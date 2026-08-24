@@ -1,0 +1,13 @@
+# Local conversion inputs and scratch output
+tmp/
+
+# Python tooling
+__pycache__/
+*.py[cod]
+.venv/
+
+# Editor and operating-system files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
