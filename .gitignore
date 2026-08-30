@@ -6,6 +6,11 @@ __pycache__/
 *.py[cod]
 .venv/
 
+# Node / TypeScript tooling
+node_modules/
+dist/
+coverage/
+
 # Editor and operating-system files
 .vscode/
 .idea/
