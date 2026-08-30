@@ -3,11 +3,15 @@ import {
   canonicalizeHexside,
   createAxialBounds,
   createFoundationScenarioFixture,
+  createGameplayEngine,
+  createMemoryGameplayPorts,
+  createRuleConfigurationFixture,
   createRuleGameStateFixture,
   directedHexside,
   formatHexId,
   hex,
   parseFaceId,
+  parseSeatId,
   pieceLocationKey,
   hashScenarioDefinition,
   hashGameState,
@@ -49,3 +53,23 @@ assert.equal(
   ruleEngine.getActionFamilies(ruleFixture, ruleFixture.sequence.actingPlayerId).length,
   11,
 );
+
+const gameplayPorts = createMemoryGameplayPorts([ruleFixture.scenario]);
+const gameplay = createGameplayEngine(gameplayPorts);
+const seatOne = parseSeatId('seat:dist-one').value;
+const seatTwo = parseSeatId('seat:dist-two').value;
+const gameplaySession = await gameplay.createSession({
+  scenario: ruleFixture.scenario,
+  configuration: createRuleConfigurationFixture(),
+  rulesSeed: 6,
+  bindings: [
+    { seatId: seatOne, playerId: ruleFixture.scenario.players[0].id, label: 'One' },
+    { seatId: seatTwo, playerId: ruleFixture.scenario.players[1].id, label: 'Two' },
+  ],
+  label: 'dist smoke',
+});
+assert.equal(gameplaySession.start().ok, true);
+assert.equal(gameplaySession.getView(seatOne).projection.stateRevision, 0);
+const gameplaySave = gameplaySession.serializeSave();
+const loadedGameplay = await gameplay.loadSession(gameplaySave);
+assert.equal(loadedGameplay.getMetadata().stateHash, gameplaySession.getMetadata().stateHash);
