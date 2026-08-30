@@ -13,7 +13,8 @@
     "smoke": "node tests/dist-smoke.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
-    "typecheck": "tsc -p tsconfig.json"
+    "typecheck": "tsc -p tsconfig.json",
+    "ui:serve": "npm run build && node scripts/serve-ui.mjs"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",

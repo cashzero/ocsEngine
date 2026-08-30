@@ -15,6 +15,7 @@ import {
   pieceLocationKey,
   hashScenarioDefinition,
   hashGameState,
+  layoutHexMap,
   parseGameStateJson,
   parseScenarioJson,
   serializeScenarioDefinition,
@@ -73,3 +74,4 @@ assert.equal(gameplaySession.getView(seatOne).projection.stateRevision, 0);
 const gameplaySave = gameplaySession.serializeSave();
 const loadedGameplay = await gameplay.loadSession(gameplaySave);
 assert.equal(loadedGameplay.getMetadata().stateHash, gameplaySession.getMetadata().stateHash);
+assert.equal(layoutHexMap(ruleFixture.scenario).cells.length, 25);

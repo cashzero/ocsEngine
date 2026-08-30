@@ -4,3 +4,4 @@ export * from './serialization/index.js';
 export * from './testing/index.js';
 export * from './rules/index.js';
 export * from './gameplay/index.js';
+export * from './ui/index.js';
