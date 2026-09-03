@@ -1,5 +1,6 @@
 import { parseHexCoordinateId, type HexId } from '../core/index.js';
 import type { PieceDefinition } from '../domain/piece/index.js';
+import type { MapDefinition } from '../domain/map/index.js';
 import type { ScenarioDefinition } from '../domain/scenario/index.js';
 import type { GameAction, ProjectedPiece } from '../rules/index.js';
 
@@ -66,8 +67,8 @@ const hexPoints = (centerX: number, centerY: number, size: number): string =>
     return `${(centerX + size * Math.cos(radians)).toFixed(2)},${(centerY + size * Math.sin(radians)).toFixed(2)}`;
   }).join(' ');
 
-export const layoutHexMap = (scenario: ScenarioDefinition, hexSize = 54): HexMapLayout => {
-  const raw = scenario.mapDefinition.hexes.map((hex) => {
+export const layoutMapDefinition = (map: MapDefinition, hexSize = 54): HexMapLayout => {
+  const raw = map.hexes.map((hex) => {
     const parsed = parseHexCoordinateId(hex.id);
     if (!parsed.ok) throw new Error(`Invalid map Hex ID: ${hex.id}`);
     const { q, r } = parsed.value;
@@ -89,5 +90,8 @@ export const layoutHexMap = (scenario: ScenarioDefinition, hexSize = 54): HexMap
   });
   return { width: maxX - minX, height: maxY - minY, hexSize, cells };
 };
+
+export const layoutHexMap = (scenario: ScenarioDefinition, hexSize = 54): HexMapLayout =>
+  layoutMapDefinition(scenario.mapDefinition, hexSize);
 
 export const safeDomId = (value: string): string => `ocs-${value.replace(/[^a-z0-9_-]/giu, '-')}`;
