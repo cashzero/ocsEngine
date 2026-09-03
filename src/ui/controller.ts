@@ -31,6 +31,7 @@ export interface UiController {
   readonly createCheckpoint: () => void;
   readonly undoTo: (checkpointId: string) => Promise<void>;
   readonly serializeSave: () => string;
+  readonly serializeReplay: () => string;
   readonly loadSave: (serialized: string) => Promise<void>;
   readonly beginHandoff: () => void;
   readonly completeHandoff: () => void;
@@ -59,6 +60,9 @@ class DefaultUiController implements UiController {
     this.#session = options.session;
     this.#scenario = options.scenario;
     this.#bindings = options.bindings.map((binding) => ({ ...binding }));
+    this.#notice = options.session.getMetadata().lifecycle === 'ACTIVE'
+      ? 'Generated scenario is active. Select a legal action to play.'
+      : 'Scenario ready. Start the session when you are ready.';
     this.#bindSession();
   }
 
@@ -77,12 +81,13 @@ class DefaultUiController implements UiController {
     const kind = requestedKind !== null && families.some((family) => family.kind === requestedKind && family.enabled)
       ? requestedKind
       : families.find(({ enabled }) => enabled)?.kind ?? requestedKind;
-    const result = kind === null
+    const needsPieceSelection = kind === 'MOVE_PIECE' && this.#selection.pieceId === null;
+    const result = kind === null || needsPieceSelection
       ? { actions: [] as readonly GameAction[] }
       : this.#session.getActionCandidates(seatId, {
         kind,
         pieceId: this.#selection.pieceId as Parameters<GameSession['getActionCandidates']>[1]['pieceId'],
-        budget: 100,
+        budget: 24,
       });
     const index = Math.min(this.#selection.candidateIndex, Math.max(0, result.actions.length - 1));
     const selectedAction = result.actions[index] ?? null;
@@ -94,6 +99,9 @@ class DefaultUiController implements UiController {
 
   getSnapshot = (): UiSnapshot => {
     const state = this.#candidateState();
+    const decisionOwner = this.#bindings.find(({ seatId }) => this.#session.getPendingDecision(seatId) !== null);
+    const sequenceOwner = this.#bindings.find(({ playerId }) =>
+      playerId === state.view.projection?.sequence.actingPlayerId);
     return {
       scenario: this.#scenario,
       view: state.view,
@@ -108,6 +116,7 @@ class DefaultUiController implements UiController {
       notice: this.#notice,
       busy: this.#busy,
       handoffPending: this.#handoffToken !== null,
+      requiredSeatId: decisionOwner?.seatId ?? sequenceOwner?.seatId ?? null,
     };
   };
 
@@ -179,7 +188,7 @@ class DefaultUiController implements UiController {
     );
     return result.status === 'ACCEPTED'
       ? `Decision accepted at revision ${result.revision}.`
-      : `Decision ${result.status.toLowerCase()}.`;
+      : `Decision ${result.status.toLowerCase()}: ${result.violations.map(({ message }) => message).join(' ') || 'No Rule violation detail was returned.'}`;
   });
 
   start = (): void => {
@@ -209,6 +218,8 @@ class DefaultUiController implements UiController {
   });
 
   serializeSave = (): string => this.#session.serializeSave();
+
+  serializeReplay = (): string => JSON.stringify(this.#session.exportReplay(), null, 2);
 
   loadSave = async (serialized: string): Promise<void> => this.#run(async () => {
     const loaded = await this.#engine.loadSession(serialized);

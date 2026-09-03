@@ -1,5 +1,7 @@
 # Local conversion inputs and scratch output
 tmp/
+.tmp-edge-*/
+.tmp-ocs-*.png
 
 # Python tooling
 __pycache__/

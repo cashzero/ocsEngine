@@ -212,6 +212,16 @@ describe('Piece runtime state', () => {
     expect(validatePieceRuntimeState(catalog(), validRuntimeState())).toEqual([]);
   });
 
+  it('does not treat eliminated Pieces as occupants of one shared stack', () => {
+    const state = validRuntimeState();
+    const eliminated = ['piece:eliminated-one', 'piece:eliminated-two'].map((id) =>
+      groundState(id, 'cargo', { kind: 'ELIMINATED' }, 0));
+    expect(validatePieceRuntimeState(catalog(), {
+      ...state,
+      pieces: [...state.pieces, ...eliminated],
+    })).toEqual([]);
+  });
+
   it('keeps mode independent from printed face orientation', () => {
     const state = validRuntimeState();
     const pieces = state.pieces.map((piece) => piece.id === 'piece:carrier'
