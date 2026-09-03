@@ -1,0 +1,309 @@
+import {
+  FOUNDATION_SCHEMA_VERSION,
+  err,
+  movementPoints,
+  ok,
+  parseDefinitionId,
+  regimentalEquivalents,
+  type DefinitionId,
+  type Result,
+} from '../../core/index.js';
+import {
+  parseCapabilityId,
+  parseFaceId,
+  type CapabilityDeclaration,
+  type PieceDefinition,
+  type PieceDefinitionCatalog,
+  type PieceStepProfile,
+} from '../../domain/piece/index.js';
+import { canonicalJson } from '../../serialization/index.js';
+import { createSeededRandom, mixUint32 } from '../map/rng.js';
+import {
+  BTR_BUILD_FILE_SHA256,
+  findReviewedOobArchetype,
+  type ReviewedOobArchetype,
+} from './catalog.js';
+import {
+  OOB_GENERATOR_VERSION,
+  OOB_SCALES,
+  type GeneratedOob,
+  type GeneratedOobFormation,
+  type GeneratedOobSide,
+  type GeneratedOobUnit,
+  type NormalizedRandomOobOptions,
+  type OobFormationArchetype,
+  type OobGenerationError,
+  type OobScale,
+  type OobSide,
+  type OobUnitRole,
+  type RandomOobOptions,
+} from './model.js';
+import { validateGeneratedOob } from './validation.js';
+
+const SIDES: readonly OobSide[] = ['ALLIED', 'AXIS'];
+const FORMATION_ARCHETYPES: readonly OobFormationArchetype[] = ['ARMORED', 'INFANTRY', 'MOBILE_INFANTRY'];
+
+const must = <T, E>(result: Result<T, E>): T => {
+  if (!result.ok) throw new Error('Random OOB generator produced an invalid Foundation scalar.');
+  return result.value;
+};
+
+const definitionId = (value: string): DefinitionId => must(parseDefinitionId(value));
+const faceId = must(parseFaceId('front'));
+const capabilityId = (value: string) => must(parseCapabilityId(value));
+
+const SCALE_COMBAT_UNITS: Readonly<Record<OobScale, number>> = {
+  COMPACT: 2, STANDARD: 3, LARGE: 4,
+};
+
+const displaySide = (side: OobSide): string => side === 'ALLIED' ? 'Allied' : 'Axis';
+const displayArchetype = (archetype: OobFormationArchetype): string => ({
+  ARMORED: 'Armored', INFANTRY: 'Infantry', MOBILE_INFANTRY: 'Mobile Infantry',
+})[archetype];
+
+const capabilitiesFor = (role: OobUnitRole): readonly CapabilityDeclaration[] => {
+  switch (role) {
+    case 'FORMATION_COMMAND': return [{ id: capabilityId('HQ'), parameters: [] }];
+    case 'ARTILLERY': return [{ id: capabilityId('ARTILLERY'), parameters: [] }];
+    case 'RECONNAISSANCE': return [{ id: capabilityId('RECONNAISSANCE'), parameters: [] }];
+    case 'ENGINEER': return [{ id: capabilityId('ENGINEER_CAPABLE'), parameters: [] }];
+    case 'TRANSPORT': return [{
+      id: capabilityId('TRANSPORT_CAPACITY'),
+      parameters: [{
+        key: 'capacity', kind: 'EXACT_QUANTITY', value: 8,
+        unitDefinitionId: definitionId('quantity:supply-token'),
+      }],
+    }];
+    case 'COMBAT':
+    case 'SUPPLY': return [];
+  }
+};
+
+const stepsFor = (archetype: ReviewedOobArchetype): readonly PieceStepProfile[] => {
+  if (archetype.family === 'RESOURCE') return [];
+  const profile = (remainingSteps: number, strength: number): PieceStepProfile => ({
+    remainingSteps,
+    combatStrength: strength,
+    actionRating: archetype.actionRating,
+    movementPointTicks: archetype.movementPoints === null ? null : must(movementPoints(archetype.movementPoints)),
+    regimentalEquivalentTicks: archetype.regimentalEquivalents === null
+      ? null : must(regimentalEquivalents(remainingSteps === archetype.steps
+        ? archetype.regimentalEquivalents
+        : Math.max(0.25, archetype.regimentalEquivalents / 2))),
+    range: archetype.range,
+    ratings: [],
+  });
+  return Array.from({ length: archetype.steps }, (_, index) => {
+    const remainingSteps = index + 1;
+    const strength = archetype.combatStrength === null ? 0
+      : remainingSteps === archetype.steps ? archetype.combatStrength : Math.ceil(archetype.combatStrength / 2);
+    return profile(remainingSteps, strength);
+  });
+};
+
+interface UnitBuildContext {
+  readonly options: NormalizedRandomOobOptions;
+  readonly side: OobSide;
+  readonly role: OobUnitRole;
+  readonly formationArchetype?: OobFormationArchetype;
+  readonly formationId: DefinitionId | null;
+  readonly name: string;
+  readonly localId: string;
+}
+
+const buildUnit = (context: UnitBuildContext): {
+  readonly unit: GeneratedOobUnit;
+  readonly definition: PieceDefinition;
+} => {
+  const source = findReviewedOobArchetype(context.side, context.role, context.formationArchetype);
+  const idBase = `generated-oob:${context.options.seed}:${context.side.toLowerCase()}:${context.localId}`;
+  const id = definitionId(idBase);
+  const sourceReference = {
+    document: 'Beyond the Rhine VASSAL buildFile.xml v1.27.0',
+    locator: `VASSAL.build.widget.PieceSlot[gpid=${source.gpid}]`,
+    note: `SHA-256 ${BTR_BUILD_FILE_SHA256}; reviewed raw entryName: ${source.rawName}`,
+  } as const;
+  const definition: PieceDefinition = {
+    id,
+    family: source.family,
+    name: context.name,
+    categoryDefinitionId: definitionId(`category:oob:${context.role.toLowerCase()}`),
+    ownership: {
+      sideDefinitionId: definitionId(`side:${context.side.toLowerCase()}`),
+      factionDefinitionId: null,
+      nationalityDefinitionId: definitionId(`nationality:${context.side.toLowerCase()}`),
+      formationDefinitionId: context.formationId,
+      groupDefinitionId: null,
+    },
+    faces: source.family === 'RESOURCE' ? [] : [{
+      id: faceId,
+      name: 'Front',
+      mobilityClassDefinitionId: definitionId(context.role === 'COMBAT'
+        && context.formationArchetype === 'ARMORED' ? 'mobility:tracked'
+        : context.role === 'TRANSPORT' || context.role === 'RECONNAISSANCE' ? 'mobility:motorized'
+          : 'mobility:leg'),
+      steps: stepsFor(source),
+    }],
+    capabilities: capabilitiesFor(context.role),
+    resource: source.family === 'RESOURCE' ? {
+      resourceDefinitionId: definitionId('resource:supply'),
+      unitDefinitionId: definitionId('quantity:supply-token'),
+      printedQuantity: 4,
+      capacity: 8,
+    } : null,
+    facility: null,
+    marker: null,
+    deferredClassification: null,
+    source: { records: [
+      {
+        field: 'name-and-role', rawValue: source.rawName,
+        normalizedValue: `${context.name} / ${context.role}`,
+        source: sourceReference, confidence: 'HIGH', reviewStatus: 'REVIEWED',
+      },
+      {
+        field: 'generator-ratings',
+        rawValue: `BTR gpid=${source.gpid}; encoded VASSAL traits intentionally not decoded`,
+        normalizedValue: `strength=${source.combatStrength}; ar=${source.actionRating}; movement=${source.movementPoints}; range=${source.range}; steps=${source.steps}`,
+        source: { document: 'docs/oob/01-normalization-decisions.md', locator: source.id },
+        confidence: 'MEDIUM', reviewStatus: 'REVIEWED',
+      },
+    ] },
+  };
+  return {
+    unit: {
+      id: `${idBase}:unit`, definitionId: id, side: context.side,
+      formationId: context.formationId, role: context.role,
+      sourceArchetypeId: source.id, pointCost: source.pointCost,
+    },
+    definition,
+  };
+};
+
+export const normalizeRandomOobOptions = (
+  options: RandomOobOptions,
+): Result<NormalizedRandomOobOptions, readonly OobGenerationError[]> => {
+  const errors: OobGenerationError[] = [];
+  if (!Number.isSafeInteger(options.seed) || options.seed < 0 || options.seed > 0xffff_ffff) {
+    errors.push({ code: 'INVALID_OPTIONS', message: 'Seed must be a uint32.', path: ['seed'] });
+  }
+  if (!(OOB_SCALES as readonly string[]).includes(options.scale)) {
+    errors.push({ code: 'INVALID_OPTIONS', message: 'Scale must be COMPACT, STANDARD, or LARGE.', path: ['scale'] });
+  }
+  if (!Number.isSafeInteger(options.formationsPerSide)
+    || options.formationsPerSide < 1 || options.formationsPerSide > 6) {
+    errors.push({ code: 'INVALID_OPTIONS', message: 'Formations per side must be an integer from 1 to 6.', path: ['formationsPerSide'] });
+  }
+  return errors.length > 0 ? err(errors) : ok({ ...options });
+};
+
+const formationPlan = (
+  options: NormalizedRandomOobOptions,
+): readonly OobFormationArchetype[] => {
+  const rng = createSeededRandom(mixUint32(options.seed ^ 0x4f4f_4237));
+  const plan: OobFormationArchetype[] = [];
+  while (plan.length < options.formationsPerSide) {
+    plan.push(...rng.shuffle(FORMATION_ARCHETYPES));
+  }
+  return plan.slice(0, options.formationsPerSide);
+};
+
+const buildSide = (
+  side: OobSide,
+  plan: readonly OobFormationArchetype[],
+  options: NormalizedRandomOobOptions,
+  definitions: PieceDefinition[],
+): GeneratedOobSide => {
+  const formations: GeneratedOobFormation[] = plan.map((archetype, formationIndex) => {
+    const sequence = formationIndex + 1;
+    const formationId = definitionId(`formation:generated:${options.seed}:${side.toLowerCase()}:${sequence}`);
+    const formationName = `${displaySide(side)} ${sequence} ${displayArchetype(archetype)} Formation`;
+    const requests: Array<{ role: OobUnitRole; suffix: string }> = [
+      { role: 'FORMATION_COMMAND', suffix: 'command' },
+      ...Array.from({ length: SCALE_COMBAT_UNITS[options.scale] }, (_, index) => ({
+        role: 'COMBAT' as const, suffix: `combat-${index + 1}`,
+      })),
+      { role: 'ARTILLERY', suffix: 'artillery-1' },
+      ...(options.scale === 'LARGE' ? [{ role: 'ARTILLERY' as const, suffix: 'artillery-2' }] : []),
+      ...(archetype === 'ARMORED' || archetype === 'MOBILE_INFANTRY'
+        ? [{ role: 'RECONNAISSANCE' as const, suffix: 'recon' }] : []),
+    ];
+    const units = requests.map(({ role, suffix }) => {
+      const built = buildUnit({
+        options, side, role, formationArchetype: archetype, formationId,
+        name: `${formationName} ${role.replaceAll('_', ' ').toLowerCase()} ${suffix.split('-').at(-1)}`,
+        localId: `f${sequence}-${suffix}`,
+      });
+      definitions.push(built.definition);
+      return built.unit;
+    });
+    return { id: formationId, side, name: formationName, archetype, units };
+  });
+
+  const supportCount = options.scale === 'LARGE'
+    ? options.formationsPerSide : Math.max(1, Math.ceil(options.formationsPerSide / 2));
+  const independentRequests: OobUnitRole[] = [
+    ...Array.from({ length: supportCount }, () => 'ARTILLERY' as const),
+    ...Array.from({ length: options.scale === 'LARGE' ? Math.ceil(options.formationsPerSide / 2) : 1 }, () => 'ENGINEER' as const),
+    ...Array.from({ length: supportCount }, () => 'TRANSPORT' as const),
+    ...Array.from({ length: supportCount }, () => 'SUPPLY' as const),
+  ];
+  const roleCounts = new Map<OobUnitRole, number>();
+  const independentUnits = independentRequests.map((role) => {
+    const ordinal = (roleCounts.get(role) ?? 0) + 1;
+    roleCounts.set(role, ordinal);
+    const built = buildUnit({
+      options, side, role, formationId: null,
+      name: `${displaySide(side)} Independent ${role.replaceAll('_', ' ').toLowerCase()} ${ordinal}`,
+      localId: `independent-${role.toLowerCase()}-${ordinal}`,
+    });
+    definitions.push(built.definition);
+    return built.unit;
+  });
+  return { side, formations, independentUnits };
+};
+
+export const generateRandomOob = (
+  requested: RandomOobOptions,
+): Result<GeneratedOob, readonly OobGenerationError[]> => {
+  const normalized = normalizeRandomOobOptions(requested);
+  if (!normalized.ok) return normalized;
+  const options = normalized.value;
+  const plan = formationPlan(options);
+  const definitions: PieceDefinition[] = [];
+  const sides = SIDES.map((side) => buildSide(side, plan, options, definitions));
+  const pieceDefinitionCatalog: PieceDefinitionCatalog = {
+    id: definitionId(`catalog:generated-oob:${options.seed}`),
+    schemaVersion: FOUNDATION_SCHEMA_VERSION,
+    definitions,
+    provenance: [
+      {
+        document: 'Beyond the Rhine VASSAL buildFile.xml v1.27.0',
+        locator: `sha256:${BTR_BUILD_FILE_SHA256.toLowerCase()}`,
+        note: 'Names/roles/GPIDs reviewed as reference evidence; this output is synthetic and does not reproduce the historical OOB.',
+      },
+      { document: 'ocsEngine random OOB generator', locator: `M7/${OOB_GENERATOR_VERSION}/${options.scale}/${options.seed}` },
+    ],
+  };
+  const draft = {
+    schemaVersion: 1 as const, generatorVersion: OOB_GENERATOR_VERSION,
+    options, sides, pieceDefinitionCatalog, warnings: [] as readonly string[],
+  };
+  const validation = validateGeneratedOob(draft);
+  if (!validation.valid) return err([{
+    code: 'GENERATION_INVALID', message: 'Generated OOB failed composition or Foundation validation.',
+    path: [], issues: validation.issues,
+  }]);
+  const armored = plan.filter((value) => value === 'ARMORED').length;
+  const warnings = armored === plan.length && plan.length > 1
+    ? ['All formations are armored; transport and fuel pressure will be unusually high.'] : [];
+  return ok({ ...draft, metrics: validation.metrics, warnings });
+};
+
+export const serializeGeneratedOob = (
+  generated: GeneratedOob,
+): Result<string, readonly OobGenerationError[]> => {
+  const serialized = canonicalJson(generated);
+  return serialized.ok ? serialized : err(serialized.error.map((issue) => ({
+    code: 'GENERATION_INVALID' as const, message: issue.message, path: issue.path, issues: [issue],
+  })));
+};

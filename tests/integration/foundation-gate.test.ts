@@ -151,19 +151,23 @@ describe('F10 Foundation integration gate', () => {
 
   it('keeps package dependencies one-way and records every F0-F10 study output', () => {
     const sourceRoot = join(process.cwd(), 'src');
-    const prohibitedImports = /from\s+['"][^'"]*(?:react|generator|\/ai(?:\/|['"]))/giu;
+    const prohibitedImports = /from\s+['"][^'"]*(?:react|\/ai(?:\/|['"]))/giu;
     const boundaryLeaks = sourceFiles(sourceRoot).flatMap((path) => {
       const content = readFileSync(path, 'utf8');
       const relative = path.slice(sourceRoot.length).replaceAll('\\', '/');
       const layerPattern = relative.startsWith('/core/')
-        ? /from\s+['"][^'"]*(?:domain|serialization|testing|rules|gameplay)/gu
+        ? /from\s+['"][^'"]*(?:domain|serialization|testing|rules|gameplay|ui|generation)/gu
         : relative.startsWith('/domain/')
-          ? /from\s+['"][^'"]*(?:serialization|testing|rules|gameplay)/gu
+          ? /from\s+['"][^'"]*(?:serialization|testing|rules|gameplay|ui|generation)/gu
           : relative.startsWith('/serialization/')
-            ? /from\s+['"][^'"]*(?:testing|rules|gameplay)/gu
+            ? /from\s+['"][^'"]*(?:testing|rules|gameplay|ui|generation)/gu
             : relative.startsWith('/rules/')
-              ? /from\s+['"][^'"]*gameplay/gu
-              : /$a/gu;
+              ? /from\s+['"][^'"]*(?:gameplay|ui|generation)/gu
+              : relative.startsWith('/gameplay/')
+                ? /from\s+['"][^'"]*(?:ui|generation)/gu
+                : relative.startsWith('/generation/')
+                  ? /from\s+['"][^'"]*(?:rules|gameplay|ui|\/ai(?:\/|['"]))/gu
+                  : /$a/gu;
       return [...content.matchAll(prohibitedImports), ...content.matchAll(layerPattern)]
         .map((match) => ({ path, importText: match[0] }));
     });

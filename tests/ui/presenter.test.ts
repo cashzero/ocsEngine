@@ -2,7 +2,11 @@ import { describe, expect, it } from 'vitest';
 import {
   actionKindLabel,
   actionSummary,
+  buildGeneratedMapPreview,
+  buildGeneratedOobPreview,
   createRuleGameStateFixture,
+  generateRandomMap,
+  generateRandomOob,
   layoutHexMap,
 } from '../../src/index.js';
 
@@ -27,5 +31,29 @@ describe('U3-U4 UI map and action presenters', () => {
     };
     expect(actionKindLabel(action.kind)).toBe('Advance sequence');
     expect(actionSummary(action)).toBe('Continue to the next segment');
+  });
+
+  it('projects generated terrain and infrastructure into an SVG-ready model', () => {
+    const generated = generateRandomMap({ width: 18, height: 12, seed: 1943, style: 'MEDITERRANEAN_COAST' });
+    expect(generated.ok).toBe(true);
+    if (!generated.ok) return;
+    const preview = buildGeneratedMapPreview(generated.value);
+    expect(preview.cells).toHaveLength(216);
+    expect(preview.cells.some(({ terrain }) => terrain === 'WATER')).toBe(true);
+    expect(preview.edges.some(({ kind }) => kind === 'PRIMARY_ROAD')).toBe(true);
+    expect(preview.edges.some(({ kind }) => kind === 'RIVER' || kind === 'MAJOR_RIVER')).toBe(true);
+  });
+
+  it('projects generated OOB definitions into readable counter summaries', () => {
+    const generated = generateRandomOob({ seed: 1944, scale: 'STANDARD', formationsPerSide: 3 });
+    expect(generated.ok).toBe(true);
+    if (!generated.ok) return;
+    const preview = buildGeneratedOobPreview(generated.value);
+    expect(preview.sides).toHaveLength(2);
+    expect(preview.sides.every(({ formations }) => formations.length === 3)).toBe(true);
+    expect(preview.sides.flatMap(({ formations }) => formations)
+      .every(({ units }) => units.some(({ role }) => role === 'FORMATION_COMMAND'))).toBe(true);
+    expect(preview.sides.flatMap(({ formations }) => formations)
+      .flatMap(({ units }) => units).some(({ combatStrength }) => combatStrength !== null)).toBe(true);
   });
 });

@@ -15,6 +15,11 @@ import {
   pieceLocationKey,
   hashScenarioDefinition,
   hashGameState,
+  generateRandomMap,
+  generateRandomOob,
+  prepareNewGame,
+  DEFAULT_NEW_GAME_REQUEST,
+  sweepGameFlowSeedOrthogonality,
   layoutHexMap,
   parseGameStateJson,
   parseScenarioJson,
@@ -75,3 +80,14 @@ const gameplaySave = gameplaySession.serializeSave();
 const loadedGameplay = await gameplay.loadSession(gameplaySave);
 assert.equal(loadedGameplay.getMetadata().stateHash, gameplaySession.getMetadata().stateHash);
 assert.equal(layoutHexMap(ruleFixture.scenario).cells.length, 25);
+const generatedMap = generateRandomMap({ width: 18, height: 12, seed: 1943, style: 'TEMPERATE_INLAND' });
+assert.equal(generatedMap.ok, true);
+assert.equal(generatedMap.value.metrics.connectedRoadComponents, 1);
+const generatedOob = generateRandomOob({ seed: 1944, scale: 'STANDARD', formationsPerSide: 3 });
+assert.equal(generatedOob.ok, true);
+assert.equal(generatedOob.value.metrics.balanceRatio, 1);
+assert.equal(generatedOob.value.sides.length, 2);
+const generatedGame = prepareNewGame(DEFAULT_NEW_GAME_REQUEST);
+assert.equal(generatedGame.ok, true);
+assert.equal(generatedGame.value.scenario.initialPieceState.pieces.length, generatedGame.value.generatedOob.metrics.unitCount);
+assert.equal(sweepGameFlowSeedOrthogonality(DEFAULT_NEW_GAME_REQUEST).passed, true);
