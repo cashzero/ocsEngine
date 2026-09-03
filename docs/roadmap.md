@@ -403,6 +403,8 @@ validation summary 與 save。此時只生成地圖，仍使用固定 OOB fixtur
 
 ## 11. M7：OOB Catalog 與 Random OOB
 
+實作狀態：M7.0–M7.10 已完成；逐步研究、驗證與交付證據見 [Random OOB WBS](roadmap/06-random-oob-wbs.md)。M8 才會加入 deployment 與 playable Scenario composition。
+
 ### 研究先行
 
 1. 研究 BCS random OOB/template/deployment，輸出
@@ -426,7 +428,7 @@ moduledata + buildFile.xml
 
 ### Random OOB
 
-- exact historical 與 OOB-inspired 兩種模式；
+- 本階段交付可追溯的 OOB-inspired random 模式；exact historical import 必須等待官方 game-specific OOB/rating review，不能只憑 VASSAL palette 宣稱完成；
 - formation required/optional role slots；
 - HQ、artillery、engineer、transport、SP/dump 等 package；
 - steps、RE、mobility、AR、artillery、transport、supply capacity 的多維 budget；
@@ -452,7 +454,21 @@ moduledata + buildFile.xml
 
 ## 12. M8：Random Scenario Integration
 
-M8 將 Random Map 與 Random OOB 合成可直接人工遊玩的 scenario。
+實作狀態：**IN PROGRESS**。Random Map 與 Random OOB 已合成可人工操作的 generated scenario，且真實瀏覽器已完成 default、Large 與 contact 主流程；但 lifecycle、real save/load、Game End/final replay 與其餘產品操作 gate 尚未全數驗證，M8.10 不得標為完成。
+
+M8 同時是正式的 Game Flow Integration milestone；詳細 WBS 與架構圖：
+
+- [M8 Game Flow Integration WBS](roadmap/07-game-flow-integration-wbs.md)
+- [End-to-end Game Flow Architecture](architecture/game-flow.md)
+
+產品主流程固定為：
+
+```text
+New Game → Generate Map → Generate OOB → Compose/Deploy Scenario
+         → Gameplay Session → Game End
+```
+
+UI 正常入口已移除 fixed synthetic fixture；M6/M7 preview 保留為診斷工具。畫面上的 map、OOB、legal actions、save/replay 與 result 全部來自同一個 generated Scenario。
 
 ### Seed contract
 
@@ -484,16 +500,14 @@ M8 將 Random Map 與 Random OOB 合成可直接人工遊玩的 scenario。
 
 ### 文件產出
 
-- `docs/generator-study/04-ocs-random-scenario-contract.md`
-- `docs/generator/M8-scenario-template-spec.md`
-- `docs/generator/M8-deployment-and-balance.md`
-- `docs/reports/M8-map-oob-orthogonal-sweep.md`
-- `docs/reports/M8-generated-manual-playthrough.md`
+- `docs/game-flow/00-current-gap-and-flow-contract.md` 至 `08-persistence-recovery.md`
+- `docs/architecture/game-flow.md`
+- `docs/reports/M8-orthogonal-seed-sweep.md`
+- `docs/reports/M8-generated-game-flow-gate.md`
 
 ### Exit gate
 
-固定 map 掃不同 OOB、固定 OOB 掃不同 map、全部 seed 同時變動三組測試均通過，
-且 generated scenario 可由人類完整遊玩。通過後才開始 AI Bot。
+固定 map/不同 OOB、固定 OOB/不同 map、deployment seed orthogonality 已通過；generated session 的整回合主流程亦已由真實瀏覽器操作通過。仍須依 `docs/quality/03-product-operation-verification-plan.md` 完成 real save/load、Game End/final replay、layout 與 fault-visibility gate。所有 P0 通過前，M9 AI Bot 不得開始。
 
 ## 13. M9：AI Bot
 
