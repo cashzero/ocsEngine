@@ -438,7 +438,7 @@ export const validatePieceRuntimeState = (
     issues.push(...validatePiece(piece, pieceIndex, catalog));
   });
   for (const duplicate of duplicateKeys(
-    state.pieces,
+    state.pieces.filter(({ location }) => location.kind !== 'ELIMINATED'),
     (piece) => stableKey([pieceLocationKey(piece.location), String(piece.stackOrder)]),
   )) {
     issues.push(error(

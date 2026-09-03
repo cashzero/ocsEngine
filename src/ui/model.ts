@@ -9,6 +9,7 @@ import type {
   GameplayView,
   HistoryRecord,
   SeatBinding,
+  SeatId,
 } from '../gameplay/index.js';
 
 export interface UiSelection {
@@ -32,6 +33,7 @@ export interface UiSnapshot {
   readonly notice: string;
   readonly busy: boolean;
   readonly handoffPending: boolean;
+  readonly requiredSeatId: SeatId | null;
 }
 
 export type UiListener = (snapshot: UiSnapshot) => void;

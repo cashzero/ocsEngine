@@ -1,3 +1,12 @@
+import {
+  HEX_DIRECTIONS,
+  formatHexId,
+  hexDistance,
+  neighbor,
+  parseHexCoordinateId,
+  type HexId,
+} from '../core/index.js';
+import { createPieceDefinitionCatalogIndex, type PieceState } from '../domain/piece/index.js';
 import { parseRuleActionId, type RuleActionId } from './kernel/ids.js';
 import type { GameAction, GameState } from './kernel/model.js';
 import { applyGameAction, validateGameAction } from './kernel/reducer.js';
@@ -24,119 +33,202 @@ const base = (state: GameState, actorId: GameAction['actorId'], scope: string) =
   expectedRevision: state.revision,
 });
 
-const candidates = (state: GameState, request: CandidateRequest): readonly GameAction[] => {
+const onMapHex = (piece: PieceState): HexId | null =>
+  piece.location.kind === 'ON_MAP' ? piece.location.hexId : null;
+
+const adjacent = (left: string, right: string): boolean => {
+  const from = parseHexCoordinateId(left);
+  const to = parseHexCoordinateId(right);
+  return from.ok && to.ok && hexDistance(from.value, to.value) === 1;
+};
+
+const barrageRange = (state: GameState, piece: PieceState): number => {
+  if (piece.currentFaceId === null || piece.remainingSteps === null) return 0;
+  const definition = createPieceDefinitionCatalogIndex(state.scenario.pieceCatalog).get(piece.definitionId);
+  if (!definition?.capabilities.some(({ id }) => id === 'ARTILLERY')) return 0;
+  return definition.faces.find(({ id }) => id === piece.currentFaceId)?.steps
+    .find(({ remainingSteps }) => remainingSteps === piece.remainingSteps)?.range ?? 0;
+};
+
+const candidates = (
+  state: GameState,
+  request: CandidateRequest,
+  legalLimit: number | null = null,
+): readonly GameAction[] => {
   const actions: GameAction[] = [];
+  const add = (action: GameAction): boolean => {
+    if (validateGameAction(state, action).allowed) actions.push(action);
+    return legalLimit !== null && actions.length >= legalLimit;
+  };
+  const byId = <T extends { readonly id: string }>(items: readonly T[]): readonly T[] =>
+    [...items].sort((left, right) => String(left.id).localeCompare(String(right.id)));
   switch (request.kind) {
     case 'ADVANCE_SEQUENCE':
-      actions.push({ ...base(state, request.actorId, 'advance'), kind: 'ADVANCE_SEQUENCE' });
+      add({ ...base(state, request.actorId, 'advance'), kind: 'ADVANCE_SEQUENCE' });
       break;
     case 'CHANGE_MODE':
-      for (const piece of state.pieceState.pieces.filter(({ ownerId }) => ownerId === request.actorId)) {
+      for (const piece of byId(state.pieceState.pieces.filter(({ ownerId }) => ownerId === request.actorId))) {
         for (const mode of ['COMBAT', 'MOVE', 'RESERVE', 'STRAT'] as const) {
-          actions.push({ ...base(state, request.actorId, `mode:${piece.id}:${mode}`), kind: 'CHANGE_MODE', pieceId: piece.id, mode });
+          if (add({ ...base(state, request.actorId, `mode:${piece.id}:${mode}`), kind: 'CHANGE_MODE', pieceId: piece.id, mode })) return actions;
         }
       }
       break;
     case 'RELEASE_RESERVE':
-      for (const piece of state.pieceState.pieces.filter(({ ownerId, mode }) => ownerId === request.actorId && mode === 'RESERVE')) {
-        actions.push({ ...base(state, request.actorId, `release:${piece.id}`), kind: 'RELEASE_RESERVE', pieceId: piece.id });
+      for (const piece of byId(state.pieceState.pieces.filter(({ ownerId, mode }) => ownerId === request.actorId && mode === 'RESERVE'))) {
+        if (add({ ...base(state, request.actorId, `release:${piece.id}`), kind: 'RELEASE_RESERVE', pieceId: piece.id })) return actions;
       }
       break;
     case 'MOVE_PIECE':
       for (const pieceId of request.pieceId !== null
         ? [request.pieceId]
-        : state.pieceState.pieces.filter(({ ownerId }) => ownerId === request.actorId).map(({ id }) => id)) {
+        : byId(state.pieceState.pieces.filter(({ ownerId }) => ownerId === request.actorId)).map(({ id }) => id)) {
+        if (legalLimit === 1) {
+          const piece = state.pieceState.pieces.find(({ id }) => id === pieceId);
+          const origin = piece && onMapHex(piece);
+          const coordinate = origin ? parseHexCoordinateId(origin) : null;
+          if (!origin || !coordinate?.ok) continue;
+          for (const direction of HEX_DIRECTIONS) {
+            const destination = formatHexId(neighbor(coordinate.value, direction));
+            if (add({
+              ...base(state, request.actorId, `move:${pieceId}:${destination}`),
+              kind: 'MOVE_PIECE', pieceId, path: [origin, destination],
+            })) return actions;
+          }
+          continue;
+        }
         const reachable = queryReachableHexes(state, request.actorId, pieceId);
-        for (const candidate of reachable.value ?? []) {
-          actions.push({ ...base(state, request.actorId, `move:${pieceId}:${candidate.hexId}`), kind: 'MOVE_PIECE', pieceId, path: candidate.path });
+        for (const candidate of [...(reachable.value ?? [])].sort((left, right) => String(left.hexId).localeCompare(String(right.hexId)))) {
+          if (add({ ...base(state, request.actorId, `move:${pieceId}:${candidate.hexId}`), kind: 'MOVE_PIECE', pieceId, path: candidate.path })) return actions;
         }
       }
       break;
     case 'CHECK_SUPPLY':
-      for (const piece of state.pieceState.pieces.filter(({ ownerId, mode }) => ownerId === request.actorId && mode !== null)) {
+      for (const piece of byId(state.pieceState.pieces.filter(({ ownerId, mode }) => ownerId === request.actorId && mode !== null))) {
         const supply = querySupply(state, request.actorId, piece.id, 'TRACE');
         if (supply.value?.requiresPayment) {
-          for (const source of supply.value.resourceSources) {
-            actions.push({ ...base(state, request.actorId, `supply:${piece.id}:${source.pieceId}`), kind: 'CHECK_SUPPLY', pieceIds: [piece.id], sourcePieceId: source.pieceId });
+          for (const source of [...supply.value.resourceSources]
+            .sort((left, right) => String(left.pieceId).localeCompare(String(right.pieceId)))) {
+            if (add({ ...base(state, request.actorId, `supply:${piece.id}:${source.pieceId}`), kind: 'CHECK_SUPPLY', pieceIds: [piece.id], sourcePieceId: source.pieceId })) return actions;
           }
         } else {
-          actions.push({ ...base(state, request.actorId, `supply:${piece.id}:trace`), kind: 'CHECK_SUPPLY', pieceIds: [piece.id], sourcePieceId: null });
+          if (add({ ...base(state, request.actorId, `supply:${piece.id}:trace`), kind: 'CHECK_SUPPLY', pieceIds: [piece.id], sourcePieceId: null })) return actions;
         }
       }
       break;
     case 'DECLARE_COMBAT': {
       const combatKind = state.sequence.phase === 'COMBAT' ? 'REGULAR' as const : 'OVERRUN' as const;
-      const friendly = state.pieceState.pieces.filter(({ ownerId, location }) =>
-        ownerId === request.actorId && location.kind === 'ON_MAP');
-      const enemies = state.pieceState.pieces.filter(({ ownerId, location }) =>
-        ownerId !== request.actorId && location.kind === 'ON_MAP');
+      const friendly = byId(state.pieceState.pieces.filter(({ ownerId, location }) =>
+        ownerId === request.actorId && location.kind === 'ON_MAP'))
+        .filter((piece) => !['RESERVE', 'STRAT'].includes(piece.mode ?? '')
+          && !state.usage.some((usage) => usage.pieceId === piece.id && usage.attacked));
+      const enemies = byId(state.pieceState.pieces.filter(({ ownerId, location }) =>
+        ownerId !== request.actorId && location.kind === 'ON_MAP'));
       for (const attacker of friendly) {
         for (const defender of enemies) {
           if (defender.location.kind !== 'ON_MAP') continue;
-          actions.push({
+          if (!adjacent(attacker.location.kind === 'ON_MAP' ? attacker.location.hexId : '', defender.location.hexId)) continue;
+          if (add({
             ...base(state, request.actorId, `combat:${combatKind}:${attacker.id}:${defender.id}`),
             kind: 'DECLARE_COMBAT', combatKind,
             attackerIds: [attacker.id], defenderIds: [defender.id],
             targetHexId: defender.location.hexId,
-          });
+          })) return actions;
         }
       }
       break;
     }
     case 'DECLARE_BARRAGE': {
-      const friendly = state.pieceState.pieces.filter(({ ownerId }) => ownerId === request.actorId);
-      const enemies = state.pieceState.pieces.filter(({ ownerId, location }) =>
-        ownerId !== request.actorId && location.kind === 'ON_MAP');
-      for (const firer of friendly) {
+      const friendly = byId(state.pieceState.pieces.filter(({ ownerId, location }) =>
+        ownerId === request.actorId && location.kind === 'ON_MAP'))
+        .map((piece) => ({ piece, range: barrageRange(state, piece) }))
+        .filter(({ piece, range }) => range > 0
+          && !state.usage.some((usage) => usage.pieceId === piece.id && usage.barraged));
+      const enemies = byId(state.pieceState.pieces.filter(({ ownerId, location }) =>
+        ownerId !== request.actorId && location.kind === 'ON_MAP'));
+      for (const { piece: firer, range } of friendly) {
         for (const target of enemies) {
           if (target.location.kind !== 'ON_MAP') continue;
-          actions.push({
+          const sourceHex = firer.location.kind === 'ON_MAP' ? firer.location.hexId : '';
+          const source = parseHexCoordinateId(sourceHex);
+          const destination = parseHexCoordinateId(target.location.hexId);
+          if (!source.ok || !destination.ok || hexDistance(source.value, destination.value) > range) continue;
+          if (add({
             ...base(state, request.actorId, `barrage:${firer.id}:${target.id}`),
             kind: 'DECLARE_BARRAGE', firerIds: [firer.id], targetPieceIds: [target.id],
             targetHexId: target.location.hexId,
-          });
+          })) return actions;
         }
       }
       break;
     }
     case 'RESPOND_DECISION':
       if (state.pendingDecision?.ownerId === request.actorId) {
-        for (const option of state.pendingDecision.options) {
-          actions.push({
+        for (const option of byId(state.pendingDecision.options)) {
+          if (add({
             ...base(state, request.actorId, `decision:${state.pendingDecision.id}:${option.id}`),
             kind: 'RESPOND_DECISION', decisionId: state.pendingDecision.id, choiceId: option.id,
-          });
+          })) return actions;
         }
       }
       break;
     case 'COMMIT_TRANSACTION':
-      if (state.activeTransaction?.ownerId === request.actorId) actions.push({
+      if (state.activeTransaction?.ownerId === request.actorId) add({
         ...base(state, request.actorId, `commit:${state.activeTransaction.id}`),
         kind: 'COMMIT_TRANSACTION', transactionId: state.activeTransaction.id,
       });
       break;
     case 'CANCEL_TRANSACTION':
-      if (state.activeTransaction?.ownerId === request.actorId) actions.push({
+      if (state.activeTransaction?.ownerId === request.actorId) add({
         ...base(state, request.actorId, `cancel:${state.activeTransaction.id}`),
         kind: 'CANCEL_TRANSACTION', transactionId: state.activeTransaction.id,
       });
       break;
     case 'PLACE_REINFORCEMENT':
-      for (const piece of state.pieceState.pieces.filter(({ ownerId }) => ownerId === request.actorId)) {
-        for (const entry of state.scenario.entries) {
-          actions.push({
+      for (const piece of byId(state.pieceState.pieces.filter(({ ownerId, location }) =>
+        ownerId === request.actorId && ['OFF_MAP_BOX', 'HOLDING_AREA', 'POOL', 'TURN_TRACK'].includes(location.kind)))) {
+        for (const entry of [...state.scenario.entries].sort((left, right) => String(left.hexId).localeCompare(String(right.hexId)))) {
+          if (add({
             ...base(state, request.actorId, `reinforcement:${piece.id}:${entry.hexId}`),
             kind: 'PLACE_REINFORCEMENT', pieceId: piece.id, hexId: entry.hexId,
-          });
+          })) return actions;
         }
       }
       break;
     default:
       break;
   }
-  return actions
-    .filter((action) => validateGameAction(state, action).allowed)
-    .sort((left, right) => String(left.actionId).localeCompare(String(right.actionId)));
+  return actions;
+};
+
+const kindMayBeLegal = (state: GameState, request: CandidateRequest): boolean => {
+  if (state.sequence.phase === 'COMPLETE') return false;
+  if (state.pendingDecision !== null) {
+    return request.kind === 'RESPOND_DECISION'
+      ? state.pendingDecision.ownerId === request.actorId
+      : request.kind === 'CANCEL_TRANSACTION' && state.activeTransaction?.ownerId === request.actorId;
+  }
+  if (state.activeTransaction !== null) {
+    return ['COMMIT_TRANSACTION', 'CANCEL_TRANSACTION'].includes(request.kind)
+      && state.activeTransaction.ownerId === request.actorId;
+  }
+  if (request.actorId !== state.sequence.actingPlayerId) return false;
+  const { phase, segment } = state.sequence;
+  switch (request.kind) {
+    case 'ADVANCE_SEQUENCE': return true;
+    case 'CHANGE_MODE': return phase === 'MOVEMENT' && segment === 'MOVEMENT';
+    case 'RELEASE_RESERVE': return phase === 'REACTION' || phase === 'EXPLOITATION';
+    case 'MOVE_PIECE': return segment === 'MOVEMENT'
+      && ['MOVEMENT', 'REACTION', 'EXPLOITATION'].includes(phase);
+    case 'CHECK_SUPPLY': return phase === 'SUPPLY';
+    case 'DECLARE_COMBAT': return (phase === 'COMBAT' && segment === 'COMBAT')
+      || (segment === 'MOVEMENT' && ['MOVEMENT', 'REACTION', 'EXPLOITATION'].includes(phase));
+    case 'DECLARE_BARRAGE': return segment === 'BARRAGE'
+      && ['MOVEMENT', 'REACTION', 'COMBAT', 'EXPLOITATION'].includes(phase);
+    case 'PLACE_REINFORCEMENT': return phase === 'REINFORCEMENT';
+    case 'RESPOND_DECISION':
+    case 'COMMIT_TRANSACTION':
+    case 'CANCEL_TRANSACTION': return false;
+  }
 };
 
 const ALL_ACTION_KINDS: readonly GameAction['kind'][] = [
@@ -146,18 +238,25 @@ const ALL_ACTION_KINDS: readonly GameAction['kind'][] = [
 ];
 
 const engine: RuleEngine = {
-  getActionFamilies: (state: GameState, actorId: GameAction['actorId']): readonly ActionFamily[] => ALL_ACTION_KINDS.map((kind) => ({
-    kind,
-    enabled: candidates(state, { actorId, kind, pieceId: null, budget: 1 }).length > 0,
-  })),
+  getActionFamilies: (state: GameState, actorId: GameAction['actorId']): readonly ActionFamily[] => ALL_ACTION_KINDS.map((kind) => {
+    const request = { actorId, kind, pieceId: null, budget: 1 };
+    return { kind, enabled: kindMayBeLegal(state, request) && candidates(state, request, 1).length > 0 };
+  }),
   getActionCandidates: (state: GameState, request: CandidateRequest): CandidateResult => {
-    const all = candidates(state, request);
     const budget = Math.max(0, Math.floor(request.budget));
+    const scanned = kindMayBeLegal(state, request) ? candidates(state, request, budget + 1) : [];
+    const truncated = scanned.length > budget;
+    const actions = scanned.slice(0, budget);
     return {
-      actions: all.slice(0, budget),
-      truncated: all.length > budget,
-      reasons: all.length > 0
-        ? [{ code: 'CANDIDATES_AVAILABLE', allowed: true, message: `${all.length} candidate(s).`, rule: 'engine' }]
+      actions,
+      truncated,
+      reasons: scanned.length > 0
+        ? [{
+          code: 'CANDIDATES_AVAILABLE',
+          allowed: true,
+          message: truncated ? `More than ${budget} candidate(s); showing the first ${budget}.` : `${actions.length} candidate(s).`,
+          rule: 'engine',
+        }]
         : [{ code: 'NO_LEGAL_CANDIDATES', allowed: false, message: 'No legal candidates.', rule: 'engine' }],
     };
   },

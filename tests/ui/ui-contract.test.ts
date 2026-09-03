@@ -14,6 +14,9 @@ describe('U0-U10 operable UI contract', () => {
         'hotseat-privacy-and-recovery', 'browser-playthrough',
       ][index]}.md`),
       'docs/reports/U10-operable-ui-gate.md',
+      'docs/ui/10-play-first-generated-operation.md',
+      'docs/quality/01-delivery-status-and-todo-policy.md',
+      'AGENTS.md',
     ];
     expect(outputs.filter((path) => !existsSync(join(process.cwd(), path)))).toEqual([]);
   });
@@ -32,5 +35,34 @@ describe('U0-U10 operable UI contract', () => {
     const controller = readFileSync(join(process.cwd(), 'src/ui/controller.ts'), 'utf8');
     expect(controller).not.toMatch(/applyAction|validateGameAction|Math\.random/gu);
     expect(controller).toMatch(/session\.dispatch|session\.getActionCandidates|session\.getView/gu);
+  });
+
+  it('previews map, OOB, and deployment as one New Game package', () => {
+    const browser = readFileSync(join(process.cwd(), 'src/ui/browser.ts'), 'utf8');
+    expect(browser).toContain('newGameOrchestrator.prepare');
+    expect(browser).toContain('operationPreviewHtml(newGamePreview)');
+    expect(browser).toContain('buildGeneratedMapPreview(prepared.generatedMap');
+    expect(browser).toContain('buildGeneratedOobPreview(prepared.generatedOob)');
+    expect(browser).toContain('prepared.deployment.metrics.occupiedHexes');
+    expect(browser).toContain('Build operation preview');
+    expect(browser).toContain('Start this operation');
+    expect(browser).not.toContain("'#random-map'");
+    expect(browser).not.toContain("'#random-oob'");
+    expect(browser).not.toContain('terrain-label');
+  });
+
+  it('uses the integrated New Game orchestrator and renders an authoritative Game End', () => {
+    const browser = readFileSync(join(process.cwd(), 'src/ui/browser.ts'), 'utf8');
+    expect(browser).toContain('createNewGameOrchestrator');
+    expect(browser).toContain('Build operation preview');
+    expect(browser).toContain('Start this operation');
+    expect(browser).toContain('2 Map');
+    expect(browser).toContain('3 OOB');
+    expect(browser).toContain('4 Deployment');
+    expect(browser).toContain("lifecycle !== 'FINISHED'");
+    expect(browser).toContain('Download final save');
+    expect(browser).toContain('Download replay');
+    expect(browser).not.toContain('createRuleGameStateFixture');
+    expect(browser).not.toContain('createRuleConfigurationFixture');
   });
 });
