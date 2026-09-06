@@ -209,7 +209,7 @@ Run the built UI, beginning with the fixed NG-07 request from
    required pending decisions, and hot-seat handoffs. Exercise a step/resource state in
    a naturally reachable scenario; if it cannot be reached, the row is `BLOCKED`, not
    inferred from tests.
-6. Repeat counter inspection at 1440×900 and 760×1000, including map zoom and a stack of
+6. Repeat counter inspection at 1920×1080 and 1680×1050 (user-approved desktop scope amendment, 2026-09-06), including map zoom and a stack of
    at least three counters. Record latency, clipping, overlaps, console errors, and all
    usability defects.
 

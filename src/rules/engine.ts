@@ -10,7 +10,7 @@ import { createPieceDefinitionCatalogIndex, type PieceState } from '../domain/pi
 import { parseRuleActionId, type RuleActionId } from './kernel/ids.js';
 import type { GameAction, GameState } from './kernel/model.js';
 import { applyGameAction, validateGameAction } from './kernel/reducer.js';
-import { queryReachableHexes } from './movement/movement.js';
+import { queryReachableHexes, queryMovementPath } from './movement/movement.js';
 import { querySupply } from './supply/supply.js';
 import { projectRuleState } from './query/projection.js';
 import type {
@@ -57,6 +57,12 @@ const candidates = (
 ): readonly GameAction[] => {
   const actions: GameAction[] = [];
   const add = (action: GameAction): boolean => {
+    if (request.pieceId !== null) {
+      if ('pieceId' in action && action.pieceId !== request.pieceId) return false;
+      if (action.kind === 'CHECK_SUPPLY' && !action.pieceIds.includes(request.pieceId)) return false;
+      if (action.kind === 'DECLARE_COMBAT' && !action.attackerIds.includes(request.pieceId)) return false;
+      if (action.kind === 'DECLARE_BARRAGE' && !action.firerIds.includes(request.pieceId)) return false;
+    }
     if (validateGameAction(state, action).allowed) actions.push(action);
     return legalLimit !== null && actions.length >= legalLimit;
   };
@@ -264,6 +270,7 @@ const engine: RuleEngine = {
   applyAction: applyGameAction,
   explain: (state: GameState, action: GameAction): RuleExplanation => {
     const validation = validateGameAction(state, action);
+    const movement = action.kind === 'MOVE_PIECE' ? queryMovementPath(state, action.actorId, action.pieceId, action.path) : null;
     return {
       allowed: validation.allowed,
       actionKind: action.kind,
@@ -273,6 +280,8 @@ const engine: RuleEngine = {
       facts: [
         { key: 'state.revision', value: state.revision, visibility: 'PUBLIC', ownerId: null },
         { key: 'sequence.phase', value: state.sequence.phase, visibility: 'PUBLIC', ownerId: null },
+        ...(movement?.facts ?? []),
+        ...(movement?.value && action.kind === 'MOVE_PIECE' ? [{ key: 'movement.remainingTicks', value: Math.max(0, movement.value.allowanceTicks - (state.usage.find(u => u.pieceId === action.pieceId)?.movementSpentTicks ?? 0) - movement.value.totalTicks), visibility: 'OWNER_ONLY' as const, ownerId: action.actorId }] : []),
       ],
       citations: [...new Set(validation.violations.map(({ rule }) => rule))],
     };
