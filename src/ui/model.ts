@@ -25,6 +25,7 @@ export interface UiSnapshot {
   readonly bindings: readonly SeatBinding[];
   readonly families: readonly ActionFamily[];
   readonly candidates: readonly GameAction[];
+  readonly candidatesTruncated: boolean;
   readonly selectedAction: GameAction | null;
   readonly explanation: RuleExplanation | null;
   readonly selection: UiSelection;

@@ -2,6 +2,12 @@
 
 Status: **FROZEN BASELINE / EXECUTION IN PROGRESS** (2026-09-04).
 
+Desktop scope amendment (2026-09-06, explicitly approved by the user): default
+1920×1080, supported 1680×1050. Narrow-screen acceptance is removed. A single
+left command deck remains fixed; only bounded collections may scroll. Historical
+reports retain their original viewport evidence. All other operation expectations
+and unverified statuses remain unchanged.
+
 The unit-counter portion of the baseline was expanded on 2026-09-04 after the prior U4
 scope was found to prove interaction but not OCS counter fidelity. Section B1 and
 `04-counter-fidelity-correction-plan.md` are now required P0 evidence; existing map or
@@ -35,7 +41,7 @@ Measured from click/key input until the next usable render on the current verifi
 - action execution and revision refresh: at most 1,500 ms;
 - combined Map/OOB/deployment preview or Gameplay mount: at most 3,000 ms;
 - no interaction may leave the UI without a visible busy state for more than 1,000 ms;
-- all visible text is at least 13 px at desktop and narrow viewport sizes.
+- ordinary interface text is at least 13 px at both desktop viewport sizes; retain the approved counter-artwork/LOD exception.
 
 A completed transition does not pass when it exceeds its budget or temporarily appears dead.
 
@@ -80,7 +86,7 @@ summary, or isolated counter laboratory is not acceptable evidence.
 | CTR-05 | P0 | Operate a legal face/mode change and a reachable step/resource change | Printed face and per-step/resource values update from authoritative state; mode/status appears separately and no stale printed value remains | UNVERIFIED |
 | CTR-06 | P0 | Inspect a three-counter stack at normal zoom, zoom limits, selection, hover, and keyboard focus | Square aspect/field order remain stable; counter identity and critical ratings are not obscured by stack offset or interaction chrome | UNVERIFIED |
 | CTR-07 | P0 | Inspect the same enemy stack before and after a valid hot-seat handoff | Counter back/redaction, accessible name, DOM, and stack count reveal only rule-allowed information | UNVERIFIED |
-| CTR-08 | P0 | Repeat CTR-01 through CTR-07 at 1440×900 and 760×1000 while recording console and timing evidence | Required counters and controls remain reachable; no clipped/overlapping critical field, uncaught error, or over-budget interaction | UNVERIFIED |
+| CTR-08 | P0 | Repeat CTR-01 through CTR-07 at 1920×1080 and 1680×1050 while recording console and timing evidence | Required counters and controls remain reachable; no clipped/overlapping critical field, uncaught error, or over-budget interaction | UNVERIFIED |
 
 ## C. Rule actions through the actual UI
 
@@ -125,8 +131,8 @@ is `BLOCKED`, not `PASS`; the missing scenario/setup path is a product gap to re
 
 | ID | Pri | Operation | Required result | Status |
 |---|---:|---|---|---|
-| UI-01 | P0 | Operate at 1440×900 | Map remains dominant; primary commands and current phase/seat are readable | UNVERIFIED |
-| UI-02 | P0 | Operate at 760×1000 | No horizontal page overflow; map and commands remain reachable | UNVERIFIED |
+| UI-01 | P0 | Operate at 1920×1080 | Map remains dominant; single left deck does not scroll; primary commands and current phase/seat remain visible | UNVERIFIED |
+| UI-02 | P0 | Operate at 1680×1050 | No page overflow, clipped content, or whole-deck scrolling; only bounded lists scroll; map and commands remain reachable | UNVERIFIED |
 | UI-03 | P0 | Measure every visible text node in both viewports and inspect screenshots | Minimum computed size is 13 px; no visually illegible clipped labels | UNVERIFIED |
 | UI-04 | P0 | Run NG-07 and ACT-14 while collecting console/runtime errors | Zero uncaught exception or error log; failures appear in the UI | UNVERIFIED |
 | UI-05 | P1 | Keyboard traverse New Game, map selection, actions, modal, handoff | Focus remains visible and modal focus cannot escape into private content | UNVERIFIED |

@@ -13,6 +13,7 @@ import {
 } from '../index.js';
 import { createUiController, type UiController } from './controller.js';
 import { counterView, counterSvgBody, counterSvg, counterLod } from './counter.js';
+import { commandDeckHtml, actionDestination, type DeckState, type DeckList } from './command-deck.js';
 import type { UiSnapshot } from './model.js';
 import {
   actionKindLabel,
@@ -54,8 +55,29 @@ let newGameSettings: NewGameRequest = {
 };
 let newGameOpen = location.hash === '#new-game';
 let newGameBusy = false;
+let preparingPreview = false;
 let newGameError = '';
 let newGamePreview: GeneratedScenarioPackage | null = null;
+const deck: DeckState = { list: 'units', search: '', working: false };
+let utilityOpen: 'session' | 'rules' | null = null;
+let rulePage = 0;
+const listPositions = new Map<string, number>();
+let settingsTab = 'basic';
+let previewStale = false;
+let mapDragged = false;
+const afterPaint = (): Promise<void> => new Promise(resolve => requestAnimationFrame(() => setTimeout(resolve, 0)));
+const runUi = async (operation: () => void | Promise<void>): Promise<void> => {
+  if (deck.working) return;
+  deck.error = '';
+  deck.working = true;
+  root.querySelectorAll<HTMLButtonElement>('#execute-action, #end-phase').forEach(button => { button.disabled = true; });
+  const notice = root.querySelector('.deck-notice');
+  if (notice) notice.textContent = 'Preparing action…';
+  await afterPaint();
+  try { await operation(); }
+  catch (error) { deck.error = `${error instanceof Error ? error.message : 'Action could not be prepared.'} Choose the action again to retry.`; }
+  finally { deck.working = false; render(controller.getSnapshot()); }
+};
 
 const onMapStacks = (snapshot: UiSnapshot) => new Map(
   (snapshot.view.projection?.stacks ?? [])
@@ -105,7 +127,8 @@ const renderMap = (snapshot: UiSnapshot): string => {
   };
   const terrain = theater.cells.map((cell) => {
     const selected = snapshot.selection.hexId === cell.id ? ' is-selected' : '';
-    return `<g class="hex-cell terrain-${cell.terrain.toLowerCase()}${selected}" role="button" tabindex="0" data-hex="${escapeHtml(cell.id)}"
+    const reachable = snapshot.selection.actionKind !== 'ADVANCE_SEQUENCE' && snapshot.candidates.some(action => actionDestination(action) === cell.id);
+    return `<g class="hex-cell terrain-${cell.terrain.toLowerCase()}${selected}${reachable ? ' is-reachable' : ''}" role="button" tabindex="${cell.id === (snapshot.selection.hexId ?? theater.cells[0]?.id) ? 0 : -1}" data-hex="${escapeHtml(cell.id)}"
       aria-label="Hex ${escapeHtml(cell.id)}, ${escapeHtml(cell.terrain.toLowerCase())} terrain">
       <polygon points="${cell.points}"></polygon>
       <text class="hex-coordinate" x="${cell.x}" y="${cell.y + 39}" text-anchor="middle">${escapeHtml(cell.id)}</text>
@@ -123,6 +146,9 @@ const renderMap = (snapshot: UiSnapshot): string => {
     return `${strategic}${settlement}${objective}`;
   }).join('');
   const selectedCounters: string[] = [];
+  const selectedPath = snapshot.selectedAction?.kind === 'MOVE_PIECE'
+    ? snapshot.selectedAction.path.map(id => theater.cells.find(cell => cell.id === id)).filter(cell => cell !== undefined).map(cell => `${cell.x},${cell.y}`).join(' ')
+    : '';
   const stackBadges: string[] = [];
   const counters = theater.cells.map((cell) => {
     const stack = stacks.get(cell.id);
@@ -137,7 +163,7 @@ const renderMap = (snapshot: UiSnapshot): string => {
       const label = pieceLabel(scenario, piece);
       const definition = scenario.pieceCatalog.definitions.find(({id}) => id === piece.definitionId)!;
       const markup = `<g class="counter owner-${ownerIndex + 1}${pieceSelected}" transform="translate(${x} ${y}) scale(.7)"
-        role="button" tabindex="0" data-piece="${escapeHtml(piece.id)}" data-hex="${escapeHtml(cell.id)}"
+        role="button" tabindex="-1" data-piece="${escapeHtml(piece.id)}" data-hex="${escapeHtml(cell.id)}"
         aria-label="${escapeHtml(`${label}, ${cell.id}, ${piece.mode ?? 'no mode'}, ${piece.remainingSteps ?? 'unknown'} steps`)}">
         ${counterSvgBody(counterView(definition, piece))}
       </g>`;
@@ -152,68 +178,16 @@ const renderMap = (snapshot: UiSnapshot): string => {
   }).join('');
   // SVG uses document paint order, not CSS z-index. Keep ALL hex artwork below
   // counters, and the selected counter above every other stack's counters.
-  return `${terrainDefsHtml()}<g class="hex-map-layer"><g class="terrain-layer">${terrain}</g><g class="river-layer">${rivers}</g><g class="road-layer">${roads}</g><g class="feature-layer">${features}</g></g><g class="counter-layer"><g class="unselected-counter-layer">${counters}</g><g class="selected-counter-layer">${selectedCounters.join('')}</g><g class="stack-badge-layer">${stackBadges.join('')}</g></g>`;
+  return `${terrainDefsHtml()}<g class="hex-map-layer"><g class="terrain-layer">${terrain}</g><g class="river-layer">${rivers}</g><g class="road-layer">${roads}</g><g class="feature-layer">${features}</g><polyline class="movement-path" points="${selectedPath}" /></g><g class="counter-layer"><g class="unselected-counter-layer">${counters}</g><g class="selected-counter-layer">${selectedCounters.join('')}</g><g class="stack-badge-layer">${stackBadges.join('')}</g></g>`;
 };
 
-const selectedStackHtml = (snapshot: UiSnapshot): string => {
-  const stack = [...onMapStacks(snapshot).entries()].find(([hexId]) => hexId === snapshot.selection.hexId)?.[1];
-  if (!stack) return '<p class="empty-state">Select a map hex to inspect its stack.</p>';
-  if (stack.pieces.length === 0 && stack.hiddenCount === 0) return '<p class="empty-state">This hex has no visible counters.</p>';
-  return `<div class="stack-list">${stack.pieces.map((piece) => `
-    <button class="stack-piece ${snapshot.selection.pieceId === piece.id ? 'is-selected' : ''}"
-      data-piece="${escapeHtml(piece.id)}">
-      ${counterSvg(counterView(scenario.pieceCatalog.definitions.find(({id}) => id === piece.definitionId)!, piece))}
-      <span>${escapeHtml(pieceLabel(scenario, piece))}</span>
-      <small>${escapeHtml(piece.redacted ? 'Enemy details hidden' : `${piece.mode ?? 'No mode'} · ${piece.remainingSteps ?? '–'} steps`)}</small>
-    </button>`).join('')}
-    ${stack.hiddenCount > 0 ? `<p>${stack.hiddenCount} additional enemy counter(s) hidden.</p>` : ''}</div>`;
-};
-
-const actionPanelHtml = (snapshot: UiSnapshot): string => {
-  const enabled = snapshot.families.filter(({ enabled }) => enabled);
-  const moveNeedsPiece = snapshot.selection.actionKind === 'MOVE_PIECE' && snapshot.selection.pieceId === null;
-  const familyButtons = enabled.map((family) => `
-    <button class="action-family ${snapshot.selection.actionKind === family.kind ? 'is-selected' : ''}"
-      data-action-kind="${family.kind}">
-      ${escapeHtml(actionKindLabel(family.kind))}
-    </button>`).join('');
-  const candidates = snapshot.candidates.map((action, index) => `
-    <button class="candidate ${snapshot.selection.candidateIndex === index ? 'is-selected' : ''}" data-candidate="${index}">
-      <strong>${escapeHtml(actionKindLabel(action.kind))}</strong>
-      <span>${escapeHtml(actionSummary(action))}</span>
-    </button>`).join('');
-  const explanation = snapshot.explanation === null ? '<p class="empty-state">Select a legal candidate to see its rule explanation.</p>' : `
-    <div class="explanation ${snapshot.explanation.allowed ? 'is-legal' : 'is-illegal'}">
-      <strong>${snapshot.explanation.allowed ? 'Legal action' : 'Action blocked'}</strong>
-      ${snapshot.explanation.reasons.map(({ message, rule }) => `<p>${escapeHtml(message)} <cite>${escapeHtml(rule)}</cite></p>`).join('')}
-      ${snapshot.explanation.facts.map(({ key, value }) => `<dl><dt>${escapeHtml(key)}</dt><dd>${escapeHtml(value)}</dd></dl>`).join('')}
-    </div>`;
-  return `<section class="panel action-panel" aria-labelledby="actions-title">
-    <div class="panel-heading"><div><p class="eyebrow">COMMAND</p><h2 id="actions-title">Legal actions</h2></div><span class="count">${enabled.length} ready</span></div>
-    <div class="action-families">${familyButtons}</div>
-    <h3>Candidate choices</h3>
-    <div class="candidate-list">${candidates || `<p class="empty-state">${moveNeedsPiece ? 'Select one of your counters on the map to list its legal moves.' : 'No candidates for this selection.'}</p>`}</div>
-    <h3>Rule explanation</h3>${explanation}
-    <button class="primary wide" id="execute-action" ${snapshot.selectedAction && !snapshot.busy ? '' : 'disabled'}>Execute selected action</button>
-  </section>`;
-};
-
-const historyHtml = (snapshot: UiSnapshot): string => {
-  const records = [...snapshot.history].reverse().slice(0, 20);
-  return `<section class="panel history-panel" aria-labelledby="history-title">
-    <div class="panel-heading"><div><p class="eyebrow">TIMELINE</p><h2 id="history-title">History</h2></div><span class="count">${snapshot.history.length}</span></div>
-    <ol class="history-list">${records.map((record) => `<li>
-      <span class="revision">R${record.revisionAfter}</span><div><strong>${escapeHtml(actionKindLabel(record.action.kind))}</strong><p>${escapeHtml(record.summary)}</p></div>
-    </li>`).join('') || '<li class="empty-state">No actions dispatched yet.</li>'}</ol>
-  </section>`;
-};
 
 const decisionHtml = (snapshot: UiSnapshot): string => {
   const pending = snapshot.view.pendingDecision;
   if (!pending || snapshot.view.privacyLocked) return '';
   return `<div class="modal-backdrop"><section class="decision-dialog" role="dialog" aria-modal="true" aria-labelledby="decision-title">
     <p class="eyebrow">PENDING DECISION</p><h2 id="decision-title">${escapeHtml(pending.kind.replaceAll('_', ' '))}</h2>
-    <p>The rules transaction is paused until the active player chooses an option.</p>
+    <p>Choose an option to continue.</p>
     <div class="decision-options">${pending.options.map(({ id, label }) => `
       <button class="decision-option" data-choice="${escapeHtml(id)}">${escapeHtml(label)}</button>`).join('')}</div>
   </section></div>`;
@@ -264,16 +238,16 @@ const operationPreviewHtml = (prepared: GeneratedScenarioPackage): string => {
 
 const newGameDialogHtml = (): string => {
   if (!newGameOpen) return '';
-  const configuredClass = newGamePreview ? 'is-complete' : 'is-active';
-  const generatedClass = newGamePreview ? 'is-complete' : '';
-  const gameplayClass = newGameBusy ? 'is-active' : '';
+  const configuredClass = newGamePreview && !previewStale || preparingPreview ? 'is-complete' : 'is-active';
+  const generatedClass = newGamePreview && !previewStale ? 'is-complete' : '';
+  const gameplayClass = newGameBusy && !preparingPreview ? 'is-active' : '';
   return `<div class="modal-backdrop new-game-backdrop"><section class="new-game-dialog" role="dialog" aria-modal="true" aria-labelledby="new-game-title">
     <header class="generator-header"><div><p class="eyebrow">NEW OPERATION</p><h2 id="new-game-title">Build, inspect, then deploy</h2><p>Map, OOB and deployment are generated as one deterministic package. The preview below is the operation Gameplay will mount.</p></div><button id="close-new-game" ${newGameBusy ? 'disabled' : ''}>Close</button></header>
     <div class="flow-steps" aria-label="New Game generation sequence"><span class="${configuredClass}" ${configuredClass === 'is-active' ? 'aria-current="step"' : ''}>1 Configure</span><span class="${generatedClass}">2 Map</span><span class="${generatedClass}">3 OOB</span><span class="${generatedClass}">4 Deployment</span><span class="${gameplayClass}" ${gameplayClass === 'is-active' ? 'aria-current="step"' : ''}>5 Gameplay</span></div>
     <div class="new-game-body"><form id="new-game-form" class="new-game-form">
       <div class="new-game-submit">
-        <div><strong>${newGamePreview ? 'Preview ready' : 'Configure operation'}</strong><p>Any option change invalidates the current preview.</p></div>
-        <button class="primary" type="submit" ${newGameBusy ? 'disabled' : ''}>Build operation preview</button>
+        <div><strong>${preparingPreview ? 'Generating map, forces and deployment…' : previewStale && newGamePreview ? 'Preview out of date' : newGamePreview ? 'Preview ready' : 'Configure operation'}</strong><p>${previewStale && newGamePreview ? 'Build a fresh preview before starting.' : 'Review your map and forces before starting.'}</p></div>
+        <button class="primary" type="submit" ${newGameBusy ? 'disabled' : ''}>${preparingPreview ? 'Building preview…' : 'Build operation preview'}</button>
       </div>
       <fieldset><legend>Operational map</legend>
         <label>Style<select id="new-game-style"><option value="TEMPERATE_INLAND" ${newGameSettings.map.style === 'TEMPERATE_INLAND' ? 'selected' : ''}>Temperate inland</option><option value="MEDITERRANEAN_COAST" ${newGameSettings.map.style === 'MEDITERRANEAN_COAST' ? 'selected' : ''}>Mediterranean coast</option></select></label>
@@ -317,6 +291,32 @@ const gameEndHtml = (snapshot: UiSnapshot): string => {
 };
 
 const render = (snapshot: UiSnapshot): void => {
+  const focused = document.activeElement as HTMLElement | null;
+  const focusId = focused?.id;
+  const focusHex = focused?.dataset.hex;
+  const focusPiece = focused?.dataset.piece;
+  root.querySelectorAll<HTMLElement>('[data-scroll-key]').forEach(element => listPositions.set(element.dataset.scrollKey!, element.scrollTop));
+  if (snapshot.view.privacyLocked) {
+    utilityOpen = null; deck.search = ''; deck.list = 'units'; listPositions.clear();
+    root.innerHTML = privacyHtml(snapshot);
+    bindEvents(snapshot);
+    root.querySelector<HTMLButtonElement>('#complete-handoff')?.focus();
+    return;
+  }
+  if (snapshot.view.pendingDecision && !newGameOpen) {
+    utilityOpen = null;
+    root.innerHTML = decisionHtml(snapshot);
+    bindEvents(snapshot);
+    const options = [...root.querySelectorAll<HTMLButtonElement>('[data-choice]')];
+    options[0]?.focus();
+    root.querySelector<HTMLElement>('.decision-dialog')!.onkeydown = event => {
+      if (event.key !== 'Tab' || !options.length) return;
+      event.preventDefault();
+      const index = options.indexOf(document.activeElement as HTMLButtonElement);
+      options[(index + (event.shiftKey ? -1 : 1) + options.length) % options.length]?.focus();
+    };
+    return;
+  }
   const projection = snapshot.view.projection;
   const sequence = projection?.sequence;
   const activeBinding = snapshot.bindings.find(({ seatId }) => seatId === snapshot.view.metadata.activeSeatId);
@@ -340,33 +340,7 @@ const render = (snapshot: UiSnapshot): void => {
         <div class="seat-badge"><span class="status-dot"></span><div><small>ACTIVE SEAT</small><strong>${escapeHtml(activeBinding?.label ?? snapshot.view.playerId)}</strong></div></div>
       </header>
 
-      <aside class="command-rail" aria-label="Command deck">
-        <header class="deck-brand"><a class="brand" href="#map-title" aria-label="OCS command map"><span class="brand-mark">OCS</span><span>Operational Command</span></a></header>
-        <section class="session-block"><p class="eyebrow">SESSION</p><h1>${escapeHtml(snapshot.view.metadata.label)}</h1>
-          <div class="lifecycle"><span>${escapeHtml(lifecycle)}</span><small>${escapeHtml(snapshot.view.metadata.rulesVersion)}</small></div>
-          <div class="button-grid">
-            <button class="primary" id="open-new-game">New Game</button>
-            <button id="toggle-pause" ${lifecycle === 'ACTIVE' || lifecycle === 'PAUSED' ? '' : 'disabled'}>${lifecycle === 'PAUSED' ? 'Resume' : 'Pause'}</button>
-          </div>
-        </section>
-        <section class="operation-block"><p class="eyebrow">OPERATION</p>
-          <dl class="session-summary"><div><dt>Units</dt><dd>${currentGame.summary.unitCount}</dd></div><div><dt>Formations</dt><dd>${currentGame.summary.formationCount}</dd></div><div><dt>Objectives</dt><dd>${currentGame.summary.objectiveCount}</dd></div><div><dt>Turns</dt><dd>${currentGame.summary.turnLimit}</dd></div></dl>
-        </section>
-        ${handoffRequired ? `<section class="handoff-required" role="status"><p class="eyebrow">PLAYER CHANGE</p><h2>Pass control</h2><p>${escapeHtml(actingBinding?.label ?? 'The other player')} owns the next action or decision.</p><button class="primary wide" id="begin-required-handoff">Hand off now</button></section>` : ''}
-        ${actionPanelHtml(snapshot)}
-        <section class="panel stack-panel" aria-labelledby="stack-title"><div class="panel-heading"><div><p class="eyebrow">INSPECT</p><h2 id="stack-title">Stack ${escapeHtml(snapshot.selection.hexId ?? '')}</h2></div></div>${selectedStackHtml(snapshot)}</section>
-        <details class="utility-drawer"><summary>History <span class="count">${snapshot.history.length}</span></summary>${historyHtml(snapshot)}</details>
-        <details class="utility-drawer"><summary>Session tools</summary><div class="utility-content">
-          <p><strong>${escapeHtml(activeBinding?.label ?? '')}</strong><br><span class="supporting">Acting player: ${escapeHtml(sequence?.actingPlayerId ?? '–')}</span></p>
-          <button class="wide" id="begin-handoff" ${otherBinding && lifecycle !== 'READY' ? '' : 'disabled'}>Hand off to ${escapeHtml(otherBinding?.label ?? 'next seat')}</button>
-          <div class="button-grid"><button id="save-game">Download save</button><button id="load-game">Load save</button></div>
-          <input id="save-file" type="file" accept="application/json,.json" hidden>
-          <button class="wide" id="create-checkpoint">Create checkpoint</button>
-          <div class="checkpoint-list">${checkpoints || '<p class="empty-state">No checkpoints yet.</p>'}</div>
-          <p class="supporting">Seeds: map ${currentGame.request.seeds.map}, OOB ${currentGame.request.seeds.oob}, deployment ${currentGame.request.seeds.deployment}, rules ${currentGame.request.seeds.rules}.</p>
-        </div></details>
-        <div class="notice" role="status" aria-live="polite">${escapeHtml(snapshot.notice)}</div>
-      </aside>
+      <aside class="command-rail" aria-label="Command deck">${commandDeckHtml(snapshot, deck)}</aside>
 
       <main class="workspace">
         <section class="map-card" aria-labelledby="map-title">
@@ -380,7 +354,57 @@ const render = (snapshot: UiSnapshot): void => {
         </section>
       </main>
     </div>${decisionHtml(snapshot)}${newGameDialogHtml()}${privacyHtml(snapshot)}${gameEndHtml(snapshot)}`;
+  const sessionContent = `<p><strong>${escapeHtml(activeBinding?.label ?? '')}</strong> · ${escapeHtml(lifecycle)}</p>
+    <button class="wide" id="begin-handoff" ${otherBinding && lifecycle !== 'READY' ? '' : 'disabled'}>Hand off to ${escapeHtml(otherBinding?.label ?? 'next seat')}</button>
+    <div class="button-grid"><button id="save-game">Download save</button><button id="load-game">Load save</button></div>
+    <input id="save-file" type="file" accept="application/json,.json" hidden>
+    <button id="create-checkpoint">Create checkpoint</button><div class="checkpoint-list">${checkpoints || '<p>No checkpoints yet.</p>'}</div>
+    <p class="supporting">${currentGame.summary.unitCount} units · ${currentGame.summary.formationCount} formations · ${currentGame.summary.turnLimit} turns</p>
+    <p class="supporting">Seeds: map ${currentGame.request.seeds.map}, OOB ${currentGame.request.seeds.oob}, deployment ${currentGame.request.seeds.deployment}, rules ${currentGame.request.seeds.rules}.</p>`;
+  root.querySelector('.topbar')?.insertAdjacentHTML('beforeend', `<div class="session-actions"><button id="open-new-game">New Game</button><button id="toggle-pause" ${lifecycle === 'ACTIVE' || lifecycle === 'PAUSED' ? '' : 'disabled'}>${lifecycle === 'PAUSED' ? 'Resume' : 'Pause'}</button><button id="open-session">Session</button></div>`);
+  if (utilityOpen) {
+    const facts = snapshot.explanation ? [...snapshot.explanation.reasons.map(r => `${r.message} (${r.rule})`), ...snapshot.explanation.facts.map(f => `${f.key}: ${f.value}`)] : [];
+    rulePage = Math.min(rulePage, Math.max(0, facts.length - 1));
+    root.insertAdjacentHTML('beforeend', `<div class="modal-backdrop utility-backdrop"><section class="utility-dialog" role="dialog" aria-modal="true" aria-labelledby="utility-title"><header><h2 id="utility-title">${utilityOpen === 'session' ? 'Session' : 'Rules & effects'}</h2><button id="close-utility">Close</button></header>${utilityOpen === 'session' ? `<div class="utility-content">${sessionContent}</div>` : `<p>${escapeHtml(snapshot.selectedAction ? actionSummary(snapshot.selectedAction) : '')}</p><p class="rule-detail">${escapeHtml(facts[rulePage] ?? 'No additional rule details.')}</p><div class="button-grid"><button id="previous-rule" ${rulePage === 0 ? 'disabled' : ''}>Previous</button><button id="next-rule" ${rulePage >= facts.length - 1 ? 'disabled' : ''}>Next (${rulePage + 1}/${facts.length})</button></div>`}</section></div>`);
+  }
+  const form = root.querySelector<HTMLElement>('#new-game-form');
+  if (form) {
+    form.querySelectorAll<HTMLInputElement>('input').forEach(input => { input.required = true; });
+    form.dataset.settingsTab = settingsTab;
+    const basic = document.createElement('div'); basic.className = 'settings-basic';
+    const advanced = document.createElement('fieldset'); advanced.className = 'settings-advanced'; advanced.innerHTML = '<legend>Reproducible seeds</legend>';
+    form.querySelectorAll('fieldset').forEach(fieldset => basic.append(fieldset));
+    basic.querySelectorAll<HTMLInputElement>('input[id$="-seed"]').forEach(input => { const label = input.closest('label'); if (label) advanced.append(label); });
+    const random = basic.querySelector('#randomize-new-game'); if (random) advanced.append(random);
+    form.append(basic, advanced);
+    form.insertAdjacentHTML('afterbegin', `<nav class="settings-tabs" aria-label="New Game settings"><button type="button" data-settings="basic" aria-pressed="${settingsTab === 'basic'}">Basic</button><button type="button" data-settings="advanced" aria-pressed="${settingsTab === 'advanced'}">Advanced seeds</button></nav>`);
+    const footer = document.createElement('footer'); footer.className = 'new-game-footer';
+    const submit = form.querySelector<HTMLElement>('.new-game-submit'); if (submit) footer.append(submit);
+    footer.querySelector('button')?.setAttribute('form', 'new-game-form');
+    const start = root.querySelector('#start-previewed-game'); if (start) footer.append(start);
+    root.querySelector('.new-game-dialog')?.append(footer);
+    if (previewStale) { root.querySelector('.operation-preview-content')?.classList.add('is-stale'); if (start) (start as HTMLButtonElement).disabled = true; }
+  }
   bindEvents(snapshot);
+  root.querySelectorAll<HTMLElement>('[data-scroll-key]').forEach(element => { element.scrollTop = listPositions.get(element.dataset.scrollKey!) ?? 0; });
+  const dialog = root.querySelector<HTMLElement>('[role="dialog"]');
+  if (dialog) {
+    root.querySelector<HTMLElement>('.app-shell')!.inert = true;
+    const target = focusId ? document.getElementById(focusId) : null;
+    if (target && dialog.contains(target)) target.focus({ preventScroll: true });
+    else dialog.querySelector<HTMLElement>('button, input, select')?.focus({ preventScroll: true });
+    dialog.onkeydown = event => {
+      if (event.key !== 'Tab') return;
+      const items = [...dialog.querySelectorAll<HTMLElement>('button:not(:disabled), input:not(:disabled), select:not(:disabled), [tabindex="0"]')].filter(e => e.getClientRects().length);
+      const index = items.indexOf(document.activeElement as HTMLElement);
+      if (event.shiftKey && index <= 0) { event.preventDefault(); items.at(-1)?.focus(); }
+      else if (!event.shiftKey && index === items.length - 1) { event.preventDefault(); items[0]?.focus(); }
+    };
+  } else if (focusId) document.getElementById(focusId)?.focus({ preventScroll: true });
+  else if (focusPiece || focusHex) {
+    const match = [...root.querySelectorAll<HTMLElement>('[data-hex], [data-piece]')].find(e => focusPiece ? e.dataset.piece === focusPiece : e.dataset.hex === focusHex);
+    match?.focus({ preventScroll: true });
+  }
   updateCamera();
 };
 
@@ -415,6 +439,9 @@ const downloadJson = (content: string, filename: string): void => {
 };
 
 const openNewGame = (snapshot: UiSnapshot): void => {
+  utilityOpen = null;
+  previewStale = false;
+  settingsTab = 'basic';
   newGameOpen = true;
   newGamePreview = null;
   newGameError = '';
@@ -428,6 +455,7 @@ const mountCreatedGame = async (created: CreatedNewGame): Promise<void> => {
   controller.dispose();
   await currentGame.session.close();
   currentGame = created;
+  deck.search = ''; deck.list = 'units'; listPositions.clear(); utilityOpen = null;
   scenario = created.scenario;
   bindings = created.bindings;
   theater = buildGeneratedMapPreview(created.generatedMap, 50);
@@ -457,21 +485,43 @@ function bindEvents(snapshot: UiSnapshot): void {
   $('#begin-required-handoff')?.addEventListener('click', controller.beginHandoff);
   $('#complete-handoff')?.addEventListener('click', controller.completeHandoff);
   $('#create-checkpoint')?.addEventListener('click', controller.createCheckpoint);
-  $('#execute-action')?.addEventListener('click', () => void controller.executeSelected());
+  $('#execute-action')?.addEventListener('click', () => void runUi(controller.executeSelected));
+  $('#open-session')?.addEventListener('click', () => { utilityOpen = 'session'; render(snapshot); });
+  $('#close-utility')?.addEventListener('click', () => { utilityOpen = null; render(snapshot); });
+  $('#open-rule-details')?.addEventListener('click', () => { utilityOpen = 'rules'; rulePage = 0; render(snapshot); });
+  $('#previous-rule')?.addEventListener('click', () => { rulePage--; render(snapshot); });
+  $('#next-rule')?.addEventListener('click', () => { rulePage++; render(snapshot); });
+  $('#clear-action')?.addEventListener('click', () => void runUi(() => { deck.list = 'units'; controller.selectPiece(null); controller.selectActionKind('ADVANCE_SEQUENCE'); }));
+  $('#load-more-candidates')?.addEventListener('click', () => void runUi(controller.loadMoreCandidates));
+  $('#end-phase')?.addEventListener('click', () => void runUi(async () => { controller.selectActionKind('ADVANCE_SEQUENCE'); await controller.executeSelected(); }));
+  $('#deck-action')?.addEventListener('change', event => {
+    const kind = (event.target as HTMLSelectElement).value;
+    if (kind) void runUi(() => { deck.list = 'candidates'; controller.selectActionKind(kind as NonNullable<UiSnapshot['selection']['actionKind']>); });
+  });
+  $('#deck-search')?.addEventListener('input', event => { deck.search = (event.target as HTMLInputElement).value; render(snapshot); });
+  root.querySelectorAll<HTMLButtonElement>('[data-settings]').forEach(button => button.addEventListener('click', () => {
+    settingsTab = button.dataset.settings!;
+    const form = root.querySelector<HTMLElement>('#new-game-form'); if (form) form.dataset.settingsTab = settingsTab;
+    root.querySelectorAll<HTMLButtonElement>('[data-settings]').forEach(item => item.setAttribute('aria-pressed', String(item.dataset.settings === settingsTab)));
+  }));
+  root.querySelectorAll<HTMLElement>('[data-deck-list]').forEach(button => button.addEventListener('click', () => { deck.list = button.dataset.deckList as DeckList; render(snapshot); }));
   $('#zoom-in')?.addEventListener('click', () => zoom(1.2));
   $('#zoom-out')?.addEventListener('click', () => zoom(1 / 1.2));
   $('#zoom-reset')?.addEventListener('click', () => { camera.zoom = 1; camera.x = 0; camera.y = 0; updateCamera(); });
 
-  root.querySelectorAll<HTMLElement>('[data-hex]').forEach((element) => element.addEventListener('click', (event) => {
-    event.stopPropagation(); controller.selectHex(element.dataset.hex ?? null);
+  root.querySelectorAll<HTMLElement>('.hex-cell[data-hex]').forEach((element) => element.addEventListener('click', (event) => {
+    event.stopPropagation();
+    if (mapDragged) { mapDragged = false; return; }
+    const candidate = snapshot.candidates.findIndex(action => actionDestination(action) === element.dataset.hex);
+    if (deck.list === 'candidates' && candidate >= 0) controller.selectCandidate(candidate);
+    else { deck.list = 'stack'; controller.selectHex(element.dataset.hex ?? null); }
   }));
   root.querySelectorAll<HTMLElement>('[data-piece]').forEach((element) => element.addEventListener('click', (event) => {
     event.stopPropagation();
-    if (element.dataset.hex) controller.selectHex(element.dataset.hex);
-    controller.selectPiece(element.dataset.piece ?? null);
+    void runUi(() => { if (element.dataset.hex) controller.selectHex(element.dataset.hex); controller.selectPiece(element.dataset.piece ?? null); });
   }));
-  activateKeyboard('.hex-cell[data-hex]', (element) => controller.selectHex(element.dataset.hex ?? null));
-  activateKeyboard('[data-piece]', (element) => {
+  activateKeyboard('.hex-cell[data-hex]', (element) => element.dispatchEvent(new MouseEvent('click', { bubbles: true })));
+  activateKeyboard('.counter[data-piece]', (element) => {
     if (element.dataset.hex) controller.selectHex(element.dataset.hex);
     controller.selectPiece(element.dataset.piece ?? null);
   });
@@ -497,7 +547,7 @@ function bindEvents(snapshot: UiSnapshot): void {
     if (file) void file.text().then((text) => controller.loadSave(text));
   });
 
-  $('#new-game-form')?.addEventListener('submit', (event) => {
+  $('#new-game-form')?.addEventListener('submit', async (event) => {
     event.preventDefault();
     if (newGameBusy) return;
     newGameSettings = {
@@ -520,16 +570,37 @@ function bindEvents(snapshot: UiSnapshot): void {
       turnLimit: Number(root.querySelector<HTMLInputElement>('#new-game-turn-limit')?.value ?? 0),
     };
     newGameError = '';
-    const prepared = newGameOrchestrator.prepare(newGameSettings);
-    if (prepared.ok) newGamePreview = prepared.value;
-    else {
+    newGameBusy = true;
+    preparingPreview = true;
+    render(snapshot);
+    await afterPaint();
+    try {
+      const prepared = newGameOrchestrator.prepare(newGameSettings);
+      if (prepared.ok) newGamePreview = prepared.value;
+      else { newGamePreview = null; newGameError = prepared.error.map(({ stage, message }) => `${stage}: ${message}`).join(' '); }
+    } catch (error) {
       newGamePreview = null;
-      newGameError = prepared.error.map(({ stage, message }) => `${stage}: ${message}`).join(' ');
+      newGameError = `${error instanceof Error ? error.message : 'Preview failed.'} Adjust the settings and build again.`;
     }
+    newGameBusy = false;
+    preparingPreview = false;
+    previewStale = false;
     render(snapshot);
   });
-  $('#new-game-form')?.addEventListener('change', () => {
-    newGamePreview = null;
+  $('#new-game-form')?.addEventListener('input', (event) => {
+    previewStale = true;
+    const input = event.target as HTMLInputElement;
+    const value = Number(input.value);
+    const id = input.id;
+    root.querySelector('.field-error')?.remove(); input.removeAttribute('aria-invalid');
+    newGameSettings = { ...newGameSettings, map: { ...newGameSettings.map }, oob: { ...newGameSettings.oob }, seeds: { ...newGameSettings.seeds } };
+    if (id === 'new-game-width') newGameSettings = { ...newGameSettings, map: { ...newGameSettings.map, width: value } };
+    if (id === 'new-game-height') newGameSettings = { ...newGameSettings, map: { ...newGameSettings.map, height: value } };
+    if (id === 'new-game-style') newGameSettings = { ...newGameSettings, map: { ...newGameSettings.map, style: input.value as MapGenerationStyle } };
+    if (id === 'new-game-scale') newGameSettings = { ...newGameSettings, oob: { ...newGameSettings.oob, scale: input.value as OobScale } };
+    if (id === 'new-game-formations') newGameSettings = { ...newGameSettings, oob: { ...newGameSettings.oob, formationsPerSide: value } };
+    if (id === 'new-game-turn-limit') newGameSettings = { ...newGameSettings, turnLimit: value };
+    for (const key of ['map', 'oob', 'deployment', 'rules'] as const) if (id === `new-game-${key}-seed`) newGameSettings = { ...newGameSettings, seeds: { ...newGameSettings.seeds, [key]: value } };
     const start = root.querySelector<HTMLButtonElement>('#start-previewed-game');
     if (start) {
       start.disabled = true;
@@ -538,22 +609,35 @@ function bindEvents(snapshot: UiSnapshot): void {
     root.querySelector('.operation-preview-content')?.classList.add('is-stale');
     const status = root.querySelector<HTMLElement>('.new-game-submit strong');
     const supporting = root.querySelector<HTMLElement>('.new-game-submit p');
-    if (status) status.textContent = 'Preview invalidated';
-    if (supporting) supporting.textContent = 'Options changed. Build a fresh Map, OOB and deployment package.';
+    if (status) status.textContent = newGamePreview ? 'Preview out of date' : 'Settings updated';
+    if (supporting) supporting.textContent = 'Build a fresh preview before starting.';
   });
+  $('#new-game-form')?.addEventListener('invalid', event => {
+    const input = event.target as HTMLInputElement;
+    const form = root.querySelector<HTMLElement>('#new-game-form')!;
+    settingsTab = input.id.endsWith('-seed') ? 'advanced' : 'basic'; form.dataset.settingsTab = settingsTab;
+    root.querySelectorAll<HTMLElement>('[data-settings]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.settings === settingsTab)));
+    root.querySelector('.field-error')?.remove();
+    input.setAttribute('aria-invalid', 'true'); input.setAttribute('aria-describedby', 'field-error');
+    input.closest('label')?.insertAdjacentHTML('beforeend', `<span id="field-error" class="field-error" role="alert">${escapeHtml(input.validationMessage)}</span>`);
+  }, true);
   $('#start-previewed-game')?.addEventListener('click', () => {
-    if (newGameBusy || !newGamePreview) return;
+    if (newGameBusy || !newGamePreview || previewStale) return;
     newGameBusy = true;
     newGameError = '';
     const request = newGamePreview.request;
     render(snapshot);
-    void newGameOrchestrator.create(request).then(async (created) => {
+    void afterPaint().then(() => newGameOrchestrator.create(request)).then(async (created) => {
       if (created.ok) await mountCreatedGame(created.value);
       else {
         newGameBusy = false;
         newGameError = created.error.map(({ stage, message }) => `${stage}: ${message}`).join(' ');
         render(controller.getSnapshot());
       }
+    }).catch(error => {
+      newGameBusy = false;
+      newGameError = `${error instanceof Error ? error.message : 'Operation could not start.'} Build a new preview to retry.`;
+      render(controller.getSnapshot());
     });
   });
   $('#randomize-new-game')?.addEventListener('click', () => {
@@ -564,18 +648,32 @@ function bindEvents(snapshot: UiSnapshot): void {
       seeds: { map: values[0]!, oob: values[1]!, deployment: values[2]!, rules: values[3]! },
     };
     newGamePreview = null;
+    previewStale = false;
     render(snapshot);
   });
 
   const map = $<SVGSVGElement>('#hex-map');
+  map?.addEventListener('keydown', (event: KeyboardEvent) => {
+    if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(event.key)) return;
+    const current = (event.target as HTMLElement).closest<HTMLElement>('.hex-cell');
+    if (!current) return;
+    event.preventDefault();
+    const [q, r] = (current.dataset.hex ?? '0,0').split(',').map(Number);
+    const nextQ = q! + (event.key === 'ArrowRight' ? 1 : event.key === 'ArrowLeft' ? -1 : 0);
+    const nextR = r! + (event.key === 'ArrowDown' ? 1 : event.key === 'ArrowUp' ? -1 : 0);
+    const next = [...root.querySelectorAll<HTMLElement>('.hex-cell')].find(e => e.dataset.hex === `${nextQ},${nextR}`);
+    if (next) { current.setAttribute('tabindex', '-1'); next.setAttribute('tabindex', '0'); next.focus({ preventScroll: true }); }
+  });
   map?.addEventListener('wheel', (event: WheelEvent) => { event.preventDefault(); zoom(event.deltaY < 0 ? 1.12 : 1 / 1.12); }, { passive: false });
   map?.addEventListener('pointerdown', (event: PointerEvent) => {
     if ((event.target as Element).closest('.counter')) return;
+    mapDragged = false;
     dragging = { x: event.clientX, y: event.clientY, cameraX: camera.x, cameraY: camera.y };
-    map.setPointerCapture(event.pointerId);
   });
   map?.addEventListener('pointermove', (event: PointerEvent) => {
     if (!dragging) return;
+    if (Math.hypot(event.clientX - dragging.x, event.clientY - dragging.y) < 5) return;
+    mapDragged = true; map.setPointerCapture(event.pointerId);
     const scale = layout.width / Math.max(1, map.getBoundingClientRect().width);
     camera.x = dragging.cameraX + (event.clientX - dragging.x) * scale;
     camera.y = dragging.cameraY + (event.clientY - dragging.y) * scale;

@@ -24,6 +24,7 @@ export interface UiController {
   readonly selectPiece: (pieceId: string | null) => void;
   readonly selectActionKind: (kind: GameAction['kind']) => void;
   readonly selectCandidate: (index: number) => void;
+  readonly loadMoreCandidates: () => void;
   readonly executeSelected: () => Promise<void>;
   readonly respondToDecision: (choiceId: string) => Promise<void>;
   readonly start: () => void;
@@ -53,6 +54,7 @@ class DefaultUiController implements UiController {
   #notice = 'Scenario ready. Start the session when you are ready.';
   #busy = false;
   #requestSequence = 0;
+  #candidateBudget = 24;
   #handoffToken: HandoffToken | null = null;
 
   constructor(options: UiControllerOptions) {
@@ -83,18 +85,18 @@ class DefaultUiController implements UiController {
       : families.find(({ enabled }) => enabled)?.kind ?? requestedKind;
     const needsPieceSelection = kind === 'MOVE_PIECE' && this.#selection.pieceId === null;
     const result = kind === null || needsPieceSelection
-      ? { actions: [] as readonly GameAction[] }
+      ? { actions: [] as readonly GameAction[], truncated: false }
       : this.#session.getActionCandidates(seatId, {
         kind,
         pieceId: this.#selection.pieceId as Parameters<GameSession['getActionCandidates']>[1]['pieceId'],
-        budget: 24,
+        budget: this.#candidateBudget,
       });
     const index = Math.min(this.#selection.candidateIndex, Math.max(0, result.actions.length - 1));
     const selectedAction = result.actions[index] ?? null;
     const explanation = selectedAction === null
       ? null
       : this.#session.validateDraft(this.#session.createDraft(seatId, selectedAction)).explanation;
-    return { view, families, kind, candidates: result.actions, index, selectedAction, explanation };
+    return { view, families, kind, candidates: result.actions, truncated: result.truncated, index, selectedAction, explanation };
   }
 
   getSnapshot = (): UiSnapshot => {
@@ -108,6 +110,7 @@ class DefaultUiController implements UiController {
       bindings: this.#bindings,
       families: state.families,
       candidates: state.candidates,
+      candidatesTruncated: state.truncated,
       selectedAction: state.selectedAction,
       explanation: state.explanation,
       selection: { ...this.#selection, actionKind: state.kind, candidateIndex: state.index },
@@ -137,11 +140,13 @@ class DefaultUiController implements UiController {
   };
 
   selectPiece = (pieceId: string | null): void => {
+    this.#candidateBudget = 24;
     this.#selection = { ...this.#selection, pieceId, candidateIndex: 0 };
     this.#emit();
   };
 
   selectActionKind = (kind: GameAction['kind']): void => {
+    this.#candidateBudget = 24;
     this.#selection = { ...this.#selection, actionKind: kind, candidateIndex: 0 };
     this.#emit();
   };
@@ -150,6 +155,8 @@ class DefaultUiController implements UiController {
     this.#selection = { ...this.#selection, candidateIndex: Math.max(0, candidateIndex) };
     this.#emit();
   };
+
+  loadMoreCandidates = (): void => { this.#candidateBudget += 24; this.#emit(); };
 
   async #run(operation: () => Promise<string>): Promise<void> {
     if (this.#busy) return;
