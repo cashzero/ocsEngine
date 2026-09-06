@@ -20,9 +20,16 @@ See the [implementation roadmap](docs/roadmap.md), [end-to-end game flow archite
 
 ```powershell
 npm ci
+npm run dev
 npm run typecheck
 npm test
 npm run build
 npm run check
 npm run ui:serve
 ```
+
+`npm run dev` builds the project and serves the UI at http://127.0.0.1:4173
+(alias for `npm run ui:serve`). If the default port is occupied, it tries the next
+20 ports and prints the actual URL. Set `OCS_UI_PORT` to require a specific port;
+if that port is occupied, startup exits with a helpful error.
+Restart the command after TypeScript changes to rebuild; automatic reload is not enabled.

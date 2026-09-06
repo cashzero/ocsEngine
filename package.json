@@ -8,6 +8,7 @@
     "node": "^20.19.0 || >=22.12.0"
   },
   "scripts": {
+    "dev": "npm run ui:serve",
     "build": "tsc -p tsconfig.build.json",
     "check": "npm run typecheck && npm test && npm run build && npm run smoke",
     "smoke": "node tests/dist-smoke.mjs",
