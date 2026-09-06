@@ -146,8 +146,11 @@ const dispatch = (state: GameState, action: GameAction): { state: GameState; eve
     }
     case 'CHANGE_MODE': {
       const piece = state.pieceState.pieces.find(({ id }) => id === action.pieceId)!;
+      const definition = state.scenario.pieceCatalog.definitions.find(({id}) => id === piece.definitionId)!;
+      const face = action.mode === 'COMBAT' || action.mode === 'MOVE'
+        ? definition.faces.find(({id}) => id === action.mode.toLowerCase()) : undefined;
       return {
-        state: { ...state, pieceState: upsertPieceState(state.pieceState, { ...piece, mode: action.mode }) },
+        state: { ...state, pieceState: upsertPieceState(state.pieceState, { ...piece, mode: action.mode, currentFaceId: face?.id ?? piece.currentFaceId }) },
         events: [{ kind: 'MODE_CHANGED', sequence: 0, pieceId: piece.id, from: piece.mode, to: action.mode }],
       };
     }

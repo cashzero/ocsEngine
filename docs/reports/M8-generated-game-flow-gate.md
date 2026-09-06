@@ -1,8 +1,12 @@
 # M8 generated game-flow gate
 
-Status: **IN PROGRESS (2026-09-03)**.
+Status: **IN PROGRESS (2026-09-04)**.
 
 The original Large-OOB stall is fixed and the main real-browser turn gate now passes. M8 remains open because real save/load, Game End/final-download, narrow-layout interaction, invalid-input, and remaining rows in `docs/quality/03-product-operation-verification-plan.md` have not yet all been exercised.
+
+The 2026-09-04 counter review also invalidated any interpretation of piece-glyph
+presence as printed OCS counter fidelity. M8 cannot complete until CTR-01 through CTR-08
+are exercised against the integrated flow.
 
 Validated path:
 
@@ -21,7 +25,7 @@ Evidence:
 - package gate: `npm run check` passes typecheck, 31 test files / 151 tests, production build and distribution smoke test.
 - combined browser preview: 216 Map Hexes, road/river/settlement/objective layers, both OOB sides, six deployment/summary metrics, and stages 1–4 active before Gameplay;
 - option change visibly invalidates Start; rebuilding width 16 then starting mounts a 16×12 / 192-Hex active session;
-- the rebuilt preview terrain signature equals the mounted active-map terrain signature Hex by Hex, generated counters are present, and browser errors are zero;
+- the rebuilt preview terrain signature equals the mounted active-map terrain signature Hex by Hex, generated projected-piece glyphs are present, and browser errors are zero; this presence check does not prove printed counter fidelity;
 - standalone player-facing Map/OOB laboratories and per-Hex terrain-name labels are absent.
 
 Current real-browser evidence (2026-09-03):

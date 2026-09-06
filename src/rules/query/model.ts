@@ -40,6 +40,8 @@ export interface RuleExplanation {
 }
 
 export interface ProjectedPiece {
+  readonly currentFaceId: import('../../domain/piece/index.js').FaceId | null;
+  readonly resourceQuantity: number | null;
   readonly id: PieceId;
   readonly ownerId: PlayerId;
   readonly definitionId: DefinitionId;

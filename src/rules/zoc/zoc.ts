@@ -21,7 +21,7 @@ const exertsZoc = (state: GameState, piece: GameState['pieceState']['pieces'][nu
   const definition = createPieceDefinitionCatalogIndex(state.scenario.pieceCatalog).get(piece.definitionId);
   const face = definition?.faces.find(({ id }) => id === piece.currentFaceId);
   const step = face?.steps.find(({ remainingSteps }) => remainingSteps === piece.remainingSteps);
-  return definition?.family === 'GROUND' && step?.combatStrength !== null && step?.combatStrength !== undefined;
+  return definition?.family === 'GROUND' && !definition.counter?.defensiveOnly && step?.combatStrength !== null && step?.combatStrength !== undefined;
 };
 
 export const queryZoc = (

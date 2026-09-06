@@ -152,7 +152,7 @@ export const deployGeneratedForces = (
         location: awaitingReinforcement
           ? { kind: 'OFF_MAP_BOX', boxId: GENERATED_REINFORCEMENT_BOXES[side] }
           : { kind: 'ON_MAP', hexId },
-        currentFaceId: definition.faces[0]?.id ?? null,
+        currentFaceId: definition.faces.find(({id}) => id === 'move')?.id ?? definition.faces[0]?.id ?? null,
         remainingSteps: fullStrength(definition),
         mode: definition.family === 'GROUND' ? 'MOVE' : null,
         statuses: [],

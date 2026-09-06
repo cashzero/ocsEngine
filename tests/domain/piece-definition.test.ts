@@ -82,6 +82,7 @@ const transportCapability: CapabilityDeclaration = {
 };
 
 const piece = (id: string, family: PieceFamily): PieceDefinition => ({
+  counter: null,
   id: definitionId(`piece-definition:${id}`),
   family,
   name: id,

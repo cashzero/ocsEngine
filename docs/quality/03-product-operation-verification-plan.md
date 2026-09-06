@@ -1,6 +1,11 @@
 # Product-operation verification plan
 
-Status: **FROZEN BASELINE / EXECUTION IN PROGRESS** (2026-09-03).
+Status: **FROZEN BASELINE / EXECUTION IN PROGRESS** (2026-09-04).
+
+The unit-counter portion of the baseline was expanded on 2026-09-04 after the prior U4
+scope was found to prove interaction but not OCS counter fidelity. Section B1 and
+`04-counter-fidelity-correction-plan.md` are now required P0 evidence; existing map or
+whole-turn screenshots cannot satisfy them by inference.
 
 This plan is the acceptance authority for the current player-facing product. Unit, integration,
 source-contract, and headless tests are regression support only. They cannot change a row's status
@@ -59,6 +64,23 @@ A completed transition does not pass when it exceeds its budget or temporarily a
 | MAP-03 | P0 | Click and keyboard-activate a Hex and a counter | Selection is visible; stack panel identifies the Hex and visible pieces | UNVERIFIED |
 | MAP-04 | P0 | Compare OOB preview with mounted counters/stacks | Both sides/formations and every generated unit remain traceable; projection/stack hiding explains any count difference | UNVERIFIED |
 | MAP-05 | P1 | Inspect enemy stacks from each hot-seat side | Owner-visible data and enemy redaction follow the active seat; no private data leaks | UNVERIFIED |
+
+## B1. Printed unit-counter fidelity
+
+Use the fixed NG-07 package and the reviewed VASSAL/rulebook corpus defined in
+`04-counter-fidelity-correction-plan.md`. A generic rectangle, role abbreviation, text
+summary, or isolated counter laboratory is not acceptable evidence.
+
+| ID | Pri | Player operation | Required visible result | Status |
+|---|---:|---|---|---|
+| CTR-01 | P0 | Inspect Allied and Axis unit counters in the combined New Game preview | Both sides expose the generated unit counters, not formation counts alone; HQ, combat, artillery, reconnaissance, engineer, transport, and supply templates are visibly distinct | UNVERIFIED |
+| CTR-02 | P0 | Compare a basic combat counter with its reviewed definition and rulebook template | Designation, echelon, symbol, affiliation, Combat Strength, Action Rating, MA/mobility, combat category, and applicable RE are in the correct counter grammar and match the generated definition | UNVERIFIED |
+| CTR-03 | P0 | Inspect HQ, artillery, transport, and supply counters | Each uses its role-specific printed fields; not-applicable ratings are omitted rather than shown as zero, question mark, or a generic role label | UNVERIFIED |
+| CTR-04 | P0 | Start the exact previewed package and find the sampled counters on the mounted map and in stack inspection | Identity, current printed face, values, symbol, side, and formation marking agree across preview, map, and inspector | UNVERIFIED |
+| CTR-05 | P0 | Operate a legal face/mode change and a reachable step/resource change | Printed face and per-step/resource values update from authoritative state; mode/status appears separately and no stale printed value remains | UNVERIFIED |
+| CTR-06 | P0 | Inspect a three-counter stack at normal zoom, zoom limits, selection, hover, and keyboard focus | Square aspect/field order remain stable; counter identity and critical ratings are not obscured by stack offset or interaction chrome | UNVERIFIED |
+| CTR-07 | P0 | Inspect the same enemy stack before and after a valid hot-seat handoff | Counter back/redaction, accessible name, DOM, and stack count reveal only rule-allowed information | UNVERIFIED |
+| CTR-08 | P0 | Repeat CTR-01 through CTR-07 at 1440×900 and 760×1000 while recording console and timing evidence | Required counters and controls remain reachable; no clipped/overlapping critical field, uncaught error, or over-budget interaction | UNVERIFIED |
 
 ## C. Rule actions through the actual UI
 

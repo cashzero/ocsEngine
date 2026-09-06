@@ -70,7 +70,9 @@ const effectiveStrength = (
   piece: PieceState,
   supplied: boolean,
 ): number => {
-  let strength = currentStep(state, piece)?.combatStrength ?? 0;
+  const definition = catalogFor(state).get(piece.definitionId);
+  let strength = currentStep(state, piece)?.combatStrength
+    ?? (definition?.counter?.kind === 'HQ' ? 5 : definition?.counter?.kind === 'ARTILLERY' ? 1 : 0);
   if (piece.mode === 'DG') strength /= 2;
   if (isOutOfSupply(piece)) strength *= supplied ? 0.5 : 0.25;
   return strength;
@@ -121,6 +123,7 @@ export const queryCombat = (
     || !adjacent(onMapHex(piece)!, targetHexId))) reasons.push({ code: 'ATTACKER_NOT_ADJACENT', allowed: false, message: 'Every attacker must be owned, on-map, and adjacent.', rule: combatKind === 'OVERRUN' ? '8.1' : '9.1' });
   if (defenders.some((piece) => piece.ownerId === actorId || onMapHex(piece) !== targetHexId)) reasons.push({ code: 'INVALID_TARGET_HEX', allowed: false, message: 'Every defender must be enemy in target Hex.', rule: '9.1' });
   if (attackers.some((piece) => ['RESERVE', 'STRAT'].includes(piece.mode ?? '')
+    || catalogFor(state).get(piece.definitionId)?.counter?.defensiveOnly
     || currentStep(state, piece)?.combatStrength === null
     || currentStep(state, piece)?.combatStrength === undefined)) reasons.push({ code: 'ATTACKER_NOT_CAPABLE', allowed: false, message: 'Attacker mode/ratings cannot attack.', rule: '4.4' });
   if (attackers.some((piece) => state.usage.some((usage) => usage.pieceId === piece.id && usage.attacked))) {
@@ -189,7 +192,7 @@ export const queryBarrage = (
     return !target || target.ownerId === actorId || onMapHex(target) !== targetHexId;
   })) reasons.push({ code: 'INVALID_BARRAGE_TARGET', allowed: false, message: 'Targets must be enemy Pieces in target Hex.', rule: '10.0d' });
   if (firers.some((piece) => state.usage.some((usage) => usage.pieceId === piece.id && usage.barraged))) reasons.push({ code: 'ARTILLERY_ALREADY_BARRAGED', allowed: false, message: 'A firer already barraged this turn.', rule: '10.0e' });
-  const strength = firers.reduce((total, piece) => total + (currentStep(state, piece)?.combatStrength ?? 0), 0);
+  const strength = firers.reduce((total, piece) => total + Number(currentStep(state, piece)?.ratings.find(({ratingDefinitionId}) => ratingDefinitionId === 'rating:barrage-strength')?.value ?? currentStep(state, piece)?.combatStrength ?? 0), 0);
   const band = stableSort(state.configuration.barrageTable, (left, right) => right.minimumStrength - left.minimumStrength)
     .find(({ minimumStrength }) => strength >= minimumStrength) ?? state.configuration.barrageTable[0]!;
   const allowed = reasons.every(({ allowed }) => allowed);

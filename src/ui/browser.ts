@@ -12,6 +12,7 @@ import {
   type OobScale,
 } from '../index.js';
 import { createUiController, type UiController } from './controller.js';
+import { counterView, counterSvgBody, counterSvg, counterLod } from './counter.js';
 import type { UiSnapshot } from './model.js';
 import {
   actionKindLabel,
@@ -121,29 +122,37 @@ const renderMap = (snapshot: UiSnapshot): string => {
     const objective = objectives.has(cell.id) ? `<g class="objective-marker" aria-label="objective"><circle cx="${cell.x}" cy="${cell.y}" r="15"></circle><path d="M${cell.x - 20} ${cell.y}h40M${cell.x} ${cell.y - 20}v40"></path></g>` : '';
     return `${strategic}${settlement}${objective}`;
   }).join('');
+  const selectedCounters: string[] = [];
+  const stackBadges: string[] = [];
   const counters = theater.cells.map((cell) => {
     const stack = stacks.get(cell.id);
     const visiblePieces = (stack?.pieces ?? []).slice(0, 3);
+    const selectedPiece = stack?.pieces.find(({id}) => id === snapshot.selection.pieceId);
+    if (selectedPiece && !visiblePieces.includes(selectedPiece)) visiblePieces.push(selectedPiece);
     const counterHtml = visiblePieces.map((piece, index) => {
       const ownerIndex = scenario.players.findIndex(({ id }) => id === piece.ownerId);
-      const x = cell.x - 23 + index * 8;
-      const y = cell.y - 20 - index * 7;
+      const x = cell.x - 35 + index * 8;
+      const y = cell.y - 35 - index * 7;
       const pieceSelected = snapshot.selection.pieceId === piece.id ? ' is-selected' : '';
       const label = pieceLabel(scenario, piece);
-      return `<g class="counter owner-${ownerIndex + 1}${pieceSelected}" transform="translate(${x} ${y})"
+      const definition = scenario.pieceCatalog.definitions.find(({id}) => id === piece.definitionId)!;
+      const markup = `<g class="counter owner-${ownerIndex + 1}${pieceSelected}" transform="translate(${x} ${y}) scale(.7)"
         role="button" tabindex="0" data-piece="${escapeHtml(piece.id)}" data-hex="${escapeHtml(cell.id)}"
         aria-label="${escapeHtml(`${label}, ${cell.id}, ${piece.mode ?? 'no mode'}, ${piece.remainingSteps ?? 'unknown'} steps`)}">
-        <rect width="46" height="40" rx="4"></rect>
-        <text class="counter-name" x="23" y="16" text-anchor="middle">${escapeHtml(piece.redacted ? '?' : roleLabel(piece.id))}</text>
-        <text class="counter-stats" x="23" y="32" text-anchor="middle">${escapeHtml(piece.redacted ? '?' : `${piece.remainingSteps ?? '?'} · ${piece.mode?.slice(0, 3) ?? '?'}`)}</text>
+        ${counterSvgBody(counterView(definition, piece))}
       </g>`;
+      if (pieceSelected) { selectedCounters.push(markup); return ''; }
+      return markup;
     }).join('');
     const hiddenCount = (stack?.hiddenCount ?? 0) + Math.max(0, (stack?.pieces.length ?? 0) - visiblePieces.length);
     const hidden = hiddenCount > 0
       ? `<g class="hidden-count" transform="translate(${cell.x + 23} ${cell.y - 30})"><circle r="12"></circle><text y="5" text-anchor="middle">+${hiddenCount}</text></g>` : '';
-    return `${counterHtml}${hidden}`;
+    stackBadges.push(hidden);
+    return counterHtml;
   }).join('');
-  return `${terrainDefsHtml()}<g class="terrain-layer">${terrain}</g><g class="river-layer">${rivers}</g><g class="road-layer">${roads}</g><g class="feature-layer">${features}</g><g class="counter-layer">${counters}</g>`;
+  // SVG uses document paint order, not CSS z-index. Keep ALL hex artwork below
+  // counters, and the selected counter above every other stack's counters.
+  return `${terrainDefsHtml()}<g class="hex-map-layer"><g class="terrain-layer">${terrain}</g><g class="river-layer">${rivers}</g><g class="road-layer">${roads}</g><g class="feature-layer">${features}</g></g><g class="counter-layer"><g class="unselected-counter-layer">${counters}</g><g class="selected-counter-layer">${selectedCounters.join('')}</g><g class="stack-badge-layer">${stackBadges.join('')}</g></g>`;
 };
 
 const selectedStackHtml = (snapshot: UiSnapshot): string => {
@@ -153,6 +162,7 @@ const selectedStackHtml = (snapshot: UiSnapshot): string => {
   return `<div class="stack-list">${stack.pieces.map((piece) => `
     <button class="stack-piece ${snapshot.selection.pieceId === piece.id ? 'is-selected' : ''}"
       data-piece="${escapeHtml(piece.id)}">
+      ${counterSvg(counterView(scenario.pieceCatalog.definitions.find(({id}) => id === piece.definitionId)!, piece))}
       <span>${escapeHtml(pieceLabel(scenario, piece))}</span>
       <small>${escapeHtml(piece.redacted ? 'Enemy details hidden' : `${piece.mode ?? 'No mode'} · ${piece.remainingSteps ?? '–'} steps`)}</small>
     </button>`).join('')}
@@ -221,6 +231,11 @@ const oobRoleLabel = (role: string): string => role.replaceAll('_', ' ').toLower
 const operationPreviewHtml = (prepared: GeneratedScenarioPackage): string => {
   const map = buildGeneratedMapPreview(prepared.generatedMap, 32);
   const oob = buildGeneratedOobPreview(prepared.generatedOob);
+  const previewCounter = (unit: {id:string}): string => {
+    const piece = prepared.scenario.initialPieceState.pieces.find(({id}) => id === unit.id)!;
+    const definition = prepared.scenario.pieceCatalog.definitions.find(({id}) => id === piece.definitionId)!;
+    return `<figure class="preview-counter">${counterSvg(counterView(definition, {...piece, statuses: [], redacted: false}))}<figcaption>${escapeHtml(definition.name)}</figcaption></figure>`;
+  };
   const objectives = new Set<string>(prepared.deployment.objectiveHexIds);
   const cells = map.cells.map((cell) => `<g class="generated-cell terrain-${cell.terrain.toLowerCase()}">
     <polygon points="${cell.points}"></polygon>
@@ -235,7 +250,8 @@ const operationPreviewHtml = (prepared: GeneratedScenarioPackage): string => {
   const forces = oob.sides.map((side) => `<section class="preview-force side-${side.side.toLowerCase()}">
     <header><strong>${escapeHtml(side.side)}</strong><span>${prepared.generatedOob.metrics.pointsBySide[side.side]} points</span></header>
     <ul>${side.formations.map((formation) => `<li><span>${escapeHtml(formation.name)}</span><small>${formation.units.length} units · ${escapeHtml(formation.archetype.replaceAll('_', ' ').toLowerCase())}</small></li>`).join('')}</ul>
-    <p>${side.independentUnits.length} independent support / logistics units</p>
+    ${side.formations.map((formation) => `<details class="counter-formation"><summary>${escapeHtml(formation.name)}</summary><div class="counter-grid">${formation.units.map(previewCounter).join('')}</div></details>`).join('')}
+    <details class="counter-formation"><summary>${side.independentUnits.length} independent support / logistics units</summary><div class="counter-grid">${side.independentUnits.map(previewCounter).join('')}</div></details>
   </section>`).join('');
   return `<div class="operation-preview-content">
     <div class="operation-map-wrap"><svg class="operation-map" viewBox="0 0 ${map.layout.width} ${map.layout.height}" role="img" aria-label="Generated operation map preview">${terrainDefsHtml()}${cells}${rivers}${roads}</svg></div>
@@ -365,6 +381,7 @@ const render = (snapshot: UiSnapshot): void => {
       </main>
     </div>${decisionHtml(snapshot)}${newGameDialogHtml()}${privacyHtml(snapshot)}${gameEndHtml(snapshot)}`;
   bindEvents(snapshot);
+  updateCamera();
 };
 
 const activateKeyboard = (selector: string, callback: (element: HTMLElement) => void): void => {
@@ -374,6 +391,10 @@ const activateKeyboard = (selector: string, callback: (element: HTMLElement) => 
 };
 
 const updateCamera = (): void => {
+  const svg = root.querySelector<SVGSVGElement>('#hex-map');
+  const cameraGroup = root.querySelector<SVGGElement>('#map-camera');
+  const matrix = svg?.getScreenCTM();
+  if (cameraGroup && matrix) cameraGroup.dataset.counterLod = counterLod(70 * Math.hypot(matrix.a, matrix.b) * camera.zoom);
   root.querySelector<SVGGElement>('#map-camera')?.setAttribute('transform', `translate(${camera.x} ${camera.y}) scale(${camera.zoom})`);
   const output = root.querySelector<HTMLOutputElement>('#zoom-level');
   if (output) output.value = `${Math.round(camera.zoom * 100)}%`;
@@ -450,7 +471,10 @@ function bindEvents(snapshot: UiSnapshot): void {
     controller.selectPiece(element.dataset.piece ?? null);
   }));
   activateKeyboard('.hex-cell[data-hex]', (element) => controller.selectHex(element.dataset.hex ?? null));
-  activateKeyboard('[data-piece]', (element) => controller.selectPiece(element.dataset.piece ?? null));
+  activateKeyboard('[data-piece]', (element) => {
+    if (element.dataset.hex) controller.selectHex(element.dataset.hex);
+    controller.selectPiece(element.dataset.piece ?? null);
+  });
   root.querySelectorAll<HTMLButtonElement>('[data-action-kind]').forEach((button) => button.addEventListener('click', () =>
     controller.selectActionKind(button.dataset.actionKind as NonNullable<UiSnapshot['selection']['actionKind']>)));
   root.querySelectorAll<HTMLButtonElement>('[data-candidate]').forEach((button) => button.addEventListener('click', () =>
@@ -561,3 +585,4 @@ function bindEvents(snapshot: UiSnapshot): void {
 }
 
 unsubscribeController = controller.subscribe(render);
+window.addEventListener('resize', updateCamera);

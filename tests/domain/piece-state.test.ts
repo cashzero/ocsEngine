@@ -57,6 +57,7 @@ const groundDefinition = (
 ): PieceDefinition => ({
   id: definitionId(`piece-definition:${id}`),
   family: 'GROUND',
+  counter: null,
   name: id,
   categoryDefinitionId: definitionId('category:ground'),
   ownership: {
