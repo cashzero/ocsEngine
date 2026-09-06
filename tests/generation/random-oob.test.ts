@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { FORMATION_NAME_PROFILES } from '../../src/generation/oob/name-catalog.js';
 import {
   BTR_BUILD_FILE_SHA256,
   generateRandomOob,
@@ -11,6 +12,24 @@ import {
 const options = { seed: 1944, scale: 'STANDARD' as const, formationsPerSide: 3 };
 
 describe('M7 deterministic random OOB pipeline', () => {
+  it.each(['COMPACT', 'STANDARD', 'LARGE'] as const)('gives %s packages distinct WWII identities', (scale) => {
+    for (const seed of [0, 7, 1944, 0xffffffff]) {
+      const result = generateRandomOob({ seed, scale, formationsPerSide: 6 });
+      expect(result.ok).toBe(true);
+      if (!result.ok) return;
+      for (const side of result.value.sides) {
+        expect(new Set(side.formations.map((formation) => formation.name)).size).toBe(6);
+        expect(side.formations.every((formation) => FORMATION_NAME_PROFILES.some((profile) =>
+          profile.name === formation.name && profile.side === side.side && profile.archetype === formation.archetype))).toBe(true);
+      }
+      const names = result.value.pieceDefinitionCatalog.definitions.map((definition) => definition.name);
+      expect(new Set(names).size).toBe(names.length);
+      expect(names.every((name) => !/Independent|combat \d|undefined/.test(name))).toBe(true);
+      expect(names.some((name) => name.includes('QM Truck Co'))).toBe(true);
+      expect(names.some((name) => name.includes('Pionier-Btl.'))).toBe(true);
+    }
+  });
+
   it('returns byte-identical Foundation Piece Definitions for the same seed', () => {
     const first = generateRandomOob(options);
     const second = generateRandomOob(options);
