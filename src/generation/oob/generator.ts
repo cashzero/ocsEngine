@@ -40,6 +40,7 @@ import {
   type RandomOobOptions,
 } from './model.js';
 import { validateGeneratedOob } from './validation.js';
+import { formationNames, unitName } from './names.js';
 
 const SIDES: readonly OobSide[] = ['ALLIED', 'AXIS'];
 const FORMATION_ARCHETYPES: readonly OobFormationArchetype[] = ['ARMORED', 'INFANTRY', 'MOBILE_INFANTRY'];
@@ -56,11 +57,6 @@ const capabilityId = (value: string) => must(parseCapabilityId(value));
 const SCALE_COMBAT_UNITS: Readonly<Record<OobScale, number>> = {
   COMPACT: 2, STANDARD: 3, LARGE: 4,
 };
-
-const displaySide = (side: OobSide): string => side === 'ALLIED' ? 'Allied' : 'Axis';
-const displayArchetype = (archetype: OobFormationArchetype): string => ({
-  ARMORED: 'Armored', INFANTRY: 'Infantry', MOBILE_INFANTRY: 'Mobile Infantry',
-})[archetype];
 
 const capabilitiesFor = (role: OobUnitRole): readonly CapabilityDeclaration[] => {
   switch (role) {
@@ -214,7 +210,9 @@ const buildSide = (
   const formations: GeneratedOobFormation[] = plan.map((archetype, formationIndex) => {
     const sequence = formationIndex + 1;
     const formationId = definitionId(`formation:generated:${options.seed}:${side.toLowerCase()}:${sequence}`);
-    const formationName = `${displaySide(side)} ${sequence} ${displayArchetype(archetype)} Formation`;
+    const occurrence = plan.slice(0, formationIndex).filter((value) => value === archetype).length;
+    const namingProfile = formationNames(options.seed, side, archetype)[occurrence]!;
+    const formationName = namingProfile.name;
     const requests: Array<{ role: OobUnitRole; suffix: string }> = [
       { role: 'FORMATION_COMMAND', suffix: 'command' },
       ...Array.from({ length: SCALE_COMBAT_UNITS[options.scale] }, (_, index) => ({
@@ -228,7 +226,7 @@ const buildSide = (
     const units = requests.map(({ role, suffix }) => {
       const built = buildUnit({
         options, side, role, formationArchetype: archetype, formationId,
-        name: `${formationName} ${role.replaceAll('_', ' ').toLowerCase()} ${suffix.split('-').at(-1)}`,
+        name: unitName(side, role, Number(suffix.split('-').at(-1)) || 1, options.seed, namingProfile),
         localId: `f${sequence}-${suffix}`,
       });
       definitions.push(built.definition);
@@ -251,7 +249,7 @@ const buildSide = (
     roleCounts.set(role, ordinal);
     const built = buildUnit({
       options, side, role, formationId: null,
-      name: `${displaySide(side)} Independent ${role.replaceAll('_', ' ').toLowerCase()} ${ordinal}`,
+      name: unitName(side, role, ordinal, options.seed),
       localId: `independent-${role.toLowerCase()}-${ordinal}`,
     });
     definitions.push(built.definition);
