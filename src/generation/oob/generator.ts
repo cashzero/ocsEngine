@@ -17,6 +17,7 @@ import {
   type PieceStepProfile,
 } from '../../domain/piece/index.js';
 import { canonicalJson } from '../../serialization/index.js';
+import { corpusCounter, corpusFaces } from './counter-corpus.js';
 import { createSeededRandom, mixUint32 } from '../map/rng.js';
 import {
   BTR_BUILD_FILE_SHA256,
@@ -124,6 +125,11 @@ const buildUnit = (context: UnitBuildContext): {
     note: `SHA-256 ${BTR_BUILD_FILE_SHA256}; reviewed raw entryName: ${source.rawName}`,
   } as const;
   const definition: PieceDefinition = {
+    counter: corpusCounter(source.gpid,
+      context.localId.split('-').at(-1) ?? '',
+      context.formationId ? `F${context.formationId.split(':').at(-1)}` : '',
+      context.side === 'ALLIED' ? 'US' : 'GERMAN',
+      context.formationId ? ['#75c3af', '#e2638b', '#6c9cd2', '#e4c063', '#ae87c7', '#c59064'][Number(context.formationId.split(':').at(-1)) - 1]! : null),
     id,
     family: source.family,
     name: context.name,
@@ -135,15 +141,7 @@ const buildUnit = (context: UnitBuildContext): {
       formationDefinitionId: context.formationId,
       groupDefinitionId: null,
     },
-    faces: source.family === 'RESOURCE' ? [] : [{
-      id: faceId,
-      name: 'Front',
-      mobilityClassDefinitionId: definitionId(context.role === 'COMBAT'
-        && context.formationArchetype === 'ARMORED' ? 'mobility:tracked'
-        : context.role === 'TRANSPORT' || context.role === 'RECONNAISSANCE' ? 'mobility:motorized'
-          : 'mobility:leg'),
-      steps: stepsFor(source),
-    }],
+    faces: corpusFaces(source.gpid),
     capabilities: capabilitiesFor(context.role),
     resource: source.family === 'RESOURCE' ? {
       resourceDefinitionId: definitionId('resource:supply'),
@@ -161,10 +159,10 @@ const buildUnit = (context: UnitBuildContext): {
         source: sourceReference, confidence: 'HIGH', reviewStatus: 'REVIEWED',
       },
       {
-        field: 'generator-ratings',
-        rawValue: `BTR gpid=${source.gpid}; encoded VASSAL traits intentionally not decoded`,
-        normalizedValue: `strength=${source.combatStrength}; ar=${source.actionRating}; movement=${source.movementPoints}; range=${source.range}; steps=${source.steps}`,
-        source: { document: 'docs/oob/01-normalization-decisions.md', locator: source.id },
+        field: 'counter-faces',
+        rawValue: `BTR gpid=${source.gpid}; image transcription`,
+        normalizedValue: 'Printed faces from counter-corpus; generated designation and affiliation',
+        source: { document: 'docs/oob/counter-corpus.md', locator: String(source.gpid) },
         confidence: 'MEDIUM', reviewStatus: 'REVIEWED',
       },
     ] },

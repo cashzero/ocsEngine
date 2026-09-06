@@ -51,6 +51,7 @@ import {
   parseCapabilityId,
   parseFaceId,
   type CapabilityDeclaration,
+  type CounterDefinition,
   type CapabilityId,
   type CapabilityParameter,
   type FacilityDefinitionProfile,
@@ -327,7 +328,23 @@ const pieceDefinitionSourceDecoder: Decoder<PieceDefinitionSource> = objectDecod
   records: arrayDecoder(evidenceDecoder),
 });
 
+const counterDecoder: Decoder<CounterDefinition> = objectDecoder({
+  kind: literalDecoder('COMBAT', 'ARTILLERY', 'HQ', 'TRANSPORT', 'SUPPLY'),
+  symbol: literalDecoder('INFANTRY', 'ARMOR', 'GLIDER', 'RECON', 'ARTILLERY', 'SP_ARTILLERY', 'ENGINEER', 'HQ', 'TRUCK', 'SUPPLY'),
+  designation: stringDecoder,
+  affiliation: stringDecoder,
+  echelon: stringDecoder,
+  nationality: literalDecoder('US', 'GERMAN'),
+  combatCategory: literalDecoder('ARMOR', 'MECH', 'OTHER'),
+  formationColor: nullableDecoder(stringDecoder),
+  defensiveOnly: booleanDecoder,
+  rebuildable: booleanDecoder,
+  showRe: booleanDecoder,
+  transportPoints: nullableDecoder(numberDecoder),
+});
+
 const pieceDefinitionDecoder: Decoder<PieceDefinition> = objectDecoder({
+  counter: nullableDecoder(counterDecoder),
   id: definitionIdDecoder,
   family: literalDecoder(...PIECE_FAMILIES),
   name: stringDecoder,

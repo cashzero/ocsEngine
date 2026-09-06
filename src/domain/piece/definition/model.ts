@@ -20,6 +20,21 @@ export const PIECE_FAMILIES = [
 
 export type PieceFamily = (typeof PIECE_FAMILIES)[number];
 
+export interface CounterDefinition {
+  readonly kind: 'COMBAT' | 'ARTILLERY' | 'HQ' | 'TRANSPORT' | 'SUPPLY';
+  readonly symbol: 'INFANTRY' | 'ARMOR' | 'GLIDER' | 'RECON' | 'ARTILLERY' | 'SP_ARTILLERY' | 'ENGINEER' | 'HQ' | 'TRUCK' | 'SUPPLY';
+  readonly designation: string;
+  readonly affiliation: string;
+  readonly echelon: string;
+  readonly nationality: 'US' | 'GERMAN';
+  readonly combatCategory: 'ARMOR' | 'MECH' | 'OTHER';
+  readonly formationColor: string | null;
+  readonly defensiveOnly: boolean;
+  readonly rebuildable: boolean;
+  readonly showRe: boolean;
+  readonly transportPoints: number | null;
+}
+
 export interface PieceOwnershipDefinition {
   readonly sideDefinitionId: DefinitionId | null;
   readonly factionDefinitionId: DefinitionId | null;
@@ -89,6 +104,7 @@ export interface PieceDefinitionSource {
 }
 
 export interface PieceDefinition {
+  readonly counter: CounterDefinition | null;
   readonly id: DefinitionId;
   readonly family: PieceFamily;
   readonly name: string;

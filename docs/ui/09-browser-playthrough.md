@@ -1,5 +1,9 @@
 # U9 — Browser playthrough protocol
 
+Counter evidence correction (2026-09-04): the captures below prove projected-piece
+presence, selection, and responsive layout only. They show the reduced role/steps/mode
+glyph and do not pass the reopened OCS counter-fidelity gate.
+
 ## Local run
 
 Run `npm run ui:serve`, then open `http://127.0.0.1:4173`.
@@ -19,7 +23,7 @@ U10 records the executed browser evidence and final automated counts.
 ## Executed evidence — 2026-08-30
 
 - Chrome headless rendered the built app at 1440×1000 and 760×1000 without a boot failure.
-- The wide capture showed the complete session rail, 5×5 SVG map, six projected counters, action/explanation rail, and timeline.
-- The narrow capture showed the single-flow breakpoint, readable command controls, map toolbar, and counters with no text below the 13px contract.
+- The wide capture showed the complete session rail, 5×5 SVG map, six projected piece glyphs, action/explanation rail, and timeline.
+- The narrow capture showed the single-flow breakpoint, readable command controls, map toolbar, and projected piece glyphs with no text below the 13px contract.
 - HTTP checks returned the HTML entry and compiled `dist/ui/browser.js` with their expected content types.
 - The in-app Browser runtime could not initialize because its environment lacked kernel assets; Chrome headless supplied the visual smoke evidence, while deterministic controller tests exercised the interactions.

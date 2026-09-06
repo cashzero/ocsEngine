@@ -5,6 +5,8 @@ import type { GameState } from '../kernel/model.js';
 import type { ProjectedPiece, ProjectedStack, RuleProjection } from './model.js';
 
 const projectPiece = (piece: PieceState, redacted: boolean): ProjectedPiece => ({
+  currentFaceId: redacted ? null : piece.currentFaceId,
+  resourceQuantity: redacted ? null : piece.resourceQuantity,
   id: piece.id,
   ownerId: piece.ownerId,
   definitionId: piece.definitionId,

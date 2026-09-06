@@ -1,13 +1,20 @@
 # U10 — Operable UI integration gate
 
-Status: **IN PROGRESS (2026-09-03)**.
+Status: **IN PROGRESS (2026-09-04)**.
 
-The map-first visual sub-gate and whole-turn interaction sub-gate now pass. U10 remains open while session persistence, Game End downloads, full keyboard traversal, and the remaining product-operation rows are still unverified; see `docs/quality/02-game-flow-acceptance-correction.md` and `03-product-operation-verification-plan.md`.
+The map-first layout sub-gate and whole-turn interaction sub-gate now pass. They do not
+prove OCS counter fidelity. The counter portion of U4 was reopened on 2026-09-04 after
+comparison with the OCS v4.3 counter explanation and representative Beyond the Rhine
+VASSAL faces. U10 remains open while counter fidelity, session persistence, Game End
+downloads, full keyboard traversal, and the remaining product-operation rows are still
+unverified; see `docs/quality/02-game-flow-acceptance-correction.md`,
+`03-product-operation-verification-plan.md`, and
+`04-counter-fidelity-correction-plan.md`.
 
 ## Delivered slice
 
 - Responsive operational shell with a strict 13px minimum text size.
-- Deterministic SVG Hex map with pan, zoom, reset, counter selection, and stack inspection.
+- Deterministic SVG Hex map with pan, zoom, reset, projected-piece selection, and stack inspection. The current piece glyph is not accepted as an OCS counter.
 - Gameplay-owned lifecycle, legal action discovery, explanation, dispatch, and pending-decision flow.
 - Timeline, checkpoints/undo, canonical save download/load, and hot-seat privacy handoff.
 - Keyboard focus, SVG accessible names, ARIA status/dialog semantics, and reduced-motion handling.
@@ -33,4 +40,6 @@ UI owns camera and selection only. Rule legality and state changes remain in Rul
 
 Graphical map, responsive layout, preview/mount equality and typography evidence remain valid. On 2026-09-03, `scripts/ui-flow-gate.mjs` completed whole turns for default and Large inputs and reached Turn 4 in a contact scenario while operating all exposed ground-action families, decisions, and visible privacy handoffs within the frozen latency budgets. `scripts/ui-cdp-gate.mjs` also passed desktop/narrow rendering with a 13 px minimum and zero browser errors.
 
-U10 remains `IN PROGRESS`: those results do not substitute for real file save/load, terminal Game End downloads, full keyboard/focus traversal, and all other open P0 rows in the product-operation plan.
+U10 remains `IN PROGRESS`: those results do not substitute for the reopened printed
+counter gate, real file save/load, terminal Game End downloads, full keyboard/focus
+traversal, and all other open P0 rows in the product-operation plan.

@@ -7,7 +7,10 @@ The existing Gameplay Engine already owns lifecycle, action discovery, dispatch 
 ## Boundary
 
 - `src/ui/controller.ts` calls Gameplay public methods only.
-- The browser retains immutable `ScenarioDefinition` solely to draw map geometry and counter names.
+- The browser retains immutable `ScenarioDefinition` to draw map geometry and resolve
+  public printed-counter definitions. Viewer-sensitive runtime facts still come only
+  from `GameplayView.projection`; the definition catalog must never be used to bypass
+  projected face/step/resource/status redaction.
 - Viewer-sensitive counters always come from `GameplayView.projection`; the UI never reads `GameState`.
 - No rule calculation, dice roll, resource mutation, or transaction progression exists in UI code.
 

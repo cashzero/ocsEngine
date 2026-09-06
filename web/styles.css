@@ -82,10 +82,7 @@ small, .supporting { font-size: 14px; color: var(--muted); }
 .hex-coordinate, .hidden-count { pointer-events: none; font-family: ui-sans-serif, system-ui, sans-serif; font-size: 13px; fill: #c4cdc0; }
 .hidden-count { fill: #fff0bd; font-weight: 800; }
 .counter { cursor: pointer; filter: drop-shadow(0 4px 3px rgba(0, 0, 0, .35)); }
-.counter rect { fill: var(--player-one); stroke: #201a0e; stroke-width: 2; vector-effect: non-scaling-stroke; }
-.counter.owner-2 rect { fill: var(--player-two); }
-.counter:hover rect, .counter.is-selected rect { stroke: #fff4cb; stroke-width: 4; }
-.counter text { pointer-events: none; fill: #131712; font-family: ui-sans-serif, system-ui, sans-serif; font-size: 13px; font-weight: 800; }
+.counter:hover > .counter-paper, .counter.is-selected > .counter-paper { stroke: #fff4cb; stroke-width: 4; }
 .counter-stats { font-weight: 650; }
 .map-legend { position: absolute; left: 12px; right: 12px; bottom: 10px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 7px 10px; border: 1px solid var(--line); border-radius: 6px; color: var(--muted); background: rgba(13, 20, 16, .88); font-size: 13px; pointer-events: none; }
 .legend-chip { padding: 2px 7px; border-radius: 3px; color: #151712; background: var(--player-one); font-weight: 750; }
@@ -322,7 +319,38 @@ small, .supporting { font-size: 14px; color: var(--muted); }
 .objective-marker circle { stroke-dasharray: 4 3; }
 .hidden-count circle { fill: #17211d; stroke: #fff0bd; stroke-width: 2; vector-effect: non-scaling-stroke; }
 .hidden-count text { fill: #fff0bd; font-size: 13px; font-weight: 850; }
-.counter rect { width: 46px; height: 40px; }
+.unit-counter { display: block; width: 112px; height: 112px; flex-shrink: 0; overflow: visible; }
+.counter, .unit-counter { color: #151810; }
+.counter text, .unit-counter text { pointer-events: none; fill: #151810; font-family: 'Arial Narrow', Arial, sans-serif; font-size: 14px; font-weight: 700; }
+.counter-paper { fill: #a7aba0; stroke: #24271e; stroke-width: 2; }
+.counter-paper.nation-US { fill: #99ad36; }
+.counter-paper.nation-GERMAN { fill: #b8b7a5; }
+.counter-paper.concealed { fill: #a7aba0; }
+.counter-unknown { fill: none; stroke: #29312b; stroke-width: 7; }
+.counter-symbol { stroke: currentColor; stroke-width: 2; fill: none; }
+.symbol-box { fill: transparent; }
+.category-ARMOR .symbol-box { fill: #f3d727; }
+.category-MECH .symbol-box { fill: #df3d32; }
+.move-band { stroke: #f9f5e6; stroke-width: 7; }
+.formation-band { stroke-width: 8; }
+.counter .counter-number, .unit-counter .counter-number { font-size: 31px; font-stretch: condensed; }
+.counter .counter-ar, .unit-counter .counter-ar { font-size: 24px; }
+.counter .counter-range, .unit-counter .counter-range { font-size: 17px; }
+.counter .mobility-leg, .unit-counter .mobility-leg { fill: #fff; paint-order: stroke; stroke: #333; stroke-width: .7; }
+.counter .mobility-tracked, .unit-counter .mobility-tracked { fill: #c11d20; }
+.tracked-box, .barrage-box, .re-dot { fill: #f5df20; }
+.counter-designation { transform: rotate(-90deg); transform-origin: 13px 56px; }
+.counter-affiliation { transform: rotate(-90deg); transform-origin: 87px 38px; }
+.counter-state rect { fill: #f8e9ae; }
+.counter .counter-state text, .unit-counter .counter-state text { font-size: 11px; }
+.counter-grid { display: flex; flex-wrap: wrap; gap: 12px; padding: 12px; }
+.counter-formation summary { cursor: pointer; padding: 9px; }
+.preview-counter { margin: 0; width: 120px; }
+.preview-counter figcaption { font-size: 13px; overflow-wrap: anywhere; line-height: 1.3; margin-top: 5px; }
+[data-counter-lod="ratings"] .counter-identification, [data-counter-lod="symbol"] .counter-identification,
+[data-counter-lod="symbol"] .counter-values { display: none; }
+[data-counter-lod="symbol"] .counter-symbol { transform: translate(-20px, -4px) scale(1.4); }
+.stack-piece .unit-counter { margin: 6px auto; }
 
 .map-controls { position: absolute; right: 16px; bottom: 16px; z-index: 2; display: flex; align-items: center; gap: 5px; padding: 7px; border: 1px solid var(--line-bright); border-radius: 8px; background: rgba(13, 20, 16, .93); box-shadow: var(--shadow); }
 .map-controls button { min-width: 42px; padding: 6px 9px; }

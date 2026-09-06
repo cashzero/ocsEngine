@@ -82,6 +82,7 @@ export const buildPieceDefinition = (
 ): PieceDefinition => ({
   id: definitionId('piece-definition:fixture-ground'),
   family: 'GROUND',
+  counter: null,
   name: 'Fixture ground unit',
   categoryDefinitionId: definitionId('category:ground'),
   ownership: {
