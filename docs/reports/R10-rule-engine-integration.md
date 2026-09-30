@@ -1,5 +1,18 @@
 # R10 Rule Engine Integration Report
 
+## Status correction (2026-09-30)
+
+Status: **IN PROGRESS — reopened.** [Study 9: OCS 4.3 rules vs. Rule Engine plan
+gap analysis](../study/09-rules-vs-plan-gap-analysis.md) disproves the completion
+claim below: the combat and barrage tables are synthetic yet marked `REVIEWED`,
+the integration run never exercises Overrun or Exploitation combat, and core
+rules (odds rounding, Action Rating selection, Surprise, terrain rows and AT
+effects, option/exploit results, per-step combat supply, fuel, internal stocks,
+Truck-only ZOC and negation, end-of-segment stacking) are missing while the
+manifest reports their sections as `IMPLEMENTED`. The original report is kept
+unchanged below as evidence; the gate stays open until Study 9 TODO-R1 through
+TODO-R14 are closed with the listed evidence.
+
 ## Gate result
 
 The OCS 4.3 ground/logistics Rule Engine MVP is complete as a deterministic, headless package. It consumes the Foundation scenario model and exposes action families, bounded candidates, legality/explanations, immutable transitions/events, viewer projection, strict snapshots, and action replay. It has no Gameplay, UI, random-generation, AI, React, or browser dependency.
