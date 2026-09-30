@@ -1,12 +1,20 @@
 import { FOUNDATION_SCHEMA_VERSION, parseDefinitionId, type DefinitionId, type Result } from '../core/index.js';
 import type { RuleConfiguration } from '../rules/index.js';
 import type { GeneratedDeployment } from './model.js';
+import {
+  GENERATED_HEXSIDE_MOVEMENT_COSTS,
+  GENERATED_ROAD_MOVEMENT_COSTS,
+  GENERATED_TERRAIN_MOVEMENT_COSTS,
+} from './movement-tec.js';
 
 const must = <T, E>(result: Result<T, E>): T => {
   if (!result.ok) throw new Error('Game-flow Definition ID is invalid.');
   return result.value;
 };
 const id = (value: string): DefinitionId => must(parseDefinitionId(value));
+
+/** OCS 4.8 ten-RE stacking limit in quarter-RE ticks. */
+export const GENERATED_STACKING_LIMIT_RE_TICKS = 40;
 
 /** Production-owned ground-game configuration; test fixtures are deliberately not imported. */
 export const createGeneratedRuleConfiguration = (
@@ -16,16 +24,12 @@ export const createGeneratedRuleConfiguration = (
   schemaVersion: FOUNDATION_SCHEMA_VERSION,
   id: id('rules:ocs-generated-ground-duel'),
   rulesVersion: 'OCS generated ground duel 0.1.0',
-  terrainMovementCosts: [
-    ['terrain:clear', 4], ['terrain:woods', 8], ['terrain:rough', 8],
-    ['terrain:mountain', 12], ['terrain:marsh', 8], ['terrain:water', 400],
-  ].map(([terrainDefinitionId, costTicks]) => ({ terrainDefinitionId: id(String(terrainDefinitionId)), costTicks: Number(costTicks) })),
-  hexsideMovementCosts: [
-    ['edge:road', 0], ['edge:primary-road', 0], ['edge:river', 4], ['edge:major-river', 8],
-  ].map(([featureDefinitionId, costTicks]) => ({ featureDefinitionId: id(String(featureDefinitionId)), costTicks: Number(costTicks) })),
+  terrainMovementCosts: GENERATED_TERRAIN_MOVEMENT_COSTS,
+  hexsideMovementCosts: GENERATED_HEXSIDE_MOVEMENT_COSTS,
+  roadMovementCosts: GENERATED_ROAD_MOVEMENT_COSTS,
   defaultTerrainCostTicks: 4,
   minimumMoveTicks: 4,
-  stackingLimitReTicks: 40,
+  stackingLimitReTicks: GENERATED_STACKING_LIMIT_RE_TICKS,
   supplyTraceRange: 6,
   combatSupplyTokenCost: 1,
   combatTable: [

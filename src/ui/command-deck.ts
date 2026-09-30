@@ -3,7 +3,7 @@ import { counterSvg, counterView } from './counter.js';
 import { actionKindLabel, actionSummary, pieceLabel } from './presenter.js';
 
 export type DeckList = 'units' | 'stack' | 'hq' | 'candidates' | 'history';
-export interface DeckState { list: DeckList; search: string; working: boolean; error?: string; }
+export interface DeckState { list: DeckList; search: string; working: boolean; error?: string; hint?: string; }
 const esc = (value: unknown): string => String(value).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#039;');
 export const actionDestination = (action: UiSnapshot['selectedAction']): string | null => {
   if (!action) return null;
@@ -26,9 +26,15 @@ export const commandDeckHtml = (snapshot: UiSnapshot, state: DeckState): string 
   const destination = actionDestination(action);
   const movementCost = snapshot.explanation?.facts.find(f => f.key === 'movement.totalTicks')?.value;
   const movementRemaining = snapshot.explanation?.facts.find(f => f.key === 'movement.remainingTicks')?.value;
+  const moveMode = snapshot.selection.actionKind === 'MOVE_PIECE';
+  const moveGuide = !moveMode ? '' : selected === undefined
+    ? 'Select a unit on the map or in the Units list.'
+    : snapshot.candidates.length === 0
+      ? 'This unit cannot move now.'
+      : `Click a highlighted hex on the map to choose a destination (${snapshot.candidates.length} reachable).`;
   const effect = action?.kind === 'MOVE_PIECE' && typeof movementCost === 'number' && typeof movementRemaining === 'number'
     ? `${action.path[0]} → ${destination} · Cost ${movementCost / 4} MP · ${movementRemaining / 4} MP left`
-    : action ? actionSummary(action) : 'Select an action, or end this phase when ready.';
+    : action ? actionSummary(action) : moveGuide || 'Select an action, or end this phase when ready.';
   const friendlySummary = (candidate: NonNullable<UiSnapshot['selectedAction']>): string => {
     const label = 'pieceId' in candidate ? pieces.find(({ piece }) => piece.id === candidate.pieceId) : undefined;
     const name = label ? pieceLabel(scenario, label.piece) : 'Selected unit';
@@ -52,7 +58,7 @@ export const commandDeckHtml = (snapshot: UiSnapshot, state: DeckState): string 
     <div class="deck-actions"><label for="deck-action">Action</label><select id="deck-action" ${busy || required ? 'disabled' : ''}><option value="">Choose an action</option>${families.map(f => `<option value="${f.kind}" ${snapshot.selection.actionKind === f.kind ? 'selected' : ''}>${esc(actionKindLabel(f.kind))}</option>`).join('')}</select></div>
     <nav class="deck-tabs" aria-label="Command lists">${tabs.map(([key, name]) => `<button data-deck-list="${key}" aria-pressed="${state.list === key}">${name}</button>`).join('')}</nav>
     <label class="deck-search">Find unit<input id="deck-search" type="search" value="${esc(state.search)}" placeholder="Name or formation" ${state.list === 'candidates' || state.list === 'history' ? 'disabled' : ''}></label>
-    <div class="deck-list" data-scroll-key="${state.list}" tabindex="0" aria-label="${tabs.find(([key]) => key === state.list)?.[1]} list" aria-busy="${busy}">${state.list === 'history' ? history || '<p>No actions yet.</p>' : state.list === 'candidates' ? (candidates || '<p>No choices for this selection. Choose a different unit or action.</p>') + (snapshot.candidatesTruncated ? '<button id="load-more-candidates" class="wide">Load more choices</button>' : '') : unitRows || '<p>No visible units match this selection.</p>'}</div>
-    <section class="deck-consequence"><strong>${action ? esc(actionKindLabel(action.kind)) : 'Current phase'}</strong><p>${esc(effect)}</p><button id="open-rule-details" ${snapshot.explanation ? '' : 'disabled'}>Review rules &amp; effects</button></section>
-    <footer class="deck-footer"><div class="deck-notice" role="status" title="${esc(state.error || snapshot.notice)}">${busy ? 'Preparing action…' : esc(state.error || snapshot.notice)}</div><div class="button-grid"><button id="clear-action" ${busy ? 'disabled' : ''}>Clear selection</button><button class="primary" id="execute-action" ${action && snapshot.explanation?.allowed && !busy && !required && !state.error ? '' : 'disabled'}>${busy ? 'Working…' : destination ? `Confirm · ${esc(destination)}` : action ? esc(actionKindLabel(action.kind)) : 'Select action'}</button></div>${required ? `<button id="begin-required-handoff" class="primary wide">Hand off to ${esc(owner ?? 'next player')}</button>` : `<button id="end-phase" class="wide" ${advance && !busy ? '' : 'disabled'}>End phase / segment</button>`}</footer>`;
+    <div class="deck-list" data-scroll-key="${state.list}" tabindex="0" aria-label="${tabs.find(([key]) => key === state.list)?.[1]} list" aria-busy="${busy}">${state.list === 'history' ? history || '<p>No actions yet.</p>' : state.list === 'candidates' && moveMode ? `<p>${esc(moveGuide)}</p>` : state.list === 'candidates' ? (candidates || '<p>No choices for this selection. Choose a different unit or action.</p>') + (snapshot.candidatesTruncated ? '<button id="load-more-candidates" class="wide">Load more choices</button>' : '') : unitRows || '<p>No visible units match this selection.</p>'}</div>
+    <section class="deck-consequence"><strong>${action ? esc(actionKindLabel(action.kind)) : moveMode ? 'Move unit' : 'Current phase'}</strong><p>${esc(effect)}</p><button id="open-rule-details" ${snapshot.explanation ? '' : 'disabled'}>Review rules &amp; effects</button></section>
+    <footer class="deck-footer"><div class="deck-notice" role="status" title="${esc(state.error || state.hint || snapshot.notice)}">${busy ? 'Preparing action…' : esc(state.error || state.hint || snapshot.notice)}</div><div class="button-grid"><button id="clear-action" ${busy ? 'disabled' : ''}>Clear selection</button><button class="primary" id="execute-action" ${action && snapshot.explanation?.allowed && !busy && !required && !state.error ? '' : 'disabled'}>${busy ? 'Working…' : destination ? `Confirm · ${esc(destination)}` : action ? esc(actionKindLabel(action.kind)) : moveMode ? 'Choose destination' : 'Select action'}</button></div>${required ? `<button id="begin-required-handoff" class="primary wide">Hand off to ${esc(owner ?? 'next player')}</button>` : `<button id="end-phase" class="wide" ${advance && !busy ? '' : 'disabled'}>End phase / segment</button>`}</footer>`;
 };

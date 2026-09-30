@@ -30,14 +30,42 @@ export interface TurnSequenceState {
   readonly actingPlayerId: PlayerId;
 }
 
-export interface TerrainMovementCost {
-  readonly terrainDefinitionId: DefinitionId;
-  readonly costTicks: number;
+/**
+ * One Terrain Effects Chart cell (6.2). `MP` is exact quarter-MP ticks, `ALL` requires the
+ * unit's entire MA, `PROHIBITED` forbids entry (6.2c), and `OTHER_TERRAIN` defers to the
+ * other terrain in the Hex (TEC "ot").
+ */
+export type MovementCost =
+  | { readonly kind: 'MP'; readonly ticks: number }
+  | { readonly kind: 'ALL' }
+  | { readonly kind: 'PROHIBITED' }
+  | { readonly kind: 'OTHER_TERRAIN' };
+
+/** TEC costs per mobility type (3.1a). */
+export interface MobilityMovementCosts {
+  readonly leg: MovementCost;
+  readonly truck: MovementCost;
+  readonly tracked: MovementCost;
 }
 
+export type MobilityType = keyof MobilityMovementCosts;
+
+/** Hex cost for a terrain Definition or a printed Hex feature (for example a settlement). */
+export interface TerrainMovementCost {
+  readonly terrainDefinitionId: DefinitionId;
+  readonly costs: MobilityMovementCosts;
+}
+
+/** Additive hexside cost (6.2b); `PROHIBITED` and `ALL` apply as for Hex terrain. */
 export interface HexsideMovementCost {
   readonly featureDefinitionId: DefinitionId;
-  readonly costTicks: number;
+  readonly costs: MobilityMovementCosts;
+}
+
+/** Road-like hexside feature; crossing it pays this cost and ignores other terrain (6.2a). */
+export interface RoadMovementCost {
+  readonly featureDefinitionId: DefinitionId;
+  readonly costs: MobilityMovementCosts;
 }
 
 export type CombatResultCode =
@@ -71,6 +99,7 @@ export interface RuleConfiguration {
   readonly rulesVersion: string;
   readonly terrainMovementCosts: readonly TerrainMovementCost[];
   readonly hexsideMovementCosts: readonly HexsideMovementCost[];
+  readonly roadMovementCosts: readonly RoadMovementCost[];
   readonly defaultTerrainCostTicks: number;
   readonly minimumMoveTicks: number;
   readonly stackingLimitReTicks: number;
