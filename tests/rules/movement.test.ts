@@ -9,6 +9,7 @@ import {
   ruleActionBase,
   ruleEngine,
   setRuleSequenceFixture,
+  uniformCosts,
   type GameAction,
 } from '../../src/index.js';
 
@@ -57,7 +58,7 @@ describe('R5 movement query and execution', () => {
     const state = setRuleSequenceFixture({
       ...source,
       configuration: { ...source.configuration, defaultTerrainCostTicks: 100,
-        terrainMovementCosts: [{ terrainDefinitionId: source.configuration.terrainMovementCosts[0]!.terrainDefinitionId, costTicks: 100 }] },
+        terrainMovementCosts: [{ terrainDefinitionId: source.configuration.terrainMovementCosts[0]!.terrainDefinitionId, costs: uniformCosts(100) }] },
     }, 'MOVEMENT', 'MOVEMENT', actor);
     const piece = state.pieceState.pieces.find(({ id }) => id === 'piece:multi-step')!;
     const result = queryMovementPath(state, actor, piece.id, ['2,1', '1,1'] as never);

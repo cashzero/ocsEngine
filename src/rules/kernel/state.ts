@@ -40,12 +40,21 @@ export const validateRuleConfiguration = (
   for (const [field, entries] of [
     ['terrainMovementCosts', configuration.terrainMovementCosts],
     ['hexsideMovementCosts', configuration.hexsideMovementCosts],
+    ['roadMovementCosts', configuration.roadMovementCosts],
   ] as const) {
     const ids = entries.map((entry) => 'terrainDefinitionId' in entry
       ? entry.terrainDefinitionId : entry.featureDefinitionId);
     if (new Set(ids).size !== ids.length) issues.push(issue('DUPLICATE_RULE_CONFIGURATION_ID', [field], `${field} contains duplicate Definition IDs.`));
-    if (entries.some(({ costTicks }) => !Number.isSafeInteger(costTicks))) {
+    const costs = entries.flatMap(({ costs: byMobility }) => [byMobility.leg, byMobility.truck, byMobility.tracked]);
+    if (costs.some((cost) => cost.kind === 'MP' && !Number.isSafeInteger(cost.ticks))) {
       issues.push(issue('INVALID_RULE_CONFIGURATION_QUANTITY', [field], `${field} costs must be exact integer ticks.`));
+    }
+    // "ot" only makes sense for a Hex; roads must be enterable or prohibited, never additive.
+    if (field !== 'terrainMovementCosts' && costs.some(({ kind }) => kind === 'OTHER_TERRAIN')) {
+      issues.push(issue('INVALID_RULE_CONFIGURATION_QUANTITY', [field], `${field} cannot defer to other terrain.`));
+    }
+    if (field === 'roadMovementCosts' && costs.some((cost) => cost.kind === 'MP' && cost.ticks < 0)) {
+      issues.push(issue('INVALID_RULE_CONFIGURATION_QUANTITY', [field], `${field} costs cannot be negative.`));
     }
   }
   for (const [field, table] of [

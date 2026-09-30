@@ -8,7 +8,7 @@ import {
   type PlayerId,
   type Result,
 } from '../core/index.js';
-import type { GameAction, GameState, RuleConfiguration, RulePhase, RuleSegment } from '../rules/kernel/index.js';
+import type { GameAction, GameState, MobilityMovementCosts, RuleConfiguration, RulePhase, RuleSegment } from '../rules/kernel/index.js';
 import { parseRuleActionId } from '../rules/kernel/index.js';
 import { createInitialGameState } from '../rules/kernel/index.js';
 import { createFoundationScenarioFixture } from './foundation-fixtures.js';
@@ -19,16 +19,24 @@ const must = <T, E>(result: Result<T, E>): T => {
 };
 const definitionId = (value: string): DefinitionId => must(parseDefinitionId(value));
 
+/** The same exact-tick cost for every mobility type. */
+export const uniformCosts = (ticks: number): MobilityMovementCosts => {
+  const cost = { kind: 'MP', ticks } as const;
+  return { leg: cost, truck: cost, tracked: cost };
+};
+
 export const createRuleConfigurationFixture = (): RuleConfiguration => ({
   schemaVersion: must(schemaVersion(1)),
   id: definitionId('rules:ocs-4.3-ground-mvp'),
   rulesVersion: 'OCS 4.3 ground/logistics MVP',
-  terrainMovementCosts: [{ terrainDefinitionId: definitionId('terrain:plain'), costTicks: 4 }],
+  terrainMovementCosts: [{ terrainDefinitionId: definitionId('terrain:plain'), costs: uniformCosts(4) }],
   hexsideMovementCosts: [
-    { featureDefinitionId: definitionId('edge:river'), costTicks: 4 },
-    { featureDefinitionId: definitionId('edge:bridge'), costTicks: -4 },
-    { featureDefinitionId: definitionId('edge:road'), costTicks: 0 },
-    { featureDefinitionId: definitionId('edge:rail'), costTicks: 0 },
+    { featureDefinitionId: definitionId('edge:river'), costs: uniformCosts(4) },
+    { featureDefinitionId: definitionId('edge:bridge'), costs: uniformCosts(-4) },
+  ],
+  roadMovementCosts: [
+    { featureDefinitionId: definitionId('edge:road'), costs: uniformCosts(4) },
+    { featureDefinitionId: definitionId('edge:rail'), costs: uniformCosts(4) },
   ],
   defaultTerrainCostTicks: 4,
   minimumMoveTicks: 4,
