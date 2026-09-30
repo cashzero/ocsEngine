@@ -64,6 +64,31 @@
    （「This UI currently accepts saves for the loaded scenario only.」），玩家須先手動以相同設定
    與四個 seed 重建同一場景才能讀檔。讀檔成功／失敗訊息只出現在 Session 對話框後方的左欄底部。
 
+## 追加：移動規則與移動 UI（2026-09-30 使用者回饋後追查）
+
+使用者指出「不應該有移動目的地清單」且「reachable hex 顯然是錯的」。追查結果：
+
+8. **Reachable 計算違反 OCS 移動規則。** 以 Large 案例（seeds `91001–91004`）的 Movement
+   階段查詢完整候選：
+   - 6.2c／6.1c：水域只是 400 ticks 的高成本，不是禁止地形；最低移動（minimum move）
+     不檢查禁止地形，因此每個沿岸單位都能移入海洋 Hex（例如 `2,4 → 1,4`、`2,5 → 1,6`）。
+   - 6.2a：沿連續道路移動應只付道路成本並忽略 Hex 地形與 hexside；目前道路 hexside
+     只加 0，仍付目的 Hex 的完整地形成本，河流也照加，道路完全沒有效果。
+   - 6.2：成本應依 Leg／Truck／Tracked 區分；棋子資料已有 `mobilityClassDefinitionId`，
+     但 `stepCost()` 忽略它，所有單位共用一張成本表。
+   - 6.1d：未檢查 A→B 需與 B→A 同樣合法。
+   - 12.5 燃料（Truck／Tracked 移動需付費）未實作，也未記錄為 DEFERRED。
+   `docs/study/02-units-modes-zoc-movement.md` 已把上述列為必要行為並註明 TEC 待審，
+   但 manifest 將 `movement.ground` 標為 IMPLEMENTED；repo 內沒有經審核的 TEC 數值。
+9. **移動 UI 決定（使用者指示）：** 移動不使用目的地清單。選取單位後地圖顯示完整合法範圍，
+   點地圖目的地顯示路徑與成本，再確認。這推翻 `docs/ui/11-desktop-command-deck-design.md`
+   S2 的「合法目的地清單」設計，須同步修改該文件。完整範圍查詢目前約 0.8–1.1 秒
+   （Node，Large），UI 每次 emit 重算，需要快取與加速。
+
+關閉證據：以經使用者核准來源的 TEC 實作 6.1c／6.1d／6.2a–c 與 mobility class，
+規則測試涵蓋禁止地形、最低移動、道路覆寫、hexside 疊加與雙向合法；實際 UI 中以 Large
+案例示範沿岸單位無法入海、道路延伸範圍、Leg 與 Truck 範圍不同，並記錄延遲。
+
 ## 次要問題
 
 - 預設案例一個遊戲回合共 34 個階段／段，其中 19 個沒有任何可用行動（Weather、First Player、
