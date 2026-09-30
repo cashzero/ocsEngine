@@ -17,6 +17,8 @@ export interface UiSelection {
   readonly pieceId: string | null;
   readonly actionKind: GameAction['kind'] | null;
   readonly candidateIndex: number;
+  /** Chosen map destination for MOVE_PIECE; movement has no candidate list, so null means none yet. */
+  readonly destinationHexId: string | null;
 }
 
 export interface UiSnapshot {

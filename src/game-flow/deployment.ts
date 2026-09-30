@@ -22,7 +22,10 @@ import type {
 } from '../domain/piece/index.js';
 import { createSeededRandom, mixUint32, type GeneratedMap } from '../generation/map/index.js';
 import type { GeneratedOob, GeneratedOobUnit, OobSide } from '../generation/oob/index.js';
+import type { MobilityType } from '../rules/index.js';
 import type { GameFlowFailure, GeneratedDeployment } from './model.js';
+import { GENERATED_STACKING_LIMIT_RE_TICKS } from './configuration.js';
+import { GENERATED_TERRAIN_MOVEMENT_COSTS } from './movement-tec.js';
 
 const uint32 = (value: number): boolean => Number.isSafeInteger(value) && value >= 0 && value <= 0xffff_ffff;
 
@@ -56,9 +59,32 @@ const allUnits = (oob: GeneratedOob): readonly GeneratedOobUnit[] => oob.sides.f
 
 const sidePlayer = (side: OobSide, players: Readonly<Record<OobSide, PlayerId>>): PlayerId => players[side];
 
+const deployedFace = (definition: PieceDefinition) =>
+  definition.faces.find(({ id }) => id === 'move') ?? definition.faces[0];
+
+const deployedMobility = (definition: PieceDefinition): MobilityType | null => {
+  const mobility = String(deployedFace(definition)?.mobilityClassDefinitionId ?? '');
+  return mobility === 'mobility:leg' ? 'leg' : mobility === 'mobility:truck' ? 'truck'
+    : mobility === 'mobility:tracked' ? 'tracked' : null;
+};
+
+const terrainCostById = new Map(GENERATED_TERRAIN_MOVEMENT_COSTS
+  .map(({ terrainDefinitionId, costs }) => [String(terrainDefinitionId), costs]));
+
+/** False when the generated TEC prohibits the mobility type from any terrain in the Hex. */
+const canDeployOn = (hex: HexDefinition, mobility: MobilityType | null): boolean => mobility === null
+  || ![...hex.terrainDefinitionIds, ...hex.features.map(({ definitionId }) => definitionId)]
+    .some((id) => terrainCostById.get(String(id))?.[mobility].kind === 'PROHIBITED');
+
 const fullStrength = (definition: PieceDefinition): number | null => {
   const steps = definition.faces[0]?.steps ?? [];
   return steps.length === 0 ? null : Math.max(...steps.map((profile) => profile.remainingSteps));
+};
+
+const deployedReTicks = (definition: PieceDefinition): number => {
+  const strength = fullStrength(definition);
+  return Number(deployedFace(definition)?.steps.find(({ remainingSteps }) => remainingSteps === strength)
+    ?.regimentalEquivalentTicks ?? 0);
 };
 
 const reTicks = (piece: PieceState, definition: PieceDefinition): number => {
@@ -99,6 +125,7 @@ export const deployGeneratedForces = (
   if (!initialRevision.ok) throw new Error('Revision zero must be valid.');
   const definitionById = new Map(oob.pieceDefinitionCatalog.definitions.map((definition) => [definition.id, definition]));
   const land = map.mapDefinition.hexes.filter((hex) => !terrainIsWater(hex));
+  const hexById = new Map(map.mapDefinition.hexes.map((hex) => [hex.id, hex]));
   const firstAnchor = map.strategicRegions.firstEntryHexIds[0];
   const secondAnchor = map.strategicRegions.secondEntryHexIds[0];
   if (!firstAnchor || !secondAnchor || land.length === 0) {
@@ -132,9 +159,28 @@ export const deployGeneratedForces = (
     if (fieldUnits.length > slots.length || sideSupply[side].length === 0) {
       return { ok: false, error: [deploymentFailure(`Map cannot deploy every ${side} unit within its operational zone.`)] };
     }
+    // Each field unit takes the nearest remaining slot on a Hex its deployed face may enter (6.2c).
+    // Stacking (4.8) is also respected here so a displaced unit cannot overstack a later Hex.
+    const remainingSlots = [...slots];
+    const usedReTicks = new Map<HexId, number>();
+    const fieldPlacements: { unit: (typeof fieldUnits)[number]; hexId: HexId }[] = [];
+    for (const unit of fieldUnits) {
+      const definition = definitionById.get(unit.definitionId);
+      const offMap = unit.id === reinforcement?.id;
+      const unitReTicks = definition && !offMap ? deployedReTicks(definition) : 0;
+      const slotIndex = remainingSlots.findIndex((hexId) => (definition === undefined
+        || canDeployOn(hexById.get(hexId)!, deployedMobility(definition)))
+        && (usedReTicks.get(hexId) ?? 0) + unitReTicks <= GENERATED_STACKING_LIMIT_RE_TICKS);
+      if (slotIndex < 0) {
+        return { ok: false, error: [deploymentFailure(`Map cannot deploy every ${side} unit on terrain it can enter within stacking limits.`)] };
+      }
+      const hexId = remainingSlots.splice(slotIndex, 1)[0]!;
+      usedReTicks.set(hexId, (usedReTicks.get(hexId) ?? 0) + unitReTicks);
+      fieldPlacements.push({ unit, hexId });
+    }
     const placements = [
       ...supplyUnits.map((unit, index) => ({ unit, hexId: sideSupply[side][index % sideSupply[side].length]! })),
-      ...fieldUnits.map((unit, index) => ({ unit, hexId: slots[index]! })),
+      ...fieldPlacements,
     ];
     for (const { unit, hexId } of placements) {
       const definition = definitionById.get(unit.definitionId);
@@ -152,7 +198,7 @@ export const deployGeneratedForces = (
         location: awaitingReinforcement
           ? { kind: 'OFF_MAP_BOX', boxId: GENERATED_REINFORCEMENT_BOXES[side] }
           : { kind: 'ON_MAP', hexId },
-        currentFaceId: definition.faces.find(({id}) => id === 'move')?.id ?? definition.faces[0]?.id ?? null,
+        currentFaceId: deployedFace(definition)?.id ?? null,
         remainingSteps: fullStrength(definition),
         mode: definition.family === 'GROUND' ? 'MOVE' : null,
         statuses: [],

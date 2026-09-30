@@ -46,7 +46,13 @@ html, body { min-width: 1680px; height: 100%; overflow: hidden; }
 .map-legend { display: flex; left: 16px; right: auto; bottom: 16px; max-width: calc(100% - 300px); }
 .terrain-key { display: inline-block; }
 .hex-cell.is-reachable polygon { stroke: #a5e4c6; stroke-width: 3; }
-.movement-path { fill: none; stroke: #ffdc80; stroke-width: 4; stroke-dasharray: 8 5; vector-effect: non-scaling-stroke; pointer-events: none; }
+/* Move mode: out-of-range hexes recede so the legal range reads as one area. */
+.hex-map-layer.is-moving .hex-cell:not(.is-reachable) polygon { filter: brightness(.55) saturate(.7); }
+.hex-map-layer.is-moving .hex-cell.is-reachable { cursor: pointer; }
+.hex-cell.is-destination polygon { stroke: #ffdc80; stroke-width: 5; }
+/* Solid and outlined so the planned path never reads as a (dashed) road. */
+.movement-path { fill: none; stroke: #fff1c2; stroke-width: 5; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; pointer-events: none; filter: drop-shadow(0 0 1.5px #111) drop-shadow(0 0 1.5px #111); }
+.movement-path-end { fill: #fff1c2; stroke: #111; stroke-width: 2; pointer-events: none; }
 .utility-dialog { width: 640px; max-height: calc(100vh - 48px); padding: 24px; background: var(--panel); border: 1px solid var(--line-bright); border-radius: 8px; }
 .utility-dialog > header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
 .utility-dialog .utility-content { border: 0; padding: 0; }
@@ -89,3 +95,5 @@ select:focus-visible, input:focus-visible { outline: 3px solid #ffe09a; outline-
 input[aria-invalid=true] { border-color: var(--danger); }
 .decision-dialog { display: flex; flex-direction: column; max-height: calc(100vh - 48px); }
 .decision-options { overflow-y: auto; min-height: 0; }
+/* Mouse selection already shows the hex highlight; keep the focus ring for keyboard users only. */
+.hex-cell:focus:not(:focus-visible), .counter:focus:not(:focus-visible) { outline: none; }

@@ -25,6 +25,7 @@ import {
   decoder,
   literalDecoder,
   nullableDecoder,
+  taggedUnionDecoder,
   objectDecoder,
   refinedDecoder,
   safeIntegerDecoder,
@@ -36,6 +37,7 @@ import type {
   BarrageResultCode,
   CombatResultCode,
   GameState,
+  MovementCost,
   PendingDecision,
   PieceUsageState,
   ResourceReservation,
@@ -96,17 +98,31 @@ const combatResults = [
 ] as const satisfies readonly CombatResultCode[];
 const barrageResults = ['NO_EFFECT', 'DG', 'STEP_LOSS_AND_DG'] as const satisfies readonly BarrageResultCode[];
 
+const movementCostDecoder: Decoder<MovementCost> = taggedUnionDecoder<MovementCost>('kind', {
+  MP: objectDecoder({ kind: literalDecoder('MP'), ticks: safeIntegerDecoder }),
+  ALL: objectDecoder({ kind: literalDecoder('ALL') }),
+  PROHIBITED: objectDecoder({ kind: literalDecoder('PROHIBITED') }),
+  OTHER_TERRAIN: objectDecoder({ kind: literalDecoder('OTHER_TERRAIN') }),
+});
+const mobilityCostsDecoder = objectDecoder({
+  leg: movementCostDecoder, truck: movementCostDecoder, tracked: movementCostDecoder,
+});
+
 const configurationDecoder: Decoder<RuleConfiguration> = objectDecoder({
   schemaVersion: versionDecoder,
   id: definitionIdDecoder,
   rulesVersion: stringDecoder,
   terrainMovementCosts: arrayDecoder(objectDecoder({
     terrainDefinitionId: definitionIdDecoder,
-    costTicks: safeIntegerDecoder,
+    costs: mobilityCostsDecoder,
   })),
   hexsideMovementCosts: arrayDecoder(objectDecoder({
     featureDefinitionId: definitionIdDecoder,
-    costTicks: safeIntegerDecoder,
+    costs: mobilityCostsDecoder,
+  })),
+  roadMovementCosts: arrayDecoder(objectDecoder({
+    featureDefinitionId: definitionIdDecoder,
+    costs: mobilityCostsDecoder,
   })),
   defaultTerrainCostTicks: safeIntegerDecoder,
   minimumMoveTicks: safeIntegerDecoder,
@@ -267,6 +283,8 @@ const canonicalStateValue = (state: GameState): GameState => {
       terrainMovementCosts: stableSort(state.configuration.terrainMovementCosts,
         (left, right) => String(left.terrainDefinitionId).localeCompare(String(right.terrainDefinitionId))),
       hexsideMovementCosts: stableSort(state.configuration.hexsideMovementCosts,
+        (left, right) => String(left.featureDefinitionId).localeCompare(String(right.featureDefinitionId))),
+      roadMovementCosts: stableSort(state.configuration.roadMovementCosts,
         (left, right) => String(left.featureDefinitionId).localeCompare(String(right.featureDefinitionId))),
       combatTable: stableSort(state.configuration.combatTable, (left, right) => left.minimumOdds - right.minimumOdds),
       barrageTable: stableSort(state.configuration.barrageTable, (left, right) => left.minimumStrength - right.minimumStrength),
