@@ -42,6 +42,7 @@ other module assets must not be copied into this repository without permission.
 | 6 | `06-bcsengine-reuse-study.md` | Which `bcsEngine` modules can be reused, adapted, referenced, or rejected? |
 | 7 | `07-beyond-the-rhine-vassal-reference.md` | What reliable data and validation evidence can the reference VASSAL module provide? |
 | 8 | `08-crosswalk-and-implementation-roadmap.md` | Which OCS rule subsystems and dependencies must the generator roadmap eventually cover? |
+| 9 | `09-rules-vs-plan-gap-analysis.md` | Where do the Rule Engine plan, slice specs, manifest, and implementation diverge from OCS 4.3? |
 
 ## Required structure for every study document
 
