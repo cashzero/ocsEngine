@@ -125,10 +125,14 @@ const renderMap = (snapshot: UiSnapshot): string => {
       default: return 'UNIT';
     }
   };
+  const destinations = snapshot.selection.actionKind === 'ADVANCE_SEQUENCE' ? new Set<string>()
+    : new Set(snapshot.candidates.map(actionDestination).filter((hexId) => hexId !== null));
+  const chosenDestination = actionDestination(snapshot.selectedAction);
   const terrain = theater.cells.map((cell) => {
     const selected = snapshot.selection.hexId === cell.id ? ' is-selected' : '';
-    const reachable = snapshot.selection.actionKind !== 'ADVANCE_SEQUENCE' && snapshot.candidates.some(action => actionDestination(action) === cell.id);
-    return `<g class="hex-cell terrain-${cell.terrain.toLowerCase()}${selected}${reachable ? ' is-reachable' : ''}" role="button" tabindex="${cell.id === (snapshot.selection.hexId ?? theater.cells[0]?.id) ? 0 : -1}" data-hex="${escapeHtml(cell.id)}"
+    const reachable = destinations.has(cell.id);
+    const destination = chosenDestination === cell.id ? ' is-destination' : '';
+    return `<g class="hex-cell terrain-${cell.terrain.toLowerCase()}${selected}${reachable ? ' is-reachable' : ''}${destination}" role="button" tabindex="${cell.id === (snapshot.selection.hexId ?? theater.cells[0]?.id) ? 0 : -1}" data-hex="${escapeHtml(cell.id)}"
       aria-label="Hex ${escapeHtml(cell.id)}, ${escapeHtml(cell.terrain.toLowerCase())} terrain">
       <polygon points="${cell.points}"></polygon>
       <text class="hex-coordinate" x="${cell.x}" y="${cell.y + 39}" text-anchor="middle">${escapeHtml(cell.id)}</text>
@@ -149,6 +153,8 @@ const renderMap = (snapshot: UiSnapshot): string => {
   const selectedPath = snapshot.selectedAction?.kind === 'MOVE_PIECE'
     ? snapshot.selectedAction.path.map(id => theater.cells.find(cell => cell.id === id)).filter(cell => cell !== undefined).map(cell => `${cell.x},${cell.y}`).join(' ')
     : '';
+  const lastPoint = selectedPath.split(' ').at(-1)?.split(',');
+  const pathEnd = selectedPath && lastPoint ? `<circle class="movement-path-end" cx="${lastPoint[0]}" cy="${lastPoint[1]}" r="7"></circle>` : '';
   const stackBadges: string[] = [];
   const counters = theater.cells.map((cell) => {
     const stack = stacks.get(cell.id);
@@ -178,7 +184,7 @@ const renderMap = (snapshot: UiSnapshot): string => {
   }).join('');
   // SVG uses document paint order, not CSS z-index. Keep ALL hex artwork below
   // counters, and the selected counter above every other stack's counters.
-  return `${terrainDefsHtml()}<g class="hex-map-layer"><g class="terrain-layer">${terrain}</g><g class="river-layer">${rivers}</g><g class="road-layer">${roads}</g><g class="feature-layer">${features}</g><polyline class="movement-path" points="${selectedPath}" /></g><g class="counter-layer"><g class="unselected-counter-layer">${counters}</g><g class="selected-counter-layer">${selectedCounters.join('')}</g><g class="stack-badge-layer">${stackBadges.join('')}</g></g>`;
+  return `${terrainDefsHtml()}<g class="hex-map-layer${snapshot.selection.actionKind === 'MOVE_PIECE' && snapshot.selection.pieceId !== null ? ' is-moving' : ''}"><g class="terrain-layer">${terrain}</g><g class="river-layer">${rivers}</g><g class="road-layer">${roads}</g><g class="feature-layer">${features}</g><polyline class="movement-path" points="${selectedPath}" />${pathEnd}</g><g class="counter-layer"><g class="unselected-counter-layer">${counters}</g><g class="selected-counter-layer">${selectedCounters.join('')}</g><g class="stack-badge-layer">${stackBadges.join('')}</g></g>`;
 };
 
 
@@ -471,6 +477,32 @@ const mountCreatedGame = async (created: CreatedNewGame): Promise<void> => {
   unsubscribeController = controller.subscribe(render);
 };
 
+const moving = (snapshot: UiSnapshot): boolean =>
+  snapshot.selection.actionKind === 'MOVE_PIECE' && snapshot.selection.pieceId !== null;
+
+const isDestination = (snapshot: UiSnapshot, hexId: string | null): boolean =>
+  hexId !== null && snapshot.candidates.some((action) => actionDestination(action) === hexId);
+
+const chooseDestination = (snapshot: UiSnapshot, hexId: string | null): void => {
+  if (isDestination(snapshot, hexId)) { deck.hint = ''; controller.selectDestination(hexId); return; }
+  const origin = (snapshot.view.projection?.stacks ?? []).find((stack) => stack.pieces.some(({ id }) => id === snapshot.selection.pieceId));
+  const atOrigin = origin?.location.kind === 'ON_MAP' && origin.location.hexId === hexId;
+  deck.hint = atOrigin ? '' : `Hex ${hexId} is not a legal destination for this unit. Choose a highlighted hex, or Clear selection to pick another unit.`;
+  controller.selectDestination(null);
+};
+
+/** Selecting a friendly unit enters Move directly when movement is legal and no other action was chosen. */
+const selectUnit = (snapshot: UiSnapshot, hexId: string | null, pieceId: string | null): void => {
+  deck.hint = '';
+  if (hexId) controller.selectHex(hexId);
+  const piece = (snapshot.view.projection?.stacks ?? []).flatMap((stack) => stack.pieces).find(({ id }) => id === pieceId);
+  const kind = snapshot.selection.actionKind;
+  const moveAvailable = snapshot.families.some((family) => family.kind === 'MOVE_PIECE' && family.enabled);
+  if (piece && !piece.redacted && piece.ownerId === snapshot.view.playerId && moveAvailable
+    && (kind === null || kind === 'ADVANCE_SEQUENCE')) controller.selectActionKind('MOVE_PIECE');
+  controller.selectPiece(pieceId);
+};
+
 function bindEvents(snapshot: UiSnapshot): void {
   const $ = <T extends Element>(selector: string) => root.querySelector<T>(selector);
   $('#open-new-game')?.addEventListener('click', () => openNewGame(snapshot));
@@ -491,12 +523,13 @@ function bindEvents(snapshot: UiSnapshot): void {
   $('#open-rule-details')?.addEventListener('click', () => { utilityOpen = 'rules'; rulePage = 0; render(snapshot); });
   $('#previous-rule')?.addEventListener('click', () => { rulePage--; render(snapshot); });
   $('#next-rule')?.addEventListener('click', () => { rulePage++; render(snapshot); });
-  $('#clear-action')?.addEventListener('click', () => void runUi(() => { deck.list = 'units'; controller.selectPiece(null); controller.selectActionKind('ADVANCE_SEQUENCE'); }));
+  $('#clear-action')?.addEventListener('click', () => void runUi(() => { deck.list = 'units'; deck.hint = ''; controller.selectPiece(null); controller.selectActionKind('ADVANCE_SEQUENCE'); }));
   $('#load-more-candidates')?.addEventListener('click', () => void runUi(controller.loadMoreCandidates));
   $('#end-phase')?.addEventListener('click', () => void runUi(async () => { controller.selectActionKind('ADVANCE_SEQUENCE'); await controller.executeSelected(); }));
   $('#deck-action')?.addEventListener('change', event => {
     const kind = (event.target as HTMLSelectElement).value;
-    if (kind) void runUi(() => { deck.list = 'candidates'; controller.selectActionKind(kind as NonNullable<UiSnapshot['selection']['actionKind']>); });
+    // Movement is chosen on the map, so it keeps the current list instead of opening Choices.
+    if (kind) void runUi(() => { if (kind !== 'MOVE_PIECE') deck.list = 'candidates'; controller.selectActionKind(kind as NonNullable<UiSnapshot['selection']['actionKind']>); });
   });
   $('#deck-search')?.addEventListener('input', event => { deck.search = (event.target as HTMLInputElement).value; render(snapshot); });
   root.querySelectorAll<HTMLButtonElement>('[data-settings]').forEach(button => button.addEventListener('click', () => {
@@ -512,19 +545,23 @@ function bindEvents(snapshot: UiSnapshot): void {
   root.querySelectorAll<HTMLElement>('.hex-cell[data-hex]').forEach((element) => element.addEventListener('click', (event) => {
     event.stopPropagation();
     if (mapDragged) { mapDragged = false; return; }
-    const candidate = snapshot.candidates.findIndex(action => actionDestination(action) === element.dataset.hex);
+    const hexId = element.dataset.hex ?? null;
+    if (moving(snapshot)) { chooseDestination(snapshot, hexId); return; }
+    const candidate = snapshot.candidates.findIndex(action => actionDestination(action) === hexId);
     if (deck.list === 'candidates' && candidate >= 0) controller.selectCandidate(candidate);
-    else { deck.list = 'stack'; controller.selectHex(element.dataset.hex ?? null); }
+    else { deck.list = 'stack'; controller.selectHex(hexId); }
   }));
   root.querySelectorAll<HTMLElement>('[data-piece]').forEach((element) => element.addEventListener('click', (event) => {
     event.stopPropagation();
-    void runUi(() => { if (element.dataset.hex) controller.selectHex(element.dataset.hex); controller.selectPiece(element.dataset.piece ?? null); });
+    // On the map, a counter standing on a legal destination is part of that destination.
+    if (element.closest('#hex-map') && moving(snapshot) && isDestination(snapshot, element.dataset.hex ?? null)) {
+      chooseDestination(snapshot, element.dataset.hex ?? null);
+      return;
+    }
+    void runUi(() => selectUnit(snapshot, element.dataset.hex ?? null, element.dataset.piece ?? null));
   }));
   activateKeyboard('.hex-cell[data-hex]', (element) => element.dispatchEvent(new MouseEvent('click', { bubbles: true })));
-  activateKeyboard('.counter[data-piece]', (element) => {
-    if (element.dataset.hex) controller.selectHex(element.dataset.hex);
-    controller.selectPiece(element.dataset.piece ?? null);
-  });
+  activateKeyboard('.counter[data-piece]', (element) => selectUnit(snapshot, element.dataset.hex ?? null, element.dataset.piece ?? null));
   root.querySelectorAll<HTMLButtonElement>('[data-action-kind]').forEach((button) => button.addEventListener('click', () =>
     controller.selectActionKind(button.dataset.actionKind as NonNullable<UiSnapshot['selection']['actionKind']>)));
   root.querySelectorAll<HTMLButtonElement>('[data-candidate]').forEach((button) => button.addEventListener('click', () =>

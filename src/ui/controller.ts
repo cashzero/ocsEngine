@@ -24,6 +24,7 @@ export interface UiController {
   readonly selectPiece: (pieceId: string | null) => void;
   readonly selectActionKind: (kind: GameAction['kind']) => void;
   readonly selectCandidate: (index: number) => void;
+  readonly selectDestination: (hexId: string | null) => void;
   readonly loadMoreCandidates: () => void;
   readonly executeSelected: () => Promise<void>;
   readonly respondToDecision: (choiceId: string) => Promise<void>;
@@ -40,8 +41,10 @@ export interface UiController {
 }
 
 const initialSelection = (): UiSelection => ({
-  hexId: null, pieceId: null, actionKind: null, candidateIndex: 0,
+  hexId: null, pieceId: null, actionKind: null, candidateIndex: 0, destinationHexId: null,
 });
+
+const MOVE_KIND = 'MOVE_PIECE';
 
 class DefaultUiController implements UiController {
   readonly #engine: GameplayEngine;
@@ -56,6 +59,10 @@ class DefaultUiController implements UiController {
   #requestSequence = 0;
   #candidateBudget = 24;
   #handoffToken: HandoffToken | null = null;
+  // Rule queries depend only on these inputs, so repeated emits (hover, list, destination
+  // clicks) reuse them instead of recomputing legality for every render.
+  #queryCache = new Map<string, unknown>();
+  #queryCacheRevision = '';
 
   constructor(options: UiControllerOptions) {
     this.#engine = options.engine;
@@ -75,27 +82,41 @@ class DefaultUiController implements UiController {
 
   #activeSeat(): SeatId { return this.#session.getMetadata().activeSeatId; }
 
+  #cached<T>(key: string, compute: () => T): T {
+    const metadata = this.#session.getMetadata();
+    const scope = `${this.#session.getRevision()}|${metadata.lifecycle}|${metadata.activeSeatId}|${this.#handoffToken ?? ''}`;
+    if (scope !== this.#queryCacheRevision) { this.#queryCache.clear(); this.#queryCacheRevision = scope; }
+    if (!this.#queryCache.has(key)) this.#queryCache.set(key, compute());
+    return this.#queryCache.get(key) as T;
+  }
+
   #candidateState() {
     const seatId = this.#activeSeat();
     const view = this.#session.getView(seatId);
-    const families = this.#session.getActionFamilies(seatId);
+    const families = this.#cached('families', () => this.#session.getActionFamilies(seatId));
     const requestedKind = this.#selection.actionKind;
     const kind = requestedKind !== null && families.some((family) => family.kind === requestedKind && family.enabled)
       ? requestedKind
       : families.find(({ enabled }) => enabled)?.kind ?? requestedKind;
-    const needsPieceSelection = kind === 'MOVE_PIECE' && this.#selection.pieceId === null;
+    const isMove = kind === MOVE_KIND;
+    const needsPieceSelection = isMove && this.#selection.pieceId === null;
+    // Movement shows the complete legal range on the map, so it is never truncated.
+    const budget = isMove ? Number.MAX_SAFE_INTEGER : this.#candidateBudget;
     const result = kind === null || needsPieceSelection
       ? { actions: [] as readonly GameAction[], truncated: false }
-      : this.#session.getActionCandidates(seatId, {
+      : this.#cached(`candidates|${kind}|${this.#selection.pieceId}|${budget}`, () => this.#session.getActionCandidates(seatId, {
         kind,
         pieceId: this.#selection.pieceId as Parameters<GameSession['getActionCandidates']>[1]['pieceId'],
-        budget: this.#candidateBudget,
-      });
-    const index = Math.min(this.#selection.candidateIndex, Math.max(0, result.actions.length - 1));
+        budget,
+      }));
+    const index = isMove
+      ? result.actions.findIndex((action) => action.kind === MOVE_KIND && action.path.at(-1) === this.#selection.destinationHexId)
+      : Math.min(this.#selection.candidateIndex, Math.max(0, result.actions.length - 1));
     const selectedAction = result.actions[index] ?? null;
     const explanation = selectedAction === null
       ? null
-      : this.#session.validateDraft(this.#session.createDraft(seatId, selectedAction)).explanation;
+      : this.#cached(`explain|${selectedAction.actionId}|${index}`, () =>
+        this.#session.validateDraft(this.#session.createDraft(seatId, selectedAction)).explanation);
     return { view, families, kind, candidates: result.actions, truncated: result.truncated, index, selectedAction, explanation };
   }
 
@@ -135,24 +156,29 @@ class DefaultUiController implements UiController {
   };
 
   selectHex = (hexId: string | null): void => {
-    this.#selection = { ...this.#selection, hexId, pieceId: null, candidateIndex: 0 };
+    this.#selection = { ...this.#selection, hexId, pieceId: null, candidateIndex: 0, destinationHexId: null };
     this.#emit();
   };
 
   selectPiece = (pieceId: string | null): void => {
     this.#candidateBudget = 24;
-    this.#selection = { ...this.#selection, pieceId, candidateIndex: 0 };
+    this.#selection = { ...this.#selection, pieceId, candidateIndex: 0, destinationHexId: null };
     this.#emit();
   };
 
   selectActionKind = (kind: GameAction['kind']): void => {
     this.#candidateBudget = 24;
-    this.#selection = { ...this.#selection, actionKind: kind, candidateIndex: 0 };
+    this.#selection = { ...this.#selection, actionKind: kind, candidateIndex: 0, destinationHexId: null };
     this.#emit();
   };
 
   selectCandidate = (candidateIndex: number): void => {
     this.#selection = { ...this.#selection, candidateIndex: Math.max(0, candidateIndex) };
+    this.#emit();
+  };
+
+  selectDestination = (hexId: string | null): void => {
+    this.#selection = { ...this.#selection, destinationHexId: hexId };
     this.#emit();
   };
 
@@ -179,7 +205,11 @@ class DefaultUiController implements UiController {
     const result = await this.#session.dispatch({
       requestId: this.#requestId(), seatId: this.#activeSeat(), action,
     });
-    this.#selection = { ...this.#selection, candidateIndex: 0 };
+    const movedTo = result.status === 'ACCEPTED' && action.kind === 'MOVE_PIECE' ? action.path.at(-1) ?? null : null;
+    this.#selection = {
+      ...this.#selection, candidateIndex: 0, destinationHexId: null,
+      hexId: movedTo ?? this.#selection.hexId,
+    };
     if (result.status === 'ACCEPTED' && result.pendingDecision !== null) {
       const owner = this.#bindings.find(({ seatId }) => this.#session.getPendingDecision(seatId) !== null);
       return `${action.kind} accepted at revision ${result.revision}. Pending decision for ${owner?.label ?? 'another seat'}; hand off control.`;
@@ -236,6 +266,8 @@ class DefaultUiController implements UiController {
     }
     await this.#session.close();
     this.#session = loaded;
+    this.#queryCache.clear();
+    this.#queryCacheRevision = '';
     this.#selection = initialSelection();
     this.#handoffToken = null;
     this.#bindSession();
