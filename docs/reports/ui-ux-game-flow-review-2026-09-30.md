@@ -121,7 +121,16 @@
 接敵案例到第 4 回合，含 18 次地圖移動、戰鬥、砲擊、19 次決策與 25 次交接。console 錯誤 0。
 `npm run check` 通過（37 個測試檔、177 項測試、build、smoke）。
 
-此修正只關閉第 4 項與第 8 項中的禁止地形、道路、mobility、6.1d；以下仍為 TODO，gate 維持 `IN PROGRESS`：
+此修正只關閉第 4 項與第 8 項中的禁止地形、道路、mobility、6.1d；以下仍為 TODO，gate 維持 `IN PROGRESS`。
+
+> **2026-10-01 更新**（依 `ocs-rebuild-2026-10-01.md` 與程式核對；皆為「程式已處理，待實機驗證」，非關閉）：
+> Reaction／Exploitation 資格、燃料、泥濘／雪、增援禁止地形（`lifecycle.ts` `reinforcementHexes`）、
+> overrun 8.1b／8.1c 已處理。仍開啟：航空阻止道路註記（空權 DEFERRED）、鍵盤移動實操、
+> 以及次要問題中重建紀錄未提及的四項：New Game RE 超限錯誤未指出欄位、預覽失效時步驟列仍全顯示完成、
+> 預覽地圖不顯示部署位置、單位列按鈕可讀名稱混入 counter SVG 文字。
+> 次要問題中的 Escape、縮放錨點、矩形地圖、Game End 可關閉、圖例、空階段自動通過，重建紀錄稱已修，同樣待實機驗證。
+
+原始清單（2026-09-30）：
 
 - 第 1 項 Reaction／Exploitation 行動資格仍錯；實測 Axis 一般單位在 Reaction 以 14 MP 橫越地圖。
 - 燃料（12.5）、泥濘／雪、航空阻止道路註記未實作（見 `docs/rules/btr-movement-tec.md`）。
