@@ -1,5 +1,7 @@
 # Desktop Command Deck — 版面稿與操作契約
 
+> 2026-10-01 更新：動作下拉選單與候選清單流程已由「以單位為中心」的地圖互動取代（選單位 → 可達範圍／可攻擊敵格 → 點擊預覽 → 確認；攻擊面板與就地決策）。本文件以下描述為先前設計，現行設計與證據見 `docs/reports/ocs-rebuild-2026-10-01.md`。
+
 日期：2026-09-06。狀態：DESIGN DRAFT / PRODUCT VERIFICATION UNVERIFIED。
 
 本文件是重新設計的下一份可審閱交付，不是產品完成報告。依使用者指示，unit counter 視為已完成前置成果，沿用目前共用 renderer、projection 與 LOD；本工作不重開棋子設計。既有 counter 報告仍有歷史未結項，本文件不覆寫其證據或推定其他 gate 通過。

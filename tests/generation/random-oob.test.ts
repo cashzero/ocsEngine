@@ -26,7 +26,8 @@ describe('M7 deterministic random OOB pipeline', () => {
       expect(new Set(names).size).toBe(names.length);
       expect(names.every((name) => !/Independent|combat \d|undefined/.test(name))).toBe(true);
       expect(names.some((name) => name.includes('QM Truck Co'))).toBe(true);
-      expect(names.some((name) => name.includes('Pionier-Btl.'))).toBe(true);
+      // Engineer counters print a brigade (X) echelon, so their names follow it.
+      expect(names.some((name) => name.includes('Pionier-Brigade'))).toBe(true);
     }
   });
 

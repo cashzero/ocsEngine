@@ -2,20 +2,41 @@ import { stableSort, stableKey, type PlayerId } from '../../core/index.js';
 import { pieceLocationKey, type PieceLocation } from '../../domain/map/index.js';
 import type { PieceState } from '../../domain/piece/index.js';
 import type { GameState } from '../kernel/model.js';
-import type { ProjectedPiece, ProjectedStack, RuleProjection } from './model.js';
+import { INTERNAL_STOCKS_STATUS, OUT_OF_TRACE_SINCE_STATUS, RETURN_TURN_STATUS, isCombatUnit } from '../pieces.js';
+import { exertsZoc } from '../zoc/zoc.js';
+import { calculateCombatOdds } from '../combat/strength.js';
+import { previewBarrage } from '../combat/combat.js';
+import { BARRAGE_TABLE_COLUMNS } from '../tables/ocs-4.3.js';
+import type { ProjectedCombat, ProjectedPiece, ProjectedStack, RuleProjection } from './model.js';
 
-const projectPiece = (piece: PieceState, redacted: boolean): ProjectedPiece => ({
-  currentFaceId: redacted ? null : piece.currentFaceId,
-  resourceQuantity: redacted ? null : piece.resourceQuantity,
+/** 4.9a: internal stocks and other private bookkeeping are never shown to the enemy. */
+const PRIVATE_STATUSES: readonly string[] = [INTERNAL_STOCKS_STATUS, OUT_OF_TRACE_SINCE_STATUS, RETURN_TURN_STATUS];
+
+const projectPiece = (piece: PieceState, stepsHidden: boolean): ProjectedPiece => ({
+  currentFaceId: piece.currentFaceId,
+  resourceQuantity: stepsHidden ? null : piece.resourceQuantity,
   id: piece.id,
   ownerId: piece.ownerId,
   definitionId: piece.definitionId,
   location: { ...piece.location },
   mode: piece.mode,
-  remainingSteps: redacted ? null : piece.remainingSteps,
-  statuses: redacted ? [] : piece.statuses.map(({ statusDefinitionId }) => statusDefinitionId),
-  redacted,
+  remainingSteps: stepsHidden ? null : piece.remainingSteps,
+  statuses: piece.statuses.map(({ statusDefinitionId }) => statusDefinitionId)
+    .filter((id) => !stepsHidden || !PRIVATE_STATUSES.includes(id)),
+  statusValues: stepsHidden ? [] : piece.statuses.flatMap(({ statusDefinitionId, value }) =>
+    value.kind === 'TEXT' || value.kind === 'INTEGER' ? [{ statusDefinitionId, value: value.value }] : []),
+  redacted: stepsHidden,
 });
+
+/**
+ * 4.9a: a player never looks through an enemy stack but always sees its top Combat Mode
+ * Attack-Capable unit (or its top combat unit if none has a ZOC), including Strat, DG or Out of
+ * Supply status, but not steps lost. Hidden units are only counted, never identified.
+ */
+const visibleEnemyTop = (state: GameState, enemy: readonly PieceState[]): PieceState | undefined => {
+  const combat = enemy.filter((piece) => isCombatUnit(state, piece));
+  return combat.find((piece) => exertsZoc(state, piece)) ?? combat[0] ?? enemy[0];
+};
 
 export const projectRuleState = (state: GameState, viewerId: PlayerId): RuleProjection => {
   const groups = new Map<string, { location: PieceLocation; pieces: PieceState[] }>();
@@ -27,17 +48,20 @@ export const projectRuleState = (state: GameState, viewerId: PlayerId): RuleProj
   }
   const stacks: ProjectedStack[] = [];
   for (const group of groups.values()) {
-    const ordered = stableSort(group.pieces, (left, right) => left.stackOrder - right.stackOrder);
+    const ordered = stableSort(group.pieces, (left, right) => right.stackOrder - left.stackOrder);
     const friendly = ordered.filter(({ ownerId }) => ownerId === viewerId);
     const enemy = ordered.filter(({ ownerId }) => ownerId !== viewerId);
-    const visibleEnemy = enemy.length === 0 ? [] : [enemy[0]!];
+    // Enemy off-map holdings and truck loads are not visible at all.
+    if (group.location.kind !== 'ON_MAP' && friendly.length === 0) continue;
+    // Off-map enemy holdings are not visible at all.
+    const top = group.location.kind === 'ON_MAP' ? visibleEnemyTop(state, enemy) : undefined;
     stacks.push({
       location: { ...group.location },
       pieces: [
-        ...friendly.map((piece) => projectPiece(piece, false)),
-        ...visibleEnemy.map((piece) => projectPiece(piece, true)),
+        ...stableSort(friendly, (left, right) => left.stackOrder - right.stackOrder).map((piece) => projectPiece(piece, false)),
+        ...(top ? [projectPiece(top, true)] : []),
       ],
-      hiddenCount: Math.max(0, enemy.length - visibleEnemy.length),
+      hiddenCount: Math.max(0, enemy.length - (top ? 1 : 0)),
     });
   }
   return {
@@ -51,7 +75,37 @@ export const projectRuleState = (state: GameState, viewerId: PlayerId): RuleProj
     }),
     pendingDecision: state.pendingDecision?.ownerId === viewerId ? state.pendingDecision : null,
     victory: state.victory,
+    combat: projectCombat(state),
+    weather: state.weather,
+    // Fuel markers and fueled Formation markers are on the map for both players to see.
+    fuel: state.fuel,
   };
+};
+
+/**
+ * 4.9b/c: during a combat both players know each side's Action Rating difference, total strength
+ * and the table used; during a barrage the barrage strength and column. Units are not identified.
+ */
+const projectCombat = (state: GameState): ProjectedCombat | null => {
+  const transaction = state.activeTransaction;
+  if (!transaction) return null;
+  const defenderDecided = transaction.step !== 'ATTACKER_SUPPLY' && transaction.step !== 'DEFENDER_SUPPLY' && transaction.step !== 'BARRAGE_SUPPLY';
+  const base = {
+    kind: transaction.kind, targetHexId: transaction.targetHexId, attackerOwnerId: transaction.ownerId,
+    attackerCount: transaction.attackerIds.length, defenderCount: transaction.defenderIds.length,
+    result: transaction.result, rollTotal: transaction.roll?.total ?? null,
+    surpriseTotal: transaction.surpriseRoll?.total ?? null, shiftDie: transaction.shiftDie,
+    defenderSupplied: defenderDecided ? transaction.defenderSupplied || transaction.defenderInternalIds.length > 0 : null,
+  };
+  if (transaction.kind === 'BARRAGE') {
+    const preview = previewBarrage(state, transaction.ownerId, transaction.attackerIds, transaction.targetHexId);
+    return { ...base, attackerStrength: preview.strength, defenderStrength: null, odds: BARRAGE_TABLE_COLUMNS[preview.finalColumn]!.label, line: null, drm: null };
+  }
+  const supplied = !defenderDecided ? transaction.defenderIds
+    : transaction.defenderSupplied ? transaction.defenderIds : transaction.defenderInternalIds;
+  const odds = calculateCombatOdds(state, transaction.attackerIds, transaction.defenderIds, transaction.targetHexId,
+    supplied, transaction.leadAttackerId, transaction.leadDefenderId, transaction.defenderTerrainId);
+  return { ...base, attackerStrength: odds.attackerStrength, defenderStrength: odds.defenderStrength, odds: odds.oddsText, line: odds.line, drm: odds.drm };
 };
 
 export const ruleQueryCacheKey = (

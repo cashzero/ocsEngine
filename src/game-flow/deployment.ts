@@ -95,8 +95,10 @@ const reTicks = (piece: PieceState, definition: PieceDefinition): number => {
 };
 
 const selectObjective = (map: GeneratedMap): HexId => {
-  const centerQ = (map.mapDefinition.bounds.minQ + map.mapDefinition.bounds.maxQ) / 2;
+  // Generated maps are odd-r offset rectangles, so the centre is measured in map columns.
+  const centerColumn = (map.options.width - 1) / 2;
   const centerR = (map.mapDefinition.bounds.minR + map.mapDefinition.bounds.maxR) / 2;
+  const column = (q: number, r: number): number => q + Math.floor(r / 2);
   const candidates = map.strategicRegions.settlementHexIds.length > 0
     ? map.strategicRegions.settlementHexIds
     : map.mapDefinition.hexes.filter((hex) => !terrainIsWater(hex)).map(({ id }) => id);
@@ -104,8 +106,8 @@ const selectObjective = (map: GeneratedMap): HexId => {
     const l = parseHexCoordinateId(left);
     const r = parseHexCoordinateId(right);
     if (!l.ok || !r.ok) return String(left).localeCompare(String(right));
-    const ld = Math.abs(l.value.q - centerQ) + Math.abs(l.value.r - centerR);
-    const rd = Math.abs(r.value.q - centerQ) + Math.abs(r.value.r - centerR);
+    const ld = Math.abs(column(l.value.q, l.value.r) - centerColumn) + Math.abs(l.value.r - centerR);
+    const rd = Math.abs(column(r.value.q, r.value.r) - centerColumn) + Math.abs(r.value.r - centerR);
     return ld - rd || String(left).localeCompare(String(right));
   })[0]!;
 };

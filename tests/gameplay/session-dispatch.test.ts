@@ -23,7 +23,7 @@ describe('G1-G2 Gameplay lifecycle and dispatch', () => {
   it('bootstraps READY, exposes metadata, and enforces lifecycle idempotently', async () => {
     const fixture = await createGameplayFixture();
     expect(fixture.session.getMetadata()).toMatchObject({
-      label: 'Synthetic Gameplay fixture', lifecycle: 'READY', rulesVersion: 'OCS 4.3 ground/logistics MVP',
+      label: 'Generated duel Gameplay fixture', lifecycle: 'READY', rulesVersion: 'OCS 4.3 generated ground duel 0.3.0',
     });
     expect(fixture.session.getRevision()).toBe(0);
     expect(fixture.session.start()).toMatchObject({ ok: true, lifecycle: 'ACTIVE' });
@@ -118,8 +118,8 @@ describe('G1-G2 Gameplay lifecycle and dispatch', () => {
     const session = await engine.createSession({
       scenario, configuration, rulesSeed: 6,
       bindings: [
-        { seatId: fixture.seats[0], playerId: fixture.players[0], label: 'One' },
-        { seatId: fixture.seats[1], playerId: fixture.players[1], label: 'Two' },
+        { seatId: fixture.seats[0], playerId: scenario.players[0]!.id, label: 'One' },
+        { seatId: fixture.seats[1], playerId: scenario.players[1]!.id, label: 'Two' },
       ],
       label: 'Detached input',
     });
