@@ -14,6 +14,9 @@ import {
 } from '../index.js';
 import { createUiController, type UiController } from './controller.js';
 import { counterView, counterSvgBody, counterSvg, counterLod } from './counter.js';
+import {
+  coastlineHtml, mapArtDefsHtml, objectiveArtHtml, riversHtml, roadsHtml, settlementArtHtml, strategicBandPoints, terrainGlyphsHtml,
+} from './map-art.js';
 import { commandDeckHtml, type DeckState, type DeckList } from './command-deck.js';
 import type { UiSnapshot } from './model.js';
 import { phaseLabel, pieceLabel, printedHexLabel } from './presenter.js';
@@ -81,27 +84,6 @@ const onMapStacks = (snapshot: UiSnapshot) => new Map(
     .map((stack) => [stack.location.kind === 'ON_MAP' ? stack.location.hexId : '', stack]),
 );
 
-const terrainDefsHtml = (): string => `<defs>
-  <pattern id="terrain-clear" width="18" height="18" patternUnits="userSpaceOnUse"><rect width="18" height="18" fill="#7d805b"/><path d="M2 14l4-3m7-7l3-2" stroke="#97966e" stroke-width="1"/></pattern>
-  <pattern id="terrain-woods" width="20" height="20" patternUnits="userSpaceOnUse"><rect width="20" height="20" fill="#35583d"/><path d="M5 15l3-8 3 8zm8 2l2-6 3 6z" fill="#1f3f2a"/><path d="M8 15v3m7-1v2" stroke="#b9a477" stroke-width="1.2"/></pattern>
-  <pattern id="terrain-rough" width="18" height="18" patternUnits="userSpaceOnUse"><rect width="18" height="18" fill="#806f50"/><path d="M1 16L7 9l3 3 4-7 4 11" fill="none" stroke="#a79569" stroke-width="1.3"/></pattern>
-  <pattern id="terrain-mountain" width="24" height="22" patternUnits="userSpaceOnUse"><rect width="24" height="22" fill="#5b5c57"/><path d="M1 19L8 6l4 7 4-10 7 16" fill="#74756e" stroke="#343633" stroke-width="1.2"/><path d="M6 10l2-4 2 4m4-3l2-4 2 5" fill="#d2d1c7"/></pattern>
-  <pattern id="terrain-marsh" width="22" height="18" patternUnits="userSpaceOnUse"><rect width="22" height="18" fill="#536c55"/><path d="M1 13c4-3 7 3 11 0s7 2 10-1M4 6v6m4-8v7m9-5v6" fill="none" stroke="#8da484" stroke-width="1.1"/></pattern>
-  <pattern id="terrain-water" width="24" height="18" patternUnits="userSpaceOnUse"><rect width="24" height="18" fill="#315e78"/><path d="M0 5c4-3 8 3 12 0s8 3 12 0M0 13c4-3 8 3 12 0s8 3 12 0" fill="none" stroke="#69a8c6" stroke-width="1.2"/></pattern>
-</defs>`;
-
-const riverEdgeLine = (edge: (typeof theater.edges)[number]): string => {
-  const dx = edge.x2 - edge.x1;
-  const dy = edge.y2 - edge.y1;
-  const length = Math.hypot(dx, dy) || 1;
-  const half = layout.hexSize / 2;
-  const middleX = (edge.x1 + edge.x2) / 2;
-  const middleY = (edge.y1 + edge.y2) / 2;
-  const perpendicularX = -dy / length * half;
-  const perpendicularY = dx / length * half;
-  return `<line class="map-edge ${edge.kind.toLowerCase().replace('_', '-')}" x1="${middleX - perpendicularX}" y1="${middleY - perpendicularY}" x2="${middleX + perpendicularX}" y2="${middleY + perpendicularY}"></line>`;
-};
-
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 /** Date and ground condition of the Game Turn (17.0). */
@@ -140,18 +122,16 @@ const renderMap = (snapshot: UiSnapshot): string => {
     return `<g class="${classes}" role="button" tabindex="${cell.id === (snapshot.selection.hexId ?? theater.cells[0]?.id) ? 0 : -1}" data-hex="${escapeHtml(cell.id)}"
       aria-label="Hex ${escapeHtml(printedHexLabel(cell.id))}, ${escapeHtml(cell.terrain.toLowerCase())}">
       <polygon points="${cell.points}"></polygon>
+      ${terrainGlyphsHtml(cell, layout.hexSize)}
       <text class="hex-coordinate" x="${cell.x}" y="${cell.y + 40}" text-anchor="middle">${escapeHtml(printedHexLabel(cell.id))}</text>
     </g>`;
   }).join('');
-  const rivers = theater.edges.filter(({ kind }) => kind.includes('RIVER')).map(riverEdgeLine).join('');
-  const roads = theater.edges.filter(({ kind }) => kind.includes('ROAD')).map((edge) =>
-    `<line class="map-edge ${edge.kind.toLowerCase().replace('_', '-')}" x1="${edge.x1}" y1="${edge.y1}" x2="${edge.x2}" y2="${edge.y2}"></line>`).join('');
+  const rivers = coastlineHtml(theater.cells, layout.hexSize) + riversHtml(theater.edges, layout.hexSize, 'map-edge');
+  const roads = roadsHtml(theater.edges, theater.cells, layout.hexSize, 'map-edge');
   const features = theater.cells.map((cell) => {
-    const settlement = cell.settlement ? `<g class="settlement settlement-${cell.settlement.toLowerCase()}" aria-label="${cell.settlement.toLowerCase()}">
-      <circle cx="${cell.x}" cy="${cell.y}" r="${cell.settlement === 'CITY' ? 9 : cell.settlement === 'TOWN' ? 7 : 5}"></circle>
-      <path d="M${cell.x - 5} ${cell.y + 8}h10M${cell.x} ${cell.y - 6}v12"></path></g>` : '';
-    const strategic = cell.strategic ? `<path class="strategic-zone side-${cell.strategic.toLowerCase()}" d="M${cell.x - 14} ${cell.y - 29}h28" aria-label="${cell.strategic.toLowerCase()} entry or supply zone"></path>` : '';
-    const objective = objectives.has(cell.id) ? `<g class="objective-marker" aria-label="objective"><circle cx="${cell.x}" cy="${cell.y}" r="15"></circle><path d="M${cell.x - 20} ${cell.y}h40M${cell.x} ${cell.y - 20}v40"></path></g>` : '';
+    const settlement = cell.settlement ? `<g class="settlement settlement-${cell.settlement.toLowerCase()}" aria-label="${cell.settlement.toLowerCase()}">${settlementArtHtml(cell, layout.hexSize)}</g>` : '';
+    const strategic = cell.strategic ? `<polygon class="strategic-zone side-${cell.strategic.toLowerCase()}" points="${strategicBandPoints(cell, layout.hexSize)}" aria-label="${cell.strategic.toLowerCase()} entry or supply zone"></polygon>` : '';
+    const objective = objectives.has(cell.id) ? `<g class="objective-marker" aria-label="objective">${objectiveArtHtml(cell, layout.hexSize)}</g>` : '';
     // 14.4c Patrol Zones (both sides can see Active Fighters on top, 4.8e) and 14.8 Trainbusting markers.
     const zone = [ownZone.has(cell.id) ? `<polygon class="air-zone-mark" points="${cell.points}" transform="translate(${cell.x} ${cell.y}) scale(.86) translate(${-cell.x} ${-cell.y})"></polygon>` : '',
       enemyZone.has(cell.id) ? `<polygon class="air-zone-mark enemy" points="${cell.points}" transform="translate(${cell.x} ${cell.y}) scale(.78) translate(${-cell.x} ${-cell.y})"></polygon>` : ''].join('');
@@ -191,7 +171,7 @@ const renderMap = (snapshot: UiSnapshot): string => {
     return html;
   }).join('');
   // SVG paints in document order: every hex below every counter, the selected counter on top.
-  return `${terrainDefsHtml()}<g class="hex-map-layer${moving ? ' is-moving' : ''}"><g class="terrain-layer">${terrain}</g><g class="river-layer">${rivers}</g><g class="road-layer">${roads}</g><g class="feature-layer">${features}</g><polyline class="movement-path" points="${pathPoints}" />${pathEnd}</g><g class="counter-layer"><g class="unselected-counter-layer">${counters}</g><g class="selected-counter-layer">${selectedCounters.join('')}</g><g class="stack-badge-layer">${stackBadges.join('')}</g></g>`;
+  return `${mapArtDefsHtml()}<g class="hex-map-layer${moving ? ' is-moving' : ''}"><g class="terrain-layer">${terrain}</g><g class="river-layer">${rivers}</g><g class="road-layer">${roads}</g><g class="feature-layer">${features}</g><polyline class="movement-path" points="${pathPoints}" />${pathEnd}</g><g class="counter-layer"><g class="unselected-counter-layer">${counters}</g><g class="selected-counter-layer">${selectedCounters.join('')}</g><g class="stack-badge-layer">${stackBadges.join('')}</g></g>`;
 };
 
 const privacyHtml = (snapshot: UiSnapshot): string => snapshot.view.privacyLocked ? `
@@ -212,16 +192,16 @@ const operationPreviewHtml = (prepared: GeneratedScenarioPackage): string => {
     return `<figure class="preview-counter">${counterSvg(counterView(definition, {...piece, statuses: [], statusValues: piece.statuses.flatMap(({ statusDefinitionId, value }) => value.kind === 'INTEGER' ? [{ statusDefinitionId, value: value.value }] : []), redacted: false}))}<figcaption>${escapeHtml(definition.name)}</figcaption></figure>`;
   };
   const objectives = new Set<string>(prepared.deployment.objectiveHexIds);
+  const hexSize = map.layout.hexSize;
   const cells = map.cells.map((cell) => `<g class="generated-cell terrain-${cell.terrain.toLowerCase()}">
-    <polygon points="${cell.points}"></polygon>
-    ${cell.settlement ? `<circle class="settlement-marker" cx="${cell.x}" cy="${cell.y}" r="${cell.settlement === 'CITY' ? 7 : 5}"></circle>` : ''}
-    ${cell.strategic ? `<path class="preview-entry side-${cell.strategic.toLowerCase()}" d="M${cell.x - 10} ${cell.y - 18}h20"></path>` : ''}
-    ${objectives.has(cell.id) ? `<circle class="preview-objective" cx="${cell.x}" cy="${cell.y}" r="11"></circle>` : ''}
-  </g>`).join('');
-  const rivers = map.edges.filter(({ kind }) => kind.includes('RIVER')).map((edge) =>
-    `<line class="generated-edge ${edge.kind.toLowerCase().replace('_', '-')}" x1="${edge.x1}" y1="${edge.y1}" x2="${edge.x2}" y2="${edge.y2}"></line>`).join('');
-  const roads = map.edges.filter(({ kind }) => kind.includes('ROAD')).map((edge) =>
-    `<line class="generated-edge ${edge.kind.toLowerCase().replace('_', '-')}" x1="${edge.x1}" y1="${edge.y1}" x2="${edge.x2}" y2="${edge.y2}"></line>`).join('');
+    <polygon points="${cell.points}"></polygon>${terrainGlyphsHtml(cell, hexSize)}</g>`).join('');
+  const features = map.cells.map((cell) => [
+    cell.strategic ? `<polygon class="preview-entry side-${cell.strategic.toLowerCase()}" points="${strategicBandPoints(cell, hexSize)}"></polygon>` : '',
+    cell.settlement ? `<g class="settlement-marker">${settlementArtHtml(cell, hexSize)}</g>` : '',
+    objectives.has(cell.id) ? `<g class="preview-objective">${objectiveArtHtml(cell, hexSize)}</g>` : '',
+  ].join('')).join('');
+  const rivers = coastlineHtml(map.cells, hexSize) + riversHtml(map.edges, hexSize, 'generated-edge');
+  const roads = roadsHtml(map.edges, map.cells, hexSize, 'generated-edge');
   const forces = oob.sides.map((side) => `<section class="preview-force side-${side.side.toLowerCase()}">
     <header><strong>${escapeHtml(side.side)}</strong><span>${prepared.generatedOob.metrics.pointsBySide[side.side]} points</span></header>
     <ul>${side.formations.map((formation) => `<li><span>${escapeHtml(formation.name)}</span><small>${formation.units.length} units · ${escapeHtml(formation.archetype.replaceAll('_', ' ').toLowerCase())}</small></li>`).join('')}</ul>
@@ -230,7 +210,7 @@ const operationPreviewHtml = (prepared: GeneratedScenarioPackage): string => {
     ${side.independentUnits.some(({ role }) => role === 'AIRCRAFT') ? `<details class="counter-formation"><summary>Air forces: ${side.independentUnits.filter(({ role }) => role === 'AIRCRAFT').length} aircraft, ${side.independentUnits.filter(({ role }) => role === 'AIR_BASE').length} Air Base(s)</summary><div class="counter-grid">${side.independentUnits.filter(({ role }) => role === 'AIRCRAFT' || role === 'AIR_BASE').map(previewCounter).join('')}</div></details>` : ''}
   </section>`).join('');
   return `<div class="operation-preview-content">
-    <div class="operation-map-wrap"><svg class="operation-map" viewBox="0 0 ${map.layout.width} ${map.layout.height}" role="img" aria-label="Generated operation map preview">${terrainDefsHtml()}${cells}${rivers}${roads}</svg></div>
+    <div class="operation-map-wrap"><svg class="operation-map" viewBox="0 0 ${map.layout.width} ${map.layout.height}" role="img" aria-label="Generated operation map preview">${mapArtDefsHtml()}${cells}${rivers}${roads}${features}</svg></div>
     <dl class="operation-metrics"><div><dt>Map</dt><dd>${escapeHtml(prepared.summary.mapSize)}</dd></div><div><dt>Units</dt><dd>${prepared.summary.unitCount}</dd></div><div><dt>Formations</dt><dd>${prepared.summary.formationCount}</dd></div><div><dt>Deployed hexes</dt><dd>${prepared.deployment.metrics.occupiedHexes}</dd></div><div><dt>Objectives</dt><dd>${prepared.summary.objectiveCount}</dd></div><div><dt>Warnings</dt><dd>${prepared.warnings.length}</dd></div></dl>
     <div class="preview-forces">${forces}</div>
     ${prepared.warnings.length > 0 ? `<details class="preview-warnings"><summary>${prepared.warnings.length} generation warning(s)</summary><ul>${prepared.warnings.map((warning) => `<li>${escapeHtml(warning)}</li>`).join('')}</ul></details>` : ''}

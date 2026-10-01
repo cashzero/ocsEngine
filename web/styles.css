@@ -143,32 +143,7 @@ small, .supporting { font-size: 14px; color: var(--muted); }
 .generator-metrics dt { color: var(--muted); font-size: 13px; }
 .generator-metrics dd { margin: 1px 0 0; color: var(--accent); font-size: 17px; font-weight: 800; }
 .generator-preview { min-width: 0; display: flex; flex-direction: column; padding: 14px; overflow: hidden; background: #101814; }
-.generator-map { min-height: 460px; flex: 1; width: 100%; border: 1px solid var(--line); border-radius: 7px; background: #12201a; }
-.generated-cell polygon { stroke: rgba(225, 235, 221, .36); stroke-width: 1; fill: #6d765b; }
-.generated-cell.terrain-woods polygon { fill: #34553b; }
-.generated-cell.terrain-rough polygon { fill: #756b52; }
-.generated-cell.terrain-mountain polygon { fill: #5a5b57; }
-.generated-cell.terrain-marsh polygon { fill: #566c54; }
-.generated-cell.terrain-water polygon { fill: #315d75; }
-.generated-edge { vector-effect: non-scaling-stroke; pointer-events: none; }
-.generated-edge.river { stroke: #61b9e6; stroke-width: 2.5; }
-.generated-edge.major_river { stroke: #83d2fa; stroke-width: 4; }
-.generated-edge.road { stroke: #c8aa77; stroke-width: 2.5; stroke-dasharray: 5 3; }
-.generated-edge.primary_road { stroke: #f3d39b; stroke-width: 4; }
-.settlement-marker { fill: #f1d6a1; stroke: #3b2c17; stroke-width: 2; vector-effect: non-scaling-stroke; }
-.strategic-marker { fill: #15130c; font-family: ui-sans-serif, system-ui, sans-serif; font-size: 13px; font-weight: 900; }
-.strategic-marker.side-second { fill: #e8f4ff; }
 .generator-empty { min-height: 460px; display: grid; place-items: center; border: 1px dashed var(--line-bright); border-radius: 7px; color: var(--muted); font-size: 16px; }
-.generator-legend { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 9px; color: var(--muted); font-size: 13px; }
-.generator-legend span { padding: 3px 7px; border: 1px solid var(--line); border-radius: 3px; }
-.generator-legend .terrain-clear { background: #6d765b; color: #111; }
-.generator-legend .terrain-woods { background: #34553b; color: #fff; }
-.generator-legend .terrain-rough { background: #756b52; color: #fff; }
-.generator-legend .terrain-mountain { background: #5a5b57; color: #fff; }
-.generator-legend .terrain-marsh { background: #566c54; color: #fff; }
-.generator-legend .terrain-water { background: #315d75; color: #fff; }
-.generator-legend .road-key { border-bottom: 3px solid #f3d39b; }
-.generator-legend .river-key { border-bottom: 3px solid #61b9e6; }
 
 .oob-dialog { width: min(1320px, 100%); }
 .oob-preview { overflow-y: auto; }
@@ -289,34 +264,38 @@ small, .supporting { font-size: 14px; color: var(--muted); }
 .map-viewport { width: 100%; height: 100%; min-height: 0; background-color: #18231e; background-image: radial-gradient(circle at 50% 42%, rgba(82, 105, 92, .18), transparent 62%); }
 #hex-map { width: 100%; height: 100%; min-height: 0; }
 
-.hex-cell polygon { stroke: rgba(225, 232, 218, .45); stroke-width: 1.1; transition: filter .12s, stroke .12s; }
-.hex-cell.terrain-clear polygon { fill: url(#terrain-clear); }
-.hex-cell.terrain-woods polygon { fill: url(#terrain-woods); }
-.hex-cell.terrain-rough polygon { fill: url(#terrain-rough); }
-.hex-cell.terrain-mountain polygon { fill: url(#terrain-mountain); }
-.hex-cell.terrain-marsh polygon { fill: url(#terrain-marsh); }
-.hex-cell.terrain-water polygon { fill: url(#terrain-water); }
-.hex-cell:hover polygon, .hex-cell.is-selected polygon { filter: brightness(1.16); stroke: #ffe19a; stroke-width: 3; }
-.hex-cell.terrain-clear:hover polygon, .hex-cell.terrain-clear.is-selected polygon { fill: url(#terrain-clear); }
-.hex-cell.terrain-woods:hover polygon, .hex-cell.terrain-woods.is-selected polygon { fill: url(#terrain-woods); }
-.hex-cell.terrain-rough:hover polygon, .hex-cell.terrain-rough.is-selected polygon { fill: url(#terrain-rough); }
-.hex-cell.terrain-mountain:hover polygon, .hex-cell.terrain-mountain.is-selected polygon { fill: url(#terrain-mountain); }
-.hex-cell.terrain-marsh:hover polygon, .hex-cell.terrain-marsh.is-selected polygon { fill: url(#terrain-marsh); }
-.hex-cell.terrain-water:hover polygon, .hex-cell.terrain-water.is-selected polygon { fill: url(#terrain-water); }
+.map-viewport { background-color: #141c18; background-image: radial-gradient(circle at 50% 42%, rgba(120, 128, 96, .16), transparent 64%); }
+/* Printed-map look: paper-toned terrain, a fine ink grid, and artwork that scales with the camera. */
+#hex-map .terrain-layer { filter: drop-shadow(0 4px 14px rgba(0, 0, 0, .55)); }
+.hex-cell polygon { stroke: rgba(48, 42, 26, .42); stroke-width: 1; vector-effect: non-scaling-stroke; transition: filter .12s, stroke .12s; }
+.hex-cell.terrain-clear polygon, .generated-cell.terrain-clear polygon { fill: url(#terrain-clear); }
+.hex-cell.terrain-woods polygon, .generated-cell.terrain-woods polygon { fill: url(#terrain-woods); }
+.hex-cell.terrain-rough polygon, .generated-cell.terrain-rough polygon { fill: url(#terrain-rough); }
+.hex-cell.terrain-mountain polygon, .generated-cell.terrain-mountain polygon { fill: url(#terrain-mountain); }
+.hex-cell.terrain-marsh polygon, .generated-cell.terrain-marsh polygon { fill: url(#terrain-marsh); }
+.hex-cell.terrain-water polygon, .generated-cell.terrain-water polygon { fill: url(#terrain-water); }
+.hex-cell:hover polygon, .hex-cell.is-selected polygon { filter: brightness(1.12); stroke: #fff2b8; stroke-width: 3; }
+.terrain-art, .terrain-art use { pointer-events: none; }
 .hex-coordinate { opacity: 0; fill: #fff6dc; font-size: 13px; font-weight: 800; paint-order: stroke; stroke: rgba(17, 24, 20, .9); stroke-width: 3px; transition: opacity .12s; }
 .hex-cell:hover .hex-coordinate, .hex-cell.is-selected .hex-coordinate { opacity: 1; }
-.map-edge { pointer-events: none; vector-effect: non-scaling-stroke; }
-.map-edge.river { stroke: #58b6e8; stroke-width: 3; }
-.map-edge.major-river { stroke: #8ed8ff; stroke-width: 5; }
-.map-edge.road { stroke: #d5b47b; stroke-width: 3; stroke-dasharray: 6 4; }
-.map-edge.primary-road { stroke: #f3d49a; stroke-width: 5; }
-.settlement, .strategic-zone, .objective-marker { pointer-events: none; }
-.settlement circle { fill: #f0d39a; stroke: #392b17; stroke-width: 2; vector-effect: non-scaling-stroke; }
-.settlement path { fill: none; stroke: #4b3419; stroke-width: 2; vector-effect: non-scaling-stroke; }
-.strategic-zone { fill: none; stroke: var(--player-one); stroke-width: 6; stroke-linecap: round; vector-effect: non-scaling-stroke; }
-.strategic-zone.side-second { stroke: var(--player-two); }
-.objective-marker circle, .objective-marker path { fill: none; stroke: #fff0a8; stroke-width: 2.5; vector-effect: non-scaling-stroke; }
-.objective-marker circle { stroke-dasharray: 4 3; }
+.map-edge, .generated-edge, .river-bank, .road-casing { pointer-events: none; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.coastline { pointer-events: none; fill: none; stroke: #33617d; stroke-width: 3; stroke-linecap: round; }
+.river-bank.river { stroke: #2f5f7a; stroke-width: 7; }
+.river-bank.major-river { stroke: #2a5571; stroke-width: 11.5; }
+.map-edge.river, .generated-edge.river { stroke: #5aa9d6; stroke-width: 4.2; }
+.map-edge.major-river, .generated-edge.major-river { stroke: #6bb8e2; stroke-width: 8; }
+.road-casing.road { stroke: rgba(54, 40, 22, .8); stroke-width: 6.5; }
+.road-casing.primary-road { stroke: #3a2a16; stroke-width: 10; }
+.map-edge.road, .generated-edge.road { stroke: #ead6a4; stroke-width: 3.4; }
+.map-edge.primary-road, .generated-edge.primary-road { stroke: #f7d880; stroke-width: 6; }
+.settlement, .strategic-zone, .objective-marker, .settlement-marker, .preview-entry, .preview-objective { pointer-events: none; }
+.settlement-footprint { fill: #ddd2b4; stroke: #6b5a3c; stroke-width: 1; opacity: .9; }
+.settlement-block { fill: #8c3a2c; stroke: #3d1a12; stroke-width: .8; }
+.settlement-village .settlement-block, .settlement-marker .settlement-block { stroke-width: .8; }
+.strategic-zone, .preview-entry { fill: none; stroke: var(--player-one); stroke-width: 4.5; stroke-dasharray: 9 5; opacity: .9; }
+.strategic-zone.side-second, .preview-entry.side-second { stroke: var(--player-two); }
+.objective-marker circle, .preview-objective circle { fill: #2a2112; stroke: #ffd766; stroke-width: 1.8; }
+.objective-marker polygon, .preview-objective polygon { fill: #ffd766; }
 .hidden-count circle { fill: #17211d; stroke: #fff0bd; stroke-width: 2; vector-effect: non-scaling-stroke; }
 .hidden-count text { fill: #fff0bd; font-size: 13px; font-weight: 850; }
 .unit-counter { display: block; width: 112px; height: 112px; flex-shrink: 0; overflow: visible; }
@@ -356,14 +335,14 @@ small, .supporting { font-size: 14px; color: var(--muted); }
 .map-controls button { min-width: 42px; padding: 6px 9px; }
 .map-controls output { min-width: 56px; text-align: center; font-size: 14px; }
 .map-legend { left: 16px; right: auto; bottom: 16px; max-width: calc(100% - 300px); gap: 6px; }
-.terrain-key, .line-key { padding: 3px 7px; border-radius: 3px; color: #f5f4e9; background: #626548; font-weight: 750; }
-.terrain-key.woods { background: #35583d; }
-.terrain-key.rough { background: #806f50; }
-.terrain-key.mountain { background: #5b5c57; }
-.terrain-key.marsh { background: #536c55; }
-.terrain-key.water { background: #315e78; }
-.line-key { color: var(--muted); background: transparent; border-bottom: 3px solid #f3d49a; border-radius: 0; }
-.line-key.river { border-color: #58b6e8; }
+.terrain-key, .line-key { padding: 3px 7px; border-radius: 3px; color: #1f1c12; background: #b7b083; font-weight: 750; }
+.terrain-key.woods { background: #4a6e3c; color: #f5f4e9; }
+.terrain-key.rough { background: #cfb381; }
+.terrain-key.mountain { background: #9e9079; color: #f5f4e9; }
+.terrain-key.marsh { background: #98aa8c; }
+.terrain-key.water { background: #6d9fbf; }
+.line-key { color: var(--muted); background: transparent; border-bottom: 3px solid #f5d67f; border-radius: 0; }
+.line-key.river { border-color: #5aa9d6; }
 
 .command-rail .panel { margin: 0 0 12px; border-radius: 7px; box-shadow: none; background: #17211d; }
 .command-rail .panel-heading { padding: 10px 11px; }
@@ -398,20 +377,7 @@ small, .supporting { font-size: 14px; color: var(--muted); }
 .operation-preview-content.is-stale { opacity: .55; }
 .operation-map-wrap { height: 360px; overflow: hidden; border: 1px solid var(--line); border-radius: 8px; background: #17251e; }
 .operation-map { width: 100%; height: 100%; }
-.generated-cell polygon { stroke: rgba(225, 235, 221, .38); stroke-width: 1; vector-effect: non-scaling-stroke; }
-.generated-cell.terrain-clear polygon { fill: url(#terrain-clear); }
-.generated-cell.terrain-woods polygon { fill: url(#terrain-woods); }
-.generated-cell.terrain-rough polygon { fill: url(#terrain-rough); }
-.generated-cell.terrain-mountain polygon { fill: url(#terrain-mountain); }
-.generated-cell.terrain-marsh polygon { fill: url(#terrain-marsh); }
-.generated-cell.terrain-water polygon { fill: url(#terrain-water); }
-.generated-edge.river { stroke: #58b6e8; }
-.generated-edge.major-river { stroke: #8ed8ff; stroke-width: 4; }
-.generated-edge.road { stroke: #d5b47b; stroke-dasharray: 5 3; }
-.generated-edge.primary-road { stroke: #f3d49a; stroke-width: 4; }
-.preview-entry { fill: none; stroke: var(--player-one); stroke-width: 5; stroke-linecap: round; vector-effect: non-scaling-stroke; }
-.preview-entry.side-second { stroke: var(--player-two); }
-.preview-objective { fill: none; stroke: #fff0a8; stroke-width: 3; stroke-dasharray: 4 3; vector-effect: non-scaling-stroke; }
+.generated-cell polygon { stroke: rgba(48, 42, 26, .42); stroke-width: 1; vector-effect: non-scaling-stroke; }
 .operation-metrics { display: grid; grid-template-columns: repeat(6, 1fr); gap: 1px; margin: 0; border: 1px solid var(--line); background: var(--line); }
 .operation-metrics div { min-width: 0; padding: 8px; background: #111a16; }
 .operation-metrics dt { color: var(--muted); font-size: 13px; }
