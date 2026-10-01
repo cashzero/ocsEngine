@@ -9,7 +9,7 @@ import {
 import type { HexsideId, MapDefinition } from '../../domain/map/index.js';
 import { canonicalJson } from '../../serialization/index.js';
 import { generateHydrology } from './hydrology.js';
-import { definitionId, toHexsideCollections } from './internal.js';
+import { definitionId, rectangularAxialBounds, toHexsideCollections } from './internal.js';
 import type {
   GeneratedMap,
   MapGenerationError,
@@ -65,7 +65,7 @@ export const generateRandomMap = (
   const mapDefinition: MapDefinition = {
     id: mapId.value,
     schemaVersion: FOUNDATION_SCHEMA_VERSION,
-    bounds: { minQ: 0, maxQ: options.width - 1, minR: 0, maxR: options.height - 1 },
+    bounds: rectangularAxialBounds(options.width, options.height),
     hexes: [...cells.values()].map((cell) => ({
       id: cell.id,
       terrainDefinitionIds: [TERRAIN_IDS[cell.terrain]!],

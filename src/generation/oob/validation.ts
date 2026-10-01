@@ -83,13 +83,13 @@ export const validateGeneratedOob = (
         issues.push(issue('FORMATION_OWNERSHIP_MISMATCH', 'Formation units must belong to their containing side and formation.', basePath));
       }
       if (formation.units.filter(({ role }) => role === 'FORMATION_COMMAND').length !== 1) {
-        issues.push(issue('FORMATION_COMMAND_INVARIANT', 'Each formation requires exactly one command element.', [...basePath, 'units']));
+        issues.push(issue('FORMATION_COMMAND_INVARIANT', 'Each multi-unit formation requires exactly one command element.', [...basePath, 'units']));
       }
       if (formation.units.filter(({ role }) => role === 'COMBAT').length < 2) {
-        issues.push(issue('FORMATION_COMBAT_INVARIANT', 'Each formation requires at least two combat elements.', [...basePath, 'units']));
+        issues.push(issue('FORMATION_COMBAT_INVARIANT', 'Each multi-unit formation requires at least two combat elements.', [...basePath, 'units']));
       }
       if (!formation.units.some(({ role }) => role === 'ARTILLERY')) {
-        issues.push(issue('FORMATION_SUPPORT_INVARIANT', 'Each formation requires an artillery element.', [...basePath, 'units']));
+        issues.push(issue('FORMATION_SUPPORT_INVARIANT', 'Each multi-unit formation requires an artillery element.', [...basePath, 'units']));
       }
     }
     if (side.independentUnits.some((unit) => unit.side !== side.side || unit.formationId !== null)) {

@@ -44,8 +44,15 @@ export const coordinateFor = (id: HexId): HexCoordinate => {
   return parsed.value;
 };
 
+/**
+ * Map column of a pointy-top Hex in an "odd-r" offset rectangle: every row holds columns
+ * 0..width-1, and odd rows are drawn half a Hex to the right. Generated maps are rectangles
+ * in this sense, like printed wargame maps, rather than axial parallelograms.
+ */
+export const columnOf = (coordinate: HexCoordinate): number => coordinate.q + Math.floor(coordinate.r / 2);
+
 export const inBounds = (coordinate: HexCoordinate, width: number, height: number): boolean =>
-  coordinate.q >= 0 && coordinate.q < width && coordinate.r >= 0 && coordinate.r < height;
+  columnOf(coordinate) >= 0 && columnOf(coordinate) < width && coordinate.r >= 0 && coordinate.r < height;
 
 export const neighborCells = (
   cell: GeneratedCell,
@@ -90,4 +97,10 @@ export const toHexsideCollections = (
   }));
 
 export const rectangularCoordinates = (width: number, height: number): readonly HexCoordinate[] =>
-  Array.from({ length: height }, (_, r) => Array.from({ length: width }, (__, q) => hex(q, r))).flat();
+  Array.from({ length: height }, (_, r) => Array.from({ length: width }, (__, column) =>
+    hex(column - Math.floor(r / 2), r))).flat();
+
+/** Axial bounds enclosing an offset rectangle of `width` columns and `height` rows. */
+export const rectangularAxialBounds = (width: number, height: number) => ({
+  minQ: -Math.floor((height - 1) / 2), maxQ: width - 1, minR: 0, maxR: height - 1,
+});

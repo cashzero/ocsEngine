@@ -3,6 +3,7 @@ import type { HexsideId } from '../../domain/map/index.js';
 import { createSeededRandom } from './rng.js';
 import {
   addHexsideFeature,
+  columnOf,
   definitionId,
   neighborCells,
   type GeneratedCell,
@@ -13,7 +14,7 @@ const RIVER = definitionId('edge:river');
 const MAJOR_RIVER = definitionId('edge:major-river');
 
 const edgeDistance = (cell: GeneratedCell, width: number, height: number): number =>
-  Math.min(cell.coordinate.q, width - 1 - cell.coordinate.q, cell.coordinate.r, height - 1 - cell.coordinate.r);
+  Math.min(columnOf(cell.coordinate), width - 1 - columnOf(cell.coordinate), cell.coordinate.r, height - 1 - cell.coordinate.r);
 
 export const generateHydrology = (
   cells: ReadonlyMap<HexId, GeneratedCell>,
@@ -23,14 +24,14 @@ export const generateHydrology = (
   const rng = createSeededRandom(options.seed ^ 0x6a09e667);
   const starts = [...cells.values()]
     .filter(({ terrain, coordinate }) => terrain !== 'WATER'
-      && coordinate.q > 1 && coordinate.q < options.width - 2
+      && columnOf(coordinate) > 1 && columnOf(coordinate) < options.width - 2
       && coordinate.r > 1 && coordinate.r < options.height - 2)
     .sort((left, right) => right.elevation - left.elevation || String(left.id).localeCompare(String(right.id)));
   const riverCount = Math.max(1, Math.min(5, Math.floor(options.width * options.height / 120) + 1));
   const usedStarts: GeneratedCell[] = [];
   for (const candidate of starts) {
     if (usedStarts.length >= riverCount) break;
-    if (usedStarts.some((other) => Math.abs(other.coordinate.q - candidate.coordinate.q)
+    if (usedStarts.some((other) => Math.abs(columnOf(other.coordinate) - columnOf(candidate.coordinate))
       + Math.abs(other.coordinate.r - candidate.coordinate.r) < 5)) continue;
     usedStarts.push(candidate);
   }

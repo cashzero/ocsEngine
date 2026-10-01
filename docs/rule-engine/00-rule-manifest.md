@@ -1,6 +1,6 @@
 # R0 Rule Manifest
 
-The executable manifest is `src/rules/manifest.ts`. Every Rule Engine capability is classified as `IMPLEMENTED`, `DEFERRED`, `GAME_SPECIFIC`, or `NOT_APPLICABLE`, with owning module, OCS rule citation, public actions/queries, tests, and a scope note.
+The executable manifest is `src/rules/manifest.ts`. Every Rule Engine capability is classified as `IMPLEMENTED`, `PARTIAL` (usable, with every known gap listed after `GAP:` in its note), `DEFERRED`, `GAME_SPECIFIC`, or `NOT_APPLICABLE`, with owning module, OCS rule citation, public actions/queries, tests, and a scope note.
 
 Implemented ground/logistics capabilities cover sequence, mode, stacking, purpose-specific ZOC, ground movement, transaction/reservation, trace/dump supply, regular combat, overrun, artillery barrage, retreat/advance, reinforcement, cleanup, and a generic victory adapter.
 
