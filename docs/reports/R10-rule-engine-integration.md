@@ -1,6 +1,11 @@
 # R10 Rule Engine Integration Report
 
-## Gate result
+Status: **REOPENED (2026-09-30)**. The completion claim below is disproven by
+`docs/reports/rules-ui-audit-2026-09-30.md`: 28 of 30 OCS 4.3 conformance probes
+(`scripts/audit/rules-conformance-probe.mjs`) fail on features the manifest marks
+`IMPLEMENTED`. The original text is preserved as the historical evidence trail. The Rule Engine was rebuilt on 2026-10-01 (`ocs-rebuild-2026-10-01.md`); the probe now reports 35/35 conforming, but R10 stays IN PROGRESS because several features are PARTIAL or DEFERRED in `src/rules/manifest.ts`.
+
+## Gate result (original, disproven)
 
 The OCS 4.3 ground/logistics Rule Engine MVP is complete as a deterministic, headless package. It consumes the Foundation scenario model and exposes action families, bounded candidates, legality/explanations, immutable transitions/events, viewer projection, strict snapshots, and action replay. It has no Gameplay, UI, random-generation, AI, React, or browser dependency.
 

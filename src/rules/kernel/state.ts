@@ -10,13 +10,18 @@ import {
 import { validateMapState } from '../../domain/map/index.js';
 import { validatePieceRuntimeState } from '../../domain/piece/index.js';
 import { validateScenarioDefinition, type ScenarioDefinition } from '../../domain/scenario/index.js';
-import { createInitialSequence } from '../sequence/sequence.js';
+import { isCombatUnit } from '../pieces.js';
+import { createInitialSequence, PHASE_SEGMENTS } from '../sequence/sequence.js';
 import { createRulesRng } from './rng.js';
-import type { GameState, RuleConfiguration } from './model.js';
+import { SEQUENCE_DECISION_KINDS, type GameState, type RuleConfiguration } from './model.js';
+import { settleInitialSequence } from './reducer.js';
 
 const issue = (code: string, path: readonly (string | number)[], message: string): ValidationIssue => ({
   code, path, severity: 'ERROR', message,
 });
+
+const validMultiplier = (value: { numerator: number; denominator: number }): boolean =>
+  Number.isSafeInteger(value.numerator) && Number.isSafeInteger(value.denominator) && value.numerator >= 0 && value.denominator > 0;
 
 export const validateRuleConfiguration = (
   configuration: RuleConfiguration,
@@ -27,29 +32,24 @@ export const validateRuleConfiguration = (
     ['defaultTerrainCostTicks', configuration.defaultTerrainCostTicks, 0],
     ['minimumMoveTicks', configuration.minimumMoveTicks, 0],
     ['stackingLimitReTicks', configuration.stackingLimitReTicks, 1],
-    ['supplyTraceRange', configuration.supplyTraceRange, 0],
-    ['combatSupplyTokenCost', configuration.combatSupplyTokenCost, 0],
+    ['supplyDrawRangeTicks', configuration.supplyDrawRangeTicks, 0],
     ['turnLimit', configuration.turnLimit, 1],
   ] as const) {
     if (!Number.isSafeInteger(value) || value < minimum) {
       issues.push(issue('INVALID_RULE_CONFIGURATION_QUANTITY', [field], `${field} is invalid.`));
     }
   }
-  if (configuration.combatTable.length === 0) issues.push(issue('MISSING_RULE_TABLE', ['combatTable'], 'Combat table is required.'));
-  if (configuration.barrageTable.length === 0) issues.push(issue('MISSING_RULE_TABLE', ['barrageTable'], 'Barrage table is required.'));
   for (const [field, entries] of [
     ['terrainMovementCosts', configuration.terrainMovementCosts],
     ['hexsideMovementCosts', configuration.hexsideMovementCosts],
     ['roadMovementCosts', configuration.roadMovementCosts],
   ] as const) {
-    const ids = entries.map((entry) => 'terrainDefinitionId' in entry
-      ? entry.terrainDefinitionId : entry.featureDefinitionId);
+    const ids = entries.map((entry) => 'terrainDefinitionId' in entry ? entry.terrainDefinitionId : entry.featureDefinitionId);
     if (new Set(ids).size !== ids.length) issues.push(issue('DUPLICATE_RULE_CONFIGURATION_ID', [field], `${field} contains duplicate Definition IDs.`));
     const costs = entries.flatMap(({ costs: byMobility }) => [byMobility.leg, byMobility.truck, byMobility.tracked]);
     if (costs.some((cost) => cost.kind === 'MP' && !Number.isSafeInteger(cost.ticks))) {
       issues.push(issue('INVALID_RULE_CONFIGURATION_QUANTITY', [field], `${field} costs must be exact integer ticks.`));
     }
-    // "ot" only makes sense for a Hex; roads must be enterable or prohibited, never additive.
     if (field !== 'terrainMovementCosts' && costs.some(({ kind }) => kind === 'OTHER_TERRAIN')) {
       issues.push(issue('INVALID_RULE_CONFIGURATION_QUANTITY', [field], `${field} cannot defer to other terrain.`));
     }
@@ -57,15 +57,39 @@ export const validateRuleConfiguration = (
       issues.push(issue('INVALID_RULE_CONFIGURATION_QUANTITY', [field], `${field} costs cannot be negative.`));
     }
   }
-  for (const [field, table] of [
-    ['combatTable', configuration.combatTable],
-    ['barrageTable', configuration.barrageTable],
-  ] as const) {
-    for (const [index, band] of table.entries()) {
-      const results = band.resultsByTwoDiceTotal;
-      if (Array.from({ length: 11 }, (_, offset) => offset + 2).some((total) => results[total] === undefined)) {
-        issues.push(issue('INCOMPLETE_RULE_TABLE_BAND', [field, index], 'Every 2d6 total from 2 through 12 requires a result.'));
+  const weather = configuration.weather;
+  if (weather !== null) {
+    const days = (month: number, day: number) => month >= 1 && month <= 12 && day >= 1 && day <= 31;
+    if (!days(weather.startMonth, weather.startDay) || weather.turnDays.length === 0
+      || weather.turnDays.some((day) => !days(1, day)) || weather.table.length === 0) {
+      issues.push(issue('INVALID_WEATHER_CONFIGURATION', ['weather'], 'Weather needs a valid start date, turn days, and table rows.'));
+    }
+    for (const [index, row] of weather.table.entries()) {
+      const covered = Array.from({ length: 6 }, (_, face) => row.ground.filter(({ minimum, maximum }) => face + 1 >= minimum && face + 1 <= maximum).length);
+      if (!days(row.month, row.firstDay) || !days(row.month, row.lastDay) || row.firstDay > row.lastDay || covered.some((count) => count !== 1)) {
+        issues.push(issue('INVALID_WEATHER_ROW', ['weather', 'table', index], 'Each Weather Table row must give exactly one ground condition for every die face.'));
       }
+    }
+  }
+  const arrivals = configuration.supplyArrivals;
+  if (arrivals !== null) {
+    const width = arrivals.rows[0]?.points.length ?? 0;
+    const covered = Array.from({ length: 11 }, (_, index) => arrivals.rows.filter(({ minimum, maximum }) => index + 2 >= minimum && index + 2 <= maximum).length);
+    if (width === 0 || covered.some((count) => count !== 1) || arrivals.rows.some(({ points }) => points.length !== width || points.some((value) => !Number.isSafeInteger(value) || value < 0))) {
+      issues.push(issue('INVALID_SUPPLY_TABLE', ['supplyArrivals', 'rows'], 'The Supply Table must cover every 2d6 total with one row of non-negative SP.'));
+    }
+    if (arrivals.players.some(({ status }) => !Number.isSafeInteger(status) || status < 1 || status > width)) {
+      issues.push(issue('INVALID_SUPPLY_STATUS', ['supplyArrivals', 'players'], 'Each Supply Status must name a table column.'));
+    }
+  }
+  for (const [field, entries] of [
+    ['terrainCombatEffects', configuration.terrainCombatEffects],
+    ['hexsideCombatEffects', configuration.hexsideCombatEffects],
+  ] as const) {
+    const ids = entries.map((entry) => 'terrainDefinitionId' in entry ? entry.terrainDefinitionId : entry.featureDefinitionId);
+    if (new Set(ids).size !== ids.length) issues.push(issue('DUPLICATE_RULE_CONFIGURATION_ID', [field], `${field} contains duplicate Definition IDs.`));
+    if (entries.some(({ multipliers }) => ![multipliers.armor, multipliers.mech, multipliers.other].every(validMultiplier))) {
+      issues.push(issue('INVALID_RULE_CONFIGURATION_QUANTITY', [field], `${field} multipliers must be integer fractions.`));
     }
   }
   return issues;
@@ -83,29 +107,34 @@ export const createInitialGameState = (
   if (issues.length > 0) return err(issues);
   const initialRevision = revision(0);
   if (!initialRevision.ok) throw new Error('Revision zero must be valid.');
-  return ok({
+  const state: GameState = {
     schemaVersion: FOUNDATION_SCHEMA_VERSION,
     revision: initialRevision.value,
     scenarioId: scenario.id,
     scenario,
     configuration,
-    sequence: createInitialSequence(
-      scenario.players.map(({ id }) => id),
-      scenario.turnStart.firstPlayerId,
-    ),
+    sequence: createInitialSequence(scenario.players.map(({ id }) => id), scenario.turnStart.firstPlayerId),
     mapState: scenario.initialMapState,
     pieceState: scenario.initialPieceState,
     usage: [],
+    ledger: { attackedHexIds: [], barragedHexIds: [] },
     currentMoverId: null,
     rng: createRulesRng(rulesSeed),
     activeTransaction: null,
     pendingDecision: null,
+    weather: { groundCondition: 'DRY', month: null, day: null, roll: null },
+    fuel: { formations: [], hqIds: [] },
+    interrupts: [],
+    formationTraces: [],
     victory: {
       scores: scenario.players.map(({ id }) => ({ playerId: id, points: 0 })),
       winnerId: null,
       reason: null,
     },
-  });
+  };
+  const settled = settleInitialSequence(state);
+  const invariant = validateGameState(settled);
+  return invariant.length > 0 ? err(invariant) : ok(settled);
 };
 
 export const validateGameState = (state: GameState): readonly ValidationIssue[] => {
@@ -118,27 +147,24 @@ export const validateGameState = (state: GameState): readonly ValidationIssue[] 
   issues.push(...validateMapState(state.scenario.mapDefinition, state.mapState).map((entry) => ({ ...entry, path: ['mapState', ...entry.path] })));
   issues.push(...validatePieceRuntimeState(state.scenario.pieceCatalog, state.pieceState).map((entry) => ({ ...entry, path: ['pieceState', ...entry.path] })));
   const playerIds = new Set(state.scenario.players.map(({ id }) => id));
-  if (!playerIds.has(state.sequence.phasingPlayerId) || !playerIds.has(state.sequence.actingPlayerId)) {
+  const { sequence } = state;
+  if (![sequence.phasingPlayerId, sequence.actingPlayerId, sequence.firstPlayerId].every((id) => playerIds.has(id))) {
     issues.push(issue('UNKNOWN_SEQUENCE_PLAYER', ['sequence'], 'Sequence references an undeclared Player.'));
   }
-  const segmented: Readonly<Record<string, readonly string[]>> = {
-    MOVEMENT: ['MOVEMENT', 'BARRAGE'], REACTION: ['MOVEMENT', 'BARRAGE'],
-    COMBAT: ['BARRAGE', 'COMBAT'], EXPLOITATION: ['MOVEMENT', 'BARRAGE', 'COMBAT'],
-  };
-  const allowedSegments = segmented[state.sequence.phase] ?? ['NONE'];
-  if (!allowedSegments.includes(state.sequence.segment)) {
+  const allowedSegments = PHASE_SEGMENTS[sequence.phase] ?? ['NONE'];
+  if (!allowedSegments.includes(sequence.segment)) {
     issues.push(issue('INVALID_SEQUENCE_SEGMENT', ['sequence', 'segment'], 'Segment does not belong to the current Phase.'));
   }
-  if ((state.sequence.phase === 'REACTION') === (state.sequence.actingPlayerId === state.sequence.phasingPlayerId)) {
-    issues.push(issue('INVALID_SEQUENCE_ACTOR', ['sequence', 'actingPlayerId'], 'Reaction must belong to the opponent; other Phases belong to the phasing Player.'));
+  if ((sequence.phase === 'REACTION') === (sequence.actingPlayerId === sequence.phasingPlayerId)) {
+    issues.push(issue('INVALID_SEQUENCE_ACTOR', ['sequence', 'actingPlayerId'], 'Reaction belongs to the non-phasing player; other phases to the phasing player.'));
   }
   const pieceIds = new Set(state.pieceState.pieces.map(({ id }) => id));
   const usageIds = state.usage.map(({ pieceId }) => pieceId);
   if (new Set(usageIds).size !== usageIds.length) issues.push(issue('DUPLICATE_USAGE_PIECE', ['usage'], 'Usage ledger contains duplicate Pieces.'));
   for (const [index, usage] of state.usage.entries()) {
     if (!pieceIds.has(usage.pieceId)) issues.push(issue('UNKNOWN_USAGE_PIECE', ['usage', index, 'pieceId'], 'Usage references an unknown Piece.'));
-    if (!Number.isSafeInteger(usage.movementSpentTicks) || usage.movementSpentTicks < 0) {
-      issues.push(issue('INVALID_USAGE_QUANTITY', ['usage', index, 'movementSpentTicks'], 'Movement spent must be a non-negative integer tick quantity.'));
+    if (!Number.isFinite(usage.movementSpentTicks) || usage.movementSpentTicks < 0) {
+      issues.push(issue('INVALID_USAGE_QUANTITY', ['usage', index, 'movementSpentTicks'], 'Movement spent must be a non-negative quantity.'));
     }
   }
   if (!Number.isSafeInteger(state.rng.state) || state.rng.state < 0 || state.rng.state > 0xffff_ffff
@@ -148,31 +174,45 @@ export const validateGameState = (state: GameState): readonly ValidationIssue[] 
   if (state.currentMoverId !== null && !pieceIds.has(state.currentMoverId)) {
     issues.push(issue('UNKNOWN_CURRENT_MOVER', ['currentMoverId'], 'Current mover references an unknown Piece.'));
   }
-  if (state.pendingDecision !== null && state.activeTransaction?.id !== state.pendingDecision.transactionId) {
-    issues.push(issue('ORPHAN_PENDING_DECISION', ['pendingDecision'], 'Pending decision does not reference the active transaction.'));
-  }
-  if (state.pendingDecision !== null) {
-    if (state.pendingDecision.options.length === 0) issues.push(issue('EMPTY_PENDING_DECISION', ['pendingDecision', 'options'], 'Pending decision requires at least one option.'));
-    const optionIds = state.pendingDecision.options.map(({ id }) => id);
+  const pending = state.pendingDecision;
+  if (pending !== null) {
+    if (pending.transactionId !== null && state.activeTransaction?.id !== pending.transactionId) {
+      issues.push(issue('ORPHAN_PENDING_DECISION', ['pendingDecision'], 'Pending decision does not reference the active transaction.'));
+    }
+    if (pending.transactionId === null && !SEQUENCE_DECISION_KINDS.includes(pending.kind)) {
+      issues.push(issue('ORPHAN_PENDING_DECISION', ['pendingDecision'], 'Only sequence decisions exist outside a transaction.'));
+    }
+    if (pending.options.length === 0) issues.push(issue('EMPTY_PENDING_DECISION', ['pendingDecision', 'options'], 'Pending decision requires at least one option.'));
+    const optionIds = pending.options.map(({ id }) => id);
     if (new Set(optionIds).size !== optionIds.length) issues.push(issue('DUPLICATE_DECISION_OPTION', ['pendingDecision', 'options'], 'Pending decision option IDs must be unique.'));
   }
-  if (state.activeTransaction !== null) {
-    for (const pieceId of [...state.activeTransaction.attackerIds, ...state.activeTransaction.defenderIds]) {
+  const transaction = state.activeTransaction;
+  if (transaction !== null) {
+    for (const pieceId of [...transaction.attackerIds, ...transaction.defenderIds]) {
       if (!pieceIds.has(pieceId)) issues.push(issue('STALE_TRANSACTION_PARTICIPANT', ['activeTransaction'], `Unknown participant ${pieceId}.`));
     }
-    const expectsDecision = state.activeTransaction.step !== 'READY';
-    if (expectsDecision !== (state.pendingDecision !== null)) {
-      issues.push(issue('TRANSACTION_DECISION_MISMATCH', ['activeTransaction', 'step'], 'Transaction step and pending decision disagree.'));
+    if (pending?.transactionId !== transaction.id) {
+      issues.push(issue('TRANSACTION_DECISION_MISMATCH', ['activeTransaction', 'step'], 'An unresolved transaction always waits on its own decision.'));
     }
-    for (const [index, reservation] of state.activeTransaction.reservations.entries()) {
+    for (const [index, reservation] of [...transaction.attackerPayments, ...transaction.defenderPayments].entries()) {
       if (!pieceIds.has(reservation.resourcePieceId) || !Number.isSafeInteger(reservation.quantity) || reservation.quantity <= 0) {
-        issues.push(issue('INVALID_RESOURCE_RESERVATION', ['activeTransaction', 'reservations', index], 'Reservation requires a known resource Piece and positive integer quantity.'));
+        issues.push(issue('INVALID_RESOURCE_RESERVATION', ['activeTransaction', 'payments', index], 'Payments require a known dump and a positive Token quantity.'));
       }
     }
   }
+  // 4.8c: combat units of both sides never share a Hex.
+  const owners = new Map<string, Set<string>>();
+  for (const piece of state.pieceState.pieces) {
+    if (piece.location.kind !== 'ON_MAP' || !isCombatUnit(state, piece)) continue;
+    const set = owners.get(piece.location.hexId) ?? new Set<string>();
+    set.add(piece.ownerId);
+    owners.set(piece.location.hexId, set);
+  }
+  for (const [hexId, set] of owners) {
+    if (set.size > 1) issues.push(issue('OPPOSING_COMBAT_UNITS_SHARE_HEX', ['pieceState', hexId], `Hex ${hexId} holds combat units of both sides.`));
+  }
   const scoreIds = state.victory.scores.map(({ playerId }) => playerId);
-  if (new Set(scoreIds).size !== scoreIds.length || scoreIds.length !== playerIds.size
-    || scoreIds.some((id) => !playerIds.has(id))) {
+  if (new Set(scoreIds).size !== scoreIds.length || scoreIds.length !== playerIds.size || scoreIds.some((id) => !playerIds.has(id))) {
     issues.push(issue('INVALID_VICTORY_SCORE_PLAYERS', ['victory', 'scores'], 'Victory scores must contain each Scenario Player exactly once.'));
   }
   if (state.victory.winnerId !== null && !playerIds.has(state.victory.winnerId)) {

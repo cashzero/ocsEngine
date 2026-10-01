@@ -3,6 +3,8 @@ export * from './configuration.js';
 export * from './deployment.js';
 export * from './model.js';
 export * from './movement-tec.js';
+export * from './combat-tec.js';
 export * from './orchestrator.js';
 export * from './sweep.js';
 export * from './validation.js';
+export * from './weather-supply-tables.js';

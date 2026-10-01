@@ -1,64 +1,213 @@
+import type { ProjectedPiece } from '../rules/index.js';
 import type { UiSnapshot } from './model.js';
 import { counterSvg, counterView } from './counter.js';
-import { actionKindLabel, actionSummary, pieceLabel } from './presenter.js';
+import { actionKindLabel, phaseLabel, pieceDefinition, pieceLabel, printedHexLabel } from './presenter.js';
 
-export type DeckList = 'units' | 'stack' | 'hq' | 'candidates' | 'history';
+export type DeckList = 'units' | 'stack' | 'history';
 export interface DeckState { list: DeckList; search: string; working: boolean; error?: string; hint?: string; }
+
 const esc = (value: unknown): string => String(value).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#039;');
-export const actionDestination = (action: UiSnapshot['selectedAction']): string | null => {
-  if (!action) return null;
-  if (action.kind === 'MOVE_PIECE') return action.path.at(-1) ?? null;
-  if (action.kind === 'PLACE_REINFORCEMENT') return action.hexId;
-  if (action.kind === 'DECLARE_COMBAT' || action.kind === 'DECLARE_BARRAGE') return action.targetHexId;
-  return null;
+const mp = (ticks: unknown): string => typeof ticks === 'number' ? `${Math.round(ticks / 4 * 100) / 100}` : '–';
+const fact = (snapshot: { readonly facts: readonly { readonly key: string; readonly value: unknown }[] } | null | undefined, key: string) =>
+  snapshot?.facts.find((entry) => entry.key === key)?.value;
+
+const counterFor = (snapshot: UiSnapshot, piece: ProjectedPiece): string => {
+  const definition = pieceDefinition(snapshot.scenario, piece);
+  return definition ? counterSvg(counterView(definition, piece)) : '';
 };
+
+const modeName = (mode: string | null): string => mode === null ? 'Supply' : ({
+  COMBAT: 'Combat mode', MOVE: 'Move mode', RESERVE: 'Reserve', STRAT: 'Strat mode', DG: 'Disorganized', EXPLOITATION: 'Exploit',
+} as Record<string, string>)[mode] ?? mode;
+
+const pieceHex = (piece: ProjectedPiece): string => piece.location.kind === 'ON_MAP' ? printedHexLabel(piece.location.hexId) : 'off map';
+
+/** Replace raw Hex IDs ("q,r") in engine text with printed Hex numbers. */
+const withHexLabels = (text: string): string => text.replace(/-?\d+,-?\d+/gu, (hexId) => printedHexLabel(hexId));
+
+const statusValue = (piece: ProjectedPiece, id: string): string | number | undefined =>
+  piece.statusValues.find(({ statusDefinitionId }) => statusDefinitionId === id)?.value;
+
+/** Supply details a player sees on his own unit: internal stocks (12.10), truck size and load (13.2). */
+const supplyDetails = (snapshot: UiSnapshot, piece: ProjectedPiece): string => {
+  const parts: string[] = [];
+  const stocks = statusValue(piece, 'status:internal-stocks');
+  if (stocks === 'LOW') parts.push('Internal stocks Low');
+  if (stocks === 'EXHAUSTED') parts.push('Internal stocks Exhausted');
+  const definition = pieceDefinition(snapshot.scenario, piece);
+  if (definition?.counter?.kind === 'TRANSPORT') {
+    const points = statusValue(piece, 'status:transport-points') ?? definition.counter.transportPoints ?? 0;
+    const load = (snapshot.view.projection?.stacks ?? []).filter(({ location }) => location.kind === 'CONTAINER' && location.containerId === piece.id)
+      .flatMap(({ pieces }) => pieces).reduce((total, cargo) => total + (cargo.resourceQuantity ?? 0), 0);
+    parts.push(piece.currentFaceId === 'extender' ? 'Extender (trace supply source)' : `${points} truck point${points === 1 ? '' : 's'} · load ${load}/${Number(points) * 4}T`);
+  }
+  if (definition?.family === 'RESOURCE') parts.push(`${piece.resourceQuantity ?? 0}T (${(piece.resourceQuantity ?? 0) / 4} SP)`);
+  return parts.join(' · ');
+};
+
+const unitRow = (snapshot: UiSnapshot, piece: ProjectedPiece, extra = ''): string => `<button class="deck-unit ${piece.id === snapshot.selection.pieceId ? 'is-selected' : ''}" data-piece="${esc(piece.id)}"${piece.location.kind === 'ON_MAP' ? ` data-hex="${esc(piece.location.hexId)}"` : ''}>
+    ${counterFor(snapshot, piece)}<span>${esc(pieceLabel(snapshot.scenario, piece))}<small>${esc(pieceHex(piece))} · ${esc(modeName(piece.mode))}${piece.statuses.includes('status:out-of-supply') ? ' · Out of supply' : ''}${supplyDetails(snapshot, piece) ? ` · ${esc(supplyDetails(snapshot, piece))}` : ''}${extra}</small></span></button>`;
+
+const selectedCard = (snapshot: UiSnapshot): string => {
+  const piece = snapshot.selectedPiece;
+  if (!piece) {
+    const hex = snapshot.selection.hexId;
+    return `<div><h2>${hex ? `Hex ${esc(printedHexLabel(hex))}` : 'No unit selected'}</h2><p>Click one of your units on the map. Its legal moves light up, and enemy stacks you can attack get a red ring.</p></div>`;
+  }
+  const own = piece.ownerId === snapshot.view.playerId;
+  const needsFuel = own && snapshot.unitActions.some(({ group }) => group === 'FUEL') && snapshot.reachable.size === 0;
+  const details = own ? supplyDetails(snapshot, piece) : '';
+  return `${counterFor(snapshot, piece)}<div><strong>${esc(pieceLabel(snapshot.scenario, piece))}</strong>
+    <p>${esc(pieceHex(piece))} · ${esc(modeName(piece.mode))}${details ? ` · ${esc(details)}` : ''}</p>
+    <small>${own ? (needsFuel ? 'Needs fuel before it can move (12.5)' : snapshot.reachable.size > 0 ? `${snapshot.reachable.size} hexes reachable` : 'Cannot move now') : 'Enemy · steps lost and internal stocks are hidden'}${piece.statuses.includes('status:out-of-supply') ? ' · Out of supply' : ''}</small></div>`;
+};
+
+const explanationBlock = (explanation: NonNullable<UiSnapshot['movePreview']>['explanation'] | null): string => {
+  if (!explanation || explanation.allowed) return '';
+  return `<ul class="rule-blockers">${explanation.reasons.filter(({ allowed }) => !allowed).map(({ message, rule }) => `<li>${esc(message)} <cite>${esc(rule)}</cite></li>`).join('')}</ul>`;
+};
+
+const draftPanel = (snapshot: UiSnapshot): string => {
+  const draft = snapshot.draft!;
+  const units = draft.eligibleIds.map((id) => snapshot.view.projection?.stacks.flatMap(({ pieces }) => pieces).find((piece) => piece.id === id)).filter((piece): piece is ProjectedPiece => piece !== undefined);
+  const facts = draft.explanation;
+  const title = draft.kind === 'BARRAGE' ? 'Barrage' : draft.kind === 'OVERRUN' ? 'Overrun' : 'Attack';
+  const rows = draft.kind === 'BARRAGE'
+    ? `<dl class="combat-facts"><div><dt>Barrage strength</dt><dd>${esc(fact(facts, 'barrage.strength') ?? '–')}</dd></div>
+        <div><dt>Shifts</dt><dd>${esc(fact(facts, 'barrage.shifts') || 'none')}</dd></div>
+        <div><dt>Spotter</dt><dd>${fact(facts, 'barrage.spotter') ? 'yes' : 'none (3 left)'}</dd></div>
+        <div><dt>Supply</dt><dd>${esc(fact(facts, 'barrage.supplyTokens') ?? '–')}T</dd></div></dl>`
+    : `<dl class="combat-facts"><div><dt>Strength</dt><dd>${esc(fact(facts, 'combat.attackerStrength') ?? '–')} : ${esc(fact(facts, 'combat.defenderStrength') ?? '?')}</dd></div>
+        <div><dt>Odds</dt><dd>${esc(fact(facts, 'combat.odds') ?? '–')} (${esc(String(fact(facts, 'combat.line') ?? '').replace('_', ' ').toLowerCase())})</dd></div>
+        <div><dt>If defender withholds supply</dt><dd>${esc(fact(facts, 'combat.oddsUnsupplied') ?? '–')}</dd></div>
+        <div><dt>AR DRM</dt><dd>${esc(fact(facts, 'combat.attackerActionRating') ?? '–')} − ${esc(fact(facts, 'combat.defenderActionRating') ?? '?')} = ${esc(fact(facts, 'combat.drm') ?? '–')}</dd></div>
+        <div><dt>Your supply cost</dt><dd>${esc(fact(facts, 'combat.attackerSupplyTokens') ?? '–')}T</dd></div></dl>`;
+  const participants = units.map((piece) => {
+    const checked = draft.selectedIds.includes(piece.id);
+    return `<label class="participant"><input type="checkbox" data-participant="${esc(piece.id)}" ${checked ? 'checked' : ''}>
+      ${counterFor(snapshot, piece)}<span>${esc(pieceLabel(snapshot.scenario, piece))}<small>${esc(pieceHex(piece))}</small></span>
+      ${draft.kind !== 'BARRAGE' && checked ? `<input type="radio" name="lead" data-lead="${esc(piece.id)}" ${draft.leadId === piece.id ? 'checked' : ''} aria-label="Lead with this unit's Action Rating">` : ''}</label>`;
+  }).join('');
+  return `<section class="deck-context combat-draft" aria-label="${title} plan">
+    <h2>${title} ${esc(printedHexLabel(draft.targetHexId))}</h2>
+    ${rows}
+    <p class="hint">${draft.kind === 'BARRAGE' ? 'Tick the artillery that fires.' : 'Tick the units that attack; the radio button picks the unit whose Action Rating leads.'}</p>
+    <div class="participants">${participants || '<p>No eligible units.</p>'}</div>
+    ${explanationBlock(facts)}
+    <div class="button-grid"><button id="cancel-draft">Cancel</button><button class="primary" id="declare-draft" ${facts?.allowed && !snapshot.busy ? '' : 'disabled'}>${title}</button></div>
+  </section>`;
+};
+
+const decisionPanel = (snapshot: UiSnapshot): string => {
+  const decision = snapshot.decision!;
+  const combat = snapshot.view.projection?.combat;
+  const summary = combat ? `<p class="combat-summary">${combat.kind === 'BARRAGE' ? 'Barrage' : combat.kind === 'OVERRUN' ? 'Overrun' : 'Attack'} on ${esc(printedHexLabel(combat.targetHexId))} · ${esc(combat.attackerStrength)}${combat.defenderStrength === null ? '' : ` : ${esc(combat.defenderStrength)}`} · ${esc(combat.odds)}${combat.drm === null ? '' : ` · DRM ${combat.drm >= 0 ? '+' : ''}${combat.drm}`}${combat.result ? ` · <strong>${esc(combat.result)}</strong>` : ''}${combat.rollTotal ? ` (roll ${combat.rollTotal}${combat.shiftDie ? `, surprise ${combat.shiftDie} col` : ''})` : ''}</p>` : '';
+  const hexChoice = decision.options.some(({ hexId }) => hexId !== null);
+  return `<section class="deck-context decision-panel" aria-label="Decision">
+    <p class="eyebrow">YOUR DECISION</p><h2>${esc(withHexLabels(decision.prompt))}</h2>${summary}
+    ${hexChoice ? '<p class="hint">Click a highlighted hex on the map, or choose below.</p>' : ''}
+    <div class="decision-options">${decision.options.map(({ id, label }) => `<button class="decision-option" data-choice="${esc(id)}">${esc(withHexLabels(label))}</button>`).join('')}</div>
+  </section>`;
+};
+
+const contextPanel = (snapshot: UiSnapshot, state: DeckState): string => {
+  const required = snapshot.view.metadata.lifecycle === 'ACTIVE' && snapshot.requiredSeatId && snapshot.requiredSeatId !== snapshot.view.metadata.activeSeatId;
+  if (required) {
+    const owner = snapshot.bindings.find(({ seatId }) => seatId === snapshot.requiredSeatId)?.label ?? 'the other player';
+    return `<section class="deck-context"><h2>${esc(owner)} to act</h2><p>${snapshot.decisionSeatId ? 'The other player has a decision to make in this combat.' : 'The next step belongs to the other player.'} Hand the screen over when ready.</p>
+      <button id="begin-required-handoff" class="primary wide">Hand off to ${esc(owner)}</button></section>`;
+  }
+  if (snapshot.decision) return decisionPanel(snapshot);
+  if (snapshot.draft) return draftPanel(snapshot);
+  const parts: string[] = [];
+  if (snapshot.movePreview) {
+    const preview = snapshot.movePreview;
+    const reTicks = (piece: ProjectedPiece): number => Number(pieceDefinition(snapshot.scenario, piece)?.faces
+      .find(({ id }) => id === piece.currentFaceId)?.steps.find(({ remainingSteps }) => remainingSteps === piece.remainingSteps)?.regimentalEquivalentTicks ?? 0);
+    const already = (snapshot.view.projection?.stacks ?? []).flatMap(({ pieces }) => pieces)
+      .filter((piece) => piece.ownerId === snapshot.view.playerId && piece.location.kind === 'ON_MAP' && piece.location.hexId === preview.destinationHexId && piece.id !== snapshot.selectedPiece?.id);
+    const total = already.reduce((sum, piece) => sum + reTicks(piece), 0) + (snapshot.selectedPiece ? reTicks(snapshot.selectedPiece) : 0);
+    if (total > 40) parts.push(`<p class="blocker">Ending here makes ${total / 4} RE in one hex: over 10 RE at the end of the segment, you must eliminate units (4.8a).</p>`);
+    parts.push(`<div class="move-preview"><strong>Move to ${esc(printedHexLabel(preview.destinationHexId))}</strong>
+      <p>Cost ${mp(fact(preview.explanation, 'movement.totalTicks'))} MP · ${mp(fact(preview.explanation, 'movement.remainingTicks'))} MP left after the move.</p>
+      ${explanationBlock(preview.explanation)}
+      <div class="button-grid"><button id="cancel-move">Cancel</button><button class="primary" id="confirm-move" ${preview.explanation.allowed && !snapshot.busy ? '' : 'disabled'}>Confirm move</button></div>
+      <small>Tip: click the same hex again to confirm.</small></div>`);
+  }
+  if (snapshot.modeOptions.length > 0 || snapshot.releaseAction) {
+    parts.push(`<div class="mode-actions"><strong>Mode</strong><div class="chip-row">${snapshot.modeOptions.map(({ mode }) => `<button data-mode="${mode}">${esc(modeName(mode))}</button>`).join('')}${snapshot.releaseAction ? '<button id="release-reserve">Release reserve</button>' : ''}</div></div>`);
+  }
+  if (snapshot.unitActions.length > 0) {
+    const groups: [string, string][] = [['FUEL', 'Fuel'], ['SUPPLY', 'Supply'], ['BREAKOUT', 'Breakout'], ['TRANSPORT', 'Trucks'], ['DUMP', 'Dump']];
+    parts.push(groups.flatMap(([group, title]) => {
+      const entries = snapshot.unitActions.filter((entry) => entry.group === group);
+      return entries.length === 0 ? [] : [`<div class="unit-actions"><strong>${title}</strong><div class="action-list">${entries.map(({ key, label }) => `<button data-unit-action="${esc(key)}">${esc(withHexLabels(label))}</button>`).join('')}</div></div>`];
+    }).join(''));
+  }
+  if (snapshot.collapseHexes.length > 0) {
+    parts.push('<p class="hint">Or collapse the Extender (9.14d): click a highlighted hex in trace supply within its range.</p>');
+  }
+  if (snapshot.stepActions.length > 0) {
+    const recovery = snapshot.stepActions.filter(({ group }) => group === 'SUPPLY');
+    const trace = snapshot.stepActions.filter(({ group }) => group === 'TRACE');
+    const breakout = snapshot.stepActions.filter(({ group }) => group === 'BREAKOUT');
+    const block = (title: string, hint: string, entries: typeof recovery) => entries.length === 0 ? ''
+      : `<div class="step-actions"><strong>${title}</strong><p class="hint">${hint}</p><div class="action-list">${entries.map(({ key, label }) => `<button data-unit-action="${esc(key)}">${esc(withHexLabels(label))}</button>`).join('')}</div></div>`;
+    parts.push(block('Recover internal stocks (required first)', 'Units marked Low or Exhausted must recover from dumps in reach before anything else this phase (12.10e).', recovery)
+      + block('Formation trace route', 'All units of a division trace through one HQ or one source; the others must eat off the map or go Out of Supply (12.6f).', trace)
+      + block('Breakout', 'Units out of trace supply may try to break out: 5-6 they leave and return as reinforcements, 1-4 they are lost (12.8e).', breakout));
+  }
+  if (snapshot.arrivals.length > 0) {
+    const pieces = snapshot.view.projection?.stacks.flatMap(({ pieces: stackPieces }) => stackPieces) ?? [];
+    parts.push(`<div class="arrivals"><strong>Reinforcements arriving</strong><p class="hint">Select a unit, then click a highlighted entry hex.</p>${snapshot.arrivals.map(({ pieceId }) => {
+      const piece = pieces.find(({ id }) => id === pieceId);
+      return piece ? unitRow(snapshot, piece, ' · arriving') : '';
+    }).join('')}</div>`);
+  }
+  if (snapshot.supplyNeeds.length > 0) {
+    const pieces = snapshot.view.projection?.stacks.flatMap(({ pieces: stackPieces }) => stackPieces) ?? [];
+    parts.push(`<div class="supply-needs"><strong>Out of trace supply</strong><p class="hint">Feed a unit from a dump (1T per 2 RE) or leave it; unfed units become Out of Supply when the phase ends.</p>${snapshot.supplyNeeds.map((need) => {
+      const piece = pieces.find(({ id }) => id === need.pieceId);
+      if (!piece) return '';
+      return `<div class="supply-need">${unitRow(snapshot, piece)}<div class="chip-row">${need.options.map(({ dumpId }) => {
+        const dump = pieces.find(({ id }) => id === dumpId);
+        return `<button data-feed="${esc(need.pieceId)}" data-dump="${esc(dumpId)}">Feed from ${esc(dump ? pieceHex(dump) : 'dump')}</button>`;
+      }).join('')}</div></div>`;
+    }).join('')}</div>`);
+  }
+  if (parts.length === 0) {
+    const guidance = snapshot.attackTargets.length > 0 ? 'Red-ringed enemy hexes can be attacked: click one to plan the attack.'
+      : snapshot.barrageTargets.length > 0 ? 'Orange-ringed enemy hexes are in artillery range: click one to plan a barrage.'
+        : snapshot.selectedPiece && snapshot.reachable.size > 0 ? 'Click a highlighted hex to preview the move.'
+          : 'Select a unit, or end this step when you are done.';
+    parts.push(`<p class="hint">${esc(state.hint || guidance)}</p>`);
+  }
+  return `<section class="deck-context">${parts.join('')}</section>`;
+};
+
 export const commandDeckHtml = (snapshot: UiSnapshot, state: DeckState): string => {
-  const { scenario, view } = snapshot;
-  const pieces = (view.projection?.stacks ?? []).flatMap(stack => stack.pieces.map(piece => ({ piece, hex: stack.location.kind === 'ON_MAP' ? stack.location.hexId : '' })));
-  const selected = pieces.find(({ piece }) => piece.id === snapshot.selection.pieceId);
-  const definition = selected && scenario.pieceCatalog.definitions.find(({ id }) => id === selected.piece.definitionId);
-  const families = snapshot.families.filter(f => f.enabled && f.kind !== 'ADVANCE_SEQUENCE');
-  const advance = snapshot.families.some(f => f.enabled && f.kind === 'ADVANCE_SEQUENCE');
+  const { view } = snapshot;
+  const sequence = view.projection?.sequence;
   const busy = state.working || snapshot.busy;
-  const required = view.metadata.lifecycle === 'ACTIVE' && snapshot.requiredSeatId && snapshot.requiredSeatId !== view.metadata.activeSeatId;
-  const owner = snapshot.bindings.find(b => b.seatId === snapshot.requiredSeatId)?.label;
-  const action = snapshot.selectedAction?.kind !== 'ADVANCE_SEQUENCE' ? snapshot.selectedAction : null;
-  const destination = actionDestination(action);
-  const movementCost = snapshot.explanation?.facts.find(f => f.key === 'movement.totalTicks')?.value;
-  const movementRemaining = snapshot.explanation?.facts.find(f => f.key === 'movement.remainingTicks')?.value;
-  const moveMode = snapshot.selection.actionKind === 'MOVE_PIECE';
-  const moveGuide = !moveMode ? '' : selected === undefined
-    ? 'Select a unit on the map or in the Units list.'
-    : snapshot.candidates.length === 0
-      ? 'This unit cannot move now.'
-      : `Click a highlighted hex on the map to choose a destination (${snapshot.candidates.length} reachable).`;
-  const effect = action?.kind === 'MOVE_PIECE' && typeof movementCost === 'number' && typeof movementRemaining === 'number'
-    ? `${action.path[0]} → ${destination} · Cost ${movementCost / 4} MP · ${movementRemaining / 4} MP left`
-    : action ? actionSummary(action) : moveGuide || 'Select an action, or end this phase when ready.';
-  const friendlySummary = (candidate: NonNullable<UiSnapshot['selectedAction']>): string => {
-    const label = 'pieceId' in candidate ? pieces.find(({ piece }) => piece.id === candidate.pieceId) : undefined;
-    const name = label ? pieceLabel(scenario, label.piece) : 'Selected unit';
-    if (candidate.kind === 'MOVE_PIECE') return `${name} → ${candidate.path.at(-1)}`;
-    if (candidate.kind === 'PLACE_REINFORCEMENT') return `${name} → ${candidate.hexId}`;
-    if (candidate.kind === 'CHANGE_MODE') return `${name} → ${candidate.mode}`;
-    return actionSummary(candidate);
-  };
-  const tabs: [DeckList, string][] = [['units', 'Units'], ['stack', 'Stack'], ['hq', 'HQ'], ['candidates', 'Choices'], ['history', 'History']];
-  const filtered = pieces.filter(({ piece, hex }) => {
-    if (state.list === 'stack' && hex !== snapshot.selection.hexId) return false;
-    if (state.list === 'hq' && (piece.redacted || scenario.pieceCatalog.definitions.find(d => d.id === piece.definitionId)?.counter?.kind !== 'HQ')) return false;
-    return pieceLabel(scenario, piece).toLowerCase().includes(state.search.toLowerCase());
-  });
-  const unitRows = filtered.map(({ piece, hex }) => `<button class="deck-unit ${piece.id === snapshot.selection.pieceId ? 'is-selected' : ''}" data-piece="${esc(piece.id)}" data-hex="${esc(hex)}">
-    ${counterSvg(counterView(scenario.pieceCatalog.definitions.find(d => d.id === piece.definitionId)!, piece))}<span>${esc(pieceLabel(scenario, piece))}<small>${esc(hex ? `Hex ${hex}` : 'Off map')}${piece.redacted ? ' · Details hidden' : ` · ${esc(piece.mode ?? 'Supply')}`}</small></span></button>`).join('');
-  const candidates = snapshot.candidates.map((candidate, index) => candidate.kind === 'ADVANCE_SEQUENCE' ? '' : `<button class="candidate ${snapshot.selection.candidateIndex === index ? 'is-selected' : ''}" data-candidate="${index}"><strong>${esc(actionKindLabel(candidate.kind))}${actionDestination(candidate) ? ` · ${esc(actionDestination(candidate))}` : ''}</strong><span>${esc(friendlySummary(candidate))}</span></button>`).join('');
-  const history = [...snapshot.history].reverse().map(record => `<article class="deck-event"><strong>${esc(actionKindLabel(record.action.kind))}</strong><p>${esc(record.summary)}</p><small>Revision ${record.revisionAfter}</small></article>`).join('');
-  return `<header class="deck-phase"><p class="eyebrow">COMMAND</p><h1>${esc(view.projection?.sequence.phase.replaceAll('_', ' ') ?? view.metadata.lifecycle)}</h1><span>${required ? `Pass to ${esc(owner ?? 'next player')}` : `${families.length} action types available`}</span></header>
-    <section class="deck-selection" aria-label="Selected unit">${selected && definition ? `${counterSvg(counterView(definition, selected.piece))}<div><strong>${esc(pieceLabel(scenario, selected.piece))}</strong><p>${esc(selected.hex ? `Hex ${selected.hex}` : 'Off map')}</p><small>${esc(selected.piece.redacted ? 'Enemy details hidden' : selected.piece.mode ?? 'Supply')}</small></div>` : `<div><h2>${snapshot.selection.hexId ? `Hex ${esc(snapshot.selection.hexId)}` : 'Select a unit'}</h2><p>Choose a counter on the map or from the unit list.</p></div>`}</section>
-    <div class="deck-actions"><label for="deck-action">Action</label><select id="deck-action" ${busy || required ? 'disabled' : ''}><option value="">Choose an action</option>${families.map(f => `<option value="${f.kind}" ${snapshot.selection.actionKind === f.kind ? 'selected' : ''}>${esc(actionKindLabel(f.kind))}</option>`).join('')}</select></div>
-    <nav class="deck-tabs" aria-label="Command lists">${tabs.map(([key, name]) => `<button data-deck-list="${key}" aria-pressed="${state.list === key}">${name}</button>`).join('')}</nav>
-    <label class="deck-search">Find unit<input id="deck-search" type="search" value="${esc(state.search)}" placeholder="Name or formation" ${state.list === 'candidates' || state.list === 'history' ? 'disabled' : ''}></label>
-    <div class="deck-list" data-scroll-key="${state.list}" tabindex="0" aria-label="${tabs.find(([key]) => key === state.list)?.[1]} list" aria-busy="${busy}">${state.list === 'history' ? history || '<p>No actions yet.</p>' : state.list === 'candidates' && moveMode ? `<p>${esc(moveGuide)}</p>` : state.list === 'candidates' ? (candidates || '<p>No choices for this selection. Choose a different unit or action.</p>') + (snapshot.candidatesTruncated ? '<button id="load-more-candidates" class="wide">Load more choices</button>' : '') : unitRows || '<p>No visible units match this selection.</p>'}</div>
-    <section class="deck-consequence"><strong>${action ? esc(actionKindLabel(action.kind)) : moveMode ? 'Move unit' : 'Current phase'}</strong><p>${esc(effect)}</p><button id="open-rule-details" ${snapshot.explanation ? '' : 'disabled'}>Review rules &amp; effects</button></section>
-    <footer class="deck-footer"><div class="deck-notice" role="status" title="${esc(state.error || state.hint || snapshot.notice)}">${busy ? 'Preparing action…' : esc(state.error || state.hint || snapshot.notice)}</div><div class="button-grid"><button id="clear-action" ${busy ? 'disabled' : ''}>Clear selection</button><button class="primary" id="execute-action" ${action && snapshot.explanation?.allowed && !busy && !required && !state.error ? '' : 'disabled'}>${busy ? 'Working…' : destination ? `Confirm · ${esc(destination)}` : action ? esc(actionKindLabel(action.kind)) : moveMode ? 'Choose destination' : 'Select action'}</button></div>${required ? `<button id="begin-required-handoff" class="primary wide">Hand off to ${esc(owner ?? 'next player')}</button>` : `<button id="end-phase" class="wide" ${advance && !busy ? '' : 'disabled'}>End phase / segment</button>`}</footer>`;
+  const pieces = (view.projection?.stacks ?? []).flatMap((stack) => stack.pieces);
+  const own = pieces.filter(({ ownerId }) => ownerId === view.playerId);
+  const listed = state.list === 'stack'
+    ? pieces.filter((piece) => piece.location.kind === 'ON_MAP' && piece.location.hexId === snapshot.selection.hexId)
+    : own.filter((piece) => pieceLabel(snapshot.scenario, piece).toLowerCase().includes(state.search.toLowerCase()));
+  const hiddenHere = (view.projection?.stacks ?? []).find(({ location }) => location.kind === 'ON_MAP' && location.hexId === snapshot.selection.hexId)?.hiddenCount ?? 0;
+  const history = [...snapshot.history].reverse().slice(0, 80).map((record) => `<article class="deck-event"><strong>${esc(actionKindLabel(record.action.kind))}</strong><p>${esc(record.summary)}</p><small>Revision ${record.revisionAfter}</small></article>`).join('');
+  const tabs: [DeckList, string][] = [['units', 'My units'], ['stack', 'Hex'], ['history', 'Log']];
+  const list = state.list === 'history' ? history || '<p>No actions yet.</p>'
+    : `${listed.map((piece) => unitRow(snapshot, piece)).join('') || '<p>No units here.</p>'}${state.list === 'stack' && hiddenHere > 0 ? `<p>${hiddenHere} more enemy unit${hiddenHere === 1 ? '' : 's'} hidden under the top counter.</p>` : ''}`;
+  const weather = view.projection?.weather;
+  const date = weather?.month ? ` · ${weather.day} ${['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][weather.month - 1]}` : '';
+  const ground = weather ? ` · ${({ DRY: 'Dry ground', MUD: 'Mud', SNOW: 'Snow' } as const)[weather.groundCondition]}` : '';
+  return `<header class="deck-phase"><p class="eyebrow">TURN ${sequence?.gameTurn ?? '–'}${esc(date)}${esc(ground)}</p><h1>${esc(sequence ? phaseLabel(sequence.phase, sequence.segment) : view.metadata.lifecycle)}</h1></header>
+    <section class="deck-selection" aria-label="Selected unit">${selectedCard(snapshot)}</section>
+    ${contextPanel(snapshot, state)}
+    <nav class="deck-tabs" aria-label="Lists">${tabs.map(([key, name]) => `<button data-deck-list="${key}" aria-pressed="${state.list === key}">${name}</button>`).join('')}${state.list === 'units' ? `<input id="deck-search" type="search" value="${esc(state.search)}" placeholder="Find unit" aria-label="Find unit">` : ''}</nav>
+    <div class="deck-list" data-scroll-key="${state.list}" tabindex="0" aria-busy="${busy}">${list}</div>
+    <footer class="deck-footer"><div class="deck-notice" role="status">${busy ? 'Working…' : esc(state.error || snapshot.notice)}</div>
+      ${snapshot.endStep.blockers.length > 0 ? `<p class="blocker">${esc(snapshot.endStep.blockers.join(' '))}</p>` : ''}
+      <button id="end-phase" class="wide ${snapshot.endStep.enabled ? 'primary' : ''}" ${snapshot.endStep.enabled && !busy && !snapshot.decision && !snapshot.draft ? '' : 'disabled'}>${esc(snapshot.endStep.label)}</button></footer>`;
 };

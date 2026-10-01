@@ -6,6 +6,7 @@ import {
 import type { HexsideId } from '../../domain/map/index.js';
 import {
   addHexsideFeature,
+  columnOf,
   definitionId,
   distanceBetween,
   neighborCells,
@@ -32,8 +33,8 @@ const selectEdgeHex = (
   const land = [...cells.values()].filter(({ terrain }) => terrain !== 'WATER');
   return land.sort((left, right) => {
     const sideOrder = side === 'FIRST'
-      ? left.coordinate.q - right.coordinate.q
-      : right.coordinate.q - left.coordinate.q;
+      ? columnOf(left.coordinate) - columnOf(right.coordinate)
+      : columnOf(right.coordinate) - columnOf(left.coordinate);
     if (sideOrder !== 0) return sideOrder;
     return Math.abs(left.coordinate.r - height / 2) - Math.abs(right.coordinate.r - height / 2)
       || String(left.id).localeCompare(String(right.id));
@@ -47,7 +48,7 @@ const selectSettlements = (
   const target = Math.max(4, Math.round(options.width * options.height * options.settlementDensity));
   const candidates = [...cells.values()]
     .filter((cell) => cell.terrain !== 'WATER' && cell.terrain !== 'MOUNTAIN'
-      && cell.coordinate.q > 0 && cell.coordinate.q < options.width - 1
+      && columnOf(cell.coordinate) > 0 && columnOf(cell.coordinate) < options.width - 1
       && cell.coordinate.r > 0 && cell.coordinate.r < options.height - 1)
     .map((cell) => ({
       cell,

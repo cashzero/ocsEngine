@@ -74,9 +74,11 @@ export interface GameplayView {
 export interface PendingDecisionDescriptor {
   readonly id: string;
   readonly kind: PendingDecisionKind;
-  readonly transactionId: string;
+  readonly transactionId: string | null;
+  readonly prompt: string;
   readonly stateRevision: Revision;
-  readonly options: readonly { readonly id: string; readonly label: string }[];
+  /** `hexId` is set when the option refers to a map Hex (retreat or placement destinations). */
+  readonly options: readonly { readonly id: string; readonly label: string; readonly hexId: string | null }[];
 }
 
 export interface ActionDraft {
@@ -197,7 +199,8 @@ export interface GameplaySaveActionMetadata {
 
 export interface GameplaySaveEnvelope {
   readonly schemaVersion: 1;
-  readonly gameplayVersion: '0.1.0';
+  /** 0.2.0: OCS 4.3 rule state with fuel, weather, internal stocks, transport and the new decisions. */
+  readonly gameplayVersion: '0.2.0';
   readonly sessionId: SessionId;
   readonly label: string;
   readonly createdAtMs: number;

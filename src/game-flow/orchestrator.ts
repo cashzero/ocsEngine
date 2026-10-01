@@ -76,4 +76,5 @@ export const DEFAULT_NEW_GAME_REQUEST: NewGameRequest = {
   oob: { scale: 'COMPACT', formationsPerSide: 2 },
   seeds: { map: 0x0c500001, oob: 0x0c500002, deployment: 0x0c500003, rules: 0x0c500004 },
   turnLimit: 2,
+  startMonth: 10,
 };

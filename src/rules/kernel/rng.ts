@@ -19,6 +19,13 @@ const nextUint32 = (state: number): number => {
   return value >>> 0;
 };
 
+export const rollDie = (
+  rng: RulesRngState,
+): { readonly rng: RulesRngState; readonly value: number } => {
+  const next = nextUint32(rng.state);
+  return { rng: { state: next, draws: rng.draws + 1 }, value: next % 6 + 1 };
+};
+
 export const rollTwoDice = (
   rng: RulesRngState,
 ): { readonly rng: RulesRngState; readonly roll: RulesDiceRoll } => {
