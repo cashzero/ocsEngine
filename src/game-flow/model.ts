@@ -33,6 +33,8 @@ export interface NewGameRequest {
     readonly rules: number;
   };
   readonly turnLimit: number;
+  /** Month of the first Game Turn (September through April), which selects the Weather Table rows (17.0). */
+  readonly startMonth: number;
 }
 
 export interface GeneratedDeployment {

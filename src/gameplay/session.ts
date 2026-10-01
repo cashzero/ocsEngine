@@ -87,6 +87,7 @@ const pendingFor = (state: GameState, playerId: PlayerId): PendingDecisionDescri
     id: pending.id,
     kind: pending.kind,
     transactionId: pending.transactionId,
+    prompt: pending.prompt,
     stateRevision: state.revision,
     options: pending.options.map((option) => ({ ...option })),
   } : null;
@@ -492,7 +493,7 @@ export class GameplaySession implements GameSession {
     const current = serializeGameState(this.#state);
     if (!initial.ok || !current.ok) throw new GameplayFailure({ code: 'SAVE_INVALID', message: 'Authoritative state cannot be serialized.', path: [] });
     return {
-      schemaVersion: 1, gameplayVersion: '0.1.0', sessionId: this.#id,
+      schemaVersion: 1, gameplayVersion: '0.2.0', sessionId: this.#id,
       label: this.#label, createdAtMs: this.#createdAtMs,
       lifecycle: this.#lifecycle, activeSeatId: this.#activeSeatId,
       bindings: this.#bindings.map((binding) => ({ ...binding })),

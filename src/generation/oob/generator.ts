@@ -17,7 +17,7 @@ import {
   type PieceStepProfile,
 } from '../../domain/piece/index.js';
 import { canonicalJson } from '../../serialization/index.js';
-import { corpusCounter, corpusFaces } from './counter-corpus.js';
+import { COUNTER_CORPUS, TRUCK_COUNTER_POINTS, corpusCounter, corpusFaces } from './counter-corpus.js';
 import { createSeededRandom, mixUint32 } from '../map/rng.js';
 import {
   BTR_BUILD_FILE_SHA256,
@@ -67,7 +67,8 @@ const capabilitiesFor = (role: OobUnitRole): readonly CapabilityDeclaration[] =>
     case 'TRANSPORT': return [{
       id: capabilityId('TRANSPORT_CAPACITY'),
       parameters: [{
-        key: 'capacity', kind: 'EXACT_QUANTITY', value: 8,
+        // 13.2c: a Transport Point carries its size in SP (four Tokens each).
+        key: 'capacity', kind: 'EXACT_QUANTITY', value: TRUCK_COUNTER_POINTS * 4,
         unitDefinitionId: definitionId('quantity:supply-token'),
       }],
     }];
@@ -98,6 +99,11 @@ const stepsFor = (archetype: ReviewedOobArchetype): readonly PieceStepProfile[] 
   });
 };
 
+/** Echelon printed on the unit's counter; a formation HQ commands a division (XX). */
+const echelonFor = (side: OobSide, role: OobUnitRole, archetype: OobFormationArchetype | undefined, inFormation: boolean): string =>
+  role === 'FORMATION_COMMAND' && inFormation ? 'XX'
+    : COUNTER_CORPUS[findReviewedOobArchetype(side, role, archetype).gpid]?.echelon ?? '';
+
 interface UnitBuildContext {
   readonly options: NormalizedRandomOobOptions;
   readonly side: OobSide;
@@ -125,7 +131,8 @@ const buildUnit = (context: UnitBuildContext): {
       context.localId.split('-').at(-1) ?? '',
       context.formationId ? `F${context.formationId.split(':').at(-1)}` : '',
       context.side === 'ALLIED' ? 'US' : 'GERMAN',
-      context.formationId ? ['#75c3af', '#e2638b', '#6c9cd2', '#e4c063', '#ae87c7', '#c59064'][Number(context.formationId.split(':').at(-1)) - 1]! : null),
+      context.formationId ? ['#75c3af', '#e2638b', '#6c9cd2', '#e4c063', '#ae87c7', '#c59064'][Number(context.formationId.split(':').at(-1)) - 1]! : null,
+      echelonFor(context.side, context.role, context.formationArchetype, context.formationId !== null)),
     id,
     family: source.family,
     name: context.name,
@@ -143,7 +150,8 @@ const buildUnit = (context: UnitBuildContext): {
       resourceDefinitionId: definitionId('resource:supply'),
       unitDefinitionId: definitionId('quantity:supply-token'),
       printedQuantity: 4,
-      capacity: 8,
+      // 12.1c: generic dumps hold any number of SP.
+      capacity: 400,
     } : null,
     facility: null,
     marker: null,
@@ -213,6 +221,7 @@ const buildSide = (
     const occurrence = plan.slice(0, formationIndex).filter((value) => value === archetype).length;
     const namingProfile = formationNames(options.seed, side, archetype)[occurrence]!;
     const formationName = namingProfile.name;
+    // Every division is a multi-unit formation: its divisional HQ (XX) and regiment-sized units.
     const requests: Array<{ role: OobUnitRole; suffix: string }> = [
       { role: 'FORMATION_COMMAND', suffix: 'command' },
       ...Array.from({ length: SCALE_COMBAT_UNITS[options.scale] }, (_, index) => ({
@@ -226,7 +235,8 @@ const buildSide = (
     const units = requests.map(({ role, suffix }) => {
       const built = buildUnit({
         options, side, role, formationArchetype: archetype, formationId,
-        name: unitName(side, role, Number(suffix.split('-').at(-1)) || 1, options.seed, namingProfile),
+        name: unitName(side, role, Number(suffix.split('-').at(-1)) || 1, options.seed, namingProfile,
+          echelonFor(side, role, archetype, true)),
         localId: `f${sequence}-${suffix}`,
       });
       definitions.push(built.definition);
@@ -249,7 +259,7 @@ const buildSide = (
     roleCounts.set(role, ordinal);
     const built = buildUnit({
       options, side, role, formationId: null,
-      name: unitName(side, role, ordinal, options.seed),
+      name: unitName(side, role, ordinal, options.seed, undefined, echelonFor(side, role, undefined, false)),
       localId: `independent-${role.toLowerCase()}-${ordinal}`,
     });
     definitions.push(built.definition);

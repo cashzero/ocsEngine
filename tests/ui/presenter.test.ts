@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   actionKindLabel,
   actionSummary,
+  printedHexLabel,
   buildGeneratedMapPreview,
   buildGeneratedOobPreview,
   createRuleGameStateFixture,
@@ -29,8 +30,9 @@ describe('U3-U4 UI map and action presenters', () => {
       expectedRevision: state.revision,
       kind: 'ADVANCE_SEQUENCE' as const,
     };
-    expect(actionKindLabel(action.kind)).toBe('Advance sequence');
-    expect(actionSummary(action)).toBe('Continue to the next segment');
+    expect(actionKindLabel(action.kind)).toBe('End step');
+    expect(actionSummary(action)).toBe('End the current step');
+    expect(printedHexLabel('3,4')).toBe('0605');
   });
 
   it('projects generated terrain and infrastructure into an SVG-ready model', () => {

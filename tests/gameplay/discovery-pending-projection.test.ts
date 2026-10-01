@@ -60,52 +60,57 @@ describe('G3-G5 discovery, pending decisions, and projection access', () => {
     const declare: GameAction = {
       actionId: id('declare-combat'), actorId: fixture.players[0],
       expectedRevision: fixture.session.getRevision(), kind: 'DECLARE_COMBAT', combatKind: 'REGULAR',
-      attackerIds: ['piece:multi-step' as never], defenderIds: ['piece:ground' as never],
-      targetHexId: '3,1' as never,
+      attackerIds: [fixture.units.attacker], defenderIds: [fixture.units.defender, fixture.units.secondDefender],
+      targetHexId: '6,5' as never, leadAttackerId: fixture.units.attacker,
     };
     const declared = await fixture.session.dispatch({
       requestId: gameplayRequestId('declare-combat'), seatId: fixture.seats[0], action: declare,
     });
     expect(declared.status).toBe('ACCEPTED');
-    const pending = fixture.session.getPendingDecision(fixture.seats[0]);
-    expect(pending).toMatchObject({ kind: 'RESOURCE_SOURCE' });
-    expect(fixture.session.getPendingDecision(fixture.seats[1])).toBeNull();
+    // The defender owns the supply choice (9.2 step 2); the attacker sees nothing pending.
+    const pending = fixture.session.getPendingDecision(fixture.seats[1]);
+    expect(pending).toMatchObject({ kind: 'SUPPLY_SOURCE' });
+    expect(fixture.session.getPendingDecision(fixture.seats[0])).toBeNull();
     const wrongSeat = await fixture.session.respondToPendingDecision(
-      gameplayRequestId('wrong-owner'), fixture.seats[1], 'UNSUPPLIED',
+      gameplayRequestId('wrong-owner'), fixture.seats[0], pending!.options[0]!.id,
     );
     expect(wrongSeat).toMatchObject({ status: 'REJECTED', violations: [{ code: 'NO_VISIBLE_PENDING_DECISION' }] });
 
-    const choice = pending!.options.find(({ id: choiceId }) => choiceId.startsWith('resource:'))!;
-    const responseRequestId = gameplayRequestId('resource-choice');
+    const choice = pending!.options.find(({ id: choiceId }) => choiceId.startsWith('pay:'))!;
+    const responseRequestId = gameplayRequestId('defender-choice');
     const [responded, duplicateResponse] = await Promise.all([
-      fixture.session.respondToPendingDecision(responseRequestId, fixture.seats[0], choice.id),
-      fixture.session.respondToPendingDecision(responseRequestId, fixture.seats[0], choice.id),
+      fixture.session.respondToPendingDecision(responseRequestId, fixture.seats[1], choice.id),
+      fixture.session.respondToPendingDecision(responseRequestId, fixture.seats[1], choice.id),
     ]);
     expect(responded.status).toBe('ACCEPTED');
     expect(duplicateResponse.status).toBe('DUPLICATE');
-    expect(fixture.session.getPendingDecision(fixture.seats[0])).toBeNull();
-    const commits = fixture.session.getActionCandidates(fixture.seats[0], {
-      kind: 'COMMIT_TRANSACTION', pieceId: null, budget: 1,
-    });
-    expect(commits.actions).toHaveLength(1);
+    // Next the defender names his Action Rating unit (9.2 step 3); then the dice are rolled.
+    const lead = fixture.session.getPendingDecision(fixture.seats[1]);
+    expect(lead?.kind).toBe('DEFENDER_LEAD');
+    expect((await fixture.session.respondToPendingDecision(gameplayRequestId('defender-lead'), fixture.seats[1], lead!.options[0]!.id)).status).toBe('ACCEPTED');
+    const history = fixture.session.getHistory({ offset: 0, limit: 200, actionKind: null }).records;
+    expect(history.at(-1)!.events.some(({ kind }) => kind === 'DICE_ROLLED')).toBe(true);
   });
 
   it('redacts enemy stacks and enforces a privacy screen during hot-seat handoff', async () => {
     const fixture = await createGameplayFixture();
     fixture.session.start();
     const firstView = fixture.session.getView(fixture.seats[0]);
-    const enemyForFirst = firstView.projection!.stacks.flatMap(({ pieces }) => pieces)
-      .find(({ id: pieceId }) => pieceId === 'piece:ground');
+    const enemyStack = firstView.projection!.stacks.find(({ location }) => location.kind === 'ON_MAP' && location.hexId === '6,5')!;
+    // 4.9a: only the top unit is visible to the enemy, without steps lost; the rest is a count.
+    expect(enemyStack.pieces).toHaveLength(1);
+    expect(enemyStack.hiddenCount).toBe(1);
+    const enemyForFirst = enemyStack.pieces[0]!;
+    expect(enemyForFirst).toMatchObject({ redacted: true, remainingSteps: null });
     const ownForSecond = fixture.session.getView(fixture.seats[1]).projection!.stacks
-      .flatMap(({ pieces }) => pieces).find(({ id: pieceId }) => pieceId === 'piece:ground');
-    expect(enemyForFirst).toMatchObject({ redacted: true, remainingSteps: null, statuses: [] });
+      .flatMap(({ pieces }) => pieces).find(({ id: pieceId }) => pieceId === enemyForFirst.id);
     expect(ownForSecond).toMatchObject({ redacted: false, remainingSteps: 1 });
     (firstView.projection!.victory.scores[0] as { points: number }).points = 999;
     (enemyForFirst as { remainingSteps: number | null }).remainingSteps = 999;
     const detachedView = fixture.session.getView(fixture.seats[0]);
     expect(detachedView.projection!.victory.scores[0]?.points).toBe(0);
     expect(detachedView.projection!.stacks.flatMap(({ pieces }) => pieces)
-      .find(({ id: pieceId }) => pieceId === 'piece:ground')?.remainingSteps).toBeNull();
+      .find(({ id: pieceId }) => pieceId === enemyForFirst.id)?.remainingSteps).toBeNull();
 
     const token = fixture.session.beginHandoff(fixture.seats[0], fixture.seats[1]);
     expect(fixture.session.getView(fixture.seats[0])).toMatchObject({ privacyLocked: true, projection: null });

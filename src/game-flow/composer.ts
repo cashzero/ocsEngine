@@ -121,7 +121,7 @@ export const composeGeneratedScenario = (
     generatedOob,
     deployment,
     scenario,
-    configuration: createGeneratedRuleConfiguration(deployment, request.turnLimit),
+    configuration: createGeneratedRuleConfiguration(deployment, request, generatedOob, GENERATED_PLAYERS),
     bindings: GENERATED_BINDINGS,
     summary: {
       mapSize: `${generatedMap.options.width}×${generatedMap.options.height}`,
