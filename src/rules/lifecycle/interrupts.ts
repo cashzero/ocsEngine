@@ -5,6 +5,8 @@ import type { RuleTransactionId } from '../kernel/ids.js';
 import type { GameState, PendingDecision, RuleEvent, RuleInterrupt } from '../kernel/model.js';
 import { definitionOf, pieceById } from '../pieces.js';
 import { applyDisplacement, captureDisplacementHexes, extenderCollapseHexes } from '../supply/transport.js';
+import { airDisplacementHexes, applyAirDisplacement } from '../air/base.js';
+import { aircraftRange } from '../air/aircraft.js';
 
 /**
  * Interrupts are rule events whose owner must choose before play continues: attrition losses
@@ -30,6 +32,12 @@ const optionsFor = (state: GameState, interrupt: RuleInterrupt): PendingDecision
   }
   const pieceId = interrupt.pieceIds[0]!;
   const piece = pieceById(state, pieceId)!;
+  if (interrupt.kind === 'AIR_DISPLACEMENT') {
+    const bases = airDisplacementHexes(state, piece, interrupt.fromHexId);
+    return bases.length > 0
+      ? bases.map((hexId) => ({ id: `hex:${hexId}`, label: `Displace to the Air Base at ${hexId} (Inactive)`, hexId }))
+      : [{ id: 'hex:none', label: 'No friendly Air Base within twice its range: the aircraft is destroyed', hexId: null }];
+  }
   const hexes = interrupt.reason === 'CAPTURE'
     ? captureDisplacementHexes(state, piece, interrupt.fromHexId, interrupt.range)
     : extenderCollapseHexes(state, piece, interrupt.fromHexId);
@@ -75,7 +83,11 @@ export const settleInterrupts = (
         prompt: `Attrition in ${interrupt.hexId}: ${interrupt.steps} step${interrupt.steps === 1 ? '' : 's'} to lose. Choose the Out of Supply unit to lose the next step.`,
         options,
       }
-      : {
+      : interrupt.kind === 'AIR_DISPLACEMENT' ? {
+        id: id.value, kind: 'DISPLACEMENT_HEX', ownerId: interrupt.ownerId, transactionId,
+        prompt: `The Air Base at ${interrupt.fromHexId} was captured: ${nameOf(state, interrupt.pieceIds[0]!)} must displace to a friendly Air Base within ${2 * aircraftRange(state, pieceById(state, interrupt.pieceIds[0]!)!)} hexes and becomes Inactive.`,
+        options,
+      } : {
         id: id.value, kind: 'DISPLACEMENT_HEX', ownerId: interrupt.ownerId, transactionId,
         prompt: interrupt.reason === 'CAPTURE'
           ? `${nameOf(state, interrupt.pieceIds[0]!)} escapes capture in ${interrupt.fromHexId}: place it up to ${interrupt.range} hexes away.`
@@ -111,7 +123,7 @@ export const applyInterruptChoice = (
   }
   const [pieceId, ...others] = interrupt.pieceIds;
   const hexId = choiceId === 'hex:none' ? null : choiceId.slice('hex:'.length) as never;
-  const next = applyDisplacement(state, pieceId!, hexId);
+  const next = interrupt.kind === 'AIR_DISPLACEMENT' ? applyAirDisplacement(state, pieceId!, hexId) : applyDisplacement(state, pieceId!, hexId);
   return {
     state: pruned({ ...next, interrupts: others.length > 0 ? [{ ...interrupt, pieceIds: others }, ...rest] : rest }),
     events: [{ kind: 'PIECE_DISPLACED', sequence: 0, pieceId: pieceId!, toHexId: hexId }],

@@ -1,4 +1,5 @@
 import { parseHexCoordinateId, type HexId } from '../core/index.js';
+import { AIR_MISSION_LABELS } from '../rules/air/mission.js';
 import type { PieceDefinition } from '../domain/piece/index.js';
 import type { MapDefinition } from '../domain/map/index.js';
 import type { ScenarioDefinition } from '../domain/scenario/index.js';
@@ -43,6 +44,10 @@ const ACTION_LABELS: Readonly<Record<GameAction['kind'], string>> = {
   FORM_EXTENDER: 'Form Extender',
   DISSOLVE_EXTENDER: 'Flip Extender back',
   COLLAPSE_EXTENDER: 'Collapse Extender',
+  REFIT_AIRCRAFT: 'Refit aircraft',
+  DECLARE_AIR_MISSION: 'Air mission',
+  REDUCE_AIR_BASE: 'Reduce Air Base',
+  COMBINE_AIRCRAFT: 'Combine aircraft',
 };
 
 export const actionKindLabel = (kind: GameAction['kind']): string => ACTION_LABELS[kind];
@@ -91,6 +96,10 @@ export const actionSummary = (action: GameAction): string => {
     case 'FORM_EXTENDER': return 'Form Extender';
     case 'DISSOLVE_EXTENDER': return 'Flip Extender back to trucks';
     case 'COLLAPSE_EXTENDER': return `Collapse to ${printedHexLabel(action.hexId)}`;
+    case 'REFIT_AIRCRAFT': return `Refit ${action.aircraftIds.length} aircraft (1T)`;
+    case 'DECLARE_AIR_MISSION': return `${AIR_MISSION_LABELS[action.mission]} ${printedHexLabel(action.targetHexId)} with ${action.aircraftIds.length} aircraft`;
+    case 'REDUCE_AIR_BASE': return 'Reduce the Air Base one Level';
+    case 'COMBINE_AIRCRAFT': return 'Combine two reduced aircraft';
   }
 };
 

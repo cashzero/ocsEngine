@@ -7,6 +7,7 @@ import {
   buildGeneratedOobPreview,
   type CreatedNewGame,
   type GeneratedScenarioPackage,
+  type AirForceLevel,
   type MapGenerationStyle,
   type NewGameRequest,
   type OobScale,
@@ -118,6 +119,9 @@ const renderMap = (snapshot: UiSnapshot): string => {
   const barrage = new Set(snapshot.barrageTargets);
   const placement = new Set(snapshot.placementHexes);
   const retreat = new Set([...snapshot.decisionHexes, ...snapshot.collapseHexes]);
+  const airTargets = new Set(snapshot.air.targetHexes);
+  const ownZone = new Set(snapshot.air.showZones ? snapshot.air.patrolZones.own : []);
+  const enemyZone = new Set(snapshot.air.showZones ? snapshot.air.patrolZones.enemy : []);
   const moving = snapshot.reachable.size > 0;
   const combatHex = snapshot.view.projection?.combat?.targetHexId ?? null;
   const terrain = theater.cells.map((cell) => {
@@ -130,6 +134,7 @@ const renderMap = (snapshot: UiSnapshot): string => {
       barrage.has(cell.id) ? 'is-barrage' : '',
       placement.has(cell.id) ? 'is-placement' : '',
       retreat.has(cell.id) ? 'is-retreat' : '',
+      airTargets.has(cell.id) ? 'is-air-target' : '',
       snapshot.draft?.targetHexId === cell.id || combatHex === cell.id ? 'is-target' : '',
     ].filter(Boolean).join(' ');
     return `<g class="${classes}" role="button" tabindex="${cell.id === (snapshot.selection.hexId ?? theater.cells[0]?.id) ? 0 : -1}" data-hex="${escapeHtml(cell.id)}"
@@ -147,7 +152,12 @@ const renderMap = (snapshot: UiSnapshot): string => {
       <path d="M${cell.x - 5} ${cell.y + 8}h10M${cell.x} ${cell.y - 6}v12"></path></g>` : '';
     const strategic = cell.strategic ? `<path class="strategic-zone side-${cell.strategic.toLowerCase()}" d="M${cell.x - 14} ${cell.y - 29}h28" aria-label="${cell.strategic.toLowerCase()} entry or supply zone"></path>` : '';
     const objective = objectives.has(cell.id) ? `<g class="objective-marker" aria-label="objective"><circle cx="${cell.x}" cy="${cell.y}" r="15"></circle><path d="M${cell.x - 20} ${cell.y}h40M${cell.x} ${cell.y - 20}v40"></path></g>` : '';
-    return `${strategic}${settlement}${objective}`;
+    // 14.4c Patrol Zones (both sides can see Active Fighters on top, 4.8e) and 14.8 Trainbusting markers.
+    const zone = [ownZone.has(cell.id) ? `<polygon class="air-zone-mark" points="${cell.points}" transform="translate(${cell.x} ${cell.y}) scale(.86) translate(${-cell.x} ${-cell.y})"></polygon>` : '',
+      enemyZone.has(cell.id) ? `<polygon class="air-zone-mark enemy" points="${cell.points}" transform="translate(${cell.x} ${cell.y}) scale(.78) translate(${-cell.x} ${-cell.y})"></polygon>` : ''].join('');
+    const busting = snapshot.air.trainbusting.find(({ hexId }) => hexId === cell.id);
+    const trainbusting = busting ? `<g class="trainbusting-mark" aria-label="Trainbusting marker${busting.own ? '' : ' (enemy)'}"><rect x="${cell.x + 8}" y="${cell.y + 8}" width="30" height="18" rx="3"></rect><text x="${cell.x + 23}" y="${cell.y + 21}" text-anchor="middle">TB</text></g>` : '';
+    return `${strategic}${settlement}${objective}${zone}${trainbusting}`;
   }).join('');
   const pathPoints = (snapshot.movePreview?.path ?? [])
     .map(id => theater.cells.find(cell => cell.id === id)).filter(cell => cell !== undefined).map(cell => `${cell.x},${cell.y}`).join(' ');
@@ -199,7 +209,7 @@ const operationPreviewHtml = (prepared: GeneratedScenarioPackage): string => {
   const previewCounter = (unit: {id:string}): string => {
     const piece = prepared.scenario.initialPieceState.pieces.find(({id}) => id === unit.id)!;
     const definition = prepared.scenario.pieceCatalog.definitions.find(({id}) => id === piece.definitionId)!;
-    return `<figure class="preview-counter">${counterSvg(counterView(definition, {...piece, statuses: [], redacted: false}))}<figcaption>${escapeHtml(definition.name)}</figcaption></figure>`;
+    return `<figure class="preview-counter">${counterSvg(counterView(definition, {...piece, statuses: [], statusValues: piece.statuses.flatMap(({ statusDefinitionId, value }) => value.kind === 'INTEGER' ? [{ statusDefinitionId, value: value.value }] : []), redacted: false}))}<figcaption>${escapeHtml(definition.name)}</figcaption></figure>`;
   };
   const objectives = new Set<string>(prepared.deployment.objectiveHexIds);
   const cells = map.cells.map((cell) => `<g class="generated-cell terrain-${cell.terrain.toLowerCase()}">
@@ -216,7 +226,8 @@ const operationPreviewHtml = (prepared: GeneratedScenarioPackage): string => {
     <header><strong>${escapeHtml(side.side)}</strong><span>${prepared.generatedOob.metrics.pointsBySide[side.side]} points</span></header>
     <ul>${side.formations.map((formation) => `<li><span>${escapeHtml(formation.name)}</span><small>${formation.units.length} units · ${escapeHtml(formation.archetype.replaceAll('_', ' ').toLowerCase())}</small></li>`).join('')}</ul>
     ${side.formations.map((formation) => `<details class="counter-formation"><summary>${escapeHtml(formation.name)}</summary><div class="counter-grid">${formation.units.map(previewCounter).join('')}</div></details>`).join('')}
-    <details class="counter-formation"><summary>${side.independentUnits.length} independent support / logistics units</summary><div class="counter-grid">${side.independentUnits.map(previewCounter).join('')}</div></details>
+    <details class="counter-formation"><summary>${side.independentUnits.filter(({ role }) => role !== 'AIRCRAFT' && role !== 'AIR_BASE').length} independent support / logistics units</summary><div class="counter-grid">${side.independentUnits.filter(({ role }) => role !== 'AIRCRAFT' && role !== 'AIR_BASE').map(previewCounter).join('')}</div></details>
+    ${side.independentUnits.some(({ role }) => role === 'AIRCRAFT') ? `<details class="counter-formation"><summary>Air forces: ${side.independentUnits.filter(({ role }) => role === 'AIRCRAFT').length} aircraft, ${side.independentUnits.filter(({ role }) => role === 'AIR_BASE').length} Air Base(s)</summary><div class="counter-grid">${side.independentUnits.filter(({ role }) => role === 'AIRCRAFT' || role === 'AIR_BASE').map(previewCounter).join('')}</div></details>` : ''}
   </section>`).join('');
   return `<div class="operation-preview-content">
     <div class="operation-map-wrap"><svg class="operation-map" viewBox="0 0 ${map.layout.width} ${map.layout.height}" role="img" aria-label="Generated operation map preview">${terrainDefsHtml()}${cells}${rivers}${roads}</svg></div>
@@ -251,6 +262,7 @@ const newGameDialogHtml = (): string => {
         <label>Formations per side<input id="new-game-formations" type="number" min="1" max="6" value="${newGameSettings.oob.formationsPerSide}"></label>
         <label>OOB seed<input id="new-game-oob-seed" type="number" min="0" max="4294967295" value="${newGameSettings.seeds.oob}"></label>
         <label>Deployment seed<input id="new-game-deployment-seed" type="number" min="0" max="4294967295" value="${newGameSettings.seeds.deployment}"></label>
+        <label>Air forces<select id="new-game-air"><option value="NONE" ${(newGameSettings.oob.air ?? 'NONE') === 'NONE' ? 'selected' : ''}>None (ground duel)</option><option value="STANDARD" ${newGameSettings.oob.air === 'STANDARD' ? 'selected' : ''}>Fighters, bombers and Air Bases</option></select></label>
       </fieldset>
       <fieldset><legend>Game rules</legend>
         <label>Turn limit<input id="new-game-turn-limit" type="number" min="1" max="20" value="${newGameSettings.turnLimit}"></label>
@@ -330,8 +342,8 @@ const render = (snapshot: UiSnapshot): void => {
             <svg id="hex-map" viewBox="0 0 ${layout.width} ${layout.height}" role="application" aria-label="Hex map. Click a unit to select it, a highlighted hex to move, a ringed enemy hex to attack.">
               <g id="map-camera" transform="translate(${camera.x} ${camera.y}) scale(${camera.zoom})">${renderMap(snapshot)}</g>
             </svg>
-            <div class="map-controls" aria-label="Map zoom controls"><button id="zoom-out" aria-label="Zoom out">−</button><output id="zoom-level">${Math.round(camera.zoom * 100)}%</output><button id="zoom-in" aria-label="Zoom in">+</button><button id="zoom-reset">Reset</button></div>
-            <div class="map-legend"><span class="terrain-key clear">Clear</span><span class="terrain-key woods">Woods</span><span class="terrain-key rough">Rough</span><span class="terrain-key mountain">Mountain</span><span class="terrain-key marsh">Marsh</span><span class="terrain-key water">Water</span><span class="line-key road">Road</span><span class="line-key river">River</span><span class="legend-mark objective">Objective</span><span class="legend-ring move">Move</span><span class="legend-ring attack">Attack</span><span class="legend-ring barrage">Barrage</span></div>
+            <div class="map-controls" aria-label="Map zoom controls"><button id="zoom-out" aria-label="Zoom out">−</button><output id="zoom-level">${Math.round(camera.zoom * 100)}%</output><button id="zoom-in" aria-label="Zoom in">+</button><button id="zoom-reset">Reset</button><button id="toggle-air-zones" aria-pressed="${snapshot.air.showZones}" title="Show the 10-hex Patrol Zones of Air Bases with Active Fighters (14.4c)">Patrol Zones</button></div>
+            <div class="map-legend"><span class="terrain-key clear">Clear</span><span class="terrain-key woods">Woods</span><span class="terrain-key rough">Rough</span><span class="terrain-key mountain">Mountain</span><span class="terrain-key marsh">Marsh</span><span class="terrain-key water">Water</span><span class="line-key road">Road</span><span class="line-key river">River</span><span class="legend-mark objective">Objective</span><span class="legend-ring move">Move</span><span class="legend-ring attack">Attack</span><span class="legend-ring barrage">Barrage</span>${snapshot.air.showZones ? '<span class="legend-ring air-zone">Your Patrol Zone</span><span class="legend-ring air-zone enemy">Enemy Patrol Zone</span>' : ''}</div>
             <div class="hover-info" aria-live="off">${hover ? `Hex ${escapeHtml(printedHexLabel(hover.id))} · ${escapeHtml(hover.terrain.toLowerCase())}${hover.settlement ? ` · ${hover.settlement.toLowerCase()}` : ''}${currentGame.deployment.objectiveHexIds.includes(hover.id as never) ? ' · objective' : ''}` : 'Hover a hex for terrain.'}</div>
           </div>
         </section>
@@ -453,7 +465,7 @@ const mountCreatedGame = async (created: CreatedNewGame): Promise<void> => {
 
 /** Clicking a counter on a hex that is itself a target acts on the hex; otherwise it selects the unit. */
 const clickCounter = (snapshot: UiSnapshot, pieceId: string, hexId: string): Promise<void> | void => {
-  const targetsHex = snapshot.reachable.has(hexId) || snapshot.attackTargets.includes(hexId)
+  const targetsHex = snapshot.reachable.has(hexId) || snapshot.attackTargets.includes(hexId) || snapshot.air.targetHexes.includes(hexId)
     || snapshot.barrageTargets.includes(hexId) || snapshot.placementHexes.includes(hexId) || snapshot.decisionHexes.includes(hexId)
     || snapshot.collapseHexes.includes(hexId);
   const piece = snapshot.view.projection?.stacks.flatMap(({ pieces }) => pieces).find(({ id }) => id === pieceId);
@@ -492,6 +504,14 @@ function bindEvents(snapshot: UiSnapshot): void {
   root.querySelectorAll<HTMLInputElement>('[data-participant]').forEach(input => input.addEventListener('change', () => controller.toggleParticipant(input.dataset.participant!)));
   root.querySelectorAll<HTMLInputElement>('[data-lead]').forEach(input => input.addEventListener('change', () => controller.setLead(input.dataset.lead!)));
   root.querySelectorAll<HTMLButtonElement>('[data-choice]').forEach((button) => button.addEventListener('click', () => void runUi(() => controller.respondToDecision(button.dataset.choice ?? ''))));
+  root.querySelectorAll<HTMLButtonElement>('[data-air-mission]').forEach((button) => button.addEventListener('click', () => controller.planAirMission(button.dataset.airMission as never)));
+  root.querySelectorAll<HTMLButtonElement>('[data-air-target]').forEach((button) => button.addEventListener('click', () => controller.setAirTarget(button.dataset.airTarget as never)));
+  root.querySelectorAll<HTMLInputElement>('[data-air-aircraft]').forEach((input) => input.addEventListener('change', () => controller.toggleAirAircraft(input.dataset.airAircraft!)));
+  root.querySelectorAll<HTMLInputElement>('[data-refit-aircraft]').forEach((input) => input.addEventListener('change', () => controller.toggleRefitAircraft(input.dataset.refitBase!, input.dataset.refitAircraft!)));
+  root.querySelectorAll<HTMLButtonElement>('[data-refit]').forEach((button) => button.addEventListener('click', () => void runUi(() => controller.refitBase(button.dataset.refit!))));
+  $('#declare-air-mission')?.addEventListener('click', () => void runUi(controller.declareAirMission));
+  $('#cancel-air-mission')?.addEventListener('click', controller.cancelAirMission);
+  $('#toggle-air-zones')?.addEventListener('click', controller.toggleAirZones);
   root.querySelectorAll<HTMLButtonElement>('[data-checkpoint]').forEach((button) => button.addEventListener('click', () => void controller.undoTo(button.dataset.checkpoint ?? '')));
   root.querySelectorAll<HTMLElement>('[data-settings]').forEach(button => button.addEventListener('click', () => {
     settingsTab = button.dataset.settings!;
@@ -548,6 +568,7 @@ function bindEvents(snapshot: UiSnapshot): void {
       oob: {
         scale: root.querySelector<HTMLSelectElement>('#new-game-scale')?.value as OobScale,
         formationsPerSide: Number(root.querySelector<HTMLInputElement>('#new-game-formations')?.value ?? 0),
+        ...(root.querySelector<HTMLSelectElement>('#new-game-air')?.value === 'STANDARD' ? { air: 'STANDARD' as AirForceLevel } : {}),
       },
       seeds: {
         map: Number(root.querySelector<HTMLInputElement>('#new-game-map-seed')?.value ?? -1),
@@ -588,6 +609,7 @@ function bindEvents(snapshot: UiSnapshot): void {
     if (id === 'new-game-style') newGameSettings = { ...newGameSettings, map: { ...newGameSettings.map, style: input.value as MapGenerationStyle } };
     if (id === 'new-game-scale') newGameSettings = { ...newGameSettings, oob: { ...newGameSettings.oob, scale: input.value as OobScale } };
     if (id === 'new-game-formations') newGameSettings = { ...newGameSettings, oob: { ...newGameSettings.oob, formationsPerSide: value } };
+    if (id === 'new-game-air') newGameSettings = { ...newGameSettings, oob: { ...newGameSettings.oob, air: input.value as AirForceLevel } };
     if (id === 'new-game-turn-limit') newGameSettings = { ...newGameSettings, turnLimit: value };
     if (id === 'new-game-start-month') newGameSettings = { ...newGameSettings, startMonth: value };
     for (const key of ['map', 'oob', 'deployment', 'rules'] as const) if (id === `new-game-${key}-seed`) newGameSettings = { ...newGameSettings, seeds: { ...newGameSettings.seeds, [key]: value } };

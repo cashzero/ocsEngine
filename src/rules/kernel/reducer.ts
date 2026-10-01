@@ -2,6 +2,8 @@ import { revision, type PieceId } from '../../core/index.js';
 import { setHexControl } from '../../domain/map/index.js';
 import { upsertPieceState } from '../../domain/piece/index.js';
 import { declareBarrage, declareCombat, nextStackOrder, resolveDecision } from '../combat/combat.js';
+import { applyCombineAircraft, applyReduceAirBase, applyRefit } from '../air/base.js';
+import { declareAirMission, resolveAirDecision } from '../air/mission.js';
 import { applyInterruptChoice, settleInterrupts } from '../lifecycle/interrupts.js';
 import {
   applySequenceLifecycle,
@@ -208,6 +210,14 @@ const dispatch = (state: GameState, action: GameAction): Transition => {
       return declareCombat(state, action);
     case 'DECLARE_BARRAGE':
       return declareBarrage(state, action);
+    case 'DECLARE_AIR_MISSION':
+      return declareAirMission(state, action);
+    case 'REFIT_AIRCRAFT':
+      return applyRefit(state, action);
+    case 'REDUCE_AIR_BASE':
+      return applyReduceAirBase(state, action);
+    case 'COMBINE_AIRCRAFT':
+      return applyCombineAircraft(state, action);
     case 'RESPOND_DECISION': {
       const pending = state.pendingDecision!;
       if (pending.kind === 'FIRST_PLAYER') {
@@ -229,6 +239,9 @@ const dispatch = (state: GameState, action: GameAction): Transition => {
           return { state: advanced.state, events: renumber([...events, ...advanced.events]) };
         }
         return { state: settled.state, events: renumber(events) };
+      }
+      if (state.activeTransaction?.kind === 'AIR_MISSION' && pending.transactionId === state.activeTransaction.id) {
+        return resolveAirDecision(state, action.choiceId);
       }
       return resolveDecision(state, action.choiceId);
     }

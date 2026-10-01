@@ -234,3 +234,101 @@ export const INTERNAL_RECOVERY_TOKENS_PER_LEVEL = 2;
 
 /** 12.5c fuel costs in Tokens. */
 export const FUEL_COSTS = { formation: 4, hq: 4, singleUnit: 1 } as const;
+
+// ─── Air power (chart page 1 "Air", and the Barrage vs Facility Table on page 4) ──────────────────
+
+/** 14.3e Air Combat Table: modified 2d6 (attacker ACR added, defender ACR subtracted). */
+export type AirCombatResult = 'ATTACKER_ABORTS' | 'BOTH_ABORT' | 'DEFENDER_ABORTS';
+
+export const airCombatResult = (modifiedRoll: number): AirCombatResult =>
+  modifiedRoll <= 6 ? 'ATTACKER_ABORTS' : modifiedRoll === 7 ? 'BOTH_ABORT' : 'DEFENDER_ABORTS';
+
+/** 14.3e loss die: aborted aircraft also lose a step on 5-6. */
+export const AIR_COMBAT_LOSS_MINIMUM = 5;
+
+/** 14.4e Flak: a modified 2d6 of 11 or more kills one mission aircraft step. */
+export const FLAK_HIT_MINIMUM = 11;
+
+/** 14.4e Flak Roll Modifiers. Air Base Level and printed/ship Flak are added as their values. */
+export const FLAK_MODIFIERS = {
+  threeOrMoreAircraft: 1,
+  headquarters: 1,
+  patrolZoneWithFighter: 1,
+  patrolZoneWithoutFighter: 2,
+  patrolZoneTrainbusting: 1,
+} as const;
+
+/** 14.4c: a Patrol Zone extends 10 hexes from an Air Base with an Active Fighter. */
+export const PATROL_ZONE_HEXES = 10;
+
+/** 14.7c: the short-range shift applies when every aircraft is within 10 hexes of its base. */
+export const SHORT_RANGE_HEXES = 10;
+
+/**
+ * 14.4f Mission Loss Table by the number of mission aircraft, indexed by one die (1-6): `#n` is the
+ * n-th aircraft of the mission stack, `W` the weakest and `S` the strongest in Barrage Strength.
+ */
+export const MISSION_LOSS_TABLE: Readonly<Record<2 | 3 | 4, readonly string[]>> = {
+  2: ['#1', '#1', '#1', '#2', '#2', '#2'],
+  3: ['#1', '#1', '#2', '#2', '#3', '#3'],
+  4: ['#1', '#2', '#3', '#4', 'W', 'S'],
+};
+
+/** 9.14f Air Base Capture Table: 2d6 per aircraft, 6 or less loses a step. */
+export const AIR_BASE_CAPTURE = { stepLossMaximum: 6, activeModifier: 2, advanceModifier: 2 } as const;
+
+/**
+ * 14.10d Air Transport Success Table: the highest failing modified 2d6 by hex status and terrain.
+ * Transcribed for the air transport slice; nothing consumes it until Air Drop is implemented.
+ */
+export const AIR_TRANSPORT_FAILURE_MAXIMUM: Readonly<Record<'FRIENDLY' | 'ENEMY', Readonly<Record<'CLEAR' | 'CLOSED', number>>>> = {
+  FRIENDLY: { CLEAR: 4, CLOSED: 5 },
+  ENEMY: { CLEAR: 5, CLOSED: 6 },
+};
+
+export interface FacilityColumn {
+  readonly label: string;
+  readonly minimumStrength: number;
+}
+
+/** 10.0c Barrage vs Facility Table columns (the printed costs apply to artillery only). */
+export const FACILITY_TABLE_COLUMNS: readonly FacilityColumn[] = [
+  { label: '1 or less', minimumStrength: 1 },
+  { label: '2', minimumStrength: 2 },
+  { label: '3-4', minimumStrength: 3 },
+  { label: '5-10', minimumStrength: 5 },
+  { label: '11-20', minimumStrength: 11 },
+  { label: '21-40', minimumStrength: 21 },
+  { label: '41-80', minimumStrength: 41 },
+  { label: '81+', minimumStrength: 81 },
+];
+
+/** Barrage vs Facility Table rows for one die (1-6); `*` is a successful Trainbusting. */
+export const FACILITY_TABLE_ROWS: Readonly<Record<number, readonly string[]>> = Object.fromEntries([
+  '- - - - - - (5) 1(5)',
+  '- - - - - (5) 1(4) 1(4)',
+  '- - - - (5) 1(5) 1(4) 1(4)',
+  '- - - *(6) 1*(5) 1*(4) 1*(4) 2*(4)',
+  '- (6) *(6) 1*(5) 1*(4) 2*(4) 2*(4) 2*(3)',
+  '(6) *(5) 1*(5) 1*(4) 1*(4) 2*(4) 2*(3) 2*(3)',
+].map((row, index) => [index + 1, row.split(' ')]));
+
+export const facilityColumnIndex = (strength: number): number =>
+  FACILITY_TABLE_COLUMNS.reduce((index, column, current) => strength >= column.minimumStrength ? current : index, 0);
+
+export interface FacilityResult {
+  readonly text: string;
+  /** "1"/"2": Air Base Levels lost (or Port hits). */
+  readonly levels: number;
+  /** "*": a Trainbusting barrage succeeds. */
+  readonly trainbusting: boolean;
+  /** "(#)": each aircraft at a targeted Air Base loses a step on one die of this number or more. */
+  readonly aircraftCheck: number | null;
+}
+
+export const parseFacilityResult = (text: string): FacilityResult => ({
+  text,
+  levels: Number(/^([12])/u.exec(text)?.[1] ?? 0),
+  trainbusting: text.includes('*'),
+  aircraftCheck: /\((\d)\)/u.test(text) ? Number(/\((\d)\)/u.exec(text)![1]) : null,
+});

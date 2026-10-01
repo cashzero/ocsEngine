@@ -1,4 +1,5 @@
 import { stableSort, type HexId, type PieceId, type PlayerId } from '../../core/index.js';
+import { captureAirBase } from '../air/base.js';
 import type { PieceRuntimeState, PieceState } from '../../domain/piece/index.js';
 import type { GameState, RuleEvent, RuleViolation } from '../kernel/model.js';
 import { rollDie } from '../kernel/rng.js';
@@ -482,8 +483,9 @@ export const captureDisplacementHexes = (state: GameState, truck: PieceState, fr
  * combined points, loaded SP sharing their fate; the rest displace by the owner's choice. Extenders
  * collapse instead of being captured.
  */
-export const captureAt = (state: GameState, capturerId: PlayerId, hexId: HexId, events: RuleEvent[]): GameState => {
-  let next = state;
+export const captureAt = (state: GameState, capturerId: PlayerId, hexId: HexId, events: RuleEvent[], byAdvance = false): GameState => {
+  // 9.14f: Air Bases are captured and the aircraft there roll and displace.
+  let next = captureAirBase(state, capturerId, hexId, byAdvance, events);
   const enemy = piecesAt(next, hexId).filter((piece) => piece.ownerId !== capturerId);
   // Extenders collapse first (9.14d); with no legal Hex they flip and are checked as trucks.
   for (const extender of enemy.filter((piece) => isExtender(next, piece))) {

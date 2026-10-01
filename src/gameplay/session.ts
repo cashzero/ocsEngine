@@ -1,4 +1,5 @@
 import type { PlayerId, Revision } from '../core/index.js';
+import { GAMEPLAY_SAVE_VERSION } from './persistence.js';
 import {
   hashGameState,
   parseGameStateJson,
@@ -493,7 +494,7 @@ export class GameplaySession implements GameSession {
     const current = serializeGameState(this.#state);
     if (!initial.ok || !current.ok) throw new GameplayFailure({ code: 'SAVE_INVALID', message: 'Authoritative state cannot be serialized.', path: [] });
     return {
-      schemaVersion: 1, gameplayVersion: '0.2.0', sessionId: this.#id,
+      schemaVersion: 1, gameplayVersion: GAMEPLAY_SAVE_VERSION, sessionId: this.#id,
       label: this.#label, createdAtMs: this.#createdAtMs,
       lifecycle: this.#lifecycle, activeSeatId: this.#activeSeatId,
       bindings: this.#bindings.map((binding) => ({ ...binding })),
