@@ -533,7 +533,11 @@ const continueSetup = (input: GameState): Transition => {
     }
     if (transaction.step === 'DEFENDER_LEAD') {
       const defenders = transaction.defenderIds.flatMap((id) => pieceById(state, id) ?? []);
-      const options = defenders.map((piece) => ({ id: `lead:${piece.id}`, label: `${unitName(state, piece)} (AR ${combatActionRating(state, piece)})`, hexId: null }));
+      // 9.6: show the DRM each choice produces, so the defender sees the consequence before choosing.
+      const drmWith = (piece: PieceState): number => calculateCombatOdds(state, transaction.attackerIds, transaction.defenderIds, transaction.targetHexId,
+        suppliedDefenderIds(transaction), transaction.leadAttackerId, piece.id).drm;
+      const signed = (value: number): string => (value > 0 ? `+${value}` : value < 0 ? `−${-value}` : '0');
+      const options = defenders.map((piece) => ({ id: `lead:${piece.id}`, label: `${unitName(state, piece)} (AR ${combatActionRating(state, piece)}): combat DRM ${signed(drmWith(piece))}`, hexId: null }));
       if (options.length === 1) { state = { ...state, activeTransaction: { ...transaction, leadDefenderId: defenders[0]!.id, step: 'DEFENDER_TERRAIN' } }; continue; }
       const lead = pieceById(state, transaction.leadAttackerId!);
       const pending = setupDecision(state, 'DEFENDER_LEAD', transaction.defenderOwnerId,

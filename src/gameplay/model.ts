@@ -1,6 +1,7 @@
 import type {
   Brand,
   ContentHash,
+  PieceId,
   PlayerId,
   Revision,
   ScenarioId,
@@ -17,6 +18,8 @@ import type {
   RuleProjection,
   RuleViolation,
   RuleConfiguration,
+  ReachableHex,
+  RuleQueryResult,
 } from '../rules/index.js';
 
 export type SessionId = Brand<string, 'SessionId'>;
@@ -272,6 +275,8 @@ export interface GameSession {
   readonly getView: (seatId: SeatId) => GameplayView;
   readonly getActionFamilies: (seatId: SeatId) => readonly ActionFamily[];
   readonly getActionCandidates: (seatId: SeatId, request: Omit<CandidateRequest, 'actorId'>) => CandidateResult;
+  /** Destinations of one of the seat's units with their MP cost (6.1); empty when not interactive. */
+  readonly getMovementRange: (seatId: SeatId, pieceId: PieceId) => RuleQueryResult<readonly ReachableHex[]>;
   readonly createDraft: (seatId: SeatId, action: GameAction) => ActionDraft;
   readonly validateDraft: (draft: ActionDraft) => DraftValidation;
   readonly getPendingDecision: (seatId: SeatId) => PendingDecisionDescriptor | null;
@@ -287,6 +292,8 @@ export interface GameSession {
   readonly completeHandoff: (token: HandoffToken) => GameplayOperationResult;
   readonly createCheckpoint: (label?: string) => CheckpointDescriptor;
   readonly listCheckpoints: () => readonly CheckpointDescriptor[];
+  /** Drop a checkpoint that is no longer wanted (for example a superseded automatic one). */
+  readonly removeCheckpoint: (checkpointId: CheckpointId) => boolean;
   readonly undoTo: (checkpointId: CheckpointId) => Promise<GameplayOperationResult>;
   readonly save: () => GameplaySaveEnvelope;
   readonly serializeSave: () => string;

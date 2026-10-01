@@ -16,6 +16,7 @@ import type {
   SeatBinding,
   SeatId,
 } from '../gameplay/index.js';
+import type { CombatReport, FeedEntry, TrackStep } from './narrative.js';
 
 export interface UiSelection {
   readonly hexId: string | null;
@@ -101,7 +102,38 @@ export interface UnitAction {
 export interface EndStep {
   readonly enabled: boolean;
   readonly label: string;
+  /** The step that nominally follows; steps without legal actions are passed automatically. */
+  readonly next: string;
   readonly blockers: readonly string[];
+}
+
+/** Cost of reaching one Hex of the selected unit's range (6.1). */
+export interface MoveRangeEntry {
+  readonly path: readonly string[];
+  readonly costTicks: number;
+  readonly remainingAfterTicks: number;
+  /** Entering stops the move (enemy ZOC for Truck units, "All" terrain, minimum move). */
+  readonly endsMovement: boolean;
+}
+
+/** Why the screen must pass to the other player, phrased without the other player's private data. */
+export interface HandoffInfo {
+  readonly toSeatId: SeatId;
+  readonly toLabel: string;
+  readonly reason: string;
+}
+
+/** What happened while a seat was away from the screen. */
+export interface AwayReport {
+  readonly entries: readonly FeedEntry[];
+  readonly combats: readonly CombatReport[];
+}
+
+/** Progress of the combat decision the viewer is answering. */
+export interface CombatSheet {
+  readonly role: 'ATTACKER' | 'DEFENDER';
+  readonly steps: readonly { readonly label: string; readonly status: 'done' | 'current' | 'upcoming' }[];
+  readonly answers: readonly string[];
 }
 
 export interface UiSnapshot {
@@ -113,6 +145,9 @@ export interface UiSnapshot {
   readonly selectedPiece: ProjectedPiece | null;
   /** Legal destinations of the selected unit, keyed by Hex, with the least-cost path. */
   readonly reachable: ReadonlyMap<string, readonly string[]>;
+  readonly moveRange: ReadonlyMap<string, MoveRangeEntry>;
+  /** MP the selected unit has left this phase, in quarter-MP ticks; null when it cannot move. */
+  readonly remainingTicks: number | null;
   readonly movePreview: MovePreview | null;
   /** Enemy Hexes the current segment allows attacking (overruns only for the selected unit). */
   readonly attackTargets: readonly string[];
@@ -140,6 +175,23 @@ export interface UiSnapshot {
   readonly handoffPending: boolean;
   readonly requiredSeatId: SeatId | null;
   readonly air: AirOverview;
+  readonly handoff: HandoffInfo | null;
+  readonly feed: readonly FeedEntry[];
+  readonly combatReports: readonly CombatReport[];
+  /** Latest combat resolved by this seat's own action, until dismissed. */
+  readonly resultCard: CombatReport | null;
+  readonly awayReport: AwayReport | null;
+  readonly phaseTrack: readonly TrackStep[];
+  /** Own units that moved / attacked since the current phase began. */
+  readonly movedThisPhase: ReadonlySet<string>;
+  readonly attackedThisPhase: ReadonlySet<string>;
+  /** Restores the automatic checkpoint taken when this step began (no dice rolled since). */
+  readonly undoStep: { readonly label: string } | null;
+  readonly combatSheet: CombatSheet | null;
+  /** The pending supply decision can be paid automatically from the largest dumps. */
+  readonly autoPay: boolean;
+  /** Display name of each formation of the viewer, by formation Definition ID. */
+  readonly formationNames: ReadonlyMap<string, string>;
 }
 
 export type UiListener = (snapshot: UiSnapshot) => void;

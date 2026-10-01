@@ -1,6 +1,6 @@
 import type { HexId, PieceId, PlayerId } from '../core/index.js';
 import type { OcsMode } from '../domain/piece/index.js';
-import { DEFAULT_NEW_GAME_REQUEST, prepareNewGame } from '../game-flow/index.js';
+import { prepareNewGame } from '../game-flow/index.js';
 import type { NewGameRequest } from '../game-flow/index.js';
 import {
   createInitialGameState,
@@ -29,25 +29,38 @@ export const CONTACT_NEW_GAME_REQUEST: NewGameRequest = {
   startMonth: 9,
 };
 
+/**
+ * Fixed package for rule tests and the conformance probe (the former UI default). Kept separate
+ * from DEFAULT_NEW_GAME_REQUEST so changing what players are offered never moves rule baselines.
+ */
+export const RULE_FIXTURE_NEW_GAME_REQUEST: NewGameRequest = {
+  templateId: 'GROUND_DUEL',
+  map: { width: 18, height: 12, style: 'TEMPERATE_INLAND' },
+  oob: { scale: 'COMPACT', formationsPerSide: 2 },
+  seeds: { map: 0x0c500001, oob: 0x0c500002, deployment: 0x0c500003, rules: 0x0c500004 },
+  turnLimit: 2,
+  startMonth: 10,
+};
+
 export const ALLIED = 'player:allied' as PlayerId;
 export const AXIS = 'player:axis' as PlayerId;
 
-/** The default generated scenario with air forces (each side: Fighters, Tactical Bombers, an Air Base). */
+/** The rule fixture scenario with air forces (each side: Fighters, Tactical Bombers, an Air Base). */
 export const AIR_NEW_GAME_REQUEST: NewGameRequest = {
-  ...DEFAULT_NEW_GAME_REQUEST,
-  oob: { ...DEFAULT_NEW_GAME_REQUEST.oob, air: 'STANDARD' },
+  ...RULE_FIXTURE_NEW_GAME_REQUEST,
+  oob: { ...RULE_FIXTURE_NEW_GAME_REQUEST.oob, air: 'STANDARD' },
 };
 
 const preparedCache = new Map<NewGameRequest, ReturnType<typeof prepareNewGame>>();
-const prepared = (request: NewGameRequest = DEFAULT_NEW_GAME_REQUEST) => {
+const prepared = (request: NewGameRequest = RULE_FIXTURE_NEW_GAME_REQUEST) => {
   let entry = preparedCache.get(request);
   if (!entry) { entry = prepareNewGame(request); preparedCache.set(request, entry); }
   if (!entry.ok) throw new Error('Generated rule scenario failed to prepare.');
   return entry.value;
 };
 
-/** Piece ID in the default generated scenario whose ID contains `fragment`. */
-export const generatedPieceId = (fragment: string, request: NewGameRequest = DEFAULT_NEW_GAME_REQUEST): PieceId => {
+/** Piece ID in the rule fixture scenario whose ID contains `fragment`. */
+export const generatedPieceId = (fragment: string, request: NewGameRequest = RULE_FIXTURE_NEW_GAME_REQUEST): PieceId => {
   const piece = prepared(request).scenario.initialPieceState.pieces.find(({ id }) => id.includes(fragment));
   if (!piece) throw new Error(`No generated Piece matches ${fragment}.`);
   return piece.id;

@@ -23,6 +23,25 @@ export const validateNewGameRequest = (request: NewGameRequest): readonly GameFl
   return failures;
 };
 
+/**
+ * Map sizes a player may choose for a New Game. The map generator itself accepts 8x8 and up so
+ * rule tests can build small contact maps; operations smaller than this are not offered to players.
+ */
+export const NEW_GAME_MAP_LIMITS = { minWidth: 16, maxWidth: 64, minHeight: 12, maxHeight: 48 } as const;
+
+export const validateNewGameMapSize = (request: NewGameRequest): readonly GameFlowFailure[] => {
+  const { minWidth, maxWidth, minHeight, maxHeight } = NEW_GAME_MAP_LIMITS;
+  const failures: GameFlowFailure[] = [];
+  const { width, height } = request.map;
+  if (!Number.isSafeInteger(width) || width < minWidth || width > maxWidth) {
+    failures.push({ stage: 'OPTIONS', code: 'MAP_WIDTH_OUT_OF_RANGE', message: `Map width must be from ${minWidth} to ${maxWidth} hexes.`, path: ['map', 'width'] });
+  }
+  if (!Number.isSafeInteger(height) || height < minHeight || height > maxHeight) {
+    failures.push({ stage: 'OPTIONS', code: 'MAP_HEIGHT_OUT_OF_RANGE', message: `Map height must be from ${minHeight} to ${maxHeight} hexes.`, path: ['map', 'height'] });
+  }
+  return failures;
+};
+
 export const validateGeneratedScenarioPackage = (
   generated: GeneratedScenarioPackage,
 ): readonly GameFlowFailure[] => {
