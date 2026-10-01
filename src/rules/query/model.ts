@@ -49,6 +49,8 @@ export interface ProjectedPiece {
   readonly mode: OcsMode | null;
   readonly remainingSteps: number | null;
   readonly statuses: readonly string[];
+  /** Values of TEXT and INTEGER statuses (internal stocks level, truck size); empty for enemy units. */
+  readonly statusValues: readonly { readonly statusDefinitionId: DefinitionId; readonly value: string | number }[];
   readonly redacted: boolean;
 }
 
@@ -65,6 +67,28 @@ export interface RuleProjection {
   readonly stacks: readonly ProjectedStack[];
   readonly pendingDecision: GameState['pendingDecision'];
   readonly victory: GameState['victory'];
+  readonly combat: ProjectedCombat | null;
+  readonly weather: GameState['weather'];
+  readonly fuel: GameState['fuel'];
+}
+
+/** Public facts of the combat or barrage in progress (4.9b/c); units are not identified. */
+export interface ProjectedCombat {
+  readonly kind: 'COMBAT' | 'OVERRUN' | 'BARRAGE';
+  readonly targetHexId: string;
+  readonly attackerOwnerId: PlayerId;
+  readonly attackerCount: number;
+  readonly defenderCount: number;
+  readonly attackerStrength: number;
+  readonly defenderStrength: number | null;
+  readonly odds: string;
+  readonly line: string | null;
+  readonly drm: number | null;
+  readonly defenderSupplied: boolean | null;
+  readonly result: string | null;
+  readonly rollTotal: number | null;
+  readonly surpriseTotal: number | null;
+  readonly shiftDie: number | null;
 }
 
 export interface ActionFamily {

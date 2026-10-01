@@ -2,6 +2,7 @@ import {
   err,
   ok,
   parseContentHash,
+  parseDefinitionId,
   parseHexCoordinateId,
   parsePieceId,
   parsePlayerId,
@@ -107,10 +108,15 @@ const parseAction = (input: unknown, path: Path, issues: GameplayError[]): GameA
   const fields: Readonly<Record<GameAction['kind'], readonly string[]>> = {
     ADVANCE_SEQUENCE: [], CHANGE_MODE: ['pieceId', 'mode'], RELEASE_RESERVE: ['pieceId'],
     MOVE_PIECE: ['pieceId', 'path'], CHECK_SUPPLY: ['pieceIds', 'sourcePieceId'],
-    DECLARE_COMBAT: ['combatKind', 'attackerIds', 'defenderIds', 'targetHexId'],
+    DECLARE_COMBAT: ['combatKind', 'attackerIds', 'defenderIds', 'targetHexId', 'leadAttackerId'],
     DECLARE_BARRAGE: ['firerIds', 'targetPieceIds', 'targetHexId'],
     RESPOND_DECISION: ['decisionId', 'choiceId'], COMMIT_TRANSACTION: ['transactionId'],
     CANCEL_TRANSACTION: ['transactionId'], PLACE_REINFORCEMENT: ['pieceId', 'hexId'],
+    PAY_FUEL: ['method', 'pieceId', 'sourcePieceId'], RECOVER_INTERNALS: ['pieceId', 'sourcePieceIds'],
+    CHOOSE_FORMATION_TRACE: ['formationId', 'routeKey'], ATTEMPT_BREAKOUT: ['pieceId'],
+    BLOW_DUMP: ['dumpId', 'tokens'], LOAD_SUPPLY: ['truckId', 'dumpId', 'tokens'], UNLOAD_SUPPLY: ['truckId', 'tokens'],
+    COMBINE_TRANSPORT: ['truckIds'], DIVIDE_TRANSPORT: ['truckId', 'points'], FORM_EXTENDER: ['truckId'],
+    DISSOLVE_EXTENDER: ['extenderId'], COLLAPSE_EXTENDER: ['extenderId', 'hexId'],
   };
   if (!(kind in fields)) issues.push(issue('SAVE_INVALID', [...path, 'kind'], `Unknown action kind ${kind}.`));
   exactKeys(record, ['actionId', 'actorId', 'expectedRevision', 'kind', ...(fields[kind] ?? [])], path, issues);
@@ -157,7 +163,7 @@ const parseAction = (input: unknown, path: Path, issues: GameplayError[]): GameA
     case 'DECLARE_COMBAT': {
       const combatKind = textAt(record, 'combatKind', path, issues);
       if (!['REGULAR', 'OVERRUN'].includes(combatKind)) issues.push(issue('SAVE_INVALID', [...path, 'combatKind'], 'Invalid combat kind.'));
-      return { ...base, combatKind, attackerIds: pieces('attackerIds'), defenderIds: pieces('defenderIds'), targetHexId: hex('targetHexId') } as GameAction;
+      return { ...base, combatKind, attackerIds: pieces('attackerIds'), defenderIds: pieces('defenderIds'), targetHexId: hex('targetHexId'), leadAttackerId: piece('leadAttackerId') } as GameAction;
     }
     case 'DECLARE_BARRAGE': return { ...base, firerIds: pieces('firerIds'), targetPieceIds: pieces('targetPieceIds'), targetHexId: hex('targetHexId') } as GameAction;
     case 'RESPOND_DECISION': {
@@ -174,6 +180,27 @@ const parseAction = (input: unknown, path: Path, issues: GameplayError[]): GameA
       return { ...base, transactionId: parsed.ok ? parsed.value : value as never } as GameAction;
     }
     case 'PLACE_REINFORCEMENT': return { ...base, pieceId: piece('pieceId'), hexId: hex('hexId') } as GameAction;
+    case 'PAY_FUEL': {
+      const method = textAt(record, 'method', path, issues);
+      if (!['FORMATION', 'HQ', 'SINGLE_UNIT'].includes(method)) issues.push(issue('SAVE_INVALID', [...path, 'method'], 'Invalid fuel method.'));
+      return { ...base, method, pieceId: piece('pieceId'), sourcePieceId: piece('sourcePieceId') } as GameAction;
+    }
+    case 'RECOVER_INTERNALS': return { ...base, pieceId: piece('pieceId'), sourcePieceIds: pieces('sourcePieceIds') } as GameAction;
+    case 'CHOOSE_FORMATION_TRACE': {
+      const formation = textAt(record, 'formationId', path, issues);
+      const parsed = parseDefinitionId(formation);
+      if (!parsed.ok) issues.push(issue('SAVE_INVALID', [...path, 'formationId'], 'Invalid formation Definition ID.'));
+      return { ...base, formationId: parsed.ok ? parsed.value : formation as never, routeKey: textAt(record, 'routeKey', path, issues) } as GameAction;
+    }
+    case 'ATTEMPT_BREAKOUT': return { ...base, pieceId: piece('pieceId') } as GameAction;
+    case 'BLOW_DUMP': return { ...base, dumpId: piece('dumpId'), tokens: integerAt(record, 'tokens', path, issues) } as GameAction;
+    case 'LOAD_SUPPLY': return { ...base, truckId: piece('truckId'), dumpId: piece('dumpId'), tokens: integerAt(record, 'tokens', path, issues) } as GameAction;
+    case 'UNLOAD_SUPPLY': return { ...base, truckId: piece('truckId'), tokens: integerAt(record, 'tokens', path, issues) } as GameAction;
+    case 'COMBINE_TRANSPORT': return { ...base, truckIds: pieces('truckIds') } as GameAction;
+    case 'DIVIDE_TRANSPORT': return { ...base, truckId: piece('truckId'), points: integerAt(record, 'points', path, issues) } as GameAction;
+    case 'FORM_EXTENDER': return { ...base, truckId: piece('truckId') } as GameAction;
+    case 'DISSOLVE_EXTENDER': return { ...base, extenderId: piece('extenderId') } as GameAction;
+    case 'COLLAPSE_EXTENDER': return { ...base, extenderId: piece('extenderId'), hexId: hex('hexId') } as GameAction;
     default: return base as GameAction;
   }
 };
@@ -229,6 +256,9 @@ const parseActionMetadata = (
   };
 };
 
+/** Version written into every Gameplay save and the only one this build reads. */
+export const GAMEPLAY_SAVE_VERSION = '0.2.0' as const;
+
 export const serializeGameplaySave = (
   envelope: GameplaySaveEnvelope,
 ): Result<string, readonly GameplayError[]> => {
@@ -253,7 +283,13 @@ export const parseGameplaySave = (
   exactKeys(record, keys, [], issues);
   const schema = integerAt(record, 'schemaVersion', [], issues);
   const version = textAt(record, 'gameplayVersion', [], issues);
-  if (schema !== 1 || version !== '0.1.0') issues.push(issue('SAVE_INCOMPATIBLE', ['schemaVersion'], 'Unsupported Gameplay save version.'));
+  if (schema !== 1 || version !== GAMEPLAY_SAVE_VERSION) {
+    // Older saves cannot be migrated: their action logs replay rules that have since been corrected.
+    issues.push(issue('SAVE_INCOMPATIBLE', ['gameplayVersion'], version === '0.1.0'
+      ? 'This save was made before the OCS 4.3 rules rebuild (save version 0.1.0). Its moves replay rules that have since been corrected, so it cannot be converted; start a new game.'
+      : `Unsupported save version ${version || 'unknown'}; this build reads version ${GAMEPLAY_SAVE_VERSION}.`));
+    return err(issues);
+  }
   const sessionText = textAt(record, 'sessionId', [], issues);
   const seatText = textAt(record, 'activeSeatId', [], issues);
   const session = parseSessionId(sessionText);
@@ -291,7 +327,7 @@ export const parseGameplaySave = (
     ? record.checkpoints.map((value, index) => parseCheckpoint(value, ['checkpoints', index], issues))
     : (issues.push(issue('SAVE_INVALID', ['checkpoints'], 'Expected checkpoints array.')), []);
   const envelope: GameplaySaveEnvelope = {
-    schemaVersion: 1, gameplayVersion: '0.1.0',
+    schemaVersion: 1, gameplayVersion: GAMEPLAY_SAVE_VERSION,
     sessionId: session.ok ? session.value : sessionText as never,
     label: textAt(record, 'label', [], issues),
     createdAtMs: integerAt(record, 'createdAtMs', [], issues),

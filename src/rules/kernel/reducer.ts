@@ -1,310 +1,263 @@
-import { parseRuleActionId, type RuleActionId } from './ids.js';
-import { revision, stableSort, type PieceId } from '../../core/index.js';
+import { revision, type PieceId } from '../../core/index.js';
 import { setHexControl } from '../../domain/map/index.js';
 import { upsertPieceState } from '../../domain/piece/index.js';
-import { queryMovementPath } from '../movement/movement.js';
-import { nextStackOrderAtHex } from '../stacking/stacking.js';
-import {
-  commitRuleTransaction,
-  queryBarrage,
-  resolveResultDecision,
-  validateCombatOrBarrageDeclaration,
-  validateTransactionCommit,
-} from '../combat/combat.js';
-import { validateModeChange, validateReserveRelease } from '../mode/mode.js';
+import { declareBarrage, declareCombat, nextStackOrder, resolveDecision } from '../combat/combat.js';
+import { applyInterruptChoice, settleInterrupts } from '../lifecycle/interrupts.js';
 import {
   applySequenceLifecycle,
+  eliminateForOverstack,
+  overstackDecision,
   placeReinforcement,
-  validateReinforcementPlacement,
+  resolveFirstPlayerDecision,
 } from '../lifecycle/lifecycle.js';
+import { applyBreakout } from '../lifecycle/supply-phase.js';
+import { applyModeChange, applyReserveRelease } from '../mode/mode.js';
+import { queryMovementPath } from '../movement/movement.js';
+import { hexOf, pieceById, reTicksOf, usageOf, withInternalStocks, withUsage } from '../pieces.js';
+import { hasOptionalActions } from '../query/candidates.js';
 import { nextSequence } from '../sequence/sequence.js';
+import { commitFuelForMove, payFuel } from '../supply/fuel.js';
+import { dumpsReaching, eatOffMapCost, recoveryPlan, spendReservations } from '../supply/supply.js';
 import {
-  outOfSupplyStatusId,
-  querySupply,
-  supplyCheckCost,
-  validateSupplyCheck,
-} from '../supply/supply.js';
-import {
-  declareTransaction,
-  reservationFromChoice,
-  validateDecisionResponse,
-  validateTransactionCancel,
-  validateTransactionDeclaration,
-} from '../transaction/transaction.js';
+  applyBlowDump,
+  applyCollapseExtender,
+  applyCombine,
+  applyDissolveExtender,
+  applyDivide,
+  applyFormExtender,
+  applyLoad,
+  applyUnload,
+  captureAt,
+} from '../supply/transport.js';
 import { violation } from '../validation/violation.js';
 import { validateGameState } from './state.js';
-import type {
-  ActionValidation,
-  GameAction,
-  GameState,
-  PieceUsageState,
-  RuleEvent,
-  RuleViolation,
-  TransitionResult,
-} from './model.js';
+import { validateAdvance, validateGameAction } from './validate.js';
+import type { GameAction, GameState, ResourceReservation, RuleEvent, TransitionResult } from './model.js';
 
-const actionKindRule: Readonly<Record<GameAction['kind'], string>> = {
-  ADVANCE_SEQUENCE: '2.2', CHANGE_MODE: '5.4', RELEASE_RESERVE: '5.7b',
-  MOVE_PIECE: '6.1', CHECK_SUPPLY: '12.6', DECLARE_COMBAT: '9.1',
-  DECLARE_BARRAGE: '10.0', RESPOND_DECISION: '9.2', COMMIT_TRANSACTION: '9.9',
-  CANCEL_TRANSACTION: '9.2', PLACE_REINFORCEMENT: '13.6',
-};
+export { validateGameAction } from './validate.js';
 
-const commonViolations = (state: GameState, action: GameAction): RuleViolation[] => {
-  const issues: RuleViolation[] = [];
-  if (!parseRuleActionId(action.actionId).ok) issues.push(violation('INVALID_ACTION_ID', ['actionId'], 'Action ID is invalid.', 'engine'));
-  if (action.expectedRevision !== state.revision) issues.push(violation('STALE_REVISION', ['expectedRevision'], `Expected ${action.expectedRevision}; current is ${state.revision}.`, 'engine'));
-  if (!state.scenario.players.some(({ id }) => id === action.actorId)) issues.push(violation('UNKNOWN_ACTOR', ['actorId'], 'Actor is not declared by the Scenario.', 'engine'));
-  if (state.sequence.phase === 'COMPLETE') issues.push(violation('GAME_ALREADY_COMPLETE', ['kind'], 'No actions are accepted after completion.', '2.2'));
-  if (state.pendingDecision !== null) {
-    if (action.kind !== 'RESPOND_DECISION' && action.kind !== 'CANCEL_TRANSACTION') {
-      issues.push(violation('PENDING_DECISION_LOCK', ['kind'], 'Only the pending response or a pre-commit cancellation is accepted.', 'engine'));
-    } else if (action.kind === 'RESPOND_DECISION'
-      && action.actorId !== state.pendingDecision.ownerId) {
-      issues.push(violation('WRONG_DECISION_OWNER', ['actorId'], 'Actor does not own the pending decision.', 'engine'));
+type Transition = { readonly state: GameState; readonly events: readonly RuleEvent[] };
+
+const renumber = (events: readonly RuleEvent[]): readonly RuleEvent[] => events.map((event, index) => ({ ...event, sequence: index }));
+
+/**
+ * Advance the sequence one step, then keep advancing past steps in which the acting player has
+ * no legal choice at all. Skipping an empty step is identical to its player declining to act.
+ */
+export const advanceSequence = (state: GameState): Transition => {
+  const events: RuleEvent[] = [];
+  let current = state;
+  for (let guard = 0; guard < 200; guard += 1) {
+    // Pending attrition losses or displacements are settled by their owner first.
+    if (current.interrupts.length > 0) {
+      const settled = settleInterrupts(current, null);
+      current = settled.state;
+      events.push(...settled.events);
+      if (current.pendingDecision !== null) break;
     }
-  } else if (action.kind === 'RESPOND_DECISION') {
-    issues.push(violation('NO_PENDING_DECISION', ['decisionId'], 'There is no pending decision.', 'engine'));
+    // 4.8a: an overstacked Hex must shed units before the step can end.
+    const overstack = overstackDecision(current);
+    if (overstack) {
+      events.push({ kind: 'DECISION_REQUESTED', sequence: events.length, decision: overstack });
+      current = { ...current, pendingDecision: overstack };
+      break;
+    }
+    const step = applySequenceLifecycle(current, nextSequence(current));
+    current = step.state;
+    events.push(...step.events);
+    if (current.sequence.phase === 'COMPLETE' || current.pendingDecision !== null) break;
+    if (current.interrupts.length > 0) continue;
+    if (hasOptionalActions(current)) break;
+    if (validateAdvance(current, current.sequence.actingPlayerId).length > 0) break;
   }
-  if (state.activeTransaction !== null
-    && !['RESPOND_DECISION', 'COMMIT_TRANSACTION', 'CANCEL_TRANSACTION'].includes(action.kind)) {
-    issues.push(violation('ACTIVE_TRANSACTION_LOCK', ['kind'], 'Active transaction must resolve or cancel first.', 'engine'));
-  }
-  return issues;
+  return { state: current, events: renumber(events) };
 };
 
-export const validateGameAction = (state: GameState, action: GameAction): ActionValidation => {
-  const issues = commonViolations(state, action);
-  if (issues.length === 0) {
-    switch (action.kind) {
-      case 'ADVANCE_SEQUENCE':
-        if (action.actorId !== state.sequence.actingPlayerId) issues.push(violation('WRONG_ACTOR', ['actorId'], 'Actor does not own the sequence step.', '2.3'));
-        if (state.currentMoverId !== null) issues.push(violation('CURRENT_MOVER_LOCK', ['kind'], 'Current mover must finish first.', '6.1'));
-        break;
-      case 'CHANGE_MODE': issues.push(...validateModeChange(state, action.actorId, action.pieceId, action.mode)); break;
-      case 'RELEASE_RESERVE': issues.push(...validateReserveRelease(state, action.actorId, action.pieceId)); break;
-      case 'MOVE_PIECE': {
-        const result = queryMovementPath(state, action.actorId, action.pieceId, action.path);
-        issues.push(...result.reasons.filter(({ allowed }) => !allowed).map((reason) =>
-          violation(reason.code, ['path'], reason.message, reason.rule)));
-        break;
+/** Starting position: the pre-turn and empty phases before the first real choice are skipped. */
+export const settleInitialSequence = (state: GameState): GameState =>
+  state.sequence.phase === 'WEATHER' || !hasOptionalActions(state) ? advanceSequence(state).state : state;
+
+/** A unit beginning to act ends the previous unit's move (6.1g). */
+const beginMoving = (state: GameState, pieceId: PieceId): GameState => {
+  const previous = state.currentMoverId !== null && state.currentMoverId !== pieceId ? pieceById(state, state.currentMoverId) : undefined;
+  return previous ? { ...state, usage: withUsage(state, { ...usageOf(state, previous), moved: true }) } : state;
+};
+
+const dispatch = (state: GameState, action: GameAction): Transition => {
+  switch (action.kind) {
+    case 'ADVANCE_SEQUENCE':
+      return advanceSequence(state);
+    case 'CHANGE_MODE': {
+      const piece = pieceById(state, action.pieceId)!;
+      const changed = applyModeChange(piece, action.mode);
+      // 5.4: changing mode is how a unit begins its move, which ends the previous unit's move (6.1g).
+      const next = beginMoving(state, piece.id);
+      return {
+        state: { ...next, currentMoverId: piece.id, pieceState: upsertPieceState(next.pieceState, changed) },
+        events: [{ kind: 'MODE_CHANGED', sequence: 0, pieceId: piece.id, from: piece.mode, to: changed.mode ?? action.mode }],
+      };
+    }
+    case 'RELEASE_RESERVE': {
+      const piece = pieceById(state, action.pieceId)!;
+      const released = applyReserveRelease(piece);
+      return {
+        state: {
+          ...state,
+          pieceState: upsertPieceState(state.pieceState, released),
+          usage: withUsage(state, { ...usageOf(state, piece), reserveReleased: true }),
+        },
+        events: [{ kind: 'MODE_CHANGED', sequence: 0, pieceId: piece.id, from: piece.mode, to: released.mode! }],
+      };
+    }
+    case 'MOVE_PIECE': {
+      const query = queryMovementPath(state, action.actorId, action.pieceId, action.path).value!;
+      const destination = action.path.at(-1)!;
+      // 12.5e: an independent unit fueled by an HQ fixes that HQ's throw location as it starts.
+      let next = commitFuelForMove(beginMoving(state, action.pieceId), pieceById(state, action.pieceId)!);
+      const piece = pieceById(next, action.pieceId)!;
+      const usage = usageOf(next, piece);
+      next = {
+        ...next,
+        currentMoverId: piece.id,
+        pieceState: upsertPieceState(next.pieceState, {
+          ...piece,
+          location: { kind: 'ON_MAP', hexId: destination },
+          stackOrder: nextStackOrder(next.pieceState.pieces, destination, piece.id),
+        }),
+      };
+      next = {
+        ...next,
+        usage: withUsage(next, {
+          ...usage, moved: true, phaseStartHexId: usage.phaseStartHexId ?? hexOf(piece),
+          movementSpentTicks: usage.movementSpentTicks + query.spentTicks,
+        }),
+      };
+      // 4.5b: units that negated an enemy ZOC for this move may not spend MP later this phase.
+      for (const negatorId of query.negatorIds) {
+        const negator = pieceById(next, negatorId)!;
+        next = { ...next, usage: withUsage(next, { ...usageOf(next, negator), negationLocked: true }) };
       }
-      case 'CHECK_SUPPLY':
-        issues.push(...validateSupplyCheck(
-          state,
-          action.actorId,
-          action.pieceIds,
-          action.sourcePieceId,
-        ));
-        break;
-      case 'DECLARE_COMBAT':
-      case 'DECLARE_BARRAGE':
-        issues.push(...validateTransactionDeclaration(state, action));
-        issues.push(...validateCombatOrBarrageDeclaration(state, action));
-        break;
-      case 'RESPOND_DECISION':
-        issues.push(...validateDecisionResponse(state, action.decisionId, action.choiceId));
-        break;
-      case 'CANCEL_TRANSACTION':
-        issues.push(...validateTransactionCancel(state, action.actorId, action.transactionId));
-        break;
-      case 'COMMIT_TRANSACTION':
-        issues.push(...validateTransactionCommit(state, action.actorId, action.transactionId));
-        break;
-      case 'PLACE_REINFORCEMENT':
-        issues.push(...validateReinforcementPlacement(state, action));
-        break;
+      const events: RuleEvent[] = [{ kind: 'PIECE_MOVED', sequence: 0, pieceId: piece.id, path: action.path, spentTicks: query.spentTicks }];
+      // 9.14: entering enemy non-combat units captures or displaces them.
+      for (const hexId of action.path.slice(1)) {
+        next = captureAt(next, action.actorId, hexId, events);
+        next = { ...next, mapState: setHexControl(next.mapState, hexId, action.actorId) };
+      }
+      const settled = settleInterrupts(next, null);
+      return { state: settled.state, events: renumber([...events, ...settled.events]) };
     }
+    case 'CHECK_SUPPLY': {
+      const cost = eatOffMapCost(action.pieceIds.reduce((total, id) => total + reTicksOf(state, pieceById(state, id)!), 0));
+      const dump = pieceById(state, action.sourcePieceId!)!;
+      const unitDefinitionId = state.scenario.pieceCatalog.definitions.find(({ id }) => id === dump.definitionId)!.resource!.unitDefinitionId;
+      let next: GameState = { ...state, pieceState: spendReservations(state, [{ resourcePieceId: dump.id, quantity: cost, unitDefinitionId }]) };
+      for (const id of action.pieceIds) next = { ...next, usage: withUsage(next, { ...usageOf(next, pieceById(next, id)!), supplyPaid: true }) };
+      return { state: next, events: [{ kind: 'SUPPLY_SPENT', sequence: 0, resourcePieceId: dump.id, quantity: cost }] };
+    }
+    case 'RECOVER_INTERNALS': {
+      const piece = pieceById(state, action.pieceId)!;
+      const dumps = dumpsReaching(state, action.actorId, hexOf(piece)!, piece);
+      const ordered = action.sourcePieceIds.flatMap((id) => dumps.filter(({ pieceId }) => pieceId === id));
+      const plan = recoveryPlan(state, piece, ordered.reduce((total, dump) => total + dump.availableQuantity, 0));
+      const payments: ResourceReservation[] = [];
+      let left = plan.tokens;
+      for (const dump of ordered) {
+        if (left <= 0) break;
+        const quantity = Math.min(left, dump.availableQuantity);
+        left -= quantity;
+        const dumpPiece = pieceById(state, dump.pieceId)!;
+        payments.push({ resourcePieceId: dump.pieceId, quantity, unitDefinitionId: state.scenario.pieceCatalog.definitions.find(({ id }) => id === dumpPiece.definitionId)!.resource!.unitDefinitionId });
+      }
+      let next: GameState = { ...state, pieceState: spendReservations(state, payments) };
+      next = { ...next, pieceState: upsertPieceState(next.pieceState, withInternalStocks(pieceById(next, piece.id)!, plan.level)) };
+      next = { ...next, usage: withUsage(next, { ...usageOf(next, piece), recovered: true }) };
+      return {
+        state: next,
+        events: renumber([
+          ...payments.map((payment) => ({ kind: 'SUPPLY_SPENT' as const, sequence: 0, resourcePieceId: payment.resourcePieceId, quantity: payment.quantity })),
+          { kind: 'INTERNAL_STOCKS_CHANGED', sequence: 0, pieceId: piece.id, level: plan.level },
+        ]),
+      };
+    }
+    case 'CHOOSE_FORMATION_TRACE':
+      return {
+        state: { ...state, formationTraces: [...state.formationTraces.filter(({ formationId }) => formationId !== action.formationId), { formationId: action.formationId, routeKey: action.routeKey }] },
+        events: [],
+      };
+    case 'PAY_FUEL':
+      return payFuel(state, action.method, action.pieceId, action.sourcePieceId);
+    case 'ATTEMPT_BREAKOUT':
+      return applyBreakout(state, action.pieceId);
+    case 'BLOW_DUMP':
+      return applyBlowDump(state, action.dumpId, action.tokens);
+    case 'LOAD_SUPPLY':
+      return applyLoad(state, action.truckId, action.dumpId, action.tokens);
+    case 'UNLOAD_SUPPLY':
+      return applyUnload(state, action.truckId, action.tokens);
+    case 'COMBINE_TRANSPORT':
+      return applyCombine(state, action.truckIds);
+    case 'DIVIDE_TRANSPORT':
+      return applyDivide(state, action.truckId, action.points);
+    case 'FORM_EXTENDER':
+      return applyFormExtender(state, action.truckId);
+    case 'DISSOLVE_EXTENDER':
+      return applyDissolveExtender(state, action.extenderId);
+    case 'COLLAPSE_EXTENDER':
+      return applyCollapseExtender(state, action.extenderId, action.hexId);
+    case 'DECLARE_COMBAT':
+      return declareCombat(state, action);
+    case 'DECLARE_BARRAGE':
+      return declareBarrage(state, action);
+    case 'RESPOND_DECISION': {
+      const pending = state.pendingDecision!;
+      if (pending.kind === 'FIRST_PLAYER') {
+        const chosen = resolveFirstPlayerDecision(state, action.choiceId);
+        return hasOptionalActions(chosen) ? { state: chosen, events: [] } : advanceSequence(chosen);
+      }
+      if (pending.kind === 'OVERSTACK_ELIMINATION') {
+        const reduced = eliminateForOverstack(state, action.choiceId);
+        const next = advanceSequence(reduced);
+        return { state: next.state, events: renumber([{ kind: 'STEP_LOST', sequence: 0, pieceId: action.choiceId.slice('eliminate:'.length) as never, remainingSteps: null }, ...next.events]) };
+      }
+      if (pending.transactionId === null && (pending.kind === 'ATTRITION_LOSS' || pending.kind === 'DISPLACEMENT_HEX')) {
+        const applied = applyInterruptChoice(state, action.choiceId);
+        const settled = settleInterrupts(applied.state, null);
+        const events = [...applied.events, ...settled.events];
+        // Attrition interrupts the sequence of play: once settled, empty steps are passed as usual.
+        if (settled.state.pendingDecision === null && pending.kind === 'ATTRITION_LOSS' && !hasOptionalActions(settled.state)) {
+          const advanced = advanceSequence(settled.state);
+          return { state: advanced.state, events: renumber([...events, ...advanced.events]) };
+        }
+        return { state: settled.state, events: renumber(events) };
+      }
+      return resolveDecision(state, action.choiceId);
+    }
+    case 'CANCEL_TRANSACTION': {
+      const transaction = state.activeTransaction!;
+      const barrage = transaction.kind === 'BARRAGE';
+      return {
+        state: {
+          ...state, activeTransaction: null, pendingDecision: null,
+          ledger: barrage
+            ? { ...state.ledger, barragedHexIds: state.ledger.barragedHexIds.filter((hexId) => hexId !== transaction.targetHexId) }
+            : { ...state.ledger, attackedHexIds: state.ledger.attackedHexIds.filter((hexId) => hexId !== transaction.targetHexId) },
+          usage: state.usage.map((entry) => transaction.attackerIds.includes(entry.pieceId)
+            ? (barrage ? { ...entry, barraged: false } : { ...entry, attacked: false }) : entry),
+        },
+        events: [{ kind: 'TRANSACTION_CANCELLED', sequence: 0, transactionId: transaction.id }],
+      };
+    }
+    case 'COMMIT_TRANSACTION':
+      throw new Error('COMMIT_TRANSACTION is never legal.');
+    case 'PLACE_REINFORCEMENT':
+      return placeReinforcement(state, action);
   }
-  return { allowed: issues.length === 0, violations: issues };
 };
 
 const nextRevision = (state: GameState): GameState['revision'] => {
   const next = revision(state.revision + 1);
   if (!next.ok) throw new RangeError('GameState revision exhausted.');
   return next.value;
-};
-
-const usageFor = (state: GameState, pieceId: PieceId): PieceUsageState => state.usage
-  .find((entry) => entry.pieceId === pieceId) ?? {
-    pieceId, movementSpentTicks: 0, moved: false, fired: false,
-    attacked: false, barraged: false, reserveReleased: false,
-  };
-
-const setUsage = (state: GameState, usage: PieceUsageState): readonly PieceUsageState[] => {
-  const exists = state.usage.some(({ pieceId }) => pieceId === usage.pieceId);
-  return stableSort(exists
-    ? state.usage.map((entry) => entry.pieceId === usage.pieceId ? usage : entry)
-    : [...state.usage, usage], (left, right) => String(left.pieceId).localeCompare(String(right.pieceId)));
-};
-
-const dispatch = (state: GameState, action: GameAction): { state: GameState; events: readonly RuleEvent[] } => {
-  switch (action.kind) {
-    case 'ADVANCE_SEQUENCE': {
-      const to = nextSequence(state);
-      return applySequenceLifecycle(state, to);
-    }
-    case 'CHANGE_MODE': {
-      const piece = state.pieceState.pieces.find(({ id }) => id === action.pieceId)!;
-      const definition = state.scenario.pieceCatalog.definitions.find(({id}) => id === piece.definitionId)!;
-      const face = action.mode === 'COMBAT' || action.mode === 'MOVE'
-        ? definition.faces.find(({id}) => id === action.mode.toLowerCase()) : undefined;
-      return {
-        state: { ...state, pieceState: upsertPieceState(state.pieceState, { ...piece, mode: action.mode, currentFaceId: face?.id ?? piece.currentFaceId }) },
-        events: [{ kind: 'MODE_CHANGED', sequence: 0, pieceId: piece.id, from: piece.mode, to: action.mode }],
-      };
-    }
-    case 'RELEASE_RESERVE': {
-      const usage = usageFor(state, action.pieceId);
-      return { state: { ...state, usage: setUsage(state, { ...usage, reserveReleased: true }) }, events: [] };
-    }
-    case 'MOVE_PIECE': {
-      const query = queryMovementPath(state, action.actorId, action.pieceId, action.path);
-      const piece = state.pieceState.pieces.find(({ id }) => id === action.pieceId)!;
-      const destination = action.path.at(-1)!;
-      const usage = usageFor(state, piece.id);
-      const spent = query.value!.totalTicks;
-      return {
-        state: {
-          ...state,
-          pieceState: upsertPieceState(state.pieceState, {
-            ...piece,
-            location: { kind: 'ON_MAP', hexId: destination },
-            stackOrder: nextStackOrderAtHex(state.pieceState, destination, piece.id),
-          }),
-          usage: setUsage(state, {
-            ...usage,
-            moved: true,
-            movementSpentTicks: usage.movementSpentTicks + spent,
-          }),
-          mapState: setHexControl(state.mapState, destination, action.actorId),
-        },
-        events: [{ kind: 'PIECE_MOVED', sequence: 0, pieceId: piece.id, path: action.path, spentTicks: spent }],
-      };
-    }
-    case 'CHECK_SUPPLY': {
-      let pieceState = state.pieceState;
-      const events: RuleEvent[] = [];
-      if (action.sourcePieceId !== null) {
-        const resource = pieceState.pieces.find(({ id }) => id === action.sourcePieceId)!;
-        const quantity = supplyCheckCost(state, action.pieceIds);
-        pieceState = upsertPieceState(pieceState, {
-          ...resource,
-          resourceQuantity: (resource.resourceQuantity ?? 0) - quantity,
-        });
-        events.push({
-          kind: 'SUPPLY_SPENT', sequence: events.length,
-          resourcePieceId: resource.id, quantity,
-        });
-      }
-      for (const pieceId of action.pieceIds) {
-        const piece = pieceState.pieces.find(({ id }) => id === pieceId)!;
-        const inSupply = action.sourcePieceId !== null
-          || querySupply(state, action.actorId, pieceId, 'TRACE').allowed;
-        const existing = piece.statuses.filter(({ statusDefinitionId }) =>
-          statusDefinitionId !== outOfSupplyStatusId);
-        pieceState = upsertPieceState(pieceState, {
-          ...piece,
-          statuses: [...existing, {
-            statusDefinitionId: outOfSupplyStatusId,
-            value: { kind: 'FLAG', value: !inSupply },
-          }],
-        });
-        events.push({
-          kind: 'SUPPLY_STATUS_CHANGED', sequence: events.length, pieceId, inSupply,
-        });
-      }
-      return { state: { ...state, pieceState }, events };
-    }
-    case 'DECLARE_COMBAT': {
-      const declared = declareTransaction(state, {
-        kind: action.combatKind === 'OVERRUN' ? 'OVERRUN' : 'COMBAT',
-        ownerId: action.actorId,
-        actionId: action.actionId,
-        attackerIds: action.attackerIds,
-        defenderIds: action.defenderIds,
-        targetHexId: action.targetHexId,
-        requiredQuantity: state.configuration.combatSupplyTokenCost,
-        allowUnsupplied: true,
-      });
-      return {
-        state: {
-          ...state,
-          activeTransaction: declared.transaction,
-          pendingDecision: declared.decision,
-          currentMoverId: action.combatKind === 'OVERRUN' ? action.attackerIds[0] ?? null : null,
-        },
-        events: [
-          { kind: 'TRANSACTION_DECLARED', sequence: 0, transactionId: declared.transaction.id, transactionKind: declared.transaction.kind },
-          { kind: 'DECISION_REQUESTED', sequence: 1, decision: declared.decision },
-        ],
-      };
-    }
-    case 'DECLARE_BARRAGE': {
-      const calculation = queryBarrage(
-        state,
-        action.actorId,
-        action.firerIds,
-        action.targetPieceIds,
-        action.targetHexId,
-      ).value!;
-      const declared = declareTransaction(state, {
-        kind: 'BARRAGE',
-        ownerId: action.actorId,
-        actionId: action.actionId,
-        attackerIds: action.firerIds,
-        defenderIds: action.targetPieceIds,
-        targetHexId: action.targetHexId,
-        requiredQuantity: calculation.supplyTokenCost,
-        allowUnsupplied: false,
-      });
-      return {
-        state: { ...state, activeTransaction: declared.transaction, pendingDecision: declared.decision },
-        events: [
-          { kind: 'TRANSACTION_DECLARED', sequence: 0, transactionId: declared.transaction.id, transactionKind: 'BARRAGE' },
-          { kind: 'DECISION_REQUESTED', sequence: 1, decision: declared.decision },
-        ],
-      };
-    }
-    case 'RESPOND_DECISION': {
-      const transaction = state.activeTransaction!;
-      if (state.pendingDecision!.kind !== 'RESOURCE_SOURCE') {
-        return resolveResultDecision(state, action.choiceId);
-      }
-      const required = transaction.kind === 'BARRAGE'
-        ? queryBarrage(
-          state,
-          transaction.ownerId,
-          transaction.attackerIds,
-          transaction.defenderIds,
-          transaction.targetHexId,
-        ).value!.supplyTokenCost
-        : state.configuration.combatSupplyTokenCost;
-      const reservation = reservationFromChoice(state, action.choiceId, required);
-      const reservations = reservation ? [reservation] : [];
-      return {
-        state: {
-          ...state,
-          activeTransaction: { ...transaction, step: 'READY', reservations },
-          pendingDecision: null,
-        },
-        events: reservation
-          ? [{ kind: 'RESOURCE_RESERVED', sequence: 0, transactionId: transaction.id, reservation }]
-          : [],
-      };
-    }
-    case 'CANCEL_TRANSACTION': {
-      const transaction = state.activeTransaction!;
-      return {
-        state: { ...state, activeTransaction: null, pendingDecision: null, currentMoverId: null },
-        events: [{ kind: 'TRANSACTION_CANCELLED', sequence: 0, transactionId: transaction.id }],
-      };
-    }
-    case 'COMMIT_TRANSACTION':
-      return commitRuleTransaction(state);
-    case 'PLACE_REINFORCEMENT':
-      return placeReinforcement(state, action);
-  }
 };
 
 export const applyGameAction = (state: GameState, action: GameAction): TransitionResult => {
@@ -318,12 +271,7 @@ export const applyGameAction = (state: GameState, action: GameAction): Transitio
       ok: false,
       state,
       events: [],
-      violations: invariantIssues.map((entry) => violation(
-        'STATE_INVARIANT_VIOLATION',
-        entry.path,
-        `${entry.code}: ${entry.message}`,
-        'engine',
-      )),
+      violations: invariantIssues.map((entry) => violation('STATE_INVARIANT_VIOLATION', entry.path, `${entry.code}: ${entry.message}`, 'engine')),
     };
   }
   return { ok: true, state: candidate, events: transition.events };
