@@ -462,7 +462,8 @@ const render = (snapshot: UiSnapshot): void => {
   }
   bindEvents(snapshot);
   root.querySelectorAll<HTMLElement>('[data-scroll-key]').forEach(element => { element.scrollTop = listPositions.get(element.dataset.scrollKey!) ?? 0; });
-  const dialog = root.querySelector<HTMLElement>('[role="dialog"]');
+  // Only true modals inert the app shell; the non-modal stack picker lives inside it.
+  const dialog = root.querySelector<HTMLElement>('[role="dialog"][aria-modal="true"], .modal-backdrop [role="dialog"]');
   if (dialog) {
     root.querySelector<HTMLElement>('.app-shell')!.inert = true;
     const target = focusId ? document.getElementById(focusId) : null;
@@ -618,7 +619,7 @@ const stackPickerHtml = (snapshot: UiSnapshot): string => {
     return `<button class="stack-pick${snapshot.selection.pieceId === piece.id ? ' is-selected' : ''}" data-pick-piece="${escapeHtml(piece.id)}" ${own ? '' : 'disabled'}>
       <span class="stack-pick-art" aria-hidden="true">${counterSvg(counterView(definition, piece))}</span><span>${escapeHtml(`${own ? '' : 'Enemy · '}${pieceLabel(scenario, piece)}`)}</span></button>`;
   }).join('');
-  return `<div class="stack-picker" role="dialog" aria-label="Units in hex ${escapeHtml(printedHexLabel(stackPickerHex))}" data-anchor-hex="${escapeHtml(stackPickerHex)}">
+  return `<div class="stack-picker" role="group" aria-label="Units in hex ${escapeHtml(printedHexLabel(stackPickerHex))}" data-anchor-hex="${escapeHtml(stackPickerHex)}">
     <header><strong>Hex ${escapeHtml(printedHexLabel(stackPickerHex))} · ${stack.pieces.length + stack.hiddenCount} units</strong><button id="close-stack-picker" aria-label="Close stack list">×</button></header>
     ${rows}${stack.hiddenCount > 0 ? `<p>${stack.hiddenCount} enemy unit${stack.hiddenCount === 1 ? '' : 's'} hidden under the top counter.</p>` : ''}
   </div>`;
