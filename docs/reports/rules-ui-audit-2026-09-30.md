@@ -86,6 +86,7 @@ delivery-status rule，下列 gate 在對應證據補齊前不得再標為完成
 - `src/rules/manifest.ts`：`sequence.ground-turn`、`mode.transition`、`zoc.purpose`、`movement.ground`、
   `transaction.reservation`、`supply.trace-and-dump`、`combat.ground`、`overrun.ground`、
   `barrage.artillery` 的 `IMPLEMENTED` 不成立；`RULE_TABLE_PROVENANCE` 兩張 `REVIEWED` 表不成立。
+  （2026-10-01：manifest 已加入 `PARTIAL` 與 `GAP:` 並拆出 DEFERRED 列，探針 40/40 符合；逐條登記 §1–21 與每列正反測試仍待補，故此 TODO 未關閉。）
   TODO：manifest 型別需要能表達「部分實作」或降為 DEFERRED，改動牽涉 `requireImplementedRuleFeature`
   與 manifest 測試，待重建範圍決定後一併處理。影響：manifest 目前對外宣稱錯誤。關閉證據：
   `rules-conformance-probe.mjs` 全數 ok，且每列有正反測試。
