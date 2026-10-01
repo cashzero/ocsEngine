@@ -9,6 +9,7 @@ import {
   columnOf,
   definitionId,
   distanceBetween,
+  MinHeap,
   neighborCells,
   type GeneratedCell,
 } from './internal.js';
@@ -64,39 +65,6 @@ const selectSettlements = (
   }
   return selected;
 };
-
-class MinHeap<T> {
-  #values: Array<{ value: T; priority: number }> = [];
-  push(value: T, priority: number): void {
-    this.#values.push({ value, priority });
-    let index = this.#values.length - 1;
-    while (index > 0) {
-      const parent = Math.floor((index - 1) / 2);
-      if (this.#values[parent]!.priority <= priority) break;
-      this.#values[index] = this.#values[parent]!;
-      index = parent;
-    }
-    this.#values[index] = { value, priority };
-  }
-  pop(): T | undefined {
-    const root = this.#values[0];
-    const tail = this.#values.pop();
-    if (!root || !tail || this.#values.length === 0) return root?.value;
-    let index = 0;
-    while (true) {
-      const left = index * 2 + 1;
-      const right = left + 1;
-      if (left >= this.#values.length) break;
-      const child = right < this.#values.length && this.#values[right]!.priority < this.#values[left]!.priority ? right : left;
-      if (this.#values[child]!.priority >= tail.priority) break;
-      this.#values[index] = this.#values[child]!;
-      index = child;
-    }
-    this.#values[index] = tail;
-    return root.value;
-  }
-  get size(): number { return this.#values.length; }
-}
 
 const terrainCost = (cell: GeneratedCell): number => {
   switch (cell.terrain) {
