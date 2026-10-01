@@ -7,7 +7,7 @@ import type {
   GeneratedMap,
   MapGenerationStyle,
 } from '../generation/map/index.js';
-import type { GeneratedOob, OobScale } from '../generation/oob/index.js';
+import type { AirForceLevel, GeneratedOob, OobScale } from '../generation/oob/index.js';
 import type { RuleConfiguration } from '../rules/index.js';
 
 export const GAME_FLOW_VERSION = '0.1.0' as const;
@@ -25,6 +25,8 @@ export interface NewGameRequest {
   readonly oob: {
     readonly scale: OobScale;
     readonly formationsPerSide: number;
+    /** Aircraft and Air Bases (14.0-15.0). Absent means NONE: a ground duel. */
+    readonly air?: AirForceLevel;
   };
   readonly seeds: {
     readonly map: number;

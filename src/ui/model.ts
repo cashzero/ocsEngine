@@ -3,6 +3,7 @@ import type { OcsMode } from '../domain/piece/index.js';
 import type { ScenarioDefinition } from '../domain/scenario/index.js';
 import type {
   ActionFamily,
+  AirMissionKind,
   GameAction,
   ProjectedPiece,
   RuleExplanation,
@@ -39,6 +40,46 @@ export interface AttackDraft {
   readonly explanation: RuleExplanation | null;
 }
 
+/** An air mission being planned: mission type, then target hex, then aircraft (14.2f A-B). */
+export interface AirDraft {
+  readonly mission: AirMissionKind;
+  readonly label: string;
+  readonly targetHexId: string | null;
+  readonly target: 'COMBAT_UNITS' | 'AIR_BASE' | null;
+  /** Barrage targets available in the chosen hex (10.0d). */
+  readonly targetOptions: readonly ('COMBAT_UNITS' | 'AIR_BASE')[];
+  readonly eligibleIds: readonly PieceId[];
+  readonly selectedIds: readonly PieceId[];
+  /** Most aircraft this mission may use: four, or one for sweeps, hip shoots and transfers as offered. */
+  readonly maximum: number;
+  readonly action: GameAction | null;
+  readonly explanation: RuleExplanation | null;
+}
+
+/** One friendly Air Base in the Aircraft Refit Phase (15.1). */
+export interface AirRefit {
+  readonly baseId: PieceId;
+  readonly hexId: string;
+  readonly capacity: number;
+  readonly inactiveIds: readonly PieceId[];
+  readonly selectedIds: readonly PieceId[];
+  readonly sourceIds: readonly PieceId[];
+  readonly action: GameAction | null;
+  readonly explanation: RuleExplanation | null;
+}
+
+export interface AirOverview {
+  /** Missions of the current segment; `available` when some aircraft has a legal target. */
+  readonly missions: readonly { readonly mission: AirMissionKind; readonly label: string; readonly available: boolean }[];
+  readonly draft: AirDraft | null;
+  /** Hexes the planned mission can target (highlighted on the map). */
+  readonly targetHexes: readonly string[];
+  readonly refits: readonly AirRefit[];
+  readonly patrolZones: { readonly own: readonly string[]; readonly enemy: readonly string[] };
+  readonly trainbusting: readonly { readonly hexId: string; readonly own: boolean }[];
+  readonly showZones: boolean;
+}
+
 export interface SupplyNeed {
   readonly pieceId: PieceId;
   readonly options: readonly { readonly action: GameAction; readonly dumpId: PieceId }[];
@@ -52,7 +93,7 @@ export interface Arrival {
 /** A one-click rules action offered in the command deck (fuel, breakout, trucks, dumps...). */
 export interface UnitAction {
   readonly key: string;
-  readonly group: 'FUEL' | 'SUPPLY' | 'BREAKOUT' | 'TRANSPORT' | 'DUMP' | 'TRACE';
+  readonly group: 'FUEL' | 'SUPPLY' | 'BREAKOUT' | 'TRANSPORT' | 'DUMP' | 'TRACE' | 'AIR';
   readonly label: string;
   readonly action: GameAction;
 }
@@ -98,6 +139,7 @@ export interface UiSnapshot {
   readonly busy: boolean;
   readonly handoffPending: boolean;
   readonly requiredSeatId: SeatId | null;
+  readonly air: AirOverview;
 }
 
 export type UiListener = (snapshot: UiSnapshot) => void;

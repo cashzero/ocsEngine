@@ -1,5 +1,9 @@
 import type { PlayerId } from '../core/index.js';
 import { previewBarrage, previewCombat } from './combat/combat.js';
+import { inPatrolZoneOf } from './air/aircraft.js';
+import { AIR_MISSION_LABELS, flakModifiers, missionBarrageStrength, previewAirBarrage } from './air/mission.js';
+import { hexOf, opponentOf, pieceById } from './pieces.js';
+import { BARRAGE_TABLE_COLUMNS, FACILITY_TABLE_COLUMNS, facilityColumnIndex } from './tables/ocs-4.3.js';
 import type { GameAction, GameState } from './kernel/model.js';
 import { applyGameAction } from './kernel/reducer.js';
 import { validateGameAction } from './kernel/validate.js';
@@ -50,6 +54,33 @@ const actionFacts = (state: GameState, action: GameAction): readonly RuleFact[] 
       publicFact('barrage.spotter', preview.spotter),
       publicFact('barrage.shifts', preview.shifts.map(({ reason, shift }) => `${reason} ${shift > 0 ? '+' : ''}${shift}`).join(', ')),
     ];
+  }
+  if (action.kind === 'DECLARE_AIR_MISSION') {
+    const enemy = opponentOf(state, action.actorId);
+    const flakSubject = ['BARRAGE', 'HIP_SHOOT', 'TRAINBUSTING'].includes(action.mission)
+      || (action.mission === 'BASE_TRANSFER' && inPatrolZoneOf(state, enemy, action.targetHexId));
+    const modifiers = flakSubject ? flakModifiers(state, action.aircraftIds, action.mission, action.targetHexId, action.actorId) : [];
+    const strength = missionBarrageStrength(state, action.aircraftIds);
+    const facts: RuleFact[] = [
+      publicFact('air.mission', AIR_MISSION_LABELS[action.mission]),
+      publicFact('air.flakSubject', flakSubject),
+      publicFact('air.flakModifier', modifiers.reduce((sum, { value }) => sum + value, 0)),
+      publicFact('air.flakReasons', modifiers.map(({ reason, value }) => `${reason} +${value}`).join(', ')),
+      publicFact('air.enemyPatrolZone', inPatrolZoneOf(state, enemy, action.targetHexId)),
+      publicFact('air.strength', strength),
+    ];
+    if (action.target === 'COMBAT_UNITS') {
+      const aircraft = action.aircraftIds.flatMap((id) => { const piece = pieceById(state, id); return piece && hexOf(piece) ? [{ pieceId: id, baseHexId: hexOf(piece)! }] : []; });
+      const preview = previewAirBarrage(state, action.actorId, aircraft, action.targetHexId);
+      facts.push(
+        publicFact('air.initialColumn', BARRAGE_TABLE_COLUMNS[preview.initialColumn]!.label),
+        publicFact('air.finalColumn', BARRAGE_TABLE_COLUMNS[preview.finalColumn]!.label),
+        publicFact('air.shifts', preview.shifts.map(({ reason, shift }) => `${reason} ${shift > 0 ? '+' : ''}${shift}`).join(', ')),
+      );
+    } else if (action.target === 'AIR_BASE' || action.mission === 'TRAINBUSTING') {
+      facts.push(publicFact('air.finalColumn', FACILITY_TABLE_COLUMNS[facilityColumnIndex(strength)]!.label));
+    }
+    return facts;
   }
   return [];
 };

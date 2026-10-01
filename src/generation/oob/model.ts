@@ -14,12 +14,20 @@ export type OobUnitRole =
   | 'RECONNAISSANCE'
   | 'ENGINEER'
   | 'TRANSPORT'
-  | 'SUPPLY';
+  | 'SUPPLY'
+  | 'AIRCRAFT'
+  | 'AIR_BASE';
+
+/** Air forces in a generated OOB: none (ground duel) or each side's aircraft and Air Bases (14.0, 15.0). */
+export const AIR_FORCE_LEVELS = ['NONE', 'STANDARD'] as const;
+export type AirForceLevel = (typeof AIR_FORCE_LEVELS)[number];
 
 export interface RandomOobOptions {
   readonly seed: number;
   readonly scale: OobScale;
   readonly formationsPerSide: number;
+  /** Absent means NONE, so ground-only requests generate exactly what they did before air power. */
+  readonly air?: AirForceLevel;
 }
 
 export interface NormalizedRandomOobOptions extends RandomOobOptions {}

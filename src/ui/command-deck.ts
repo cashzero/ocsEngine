@@ -16,6 +16,19 @@ const counterFor = (snapshot: UiSnapshot, piece: ProjectedPiece): string => {
   return definition ? counterSvg(counterView(definition, piece)) : '';
 };
 
+const isAir = (snapshot: UiSnapshot, piece: ProjectedPiece): boolean => pieceDefinition(snapshot.scenario, piece)?.family === 'AIR';
+const isAirBase = (snapshot: UiSnapshot, piece: ProjectedPiece): boolean => pieceDefinition(snapshot.scenario, piece)?.facility?.facilityTypeDefinitionId === 'facility:air-base';
+
+/** Status word under a unit name: mode for ground units, Active/Inactive for aircraft (14.1a), Level for bases. */
+const statusName = (snapshot: UiSnapshot, piece: ProjectedPiece): string => {
+  if (isAir(snapshot, piece)) return `${piece.statuses.includes('status:air-inactive') ? 'Inactive' : 'Active'}${piece.remainingSteps === 1 ? ' · reduced' : ''}`;
+  if (isAirBase(snapshot, piece)) {
+    const level = piece.statusValues.find(({ statusDefinitionId }) => statusDefinitionId === 'status:air-base-level')?.value;
+    return `Air Base Level ${level ?? 1}`;
+  }
+  return modeName(piece.mode);
+};
+
 const modeName = (mode: string | null): string => mode === null ? 'Supply' : ({
   COMBAT: 'Combat mode', MOVE: 'Move mode', RESERVE: 'Reserve', STRAT: 'Strat mode', DG: 'Disorganized', EXPLOITATION: 'Exploit',
 } as Record<string, string>)[mode] ?? mode;
@@ -46,7 +59,7 @@ const supplyDetails = (snapshot: UiSnapshot, piece: ProjectedPiece): string => {
 };
 
 const unitRow = (snapshot: UiSnapshot, piece: ProjectedPiece, extra = ''): string => `<button class="deck-unit ${piece.id === snapshot.selection.pieceId ? 'is-selected' : ''}" data-piece="${esc(piece.id)}"${piece.location.kind === 'ON_MAP' ? ` data-hex="${esc(piece.location.hexId)}"` : ''}>
-    ${counterFor(snapshot, piece)}<span>${esc(pieceLabel(snapshot.scenario, piece))}<small>${esc(pieceHex(piece))} · ${esc(modeName(piece.mode))}${piece.statuses.includes('status:out-of-supply') ? ' · Out of supply' : ''}${supplyDetails(snapshot, piece) ? ` · ${esc(supplyDetails(snapshot, piece))}` : ''}${extra}</small></span></button>`;
+    ${counterFor(snapshot, piece)}<span>${esc(pieceLabel(snapshot.scenario, piece))}<small>${esc(pieceHex(piece))} · ${esc(statusName(snapshot, piece))}${piece.statuses.includes('status:out-of-supply') ? ' · Out of supply' : ''}${supplyDetails(snapshot, piece) ? ` · ${esc(supplyDetails(snapshot, piece))}` : ''}${extra}</small></span></button>`;
 
 const selectedCard = (snapshot: UiSnapshot): string => {
   const piece = snapshot.selectedPiece;
@@ -55,6 +68,12 @@ const selectedCard = (snapshot: UiSnapshot): string => {
     return `<div><h2>${hex ? `Hex ${esc(printedHexLabel(hex))}` : 'No unit selected'}</h2><p>Click one of your units on the map. Its legal moves light up, and enemy stacks you can attack get a red ring.</p></div>`;
   }
   const own = piece.ownerId === snapshot.view.playerId;
+  if (isAir(snapshot, piece) || isAirBase(snapshot, piece)) {
+    const step = pieceDefinition(snapshot.scenario, piece)?.faces[0]?.steps.find(({ remainingSteps }) => remainingSteps === (piece.remainingSteps ?? 2));
+    return `${counterFor(snapshot, piece)}<div><strong>${esc(pieceLabel(snapshot.scenario, piece))}</strong>
+      <p>${esc(pieceHex(piece))} · ${esc(statusName(snapshot, piece))}</p>
+      <small>${isAir(snapshot, piece) ? `Range ${step?.range ?? '–'} hexes · flies missions from its Air Base (14.2)` : 'Holds 4 + Level Active aircraft; refits 2 × Level for 1T (15.0-15.1)'}</small></div>`;
+  }
   const needsFuel = own && snapshot.unitActions.some(({ group }) => group === 'FUEL') && snapshot.reachable.size === 0;
   const details = own ? supplyDetails(snapshot, piece) : '';
   return `${counterFor(snapshot, piece)}<div><strong>${esc(pieceLabel(snapshot.scenario, piece))}</strong>
@@ -98,10 +117,64 @@ const draftPanel = (snapshot: UiSnapshot): string => {
   </section>`;
 };
 
+const airMissionSummary = (snapshot: UiSnapshot): string => {
+  const air = snapshot.view.projection?.combat?.air;
+  if (!air) return '';
+  return `<div class="combat-summary"><strong>${esc(air.mission)} · ${esc(printedHexLabel(snapshot.view.projection!.combat!.targetHexId))}</strong>
+    <ol class="air-log">${air.log.map((line) => `<li>${esc(withHexLabels(line))}</li>`).join('')}</ol></div>`;
+};
+
+const pieceById = (snapshot: UiSnapshot, id: string): ProjectedPiece | undefined =>
+  snapshot.view.projection?.stacks.flatMap(({ pieces }) => pieces).find((piece) => piece.id === id);
+
+const airDraftPanel = (snapshot: UiSnapshot): string => {
+  const draft = snapshot.air.draft!;
+  const facts = draft.explanation;
+  if (!draft.targetHexId) {
+    return `<section class="deck-context air-panel" aria-label="${esc(draft.label)} plan"><h2>${esc(draft.label)}</h2>
+      <p class="hint">${snapshot.air.targetHexes.length > 0 ? `Click one of the ${snapshot.air.targetHexes.length} highlighted hexes to choose the mission hex.` : 'No target is in range of a ready aircraft.'}</p>
+      <div class="button-grid"><button id="cancel-air-mission">Cancel</button></div></section>`;
+  }
+  const targetChoice = draft.targetOptions.length > 1
+    ? `<div class="chip-row" role="group" aria-label="Barrage target">${draft.targetOptions.map((target) => `<button data-air-target="${target}" aria-pressed="${draft.target === target}">${target === 'AIR_BASE' ? 'Air Base (Facility Table)' : 'Combat units'}</button>`).join('')}</div>` : '';
+  const aircraft = draft.eligibleIds.map((id) => {
+    const piece = pieceById(snapshot, id);
+    if (!piece) return '';
+    return `<label class="participant"><input type="${draft.maximum === 1 ? 'radio' : 'checkbox'}" name="air-aircraft" data-air-aircraft="${esc(id)}" ${draft.selectedIds.includes(id) ? 'checked' : ''}>
+      ${counterFor(snapshot, piece)}<span>${esc(pieceLabel(snapshot.scenario, piece))}<small>${esc(pieceHex(piece))}</small></span></label>`;
+  }).join('');
+  const rows = [
+    ['Mission hex', printedHexLabel(draft.targetHexId)],
+    ...(fact(facts, 'air.finalColumn') !== undefined ? [['Table column', `${fact(facts, 'air.initialColumn') ?? ''}${fact(facts, 'air.initialColumn') ? ' → ' : ''}${fact(facts, 'air.finalColumn')}`]] : []),
+    ...(fact(facts, 'air.shifts') ? [['Shifts', fact(facts, 'air.shifts')]] : []),
+    ...(['BARRAGE', 'HIP_SHOOT', 'TRAINBUSTING'].includes(draft.mission) ? [['Barrage strength', fact(facts, 'air.strength') ?? '–']] : []),
+    ['Flak', fact(facts, 'air.flakSubject') ? `+${fact(facts, 'air.flakModifier') ?? 0}${fact(facts, 'air.flakReasons') ? ` (${fact(facts, 'air.flakReasons')})` : ''}; 11+ on 2d6 costs a step` : 'not rolled for this mission'],
+    ['Enemy Patrol Zone', !fact(facts, 'air.enemyPatrolZone') ? 'no' : fact(facts, 'air.flakSubject') ? 'yes: an enemy Fighter may intercept' : 'yes (this mission cannot be intercepted)'],
+  ];
+  return `<section class="deck-context air-panel combat-draft" aria-label="${esc(draft.label)} plan">
+    <h2>${esc(draft.label)} ${esc(printedHexLabel(draft.targetHexId))}</h2>${targetChoice}
+    <dl class="combat-facts">${rows.map(([label, value]) => `<div><dt>${esc(label)}</dt><dd>${esc(value)}</dd></div>`).join('')}</dl>
+    <p class="hint">${draft.maximum === 1 ? 'Choose the aircraft that flies.' : `Tick up to ${draft.maximum} aircraft; they may come from different bases.`} Every mission aircraft becomes Inactive at a base afterwards${draft.mission === 'BASE_TRANSFER' ? ' (a Fighter staying within range stays Active)' : ''}.</p>
+    <div class="participants">${aircraft || '<p>No eligible aircraft.</p>'}</div>
+    ${explanationBlock(facts)}
+    <div class="button-grid"><button id="cancel-air-mission">Cancel</button><button class="primary" id="declare-air-mission" ${facts?.allowed && !snapshot.busy ? '' : 'disabled'}>Fly ${esc(draft.label)}</button></div>
+  </section>`;
+};
+
+const refitPanel = (snapshot: UiSnapshot): string => snapshot.air.refits.length === 0 ? '' : `<div class="air-panel"><strong>Aircraft refit</strong>
+  <p class="hint">Each Air Base refits once: up to 2 × Level Inactive aircraft for 1T drawn or thrown to the base (15.1).</p>
+  ${snapshot.air.refits.map((refit) => `<div class="refit-base"><small>Air Base ${esc(printedHexLabel(refit.hexId))} · up to ${refit.capacity}</small>
+    <div class="participants">${refit.inactiveIds.map((id) => { const piece = pieceById(snapshot, id); return piece ? `<label class="participant"><input type="checkbox" data-refit-base="${esc(refit.baseId)}" data-refit-aircraft="${esc(id)}" ${refit.selectedIds.includes(id) ? 'checked' : ''}>${counterFor(snapshot, piece)}<span>${esc(pieceLabel(snapshot.scenario, piece))}</span></label>` : ''; }).join('')}</div>
+    ${explanationBlock(refit.explanation)}
+    <button class="primary" data-refit="${esc(refit.baseId)}" ${refit.explanation?.allowed && !snapshot.busy ? '' : 'disabled'}>Refit ${refit.selectedIds.length} for 1T</button></div>`).join('')}</div>`;
+
+const airMissionButtons = (snapshot: UiSnapshot): string => snapshot.air.missions.length === 0 ? '' : `<div class="air-panel"><strong>Air missions</strong>
+  <div class="chip-row">${snapshot.air.missions.map(({ mission, label, available }) => `<button data-air-mission="${mission}" ${available ? '' : 'disabled'}>${esc(label)}</button>`).join('')}</div></div>`;
+
 const decisionPanel = (snapshot: UiSnapshot): string => {
   const decision = snapshot.decision!;
   const combat = snapshot.view.projection?.combat;
-  const summary = combat ? `<p class="combat-summary">${combat.kind === 'BARRAGE' ? 'Barrage' : combat.kind === 'OVERRUN' ? 'Overrun' : 'Attack'} on ${esc(printedHexLabel(combat.targetHexId))} · ${esc(combat.attackerStrength)}${combat.defenderStrength === null ? '' : ` : ${esc(combat.defenderStrength)}`} · ${esc(combat.odds)}${combat.drm === null ? '' : ` · DRM ${combat.drm >= 0 ? '+' : ''}${combat.drm}`}${combat.result ? ` · <strong>${esc(combat.result)}</strong>` : ''}${combat.rollTotal ? ` (roll ${combat.rollTotal}${combat.shiftDie ? `, surprise ${combat.shiftDie} col` : ''})` : ''}</p>` : '';
+  const summary = combat?.kind === 'AIR_MISSION' ? airMissionSummary(snapshot) : combat ? `<p class="combat-summary">${combat.kind === 'BARRAGE' ? 'Barrage' : combat.kind === 'OVERRUN' ? 'Overrun' : 'Attack'} on ${esc(printedHexLabel(combat.targetHexId))} · ${esc(combat.attackerStrength)}${combat.defenderStrength === null ? '' : ` : ${esc(combat.defenderStrength)}`} · ${esc(combat.odds)}${combat.drm === null ? '' : ` · DRM ${combat.drm >= 0 ? '+' : ''}${combat.drm}`}${combat.result ? ` · <strong>${esc(combat.result)}</strong>` : ''}${combat.rollTotal ? ` (roll ${combat.rollTotal}${combat.shiftDie ? `, surprise ${combat.shiftDie} col` : ''})` : ''}</p>` : '';
   const hexChoice = decision.options.some(({ hexId }) => hexId !== null);
   return `<section class="deck-context decision-panel" aria-label="Decision">
     <p class="eyebrow">YOUR DECISION</p><h2>${esc(withHexLabels(decision.prompt))}</h2>${summary}
@@ -119,7 +192,8 @@ const contextPanel = (snapshot: UiSnapshot, state: DeckState): string => {
   }
   if (snapshot.decision) return decisionPanel(snapshot);
   if (snapshot.draft) return draftPanel(snapshot);
-  const parts: string[] = [];
+  if (snapshot.air.draft) return airDraftPanel(snapshot);
+  const parts: string[] = [refitPanel(snapshot), airMissionButtons(snapshot)].filter(Boolean);
   if (snapshot.movePreview) {
     const preview = snapshot.movePreview;
     const reTicks = (piece: ProjectedPiece): number => Number(pieceDefinition(snapshot.scenario, piece)?.faces
@@ -138,7 +212,7 @@ const contextPanel = (snapshot: UiSnapshot, state: DeckState): string => {
     parts.push(`<div class="mode-actions"><strong>Mode</strong><div class="chip-row">${snapshot.modeOptions.map(({ mode }) => `<button data-mode="${mode}">${esc(modeName(mode))}</button>`).join('')}${snapshot.releaseAction ? '<button id="release-reserve">Release reserve</button>' : ''}</div></div>`);
   }
   if (snapshot.unitActions.length > 0) {
-    const groups: [string, string][] = [['FUEL', 'Fuel'], ['SUPPLY', 'Supply'], ['BREAKOUT', 'Breakout'], ['TRANSPORT', 'Trucks'], ['DUMP', 'Dump']];
+    const groups: [string, string][] = [['FUEL', 'Fuel'], ['SUPPLY', 'Supply'], ['BREAKOUT', 'Breakout'], ['TRANSPORT', 'Trucks'], ['DUMP', 'Dump'], ['AIR', 'Air']];
     parts.push(groups.flatMap(([group, title]) => {
       const entries = snapshot.unitActions.filter((entry) => entry.group === group);
       return entries.length === 0 ? [] : [`<div class="unit-actions"><strong>${title}</strong><div class="action-list">${entries.map(({ key, label }) => `<button data-unit-action="${esc(key)}">${esc(withHexLabels(label))}</button>`).join('')}</div></div>`];
@@ -207,7 +281,7 @@ export const commandDeckHtml = (snapshot: UiSnapshot, state: DeckState): string 
     ${contextPanel(snapshot, state)}
     <nav class="deck-tabs" aria-label="Lists">${tabs.map(([key, name]) => `<button data-deck-list="${key}" aria-pressed="${state.list === key}">${name}</button>`).join('')}${state.list === 'units' ? `<input id="deck-search" type="search" value="${esc(state.search)}" placeholder="Find unit" aria-label="Find unit">` : ''}</nav>
     <div class="deck-list" data-scroll-key="${state.list}" tabindex="0" aria-busy="${busy}">${list}</div>
-    <footer class="deck-footer"><div class="deck-notice" role="status">${busy ? 'Working…' : esc(state.error || snapshot.notice)}</div>
+    <footer class="deck-footer"><div class="deck-notice" role="status">${busy ? 'Working…' : esc(withHexLabels(state.error || snapshot.notice))}</div>
       ${snapshot.endStep.blockers.length > 0 ? `<p class="blocker">${esc(snapshot.endStep.blockers.join(' '))}</p>` : ''}
       <button id="end-phase" class="wide ${snapshot.endStep.enabled ? 'primary' : ''}" ${snapshot.endStep.enabled && !busy && !snapshot.decision && !snapshot.draft ? '' : 'disabled'}>${esc(snapshot.endStep.label)}</button></footer>`;
 };

@@ -1,4 +1,5 @@
 import { stableSort, type HexId, type PieceId, type PlayerId } from '../../core/index.js';
+import { trainbustingTicks } from '../air/aircraft.js';
 import type { PieceState } from '../../domain/piece/index.js';
 import type { GameState, MobilityType, RuleViolation } from '../kernel/model.js';
 import type { RuleQueryResult } from '../query/model.js';
@@ -132,7 +133,9 @@ export const queryMovementPath = (
       }
       const toHexId = step.cost.toHexId;
       enteredAll ||= step.all;
-      steps.push(step.all ? { ...step.cost, totalTicks: Math.max(step.cost.totalTicks, Math.ceil(allowanceTicks - alreadySpent)) } : step.cost);
+      const zone = trainbustingTicks(state, piece.ownerId, toHexId, mobility === 'leg');
+      steps.push(step.all ? { ...step.cost, totalTicks: Math.max(step.cost.totalTicks, Math.ceil(allowanceTicks - alreadySpent)) }
+        : zone > 0 ? { ...step.cost, totalTicks: step.cost.totalTicks + zone } : step.cost);
       const blocked = enterableHex(state, piece, toHexId);
       if (blocked) violations.push({ ...blocked, path: ['path', index] });
       if (piece.mode === 'STRAT' && inEnemyZoc(state, piece.ownerId, toHexId)) {
@@ -242,7 +245,7 @@ export const queryReachableHexes = (
       const step = costs.evaluate(current!.hexId, next);
       if (step.kind !== 'COST' || !checkHex(next)) continue;
       const fromOrigin = current!.hexId === originHexId;
-      const stepTicks = step.all ? Math.max(step.cost.totalTicks, remaining) : step.cost.totalTicks;
+      const stepTicks = step.all ? Math.max(step.cost.totalTicks, remaining) : step.cost.totalTicks + trainbustingTicks(state, piece.ownerId, next, mobility === 'leg');
       const costTicks = current!.costTicks + stepTicks;
       const withinBudget = costTicks <= remaining + 1e-9 && !(step.all && !unmoved);
       if (!withinBudget && !(fromOrigin && minimumMove)) continue;

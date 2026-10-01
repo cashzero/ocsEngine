@@ -27,6 +27,7 @@ import {
 import {
   OOB_GENERATOR_VERSION,
   OOB_SCALES,
+  AIR_FORCE_LEVELS,
   type GeneratedOob,
   type GeneratedOobFormation,
   type GeneratedOobSide,
@@ -41,6 +42,7 @@ import {
 } from './model.js';
 import { validateGeneratedOob } from './validation.js';
 import { formationNames, unitName } from './names.js';
+import { buildAirForces } from './air.js';
 
 const SIDES: readonly OobSide[] = ['ALLIED', 'AXIS'];
 const FORMATION_ARCHETYPES: readonly OobFormationArchetype[] = ['ARMORED', 'INFANTRY', 'MOBILE_INFANTRY'];
@@ -73,7 +75,9 @@ const capabilitiesFor = (role: OobUnitRole): readonly CapabilityDeclaration[] =>
       }],
     }];
     case 'COMBAT':
-    case 'SUPPLY': return [];
+    case 'SUPPLY':
+    case 'AIRCRAFT':
+    case 'AIR_BASE': return [];
   }
 };
 
@@ -195,7 +199,11 @@ export const normalizeRandomOobOptions = (
     || options.formationsPerSide < 1 || options.formationsPerSide > 6) {
     errors.push({ code: 'INVALID_OPTIONS', message: 'Formations per side must be an integer from 1 to 6.', path: ['formationsPerSide'] });
   }
-  return errors.length > 0 ? err(errors) : ok({ ...options });
+  if (options.air !== undefined && !(AIR_FORCE_LEVELS as readonly string[]).includes(options.air)) {
+    errors.push({ code: 'INVALID_OPTIONS', message: 'Air forces must be NONE or STANDARD.', path: ['air'] });
+  }
+  const { air, ...ground } = options;
+  return errors.length > 0 ? err(errors) : ok(air === 'STANDARD' ? { ...ground, air } : ground);
 };
 
 const formationPlan = (
@@ -265,7 +273,8 @@ const buildSide = (
     definitions.push(built.definition);
     return built.unit;
   });
-  return { side, formations, independentUnits };
+  const air = options.air === 'STANDARD' ? buildAirForces(side, options, definitions) : [];
+  return { side, formations, independentUnits: [...independentUnits, ...air] };
 };
 
 export const generateRandomOob = (

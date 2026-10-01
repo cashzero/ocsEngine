@@ -62,6 +62,9 @@ export const unitName = (
         : `${number} ${allied ? 'Engr Combat Bn' : 'Pionier-Btl.'}`;
       case 'TRANSPORT': return `${number} ${allied ? 'QM Truck Co' : 'Kraftfahr-Kp.'}`;
       case 'SUPPLY': return `${allied ? 'Army Supply Dump' : 'Heeres-Nachschublager'} ${number}`;
+      // Aircraft and Air Bases are named by the air generator.
+      case 'AIRCRAFT': return `Air Group ${number}`;
+      case 'AIR_BASE': return `Air Base ${number}`;
     }
   })();
   if (role === 'COMBAT' && echelon === 'XX') return label;

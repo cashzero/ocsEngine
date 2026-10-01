@@ -18,6 +18,9 @@ import {
   stepOf,
 } from '../pieces.js';
 import { combatActionRating } from '../combat/strength.js';
+import { combineCandidates, refitCandidates } from '../air/base.js';
+import { AIR_MISSION_KINDS, aircraftForTarget, airMissionTargets, missionSegment } from '../air/mission.js';
+import { airBaseLevel, friendlyAirBases, isAirStrip } from '../air/aircraft.js';
 import {
   dumpsReaching,
   eatOffMapCost,
@@ -273,6 +276,43 @@ export const candidateActions = (
       break;
     case 'COLLAPSE_EXTENDER':
       break;
+    case 'REFIT_AIRCRAFT':
+      for (const candidate of refitCandidates(state, request.actorId)) {
+        if (request.pieceId !== null && candidate.base.id !== request.pieceId && !candidate.aircraftIds.includes(request.pieceId)) continue;
+        for (const sourcePieceId of candidate.sourceIds) {
+          if (add({ ...base(state, request.actorId, `refit:${candidate.base.id}:${sourcePieceId}`), kind: 'REFIT_AIRCRAFT', baseId: candidate.base.id, aircraftIds: candidate.aircraftIds, sourcePieceId })) return actions;
+        }
+      }
+      break;
+    case 'DECLARE_AIR_MISSION': {
+      if (state.activeTransaction !== null || state.pendingDecision !== null) break;
+      for (const mission of AIR_MISSION_KINDS.filter((kind) => missionSegment(kind) === state.sequence.segment)) {
+        for (const { hexId, target } of airMissionTargets(state, request.actorId, mission)) {
+          const eligible = aircraftForTarget(state, request.actorId, mission, hexId).filter(({ id }) => request.pieceId === null || id === request.pieceId);
+          if (eligible.length === 0) continue;
+          // One aircraft per sweep (14.6 play note), transfer and hip shoot; up to four for barrages.
+          const groups = request.pieceId !== null || (mission !== 'BARRAGE' && mission !== 'TRAINBUSTING')
+            ? eligible.map((piece) => [piece])
+            : mission === 'BARRAGE' && eligible.length > 1 ? [eligible.slice(0, 4), ...eligible.slice(0, 4).map((piece) => [piece])] : [eligible.slice(0, 4)];
+          for (const group of groups) {
+            if (add({ ...base(state, request.actorId, `air:${mission}:${hexId}:${target ?? 'hex'}:${group.map(({ id }) => id).join('+')}`), kind: 'DECLARE_AIR_MISSION', mission, aircraftIds: group.map(({ id }) => id), targetHexId: hexId, target })) return actions;
+          }
+        }
+      }
+      break;
+    }
+    case 'REDUCE_AIR_BASE':
+      for (const airBase of friendlyAirBases(state, request.actorId).filter((piece) => !isAirStrip(state, piece) && airBaseLevel(state, piece) > 1)) {
+        const units = owned.filter((piece) => hexOf(piece) === hexOf(airBase) && piece.mode === 'COMBAT' && !usageOf(state, piece).moved);
+        if (units.length === 0) continue;
+        if (add({ ...base(state, request.actorId, `reduce:${airBase.id}`), kind: 'REDUCE_AIR_BASE', baseId: airBase.id, pieceIds: units.map(({ id }) => id) })) return actions;
+      }
+      break;
+    case 'COMBINE_AIRCRAFT':
+      for (const pair of combineCandidates(state, request.actorId).filter((ids) => request.pieceId === null || ids.includes(request.pieceId))) {
+        if (add({ ...base(state, request.actorId, `combine-air:${pair.join('+')}`), kind: 'COMBINE_AIRCRAFT', aircraftIds: [...pair] })) return actions;
+      }
+      break;
   }
   return actions;
 };
@@ -290,7 +330,14 @@ export const ALL_ACTION_KINDS: readonly GameAction['kind'][] = [
   'CANCEL_TRANSACTION', 'PLACE_REINFORCEMENT', 'PAY_FUEL', 'RECOVER_INTERNALS', 'CHOOSE_FORMATION_TRACE',
   'ATTEMPT_BREAKOUT', 'BLOW_DUMP', 'LOAD_SUPPLY', 'UNLOAD_SUPPLY', 'COMBINE_TRANSPORT', 'DIVIDE_TRANSPORT',
   'FORM_EXTENDER', 'DISSOLVE_EXTENDER', 'COLLAPSE_EXTENDER',
+  'REFIT_AIRCRAFT', 'DECLARE_AIR_MISSION', 'REDUCE_AIR_BASE', 'COMBINE_AIRCRAFT',
 ];
+
+/**
+ * Bookkeeping that is legal in any step but never a reason to stop the sequence on its own: two
+ * reduced aircraft may combine (13.9-4) in any step where play stops for something else.
+ */
+const NON_STOPPING_KINDS: readonly GameAction['kind'][] = ['COMBINE_AIRCRAFT'];
 
 /** Cheap phase/actor filter before generating candidates. */
 export const kindMayBeLegal = (state: GameState, actorId: PlayerId, kind: GameAction['kind']): boolean => {
@@ -325,6 +372,10 @@ export const kindMayBeLegal = (state: GameState, actorId: PlayerId, kind: GameAc
     case 'FORM_EXTENDER':
     case 'DISSOLVE_EXTENDER':
     case 'COLLAPSE_EXTENDER': return phase === 'MOVEMENT' && segment === 'MOVEMENT';
+    case 'REFIT_AIRCRAFT': return phase === 'AIRCRAFT_REFIT';
+    case 'DECLARE_AIR_MISSION': return (segment === 'MOVEMENT' || segment === 'BARRAGE') && ['MOVEMENT', 'REACTION', 'EXPLOITATION'].includes(phase);
+    case 'REDUCE_AIR_BASE': return phase === 'MOVEMENT' && segment === 'MOVEMENT';
+    case 'COMBINE_AIRCRAFT': return true;
     case 'RESPOND_DECISION':
     case 'COMMIT_TRANSACTION':
     case 'CANCEL_TRANSACTION': return false;
@@ -342,6 +393,6 @@ export const actionFamilies = (state: GameState, actorId: PlayerId): readonly Ac
 export const hasOptionalActions = (state: GameState): boolean => {
   if (state.pendingDecision !== null || state.activeTransaction !== null) return true;
   const actorId = state.sequence.actingPlayerId;
-  return ALL_ACTION_KINDS.some((kind) => kind !== 'ADVANCE_SEQUENCE' && kindMayBeLegal(state, actorId, kind)
+  return ALL_ACTION_KINDS.some((kind) => kind !== 'ADVANCE_SEQUENCE' && !NON_STOPPING_KINDS.includes(kind) && kindMayBeLegal(state, actorId, kind)
     && candidateActions(state, { actorId, kind, pieceId: null, budget: 1 }, 1).length > 0);
 };

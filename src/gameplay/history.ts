@@ -6,7 +6,7 @@ export const formatHistorySummary = (
   events: readonly RuleEvent[],
 ): string => `${action.kind}: ${events.length === 0
   ? 'accepted with no emitted event'
-  : events.map(({ kind }) => kind).join(', ')}`;
+  : events.map((event) => event.kind === 'TRANSACTION_RESOLVED' ? `TRANSACTION_RESOLVED (${event.result})` : event.kind).join(', ')}`;
 
 export const queryHistory = (
   records: readonly HistoryRecord[],

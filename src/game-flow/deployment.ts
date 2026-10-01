@@ -26,6 +26,7 @@ import type { MobilityType } from '../rules/index.js';
 import type { GameFlowFailure, GeneratedDeployment } from './model.js';
 import { GENERATED_STACKING_LIMIT_RE_TICKS } from './configuration.js';
 import { GENERATED_TERRAIN_MOVEMENT_COSTS } from './movement-tec.js';
+import { initialAirBaseLevel } from '../generation/oob/air.js';
 
 const uint32 = (value: number): boolean => Number.isSafeInteger(value) && value >= 0 && value <= 0xffff_ffff;
 
@@ -156,7 +157,9 @@ export const deployGeneratedForces = (
     const slots = ranked.flatMap(({ hex }) => [hex.id, hex.id, hex.id]);
     const units = allUnits(oob).filter((unit) => unit.side === side);
     const supplyUnits = units.filter(({ role }) => role === 'SUPPLY');
-    const fieldUnits = units.filter(({ role }) => role !== 'SUPPLY');
+    const airBases = units.filter(({ role }) => role === 'AIR_BASE');
+    const aircraft = units.filter(({ role }) => role === 'AIRCRAFT');
+    const fieldUnits = units.filter(({ role }) => role !== 'SUPPLY' && role !== 'AIR_BASE' && role !== 'AIRCRAFT');
     const reinforcement = fieldUnits.find(({ formationId }) => formationId === null) ?? fieldUnits.at(-1);
     if (fieldUnits.length > slots.length || sideSupply[side].length === 0) {
       return { ok: false, error: [deploymentFailure(`Map cannot deploy every ${side} unit within its operational zone.`)] };
@@ -184,6 +187,34 @@ export const deployGeneratedForces = (
       ...supplyUnits.map((unit, index) => ({ unit, hexId: sideSupply[side][index % sideSupply[side].length]! })),
       ...fieldPlacements,
     ];
+    // 15.0: Air Bases sit in the rear near the side's supply hexes (so refit SP can reach them), on
+    // ground trucks can enter, at least three hexes apart; one Air Base per hex (15.0a).
+    const baseHexes: HexId[] = [];
+    const supplyAnchor = sideSupply[side][0]!;
+    const baseCandidates = zones[side]
+      .filter((hex) => canDeployOn(hex, 'truck') && distance(hex.id, supplyAnchor) >= 1)
+      .map((hex) => ({ hex, score: distance(hex.id, supplyAnchor) * 10_000 + Math.floor(rng.next() * 10_000) }))
+      .sort((left, right) => left.score - right.score || String(left.hex.id).localeCompare(String(right.hex.id)));
+    for (const _ of airBases) {
+      const chosen = baseCandidates.find(({ hex }) => baseHexes.every((used) => distance(used, hex.id) >= 3));
+      if (!chosen) return { ok: false, error: [deploymentFailure(`Map has no room for every ${side} Air Base in the rear.`)] };
+      baseHexes.push(chosen.hex.id);
+    }
+    // Aircraft begin Active (IV-E) and are spread over the bases within each base's 4 + Level limit (14.2a).
+    const baseLevels = airBases.map((unit) => initialAirBaseLevel(definitionById.get(unit.definitionId)!) ?? 1);
+    const activeCounts = airBases.map(() => 0);
+    const aircraftPlacements: { unit: (typeof aircraft)[number]; hexId: HexId }[] = [];
+    for (const [index, unit] of aircraft.entries()) {
+      const order = airBases.map((_, offset) => (index + offset) % airBases.length);
+      const baseIndex = order.find((candidate) => activeCounts[candidate]! < 4 + baseLevels[candidate]!);
+      if (baseIndex === undefined) return { ok: false, error: [deploymentFailure(`${side} Air Bases cannot hold every aircraft Active.`)] };
+      activeCounts[baseIndex] = activeCounts[baseIndex]! + 1;
+      aircraftPlacements.push({ unit, hexId: baseHexes[baseIndex]! });
+    }
+    placements.push(
+      ...airBases.map((unit, index) => ({ unit, hexId: baseHexes[index]! })),
+      ...aircraftPlacements,
+    );
     for (const { unit, hexId } of placements) {
       const definition = definitionById.get(unit.definitionId);
       const parsedId = parsePieceId(unit.id);
@@ -203,7 +234,9 @@ export const deployGeneratedForces = (
         currentFaceId: deployedFace(definition)?.id ?? null,
         remainingSteps: fullStrength(definition),
         mode: definition.family === 'GROUND' ? 'MOVE' : null,
-        statuses: [],
+        statuses: unit.role === 'AIR_BASE'
+          ? [{ statusDefinitionId: 'status:air-base-level' as never, value: { kind: 'INTEGER', value: initialAirBaseLevel(definition) ?? 1 } }]
+          : [],
         stackOrder,
         resourceQuantity: definition.resource?.printedQuantity ?? null,
       });

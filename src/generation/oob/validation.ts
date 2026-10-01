@@ -11,7 +11,7 @@ import type {
 const SIDES: readonly OobSide[] = ['ALLIED', 'AXIS'];
 const ROLES: readonly OobUnitRole[] = [
   'FORMATION_COMMAND', 'COMBAT', 'ARTILLERY', 'RECONNAISSANCE',
-  'ENGINEER', 'TRANSPORT', 'SUPPLY',
+  'ENGINEER', 'TRANSPORT', 'SUPPLY', 'AIRCRAFT', 'AIR_BASE',
 ];
 
 const issue = (code: string, message: string, path: readonly (string | number)[] = []): ValidationIssue => ({
@@ -20,7 +20,7 @@ const issue = (code: string, message: string, path: readonly (string | number)[]
 
 const emptyRoleCounts = (): Record<OobUnitRole, number> => ({
   FORMATION_COMMAND: 0, COMBAT: 0, ARTILLERY: 0, RECONNAISSANCE: 0,
-  ENGINEER: 0, TRANSPORT: 0, SUPPLY: 0,
+  ENGINEER: 0, TRANSPORT: 0, SUPPLY: 0, AIRCRAFT: 0, AIR_BASE: 0,
 });
 
 export const measureGeneratedOob = (
