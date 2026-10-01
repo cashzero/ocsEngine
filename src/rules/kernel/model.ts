@@ -226,7 +226,7 @@ export interface ResourceReservation {
   readonly unitDefinitionId: DefinitionId;
 }
 
-export type RuleTransactionKind = 'COMBAT' | 'OVERRUN' | 'BARRAGE';
+export type RuleTransactionKind = 'COMBAT' | 'OVERRUN' | 'BARRAGE' | 'AIR_MISSION';
 
 /** Steps of 9.2 (combat) and 10.0 (barrage) that wait on a player. */
 export type RuleTransactionStep =
@@ -235,7 +235,9 @@ export type RuleTransactionStep =
   | 'DEFENDER_LEAD'
   | 'DEFENDER_TERRAIN'
   | 'BARRAGE_SUPPLY'
-  | 'RESOLVING';
+  | 'RESOLVING'
+  /** An air mission runs its own sequence (14.2f); see `RuleTransaction.air`. */
+  | 'AIR_MISSION';
 
 export interface RulesDiceRoll {
   readonly dice: readonly [number, number];
@@ -310,6 +312,92 @@ export interface RuleTransaction {
   readonly attackerRetreated: boolean;
   /** Hexes that held enemy combat units when the combat began (9.12f). */
   readonly blockedHexIds: readonly HexId[];
+  /** The air mission sequence (14.2f); null for ground combats and artillery barrages. */
+  readonly air: AirMissionState | null;
+}
+
+/** 14.2e mission types implemented here; Air Transport and Air Drop (14.9, 14.10) are not. */
+export type AirMissionKind = 'FIGHTER_SWEEP' | 'BARRAGE' | 'HIP_SHOOT' | 'TRAINBUSTING' | 'BASE_TRANSFER';
+
+/** 10.0d: the general target announced for a barrage mission. */
+export type AirBarrageTarget = 'COMBAT_UNITS' | 'AIR_BASE';
+
+/** Where an air mission stands in the Air Mission Sequence (14.2f, steps C to G). */
+export type AirMissionStage =
+  | 'AIR_COMBAT'
+  | 'INTERCEPTION'
+  | 'FLAK'
+  | 'RESOLVE'
+  | 'TARGET_LOSS'
+  | 'RETURN';
+
+/** A mission aircraft and the Air Base it flew from (14.2d range, 14.7c short range). */
+export interface MissionAircraft {
+  readonly pieceId: PieceId;
+  readonly baseHexId: HexId;
+}
+
+/** One Air Combat (14.3) in the mission hex, or an Interception (14.5). */
+export interface AirCombatState {
+  readonly context: 'MISSION_HEX' | 'INTERCEPTION';
+  /** 14.3c: normally the player initiating the battle; roles switch when he has only parenthesized ratings. */
+  readonly attackerId: PlayerId;
+  /** Active aircraft of the mission player still fighting (mission aircraft and 14.4d non-mission aircraft). */
+  readonly missionSideIds: readonly PieceId[];
+  /** Active aircraft of the other player still fighting. */
+  readonly opposingSideIds: readonly PieceId[];
+  /** Players who still choose voluntary aborts before the first round (14.3d A). */
+  readonly abortsPending: readonly PlayerId[];
+  /** The attacker's aircraft for the current round, chosen before the defender picks (14.3e B). */
+  readonly attackerPickId: PieceId | null;
+  readonly round: number;
+}
+
+/** An aircraft that must return to a friendly Air Base after aborting or completing the mission (14.1c). */
+export interface AirReturn {
+  readonly pieceId: PieceId;
+  /** Hex the aircraft returns from: the mission hex. */
+  readonly fromHexId: HexId;
+  /** 14.1c: aircraft aborting over a friendly Air Base must return to that base. */
+  readonly requiredHexId: HexId | null;
+  /** 14.11: a Fighter transferring within normal range stays Active. */
+  readonly staysActive: boolean;
+}
+
+export interface AirMissionState {
+  readonly mission: AirMissionKind;
+  readonly target: AirBarrageTarget | null;
+  readonly stage: AirMissionStage;
+  /** Mission aircraft still on the mission, in mission-stack order (14.4f). */
+  readonly aircraft: readonly MissionAircraft[];
+  readonly combat: AirCombatState | null;
+  /** The Fighter that intercepted this mission, if any (14.5). */
+  readonly interceptorId: PieceId | null;
+  readonly interceptionOffered: boolean;
+  /** Modified Flak roll once rolled (14.4e). */
+  readonly flakTotal: number | null;
+  /** Barrage step losses still to be taken by the target's owner. */
+  readonly targetLosses: number;
+  readonly returns: readonly AirReturn[];
+  /** Player-readable record of what happened, for the decision panel. */
+  readonly log: readonly string[];
+}
+
+/** 14.8: a Trainbusting marker, removed in the next Clean Up Phase of its owner's enemy. */
+export interface TrainbustingMarker {
+  readonly hexId: HexId;
+  readonly ownerId: PlayerId;
+}
+
+/** Air bookkeeping (14.0-15.0) that is not part of a Piece. The phase ledgers are cleared when the phase changes. */
+export interface AirState {
+  /** Aircraft that flew a mission this phase (14.2e: one mission per phase). */
+  readonly missionFlownIds: readonly PieceId[];
+  /** Air Bases that refit this phase (15.1A). */
+  readonly refittedBaseIds: readonly PieceId[];
+  /** Air Bases reduced this phase (15.4). */
+  readonly reducedBaseIds: readonly PieceId[];
+  readonly trainbusting: readonly TrainbustingMarker[];
 }
 
 export type PendingDecisionKind =
@@ -323,11 +411,17 @@ export type PendingDecisionKind =
   | 'ADVANCE_HEX'
   | 'DISPLACEMENT_HEX'
   | 'ATTRITION_LOSS'
-  | 'OVERSTACK_ELIMINATION';
+  | 'OVERSTACK_ELIMINATION'
+  | 'AIR_ABORT'
+  | 'AIR_COMBAT_PICK'
+  | 'INTERCEPTION'
+  | 'MISSION_LOSS'
+  | 'AIR_RETURN';
 
 export const PENDING_DECISION_KINDS: readonly PendingDecisionKind[] = [
   'FIRST_PLAYER', 'SUPPLY_SOURCE', 'DEFENDER_LEAD', 'DEFENDER_TERRAIN', 'STEP_LOSS', 'OPTION_SPLIT',
   'RETREAT_HEX', 'ADVANCE_HEX', 'DISPLACEMENT_HEX', 'ATTRITION_LOSS', 'OVERSTACK_ELIMINATION',
+  'AIR_ABORT', 'AIR_COMBAT_PICK', 'INTERCEPTION', 'MISSION_LOSS', 'AIR_RETURN',
 ];
 
 /** Decisions that may exist outside a combat: sequence of play, attrition, and movement captures. */
@@ -393,7 +487,9 @@ export type RuleInterrupt =
    * Transport Points displaced by capture (9.14c, `range` Hexes) or an Extender collapsing to a Hex
    * in trace supply within its range (9.14d, `range` Truck MP ticks).
    */
-  | { readonly kind: 'DISPLACEMENT'; readonly reason: 'CAPTURE' | 'EXTENDER_COLLAPSE'; readonly ownerId: PlayerId; readonly fromHexId: HexId; readonly pieceIds: readonly PieceId[]; readonly range: number };
+  | { readonly kind: 'DISPLACEMENT'; readonly reason: 'CAPTURE' | 'EXTENDER_COLLAPSE'; readonly ownerId: PlayerId; readonly fromHexId: HexId; readonly pieceIds: readonly PieceId[]; readonly range: number }
+  /** 9.14f: aircraft at a captured Air Base displace to a friendly Air Base within twice their range. */
+  | { readonly kind: 'AIR_DISPLACEMENT'; readonly ownerId: PlayerId; readonly fromHexId: HexId; readonly pieceIds: readonly PieceId[] };
 
 /** A multi-unit formation's common trace route for the current Supply Phase (12.6f, 13.7a). */
 export interface FormationTraceChoice {
@@ -422,6 +518,7 @@ export interface GameState {
   readonly interrupts: readonly RuleInterrupt[];
   readonly formationTraces: readonly FormationTraceChoice[];
   readonly victory: VictoryState;
+  readonly air: AirState;
 }
 
 interface ActionEnvelope {
@@ -467,7 +564,22 @@ export type GameAction =
   | (ActionEnvelope & { readonly kind: 'DIVIDE_TRANSPORT'; readonly truckId: PieceId; readonly points: number })
   | (ActionEnvelope & { readonly kind: 'FORM_EXTENDER'; readonly truckId: PieceId })
   | (ActionEnvelope & { readonly kind: 'DISSOLVE_EXTENDER'; readonly extenderId: PieceId })
-  | (ActionEnvelope & { readonly kind: 'COLLAPSE_EXTENDER'; readonly extenderId: PieceId; readonly hexId: HexId });
+  | (ActionEnvelope & { readonly kind: 'COLLAPSE_EXTENDER'; readonly extenderId: PieceId; readonly hexId: HexId })
+  /** 15.1: refit Inactive aircraft at one Air Base for 1T drawn or thrown to the base. */
+  | (ActionEnvelope & { readonly kind: 'REFIT_AIRCRAFT'; readonly baseId: PieceId; readonly aircraftIds: readonly PieceId[]; readonly sourcePieceId: PieceId })
+  /** 14.2f A-B: declare a mission and fly up to four Active aircraft to the mission hex. */
+  | (ActionEnvelope & {
+    readonly kind: 'DECLARE_AIR_MISSION';
+    readonly mission: AirMissionKind;
+    readonly aircraftIds: readonly PieceId[];
+    readonly targetHexId: HexId;
+    /** 10.0d: required for BARRAGE and HIP_SHOOT, null otherwise. */
+    readonly target: AirBarrageTarget | null;
+  })
+  /** 15.4: one RE of Combat Mode units that do not move reduces a friendly Air Base one Level. */
+  | (ActionEnvelope & { readonly kind: 'REDUCE_AIR_BASE'; readonly baseId: PieceId; readonly pieceIds: readonly PieceId[] })
+  /** 13.9-4: two reduced aircraft of the same type, values and status in one hex combine into one full-strength aircraft. */
+  | (ActionEnvelope & { readonly kind: 'COMBINE_AIRCRAFT'; readonly aircraftIds: readonly PieceId[] });
 
 /** 12.5c: Formation Method (1 SP), HQ Method (1 SP), or Single-Unit Method (1T). */
 export type FuelMethod = 'FORMATION' | 'HQ' | 'SINGLE_UNIT';
@@ -505,7 +617,12 @@ export type RuleEvent =
   | { readonly kind: 'DUMP_BLOWN'; readonly sequence: number; readonly resourcePieceId: PieceId; readonly destroyed: number }
   | { readonly kind: 'SUPPLY_TRANSFERRED'; readonly sequence: number; readonly truckId: PieceId; readonly tokens: number; readonly loaded: boolean }
   | { readonly kind: 'TRANSPORT_REORGANIZED'; readonly sequence: number; readonly pieceIds: readonly PieceId[] }
-  | { readonly kind: 'PIECE_DISPLACED'; readonly sequence: number; readonly pieceId: PieceId; readonly toHexId: HexId | null };
+  | { readonly kind: 'PIECE_DISPLACED'; readonly sequence: number; readonly pieceId: PieceId; readonly toHexId: HexId | null }
+  | { readonly kind: 'AIRCRAFT_STATUS_CHANGED'; readonly sequence: number; readonly pieceId: PieceId; readonly active: boolean; readonly hexId: HexId | null }
+  | { readonly kind: 'AIR_COMBAT_ROUND'; readonly sequence: number; readonly attackerPieceId: PieceId; readonly defenderPieceId: PieceId; readonly modifiedRoll: number; readonly result: string; readonly lossDie: number }
+  | { readonly kind: 'FLAK_ROLLED'; readonly sequence: number; readonly modifiedRoll: number; readonly hit: boolean }
+  | { readonly kind: 'AIR_BASE_LEVEL_CHANGED'; readonly sequence: number; readonly pieceId: PieceId; readonly level: number }
+  | { readonly kind: 'TRAINBUSTING_CHANGED'; readonly sequence: number; readonly hexId: HexId; readonly ownerId: PlayerId; readonly placed: boolean };
 
 export interface RuleViolation {
   readonly code: string;

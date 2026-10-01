@@ -76,7 +76,7 @@ src/ai/           bot strategy、planning、scoring、telemetry、self-play
 | M8 | Random Scenario Integration | M6–M7、M4–M5 | 生成後立即人工遊玩 |
 | M9 | AI Bot | M8、完整 legal actions | Bot 可完成 generated scenario |
 | M10 | Paired Self-play／品質 Gate | M9 | 跨 map/OOB seed 評估與 regression |
-| M11 | Air、Naval、Optional、進階 generator | M10 | 擴展完整 OCS 系列能力 |
+| M11 | Air、Naval、Optional、進階 generator | M10 | 擴展完整 OCS 系列能力（Air 計畫：[M11-Air WBS](roadmap/08-air-power-wbs.md)，PLANNED） |
 
 Hex/Unit Foundation 是所有後續工作的起點。AI 是產品目標，但只有在同一
 generated scenario 已能由人類透過 UI 完整操作後才進入。

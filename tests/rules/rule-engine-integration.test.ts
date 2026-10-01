@@ -150,7 +150,7 @@ describe('Rule Engine integration over the generated contact scenario', () => {
     expect(all.actions.length).toBeGreaterThan(1);
     expect(all.actions.every((candidate) => ruleEngine.validateAction(state, candidate).allowed)).toBe(true);
     expect(bounded.truncated).toBe(true);
-    expect(ruleEngine.getActionFamilies(state, ALLIED)).toHaveLength(23);
+    expect(ruleEngine.getActionFamilies(state, ALLIED)).toHaveLength(27);
     const key = ruleQueryCacheKey(state, ALLIED, 'candidate-proof');
     const enabled = createRuleQueryCache(true);
     let computations = 0;

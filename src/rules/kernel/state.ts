@@ -10,7 +10,8 @@ import {
 import { validateMapState } from '../../domain/map/index.js';
 import { validatePieceRuntimeState } from '../../domain/piece/index.js';
 import { validateScenarioDefinition, type ScenarioDefinition } from '../../domain/scenario/index.js';
-import { isCombatUnit } from '../pieces.js';
+import { hexOf, isCombatUnit } from '../pieces.js';
+import { activeAircraftAt, activeAircraftLimit, friendlyAirBaseAt, isAirBase, isAircraft } from '../air/aircraft.js';
 import { createInitialSequence, PHASE_SEGMENTS } from '../sequence/sequence.js';
 import { createRulesRng } from './rng.js';
 import { SEQUENCE_DECISION_KINDS, type GameState, type RuleConfiguration } from './model.js';
@@ -131,6 +132,7 @@ export const createInitialGameState = (
       winnerId: null,
       reason: null,
     },
+    air: { missionFlownIds: [], refittedBaseIds: [], reducedBaseIds: [], trainbusting: [] },
   };
   const settled = settleInitialSequence(state);
   const invariant = validateGameState(settled);
@@ -198,6 +200,19 @@ export const validateGameState = (state: GameState): readonly ValidationIssue[] 
       if (!pieceIds.has(reservation.resourcePieceId) || !Number.isSafeInteger(reservation.quantity) || reservation.quantity <= 0) {
         issues.push(issue('INVALID_RESOURCE_RESERVATION', ['activeTransaction', 'payments', index], 'Payments require a known dump and a positive Token quantity.'));
       }
+    }
+  }
+  // 14.2a, 15.0bD: a friendly Air Base never holds more Active aircraft than 4 + its Level.
+  for (const base of state.pieceState.pieces.filter((piece) => piece.location.kind === 'ON_MAP' && isAirBase(state, piece))) {
+    const hexId = hexOf(base)!;
+    if (activeAircraftAt(state, base.ownerId, hexId).length > activeAircraftLimit(state, base)) {
+      issues.push(issue('AIR_BASE_ACTIVE_LIMIT', ['pieceState', hexId], `Air Base ${hexId} holds more Active aircraft than its Level allows.`));
+    }
+  }
+  // 14.2c: aircraft on the map are always at a friendly Air Base (missions are resolved inside a transaction).
+  for (const piece of state.pieceState.pieces.filter((candidate) => candidate.location.kind === 'ON_MAP' && isAircraft(state, candidate))) {
+    if (!friendlyAirBaseAt(state, piece.ownerId, hexOf(piece)!) && !state.interrupts.some((interrupt) => interrupt.kind === 'AIR_DISPLACEMENT' && interrupt.pieceIds.includes(piece.id))) {
+      issues.push(issue('AIRCRAFT_OFF_BASE', ['pieceState', piece.id], `Aircraft ${piece.id} is not at a friendly Air Base.`));
     }
   }
   // 4.8c: combat units of both sides never share a Hex.

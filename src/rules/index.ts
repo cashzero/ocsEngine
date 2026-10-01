@@ -1,6 +1,7 @@
 export * from './manifest.js';
 export * from './engine.js';
 export * from './combat/index.js';
+export * from './air/index.js';
 export * from './lifecycle/index.js';
 export * from './kernel/index.js';
 export * from './query/index.js';

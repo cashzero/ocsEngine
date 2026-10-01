@@ -319,6 +319,7 @@ const emptyTransaction = (
   lossLedger: [],
   attackerRetreated: false,
   blockedHexIds: [],
+  air: null,
 });
 
 export const declareCombat = (state: GameState, action: CombatDeclaration): Transition => {
@@ -705,7 +706,8 @@ const withQueue = (state: GameState, queue: readonly ResolutionStep[], patch: Pa
   ...state, activeTransaction: { ...state.activeTransaction!, ...patch, queue },
 });
 
-const setModeForHex = (state: GameState, hexId: HexId, playerId: PlayerId, events: RuleEvent[]): GameState => {
+/** DG every combat unit of `playerId` in the hex (9.12a/e, 10.0a). */
+export const setModeForHex = (state: GameState, hexId: HexId, playerId: PlayerId, events: RuleEvent[]): GameState => {
   let pieceState = state.pieceState;
   for (const piece of friendlyCombatUnitsAt(state, playerId, hexId)) {
     if (piece.mode === 'DG' || isTransportPoint(state, piece)) continue;
@@ -854,7 +856,7 @@ const advanceInto = (state: GameState, ids: readonly PieceId[], events: RuleEven
   }
   if (ids.length > 0) {
     // 9.12gC: advancing captures or displaces enemy non-combat units per 9.14.
-    next = captureAt(next, transaction.ownerId, transaction.targetHexId, events);
+    next = captureAt(next, transaction.ownerId, transaction.targetHexId, events, true);
     next = { ...next, mapState: setHexControl(next.mapState, transaction.targetHexId, transaction.ownerId) };
   }
   return next;
@@ -1114,19 +1116,37 @@ const densityTicks = (state: GameState, targets: readonly PieceState[]): number 
   return [...byGroup.values()].reduce((total, ticks) => total + Math.min(12, ticks), 0);
 };
 
-export const previewBarrage = (state: GameState, actorId: PlayerId, firerIds: readonly PieceId[], targetHexId: HexId): BarragePreview => {
-  const firers = firerIds.flatMap((id) => pieceById(state, id) ?? []);
-  const strength = roundOcs(firers.reduce((total, piece) => total + barrageStrengthOf(state, piece), 0));
-  const initialColumn = barrageColumnIndex(strength);
+/** 10.0b: a correct spotter is a friendly combat unit adjacent to the target hex. */
+export const hasCorrectSpotter = (state: GameState, actorId: PlayerId, targetHexId: HexId): boolean =>
+  adjacentHexIds(targetHexId).some((hexId) => friendlyCombatUnitsAt(state, actorId, hexId).length > 0);
+
+/**
+ * Barrage Table shifts that depend on the target (10.0a): density, the target's best terrain,
+ * spotter, and Strat Mode. `spotted: false` forces the no-spotter shift (14.1eA Strategic Bombers).
+ */
+export const barrageTargetShifts = (
+  state: GameState,
+  actorId: PlayerId,
+  targetHexId: HexId,
+  spotted = true,
+): { readonly shifts: readonly { readonly reason: string; readonly shift: number }[]; readonly spotter: boolean } => {
   const targets = enemyCombatUnitsAt(state, actorId, targetHexId);
   const shifts: { reason: string; shift: number }[] = [{ reason: 'Density', shift: barrageDensityShift(densityTicks(state, targets)) }];
   // 10.0a: the targeted player picks the terrain; the largest left shift is always his best pick.
   const terrainShift = Math.min(0, ...hexCombatTerrains(state, targetHexId).map(({ line }) =>
     line === 'EXTREMELY_CLOSE' ? -2 : line === 'CLOSE' || line === 'VERY_CLOSE' ? -1 : 0));
   if (terrainShift !== 0) shifts.push({ reason: 'Terrain', shift: terrainShift });
-  const spotter = adjacentHexIds(targetHexId).some((hexId) => friendlyCombatUnitsAt(state, actorId, hexId).length > 0);
+  const spotter = spotted && hasCorrectSpotter(state, actorId, targetHexId);
   if (!spotter) shifts.push({ reason: 'No spotter', shift: -3 });
   if (targets.some((piece) => piece.mode === 'STRAT')) shifts.push({ reason: 'Strat Mode target', shift: 3 });
+  return { shifts, spotter };
+};
+
+export const previewBarrage = (state: GameState, actorId: PlayerId, firerIds: readonly PieceId[], targetHexId: HexId): BarragePreview => {
+  const firers = firerIds.flatMap((id) => pieceById(state, id) ?? []);
+  const strength = roundOcs(firers.reduce((total, piece) => total + barrageStrengthOf(state, piece), 0));
+  const initialColumn = barrageColumnIndex(strength);
+  const { shifts, spotter } = barrageTargetShifts(state, actorId, targetHexId);
   const finalColumn = Math.max(0, Math.min(BARRAGE_TABLE_COLUMNS.length - 1, initialColumn + shifts.reduce((total, { shift }) => total + shift, 0)));
   return { strength, initialColumn, finalColumn, supplyTokens: BARRAGE_TABLE_COLUMNS[initialColumn]!.supplyTokens, spotter, shifts };
 };

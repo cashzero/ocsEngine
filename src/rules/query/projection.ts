@@ -8,6 +8,8 @@ import { calculateCombatOdds } from '../combat/strength.js';
 import { previewBarrage } from '../combat/combat.js';
 import { BARRAGE_TABLE_COLUMNS } from '../tables/ocs-4.3.js';
 import type { ProjectedCombat, ProjectedPiece, ProjectedStack, RuleProjection } from './model.js';
+import { AIR_MISSION_LABELS, previewAirBarrage } from '../air/mission.js';
+import { aircraftName, isActiveAircraft, isAirBase, isAircraft, isFighter, patrolZoneHexes } from '../air/aircraft.js';
 
 /** 4.9a: internal stocks and other private bookkeeping are never shown to the enemy. */
 const PRIVATE_STATUSES: readonly string[] = [INTERNAL_STOCKS_STATUS, OUT_OF_TRACE_SINCE_STATUS, RETURN_TURN_STATUS];
@@ -23,8 +25,10 @@ const projectPiece = (piece: PieceState, stepsHidden: boolean): ProjectedPiece =
   remainingSteps: stepsHidden ? null : piece.remainingSteps,
   statuses: piece.statuses.map(({ statusDefinitionId }) => statusDefinitionId)
     .filter((id) => !stepsHidden || !PRIVATE_STATUSES.includes(id)),
-  statusValues: stepsHidden ? [] : piece.statuses.flatMap(({ statusDefinitionId, value }) =>
-    value.kind === 'TEXT' || value.kind === 'INTEGER' ? [{ statusDefinitionId, value: value.value }] : []),
+  // An Air Base's Level is printed on its counter (15.0), so it is never private.
+  statusValues: piece.statuses.flatMap(({ statusDefinitionId, value }) =>
+    (value.kind === 'TEXT' || value.kind === 'INTEGER') && (!stepsHidden || statusDefinitionId === 'status:air-base-level')
+      ? [{ statusDefinitionId, value: value.value }] : []),
   redacted: stepsHidden,
 });
 
@@ -33,9 +37,15 @@ const projectPiece = (piece: PieceState, stepsHidden: boolean): ProjectedPiece =
  * Attack-Capable unit (or its top combat unit if none has a ZOC), including Strat, DG or Out of
  * Supply status, but not steps lost. Hidden units are only counted, never identified.
  */
-const visibleEnemyTop = (state: GameState, enemy: readonly PieceState[]): PieceState | undefined => {
+const visibleEnemyTop = (state: GameState, enemy: readonly PieceState[]): readonly PieceState[] => {
   const combat = enemy.filter((piece) => isCombatUnit(state, piece));
-  return combat.find((piece) => exertsZoc(state, piece)) ?? combat[0] ?? enemy[0];
+  const top = combat.find((piece) => exertsZoc(state, piece)) ?? combat[0];
+  // 4.8e, 4.9a: the Air Base and the top Active plane (a Fighter if any) are seen too.
+  const base = enemy.find((piece) => isAirBase(state, piece));
+  const active = enemy.filter((piece) => isAircraft(state, piece) && isActiveAircraft(piece));
+  const plane = active.find((piece) => isFighter(state, piece)) ?? active[0];
+  const visible = [top, base, plane].filter((piece): piece is PieceState => piece !== undefined);
+  return visible.length > 0 ? visible : enemy.slice(0, 1);
 };
 
 export const projectRuleState = (state: GameState, viewerId: PlayerId): RuleProjection => {
@@ -54,14 +64,14 @@ export const projectRuleState = (state: GameState, viewerId: PlayerId): RuleProj
     // Enemy off-map holdings and truck loads are not visible at all.
     if (group.location.kind !== 'ON_MAP' && friendly.length === 0) continue;
     // Off-map enemy holdings are not visible at all.
-    const top = group.location.kind === 'ON_MAP' ? visibleEnemyTop(state, enemy) : undefined;
+    const top = group.location.kind === 'ON_MAP' ? visibleEnemyTop(state, enemy) : [];
     stacks.push({
       location: { ...group.location },
       pieces: [
         ...stableSort(friendly, (left, right) => left.stackOrder - right.stackOrder).map((piece) => projectPiece(piece, false)),
-        ...(top ? [projectPiece(top, true)] : []),
+        ...stableSort(top, (left, right) => left.stackOrder - right.stackOrder).map((piece) => projectPiece(piece, true)),
       ],
-      hiddenCount: Math.max(0, enemy.length - (top ? 1 : 0)),
+      hiddenCount: Math.max(0, enemy.length - top.length),
     });
   }
   return {
@@ -79,6 +89,10 @@ export const projectRuleState = (state: GameState, viewerId: PlayerId): RuleProj
     weather: state.weather,
     // Fuel markers and fueled Formation markers are on the map for both players to see.
     fuel: state.fuel,
+    air: {
+      trainbusting: state.air.trainbusting,
+      patrolZones: state.scenario.players.map(({ id }) => ({ playerId: id, hexIds: patrolZoneHexes(state, id) })).filter(({ hexIds }) => hexIds.length > 0),
+    },
   };
 };
 
@@ -96,7 +110,22 @@ const projectCombat = (state: GameState): ProjectedCombat | null => {
     result: transaction.result, rollTotal: transaction.roll?.total ?? null,
     surpriseTotal: transaction.surpriseRoll?.total ?? null, shiftDie: transaction.shiftDie,
     defenderSupplied: defenderDecided ? transaction.defenderSupplied || transaction.defenderInternalIds.length > 0 : null,
+    air: null,
   };
+  if (transaction.kind === 'AIR_MISSION' && transaction.air) {
+    const air = transaction.air;
+    const preview = air.target === 'COMBAT_UNITS' ? previewAirBarrage(state, transaction.ownerId, air.aircraft, transaction.targetHexId) : null;
+    return {
+      ...base, attackerCount: air.aircraft.length,
+      attackerStrength: preview?.strength ?? 0, defenderStrength: null,
+      odds: preview ? BARRAGE_TABLE_COLUMNS[preview.finalColumn]!.label : AIR_MISSION_LABELS[air.mission], line: null, drm: null,
+      air: {
+        mission: AIR_MISSION_LABELS[air.mission], target: air.target, stage: air.stage,
+        aircraftNames: air.aircraft.map(({ pieceId }) => aircraftName(state, state.pieceState.pieces.find(({ id }) => id === pieceId))),
+        log: air.log,
+      },
+    };
+  }
   if (transaction.kind === 'BARRAGE') {
     const preview = previewBarrage(state, transaction.ownerId, transaction.attackerIds, transaction.targetHexId);
     return { ...base, attackerStrength: preview.strength, defenderStrength: null, odds: BARRAGE_TABLE_COLUMNS[preview.finalColumn]!.label, line: null, drm: null };

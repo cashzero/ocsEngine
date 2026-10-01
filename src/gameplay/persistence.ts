@@ -117,6 +117,9 @@ const parseAction = (input: unknown, path: Path, issues: GameplayError[]): GameA
     BLOW_DUMP: ['dumpId', 'tokens'], LOAD_SUPPLY: ['truckId', 'dumpId', 'tokens'], UNLOAD_SUPPLY: ['truckId', 'tokens'],
     COMBINE_TRANSPORT: ['truckIds'], DIVIDE_TRANSPORT: ['truckId', 'points'], FORM_EXTENDER: ['truckId'],
     DISSOLVE_EXTENDER: ['extenderId'], COLLAPSE_EXTENDER: ['extenderId', 'hexId'],
+    REFIT_AIRCRAFT: ['baseId', 'aircraftIds', 'sourcePieceId'],
+    DECLARE_AIR_MISSION: ['mission', 'aircraftIds', 'targetHexId', 'target'],
+    REDUCE_AIR_BASE: ['baseId', 'pieceIds'], COMBINE_AIRCRAFT: ['aircraftIds'],
   };
   if (!(kind in fields)) issues.push(issue('SAVE_INVALID', [...path, 'kind'], `Unknown action kind ${kind}.`));
   exactKeys(record, ['actionId', 'actorId', 'expectedRevision', 'kind', ...(fields[kind] ?? [])], path, issues);
@@ -197,6 +200,16 @@ const parseAction = (input: unknown, path: Path, issues: GameplayError[]): GameA
     case 'LOAD_SUPPLY': return { ...base, truckId: piece('truckId'), dumpId: piece('dumpId'), tokens: integerAt(record, 'tokens', path, issues) } as GameAction;
     case 'UNLOAD_SUPPLY': return { ...base, truckId: piece('truckId'), tokens: integerAt(record, 'tokens', path, issues) } as GameAction;
     case 'COMBINE_TRANSPORT': return { ...base, truckIds: pieces('truckIds') } as GameAction;
+    case 'REFIT_AIRCRAFT': return { ...base, baseId: piece('baseId'), aircraftIds: pieces('aircraftIds'), sourcePieceId: piece('sourcePieceId') } as GameAction;
+    case 'DECLARE_AIR_MISSION': {
+      const mission = textAt(record, 'mission', path, issues);
+      if (!['FIGHTER_SWEEP', 'BARRAGE', 'HIP_SHOOT', 'TRAINBUSTING', 'BASE_TRANSFER'].includes(mission)) issues.push(issue('SAVE_INVALID', [...path, 'mission'], 'Invalid air mission.'));
+      const target = record.target === null ? null : textAt(record, 'target', path, issues);
+      if (target !== null && !['COMBAT_UNITS', 'AIR_BASE'].includes(target)) issues.push(issue('SAVE_INVALID', [...path, 'target'], 'Invalid barrage target.'));
+      return { ...base, mission, aircraftIds: pieces('aircraftIds'), targetHexId: hex('targetHexId'), target } as GameAction;
+    }
+    case 'REDUCE_AIR_BASE': return { ...base, baseId: piece('baseId'), pieceIds: pieces('pieceIds') } as GameAction;
+    case 'COMBINE_AIRCRAFT': return { ...base, aircraftIds: pieces('aircraftIds') } as GameAction;
     case 'DIVIDE_TRANSPORT': return { ...base, truckId: piece('truckId'), points: integerAt(record, 'points', path, issues) } as GameAction;
     case 'FORM_EXTENDER': return { ...base, truckId: piece('truckId') } as GameAction;
     case 'DISSOLVE_EXTENDER': return { ...base, extenderId: piece('extenderId') } as GameAction;
@@ -257,7 +270,10 @@ const parseActionMetadata = (
 };
 
 /** Version written into every Gameplay save and the only one this build reads. */
-export const GAMEPLAY_SAVE_VERSION = '0.2.0' as const;
+export const GAMEPLAY_SAVE_VERSION = '0.3.0' as const;
+
+/** Older versions this build still reads, upgrading their snapshots on load (see `migrateLegacySave`). */
+export const LEGACY_GAMEPLAY_SAVE_VERSIONS: readonly string[] = ['0.2.0'];
 
 export const serializeGameplaySave = (
   envelope: GameplaySaveEnvelope,
@@ -283,7 +299,7 @@ export const parseGameplaySave = (
   exactKeys(record, keys, [], issues);
   const schema = integerAt(record, 'schemaVersion', [], issues);
   const version = textAt(record, 'gameplayVersion', [], issues);
-  if (schema !== 1 || version !== GAMEPLAY_SAVE_VERSION) {
+  if (schema !== 1 || (version !== GAMEPLAY_SAVE_VERSION && !LEGACY_GAMEPLAY_SAVE_VERSIONS.includes(version))) {
     // Older saves cannot be migrated: their action logs replay rules that have since been corrected.
     issues.push(issue('SAVE_INCOMPATIBLE', ['gameplayVersion'], version === '0.1.0'
       ? 'This save was made before the OCS 4.3 rules rebuild (save version 0.1.0). Its moves replay rules that have since been corrected, so it cannot be converted; start a new game.'
@@ -327,7 +343,7 @@ export const parseGameplaySave = (
     ? record.checkpoints.map((value, index) => parseCheckpoint(value, ['checkpoints', index], issues))
     : (issues.push(issue('SAVE_INVALID', ['checkpoints'], 'Expected checkpoints array.')), []);
   const envelope: GameplaySaveEnvelope = {
-    schemaVersion: 1, gameplayVersion: GAMEPLAY_SAVE_VERSION,
+    schemaVersion: 1, gameplayVersion: version as GameplaySaveEnvelope['gameplayVersion'],
     sessionId: session.ok ? session.value : sessionText as never,
     label: textAt(record, 'label', [], issues),
     createdAtMs: integerAt(record, 'createdAtMs', [], issues),

@@ -70,11 +70,27 @@ export interface RuleProjection {
   readonly combat: ProjectedCombat | null;
   readonly weather: GameState['weather'];
   readonly fuel: GameState['fuel'];
+  readonly air: ProjectedAir;
+}
+
+/** Air facts both players can see: Trainbusting markers and Patrol Zones (Active Fighters are on top, 4.8e). */
+export interface ProjectedAir {
+  readonly trainbusting: GameState['air']['trainbusting'];
+  readonly patrolZones: readonly { readonly playerId: PlayerId; readonly hexIds: readonly string[] }[];
+}
+
+/** 4.9c/d: an air mission reveals its aircraft, the Flak roll, and the result. */
+export interface ProjectedAirMission {
+  readonly mission: string;
+  readonly target: string | null;
+  readonly stage: string;
+  readonly aircraftNames: readonly string[];
+  readonly log: readonly string[];
 }
 
 /** Public facts of the combat or barrage in progress (4.9b/c); units are not identified. */
 export interface ProjectedCombat {
-  readonly kind: 'COMBAT' | 'OVERRUN' | 'BARRAGE';
+  readonly kind: 'COMBAT' | 'OVERRUN' | 'BARRAGE' | 'AIR_MISSION';
   readonly targetHexId: string;
   readonly attackerOwnerId: PlayerId;
   readonly attackerCount: number;
@@ -89,6 +105,7 @@ export interface ProjectedCombat {
   readonly rollTotal: number | null;
   readonly surpriseTotal: number | null;
   readonly shiftDie: number | null;
+  readonly air: ProjectedAirMission | null;
 }
 
 export interface ActionFamily {
