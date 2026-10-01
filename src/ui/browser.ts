@@ -13,13 +13,9 @@ import {
 } from '../index.js';
 import { createUiController, type UiController } from './controller.js';
 import { counterView, counterSvgBody, counterSvg, counterLod } from './counter.js';
-import { commandDeckHtml, actionDestination, type DeckState, type DeckList } from './command-deck.js';
+import { commandDeckHtml, type DeckState, type DeckList } from './command-deck.js';
 import type { UiSnapshot } from './model.js';
-import {
-  actionKindLabel,
-  actionSummary,
-  pieceLabel,
-} from './presenter.js';
+import { phaseLabel, pieceLabel, printedHexLabel } from './presenter.js';
 
 const root = document.querySelector<HTMLElement>('#app') ?? (() => {
   throw new Error('UI root was not found.');
@@ -59,23 +55,22 @@ let preparingPreview = false;
 let newGameError = '';
 let newGamePreview: GeneratedScenarioPackage | null = null;
 const deck: DeckState = { list: 'units', search: '', working: false };
-let utilityOpen: 'session' | 'rules' | null = null;
-let rulePage = 0;
+let utilityOpen: 'session' | null = null;
+let gameEndDismissed = false;
 const listPositions = new Map<string, number>();
 let settingsTab = 'basic';
 let previewStale = false;
 let mapDragged = false;
+let hoverHexId: string | null = null;
 const afterPaint = (): Promise<void> => new Promise(resolve => requestAnimationFrame(() => setTimeout(resolve, 0)));
 const runUi = async (operation: () => void | Promise<void>): Promise<void> => {
   if (deck.working) return;
   deck.error = '';
   deck.working = true;
-  root.querySelectorAll<HTMLButtonElement>('#execute-action, #end-phase').forEach(button => { button.disabled = true; });
-  const notice = root.querySelector('.deck-notice');
-  if (notice) notice.textContent = 'Preparing action…';
+  root.querySelectorAll<HTMLButtonElement>('#end-phase, #confirm-move, #declare-draft').forEach(button => { button.disabled = true; });
   await afterPaint();
   try { await operation(); }
-  catch (error) { deck.error = `${error instanceof Error ? error.message : 'Action could not be prepared.'} Choose the action again to retry.`; }
+  catch (error) { deck.error = `${error instanceof Error ? error.message : 'Action could not be completed.'}`; }
   finally { deck.working = false; render(controller.getSnapshot()); }
 };
 
@@ -106,36 +101,41 @@ const riverEdgeLine = (edge: (typeof theater.edges)[number]): string => {
   return `<line class="map-edge ${edge.kind.toLowerCase().replace('_', '-')}" x1="${middleX - perpendicularX}" y1="${middleY - perpendicularY}" x2="${middleX + perpendicularX}" y2="${middleY + perpendicularY}"></line>`;
 };
 
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+/** Date and ground condition of the Game Turn (17.0). */
+const weatherLabel = (snapshot: UiSnapshot): string => {
+  const weather = snapshot.view.projection?.weather;
+  if (!weather) return '–';
+  const ground = { DRY: 'Dry', MUD: 'Mud', SNOW: 'Snow' }[weather.groundCondition];
+  return weather.month ? `${weather.day} ${MONTHS[weather.month - 1]} · ${ground}` : ground;
+};
+
 const renderMap = (snapshot: UiSnapshot): string => {
   const stacks = onMapStacks(snapshot);
   const objectives = new Set<string>(currentGame.deployment.objectiveHexIds);
-  const roles = new Map(currentGame.generatedOob.sides.flatMap((side) => [
-    ...side.formations.flatMap((formation) => formation.units),
-    ...side.independentUnits,
-  ]).map((unit) => [unit.id, unit.role]));
-  const roleLabel = (pieceId: string): string => {
-    switch (roles.get(pieceId)) {
-      case 'FORMATION_COMMAND': return 'HQ';
-      case 'COMBAT': return 'CBT';
-      case 'ARTILLERY': return 'ART';
-      case 'RECONNAISSANCE': return 'REC';
-      case 'ENGINEER': return 'ENG';
-      case 'TRANSPORT': return 'TRN';
-      case 'SUPPLY': return 'SUP';
-      default: return 'UNIT';
-    }
-  };
-  const destinations = snapshot.selection.actionKind === 'ADVANCE_SEQUENCE' ? new Set<string>()
-    : new Set(snapshot.candidates.map(actionDestination).filter((hexId) => hexId !== null));
-  const chosenDestination = actionDestination(snapshot.selectedAction);
+  const attack = new Set(snapshot.attackTargets);
+  const barrage = new Set(snapshot.barrageTargets);
+  const placement = new Set(snapshot.placementHexes);
+  const retreat = new Set([...snapshot.decisionHexes, ...snapshot.collapseHexes]);
+  const moving = snapshot.reachable.size > 0;
+  const combatHex = snapshot.view.projection?.combat?.targetHexId ?? null;
   const terrain = theater.cells.map((cell) => {
-    const selected = snapshot.selection.hexId === cell.id ? ' is-selected' : '';
-    const reachable = destinations.has(cell.id);
-    const destination = chosenDestination === cell.id ? ' is-destination' : '';
-    return `<g class="hex-cell terrain-${cell.terrain.toLowerCase()}${selected}${reachable ? ' is-reachable' : ''}${destination}" role="button" tabindex="${cell.id === (snapshot.selection.hexId ?? theater.cells[0]?.id) ? 0 : -1}" data-hex="${escapeHtml(cell.id)}"
-      aria-label="Hex ${escapeHtml(cell.id)}, ${escapeHtml(cell.terrain.toLowerCase())} terrain">
+    const classes = [
+      'hex-cell', `terrain-${cell.terrain.toLowerCase()}`,
+      snapshot.selection.hexId === cell.id ? 'is-selected' : '',
+      snapshot.reachable.has(cell.id) ? 'is-reachable' : '',
+      snapshot.movePreview?.destinationHexId === cell.id ? 'is-destination' : '',
+      attack.has(cell.id) ? 'is-attack' : '',
+      barrage.has(cell.id) ? 'is-barrage' : '',
+      placement.has(cell.id) ? 'is-placement' : '',
+      retreat.has(cell.id) ? 'is-retreat' : '',
+      snapshot.draft?.targetHexId === cell.id || combatHex === cell.id ? 'is-target' : '',
+    ].filter(Boolean).join(' ');
+    return `<g class="${classes}" role="button" tabindex="${cell.id === (snapshot.selection.hexId ?? theater.cells[0]?.id) ? 0 : -1}" data-hex="${escapeHtml(cell.id)}"
+      aria-label="Hex ${escapeHtml(printedHexLabel(cell.id))}, ${escapeHtml(cell.terrain.toLowerCase())}">
       <polygon points="${cell.points}"></polygon>
-      <text class="hex-coordinate" x="${cell.x}" y="${cell.y + 39}" text-anchor="middle">${escapeHtml(cell.id)}</text>
+      <text class="hex-coordinate" x="${cell.x}" y="${cell.y + 40}" text-anchor="middle">${escapeHtml(printedHexLabel(cell.id))}</text>
     </g>`;
   }).join('');
   const rivers = theater.edges.filter(({ kind }) => kind.includes('RIVER')).map(riverEdgeLine).join('');
@@ -149,60 +149,45 @@ const renderMap = (snapshot: UiSnapshot): string => {
     const objective = objectives.has(cell.id) ? `<g class="objective-marker" aria-label="objective"><circle cx="${cell.x}" cy="${cell.y}" r="15"></circle><path d="M${cell.x - 20} ${cell.y}h40M${cell.x} ${cell.y - 20}v40"></path></g>` : '';
     return `${strategic}${settlement}${objective}`;
   }).join('');
+  const pathPoints = (snapshot.movePreview?.path ?? [])
+    .map(id => theater.cells.find(cell => cell.id === id)).filter(cell => cell !== undefined).map(cell => `${cell.x},${cell.y}`).join(' ');
+  const lastPoint = pathPoints.split(' ').at(-1)?.split(',');
+  const pathEnd = pathPoints && lastPoint ? `<circle class="movement-path-end" cx="${lastPoint[0]}" cy="${lastPoint[1]}" r="7"></circle>` : '';
   const selectedCounters: string[] = [];
-  const selectedPath = snapshot.selectedAction?.kind === 'MOVE_PIECE'
-    ? snapshot.selectedAction.path.map(id => theater.cells.find(cell => cell.id === id)).filter(cell => cell !== undefined).map(cell => `${cell.x},${cell.y}`).join(' ')
-    : '';
-  const lastPoint = selectedPath.split(' ').at(-1)?.split(',');
-  const pathEnd = selectedPath && lastPoint ? `<circle class="movement-path-end" cx="${lastPoint[0]}" cy="${lastPoint[1]}" r="7"></circle>` : '';
   const stackBadges: string[] = [];
   const counters = theater.cells.map((cell) => {
     const stack = stacks.get(cell.id);
-    const visiblePieces = (stack?.pieces ?? []).slice(0, 3);
-    const selectedPiece = stack?.pieces.find(({id}) => id === snapshot.selection.pieceId);
-    if (selectedPiece && !visiblePieces.includes(selectedPiece)) visiblePieces.push(selectedPiece);
-    const counterHtml = visiblePieces.map((piece, index) => {
+    const pieces = stack?.pieces ?? [];
+    // Draw the bottom of the stack first; at most three counters are shown, the rest are counted.
+    const visible = pieces.slice(-3);
+    const selectedPiece = pieces.find(({ id }) => id === snapshot.selection.pieceId);
+    if (selectedPiece && !visible.includes(selectedPiece)) visible.push(selectedPiece);
+    const html = visible.map((piece, index) => {
       const ownerIndex = scenario.players.findIndex(({ id }) => id === piece.ownerId);
-      const x = cell.x - 35 + index * 8;
-      const y = cell.y - 35 - index * 7;
-      const pieceSelected = snapshot.selection.pieceId === piece.id ? ' is-selected' : '';
-      const label = pieceLabel(scenario, piece);
-      const definition = scenario.pieceCatalog.definitions.find(({id}) => id === piece.definitionId)!;
-      const markup = `<g class="counter owner-${ownerIndex + 1}${pieceSelected}" transform="translate(${x} ${y}) scale(.7)"
+      const x = cell.x - 35 + index * 6;
+      const y = cell.y - 35 - index * 6;
+      const isSelected = snapshot.selection.pieceId === piece.id;
+      const definition = scenario.pieceCatalog.definitions.find(({ id }) => id === piece.definitionId)!;
+      const markup = `<g class="counter owner-${ownerIndex + 1}${isSelected ? ' is-selected' : ''}" transform="translate(${x} ${y}) scale(.7)"
         role="button" tabindex="-1" data-piece="${escapeHtml(piece.id)}" data-hex="${escapeHtml(cell.id)}"
-        aria-label="${escapeHtml(`${label}, ${cell.id}, ${piece.mode ?? 'no mode'}, ${piece.remainingSteps ?? 'unknown'} steps`)}">
+        aria-label="${escapeHtml(`${piece.ownerId === snapshot.view.playerId ? '' : 'Enemy '}${pieceLabel(scenario, piece)}, hex ${printedHexLabel(cell.id)}`)}">
         ${counterSvgBody(counterView(definition, piece))}
       </g>`;
-      if (pieceSelected) { selectedCounters.push(markup); return ''; }
+      if (isSelected) { selectedCounters.push(markup); return ''; }
       return markup;
     }).join('');
-    const hiddenCount = (stack?.hiddenCount ?? 0) + Math.max(0, (stack?.pieces.length ?? 0) - visiblePieces.length);
-    const hidden = hiddenCount > 0
-      ? `<g class="hidden-count" transform="translate(${cell.x + 23} ${cell.y - 30})"><circle r="12"></circle><text y="5" text-anchor="middle">+${hiddenCount}</text></g>` : '';
-    stackBadges.push(hidden);
-    return counterHtml;
+    const hiddenCount = (stack?.hiddenCount ?? 0) + Math.max(0, pieces.length - visible.length);
+    if (hiddenCount > 0) stackBadges.push(`<g class="hidden-count" transform="translate(${cell.x + 26} ${cell.y - 34})"><circle r="12"></circle><text y="5" text-anchor="middle">+${hiddenCount}</text></g>`);
+    return html;
   }).join('');
-  // SVG uses document paint order, not CSS z-index. Keep ALL hex artwork below
-  // counters, and the selected counter above every other stack's counters.
-  return `${terrainDefsHtml()}<g class="hex-map-layer${snapshot.selection.actionKind === 'MOVE_PIECE' && snapshot.selection.pieceId !== null ? ' is-moving' : ''}"><g class="terrain-layer">${terrain}</g><g class="river-layer">${rivers}</g><g class="road-layer">${roads}</g><g class="feature-layer">${features}</g><polyline class="movement-path" points="${selectedPath}" />${pathEnd}</g><g class="counter-layer"><g class="unselected-counter-layer">${counters}</g><g class="selected-counter-layer">${selectedCounters.join('')}</g><g class="stack-badge-layer">${stackBadges.join('')}</g></g>`;
-};
-
-
-const decisionHtml = (snapshot: UiSnapshot): string => {
-  const pending = snapshot.view.pendingDecision;
-  if (!pending || snapshot.view.privacyLocked) return '';
-  return `<div class="modal-backdrop"><section class="decision-dialog" role="dialog" aria-modal="true" aria-labelledby="decision-title">
-    <p class="eyebrow">PENDING DECISION</p><h2 id="decision-title">${escapeHtml(pending.kind.replaceAll('_', ' '))}</h2>
-    <p>Choose an option to continue.</p>
-    <div class="decision-options">${pending.options.map(({ id, label }) => `
-      <button class="decision-option" data-choice="${escapeHtml(id)}">${escapeHtml(label)}</button>`).join('')}</div>
-  </section></div>`;
+  // SVG paints in document order: every hex below every counter, the selected counter on top.
+  return `${terrainDefsHtml()}<g class="hex-map-layer${moving ? ' is-moving' : ''}"><g class="terrain-layer">${terrain}</g><g class="river-layer">${rivers}</g><g class="road-layer">${roads}</g><g class="feature-layer">${features}</g><polyline class="movement-path" points="${pathPoints}" />${pathEnd}</g><g class="counter-layer"><g class="unselected-counter-layer">${counters}</g><g class="selected-counter-layer">${selectedCounters.join('')}</g><g class="stack-badge-layer">${stackBadges.join('')}</g></g>`;
 };
 
 const privacyHtml = (snapshot: UiSnapshot): string => snapshot.view.privacyLocked ? `
   <div class="privacy-screen" role="dialog" aria-modal="true" aria-labelledby="handoff-title">
     <div><p class="eyebrow">HOT-SEAT PRIVACY</p><h2 id="handoff-title">Pass the screen</h2>
-    <p>The map and player information are hidden until the next player confirms.</p>
+    <p>The map is hidden until the next player confirms.</p>
     <button class="primary" id="complete-handoff">I am the next player</button></div>
   </div>` : '';
 
@@ -269,6 +254,8 @@ const newGameDialogHtml = (): string => {
       </fieldset>
       <fieldset><legend>Game rules</legend>
         <label>Turn limit<input id="new-game-turn-limit" type="number" min="1" max="20" value="${newGameSettings.turnLimit}"></label>
+        <label>Start month<select id="new-game-start-month">${START_MONTHS.map(([month, name]) => `<option value="${month}" ${newGameSettings.startMonth === month ? 'selected' : ''}>${name}</option>`).join('')}</select></label>
+        <p class="field-help">The month sets the weather: September is always dry, autumn brings mud, and midwinter snow.</p>
         <label>Rules seed<input id="new-game-rules-seed" type="number" min="0" max="4294967295" value="${newGameSettings.seeds.rules}"></label>
         <button type="button" id="randomize-new-game">Randomize all seeds</button>
       </fieldset>
@@ -277,8 +264,13 @@ const newGameDialogHtml = (): string => {
   </section></div>`;
 };
 
+/** BTR Weather Table months (17.0), in campaign order. */
+const START_MONTHS: readonly (readonly [number, string])[] = [
+  [9, 'September'], [10, 'October'], [11, 'November'], [12, 'December'], [1, 'January'], [2, 'February'], [3, 'March'], [4, 'April'],
+];
+
 const gameEndHtml = (snapshot: UiSnapshot): string => {
-  if (snapshot.view.metadata.lifecycle !== 'FINISHED' || newGameOpen) return '';
+  if (snapshot.view.metadata.lifecycle !== 'FINISHED' || newGameOpen || gameEndDismissed) return '';
   const victory = snapshot.view.projection?.victory;
   const winner = victory?.winnerId === null
     ? 'Draw'
@@ -292,7 +284,7 @@ const gameEndHtml = (snapshot: UiSnapshot): string => {
     <p>${victory?.winnerId === null ? 'The operation ends without a sole winner.' : `${winner} wins the generated operation.`}</p>
     <dl class="game-end-scores">${scores}</dl>
     <p class="game-end-reason">Result: ${escapeHtml(victory?.reason?.replaceAll('_', ' ') ?? 'completed')} · final revision ${snapshot.view.stateRevision}</p>
-    <div class="game-end-actions"><button id="download-final-save">Download final save</button><button id="download-replay">Download replay</button><button class="primary" id="new-game-after-end">New Game</button></div>
+    <div class="game-end-actions"><button id="download-final-save">Download final save</button><button id="download-replay">Download replay</button><button id="close-game-end">View final map</button><button class="primary" id="new-game-after-end">New Game</button></div>
   </section></div>`;
 };
 
@@ -309,41 +301,25 @@ const render = (snapshot: UiSnapshot): void => {
     root.querySelector<HTMLButtonElement>('#complete-handoff')?.focus();
     return;
   }
-  if (snapshot.view.pendingDecision && !newGameOpen) {
-    utilityOpen = null;
-    root.innerHTML = decisionHtml(snapshot);
-    bindEvents(snapshot);
-    const options = [...root.querySelectorAll<HTMLButtonElement>('[data-choice]')];
-    options[0]?.focus();
-    root.querySelector<HTMLElement>('.decision-dialog')!.onkeydown = event => {
-      if (event.key !== 'Tab' || !options.length) return;
-      event.preventDefault();
-      const index = options.indexOf(document.activeElement as HTMLButtonElement);
-      options[(index + (event.shiftKey ? -1 : 1) + options.length) % options.length]?.focus();
-    };
-    return;
-  }
   const projection = snapshot.view.projection;
   const sequence = projection?.sequence;
   const activeBinding = snapshot.bindings.find(({ seatId }) => seatId === snapshot.view.metadata.activeSeatId);
   const otherBinding = snapshot.bindings.find(({ seatId }) => seatId !== snapshot.view.metadata.activeSeatId);
   const lifecycle = snapshot.view.metadata.lifecycle;
-  const actingBinding = snapshot.bindings.find(({ seatId }) => seatId === snapshot.requiredSeatId);
-  const handoffRequired = lifecycle === 'ACTIVE' && snapshot.requiredSeatId !== null
-    && snapshot.view.metadata.activeSeatId !== snapshot.requiredSeatId;
   const checkpoints = snapshot.checkpoints.map((checkpoint) => `
     <button class="checkpoint" data-checkpoint="${escapeHtml(checkpoint.id)}">${escapeHtml(checkpoint.label || checkpoint.id)} · R${checkpoint.revision}</button>`).join('');
+  const hover = hoverHexId ? theater.cells.find(({ id }) => id === hoverHexId) : undefined;
   root.innerHTML = `
     <div class="app-shell">
       <header class="topbar">
         <div class="theater-title"><p class="eyebrow">GENERATED THEATER</p><strong id="map-title">${escapeHtml(currentGame.summary.mapSize)} · ${escapeHtml(currentGame.summary.mapStyle.replaceAll('_', ' ').toLowerCase())}</strong></div>
         <div class="turn-strip" aria-label="Current turn state">
-          <span><small>TURN</small><strong>${sequence?.gameTurn ?? '–'}</strong></span>
-          <span><small>PHASE</small><strong>${escapeHtml(sequence?.phase ?? lifecycle)}</strong></span>
-          <span><small>SEGMENT</small><strong>${escapeHtml(sequence?.segment ?? '–')}</strong></span>
-          <span><small>REVISION</small><strong>${snapshot.view.stateRevision}</strong></span>
+          <span><small>TURN</small><strong>${sequence?.gameTurn ?? '–'} / ${currentGame.summary.turnLimit}</strong></span>
+          <span class="phase-cell"><small>STEP</small><strong>${escapeHtml(sequence ? phaseLabel(sequence.phase, sequence.segment) : lifecycle)}</strong></span>
+          <span><small>WEATHER</small><strong>${escapeHtml(weatherLabel(snapshot))}</strong></span>
+          <span><small>PHASING</small><strong>${escapeHtml(scenario.players.find(({ id }) => id === sequence?.phasingPlayerId)?.name ?? '–')}</strong></span>
         </div>
-        <div class="seat-badge"><span class="status-dot"></span><div><small>ACTIVE SEAT</small><strong>${escapeHtml(activeBinding?.label ?? snapshot.view.playerId)}</strong></div></div>
+        <div class="seat-badge"><span class="status-dot"></span><div><small>AT THE SCREEN</small><strong>${escapeHtml(activeBinding?.label ?? snapshot.view.playerId)}</strong></div></div>
       </header>
 
       <aside class="command-rail" aria-label="Command deck">${commandDeckHtml(snapshot, deck)}</aside>
@@ -351,15 +327,16 @@ const render = (snapshot: UiSnapshot): void => {
       <main class="workspace">
         <section class="map-card" aria-labelledby="map-title">
           <div class="map-viewport" id="map-viewport">
-            <svg id="hex-map" viewBox="0 0 ${layout.width} ${layout.height}" role="img" aria-label="Hex map; use arrow-free pointer pan and zoom controls">
+            <svg id="hex-map" viewBox="0 0 ${layout.width} ${layout.height}" role="application" aria-label="Hex map. Click a unit to select it, a highlighted hex to move, a ringed enemy hex to attack.">
               <g id="map-camera" transform="translate(${camera.x} ${camera.y}) scale(${camera.zoom})">${renderMap(snapshot)}</g>
             </svg>
             <div class="map-controls" aria-label="Map zoom controls"><button id="zoom-out" aria-label="Zoom out">−</button><output id="zoom-level">${Math.round(camera.zoom * 100)}%</output><button id="zoom-in" aria-label="Zoom in">+</button><button id="zoom-reset">Reset</button></div>
-            <div class="map-legend"><span class="terrain-key woods">Woods</span><span class="terrain-key rough">Rough</span><span class="terrain-key mountain">Mountain</span><span class="terrain-key marsh">Marsh</span><span class="terrain-key water">Water</span><span class="line-key road">Road</span><span class="line-key river">River</span><span class="legend-chip owner-1">Player one</span><span class="legend-chip owner-2">Player two</span></div>
+            <div class="map-legend"><span class="terrain-key clear">Clear</span><span class="terrain-key woods">Woods</span><span class="terrain-key rough">Rough</span><span class="terrain-key mountain">Mountain</span><span class="terrain-key marsh">Marsh</span><span class="terrain-key water">Water</span><span class="line-key road">Road</span><span class="line-key river">River</span><span class="legend-mark objective">Objective</span><span class="legend-ring move">Move</span><span class="legend-ring attack">Attack</span><span class="legend-ring barrage">Barrage</span></div>
+            <div class="hover-info" aria-live="off">${hover ? `Hex ${escapeHtml(printedHexLabel(hover.id))} · ${escapeHtml(hover.terrain.toLowerCase())}${hover.settlement ? ` · ${hover.settlement.toLowerCase()}` : ''}${currentGame.deployment.objectiveHexIds.includes(hover.id as never) ? ' · objective' : ''}` : 'Hover a hex for terrain.'}</div>
           </div>
         </section>
       </main>
-    </div>${decisionHtml(snapshot)}${newGameDialogHtml()}${privacyHtml(snapshot)}${gameEndHtml(snapshot)}`;
+    </div>${newGameDialogHtml()}${privacyHtml(snapshot)}${gameEndHtml(snapshot)}`;
   const sessionContent = `<p><strong>${escapeHtml(activeBinding?.label ?? '')}</strong> · ${escapeHtml(lifecycle)}</p>
     <button class="wide" id="begin-handoff" ${otherBinding && lifecycle !== 'READY' ? '' : 'disabled'}>Hand off to ${escapeHtml(otherBinding?.label ?? 'next seat')}</button>
     <div class="button-grid"><button id="save-game">Download save</button><button id="load-game">Load save</button></div>
@@ -369,9 +346,7 @@ const render = (snapshot: UiSnapshot): void => {
     <p class="supporting">Seeds: map ${currentGame.request.seeds.map}, OOB ${currentGame.request.seeds.oob}, deployment ${currentGame.request.seeds.deployment}, rules ${currentGame.request.seeds.rules}.</p>`;
   root.querySelector('.topbar')?.insertAdjacentHTML('beforeend', `<div class="session-actions"><button id="open-new-game">New Game</button><button id="toggle-pause" ${lifecycle === 'ACTIVE' || lifecycle === 'PAUSED' ? '' : 'disabled'}>${lifecycle === 'PAUSED' ? 'Resume' : 'Pause'}</button><button id="open-session">Session</button></div>`);
   if (utilityOpen) {
-    const facts = snapshot.explanation ? [...snapshot.explanation.reasons.map(r => `${r.message} (${r.rule})`), ...snapshot.explanation.facts.map(f => `${f.key}: ${f.value}`)] : [];
-    rulePage = Math.min(rulePage, Math.max(0, facts.length - 1));
-    root.insertAdjacentHTML('beforeend', `<div class="modal-backdrop utility-backdrop"><section class="utility-dialog" role="dialog" aria-modal="true" aria-labelledby="utility-title"><header><h2 id="utility-title">${utilityOpen === 'session' ? 'Session' : 'Rules & effects'}</h2><button id="close-utility">Close</button></header>${utilityOpen === 'session' ? `<div class="utility-content">${sessionContent}</div>` : `<p>${escapeHtml(snapshot.selectedAction ? actionSummary(snapshot.selectedAction) : '')}</p><p class="rule-detail">${escapeHtml(facts[rulePage] ?? 'No additional rule details.')}</p><div class="button-grid"><button id="previous-rule" ${rulePage === 0 ? 'disabled' : ''}>Previous</button><button id="next-rule" ${rulePage >= facts.length - 1 ? 'disabled' : ''}>Next (${rulePage + 1}/${facts.length})</button></div>`}</section></div>`);
+    root.insertAdjacentHTML('beforeend', `<div class="modal-backdrop utility-backdrop"><section class="utility-dialog" role="dialog" aria-modal="true" aria-labelledby="utility-title"><header><h2 id="utility-title">Session</h2><button id="close-utility">Close</button></header><div class="utility-content">${sessionContent}</div></section></div>`);
   }
   const form = root.querySelector<HTMLElement>('#new-game-form');
   if (form) {
@@ -414,24 +389,23 @@ const render = (snapshot: UiSnapshot): void => {
   updateCamera();
 };
 
-const activateKeyboard = (selector: string, callback: (element: HTMLElement) => void): void => {
-  root.querySelectorAll<HTMLElement>(selector).forEach((element) => element.addEventListener('keydown', (event) => {
-    if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); callback(element); }
-  }));
-};
-
 const updateCamera = (): void => {
   const svg = root.querySelector<SVGSVGElement>('#hex-map');
   const cameraGroup = root.querySelector<SVGGElement>('#map-camera');
   const matrix = svg?.getScreenCTM();
   if (cameraGroup && matrix) cameraGroup.dataset.counterLod = counterLod(70 * Math.hypot(matrix.a, matrix.b) * camera.zoom);
-  root.querySelector<SVGGElement>('#map-camera')?.setAttribute('transform', `translate(${camera.x} ${camera.y}) scale(${camera.zoom})`);
+  cameraGroup?.setAttribute('transform', `translate(${camera.x} ${camera.y}) scale(${camera.zoom})`);
   const output = root.querySelector<HTMLOutputElement>('#zoom-level');
   if (output) output.value = `${Math.round(camera.zoom * 100)}%`;
 };
 
-const zoom = (factor: number): void => {
-  camera.zoom = Math.max(0.65, Math.min(2.4, camera.zoom * factor));
+/** Zoom keeping the map point under (anchorX, anchorY), in viewBox units, fixed on screen. */
+const zoomAt = (factor: number, anchorX = layout.width / 2, anchorY = layout.height / 2): void => {
+  const next = Math.max(0.6, Math.min(2.6, camera.zoom * factor));
+  const ratio = next / camera.zoom;
+  camera.x = anchorX - (anchorX - camera.x) * ratio;
+  camera.y = anchorY - (anchorY - camera.y) * ratio;
+  camera.zoom = next;
   updateCamera();
 };
 
@@ -461,7 +435,7 @@ const mountCreatedGame = async (created: CreatedNewGame): Promise<void> => {
   controller.dispose();
   await currentGame.session.close();
   currentGame = created;
-  deck.search = ''; deck.list = 'units'; listPositions.clear(); utilityOpen = null;
+  deck.search = ''; deck.list = 'units'; listPositions.clear(); utilityOpen = null; gameEndDismissed = false;
   scenario = created.scenario;
   bindings = created.bindings;
   theater = buildGeneratedMapPreview(created.generatedMap, 50);
@@ -477,29 +451,13 @@ const mountCreatedGame = async (created: CreatedNewGame): Promise<void> => {
   unsubscribeController = controller.subscribe(render);
 };
 
-const moving = (snapshot: UiSnapshot): boolean =>
-  snapshot.selection.actionKind === 'MOVE_PIECE' && snapshot.selection.pieceId !== null;
-
-const isDestination = (snapshot: UiSnapshot, hexId: string | null): boolean =>
-  hexId !== null && snapshot.candidates.some((action) => actionDestination(action) === hexId);
-
-const chooseDestination = (snapshot: UiSnapshot, hexId: string | null): void => {
-  if (isDestination(snapshot, hexId)) { deck.hint = ''; controller.selectDestination(hexId); return; }
-  const origin = (snapshot.view.projection?.stacks ?? []).find((stack) => stack.pieces.some(({ id }) => id === snapshot.selection.pieceId));
-  const atOrigin = origin?.location.kind === 'ON_MAP' && origin.location.hexId === hexId;
-  deck.hint = atOrigin ? '' : `Hex ${hexId} is not a legal destination for this unit. Choose a highlighted hex, or Clear selection to pick another unit.`;
-  controller.selectDestination(null);
-};
-
-/** Selecting a friendly unit enters Move directly when movement is legal and no other action was chosen. */
-const selectUnit = (snapshot: UiSnapshot, hexId: string | null, pieceId: string | null): void => {
-  deck.hint = '';
-  if (hexId) controller.selectHex(hexId);
-  const piece = (snapshot.view.projection?.stacks ?? []).flatMap((stack) => stack.pieces).find(({ id }) => id === pieceId);
-  const kind = snapshot.selection.actionKind;
-  const moveAvailable = snapshot.families.some((family) => family.kind === 'MOVE_PIECE' && family.enabled);
-  if (piece && !piece.redacted && piece.ownerId === snapshot.view.playerId && moveAvailable
-    && (kind === null || kind === 'ADVANCE_SEQUENCE')) controller.selectActionKind('MOVE_PIECE');
+/** Clicking a counter on a hex that is itself a target acts on the hex; otherwise it selects the unit. */
+const clickCounter = (snapshot: UiSnapshot, pieceId: string, hexId: string): Promise<void> | void => {
+  const targetsHex = snapshot.reachable.has(hexId) || snapshot.attackTargets.includes(hexId)
+    || snapshot.barrageTargets.includes(hexId) || snapshot.placementHexes.includes(hexId) || snapshot.decisionHexes.includes(hexId)
+    || snapshot.collapseHexes.includes(hexId);
+  const piece = snapshot.view.projection?.stacks.flatMap(({ pieces }) => pieces).find(({ id }) => id === pieceId);
+  if (targetsHex || !piece || piece.ownerId !== snapshot.view.playerId) return controller.clickHex(hexId);
   controller.selectPiece(pieceId);
 };
 
@@ -507,77 +465,70 @@ function bindEvents(snapshot: UiSnapshot): void {
   const $ = <T extends Element>(selector: string) => root.querySelector<T>(selector);
   $('#open-new-game')?.addEventListener('click', () => openNewGame(snapshot));
   $('#new-game-after-end')?.addEventListener('click', () => openNewGame(snapshot));
+  $('#close-game-end')?.addEventListener('click', () => { gameEndDismissed = true; render(controller.getSnapshot()); });
   $('#close-new-game')?.addEventListener('click', () => {
     newGameOpen = false;
     history.replaceState(null, '', location.pathname);
-    render(snapshot);
+    render(controller.getSnapshot());
   });
   $('#toggle-pause')?.addEventListener('click', controller.togglePause);
-  $('#begin-handoff')?.addEventListener('click', controller.beginHandoff);
+  $('#begin-handoff')?.addEventListener('click', () => { utilityOpen = null; controller.beginHandoff(); });
   $('#begin-required-handoff')?.addEventListener('click', controller.beginHandoff);
   $('#complete-handoff')?.addEventListener('click', controller.completeHandoff);
   $('#create-checkpoint')?.addEventListener('click', controller.createCheckpoint);
-  $('#execute-action')?.addEventListener('click', () => void runUi(controller.executeSelected));
   $('#open-session')?.addEventListener('click', () => { utilityOpen = 'session'; render(snapshot); });
   $('#close-utility')?.addEventListener('click', () => { utilityOpen = null; render(snapshot); });
-  $('#open-rule-details')?.addEventListener('click', () => { utilityOpen = 'rules'; rulePage = 0; render(snapshot); });
-  $('#previous-rule')?.addEventListener('click', () => { rulePage--; render(snapshot); });
-  $('#next-rule')?.addEventListener('click', () => { rulePage++; render(snapshot); });
-  $('#clear-action')?.addEventListener('click', () => void runUi(() => { deck.list = 'units'; deck.hint = ''; controller.selectPiece(null); controller.selectActionKind('ADVANCE_SEQUENCE'); }));
-  $('#load-more-candidates')?.addEventListener('click', () => void runUi(controller.loadMoreCandidates));
-  $('#end-phase')?.addEventListener('click', () => void runUi(async () => { controller.selectActionKind('ADVANCE_SEQUENCE'); await controller.executeSelected(); }));
-  $('#deck-action')?.addEventListener('change', event => {
-    const kind = (event.target as HTMLSelectElement).value;
-    // Movement is chosen on the map, so it keeps the current list instead of opening Choices.
-    if (kind) void runUi(() => { if (kind !== 'MOVE_PIECE') deck.list = 'candidates'; controller.selectActionKind(kind as NonNullable<UiSnapshot['selection']['actionKind']>); });
-  });
-  $('#deck-search')?.addEventListener('input', event => { deck.search = (event.target as HTMLInputElement).value; render(snapshot); });
-  root.querySelectorAll<HTMLButtonElement>('[data-settings]').forEach(button => button.addEventListener('click', () => {
+  $('#end-phase')?.addEventListener('click', () => void runUi(controller.endStep));
+  $('#confirm-move')?.addEventListener('click', () => void runUi(controller.confirmMove));
+  $('#cancel-move')?.addEventListener('click', () => controller.selectPiece(snapshot.selection.pieceId));
+  $('#declare-draft')?.addEventListener('click', () => void runUi(controller.declareDraft));
+  $('#cancel-draft')?.addEventListener('click', controller.cancelDraft);
+  $('#release-reserve')?.addEventListener('click', () => void runUi(controller.releaseReserve));
+  $('#deck-search')?.addEventListener('input', event => { deck.search = (event.target as HTMLInputElement).value; render(controller.getSnapshot()); });
+  root.querySelectorAll<HTMLElement>('[data-deck-list]').forEach(button => button.addEventListener('click', () => { deck.list = button.dataset.deckList as DeckList; render(controller.getSnapshot()); }));
+  root.querySelectorAll<HTMLButtonElement>('[data-mode]').forEach(button => button.addEventListener('click', () => void runUi(() => controller.changeMode(button.dataset.mode as never))));
+  root.querySelectorAll<HTMLButtonElement>('[data-feed]').forEach(button => button.addEventListener('click', () => void runUi(() => controller.feedSupply(button.dataset.feed!, button.dataset.dump!))));
+  root.querySelectorAll<HTMLButtonElement>('[data-unit-action]').forEach(button => button.addEventListener('click', () => void runUi(() => controller.runAction(button.dataset.unitAction!))));
+  root.querySelectorAll<HTMLInputElement>('[data-participant]').forEach(input => input.addEventListener('change', () => controller.toggleParticipant(input.dataset.participant!)));
+  root.querySelectorAll<HTMLInputElement>('[data-lead]').forEach(input => input.addEventListener('change', () => controller.setLead(input.dataset.lead!)));
+  root.querySelectorAll<HTMLButtonElement>('[data-choice]').forEach((button) => button.addEventListener('click', () => void runUi(() => controller.respondToDecision(button.dataset.choice ?? ''))));
+  root.querySelectorAll<HTMLButtonElement>('[data-checkpoint]').forEach((button) => button.addEventListener('click', () => void controller.undoTo(button.dataset.checkpoint ?? '')));
+  root.querySelectorAll<HTMLElement>('[data-settings]').forEach(button => button.addEventListener('click', () => {
     settingsTab = button.dataset.settings!;
     const form = root.querySelector<HTMLElement>('#new-game-form'); if (form) form.dataset.settingsTab = settingsTab;
     root.querySelectorAll<HTMLButtonElement>('[data-settings]').forEach(item => item.setAttribute('aria-pressed', String(item.dataset.settings === settingsTab)));
   }));
-  root.querySelectorAll<HTMLElement>('[data-deck-list]').forEach(button => button.addEventListener('click', () => { deck.list = button.dataset.deckList as DeckList; render(snapshot); }));
-  $('#zoom-in')?.addEventListener('click', () => zoom(1.2));
-  $('#zoom-out')?.addEventListener('click', () => zoom(1 / 1.2));
+  $('#zoom-in')?.addEventListener('click', () => zoomAt(1.2));
+  $('#zoom-out')?.addEventListener('click', () => zoomAt(1 / 1.2));
   $('#zoom-reset')?.addEventListener('click', () => { camera.zoom = 1; camera.x = 0; camera.y = 0; updateCamera(); });
 
-  root.querySelectorAll<HTMLElement>('.hex-cell[data-hex]').forEach((element) => element.addEventListener('click', (event) => {
+  // Deck unit rows select the unit and centre the map selection on its hex.
+  root.querySelectorAll<HTMLElement>('.deck-unit[data-piece]').forEach((element) => element.addEventListener('click', () => controller.selectPiece(element.dataset.piece ?? null)));
+  root.querySelectorAll<HTMLElement>('#hex-map .hex-cell[data-hex]').forEach((element) => {
+    element.addEventListener('click', (event) => {
+      event.stopPropagation();
+      if (mapDragged) { mapDragged = false; return; }
+      void runUi(() => controller.clickHex(element.dataset.hex!));
+    });
+    element.addEventListener('pointerenter', () => {
+      hoverHexId = element.dataset.hex ?? null;
+      const info = root.querySelector<HTMLElement>('.hover-info');
+      const cell = theater.cells.find(({ id }) => id === hoverHexId);
+      if (info && cell) info.textContent = `Hex ${printedHexLabel(cell.id)} · ${cell.terrain.toLowerCase()}${cell.settlement ? ` · ${cell.settlement.toLowerCase()}` : ''}${currentGame.deployment.objectiveHexIds.includes(cell.id as never) ? ' · objective' : ''}`;
+    });
+    element.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); void runUi(() => controller.clickHex(element.dataset.hex!)); }
+    });
+  });
+  root.querySelectorAll<HTMLElement>('#hex-map .counter[data-piece]').forEach((element) => element.addEventListener('click', (event) => {
     event.stopPropagation();
     if (mapDragged) { mapDragged = false; return; }
-    const hexId = element.dataset.hex ?? null;
-    if (moving(snapshot)) { chooseDestination(snapshot, hexId); return; }
-    const candidate = snapshot.candidates.findIndex(action => actionDestination(action) === hexId);
-    if (deck.list === 'candidates' && candidate >= 0) controller.selectCandidate(candidate);
-    else { deck.list = 'stack'; controller.selectHex(hexId); }
+    void runUi(() => clickCounter(snapshot, element.dataset.piece!, element.dataset.hex!));
   }));
-  root.querySelectorAll<HTMLElement>('[data-piece]').forEach((element) => element.addEventListener('click', (event) => {
-    event.stopPropagation();
-    // On the map, a counter standing on a legal destination is part of that destination.
-    if (element.closest('#hex-map') && moving(snapshot) && isDestination(snapshot, element.dataset.hex ?? null)) {
-      chooseDestination(snapshot, element.dataset.hex ?? null);
-      return;
-    }
-    void runUi(() => selectUnit(snapshot, element.dataset.hex ?? null, element.dataset.piece ?? null));
-  }));
-  activateKeyboard('.hex-cell[data-hex]', (element) => element.dispatchEvent(new MouseEvent('click', { bubbles: true })));
-  activateKeyboard('.counter[data-piece]', (element) => selectUnit(snapshot, element.dataset.hex ?? null, element.dataset.piece ?? null));
-  root.querySelectorAll<HTMLButtonElement>('[data-action-kind]').forEach((button) => button.addEventListener('click', () =>
-    controller.selectActionKind(button.dataset.actionKind as NonNullable<UiSnapshot['selection']['actionKind']>)));
-  root.querySelectorAll<HTMLButtonElement>('[data-candidate]').forEach((button) => button.addEventListener('click', () =>
-    controller.selectCandidate(Number(button.dataset.candidate))));
-  root.querySelectorAll<HTMLButtonElement>('[data-choice]').forEach((button) => button.addEventListener('click', () =>
-    void controller.respondToDecision(button.dataset.choice ?? '')));
-  root.querySelectorAll<HTMLButtonElement>('[data-checkpoint]').forEach((button) => button.addEventListener('click', () =>
-    void controller.undoTo(button.dataset.checkpoint ?? '')));
 
-  $('#save-game')?.addEventListener('click', () => {
-    downloadJson(controller.serializeSave(), `ocs-${snapshot.view.metadata.id}.json`);
-  });
-  $('#download-final-save')?.addEventListener('click', () =>
-    downloadJson(controller.serializeSave(), `ocs-final-${snapshot.view.metadata.id}.json`));
-  $('#download-replay')?.addEventListener('click', () =>
-    downloadJson(controller.serializeReplay(), `ocs-replay-${snapshot.view.metadata.id}.json`));
+  $('#save-game')?.addEventListener('click', () => downloadJson(controller.serializeSave(), `ocs-${snapshot.view.metadata.id}.json`));
+  $('#download-final-save')?.addEventListener('click', () => downloadJson(controller.serializeSave(), `ocs-final-${snapshot.view.metadata.id}.json`));
+  $('#download-replay')?.addEventListener('click', () => downloadJson(controller.serializeReplay(), `ocs-replay-${snapshot.view.metadata.id}.json`));
   $('#load-game')?.addEventListener('click', () => $('#save-file')?.dispatchEvent(new MouseEvent('click')));
   $('#save-file')?.addEventListener('change', (event) => {
     const file = (event.currentTarget as HTMLInputElement).files?.[0];
@@ -605,6 +556,7 @@ function bindEvents(snapshot: UiSnapshot): void {
         rules: Number(root.querySelector<HTMLInputElement>('#new-game-rules-seed')?.value ?? -1),
       },
       turnLimit: Number(root.querySelector<HTMLInputElement>('#new-game-turn-limit')?.value ?? 0),
+      startMonth: Number(root.querySelector<HTMLSelectElement>('#new-game-start-month')?.value ?? 0),
     };
     newGameError = '';
     newGameBusy = true;
@@ -637,6 +589,7 @@ function bindEvents(snapshot: UiSnapshot): void {
     if (id === 'new-game-scale') newGameSettings = { ...newGameSettings, oob: { ...newGameSettings.oob, scale: input.value as OobScale } };
     if (id === 'new-game-formations') newGameSettings = { ...newGameSettings, oob: { ...newGameSettings.oob, formationsPerSide: value } };
     if (id === 'new-game-turn-limit') newGameSettings = { ...newGameSettings, turnLimit: value };
+    if (id === 'new-game-start-month') newGameSettings = { ...newGameSettings, startMonth: value };
     for (const key of ['map', 'oob', 'deployment', 'rules'] as const) if (id === `new-game-${key}-seed`) newGameSettings = { ...newGameSettings, seeds: { ...newGameSettings.seeds, [key]: value } };
     const start = root.querySelector<HTMLButtonElement>('#start-previewed-game');
     if (start) {
@@ -696,20 +649,26 @@ function bindEvents(snapshot: UiSnapshot): void {
     if (!current) return;
     event.preventDefault();
     const [q, r] = (current.dataset.hex ?? '0,0').split(',').map(Number);
-    const nextQ = q! + (event.key === 'ArrowRight' ? 1 : event.key === 'ArrowLeft' ? -1 : 0);
+    // Offset-rectangle navigation: left/right along the row, up/down keep the visual column.
     const nextR = r! + (event.key === 'ArrowDown' ? 1 : event.key === 'ArrowUp' ? -1 : 0);
+    const column = q! + Math.floor(r! / 2) + (event.key === 'ArrowRight' ? 1 : event.key === 'ArrowLeft' ? -1 : 0);
+    const nextQ = column - Math.floor(nextR / 2);
     const next = [...root.querySelectorAll<HTMLElement>('.hex-cell')].find(e => e.dataset.hex === `${nextQ},${nextR}`);
     if (next) { current.setAttribute('tabindex', '-1'); next.setAttribute('tabindex', '0'); next.focus({ preventScroll: true }); }
   });
-  map?.addEventListener('wheel', (event: WheelEvent) => { event.preventDefault(); zoom(event.deltaY < 0 ? 1.12 : 1 / 1.12); }, { passive: false });
+  map?.addEventListener('wheel', (event: WheelEvent) => {
+    event.preventDefault();
+    const bounds = map.getBoundingClientRect();
+    const scale = layout.width / Math.max(1, bounds.width);
+    zoomAt(event.deltaY < 0 ? 1.12 : 1 / 1.12, (event.clientX - bounds.left) * scale, (event.clientY - bounds.top) * scale);
+  }, { passive: false });
   map?.addEventListener('pointerdown', (event: PointerEvent) => {
-    if ((event.target as Element).closest('.counter')) return;
     mapDragged = false;
     dragging = { x: event.clientX, y: event.clientY, cameraX: camera.x, cameraY: camera.y };
   });
   map?.addEventListener('pointermove', (event: PointerEvent) => {
     if (!dragging) return;
-    if (Math.hypot(event.clientX - dragging.x, event.clientY - dragging.y) < 5) return;
+    if (Math.hypot(event.clientX - dragging.x, event.clientY - dragging.y) < 6) return;
     mapDragged = true; map.setPointerCapture(event.pointerId);
     const scale = layout.width / Math.max(1, map.getBoundingClientRect().width);
     camera.x = dragging.cameraX + (event.clientX - dragging.x) * scale;
@@ -718,6 +677,15 @@ function bindEvents(snapshot: UiSnapshot): void {
   });
   map?.addEventListener('pointerup', () => { dragging = null; });
 }
+
+window.addEventListener('keydown', (event) => {
+  if (event.key !== 'Escape') return;
+  if (utilityOpen) { utilityOpen = null; render(controller.getSnapshot()); return; }
+  if (newGameOpen && !newGameBusy) { newGameOpen = false; history.replaceState(null, '', location.pathname); render(controller.getSnapshot()); return; }
+  const snapshot = controller.getSnapshot();
+  if (snapshot.draft) controller.cancelDraft();
+  else controller.clearSelection();
+});
 
 unsubscribeController = controller.subscribe(render);
 window.addEventListener('resize', updateCamera);

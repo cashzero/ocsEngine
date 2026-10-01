@@ -7,40 +7,43 @@ import {
   createUiController,
 } from '../../src/index.js';
 
-describe('map-based movement selection', () => {
-  it('shows the whole legal range and selects nothing until a destination is chosen', async () => {
+describe('map-based movement selection on the generated default game', () => {
+  it('shows the whole legal range, previews a path, and moves only on confirmation', async () => {
     const engine = createGameplayEngine(createMemoryGameplayPorts());
     const created = await createNewGameOrchestrator(engine).create(DEFAULT_NEW_GAME_REQUEST);
     if (!created.ok) throw new Error('Default game must be created.');
     const { session, scenario, bindings } = created.value;
     const controller = createUiController({ engine, session, scenario, bindings });
-    for (let step = 0; step < 10 && controller.getSnapshot().view.projection?.sequence.phase !== 'MOVEMENT'; step += 1) {
-      controller.selectActionKind('ADVANCE_SEQUENCE');
-      await controller.executeSelected();
+    // Reinforcements arrive first and cannot be delayed (13.6).
+    for (const arrival of controller.getSnapshot().arrivals) {
+      controller.selectPiece(arrival.pieceId);
+      await controller.clickHex(arrival.entryHexIds[0]!);
     }
+    await controller.endStep();
     const snapshot = controller.getSnapshot();
+    expect(snapshot.view.projection?.sequence.phase).toBe('MOVEMENT');
     const mover = snapshot.view.projection!.stacks.flatMap(({ pieces }) => pieces)
-      .find((piece) => !piece.redacted && piece.ownerId === snapshot.view.playerId && piece.mode === 'MOVE')!;
+      .find((piece) => piece.ownerId === snapshot.view.playerId && piece.mode === 'MOVE' && piece.location.kind === 'ON_MAP')!;
 
-    controller.selectActionKind('MOVE_PIECE');
     controller.selectPiece(mover.id);
+    // A Truck or Track unit is fueled first (12.5a); a leg unit moves at once.
+    const fuel = controller.getSnapshot().unitActions.find(({ group }) => group === 'FUEL');
+    if (fuel) await controller.runAction(fuel.key);
     const range = controller.getSnapshot();
-    expect(range.candidates.length).toBeGreaterThan(24);
-    expect(range.candidatesTruncated).toBe(false);
-    expect(range.selectedAction).toBeNull();
+    expect(range.reachable.size).toBeGreaterThan(24);
+    expect(range.movePreview).toBeNull();
 
-    const last = range.candidates.at(-1)!;
-    const destination = last.kind === 'MOVE_PIECE' ? last.path.at(-1)! : '';
-    controller.selectDestination(destination);
+    const destination = [...range.reachable.keys()].at(-1)!;
+    await controller.clickHex(destination);
     const chosen = controller.getSnapshot();
-    expect(chosen.selectedAction).toMatchObject({ kind: 'MOVE_PIECE', pieceId: mover.id });
-    expect(chosen.explanation?.allowed).toBe(true);
+    expect(chosen.movePreview).toMatchObject({ destinationHexId: destination, path: range.reachable.get(destination) });
+    expect(chosen.view.stateRevision).toBe(range.view.stateRevision);
 
-    await controller.executeSelected();
+    await controller.confirmMove();
     const moved = controller.getSnapshot();
-    expect(moved.notice).toContain('accepted');
-    expect(moved.selection).toMatchObject({ pieceId: mover.id, hexId: destination, destinationHexId: null });
-    expect(moved.selectedAction).toBeNull();
+    expect(moved.view.stateRevision).toBe(range.view.stateRevision + 1);
+    expect(moved.selection).toMatchObject({ pieceId: mover.id, hexId: destination });
+    expect(moved.movePreview).toBeNull();
     controller.dispose();
   });
 });

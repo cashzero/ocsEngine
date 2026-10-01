@@ -2,6 +2,7 @@ import { validateScenarioDefinition } from '../domain/scenario/index.js';
 import { createPieceDefinitionCatalogIndex } from '../domain/piece/index.js';
 import { validateRuleConfiguration } from '../rules/index.js';
 import type { GameFlowFailure, GeneratedScenarioPackage, NewGameRequest } from './model.js';
+import { BTR_CAMPAIGN_MONTHS, btrTurnDate } from './weather-supply-tables.js';
 
 const uint32 = (value: number): boolean => Number.isSafeInteger(value) && value >= 0 && value <= 0xffff_ffff;
 
@@ -13,6 +14,11 @@ export const validateNewGameRequest = (request: NewGameRequest): readonly GameFl
   }
   if (!Number.isSafeInteger(request.turnLimit) || request.turnLimit < 1 || request.turnLimit > 20) {
     failures.push({ stage: 'OPTIONS', code: 'INVALID_TURN_LIMIT', message: 'Turn limit must be an integer from 1 through 20.', path: ['turnLimit'] });
+  }
+  if (!BTR_CAMPAIGN_MONTHS.includes(request.startMonth)) {
+    failures.push({ stage: 'OPTIONS', code: 'INVALID_START_MONTH', message: 'The campaign starts in a month from September through April.', path: ['startMonth'] });
+  } else if (Number.isSafeInteger(request.turnLimit) && btrTurnDate(request.startMonth, request.turnLimit) === null) {
+    failures.push({ stage: 'OPTIONS', code: 'CALENDAR_EXCEEDS_WEATHER_TABLE', message: 'The last turn would fall after April, where the Weather Table ends; start earlier or play fewer turns.', path: ['startMonth'] });
   }
   return failures;
 };

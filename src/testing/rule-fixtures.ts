@@ -19,6 +19,8 @@ const must = <T, E>(result: Result<T, E>): T => {
 };
 const definitionId = (value: string): DefinitionId => must(parseDefinitionId(value));
 
+const unit = { numerator: 1, denominator: 1, attackOnly: false } as const;
+
 /** The same exact-tick cost for every mobility type. */
 export const uniformCosts = (ticks: number): MobilityMovementCosts => {
   const cost = { kind: 'MP', ticks } as const;
@@ -29,58 +31,27 @@ export const createRuleConfigurationFixture = (): RuleConfiguration => ({
   schemaVersion: must(schemaVersion(1)),
   id: definitionId('rules:ocs-4.3-ground-mvp'),
   rulesVersion: 'OCS 4.3 ground/logistics MVP',
-  terrainMovementCosts: [{ terrainDefinitionId: definitionId('terrain:plain'), costs: uniformCosts(4) }],
+  terrainMovementCosts: [{ terrainDefinitionId: definitionId('terrain:plain'), costs: uniformCosts(4), weather: [] }],
   hexsideMovementCosts: [
-    { featureDefinitionId: definitionId('edge:river'), costs: uniformCosts(4) },
-    { featureDefinitionId: definitionId('edge:bridge'), costs: uniformCosts(-4) },
+    { featureDefinitionId: definitionId('edge:river'), costs: uniformCosts(4), weather: [] },
+    { featureDefinitionId: definitionId('edge:bridge'), costs: uniformCosts(-4), weather: [] },
   ],
   roadMovementCosts: [
-    { featureDefinitionId: definitionId('edge:road'), costs: uniformCosts(4) },
-    { featureDefinitionId: definitionId('edge:rail'), costs: uniformCosts(4) },
+    { featureDefinitionId: definitionId('edge:road'), costs: uniformCosts(4), weather: [] },
+    { featureDefinitionId: definitionId('edge:rail'), costs: uniformCosts(4), weather: [] },
   ],
   defaultTerrainCostTicks: 4,
   minimumMoveTicks: 4,
   stackingLimitReTicks: 40,
-  supplyTraceRange: 6,
-  combatSupplyTokenCost: 1,
-  combatTable: [
-    {
-      minimumOdds: 0,
-      resultsByTwoDiceTotal: {
-        2: 'ATTACKER_STEP_LOSS', 3: 'ATTACKER_STEP_LOSS', 4: 'NO_EFFECT',
-        5: 'NO_EFFECT', 6: 'NO_EFFECT', 7: 'DEFENDER_RETREAT',
-        8: 'DEFENDER_RETREAT', 9: 'DEFENDER_STEP_LOSS', 10: 'DEFENDER_STEP_LOSS',
-        11: 'DEFENDER_STEP_LOSS_AND_RETREAT', 12: 'DEFENDER_STEP_LOSS_AND_RETREAT',
-      },
-    },
-    {
-      minimumOdds: 2,
-      resultsByTwoDiceTotal: {
-        2: 'NO_EFFECT', 3: 'NO_EFFECT', 4: 'DEFENDER_RETREAT', 5: 'DEFENDER_RETREAT',
-        6: 'DEFENDER_RETREAT', 7: 'DEFENDER_STEP_LOSS', 8: 'DEFENDER_STEP_LOSS',
-        9: 'DEFENDER_STEP_LOSS_AND_RETREAT', 10: 'DEFENDER_STEP_LOSS_AND_RETREAT',
-        11: 'DEFENDER_STEP_LOSS_AND_RETREAT', 12: 'DEFENDER_STEP_LOSS_AND_RETREAT',
-      },
-    },
-  ],
-  barrageTable: [
-    {
-      minimumStrength: 0, supplyTokenCost: 1,
-      resultsByTwoDiceTotal: {
-        2: 'NO_EFFECT', 3: 'NO_EFFECT', 4: 'NO_EFFECT', 5: 'NO_EFFECT',
-        6: 'DG', 7: 'DG', 8: 'DG', 9: 'DG', 10: 'STEP_LOSS_AND_DG',
-        11: 'STEP_LOSS_AND_DG', 12: 'STEP_LOSS_AND_DG',
-      },
-    },
-    {
-      minimumStrength: 4, supplyTokenCost: 1,
-      resultsByTwoDiceTotal: {
-        2: 'NO_EFFECT', 3: 'NO_EFFECT', 4: 'DG', 5: 'DG', 6: 'DG', 7: 'DG',
-        8: 'STEP_LOSS_AND_DG', 9: 'STEP_LOSS_AND_DG', 10: 'STEP_LOSS_AND_DG',
-        11: 'STEP_LOSS_AND_DG', 12: 'STEP_LOSS_AND_DG',
-      },
-    },
-  ],
+  terrainCombatEffects: [{
+    terrainDefinitionId: definitionId('terrain:plain'), line: 'OPEN',
+    multipliers: { armor: unit, mech: unit, other: unit },
+  }],
+  hexsideCombatEffects: [],
+  supplyDrawRangeTicks: 20,
+  weather: null,
+  supplyArrivals: null,
+  reinforcementBoxes: [],
   turnLimit: 2,
   objectives: [{ hexId: formatHexId(hex(4, 4)), points: 5 }],
 });

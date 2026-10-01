@@ -1,11 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import {
   DEFAULT_NEW_GAME_REQUEST,
+  createAutoplaySource,
   createGameplayEngine,
   createMemoryGameplayPorts,
   createNewGameOrchestrator,
   parseDispatchRequestId,
   prepareNewGame,
+  runHeadlessSession,
   sweepGameFlowSeedOrthogonality,
   validateGeneratedScenarioPackage,
 } from '../../src/index.js';
@@ -40,21 +42,8 @@ describe('generated New Game flow', () => {
     const { session, bindings } = created.value;
     expect(session.getMetadata().lifecycle).toBe('ACTIVE');
 
-    for (let index = 0; index < 80 && session.getMetadata().lifecycle !== 'FINISHED'; index += 1) {
-      const actingPlayerId = session.getView(bindings[0]!.seatId).projection!.sequence.actingPlayerId;
-      const binding = bindings.find(({ playerId }) => playerId === actingPlayerId)!;
-      const action = session.getActionCandidates(binding.seatId, {
-        kind: 'ADVANCE_SEQUENCE', pieceId: null, budget: 1,
-      }).actions[0];
-      expect(action).toBeDefined();
-      if (!action) break;
-      const requestId = parseDispatchRequestId(`game-flow:test:${index}`);
-      expect(requestId.ok).toBe(true);
-      if (!requestId.ok) break;
-      const result = await session.dispatch({ requestId: requestId.value, seatId: binding.seatId, action });
-      expect(result.status).toBe('ACCEPTED');
-    }
-
+    const run = await runHeadlessSession(session, createAutoplaySource(bindings), 800);
+    expect(run.rejected).toBe(0);
     expect(session.getMetadata().lifecycle).toBe('FINISHED');
     const finalView = session.getView(bindings[0]!.seatId);
     expect(finalView.projection?.victory.reason).toBe('TURN_LIMIT');

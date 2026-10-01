@@ -2,7 +2,7 @@ import { parseHexCoordinateId, type HexId } from '../core/index.js';
 import type { PieceDefinition } from '../domain/piece/index.js';
 import type { MapDefinition } from '../domain/map/index.js';
 import type { ScenarioDefinition } from '../domain/scenario/index.js';
-import type { GameAction, ProjectedPiece } from '../rules/index.js';
+import type { GameAction, ProjectedPiece, RulePhase, RuleSegment } from '../rules/index.js';
 
 export interface HexLayoutCell {
   readonly id: HexId;
@@ -20,46 +20,90 @@ export interface HexMapLayout {
 }
 
 const ACTION_LABELS: Readonly<Record<GameAction['kind'], string>> = {
-  ADVANCE_SEQUENCE: 'Advance sequence',
+  ADVANCE_SEQUENCE: 'End step',
   CHANGE_MODE: 'Change mode',
   RELEASE_RESERVE: 'Release reserve',
-  MOVE_PIECE: 'Move unit',
-  CHECK_SUPPLY: 'Check supply',
-  DECLARE_COMBAT: 'Declare combat',
-  DECLARE_BARRAGE: 'Declare barrage',
-  RESPOND_DECISION: 'Respond to decision',
-  COMMIT_TRANSACTION: 'Commit transaction',
-  CANCEL_TRANSACTION: 'Cancel transaction',
+  MOVE_PIECE: 'Move',
+  CHECK_SUPPLY: 'Eat off the map',
+  DECLARE_COMBAT: 'Attack',
+  DECLARE_BARRAGE: 'Barrage',
+  RESPOND_DECISION: 'Decision',
+  COMMIT_TRANSACTION: 'Resolve',
+  CANCEL_TRANSACTION: 'Withdraw attack',
   PLACE_REINFORCEMENT: 'Place reinforcement',
+  PAY_FUEL: 'Pay fuel',
+  RECOVER_INTERNALS: 'Recover internal stocks',
+  CHOOSE_FORMATION_TRACE: 'Choose formation trace',
+  ATTEMPT_BREAKOUT: 'Attempt breakout',
+  BLOW_DUMP: 'Blow dump',
+  LOAD_SUPPLY: 'Load supply',
+  UNLOAD_SUPPLY: 'Unload supply',
+  COMBINE_TRANSPORT: 'Combine trucks',
+  DIVIDE_TRANSPORT: 'Divide trucks',
+  FORM_EXTENDER: 'Form Extender',
+  DISSOLVE_EXTENDER: 'Flip Extender back',
+  COLLAPSE_EXTENDER: 'Collapse Extender',
 };
 
 export const actionKindLabel = (kind: GameAction['kind']): string => ACTION_LABELS[kind];
 
-const suffix = (value: string): string => value.split(':').at(-1) ?? value;
+const PHASE_LABELS: Readonly<Record<RulePhase, string>> = {
+  WEATHER: 'Weather', FIRST_PLAYER: 'First Player', AIRCRAFT_REFIT: 'Aircraft Refit',
+  REINFORCEMENT: 'Reinforcement', MOVEMENT: 'Movement', SUPPLY: 'Supply', REACTION: 'Reaction',
+  COMBAT: 'Combat', EXPLOITATION: 'Exploitation', CLEAN_UP: 'Clean Up', TURN_END: 'Turn End', COMPLETE: 'Game over',
+};
+
+export const phaseLabel = (phase: RulePhase, segment: RuleSegment): string =>
+  segment === 'NONE' ? `${PHASE_LABELS[phase]} Phase`
+    : `${PHASE_LABELS[phase]} · ${segment === 'MOVEMENT' ? 'Movement' : segment === 'BARRAGE' ? 'Barrage' : segment === 'BREAKOUT' ? 'Breakout' : 'Combat'} Segment`;
+
+/** Printed-map style Hex number: column and row, 1-based, e.g. "0507". */
+export const printedHexLabel = (hexId: string): string => {
+  const parsed = parseHexCoordinateId(hexId);
+  if (!parsed.ok) return hexId;
+  const { q, r } = parsed.value;
+  const column = q + Math.floor(r / 2) + 1;
+  return `${String(column).padStart(2, '0')}${String(r + 1).padStart(2, '0')}`;
+};
 
 export const actionSummary = (action: GameAction): string => {
   switch (action.kind) {
-    case 'ADVANCE_SEQUENCE': return 'Continue to the next segment';
-    case 'CHANGE_MODE': return `${suffix(action.pieceId)} → ${action.mode}`;
-    case 'RELEASE_RESERVE': return `Release ${suffix(action.pieceId)}`;
-    case 'MOVE_PIECE': return `${suffix(action.pieceId)} → ${action.path.at(-1) ?? 'current hex'}`;
-    case 'CHECK_SUPPLY': return `${action.pieceIds.map(suffix).join(', ')} supply trace`;
-    case 'DECLARE_COMBAT': return `${action.combatKind}: ${action.attackerIds.map(suffix).join(', ')} → ${action.targetHexId}`;
-    case 'DECLARE_BARRAGE': return `${action.firerIds.map(suffix).join(', ')} → ${action.targetHexId}`;
-    case 'RESPOND_DECISION': return action.choiceId;
-    case 'COMMIT_TRANSACTION': return `Resolve ${suffix(action.transactionId)}`;
-    case 'CANCEL_TRANSACTION': return `Cancel ${suffix(action.transactionId)}`;
-    case 'PLACE_REINFORCEMENT': return `${suffix(action.pieceId)} → ${action.hexId}`;
+    case 'ADVANCE_SEQUENCE': return 'End the current step';
+    case 'CHANGE_MODE': return `Change to ${action.mode.toLowerCase()} mode`;
+    case 'RELEASE_RESERVE': return 'Release from reserve';
+    case 'MOVE_PIECE': return `Move to ${printedHexLabel(action.path.at(-1) ?? '')}`;
+    case 'CHECK_SUPPLY': return 'Draw supply from a dump';
+    case 'DECLARE_COMBAT': return `${action.combatKind === 'OVERRUN' ? 'Overrun' : 'Attack'} ${printedHexLabel(action.targetHexId)}`;
+    case 'DECLARE_BARRAGE': return `Barrage ${printedHexLabel(action.targetHexId)}`;
+    case 'RESPOND_DECISION': return 'Decision';
+    case 'COMMIT_TRANSACTION': return 'Resolve';
+    case 'CANCEL_TRANSACTION': return 'Withdraw attack';
+    case 'PLACE_REINFORCEMENT': return `Place at ${printedHexLabel(action.hexId)}`;
+    case 'PAY_FUEL': return action.method === 'SINGLE_UNIT' ? 'Fuel this unit (1T)' : action.method === 'FORMATION' ? 'Fuel the formation (1 SP)' : 'Fuel the HQ (1 SP)';
+    case 'RECOVER_INTERNALS': return 'Recover internal stocks';
+    case 'CHOOSE_FORMATION_TRACE': return 'Change the formation trace route';
+    case 'ATTEMPT_BREAKOUT': return 'Attempt breakout';
+    case 'BLOW_DUMP': return `Blow ${action.tokens}T`;
+    case 'LOAD_SUPPLY': return `Load ${action.tokens}T`;
+    case 'UNLOAD_SUPPLY': return `Unload ${action.tokens}T`;
+    case 'COMBINE_TRANSPORT': return 'Combine trucks';
+    case 'DIVIDE_TRANSPORT': return `Split off ${action.points} point${action.points === 1 ? '' : 's'}`;
+    case 'FORM_EXTENDER': return 'Form Extender';
+    case 'DISSOLVE_EXTENDER': return 'Flip Extender back to trucks';
+    case 'COLLAPSE_EXTENDER': return `Collapse to ${printedHexLabel(action.hexId)}`;
   }
 };
 
 export const pieceDefinition = (
   scenario: ScenarioDefinition,
-  piece: ProjectedPiece,
+  piece: Pick<ProjectedPiece, 'definitionId'>,
 ): PieceDefinition | null => scenario.pieceCatalog.definitions.find(({ id }) => id === piece.definitionId) ?? null;
 
-export const pieceLabel = (scenario: ScenarioDefinition, piece: ProjectedPiece): string =>
-  piece.redacted ? 'Enemy unit' : pieceDefinition(scenario, piece)?.name ?? suffix(piece.id);
+export const unitLabel = (scenario: ScenarioDefinition, piece: Pick<ProjectedPiece, 'definitionId'>): string =>
+  pieceDefinition(scenario, piece)?.name ?? 'Unit';
+
+/** Label for a counter as the viewer is allowed to see it. */
+export const pieceLabel = (scenario: ScenarioDefinition, piece: ProjectedPiece): string => unitLabel(scenario, piece);
 
 const hexPoints = (centerX: number, centerY: number, size: number): string =>
   Array.from({ length: 6 }, (_, index) => {
@@ -76,7 +120,7 @@ export const layoutMapDefinition = (map: MapDefinition, hexSize = 54): HexMapLay
       id: hex.id,
       x: hexSize * Math.sqrt(3) * (q + r / 2),
       y: hexSize * 1.5 * r,
-      terrain: hex.terrainDefinitionIds.map(suffix).join(', ') || 'clear',
+      terrain: hex.terrainDefinitionIds.map((id) => String(id).split(':').at(-1)).join(', ') || 'clear',
     };
   });
   const minX = Math.min(...raw.map(({ x }) => x)) - hexSize - 8;

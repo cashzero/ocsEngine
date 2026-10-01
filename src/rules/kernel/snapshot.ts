@@ -22,6 +22,7 @@ import {
   parseScenarioDefinition,
   type Decoder,
   arrayDecoder,
+  booleanDecoder,
   decoder,
   literalDecoder,
   nullableDecoder,
@@ -31,20 +32,26 @@ import {
   safeIntegerDecoder,
   stringDecoder,
 } from '../../serialization/index.js';
-import type { ScenarioDefinition } from '../../domain/scenario/index.js';
+import { parseMapBoxId } from '../../domain/map/index.js';
 import { parseRuleDecisionId, parseRuleTransactionId } from './ids.js';
+import { PENDING_DECISION_KINDS } from './model.js';
 import type {
-  BarrageResultCode,
-  CombatResultCode,
+  CombatMultiplier,
+  FuelState,
   GameState,
+  PaymentProgress,
+  RuleInterrupt,
+  WeatherState,
   MovementCost,
   PendingDecision,
   PieceUsageState,
+  ResolutionStep,
   ResourceReservation,
   RuleConfiguration,
   RulesDiceRoll,
   RulesRngState,
   RuleTransaction,
+  SegmentLedger,
   TurnSequenceState,
   VictoryState,
 } from './model.js';
@@ -69,34 +76,9 @@ const hexIdDecoder: Decoder<HexId> = refinedDecoder(
   'INVALID_RULE_SNAPSHOT_ID',
   (value) => `Invalid Hex ID: ${value}.`,
 );
+const boxIdDecoder = fromParser(parseMapBoxId, 'Box ID');
 const versionDecoder = refinedDecoder(safeIntegerDecoder, schemaVersion, 'INVALID_SCHEMA_VERSION', String);
 const revisionDecoder = refinedDecoder(safeIntegerDecoder, revision, 'INVALID_REVISION', String);
-
-const resultMapDecoder = <T extends string>(values: readonly T[]): Decoder<Readonly<Record<number, T>>> =>
-  decoder((input, path = []) => {
-    if (typeof input !== 'object' || input === null || Array.isArray(input)) {
-      return err([issue('SCHEMA_TYPE_MISMATCH', path, 'Expected a dice-result object.')]);
-    }
-    const record = input as Readonly<Record<string, unknown>>;
-    const expected = Array.from({ length: 11 }, (_, index) => String(index + 2));
-    const issues: ValidationIssue[] = Object.keys(record)
-      .filter((key) => !expected.includes(key))
-      .map((key) => issue('UNKNOWN_SCHEMA_FIELD', [...path, key], `Unknown dice total ${key}.`));
-    const output: Record<number, T> = {};
-    for (const key of expected) {
-      const value = record[key];
-      if (typeof value !== 'string' || !values.includes(value as T)) {
-        issues.push(issue('SCHEMA_LITERAL_MISMATCH', [...path, key], `Invalid result for dice total ${key}.`));
-      } else output[Number(key)] = value as T;
-    }
-    return issues.length > 0 ? err(issues) : ok(output);
-  });
-
-const combatResults = [
-  'NO_EFFECT', 'ATTACKER_STEP_LOSS', 'DEFENDER_STEP_LOSS',
-  'DEFENDER_RETREAT', 'DEFENDER_STEP_LOSS_AND_RETREAT',
-] as const satisfies readonly CombatResultCode[];
-const barrageResults = ['NO_EFFECT', 'DG', 'STEP_LOSS_AND_DG'] as const satisfies readonly BarrageResultCode[];
 
 const movementCostDecoder: Decoder<MovementCost> = taggedUnionDecoder<MovementCost>('kind', {
   MP: objectDecoder({ kind: literalDecoder('MP'), ticks: safeIntegerDecoder }),
@@ -107,37 +89,45 @@ const movementCostDecoder: Decoder<MovementCost> = taggedUnionDecoder<MovementCo
 const mobilityCostsDecoder = objectDecoder({
   leg: movementCostDecoder, truck: movementCostDecoder, tracked: movementCostDecoder,
 });
+const weatherColumnsDecoder = arrayDecoder(objectDecoder({
+  condition: literalDecoder('MUD', 'SNOW'), costs: mobilityCostsDecoder,
+}));
+const groundConditionDecoder = literalDecoder('DRY', 'MUD', 'SNOW');
+const multiplierDecoder: Decoder<CombatMultiplier> = objectDecoder({
+  numerator: safeIntegerDecoder, denominator: safeIntegerDecoder, attackOnly: booleanDecoder,
+});
+const classMultipliersDecoder = objectDecoder({ armor: multiplierDecoder, mech: multiplierDecoder, other: multiplierDecoder });
+const lineDecoder = literalDecoder('OPEN', 'CLOSE', 'VERY_CLOSE', 'EXTREMELY_CLOSE');
 
 const configurationDecoder: Decoder<RuleConfiguration> = objectDecoder({
   schemaVersion: versionDecoder,
   id: definitionIdDecoder,
   rulesVersion: stringDecoder,
-  terrainMovementCosts: arrayDecoder(objectDecoder({
-    terrainDefinitionId: definitionIdDecoder,
-    costs: mobilityCostsDecoder,
-  })),
-  hexsideMovementCosts: arrayDecoder(objectDecoder({
-    featureDefinitionId: definitionIdDecoder,
-    costs: mobilityCostsDecoder,
-  })),
-  roadMovementCosts: arrayDecoder(objectDecoder({
-    featureDefinitionId: definitionIdDecoder,
-    costs: mobilityCostsDecoder,
-  })),
+  terrainMovementCosts: arrayDecoder(objectDecoder({ terrainDefinitionId: definitionIdDecoder, costs: mobilityCostsDecoder, weather: weatherColumnsDecoder })),
+  hexsideMovementCosts: arrayDecoder(objectDecoder({ featureDefinitionId: definitionIdDecoder, costs: mobilityCostsDecoder, weather: weatherColumnsDecoder })),
+  roadMovementCosts: arrayDecoder(objectDecoder({ featureDefinitionId: definitionIdDecoder, costs: mobilityCostsDecoder, weather: weatherColumnsDecoder })),
   defaultTerrainCostTicks: safeIntegerDecoder,
   minimumMoveTicks: safeIntegerDecoder,
+  terrainCombatEffects: arrayDecoder(objectDecoder({
+    terrainDefinitionId: definitionIdDecoder, line: nullableDecoder(lineDecoder), multipliers: classMultipliersDecoder,
+  })),
+  hexsideCombatEffects: arrayDecoder(objectDecoder({ featureDefinitionId: definitionIdDecoder, multipliers: classMultipliersDecoder })),
   stackingLimitReTicks: safeIntegerDecoder,
-  supplyTraceRange: safeIntegerDecoder,
-  combatSupplyTokenCost: safeIntegerDecoder,
-  combatTable: arrayDecoder(objectDecoder({
-    minimumOdds: safeIntegerDecoder,
-    resultsByTwoDiceTotal: resultMapDecoder(combatResults),
+  supplyDrawRangeTicks: safeIntegerDecoder,
+  weather: nullableDecoder(objectDecoder({
+    startMonth: safeIntegerDecoder,
+    startDay: safeIntegerDecoder,
+    turnDays: arrayDecoder(safeIntegerDecoder),
+    table: arrayDecoder(objectDecoder({
+      month: safeIntegerDecoder, firstDay: safeIntegerDecoder, lastDay: safeIntegerDecoder,
+      ground: arrayDecoder(objectDecoder({ condition: groundConditionDecoder, minimum: safeIntegerDecoder, maximum: safeIntegerDecoder })),
+    })),
   })),
-  barrageTable: arrayDecoder(objectDecoder({
-    minimumStrength: safeIntegerDecoder,
-    supplyTokenCost: safeIntegerDecoder,
-    resultsByTwoDiceTotal: resultMapDecoder(barrageResults),
+  supplyArrivals: nullableDecoder(objectDecoder({
+    rows: arrayDecoder(objectDecoder({ minimum: safeIntegerDecoder, maximum: safeIntegerDecoder, points: arrayDecoder(safeIntegerDecoder) })),
+    players: arrayDecoder(objectDecoder({ playerId: playerIdDecoder, status: safeIntegerDecoder, resourceDefinitionId: definitionIdDecoder })),
   })),
+  reinforcementBoxes: arrayDecoder(objectDecoder({ playerId: playerIdDecoder, boxId: boxIdDecoder })),
   turnLimit: safeIntegerDecoder,
   objectives: arrayDecoder(objectDecoder({ hexId: hexIdDecoder, points: safeIntegerDecoder })),
 });
@@ -151,7 +141,8 @@ const sequenceDecoder: Decoder<TurnSequenceState> = objectDecoder({
     'WEATHER', 'FIRST_PLAYER', 'AIRCRAFT_REFIT', 'REINFORCEMENT', 'MOVEMENT',
     'SUPPLY', 'REACTION', 'COMBAT', 'EXPLOITATION', 'CLEAN_UP', 'TURN_END', 'COMPLETE',
   ),
-  segment: literalDecoder('NONE', 'MOVEMENT', 'BARRAGE', 'COMBAT'),
+  segment: literalDecoder('NONE', 'BREAKOUT', 'MOVEMENT', 'BARRAGE', 'COMBAT'),
+  firstPlayerId: playerIdDecoder,
   phasingPlayerId: playerIdDecoder,
   actingPlayerId: playerIdDecoder,
 });
@@ -159,11 +150,24 @@ const sequenceDecoder: Decoder<TurnSequenceState> = objectDecoder({
 const usageDecoder: Decoder<PieceUsageState> = objectDecoder({
   pieceId: pieceIdDecoder,
   movementSpentTicks: safeIntegerDecoder,
-  moved: { decode: (input, path = []) => typeof input === 'boolean' ? ok(input) : err([issue('SCHEMA_TYPE_MISMATCH', path, 'Expected boolean.')]) },
-  fired: { decode: (input, path = []) => typeof input === 'boolean' ? ok(input) : err([issue('SCHEMA_TYPE_MISMATCH', path, 'Expected boolean.')]) },
-  attacked: { decode: (input, path = []) => typeof input === 'boolean' ? ok(input) : err([issue('SCHEMA_TYPE_MISMATCH', path, 'Expected boolean.')]) },
-  barraged: { decode: (input, path = []) => typeof input === 'boolean' ? ok(input) : err([issue('SCHEMA_TYPE_MISMATCH', path, 'Expected boolean.')]) },
-  reserveReleased: { decode: (input, path = []) => typeof input === 'boolean' ? ok(input) : err([issue('SCHEMA_TYPE_MISMATCH', path, 'Expected boolean.')]) },
+  moved: booleanDecoder,
+  phaseStartHexId: nullableDecoder(hexIdDecoder),
+  attacked: booleanDecoder,
+  barraged: booleanDecoder,
+  reserveReleased: booleanDecoder,
+  negationLocked: booleanDecoder,
+  supplyPaid: booleanDecoder,
+  fueled: booleanDecoder,
+  fuelThrowHexId: nullableDecoder(hexIdDecoder),
+  recovered: booleanDecoder,
+  breakoutAttempted: booleanDecoder,
+  blown: booleanDecoder,
+  unloadedTokens: safeIntegerDecoder,
+});
+
+const ledgerDecoder: Decoder<SegmentLedger> = objectDecoder({
+  attackedHexIds: arrayDecoder(hexIdDecoder),
+  barragedHexIds: arrayDecoder(hexIdDecoder),
 });
 
 const rngDecoder: Decoder<RulesRngState> = objectDecoder({
@@ -206,26 +210,86 @@ const rollDecoder: Decoder<RulesDiceRoll> = decoder((input, path = []) => {
   });
 });
 
+const sideDecoder = literalDecoder('ATTACKER', 'DEFENDER');
+const resolutionStepDecoder: Decoder<ResolutionStep> = taggedUnionDecoder<ResolutionStep>('kind', {
+  LOSS: objectDecoder({
+    kind: literalDecoder('LOSS'), side: sideDecoder, count: safeIntegerDecoder,
+    distribution: literalDecoder('COMBAT', 'FREE'), pieceIds: arrayDecoder(pieceIdDecoder),
+  }),
+  OPTION: objectDecoder({ kind: literalDecoder('OPTION'), side: sideDecoder, points: safeIntegerDecoder }),
+  RETREAT: objectDecoder({ kind: literalDecoder('RETREAT'), side: sideDecoder, hexes: safeIntegerDecoder, pieceIds: arrayDecoder(pieceIdDecoder) }),
+  EXPLOIT: objectDecoder({ kind: literalDecoder('EXPLOIT'), rating: safeIntegerDecoder }),
+  DEFENDER_DG: objectDecoder({ kind: literalDecoder('DEFENDER_DG') }),
+  ADVANCE: objectDecoder({ kind: literalDecoder('ADVANCE') }),
+});
+
+const paymentDecoder: Decoder<PaymentProgress> = objectDecoder({
+  side: sideDecoder,
+  queue: arrayDecoder(objectDecoder({ pieceIds: arrayDecoder(pieceIdDecoder), tokens: safeIntegerDecoder })),
+  paid: safeIntegerDecoder,
+});
+
 const transactionDecoder: Decoder<RuleTransaction> = objectDecoder({
   id: transactionIdDecoder,
   kind: literalDecoder('COMBAT', 'OVERRUN', 'BARRAGE'),
-  step: literalDecoder('AWAITING_RESOURCE', 'READY', 'AWAITING_LOSS', 'AWAITING_RETREAT', 'AWAITING_ADVANCE'),
+  step: literalDecoder('ATTACKER_SUPPLY', 'DEFENDER_SUPPLY', 'DEFENDER_LEAD', 'DEFENDER_TERRAIN', 'BARRAGE_SUPPLY', 'RESOLVING'),
   ownerId: playerIdDecoder,
+  defenderOwnerId: playerIdDecoder,
   originRevision: revisionDecoder,
   attackerIds: arrayDecoder(pieceIdDecoder),
   defenderIds: arrayDecoder(pieceIdDecoder),
   targetHexId: hexIdDecoder,
-  reservations: arrayDecoder(reservationDecoder),
+  leadAttackerId: nullableDecoder(pieceIdDecoder),
+  leadDefenderId: nullableDecoder(pieceIdDecoder),
+  attackerPayments: arrayDecoder(reservationDecoder),
+  defenderPayments: arrayDecoder(reservationDecoder),
+  payment: nullableDecoder(paymentDecoder),
+  attackerInternalIds: arrayDecoder(pieceIdDecoder),
+  defenderSupplied: booleanDecoder,
+  defenderInternalIds: arrayDecoder(pieceIdDecoder),
+  defenderTerrainId: nullableDecoder(stringDecoder),
+  surpriseRoll: nullableDecoder(rollDecoder),
+  shiftDie: nullableDecoder(safeIntegerDecoder),
   roll: nullableDecoder(rollDecoder),
-  result: nullableDecoder(literalDecoder(...combatResults, ...barrageResults)),
+  result: nullableDecoder(stringDecoder),
+  queue: arrayDecoder(resolutionStepDecoder),
+  lossLedger: arrayDecoder(objectDecoder({ pieceId: pieceIdDecoder, steps: safeIntegerDecoder })),
+  attackerRetreated: booleanDecoder,
+  blockedHexIds: arrayDecoder(hexIdDecoder),
 });
 
 const decisionDecoder: Decoder<PendingDecision> = objectDecoder({
   id: decisionIdDecoder,
-  kind: literalDecoder('RESOURCE_SOURCE', 'STEP_LOSS', 'RETREAT_HEX', 'ADVANCE_HEX'),
+  kind: literalDecoder(...PENDING_DECISION_KINDS),
   ownerId: playerIdDecoder,
-  transactionId: transactionIdDecoder,
-  options: arrayDecoder(objectDecoder({ id: stringDecoder, label: stringDecoder })),
+  transactionId: nullableDecoder(transactionIdDecoder),
+  prompt: stringDecoder,
+  options: arrayDecoder(objectDecoder({ id: stringDecoder, label: stringDecoder, hexId: nullableDecoder(hexIdDecoder) })),
+});
+
+const weatherStateDecoder: Decoder<WeatherState> = objectDecoder({
+  groundCondition: groundConditionDecoder,
+  month: nullableDecoder(safeIntegerDecoder),
+  day: nullableDecoder(safeIntegerDecoder),
+  roll: nullableDecoder(safeIntegerDecoder),
+});
+
+const fuelDecoder: Decoder<FuelState> = objectDecoder({
+  formations: arrayDecoder(objectDecoder({
+    playerId: playerIdDecoder, formationId: definitionIdDecoder, coveredPieceIds: arrayDecoder(pieceIdDecoder),
+  })),
+  hqIds: arrayDecoder(pieceIdDecoder),
+});
+
+const interruptDecoder: Decoder<RuleInterrupt> = taggedUnionDecoder<RuleInterrupt>('kind', {
+  ATTRITION: objectDecoder({
+    kind: literalDecoder('ATTRITION'), ownerId: playerIdDecoder, hexId: hexIdDecoder,
+    steps: safeIntegerDecoder, pieceIds: arrayDecoder(pieceIdDecoder),
+  }),
+  DISPLACEMENT: objectDecoder({
+    kind: literalDecoder('DISPLACEMENT'), reason: literalDecoder('CAPTURE', 'EXTENDER_COLLAPSE'), ownerId: playerIdDecoder, fromHexId: hexIdDecoder,
+    pieceIds: arrayDecoder(pieceIdDecoder), range: safeIntegerDecoder,
+  }),
 });
 
 const victoryDecoder: Decoder<VictoryState> = objectDecoder({
@@ -244,10 +308,15 @@ interface RawGameState {
   readonly mapState: unknown;
   readonly pieceState: unknown;
   readonly usage: readonly PieceUsageState[];
+  readonly ledger: SegmentLedger;
   readonly currentMoverId: GameState['currentMoverId'];
   readonly rng: RulesRngState;
   readonly activeTransaction: RuleTransaction | null;
   readonly pendingDecision: PendingDecision | null;
+  readonly weather: WeatherState;
+  readonly fuel: FuelState;
+  readonly interrupts: readonly RuleInterrupt[];
+  readonly formationTraces: GameState['formationTraces'];
   readonly victory: VictoryState;
 }
 
@@ -261,12 +330,19 @@ const rawGameStateDecoder: Decoder<RawGameState> = objectDecoder({
   mapState: unknownDecoder,
   pieceState: unknownDecoder,
   usage: arrayDecoder(usageDecoder),
+  ledger: ledgerDecoder,
   currentMoverId: nullableDecoder(pieceIdDecoder),
   rng: rngDecoder,
   activeTransaction: nullableDecoder(transactionDecoder),
   pendingDecision: nullableDecoder(decisionDecoder),
+  weather: weatherStateDecoder,
+  fuel: fuelDecoder,
+  interrupts: arrayDecoder(interruptDecoder),
+  formationTraces: arrayDecoder(objectDecoder({ formationId: definitionIdDecoder, routeKey: stringDecoder })),
   victory: victoryDecoder,
 });
+
+const byText = <T>(key: (value: T) => string) => (left: T, right: T): number => key(left).localeCompare(key(right));
 
 const canonicalStateValue = (state: GameState): GameState => {
   const staticScenario = canonicalizeScenarioDefinition(state.scenario);
@@ -280,34 +356,25 @@ const canonicalStateValue = (state: GameState): GameState => {
     scenario: staticScenario,
     configuration: {
       ...state.configuration,
-      terrainMovementCosts: stableSort(state.configuration.terrainMovementCosts,
-        (left, right) => String(left.terrainDefinitionId).localeCompare(String(right.terrainDefinitionId))),
-      hexsideMovementCosts: stableSort(state.configuration.hexsideMovementCosts,
-        (left, right) => String(left.featureDefinitionId).localeCompare(String(right.featureDefinitionId))),
-      roadMovementCosts: stableSort(state.configuration.roadMovementCosts,
-        (left, right) => String(left.featureDefinitionId).localeCompare(String(right.featureDefinitionId))),
-      combatTable: stableSort(state.configuration.combatTable, (left, right) => left.minimumOdds - right.minimumOdds),
-      barrageTable: stableSort(state.configuration.barrageTable, (left, right) => left.minimumStrength - right.minimumStrength),
-      objectives: stableSort(state.configuration.objectives, (left, right) => String(left.hexId).localeCompare(String(right.hexId))),
+      terrainMovementCosts: stableSort(state.configuration.terrainMovementCosts, byText(({ terrainDefinitionId }) => String(terrainDefinitionId))),
+      hexsideMovementCosts: stableSort(state.configuration.hexsideMovementCosts, byText(({ featureDefinitionId }) => String(featureDefinitionId))),
+      roadMovementCosts: stableSort(state.configuration.roadMovementCosts, byText(({ featureDefinitionId }) => String(featureDefinitionId))),
+      terrainCombatEffects: stableSort(state.configuration.terrainCombatEffects, byText(({ terrainDefinitionId }) => String(terrainDefinitionId))),
+      hexsideCombatEffects: stableSort(state.configuration.hexsideCombatEffects, byText(({ featureDefinitionId }) => String(featureDefinitionId))),
+      objectives: stableSort(state.configuration.objectives, byText(({ hexId }) => String(hexId))),
     },
     sequence: { ...state.sequence },
     mapState: currentEnvelope.initialMapState,
     pieceState: currentEnvelope.initialPieceState,
-    usage: stableSort(state.usage, (left, right) => String(left.pieceId).localeCompare(String(right.pieceId))),
-    activeTransaction: state.activeTransaction === null ? null : {
-      ...state.activeTransaction,
-      attackerIds: stableSort(state.activeTransaction.attackerIds, (left, right) => String(left).localeCompare(String(right))),
-      defenderIds: stableSort(state.activeTransaction.defenderIds, (left, right) => String(left).localeCompare(String(right))),
-      reservations: stableSort(state.activeTransaction.reservations,
-        (left, right) => String(left.resourcePieceId).localeCompare(String(right.resourcePieceId))),
+    usage: stableSort(state.usage, byText(({ pieceId }) => String(pieceId))),
+    fuel: {
+      formations: stableSort(state.fuel.formations, byText(({ formationId }) => String(formationId))),
+      hqIds: stableSort(state.fuel.hqIds, byText(String)),
     },
-    pendingDecision: state.pendingDecision === null ? null : {
-      ...state.pendingDecision,
-      options: stableSort(state.pendingDecision.options, (left, right) => left.id.localeCompare(right.id)),
-    },
+    formationTraces: stableSort(state.formationTraces, byText(({ formationId }) => String(formationId))),
     victory: {
       ...state.victory,
-      scores: stableSort(state.victory.scores, (left, right) => String(left.playerId).localeCompare(String(right.playerId))),
+      scores: stableSort(state.victory.scores, byText(({ playerId }) => String(playerId))),
     },
   };
 };
@@ -345,10 +412,15 @@ export const parseGameState = (input: unknown): Result<GameState, readonly Valid
     mapState: current.value.initialMapState,
     pieceState: current.value.initialPieceState,
     usage: raw.value.usage,
+    ledger: raw.value.ledger,
     currentMoverId: raw.value.currentMoverId,
     rng: raw.value.rng,
     activeTransaction: raw.value.activeTransaction,
     pendingDecision: raw.value.pendingDecision,
+    weather: raw.value.weather,
+    fuel: raw.value.fuel,
+    interrupts: raw.value.interrupts,
+    formationTraces: raw.value.formationTraces,
     victory: raw.value.victory,
   };
   const issues = [...validateGameState(state)];
