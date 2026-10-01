@@ -41,7 +41,7 @@ describe('G9-G10 headless and UI contract gate', () => {
       'getMetadata', 'getRevision', 'getView', 'getActionFamilies', 'getActionCandidates',
       'createDraft', 'validateDraft', 'getPendingDecision', 'respondToPendingDecision',
       'dispatch', 'subscribe', 'getHistory', 'getDiagnostics', 'start', 'pause', 'resume',
-      'beginHandoff', 'completeHandoff', 'createCheckpoint', 'listCheckpoints', 'undoTo',
+      'beginHandoff', 'completeHandoff', 'createCheckpoint', 'listCheckpoints', 'removeCheckpoint', 'undoTo', 'getMovementRange',
       'save', 'serializeSave', 'exportReplay', 'close',
     ];
     expect(methods.filter((method) => typeof (fixture.session as unknown as Record<string, unknown>)[method] !== 'function')).toEqual([]);

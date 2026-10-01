@@ -146,7 +146,8 @@ export class GameplaySession implements GameSession {
         events: cloneValue(record.events), violations: [], pendingDecision: null, warnings: [],
       });
     }
-    this.#checkpointSequence = this.#checkpoints.length;
+    // Checkpoints may have been removed, so continue after the highest existing sequence number.
+    this.#checkpointSequence = this.#checkpoints.reduce((highest, { id }) => Math.max(highest, Number(/:(\d+)$/u.exec(String(id))?.[1] ?? 0)), this.#checkpoints.length);
     this.#metrics = { ...this.#metrics, acceptedDispatches: this.#history.length };
   }
 
@@ -193,6 +194,14 @@ export class GameplaySession implements GameSession {
       reasons: [{ code: 'SESSION_NOT_INTERACTIVE', allowed: false, message: 'Session is not accepting interaction.', rule: 'gameplay' }],
     };
     return this.#ports.rules.getActionCandidates(this.#state, { ...request, actorId: binding.playerId });
+  };
+
+  getMovementRange = (seatId: SeatId, pieceId: Parameters<GameSession['getMovementRange']>[1]): ReturnType<GameSession['getMovementRange']> => {
+    const binding = this.#binding(seatId);
+    if (this.#lifecycle !== 'ACTIVE' || this.#handoff !== null) {
+      return { allowed: false, value: [], reasons: [{ code: 'SESSION_NOT_INTERACTIVE', allowed: false, message: 'Session is not accepting interaction.', rule: 'gameplay' }], facts: [], dependencies: [] };
+    }
+    return cloneValue(this.#ports.rules.queryMovementRange(this.#state, binding.playerId, pieceId));
   };
 
   createDraft = (seatId: SeatId, action: GameAction): ActionDraft => ({
@@ -466,6 +475,12 @@ export class GameplaySession implements GameSession {
   };
 
   listCheckpoints = (): readonly CheckpointDescriptor[] => this.#checkpoints.map(({ snapshot: _, ...checkpoint }) => ({ ...checkpoint }));
+
+  removeCheckpoint = (checkpointId: CheckpointDescriptor['id']): boolean => {
+    const before = this.#checkpoints.length;
+    this.#checkpoints = this.#checkpoints.filter(({ id }) => id !== checkpointId);
+    return this.#checkpoints.length !== before;
+  };
 
   undoTo = (checkpointId: CheckpointDescriptor['id']): Promise<GameplayOperationResult> => this.#enqueue(async () => {
     const checkpoint = this.#checkpoints.find(({ id }) => id === checkpointId);

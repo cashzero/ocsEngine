@@ -121,8 +121,11 @@ describe('UI controller: unit-first play through Gameplay only', () => {
     await controller.loadSave(save);
     expect(controller.getSnapshot()).toMatchObject({
       view: { stateRevision: revision, metadata: { lifecycle: 'ACTIVE' } },
-      checkpoints: [{ revision }],
     });
+    // The manual checkpoint survives the round trip; the automatic step checkpoint is replaced, not duplicated.
+    const checkpoints = controller.getSnapshot().checkpoints;
+    expect(checkpoints.filter(({ label }) => label === `Revision ${revision}`)).toHaveLength(1);
+    expect(checkpoints.filter(({ label }) => label.startsWith('Auto: '))).toHaveLength(1);
     controller.dispose();
   });
 

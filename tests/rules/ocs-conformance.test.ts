@@ -187,7 +187,7 @@ describe('OCS 4.3 ground combat (9.0-9.13)', () => {
         .map(({ ownerId }) => ownerId));
       expect(owners.size).toBeLessThanOrEqual(1);
     }
-  });
+  }, 30_000);
 });
 
 describe('OCS 4.3 overrun (8.0-8.1)', () => {

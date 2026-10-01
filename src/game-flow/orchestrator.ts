@@ -11,7 +11,7 @@ import type {
   NewGameOrchestrator,
   NewGameRequest,
 } from './model.js';
-import { validateGeneratedScenarioPackage, validateNewGameRequest } from './validation.js';
+import { validateGeneratedScenarioPackage, validateNewGameMapSize, validateNewGameRequest } from './validation.js';
 
 const generatorFailures = (
   stage: 'MAP' | 'OOB',
@@ -39,10 +39,16 @@ export const prepareNewGame = (
   return failures.length > 0 ? { ok: false, error: failures } : composed;
 };
 
+/** The player-facing preparation: New Game map limits first, then the full package. */
+const preparePlayerNewGame: NewGameOrchestrator['prepare'] = (request) => {
+  const sizeFailures = validateNewGameMapSize(request);
+  return sizeFailures.length > 0 ? { ok: false, error: sizeFailures } : prepareNewGame(request);
+};
+
 export const createNewGameOrchestrator = (engine: GameFlowEngine): NewGameOrchestrator => ({
-  prepare: prepareNewGame,
+  prepare: preparePlayerNewGame,
   create: async (request: NewGameRequest) => {
-    const prepared = prepareNewGame(request);
+    const prepared = preparePlayerNewGame(request);
     if (!prepared.ok) return prepared;
     try {
       const session = await engine.createSession({
@@ -70,11 +76,15 @@ export const createNewGameOrchestrator = (engine: GameFlowEngine): NewGameOrches
   },
 });
 
+/**
+ * The operation offered when the UI opens (user decision 2026-10-01: larger map, more turns).
+ * Sides start 25-30 hexes apart, so contact comes around turn 2-3 with turns left to fight.
+ */
 export const DEFAULT_NEW_GAME_REQUEST: NewGameRequest = {
   templateId: 'GROUND_DUEL',
-  map: { width: 18, height: 12, style: 'TEMPERATE_INLAND' },
+  map: { width: 32, height: 24, style: 'TEMPERATE_INLAND' },
   oob: { scale: 'COMPACT', formationsPerSide: 2 },
   seeds: { map: 0x0c500001, oob: 0x0c500002, deployment: 0x0c500003, rules: 0x0c500004 },
-  turnLimit: 2,
+  turnLimit: 8,
   startMonth: 10,
 };

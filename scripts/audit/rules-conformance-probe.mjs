@@ -5,7 +5,7 @@
 // contradicts the rule. Exit code is non-zero when any row fails.
 import * as E from '../../dist/index.js';
 
-const P = E.prepareNewGame(E.DEFAULT_NEW_GAME_REQUEST).value;
+const P = E.prepareNewGame(E.RULE_FIXTURE_NEW_GAME_REQUEST).value;
 const AL = 'player:allied', AX = 'player:axis';
 const find = (s) => P.scenario.initialPieceState.pieces.find((p) => p.id.includes(s))?.id;
 const U = {
@@ -268,7 +268,7 @@ const settle = (s, pick = (d) => d.options[0].id) => {
     rolls += r.events.filter((e) => e.kind === 'FIRST_PLAYER_ROLLED').length;
     s = r.state;
   }
-  report('SEQ-first-player', '2.3', 'dice decide first player from turn 2', `first-player rolls over ${E.DEFAULT_NEW_GAME_REQUEST.turnLimit} turns: ${rolls}`, rolls !== E.DEFAULT_NEW_GAME_REQUEST.turnLimit - 1);
+  report('SEQ-first-player', '2.3', 'dice decide first player from turn 2', `first-player rolls over ${E.RULE_FIXTURE_NEW_GAME_REQUEST.turnLimit} turns: ${rolls}`, rolls !== E.RULE_FIXTURE_NEW_GAME_REQUEST.turnLimit - 1);
   const far = { [U.alTrk]: ['14,5', 'MOVE', 'move'] };
   let t = seq(build(far), 'MOVEMENT', 'BARRAGE', AL);
   t = act(t, AL, { kind: 'ADVANCE_SEQUENCE' }).state;
