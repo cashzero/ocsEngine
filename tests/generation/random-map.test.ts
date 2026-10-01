@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import {
   generateRandomMap,
+  hexDistance,
+  parseHexCoordinateId,
   parseHexsideId,
   serializeGeneratedMap,
   validateGeneratedMap,
@@ -41,6 +43,40 @@ describe('M6 deterministic random map pipeline', () => {
       else expect(result.metrics.terrainCounts.WATER).toBe(0);
     },
   );
+
+  it('draws rivers as corner-connected channels that join into few systems', () => {
+    type Side = readonly [ReturnType<typeof hexOf>, ReturnType<typeof hexOf>];
+    function hexOf(id: string) {
+      const parsed = parseHexCoordinateId(id as never);
+      if (!parsed.ok) throw new Error('bad hex');
+      return parsed.value;
+    }
+    for (const seed of [1, 7, 1943, 31337, 5, 99, 2024, 777]) {
+      const generated = generateRandomMap({ ...options, seed });
+      expect(generated.ok).toBe(true);
+      if (!generated.ok) continue;
+      const sides: Side[] = generated.value.mapDefinition.hexsides
+        .filter(({ featureDefinitionIds }) => featureDefinitionIds.some((id) => /^edge:(?:major-)?river$/u.test(String(id))))
+        .map(({ hexsideId }) => {
+          const parsed = parseHexsideId(hexsideId);
+          if (!parsed.ok) throw new Error('bad hexside');
+          return [hexOf(parsed.value.firstHexId), hexOf(parsed.value.secondHexId)] as const;
+        });
+      // Two Hexsides meet at a corner when they share one Hex and their other Hexes are adjacent.
+      const meets = (left: Side, right: Side): boolean => {
+        const shared = left.filter((a) => right.some((b) => hexDistance(a, b) === 0));
+        if (shared.length !== 1) return false;
+        const a = left.find((hex) => hexDistance(hex, shared[0]!) !== 0)!;
+        const b = right.find((hex) => hexDistance(hex, shared[0]!) !== 0)!;
+        return hexDistance(a, b) === 1;
+      };
+      const parent = sides.map((_, index) => index);
+      const find = (index: number): number => (parent[index] === index ? index : (parent[index] = find(parent[index]!)));
+      sides.forEach((left, i) => sides.forEach((right, j) => { if (j > i && meets(left, right)) parent[find(i)] = find(j); }));
+      sides.forEach((side, i) => expect(sides.some((other, j) => j !== i && meets(side, other))).toBe(true));
+      expect(new Set(sides.map((_, i) => find(i))).size).toBeLessThanOrEqual(4);
+    }
+  });
 
   it('rejects invalid generation options without partial output', () => {
     const generated = generateRandomMap({ width: 4, height: 99, seed: -1, style: 'TEMPERATE_INLAND' });
