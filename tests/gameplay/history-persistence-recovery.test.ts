@@ -86,13 +86,14 @@ describe('G6-G8 history, persistence, and recovery', () => {
     const declared: GameAction = {
       actionId: actionId('pending-combat'), actorId: fixture.players[0],
       expectedRevision: fixture.session.getRevision(), kind: 'DECLARE_COMBAT', combatKind: 'REGULAR',
-      attackerIds: ['piece:multi-step' as never], defenderIds: ['piece:ground' as never],
-      targetHexId: '3,1' as never,
+      attackerIds: [fixture.units.attacker], defenderIds: [fixture.units.defender, fixture.units.secondDefender],
+      targetHexId: '6,5' as never, leadAttackerId: fixture.units.attacker,
     };
     expect((await fixture.session.dispatch({
       requestId: gameplayRequestId('pending-combat'), seatId: fixture.seats[0], action: declared,
     })).status).toBe('ACCEPTED');
-    const checkpoint = fixture.session.createCheckpoint('pending resource choice');
+    expect(fixture.session.getPendingDecision(fixture.seats[1])).toMatchObject({ kind: 'SUPPLY_SOURCE' });
+    const checkpoint = fixture.session.createCheckpoint('pending defender choice');
     const serialized = fixture.session.serializeSave();
     const parsed = parseGameplaySave(serialized);
     expect(parsed.ok).toBe(true);
@@ -102,7 +103,7 @@ describe('G6-G8 history, persistence, and recovery', () => {
     const loaded = await fixture.engine.loadSession(serialized);
     expect(loaded.getMetadata().stateHash).toBe(fixture.session.getMetadata().stateHash);
     expect(loaded.getRevision()).toBe(fixture.session.getRevision());
-    expect(loaded.getPendingDecision(fixture.seats[0])).toEqual(fixture.session.getPendingDecision(fixture.seats[0]));
+    expect(loaded.getPendingDecision(fixture.seats[1])).toEqual(fixture.session.getPendingDecision(fixture.seats[1]));
     expect(loaded.getHistory({ offset: 0, limit: 100, actionKind: null }))
       .toEqual(fixture.session.getHistory({ offset: 0, limit: 100, actionKind: null }));
     expect(loaded.listCheckpoints()).toContainEqual(checkpoint);
@@ -152,8 +153,8 @@ describe('G6-G8 history, persistence, and recovery', () => {
     const faulted = await throwingEngine.createSession({
       scenario, configuration: createRuleConfigurationFixture(), rulesSeed: 6,
       bindings: [
-        { seatId: fixture.seats[0], playerId: fixture.players[0], label: 'One' },
-        { seatId: fixture.seats[1], playerId: fixture.players[1], label: 'Two' },
+        { seatId: fixture.seats[0], playerId: scenario.players[0]!.id, label: 'One' },
+        { seatId: fixture.seats[1], playerId: scenario.players[1]!.id, label: 'Two' },
       ],
       label: 'Fault isolation',
     });
@@ -161,7 +162,7 @@ describe('G6-G8 history, persistence, and recovery', () => {
     const result = await faulted.dispatch({
       requestId: gameplayRequestId('fatal'), seatId: fixture.seats[0],
       action: {
-        actionId: actionId('fatal'), actorId: fixture.players[0],
+        actionId: actionId('fatal'), actorId: scenario.players[0]!.id,
         expectedRevision: faulted.getRevision(), kind: 'ADVANCE_SEQUENCE',
       },
     });

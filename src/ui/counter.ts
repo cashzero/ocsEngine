@@ -5,10 +5,12 @@ export type CounterLod = 'full' | 'ratings' | 'symbol';
 export const counterLod = (screenPixels: number): CounterLod => screenPixels >= 58 ? 'full' : screenPixels >= 38 ? 'ratings' : 'symbol';
 const escape = (value: unknown): string => String(value).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#39;');
 export const counterView = (definition: PieceDefinition, piece: Pick<ProjectedPiece, 'currentFaceId' | 'remainingSteps' | 'resourceQuantity' | 'mode' | 'statuses' | 'redacted'>) => {
-  if (piece.redacted) return { redacted: true as const, label: 'Enemy unit' };
+  // A visible enemy counter shows its face; steps lost are hidden (4.9a), so show the printed face.
+  if (piece.redacted && piece.currentFaceId === null && definition.counter?.kind !== 'SUPPLY') return { redacted: true as const, label: 'Enemy unit' };
   if (!definition.counter) throw new Error(`Counter definition missing: ${definition.id}`);
   const face = definition.faces.find(({id}) => id === piece.currentFaceId);
-  const step = face?.steps.find(({remainingSteps}) => remainingSteps === piece.remainingSteps);
+  const fullSteps = Math.max(0, ...(face?.steps.map(({ remainingSteps }) => remainingSteps) ?? []));
+  const step = face?.steps.find(({remainingSteps}) => remainingSteps === (piece.remainingSteps ?? fullSteps));
   if (definition.counter.kind !== 'SUPPLY' && (!face || !step)) throw new Error(`Counter face/step missing: ${definition.id}`);
   return { redacted: false as const, label: definition.name, counter: definition.counter, face, step,
     mode: piece.mode, statuses: piece.statuses, quantity: piece.resourceQuantity,

@@ -55,8 +55,12 @@ const tecState = (options: {
     },
     usage: options.spentTicks === undefined ? source.usage : [{
       pieceId: mover.id, movementSpentTicks: options.spentTicks, moved: true,
-      fired: false, attacked: false, barraged: false, reserveReleased: false,
+      phaseStartHexId: null, attacked: false, barraged: false, reserveReleased: false,
+      negationLocked: false, supplyPaid: false, fueled: false, fuelThrowHexId: null, recovered: false,
+      breakoutAttempted: false, blown: false, unloadedTokens: 0,
     }],
+    // Fuel (12.5) is paid so these tests isolate terrain costs.
+    fuel: { hqIds: [], formations: [{ playerId: mover.ownerId, formationId: definitionId('formation:test-fuel'), coveredPieceIds: [mover.id] }] },
   };
   return setRuleSequenceFixture(state, 'MOVEMENT', 'MOVEMENT', source.scenario.players[0]!.id);
 };
