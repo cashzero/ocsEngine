@@ -49,7 +49,10 @@ let theater = buildGeneratedMapPreview(currentGame.generatedMap, 50);
 let layout = theater.layout;
 let unsubscribeController: (() => void) | null = null;
 
-const camera = { zoom: 1, x: 0, y: 0 };
+/** Internal scale of the normal framing; the zoom readout is relative to it, so this framing reads 100%. */
+const DEFAULT_ZOOM = 1.4;
+const zoomPercent = (): number => Math.round((camera.zoom / DEFAULT_ZOOM) * 100);
+const camera = { zoom: DEFAULT_ZOOM, x: 0, y: 0 };
 let dragging: { x: number; y: number; cameraX: number; cameraY: number } | null = null;
 let newGameSettings: NewGameRequest = {
   ...DEFAULT_NEW_GAME_REQUEST,
@@ -421,7 +424,7 @@ const render = (snapshot: UiSnapshot): void => {
               <g id="map-camera" transform="translate(${camera.x} ${camera.y}) scale(${camera.zoom})">${renderMap(snapshot)}</g>
             </svg>
             ${stackPickerHtml(snapshot)}
-            <div class="map-controls" aria-label="Map zoom controls"><button id="zoom-out" aria-label="Zoom out">−</button><output id="zoom-level">${Math.round(camera.zoom * 100)}%</output><button id="zoom-in" aria-label="Zoom in">+</button><button id="zoom-reset">Reset</button><button id="toggle-air-zones" aria-pressed="${snapshot.air.showZones}" title="Show the 10-hex Patrol Zones of Air Bases with Active Fighters (14.4c)">Patrol Zones</button></div>
+            <div class="map-controls" aria-label="Map zoom controls"><button id="zoom-out" aria-label="Zoom out">−</button><output id="zoom-level">${zoomPercent()}%</output><button id="zoom-in" aria-label="Zoom in">+</button><button id="zoom-reset">Reset</button><button id="toggle-air-zones" aria-pressed="${snapshot.air.showZones}" title="Show the 10-hex Patrol Zones of Air Bases with Active Fighters (14.4c)">Patrol Zones</button></div>
             <div class="map-legend"><span class="terrain-key clear">Clear</span><span class="terrain-key woods">Woods</span><span class="terrain-key rough">Rough</span><span class="terrain-key mountain">Mountain</span><span class="terrain-key marsh">Marsh</span><span class="terrain-key water">Water</span><span class="line-key road">Road</span><span class="line-key river">River</span><span class="legend-mark objective">Objective</span><span class="legend-ring move">Move</span><span class="legend-ring attack">Attack</span><span class="legend-ring barrage">Barrage</span>${snapshot.air.showZones ? '<span class="legend-ring air-zone">Your Patrol Zone</span><span class="legend-ring air-zone enemy">Enemy Patrol Zone</span>' : ''}</div>
             <div class="hover-info" aria-live="off">${hover ? escapeHtml(hoverText(snapshot, hover.id)) : 'Hover a hex for terrain.'}</div>
           </div>
@@ -491,12 +494,21 @@ const updateCamera = (): void => {
   if (cameraGroup && matrix) cameraGroup.dataset.counterLod = counterLod(70 * Math.hypot(matrix.a, matrix.b) * camera.zoom);
   cameraGroup?.setAttribute('transform', `translate(${camera.x} ${camera.y}) scale(${camera.zoom})`);
   const output = root.querySelector<HTMLOutputElement>('#zoom-level');
-  if (output) output.value = `${Math.round(camera.zoom * 100)}%`;
+  if (output) output.value = `${zoomPercent()}%`;
 };
+
+/** Default zoom, centred on the map (the camera group scales about the viewBox origin). */
+const resetCamera = (): void => {
+  camera.zoom = DEFAULT_ZOOM;
+  camera.x = (layout.width / 2) * (1 - DEFAULT_ZOOM);
+  camera.y = (layout.height / 2) * (1 - DEFAULT_ZOOM);
+};
+
+resetCamera();
 
 /** Zoom keeping the map point under (anchorX, anchorY), in viewBox units, fixed on screen. */
 const zoomAt = (factor: number, anchorX = layout.width / 2, anchorY = layout.height / 2): void => {
-  const next = Math.max(0.6, Math.min(2.6, camera.zoom * factor));
+  const next = Math.max(0.6 * DEFAULT_ZOOM, Math.min(2.6 * DEFAULT_ZOOM, camera.zoom * factor));
   const ratio = next / camera.zoom;
   camera.x = anchorX - (anchorX - camera.x) * ratio;
   camera.y = anchorY - (anchorY - camera.y) * ratio;
@@ -577,7 +589,7 @@ const mountCreatedGame = async (created: CreatedNewGame): Promise<void> => {
   bindings = created.bindings;
   theater = buildGeneratedMapPreview(created.generatedMap, 50);
   layout = theater.layout;
-  camera.zoom = 1; camera.x = 0; camera.y = 0;
+  resetCamera();
   newGameSettings = created.request;
   newGamePreview = null;
   newGameOpen = false;
@@ -704,7 +716,7 @@ function bindEvents(snapshot: UiSnapshot): void {
   }));
   $('#zoom-in')?.addEventListener('click', () => zoomAt(1.2));
   $('#zoom-out')?.addEventListener('click', () => zoomAt(1 / 1.2));
-  $('#zoom-reset')?.addEventListener('click', () => { camera.zoom = 1; camera.x = 0; camera.y = 0; updateCamera(); });
+  $('#zoom-reset')?.addEventListener('click', () => { resetCamera(); updateCamera(); });
 
   // Deck unit rows select the unit and centre the map selection on its hex.
   root.querySelectorAll<HTMLElement>('.deck-unit[data-piece]').forEach((element) => element.addEventListener('click', () => controller.selectPiece(element.dataset.piece ?? null)));
