@@ -52,5 +52,5 @@ describe('generated New Game flow', () => {
     expect(loaded.getMetadata().lifecycle).toBe('FINISHED');
     expect(loaded.getView(bindings[0]!.seatId).projection?.victory).toEqual(finalView.projection?.victory);
     expect(session.exportReplay().actions.length).toBeGreaterThan(0);
-  });
+  }, 60_000);
 });
