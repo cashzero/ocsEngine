@@ -33,12 +33,13 @@ const terrain = (value: string): GeneratedTerrainKind => {
     || kind === 'MARSH' || kind === 'WATER' ? kind : 'CLEAR';
 };
 
-const edgeKind = (definitions: readonly string[]): GeneratedMapPreviewEdge['kind'] | null => {
-  if (definitions.includes('edge:primary-road')) return 'PRIMARY_ROAD';
-  if (definitions.includes('edge:road')) return 'ROAD';
-  if (definitions.includes('edge:major-river')) return 'MAJOR_RIVER';
-  if (definitions.includes('edge:river')) return 'RIVER';
-  return null;
+/** A hexside may carry both a watercourse and a road (a bridge); each is drawn on its own layer. */
+const edgeKinds = (definitions: readonly string[]): GeneratedMapPreviewEdge['kind'][] => {
+  const road = definitions.includes('edge:primary-road') ? 'PRIMARY_ROAD' as const
+    : definitions.includes('edge:road') ? 'ROAD' as const : null;
+  const river = definitions.includes('edge:major-river') ? 'MAJOR_RIVER' as const
+    : definitions.includes('edge:river') ? 'RIVER' as const : null;
+  return [river, road].filter((kind) => kind !== null);
 };
 
 export const buildGeneratedMapPreview = (generated: GeneratedMap, hexSize = 36): GeneratedMapPreview => {
@@ -59,14 +60,14 @@ export const buildGeneratedMapPreview = (generated: GeneratedMap, hexSize = 36):
     };
   });
   const edges = generated.mapDefinition.hexsides.flatMap((edge) => {
-    const kind = edgeKind(edge.featureDefinitionIds.map(String));
+    const kinds = edgeKinds(edge.featureDefinitionIds.map(String));
     const parsed = parseHexsideId(edge.hexsideId);
-    if (!kind || !parsed.ok) return [];
+    if (kinds.length === 0 || !parsed.ok) return [];
     const first = positions.get(parsed.value.firstHexId);
     const second = positions.get(parsed.value.secondHexId);
-    return first && second ? [{
+    return first && second ? kinds.map((kind) => ({
       id: edge.hexsideId, x1: first.x, y1: first.y, x2: second.x, y2: second.y, kind,
-    }] : [];
+    })) : [];
   });
   return { layout, cells, edges };
 };
