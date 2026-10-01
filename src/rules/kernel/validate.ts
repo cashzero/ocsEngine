@@ -1,6 +1,8 @@
 import { parseRuleActionId } from './ids.js';
 import type { ActionValidation, GameAction, GameState, RuleViolation } from './model.js';
 import { validateBarrageDeclaration, validateCombatDeclaration } from '../combat/combat.js';
+import { validateCombineAircraft, validateReduceAirBase, validateRefit } from '../air/base.js';
+import { validateAirMission } from '../air/mission.js';
 import { arrivingReinforcements, validateReinforcementPlacement } from '../lifecycle/lifecycle.js';
 import { validateModeChange, validateReserveRelease } from '../mode/mode.js';
 import { queryMovementPath } from '../movement/movement.js';
@@ -84,6 +86,10 @@ export const validateGameAction = (state: GameState, action: GameAction): Action
       case 'FORM_EXTENDER': issues.push(...validateFormExtender(state, action.actorId, action.truckId)); break;
       case 'DISSOLVE_EXTENDER': issues.push(...validateDissolveExtender(state, action.actorId, action.extenderId)); break;
       case 'COLLAPSE_EXTENDER': issues.push(...validateCollapseExtender(state, action.actorId, action.extenderId, action.hexId)); break;
+      case 'DECLARE_AIR_MISSION': issues.push(...validateAirMission(state, action)); break;
+      case 'REFIT_AIRCRAFT': issues.push(...validateRefit(state, action)); break;
+      case 'REDUCE_AIR_BASE': issues.push(...validateReduceAirBase(state, action)); break;
+      case 'COMBINE_AIRCRAFT': issues.push(...validateCombineAircraft(state, action)); break;
     }
   }
   return { allowed: issues.length === 0, violations: issues };

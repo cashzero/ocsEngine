@@ -137,6 +137,24 @@ is `BLOCKED`, not `PASS`; the missing scenario/setup path is a product gap to re
 | UI-04 | P0 | Run NG-07 and ACT-14 while collecting console/runtime errors | Zero uncaught exception or error log; failures appear in the UI | UNVERIFIED |
 | UI-05 | P1 | Keyboard traverse New Game, map selection, actions, modal, handoff | Focus remains visible and modal focus cannot escape into private content | UNVERIFIED |
 
+## F. Air power (added 2026-10-01 with M11-Air A9)
+
+Run on a New Game with **Air forces: Fighters, bombers and Air Bases**. Air Transport and Air Drop
+(14.9, 14.10) are not implemented and have no row; Hip Shoots are unreachable because no air force is
+listed as able to Hip Shoot (game-specific rules were left out), so that part of AIR-05 is `BLOCKED`.
+
+| ID | Pri | Player operation | Required visible result | Status |
+|---|---:|---|---|---|
+| AIR-01 | P0 | Inspect both sides' aircraft and Air Bases in the preview, then on the mounted map from each seat | Printed values, Active status and Level match the preview; the enemy sees only the Air Base, its top Active plane and top combat unit (4.9a) | UNVERIFIED |
+| AIR-02 | P0 | Refit Inactive aircraft in the Aircraft Refit Phase | 1T cost, 2 × Level capacity, the un-negated ZOC restriction and the Active limit are visible; refitted aircraft become Active | UNVERIFIED |
+| AIR-03 | P0 | Fly a Fighter Sweep against an enemy Air Base | Voluntary aborts, alternating picks across hot-seat handoffs, round results, return to base Inactive | UNVERIFIED |
+| AIR-04 | P0 | Fly an air barrage into an enemy Patrol Zone and have it intercepted | The owner decides interception after a handoff; Air Combat, Flak with its modifiers, Mission Loss, the barrage result, and the one-barrage-per-hex limit are visible | UNVERIFIED |
+| AIR-05 | P1 | Fly Trainbusting; Hip Shoot where allowed | Marker shown; enemy movement costs +1 MP in the zone; marker removed at the enemy Clean Up. Hip Shoot: BLOCKED (see above) | UNVERIFIED |
+| AIR-06 | P1 | Base Transfer; barrage an Air Base on the Facility Table | Fighter within range stays Active; Level never drops below 1 | UNVERIFIED |
+| AIR-07 | P0 | Capture an Air Base with a ground unit | Capture rolls, displacement choice to a base within twice the range (or loss), aircraft Inactive | UNVERIFIED |
+| AIR-08 | P1 | Try a second barrage on the same hex and a second mission with the same aircraft | Both unavailable with the rule explained (10.0e, 14.2e) | UNVERIFIED |
+| AIR-09 | P0 | Play a whole turn with air forces, then to Game End; save, load and replay | No dead end; console has no errors; the loaded and replayed game matches | UNVERIFIED |
+
 ## Execution order and stop conditions
 
 1. Run BOOT and NG rows first. A package-continuity failure blocks all downstream Game Flow claims.

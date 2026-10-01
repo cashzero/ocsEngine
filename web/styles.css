@@ -437,3 +437,30 @@ small, .supporting { font-size: 14px; color: var(--muted); }
   .operation-metrics { grid-template-columns: repeat(2, 1fr); }
   .preview-force ul { grid-template-columns: 1fr; }
 }
+
+/* Air units (3.5, 14.1) and Air Bases (15.0). */
+.air-badge { fill: #f2efe0; stroke: #8b1d1d; stroke-width: 2; }
+.air-badge.fighter { fill: #c62828; stroke: #5a0f0f; }
+.counter text.air-type, .unit-counter text.air-type { font-size: 13px; fill: #151810; }
+.counter .air-badge.fighter + text.air-type, .unit-counter .air-badge.fighter + text.air-type { fill: #fff; }
+.counter text.air-designation, .unit-counter text.air-designation { font-size: 15px; }
+.air-range-box { fill: #f5e663; stroke: none; }
+.counter text.air-range, .unit-counter text.air-range { font-size: 15px; }
+.air-silhouette { stroke: #1e2a1c; stroke-width: 3; fill: #3f513a; }
+.counter-paper.is-reduced { stroke-dasharray: 6 3; }
+.air-base-disc { fill: #c9b892; stroke: #24271e; stroke-width: 2; }
+.air-base-disc.nation-US { fill: #c9c27e; }
+.air-base-runways { stroke: #24271e; stroke-width: 5; fill: none; }
+.air-zone-mark { fill: rgba(90, 160, 216, .16); stroke: #5aa0d8; stroke-width: 3; stroke-dasharray: 6 4; opacity: .9; pointer-events: none; }
+.air-zone-mark.enemy { fill: rgba(224, 107, 90, .16); stroke: #e06b5a; }
+.trainbusting-mark rect { fill: #3b2c1f; stroke: #f0d48a; stroke-width: 2; }
+.trainbusting-mark text { fill: #f0d48a; font-size: 13px; font-weight: 700; pointer-events: none; }
+.hex-cell.is-air-target polygon { stroke: #5aa0d8; stroke-width: 5; stroke-dasharray: 8 5; }
+.air-panel { display: grid; gap: 8px; }
+.air-panel .chip-row button[aria-pressed="true"] { outline: 2px solid #5aa0d8; }
+.air-log { margin: 0; padding-left: 18px; font-size: 13px; }
+.air-base-level { fill: #f4ecd2; stroke: #24271e; stroke-width: 2; }
+.counter .air-base-level-text, .unit-counter .air-base-level-text { font-size: 26px; }
+.legend-ring.air-zone { border-color: #5aa0d8; border-style: dashed; }
+.legend-ring.air-zone.enemy { border-color: #e06b5a; }
+#toggle-air-zones[aria-pressed="true"] { outline: 2px solid #5aa0d8; }

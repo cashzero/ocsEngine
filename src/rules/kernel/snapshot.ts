@@ -36,6 +36,8 @@ import { parseMapBoxId } from '../../domain/map/index.js';
 import { parseRuleDecisionId, parseRuleTransactionId } from './ids.js';
 import { PENDING_DECISION_KINDS } from './model.js';
 import type {
+  AirMissionState,
+  AirState,
   CombatMultiplier,
   FuelState,
   GameState,
@@ -229,10 +231,44 @@ const paymentDecoder: Decoder<PaymentProgress> = objectDecoder({
   paid: safeIntegerDecoder,
 });
 
+const airMissionDecoder: Decoder<AirMissionState> = objectDecoder({
+  mission: literalDecoder('FIGHTER_SWEEP', 'BARRAGE', 'HIP_SHOOT', 'TRAINBUSTING', 'BASE_TRANSFER'),
+  target: nullableDecoder(literalDecoder('COMBAT_UNITS', 'AIR_BASE')),
+  stage: literalDecoder('AIR_COMBAT', 'INTERCEPTION', 'FLAK', 'RESOLVE', 'TARGET_LOSS', 'RETURN'),
+  aircraft: arrayDecoder(objectDecoder({ pieceId: pieceIdDecoder, baseHexId: hexIdDecoder })),
+  combat: nullableDecoder(objectDecoder({
+    context: literalDecoder('MISSION_HEX', 'INTERCEPTION'),
+    attackerId: playerIdDecoder,
+    missionSideIds: arrayDecoder(pieceIdDecoder),
+    opposingSideIds: arrayDecoder(pieceIdDecoder),
+    abortsPending: arrayDecoder(playerIdDecoder),
+    attackerPickId: nullableDecoder(pieceIdDecoder),
+    round: safeIntegerDecoder,
+  })),
+  interceptorId: nullableDecoder(pieceIdDecoder),
+  interceptionOffered: booleanDecoder,
+  flakTotal: nullableDecoder(safeIntegerDecoder),
+  targetLosses: safeIntegerDecoder,
+  returns: arrayDecoder(objectDecoder({
+    pieceId: pieceIdDecoder, fromHexId: hexIdDecoder, requiredHexId: nullableDecoder(hexIdDecoder), staysActive: booleanDecoder,
+  })),
+  log: arrayDecoder(stringDecoder),
+});
+
+const airStateDecoder: Decoder<AirState> = objectDecoder({
+  missionFlownIds: arrayDecoder(pieceIdDecoder),
+  refittedBaseIds: arrayDecoder(pieceIdDecoder),
+  reducedBaseIds: arrayDecoder(pieceIdDecoder),
+  trainbusting: arrayDecoder(objectDecoder({ hexId: hexIdDecoder, ownerId: playerIdDecoder })),
+});
+
+/** Air bookkeeping of a state with no air activity yet (also the value 0.2.0 snapshots migrate to). */
+export const EMPTY_AIR_STATE: AirState = { missionFlownIds: [], refittedBaseIds: [], reducedBaseIds: [], trainbusting: [] };
+
 const transactionDecoder: Decoder<RuleTransaction> = objectDecoder({
   id: transactionIdDecoder,
-  kind: literalDecoder('COMBAT', 'OVERRUN', 'BARRAGE'),
-  step: literalDecoder('ATTACKER_SUPPLY', 'DEFENDER_SUPPLY', 'DEFENDER_LEAD', 'DEFENDER_TERRAIN', 'BARRAGE_SUPPLY', 'RESOLVING'),
+  kind: literalDecoder('COMBAT', 'OVERRUN', 'BARRAGE', 'AIR_MISSION'),
+  step: literalDecoder('ATTACKER_SUPPLY', 'DEFENDER_SUPPLY', 'DEFENDER_LEAD', 'DEFENDER_TERRAIN', 'BARRAGE_SUPPLY', 'RESOLVING', 'AIR_MISSION'),
   ownerId: playerIdDecoder,
   defenderOwnerId: playerIdDecoder,
   originRevision: revisionDecoder,
@@ -256,6 +292,7 @@ const transactionDecoder: Decoder<RuleTransaction> = objectDecoder({
   lossLedger: arrayDecoder(objectDecoder({ pieceId: pieceIdDecoder, steps: safeIntegerDecoder })),
   attackerRetreated: booleanDecoder,
   blockedHexIds: arrayDecoder(hexIdDecoder),
+  air: nullableDecoder(airMissionDecoder),
 });
 
 const decisionDecoder: Decoder<PendingDecision> = objectDecoder({
@@ -290,6 +327,9 @@ const interruptDecoder: Decoder<RuleInterrupt> = taggedUnionDecoder<RuleInterrup
     kind: literalDecoder('DISPLACEMENT'), reason: literalDecoder('CAPTURE', 'EXTENDER_COLLAPSE'), ownerId: playerIdDecoder, fromHexId: hexIdDecoder,
     pieceIds: arrayDecoder(pieceIdDecoder), range: safeIntegerDecoder,
   }),
+  AIR_DISPLACEMENT: objectDecoder({
+    kind: literalDecoder('AIR_DISPLACEMENT'), ownerId: playerIdDecoder, fromHexId: hexIdDecoder, pieceIds: arrayDecoder(pieceIdDecoder),
+  }),
 });
 
 const victoryDecoder: Decoder<VictoryState> = objectDecoder({
@@ -318,6 +358,7 @@ interface RawGameState {
   readonly interrupts: readonly RuleInterrupt[];
   readonly formationTraces: GameState['formationTraces'];
   readonly victory: VictoryState;
+  readonly air: AirState;
 }
 
 const rawGameStateDecoder: Decoder<RawGameState> = objectDecoder({
@@ -340,6 +381,7 @@ const rawGameStateDecoder: Decoder<RawGameState> = objectDecoder({
   interrupts: arrayDecoder(interruptDecoder),
   formationTraces: arrayDecoder(objectDecoder({ formationId: definitionIdDecoder, routeKey: stringDecoder })),
   victory: victoryDecoder,
+  air: airStateDecoder,
 });
 
 const byText = <T>(key: (value: T) => string) => (left: T, right: T): number => key(left).localeCompare(key(right));
@@ -372,6 +414,10 @@ const canonicalStateValue = (state: GameState): GameState => {
       hqIds: stableSort(state.fuel.hqIds, byText(String)),
     },
     formationTraces: stableSort(state.formationTraces, byText(({ formationId }) => String(formationId))),
+    air: {
+      ...state.air,
+      trainbusting: stableSort(state.air.trainbusting, byText(({ hexId, ownerId }) => `${hexId}|${ownerId}`)),
+    },
     victory: {
       ...state.victory,
       scores: stableSort(state.victory.scores, byText(({ playerId }) => String(playerId))),
@@ -422,9 +468,26 @@ export const parseGameState = (input: unknown): Result<GameState, readonly Valid
     interrupts: raw.value.interrupts,
     formationTraces: raw.value.formationTraces,
     victory: raw.value.victory,
+    air: raw.value.air,
   };
   const issues = [...validateGameState(state)];
   return issues.length > 0 ? err(issues) : ok(state);
+};
+
+/**
+ * Upgrade a gameplay 0.2.0 snapshot (before air power) to the current shape: no air bookkeeping and
+ * no air mission in progress. Nothing else changed, so the upgraded state replays identically.
+ */
+export const upgradeLegacyGameStateInput = (input: unknown): unknown => {
+  if (typeof input !== 'object' || input === null || Array.isArray(input)) return input;
+  const record = input as Readonly<Record<string, unknown>>;
+  const transaction = record.activeTransaction;
+  return {
+    ...record,
+    air: record.air ?? EMPTY_AIR_STATE,
+    activeTransaction: typeof transaction === 'object' && transaction !== null && !Array.isArray(transaction)
+      ? { air: null, ...(transaction as Readonly<Record<string, unknown>>) } : transaction ?? null,
+  };
 };
 
 export const parseGameStateJson = (text: string): Result<GameState, readonly ValidationIssue[]> => {

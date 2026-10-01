@@ -44,12 +44,13 @@ const deferred = (id: string, rules: readonly string[], owner: string, note: str
 
 const CONFORMANCE = 'ocs-conformance.test.ts';
 const LOGISTICS = 'ocs-logistics.test.ts';
+const AIR = 'ocs-air.test.ts';
 
 export const RULE_FEATURE_MANIFEST: readonly RuleFeatureManifestEntry[] = Object.freeze([
   entry('sequence.ground-turn', 'PARTIAL', ['2.1', '2.2', '2.3', '17.0'], 'rules/sequence', ['ADVANCE_SEQUENCE', 'RESPOND_DECISION'], ['SEQUENCE'], [CONFORMANCE, LOGISTICS, 'rule-engine-integration.test.ts'],
-    'Both Player Turns with every phase and segment (including the Breakout Segment); weather is rolled on the game-specific Weather Table; First Player Determination rolls from turn 2 and the winner chooses; steps with no legal choice are passed automatically. GAP: the Aircraft Refit Phase is always empty because air power is deferred; the Variable Reinforcement Table and unit rebuilds (13.5) are not implemented.'),
+    'Both Player Turns with every phase and segment (including the Breakout Segment); weather is rolled on the game-specific Weather Table; First Player Determination rolls from turn 2 and the winner chooses; steps with no legal choice are passed automatically. The Aircraft Refit Phase stops when an Air Base can refit. GAP: the Variable Reinforcement Table and unit rebuilds (13.5) are not implemented.'),
   entry('weather', 'IMPLEMENTED', ['17.0'], 'rules/lifecycle', ['ADVANCE_SEQUENCE'], ['MOVEMENT_PATH'], [LOGISTICS],
-    'Calendar date per Game Turn, one die on the dated Weather Table row ("Auto" rows need no roll), Mud and Snow TEC columns for movement, and normal costs for supply paths except where weather lowers them (12.3d, 17.0c). Flight conditions are not rolled: there are no air units in the ground game.'),
+    'Calendar date per Game Turn, one die on the dated Weather Table row ("Auto" rows need no roll), Mud and Snow TEC columns for movement, and normal costs for supply paths except where weather lowers them (12.3d, 17.0c). GAP: Flight Conditions are not rolled; the Weather Table flight effects are game-specific rules left out as the user requested, so weather never restricts air missions.'),
   entry('mode.transition', 'IMPLEMENTED', ['5.1-5.10'], 'rules/mode', ['CHANGE_MODE', 'RELEASE_RESERVE'], ['MODE_CHANGE'], [CONFORMANCE],
     'Voluntary changes only as a unit begins to move; Strat on the Move side; Reserve/Strat never entered in enemy ZOC; release removes the marker; DG/Exploit are involuntary and cleared at the owner\'s Clean Up; Reserve markers come off defenders that receive a combat result (5.7d).'),
   entry('stacking.ground', 'IMPLEMENTED', ['4.6', '4.8'], 'rules/stacking', ['RESPOND_DECISION'], ['STACKING'], [CONFORMANCE, LOGISTICS],
@@ -75,7 +76,11 @@ export const RULE_FEATURE_MANIFEST: readonly RuleFeatureManifestEntry[] = Object
   deferred('replacements-rebuilds', ['13.5', '13.9'], 'rules/lifecycle', 'Generated games have no Variable Reinforcement Table or rebuild points.'),
   deferred('hedgehogs-engineering', ['13.8', '16.0'], 'rules/combat', 'Engineers cannot bridge, build hedgehogs or create detrainable hexes.'),
   deferred('movement.rail-sea-air', ['13.3', '14.9', '19.0'], 'rules/movement', 'Transport networks require game-specific capacity data.'),
-  deferred('air-power', ['14.0-15.0'], 'rules/air', 'Outside the ground/logistics scope.'),
+  entry('air.bases-and-refit', 'PARTIAL', ['3.5', '9.14f', '13.9', '14.1', '14.2a', '15.0', '15.1', '15.4'], 'rules/air', ['REFIT_AIRCRAFT', 'REDUCE_AIR_BASE', 'COMBINE_AIRCRAFT', 'MOVE_PIECE'], ['AIR'], [AIR, 'air-integration.test.ts'],
+    'Two-step aircraft, Active/Inactive, 4 + Level Active aircraft per Air Base, refit once per phase of 2 x Level aircraft for 1T drawn or thrown to the base (not in an un-negated enemy ZOC), voluntary reduction by one RE in Combat Mode, combining reduced aircraft, and capture on the Air Base Capture Table with displacement to a base within twice the range. GAP: building and improving Air Bases and Air Strips (15.2, 15.3) need Engineer construction (13.8); air replacements (13.5f) and air reinforcements (13.6) do not occur in generated games; the BTR rule that halves refit in Mud and Snow is not applied (game-specific rules were left out at the user\'s request).'),
+  entry('air.missions', 'PARTIAL', ['10.0c', '10.0d', '10.0e', '10.2', '14.1e', '14.2', '14.3', '14.4', '14.5', '14.6', '14.7', '14.8', '14.11'], 'rules/air', ['DECLARE_AIR_MISSION', 'RESPOND_DECISION'], ['AIR'], [AIR, 'air-integration.test.ts'],
+    'Air Mission Sequence with up to four aircraft from any bases: Air Combat in an enemy base hex (parenthesized ratings, voluntary aborts, alternating picks, loss die), Interception by one Active Fighter whose Patrol Zone covers the mission hex, Flak with the 14.4e modifiers and the Mission Loss Table, air barrages on units (no supply cost, short-range shift, Strategic Bombers unspotted, [1/2] as DG), Barrage vs Facility on Air Bases, Trainbusting zones (+1 MP to enemy ground movement, Leg only in the marker hex, removed at the enemy Clean Up), Fighter Sweeps, and Base Transfers. GAP: no air force is listed as able to Hip Shoot because the game-specific rules were left out, so Hip Shoots are never available in generated games; flight weather (game Weather Table) never restricts missions; Trainbusting has no rail effect because railroads are deferred; there is no ship Flak.'),
+  deferred('air.transport-and-drop', ['14.9', '14.10'], 'rules/air', 'Air Transport, Air Drop, Drop Plans and gliders are not implemented; generated games include no Transport aircraft.'),
   deferred('naval-shipping', ['18.0-19.0'], 'rules/naval', 'Outside the ground/logistics scope.'),
   deferred('optional-rules', ['21.1-21.12'], 'rules/optional', 'Each optional rule needs an explicit configuration contract.'),
   { id: 'victory.game-table', rules: ['game-specific'], status: 'GAME_SPECIFIC', owner: 'rules/victory', actions: [], queries: ['VICTORY'], tests: ['rule-engine-integration.test.ts'], note: 'Generic turn/objective adapter; scenario-specific VP tables are data.' },
@@ -131,6 +136,18 @@ export const RULE_TABLE_PROVENANCE: readonly RuleTableProvenance[] = Object.free
     sourceDocument: 'BTR_TEC_jp.pdf page 2 (user supplied)', locator: 'Terrain Effects on Movement, Normal',
     sourceSha256: '2a51331aae3b6e816353c80f3156c7a01df6dc035944374b9fd0eecba54dd0e9',
     reviewStatus: 'REVIEWED', resolutionPriority: 200,
+  },
+  {
+    id: 'table:ocs-4.3-air', rulesVersion: 'OCS 4.3',
+    sourceDocument: `${V43_CHARTS}1 1000.png`, locator: 'Air Combat (14.3e), Flak (14.4e), Mission Loss (14.4f), Air Base Capture (9.14f), Air Transport Success (14.10d)',
+    sourceSha256: 'c12961fdf2eb4c9eb5bf750d81300cd727abe2dc04deccebe59eb89a31c35822',
+    reviewStatus: 'REVIEWED', resolutionPriority: 100,
+  },
+  {
+    id: 'table:ocs-4.3-barrage-vs-facility', rulesVersion: 'OCS 4.3',
+    sourceDocument: `${V43_CHARTS}4 1000.png`, locator: 'Barrage vs Facility Table (10.0c)',
+    sourceSha256: '69b711ebb28640f9c2262677c8a7595b75765e7b130ec7dfc1b61818abbd94c9',
+    reviewStatus: 'REVIEWED', resolutionPriority: 100,
   },
   {
     id: 'table:scenario-victory', rulesVersion: 'game-specific',

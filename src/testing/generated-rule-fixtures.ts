@@ -32,18 +32,23 @@ export const CONTACT_NEW_GAME_REQUEST: NewGameRequest = {
 export const ALLIED = 'player:allied' as PlayerId;
 export const AXIS = 'player:axis' as PlayerId;
 
-const prepared = (() => {
-  let cache: ReturnType<typeof prepareNewGame> | null = null;
-  return () => {
-    cache ??= prepareNewGame(DEFAULT_NEW_GAME_REQUEST);
-    if (!cache.ok) throw new Error('Default generated scenario failed to prepare.');
-    return cache.value;
-  };
-})();
+/** The default generated scenario with air forces (each side: Fighters, Tactical Bombers, an Air Base). */
+export const AIR_NEW_GAME_REQUEST: NewGameRequest = {
+  ...DEFAULT_NEW_GAME_REQUEST,
+  oob: { ...DEFAULT_NEW_GAME_REQUEST.oob, air: 'STANDARD' },
+};
+
+const preparedCache = new Map<NewGameRequest, ReturnType<typeof prepareNewGame>>();
+const prepared = (request: NewGameRequest = DEFAULT_NEW_GAME_REQUEST) => {
+  let entry = preparedCache.get(request);
+  if (!entry) { entry = prepareNewGame(request); preparedCache.set(request, entry); }
+  if (!entry.ok) throw new Error('Generated rule scenario failed to prepare.');
+  return entry.value;
+};
 
 /** Piece ID in the default generated scenario whose ID contains `fragment`. */
-export const generatedPieceId = (fragment: string): PieceId => {
-  const piece = prepared().scenario.initialPieceState.pieces.find(({ id }) => id.includes(fragment));
+export const generatedPieceId = (fragment: string, request: NewGameRequest = DEFAULT_NEW_GAME_REQUEST): PieceId => {
+  const piece = prepared(request).scenario.initialPieceState.pieces.find(({ id }) => id.includes(fragment));
   if (!piece) throw new Error(`No generated Piece matches ${fragment}.`);
   return piece.id;
 };
@@ -62,9 +67,9 @@ export interface GeneratedRuleScenario {
 export const buildGeneratedRuleScenario = (
   placement: Placement,
   terrain: Readonly<Record<string, string>> = {},
-  options: { readonly sources?: GameState['scenario']['sources']; readonly keepHexsides?: boolean } = {},
+  options: { readonly sources?: GameState['scenario']['sources']; readonly keepHexsides?: boolean; readonly request?: NewGameRequest } = {},
 ): GeneratedRuleScenario => {
-  const source = prepared();
+  const source = prepared(options.request);
   const orders = new Map<string, number>();
   const pieces = source.scenario.initialPieceState.pieces.map((piece) => {
     const spec = placement[piece.id];
@@ -105,7 +110,7 @@ export const buildGeneratedRuleScenario = (
 export const buildGeneratedRuleState = (
   placement: Placement,
   terrain: Readonly<Record<string, string>> = {},
-  options: { readonly sources?: GameState['scenario']['sources']; readonly keepHexsides?: boolean; readonly fueled?: boolean } = {},
+  options: { readonly sources?: GameState['scenario']['sources']; readonly keepHexsides?: boolean; readonly fueled?: boolean; readonly request?: NewGameRequest } = {},
 ): GameState => {
   const built = buildGeneratedRuleScenario(placement, terrain, options);
   const created = createInitialGameState(built.scenario, built.configuration, 7);

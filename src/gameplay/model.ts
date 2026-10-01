@@ -199,8 +199,11 @@ export interface GameplaySaveActionMetadata {
 
 export interface GameplaySaveEnvelope {
   readonly schemaVersion: 1;
-  /** 0.2.0: OCS 4.3 rule state with fuel, weather, internal stocks, transport and the new decisions. */
-  readonly gameplayVersion: '0.2.0';
+  /**
+   * 0.3.0: adds air power (aircraft, Air Bases, air missions). 0.2.0 saves (ground rules before air)
+   * are still read: their snapshots are upgraded with empty air bookkeeping when loaded.
+   */
+  readonly gameplayVersion: '0.2.0' | '0.3.0';
   readonly sessionId: SessionId;
   readonly label: string;
   readonly createdAtMs: number;
