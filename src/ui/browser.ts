@@ -402,7 +402,6 @@ const render = (snapshot: UiSnapshot): void => {
   root.innerHTML = `
     <div class="app-shell">
       <header class="topbar">
-        <div class="theater-title"><p class="eyebrow">GENERATED THEATER</p><strong id="map-title">${escapeHtml(currentGame.summary.mapSize)} · ${escapeHtml(currentGame.summary.mapStyle.replaceAll('_', ' ').toLowerCase())}</strong></div>
         <div class="turn-strip" aria-label="Current turn state">
           <span class="turn-cell"><small>TURN ${sequence?.gameTurn ?? '–'} / ${currentGame.summary.turnLimit}</small><strong>${escapeHtml(weatherLabel(snapshot))}</strong></span>
           <ol class="phase-track" aria-label="${escapeHtml(`${playerName(sequence?.phasingPlayerId)} Player Turn`)}">
@@ -416,7 +415,7 @@ const render = (snapshot: UiSnapshot): void => {
       <aside class="command-rail" aria-label="Command deck">${commandDeckHtml(snapshot, deck)}</aside>
 
       <main class="workspace">
-        <section class="map-card" aria-labelledby="map-title">
+        <section class="map-card" aria-label="${escapeHtml(`${currentGame.summary.mapSize} · ${currentGame.summary.mapStyle.replaceAll('_', ' ').toLowerCase()}`)}">
           <div class="map-viewport" id="map-viewport">
             <svg id="hex-map" viewBox="0 0 ${layout.width} ${layout.height}" role="application" aria-label="Hex map. Click a unit to select it, a highlighted hex to move, a ringed enemy hex to attack.">
               <g id="map-camera" transform="translate(${camera.x} ${camera.y}) scale(${camera.zoom})">${renderMap(snapshot)}</g>
