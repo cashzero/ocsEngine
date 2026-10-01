@@ -133,7 +133,7 @@ await click('#new-game-form button[type="submit"]');
 await waitFor("document.querySelector('#start-previewed-game')?.disabled === false", 'rebuilt operation preview');
 const rebuiltSignature = await evaluate("[...document.querySelectorAll('.operation-map .generated-cell')].map((cell) => [...cell.classList].find((name) => name.startsWith('terrain-'))).join('|')");
 await click('#start-previewed-game');
-await waitFor("document.querySelector('.theater-title strong')?.textContent.includes('16×12')", 'previewed operation mount');
+await waitFor("document.querySelector('.map-card')?.getAttribute('aria-label')?.includes('16×12')", 'previewed operation mount');
 
 const mounted = await evaluate(visualContract);
 const mountedSignature = await evaluate("[...document.querySelectorAll('.hex-cell')].map((cell) => [...cell.classList].find((name) => name.startsWith('terrain-'))).join('|')");

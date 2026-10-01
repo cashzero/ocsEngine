@@ -266,7 +266,7 @@ const setNewGameControls = async (testCase) => evaluate(`(() => {
 
 const packageSnapshot = () => evaluate(`(() => ({
   title: document.querySelector('.session-block h1')?.textContent ?? '',
-  theater: document.querySelector('.theater-title strong')?.textContent ?? '',
+  theater: document.querySelector('.map-card')?.getAttribute('aria-label') ?? '',
   summary: Object.fromEntries([...document.querySelectorAll('.session-summary > div')]
     .map((node) => [node.querySelector('dt')?.textContent ?? '', node.querySelector('dd')?.textContent ?? ''])),
   hexes: document.querySelectorAll('.hex-cell').length,
