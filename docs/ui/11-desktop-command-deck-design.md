@@ -1,5 +1,7 @@
 # Desktop Command Deck — 版面稿與操作契約
 
+> 2026-10-01 第二次更新：回合軌、結果卡／交接原因、堆疊清單、地圖目標框、可達成本分層、單位清單徽章與自動預覽的設計與 TODO 見 `docs/reports/ui-flow-review-2026-10-01.md`。
+>
 > 2026-10-01 更新：動作下拉選單與候選清單流程已由「以單位為中心」的地圖互動取代（選單位 → 可達範圍／可攻擊敵格 → 點擊預覽 → 確認；攻擊面板與就地決策）。本文件以下描述為先前設計，現行設計與證據見 `docs/reports/ocs-rebuild-2026-10-01.md`。
 
 日期：2026-09-06。狀態：DESIGN DRAFT / PRODUCT VERIFICATION UNVERIFIED。

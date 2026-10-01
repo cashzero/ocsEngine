@@ -189,6 +189,8 @@ export interface ReachableHex {
   readonly hexId: HexId;
   readonly costTicks: number;
   readonly path: readonly HexId[];
+  /** Movement must stop on entering: enemy ZOC for Truck units (4.5), an "All" cost, or a minimum move (6.1). */
+  readonly endsMovement?: boolean;
 }
 
 /**
@@ -256,14 +258,18 @@ export const queryReachableHexes = (
       else terminal.delete(next);
     }
   }
-  let reachable = [...best.values()].filter(({ hexId }) => hexId !== originHexId);
+  let reachable = [...best.values()].filter(({ hexId }) => hexId !== originHexId)
+    .map((entry) => terminal.has(entry.hexId) ? { ...entry, endsMovement: true } : entry);
   if (piece.mode === 'STRAT') reachable = reachable.filter(({ hexId }) => traceSupplyAvailableAt(state, piece.ownerId, hexId));
   const ordered = stableSort(reachable, (left, right) => left.costTicks - right.costTicks || String(left.hexId).localeCompare(String(right.hexId)));
   return {
     allowed: true,
     value: ordered,
     reasons: [{ code: 'REACHABLE_HEXES_ENUMERATED', allowed: true, message: `${ordered.length} reachable Hexes.`, rule: '6.1-6.3' }],
-    facts: [{ key: 'movement.reachableCount', value: ordered.length, visibility: 'OWNER_ONLY', ownerId: actorId }],
+    facts: [
+      { key: 'movement.reachableCount', value: ordered.length, visibility: 'OWNER_ONLY', ownerId: actorId },
+      { key: 'movement.remainingTicks', value: remaining, visibility: 'OWNER_ONLY', ownerId: actorId },
+    ],
     dependencies: [{ aggregate: 'GAME', revision: state.revision, key: `reachable:${pieceId}` }],
   };
 };

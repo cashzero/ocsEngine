@@ -1,16 +1,29 @@
-import type { PieceId } from '../core/index.js';
+import type { PieceId, PlayerId } from '../core/index.js';
 import type { OcsMode } from '../domain/piece/index.js';
 import type { ScenarioDefinition } from '../domain/scenario/index.js';
 import {
   parseDispatchRequestId,
+  type CheckpointDescriptor,
   type GameSession,
   type GameplayEngine,
   type HandoffToken,
+  type HistoryRecord,
   type SeatBinding,
   type SeatId,
+  type SessionNotification,
 } from '../gameplay/index.js';
-import { AIR_MISSION_KINDS, AIR_MISSION_LABELS, missionSegment, parseRuleActionId, type AirMissionKind, type GameAction, type ProjectedPiece, type RuleExplanation } from '../rules/index.js';
-import type { AirDraft, AirOverview, AirRefit, Arrival, AttackDraft, EndStep, MovePreview, SupplyNeed, UiListener, UiSelection, UiSnapshot, UnitAction } from './model.js';
+import {
+  AIR_MISSION_KINDS, AIR_MISSION_LABELS, missionSegment, parseRuleActionId,
+  type AirMissionKind, type GameAction, type ProjectedCombat, type ProjectedPiece, type RuleEvent, type RuleExplanation,
+} from '../rules/index.js';
+import type {
+  AirDraft, AirOverview, AirRefit, Arrival, AttackDraft, AwayReport, CombatSheet, EndStep, HandoffInfo, MovePreview, MoveRangeEntry,
+  SupplyNeed, UiListener, UiSelection, UiSnapshot, UnitAction,
+} from './model.js';
+import {
+  buildCombatReports, describeRecord, nominalNextStep, playerTurnTrack,
+  type CombatReport, type FeedEntry, type NarrativeContext,
+} from './narrative.js';
 import { phaseLabel, printedHexLabel, unitLabel } from './presenter.js';
 
 export interface UiControllerOptions {
@@ -18,7 +31,15 @@ export interface UiControllerOptions {
   readonly session: GameSession;
   readonly scenario: ScenarioDefinition;
   readonly bindings: readonly SeatBinding[];
+  /**
+   * Pass, without a hand-over, a step of the other player whose only legal action is blowing a dump
+   * (12.11a). Default true; the players can turn it off in the Session dialog.
+   */
+  readonly skipDumpOnlySteps?: boolean;
 }
+
+/** Action ID scope of steps passed by the dump-only setting, so the log can say why. */
+export const AUTO_PASS_SCOPE = 'auto-pass';
 
 export interface UiController {
   readonly getSnapshot: () => UiSnapshot;
@@ -38,7 +59,14 @@ export interface UiController {
   /** Run one of the snapshot's unitActions or stepActions by key. */
   readonly runAction: (key: string) => Promise<void>;
   readonly respondToDecision: (choiceId: string) => Promise<void>;
+  /** Pay the pending combat-supply decision from the largest dumps, consumer by consumer. */
+  readonly autoPay: () => Promise<void>;
   readonly endStep: () => Promise<void>;
+  /** Restore the automatic checkpoint taken at the start of the current step. */
+  readonly undoStep: () => Promise<void>;
+  readonly dismissResult: () => void;
+  readonly dismissAwayReport: () => void;
+  readonly setSkipDumpOnlySteps: (enabled: boolean) => void;
   readonly start: () => void;
   readonly togglePause: () => void;
   readonly createCheckpoint: () => void;
@@ -80,6 +108,35 @@ interface DraftInput {
   readonly leadId: PieceId | null;
 }
 
+interface AutoCheckpoint {
+  readonly id: CheckpointDescriptor['id'];
+  readonly stepKey: string;
+  readonly historyLength: number;
+  readonly seatId: SeatId;
+  readonly label: string;
+}
+
+/** Events after which "undo this step" would let a player re-roll or retract what the opponent saw. */
+const IRREVERSIBLE_EVENTS: ReadonlySet<RuleEvent['kind']> = new Set([
+  'DICE_ROLLED', 'TRANSACTION_DECLARED', 'SUPPLY_ARRIVED', 'BREAKOUT_ROLLED', 'ATTRITION_ROLLED',
+  'FIRST_PLAYER_ROLLED', 'WEATHER_DETERMINED', 'DUMP_BLOWN', 'DECISION_REQUESTED',
+]);
+
+/** Number the second and later of identical labels so every choice can be told apart. */
+export const distinctLabels = <T extends { readonly label: string }>(items: readonly T[]): T[] => {
+  const totals = new Map<string, number>();
+  for (const { label } of items) totals.set(label, (totals.get(label) ?? 0) + 1);
+  const seen = new Map<string, number>();
+  return items.map((item) => {
+    if ((totals.get(item.label) ?? 0) < 2) return item;
+    const index = (seen.get(item.label) ?? 0) + 1;
+    seen.set(item.label, index);
+    return { ...item, label: `${item.label} (#${index})` };
+  });
+};
+
+const formationNameOf = (unitName: string): string => unitName.includes(' / ') ? unitName.slice(unitName.lastIndexOf(' / ') + 3) : unitName;
+
 class DefaultUiController implements UiController {
   readonly #engine: GameplayEngine;
   readonly #scenario: ScenarioDefinition;
@@ -95,29 +152,47 @@ class DefaultUiController implements UiController {
   #requestSequence = 0;
   #actionSequence = 0;
   #handoffToken: HandoffToken | null = null;
+  #handoffInfo: HandoffInfo | null = null;
   #cache = new Map<string, unknown>();
   #cacheScope = '';
   #airDraft: AirDraftInput | null = null;
   #refitSelection = new Map<string, readonly PieceId[]>();
   #showAirZones = false;
+  /** Public combat facts per transaction, captured while the combat is open. */
+  #combatFacts = new Map<string, ProjectedCombat>();
+  #openTransaction: string | null = null;
+  /** History length each seat has already seen at the screen. */
+  #seen = new Map<SeatId, number>();
+  #awayReport: AwayReport | null = null;
+  #resultCard = new Map<SeatId, string>();
+  #answers = new Map<string, string[]>();
+  #autoCheckpoint: AutoCheckpoint | null = null;
+  #skipDumpOnlySteps: boolean;
 
   constructor(options: UiControllerOptions) {
     this.#engine = options.engine;
     this.#session = options.session;
     this.#scenario = options.scenario;
     this.#bindings = options.bindings.map((binding) => ({ ...binding }));
+    this.#skipDumpOnlySteps = options.skipDumpOnlySteps ?? true;
     this.#notice = options.session.getMetadata().lifecycle === 'ACTIVE'
       ? 'Select a unit on the map to see where it can move and what it can attack.'
       : 'Scenario ready. Start the session when you are ready.';
     this.#bindSession();
+    this.#afterChange();
   }
 
   #bindSession(): void {
     this.#unsubscribeSession?.();
-    this.#unsubscribeSession = this.#session.subscribe(() => this.#emit());
+    this.#unsubscribeSession = this.#session.subscribe((notification) => {
+      this.#observe(notification);
+      this.#emit();
+    });
   }
 
   #activeSeat(): SeatId { return this.#session.getMetadata().activeSeatId; }
+
+  #playerOf(seatId: SeatId): PlayerId { return this.#bindings.find((binding) => binding.seatId === seatId)!.playerId; }
 
   #cached<T>(key: string, compute: () => T): T {
     const metadata = this.#session.getMetadata();
@@ -125,6 +200,10 @@ class DefaultUiController implements UiController {
     if (scope !== this.#cacheScope) { this.#cache.clear(); this.#cacheScope = scope; }
     if (!this.#cache.has(key)) this.#cache.set(key, compute());
     return this.#cache.get(key) as T;
+  }
+
+  #history(): readonly HistoryRecord[] {
+    return this.#cached('history', () => this.#session.getHistory({ offset: 0, limit: Number.MAX_SAFE_INTEGER, actionKind: null }).records);
   }
 
   #candidates(kind: GameAction['kind'], pieceId: string | null = null, budget = 500): readonly GameAction[] {
@@ -157,6 +236,47 @@ class DefaultUiController implements UiController {
     return null;
   }
 
+  /** Track open combats and remember their public facts, so results can be reported after the fact. */
+  #observe(notification: SessionNotification): void {
+    if (notification.kind === 'DISPATCH_ACCEPTED') {
+      for (const event of notification.record.events) {
+        if (event.kind === 'TRANSACTION_DECLARED') this.#openTransaction = event.transactionId;
+        if ((event.kind === 'TRANSACTION_RESOLVED' || event.kind === 'TRANSACTION_CANCELLED') && this.#openTransaction === event.transactionId) this.#openTransaction = null;
+      }
+    }
+    if (notification.kind === 'CHECKPOINT_RESTORED') {
+      this.#openTransaction = null;
+      const length = this.#session.getHistory({ offset: 0, limit: 0, actionKind: null }).total;
+      for (const [seat, seen] of this.#seen) this.#seen.set(seat, Math.min(seen, length));
+    }
+    if (this.#openTransaction !== null) {
+      const view = this.#session.getView(this.#activeSeat());
+      const combat = view.projection?.combat;
+      // Keep the odds as declared: after the roll, losses change the strengths shown in the projection.
+      if (combat && combat.result === null) this.#combatFacts.set(this.#openTransaction, combat);
+    }
+    this.#afterChange();
+  }
+
+  #stepKey(): string | null {
+    const sequence = this.#session.getView(this.#activeSeat()).projection?.sequence;
+    return sequence ? `${sequence.gameTurn}:${sequence.playerTurnIndex}:${sequence.phase}:${sequence.segment}:${sequence.actingPlayerId}` : null;
+  }
+
+  /** Keep one rolling automatic checkpoint at the start of the current step; older ones are dropped. */
+  #afterChange(): void {
+    const metadata = this.#session.getMetadata();
+    if (metadata.lifecycle !== 'ACTIVE' || this.#handoffToken !== null || this.#decision() !== null) return;
+    const key = this.#stepKey();
+    if (key === null || this.#autoCheckpoint?.stepKey === key) return;
+    const sequence = this.#session.getView(this.#activeSeat()).projection!.sequence;
+    const label = `Auto: start of ${phaseLabel(sequence.phase, sequence.segment)} (turn ${sequence.gameTurn})`;
+    if (this.#autoCheckpoint) this.#session.removeCheckpoint(this.#autoCheckpoint.id);
+    const checkpoint = this.#session.createCheckpoint(label);
+    const actingSeat = this.#bindings.find(({ playerId }) => playerId === sequence.actingPlayerId)?.seatId ?? this.#activeSeat();
+    this.#autoCheckpoint = { id: checkpoint.id, stepKey: key, historyLength: checkpoint.actionIndex, seatId: actingSeat, label };
+  }
+
   #buildDraftAction(input: DraftInput): GameAction | null {
     if (input.selectedIds.length === 0) return null;
     const view = this.#session.getView(this.#activeSeat());
@@ -182,14 +302,114 @@ class DefaultUiController implements UiController {
   #endStep(): EndStep {
     const view = this.#session.getView(this.#activeSeat());
     const sequence = view.projection?.sequence;
-    const label = sequence ? `End ${phaseLabel(sequence.phase, sequence.segment)}` : 'End step';
+    const label = sequence ? `Finish ${phaseLabel(sequence.phase, sequence.segment)}` : 'End step';
+    const next = sequence ? nominalNextStep(sequence) : '';
     const advance = this.#candidates('ADVANCE_SEQUENCE', null, 1)[0];
-    if (advance) return { enabled: true, label, blockers: [] };
+    if (advance) return { enabled: true, label, next, blockers: [] };
     const probe: GameAction = {
       actionId: this.#actionId('advance-probe'), actorId: view.playerId, expectedRevision: this.#session.getRevision(), kind: 'ADVANCE_SEQUENCE',
     };
     const explanation = this.#explain(probe);
-    return { enabled: false, label, blockers: explanation.reasons.filter(({ allowed }) => !allowed).map(({ message }) => message) };
+    return { enabled: false, label, next, blockers: explanation.reasons.filter(({ allowed }) => !allowed).map(({ message }) => message) };
+  }
+
+  #narrativeContext(seatId: SeatId): NarrativeContext {
+    const viewerId = this.#playerOf(seatId);
+    const definitions = new Map(this.#scenario.pieceCatalog.definitions.map((definition) => [String(definition.id), definition]));
+    const known = new Map<string, { name: string; ownerId: PlayerId }>();
+    for (const piece of this.#scenario.initialPieceState.pieces) {
+      known.set(String(piece.id), { name: definitions.get(String(piece.definitionId))?.name ?? 'Unit', ownerId: piece.ownerId });
+    }
+    for (const piece of this.#pieces()) known.set(String(piece.id), { name: unitLabel(this.#scenario, piece), ownerId: piece.ownerId });
+    return {
+      viewerId,
+      playerName: (playerId) => this.#bindings.find((binding) => binding.playerId === playerId)?.label
+        ?? this.#scenario.players.find(({ id }) => id === playerId)?.name ?? String(playerId),
+      piece: (pieceId) => known.get(String(pieceId)) ?? null,
+    };
+  }
+
+  #feed(seatId: SeatId): readonly FeedEntry[] {
+    return this.#cached(`feed|${seatId}`, () => {
+      const context = this.#narrativeContext(seatId);
+      return this.#history().map((record) => describeRecord(record, context));
+    });
+  }
+
+  #combatReports(seatId: SeatId): readonly CombatReport[] {
+    return this.#cached(`combats|${seatId}|${this.#combatFacts.size}`, () => buildCombatReports(this.#history(), this.#combatFacts, this.#narrativeContext(seatId)));
+  }
+
+  #handoffReason(toSeatId: SeatId): string {
+    const pending = this.#decision();
+    const combat = this.#session.getView(this.#activeSeat()).projection?.combat;
+    const where = combat ? ` at ${printedHexLabel(combat.targetHexId)}` : '';
+    const what = combat?.kind === 'BARRAGE' ? 'barrage' : combat?.kind === 'OVERRUN' ? 'overrun' : 'attack';
+    if (pending && pending.seatId === toSeatId) {
+      switch (pending.decision.kind) {
+        case 'SUPPLY_SOURCE': return combat && combat.attackerOwnerId !== this.#playerOf(toSeatId)
+          ? `Defend against the ${what}${where}: combat supply, Action Rating unit and terrain.` : `Pay combat supply for the ${what}${where}.`;
+        case 'DEFENDER_LEAD': case 'DEFENDER_TERRAIN': return `Defend against the ${what}${where}: Action Rating unit and terrain.`;
+        case 'STEP_LOSS': case 'OPTION_SPLIT': case 'RETREAT_HEX': return `Apply the combat result${where}: losses and retreats.`;
+        case 'ADVANCE_HEX': return `Choose units to advance after combat${where}.`;
+        case 'FIRST_PLAYER': return 'Choose who takes the first Player Turn (2.3).';
+        case 'OVERSTACK_ELIMINATION': return 'Remove units from an overstacked Hex (4.8a).';
+        case 'ATTRITION_LOSS': return 'Choose the units lost to attrition (12.8).';
+        case 'DISPLACEMENT_HEX': return 'Place displaced trucks (9.14).';
+      }
+    }
+    const sequence = this.#session.getView(this.#activeSeat()).projection?.sequence;
+    if (!sequence) return 'Their turn to act.';
+    if (sequence.phase === 'REACTION') return 'Reaction Phase: move released Reserves and fire barrages (7.0).';
+    const phasing = this.#bindings.find(({ playerId }) => playerId === sequence.phasingPlayerId)?.seatId === toSeatId;
+    const step = phaseLabel(sequence.phase, sequence.segment);
+    if (!phasing) return `${step}.`;
+    return ['AIRCRAFT_REFIT', 'REINFORCEMENT'].includes(sequence.phase) ? `Their Player Turn begins: ${step}.` : `Continue their Player Turn: ${step}.`;
+  }
+
+  #phaseRecords(): readonly HistoryRecord[] {
+    const records = this.#history();
+    for (let index = records.length - 1; index >= 0; index -= 1) {
+      if (records[index]!.events.some((event) => event.kind === 'SEQUENCE_ADVANCED')) return records.slice(index + 1);
+    }
+    return records;
+  }
+
+  #undoStepAvailable(): { label: string } | null {
+    const auto = this.#autoCheckpoint;
+    if (!auto || auto.stepKey !== this.#stepKey() || auto.seatId !== this.#activeSeat() || this.#decision() !== null) return null;
+    if (!this.#session.listCheckpoints().some(({ id }) => id === auto.id)) return null;
+    const since = this.#history().slice(auto.historyLength);
+    if (since.length === 0) return null;
+    if (since.some((record) => record.seatId !== auto.seatId || record.events.some((event) => IRREVERSIBLE_EVENTS.has(event.kind)))) return null;
+    return { label: auto.label.replace(/^Auto: /u, '') };
+  }
+
+  #combatSheet(decision: NonNullable<UiSnapshot['decision']>, playerId: PlayerId): CombatSheet | null {
+    if (!decision.transactionId) return null;
+    const combat = this.#session.getView(this.#activeSeat()).projection?.combat;
+    const role = combat && combat.attackerOwnerId === playerId ? 'ATTACKER' : 'DEFENDER';
+    const labels = role === 'ATTACKER' ? ['Combat supply', 'Defender decides', 'Roll', 'Results'] : ['Combat supply', 'AR unit', 'Terrain', 'Roll', 'Results'];
+    const current = decision.kind === 'SUPPLY_SOURCE' ? 0 : decision.kind === 'DEFENDER_LEAD' ? 1 : decision.kind === 'DEFENDER_TERRAIN' ? 2 : labels.length - 1;
+    return {
+      role,
+      steps: labels.map((label, index) => ({ label, status: index < current ? 'done' : index === current ? 'current' : 'upcoming' })),
+      answers: this.#answers.get(`${decision.transactionId}|${this.#activeSeat()}`) ?? [],
+    };
+  }
+
+  #formationNames(playerId: PlayerId): ReadonlyMap<string, string> {
+    return this.#cached(`formations|${playerId}`, () => {
+      const names = new Map<string, string>();
+      const owned = new Set(this.#scenario.initialPieceState.pieces.filter(({ ownerId }) => ownerId === playerId).map(({ definitionId }) => String(definitionId)));
+      for (const definition of this.#scenario.pieceCatalog.definitions) {
+        const formation = definition.ownership.formationDefinitionId;
+        if (!formation || !owned.has(String(definition.id))) continue;
+        const name = formationNameOf(definition.name);
+        if (!names.has(String(formation)) || definition.counter?.kind === 'HQ') names.set(String(formation), name);
+      }
+      return names;
+    });
   }
 
   getSnapshot = (): UiSnapshot => {
@@ -203,9 +423,18 @@ class DefaultUiController implements UiController {
     const segment = view.projection?.sequence.segment;
 
     const reachable = new Map<string, readonly string[]>();
+    const moveRange = new Map<string, MoveRangeEntry>();
+    let remainingTicks: number | null = null;
     if (ownSelected && enabled('MOVE_PIECE')) {
-      for (const action of this.#candidates('MOVE_PIECE', ownSelected.id, 2000)) {
-        if (action.kind === 'MOVE_PIECE') reachable.set(action.path.at(-1)!, action.path);
+      const range = this.#cached(`range|${ownSelected.id}`, () => this.#session.getMovementRange(seatId, ownSelected.id));
+      const remaining = range.facts.find(({ key }) => key === 'movement.remainingTicks')?.value;
+      remainingTicks = typeof remaining === 'number' ? remaining : null;
+      for (const entry of range.value ?? []) {
+        reachable.set(entry.hexId, entry.path);
+        moveRange.set(entry.hexId, {
+          path: entry.path, costTicks: entry.costTicks,
+          remainingAfterTicks: Math.max(0, (remainingTicks ?? 0) - entry.costTicks), endsMovement: entry.endsMovement === true,
+        });
       }
     }
     let movePreview: MovePreview | null = null;
@@ -259,9 +488,27 @@ class DefaultUiController implements UiController {
     const collapseHexes = ownSelected && ownSelected.currentFaceId === 'extender' && ownSelected.location.kind === 'ON_MAP' && enabled('COLLAPSE_EXTENDER')
       ? this.#cached(`collapse|${ownSelected.id}`, () => this.#session.getActionFamilies(seatId) && this.#collapseHexes(ownSelected)) : [];
     const pending = this.#decision();
-    const decisionHexes = pending && pending.seatId === seatId
-      ? [...new Set(pending.decision.options.flatMap(({ hexId }) => hexId ? [hexId] : []))] : [];
-    const sequenceOwner = this.#bindings.find(({ playerId }) => playerId === view.projection?.sequence.actingPlayerId);
+    const ownDecision = pending?.seatId === seatId ? pending.decision : null;
+    const decisionHexes = ownDecision ? [...new Set(ownDecision.options.flatMap(({ hexId }) => hexId ? [hexId] : []))] : [];
+    const sequence = view.projection?.sequence;
+    const sequenceOwner = this.#bindings.find(({ playerId }) => playerId === sequence?.actingPlayerId);
+    const requiredSeatId = pending?.seatId ?? sequenceOwner?.seatId ?? null;
+    const otherBinding = this.#bindings.find((binding) => binding.seatId !== seatId);
+    const handoff: HandoffInfo | null = this.#handoffInfo
+      ?? (requiredSeatId && requiredSeatId !== seatId && view.metadata.lifecycle === 'ACTIVE'
+        ? { toSeatId: requiredSeatId, toLabel: this.#bindings.find((binding) => binding.seatId === requiredSeatId)?.label ?? 'the other player', reason: this.#handoffReason(requiredSeatId) }
+        : null);
+    const reports = view.privacyLocked ? [] : this.#combatReports(seatId);
+    const resultId = this.#resultCard.get(seatId);
+    const phaseRecords = view.privacyLocked ? [] : this.#phaseRecords();
+    const own = new Set(pieces.filter(({ ownerId }) => ownerId === view.playerId).map(({ id }) => String(id)));
+    const movedThisPhase = new Set<string>();
+    const attackedThisPhase = new Set<string>();
+    for (const record of phaseRecords) {
+      if (record.action.kind === 'MOVE_PIECE' && own.has(String(record.action.pieceId))) movedThisPhase.add(String(record.action.pieceId));
+      if (record.action.kind === 'DECLARE_COMBAT') for (const id of record.action.attackerIds) if (own.has(String(id))) attackedThisPhase.add(String(id));
+      if (record.action.kind === 'DECLARE_BARRAGE') for (const id of record.action.firerIds) if (own.has(String(id))) attackedThisPhase.add(String(id));
+    }
     return {
       scenario: this.#scenario,
       view,
@@ -270,6 +517,8 @@ class DefaultUiController implements UiController {
       selection: { ...this.#selection },
       selectedPiece,
       reachable,
+      moveRange,
+      remainingTicks,
       movePreview,
       attackTargets,
       barrageTargets,
@@ -283,16 +532,28 @@ class DefaultUiController implements UiController {
       stepActions,
       collapseHexes,
       endStep: this.#endStep(),
-      decision: pending?.seatId === seatId ? pending.decision : null,
+      decision: ownDecision ? { ...ownDecision, options: distinctLabels(ownDecision.options) } : null,
       decisionSeatId: pending?.seatId ?? null,
       decisionHexes,
-      history: this.#session.getHistory({ offset: 0, limit: 400, actionKind: null }).records,
+      history: this.#history(),
       checkpoints: this.#session.listCheckpoints(),
       notice: this.#notice,
       busy: this.#busy,
       handoffPending: this.#handoffToken !== null,
-      requiredSeatId: pending?.seatId ?? sequenceOwner?.seatId ?? null,
+      requiredSeatId,
       air: this.#airOverview(enabled),
+      handoff,
+      feed: view.privacyLocked ? [] : this.#feed(seatId),
+      combatReports: reports,
+      resultCard: reports.find(({ transactionId }) => transactionId === resultId) ?? null,
+      awayReport: view.privacyLocked ? null : this.#awayReport,
+      phaseTrack: sequence && otherBinding ? playerTurnTrack(this.#history(), sequence, sequence.phasingPlayerId === view.playerId ? otherBinding.playerId : view.playerId) : [],
+      movedThisPhase,
+      attackedThisPhase,
+      undoStep: view.privacyLocked ? null : this.#undoStepAvailable(),
+      combatSheet: ownDecision ? this.#combatSheet(ownDecision, view.playerId) : null,
+      autoPay: ownDecision?.kind === 'SUPPLY_SOURCE' && ownDecision.options.some(({ id }) => id.startsWith('pay:')),
+      formationNames: this.#formationNames(view.playerId),
     };
   };
 
@@ -459,9 +720,10 @@ class DefaultUiController implements UiController {
   #dumpLabel(dumpId: string): string {
     const dump = this.#pieces().find(({ id }) => id === dumpId);
     if (!dump) return 'a dump';
-    if (dump.location.kind === 'ON_MAP') return `the dump at ${printedHexLabel(dump.location.hexId)}`;
+    const size = dump.resourceQuantity !== null ? `${dump.resourceQuantity}T ` : '';
+    if (dump.location.kind === 'ON_MAP') return `the ${size}dump at ${printedHexLabel(dump.location.hexId)}`;
     const truck = dump.location.kind === 'CONTAINER' ? this.#pieces().find(({ id }) => id === (dump.location as { containerId: string }).containerId) : undefined;
-    return truck?.location.kind === 'ON_MAP' ? `the truck load at ${printedHexLabel(truck.location.hexId)}` : 'a dump';
+    return truck?.location.kind === 'ON_MAP' ? `the ${size}truck load at ${printedHexLabel(truck.location.hexId)}` : 'a dump';
   }
 
   #probe(action: Omit<GameAction, 'actionId' | 'actorId' | 'expectedRevision'>): GameAction | null {
@@ -492,7 +754,7 @@ class DefaultUiController implements UiController {
       }
       if (enabled('LOAD_SUPPLY')) {
         for (const action of this.#candidates('LOAD_SUPPLY', piece.id)) {
-          if (action.kind === 'LOAD_SUPPLY') add('TRANSPORT', `Load ${action.tokens}T from the dump here (10% of MA)`, action);
+          if (action.kind === 'LOAD_SUPPLY') add('TRANSPORT', `Load ${action.tokens}T from ${this.#dumpLabel(action.dumpId)} (10% of MA)`, action);
         }
       }
       if (enabled('UNLOAD_SUPPLY')) {
@@ -514,7 +776,7 @@ class DefaultUiController implements UiController {
       if (enabled('DISSOLVE_EXTENDER')) add('TRANSPORT', 'Flip the Extender back to trucks (half MA)', this.#candidates('DISSOLVE_EXTENDER', piece.id)[0]);
       if (enabled('REDUCE_AIR_BASE')) add('AIR', 'Reduce this Air Base one Level with 1 RE of Combat Mode units here (they do not move)', this.#candidates('REDUCE_AIR_BASE', piece.id)[0]);
       if (enabled('COMBINE_AIRCRAFT')) add('AIR', 'Combine with the other reduced aircraft of the same type here', this.#candidates('COMBINE_AIRCRAFT', piece.id)[0]);
-      return actions;
+      return distinctLabels(actions);
     });
   }
 
@@ -522,6 +784,7 @@ class DefaultUiController implements UiController {
     return this.#cached('step-actions', () => {
       const actions: UnitAction[] = [];
       const name = (pieceId: string) => { const piece = this.#pieces().find(({ id }) => id === pieceId); return piece ? unitLabel(this.#scenario, piece) : 'Unit'; };
+      const formations = this.#formationNames(this.#session.getView(this.#activeSeat()).playerId);
       if (enabled('RECOVER_INTERNALS')) {
         for (const action of this.#candidates('RECOVER_INTERNALS')) {
           if (action.kind === 'RECOVER_INTERNALS') actions.push({ key: `recover:${action.pieceId}`, group: 'SUPPLY', label: `${name(action.pieceId)}: recover internal stocks`, action });
@@ -531,7 +794,8 @@ class DefaultUiController implements UiController {
         for (const action of this.#candidates('CHOOSE_FORMATION_TRACE')) {
           if (action.kind !== 'CHOOSE_FORMATION_TRACE') continue;
           const route = action.routeKey.startsWith('HQ:') ? `through ${name(action.routeKey.slice(3))}` : `directly from the source at ${printedHexLabel(action.routeKey.slice(5))}`;
-          actions.push({ key: `trace:${action.formationId}:${action.routeKey}`, group: 'TRACE', label: `Trace the formation ${route}`, action });
+          const formation = formations.get(String(action.formationId)) ?? 'the formation';
+          actions.push({ key: `trace:${action.formationId}:${action.routeKey}`, group: 'TRACE', label: `${formation}: trace ${route}`, action });
         }
       }
       if (enabled('ATTEMPT_BREAKOUT')) {
@@ -539,7 +803,7 @@ class DefaultUiController implements UiController {
           if (action.kind === 'ATTEMPT_BREAKOUT') actions.push({ key: `breakout:${action.pieceId}`, group: 'BREAKOUT', label: `${name(action.pieceId)}: attempt breakout`, action });
         }
       }
-      return actions;
+      return distinctLabels(actions);
     });
   }
 
@@ -558,6 +822,8 @@ class DefaultUiController implements UiController {
   };
 
   #emit(): void {
+    const view = this.#session.getView(this.#activeSeat());
+    if (!view.privacyLocked) this.#seen.set(this.#activeSeat(), this.#history().length);
     const snapshot = this.getSnapshot();
     for (const listener of this.#listeners) listener(snapshot);
   }
@@ -605,7 +871,7 @@ class DefaultUiController implements UiController {
 
   clickHex = async (hexId: string): Promise<void> => {
     const snapshot = this.getSnapshot();
-    if (snapshot.view.privacyLocked) return;
+    if (snapshot.view.privacyLocked || snapshot.view.metadata.lifecycle !== 'ACTIVE') return;
     if (snapshot.decision && snapshot.decisionHexes.includes(hexId)) {
       const option = snapshot.decision.options.find((candidate) => candidate.hexId === hexId);
       if (option) { await this.respondToDecision(option.id); return; }
@@ -622,7 +888,11 @@ class DefaultUiController implements UiController {
     if (snapshot.placementHexes.includes(hexId) && snapshot.selectedPiece) {
       const action = this.#candidates('PLACE_REINFORCEMENT', snapshot.selectedPiece.id)
         .find((candidate) => candidate.kind === 'PLACE_REINFORCEMENT' && candidate.hexId === hexId);
-      if (action) { await this.#dispatch(action, `${unitLabel(this.#scenario, snapshot.selectedPiece)} placed at ${printedHexLabel(hexId)}.`); return; }
+      if (action) {
+        this.#selection = { ...this.#selection, hexId };
+        await this.#dispatch(action, `${unitLabel(this.#scenario, snapshot.selectedPiece)} placed at ${printedHexLabel(hexId)}.`);
+        return;
+      }
     }
     if (snapshot.reachable.has(hexId)) {
       if (this.#destination === hexId) { await this.confirmMove(); return; }
@@ -686,7 +956,7 @@ class DefaultUiController implements UiController {
     if (!draft?.action || !draft.explanation?.allowed) return;
     const target = draft.targetHexId;
     this.#draft = null;
-    await this.#dispatch(draft.action, draft.kind === 'BARRAGE' ? `Barrage on ${printedHexLabel(target)} resolved.` : `Attack on ${printedHexLabel(target)} declared.`);
+    await this.#dispatch(draft.action, draft.kind === 'BARRAGE' ? `Barrage on ${printedHexLabel(target)} declared.` : `${draft.kind === 'OVERRUN' ? 'Overrun' : 'Attack'} on ${printedHexLabel(target)} declared.`, draft.explanation);
   };
 
   cancelDraft = (): void => { this.#draft = null; this.#emit(); };
@@ -706,11 +976,33 @@ class DefaultUiController implements UiController {
     if (option) await this.#dispatch(option.action, 'Supply drawn from the dump.');
   };
 
+  /**
+   * When the other player's step offers nothing but blowing dumps, end it for them instead of
+   * asking for two hand-overs. Recorded with its own action scope so the log explains it.
+   */
+  async #autoPassDumpOnly(): Promise<string> {
+    if (!this.#skipDumpOnlySteps) return '';
+    const passed: string[] = [];
+    for (let guard = 0; guard < 12; guard += 1) {
+      if (this.#session.getMetadata().lifecycle !== 'ACTIVE' || this.#handoffToken !== null || this.#decision() !== null) break;
+      const sequence = this.#session.getView(this.#activeSeat()).projection?.sequence;
+      const seat = this.#bindings.find(({ playerId }) => playerId === sequence?.actingPlayerId);
+      if (!sequence || !seat || seat.seatId === this.#activeSeat()) break;
+      const enabled = this.#session.getActionFamilies(seat.seatId).filter(({ enabled: on }) => on).map(({ kind }) => kind);
+      if (!enabled.includes('ADVANCE_SEQUENCE') || !enabled.every((kind) => kind === 'ADVANCE_SEQUENCE' || kind === 'BLOW_DUMP')) break;
+      const action: GameAction = { actionId: this.#actionId(AUTO_PASS_SCOPE), actorId: seat.playerId, expectedRevision: this.#session.getRevision(), kind: 'ADVANCE_SEQUENCE' };
+      const result = await this.#session.dispatch({ requestId: this.#requestId(), seatId: seat.seatId, action });
+      if (result.status !== 'ACCEPTED') break;
+      passed.push(`${seat.label}: ${phaseLabel(sequence.phase, sequence.segment)}`);
+    }
+    return passed.length > 0 ? ` Passed without a hand-over (only dump blowing was possible): ${passed.join('; ')}.` : '';
+  }
+
   async #run(operation: () => Promise<string>): Promise<void> {
     if (this.#busy) return;
     this.#busy = true;
     this.#emit();
-    try { this.#notice = await operation(); }
+    try { this.#notice = await operation(); this.#notice += await this.#autoPassDumpOnly(); }
     catch (error) { this.#notice = error instanceof Error ? error.message : 'Unexpected UI operation failure.'; }
     finally { this.#busy = false; this.#emit(); }
   }
@@ -721,31 +1013,89 @@ class DefaultUiController implements UiController {
     return parsed.value;
   }
 
-  #dispatch = async (action: GameAction, message: string): Promise<void> => this.#run(async () => {
+  /** A combat resolved by this seat's own action is shown to it as a result card. */
+  #noteResolved(events: readonly RuleEvent[]): string {
+    const resolved = events.filter((event): event is Extract<RuleEvent, { kind: 'TRANSACTION_RESOLVED' }> => event.kind === 'TRANSACTION_RESOLVED');
+    if (resolved.length === 0) return '';
+    this.#resultCard.set(this.#activeSeat(), resolved.at(-1)!.transactionId);
+    return ` Result ${resolved.map(({ result }) => result).join(', ')}.`;
+  }
+
+  /** Facts of a declared combat, kept in case it resolves before any projection shows it. */
+  #rememberDeclaration(events: readonly RuleEvent[], explanation: RuleExplanation | undefined, action: GameAction): void {
+    const declared = events.find((event) => event.kind === 'TRANSACTION_DECLARED');
+    if (!declared || declared.kind !== 'TRANSACTION_DECLARED' || !explanation || this.#combatFacts.has(declared.transactionId)) return;
+    const fact = (key: string) => explanation.facts.find((entry) => entry.key === key)?.value;
+    const number = (key: string): number | null => (typeof fact(key) === 'number' ? fact(key) as number : null);
+    const barrage = action.kind === 'DECLARE_BARRAGE';
+    this.#combatFacts.set(declared.transactionId, {
+      kind: declared.transactionKind, targetHexId: action.kind === 'DECLARE_COMBAT' || action.kind === 'DECLARE_BARRAGE' ? action.targetHexId : '',
+      attackerOwnerId: action.actorId, attackerCount: action.kind === 'DECLARE_COMBAT' ? action.attackerIds.length : action.kind === 'DECLARE_BARRAGE' ? action.firerIds.length : 0,
+      defenderCount: 0, attackerStrength: number(barrage ? 'barrage.strength' : 'combat.attackerStrength') ?? 0,
+      defenderStrength: barrage ? null : number('combat.defenderStrength'), odds: String(fact(barrage ? 'barrage.finalColumn' : 'combat.odds') ?? ''),
+      line: barrage ? null : String(fact('combat.line') ?? ''), drm: barrage ? null : number('combat.drm'),
+      defenderSupplied: null, result: null, rollTotal: null, surpriseTotal: null, shiftDie: null, air: null,
+    });
+  }
+
+  #dispatch = async (action: GameAction, message: string, explanation?: RuleExplanation): Promise<void> => this.#run(async () => {
     let success = message;
     const result = await this.#session.dispatch({ requestId: this.#requestId(), seatId: this.#activeSeat(), action });
     if (result.status !== 'ACCEPTED') {
       return `Not allowed: ${result.violations.map(({ message }) => message).join(' ')}`;
     }
+    this.#rememberDeclaration(result.events, explanation, action);
     if (action.kind !== 'MOVE_PIECE') this.#resetIntent();
-    const resolved = result.events.flatMap((event) => event.kind === 'TRANSACTION_RESOLVED' && action.kind === 'DECLARE_AIR_MISSION' ? [event.result] : []);
-    if (resolved.length > 0) success = `${success} ${withPrintedHexes(resolved.join(' '))}`;
+    const airResults = result.events.flatMap((event) => event.kind === 'TRANSACTION_RESOLVED' && action.kind === 'DECLARE_AIR_MISSION' ? [event.result] : []);
+    if (airResults.length > 0) success = `${success} ${withPrintedHexes(airResults.join(' '))}`;
+    const resolved = airResults.length > 0 ? (this.#noteResolved(result.events), '') : this.#noteResolved(result.events);
     const pending = this.#decision();
     if (pending && pending.seatId !== this.#activeSeat()) {
       const owner = this.#bindings.find(({ seatId }) => seatId === pending.seatId);
-      return `${success} ${owner?.label ?? 'The other player'} must decide: ${pending.decision.prompt}`;
+      return `${success}${resolved} ${owner?.label ?? 'The other player'} must decide next.`;
     }
-    return success;
+    return `${success}${resolved}`;
   });
 
-  respondToDecision = async (choiceId: string): Promise<void> => this.#run(async () => {
+  respondToDecision = async (choiceId: string): Promise<void> => this.#run(async () => this.#respond(choiceId));
+
+  async #respond(choiceId: string): Promise<string> {
+    const decision = this.#session.getPendingDecision(this.#activeSeat());
+    const chosen = decision ? distinctLabels(decision.options).find(({ id }) => id === choiceId)?.label : undefined;
     const result = await this.#session.respondToPendingDecision(this.#requestId(), this.#activeSeat(), choiceId);
     if (result.status !== 'ACCEPTED') return `Decision not accepted: ${result.violations.map(({ message }) => message).join(' ')}`;
+    // Answers are kept per seat: the defender must not see where the attacker drew supply from.
+    const answerKey = `${decision?.transactionId}|${this.#activeSeat()}`;
+    if (decision?.transactionId && chosen) this.#answers.set(answerKey, [...(this.#answers.get(answerKey) ?? []), chosen.replace(/-?\d+,-?\d+/gu, (id) => printedHexLabel(id))]);
+    const resolved = this.#noteResolved(result.events);
     const combat = result.events.filter((event) => event.kind === 'TRANSACTION_RESOLVED');
     if (combat.length > 0 && result.events.some((event) => event.kind === 'AIRCRAFT_STATUS_CHANGED')) {
       return `Air mission resolved: ${withPrintedHexes(combat.map((event) => event.kind === 'TRANSACTION_RESOLVED' ? event.result : '').join(' '))}`;
     }
-    return combat.length > 0 ? `Combat resolved (${combat.map((event) => event.kind === 'TRANSACTION_RESOLVED' ? event.result : '').join(', ')}).` : 'Decision recorded.';
+    return resolved ? `Combat resolved.${resolved}` : 'Decision recorded.';
+  }
+
+  autoPay = async (): Promise<void> => this.#run(async () => {
+    let paid = 0;
+    for (let guard = 0; guard < 20; guard += 1) {
+      const decision = this.#session.getPendingDecision(this.#activeSeat());
+      if (!decision || decision.kind !== 'SUPPLY_SOURCE') break;
+      const pieces = this.#pieces();
+      const scored = decision.options.flatMap(({ id }) => {
+        if (!id.startsWith('pay:')) return [];
+        const body = id.slice('pay:'.length);
+        const dumpId = body.slice(0, body.lastIndexOf(':'));
+        const tokens = Number(body.slice(body.lastIndexOf(':') + 1));
+        const available = pieces.find((piece) => piece.id === dumpId)?.resourceQuantity ?? 0;
+        return [{ id, tokens, available }];
+      }).sort((left, right) => right.tokens - left.tokens || right.available - left.available);
+      if (scored.length === 0) break;
+      const message = await this.#respond(scored[0]!.id);
+      paid += scored[0]!.tokens;
+      if (!message.startsWith('Decision recorded') && !message.startsWith('Combat resolved')) return message;
+      if (message.startsWith('Combat resolved')) return `Paid ${paid}T. ${message}`;
+    }
+    return `Paid ${paid}T of combat supply from the largest dumps.`;
   });
 
   endStep = async (): Promise<void> => {
@@ -755,19 +1105,43 @@ class DefaultUiController implements UiController {
     };
     this.#selection = initialSelection();
     this.#resetIntent();
-    await this.#dispatch(action, 'Step ended.');
+    const step = view.projection?.sequence;
+    await this.#dispatch(action, step ? `${phaseLabel(step.phase, step.segment)} finished.` : 'Step ended.');
+  };
+
+  undoStep = async (): Promise<void> => this.#run(async () => {
+    const available = this.#undoStepAvailable();
+    const auto = this.#autoCheckpoint;
+    if (!available || !auto) return 'Nothing to undo in this step.';
+    const result = await this.#session.undoTo(auto.id);
+    if (!result.ok) return result.code;
+    const resumed = this.#session.resume();
+    this.#selection = initialSelection();
+    this.#resetIntent();
+    return resumed.ok ? `Back to the ${available.label}.` : resumed.code;
+  });
+
+  dismissResult = (): void => { this.#resultCard.delete(this.#activeSeat()); this.#emit(); };
+
+  dismissAwayReport = (): void => { this.#awayReport = null; this.#emit(); };
+
+  setSkipDumpOnlySteps = (enabled: boolean): void => {
+    this.#skipDumpOnlySteps = enabled;
+    this.#notice = enabled ? 'Steps where the other player could only blow dumps now pass without a hand-over.' : 'Every step with a legal action now asks for a hand-over.';
+    this.#emit();
   };
 
   start = (): void => {
     const result = this.#session.start();
     this.#notice = result.ok ? 'Session started.' : result.code;
+    this.#afterChange();
     this.#emit();
   };
 
   togglePause = (): void => {
     const lifecycle = this.#session.getMetadata().lifecycle;
     const result = lifecycle === 'PAUSED' ? this.#session.resume() : this.#session.pause();
-    this.#notice = result.ok ? result.code.replaceAll('_', ' ').toLowerCase() : result.code;
+    this.#notice = result.ok ? (lifecycle === 'PAUSED' ? 'Resumed.' : 'Paused. Resume to continue playing.') : result.code;
     this.#emit();
   };
 
@@ -802,26 +1176,54 @@ class DefaultUiController implements UiController {
     this.#selection = initialSelection();
     this.#resetIntent();
     this.#handoffToken = null;
+    this.#handoffInfo = null;
+    this.#awayReport = null;
+    this.#autoCheckpoint = null;
+    this.#openTransaction = null;
+    this.#seen.clear();
+    // An automatic checkpoint inside the save belongs to a step that is over; keep only the new one.
+    for (const checkpoint of loaded.listCheckpoints()) if (checkpoint.label.startsWith('Auto: ')) loaded.removeCheckpoint(checkpoint.id);
     this.#bindSession();
+    this.#afterChange();
     return `Save loaded at revision ${loaded.getRevision()}.`;
   });
 
   beginHandoff = (): void => {
     const from = this.#activeSeat();
-    const to = this.#bindings.find(({ seatId }) => seatId !== from)?.seatId;
+    const snapshot = this.getSnapshot();
+    const to = snapshot.handoff?.toSeatId ?? this.#bindings.find(({ seatId }) => seatId !== from)?.seatId;
     if (!to) { this.#notice = 'No second seat is available.'; this.#emit(); return; }
+    const toLabel = this.#bindings.find(({ seatId }) => seatId === to)?.label ?? 'the next player';
+    const reason = snapshot.handoff?.reason ?? 'Hand-over requested from the Session menu.';
+    this.#handoffInfo = { toSeatId: to, toLabel, reason };
     this.#handoffToken = this.#session.beginHandoff(from, to);
-    this.#notice = 'Privacy screen locked. Pass control to the next player.';
+    this.#notice = `Screen locked for ${toLabel}.`;
     this.#emit();
   };
 
   completeHandoff = (): void => {
-    if (this.#handoffToken === null) return;
+    if (this.#handoffToken === null || !this.#handoffInfo) return;
+    const to = this.#handoffInfo.toSeatId;
+    // Everything the incoming player has not yet seen: the other seat's actions and automatic steps.
+    const seen = this.#seen.get(to) ?? 0;
+    const missed = this.#history().slice(seen).filter((record) => record.seatId !== to);
     const result = this.#session.completeHandoff(this.#handoffToken);
-    if (result.ok) this.#handoffToken = null;
-    this.#notice = result.ok ? 'Your turn to act.' : result.code;
+    if (result.ok) {
+      this.#handoffToken = null;
+      const label = this.#handoffInfo.toLabel;
+      this.#handoffInfo = null;
+      const context = this.#narrativeContext(to);
+      const revisions = new Set(missed.map(({ revisionAfter }) => Number(revisionAfter)));
+      const combats = buildCombatReports(this.#history(), this.#combatFacts, context)
+        .filter((report) => report.status !== 'OPEN' && revisions.has(report.lastRevision));
+      this.#awayReport = missed.length > 0 ? { entries: missed.map((record) => describeRecord(record, context)), combats } : null;
+      this.#notice = `Your turn, ${label}.`;
+    } else {
+      this.#notice = result.code;
+    }
     this.#selection = initialSelection();
     this.#resetIntent();
+    this.#afterChange();
     this.#emit();
   };
 

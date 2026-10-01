@@ -2,6 +2,12 @@
 
 Status: **FROZEN BASELINE / EXECUTION IN PROGRESS** (2026-09-04).
 
+Default-operation amendment (2026-10-01, explicitly requested by the user: "default map way too
+small, inc min size" and "2 turn 也太少"): the New Game default is `32×24 / TEMPERATE_INLAND /
+COMPACT / 2 per side / 8 turns`, and players may choose maps from 16×12 to 64×48. NG-06 now names
+that default; NG-07 keeps its explicit 18×12 Large package, which is within the new limits. The
+map generator itself still accepts 8×8 for rule-test fixtures only.
+
 Desktop scope amendment (2026-09-06, explicitly approved by the user): default
 1920×1080, supported 1680×1050. Narrow-screen acceptance is removed. A single
 left command deck remains fixed; only bounded collections may scroll. Historical
@@ -55,7 +61,7 @@ A completed transition does not pass when it exceeds its budget or temporarily a
 | NG-03 | P0 | Change one option after preview | Existing preview is visibly stale and Start is disabled | UNVERIFIED |
 | NG-04 | P0 | Enter invalid width, formation count, seed, and turn limit | Each invalid request is rejected with a player-readable field/stage error | UNVERIFIED |
 | NG-05 | P1 | Use Randomize all seeds | All four displayed seeds change; preview becomes invalid | UNVERIFIED |
-| NG-06 | P0 | Build and start default `18×12 / COMPACT / 2 formations per side` | Preview and mounted map size, style, units, formations, objectives, seeds, and turn limit agree | UNVERIFIED |
+| NG-06 | P0 | Build and start default `32×24 / COMPACT / 2 formations per side / 8 turns` (amended 2026-10-01, see below) | Preview and mounted map size, style, units, formations, objectives, seeds, and turn limit agree | UNVERIFIED |
 | NG-07 | P0 | Build and start `MEDITERRANEAN_COAST / 18×12 / LARGE / 4 per side`, seeds `91001/91002/91003/91004`, 3 turns | Preview and mounted package agree; expected headline counts are 216 Hexes, 90 units, 8 formations, 28 deployed Hexes | UNVERIFIED |
 | NG-08 | P0 | Repeat NG-07 from a fresh page | Map terrain/feature signature, OOB identity/stats, and deployment are identical | UNVERIFIED |
 | NG-09 | P1 | Change only each seed in four separate runs | Only the documented Map/OOB/deployment/rules dimension changes | UNVERIFIED |

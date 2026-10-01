@@ -45,7 +45,7 @@ describe('U0-U10 operable UI contract', () => {
     expect(browser).toContain('buildGeneratedMapPreview(prepared.generatedMap');
     expect(browser).toContain('buildGeneratedOobPreview(prepared.generatedOob)');
     expect(browser).toContain('prepared.deployment.metrics.occupiedHexes');
-    expect(browser).toContain('Build operation preview');
+    expect(browser).toContain('schedulePreview');
     expect(browser).toContain('Start this operation');
     expect(browser).not.toContain("'#random-map'");
     expect(browser).not.toContain("'#random-oob'");
@@ -55,7 +55,7 @@ describe('U0-U10 operable UI contract', () => {
   it('uses the integrated New Game orchestrator and renders an authoritative Game End', () => {
     const browser = readFileSync(join(process.cwd(), 'src/ui/browser.ts'), 'utf8');
     expect(browser).toContain('createNewGameOrchestrator');
-    expect(browser).toContain('Build operation preview');
+    expect(browser).toContain('schedulePreview');
     expect(browser).toContain('Start this operation');
     expect(browser).toContain('2 Map');
     expect(browser).toContain('3 OOB');

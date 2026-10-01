@@ -133,4 +133,6 @@ export interface RuleEngine {
   readonly applyAction: (state: GameState, action: GameAction) => import('../kernel/model.js').TransitionResult;
   readonly explain: (state: GameState, action: GameAction) => RuleExplanation;
   readonly projectForViewer: (state: GameState, viewerId: PlayerId) => RuleProjection;
+  /** Least-cost destinations of one own unit with their cost; facts carry `movement.remainingTicks`. */
+  readonly queryMovementRange: (state: GameState, actorId: PlayerId, pieceId: PieceId) => RuleQueryResult<readonly import('../movement/movement.js').ReachableHex[]>;
 }
