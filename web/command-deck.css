@@ -262,3 +262,6 @@ details.list-group summary { cursor: pointer; padding: 4px 0; }
 .move-popup[data-side=bottom]::before { top: -7px; left: calc(var(--pointer) - 6px); transform: rotate(135deg); }
 .move-popup[data-side=top]::before { bottom: -7px; left: calc(var(--pointer) - 6px); transform: rotate(-45deg); }
 .move-popup.no-pointer::before { display: none; }
+
+.fuel-panel .step-title { display: block; margin: .35rem 0 .2rem; opacity: .75; }
+.fuel-panel button.is-picked { outline: 2px solid #ffe078; }

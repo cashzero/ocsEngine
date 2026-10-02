@@ -45,6 +45,8 @@ export interface MapState {
   readonly barrage: ReadonlySet<string>;
   readonly placement: ReadonlySet<string>;
   readonly retreat: ReadonlySet<string>;
+  /** The hex of a supply source the player is pointing at in the deck. */
+  readonly highlight: ReadonlySet<string>;
   readonly airTargets: ReadonlySet<string>;
   readonly destinationHexId: string | null;
   /** The hex of an attack being planned or resolved. */
@@ -67,7 +69,7 @@ export interface MapEvents {
 }
 
 export const EMPTY_MAP_STATE: MapState = {
-  selectedHexId: null, reachable: new Map(), dimmed: new Set(), attack: new Set(), barrage: new Set(), placement: new Set(), retreat: new Set(),
+  selectedHexId: null, reachable: new Map(), dimmed: new Set(), attack: new Set(), barrage: new Set(), placement: new Set(), retreat: new Set(), highlight: new Set(),
   airTargets: new Set(), destinationHexId: null, targetHexIds: new Set(), path: [], ownZone: new Set(), enemyZone: new Set(), trainbusting: [], counters: [], badges: [],
 };
 
@@ -949,7 +951,7 @@ export class MapView {
   #drawTargets(): void {
     const ctx = this.#ctx;
     const state = this.#state;
-    const hexIds = new Set([...state.attack, ...state.barrage, ...state.placement, ...state.retreat, ...state.targetHexIds, state.destinationHexId].filter((id): id is string => id !== null));
+    const hexIds = new Set([...state.attack, ...state.barrage, ...state.placement, ...state.retreat, ...state.highlight, ...state.targetHexIds, state.destinationHexId].filter((id): id is string => id !== null));
     ctx.save();
     ctx.lineJoin = 'round';
     ctx.shadowColor = 'rgba(0, 0, 0, .9)';
@@ -958,7 +960,8 @@ export class MapView {
       const path = this.#geometry!.hexPath.get(hexId);
       if (!path) return;
       // When a hex is several kinds of target at once, the later kind wins, as the CSS cascade did.
-      const style = state.targetHexIds.has(hexId) ? ['#ffffff', 5, []] as const
+      const style = state.highlight.has(hexId) ? ['#ffe078', 6, []] as const
+        : state.targetHexIds.has(hexId) ? ['#ffffff', 5, []] as const
         : hexId === state.destinationHexId ? ['#ffdc80', 4, []] as const
           : state.retreat.has(hexId) ? ['#ffe09a', 4, [10, 4]] as const
             : state.placement.has(hexId) ? ['#9ed0ff', 4, []] as const
