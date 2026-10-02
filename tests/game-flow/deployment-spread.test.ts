@@ -15,10 +15,11 @@ const deployed = (request: NewGameRequest) => {
   const prepared = prepareNewGame(request);
   expect(prepared.ok).toBe(true);
   if (!prepared.ok) throw new Error('Default game must prepare.');
-  const { scenario } = prepared.value;
+  const { scenario, generatedOob } = prepared.value;
   const definitions = new Map(scenario.pieceCatalog.definitions.map((definition) => [definition.id, definition]));
-  const formations = new Map(scenario.initialPieceState.relations.flatMap((relation) =>
-    relation.kind === 'FORMATION_MEMBERSHIP' ? [[relation.memberId as string, relation.formationDefinitionId as string]] : []));
+  // Division slots of the OOB: a single-unit division has no Formation ID but still deploys as its own group.
+  const formations = new Map(generatedOob.sides.flatMap((side) => side.formations.flatMap((formation) =>
+    formation.units.map((unit) => [unit.id, String(formation.id)] as const))));
   return scenario.initialPieceState.pieces.flatMap((piece) => piece.location.kind === 'ON_MAP'
     ? [{
       owner: piece.ownerId,

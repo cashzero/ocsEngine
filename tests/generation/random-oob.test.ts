@@ -96,6 +96,11 @@ describe('M7 deterministic random OOB pipeline', () => {
           const definition = definitions.get(unit.definitionId)!;
           expect(definition.counter?.echelon).toBe('XX');
           expect(definition.faces[0]!.steps.length).toBeGreaterThanOrEqual(3);
+          // One counter is not a multi-unit formation (3.1c): no Formation ID, colour band or affiliation.
+          expect(unit.formationId).toBeNull();
+          expect(definition.ownership.formationDefinitionId).toBeNull();
+          expect(definition.counter?.formationColor).toBeNull();
+          expect(definition.counter?.affiliation).toBe('');
           if (formation.archetype === 'AIRBORNE') {
             expect([mobility(unit.definitionId, 'combat'), mobility(unit.definitionId, 'move')]).toEqual(['mobility:leg', 'mobility:leg']);
           } else {
