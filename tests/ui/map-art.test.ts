@@ -2,7 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { generateRandomMap } from '../../src/index.js';
 import { buildGeneratedMapPreview } from '../../src/ui/map-generator-presenter.js';
 import {
-  coastlineHtml, mapArtDefsHtml, riversHtml, roadsHtml, settlementArtHtml, terrainGlyphsHtml,
+  coastlineHtml, hexGridHtml, mapArtDefsHtml, placeNameFor, regionEdgesHtml, riversHtml, roadsHtml, settlementArtHtml, terrainFillHtml,
+  terrainGlyphsHtml,
 } from '../../src/ui/map-art.js';
 
 const preview = (() => {
@@ -18,7 +19,7 @@ describe('printed-map artwork', () => {
     expect(draw()).toBe(draw());
   });
 
-  it('fills woods with a seamless canopy instead of scattered glyphs', () => {
+  it('fills woods with a seamless stipple instead of scattered glyphs', () => {
     expect(mapArtDefsHtml()).toContain('<pattern id="terrain-woods"');
     const woods = preview.cells.find(({ terrain }) => terrain === 'WOODS');
     expect(woods).toBeDefined();
@@ -50,6 +51,39 @@ describe('printed-map artwork', () => {
       && preview.edges.some((edge) => edge.kind.endsWith('ROAD') && edge.x1 === x && edge.y1 === y));
     expect(settled.length).toBeGreaterThan(0);
     settled.forEach(({ x, y }) => expect(roads).toContain(`M${x.toFixed(1)} ${y.toFixed(1)}C`));
+  });
+
+  it('nudges fill corners identically for neighbouring hexes so the ground tiles without gaps', () => {
+    const corners = (html: string): string[] => html.match(/points="([^"]+)"/u)![1]!.split(' ');
+    const first = preview.cells[0]!;
+    const neighbour = preview.cells.find((cell) => cell !== first && Math.hypot(cell.x - first.x, cell.y - first.y) < 50 * 1.8)!;
+    const shared = corners(terrainFillHtml(first, 50)).filter((corner) => corners(terrainFillHtml(neighbour, 50)).includes(corner));
+    expect(shared).toHaveLength(2);
+    // Corners move, but only a little: the polygon stays recognisably a hex.
+    const [x, y] = corners(terrainFillHtml(first, 50))[0]!.split(',').map(Number);
+    expect(Math.hypot(x! - first.x - 50 * Math.cos(-Math.PI / 6), y! - first.y - 50 * Math.sin(-Math.PI / 6))).toBeLessThan(50 * 0.2);
+  });
+
+  it('draws the hex grid as one path with every hexside once', () => {
+    const grid = hexGridHtml(preview.cells, 50);
+    expect(grid.match(/class="hex-grid"/gu)).toHaveLength(1);
+    const sides = grid.match(/M/gu)!.length;
+    expect(sides).toBeLessThan(preview.cells.length * 6);
+    expect(sides).toBeGreaterThan(preview.cells.length * 3);
+  });
+
+  it('fringes forests and rough ground where they meet other ground', () => {
+    const edges = regionEdgesHtml(preview.cells, 50);
+    expect(edges).toContain('class="region-edge woods"');
+    expect(regionEdgesHtml(preview.cells.map((cell) => ({ ...cell, terrain: 'CLEAR' as const })), 50)).toBe('');
+  });
+
+  it('names cities and towns but leaves villages unlabelled', () => {
+    const settle = (settlement: 'CITY' | 'TOWN' | 'VILLAGE'): string => settlementArtHtml({ ...preview.cells[0]!, settlement }, 50);
+    expect(settle('CITY')).toContain('class="place-name city"');
+    expect(settle('TOWN')).toContain('class="place-name town"');
+    expect(settle('VILLAGE')).not.toContain('place-name');
+    expect(placeNameFor('3,4')).toBe(placeNameFor('3,4'));
   });
 
   it('outlines the coast where water meets land', () => {

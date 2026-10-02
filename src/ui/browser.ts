@@ -16,7 +16,8 @@ import {
 import { createUiController, type UiController } from './controller.js';
 import { counterView, counterSvgBody, counterSvg, counterLod } from './counter.js';
 import {
-  coastlineHtml, mapArtDefsHtml, objectiveArtHtml, riversHtml, roadsHtml, settlementArtHtml, strategicBandPoints, terrainGlyphsHtml,
+  coastlineHtml, hexGridHtml, hexNumberHtml, mapArtDefsHtml, objectiveArtHtml, regionEdgesHtml, riversHtml, roadsHtml, settlementArtHtml,
+  strategicBandPoints, terrainFillHtml, terrainGlyphsHtml,
 } from './map-art.js';
 import { commandDeckHtml, unitRosterBodyHtml, unitRosterHtml, unmovedUnits, withHexLabels, type DeckState, type DeckList, type UnitFilter } from './command-deck.js';
 import type { UiSnapshot } from './model.js';
@@ -208,9 +209,13 @@ const renderMap = (snapshot: UiSnapshot): string => {
       aria-label="Hex ${escapeHtml(printedHexLabel(cell.id))}, ${escapeHtml(cell.terrain.toLowerCase())}">
       <polygon points="${cell.points}"></polygon>
       ${terrainGlyphsHtml(cell, layout.hexSize)}
-      <text class="hex-coordinate" x="${cell.x}" y="${cell.y + 40}" text-anchor="middle">${escapeHtml(printedHexLabel(cell.id))}</text>
+      ${hexNumberHtml(cell, escapeHtml(printedHexLabel(cell.id)), layout.hexSize)}
     </g>`;
   }).join('');
+  // Ground fills carry no outline or interaction; while a unit is selected, hexes outside its range recede.
+  const fills = theater.cells.map((cell) => terrainFillHtml(cell, layout.hexSize,
+    moving && !snapshot.reachable.has(cell.id) && !attack.has(cell.id) && snapshot.selection.hexId !== cell.id ? 'is-dimmed' : '')).join('');
+  const gridLines = regionEdgesHtml(theater.cells, layout.hexSize) + hexGridHtml(theater.cells, layout.hexSize);
   const rivers = coastlineHtml(theater.cells, layout.hexSize) + riversHtml(theater.edges, layout.hexSize, 'map-edge');
   const roads = roadsHtml(theater.edges, theater.cells, layout.hexSize, 'map-edge');
   const features = theater.cells.map((cell) => {
@@ -265,7 +270,7 @@ const renderMap = (snapshot: UiSnapshot): string => {
     return kinds.length === 0 ? [] : [`<polygon class="target-outline ${kinds.map((kind) => `outline-${kind}`).join(' ')}" points="${cell.points}"></polygon>`];
   }).join('');
   // SVG paints in document order: every hex below every counter, the selected counter on top.
-  return `${mapArtDefsHtml()}<g class="hex-map-layer${moving ? ' is-moving' : ''}"><g class="terrain-layer">${terrain}</g><g class="river-layer">${rivers}</g><g class="road-layer">${roads}</g><g class="feature-layer">${features}</g><polyline class="movement-path" points="${pathPoints}" />${pathEnd}</g><g class="counter-layer"><g class="unselected-counter-layer">${counters}</g><g class="selected-counter-layer">${selectedCounters.join('')}</g><g class="stack-badge-layer">${stackBadges.join('')}</g></g><g class="target-overlay" aria-hidden="true">${overlay}</g>`;
+  return `${mapArtDefsHtml()}<g class="hex-map-layer${moving ? ' is-moving' : ''}"><g class="terrain-layer">${fills}</g><g class="grid-layer">${gridLines}</g><g class="hex-cells">${terrain}</g><g class="river-layer">${rivers}</g><g class="road-layer">${roads}</g><g class="feature-layer">${features}</g><polyline class="movement-path" points="${pathPoints}" />${pathEnd}</g><g class="counter-layer"><g class="unselected-counter-layer">${counters}</g><g class="selected-counter-layer">${selectedCounters.join('')}</g><g class="stack-badge-layer">${stackBadges.join('')}</g></g><g class="target-overlay" aria-hidden="true">${overlay}</g>`;
 };
 
 const privacyHtml = (snapshot: UiSnapshot): string => snapshot.view.privacyLocked ? `
@@ -300,8 +305,9 @@ const operationPreviewHtml = (prepared: GeneratedScenarioPackage): string => {
     const entry = deployed.get(cell.id);
     return entry ? [`<g class="preview-deployment owner-${entry.owner + 1}"><rect x="${cell.x - 12}" y="${cell.y - 12}" width="24" height="24" rx="3"></rect><text x="${cell.x}" y="${cell.y + 5}" text-anchor="middle">${entry.count}</text></g>`] : [];
   }).join('');
-  const cells = map.cells.map((cell) => `<g class="generated-cell terrain-${cell.terrain.toLowerCase()}">
-    <polygon points="${cell.points}"></polygon>${terrainGlyphsHtml(cell, hexSize)}</g>`).join('');
+  const cells = `<g class="terrain-layer">${map.cells.map((cell) => terrainFillHtml(cell, hexSize)).join('')}</g>`
+    + `<g class="grid-layer">${regionEdgesHtml(map.cells, hexSize)}${hexGridHtml(map.cells, hexSize)}</g>`
+    + `<g class="generated-cells">${map.cells.map((cell) => terrainGlyphsHtml(cell, hexSize)).join('')}</g>`;
   const features = map.cells.map((cell) => [
     cell.strategic ? `<polygon class="preview-entry side-${cell.strategic.toLowerCase()}" points="${strategicBandPoints(cell, hexSize)}"></polygon>` : '',
     cell.settlement ? `<g class="settlement-marker">${settlementArtHtml(cell, hexSize)}</g>` : '',

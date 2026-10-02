@@ -97,12 +97,9 @@ html, body { min-width: 1680px; height: 100%; overflow: hidden; }
 .legend-ring.barrage { border-color: #ffa24a; }
 .legend-mark.objective { color: #ffd766; }
 .legend-mark.objective::before { content: "★ "; }
-.hex-coordinate { font-size: 13px; fill: rgba(235, 240, 225, .55); }
-
-.hex-cell.is-reachable polygon { stroke: #b9f2d5; stroke-width: 3.5; filter: brightness(1.12); }
+.hex-cell.is-reachable polygon { fill: rgba(255, 255, 255, .16); stroke: #b9f2d5; stroke-width: 3.5; vector-effect: non-scaling-stroke; }
 .hex-cell.is-reachable.reach-stop polygon { stroke: #ffc66b; stroke-width: 3; stroke-dasharray: 3 3; }
-/* While a unit is selected, out-of-range hexes recede so its legal range reads as one area. */
-.hex-map-layer.is-moving .hex-cell:not(.is-reachable):not(.is-attack):not(.is-selected) polygon,
+/* While a unit is selected, out-of-range hexes recede (their .terrain-fill is dimmed) so its legal range reads as one area. */
 .hex-map-layer.is-moving .hex-cell:not(.is-reachable):not(.is-attack):not(.is-selected) .terrain-art { filter: brightness(.55) saturate(.6); }
 .hex-cell.is-reachable, .hex-cell.is-attack, .hex-cell.is-barrage, .hex-cell.is-placement, .hex-cell.is-retreat { cursor: pointer; }
 /* Target outlines are drawn above the counters (see .target-overlay) so stacks never hide them. */
@@ -159,7 +156,7 @@ input[aria-invalid=true] { border-color: var(--danger); }
 .game-end-actions { display: flex; flex-wrap: wrap; gap: 8px; }
 /* Mouse selection already shows the hex highlight; keep the focus ring for keyboard users only. */
 .hex-cell:focus:not(:focus-visible), .counter:focus:not(:focus-visible) { outline: none; }
-.terrain-key.clear { background: #7d805b; color: #111; }
+.terrain-key.clear { background: #d3d4ab; color: #111; }
 /* While planning a combat, answering a decision, handing over, or reading what happened, the work area takes the lists' space. */
 .command-rail:has(.combat-draft) > .deck-tabs, .command-rail:has(.combat-draft) > .deck-list,
 .command-rail:has(.decision-panel) > .deck-tabs, .command-rail:has(.decision-panel) > .deck-list,
