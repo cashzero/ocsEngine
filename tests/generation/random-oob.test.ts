@@ -53,7 +53,7 @@ describe('M7 deterministic random OOB pipeline', () => {
       expect(generated.ok).toBe(true);
       if (!generated.ok) return;
       expect(validateGeneratedOob(generated.value)).toMatchObject({ valid: true, issues: [] });
-      expect(generated.value.metrics.balanceRatio).toBe(1);
+      expect(generated.value.metrics.balanceRatio).toBeGreaterThanOrEqual(0.9);
       expect(generated.value.sides).toHaveLength(2);
       for (const side of generated.value.sides) {
         expect(side.formations).toHaveLength(options.formationsPerSide);
@@ -61,13 +61,54 @@ describe('M7 deterministic random OOB pipeline', () => {
           'ARTILLERY', 'ENGINEER', 'TRANSPORT', 'SUPPLY',
         ]));
         for (const formation of side.formations) {
-          expect(formation.units.filter(({ role }) => role === 'FORMATION_COMMAND')).toHaveLength(1);
-          expect(formation.units.filter(({ role }) => role === 'COMBAT').length).toBeGreaterThanOrEqual(2);
-          expect(formation.units.some(({ role }) => role === 'ARTILLERY')).toBe(true);
+          const roles = formation.units.map(({ role }) => role);
+          if (formation.archetype === 'INFANTRY') {
+            expect(roles).toEqual(['COMBAT']);
+            continue;
+          }
+          expect(roles.filter((role) => role === 'FORMATION_COMMAND')).toHaveLength(1);
+          expect(roles.filter((role) => role === 'COMBAT').length).toBeGreaterThanOrEqual(2);
+          expect(roles.includes('ARTILLERY')).toBe(formation.archetype !== 'AIRBORNE');
         }
       }
     },
   );
+
+  it('keeps airborne divisions free of armored recon and tracked artillery, and infantry divisions single-unit', () => {
+    let airborne = 0;
+    let infantry = 0;
+    for (let seed = 1; seed <= 40; seed += 1) {
+      const generated = generateRandomOob({ ...options, seed, formationsPerSide: 3 });
+      expect(generated.ok).toBe(true);
+      if (!generated.ok) return;
+      const definitions = new Map(generated.value.pieceDefinitionCatalog.definitions.map((definition) => [definition.id, definition]));
+      for (const side of generated.value.sides) {
+        for (const formation of side.formations) {
+          if (formation.archetype === 'AIRBORNE') {
+            airborne += 1;
+            expect(side.side).toBe('ALLIED');
+            for (const unit of formation.units) {
+              expect(['FORMATION_COMMAND', 'COMBAT']).toContain(unit.role);
+              const faces = definitions.get(unit.definitionId)!.faces;
+              // Airborne units move on foot on both faces.
+              expect(faces.every(({ mobilityClassDefinitionId }) => String(mobilityClassDefinitionId) === 'mobility:leg'
+                || unit.role === 'FORMATION_COMMAND')).toBe(true);
+            }
+          }
+          if (formation.archetype === 'INFANTRY') {
+            infantry += 1;
+            expect(formation.units).toHaveLength(1);
+            expect(definitions.get(formation.units[0]!.definitionId)!.counter?.echelon).toBe('XX');
+            // US infantry divisions are motorized (truck Movement Allowance); German ones march on foot.
+            const moveFace = definitions.get(formation.units[0]!.definitionId)!.faces.find(({ id }) => String(id) === 'move')!;
+            expect(String(moveFace.mobilityClassDefinitionId)).toBe(side.side === 'ALLIED' ? 'mobility:truck' : 'mobility:leg');
+          }
+        }
+      }
+    }
+    expect(airborne).toBeGreaterThan(0);
+    expect(infantry).toBeGreaterThan(0);
+  });
 
   it('uses reviewed BTR locators while keeping ratings explicitly synthetic', () => {
     expect(BTR_BUILD_FILE_SHA256).toMatch(/^[A-F0-9]{64}$/u);

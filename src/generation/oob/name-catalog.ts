@@ -178,7 +178,7 @@ export const FORMATION_NAME_PROFILES: readonly FormationNameProfile[] = [
   {
     "name": "US 82nd Airborne Division \"All American\"",
     "side": "ALLIED",
-    "archetype": "MOBILE_INFANTRY",
+    "archetype": "AIRBORNE",
     "combat": [
       "1/504 Abn Bn",
       "2/504 Abn Bn",
@@ -242,7 +242,7 @@ export const FORMATION_NAME_PROFILES: readonly FormationNameProfile[] = [
   {
     "name": "US 101st Airborne Division \"Screaming Eagles\"",
     "side": "ALLIED",
-    "archetype": "MOBILE_INFANTRY",
+    "archetype": "AIRBORNE",
     "combat": [
       "1/501 Abn Bn",
       "2/501 Abn Bn",
@@ -1068,7 +1068,7 @@ export const FORMATION_NAME_PROFILES: readonly FormationNameProfile[] = [
   {
     "name": "US 17th Airborne Division \"Golden Talons\"",
     "side": "ALLIED",
-    "archetype": "MOBILE_INFANTRY",
+    "archetype": "AIRBORNE",
     "combat": [
       "1/507 Abn Bn",
       "2/507 Abn Bn",
@@ -1091,7 +1091,7 @@ export const FORMATION_NAME_PROFILES: readonly FormationNameProfile[] = [
   {
     "name": "US 517th Parachute Regimental Combat Team",
     "side": "ALLIED",
-    "archetype": "MOBILE_INFANTRY",
+    "archetype": "AIRBORNE",
     "combat": [
       "1 Abn Bn",
       "2 Abn Bn",

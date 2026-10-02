@@ -82,13 +82,25 @@ export const validateGeneratedOob = (
         || unit.formationId !== formation.id)) {
         issues.push(issue('FORMATION_OWNERSHIP_MISMATCH', 'Formation units must belong to their containing side and formation.', basePath));
       }
-      if (formation.units.filter(({ role }) => role === 'FORMATION_COMMAND').length !== 1) {
+      const count = (wanted: OobUnitRole) => formation.units.filter(({ role }) => role === wanted).length;
+      if (formation.archetype === 'INFANTRY') {
+        // A plain infantry division is one XX counter.
+        if (formation.units.length !== 1 || count('COMBAT') !== 1) {
+          issues.push(issue('FORMATION_COMBAT_INVARIANT', 'An infantry division is exactly one combat unit.', [...basePath, 'units']));
+        }
+        continue;
+      }
+      if (count('FORMATION_COMMAND') !== 1) {
         issues.push(issue('FORMATION_COMMAND_INVARIANT', 'Each multi-unit formation requires exactly one command element.', [...basePath, 'units']));
       }
-      if (formation.units.filter(({ role }) => role === 'COMBAT').length < 2) {
+      if (count('COMBAT') < 2) {
         issues.push(issue('FORMATION_COMBAT_INVARIANT', 'Each multi-unit formation requires at least two combat elements.', [...basePath, 'units']));
       }
-      if (!formation.units.some(({ role }) => role === 'ARTILLERY')) {
+      if (formation.archetype === 'AIRBORNE') {
+        if (count('ARTILLERY') + count('RECONNAISSANCE') > 0) {
+          issues.push(issue('AIRBORNE_ORGANIC_SUPPORT', 'Airborne divisions carry no organic armored reconnaissance or tracked artillery.', [...basePath, 'units']));
+        }
+      } else if (count('ARTILLERY') === 0) {
         issues.push(issue('FORMATION_SUPPORT_INVARIANT', 'Each multi-unit formation requires an artillery element.', [...basePath, 'units']));
       }
     }

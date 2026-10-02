@@ -6,7 +6,7 @@ export const OOB_GENERATOR_VERSION = '0.1.0' as const;
 export const OOB_SCALES = ['COMPACT', 'STANDARD', 'LARGE'] as const;
 export type OobScale = (typeof OOB_SCALES)[number];
 export type OobSide = 'ALLIED' | 'AXIS';
-export type OobFormationArchetype = 'ARMORED' | 'INFANTRY' | 'MOBILE_INFANTRY';
+export type OobFormationArchetype = 'ARMORED' | 'INFANTRY' | 'MOBILE_INFANTRY' | 'AIRBORNE';
 export type OobUnitRole =
   | 'FORMATION_COMMAND'
   | 'COMBAT'

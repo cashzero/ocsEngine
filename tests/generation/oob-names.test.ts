@@ -7,7 +7,8 @@ describe('WWII OOB naming references', () => {
     expect(FORMATION_NAME_PROFILES.length).toBeGreaterThanOrEqual(50);
     expect(new Set(FORMATION_NAME_PROFILES.map(({ name }) => name)).size).toBe(FORMATION_NAME_PROFILES.length);
     for (const side of ['ALLIED', 'AXIS'] as const) {
-      for (const archetype of ['ARMORED', 'INFANTRY', 'MOBILE_INFANTRY'] as const) {
+      // Airborne divisions are Allied only; Panzergrenadier/Führer packages are Axis only.
+      for (const archetype of ['ARMORED', 'INFANTRY', side === 'ALLIED' ? 'AIRBORNE' : 'MOBILE_INFANTRY'] as const) {
         const pool = FORMATION_NAME_PROFILES.filter((profile) => profile.side === side && profile.archetype === archetype);
         expect(pool.length).toBeGreaterThanOrEqual(4);
         const seen = new Set<string>();
