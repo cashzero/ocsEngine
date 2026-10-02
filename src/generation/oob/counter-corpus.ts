@@ -26,7 +26,7 @@ export const ALLIED_AIRBORNE_GPID = 900_002;
 export const ALLIED_AIRBORNE_DIVISION_GPIDS: Readonly<Record<string, number>> = {
   '82.Abn': ALLIED_AIRBORNE_GPID, '101.Abn': 900_003, '17.Abn': 900_004, '13.Abn': 900_005,
 };
-const airborneDivision = (moveStrength: number, regiments: number, combatStrength = 2 * moveStrength): SourceCounter =>
+const airborneDivision = (moveStrength: number, regiments: number, combatStrength: number): SourceCounter =>
   basic('INFANTRY', 'XX', 'OTHER', [combatStrength, 4, 3, 0], [moveStrength, 4, 5, 0], ['leg', 'leg'], regiments, regiments);
 export const COUNTER_CORPUS: Readonly<Record<number, SourceCounter>> = {
   319: hq([0,0,0,14], [0,0,16,9]),
@@ -43,15 +43,12 @@ export const COUNTER_CORPUS: Readonly<Record<number, SourceCounter>> = {
   // Synthetic key: the VASSAL GPID has not been extracted (see TODO in catalog.ts).
   [AXIS_AIRBORNE_GPID]: basic('INFANTRY', 'XX', 'OTHER', [18,3,3,0], [9,3,4,0], ['leg','leg'], 4, 4),
   // US airborne divisions (XX, one step per regiment, leg on both faces): the sum of the regiments printed on counter
-  // sheet 2B (3-4-5 / 2-4-5 move faces). TODO(allied-airborne-combat-face): the sheets provided show only the move
-  // faces; the combat face is taken as twice the move face with Combat MA 3, except 101.Abn whose printed 18-4-3 is
-  // known (its combat face is NOT double: 10 -> 18, so the doubling is wrong at least there).
-  // User-visible impact: 82.Abn, 17.Abn and 13.Abn attack strength may differ from the printed counters. Closes when
-  // the printed combat faces of those three divisions are read and replaced.
-  [ALLIED_AIRBORNE_GPID]: airborneDivision(8, 3), // 82.Abn: 505 3, 504 3, 325 2
-  900_003: airborneDivision(10, 4, 18), // 101.Abn: 506 3, 502 3, 401 2, 327 2; printed 18-4-3 / 10-4-5 (user-verified)
-  900_004: airborneDivision(7, 3), // 17.Abn: 513 3, two regiments of 2
-  900_005: airborneDivision(7, 3), // 13.Abn: 515 3, 517 2, 326 2
+  // sheets 2F (combat faces, 4-4-3 / 5-4-3) and 2B (move faces, 2-4-5 / 3-4-5). 101.Abn's 18-4-3 / 10-4-5 was also
+  // confirmed by the user.
+  [ALLIED_AIRBORNE_GPID]: airborneDivision(8, 3, 14), // 82.Abn: 505 5/3, 504 5/3, 325 4/2
+  900_003: airborneDivision(10, 4, 18), // 101.Abn: 506 5/3, 502 5/3, 401 4/2, 327 4/2
+  900_004: airborneDivision(7, 3, 13), // 17.Abn: 513 5/3, 194 4/2, 193 4/2
+  900_005: airborneDivision(7, 3, 13), // 13.Abn: 515 5/3, 517 4/2, 326 4/2
   806: basic('INFANTRY', 'III', 'OTHER', [7,4,3,0], [4,4,14,0], ['leg','truck'], 1, 1),
   // US 159 Inf Rgt: images/BTR S02 R06 C19.png (4-3-3) and C19B.png (2-3-14).
   408: basic('INFANTRY', 'III', 'OTHER', [4,3,3,0], [2,3,14,0], ['leg','truck'], 1, 1),

@@ -111,17 +111,18 @@ describe('M7 deterministic random OOB pipeline', () => {
     expect([...seen]).not.toContain('ALLIED/MOBILE_INFANTRY');
   });
 
-  it('sums the printed regiments for each US airborne division (sheet 2B), one step per regiment', () => {
-    const expected: Record<string, { move: number; steps: number }> = {
-      '82.Abn': { move: 8, steps: 3 }, '101.Abn': { move: 10, steps: 4 }, '17.Abn': { move: 7, steps: 3 }, '13.Abn': { move: 7, steps: 3 },
+  it('sums the printed regiments for each US airborne division (sheets 2F/2B), one step per regiment', () => {
+    const expected: Record<string, { combat: number; move: number; steps: number }> = {
+      '82.Abn': { combat: 14, move: 8, steps: 3 }, '101.Abn': { combat: 18, move: 10, steps: 4 },
+      '17.Abn': { combat: 13, move: 7, steps: 3 }, '13.Abn': { combat: 13, move: 7, steps: 3 },
     };
-    for (const [name, { move, steps }] of Object.entries(expected)) {
+    for (const [name, { combat, move, steps }] of Object.entries(expected)) {
       const faces = corpusFaces(ALLIED_AIRBORNE_DIVISION_GPIDS[name]!);
       const face = (id: string) => faces.find((candidate) => String(candidate.id) === id)!;
       expect(face('move').steps).toHaveLength(steps);
+      expect(face('combat').steps[0]!.combatStrength).toBe(combat);
       expect(face('move').steps[0]!.combatStrength).toBe(move);
-      // 101.Abn's printed combat face is 18-4-3 (not double); the others are an unverified doubling (TODO in the corpus).
-      expect(face('combat').steps[0]!.combatStrength).toBe(name === '101.Abn' ? 18 : move * 2);
+      expect(face('combat').steps[0]!.actionRating).toBe(4);
     }
   });
 
