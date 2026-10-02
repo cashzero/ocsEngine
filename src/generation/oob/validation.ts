@@ -79,13 +79,15 @@ export const validateGeneratedOob = (
     }
     for (const [formationIndex, formation] of side.formations.entries()) {
       const basePath = ['sides', sideIndex, 'formations', formationIndex] as const;
+      // A single-unit division's counter belongs to no formation; the entry only names the division slot.
+      const memberOf = isSingleUnitDivision(formation.side, formation.archetype) ? null : formation.id;
       if (formation.side !== side.side || formation.units.some((unit) => unit.side !== side.side
-        || unit.formationId !== formation.id)) {
+        || unit.formationId !== memberOf)) {
         issues.push(issue('FORMATION_OWNERSHIP_MISMATCH', 'Formation units must belong to their containing side and formation.', basePath));
       }
       const count = (wanted: OobUnitRole) => formation.units.filter(({ role }) => role === wanted).length;
       if (isSingleUnitDivision(formation.side, formation.archetype)) {
-        // Infantry and German airborne divisions are one XX counter.
+        // Infantry and airborne divisions are one XX counter.
         if (formation.units.length !== 1 || count('COMBAT') !== 1) {
           issues.push(issue('FORMATION_COMBAT_INVARIANT', 'A single-unit division is exactly one combat unit.', [...basePath, 'units']));
         }

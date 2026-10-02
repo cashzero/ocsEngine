@@ -252,9 +252,11 @@ const buildSide = (
         ...(options.scale === 'LARGE' ? [{ role: 'ARTILLERY' as const, suffix: 'artillery-2' }] : []),
         { role: 'RECONNAISSANCE' as const, suffix: 'recon' },
       ];
+    // A single-unit division is one counter, not a multi-unit formation (3.1c): no Formation ID, colour band or affiliation.
+    const memberOf = isSingleUnitDivision(side, archetype) ? null : formationId;
     const units = requests.map(({ role, suffix }) => {
       const built = buildUnit({
-        options, side, role, formationArchetype: archetype, formationId,
+        options, side, role, formationArchetype: archetype, formationId: memberOf,
         name: unitName(side, role, Number(suffix.split('-').at(-1)) || 1, options.seed, namingProfile,
           echelonFor(side, role, archetype, true)),
         localId: `f${sequence}-${suffix}`,

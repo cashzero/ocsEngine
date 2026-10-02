@@ -66,6 +66,10 @@ const allUnits = (oob: GeneratedOob): readonly GeneratedOobUnit[] => oob.sides.f
   ...side.independentUnits,
 ]);
 
+/** Deployment group of each OOB unit: its division slot (a single-unit division too, though it has no Formation ID), else independent. */
+const deploymentGroups = (oob: GeneratedOob): ReadonlyMap<string, string> => new Map(oob.sides.flatMap((side) =>
+  side.formations.flatMap((formation) => formation.units.map((unit) => [unit.id, String(formation.id)] as const))));
+
 const sidePlayer = (side: OobSide, players: Readonly<Record<OobSide, PlayerId>>): PlayerId => players[side];
 
 const deployedFace = (definition: PieceDefinition) =>
@@ -243,6 +247,7 @@ export const deployGeneratedForces = (
   };
 
   const pieces: PieceState[] = [];
+  const groups = deploymentGroups(oob);
   const relations: PieceRelation[] = [];
   const stackCounts = new Map<HexId, number>();
   for (const side of ['ALLIED', 'AXIS'] as const) {
@@ -258,7 +263,8 @@ export const deployGeneratedForces = (
     const airBases = units.filter(({ role }) => role === 'AIR_BASE');
     const aircraft = units.filter(({ role }) => role === 'AIRCRAFT');
     const fieldUnits = units.filter(({ role }) => role !== 'SUPPLY' && role !== 'AIR_BASE' && role !== 'AIRCRAFT');
-    const reinforcement = fieldUnits.find(({ formationId }) => formationId === null) ?? fieldUnits.at(-1);
+    const groupOf = (unit: GeneratedOobUnit): string => groups.get(unit.id) ?? 'independent';
+    const reinforcement = fieldUnits.find((unit) => groupOf(unit) === 'independent') ?? fieldUnits.at(-1);
     if (fieldUnits.length > denseSlots.length || sideSupply[side].length === 0) {
       return { ok: false, error: [deploymentFailure(`Map cannot deploy every ${side} unit within its operational zone.`)] };
     }
@@ -298,7 +304,7 @@ export const deployGeneratedForces = (
     // inside supply reach and clear of the dumps and Air Bases, and a unit takes the nearest slot of its
     // group on a Hex its deployed face may enter (6.2c). Stacking (4.8) is respected so a displaced unit
     // cannot overstack a later Hex.
-    const groupKeys = [...new Set(fieldUnits.map(({ formationId }) => formationId ?? 'independent'))];
+    const groupKeys = [...new Set(fieldUnits.map(groupOf))];
     const reach = new Set(dumpHexes.flatMap((hexId) => [...supplyReachOf(hexId)]));
     const reserved = new Set<HexId>([...dumpHexes, ...baseHexes]);
     const rankedIds = ranked.map(({ hex }) => hex.id);
@@ -310,7 +316,7 @@ export const deployGeneratedForces = (
     for (const [index, key] of groupKeys.entries()) {
       const center = centers[index];
       if (center === undefined) break;
-      const size = fieldUnits.filter(({ formationId }) => (formationId ?? 'independent') === key).length;
+      const size = fieldUnits.filter((unit) => groupOf(unit) === key).length;
       const hexes = [center];
       const nearby = rankedIds
         .filter((hexId) => !claimed.has(hexId) && !reserved.has(hexId) && (reach.size === 0 || reach.has(hexId)))
@@ -334,7 +340,7 @@ export const deployGeneratedForces = (
       const fits = (hexId: HexId): boolean => (definition === undefined
         || canDeployOn(hexById.get(hexId)!, deployedMobility(definition)))
         && (usedReTicks.get(hexId) ?? 0) + unitReTicks <= GENERATED_STACKING_LIMIT_RE_TICKS;
-      const ownSlots = groupSlots.get(unit.formationId ?? 'independent') ?? [];
+      const ownSlots = groupSlots.get(groupOf(unit)) ?? [];
       const ownIndex = ownSlots.findIndex(fits);
       const fallbackIndex = ownIndex < 0 ? fallbackSlots.findIndex(fits) : -1;
       if (ownIndex < 0 && fallbackIndex < 0) {
