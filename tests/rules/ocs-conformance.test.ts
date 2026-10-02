@@ -24,7 +24,7 @@ import {
 
 const U = {
   alTrk: generatedPieceId('allied:f1-combat-1'), alTrk2: generatedPieceId('allied:f1-combat-2'),
-  alLeg: generatedPieceId('allied:f2-combat-1'), alLeg2: generatedPieceId('allied:f2-combat-2'),
+  alLeg: generatedPieceId('allied:f2-combat-1'), alLeg2: generatedPieceId('allied:f1-combat-2'),
   alArt: generatedPieceId('allied:f1-artillery-1'), alEng: generatedPieceId('allied:independent-engineer-1'),
   alHq: generatedPieceId('allied:f1-command'), alSup: generatedPieceId('allied:independent-supply-1'),
   axTrk: generatedPieceId('axis:f1-combat-1'), axTrk2: generatedPieceId('axis:f1-combat-2'),
@@ -153,10 +153,10 @@ describe('OCS 4.3 ground combat (9.0-9.13)', () => {
   });
 
   it('only disorganizes a one-hex retreat that enters an enemy ZOC (5.10a, 9.12)', () => {
-    const state = atStep(buildGeneratedRuleState({ [U.alLeg]: ['5,5', 'COMBAT', 'combat'], [U.axTrk]: ['6,5', 'COMBAT', 'combat'], [U.alSup]: ['4,5', null] }), 'COMBAT', 'COMBAT', ALLIED);
+    const state = atStep(buildGeneratedRuleState({ [U.alTrk]: ['5,5', 'COMBAT', 'combat'], [U.axTrk]: ['6,5', 'COMBAT', 'combat'], [U.alSup]: ['4,5', null] }), 'COMBAT', 'COMBAT', ALLIED);
     let checked = 0;
     for (let seed = 1; seed < 400 && checked < 3; seed += 1) {
-      let declared = declareTestCombat({ ...state, rng: createRulesRng(seed) }, ALLIED, 'REGULAR', [U.alLeg], '6,5');
+      let declared = declareTestCombat({ ...state, rng: createRulesRng(seed) }, ALLIED, 'REGULAR', [U.alTrk], '6,5');
       const events = [...declared.events];
       // The defender's supply, lead unit and terrain are chosen before the dice are rolled.
       while (declared.state.pendingDecision && declared.state.activeTransaction?.result === null) {
