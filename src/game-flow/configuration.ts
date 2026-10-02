@@ -20,6 +20,12 @@ const id = (value: string): DefinitionId => must(parseDefinitionId(value));
 /** OCS 4.8 ten-RE stacking limit in quarter-RE ticks. */
 export const GENERATED_STACKING_LIMIT_RE_TICKS = 40;
 
+/** Terrain cost in quarter-MP ticks for terrain the TEC does not list. */
+export const GENERATED_DEFAULT_TERRAIN_COST_TICKS = 4;
+
+/** 12.3a: direct draw range is 5 Truck MP, in quarter-MP ticks. */
+export const GENERATED_SUPPLY_DRAW_RANGE_TICKS = 20;
+
 /** The dump Definition each side's Supply Table arrivals use. */
 const supplyDefinitionFor = (oob: GeneratedOob, side: OobSide): DefinitionId => {
   const unit = oob.sides.find((candidate) => candidate.side === side)?.independentUnits.find(({ role }) => role === 'SUPPLY');
@@ -40,7 +46,7 @@ export const createGeneratedRuleConfiguration = (
   terrainMovementCosts: GENERATED_TERRAIN_MOVEMENT_COSTS,
   hexsideMovementCosts: GENERATED_HEXSIDE_MOVEMENT_COSTS,
   roadMovementCosts: GENERATED_ROAD_MOVEMENT_COSTS,
-  defaultTerrainCostTicks: 4,
+  defaultTerrainCostTicks: GENERATED_DEFAULT_TERRAIN_COST_TICKS,
   minimumMoveTicks: 4,
   stackingLimitReTicks: GENERATED_STACKING_LIMIT_RE_TICKS,
   terrainCombatEffects: GENERATED_TERRAIN_COMBAT_EFFECTS,

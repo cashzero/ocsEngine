@@ -45,7 +45,18 @@ export interface MovementCostModel {
 
 const mapIndexes = new WeakMap<MapDefinition, ReturnType<typeof createMapDefinitionIndex>>();
 
-export const mapIndexOf = (state: GameState) => {
+/**
+ * The slice of a game that movement cost depends on. A full GameState satisfies it, and so does a
+ * map plus TEC before any game exists (deployment checks supply reach with it).
+ */
+export interface MovementCostContext {
+  readonly scenario: { readonly mapDefinition: MapDefinition };
+  readonly configuration: Pick<GameState['configuration'],
+    'terrainMovementCosts' | 'hexsideMovementCosts' | 'roadMovementCosts' | 'defaultTerrainCostTicks'>;
+  readonly weather: { readonly groundCondition: GroundCondition };
+}
+
+export const mapIndexOf = (state: Pick<MovementCostContext, 'scenario'>) => {
   let index = mapIndexes.get(state.scenario.mapDefinition);
   if (!index) {
     index = createMapDefinitionIndex(state.scenario.mapDefinition);
@@ -60,7 +71,7 @@ export const hexTerrainIds = (state: GameState, hexId: HexId): readonly string[]
   return hex ? [...hex.terrainDefinitionIds.map(String), ...hex.features.map(({ definitionId }) => String(definitionId))] : [];
 };
 
-export const hexsideFeatureIds = (state: GameState, fromHexId: HexId, toHexId: HexId): readonly string[] => {
+export const hexsideFeatureIds = (state: Pick<MovementCostContext, 'scenario'>, fromHexId: HexId, toHexId: HexId): readonly string[] => {
   const from = parseHexCoordinateId(fromHexId);
   if (!from.ok) return [];
   const direction = HEX_DIRECTIONS.find((candidate) => formatHexId(neighbor(from.value, candidate)) === toHexId);
@@ -70,7 +81,7 @@ export const hexsideFeatureIds = (state: GameState, fromHexId: HexId, toHexId: H
 };
 
 /** Cost models per map and configuration object (both are immutable for a game). */
-const modelCache = new WeakMap<MapDefinition, WeakMap<GameState['configuration'], Map<string, MovementCostModel>>>();
+const modelCache = new WeakMap<MapDefinition, WeakMap<MovementCostContext['configuration'], Map<string, MovementCostModel>>>();
 
 /** TEC column for the ground condition (17.0a); the normal column applies when none is listed. */
 const columnFor = (
@@ -84,7 +95,7 @@ const columnFor = (
  * default). `useRoads` false ignores road features, as overruns must (8.1c).
  */
 export const movementCostModel = (
-  state: GameState,
+  state: MovementCostContext,
   mobility: MobilityType,
   useRoads = true,
   condition: GroundCondition = state.weather.groundCondition,
