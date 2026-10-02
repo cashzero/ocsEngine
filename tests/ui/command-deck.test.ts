@@ -84,6 +84,41 @@ describe('phase-specific command deck', () => {
     controller.dispose();
   });
 
+  it('names the step End phase finishes without repeating the phase, and keeps Undo in place when nothing can be undone', async () => {
+    const controller = await startGame();
+    const deck = newDeck();
+    let controls = phaseControlsHtml(controller.getSnapshot(), deck);
+    expect(controls).toContain('End Reinforcement Phase');
+    expect(controls).toContain('Next: Movement Phase');
+    expect(controls).toMatch(/id="undo-step"[^>]*disabled/u);
+    for (const arrival of controller.getSnapshot().arrivals) {
+      controller.selectPiece(arrival.pieceId);
+      await controller.clickHex(arrival.entryHexIds[0]!);
+    }
+    await controller.endStep();
+    controls = phaseControlsHtml(controller.getSnapshot(), deck);
+    expect(controls).toContain('End Movement Segment');
+    expect(controls).toContain('Next: Barrage Segment');
+    expect(controls).not.toContain('Movement · Movement');
+    controller.dispose();
+  });
+
+  it('plays straight on after a checkpoint restore or a save made while paused: there is no Pause control to resume from', async () => {
+    const controller = await startGame();
+    controller.createCheckpoint();
+    const checkpoint = controller.getSnapshot().checkpoints.at(-1)!;
+    await controller.undoTo(checkpoint.id);
+    expect(controller.getSnapshot().view.metadata.lifecycle).toBe('ACTIVE');
+
+    const engine = createGameplayEngine(createMemoryGameplayPorts());
+    const created = await createNewGameOrchestrator(engine).create(DEFAULT_NEW_GAME_REQUEST);
+    if (!created.ok) throw new Error('Default game must be created.');
+    expect(created.value.session.pause()).toMatchObject({ ok: true, lifecycle: 'PAUSED' });
+    await controller.loadSave(created.value.session.serializeSave());
+    expect(controller.getSnapshot().view.metadata.lifecycle).toBe('ACTIVE');
+    controller.dispose();
+  });
+
   it('confirms a previewed move in a popup anchored to the destination, not in the deck', async () => {
     const controller = await startGame();
     for (const arrival of controller.getSnapshot().arrivals) {

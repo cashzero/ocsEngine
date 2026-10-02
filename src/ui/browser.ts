@@ -100,7 +100,7 @@ let lastMoveHex: string | null = null;
 let rosterWasOpen = false;
 /** The modal dialog drawn last, to move focus into a dialog only when it opens. */
 let lastDialog: Element | null = null;
-let utilityOpen: 'session' | null = null;
+let utilityOpen: 'menu' | null = null;
 let gameEndDismissed = false;
 /** Scroll position of each list by its scroll key, so a tab's list comes back where the player left it. */
 const listPositions = new Map<string, number>();
@@ -150,18 +150,28 @@ const trackSubLabel = (step: UiSnapshot['phaseTrack'][number], sequence: NonNull
     // "Movement · Movement Segment" would read "Movement Movement"; only name a segment that adds information.
     segment.toLowerCase() === step.label.toLowerCase() ? '' : segment,
   ].filter(Boolean);
-  return parts.length > 0 ? html`<small>${parts.join(' · ')}</small>` : nothing;
+  return parts.length > 0 ? html`<small class="track-sub">${parts.join(' · ')}</small>` : nothing;
 };
 
-const phaseTrackItem = (step: UiSnapshot['phaseTrack'][number], sequence: NonNullable<UiSnapshot['view']['projection']>['sequence'] | undefined) =>
-  html`<li class="is-${step.status}" aria-current=${step.status === 'current' ? 'step' : nothing} title=${`${step.label}${step.actorId !== sequence?.phasingPlayerId ? ` (${playerName(step.actorId)})` : ''}: ${step.status === 'skipped' ? 'passed automatically, no legal actions' : step.status}`}>${step.label}${trackSubLabel(step, sequence)}</li>`;
+const TRACK_MARKS: Readonly<Record<string, string>> = { done: '✓', skipped: '–', current: '▸' };
 
-/** The always-visible chip: just the current phase. Hovering the picker opens the full list as a popup. */
+/** One row of the turn popup: a fixed mark column, the phase, then who acts or the current segment, all on one line. */
+const phaseTrackItem = (step: UiSnapshot['phaseTrack'][number], sequence: NonNullable<UiSnapshot['view']['projection']>['sequence'] | undefined) =>
+  html`<li class="is-${step.status}" aria-current=${step.status === 'current' ? 'step' : nothing} title=${`${step.label}${step.actorId !== sequence?.phasingPlayerId ? ` (${playerName(step.actorId)})` : ''}: ${step.status === 'skipped' ? 'passed automatically, no legal actions' : step.status}`}><span class="track-mark" aria-hidden="true">${TRACK_MARKS[step.status] ?? ''}</span><span class="track-label">${step.label}</span>${trackSubLabel(step, sequence)}</li>`;
+
+/**
+ * The picker's face, read like the Turn cell beside it (it is state, not a button): whose turn it is and who must act
+ * when that is the other player (a Reaction Phase, a defender's decision) on top, where the game is underneath.
+ */
 const phaseTrackCurrent = (snapshot: UiSnapshot, sequence: NonNullable<UiSnapshot['view']['projection']>['sequence'] | undefined) => {
+  if (!sequence) return nothing;
   const current = snapshot.phaseTrack.find((step) => step.status === 'current');
+  const segment = current && sequence.segment !== 'NONE' ? (phaseLabel(sequence.phase, sequence.segment).split(' · ')[1] ?? '').replace(/ Segment$/u, '') : '';
   // Steps outside the turn track (First Player roll, Weather, Game over) still name where the game is.
-  if (!current) return sequence ? html`<span class="phase-current">${phaseLabel(sequence.phase, sequence.segment)}</span>` : nothing;
-  return html`<span class="phase-current">${current.label}${trackSubLabel(current, sequence)}</span>`;
+  const label = current ? [current.label, segment.toLowerCase() === current.label.toLowerCase() ? '' : segment].filter(Boolean).join(' · ') : phaseLabel(sequence.phase, sequence.segment);
+  const actor = snapshot.bindings.find(({ seatId }) => seatId === snapshot.view.metadata.activeSeatId)?.playerId;
+  const turn = `${playerName(sequence.phasingPlayerId)} player turn${actor && actor !== sequence.phasingPlayerId ? ` · ${playerName(actor)} to act` : ''}`;
+  return html`<small>${turn}</small><strong>${label}<span class="caret" aria-hidden="true">▾</span></strong>`;
 };
 
 const playerName = (playerId: string | undefined): string =>
@@ -625,28 +635,35 @@ const gameEndDialog = (snapshot: UiSnapshot) => {
   </section></div>`;
 };
 
-const sessionDialog = (snapshot: UiSnapshot) => {
+/** The game menu: everything outside the turn itself (new game, saves, hot-seat, checkpoints), grouped by what it touches. */
+const menuDialog = (snapshot: UiSnapshot) => {
   if (!utilityOpen) return nothing;
   const lifecycle = snapshot.view.metadata.lifecycle;
   const activeBinding = snapshot.bindings.find(({ seatId }) => seatId === snapshot.view.metadata.activeSeatId);
   const otherBinding = snapshot.bindings.find(({ seatId }) => seatId !== snapshot.view.metadata.activeSeatId);
   const close = () => { utilityOpen = null; render(controller.getSnapshot()); };
-  return html`<div class="modal-backdrop utility-backdrop"><section class="utility-dialog" role="dialog" aria-modal="true" aria-labelledby="utility-title" @keydown=${trapFocus}><header><h2 id="utility-title">Session</h2><button id="close-utility" @click=${close}>Close</button></header><div class="utility-content">
-    <p><strong>${activeBinding?.label ?? ''}</strong> · ${lifecycle}</p>
-    <button class="wide" id="begin-handoff" ?disabled=${!(otherBinding && lifecycle !== 'READY')} @click=${() => { utilityOpen = null; controller.beginHandoff(); }}>Hand off to ${otherBinding?.label ?? 'next seat'}</button>
-    <div class="button-grid"><button id="save-game" @click=${() => downloadJson(controller.serializeSave(), `ocs-${snapshot.view.metadata.id}.json`)}>Download save</button><button id="load-game" @click=${() => root.querySelector<HTMLInputElement>('#save-file')?.click()}>Load save</button></div>
-    <input id="save-file" type="file" accept="application/json,.json" hidden @change=${(event: Event) => {
-      const file = (event.currentTarget as HTMLInputElement).files?.[0];
-      if (file) void file.text().then((text) => controller.loadSave(text));
-    }}>
-    <label class="setting-toggle"><input type="checkbox" id="skip-dump-only" .checked=${skipDumpOnlySteps} @change=${(event: Event) => {
-      skipDumpOnlySteps = (event.target as HTMLInputElement).checked;
-      controller.setSkipDumpOnlySteps(skipDumpOnlySteps);
-    }}> Pass the other player's step without a hand-over when blowing a dump (12.11a) is their only option</label>
-    <button id="create-checkpoint" @click=${() => controller.createCheckpoint()}>Create checkpoint</button><div class="checkpoint-list">${snapshot.checkpoints.length > 0 ? snapshot.checkpoints.map((checkpoint) => html`
-      <button class="checkpoint" data-checkpoint=${checkpoint.id} @click=${() => void controller.undoTo(checkpoint.id)}>${checkpoint.label || checkpoint.id} · R${checkpoint.revision}</button>`) : html`<p>No checkpoints yet.</p>`}</div>
-    <p class="supporting">${currentGame.summary.unitCount} units · ${currentGame.summary.formationCount} formations · ${currentGame.summary.turnLimit} turns</p>
-    <p class="supporting">Seeds: map ${currentGame.request.seeds.map}, OOB ${currentGame.request.seeds.oob}, deployment ${currentGame.request.seeds.deployment}, rules ${currentGame.request.seeds.rules}.</p>
+  return html`<div class="modal-backdrop utility-backdrop"><section class="utility-dialog menu-dialog" role="dialog" aria-modal="true" aria-labelledby="utility-title" @keydown=${trapFocus}><header><h2 id="utility-title">Menu</h2><button id="close-utility" @click=${close}>Close</button></header><div class="utility-content">
+    <section class="menu-section" aria-labelledby="menu-game"><h3 id="menu-game">Game</h3>
+      <div class="menu-row"><button class="primary" id="open-new-game" @click=${openNewGame}>New Game…</button><button id="save-game" @click=${() => downloadJson(controller.serializeSave(), `ocs-${snapshot.view.metadata.id}.json`)}>Download save</button><button id="load-game" @click=${() => root.querySelector<HTMLInputElement>('#save-file')?.click()}>Load save…</button></div>
+      <input id="save-file" type="file" accept="application/json,.json" hidden @change=${(event: Event) => {
+        const file = (event.currentTarget as HTMLInputElement).files?.[0];
+        if (file) { utilityOpen = null; void file.text().then((text) => controller.loadSave(text)); }
+      }}>
+      <p class="supporting">${currentGame.summary.unitCount} units · ${currentGame.summary.formationCount} formations · ${currentGame.summary.turnLimit} turns · seeds map ${currentGame.request.seeds.map}, OOB ${currentGame.request.seeds.oob}, deployment ${currentGame.request.seeds.deployment}, rules ${currentGame.request.seeds.rules}</p>
+    </section>
+    <section class="menu-section" aria-labelledby="menu-seats"><h3 id="menu-seats">Hot seat</h3>
+      <p class="supporting">${activeBinding?.label ?? ''} has the screen.</p>
+      <button class="wide" id="begin-handoff" ?disabled=${!(otherBinding && lifecycle !== 'READY')} @click=${() => { utilityOpen = null; controller.beginHandoff(); }}>Hand the screen to ${otherBinding?.label ?? 'the next seat'}</button>
+      <label class="setting-toggle"><input type="checkbox" id="skip-dump-only" .checked=${skipDumpOnlySteps} @change=${(event: Event) => {
+        skipDumpOnlySteps = (event.target as HTMLInputElement).checked;
+        controller.setSkipDumpOnlySteps(skipDumpOnlySteps);
+      }}> Pass the other player's step without a hand-over when blowing a dump (12.11a) is their only option</label>
+    </section>
+    <section class="menu-section" aria-labelledby="menu-checkpoints"><h3 id="menu-checkpoints">Checkpoints</h3>
+      <button id="create-checkpoint" @click=${() => controller.createCheckpoint()}>Create checkpoint</button>
+      <div class="checkpoint-list">${snapshot.checkpoints.length > 0 ? snapshot.checkpoints.map((checkpoint) => html`
+        <button class="checkpoint" data-checkpoint=${checkpoint.id} @click=${() => { utilityOpen = null; void controller.undoTo(checkpoint.id); }}>Restore ${checkpoint.label || checkpoint.id} · R${checkpoint.revision}</button>`) : html`<p class="supporting">No checkpoints yet.</p>`}</div>
+    </section>
   </div></section></div>`;
 };
 
@@ -669,20 +686,18 @@ const appView = (snapshot: UiSnapshot): TemplateResult => {
   const modal = newGameOpen || utilityOpen !== null || (lifecycle === 'FINISHED' && !gameEndDismissed);
   return html`
     <div class="app-shell" ?inert=${modal}>
-      <header class="topbar">
+      <header class="topbar" data-active-seat=${activeBinding?.label ?? snapshot.view.playerId}>
         <div class="turn-strip" aria-label="Current turn state">
-          <span class="turn-cell"><small>TURN ${sequence?.gameTurn ?? '–'} / ${currentGame.summary.turnLimit}</small><strong>${weatherLabel(snapshot)}</strong></span>
+          <span class="turn-cell"><small>Turn ${sequence?.gameTurn ?? '–'} / ${currentGame.summary.turnLimit}</small><strong>${weatherLabel(snapshot)}</strong></span>
           <div class="phase-picker" tabindex="0" aria-label=${`${playerName(sequence?.phasingPlayerId)} Player Turn`}>
-            <span class="track-owner">${playerName(sequence?.phasingPlayerId)}</span>
             ${phaseTrackCurrent(snapshot, sequence)}
             <ol class="phase-track phase-popup" aria-label=${`${playerName(sequence?.phasingPlayerId)} Player Turn phases`}>
               ${snapshot.phaseTrack.map((step) => phaseTrackItem(step, sequence))}
             </ol>
           </div>
-          ${phaseControlsView(snapshot, deck)}
+          <div class="bar-controls">${phaseControlsView(snapshot, deck)}</div>
         </div>
-        <div class="seat-badge"><span class="status-dot"></span><div><small>AT THE SCREEN</small><strong>${activeBinding?.label ?? snapshot.view.playerId}</strong></div></div>
-        <div class="session-actions"><button id="open-new-game" @click=${openNewGame}>New Game</button><button id="toggle-pause" ?disabled=${!(lifecycle === 'ACTIVE' || lifecycle === 'PAUSED')} @click=${() => controller.togglePause()}>${lifecycle === 'PAUSED' ? 'Resume' : 'Pause'}</button><button id="open-session" @click=${() => { utilityOpen = 'session'; render(controller.getSnapshot()); }}>Session</button></div>
+        <div class="session-actions"><button id="open-menu" class="bar-button" aria-haspopup="dialog" @click=${() => { utilityOpen = 'menu'; render(controller.getSnapshot()); }}><span class="bar-label">☰ Menu</span></button></div>
       </header>
 
       <aside class="command-rail" aria-label="Command deck">${commandDeckView(snapshot, deck)}</aside>
@@ -698,7 +713,7 @@ const appView = (snapshot: UiSnapshot): TemplateResult => {
           </div>
         </section>
       </main>
-    </div>${newGameDialog()}${gameEndDialog(snapshot)}${sessionDialog(snapshot)}`;
+    </div>${newGameDialog()}${gameEndDialog(snapshot)}${menuDialog(snapshot)}`;
 };
 
 const render = (snapshot: UiSnapshot): void => {
@@ -761,6 +776,7 @@ root.addEventListener('click', (event) => {
     return;
   }
   if (byId('deselect')) { controller.clearSelection(); return; }
+  if (byId('resume-game')) { controller.resume(); return; }
   if (byId('undo-step')) { void runUi(controller.undoStep); return; }
   if (byId('auto-pay')) { void runUi(controller.autoPay); return; }
   if (byId('dismiss-result')) { controller.dismissResult(); return; }

@@ -72,7 +72,8 @@ export interface UiController {
   readonly dismissAwayReport: () => void;
   readonly setSkipDumpOnlySteps: (enabled: boolean) => void;
   readonly start: () => void;
-  readonly togglePause: () => void;
+  /** A turn-based game has no pause: this only takes back a session that arrived paused (an older save). */
+  readonly resume: () => void;
   readonly createCheckpoint: () => void;
   readonly undoTo: (checkpointId: string) => Promise<void>;
   readonly serializeSave: () => string;
@@ -1330,10 +1331,9 @@ class DefaultUiController implements UiController {
     this.#emit();
   };
 
-  togglePause = (): void => {
-    const lifecycle = this.#session.getMetadata().lifecycle;
-    const result = lifecycle === 'PAUSED' ? this.#session.resume() : this.#session.pause();
-    this.#notice = result.ok ? (lifecycle === 'PAUSED' ? 'Resumed.' : 'Paused. Resume to continue playing.') : result.code;
+  resume = (): void => {
+    const result = this.#session.resume();
+    this.#notice = result.ok ? 'Resumed.' : result.code;
     this.#emit();
   };
 
@@ -1348,7 +1348,10 @@ class DefaultUiController implements UiController {
     if (!checkpoint) return 'Checkpoint no longer exists.';
     const result = await this.#session.undoTo(checkpoint.id);
     this.#resetIntent();
-    return result.ok ? `Restored ${checkpoint.label || checkpoint.id}. Resume to continue.` : result.code;
+    if (!result.ok) return result.code;
+    // The session pauses on a restore; play goes straight on from the checkpoint (a finished game stays finished).
+    if (result.lifecycle === 'PAUSED') this.#session.resume();
+    return `Restored ${checkpoint.label || checkpoint.id}.`;
   });
 
   serializeSave = (): string => this.#session.serializeSave();
@@ -1376,6 +1379,8 @@ class DefaultUiController implements UiController {
     // An automatic checkpoint inside the save belongs to a step that is over; keep only the new one.
     this.#undoPoints = [];
     for (const checkpoint of loaded.listCheckpoints()) if (checkpoint.label.startsWith('Auto: ') || checkpoint.label.startsWith(UNDO_POINT_PREFIX)) loaded.removeCheckpoint(checkpoint.id);
+    // A save made while paused (before the UI dropped Pause) is played on at once.
+    if (loaded.getMetadata().lifecycle === 'PAUSED') loaded.resume();
     this.#bindSession();
     this.#continueNumbering();
     this.#afterChange();

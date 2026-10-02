@@ -70,7 +70,8 @@ try {
   await send('Runtime.enable');
   await send('Emulation.setDeviceMetricsOverride', {width:1440,height:900,deviceScaleFactor:1,mobile:false});
   await send('Page.navigate', {url:'http://127.0.0.1:4173/'});
-  await wait("document.querySelector('#open-new-game')");
+  await wait("document.querySelector('#open-menu')");
+  await click('#open-menu');
   await click('#open-new-game');
   await click('#new-game-form button[type="submit"]');
   await wait("document.querySelector('#start-previewed-game')?.disabled === false");
