@@ -19,7 +19,7 @@ import {
   coastlineHtml, hexGridHtml, hexNumberHtml, mapArtDefsHtml, objectiveArtHtml, regionEdgesHtml, riversHtml, roadsHtml, settlementArtHtml,
   strategicBandPoints, terrainFillHtml, terrainGlyphsHtml,
 } from './map-art.js';
-import { commandDeckHtml, unitRosterBodyHtml, unitRosterHtml, unmovedUnits, withHexLabels, type DeckState, type DeckList, type UnitFilter } from './command-deck.js';
+import { commandDeckHtml, movePopupHtml, phaseControlsHtml, selectDeckTab, syncDeckTab, unitRosterBodyHtml, unitRosterHtml, unmovedUnits, withHexLabels, type DeckState, type UnitFilter } from './command-deck.js';
 import type { UiSnapshot } from './model.js';
 import { phaseLabel, pieceLabel, printedHexLabel } from './presenter.js';
 
@@ -82,8 +82,12 @@ const newGameInvalidFields = (): readonly string[] => [
   ...NEW_GAME_FIXES.filter(({ codes }) => newGameErrors.some(({ code }) => codes.includes(code))).flatMap(({ fields }) => fields),
   ...newGameErrors.filter(({ code }) => code === 'INVALID_SEED').map(({ path }) => `new-game-${String(path[1])}-seed`),
 ];
-const deck: DeckState = { list: 'stack', search: '', working: false };
+const deck: DeckState = { search: '', working: false };
 let rosterOpen = false;
+/** Destination of the move popup drawn last, to hand focus to it when it opens and back to the hex when it closes. */
+let lastMoveHex: string | null = null;
+/** Whether the roster popup was open when the page was drawn last, to move focus in and back out of it. */
+let rosterWasOpen = false;
 let utilityOpen: 'session' | null = null;
 let gameEndDismissed = false;
 const listPositions = new Map<string, number>();
@@ -137,7 +141,8 @@ const phaseTrackItemHtml = (step: UiSnapshot['phaseTrack'][number], sequence: No
 /** The always-visible chip: just the current phase. Hovering the picker opens the full list as a popup. */
 const phaseTrackCurrentHtml = (snapshot: UiSnapshot, sequence: NonNullable<UiSnapshot['view']['projection']>['sequence'] | undefined): string => {
   const current = snapshot.phaseTrack.find((step) => step.status === 'current');
-  if (!current) return '';
+  // Steps outside the turn track (First Player roll, Weather, Game over) still name where the game is.
+  if (!current) return sequence ? `<span class="phase-current">${escapeHtml(phaseLabel(sequence.phase, sequence.segment))}</span>` : '';
   return `<span class="phase-current">${escapeHtml(current.label)}${trackSubLabel(current, sequence)}</span>`;
 };
 
@@ -406,12 +411,13 @@ const render = (snapshot: UiSnapshot): void => {
   const focusPiece = focused?.dataset.piece;
   root.querySelectorAll<HTMLElement>('[data-scroll-key]').forEach(element => listPositions.set(element.dataset.scrollKey!, element.scrollTop));
   if (snapshot.view.privacyLocked) {
-    utilityOpen = null; deck.search = ''; deck.list = 'stack'; rosterOpen = false; listPositions.clear();
+    utilityOpen = null; deck.search = ''; deck.tab = undefined; deck.lastPiece = null; rosterOpen = false; rosterWasOpen = false; lastMoveHex = null; listPositions.clear();
     root.innerHTML = privacyHtml(snapshot);
     bindEvents(snapshot);
     root.querySelector<HTMLButtonElement>('#complete-handoff')?.focus();
     return;
   }
+  syncDeckTab(snapshot, deck);
   const projection = snapshot.view.projection;
   const sequence = projection?.sequence;
   const activeBinding = snapshot.bindings.find(({ seatId }) => seatId === snapshot.view.metadata.activeSeatId);
@@ -432,6 +438,7 @@ const render = (snapshot: UiSnapshot): void => {
               ${snapshot.phaseTrack.map((step) => phaseTrackItemHtml(step, sequence)).join('')}
             </ol>
           </div>
+          ${phaseControlsHtml(snapshot, deck)}
         </div>
         <div class="seat-badge"><span class="status-dot"></span><div><small>AT THE SCREEN</small><strong>${escapeHtml(activeBinding?.label ?? snapshot.view.playerId)}</strong></div></div>
       </header>
@@ -444,7 +451,7 @@ const render = (snapshot: UiSnapshot): void => {
             <svg id="hex-map" viewBox="0 0 ${layout.width} ${layout.height}" role="application" aria-label="Hex map. Click a unit to select it, a highlighted hex to move, a ringed enemy hex to attack.">
               <g id="map-camera" transform="translate(${camera.x} ${camera.y}) scale(${camera.zoom})">${renderMap(snapshot)}</g>
             </svg>
-            ${stackPickerHtml(snapshot)}${rosterOpen ? unitRosterHtml(snapshot, deck) : ''}
+            ${stackPickerHtml(snapshot)}${rosterOpen ? unitRosterHtml(snapshot, deck) : movePopupHtml(snapshot)}
             <div class="map-controls" aria-label="Map zoom controls"><button id="zoom-out" aria-label="Zoom out">−</button><output id="zoom-level">${zoomPercent()}%</output><button id="zoom-in" aria-label="Zoom in">+</button><button id="zoom-reset">Reset</button><button id="toggle-air-zones" aria-pressed="${snapshot.air.showZones}" title="Show the 10-hex Patrol Zones of Air Bases with Active Fighters (14.4c)">Patrol Zones</button></div>
             <div class="map-legend"><span class="terrain-key clear">Clear</span><span class="terrain-key woods">Woods</span><span class="terrain-key rough">Rough</span><span class="terrain-key mountain">Mountain</span><span class="terrain-key marsh">Marsh</span><span class="terrain-key water">Water</span><span class="line-key road">Road</span><span class="line-key river">River</span><span class="legend-mark objective">Objective</span><span class="legend-ring move">Move</span><span class="legend-ring move-stop" title="You must stop here (for example on entering an enemy ZOC)">Move ends here</span><span class="legend-ring attack">Attack</span><span class="legend-ring barrage">Barrage</span>${snapshot.air.showZones ? '<span class="legend-ring air-zone">Your Patrol Zone</span><span class="legend-ring air-zone enemy">Enemy Patrol Zone</span>' : ''}</div>
             <div class="hover-info" aria-live="off">${hover ? escapeHtml(hoverText(snapshot, hover.id)) : 'Hover a hex for terrain.'}</div>
@@ -504,11 +511,24 @@ const render = (snapshot: UiSnapshot): void => {
     const match = [...root.querySelectorAll<HTMLElement>('[data-hex], [data-piece]')].find(e => focusPiece ? e.dataset.piece === focusPiece : e.dataset.hex === focusHex);
     match?.focus({ preventScroll: true });
   }
+  // The move popup takes focus when it opens (Enter confirms) and returns it to the hex when it closes.
+  const moveHex = root.querySelector<HTMLElement>('.move-popup')?.dataset.anchorHex ?? null;
+  if (moveHex && moveHex !== lastMoveHex) (root.querySelector<HTMLElement>('#confirm-move:not(:disabled)') ?? root.querySelector<HTMLElement>('#cancel-move'))?.focus({ preventScroll: true });
+  else if (!moveHex && lastMoveHex && document.activeElement === document.body && !dialog) {
+    root.querySelector<HTMLElement>(`#hex-map .hex-cell[data-hex="${CSS.escape(lastMoveHex)}"]`)?.focus({ preventScroll: true });
+  }
+  lastMoveHex = moveHex;
+  // The roster takes focus into its search box when it opens and gives it back to its button when it closes.
+  const rosterShown = root.querySelector('.roster-popup') !== null;
+  if (rosterShown && !rosterWasOpen) root.querySelector<HTMLElement>('#roster-search')?.focus({ preventScroll: true });
+  else if (!rosterShown && rosterWasOpen && document.activeElement === document.body) root.querySelector<HTMLElement>('#open-roster')?.focus({ preventScroll: true });
+  rosterWasOpen = rosterShown;
   updateCamera();
 };
 
 const updateCamera = (): void => {
   positionStackPicker();
+  positionMovePopup();
   const svg = root.querySelector<SVGSVGElement>('#hex-map');
   const cameraGroup = root.querySelector<SVGGElement>('#map-camera');
   const matrix = svg?.getScreenCTM();
@@ -604,7 +624,7 @@ const mountCreatedGame = async (created: CreatedNewGame): Promise<void> => {
   controller.dispose();
   await currentGame.session.close();
   currentGame = created;
-  deck.search = ''; deck.list = 'stack'; rosterOpen = false; deck.filter = 'all'; deck.confirmEnd = false; listPositions.clear(); utilityOpen = null; gameEndDismissed = false;
+  deck.search = ''; deck.tab = undefined; deck.lastPiece = null; rosterOpen = false; rosterWasOpen = false; lastMoveHex = null; deck.filter = 'all'; deck.confirmEnd = false; listPositions.clear(); utilityOpen = null; gameEndDismissed = false;
   hoverHexId = null; stackPickerHex = null;
   scenario = created.scenario;
   bindings = created.bindings;
@@ -672,6 +692,63 @@ const positionStackPicker = (): void => {
   picker.style.top = `${top}px`;
 };
 
+/**
+ * Place the move popup beside its destination, on the side away from the path that arrives there,
+ * clear of the destination hex and of the map's own overlays; flip to another side when it does not fit.
+ */
+const positionMovePopup = (): void => {
+  const popup = root.querySelector<HTMLElement>('.move-popup');
+  const viewport = root.querySelector<HTMLElement>('#map-viewport');
+  if (!popup || !viewport) return;
+  const cellOf = (hexId: string | undefined) => hexId ? root.querySelector<SVGGElement>(`#hex-map .hex-cell[data-hex="${CSS.escape(hexId)}"]`) : null;
+  const target = cellOf(popup.dataset.anchorHex)?.getBoundingClientRect();
+  if (!target) return;
+  const frame = viewport.getBoundingClientRect();
+  const from = cellOf(popup.dataset.fromHex)?.getBoundingClientRect();
+  const margin = 12;
+  const gap = 10;
+  const width = popup.offsetWidth;
+  const height = popup.offsetHeight;
+  const hex = { left: target.left - frame.left, right: target.right - frame.left, top: target.top - frame.top, bottom: target.bottom - frame.top };
+  const centre = { x: (hex.left + hex.right) / 2, y: (hex.top + hex.bottom) / 2 };
+  const dx = from ? centre.x - ((from.left + from.right) / 2 - frame.left) : 1;
+  const dy = from ? centre.y - ((from.top + from.bottom) / 2 - frame.top) : 0;
+  const clamp = (value: number, low: number, high: number) => Math.max(low, Math.min(high, value));
+  type Side = 'right' | 'left' | 'bottom' | 'top';
+  const along: Side = Math.abs(dx) >= Math.abs(dy) ? (dx >= 0 ? 'right' : 'left') : (dy >= 0 ? 'bottom' : 'top');
+  const opposite: Record<Side, Side> = { right: 'left', left: 'right', bottom: 'top', top: 'bottom' };
+  const across: Side[] = along === 'right' || along === 'left' ? ['bottom', 'top'] : ['right', 'left'];
+  const place = (side: Side) => {
+    const left = side === 'right' ? hex.right + gap : side === 'left' ? hex.left - gap - width : centre.x - width / 2;
+    const top = side === 'bottom' ? hex.bottom + gap : side === 'top' ? hex.top - gap - height : centre.y - height / 2;
+    return { side, left: clamp(left, margin, frame.width - width - margin), top: clamp(top, margin, frame.height - height - margin) };
+  };
+  // Map overlays the popup must not sit on.
+  const obstacles = ['.map-controls', '.map-legend', '.hover-info'].flatMap((selector) => {
+    const box = viewport.querySelector<HTMLElement>(selector)?.getBoundingClientRect();
+    return box ? [{ left: box.left - frame.left, right: box.right - frame.left, top: box.top - frame.top, bottom: box.bottom - frame.top }] : [];
+  });
+  const overlaps = (a: { left: number; top: number; width: number; height: number }, b: { left: number; right: number; top: number; bottom: number }) =>
+    a.left < b.right && a.left + a.width > b.left && a.top < b.bottom && a.top + a.height > b.top;
+  // Past the destination first; then above or below it (they leave the arriving path clear); the path side last.
+  const candidates = [along, ...across, opposite[along]].map(place);
+  const fits = (spot: ReturnType<typeof place>) => !overlaps({ ...spot, width, height }, hex) && !obstacles.some((box) => overlaps({ ...spot, width, height }, box));
+  // Pinned to an edge (hex out of view, or beside an overlay), slide clear of the overlay it landed on.
+  const nudged = candidates.flatMap((candidate) => obstacles.flatMap((box) => [
+    { ...candidate, left: clamp(box.left - gap - width, margin, frame.width - width - margin) },
+    { ...candidate, top: clamp(box.bottom + gap, margin, frame.height - height - margin) },
+  ]));
+  const spot = candidates.find(fits) ?? nudged.find(fits) ?? candidates.find((candidate) => !overlaps({ ...candidate, width, height }, hex)) ?? candidates[0]!;
+  popup.style.left = `${spot.left}px`;
+  popup.style.top = `${spot.top}px`;
+  popup.dataset.side = spot.side;
+  // The pointer aims at the hex centre; hidden when the hex has been panned out of view.
+  const visible = centre.x > 0 && centre.x < frame.width && centre.y > 0 && centre.y < frame.height;
+  const pointer = spot.side === 'left' || spot.side === 'right' ? centre.y - spot.top : centre.x - spot.left;
+  popup.style.setProperty('--pointer', `${clamp(pointer, 14, (spot.side === 'left' || spot.side === 'right' ? height : width) - 14)}px`);
+  popup.classList.toggle('no-pointer', !visible);
+};
+
 function bindEvents(snapshot: UiSnapshot): void {
   const $ = <T extends Element>(selector: string) => root.querySelector<T>(selector);
   $('#open-new-game')?.addEventListener('click', () => openNewGame(snapshot));
@@ -727,7 +804,11 @@ function bindEvents(snapshot: UiSnapshot): void {
     const body = $('#roster-body'); if (body) body.innerHTML = unitRosterBodyHtml(controller.getSnapshot(), deck);
   });
   if (rosterSearch && document.activeElement === rosterSearch) rosterSearch.setSelectionRange(rosterSearch.value.length, rosterSearch.value.length);
-  root.querySelectorAll<HTMLElement>('[data-deck-list]').forEach(button => button.addEventListener('click', () => { deck.list = button.dataset.deckList as DeckList; render(controller.getSnapshot()); }));
+  root.querySelectorAll<HTMLElement>('[data-deck-tab]').forEach(button => button.addEventListener('click', () => {
+    const current = controller.getSnapshot();
+    selectDeckTab(current, deck, button.dataset.deckTab!);
+    render(current);
+  }));
   root.querySelectorAll<HTMLButtonElement>('[data-mode]').forEach(button => button.addEventListener('click', () => void runUi(() => controller.changeMode(button.dataset.mode as never))));
   root.querySelectorAll<HTMLButtonElement>('[data-feed]').forEach(button => button.addEventListener('click', () => void runUi(() => controller.feedSupply(button.dataset.feed!, button.dataset.dump!))));
   root.querySelectorAll<HTMLButtonElement>('[data-unit-action]').forEach(button => button.addEventListener('click', () => void runUi(() => controller.runAction(button.dataset.unitAction!))));
@@ -900,6 +981,7 @@ function bindEvents(snapshot: UiSnapshot): void {
 window.addEventListener('keydown', (event) => {
   if (event.key !== 'Escape') return;
   if (rosterOpen) { rosterOpen = false; render(controller.getSnapshot()); return; }
+  if (controller.getSnapshot().movePreview) { controller.selectPiece(controller.getSnapshot().selection.pieceId); return; }
   if (stackPickerHex) { stackPickerHex = null; render(controller.getSnapshot()); return; }
   if (utilityOpen) { utilityOpen = null; render(controller.getSnapshot()); return; }
   if (newGameOpen && !newGameBusy) { newGameOpen = false; history.replaceState(null, '', location.pathname); render(controller.getSnapshot()); return; }
