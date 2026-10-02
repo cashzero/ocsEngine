@@ -26,8 +26,8 @@ export const ALLIED_AIRBORNE_GPID = 900_002;
 export const ALLIED_AIRBORNE_DIVISION_GPIDS: Readonly<Record<string, number>> = {
   '82.Abn': ALLIED_AIRBORNE_GPID, '101.Abn': 900_003, '17.Abn': 900_004, '13.Abn': 900_005,
 };
-const airborneDivision = (moveStrength: number, regiments: number): SourceCounter =>
-  basic('INFANTRY', 'XX', 'OTHER', [2 * moveStrength, 4, 3, 0], [moveStrength, 4, 5, 0], ['leg', 'leg'], regiments, regiments);
+const airborneDivision = (moveStrength: number, regiments: number, combatStrength = 2 * moveStrength): SourceCounter =>
+  basic('INFANTRY', 'XX', 'OTHER', [combatStrength, 4, 3, 0], [moveStrength, 4, 5, 0], ['leg', 'leg'], regiments, regiments);
 export const COUNTER_CORPUS: Readonly<Record<number, SourceCounter>> = {
   319: hq([0,0,0,14], [0,0,16,9]),
   160: basic('ARMOR', 'III', 'MECH', [14,4,6,0], [7,4,14,0], ['tracked','tracked'], 1, 1),
@@ -44,11 +44,12 @@ export const COUNTER_CORPUS: Readonly<Record<number, SourceCounter>> = {
   [AXIS_AIRBORNE_GPID]: basic('INFANTRY', 'XX', 'OTHER', [18,3,3,0], [9,3,4,0], ['leg','leg'], 4, 4),
   // US airborne divisions (XX, one step per regiment, leg on both faces): the sum of the regiments printed on counter
   // sheet 2B (3-4-5 / 2-4-5 move faces). TODO(allied-airborne-combat-face): the sheets provided show only the move
-  // faces; the combat face is taken as twice the move face (as on every other corpus counter) with Combat MA 3.
-  // User-visible impact: US airborne attack strength may differ from the printed regiments. Closes when sheets 1F/2F
-  // (the combat faces of the regiments) are read and the doubled values checked.
+  // faces; the combat face is taken as twice the move face with Combat MA 3, except 101.Abn whose printed 18-4-3 is
+  // known (its combat face is NOT double: 10 -> 18, so the doubling is wrong at least there).
+  // User-visible impact: 82.Abn, 17.Abn and 13.Abn attack strength may differ from the printed counters. Closes when
+  // the printed combat faces of those three divisions are read and replaced.
   [ALLIED_AIRBORNE_GPID]: airborneDivision(8, 3), // 82.Abn: 505 3, 504 3, 325 2
-  900_003: airborneDivision(10, 4), // 101.Abn: 506 3, 502 3, 401 2, 327 2
+  900_003: airborneDivision(10, 4, 18), // 101.Abn: 506 3, 502 3, 401 2, 327 2; printed 18-4-3 / 10-4-5 (user-verified)
   900_004: airborneDivision(7, 3), // 17.Abn: 513 3, two regiments of 2
   900_005: airborneDivision(7, 3), // 13.Abn: 515 3, 517 2, 326 2
   806: basic('INFANTRY', 'III', 'OTHER', [7,4,3,0], [4,4,14,0], ['leg','truck'], 1, 1),

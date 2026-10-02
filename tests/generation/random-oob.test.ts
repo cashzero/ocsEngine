@@ -120,7 +120,8 @@ describe('M7 deterministic random OOB pipeline', () => {
       const face = (id: string) => faces.find((candidate) => String(candidate.id) === id)!;
       expect(face('move').steps).toHaveLength(steps);
       expect(face('move').steps[0]!.combatStrength).toBe(move);
-      expect(face('combat').steps[0]!.combatStrength).toBe(move * 2);
+      // 101.Abn's printed combat face is 18-4-3 (not double); the others are an unverified doubling (TODO in the corpus).
+      expect(face('combat').steps[0]!.combatStrength).toBe(name === '101.Abn' ? 18 : move * 2);
     }
   });
 
