@@ -45,10 +45,15 @@ import { formationNames, unitName } from './names.js';
 import { buildAirForces } from './air.js';
 
 const SIDES: readonly OobSide[] = ['ALLIED', 'AXIS'];
-// Plan slots shared by both sides; the Allied mobile slot is an airborne division (no organic armor).
+// Plan slots shared by both sides. The mobile slot is an airborne division for the Allies (who field no
+// armored-infantry packages) and alternates Panzergrenadier / Fallschirmjäger for the Axis.
 const FORMATION_ARCHETYPES: readonly OobFormationArchetype[] = ['ARMORED', 'INFANTRY', 'MOBILE_INFANTRY'];
-const sideArchetype = (side: OobSide, planned: OobFormationArchetype): OobFormationArchetype =>
-  side === 'ALLIED' && planned === 'MOBILE_INFANTRY' ? 'AIRBORNE' : planned;
+const sideArchetypes = (side: OobSide, plan: readonly OobFormationArchetype[], seed: number): readonly OobFormationArchetype[] =>
+  plan.map((planned, index) => {
+    if (planned !== 'MOBILE_INFANTRY') return planned;
+    const occurrence = plan.slice(0, index).filter((value) => value === planned).length;
+    return side === 'ALLIED' || (occurrence + seed) % 2 === 1 ? 'AIRBORNE' : planned;
+  });
 
 const must = <T, E>(result: Result<T, E>): T => {
   if (!result.ok) throw new Error('Random OOB generator produced an invalid Foundation scalar.');
@@ -226,11 +231,11 @@ const buildSide = (
   options: NormalizedRandomOobOptions,
   definitions: PieceDefinition[],
 ): GeneratedOobSide => {
-  const formations: GeneratedOobFormation[] = plan.map((planned, formationIndex) => {
-    const archetype = sideArchetype(side, planned);
+  const archetypes = sideArchetypes(side, plan, options.seed);
+  const formations: GeneratedOobFormation[] = archetypes.map((archetype, formationIndex) => {
     const sequence = formationIndex + 1;
     const formationId = definitionId(`formation:generated:${options.seed}:${side.toLowerCase()}:${sequence}`);
-    const occurrence = plan.slice(0, formationIndex).filter((value) => value === planned).length;
+    const occurrence = archetypes.slice(0, formationIndex).filter((value) => value === archetype).length;
     const namingProfile = formationNames(options.seed, side, archetype)[occurrence]!;
     const formationName = namingProfile.name;
     // A plain infantry division is a single XX counter; the other divisions are an HQ plus

@@ -1100,5 +1100,89 @@ export const FORMATION_NAME_PROFILES: readonly FormationNameProfile[] = [
     "recon": [],
     "engineers": [],
     "source": "bcsEngine/scenarioTemplates/supplementalOobFormations.ts"
+  },
+  {
+    "name": "3. Fallschirmjäger-Division",
+    "side": "AXIS",
+    "archetype": "AIRBORNE",
+    "combat": [
+      "I/5 FJ Bn",
+      "II/5 FJ Bn",
+      "III/5 FJ Bn",
+      "I/8 FJ Bn",
+      "II/8 FJ Bn",
+      "III/8 FJ Bn",
+      "I/9 FJ Bn",
+      "II/9 FJ Bn",
+      "III/9 FJ Bn"
+    ],
+    "recon": [],
+    "engineers": [
+      "3 FJ Pio Bn"
+    ],
+    "source": "hand-authored (historical Fallschirmjäger divisions; not in the bcsEngine import)"
+  },
+  {
+    "name": "5. Fallschirmjäger-Division",
+    "side": "AXIS",
+    "archetype": "AIRBORNE",
+    "combat": [
+      "I/13 FJ Bn",
+      "II/13 FJ Bn",
+      "III/13 FJ Bn",
+      "I/14 FJ Bn",
+      "II/14 FJ Bn",
+      "III/14 FJ Bn",
+      "I/15 FJ Bn",
+      "II/15 FJ Bn",
+      "III/15 FJ Bn"
+    ],
+    "recon": [],
+    "engineers": [
+      "5 FJ Pio Bn"
+    ],
+    "source": "hand-authored (historical Fallschirmjäger divisions; not in the bcsEngine import)"
+  },
+  {
+    "name": "2. Fallschirmjäger-Division",
+    "side": "AXIS",
+    "archetype": "AIRBORNE",
+    "combat": [
+      "I/2 FJ Bn",
+      "II/2 FJ Bn",
+      "III/2 FJ Bn",
+      "I/6 FJ Bn",
+      "II/6 FJ Bn",
+      "III/6 FJ Bn",
+      "I/7 FJ Bn",
+      "II/7 FJ Bn",
+      "III/7 FJ Bn"
+    ],
+    "recon": [],
+    "engineers": [
+      "2 FJ Pio Bn"
+    ],
+    "source": "hand-authored (historical Fallschirmjäger divisions; not in the bcsEngine import)"
+  },
+  {
+    "name": "6. Fallschirmjäger-Division",
+    "side": "AXIS",
+    "archetype": "AIRBORNE",
+    "combat": [
+      "I/16 FJ Bn",
+      "II/16 FJ Bn",
+      "III/16 FJ Bn",
+      "I/17 FJ Bn",
+      "II/17 FJ Bn",
+      "III/17 FJ Bn",
+      "I/18 FJ Bn",
+      "II/18 FJ Bn",
+      "III/18 FJ Bn"
+    ],
+    "recon": [],
+    "engineers": [
+      "6 FJ Pio Bn"
+    ],
+    "source": "hand-authored (historical Fallschirmjäger divisions; not in the bcsEngine import)"
   }
 ];
