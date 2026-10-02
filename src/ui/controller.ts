@@ -933,6 +933,8 @@ class DefaultUiController implements UiController {
     await this.#dispatch(preview.action, `Moved to ${printedHexLabel(destination)}.`);
     this.#selection = { ...this.#selection, hexId: destination };
     this.#destination = null;
+    // A unit with nowhere left to go is finished: release it so the player is not left holding a dead selection.
+    if (this.getSnapshot().reachable.size === 0) this.#selection = initialSelection();
     this.#emit();
   };
 

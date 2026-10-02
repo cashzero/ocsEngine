@@ -18,7 +18,7 @@ import { counterView, counterSvgBody, counterSvg, counterLod } from './counter.j
 import {
   coastlineHtml, mapArtDefsHtml, objectiveArtHtml, riversHtml, roadsHtml, settlementArtHtml, strategicBandPoints, terrainGlyphsHtml,
 } from './map-art.js';
-import { commandDeckHtml, unmovedUnits, withHexLabels, type DeckState, type DeckList, type UnitFilter } from './command-deck.js';
+import { commandDeckHtml, unitRosterBodyHtml, unitRosterHtml, unmovedUnits, withHexLabels, type DeckState, type DeckList, type UnitFilter } from './command-deck.js';
 import type { UiSnapshot } from './model.js';
 import { phaseLabel, pieceLabel, printedHexLabel } from './presenter.js';
 
@@ -81,7 +81,8 @@ const newGameInvalidFields = (): readonly string[] => [
   ...NEW_GAME_FIXES.filter(({ codes }) => newGameErrors.some(({ code }) => codes.includes(code))).flatMap(({ fields }) => fields),
   ...newGameErrors.filter(({ code }) => code === 'INVALID_SEED').map(({ path }) => `new-game-${String(path[1])}-seed`),
 ];
-const deck: DeckState = { list: 'units', search: '', working: false };
+const deck: DeckState = { list: 'stack', search: '', working: false };
+let rosterOpen = false;
 let utilityOpen: 'session' | null = null;
 let gameEndDismissed = false;
 const listPositions = new Map<string, number>();
@@ -173,11 +174,10 @@ const renderMap = (snapshot: UiSnapshot): string => {
   const enemyZone = new Set(snapshot.air.showZones ? snapshot.air.patrolZones.enemy : []);
   const moving = snapshot.reachable.size > 0;
   const combatHex = snapshot.view.projection?.combat?.targetHexId ?? null;
-  const half = (snapshot.remainingTicks ?? 0) / 2;
   const reachBand = (hexId: string): string => {
     const entry = snapshot.moveRange.get(hexId);
     if (!entry) return '';
-    return `${entry.remainingAfterTicks >= half ? 'reach-near' : 'reach-far'}${entry.endsMovement ? ' reach-stop' : ''}`;
+    return entry.endsMovement ? 'reach-stop' : '';
   };
   const terrain = theater.cells.map((cell) => {
     const classes = [
@@ -388,7 +388,7 @@ const render = (snapshot: UiSnapshot): void => {
   const focusPiece = focused?.dataset.piece;
   root.querySelectorAll<HTMLElement>('[data-scroll-key]').forEach(element => listPositions.set(element.dataset.scrollKey!, element.scrollTop));
   if (snapshot.view.privacyLocked) {
-    utilityOpen = null; deck.search = ''; deck.list = 'units'; listPositions.clear();
+    utilityOpen = null; deck.search = ''; deck.list = 'stack'; rosterOpen = false; listPositions.clear();
     root.innerHTML = privacyHtml(snapshot);
     bindEvents(snapshot);
     root.querySelector<HTMLButtonElement>('#complete-handoff')?.focus();
@@ -423,9 +423,9 @@ const render = (snapshot: UiSnapshot): void => {
             <svg id="hex-map" viewBox="0 0 ${layout.width} ${layout.height}" role="application" aria-label="Hex map. Click a unit to select it, a highlighted hex to move, a ringed enemy hex to attack.">
               <g id="map-camera" transform="translate(${camera.x} ${camera.y}) scale(${camera.zoom})">${renderMap(snapshot)}</g>
             </svg>
-            ${stackPickerHtml(snapshot)}
+            ${stackPickerHtml(snapshot)}${rosterOpen ? unitRosterHtml(snapshot, deck) : ''}
             <div class="map-controls" aria-label="Map zoom controls"><button id="zoom-out" aria-label="Zoom out">−</button><output id="zoom-level">${zoomPercent()}%</output><button id="zoom-in" aria-label="Zoom in">+</button><button id="zoom-reset">Reset</button><button id="toggle-air-zones" aria-pressed="${snapshot.air.showZones}" title="Show the 10-hex Patrol Zones of Air Bases with Active Fighters (14.4c)">Patrol Zones</button></div>
-            <div class="map-legend"><span class="terrain-key clear">Clear</span><span class="terrain-key woods">Woods</span><span class="terrain-key rough">Rough</span><span class="terrain-key mountain">Mountain</span><span class="terrain-key marsh">Marsh</span><span class="terrain-key water">Water</span><span class="line-key road">Road</span><span class="line-key river">River</span><span class="legend-mark objective">Objective</span><span class="legend-ring move">Move</span><span class="legend-ring attack">Attack</span><span class="legend-ring barrage">Barrage</span>${snapshot.air.showZones ? '<span class="legend-ring air-zone">Your Patrol Zone</span><span class="legend-ring air-zone enemy">Enemy Patrol Zone</span>' : ''}</div>
+            <div class="map-legend"><span class="terrain-key clear">Clear</span><span class="terrain-key woods">Woods</span><span class="terrain-key rough">Rough</span><span class="terrain-key mountain">Mountain</span><span class="terrain-key marsh">Marsh</span><span class="terrain-key water">Water</span><span class="line-key road">Road</span><span class="line-key river">River</span><span class="legend-mark objective">Objective</span><span class="legend-ring move">Move</span><span class="legend-ring move-stop" title="You must stop here (for example on entering an enemy ZOC)">Move ends here</span><span class="legend-ring attack">Attack</span><span class="legend-ring barrage">Barrage</span>${snapshot.air.showZones ? '<span class="legend-ring air-zone">Your Patrol Zone</span><span class="legend-ring air-zone enemy">Enemy Patrol Zone</span>' : ''}</div>
             <div class="hover-info" aria-live="off">${hover ? escapeHtml(hoverText(snapshot, hover.id)) : 'Hover a hex for terrain.'}</div>
           </div>
         </section>
@@ -583,7 +583,7 @@ const mountCreatedGame = async (created: CreatedNewGame): Promise<void> => {
   controller.dispose();
   await currentGame.session.close();
   currentGame = created;
-  deck.search = ''; deck.list = 'units'; deck.filter = 'all'; deck.confirmEnd = false; listPositions.clear(); utilityOpen = null; gameEndDismissed = false;
+  deck.search = ''; deck.list = 'stack'; rosterOpen = false; deck.filter = 'all'; deck.confirmEnd = false; listPositions.clear(); utilityOpen = null; gameEndDismissed = false;
   hoverHexId = null; stackPickerHex = null;
   scenario = created.scenario;
   bindings = created.bindings;
@@ -679,6 +679,7 @@ function bindEvents(snapshot: UiSnapshot): void {
     stackPickerHex = null;
     void runUi(controller.endStep);
   });
+  $('#deselect')?.addEventListener('click', controller.clearSelection);
   $('#undo-step')?.addEventListener('click', () => void runUi(controller.undoStep));
   $('#auto-pay')?.addEventListener('click', () => void runUi(controller.autoPay));
   $('#dismiss-result')?.addEventListener('click', controller.dismissResult);
@@ -692,7 +693,19 @@ function bindEvents(snapshot: UiSnapshot): void {
   $('#declare-draft')?.addEventListener('click', () => void runUi(controller.declareDraft));
   $('#cancel-draft')?.addEventListener('click', controller.cancelDraft);
   $('#release-reserve')?.addEventListener('click', () => void runUi(controller.releaseReserve));
-  $('#deck-search')?.addEventListener('input', event => { deck.search = (event.target as HTMLInputElement).value; render(controller.getSnapshot()); });
+  $('#open-roster')?.addEventListener('click', () => { rosterOpen = !rosterOpen; stackPickerHex = null; render(controller.getSnapshot()); });
+  $('#close-roster')?.addEventListener('click', () => { rosterOpen = false; render(controller.getSnapshot()); });
+  $('.roster-popup')?.addEventListener('click', (event) => {
+    const pick = (event.target as Element).closest<HTMLElement>('[data-roster-pick]');
+    if (pick) { rosterOpen = false; controller.selectPiece(pick.dataset.rosterPick ?? null); }
+  });
+  const rosterSearch = $<HTMLInputElement>('#roster-search');
+  // Typing refreshes only the list body; a full render would repaint the map and every counter per keystroke.
+  rosterSearch?.addEventListener('input', () => {
+    deck.search = rosterSearch.value;
+    const body = $('#roster-body'); if (body) body.innerHTML = unitRosterBodyHtml(controller.getSnapshot(), deck);
+  });
+  if (rosterSearch && document.activeElement === rosterSearch) rosterSearch.setSelectionRange(rosterSearch.value.length, rosterSearch.value.length);
   root.querySelectorAll<HTMLElement>('[data-deck-list]').forEach(button => button.addEventListener('click', () => { deck.list = button.dataset.deckList as DeckList; render(controller.getSnapshot()); }));
   root.querySelectorAll<HTMLButtonElement>('[data-mode]').forEach(button => button.addEventListener('click', () => void runUi(() => controller.changeMode(button.dataset.mode as never))));
   root.querySelectorAll<HTMLButtonElement>('[data-feed]').forEach(button => button.addEventListener('click', () => void runUi(() => controller.feedSupply(button.dataset.feed!, button.dataset.dump!))));
@@ -865,6 +878,7 @@ function bindEvents(snapshot: UiSnapshot): void {
 
 window.addEventListener('keydown', (event) => {
   if (event.key !== 'Escape') return;
+  if (rosterOpen) { rosterOpen = false; render(controller.getSnapshot()); return; }
   if (stackPickerHex) { stackPickerHex = null; render(controller.getSnapshot()); return; }
   if (utilityOpen) { utilityOpen = null; render(controller.getSnapshot()); return; }
   if (newGameOpen && !newGameBusy) { newGameOpen = false; history.replaceState(null, '', location.pathname); render(controller.getSnapshot()); return; }
