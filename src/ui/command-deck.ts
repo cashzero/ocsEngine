@@ -4,10 +4,12 @@ import { counterSvg, counterView } from './counter.js';
 import { combatHeadline, combatOutlook, type CombatReport, type FeedEntry, type NarrativeContext } from './narrative.js';
 import { phaseLabel, pieceDefinition, pieceLabel, printedHexLabel } from './presenter.js';
 
-export type DeckList = 'stack' | 'history';
 export type UnitFilter = 'all' | 'unmoved' | 'moved';
 export interface DeckState {
-  list: DeckList;
+  /** The tab the player picked, valid only for the phase it was picked in. */
+  tab?: { readonly key: string; readonly id: string } | undefined;
+  /** Unit selected when the deck was last drawn, to notice a new pick. */
+  lastPiece?: string | null;
   search: string;
   working: boolean;
   error?: string;
@@ -106,7 +108,7 @@ const selectedCard = (snapshot: UiSnapshot): string => {
   const piece = snapshot.selectedPiece;
   if (!piece) {
     const hex = snapshot.selection.hexId;
-    return `<div><h2>${hex ? `Hex ${esc(printedHexLabel(hex))}` : 'No unit selected'}</h2><p>${hex ? 'No unit of yours here.' : 'Click one of your units on the map or in the list below.'}</p></div>`;
+    return `<div><h2>${hex ? `Hex ${esc(printedHexLabel(hex))}` : 'No unit selected'}</h2><p>${hex ? 'No unit of yours here.' : 'Click one of your units on the map, or open All units.'}</p></div>`;
   }
   const own = piece.ownerId === snapshot.view.playerId;
   if (isAir(snapshot, piece) || isAirBase(snapshot, piece)) {
@@ -288,45 +290,87 @@ const decisionPanel = (snapshot: UiSnapshot): string => {
   </section>`;
 };
 
-const contextPanel = (snapshot: UiSnapshot, state: DeckState): string => {
-  const result = snapshot.resultCard ? `<section class="deck-context result-card" aria-label="Combat result"><p class="eyebrow">COMBAT RESULT</p>${combatCard(snapshot, snapshot.resultCard, 'dismiss-result')}</section>` : '';
+const resultPanel = (snapshot: UiSnapshot): string => snapshot.resultCard
+  ? `<section class="deck-context result-card" aria-label="Combat result"><p class="eyebrow">COMBAT RESULT</p>${combatCard(snapshot, snapshot.resultCard, 'dismiss-result')}</section>` : '';
+
+/**
+ * Work that interrupts the tabs: a hand-over, a pending decision or an open attack/air plan. It takes
+ * the whole body of the deck until it is finished, then the player returns to the tab they were on.
+ * It is drawn first: what the player must answer is never pushed below the fold by the report of what happened.
+ */
+const interruptPanel = (snapshot: UiSnapshot): string => {
   if (snapshot.view.metadata.lifecycle === 'ACTIVE' && snapshot.handoff && !snapshot.decision) {
-    return `${result}<section class="deck-context handoff-panel"><p class="eyebrow">HAND OVER</p><h2>${esc(snapshot.handoff.toLabel)} to act</h2><p>${esc(snapshot.handoff.reason)}</p>
+    return `<section class="deck-context handoff-panel"><p class="eyebrow">HAND OVER</p><h2>${esc(snapshot.handoff.toLabel)} to act</h2><p>${esc(snapshot.handoff.reason)}</p>
       <button id="begin-required-handoff" class="primary wide">Hand the screen to ${esc(snapshot.handoff.toLabel)}</button></section>`;
   }
-  if (snapshot.decision) return `${result}${decisionPanel(snapshot)}`;
-  if (snapshot.draft) return `${result}${draftPanel(snapshot)}`;
-  if (snapshot.air.draft) return `${result}${airDraftPanel(snapshot)}`;
-  const parts: string[] = [refitPanel(snapshot), airMissionButtons(snapshot)].filter(Boolean);
-  if (snapshot.movePreview) {
-    const preview = snapshot.movePreview;
-    const range = snapshot.moveRange.get(preview.destinationHexId);
-    const reTicks = (piece: ProjectedPiece): number => Number(pieceDefinition(snapshot.scenario, piece)?.faces
-      .find(({ id }) => id === piece.currentFaceId)?.steps.find(({ remainingSteps }) => remainingSteps === piece.remainingSteps)?.regimentalEquivalentTicks ?? 0);
-    const already = (snapshot.view.projection?.stacks ?? []).flatMap(({ pieces }) => pieces)
-      .filter((piece) => piece.ownerId === snapshot.view.playerId && piece.location.kind === 'ON_MAP' && piece.location.hexId === preview.destinationHexId && piece.id !== snapshot.selectedPiece?.id);
-    const total = already.reduce((sum, piece) => sum + reTicks(piece), 0) + (snapshot.selectedPiece ? reTicks(snapshot.selectedPiece) : 0);
-    if (total > 40) parts.push(`<p class="blocker">Ending here makes ${total / 4} RE in one hex: over 10 RE at the end of the segment, you must eliminate units (4.8a).</p>`);
-    parts.push(`<div class="move-preview"><strong>Move to ${esc(printedHexLabel(preview.destinationHexId))}</strong>
-      <p>Cost ${mp(fact(preview.explanation, 'movement.totalTicks'))} MP · ${mp(fact(preview.explanation, 'movement.remainingTicks'))} MP left after the move.</p>
-      ${range?.endsMovement ? '<p class="blocker">The move ends there (enemy ZOC, all-MP terrain, or minimum move).</p>' : ''}
-      ${explanationBlock(preview.explanation)}
-      <div class="button-grid"><button id="cancel-move">Cancel</button><button class="primary" id="confirm-move" ${preview.explanation.allowed && !snapshot.busy ? '' : 'disabled'}>Confirm move</button></div>
-      <small>Tip: click the same hex again to confirm.</small></div>`);
+  if (snapshot.decision) return decisionPanel(snapshot);
+  if (snapshot.draft) return draftPanel(snapshot);
+  if (snapshot.air.draft) return airDraftPanel(snapshot);
+  return '';
+};
+
+const phaseKey = (snapshot: UiSnapshot): string => {
+  const sequence = snapshot.view.projection?.sequence;
+  return sequence ? `${sequence.phase}:${sequence.segment}` : 'none';
+};
+
+export interface DeckTab { readonly id: string; readonly label: string; /** Things waiting for the player in this tab. */ readonly badge: number }
+
+/** The tabs of the current phase, required work first, optional air missions after the unit's own tab. Every phase ends with Log. */
+export const deckTabs = (snapshot: UiSnapshot): DeckTab[] => {
+  const sequence = snapshot.view.projection?.sequence;
+  const phase = sequence?.phase;
+  const segment = sequence?.segment;
+  const tabs: DeckTab[] = [];
+  if (phase === 'REINFORCEMENT' || snapshot.arrivals.length > 0) tabs.push({ id: 'arrivals', label: 'Arrivals', badge: snapshot.arrivals.length });
+  if (phase === 'SUPPLY' || segment === 'BREAKOUT' || snapshot.stepActions.length > 0 || snapshot.supplyNeeds.length > 0) {
+    tabs.push({ id: 'supply', label: segment === 'BREAKOUT' ? 'Breakout' : 'Supply', badge: snapshot.supplyNeeds.length + snapshot.stepActions.length });
   }
-  if (snapshot.modeOptions.length > 0 || snapshot.releaseAction) {
-    parts.push(`<div class="mode-actions"><strong>Mode</strong><div class="chip-row">${snapshot.modeOptions.map(({ mode }) => `<button data-mode="${mode}">${esc(modeName(mode))}</button>`).join('')}${snapshot.releaseAction ? '<button id="release-reserve">Release reserve</button>' : ''}</div></div>`);
+  if (phase === 'AIRCRAFT_REFIT' || snapshot.air.refits.length > 0) tabs.push({ id: 'refit', label: 'Refit', badge: snapshot.air.refits.length });
+  if (phase === 'COMBAT' || phase === 'EXPLOITATION' || segment === 'COMBAT' || segment === 'BARRAGE') {
+    tabs.push({ id: 'targets', label: 'Targets', badge: new Set([...snapshot.attackTargets, ...snapshot.barrageTargets]).size });
   }
-  if (snapshot.unitActions.length > 0) {
-    const groups: [string, string][] = [['FUEL', 'Fuel'], ['SUPPLY', 'Supply'], ['BREAKOUT', 'Breakout'], ['TRANSPORT', 'Trucks'], ['DUMP', 'Dump'], ['AIR', 'Air']];
-    parts.push(groups.flatMap(([group, title]) => {
-      const entries = snapshot.unitActions.filter((entry) => entry.group === group);
-      return entries.length === 0 ? [] : [`<div class="unit-actions"><strong>${title}</strong><div class="action-list">${entries.map(({ key, label }) => `<button data-unit-action="${esc(key)}">${esc(withHexLabels(label))}</button>`).join('')}</div></div>`];
-    }).join(''));
+  if (phase !== 'AIRCRAFT_REFIT') tabs.push({ id: 'unit', label: 'Unit', badge: 0 });
+  // Air missions are optional in every step that offers them, so Air never takes the lead from the step's own work.
+  if (snapshot.air.missions.length > 0) tabs.push({ id: 'air', label: 'Air', badge: snapshot.air.missions.filter(({ available }) => available).length });
+  tabs.push({ id: 'log', label: 'Log', badge: 0 });
+  return tabs;
+};
+
+/** The tab on show: the player's pick within this phase, otherwise the phase's first (required) tab. */
+export const activeDeckTab = (snapshot: UiSnapshot, state: DeckState): string => {
+  const tabs = deckTabs(snapshot);
+  return state.tab?.key === phaseKey(snapshot) && tabs.some(({ id }) => id === state.tab?.id) ? state.tab.id : tabs[0]!.id;
+};
+
+/** The player picks a tab; it stays for the rest of this phase. */
+export const selectDeckTab = (snapshot: UiSnapshot, state: DeckState, id: string): void => { state.tab = { key: phaseKey(snapshot), id }; };
+
+/** Tabs that are worked through by clicking their own rows; picking a unit there must not leave them. */
+const WORK_LISTS: readonly string[] = ['arrivals', 'supply', 'refit'];
+
+/** Call before drawing: a new phase forgets the previous pick, and choosing a unit opens its Unit tab. */
+export const syncDeckTab = (snapshot: UiSnapshot, state: DeckState): void => {
+  const key = phaseKey(snapshot);
+  if (state.tab && state.tab.key !== key) state.tab = undefined;
+  const piece = snapshot.selection.pieceId;
+  if (piece && piece !== state.lastPiece && !WORK_LISTS.includes(activeDeckTab(snapshot, state)) && deckTabs(snapshot).some(({ id }) => id === 'unit')) {
+    state.tab = { key, id: 'unit' };
   }
-  if (snapshot.collapseHexes.length > 0) {
-    parts.push('<p class="hint">Or collapse the Extender (9.14d): click a highlighted hex in trace supply within its range.</p>');
-  }
+  state.lastPiece = piece;
+};
+
+const arrivalsTab = (snapshot: UiSnapshot): string => {
+  if (snapshot.arrivals.length === 0) return '<p class="hint">All reinforcements are placed.</p>';
+  const pieces = snapshot.view.projection?.stacks.flatMap(({ pieces: stackPieces }) => stackPieces) ?? [];
+  return `<div class="arrivals"><strong>Reinforcements arriving (${snapshot.arrivals.length})</strong><p class="hint">Select a unit, then click a blue entry hex on the map.</p>${snapshot.arrivals.map(({ pieceId }) => {
+    const piece = pieces.find(({ id }) => id === pieceId);
+    return piece ? unitRow(snapshot, piece, ' · arriving') : '';
+  }).join('')}</div>`;
+};
+
+const supplyTab = (snapshot: UiSnapshot): string => {
+  const parts: string[] = [];
   if (snapshot.stepActions.length > 0) {
     const recovery = snapshot.stepActions.filter(({ group }) => group === 'SUPPLY');
     const trace = snapshot.stepActions.filter(({ group }) => group === 'TRACE');
@@ -337,15 +381,7 @@ const contextPanel = (snapshot: UiSnapshot, state: DeckState): string => {
       + block('Formation trace route', 'All units of a division trace through one HQ or one source; the others must eat off the map or go Out of Supply (12.6f).', trace)
       + block('Breakout', 'Units out of trace supply may try to break out: 5-6 they leave and return as reinforcements, 1-4 they are lost (12.8e).', breakout));
   }
-  if (snapshot.arrivals.length > 0) {
-    const pieces = snapshot.view.projection?.stacks.flatMap(({ pieces: stackPieces }) => stackPieces) ?? [];
-    parts.push(`<div class="arrivals"><strong>Reinforcements arriving (${snapshot.arrivals.length})</strong>${snapshot.arrivals.map(({ pieceId }) => {
-      const piece = pieces.find(({ id }) => id === pieceId);
-      return piece ? unitRow(snapshot, piece, ' · arriving') : '';
-    }).join('')}</div>`);
-  }
-  const sequence = snapshot.view.projection?.sequence;
-  if (sequence?.phase === 'SUPPLY') {
+  if (snapshot.view.projection?.sequence.phase === 'SUPPLY') {
     const own = (snapshot.view.projection?.stacks ?? []).flatMap(({ pieces }) => pieces).filter((piece) => piece.ownerId === snapshot.view.playerId && piece.location.kind === 'ON_MAP');
     const outOfSupply = own.filter((piece) => piece.statuses.includes('status:out-of-supply')).length;
     parts.push(`<p class="summary-line">${snapshot.supplyNeeds.length} unit${snapshot.supplyNeeds.length === 1 ? '' : 's'} out of trace supply now · ${outOfSupply} marked Out of Supply.</p>`);
@@ -361,16 +397,85 @@ const contextPanel = (snapshot: UiSnapshot, state: DeckState): string => {
       }).join('')}</div></div>`;
     }).join('')}</div>`);
   }
-  if (sequence?.segment === 'COMBAT' && !snapshot.selectedPiece && snapshot.attackTargets.length > 0) {
-    parts.push(`<div class="target-list"><strong>Enemy hexes you can attack</strong><div class="chip-row">${snapshot.attackTargets.map((hexId) => `<button data-target-hex="${esc(hexId)}">Attack ${esc(printedHexLabel(hexId))}</button>`).join('')}</div></div>`);
+  return parts.join('') || '<p class="hint">Nothing needs supply attention in this step.</p>';
+};
+
+const refitTab = (snapshot: UiSnapshot): string => refitPanel(snapshot) || '<p class="hint">No Air Base has aircraft to refit.</p>';
+
+const targetsTab = (snapshot: UiSnapshot): string => {
+  const segment = snapshot.view.projection?.sequence.segment;
+  const chips = (title: string, verb: string, hexes: readonly string[]) => hexes.length === 0 ? ''
+    : `<div class="target-list"><strong>${title}</strong><div class="chip-row">${hexes.map((hexId) => `<button data-target-hex="${esc(hexId)}">${verb} ${esc(printedHexLabel(hexId))}</button>`).join('')}</div></div>`;
+  const attack = chips(segment === 'COMBAT' ? 'Enemy hexes you can attack' : 'Enemy hexes the selected unit can overrun', segment === 'COMBAT' ? 'Attack' : 'Overrun', snapshot.attackTargets);
+  const barrage = chips('Enemy hexes in artillery range', 'Barrage', snapshot.barrageTargets);
+  return attack + barrage || `<p class="hint">${snapshot.view.projection?.sequence.segment === 'BARRAGE' ? 'No barrage targets in range.' : 'No enemy hex can be attacked.'}</p>`;
+};
+
+const airTab = (snapshot: UiSnapshot): string => `${airMissionButtons(snapshot)}<p class="hint">Pick a mission, then a highlighted target hex and the aircraft that fly it.</p>`;
+
+const unitTab = (snapshot: UiSnapshot, state: DeckState): string => {
+  const parts: string[] = [];
+  if (snapshot.movePreview && !snapshot.movePreview.explanation.allowed) parts.push(`<div class="move-preview"><strong>Move to ${esc(printedHexLabel(snapshot.movePreview.destinationHexId))} is not allowed</strong>${explanationBlock(snapshot.movePreview.explanation)}</div>`);
+  if (snapshot.modeOptions.length > 0 || snapshot.releaseAction) {
+    parts.push(`<div class="mode-actions"><strong>Mode</strong><div class="chip-row">${snapshot.modeOptions.map(({ mode }) => `<button data-mode="${mode}">${esc(modeName(mode))}</button>`).join('')}${snapshot.releaseAction ? '<button id="release-reserve">Release reserve</button>' : ''}</div></div>`);
+  }
+  if (snapshot.unitActions.length > 0) {
+    const groups: [string, string][] = [['FUEL', 'Fuel'], ['SUPPLY', 'Supply'], ['BREAKOUT', 'Breakout'], ['TRANSPORT', 'Trucks'], ['DUMP', 'Dump'], ['AIR', 'Air']];
+    parts.push(groups.flatMap(([group, title]) => {
+      const entries = snapshot.unitActions.filter((entry) => entry.group === group);
+      return entries.length === 0 ? [] : [`<div class="unit-actions"><strong>${title}</strong><div class="action-list">${entries.map(({ key, label }) => `<button data-unit-action="${esc(key)}">${esc(withHexLabels(label))}</button>`).join('')}</div></div>`];
+    }).join(''));
+  }
+  if (snapshot.collapseHexes.length > 0) {
+    parts.push('<p class="hint">Or collapse the Extender (9.14d): click a highlighted hex in trace supply within its range.</p>');
   }
   if (parts.length === 0) {
+    const unmoved = unmovedUnits(snapshot);
     const guidance = snapshot.selectedPiece && snapshot.reachable.size > 0 ? 'Click a highlighted hex to preview the move; darker hexes are out of reach.'
       : snapshot.attackTargets.length > 0 ? 'Red-ringed enemy hexes can be attacked: click one to plan it.'
-        : state.hint || 'Select a unit, or finish this step when you are done.';
-    parts.push(`<p class="hint">${esc(guidance)}</p>`);
+        : state.hint || (snapshot.selectedPiece ? 'This unit has no actions in this step.' : 'Select a unit on the map, or open All units, to see its actions.');
+    parts.push(`<p class="hint">${esc(guidance)}</p>${unmoved > 0 && !snapshot.selectedPiece ? `<p class="summary-line">${unmoved} unit${unmoved === 1 ? ' has' : 's have'} not moved yet.</p>` : ''}`);
   }
-  return `${result}<section class="deck-context">${parts.join('')}</section>`;
+  return parts.join('');
+};
+
+const logTab = (snapshot: UiSnapshot): string => collapse(snapshot.feed).reverse().slice(0, 120).map(feedEntryHtml).join('') || '<p class="hint">No actions yet.</p>';
+
+const tabBody = (snapshot: UiSnapshot, state: DeckState, tab: string): string => {
+  switch (tab) {
+    case 'arrivals': return arrivalsTab(snapshot);
+    case 'supply': return supplyTab(snapshot);
+    case 'refit': return refitTab(snapshot);
+    case 'targets': return targetsTab(snapshot);
+    case 'air': return airTab(snapshot);
+    case 'unit': return unitTab(snapshot, state);
+    default: return logTab(snapshot);
+  }
+};
+
+/**
+ * Confirmation of the previewed move, drawn beside the destination hex on the map. Short on purpose:
+ * cost, what is left, why it is blocked; the full rule explanation stays in the Unit tab.
+ */
+export const movePopupHtml = (snapshot: UiSnapshot): string => {
+  const preview = snapshot.movePreview;
+  if (!preview) return '';
+  const range = snapshot.moveRange.get(preview.destinationHexId);
+  const reTicks = (piece: ProjectedPiece): number => Number(pieceDefinition(snapshot.scenario, piece)?.faces
+    .find(({ id }) => id === piece.currentFaceId)?.steps.find(({ remainingSteps }) => remainingSteps === piece.remainingSteps)?.regimentalEquivalentTicks ?? 0);
+  const already = (snapshot.view.projection?.stacks ?? []).flatMap(({ pieces }) => pieces)
+    .filter((piece) => piece.ownerId === snapshot.view.playerId && piece.location.kind === 'ON_MAP' && piece.location.hexId === preview.destinationHexId && piece.id !== snapshot.selectedPiece?.id);
+  const total = already.reduce((sum, piece) => sum + reTicks(piece), 0) + (snapshot.selectedPiece ? reTicks(snapshot.selectedPiece) : 0);
+  const reasons = preview.explanation.allowed ? [] : preview.explanation.reasons.filter(({ allowed }) => !allowed);
+  const from = preview.path.length > 1 ? preview.path[preview.path.length - 2]! : snapshot.selectedPiece?.location.kind === 'ON_MAP' ? snapshot.selectedPiece.location.hexId : '';
+  return `<div class="move-popup" role="group" aria-label="Confirm move to ${esc(printedHexLabel(preview.destinationHexId))}" data-anchor-hex="${esc(preview.destinationHexId)}" data-from-hex="${esc(from)}">
+    <strong>Move to ${esc(printedHexLabel(preview.destinationHexId))}</strong>
+    <p>Cost ${mp(fact(preview.explanation, 'movement.totalTicks'))} MP · ${mp(fact(preview.explanation, 'movement.remainingTicks'))} MP left after the move.</p>
+    ${range?.endsMovement ? '<p class="blocker">The move ends there (enemy ZOC, all-MP terrain, or minimum move).</p>' : ''}
+    ${total > 40 ? `<p class="blocker">Ending here makes ${total / 4} RE in one hex: over 10 RE at the end of the segment, you must eliminate units (4.8a).</p>` : ''}
+    ${reasons.length > 0 ? `<p class="blocker">${esc(withHexLabels(reasons[0]!.message))} <cite>${esc(reasons[0]!.rule)}</cite></p>${reasons.length > 1 ? `<p class="hint">${reasons.length - 1} more reason${reasons.length === 2 ? '' : 's'} in the Unit tab.</p>` : ''}` : ''}
+    <div class="button-grid"><button id="cancel-move">Cancel</button><button class="primary" id="confirm-move" ${preview.explanation.allowed && !snapshot.busy ? '' : 'disabled'}>Confirm</button></div>
+  </div>`;
 };
 
 const unitFormation = (snapshot: UiSnapshot, piece: ProjectedPiece): string => {
@@ -431,32 +536,45 @@ export const unmovedUnits = (snapshot: UiSnapshot): number => {
       && !snapshot.movedThisPhase.has(String(piece.id))).length;
 };
 
+/** Undo and End phase, drawn beside the phase chip in the top bar, with the reasons the phase cannot end yet. */
+export const phaseControlsHtml = (snapshot: UiSnapshot, state: DeckState): string => {
+  const busy = state.working || snapshot.busy;
+  const unmoved = unmovedUnits(snapshot);
+  const disabled = !(snapshot.endStep.enabled && !busy && !snapshot.decision && !snapshot.draft && snapshot.view.metadata.lifecycle === 'ACTIVE');
+  const confirming = state.confirmEnd && unmoved > 0;
+  // While the screen is being handed over, the hand-over panel says what is needed; a blocker would only be noise.
+  const handingOver = snapshot.view.metadata.lifecycle === 'ACTIVE' && snapshot.handoff !== null && !snapshot.decision;
+  const reasons = [
+    ...(handingOver ? [] : snapshot.endStep.blockers.map(withHexLabels)),
+  ];
+  if (reasons.length === 0 && snapshot.decision) reasons.push('Answer the open decision first.');
+  else if (reasons.length === 0 && snapshot.draft) reasons.push('Finish or cancel the open plan first.');
+  return `<div class="phase-actions">
+    ${snapshot.undoStep ? `<button id="undo-step" class="subtle" title="Undo back to the ${esc(snapshot.undoStep.label)}" aria-label="Undo back to the ${esc(snapshot.undoStep.label)}">↶ Undo</button>` : ''}
+    <button id="end-phase" class="${confirming ? 'warning' : snapshot.endStep.enabled ? 'primary' : ''}" ${disabled ? 'disabled' : ''}>${confirming
+      ? `Finish anyway: ${unmoved} unit${unmoved === 1 ? ' has' : 's have'} not moved`
+      : esc(snapshot.endStep.label)}<small>${esc(confirming ? 'Press again to confirm' : `Next: ${snapshot.endStep.next}`)}</small></button>
+    ${reasons.length > 0 ? `<p class="end-note" role="status">${esc(reasons.join(' '))}</p>` : ''}
+  </div>`;
+};
+
 export const commandDeckHtml = (snapshot: UiSnapshot, state: DeckState): string => {
   const { view } = snapshot;
   const sequence = view.projection?.sequence;
   const busy = state.working || snapshot.busy;
-  const pieces = (view.projection?.stacks ?? []).flatMap((stack) => stack.pieces);
-  const own = pieces.filter(({ ownerId }) => ownerId === view.playerId);
-  const hiddenHere = (view.projection?.stacks ?? []).find(({ location }) => location.kind === 'ON_MAP' && location.hexId === snapshot.selection.hexId)?.hiddenCount ?? 0;
-  const tabs: [DeckList, string][] = [['stack', 'Hex'], ['history', 'Log']];
-  const stackList = pieces.filter((piece) => piece.location.kind === 'ON_MAP' && piece.location.hexId === snapshot.selection.hexId);
-  const history = collapse(snapshot.feed).reverse().slice(0, 120).map(feedEntryHtml).join('');
-  const list = state.list === 'history' ? history || '<p>No actions yet.</p>'
-    : `${stackList.map((piece) => unitRow(snapshot, piece)).join('') || '<p>Select a hex to list its units.</p>'}${hiddenHere > 0 ? `<p>${hiddenHere} more enemy unit${hiddenHere === 1 ? '' : 's'} hidden under the top counter.</p>` : ''}`;
-  const unmoved = unmovedUnits(snapshot);
-  const endDisabled = !(snapshot.endStep.enabled && !busy && !snapshot.decision && !snapshot.draft && view.metadata.lifecycle === 'ACTIVE');
-  const confirming = state.confirmEnd && unmoved > 0;
+  const own = (view.projection?.stacks ?? []).flatMap((stack) => stack.pieces).filter(({ ownerId }) => ownerId === view.playerId);
   const objective = stepObjective(snapshot);
-  return `<header class="deck-phase"><h1>${esc(sequence ? phaseLabel(sequence.phase, sequence.segment) : view.metadata.lifecycle)}</h1>${objective ? `<p>${esc(objective)}</p>` : ''}</header>
+  const interrupt = interruptPanel(snapshot);
+  const away = awayPanel(snapshot);
+  const tabs = deckTabs(snapshot);
+  const active = activeDeckTab(snapshot, state);
+  const body = away || interrupt
+    ? `<div class="deck-body deck-task" data-scroll-key="task" aria-busy="${busy}">${interrupt}${resultPanel(snapshot)}${away}</div>`
+    : `<nav class="deck-tabs" aria-label="${esc(sequence ? phaseLabel(sequence.phase, sequence.segment) : 'Deck')}">${tabs.map(({ id, label, badge }) => `<button data-deck-tab="${id}" aria-pressed="${active === id}"${badge > 0 ? ` aria-label="${esc(label)}, ${badge} waiting"` : ''}>${esc(label)}${badge > 0 ? ` <span class="tab-badge" aria-hidden="true">${badge}</span>` : ''}</button>`).join('')}<button id="open-roster" class="roster-open" aria-haspopup="dialog" title="List every unit you command">All units (${own.filter(({ location }) => location.kind !== 'ELIMINATED').length})</button></nav>
+      <div class="deck-body" data-scroll-key="tab-${active}" tabindex="0" aria-busy="${busy}">${resultPanel(snapshot)}<section class="deck-context">${tabBody(snapshot, state, active)}</section></div>`;
+  return `${objective ? `<p class="deck-objective">${esc(objective)}</p>` : ''}
     ${view.metadata.lifecycle === 'PAUSED' ? '<p class="paused-banner" role="status">Paused — press Resume in the top bar to continue.</p>' : ''}
     <section class="deck-selection" aria-label="Selected unit">${selectedCard(snapshot)}${snapshot.selectedPiece || snapshot.selection.hexId ? '<button id="deselect" class="subtle" title="Finish with this unit and clear the selection (Esc)">Done</button>' : ''}</section>
-    <div class="deck-work" data-scroll-key="work">${awayPanel(snapshot)}${contextPanel(snapshot, state)}</div>
-    <nav class="deck-tabs" aria-label="Lists">${tabs.map(([key, name]) => `<button data-deck-list="${key}" aria-pressed="${state.list === key}">${name}</button>`).join('')}<button id="open-roster" class="roster-open" aria-haspopup="dialog" title="List every unit you command">All units (${own.filter(({ location }) => location.kind !== 'ELIMINATED').length})</button></nav>
-    <div class="deck-list" data-scroll-key="${state.list}" tabindex="0" aria-busy="${busy}">${list}</div>
-    <footer class="deck-footer"><div class="deck-notice" role="status">${busy ? 'Working…' : esc(withHexLabels(state.error || snapshot.notice))}</div>
-      ${snapshot.endStep.blockers.length > 0 ? `<p class="blocker">${esc(withHexLabels(snapshot.endStep.blockers.join(' ')))}</p>` : ''}
-      ${snapshot.undoStep ? `<button id="undo-step" class="wide subtle">Undo back to the ${esc(snapshot.undoStep.label)}</button>` : ''}
-      <button id="end-phase" class="wide ${confirming ? 'warning' : snapshot.endStep.enabled ? 'primary' : ''}" ${endDisabled ? 'disabled' : ''}>${confirming
-        ? `Finish anyway: ${unmoved} unit${unmoved === 1 ? ' has' : 's have'} not moved`
-        : esc(snapshot.endStep.label)}<small>${esc(confirming ? 'Press again to confirm' : `Next: ${snapshot.endStep.next}`)}</small></button></footer>`;
+    ${body}
+    <footer class="deck-footer"><div class="deck-notice" role="status">${busy ? 'Working…' : esc(withHexLabels(state.error || snapshot.notice))}</div></footer>`;
 };
