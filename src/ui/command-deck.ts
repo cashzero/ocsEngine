@@ -4,7 +4,7 @@ import { counterSvg, counterView } from './counter.js';
 import { combatHeadline, combatOutlook, type CombatReport, type FeedEntry, type NarrativeContext } from './narrative.js';
 import { phaseLabel, pieceDefinition, pieceLabel, printedHexLabel } from './presenter.js';
 
-export type DeckList = 'units' | 'stack' | 'history';
+export type DeckList = 'stack' | 'history';
 export type UnitFilter = 'all' | 'unmoved' | 'moved';
 export interface DeckState {
   list: DeckList;
@@ -378,20 +378,48 @@ const unitFormation = (snapshot: UiSnapshot, piece: ProjectedPiece): string => {
   return formation ? snapshot.formationNames.get(String(formation)) ?? '' : '';
 };
 
-const unitList = (snapshot: UiSnapshot, state: DeckState, own: readonly ProjectedPiece[]): string => {
-  const search = state.search.toLowerCase();
-  const sorted = [...own].filter((piece) => pieceLabel(snapshot.scenario, piece).toLowerCase().includes(search))
-    // Stable order: by formation, then name, so rows do not jump when units move.
-    .sort((left, right) => unitFormation(snapshot, left).localeCompare(unitFormation(snapshot, right))
-      || pieceLabel(snapshot.scenario, left).localeCompare(pieceLabel(snapshot.scenario, right)) || String(left.id).localeCompare(String(right.id)));
+const rosterOwn = (snapshot: UiSnapshot): ProjectedPiece[] =>
+  (snapshot.view.projection?.stacks ?? []).flatMap((stack) => stack.pieces).filter(({ ownerId }) => ownerId === snapshot.view.playerId);
+
+/** The scrolling part of the roster. Rebuilt on its own while typing so a force of hundreds does not repaint the whole page. */
+export const unitRosterBodyHtml = (snapshot: UiSnapshot, state: DeckState): string => {
+  const search = state.search.trim().toLowerCase();
   const filter = state.filter ?? 'all';
-  const onMap = sorted.filter(({ location }) => location.kind === 'ON_MAP' || location.kind === 'CONTAINER')
+  const byName = (left: ProjectedPiece, right: ProjectedPiece): number =>
+    pieceLabel(snapshot.scenario, left).localeCompare(pieceLabel(snapshot.scenario, right)) || String(left.id).localeCompare(String(right.id));
+  const matches = (piece: ProjectedPiece): boolean => search === '' || `${pieceLabel(snapshot.scenario, piece)} ${unitFormation(snapshot, piece)} ${pieceHex(piece)}`.toLowerCase().includes(search);
+  const all = rosterOwn(snapshot).filter(matches);
+  const active = all.filter(({ location }) => location.kind !== 'ELIMINATED')
     .filter((piece) => filter === 'all' || (filter === 'moved') === snapshot.movedThisPhase.has(String(piece.id)));
-  const offMap = sorted.filter(({ location }) => location.kind !== 'ON_MAP' && location.kind !== 'CONTAINER' && location.kind !== 'ELIMINATED');
-  const eliminated = sorted.filter(({ location }) => location.kind === 'ELIMINATED');
-  return `${onMap.map((piece) => unitRow(snapshot, piece)).join('') || '<p>No units match.</p>'}
-    ${offMap.length > 0 && filter === 'all' ? `<h3 class="list-group">Off map (${offMap.length})</h3>${offMap.map((piece) => unitRow(snapshot, piece)).join('')}` : ''}
-    ${eliminated.length > 0 && filter === 'all' ? `<details class="list-group"><summary>Eliminated (${eliminated.length})</summary>${eliminated.map((piece) => unitRow(snapshot, piece)).join('')}</details>` : ''}`;
+  const groups = new Map<string, ProjectedPiece[]>();
+  for (const piece of active) {
+    const name = unitFormation(snapshot, piece) || 'Independent units';
+    groups.set(name, [...(groups.get(name) ?? []), piece]);
+  }
+  const row = (piece: ProjectedPiece): string => `<button class="roster-unit${piece.id === snapshot.selection.pieceId ? ' is-selected' : ''}" data-piece="${esc(piece.id)}" data-roster-pick="${esc(piece.id)}" aria-label="${esc(`${pieceLabel(snapshot.scenario, piece)}, ${pieceHex(piece)}`)}">
+    <span class="roster-art" aria-hidden="true">${counterFor(snapshot, piece)}</span><span class="roster-text">${esc(pieceLabel(snapshot.scenario, piece))}<small>${esc(pieceHex(piece))} · ${esc(statusName(snapshot, piece))}</small></span>${badges(snapshot, piece)}</button>`;
+  const body = [...groups.entries()].sort(([left], [right]) => left.localeCompare(right))
+    .map(([name, pieces]) => `<details class="roster-group" open><summary>${esc(name)} <small>${pieces.length}</small></summary><div class="roster-grid">${pieces.sort(byName).map(row).join('')}</div></details>`).join('')
+    || '<p class="roster-empty">No units match.</p>';
+  const eliminated = all.filter(({ location }) => location.kind === 'ELIMINATED');
+  return `${body}${eliminated.length > 0 && filter === 'all' ? `<details class="roster-group roster-eliminated"><summary>Eliminated <small>${eliminated.length}</small></summary><div class="roster-grid">${eliminated.sort(byName).map(row).join('')}</div></details>` : ''}`;
+};
+
+/**
+ * Every unit the player commands, as one wide popup over the map: grouped by formation in several
+ * columns of compact rows, searchable by name, formation or hex. Sized for a force of hundreds.
+ */
+export const unitRosterHtml = (snapshot: UiSnapshot, state: DeckState): string => {
+  const sequence = snapshot.view.projection?.sequence;
+  const movement = sequence?.phase === 'MOVEMENT' && sequence.segment === 'MOVEMENT';
+  const filters = movement
+    ? `<div class="unit-filter" role="group" aria-label="Filter units">${(['all', 'unmoved', 'moved'] as const).map((key) => `<button data-unit-filter="${key}" aria-pressed="${(state.filter ?? 'all') === key}">${key === 'all' ? 'All' : key === 'moved' ? `Moved ${snapshot.movedThisPhase.size}` : `Not moved ${unmovedUnits(snapshot)}`}</button>`).join('')}</div>` : '';
+  return `<div class="roster-popup" role="dialog" aria-label="All my units">
+    <header><strong>My units · ${rosterOwn(snapshot).filter(({ location }) => location.kind !== 'ELIMINATED').length}</strong>
+      <input id="roster-search" type="search" value="${esc(state.search)}" placeholder="Find by name, formation or hex" aria-label="Find unit">${filters}
+      <button id="close-roster" aria-label="Close unit list">×</button></header>
+    <div class="roster-body" id="roster-body" data-scroll-key="roster" tabindex="0">${unitRosterBodyHtml(snapshot, state)}</div>
+  </div>`;
 };
 
 /** Units that could still move this Movement Phase but have not, for the End confirmation. */
@@ -410,24 +438,21 @@ export const commandDeckHtml = (snapshot: UiSnapshot, state: DeckState): string 
   const pieces = (view.projection?.stacks ?? []).flatMap((stack) => stack.pieces);
   const own = pieces.filter(({ ownerId }) => ownerId === view.playerId);
   const hiddenHere = (view.projection?.stacks ?? []).find(({ location }) => location.kind === 'ON_MAP' && location.hexId === snapshot.selection.hexId)?.hiddenCount ?? 0;
-  const tabs: [DeckList, string][] = [['units', 'My units'], ['stack', 'Hex'], ['history', 'Log']];
+  const tabs: [DeckList, string][] = [['stack', 'Hex'], ['history', 'Log']];
   const stackList = pieces.filter((piece) => piece.location.kind === 'ON_MAP' && piece.location.hexId === snapshot.selection.hexId);
   const history = collapse(snapshot.feed).reverse().slice(0, 120).map(feedEntryHtml).join('');
   const list = state.list === 'history' ? history || '<p>No actions yet.</p>'
-    : state.list === 'stack' ? `${stackList.map((piece) => unitRow(snapshot, piece)).join('') || '<p>Select a hex to list its units.</p>'}${hiddenHere > 0 ? `<p>${hiddenHere} more enemy unit${hiddenHere === 1 ? '' : 's'} hidden under the top counter.</p>` : ''}`
-      : unitList(snapshot, state, own);
-  const movementSummary = sequence?.phase === 'MOVEMENT' && sequence.segment === 'MOVEMENT' && state.list === 'units'
-    ? `<div class="unit-filter" role="group" aria-label="Filter units">${(['all', 'unmoved', 'moved'] as const).map((key) => `<button data-unit-filter="${key}" aria-pressed="${(state.filter ?? 'all') === key}">${key === 'all' ? 'All' : key === 'moved' ? `Moved ${snapshot.movedThisPhase.size}` : `Not moved ${unmovedUnits(snapshot)}`}</button>`).join('')}</div>` : '';
+    : `${stackList.map((piece) => unitRow(snapshot, piece)).join('') || '<p>Select a hex to list its units.</p>'}${hiddenHere > 0 ? `<p>${hiddenHere} more enemy unit${hiddenHere === 1 ? '' : 's'} hidden under the top counter.</p>` : ''}`;
   const unmoved = unmovedUnits(snapshot);
   const endDisabled = !(snapshot.endStep.enabled && !busy && !snapshot.decision && !snapshot.draft && view.metadata.lifecycle === 'ACTIVE');
   const confirming = state.confirmEnd && unmoved > 0;
   const objective = stepObjective(snapshot);
   return `<header class="deck-phase"><h1>${esc(sequence ? phaseLabel(sequence.phase, sequence.segment) : view.metadata.lifecycle)}</h1>${objective ? `<p>${esc(objective)}</p>` : ''}</header>
     ${view.metadata.lifecycle === 'PAUSED' ? '<p class="paused-banner" role="status">Paused — press Resume in the top bar to continue.</p>' : ''}
-    <section class="deck-selection" aria-label="Selected unit">${selectedCard(snapshot)}</section>
+    <section class="deck-selection" aria-label="Selected unit">${selectedCard(snapshot)}${snapshot.selectedPiece || snapshot.selection.hexId ? '<button id="deselect" class="subtle" title="Finish with this unit and clear the selection (Esc)">Done</button>' : ''}</section>
     <div class="deck-work" data-scroll-key="work">${awayPanel(snapshot)}${contextPanel(snapshot, state)}</div>
-    <nav class="deck-tabs" aria-label="Lists">${tabs.map(([key, name]) => `<button data-deck-list="${key}" aria-pressed="${state.list === key}">${name}</button>`).join('')}${state.list === 'units' ? `<input id="deck-search" type="search" value="${esc(state.search)}" placeholder="Find unit" aria-label="Find unit">` : ''}</nav>
-    <div class="deck-list" data-scroll-key="${state.list}" tabindex="0" aria-busy="${busy}">${movementSummary}${list}</div>
+    <nav class="deck-tabs" aria-label="Lists">${tabs.map(([key, name]) => `<button data-deck-list="${key}" aria-pressed="${state.list === key}">${name}</button>`).join('')}<button id="open-roster" class="roster-open" aria-haspopup="dialog" title="List every unit you command">All units (${own.filter(({ location }) => location.kind !== 'ELIMINATED').length})</button></nav>
+    <div class="deck-list" data-scroll-key="${state.list}" tabindex="0" aria-busy="${busy}">${list}</div>
     <footer class="deck-footer"><div class="deck-notice" role="status">${busy ? 'Working…' : esc(withHexLabels(state.error || snapshot.notice))}</div>
       ${snapshot.endStep.blockers.length > 0 ? `<p class="blocker">${esc(withHexLabels(snapshot.endStep.blockers.join(' ')))}</p>` : ''}
       ${snapshot.undoStep ? `<button id="undo-step" class="wide subtle">Undo back to the ${esc(snapshot.undoStep.label)}</button>` : ''}
