@@ -106,15 +106,13 @@ describe('the truck\'s supply area (A2)', () => {
     controller.dispose();
   });
 
-  it('never names a supply dump, and does not count what a truck carries as another unit (A3)', async () => {
+  it('never names a supply dump with a number, and does not count dumps or what a truck carries as units (A3)', async () => {
     const { controller, truck, dumpAway, hexOf, own } = await startMovement();
-    const rosterOf = () => unitRosterHtml(controller.getSnapshot(), newDeck());
     const countOf = () => commandDeckHtml(controller.getSnapshot(), newDeck()).match(/All units \((\d+)\)/u)?.[1];
     const dump = dumpAway();
-    // Every dump reads "Supply dump", in the roster and on its selection card, never "Supply Dump 255" or the like.
-    expect(rosterOf()).toContain('Supply dump');
-    expect(rosterOf()).not.toMatch(/Supply [Dd]ump \d|Nachschublager|Army Supply/u);
+    // A dump's selection card reads "Supply dump", never "Supply Dump 255" or the like.
     controller.selectPiece(dump.id);
+    expect(commandDeckHtml(controller.getSnapshot(), newDeck())).toContain('Supply dump');
     expect(commandDeckHtml(controller.getSnapshot(), newDeck())).not.toMatch(/Supply [Dd]ump \d|Nachschublager|Army Supply/u);
 
     const before = countOf();
@@ -122,12 +120,39 @@ describe('the truck\'s supply area (A2)', () => {
     await controller.clickHex(hexOf(dump)!);
     await controller.confirmMove();
     const { loads } = controller.getSnapshot().transportOptions!;
-    // Loading the whole dump puts that counter on the truck: it is cargo now and stops being listed as a unit.
+    // Loading the whole dump puts that counter on the truck as cargo. Neither the dump nor its cargo was ever a unit, so the count holds.
     await controller.transferSupply('LOAD', loads[0]!.pieceId, loads[0]!.maxTokens);
     const cargo = own().find(({ id }) => id === dump.id)!;
     expect(cargo.role).toBe('CARGO');
-    expect(rosterOf()).not.toContain(`data-roster-pick="${dump.id}"`);
-    expect(Number(countOf())).toBe(Number(before) - 1);
+    expect(unitRosterHtml(controller.getSnapshot(), newDeck())).not.toContain(`data-roster-pick="${dump.id}"`);
+    expect(countOf()).toBe(before);
+    controller.dispose();
+  });
+
+  it('leaves supply dumps out of All units and lists trucks in their own group, apart from the formations', async () => {
+    const { controller, own } = await startMovement();
+    const snapshot = controller.getSnapshot();
+    const html = unitRosterHtml(snapshot, newDeck());
+    const dumps = own().filter(({ role }) => role === 'DUMP');
+    const trucks = own().filter(({ role, location }) => (role === 'TRUCK' || role === 'EXTENDER') && location.kind !== 'ELIMINATED');
+    expect(dumps.length, 'the default game has dumps').toBeGreaterThan(0);
+    expect(trucks.length, 'the default game has trucks').toBeGreaterThan(0);
+    for (const dump of dumps) expect(html).not.toContain(`data-roster-pick="${dump.id}"`);
+    expect(html).not.toContain('Supply dump');
+    const countable = own().filter(({ role, location }) => role !== 'DUMP' && role !== 'CARGO' && location.kind !== 'ELIMINATED').length;
+    expect(html).toContain(`My units · ${countable}`);
+    expect(commandDeckHtml(snapshot, newDeck())).toContain(`All units (${countable})`);
+
+    // The Trucks group comes after every formation group, holds every truck, and nothing else.
+    const host = document.createElement('div');
+    host.innerHTML = html;
+    const groups = [...host.querySelectorAll<HTMLElement>('details.roster-group:not(.roster-eliminated)')];
+    const transport = groups.at(-1)!;
+    expect(transport.classList.contains('roster-transport')).toBe(true);
+    expect(transport.querySelector('summary')!.textContent).toContain('Trucks');
+    const picked = (group: HTMLElement) => [...group.querySelectorAll<HTMLElement>('[data-roster-pick]')].map((button) => button.dataset.rosterPick);
+    expect(picked(transport).sort()).toEqual(trucks.map(({ id }) => String(id)).sort());
+    for (const group of groups.slice(0, -1)) for (const truck of trucks) expect(picked(group)).not.toContain(String(truck.id));
     controller.dispose();
   });
 
