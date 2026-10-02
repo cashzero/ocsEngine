@@ -93,8 +93,8 @@ describe('M7 deterministic random OOB pipeline', () => {
               const faces = definitions.get(unit.definitionId)!.faces;
               // Allied airborne units move on foot on both faces. TODO(axis-airborne-counter): the Axis
               // regiment still borrows a truck-mobile counter until the German sheet is transcribed.
-              expect(side.side === 'AXIS' || faces.every(({ mobilityClassDefinitionId }) => String(mobilityClassDefinitionId) === 'mobility:leg'
-                || unit.role === 'FORMATION_COMMAND'))).toBe(true);
+              expect(side.side === 'AXIS' || unit.role === 'FORMATION_COMMAND'
+                || faces.every(({ mobilityClassDefinitionId }) => String(mobilityClassDefinitionId) === 'mobility:leg')).toBe(true);
             }
           }
           if (formation.archetype === 'INFANTRY') {
