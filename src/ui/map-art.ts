@@ -32,23 +32,50 @@ const seeded = (seed: string): (() => number) => {
 
 const fixed = (value: number): string => value.toFixed(1);
 
-/** Crown layout for one canopy tile; crowns that cross the tile edge are repeated so the fill is seamless. */
-const CANOPY_TILE = { width: 42, height: 36 } as const;
-const CANOPY_CROWNS: readonly (readonly [number, number, number])[] = [
-  [8, 8, 9.5], [27, 5, 10], [40, 13, 9], [17, 20, 11], [33, 25, 9.5], [5, 29, 9.5], [24, 35, 9],
-];
+/**
+ * Palette read from the printed Beyond the Rhine map in the VASSAL module: a flat khaki ground, pale
+ * sea, stippled green woods, tan rough ground and a hairline white hex grid. Only the look is
+ * borrowed; no raster from the module is used.
+ */
+const GROUND = '#d3d4ab';
 
-const woodsCanopyPattern = (): string => {
-  const { width, height } = CANOPY_TILE;
-  const crowns = CANOPY_CROWNS.flatMap(([x, y, r]) => [-1, 0, 1].flatMap((dx) => [-1, 0, 1].map((dy) => [x + dx * width, y + dy * height, r] as const)))
-    .filter(([x, y, r]) => x + r + 2 > 0 && x - r - 2 < width && y + r + 3 > 0 && y - r - 2 < height)
-    .sort((first, second) => first[1] - second[1]);
-  const shapes = crowns.map(([x, y, r]) =>
-    `<circle cx="${fixed(x + 1.5)}" cy="${fixed(y + 2.5)}" r="${fixed(r)}" fill="#1f3019" opacity=".5"/>`
-    + `<circle cx="${fixed(x)}" cy="${fixed(y)}" r="${fixed(r)}" fill="#567a42" stroke="#30492a" stroke-width=".9"/>`
-    + `<circle cx="${fixed(x - r * 0.3)}" cy="${fixed(y - r * 0.32)}" r="${fixed(r * 0.48)}" fill="#6e9353"/>`
-    + `<circle cx="${fixed(x - r * 0.42)}" cy="${fixed(y - r * 0.45)}" r="${fixed(r * 0.18)}" fill="#93b276"/>`).join('');
-  return `<pattern id="terrain-woods" width="${width}" height="${height}" patternUnits="userSpaceOnUse"><rect width="${width}" height="${height}" fill="#2f4529"/>${shapes}</pattern>`;
+/** Scatter `count` dots over a square tile, repeating any dot that crosses an edge so the tile repeats seamlessly. */
+const tileDots = (seed: string, size: number, count: number, radius: readonly [number, number], fill: string): string => {
+  const random = seeded(seed);
+  return Array.from({ length: count }, () => ({ x: random() * size, y: random() * size, r: radius[0] + random() * (radius[1] - radius[0]) }))
+    .flatMap(({ x, y, r }) => [-1, 0, 1].flatMap((dx) => [-1, 0, 1].map((dy) => ({ x: x + dx * size, y: y + dy * size, r }))))
+    .filter(({ x, y, r }) => x + r > 0 && x - r < size && y + r > 0 && y - r < size)
+    .map(({ x, y, r }) => `<circle cx="${fixed(x)}" cy="${fixed(y)}" r="${fixed(r)}" fill="${fill}"/>`).join('');
+};
+
+/** Stippled woods: a mid-green ground peppered with dark and pale dots, as the printed map shows its forests. */
+const woodsStipplePattern = (): string => {
+  const size = 72;
+  return `<pattern id="terrain-woods" width="${size}" height="${size}" patternUnits="userSpaceOnUse"><rect width="${size}" height="${size}" fill="#93ac71"/>`
+    + tileDots('woods:mid', size, 70, [1.2, 2.6], '#7a9a58')
+    + tileDots('woods:dark', size, 85, [0.9, 2], '#587c41')
+    + tileDots('woods:pale', size, 55, [0.7, 1.5], '#cadcae') + '</pattern>';
+};
+
+/** Marsh is drawn as the printed map draws polders: a network of thin blue ditches over pale wet ground. */
+const marshDitchPattern = (): string => {
+  const size = 84;
+  const random = seeded('marsh:ditch');
+  const ditches = Array.from({ length: 11 }, () => {
+    let x = random() * size;
+    let y = random() * size;
+    let horizontal = random() < 0.5;
+    return `M${fixed(x)} ${fixed(y)}` + Array.from({ length: 2 + Math.floor(random() * 3) }, () => {
+      const run = (8 + random() * 22) * (random() < 0.5 ? -1 : 1);
+      if (horizontal) x += run; else y += run;
+      horizontal = !horizontal;
+      return `${horizontal ? 'V' : 'H'}${fixed(horizontal ? y : x)}`;
+    }).join('');
+  });
+  const paths = [-1, 0, 1].flatMap((dx) => [-1, 0, 1].map((dy) =>
+    `<g transform="translate(${dx * size} ${dy * size})">${ditches.map((d) => `<path d="${d}"/>`).join('')}</g>`)).join('');
+  return `<pattern id="terrain-marsh" width="${size}" height="${size}" patternUnits="userSpaceOnUse"><rect width="${size}" height="${size}" fill="#c4d3b0"/>`
+    + `<g fill="none" stroke="#3d9ac0" stroke-width="1.3" stroke-linejoin="round" stroke-linecap="round" opacity=".9">${paths}</g></pattern>`;
 };
 
 /**
@@ -81,15 +108,13 @@ const reliefPattern = (id: string, options: {
 };
 
 export const mapArtDefsHtml = (): string => `<defs>
-  <pattern id="terrain-clear" width="28" height="24" patternUnits="userSpaceOnUse"><rect width="28" height="24" fill="#b7b083"/><path d="M4 7h1M17 4h1M11 16h1M23 19h1" stroke="#9c9467" stroke-width="1.4" stroke-linecap="round"/></pattern>
-  ${woodsCanopyPattern()}
-  ${reliefPattern('terrain-rough', { size: 200, frequency: 0.035, octaves: 2, seed: 5, relief: 3, elevation: 58, light: '#fff6e2', tint: '#d2b886' })}
-  ${reliefPattern('terrain-mountain', { size: 240, frequency: 0.0125, octaves: 4, seed: 11, relief: 9, elevation: 40, light: '#fbf4e6', tint: '#b6a78e', ridged: true })}
-  <pattern id="terrain-marsh" width="24" height="16" patternUnits="userSpaceOnUse"><rect width="24" height="16" fill="#98aa8c"/><path d="M2 5h6M14 12h7" stroke="#7aa3b4" stroke-width="1.3" stroke-linecap="round"/></pattern>
-  <pattern id="terrain-water" width="30" height="20" patternUnits="userSpaceOnUse"><rect width="30" height="20" fill="#6d9fbf"/><path d="M2 6q3-2.5 6 0t6 0M16 15q3-2.5 6 0t6 0" fill="none" stroke="#9cc6de" stroke-width="1.1" stroke-linecap="round"/></pattern>
-  <g id="glyph-reed" fill="none" stroke-linecap="round"><path d="M-9 6h7M3 6h7" stroke="#4f86a3" stroke-width="1.4"/><path d="M-3 4v-8M0 4v-11M3 4v-7M-6 4l-2-5M6 4l2-5" stroke="#3b5a35" stroke-width="1.3"/></g>
-  <g id="glyph-wave"><path d="M-10 0q2.5-3.5 5 0t5 0 5 0 5 0" fill="none" stroke="#d5ecf7" stroke-width="1.5" stroke-linecap="round"/></g>
-  <g id="glyph-grass"><path d="M-3 2l-1-4M0 2v-5M3 2l1-4" fill="none" stroke="#857d52" stroke-width="1.1" stroke-linecap="round"/></g>
+  <pattern id="terrain-clear" width="48" height="48" patternUnits="userSpaceOnUse"><rect width="48" height="48" fill="${GROUND}"/>${tileDots('clear:grain', 48, 14, [0.5, 1], '#c7c89d')}${tileDots('clear:light', 48, 10, [0.5, 0.9], '#dfe0bb')}</pattern>
+  ${woodsStipplePattern()}
+  ${reliefPattern('terrain-rough', { size: 200, frequency: 0.035, octaves: 2, seed: 5, relief: 3, elevation: 58, light: '#fff8ea', tint: '#d3b17c' })}
+  ${reliefPattern('terrain-mountain', { size: 240, frequency: 0.0125, octaves: 4, seed: 11, relief: 9, elevation: 40, light: '#fbf4e6', tint: '#b09c7c', ridged: true })}
+  ${marshDitchPattern()}
+  <pattern id="terrain-water" width="30" height="20" patternUnits="userSpaceOnUse"><rect width="30" height="20" fill="#a4d3ea"/></pattern>
+  <g id="glyph-wave"><path d="M-10 0q2.5-3.5 5 0t5 0 5 0 5 0" fill="none" stroke="#d3ebf7" stroke-width="1.3" stroke-linecap="round"/></g>
 </defs>`;
 
 type Placement = { readonly x: number; readonly y: number; readonly scale: number };
@@ -103,17 +128,33 @@ const scatter = (random: () => number, count: number, radius: number, scale: () 
   }).sort((first, second) => first.y - second.y);
 
 const glyphPlan = (cell: GeneratedMapPreviewCell, random: () => number): { glyph: string; placements: Placement[] } | null => {
-  switch (cell.terrain) {
-    // Woods are drawn by the seamless canopy fill so adjacent woods hexes merge into one forest.
-    case 'WOODS': return null;
-    // Mountains are drawn by the seamless range fill so adjacent mountain hexes merge into one massif.
-    case 'MOUNTAIN': return null;
-    // Rough ground is drawn by its relief fill.
-    case 'ROUGH': return null;
-    case 'MARSH': return { glyph: 'glyph-reed', placements: scatter(random, 3, 18, () => 0.9 + random() * 0.2) };
-    case 'WATER': return { glyph: 'glyph-wave', placements: scatter(random, 3, 20, () => 0.9 + random() * 0.3) };
-    default: return random() < 0.55 ? { glyph: 'glyph-grass', placements: scatter(random, 1 + Math.floor(random() * 2), 24, () => 1) } : null;
-  }
+  // Every land terrain is drawn by its seamless fill (adjacent hexes merge into one forest, range or polder);
+  // only open water keeps a few sparse wave marks, since the printed sea is otherwise blank.
+  if (cell.terrain !== 'WATER') return null;
+  return random() < 0.4 ? { glyph: 'glyph-wave', placements: scatter(random, 1, 18, () => 0.9 + random() * 0.3) } : null;
+};
+
+/**
+ * The printed map's terrain is not cut to the hex grid, so each fill polygon has its corners nudged by a
+ * deterministic amount keyed on the corner's position. Neighbouring hexes share corners, so the fills still
+ * tile without gaps while woods, rough ground and coasts get irregular, hand-drawn boundaries.
+ */
+const JITTER = 0.11;
+
+const jitterPoint = (x: number, y: number, hexSize: number): Point => {
+  const random = seeded(`corner:${Math.round(x * 2)},${Math.round(y * 2)}`);
+  return { x: x + (random() - 0.5) * 2 * JITTER * hexSize, y: y + (random() - 0.5) * 2 * JITTER * hexSize };
+};
+
+const cornerOf = (cell: GeneratedMapPreviewCell, index: number, hexSize: number): Point => {
+  const radians = Math.PI / 180 * (60 * index - 30);
+  return jitterPoint(cell.x + hexSize * Math.cos(radians), cell.y + hexSize * Math.sin(radians), hexSize);
+};
+
+/** One ground-coloured polygon per hex, with no outline of its own; the grid is a separate layer. */
+export const terrainFillHtml = (cell: GeneratedMapPreviewCell, hexSize: number, extraClass = ''): string => {
+  const points = Array.from({ length: 6 }, (_, index) => { const { x, y } = cornerOf(cell, index, hexSize); return `${fixed(x)},${fixed(y)}`; }).join(' ');
+  return `<polygon class="terrain-fill terrain-${cell.terrain.toLowerCase()}${extraClass ? ` ${extraClass}` : ''}" points="${points}"></polygon>`;
 };
 
 /** Terrain symbols for one hex; the hex polygon itself supplies the ground colour. */
@@ -143,8 +184,11 @@ export const riverPathData = (edge: GeneratedMapPreviewEdge, hexSize: number): s
   const alongX = -dy / length;
   const alongY = dx / length;
   const bow = (seeded(`river:${edge.id}`)() - 0.5) * hexSize * 0.32;
-  return `M${fixed(middleX - alongX * half)} ${fixed(middleY - alongY * half)}`
-    + `Q${fixed(middleX + dx / length * bow)} ${fixed(middleY + dy / length * bow)} ${fixed(middleX + alongX * half)} ${fixed(middleY + alongY * half)}`;
+  // The hexside ends on the same nudged corners the terrain fills use, so a river hugs the coast and forest edges.
+  const start = jitterPoint(middleX - alongX * half, middleY - alongY * half, hexSize);
+  const end = jitterPoint(middleX + alongX * half, middleY + alongY * half, hexSize);
+  return `M${fixed(start.x)} ${fixed(start.y)}`
+    + `Q${fixed(middleX + dx / length * bow)} ${fixed(middleY + dy / length * bow)} ${fixed(end.x)} ${fixed(end.y)}`;
 };
 
 /** River banks first, then water, so joined hexsides form one continuous channel. */
@@ -250,24 +294,47 @@ export const roadsHtml = (
   return `<g class="road-casings" aria-hidden="true">${casings}</g>${surfaces}`;
 };
 
-/** A built-up area: a pale footprint with a cluster of building blocks sized by settlement class. */
+const NAME_PREFIXES = ['Ber', 'Mont', 'Vel', 'Hal', 'Dor', 'Kes', 'Ant', 'Lor', 'Rou', 'Sant', 'Bre', 'Gen', 'Tul', 'Mar', 'Vau', 'Ost', 'Lin', 'Cor', 'Ham', 'Wes'];
+const NAME_SUFFIXES = ['burg', 'ville', 'dorf', 'stad', 'court', 'heim', 'mont', 'wyck', 'bach', 'lay', 'ford', 'mar'];
+
+/** Cosmetic place name derived from the Hex ID; carries no meaning for rules, scenarios or the OOB. */
+export const placeNameFor = (hexId: string): string => {
+  const random = seeded(`name:${hexId}`);
+  return NAME_PREFIXES[Math.floor(random() * NAME_PREFIXES.length)]! + NAME_SUFFIXES[Math.floor(random() * NAME_SUFFIXES.length)]!;
+};
+
+/**
+ * A built-up area as the printed map draws it: a dense cluster of dark building blocks sized by settlement
+ * class, with a bold serif name to its right (cities and towns only, so villages do not clutter the map).
+ */
 export const settlementArtHtml = (cell: GeneratedMapPreviewCell, hexSize: number): string => {
   if (!cell.settlement) return '';
   const unit = hexSize / GLYPH_HEX_SIZE;
   const random = seeded(`settlement:${cell.id}`);
-  const plan = { CITY: { radius: 17, blocks: 9, spread: 11 }, TOWN: { radius: 11, blocks: 5, spread: 7 }, VILLAGE: { radius: 7, blocks: 3, spread: 3.5 } }[cell.settlement];
-  const footprint = plan.radius > 0
-    ? `<circle class="settlement-footprint" cx="${fixed(cell.x)}" cy="${fixed(cell.y)}" r="${fixed(plan.radius * unit)}"></circle>` : '';
+  const plan = {
+    CITY: { blocks: 38, spread: 21, size: 3.6, font: 13 },
+    TOWN: { blocks: 16, spread: 12, size: 3.2, font: 11 },
+    VILLAGE: { blocks: 5, spread: 6, size: 3, font: 0 },
+  }[cell.settlement];
   const blocks = Array.from({ length: plan.blocks }, (_, index) => {
     const angle = index * 2.4 + random();
     const distance = index === 0 ? 0 : plan.spread * Math.sqrt(index / plan.blocks) * unit;
-    const width = (3.6 + random() * 2.6) * unit;
-    const height = (3.2 + random() * 2.4) * unit;
+    const width = (plan.size * (0.8 + random() * 1.1)) * unit;
+    const height = (plan.size * (0.7 + random() * 0.9)) * unit;
     const x = cell.x + Math.cos(angle) * distance;
-    const y = cell.y + Math.sin(angle) * distance;
-    return `<rect class="settlement-block" x="${fixed(x - width / 2)}" y="${fixed(y - height / 2)}" width="${fixed(width)}" height="${fixed(height)}" transform="rotate(${Math.round(random() * 40 - 20)} ${fixed(x)} ${fixed(y)})"></rect>`;
+    const y = cell.y + Math.sin(angle) * distance * 0.9;
+    const tone = random() < 0.22 ? ' alt' : '';
+    return `<rect class="settlement-block${tone}" x="${fixed(x - width / 2)}" y="${fixed(y - height / 2)}" width="${fixed(width)}" height="${fixed(height)}" transform="rotate(${Math.round(random() * 50 - 25)} ${fixed(x)} ${fixed(y)})"></rect>`;
   }).join('');
-  return `${footprint}${blocks}`;
+  // Villages are a few houses among trees.
+  const trees = cell.settlement === 'VILLAGE'
+    ? Array.from({ length: 3 }, (_, index) => {
+      const angle = index * 2.1 + random() * 1.2;
+      return `<circle class="settlement-tree" cx="${fixed(cell.x + Math.cos(angle) * 7.5 * unit)}" cy="${fixed(cell.y + Math.sin(angle) * 6 * unit)}" r="${fixed((2 + random()) * unit)}"></circle>`;
+    }).join('') : '';
+  const name = plan.font > 0
+    ? `<text class="place-name ${cell.settlement.toLowerCase()}" x="${fixed(cell.x + (plan.spread + 6) * unit)}" y="${fixed(cell.y + plan.font * 0.35 * unit)}" font-size="${fixed(plan.font * unit)}" stroke-width="${fixed(3 * unit)}">${placeNameFor(cell.id)}</text>` : '';
+  return `${blocks}${trees}${name}`;
 };
 
 /** Victory objective: a gold star medallion in the hex's bottom point, the strip a stacked counter leaves uncovered. */
@@ -293,17 +360,64 @@ export const strategicBandPoints = (cell: GeneratedMapPreviewCell, hexSize: numb
 /** Axial neighbour across each pointy-top hexside; side i joins vertex i and i + 1 (vertex 0 at -30°). */
 const SIDE_NEIGHBOURS: readonly (readonly [number, number])[] = [[1, 0], [0, 1], [-1, 1], [-1, 0], [0, -1], [1, -1]];
 
+/** Hexside path data (on the nudged corners the fills use) wherever `isEdge(cell, neighbour)` holds; map-edge sides are skipped. */
+const boundaryPath = (
+  cells: readonly GeneratedMapPreviewCell[], hexSize: number,
+  isEdge: (cell: GeneratedMapPreviewCell, neighbour: GeneratedMapPreviewCell) => boolean,
+): string => {
+  const byId = new Map(cells.map((cell) => [cell.id, cell]));
+  const vertex = (cell: GeneratedMapPreviewCell, index: number): string => {
+    const { x, y } = cornerOf(cell, index, hexSize);
+    return `${fixed(x)} ${fixed(y)}`;
+  };
+  return cells.flatMap((cell) => {
+    const [q, r] = cell.id.split(',').map(Number);
+    return SIDE_NEIGHBOURS.flatMap(([dq, dr], side) => {
+      const neighbour = byId.get(`${q! + dq},${r! + dr}`);
+      return neighbour && isEdge(cell, neighbour) ? [`M${vertex(cell, side)}L${vertex(cell, (side + 1) % 6)}`] : [];
+    });
+  }).join('');
+};
+
 /** Shoreline along every hexside where water meets land; the map edge is left open. */
 export const coastlineHtml = (cells: readonly GeneratedMapPreviewCell[], hexSize: number): string => {
-  const water = new Map(cells.map((cell) => [cell.id, cell.terrain === 'WATER']));
-  const vertex = (cell: GeneratedMapPreviewCell, index: number): string => {
-    const radians = Math.PI / 180 * (60 * index - 30);
-    return `${fixed(cell.x + hexSize * Math.cos(radians))} ${fixed(cell.y + hexSize * Math.sin(radians))}`;
-  };
-  const segments = cells.filter(({ terrain }) => terrain === 'WATER').flatMap((cell) => {
-    const [q, r] = cell.id.split(',').map(Number);
-    return SIDE_NEIGHBOURS.flatMap(([dq, dr], side) =>
-      water.get(`${q! + dq},${r! + dr}`) === false ? [`M${vertex(cell, side)}L${vertex(cell, (side + 1) % 6)}`] : []);
-  });
-  return segments.length > 0 ? `<path class="coastline" d="${segments.join('')}" aria-hidden="true"></path>` : '';
+  const d = boundaryPath(cells, hexSize, (cell, neighbour) => cell.terrain === 'WATER' && neighbour.terrain !== 'WATER');
+  return d ? `<path class="coastline" d="${d}" aria-hidden="true"></path>` : '';
 };
+
+const REGION_RANK = { MOUNTAIN: 3, ROUGH: 2, WOODS: 1 } as const;
+
+/**
+ * A fine darker fringe where woods, rough ground or mountains meet other ground, like the printed map's
+ * outlined forests. Where two such regions touch, only the higher-ranked one draws the shared side.
+ */
+export const regionEdgesHtml = (cells: readonly GeneratedMapPreviewCell[], hexSize: number): string =>
+  (['WOODS', 'ROUGH', 'MOUNTAIN'] as const).map((kind) => {
+    const d = boundaryPath(cells, hexSize, (cell, neighbour) => cell.terrain === kind && neighbour.terrain !== kind
+      && (REGION_RANK[neighbour.terrain as keyof typeof REGION_RANK] ?? 0) < REGION_RANK[kind]);
+    return d ? `<path class="region-edge ${kind.toLowerCase()}" d="${d}"></path>` : '';
+  }).join('');
+
+/** The printed hex grid: one hairline path over the regular hexsides, each side drawn once. */
+export const hexGridHtml = (cells: readonly GeneratedMapPreviewCell[], hexSize: number): string => {
+  const seen = new Set<string>();
+  const segments: string[] = [];
+  cells.forEach((cell) => {
+    const corners = Array.from({ length: 6 }, (_, index) => {
+      const radians = Math.PI / 180 * (60 * index - 30);
+      return { x: cell.x + hexSize * Math.cos(radians), y: cell.y + hexSize * Math.sin(radians) };
+    });
+    corners.forEach((from, index) => {
+      const to = corners[(index + 1) % 6]!;
+      const key = [pointKey(from.x, from.y), pointKey(to.x, to.y)].sort().join('|');
+      if (seen.has(key)) return;
+      seen.add(key);
+      segments.push(`M${fixed(from.x)} ${fixed(from.y)}L${fixed(to.x)} ${fixed(to.y)}`);
+    });
+  });
+  return `<path class="hex-grid" d="${segments.join('')}" aria-hidden="true"></path>`;
+};
+
+/** The hex's printed number, set small at the top of the hex where a counter leaves it uncovered. */
+export const hexNumberHtml = (cell: GeneratedMapPreviewCell, label: string, hexSize: number): string =>
+  `<text class="hex-coordinate" x="${fixed(cell.x)}" y="${fixed(cell.y - 33 * hexSize / GLYPH_HEX_SIZE)}" font-size="${fixed(10 * hexSize / GLYPH_HEX_SIZE)}" text-anchor="middle">${label}</text>`;

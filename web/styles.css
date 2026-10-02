@@ -76,10 +76,7 @@ small, .supporting { font-size: 14px; color: var(--muted); }
 .map-viewport { position: relative; min-height: 0; flex: 1; overflow: hidden; background-color: #18231e; background-image: linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px); background-size: 24px 24px; }
 #hex-map { display: block; width: 100%; height: 100%; min-height: 420px; touch-action: none; cursor: grab; }
 #hex-map:active { cursor: grabbing; }
-.hex-cell polygon { fill: #38443a; stroke: #8e9b87; stroke-width: 1.4; vector-effect: non-scaling-stroke; transition: fill .12s, stroke .12s; }
-.hex-cell:nth-child(3n + 1) polygon { fill: #3d4838; }
-.hex-cell:hover polygon, .hex-cell.is-selected polygon { fill: #4d5845; stroke: var(--accent); stroke-width: 3; }
-.hex-coordinate, .hidden-count { pointer-events: none; font-family: ui-sans-serif, system-ui, sans-serif; font-size: 13px; fill: #c4cdc0; }
+.hidden-count { pointer-events: none; font-family: ui-sans-serif, system-ui, sans-serif; font-size: 13px; fill: #c4cdc0; }
 .hidden-count { fill: #fff0bd; font-weight: 800; }
 .counter { cursor: pointer; filter: drop-shadow(0 4px 3px rgba(0, 0, 0, .35)); }
 .counter:hover > .counter-paper, .counter.is-selected > .counter-paper { stroke: #fff4cb; stroke-width: 4; }
@@ -267,31 +264,47 @@ small, .supporting { font-size: 14px; color: var(--muted); }
 .map-viewport { background-color: #141c18; background-image: radial-gradient(circle at 50% 42%, rgba(120, 128, 96, .16), transparent 64%); }
 /* Printed-map look: paper-toned terrain, a fine ink grid, and artwork that scales with the camera. */
 #hex-map .terrain-layer { filter: drop-shadow(0 4px 14px rgba(0, 0, 0, .55)); }
-.hex-cell polygon { stroke: rgba(48, 42, 26, .42); stroke-width: 1; vector-effect: non-scaling-stroke; transition: filter .12s, stroke .12s; }
-.hex-cell.terrain-clear polygon, .generated-cell.terrain-clear polygon { fill: url(#terrain-clear); }
-.hex-cell.terrain-woods polygon, .generated-cell.terrain-woods polygon { fill: url(#terrain-woods); }
-.hex-cell.terrain-rough polygon, .generated-cell.terrain-rough polygon { fill: url(#terrain-rough); }
-.hex-cell.terrain-mountain polygon, .generated-cell.terrain-mountain polygon { fill: url(#terrain-mountain); }
-.hex-cell.terrain-marsh polygon, .generated-cell.terrain-marsh polygon { fill: url(#terrain-marsh); }
-.hex-cell.terrain-water polygon, .generated-cell.terrain-water polygon { fill: url(#terrain-water); }
-.hex-cell:hover polygon, .hex-cell.is-selected polygon { filter: brightness(1.12); stroke: #fff2b8; stroke-width: 3; }
+/* Ground fills have no outline of their own: stroking each with its own pattern paints over the seams, so a forest or sea reads as one region. */
+.terrain-fill { pointer-events: none; stroke-width: 3; stroke-linejoin: round; transition: filter .12s; }
+.terrain-fill.terrain-clear { fill: url(#terrain-clear); stroke: url(#terrain-clear); }
+.terrain-fill.terrain-woods { fill: url(#terrain-woods); stroke: url(#terrain-woods); }
+.terrain-fill.terrain-rough { fill: url(#terrain-rough); stroke: url(#terrain-rough); }
+.terrain-fill.terrain-mountain { fill: url(#terrain-mountain); stroke: url(#terrain-mountain); }
+.terrain-fill.terrain-marsh { fill: url(#terrain-marsh); stroke: url(#terrain-marsh); }
+.terrain-fill.terrain-water { fill: url(#terrain-water); stroke: url(#terrain-water); }
+.terrain-fill.is-dimmed { filter: brightness(.55) saturate(.6); }
+/* Hairline white grid, as printed; region fringes and the coast sit just above it. */
+.grid-layer, .river-layer, .road-layer, .feature-layer { pointer-events: none; }
+.hex-grid { fill: none; stroke: rgba(255, 255, 255, .6); stroke-width: 1; vector-effect: non-scaling-stroke; }
+.region-edge { fill: none; stroke-linecap: round; stroke-width: 1.4; vector-effect: non-scaling-stroke; }
+.region-edge.woods { stroke: rgba(63, 98, 52, .85); }
+.region-edge.rough { stroke: rgba(150, 110, 58, .75); }
+.region-edge.mountain { stroke: rgba(92, 76, 56, .8); }
+/* Hex cells only take clicks and show state; the ground is painted by the fill layer beneath them. */
+.hex-cell polygon { fill: transparent; stroke: none; transition: fill .12s, stroke .12s; }
+.hex-cell:hover polygon, .hex-cell.is-selected polygon { fill: rgba(255, 255, 255, .22); stroke: #fff2b8; stroke-width: 3; vector-effect: non-scaling-stroke; }
 .terrain-art, .terrain-art use { pointer-events: none; }
-.hex-coordinate { opacity: 0; fill: #fff6dc; font-size: 13px; font-weight: 800; paint-order: stroke; stroke: rgba(17, 24, 20, .9); stroke-width: 3px; transition: opacity .12s; }
-.hex-cell:hover .hex-coordinate, .hex-cell.is-selected .hex-coordinate { opacity: 1; }
+.hex-coordinate { pointer-events: none; fill: rgba(33, 30, 18, .62); font-family: ui-sans-serif, system-ui, sans-serif; font-weight: 700; paint-order: stroke; stroke: rgba(235, 233, 200, .55); stroke-width: 2px; transition: fill .12s; }
+.hex-cell:hover .hex-coordinate, .hex-cell.is-selected .hex-coordinate { fill: #15120a; stroke: rgba(255, 249, 214, .95); }
 .map-edge, .generated-edge, .river-bank, .road-casing { pointer-events: none; fill: none; stroke-linecap: round; stroke-linejoin: round; }
-.coastline { pointer-events: none; fill: none; stroke: #33617d; stroke-width: 3; stroke-linecap: round; }
-.river-bank.river { stroke: #2f5f7a; stroke-width: 7; }
-.river-bank.major-river { stroke: #2a5571; stroke-width: 11.5; }
-.map-edge.river, .generated-edge.river { stroke: #5aa9d6; stroke-width: 4.2; }
-.map-edge.major-river, .generated-edge.major-river { stroke: #6bb8e2; stroke-width: 8; }
-.road-casing.road { stroke: rgba(54, 40, 22, .8); stroke-width: 6.5; }
-.road-casing.primary-road { stroke: #3a2a16; stroke-width: 10; }
-.map-edge.road, .generated-edge.road { stroke: #ead6a4; stroke-width: 3.4; }
-.map-edge.primary-road, .generated-edge.primary-road { stroke: #f7d880; stroke-width: 6; }
+.coastline { pointer-events: none; fill: none; stroke: #4f8fb6; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+/* Rivers: a dark blue edge with a pale blue channel. */
+.river-bank.river { stroke: #2a62a0; stroke-width: 6; }
+.river-bank.major-river { stroke: #1f4f8c; stroke-width: 11.5; }
+.map-edge.river, .generated-edge.river { stroke: #95cdee; stroke-width: 3.2; }
+.map-edge.major-river, .generated-edge.major-river { stroke: #8cc7ec; stroke-width: 7.6; }
+/* Roads: a golden-brown surface with a black casing, heavier for primary roads. */
+.road-casing.road { stroke: #1d150a; stroke-width: 6.4; }
+.road-casing.primary-road { stroke: #1d150a; stroke-width: 10.4; }
+.map-edge.road, .generated-edge.road { stroke: #c4ab5e; stroke-width: 3.4; }
+.map-edge.primary-road, .generated-edge.primary-road { stroke: #a88b35; stroke-width: 7.4; }
 .settlement, .strategic-zone, .objective-marker, .settlement-marker, .preview-entry, .preview-objective { pointer-events: none; }
-.settlement-footprint { fill: #ddd2b4; stroke: #6b5a3c; stroke-width: 1; opacity: .9; }
-.settlement-block { fill: #8c3a2c; stroke: #3d1a12; stroke-width: .8; }
-.settlement-village .settlement-block, .settlement-marker .settlement-block { stroke-width: .8; }
+.settlement-block { fill: #2a2520; stroke: rgba(236, 232, 200, .55); stroke-width: .5; }
+.settlement-block.alt { fill: #5c564b; }
+.settlement-village .settlement-block, .settlement-marker .settlement-block.village { fill: #4a3426; }
+.settlement-tree { fill: #5d7d3a; stroke: #3f5a28; stroke-width: .6; }
+.place-name { pointer-events: none; fill: #15120a; font-family: Georgia, 'Times New Roman', serif; font-weight: 800; paint-order: stroke; stroke: rgba(236, 235, 205, .85); stroke-linejoin: round; text-anchor: start; }
+.place-name.town { font-weight: 700; }
 .strategic-zone, .preview-entry { fill: none; stroke: var(--player-one); stroke-width: 4.5; stroke-dasharray: 9 5; opacity: .9; }
 .strategic-zone.side-second, .preview-entry.side-second { stroke: var(--player-two); }
 .objective-marker circle, .preview-objective circle { fill: #2a2112; stroke: #ffd766; stroke-width: 1.8; }
@@ -335,14 +348,14 @@ small, .supporting { font-size: 14px; color: var(--muted); }
 .map-controls button { min-width: 42px; padding: 6px 9px; }
 .map-controls output { min-width: 56px; text-align: center; font-size: 14px; }
 .map-legend { left: 16px; right: auto; bottom: 16px; max-width: calc(100% - 300px); gap: 6px; }
-.terrain-key, .line-key { padding: 3px 7px; border-radius: 3px; color: #1f1c12; background: #b7b083; font-weight: 750; }
-.terrain-key.woods { background: #4a6e3c; color: #f5f4e9; }
-.terrain-key.rough { background: #cfb381; }
-.terrain-key.mountain { background: #9e9079; color: #f5f4e9; }
-.terrain-key.marsh { background: #98aa8c; }
-.terrain-key.water { background: #6d9fbf; }
-.line-key { color: var(--muted); background: transparent; border-bottom: 3px solid #f5d67f; border-radius: 0; }
-.line-key.river { border-color: #5aa9d6; }
+.terrain-key, .line-key { padding: 3px 7px; border-radius: 3px; color: #1f1c12; background: #d3d4ab; font-weight: 750; }
+.terrain-key.woods { background: #93ac71; }
+.terrain-key.rough { background: #d3b17c; }
+.terrain-key.mountain { background: #b09c7c; }
+.terrain-key.marsh { background: #c4d3b0; box-shadow: inset 0 -3px 0 #3d9ac0; }
+.terrain-key.water { background: #a4d3ea; }
+.line-key { color: var(--muted); background: transparent; border-bottom: 3px solid #a88b35; border-radius: 0; }
+.line-key.river { border-color: #4f8fb6; }
 
 .command-rail .panel { margin: 0 0 12px; border-radius: 7px; box-shadow: none; background: #17211d; }
 .command-rail .panel-heading { padding: 10px 11px; }
@@ -377,7 +390,6 @@ small, .supporting { font-size: 14px; color: var(--muted); }
 .operation-preview-content.is-stale { opacity: .55; }
 .operation-map-wrap { height: 360px; overflow: hidden; border: 1px solid var(--line); border-radius: 8px; background: #17251e; }
 .operation-map { width: 100%; height: 100%; }
-.generated-cell polygon { stroke: rgba(48, 42, 26, .42); stroke-width: 1; vector-effect: non-scaling-stroke; }
 .operation-metrics { display: grid; grid-template-columns: repeat(6, 1fr); gap: 1px; margin: 0; border: 1px solid var(--line); background: var(--line); }
 .operation-metrics div { min-width: 0; padding: 8px; background: #111a16; }
 .operation-metrics dt { color: var(--muted); font-size: 13px; }
