@@ -19,6 +19,7 @@ import {
   generatedPieceId,
   hexDistanceBetween,
   internalStocksOf,
+  mergeSupplyAt,
   overstackDecision,
   pieceHasTrace,
   previewBarrage,
@@ -343,6 +344,156 @@ describe('OCS 4.3 transport, Extenders and dumps (9.14, 12.2, 12.7, 12.11, 13.2)
     const unloaded = ok(applyRuleAction(moved, ALLIED, { kind: 'UNLOAD_SUPPLY', truckId: U.alTruck, tokens: 4 }));
     expect(piece(unloaded, U.alSup).location).toEqual({ kind: 'ON_MAP', hexId: '4,5' });
     expect(codes(applyRuleAction(unloaded, ALLIED, { kind: 'LOAD_SUPPLY', truckId: U.alTruck, dumpId: U.alSup, tokens: 4 }))).toContain('INVALID_LOAD_QUANTITY');
+  });
+
+  it('offers Combine for the selected truck when another truck of its type shares the Hex (13.2c)', () => {
+    const state = atStep(buildGeneratedRuleState({ [U.alTruck]: ['1,5', null] }), 'MOVEMENT', 'MOVEMENT', ALLIED);
+    const known = new Set(state.pieceState.pieces.map(({ id }) => id));
+    const divided = ok(applyRuleAction(state, ALLIED, { kind: 'DIVIDE_TRANSPORT', truckId: U.alTruck, points: 1 }));
+    const splitId = divided.pieceState.pieces.find(({ id }) => !known.has(id))!.id;
+    const combine = (pieceId: PieceId | null) => ruleEngine.getActionCandidates(divided, { actorId: ALLIED, kind: 'COMBINE_TRANSPORT', pieceId, budget: 5 }).actions;
+    for (const selected of [null, U.alTruck, splitId]) {
+      const actions = combine(selected);
+      expect(actions.map(({ kind }) => kind), `selected ${selected}`).toEqual(['COMBINE_TRANSPORT']);
+      expect(actions[0]!.kind === 'COMBINE_TRANSPORT' ? [...actions[0]!.truckIds].sort() : []).toEqual([U.alTruck, splitId].sort());
+    }
+    // A selected piece that is not one of the group does not get the action.
+    expect(combine(U.alSup)).toEqual([]);
+  });
+
+  it('keeps the supply of one Hex in one dump counter, whichever dump it was printed as', () => {
+    const dumpsAt = (state: GameState, hex: string) => state.pieceState.pieces.filter((candidate) => candidate.location.kind === 'ON_MAP'
+      && candidate.location.hexId === hex && candidate.ownerId === ALLIED && (candidate.resourceQuantity ?? 0) > 0
+      && state.scenario.pieceCatalog.definitions.find(({ id }) => id === candidate.definitionId)?.family === 'RESOURCE');
+    const base = atStep(buildGeneratedRuleState({ [U.alTruck]: ['1,5', null], [U.alSup]: ['1,5', null], [U.alLeg]: ['4,5', 'COMBAT', 'combat'] }), 'MOVEMENT', 'MOVEMENT', ALLIED);
+    // A second dump of the same kind that was printed as a different piece (the scenario has one definition per dump), waiting at the destination.
+    const firstDefinition = base.scenario.pieceCatalog.definitions.find(({ id }) => id === piece(base, U.alSup).definitionId)!;
+    const secondDefinition = { ...firstDefinition, id: 'definition:test-second-supply' as typeof firstDefinition.id };
+    const secondPiece = { ...piece(base, U.alSup), id: 'piece:test-second-supply' as PieceId, definitionId: secondDefinition.id, location: { kind: 'ON_MAP' as const, hexId: '4,5' as HexId }, stackOrder: 9 };
+    const second = secondPiece.id;
+    const state: GameState = {
+      ...base,
+      scenario: { ...base.scenario, pieceCatalog: { ...base.scenario.pieceCatalog, definitions: [...base.scenario.pieceCatalog.definitions, secondDefinition] } },
+      pieceState: { ...base.pieceState, pieces: [...base.pieceState.pieces, secondPiece] },
+    };
+    const waiting = piece(state, second).resourceQuantity!;
+    const carried = piece(state, U.alSup).resourceQuantity!;
+    const loaded = ok(applyRuleAction(state, ALLIED, { kind: 'LOAD_SUPPLY', truckId: U.alTruck, dumpId: U.alSup, tokens: carried }));
+    const moved = ok(applyRuleAction(loaded, ALLIED, { kind: 'MOVE_PIECE', pieceId: U.alTruck, path: path('1,5', '2,5', '3,5', '4,5') }));
+    // Unloading where another dump already stands adds to that dump; it does not leave a second counter beside it.
+    const unloaded = ok(applyRuleAction(moved, ALLIED, { kind: 'UNLOAD_SUPPLY', truckId: U.alTruck, tokens: carried }));
+    expect(dumpsAt(unloaded, '4,5').map(({ id, resourceQuantity }) => [id, resourceQuantity])).toEqual([[second, waiting + carried]]);
+    // The load that was unloaded is gone as a counter (its tokens now belong to the dump).
+    expect(piece(unloaded, U.alSup).location.kind).toBe('ELIMINATED');
+
+    // A dump placed where the same kind of supply already lies (a reinforcement dump arriving) joins it as well.
+    const crowded = { ...state, pieceState: { ...state.pieceState, pieces: state.pieceState.pieces.map((candidate) => candidate.id === U.alSup
+      ? { ...candidate, location: { kind: 'ON_MAP' as const, hexId: '4,5' as HexId } } : candidate) } };
+    expect(dumpsAt(crowded, '4,5')).toHaveLength(2);
+    const merged = mergeSupplyAt(crowded, '4,5' as HexId, ALLIED);
+    expect(dumpsAt(merged, '4,5').map(({ resourceQuantity }) => resourceQuantity)).toEqual([waiting + carried]);
+    // Dumps of different owners never merge.
+    expect(dumpsAt(mergeSupplyAt(crowded, '4,5' as HexId, AXIS), '4,5')).toHaveLength(2);
+  });
+
+  it('lets a truck that already moved divide and then combine again at no MP cost (13.2c, 6.1f)', () => {
+    const state = atStep(buildGeneratedRuleState({ [U.alTruck]: ['1,5', null] }), 'MOVEMENT', 'MOVEMENT', ALLIED);
+    const moved = ok(applyRuleAction(state, ALLIED, { kind: 'MOVE_PIECE', pieceId: U.alTruck, path: path('1,5', '2,5') }));
+    const spent = moved.usage.find(({ pieceId }) => pieceId === U.alTruck)!.movementSpentTicks;
+    expect(spent).toBeGreaterThan(0);
+    const known = new Set(moved.pieceState.pieces.map(({ id }) => id));
+    const divided = ok(applyRuleAction(moved, ALLIED, { kind: 'DIVIDE_TRANSPORT', truckId: U.alTruck, points: 1 }));
+    const splitId = divided.pieceState.pieces.find(({ id }) => !known.has(id))!.id;
+    // Both parts are in the same Hex and the move is not over for them: Combine is legal, for either one selected.
+    for (const selected of [U.alTruck, splitId]) {
+      const actions = ruleEngine.getActionCandidates(divided, { actorId: ALLIED, kind: 'COMBINE_TRANSPORT', pieceId: selected, budget: 5 }).actions;
+      expect(actions.map(({ kind }) => kind), `selected ${selected}`).toEqual(['COMBINE_TRANSPORT']);
+    }
+    const combined = ok(applyRuleAction(divided, ALLIED, { kind: 'COMBINE_TRANSPORT', truckIds: [U.alTruck, splitId] }));
+    // The combined counter has spent as much as the most-used part, and no more (6.1f).
+    expect(combined.usage.find(({ pieceId }) => pieceId === U.alTruck)!.movementSpentTicks).toBe(spent);
+    // The part split off may itself continue to move with what is left of the allowance.
+    const explanation = ruleEngine.explain(divided, { actionId: 'probe', actorId: ALLIED, expectedRevision: divided.revision, kind: 'MOVE_PIECE', pieceId: splitId, path: path('2,5', '3,5') } as never);
+    expect(explanation.allowed).toBe(true);
+  });
+
+  it('warns, before the move, that moving another unit ends a loaded truck\'s move (6.1g)', () => {
+    const state = atStep(buildGeneratedRuleState({ [U.alTruck]: ['1,5', null], [U.alSup]: ['1,5', null], [U.alLeg]: ['4,5', 'MOVE', 'move'] }), 'MOVEMENT', 'MOVEMENT', ALLIED);
+    const moveLeg = (from: GameState) => ruleEngine.explain(from, { actionId: 'probe', actorId: ALLIED, expectedRevision: from.revision, kind: 'MOVE_PIECE', pieceId: U.alLeg, path: path('4,5', '3,5') } as never);
+    const fact = (explanation: ReturnType<typeof moveLeg>, key: string) => explanation.facts.find((entry) => entry.key === key)?.value;
+    // No truck has started moving: nothing is given up.
+    expect(fact(moveLeg(state), 'movement.endsOtherMover.pieceId')).toBeUndefined();
+    const loaded = ok(applyRuleAction(state, ALLIED, { kind: 'LOAD_SUPPLY', truckId: U.alTruck, dumpId: U.alSup, tokens: 4 }));
+    const explanation = moveLeg(loaded);
+    expect(explanation.allowed).toBe(true);
+    expect(fact(explanation, 'movement.endsOtherMover.pieceId')).toBe(U.alTruck);
+    expect(fact(explanation, 'movement.endsOtherMover.loadTokens')).toBe(4);
+    expect(fact(explanation, 'movement.endsOtherMover.remainingTicks')).toBe(180 - 20);
+    // The warning is real: once the leg unit moves, the truck can no longer act.
+    const after = ok(applyRuleAction(loaded, ALLIED, { kind: 'MOVE_PIECE', pieceId: U.alLeg, path: path('4,5', '3,5') }));
+    expect(codes(applyRuleAction(after, ALLIED, { kind: 'UNLOAD_SUPPLY', truckId: U.alTruck, tokens: 4 }))).toContain('MOVEMENT_ALREADY_FINISHED');
+    // A truck that is out of MP has nothing left to lose.
+    const spent = withPiece(loaded, U.alTruck, (current) => current);
+    expect(fact(moveLeg({ ...spent, usage: spent.usage.map((entry) => entry.pieceId === U.alTruck ? { ...entry, movementSpentTicks: 180 } : entry) }), 'movement.endsOtherMover.pieceId')).toBeUndefined();
+  });
+
+  describe('transport options for the UI (A1)', () => {
+    const optionsOf = (state: GameState, truckId: PieceId = U.alTruck, actor = ALLIED) => ruleEngine.queryTransportOptions(state, actor, truckId);
+    const loadAction = (state: GameState, dumpId: PieceId, tokens: number) => ({ actionId: 'probe', actorId: ALLIED, expectedRevision: state.revision, kind: 'LOAD_SUPPLY', truckId: U.alTruck, dumpId, tokens }) as never;
+    const unloadAction = (state: GameState, tokens: number) => ({ actionId: 'probe', actorId: ALLIED, expectedRevision: state.revision, kind: 'UNLOAD_SUPPLY', truckId: U.alTruck, tokens }) as never;
+
+    it('offers every Token count the engine accepts, with the MP it costs and what is left', () => {
+      const state = atStep(buildGeneratedRuleState({ [U.alTruck]: ['1,5', null], [U.alSup]: ['1,5', null] }), 'MOVEMENT', 'MOVEMENT', ALLIED);
+      const result = optionsOf(state);
+      expect(result.allowed).toBe(true);
+      const options = result.value!;
+      expect(options.loadedTokens).toBe(0);
+      expect(options.unload).toBeNull();
+      const [load] = options.loads;
+      expect(options.loads).toHaveLength(1);
+      expect(load).toMatchObject({ kind: 'LOAD', pieceId: U.alSup, available: true, minTokens: 1, costTicks: 20, reasons: [] });
+      expect(load!.remainingAfterTicks).toBe(options.remainingTicks - 20);
+      // The range is exactly what the rules accept: every count inside is legal, one more is not.
+      for (let tokens = load!.minTokens; tokens <= load!.maxTokens; tokens += 1) {
+        expect(ruleEngine.validateAction(state, loadAction(state, U.alSup, tokens)).allowed, `${tokens}T`).toBe(true);
+      }
+      expect(ruleEngine.validateAction(state, loadAction(state, U.alSup, load!.maxTokens + 1)).allowed).toBe(false);
+      // Loading part of it leaves the rest to load later and still shows an honest range.
+      const part = ok(applyRuleAction(state, ALLIED, { kind: 'LOAD_SUPPLY', truckId: U.alTruck, dumpId: U.alSup, tokens: 1 }));
+      expect(optionsOf(part).value!.loadedTokens).toBe(1);
+      // The dump left in the Hex is a legal place to unload onto (13.2f), and the rules agree.
+      const unload = optionsOf(part).value!.unload!;
+      expect(unload).toMatchObject({ kind: 'UNLOAD', available: true, minTokens: 1, maxTokens: 1 });
+      expect(ruleEngine.validateAction(part, unloadAction(part, 1)).allowed).toBe(true);
+    });
+
+    it('says why a load or an unload is not offered, with the rule (12.2a, 13.2f)', () => {
+      const state = atStep(buildGeneratedRuleState({ [U.alTruck]: ['1,5', null], [U.alSup]: ['1,5', null], [U.alLeg]: ['4,5', 'COMBAT', 'combat'] }), 'MOVEMENT', 'MOVEMENT', ALLIED);
+      const loaded = ok(applyRuleAction(state, ALLIED, { kind: 'LOAD_SUPPLY', truckId: U.alTruck, dumpId: U.alSup, tokens: 4 }));
+      // Out in the open with no friendly combat unit or dump, the SP cannot be unloaded.
+      const stuck = optionsOf(loaded).value!.unload!;
+      expect(stuck.available).toBe(false);
+      expect(stuck.reasons.map(({ code, rule }) => [code, rule])).toContainEqual(['INVALID_UNLOAD_HEX', '13.2f']);
+      expect(ruleEngine.validateAction(loaded, unloadAction(loaded, 4)).allowed).toBe(false);
+      // With a friendly combat unit it can, and the maximum is the whole load.
+      const moved = ok(applyRuleAction(loaded, ALLIED, { kind: 'MOVE_PIECE', pieceId: U.alTruck, path: path('1,5', '2,5', '3,5', '4,5') }));
+      const unload = optionsOf(moved).value!.unload!;
+      expect(unload).toMatchObject({ available: true, minTokens: 1, maxTokens: 4, costTicks: 20 });
+      expect(ruleEngine.validateAction(moved, unloadAction(moved, unload.maxTokens)).allowed).toBe(true);
+      // SP unloaded this phase cannot be loaded again (12.2a).
+      const unloaded = ok(applyRuleAction(moved, ALLIED, { kind: 'UNLOAD_SUPPLY', truckId: U.alTruck, tokens: 4 }));
+      const again = optionsOf(unloaded).value!.loads.find(({ pieceId }) => pieceId === U.alSup)!;
+      expect(again.available).toBe(false);
+      expect(again.reasons.map(({ code, rule }) => [code, rule])).toContainEqual(['INVALID_LOAD_QUANTITY', '12.2a']);
+      expect(again.reasons.map(({ message }) => message).join(' ')).toContain('unloaded this phase');
+    });
+
+    it('refuses to describe a piece that is not one of the asking player\'s Transport Points', () => {
+      const state = atStep(buildGeneratedRuleState({ [U.alTruck]: ['1,5', null], [U.alLeg]: ['4,5', 'COMBAT', 'combat'] }), 'MOVEMENT', 'MOVEMENT', ALLIED);
+      expect(optionsOf(state, U.alLeg).allowed).toBe(false);
+      expect(optionsOf(state, U.alTruck, AXIS).allowed).toBe(false);
+      expect(optionsOf(state, U.alTruck, AXIS).value).toBeNull();
+    });
   });
 
   it('forms an Extender that becomes a supply source, and refuses one that cannot connect (12.7)', () => {

@@ -204,6 +204,14 @@ export class GameplaySession implements GameSession {
     return cloneValue(this.#ports.rules.queryMovementRange(this.#state, binding.playerId, pieceId));
   };
 
+  getTransportOptions = (seatId: SeatId, truckId: Parameters<GameSession['getTransportOptions']>[1]): ReturnType<GameSession['getTransportOptions']> => {
+    const binding = this.#binding(seatId);
+    if (this.#lifecycle !== 'ACTIVE' || this.#handoff !== null) {
+      return { allowed: false, value: null, reasons: [{ code: 'SESSION_NOT_INTERACTIVE', allowed: false, message: 'Session is not accepting interaction.', rule: 'gameplay' }], facts: [], dependencies: [] };
+    }
+    return cloneValue(this.#ports.rules.queryTransportOptions(this.#state, binding.playerId, truckId));
+  };
+
   createDraft = (seatId: SeatId, action: GameAction): ActionDraft => ({
     stateRevision: this.#state.revision, seatId: this.#binding(seatId).seatId, action: cloneAction(action),
   });
@@ -346,6 +354,7 @@ export class GameplaySession implements GameSession {
       status: 'ACCEPTED', requestId: request.requestId, revision: this.#state.revision,
       events: cloneValue(transition.events), violations: [], pendingDecision: this.#state.pendingDecision === null
         ? null : pendingFor(this.#state, this.#state.pendingDecision.ownerId), warnings,
+      randomUsed: JSON.stringify(before.rng) !== JSON.stringify(transition.state.rng),
     };
     return this.#remember(request.requestId, result);
   }

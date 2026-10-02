@@ -27,6 +27,7 @@ import {
   withStatus,
 } from '../pieces.js';
 import { clearFuel } from '../supply/fuel.js';
+import { mergeSupplyAt } from '../supply/transport.js';
 import { violation } from '../validation/violation.js';
 import { nextStackOrder } from '../combat/combat.js';
 import { movementCostModel } from '../terrain.js';
@@ -247,16 +248,18 @@ export const placeReinforcement = (
   action: Extract<GameAction, { readonly kind: 'PLACE_REINFORCEMENT' }>,
 ): { readonly state: GameState; readonly events: readonly RuleEvent[] } => {
   const piece = pieceById(state, action.pieceId)!;
+  const placed: GameState = {
+    ...state,
+    pieceState: upsertPieceState(state.pieceState, {
+      ...withStatus(piece, RETURN_TURN_STATUS, null),
+      location: { kind: 'ON_MAP', hexId: action.hexId },
+      stackOrder: nextStackOrder(state.pieceState.pieces, action.hexId, piece.id),
+    }),
+    mapState: setHexControl(state.mapState, action.hexId, action.actorId),
+  };
   return {
-    state: {
-      ...state,
-      pieceState: upsertPieceState(state.pieceState, {
-        ...withStatus(piece, RETURN_TURN_STATUS, null),
-        location: { kind: 'ON_MAP', hexId: action.hexId },
-        stackOrder: nextStackOrder(state.pieceState.pieces, action.hexId, piece.id),
-      }),
-      mapState: setHexControl(state.mapState, action.hexId, action.actorId),
-    },
+    // A dump placed where the same kind of supply already lies joins it: one hex, one dump.
+    state: mergeSupplyAt(placed, action.hexId, piece.ownerId),
     events: [{ kind: 'REINFORCEMENT_PLACED', sequence: 0, pieceId: action.pieceId, hexId: action.hexId }],
   };
 };

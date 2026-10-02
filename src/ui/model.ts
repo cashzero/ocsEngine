@@ -7,6 +7,7 @@ import type {
   GameAction,
   ProjectedPiece,
   RuleExplanation,
+  TransportOptions,
 } from '../rules/index.js';
 import type {
   CheckpointDescriptor,
@@ -21,6 +22,13 @@ import type { CombatReport, FeedEntry, TrackStep } from './narrative.js';
 export interface UiSelection {
   readonly hexId: string | null;
   readonly pieceId: string | null;
+}
+
+/** One line of the supply ledger. `spent` counts Tokens consumed (fuel, feeding); loads and unloads only move SP and count 0. */
+export interface LedgerLine {
+  readonly revision: number;
+  readonly text: string;
+  readonly spent: number;
 }
 
 export interface MovePreview {
@@ -160,6 +168,10 @@ export interface UiSnapshot {
   readonly supplyNeeds: readonly SupplyNeed[];
   /** Actions for the selected unit, dump, or truck. */
   readonly unitActions: readonly UnitAction[];
+  /** SP the seat paid or moved this player turn, oldest first: what, from which dump or truck, and what that source holds now. */
+  readonly ledger: readonly LedgerLine[];
+  /** What the selected own truck can load and unload where it stands (13.2f); null when no truck is selected or it is not the Movement Segment. */
+  readonly transportOptions: TransportOptions | null;
   /** Step-wide actions: internal stocks recovery, formation trace routes, breakout attempts. */
   readonly stepActions: readonly UnitAction[];
   /** Hexes the selected Extender may collapse to (9.14d). */
@@ -186,7 +198,7 @@ export interface UiSnapshot {
   readonly movedThisPhase: ReadonlySet<string>;
   readonly attackedThisPhase: ReadonlySet<string>;
   /** Restores the automatic checkpoint taken when this step began (no dice rolled since). */
-  readonly undoStep: { readonly label: string } | null;
+  readonly undoStep: { readonly label: string; /** ACTION takes back the last action only; STEP returns to the start of the step. */ readonly scope: 'ACTION' | 'STEP' } | null;
   readonly combatSheet: CombatSheet | null;
   /** The pending supply decision can be paid automatically from the largest dumps. */
   readonly autoPay: boolean;

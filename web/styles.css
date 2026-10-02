@@ -335,6 +335,12 @@ small, .supporting { font-size: 14px; color: var(--muted); }
 .counter-affiliation { transform: rotate(-90deg); transform-origin: 87px 38px; }
 .counter-state rect { fill: #f8e9ae; }
 .counter .counter-state text, .unit-counter .counter-state text { font-size: 11px; }
+/* A friendly truck's load gauge: an empty outline, a part-filled bar, or a full bar, with the Tokens carried. */
+.load-track { fill: rgba(255, 255, 255, .35); stroke: #333; stroke-width: 1.5; }
+.load-fill { fill: #2f6f9f; }
+.load-full .load-fill { fill: #b4351f; }
+.counter .counter-load-text, .unit-counter .counter-load-text { font-size: 15px; font-weight: 700; fill: #fff; paint-order: stroke; stroke: #1b1b1b; stroke-width: 2.4px; }
+[data-counter-lod="symbol"] .load-gauge { display: none; }
 .counter-grid { display: flex; flex-wrap: wrap; gap: 12px; padding: 12px; }
 .counter-formation summary { cursor: pointer; padding: 9px; }
 .preview-counter { margin: 0; width: 120px; }

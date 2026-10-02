@@ -135,4 +135,51 @@ describe('phase-specific command deck', () => {
     expect(commandDeckHtml(refused, newDeck())).toContain('Second reason.');
     controller.dispose();
   });
+
+  it('warns in the move popup that moving another unit ends a loaded truck\'s move (6.1g)', async () => {
+    const controller = await startGame();
+    for (const arrival of controller.getSnapshot().arrivals) {
+      controller.selectPiece(arrival.pieceId);
+      await controller.clickHex(arrival.entryHexIds[0]!);
+    }
+    await controller.endStep();
+    const own = () => controller.getSnapshot().view.projection!.stacks.flatMap(({ pieces }) => pieces)
+      .filter((piece) => piece.ownerId === controller.getSnapshot().view.playerId && piece.location.kind === 'ON_MAP');
+    const kindOf = (id: string) => {
+      const piece = own().find((entry) => entry.id === id)!;
+      return controller.getSnapshot().scenario.pieceCatalog.definitions.find(({ id: definitionId }) => definitionId === piece.definitionId)?.counter?.kind;
+    };
+    const hexOf = (piece: { readonly location: unknown }): string | null => {
+      const location = piece.location as { kind: string; hexId?: string };
+      return location.kind === 'ON_MAP' ? location.hexId ?? null : null;
+    };
+    const truck = own().find((piece) => kindOf(piece.id) === 'TRANSPORT')!;
+    const dump = own().find((piece) => kindOf(piece.id) === 'SUPPLY' && hexOf(piece) !== hexOf(truck) && (piece.resourceQuantity ?? 0) > 0)!;
+    controller.selectPiece(truck.id);
+    await controller.clickHex(hexOf(dump)!);
+    await controller.confirmMove();
+    const load = controller.getSnapshot().unitActions.find(({ group, label }) => group === 'TRANSPORT' && label.startsWith('Load'));
+    expect(load, 'the truck can load at the dump').toBeDefined();
+    await controller.runAction(load!.key);
+
+    // A unit that needs no fuel: moving it is allowed, but the popup says what it costs the truck.
+    const leg = own().find((piece) => piece.mode === 'MOVE' && piece.id !== truck.id && kindOf(piece.id) === 'COMBAT' && controller.getSnapshot().scenario.pieceCatalog.definitions
+      .find(({ id }) => id === piece.definitionId)?.faces.some(({ mobilityClassDefinitionId }) => String(mobilityClassDefinitionId) === 'mobility:leg'))!;
+    controller.selectPiece(leg.id);
+    const destination = [...controller.getSnapshot().reachable.keys()][0]!;
+    await controller.clickHex(destination);
+    const warned = movePopupHtml(controller.getSnapshot());
+    expect(warned).toContain('class="warning"');
+    expect(warned).toContain('QM Truck');
+    expect(warned).toContain('4T');
+    expect(warned).toContain('6.1g');
+    expect(warned).toMatch(/id="confirm-move"[^>]*>Confirm anyway</u);
+    expect(warned).not.toMatch(/id="confirm-move"\s+disabled/u);
+
+    // Without a truck in progress the popup is the plain one.
+    const plain = { ...controller.getSnapshot(), movePreview: { ...controller.getSnapshot().movePreview!, explanation: { ...controller.getSnapshot().movePreview!.explanation, facts: controller.getSnapshot().movePreview!.explanation.facts.filter(({ key }) => !key.startsWith('movement.endsOtherMover')) } } };
+    expect(movePopupHtml(plain)).not.toContain('class="warning"');
+    expect(movePopupHtml(plain)).toMatch(/id="confirm-move"[^>]*>Confirm</u);
+    controller.dispose();
+  });
 });

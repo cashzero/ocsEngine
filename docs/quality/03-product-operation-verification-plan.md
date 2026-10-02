@@ -8,6 +8,15 @@ COMPACT / 2 per side / 8 turns`, and players may choose maps from 16×12 to 64×
 that default; NG-07 keeps its explicit 18×12 Large package, which is within the new limits. The
 map generator itself still accepts 8×8 for rule-test fixtures only.
 
+Supply UX amendment (2026-10-02, explicitly approved by the user: "OK" to adding the SUP rows proposed in
+`docs/roadmap/09-supply-logistics-ux-wbs.md` §4): section G adds Supply and logistics rows. Every new row
+starts `UNVERIFIED`; no existing row changes status or expectation. The 2026-10-02 A0 baseline
+(`docs/reports/supply-ux-a0-baseline-2026-10-02.md`) operated parts of this flow, including a checkpoint
+restore, but did not store every evidence item required by "Rules of evidence" (screenshot artifacts,
+elapsed time), so it promotes no row here, including SES-04. SUP-A15 states the approved intent (undo one
+action, not the whole segment); its exact semantics for actions with dice or revealed information must be
+confirmed in the A4 design review before that row can be executed.
+
 Desktop scope amendment (2026-09-06, explicitly approved by the user): default
 1920×1080, supported 1680×1050. Narrow-screen acceptance is removed. A single
 left command deck remains fixed; only bounded collections may scroll. Historical
@@ -161,6 +170,43 @@ listed as able to Hip Shoot (game-specific rules were left out), so that part of
 | AIR-08 | P1 | Try a second barrage on the same hex and a second mission with the same aircraft | Both unavailable with the rule explained (10.0e, 14.2e) | UNVERIFIED |
 | AIR-09 | P0 | Play a whole turn with air forces, then to Game End; save, load and replay | No dead end; console has no errors; the loaded and replayed game matches | UNVERIFIED |
 
+## G. Supply and logistics (added 2026-10-02, plan `docs/roadmap/09-supply-logistics-ux-wbs.md`)
+
+Run on the default New Game. Phase A rows (SUP-A) cover the manual flow; Phase B rows (SUP-B) cover the
+helpers and start only after the Phase A gate. Supply dumps are generic counters with no names (original
+board-game design; user decision 2026-10-02).
+
+| ID | Pri | Player operation | Required visible result | Status |
+|---|---:|---|---|---|
+| SUP-A01 | P0 | Select a truck in a Hex with an 8T+ dump and load a chosen part, such as 3T | Truck load is 3T, the dump keeps the rest, and the MP spent equals the preview shown before the click | PASS |
+| SUP-A02 | P0 | Move that truck to a Hex with a friendly combat unit and unload a chosen part, such as 2T | The Hex shows a 2T dump, the truck keeps 1T, and the map and the selection card agree | PASS (re-run 2026-10-02 after fix) |
+| SUP-A03 | P0 | Open the truck in a Hex with no friendly combat unit and no friendly dump while it carries SP | Unload is shown disabled with the reason and rule 13.2f, not silently absent | PASS |
+| SUP-A04 | P0 | Unload SP, then try to load the same SP again in the same phase | Load is shown disabled with the reason "unloaded this phase" (12.2a) | PASS |
+| SUP-A05 | P0 | Look at empty, part-loaded, and full trucks on the map and in the stack list | The three states are visually distinct; the stack list shows each truck's load | PASS |
+| SUP-A06 | P1 | Select a dump that shares a Hex with a friendly truck and use "carry with a truck" | The same transfer area opens with the same result as from the truck | PASS |
+| SUP-A07 | P0 | Load a truck, then pick another unit and preview its move | Before the move is confirmed, the UI warns that the truck would lose its remaining MP and load for the phase (6.1g); confirming is an explicit choice | PASS |
+| SUP-A08 | P1 | Divide a truck, then combine the parts again | Points, load, counter-mix limit (13.2c) and spent MA (6.1f) are correct; no MP is charged | PASS |
+| SUP-A09 | P0 | Pay one fuel and one combat supply, then open the supply ledger | The ledger lists what was paid, from which dump or truck, and what is left; it matches the real deduction | PASS (fuel and combat, real UI) |
+| SUP-A10 | P0 | Create a checkpoint with a loaded truck, change state, restore it; then download a save and load that file | Truck points, load, dump quantities and ledger match the saved state in both routes | Checkpoint route PASS; file route OUT OF SCOPE (user decision 2026-10-02) |
+| SUP-A11 | P0 | Divide and combine trucks and compare the map counter with the selection card | The counter shows the current Transport Points, not the printed 5 | PASS |
+| SUP-A12 | P0 | Put two same-type trucks in one Hex (for example by dividing one) and select either | A Combine action is offered and works (blocking issue N-08) | PASS |
+| SUP-A13 | P0 | Inspect dumps in the roster, selection card, fuel options, stack list and ledger, including SP carried by a truck | No dump has a name; each reads as type, quantity and Hex; carried SP is shown on its truck, not as a separate "off map" unit | PASS |
+| SUP-A14 | P1 | Divide, load and unload, then read the unit counts | Each counter counts once (a truck is a unit, so a split truck is two); SP carried aboard a truck is not counted as a unit (expectation changed with the user's approval 2026-10-02) | PASS (observed 15 to 16 after a split, unchanged by load and unload) |
+| SUP-A15 | P0 | After a move, a load, and a divide, press Undo | Undo reverts only the last action, not the whole segment (approved: only the last action is undone; dice, revealed information, ending the step and combat clear Undo) | PASS (move/load/divide in real UI; the dice cases by headless tests only) |
+Phase A results of 2026-10-02 are in `docs/quality/evidence/supply-a-2026-10-02/README.md` (input, observed, elapsed, revision, console and artifacts per row).
+After the fixes of the same day, SUP-A02 (dumps of one kind in a Hex are one counter and one map marker) and SUP-A09 (combat and barrage payments are in the ledger) were re-run in the real UI and pass.
+SUP-A15 passes: the user confirmed the Undo semantics ("OK"). SUP-A14: the user decided that a truck is close to a unit, so a split truck counts as two (15 to 16); the row's expectation was changed accordingly and the earlier observation now meets it.
+SUP-A10: the user moved file-based save/load out of scope on 2026-10-02; the checkpoint route passed and the file route stays UNAVAILABLE (needs a real file chooser). A whole game turn (both player turns, hot-seat handoffs, the First Player decision) was then played with real clicks; see the evidence README. 
+
+| SUP-B01 | P0 | Enter "8T, from dump A to Hex B" | A plan preview lists trucks, route, MP per step, and resulting stock; game state is unchanged until confirmed | UNVERIFIED |
+| SUP-B02 | P0 | Confirm that plan | Hex B gains 8T and the final state equals the manual run of the same actions | UNVERIFIED |
+| SUP-B03 | P0 | Enter a task that exceeds the available MP | A shortfall report states how much can be delivered and why, with alternatives | UNVERIFIED |
+| SUP-B04 | P1 | Choose a destination that breaks the unload condition (13.2f) | The planner says so and suggests legal Hexes | UNVERIFIED |
+| SUP-B05 | P0 | Run the fuel estimate for chosen units | Needs and available sources are correct, and the later real payment matches the estimate | UNVERIFIED |
+| SUP-B06 | P1 | Take a shortfall from the estimate into the planner | Destination and quantity are prefilled and a plan can be built | UNVERIFIED |
+| SUP-B07 | P1 | Run the Supply Phase prediction | The predicted Out of Supply list matches the real result at the end of the Supply Phase | UNVERIFIED |
+| SUP-B08 | P0 | Play a whole turn using only the helpers, then save, load and replay | No dead end, no console error, and the loaded and replayed game match | UNVERIFIED |
+
 ## Execution order and stop conditions
 
 1. Run BOOT and NG rows first. A package-continuity failure blocks all downstream Game Flow claims.
@@ -172,6 +218,9 @@ listed as able to Hip Shoot (game-specific rules were left out), so that part of
 6. Fix only observed blockers. Rebuild, then re-run the failed row plus every dependent row.
 7. Run automated typecheck/tests/build/smoke only after product-operation rows pass. These prove
    regression stability, not player acceptance.
+8. Run the SUP-A rows after the Phase A work of `09-supply-logistics-ux-wbs.md`, and the SUP-B rows after
+   its Phase B work. SUP-A10 needs a real file download and load, so it needs the user's permission to
+   download before it is executed.
 
 The gate may be marked `PASS` only when every P0 row is `PASS`, no P1 row has a player-blocking
 failure, evidence belongs to the same final build, and the observed-issue list contains no open P0.
