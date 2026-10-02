@@ -25,6 +25,8 @@ export interface DeckState {
   filter?: UnitFilter;
   /** The End button was pressed once while units had not moved; the next press confirms. */
   confirmEnd?: boolean;
+  /** Fuel step 1: the coverage the player picked (single unit, formation, HQ); step 2 then lists the dumps that can pay for it. */
+  fuelMethod?: { readonly pieceId: string; readonly method: string } | undefined;
 }
 
 export type View = TemplateResult | typeof nothing;
@@ -474,6 +476,43 @@ const transportSection = (snapshot: UiSnapshot, others: readonly { key: string; 
     ${others.length > 0 ? actionButtons(others) : nothing}</div>`;
 };
 
+const FUEL_METHODS: Readonly<Record<string, { readonly title: string; readonly detail: string }>> = {
+  SINGLE_UNIT: { title: 'This unit only', detail: '1T, this phase' },
+  FORMATION: { title: 'Whole formation', detail: '1 SP, until Clean Up' },
+  HQ: { title: 'This HQ and units in its range', detail: '1 SP, until Clean Up' },
+};
+
+/** The hex a supply source stands in: a dump on the map, or the truck carrying it. */
+const sourceHex = (snapshot: UiSnapshot, pieceId: string): string | null => {
+  const pieces = (snapshot.view.projection?.stacks ?? []).flatMap((stack) => stack.pieces);
+  const piece = pieces.find(({ id }) => id === pieceId);
+  if (!piece) return null;
+  if (piece.location.kind === 'ON_MAP') return piece.location.hexId;
+  const carrier = piece.location.kind === 'CONTAINER' ? pieces.find(({ id }) => id === (piece.location as { containerId: string }).containerId) : undefined;
+  return carrier?.location.kind === 'ON_MAP' ? carrier.location.hexId : null;
+};
+
+/** Fuel in two steps: first what to fuel (this unit, its formation, the HQ), then which supply dump pays. Hovering a dump marks its hex on the map. */
+const fuelSection = (snapshot: UiSnapshot, state: DeckState): View => {
+  const entries = snapshot.unitActions.filter((entry) => entry.group === 'FUEL' && entry.action.kind === 'PAY_FUEL');
+  if (entries.length === 0) return nothing;
+  const methodOf = (entry: (typeof entries)[number]): string => (entry.action as { method: string }).method;
+  const methods = [...new Set(entries.map(methodOf))];
+  const pieceId = snapshot.selection.pieceId ?? '';
+  // One method is the only choice; otherwise the pick is remembered for this unit only.
+  const picked = state.fuelMethod?.pieceId === pieceId && methods.includes(state.fuelMethod.method) ? state.fuelMethod.method : methods.length === 1 ? methods[0]! : null;
+  const step1 = html`<div class="fuel-step"><small class="step-title">1 · What to fuel</small><div class="chip-row">${methods.map((method) => {
+    const info = FUEL_METHODS[method] ?? { title: method, detail: '' };
+    return html`<button data-fuel-method=${method} aria-pressed=${String(method === picked)} class=${method === picked ? 'is-picked' : ''}>${info.title}<small> · ${info.detail}</small></button>`;
+  })}</div></div>`;
+  const dumps = picked === null ? html`<p class="hint">Choose what to fuel first; then you pick the supply dump that pays.</p>`
+    : html`<div class="fuel-step"><small class="step-title">2 · Pay from which dump</small><div class="action-list">${entries.filter((entry) => methodOf(entry) === picked).map(({ key, label, action }) => {
+      const hex = sourceHex(snapshot, (action as { sourcePieceId: string }).sourcePieceId);
+      return html`<button data-unit-action=${key} data-highlight-hex=${hex ?? nothing}>${withHexLabels(label.replace(/^.*? from /u, ''))}</button>`;
+    })}</div><p class="hint">Hover a dump to see its hex on the map.</p></div>`;
+  return html`<div class="unit-actions fuel-panel"><strong>Fuel</strong>${step1}${dumps}</div>`;
+};
+
 const unitTab = (snapshot: UiSnapshot, state: DeckState): TemplateResult => {
   const parts: View[] = [];
   if (snapshot.movePreview && !snapshot.movePreview.explanation.allowed) parts.push(html`<div class="move-preview"><strong>Move to ${printedHexLabel(snapshot.movePreview.destinationHexId)} is not allowed</strong>${explanationBlock(snapshot.movePreview.explanation)}</div>`);
@@ -484,10 +523,11 @@ const unitTab = (snapshot: UiSnapshot, state: DeckState): TemplateResult => {
     const groups: [string, string][] = [['FUEL', 'Fuel'], ['SUPPLY', 'Supply'], ['BREAKOUT', 'Breakout'], ['TRANSPORT', 'Trucks'], ['DUMP', 'Dump'], ['AIR', 'Air']];
     // Loading, unloading and splitting live in the truck's supply area; the buttons that remain are the other truck actions.
     const inPanel = (kind: string) => ['LOAD_SUPPLY', 'UNLOAD_SUPPLY', 'DIVIDE_TRANSPORT'].includes(kind);
-    parts.push(...groups.flatMap(([group, title]) => {
+    parts.push(...groups.flatMap(([group, title]): View[] => {
       if (group === 'TRANSPORT' && snapshot.transportOptions) {
         return [transportSection(snapshot, snapshot.unitActions.filter((entry) => entry.group === 'TRANSPORT' && !inPanel(entry.action.kind)))];
       }
+      if (group === 'FUEL') return [fuelSection(snapshot, state)];
       const entries = snapshot.unitActions.filter((entry) => entry.group === group);
       return entries.length === 0 ? [] : [html`<div class="unit-actions"><strong>${title}</strong>${actionButtons(entries)}</div>`];
     }));

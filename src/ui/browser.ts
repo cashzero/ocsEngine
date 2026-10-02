@@ -58,6 +58,8 @@ let cellsById = new Map(theater.cells.map((cell) => [cell.id, cell]));
 let unsubscribeController: (() => void) | null = null;
 /** The snapshot drawn last; the map's listeners and the keyboard handlers read it. */
 let shown: UiSnapshot | null = null;
+/** The hex of the supply option the pointer is on in the deck; drawn on the map. */
+let sourceHighlightHex: string | null = null;
 
 let newGameSettings: NewGameRequest = {
   ...DEFAULT_NEW_GAME_REQUEST,
@@ -275,6 +277,7 @@ const mapStateOf = (snapshot: UiSnapshot): MapState => {
     barrage: new Set(snapshot.barrageTargets),
     placement: new Set(snapshot.placementHexes),
     retreat: new Set([...snapshot.decisionHexes, ...snapshot.collapseHexes]),
+    highlight: new Set(sourceHighlightHex ? [sourceHighlightHex] : []),
     airTargets: new Set(snapshot.air.targetHexes),
     destinationHexId: snapshot.movePreview?.destinationHexId ?? null,
     targetHexIds: new Set([snapshot.draft?.targetHexId, combatHex].filter((id): id is string => typeof id === 'string')),
@@ -787,6 +790,9 @@ root.addEventListener('click', (event) => {
   if (mode) { void runUi(() => controller.changeMode(mode.dataset.mode as never)); return; }
   const feed = closest('[data-feed]');
   if (feed) { void runUi(() => controller.feedSupply(feed.dataset.feed!, feed.dataset.dump!)); return; }
+  // Fuel step 1 only remembers the pick; the dump list (step 2) is drawn from it.
+  const fuelMethod = closest('[data-fuel-method]');
+  if (fuelMethod) { const current = controller.getSnapshot(); deck.fuelMethod = { pieceId: current.selection.pieceId ?? '', method: fuelMethod.dataset.fuelMethod! }; render(current); return; }
   const action = closest('[data-unit-action]');
   if (action) { void runUi(() => controller.runAction(action.dataset.unitAction!)); return; }
   // The truck's supply area: the Token count is read from the row's own field when the button is pressed.
@@ -818,6 +824,20 @@ root.addEventListener('click', (event) => {
   const unit = closest('.deck-unit[data-piece]');
   if (unit) controller.selectPiece(unit.dataset.piece ?? null);
 });
+
+/** Pointing at (or focusing) a supply option in the deck marks its hex on the map without redrawing the deck. */
+const markSource = (event: Event, entering: boolean): void => {
+  const hexId = (event.target as Element).closest<HTMLElement>('[data-highlight-hex]')?.dataset.highlightHex ?? null;
+  if (!hexId && entering) return;
+  const next = entering ? hexId : null;
+  if (next === sourceHighlightHex || !shown) return;
+  sourceHighlightHex = next;
+  mapView.update(mapStateOf(shown));
+};
+root.addEventListener('pointerover', (event) => markSource(event, true));
+root.addEventListener('pointerout', (event) => markSource(event, false));
+root.addEventListener('focusin', (event) => markSource(event, true));
+root.addEventListener('focusout', (event) => markSource(event, false));
 
 root.addEventListener('change', (event) => {
   const input = event.target as HTMLInputElement;
