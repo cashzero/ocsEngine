@@ -2,6 +2,7 @@ import { stableSort, type HexId, type PieceId, type PlayerId } from '../../core/
 import { captureAirBase } from '../air/base.js';
 import type { PieceRuntimeState, PieceState } from '../../domain/piece/index.js';
 import type { GameState, RuleEvent, RuleViolation } from '../kernel/model.js';
+import type { RuleQueryResult, RuleReason } from '../query/model.js';
 import { rollDie } from '../kernel/rng.js';
 import {
   TRANSPORT_POINTS_STATUS,
@@ -221,6 +222,80 @@ export const applyUnload = (state: GameState, truckId: PieceId, tokens: number):
     pieceState = next.pieceState;
   }
   return { state: next, events: [{ kind: 'SUPPLY_TRANSFERRED', sequence: 0, truckId, tokens, loaded: false }] };
+};
+
+// ─── What a truck can load and unload here (read-only, for the UI) ───────────────────────────
+
+/** One way a truck can move SP in its Hex: a load from one dump, or an unload of what it carries. */
+export interface TransportOption {
+  readonly kind: 'LOAD' | 'UNLOAD';
+  /** The ground dump to load from; null for an unload. */
+  readonly pieceId: PieceId | null;
+  /** Any whole number of Tokens from `minTokens` to `maxTokens` is accepted by the rules; both are 0 when not available. */
+  readonly minTokens: number;
+  readonly maxTokens: number;
+  /** MA the truck spends on one such action (13.2f), and what it has left afterwards. */
+  readonly costTicks: number;
+  readonly remainingAfterTicks: number;
+  readonly available: boolean;
+  /** Why it is not available, as the rules say it (code, message, rule number); empty when available. */
+  readonly reasons: readonly RuleReason[];
+}
+
+export interface TransportOptions {
+  readonly truckId: PieceId;
+  readonly hexId: HexId;
+  readonly points: number;
+  readonly capacityTokens: number;
+  readonly loadedTokens: number;
+  readonly remainingTicks: number;
+  /** The truck is the unit now moving (6.1g): it must finish before another unit begins to move. */
+  readonly isCurrentMover: boolean;
+  readonly loads: readonly TransportOption[];
+  /** Null when the truck carries nothing. */
+  readonly unload: TransportOption | null;
+}
+
+const reasonsOf = (issues: readonly RuleViolation[]): RuleReason[] =>
+  issues.map(({ code, message, rule }) => ({ code, allowed: false, message, rule }));
+
+/**
+ * The loads and unload the asking player's Transport Point could do now, built from `validateLoad` and
+ * `validateUnload` so the offered range is exactly what the rules accept.
+ */
+export const queryTransportOptions = (state: GameState, actorId: PlayerId, truckId: PieceId): RuleQueryResult<TransportOptions | null> => {
+  const truck = pieceById(state, truckId);
+  const dependencies = [{ aggregate: 'GAME' as const, revision: state.revision, key: `transport:${truckId}` }];
+  if (!truck || truck.ownerId !== actorId || !isTransportPoint(state, truck) || hexOf(truck) === null) {
+    return { allowed: false, value: null, reasons: [{ code: 'INVALID_TRANSPORT_POINT', allowed: false, message: 'Choose one of your Transport Points on the map.', rule: '13.2' }], facts: [], dependencies };
+  }
+  const hexId = hexOf(truck)!;
+  const remaining = remainingTicks(state, truck);
+  const cost = loadCostTicks(state, truck);
+  const carried = loadedTokens(state, truck);
+  const room = capacityTokens(state, truck) - carried;
+  const loads: TransportOption[] = isExtender(state, truck) ? [] : groundDumpsAt(state, actorId, hexId).map((dump) => {
+    const max = Math.max(0, Math.min((dump.resourceQuantity ?? 0) - usageOf(state, dump).unloadedTokens, room));
+    // Probe with one Token when nothing can be loaded, so the rules name the reason.
+    const issues = validateLoad(state, actorId, truckId, dump.id, Math.max(1, max));
+    const available = max >= 1 && issues.length === 0;
+    return {
+      kind: 'LOAD' as const, pieceId: dump.id, minTokens: available ? 1 : 0, maxTokens: available ? max : 0,
+      costTicks: cost, remainingAfterTicks: Math.max(0, remaining - cost), available, reasons: available ? [] : reasonsOf(issues),
+    };
+  });
+  const unloadIssues = carried > 0 ? validateUnload(state, actorId, truckId, carried) : [];
+  const unload: TransportOption | null = carried > 0 ? {
+    kind: 'UNLOAD', pieceId: null, minTokens: unloadIssues.length === 0 ? 1 : 0, maxTokens: unloadIssues.length === 0 ? carried : 0,
+    costTicks: cost, remainingAfterTicks: Math.max(0, remaining - cost), available: unloadIssues.length === 0, reasons: reasonsOf(unloadIssues),
+  } : null;
+  return {
+    allowed: true,
+    value: { truckId, hexId, points: transportPointsOf(state, truck), capacityTokens: capacityTokens(state, truck), loadedTokens: carried, remainingTicks: remaining, isCurrentMover: state.currentMoverId === truckId, loads, unload },
+    reasons: [{ code: 'TRANSPORT_OPTIONS', allowed: true, message: `${loads.length} dump(s) here.`, rule: '13.2f' }],
+    facts: [],
+    dependencies,
+  };
 };
 
 // ─── Combining and dividing (13.2c) ──────────────────────────────────────────────────────────

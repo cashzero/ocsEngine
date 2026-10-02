@@ -39,7 +39,16 @@ export interface RuleExplanation {
   readonly citations: readonly string[];
 }
 
+/**
+ * What a counter is used for, so the UI never has to guess it from field combinations. A supply counter is a
+ * `DUMP` on the map and `CARGO` while a Transport Point carries it; a truck is an `EXTENDER` on its other face.
+ */
+export type PieceRole = 'COMBAT' | 'ARTILLERY' | 'HQ' | 'TRUCK' | 'EXTENDER' | 'DUMP' | 'CARGO' | 'AIRCRAFT' | 'AIR_BASE' | 'OTHER';
+
 export interface ProjectedPiece {
+  readonly role: PieceRole;
+  /** Tokens a friendly truck carries (13.2f); null for anything else and for enemy counters. */
+  readonly carriedTokens: number | null;
   readonly currentFaceId: import('../../domain/piece/index.js').FaceId | null;
   readonly resourceQuantity: number | null;
   readonly id: PieceId;
@@ -135,4 +144,6 @@ export interface RuleEngine {
   readonly projectForViewer: (state: GameState, viewerId: PlayerId) => RuleProjection;
   /** Least-cost destinations of one own unit with their cost; facts carry `movement.remainingTicks`. */
   readonly queryMovementRange: (state: GameState, actorId: PlayerId, pieceId: PieceId) => RuleQueryResult<readonly import('../movement/movement.js').ReachableHex[]>;
+  /** What one own Transport Point can load or unload in its Hex now: Token ranges, MP cost, and the rule behind anything not offered. */
+  readonly queryTransportOptions: (state: GameState, actorId: PlayerId, truckId: PieceId) => RuleQueryResult<import('../supply/transport.js').TransportOptions | null>;
 }

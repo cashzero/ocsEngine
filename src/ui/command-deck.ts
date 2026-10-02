@@ -333,6 +333,8 @@ export const deckTabs = (snapshot: UiSnapshot): DeckTab[] => {
   if (phase !== 'AIRCRAFT_REFIT') tabs.push({ id: 'unit', label: 'Unit', badge: 0 });
   // Air missions are optional in every step that offers them, so Air never takes the lead from the step's own work.
   if (snapshot.air.missions.length > 0) tabs.push({ id: 'air', label: 'Air', badge: snapshot.air.missions.filter(({ available }) => available).length });
+  // What the seat has paid or moved this step, once there is something to read; optional, so it never takes the first place.
+  if (snapshot.ledger.length > 0) tabs.push({ id: 'ledger', label: 'Ledger', badge: 0 });
   tabs.push({ id: 'log', label: 'Log', badge: 0 });
   return tabs;
 };
@@ -413,18 +415,73 @@ const targetsTab = (snapshot: UiSnapshot): string => {
 
 const airTab = (snapshot: UiSnapshot): string => `${airMissionButtons(snapshot)}<p class="hint">Pick a mission, then a highlighted target hex and the aircraft that fly it.</p>`;
 
+/** A supply dump is a generic counter: it reads as its size, never by a name (the board-game counter has none). */
+const supplyText = (tokens: number): string => `${tokens}T (${tokens / 4} SP)`;
+
+const transferRow = (title: string, kind: 'LOAD' | 'UNLOAD', dumpId: string | null, option: NonNullable<UiSnapshot['transportOptions']>['loads'][number]): string => {
+  const verb = kind === 'LOAD' ? 'Load' : 'Unload';
+  if (!option.available) {
+    const reason = option.reasons[0];
+    return `<div class="transfer-row is-blocked"><span class="transfer-title">${esc(title)}</span><button disabled>${verb}</button>
+      <small class="blocker">${esc(reason ? withHexLabels(reason.message) : 'Not available now.')}${reason ? ` <cite>${esc(reason.rule)}</cite>` : ''}</small></div>`;
+  }
+  return `<div class="transfer-row"><span class="transfer-title">${esc(title)}</span>
+    <label class="transfer-amount">Tokens <input type="number" class="transfer-tokens" min="${option.minTokens}" max="${option.maxTokens}" value="${option.maxTokens}" inputmode="numeric" aria-label="${esc(`Tokens to ${verb.toLowerCase()}: ${option.minTokens} to ${option.maxTokens}`)}"></label>
+    <button class="primary" data-transfer="${kind}"${dumpId ? ` data-dump="${esc(dumpId)}"` : ''}>${verb}</button>
+    <small>${option.minTokens}–${option.maxTokens}T · costs ${mp(option.costTicks)} MP, ${mp(option.remainingAfterTicks)} MP left afterwards</small></div>`;
+};
+
+/** The truck's supply area: what is here to load, what it carries, what each action costs, and why something is not offered. */
+const transportSection = (snapshot: UiSnapshot, others: readonly { key: string; label: string }[]): string => {
+  const options = snapshot.transportOptions!;
+  const pieces = (snapshot.view.projection?.stacks ?? []).flatMap(({ pieces: stackPieces }) => stackPieces);
+  const divide = snapshot.unitActions.flatMap(({ action }) => action.kind === 'DIVIDE_TRANSPORT' ? [action.points] : []);
+  const loads = options.loads.map((option) => {
+    const dump = pieces.find(({ id }) => id === option.pieceId);
+    return transferRow(`Dump here · ${supplyText(dump?.resourceQuantity ?? 0)}`, 'LOAD', option.pieceId, option);
+  }).join('');
+  const nothingHere = options.loads.length === 0 ? '<p class="hint">No friendly supply dump in this hex to load from.</p>' : '';
+  const unload = options.unload ? transferRow(`Carrying ${supplyText(options.loadedTokens)}`, 'UNLOAD', null, options.unload) : '';
+  const midMove = options.isCurrentMover && options.remainingTicks > 0
+    ? '<p class="warning">This truck is mid-move. Finish with it before moving another unit, or it loses its remaining MP and load (6.1g) <cite>6.1g</cite></p>' : '';
+  const split = divide.length > 0
+    ? `<div class="transfer-row"><span class="transfer-title">Split the counter</span>
+      <label class="transfer-amount">Points <input type="number" class="divide-points" min="1" max="${Math.max(...divide)}" value="1" inputmode="numeric" aria-label="Truck points to split off"></label>
+      <button data-divide>Split off</button><small>No MP cost (13.2c)</small></div>` : '';
+  return `<div class="unit-actions transport-panel"><strong>Trucks</strong>
+    <p class="summary-line">${options.points} truck point${options.points === 1 ? '' : 's'} · carrying ${options.loadedTokens}/${options.capacityTokens}T · ${mp(options.remainingTicks)} MP left</p>
+    ${midMove}${loads}${nothingHere}${unload}${split}
+    ${others.length > 0 ? `<div class="action-list">${others.map(({ key, label }) => `<button data-unit-action="${esc(key)}">${esc(withHexLabels(label))}</button>`).join('')}</div>` : ''}</div>`;
+};
+
 const unitTab = (snapshot: UiSnapshot, state: DeckState): string => {
   const parts: string[] = [];
   if (snapshot.movePreview && !snapshot.movePreview.explanation.allowed) parts.push(`<div class="move-preview"><strong>Move to ${esc(printedHexLabel(snapshot.movePreview.destinationHexId))} is not allowed</strong>${explanationBlock(snapshot.movePreview.explanation)}</div>`);
   if (snapshot.modeOptions.length > 0 || snapshot.releaseAction) {
     parts.push(`<div class="mode-actions"><strong>Mode</strong><div class="chip-row">${snapshot.modeOptions.map(({ mode }) => `<button data-mode="${mode}">${esc(modeName(mode))}</button>`).join('')}${snapshot.releaseAction ? '<button id="release-reserve">Release reserve</button>' : ''}</div></div>`);
   }
-  if (snapshot.unitActions.length > 0) {
+  if (snapshot.unitActions.length > 0 || snapshot.transportOptions) {
     const groups: [string, string][] = [['FUEL', 'Fuel'], ['SUPPLY', 'Supply'], ['BREAKOUT', 'Breakout'], ['TRANSPORT', 'Trucks'], ['DUMP', 'Dump'], ['AIR', 'Air']];
+    // Loading, unloading and splitting live in the truck's supply area; the buttons that remain are the other truck actions.
+    const inPanel = (kind: string) => ['LOAD_SUPPLY', 'UNLOAD_SUPPLY', 'DIVIDE_TRANSPORT'].includes(kind);
     parts.push(groups.flatMap(([group, title]) => {
+      if (group === 'TRANSPORT' && snapshot.transportOptions) {
+        return [transportSection(snapshot, snapshot.unitActions.filter((entry) => entry.group === 'TRANSPORT' && !inPanel(entry.action.kind)))];
+      }
       const entries = snapshot.unitActions.filter((entry) => entry.group === group);
       return entries.length === 0 ? [] : [`<div class="unit-actions"><strong>${title}</strong><div class="action-list">${entries.map(({ key, label }) => `<button data-unit-action="${esc(key)}">${esc(withHexLabels(label))}</button>`).join('')}</div></div>`];
     }).join(''));
+  }
+  // A dump has no move of its own: it is carried, so say which trucks here can carry it.
+  const dump = snapshot.selectedPiece;
+  const sequence = snapshot.view.projection?.sequence;
+  if (dump?.role === 'DUMP' && dump.ownerId === snapshot.view.playerId && dump.location.kind === 'ON_MAP' && sequence?.phase === 'MOVEMENT' && sequence.segment === 'MOVEMENT') {
+    const hexId = dump.location.hexId;
+    const trucks = (snapshot.view.projection?.stacks ?? []).flatMap(({ pieces }) => pieces)
+      .filter((piece) => piece.role === 'TRUCK' && piece.ownerId === dump.ownerId && piece.location.kind === 'ON_MAP' && piece.location.hexId === hexId);
+    parts.push(`<div class="unit-actions"><strong>Carry with a truck</strong>${trucks.length > 0
+      ? `<p class="hint">Select a truck in this hex to choose how many Tokens to load from this ${supplyText(dump.resourceQuantity ?? 0)} dump.</p>${trucks.map((truck) => unitRow(snapshot, truck)).join('')}`
+      : '<p class="hint">No friendly truck in this hex. Move one here to load from this dump.</p>'}</div>`);
   }
   if (snapshot.collapseHexes.length > 0) {
     parts.push('<p class="hint">Or collapse the Extender (9.14d): click a highlighted hex in trace supply within its range.</p>');
@@ -439,6 +496,14 @@ const unitTab = (snapshot: UiSnapshot, state: DeckState): string => {
   return parts.join('');
 };
 
+/** The supply the seat has paid or moved in this step, newest last, with what each source holds now. */
+const ledgerTab = (snapshot: UiSnapshot): string => {
+  const spent = snapshot.ledger.reduce((total, { spent: tokens }) => total + tokens, 0);
+  return `<div class="ledger"><strong>Supply this step</strong>
+    <p class="summary-line">${spent}T paid · ${snapshot.ledger.length} entr${snapshot.ledger.length === 1 ? 'y' : 'ies'}</p>
+    <ol class="ledger-list">${snapshot.ledger.map(({ text }) => `<li>${esc(withHexLabels(text))}</li>`).join('')}</ol></div>`;
+};
+
 const logTab = (snapshot: UiSnapshot): string => collapse(snapshot.feed).reverse().slice(0, 120).map(feedEntryHtml).join('') || '<p class="hint">No actions yet.</p>';
 
 const tabBody = (snapshot: UiSnapshot, state: DeckState, tab: string): string => {
@@ -449,6 +514,7 @@ const tabBody = (snapshot: UiSnapshot, state: DeckState, tab: string): string =>
     case 'targets': return targetsTab(snapshot);
     case 'air': return airTab(snapshot);
     case 'unit': return unitTab(snapshot, state);
+    case 'ledger': return ledgerTab(snapshot);
     default: return logTab(snapshot);
   }
 };
@@ -468,13 +534,21 @@ export const movePopupHtml = (snapshot: UiSnapshot): string => {
   const total = already.reduce((sum, piece) => sum + reTicks(piece), 0) + (snapshot.selectedPiece ? reTicks(snapshot.selectedPiece) : 0);
   const reasons = preview.explanation.allowed ? [] : preview.explanation.reasons.filter(({ allowed }) => !allowed);
   const from = preview.path.length > 1 ? preview.path[preview.path.length - 2]! : snapshot.selectedPiece?.location.kind === 'ON_MAP' ? snapshot.selectedPiece.location.hexId : '';
+  // 6.1g: starting this move ends a Transport Point's move; say what it would give up before the player confirms.
+  const endsId = fact(preview.explanation, 'movement.endsOtherMover.pieceId');
+  const endsPiece = typeof endsId === 'string' ? (snapshot.view.projection?.stacks ?? []).flatMap(({ pieces }) => pieces).find(({ id }) => id === endsId) : undefined;
+  const endsLoad = Number(fact(preview.explanation, 'movement.endsOtherMover.loadTokens') ?? 0);
+  const endsWarning = endsPiece
+    ? `<p class="warning">This ends the move of ${esc(pieceLabel(snapshot.scenario, endsPiece))}: its ${mp(fact(preview.explanation, 'movement.endsOtherMover.remainingTicks'))} MP left${endsLoad > 0 ? ` and ${endsLoad}T aboard` : ''} cannot be used again this phase <cite>6.1g</cite></p>`
+    : '';
   return `<div class="move-popup" role="group" aria-label="Confirm move to ${esc(printedHexLabel(preview.destinationHexId))}" data-anchor-hex="${esc(preview.destinationHexId)}" data-from-hex="${esc(from)}">
     <strong>Move to ${esc(printedHexLabel(preview.destinationHexId))}</strong>
     <p>Cost ${mp(fact(preview.explanation, 'movement.totalTicks'))} MP · ${mp(fact(preview.explanation, 'movement.remainingTicks'))} MP left after the move.</p>
     ${range?.endsMovement ? '<p class="blocker">The move ends there (enemy ZOC, all-MP terrain, or minimum move).</p>' : ''}
     ${total > 40 ? `<p class="blocker">Ending here makes ${total / 4} RE in one hex: over 10 RE at the end of the segment, you must eliminate units (4.8a).</p>` : ''}
     ${reasons.length > 0 ? `<p class="blocker">${esc(withHexLabels(reasons[0]!.message))} <cite>${esc(reasons[0]!.rule)}</cite></p>${reasons.length > 1 ? `<p class="hint">${reasons.length - 1} more reason${reasons.length === 2 ? '' : 's'} in the Unit tab.</p>` : ''}` : ''}
-    <div class="button-grid"><button id="cancel-move">Cancel</button><button class="primary" id="confirm-move" ${preview.explanation.allowed && !snapshot.busy ? '' : 'disabled'}>Confirm</button></div>
+    ${endsWarning}
+    <div class="button-grid"><button id="cancel-move">Cancel</button><button class="primary" id="confirm-move" ${preview.explanation.allowed && !snapshot.busy ? '' : 'disabled'}>${endsWarning ? 'Confirm anyway' : 'Confirm'}</button></div>
   </div>`;
 };
 
@@ -483,8 +557,9 @@ const unitFormation = (snapshot: UiSnapshot, piece: ProjectedPiece): string => {
   return formation ? snapshot.formationNames.get(String(formation)) ?? '' : '';
 };
 
+/** Every counter the player commands. SP a truck carries is part of that truck, not another unit. */
 const rosterOwn = (snapshot: UiSnapshot): ProjectedPiece[] =>
-  (snapshot.view.projection?.stacks ?? []).flatMap((stack) => stack.pieces).filter(({ ownerId }) => ownerId === snapshot.view.playerId);
+  (snapshot.view.projection?.stacks ?? []).flatMap((stack) => stack.pieces).filter(({ ownerId, role }) => ownerId === snapshot.view.playerId && role !== 'CARGO');
 
 /** The scrolling part of the roster. Rebuilt on its own while typing so a force of hundreds does not repaint the whole page. */
 export const unitRosterBodyHtml = (snapshot: UiSnapshot, state: DeckState): string => {
@@ -550,7 +625,10 @@ export const phaseControlsHtml = (snapshot: UiSnapshot, state: DeckState): strin
   if (reasons.length === 0 && snapshot.decision) reasons.push('Answer the open decision first.');
   else if (reasons.length === 0 && snapshot.draft) reasons.push('Finish or cancel the open plan first.');
   return `<div class="phase-actions">
-    ${snapshot.undoStep ? `<button id="undo-step" class="subtle" title="Undo back to the ${esc(snapshot.undoStep.label)}" aria-label="Undo back to the ${esc(snapshot.undoStep.label)}">↶ Undo</button>` : ''}
+    ${snapshot.undoStep ? (() => {
+      const text = snapshot.undoStep.scope === 'ACTION' ? `Undo: ${snapshot.undoStep.label}` : `Undo back to the ${snapshot.undoStep.label}`;
+      return `<button id="undo-step" class="subtle" title="${esc(text)}" aria-label="${esc(text)}">↶ Undo</button>`;
+    })() : ''}
     <button id="end-phase" class="${confirming ? 'warning' : snapshot.endStep.enabled ? 'primary' : ''}" ${disabled ? 'disabled' : ''}>${confirming
       ? `Finish anyway: ${unmoved} unit${unmoved === 1 ? ' has' : 's have'} not moved`
       : esc(snapshot.endStep.label)}<small>${esc(confirming ? 'Press again to confirm' : `Next: ${snapshot.endStep.next}`)}</small></button>
@@ -562,7 +640,7 @@ export const commandDeckHtml = (snapshot: UiSnapshot, state: DeckState): string 
   const { view } = snapshot;
   const sequence = view.projection?.sequence;
   const busy = state.working || snapshot.busy;
-  const own = (view.projection?.stacks ?? []).flatMap((stack) => stack.pieces).filter(({ ownerId }) => ownerId === view.playerId);
+  const own = (view.projection?.stacks ?? []).flatMap((stack) => stack.pieces).filter(({ ownerId, role }) => ownerId === view.playerId && role !== 'CARGO');
   const objective = stepObjective(snapshot);
   const interrupt = interruptPanel(snapshot);
   const away = awayPanel(snapshot);

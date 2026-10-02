@@ -18,7 +18,7 @@ import {
 } from '../rules/index.js';
 import type {
   AirDraft, AirOverview, AirRefit, Arrival, AttackDraft, AwayReport, CombatSheet, EndStep, HandoffInfo, MovePreview, MoveRangeEntry,
-  SupplyNeed, UiListener, UiSelection, UiSnapshot, UnitAction,
+  LedgerLine, SupplyNeed, UiListener, UiSelection, UiSnapshot, UnitAction,
 } from './model.js';
 import {
   buildCombatReports, describeRecord, nominalNextStep, playerTurnTrack,
@@ -58,6 +58,10 @@ export interface UiController {
   readonly feedSupply: (pieceId: string, dumpId: string) => Promise<void>;
   /** Run one of the snapshot's unitActions or stepActions by key. */
   readonly runAction: (key: string) => Promise<void>;
+  /** Load a chosen number of Tokens from a dump in the selected truck's Hex, or unload some of its load (13.2f). */
+  readonly transferSupply: (kind: 'LOAD' | 'UNLOAD', dumpId: string | null, tokens: number) => Promise<void>;
+  /** Split a chosen number of Transport Points off the selected truck (13.2c). */
+  readonly divideTruck: (points: number) => Promise<void>;
   readonly respondToDecision: (choiceId: string) => Promise<void>;
   /** Pay the pending combat-supply decision from the largest dumps, consumer by consumer. */
   readonly autoPay: () => Promise<void>;
@@ -116,6 +120,28 @@ interface AutoCheckpoint {
   readonly label: string;
 }
 
+/** One action that Undo can take back: the state just before it, kept as a checkpoint. */
+interface UndoPoint {
+  readonly id: CheckpointDescriptor['id'];
+  readonly stepKey: string;
+  readonly seatId: SeatId;
+  /** What the action did, in the words shown to the player ("Moved to 0316."). */
+  readonly label: string;
+}
+
+/** Label prefix of the checkpoints taken before each undoable action; they are never listed with the player's own checkpoints. */
+const UNDO_POINT_PREFIX = 'Before: ';
+/** Most actions Undo can step back through in one step. */
+const UNDO_DEPTH = 30;
+/**
+ * Actions that only rearrange the player's own units and stores, so taking one back reveals nothing and re-rolls
+ * nothing. Anything else (combat, barrage, decisions, ending a step, air missions, blowing a dump...) clears Undo.
+ */
+const UNDOABLE_ACTIONS: ReadonlySet<GameAction['kind']> = new Set([
+  'MOVE_PIECE', 'CHANGE_MODE', 'RELEASE_RESERVE', 'PLACE_REINFORCEMENT', 'PAY_FUEL', 'RECOVER_INTERNALS', 'CHOOSE_FORMATION_TRACE',
+  'LOAD_SUPPLY', 'UNLOAD_SUPPLY', 'COMBINE_TRANSPORT', 'DIVIDE_TRANSPORT', 'FORM_EXTENDER', 'DISSOLVE_EXTENDER',
+]);
+
 /** Events after which "undo this step" would let a player re-roll or retract what the opponent saw. */
 const IRREVERSIBLE_EVENTS: ReadonlySet<RuleEvent['kind']> = new Set([
   'DICE_ROLLED', 'TRANSACTION_DECLARED', 'SUPPLY_ARRIVED', 'BREAKOUT_ROLLED', 'ATTRITION_ROLLED',
@@ -167,6 +193,11 @@ class DefaultUiController implements UiController {
   #resultCard = new Map<SeatId, string>();
   #answers = new Map<string, string[]>();
   #autoCheckpoint: AutoCheckpoint | null = null;
+  /** Actions of the current step that Undo can take back, oldest first. */
+  #undoPoints: UndoPoint[] = [];
+  /** Where a payment was drawn from, as the player saw it when paying (the dump may be gone afterwards), by history index. */
+  #sourceNotes = new Map<number, { readonly id: string; readonly label: string }>();
+  #undoing = false;
   #skipDumpOnlySteps: boolean;
 
   constructor(options: UiControllerOptions) {
@@ -239,14 +270,19 @@ class DefaultUiController implements UiController {
   /** Track open combats and remember their public facts, so results can be reported after the fact. */
   #observe(notification: SessionNotification): void {
     if (notification.kind === 'DISPATCH_ACCEPTED') {
+      // Whatever path dispatched it, an action Undo cannot take back (or one that rolled or revealed) ends what came before.
+      if (!UNDOABLE_ACTIONS.has(notification.record.action.kind) || notification.record.events.some((event) => IRREVERSIBLE_EVENTS.has(event.kind))) this.#clearUndoPoints();
       for (const event of notification.record.events) {
         if (event.kind === 'TRANSACTION_DECLARED') this.#openTransaction = event.transactionId;
         if ((event.kind === 'TRANSACTION_RESOLVED' || event.kind === 'TRANSACTION_CANCELLED') && this.#openTransaction === event.transactionId) this.#openTransaction = null;
       }
     }
     if (notification.kind === 'CHECKPOINT_RESTORED') {
+      // A restore the player asked for from the Session list invalidates the stack; Undo's own restore keeps it.
+      if (!this.#undoing) this.#clearUndoPoints();
       this.#openTransaction = null;
       const length = this.#session.getHistory({ offset: 0, limit: 0, actionKind: null }).total;
+      for (const index of [...this.#sourceNotes.keys()]) if (index >= length) this.#sourceNotes.delete(index);
       for (const [seat, seen] of this.#seen) this.#seen.set(seat, Math.min(seen, length));
     }
     if (this.#openTransaction !== null) {
@@ -375,14 +411,82 @@ class DefaultUiController implements UiController {
     return records;
   }
 
-  #undoStepAvailable(): { label: string } | null {
+  /** The supply the seat paid or moved this step, from its own accepted actions. */
+  #ledger(records: readonly HistoryRecord[], seatId: SeatId, pieces: readonly ProjectedPiece[]): readonly LedgerLine[] {
+    const lines: LedgerLine[] = [];
+    const where = (index: number): string => {
+      const note = this.#sourceNotes.get(index);
+      if (!note) return 'a dump';
+      const source = pieces.find(({ id }) => id === note.id);
+      const left = source && source.location.kind !== 'ELIMINATED' && (source.resourceQuantity ?? 0) > 0 ? `${source.resourceQuantity}T left` : 'used up';
+      return `${note.label} (${left})`;
+    };
+    const method = { SINGLE_UNIT: 'this unit', FORMATION: 'its whole formation', HQ: 'the HQ and its range' } as const;
+    for (const record of records) {
+      if (record.seatId !== seatId) continue;
+      for (const event of record.events) {
+        const revision = record.revisionAfter;
+        if (event.kind === 'FUEL_PAID') {
+          const unit = pieces.find(({ id }) => id === event.pieceId);
+          lines.push({ revision, spent: event.tokens, text: `Fuel ${event.tokens}T for ${unit ? unitLabel(this.#scenario, unit) : 'a unit'} (${method[event.method]}) from ${where(record.sequence)}.` });
+        } else if (event.kind === 'SUPPLY_SPENT') {
+          lines.push({ revision, spent: event.quantity, text: `${event.quantity}T drawn from ${where(record.sequence)}.` });
+        } else if (event.kind === 'SUPPLY_TRANSFERRED') {
+          lines.push({ revision, spent: 0, text: `${event.loaded ? 'Loaded' : 'Unloaded'} ${event.tokens}T ${event.loaded ? 'onto' : 'from'} a truck.` });
+        } else if (event.kind === 'DUMP_BLOWN') {
+          lines.push({ revision, spent: 0, text: `Blew a dump: ${event.destroyed}T destroyed.` });
+        }
+      }
+    }
+    return lines;
+  }
+
+  #clearUndoPoints(): void {
+    for (const point of this.#undoPoints) this.#session.removeCheckpoint(point.id);
+    this.#undoPoints = [];
+  }
+
+  /** The state just before an undoable action, taken only when nothing is pending and no hand-over is under way. */
+  #takeUndoPoint(action: GameAction, label: string): CheckpointDescriptor | null {
+    const stepKey = this.#stepKey();
+    if (!UNDOABLE_ACTIONS.has(action.kind) || stepKey === null || this.#handoffToken !== null || this.#decision() !== null) return null;
+    if (this.#session.getMetadata().lifecycle !== 'ACTIVE') return null;
+    return this.#session.createCheckpoint(`${UNDO_POINT_PREFIX}${label}`);
+  }
+
+  /**
+   * After an accepted action: remember it for Undo, or, when it cannot be taken back (not an undoable kind, or it drew
+   * from the dice or asks the other player to decide), forget everything before it. Returns text for the player when
+   * something that could have been undone no longer can be.
+   */
+  #recordUndoPoint(taken: CheckpointDescriptor | null, action: GameAction, label: string, result: { readonly randomUsed?: boolean; readonly events: readonly RuleEvent[]; readonly pendingDecision: unknown }): string {
+    const irreversible = result.randomUsed === true || result.pendingDecision !== null || result.events.some((event) => IRREVERSIBLE_EVENTS.has(event.kind));
+    if (taken && !irreversible) {
+      this.#undoPoints.push({ id: taken.id, stepKey: this.#stepKey() ?? '', seatId: this.#activeSeat(), label });
+      while (this.#undoPoints.length > UNDO_DEPTH) this.#session.removeCheckpoint(this.#undoPoints.shift()!.id);
+      return '';
+    }
+    const hadSomething = this.#undoPoints.length > 0;
+    if (taken) this.#session.removeCheckpoint(taken.id);
+    this.#clearUndoPoints();
+    return UNDOABLE_ACTIONS.has(action.kind) && hadSomething ? ' This cannot be undone: dice were rolled or the other player must decide.' : '';
+  }
+
+  #undoActionAvailable(): { label: string; scope: 'ACTION' } | null {
+    const point = this.#undoPoints.at(-1);
+    if (!point || point.stepKey !== this.#stepKey() || point.seatId !== this.#activeSeat() || this.#decision() !== null) return null;
+    if (!this.#session.listCheckpoints().some(({ id }) => id === point.id)) return null;
+    return { label: point.label, scope: 'ACTION' };
+  }
+
+  #undoStepAvailable(): { label: string; scope: 'STEP' } | null {
     const auto = this.#autoCheckpoint;
     if (!auto || auto.stepKey !== this.#stepKey() || auto.seatId !== this.#activeSeat() || this.#decision() !== null) return null;
     if (!this.#session.listCheckpoints().some(({ id }) => id === auto.id)) return null;
     const since = this.#history().slice(auto.historyLength);
     if (since.length === 0) return null;
     if (since.some((record) => record.seatId !== auto.seatId || record.events.some((event) => IRREVERSIBLE_EVENTS.has(event.kind)))) return null;
-    return { label: auto.label.replace(/^Auto: /u, '') };
+    return { label: auto.label.replace(/^Auto: /u, ''), scope: 'STEP' };
   }
 
   #combatSheet(decision: NonNullable<UiSnapshot['decision']>, playerId: PlayerId): CombatSheet | null {
@@ -484,6 +588,9 @@ class DefaultUiController implements UiController {
       for (const [pieceId, options] of byPiece) supplyNeeds.push({ pieceId: pieceId as PieceId, options });
     }
     const unitActions = ownSelected ? this.#unitActions(ownSelected, enabled) : [];
+    const transportOptions = ownSelected?.role === 'TRUCK' && view.metadata.lifecycle === 'ACTIVE' && !view.privacyLocked
+      && view.projection?.sequence.phase === 'MOVEMENT' && segment === 'MOVEMENT'
+      ? this.#cached(`transport|${ownSelected.id}`, () => this.#session.getTransportOptions(seatId, ownSelected.id).value) : null;
     const stepActions = this.#stepActions(enabled);
     const collapseHexes = ownSelected && ownSelected.currentFaceId === 'extender' && ownSelected.location.kind === 'ON_MAP' && enabled('COLLAPSE_EXTENDER')
       ? this.#cached(`collapse|${ownSelected.id}`, () => this.#session.getActionFamilies(seatId) && this.#collapseHexes(ownSelected)) : [];
@@ -509,6 +616,7 @@ class DefaultUiController implements UiController {
       if (record.action.kind === 'DECLARE_COMBAT') for (const id of record.action.attackerIds) if (own.has(String(id))) attackedThisPhase.add(String(id));
       if (record.action.kind === 'DECLARE_BARRAGE') for (const id of record.action.firerIds) if (own.has(String(id))) attackedThisPhase.add(String(id));
     }
+    const ledger = view.privacyLocked ? [] : this.#ledger(phaseRecords, seatId, pieces);
     return {
       scenario: this.#scenario,
       view,
@@ -529,6 +637,8 @@ class DefaultUiController implements UiController {
       placementHexes,
       supplyNeeds,
       unitActions,
+      ledger,
+      transportOptions,
       stepActions,
       collapseHexes,
       endStep: this.#endStep(),
@@ -536,7 +646,7 @@ class DefaultUiController implements UiController {
       decisionSeatId: pending?.seatId ?? null,
       decisionHexes,
       history: this.#history(),
-      checkpoints: this.#session.listCheckpoints(),
+      checkpoints: this.#session.listCheckpoints().filter(({ label }) => !label.startsWith(UNDO_POINT_PREFIX)),
       notice: this.#notice,
       busy: this.#busy,
       handoffPending: this.#handoffToken !== null,
@@ -550,7 +660,7 @@ class DefaultUiController implements UiController {
       phaseTrack: sequence && otherBinding ? playerTurnTrack(this.#history(), sequence, sequence.phasingPlayerId === view.playerId ? otherBinding.playerId : view.playerId) : [],
       movedThisPhase,
       attackedThisPhase,
-      undoStep: view.privacyLocked ? null : this.#undoStepAvailable(),
+      undoStep: view.privacyLocked ? null : this.#undoActionAvailable() ?? this.#undoStepAvailable(),
       combatSheet: ownDecision ? this.#combatSheet(ownDecision, view.playerId) : null,
       autoPay: ownDecision?.kind === 'SUPPLY_SOURCE' && ownDecision.options.some(({ id }) => id.startsWith('pay:')),
       formationNames: this.#formationNames(view.playerId),
@@ -748,7 +858,8 @@ class DefaultUiController implements UiController {
       }
       if (enabled('ATTEMPT_BREAKOUT')) add('BREAKOUT', 'Attempt breakout (5-6 on one die)', this.#candidates('ATTEMPT_BREAKOUT', piece.id)[0]);
       if (enabled('RECOVER_INTERNALS')) add('SUPPLY', 'Recover internal stocks', this.#candidates('RECOVER_INTERNALS', piece.id)[0]);
-      const isDump = piece.resourceQuantity !== null && piece.remainingSteps === null && piece.mode === null && piece.currentFaceId !== 'move' && piece.currentFaceId !== 'extender';
+      // A dump on the map, or SP a truck carries (12.11a: either can be blown).
+      const isDump = piece.role === 'DUMP' || piece.role === 'CARGO';
       if (enabled('BLOW_DUMP') && isDump && (piece.resourceQuantity ?? 0) > 0) {
         add('DUMP', `Blow this dump (${piece.resourceQuantity}T; roll for 25-100% destroyed)`, this.#probe({ kind: 'BLOW_DUMP', dumpId: piece.id, tokens: piece.resourceQuantity ?? 0 } as never));
       }
@@ -813,6 +924,29 @@ class DefaultUiController implements UiController {
     return this.#scenario.mapDefinition.hexes.map(({ id }) => id).filter((hexId) => hexId !== origin
       && this.#probe({ kind: 'COLLAPSE_EXTENDER', extenderId: piece.id, hexId } as never) !== null);
   }
+
+  /** Load Tokens from a dump in the selected truck's Hex, or unload Tokens it carries (13.2f): any count the options allow. */
+  transferSupply = async (kind: 'LOAD' | 'UNLOAD', dumpId: string | null, tokens: number): Promise<void> => {
+    const truck = this.getSnapshot().selectedPiece;
+    const options = this.getSnapshot().transportOptions;
+    if (!truck || !options || !Number.isSafeInteger(tokens) || tokens < 1) return;
+    const where = printedHexLabel(options.hexId);
+    const action = kind === 'LOAD'
+      ? { kind: 'LOAD_SUPPLY', truckId: truck.id, dumpId: dumpId as PieceId, tokens }
+      : { kind: 'UNLOAD_SUPPLY', truckId: truck.id, tokens };
+    await this.#dispatch({ ...action, actionId: this.#actionId('transfer'), actorId: this.#session.getView(this.#activeSeat()).playerId, expectedRevision: this.#session.getRevision() } as GameAction,
+      kind === 'LOAD' ? `Loaded ${tokens}T onto the truck at ${where}.` : `Unloaded ${tokens}T at ${where}.`);
+  };
+
+  /** Split `points` Transport Points off the selected truck (13.2c). */
+  divideTruck = async (points: number): Promise<void> => {
+    const truck = this.getSnapshot().selectedPiece;
+    if (!truck || !Number.isSafeInteger(points) || points < 1) return;
+    await this.#dispatch({
+      kind: 'DIVIDE_TRANSPORT', truckId: truck.id, points,
+      actionId: this.#actionId('divide'), actorId: this.#session.getView(this.#activeSeat()).playerId, expectedRevision: this.#session.getRevision(),
+    } as GameAction, `Split off ${points} truck point${points === 1 ? '' : 's'}.`);
+  };
 
   runAction = async (key: string): Promise<void> => {
     const snapshot = this.getSnapshot();
@@ -1042,10 +1176,16 @@ class DefaultUiController implements UiController {
 
   #dispatch = async (action: GameAction, message: string, explanation?: RuleExplanation): Promise<void> => this.#run(async () => {
     let success = message;
+    // Remember where a payment is drawn from, in the words the player saw, for the supply ledger.
+    const sourceId = action.kind === 'PAY_FUEL' ? action.sourcePieceId : action.kind === 'CHECK_SUPPLY' ? action.sourcePieceId : null;
+    if (sourceId) this.#sourceNotes.set(this.#session.getHistory({ offset: 0, limit: 0, actionKind: null }).total, { id: String(sourceId), label: this.#dumpLabel(String(sourceId)) });
+    const taken = this.#takeUndoPoint(action, message);
     const result = await this.#session.dispatch({ requestId: this.#requestId(), seatId: this.#activeSeat(), action });
     if (result.status !== 'ACCEPTED') {
-      return `Not allowed: ${result.violations.map(({ message }) => message).join(' ')}`;
+      if (taken) this.#session.removeCheckpoint(taken.id);
+      return `Not allowed: ${result.violations.map(({ message: reason }) => reason).join(' ')}`;
     }
+    success += this.#recordUndoPoint(taken, action, message, result);
     this.#rememberDeclaration(result.events, explanation, action);
     if (action.kind !== 'MOVE_PIECE') this.#resetIntent();
     const airResults = result.events.flatMap((event) => event.kind === 'TRANSACTION_RESOLVED' && action.kind === 'DECLARE_AIR_MISSION' ? [event.result] : []);
@@ -1112,6 +1252,22 @@ class DefaultUiController implements UiController {
   };
 
   undoStep = async (): Promise<void> => this.#run(async () => {
+    // Take back the last action only, when Undo has one; otherwise fall back to the start of the step.
+    const point = this.#undoPoints.at(-1);
+    if (point && this.#undoActionAvailable()) {
+      this.#undoing = true;
+      try {
+        const restored = await this.#session.undoTo(point.id);
+        if (!restored.ok) return restored.code;
+      } finally { this.#undoing = false; }
+      this.#undoPoints.pop();
+      this.#session.removeCheckpoint(point.id);
+      const resumed = this.#session.resume();
+      // Keep the player's selection when that unit still exists, so a truck can be loaded again without picking it anew.
+      if (!this.#pieces().some(({ id }) => id === this.#selection.pieceId)) this.#selection = initialSelection();
+      this.#resetIntent();
+      return resumed.ok ? `Undid: ${point.label}` : resumed.code;
+    }
     const available = this.#undoStepAvailable();
     const auto = this.#autoCheckpoint;
     if (!available || !auto) return 'Nothing to undo in this step.';
@@ -1184,7 +1340,8 @@ class DefaultUiController implements UiController {
     this.#openTransaction = null;
     this.#seen.clear();
     // An automatic checkpoint inside the save belongs to a step that is over; keep only the new one.
-    for (const checkpoint of loaded.listCheckpoints()) if (checkpoint.label.startsWith('Auto: ')) loaded.removeCheckpoint(checkpoint.id);
+    this.#undoPoints = [];
+    for (const checkpoint of loaded.listCheckpoints()) if (checkpoint.label.startsWith('Auto: ') || checkpoint.label.startsWith(UNDO_POINT_PREFIX)) loaded.removeCheckpoint(checkpoint.id);
     this.#bindSession();
     this.#afterChange();
     return `Save loaded at revision ${loaded.getRevision()}.`;

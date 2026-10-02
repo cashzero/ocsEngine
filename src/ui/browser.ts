@@ -669,7 +669,7 @@ const stackPickerHtml = (snapshot: UiSnapshot): string => {
     const definition = scenario.pieceCatalog.definitions.find(({ id }) => id === piece.definitionId)!;
     const own = piece.ownerId === snapshot.view.playerId;
     return `<button class="stack-pick${snapshot.selection.pieceId === piece.id ? ' is-selected' : ''}" data-pick-piece="${escapeHtml(piece.id)}" ${own ? '' : 'disabled'}>
-      <span class="stack-pick-art" aria-hidden="true">${counterSvg(counterView(definition, piece))}</span><span>${escapeHtml(`${own ? '' : 'Enemy · '}${pieceLabel(scenario, piece)}`)}</span></button>`;
+      <span class="stack-pick-art" aria-hidden="true">${counterSvg(counterView(definition, piece))}</span><span>${escapeHtml(`${own ? '' : 'Enemy · '}${pieceLabel(scenario, piece)}${piece.role === 'DUMP' ? ` · ${piece.resourceQuantity ?? 0}T` : ''}${typeof piece.carriedTokens === 'number' ? ` · carries ${piece.carriedTokens}T` : ''}`)}</span></button>`;
   }).join('');
   return `<div class="stack-picker" role="group" aria-label="Units in hex ${escapeHtml(printedHexLabel(stackPickerHex))}" data-anchor-hex="${escapeHtml(stackPickerHex)}">
     <header><strong>Hex ${escapeHtml(printedHexLabel(stackPickerHex))} · ${stack.pieces.length + stack.hiddenCount} units</strong><button id="close-stack-picker" aria-label="Close stack list">×</button></header>
@@ -812,6 +812,20 @@ function bindEvents(snapshot: UiSnapshot): void {
   root.querySelectorAll<HTMLButtonElement>('[data-mode]').forEach(button => button.addEventListener('click', () => void runUi(() => controller.changeMode(button.dataset.mode as never))));
   root.querySelectorAll<HTMLButtonElement>('[data-feed]').forEach(button => button.addEventListener('click', () => void runUi(() => controller.feedSupply(button.dataset.feed!, button.dataset.dump!))));
   root.querySelectorAll<HTMLButtonElement>('[data-unit-action]').forEach(button => button.addEventListener('click', () => void runUi(() => controller.runAction(button.dataset.unitAction!))));
+  // The truck's supply area: the Token count is read from the row's own field when the button is pressed.
+  root.querySelectorAll<HTMLButtonElement>('[data-transfer]').forEach(button => button.addEventListener('click', () => {
+    const field = button.closest('.transfer-row')?.querySelector<HTMLInputElement>('.transfer-tokens');
+    const tokens = Number(field?.value);
+    const min = Number(field?.min), max = Number(field?.max);
+    if (!field || !Number.isSafeInteger(tokens) || tokens < min || tokens > max) { field?.focus(); field?.reportValidity(); return; }
+    void runUi(() => controller.transferSupply(button.dataset.transfer as 'LOAD' | 'UNLOAD', button.dataset.dump ?? null, tokens));
+  }));
+  root.querySelectorAll<HTMLButtonElement>('[data-divide]').forEach(button => button.addEventListener('click', () => {
+    const field = button.closest('.transfer-row')?.querySelector<HTMLInputElement>('.divide-points');
+    const points = Number(field?.value);
+    if (!field || !Number.isSafeInteger(points) || points < Number(field.min) || points > Number(field.max)) { field?.focus(); field?.reportValidity(); return; }
+    void runUi(() => controller.divideTruck(points));
+  }));
   root.querySelectorAll<HTMLInputElement>('[data-participant]').forEach(input => input.addEventListener('change', () => controller.toggleParticipant(input.dataset.participant!)));
   root.querySelectorAll<HTMLInputElement>('[data-lead]').forEach(input => input.addEventListener('change', () => controller.setLead(input.dataset.lead!)));
   root.querySelectorAll<HTMLButtonElement>('[data-choice]').forEach((button) => button.addEventListener('click', () => void runUi(() => controller.respondToDecision(button.dataset.choice ?? ''))));

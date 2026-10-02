@@ -4,7 +4,8 @@ import type { ProjectedPiece } from '../rules/index.js';
 export type CounterLod = 'full' | 'ratings' | 'symbol';
 export const counterLod = (screenPixels: number): CounterLod => screenPixels >= 58 ? 'full' : screenPixels >= 38 ? 'ratings' : 'symbol';
 const escape = (value: unknown): string => String(value).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#39;');
-type CounterPiece = Pick<ProjectedPiece, 'currentFaceId' | 'remainingSteps' | 'resourceQuantity' | 'mode' | 'statuses' | 'redacted'> & { readonly statusValues?: ProjectedPiece['statusValues'] };
+type CounterPiece = Pick<ProjectedPiece, 'currentFaceId' | 'remainingSteps' | 'resourceQuantity' | 'mode' | 'statuses' | 'redacted'>
+  & { readonly statusValues?: ProjectedPiece['statusValues']; readonly carriedTokens?: number | null };
 
 const capabilityParameter = (definition: PieceDefinition, capability: string, key: string) =>
   definition.capabilities.find(({ id }) => id === capability)?.parameters.find((parameter) => parameter.key === key);
@@ -50,8 +51,14 @@ export const counterView = (definition: PieceDefinition, piece: CounterPiece) =>
   const fullSteps = Math.max(0, ...(face?.steps.map(({ remainingSteps }) => remainingSteps) ?? []));
   const step = face?.steps.find(({remainingSteps}) => remainingSteps === (piece.remainingSteps ?? fullSteps));
   if (definition.counter.kind !== 'SUPPLY' && (!face || !step)) throw new Error(`Counter face/step missing: ${definition.id}`);
+  // 13.2c: a divided or combined truck is a smaller or larger counter; its current size is a status, the printed one is the default.
+  const points = piece.statusValues?.find(({ statusDefinitionId }) => statusDefinitionId === 'status:transport-points')?.value;
   return { redacted: false as const, kind: 'unit' as const, label: definition.name, counter: definition.counter, face, step,
     mode: piece.mode, statuses: piece.statuses, quantity: piece.resourceQuantity,
+    transportPoints: typeof points === 'number' ? points : definition.counter.transportPoints,
+    // The load a friendly truck carries, as Tokens of its capacity (4 per point); null when unknown (enemy) or not a truck.
+    load: definition.counter.kind === 'TRANSPORT' && typeof piece.carriedTokens === 'number' && piece.currentFaceId !== 'extender'
+      ? { tokens: piece.carriedTokens, capacity: 4 * (typeof points === 'number' ? points : definition.counter.transportPoints ?? 0) } : null,
     barrage: step?.ratings.find(({ratingDefinitionId}) => ratingDefinitionId === 'rating:barrage-strength')?.value ?? null,
     mobility: face?.mobilityClassDefinitionId === 'mobility:tracked' ? 'tracked' : face?.mobilityClassDefinitionId === 'mobility:leg' ? 'leg' : 'truck',
   };
@@ -105,19 +112,28 @@ export const counterSvgBody = (view: CounterViewModel): string => {
   else if (c.kind === 'SUPPLY') ratings = text(50,84,`${(view.quantity ?? 0) / 4} SP`,'counter-number');
   else {
     ratings = (c.kind === 'ARTILLERY' ? '<rect class="barrage-box" x="6" y="59" width="34" height="30"/>' : '')
-      + text(24,85,c.kind === 'ARTILLERY' ? view.barrage : c.kind === 'TRANSPORT' ? c.transportPoints : strengthText,'counter-number')
+      + text(24,85,c.kind === 'ARTILLERY' ? view.barrage : c.kind === 'TRANSPORT' ? view.transportPoints : strengthText,'counter-number')
       + (c.kind === 'TRANSPORT' ? '' : text(50,83,view.step?.actionRating ?? '', 'counter-ar'))
       + (c.kind === 'ARTILLERY' ? text(50,64,view.step?.range,'counter-range') : '')
       + (view.mobility === 'tracked' ? '<rect class="tracked-box" x="65" y="58" width="31" height="31"/>' : '')
       + text(80,85,ma,`counter-number mobility-${view.mobility}`);
   }
+  // A truck's load gauge sits where the other counters print their Action Rating: empty, part-filled, or full.
+  const gauge = c.kind === 'TRANSPORT' && view.load
+    ? (() => {
+      const ratio = view.load.capacity > 0 ? Math.min(1, view.load.tokens / view.load.capacity) : 0;
+      const state = view.load.tokens <= 0 ? 'empty' : view.load.tokens >= view.load.capacity ? 'full' : 'part';
+      return `<g class="load-gauge load-${state}"><rect class="load-track" x="38" y="67" width="24" height="18" rx="2"/>`
+        + `${ratio > 0 ? `<rect class="load-fill" x="38" y="67" width="${(24 * ratio).toFixed(1)}" height="18" rx="2"/>` : ''}`
+        + `${text(50, 80, view.load.tokens > 0 ? `${view.load.tokens}T` : '', 'counter-load-text')}</g>`;
+    })() : '';
   return `<rect class="counter-paper nation-${c.nationality}" width="100" height="100"/>
     ${view.face?.id === 'move' ? '<path class="move-band" d="M3 9H97"/>' : ''}
     ${c.formationColor ? `<path class="formation-band" stroke="${escape(c.formationColor)}" d="M3 51H97"/>` : ''}
     <g class="counter-identification">${text(50,21,c.echelon,'counter-echelon')}${text(13,56,c.designation,'counter-designation')}${text(87,38,c.affiliation,'counter-affiliation')}
     ${c.showRe ? `<circle class="re-dot" cx="13" cy="28" r="10"/>${text(13,33,(view.step?.regimentalEquivalentTicks ?? 0)/4,'counter-re')}` : ''}</g>
     <g class="counter-symbol category-${c.combatCategory}">${!['TRUCK','SUPPLY'].includes(c.symbol) ? '<rect class="symbol-box" x="28" y="24" width="44" height="25"/>' : ''}${symbolPaths[c.symbol]}</g>
-    <g class="counter-values">${ratings}</g>
+    <g class="counter-values">${ratings}</g>${gauge}
     ${flags.length ? `<g class="counter-state"><rect x="2" y="88" width="96" height="12"/>${text(50,98,flags.join(' · '))}</g>` : ''}`;
 };
 export const counterSvg = (view: CounterViewModel): string => `<svg class="unit-counter" viewBox="0 0 100 100" role="img" aria-label="${escape(view.label)}">${counterSvgBody(view)}</svg>`;

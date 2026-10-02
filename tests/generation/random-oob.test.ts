@@ -22,7 +22,12 @@ describe('M7 deterministic random OOB pipeline', () => {
         expect(side.formations.every((formation) => FORMATION_NAME_PROFILES.some((profile) =>
           profile.name === formation.name && profile.side === side.side && profile.archetype === formation.archetype))).toBe(true);
       }
-      const names = result.value.pieceDefinitionCatalog.definitions.map((definition) => definition.name);
+      const definitions = result.value.pieceDefinitionCatalog.definitions;
+      // A supply dump is a generic counter with no name (user decision 2026-10-02); every other counter keeps a distinct one.
+      const supply = definitions.filter((definition) => definition.family === 'RESOURCE');
+      expect(supply.length).toBeGreaterThan(0);
+      expect(supply.every((definition) => definition.name === 'Supply Dump')).toBe(true);
+      const names = definitions.filter((definition) => definition.family !== 'RESOURCE').map((definition) => definition.name);
       expect(new Set(names).size).toBe(names.length);
       expect(names.every((name) => !/Independent|combat \d|undefined/.test(name))).toBe(true);
       expect(names.some((name) => name.includes('QM Truck Co'))).toBe(true);

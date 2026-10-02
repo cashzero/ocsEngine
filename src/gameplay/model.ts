@@ -20,6 +20,7 @@ import type {
   RuleConfiguration,
   ReachableHex,
   RuleQueryResult,
+  TransportOptions,
 } from '../rules/index.js';
 
 export type SessionId = Brand<string, 'SessionId'>;
@@ -111,6 +112,8 @@ export interface DispatchResult {
   readonly violations: readonly RuleViolation[];
   readonly pendingDecision: PendingDecisionDescriptor | null;
   readonly warnings: readonly GameplayWarning[];
+  /** The accepted action drew from the dice stream, whether or not an event shows it: taking it back would allow a re-roll. */
+  readonly randomUsed?: boolean;
 }
 
 export interface GameplayWarning {
@@ -277,6 +280,8 @@ export interface GameSession {
   readonly getActionCandidates: (seatId: SeatId, request: Omit<CandidateRequest, 'actorId'>) => CandidateResult;
   /** Destinations of one of the seat's units with their MP cost (6.1); empty when not interactive. */
   readonly getMovementRange: (seatId: SeatId, pieceId: PieceId) => RuleQueryResult<readonly ReachableHex[]>;
+  /** What the seat's Transport Point can load or unload where it stands, with Token ranges, MP cost and the rule behind anything not offered. */
+  readonly getTransportOptions: (seatId: SeatId, truckId: PieceId) => RuleQueryResult<TransportOptions | null>;
   readonly createDraft: (seatId: SeatId, action: GameAction) => ActionDraft;
   readonly validateDraft: (draft: ActionDraft) => DraftValidation;
   readonly getPendingDecision: (seatId: SeatId) => PendingDecisionDescriptor | null;
