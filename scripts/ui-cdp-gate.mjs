@@ -101,6 +101,7 @@ if (desktop.roads === 0 || desktop.rivers === 0 || desktop.settlements === 0 || 
 }
 await capture('desktop-active-map.png');
 
+await click('#open-menu');
 await click('#open-new-game');
 await waitFor("document.querySelector('#new-game-form') !== null", 'New Game configuration');
 const buildControlVisible = await evaluate(`(() => { const rect = document.querySelector('.new-game-submit').getBoundingClientRect(); return rect.top >= 0 && rect.bottom <= innerHeight; })()`);

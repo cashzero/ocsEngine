@@ -55,10 +55,10 @@ try {
   for (const [width,height,scale] of [[1920,1080,'default'],[1680,1050,'large']]) {
     await send('Emulation.setDeviceMetricsOverride', { width,height,deviceScaleFactor:1,mobile:false });
     await send('Page.navigate', { url: 'http://127.0.0.1:4173/' });
-    await wait(`!!document.querySelector('#open-new-game')`);
+    await wait(`!!document.querySelector('#open-menu')`);
     await capture(`${scale}-boot`);
-    await click('#open-new-game');
-    await click('#close-new-game'); await click('#open-new-game');
+    await click('#open-menu'); await click('#open-new-game');
+    await click('#close-new-game'); await click('#open-menu'); await click('#open-new-game');
     if (scale === 'large') {
       await select('#new-game-style',1); await select('#new-game-scale',2); await fill('#new-game-formations',4); await fill('#new-game-turn-limit',3);
       await click('[data-settings="advanced"]');
@@ -95,18 +95,14 @@ try {
     assert(moved, 'Whole turn needs a unit action');
     assert(Number(await read(`document.querySelector('.turn-strip strong').textContent`))>1,'Must reach turn two');
     await capture(`${scale}-turn-two`);
-    await click('#toggle-pause');
-    assert.equal(await read(`document.querySelector('#end-phase').disabled`),true);
-    await click('#toggle-pause');
+    assert.equal(await read(`!!document.querySelector('#toggle-pause')`),false,'A turn-based game has no Pause control');
     if (await read(`!!document.querySelector('#begin-required-handoff')`)) { await click('#begin-required-handoff'); await click('#complete-handoff'); }
-    await click('#open-session'); await click('#create-checkpoint');
+    await click('#open-menu'); await click('#create-checkpoint');
     const savedRevision = await read(`document.querySelector('.turn-strip span:last-child strong').textContent`);
     await capture(`${scale}-session`);
-    await click('#close-utility'); await click('#end-phase'); await click('#open-session');
-    await click('[data-checkpoint]');
+    await click('#close-utility'); await click('#end-phase'); await click('#open-menu');
+    await click('[data-checkpoint]'); // Restoring closes the menu and play goes on.
     assert.equal(await read(`document.querySelector('.turn-strip span:last-child strong').textContent`),savedRevision);
-    await click('#close-utility');
-    if(await read(`document.querySelector('#toggle-pause').textContent==='Resume'`)) await click('#toggle-pause');
   }
   assert.equal(errors.length,0,JSON.stringify(errors));
   console.log('Desktop layout and whole-turn exploratory runs completed. This is not the entire product gate.');

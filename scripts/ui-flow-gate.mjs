@@ -111,7 +111,7 @@ const currentState = () => evaluate(`(() => ({
   phase: document.querySelector('.turn-strip span:nth-child(2) strong')?.textContent ?? '',
   segment: document.querySelector('.turn-strip span:nth-child(3) strong')?.textContent ?? '',
   revision: Number(document.querySelector('.turn-strip span:nth-child(4) strong')?.textContent ?? 0),
-  seat: document.querySelector('.seat-badge strong')?.textContent ?? '',
+  seat: document.querySelector('.topbar')?.dataset.activeSeat ?? '',
   families: [...document.querySelectorAll('[data-action-kind]')].map((node) => node.dataset.actionKind),
   handoffRequired: document.querySelector('#begin-required-handoff') !== null,
   privacy: document.querySelector('#complete-handoff') !== null,
@@ -304,7 +304,8 @@ const fontAndViewportSnapshot = () => evaluate(`(() => {
 
 const runCase = async (testCase) => {
   await send('Page.navigate', { url: baseUrl });
-  await waitFor("document.querySelector('#open-new-game') !== null", `${testCase.id} boot`);
+  await waitFor("document.querySelector('#open-menu') !== null", `${testCase.id} boot`);
+  await clickVisible('#open-menu');
   await clickVisible('#open-new-game');
   await waitFor("document.querySelector('#new-game-form') !== null", `${testCase.id} New Game`);
   await setNewGameControls(testCase);
@@ -345,7 +346,7 @@ const runCase = async (testCase) => {
       const priorSeat = state.seat;
       await clickVisible('#complete-handoff');
       await waitFor(`document.querySelector('#complete-handoff') === null
-        && document.querySelector('.seat-badge strong')?.textContent !== ${JSON.stringify(priorSeat)}`, 'handoff completion');
+        && document.querySelector('.topbar')?.dataset.activeSeat !== ${JSON.stringify(priorSeat)}`, 'handoff completion');
       playthrough.handoffs += 1;
       continue;
     }

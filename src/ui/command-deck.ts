@@ -107,7 +107,8 @@ const unitRow = (snapshot: UiSnapshot, piece: ProjectedPiece, extra = ''): Templ
 export const stepObjective = (snapshot: UiSnapshot): string => {
   const sequence = snapshot.view.projection?.sequence;
   if (!sequence) return '';
-  if (snapshot.view.metadata.lifecycle === 'PAUSED') return 'The game is paused. Resume to continue playing.';
+  // The paused banner, with its Resume button, says it.
+  if (snapshot.view.metadata.lifecycle === 'PAUSED') return '';
   if (snapshot.view.metadata.lifecycle === 'FINISHED') return 'The operation has ended.';
   if (sequence.segment === 'BREAKOUT') return 'Units out of trace supply may attempt a breakout (12.8e); otherwise finish this segment.';
   if (sequence.segment === 'BARRAGE') return snapshot.barrageTargets.length > 0 ? 'Orange-ringed enemy hexes are in artillery range: click one to plan a barrage.' : 'No barrage targets in range.';
@@ -693,12 +694,20 @@ export const phaseControlsView = (snapshot: UiSnapshot, state: DeckState): Templ
   if (reasons.length === 0 && snapshot.decision) reasons.push('Answer the open decision first.');
   else if (reasons.length === 0 && snapshot.draft) reasons.push('Finish or cancel the open plan first.');
   const undo = snapshot.undoStep ? (snapshot.undoStep.scope === 'ACTION' ? `Undo: ${snapshot.undoStep.label}` : `Undo back to the ${snapshot.undoStep.label}`) : null;
+  // The phase picker beside it already names the phase: "End Movement Segment · Next: Barrage Segment", not the phase twice over.
+  const sequence = snapshot.view.projection?.sequence;
+  const [phase, segment] = sequence ? phaseLabel(sequence.phase, sequence.segment).split(' · ') : [];
+  const [nextPhase, nextSegment] = snapshot.endStep.next.split(' · ');
+  const endLabel = phase ? `End ${segment ?? phase}` : snapshot.endStep.label;
+  const nextLabel = !nextSegment ? snapshot.endStep.next : nextPhase === phase ? nextSegment
+    : nextSegment === `${nextPhase} Segment` ? `${nextPhase} Phase` : snapshot.endStep.next;
+  // Undo keeps its place when there is nothing to take back, so End phase never jumps sideways under the pointer.
   return html`<div class="phase-actions">
-    ${undo ? html`<button id="undo-step" class="subtle" title=${undo} aria-label=${undo}>↶ Undo</button>` : nothing}
-    <button id="end-phase" class=${confirming ? 'warning' : snapshot.endStep.enabled ? 'primary' : ''} ?disabled=${disabled}>${confirming
+    <button id="undo-step" class="bar-button" title=${undo ?? 'Nothing to undo in this step'} aria-label=${undo ?? 'Undo'} ?disabled=${!undo || busy}><span class="bar-label">↶ Undo</span></button>
+    <span class="end-anchor"><button id="end-phase" class="bar-button ${confirming ? 'warning' : snapshot.endStep.enabled ? 'primary' : ''}" ?disabled=${disabled}><span class="bar-label">${confirming
       ? `Finish anyway: ${unmoved} unit${unmoved === 1 ? ' has' : 's have'} not moved`
-      : snapshot.endStep.label}<small>${confirming ? 'Press again to confirm' : `Next: ${snapshot.endStep.next}`}</small></button>
-    ${reasons.length > 0 ? html`<p class="end-note" role="status">${reasons.join(' ')}</p>` : nothing}
+      : endLabel}</span><small class="bar-sub">${confirming ? 'Press again to confirm' : `Next: ${nextLabel}`}</small></button>
+    ${reasons.length > 0 ? html`<p class="end-note" role="status">${reasons.join(' ')}</p>` : nothing}</span>
   </div>`;
 };
 
@@ -717,7 +726,7 @@ export const commandDeckView = (snapshot: UiSnapshot, state: DeckState): Templat
     : html`<nav class="deck-tabs" aria-label=${sequence ? phaseLabel(sequence.phase, sequence.segment) : 'Deck'}>${tabs.map(({ id, label, badge }) => html`<button data-deck-tab=${id} aria-pressed=${String(active === id)} aria-label=${badge > 0 ? `${label}, ${badge} waiting` : nothing}>${label}${badge > 0 ? html` <span class="tab-badge" aria-hidden="true">${badge}</span>` : nothing}</button>`)}<button id="open-roster" class="roster-open" aria-haspopup="dialog" title="List every unit you command">All units (${own.filter(({ location }) => location.kind !== 'ELIMINATED').length})</button></nav>
       <div class="deck-body" data-scroll-key=${`tab-${active}`} tabindex="0" aria-busy=${String(busy)}>${resultPanel(snapshot)}<section class="deck-context">${tabBody(snapshot, state, active)}</section></div>`;
   return html`${objective ? html`<p class="deck-objective">${objective}</p>` : nothing}
-    ${view.metadata.lifecycle === 'PAUSED' ? html`<p class="paused-banner" role="status">Paused — press Resume in the top bar to continue.</p>` : nothing}
+    ${view.metadata.lifecycle === 'PAUSED' ? html`<p class="paused-banner" role="status">This game was saved paused. <button id="resume-game" class="bar-button">Resume</button></p>` : nothing}
     <section class="deck-selection" aria-label="Selected unit">${selectedCard(snapshot)}${snapshot.selectedPiece || snapshot.selection.hexId ? html`<button id="deselect" class="subtle" title="Finish with this unit and clear the selection (Esc)">Done</button>` : nothing}</section>
     ${body}
     <footer class="deck-footer"><div class="deck-notice" role="status">${snapshot.busy ? 'Working…' : withHexLabels(state.error || snapshot.notice)}</div></footer>`;
