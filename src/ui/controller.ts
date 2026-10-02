@@ -48,6 +48,8 @@ export interface UiController {
   readonly clickHex: (hexId: string) => Promise<void>;
   readonly selectPiece: (pieceId: string | null) => void;
   readonly clearSelection: () => void;
+  /** Finish the selected unit's move (6.1g) and let it go; a unit that has not begun moving is only deselected. */
+  readonly finishMove: () => Promise<void>;
   readonly confirmMove: () => Promise<void>;
   readonly toggleParticipant: (pieceId: string) => void;
   readonly setLead: (pieceId: string) => void;
@@ -139,7 +141,7 @@ const UNDO_DEPTH = 30;
  * nothing. Anything else (combat, barrage, decisions, ending a step, air missions, blowing a dump...) clears Undo.
  */
 const UNDOABLE_ACTIONS: ReadonlySet<GameAction['kind']> = new Set([
-  'MOVE_PIECE', 'CHANGE_MODE', 'RELEASE_RESERVE', 'PLACE_REINFORCEMENT', 'PAY_FUEL', 'RECOVER_INTERNALS', 'CHOOSE_FORMATION_TRACE',
+  'MOVE_PIECE', 'END_MOVE', 'CHANGE_MODE', 'RELEASE_RESERVE', 'PLACE_REINFORCEMENT', 'PAY_FUEL', 'RECOVER_INTERNALS', 'CHOOSE_FORMATION_TRACE',
   'LOAD_SUPPLY', 'UNLOAD_SUPPLY', 'COMBINE_TRANSPORT', 'DIVIDE_TRANSPORT', 'FORM_EXTENDER', 'DISSOLVE_EXTENDER',
 ]);
 
@@ -661,6 +663,7 @@ class DefaultUiController implements UiController {
       families,
       selection: { ...this.#selection },
       selectedPiece,
+      selectedIsMoving: ownSelected !== null && view.projection?.currentMoverId === ownSelected.id,
       reachable,
       moveRange,
       remainingTicks,
@@ -1018,6 +1021,16 @@ class DefaultUiController implements UiController {
     this.#selection = initialSelection();
     this.#resetIntent();
     this.#emit();
+  };
+
+  finishMove = async (): Promise<void> => {
+    const pieceId = this.#selection.pieceId;
+    if (!pieceId || !this.getSnapshot().selectedIsMoving) { this.clearSelection(); return; }
+    const action = this.#probe({ kind: 'END_MOVE', pieceId } as never);
+    if (!action) return;
+    await this.#dispatch(action, 'Move finished.');
+    // Keep the selection when the game refused, so the notice explains why the unit is still held.
+    if (this.#session.getView(this.#activeSeat()).projection?.currentMoverId !== pieceId) this.clearSelection();
   };
 
   #openDraft(kind: AttackDraft['kind'], targetHexId: string): void {

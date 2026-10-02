@@ -82,6 +82,38 @@ describe('OCS 4.3 phase eligibility and modes (5.0, 6.1g, 7.0, 11.0)', () => {
     expect(codes(applyRuleAction(state, ALLIED, { kind: 'MOVE_PIECE', pieceId: U.alTrk, path: path('6,5', '7,5') }))).toContain('MOVEMENT_ALREADY_FINISHED');
   });
 
+  it('lets the player finish the current mover without starting another unit (6.1g)', () => {
+    let state = atStep(buildGeneratedRuleState({ [U.alTrk]: ['5,5', 'MOVE', 'move'], [U.alTrk2]: ['5,7', 'MOVE', 'move'], [U.axTrk]: ['12,5', 'COMBAT', 'combat'] }), 'MOVEMENT', 'MOVEMENT', ALLIED);
+    const endFamily = (current: GameState) => ruleEngine.getActionFamilies(current, ALLIED).find(({ kind }) => kind === 'END_MOVE')?.enabled;
+    expect(endFamily(state)).toBe(false);
+    expect(ruleEngine.projectForViewer(state, ALLIED).currentMoverId).toBeNull();
+
+    state = applyRuleAction(state, ALLIED, { kind: 'MOVE_PIECE', pieceId: U.alTrk, path: path('5,5', '6,5') }).state;
+    expect(ruleEngine.projectForViewer(state, ALLIED).currentMoverId).toBe(U.alTrk);
+    expect(ruleEngine.projectForViewer(state, AXIS).currentMoverId).toBeNull();
+    expect(endFamily(state)).toBe(true);
+    expect(codes(applyRuleAction(state, ALLIED, { kind: 'END_MOVE', pieceId: U.alTrk2 }))).toContain('NOT_CURRENT_MOVER');
+    expect(codes(applyRuleAction(state, AXIS, { kind: 'END_MOVE', pieceId: U.alTrk }))).toContain('NOT_PIECE_OWNER');
+
+    const ended = applyRuleAction(state, ALLIED, { kind: 'END_MOVE', pieceId: U.alTrk });
+    expect(ended.ok).toBe(true);
+    expect(ended.events.map(({ kind }) => kind)).toContain('MOVE_ENDED');
+    expect(ended.state.currentMoverId).toBeNull();
+    expect(ruleEngine.projectForViewer(ended.state, ALLIED).currentMoverId).toBeNull();
+    expect(codes(applyRuleAction(ended.state, ALLIED, { kind: 'MOVE_PIECE', pieceId: U.alTrk, path: path('6,5', '7,5') }))).toContain('MOVEMENT_ALREADY_FINISHED');
+    expect(codes(applyRuleAction(ended.state, ALLIED, { kind: 'END_MOVE', pieceId: U.alTrk }))).toContain('NOT_CURRENT_MOVER');
+    // Other units still move normally afterwards.
+    expect(applyRuleAction(ended.state, ALLIED, { kind: 'MOVE_PIECE', pieceId: U.alTrk2, path: path('5,7', '6,7') }).ok).toBe(true);
+  });
+
+  it('finishes a unit that only changed mode, so it cannot move later in the phase (5.4, 6.1g)', () => {
+    let state = atStep(buildGeneratedRuleState({ [U.alTrk]: ['5,5', 'COMBAT', 'combat'], [U.axTrk]: ['12,5', 'COMBAT', 'combat'] }), 'MOVEMENT', 'MOVEMENT', ALLIED);
+    state = applyRuleAction(state, ALLIED, { kind: 'CHANGE_MODE', pieceId: U.alTrk, mode: 'MOVE' }).state;
+    expect(ruleEngine.projectForViewer(state, ALLIED).currentMoverId).toBe(U.alTrk);
+    state = applyRuleAction(state, ALLIED, { kind: 'END_MOVE', pieceId: U.alTrk }).state;
+    expect(codes(applyRuleAction(state, ALLIED, { kind: 'MOVE_PIECE', pieceId: U.alTrk, path: path('5,5', '6,5') }))).toContain('MOVEMENT_ALREADY_FINISHED');
+  });
+
   it('orients Strat units to their Move side (5.8)', () => {
     const state = atStep(buildGeneratedRuleState({ [U.alTrk]: ['5,5', 'COMBAT', 'combat'] }), 'MOVEMENT', 'MOVEMENT', ALLIED);
     expect(piece(applyRuleAction(state, ALLIED, { kind: 'CHANGE_MODE', pieceId: U.alTrk, mode: 'STRAT' }).state, U.alTrk).currentFaceId).toBe('move');

@@ -532,6 +532,8 @@ export type GameAction =
   | (ActionEnvelope & { readonly kind: 'CHANGE_MODE'; readonly pieceId: PieceId; readonly mode: OcsMode })
   | (ActionEnvelope & { readonly kind: 'RELEASE_RESERVE'; readonly pieceId: PieceId })
   | (ActionEnvelope & { readonly kind: 'MOVE_PIECE'; readonly pieceId: PieceId; readonly path: readonly HexId[] })
+  /** Declare the current mover finished (6.1g) without starting another unit; its unspent MP are lost for the phase. */
+  | (ActionEnvelope & { readonly kind: 'END_MOVE'; readonly pieceId: PieceId })
   | (ActionEnvelope & { readonly kind: 'CHECK_SUPPLY'; readonly pieceIds: readonly PieceId[]; readonly sourcePieceId: PieceId | null })
   | (ActionEnvelope & {
     readonly kind: 'DECLARE_COMBAT';
@@ -592,6 +594,7 @@ export type RuleEvent =
   | { readonly kind: 'FIRST_PLAYER_ROLLED'; readonly sequence: number; readonly rolls: readonly { readonly playerId: PlayerId; readonly total: number }[]; readonly winnerId: PlayerId }
   | { readonly kind: 'MODE_CHANGED'; readonly sequence: number; readonly pieceId: PieceId; readonly from: OcsMode | null; readonly to: OcsMode }
   | { readonly kind: 'PIECE_MOVED'; readonly sequence: number; readonly pieceId: PieceId; readonly path: readonly HexId[]; readonly spentTicks: number }
+  | { readonly kind: 'MOVE_ENDED'; readonly sequence: number; readonly pieceId: PieceId }
   | { readonly kind: 'SUPPLY_STATUS_CHANGED'; readonly sequence: number; readonly pieceId: PieceId; readonly inSupply: boolean }
   | { readonly kind: 'SUPPLY_SPENT'; readonly sequence: number; readonly resourcePieceId: PieceId; readonly quantity: number }
   | { readonly kind: 'SUPPLY_CAPTURED'; readonly sequence: number; readonly resourcePieceId: PieceId; readonly captured: number; readonly destroyed: number }

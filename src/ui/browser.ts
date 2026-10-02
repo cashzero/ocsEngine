@@ -779,6 +779,7 @@ root.addEventListener('click', (event) => {
     return;
   }
   if (byId('deselect')) { controller.clearSelection(); return; }
+  if (byId('finish-move')) { void runUi(controller.finishMove); return; }
   if (byId('resume-game')) { controller.resume(); return; }
   if (byId('undo-step')) { void runUi(controller.undoStep); return; }
   if (byId('auto-pay')) { void runUi(controller.autoPay); return; }
@@ -966,8 +967,15 @@ window.addEventListener('keydown', (event) => {
   if (utilityOpen) { utilityOpen = null; render(controller.getSnapshot()); return; }
   if (newGameOpen && !newGameBusy) { closeNewGame(); return; }
   const snapshot = controller.getSnapshot();
-  if (snapshot.draft) controller.cancelDraft();
-  else controller.clearSelection();
+  if (snapshot.draft) { controller.cancelDraft(); return; }
+  // A unit part-way through its move is not dropped by Esc: only Done ends it (6.1g). Point the player at Done instead.
+  if (snapshot.selectedIsMoving) {
+    deck.hint = 'This unit is still moving. Press Done to finish its move, or pick another unit.';
+    render(snapshot);
+    document.querySelector<HTMLButtonElement>('#finish-move')?.focus();
+    return;
+  }
+  controller.clearSelection();
 });
 
 performance.mark('ocs:boot:render');
