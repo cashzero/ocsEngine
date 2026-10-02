@@ -23,7 +23,7 @@ for (const file of ['oobFormations.ts', 'supplementalOobFormations.ts']) {
           ? unitsNode.text.split(';').map((unit) => { const [name, , kind] = unit.split(':'); return { name, kind }; })
           : unitsNode.elements.map((unit) => ({ name: unit.elements[0].text, kind: unit.elements[2]?.text }));
         const archetype = doctrineNode.text === 'LINE' ? 'INFANTRY'
-          : /Panzergrenadier|Führer-|Airborne|Parachute/.test(name) ? 'MOBILE_INFANTRY' : 'ARMORED';
+          : /Panzergrenadier|Führer-|Airborne|Parachute/.test(name) ? (side === 'ALLIED' ? 'AIRBORNE' : 'MOBILE_INFANTRY') : 'ARMORED';
         const recon = units.filter((unit) => unit.kind === 'RECON' || /Recon|Rcn|Aufk|Fus Coy/.test(unit.name)).map((unit) => unit.name);
         const engineers = units.filter((unit) => /Eng|Pio/.test(unit.name)).map((unit) => unit.name);
         const combat = units.filter((unit) => !recon.includes(unit.name) && !engineers.includes(unit.name)
@@ -38,6 +38,7 @@ for (const file of ['oobFormations.ts', 'supplementalOobFormations.ts']) {
   };
   visit(source);
 }
+// TODO: the German Fallschirmjäger and US 13th Airborne profiles in name-catalog.ts are hand-authored; re-add them after re-importing.
 writeFileSync('src/generation/oob/name-catalog.ts', `// Naming references imported from bcsEngine; synthetic OCS packages, not historical OOBs.\n`
   + `import type { OobFormationArchetype, OobSide } from './model.js';\n\n`
   + `export interface FormationNameProfile {\n  readonly name: string;\n  readonly side: OobSide;\n  readonly archetype: OobFormationArchetype;\n  readonly combat: readonly string[];\n  readonly recon: readonly string[];\n  readonly engineers: readonly string[];\n  readonly source: string;\n}\n\n`

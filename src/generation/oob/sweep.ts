@@ -13,7 +13,7 @@ export const sweepRandomOobSeeds = (
   let minimumBalanceRatio = 1;
   let minimumUnitsPerSide = Number.POSITIVE_INFINITY;
   let maximumUnitsPerSide = 0;
-  const archetypeCounts: Record<OobFormationArchetype, number> = { ARMORED: 0, INFANTRY: 0, MOBILE_INFANTRY: 0 };
+  const archetypeCounts: Record<OobFormationArchetype, number> = { ARMORED: 0, INFANTRY: 0, MOBILE_INFANTRY: 0, AIRBORNE: 0 };
   const failures: Array<{ seed: number; codes: readonly string[] }> = [];
   for (let index = 0; index < count; index += 1) {
     const seed = (firstSeed + index) >>> 0;
@@ -28,7 +28,7 @@ export const sweepRandomOobSeeds = (
       minimumBalanceRatio = Math.min(minimumBalanceRatio, result.value.metrics.balanceRatio);
       minimumUnitsPerSide = Math.min(minimumUnitsPerSide, ...Object.values(result.value.metrics.unitsBySide));
       maximumUnitsPerSide = Math.max(maximumUnitsPerSide, ...Object.values(result.value.metrics.unitsBySide));
-      for (const formation of result.value.sides[0]!.formations) archetypeCounts[formation.archetype] += 1;
+      for (const side of result.value.sides) for (const formation of side.formations) archetypeCounts[formation.archetype] += 1;
     } catch (error) {
       exceptions += 1;
       failures.push({ seed, codes: [error instanceof Error ? error.name : 'UNKNOWN_EXCEPTION'] });

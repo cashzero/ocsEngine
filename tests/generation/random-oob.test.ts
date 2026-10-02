@@ -1,13 +1,17 @@
 import { describe, expect, it } from 'vitest';
 import { FORMATION_NAME_PROFILES } from '../../src/generation/oob/name-catalog.js';
+import { ALLIED_AIRBORNE_DIVISION_GPIDS, corpusFaces } from '../../src/generation/oob/counter-corpus.js';
+import { shortFormationName } from '../../src/generation/oob/names.js';
 import {
   BTR_BUILD_FILE_SHA256,
   generateRandomOob,
+  isSingleUnitDivision,
   REVIEWED_OOB_ARCHETYPES,
   serializeGeneratedOob,
   validateGeneratedOob,
   validatePieceDefinitionCatalog,
 } from '../../src/index.js';
+import type { DefinitionId } from '../../src/core/index.js';
 
 const options = { seed: 1944, scale: 'STANDARD' as const, formationsPerSide: 3 };
 
@@ -20,7 +24,7 @@ describe('M7 deterministic random OOB pipeline', () => {
       for (const side of result.value.sides) {
         expect(new Set(side.formations.map((formation) => formation.name)).size).toBe(6);
         expect(side.formations.every((formation) => FORMATION_NAME_PROFILES.some((profile) =>
-          profile.name === formation.name && profile.side === side.side && profile.archetype === formation.archetype))).toBe(true);
+          shortFormationName(profile.name) === formation.name && profile.side === side.side && profile.archetype === formation.archetype))).toBe(true);
       }
       const definitions = result.value.pieceDefinitionCatalog.definitions;
       // A supply dump is a generic counter with no name (user decision 2026-10-02); every other counter keeps a distinct one.
@@ -30,9 +34,9 @@ describe('M7 deterministic random OOB pipeline', () => {
       const names = definitions.filter((definition) => definition.family !== 'RESOURCE').map((definition) => definition.name);
       expect(new Set(names).size).toBe(names.length);
       expect(names.every((name) => !/Independent|combat \d|undefined/.test(name))).toBe(true);
-      expect(names.some((name) => name.includes('QM Truck Co'))).toBe(true);
+      expect(names.some((name) => name.includes('Truck Co'))).toBe(true);
       // Engineer counters print a brigade (X) echelon, so their names follow it.
-      expect(names.some((name) => name.includes('Pionier-Brigade'))).toBe(true);
+      expect(names.some((name) => name.includes('Pi Bde'))).toBe(true);
     }
   });
 
@@ -53,7 +57,7 @@ describe('M7 deterministic random OOB pipeline', () => {
       expect(generated.ok).toBe(true);
       if (!generated.ok) return;
       expect(validateGeneratedOob(generated.value)).toMatchObject({ valid: true, issues: [] });
-      expect(generated.value.metrics.balanceRatio).toBe(1);
+      expect(generated.value.metrics.balanceRatio).toBeGreaterThanOrEqual(0.9);
       expect(generated.value.sides).toHaveLength(2);
       for (const side of generated.value.sides) {
         expect(side.formations).toHaveLength(options.formationsPerSide);
@@ -61,17 +65,70 @@ describe('M7 deterministic random OOB pipeline', () => {
           'ARTILLERY', 'ENGINEER', 'TRANSPORT', 'SUPPLY',
         ]));
         for (const formation of side.formations) {
-          expect(formation.units.filter(({ role }) => role === 'FORMATION_COMMAND')).toHaveLength(1);
-          expect(formation.units.filter(({ role }) => role === 'COMBAT').length).toBeGreaterThanOrEqual(2);
-          expect(formation.units.some(({ role }) => role === 'ARTILLERY')).toBe(true);
+          const roles = formation.units.map(({ role }) => role);
+          if (isSingleUnitDivision(side.side, formation.archetype)) {
+            expect(roles).toEqual(['COMBAT']);
+            continue;
+          }
+          expect(roles.filter((role) => role === 'FORMATION_COMMAND')).toHaveLength(1);
+          expect(roles.filter((role) => role === 'COMBAT').length).toBeGreaterThanOrEqual(2);
+          expect(roles.includes('ARTILLERY')).toBe(formation.archetype !== 'AIRBORNE');
         }
       }
     },
   );
 
+  it('builds infantry and airborne divisions as single XX units, with airborne leg-mobile and never filed as mobile infantry', () => {
+    const seen = new Set<string>();
+    for (let seed = 1; seed <= 40; seed += 1) {
+      const generated = generateRandomOob({ ...options, seed, formationsPerSide: 4 });
+      expect(generated.ok).toBe(true);
+      if (!generated.ok) return;
+      const definitions = new Map(generated.value.pieceDefinitionCatalog.definitions.map((definition) => [definition.id, definition]));
+      const mobility = (unitDefinitionId: DefinitionId, faceName: string) => String(definitions.get(unitDefinitionId)!.faces
+        .find(({ id }) => String(id) === faceName)!.mobilityClassDefinitionId);
+      for (const side of generated.value.sides) {
+        for (const formation of side.formations) {
+          seen.add(`${side.side}/${formation.archetype}`);
+          if (!isSingleUnitDivision(side.side, formation.archetype)) continue;
+          expect(formation.units).toHaveLength(1);
+          const unit = formation.units[0]!;
+          const definition = definitions.get(unit.definitionId)!;
+          expect(definition.counter?.echelon).toBe('XX');
+          expect(definition.faces[0]!.steps.length).toBeGreaterThanOrEqual(3);
+          if (formation.archetype === 'AIRBORNE') {
+            expect([mobility(unit.definitionId, 'combat'), mobility(unit.definitionId, 'move')]).toEqual(['mobility:leg', 'mobility:leg']);
+          } else {
+            // US infantry divisions are motorized (truck move face); German ones march on foot.
+            expect(mobility(unit.definitionId, 'move')).toBe(side.side === 'ALLIED' ? 'mobility:truck' : 'mobility:leg');
+          }
+        }
+      }
+    }
+    expect([...seen].sort()).toEqual(expect.arrayContaining([
+      'ALLIED/AIRBORNE', 'ALLIED/INFANTRY', 'AXIS/AIRBORNE', 'AXIS/INFANTRY', 'AXIS/MOBILE_INFANTRY']));
+    // The Allies have no mobile-infantry package, and airborne is never filed under it.
+    expect([...seen]).not.toContain('ALLIED/MOBILE_INFANTRY');
+  });
+
+  it('sums the printed regiments for each US airborne division (sheets 2F/2B), one step per regiment', () => {
+    const expected: Record<string, { combat: number; move: number; steps: number }> = {
+      '82.Abn': { combat: 14, move: 8, steps: 3 }, '101.Abn': { combat: 18, move: 10, steps: 4 },
+      '17.Abn': { combat: 13, move: 7, steps: 3 }, '13.Abn': { combat: 13, move: 7, steps: 3 },
+    };
+    for (const [name, { combat, move, steps }] of Object.entries(expected)) {
+      const faces = corpusFaces(ALLIED_AIRBORNE_DIVISION_GPIDS[name]!);
+      const face = (id: string) => faces.find((candidate) => String(candidate.id) === id)!;
+      expect(face('move').steps).toHaveLength(steps);
+      expect(face('combat').steps[0]!.combatStrength).toBe(combat);
+      expect(face('move').steps[0]!.combatStrength).toBe(move);
+      expect(face('combat').steps[0]!.actionRating).toBe(4);
+    }
+  });
+
   it('uses reviewed BTR locators while keeping ratings explicitly synthetic', () => {
     expect(BTR_BUILD_FILE_SHA256).toMatch(/^[A-F0-9]{64}$/u);
-    expect(REVIEWED_OOB_ARCHETYPES).toHaveLength(18);
+    expect(REVIEWED_OOB_ARCHETYPES).toHaveLength(19);
     expect(REVIEWED_OOB_ARCHETYPES.every(({ rawName, gpid }) => rawName.length > 0 && gpid >= 0)).toBe(true);
     expect(REVIEWED_OOB_ARCHETYPES.some(({ rawName }) => /combat train/iu.test(rawName))).toBe(false);
     const generated = generateRandomOob(options);

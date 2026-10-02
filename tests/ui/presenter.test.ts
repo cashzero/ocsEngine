@@ -54,7 +54,8 @@ describe('U3-U4 UI map and action presenters', () => {
     expect(preview.sides).toHaveLength(2);
     expect(preview.sides.every(({ formations }) => formations.length === 3)).toBe(true);
     expect(preview.sides.flatMap(({ formations }) => formations)
-      .every(({ units }) => units.some(({ role }) => role === 'FORMATION_COMMAND'))).toBe(true);
+      .every(({ units }) => units.length === 1 // infantry and German airborne divisions are a single XX unit
+        || units.some(({ role }) => role === 'FORMATION_COMMAND'))).toBe(true);
     expect(preview.sides.flatMap(({ formations }) => formations)
       .flatMap(({ units }) => units).some(({ combatStrength }) => combatStrength !== null)).toBe(true);
   });

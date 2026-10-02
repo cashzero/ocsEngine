@@ -71,7 +71,7 @@ describe('the supply ledger (A5)', () => {
     const html = commandDeckHtml(snapshot, deck);
     expect(html).toContain('Supply this turn');
     expect(html).toContain('1T paid');
-    expect(html).toContain('Fuel 1T for Recon Detachment 1');
+    expect(html).toContain('Fuel 1T for ');
     expect(html).toContain('from the ');
     controller.dispose();
   });

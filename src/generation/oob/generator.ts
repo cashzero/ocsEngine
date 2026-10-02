@@ -17,7 +17,7 @@ import {
   type PieceStepProfile,
 } from '../../domain/piece/index.js';
 import { canonicalJson } from '../../serialization/index.js';
-import { COUNTER_CORPUS, TRUCK_COUNTER_POINTS, corpusCounter, corpusFaces } from './counter-corpus.js';
+import { ALLIED_AIRBORNE_DIVISION_GPIDS, COUNTER_CORPUS, TRUCK_COUNTER_POINTS, corpusCounter, corpusFaces } from './counter-corpus.js';
 import { createSeededRandom, mixUint32 } from '../map/rng.js';
 import {
   BTR_BUILD_FILE_SHA256,
@@ -33,6 +33,7 @@ import {
   type GeneratedOobSide,
   type GeneratedOobUnit,
   type NormalizedRandomOobOptions,
+  isSingleUnitDivision,
   type OobFormationArchetype,
   type OobGenerationError,
   type OobScale,
@@ -45,7 +46,11 @@ import { formationNames, unitName } from './names.js';
 import { buildAirForces } from './air.js';
 
 const SIDES: readonly OobSide[] = ['ALLIED', 'AXIS'];
-const FORMATION_ARCHETYPES: readonly OobFormationArchetype[] = ['ARMORED', 'INFANTRY', 'MOBILE_INFANTRY'];
+// Plan slots shared by both sides. Airborne is its own slot (a single XX division on both sides). Only the Axis have mobile-infantry packages (Panzergrenadier/Führer); the Allied
+// mobile slot is filled with an armored division, the Allies' mobile force.
+const FORMATION_ARCHETYPES: readonly OobFormationArchetype[] = ['ARMORED', 'INFANTRY', 'MOBILE_INFANTRY', 'AIRBORNE'];
+const sideArchetype = (side: OobSide, planned: OobFormationArchetype): OobFormationArchetype =>
+  side === 'ALLIED' && planned === 'MOBILE_INFANTRY' ? 'ARMORED' : planned;
 
 const must = <T, E>(result: Result<T, E>): T => {
   if (!result.ok) throw new Error('Random OOB generator produced an invalid Foundation scalar.');
@@ -116,13 +121,16 @@ interface UnitBuildContext {
   readonly formationId: DefinitionId | null;
   readonly name: string;
   readonly localId: string;
+  /** Overrides the archetype's counter, for divisions whose printed regiments differ (US airborne). */
+  readonly counterGpid?: number;
 }
 
 const buildUnit = (context: UnitBuildContext): {
   readonly unit: GeneratedOobUnit;
   readonly definition: PieceDefinition;
 } => {
-  const source = findReviewedOobArchetype(context.side, context.role, context.formationArchetype);
+  const archetypeSource = findReviewedOobArchetype(context.side, context.role, context.formationArchetype);
+  const source = context.counterGpid === undefined ? archetypeSource : { ...archetypeSource, gpid: context.counterGpid };
   const idBase = `generated-oob:${context.options.seed}:${context.side.toLowerCase()}:${context.localId}`;
   const id = definitionId(idBase);
   const sourceReference = {
@@ -223,29 +231,35 @@ const buildSide = (
   options: NormalizedRandomOobOptions,
   definitions: PieceDefinition[],
 ): GeneratedOobSide => {
-  const formations: GeneratedOobFormation[] = plan.map((archetype, formationIndex) => {
+  const archetypes = plan.map((planned) => sideArchetype(side, planned));
+  const formations: GeneratedOobFormation[] = archetypes.map((archetype, formationIndex) => {
     const sequence = formationIndex + 1;
     const formationId = definitionId(`formation:generated:${options.seed}:${side.toLowerCase()}:${sequence}`);
-    const occurrence = plan.slice(0, formationIndex).filter((value) => value === archetype).length;
+    const occurrence = archetypes.slice(0, formationIndex).filter((value) => value === archetype).length;
     const namingProfile = formationNames(options.seed, side, archetype)[occurrence]!;
     const formationName = namingProfile.name;
-    // Every division is a multi-unit formation: its divisional HQ (XX) and regiment-sized units.
-    const requests: Array<{ role: OobUnitRole; suffix: string }> = [
-      { role: 'FORMATION_COMMAND', suffix: 'command' },
-      ...Array.from({ length: SCALE_COMBAT_UNITS[options.scale] }, (_, index) => ({
-        role: 'COMBAT' as const, suffix: `combat-${index + 1}`,
-      })),
-      { role: 'ARTILLERY', suffix: 'artillery-1' },
-      ...(options.scale === 'LARGE' ? [{ role: 'ARTILLERY' as const, suffix: 'artillery-2' }] : []),
-      ...(archetype === 'ARMORED' || archetype === 'MOBILE_INFANTRY'
-        ? [{ role: 'RECONNAISSANCE' as const, suffix: 'recon' }] : []),
-    ];
+    // Infantry and airborne divisions are a single XX counter; armored and mobile-infantry divisions are an HQ plus
+    // regiment-sized units.
+    const combatRequests = Array.from({ length: SCALE_COMBAT_UNITS[options.scale] }, (_, index) => ({
+      role: 'COMBAT' as const, suffix: `combat-${index + 1}`,
+    }));
+    const requests: Array<{ role: OobUnitRole; suffix: string }> = isSingleUnitDivision(side, archetype)
+      ? [{ role: 'COMBAT', suffix: 'combat-1' }]
+      : [
+        { role: 'FORMATION_COMMAND', suffix: 'command' },
+        ...combatRequests,
+        { role: 'ARTILLERY' as const, suffix: 'artillery-1' },
+        ...(options.scale === 'LARGE' ? [{ role: 'ARTILLERY' as const, suffix: 'artillery-2' }] : []),
+        { role: 'RECONNAISSANCE' as const, suffix: 'recon' },
+      ];
     const units = requests.map(({ role, suffix }) => {
       const built = buildUnit({
         options, side, role, formationArchetype: archetype, formationId,
         name: unitName(side, role, Number(suffix.split('-').at(-1)) || 1, options.seed, namingProfile,
           echelonFor(side, role, archetype, true)),
         localId: `f${sequence}-${suffix}`,
+        ...(side === 'ALLIED' && archetype === 'AIRBORNE' && ALLIED_AIRBORNE_DIVISION_GPIDS[formationName] !== undefined
+          ? { counterGpid: ALLIED_AIRBORNE_DIVISION_GPIDS[formationName] } : {}),
       });
       definitions.push(built.definition);
       return built.unit;
