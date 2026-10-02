@@ -73,6 +73,8 @@ export interface RuleProjection {
   readonly stateRevision: Revision;
   readonly viewerId: PlayerId;
   readonly sequence: GameState['sequence'];
+  /** The viewer's own unit that is still moving and may spend more MP (6.1g); null otherwise and for the opponent. */
+  readonly currentMoverId: PieceId | null;
   readonly stacks: readonly ProjectedStack[];
   readonly pendingDecision: GameState['pendingDecision'];
   readonly victory: GameState['victory'];

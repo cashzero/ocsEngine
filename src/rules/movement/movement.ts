@@ -91,6 +91,18 @@ export const moverViolations = (state: GameState, actorId: PlayerId, piece: Piec
   return issues;
 };
 
+/** 6.1g: the player may declare the unit now moving finished without beginning another one. */
+export const validateEndMove = (state: GameState, actorId: PlayerId, pieceId: PieceId): RuleViolation[] => {
+  const piece = pieceById(state, pieceId);
+  if (!piece) return [violation('UNKNOWN_PIECE', ['pieceId'], 'Unknown Piece.', '6.1g')];
+  const issues: RuleViolation[] = [];
+  if (piece.ownerId !== actorId) issues.push(violation('NOT_PIECE_OWNER', ['actorId'], 'Actor does not own the mover.', '6.3a'));
+  if (actorId !== state.sequence.actingPlayerId) issues.push(violation('WRONG_ACTOR', ['actorId'], 'Only the designated player can move units in this phase.', '6.3a'));
+  if (!phaseAllowsMovement(state)) issues.push(violation('INVALID_MOVEMENT_PHASE', ['sequence'], 'Ground movement requires a Movement Segment.', '6.0'));
+  if (state.currentMoverId !== pieceId) issues.push(violation('NOT_CURRENT_MOVER', ['pieceId'], 'Only the unit now moving can finish its move.', '6.1g'));
+  return issues;
+};
+
 const enterableHex = (state: GameState, piece: PieceState, hexId: HexId): RuleViolation | null => {
   if (enemyCombatUnitsAt(state, piece.ownerId, hexId).length > 0) {
     return violation('ENEMY_OCCUPIED_HEX', ['path'], 'Units cannot enter a Hex with enemy combat units; declare an overrun instead.', '4.8c');

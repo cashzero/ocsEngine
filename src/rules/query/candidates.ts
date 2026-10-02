@@ -153,6 +153,11 @@ export const candidateActions = (
         }
       }
       break;
+    case 'END_MOVE':
+      if (state.currentMoverId !== null && (request.pieceId === null || request.pieceId === state.currentMoverId)) {
+        add({ ...base(state, request.actorId, `end-move:${state.currentMoverId}`), kind: 'END_MOVE', pieceId: state.currentMoverId });
+      }
+      break;
     case 'CHECK_SUPPLY':
       if (state.sequence.phase !== 'SUPPLY') break;
       for (const piece of byId(unitsNeedingSupply(state, request.actorId)).filter(({ id }) => request.pieceId === null || id === request.pieceId)) {
@@ -327,7 +332,7 @@ export const candidateActions = (
 const DUMP_THREAT_HEXES = 1;
 
 export const ALL_ACTION_KINDS: readonly GameAction['kind'][] = [
-  'ADVANCE_SEQUENCE', 'CHANGE_MODE', 'RELEASE_RESERVE', 'MOVE_PIECE', 'CHECK_SUPPLY',
+  'ADVANCE_SEQUENCE', 'CHANGE_MODE', 'RELEASE_RESERVE', 'MOVE_PIECE', 'END_MOVE', 'CHECK_SUPPLY',
   'DECLARE_COMBAT', 'DECLARE_BARRAGE', 'RESPOND_DECISION', 'COMMIT_TRANSACTION',
   'CANCEL_TRANSACTION', 'PLACE_REINFORCEMENT', 'PAY_FUEL', 'RECOVER_INTERNALS', 'CHOOSE_FORMATION_TRACE',
   'ATTEMPT_BREAKOUT', 'BLOW_DUMP', 'LOAD_SUPPLY', 'UNLOAD_SUPPLY', 'COMBINE_TRANSPORT', 'DIVIDE_TRANSPORT',
@@ -337,9 +342,10 @@ export const ALL_ACTION_KINDS: readonly GameAction['kind'][] = [
 
 /**
  * Bookkeeping that is legal in any step but never a reason to stop the sequence on its own: two
- * reduced aircraft may combine (13.9-4) in any step where play stops for something else.
+ * reduced aircraft may combine (13.9-4) in any step where play stops for something else, and the
+ * current mover may be declared finished (6.1g).
  */
-const NON_STOPPING_KINDS: readonly GameAction['kind'][] = ['COMBINE_AIRCRAFT'];
+const NON_STOPPING_KINDS: readonly GameAction['kind'][] = ['COMBINE_AIRCRAFT', 'END_MOVE'];
 
 /** Cheap phase/actor filter before generating candidates. */
 export const kindMayBeLegal = (state: GameState, actorId: PlayerId, kind: GameAction['kind']): boolean => {
@@ -356,7 +362,8 @@ export const kindMayBeLegal = (state: GameState, actorId: PlayerId, kind: GameAc
     case 'ADVANCE_SEQUENCE': return true;
     case 'CHANGE_MODE': return phase === 'MOVEMENT' && segment === 'MOVEMENT';
     case 'RELEASE_RESERVE': return phase === 'REACTION' || phase === 'EXPLOITATION';
-    case 'MOVE_PIECE': return segment === 'MOVEMENT' && ['MOVEMENT', 'REACTION', 'EXPLOITATION'].includes(phase);
+    case 'MOVE_PIECE':
+    case 'END_MOVE': return segment === 'MOVEMENT' && ['MOVEMENT', 'REACTION', 'EXPLOITATION'].includes(phase);
     case 'CHECK_SUPPLY': return phase === 'SUPPLY';
     case 'DECLARE_COMBAT': return (segment === 'COMBAT' && (phase === 'COMBAT' || phase === 'EXPLOITATION'))
       || (segment === 'MOVEMENT' && ['MOVEMENT', 'REACTION', 'EXPLOITATION'].includes(phase));
