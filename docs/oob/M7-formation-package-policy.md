@@ -10,3 +10,5 @@ The command element is a force-organization marker in generated data, not an imp
 
 Point values are attached to reviewed archetypes. Allied and Axis packages use matched costs and the same archetype plan, making the intended balance observable rather than dependent on retry loops.
 
+
+Naming: formation and unit names use the short counter forms, not full titles or nicknames (`shortFormationName` in `names.ts`): `82.Abn`, `2.A`, `35.Inf`, `12.SS`, `3.PG`, `352.VG`, `6.FJ`, `FBB`; a single-unit division counter is named exactly after its formation, and support units use abbreviations (`Div Arty I`, `Rcn Det`, `Truck Co`, `Pi Bde`).

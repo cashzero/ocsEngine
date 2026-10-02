@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { FORMATION_NAME_PROFILES } from '../../src/generation/oob/name-catalog.js';
+import { shortFormationName } from '../../src/generation/oob/names.js';
 import {
   BTR_BUILD_FILE_SHA256,
   generateRandomOob,
@@ -22,7 +23,7 @@ describe('M7 deterministic random OOB pipeline', () => {
       for (const side of result.value.sides) {
         expect(new Set(side.formations.map((formation) => formation.name)).size).toBe(6);
         expect(side.formations.every((formation) => FORMATION_NAME_PROFILES.some((profile) =>
-          profile.name === formation.name && profile.side === side.side && profile.archetype === formation.archetype))).toBe(true);
+          shortFormationName(profile.name) === formation.name && profile.side === side.side && profile.archetype === formation.archetype))).toBe(true);
       }
       const definitions = result.value.pieceDefinitionCatalog.definitions;
       // A supply dump is a generic counter with no name (user decision 2026-10-02); every other counter keeps a distinct one.
@@ -32,9 +33,9 @@ describe('M7 deterministic random OOB pipeline', () => {
       const names = definitions.filter((definition) => definition.family !== 'RESOURCE').map((definition) => definition.name);
       expect(new Set(names).size).toBe(names.length);
       expect(names.every((name) => !/Independent|combat \d|undefined/.test(name))).toBe(true);
-      expect(names.some((name) => name.includes('QM Truck Co'))).toBe(true);
+      expect(names.some((name) => name.includes('Truck Co'))).toBe(true);
       // Engineer counters print a brigade (X) echelon, so their names follow it.
-      expect(names.some((name) => name.includes('Pionier-Brigade'))).toBe(true);
+      expect(names.some((name) => name.includes('Pi Bde'))).toBe(true);
     }
   });
 
