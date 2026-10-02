@@ -22,6 +22,12 @@ const artillery = (symbol: SourceCounter['symbol'], combat: Values, move: Values
 export const AXIS_AIRBORNE_GPID = 900_001;
 /** Placeholder key for the US airborne division counter; not a real BTR GPID. */
 export const ALLIED_AIRBORNE_GPID = 900_002;
+/** Placeholder keys (not real BTR GPIDs) of each US airborne division counter, by short formation name. */
+export const ALLIED_AIRBORNE_DIVISION_GPIDS: Readonly<Record<string, number>> = {
+  '82.Abn': ALLIED_AIRBORNE_GPID, '101.Abn': 900_003, '17.Abn': 900_004, '13.Abn': 900_005,
+};
+const airborneDivision = (moveStrength: number, regiments: number): SourceCounter =>
+  basic('INFANTRY', 'XX', 'OTHER', [2 * moveStrength, 4, 3, 0], [moveStrength, 4, 5, 0], ['leg', 'leg'], regiments, regiments);
 export const COUNTER_CORPUS: Readonly<Record<number, SourceCounter>> = {
   319: hq([0,0,0,14], [0,0,16,9]),
   160: basic('ARMOR', 'III', 'MECH', [14,4,6,0], [7,4,14,0], ['tracked','tracked'], 1, 1),
@@ -36,11 +42,15 @@ export const COUNTER_CORPUS: Readonly<Record<number, SourceCounter>> = {
   // German Fallschirmjäger division (XX, 4 steps): counter sheets 3F (18-3-3) / 3B (9-3-4), leg on both faces.
   // Synthetic key: the VASSAL GPID has not been extracted (see TODO in catalog.ts).
   [AXIS_AIRBORNE_GPID]: basic('INFANTRY', 'XX', 'OTHER', [18,3,3,0], [9,3,4,0], ['leg','leg'], 4, 4),
-  // US airborne division (XX, 4 steps), leg on both faces. TODO(allied-airborne-division-counter): estimated from
-  // the sheet 1B/2B regiment move faces (3 regiments at ~3-4-5, i.e. 8 on the move face), not transcribed from a
-  // printed division counter. Impact: US airborne division strength/AR may differ from a printed one. Closes when a
-  // printed division counter (or the front faces, sheets 1F/2F) is read and these numbers replaced.
-  [ALLIED_AIRBORNE_GPID]: basic('INFANTRY', 'XX', 'OTHER', [16,4,3,0], [8,4,5,0], ['leg','leg'], 4, 4),
+  // US airborne divisions (XX, one step per regiment, leg on both faces): the sum of the regiments printed on counter
+  // sheet 2B (3-4-5 / 2-4-5 move faces). TODO(allied-airborne-combat-face): the sheets provided show only the move
+  // faces; the combat face is taken as twice the move face (as on every other corpus counter) with Combat MA 3.
+  // User-visible impact: US airborne attack strength may differ from the printed regiments. Closes when sheets 1F/2F
+  // (the combat faces of the regiments) are read and the doubled values checked.
+  [ALLIED_AIRBORNE_GPID]: airborneDivision(8, 3), // 82.Abn: 505 3, 504 3, 325 2
+  900_003: airborneDivision(10, 4), // 101.Abn: 506 3, 502 3, 401 2, 327 2
+  900_004: airborneDivision(7, 3), // 17.Abn: 513 3, two regiments of 2
+  900_005: airborneDivision(7, 3), // 13.Abn: 515 3, 517 2, 326 2
   806: basic('INFANTRY', 'III', 'OTHER', [7,4,3,0], [4,4,14,0], ['leg','truck'], 1, 1),
   // US 159 Inf Rgt: images/BTR S02 R06 C19.png (4-3-3) and C19B.png (2-3-14).
   408: basic('INFANTRY', 'III', 'OTHER', [4,3,3,0], [2,3,14,0], ['leg','truck'], 1, 1),

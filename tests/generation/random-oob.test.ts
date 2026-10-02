@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { FORMATION_NAME_PROFILES } from '../../src/generation/oob/name-catalog.js';
+import { ALLIED_AIRBORNE_DIVISION_GPIDS, corpusFaces } from '../../src/generation/oob/counter-corpus.js';
 import { shortFormationName } from '../../src/generation/oob/names.js';
 import {
   BTR_BUILD_FILE_SHA256,
@@ -94,7 +95,7 @@ describe('M7 deterministic random OOB pipeline', () => {
           const unit = formation.units[0]!;
           const definition = definitions.get(unit.definitionId)!;
           expect(definition.counter?.echelon).toBe('XX');
-          expect(definition.faces[0]!.steps).toHaveLength(4);
+          expect(definition.faces[0]!.steps.length).toBeGreaterThanOrEqual(3);
           if (formation.archetype === 'AIRBORNE') {
             expect([mobility(unit.definitionId, 'combat'), mobility(unit.definitionId, 'move')]).toEqual(['mobility:leg', 'mobility:leg']);
           } else {
@@ -108,6 +109,19 @@ describe('M7 deterministic random OOB pipeline', () => {
       'ALLIED/AIRBORNE', 'ALLIED/INFANTRY', 'AXIS/AIRBORNE', 'AXIS/INFANTRY', 'AXIS/MOBILE_INFANTRY']));
     // The Allies have no mobile-infantry package, and airborne is never filed under it.
     expect([...seen]).not.toContain('ALLIED/MOBILE_INFANTRY');
+  });
+
+  it('sums the printed regiments for each US airborne division (sheet 2B), one step per regiment', () => {
+    const expected: Record<string, { move: number; steps: number }> = {
+      '82.Abn': { move: 8, steps: 3 }, '101.Abn': { move: 10, steps: 4 }, '17.Abn': { move: 7, steps: 3 }, '13.Abn': { move: 7, steps: 3 },
+    };
+    for (const [name, { move, steps }] of Object.entries(expected)) {
+      const faces = corpusFaces(ALLIED_AIRBORNE_DIVISION_GPIDS[name]!);
+      const face = (id: string) => faces.find((candidate) => String(candidate.id) === id)!;
+      expect(face('move').steps).toHaveLength(steps);
+      expect(face('move').steps[0]!.combatStrength).toBe(move);
+      expect(face('combat').steps[0]!.combatStrength).toBe(move * 2);
+    }
   });
 
   it('uses reviewed BTR locators while keeping ratings explicitly synthetic', () => {

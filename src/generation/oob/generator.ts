@@ -17,7 +17,7 @@ import {
   type PieceStepProfile,
 } from '../../domain/piece/index.js';
 import { canonicalJson } from '../../serialization/index.js';
-import { COUNTER_CORPUS, TRUCK_COUNTER_POINTS, corpusCounter, corpusFaces } from './counter-corpus.js';
+import { ALLIED_AIRBORNE_DIVISION_GPIDS, COUNTER_CORPUS, TRUCK_COUNTER_POINTS, corpusCounter, corpusFaces } from './counter-corpus.js';
 import { createSeededRandom, mixUint32 } from '../map/rng.js';
 import {
   BTR_BUILD_FILE_SHA256,
@@ -121,13 +121,16 @@ interface UnitBuildContext {
   readonly formationId: DefinitionId | null;
   readonly name: string;
   readonly localId: string;
+  /** Overrides the archetype's counter, for divisions whose printed regiments differ (US airborne). */
+  readonly counterGpid?: number;
 }
 
 const buildUnit = (context: UnitBuildContext): {
   readonly unit: GeneratedOobUnit;
   readonly definition: PieceDefinition;
 } => {
-  const source = findReviewedOobArchetype(context.side, context.role, context.formationArchetype);
+  const archetypeSource = findReviewedOobArchetype(context.side, context.role, context.formationArchetype);
+  const source = context.counterGpid === undefined ? archetypeSource : { ...archetypeSource, gpid: context.counterGpid };
   const idBase = `generated-oob:${context.options.seed}:${context.side.toLowerCase()}:${context.localId}`;
   const id = definitionId(idBase);
   const sourceReference = {
@@ -255,6 +258,8 @@ const buildSide = (
         name: unitName(side, role, Number(suffix.split('-').at(-1)) || 1, options.seed, namingProfile,
           echelonFor(side, role, archetype, true)),
         localId: `f${sequence}-${suffix}`,
+        ...(side === 'ALLIED' && archetype === 'AIRBORNE' && ALLIED_AIRBORNE_DIVISION_GPIDS[formationName] !== undefined
+          ? { counterGpid: ALLIED_AIRBORNE_DIVISION_GPIDS[formationName] } : {}),
       });
       definitions.push(built.definition);
       return built.unit;
