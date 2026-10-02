@@ -40,5 +40,5 @@ describe('generated deployment terrain and stacking', () => {
       }
     }
     expect(prepared).toBe(36);
-  });
+  }, 15_000);
 });

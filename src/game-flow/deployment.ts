@@ -22,10 +22,18 @@ import type {
 } from '../domain/piece/index.js';
 import { createSeededRandom, mixUint32, type GeneratedMap } from '../generation/map/index.js';
 import type { GeneratedOob, GeneratedOobUnit, OobSide } from '../generation/oob/index.js';
-import type { MobilityType } from '../rules/index.js';
+import { adjacentHexIds, movementCostModel, type MobilityType, type MovementCostModel } from '../rules/index.js';
 import type { GameFlowFailure, GeneratedDeployment } from './model.js';
-import { GENERATED_STACKING_LIMIT_RE_TICKS } from './configuration.js';
-import { GENERATED_TERRAIN_MOVEMENT_COSTS } from './movement-tec.js';
+import {
+  GENERATED_DEFAULT_TERRAIN_COST_TICKS,
+  GENERATED_STACKING_LIMIT_RE_TICKS,
+  GENERATED_SUPPLY_DRAW_RANGE_TICKS,
+} from './configuration.js';
+import {
+  GENERATED_HEXSIDE_MOVEMENT_COSTS,
+  GENERATED_ROAD_MOVEMENT_COSTS,
+  GENERATED_TERRAIN_MOVEMENT_COSTS,
+} from './movement-tec.js';
 import { initialAirBaseLevel } from '../generation/oob/air.js';
 
 const uint32 = (value: number): boolean => Number.isSafeInteger(value) && value >= 0 && value <= 0xffff_ffff;
@@ -95,6 +103,87 @@ const reTicks = (piece: PieceState, definition: PieceDefinition): number => {
     ?.regimentalEquivalentTicks ?? 0);
 };
 
+/**
+ * Preferred minimum Hex distance between formation centres, so formations form separate groups rather
+ * than one blob. Units of one formation may share a Hex or stand adjacent; this relaxes only when the
+ * zone is too small.
+ */
+export const GENERATED_FORMATION_SPACING_HEXES = 3;
+
+/** Field units per Hex inside a formation group, so stacks stay small. */
+const FIELD_UNITS_PER_HEX = 2;
+
+/** Supply dumps stand this many Hexes in from the entry Hex, apart from each other, not on the map edge. */
+const DUMP_MIN_DEPTH_HEXES = 3;
+const DUMP_SPACING_HEXES = 3;
+/** Nearest candidate Hexes compared by draw coverage when siting a dump. */
+const DUMP_CANDIDATE_LIMIT = 12;
+
+const truckCostModel = (map: GeneratedMap): MovementCostModel => movementCostModel({
+  scenario: { mapDefinition: map.mapDefinition },
+  configuration: {
+    terrainMovementCosts: GENERATED_TERRAIN_MOVEMENT_COSTS,
+    hexsideMovementCosts: GENERATED_HEXSIDE_MOVEMENT_COSTS,
+    roadMovementCosts: GENERATED_ROAD_MOVEMENT_COSTS,
+    defaultTerrainCostTicks: GENERATED_DEFAULT_TERRAIN_COST_TICKS,
+  },
+  weather: { groundCondition: 'DRY' },
+}, 'truck');
+
+/**
+ * Hexes a supply dump at `originHexId` reaches by Truck draw (12.3a, 12.3d). Truck and Track units
+ * need fuel from a dump within that range (12.5), so field units deploy inside it. Uses the same
+ * movement cost model as play (weather ignored, 17.0c), so terrain, rivers and roads are respected.
+ */
+const supplyReach = (model: MovementCostModel, originHexId: HexId): ReadonlySet<HexId> => {
+  const best = new Map<HexId, number>([[originHexId, 0]]);
+  const queue: HexId[] = [originHexId];
+  for (let head = 0; head < queue.length; head += 1) {
+    const hexId = queue[head]!;
+    for (const next of adjacentHexIds(hexId)) {
+      const step = model.evaluate(hexId, next);
+      if (step.kind !== 'COST' || step.all) continue;
+      const total = best.get(hexId)! + step.cost.totalTicks;
+      if (total > GENERATED_SUPPLY_DRAW_RANGE_TICKS || total >= (best.get(next) ?? Number.POSITIVE_INFINITY)) continue;
+      best.set(next, total);
+      queue.push(next);
+    }
+  }
+  return new Set(best.keys());
+};
+
+/**
+ * Centre Hexes for `count` formation groups, nearest the side's anchor first, each at least `spacing`
+ * Hexes from every reserved Hex (supply dumps, Air Bases) and from every earlier centre. Wider spacing
+ * is preferred, but staying inside `reach` (supply) outranks it; both relax until `count` centres exist.
+ */
+const formationCenters = (
+  ranked: readonly HexId[],
+  reserved: readonly HexId[],
+  reach: ReadonlySet<HexId>,
+  count: number,
+): HexId[] => {
+  const spacings = [GENERATED_FORMATION_SPACING_HEXES, 2, 1];
+  const attempts = [
+    ...spacings.map((spacing) => ({ spacing, inReach: true })),
+    ...spacings.map((spacing) => ({ spacing, inReach: false })),
+  ];
+  for (const { spacing, inReach } of attempts) {
+    const taken = [...reserved];
+    const chosen: HexId[] = [];
+    for (const hexId of ranked) {
+      if (chosen.length === count) break;
+      if (inReach && !reach.has(hexId)) continue;
+      if (taken.every((other) => distance(other, hexId) >= spacing)) {
+        chosen.push(hexId);
+        taken.push(hexId);
+      }
+    }
+    if (chosen.length === count) return chosen;
+  }
+  return [];
+};
+
 const selectObjective = (map: GeneratedMap): HexId => {
   // Generated maps are odd-r offset rectangles, so the centre is measured in map columns.
   const centerColumn = (map.options.width - 1) / 2;
@@ -135,6 +224,14 @@ export const deployGeneratedForces = (
     return { ok: false, error: [deploymentFailure('Generated map has no usable opposing entry regions.')] };
   }
 
+  const truckModel = truckCostModel(map);
+  const reachCache = new Map<HexId, ReadonlySet<HexId>>();
+  const supplyReachOf = (hexId: HexId): ReadonlySet<HexId> => {
+    let reach = reachCache.get(hexId);
+    if (!reach) { reach = supplyReach(truckModel, hexId); reachCache.set(hexId, reach); }
+    return reach;
+  };
+
   const sideAnchors: Readonly<Record<OobSide, HexId>> = { ALLIED: firstAnchor, AXIS: secondAnchor };
   const sideSupply: Readonly<Record<OobSide, readonly HexId[]>> = {
     ALLIED: map.strategicRegions.firstSupplyHexIds,
@@ -154,43 +251,40 @@ export const deployGeneratedForces = (
       hex,
       score: distance(hex.id, sideAnchors[side]) * 10_000 + Math.floor(rng.next() * 10_000),
     })).sort((left, right) => left.score - right.score || String(left.hex.id).localeCompare(String(right.hex.id)));
-    const slots = ranked.flatMap(({ hex }) => [hex.id, hex.id, hex.id]);
+    // Dense fallback: three slots per Hex, used only when the spread slots cannot take a unit.
+    const denseSlots = ranked.flatMap(({ hex }) => [hex.id, hex.id, hex.id]);
     const units = allUnits(oob).filter((unit) => unit.side === side);
     const supplyUnits = units.filter(({ role }) => role === 'SUPPLY');
     const airBases = units.filter(({ role }) => role === 'AIR_BASE');
     const aircraft = units.filter(({ role }) => role === 'AIRCRAFT');
     const fieldUnits = units.filter(({ role }) => role !== 'SUPPLY' && role !== 'AIR_BASE' && role !== 'AIRCRAFT');
     const reinforcement = fieldUnits.find(({ formationId }) => formationId === null) ?? fieldUnits.at(-1);
-    if (fieldUnits.length > slots.length || sideSupply[side].length === 0) {
+    if (fieldUnits.length > denseSlots.length || sideSupply[side].length === 0) {
       return { ok: false, error: [deploymentFailure(`Map cannot deploy every ${side} unit within its operational zone.`)] };
     }
-    // Each field unit takes the nearest remaining slot on a Hex its deployed face may enter (6.2c).
-    // Stacking (4.8) is also respected here so a displaced unit cannot overstack a later Hex.
-    const remainingSlots = [...slots];
-    const usedReTicks = new Map<HexId, number>();
-    const fieldPlacements: { unit: (typeof fieldUnits)[number]; hexId: HexId }[] = [];
-    for (const unit of fieldUnits) {
-      const definition = definitionById.get(unit.definitionId);
-      const offMap = unit.id === reinforcement?.id;
-      const unitReTicks = definition && !offMap ? deployedReTicks(definition) : 0;
-      const slotIndex = remainingSlots.findIndex((hexId) => (definition === undefined
-        || canDeployOn(hexById.get(hexId)!, deployedMobility(definition)))
-        && (usedReTicks.get(hexId) ?? 0) + unitReTicks <= GENERATED_STACKING_LIMIT_RE_TICKS);
-      if (slotIndex < 0) {
-        return { ok: false, error: [deploymentFailure(`Map cannot deploy every ${side} unit on terrain it can enter within stacking limits.`)] };
-      }
-      const hexId = remainingSlots.splice(slotIndex, 1)[0]!;
-      usedReTicks.set(hexId, (usedReTicks.get(hexId) ?? 0) + unitReTicks);
-      fieldPlacements.push({ unit, hexId });
-    }
-    const placements = [
-      ...supplyUnits.map((unit, index) => ({ unit, hexId: sideSupply[side][index % sideSupply[side].length]! })),
-      ...fieldPlacements,
-    ];
     // 15.0: Air Bases sit in the rear near the side's supply hexes (so refit SP can reach them), on
     // ground trucks can enter, at least three hexes apart; one Air Base per hex (15.0a).
     const baseHexes: HexId[] = [];
-    const supplyAnchor = sideSupply[side][0]!;
+    // Supply dumps are spread too: each stands inside the zone, on ground trucks can enter, apart from
+    // the others (spacing relaxes only when the zone is too small), and where its draw range covers the
+    // most ground so the units around it can be fuelled. The first dump anchors the Air Bases.
+    const dumpCandidates = ranked
+      .filter(({ hex }) => canDeployOn(hex, 'truck')
+        && distance(hex.id, sideAnchors[side]) >= DUMP_MIN_DEPTH_HEXES)
+      .slice(0, DUMP_CANDIDATE_LIMIT)
+      .map(({ hex }, order) => ({ hexId: hex.id, order, coverage: supplyReachOf(hex.id).size }))
+      .sort((left, right) => right.coverage - left.coverage || left.order - right.order);
+    const dumpHexes: HexId[] = [];
+    for (const spacing of [DUMP_SPACING_HEXES, 2, 1]) {
+      dumpHexes.length = 0;
+      for (const { hexId } of dumpCandidates) {
+        if (dumpHexes.length === supplyUnits.length) break;
+        if (dumpHexes.every((used) => distance(used, hexId) >= spacing)) dumpHexes.push(hexId);
+      }
+      if (dumpHexes.length === supplyUnits.length) break;
+    }
+    if (dumpHexes.length < supplyUnits.length) dumpHexes.push(...sideSupply[side].slice(0, supplyUnits.length - dumpHexes.length));
+    const supplyAnchor = dumpHexes[0] ?? sideSupply[side][0]!;
     const baseCandidates = zones[side]
       .filter((hex) => canDeployOn(hex, 'truck') && distance(hex.id, supplyAnchor) >= 1)
       .map((hex) => ({ hex, score: distance(hex.id, supplyAnchor) * 10_000 + Math.floor(rng.next() * 10_000) }))
@@ -200,6 +294,60 @@ export const deployGeneratedForces = (
       if (!chosen) return { ok: false, error: [deploymentFailure(`Map has no room for every ${side} Air Base in the rear.`)] };
       baseHexes.push(chosen.hex.id);
     }
+    // Field units deploy as formation groups rather than one blob: each formation gets its own centre,
+    // inside supply reach and clear of the dumps and Air Bases, and a unit takes the nearest slot of its
+    // group on a Hex its deployed face may enter (6.2c). Stacking (4.8) is respected so a displaced unit
+    // cannot overstack a later Hex.
+    const groupKeys = [...new Set(fieldUnits.map(({ formationId }) => formationId ?? 'independent'))];
+    const reach = new Set(dumpHexes.flatMap((hexId) => [...supplyReachOf(hexId)]));
+    const reserved = new Set<HexId>([...dumpHexes, ...baseHexes]);
+    const rankedIds = ranked.map(({ hex }) => hex.id);
+    const centers = formationCenters(rankedIds, [...reserved], reach, groupKeys.length);
+    // Each formation group takes its centre, then the nearest free Hexes around it (reach and the
+    // dumps/bases permitting), FIELD_UNITS_PER_HEX slots each. No Hex belongs to two groups.
+    const claimed = new Set<HexId>(centers);
+    const groupSlots = new Map<string, HexId[]>();
+    for (const [index, key] of groupKeys.entries()) {
+      const center = centers[index];
+      if (center === undefined) break;
+      const size = fieldUnits.filter(({ formationId }) => (formationId ?? 'independent') === key).length;
+      const hexes = [center];
+      const nearby = rankedIds
+        .filter((hexId) => !claimed.has(hexId) && !reserved.has(hexId) && (reach.size === 0 || reach.has(hexId)))
+        .map((hexId, order) => ({ hexId, order, away: distance(hexId, center) }))
+        .filter(({ away }) => away <= 3)
+        .sort((left, right) => left.away - right.away || left.order - right.order);
+      for (const { hexId } of nearby) {
+        if (hexes.length * FIELD_UNITS_PER_HEX >= size + 1) break;
+        hexes.push(hexId);
+        claimed.add(hexId);
+      }
+      groupSlots.set(key, hexes.flatMap((hexId) => Array<HexId>(FIELD_UNITS_PER_HEX).fill(hexId)));
+    }
+    const fallbackSlots = [...denseSlots];
+    const usedReTicks = new Map<HexId, number>();
+    const fieldPlacements: { unit: (typeof fieldUnits)[number]; hexId: HexId }[] = [];
+    for (const unit of fieldUnits) {
+      const definition = definitionById.get(unit.definitionId);
+      const offMap = unit.id === reinforcement?.id;
+      const unitReTicks = definition && !offMap ? deployedReTicks(definition) : 0;
+      const fits = (hexId: HexId): boolean => (definition === undefined
+        || canDeployOn(hexById.get(hexId)!, deployedMobility(definition)))
+        && (usedReTicks.get(hexId) ?? 0) + unitReTicks <= GENERATED_STACKING_LIMIT_RE_TICKS;
+      const ownSlots = groupSlots.get(unit.formationId ?? 'independent') ?? [];
+      const ownIndex = ownSlots.findIndex(fits);
+      const fallbackIndex = ownIndex < 0 ? fallbackSlots.findIndex(fits) : -1;
+      if (ownIndex < 0 && fallbackIndex < 0) {
+        return { ok: false, error: [deploymentFailure(`Map cannot deploy every ${side} unit on terrain it can enter within stacking limits.`)] };
+      }
+      const hexId = ownIndex >= 0 ? ownSlots.splice(ownIndex, 1)[0]! : fallbackSlots.splice(fallbackIndex, 1)[0]!;
+      usedReTicks.set(hexId, (usedReTicks.get(hexId) ?? 0) + unitReTicks);
+      fieldPlacements.push({ unit, hexId });
+    }
+    const placements = [
+      ...supplyUnits.map((unit, index) => ({ unit, hexId: dumpHexes[index % dumpHexes.length]! })),
+      ...fieldPlacements,
+    ];
     // Aircraft begin Active (IV-E) and are spread over the bases within each base's 4 + Level limit (14.2a).
     const baseLevels = airBases.map((unit) => initialAirBaseLevel(definitionById.get(unit.definitionId)!) ?? 1);
     const activeCounts = airBases.map(() => 0);
