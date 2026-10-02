@@ -168,7 +168,7 @@ export interface UiSnapshot {
   readonly supplyNeeds: readonly SupplyNeed[];
   /** Actions for the selected unit, dump, or truck. */
   readonly unitActions: readonly UnitAction[];
-  /** SP the seat paid or moved this step, oldest first: what, from which dump or truck, and what that source holds now. */
+  /** SP the seat paid or moved this player turn, oldest first: what, from which dump or truck, and what that source holds now. */
   readonly ledger: readonly LedgerLine[];
   /** What the selected own truck can load and unload where it stands (13.2f); null when no truck is selected or it is not the Movement Segment. */
   readonly transportOptions: TransportOptions | null;

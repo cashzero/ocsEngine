@@ -78,7 +78,7 @@ Tab 組合由當前 phase 與資料決定；必辦者在最左並帶徽章。每
 | Combat、Exploitation、Barrage | **Targets**（可攻擊／可砲擊的敵方 hex；空狀態說明原因） |
 | 非 Aircraft Refit | **Unit**（模式、Release、燃料、卡車、傾倒等所選單位的動作） |
 | 有可用空中任務 | **Air**（可選；排在 Unit 之後，不搶走該步驟的主要工作） |
-| 本步驟己方付過或搬過補給（2026-10-02，M12-Supply A5） | **Ledger**（唯讀帳目：付了什麼、從哪個堆或卡車、來源剩多少；可選，排在 Air 之後、Log 之前） |
+| 本玩家回合己方付過或搬過補給（含戰鬥與砲擊付費，標題「Supply this turn」）（2026-10-02，M12-Supply A5） | **Ledger**（唯讀帳目：付了什麼、從哪個堆或卡車、來源剩多少；可選，排在 Air 之後、Log 之前） |
 | 一律 | **Log** |
 
 **Unit tab 的卡車區塊**（2026-10-02，M12-Supply A2／A4）：選取己方卡車且在 Movement 階段的移動段時，「Trucks」群組改為內嵌區塊

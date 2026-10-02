@@ -409,13 +409,24 @@ class DefaultUiController implements UiController {
     return records;
   }
 
-  /** The supply the seat paid or moved this step, from its own accepted actions. */
+  /** Everything since the current player turn began (a new game turn or the other player's turn starting). */
+  #turnRecords(): readonly HistoryRecord[] {
+    const records = this.#history();
+    for (let index = records.length - 1; index >= 0; index -= 1) {
+      const turnChanged = records[index]!.events.some((event) => event.kind === 'SEQUENCE_ADVANCED'
+        && (event.from.gameTurn !== event.to.gameTurn || event.from.playerTurnIndex !== event.to.playerTurnIndex));
+      if (turnChanged) return records.slice(index + 1);
+    }
+    return records;
+  }
+
+  /** The supply the seat paid or moved this turn, from its own accepted actions. */
   #ledger(records: readonly HistoryRecord[], seatId: SeatId, pieces: readonly ProjectedPiece[]): readonly LedgerLine[] {
     const lines: LedgerLine[] = [];
     // Where a payment was drawn from is read from the action and from the state now, so it is the same after a save is loaded
     // or a checkpoint restored: the dump's Hex, or the truck carrying it, and what it holds now ("used up" when it is gone).
-    const where = (action: GameAction): string => {
-      const sourceId = action.kind === 'PAY_FUEL' || action.kind === 'CHECK_SUPPLY' ? action.sourcePieceId : null;
+    const sourceOf = (action: GameAction): string | null => action.kind === 'PAY_FUEL' || action.kind === 'CHECK_SUPPLY' ? action.sourcePieceId : null;
+    const where = (sourceId: string | null): string => {
       const source = sourceId ? pieces.find(({ id }) => id === sourceId) : undefined;
       if (!source) return 'a dump';
       const container = source.location.kind === 'CONTAINER' ? pieces.find(({ id }) => id === (source.location as { containerId: string }).containerId) : undefined;
@@ -425,15 +436,25 @@ class DefaultUiController implements UiController {
       return `${what} (${left})`;
     };
     const method = { SINGLE_UNIT: 'this unit', FORMATION: 'its whole formation', HQ: 'the HQ and its range' } as const;
+    const playerId = this.#bindings.find((binding) => binding.seatId === seatId)?.playerId;
     for (const record of records) {
-      if (record.seatId !== seatId) continue;
       for (const event of record.events) {
         const revision = record.revisionAfter;
+        // Combat and barrage supply is consumed when the dice are rolled, which may be on the other player's action, so it is read
+        // by whose dump it was, not by who acted; the other side's dumps are never shown.
+        if (event.kind === 'RESOURCE_CONSUMED') {
+          const source = pieces.find(({ id }) => id === event.reservation.resourcePieceId);
+          if (source && source.ownerId === playerId) {
+            lines.push({ revision, spent: event.reservation.quantity, text: `Combat or barrage supply ${event.reservation.quantity}T from ${where(String(source.id))}.` });
+          }
+          continue;
+        }
+        if (record.seatId !== seatId) continue;
         if (event.kind === 'FUEL_PAID') {
           const unit = pieces.find(({ id }) => id === event.pieceId);
-          lines.push({ revision, spent: event.tokens, text: `Fuel ${event.tokens}T for ${unit ? unitLabel(this.#scenario, unit) : 'a unit'} (${method[event.method]}) from ${where(record.action)}.` });
+          lines.push({ revision, spent: event.tokens, text: `Fuel ${event.tokens}T for ${unit ? unitLabel(this.#scenario, unit) : 'a unit'} (${method[event.method]}) from ${where(sourceOf(record.action))}.` });
         } else if (event.kind === 'SUPPLY_SPENT') {
-          lines.push({ revision, spent: event.quantity, text: `${event.quantity}T drawn from ${where(record.action)}.` });
+          lines.push({ revision, spent: event.quantity, text: `${event.quantity}T drawn from ${where(sourceOf(record.action))}.` });
         } else if (event.kind === 'SUPPLY_TRANSFERRED') {
           lines.push({ revision, spent: 0, text: `${event.loaded ? 'Loaded' : 'Unloaded'} ${event.tokens}T ${event.loaded ? 'onto' : 'from'} a truck.` });
         } else if (event.kind === 'DUMP_BLOWN') {
@@ -631,7 +652,7 @@ class DefaultUiController implements UiController {
       if (record.action.kind === 'DECLARE_COMBAT') for (const id of record.action.attackerIds) if (own.has(String(id))) attackedThisPhase.add(String(id));
       if (record.action.kind === 'DECLARE_BARRAGE') for (const id of record.action.firerIds) if (own.has(String(id))) attackedThisPhase.add(String(id));
     }
-    const ledger = view.privacyLocked ? [] : this.#ledger(phaseRecords, seatId, pieces);
+    const ledger = view.privacyLocked ? [] : this.#ledger(this.#turnRecords(), seatId, pieces);
     return {
       scenario: this.#scenario,
       view,

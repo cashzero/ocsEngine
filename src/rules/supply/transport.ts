@@ -114,6 +114,35 @@ const spendAsMover = (state: GameState, truck: PieceState, ticks: number): GameS
 const groundDumpsAt = (state: GameState, playerId: PlayerId, hexId: HexId): readonly PieceState[] =>
   piecesAt(state, hexId).filter((piece) => piece.ownerId === playerId && definitionOf(state, piece)?.family === 'RESOURCE' && (piece.resourceQuantity ?? 0) > 0);
 
+/**
+ * Supply of one kind is one counter wherever it lies: two dumps (or a dump and a load) of the same resource and unit and the same
+ * owner are interchangeable, whichever piece each was printed as, so unloading or loading joins them instead of leaving two.
+ */
+export const sameSupply = (state: GameState, left: PieceState, right: PieceState): boolean => {
+  const a = definitionOf(state, left)?.resource;
+  const b = definitionOf(state, right)?.resource;
+  return !!a && !!b && left.ownerId === right.ownerId && a.resourceDefinitionId === b.resourceDefinitionId && a.unitDefinitionId === b.unitDefinitionId;
+};
+
+/** A newly placed dump joins the same kind of dump already in its Hex. */
+export const mergeSupplyAt = (state: GameState, hexId: HexId, ownerId: PlayerId): GameState => {
+  const dumps = stableSort(groundDumpsAt(state, ownerId, hexId), (left, right) => (right.resourceQuantity ?? 0) - (left.resourceQuantity ?? 0) || String(left.id).localeCompare(String(right.id)));
+  let pieceState = state.pieceState;
+  const folded = new Set<PieceId>();
+  for (const keeper of dumps) {
+    if (folded.has(keeper.id)) continue;
+    let total = keeper.resourceQuantity ?? 0;
+    for (const other of dumps) {
+      if (other.id === keeper.id || folded.has(other.id) || !sameSupply(state, keeper, other)) continue;
+      total += other.resourceQuantity ?? 0;
+      folded.add(other.id);
+      pieceState = upsert(pieceState, { ...other, resourceQuantity: 0, location: { kind: 'ELIMINATED' } });
+    }
+    if (total !== (keeper.resourceQuantity ?? 0)) pieceState = upsert(pieceState, { ...keeper, resourceQuantity: total });
+  }
+  return pieceState === state.pieceState ? state : { ...state, pieceState };
+};
+
 export const validateLoad = (state: GameState, actorId: PlayerId, truckId: PieceId, dumpId: PieceId, tokens: number): readonly RuleViolation[] => {
   const issues: RuleViolation[] = [];
   const phase = transportPhase(state, actorId);
@@ -154,7 +183,7 @@ export const applyLoad = (state: GameState, truckId: PieceId, dumpId: PieceId, t
   const dump = pieceById(state, dumpId)!;
   let next = spendAsMover(state, truck, loadCostTicks(state, truck));
   let pieceState = next.pieceState;
-  const existing = cargoOf(next, truck).find(({ definitionId }) => definitionId === dump.definitionId);
+  const existing = cargoOf(next, truck).find((cargo) => sameSupply(next, cargo, dump));
   const remaining = (dump.resourceQuantity ?? 0) - tokens;
   if (existing) {
     const quantity = (existing.resourceQuantity ?? 0) + tokens;
@@ -201,7 +230,7 @@ export const applyUnload = (state: GameState, truckId: PieceId, tokens: number):
     if (left <= 0) break;
     const take = Math.min(left, cargo.resourceQuantity ?? 0);
     left -= take;
-    const target = groundDumpsAt({ ...next, pieceState }, truck.ownerId, hexId).find(({ definitionId }) => definitionId === cargo.definitionId);
+    const target = groundDumpsAt({ ...next, pieceState }, truck.ownerId, hexId).find((ground) => sameSupply(next, ground, cargo));
     const remainingCargo = (cargo.resourceQuantity ?? 0) - take;
     if (target) {
       pieceState = upsert(pieceState, { ...target, resourceQuantity: (target.resourceQuantity ?? 0) + take });

@@ -242,12 +242,29 @@ const renderMap = (snapshot: UiSnapshot): string => {
   const stackBadges: string[] = [];
   const counters = theater.cells.map((cell) => {
     const stack = stacks.get(cell.id);
-    const pieces = stackOrder(stack?.pieces ?? []);
+    const allPieces = stackOrder(stack?.pieces ?? []);
+    // Supply lies in the hex rather than in the stack: a hex's dump is one small marker at its corner and does not take one of the
+    // three counter places or count towards the hidden ones.
+    const dumps = allPieces.filter(({ role }) => role === 'DUMP').sort((left, right) => (right.resourceQuantity ?? 0) - (left.resourceQuantity ?? 0));
+    const pieces = allPieces.filter(({ role }) => role !== 'DUMP');
     // Draw the bottom of the stack first; at most three counters are shown, the rest are counted.
     const visible = pieces.slice(-3);
     const selectedPiece = pieces.find(({ id }) => id === snapshot.selection.pieceId);
     if (selectedPiece && !visible.includes(selectedPiece)) visible.push(selectedPiece);
-    const html = visible.map((piece, index) => {
+    const dump = dumps[0];
+    const dumpMarkup = dump ? (() => {
+      const definition = scenario.pieceCatalog.definitions.find(({ id }) => id === dump.definitionId)!;
+      const ownerIndex = scenario.players.findIndex(({ id }) => id === dump.ownerId);
+      const isSelected = snapshot.selection.pieceId === dump.id;
+      const markup = `<g class="counter dump-marker owner-${ownerIndex + 1}${isSelected ? ' is-selected' : ''}" transform="translate(${cell.x - 4} ${cell.y - 2}) scale(.5)"
+        role="button" tabindex="-1" data-piece="${escapeHtml(dump.id)}" data-hex="${escapeHtml(cell.id)}"
+        aria-label="${escapeHtml(`${dump.ownerId === snapshot.view.playerId ? '' : 'Enemy '}${pieceLabel(scenario, dump)}, hex ${printedHexLabel(cell.id)}`)}">
+        ${counterSvgBody(counterView(definition, dump))}
+      </g>`;
+      if (isSelected) { selectedCounters.push(markup); return ''; }
+      return markup;
+    })() : '';
+    const html = dumpMarkup + visible.map((piece, index) => {
       const ownerIndex = scenario.players.findIndex(({ id }) => id === piece.ownerId);
       const x = cell.x - 35 + index * 6;
       const y = cell.y - 35 - index * 6;
@@ -261,7 +278,7 @@ const renderMap = (snapshot: UiSnapshot): string => {
       if (isSelected) { selectedCounters.push(markup); return ''; }
       return markup;
     }).join('');
-    const hiddenCount = (stack?.hiddenCount ?? 0) + Math.max(0, pieces.length - visible.length);
+    const hiddenCount = (stack?.hiddenCount ?? 0) + Math.max(0, pieces.length - visible.length) + Math.max(0, dumps.length - 1);
     if (hiddenCount > 0) stackBadges.push(`<g class="hidden-count" transform="translate(${cell.x + 26} ${cell.y - 34})"><circle r="12"></circle><text y="5" text-anchor="middle">+${hiddenCount}</text></g>`);
     return html;
   }).join('');

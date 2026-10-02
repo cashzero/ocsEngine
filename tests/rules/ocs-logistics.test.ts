@@ -19,6 +19,7 @@ import {
   generatedPieceId,
   hexDistanceBetween,
   internalStocksOf,
+  mergeSupplyAt,
   overstackDecision,
   pieceHasTrace,
   previewBarrage,
@@ -358,6 +359,41 @@ describe('OCS 4.3 transport, Extenders and dumps (9.14, 12.2, 12.7, 12.11, 13.2)
     }
     // A selected piece that is not one of the group does not get the action.
     expect(combine(U.alSup)).toEqual([]);
+  });
+
+  it('keeps the supply of one Hex in one dump counter, whichever dump it was printed as', () => {
+    const dumpsAt = (state: GameState, hex: string) => state.pieceState.pieces.filter((candidate) => candidate.location.kind === 'ON_MAP'
+      && candidate.location.hexId === hex && candidate.ownerId === ALLIED && (candidate.resourceQuantity ?? 0) > 0
+      && state.scenario.pieceCatalog.definitions.find(({ id }) => id === candidate.definitionId)?.family === 'RESOURCE');
+    const base = atStep(buildGeneratedRuleState({ [U.alTruck]: ['1,5', null], [U.alSup]: ['1,5', null], [U.alLeg]: ['4,5', 'COMBAT', 'combat'] }), 'MOVEMENT', 'MOVEMENT', ALLIED);
+    // A second dump of the same kind that was printed as a different piece (the scenario has one definition per dump), waiting at the destination.
+    const firstDefinition = base.scenario.pieceCatalog.definitions.find(({ id }) => id === piece(base, U.alSup).definitionId)!;
+    const secondDefinition = { ...firstDefinition, id: 'definition:test-second-supply' as typeof firstDefinition.id };
+    const secondPiece = { ...piece(base, U.alSup), id: 'piece:test-second-supply' as PieceId, definitionId: secondDefinition.id, location: { kind: 'ON_MAP' as const, hexId: '4,5' as HexId }, stackOrder: 9 };
+    const second = secondPiece.id;
+    const state: GameState = {
+      ...base,
+      scenario: { ...base.scenario, pieceCatalog: { ...base.scenario.pieceCatalog, definitions: [...base.scenario.pieceCatalog.definitions, secondDefinition] } },
+      pieceState: { ...base.pieceState, pieces: [...base.pieceState.pieces, secondPiece] },
+    };
+    const waiting = piece(state, second).resourceQuantity!;
+    const carried = piece(state, U.alSup).resourceQuantity!;
+    const loaded = ok(applyRuleAction(state, ALLIED, { kind: 'LOAD_SUPPLY', truckId: U.alTruck, dumpId: U.alSup, tokens: carried }));
+    const moved = ok(applyRuleAction(loaded, ALLIED, { kind: 'MOVE_PIECE', pieceId: U.alTruck, path: path('1,5', '2,5', '3,5', '4,5') }));
+    // Unloading where another dump already stands adds to that dump; it does not leave a second counter beside it.
+    const unloaded = ok(applyRuleAction(moved, ALLIED, { kind: 'UNLOAD_SUPPLY', truckId: U.alTruck, tokens: carried }));
+    expect(dumpsAt(unloaded, '4,5').map(({ id, resourceQuantity }) => [id, resourceQuantity])).toEqual([[second, waiting + carried]]);
+    // The load that was unloaded is gone as a counter (its tokens now belong to the dump).
+    expect(piece(unloaded, U.alSup).location.kind).toBe('ELIMINATED');
+
+    // A dump placed where the same kind of supply already lies (a reinforcement dump arriving) joins it as well.
+    const crowded = { ...state, pieceState: { ...state.pieceState, pieces: state.pieceState.pieces.map((candidate) => candidate.id === U.alSup
+      ? { ...candidate, location: { kind: 'ON_MAP' as const, hexId: '4,5' as HexId } } : candidate) } };
+    expect(dumpsAt(crowded, '4,5')).toHaveLength(2);
+    const merged = mergeSupplyAt(crowded, '4,5' as HexId, ALLIED);
+    expect(dumpsAt(merged, '4,5').map(({ resourceQuantity }) => resourceQuantity)).toEqual([waiting + carried]);
+    // Dumps of different owners never merge.
+    expect(dumpsAt(mergeSupplyAt(crowded, '4,5' as HexId, AXIS), '4,5')).toHaveLength(2);
   });
 
   it('lets a truck that already moved divide and then combine again at no MP cost (13.2c, 6.1f)', () => {

@@ -499,7 +499,7 @@ const unitTab = (snapshot: UiSnapshot, state: DeckState): string => {
 /** The supply the seat has paid or moved in this step, newest last, with what each source holds now. */
 const ledgerTab = (snapshot: UiSnapshot): string => {
   const spent = snapshot.ledger.reduce((total, { spent: tokens }) => total + tokens, 0);
-  return `<div class="ledger"><strong>Supply this step</strong>
+  return `<div class="ledger"><strong>Supply this turn</strong>
     <p class="summary-line">${spent}T paid · ${snapshot.ledger.length} entr${snapshot.ledger.length === 1 ? 'y' : 'ies'}</p>
     <ol class="ledger-list">${snapshot.ledger.map(({ text }) => `<li>${esc(withHexLabels(text))}</li>`).join('')}</ol></div>`;
 };

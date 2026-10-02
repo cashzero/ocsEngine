@@ -69,7 +69,7 @@ describe('the supply ledger (A5)', () => {
     expect(deckTabs(snapshot).map(({ id }) => id)).toContain('ledger');
     selectDeckTab(snapshot, deck, 'ledger');
     const html = commandDeckHtml(snapshot, deck);
-    expect(html).toContain('Supply this step');
+    expect(html).toContain('Supply this turn');
     expect(html).toContain('1T paid');
     expect(html).toContain('Fuel 1T for Recon Detachment 1');
     expect(html).toContain('from the ');
