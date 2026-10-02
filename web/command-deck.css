@@ -25,15 +25,13 @@ html, body { min-width: 1680px; height: 100%; overflow: hidden; }
 
 .command-rail { grid-column: 1; grid-row: 2; display: flex; flex-direction: column; padding: 0; min-height: 0; overflow: hidden; background: #121b17; }
 .command-rail > * { flex: none; }
-.command-rail > .deck-work { flex: 1 1 0; min-height: 120px; overflow-y: auto; overscroll-behavior: contain; display: flex; flex-direction: column; }
-.command-rail > .deck-list { flex: 1.2 1 0; }
+.command-rail > .deck-body { flex: 1 1 0; min-height: 120px; overflow-y: auto; overscroll-behavior: contain; display: flex; flex-direction: column; scrollbar-gutter: stable; }
+.command-rail > .deck-body > * { flex: none; }
 .command-rail > section, .command-rail > header, .command-rail > footer { margin: 0; padding: 12px 16px; border: 0; border-bottom: 1px solid var(--line); min-width: 0; }
-.deck-phase h1 { font: 700 19px/1.25 ui-sans-serif, system-ui, sans-serif; margin: 0; }
-.deck-phase p { margin: 4px 0 0; color: var(--muted); font-size: 13px; line-height: 1.4; }
+.command-rail > .deck-objective { margin: 0; padding: 8px 16px; border-bottom: 1px solid var(--line); color: var(--muted); font-size: 13px; line-height: 1.4; }
 .paused-banner { margin: 0; padding: 8px 16px; color: #241b06; background: #f2b84b; font-size: 14px; font-weight: 750; }
-.deck-phase .eyebrow { margin: 0 0 2px; }
-.deck-selection { display: flex; align-items: center; gap: 12px; min-height: 110px; }
-.deck-selection .unit-counter { width: 96px; height: 96px; flex: 0 0 96px; }
+.deck-selection { display: flex; align-items: center; gap: 12px; min-height: 84px; }
+.deck-selection .unit-counter { width: 72px; height: 72px; flex: 0 0 72px; }
 .deck-selection > div { min-width: 0; }
 .deck-selection h2 { font-size: 17px; }
 .deck-selection p { font-size: 14px; margin: 4px 0; }
@@ -65,12 +63,11 @@ html, body { min-width: 1680px; height: 100%; overflow: hidden; }
 .decision-options { display: grid; gap: 6px; }
 .decision-option { text-align: left; }
 .supply-need { display: grid; gap: 4px; margin-top: 8px; }
-.deck-tabs { display: flex; align-items: center; gap: 2px; padding: 0 8px; border-bottom: 1px solid var(--line); }
+.deck-tabs { display: flex; flex-wrap: wrap; align-items: center; gap: 2px; padding: 0 8px; border-bottom: 1px solid var(--line); }
 .deck-tabs button { flex: 0 0 auto; border: 0; border-radius: 0; min-width: 0; padding: 6px 10px; font-size: 13px; background: transparent; }
+.tab-badge { display: inline-block; min-width: 18px; margin-left: 2px; padding: 0 5px; border-radius: 9px; color: var(--accent-ink); background: var(--accent); font-size: 12px; font-weight: 800; line-height: 18px; text-align: center; }
 .deck-tabs button[aria-pressed=true], .settings-tabs button[aria-pressed=true] { color: #ffe09a; border-bottom: 3px solid var(--accent); background: #2c3024; }
 .deck-tabs input { flex: 1; min-width: 0; height: 32px; margin-left: 6px; border: 1px solid var(--line); border-radius: 5px; color: var(--ink); background: #1d2924; padding: 4px 8px; font: inherit; font-size: 13px; }
-.deck-list { overflow-y: auto; overflow-x: hidden; min-height: 0; padding: 6px 12px 12px; overscroll-behavior: contain; scrollbar-gutter: stable; }
-.deck-list > p { padding: 10px; font-size: 14px; color: var(--muted); }
 .deck-unit { display: flex; align-items: center; gap: 10px; width: 100%; padding: 6px 8px; margin-bottom: 6px; text-align: left; }
 .deck-unit .unit-counter { width: 56px; height: 56px; flex: 0 0 56px; }
 .deck-unit > span { min-width: 0; overflow-wrap: anywhere; font-size: 14px; }
@@ -78,10 +75,10 @@ html, body { min-width: 1680px; height: 100%; overflow: hidden; }
 .deck-unit.is-selected { background: #303a2c; border-color: var(--accent); }
 .deck-event { border-bottom: 1px solid var(--line); padding: 8px; font-size: 14px; }
 .deck-event p { margin: 4px 0; overflow-wrap: anywhere; color: var(--muted); }
-.command-rail > .deck-footer { padding: 10px 16px; display: grid; gap: 6px; border-top: 1px solid var(--line); }
-.deck-footer button { min-height: 44px; font-size: 15px; }
+.command-rail > .deck-footer { padding: 8px 16px; border-top: 1px solid var(--line); border-bottom: 0; }
+.command-rail > .deck-footer:has(.deck-notice:empty) { display: none; }
 .deck-notice { font-size: 13px; line-height: 1.4; color: var(--muted); overflow-wrap: anywhere; min-height: 18px; }
-.deck-footer .blocker { margin: 0; font-size: 13px; color: #ffcf9a; }
+.blocker { margin: 0; font-size: 13px; color: #ffcf9a; }
 
 .workspace { grid-row: 2; grid-column: 2; width: auto; height: auto; min-height: 0; overflow: hidden; padding: 0; }
 .map-card { min-height: 0; margin: 0; border-radius: 0; border: 0; }
@@ -157,12 +154,8 @@ input[aria-invalid=true] { border-color: var(--danger); }
 /* Mouse selection already shows the hex highlight; keep the focus ring for keyboard users only. */
 .hex-cell:focus:not(:focus-visible), .counter:focus:not(:focus-visible) { outline: none; }
 .terrain-key.clear { background: #d3d4ab; color: #111; }
-/* While planning a combat, answering a decision, handing over, or reading what happened, the work area takes the lists' space. */
-.command-rail:has(.combat-draft) > .deck-tabs, .command-rail:has(.combat-draft) > .deck-list,
-.command-rail:has(.decision-panel) > .deck-tabs, .command-rail:has(.decision-panel) > .deck-list,
-.command-rail:has(.away-report) > .deck-tabs, .command-rail:has(.away-report) > .deck-list,
-.command-rail:has(#begin-required-handoff) > .deck-tabs, .command-rail:has(#begin-required-handoff) > .deck-list { display: none; }
-.combat-draft > .button-grid, .move-preview > .button-grid { position: sticky; bottom: 0; padding-top: 6px; background: inherit; }
+/* In a long attack or air plan the Cancel/Declare buttons stay in view at the bottom of the task area. */
+.combat-draft > .button-grid { position: sticky; bottom: 0; padding-top: 6px; background: inherit; }
 
 /* Fuel, supply, truck, dump and breakout actions (12.5, 12.7, 12.8e, 12.10, 12.11, 13.2). */
 .unit-actions, .step-actions { margin-top: 10px; }
@@ -170,10 +163,13 @@ input[aria-invalid=true] { border-color: var(--danger); }
 .action-list button { min-height: 36px; padding: 6px 10px; text-align: left; font-size: 13px; line-height: 1.3; }
 
 /* Command deck flow (2026-10-01 review D1-D5). */
-.deck-footer #end-phase { display: flex; flex-direction: column; align-items: center; gap: 1px; line-height: 1.2; }
-.deck-footer #end-phase small { font-size: 13px; font-weight: 600; color: inherit; opacity: .8; }
-.deck-footer button.warning { border-color: #ff9d6b; color: #2a1206; background: #ffb488; }
-.deck-footer button.subtle { min-height: 36px; font-size: 13px; background: transparent; }
+.phase-actions { position: relative; display: flex; align-items: center; gap: 8px; margin-left: 12px; padding: 8px 10px; min-width: 0; }
+.phase-actions #end-phase { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0; min-height: 46px; padding: 3px 16px; line-height: 1.2; white-space: nowrap; }
+.phase-actions #end-phase small { font-size: 13px; font-weight: 600; color: inherit; opacity: .8; }
+.phase-actions button.warning { border-color: #ff9d6b; color: #2a1206; background: #ffb488; }
+.phase-actions button.subtle { min-height: 36px; padding: 4px 10px; font-size: 13px; background: transparent; white-space: nowrap; }
+/* Why the phase cannot end yet: a note hanging under the button, over the map's corner. */
+.end-note { position: absolute; z-index: 45; top: calc(100% - 4px); left: 10px; right: auto; width: max-content; max-width: 380px; margin: 0; padding: 8px 12px; border: 1px solid var(--line-bright); border-left: 4px solid #ffcf9a; border-radius: 6px; background: #211f16; box-shadow: 0 10px 30px rgba(0, 0, 0, .45); color: #ffcf9a; font-size: 13px; line-height: 1.4; }
 .combat-card { display: grid; gap: 6px; padding: 10px; border: 1px solid var(--line-bright); border-left: 4px solid #ffb488; border-radius: 6px; background: #1d211a; }
 .combat-card.status-cancelled { border-left-color: var(--muted); }
 .combat-card header strong { font-size: 14px; }
@@ -185,6 +181,8 @@ input[aria-invalid=true] { border-color: var(--danger); }
 .result-card { border-left: 4px solid #ffb488; background: #1b1d17; }
 .away-report { background: #1a2420; border-left: 4px solid var(--green); }
 .away-entries { display: grid; max-height: 320px; overflow-y: auto; border: 1px solid var(--line); border-radius: 5px; }
+/* The task body is the one scroll area; the report must not scroll inside it. */
+.deck-task .away-entries { max-height: none; overflow: visible; }
 .handoff-panel { border-left: 4px solid var(--accent); background: #211f16; }
 .combat-steps { display: flex; flex-wrap: wrap; gap: 4px; margin: 0; padding: 0; list-style: none; }
 .combat-steps li { padding: 2px 8px; border: 1px solid var(--line); border-radius: 10px; color: var(--muted); font-size: 13px; }
@@ -256,3 +254,16 @@ details.list-group summary { cursor: pointer; padding: 4px 0; }
 
 .setting-toggle { display: flex; gap: 8px; align-items: flex-start; font-size: 14px; color: var(--ink); }
 .setting-toggle input { width: 18px; height: 18px; margin-top: 2px; flex: none; }
+
+/* Move confirmation: a small popup beside the destination hex, over the map. */
+.move-popup { --pointer: 50%; position: absolute; z-index: 5; width: 280px; display: grid; gap: 6px; padding: 10px 12px; border: 1px solid var(--accent); border-radius: 8px; background: rgba(23, 27, 20, .98); box-shadow: var(--shadow); font-size: 14px; }
+.move-popup p, .move-popup strong { margin: 0; }
+.move-popup .hint { color: var(--muted); font-size: 13px; }
+.move-popup cite { color: var(--muted); font-style: normal; }
+.move-popup button { min-height: 38px; }
+.move-popup::before { content: ""; position: absolute; width: 12px; height: 12px; background: inherit; border: inherit; border-width: 0 0 1px 1px; transform: rotate(45deg); }
+.move-popup[data-side=right]::before { left: -7px; top: calc(var(--pointer) - 6px); }
+.move-popup[data-side=left]::before { right: -7px; top: calc(var(--pointer) - 6px); transform: rotate(225deg); }
+.move-popup[data-side=bottom]::before { top: -7px; left: calc(var(--pointer) - 6px); transform: rotate(135deg); }
+.move-popup[data-side=top]::before { bottom: -7px; left: calc(var(--pointer) - 6px); transform: rotate(-45deg); }
+.move-popup.no-pointer::before { display: none; }
