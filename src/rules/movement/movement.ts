@@ -2,7 +2,7 @@ import { stableSort, type HexId, type PieceId, type PlayerId } from '../../core/
 import { trainbustingTicks } from '../air/aircraft.js';
 import type { PieceState } from '../../domain/piece/index.js';
 import type { GameState, MobilityType, RuleViolation } from '../kernel/model.js';
-import type { RuleQueryResult } from '../query/model.js';
+import type { RuleFact, RuleQueryResult } from '../query/model.js';
 import {
   adjacentHexIds as adjacentOf,
   definitionOf,
@@ -10,6 +10,7 @@ import {
   friendlyCombatUnitsAt,
   isAttackCapable,
   isEligibleMover,
+  isTransportPoint,
   mobilityOf,
   movementAllowanceTicks as allowanceFor,
   pieceById,
@@ -101,6 +102,25 @@ const enterableHex = (state: GameState, piece: PieceState, hexId: HexId): RuleVi
   return null;
 };
 
+/**
+ * 6.1g: a unit beginning to move ends the previous unit's move. A Transport Point that has loaded, unloaded or
+ * moved may still hold MP and SP, so the player is told what moving `movingId` would give up.
+ */
+const endsOtherMoverFacts = (state: GameState, actorId: PlayerId, movingId: PieceId): RuleFact[] => {
+  const previous = state.currentMoverId !== null && state.currentMoverId !== movingId ? pieceById(state, state.currentMoverId) : undefined;
+  if (!previous || previous.ownerId !== actorId || previous.location.kind !== 'ON_MAP' || !isTransportPoint(state, previous)) return [];
+  const remainingTicks = allowanceFor(state, previous) - usageOf(state, previous).movementSpentTicks;
+  if (remainingTicks <= 0) return [];
+  const cargoIds = new Set(state.pieceState.relations.flatMap((relation) => relation.kind === 'CARGO' && relation.containerId === previous.id ? [relation.cargoId] : []));
+  const loadTokens = state.pieceState.pieces.reduce((total, piece) => cargoIds.has(piece.id) ? total + (piece.resourceQuantity ?? 0) : total, 0);
+  const owner = { visibility: 'OWNER_ONLY', ownerId: actorId } as const;
+  return [
+    { key: 'movement.endsOtherMover.pieceId', value: previous.id, ...owner },
+    { key: 'movement.endsOtherMover.remainingTicks', value: remainingTicks, ...owner },
+    { key: 'movement.endsOtherMover.loadTokens', value: loadTokens, ...owner },
+  ];
+};
+
 export const queryMovementPath = (
   state: GameState,
   actorId: PlayerId,
@@ -180,6 +200,7 @@ export const queryMovementPath = (
       { key: 'movement.totalTicks', value: totalTicks, visibility: 'PUBLIC', ownerId: null },
       { key: 'movement.allowanceTicks', value: allowanceTicks, visibility: 'OWNER_ONLY', ownerId: actorId },
       { key: 'movement.remainingTicks', value: Math.max(0, allowanceTicks - alreadySpent - spent), visibility: 'OWNER_ONLY', ownerId: actorId },
+      ...endsOtherMoverFacts(state, actorId, pieceId),
     ],
     dependencies: [{ aggregate: 'GAME', revision: state.revision, key: `movement:${pieceId}` }],
   };

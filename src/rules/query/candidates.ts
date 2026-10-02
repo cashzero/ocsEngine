@@ -252,9 +252,11 @@ export const candidateActions = (
       }
       break;
     case 'COMBINE_TRANSPORT': {
+      // Group among every friendly piece: a selected truck needs its partners, which `owned` has already filtered out.
       const byHex = new Map<string, PieceState[]>();
-      for (const truck of owned) byHex.set(`${hexOf(truck)}|${truck.definitionId}`, [...(byHex.get(`${hexOf(truck)}|${truck.definitionId}`) ?? []), truck]);
+      for (const truck of friendlyOnMap(state, request.actorId)) byHex.set(`${hexOf(truck)}|${truck.definitionId}`, [...(byHex.get(`${hexOf(truck)}|${truck.definitionId}`) ?? []), truck]);
       for (const group of byHex.values()) {
+        if (request.pieceId !== null && !group.some(({ id }) => id === request.pieceId)) continue;
         if (group.length > 1 && add({ ...base(state, request.actorId, `combine:${group.map(({ id }) => id).join('+')}`), kind: 'COMBINE_TRANSPORT', truckIds: group.map(({ id }) => id) })) return actions;
       }
       break;
