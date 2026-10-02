@@ -129,6 +129,24 @@ describe('the truck\'s supply area (A2)', () => {
     controller.dispose();
   });
 
+  it('does not list a merged or used-up dump as an eliminated unit, but still lists an eliminated combat unit', async () => {
+    // Found in the whole-turn run: a reinforcement dump merged into the dump already in the Hex left "Supply dump, eliminated" in the roster.
+    const { controller, own } = await startMovement();
+    const snapshot = controller.getSnapshot();
+    const gone = (target: string) => {
+      const stacks = snapshot.view.projection!.stacks.map((stack) => ({
+        ...stack,
+        pieces: stack.pieces.map((piece) => (piece.id === target ? { ...piece, location: { kind: 'ELIMINATED' } } : piece)),
+      }));
+      return { ...snapshot, view: { ...snapshot.view, projection: { ...snapshot.view.projection!, stacks } } } as typeof snapshot;
+    };
+    const dump = own().find(({ role }) => role === 'DUMP')!;
+    const unit = own().find(({ role }) => role === 'COMBAT')!;
+    expect(unitRosterHtml(gone(String(dump.id)), newDeck())).not.toContain('roster-eliminated');
+    expect(unitRosterHtml(gone(String(unit.id)), newDeck())).toContain('roster-eliminated');
+    controller.dispose();
+  });
+
   it('draws a truck\'s load on its counter: empty, part-loaded, full (A3)', async () => {
     const { controller, truck, dumpAway, hexOf, own } = await startMovement();
     const gaugeOf = () => {

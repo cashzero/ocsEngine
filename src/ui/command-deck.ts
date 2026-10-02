@@ -557,9 +557,13 @@ const unitFormation = (snapshot: UiSnapshot, piece: ProjectedPiece): string => {
   return formation ? snapshot.formationNames.get(String(formation)) ?? '' : '';
 };
 
-/** Every counter the player commands. SP a truck carries is part of that truck, not another unit. */
+/**
+ * Every counter the player commands. SP a truck carries is part of that truck, not another unit, and a dump that was merged into
+ * another or used up is gone, not an eliminated unit.
+ */
 const rosterOwn = (snapshot: UiSnapshot): ProjectedPiece[] =>
-  (snapshot.view.projection?.stacks ?? []).flatMap((stack) => stack.pieces).filter(({ ownerId, role }) => ownerId === snapshot.view.playerId && role !== 'CARGO');
+  (snapshot.view.projection?.stacks ?? []).flatMap((stack) => stack.pieces)
+    .filter(({ ownerId, role, location }) => ownerId === snapshot.view.playerId && role !== 'CARGO' && !(role === 'DUMP' && location.kind === 'ELIMINATED'));
 
 /** The scrolling part of the roster. Rebuilt on its own while typing so a force of hundreds does not repaint the whole page. */
 export const unitRosterBodyHtml = (snapshot: UiSnapshot, state: DeckState): string => {

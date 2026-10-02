@@ -187,7 +187,7 @@ board-game design; user decision 2026-10-02).
 | SUP-A07 | P0 | Load a truck, then pick another unit and preview its move | Before the move is confirmed, the UI warns that the truck would lose its remaining MP and load for the phase (6.1g); confirming is an explicit choice | PASS |
 | SUP-A08 | P1 | Divide a truck, then combine the parts again | Points, load, counter-mix limit (13.2c) and spent MA (6.1f) are correct; no MP is charged | PASS |
 | SUP-A09 | P0 | Pay one fuel and one combat supply, then open the supply ledger | The ledger lists what was paid, from which dump or truck, and what is left; it matches the real deduction | PASS (fuel and combat, real UI) |
-| SUP-A10 | P0 | Create a checkpoint with a loaded truck, change state, restore it; then download a save and load that file | Truck points, load, dump quantities and ledger match the saved state in both routes | UNAVAILABLE |
+| SUP-A10 | P0 | Create a checkpoint with a loaded truck, change state, restore it; then download a save and load that file | Truck points, load, dump quantities and ledger match the saved state in both routes | Checkpoint route PASS; file route OUT OF SCOPE (user decision 2026-10-02) |
 | SUP-A11 | P0 | Divide and combine trucks and compare the map counter with the selection card | The counter shows the current Transport Points, not the printed 5 | PASS |
 | SUP-A12 | P0 | Put two same-type trucks in one Hex (for example by dividing one) and select either | A Combine action is offered and works (blocking issue N-08) | PASS |
 | SUP-A13 | P0 | Inspect dumps in the roster, selection card, fuel options, stack list and ledger, including SP carried by a truck | No dump has a name; each reads as type, quantity and Hex; carried SP is shown on its truck, not as a separate "off map" unit | PASS |
@@ -196,7 +196,7 @@ board-game design; user decision 2026-10-02).
 Phase A results of 2026-10-02 are in `docs/quality/evidence/supply-a-2026-10-02/README.md` (input, observed, elapsed, revision, console and artifacts per row).
 After the fixes of the same day, SUP-A02 (dumps of one kind in a Hex are one counter and one map marker) and SUP-A09 (combat and barrage payments are in the ledger) were re-run in the real UI and pass.
 SUP-A15 passes: the user confirmed the Undo semantics ("OK"). SUP-A14: the user decided that a truck is close to a unit, so a split truck counts as two (15 to 16); the row's expectation was changed accordingly and the earlier observation now meets it.
-SUP-A10 is UNAVAILABLE (its file-load step needs a real file chooser). The Phase A gate is therefore not passed.
+SUP-A10: the user moved file-based save/load out of scope on 2026-10-02; the checkpoint route passed and the file route stays UNAVAILABLE (needs a real file chooser). A whole game turn (both player turns, hot-seat handoffs, the First Player decision) was then played with real clicks; see the evidence README. 
 
 | SUP-B01 | P0 | Enter "8T, from dump A to Hex B" | A plan preview lists trucks, route, MP per step, and resulting stock; game state is unchanged until confirmed | UNVERIFIED |
 | SUP-B02 | P0 | Confirm that plan | Hex B gains 8T and the final state equals the manual run of the same actions | UNVERIFIED |

@@ -80,8 +80,52 @@ supply of one kind in the same Hex must not be two counters; combat and barrage 
   and its heading reads "Supply this turn". **SUP-A09 PASS.**
 - **SUP-A15 PASS** on the user's confirmation; the dice / revealed-information / combat clearing is covered by headless tests (`undo-action.test.ts`, `random-used.test.ts`), not by a real-UI dice roll.
 
+## Whole-turn run in the integrated flow (same day, after the user said "先驗收 並push")
+
+Build: commit `d24494e` served from `dist` at `http://127.0.0.1:4173`. Real clicks on visible controls; JavaScript only to read the page, plus **keyboard focus + Enter**
+to pick a hex or entry hex that counters cover (the pane is small and a click on a covered hex does not reach it; this is an environment limit, not a rules limit).
+Console errors: none were read in this run.
+
+**New Game (visibly different input, previewed, same package started).** Opened New Game, changed the map from 32×24 to 16×12 (everything else default), pressed
+"Rebuild operation preview": the preview read "16×12 · 28 units · 4 formations", the two armies listed with points. Pressed "Start this operation".
+
+**Game turn 1, both player turns, then the turn-2 decision:**
+
+| Step | What was done | Observed |
+|---|---|---|
+| Allied Reinforcement | Selected the arriving supply dump and the FA Group, placed each on the blue entry hex 0107, finished the phase | "Supply dump placed at 0107."; Finish was disabled until both were placed (explained by "Every arriving reinforcement must be placed") |
+| Allied Movement | Truck from 0411 to 0407 (Confirm), Load (dump had 4T) | "Loaded 4T onto the truck at 0407"; the dump was used up and the panel then read "No friendly supply dump in this hex"; Ledger tab appeared |
+| | Truck to 0207, Unload | "Unloaded 4T at 0207"; Load blocked "SP unloaded this phase cannot be loaded again this phase. 12.2a" |
+| | Alanis TF "Needs fuel", paid "from the 4T dump at 0207" (the dump just unloaded) | 14 MP left; "…: done." |
+| | Preview Alanis TF to 0607 while the truck was mid-move | Popup "This ends the move of US 255 QM Truck Co: its 29 MP left cannot be used again this phase 6.1g", button "Confirm anyway" (pressed); "Moved to 0607." |
+| | Finish Movement | First press: "Finish anyway: 11 units have not moved · Press again to confirm"; second press moved on. Barrage segment passed automatically |
+| Allied Supply | Finish Supply Phase | Reaction, Combat and Clean Up had no legal actions and were passed automatically; "12T of supply arrived (Supply Table roll 8)" |
+| Hot-seat handoff | "Hand the screen to Axis commander", then the privacy screen "Pass the screen to Axis commander · The map stays hidden until they confirm", then "I am Axis commander" | Axis saw "WHILE YOU WERE AWAY": "Enemy reinforcements entered at 0107 ×2", "Allied commander took a logistics action ×3", the supply arrival; dismissed with "Got it" |
+| Axis Reinforcement | Placed Supply dump and Artillerie-Regiment 614 at 1607 | Finish enabled only afterwards |
+| Axis Movement | 103 Aufk Bn "Needs fuel", paid 1T from the 4T dump at 1307, moved 1509 to 1109 (Confirm), finished (second press) | "Moved to 1109."; 18 MP then 14 MP left |
+| Axis Supply | Finish Supply Phase | Turn counter went to **TURN 2 / 8 · 5 Oct** |
+| Turn 2 decision | "You won the First Player roll for turn 2. Take the first or the second Player Turn?" Pressed "Go first" | "Decision recorded."; Axis Reinforcement of turn 2 began |
+| Turn 2 reinforcement (merge check) | Axis supply dump arrived at 1607 where the 12T dump stood | The roster showed **one** "Supply dump 1607 · 6 SP" (24T): merged in the real UI |
+
+**Defect found by this run (fixed):** after that merge the roster listed "Supply dump, eliminated" (the absorbed counter) in its Eliminated group. A merged or used-up dump is not an
+eliminated unit. Fix: `rosterOwn` in `command-deck.ts` leaves out dumps whose location is ELIMINATED; test `does not list a merged or used-up dump as an eliminated unit…` in
+`transport-panel.test.ts` failed before the fix (the Eliminated group was shown) and passes after. **The fix is verified headlessly only; the real UI was not reloaded to look again.**
+
+**Not exercised in this turn, said plainly:** no ground combat, barrage or overrun happened (the armies start 12+ hexes apart on 16×12); combat supply payment was verified in the earlier real
+fight (SUP-A09, `A09-combat-supply-in-ledger.jpg`). The Allied side's Reaction/Combat/Clean Up were passed automatically, so no human decision was taken there. Screenshots were not
+taken during this run (the pane returned stale or off-centre frames); the evidence above is the text trace read from the page.
+
+**Click count of the baseline supply task (select truck, move to dump, load, move to unit hex, unload, select unit, pay fuel):** truck 2 (roster open + pick), move 2 (hex + Confirm), load 1,
+move 2, unload 1, select unit 2, fuel 1 = **11**, equal to the baseline of 11. The user has not confirmed a target number.
+
+## Scope decision by the user
+
+On 2026-10-02 the user said: "目前可以先驗收 並push　讀檔那些移出scope". The file-based save/load rows are therefore **out of scope** for the Phase A gate (SUP-A10's file route; the checkpoint route
+was observed to pass). This is the user's explicit decision, recorded here and in doc 03.
+
 ## Still open
 
 - **SUP-A14 PASS under the changed expectation.** The user decided (2026-10-02) that a truck is close to a unit, so each counter counts once and a split truck counts as two. The original observation (15 to 16 after a split, unchanged by load/unload, carried SP not counted) meets it.
-- **SUP-A10 UNAVAILABLE**: the file-load step needs a real file chooser.
-- No whole turn was played end to end with real clicks. **The Phase A gate stays IN PROGRESS.**
+- Out of scope by the user's decision: file-based save and load (SUP-A10 file route).
+- Not measured: the user has not set a target number of clicks for the baseline task (observed 11).
+- Not run: Phase B (SUP-B rows).
