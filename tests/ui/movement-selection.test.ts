@@ -33,7 +33,9 @@ describe('map-based movement selection on the generated default game', () => {
     expect(range.reachable.size).toBeGreaterThan(24);
     expect(range.movePreview).toBeNull();
 
-    const destination = [...range.reachable.keys()].at(-1)!;
+    // A mid-range hex: the farthest one spends every MP, which rightly releases the selection.
+    const reachableHexes = [...range.reachable.keys()];
+    const destination = reachableHexes[Math.floor(reachableHexes.length / 2)]!;
     await controller.clickHex(destination);
     const chosen = controller.getSnapshot();
     expect(chosen.movePreview).toMatchObject({ destinationHexId: destination, path: range.reachable.get(destination) });
