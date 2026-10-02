@@ -61,12 +61,13 @@ export const unitName = (
         ? (allied ? `${number} Engr Combat Group` : `Pionier-Brigade ${number}`)
         : `${number} ${allied ? 'Engr Combat Bn' : 'Pionier-Btl.'}`;
       case 'TRANSPORT': return `${number} ${allied ? 'QM Truck Co' : 'Kraftfahr-Kp.'}`;
-      case 'SUPPLY': return `${allied ? 'Army Supply Dump' : 'Heeres-Nachschublager'} ${number}`;
+      // A supply dump is a generic counter with no name or number on the board-game piece; only its size matters.
+      case 'SUPPLY': return 'Supply Dump';
       // Aircraft and Air Bases are named by the air generator.
       case 'AIRCRAFT': return `Air Group ${number}`;
       case 'AIR_BASE': return `Air Base ${number}`;
     }
   })();
-  if (role === 'COMBAT' && echelon === 'XX') return label;
+  if ((role === 'COMBAT' && echelon === 'XX') || role === 'SUPPLY') return label;
   return formation ? `${label} / ${formation.name}` : `${allied ? 'US' : 'German'} ${label}`;
 };

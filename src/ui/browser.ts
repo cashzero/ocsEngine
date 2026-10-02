@@ -242,12 +242,29 @@ const renderMap = (snapshot: UiSnapshot): string => {
   const stackBadges: string[] = [];
   const counters = theater.cells.map((cell) => {
     const stack = stacks.get(cell.id);
-    const pieces = stackOrder(stack?.pieces ?? []);
+    const allPieces = stackOrder(stack?.pieces ?? []);
+    // Supply lies in the hex rather than in the stack: a hex's dump is one small marker at its corner and does not take one of the
+    // three counter places or count towards the hidden ones.
+    const dumps = allPieces.filter(({ role }) => role === 'DUMP').sort((left, right) => (right.resourceQuantity ?? 0) - (left.resourceQuantity ?? 0));
+    const pieces = allPieces.filter(({ role }) => role !== 'DUMP');
     // Draw the bottom of the stack first; at most three counters are shown, the rest are counted.
     const visible = pieces.slice(-3);
     const selectedPiece = pieces.find(({ id }) => id === snapshot.selection.pieceId);
     if (selectedPiece && !visible.includes(selectedPiece)) visible.push(selectedPiece);
-    const html = visible.map((piece, index) => {
+    const dump = dumps[0];
+    const dumpMarkup = dump ? (() => {
+      const definition = scenario.pieceCatalog.definitions.find(({ id }) => id === dump.definitionId)!;
+      const ownerIndex = scenario.players.findIndex(({ id }) => id === dump.ownerId);
+      const isSelected = snapshot.selection.pieceId === dump.id;
+      const markup = `<g class="counter dump-marker owner-${ownerIndex + 1}${isSelected ? ' is-selected' : ''}" transform="translate(${cell.x - 4} ${cell.y - 2}) scale(.5)"
+        role="button" tabindex="-1" data-piece="${escapeHtml(dump.id)}" data-hex="${escapeHtml(cell.id)}"
+        aria-label="${escapeHtml(`${dump.ownerId === snapshot.view.playerId ? '' : 'Enemy '}${pieceLabel(scenario, dump)}, hex ${printedHexLabel(cell.id)}`)}">
+        ${counterSvgBody(counterView(definition, dump))}
+      </g>`;
+      if (isSelected) { selectedCounters.push(markup); return ''; }
+      return markup;
+    })() : '';
+    const html = dumpMarkup + visible.map((piece, index) => {
       const ownerIndex = scenario.players.findIndex(({ id }) => id === piece.ownerId);
       const x = cell.x - 35 + index * 6;
       const y = cell.y - 35 - index * 6;
@@ -261,7 +278,7 @@ const renderMap = (snapshot: UiSnapshot): string => {
       if (isSelected) { selectedCounters.push(markup); return ''; }
       return markup;
     }).join('');
-    const hiddenCount = (stack?.hiddenCount ?? 0) + Math.max(0, pieces.length - visible.length);
+    const hiddenCount = (stack?.hiddenCount ?? 0) + Math.max(0, pieces.length - visible.length) + Math.max(0, dumps.length - 1);
     if (hiddenCount > 0) stackBadges.push(`<g class="hidden-count" transform="translate(${cell.x + 26} ${cell.y - 34})"><circle r="12"></circle><text y="5" text-anchor="middle">+${hiddenCount}</text></g>`);
     return html;
   }).join('');
@@ -669,7 +686,7 @@ const stackPickerHtml = (snapshot: UiSnapshot): string => {
     const definition = scenario.pieceCatalog.definitions.find(({ id }) => id === piece.definitionId)!;
     const own = piece.ownerId === snapshot.view.playerId;
     return `<button class="stack-pick${snapshot.selection.pieceId === piece.id ? ' is-selected' : ''}" data-pick-piece="${escapeHtml(piece.id)}" ${own ? '' : 'disabled'}>
-      <span class="stack-pick-art" aria-hidden="true">${counterSvg(counterView(definition, piece))}</span><span>${escapeHtml(`${own ? '' : 'Enemy · '}${pieceLabel(scenario, piece)}`)}</span></button>`;
+      <span class="stack-pick-art" aria-hidden="true">${counterSvg(counterView(definition, piece))}</span><span>${escapeHtml(`${own ? '' : 'Enemy · '}${pieceLabel(scenario, piece)}${piece.role === 'DUMP' ? ` · ${piece.resourceQuantity ?? 0}T` : ''}${typeof piece.carriedTokens === 'number' ? ` · carries ${piece.carriedTokens}T` : ''}`)}</span></button>`;
   }).join('');
   return `<div class="stack-picker" role="group" aria-label="Units in hex ${escapeHtml(printedHexLabel(stackPickerHex))}" data-anchor-hex="${escapeHtml(stackPickerHex)}">
     <header><strong>Hex ${escapeHtml(printedHexLabel(stackPickerHex))} · ${stack.pieces.length + stack.hiddenCount} units</strong><button id="close-stack-picker" aria-label="Close stack list">×</button></header>
@@ -812,6 +829,20 @@ function bindEvents(snapshot: UiSnapshot): void {
   root.querySelectorAll<HTMLButtonElement>('[data-mode]').forEach(button => button.addEventListener('click', () => void runUi(() => controller.changeMode(button.dataset.mode as never))));
   root.querySelectorAll<HTMLButtonElement>('[data-feed]').forEach(button => button.addEventListener('click', () => void runUi(() => controller.feedSupply(button.dataset.feed!, button.dataset.dump!))));
   root.querySelectorAll<HTMLButtonElement>('[data-unit-action]').forEach(button => button.addEventListener('click', () => void runUi(() => controller.runAction(button.dataset.unitAction!))));
+  // The truck's supply area: the Token count is read from the row's own field when the button is pressed.
+  root.querySelectorAll<HTMLButtonElement>('[data-transfer]').forEach(button => button.addEventListener('click', () => {
+    const field = button.closest('.transfer-row')?.querySelector<HTMLInputElement>('.transfer-tokens');
+    const tokens = Number(field?.value);
+    const min = Number(field?.min), max = Number(field?.max);
+    if (!field || !Number.isSafeInteger(tokens) || tokens < min || tokens > max) { field?.focus(); field?.reportValidity(); return; }
+    void runUi(() => controller.transferSupply(button.dataset.transfer as 'LOAD' | 'UNLOAD', button.dataset.dump ?? null, tokens));
+  }));
+  root.querySelectorAll<HTMLButtonElement>('[data-divide]').forEach(button => button.addEventListener('click', () => {
+    const field = button.closest('.transfer-row')?.querySelector<HTMLInputElement>('.divide-points');
+    const points = Number(field?.value);
+    if (!field || !Number.isSafeInteger(points) || points < Number(field.min) || points > Number(field.max)) { field?.focus(); field?.reportValidity(); return; }
+    void runUi(() => controller.divideTruck(points));
+  }));
   root.querySelectorAll<HTMLInputElement>('[data-participant]').forEach(input => input.addEventListener('change', () => controller.toggleParticipant(input.dataset.participant!)));
   root.querySelectorAll<HTMLInputElement>('[data-lead]').forEach(input => input.addEventListener('change', () => controller.setLead(input.dataset.lead!)));
   root.querySelectorAll<HTMLButtonElement>('[data-choice]').forEach((button) => button.addEventListener('click', () => void runUi(() => controller.respondToDecision(button.dataset.choice ?? ''))));

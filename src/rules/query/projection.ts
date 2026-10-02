@@ -2,19 +2,46 @@ import { stableSort, stableKey, type PlayerId } from '../../core/index.js';
 import { pieceLocationKey, type PieceLocation } from '../../domain/map/index.js';
 import type { PieceState } from '../../domain/piece/index.js';
 import type { GameState } from '../kernel/model.js';
-import { INTERNAL_STOCKS_STATUS, OUT_OF_TRACE_SINCE_STATUS, RETURN_TURN_STATUS, isCombatUnit } from '../pieces.js';
+import { INTERNAL_STOCKS_STATUS, OUT_OF_TRACE_SINCE_STATUS, RETURN_TURN_STATUS, definitionOf, isCombatUnit } from '../pieces.js';
 import { exertsZoc } from '../zoc/zoc.js';
 import { calculateCombatOdds } from '../combat/strength.js';
 import { previewBarrage } from '../combat/combat.js';
 import { BARRAGE_TABLE_COLUMNS } from '../tables/ocs-4.3.js';
-import type { ProjectedCombat, ProjectedPiece, ProjectedStack, RuleProjection } from './model.js';
+import type { PieceRole, ProjectedCombat, ProjectedPiece, ProjectedStack, RuleProjection } from './model.js';
 import { AIR_MISSION_LABELS, previewAirBarrage } from '../air/mission.js';
 import { aircraftName, isActiveAircraft, isAirBase, isAircraft, isFighter, patrolZoneHexes } from '../air/aircraft.js';
 
 /** 4.9a: internal stocks and other private bookkeeping are never shown to the enemy. */
 const PRIVATE_STATUSES: readonly string[] = [INTERNAL_STOCKS_STATUS, OUT_OF_TRACE_SINCE_STATUS, RETURN_TURN_STATUS];
+/** Status values the enemy may read because they are printed on the counter itself. */
+const PUBLIC_VALUE_STATUSES: readonly string[] = ['status:air-base-level', 'status:transport-points'];
 
-const projectPiece = (piece: PieceState, stepsHidden: boolean): ProjectedPiece => ({
+/** What the counter is for, from its definition and where it is (not from which fields happen to be set). */
+export const roleOf = (state: GameState, piece: PieceState): PieceRole => {
+  const definition = definitionOf(state, piece);
+  if (!definition) return 'OTHER';
+  if (isAircraft(state, piece)) return 'AIRCRAFT';
+  if (isAirBase(state, piece)) return 'AIR_BASE';
+  if (definition.family === 'RESOURCE') return piece.location.kind === 'CONTAINER' ? 'CARGO' : 'DUMP';
+  switch (definition.counter?.kind) {
+    case 'TRANSPORT': return piece.currentFaceId === 'extender' ? 'EXTENDER' : 'TRUCK';
+    case 'HQ': return 'HQ';
+    case 'ARTILLERY': return 'ARTILLERY';
+    case 'COMBAT': return 'COMBAT';
+    case 'SUPPLY': return 'DUMP';
+    default: return 'OTHER';
+  }
+};
+
+/** Tokens carried by a truck: the SP in its cargo relations. */
+const carriedTokensOf = (state: GameState, truck: PieceState): number => {
+  const cargoIds = new Set(state.pieceState.relations.flatMap((relation) => relation.kind === 'CARGO' && relation.containerId === truck.id ? [relation.cargoId] : []));
+  return state.pieceState.pieces.reduce((total, piece) => cargoIds.has(piece.id) ? total + (piece.resourceQuantity ?? 0) : total, 0);
+};
+
+const projectPiece = (state: GameState, piece: PieceState, stepsHidden: boolean): ProjectedPiece => ({
+  role: roleOf(state, piece),
+  carriedTokens: !stepsHidden && roleOf(state, piece) === 'TRUCK' ? carriedTokensOf(state, piece) : null,
   currentFaceId: piece.currentFaceId,
   resourceQuantity: stepsHidden ? null : piece.resourceQuantity,
   id: piece.id,
@@ -25,9 +52,9 @@ const projectPiece = (piece: PieceState, stepsHidden: boolean): ProjectedPiece =
   remainingSteps: stepsHidden ? null : piece.remainingSteps,
   statuses: piece.statuses.map(({ statusDefinitionId }) => statusDefinitionId)
     .filter((id) => !stepsHidden || !PRIVATE_STATUSES.includes(id)),
-  // An Air Base's Level is printed on its counter (15.0), so it is never private.
+  // An Air Base's Level (15.0) and a Transport Point's size (13.2c) are printed on the counter, so neither is private.
   statusValues: piece.statuses.flatMap(({ statusDefinitionId, value }) =>
-    (value.kind === 'TEXT' || value.kind === 'INTEGER') && (!stepsHidden || statusDefinitionId === 'status:air-base-level')
+    (value.kind === 'TEXT' || value.kind === 'INTEGER') && (!stepsHidden || PUBLIC_VALUE_STATUSES.includes(statusDefinitionId))
       ? [{ statusDefinitionId, value: value.value }] : []),
   redacted: stepsHidden,
 });
@@ -68,8 +95,8 @@ export const projectRuleState = (state: GameState, viewerId: PlayerId): RuleProj
     stacks.push({
       location: { ...group.location },
       pieces: [
-        ...stableSort(friendly, (left, right) => left.stackOrder - right.stackOrder).map((piece) => projectPiece(piece, false)),
-        ...stableSort(top, (left, right) => left.stackOrder - right.stackOrder).map((piece) => projectPiece(piece, true)),
+        ...stableSort(friendly, (left, right) => left.stackOrder - right.stackOrder).map((piece) => projectPiece(state, piece, false)),
+        ...stableSort(top, (left, right) => left.stackOrder - right.stackOrder).map((piece) => projectPiece(state, piece, true)),
       ],
       hiddenCount: Math.max(0, enemy.length - top.length),
     });

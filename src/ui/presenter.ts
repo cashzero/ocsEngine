@@ -108,8 +108,11 @@ export const pieceDefinition = (
   piece: Pick<ProjectedPiece, 'definitionId'>,
 ): PieceDefinition | null => scenario.pieceCatalog.definitions.find(({ id }) => id === piece.definitionId) ?? null;
 
-export const unitLabel = (scenario: ScenarioDefinition, piece: Pick<ProjectedPiece, 'definitionId'>): string =>
-  pieceDefinition(scenario, piece)?.name ?? 'Unit';
+export const unitLabel = (scenario: ScenarioDefinition, piece: Pick<ProjectedPiece, 'definitionId'>): string => {
+  const definition = pieceDefinition(scenario, piece);
+  // A supply dump has no name on the board-game counter, whatever an older save or package called it.
+  return definition?.family === 'RESOURCE' ? 'Supply dump' : definition?.name ?? 'Unit';
+};
 
 /** Label for a counter as the viewer is allowed to see it. */
 export const pieceLabel = (scenario: ScenarioDefinition, piece: ProjectedPiece): string => unitLabel(scenario, piece);
