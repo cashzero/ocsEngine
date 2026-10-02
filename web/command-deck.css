@@ -95,22 +95,6 @@ p.warning cite { font-style: normal; opacity: 0.8; }
 .legend-ring.barrage { border-color: #ffa24a; }
 .legend-mark.objective { color: #ffd766; }
 .legend-mark.objective::before { content: "★ "; }
-.hex-cell.is-reachable polygon { fill: rgba(255, 255, 255, .16); stroke: #b9f2d5; stroke-width: 3.5; vector-effect: non-scaling-stroke; }
-.hex-cell.is-reachable.reach-stop polygon { stroke: #ffc66b; stroke-width: 3; stroke-dasharray: 3 3; }
-/* While a unit is selected, out-of-range hexes recede (their .terrain-fill is dimmed) so its legal range reads as one area. */
-.hex-map-layer.is-moving .hex-cell:not(.is-reachable):not(.is-attack):not(.is-selected) .terrain-art { filter: brightness(.55) saturate(.6); }
-.hex-cell.is-reachable, .hex-cell.is-attack, .hex-cell.is-barrage, .hex-cell.is-placement, .hex-cell.is-retreat { cursor: pointer; }
-/* Target outlines are drawn above the counters (see .target-overlay) so stacks never hide them. */
-.target-overlay { pointer-events: none; }
-.target-outline { fill: none; vector-effect: non-scaling-stroke; stroke-linejoin: round; filter: drop-shadow(0 0 2px rgba(0, 0, 0, .9)); }
-.outline-attack { stroke: #ff6b5b; stroke-width: 4; }
-.outline-barrage { stroke: #ffa24a; stroke-width: 4; stroke-dasharray: 8 5; }
-.outline-placement { stroke: #9ed0ff; stroke-width: 4; }
-.outline-retreat { stroke: #ffe09a; stroke-width: 4; stroke-dasharray: 10 4; }
-.outline-destination { stroke: #ffdc80; stroke-width: 4; }
-.outline-target { stroke: #ffffff; stroke-width: 5; }
-.movement-path { fill: none; stroke: #fff1c2; stroke-width: 5; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; pointer-events: none; filter: drop-shadow(0 0 1.5px #111) drop-shadow(0 0 1.5px #111); }
-.movement-path-end { fill: #fff1c2; stroke: #111; stroke-width: 2; pointer-events: none; }
 
 .utility-dialog { width: 640px; max-height: calc(100vh - 48px); padding: 24px; background: var(--panel); border: 1px solid var(--line-bright); border-radius: 8px; overflow-y: auto; }
 .utility-dialog > header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
@@ -153,7 +137,7 @@ select:focus-visible, input:focus-visible { outline: 3px solid #ffe09a; outline-
 input[aria-invalid=true] { border-color: var(--danger); }
 .game-end-actions { display: flex; flex-wrap: wrap; gap: 8px; }
 /* Mouse selection already shows the hex highlight; keep the focus ring for keyboard users only. */
-.hex-cell:focus:not(:focus-visible), .counter:focus:not(:focus-visible) { outline: none; }
+#hex-map:focus:not(:focus-visible) { outline: none; }
 .terrain-key.clear { background: #d3d4ab; color: #111; }
 /* In a long attack or air plan the Cancel/Declare buttons stay in view at the bottom of the task area. */
 .combat-draft > .button-grid { position: sticky; bottom: 0; padding-top: 6px; background: inherit; }

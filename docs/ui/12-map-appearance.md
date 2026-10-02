@@ -8,7 +8,7 @@ Restyle the theater map and the New Game map preview so they read like the print
 Beyond the Rhine map shown in the VASSAL module (`docs/study/07-beyond-the-rhine-vassal-reference.md`).
 Only the *look* is borrowed: palette, line weights, grid, and how terrain, roads,
 rivers and towns are drawn. No raster or other asset from the module is copied; all art
-is generated SVG in `src/ui/map-art.ts`. Rules, map data, and the OOB are untouched.
+is generated in `src/ui/map-art.ts` (SVG for the New Game preview; the same geometry painted on the theater canvas by `src/ui/map-canvas.ts`). Rules, map data, and the OOB are untouched.
 
 ## What changed
 
