@@ -1,3 +1,4 @@
+// @vitest-environment happy-dom
 import { describe, expect, it, vi } from 'vitest';
 import {
   DEFAULT_NEW_GAME_REQUEST,
@@ -6,7 +7,7 @@ import {
   createNewGameOrchestrator,
   createUiController,
 } from '../../src/index.js';
-import { phaseControlsHtml } from '../../src/ui/command-deck.js';
+import { phaseControlsHtml } from './render-view.js';
 
 vi.setConfig({ testTimeout: 30000 });
 

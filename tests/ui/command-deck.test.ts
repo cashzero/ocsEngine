@@ -1,3 +1,4 @@
+// @vitest-environment happy-dom
 import { describe, expect, it } from 'vitest';
 import {
   DEFAULT_NEW_GAME_REQUEST,
@@ -7,8 +8,9 @@ import {
   createUiController,
 } from '../../src/index.js';
 import {
-  activeDeckTab, commandDeckHtml, deckTabs, movePopupHtml, phaseControlsHtml, selectDeckTab, syncDeckTab, type DeckState,
+  activeDeckTab, deckTabs, selectDeckTab, syncDeckTab, type DeckState,
 } from '../../src/ui/command-deck.js';
+import { commandDeckHtml, movePopupHtml, phaseControlsHtml } from './render-view.js';
 
 const startGame = async () => {
   const engine = createGameplayEngine(createMemoryGameplayPorts());
