@@ -76,10 +76,10 @@ describe('M7 deterministic random OOB pipeline', () => {
     },
   );
 
-  it('keeps Allied airborne divisions multi-unit and leg-mobile, with German airborne and infantry divisions as single XX units', () => {
+  it('builds infantry and airborne divisions as single XX units, with airborne leg-mobile and never filed as mobile infantry', () => {
     const seen = new Set<string>();
     for (let seed = 1; seed <= 40; seed += 1) {
-      const generated = generateRandomOob({ ...options, seed, formationsPerSide: 3 });
+      const generated = generateRandomOob({ ...options, seed, formationsPerSide: 4 });
       expect(generated.ok).toBe(true);
       if (!generated.ok) return;
       const definitions = new Map(generated.value.pieceDefinitionCatalog.definitions.map((definition) => [definition.id, definition]));
@@ -88,28 +88,25 @@ describe('M7 deterministic random OOB pipeline', () => {
       for (const side of generated.value.sides) {
         for (const formation of side.formations) {
           seen.add(`${side.side}/${formation.archetype}`);
-          if (formation.archetype === 'AIRBORNE' && side.side === 'ALLIED') {
-            for (const unit of formation.units) {
-              expect(['FORMATION_COMMAND', 'COMBAT']).toContain(unit.role);
-              if (unit.role === 'COMBAT') {
-                expect([mobility(unit.definitionId, 'combat'), mobility(unit.definitionId, 'move')]).toEqual(['mobility:leg', 'mobility:leg']);
-              }
-            }
-          } else if (isSingleUnitDivision(side.side, formation.archetype)) {
-            expect(formation.units).toHaveLength(1);
-            const definition = definitions.get(formation.units[0]!.definitionId)!;
-            expect(definition.counter?.echelon).toBe('XX');
-            expect(definition.name).toBe(formation.name);
-            // US infantry divisions are motorized (truck move face); German infantry and airborne divisions march on foot.
-            const expected = side.side === 'ALLIED' ? 'mobility:truck' : 'mobility:leg';
-            expect(mobility(formation.units[0]!.definitionId, 'move')).toBe(expected);
-            if (formation.archetype === 'AIRBORNE') expect(mobility(formation.units[0]!.definitionId, 'combat')).toBe('mobility:leg');
+          if (!isSingleUnitDivision(side.side, formation.archetype)) continue;
+          expect(formation.units).toHaveLength(1);
+          const unit = formation.units[0]!;
+          const definition = definitions.get(unit.definitionId)!;
+          expect(definition.counter?.echelon).toBe('XX');
+          expect(definition.faces[0]!.steps).toHaveLength(4);
+          if (formation.archetype === 'AIRBORNE') {
+            expect([mobility(unit.definitionId, 'combat'), mobility(unit.definitionId, 'move')]).toEqual(['mobility:leg', 'mobility:leg']);
+          } else {
+            // US infantry divisions are motorized (truck move face); German ones march on foot.
+            expect(mobility(unit.definitionId, 'move')).toBe(side.side === 'ALLIED' ? 'mobility:truck' : 'mobility:leg');
           }
         }
       }
     }
     expect([...seen].sort()).toEqual(expect.arrayContaining([
       'ALLIED/AIRBORNE', 'ALLIED/INFANTRY', 'AXIS/AIRBORNE', 'AXIS/INFANTRY', 'AXIS/MOBILE_INFANTRY']));
+    // The Allies have no mobile-infantry package, and airborne is never filed under it.
+    expect([...seen]).not.toContain('ALLIED/MOBILE_INFANTRY');
   });
 
   it('uses reviewed BTR locators while keeping ratings explicitly synthetic', () => {

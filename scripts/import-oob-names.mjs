@@ -38,7 +38,7 @@ for (const file of ['oobFormations.ts', 'supplementalOobFormations.ts']) {
   };
   visit(source);
 }
-// TODO: the German Fallschirmjäger profiles in name-catalog.ts are hand-authored; re-add them after re-importing.
+// TODO: the German Fallschirmjäger and US 13th Airborne profiles in name-catalog.ts are hand-authored; re-add them after re-importing.
 writeFileSync('src/generation/oob/name-catalog.ts', `// Naming references imported from bcsEngine; synthetic OCS packages, not historical OOBs.\n`
   + `import type { OobFormationArchetype, OobSide } from './model.js';\n\n`
   + `export interface FormationNameProfile {\n  readonly name: string;\n  readonly side: OobSide;\n  readonly archetype: OobFormationArchetype;\n  readonly combat: readonly string[];\n  readonly recon: readonly string[];\n  readonly engineers: readonly string[];\n  readonly source: string;\n}\n\n`

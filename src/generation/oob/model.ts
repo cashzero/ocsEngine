@@ -8,11 +8,11 @@ export type OobScale = (typeof OOB_SCALES)[number];
 export type OobSide = 'ALLIED' | 'AXIS';
 export type OobFormationArchetype = 'ARMORED' | 'INFANTRY' | 'MOBILE_INFANTRY' | 'AIRBORNE';
 /**
- * Infantry divisions and German Fallschirmjäger divisions are one XX counter; armored, mobile-infantry and
- * Allied airborne divisions are an HQ plus regiment-sized units.
+ * Infantry and airborne divisions are one XX counter (the Rule Engine's Breakdown rule, 20.0, lets them detach
+ * regiments in play); armored and mobile-infantry divisions are an HQ plus regiment-sized units.
  */
-export const isSingleUnitDivision = (side: OobSide, archetype: OobFormationArchetype): boolean =>
-  archetype === 'INFANTRY' || (side === 'AXIS' && archetype === 'AIRBORNE');
+export const isSingleUnitDivision = (_side: OobSide, archetype: OobFormationArchetype): boolean =>
+  archetype === 'INFANTRY' || archetype === 'AIRBORNE';
 export type OobUnitRole =
   | 'FORMATION_COMMAND'
   | 'COMBAT'

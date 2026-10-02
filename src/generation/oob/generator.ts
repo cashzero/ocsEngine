@@ -46,17 +46,11 @@ import { formationNames, unitName } from './names.js';
 import { buildAirForces } from './air.js';
 
 const SIDES: readonly OobSide[] = ['ALLIED', 'AXIS'];
-// Plan slots shared by both sides. The mobile slot is an airborne division for the Allies (who field no
-// armored-infantry packages); the Axis infantry slot alternates by seed between a line infantry division and a
-// Fallschirmjäger division, so both are single XX counters and the point totals stay matched.
-const FORMATION_ARCHETYPES: readonly OobFormationArchetype[] = ['ARMORED', 'INFANTRY', 'MOBILE_INFANTRY'];
-const sideArchetypes = (side: OobSide, plan: readonly OobFormationArchetype[], seed: number): readonly OobFormationArchetype[] =>
-  plan.map((planned, index) => {
-    const occurrence = plan.slice(0, index).filter((value) => value === planned).length;
-    if (planned === 'MOBILE_INFANTRY' && side === 'ALLIED') return 'AIRBORNE';
-    if (planned === 'INFANTRY' && side === 'AXIS' && (occurrence + seed) % 2 === 1) return 'AIRBORNE';
-    return planned;
-  });
+// Plan slots shared by both sides. Airborne is its own slot (a single XX division on both sides). Only the Axis have mobile-infantry packages (Panzergrenadier/Führer); the Allied
+// mobile slot is filled with an armored division, the Allies' mobile force.
+const FORMATION_ARCHETYPES: readonly OobFormationArchetype[] = ['ARMORED', 'INFANTRY', 'MOBILE_INFANTRY', 'AIRBORNE'];
+const sideArchetype = (side: OobSide, planned: OobFormationArchetype): OobFormationArchetype =>
+  side === 'ALLIED' && planned === 'MOBILE_INFANTRY' ? 'ARMORED' : planned;
 
 const must = <T, E>(result: Result<T, E>): T => {
   if (!result.ok) throw new Error('Random OOB generator produced an invalid Foundation scalar.');
@@ -234,16 +228,16 @@ const buildSide = (
   options: NormalizedRandomOobOptions,
   definitions: PieceDefinition[],
 ): GeneratedOobSide => {
-  const archetypes = sideArchetypes(side, plan, options.seed);
+  const archetypes = plan.map((planned) => sideArchetype(side, planned));
   const formations: GeneratedOobFormation[] = archetypes.map((archetype, formationIndex) => {
     const sequence = formationIndex + 1;
     const formationId = definitionId(`formation:generated:${options.seed}:${side.toLowerCase()}:${sequence}`);
     const occurrence = archetypes.slice(0, formationIndex).filter((value) => value === archetype).length;
     const namingProfile = formationNames(options.seed, side, archetype)[occurrence]!;
     const formationName = namingProfile.name;
-    // Infantry and German airborne divisions are a single XX counter; the other divisions are an HQ plus
-    // regiment-sized units. Airborne divisions carry no organic armor or artillery (counter sheets 1B/2B).
-    const combatRequests = Array.from({ length: SCALE_COMBAT_UNITS[options.scale] + (archetype === 'AIRBORNE' ? 1 : 0) }, (_, index) => ({
+    // Infantry and airborne divisions are a single XX counter; armored and mobile-infantry divisions are an HQ plus
+    // regiment-sized units.
+    const combatRequests = Array.from({ length: SCALE_COMBAT_UNITS[options.scale] }, (_, index) => ({
       role: 'COMBAT' as const, suffix: `combat-${index + 1}`,
     }));
     const requests: Array<{ role: OobUnitRole; suffix: string }> = isSingleUnitDivision(side, archetype)
@@ -251,10 +245,9 @@ const buildSide = (
       : [
         { role: 'FORMATION_COMMAND', suffix: 'command' },
         ...combatRequests,
-        ...(archetype === 'AIRBORNE' ? [] : [{ role: 'ARTILLERY' as const, suffix: 'artillery-1' }]),
-        ...(archetype !== 'AIRBORNE' && options.scale === 'LARGE' ? [{ role: 'ARTILLERY' as const, suffix: 'artillery-2' }] : []),
-        ...(archetype === 'ARMORED' || archetype === 'MOBILE_INFANTRY'
-          ? [{ role: 'RECONNAISSANCE' as const, suffix: 'recon' }] : []),
+        { role: 'ARTILLERY' as const, suffix: 'artillery-1' },
+        ...(options.scale === 'LARGE' ? [{ role: 'ARTILLERY' as const, suffix: 'artillery-2' }] : []),
+        { role: 'RECONNAISSANCE' as const, suffix: 'recon' },
       ];
     const units = requests.map(({ role, suffix }) => {
       const built = buildUnit({

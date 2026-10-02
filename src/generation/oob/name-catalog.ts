@@ -1089,18 +1089,24 @@ export const FORMATION_NAME_PROFILES: readonly FormationNameProfile[] = [
     "source": "bcsEngine/scenarioTemplates/supplementalOobFormations.ts"
   },
   {
-    "name": "US 517th Parachute Regimental Combat Team",
+    "name": "US 13th Airborne Division \"Black Cats\"",
     "side": "ALLIED",
     "archetype": "AIRBORNE",
     "combat": [
-      "1 Abn Bn",
-      "2 Abn Bn",
-      "3 Abn Bn"
+      "1/515 Abn Bn",
+      "2/515 Abn Bn",
+      "3/515 Abn Bn",
+      "1/326 Gld Bn",
+      "2/326 Gld Bn",
+      "1/517 Abn Bn"
     ],
     "recon": [],
-    "engineers": [],
-    "source": "bcsEngine/scenarioTemplates/supplementalOobFormations.ts"
+    "engineers": [
+      "129 Abn Eng Bn"
+    ],
+    "source": "hand-authored (13th Airborne Division on counter sheet 2B; not in the bcsEngine import)"
   },
+
   {
     "name": "3. Fallschirmjäger-Division",
     "side": "AXIS",

@@ -20,6 +20,8 @@ const hq = (combat: Values, move: Values): SourceCounter => ({ ...basic('HQ', 'X
 const artillery = (symbol: SourceCounter['symbol'], combat: Values, move: Values, mobility: SourceCounter['mobility']): SourceCounter => ({ ...basic(symbol, 'III', 'OTHER', combat, move, mobility), kind: 'ARTILLERY' });
 /** Placeholder key for the German airborne division counter; not a real BTR GPID. */
 export const AXIS_AIRBORNE_GPID = 900_001;
+/** Placeholder key for the US airborne division counter; not a real BTR GPID. */
+export const ALLIED_AIRBORNE_GPID = 900_002;
 export const COUNTER_CORPUS: Readonly<Record<number, SourceCounter>> = {
   319: hq([0,0,0,14], [0,0,16,9]),
   160: basic('ARMOR', 'III', 'MECH', [14,4,6,0], [7,4,14,0], ['tracked','tracked'], 1, 1),
@@ -34,6 +36,11 @@ export const COUNTER_CORPUS: Readonly<Record<number, SourceCounter>> = {
   // German Fallschirmjäger division (XX, 4 steps): counter sheets 3F (18-3-3) / 3B (9-3-4), leg on both faces.
   // Synthetic key: the VASSAL GPID has not been extracted (see TODO in catalog.ts).
   [AXIS_AIRBORNE_GPID]: basic('INFANTRY', 'XX', 'OTHER', [18,3,3,0], [9,3,4,0], ['leg','leg'], 4, 4),
+  // US airborne division (XX, 4 steps), leg on both faces. TODO(allied-airborne-division-counter): estimated from
+  // the sheet 1B/2B regiment move faces (3 regiments at ~3-4-5, i.e. 8 on the move face), not transcribed from a
+  // printed division counter. Impact: US airborne division strength/AR may differ from a printed one. Closes when a
+  // printed division counter (or the front faces, sheets 1F/2F) is read and these numbers replaced.
+  [ALLIED_AIRBORNE_GPID]: basic('INFANTRY', 'XX', 'OTHER', [16,4,3,0], [8,4,5,0], ['leg','leg'], 4, 4),
   806: basic('INFANTRY', 'III', 'OTHER', [7,4,3,0], [4,4,14,0], ['leg','truck'], 1, 1),
   // US 159 Inf Rgt: images/BTR S02 R06 C19.png (4-3-3) and C19B.png (2-3-14).
   408: basic('INFANTRY', 'III', 'OTHER', [4,3,3,0], [2,3,14,0], ['leg','truck'], 1, 1),

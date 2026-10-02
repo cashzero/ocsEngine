@@ -97,11 +97,7 @@ export const validateGeneratedOob = (
       if (count('COMBAT') < 2) {
         issues.push(issue('FORMATION_COMBAT_INVARIANT', 'Each multi-unit formation requires at least two combat elements.', [...basePath, 'units']));
       }
-      if (formation.archetype === 'AIRBORNE') {
-        if (count('ARTILLERY') + count('RECONNAISSANCE') > 0) {
-          issues.push(issue('AIRBORNE_ORGANIC_SUPPORT', 'Airborne divisions carry no organic armored reconnaissance or tracked artillery.', [...basePath, 'units']));
-        }
-      } else if (count('ARTILLERY') === 0) {
+      if (count('ARTILLERY') === 0) {
         issues.push(issue('FORMATION_SUPPORT_INVARIANT', 'Each multi-unit formation requires an artillery element.', [...basePath, 'units']));
       }
     }
