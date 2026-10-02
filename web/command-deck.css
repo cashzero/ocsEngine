@@ -3,21 +3,24 @@ html, body { min-width: 1680px; height: 100%; overflow: hidden; }
 .app-shell { width: 100%; height: 100vh; min-height: 0; display: grid; grid-template: 64px minmax(0, 1fr) / 400px minmax(0, 1fr); overflow: hidden; }
 .topbar { grid-column: 1 / -1; grid-row: 1; display: grid; grid-template-columns: minmax(560px, 1fr) 190px auto; position: static; min-height: 0; }
 .seat-badge { display: flex; }
-.turn-strip { overflow: hidden; justify-content: flex-start; }
+.turn-strip { overflow: visible; justify-content: flex-start; }
 .turn-strip { align-items: stretch; }
 .turn-strip .turn-cell { min-width: 120px; }
-.phase-track { display: flex; align-items: stretch; gap: 2px; margin: 0; padding: 8px 10px; list-style: none; min-width: 0; }
-.phase-track li { display: flex; flex-direction: column; justify-content: center; padding: 2px 6px; border-radius: 5px; color: var(--muted); font-size: 13px; font-weight: 700; line-height: 1.2; white-space: nowrap; }
-.phase-track li small { font-size: 13px; font-weight: 600; letter-spacing: 0; }
-.phase-track .track-owner { color: var(--ink); background: transparent; padding-left: 0; }
-.phase-track li.is-done { color: #b9d8c6; }
-.phase-track li.is-done::before { content: "\2713  "; }
-.phase-track li.is-skipped { color: #8a968e; text-decoration: line-through; }
-.phase-track li.is-current { color: var(--accent-ink); background: var(--accent); }
-/* Collapsed: only the current phase shows; hovering the strip reveals the whole track. */
-.phase-track li:not(.track-owner):not(.is-current) { display: none; }
-.turn-strip:hover .phase-track li, .turn-strip:focus-within .phase-track li { display: flex; }
-.phase-track li.is-current small { color: var(--accent-ink); }
+/* Collapsed: owner + current phase. Hovering/focusing the picker opens the whole turn as a popup below it, without moving anything. */
+.phase-picker { position: relative; display: flex; align-items: center; gap: 8px; padding: 8px 10px; min-width: 0; outline: none; }
+.phase-picker .track-owner { color: var(--ink); font-size: 13px; font-weight: 700; white-space: nowrap; }
+.phase-current { display: flex; flex-direction: column; justify-content: center; padding: 2px 8px; border-radius: 5px; color: var(--accent-ink); background: var(--accent); font-size: 13px; font-weight: 700; line-height: 1.2; white-space: nowrap; cursor: default; }
+.phase-current small { font-size: 13px; font-weight: 600; letter-spacing: 0; color: var(--accent-ink); }
+.phase-picker:focus-visible .phase-current { outline: 2px solid var(--ink); outline-offset: 2px; }
+.phase-popup { display: none; position: absolute; top: 100%; left: 10px; z-index: 50; flex-direction: column; gap: 2px; margin: 0; padding: 6px; list-style: none; min-width: 190px; background: #16211c; border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 10px 30px rgba(0, 0, 0, .45); }
+.phase-picker:hover .phase-popup, .phase-picker:focus-within .phase-popup { display: flex; }
+.phase-popup li { display: flex; flex-direction: column; justify-content: center; padding: 4px 10px; border-radius: 5px; color: var(--muted); font-size: 13px; font-weight: 700; line-height: 1.2; white-space: nowrap; }
+.phase-popup li small { font-size: 13px; font-weight: 600; letter-spacing: 0; }
+.phase-popup li.is-done { color: #b9d8c6; }
+.phase-popup li.is-done::before { content: "\2713  "; }
+.phase-popup li.is-skipped { color: #8a968e; text-decoration: line-through; }
+.phase-popup li.is-current { color: var(--accent-ink); background: var(--accent); }
+.phase-popup li.is-current small { color: var(--accent-ink); }
 .session-actions { display: flex; gap: 8px; padding: 10px 16px; align-items: center; }
 
 .command-rail { grid-column: 1; grid-row: 2; display: flex; flex-direction: column; padding: 0; min-height: 0; overflow: hidden; background: #121b17; }
