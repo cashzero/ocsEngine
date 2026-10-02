@@ -622,12 +622,15 @@ const unitFormation = (snapshot: UiSnapshot, piece: ProjectedPiece): string => {
 };
 
 /**
- * Every counter the player commands. SP a truck carries is part of that truck, not another unit, and a dump that was merged into
- * another or used up is gone, not an eliminated unit.
+ * Every unit the player commands. A supply dump is supply lying on the map, not a unit, so it is never listed or counted here (it is
+ * reached on the map and in the stack picker); SP a truck carries is part of that truck, not another unit.
  */
 const rosterOwn = (snapshot: UiSnapshot): ProjectedPiece[] =>
   (snapshot.view.projection?.stacks ?? []).flatMap((stack) => stack.pieces)
-    .filter(({ ownerId, role, location }) => ownerId === snapshot.view.playerId && role !== 'CARGO' && !(role === 'DUMP' && location.kind === 'ELIMINATED'));
+    .filter(({ ownerId, role }) => ownerId === snapshot.view.playerId && role !== 'CARGO' && role !== 'DUMP');
+
+/** Trucks and extenders haul supply rather than fight, so the roster lists them in a group of their own after the formations. */
+const isTransport = ({ role }: ProjectedPiece): boolean => role === 'TRUCK' || role === 'EXTENDER';
 
 /** The scrolling part of the roster; rows are keyed by unit so filtering moves them instead of redrawing their counters. */
 export const unitRosterBodyView = (snapshot: UiSnapshot, state: DeckState): TemplateResult => {
@@ -640,17 +643,21 @@ export const unitRosterBodyView = (snapshot: UiSnapshot, state: DeckState): Temp
   const active = all.filter(({ location }) => location.kind !== 'ELIMINATED')
     .filter((piece) => filter === 'all' || (filter === 'moved') === snapshot.movedThisPhase.has(String(piece.id)));
   const groups = new Map<string, ProjectedPiece[]>();
-  for (const piece of active) {
+  for (const piece of active.filter((piece) => !isTransport(piece))) {
     const name = unitFormation(snapshot, piece) || 'Independent units';
     groups.set(name, [...(groups.get(name) ?? []), piece]);
   }
   const row = (piece: ProjectedPiece): TemplateResult => html`<button class="roster-unit${piece.id === snapshot.selection.pieceId ? ' is-selected' : ''}" data-piece=${piece.id} data-roster-pick=${piece.id} aria-label=${`${pieceLabel(snapshot.scenario, piece)}, ${pieceHex(piece)}`}>
     <span class="roster-art" aria-hidden="true">${counterFor(snapshot, piece)}</span><span class="roster-text">${pieceLabel(snapshot.scenario, piece)}<small>${pieceHex(piece)} · ${statusName(snapshot, piece)}</small></span>${badges(snapshot, piece)}</button>`;
   const rows = (pieces: ProjectedPiece[]) => repeat(pieces.sort(byName), (piece) => piece.id, row);
-  const sorted = [...groups.entries()].sort(([left], [right]) => left.localeCompare(right));
+  const transport = active.filter(isTransport);
+  const sorted: { key: string; name: string; pieces: ProjectedPiece[]; extra: string }[] = [
+    ...[...groups.entries()].sort(([left], [right]) => left.localeCompare(right)).map(([name, pieces]) => ({ key: `formation:${name}`, name, pieces, extra: '' })),
+    ...(transport.length > 0 ? [{ key: 'transport', name: 'Trucks', pieces: transport, extra: ' roster-transport' }] : []),
+  ];
   const eliminated = all.filter(({ location }) => location.kind === 'ELIMINATED');
   return html`${sorted.length > 0
-    ? repeat(sorted, ([name]) => name, ([name, pieces]) => html`<details class="roster-group" open><summary>${name} <small>${pieces.length}</small></summary><div class="roster-grid">${rows(pieces)}</div></details>`)
+    ? repeat(sorted, ({ key }) => key, ({ name, pieces, extra }) => html`<details class="roster-group${extra}" open><summary>${name} <small>${pieces.length}</small></summary><div class="roster-grid">${rows(pieces)}</div></details>`)
     : html`<p class="roster-empty">No units match.</p>`}${eliminated.length > 0 && filter === 'all' ? html`<details class="roster-group roster-eliminated"><summary>Eliminated <small>${eliminated.length}</small></summary><div class="roster-grid">${rows(eliminated)}</div></details>` : nothing}`;
 };
 
@@ -715,7 +722,7 @@ export const commandDeckView = (snapshot: UiSnapshot, state: DeckState): Templat
   const { view } = snapshot;
   const sequence = view.projection?.sequence;
   const busy = busyOf(snapshot, state);
-  const own = (view.projection?.stacks ?? []).flatMap((stack) => stack.pieces).filter(({ ownerId, role }) => ownerId === view.playerId && role !== 'CARGO');
+  const own = rosterOwn(snapshot);
   const objective = stepObjective(snapshot);
   const interrupt = interruptPanel(snapshot, state);
   const away = awayPanel(snapshot);
