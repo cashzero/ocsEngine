@@ -37,7 +37,7 @@ export const RULE_FIXTURE_NEW_GAME_REQUEST: NewGameRequest = {
   templateId: 'GROUND_DUEL',
   map: { width: 18, height: 12, style: 'TEMPERATE_INLAND' },
   oob: { scale: 'COMPACT', formationsPerSide: 2 },
-  seeds: { map: 0x0c500001, oob: 0x0c500002, deployment: 0x0c500003, rules: 0x0c500004 },
+  seeds: { map: 0x0c500001, oob: 0x0c500160, deployment: 0x0c500003, rules: 0x0c500004 },
   turnLimit: 2,
   startMonth: 10,
 };

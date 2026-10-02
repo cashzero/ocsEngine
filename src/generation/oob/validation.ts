@@ -1,5 +1,6 @@
 import type { ValidationIssue } from '../../core/index.js';
 import { validatePieceDefinitionCatalog } from '../../domain/piece/index.js';
+import { isSingleUnitDivision } from './model.js';
 import type {
   GeneratedOob,
   GeneratedOobMetrics,
@@ -82,13 +83,21 @@ export const validateGeneratedOob = (
         || unit.formationId !== formation.id)) {
         issues.push(issue('FORMATION_OWNERSHIP_MISMATCH', 'Formation units must belong to their containing side and formation.', basePath));
       }
-      if (formation.units.filter(({ role }) => role === 'FORMATION_COMMAND').length !== 1) {
+      const count = (wanted: OobUnitRole) => formation.units.filter(({ role }) => role === wanted).length;
+      if (isSingleUnitDivision(formation.side, formation.archetype)) {
+        // Infantry and German airborne divisions are one XX counter.
+        if (formation.units.length !== 1 || count('COMBAT') !== 1) {
+          issues.push(issue('FORMATION_COMBAT_INVARIANT', 'A single-unit division is exactly one combat unit.', [...basePath, 'units']));
+        }
+        continue;
+      }
+      if (count('FORMATION_COMMAND') !== 1) {
         issues.push(issue('FORMATION_COMMAND_INVARIANT', 'Each multi-unit formation requires exactly one command element.', [...basePath, 'units']));
       }
-      if (formation.units.filter(({ role }) => role === 'COMBAT').length < 2) {
+      if (count('COMBAT') < 2) {
         issues.push(issue('FORMATION_COMBAT_INVARIANT', 'Each multi-unit formation requires at least two combat elements.', [...basePath, 'units']));
       }
-      if (!formation.units.some(({ role }) => role === 'ARTILLERY')) {
+      if (count('ARTILLERY') === 0) {
         issues.push(issue('FORMATION_SUPPORT_INVARIANT', 'Each multi-unit formation requires an artillery element.', [...basePath, 'units']));
       }
     }

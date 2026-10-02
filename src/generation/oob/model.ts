@@ -6,7 +6,13 @@ export const OOB_GENERATOR_VERSION = '0.1.0' as const;
 export const OOB_SCALES = ['COMPACT', 'STANDARD', 'LARGE'] as const;
 export type OobScale = (typeof OOB_SCALES)[number];
 export type OobSide = 'ALLIED' | 'AXIS';
-export type OobFormationArchetype = 'ARMORED' | 'INFANTRY' | 'MOBILE_INFANTRY';
+export type OobFormationArchetype = 'ARMORED' | 'INFANTRY' | 'MOBILE_INFANTRY' | 'AIRBORNE';
+/**
+ * Infantry and airborne divisions are one XX counter (the Rule Engine's Breakdown rule, 20.0, lets them detach
+ * regiments in play); armored and mobile-infantry divisions are an HQ plus regiment-sized units.
+ */
+export const isSingleUnitDivision = (_side: OobSide, archetype: OobFormationArchetype): boolean =>
+  archetype === 'INFANTRY' || archetype === 'AIRBORNE';
 export type OobUnitRole =
   | 'FORMATION_COMMAND'
   | 'COMBAT'
