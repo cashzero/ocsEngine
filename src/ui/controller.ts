@@ -195,8 +195,6 @@ class DefaultUiController implements UiController {
   #autoCheckpoint: AutoCheckpoint | null = null;
   /** Actions of the current step that Undo can take back, oldest first. */
   #undoPoints: UndoPoint[] = [];
-  /** Where a payment was drawn from, as the player saw it when paying (the dump may be gone afterwards), by history index. */
-  #sourceNotes = new Map<number, { readonly id: string; readonly label: string }>();
   #undoing = false;
   #skipDumpOnlySteps: boolean;
 
@@ -210,6 +208,7 @@ class DefaultUiController implements UiController {
       ? 'Select a unit on the map to see where it can move and what it can attack.'
       : 'Scenario ready. Start the session when you are ready.';
     this.#bindSession();
+    this.#continueNumbering();
     this.#afterChange();
   }
 
@@ -282,7 +281,6 @@ class DefaultUiController implements UiController {
       if (!this.#undoing) this.#clearUndoPoints();
       this.#openTransaction = null;
       const length = this.#session.getHistory({ offset: 0, limit: 0, actionKind: null }).total;
-      for (const index of [...this.#sourceNotes.keys()]) if (index >= length) this.#sourceNotes.delete(index);
       for (const [seat, seen] of this.#seen) this.#seen.set(seat, Math.min(seen, length));
     }
     if (this.#openTransaction !== null) {
@@ -414,12 +412,17 @@ class DefaultUiController implements UiController {
   /** The supply the seat paid or moved this step, from its own accepted actions. */
   #ledger(records: readonly HistoryRecord[], seatId: SeatId, pieces: readonly ProjectedPiece[]): readonly LedgerLine[] {
     const lines: LedgerLine[] = [];
-    const where = (index: number): string => {
-      const note = this.#sourceNotes.get(index);
-      if (!note) return 'a dump';
-      const source = pieces.find(({ id }) => id === note.id);
-      const left = source && source.location.kind !== 'ELIMINATED' && (source.resourceQuantity ?? 0) > 0 ? `${source.resourceQuantity}T left` : 'used up';
-      return `${note.label} (${left})`;
+    // Where a payment was drawn from is read from the action and from the state now, so it is the same after a save is loaded
+    // or a checkpoint restored: the dump's Hex, or the truck carrying it, and what it holds now ("used up" when it is gone).
+    const where = (action: GameAction): string => {
+      const sourceId = action.kind === 'PAY_FUEL' || action.kind === 'CHECK_SUPPLY' ? action.sourcePieceId : null;
+      const source = sourceId ? pieces.find(({ id }) => id === sourceId) : undefined;
+      if (!source) return 'a dump';
+      const container = source.location.kind === 'CONTAINER' ? pieces.find(({ id }) => id === (source.location as { containerId: string }).containerId) : undefined;
+      const hexId = source.location.kind === 'ON_MAP' ? source.location.hexId : container?.location.kind === 'ON_MAP' ? container.location.hexId : null;
+      const what = `the ${container ? 'truck load' : 'dump'}${hexId ? ` at ${printedHexLabel(hexId)}` : ''}`;
+      const left = source.location.kind !== 'ELIMINATED' && (source.resourceQuantity ?? 0) > 0 ? `${source.resourceQuantity}T there now` : 'used up';
+      return `${what} (${left})`;
     };
     const method = { SINGLE_UNIT: 'this unit', FORMATION: 'its whole formation', HQ: 'the HQ and its range' } as const;
     for (const record of records) {
@@ -428,9 +431,9 @@ class DefaultUiController implements UiController {
         const revision = record.revisionAfter;
         if (event.kind === 'FUEL_PAID') {
           const unit = pieces.find(({ id }) => id === event.pieceId);
-          lines.push({ revision, spent: event.tokens, text: `Fuel ${event.tokens}T for ${unit ? unitLabel(this.#scenario, unit) : 'a unit'} (${method[event.method]}) from ${where(record.sequence)}.` });
+          lines.push({ revision, spent: event.tokens, text: `Fuel ${event.tokens}T for ${unit ? unitLabel(this.#scenario, unit) : 'a unit'} (${method[event.method]}) from ${where(record.action)}.` });
         } else if (event.kind === 'SUPPLY_SPENT') {
-          lines.push({ revision, spent: event.quantity, text: `${event.quantity}T drawn from ${where(record.sequence)}.` });
+          lines.push({ revision, spent: event.quantity, text: `${event.quantity}T drawn from ${where(record.action)}.` });
         } else if (event.kind === 'SUPPLY_TRANSFERRED') {
           lines.push({ revision, spent: 0, text: `${event.loaded ? 'Loaded' : 'Unloaded'} ${event.tokens}T ${event.loaded ? 'onto' : 'from'} a truck.` });
         } else if (event.kind === 'DUMP_BLOWN') {
@@ -439,6 +442,18 @@ class DefaultUiController implements UiController {
       }
     }
     return lines;
+  }
+
+  /**
+   * Request and action numbers continue after those a loaded game already used: the session refuses a request it has seen
+   * as a duplicate, so a page that starts counting from 1 again would have its first actions refused.
+   */
+  #continueNumbering(): void {
+    const trailing = (id: string): number => Number(/(\d+)$/u.exec(id)?.[1] ?? 0);
+    for (const record of this.#session.getHistory({ offset: 0, limit: Number.MAX_SAFE_INTEGER, actionKind: null }).records) {
+      this.#requestSequence = Math.max(this.#requestSequence, trailing(String(record.requestId)));
+      this.#actionSequence = Math.max(this.#actionSequence, trailing(String(record.action.actionId)));
+    }
   }
 
   #clearUndoPoints(): void {
@@ -1176,14 +1191,12 @@ class DefaultUiController implements UiController {
 
   #dispatch = async (action: GameAction, message: string, explanation?: RuleExplanation): Promise<void> => this.#run(async () => {
     let success = message;
-    // Remember where a payment is drawn from, in the words the player saw, for the supply ledger.
-    const sourceId = action.kind === 'PAY_FUEL' ? action.sourcePieceId : action.kind === 'CHECK_SUPPLY' ? action.sourcePieceId : null;
-    if (sourceId) this.#sourceNotes.set(this.#session.getHistory({ offset: 0, limit: 0, actionKind: null }).total, { id: String(sourceId), label: this.#dumpLabel(String(sourceId)) });
     const taken = this.#takeUndoPoint(action, message);
     const result = await this.#session.dispatch({ requestId: this.#requestId(), seatId: this.#activeSeat(), action });
     if (result.status !== 'ACCEPTED') {
       if (taken) this.#session.removeCheckpoint(taken.id);
-      return `Not allowed: ${result.violations.map(({ message: reason }) => reason).join(' ')}`;
+      const reasons = result.violations.map(({ message: reason }) => reason).join(' ');
+      return `Not allowed: ${reasons || `the game refused the action (${result.status.toLowerCase()}).`}`;
     }
     success += this.#recordUndoPoint(taken, action, message, result);
     this.#rememberDeclaration(result.events, explanation, action);
@@ -1343,6 +1356,7 @@ class DefaultUiController implements UiController {
     this.#undoPoints = [];
     for (const checkpoint of loaded.listCheckpoints()) if (checkpoint.label.startsWith('Auto: ') || checkpoint.label.startsWith(UNDO_POINT_PREFIX)) loaded.removeCheckpoint(checkpoint.id);
     this.#bindSession();
+    this.#continueNumbering();
     this.#afterChange();
     return `Save loaded at revision ${loaded.getRevision()}.`;
   });

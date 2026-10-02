@@ -360,6 +360,27 @@ describe('OCS 4.3 transport, Extenders and dumps (9.14, 12.2, 12.7, 12.11, 13.2)
     expect(combine(U.alSup)).toEqual([]);
   });
 
+  it('lets a truck that already moved divide and then combine again at no MP cost (13.2c, 6.1f)', () => {
+    const state = atStep(buildGeneratedRuleState({ [U.alTruck]: ['1,5', null] }), 'MOVEMENT', 'MOVEMENT', ALLIED);
+    const moved = ok(applyRuleAction(state, ALLIED, { kind: 'MOVE_PIECE', pieceId: U.alTruck, path: path('1,5', '2,5') }));
+    const spent = moved.usage.find(({ pieceId }) => pieceId === U.alTruck)!.movementSpentTicks;
+    expect(spent).toBeGreaterThan(0);
+    const known = new Set(moved.pieceState.pieces.map(({ id }) => id));
+    const divided = ok(applyRuleAction(moved, ALLIED, { kind: 'DIVIDE_TRANSPORT', truckId: U.alTruck, points: 1 }));
+    const splitId = divided.pieceState.pieces.find(({ id }) => !known.has(id))!.id;
+    // Both parts are in the same Hex and the move is not over for them: Combine is legal, for either one selected.
+    for (const selected of [U.alTruck, splitId]) {
+      const actions = ruleEngine.getActionCandidates(divided, { actorId: ALLIED, kind: 'COMBINE_TRANSPORT', pieceId: selected, budget: 5 }).actions;
+      expect(actions.map(({ kind }) => kind), `selected ${selected}`).toEqual(['COMBINE_TRANSPORT']);
+    }
+    const combined = ok(applyRuleAction(divided, ALLIED, { kind: 'COMBINE_TRANSPORT', truckIds: [U.alTruck, splitId] }));
+    // The combined counter has spent as much as the most-used part, and no more (6.1f).
+    expect(combined.usage.find(({ pieceId }) => pieceId === U.alTruck)!.movementSpentTicks).toBe(spent);
+    // The part split off may itself continue to move with what is left of the allowance.
+    const explanation = ruleEngine.explain(divided, { actionId: 'probe', actorId: ALLIED, expectedRevision: divided.revision, kind: 'MOVE_PIECE', pieceId: splitId, path: path('2,5', '3,5') } as never);
+    expect(explanation.allowed).toBe(true);
+  });
+
   it('warns, before the move, that moving another unit ends a loaded truck\'s move (6.1g)', () => {
     const state = atStep(buildGeneratedRuleState({ [U.alTruck]: ['1,5', null], [U.alSup]: ['1,5', null], [U.alLeg]: ['4,5', 'MOVE', 'move'] }), 'MOVEMENT', 'MOVEMENT', ALLIED);
     const moveLeg = (from: GameState) => ruleEngine.explain(from, { actionId: 'probe', actorId: ALLIED, expectedRevision: from.revision, kind: 'MOVE_PIECE', pieceId: U.alLeg, path: path('4,5', '3,5') } as never);

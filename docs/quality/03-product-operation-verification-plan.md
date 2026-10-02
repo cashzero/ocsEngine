@@ -178,21 +178,25 @@ board-game design; user decision 2026-10-02).
 
 | ID | Pri | Player operation | Required visible result | Status |
 |---|---:|---|---|---|
-| SUP-A01 | P0 | Select a truck in a Hex with an 8T+ dump and load a chosen part, such as 3T | Truck load is 3T, the dump keeps the rest, and the MP spent equals the preview shown before the click | UNVERIFIED |
-| SUP-A02 | P0 | Move that truck to a Hex with a friendly combat unit and unload a chosen part, such as 2T | The Hex shows a 2T dump, the truck keeps 1T, and the map and the selection card agree | UNVERIFIED |
-| SUP-A03 | P0 | Open the truck in a Hex with no friendly combat unit and no friendly dump while it carries SP | Unload is shown disabled with the reason and rule 13.2f, not silently absent | UNVERIFIED |
-| SUP-A04 | P0 | Unload SP, then try to load the same SP again in the same phase | Load is shown disabled with the reason "unloaded this phase" (12.2a) | UNVERIFIED |
-| SUP-A05 | P0 | Look at empty, part-loaded, and full trucks on the map and in the stack list | The three states are visually distinct; the stack list shows each truck's load | UNVERIFIED |
-| SUP-A06 | P1 | Select a dump that shares a Hex with a friendly truck and use "carry with a truck" | The same transfer area opens with the same result as from the truck | UNVERIFIED |
-| SUP-A07 | P0 | Load a truck, then pick another unit and preview its move | Before the move is confirmed, the UI warns that the truck would lose its remaining MP and load for the phase (6.1g); confirming is an explicit choice | UNVERIFIED |
-| SUP-A08 | P1 | Divide a truck, then combine the parts again | Points, load, counter-mix limit (13.2c) and spent MA (6.1f) are correct; no MP is charged | UNVERIFIED |
-| SUP-A09 | P0 | Pay one fuel and one combat supply, then open the supply ledger | The ledger lists what was paid, from which dump or truck, and what is left; it matches the real deduction | UNVERIFIED |
-| SUP-A10 | P0 | Create a checkpoint with a loaded truck, change state, restore it; then download a save and load that file | Truck points, load, dump quantities and ledger match the saved state in both routes | UNVERIFIED |
-| SUP-A11 | P0 | Divide and combine trucks and compare the map counter with the selection card | The counter shows the current Transport Points, not the printed 5 | UNVERIFIED |
-| SUP-A12 | P0 | Put two same-type trucks in one Hex (for example by dividing one) and select either | A Combine action is offered and works (blocking issue N-08) | UNVERIFIED |
-| SUP-A13 | P0 | Inspect dumps in the roster, selection card, fuel options, stack list and ledger, including SP carried by a truck | No dump has a name; each reads as type, quantity and Hex; carried SP is shown on its truck, not as a separate "off map" unit | UNVERIFIED |
-| SUP-A14 | P1 | Divide, load and unload, then read the unit counts | Counts of units are not inflated by split counters or carried SP | UNVERIFIED |
+| SUP-A01 | P0 | Select a truck in a Hex with an 8T+ dump and load a chosen part, such as 3T | Truck load is 3T, the dump keeps the rest, and the MP spent equals the preview shown before the click | PASS |
+| SUP-A02 | P0 | Move that truck to a Hex with a friendly combat unit and unload a chosen part, such as 2T | The Hex shows a 2T dump, the truck keeps 1T, and the map and the selection card agree | FAIL |
+| SUP-A03 | P0 | Open the truck in a Hex with no friendly combat unit and no friendly dump while it carries SP | Unload is shown disabled with the reason and rule 13.2f, not silently absent | PASS |
+| SUP-A04 | P0 | Unload SP, then try to load the same SP again in the same phase | Load is shown disabled with the reason "unloaded this phase" (12.2a) | PASS |
+| SUP-A05 | P0 | Look at empty, part-loaded, and full trucks on the map and in the stack list | The three states are visually distinct; the stack list shows each truck's load | PASS |
+| SUP-A06 | P1 | Select a dump that shares a Hex with a friendly truck and use "carry with a truck" | The same transfer area opens with the same result as from the truck | PASS |
+| SUP-A07 | P0 | Load a truck, then pick another unit and preview its move | Before the move is confirmed, the UI warns that the truck would lose its remaining MP and load for the phase (6.1g); confirming is an explicit choice | PASS |
+| SUP-A08 | P1 | Divide a truck, then combine the parts again | Points, load, counter-mix limit (13.2c) and spent MA (6.1f) are correct; no MP is charged | PASS |
+| SUP-A09 | P0 | Pay one fuel and one combat supply, then open the supply ledger | The ledger lists what was paid, from which dump or truck, and what is left; it matches the real deduction | BLOCKED |
+| SUP-A10 | P0 | Create a checkpoint with a loaded truck, change state, restore it; then download a save and load that file | Truck points, load, dump quantities and ledger match the saved state in both routes | UNAVAILABLE |
+| SUP-A11 | P0 | Divide and combine trucks and compare the map counter with the selection card | The counter shows the current Transport Points, not the printed 5 | PASS |
+| SUP-A12 | P0 | Put two same-type trucks in one Hex (for example by dividing one) and select either | A Combine action is offered and works (blocking issue N-08) | PASS |
+| SUP-A13 | P0 | Inspect dumps in the roster, selection card, fuel options, stack list and ledger, including SP carried by a truck | No dump has a name; each reads as type, quantity and Hex; carried SP is shown on its truck, not as a separate "off map" unit | PASS |
+| SUP-A14 | P1 | Divide, load and unload, then read the unit counts | Counts of units are not inflated by split counters or carried SP | FAIL |
 | SUP-A15 | P0 | After a move, a load, and a divide, press Undo | Undo reverts only the last action, not the whole segment (approved intent; semantics for dice and revealed information to be confirmed) | UNVERIFIED |
+Phase A results of 2026-10-02 are in `docs/quality/evidence/supply-a-2026-10-02/README.md` (input, observed, elapsed, revision, console and artifacts per row).
+SUP-A02 and SUP-A14 failed as written; SUP-A09 is BLOCKED (no combat state reachable, and the ledger has no combat payments); SUP-A10 is UNAVAILABLE (its file-load step needs a
+real file chooser); SUP-A15 stays UNVERIFIED until the user confirms the Undo semantics. The Phase A gate is therefore not passed.
+
 | SUP-B01 | P0 | Enter "8T, from dump A to Hex B" | A plan preview lists trucks, route, MP per step, and resulting stock; game state is unchanged until confirmed | UNVERIFIED |
 | SUP-B02 | P0 | Confirm that plan | Hex B gains 8T and the final state equals the manual run of the same actions | UNVERIFIED |
 | SUP-B03 | P0 | Enter a task that exceeds the available MP | A shortfall report states how much can be delivered and why, with alternatives | UNVERIFIED |

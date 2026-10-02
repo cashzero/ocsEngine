@@ -170,6 +170,25 @@ describe('the truck\'s supply area (A2)', () => {
     controller.dispose();
   });
 
+  it('combines the parts of a truck that already moved and loaded, keeping the load and spending no MP (13.2c)', async () => {
+    const { controller, truck, dumpAway, hexOf, own } = await startMovement();
+    controller.selectPiece(truck().id);
+    await controller.clickHex(hexOf(dumpAway())!);
+    await controller.confirmMove();
+    const loads = controller.getSnapshot().transportOptions!.loads[0]!;
+    await controller.transferSupply('LOAD', loads.pieceId, 3);
+    const remaining = controller.getSnapshot().transportOptions!.remainingTicks;
+    await controller.divideTruck(4);
+    // The truck moved before it was divided; both parts are in one Hex, so Combine is offered and works.
+    const combine = controller.getSnapshot().unitActions.find(({ action }) => action.kind === 'COMBINE_TRANSPORT');
+    expect(combine, 'Combine is offered after dividing a truck that moved').toBeDefined();
+    await controller.runAction(combine!.key);
+    const options = controller.getSnapshot().transportOptions!;
+    expect(options).toMatchObject({ points: 5, loadedTokens: 3, capacityTokens: 20, remainingTicks: remaining });
+    expect(own().filter(({ role, location }) => role === 'TRUCK' && location.kind === 'ON_MAP')).toHaveLength(1);
+    controller.dispose();
+  });
+
   it('splits a chosen number of points off the counter without MP cost', async () => {
     const { controller, truck, own } = await startMovement();
     controller.selectPiece(truck().id);

@@ -51,11 +51,19 @@ describe('the supply ledger (A5)', () => {
     // It names the unit and the source the player picked, and what that source holds after the payment.
     expect(line.text).toContain('Fuel 1T');
     expect(line.text).toContain('this unit');
-    expect(line.text).toContain(`the ${before}T dump at`);
-    expect(line.text).toMatch(/\((\d+T left|used up)\)/u);
+    expect(line.text).toContain('from the dump at ');
     const remaining = own(controller).find(({ id }) => id === source.id)?.resourceQuantity ?? 0;
     expect(remaining).toBe(before - 1);
-    expect(line.text).toContain(remaining > 0 ? `${remaining}T left` : 'used up');
+    expect(line.text).toContain(remaining > 0 ? `(${remaining}T there now)` : '(used up)');
+
+    // The ledger is read from the state, so a save loaded later (here into the same controller after the state changed)
+    // gives the same words, whatever the page remembers.
+    const saved = controller.serializeSave();
+    const text = controller.getSnapshot().ledger.map((entry) => entry.text);
+    controller.selectPiece(unit.id);
+    await controller.endStep();
+    await controller.loadSave(saved);
+    expect(controller.getSnapshot().ledger.map((entry) => entry.text)).toEqual(text);
 
     // The tab appears after the unit's own tab, and shows the total paid.
     expect(deckTabs(snapshot).map(({ id }) => id)).toContain('ledger');

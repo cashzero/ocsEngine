@@ -182,6 +182,14 @@ Undo 按鈕提示「Undo: Loaded 3T onto the truck at 0316.」，按下後訊息
 
 ### A6　Phase A 整合驗收 gate
 
+**驗收結果（2026-10-02，使用者指示「驗收」）：gate 未通過，維持 IN PROGRESS。** 逐列證據在
+[evidence/supply-a-2026-10-02/README.md](../quality/evidence/supply-a-2026-10-02/README.md)，狀態已寫入 doc 03 §G：
+**PASS** A01、A03、A04、A05、A06、A07、A08、A11、A12、A13；**FAIL** A02（地圖只畫三個 counter，新堆是「+1」徽章，不是 counter）、
+A14（分拆本來就多一個 counter，計數會增加）；**BLOCKED** A09（到不了戰鬥，且帳目不含戰鬥付費）；**UNAVAILABLE** A10（檔案讀取步驟需要真的選檔視窗；
+下載是真的，checkpoint 路徑通過）；**UNVERIFIED** A15（Undo 語意待使用者確認）。
+驗收中找到並修正三個缺陷（各有先失敗的測試）：D1 移動後分拆的卡車不能再合併；D2 帳目來源在新頁面讀檔後變成「a dump」；
+D3 **新頁面讀檔後前幾個動作被當成重複請求拒絕**（原本就有的缺陷）。下方各 TODO 以此為準，舊的 TODO-A3a（堆疊清單）、TODO-A6a 的下載部分已關閉。
+
 **狀態（2026-10-02）：IN PROGRESS。不得標為完成。** A2～A5 已實作，`npm run check` 通過（47 檔、274 測試），
 但依 `AGENTS.md`，下列驗收仍未滿足，因此 gate 不能標 DONE／PASS：
 

@@ -381,7 +381,9 @@ export const applyDivide = (state: GameState, truckId: PieceId, points: number):
   }
   const next: GameState = { ...state, pieceState };
   return {
-    state: { ...next, usage: withUsage(next, { ...usageOf(state, truck), pieceId: newId }) },
+    // 13.2c: the divided parts may continue to move, having used what the whole counter used (6.1f). The part split off
+    // is therefore not "finished moving" even if the original is: only beginning another unit's move finishes the original.
+    state: { ...next, usage: withUsage(next, { ...usageOf(state, truck), pieceId: newId, moved: false }) },
     events: [{ kind: 'TRANSPORT_REORGANIZED', sequence: 0, pieceIds: [truck.id, newId] }],
   };
 };
