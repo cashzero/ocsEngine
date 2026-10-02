@@ -74,12 +74,12 @@ small, .supporting { font-size: 14px; color: var(--muted); }
 .map-controls button { min-width: 42px; padding: 6px 10px; }
 .map-controls output { min-width: 58px; color: var(--muted); text-align: center; font-size: 14px; }
 .map-viewport { position: relative; min-height: 0; flex: 1; overflow: hidden; background-color: #18231e; background-image: linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px); background-size: 24px 24px; }
+/* The map is one canvas (src/ui/map-canvas.ts) filling its host; popups and controls sit over it. */
+.map-host { position: absolute; inset: 0; }
 #hex-map { display: block; width: 100%; height: 100%; min-height: 420px; touch-action: none; cursor: grab; }
-#hex-map:active { cursor: grabbing; }
-.hidden-count { pointer-events: none; font-family: ui-sans-serif, system-ui, sans-serif; font-size: 13px; fill: #c4cdc0; }
-.hidden-count { fill: #fff0bd; font-weight: 800; }
+#hex-map:active, #hex-map.is-panning { cursor: grabbing !important; }
+.visually-hidden { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 .counter { cursor: pointer; filter: drop-shadow(0 4px 3px rgba(0, 0, 0, .35)); }
-.counter:hover > .counter-paper, .counter.is-selected > .counter-paper { stroke: #fff4cb; stroke-width: 4; }
 .counter-stats { font-weight: 650; }
 .map-legend { position: absolute; left: 12px; right: 12px; bottom: 10px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 7px 10px; border: 1px solid var(--line); border-radius: 6px; color: var(--muted); background: rgba(13, 20, 16, .88); font-size: 13px; pointer-events: none; }
 .legend-chip { padding: 2px 7px; border-radius: 3px; color: #151712; background: var(--player-one); font-weight: 750; }
@@ -263,7 +263,6 @@ small, .supporting { font-size: 14px; color: var(--muted); }
 
 .map-viewport { background-color: #141c18; background-image: radial-gradient(circle at 50% 42%, rgba(120, 128, 96, .16), transparent 64%); }
 /* Printed-map look: paper-toned terrain, a fine ink grid, and artwork that scales with the camera. */
-#hex-map .terrain-layer { filter: drop-shadow(0 4px 14px rgba(0, 0, 0, .55)); }
 /* Ground fills have no outline of their own: stroking each with its own pattern paints over the seams, so a forest or sea reads as one region. */
 .terrain-fill { pointer-events: none; stroke-width: 3; stroke-linejoin: round; transition: filter .12s; }
 .terrain-fill.terrain-clear { fill: url(#terrain-clear); stroke: url(#terrain-clear); }
@@ -272,7 +271,6 @@ small, .supporting { font-size: 14px; color: var(--muted); }
 .terrain-fill.terrain-mountain { fill: url(#terrain-mountain); stroke: url(#terrain-mountain); }
 .terrain-fill.terrain-marsh { fill: url(#terrain-marsh); stroke: url(#terrain-marsh); }
 .terrain-fill.terrain-water { fill: url(#terrain-water); stroke: url(#terrain-water); }
-.terrain-fill.is-dimmed { filter: brightness(.55) saturate(.6); }
 /* Hairline white grid, as printed; region fringes and the coast sit just above it. */
 .grid-layer, .river-layer, .road-layer, .feature-layer { pointer-events: none; }
 .hex-grid { fill: none; stroke: rgba(255, 255, 255, .6); stroke-width: 1; vector-effect: non-scaling-stroke; }
@@ -280,12 +278,8 @@ small, .supporting { font-size: 14px; color: var(--muted); }
 .region-edge.woods { stroke: rgba(63, 98, 52, .85); }
 .region-edge.rough { stroke: rgba(150, 110, 58, .75); }
 .region-edge.mountain { stroke: rgba(92, 76, 56, .8); }
-/* Hex cells only take clicks and show state; the ground is painted by the fill layer beneath them. */
-.hex-cell polygon { fill: transparent; stroke: none; transition: fill .12s, stroke .12s; }
-.hex-cell:hover polygon, .hex-cell.is-selected polygon { fill: rgba(255, 255, 255, .22); stroke: #fff2b8; stroke-width: 3; vector-effect: non-scaling-stroke; }
 .terrain-art, .terrain-art use { pointer-events: none; }
-.hex-coordinate { pointer-events: none; fill: rgba(33, 30, 18, .62); font-family: ui-sans-serif, system-ui, sans-serif; font-weight: 700; paint-order: stroke; stroke: rgba(235, 233, 200, .55); stroke-width: 2px; transition: fill .12s; }
-.hex-cell:hover .hex-coordinate, .hex-cell.is-selected .hex-coordinate { fill: #15120a; stroke: rgba(255, 249, 214, .95); }
+.hex-coordinate { pointer-events: none; fill: rgba(33, 30, 18, .62); font-family: ui-sans-serif, system-ui, sans-serif; font-weight: 700; paint-order: stroke; stroke: rgba(235, 233, 200, .55); stroke-width: 2px; }
 .map-edge, .generated-edge, .river-bank, .road-casing { pointer-events: none; fill: none; stroke-linecap: round; stroke-linejoin: round; }
 .coastline { pointer-events: none; fill: none; stroke: #4f8fb6; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 /* Rivers: a dark blue edge with a pale blue channel. */
@@ -309,8 +303,6 @@ small, .supporting { font-size: 14px; color: var(--muted); }
 .strategic-zone.side-second, .preview-entry.side-second { stroke: var(--player-two); }
 .objective-marker circle, .preview-objective circle { fill: #2a2112; stroke: #ffd766; stroke-width: 1.8; }
 .objective-marker polygon, .preview-objective polygon { fill: #ffd766; }
-.hidden-count circle { fill: #17211d; stroke: #fff0bd; stroke-width: 2; vector-effect: non-scaling-stroke; }
-.hidden-count text { fill: #fff0bd; font-size: 13px; font-weight: 850; }
 .unit-counter { display: block; width: 112px; height: 112px; flex-shrink: 0; overflow: visible; }
 .counter, .unit-counter { color: #151810; }
 .counter text, .unit-counter text { pointer-events: none; fill: #151810; font-family: 'Arial Narrow', Arial, sans-serif; font-size: 14px; font-weight: 700; }
@@ -469,11 +461,6 @@ small, .supporting { font-size: 14px; color: var(--muted); }
 .air-base-disc { fill: #c9b892; stroke: #24271e; stroke-width: 2; }
 .air-base-disc.nation-US { fill: #c9c27e; }
 .air-base-runways { stroke: #24271e; stroke-width: 5; fill: none; }
-.air-zone-mark { fill: rgba(90, 160, 216, .16); stroke: #5aa0d8; stroke-width: 3; stroke-dasharray: 6 4; opacity: .9; pointer-events: none; }
-.air-zone-mark.enemy { fill: rgba(224, 107, 90, .16); stroke: #e06b5a; }
-.trainbusting-mark rect { fill: #3b2c1f; stroke: #f0d48a; stroke-width: 2; }
-.trainbusting-mark text { fill: #f0d48a; font-size: 13px; font-weight: 700; pointer-events: none; }
-.hex-cell.is-air-target polygon { stroke: #5aa0d8; stroke-width: 5; stroke-dasharray: 8 5; }
 .air-panel { display: grid; gap: 8px; }
 .air-panel .chip-row button[aria-pressed="true"] { outline: 2px solid #5aa0d8; }
 .air-log { margin: 0; padding-left: 18px; font-size: 13px; }

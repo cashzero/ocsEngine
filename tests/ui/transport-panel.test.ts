@@ -1,3 +1,4 @@
+// @vitest-environment happy-dom
 import { describe, expect, it, vi } from 'vitest';
 import {
   DEFAULT_NEW_GAME_REQUEST,
@@ -6,7 +7,8 @@ import {
   createNewGameOrchestrator,
   createUiController,
 } from '../../src/index.js';
-import { commandDeckHtml, unitRosterHtml, type DeckState } from '../../src/ui/command-deck.js';
+import type { DeckState } from '../../src/ui/command-deck.js';
+import { commandDeckHtml, unitRosterHtml } from './render-view.js';
 import { counterSvgBody, counterView } from '../../src/ui/counter.js';
 
 // Each test plays a few real actions through the controller, which is slower than a unit test under a parallel run.

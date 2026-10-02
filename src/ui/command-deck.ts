@@ -1,8 +1,16 @@
+import { html, nothing, type TemplateResult } from 'lit-html';
+import { repeat } from 'lit-html/directives/repeat.js';
+import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import type { ProjectedPiece } from '../rules/index.js';
 import type { UiSnapshot } from './model.js';
 import { counterSvg, counterView } from './counter.js';
 import { combatHeadline, combatOutlook, type CombatReport, type FeedEntry, type NarrativeContext } from './narrative.js';
 import { phaseLabel, pieceDefinition, pieceLabel, printedHexLabel } from './presenter.js';
+
+/**
+ * The left command deck, the phase controls and the map popups, as lit-html templates. They carry no handlers: browser.ts
+ * delegates clicks by the ids and data attributes here, so these stay plain views of a UiSnapshot that tests can render.
+ */
 
 export type UnitFilter = 'all' | 'unmoved' | 'moved';
 export interface DeckState {
@@ -19,15 +27,20 @@ export interface DeckState {
   confirmEnd?: boolean;
 }
 
-const esc = (value: unknown): string => String(value).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#039;');
+export type View = TemplateResult | typeof nothing;
+
 const mp = (ticks: unknown): string => typeof ticks === 'number' ? `${Math.round(ticks / 4 * 100) / 100}` : '–';
 const fact = (snapshot: { readonly facts: readonly { readonly key: string; readonly value: unknown }[] } | null | undefined, key: string) =>
   snapshot?.facts.find((entry) => entry.key === key)?.value;
 const percent = (value: number): string => `${Math.round(value * 100)}%`;
+/** Controls stay disabled while the engine works or while the page is about to run a player's action. */
+const busyOf = (snapshot: UiSnapshot, state?: DeckState): boolean => snapshot.busy || state?.working === true;
+const text = (value: unknown): string => value === null || value === undefined ? '' : String(value);
 
-const counterFor = (snapshot: UiSnapshot, piece: ProjectedPiece): string => {
+/** Counter art is markup built (and escaped) by counter.ts. */
+const counterFor = (snapshot: UiSnapshot, piece: ProjectedPiece): View => {
   const definition = pieceDefinition(snapshot.scenario, piece);
-  return definition ? counterSvg(counterView(definition, piece)) : '';
+  return definition ? html`${unsafeHTML(counterSvg(counterView(definition, piece)))}` : nothing;
 };
 
 const isAir = (snapshot: UiSnapshot, piece: ProjectedPiece): boolean => pieceDefinition(snapshot.scenario, piece)?.family === 'AIR';
@@ -51,7 +64,7 @@ const pieceHex = (piece: ProjectedPiece): string => piece.location.kind === 'ON_
   : piece.location.kind === 'ELIMINATED' ? 'eliminated' : 'off map';
 
 /** Replace raw Hex IDs ("q,r") in engine text with printed Hex numbers. */
-export const withHexLabels = (text: string): string => text.replace(/-?\d+,-?\d+/gu, (hexId) => printedHexLabel(hexId));
+export const withHexLabels = (value: string): string => value.replace(/-?\d+,-?\d+/gu, (hexId) => printedHexLabel(hexId));
 
 const statusValue = (piece: ProjectedPiece, id: string): string | number | undefined =>
   piece.statusValues.find(({ statusDefinitionId }) => statusDefinitionId === id)?.value;
@@ -73,17 +86,20 @@ const supplyDetails = (snapshot: UiSnapshot, piece: ProjectedPiece): string => {
   return parts.join(' · ');
 };
 
-const badges = (snapshot: UiSnapshot, piece: ProjectedPiece): string => {
+const badges = (snapshot: UiSnapshot, piece: ProjectedPiece): View => {
   const list: [string, string][] = [];
   if (snapshot.movedThisPhase.has(String(piece.id))) list.push(['moved', 'Moved']);
   if (snapshot.attackedThisPhase.has(String(piece.id))) list.push(['attacked', 'Attacked']);
   if (piece.statuses.includes('status:out-of-supply')) list.push(['oos', 'Out of supply']);
   if (piece.mode === 'DG') list.push(['dg', 'DG']);
-  return list.length === 0 ? '' : `<span class="badges">${list.map(([kind, text]) => `<em class="badge badge-${kind}">${text}</em>`).join('')}</span>`;
+  return list.length === 0 ? nothing : html`<span class="badges">${list.map(([kind, label]) => html`<em class="badge badge-${kind}">${label}</em>`)}</span>`;
 };
 
-const unitRow = (snapshot: UiSnapshot, piece: ProjectedPiece, extra = ''): string => `<button class="deck-unit ${piece.id === snapshot.selection.pieceId ? 'is-selected' : ''}" data-piece="${esc(piece.id)}"${piece.location.kind === 'ON_MAP' ? ` data-hex="${esc(piece.location.hexId)}"` : ''} aria-label="${esc(`${pieceLabel(snapshot.scenario, piece)}, ${pieceHex(piece)}`)}">
-    <span class="deck-unit-art" aria-hidden="true">${counterFor(snapshot, piece)}</span><span>${esc(pieceLabel(snapshot.scenario, piece))}<small>${esc(pieceHex(piece))} · ${esc(statusName(snapshot, piece))}${supplyDetails(snapshot, piece) ? ` · ${esc(supplyDetails(snapshot, piece))}` : ''}${extra}</small>${badges(snapshot, piece)}</span></button>`;
+const unitRow = (snapshot: UiSnapshot, piece: ProjectedPiece, extra = ''): TemplateResult => {
+  const details = supplyDetails(snapshot, piece);
+  return html`<button class="deck-unit ${piece.id === snapshot.selection.pieceId ? 'is-selected' : ''}" data-piece=${piece.id} data-hex=${piece.location.kind === 'ON_MAP' ? piece.location.hexId : nothing} aria-label=${`${pieceLabel(snapshot.scenario, piece)}, ${pieceHex(piece)}`}>
+    <span class="deck-unit-art" aria-hidden="true">${counterFor(snapshot, piece)}</span><span>${pieceLabel(snapshot.scenario, piece)}<small>${pieceHex(piece)} · ${statusName(snapshot, piece)}${details ? ` · ${details}` : ''}${extra}</small>${badges(snapshot, piece)}</span></button>`;
+};
 
 /** What the current step asks of the player, in one sentence. */
 export const stepObjective = (snapshot: UiSnapshot): string => {
@@ -104,17 +120,17 @@ export const stepObjective = (snapshot: UiSnapshot): string => {
   }
 };
 
-const selectedCard = (snapshot: UiSnapshot): string => {
+const selectedCard = (snapshot: UiSnapshot): TemplateResult => {
   const piece = snapshot.selectedPiece;
   if (!piece) {
     const hex = snapshot.selection.hexId;
-    return `<div><h2>${hex ? `Hex ${esc(printedHexLabel(hex))}` : 'No unit selected'}</h2><p>${hex ? 'No unit of yours here.' : 'Click one of your units on the map, or open All units.'}</p></div>`;
+    return html`<div><h2>${hex ? `Hex ${printedHexLabel(hex)}` : 'No unit selected'}</h2><p>${hex ? 'No unit of yours here.' : 'Click one of your units on the map, or open All units.'}</p></div>`;
   }
   const own = piece.ownerId === snapshot.view.playerId;
   if (isAir(snapshot, piece) || isAirBase(snapshot, piece)) {
     const step = pieceDefinition(snapshot.scenario, piece)?.faces[0]?.steps.find(({ remainingSteps }) => remainingSteps === (piece.remainingSteps ?? 2));
-    return `${counterFor(snapshot, piece)}<div><strong>${esc(pieceLabel(snapshot.scenario, piece))}</strong>
-      <p>${esc(pieceHex(piece))} · ${esc(statusName(snapshot, piece))}</p>
+    return html`${counterFor(snapshot, piece)}<div><strong>${pieceLabel(snapshot.scenario, piece)}</strong>
+      <p>${pieceHex(piece)} · ${statusName(snapshot, piece)}</p>
       <small>${isAir(snapshot, piece) ? `Range ${step?.range ?? '–'} hexes · flies missions from its Air Base (14.2)` : 'Holds 4 + Level Active aircraft; refits 2 × Level for 1T (15.0-15.1)'}</small></div>`;
   }
   const arriving = snapshot.arrivals.some(({ pieceId }) => pieceId === piece.id);
@@ -127,14 +143,14 @@ const selectedCard = (snapshot: UiSnapshot): string => {
         : needsFuel ? 'Needs fuel before it can move (12.5)'
           : snapshot.reachable.size > 0 ? `${mp(snapshot.remainingTicks)} MP left · ${snapshot.reachable.size} hexes reachable`
             : snapshot.movedThisPhase.has(String(piece.id)) ? 'Already moved this phase' : 'Cannot move in this step';
-  return `${counterFor(snapshot, piece)}<div><strong>${esc(pieceLabel(snapshot.scenario, piece))}</strong>
-    <p>${esc(pieceHex(piece))} · ${esc(statusName(snapshot, piece))}${details ? ` · ${esc(details)}` : ''}</p>
-    <small>${esc(status)}${piece.statuses.includes('status:out-of-supply') ? ' · Out of supply' : ''}</small></div>`;
+  return html`${counterFor(snapshot, piece)}<div><strong>${pieceLabel(snapshot.scenario, piece)}</strong>
+    <p>${pieceHex(piece)} · ${statusName(snapshot, piece)}${details ? ` · ${details}` : ''}</p>
+    <small>${status}${piece.statuses.includes('status:out-of-supply') ? ' · Out of supply' : ''}</small></div>`;
 };
 
-const explanationBlock = (explanation: NonNullable<UiSnapshot['movePreview']>['explanation'] | null): string => {
-  if (!explanation || explanation.allowed) return '';
-  return `<ul class="rule-blockers">${explanation.reasons.filter(({ allowed }) => !allowed).map(({ message, rule }) => `<li>${esc(withHexLabels(message))} <cite>${esc(rule)}</cite></li>`).join('')}</ul>`;
+const explanationBlock = (explanation: NonNullable<UiSnapshot['movePreview']>['explanation'] | null): View => {
+  if (!explanation || explanation.allowed) return nothing;
+  return html`<ul class="rule-blockers">${explanation.reasons.filter(({ allowed }) => !allowed).map(({ message, rule }) => html`<li>${withHexLabels(message)} <cite>${rule}</cite></li>`)}</ul>`;
 };
 
 const narrativeContext = (snapshot: UiSnapshot): NarrativeContext => ({
@@ -144,18 +160,18 @@ const narrativeContext = (snapshot: UiSnapshot): NarrativeContext => ({
 });
 
 /** A resolved (or withdrawn) combat, shown to both players in plain language. */
-export const combatCard = (snapshot: UiSnapshot, report: CombatReport, dismissId = ''): string => {
+export const combatCard = (snapshot: UiSnapshot, report: CombatReport, dismissId = ''): TemplateResult => {
   const rolls = [report.surpriseRoll !== null ? `surprise roll ${report.surpriseRoll}` : '', report.roll !== null ? `${report.kind === 'BARRAGE' ? 'barrage' : 'combat'} roll ${report.roll}` : ''].filter(Boolean).join(' · ');
-  return `<article class="combat-card status-${report.status.toLowerCase()}">
-    <header><strong>${esc(combatHeadline(report, narrativeContext(snapshot)))}</strong></header>
-    ${report.result ? `<p class="combat-result"><b>${esc(report.result)}</b>${rolls ? ` <small>${esc(rolls)}</small>` : ''}</p>` : ''}
-    <p>${esc(report.explanation || 'In progress.')}</p>
-    ${report.outcomes.length > 0 ? `<ul>${report.outcomes.map((line) => `<li>${esc(line)}</li>`).join('')}</ul>` : report.status === 'RESOLVED' ? '<p class="hint">No unit was lost or moved.</p>' : ''}
-    ${dismissId ? `<button id="${dismissId}">OK</button>` : ''}
+  return html`<article class="combat-card status-${report.status.toLowerCase()}">
+    <header><strong>${combatHeadline(report, narrativeContext(snapshot))}</strong></header>
+    ${report.result ? html`<p class="combat-result"><b>${report.result}</b>${rolls ? html` <small>${rolls}</small>` : nothing}</p>` : nothing}
+    <p>${report.explanation || 'In progress.'}</p>
+    ${report.outcomes.length > 0 ? html`<ul>${report.outcomes.map((line) => html`<li>${line}</li>`)}</ul>` : report.status === 'RESOLVED' ? html`<p class="hint">No unit was lost or moved.</p>` : nothing}
+    ${dismissId ? html`<button id=${dismissId}>OK</button>` : nothing}
   </article>`;
 };
 
-const feedEntryHtml = (entry: FeedEntry & { readonly repeat?: number }): string => `<article class="deck-event" title="${esc(entry.technical)}"><strong>${esc(entry.title)}${(entry.repeat ?? 1) > 1 ? ` <small>×${entry.repeat}</small>` : ''}</strong>${entry.lines.map((line) => `<p>${esc(line)}</p>`).join('')}</article>`;
+const feedEntry = (entry: FeedEntry & { readonly repeat?: number }): TemplateResult => html`<article class="deck-event" title=${entry.technical}><strong>${entry.title}${(entry.repeat ?? 1) > 1 ? html` <small>×${entry.repeat}</small>` : nothing}</strong>${entry.lines.map((line) => html`<p>${line}</p>`)}</article>`;
 
 /** Fold consecutive entries that say the same thing and carry no detail ("answered a decision" x4). */
 const collapse = (entries: readonly FeedEntry[]): (FeedEntry & { repeat: number })[] => entries.reduce<(FeedEntry & { repeat: number })[]>((folded, entry) => {
@@ -165,21 +181,21 @@ const collapse = (entries: readonly FeedEntry[]): (FeedEntry & { repeat: number 
   return folded;
 }, []);
 
-const awayPanel = (snapshot: UiSnapshot): string => {
+const awayPanel = (snapshot: UiSnapshot): View => {
   const report = snapshot.awayReport;
-  if (!report) return '';
+  if (!report) return nothing;
   const entries = report.entries.filter((entry) => entry.lines.length > 0 || !entry.title.startsWith('An enemy unit moved'));
   const moves = report.entries.length - entries.length;
-  return `<section class="deck-context away-report" aria-label="While you were away">
+  return html`<section class="deck-context away-report" aria-label="While you were away">
     <p class="eyebrow">WHILE YOU WERE AWAY</p>
-    ${report.combats.map((combat) => combatCard(snapshot, combat)).join('')}
-    ${moves > 0 ? `<p class="hint">${moves} enemy move${moves === 1 ? '' : 's'} (see the map).</p>` : ''}
-    <div class="away-entries">${collapse(entries).map(feedEntryHtml).join('')}</div>
+    ${report.combats.map((combat) => combatCard(snapshot, combat))}
+    ${moves > 0 ? html`<p class="hint">${moves} enemy move${moves === 1 ? '' : 's'} (see the map).</p>` : nothing}
+    <div class="away-entries">${collapse(entries).map(feedEntry)}</div>
     <button class="primary" id="dismiss-away">Got it</button>
   </section>`;
 };
 
-const draftPanel = (snapshot: UiSnapshot): string => {
+const draftPanel = (snapshot: UiSnapshot, state: DeckState): TemplateResult => {
   const draft = snapshot.draft!;
   const units = draft.eligibleIds.map((id) => snapshot.view.projection?.stacks.flatMap(({ pieces }) => pieces).find((piece) => piece.id === id)).filter((piece): piece is ProjectedPiece => piece !== undefined);
   const facts = draft.explanation;
@@ -187,126 +203,126 @@ const draftPanel = (snapshot: UiSnapshot): string => {
   const outlook = draft.kind === 'BARRAGE' ? null
     : combatOutlook(String(fact(facts, 'combat.line') ?? ''), String(fact(facts, 'combat.column') ?? ''), Number(fact(facts, 'combat.drm') ?? 0));
   const rows = draft.kind === 'BARRAGE'
-    ? `<dl class="combat-facts"><div><dt>Barrage strength</dt><dd>${esc(fact(facts, 'barrage.strength') ?? '–')}</dd></div>
-        <div><dt>Shifts</dt><dd>${esc(fact(facts, 'barrage.shifts') || 'none')}</dd></div>
+    ? html`<dl class="combat-facts"><div><dt>Barrage strength</dt><dd>${text(fact(facts, 'barrage.strength') ?? '–')}</dd></div>
+        <div><dt>Shifts</dt><dd>${text(fact(facts, 'barrage.shifts') || 'none')}</dd></div>
         <div><dt>Spotter</dt><dd>${fact(facts, 'barrage.spotter') ? 'yes' : 'none (3 left)'}</dd></div>
-        <div><dt>Supply</dt><dd>${esc(fact(facts, 'barrage.supplyTokens') ?? '–')}T</dd></div></dl>`
-    : `<dl class="combat-facts"><div><dt>Strength</dt><dd>${esc(fact(facts, 'combat.attackerStrength') ?? '–')} : ${esc(fact(facts, 'combat.defenderStrength') ?? '?')}</dd></div>
-        <div><dt>Odds</dt><dd>${esc(fact(facts, 'combat.odds') ?? '–')} (${esc(String(fact(facts, 'combat.line') ?? '').replace('_', ' ').toLowerCase())})</dd></div>
-        <div><dt>If defender withholds supply</dt><dd>${esc(fact(facts, 'combat.oddsUnsupplied') ?? '–')}</dd></div>
-        <div><dt>AR DRM</dt><dd>${esc(fact(facts, 'combat.attackerActionRating') ?? '–')} − ${esc(fact(facts, 'combat.defenderActionRating') ?? '?')} = ${esc(fact(facts, 'combat.drm') ?? '–')}</dd></div>
-        <div><dt>Your supply cost</dt><dd>${esc(fact(facts, 'combat.attackerSupplyTokens') ?? '–')}T</dd></div></dl>`;
-  const outlookHtml = draft.kind === 'BARRAGE' ? ''
-    : outlook ? `<p class="outlook${outlook.attackerStep > outlook.defenderHurt ? ' is-poor' : ''}">Before Surprise: you lose a mandatory step on ${percent(outlook.attackerStep)} of rolls (a loss or option on ${percent(outlook.attackerHurt)}); the defender loses, retreats or is DG on ${percent(outlook.defenderHurt)}${outlook.exploit > 0 ? `; exploitation on ${percent(outlook.exploit)}` : ''}.</p>`
-      : facts?.allowed ? '<p class="outlook is-poor">These odds are off the Combat Table columns.</p>' : '';
+        <div><dt>Supply</dt><dd>${text(fact(facts, 'barrage.supplyTokens') ?? '–')}T</dd></div></dl>`
+    : html`<dl class="combat-facts"><div><dt>Strength</dt><dd>${text(fact(facts, 'combat.attackerStrength') ?? '–')} : ${text(fact(facts, 'combat.defenderStrength') ?? '?')}</dd></div>
+        <div><dt>Odds</dt><dd>${text(fact(facts, 'combat.odds') ?? '–')} (${String(fact(facts, 'combat.line') ?? '').replace('_', ' ').toLowerCase()})</dd></div>
+        <div><dt>If defender withholds supply</dt><dd>${text(fact(facts, 'combat.oddsUnsupplied') ?? '–')}</dd></div>
+        <div><dt>AR DRM</dt><dd>${text(fact(facts, 'combat.attackerActionRating') ?? '–')} − ${text(fact(facts, 'combat.defenderActionRating') ?? '?')} = ${text(fact(facts, 'combat.drm') ?? '–')}</dd></div>
+        <div><dt>Your supply cost</dt><dd>${text(fact(facts, 'combat.attackerSupplyTokens') ?? '–')}T</dd></div></dl>`;
+  const outlookView = draft.kind === 'BARRAGE' ? nothing
+    : outlook ? html`<p class="outlook${outlook.attackerStep > outlook.defenderHurt ? ' is-poor' : ''}">Before Surprise: you lose a mandatory step on ${percent(outlook.attackerStep)} of rolls (a loss or option on ${percent(outlook.attackerHurt)}); the defender loses, retreats or is DG on ${percent(outlook.defenderHurt)}${outlook.exploit > 0 ? `; exploitation on ${percent(outlook.exploit)}` : ''}.</p>`
+      : facts?.allowed ? html`<p class="outlook is-poor">These odds are off the Combat Table columns.</p>` : nothing;
   const participants = units.map((piece) => {
     const checked = draft.selectedIds.includes(piece.id);
-    return `<label class="participant"><input type="checkbox" data-participant="${esc(piece.id)}" ${checked ? 'checked' : ''}>
-      ${counterFor(snapshot, piece)}<span>${esc(pieceLabel(snapshot.scenario, piece))}<small>${esc(pieceHex(piece))}</small></span>
-      ${draft.kind !== 'BARRAGE' && checked ? `<input type="radio" name="lead" data-lead="${esc(piece.id)}" ${draft.leadId === piece.id ? 'checked' : ''} aria-label="Lead with this unit's Action Rating">` : ''}</label>`;
-  }).join('');
+    return html`<label class="participant"><input type="checkbox" data-participant=${piece.id} .checked=${checked}>
+      ${counterFor(snapshot, piece)}<span>${pieceLabel(snapshot.scenario, piece)}<small>${pieceHex(piece)}</small></span>
+      ${draft.kind !== 'BARRAGE' && checked ? html`<input type="radio" name="lead" data-lead=${piece.id} .checked=${draft.leadId === piece.id} aria-label="Lead with this unit's Action Rating">` : nothing}</label>`;
+  });
   const note = draft.kind === 'OVERRUN' ? 'Overrun costs 3 MP; if it succeeds the units must enter the hex (8.0).'
     : draft.kind === 'BARRAGE' ? 'Tick the artillery that fires.' : 'Tick the attacking units; the radio button picks the unit whose Action Rating leads.';
-  return `<section class="deck-context combat-draft" aria-label="${title} plan">
-    <h2>${title} ${esc(printedHexLabel(draft.targetHexId))}</h2>
-    ${rows}${outlookHtml}
-    <p class="hint">${esc(note)} Supply is paid from dumps in reach; if several can pay you will choose, or pay automatically.</p>
-    <div class="participants">${participants || '<p>No eligible units.</p>'}</div>
+  return html`<section class="deck-context combat-draft" aria-label="${title} plan">
+    <h2>${title} ${printedHexLabel(draft.targetHexId)}</h2>
+    ${rows}${outlookView}
+    <p class="hint">${note} Supply is paid from dumps in reach; if several can pay you will choose, or pay automatically.</p>
+    <div class="participants">${participants.length > 0 ? participants : html`<p>No eligible units.</p>`}</div>
     ${explanationBlock(facts)}
-    <div class="button-grid"><button id="cancel-draft">Cancel</button><button class="primary" id="declare-draft" ${facts?.allowed && !snapshot.busy ? '' : 'disabled'}>${title}</button></div>
+    <div class="button-grid"><button id="cancel-draft">Cancel</button><button class="primary" id="declare-draft" ?disabled=${!(facts?.allowed && !busyOf(snapshot, state))}>${title}</button></div>
   </section>`;
 };
 
-const airMissionSummary = (snapshot: UiSnapshot): string => {
+const airMissionSummary = (snapshot: UiSnapshot): View => {
   const air = snapshot.view.projection?.combat?.air;
-  if (!air) return '';
-  return `<div class="combat-summary"><strong>${esc(air.mission)} · ${esc(printedHexLabel(snapshot.view.projection!.combat!.targetHexId))}</strong>
-    <ol class="air-log">${air.log.map((line) => `<li>${esc(withHexLabels(line))}</li>`).join('')}</ol></div>`;
+  if (!air) return nothing;
+  return html`<div class="combat-summary"><strong>${air.mission} · ${printedHexLabel(snapshot.view.projection!.combat!.targetHexId)}</strong>
+    <ol class="air-log">${air.log.map((line) => html`<li>${withHexLabels(line)}</li>`)}</ol></div>`;
 };
 
 const pieceById = (snapshot: UiSnapshot, id: string): ProjectedPiece | undefined =>
   snapshot.view.projection?.stacks.flatMap(({ pieces }) => pieces).find((piece) => piece.id === id);
 
-const airDraftPanel = (snapshot: UiSnapshot): string => {
+const airDraftPanel = (snapshot: UiSnapshot, state: DeckState): TemplateResult => {
   const draft = snapshot.air.draft!;
   const facts = draft.explanation;
   if (!draft.targetHexId) {
-    return `<section class="deck-context air-panel" aria-label="${esc(draft.label)} plan"><h2>${esc(draft.label)}</h2>
+    return html`<section class="deck-context air-panel" aria-label="${draft.label} plan"><h2>${draft.label}</h2>
       <p class="hint">${snapshot.air.targetHexes.length > 0 ? `Click one of the ${snapshot.air.targetHexes.length} highlighted hexes to choose the mission hex.` : 'No target is in range of a ready aircraft.'}</p>
       <div class="button-grid"><button id="cancel-air-mission">Cancel</button></div></section>`;
   }
   const targetChoice = draft.targetOptions.length > 1
-    ? `<div class="chip-row" role="group" aria-label="Barrage target">${draft.targetOptions.map((target) => `<button data-air-target="${target}" aria-pressed="${draft.target === target}">${target === 'AIR_BASE' ? 'Air Base (Facility Table)' : 'Combat units'}</button>`).join('')}</div>` : '';
-  const aircraft = draft.eligibleIds.map((id) => {
+    ? html`<div class="chip-row" role="group" aria-label="Barrage target">${draft.targetOptions.map((target) => html`<button data-air-target=${target} aria-pressed=${String(draft.target === target)}>${target === 'AIR_BASE' ? 'Air Base (Facility Table)' : 'Combat units'}</button>`)}</div>` : nothing;
+  const aircraft = draft.eligibleIds.flatMap((id) => {
     const piece = pieceById(snapshot, id);
-    if (!piece) return '';
-    return `<label class="participant"><input type="${draft.maximum === 1 ? 'radio' : 'checkbox'}" name="air-aircraft" data-air-aircraft="${esc(id)}" ${draft.selectedIds.includes(id) ? 'checked' : ''}>
-      ${counterFor(snapshot, piece)}<span>${esc(pieceLabel(snapshot.scenario, piece))}<small>${esc(pieceHex(piece))}</small></span></label>`;
-  }).join('');
-  const rows = [
+    if (!piece) return [];
+    return [html`<label class="participant"><input type=${draft.maximum === 1 ? 'radio' : 'checkbox'} name="air-aircraft" data-air-aircraft=${id} .checked=${draft.selectedIds.includes(id)}>
+      ${counterFor(snapshot, piece)}<span>${pieceLabel(snapshot.scenario, piece)}<small>${pieceHex(piece)}</small></span></label>`];
+  });
+  const rows: [string, unknown][] = [
     ['Mission hex', printedHexLabel(draft.targetHexId)],
-    ...(fact(facts, 'air.finalColumn') !== undefined ? [['Table column', `${fact(facts, 'air.initialColumn') ?? ''}${fact(facts, 'air.initialColumn') ? ' → ' : ''}${fact(facts, 'air.finalColumn')}`]] : []),
-    ...(fact(facts, 'air.shifts') ? [['Shifts', fact(facts, 'air.shifts')]] : []),
-    ...(['BARRAGE', 'HIP_SHOOT', 'TRAINBUSTING'].includes(draft.mission) ? [['Barrage strength', fact(facts, 'air.strength') ?? '–']] : []),
-    ['Flak', fact(facts, 'air.flakSubject') ? `+${fact(facts, 'air.flakModifier') ?? 0}${fact(facts, 'air.flakReasons') ? ` (${fact(facts, 'air.flakReasons')})` : ''}; 11+ on 2d6 costs a step` : 'not rolled for this mission'],
+    ...(fact(facts, 'air.finalColumn') !== undefined ? [['Table column', `${text(fact(facts, 'air.initialColumn') ?? '')}${fact(facts, 'air.initialColumn') ? ' → ' : ''}${text(fact(facts, 'air.finalColumn'))}`] as [string, unknown]] : []),
+    ...(fact(facts, 'air.shifts') ? [['Shifts', fact(facts, 'air.shifts')] as [string, unknown]] : []),
+    ...(['BARRAGE', 'HIP_SHOOT', 'TRAINBUSTING'].includes(draft.mission) ? [['Barrage strength', fact(facts, 'air.strength') ?? '–'] as [string, unknown]] : []),
+    ['Flak', fact(facts, 'air.flakSubject') ? `+${text(fact(facts, 'air.flakModifier') ?? 0)}${fact(facts, 'air.flakReasons') ? ` (${text(fact(facts, 'air.flakReasons'))})` : ''}; 11+ on 2d6 costs a step` : 'not rolled for this mission'],
     ['Enemy Patrol Zone', !fact(facts, 'air.enemyPatrolZone') ? 'no' : fact(facts, 'air.flakSubject') ? 'yes: an enemy Fighter may intercept' : 'yes (this mission cannot be intercepted)'],
   ];
-  return `<section class="deck-context air-panel combat-draft" aria-label="${esc(draft.label)} plan">
-    <h2>${esc(draft.label)} ${esc(printedHexLabel(draft.targetHexId))}</h2>${targetChoice}
-    <dl class="combat-facts">${rows.map(([label, value]) => `<div><dt>${esc(label)}</dt><dd>${esc(value)}</dd></div>`).join('')}</dl>
+  return html`<section class="deck-context air-panel combat-draft" aria-label="${draft.label} plan">
+    <h2>${draft.label} ${printedHexLabel(draft.targetHexId)}</h2>${targetChoice}
+    <dl class="combat-facts">${rows.map(([label, value]) => html`<div><dt>${label}</dt><dd>${text(value)}</dd></div>`)}</dl>
     <p class="hint">${draft.maximum === 1 ? 'Choose the aircraft that flies.' : `Tick up to ${draft.maximum} aircraft; they may come from different bases.`} Every mission aircraft becomes Inactive at a base afterwards${draft.mission === 'BASE_TRANSFER' ? ' (a Fighter staying within range stays Active)' : ''}.</p>
-    <div class="participants">${aircraft || '<p>No eligible aircraft.</p>'}</div>
+    <div class="participants">${aircraft.length > 0 ? aircraft : html`<p>No eligible aircraft.</p>`}</div>
     ${explanationBlock(facts)}
-    <div class="button-grid"><button id="cancel-air-mission">Cancel</button><button class="primary" id="declare-air-mission" ${facts?.allowed && !snapshot.busy ? '' : 'disabled'}>Fly ${esc(draft.label)}</button></div>
+    <div class="button-grid"><button id="cancel-air-mission">Cancel</button><button class="primary" id="declare-air-mission" ?disabled=${!(facts?.allowed && !busyOf(snapshot, state))}>Fly ${draft.label}</button></div>
   </section>`;
 };
 
-const refitPanel = (snapshot: UiSnapshot): string => snapshot.air.refits.length === 0 ? '' : `<div class="air-panel"><strong>Aircraft refit</strong>
+const refitPanel = (snapshot: UiSnapshot, state: DeckState): View => snapshot.air.refits.length === 0 ? nothing : html`<div class="air-panel"><strong>Aircraft refit</strong>
   <p class="hint">Each Air Base refits once: up to 2 × Level Inactive aircraft for 1T drawn or thrown to the base (15.1).</p>
-  ${snapshot.air.refits.map((refit) => `<div class="refit-base"><small>Air Base ${esc(printedHexLabel(refit.hexId))} · up to ${refit.capacity}</small>
-    <div class="participants">${refit.inactiveIds.map((id) => { const piece = pieceById(snapshot, id); return piece ? `<label class="participant"><input type="checkbox" data-refit-base="${esc(refit.baseId)}" data-refit-aircraft="${esc(id)}" ${refit.selectedIds.includes(id) ? 'checked' : ''}>${counterFor(snapshot, piece)}<span>${esc(pieceLabel(snapshot.scenario, piece))}</span></label>` : ''; }).join('')}</div>
+  ${snapshot.air.refits.map((refit) => html`<div class="refit-base"><small>Air Base ${printedHexLabel(refit.hexId)} · up to ${refit.capacity}</small>
+    <div class="participants">${refit.inactiveIds.map((id) => { const piece = pieceById(snapshot, id); return piece ? html`<label class="participant"><input type="checkbox" data-refit-base=${refit.baseId} data-refit-aircraft=${id} .checked=${refit.selectedIds.includes(id)}>${counterFor(snapshot, piece)}<span>${pieceLabel(snapshot.scenario, piece)}</span></label>` : nothing; })}</div>
     ${explanationBlock(refit.explanation)}
-    <button class="primary" data-refit="${esc(refit.baseId)}" ${refit.explanation?.allowed && !snapshot.busy ? '' : 'disabled'}>Refit ${refit.selectedIds.length} for 1T</button></div>`).join('')}</div>`;
+    <button class="primary" data-refit=${refit.baseId} ?disabled=${!(refit.explanation?.allowed && !busyOf(snapshot, state))}>Refit ${refit.selectedIds.length} for 1T</button></div>`)}</div>`;
 
-const airMissionButtons = (snapshot: UiSnapshot): string => snapshot.air.missions.length === 0 ? '' : `<div class="air-panel"><strong>Air missions</strong>
-  <div class="chip-row">${snapshot.air.missions.map(({ mission, label, available }) => `<button data-air-mission="${mission}" ${available ? '' : 'disabled'}>${esc(label)}</button>`).join('')}</div></div>`;
+const airMissionButtons = (snapshot: UiSnapshot): View => snapshot.air.missions.length === 0 ? nothing : html`<div class="air-panel"><strong>Air missions</strong>
+  <div class="chip-row">${snapshot.air.missions.map(({ mission, label, available }) => html`<button data-air-mission=${mission} ?disabled=${!available}>${label}</button>`)}</div></div>`;
 
-const decisionPanel = (snapshot: UiSnapshot): string => {
+const decisionPanel = (snapshot: UiSnapshot): TemplateResult => {
   const decision = snapshot.decision!;
   const combat = snapshot.view.projection?.combat;
   const sheet = snapshot.combatSheet;
   const what = combat ? (combat.kind === 'AIR_MISSION' ? 'Air mission' : combat.kind === 'BARRAGE' ? 'Barrage' : combat.kind === 'OVERRUN' ? 'Overrun' : 'Attack') : '';
-  const summary = combat?.kind === 'AIR_MISSION' ? airMissionSummary(snapshot) : combat ? `<p class="combat-summary">${what} on ${esc(printedHexLabel(combat.targetHexId))} · ${esc(combat.attackerStrength)}${combat.defenderStrength === null ? '' : ` : ${esc(combat.defenderStrength)}`} · ${esc(combat.odds)}${combat.drm === null ? '' : ` · DRM ${combat.drm >= 0 ? '+' : ''}${combat.drm}`}${combat.result ? ` · <strong>${esc(combat.result)}</strong>` : ''}${combat.rollTotal ? ` (roll ${combat.rollTotal}${combat.shiftDie ? `, surprise ${combat.shiftDie} col` : ''})` : ''}</p>` : '';
-  const steps = sheet ? `<ol class="combat-steps" aria-label="Combat steps">${sheet.steps.map(({ label, status }) => `<li class="is-${status}"${status === 'current' ? ' aria-current="step"' : ''}>${esc(label)}</li>`).join('')}</ol>` : '';
-  const answers = sheet && sheet.answers.length > 0 ? `<ul class="combat-answers">${sheet.answers.map((answer) => `<li>✓ ${esc(answer)}</li>`).join('')}</ul>` : '';
+  const summary = combat?.kind === 'AIR_MISSION' ? airMissionSummary(snapshot) : combat ? html`<p class="combat-summary">${what} on ${printedHexLabel(combat.targetHexId)} · ${combat.attackerStrength}${combat.defenderStrength === null ? '' : ` : ${combat.defenderStrength}`} · ${combat.odds}${combat.drm === null ? '' : ` · DRM ${combat.drm >= 0 ? '+' : ''}${combat.drm}`}${combat.result ? html` · <strong>${combat.result}</strong>` : nothing}${combat.rollTotal ? ` (roll ${combat.rollTotal}${combat.shiftDie ? `, surprise ${combat.shiftDie} col` : ''})` : ''}</p>` : nothing;
+  const steps = sheet ? html`<ol class="combat-steps" aria-label="Combat steps">${sheet.steps.map(({ label, status }) => html`<li class="is-${status}" aria-current=${status === 'current' ? 'step' : nothing}>${label}</li>`)}</ol>` : nothing;
+  const answers = sheet && sheet.answers.length > 0 ? html`<ul class="combat-answers">${sheet.answers.map((answer) => html`<li>✓ ${answer}</li>`)}</ul>` : nothing;
   const hexChoice = decision.options.some(({ hexId }) => hexId !== null);
-  const title = sheet ? `${sheet.role === 'DEFENDER' ? 'Defend' : what} ${combat ? esc(printedHexLabel(combat.targetHexId)) : ''}` : 'Your decision';
-  return `<section class="deck-context decision-panel" aria-label="Decision">
-    <p class="eyebrow">${esc(title.toUpperCase())}</p>${steps}${summary}${answers}
-    <h2>${esc(withHexLabels(decision.prompt))}</h2>
-    ${hexChoice ? '<p class="hint">Click a highlighted hex on the map, or choose below.</p>' : ''}
-    ${snapshot.autoPay ? '<button class="primary" id="auto-pay">Pay automatically from the largest dumps</button>' : ''}
-    <div class="decision-options">${decision.options.map(({ id, label }) => `<button class="decision-option" data-choice="${esc(id)}">${esc(withHexLabels(label))}</button>`).join('')}</div>
+  const title = sheet ? `${sheet.role === 'DEFENDER' ? 'Defend' : what} ${combat ? printedHexLabel(combat.targetHexId) : ''}` : 'Your decision';
+  return html`<section class="deck-context decision-panel" aria-label="Decision">
+    <p class="eyebrow">${title.toUpperCase()}</p>${steps}${summary}${answers}
+    <h2>${withHexLabels(decision.prompt)}</h2>
+    ${hexChoice ? html`<p class="hint">Click a highlighted hex on the map, or choose below.</p>` : nothing}
+    ${snapshot.autoPay ? html`<button class="primary" id="auto-pay">Pay automatically from the largest dumps</button>` : nothing}
+    <div class="decision-options">${decision.options.map(({ id, label }) => html`<button class="decision-option" data-choice=${id}>${withHexLabels(label)}</button>`)}</div>
   </section>`;
 };
 
-const resultPanel = (snapshot: UiSnapshot): string => snapshot.resultCard
-  ? `<section class="deck-context result-card" aria-label="Combat result"><p class="eyebrow">COMBAT RESULT</p>${combatCard(snapshot, snapshot.resultCard, 'dismiss-result')}</section>` : '';
+const resultPanel = (snapshot: UiSnapshot): View => snapshot.resultCard
+  ? html`<section class="deck-context result-card" aria-label="Combat result"><p class="eyebrow">COMBAT RESULT</p>${combatCard(snapshot, snapshot.resultCard, 'dismiss-result')}</section>` : nothing;
 
 /**
  * Work that interrupts the tabs: a hand-over, a pending decision or an open attack/air plan. It takes
  * the whole body of the deck until it is finished, then the player returns to the tab they were on.
  * It is drawn first: what the player must answer is never pushed below the fold by the report of what happened.
  */
-const interruptPanel = (snapshot: UiSnapshot): string => {
+const interruptPanel = (snapshot: UiSnapshot, state: DeckState): View => {
   if (snapshot.view.metadata.lifecycle === 'ACTIVE' && snapshot.handoff && !snapshot.decision) {
-    return `<section class="deck-context handoff-panel"><p class="eyebrow">HAND OVER</p><h2>${esc(snapshot.handoff.toLabel)} to act</h2><p>${esc(snapshot.handoff.reason)}</p>
-      <button id="begin-required-handoff" class="primary wide">Hand the screen to ${esc(snapshot.handoff.toLabel)}</button></section>`;
+    return html`<section class="deck-context handoff-panel"><p class="eyebrow">HAND OVER</p><h2>${snapshot.handoff.toLabel} to act</h2><p>${snapshot.handoff.reason}</p>
+      <button id="begin-required-handoff" class="primary wide">Hand the screen to ${snapshot.handoff.toLabel}</button></section>`;
   }
   if (snapshot.decision) return decisionPanel(snapshot);
-  if (snapshot.draft) return draftPanel(snapshot);
-  if (snapshot.air.draft) return airDraftPanel(snapshot);
-  return '';
+  if (snapshot.draft) return draftPanel(snapshot, state);
+  if (snapshot.air.draft) return airDraftPanel(snapshot, state);
+  return nothing;
 };
 
 const phaseKey = (snapshot: UiSnapshot): string => {
@@ -362,115 +378,119 @@ export const syncDeckTab = (snapshot: UiSnapshot, state: DeckState): void => {
   state.lastPiece = piece;
 };
 
-const arrivalsTab = (snapshot: UiSnapshot): string => {
-  if (snapshot.arrivals.length === 0) return '<p class="hint">All reinforcements are placed.</p>';
+const arrivalsTab = (snapshot: UiSnapshot): TemplateResult => {
+  if (snapshot.arrivals.length === 0) return html`<p class="hint">All reinforcements are placed.</p>`;
   const pieces = snapshot.view.projection?.stacks.flatMap(({ pieces: stackPieces }) => stackPieces) ?? [];
-  return `<div class="arrivals"><strong>Reinforcements arriving (${snapshot.arrivals.length})</strong><p class="hint">Select a unit, then click a blue entry hex on the map.</p>${snapshot.arrivals.map(({ pieceId }) => {
+  return html`<div class="arrivals"><strong>Reinforcements arriving (${snapshot.arrivals.length})</strong><p class="hint">Select a unit, then click a blue entry hex on the map.</p>${snapshot.arrivals.map(({ pieceId }) => {
     const piece = pieces.find(({ id }) => id === pieceId);
-    return piece ? unitRow(snapshot, piece, ' · arriving') : '';
-  }).join('')}</div>`;
+    return piece ? unitRow(snapshot, piece, ' · arriving') : nothing;
+  })}</div>`;
 };
 
-const supplyTab = (snapshot: UiSnapshot): string => {
-  const parts: string[] = [];
+const actionButtons = (entries: readonly { readonly key: string; readonly label: string }[]): TemplateResult =>
+  html`<div class="action-list">${entries.map(({ key, label }) => html`<button data-unit-action=${key}>${withHexLabels(label)}</button>`)}</div>`;
+
+const supplyTab = (snapshot: UiSnapshot): TemplateResult => {
+  const parts: View[] = [];
   if (snapshot.stepActions.length > 0) {
     const recovery = snapshot.stepActions.filter(({ group }) => group === 'SUPPLY');
     const trace = snapshot.stepActions.filter(({ group }) => group === 'TRACE');
     const breakout = snapshot.stepActions.filter(({ group }) => group === 'BREAKOUT');
-    const block = (title: string, hint: string, entries: typeof recovery) => entries.length === 0 ? ''
-      : `<div class="step-actions"><strong>${title}</strong><p class="hint">${hint}</p><div class="action-list">${entries.map(({ key, label }) => `<button data-unit-action="${esc(key)}">${esc(withHexLabels(label))}</button>`).join('')}</div></div>`;
-    parts.push(block('Recover internal stocks (required first)', 'Units marked Low or Exhausted must recover from dumps in reach before anything else this phase (12.10e).', recovery)
-      + block('Formation trace route', 'All units of a division trace through one HQ or one source; the others must eat off the map or go Out of Supply (12.6f).', trace)
-      + block('Breakout', 'Units out of trace supply may try to break out: 5-6 they leave and return as reinforcements, 1-4 they are lost (12.8e).', breakout));
+    const block = (title: string, hint: string, entries: typeof recovery): View => entries.length === 0 ? nothing
+      : html`<div class="step-actions"><strong>${title}</strong><p class="hint">${hint}</p>${actionButtons(entries)}</div>`;
+    parts.push(block('Recover internal stocks (required first)', 'Units marked Low or Exhausted must recover from dumps in reach before anything else this phase (12.10e).', recovery),
+      block('Formation trace route', 'All units of a division trace through one HQ or one source; the others must eat off the map or go Out of Supply (12.6f).', trace),
+      block('Breakout', 'Units out of trace supply may try to break out: 5-6 they leave and return as reinforcements, 1-4 they are lost (12.8e).', breakout));
   }
   if (snapshot.view.projection?.sequence.phase === 'SUPPLY') {
     const own = (snapshot.view.projection?.stacks ?? []).flatMap(({ pieces }) => pieces).filter((piece) => piece.ownerId === snapshot.view.playerId && piece.location.kind === 'ON_MAP');
     const outOfSupply = own.filter((piece) => piece.statuses.includes('status:out-of-supply')).length;
-    parts.push(`<p class="summary-line">${snapshot.supplyNeeds.length} unit${snapshot.supplyNeeds.length === 1 ? '' : 's'} out of trace supply now · ${outOfSupply} marked Out of Supply.</p>`);
+    parts.push(html`<p class="summary-line">${snapshot.supplyNeeds.length} unit${snapshot.supplyNeeds.length === 1 ? '' : 's'} out of trace supply now · ${outOfSupply} marked Out of Supply.</p>`);
   }
   if (snapshot.supplyNeeds.length > 0) {
     const pieces = snapshot.view.projection?.stacks.flatMap(({ pieces: stackPieces }) => stackPieces) ?? [];
-    parts.push(`<div class="supply-needs"><strong>Out of trace supply</strong><p class="hint">Feed a unit from a dump (1T per 2 RE) or leave it; unfed units become Out of Supply when the phase ends.</p>${snapshot.supplyNeeds.map((need) => {
+    parts.push(html`<div class="supply-needs"><strong>Out of trace supply</strong><p class="hint">Feed a unit from a dump (1T per 2 RE) or leave it; unfed units become Out of Supply when the phase ends.</p>${snapshot.supplyNeeds.map((need) => {
       const piece = pieces.find(({ id }) => id === need.pieceId);
-      if (!piece) return '';
-      return `<div class="supply-need">${unitRow(snapshot, piece)}<div class="chip-row">${need.options.map(({ dumpId }) => {
+      if (!piece) return nothing;
+      return html`<div class="supply-need">${unitRow(snapshot, piece)}<div class="chip-row">${need.options.map(({ dumpId }) => {
         const dump = pieces.find(({ id }) => id === dumpId);
-        return `<button data-feed="${esc(need.pieceId)}" data-dump="${esc(dumpId)}">Feed from ${esc(dump ? `${dump.resourceQuantity ?? 0}T at ${pieceHex(dump)}` : 'dump')}</button>`;
-      }).join('')}</div></div>`;
-    }).join('')}</div>`);
+        return html`<button data-feed=${need.pieceId} data-dump=${dumpId}>Feed from ${dump ? `${dump.resourceQuantity ?? 0}T at ${pieceHex(dump)}` : 'dump'}</button>`;
+      })}</div></div>`;
+    })}</div>`);
   }
-  return parts.join('') || '<p class="hint">Nothing needs supply attention in this step.</p>';
+  return parts.some((part) => part !== nothing) ? html`${parts}` : html`<p class="hint">Nothing needs supply attention in this step.</p>`;
 };
 
-const refitTab = (snapshot: UiSnapshot): string => refitPanel(snapshot) || '<p class="hint">No Air Base has aircraft to refit.</p>';
+const refitTab = (snapshot: UiSnapshot, state: DeckState): View => snapshot.air.refits.length > 0 ? refitPanel(snapshot, state) : html`<p class="hint">No Air Base has aircraft to refit.</p>`;
 
-const targetsTab = (snapshot: UiSnapshot): string => {
+const targetsTab = (snapshot: UiSnapshot): TemplateResult => {
   const segment = snapshot.view.projection?.sequence.segment;
-  const chips = (title: string, verb: string, hexes: readonly string[]) => hexes.length === 0 ? ''
-    : `<div class="target-list"><strong>${title}</strong><div class="chip-row">${hexes.map((hexId) => `<button data-target-hex="${esc(hexId)}">${verb} ${esc(printedHexLabel(hexId))}</button>`).join('')}</div></div>`;
-  const attack = chips(segment === 'COMBAT' ? 'Enemy hexes you can attack' : 'Enemy hexes the selected unit can overrun', segment === 'COMBAT' ? 'Attack' : 'Overrun', snapshot.attackTargets);
-  const barrage = chips('Enemy hexes in artillery range', 'Barrage', snapshot.barrageTargets);
-  return attack + barrage || `<p class="hint">${snapshot.view.projection?.sequence.segment === 'BARRAGE' ? 'No barrage targets in range.' : 'No enemy hex can be attacked.'}</p>`;
+  const chips = (title: string, verb: string, hexes: readonly string[]): View => hexes.length === 0 ? nothing
+    : html`<div class="target-list"><strong>${title}</strong><div class="chip-row">${hexes.map((hexId) => html`<button data-target-hex=${hexId}>${verb} ${printedHexLabel(hexId)}</button>`)}</div></div>`;
+  if (snapshot.attackTargets.length === 0 && snapshot.barrageTargets.length === 0) {
+    return html`<p class="hint">${segment === 'BARRAGE' ? 'No barrage targets in range.' : 'No enemy hex can be attacked.'}</p>`;
+  }
+  return html`${chips(segment === 'COMBAT' ? 'Enemy hexes you can attack' : 'Enemy hexes the selected unit can overrun', segment === 'COMBAT' ? 'Attack' : 'Overrun', snapshot.attackTargets)}${chips('Enemy hexes in artillery range', 'Barrage', snapshot.barrageTargets)}`;
 };
 
-const airTab = (snapshot: UiSnapshot): string => `${airMissionButtons(snapshot)}<p class="hint">Pick a mission, then a highlighted target hex and the aircraft that fly it.</p>`;
+const airTab = (snapshot: UiSnapshot): TemplateResult => html`${airMissionButtons(snapshot)}<p class="hint">Pick a mission, then a highlighted target hex and the aircraft that fly it.</p>`;
 
 /** A supply dump is a generic counter: it reads as its size, never by a name (the board-game counter has none). */
 const supplyText = (tokens: number): string => `${tokens}T (${tokens / 4} SP)`;
 
-const transferRow = (title: string, kind: 'LOAD' | 'UNLOAD', dumpId: string | null, option: NonNullable<UiSnapshot['transportOptions']>['loads'][number]): string => {
+const transferRow = (title: string, kind: 'LOAD' | 'UNLOAD', dumpId: string | null, option: NonNullable<UiSnapshot['transportOptions']>['loads'][number]): TemplateResult => {
   const verb = kind === 'LOAD' ? 'Load' : 'Unload';
   if (!option.available) {
     const reason = option.reasons[0];
-    return `<div class="transfer-row is-blocked"><span class="transfer-title">${esc(title)}</span><button disabled>${verb}</button>
-      <small class="blocker">${esc(reason ? withHexLabels(reason.message) : 'Not available now.')}${reason ? ` <cite>${esc(reason.rule)}</cite>` : ''}</small></div>`;
+    return html`<div class="transfer-row is-blocked"><span class="transfer-title">${title}</span><button disabled>${verb}</button>
+      <small class="blocker">${reason ? withHexLabels(reason.message) : 'Not available now.'}${reason ? html` <cite>${reason.rule}</cite>` : nothing}</small></div>`;
   }
-  return `<div class="transfer-row"><span class="transfer-title">${esc(title)}</span>
-    <label class="transfer-amount">Tokens <input type="number" class="transfer-tokens" min="${option.minTokens}" max="${option.maxTokens}" value="${option.maxTokens}" inputmode="numeric" aria-label="${esc(`Tokens to ${verb.toLowerCase()}: ${option.minTokens} to ${option.maxTokens}`)}"></label>
-    <button class="primary" data-transfer="${kind}"${dumpId ? ` data-dump="${esc(dumpId)}"` : ''}>${verb}</button>
+  return html`<div class="transfer-row"><span class="transfer-title">${title}</span>
+    <label class="transfer-amount">Tokens <input type="number" class="transfer-tokens" min=${option.minTokens} max=${option.maxTokens} value=${option.maxTokens} inputmode="numeric" aria-label=${`Tokens to ${verb.toLowerCase()}: ${option.minTokens} to ${option.maxTokens}`}></label>
+    <button class="primary" data-transfer=${kind} data-dump=${dumpId ?? nothing}>${verb}</button>
     <small>${option.minTokens}–${option.maxTokens}T · costs ${mp(option.costTicks)} MP, ${mp(option.remainingAfterTicks)} MP left afterwards</small></div>`;
 };
 
 /** The truck's supply area: what is here to load, what it carries, what each action costs, and why something is not offered. */
-const transportSection = (snapshot: UiSnapshot, others: readonly { key: string; label: string }[]): string => {
+const transportSection = (snapshot: UiSnapshot, others: readonly { key: string; label: string }[]): TemplateResult => {
   const options = snapshot.transportOptions!;
   const pieces = (snapshot.view.projection?.stacks ?? []).flatMap(({ pieces: stackPieces }) => stackPieces);
   const divide = snapshot.unitActions.flatMap(({ action }) => action.kind === 'DIVIDE_TRANSPORT' ? [action.points] : []);
   const loads = options.loads.map((option) => {
     const dump = pieces.find(({ id }) => id === option.pieceId);
     return transferRow(`Dump here · ${supplyText(dump?.resourceQuantity ?? 0)}`, 'LOAD', option.pieceId, option);
-  }).join('');
-  const nothingHere = options.loads.length === 0 ? '<p class="hint">No friendly supply dump in this hex to load from.</p>' : '';
-  const unload = options.unload ? transferRow(`Carrying ${supplyText(options.loadedTokens)}`, 'UNLOAD', null, options.unload) : '';
+  });
+  const nothingHere = options.loads.length === 0 ? html`<p class="hint">No friendly supply dump in this hex to load from.</p>` : nothing;
+  const unload = options.unload ? transferRow(`Carrying ${supplyText(options.loadedTokens)}`, 'UNLOAD', null, options.unload) : nothing;
   const midMove = options.isCurrentMover && options.remainingTicks > 0
-    ? '<p class="warning">This truck is mid-move. Finish with it before moving another unit, or it loses its remaining MP and load (6.1g) <cite>6.1g</cite></p>' : '';
+    ? html`<p class="warning">This truck is mid-move. Finish with it before moving another unit, or it loses its remaining MP and load (6.1g) <cite>6.1g</cite></p>` : nothing;
   const split = divide.length > 0
-    ? `<div class="transfer-row"><span class="transfer-title">Split the counter</span>
-      <label class="transfer-amount">Points <input type="number" class="divide-points" min="1" max="${Math.max(...divide)}" value="1" inputmode="numeric" aria-label="Truck points to split off"></label>
-      <button data-divide>Split off</button><small>No MP cost (13.2c)</small></div>` : '';
-  return `<div class="unit-actions transport-panel"><strong>Trucks</strong>
+    ? html`<div class="transfer-row"><span class="transfer-title">Split the counter</span>
+      <label class="transfer-amount">Points <input type="number" class="divide-points" min="1" max=${Math.max(...divide)} value="1" inputmode="numeric" aria-label="Truck points to split off"></label>
+      <button data-divide>Split off</button><small>No MP cost (13.2c)</small></div>` : nothing;
+  return html`<div class="unit-actions transport-panel"><strong>Trucks</strong>
     <p class="summary-line">${options.points} truck point${options.points === 1 ? '' : 's'} · carrying ${options.loadedTokens}/${options.capacityTokens}T · ${mp(options.remainingTicks)} MP left</p>
     ${midMove}${loads}${nothingHere}${unload}${split}
-    ${others.length > 0 ? `<div class="action-list">${others.map(({ key, label }) => `<button data-unit-action="${esc(key)}">${esc(withHexLabels(label))}</button>`).join('')}</div>` : ''}</div>`;
+    ${others.length > 0 ? actionButtons(others) : nothing}</div>`;
 };
 
-const unitTab = (snapshot: UiSnapshot, state: DeckState): string => {
-  const parts: string[] = [];
-  if (snapshot.movePreview && !snapshot.movePreview.explanation.allowed) parts.push(`<div class="move-preview"><strong>Move to ${esc(printedHexLabel(snapshot.movePreview.destinationHexId))} is not allowed</strong>${explanationBlock(snapshot.movePreview.explanation)}</div>`);
+const unitTab = (snapshot: UiSnapshot, state: DeckState): TemplateResult => {
+  const parts: View[] = [];
+  if (snapshot.movePreview && !snapshot.movePreview.explanation.allowed) parts.push(html`<div class="move-preview"><strong>Move to ${printedHexLabel(snapshot.movePreview.destinationHexId)} is not allowed</strong>${explanationBlock(snapshot.movePreview.explanation)}</div>`);
   if (snapshot.modeOptions.length > 0 || snapshot.releaseAction) {
-    parts.push(`<div class="mode-actions"><strong>Mode</strong><div class="chip-row">${snapshot.modeOptions.map(({ mode }) => `<button data-mode="${mode}">${esc(modeName(mode))}</button>`).join('')}${snapshot.releaseAction ? '<button id="release-reserve">Release reserve</button>' : ''}</div></div>`);
+    parts.push(html`<div class="mode-actions"><strong>Mode</strong><div class="chip-row">${snapshot.modeOptions.map(({ mode }) => html`<button data-mode=${mode}>${modeName(mode)}</button>`)}${snapshot.releaseAction ? html`<button id="release-reserve">Release reserve</button>` : nothing}</div></div>`);
   }
   if (snapshot.unitActions.length > 0 || snapshot.transportOptions) {
     const groups: [string, string][] = [['FUEL', 'Fuel'], ['SUPPLY', 'Supply'], ['BREAKOUT', 'Breakout'], ['TRANSPORT', 'Trucks'], ['DUMP', 'Dump'], ['AIR', 'Air']];
     // Loading, unloading and splitting live in the truck's supply area; the buttons that remain are the other truck actions.
     const inPanel = (kind: string) => ['LOAD_SUPPLY', 'UNLOAD_SUPPLY', 'DIVIDE_TRANSPORT'].includes(kind);
-    parts.push(groups.flatMap(([group, title]) => {
+    parts.push(...groups.flatMap(([group, title]) => {
       if (group === 'TRANSPORT' && snapshot.transportOptions) {
         return [transportSection(snapshot, snapshot.unitActions.filter((entry) => entry.group === 'TRANSPORT' && !inPanel(entry.action.kind)))];
       }
       const entries = snapshot.unitActions.filter((entry) => entry.group === group);
-      return entries.length === 0 ? [] : [`<div class="unit-actions"><strong>${title}</strong><div class="action-list">${entries.map(({ key, label }) => `<button data-unit-action="${esc(key)}">${esc(withHexLabels(label))}</button>`).join('')}</div></div>`];
-    }).join(''));
+      return entries.length === 0 ? [] : [html`<div class="unit-actions"><strong>${title}</strong>${actionButtons(entries)}</div>`];
+    }));
   }
   // A dump has no move of its own: it is carried, so say which trucks here can carry it.
   const dump = snapshot.selectedPiece;
@@ -479,38 +499,41 @@ const unitTab = (snapshot: UiSnapshot, state: DeckState): string => {
     const hexId = dump.location.hexId;
     const trucks = (snapshot.view.projection?.stacks ?? []).flatMap(({ pieces }) => pieces)
       .filter((piece) => piece.role === 'TRUCK' && piece.ownerId === dump.ownerId && piece.location.kind === 'ON_MAP' && piece.location.hexId === hexId);
-    parts.push(`<div class="unit-actions"><strong>Carry with a truck</strong>${trucks.length > 0
-      ? `<p class="hint">Select a truck in this hex to choose how many Tokens to load from this ${supplyText(dump.resourceQuantity ?? 0)} dump.</p>${trucks.map((truck) => unitRow(snapshot, truck)).join('')}`
-      : '<p class="hint">No friendly truck in this hex. Move one here to load from this dump.</p>'}</div>`);
+    parts.push(html`<div class="unit-actions"><strong>Carry with a truck</strong>${trucks.length > 0
+      ? html`<p class="hint">Select a truck in this hex to choose how many Tokens to load from this ${supplyText(dump.resourceQuantity ?? 0)} dump.</p>${trucks.map((truck) => unitRow(snapshot, truck))}`
+      : html`<p class="hint">No friendly truck in this hex. Move one here to load from this dump.</p>`}</div>`);
   }
   if (snapshot.collapseHexes.length > 0) {
-    parts.push('<p class="hint">Or collapse the Extender (9.14d): click a highlighted hex in trace supply within its range.</p>');
+    parts.push(html`<p class="hint">Or collapse the Extender (9.14d): click a highlighted hex in trace supply within its range.</p>`);
   }
   if (parts.length === 0) {
     const unmoved = unmovedUnits(snapshot);
     const guidance = snapshot.selectedPiece && snapshot.reachable.size > 0 ? 'Click a highlighted hex to preview the move; darker hexes are out of reach.'
       : snapshot.attackTargets.length > 0 ? 'Red-ringed enemy hexes can be attacked: click one to plan it.'
         : state.hint || (snapshot.selectedPiece ? 'This unit has no actions in this step.' : 'Select a unit on the map, or open All units, to see its actions.');
-    parts.push(`<p class="hint">${esc(guidance)}</p>${unmoved > 0 && !snapshot.selectedPiece ? `<p class="summary-line">${unmoved} unit${unmoved === 1 ? ' has' : 's have'} not moved yet.</p>` : ''}`);
+    parts.push(html`<p class="hint">${guidance}</p>${unmoved > 0 && !snapshot.selectedPiece ? html`<p class="summary-line">${unmoved} unit${unmoved === 1 ? ' has' : 's have'} not moved yet.</p>` : nothing}`);
   }
-  return parts.join('');
+  return html`${parts}`;
 };
 
 /** The supply the seat has paid or moved in this step, newest last, with what each source holds now. */
-const ledgerTab = (snapshot: UiSnapshot): string => {
+const ledgerTab = (snapshot: UiSnapshot): TemplateResult => {
   const spent = snapshot.ledger.reduce((total, { spent: tokens }) => total + tokens, 0);
-  return `<div class="ledger"><strong>Supply this turn</strong>
+  return html`<div class="ledger"><strong>Supply this turn</strong>
     <p class="summary-line">${spent}T paid · ${snapshot.ledger.length} entr${snapshot.ledger.length === 1 ? 'y' : 'ies'}</p>
-    <ol class="ledger-list">${snapshot.ledger.map(({ text }) => `<li>${esc(withHexLabels(text))}</li>`).join('')}</ol></div>`;
+    <ol class="ledger-list">${snapshot.ledger.map(({ text: line }) => html`<li>${withHexLabels(line)}</li>`)}</ol></div>`;
 };
 
-const logTab = (snapshot: UiSnapshot): string => collapse(snapshot.feed).reverse().slice(0, 120).map(feedEntryHtml).join('') || '<p class="hint">No actions yet.</p>';
+const logTab = (snapshot: UiSnapshot): TemplateResult => {
+  const entries = collapse(snapshot.feed).reverse().slice(0, 120);
+  return entries.length > 0 ? html`${entries.map(feedEntry)}` : html`<p class="hint">No actions yet.</p>`;
+};
 
-const tabBody = (snapshot: UiSnapshot, state: DeckState, tab: string): string => {
+const tabBody = (snapshot: UiSnapshot, state: DeckState, tab: string): View => {
   switch (tab) {
     case 'arrivals': return arrivalsTab(snapshot);
     case 'supply': return supplyTab(snapshot);
-    case 'refit': return refitTab(snapshot);
+    case 'refit': return refitTab(snapshot, state);
     case 'targets': return targetsTab(snapshot);
     case 'air': return airTab(snapshot);
     case 'unit': return unitTab(snapshot, state);
@@ -523,9 +546,9 @@ const tabBody = (snapshot: UiSnapshot, state: DeckState, tab: string): string =>
  * Confirmation of the previewed move, drawn beside the destination hex on the map. Short on purpose:
  * cost, what is left, why it is blocked; the full rule explanation stays in the Unit tab.
  */
-export const movePopupHtml = (snapshot: UiSnapshot): string => {
+export const movePopupView = (snapshot: UiSnapshot, state?: DeckState): View => {
   const preview = snapshot.movePreview;
-  if (!preview) return '';
+  if (!preview) return nothing;
   const range = snapshot.moveRange.get(preview.destinationHexId);
   const reTicks = (piece: ProjectedPiece): number => Number(pieceDefinition(snapshot.scenario, piece)?.faces
     .find(({ id }) => id === piece.currentFaceId)?.steps.find(({ remainingSteps }) => remainingSteps === piece.remainingSteps)?.regimentalEquivalentTicks ?? 0);
@@ -539,16 +562,16 @@ export const movePopupHtml = (snapshot: UiSnapshot): string => {
   const endsPiece = typeof endsId === 'string' ? (snapshot.view.projection?.stacks ?? []).flatMap(({ pieces }) => pieces).find(({ id }) => id === endsId) : undefined;
   const endsLoad = Number(fact(preview.explanation, 'movement.endsOtherMover.loadTokens') ?? 0);
   const endsWarning = endsPiece
-    ? `<p class="warning">This ends the move of ${esc(pieceLabel(snapshot.scenario, endsPiece))}: its ${mp(fact(preview.explanation, 'movement.endsOtherMover.remainingTicks'))} MP left${endsLoad > 0 ? ` and ${endsLoad}T aboard` : ''} cannot be used again this phase <cite>6.1g</cite></p>`
-    : '';
-  return `<div class="move-popup" role="group" aria-label="Confirm move to ${esc(printedHexLabel(preview.destinationHexId))}" data-anchor-hex="${esc(preview.destinationHexId)}" data-from-hex="${esc(from)}">
-    <strong>Move to ${esc(printedHexLabel(preview.destinationHexId))}</strong>
+    ? html`<p class="warning">This ends the move of ${pieceLabel(snapshot.scenario, endsPiece)}: its ${mp(fact(preview.explanation, 'movement.endsOtherMover.remainingTicks'))} MP left${endsLoad > 0 ? ` and ${endsLoad}T aboard` : ''} cannot be used again this phase <cite>6.1g</cite></p>`
+    : nothing;
+  return html`<div class="move-popup" role="group" aria-label=${`Confirm move to ${printedHexLabel(preview.destinationHexId)}`} data-anchor-hex=${preview.destinationHexId} data-from-hex=${from}>
+    <strong>Move to ${printedHexLabel(preview.destinationHexId)}</strong>
     <p>Cost ${mp(fact(preview.explanation, 'movement.totalTicks'))} MP · ${mp(fact(preview.explanation, 'movement.remainingTicks'))} MP left after the move.</p>
-    ${range?.endsMovement ? '<p class="blocker">The move ends there (enemy ZOC, all-MP terrain, or minimum move).</p>' : ''}
-    ${total > 40 ? `<p class="blocker">Ending here makes ${total / 4} RE in one hex: over 10 RE at the end of the segment, you must eliminate units (4.8a).</p>` : ''}
-    ${reasons.length > 0 ? `<p class="blocker">${esc(withHexLabels(reasons[0]!.message))} <cite>${esc(reasons[0]!.rule)}</cite></p>${reasons.length > 1 ? `<p class="hint">${reasons.length - 1} more reason${reasons.length === 2 ? '' : 's'} in the Unit tab.</p>` : ''}` : ''}
+    ${range?.endsMovement ? html`<p class="blocker">The move ends there (enemy ZOC, all-MP terrain, or minimum move).</p>` : nothing}
+    ${total > 40 ? html`<p class="blocker">Ending here makes ${total / 4} RE in one hex: over 10 RE at the end of the segment, you must eliminate units (4.8a).</p>` : nothing}
+    ${reasons.length > 0 ? html`<p class="blocker">${withHexLabels(reasons[0]!.message)} <cite>${reasons[0]!.rule}</cite></p>${reasons.length > 1 ? html`<p class="hint">${reasons.length - 1} more reason${reasons.length === 2 ? '' : 's'} in the Unit tab.</p>` : nothing}` : nothing}
     ${endsWarning}
-    <div class="button-grid"><button id="cancel-move">Cancel</button><button class="primary" id="confirm-move" ${preview.explanation.allowed && !snapshot.busy ? '' : 'disabled'}>${endsWarning ? 'Confirm anyway' : 'Confirm'}</button></div>
+    <div class="button-grid"><button id="cancel-move">Cancel</button><button class="primary" id="confirm-move" ?disabled=${!(preview.explanation.allowed && !busyOf(snapshot, state))}>${endsPiece ? 'Confirm anyway' : 'Confirm'}</button></div>
   </div>`;
 };
 
@@ -565,8 +588,8 @@ const rosterOwn = (snapshot: UiSnapshot): ProjectedPiece[] =>
   (snapshot.view.projection?.stacks ?? []).flatMap((stack) => stack.pieces)
     .filter(({ ownerId, role, location }) => ownerId === snapshot.view.playerId && role !== 'CARGO' && !(role === 'DUMP' && location.kind === 'ELIMINATED'));
 
-/** The scrolling part of the roster. Rebuilt on its own while typing so a force of hundreds does not repaint the whole page. */
-export const unitRosterBodyHtml = (snapshot: UiSnapshot, state: DeckState): string => {
+/** The scrolling part of the roster; rows are keyed by unit so filtering moves them instead of redrawing their counters. */
+export const unitRosterBodyView = (snapshot: UiSnapshot, state: DeckState): TemplateResult => {
   const search = state.search.trim().toLowerCase();
   const filter = state.filter ?? 'all';
   const byName = (left: ProjectedPiece, right: ProjectedPiece): number =>
@@ -580,29 +603,30 @@ export const unitRosterBodyHtml = (snapshot: UiSnapshot, state: DeckState): stri
     const name = unitFormation(snapshot, piece) || 'Independent units';
     groups.set(name, [...(groups.get(name) ?? []), piece]);
   }
-  const row = (piece: ProjectedPiece): string => `<button class="roster-unit${piece.id === snapshot.selection.pieceId ? ' is-selected' : ''}" data-piece="${esc(piece.id)}" data-roster-pick="${esc(piece.id)}" aria-label="${esc(`${pieceLabel(snapshot.scenario, piece)}, ${pieceHex(piece)}`)}">
-    <span class="roster-art" aria-hidden="true">${counterFor(snapshot, piece)}</span><span class="roster-text">${esc(pieceLabel(snapshot.scenario, piece))}<small>${esc(pieceHex(piece))} · ${esc(statusName(snapshot, piece))}</small></span>${badges(snapshot, piece)}</button>`;
-  const body = [...groups.entries()].sort(([left], [right]) => left.localeCompare(right))
-    .map(([name, pieces]) => `<details class="roster-group" open><summary>${esc(name)} <small>${pieces.length}</small></summary><div class="roster-grid">${pieces.sort(byName).map(row).join('')}</div></details>`).join('')
-    || '<p class="roster-empty">No units match.</p>';
+  const row = (piece: ProjectedPiece): TemplateResult => html`<button class="roster-unit${piece.id === snapshot.selection.pieceId ? ' is-selected' : ''}" data-piece=${piece.id} data-roster-pick=${piece.id} aria-label=${`${pieceLabel(snapshot.scenario, piece)}, ${pieceHex(piece)}`}>
+    <span class="roster-art" aria-hidden="true">${counterFor(snapshot, piece)}</span><span class="roster-text">${pieceLabel(snapshot.scenario, piece)}<small>${pieceHex(piece)} · ${statusName(snapshot, piece)}</small></span>${badges(snapshot, piece)}</button>`;
+  const rows = (pieces: ProjectedPiece[]) => repeat(pieces.sort(byName), (piece) => piece.id, row);
+  const sorted = [...groups.entries()].sort(([left], [right]) => left.localeCompare(right));
   const eliminated = all.filter(({ location }) => location.kind === 'ELIMINATED');
-  return `${body}${eliminated.length > 0 && filter === 'all' ? `<details class="roster-group roster-eliminated"><summary>Eliminated <small>${eliminated.length}</small></summary><div class="roster-grid">${eliminated.sort(byName).map(row).join('')}</div></details>` : ''}`;
+  return html`${sorted.length > 0
+    ? repeat(sorted, ([name]) => name, ([name, pieces]) => html`<details class="roster-group" open><summary>${name} <small>${pieces.length}</small></summary><div class="roster-grid">${rows(pieces)}</div></details>`)
+    : html`<p class="roster-empty">No units match.</p>`}${eliminated.length > 0 && filter === 'all' ? html`<details class="roster-group roster-eliminated"><summary>Eliminated <small>${eliminated.length}</small></summary><div class="roster-grid">${rows(eliminated)}</div></details>` : nothing}`;
 };
 
 /**
  * Every unit the player commands, as one wide popup over the map: grouped by formation in several
  * columns of compact rows, searchable by name, formation or hex. Sized for a force of hundreds.
  */
-export const unitRosterHtml = (snapshot: UiSnapshot, state: DeckState): string => {
+export const unitRosterView = (snapshot: UiSnapshot, state: DeckState): TemplateResult => {
   const sequence = snapshot.view.projection?.sequence;
   const movement = sequence?.phase === 'MOVEMENT' && sequence.segment === 'MOVEMENT';
   const filters = movement
-    ? `<div class="unit-filter" role="group" aria-label="Filter units">${(['all', 'unmoved', 'moved'] as const).map((key) => `<button data-unit-filter="${key}" aria-pressed="${(state.filter ?? 'all') === key}">${key === 'all' ? 'All' : key === 'moved' ? `Moved ${snapshot.movedThisPhase.size}` : `Not moved ${unmovedUnits(snapshot)}`}</button>`).join('')}</div>` : '';
-  return `<div class="roster-popup" role="dialog" aria-label="All my units">
+    ? html`<div class="unit-filter" role="group" aria-label="Filter units">${(['all', 'unmoved', 'moved'] as const).map((key) => html`<button data-unit-filter=${key} aria-pressed=${String((state.filter ?? 'all') === key)}>${key === 'all' ? 'All' : key === 'moved' ? `Moved ${snapshot.movedThisPhase.size}` : `Not moved ${unmovedUnits(snapshot)}`}</button>`)}</div>` : nothing;
+  return html`<div class="roster-popup" role="dialog" aria-label="All my units">
     <header><strong>My units · ${rosterOwn(snapshot).filter(({ location }) => location.kind !== 'ELIMINATED').length}</strong>
-      <input id="roster-search" type="search" value="${esc(state.search)}" placeholder="Find by name, formation or hex" aria-label="Find unit">${filters}
+      <input id="roster-search" type="search" .value=${state.search} placeholder="Find by name, formation or hex" aria-label="Find unit">${filters}
       <button id="close-roster" aria-label="Close unit list">×</button></header>
-    <div class="roster-body" id="roster-body" data-scroll-key="roster" tabindex="0">${unitRosterBodyHtml(snapshot, state)}</div>
+    <div class="roster-body" id="roster-body" data-scroll-key="roster" tabindex="0">${unitRosterBodyView(snapshot, state)}</div>
   </div>`;
 };
 
@@ -616,8 +640,8 @@ export const unmovedUnits = (snapshot: UiSnapshot): number => {
 };
 
 /** Undo and End phase, drawn beside the phase chip in the top bar, with the reasons the phase cannot end yet. */
-export const phaseControlsHtml = (snapshot: UiSnapshot, state: DeckState): string => {
-  const busy = state.working || snapshot.busy;
+export const phaseControlsView = (snapshot: UiSnapshot, state: DeckState): TemplateResult => {
+  const busy = busyOf(snapshot, state);
   const unmoved = unmovedUnits(snapshot);
   const disabled = !(snapshot.endStep.enabled && !busy && !snapshot.decision && !snapshot.draft && snapshot.view.metadata.lifecycle === 'ACTIVE');
   const confirming = state.confirmEnd && unmoved > 0;
@@ -628,35 +652,33 @@ export const phaseControlsHtml = (snapshot: UiSnapshot, state: DeckState): strin
   ];
   if (reasons.length === 0 && snapshot.decision) reasons.push('Answer the open decision first.');
   else if (reasons.length === 0 && snapshot.draft) reasons.push('Finish or cancel the open plan first.');
-  return `<div class="phase-actions">
-    ${snapshot.undoStep ? (() => {
-      const text = snapshot.undoStep.scope === 'ACTION' ? `Undo: ${snapshot.undoStep.label}` : `Undo back to the ${snapshot.undoStep.label}`;
-      return `<button id="undo-step" class="subtle" title="${esc(text)}" aria-label="${esc(text)}">↶ Undo</button>`;
-    })() : ''}
-    <button id="end-phase" class="${confirming ? 'warning' : snapshot.endStep.enabled ? 'primary' : ''}" ${disabled ? 'disabled' : ''}>${confirming
+  const undo = snapshot.undoStep ? (snapshot.undoStep.scope === 'ACTION' ? `Undo: ${snapshot.undoStep.label}` : `Undo back to the ${snapshot.undoStep.label}`) : null;
+  return html`<div class="phase-actions">
+    ${undo ? html`<button id="undo-step" class="subtle" title=${undo} aria-label=${undo}>↶ Undo</button>` : nothing}
+    <button id="end-phase" class=${confirming ? 'warning' : snapshot.endStep.enabled ? 'primary' : ''} ?disabled=${disabled}>${confirming
       ? `Finish anyway: ${unmoved} unit${unmoved === 1 ? ' has' : 's have'} not moved`
-      : esc(snapshot.endStep.label)}<small>${esc(confirming ? 'Press again to confirm' : `Next: ${snapshot.endStep.next}`)}</small></button>
-    ${reasons.length > 0 ? `<p class="end-note" role="status">${esc(reasons.join(' '))}</p>` : ''}
+      : snapshot.endStep.label}<small>${confirming ? 'Press again to confirm' : `Next: ${snapshot.endStep.next}`}</small></button>
+    ${reasons.length > 0 ? html`<p class="end-note" role="status">${reasons.join(' ')}</p>` : nothing}
   </div>`;
 };
 
-export const commandDeckHtml = (snapshot: UiSnapshot, state: DeckState): string => {
+export const commandDeckView = (snapshot: UiSnapshot, state: DeckState): TemplateResult => {
   const { view } = snapshot;
   const sequence = view.projection?.sequence;
-  const busy = state.working || snapshot.busy;
+  const busy = busyOf(snapshot, state);
   const own = (view.projection?.stacks ?? []).flatMap((stack) => stack.pieces).filter(({ ownerId, role }) => ownerId === view.playerId && role !== 'CARGO');
   const objective = stepObjective(snapshot);
-  const interrupt = interruptPanel(snapshot);
+  const interrupt = interruptPanel(snapshot, state);
   const away = awayPanel(snapshot);
   const tabs = deckTabs(snapshot);
   const active = activeDeckTab(snapshot, state);
-  const body = away || interrupt
-    ? `<div class="deck-body deck-task" data-scroll-key="task" aria-busy="${busy}">${interrupt}${resultPanel(snapshot)}${away}</div>`
-    : `<nav class="deck-tabs" aria-label="${esc(sequence ? phaseLabel(sequence.phase, sequence.segment) : 'Deck')}">${tabs.map(({ id, label, badge }) => `<button data-deck-tab="${id}" aria-pressed="${active === id}"${badge > 0 ? ` aria-label="${esc(label)}, ${badge} waiting"` : ''}>${esc(label)}${badge > 0 ? ` <span class="tab-badge" aria-hidden="true">${badge}</span>` : ''}</button>`).join('')}<button id="open-roster" class="roster-open" aria-haspopup="dialog" title="List every unit you command">All units (${own.filter(({ location }) => location.kind !== 'ELIMINATED').length})</button></nav>
-      <div class="deck-body" data-scroll-key="tab-${active}" tabindex="0" aria-busy="${busy}">${resultPanel(snapshot)}<section class="deck-context">${tabBody(snapshot, state, active)}</section></div>`;
-  return `${objective ? `<p class="deck-objective">${esc(objective)}</p>` : ''}
-    ${view.metadata.lifecycle === 'PAUSED' ? '<p class="paused-banner" role="status">Paused — press Resume in the top bar to continue.</p>' : ''}
-    <section class="deck-selection" aria-label="Selected unit">${selectedCard(snapshot)}${snapshot.selectedPiece || snapshot.selection.hexId ? '<button id="deselect" class="subtle" title="Finish with this unit and clear the selection (Esc)">Done</button>' : ''}</section>
+  const body = away !== nothing || interrupt !== nothing
+    ? html`<div class="deck-body deck-task" data-scroll-key="task" aria-busy=${String(busy)}>${interrupt}${resultPanel(snapshot)}${away}</div>`
+    : html`<nav class="deck-tabs" aria-label=${sequence ? phaseLabel(sequence.phase, sequence.segment) : 'Deck'}>${tabs.map(({ id, label, badge }) => html`<button data-deck-tab=${id} aria-pressed=${String(active === id)} aria-label=${badge > 0 ? `${label}, ${badge} waiting` : nothing}>${label}${badge > 0 ? html` <span class="tab-badge" aria-hidden="true">${badge}</span>` : nothing}</button>`)}<button id="open-roster" class="roster-open" aria-haspopup="dialog" title="List every unit you command">All units (${own.filter(({ location }) => location.kind !== 'ELIMINATED').length})</button></nav>
+      <div class="deck-body" data-scroll-key=${`tab-${active}`} tabindex="0" aria-busy=${String(busy)}>${resultPanel(snapshot)}<section class="deck-context">${tabBody(snapshot, state, active)}</section></div>`;
+  return html`${objective ? html`<p class="deck-objective">${objective}</p>` : nothing}
+    ${view.metadata.lifecycle === 'PAUSED' ? html`<p class="paused-banner" role="status">Paused — press Resume in the top bar to continue.</p>` : nothing}
+    <section class="deck-selection" aria-label="Selected unit">${selectedCard(snapshot)}${snapshot.selectedPiece || snapshot.selection.hexId ? html`<button id="deselect" class="subtle" title="Finish with this unit and clear the selection (Esc)">Done</button>` : nothing}</section>
     ${body}
-    <footer class="deck-footer"><div class="deck-notice" role="status">${busy ? 'Working…' : esc(withHexLabels(state.error || snapshot.notice))}</div></footer>`;
+    <footer class="deck-footer"><div class="deck-notice" role="status">${snapshot.busy ? 'Working…' : withHexLabels(state.error || snapshot.notice)}</div></footer>`;
 };

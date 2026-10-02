@@ -2,8 +2,10 @@
 
 ## Study result
 
-Map geometry is deterministic pointy-top axial SVG. `buildGeneratedMapPreview` lays out the active `GeneratedMap`; the renderer does not substitute a fixed Scenario map or independent laboratory output.
+Map geometry is deterministic pointy-top axial. `buildGeneratedMapPreview` lays out the active `GeneratedMap`; the renderer does not substitute a fixed Scenario map or independent laboratory output.
 
-Terrain is communicated graphically with color plus SVG texture. Rivers occupy shared Hexsides; roads connect Hex centers; settlements, strategic entry/supply regions, objectives, and counters are distinct vector marks. Terrain names must not be printed in every Hex. The terrain name remains in each Hex's accessible label, and coordinates appear at low visual priority on hover/selection.
+Terrain is communicated graphically with color plus texture. Rivers occupy shared Hexsides; roads connect Hex centers; settlements, strategic entry/supply regions, objectives, and counters are distinct marks. Terrain names must not be printed in every Hex. The terrain name is announced for the keyboard cursor and shown in the hover line, and coordinates appear at low visual priority (darker on hover/selection).
 
-The SVG supports pointer drag, wheel zoom, explicit zoom in/out, and reset. The readout is relative to the default framing: the default view, the Reset button, and a newly started game all read 100% (an internal render scale of 1.4 centred on the map, `DEFAULT_ZOOM` in `src/ui/browser.ts`). Zoom is bounded from 60% to 260% of that framing. Camera position and selection are interaction state only and never enter Gameplay saves or Rule state.
+Since 2026-10-02 the theater map is one canvas (`src/ui/map-canvas.ts`). The printed terrain is painted once per zoom level into cached tiles and panning only copies tiles; highlights, targets, the move path and counters are drawn over them from the snapshot. The artwork still comes from `src/ui/map-art.ts` and `src/ui/counter.ts` (pattern tiles and counters are rasterized from their SVG), so the canvas map and the SVG New Game preview draw the same map. Clicks resolve to hexes by axial arithmetic and to counters by their drawn rectangles.
+
+The map supports pointer drag, wheel zoom, explicit zoom in/out, and reset. The readout is relative to the default framing: the default view, the Reset button, and a newly started game all read 100% (an internal render scale of 1.4 centred on the map, `DEFAULT_ZOOM` in `src/ui/map-canvas.ts`). Zoom is bounded from 60% to 260% of that framing. Camera position and selection are interaction state only and never enter Gameplay saves or Rule state.

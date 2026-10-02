@@ -114,10 +114,10 @@ export const mapArtDefsHtml = (): string => `<defs>
   ${reliefPattern('terrain-mountain', { size: 240, frequency: 0.0125, octaves: 4, seed: 11, relief: 9, elevation: 40, light: '#fbf4e6', tint: '#b09c7c', ridged: true })}
   ${marshDitchPattern()}
   <pattern id="terrain-water" width="30" height="20" patternUnits="userSpaceOnUse"><rect width="30" height="20" fill="#a4d3ea"/></pattern>
-  <g id="glyph-wave"><path d="M-10 0q2.5-3.5 5 0t5 0 5 0 5 0" fill="none" stroke="#d3ebf7" stroke-width="1.3" stroke-linecap="round"/></g>
+  <g id="glyph-wave"><path d="${WAVE_GLYPH_PATH}" fill="none" stroke="#d3ebf7" stroke-width="1.3" stroke-linecap="round"/></g>
 </defs>`;
 
-type Placement = { readonly x: number; readonly y: number; readonly scale: number };
+export type Placement = { readonly x: number; readonly y: number; readonly scale: number };
 
 /** Scatter glyph positions inside a disc of the hex, drawn back to front. */
 const scatter = (random: () => number, count: number, radius: number, scale: () => number): Placement[] =>
@@ -151,20 +151,37 @@ const cornerOf = (cell: GeneratedMapPreviewCell, index: number, hexSize: number)
   return jitterPoint(cell.x + hexSize * Math.cos(radians), cell.y + hexSize * Math.sin(radians), hexSize);
 };
 
+/** The six nudged corners of a hex's ground fill, rounded as drawn. */
+export const terrainFillCorners = (cell: GeneratedMapPreviewCell, hexSize: number): Point[] =>
+  Array.from({ length: 6 }, (_, index) => { const { x, y } = cornerOf(cell, index, hexSize); return { x: Number(fixed(x)), y: Number(fixed(y)) }; });
+
 /** One ground-coloured polygon per hex, with no outline of its own; the grid is a separate layer. */
 export const terrainFillHtml = (cell: GeneratedMapPreviewCell, hexSize: number, extraClass = ''): string => {
-  const points = Array.from({ length: 6 }, (_, index) => { const { x, y } = cornerOf(cell, index, hexSize); return `${fixed(x)},${fixed(y)}`; }).join(' ');
+  const points = terrainFillCorners(cell, hexSize).map(({ x, y }) => `${fixed(x)},${fixed(y)}`).join(' ');
   return `<polygon class="terrain-fill terrain-${cell.terrain.toLowerCase()}${extraClass ? ` ${extraClass}` : ''}" points="${points}"></polygon>`;
+};
+
+/** Wave mark used on open water, authored around (0, 0) for a 50-unit hex. */
+export const WAVE_GLYPH_PATH = 'M-10 0q2.5-3.5 5 0t5 0 5 0 5 0';
+
+/** Where a hex's terrain symbols sit: map position and scale of each glyph. */
+export const terrainGlyphPlacements = (cell: GeneratedMapPreviewCell, hexSize: number): { glyph: string; placements: Placement[] } | null => {
+  const random = seeded(`terrain:${cell.id}`);
+  const plan = glyphPlan(cell, random);
+  if (!plan) return null;
+  const unit = hexSize / GLYPH_HEX_SIZE;
+  return {
+    glyph: plan.glyph,
+    placements: plan.placements.map(({ x, y, scale }) => ({ x: Number(fixed(cell.x + x * unit)), y: Number(fixed(cell.y + y * unit)), scale: Number((scale * unit).toFixed(3)) })),
+  };
 };
 
 /** Terrain symbols for one hex; the hex polygon itself supplies the ground colour. */
 export const terrainGlyphsHtml = (cell: GeneratedMapPreviewCell, hexSize: number): string => {
-  const random = seeded(`terrain:${cell.id}`);
-  const plan = glyphPlan(cell, random);
+  const plan = terrainGlyphPlacements(cell, hexSize);
   if (!plan) return '';
-  const unit = hexSize / GLYPH_HEX_SIZE;
   const uses = plan.placements.map(({ x, y, scale }) =>
-    `<use href="#${plan.glyph}" transform="translate(${fixed(cell.x + x * unit)} ${fixed(cell.y + y * unit)}) scale(${(scale * unit).toFixed(3)})"></use>`).join('');
+    `<use href="#${plan.glyph}" transform="translate(${fixed(x)} ${fixed(y)}) scale(${scale.toFixed(3)})"></use>`).join('');
   return `<g class="terrain-art" aria-hidden="true">${uses}</g>`;
 };
 
@@ -191,16 +208,21 @@ export const riverPathData = (edge: GeneratedMapPreviewEdge, hexSize: number): s
     + `Q${fixed(middleX + dx / length * bow)} ${fixed(middleY + dy / length * bow)} ${fixed(end.x)} ${fixed(end.y)}`;
 };
 
+export interface EdgeStroke { readonly kind: GeneratedMapPreviewEdge['kind']; readonly d: string }
+
+/** One path per watercourse hexside. */
+export const riverStrokes = (edges: readonly GeneratedMapPreviewEdge[], hexSize: number): EdgeStroke[] =>
+  edges.filter(({ kind }) => kind === 'RIVER' || kind === 'MAJOR_RIVER').map((edge) => ({ kind: edge.kind, d: riverPathData(edge, hexSize) }));
+
 /** River banks first, then water, so joined hexsides form one continuous channel. */
 export const riversHtml = (edges: readonly GeneratedMapPreviewEdge[], hexSize: number, className: string): string => {
-  const rivers = edges.filter(({ kind }) => kind === 'RIVER' || kind === 'MAJOR_RIVER');
-  const data = rivers.map((edge) => ({ edge, d: riverPathData(edge, hexSize) }));
-  const banks = data.map(({ edge, d }) => `<path class="river-bank ${edgeClass(edge.kind)}" d="${d}"></path>`).join('');
-  const water = data.map(({ edge, d }) => `<path class="${className} ${edgeClass(edge.kind)}" d="${d}"></path>`).join('');
+  const data = riverStrokes(edges, hexSize);
+  const banks = data.map(({ kind, d }) => `<path class="river-bank ${edgeClass(kind)}" d="${d}"></path>`).join('');
+  const water = data.map(({ kind, d }) => `<path class="${className} ${edgeClass(kind)}" d="${d}"></path>`).join('');
   return `<g class="river-banks" aria-hidden="true">${banks}</g>${water}`;
 };
 
-type Point = { readonly x: number; readonly y: number };
+export type Point = { readonly x: number; readonly y: number };
 
 const pointKey = (x: number, y: number): string => `${fixed(x)},${fixed(y)}`;
 
@@ -211,9 +233,9 @@ const pointKey = (x: number, y: number): string => `${fixed(x)},${fixed(y)}`;
  * through junctions instead of kinking at every hex. A dark casing keeps it
  * legible over every terrain.
  */
-export const roadsHtml = (
-  edges: readonly GeneratedMapPreviewEdge[], cells: readonly GeneratedMapPreviewCell[], hexSize: number, className: string,
-): string => {
+export const roadStrokes = (
+  edges: readonly GeneratedMapPreviewEdge[], cells: readonly GeneratedMapPreviewCell[], hexSize: number,
+): EdgeStroke[] => {
   const settled = new Set(cells.filter(({ settlement }) => settlement).map(({ x, y }) => pointKey(x, y)));
   const waypoints = new Map<string, Point>();
   const waypoint = (x: number, y: number): Point => {
@@ -288,9 +310,16 @@ export const roadsHtml = (
     return `M${fixed(start.x)} ${fixed(start.y)}C${fixed(start.x + out.x * outReach)} ${fixed(start.y + out.y * outReach)} `
       + `${fixed(end.x + back.x * backReach)} ${fixed(end.y + back.y * backReach)} ${fixed(end.x)} ${fixed(end.y)}`;
   };
-  const data = roads.map((edge) => ({ edge, d: curve(edge) }));
-  const casings = data.map(({ edge, d }) => `<path class="road-casing ${edgeClass(edge.kind)}" d="${d}"></path>`).join('');
-  const surfaces = data.map(({ edge, d }) => `<path class="${className} ${edgeClass(edge.kind)}" d="${d}"></path>`).join('');
+  return roads.map((edge) => ({ kind: edge.kind, d: curve(edge) }));
+};
+
+/** Casings first, then surfaces, minor roads under primary ones. */
+export const roadsHtml = (
+  edges: readonly GeneratedMapPreviewEdge[], cells: readonly GeneratedMapPreviewCell[], hexSize: number, className: string,
+): string => {
+  const data = roadStrokes(edges, cells, hexSize);
+  const casings = data.map(({ kind, d }) => `<path class="road-casing ${edgeClass(kind)}" d="${d}"></path>`).join('');
+  const surfaces = data.map(({ kind, d }) => `<path class="${className} ${edgeClass(kind)}" d="${d}"></path>`).join('');
   return `<g class="road-casings" aria-hidden="true">${casings}</g>${surfaces}`;
 };
 
@@ -307,8 +336,16 @@ export const placeNameFor = (hexId: string): string => {
  * A built-up area as the printed map draws it: a dense cluster of dark building blocks sized by settlement
  * class, with a bold serif name to its right (cities and towns only, so villages do not clutter the map).
  */
-export const settlementArtHtml = (cell: GeneratedMapPreviewCell, hexSize: number): string => {
-  if (!cell.settlement) return '';
+export interface SettlementArt {
+  readonly blocks: readonly { readonly x: number; readonly y: number; readonly width: number; readonly height: number; readonly rotate: number; readonly cx: number; readonly cy: number; readonly alt: boolean }[];
+  readonly trees: readonly { readonly cx: number; readonly cy: number; readonly r: number }[];
+  readonly name: { readonly text: string; readonly x: number; readonly y: number; readonly fontSize: number; readonly strokeWidth: number } | null;
+}
+
+/** Geometry of a built-up area, rounded as drawn. */
+export const settlementArt = (cell: GeneratedMapPreviewCell, hexSize: number): SettlementArt | null => {
+  if (!cell.settlement) return null;
+  const round = (value: number): number => Number(fixed(value));
   const unit = hexSize / GLYPH_HEX_SIZE;
   const random = seeded(`settlement:${cell.id}`);
   const plan = {
@@ -323,39 +360,58 @@ export const settlementArtHtml = (cell: GeneratedMapPreviewCell, hexSize: number
     const height = (plan.size * (0.7 + random() * 0.9)) * unit;
     const x = cell.x + Math.cos(angle) * distance;
     const y = cell.y + Math.sin(angle) * distance * 0.9;
-    const tone = random() < 0.22 ? ' alt' : '';
-    return `<rect class="settlement-block${tone}" x="${fixed(x - width / 2)}" y="${fixed(y - height / 2)}" width="${fixed(width)}" height="${fixed(height)}" transform="rotate(${Math.round(random() * 50 - 25)} ${fixed(x)} ${fixed(y)})"></rect>`;
-  }).join('');
+    const alt = random() < 0.22;
+    return { x: round(x - width / 2), y: round(y - height / 2), width: round(width), height: round(height), rotate: Math.round(random() * 50 - 25), cx: round(x), cy: round(y), alt };
+  });
   // Villages are a few houses among trees.
   const trees = cell.settlement === 'VILLAGE'
     ? Array.from({ length: 3 }, (_, index) => {
       const angle = index * 2.1 + random() * 1.2;
-      return `<circle class="settlement-tree" cx="${fixed(cell.x + Math.cos(angle) * 7.5 * unit)}" cy="${fixed(cell.y + Math.sin(angle) * 6 * unit)}" r="${fixed((2 + random()) * unit)}"></circle>`;
-    }).join('') : '';
+      return { cx: round(cell.x + Math.cos(angle) * 7.5 * unit), cy: round(cell.y + Math.sin(angle) * 6 * unit), r: round((2 + random()) * unit) };
+    }) : [];
   const name = plan.font > 0
-    ? `<text class="place-name ${cell.settlement.toLowerCase()}" x="${fixed(cell.x + (plan.spread + 6) * unit)}" y="${fixed(cell.y + plan.font * 0.35 * unit)}" font-size="${fixed(plan.font * unit)}" stroke-width="${fixed(3 * unit)}">${placeNameFor(cell.id)}</text>` : '';
+    ? { text: placeNameFor(cell.id), x: round(cell.x + (plan.spread + 6) * unit), y: round(cell.y + plan.font * 0.35 * unit), fontSize: round(plan.font * unit), strokeWidth: round(3 * unit) } : null;
+  return { blocks, trees, name };
+};
+
+export const settlementArtHtml = (cell: GeneratedMapPreviewCell, hexSize: number): string => {
+  const art = settlementArt(cell, hexSize);
+  if (!art || !cell.settlement) return '';
+  const blocks = art.blocks.map(({ x, y, width, height, rotate, cx, cy, alt }) =>
+    `<rect class="settlement-block${alt ? ' alt' : ''}" x="${fixed(x)}" y="${fixed(y)}" width="${fixed(width)}" height="${fixed(height)}" transform="rotate(${rotate} ${fixed(cx)} ${fixed(cy)})"></rect>`).join('');
+  const trees = art.trees.map(({ cx, cy, r }) => `<circle class="settlement-tree" cx="${fixed(cx)}" cy="${fixed(cy)}" r="${fixed(r)}"></circle>`).join('');
+  const name = art.name
+    ? `<text class="place-name ${cell.settlement.toLowerCase()}" x="${fixed(art.name.x)}" y="${fixed(art.name.y)}" font-size="${fixed(art.name.fontSize)}" stroke-width="${fixed(art.name.strokeWidth)}">${art.name.text}</text>` : '';
   return `${blocks}${trees}${name}`;
 };
 
 /** Victory objective: a gold star medallion in the hex's bottom point, the strip a stacked counter leaves uncovered. */
-export const objectiveArtHtml = (cell: GeneratedMapPreviewCell, hexSize: number): string => {
+export const objectiveArt = (cell: GeneratedMapPreviewCell, hexSize: number): { readonly cx: number; readonly cy: number; readonly r: number; readonly star: readonly Point[] } => {
   const unit = hexSize / GLYPH_HEX_SIZE;
   const cx = cell.x;
   const cy = cell.y + 39 * unit;
   const star = Array.from({ length: 10 }, (_, index) => {
     const radius = (index % 2 === 0 ? 6 : 2.5) * unit;
     const angle = Math.PI / 5 * index - Math.PI / 2;
-    return `${fixed(cx + Math.cos(angle) * radius)},${fixed(cy + Math.sin(angle) * radius)}`;
-  }).join(' ');
-  return `<circle cx="${fixed(cx)}" cy="${fixed(cy)}" r="${fixed(8.5 * unit)}"></circle><polygon points="${star}"></polygon>`;
+    return { x: Number(fixed(cx + Math.cos(angle) * radius)), y: Number(fixed(cy + Math.sin(angle) * radius)) };
+  });
+  return { cx: Number(fixed(cx)), cy: Number(fixed(cy)), r: Number(fixed(8.5 * unit)), star };
+};
+
+export const objectiveArtHtml = (cell: GeneratedMapPreviewCell, hexSize: number): string => {
+  const { cx, cy, r, star } = objectiveArt(cell, hexSize);
+  return `<circle cx="${fixed(cx)}" cy="${fixed(cy)}" r="${fixed(r)}"></circle><polygon points="${star.map(({ x, y }) => `${fixed(x)},${fixed(y)}`).join(' ')}"></polygon>`;
 };
 
 /** Entry / supply zone: a band in the owning side's colour along the hex's inner rim. */
-export const strategicBandPoints = (cell: GeneratedMapPreviewCell, hexSize: number): string =>
+export const strategicBandCorners = (cell: GeneratedMapPreviewCell, hexSize: number): Point[] =>
   Array.from({ length: 6 }, (_, index) => {
     const radians = Math.PI / 180 * (60 * index - 30);
-    return `${fixed(cell.x + hexSize * 0.86 * Math.cos(radians))},${fixed(cell.y + hexSize * 0.86 * Math.sin(radians))}`;
-  }).join(' ');
+    return { x: Number(fixed(cell.x + hexSize * 0.86 * Math.cos(radians))), y: Number(fixed(cell.y + hexSize * 0.86 * Math.sin(radians))) };
+  });
+
+export const strategicBandPoints = (cell: GeneratedMapPreviewCell, hexSize: number): string =>
+  strategicBandCorners(cell, hexSize).map(({ x, y }) => `${fixed(x)},${fixed(y)}`).join(' ');
 
 /** Axial neighbour across each pointy-top hexside; side i joins vertex i and i + 1 (vertex 0 at -30°). */
 const SIDE_NEIGHBOURS: readonly (readonly [number, number])[] = [[1, 0], [0, 1], [-1, 1], [-1, 0], [0, -1], [1, -1]];
@@ -380,8 +436,11 @@ const boundaryPath = (
 };
 
 /** Shoreline along every hexside where water meets land; the map edge is left open. */
+export const coastlinePath = (cells: readonly GeneratedMapPreviewCell[], hexSize: number): string =>
+  boundaryPath(cells, hexSize, (cell, neighbour) => cell.terrain === 'WATER' && neighbour.terrain !== 'WATER');
+
 export const coastlineHtml = (cells: readonly GeneratedMapPreviewCell[], hexSize: number): string => {
-  const d = boundaryPath(cells, hexSize, (cell, neighbour) => cell.terrain === 'WATER' && neighbour.terrain !== 'WATER');
+  const d = coastlinePath(cells, hexSize);
   return d ? `<path class="coastline" d="${d}" aria-hidden="true"></path>` : '';
 };
 
@@ -391,15 +450,18 @@ const REGION_RANK = { MOUNTAIN: 3, ROUGH: 2, WOODS: 1 } as const;
  * A fine darker fringe where woods, rough ground or mountains meet other ground, like the printed map's
  * outlined forests. Where two such regions touch, only the higher-ranked one draws the shared side.
  */
+export const regionEdgePaths = (cells: readonly GeneratedMapPreviewCell[], hexSize: number): { readonly kind: keyof typeof REGION_RANK; readonly d: string }[] =>
+  (['WOODS', 'ROUGH', 'MOUNTAIN'] as const).map((kind) => ({
+    kind,
+    d: boundaryPath(cells, hexSize, (cell, neighbour) => cell.terrain === kind && neighbour.terrain !== kind
+      && (REGION_RANK[neighbour.terrain as keyof typeof REGION_RANK] ?? 0) < REGION_RANK[kind]),
+  })).filter(({ d }) => d !== '');
+
 export const regionEdgesHtml = (cells: readonly GeneratedMapPreviewCell[], hexSize: number): string =>
-  (['WOODS', 'ROUGH', 'MOUNTAIN'] as const).map((kind) => {
-    const d = boundaryPath(cells, hexSize, (cell, neighbour) => cell.terrain === kind && neighbour.terrain !== kind
-      && (REGION_RANK[neighbour.terrain as keyof typeof REGION_RANK] ?? 0) < REGION_RANK[kind]);
-    return d ? `<path class="region-edge ${kind.toLowerCase()}" d="${d}"></path>` : '';
-  }).join('');
+  regionEdgePaths(cells, hexSize).map(({ kind, d }) => `<path class="region-edge ${kind.toLowerCase()}" d="${d}"></path>`).join('');
 
 /** The printed hex grid: one hairline path over the regular hexsides, each side drawn once. */
-export const hexGridHtml = (cells: readonly GeneratedMapPreviewCell[], hexSize: number): string => {
+export const hexGridPath = (cells: readonly GeneratedMapPreviewCell[], hexSize: number): string => {
   const seen = new Set<string>();
   const segments: string[] = [];
   cells.forEach((cell) => {
@@ -415,9 +477,17 @@ export const hexGridHtml = (cells: readonly GeneratedMapPreviewCell[], hexSize: 
       segments.push(`M${fixed(from.x)} ${fixed(from.y)}L${fixed(to.x)} ${fixed(to.y)}`);
     });
   });
-  return `<path class="hex-grid" d="${segments.join('')}" aria-hidden="true"></path>`;
+  return segments.join('');
 };
 
+export const hexGridHtml = (cells: readonly GeneratedMapPreviewCell[], hexSize: number): string =>
+  `<path class="hex-grid" d="${hexGridPath(cells, hexSize)}" aria-hidden="true"></path>`;
+
 /** The hex's printed number, set small at the top of the hex where a counter leaves it uncovered. */
-export const hexNumberHtml = (cell: GeneratedMapPreviewCell, label: string, hexSize: number): string =>
-  `<text class="hex-coordinate" x="${fixed(cell.x)}" y="${fixed(cell.y - 33 * hexSize / GLYPH_HEX_SIZE)}" font-size="${fixed(10 * hexSize / GLYPH_HEX_SIZE)}" text-anchor="middle">${label}</text>`;
+export const hexNumberPlacement = (cell: GeneratedMapPreviewCell, hexSize: number): { readonly x: number; readonly y: number; readonly fontSize: number } =>
+  ({ x: Number(fixed(cell.x)), y: Number(fixed(cell.y - 33 * hexSize / GLYPH_HEX_SIZE)), fontSize: Number(fixed(10 * hexSize / GLYPH_HEX_SIZE)) });
+
+export const hexNumberHtml = (cell: GeneratedMapPreviewCell, label: string, hexSize: number): string => {
+  const { x, y, fontSize } = hexNumberPlacement(cell, hexSize);
+  return `<text class="hex-coordinate" x="${fixed(x)}" y="${fixed(y)}" font-size="${fixed(fontSize)}" text-anchor="middle">${label}</text>`;
+};
