@@ -111,6 +111,12 @@ const dispatch = (state: GameState, action: GameAction): Transition => {
         events: [{ kind: 'MODE_CHANGED', sequence: 0, pieceId: piece.id, from: piece.mode, to: released.mode! }],
       };
     }
+    case 'END_MOVE':
+      // 6.1g: ending the move counts exactly like another unit beginning to act; the unit may not move again this phase.
+      return {
+        state: { ...state, currentMoverId: null, usage: withUsage(state, { ...usageOf(state, pieceById(state, action.pieceId)!), moved: true }) },
+        events: [{ kind: 'MOVE_ENDED', sequence: 0, pieceId: action.pieceId }],
+      };
     case 'MOVE_PIECE': {
       const query = queryMovementPath(state, action.actorId, action.pieceId, action.path).value!;
       const destination = action.path.at(-1)!;

@@ -173,6 +173,65 @@ describe('phase-specific command deck', () => {
     controller.dispose();
   });
 
+  it('offers Deselect for an idle pick but only Done for a unit part-way through its move (6.1g)', async () => {
+    const controller = await startGame();
+    const deck = newDeck();
+    for (const arrival of controller.getSnapshot().arrivals) {
+      controller.selectPiece(arrival.pieceId);
+      await controller.clickHex(arrival.entryHexIds[0]!);
+    }
+    await controller.endStep();
+    const own = () => controller.getSnapshot().view.projection!.stacks.flatMap(({ pieces }) => pieces)
+      .filter((piece) => piece.ownerId === controller.getSnapshot().view.playerId && piece.location.kind === 'ON_MAP');
+    let mover: string | undefined;
+    let destination: string | undefined;
+    for (const piece of own()) {
+      controller.selectPiece(piece.id);
+      destination = [...controller.getSnapshot().moveRange].find(([, entry]) => entry.remainingAfterTicks > 0 && !entry.endsMovement)?.[0];
+      if (destination) { mover = piece.id; break; }
+    }
+    expect(mover, 'some unit can move and still have MP left').toBeDefined();
+
+    // Not yet moving: a plain Deselect.
+    let html = commandDeckHtml(controller.getSnapshot(), deck);
+    expect(controller.getSnapshot().selectedIsMoving).toBe(false);
+    expect(html).toMatch(/id="deselect"[^>]*>Deselect</u);
+    expect(html).not.toContain('id="finish-move"');
+    controller.clearSelection();
+    expect(controller.getSnapshot().selectedPiece).toBeNull();
+
+    // Part-way through the move: only Done, which states the MP given up.
+    controller.selectPiece(mover!);
+    await controller.clickHex(destination!);
+    await controller.confirmMove();
+    let snapshot = controller.getSnapshot();
+    expect(snapshot.selection.pieceId).toBe(mover);
+    expect(snapshot.selectedIsMoving).toBe(true);
+    html = commandDeckHtml(snapshot, deck);
+    expect(html).toMatch(/id="finish-move"[^>]*>Done</u);
+    expect(html).toMatch(/MP left cannot be used again this phase/u);
+    expect(html).not.toContain('id="deselect"');
+
+    // Done ends the move in the game, not just in the UI, and lets go of the unit.
+    await controller.finishMove();
+    snapshot = controller.getSnapshot();
+    expect(snapshot.selectedPiece).toBeNull();
+    expect(snapshot.view.projection?.currentMoverId).toBeNull();
+    expect(snapshot.history.at(-1)?.action.kind).toBe('END_MOVE');
+    controller.selectPiece(mover!);
+    snapshot = controller.getSnapshot();
+    expect(snapshot.selectedIsMoving).toBe(false);
+    expect(snapshot.reachable.size).toBe(0);
+    expect(commandDeckHtml(snapshot, deck)).toMatch(/id="deselect"[^>]*>Deselect</u);
+
+    // Done can be taken back like the move itself.
+    expect(snapshot.undoStep?.scope).toBe('ACTION');
+    await controller.undoStep();
+    controller.selectPiece(mover!);
+    expect(controller.getSnapshot().selectedIsMoving).toBe(true);
+    expect(controller.getSnapshot().reachable.size).toBeGreaterThan(0);
+  });
+
   it('warns in the move popup that moving another unit ends a loaded truck\'s move (6.1g)', async () => {
     const controller = await startGame();
     for (const arrival of controller.getSnapshot().arrivals) {
