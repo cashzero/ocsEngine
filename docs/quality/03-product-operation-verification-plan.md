@@ -191,11 +191,11 @@ board-game design; user decision 2026-10-02).
 | SUP-A11 | P0 | Divide and combine trucks and compare the map counter with the selection card | The counter shows the current Transport Points, not the printed 5 | PASS |
 | SUP-A12 | P0 | Put two same-type trucks in one Hex (for example by dividing one) and select either | A Combine action is offered and works (blocking issue N-08) | PASS |
 | SUP-A13 | P0 | Inspect dumps in the roster, selection card, fuel options, stack list and ledger, including SP carried by a truck | No dump has a name; each reads as type, quantity and Hex; carried SP is shown on its truck, not as a separate "off map" unit | PASS |
-| SUP-A14 | P1 | Divide, load and unload, then read the unit counts | Counts of units are not inflated by split counters or carried SP | FAIL |
+| SUP-A14 | P1 | Divide, load and unload, then read the unit counts | Each counter counts once (a truck is a unit, so a split truck is two); SP carried aboard a truck is not counted as a unit (expectation changed with the user's approval 2026-10-02) | PASS (observed 15 to 16 after a split, unchanged by load and unload) |
 | SUP-A15 | P0 | After a move, a load, and a divide, press Undo | Undo reverts only the last action, not the whole segment (approved: only the last action is undone; dice, revealed information, ending the step and combat clear Undo) | PASS (move/load/divide in real UI; the dice cases by headless tests only) |
 Phase A results of 2026-10-02 are in `docs/quality/evidence/supply-a-2026-10-02/README.md` (input, observed, elapsed, revision, console and artifacts per row).
 After the fixes of the same day, SUP-A02 (dumps of one kind in a Hex are one counter and one map marker) and SUP-A09 (combat and barrage payments are in the ledger) were re-run in the real UI and pass.
-SUP-A15 passes: the user confirmed the Undo semantics ("OK"). SUP-A14 still FAILS: splitting a truck makes "All units (n)" go 15 to 16 because the split is a second counter; the user must decide whether that is acceptable.
+SUP-A15 passes: the user confirmed the Undo semantics ("OK"). SUP-A14: the user decided that a truck is close to a unit, so a split truck counts as two (15 to 16); the row's expectation was changed accordingly and the earlier observation now meets it.
 SUP-A10 is UNAVAILABLE (its file-load step needs a real file chooser). The Phase A gate is therefore not passed.
 
 | SUP-B01 | P0 | Enter "8T, from dump A to Hex B" | A plan preview lists trucks, route, MP per step, and resulting stock; game state is unchanged until confirmed | UNVERIFIED |

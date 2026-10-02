@@ -44,7 +44,7 @@ Status vocabulary is doc 03's. A row passes only if its expectation, as written 
 | SUP-A11 | **PASS** | Split off 4 points | Counters read `4` (empty) and `1` (`3T`), selection card "1 truck point · load 3/4T"; after Combine the single counter reads `5` | Split 482–489 ms | R6 |
 | SUP-A12 | **PASS** (after fix, see D1) | Two same-type trucks in hex 0316, either selected | "Combine the trucks in this Hex into one counter" offered and works | 519 ms | R7 |
 | SUP-A13 | **PASS** | Roster, selection card, fuel options, stack list, ledger, with the truck carrying 2T | Roster labels "Supply dump, 0313", no "off map" entries, no names; fuel options "…from the 12T dump at 0113"; stack list "Supply dump · 2T"; ledger "…from the dump at 0113" | — | R10 |
-| SUP-A14 | **FAIL** | Divide, load, unload, read "All units (n)" | 15 → 16 after the split (a split counter is a real counter), unchanged by loading; carried SP is not counted. The row says split counters must not inflate the count | — | R6 |
+| SUP-A14 | **FAIL against the original wording; PASS under the user-approved wording (see Still open)** | Divide, load, unload, read "All units (n)" | 15 → 16 after the split (a split counter is a real counter), unchanged by loading; carried SP is not counted. The row says split counters must not inflate the count | — | R6 |
 | SUP-A15 | **UNVERIFIED, then PASS once the user confirmed the semantics** | Move, load, split, press Undo three times | Observed: each press took back only the last action ("Undid: Loaded 3T…", then "Moved to 0316"), the truck stayed selected, the checkpoint list did not show the internal "Before:" points, 592 ms. **doc 03 says the exact semantics (dice, revealed information) must be confirmed before this row is executed; they are not confirmed**, so this is an observation, not a result | Undo 592 ms | R5 → R3 |
 
 SUP-B01–B08 (Phase B) were not run: Phase B has not been built.
@@ -82,6 +82,6 @@ supply of one kind in the same Hex must not be two counters; combat and barrage 
 
 ## Still open
 
-- **SUP-A14 FAIL**: "All units (n)" rises when a truck is divided (a split counter is a real counter). Waiting for the user's decision (keep counting counters, or count a divided truck as one unit).
+- **SUP-A14 PASS under the changed expectation.** The user decided (2026-10-02) that a truck is close to a unit, so each counter counts once and a split truck counts as two. The original observation (15 to 16 after a split, unchanged by load/unload, carried SP not counted) meets it.
 - **SUP-A10 UNAVAILABLE**: the file-load step needs a real file chooser.
 - No whole turn was played end to end with real clicks. **The Phase A gate stays IN PROGRESS.**
