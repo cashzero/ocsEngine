@@ -1,4 +1,5 @@
 import type { PieceFamily } from '../../domain/piece/index.js';
+import { AXIS_AIRBORNE_GPID } from './counter-corpus.js';
 import type { OobFormationArchetype, OobSide, OobUnitRole } from './model.js';
 
 export const BTR_BUILD_FILE_SHA256 = '686ECB3090F89AC3952E01C28B3E6446A2315424428652D22DCA3FB5F75212AD' as const;
@@ -44,11 +45,11 @@ export const REVIEWED_OOB_ARCHETYPES: readonly ReviewedOobArchetype[] = Object.f
   { id: 'axis-armored-combat', side: 'AXIS', role: 'COMBAT', formationArchetypes: ['ARMORED'], rawName: 'Ge 2.Pz 1-3 Pz Bn', gpid: 733, family: 'GROUND', combatStrength: 10, actionRating: 4, movementPoints: 8, regimentalEquivalents: 1, range: 0, steps: 2, pointCost: 10 },
   { id: 'axis-infantry-combat', side: 'AXIS', role: 'COMBAT', formationArchetypes: ['INFANTRY'], rawName: 'Ge Infantry Division', gpid: 826, family: 'GROUND', combatStrength: 16, actionRating: 3, movementPoints: 4, regimentalEquivalents: 4, range: 0, steps: 4, pointCost: 24 },
   { id: 'axis-mobile-combat', side: 'AXIS', role: 'COMBAT', formationArchetypes: ['MOBILE_INFANTRY'], rawName: 'Ge 3.PG 8 Inf Rgt', gpid: 806, family: 'GROUND', combatStrength: 9, actionRating: 4, movementPoints: 5, regimentalEquivalents: 1, range: 0, steps: 2, pointCost: 9 },
-  // TODO(axis-airborne-counter): no German Fallschirmjäger counter has been reviewed; this borrows the
-  // Axis infantry regiment counter (GPID 806), whose move face is truck-mobile instead of leg. Missing behavior:
-  // leg-only Movement Allowance and printed FJR ratings. Impact: German airborne regiments move faster than the
-  // Allied ones. Closes when the German airborne counter sheet is transcribed into counter-corpus.ts.
-  { id: 'axis-airborne-combat', side: 'AXIS', role: 'COMBAT', formationArchetypes: ['AIRBORNE'], rawName: 'Ge 3.PG 8 Inf Rgt', gpid: 806, family: 'GROUND', combatStrength: 7, actionRating: 4, movementPoints: 5, regimentalEquivalents: 1, range: 0, steps: 1, pointCost: 10 },
+  // TODO(axis-airborne-gpid): the German airborne division counter is transcribed from counter sheets 3F/3B
+  // (18-3-3 / 9-3-4, XX, 4 steps, leg), but its VASSAL GPID was not extracted, so 900001 is a placeholder key.
+  // User-visible impact: none on play; the generated source locator for these pieces names a non-existent GPID.
+  // Closes when the real GPID is read from buildFile.xml and substituted here and in counter-corpus.ts.
+  { id: 'axis-airborne-combat', side: 'AXIS', role: 'COMBAT', formationArchetypes: ['AIRBORNE'], rawName: 'Ge Fallschirmjäger Division (counter sheet 3F/3B)', gpid: AXIS_AIRBORNE_GPID, family: 'GROUND', combatStrength: 18, actionRating: 3, movementPoints: 4, regimentalEquivalents: 4, range: 0, steps: 4, pointCost: 24 },
   { id: 'axis-artillery', side: 'AXIS', role: 'ARTILLERY', formationArchetypes: MECHANIZED_FORMATIONS, rawName: 'Ge 2.Pz 74 Arty Rgt', gpid: 739, family: 'GROUND', combatStrength: 4, actionRating: 3, movementPoints: 4, regimentalEquivalents: 0.5, range: 4, steps: 1, pointCost: 7 },
   { id: 'axis-recon', side: 'AXIS', role: 'RECONNAISSANCE', formationArchetypes: MECHANIZED_FORMATIONS, rawName: 'Ge 2.Pz 2 Aufk Bn', gpid: 737, family: 'GROUND', combatStrength: 3, actionRating: 4, movementPoints: 10, regimentalEquivalents: 0.5, range: 0, steps: 1, pointCost: 4 },
   { id: 'axis-engineer', side: 'AXIS', role: 'ENGINEER', formationArchetypes: ALL_FORMATIONS, rawName: 'Ge Pontoon', gpid: 713, family: 'GROUND', combatStrength: 1, actionRating: 3, movementPoints: 4, regimentalEquivalents: 0.5, range: 0, steps: 1, pointCost: 3 },

@@ -1,5 +1,6 @@
 import type { ValidationIssue } from '../../core/index.js';
 import { validatePieceDefinitionCatalog } from '../../domain/piece/index.js';
+import { isSingleUnitDivision } from './model.js';
 import type {
   GeneratedOob,
   GeneratedOobMetrics,
@@ -83,10 +84,10 @@ export const validateGeneratedOob = (
         issues.push(issue('FORMATION_OWNERSHIP_MISMATCH', 'Formation units must belong to their containing side and formation.', basePath));
       }
       const count = (wanted: OobUnitRole) => formation.units.filter(({ role }) => role === wanted).length;
-      if (formation.archetype === 'INFANTRY') {
-        // A plain infantry division is one XX counter.
+      if (isSingleUnitDivision(formation.side, formation.archetype)) {
+        // Infantry and German airborne divisions are one XX counter.
         if (formation.units.length !== 1 || count('COMBAT') !== 1) {
-          issues.push(issue('FORMATION_COMBAT_INVARIANT', 'An infantry division is exactly one combat unit.', [...basePath, 'units']));
+          issues.push(issue('FORMATION_COMBAT_INVARIANT', 'A single-unit division is exactly one combat unit.', [...basePath, 'units']));
         }
         continue;
       }

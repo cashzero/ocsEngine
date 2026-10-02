@@ -33,6 +33,7 @@ import {
   type GeneratedOobSide,
   type GeneratedOobUnit,
   type NormalizedRandomOobOptions,
+  isSingleUnitDivision,
   type OobFormationArchetype,
   type OobGenerationError,
   type OobScale,
@@ -46,13 +47,15 @@ import { buildAirForces } from './air.js';
 
 const SIDES: readonly OobSide[] = ['ALLIED', 'AXIS'];
 // Plan slots shared by both sides. The mobile slot is an airborne division for the Allies (who field no
-// armored-infantry packages) and alternates Panzergrenadier / Fallschirmjäger for the Axis.
+// armored-infantry packages); the Axis infantry slot alternates by seed between a line infantry division and a
+// Fallschirmjäger division, so both are single XX counters and the point totals stay matched.
 const FORMATION_ARCHETYPES: readonly OobFormationArchetype[] = ['ARMORED', 'INFANTRY', 'MOBILE_INFANTRY'];
 const sideArchetypes = (side: OobSide, plan: readonly OobFormationArchetype[], seed: number): readonly OobFormationArchetype[] =>
   plan.map((planned, index) => {
-    if (planned !== 'MOBILE_INFANTRY') return planned;
     const occurrence = plan.slice(0, index).filter((value) => value === planned).length;
-    return side === 'ALLIED' || (occurrence + seed) % 2 === 1 ? 'AIRBORNE' : planned;
+    if (planned === 'MOBILE_INFANTRY' && side === 'ALLIED') return 'AIRBORNE';
+    if (planned === 'INFANTRY' && side === 'AXIS' && (occurrence + seed) % 2 === 1) return 'AIRBORNE';
+    return planned;
   });
 
 const must = <T, E>(result: Result<T, E>): T => {
@@ -238,12 +241,12 @@ const buildSide = (
     const occurrence = archetypes.slice(0, formationIndex).filter((value) => value === archetype).length;
     const namingProfile = formationNames(options.seed, side, archetype)[occurrence]!;
     const formationName = namingProfile.name;
-    // A plain infantry division is a single XX counter; the other divisions are an HQ plus
+    // Infantry and German airborne divisions are a single XX counter; the other divisions are an HQ plus
     // regiment-sized units. Airborne divisions carry no organic armor or artillery (counter sheets 1B/2B).
     const combatRequests = Array.from({ length: SCALE_COMBAT_UNITS[options.scale] + (archetype === 'AIRBORNE' ? 1 : 0) }, (_, index) => ({
       role: 'COMBAT' as const, suffix: `combat-${index + 1}`,
     }));
-    const requests: Array<{ role: OobUnitRole; suffix: string }> = archetype === 'INFANTRY'
+    const requests: Array<{ role: OobUnitRole; suffix: string }> = isSingleUnitDivision(side, archetype)
       ? [{ role: 'COMBAT', suffix: 'combat-1' }]
       : [
         { role: 'FORMATION_COMMAND', suffix: 'command' },

@@ -18,6 +18,8 @@ interface SourceCounter {
 const basic = (symbol: SourceCounter['symbol'], echelon: string, category: SourceCounter['category'], combat: Values, move: Values, mobility: SourceCounter['mobility'], steps = 1, re = .5): SourceCounter => ({ symbol, echelon, category, combat, move, mobility, steps, re, kind: 'COMBAT' });
 const hq = (combat: Values, move: Values): SourceCounter => ({ ...basic('HQ', 'XXX', 'OTHER', combat, move, ['truck', 'truck']), kind: 'HQ' });
 const artillery = (symbol: SourceCounter['symbol'], combat: Values, move: Values, mobility: SourceCounter['mobility']): SourceCounter => ({ ...basic(symbol, 'III', 'OTHER', combat, move, mobility), kind: 'ARTILLERY' });
+/** Placeholder key for the German airborne division counter; not a real BTR GPID. */
+export const AXIS_AIRBORNE_GPID = 900_001;
 export const COUNTER_CORPUS: Readonly<Record<number, SourceCounter>> = {
   319: hq([0,0,0,14], [0,0,16,9]),
   160: basic('ARMOR', 'III', 'MECH', [14,4,6,0], [7,4,14,0], ['tracked','tracked'], 1, 1),
@@ -29,6 +31,9 @@ export const COUNTER_CORPUS: Readonly<Record<number, SourceCounter>> = {
   1103: hq([0,0,0,10], [0,0,14,7]),
   733: basic('ARMOR', 'II', 'ARMOR', [6,5,7,0], [3,5,14,0], ['tracked','tracked']),
   826: basic('INFANTRY', 'XX', 'OTHER', [16,3,3,0], [8,3,4,0], ['leg','leg'], 4, 4),
+  // German Fallschirmjäger division (XX, 4 steps): counter sheets 3F (18-3-3) / 3B (9-3-4), leg on both faces.
+  // Synthetic key: the VASSAL GPID has not been extracted (see TODO in catalog.ts).
+  [AXIS_AIRBORNE_GPID]: basic('INFANTRY', 'XX', 'OTHER', [18,3,3,0], [9,3,4,0], ['leg','leg'], 4, 4),
   806: basic('INFANTRY', 'III', 'OTHER', [7,4,3,0], [4,4,14,0], ['leg','truck'], 1, 1),
   // US 159 Inf Rgt: images/BTR S02 R06 C19.png (4-3-3) and C19B.png (2-3-14).
   408: basic('INFANTRY', 'III', 'OTHER', [4,3,3,0], [2,3,14,0], ['leg','truck'], 1, 1),
