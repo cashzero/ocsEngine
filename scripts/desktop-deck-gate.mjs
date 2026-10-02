@@ -82,8 +82,8 @@ try {
       if (Number(state.turn)>1) break;
       if (state.handoff) { await click('#begin-required-handoff'); assert.equal(await read(`document.querySelectorAll('.counter,.deck-unit,#hex-map').length`),0); await click('#complete-handoff'); handoffs++; continue; }
       if (!moved && state.options.includes('MOVE_PIECE')) {
-        await click('[data-deck-list="units"]');
-        await click('.deck-unit:not(:has(.concealed))');
+        await click('#open-roster');
+        await click('.roster-unit:not(:has(.concealed))');
         const index = await read(`[...document.querySelector('#deck-action').options].findIndex(o=>o.value==='MOVE_PIECE')`);
         await select('#deck-action',index);
         await wait(`!!document.querySelector('.candidate')`);
