@@ -21,7 +21,8 @@ export interface DeckState {
   search: string;
   working: boolean;
   error?: string;
-  hint?: string;
+  /** Why Esc did not let go of the selected unit; dropped once the pick changes or the unit stops moving. */
+  hint?: string | undefined;
   filter?: UnitFilter;
   /** The End button was pressed once while units had not moved; the next press confirms. */
   confirmEnd?: boolean;
@@ -378,6 +379,7 @@ export const syncDeckTab = (snapshot: UiSnapshot, state: DeckState): void => {
   if (piece && piece !== state.lastPiece && !WORK_LISTS.includes(activeDeckTab(snapshot, state)) && deckTabs(snapshot).some(({ id }) => id === 'unit')) {
     state.tab = { key, id: 'unit' };
   }
+  if (piece !== state.lastPiece || !snapshot.selectedIsMoving) state.hint = undefined;
   state.lastPiece = piece;
 };
 
@@ -711,6 +713,20 @@ export const phaseControlsView = (snapshot: UiSnapshot, state: DeckState): Templ
   </div>`;
 };
 
+/**
+ * A unit that has begun moving can only be let go by finishing its move (6.1g): Done ends it for the phase.
+ * Anything else selected is simply deselected, as Esc does.
+ */
+const selectionButton = (snapshot: UiSnapshot, busy: boolean): TemplateResult | typeof nothing => {
+  if (snapshot.selectedIsMoving) {
+    const left = snapshot.remainingTicks ?? 0;
+    const title = left > 0 ? `Finish this unit's move: its ${mp(left)} MP left cannot be used again this phase (6.1g)` : 'Finish this unit\'s move (6.1g)';
+    return html`<button id="finish-move" class="primary" title=${title} ?disabled=${busy}>Done</button>`;
+  }
+  return snapshot.selectedPiece || snapshot.selection.hexId
+    ? html`<button id="deselect" class="subtle" title="Clear the selection (Esc)">Deselect</button>` : nothing;
+};
+
 export const commandDeckView = (snapshot: UiSnapshot, state: DeckState): TemplateResult => {
   const { view } = snapshot;
   const sequence = view.projection?.sequence;
@@ -727,7 +743,7 @@ export const commandDeckView = (snapshot: UiSnapshot, state: DeckState): Templat
       <div class="deck-body" data-scroll-key=${`tab-${active}`} tabindex="0" aria-busy=${String(busy)}>${resultPanel(snapshot)}<section class="deck-context">${tabBody(snapshot, state, active)}</section></div>`;
   return html`${objective ? html`<p class="deck-objective">${objective}</p>` : nothing}
     ${view.metadata.lifecycle === 'PAUSED' ? html`<p class="paused-banner" role="status">This game was saved paused. <button id="resume-game" class="bar-button">Resume</button></p>` : nothing}
-    <section class="deck-selection" aria-label="Selected unit">${selectedCard(snapshot)}${snapshot.selectedPiece || snapshot.selection.hexId ? html`<button id="deselect" class="subtle" title="Finish with this unit and clear the selection (Esc)">Done</button>` : nothing}</section>
+    <section class="deck-selection" aria-label="Selected unit">${selectedCard(snapshot)}${selectionButton(snapshot, busy)}</section>
     ${body}
-    <footer class="deck-footer"><div class="deck-notice" role="status">${snapshot.busy ? 'Working…' : withHexLabels(state.error || snapshot.notice)}</div></footer>`;
+    <footer class="deck-footer"><div class="deck-notice" role="status">${snapshot.busy ? 'Working…' : withHexLabels(state.error || state.hint || snapshot.notice)}</div></footer>`;
 };

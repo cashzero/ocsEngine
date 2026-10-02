@@ -207,6 +207,7 @@ export const describeRecord = (record: HistoryRecord, context: NarrativeContext)
     case 'DECLARE_AIR_MISSION': title = `${who} flew ${action.mission.replaceAll('_', ' ').toLowerCase()} at ${hex(action.targetHexId)}`; break;
     case 'RESPOND_DECISION': title = `${who} ${decisionVerb(String(action.decisionId))}`; break;
     case 'PLACE_REINFORCEMENT': title = own ? `${name(action.pieceId)} entered at ${hex(action.hexId)}` : `Enemy reinforcements entered at ${hex(action.hexId)}`; break;
+    case 'END_MOVE': title = own ? `${name(action.pieceId)} finished moving` : 'An enemy unit finished moving'; break;
     case 'CHANGE_MODE': title = own ? `${name(action.pieceId)} changed to ${action.mode.toLowerCase()} mode` : 'An enemy unit changed mode'; break;
     case 'RELEASE_RESERVE': title = own ? `${name(action.pieceId)} released from Reserve` : 'An enemy Reserve was released'; break;
     default: title = own ? `You: ${action.kind.replaceAll('_', ' ').toLowerCase()}` : `${who} took a logistics action`; break;

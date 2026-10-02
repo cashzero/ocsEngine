@@ -151,6 +151,11 @@ export interface UiSnapshot {
   readonly families: readonly ActionFamily[];
   readonly selection: UiSelection;
   readonly selectedPiece: ProjectedPiece | null;
+  /**
+   * The selected unit has begun its move and may still continue it (6.1g). It is only let go by finishing
+   * the move (Done), never by a plain deselect that would leave it half-moved.
+   */
+  readonly selectedIsMoving: boolean;
   /** Legal destinations of the selected unit, keyed by Hex, with the least-cost path. */
   readonly reachable: ReadonlyMap<string, readonly string[]>;
   readonly moveRange: ReadonlyMap<string, MoveRangeEntry>;

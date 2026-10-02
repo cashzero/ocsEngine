@@ -25,6 +25,7 @@ const ACTION_LABELS: Readonly<Record<GameAction['kind'], string>> = {
   CHANGE_MODE: 'Change mode',
   RELEASE_RESERVE: 'Release reserve',
   MOVE_PIECE: 'Move',
+  END_MOVE: 'Finish move',
   CHECK_SUPPLY: 'Eat off the map',
   DECLARE_COMBAT: 'Attack',
   DECLARE_BARRAGE: 'Barrage',
@@ -77,6 +78,7 @@ export const actionSummary = (action: GameAction): string => {
     case 'CHANGE_MODE': return `Change to ${action.mode.toLowerCase()} mode`;
     case 'RELEASE_RESERVE': return 'Release from reserve';
     case 'MOVE_PIECE': return `Move to ${printedHexLabel(action.path.at(-1) ?? '')}`;
+    case 'END_MOVE': return 'Finish this unit\'s move';
     case 'CHECK_SUPPLY': return 'Draw supply from a dump';
     case 'DECLARE_COMBAT': return `${action.combatKind === 'OVERRUN' ? 'Overrun' : 'Attack'} ${printedHexLabel(action.targetHexId)}`;
     case 'DECLARE_BARRAGE': return `Barrage ${printedHexLabel(action.targetHexId)}`;

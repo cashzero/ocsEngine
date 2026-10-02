@@ -105,6 +105,8 @@ export const projectRuleState = (state: GameState, viewerId: PlayerId): RuleProj
     stateRevision: state.revision,
     viewerId,
     sequence: { ...state.sequence },
+    currentMoverId: state.currentMoverId !== null && state.pieceState.pieces.some(({ id, ownerId }) => id === state.currentMoverId && ownerId === viewerId)
+      ? state.currentMoverId : null,
     stacks: stableSort(stacks, (left, right) => {
       const leftKey = stableKey([pieceLocationKey(left.location)]);
       const rightKey = stableKey([pieceLocationKey(right.location)]);
