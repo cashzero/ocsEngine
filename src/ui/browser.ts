@@ -121,11 +121,23 @@ const onMapStacks = (snapshot: UiSnapshot) => new Map(
 
 /** One line under a turn-track phase: who acts (Reaction) and, for the current phase, the segment. */
 const trackSubLabel = (step: UiSnapshot['phaseTrack'][number], sequence: NonNullable<UiSnapshot['view']['projection']>['sequence'] | undefined): string => {
+  const segment = step.status === 'current' && sequence && sequence.segment !== 'NONE' ? (phaseLabel(sequence.phase, sequence.segment).split(' · ')[1] ?? '').replace(/ Segment$/u, '') : '';
   const parts = [
     step.actorId !== sequence?.phasingPlayerId ? playerName(step.actorId) : '',
-    step.status === 'current' && sequence && sequence.segment !== 'NONE' ? (phaseLabel(sequence.phase, sequence.segment).split(' · ')[1] ?? '').replace(/ Segment$/u, '') : '',
+    // "Movement · Movement Segment" would read "Movement Movement"; only name a segment that adds information.
+    segment.toLowerCase() === step.label.toLowerCase() ? '' : segment,
   ].filter(Boolean);
   return parts.length > 0 ? `<small>${escapeHtml(parts.join(' · '))}</small>` : '';
+};
+
+const phaseTrackItemHtml = (step: UiSnapshot['phaseTrack'][number], sequence: NonNullable<UiSnapshot['view']['projection']>['sequence'] | undefined): string =>
+  `<li class="is-${step.status}"${step.status === 'current' ? ' aria-current="step"' : ''} title="${escapeHtml(`${step.label}${step.actorId !== sequence?.phasingPlayerId ? ` (${playerName(step.actorId)})` : ''}: ${step.status === 'skipped' ? 'passed automatically, no legal actions' : step.status}`)}">${escapeHtml(step.label)}${trackSubLabel(step, sequence)}</li>`;
+
+/** The always-visible chip: just the current phase. Hovering the picker opens the full list as a popup. */
+const phaseTrackCurrentHtml = (snapshot: UiSnapshot, sequence: NonNullable<UiSnapshot['view']['projection']>['sequence'] | undefined): string => {
+  const current = snapshot.phaseTrack.find((step) => step.status === 'current');
+  if (!current) return '';
+  return `<span class="phase-current">${escapeHtml(current.label)}${trackSubLabel(current, sequence)}</span>`;
 };
 
 const playerName = (playerId: string | undefined): string =>
@@ -407,10 +419,13 @@ const render = (snapshot: UiSnapshot): void => {
       <header class="topbar">
         <div class="turn-strip" aria-label="Current turn state">
           <span class="turn-cell"><small>TURN ${sequence?.gameTurn ?? '–'} / ${currentGame.summary.turnLimit}</small><strong>${escapeHtml(weatherLabel(snapshot))}</strong></span>
-          <ol class="phase-track" aria-label="${escapeHtml(`${playerName(sequence?.phasingPlayerId)} Player Turn`)}">
-            <li class="track-owner">${escapeHtml(playerName(sequence?.phasingPlayerId))}</li>
-            ${snapshot.phaseTrack.map((step) => `<li class="is-${step.status}"${step.status === 'current' ? ' aria-current="step"' : ''} title="${escapeHtml(`${step.label}${step.actorId !== sequence?.phasingPlayerId ? ` (${playerName(step.actorId)})` : ''}: ${step.status === 'skipped' ? 'passed automatically, no legal actions' : step.status}`)}">${escapeHtml(step.label)}${trackSubLabel(step, sequence)}</li>`).join('')}
-          </ol>
+          <div class="phase-picker" tabindex="0" aria-label="${escapeHtml(`${playerName(sequence?.phasingPlayerId)} Player Turn`)}">
+            <span class="track-owner">${escapeHtml(playerName(sequence?.phasingPlayerId))}</span>
+            ${phaseTrackCurrentHtml(snapshot, sequence)}
+            <ol class="phase-track phase-popup" aria-label="${escapeHtml(`${playerName(sequence?.phasingPlayerId)} Player Turn phases`)}">
+              ${snapshot.phaseTrack.map((step) => phaseTrackItemHtml(step, sequence)).join('')}
+            </ol>
+          </div>
         </div>
         <div class="seat-badge"><span class="status-dot"></span><div><small>AT THE SCREEN</small><strong>${escapeHtml(activeBinding?.label ?? snapshot.view.playerId)}</strong></div></div>
       </header>
