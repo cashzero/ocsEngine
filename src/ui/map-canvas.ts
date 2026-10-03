@@ -75,8 +75,11 @@ export const EMPTY_MAP_STATE: MapState = {
   airTargets: new Set(), destinationHexId: null, targetHexIds: new Set(), path: [], traceCoverage: new Set(), ownZone: new Set(), enemyZone: new Set(), trainbusting: [], counters: [], badges: [],
 };
 
-/** Internal scale of the normal framing; the zoom readout is relative to it, so this framing reads 100%. */
-export const DEFAULT_ZOOM = 1.68;
+/** Internal scale that the zoom readout is measured against: this framing reads 100%. */
+export const ZOOM_REFERENCE = 1.68;
+/** The readout of the default framing (new game, Reset): 110% is the smallest zoom at which counter text reliably shows. */
+export const DEFAULT_ZOOM_PERCENT = 110;
+export const DEFAULT_ZOOM = ZOOM_REFERENCE * (DEFAULT_ZOOM_PERCENT / 100);
 /** Wheel notches and +/− move the readout by this many percentage points, landing on multiples of it. */
 const ZOOM_STEP_PERCENT = 10;
 /** Mostly room to zoom out: about 60% fits the whole map, 30% leaves it small enough to see around the panels. */
@@ -271,17 +274,17 @@ export class MapView {
     this.#cameraMoved();
   }
 
-  get zoomPercent(): number { return Math.round((this.camera.zoom / DEFAULT_ZOOM) * 100); }
+  get zoomPercent(): number { return Math.round((this.camera.zoom / ZOOM_REFERENCE) * 100); }
 
   /** Detail level of the counters at the current zoom (counter.ts). */
   get lod(): CounterLod { return counterLod(70 * this.#fit() * this.camera.zoom); }
 
   /** One zoom step in or out (direction ±1), snapping the readout to the next multiple of ZOOM_STEP_PERCENT. */
   zoomStep(direction: 1 | -1, anchorX?: number, anchorY?: number): void {
-    const steps = (this.camera.zoom / DEFAULT_ZOOM) * 100 / ZOOM_STEP_PERCENT;
+    const steps = (this.camera.zoom / ZOOM_REFERENCE) * 100 / ZOOM_STEP_PERCENT;
     // The tolerance keeps float noise (89.9999%) from skipping or repeating a step.
     const target = (direction > 0 ? Math.floor(steps + 1e-6) + 1 : Math.ceil(steps - 1e-6) - 1) * ZOOM_STEP_PERCENT;
-    this.#zoomTo((Math.max(MIN_ZOOM_PERCENT, Math.min(MAX_ZOOM_PERCENT, target)) / 100) * DEFAULT_ZOOM, anchorX, anchorY);
+    this.#zoomTo((Math.max(MIN_ZOOM_PERCENT, Math.min(MAX_ZOOM_PERCENT, target)) / 100) * ZOOM_REFERENCE, anchorX, anchorY);
   }
 
   /** Zoom keeping the point under (anchorX, anchorY), in framing units, fixed on screen. */
