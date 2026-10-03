@@ -237,14 +237,15 @@ describe('OCS 4.3 internal stocks, trace supply and attrition (12.6, 12.8, 12.10
     }), 'SUPPLY', 'NONE', ALLIED);
     const any = ruleEngine.queryTraceCoverage(state, ALLIED, null);
     expect(any.allowed).toBe(true);
-    expect(any.value.length).toBeGreaterThan(0);
-    expect(any.value.length).toBeLessThan(state.scenario.mapDefinition.hexes.length);
+    const anyHexes = any.value!;
+    expect(anyHexes.length).toBeGreaterThan(0);
+    expect(anyHexes.length).toBeLessThan(state.scenario.mapDefinition.hexes.length);
     // A unit's own coverage contains its hex exactly when the Supply Phase would find it in trace.
     for (const id of [U.alTrk, U.alTrk2, U.alEng, U.alHq]) {
-      const own = ruleEngine.queryTraceCoverage(state, ALLIED, id).value;
+      const own = ruleEngine.queryTraceCoverage(state, ALLIED, id).value!;
       expect(own.includes(piece(state, id).location.kind === 'ON_MAP' ? (piece(state, id).location as { hexId: string }).hexId : ''), id).toBe(pieceHasTrace(state, piece(state, id)));
       // Whatever one unit may use, some friendly unit may use too.
-      expect(own.every((hexId) => any.value.includes(hexId))).toBe(true);
+      expect(own.every((hexId) => anyHexes.includes(hexId))).toBe(true);
     }
     expect(ruleEngine.queryTraceCoverage(state, AXIS, U.alTrk).allowed).toBe(false);
   });
