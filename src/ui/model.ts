@@ -117,6 +117,13 @@ export interface EndStep {
   readonly blockers: readonly string[];
 }
 
+/** A rule that stops the selected unit from moving now, as the engine reported it. */
+export interface MoveBlocker {
+  readonly code: string;
+  readonly message: string;
+  readonly rule: string;
+}
+
 /** Cost of reaching one Hex of the selected unit's range (6.1). */
 export interface MoveRangeEntry {
   readonly path: readonly string[];
@@ -166,6 +173,11 @@ export interface UiSnapshot {
   /** The selected unit the overlay is drawn for; null when it shows where any friendly unit would trace. */
   readonly traceCoverageFor: string | null;
   readonly showTraceCoverage: boolean;
+  /**
+   * Why the selected own unit cannot begin or continue moving now (e.g. 12.5a fuel), so the deck can say so
+   * instead of a bare "cannot move"; empty when it may move or no Movement Segment is open.
+   */
+  readonly moveBlockers: readonly MoveBlocker[];
   /** MP the selected unit has left this phase, in quarter-MP ticks; null when it cannot move. */
   readonly remainingTicks: number | null;
   readonly movePreview: MovePreview | null;

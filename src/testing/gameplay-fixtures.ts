@@ -57,8 +57,8 @@ export const createGameplayDuelScenario = (): GeneratedRuleScenario => {
   return { ...built, configuration: { ...built.configuration, supplyArrivals: null } };
 };
 
-export const createGameplayFixture = async (): Promise<GameplayFixture> => {
-  const scenario = createGameplayDuelScenario();
+/** The duel session; pass a variant of `createGameplayDuelScenario()` to change its placements. */
+export const createGameplayFixture = async (scenario: GeneratedRuleScenario = createGameplayDuelScenario()): Promise<GameplayFixture> => {
   const players = [scenario.scenario.players[0]!.id, scenario.scenario.players[1]!.id] as const;
   const seats = [seat('seat:one'), seat('seat:two')] as const;
   const saves = createMemorySaveRepository();
