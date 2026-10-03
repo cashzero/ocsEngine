@@ -4,6 +4,7 @@ import { validateBarrageDeclaration, validateCombatDeclaration } from '../combat
 import { validateCombineAircraft, validateReduceAirBase, validateRefit } from '../air/base.js';
 import { validateAirMission } from '../air/mission.js';
 import { arrivingReinforcements, validateReinforcementPlacement } from '../lifecycle/lifecycle.js';
+import { validateCreateBreakdown } from '../breakdown/breakdown.js';
 import { validateModeChange, validateReserveRelease } from '../mode/mode.js';
 import { queryMovementPath, validateEndMove } from '../movement/movement.js';
 import { unitsNeedingRecovery, validateFormationTraceChoice, validateRecovery, validateSupplyCheck } from '../supply/supply.js';
@@ -68,6 +69,7 @@ export const validateGameAction = (state: GameState, action: GameAction): Action
         break;
       }
       case 'END_MOVE': issues.push(...validateEndMove(state, action.actorId, action.pieceId)); break;
+      case 'CREATE_BREAKDOWN': issues.push(...validateCreateBreakdown(state, action.actorId, action.pieceId, action.name)); break;
       case 'CHECK_SUPPLY': issues.push(...validateSupplyCheck(state, action.actorId, action.pieceIds, action.sourcePieceId)); break;
       case 'DECLARE_COMBAT': issues.push(...validateCombatDeclaration(state, action)); break;
       case 'DECLARE_BARRAGE': issues.push(...validateBarrageDeclaration(state, action)); break;

@@ -208,6 +208,8 @@ export const describeRecord = (record: HistoryRecord, context: NarrativeContext)
     case 'RESPOND_DECISION': title = `${who} ${decisionVerb(String(action.decisionId))}`; break;
     case 'PLACE_REINFORCEMENT': title = own ? `${name(action.pieceId)} entered at ${hex(action.hexId)}` : `Enemy reinforcements entered at ${hex(action.hexId)}`; break;
     case 'END_MOVE': title = own ? `${name(action.pieceId)} finished moving` : 'An enemy unit finished moving'; break;
+    // 4.9a: the enemy is not told that a division lost a step to a Breakdown; he sees the new counter only if it is on top.
+    case 'CREATE_BREAKDOWN': title = own ? `${name(action.pieceId)} detached ${action.name.split(' / ')[0]}` : 'An enemy unit reorganized'; break;
     case 'CHANGE_MODE': title = own ? `${name(action.pieceId)} changed to ${action.mode.toLowerCase()} mode` : 'An enemy unit changed mode'; break;
     case 'RELEASE_RESERVE': title = own ? `${name(action.pieceId)} released from Reserve` : 'An enemy Reserve was released'; break;
     default: title = own ? `You: ${action.kind.replaceAll('_', ' ').toLowerCase()}` : `${who} took a logistics action`; break;
@@ -226,6 +228,7 @@ export const describeRecord = (record: HistoryRecord, context: NarrativeContext)
         break;
       }
       case 'TRANSACTION_CANCELLED': lines.push('The combat was withdrawn.'); break;
+      case 'BREAKDOWN_ABSORBED': if (isOwn(event.pieceId)) lines.push(`${name(event.pieceId)} absorbed ${event.name} and regained a step.`); break;
       case 'SUPPLY_STATUS_CHANGED': if (isOwn(event.pieceId)) lines.push(`${name(event.pieceId)} is ${event.inSupply ? 'back in supply' : 'Out of Supply'}.`); break;
       case 'SUPPLY_ARRIVED': if (event.playerId === context.viewerId) lines.push(`${event.tokens}T of supply arrived (Supply Table roll ${event.roll}).`); break;
       case 'FUEL_PAID': if (isOwn(event.pieceId)) lines.push(`Fuel paid: ${event.tokens}T.`); break;

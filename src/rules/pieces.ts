@@ -46,6 +46,11 @@ export const TRANSPORT_POINTS_STATUS = statusId('status:transport-points');
 export const OUT_OF_TRACE_SINCE_STATUS = statusId('status:out-of-trace-since');
 /** 12.8e: Game Turn on which a unit that broke out returns as a reinforcement. */
 export const RETURN_TURN_STATUS = statusId('status:return-turn');
+/**
+ * TEXT name of one Piece when it differs from its Definition's. Breakdowns (20.0) share a generic Definition, but each is
+ * named after the regiment its division detached ("16 Inf Regt / 1.Inf"), which a board-game counter pool cannot do.
+ */
+export const UNIT_NAME_STATUS = statusId('status:unit-name');
 
 const integerStatus = (piece: PieceState, id: DefinitionId): number | null => {
   const value = piece.statuses.find(({ statusDefinitionId }) => statusDefinitionId === id)?.value;

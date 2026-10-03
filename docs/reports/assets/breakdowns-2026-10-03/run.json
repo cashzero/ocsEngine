@@ -1,0 +1,92 @@
+{
+  "alliedOffers": [
+    "Detach 501 Abn Regt (5-4-3, 1 RE; the division loses a step)",
+    "Detach 502 Abn Regt (5-4-3, 1 RE; the division loses a step)",
+    "Detach 506 Abn Regt (5-4-3, 1 RE; the division loses a step)",
+    "Detach 327 Gld Regt (5-4-3, 1 RE; the division loses a step)",
+    "Detach 401 Gld Regt (5-4-3, 1 RE; the division loses a step)"
+  ],
+  "afterDetach": {
+    "units": 10,
+    "strip": "Move units one at a time: select a unit to see its range. Red rings mark overrun targets.\n\nXX\n1\n3\n10\n4\n5\n101.Abn\n\n0113 · Move mode\n\n5 MP left · 53 hexes reachable\nDeselect\nUnit\nLog\nAll units (10)\nMode\nCombat mode\nReserve\nStrat mode\nBreakdowns\nDetach 501 Abn Regt (5-4-3, 1 RE; the division loses a step)\nDetach 502 Abn Regt (5-4-3, 1 RE; the division loses a step)\nDetach 327 Gld Regt (5-4-3, 1 RE; the division loses a step)\nDetach 401 Gld Regt (5-4-3, 1 RE; the division loses a step)\nDetach 506 Abn Regt (5-4-3, 1 RE; the division loses a step): done."
+  },
+  "breakdownStrip": "Move units one at a time: select a unit to see its range. Red rings mark overrun targets.\n\nIII\n506\n101.Abn\n3\n4\n5\n506 Abn Regt / 101.Abn\n\n0113 · Move mode\n\n5 MP left · 53 hexes reachable\nDeselect\nUnit\nLog\nAll units (10)\nMode\nCombat mode\nReserve\nStrat mode\nDetach 506 Abn Regt (5-4-3, 1 RE; the division loses a step): done.",
+  "undo": {
+    "before": 11,
+    "after": 10
+  },
+  "absorb": {
+    "before": 11,
+    "after": 10
+  },
+  "alliedLog": [
+    "You finished Movement · Movement Segment 101.Abn absorbed 327 Gld Regt / 101.Abn and regained a step. Passed automatically, no legal actions: Movement barrage segment. Now: Supply Phase · Allied commander.",
+    "101.Abn detached 327 Gld Regt",
+    "506 Abn Regt / 101.Abn moved 0113 → 0214",
+    "101.Abn detached 506 Abn Regt",
+    "You finished Reinforcement Phase Passed automatically, no legal actions: Movement breakout segment. Now: Movement · Movement Segment · Allied commander.",
+    "Supply dump entered at 0113"
+  ],
+  "axisAway": "Place every arriving unit: select it, then click a blue entry hex.\n\nNo unit selected\n\nClick one of your units on the map, or open All units.\n\nWHILE YOU WERE AWAY\n\n1 enemy move (see the map).\n\nEnemy reinforcements entered at 0113 ×2\nAllied commander finished Reinforcement Phase\n\nPassed automatically, no legal actions: Movement breakout segment.\n\nNow: Movement · Movement Segment · Allied commander.\n\nAn enemy unit reorganized ×2\nAllied commander finished Movement · Movement Segment\n\nPassed automatically, no legal actions: Movement barrage segment.\n\nNow: Supply Phase · Allied commander.\n\nAllied commander finished Supply Phase\n\n12T of supply arrived (Supply Table roll 8).\n\nPassed automatically, no legal actions: Reaction (Axis commander), Combat, Exploitation, Clean Up, Aircraft Refit (Axis commander).\n\nNow: Reinforcement Phase · Axis commander.\n\nGot it\nYour turn, Axis commander.",
+  "axisOffers": [
+    "Detach 13 FJ Rgt (4-3-2, 1 RE; the division loses a step)",
+    "Detach 14 FJ Rgt (4-3-2, 1 RE; the division loses a step)",
+    "Detach 15 FJ Rgt (4-3-2, 1 RE; the division loses a step)"
+  ],
+  "final": "TURN 2 / 8 5 Oct · Dry AXIS PLAYER TURN First Player Phase ▾ ↶ Undo End First Player Phase Next: Aircraft Refit Phase O",
+  "steps": [
+    {
+      "operation": "select 101.Abn from All units",
+      "elapsedMs": 249
+    },
+    {
+      "operation": "detach 506 Abn Regt",
+      "elapsedMs": 270
+    },
+    {
+      "operation": "select the Breakdown",
+      "elapsedMs": 108
+    },
+    {
+      "operation": "preview move to 0214",
+      "elapsedMs": 181
+    },
+    {
+      "operation": "confirm move",
+      "elapsedMs": 264
+    },
+    {
+      "operation": "detach 501 Abn Regt",
+      "elapsedMs": 280
+    },
+    {
+      "operation": "Undo the detach",
+      "elapsedMs": 334
+    },
+    {
+      "operation": "detach 327 Gld Regt",
+      "elapsedMs": 257
+    },
+    {
+      "operation": "confirm End Movement Segment",
+      "elapsedMs": 197
+    },
+    {
+      "operation": "hand over to Axis",
+      "elapsedMs": 737
+    },
+    {
+      "operation": "select 5.FJ from All units",
+      "elapsedMs": 252
+    },
+    {
+      "operation": "detach 13 FJ Rgt",
+      "elapsedMs": 246
+    },
+    {
+      "operation": "confirm Axis Breakdown move",
+      "elapsedMs": 397
+    }
+  ],
+  "consoleErrors": []
+}

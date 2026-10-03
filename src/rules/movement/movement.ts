@@ -51,7 +51,7 @@ export const pieceMobilityType = (state: GameState, pieceId: PieceId): MobilityT
   return piece ? mobilityOf(state, piece) : null;
 };
 
-const phaseAllowsMovement = (state: GameState): boolean =>
+export const phaseAllowsMovement = (state: GameState): boolean =>
   ['MOVEMENT', 'REACTION', 'EXPLOITATION'].includes(state.sequence.phase) && state.sequence.segment === 'MOVEMENT';
 
 /**

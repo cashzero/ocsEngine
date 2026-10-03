@@ -68,10 +68,15 @@ export const validateGeneratedOob = (
   if (duplicateIds(allUnits.map(({ definitionId }) => definitionId)).length > 0) {
     issues.push(issue('DUPLICATE_GENERATED_DEFINITION_REFERENCE', 'Every generated unit requires its own Piece Definition.', ['pieceDefinitionCatalog']));
   }
-  const definitionIds = new Set(generated.pieceDefinitionCatalog.definitions.map(({ id }) => id));
+  // Breakdown Definitions (20.0) have no starting unit: they are only created in play by the divisions that name them.
+  const breakdownIds = new Set(generated.pieceDefinitionCatalog.definitions.flatMap(({ capabilities }) => capabilities
+    .filter(({ id }) => id === 'BREAKDOWN').flatMap(({ parameters }) => parameters
+      .flatMap((parameter) => parameter.key === 'definitionId' && parameter.kind === 'TEXT' ? [parameter.value] : []))));
+  const definitionIds = new Set(generated.pieceDefinitionCatalog.definitions.map(({ id }) => id).filter((id) => !breakdownIds.has(id)));
   if (allUnits.some(({ definitionId }) => !definitionIds.has(definitionId))
-    || definitionIds.size !== allUnits.length) {
-    issues.push(issue('OOB_CATALOG_UNIT_MISMATCH', 'Generated units and Piece Definitions must form an exact one-to-one set.'));
+    || definitionIds.size !== allUnits.length
+    || [...breakdownIds].some((id) => !generated.pieceDefinitionCatalog.definitions.some((definition) => definition.id === id))) {
+    issues.push(issue('OOB_CATALOG_UNIT_MISMATCH', 'Generated units and Piece Definitions must form an exact one-to-one set, plus the Breakdown Definitions the divisions name.'));
   }
   for (const [sideIndex, side] of generated.sides.entries()) {
     if (side.formations.length !== generated.options.formationsPerSide) {

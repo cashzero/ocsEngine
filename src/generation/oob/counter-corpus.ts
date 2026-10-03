@@ -55,6 +55,14 @@ export const COUNTER_CORPUS: Readonly<Record<number, SourceCounter>> = {
   739: artillery('ARTILLERY', [25,3,3,2], [13,3,14,2], ['leg','truck']),
   737: basic('RECON', 'II', 'MECH', [3,5,8,0], [2,5,18,0], ['tracked','tracked']),
   713: basic('ENGINEER', 'X', 'OTHER', [1,0,0,0], [0,0,12,0], ['truck','truck'], 1, 1),
+  // Breakdowns (20.0): 1 RE, one step, leg on both faces, "Brkdwn" on the counter. Combat / move faces read from the art:
+  // US 5-4-3 (images BTR S01 R10 C16F/B.png) 3-4-5; US 5-3-3 (S01 R09 C15F/B) 3-3-5; Ge 3-4-2 (S04 R01 C01/B) 2-4-4;
+  // Ge 3-3-2 (S04 R01 C09/B) 2-3-4; Ge LW 4-3-2 (S03 R07 C16/B) 2-3-4.
+  88: basic('INFANTRY', 'III', 'OTHER', [5,4,3,0], [3,4,5,0], ['leg','leg'], 1, 1),
+  80: basic('INFANTRY', 'III', 'OTHER', [5,3,3,0], [3,3,5,0], ['leg','leg'], 1, 1),
+  709: basic('INFANTRY', 'III', 'OTHER', [3,4,2,0], [2,4,4,0], ['leg','leg'], 1, 1),
+  710: basic('INFANTRY', 'III', 'OTHER', [3,3,2,0], [2,3,4,0], ['leg','leg'], 1, 1),
+  1207: basic('INFANTRY', 'III', 'OTHER', [4,3,2,0], [2,3,4,0], ['leg','leg'], 1, 1),
   77: { ...basic('TRUCK', '', 'OTHER', [0,0,45,0], [0,0,45,0], ['truck','truck']), kind: 'TRANSPORT', re: 0 },
   71: { ...basic('TRUCK', '', 'OTHER', [0,0,45,0], [0,0,45,0], ['truck','truck']), kind: 'TRANSPORT', re: 0 },
 };

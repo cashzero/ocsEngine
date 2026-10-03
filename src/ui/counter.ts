@@ -53,7 +53,12 @@ export const counterView = (definition: PieceDefinition, piece: CounterPiece) =>
   if (definition.counter.kind !== 'SUPPLY' && (!face || !step)) throw new Error(`Counter face/step missing: ${definition.id}`);
   // 13.2c: a divided or combined truck is a smaller or larger counter; its current size is a status, the printed one is the default.
   const points = piece.statusValues?.find(({ statusDefinitionId }) => statusDefinitionId === 'status:transport-points')?.value;
-  return { redacted: false as const, kind: 'unit' as const, label: definition.name, counter: definition.counter, face, step,
+  // 20.0: a Breakdown shares its generic counter but prints its own regiment ("16 Inf Regt / 1.Inf": 16 and 1.Inf).
+  const ownName = piece.statusValues?.find(({ statusDefinitionId }) => statusDefinitionId === 'status:unit-name')?.value;
+  const named = typeof ownName === 'string' && ownName.length > 0;
+  const [regiment = '', division = ''] = named ? ownName.split(' / ') : [];
+  const counter = named ? { ...definition.counter, designation: regiment.split(' ')[0] ?? regiment, affiliation: division } : definition.counter;
+  return { redacted: false as const, kind: 'unit' as const, label: named ? ownName : definition.name, counter, face, step,
     mode: piece.mode, statuses: piece.statuses, quantity: piece.resourceQuantity,
     transportPoints: typeof points === 'number' ? points : definition.counter.transportPoints,
     // The load a friendly truck carries, as Tokens of its capacity (4 per point); null when unknown (enemy) or not a truck.

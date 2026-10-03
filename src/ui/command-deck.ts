@@ -523,7 +523,7 @@ const unitTab = (snapshot: UiSnapshot, state: DeckState): TemplateResult => {
     parts.push(html`<div class="mode-actions"><strong>Mode</strong><div class="chip-row">${snapshot.modeOptions.map(({ mode }) => html`<button data-mode=${mode}>${modeName(mode)}</button>`)}${snapshot.releaseAction ? html`<button id="release-reserve">Release reserve</button>` : nothing}</div></div>`);
   }
   if (snapshot.unitActions.length > 0 || snapshot.transportOptions) {
-    const groups: [string, string][] = [['FUEL', 'Fuel'], ['SUPPLY', 'Supply'], ['BREAKOUT', 'Breakout'], ['TRANSPORT', 'Trucks'], ['DUMP', 'Dump'], ['AIR', 'Air']];
+    const groups: [string, string][] = [['BREAKDOWN', 'Breakdowns'], ['FUEL', 'Fuel'], ['SUPPLY', 'Supply'], ['BREAKOUT', 'Breakout'], ['TRANSPORT', 'Trucks'], ['DUMP', 'Dump'], ['AIR', 'Air']];
     // Loading, unloading and splitting live in the truck's supply area; the buttons that remain are the other truck actions.
     const inPanel = (kind: string) => ['LOAD_SUPPLY', 'UNLOAD_SUPPLY', 'DIVIDE_TRANSPORT'].includes(kind);
     parts.push(...groups.flatMap(([group, title]): View[] => {

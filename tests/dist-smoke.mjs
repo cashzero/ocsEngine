@@ -57,7 +57,7 @@ assert.equal(ruleHash.ok, true);
 assert.match(ruleHash.value, /^sha256:[a-f0-9]{64}$/);
 assert.equal(
   ruleEngine.getActionFamilies(ruleFixture, ruleFixture.sequence.actingPlayerId).length,
-  28,
+  29,
 );
 
 const gameplayPorts = createMemoryGameplayPorts([ruleFixture.scenario]);

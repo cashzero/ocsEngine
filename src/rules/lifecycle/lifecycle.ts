@@ -26,6 +26,7 @@ import {
   returnTurnOf,
   withStatus,
 } from '../pieces.js';
+import { absorbBreakdowns } from '../breakdown/breakdown.js';
 import { clearFuel } from '../supply/fuel.js';
 import { mergeSupplyAt } from '../supply/transport.js';
 import { violation } from '../validation/violation.js';
@@ -154,12 +155,19 @@ export const applySequenceLifecycle = (
   const from = state.sequence;
   const events: RuleEvent[] = [{ kind: 'SEQUENCE_ADVANCED', sequence: 0, from, to }];
   let next: GameState = { ...state, sequence: to, currentMoverId: null };
+  const phaseEnds = from.phase !== to.phase || from.playerTurnIndex !== to.playerTurnIndex || from.gameTurn !== to.gameTurn;
+  if (phaseEnds) {
+    // 20.0d: reduced multi-step units absorb the eligible Breakdowns stacked with them at the end of every phase.
+    const absorbed = absorbBreakdowns(next);
+    next = absorbed.state;
+    events.push(...absorbed.events.map((event) => ({ ...event, sequence: events.length })));
+  }
   if (from.phase === 'WEATHER') next = determineWeather(next, events);
   if (from.phase === 'SUPPLY') next = determineSupply(next, from.phasingPlayerId, events);
   if (from.phase === 'CLEAN_UP') next = clearFuel(cleanupPlayer(next, from.phasingPlayerId, events), from.phasingPlayerId);
   if (to.phase === 'SUPPLY' && from.phase !== 'SUPPLY') next = { ...next, formationTraces: [] };
   if (to.phase === 'REINFORCEMENT' && from.phase !== 'REINFORCEMENT') next = arriveSupply(next, to.phasingPlayerId, events);
-  if (from.phase !== to.phase || from.playerTurnIndex !== to.playerTurnIndex || from.gameTurn !== to.gameTurn) {
+  if (phaseEnds) {
     // MA, attacks and barrages are all counted per phase (6.1b, 9.1c, 10.0e).
     next = { ...next, usage: [], ledger: { attackedHexIds: [], barragedHexIds: [] }, air: { ...next.air, missionFlownIds: [], refittedBaseIds: [], reducedBaseIds: [] } };
   } else if (from.segment !== to.segment) {

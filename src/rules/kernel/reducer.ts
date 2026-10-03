@@ -13,6 +13,7 @@ import {
   resolveFirstPlayerDecision,
 } from '../lifecycle/lifecycle.js';
 import { applyBreakout } from '../lifecycle/supply-phase.js';
+import { applyCreateBreakdown } from '../breakdown/breakdown.js';
 import { applyModeChange, applyReserveRelease } from '../mode/mode.js';
 import { queryMovementPath } from '../movement/movement.js';
 import { hexOf, pieceById, reTicksOf, usageOf, withInternalStocks, withUsage } from '../pieces.js';
@@ -117,6 +118,8 @@ const dispatch = (state: GameState, action: GameAction): Transition => {
         state: { ...state, currentMoverId: null, usage: withUsage(state, { ...usageOf(state, pieceById(state, action.pieceId)!), moved: true }) },
         events: [{ kind: 'MOVE_ENDED', sequence: 0, pieceId: action.pieceId }],
       };
+    case 'CREATE_BREAKDOWN':
+      return applyCreateBreakdown(state, action.pieceId, action.name);
     case 'MOVE_PIECE': {
       const query = queryMovementPath(state, action.actorId, action.pieceId, action.path).value!;
       const destination = action.path.at(-1)!;
