@@ -111,6 +111,8 @@ export const counterSvgBody = (view: CounterViewModel): string => {
   const strength = view.step?.combatStrength;
   const flags = [view.mode && !['MOVE','COMBAT'].includes(view.mode) ? ({ RESERVE:'RES', STRAT:'STRAT', DG:'DG', EXPLOITATION:'EXP' } as Record<string,string>)[view.mode] : '',
     view.statuses.includes('status:out-of-supply') ? 'OOS' : ''].filter(Boolean);
+  // A formation HQ prints its formation's short name ("82.Abn") in the symbol box, as the board-game counter does; its unit name is "HQ / 82.Abn".
+  const hqFormation = c.kind === 'HQ' ? view.label.split(' / ').slice(1).join(' / ') : '';
   const strengthText = strength == null ? '' : c.defensiveOnly ? `(${strength})` : strength;
   let ratings = '';
   if (c.kind === 'HQ') ratings = text(50,84,`${view.step?.range}–${ma}`,'counter-number');
@@ -137,7 +139,7 @@ export const counterSvgBody = (view: CounterViewModel): string => {
     ${c.formationColor ? `<path class="formation-band" stroke="${escape(c.formationColor)}" d="M3 51H97"/>` : ''}
     <g class="counter-identification">${text(50,21,c.echelon,'counter-echelon')}${text(13,56,c.designation,'counter-designation')}${text(87,38,c.affiliation,'counter-affiliation')}
     ${c.showRe ? `<circle class="re-dot" cx="13" cy="28" r="10"/>${text(13,33,(view.step?.regimentalEquivalentTicks ?? 0)/4,'counter-re')}` : ''}</g>
-    <g class="counter-symbol category-${c.combatCategory}">${!['TRUCK','SUPPLY'].includes(c.symbol) ? '<rect class="symbol-box" x="28" y="24" width="44" height="25"/>' : ''}${symbolPaths[c.symbol]}</g>
+    <g class="counter-symbol category-${c.combatCategory}">${!['TRUCK','SUPPLY'].includes(c.symbol) ? '<rect class="symbol-box" x="28" y="24" width="44" height="25"/>' : ''}${hqFormation ? text(50,43,hqFormation,'hq-formation').replace('<text ', `<text${hqFormation.length > 5 ? ` textLength="40" lengthAdjust="spacingAndGlyphs"` : ''} `) : symbolPaths[c.symbol]}</g>
     <g class="counter-values">${ratings}</g>${gauge}
     ${flags.length ? `<g class="counter-state"><rect x="2" y="88" width="96" height="12"/>${text(50,98,flags.join(' · '))}</g>` : ''}`;
 };
