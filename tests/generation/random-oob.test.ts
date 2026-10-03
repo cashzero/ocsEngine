@@ -105,6 +105,8 @@ describe('M7 deterministic random OOB pipeline', () => {
           expect(definition.ownership.formationDefinitionId).toBeNull();
           expect(definition.counter?.formationColor).toBeNull();
           expect(definition.counter?.affiliation).toBe('');
+          // Airborne divisions print the NATO airborne symbol; every other single-counter division is plain infantry.
+          expect(definition.counter?.symbol).toBe(formation.archetype === 'AIRBORNE' ? 'AIRBORNE' : 'INFANTRY');
           if (formation.archetype === 'AIRBORNE') {
             expect([mobility(unit.definitionId, 'combat'), mobility(unit.definitionId, 'move')]).toEqual(['mobility:leg', 'mobility:leg']);
           } else {

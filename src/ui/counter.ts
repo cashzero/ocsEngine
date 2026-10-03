@@ -71,6 +71,8 @@ export const counterView = (definition: PieceDefinition, piece: CounterPiece) =>
 export type CounterViewModel = ReturnType<typeof counterView>;
 const symbolPaths = {
   INFANTRY: '<path d="M29 25L71 48M71 25L29 48"/>',
+  // NATO (APP-6) airborne infantry: the infantry cross plus the airborne arc (a parachute canopy) on the frame's bottom edge.
+  AIRBORNE: '<path d="M29 25L71 48M71 25L29 48"/><path d="M30 49C36 25 64 25 70 49"/>',
   ARMOR: '<ellipse cx="50" cy="36.5" rx="17" ry="8"/>',
   GLIDER: '<path d="M29 25L71 48M71 25L29 48M34 30H66L50 40Z"/>',
   RECON: '<ellipse cx="50" cy="36.5" rx="16" ry="8"/><path d="M29 48L71 25"/>',
