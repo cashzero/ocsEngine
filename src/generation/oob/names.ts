@@ -28,6 +28,12 @@ export const shortFormationName = (name: string): string => {
   return name.replace(/ "[^"]*"/gu, '').trim();
 };
 
+/** How many formations of an archetype both sides can give distinct names (the smaller name pool). */
+export const formationNameCapacity = (archetype: OobFormationArchetype): number => Math.min(
+  ...(['ALLIED', 'AXIS'] as const).map((side) => FORMATION_NAME_PROFILES
+    .filter((profile) => profile.side === side && profile.archetype === archetype).length),
+);
+
 // Separate naming streams never consume the composition/deployment RNG. Formation names are the short forms.
 export const formationNames = (seed: number, side: OobSide, archetype: OobFormationArchetype): readonly FormationNameProfile[] =>
   createSeededRandom(mixUint32(seed ^ (side === 'ALLIED' ? 0x5553 : 0x4745)))

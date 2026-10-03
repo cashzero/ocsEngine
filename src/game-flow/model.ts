@@ -24,7 +24,9 @@ export interface NewGameRequest {
   };
   readonly oob: {
     readonly scale: OobScale;
-    readonly formationsPerSide: number;
+    /** Every division per side; `armoredDivisionsPerSide` of them are armored, the rest foot (infantry, airborne). */
+    readonly divisionsPerSide: number;
+    readonly armoredDivisionsPerSide: number;
     /** Aircraft and Air Bases (14.0-15.0). Absent means NONE: a ground duel. */
     readonly air?: AirForceLevel;
   };

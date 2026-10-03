@@ -22,7 +22,7 @@ import {
 export const CONTACT_NEW_GAME_REQUEST: NewGameRequest = {
   templateId: 'GROUND_DUEL',
   map: { width: 8, height: 8, style: 'TEMPERATE_INLAND' },
-  oob: { scale: 'COMPACT', formationsPerSide: 1 },
+  oob: { scale: 'COMPACT', divisionsPerSide: 1, armoredDivisionsPerSide: 1 },
   seeds: { map: 92_001, oob: 92_002, deployment: 92_003, rules: 92_004 },
   turnLimit: 2,
   // September: the BTR Weather Table gives Dry ground automatically, so tests see normal terrain.
@@ -36,8 +36,8 @@ export const CONTACT_NEW_GAME_REQUEST: NewGameRequest = {
 export const RULE_FIXTURE_NEW_GAME_REQUEST: NewGameRequest = {
   templateId: 'GROUND_DUEL',
   map: { width: 18, height: 12, style: 'TEMPERATE_INLAND' },
-  oob: { scale: 'COMPACT', formationsPerSide: 2 },
-  seeds: { map: 0x0c500001, oob: 0x0c500160, deployment: 0x0c500003, rules: 0x0c500004 },
+  oob: { scale: 'COMPACT', divisionsPerSide: 2, armoredDivisionsPerSide: 1 },
+  seeds: { map: 0x0c500001, oob: 0x0c5041b0, deployment: 0x0c500003, rules: 0x0c500004 },
   turnLimit: 2,
   startMonth: 10,
 };

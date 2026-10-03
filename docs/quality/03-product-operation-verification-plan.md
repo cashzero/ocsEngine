@@ -8,6 +8,14 @@ COMPACT / 2 per side / 8 turns`, and players may choose maps from 16×12 to 64×
 that default; NG-07 keeps its explicit 18×12 Large package, which is within the new limits. The
 map generator itself still accepts 8×8 for rule-test fixtures only.
 
+Order-of-battle amendment (2026-10-03, explicitly requested by the user: "default oob 應該要有更多步兵師,
+reinforce entry point應該更多" and "用divisionPerSide取代 然後指定其中有多少Arm div"): New Game sets
+`Divisions per side` (1–20; raised from 12 on the follow-up "div total 12好像還是有點少", default unchanged) and how many of them are armored (0–6); the rest are foot divisions, about one in
+four airborne. The default is `32×24 / TEMPERATE_INLAND / COMPACT / 6 divisions per side, 2 armored / 8 turns`.
+Generated maps give each side one entry Hex per six map rows along its edge (at least two), each also a Supply
+Source. NG-04, NG-06 and NG-07 are restated in these terms (NG-07's former "4 per side" plan cannot be expressed
+as a division mix, so its headline counts are recomputed for 4 divisions, 2 armored); every row stays `UNVERIFIED`.
+
 Supply UX amendment (2026-10-02, explicitly approved by the user: "OK" to adding the SUP rows proposed in
 `docs/roadmap/09-supply-logistics-ux-wbs.md` §4): section G adds Supply and logistics rows. Every new row
 starts `UNVERIFIED`; no existing row changes status or expectation. The 2026-10-02 A0 baseline
@@ -68,10 +76,10 @@ A completed transition does not pass when it exceeds its budget or temporarily a
 | NG-01 | P0 | Open New Game, close it, reopen it | Dialog lifecycle is reversible and does not mutate the active game | UNVERIFIED |
 | NG-02 | P0 | Build the default preview | Map, both OOB sides, deployment metrics, warnings, and Start are visible | UNVERIFIED |
 | NG-03 | P0 | Change one option after preview | Existing preview is visibly stale and Start is disabled | UNVERIFIED |
-| NG-04 | P0 | Enter invalid width, formation count, seed, and turn limit | Each invalid request is rejected with a player-readable field/stage error | UNVERIFIED |
+| NG-04 | P0 | Enter invalid width, division count, armored division count, seed, and turn limit | Each invalid request is rejected with a player-readable field/stage error | UNVERIFIED |
 | NG-05 | P1 | Use Randomize all seeds | All four displayed seeds change; preview becomes invalid | UNVERIFIED |
-| NG-06 | P0 | Build and start default `32×24 / COMPACT / 2 formations per side / 8 turns` (amended 2026-10-01, see below) | Preview and mounted map size, style, units, formations, objectives, seeds, and turn limit agree | UNVERIFIED |
-| NG-07 | P0 | Build and start `MEDITERRANEAN_COAST / 18×12 / LARGE / 4 per side`, seeds `91001/91002/91003/91004`, 3 turns | Preview and mounted package agree; expected headline counts are 216 Hexes, 90 units, 8 formations, 28 deployed Hexes | UNVERIFIED |
+| NG-06 | P0 | Build and start default `32×24 / COMPACT / 6 divisions per side, 2 armored / 8 turns` (amended 2026-10-01 and 2026-10-03, see above) | Preview and mounted map size, style, units, formations, objectives, seeds, and turn limit agree | UNVERIFIED |
+| NG-07 | P0 | Build and start `MEDITERRANEAN_COAST / 18×12 / LARGE / 4 divisions per side, 2 armored`, seeds `91001/91002/91003/91004`, 3 turns | Preview and mounted package agree; expected headline counts are 216 Hexes, 64 units, 8 formations, 38 deployed Hexes | UNVERIFIED |
 | NG-08 | P0 | Repeat NG-07 from a fresh page | Map terrain/feature signature, OOB identity/stats, and deployment are identical | UNVERIFIED |
 | NG-09 | P1 | Change only each seed in four separate runs | Only the documented Map/OOB/deployment/rules dimension changes | UNVERIFIED |
 | NG-10 | P0 | Observe generation and Start states | Configure, Map, OOB, Deployment, and Gameplay have truthful current/completed states; no simultaneous “active” ambiguity | UNVERIFIED |

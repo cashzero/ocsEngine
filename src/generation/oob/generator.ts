@@ -28,6 +28,7 @@ import {
   OOB_GENERATOR_VERSION,
   OOB_SCALES,
   AIR_FORCE_LEVELS,
+  OOB_DIVISION_LIMITS,
   type GeneratedOob,
   type GeneratedOobFormation,
   type GeneratedOobSide,
@@ -42,13 +43,15 @@ import {
   type RandomOobOptions,
 } from './model.js';
 import { validateGeneratedOob } from './validation.js';
-import { formationNames, unitName } from './names.js';
+import { formationNameCapacity, formationNames, unitName } from './names.js';
 import { buildAirForces } from './air.js';
 
 const SIDES: readonly OobSide[] = ['ALLIED', 'AXIS'];
-// Plan slots shared by both sides. Airborne is its own slot (a single XX division on both sides). Only the Axis have mobile-infantry packages (Panzergrenadier/Führer); the Allied
-// mobile slot is filled with an armored division, the Allies' mobile force.
-const FORMATION_ARCHETYPES: readonly OobFormationArchetype[] = ['ARMORED', 'INFANTRY', 'MOBILE_INFANTRY', 'AIRBORNE'];
+// Plan slots shared by both sides. Armored slots alternate Panzer and Panzergrenadier/Führer packages, which only
+// the Axis have; the Allied mobile slot is filled with an armored division, the Allies' mobile force. Foot slots
+// are drawn from this seeded cycle, so about one foot division in four is airborne (a single XX on both sides).
+const ARMORED_ARCHETYPES: readonly OobFormationArchetype[] = ['ARMORED', 'MOBILE_INFANTRY'];
+const FOOT_ARCHETYPES: readonly OobFormationArchetype[] = ['INFANTRY', 'INFANTRY', 'INFANTRY', 'AIRBORNE'];
 const sideArchetype = (side: OobSide, planned: OobFormationArchetype): OobFormationArchetype =>
   side === 'ALLIED' && planned === 'MOBILE_INFANTRY' ? 'ARMORED' : planned;
 
@@ -203,9 +206,20 @@ export const normalizeRandomOobOptions = (
   if (!(OOB_SCALES as readonly string[]).includes(options.scale)) {
     errors.push({ code: 'INVALID_OPTIONS', message: 'Scale must be COMPACT, STANDARD, or LARGE.', path: ['scale'] });
   }
-  if (!Number.isSafeInteger(options.formationsPerSide)
-    || options.formationsPerSide < 1 || options.formationsPerSide > 6) {
-    errors.push({ code: 'INVALID_OPTIONS', message: 'Formations per side must be an integer from 1 to 6.', path: ['formationsPerSide'] });
+  const { minDivisions, maxDivisions, maxArmored } = OOB_DIVISION_LIMITS;
+  if (!Number.isSafeInteger(options.divisionsPerSide)
+    || options.divisionsPerSide < minDivisions || options.divisionsPerSide > maxDivisions) {
+    errors.push({
+      code: 'INVALID_OPTIONS', path: ['divisionsPerSide'],
+      message: `Divisions per side must be an integer from ${minDivisions} to ${maxDivisions}.`,
+    });
+  }
+  if (!Number.isSafeInteger(options.armoredDivisionsPerSide) || options.armoredDivisionsPerSide < 0
+    || options.armoredDivisionsPerSide > maxArmored || options.armoredDivisionsPerSide > options.divisionsPerSide) {
+    errors.push({
+      code: 'INVALID_OPTIONS', path: ['armoredDivisionsPerSide'],
+      message: `Armored divisions per side must be an integer from 0 to ${maxArmored}, and no more than the divisions per side.`,
+    });
   }
   if (options.air !== undefined && !(AIR_FORCE_LEVELS as readonly string[]).includes(options.air)) {
     errors.push({ code: 'INVALID_OPTIONS', message: 'Air forces must be NONE or STANDARD.', path: ['air'] });
@@ -218,11 +232,25 @@ const formationPlan = (
   options: NormalizedRandomOobOptions,
 ): readonly OobFormationArchetype[] => {
   const rng = createSeededRandom(mixUint32(options.seed ^ 0x4f4f_4237));
-  const plan: OobFormationArchetype[] = [];
-  while (plan.length < options.formationsPerSide) {
-    plan.push(...rng.shuffle(FORMATION_ARCHETYPES));
+  const footCount = options.divisionsPerSide - options.armoredDivisionsPerSide;
+  const foot: OobFormationArchetype[] = [];
+  while (foot.length < footCount) {
+    foot.push(...rng.shuffle(FOOT_ARCHETYPES));
   }
-  return plan.slice(0, options.formationsPerSide);
+  // Every division carries a distinct historical name, so airborne slots beyond the airborne name pool
+  // become infantry (at the 20-division limit: 4 airborne and 16 infantry, both pools in full).
+  const airborneNames = formationNameCapacity('AIRBORNE');
+  let airborne = 0;
+  const named = foot.slice(0, footCount).map((archetype) => {
+    if (archetype !== 'AIRBORNE') return archetype;
+    airborne += 1;
+    return airborne <= airborneNames ? archetype : 'INFANTRY';
+  });
+  // Armored divisions first, then foot divisions, so formation IDs and the roster read in that order.
+  return [
+    ...Array.from({ length: options.armoredDivisionsPerSide }, (_, index) => ARMORED_ARCHETYPES[index % ARMORED_ARCHETYPES.length]!),
+    ...named,
+  ];
 };
 
 const buildSide = (
@@ -270,10 +298,10 @@ const buildSide = (
   });
 
   const supportCount = options.scale === 'LARGE'
-    ? options.formationsPerSide : Math.max(1, Math.ceil(options.formationsPerSide / 2));
+    ? options.divisionsPerSide : Math.max(1, Math.ceil(options.divisionsPerSide / 2));
   const independentRequests: OobUnitRole[] = [
     ...Array.from({ length: supportCount }, () => 'ARTILLERY' as const),
-    ...Array.from({ length: options.scale === 'LARGE' ? Math.ceil(options.formationsPerSide / 2) : 1 }, () => 'ENGINEER' as const),
+    ...Array.from({ length: options.scale === 'LARGE' ? Math.ceil(options.divisionsPerSide / 2) : 1 }, () => 'ENGINEER' as const),
     ...Array.from({ length: supportCount }, () => 'TRANSPORT' as const),
     ...Array.from({ length: supportCount }, () => 'SUPPLY' as const),
   ];
@@ -324,9 +352,8 @@ export const generateRandomOob = (
     code: 'GENERATION_INVALID', message: 'Generated OOB failed composition or Foundation validation.',
     path: [], issues: validation.issues,
   }]);
-  const armored = plan.filter((value) => value === 'ARMORED').length;
-  const warnings = armored === plan.length && plan.length > 1
-    ? ['All formations are armored; transport and fuel pressure will be unusually high.'] : [];
+  const warnings = options.armoredDivisionsPerSide === options.divisionsPerSide && options.divisionsPerSide > 1
+    ? ['All divisions are armored; transport and fuel pressure will be unusually high.'] : [];
   return ok({ ...draft, metrics: validation.metrics, warnings });
 };
 

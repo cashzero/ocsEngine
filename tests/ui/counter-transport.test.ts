@@ -36,14 +36,16 @@ describe('Transport Point counters show their current size (13.2c)', () => {
       return counterSvgBody(counterView(definition, piece));
     };
 
+    // A side has several trucks; follow one of them and the part divided off it.
     const [truck] = trucks();
+    const others = new Set(trucks().filter(({ id }) => id !== truck!.id).map(({ id }) => id));
     expect(printedPoints(bodyOf(truck!))).toBe('5');
     controller.selectPiece(truck!.id);
     const split = snapshot().unitActions.find(({ label }) => label === 'Split off 2 truck points');
     expect(split, 'a five-point truck can split off two points').toBeDefined();
     await controller.runAction(split!.key);
 
-    const sizes = trucks().map((piece) => printedPoints(bodyOf(piece))).sort();
+    const sizes = trucks().filter(({ id }) => !others.has(id)).map((piece) => printedPoints(bodyOf(piece))).sort();
     expect(sizes).toEqual(['2', '3']);
     controller.dispose();
   });

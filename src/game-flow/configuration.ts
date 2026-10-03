@@ -58,8 +58,8 @@ export const createGeneratedRuleConfiguration = (
     rows: BTR_SUPPLY_TABLE,
     players: (['ALLIED', 'AXIS'] as const).map((side) => ({
       playerId: players[side],
-      // Supply Status column: one per formation, so income scales with the force.
-      status: Math.max(1, Math.min(12, request.oob.formationsPerSide)),
+      // Supply Status column: one per division, so income scales with the force.
+      status: Math.max(1, Math.min(12, request.oob.divisionsPerSide)),
       resourceDefinitionId: supplyDefinitionFor(oob, side),
     })),
   },

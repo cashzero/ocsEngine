@@ -15,6 +15,10 @@ terrain habitability (open ground ≫ hills, woods ≫ marsh; never mountain), a
 field that makes settled and empty districts, river frontage (urban places favour major-river
 crossings), low elevation, and a seeded tie breaker.
 
-First and second entry/supply regions select central land Hexes at opposing horizontal extremes. They
-are neutral generator metadata and typed Hex features; faction/player ownership is deferred to
-Scenario composition.
+First and second entry/supply regions each start from a central land Hex at opposing horizontal
+extremes (the side's deployment anchor), then add further entry Hexes along the same map edge: one per
+six map rows, at least two and at most eight per side, spread by farthest-point sampling at least three
+Hexes apart (two on a short edge), on non-mountain, non-marsh land joined to the central entry. Every
+entry Hex is also a Supply Source, so a reinforcement arriving at any of them starts in trace supply
+(13.6, 12.6a). They are neutral generator metadata and typed Hex features; faction/player ownership is
+deferred to Scenario composition.

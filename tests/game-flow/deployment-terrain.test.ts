@@ -20,7 +20,7 @@ describe('generated deployment terrain and stacking', () => {
       const request: NewGameRequest = {
         ...DEFAULT_NEW_GAME_REQUEST,
         map: { width: 18, height: 12, style: seed % 2 === 0 ? 'MEDITERRANEAN_COAST' : 'TEMPERATE_INLAND' },
-        oob: { scale: scales[seed % 3]!, formationsPerSide: 1 + (seed % 4) },
+        oob: { scale: scales[seed % 3]!, divisionsPerSide: 1 + (seed % 4), armoredDivisionsPerSide: seed % 2 },
         seeds: { map: seed * 7, oob: seed * 11, deployment: seed * 13, rules: seed },
       };
       const result = orchestrator.prepare(request);
