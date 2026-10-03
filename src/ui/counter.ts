@@ -85,6 +85,35 @@ const symbolPaths = {
   SUPPLY: '<path d="M28 27H49V50H28ZM53 24H72V50H53ZM24 50H77"/><ellipse cx="38.5" cy="27" rx="10.5" ry="4"/>',
 } as const;
 const svgText = (x:number,y:number,value:unknown,cls=''):string => `<text class="${cls}" x="${x}" y="${y}" text-anchor="middle">${escape(value)}</text>`;
+/** A unit's state flags, each with the CSS key that colours it. DG and out of supply also mark the counter body (see `stateOverlay`). */
+type StateFlag = { readonly key: 'dg' | 'oos' | 'res' | 'strat' | 'exp' | 'inactive'; readonly label: string };
+const stateFlags = (mode: string | null | undefined, statuses: readonly string[]): StateFlag[] => {
+  const flags: StateFlag[] = [];
+  if (mode === 'DG') flags.push({ key: 'dg', label: 'DG' });
+  if (statuses.includes('status:out-of-supply')) flags.push({ key: 'oos', label: 'OOS' });
+  if (mode === 'RESERVE') flags.push({ key: 'res', label: 'RES' });
+  if (mode === 'STRAT') flags.push({ key: 'strat', label: 'STRAT' });
+  if (mode === 'EXPLOITATION') flags.push({ key: 'exp', label: 'EXP' });
+  return flags;
+};
+/** The bottom strip: one solid colour segment per flag so each reads on its own, instead of one cream strip of small joined text. */
+const stateBar = (flags: readonly StateFlag[]): string => {
+  if (flags.length === 0) return '';
+  const width = 96 / flags.length;
+  return `<g class="counter-state">${flags.map(({ key, label }, index) => {
+    const x = 2 + index * width;
+    return `<rect class="counter-flag-${key}" x="${x.toFixed(1)}" y="85" width="${width.toFixed(1)}" height="15"/>${svgText(+(x + width / 2).toFixed(1), 97, label, 'counter-state-label')}`;
+  }).join('')}</g>`;
+};
+/** Marks the counter body itself so a Disorganized or out-of-supply unit is told apart without reading text, at any zoom. */
+const stateOverlay = (flags: readonly StateFlag[]): { readonly under: string; readonly over: string } => {
+  const dg = flags.some(({ key }) => key === 'dg');
+  const oos = flags.some(({ key }) => key === 'oos');
+  return {
+    under: dg ? '<defs><pattern id="counter-dg-hatch" width="12" height="12" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="5" height="12" fill="#c4161c" fill-opacity=".38"/></pattern></defs><rect class="counter-dg-hatch" width="100" height="100" fill="url(#counter-dg-hatch)"/>' : '',
+    over: `${dg ? '<rect class="counter-frame-dg" x="3" y="3" width="94" height="94"/>' : ''}${oos ? '<rect class="counter-frame-oos" x="3" y="3" width="94" height="94"/>' : ''}`,
+  };
+};
 /** Squeezes a long label (more than five glyphs) into `length` user units so it never runs into the counter's other prints. */
 const fit = (textElement: string, value: unknown, length: number): string =>
   String(value).length > 5 ? textElement.replace('<text ', `<text textLength="${length}" lengthAdjust="spacingAndGlyphs" `) : textElement;
@@ -153,7 +182,7 @@ const aircraftBody = (view: Extract<CounterViewModel, { kind: 'aircraft' }>): st
     <g class="counter-symbol air-silhouette paint-${art.paint}">${art.body}</g>
     <g class="counter-values"><rect class="air-range-box" x="${89 - rangeWidth}" y="${art.rangeY}" width="${rangeWidth}" height="15"/>${svgText(89 - rangeWidth / 2,art.rangeY + 12.5,view.range,'air-range')}
     ${airCombat}${svgText(79,87,view.barrage,'counter-number air-number')}</g>
-    ${view.inactive ? `<g class="counter-state"><rect x="2" y="88" width="96" height="12"/>${svgText(50,98,'INACTIVE')}</g>` : ''}`;
+    ${stateBar(view.inactive ? [{ key: 'inactive', label: 'INACTIVE' }] : [])}`;
 };
 
 const airBaseBody = (view: Extract<CounterViewModel, { kind: 'air-base' }>): string =>
@@ -191,21 +220,20 @@ export const counterSvgBody = (view: CounterViewModel): string => {
   const text = svgText;
   const ma = view.step?.movementPointTicks == null ? '' : view.step.movementPointTicks / 4;
   const strength = view.step?.combatStrength;
-  const flags = [view.mode && !['MOVE','COMBAT'].includes(view.mode) ? ({ RESERVE:'RES', STRAT:'STRAT', DG:'DG', EXPLOITATION:'EXP' } as Record<string,string>)[view.mode] : '',
-    view.statuses.includes('status:out-of-supply') ? 'OOS' : ''].filter(Boolean);
+  const flags = stateFlags(view.mode, view.statuses);
+  const overlay = stateOverlay(flags);
   const moveBand = view.face?.id === 'move' ? '<path class="move-band" d="M3 9H97"/>' : '';
-  const stateBar = flags.length ? `<g class="counter-state"><rect x="2" y="88" width="96" height="12"/>${text(50,98,flags.join(' · '))}</g>` : '';
   if (c.kind === 'HQ') {
     // The formation's short name ("82.Abn") is printed rotated beside the flag, as the board-game counter does; the unit name is "HQ / 82.Abn".
     const formation = view.label.split(' / ').slice(1).join(' / ');
     const rating = `${view.step?.range}-${ma}`;
     const squeeze = (element: string, length: number) => element.replace('<text ', `<text textLength="${length}" lengthAdjust="spacingAndGlyphs" `);
-    return `<rect class="counter-paper nation-${c.nationality}" width="100" height="100"/>
+    return `<rect class="counter-paper nation-${c.nationality}" width="100" height="100"/>${overlay.under}
     ${moveBand}
     <g class="counter-identification">${squeeze(text(HQ_FLAG.x + HQ_FLAG.w / 2, 14, c.echelon, 'hq-echelon'), 9 * c.echelon.length)}${formation ? squeeze(text(21, 37, formation, 'hq-designation'), formation.length > 3 ? 40 : 17 * formation.length) : ''}</g>
     <g class="counter-symbol hq-flag">${hqFlag(c.nationality)}</g>
-    <g class="counter-values">${squeeze(text(56, 90, rating, 'hq-rating'), rating.length > 3 ? 56 : 44)}</g>
-    ${stateBar}`;
+    <g class="counter-values">${squeeze(text(56, flags.length ? 84 : 90, rating, flags.length ? 'hq-rating hq-rating-flagged' : 'hq-rating'), rating.length > 3 ? 56 : 44)}</g>
+    ${overlay.over}${stateBar(flags)}`;
   }
   const strengthText = strength == null ? '' : c.defensiveOnly ? `(${strength})` : strength;
   let ratings = '';
@@ -228,13 +256,13 @@ export const counterSvgBody = (view: CounterViewModel): string => {
         + `${ratio > 0 ? `<rect class="load-fill" x="38" y="67" width="${(24 * ratio).toFixed(1)}" height="18" rx="2"/>` : ''}`
         + `${text(50, 80, view.load.tokens > 0 ? `${view.load.tokens}T` : '', 'counter-load-text')}</g>`;
     })() : '';
-  return `<rect class="counter-paper nation-${c.nationality}" width="100" height="100"/>
+  return `<rect class="counter-paper nation-${c.nationality}" width="100" height="100"/>${overlay.under}
     ${moveBand}
     ${c.formationColor ? `<path class="formation-band" stroke="${escape(c.formationColor)}" d="M3 51H97"/>` : ''}
     <g class="counter-identification">${text(50,20,c.echelon,'counter-echelon')}${fit(text(20,57,c.designation,'counter-designation'), c.designation, 32)}${fit(text(88,34,c.affiliation,'counter-affiliation'), c.affiliation, 44)}
     ${c.showRe ? `<circle class="re-dot" cx="13" cy="14" r="9"/>${text(13,19,(view.step?.regimentalEquivalentTicks ?? 0)/4,'counter-re')}` : ''}</g>
     <g class="counter-symbol category-${c.combatCategory}">${!['TRUCK','SUPPLY'].includes(c.symbol) ? '<rect class="symbol-box" x="28" y="24" width="44" height="25"/>' : ''}${symbolPaths[c.symbol]}</g>
     <g class="counter-values">${ratings}</g>${gauge}
-    ${stateBar}`;
+    ${overlay.over}${stateBar(flags)}`;
 };
 export const counterSvg = (view: CounterViewModel): string => `<svg class="unit-counter" viewBox="0 0 100 100" role="img" aria-label="${escape(view.label)}">${counterSvgBody(view)}</svg>`;
