@@ -18,9 +18,9 @@ const bodyOf = (definition: PieceDefinition): string => counterSvgBody(counterVi
   currentFaceId: definition.faces[0]!.id, remainingSteps: null, resourceQuantity: null, mode: null, statuses: [], redacted: false,
 } as never));
 
-/** The NATO (APP-6) airborne infantry symbol is the infantry cross plus an arc (a parachute canopy) on the frame's bottom edge. */
+/** The NATO (APP-6) airborne infantry symbol is the infantry cross plus a small scalloped parachute canopy resting on the bottom edge inside the symbol box. */
 const INFANTRY_CROSS = 'M29 25L71 48M71 25L29 48';
-const AIRBORNE_ARC = 'M30 49C36 25 64 25 70 49';
+const AIRBORNE_ARC = 'M34 47C35 36 65 36 66 47Q58 42 50 47Q42 42 34 47Z';
 
 describe('airborne division counters print the NATO airborne symbol', () => {
   it.each([['US', ALLIED_AIRBORNE_GPID], ['German', AXIS_AIRBORNE_GPID]] as const)('%s airborne division: cross plus canopy arc', (_name, gpid) => {
