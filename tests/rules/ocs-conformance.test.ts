@@ -21,6 +21,8 @@ import {
   type HexId,
   type TransitionResult,
 } from '../../src/index.js';
+import { retreatPlans } from '../../src/rules/combat/combat.js';
+import { adjacentHexIds, hexDistanceBetween, isAdjacent } from '../../src/rules/pieces.js';
 
 const U = {
   alTrk: generatedPieceId('allied:f1-combat-1'), alTrk2: generatedPieceId('allied:f1-combat-2'),
@@ -206,6 +208,73 @@ describe('OCS 4.3 ground combat (9.0-9.13)', () => {
       checked += 1;
     }
     expect(checked).toBeGreaterThan(0);
+  });
+
+  describe('retreat direction (9.12c, 9.12e)', () => {
+    const defenderHex = '6,5' as HexId;
+    const attackerHex = '5,5' as HexId;
+    const ring = adjacentHexIds(defenderHex);
+    const beside = ring.filter((hex) => hex !== attackerHex && isAdjacent(hex, attackerHex));
+    const clear = ring.filter((hex) => hex !== attackerHex && !isAdjacent(hex, attackerHex));
+    const plansFor = (state: GameState, opponents: readonly HexId[]) =>
+      retreatPlans(state, [piece(state, U.axTrk)], 1, new Set(), new Set(opponents));
+    const destinations = (plans: ReturnType<typeof plansFor>) => plans.map(({ destination }) => String(destination)).sort();
+    const sorted = (hexes: readonly HexId[]) => hexes.map(String).sort();
+
+    it('drops hexes beside the attacker when hexes away from it cost the same or less', () => {
+      const state = atStep(buildGeneratedRuleState({
+        [U.alTrk]: [attackerHex, 'COMBAT', 'combat'], [U.axTrk]: [defenderHex, 'COMBAT', 'combat'], [U.alSup]: ['4,5', null],
+      }), 'COMBAT', 'COMBAT', ALLIED);
+      expect(beside.length).toBeGreaterThan(0);
+      const plans = plansFor(state, [attackerHex]);
+      // Beside the attacker is its ZOC (cost 1); away from it is free.
+      expect(plans.every(({ destination, zocEntries }) => zocEntries === (isAdjacent(destination, attackerHex) ? 1 : 0))).toBe(true);
+      expect(destinations(plans)).toEqual(sorted(clear));
+    });
+
+    it('still offers hexes beside the enemy when nothing else is reachable', () => {
+      const [first, second, third, fourth, ...free] = ring;
+      const state = atStep(buildGeneratedRuleState({
+        [U.alTrk]: [first!, 'COMBAT', 'combat'], [U.alTrk2]: [second!, 'COMBAT', 'combat'],
+        [U.alLeg]: [third!, 'COMBAT', 'combat'], [U.alArt]: [fourth!, 'COMBAT', 'combat'],
+        [U.axTrk]: [defenderHex, 'COMBAT', 'combat'], [U.alSup]: ['4,5', null],
+      }), 'COMBAT', 'COMBAT', ALLIED);
+      expect(destinations(plansFor(state, [first!, second!, third!, fourth!]))).toEqual(sorted(free));
+    });
+
+    // Enemy units outside the combat cover every hex away from the attacker with their ZOC.
+    const coveredAway = (attackerMode: 'COMBAT' | 'MOVE') => {
+      const outers = [...new Set(clear.flatMap((hex) => adjacentHexIds(hex)))].filter((candidate) => hexDistanceBetween(candidate, defenderHex) === 2
+        && !beside.some((near) => isAdjacent(candidate, near)) && !isAdjacent(candidate, attackerHex));
+      const covering: HexId[] = [];
+      let uncovered = clear;
+      while (uncovered.length > 0) {
+        const best = outers.reduce((top, candidate) => uncovered.filter((hex) => isAdjacent(hex, candidate)).length
+          > uncovered.filter((hex) => isAdjacent(hex, top)).length ? candidate : top);
+        covering.push(best);
+        uncovered = uncovered.filter((hex) => !isAdjacent(hex, best));
+      }
+      const spare = [U.alTrk2, U.alLeg, U.alEng];
+      expect(covering.length).toBeLessThanOrEqual(spare.length);
+      return atStep(buildGeneratedRuleState({
+        [U.alTrk]: [attackerHex, attackerMode, attackerMode === 'COMBAT' ? 'combat' : 'move'], [U.axTrk]: [defenderHex, 'COMBAT', 'combat'],
+        [U.alSup]: ['4,5', null],
+        ...Object.fromEntries(covering.map((hex, index) => [spare[index]!, [hex, 'COMBAT', 'combat']])),
+      }), 'COMBAT', 'COMBAT', ALLIED);
+    };
+
+    it('does not count enemy units outside the combat, and drops a hex beside the attacker that costs the same', () => {
+      const plans = plansFor(coveredAway('COMBAT'), [attackerHex]);
+      expect(plans.every(({ zocEntries }) => zocEntries === 1)).toBe(true);
+      expect(destinations(plans)).toEqual(sorted(clear));
+    });
+
+    it('bends to avoid losses: keeps a hex beside the attacker that costs fewer ZOC entries', () => {
+      // The attacker in Move Mode exerts no ZOC, so beside it is free while the other hexes cost one entry.
+      const plans = plansFor(coveredAway('MOVE'), [attackerHex]);
+      expect(plans.filter(({ destination }) => isAdjacent(destination, attackerHex)).every(({ zocEntries }) => zocEntries === 0)).toBe(true);
+      expect(destinations(plans)).toEqual(sorted(ring.filter((hex) => hex !== attackerHex)));
+    });
   });
 
   it('never leaves opposing combat units in one hex after an overrun (4.8c)', () => {
