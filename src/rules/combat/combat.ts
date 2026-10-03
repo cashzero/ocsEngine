@@ -744,9 +744,16 @@ export interface RetreatPlan {
  * path for all retreating units, avoiding Hexes that held enemy combat units when combat began and
  * prohibited terrain. Among paths to a destination, the fewest enemy ZOC entries (9.12e) is kept;
  * the player picks the destination. Retreats may end overstacked (4.8a is checked at segment end).
- * Destinations adjacent to an enemy combat unit are dropped whenever a non-adjacent destination exists.
+ * `opponentHexes` holds the Hexes of the enemy units in the combat (9.12c): destinations next to them are
+ * dropped when a destination away from them is no more costly in enemy ZOC entries.
  */
-export const retreatPlans = (state: GameState, pieces: readonly PieceState[], hexes: number, blocked: ReadonlySet<HexId>): readonly RetreatPlan[] => {
+export const retreatPlans = (
+  state: GameState,
+  pieces: readonly PieceState[],
+  hexes: number,
+  blocked: ReadonlySet<HexId>,
+  opponentHexes: ReadonlySet<HexId>,
+): readonly RetreatPlan[] => {
   const origin = pieces[0] ? hexOf(pieces[0]) : null;
   if (!origin || hexes <= 0) return [];
   const owner = pieces[0]!.ownerId;
@@ -781,11 +788,13 @@ export const retreatPlans = (state: GameState, pieces: readonly PieceState[], he
     }
   };
   walk([origin], 0);
-  // 9.12c: a retreat is generally away from the enemy, so a destination next to an enemy combat unit is
-  // offered only when no destination away from every enemy combat unit is reachable.
-  const nextToEnemy = (hexId: HexId): boolean => adjacentHexIds(hexId).some((adjacent) => enemyCombatUnitsAt(state, owner, adjacent).length > 0);
-  const awayFromEnemy = [...plans.values()].filter((plan) => !nextToEnemy(plan.destination));
-  const offered = awayFromEnemy.length > 0 ? awayFromEnemy : [...plans.values()];
+  // 9.12c: a retreat is generally away from the enemy units in the combat, but may bend that to avoid
+  // losses. A destination next to one of them is therefore dropped only when a destination that is not
+  // next to any of them costs no more enemy-ZOC entries (9.12e: DG, then step losses).
+  const nextToOpponent = (hexId: HexId): boolean => adjacentHexIds(hexId).some((adjacent) => opponentHexes.has(adjacent));
+  const all = [...plans.values()];
+  const clear = all.filter((plan) => !nextToOpponent(plan.destination));
+  const offered = all.filter((plan) => !nextToOpponent(plan.destination) || !clear.some(({ zocEntries }) => zocEntries <= plan.zocEntries));
   return stableSort(offered, (left, right) => left.zocEntries - right.zocEntries || String(left.destination).localeCompare(String(right.destination)));
 };
 
@@ -797,6 +806,11 @@ export const retreatPlans = (state: GameState, pieces: readonly PieceState[], he
 const retreatBlocks = (transaction: RuleTransaction, side: CombatSide): ReadonlySet<HexId> =>
   side === 'DEFENDER' ? new Set(transaction.blockedHexIds) : new Set();
 
+/** 9.12c: where the surviving enemy units in this combat stand, so a retreat can be generally away from them. */
+const retreatOpponentHexes = (state: GameState, transaction: RuleTransaction, side: CombatSide): ReadonlySet<HexId> =>
+  new Set(survivors(state, side === 'ATTACKER' ? transaction.defenderIds : transaction.attackerIds)
+    .flatMap((piece) => piece.location.kind === 'ON_MAP' ? [piece.location.hexId] : []));
+
 const optionChoices = (state: GameState, side: CombatSide, points: number): PendingDecision['options'] => {
   const transaction = state.activeTransaction!;
   const ids = side === 'ATTACKER' ? transaction.attackerIds : transaction.defenderIds;
@@ -804,10 +818,11 @@ const optionChoices = (state: GameState, side: CombatSide, points: number): Pend
   const totalSteps = alive.reduce((total, piece) => total + stepsOf(piece), 0);
   const choices: PendingDecision['options'][number][] = [];
   const blocked = retreatBlocks(transaction, side);
+  const opponentHexes = retreatOpponentHexes(state, transaction, side);
   for (let losses = points; losses >= 0; losses -= 1) {
     const retreat = points - losses;
     // 9.12: units that cannot retreat the full distance are eliminated; say so when it would happen.
-    const trapped = retreat > 0 ? alive.filter((piece) => retreatPlans(state, [piece], retreat, blocked).length === 0).length : 0;
+    const trapped = retreat > 0 ? alive.filter((piece) => retreatPlans(state, [piece], retreat, blocked, opponentHexes).length === 0).length : 0;
     if (retreat > 0 && trapped === alive.length) continue;
     const label = (retreat === 0
       ? `Lose ${Math.min(losses, totalSteps)} step${losses === 1 ? '' : 's'}`
@@ -895,7 +910,8 @@ const retreatOptions = (state: GameState, step: Extract<ResolutionStep, { kind: 
   const transaction = state.activeTransaction!;
   const alive = survivors(state, step.pieceIds);
   const blocked = retreatBlocks(transaction, step.side);
-  const options: PendingDecision['options'][number][] = retreatPlans(state, alive, step.hexes, blocked).map((plan) => ({
+  const opponentHexes = retreatOpponentHexes(state, transaction, step.side);
+  const options: PendingDecision['options'][number][] = retreatPlans(state, alive, step.hexes, blocked, opponentHexes).map((plan) => ({
     id: `hex:${plan.destination}`,
     label: `${alive.length > 1 ? `All ${alive.length} units retreat` : `${unitName(state, alive[0])} retreats`} to ${plan.destination}${plan.zocEntries > 0 ? ` (through ${plan.zocEntries} enemy ZOC: DG)` : ''}`,
     hexId: plan.destination,
@@ -905,7 +921,7 @@ const retreatOptions = (state: GameState, step: Extract<ResolutionStep, { kind: 
     const hexId = hexOf(alive[0]!)!;
     const tagalongs = friendlyCombatUnitsAt(state, transaction.ownerId, hexId).filter((piece) => !transaction.attackerIds.includes(piece.id) && !step.pieceIds.includes(piece.id));
     if (tagalongs.length > 0) {
-      for (const plan of retreatPlans(state, [...alive, ...tagalongs], step.hexes, blocked)) {
+      for (const plan of retreatPlans(state, [...alive, ...tagalongs], step.hexes, blocked, opponentHexes)) {
         options.push({ id: `with:${plan.destination}`, label: `Retreat to ${plan.destination} with the ${tagalongs.length} non-attacking unit${tagalongs.length === 1 ? '' : 's'} in the Hex`, hexId: plan.destination });
       }
     }
@@ -1080,7 +1096,7 @@ const applyRetreatChoice = (
   const group = withTagalongs
     ? [...alive, ...friendlyCombatUnitsAt(state, transaction.ownerId, hexId).filter((piece) => !transaction.attackerIds.includes(piece.id) && !step.pieceIds.includes(piece.id))]
     : alive;
-  const plan = retreatPlans(state, group, step.hexes, retreatBlocks(transaction, step.side)).find((candidate) => candidate.destination === destination)!;
+  const plan = retreatPlans(state, group, step.hexes, retreatBlocks(transaction, step.side), retreatOpponentHexes(state, transaction, step.side)).find((candidate) => candidate.destination === destination)!;
   const moved = applyRetreat(withQueue(state, rest), step.side, group, plan, events);
   return moved.zocLossIds.length > 0
     ? withQueue(moved.state, [{ kind: 'LOSS', side: step.side, count: 1, distribution: 'FREE', pieceIds: moved.zocLossIds }, ...moved.state.activeTransaction!.queue])
