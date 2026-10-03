@@ -139,6 +139,8 @@ const selectedCard = (snapshot: UiSnapshot): TemplateResult => {
   }
   const arriving = snapshot.arrivals.some(({ pieceId }) => pieceId === piece.id);
   const needsFuel = own && snapshot.unitActions.some(({ group }) => group === 'FUEL') && snapshot.reachable.size === 0;
+  // 12.5a with no payment on offer: no friendly dump can draw or throw fuel to this unit.
+  const unfuelable = own && !needsFuel && snapshot.moveBlockers.some(({ code }) => code === 'FUEL_REQUIRED');
   const details = own ? supplyDetails(snapshot, piece) : '';
   const paused = snapshot.view.metadata.lifecycle === 'PAUSED';
   const status = !own ? 'Enemy · steps lost and internal stocks are hidden'
@@ -146,7 +148,10 @@ const selectedCard = (snapshot: UiSnapshot): TemplateResult => {
       : arriving ? 'Arriving: click a blue entry hex to place it'
         : needsFuel ? 'Needs fuel before it can move (12.5)'
           : snapshot.reachable.size > 0 ? `${mp(snapshot.remainingTicks)} MP left · ${snapshot.reachable.size} hexes reachable`
-            : snapshot.movedThisPhase.has(String(piece.id)) ? 'Already moved this phase' : 'Cannot move in this step';
+            : snapshot.movedThisPhase.has(String(piece.id)) ? 'Already moved this phase'
+              : unfuelable ? 'Needs fuel to move (12.5a), but no supply dump in range has the SP to pay for it: bring supply within range first'
+                : snapshot.moveBlockers.length > 0 ? snapshot.moveBlockers.map(({ message, rule }) => `${withHexLabels(message)} (${rule})`).join(' · ')
+                  : 'Cannot move in this step';
   return html`${counterFor(snapshot, piece)}<div><strong>${pieceLabel(snapshot.scenario, piece)}</strong>
     <p>${pieceHex(piece)} · ${statusName(snapshot, piece)}${details ? ` · ${details}` : ''}</p>
     <small>${status}${piece.statuses.includes('status:out-of-supply') ? ' · Out of supply' : ''}</small></div>`;
