@@ -17,7 +17,7 @@ import {
   type AirMissionKind, type GameAction, type ProjectedCombat, type ProjectedPiece, type RuleEvent, type RuleExplanation,
 } from '../rules/index.js';
 import type {
-  AirDraft, AirOverview, AirRefit, Arrival, AttackDraft, AwayReport, CombatSheet, EndStep, HandoffInfo, MovePreview, MoveRangeEntry,
+  AirDraft, AirOverview, AirRefit, Arrival, AttackDraft, AwayReport, CombatSheet, EndStep, HandoffInfo, MoveBlocker, MovePreview, MoveRangeEntry,
   LedgerLine, SupplyNeed, UiListener, UiSelection, UiSnapshot, UnitAction,
 } from './model.js';
 import {
@@ -577,8 +577,13 @@ class DefaultUiController implements UiController {
     const reachable = new Map<string, readonly string[]>();
     const moveRange = new Map<string, MoveRangeEntry>();
     let remainingTicks: number | null = null;
-    if (ownSelected && enabled('MOVE_PIECE')) {
+    let moveBlockers: readonly MoveBlocker[] = [];
+    // MOVE_PIECE is disabled whenever no unit can move (e.g. every Track unit awaits fuel), yet the player
+    // still needs to hear why the selected one cannot: query it in any Movement Segment (6.0).
+    const movementSegment = segment === 'MOVEMENT' && ['MOVEMENT', 'REACTION', 'EXPLOITATION'].includes(view.projection?.sequence.phase ?? '');
+    if (ownSelected && (enabled('MOVE_PIECE') || movementSegment)) {
       const range = this.#cached(`range|${ownSelected.id}`, () => this.#session.getMovementRange(seatId, ownSelected.id));
+      if (!range.allowed) moveBlockers = range.reasons.filter(({ allowed }) => !allowed).map(({ code, message, rule }) => ({ code, message, rule }));
       const remaining = range.facts.find(({ key }) => key === 'movement.remainingTicks')?.value;
       remainingTicks = typeof remaining === 'number' ? remaining : null;
       for (const entry of range.value ?? []) {
@@ -680,6 +685,7 @@ class DefaultUiController implements UiController {
       selectedIsMoving: ownSelected !== null && view.projection?.currentMoverId === ownSelected.id,
       reachable,
       moveRange,
+      moveBlockers,
       traceCoverage,
       traceCoverageFor: this.#showTraceCoverage ? traceUnitId : null,
       showTraceCoverage: this.#showTraceCoverage,
