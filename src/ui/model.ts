@@ -159,6 +159,11 @@ export interface UiSnapshot {
   /** Legal destinations of the selected unit, keyed by Hex, with the least-cost path. */
   readonly reachable: ReadonlyMap<string, readonly string[]>;
   readonly moveRange: ReadonlyMap<string, MoveRangeEntry>;
+  /** Hexes where the overlay shows trace supply reaching (12.6); empty while the overlay is off. */
+  readonly traceCoverage: ReadonlySet<string>;
+  /** The selected unit the overlay is drawn for; null when it shows where any friendly unit would trace. */
+  readonly traceCoverageFor: string | null;
+  readonly showTraceCoverage: boolean;
   /** MP the selected unit has left this phase, in quarter-MP ticks; null when it cannot move. */
   readonly remainingTicks: number | null;
   readonly movePreview: MovePreview | null;
