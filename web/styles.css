@@ -333,8 +333,22 @@ small, .supporting { font-size: 13px; color: var(--muted); }
 .tracked-box, .barrage-box, .re-dot { fill: #f5df20; }
 .counter-designation { transform: rotate(-90deg); transform-origin: 20px 57px; text-anchor: start; }
 .counter-affiliation { transform: rotate(-90deg); transform-origin: 88px 34px; }
-.counter-state rect { fill: #f8e9ae; }
-.counter .counter-state text, .unit-counter .counter-state text { font-size: 11px; }
+/* State flags: solid colour segments with white lettering (colour is never the only cue), plus a frame on the counter body for DG / out of supply. */
+.counter-state rect { fill: #555b52; stroke: #151810; stroke-width: 1.2; }
+.counter-state .counter-flag-dg { fill: #c4161c; }
+.counter-state .counter-flag-oos { fill: #5b2a86; }
+.counter-state .counter-flag-res { fill: #1f5fa8; }
+.counter-state .counter-flag-strat { fill: #2f7d32; }
+.counter-state .counter-flag-exp { fill: #d9730d; }
+.counter .counter-state text, .unit-counter .counter-state text { font-size: 14px; font-weight: 800; fill: #fff; paint-order: stroke; stroke: rgba(0, 0, 0, .55); stroke-width: 1.6px; stroke-linejoin: round; }
+/* A flagged HQ's rating rises and shrinks so the state strip does not cover its lower half. */
+.counter .hq-rating-flagged, .unit-counter .hq-rating-flagged { font-size: 33px; }
+.counter-frame-dg, .counter-frame-oos { fill: none; pointer-events: none; }
+.counter-frame-dg { stroke: #c4161c; stroke-width: 5; }
+.counter-frame-oos { stroke: #5b2a86; stroke-width: 5; stroke-dasharray: 10 6; }
+/* Zoomed far out the ratings are hidden, so the strip grows into that space and drops its letters: the colour alone carries the flag. */
+[data-counter-lod="symbol"] .counter-state rect { y: 60px; height: 40px; }
+[data-counter-lod="symbol"] .counter-state-label { display: none; }
 /* A friendly truck's load gauge: an empty outline, a part-filled bar, or a full bar, with the Tokens carried. */
 .load-track { fill: rgba(255, 255, 255, .35); stroke: #333; stroke-width: 1.5; }
 .load-fill { fill: #2f6f9f; }
