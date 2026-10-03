@@ -1,7 +1,7 @@
 import type { HexId, ValidationIssue } from '../../core/index.js';
 import type { MapDefinition } from '../../domain/map/index.js';
 
-export const MAP_GENERATOR_VERSION = '0.3.0' as const;
+export const MAP_GENERATOR_VERSION = '0.3.1' as const;
 
 export type MapGenerationStyle = 'TEMPERATE_INLAND' | 'MEDITERRANEAN_COAST';
 

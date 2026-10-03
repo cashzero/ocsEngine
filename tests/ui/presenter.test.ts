@@ -47,7 +47,7 @@ describe('U3-U4 UI map and action presenters', () => {
   });
 
   it('projects generated OOB definitions into readable counter summaries', () => {
-    const generated = generateRandomOob({ seed: 1944, scale: 'STANDARD', formationsPerSide: 3 });
+    const generated = generateRandomOob({ seed: 1944, scale: 'STANDARD', divisionsPerSide: 3, armoredDivisionsPerSide: 1 });
     expect(generated.ok).toBe(true);
     if (!generated.ok) return;
     const preview = buildGeneratedOobPreview(generated.value);

@@ -57,7 +57,7 @@ M8.7–M8.10 prove the game can reach FINISHED, present an authoritative result,
 interface NewGameRequest {
   templateId: 'GROUND_DUEL';
   map: { width: number; height: number; style: MapGenerationStyle };
-  oob: { scale: OobScale; formationsPerSide: number };
+  oob: { scale: OobScale; divisionsPerSide: number; armoredDivisionsPerSide: number; air?: AirForceLevel };
   seeds: { map: number; oob: number; deployment: number; rules: number };
   turnLimit: number;
 }

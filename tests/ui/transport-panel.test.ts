@@ -33,9 +33,14 @@ const startMovement = async () => {
     const location = piece.location as { kind: string; hexId?: string };
     return location.kind === 'ON_MAP' ? location.hexId ?? null : null;
   };
-  const truck = () => own().find(({ role }) => role === 'TRUCK')!;
+  // A side has several trucks; follow one of them, and the parts later divided off it.
+  const startingTrucks = new Set(own().filter(({ role }) => role === 'TRUCK').map(({ id }) => id));
+  const truckId = [...startingTrucks][0]!;
+  const truck = () => own().find(({ id }) => id === truckId)!;
+  const truckParts = () => own().filter(({ id, role, location }) => role === 'TRUCK' && location.kind === 'ON_MAP'
+    && (id === truckId || !startingTrucks.has(id)));
   const dumpAway = () => own().find((piece) => piece.role === 'DUMP' && hexOf(piece) !== hexOf(truck()) && (piece.resourceQuantity ?? 0) > 0)!;
-  return { controller, own, hexOf, truck, dumpAway };
+  return { controller, own, hexOf, truck, truckParts, dumpAway };
 };
 
 describe('the truck\'s supply area (A2)', () => {
@@ -52,7 +57,7 @@ describe('the truck\'s supply area (A2)', () => {
   });
 
   it('loads and unloads the number of Tokens the player chooses, and says what each costs', async () => {
-    const { controller, truck, dumpAway, hexOf, own } = await startMovement();
+    const { controller, truck, truckParts, dumpAway, hexOf, own } = await startMovement();
     const dump = dumpAway();
     controller.selectPiece(truck().id);
     await controller.clickHex(hexOf(dump)!);
@@ -107,7 +112,7 @@ describe('the truck\'s supply area (A2)', () => {
   });
 
   it('never names a supply dump with a number, and does not count dumps or what a truck carries as units (A3)', async () => {
-    const { controller, truck, dumpAway, hexOf, own } = await startMovement();
+    const { controller, truck, truckParts, dumpAway, hexOf, own } = await startMovement();
     const countOf = () => commandDeckHtml(controller.getSnapshot(), newDeck()).match(/All units \((\d+)\)/u)?.[1];
     const dump = dumpAway();
     // A dump's selection card reads "Supply dump", never "Supply Dump 255" or the like.
@@ -175,7 +180,7 @@ describe('the truck\'s supply area (A2)', () => {
   });
 
   it('draws a truck\'s load on its counter: empty, part-loaded, full (A3)', async () => {
-    const { controller, truck, dumpAway, hexOf, own } = await startMovement();
+    const { controller, truck, truckParts, dumpAway, hexOf, own } = await startMovement();
     const gaugeOf = () => {
       const piece = own().find(({ id }) => id === truck().id)!;
       const definition = controller.getSnapshot().scenario.pieceCatalog.definitions.find(({ id }) => id === piece.definitionId)!;
@@ -216,7 +221,7 @@ describe('the truck\'s supply area (A2)', () => {
   });
 
   it('combines the parts of a truck that already moved and loaded, keeping the load and spending no MP (13.2c)', async () => {
-    const { controller, truck, dumpAway, hexOf, own } = await startMovement();
+    const { controller, truck, truckParts, dumpAway, hexOf, own } = await startMovement();
     controller.selectPiece(truck().id);
     await controller.clickHex(hexOf(dumpAway())!);
     await controller.confirmMove();
@@ -230,19 +235,19 @@ describe('the truck\'s supply area (A2)', () => {
     await controller.runAction(combine!.key);
     const options = controller.getSnapshot().transportOptions!;
     expect(options).toMatchObject({ points: 5, loadedTokens: 3, capacityTokens: 20, remainingTicks: remaining });
-    expect(own().filter(({ role, location }) => role === 'TRUCK' && location.kind === 'ON_MAP')).toHaveLength(1);
+    expect(truckParts()).toHaveLength(1);
     controller.dispose();
   });
 
   it('splits a chosen number of points off the counter without MP cost', async () => {
-    const { controller, truck, own } = await startMovement();
+    const { controller, truck, truckParts, own } = await startMovement();
     controller.selectPiece(truck().id);
     const html = commandDeckHtml(controller.getSnapshot(), newDeck());
     expect(html).toContain('class="divide-points"');
     expect(html).toContain('max="4"');
     expect(html).not.toContain('Split off 1 truck point');
     await controller.divideTruck(2);
-    const sizes = own().filter(({ role }) => role === 'TRUCK')
+    const sizes = truckParts()
       .map((piece) => piece.statusValues.find(({ statusDefinitionId }) => statusDefinitionId === 'status:transport-points')?.value).sort();
     expect(sizes).toEqual([2, 3]);
     controller.dispose();

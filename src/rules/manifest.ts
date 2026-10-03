@@ -115,7 +115,7 @@ export const RULE_TABLE_PROVENANCE: readonly RuleTableProvenance[] = Object.free
   },
   {
     id: 'table:btr-supply', rulesVersion: 'Beyond the Rhine',
-    sourceDocument: 'Beyond the Rhine VASSAL module 1.27.0, images/BTR Axis Supply.jpg', locator: 'German Supply Table (column = formations per side in generated games)',
+    sourceDocument: 'Beyond the Rhine VASSAL module 1.27.0, images/BTR Axis Supply.jpg', locator: 'German Supply Table (column = divisions per side in generated games)',
     sourceSha256: 'e4167413c9bd95cabf5fdca33a60ea1abad401e1144813d62f59ef66eb6865fd',
     reviewStatus: 'REVIEWED', resolutionPriority: 200,
   },

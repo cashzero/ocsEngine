@@ -80,7 +80,7 @@ const settle = (state: GameState, pick?: (decision: NonNullable<GameState['pendi
 
 describe('generated air forces (A7)', () => {
   it('adds aircraft and an Air Base per side only when requested, leaving ground forces byte-identical', () => {
-    const base = { seed: 7, scale: 'COMPACT' as const, formationsPerSide: 2 };
+    const base = { seed: 7, scale: 'COMPACT' as const, divisionsPerSide: 2, armoredDivisionsPerSide: 0 };
     const ground = generateRandomOob(base);
     const explicitNone = generateRandomOob({ ...base, air: 'NONE' });
     const air = generateRandomOob({ ...base, air: 'STANDARD' });

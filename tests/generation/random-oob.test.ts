@@ -13,12 +13,12 @@ import {
 } from '../../src/index.js';
 import type { DefinitionId } from '../../src/core/index.js';
 
-const options = { seed: 1944, scale: 'STANDARD' as const, formationsPerSide: 3 };
+const options = { seed: 1944, scale: 'STANDARD' as const, divisionsPerSide: 3, armoredDivisionsPerSide: 1 };
 
 describe('M7 deterministic random OOB pipeline', () => {
   it.each(['COMPACT', 'STANDARD', 'LARGE'] as const)('gives %s packages distinct WWII identities', (scale) => {
     for (const seed of [0, 7, 1944, 0xffffffff]) {
-      const result = generateRandomOob({ seed, scale, formationsPerSide: 6 });
+      const result = generateRandomOob({ seed, scale, divisionsPerSide: 6, armoredDivisionsPerSide: 3 });
       expect(result.ok).toBe(true);
       if (!result.ok) return;
       for (const side of result.value.sides) {
@@ -60,7 +60,7 @@ describe('M7 deterministic random OOB pipeline', () => {
       expect(generated.value.metrics.balanceRatio).toBeGreaterThanOrEqual(0.9);
       expect(generated.value.sides).toHaveLength(2);
       for (const side of generated.value.sides) {
-        expect(side.formations).toHaveLength(options.formationsPerSide);
+        expect(side.formations).toHaveLength(options.divisionsPerSide);
         expect(side.independentUnits.map(({ role }) => role)).toEqual(expect.arrayContaining([
           'ARTILLERY', 'ENGINEER', 'TRANSPORT', 'SUPPLY',
         ]));
@@ -81,7 +81,7 @@ describe('M7 deterministic random OOB pipeline', () => {
   it('builds infantry and airborne divisions as single XX units, with airborne leg-mobile and never filed as mobile infantry', () => {
     const seen = new Set<string>();
     for (let seed = 1; seed <= 40; seed += 1) {
-      const generated = generateRandomOob({ ...options, seed, formationsPerSide: 4 });
+      const generated = generateRandomOob({ ...options, seed, divisionsPerSide: 4, armoredDivisionsPerSide: 2 });
       expect(generated.ok).toBe(true);
       if (!generated.ok) return;
       const definitions = new Map(generated.value.pieceDefinitionCatalog.definitions.map((definition) => [definition.id, definition]));
@@ -178,8 +178,34 @@ describe('M7 deterministic random OOB pipeline', () => {
   });
 
   it('rejects invalid options without partial output', () => {
-    const generated = generateRandomOob({ seed: -1, scale: 'STANDARD', formationsPerSide: 0 });
+    const generated = generateRandomOob({ seed: -1, scale: 'STANDARD', divisionsPerSide: 0, armoredDivisionsPerSide: 1 });
     expect(generated.ok).toBe(false);
-    if (!generated.ok) expect(generated.error.map(({ path }) => path[0])).toEqual(['seed', 'formationsPerSide']);
+    if (!generated.ok) expect(generated.error.map(({ path }) => path[0])).toEqual(['seed', 'divisionsPerSide', 'armoredDivisionsPerSide']);
+    const tooManyArmored = generateRandomOob({ seed: 1, scale: 'COMPACT', divisionsPerSide: 2, armoredDivisionsPerSide: 3 });
+    expect(tooManyArmored.ok).toBe(false);
+    if (!tooManyArmored.ok) expect(tooManyArmored.error.map(({ path }) => path[0])).toEqual(['armoredDivisionsPerSide']);
+  });
+
+  it('fields exactly the requested armored divisions first, then foot divisions that are mostly infantry', () => {
+    let foot = 0;
+    let infantry = 0;
+    for (let seed = 1; seed <= 60; seed += 1) {
+      const generated = generateRandomOob({ seed, scale: 'COMPACT', divisionsPerSide: 6, armoredDivisionsPerSide: 2 });
+      expect(generated.ok).toBe(true);
+      if (!generated.ok) return;
+      for (const side of generated.value.sides) {
+        const archetypes = side.formations.map(({ archetype }) => archetype);
+        // Allied armored slots are armored divisions; the Axis alternate Panzer and Panzergrenadier.
+        expect(archetypes.slice(0, 2)).toEqual(side.side === 'ALLIED' ? ['ARMORED', 'ARMORED'] : ['ARMORED', 'MOBILE_INFANTRY']);
+        expect(archetypes.slice(2).every((archetype) => archetype === 'INFANTRY' || archetype === 'AIRBORNE')).toBe(true);
+        foot += archetypes.length - 2;
+        infantry += archetypes.filter((archetype) => archetype === 'INFANTRY').length;
+      }
+    }
+    // Foot slots cycle three infantry to one airborne.
+    expect(infantry / foot).toBeGreaterThanOrEqual(0.7);
+    const allFoot = generateRandomOob({ seed: 9, scale: 'COMPACT', divisionsPerSide: 4, armoredDivisionsPerSide: 0 });
+    expect(allFoot.ok && allFoot.value.sides.every(({ formations }) => formations.every(({ archetype }) => archetype !== 'ARMORED'
+      && archetype !== 'MOBILE_INFANTRY'))).toBe(true);
   });
 });
