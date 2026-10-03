@@ -15,6 +15,7 @@ import {
   createRulesRng,
   declareTestCombat,
   dumpsReaching,
+  formationRouteOptions,
   friendlySourceHexes,
   generatedPieceId,
   hexDistanceBetween,
@@ -202,17 +203,17 @@ describe('OCS 4.3 internal stocks, trace supply and attrition (12.6, 12.8, 12.10
     // per side (e.g. 3 formations) asserting pieceHasTrace is false for the other division's regiment.
   });
 
-  it('makes a formation trace through one HQ or one source; the player may pick which (12.6f)', () => {
+  it('traces a formation through one HQ or one source, picked automatically (12.6f)', () => {
     const built = buildGeneratedRuleScenario({ [U.alHq]: ['-1,6', 'COMBAT', 'combat'], [U.alTrk]: ['6,6', 'COMBAT', 'combat'], [U.alTrk2]: ['16,1', 'COMBAT', 'combat'] });
     const sources = [...built.scenario.sources, { ...built.scenario.sources[0]!, id: 'source:test:second' as never, hexId: '15,1' as HexId }];
     const created = createInitialGameState({ ...built.scenario, sources }, built.configuration, 7);
     if (!created.ok) throw new Error('state');
     const state = atStep(created.value, 'SUPPLY', 'NONE', ALLIED);
-    // The HQ route covers the HQ and one regiment; the other regiment only draws from the far source.
-    expect(pieceHasTrace(state, piece(state, U.alTrk))).toBe(true);
-    expect(pieceHasTrace(state, piece(state, U.alTrk2))).toBe(false);
+    // The common route is picked automatically (most members; ties go to a direct draw): the HQ and one regiment trace, the other must eat or go OOS.
+    expect(pieceHasTrace(state, piece(state, U.alTrk))).toBe(false);
+    expect(pieceHasTrace(state, piece(state, U.alTrk2))).toBe(true);
     const formationId = state.scenario.pieceCatalog.definitions.find(({ id }) => id === piece(state, U.alTrk2).definitionId)!.ownership.formationDefinitionId!;
-    const chosen = ok(applyRuleAction(state, ALLIED, { kind: 'CHOOSE_FORMATION_TRACE', formationId, routeKey: 'DRAW:15,1' }));
+    const chosen = ok(applyRuleAction(state, ALLIED, { kind: 'CHOOSE_FORMATION_TRACE', formationId, routeKey: 'DRAW' }));
     expect(pieceHasTrace(chosen, piece(chosen, U.alTrk2))).toBe(true);
     expect(pieceHasTrace(chosen, piece(chosen, U.alTrk))).toBe(false);
   });

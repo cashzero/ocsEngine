@@ -193,7 +193,8 @@ describe('UI flow narrative (2026-10-01 review)', () => {
     await controller.runAction(controller.getSnapshot().unitActions.find(({ label }) => label.includes('whole formation'))!.key);
     const destination = [...controller.getSnapshot().moveRange.keys()].find((hexId) => printedHexLabel(hexId) === '0205')!;
     await controller.clickHex(destination); await controller.clickHex(destination);
-    await controller.endStep(); await controller.endStep();
+    // The Supply step is skipped now that no trace-route choice is offered, so one step fewer than before.
+    await controller.endStep();
     return { controller, game };
   };
 
