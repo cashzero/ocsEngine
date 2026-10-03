@@ -333,7 +333,7 @@ const stackPicker = (snapshot: UiSnapshot) => {
     const definition = definitionOf(piece.definitionId)!;
     const own = piece.ownerId === snapshot.view.playerId;
     return html`<button class="stack-pick${snapshot.selection.pieceId === piece.id ? ' is-selected' : ''}" data-pick-piece=${piece.id} ?disabled=${!own} @click=${() => controller.selectPiece(piece.id)}>
-      <span class="stack-pick-art" aria-hidden="true">${unsafeHTML(counterSvg(counterView(definition, piece)))}</span><span>${`${own ? '' : 'Enemy · '}${pieceLabel(scenario, piece)}${piece.role === 'DUMP' ? ` · ${piece.resourceQuantity ?? 0}T` : ''}${typeof piece.carriedTokens === 'number' ? ` · carries ${piece.carriedTokens}T` : ''}`}</span></button>`;
+      <span class="stack-pick-art" aria-hidden="true">${unsafeHTML(counterSvg(counterView(definition, piece)))}</span><span>${`${own ? '' : 'Enemy · '}${pieceLabel(scenario, piece)}${piece.role === 'DUMP' ? ` · ${piece.resourceQuantity == null ? '?' : piece.resourceQuantity}T` : ''}${typeof piece.carriedTokens === 'number' ? ` · carries ${piece.carriedTokens}T` : ''}`}</span></button>`;
   });
   return html`<div class="stack-picker" role="group" aria-label=${`Units in hex ${printedHexLabel(stackPickerHex)}`} data-anchor-hex=${stackPickerHex}>
     <header><strong>Hex ${printedHexLabel(stackPickerHex)} · ${stack.pieces.length + stack.hiddenCount} units</strong><button id="close-stack-picker" aria-label="Close stack list" @click=${() => { stackPickerHex = null; render(controller.getSnapshot()); }}>×</button></header>
