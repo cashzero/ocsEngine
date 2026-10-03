@@ -49,6 +49,8 @@ describe('UI controller: unit-first play through Gameplay only', () => {
     expect(unfueled.reachable.size).toBe(0);
     const fuel = unfueled.unitActions.find(({ group, action }) => group === 'FUEL' && action.kind === 'PAY_FUEL' && action.method === 'SINGLE_UNIT')!;
     expect(fuel.label).toMatch(/1T/u);
+    // The deck names the units a payment fuels, so the player can compare methods before paying.
+    expect(fuel.fuels).toHaveLength(1);
     await controller.runAction(fuel.key);
     const fueledRevision = controller.getSnapshot().view.stateRevision;
     expect(fueledRevision).toBe(start.view.stateRevision + 1);

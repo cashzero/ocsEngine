@@ -13,7 +13,7 @@ import {
   type SessionNotification,
 } from '../gameplay/index.js';
 import {
-  AIR_MISSION_KINDS, AIR_MISSION_LABELS, missionSegment, parseRuleActionId,
+  AIR_MISSION_KINDS, AIR_MISSION_LABELS, FUEL_COSTS, missionSegment, parseRuleActionId,
   type AirMissionKind, type GameAction, type ProjectedCombat, type ProjectedPiece, type RuleEvent, type RuleExplanation,
 } from '../rules/index.js';
 import type {
@@ -903,8 +903,8 @@ class DefaultUiController implements UiController {
   #unitActions(piece: ProjectedPiece, enabled: (kind: GameAction['kind']) => boolean): readonly UnitAction[] {
     return this.#cached(`unit-actions|${piece.id}`, () => {
       const actions: UnitAction[] = [];
-      const add = (group: UnitAction['group'], label: string, action: GameAction | null | undefined) => {
-        if (action) actions.push({ key: `${group}:${actions.length}:${action.kind}`, group, label, action });
+      const add = (group: UnitAction['group'], label: string, action: GameAction | null | undefined, fuels?: readonly string[]) => {
+        if (action) actions.push({ key: `${group}:${actions.length}:${action.kind}`, group, label, action, ...(fuels ? { fuels } : {}) });
       };
       if (enabled('CREATE_BREAKDOWN')) {
         // 20.0: the Breakdown's printed values come from the division's pool; the engine numbers it ("1/101.Abn").
@@ -915,11 +915,19 @@ class DefaultUiController implements UiController {
         add('BREAKDOWN', `Detach a Breakdown${counter ? ` (${counter}, 1 RE; the division loses a step)` : ''}`, this.#candidates('CREATE_BREAKDOWN', piece.id)[0]);
       }
       if (enabled('PAY_FUEL')) {
+        const previews = this.#cached(`fuel-preview|${piece.id}`, () => this.#session.getFuelPreview(this.#activeSeat(), piece.id as PieceId).value);
         for (const action of this.#candidates('PAY_FUEL', piece.id)) {
           if (action.kind !== 'PAY_FUEL') continue;
+          const fueled = previews?.find(({ method }) => method === action.method)?.fueledPieceIds ?? [];
+          // 12.5c: the HQ Method costs 1 SP (4T); it only beats paying 1T per unit when it fuels more than four units.
+          if (action.method === 'HQ' && fueled.length * FUEL_COSTS.singleUnit <= FUEL_COSTS.hq) continue;
           const what = action.method === 'SINGLE_UNIT' ? 'Fuel this unit for this phase (1T)'
             : action.method === 'FORMATION' ? 'Fuel its whole formation until Clean Up (1 SP)' : 'Fuel this HQ and the independent units in its range until Clean Up (1 SP)';
-          add('FUEL', `${what} from ${this.#dumpLabel(action.sourcePieceId)}`, action);
+          const names = fueled.map((id) => {
+            const unit = this.#pieces().find((candidate) => candidate.id === id);
+            return unit ? `${unitLabel(this.#scenario, unit)}${unit.location.kind === 'ON_MAP' ? ` ${printedHexLabel(unit.location.hexId)}` : ''}` : 'a unit';
+          });
+          add('FUEL', `${what} from ${this.#dumpLabel(action.sourcePieceId)}`, action, names);
         }
       }
       if (enabled('ATTEMPT_BREAKOUT')) add('BREAKOUT', 'Attempt breakout (5-6 on one die)', this.#candidates('ATTEMPT_BREAKOUT', piece.id)[0]);

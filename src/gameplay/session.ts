@@ -220,6 +220,14 @@ export class GameplaySession implements GameSession {
     return cloneValue(this.#ports.rules.queryTraceCoverage(this.#state, binding.playerId, pieceId));
   };
 
+  getFuelPreview = (seatId: SeatId, pieceId: Parameters<GameSession['getFuelPreview']>[1]): ReturnType<GameSession['getFuelPreview']> => {
+    const binding = this.#binding(seatId);
+    if (this.#lifecycle !== 'ACTIVE' || this.#handoff !== null) {
+      return { allowed: false, value: [], reasons: [{ code: 'SESSION_NOT_INTERACTIVE', allowed: false, message: 'Session is not accepting interaction.', rule: 'gameplay' }], facts: [], dependencies: [] };
+    }
+    return cloneValue(this.#ports.rules.queryFuelPreview(this.#state, binding.playerId, pieceId));
+  };
+
   createDraft = (seatId: SeatId, action: GameAction): ActionDraft => ({
     stateRevision: this.#state.revision, seatId: this.#binding(seatId).seatId, action: cloneAction(action),
   });
