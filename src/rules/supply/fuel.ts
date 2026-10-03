@@ -132,7 +132,12 @@ export const fuelOptions = (state: GameState, piece: PieceState): readonly FuelO
     if (sources.length > 0) {
       const covered = state.pieceState.pieces.filter((other) => other.ownerId === piece.ownerId && hexOf(other) !== null
         && needsFuel(state, other) && isIndependent(state, other) && throwReachesFrom(state, piece, hexId, hexOf(other)!)).map(({ id }) => id);
-      const movers = [piece.id, ...covered].some((id) => { const unit = pieceById(state, id); return unit !== undefined && isEligibleMover(state, unit); });
+      // The 1 SP must buy something: an eligible mover among the HQ and its independents that is not already fueled
+      // (e.g. an HQ the Formation Method already fueled does not need to pay again for itself).
+      const movers = [piece.id, ...covered].some((id) => {
+        const unit = pieceById(state, id);
+        return unit !== undefined && needsFuel(state, unit) && fuelCoverage(state, unit) === null && isEligibleMover(state, unit);
+      });
       if (movers) options.push({ method: 'HQ', pieceId: piece.id, tokens: FUEL_COSTS.hq, sources, coveredPieceIds: [...new Set([piece.id, ...covered])] });
     }
   }

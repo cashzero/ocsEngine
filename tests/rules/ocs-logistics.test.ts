@@ -129,6 +129,21 @@ describe('OCS 4.3 fuel (12.5)', () => {
     expect(codes(applyRuleAction(paid, ALLIED, { kind: 'MOVE_PIECE', pieceId: U.alTrk, path: path('3,6', '3,7') }))).toContain('FUEL_REQUIRED');
   });
 
+  it('does not offer the HQ Method to an HQ the Formation Method already fueled unless an independent unit still needs it', () => {
+    const formationFueled = (placement: Parameters<typeof buildGeneratedRuleState>[0]): GameState => {
+      const state = unfueled(placement);
+      return { ...state, fuel: { ...state.fuel, formations: [{ playerId: ALLIED, formationId: state.pieceState.pieces.find(({ id }) => id === U.alHq)!.definitionId, coveredPieceIds: [U.alHq, U.alTrk] }] } };
+    };
+    const hqMethods = (state: GameState) => ruleEngine.getActionCandidates(state, { actorId: ALLIED, kind: 'PAY_FUEL', pieceId: U.alHq, budget: 10 }).actions
+      .filter((action) => action.kind === 'PAY_FUEL' && action.method === 'HQ');
+    // Only formation units around: the HQ is already fueled, so 1 SP for the HQ Method would buy nothing.
+    const alone = formationFueled({ [U.alHq]: ['1,6', 'COMBAT', 'combat'], [U.alTrk]: ['1,5', 'COMBAT', 'combat'], [U.alSup]: ['0,6', null] });
+    expect(hqMethods(alone)).toEqual([]);
+    // An unfueled independent unit in its throw range still makes the HQ Method worth offering.
+    const withIndependent = formationFueled({ [U.alHq]: ['1,6', 'COMBAT', 'combat'], [U.alTrk]: ['1,5', 'COMBAT', 'combat'], [U.alEng]: ['2,6', 'MOVE', 'move'], [U.alSup]: ['0,6', null] });
+    expect(hqMethods(withIndependent).length).toBeGreaterThan(0);
+  });
+
   it('requires fuel to overrun even from a standing start (12.5b)', () => {
     const state = unfueled({ [U.alTrk]: ['6,5', 'MOVE', 'move'], [U.axTrk]: ['7,5', 'MOVE', 'move'], [U.alSup]: ['5,5', null] });
     expect(codes(declareTestCombat(state, ALLIED, 'OVERRUN', [U.alTrk], '7,5'))).toContain('FUEL_REQUIRED');
