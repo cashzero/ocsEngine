@@ -78,6 +78,34 @@ describe('M6 deterministic random map pipeline', () => {
     }
   });
 
+  it('builds a BtR-scale road mesh: dense, looped, every place on a road, no unserved district', () => {
+    for (const style of ['TEMPERATE_INLAND', 'MEDITERRANEAN_COAST'] as const) for (const seed of [3, 1943, 31337, 2024]) {
+      const generated = generateRandomMap({ width: 32, height: 24, seed, style });
+      expect(generated.ok).toBe(true);
+      if (!generated.ok) continue;
+      const { metrics, mapDefinition } = generated.value;
+      // 3.5-mile Hexes: about one road Hexside per two land Hexes, most of it Secondary Road.
+      expect(metrics.roadEdges / metrics.landHexes).toBeGreaterThan(0.4);
+      expect(metrics.primaryRoadEdges / metrics.landHexes).toBeGreaterThan(0.25);
+      expect(metrics.settlements / metrics.landHexes).toBeGreaterThan(0.08);
+      expect(metrics.roadGapExcess).toBe(0);
+      expect(metrics.maximumRoadGap).toBeLessThanOrEqual(3);
+      const roadHexes = new Map<string, number>();
+      for (const { hexsideId, featureDefinitionIds } of mapDefinition.hexsides) {
+        if (!featureDefinitionIds.some((id) => /^edge:(?:primary-)?road$/u.test(String(id)))) continue;
+        const parsed = parseHexsideId(hexsideId);
+        if (!parsed.ok) continue;
+        for (const hexId of [parsed.value.firstHexId, parsed.value.secondHexId]) roadHexes.set(hexId, (roadHexes.get(hexId) ?? 0) + 1);
+      }
+      const places = mapDefinition.hexes.filter(({ features }) => features.some(({ definitionId }) => String(definitionId).startsWith('settlement:')));
+      expect(places.every(({ id }) => roadHexes.has(id))).toBe(true);
+      // A tree has one fewer edge than nodes; a road mesh has many loops.
+      expect(metrics.roadEdges).toBeGreaterThan(roadHexes.size * 1.1);
+      const towns = places.filter(({ features }) => features.some(({ definitionId }) => String(definitionId) === 'settlement:town'));
+      expect(towns.reduce((sum, { id }) => sum + roadHexes.get(id)!, 0) / towns.length).toBeGreaterThanOrEqual(3);
+    }
+  });
+
   it('rejects invalid generation options without partial output', () => {
     const generated = generateRandomMap({ width: 4, height: 99, seed: -1, style: 'TEMPERATE_INLAND' });
     expect(generated.ok).toBe(false);

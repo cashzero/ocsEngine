@@ -1,4 +1,5 @@
 import {
+  hexDistance,
   neighbor,
   parseHexCoordinateId,
   type HexId,
@@ -55,12 +56,39 @@ const componentCount = (edges: readonly (readonly [HexId, HexId])[]): number => 
   return components;
 };
 
+/** Open ground lies within two Hexes of a road, woods and hills within three (BtR scale, see docs/generator/10). */
+const ROAD_GAP_LIMIT: Readonly<Partial<Record<GeneratedTerrainKind, number>>> = { CLEAR: 2, WOODS: 3, ROUGH: 3 };
+
+/** Largest distance from any road, in Hexes, of each passable Hex kind that must be served. */
+const roadGaps = (map: MapDefinition, roadEdges: readonly (readonly [HexId, HexId])[]) => {
+  const roadHexes = [...new Set(roadEdges.flat())].flatMap((id) => {
+    const parsed = parseHexCoordinateId(id);
+    return parsed.ok ? [parsed.value] : [];
+  });
+  const gaps: Partial<Record<GeneratedTerrainKind, number>> = {};
+  for (const hex of map.hexes) {
+    const kind = terrainKind(hex.terrainDefinitionIds[0]!);
+    if (ROAD_GAP_LIMIT[kind] === undefined) continue;
+    const parsed = parseHexCoordinateId(hex.id);
+    if (!parsed.ok) continue;
+    let nearest = Number.POSITIVE_INFINITY;
+    for (const road of roadHexes) {
+      nearest = Math.min(nearest, hexDistance(parsed.value, road));
+      if (nearest === 0) break;
+    }
+    // A map without roads reports its size, so the metric stays a finite, serializable number.
+    gaps[kind] = Math.max(gaps[kind] ?? 0, Number.isFinite(nearest) ? nearest : map.hexes.length);
+  }
+  return gaps;
+};
+
 export const measureGeneratedMap = (map: MapDefinition): GeneratedMapMetrics => {
   const terrainCounts: Record<GeneratedTerrainKind, number> = {
     CLEAR: 0, WOODS: 0, ROUGH: 0, MOUNTAIN: 0, MARSH: 0, WATER: 0,
   };
   map.hexes.forEach((hex) => { terrainCounts[terrainKind(hex.terrainDefinitionIds[0]!)] += 1; });
   const roadEdges = featureEdges(map, /^edge:(?:primary-)?road$/u);
+  const gaps = roadGaps(map, roadEdges);
   return {
     terrainCounts,
     landHexes: map.hexes.length - terrainCounts.WATER,
@@ -70,6 +98,8 @@ export const measureGeneratedMap = (map: MapDefinition): GeneratedMapMetrics => 
     majorRiverEdges: featureEdges(map, /^edge:major-river$/u).length,
     settlements: map.hexes.filter(({ features }) => features.some(({ definitionId }) => String(definitionId).startsWith('settlement:'))).length,
     connectedRoadComponents: componentCount(roadEdges),
+    maximumRoadGap: Math.max(0, ...Object.values(gaps)),
+    roadGapExcess: Math.max(0, ...Object.entries(gaps).map(([kind, gap]) => gap - ROAD_GAP_LIMIT[kind as GeneratedTerrainKind]!)),
   };
 };
 
@@ -121,6 +151,7 @@ export const validateGeneratedMap = (
   if (metrics.settlements < 4) issues.push(error('TOO_FEW_SETTLEMENTS', 'Generated map requires at least four settlements.'));
   if (metrics.riverEdges < 1) issues.push(error('MISSING_RIVER_NETWORK', 'Generated map requires at least one river.'));
   if (metrics.connectedRoadComponents !== 1) issues.push(error('DISCONNECTED_ROAD_NETWORK', 'All generated roads must form one component.'));
+  if (metrics.roadGapExcess > 0) issues.push(error('ROAD_COVERAGE_GAP', 'Open ground must lie within two Hexes of a road, woods and hills within three.'));
   if (strategic.some((hexId) => !land.has(hexId))) issues.push(error('STRATEGIC_REGION_ON_WATER', 'Entry, supply, and settlement Hexes must be on land.'));
   const roadReach = reachable(map, strategic[0]!, land, true);
   if (strategic.some((hexId) => !roadReach.has(hexId))) issues.push(error('STRATEGIC_NODE_OFF_ROAD', 'Every strategic node must join the road network.'));
