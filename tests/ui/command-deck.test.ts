@@ -117,7 +117,8 @@ describe('phase-specific command deck', () => {
     await controller.loadSave(created.value.session.serializeSave());
     expect(controller.getSnapshot().view.metadata.lifecycle).toBe('ACTIVE');
     controller.dispose();
-  });
+    // Builds the default operation twice (two full games).
+  }, 20_000);
 
   it('confirms a previewed move in a popup anchored to the destination, not in the deck', async () => {
     const controller = await startGame();
@@ -258,9 +259,10 @@ describe('phase-specific command deck', () => {
     expect(load, 'the truck can load at the dump').toBeDefined();
     await controller.runAction(load!.key);
 
-    // A unit that needs no fuel: moving it is allowed, but the popup says what it costs the truck.
+    // A unit that needs no fuel (it marches on its current face): moving it is allowed, but the popup says what it costs the truck.
     const leg = own().find((piece) => piece.mode === 'MOVE' && piece.id !== truck.id && kindOf(piece.id) === 'COMBAT' && controller.getSnapshot().scenario.pieceCatalog.definitions
-      .find(({ id }) => id === piece.definitionId)?.faces.some(({ mobilityClassDefinitionId }) => String(mobilityClassDefinitionId) === 'mobility:leg'))!;
+      .find(({ id }) => id === piece.definitionId)?.faces.some(({ id, mobilityClassDefinitionId }) => id === piece.currentFaceId
+        && String(mobilityClassDefinitionId) === 'mobility:leg'))!;
     controller.selectPiece(leg.id);
     const destination = [...controller.getSnapshot().reachable.keys()][0]!;
     await controller.clickHex(destination);
@@ -277,5 +279,5 @@ describe('phase-specific command deck', () => {
     expect(movePopupHtml(plain)).not.toContain('class="warning"');
     expect(movePopupHtml(plain)).toMatch(/id="confirm-move"[^>]*>Confirm</u);
     controller.dispose();
-  });
+  }, 20_000);
 });

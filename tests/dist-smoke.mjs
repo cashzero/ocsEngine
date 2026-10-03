@@ -83,7 +83,7 @@ assert.equal(layoutHexMap(ruleFixture.scenario).cells.length, 25);
 const generatedMap = generateRandomMap({ width: 18, height: 12, seed: 1943, style: 'TEMPERATE_INLAND' });
 assert.equal(generatedMap.ok, true);
 assert.equal(generatedMap.value.metrics.connectedRoadComponents, 1);
-const generatedOob = generateRandomOob({ seed: 1944, scale: 'STANDARD', formationsPerSide: 3 });
+const generatedOob = generateRandomOob({ seed: 1944, scale: 'STANDARD', divisionsPerSide: 3, armoredDivisionsPerSide: 1 });
 assert.equal(generatedOob.ok, true);
 assert.equal(generatedOob.value.metrics.balanceRatio, 1);
 assert.equal(generatedOob.value.sides.length, 2);

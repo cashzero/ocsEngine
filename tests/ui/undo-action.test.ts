@@ -28,7 +28,9 @@ const startMovement = async () => {
     const location = piece.location as { kind: string; hexId?: string };
     return location.kind === 'ON_MAP' ? location.hexId ?? null : null;
   };
-  const truck = () => own().find(({ role }) => role === 'TRUCK')!;
+  // A side has several trucks; follow one of them.
+  const truckId = own().find(({ role }) => role === 'TRUCK')!.id;
+  const truck = () => own().find(({ id }) => id === truckId)!;
   const dumpAway = () => own().find((piece) => piece.role === 'DUMP' && hexOf(piece) !== hexOf(truck()) && (piece.resourceQuantity ?? 0) > 0)!;
   const history = () => session.getHistory({ offset: 0, limit: 1000, actionKind: null }).total;
   return { controller, session, own, hexOf, truck, dumpAway, history };
