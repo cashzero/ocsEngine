@@ -132,6 +132,7 @@ execute it, and confirm revision/history/state effects. A direct Rule test is no
 | ACT-12 | P0 | Execute `CANCEL_TRANSACTION` in a cancellable state | Reservation is released and no combat/barrage result is applied | UNVERIFIED |
 | ACT-13 | P0 | Attempt an operation from the wrong hot-seat side | Private candidates are unavailable; the UI gives an obvious handoff path | UNVERIFIED |
 | ACT-14 | P0 | Complete a whole turn containing at least one unit action, all required handoffs, and any decisions | Turn increments; no phase was skipped by a test-only/direct API shortcut | UNVERIFIED |
+| ACT-15 | P0 | Move a unit into a Hex so it holds more than 10 RE, confirm it, then press End on the Movement segment | The move preview warns of the overstack and its button reads Confirm anyway; after the move a warning stays beside End naming the Hex and its RE; End needs a second press (Finish anyway: n hex is overstacked); the 4.8a elimination decision then follows. Moves within 10 RE show none of this; Trucks and dumps are not counted. Added 2026-10-03. Evidence so far is automated only (`tests/ui/overstack-warning.test.ts`) plus a styling check of injected markup in the served page; the full browser flow has not been operated | UNVERIFIED |
 
 If the generated product cannot create a legal state for ACT-04, ACT-05, or another action, that row
 is `BLOCKED`, not `PASS`; the missing scenario/setup path is a product gap to resolve.

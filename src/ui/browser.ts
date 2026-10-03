@@ -25,7 +25,7 @@ import {
 } from './map-art.js';
 import { MapView, type MapCounter, type MapState } from './map-canvas.js';
 import {
-  commandDeckView, movePopupView, phaseControlsView, selectDeckTab, syncDeckTab, unitRosterView, unmovedUnits, withHexLabels, type DeckState, type UnitFilter,
+  commandDeckView, endOverstack, movePopupView, phaseControlsView, selectDeckTab, syncDeckTab, unitRosterView, unmovedUnits, withHexLabels, type DeckState, type UnitFilter,
 } from './command-deck.js';
 import type { UiSnapshot } from './model.js';
 import { phaseLabel, pieceLabel, printedHexLabel } from './presenter.js';
@@ -778,8 +778,8 @@ root.addEventListener('click', (event) => {
   if (closest('button:disabled')) return;
   if (byId('end-phase')) {
     const snapshot = controller.getSnapshot();
-    // Finishing Movement with units that have not moved asks for a second press (no undo after dice).
-    if (unmovedUnits(snapshot) > 0 && !deck.confirmEnd) { deck.confirmEnd = true; render(snapshot); return; }
+    // Finishing Movement with units that have not moved, or any hex over 10 RE (4.8a would force eliminations), asks for a second press (no undo after dice).
+    if ((unmovedUnits(snapshot) > 0 || endOverstack(snapshot).length > 0) && !deck.confirmEnd) { deck.confirmEnd = true; render(snapshot); return; }
     deck.confirmEnd = false;
     stackPickerHex = null;
     void runUi(controller.endStep);
