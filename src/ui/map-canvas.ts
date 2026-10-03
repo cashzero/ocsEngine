@@ -52,6 +52,8 @@ export interface MapState {
   /** The hex of an attack being planned or resolved. */
   readonly targetHexIds: ReadonlySet<string>;
   readonly path: readonly string[];
+  /** Hexes where trace supply reaches (12.6), drawn as a green wash; empty while the overlay is off. */
+  readonly traceCoverage: ReadonlySet<string>;
   readonly ownZone: ReadonlySet<string>;
   readonly enemyZone: ReadonlySet<string>;
   readonly trainbusting: readonly { readonly hexId: string; readonly own: boolean }[];
@@ -70,7 +72,7 @@ export interface MapEvents {
 
 export const EMPTY_MAP_STATE: MapState = {
   selectedHexId: null, reachable: new Map(), dimmed: new Set(), attack: new Set(), barrage: new Set(), placement: new Set(), retreat: new Set(), highlight: new Set(),
-  airTargets: new Set(), destinationHexId: null, targetHexIds: new Set(), path: [], ownZone: new Set(), enemyZone: new Set(), trainbusting: [], counters: [], badges: [],
+  airTargets: new Set(), destinationHexId: null, targetHexIds: new Set(), path: [], traceCoverage: new Set(), ownZone: new Set(), enemyZone: new Set(), trainbusting: [], counters: [], badges: [],
 };
 
 /** Internal scale of the normal framing; the zoom readout is relative to it, so this framing reads 100%. */
@@ -516,7 +518,7 @@ export class MapView {
     };
     // Paint order follows the printed map: ground and grid, the highlighted hexes, then numbers, water, roads and towns over them.
     blit('ground');
-    this.#withMapTransform(() => { this.#drawDimming(); this.#drawHexHighlights(); });
+    this.#withMapTransform(() => { this.#drawDimming(); this.#drawTraceCoverage(); this.#drawHexHighlights(); });
     blit('lines');
     this.#withMapTransform(() => {
       this.#drawHexNumbers();
@@ -788,6 +790,19 @@ export class MapView {
     ctx.globalCompositeOperation = 'saturation';
     ctx.globalAlpha = 0.4;
     ctx.fillStyle = 'rgb(128, 128, 128)';
+    ctx.fill(path);
+    ctx.restore();
+  }
+
+  /** Trace Supply overlay: a green wash over the hexes trace supply reaches, so the rest reads as out of trace. */
+  #drawTraceCoverage(): void {
+    const { traceCoverage } = this.#state;
+    if (traceCoverage.size === 0) return;
+    const ctx = this.#ctx;
+    const path = new Path2D();
+    traceCoverage.forEach((hexId) => { const corners = this.#geometry!.fillCorners.get(hexId); if (corners) path.addPath(polygon(corners)); });
+    ctx.save();
+    ctx.fillStyle = 'rgba(111, 207, 142, .26)';
     ctx.fill(path);
     ctx.restore();
   }

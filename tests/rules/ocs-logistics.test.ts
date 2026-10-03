@@ -217,6 +217,24 @@ describe('OCS 4.3 internal stocks, trace supply and attrition (12.6, 12.8, 12.10
     expect(pieceHasTrace(chosen, piece(chosen, U.alTrk2))).toBe(true);
     expect(pieceHasTrace(chosen, piece(chosen, U.alTrk))).toBe(false);
   });
+
+  it('shows the same trace coverage the Supply Phase applies, for any unit or for the selected one (12.6, 13.1d)', () => {
+    const state = atStep(buildGeneratedRuleState({
+      [U.alHq]: ['-1,6', 'COMBAT', 'combat'], [U.alTrk]: ['6,6', 'COMBAT', 'combat'], [U.alTrk2]: ['16,1', 'COMBAT', 'combat'], [U.alEng]: ['6,5', 'COMBAT', 'combat'],
+    }), 'SUPPLY', 'NONE', ALLIED);
+    const any = ruleEngine.queryTraceCoverage(state, ALLIED, null);
+    expect(any.allowed).toBe(true);
+    expect(any.value.length).toBeGreaterThan(0);
+    expect(any.value.length).toBeLessThan(state.scenario.mapDefinition.hexes.length);
+    // A unit's own coverage contains its hex exactly when the Supply Phase would find it in trace.
+    for (const id of [U.alTrk, U.alTrk2, U.alEng, U.alHq]) {
+      const own = ruleEngine.queryTraceCoverage(state, ALLIED, id).value;
+      expect(own.includes(piece(state, id).location.kind === 'ON_MAP' ? (piece(state, id).location as { hexId: string }).hexId : ''), id).toBe(pieceHasTrace(state, piece(state, id)));
+      // Whatever one unit may use, some friendly unit may use too.
+      expect(own.every((hexId) => any.value.includes(hexId))).toBe(true);
+    }
+    expect(ruleEngine.queryTraceCoverage(state, AXIS, U.alTrk).allowed).toBe(false);
+  });
 });
 
 describe('OCS 4.3 breakout (12.8e)', () => {

@@ -150,4 +150,6 @@ export interface RuleEngine {
   readonly queryMovementRange: (state: GameState, actorId: PlayerId, pieceId: PieceId) => RuleQueryResult<readonly import('../movement/movement.js').ReachableHex[]>;
   /** What one own Transport Point can load or unload in its Hex now: Token ranges, MP cost, and the rule behind anything not offered. */
   readonly queryTransportOptions: (state: GameState, actorId: PlayerId, truckId: PieceId) => RuleQueryResult<import('../supply/transport.js').TransportOptions | null>;
+  /** Hexes where the actor's trace supply reaches: for the given unit (13.1d and 12.6f apply), or for any unit when null (12.6). */
+  readonly queryTraceCoverage: (state: GameState, actorId: PlayerId, pieceId: PieceId | null) => RuleQueryResult<readonly string[]>;
 }

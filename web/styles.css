@@ -471,3 +471,4 @@ small, .supporting { font-size: 14px; color: var(--muted); }
 .legend-ring.air-zone { border-color: #5aa0d8; border-style: dashed; }
 .legend-ring.air-zone.enemy { border-color: #e06b5a; }
 #toggle-air-zones[aria-pressed="true"] { outline: 2px solid #5aa0d8; }
+#toggle-trace-coverage[aria-pressed="true"] { outline: 2px solid #6fcf8e; }

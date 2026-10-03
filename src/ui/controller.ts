@@ -92,6 +92,7 @@ export interface UiController {
   readonly toggleRefitAircraft: (baseId: string, pieceId: string) => void;
   readonly refitBase: (baseId: string) => Promise<void>;
   readonly toggleAirZones: () => void;
+  readonly toggleTraceCoverage: () => void;
   readonly dispose: () => void;
 }
 
@@ -187,6 +188,7 @@ class DefaultUiController implements UiController {
   #airDraft: AirDraftInput | null = null;
   #refitSelection = new Map<string, readonly PieceId[]>();
   #showAirZones = false;
+  #showTraceCoverage = false;
   /** Public combat facts per transaction, captured while the combat is open. */
   #combatFacts = new Map<string, ProjectedCombat>();
   #openTransaction: string | null = null;
@@ -633,6 +635,11 @@ class DefaultUiController implements UiController {
       }
       for (const [pieceId, options] of byPiece) supplyNeeds.push({ pieceId: pieceId as PieceId, options });
     }
+    // Trace Supply overlay: the selected unit's own reach (13.1d, 12.6f), else where any friendly unit would trace.
+    const traceUnitId = ownSelected?.location.kind === 'ON_MAP' ? ownSelected.id : null;
+    const traceCoverage = this.#showTraceCoverage && view.projection !== null
+      ? this.#cached(`trace|${traceUnitId}`, () => new Set<string>(this.#session.getTraceCoverage(seatId, traceUnitId as PieceId | null).value))
+      : new Set<string>();
     const unitActions = ownSelected ? this.#unitActions(ownSelected, enabled) : [];
     const transportOptions = ownSelected?.role === 'TRUCK' && view.metadata.lifecycle === 'ACTIVE' && !view.privacyLocked
       && view.projection?.sequence.phase === 'MOVEMENT' && segment === 'MOVEMENT'
@@ -673,6 +680,9 @@ class DefaultUiController implements UiController {
       selectedIsMoving: ownSelected !== null && view.projection?.currentMoverId === ownSelected.id,
       reachable,
       moveRange,
+      traceCoverage,
+      traceCoverageFor: this.#showTraceCoverage ? traceUnitId : null,
+      showTraceCoverage: this.#showTraceCoverage,
       remainingTicks,
       movePreview,
       attackTargets,
@@ -873,6 +883,7 @@ class DefaultUiController implements UiController {
   };
 
   toggleAirZones = (): void => { this.#showAirZones = !this.#showAirZones; this.#emit(); };
+  toggleTraceCoverage = (): void => { this.#showTraceCoverage = !this.#showTraceCoverage; this.#emit(); };
 
   #dumpLabel(dumpId: string): string {
     const dump = this.#pieces().find(({ id }) => id === dumpId);

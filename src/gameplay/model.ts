@@ -282,6 +282,8 @@ export interface GameSession {
   readonly getMovementRange: (seatId: SeatId, pieceId: PieceId) => RuleQueryResult<readonly ReachableHex[]>;
   /** What the seat's Transport Point can load or unload where it stands, with Token ranges, MP cost and the rule behind anything not offered. */
   readonly getTransportOptions: (seatId: SeatId, truckId: PieceId) => RuleQueryResult<TransportOptions | null>;
+  /** Hexes where the seat's trace supply reaches, for one of its units or (null) any unit; empty when not interactive. */
+  readonly getTraceCoverage: (seatId: SeatId, pieceId: PieceId | null) => RuleQueryResult<readonly string[]>;
   readonly createDraft: (seatId: SeatId, action: GameAction) => ActionDraft;
   readonly validateDraft: (draft: ActionDraft) => DraftValidation;
   readonly getPendingDecision: (seatId: SeatId) => PendingDecisionDescriptor | null;
