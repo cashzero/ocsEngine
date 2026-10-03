@@ -10,7 +10,7 @@ map generator itself still accepts 8×8 for rule-test fixtures only.
 
 Order-of-battle amendment (2026-10-03, explicitly requested by the user: "default oob 應該要有更多步兵師,
 reinforce entry point應該更多" and "用divisionPerSide取代 然後指定其中有多少Arm div"): New Game sets
-`Divisions per side` (1–12) and how many of them are armored (0–6); the rest are foot divisions, about one in
+`Divisions per side` (1–20; raised from 12 on the follow-up "div total 12好像還是有點少", default unchanged) and how many of them are armored (0–6); the rest are foot divisions, about one in
 four airborne. The default is `32×24 / TEMPERATE_INLAND / COMPACT / 6 divisions per side, 2 armored / 8 turns`.
 Generated maps give each side one entry Hex per six map rows along its edge (at least two), each also a Supply
 Source. NG-04, NG-06 and NG-07 are restated in these terms (NG-07's former "4 per side" plan cannot be expressed

@@ -43,7 +43,7 @@ import {
   type RandomOobOptions,
 } from './model.js';
 import { validateGeneratedOob } from './validation.js';
-import { formationNames, unitName } from './names.js';
+import { formationNameCapacity, formationNames, unitName } from './names.js';
 import { buildAirForces } from './air.js';
 
 const SIDES: readonly OobSide[] = ['ALLIED', 'AXIS'];
@@ -237,10 +237,19 @@ const formationPlan = (
   while (foot.length < footCount) {
     foot.push(...rng.shuffle(FOOT_ARCHETYPES));
   }
+  // Every division carries a distinct historical name, so airborne slots beyond the airborne name pool
+  // become infantry (at the 20-division limit: 4 airborne and 16 infantry, both pools in full).
+  const airborneNames = formationNameCapacity('AIRBORNE');
+  let airborne = 0;
+  const named = foot.slice(0, footCount).map((archetype) => {
+    if (archetype !== 'AIRBORNE') return archetype;
+    airborne += 1;
+    return airborne <= airborneNames ? archetype : 'INFANTRY';
+  });
   // Armored divisions first, then foot divisions, so formation IDs and the roster read in that order.
   return [
     ...Array.from({ length: options.armoredDivisionsPerSide }, (_, index) => ARMORED_ARCHETYPES[index % ARMORED_ARCHETYPES.length]!),
-    ...foot.slice(0, footCount),
+    ...named,
   ];
 };
 

@@ -29,7 +29,7 @@ export const AIR_FORCE_LEVELS = ['NONE', 'STANDARD'] as const;
 export type AirForceLevel = (typeof AIR_FORCE_LEVELS)[number];
 
 /** Divisions a side may field, and how many of them may be armored. */
-export const OOB_DIVISION_LIMITS = { minDivisions: 1, maxDivisions: 12, maxArmored: 6 } as const;
+export const OOB_DIVISION_LIMITS = { minDivisions: 1, maxDivisions: 20, maxArmored: 6 } as const;
 
 export interface RandomOobOptions {
   readonly seed: number;

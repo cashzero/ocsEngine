@@ -1,11 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { FORMATION_NAME_PROFILES } from '../../src/generation/oob/name-catalog.js';
 import { ALLIED_AIRBORNE_DIVISION_GPIDS, corpusFaces } from '../../src/generation/oob/counter-corpus.js';
-import { shortFormationName } from '../../src/generation/oob/names.js';
+import { formationNameCapacity, shortFormationName } from '../../src/generation/oob/names.js';
 import {
   BTR_BUILD_FILE_SHA256,
   generateRandomOob,
   isSingleUnitDivision,
+  OOB_DIVISION_LIMITS,
   REVIEWED_OOB_ARCHETYPES,
   serializeGeneratedOob,
   validateGeneratedOob,
@@ -207,5 +208,25 @@ describe('M7 deterministic random OOB pipeline', () => {
     const allFoot = generateRandomOob({ seed: 9, scale: 'COMPACT', divisionsPerSide: 4, armoredDivisionsPerSide: 0 });
     expect(allFoot.ok && allFoot.value.sides.every(({ formations }) => formations.every(({ archetype }) => archetype !== 'ARMORED'
       && archetype !== 'MOBILE_INFANTRY'))).toBe(true);
+  });
+
+  it('fields up to 20 distinctly named divisions a side, keeping airborne within its name pool', () => {
+    const { maxDivisions } = OOB_DIVISION_LIMITS;
+    expect(maxDivisions).toBe(20);
+    for (let seed = 1; seed <= 40; seed += 1) {
+      for (const armored of [0, 6]) {
+        const generated = generateRandomOob({ seed, scale: 'COMPACT', divisionsPerSide: maxDivisions, armoredDivisionsPerSide: armored });
+        expect(generated.ok, `seed ${seed}, ${armored} armored`).toBe(true);
+        if (!generated.ok) return;
+        for (const side of generated.value.sides) {
+          expect(side.formations).toHaveLength(maxDivisions);
+          expect(new Set(side.formations.map(({ name }) => name)).size).toBe(maxDivisions);
+          expect(side.formations.filter(({ archetype }) => archetype === 'AIRBORNE').length).toBeLessThanOrEqual(formationNameCapacity('AIRBORNE'));
+        }
+      }
+    }
+    const tooMany = generateRandomOob({ seed: 1, scale: 'COMPACT', divisionsPerSide: maxDivisions + 1, armoredDivisionsPerSide: 2 });
+    expect(tooMany.ok).toBe(false);
+    if (!tooMany.ok) expect(tooMany.error.map(({ path }) => path[0])).toEqual(['divisionsPerSide']);
   });
 });
