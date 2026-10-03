@@ -131,6 +131,30 @@ describe('OCS 4.3 fuel (12.5)', () => {
     expect(codes(applyRuleAction(paid, ALLIED, { kind: 'MOVE_PIECE', pieceId: U.alTrk, path: path('3,6', '3,7') }))).toContain('FUEL_REQUIRED');
   });
 
+  it('does not fuel a multi-step unit by the HQ Method, even with no Formation ID and after losing steps (3.2d, 3.2f, 12.5e)', () => {
+    // The single-counter infantry division walks; put it on trucks so it needs fuel at all (12.5a).
+    const motorized = (state: GameState): GameState => {
+      const divisionId = piece(state, U.alLeg).definitionId;
+      const definitions = state.scenario.pieceCatalog.definitions.map((definition) => definition.id !== divisionId ? definition
+        : { ...definition, faces: definition.faces.map((face) => ({ ...face, mobilityClassDefinitionId: 'mobility:truck' as never })) });
+      return { ...state, scenario: { ...state.scenario, pieceCatalog: { ...state.scenario.pieceCatalog, definitions } } };
+    };
+    const state = motorized(unfueled({ [U.alHq]: ['1,6', 'COMBAT', 'combat'], [U.alEng]: ['2,6', 'MOVE', 'move'], [U.alLeg]: ['2,5', 'MOVE', 'move'], [U.alSup]: ['0,6', null] }));
+    expect(state.scenario.pieceCatalog.definitions.find(({ id }) => id === piece(state, U.alLeg).definitionId)?.ownership.formationDefinitionId).toBeNull();
+    const preview = ruleEngine.queryFuelPreview(state, ALLIED, U.alHq).value!.find(({ method }) => method === 'HQ');
+    expect(preview?.fueledPieceIds).toEqual(expect.arrayContaining([U.alHq, U.alEng]));
+    expect(preview?.fueledPieceIds).not.toContain(U.alLeg);
+    const paid = ok(applyRuleAction(state, ALLIED, { kind: 'PAY_FUEL', method: 'HQ', pieceId: U.alHq, sourcePieceId: U.alSup }));
+    expect(applyRuleAction(paid, ALLIED, { kind: 'MOVE_PIECE', pieceId: U.alEng, path: path('2,6', '3,6') }).ok).toBe(true);
+    expect(codes(applyRuleAction(paid, ALLIED, { kind: 'MOVE_PIECE', pieceId: U.alLeg, path: path('2,5', '3,5') }))).toContain('FUEL_REQUIRED');
+    // A reduced division is still a multi-step unit, not a one-step independent.
+    const reduced = withPiece(paid, U.alLeg, (current) => ({ ...current, remainingSteps: 1 }));
+    expect(codes(applyRuleAction(reduced, ALLIED, { kind: 'MOVE_PIECE', pieceId: U.alLeg, path: path('2,5', '3,5') }))).toContain('FUEL_REQUIRED');
+    // The Single-Unit Method still fuels it (12.5c C); the HQ Method above spent this dump's whole SP, so pay from the start.
+    const single = ok(applyRuleAction(state, ALLIED, { kind: 'PAY_FUEL', method: 'SINGLE_UNIT', pieceId: U.alLeg, sourcePieceId: U.alSup }));
+    expect(applyRuleAction(single, ALLIED, { kind: 'MOVE_PIECE', pieceId: U.alLeg, path: path('2,5', '3,5') }).ok).toBe(true);
+  });
+
   it('does not offer the HQ Method to an HQ the Formation Method already fueled unless an independent unit still needs it', () => {
     const formationFueled = (placement: Parameters<typeof buildGeneratedRuleState>[0]): GameState => {
       const state = unfueled(placement);
@@ -205,16 +229,30 @@ describe('OCS 4.3 internal stocks, trace supply and attrition (12.6, 12.8, 12.10
     expect(found).toBe(true);
   });
 
-  it('lets a divisional HQ throw only to its own division and independent units (13.1d)', () => {
-    const state = buildGeneratedRuleState({
-      [U.alHq]: ['-1,6', 'COMBAT', 'combat'], [U.alTrk]: ['6,6', 'COMBAT', 'combat'], [U.alEng]: ['6,5', 'COMBAT', 'combat'],
-    });
-    expect(pieceHasTrace(state, piece(state, U.alTrk))).toBe(true);
-    expect(pieceHasTrace(state, piece(state, U.alEng))).toBe(true);
-    // TODO(13.1d-other-division): the fixture no longer has a second multi-unit Allied division (infantry and airborne
-    // divisions are single XX units with no HQ), so "an HQ does not throw to another division" is unexercised.
-    // User-visible impact: none until HQ-trace rules change; acceptance evidence: a fixture with two HQ divisions
-    // per side (e.g. 3 formations) asserting pieceHasTrace is false for the other division's regiment.
+  it('lets a corps HQ throw to any friendly unit, and a divisional HQ only to its own division and independent units (13.1d)', () => {
+    // Generated HQs are corps HQs outside every formation; give this one formation 1's Formation ID to make it divisional.
+    const divisional = (state: GameState): GameState => {
+      const formationId = state.scenario.pieceCatalog.definitions.find(({ id }) => id === piece(state, U.alTrk).definitionId)!.ownership.formationDefinitionId;
+      const hqDefinitionId = piece(state, U.alHq).definitionId;
+      const definitions = state.scenario.pieceCatalog.definitions.map((definition) => definition.id !== hqDefinitionId ? definition
+        : { ...definition, ownership: { ...definition.ownership, formationDefinitionId: formationId } });
+      return { ...state, scenario: { ...state.scenario, pieceCatalog: { ...state.scenario.pieceCatalog, definitions } } };
+    };
+    const withEngineer = { [U.alHq]: ['-1,6', 'COMBAT', 'combat'], [U.alTrk]: ['6,6', 'COMBAT', 'combat'], [U.alEng]: ['6,5', 'COMBAT', 'combat'] } as const;
+    const withDivision = { [U.alHq]: ['-1,6', 'COMBAT', 'combat'], [U.alTrk]: ['6,6', 'COMBAT', 'combat'], [U.alLeg]: ['6,5', 'COMBAT', 'combat'] } as const;
+    // At 6,5 a unit is in trace only through the HQ's throw.
+    const noHq = buildGeneratedRuleState({ [U.alTrk]: ['6,6', 'COMBAT', 'combat'], [U.alEng]: ['6,5', 'COMBAT', 'combat'], [U.alLeg]: ['6,4', 'COMBAT', 'combat'] });
+    expect(pieceHasTrace(noHq, piece(noHq, U.alEng))).toBe(false);
+    // A corps HQ throws to the single-counter infantry division as to anyone else.
+    const corps = buildGeneratedRuleState(withDivision);
+    expect(pieceHasTrace(corps, piece(corps, U.alLeg))).toBe(true);
+    // A divisional HQ throws to its own regiment and to an independent engineer...
+    const ownAndIndependent = divisional(buildGeneratedRuleState(withEngineer));
+    expect(pieceHasTrace(ownAndIndependent, piece(ownAndIndependent, U.alTrk))).toBe(true);
+    expect(pieceHasTrace(ownAndIndependent, piece(ownAndIndependent, U.alEng))).toBe(true);
+    // ...but not to another division: the XX counter in the engineer's Hex is a multi-step unit, not an independent one (3.2f).
+    const otherDivision = divisional(buildGeneratedRuleState(withDivision));
+    expect(pieceHasTrace(otherDivision, piece(otherDivision, U.alLeg))).toBe(false);
   });
 
   it('traces a formation through one HQ or one source, picked automatically (12.6f)', () => {
@@ -575,10 +613,6 @@ describe('OCS 4.3 transport, Extenders and dumps (9.14, 12.2, 12.7, 12.11, 13.2)
 
   it('forms an Extender that becomes a supply source, and refuses one that cannot connect (12.7)', () => {
     const state = atStep(buildGeneratedRuleState({ [U.alTruck]: ['0,6', null], [U.alLeg]: ['4,6', 'COMBAT', 'combat'] }), 'MOVEMENT', 'MOVEMENT', ALLIED);
-    // TODO(13.1d-other-division): the fixture no longer has a second multi-unit Allied division (infantry and airborne
-    // divisions are single XX units with no HQ), so "an HQ does not throw to another division" is unexercised.
-    // User-visible impact: none until HQ-trace rules change; acceptance evidence: a fixture with two HQ divisions
-    // per side (e.g. 3 formations) asserting pieceHasTrace is false for the other division's regiment.
     const formed = ok(applyRuleAction(state, ALLIED, { kind: 'FORM_EXTENDER', truckId: U.alTruck }));
     expect(friendlySourceHexes(formed, ALLIED)).toContain('0,6');
     expect(pieceHasTrace(formed, piece(formed, U.alLeg))).toBe(true);

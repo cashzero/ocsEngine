@@ -21,6 +21,7 @@ export {
   hexDistanceBetween,
   internalStocksOf,
   isAdjacent,
+  isMultiStepDefinition,
   outOfTraceSince,
   returnTurnOf,
   transportPointsOf,

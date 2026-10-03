@@ -3,7 +3,7 @@ import { repeat } from 'lit-html/directives/repeat.js';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import type { ProjectedPiece } from '../rules/index.js';
 import type { UiSnapshot } from './model.js';
-import { ROUTE_LABELS, halfTokenText } from '../rules/index.js';
+import { ROUTE_LABELS, halfTokenText, isMultiStepDefinition } from '../rules/index.js';
 import { airSentences, emphasizeAir } from './air-text.js';
 import { counterSvg, counterView } from './counter.js';
 import { combatHeadline, combatOutlook, type CombatReport, type FeedEntry, type NarrativeContext } from './narrative.js';
@@ -774,9 +774,14 @@ export const unitRosterBodyView = (snapshot: UiSnapshot, state: DeckState): Temp
   const active = all.filter(({ location }) => location.kind !== 'ELIMINATED')
     .filter((piece) => filter === 'all' || (filter === 'moved') === snapshot.movedThisPhase.has(String(piece.id)));
   const groups = new Map<string, ProjectedPiece[]>();
+  // 3.2f: a single-counter division is a multi-step unit, not an independent one (HQ fuel does not cover it), so it is listed apart.
+  const divisions: ProjectedPiece[] = [];
+  const independents: ProjectedPiece[] = [];
   for (const piece of active.filter((piece) => !isHqPiece(piece) && !isTransport(piece) && !isAir(snapshot, piece))) {
-    const name = unitFormation(snapshot, piece) || 'Independent units';
-    groups.set(name, [...(groups.get(name) ?? []), piece]);
+    const name = unitFormation(snapshot, piece);
+    if (name) groups.set(name, [...(groups.get(name) ?? []), piece]);
+    else if (isMultiStepDefinition(pieceDefinition(snapshot.scenario, piece))) divisions.push(piece);
+    else independents.push(piece);
   }
   const row = (piece: ProjectedPiece): TemplateResult => html`<button class="roster-unit${piece.id === snapshot.selection.pieceId ? ' is-selected' : ''}" data-piece=${piece.id} data-roster-pick=${piece.id} aria-label=${`${pieceLabel(snapshot.scenario, piece)}, ${pieceHex(piece)}`}>
     <span class="roster-art" aria-hidden="true">${counterFor(snapshot, piece)}</span><span class="roster-text">${pieceLabel(snapshot.scenario, piece)}<small>${pieceHex(piece)} · ${statusName(snapshot, piece)}</small></span>${badges(snapshot, piece)}</button>`;
@@ -788,6 +793,8 @@ export const unitRosterBodyView = (snapshot: UiSnapshot, state: DeckState): Temp
   const sorted: { key: string; name: string; pieces: ProjectedPiece[]; extra: string }[] = [
     ...(hqs.length > 0 ? [{ key: 'hq', name: 'HQ', pieces: hqs, extra: ' roster-hq' }] : []),
     ...[...groups.entries()].sort(([left], [right]) => left.localeCompare(right)).map(([name, pieces]) => ({ key: `formation:${name}`, name, pieces, extra: '' })),
+    ...(divisions.length > 0 ? [{ key: 'multi-step', name: 'Multi-step divisions', pieces: divisions, extra: ' roster-multi-step' }] : []),
+    ...(independents.length > 0 ? [{ key: 'independent', name: 'Independent units', pieces: independents, extra: ' roster-independent' }] : []),
     ...(air.length > 0 ? [{ key: 'air', name: 'Air', pieces: air, extra: ' roster-air' }] : []),
     ...(transport.length > 0 ? [{ key: 'transport', name: 'Trucks', pieces: transport, extra: ' roster-transport' }] : []),
   ];
