@@ -25,12 +25,10 @@ import { airBaseLevel, friendlyAirBases, isAirStrip } from '../air/aircraft.js';
 import {
   dumpsReaching,
   eatOffMapCost,
-  formationRouteOptions,
-  formationRoute,
   unitsNeedingRecovery,
   unitsNeedingSupply,
 } from '../supply/supply.js';
-import { definitionOf, formationOf, isMultiUnitFormation, locatedHexOf, reTicksOf, usageOf } from '../pieces.js';
+import { definitionOf, locatedHexOf, reTicksOf, usageOf } from '../pieces.js';
 import type { ActionFamily, CandidateRequest } from './model.js';
 
 const actionId = (value: string): RuleActionId => {
@@ -223,17 +221,9 @@ export const candidateActions = (
         if (add({ ...base(state, request.actorId, `recover:${piece.id}`), kind: 'RECOVER_INTERNALS', pieceId: piece.id, sourcePieceIds })) return actions;
       }
       break;
-    case 'CHOOSE_FORMATION_TRACE': {
-      const formations = [...new Set(owned.map((piece) => formationOf(state, piece)).filter((id) => isMultiUnitFormation(state, id)))].sort();
-      for (const formationId of formations) {
-        const current = formationRoute(state, request.actorId, formationId!);
-        for (const option of formationRouteOptions(state, request.actorId, formationId!)) {
-          if (option.routeKey === current) continue;
-          if (add({ ...base(state, request.actorId, `trace:${formationId}:${option.routeKey}`), kind: 'CHOOSE_FORMATION_TRACE', formationId: formationId!, routeKey: option.routeKey })) return actions;
-        }
-      }
+    case 'CHOOSE_FORMATION_TRACE':
+      // 12.6f: a unit either makes its trace or does not; the engine picks the common route covering most of a formation, so there is nothing to offer.
       break;
-    }
     case 'ATTEMPT_BREAKOUT':
       for (const piece of breakoutCandidates(state, request.actorId).filter(({ id }) => request.pieceId === null || id === request.pieceId)) {
         if (add({ ...base(state, request.actorId, `breakout:${piece.id}`), kind: 'ATTEMPT_BREAKOUT', pieceId: piece.id })) return actions;

@@ -399,12 +399,10 @@ const supplyTab = (snapshot: UiSnapshot): TemplateResult => {
   const parts: View[] = [];
   if (snapshot.stepActions.length > 0) {
     const recovery = snapshot.stepActions.filter(({ group }) => group === 'SUPPLY');
-    const trace = snapshot.stepActions.filter(({ group }) => group === 'TRACE');
     const breakout = snapshot.stepActions.filter(({ group }) => group === 'BREAKOUT');
     const block = (title: string, hint: string, entries: typeof recovery): View => entries.length === 0 ? nothing
       : html`<div class="step-actions"><strong>${title}</strong><p class="hint">${hint}</p>${actionButtons(entries)}</div>`;
     parts.push(block('Recover internal stocks (required first)', 'Units marked Low or Exhausted must recover from dumps in reach before anything else this phase (12.10e).', recovery),
-      block('Formation trace route', 'All units of a division trace through one HQ or one source; the others must eat off the map or go Out of Supply (12.6f).', trace),
       block('Breakout', 'Units out of trace supply may try to break out: 5-6 they leave and return as reinforcements, 1-4 they are lost (12.8e).', breakout));
   }
   if (snapshot.view.projection?.sequence.phase === 'SUPPLY') {

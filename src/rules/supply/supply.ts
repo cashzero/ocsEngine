@@ -227,18 +227,20 @@ export const friendlySourceHexes = (state: GameState, playerId: PlayerId): reado
   return result;
 };
 
-/** A trace route key: `DRAW:<source hex>` or `HQ:<hq id>` (12.6f counts them as the formation's common source). */
+/**
+ * A trace route key: `DRAW` (direct draw from any of the side's Supply Sources, which count as one common
+ * source for 12.6f) or `HQ:<hq id>`.
+ */
 export type TraceRouteKey = string;
 
-const routeKey = (route: SupplyRoute, sourceHexId: HexId): TraceRouteKey =>
-  route.method === 'DRAW' ? `DRAW:${sourceHexId}` : `HQ:${route.hqId}`;
+const routeKey = (route: SupplyRoute): TraceRouteKey => route.method === 'DRAW' ? 'DRAW' : `HQ:${route.hqId}`;
 
 /** Every trace route open to `piece` from any Supply Source. */
 export const traceRoutesFor = (state: GameState, piece: PieceState, hexId: HexId | null = locatedHexOf(state, piece)): readonly TraceRouteKey[] => {
   if (hexId === null) return [];
   const keys = new Set<TraceRouteKey>();
   for (const source of friendlySourceHexes(state, piece.ownerId)) {
-    for (const route of routesFrom(state, piece.ownerId, source, hexId, piece)) keys.add(routeKey(route, source));
+    for (const route of routesFrom(state, piece.ownerId, source, hexId, piece)) keys.add(routeKey(route));
   }
   return [...keys].sort();
 };
@@ -334,7 +336,7 @@ export const querySupply = (
   const dumps = dumpsReaching(state, actorId, hexId, piece);
   const trace = purpose === 'TRACE' && pieceHasTrace(state, piece) ? traceRoutesFor(state, piece)[0] ?? null : null;
   const value: SupplyValue = trace
-    ? { method: trace.startsWith('DRAW:') ? 'SOURCE' : 'HQ', hqId: trace.startsWith('HQ:') ? trace.slice(3) as PieceId : null, resourceSources: dumps, requiresPayment: false }
+    ? { method: trace === 'DRAW' ? 'SOURCE' : 'HQ', hqId: trace.startsWith('HQ:') ? trace.slice(3) as PieceId : null, resourceSources: dumps, requiresPayment: false }
     : { method: dumps.length > 0 ? 'DUMP' : 'NONE', hqId: null, resourceSources: dumps, requiresPayment: dumps.length > 0 };
   const allowed = trace !== null || dumps.length > 0;
   return {
@@ -343,7 +345,7 @@ export const querySupply = (
     reasons: [{
       code: trace ? 'TRACE_SUPPLY' : dumps.length > 0 ? 'ON_MAP_SUPPLY_AVAILABLE' : 'NO_SUPPLY',
       allowed,
-      message: trace ? (trace.startsWith('DRAW:') ? 'Traces directly to a Supply Source.' : 'Traces through an HQ throw.')
+      message: trace ? (trace === 'DRAW' ? 'Traces directly to a Supply Source.' : 'Traces through an HQ throw.')
         : dumps.length > 0 ? 'No trace; on-map supply can be drawn or thrown.' : 'No trace supply and no reachable dump.',
       rule: trace ? '12.6' : dumps.length > 0 ? '12.6c' : '12.6d',
     }],
