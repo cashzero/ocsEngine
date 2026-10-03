@@ -956,14 +956,6 @@ class DefaultUiController implements UiController {
           if (action.kind === 'RECOVER_INTERNALS') actions.push({ key: `recover:${action.pieceId}`, group: 'SUPPLY', label: `${name(action.pieceId)}: recover internal stocks`, action });
         }
       }
-      if (enabled('CHOOSE_FORMATION_TRACE')) {
-        for (const action of this.#candidates('CHOOSE_FORMATION_TRACE')) {
-          if (action.kind !== 'CHOOSE_FORMATION_TRACE') continue;
-          const route = action.routeKey.startsWith('HQ:') ? `through ${name(action.routeKey.slice(3))}` : `directly from the source at ${printedHexLabel(action.routeKey.slice(5))}`;
-          const formation = formations.get(String(action.formationId)) ?? 'the formation';
-          actions.push({ key: `trace:${action.formationId}:${action.routeKey}`, group: 'TRACE', label: `${formation}: trace ${route}`, action });
-        }
-      }
       if (enabled('ATTEMPT_BREAKOUT')) {
         for (const action of this.#candidates('ATTEMPT_BREAKOUT')) {
           if (action.kind === 'ATTEMPT_BREAKOUT') actions.push({ key: `breakout:${action.pieceId}`, group: 'BREAKOUT', label: `${name(action.pieceId)}: attempt breakout`, action });
