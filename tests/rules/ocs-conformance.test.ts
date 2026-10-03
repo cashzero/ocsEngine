@@ -21,6 +21,8 @@ import {
   type HexId,
   type TransitionResult,
 } from '../../src/index.js';
+import { retreatPlans } from '../../src/rules/combat/combat.js';
+import { adjacentHexIds } from '../../src/rules/pieces.js';
 
 const U = {
   alTrk: generatedPieceId('allied:f1-combat-1'), alTrk2: generatedPieceId('allied:f1-combat-2'),
@@ -206,6 +208,35 @@ describe('OCS 4.3 ground combat (9.0-9.13)', () => {
       checked += 1;
     }
     expect(checked).toBeGreaterThan(0);
+  });
+
+  it('keeps a retreat off hexes next to enemy combat units whenever another destination exists (9.12c)', () => {
+    const defenderHex = '6,5' as HexId;
+    const ring = adjacentHexIds(defenderHex);
+    const nextToEnemy = (state: GameState, hexId: HexId) => adjacentHexIds(hexId)
+      .some((hex) => state.pieceState.pieces.some((candidate) => candidate.ownerId === ALLIED && candidate.location.kind === 'ON_MAP' && candidate.location.hexId === hex));
+    const plansFor = (state: GameState) => retreatPlans(state, [piece(state, U.axTrk)], 1, new Set());
+
+    // One attacker beside the defender: every offered destination is clear of it.
+    const duelState = atStep(buildGeneratedRuleState({ [U.alTrk]: ['5,5', 'COMBAT', 'combat'], [U.axTrk]: [defenderHex, 'COMBAT', 'combat'] }), 'COMBAT', 'COMBAT', ALLIED);
+    const duelPlans = plansFor(duelState);
+    expect(duelPlans.length).toBeGreaterThan(0);
+    expect(duelPlans.every(({ destination }) => !nextToEnemy(duelState, destination))).toBe(true);
+    // Without the rule the hexes beside the attacker were legal too: they are the ones removed.
+    const beside = ring.filter((hex) => hex !== '5,5' && nextToEnemy(duelState, hex));
+    expect(beside.length).toBeGreaterThan(0);
+    expect(duelPlans.map(({ destination }) => destination)).not.toEqual(expect.arrayContaining(beside));
+
+    // Enemies on four of the six neighbours leave only hexes beside an enemy: those stay legal.
+    const [first, second, third, fourth, ...free] = ring;
+    const surrounded = atStep(buildGeneratedRuleState({
+      [U.alTrk]: [first!, 'COMBAT', 'combat'], [U.alTrk2]: [second!, 'COMBAT', 'combat'],
+      [U.alLeg]: [third!, 'COMBAT', 'combat'], [U.alArt]: [fourth!, 'COMBAT', 'combat'],
+      [U.axTrk]: [defenderHex, 'COMBAT', 'combat'],
+    }), 'COMBAT', 'COMBAT', ALLIED);
+    const fallback = plansFor(surrounded);
+    expect(free.every((hex) => nextToEnemy(surrounded, hex))).toBe(true);
+    expect(fallback.map(({ destination }) => destination).sort()).toEqual([...free].sort());
   });
 
   it('never leaves opposing combat units in one hex after an overrun (4.8c)', () => {

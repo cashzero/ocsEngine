@@ -744,6 +744,7 @@ export interface RetreatPlan {
  * path for all retreating units, avoiding Hexes that held enemy combat units when combat began and
  * prohibited terrain. Among paths to a destination, the fewest enemy ZOC entries (9.12e) is kept;
  * the player picks the destination. Retreats may end overstacked (4.8a is checked at segment end).
+ * Destinations adjacent to an enemy combat unit are dropped whenever a non-adjacent destination exists.
  */
 export const retreatPlans = (state: GameState, pieces: readonly PieceState[], hexes: number, blocked: ReadonlySet<HexId>): readonly RetreatPlan[] => {
   const origin = pieces[0] ? hexOf(pieces[0]) : null;
@@ -780,7 +781,12 @@ export const retreatPlans = (state: GameState, pieces: readonly PieceState[], he
     }
   };
   walk([origin], 0);
-  return stableSort([...plans.values()], (left, right) => left.zocEntries - right.zocEntries || String(left.destination).localeCompare(String(right.destination)));
+  // 9.12c: a retreat is generally away from the enemy, so a destination next to an enemy combat unit is
+  // offered only when no destination away from every enemy combat unit is reachable.
+  const nextToEnemy = (hexId: HexId): boolean => adjacentHexIds(hexId).some((adjacent) => enemyCombatUnitsAt(state, owner, adjacent).length > 0);
+  const awayFromEnemy = [...plans.values()].filter((plan) => !nextToEnemy(plan.destination));
+  const offered = awayFromEnemy.length > 0 ? awayFromEnemy : [...plans.values()];
+  return stableSort(offered, (left, right) => left.zocEntries - right.zocEntries || String(left.destination).localeCompare(String(right.destination)));
 };
 
 /**
