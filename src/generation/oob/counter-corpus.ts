@@ -27,7 +27,7 @@ export const ALLIED_AIRBORNE_DIVISION_GPIDS: Readonly<Record<string, number>> = 
   '82.Abn': ALLIED_AIRBORNE_GPID, '101.Abn': 900_003, '17.Abn': 900_004, '13.Abn': 900_005,
 };
 const airborneDivision = (moveStrength: number, regiments: number, combatStrength: number): SourceCounter =>
-  basic('INFANTRY', 'XX', 'OTHER', [combatStrength, 4, 3, 0], [moveStrength, 4, 5, 0], ['leg', 'leg'], regiments, regiments);
+  basic('AIRBORNE', 'XX', 'OTHER', [combatStrength, 4, 3, 0], [moveStrength, 4, 5, 0], ['leg', 'leg'], regiments, regiments);
 export const COUNTER_CORPUS: Readonly<Record<number, SourceCounter>> = {
   319: hq([0,0,0,14], [0,0,16,9]),
   160: basic('ARMOR', 'III', 'MECH', [14,4,6,0], [7,4,14,0], ['tracked','tracked'], 1, 1),
@@ -41,7 +41,7 @@ export const COUNTER_CORPUS: Readonly<Record<number, SourceCounter>> = {
   826: basic('INFANTRY', 'XX', 'OTHER', [16,3,3,0], [8,3,4,0], ['leg','leg'], 4, 4),
   // German Fallschirmjäger division (XX, 4 steps): counter sheets 3F (18-3-3) / 3B (9-3-4), leg on both faces.
   // Synthetic key: the VASSAL GPID has not been extracted (see TODO in catalog.ts).
-  [AXIS_AIRBORNE_GPID]: basic('INFANTRY', 'XX', 'OTHER', [18,3,3,0], [9,3,4,0], ['leg','leg'], 4, 4),
+  [AXIS_AIRBORNE_GPID]: basic('AIRBORNE', 'XX', 'OTHER', [18,3,3,0], [9,3,4,0], ['leg','leg'], 4, 4),
   // US airborne divisions (XX, one step per regiment, leg on both faces): the sum of the regiments printed on counter
   // sheets 2F (combat faces, 4-4-3 / 5-4-3) and 2B (move faces, 2-4-5 / 3-4-5). 101.Abn's 18-4-3 / 10-4-5 was also
   // confirmed by the user.
