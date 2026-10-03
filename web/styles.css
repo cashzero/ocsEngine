@@ -505,8 +505,6 @@ small, .supporting { font-size: 13px; color: var(--muted); }
 .counter .air-base-level-text, .unit-counter .air-base-level-text { font-size: 26px; }
 .legend-ring.air-zone { border-color: #5aa0d8; border-style: dashed; }
 .legend-ring.air-zone.enemy { border-color: #e06b5a; }
-#toggle-air-zones[aria-pressed="true"] { outline: 2px solid #5aa0d8; }
-#toggle-trace-coverage[aria-pressed="true"] { outline: 2px solid #6fcf8e; }
 /* Air Strip (15.2): a smaller, plainer disc than an Air Base; Equipment replacement counters (13.5). */
 .air-base-disc.air-strip { fill: #d8d2b4; stroke-dasharray: 8 4; }
 .air-base-disc.air-strip.nation-US { fill: #d4d19a; }
@@ -515,3 +513,10 @@ small, .supporting { font-size: 13px; color: var(--muted); }
 .counter-paper.replacement.nation-US { fill: #b9c9a2; }
 .counter-paper.replacement.nation-GERMAN { fill: #aab8c8; }
 .counter .replacement-label, .unit-counter .replacement-label { font-size: 30px; font-weight: 700; fill: #1c1f18; }
+.map-toggles { display: flex; gap: 5px; margin-left: 4px; padding-left: 9px; border-left: 1px solid var(--line); }
+.map-toggle { --toggle-on: #6fcf8e; display: inline-flex; align-items: center; gap: 7px; min-height: 42px; padding: 6px 10px; border: 1px solid var(--line); border-radius: 6px; color: var(--muted); background: #18221d; cursor: pointer; font-size: 13px; font-weight: 650; white-space: nowrap; user-select: none; }
+.map-toggle.air-zones { --toggle-on: #5aa0d8; }
+.map-toggle input { width: 16px; height: 16px; margin: 0; accent-color: var(--toggle-on); cursor: pointer; }
+.map-toggle:hover { border-color: var(--accent); }
+.map-toggle:has(input:checked) { color: var(--ink); border-color: var(--toggle-on); background: color-mix(in srgb, var(--toggle-on) 18%, #18221d); }
+.map-toggle:has(input:focus-visible) { outline: 3px solid #ffe09a; outline-offset: 3px; }
