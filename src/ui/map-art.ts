@@ -349,8 +349,8 @@ export const settlementArt = (cell: GeneratedMapPreviewCell, hexSize: number): S
   const unit = hexSize / GLYPH_HEX_SIZE;
   const random = seeded(`settlement:${cell.id}`);
   const plan = {
-    CITY: { blocks: 38, spread: 21, size: 3.6, font: 13 },
-    TOWN: { blocks: 16, spread: 12, size: 3.2, font: 11 },
+    CITY: { blocks: 38, spread: 21, size: 3.6, font: 20 },
+    TOWN: { blocks: 16, spread: 12, size: 3.2, font: 16 },
     VILLAGE: { blocks: 5, spread: 6, size: 3, font: 0 },
   }[cell.settlement];
   const blocks = Array.from({ length: plan.blocks }, (_, index) => {
