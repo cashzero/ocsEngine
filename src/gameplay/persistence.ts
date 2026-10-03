@@ -107,7 +107,7 @@ const parseAction = (input: unknown, path: Path, issues: GameplayError[]): GameA
   const kind = textAt(record, 'kind', path, issues) as GameAction['kind'];
   const fields: Readonly<Record<GameAction['kind'], readonly string[]>> = {
     ADVANCE_SEQUENCE: [], CHANGE_MODE: ['pieceId', 'mode'], RELEASE_RESERVE: ['pieceId'],
-    MOVE_PIECE: ['pieceId', 'path'], END_MOVE: ['pieceId'], CHECK_SUPPLY: ['pieceIds', 'sourcePieceId'],
+    MOVE_PIECE: ['pieceId', 'path'], END_MOVE: ['pieceId'], CREATE_BREAKDOWN: ['pieceId'], CHECK_SUPPLY: ['pieceIds', 'sourcePieceId'],
     DECLARE_COMBAT: ['combatKind', 'attackerIds', 'defenderIds', 'targetHexId', 'leadAttackerId'],
     DECLARE_BARRAGE: ['firerIds', 'targetPieceIds', 'targetHexId'],
     RESPOND_DECISION: ['decisionId', 'choiceId'], COMMIT_TRANSACTION: ['transactionId'],
@@ -161,7 +161,8 @@ const parseAction = (input: unknown, path: Path, issues: GameplayError[]): GameA
       return { ...base, pieceId: piece('pieceId'), mode } as GameAction;
     }
     case 'RELEASE_RESERVE':
-    case 'END_MOVE': return { ...base, pieceId: piece('pieceId') } as GameAction;
+    case 'END_MOVE':
+    case 'CREATE_BREAKDOWN': return { ...base, pieceId: piece('pieceId') } as GameAction;
     case 'MOVE_PIECE': return { ...base, pieceId: piece('pieceId'), path: stringArray(record.path, [...path, 'path'], issues).map((_, index) => hexFromArray(record.path, index, path, issues)) } as GameAction;
     case 'CHECK_SUPPLY': return { ...base, pieceIds: pieces('pieceIds'), sourcePieceId: record.sourcePieceId === null ? null : piece('sourcePieceId') } as GameAction;
     case 'DECLARE_COMBAT': {

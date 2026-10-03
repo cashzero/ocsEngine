@@ -9,10 +9,12 @@ import {
   applySequenceLifecycle,
   eliminateForOverstack,
   overstackDecision,
+  phaseEnds,
   placeReinforcement,
   resolveFirstPlayerDecision,
 } from '../lifecycle/lifecycle.js';
 import { applyBreakout } from '../lifecycle/supply-phase.js';
+import { absorbInto, absorptionDecision, applyCreateBreakdown, parseAbsorptionChoice } from '../breakdown/breakdown.js';
 import { applyModeChange, applyReserveRelease } from '../mode/mode.js';
 import { queryMovementPath } from '../movement/movement.js';
 import { hexOf, pieceById, reTicksOf, usageOf, withInternalStocks, withUsage } from '../pieces.js';
@@ -64,7 +66,15 @@ export const advanceSequence = (state: GameState): Transition => {
       current = { ...current, pendingDecision: overstack };
       break;
     }
-    const step = applySequenceLifecycle(current, nextSequence(current));
+    const to = nextSequence(current);
+    // 20.0d/20.0g: before the phase ends, the owner picks the absorber of a Breakdown several units could take.
+    const absorption = phaseEnds(current.sequence, to) ? absorptionDecision(current) : null;
+    if (absorption) {
+      events.push({ kind: 'DECISION_REQUESTED', sequence: events.length, decision: absorption });
+      current = { ...current, pendingDecision: absorption };
+      break;
+    }
+    const step = applySequenceLifecycle(current, to);
     current = step.state;
     events.push(...step.events);
     if (current.sequence.phase === 'COMPLETE' || current.pendingDecision !== null) break;
@@ -117,6 +127,8 @@ const dispatch = (state: GameState, action: GameAction): Transition => {
         state: { ...state, currentMoverId: null, usage: withUsage(state, { ...usageOf(state, pieceById(state, action.pieceId)!), moved: true }) },
         events: [{ kind: 'MOVE_ENDED', sequence: 0, pieceId: action.pieceId }],
       };
+    case 'CREATE_BREAKDOWN':
+      return applyCreateBreakdown(state, action.pieceId);
     case 'MOVE_PIECE': {
       const query = queryMovementPath(state, action.actorId, action.pieceId, action.path).value!;
       const destination = action.path.at(-1)!;
@@ -234,6 +246,12 @@ const dispatch = (state: GameState, action: GameAction): Transition => {
         const reduced = eliminateForOverstack(state, action.choiceId);
         const next = advanceSequence(reduced);
         return { state: next.state, events: renumber([{ kind: 'STEP_LOST', sequence: 0, pieceId: action.choiceId.slice('eliminate:'.length) as never, remainingSteps: null }, ...next.events]) };
+      }
+      if (pending.kind === 'BREAKDOWN_ABSORPTION') {
+        const { breakdownId, absorberId } = parseAbsorptionChoice(action.choiceId);
+        const absorbed = absorbInto({ ...state, pendingDecision: null }, breakdownId, absorberId);
+        const next = advanceSequence(absorbed.state);
+        return { state: next.state, events: renumber([...absorbed.events, ...next.events]) };
       }
       if (pending.transactionId === null && (pending.kind === 'ATTRITION_LOSS' || pending.kind === 'DISPLACEMENT_HEX')) {
         const applied = applyInterruptChoice(state, action.choiceId);

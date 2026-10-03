@@ -102,7 +102,7 @@ export interface Arrival {
 /** A one-click rules action offered in the command deck (fuel, breakout, trucks, dumps...). */
 export interface UnitAction {
   readonly key: string;
-  readonly group: 'FUEL' | 'SUPPLY' | 'BREAKOUT' | 'TRANSPORT' | 'DUMP' | 'TRACE' | 'AIR';
+  readonly group: 'FUEL' | 'SUPPLY' | 'BREAKOUT' | 'BREAKDOWN' | 'TRANSPORT' | 'DUMP' | 'TRACE' | 'AIR';
   readonly label: string;
   readonly action: GameAction;
 }
