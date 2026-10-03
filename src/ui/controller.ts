@@ -895,14 +895,12 @@ class DefaultUiController implements UiController {
         if (action) actions.push({ key: `${group}:${actions.length}:${action.kind}`, group, label, action });
       };
       if (enabled('CREATE_BREAKDOWN')) {
-        // 20.0: one button per regiment the division can still detach; the Breakdown's printed values come from its pool.
+        // 20.0: the Breakdown's printed values come from the division's pool; the engine numbers it ("1/101.Abn").
         const definitions = this.#scenario.pieceCatalog.definitions;
         const pool = definitions.find(({ id }) => id === piece.definitionId)?.capabilities.find(({ id }) => id === 'BREAKDOWN')
           ?.parameters.find(({ key }) => key === 'definitionId');
         const counter = pool?.kind === 'TEXT' ? definitions.find(({ id }) => id === pool.value)?.name.replace(/^.*Brkdwn /u, '') : undefined;
-        for (const action of this.#candidates('CREATE_BREAKDOWN', piece.id)) {
-          if (action.kind === 'CREATE_BREAKDOWN') add('BREAKDOWN', `Detach ${action.name.split(' / ')[0]}${counter ? ` (${counter}, 1 RE; the division loses a step)` : ''}`, action);
-        }
+        add('BREAKDOWN', `Detach a Breakdown${counter ? ` (${counter}, 1 RE; the division loses a step)` : ''}`, this.#candidates('CREATE_BREAKDOWN', piece.id)[0]);
       }
       if (enabled('PAY_FUEL')) {
         for (const action of this.#candidates('PAY_FUEL', piece.id)) {

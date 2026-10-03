@@ -53,11 +53,11 @@ export const counterView = (definition: PieceDefinition, piece: CounterPiece) =>
   if (definition.counter.kind !== 'SUPPLY' && (!face || !step)) throw new Error(`Counter face/step missing: ${definition.id}`);
   // 13.2c: a divided or combined truck is a smaller or larger counter; its current size is a status, the printed one is the default.
   const points = piece.statusValues?.find(({ statusDefinitionId }) => statusDefinitionId === 'status:transport-points')?.value;
-  // 20.0: a Breakdown shares its generic counter but prints its own regiment ("16 Inf Regt / 1.Inf": 16 and 1.Inf).
+  // 20.0: a Breakdown shares its generic counter but prints its own number and division ("1/101.Abn": 1 and 101.Abn).
   const ownName = piece.statusValues?.find(({ statusDefinitionId }) => statusDefinitionId === 'status:unit-name')?.value;
   const named = typeof ownName === 'string' && ownName.length > 0;
-  const [regiment = '', division = ''] = named ? ownName.split(' / ') : [];
-  const counter = named ? { ...definition.counter, designation: regiment.split(' ')[0] ?? regiment, affiliation: division } : definition.counter;
+  const slash = named ? ownName.indexOf('/') : -1;
+  const counter = named ? { ...definition.counter, designation: slash < 0 ? ownName : ownName.slice(0, slash), affiliation: slash < 0 ? '' : ownName.slice(slash + 1) } : definition.counter;
   return { redacted: false as const, kind: 'unit' as const, label: named ? ownName : definition.name, counter, face, step,
     mode: piece.mode, statuses: piece.statuses, quantity: piece.resourceQuantity,
     transportPoints: typeof points === 'number' ? points : definition.counter.transportPoints,

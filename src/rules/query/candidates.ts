@@ -5,7 +5,7 @@ import type { GameAction, GameState } from '../kernel/model.js';
 import { validateGameAction } from '../kernel/validate.js';
 import { arrivingReinforcements, reinforcementHexes } from '../lifecycle/lifecycle.js';
 import { breakoutCandidates } from '../lifecycle/supply-phase.js';
-import { availableBreakdownNames, breakdownProfile } from '../breakdown/breakdown.js';
+import { breakdownProfile } from '../breakdown/breakdown.js';
 import { fuelOptions } from '../supply/fuel.js';
 import { capacityTokens, cargoOf, loadedTokens } from '../supply/transport.js';
 import { queryReachableHexes } from '../movement/movement.js';
@@ -161,9 +161,7 @@ export const candidateActions = (
       break;
     case 'CREATE_BREAKDOWN':
       for (const piece of owned.filter((candidate) => breakdownProfile(state, candidate) !== null)) {
-        for (const name of availableBreakdownNames(state, piece)) {
-          if (add({ ...base(state, request.actorId, `breakdown:${piece.id}:${name}`), kind: 'CREATE_BREAKDOWN', pieceId: piece.id, name })) return actions;
-        }
+        if (add({ ...base(state, request.actorId, `breakdown:${piece.id}`), kind: 'CREATE_BREAKDOWN', pieceId: piece.id })) return actions;
       }
       break;
     case 'CHECK_SUPPLY':

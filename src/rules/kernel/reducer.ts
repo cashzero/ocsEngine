@@ -119,7 +119,7 @@ const dispatch = (state: GameState, action: GameAction): Transition => {
         events: [{ kind: 'MOVE_ENDED', sequence: 0, pieceId: action.pieceId }],
       };
     case 'CREATE_BREAKDOWN':
-      return applyCreateBreakdown(state, action.pieceId, action.name);
+      return applyCreateBreakdown(state, action.pieceId);
     case 'MOVE_PIECE': {
       const query = queryMovementPath(state, action.actorId, action.pieceId, action.path).value!;
       const destination = action.path.at(-1)!;

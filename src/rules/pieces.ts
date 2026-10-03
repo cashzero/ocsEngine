@@ -48,7 +48,7 @@ export const OUT_OF_TRACE_SINCE_STATUS = statusId('status:out-of-trace-since');
 export const RETURN_TURN_STATUS = statusId('status:return-turn');
 /**
  * TEXT name of one Piece when it differs from its Definition's. Breakdowns (20.0) share a generic Definition, but each is
- * named after the regiment its division detached ("16 Inf Regt / 1.Inf"), which a board-game counter pool cannot do.
+ * numbered after the division that detached it ("1/101.Abn"), which a board-game counter pool cannot do.
  */
 export const UNIT_NAME_STATUS = statusId('status:unit-name');
 

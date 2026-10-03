@@ -534,8 +534,8 @@ export type GameAction =
   | (ActionEnvelope & { readonly kind: 'MOVE_PIECE'; readonly pieceId: PieceId; readonly path: readonly HexId[] })
   /** Declare the current mover finished (6.1g) without starting another unit; its unspent MP are lost for the phase. */
   | (ActionEnvelope & { readonly kind: 'END_MOVE'; readonly pieceId: PieceId })
-  /** Detach a Breakdown named `name` from a multi-step unit as it begins to move (20.0, 20.0a). */
-  | (ActionEnvelope & { readonly kind: 'CREATE_BREAKDOWN'; readonly pieceId: PieceId; readonly name: string })
+  /** Detach the next numbered Breakdown ("1/101.Abn") from a multi-step unit as it begins to move (20.0, 20.0a). */
+  | (ActionEnvelope & { readonly kind: 'CREATE_BREAKDOWN'; readonly pieceId: PieceId })
   | (ActionEnvelope & { readonly kind: 'CHECK_SUPPLY'; readonly pieceIds: readonly PieceId[]; readonly sourcePieceId: PieceId | null })
   | (ActionEnvelope & {
     readonly kind: 'DECLARE_COMBAT';

@@ -13,7 +13,7 @@ import { aircraftName, isActiveAircraft, isAirBase, isAircraft, isFighter, patro
 
 /** 4.9a: internal stocks and other private bookkeeping are never shown to the enemy. */
 const PRIVATE_STATUSES: readonly string[] = [INTERNAL_STOCKS_STATUS, OUT_OF_TRACE_SINCE_STATUS, RETURN_TURN_STATUS];
-/** Status values the enemy may read because they are printed on the counter itself (a Breakdown's regiment too, 20.0). */
+/** Status values the enemy may read because they are printed on the counter itself (a Breakdown's "1/101.Abn" too, 20.0). */
 const PUBLIC_VALUE_STATUSES: readonly string[] = ['status:air-base-level', 'status:transport-points', 'status:unit-name'];
 
 /** What the counter is for, from its definition and where it is (not from which fields happen to be set). */

@@ -24,23 +24,19 @@ import { violation } from '../validation/violation.js';
 
 /**
  * Breakdowns (20.0). A multi-step "Other" unit carries the `BREAKDOWN` capability naming the generic Breakdown Definition
- * of its pool (20.0g) and the regiments it can detach. A Breakdown counter carries `BREAKDOWN_UNIT`.
+ * of its pool (20.0g). A Breakdown counter carries `BREAKDOWN_UNIT`.
  *
- * Unlike the board game, each Breakdown is linked to the division that detached it (a PARENT relation) and named after
- * one of that division's regiments; the generic Definition still sets its printed values.
+ * Unlike the board game, each Breakdown is linked to the division that detached it (a PARENT relation) and numbered
+ * after it ("1/101.Abn", "2/101.Abn"); the generic Definition still sets its printed values.
  */
 export const BREAKDOWN_CAPABILITY = 'BREAKDOWN';
 export const BREAKDOWN_UNIT_CAPABILITY = 'BREAKDOWN_UNIT';
-/** Separator of the regiment names in the `regiments` TEXT parameter. */
-export const BREAKDOWN_REGIMENT_SEPARATOR = '|';
 
 type Transition = { readonly state: GameState; readonly events: readonly RuleEvent[] };
 
 export interface BreakdownProfile {
   /** The Breakdown Definition this unit creates and absorbs (its pool, 20.0g). */
   readonly definition: PieceDefinition;
-  /** Regiment names, in the order they are offered. */
-  readonly regiments: readonly string[];
 }
 
 const textParameter = (definition: PieceDefinition | undefined, capability: string, key: string): string | null => {
@@ -51,10 +47,7 @@ const textParameter = (definition: PieceDefinition | undefined, capability: stri
 export const breakdownProfile = (state: GameState, piece: PieceState): BreakdownProfile | null => {
   const definitionId = textParameter(definitionOf(state, piece), BREAKDOWN_CAPABILITY, 'definitionId');
   const definition = definitionId === null ? undefined : state.scenario.pieceCatalog.definitions.find(({ id }) => id === definitionId);
-  if (!definition) return null;
-  const regiments = (textParameter(definitionOf(state, piece), BREAKDOWN_CAPABILITY, 'regiments') ?? '')
-    .split(BREAKDOWN_REGIMENT_SEPARATOR).map((name) => name.trim()).filter((name) => name.length > 0);
-  return { definition, regiments };
+  return definition ? { definition } : null;
 };
 
 export const isBreakdown = (state: GameState, piece: PieceState): boolean =>
@@ -89,25 +82,18 @@ const ratingOf = (state: GameState, piece: PieceState): number =>
 const breakdownRating = (profile: BreakdownProfile, parent: PieceState): number =>
   printedActionRating(profile.definition, parent.currentFaceId, 1);
 
-/**
- * Names the division may give its next Breakdown: each regiment not already detached (in play under that name). Once
- * every regiment is out, the next one is a numbered "Brkdwn".
- */
-export const availableBreakdownNames = (state: GameState, parent: PieceState): readonly string[] => {
-  const profile = breakdownProfile(state, parent);
-  if (!profile) return [];
+/** The division's next Breakdown name: the lowest number not in play ("1/101.Abn", "2/101.Abn"...). */
+export const nextBreakdownName = (state: GameState, parent: PieceState): string => {
   const division = definitionOf(state, parent)?.name ?? 'Division';
   const used = new Set(state.pieceState.pieces
     .filter((piece) => piece.ownerId === parent.ownerId && inPlay(piece))
     .flatMap((piece) => pieceNameOf(piece) ?? []));
-  const free = profile.regiments.map((regiment) => `${regiment} / ${division}`).filter((name) => !used.has(name));
-  if (free.length > 0) return free;
   let ordinal = 1;
-  while (used.has(`Brkdwn ${ordinal} / ${division}`)) ordinal += 1;
-  return [`Brkdwn ${ordinal} / ${division}`];
+  while (used.has(`${ordinal}/${division}`)) ordinal += 1;
+  return `${ordinal}/${division}`;
 };
 
-export const validateCreateBreakdown = (state: GameState, actorId: PlayerId, pieceId: PieceId, name: string): readonly RuleViolation[] => {
+export const validateCreateBreakdown = (state: GameState, actorId: PlayerId, pieceId: PieceId): readonly RuleViolation[] => {
   const piece = pieceById(state, pieceId);
   if (!piece) return [violation('UNKNOWN_PIECE', ['pieceId'], 'Unknown Piece.', '20.0')];
   const issues: RuleViolation[] = [];
@@ -131,9 +117,6 @@ export const validateCreateBreakdown = (state: GameState, actorId: PlayerId, pie
   if (breakdownRating(profile, piece) > ratingOf(state, piece)) {
     issues.push(violation('BREAKDOWN_RATING_TOO_HIGH', ['pieceId'], 'A unit can only create a Breakdown with an Action Rating equal to or less than its own.', '20.0b'));
   }
-  if (!availableBreakdownNames(state, piece).includes(name)) {
-    issues.push(violation('BREAKDOWN_NAME_UNAVAILABLE', ['name'], 'That regiment is already detached; pick one of the division\'s remaining regiments.', '20.0'));
-  }
   return issues;
 };
 
@@ -153,8 +136,9 @@ const breakdownId = (state: GameState, parentId: PieceId): PieceId => {
  * and with the same markers (20.0c). Detaching costs no MP and the Breakdown may still move this phase (20.0e); it does
  * not end another unit's move.
  */
-export const applyCreateBreakdown = (state: GameState, pieceId: PieceId, name: string): Transition => {
+export const applyCreateBreakdown = (state: GameState, pieceId: PieceId): Transition => {
   const parent = pieceById(state, pieceId)!;
+  const name = nextBreakdownName(state, parent);
   const profile = breakdownProfile(state, parent)!;
   const id = breakdownId(state, parent.id);
   const faceId = profile.definition.faces.some(({ id: face }) => face === parent.currentFaceId) ? parent.currentFaceId : profile.definition.faces[0]?.id ?? null;

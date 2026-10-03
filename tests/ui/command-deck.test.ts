@@ -234,7 +234,7 @@ describe('phase-specific command deck', () => {
     expect(controller.getSnapshot().reachable.size).toBeGreaterThan(0);
   });
 
-  it('offers one Breakdown per regiment of a division, names the detached regiment, and lets Undo take it back (20.0)', async () => {
+  it('detaches numbered Breakdowns ("1/101.Abn") from a division and lets Undo take one back (20.0)', async () => {
     const controller = await startGame();
     const deck = newDeck();
     for (const arrival of controller.getSnapshot().arrivals) {
@@ -251,27 +251,31 @@ describe('phase-specific command deck', () => {
     const html = commandDeckHtml(snapshot, deck);
     expect(html).toContain('<strong>Breakdowns</strong>');
     const offers = snapshot.unitActions.filter(({ group }) => group === 'BREAKDOWN');
-    expect(offers.length).toBeGreaterThan(1);
-    expect(offers[0]!.label).toMatch(/^Detach \d+ (Abn|Gld|Inf) Regt \(5-4-3, 1 RE; the division loses a step\)$/u);
+    expect(offers.map(({ label }) => label)).toEqual(['Detach a Breakdown (5-4-3, 1 RE; the division loses a step)']);
     const before = own().length;
     const steps = division!.remainingSteps!;
+    const divisionName = unitLabel(snapshot.scenario, division!);
+    const breakdownNames = () => own().flatMap((piece) => piece.statusValues.some(({ statusDefinitionId }) => statusDefinitionId === 'status:unit-name')
+      ? [unitLabel(controller.getSnapshot().scenario, piece)] : []).sort();
 
     await controller.runAction(offers[0]!.key);
     snapshot = controller.getSnapshot();
     expect(own()).toHaveLength(before + 1);
     expect(own().find(({ id }) => id === division!.id)?.remainingSteps).toBe(steps - 1);
-    const breakdown = own().find((piece) => piece.statusValues.some(({ statusDefinitionId }) => statusDefinitionId === 'status:unit-name'))!;
-    const regiment = offers[0]!.label.replace(/^Detach (.+?) \(.*$/u, '$1');
-    expect(unitLabel(snapshot.scenario, breakdown)).toMatch(new RegExp(`^${regiment} / `, 'u'));
-    expect(snapshot.feed.at(-1)?.title).toMatch(new RegExp(`detached ${regiment}$`, 'u'));
+    expect(breakdownNames()).toEqual([`1/${divisionName}`]);
+    expect(snapshot.feed.at(-1)?.title).toBe(`${divisionName} detached 1/${divisionName}`);
     // 4.9a: the opponent's log does not reveal which division lost a step.
     const enemyView = describeRecord(snapshot.history.at(-1)!, { viewerId: 'player:axis' as never, playerName: () => 'Axis commander', piece: () => null });
     expect(enemyView.title).toBe('An enemy unit reorganized');
-    expect(enemyView.lines.join(' ')).not.toContain(regiment);
-    // The regiment is out, so it is no longer offered.
+    expect(enemyView.lines.join(' ')).not.toContain(divisionName);
+    // The next one is number 2.
     controller.selectPiece(division!.id);
-    expect(controller.getSnapshot().unitActions.some(({ label }) => label.startsWith(`Detach ${regiment} `))).toBe(false);
+    await controller.runAction(controller.getSnapshot().unitActions.find(({ group }) => group === 'BREAKDOWN')!.key);
+    expect(breakdownNames()).toEqual([`1/${divisionName}`, `2/${divisionName}`]);
 
+    expect(controller.getSnapshot().undoStep?.scope).toBe('ACTION');
+    await controller.undoStep();
+    expect(breakdownNames()).toEqual([`1/${divisionName}`]);
     expect(controller.getSnapshot().undoStep?.scope).toBe('ACTION');
     await controller.undoStep();
     expect(own()).toHaveLength(before);

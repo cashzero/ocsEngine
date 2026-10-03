@@ -2,8 +2,6 @@ import { parseDefinitionId, type DefinitionId, type Result } from '../../core/in
 import { parseCapabilityId, type PieceDefinition } from '../../domain/piece/index.js';
 import { BTR_BUILD_FILE_SHA256 } from './catalog.js';
 import { corpusCounter, corpusFaces } from './counter-corpus.js';
-import type { FormationNameProfile } from './name-catalog.js';
-import { sizedCombatName } from './names.js';
 import type { OobFormationArchetype, OobSide } from './model.js';
 
 /** A BTR Breakdown counter (20.0) and the printed Action Rating that decides which divisions may create it (20.0b). */
@@ -23,10 +21,9 @@ const POOLS = {
   LUFTWAFFE: [{ gpid: 1207, entryName: 'Ge LW 4-3-2 Breakdown', actionRating: 3 }],
 } as const satisfies Readonly<Record<string, readonly BreakdownCounter[]>>;
 
-/** Capability names and separator read by the Rule Engine (rules/breakdown); generation does not import the rules. */
+/** Capability names read by the Rule Engine (rules/breakdown); generation does not import the rules. */
 const BREAKDOWN_CAPABILITY = 'BREAKDOWN';
 const BREAKDOWN_UNIT_CAPABILITY = 'BREAKDOWN_UNIT';
-const BREAKDOWN_REGIMENT_SEPARATOR = '|';
 
 const must = <T, E>(result: Result<T, E>): T => {
   if (!result.ok) throw new Error('Breakdown generator produced an invalid Foundation scalar.');
@@ -39,14 +36,6 @@ const poolFor = (side: OobSide, archetype: OobFormationArchetype): readonly Brea
 /** 20.0b: the strongest Breakdown of the pool whose Action Rating does not exceed the division's. */
 const counterFor = (pool: readonly BreakdownCounter[], actionRating: number): BreakdownCounter | null =>
   pool.find((counter) => counter.actionRating <= actionRating) ?? null;
-
-/**
- * The regiments a division can detach, from its naming profile's battalions ("1/16 Inf Bn", "2/16 Inf Bn" give
- * "16 Inf Regt"); separate battalions such as a tank battalion are not regiments of the division.
- */
-export const divisionRegiments = (profile: FormationNameProfile, side: OobSide): readonly string[] =>
-  [...new Set(profile.combat.filter((entry) => entry.includes('/'))
-    .map((entry) => sizedCombatName(entry, 'III', side === 'ALLIED', '', 1)))];
 
 const breakdownDefinition = (seed: number, side: OobSide, counter: BreakdownCounter): PieceDefinition => {
   const nationality = side === 'ALLIED' ? 'US' : 'GERMAN';
@@ -85,14 +74,13 @@ const breakdownDefinition = (seed: number, side: OobSide, counter: BreakdownCoun
 
 /**
  * Give a single-counter division its Breakdown pool (20.0): the division Definition gains the `BREAKDOWN` capability
- * naming the Breakdown Definition and its regiments, and that Definition is added to `definitions` once per side and pool.
- * Armor/Mech and one-step units get none.
+ * naming the Breakdown Definition, and that Definition is added to `definitions` once per side and pool. Armor/Mech and
+ * one-step units get none.
  */
 export const withBreakdowns = (
   division: PieceDefinition,
   side: OobSide,
   archetype: OobFormationArchetype,
-  profile: FormationNameProfile,
   seed: number,
   definitions: PieceDefinition[],
 ): PieceDefinition => {
@@ -109,10 +97,7 @@ export const withBreakdowns = (
     ...division,
     capabilities: [...division.capabilities, {
       id: must(parseCapabilityId(BREAKDOWN_CAPABILITY)),
-      parameters: [
-        { key: 'definitionId', kind: 'TEXT', value: breakdownId },
-        { key: 'regiments', kind: 'TEXT', value: divisionRegiments(profile, side).join(BREAKDOWN_REGIMENT_SEPARATOR) },
-      ],
+      parameters: [{ key: 'definitionId', kind: 'TEXT', value: breakdownId }],
     }],
   };
 };

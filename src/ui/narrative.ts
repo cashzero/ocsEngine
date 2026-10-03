@@ -209,7 +209,11 @@ export const describeRecord = (record: HistoryRecord, context: NarrativeContext)
     case 'PLACE_REINFORCEMENT': title = own ? `${name(action.pieceId)} entered at ${hex(action.hexId)}` : `Enemy reinforcements entered at ${hex(action.hexId)}`; break;
     case 'END_MOVE': title = own ? `${name(action.pieceId)} finished moving` : 'An enemy unit finished moving'; break;
     // 4.9a: the enemy is not told that a division lost a step to a Breakdown; he sees the new counter only if it is on top.
-    case 'CREATE_BREAKDOWN': title = own ? `${name(action.pieceId)} detached ${action.name.split(' / ')[0]}` : 'An enemy unit reorganized'; break;
+    case 'CREATE_BREAKDOWN': {
+      const created = record.events.find((event): event is Extract<RuleEvent, { kind: 'BREAKDOWN_CREATED' }> => event.kind === 'BREAKDOWN_CREATED');
+      title = own ? `${name(action.pieceId)} detached ${created?.name ?? 'a Breakdown'}` : 'An enemy unit reorganized';
+      break;
+    }
     case 'CHANGE_MODE': title = own ? `${name(action.pieceId)} changed to ${action.mode.toLowerCase()} mode` : 'An enemy unit changed mode'; break;
     case 'RELEASE_RESERVE': title = own ? `${name(action.pieceId)} released from Reserve` : 'An enemy Reserve was released'; break;
     default: title = own ? `You: ${action.kind.replaceAll('_', ' ').toLowerCase()}` : `${who} took a logistics action`; break;

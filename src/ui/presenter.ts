@@ -80,7 +80,7 @@ export const actionSummary = (action: GameAction): string => {
     case 'RELEASE_RESERVE': return 'Release from reserve';
     case 'MOVE_PIECE': return `Move to ${printedHexLabel(action.path.at(-1) ?? '')}`;
     case 'END_MOVE': return 'Finish this unit\'s move';
-    case 'CREATE_BREAKDOWN': return `Detach ${action.name}`;
+    case 'CREATE_BREAKDOWN': return 'Detach a Breakdown';
     case 'CHECK_SUPPLY': return 'Draw supply from a dump';
     case 'DECLARE_COMBAT': return `${action.combatKind === 'OVERRUN' ? 'Overrun' : 'Attack'} ${printedHexLabel(action.targetHexId)}`;
     case 'DECLARE_BARRAGE': return `Barrage ${printedHexLabel(action.targetHexId)}`;
@@ -112,7 +112,7 @@ export const pieceDefinition = (
   piece: Pick<ProjectedPiece, 'definitionId'>,
 ): PieceDefinition | null => scenario.pieceCatalog.definitions.find(({ id }) => id === piece.definitionId) ?? null;
 
-/** The Piece's own name (a Breakdown's regiment, 20.0) when it has one; null when its Definition names it. */
+/** The Piece's own name (a Breakdown's "1/101.Abn", 20.0) when it has one; null when its Definition names it. */
 export const pieceOwnName = (piece: { readonly statusValues?: ProjectedPiece['statusValues'] }): string | null => {
   const value = piece.statusValues?.find(({ statusDefinitionId }) => statusDefinitionId === 'status:unit-name')?.value;
   return typeof value === 'string' && value.length > 0 ? value : null;

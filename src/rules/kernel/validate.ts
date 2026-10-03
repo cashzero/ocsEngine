@@ -69,7 +69,7 @@ export const validateGameAction = (state: GameState, action: GameAction): Action
         break;
       }
       case 'END_MOVE': issues.push(...validateEndMove(state, action.actorId, action.pieceId)); break;
-      case 'CREATE_BREAKDOWN': issues.push(...validateCreateBreakdown(state, action.actorId, action.pieceId, action.name)); break;
+      case 'CREATE_BREAKDOWN': issues.push(...validateCreateBreakdown(state, action.actorId, action.pieceId)); break;
       case 'CHECK_SUPPLY': issues.push(...validateSupplyCheck(state, action.actorId, action.pieceIds, action.sourcePieceId)); break;
       case 'DECLARE_COMBAT': issues.push(...validateCombatDeclaration(state, action)); break;
       case 'DECLARE_BARRAGE': issues.push(...validateBarrageDeclaration(state, action)); break;

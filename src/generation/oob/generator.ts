@@ -264,9 +264,9 @@ const buildSide = (
         ...(side === 'ALLIED' && archetype === 'AIRBORNE' && ALLIED_AIRBORNE_DIVISION_GPIDS[formationName] !== undefined
           ? { counterGpid: ALLIED_AIRBORNE_DIVISION_GPIDS[formationName] } : {}),
       });
-      // 20.0: a single-counter division can detach Breakdowns named after its regiments.
+      // 20.0: a single-counter division can detach Breakdowns.
       definitions.push(isSingleUnitDivision(side, archetype) && role === 'COMBAT'
-        ? withBreakdowns(built.definition, side, archetype, namingProfile, options.seed, definitions) : built.definition);
+        ? withBreakdowns(built.definition, side, archetype, options.seed, definitions) : built.definition);
       return built.unit;
     });
     return { id: formationId, side, name: formationName, archetype, units };
