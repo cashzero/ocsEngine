@@ -1,0 +1,48 @@
+# AIR-13 / AIR-14 / AIR-15 Air Transport, Drop Plans and Air Drops (rules seed 5106)
+
+- New Game: Standard scale, air forces + transports + support, seeds {"map":5101,"oob":5102,"deployment":5103,"rules":5106}
+- PASS AIR-14: The game opens in the Allied Aircraft Refit Phase, where Drop Plans are made — observed: Turn 1 / 6, Allied player turn, Aircraft Refit Phase
+- PASS AIR-14: Plan an Air Drop lists the Para units and allows any turn in the first Refit Phase of the game — observed: Plan an Air Drop Tick the units, click the drop hex on the map, and choose the Game Turn (turn 1 or later now). XX 1 3 7 4 5 13.Abn at 0607 Para unit II 1 2 4 5 US Parachute Infantry Battalion at 0305 Para unit Drop hex click a hex on the map Hex number Game T
+- screenshot 01-allied-drop-plan-draft.jpg
+- PASS AIR-14: A Drop Plan for the US Parachute Infantry Battalion to 0306 on turn 3 is recorded — observed: US Parachute Infantry Battalion → 0306 on turn 3
+- PASS AIR-14: Delay one turn moves the plan to turn 4 (14.10c) — observed: US Parachute Infantry Battalion → 0306 on turn 4
+- PASS AIR-14: Cancel removes the plan — observed: Drop Plans No Air Drop is planned. Plan an Air Drop… A drop of combat units is planned here two turns ahead (in the first Refit Phase of the game, for any turn) and flown in that turn's Movement Phase with Air Drop (14.10b).
+- PASS AIR-14: The battalion is planned again, to drop on 0306 on turn 2 — observed: US Parachute Infantry Battalion → 0306 on turn 2
+- screenshot 02-allied-drop-planned.jpg
+- PASS AIR-14: A combat unit cannot be Air Dropped on a hex and turn it has no Drop Plan for — observed: This unit is not on a Drop Plan for this hex and turn. 14.10b
+- screenshot 03-allied-unplanned-drop-refused.jpg
+- PASS AIR-13: Air Transport of 2T by the C-47+Gldr (capacity 2T): the load, the integral-glider unloading exemption and the Flak modifier are shown — observed: {"Load":"2T of 2T capacity","Unloading":"0T count against 4T left at this base this segment","Flak":"+2 (Enemy Patrol Zone, mission has no Fighter +2); 11+ on 2d6 costs a step"}
+- screenshot 04-allied-supply-transport-draft.jpg
+- PASS AIR-15: The Transport is subject to Flak in the enemy Patrol Zone and the result is reported — observed: COMBAT RESULT Allied commander air mission on 0504 No interception. Flak: 14 (roll 12 +2), one mission aircraft step is lost. 314th TCG C-47+Gldr is reduced by Flak. Flak cut the Transports' capacity: 1T of supply is lost. Delivered 1T of supply to 0504. 314th TCG C-47+Gldr lost a step OK; decisions: Do not intercept / 1T of supply (2T loaded from this dump) / Original Air Base at 0305 (3 hexes) (550 ms)
+- Flak on the fully loaded Allied Air Transport hit; decisions: Do not intercept / 1T of supply (2T loaded from this dump) / Original Air Base at 0305 (3 hexes)
+- PASS AIR-15: A Flak step loss on a full Transport costs the cargo it can no longer carry (14.9g), and the result says what was lost — observed: COMBAT RESULT Allied commander air mission on 0504 No interception. Flak: 14 (roll 12 +2), one mission aircraft step is lost. 314th TCG C-47+Gldr is reduced by Flak. Flak cut the Transports' capacity: 1T of supply is lost. Delivered 1T of supply to 0504. 314th TCG C-47+Gldr lost a step OK; decisions: Do not intercept / 1T of supply (2T loaded from this dump) / Original Air Base at 0305 (3 hexes)
+- screenshot 05-allied-supply-transport-flown.jpg
+- PASS AIR-13: The Log reports the supply delivered at 0504 (or what Flak cost of it) — observed:  Flak: 14 (roll 12 +2), one mission aircraft step is lost.
+- PASS AIR-14: Axis: the Fallschirmjäger Battalion is planned to drop on 1504 on turn 2 — observed: Ge Fallschirmjäger Battalion → 1504 on turn 2
+- PASS AIR-13: Normal range: the battalion (1T) and 1T of supply exceed the Ju.52's 1T capacity and the mission is refused — observed: 2T of 1T capacity; The load is 2T but the Transports carry 1T. 14.9a
+- screenshot 06-axis-over-capacity.jpg
+- PASS AIR-13: Half range doubles capacity (14.9e): 2T of 2T, and 2T count against the destination's unloading limit — observed: 2T of 2T capacity; 2T count against 4T left at this base this segment
+- screenshot 07-axis-half-range-draft.jpg
+- PASS AIR-13: The Ju.52 flies the battalion and 1T to 1707, then returns (original Air Base offered first) — observed: COMBAT RESULT Axis commander air mission on 1707 Delivered Ge Fallschirmjäger Battalion, 1T of supply to 1707. OK; decisions: Original Air Base at 1407 (3 hexes) (544 ms)
+- screenshot 08-axis-transport-flown.jpg
+- PASS AIR-13: The carried battalion (MA 5) is at 1707 and may move only with half its MA: 2.5 MP left (14.9c) — observed: Move units one at a time: select a unit to see its range. Red rings mark overrun targets. II 1 2 3 5 Ge Fallschirmjäger Battalion 1707 · Move mode 2.5 MP left · 29 hexes reachable Deselect Unit Air Log All units (25) COMBAT RESULT Axis commander air mission on 1707 Delivered Ge Fallschirmjäger Batta
+- screenshot 09-axis-battalion-after-transport.jpg
+- Turn 2: Axis moves first
+- PASS AIR-14: The Fallschirmjäger drop by parachute from 1707 shows the Success Table number for 1504 — observed: Parachute · each unit and 1T roll 2d6; it fails on 6 or less; 1T of 2T capacity; Flak +2 (Enemy Patrol Zone, mission has no Fighter +2); 11+ on 2d6 costs a step
+- screenshot 10-axis-parachute-drop-draft.jpg
+- PASS AIR-14: The parachute landing is rolled and reported — observed: COMBAT RESULT Axis commander air mission on 1504 No interception. Flak: 12 (roll 10 +2), one mission aircraft step is lost. TG 2 Ju.52 is reduced by Flak. Ge Fallschirmjäger Battalion: 7 on the Success Table (fails on 6 or less), lands. TG 2 Ju.52 lost a step OK; decisions: Do not intercept / Original Air Base at 1707 (3 hexes) / Original Air Base at 1707 (3 hexes) (550 ms)
+- screenshot 11-axis-parachute-drop-flown.jpg
+- Turn 2: Allied moves second
+- PASS AIR-14: The planned battalion lands by the C-47+Gldr's glider: the Success Table number includes the glider +1 — observed: Glider · each unit and 1T roll 2d6 +1 (glider); it fails on 5 or less; 1T of 1T capacity
+- screenshot 12-allied-glider-drop-draft.jpg
+- PASS AIR-14: The glider landing is rolled and the battalion lands on 0306 or is lost as the table says — observed: COMBAT RESULT Allied commander air mission on 0306 US Parachute Infantry Battalion: 4 (roll 3 +1) on the Success Table (fails on 5 or less), is lost. OK; decisions: Original Air Base at 0305 (1 hexes) (646 ms)
+- PASS AIR-14: The preview and the result give the same Success Table number (glider +1 on the roll) — observed: preview 5, result 5
+- screenshot 13-allied-glider-drop-flown.jpg
+- Axis log after the drop: Move units one at a time: select a unit to see its range. Red rings mark overrun targets. Hex 0306 No unit of yours here. Deselect Unit Air Ledger Log All units (24) COMBAT RESULT Allied commander air mission on 0306 US Parachute Infantry Battalion: 4 (roll 3 +1) on the Success Table (fails on 5 or less), is lost. OK You made a decision US Parachute Infantry Battalion: 4 (roll 3 +1) on the Success Table (fails on 5 or less), is lost. You flew air drop at 0306 You finished Reinforcement Phase Passed automatically, no legal actions: Movement breakout segment. Now: Movement · Movement Segment · A
+- PASS AIR-13: No browser console or page error during the run — observed: 0 errors
+- Flak was reported on 2 flight(s).
+
+Ended at: Turn 2 / 6, Allied player turn, Movement
+
+Console/page errors: 0
+

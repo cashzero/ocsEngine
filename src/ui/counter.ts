@@ -30,20 +30,30 @@ const aircraftView = (definition: PieceDefinition, piece: CounterPiece) => {
     type: type?.kind === 'TEXT' ? type.value : '', designation: designation?.kind === 'TEXT' ? designation.value : definition.name,
     airCombat: rating('rating:air-combat'), parenthesized: parenthesized?.kind === 'FLAG' && parenthesized.value,
     barrage: rating('rating:barrage-strength'), range: step?.range ?? 0,
+    // 14.9a: a Transport prints its capacity (in half-Tokens here) where other aircraft print their Barrage Strength.
+    capacity: typeof rating('rating:transport-capacity') === 'number' && step?.ratings.some(({ ratingDefinitionId }) => ratingDefinitionId === 'rating:transport-capacity') ? Number(rating('rating:transport-capacity')) : null,
     reduced: (piece.remainingSteps ?? full) < full,
     inactive: piece.statuses.includes('status:air-inactive'),
   };
 };
 
-/** 15.0: an Air Base counter shows its Level. */
+/** 15.0: an Air Base counter shows its Level; an Air Strip (15.2) has none. */
 const airBaseView = (definition: PieceDefinition, piece: CounterPiece) => {
   const level = piece.statusValues?.find(({ statusDefinitionId }) => statusDefinitionId === 'status:air-base-level')?.value;
-  return { redacted: false as const, kind: 'air-base' as const, label: definition.name, nation: nationOf(definition), level: typeof level === 'number' ? level : 1 };
+  return {
+    redacted: false as const, kind: 'air-base' as const, label: definition.name, nation: nationOf(definition),
+    level: typeof level === 'number' ? level : 1, strip: definition.facility?.facilityTypeDefinitionId === 'facility:air-strip',
+  };
 };
+
+/** 13.5: an Equipment replacement counter prints "Eq" and how many it holds ("?" when the count is hidden from this seat, 4.9a). */
+const replacementView = (definition: PieceDefinition, piece: CounterPiece) =>
+  ({ redacted: false as const, kind: 'replacement' as const, label: definition.name, nation: nationOf(definition), quantity: piece.resourceQuantity === null || piece.resourceQuantity === undefined ? '?' : String(piece.resourceQuantity) });
 
 export const counterView = (definition: PieceDefinition, piece: CounterPiece) => {
   if (definition.family === 'AIR') return aircraftView(definition, piece);
-  if (definition.facility?.facilityTypeDefinitionId === 'facility:air-base') return airBaseView(definition, piece);
+  if (definition.facility?.facilityTypeDefinitionId === 'facility:air-base' || definition.facility?.facilityTypeDefinitionId === 'facility:air-strip') return airBaseView(definition, piece);
+  if (definition.family === 'REPLACEMENT') return replacementView(definition, piece);
   // A visible enemy counter shows its face; steps lost are hidden (4.9a), so show the printed face.
   if (piece.redacted && piece.currentFaceId === null && definition.counter?.kind !== 'SUPPLY') return { redacted: true as const, label: 'Enemy unit' };
   if (!definition.counter) throw new Error(`Counter definition missing: ${definition.id}`);
@@ -128,7 +138,23 @@ const pl = (d: string, extra = ''): string => `<path class="pl${extra}" d="${d}"
 const prop = (d: string): string => `<path class="plane-prop" d="${d}"/>`;
 const fw190Wing = pl('M16 45C16 42 18 41 22 41L44 39.5H52L74 41C78 41 80 42 80 45C80 48 78 49 74 49L52 51H44L22 49C18 49 16 48 16 45Z')
   + pl('M37 77.5C37 74.5 44 74.5 48 74.5C52 74.5 59 74.5 59 77.5C59 80.5 52 81 48 81C44 81 37 80.5 37 77.5Z') + balkenkreuz(25, 45) + balkenkreuz(71, 45);
+// TODO(transport-art): the C-47, C-47+Gldr and Ju.52 silhouettes are drawn after the VASSAL counter faces (75 x 64 px) by eye, not
+// traced per row like the models above. Closing evidence: a side-by-side review against the counter images (docs/quality/04).
 const planeArt: Readonly<Record<string, PlaneArt>> = {
+  // A glider keeps the tow's place in the stack of art: listed before 'C-47' so its longer name matches first.
+  'C-47+Gldr': { paint: 'od', rangeY: 22, body: pl('M10 36C10 33.5 12 33 15 33L45 32H51L81 33C84 33 86 33.5 86 36C86 38.5 84 39 81 39L51 41.5H45L15 39C12 39 10 38.5 10 36Z')
+    + pl('M44.5 18C44.5 13.5 51.5 13.5 51.5 18L52 38L49.5 58H46.5L44 38Z') + pl('M37 53C37 51.5 43 51.5 48 51.5C53 51.5 59 51.5 59 53V56.5H37Z')
+    + pl('M31 28C31 25 35.5 25 35.5 28V40H31ZM60.5 28C60.5 25 65 25 65 28V40H60.5Z') + prop('M28.5 25H38M58 25H67.5')
+    + '<path class="plane-stripe" d="M48 58V66"/>' + pl('M26 80C26 72 40 67 48 67C56 67 70 72 70 80C70 86 58 87 48 87C38 87 26 86 26 80Z', ' od')
+    + usStar(18, 36) + usStar(78, 36) },
+  'C-47': { paint: 'od', rangeY: 22, body: pl('M10 44C10 41.5 12 41 15 41L45 40H51L81 41C84 41 86 41.5 86 44C86 46.5 84 47 81 47L51 49.5H45L15 47C12 47 10 46.5 10 44Z')
+    + pl('M44.5 20C44.5 15.5 51.5 15.5 51.5 20L52 46L49.5 82H46.5L44 46Z') + pl('M35 74C35 72.5 42 72.5 48 72.5C54 72.5 61 72.5 61 74V78.5H35Z')
+    + pl('M31 35C31 32 35.5 32 35.5 35V48H31ZM60.5 35C60.5 32 65 32 65 35V48H60.5Z') + prop('M28.5 32H38M58 32H67.5') + usStar(18, 44) + usStar(78, 44) },
+  'Ju.52': { paint: 'luft', rangeY: 22, body: pl('M9 46C9 43 11 42.5 14 42.5L45 41.5H51L82 42.5C85 42.5 87 43 87 46C87 49 85 49.5 82 49.5L51 52H45L14 49.5C11 49.5 9 49 9 46Z')
+    + '<path class="plane-stripe" d="M20 42.2V49.8M28 42V50M36 41.8V50.2M60 41.8V50.2M68 42V50M76 42.2V49.8"/>'
+    + pl('M44 22C44 17.5 52 17.5 52 22L52.5 48L50 82H46L43.5 48Z') + pl('M34 74C34 72.5 42 72.5 48 72.5C54 72.5 62 72.5 62 74V78.5H34Z')
+    + pl('M46 14.5C46 12.5 50 12.5 50 14.5V22H46Z') + pl('M30 38C30 35 34.5 35 34.5 38V50H30ZM61.5 38C61.5 35 66 35 66 38V50H61.5Z')
+    + prop('M43 12H53M27.5 35H37M59 35H68.5') + balkenkreuz(20, 46) + balkenkreuz(76, 46) },
   'P-38': { paint: 'od', rangeY: 49, body: pl('M7 42C7 39.5 9 39 12 39L44 38H52L84 39C87 39 89 39.5 89 42C89 44 87 45 84 45L52 48H44L12 45C9 45 7 44 7 42Z')
     + pl('M32 33C32 28.5 37 28.5 37 33V80H32ZM59 33C59 28.5 64 28.5 64 33V80H59Z') + pl('M32 73.5H64V78H32Z')
     + pl('M45.5 25C45.5 19.5 50.5 19.5 50.5 25V55C50.5 58 45.5 58 45.5 55Z') + prop('M28 29H41M55 29H68') + usStar(16, 42) + usStar(80, 42) },
@@ -181,14 +207,25 @@ const aircraftBody = (view: Extract<CounterViewModel, { kind: 'aircraft' }>): st
     <g class="counter-identification">${badge}${svgText(90,22,view.designation,'air-designation').replace('<text ', `<text textLength="${(5.2 * view.designation.length + 6).toFixed(1)}" lengthAdjust="spacingAndGlyphs" `)}</g>
     <g class="counter-symbol air-silhouette paint-${art.paint}">${art.body}</g>
     <g class="counter-values"><rect class="air-range-box" x="${89 - rangeWidth}" y="${art.rangeY}" width="${rangeWidth}" height="15"/>${svgText(89 - rangeWidth / 2,art.rangeY + 12.5,view.range,'air-range')}
-    ${airCombat}${svgText(79,87,view.barrage,'counter-number air-number')}</g>
+    ${airCombat}${view.capacity === null ? svgText(79,87,view.barrage,'counter-number air-number') : svgText(79,87,capacityText(view.capacity),'counter-number air-number')}</g>
     ${stateBar(view.inactive ? [{ key: 'inactive', label: 'INACTIVE' }] : [])}`;
 };
 
-const airBaseBody = (view: Extract<CounterViewModel, { kind: 'air-base' }>): string =>
-  `<circle class="air-base-disc nation-${view.nation}" cx="50" cy="50" r="47"/>
+/** Transport capacity as the counter prints it: 1T, 1/2T, 2T (the value is in half-Tokens). */
+const capacityText = (halfTokens: number): string => halfTokens % 2 === 0 ? `${halfTokens / 2}T` : `${(halfTokens - 1) / 2 === 0 ? '' : (halfTokens - 1) / 2}${(halfTokens - 1) / 2 === 0 ? '' : ' '}1/2T`;
+
+const airBaseBody = (view: Extract<CounterViewModel, { kind: 'air-base' }>): string => view.strip
+  ? `<circle class="air-base-disc air-strip nation-${view.nation}" cx="50" cy="50" r="47"/>
+    <g class="counter-symbol air-base-runways"><path d="M20 62L80 38"/></g>
+    <g class="counter-values">${svgText(50,84,'STRIP','counter-number air-strip-text')}</g>`
+  : `<circle class="air-base-disc nation-${view.nation}" cx="50" cy="50" r="47"/>
     <g class="counter-symbol air-base-runways"><path d="M18 66L82 34M22 40L74 72M50 18V60"/></g>
     <g class="counter-values"><circle class="air-base-level" cx="72" cy="74" r="15"/>${svgText(72,84,view.level,'counter-number air-base-level-text')}</g>`;
+
+const replacementBody = (view: Extract<CounterViewModel, { kind: 'replacement' }>): string =>
+  `<rect class="counter-paper replacement nation-${view.nation}" width="100" height="100"/>
+    <g class="counter-symbol"><rect class="symbol-box" x="22" y="22" width="56" height="34"/>${svgText(50,48,'Eq','replacement-label')}</g>
+    <g class="counter-values">${svgText(50,84,view.quantity,'counter-number')}</g>`;
 
 // A corps HQ prints its nation's flag where other counters print the unit symbol (BTR S01 R10 C02 and the other HQ images):
 // the flag sits right of the rotated formation name, under a heavy "XXX" and over a large "range-movement" rating. The US
@@ -216,6 +253,7 @@ export const counterSvgBody = (view: CounterViewModel): string => {
   if (view.redacted) return '<rect class="counter-paper concealed" width="100" height="100"/><path class="counter-unknown" d="M32 36C32 12 70 12 70 36C70 47 50 48 50 65M50 75V81"/>';
   if (view.kind === 'aircraft') return aircraftBody(view);
   if (view.kind === 'air-base') return airBaseBody(view);
+  if (view.kind === 'replacement') return replacementBody(view);
   const c = view.counter;
   const text = svgText;
   const ma = view.step?.movementPointTicks == null ? '' : view.step.movementPointTicks / 4;

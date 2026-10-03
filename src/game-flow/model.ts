@@ -29,6 +29,10 @@ export interface NewGameRequest {
     readonly armoredDivisionsPerSide: number;
     /** Aircraft and Air Bases (14.0-15.0). Absent means NONE: a ground duel. */
     readonly air?: AirForceLevel;
+    /** Transport aircraft and a paratroop battalion per side (14.9, 14.10). Needs `air`; absent means NONE. */
+    readonly airTransport?: AirForceLevel;
+    /** The Eq allotment and aircraft reinforcements (13.5f, 13.6). Needs `air`; absent means NONE. */
+    readonly airSupport?: AirForceLevel;
   };
   readonly seeds: {
     readonly map: number;

@@ -19,7 +19,7 @@ describe('R0 Rule manifest and provenance', () => {
 
   it('fail-fast rejects deferred and unknown features', () => {
     expect(requireImplementedRuleFeature('movement.ground').ok).toBe(true);
-    expect(requireImplementedRuleFeature('air.transport-and-drop')).toMatchObject({
+    expect(requireImplementedRuleFeature('naval-shipping')).toMatchObject({
       ok: false,
       error: { code: 'UNSUPPORTED_RULE_FEATURE', status: 'DEFERRED' },
     });

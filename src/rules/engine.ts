@@ -2,6 +2,8 @@ import type { PlayerId } from '../core/index.js';
 import { previewBarrage, previewCombat } from './combat/combat.js';
 import { inPatrolZoneOf } from './air/aircraft.js';
 import { AIR_MISSION_LABELS, flakModifiers, missionBarrageStrength, previewAirBarrage } from './air/mission.js';
+import { cargoCapacity, cargoWeight, countedUnloadTokens, dropMethod, halfTokenText, landingFailureMaximum, unloadLimitTokens, unloadedAt } from './air/transport.js';
+import { friendlyAirBaseAt } from './air/aircraft.js';
 import { hexOf, opponentOf, pieceById } from './pieces.js';
 import { BARRAGE_TABLE_COLUMNS, FACILITY_TABLE_COLUMNS, facilityColumnIndex } from './tables/ocs-4.3.js';
 import type { GameAction, GameState } from './kernel/model.js';
@@ -61,7 +63,7 @@ const actionFacts = (state: GameState, action: GameAction): readonly RuleFact[] 
   if (action.kind === 'DECLARE_AIR_MISSION') {
     const enemy = opponentOf(state, action.actorId);
     const flakSubject = ['BARRAGE', 'HIP_SHOOT', 'TRAINBUSTING'].includes(action.mission)
-      || (action.mission === 'BASE_TRANSFER' && inPatrolZoneOf(state, enemy, action.targetHexId));
+      || (['BASE_TRANSFER', 'AIR_TRANSPORT', 'AIR_DROP'].includes(action.mission) && inPatrolZoneOf(state, enemy, action.targetHexId));
     const modifiers = flakSubject ? flakModifiers(state, action.aircraftIds, action.mission, action.targetHexId, action.actorId) : [];
     const strength = missionBarrageStrength(state, action.aircraftIds);
     const facts: RuleFact[] = [
@@ -82,6 +84,29 @@ const actionFacts = (state: GameState, action: GameAction): readonly RuleFact[] 
       );
     } else if (action.target === 'AIR_BASE' || action.mission === 'TRAINBUSTING') {
       facts.push(publicFact('air.finalColumn', FACILITY_TABLE_COLUMNS[facilityColumnIndex(strength)]!.label));
+    }
+    if ((action.mission === 'AIR_TRANSPORT' || action.mission === 'AIR_DROP') && action.cargo) {
+      const ids = action.aircraftIds;
+      const destination = friendlyAirBaseAt(state, action.actorId, action.targetHexId);
+      facts.push(
+        publicFact('air.cargoLoad', halfTokenText(cargoWeight(state, action.cargo))),
+        publicFact('air.cargoCapacity', halfTokenText(cargoCapacity(state, action.cargo, ids))),
+      );
+      if (action.mission === 'AIR_TRANSPORT' && destination) {
+        facts.push(
+          publicFact('air.unloadCounted', countedUnloadTokens(state, action.cargo, ids)),
+          publicFact('air.unloadLimit', unloadLimitTokens(state, destination) - unloadedAt(state, action.targetHexId)),
+        );
+      }
+      if (action.mission === 'AIR_DROP') {
+        const method = dropMethod(state, action.cargo, ids);
+        facts.push(
+          publicFact('air.dropMethod', method === 'GLIDER' ? 'Glider' : method === 'PARACHUTE' ? 'Parachute' : 'Mixed'),
+          // The table number as the result reports it; a glider landing adds +1 to the roll instead (14.10d).
+          publicFact('air.landingFailsOn', landingFailureMaximum(state, action.actorId, action.targetHexId)),
+          publicFact('air.landingDrm', method === 'GLIDER' ? 1 : 0),
+        );
+      }
     }
     return facts;
   }

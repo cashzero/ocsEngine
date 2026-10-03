@@ -1,0 +1,92 @@
+# AIR-06 Facility Table floor at Level 1 (rules seed 5104, target 0504)
+
+- New Game: Standard scale, air forces + transports + support, 8 turns, seeds {"map":5101,"oob":5102,"deployment":5103,"rules":5104}; target 0504
+- screenshot 01-Turn-1-facility-draft.jpg
+- Axis commander: Air Combat over 0504 against 391st BG A-20, 48th FG P-51, 315th TCG C-47, 61st TCG C-47: abort any aircraft before it starts? At least one must stay and fight. → Fight with all 3 aircraft
+- Allied commander (after a handoff): Air Combat over 0504 against JG 300 Fw-190d, KG 51 Ju.88, KG 76 Ju.88: abort any aircraft before it starts? At least one must stay and fight. → Fight with all 4 aircraft
+- Allied commander: Air Combat round 1: JG 300 Fw-190d (Air Combat 6) attacks. Choose the aircraft that meets it. → 391st BG A-20 (Air Combat (2))
+- Allied commander: Air Combat round 2: JG 300 Fw-190d (Air Combat 6) attacks. Choose the aircraft that meets it. → 48th FG P-51 (Air Combat 6)
+- Axis commander (after a handoff): Air Combat round 3: 48th FG P-51 (Air Combat 6) attacks. Choose the aircraft that meets it. → KG 51 Ju.88 (Air Combat (2))
+- Axis commander: JG 300 Fw-190d (Air Combat 5, reduced) returns to base and becomes Inactive: choose a friendly Air Base within 74 hexes of 0504. It took off from 1407. → Original Air Base at 1407 (10 hexes)
+- Axis commander: KG 51 Ju.88 (Air Combat (2)) returns to base and becomes Inactive: choose a friendly Air Base within 106 hexes of 0504. It took off from 1407. → Original Air Base at 1407 (10 hexes)
+- Axis commander: KG 76 Ju.88 (Air Combat (1), reduced) returns to base and becomes Inactive: choose a friendly Air Base within 106 hexes of 0504. It took off from 1707. → Original Air Base at 1707 (13 hexes)
+- Turn 1 / 8: Level 2 before; no Facility roll (the bombers did not get through) (547 ms)
+- screenshot 02-Turn-1-facility-result.jpg
+- screenshot 03-Turn-2-facility-draft.jpg
+- Axis commander: Air Combat over 0504 against 391st BG A-20, 48th FG P-51, 315th TCG C-47, 61st TCG C-47: abort any aircraft before it starts? At least one must stay and fight. → Fight with all 3 aircraft
+- Allied commander (after a handoff): Air Combat over 0504 against JG 3 Fw-190d, KG 51 Ju.88, KG 76 Ju.88: abort any aircraft before it starts? At least one must stay and fight. → Fight with all 4 aircraft
+- Allied commander: Air Combat round 1: JG 3 Fw-190d (Air Combat 6) attacks. Choose the aircraft that meets it. → 391st BG A-20 (Air Combat (1), reduced)
+- Allied commander: Air Combat round 2: JG 3 Fw-190d (Air Combat 6) attacks. Choose the aircraft that meets it. → 48th FG P-51 (Air Combat 6)
+- Axis commander (after a handoff): Air Combat round 3: 48th FG P-51 (Air Combat 6) attacks. Choose the aircraft that meets it. → KG 51 Ju.88 (Air Combat (2))
+- Axis commander: JG 3 Fw-190d (Air Combat 5, reduced) returns to base and becomes Inactive: choose a friendly Air Base within 74 hexes of 0504. It took off from 1407. → Original Air Base at 1407 (10 hexes)
+- Axis commander: KG 51 Ju.88 (Air Combat (2)) returns to base and becomes Inactive: choose a friendly Air Base within 106 hexes of 0504. It took off from 1407. → Original Air Base at 1407 (10 hexes)
+- Axis commander: KG 76 Ju.88 (Air Combat (1), reduced) returns to base and becomes Inactive: choose a friendly Air Base within 106 hexes of 0504. It took off from 1707. → Original Air Base at 1707 (13 hexes)
+- Turn 2 / 8: Level 2 before; no Facility roll (the bombers did not get through) (549 ms)
+- screenshot 04-Turn-2-facility-result.jpg
+- screenshot 05-Turn-3-facility-draft.jpg
+- Axis commander: Air Combat over 0504 against 48th FG P-51, 315th TCG C-47, 61st TCG C-47: abort any aircraft before it starts? At least one must stay and fight. → Fight with all 3 aircraft
+- Allied commander (after a handoff): Air Combat over 0504 against JG 300 Fw-190d, KG 51 Ju.88, KG 76 Ju.88: abort any aircraft before it starts? At least one must stay and fight. → Fight with all 3 aircraft
+- Allied commander: Air Combat round 1: JG 300 Fw-190d (Air Combat 5, reduced) attacks. Choose the aircraft that meets it. → 48th FG P-51 (Air Combat 6)
+- Axis commander (after a handoff): Air Combat round 2: 48th FG P-51 (Air Combat 6) attacks. Choose the aircraft that meets it. → KG 51 Ju.88 (Air Combat (2))
+- Axis commander: JG 300 Fw-190d (Air Combat 5, reduced) returns to base and becomes Inactive: choose a friendly Air Base within 74 hexes of 0504. It took off from 1407. → Original Air Base at 1407 (10 hexes)
+- Axis commander: KG 51 Ju.88 (Air Combat (1), reduced) returns to base and becomes Inactive: choose a friendly Air Base within 106 hexes of 0504. It took off from 1407. → Original Air Base at 1407 (10 hexes)
+- Axis commander: KG 76 Ju.88 (Air Combat (1), reduced) returns to base and becomes Inactive: choose a friendly Air Base within 106 hexes of 0504. It took off from 1707. → Original Air Base at 1707 (13 hexes)
+- Turn 3 / 8: Level 2 before; no Facility roll (the bombers did not get through) (541 ms)
+- screenshot 06-Turn-3-facility-result.jpg
+- screenshot 07-Turn-4-facility-draft.jpg
+- Axis commander: Air Combat over 0504 against 48th FG P-51, 315th TCG C-47, 61st TCG C-47: abort any aircraft before it starts? At least one must stay and fight. → Fight with all 3 aircraft
+- Allied commander (after a handoff): Air Combat over 0504 against JG 3 Fw-190d, KG 51 Ju.88, KG 76 Ju.88: abort any aircraft before it starts? At least one must stay and fight. → Fight with all 3 aircraft
+- Allied commander: Air Combat round 1: JG 3 Fw-190d (Air Combat 5, reduced) attacks. Choose the aircraft that meets it. → 48th FG P-51 (Air Combat 6)
+- Axis commander (after a handoff): Air Combat round 2: 48th FG P-51 (Air Combat 6) attacks. Choose the aircraft that meets it. → KG 51 Ju.88 (Air Combat (1), reduced)
+- Axis commander: JG 3 Fw-190d (Air Combat 5, reduced) returns to base and becomes Inactive: choose a friendly Air Base within 74 hexes of 0504. It took off from 1407. → Original Air Base at 1407 (10 hexes)
+- Axis commander: KG 51 Ju.88 (Air Combat (1), reduced) returns to base and becomes Inactive: choose a friendly Air Base within 106 hexes of 0504. It took off from 1407. → Original Air Base at 1407 (10 hexes)
+- Axis commander: KG 76 Ju.88 (Air Combat (1), reduced) returns to base and becomes Inactive: choose a friendly Air Base within 106 hexes of 0504. It took off from 1707. → Original Air Base at 1707 (13 hexes)
+- Turn 4 / 8: Level 2 before; no Facility roll (the bombers did not get through) (543 ms)
+- screenshot 08-Turn-4-facility-result.jpg
+- screenshot 09-Turn-5-facility-draft.jpg
+- Axis commander: Air Combat over 0504 against 48th FG P-51, 315th TCG C-47, 61st TCG C-47: abort any aircraft before it starts? At least one must stay and fight. → Fight with all 4 aircraft
+- Allied commander (after a handoff): Air Combat over 0504 against JG 26 Bf.109, KG 51 Ju.88, KG 66 Ju.88, KG 76 Ju.88: abort any aircraft before it starts? At least one must stay and fight. → Fight with all 3 aircraft
+- Allied commander: Air Combat round 1: JG 26 Bf.109 (Air Combat 5) attacks. Choose the aircraft that meets it. → 48th FG P-51 (Air Combat 6)
+- Axis commander (after a handoff): Air Combat round 2: 48th FG P-51 (Air Combat 6) attacks. Choose the aircraft that meets it. → KG 51 Ju.88 (Air Combat (1), reduced)
+- Axis commander: Air Combat round 3: 48th FG P-51 (Air Combat 6) attacks. Choose the aircraft that meets it. → KG 66 Ju.88 (Air Combat (2))
+- Axis commander: JG 26 Bf.109 (Air Combat 5) returns to base and becomes Inactive: choose a friendly Air Base within 76 hexes of 0504. It took off from 1407. → Original Air Base at 1407 (10 hexes)
+- Axis commander: KG 66 Ju.88 (Air Combat (2)) returns to base and becomes Inactive: choose a friendly Air Base within 106 hexes of 0504. It took off from 1407. → Original Air Base at 1407 (10 hexes)
+- Axis commander: KG 76 Ju.88 (Air Combat (1), reduced) returns to base and becomes Inactive: choose a friendly Air Base within 106 hexes of 0504. It took off from 1707. → Original Air Base at 1707 (13 hexes)
+- Turn 5 / 8: Level 2 before; no Facility roll (the bombers did not get through) (542 ms)
+- screenshot 10-Turn-5-facility-result.jpg
+- screenshot 11-Turn-6-facility-draft.jpg
+- Axis commander: Air Combat over 0504 against 48th FG P-51, 315th TCG C-47, 61st TCG C-47: abort any aircraft before it starts? At least one must stay and fight. → Fight with all 3 aircraft
+- Allied commander (after a handoff): Air Combat over 0504 against JG 300 Fw-190d, KG 66 Ju.88, KG 76 Ju.88: abort any aircraft before it starts? At least one must stay and fight. → Fight with all 3 aircraft
+- Allied commander: Air Combat round 1: JG 300 Fw-190d (Air Combat 5, reduced) attacks. Choose the aircraft that meets it. → 48th FG P-51 (Air Combat 6)
+- Axis commander (after a handoff): Air Combat round 2: 48th FG P-51 (Air Combat 6) attacks. Choose the aircraft that meets it. → KG 66 Ju.88 (Air Combat (2))
+- Allied commander (after a handoff): Enemy Air Barrage entering your Patrol Zone at 0504 with KG 66 Ju.88 (Air Combat (2)), KG 76 Ju.88 (Air Combat (1), reduced). Intercept with one Active Fighter? → Do not intercept
+- Axis commander (after a handoff): KG 66 Ju.88 (Air Combat (2)) returns to base and becomes Inactive: choose a friendly Air Base within 106 hexes of 0504. It took off from 1407. → Original Air Base at 1407 (10 hexes)
+- Axis commander: KG 76 Ju.88 (Air Combat (1), reduced) returns to base and becomes Inactive: choose a friendly Air Base within 106 hexes of 0504. It took off from 1707. → Original Air Base at 1707 (13 hexes)
+- Turn 6 / 8: Level 2 before; Barrage vs Facility 18 (11-20): die 4, 1*(5); 48th FG P-51 loses a step (6); 315th TCG C-47 loses a step (5); the Air Base drops to Level 1. (541 ms)
+- screenshot 12-Turn-6-facility-result.jpg
+- screenshot 13-Turn-7-facility-draft.jpg
+- Axis commander: Air Combat over 0504 against 48th FG P-51, 315th TCG C-47, 61st TCG C-47: abort any aircraft before it starts? At least one must stay and fight. → Fight with all 3 aircraft
+- Allied commander (after a handoff): Air Combat over 0504 against JG 3 Fw-190d, KG 66 Ju.88, KG 76 Ju.88: abort any aircraft before it starts? At least one must stay and fight. → Fight with all 3 aircraft
+- Allied commander: Air Combat round 1: JG 3 Fw-190d (Air Combat 5, reduced) attacks. Choose the aircraft that meets it. → 48th FG P-51 (Air Combat 5, reduced)
+- Allied commander: Air Combat round 2: JG 3 Fw-190d (Air Combat 5, reduced) attacks. Choose the aircraft that meets it. → 315th TCG C-47 (Air Combat (0), reduced)
+- Allied commander: Enemy Air Barrage entering your Patrol Zone at 0504 with JG 3 Fw-190d (Air Combat 5, reduced), KG 66 Ju.88 (Air Combat (2)), KG 76 Ju.88 (Air Combat (1), reduced). Intercept with one Active Fighter? → Do not intercept
+- Axis commander (after a handoff): JG 3 Fw-190d (Air Combat 5, reduced) returns to base and becomes Inactive: choose a friendly Air Base within 74 hexes of 0504. It took off from 1407. → Original Air Base at 1407 (10 hexes)
+- Axis commander: KG 66 Ju.88 (Air Combat (1), reduced) returns to base and becomes Inactive: choose a friendly Air Base within 106 hexes of 0504. It took off from 1407. → Original Air Base at 1407 (10 hexes)
+- Axis commander: KG 76 Ju.88 (Air Combat (1), reduced) returns to base and becomes Inactive: choose a friendly Air Base within 106 hexes of 0504. It took off from 1707. → Original Air Base at 1707 (13 hexes)
+- Turn 7 / 8: Level 1 before; Barrage vs Facility 13 (11-20): die 6, 1*(4); 61st TCG C-47 loses a step (4). (552 ms)
+- screenshot 14-Turn-7-facility-result.jpg
+- screenshot 15-Turn-8-facility-draft.jpg
+- Allied commander (after a handoff): Enemy Air Barrage entering your Patrol Zone at 0504 with JG 26 Bf.109 (Air Combat 5), KG 66 Ju.88 (Air Combat (1), reduced), KG 76 Ju.88 (Air Combat (1), reduced). Intercept with one Active Fighter? → Do not intercept
+- Axis commander (after a handoff): JG 26 Bf.109 (Air Combat 5) returns to base and becomes Inactive: choose a friendly Air Base within 76 hexes of 0504. It took off from 1407. → Original Air Base at 1407 (10 hexes)
+- Axis commander: KG 66 Ju.88 (Air Combat (1), reduced) returns to base and becomes Inactive: choose a friendly Air Base within 106 hexes of 0504. It took off from 1407. → Original Air Base at 1407 (10 hexes)
+- Axis commander: KG 76 Ju.88 (Air Combat (1), reduced) returns to base and becomes Inactive: choose a friendly Air Base within 106 hexes of 0504. It took off from 1707. → Original Air Base at 1707 (13 hexes)
+- Turn 8 / 8: Level 1 before; Barrage vs Facility 13 (11-20): die 2, no effect. (550 ms)
+- screenshot 16-Turn-8-facility-result.jpg
+- PASS AIR-06: The Level of the Air Base at 0504 as each strike's preview showed it — observed: Turn 1: L2 → no roll / Turn 2: L2 → no roll / Turn 3: L2 → no roll / Turn 4: L2 → no roll / Turn 5: L2 → no roll / Turn 6: L2 → Barrage vs Facility 18 (11-20): die 4, 1*(5); 48th FG P-51 loses a step (6); 315th TCG C-47 loses a step (5); the Air Base drops to Level 1. / Turn 7: L1 → Barrage vs Facility 13 (11-20): die 6, 1*(4); 61st TCG C-47 loses a step (4). / Turn 8: L1 → Barrage vs Facility 13 (11-20): die 2, no effect.
+- PASS AIR-06: Every Level shown is 1 or more; a Level-reducing result on a Level-1 base leaves it at Level 1 — observed: levels seen 2, 2, 2, 2, 2, 2, 1, 1; a reducing result hit the base at Level 1
+- PASS AIR-06: No browser console or page error during the run — observed: 0 errors
+
+Ended at: Turn 8 / 8, Axis player turn, Movement · Barrage
+
+Console/page errors: 0
+

@@ -9,7 +9,7 @@ import {
 } from '../rules/index.js';
 import { formatHistorySummary } from './history.js';
 import { parseSessionId } from './ids.js';
-import { parseGameplaySave } from './persistence.js';
+import { GAMEPLAY_SAVE_VERSION, parseGameplaySave } from './persistence.js';
 import { migrateLegacySave } from './migration.js';
 import { GameplayFailure, GameplaySession } from './session.js';
 import type { GameplayPorts } from './ports.js';
@@ -100,7 +100,7 @@ export class DefaultGameplayEngine implements GameplayEngine {
     if (!parsedSave.ok) throw new GameplayFailure(parsedSave.error[0] ?? {
       code: 'SAVE_INVALID', message: 'Save parsing failed.', path: [],
     });
-    const save = parsedSave.value.gameplayVersion === '0.2.0' ? await migrateLegacySave(parsedSave.value) : parsedSave.value;
+    const save = parsedSave.value.gameplayVersion !== GAMEPLAY_SAVE_VERSION ? await migrateLegacySave(parsedSave.value) : parsedSave.value;
     const loadedSequence = /:(\d+)$/u.exec(String(save.sessionId));
     if (loadedSequence) this.#sequence = Math.max(this.#sequence, Number(loadedSequence[1]));
     const initial = parseGameStateJson(save.initialSnapshot);

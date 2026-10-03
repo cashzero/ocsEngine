@@ -1,4 +1,4 @@
-import type { PieceId, PlayerId } from '../core/index.js';
+import type { HexId, PieceId, PlayerId } from '../core/index.js';
 import type { OcsMode } from '../domain/piece/index.js';
 import type { ScenarioDefinition } from '../domain/scenario/index.js';
 import {
@@ -13,12 +13,12 @@ import {
   type SessionNotification,
 } from '../gameplay/index.js';
 import {
-  AIR_MISSION_KINDS, AIR_MISSION_LABELS, FUEL_COSTS, missionSegment, parseRuleActionId,
-  type AirMissionKind, type GameAction, type ProjectedCombat, type ProjectedPiece, type RuleEvent, type RuleExplanation,
+  AIR_MISSION_KINDS, AIR_MISSION_LABELS, FUEL_COSTS, distanceBetween, missionSegment, parseRuleActionId, routesForRange,
+  type AirMissionKind, type AirRoute, type GameAction, type ProjectedCombat, type ProjectedPiece, type RuleEvent, type RuleExplanation,
 } from '../rules/index.js';
 import type {
-  AirDraft, AirOverview, AirRefit, Arrival, AttackDraft, AwayReport, CombatSheet, EndStep, HandoffInfo, MoveBlocker, MovePreview, MoveRangeEntry,
-  LedgerLine, SupplyNeed, UiListener, UiSelection, UiSnapshot, UnitAction,
+  AirDraft, AirOverview, AirRefit, Arrival, AttackDraft, AwayReport, AirRebuild, BuildOption, ConstructionOverview, CombatSheet, EndStep, HandoffInfo, MoveBlocker, MovePreview, MoveRangeEntry,
+  DropPlanDraft, DropPlanView, LedgerLine, SupplyNeed, TransportCarrier, UiListener, UiSelection, UiSnapshot, UnitAction,
 } from './model.js';
 import {
   buildCombatReports, describeRecord, nominalNextStep, playerTurnTrack,
@@ -89,6 +89,25 @@ export interface UiController {
   readonly setAirTarget: (target: 'COMBAT_UNITS' | 'AIR_BASE') => void;
   readonly declareAirMission: () => Promise<void>;
   readonly cancelAirMission: () => void;
+  /** Start planning Air Base construction with the selected Engineer-Capable unit; then click a highlighted hex. */
+  readonly toggleRebuildAircraft: (eqPieceId: string, pieceId: string) => void;
+  readonly setRebuildBase: (eqPieceId: string, baseId: string) => void;
+  readonly rebuildAircraft: (eqPieceId: string) => Promise<void>;
+  readonly toggleTransportCarrier: (pieceId: string) => void;
+  readonly setTransportRoute: (pieceId: string, route: string) => void;
+  readonly toggleTransportEscort: (pieceId: string) => void;
+  readonly toggleTransportUnit: (pieceId: string) => void;
+  readonly setTransportTokens: (tokens: number) => void;
+  readonly setTransportBase: (hexId: string) => void;
+  readonly startDropPlan: () => void;
+  readonly toggleDropUnit: (pieceId: string) => void;
+  readonly setDropTurn: (turn: number) => void;
+  readonly cancelDropPlan: () => void;
+  readonly confirmDropPlan: () => Promise<void>;
+  readonly changeDropPlan: (planId: string, change: 'DELAY' | 'CANCEL') => Promise<void>;
+  readonly planConstruction: () => void;
+  readonly cancelConstruction: () => void;
+  readonly buildAirBase: (facility: 'AIR_STRIP' | 'AIR_BASE') => Promise<void>;
   readonly toggleRefitAircraft: (baseId: string, pieceId: string) => void;
   readonly refitBase: (baseId: string) => Promise<void>;
   readonly toggleAirZones: () => void;
@@ -101,6 +120,13 @@ interface AirDraftInput {
   readonly targetHexId: string | null;
   readonly target: 'COMBAT_UNITS' | 'AIR_BASE' | null;
   readonly selectedIds: readonly PieceId[];
+  /** Air Transport and Air Drop: where the cargo is loaded, which Transports carry it and how they fly, the escorts, the units and Tokens. */
+  readonly baseHexId?: string | null;
+  readonly carrierIds?: readonly PieceId[] | null;
+  readonly routes?: Readonly<Record<string, AirRoute>>;
+  readonly escortIds?: readonly PieceId[];
+  readonly unitIds?: readonly PieceId[] | null;
+  readonly tokens?: number | null;
 }
 
 const initialSelection = (): UiSelection => ({ hexId: null, pieceId: null });
@@ -186,6 +212,9 @@ class DefaultUiController implements UiController {
   #cache = new Map<string, unknown>();
   #cacheScope = '';
   #airDraft: AirDraftInput | null = null;
+  #buildDraft: { readonly engineerId: string; readonly hexId: string | null } | null = null;
+  #dropDraft: { readonly unitIds: readonly PieceId[]; readonly hexId: string | null; readonly turn: number | null } | null = null;
+  #rebuildSelection = new Map<string, { readonly aircraftIds: readonly PieceId[] | null; readonly baseId: PieceId | null }>();
   #refitSelection = new Map<string, readonly PieceId[]>();
   #showAirZones = false;
   #showTraceCoverage = false;
@@ -714,7 +743,7 @@ class DefaultUiController implements UiController {
       busy: this.#busy,
       handoffPending: this.#handoffToken !== null,
       requiredSeatId,
-      air: this.#airOverview(enabled),
+      air: this.#airOverview(enabled, ownSelected),
       handoff,
       feed: view.privacyLocked ? [] : this.#feed(seatId),
       combatReports: reports,
@@ -756,9 +785,82 @@ class DefaultUiController implements UiController {
     return this.#scenario.pieceCatalog.definitions.find(({ id }) => id === piece.definitionId);
   }
 
+  /** Air Transport and Air Drop: the cargo is part of the order, so the draft carries Transports, routes, units and Tokens. */
+  #transportDraftView(input: AirDraftInput): AirDraft {
+    const view = this.#session.getView(this.#activeSeat());
+    const bases = view.projection?.air.transport ?? [];
+    const target = input.targetHexId as HexId | null;
+    const drop = input.mission === 'AIR_DROP';
+    const name = (definitionId: string) => this.#definition({ definitionId: definitionId as never })?.name ?? 'Aircraft';
+    const reach = (hexId: string, range: number) => target === null ? [] : routesForRange(range, distanceBetween(hexId as HexId, target), input.mission);
+    const plannedHere = (hexId: string, unitIds: readonly PieceId[]) => (view.projection?.air.dropPlans ?? []).some((plan) => plan.hexId === input.targetHexId
+      && plan.turn === view.projection?.sequence.gameTurn && plan.unitIds.some((id) => unitIds.includes(id)));
+    // The bases that could fly it, the one holding the planned units or the cargo first.
+    const baseHexIds = bases.filter((entry) => entry.transports.some((plane) => reach(entry.hexId, plane.range).length > 0))
+      .map((entry) => ({ hexId: entry.hexId, rank: drop && plannedHere(entry.hexId, entry.units.map(({ id }) => id)) ? 0 : entry.units.length > 0 || entry.dumps.length > 0 ? 1 : 2 }))
+      .sort((left, right) => left.rank - right.rank).map(({ hexId }) => hexId);
+    const baseHexId = input.baseHexId && baseHexIds.includes(input.baseHexId) ? input.baseHexId : baseHexIds[0] ?? null;
+    const base = bases.find((entry) => entry.hexId === baseHexId);
+    const usable = (base?.transports ?? []).filter((plane) => reach(base!.hexId, plane.range).length > 0);
+    const carrierIds = (input.carrierIds ?? usable.slice(0, 4).map(({ id }) => id)).filter((id) => usable.some((plane) => plane.id === id));
+    const carriers: TransportCarrier[] = usable.map((plane) => {
+      const allowed = reach(base!.hexId, plane.range);
+      const chosen = input.routes?.[plane.id];
+      return {
+        id: plane.id, label: name(plane.definitionId), capacity: plane.capacity, allowed,
+        route: chosen && allowed.includes(chosen) ? chosen : allowed[0] ?? null, selected: carrierIds.includes(plane.id), integralGlider: plane.integralGlider,
+      };
+    });
+    const flying = new Set(bases.flatMap(({ transports }) => transports.map(({ id }) => String(id))));
+    const escortIds = input.escortIds ?? [];
+    const escorts = this.#pieces().filter((piece) => piece.ownerId === view.playerId && piece.role === 'AIRCRAFT' && piece.location.kind === 'ON_MAP'
+      && !piece.statuses.includes('status:air-inactive') && !flying.has(String(piece.id)))
+      .map((piece) => ({ id: piece.id, label: `${this.#definition(piece)?.name ?? 'Aircraft'} at ${printedHexLabel(piece.location.kind === 'ON_MAP' ? piece.location.hexId : '')}`, selected: escortIds.includes(piece.id) }));
+    const plans = view.projection?.air.dropPlans ?? [];
+    const units = (base?.units ?? []).map((entry) => {
+      const planned = plans.some((plan) => plan.unitIds.includes(entry.id) && plan.hexId === input.targetHexId && plan.turn === view.projection?.sequence.gameTurn);
+      return { id: entry.id, label: name(entry.definitionId), cost: entry.cost, planned };
+    });
+    const selectedUnitIds = (input.unitIds ?? (drop ? units.filter(({ planned }) => planned).map(({ id }) => id) : [])).filter((id) => units.some((unit) => unit.id === id));
+    const tokensAvailable = (base?.dumps ?? []).reduce((total, dump) => total + dump.tokens, 0);
+    const capacityHT = carriers.filter(({ selected }) => selected).reduce((total, plane) => total + plane.capacity * (plane.route?.startsWith('HALF') ? 2 : 1), 0);
+    const usedHT = units.filter(({ id }) => selectedUnitIds.includes(id)).reduce((total, unit) => total + unit.cost, 0);
+    const tokens = Math.max(0, Math.min(tokensAvailable, input.tokens ?? Math.floor((capacityHT - usedHT) / 2)));
+    const supply: { sourcePieceId: PieceId; tokens: number }[] = [];
+    let remaining = tokens;
+    for (const dump of [...(base?.dumps ?? [])]) {
+      if (remaining <= 0) break;
+      const take = Math.min(remaining, dump.tokens);
+      supply.push({ sourcePieceId: dump.id, tokens: take });
+      remaining -= take;
+    }
+    const aircraftIds = [...carrierIds, ...escortIds];
+    let action: GameAction | null = null;
+    if (input.targetHexId && base && aircraftIds.length > 0 && (selectedUnitIds.length > 0 || tokens > 0)) {
+      action = {
+        actionId: this.#actionId('air'), actorId: view.playerId, expectedRevision: this.#session.getRevision(),
+        kind: 'DECLARE_AIR_MISSION', mission: input.mission, aircraftIds, targetHexId: input.targetHexId as never, target: null,
+        cargo: {
+          baseHexId: base.hexId as never, unitIds: selectedUnitIds, supply,
+          routes: carriers.filter(({ selected, route }) => selected && route !== null).map(({ id, route }) => ({ pieceId: id, route: route! })),
+        },
+      };
+    }
+    return {
+      mission: input.mission, label: AIR_MISSION_LABELS[input.mission], targetHexId: input.targetHexId, target: null, targetOptions: [],
+      eligibleIds: [], selectedIds: [], maximum: 4,
+      transport: {
+        drop, baseHexId, baseHexIds, carriers, escorts, units: units.map((unit) => ({ ...unit, selected: selectedUnitIds.includes(unit.id) })),
+        tokensAvailable, tokens,
+      },
+      action, explanation: action ? this.#explain(action) : null,
+    };
+  }
+
   #airDraftView(): AirDraft | null {
     const input = this.#airDraft;
     if (!input) return null;
+    if (input.mission === 'AIR_TRANSPORT' || input.mission === 'AIR_DROP') return this.#transportDraftView(input);
     const byHex = this.#airOptions().get(input.mission);
     const byTarget = input.targetHexId ? byHex?.get(input.targetHexId) : undefined;
     const targetOptions = [...(byTarget?.keys() ?? [])].filter((key): key is 'COMBAT_UNITS' | 'AIR_BASE' => key !== 'HEX');
@@ -775,12 +877,205 @@ class DefaultUiController implements UiController {
     }
     return {
       mission: input.mission, label: AIR_MISSION_LABELS[input.mission], targetHexId: input.targetHexId, target: input.target,
-      targetOptions, eligibleIds: eligible, selectedIds: selected, maximum,
+      targetOptions, eligibleIds: eligible, selectedIds: selected, maximum, transport: null,
       action, explanation: action ? this.#explain(action) : null,
     };
   }
 
-  #airOverview(enabled: (kind: GameAction['kind']) => boolean): AirOverview {
+  /** Level of the Air Base or Strip in a hex now: 0 for a strip, null when there is none. */
+  #facilityLevelAt(hexId: string): number | null {
+    for (const piece of this.#pieces()) {
+      if (piece.location.kind !== 'ON_MAP' || piece.location.hexId !== hexId) continue;
+      const facility = this.#definition(piece)?.facility?.facilityTypeDefinitionId;
+      if (facility === 'facility:air-strip') return 0;
+      if (facility === 'facility:air-base') {
+        const level = piece.statusValues.find(({ statusDefinitionId }) => statusDefinitionId === 'status:air-base-level')?.value;
+        return typeof level === 'number' ? level : 1;
+      }
+    }
+    return null;
+  }
+
+  #buildLabel(facility: 'AIR_STRIP' | 'AIR_BASE', hexId: string): string {
+    const level = this.#facilityLevelAt(hexId);
+    if (facility === 'AIR_STRIP') return 'Build an Air Strip';
+    if (level === null) return 'Build a Level 1 Air Base';
+    return level === 0 ? 'Upgrade the Air Strip to a Level 1 Air Base' : `Improve the Air Base to Level ${level + 1}`;
+  }
+
+  #rebuilds(enabled: (kind: GameAction['kind']) => boolean): readonly AirRebuild[] {
+    const projected = this.#session.getView(this.#activeSeat()).projection?.air.rebuilds ?? [];
+    if (!enabled('REBUILD_AIRCRAFT')) return [];
+    const view = this.#session.getView(this.#activeSeat());
+    return projected.map((option): AirRebuild => {
+      const choice = this.#rebuildSelection.get(option.eqPieceId);
+      // Default: as many aircraft as the Eq pay for (two steps each), reduced ones here first.
+      let budget = option.equipment * 2;
+      const defaults: PieceId[] = [];
+      for (const plane of option.aircraft) if (plane.steps <= budget) { defaults.push(plane.id); budget -= plane.steps; }
+      const selectedIds = (choice?.aircraftIds ?? defaults).filter((id) => option.aircraft.some((plane) => plane.id === id));
+      const arriving = selectedIds.some((id) => option.aircraft.find((plane) => plane.id === id)?.deadPile);
+      const baseId = arriving ? (choice?.baseId && option.baseIds.includes(choice.baseId) ? choice.baseId : option.baseIds[0] ?? null) : null;
+      const steps = selectedIds.reduce((total, id) => total + (option.aircraft.find((plane) => plane.id === id)?.steps ?? 0), 0);
+      const action: GameAction | null = selectedIds.length > 0 ? {
+        actionId: this.#actionId('rebuild'), actorId: view.playerId, expectedRevision: this.#session.getRevision(),
+        kind: 'REBUILD_AIRCRAFT', eqPieceId: option.eqPieceId, hqId: option.hqId, aircraftIds: selectedIds, baseId,
+      } : null;
+      return {
+        eqPieceId: option.eqPieceId, hexId: option.hexId, equipment: option.equipment,
+        aircraft: option.aircraft.map((plane) => ({
+          id: plane.id, label: this.#definition({ definitionId: plane.definitionId })?.name ?? 'Aircraft', steps: plane.steps, deadPile: plane.deadPile,
+          selected: selectedIds.includes(plane.id),
+        })),
+        bases: option.baseIds.map((id) => {
+          const base = this.#pieces().find((piece) => piece.id === id);
+          return { id, hexId: base?.location.kind === 'ON_MAP' ? base.location.hexId : '', selected: id === baseId };
+        }),
+        action, explanation: action ? this.#explain(action) : null, cost: Math.ceil(steps / 2),
+      };
+    });
+  }
+
+  toggleRebuildAircraft = (eqPieceId: string, pieceId: string): void => {
+    const rebuild = this.getSnapshot().air.rebuilds.find((entry) => entry.eqPieceId === eqPieceId);
+    if (!rebuild) return;
+    const selected = rebuild.aircraft.filter((plane) => plane.selected).map(({ id }) => id);
+    const next = selected.includes(pieceId as PieceId) ? selected.filter((id) => id !== pieceId) : [...selected, pieceId as PieceId];
+    this.#rebuildSelection.set(eqPieceId, { aircraftIds: next, baseId: this.#rebuildSelection.get(eqPieceId)?.baseId ?? null });
+    this.#emit();
+  };
+
+  setRebuildBase = (eqPieceId: string, baseId: string): void => {
+    const current = this.#rebuildSelection.get(eqPieceId);
+    this.#rebuildSelection.set(eqPieceId, { aircraftIds: current?.aircraftIds ?? null, baseId: baseId as PieceId });
+    this.#emit();
+  };
+
+  rebuildAircraft = async (eqPieceId: string): Promise<void> => {
+    const rebuild = this.getSnapshot().air.rebuilds.find((entry) => entry.eqPieceId === eqPieceId);
+    if (!rebuild?.action || !rebuild.explanation?.allowed) return;
+    this.#rebuildSelection.delete(eqPieceId);
+    await this.#dispatch({ ...rebuild.action, actionId: this.#actionId('rebuild'), expectedRevision: this.#session.getRevision() } as GameAction,
+      `Rebuilt ${rebuild.action.kind === 'REBUILD_AIRCRAFT' ? rebuild.action.aircraftIds.length : 0} aircraft with ${rebuild.cost} Eq.`);
+  };
+
+  /** The player's Drop Plans and the one being made (14.10b), for the Aircraft Refit Phase. */
+  #dropPlanning(enabled: (kind: GameAction['kind']) => boolean): { readonly dropPlans: readonly DropPlanView[]; readonly dropDraft: DropPlanDraft | null; readonly dropPlanning: boolean } {
+    const view = this.#session.getView(this.#activeSeat());
+    const projection = view.projection;
+    const turn = projection?.sequence.gameTurn ?? 0;
+    const label = (pieceId: string) => { const piece = this.#pieces().find(({ id }) => id === pieceId); return piece ? unitLabel(this.#scenario, piece) : 'Unit'; };
+    const dropPlans = (projection?.air.dropPlans ?? []).map((plan): DropPlanView => ({
+      id: plan.id, units: plan.unitIds.map((id) => ({ id, label: label(id) })), hexId: plan.hexId, turn: plan.turn, dueNow: plan.turn === turn,
+    }));
+    const hasTransports = this.#pieces().some((piece) => piece.ownerId === view.playerId && piece.role === 'AIRCRAFT' && piece.location.kind === 'ON_MAP'
+      && this.#definition(piece)?.faces[0]?.steps.some((step) => step.ratings.some(({ ratingDefinitionId }) => ratingDefinitionId === 'rating:transport-capacity')));
+    const inRefit = projection?.sequence.phase === 'AIRCRAFT_REFIT' && projection.sequence.actingPlayerId === view.playerId;
+    const dropPlanning = inRefit === true && (hasTransports || dropPlans.length > 0);
+    const input = dropPlanning ? this.#dropDraft : null;
+    if (!input) return { dropPlans, dropDraft: null, dropPlanning };
+    const planned = new Set(dropPlans.flatMap((plan) => plan.units.map(({ id }) => String(id))));
+    const earliest = projection?.air.earliestDropTurn ?? turn;
+    const chosenTurn = input.turn ?? earliest;
+    const candidates = this.#pieces().filter((piece) => piece.ownerId === view.playerId && piece.location.kind === 'ON_MAP' && !planned.has(String(piece.id))
+      && (piece.role === 'COMBAT' || piece.role === 'HQ' || piece.role === 'ARTILLERY'))
+      .flatMap((piece) => {
+        const definition = this.#definition(piece);
+        const para = definition?.counter?.symbol === 'AIRBORNE';
+        const leg = definition?.faces.find(({ id }) => id === 'move')?.mobilityClassDefinitionId === 'mobility:leg';
+        return para || leg ? [{ id: piece.id, label: `${unitLabel(this.#scenario, piece)} at ${printedHexLabel(piece.location.kind === 'ON_MAP' ? piece.location.hexId : '')}`, para: para === true, selected: input.unitIds.includes(piece.id) }] : [];
+      }).sort((left, right) => Number(right.para) - Number(left.para) || String(left.label).localeCompare(String(right.label)));
+    const selected = candidates.filter(({ selected: on }) => on).map(({ id }) => id);
+    const action: GameAction | null = selected.length > 0 && input.hexId ? {
+      actionId: this.#actionId('plan-drop'), actorId: view.playerId, expectedRevision: this.#session.getRevision(),
+      kind: 'PLAN_AIR_DROP', unitIds: selected, hexId: input.hexId as never, turn: chosenTurn,
+    } : null;
+    void enabled;
+    return {
+      dropPlans, dropPlanning,
+      dropDraft: { candidates, hexId: input.hexId, turn: chosenTurn, earliestTurn: earliest, action, explanation: action ? this.#explain(action) : null },
+    };
+  }
+
+  startDropPlan = (): void => {
+    this.#resetIntent();
+    this.#dropDraft = { unitIds: [], hexId: null, turn: null };
+    this.#notice = 'Drop Plan: tick the units, then click the hex where they will drop.';
+    this.#emit();
+  };
+
+  toggleDropUnit = (pieceId: string): void => {
+    if (!this.#dropDraft) return;
+    const current = this.#dropDraft.unitIds;
+    this.#dropDraft = { ...this.#dropDraft, unitIds: current.includes(pieceId as PieceId) ? current.filter((id) => id !== pieceId) : [...current, pieceId as PieceId] };
+    this.#emit();
+  };
+
+  setDropTurn = (turn: number): void => {
+    if (!this.#dropDraft || !Number.isFinite(turn)) return;
+    this.#dropDraft = { ...this.#dropDraft, turn: Math.floor(turn) };
+    this.#emit();
+  };
+
+  cancelDropPlan = (): void => { this.#dropDraft = null; this.#emit(); };
+
+  confirmDropPlan = async (): Promise<void> => {
+    const draft = this.getSnapshot().air.dropDraft;
+    if (!draft?.action || !draft.explanation?.allowed) return;
+    this.#dropDraft = null;
+    await this.#dispatch({ ...draft.action, actionId: this.#actionId('plan-drop'), expectedRevision: this.#session.getRevision() } as GameAction,
+      `Drop planned at ${printedHexLabel(draft.hexId ?? '')} for turn ${draft.turn}.`);
+  };
+
+  changeDropPlan = async (planId: string, change: 'DELAY' | 'CANCEL'): Promise<void> => {
+    const plan = this.getSnapshot().air.dropPlans.find(({ id }) => id === planId);
+    if (!plan) return;
+    await this.#dispatch({
+      kind: 'UPDATE_AIR_DROP_PLAN', planId, unitIds: plan.units.map(({ id }) => id), change,
+      actionId: this.#actionId('drop-plan'), actorId: this.#session.getView(this.#activeSeat()).playerId, expectedRevision: this.#session.getRevision(),
+    } as GameAction, change === 'DELAY' ? `Drop at ${printedHexLabel(plan.hexId)} delayed to turn ${plan.turn + 1}.` : `Drop at ${printedHexLabel(plan.hexId)} cancelled.`);
+  };
+
+  #constructionOverview(enabled: (kind: GameAction['kind']) => boolean, selected: ProjectedPiece | null): ConstructionOverview | null {
+    if (!selected || !enabled('BUILD_AIR_BASE') || this.#decision()) return null;
+    const byHex = new Map<string, Extract<GameAction, { readonly kind: 'BUILD_AIR_BASE' }>[]>();
+    for (const action of this.#candidates('BUILD_AIR_BASE', selected.id, 5000)) {
+      if (action.kind === 'BUILD_AIR_BASE' && action.engineerId === selected.id) byHex.set(action.hexId, [...(byHex.get(action.hexId) ?? []), action]);
+    }
+    if (byHex.size === 0) return null;
+    const draft = this.#buildDraft && this.#buildDraft.engineerId === selected.id ? this.#buildDraft : null;
+    const hexId = draft?.hexId && byHex.has(draft.hexId) ? draft.hexId : null;
+    const options = hexId === null ? [] : (byHex.get(hexId) ?? []).map((action): BuildOption => ({
+      facility: action.facility,
+      label: this.#buildLabel(action.facility, hexId),
+      cost: action.payments.reduce((total, { tokens }) => total + tokens, 0),
+      action, explanation: this.#explain(action),
+    }));
+    return { engineerId: selected.id, hexes: [...byHex.keys()].sort(), planning: draft !== null, hexId, options };
+  }
+
+  planConstruction = (): void => {
+    const selected = this.getSnapshot().selectedPiece;
+    if (!selected || !this.getSnapshot().air.construction) return;
+    const id = selected.id;
+    this.#resetIntent();
+    this.#buildDraft = { engineerId: id, hexId: null };
+    this.#notice = 'Construction: click a highlighted hex to choose where to build.';
+    this.#emit();
+  };
+
+  cancelConstruction = (): void => { this.#buildDraft = null; this.#emit(); };
+
+  buildAirBase = async (facility: 'AIR_STRIP' | 'AIR_BASE'): Promise<void> => {
+    const option = this.getSnapshot().air.construction?.options.find((entry) => entry.facility === facility);
+    if (!option?.explanation.allowed) return;
+    const hexId = this.getSnapshot().air.construction!.hexId!;
+    this.#buildDraft = null;
+    await this.#dispatch({ ...option.action, actionId: this.#actionId('build'), expectedRevision: this.#session.getRevision() } as GameAction,
+      `${option.label} at ${printedHexLabel(hexId)} (${option.cost}T).`);
+  };
+
+  #airOverview(enabled: (kind: GameAction['kind']) => boolean, selected: ProjectedPiece | null): AirOverview {
     const view = this.#session.getView(this.#activeSeat());
     const projection = view.projection;
     const segment = projection?.sequence.segment;
@@ -789,7 +1084,8 @@ class DefaultUiController implements UiController {
     const missions = missionsEnabled
       ? AIR_MISSION_KINDS.filter((mission) => missionSegment(mission) === segment)
         .map((mission) => ({ mission, label: AIR_MISSION_LABELS[mission], available: (options.get(mission)?.size ?? 0) > 0 }))
-        .filter(({ mission, available }) => available || mission !== 'HIP_SHOOT')
+        // Hip Shoots and the Transport missions are shown only when they can be flown now.
+        .filter(({ mission, available }) => available || !['HIP_SHOOT', 'AIR_TRANSPORT', 'AIR_DROP'].includes(mission))
       : [];
     const draft = missionsEnabled ? this.#airDraftView() : null;
     const refits: AirRefit[] = [];
@@ -804,18 +1100,35 @@ class DefaultUiController implements UiController {
         const sources = this.#candidates('REFIT_AIRCRAFT', null, 50).flatMap((action) => action.kind === 'REFIT_AIRCRAFT' && action.baseId === candidate.baseId ? [action.sourcePieceId] : []);
         const selected = (this.#refitSelection.get(candidate.baseId) ?? candidate.aircraftIds).filter((id) => inactive.includes(id));
         const action: GameAction | null = selected.length > 0 ? { ...candidate, actionId: this.#actionId('refit'), aircraftIds: selected } : null;
-        const level = base.statusValues.find(({ statusDefinitionId }) => statusDefinitionId === 'status:air-base-level')?.value;
+        const facts = projection?.air.bases.find(({ id }) => id === candidate.baseId);
         refits.push({
-          baseId: candidate.baseId, hexId, capacity: 2 * (typeof level === 'number' ? level : 1),
+          baseId: candidate.baseId, hexId, capacity: facts?.refitCapacity ?? 2,
           inactiveIds: inactive, selectedIds: selected, sourceIds: sources, action, explanation: action ? this.#explain(action) : null,
+          level: facts?.level ?? 1, active: facts?.active ?? 0, activeLimit: facts?.activeLimit ?? 0, zocBlocked: facts?.refitBlockedByZoc ?? false,
+        });
+      }
+    }
+    // A base with Inactive aircraft that cannot refit (an enemy ZOC, or no supply in reach) is still listed, with why (15.1C).
+    if (projection?.sequence.phase === 'AIRCRAFT_REFIT' && projection.sequence.actingPlayerId === view.playerId) {
+      for (const facts of projection.air.bases) {
+        if (facts.inactive === 0 || refits.some(({ baseId }) => baseId === facts.id)) continue;
+        const inactive = this.#pieces().filter((piece) => piece.ownerId === view.playerId && piece.location.kind === 'ON_MAP'
+          && piece.location.hexId === facts.hexId && piece.statuses.includes('status:air-inactive')).map(({ id }) => id);
+        refits.push({
+          baseId: facts.id, hexId: facts.hexId, capacity: facts.refitCapacity, inactiveIds: inactive, selectedIds: [], sourceIds: [], action: null, explanation: null,
+          level: facts.level, active: facts.active, activeLimit: facts.activeLimit, zocBlocked: facts.refitBlockedByZoc,
         });
       }
     }
     const zones = projection?.air.patrolZones ?? [];
+    const construction = this.#constructionOverview(enabled, selected);
     return {
+      ...this.#dropPlanning(enabled),
+      rebuilds: this.#rebuilds(enabled),
       missions, draft,
       targetHexes: draft ? [...(options.get(draft.mission)?.keys() ?? [])] : [],
       refits,
+      construction,
       patrolZones: {
         own: zones.find(({ playerId }) => playerId === view.playerId)?.hexIds ?? [],
         enemy: zones.filter(({ playerId }) => playerId !== view.playerId).flatMap(({ hexIds }) => hexIds),
@@ -840,10 +1153,47 @@ class DefaultUiController implements UiController {
     const target = byTarget.has('COMBAT_UNITS') ? 'COMBAT_UNITS' as const : byTarget.has('AIR_BASE') ? 'AIR_BASE' as const : null;
     const eligible = byTarget.get(target ?? 'HEX') ?? [];
     const maximum = draft.mission === 'BARRAGE' || draft.mission === 'TRAINBUSTING' || draft.mission === 'BASE_TRANSFER' ? 4 : 1;
-    this.#airDraft = { ...draft, targetHexId: hexId, target, selectedIds: eligible.slice(0, maximum) };
+    this.#airDraft = draft.mission === 'AIR_TRANSPORT' || draft.mission === 'AIR_DROP'
+      ? { mission: draft.mission, targetHexId: hexId, target: null, selectedIds: [] }
+      : { ...draft, targetHexId: hexId, target, selectedIds: eligible.slice(0, maximum) };
     this.#notice = `${AIR_MISSION_LABELS[draft.mission]} on ${printedHexLabel(hexId)}: choose the aircraft, check the Flak and table, then fly.`;
     this.#selection = { ...this.#selection, hexId };
   }
+
+  #patchTransport(patch: Partial<AirDraftInput>): void {
+    if (!this.#airDraft) return;
+    this.#airDraft = { ...this.#airDraft, ...patch };
+    this.#emit();
+  }
+
+  toggleTransportCarrier = (pieceId: string): void => {
+    const transport = this.#airDraftView()?.transport;
+    if (!transport) return;
+    const selected = transport.carriers.filter(({ selected: on }) => on).map(({ id }) => id);
+    this.#patchTransport({ carrierIds: selected.includes(pieceId as PieceId) ? selected.filter((id) => id !== pieceId) : [...selected, pieceId as PieceId].slice(0, 4), tokens: null });
+  };
+
+  setTransportRoute = (pieceId: string, route: string): void => {
+    this.#patchTransport({ routes: { ...(this.#airDraft?.routes ?? {}), [pieceId]: route as AirRoute }, tokens: null });
+  };
+
+  toggleTransportEscort = (pieceId: string): void => {
+    const current = this.#airDraft?.escortIds ?? [];
+    this.#patchTransport({ escortIds: current.includes(pieceId as PieceId) ? current.filter((id) => id !== pieceId) : [...current, pieceId as PieceId] });
+  };
+
+  toggleTransportUnit = (pieceId: string): void => {
+    const transport = this.#airDraftView()?.transport;
+    if (!transport) return;
+    const selected = transport.units.filter(({ selected: on }) => on).map(({ id }) => id);
+    this.#patchTransport({ unitIds: selected.includes(pieceId as PieceId) ? selected.filter((id) => id !== pieceId) : [...selected, pieceId as PieceId], tokens: null });
+  };
+
+  setTransportTokens = (tokens: number): void => { this.#patchTransport({ tokens: Number.isFinite(tokens) ? Math.max(0, Math.floor(tokens)) : 0 }); };
+
+  setTransportBase = (hexId: string): void => {
+    this.#patchTransport({ baseHexId: hexId, carrierIds: null, routes: {}, unitIds: null, tokens: null });
+  };
 
   toggleAirAircraft = (pieceId: string): void => {
     const draft = this.#airDraftView();
@@ -965,7 +1315,15 @@ class DefaultUiController implements UiController {
       }
       if (enabled('FORM_EXTENDER')) add('TRANSPORT', 'Form an Extender here (half MA; a trace supply source, 20 Truck MP back)', this.#candidates('FORM_EXTENDER', piece.id)[0]);
       if (enabled('DISSOLVE_EXTENDER')) add('TRANSPORT', 'Flip the Extender back to trucks (half MA)', this.#candidates('DISSOLVE_EXTENDER', piece.id)[0]);
-      if (enabled('REDUCE_AIR_BASE')) add('AIR', 'Reduce this Air Base one Level with 1 RE of Combat Mode units here (they do not move)', this.#candidates('REDUCE_AIR_BASE', piece.id)[0]);
+      if (enabled('REDUCE_AIR_BASE')) {
+        add('AIR', 'Reduce this Air Base one Level with 1 RE of Combat Mode units here (they do not move)', this.#candidates('REDUCE_AIR_BASE', piece.id).find((action) => action.kind === 'REDUCE_AIR_BASE' && !action.engineerId));
+        // 15.4, 13.8d: an Engineer-Capable unit does the same work for any Level 2+ base within its 2-hex radius, at no SP cost.
+        for (const action of this.#candidates('REDUCE_AIR_BASE', piece.id)) {
+          if (action.kind !== 'REDUCE_AIR_BASE' || action.engineerId !== piece.id) continue;
+          const base = this.#pieces().find(({ id }) => id === action.baseId);
+          add('AIR', `Reduce the Air Base at ${printedHexLabel(base?.location.kind === 'ON_MAP' ? base.location.hexId : '')} one Level (engineer work, no SP; this unit cannot move)`, action);
+        }
+      }
       if (enabled('COMBINE_AIRCRAFT')) add('AIR', 'Combine with the other reduced aircraft of the same type here', this.#candidates('COMBINE_AIRCRAFT', piece.id)[0]);
       return distinctLabels(actions);
     });
@@ -1040,7 +1398,7 @@ class DefaultUiController implements UiController {
     return () => this.#listeners.delete(listener);
   };
 
-  #resetIntent(): void { this.#destination = null; this.#draft = null; this.#airDraft = null; }
+  #resetIntent(): void { this.#destination = null; this.#draft = null; this.#airDraft = null; this.#buildDraft = null; this.#dropDraft = null; }
 
   selectPiece = (pieceId: string | null): void => {
     const piece = this.#pieces().find(({ id }) => id === pieceId);
@@ -1091,6 +1449,19 @@ class DefaultUiController implements UiController {
     if (snapshot.decision && snapshot.decisionHexes.includes(hexId)) {
       const option = snapshot.decision.options.find((candidate) => candidate.hexId === hexId);
       if (option) { await this.respondToDecision(option.id); return; }
+    }
+    if (this.#dropDraft) {
+      // A drop may be planned on any hex (14.10b): the click picks it.
+      this.#dropDraft = { ...this.#dropDraft, hexId };
+      this.#selection = { ...this.#selection, hexId };
+      this.#emit();
+      return;
+    }
+    if (this.#buildDraft && snapshot.air.construction?.hexes.includes(hexId)) {
+      this.#buildDraft = { ...this.#buildDraft, hexId };
+      this.#selection = { ...this.#selection, hexId };
+      this.#emit();
+      return;
     }
     if (this.#airDraft && snapshot.air.targetHexes.includes(hexId)) {
       this.#chooseAirTarget(hexId);

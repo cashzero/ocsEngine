@@ -1,0 +1,64 @@
+{
+  "title": "AIR-06 Facility Table floor at Level 1 (rules seed 5104, target 0504)",
+  "final": {
+    "turn": "Turn 8 / 8",
+    "player": "Axis player turn",
+    "phase": "Movement · Barrage",
+    "revision": null
+  },
+  "rows": [
+    {
+      "id": "AIR-06",
+      "expectation": "The Level of the Air Base at 0504 as each strike's preview showed it",
+      "observed": "Turn 1: L2 → no roll / Turn 2: L2 → no roll / Turn 3: L2 → no roll / Turn 4: L2 → no roll / Turn 5: L2 → no roll / Turn 6: L2 → Barrage vs Facility 18 (11-20): die 4, 1*(5); 48th FG P-51 loses a step (6); 315th TCG C-47 loses a step (5); the Air Base drops to Level 1. / Turn 7: L1 → Barrage vs Facility 13 (11-20): die 6, 1*(4); 61st TCG C-47 loses a step (4). / Turn 8: L1 → Barrage vs Facility 13 (11-20): die 2, no effect.",
+      "status": "PASS"
+    },
+    {
+      "id": "AIR-06",
+      "expectation": "Every Level shown is 1 or more; a Level-reducing result on a Level-1 base leaves it at Level 1",
+      "observed": "levels seen 2, 2, 2, 2, 2, 2, 1, 1; a reducing result hit the base at Level 1",
+      "status": "PASS"
+    },
+    {
+      "id": "AIR-06",
+      "expectation": "No browser console or page error during the run",
+      "observed": "0 errors",
+      "status": "PASS"
+    }
+  ],
+  "timings": [
+    {
+      "label": "Turn 1 / 8 Facility barrage",
+      "elapsed": 547
+    },
+    {
+      "label": "Turn 2 / 8 Facility barrage",
+      "elapsed": 549
+    },
+    {
+      "label": "Turn 3 / 8 Facility barrage",
+      "elapsed": 541
+    },
+    {
+      "label": "Turn 4 / 8 Facility barrage",
+      "elapsed": 543
+    },
+    {
+      "label": "Turn 5 / 8 Facility barrage",
+      "elapsed": 542
+    },
+    {
+      "label": "Turn 6 / 8 Facility barrage",
+      "elapsed": 541
+    },
+    {
+      "label": "Turn 7 / 8 Facility barrage",
+      "elapsed": 552
+    },
+    {
+      "label": "Turn 8 / 8 Facility barrage",
+      "elapsed": 550
+    }
+  ],
+  "errors": []
+}

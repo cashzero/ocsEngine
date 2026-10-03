@@ -11,9 +11,13 @@ export interface AirCounterSource {
   readonly gpid: number;
   readonly side: 'ALLIED' | 'AXIS';
   readonly designation: string;
-  readonly type: 'F' | 'T';
+  readonly type: 'F' | 'T' | 'TPT';
   readonly parenthesized: boolean;
   readonly range: number;
+  /** Transport capacity of the full and reduced sides in half-Tokens (1T = 2): C-47 1T / 1/2T (14.9a). Transports only. */
+  readonly capacity?: readonly [number, number];
+  /** 14.10f: the counter contains a glider the Transport always tows. */
+  readonly integralGlider?: boolean;
   readonly full: readonly [number, number];
   readonly reduced: readonly [number, number];
   readonly front: string;
@@ -39,6 +43,11 @@ export const AIR_COUNTER_CORPUS: readonly AirCounterSource[] = Object.freeze([
   { entryName: 'Ge Fw-190f 3-7', gpid: 1289, side: 'AXIS', designation: 'Fw-190f', type: 'F', parenthesized: false, range: 64, full: [3, 7], reduced: [2, 4], front: 'BTR S06 R04 C10.png', frontSha256: 'f6ed419a6aa28ab25db82654e46230025be0a9bc17266873158d59daaa2432bd', back: 'BTR S06 R04 C10B.png', backSha256: '1469ec6a464b4003eb6de56b3a1a8fa45623e54158cedd377eb861025cab0360' },
   { entryName: 'Ge Ju.88 (2)-12', gpid: 1292, side: 'AXIS', designation: 'Ju.88', type: 'T', parenthesized: true, range: 106, full: [2, 12], reduced: [1, 6], front: 'BTR S06 R06 C01.png', frontSha256: '9ffe3ecb81240a2b33c085d36b8c2b1df59be1e719c1be9dd97c826c98c12a72', back: 'BTR S06 R06 C01B.png', backSha256: '6c41c7923f9b660d535f9e47ecd93ff25e22a4190d3fed83e555c18cafd3683f' },
   { entryName: 'Ge Ju.88 (2)-9', gpid: 1293, side: 'AXIS', designation: 'Ju.88', type: 'T', parenthesized: true, range: 106, full: [2, 9], reduced: [1, 5], front: 'BTR S06 R06 C02.png', frontSha256: '2378a64507ec77bcd85668d00d17162e3ccb96b1b8b1293c3c268b2cf5041cf1', back: 'BTR S06 R06 C02B.png', backSha256: '9c28ca9062425d16496a301d46338b9ee2622972e26f01a60abd737c9db429da' },
+  // Transports (14.9): counters read from the module faces; Air Combat Rating (0) in parentheses, no Barrage Strength.
+  { entryName: 'US C-47', gpid: 493, side: 'ALLIED', designation: 'C-47', type: 'TPT', parenthesized: true, range: 229, capacity: [2, 1], full: [0, 0], reduced: [0, 0], front: 'BTR S01 R11 C11.png', frontSha256: '677851604c282bf78829ea5f478b3bac3dc3c7a9918215876f9a203f1d8a43c9', back: 'BTR S01 R11 C11B.png', backSha256: '46351f1761c665a71a36eaad7be34af6e8a0a04b6d948e80da1d544a9b41f974' },
+  // Integral glider (14.10f): 2T full / 1T reduced, all carried on the glider.
+  { entryName: 'US C-47 + Gldr', gpid: 498, side: 'ALLIED', designation: 'C-47+Gldr', type: 'TPT', parenthesized: true, range: 229, capacity: [4, 2], integralGlider: true, full: [0, 0], reduced: [0, 0], front: 'BTR S01 R12 C11.png', frontSha256: 'c732fc90eb167c29cd2421f7b706211bed1de1242679cbc4c4acd82640382f47', back: 'BTR S01 R12 C11B.png', backSha256: '81c8391cce385c313d668daf043080e08142980443acd49324c5f9548877e34e' },
+  { entryName: 'Ge Ju.52', gpid: 1279, side: 'AXIS', designation: 'Ju.52', type: 'TPT', parenthesized: true, range: 62, capacity: [2, 1], full: [0, 0], reduced: [0, 0], front: 'BTR S06 R01 C01.png', frontSha256: '17fa4f172f471854cd8fdfad34ee10d7f936608e22b96dfc1ba41741a4777dd4', back: 'BTR S06 R01 C01B.png', backSha256: '18d26d48073a073c03dcb78f32d9a8b2ce35da062a67d11b4f94dbbb5cf71076' },
 ]);
 
 /** Air Base counter (`Airbase` PieceSlot, Level 1-3 faces). */

@@ -79,7 +79,9 @@ export const moverViolations = (state: GameState, actorId: PlayerId, piece: Piec
       : violation('EXPLOITATION_REQUIRES_EXPLOIT_OR_RESERVE', ['pieceId'], 'Only Exploit Mode units and released Reserves can move in the Exploitation Phase.', '11.0a'));
   }
   const usage = usageOf(state, piece);
-  if (usage.moved && state.currentMoverId !== piece.id) {
+  if (state.air.builderIds.includes(piece.id)) {
+    issues.push(violation('ENGINEER_BUILT', ['pieceId'], 'An Engineer-Capable unit that performed construction cannot move in the same phase.', '13.8d'));
+  } else if (usage.moved && state.currentMoverId !== piece.id) {
     issues.push(violation('MOVEMENT_ALREADY_FINISHED', ['pieceId'], 'This unit finished moving when another unit began to move.', '6.1g'));
   }
   if (usage.negationLocked) issues.push(violation('NEGATING_UNIT_LOCKED', ['pieceId'], 'This unit negated an enemy ZOC for another unit and cannot spend MP this phase.', '4.5b'));

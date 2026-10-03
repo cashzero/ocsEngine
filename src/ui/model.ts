@@ -4,6 +4,7 @@ import type { ScenarioDefinition } from '../domain/scenario/index.js';
 import type {
   ActionFamily,
   AirMissionKind,
+  AirRoute,
   GameAction,
   ProjectedPiece,
   RuleExplanation,
@@ -49,6 +50,33 @@ export interface AttackDraft {
   readonly explanation: RuleExplanation | null;
 }
 
+/** A Transport that may carry the cargo, and how it is set to fly (14.9e). */
+export interface TransportCarrier {
+  readonly id: PieceId;
+  readonly label: string;
+  /** What it carries flown normally, in half-Tokens. */
+  readonly capacity: number;
+  readonly allowed: readonly AirRoute[];
+  readonly route: AirRoute | null;
+  readonly selected: boolean;
+  readonly integralGlider: boolean;
+}
+
+/** The load and Transports of an Air Transport or Air Drop being planned (14.9, 14.10). */
+export interface TransportDraft {
+  readonly drop: boolean;
+  readonly baseHexId: string | null;
+  /** Air Bases with a Transport that can reach the mission hex. */
+  readonly baseHexIds: readonly string[];
+  readonly carriers: readonly TransportCarrier[];
+  /** Other Active aircraft that may fly along (14.2e). */
+  readonly escorts: readonly { readonly id: PieceId; readonly label: string; readonly selected: boolean }[];
+  /** Units at the Air Base that qualify (14.9c) and what each costs in half-Tokens. */
+  readonly units: readonly { readonly id: PieceId; readonly label: string; readonly cost: number; readonly selected: boolean; readonly planned: boolean }[];
+  readonly tokensAvailable: number;
+  readonly tokens: number;
+}
+
 /** An air mission being planned: mission type, then target hex, then aircraft (14.2f A-B). */
 export interface AirDraft {
   readonly mission: AirMissionKind;
@@ -61,6 +89,28 @@ export interface AirDraft {
   readonly selectedIds: readonly PieceId[];
   /** Most aircraft this mission may use: four, or one for sweeps, hip shoots and transfers as offered. */
   readonly maximum: number;
+  /** Cargo and Transports, for Air Transport and Air Drop only. */
+  readonly transport: TransportDraft | null;
+  readonly action: GameAction | null;
+  readonly explanation: RuleExplanation | null;
+}
+
+/** A Drop Plan of the player (14.10b). */
+export interface DropPlanView {
+  readonly id: string;
+  readonly units: readonly { readonly id: PieceId; readonly label: string }[];
+  readonly hexId: string;
+  readonly turn: number;
+  /** The plan's turn is the current Game Turn: the drop may be flown in this Movement Phase. */
+  readonly dueNow: boolean;
+}
+
+/** A Drop Plan being made in the Aircraft Refit Phase. */
+export interface DropPlanDraft {
+  readonly candidates: readonly { readonly id: PieceId; readonly label: string; readonly para: boolean; readonly selected: boolean }[];
+  readonly hexId: string | null;
+  readonly turn: number;
+  readonly earliestTurn: number;
   readonly action: GameAction | null;
   readonly explanation: RuleExplanation | null;
 }
@@ -75,6 +125,49 @@ export interface AirRefit {
   readonly sourceIds: readonly PieceId[];
   readonly action: GameAction | null;
   readonly explanation: RuleExplanation | null;
+  /** 0 for an Air Strip. */
+  readonly level: number;
+  /** Active aircraft at the base now, and how many it may hold (14.2a). */
+  readonly active: number;
+  readonly activeLimit: number;
+  /** In an un-negated enemy ZOC with no friendly combat unit: the base cannot refit (15.1C). */
+  readonly zocBlocked: boolean;
+}
+
+/** One Eq counter that can rebuild aircraft in the Reinforcement Phase (13.5f). */
+export interface AirRebuild {
+  readonly eqPieceId: PieceId;
+  readonly hexId: string;
+  readonly equipment: number;
+  /** Aircraft the Eq could rebuild: the Dead Pile (two steps each) and reduced aircraft stacked with the Eq (one step each). */
+  readonly aircraft: readonly { readonly id: PieceId; readonly label: string; readonly steps: number; readonly deadPile: boolean; readonly selected: boolean }[];
+  /** Air Bases a Dead Pile aircraft may arrive at, with their hex. */
+  readonly bases: readonly { readonly id: PieceId; readonly hexId: string; readonly selected: boolean }[];
+  readonly action: GameAction | null;
+  readonly explanation: RuleExplanation | null;
+  /** Eq the current selection costs (never partly used, 13.5d). */
+  readonly cost: number;
+}
+
+/** One way an Engineer-Capable unit can build or improve in the chosen hex (13.8d, 15.2, 15.3). */
+export interface BuildOption {
+  readonly facility: 'AIR_STRIP' | 'AIR_BASE';
+  readonly label: string;
+  /** Tokens of supply it costs. */
+  readonly cost: number;
+  readonly action: GameAction;
+  readonly explanation: RuleExplanation;
+}
+
+/** Air Base construction by the selected Engineer-Capable unit: where it can build, and the hex being planned. */
+export interface ConstructionOverview {
+  readonly engineerId: PieceId;
+  /** Hexes within the unit's 2-hex radius where something can be built now. */
+  readonly hexes: readonly string[];
+  /** True while the player is planning: the hexes are highlighted and a click picks one. */
+  readonly planning: boolean;
+  readonly hexId: string | null;
+  readonly options: readonly BuildOption[];
 }
 
 export interface AirOverview {
@@ -84,6 +177,15 @@ export interface AirOverview {
   /** Hexes the planned mission can target (highlighted on the map). */
   readonly targetHexes: readonly string[];
   readonly refits: readonly AirRefit[];
+  /** Planned Air Drops of combat units (14.10b). */
+  readonly dropPlans: readonly DropPlanView[];
+  readonly dropDraft: DropPlanDraft | null;
+  /** The player has Transports or plans, so the Aircraft Refit Phase offers Drop Plans. */
+  readonly dropPlanning: boolean;
+  /** Eq counters of the player that can rebuild aircraft now (13.5f). */
+  readonly rebuilds: readonly AirRebuild[];
+  /** Construction offered to the selected Engineer-Capable unit, if any. */
+  readonly construction: ConstructionOverview | null;
   readonly patrolZones: { readonly own: readonly string[]; readonly enemy: readonly string[] };
   readonly trainbusting: readonly { readonly hexId: string; readonly own: boolean }[];
   readonly showZones: boolean;

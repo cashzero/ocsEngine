@@ -26,6 +26,13 @@ export const ALLIED_AIRBORNE_GPID = 900_002;
 export const ALLIED_AIRBORNE_DIVISION_GPIDS: Readonly<Record<string, number>> = {
   '82.Abn': ALLIED_AIRBORNE_GPID, '101.Abn': 900_003, '17.Abn': 900_004, '13.Abn': 900_005,
 };
+/**
+ * Paratroop battalions for Air Drops (14.10). TODO(para-gpid): these two counters are generator-defined (a battalion, 1/2 RE,
+ * leg on both faces: Move Mode MA 5, so its air transport equivalence is 1T, 14.9a/4.7b), not transcribed from a BTR counter,
+ * and their keys are not BTR GPIDs. Closing evidence: the BTR battalion counters transcribed into this corpus.
+ */
+export const ALLIED_PARA_GPID = 900_006;
+export const AXIS_PARA_GPID = 900_007;
 const airborneDivision = (moveStrength: number, regiments: number, combatStrength: number): SourceCounter =>
   basic('AIRBORNE', 'XX', 'OTHER', [combatStrength, 4, 3, 0], [moveStrength, 4, 5, 0], ['leg', 'leg'], regiments, regiments);
 export const COUNTER_CORPUS: Readonly<Record<number, SourceCounter>> = {
@@ -49,6 +56,8 @@ export const COUNTER_CORPUS: Readonly<Record<number, SourceCounter>> = {
   900_003: airborneDivision(10, 4, 18), // 101.Abn: 506 5/3, 502 5/3, 401 4/2, 327 4/2
   900_004: airborneDivision(7, 3, 13), // 17.Abn: 513 5/3, 194 4/2, 193 4/2
   900_005: airborneDivision(7, 3, 13), // 13.Abn: 515 5/3, 517 4/2, 326 4/2
+  [ALLIED_PARA_GPID]: basic('AIRBORNE', 'II', 'OTHER', [3,4,3,0], [2,4,5,0], ['leg','leg'], 1, .5),
+  [AXIS_PARA_GPID]: basic('AIRBORNE', 'II', 'OTHER', [3,3,3,0], [2,3,5,0], ['leg','leg'], 1, .5),
   806: basic('INFANTRY', 'III', 'OTHER', [7,4,3,0], [4,4,14,0], ['leg','truck'], 1, 1),
   // US 159 Inf Rgt: images/BTR S02 R06 C19.png (4-3-3) and C19B.png (2-3-14).
   408: basic('INFANTRY', 'III', 'OTHER', [4,3,3,0], [2,3,14,0], ['leg','truck'], 1, 1),
