@@ -320,6 +320,8 @@ small, .supporting { font-size: 14px; color: var(--muted); }
 .counter .counter-number, .unit-counter .counter-number { font-size: 31px; font-stretch: condensed; }
 .counter .counter-ar, .unit-counter .counter-ar { font-size: 24px; }
 .counter .counter-range, .unit-counter .counter-range { font-size: 17px; }
+/* A formation HQ's symbol box prints the formation's short name instead of an icon. */
+.counter .hq-formation, .unit-counter .hq-formation { font-size: 17px; stroke: none; }
 .counter .mobility-leg, .unit-counter .mobility-leg { fill: #fff; paint-order: stroke; stroke: #333; stroke-width: .7; }
 .counter .mobility-tracked, .unit-counter .mobility-tracked { fill: #c11d20; }
 .tracked-box, .barrage-box, .re-dot { fill: #f5df20; }
