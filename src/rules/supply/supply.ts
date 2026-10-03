@@ -305,6 +305,36 @@ export const validateFormationTraceChoice = (
   return issues;
 };
 
+/**
+ * Where the owner's trace supply reaches, for the map overlay: every Hex where `piece` would make its trace
+ * (its divisional HQ limit, 13.1d, and its formation's common route, 12.6f, apply), or where any friendly
+ * unit would when `piece` is null. Draw is always counted in Truck MP, so a unit's own MA does not matter.
+ */
+export const queryTraceCoverage = (state: GameState, actorId: PlayerId, pieceId: PieceId | null): RuleQueryResult<readonly HexId[]> => {
+  const piece = pieceId === null ? null : pieceById(state, pieceId);
+  if (pieceId !== null && (!piece || piece.ownerId !== actorId)) {
+    return {
+      allowed: false, value: [],
+      reasons: [{ code: 'SUPPLY_CONSUMER_UNAVAILABLE', allowed: false, message: 'Choose one of your own units.', rule: '12.6' }],
+      facts: [], dependencies: [],
+    };
+  }
+  const formationId = piece ? formationOf(state, piece) : null;
+  const common = piece && isMultiUnitFormation(state, formationId) ? formationRoute(state, actorId, formationId!) : undefined;
+  const covered = state.scenario.mapDefinition.hexes.map(({ id }) => id).filter((hexId) => {
+    if (!piece) return traceSupplyAvailableAt(state, actorId, hexId);
+    const routes = traceRoutesFor(state, piece, hexId);
+    return common === undefined ? routes.length > 0 : common !== null && routes.includes(common);
+  });
+  return {
+    allowed: true,
+    value: covered,
+    reasons: [{ code: 'TRACE_COVERAGE', allowed: true, message: 'Hexes where trace supply reaches.', rule: '12.6' }],
+    facts: [],
+    dependencies: [{ aggregate: 'PIECE', revision: state.pieceState.revision, key: `supply:coverage:${pieceId ?? 'any'}` }],
+  };
+};
+
 /** 12.6c: 1T feeds up to 2 RE; fractions round up. */
 export const eatOffMapCost = (reTicks: number): number => Math.max(1, Math.ceil(reTicks / 8));
 
