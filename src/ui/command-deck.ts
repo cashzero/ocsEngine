@@ -85,7 +85,7 @@ const supplyDetails = (snapshot: UiSnapshot, piece: ProjectedPiece): string => {
       .flatMap(({ pieces }) => pieces).reduce((total, cargo) => total + (cargo.resourceQuantity ?? 0), 0);
     parts.push(piece.currentFaceId === 'extender' ? 'Extender (trace supply source)' : `${points} truck point${points === 1 ? '' : 's'} · load ${load}/${Number(points) * 4}T`);
   }
-  if (definition?.family === 'RESOURCE') parts.push(`${piece.resourceQuantity ?? 0}T (${(piece.resourceQuantity ?? 0) / 4} SP)`);
+  if (definition?.family === 'RESOURCE') parts.push(piece.resourceQuantity == null ? '? SP (size hidden)' : `${piece.resourceQuantity}T (${piece.resourceQuantity / 4} SP)`);
   return parts.join(' · ');
 };
 

@@ -176,7 +176,8 @@ export const counterSvgBody = (view: CounterViewModel): string => {
   const strengthText = strength == null ? '' : c.defensiveOnly ? `(${strength})` : strength;
   let ratings = '';
   if (c.kind === 'HQ') ratings = text(50,84,`${view.step?.range}–${ma}`,'counter-number');
-  else if (c.kind === 'SUPPLY') ratings = text(50,84,`${(view.quantity ?? 0) / 4} SP`,'counter-number');
+  // An enemy dump's size is hidden (null in the projection): print "? SP" (an emptied dump is removed, so 0 is never real).
+  else if (c.kind === 'SUPPLY') ratings = text(50,84,`${view.quantity == null ? '?' : view.quantity / 4} SP`,'counter-number');
   else {
     ratings = (c.kind === 'ARTILLERY' ? '<rect class="barrage-box" x="6" y="59" width="34" height="30"/>' : '')
       + text(24,85,c.kind === 'ARTILLERY' ? view.barrage : c.kind === 'TRANSPORT' ? view.transportPoints : strengthText,'counter-number')
