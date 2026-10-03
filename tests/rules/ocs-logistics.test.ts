@@ -248,6 +248,25 @@ describe('OCS 4.3 internal stocks, trace supply and attrition (12.6, 12.8, 12.10
     }
     expect(ruleEngine.queryTraceCoverage(state, AXIS, U.alTrk).allowed).toBe(false);
   });
+
+  it('shows a selected HQ where it can trace for itself, and its regiments where the HQ throws (12.3b, 12.6)', () => {
+    const at = (placements: Parameters<typeof buildGeneratedRuleState>[0]) => atStep(buildGeneratedRuleState(placements), 'SUPPLY', 'NONE', ALLIED);
+    const coverage = (state: GameState, id: PieceId | null) => new Set(ruleEngine.queryTraceCoverage(state, ALLIED, id).value);
+    // With the HQ cut off at 8,6, "any unit" coverage is the bare draw area around the sources.
+    const drawArea = coverage(at({ [U.alHq]: ['8,6', 'COMBAT', 'combat'] }), null);
+    const connected = at({ [U.alHq]: ['-1,6', 'COMBAT', 'combat'], [U.alTrk]: ['6,6', 'COMBAT', 'combat'] });
+    const throwArea = coverage(connected, null);
+    expect(throwArea.size).toBeGreaterThan(drawArea.size);
+    // The HQ standing elsewhere would draw there; it does not throw to itself from where it stands now.
+    expect(coverage(connected, U.alHq)).toEqual(drawArea);
+    // Its regiment traces through the HQ's throw, so it sees the throw range.
+    expect(coverage(connected, U.alTrk)).toEqual(throwArea);
+    expect(coverage(connected, U.alTrk).has('6,6')).toBe(true);
+    // A cut-off formation has no common route yet, so the HQ still sees where it could get back into trace.
+    const cutOff = at({ [U.alHq]: ['8,6', 'COMBAT', 'combat'] });
+    expect(pieceHasTrace(cutOff, piece(cutOff, U.alHq))).toBe(false);
+    expect(coverage(cutOff, U.alHq)).toEqual(drawArea);
+  });
 });
 
 describe('OCS 4.3 breakout (12.8e)', () => {

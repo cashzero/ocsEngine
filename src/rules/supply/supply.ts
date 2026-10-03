@@ -120,7 +120,9 @@ const routesFrom = (
   for (const hq of throwingHqs(state, playerId)) {
     if (!hqMaySupply(state, hq, consumer)) continue;
     const hqDraw = supplyPathCosts(state, playerId, originHexId, hqMobility(state, hq), state.configuration.supplyDrawRangeTicks);
-    if (reaches(hqDraw, hexOf(hq)!) && hqThrowReaches(state, hq, hexId)) routes.push({ method: 'HQ', hqId: hq.id });
+    // An HQ supplying itself stands at `hexId`: it draws there and has nothing to throw, wherever it stands now.
+    const supplied = consumer?.id === hq.id ? reaches(hqDraw, hexId) : reaches(hqDraw, hexOf(hq)!) && hqThrowReaches(state, hq, hexId);
+    if (supplied) routes.push({ method: 'HQ', hqId: hq.id });
   }
   return routes;
 };
@@ -309,6 +311,7 @@ export const validateFormationTraceChoice = (
  * Where the owner's trace supply reaches, for the map overlay: every Hex where `piece` would make its trace
  * (its divisional HQ limit, 13.1d, and its formation's common route, 12.6f, apply), or where any friendly
  * unit would when `piece` is null. Draw is always counted in Truck MP, so a unit's own MA does not matter.
+ * Other HQs throw from where they stand; a selected HQ only draws for itself, so it never shows its own throw.
  */
 export const queryTraceCoverage = (state: GameState, actorId: PlayerId, pieceId: PieceId | null): RuleQueryResult<readonly HexId[]> => {
   const piece = pieceId === null ? null : pieceById(state, pieceId);
@@ -320,11 +323,12 @@ export const queryTraceCoverage = (state: GameState, actorId: PlayerId, pieceId:
     };
   }
   const formationId = piece ? formationOf(state, piece) : null;
-  const common = piece && isMultiUnitFormation(state, formationId) ? formationRoute(state, actorId, formationId!) : undefined;
+  // A formation with no member in trace has no common route yet: whichever route this unit finds would become it.
+  const common = piece && isMultiUnitFormation(state, formationId) ? formationRoute(state, actorId, formationId!) : null;
   const covered = state.scenario.mapDefinition.hexes.map(({ id }) => id).filter((hexId) => {
     if (!piece) return traceSupplyAvailableAt(state, actorId, hexId);
     const routes = traceRoutesFor(state, piece, hexId);
-    return common === undefined ? routes.length > 0 : common !== null && routes.includes(common);
+    return common === null ? routes.length > 0 : routes.includes(common);
   });
   return {
     allowed: true,
