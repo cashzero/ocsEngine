@@ -120,8 +120,10 @@ export const pieceOwnName = (piece: { readonly statusValues?: ProjectedPiece['st
 
 export const unitLabel = (scenario: ScenarioDefinition, piece: Pick<ProjectedPiece, 'definitionId'> & { readonly statusValues?: ProjectedPiece['statusValues'] }): string => {
   const definition = pieceDefinition(scenario, piece);
-  // A supply dump has no name on the board-game counter, whatever an older save or package called it.
-  return definition?.family === 'RESOURCE' ? 'Supply dump' : pieceOwnName(piece) ?? definition?.name ?? 'Unit';
+  // A supply dump and a truck have no name on the board-game counter, whatever an older save or package called them.
+  if (definition?.family === 'RESOURCE') return 'Supply dump';
+  if (definition?.counter?.kind === 'TRANSPORT') return 'Truck';
+  return pieceOwnName(piece) ?? definition?.name ?? 'Unit';
 };
 
 /** Label for a counter as the viewer is allowed to see it. */

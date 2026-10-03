@@ -94,7 +94,8 @@ export const unitName = (
       case 'ENGINEER': return echelon === 'X'
         ? (allied ? `${number} Engr Gp` : `Pi Bde ${number}`)
         : `${number} ${allied ? 'Engr Bn' : 'Pi Bn'}`;
-      case 'TRANSPORT': return `${number} ${allied ? 'Truck Co' : 'Kfz-Kp'}`;
+      // A truck is a generic counter too: the board-game piece prints no name or number, only its size and MPs.
+      case 'TRANSPORT': return 'Truck';
       // A supply dump is a generic counter with no name or number on the board-game piece; only its size matters.
       case 'SUPPLY': return 'Supply Dump';
       // Aircraft and Air Bases are named by the air generator.
@@ -102,6 +103,6 @@ export const unitName = (
       case 'AIR_BASE': return `Air Base ${number}`;
     }
   })();
-  if ((role === 'COMBAT' && echelon === 'XX') || role === 'SUPPLY') return label;
+  if ((role === 'COMBAT' && echelon === 'XX') || role === 'SUPPLY' || role === 'TRANSPORT') return label;
   return formation ? `${label} / ${formationName}` : `${allied ? 'US' : 'Ge'} ${label}`;
 };

@@ -48,6 +48,8 @@ describe('WWII OOB naming references', () => {
     expect(shortFormationName('US 82nd Airborne Division "All American"')).toBe('82.Abn');
     expect(shortFormationName('12. SS Panzer-Division "Hitlerjugend"')).toBe('12.SS');
     expect(shortFormationName('3. Panzergrenadier-Division')).toBe('3.PG');
-    expect(unitName('ALLIED', 'TRANSPORT', 1, 7)).not.toEqual(unitName('ALLIED', 'TRANSPORT', 1, 8));
+    // A truck has no name or number on the board-game counter (user decision 2026-10-03), whatever the seed or side.
+    expect(unitName('ALLIED', 'TRANSPORT', 1, 7)).toBe('Truck');
+    expect(unitName('AXIS', 'TRANSPORT', 2, 8)).toBe('Truck');
   });
 });
