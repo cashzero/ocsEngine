@@ -5,7 +5,7 @@ import type { ProjectedPiece } from '../rules/index.js';
 import type { UiSnapshot } from './model.js';
 import { counterSvg, counterView } from './counter.js';
 import { combatHeadline, combatOutlook, type CombatReport, type FeedEntry, type NarrativeContext } from './narrative.js';
-import { phaseLabel, pieceDefinition, pieceLabel, printedHexLabel } from './presenter.js';
+import { ownOverstackedHexes, type OverstackedHex, phaseLabel, pieceDefinition, pieceLabel, printedHexLabel, STACKING_LIMIT_RE_TICKS, stackingReTicks } from './presenter.js';
 
 /**
  * The left command deck, the phase controls and the map popups, as lit-html templates. They carry no handlers: browser.ts
@@ -595,11 +595,10 @@ export const movePopupView = (snapshot: UiSnapshot, state?: DeckState): View => 
   const preview = snapshot.movePreview;
   if (!preview) return nothing;
   const range = snapshot.moveRange.get(preview.destinationHexId);
-  const reTicks = (piece: ProjectedPiece): number => Number(pieceDefinition(snapshot.scenario, piece)?.faces
-    .find(({ id }) => id === piece.currentFaceId)?.steps.find(({ remainingSteps }) => remainingSteps === piece.remainingSteps)?.regimentalEquivalentTicks ?? 0);
   const already = (snapshot.view.projection?.stacks ?? []).flatMap(({ pieces }) => pieces)
     .filter((piece) => piece.ownerId === snapshot.view.playerId && piece.location.kind === 'ON_MAP' && piece.location.hexId === preview.destinationHexId && piece.id !== snapshot.selectedPiece?.id);
-  const total = already.reduce((sum, piece) => sum + reTicks(piece), 0) + (snapshot.selectedPiece ? reTicks(snapshot.selectedPiece) : 0);
+  const total = already.reduce((sum, piece) => sum + stackingReTicks(snapshot.scenario, piece), 0) + (snapshot.selectedPiece ? stackingReTicks(snapshot.scenario, snapshot.selectedPiece) : 0);
+  const overstacks = total > STACKING_LIMIT_RE_TICKS;
   const reasons = preview.explanation.allowed ? [] : preview.explanation.reasons.filter(({ allowed }) => !allowed);
   const from = preview.path.length > 1 ? preview.path[preview.path.length - 2]! : snapshot.selectedPiece?.location.kind === 'ON_MAP' ? snapshot.selectedPiece.location.hexId : '';
   // 6.1g: starting this move ends a Transport Point's move; say what it would give up before the player confirms.
@@ -613,10 +612,10 @@ export const movePopupView = (snapshot: UiSnapshot, state?: DeckState): View => 
     <strong>Move to ${printedHexLabel(preview.destinationHexId)}</strong>
     <p>Cost ${mp(fact(preview.explanation, 'movement.totalTicks'))} MP · ${mp(fact(preview.explanation, 'movement.remainingTicks'))} MP left after the move.</p>
     ${range?.endsMovement ? html`<p class="blocker">The move ends there (enemy ZOC, all-MP terrain, or minimum move).</p>` : nothing}
-    ${total > 40 ? html`<p class="blocker">Ending here makes ${total / 4} RE in one hex: over 10 RE at the end of the segment, you must eliminate units (4.8a).</p>` : nothing}
+    ${overstacks ? html`<p class="warning overstack-warning" role="alert">⚠ Overstack: ending here puts ${total / 4} RE in one hex (limit ${STACKING_LIMIT_RE_TICKS / 4}). Unless it is back to 10 RE or fewer when the segment ends, you must eliminate units <cite>4.8a</cite></p>` : nothing}
     ${reasons.length > 0 ? html`<p class="blocker">${withHexLabels(reasons[0]!.message)} <cite>${reasons[0]!.rule}</cite></p>${reasons.length > 1 ? html`<p class="hint">${reasons.length - 1} more reason${reasons.length === 2 ? '' : 's'} in the Unit tab.</p>` : nothing}` : nothing}
     ${endsWarning}
-    <div class="button-grid"><button id="cancel-move">Cancel</button><button class="primary" id="confirm-move" ?disabled=${!(preview.explanation.allowed && !busyOf(snapshot, state))}>${endsPiece ? 'Confirm anyway' : 'Confirm'}</button></div>
+    <div class="button-grid"><button id="cancel-move">Cancel</button><button class="primary" id="confirm-move" ?disabled=${!(preview.explanation.allowed && !busyOf(snapshot, state))}>${endsPiece || overstacks ? 'Confirm anyway' : 'Confirm'}</button></div>
   </div>`;
 };
 
@@ -691,12 +690,26 @@ export const unmovedUnits = (snapshot: UiSnapshot): number => {
       && !snapshot.movedThisPhase.has(String(piece.id))).length;
 };
 
+/**
+ * The player's Hexes that are over 10 RE right now. 4.8a checks them only when a segment or phase ends (never in the
+ * Reinforcement Phase), so until then this is a warning: ending the step with any of them forces eliminations.
+ */
+export const endOverstack = (snapshot: UiSnapshot): readonly OverstackedHex[] => {
+  const projection = snapshot.view.projection;
+  if (!projection || projection.sequence.phase === 'REINFORCEMENT' || snapshot.view.metadata.lifecycle !== 'ACTIVE') return [];
+  return ownOverstackedHexes(snapshot.scenario, projection.stacks.flatMap(({ pieces }) => pieces), String(snapshot.view.playerId));
+};
+
+const overstackNote = (overstacked: readonly OverstackedHex[]): TemplateResult | typeof nothing => overstacked.length === 0 ? nothing
+  : html`<p class="end-note overstack-note warning" role="alert">⚠ Overstacked: ${overstacked.map(({ hexId, reTicks }) => `${printedHexLabel(hexId)} holds ${reTicks / 4} RE`).join(', ')} (limit ${STACKING_LIMIT_RE_TICKS / 4}). Move units out before ending this step or you must eliminate units <cite>4.8a</cite></p>`;
+
 /** Undo and End phase, drawn beside the phase chip in the top bar, with the reasons the phase cannot end yet. */
 export const phaseControlsView = (snapshot: UiSnapshot, state: DeckState): TemplateResult => {
   const busy = busyOf(snapshot, state);
   const unmoved = unmovedUnits(snapshot);
+  const overstacked = endOverstack(snapshot);
   const disabled = !(snapshot.endStep.enabled && !busy && !snapshot.decision && !snapshot.draft && snapshot.view.metadata.lifecycle === 'ACTIVE');
-  const confirming = state.confirmEnd && unmoved > 0;
+  const confirming = state.confirmEnd && (unmoved > 0 || overstacked.length > 0);
   // While the screen is being handed over, the hand-over panel says what is needed; a blocker would only be noise.
   const handingOver = snapshot.view.metadata.lifecycle === 'ACTIVE' && snapshot.handoff !== null && !snapshot.decision;
   const reasons = [
@@ -715,11 +728,13 @@ export const phaseControlsView = (snapshot: UiSnapshot, state: DeckState): Templ
   // Undo keeps its place when there is nothing to take back, so End phase never jumps sideways under the pointer.
   return html`<div class="phase-actions">
     <button id="undo-step" class="bar-button" title=${undo ?? 'Nothing to undo in this step'} aria-label=${undo ?? 'Undo'} ?disabled=${!undo || busy}><span class="bar-label">↶ Undo</span></button>
-    <span class="end-anchor"><button id="end-phase" class="bar-button ${confirming ? 'warning' : snapshot.endStep.enabled ? 'primary' : ''}" ?disabled=${disabled}><span class="bar-label">${confirming
-      ? `Finish anyway: ${unmoved} unit${unmoved === 1 ? ' has' : 's have'} not moved`
+    <span class="end-anchor"><button id="end-phase" class="bar-button ${confirming || overstacked.length > 0 ? 'warning' : snapshot.endStep.enabled ? 'primary' : ''}" ?disabled=${disabled}><span class="bar-label">${confirming
+      ? overstacked.length > 0
+        ? `Finish anyway: ${overstacked.length} hex${overstacked.length === 1 ? ' is' : 'es are'} overstacked`
+        : `Finish anyway: ${unmoved} unit${unmoved === 1 ? ' has' : 's have'} not moved`
       : endLabel}</span><small class="bar-sub">${confirming ? 'Press again to confirm' : `Next: ${nextLabel}`}</small></button>
-    ${reasons.length > 0 || (!handingOver && absorptionNote(snapshot) !== nothing)
-      ? html`<div class="end-notes">${reasons.length > 0 ? html`<p class="end-note" role="status">${reasons.join(' ')}</p>` : nothing}${handingOver ? nothing : absorptionNote(snapshot)}</div>`
+    ${reasons.length > 0 || (!handingOver && (absorptionNote(snapshot) !== nothing || overstacked.length > 0))
+      ? html`<div class="end-notes">${reasons.length > 0 ? html`<p class="end-note" role="status">${reasons.join(' ')}</p>` : nothing}${handingOver ? nothing : html`${overstackNote(overstacked)}${absorptionNote(snapshot)}`}</div>`
       : nothing}</span>
   </div>`;
 };

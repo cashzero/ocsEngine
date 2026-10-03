@@ -126,6 +126,42 @@ export const unitLabel = (scenario: ScenarioDefinition, piece: Pick<ProjectedPie
   return pieceOwnName(piece) ?? definition?.name ?? 'Unit';
 };
 
+/** 4.8: ten RE in a Hex, in quarter-RE ticks (the limit every generated game is configured with). */
+export const STACKING_LIMIT_RE_TICKS = 40;
+
+/**
+ * Quarter-RE ticks a counter adds to its Hex under 4.8a. Counted exactly as the rules do (isCombatUnit): ground units
+ * only, so a Truck, an Extender, a supply dump and an aircraft never count towards the limit.
+ */
+export const stackingReTicks = (scenario: ScenarioDefinition, piece: ProjectedPiece): number => {
+  if (piece.role === 'TRUCK' || piece.role === 'EXTENDER' || piece.remainingSteps === null) return 0;
+  const definition = pieceDefinition(scenario, piece);
+  if (definition?.family !== 'GROUND') return 0;
+  return Number(definition.faces.find(({ id }) => id === piece.currentFaceId)?.steps
+    .find(({ remainingSteps }) => remainingSteps === piece.remainingSteps)?.regimentalEquivalentTicks ?? 0);
+};
+
+/** A friendly Hex over the stacking limit and how much it holds (RE ticks). */
+export interface OverstackedHex {
+  readonly hexId: string;
+  readonly reTicks: number;
+}
+
+/** The player's own Hexes over 10 RE right now, in Hex order: what 4.8a would make them eliminate when the step ends. */
+export const ownOverstackedHexes = (
+  scenario: ScenarioDefinition,
+  pieces: readonly ProjectedPiece[],
+  playerId: string,
+): readonly OverstackedHex[] => {
+  const totals = new Map<string, number>();
+  for (const piece of pieces) {
+    if (String(piece.ownerId) !== playerId || piece.location.kind !== 'ON_MAP') continue;
+    totals.set(piece.location.hexId, (totals.get(piece.location.hexId) ?? 0) + stackingReTicks(scenario, piece));
+  }
+  return [...totals.entries()].filter(([, reTicks]) => reTicks > STACKING_LIMIT_RE_TICKS)
+    .map(([hexId, reTicks]) => ({ hexId, reTicks })).sort((left, right) => left.hexId.localeCompare(right.hexId));
+};
+
 /** Label for a counter as the viewer is allowed to see it. */
 export const pieceLabel = (scenario: ScenarioDefinition, piece: ProjectedPiece): string => unitLabel(scenario, piece);
 
