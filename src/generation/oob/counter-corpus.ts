@@ -109,7 +109,8 @@ export const corpusCounter = (gpid: number, designation: string, affiliation: st
   if (!source && gpid !== 321 && gpid !== 359) throw new Error(`Unknown counter GPID ${gpid}`);
   return {
     kind: source?.kind ?? 'SUPPLY', symbol: source?.symbol ?? 'SUPPLY',
-    designation, affiliation, nationality, formationColor, echelon: echelon ?? source?.echelon ?? '',
+    // A truck prints no designation: the board-game counter shows only its symbol, points and MPs.
+    designation: source?.kind === 'TRANSPORT' ? '' : designation, affiliation, nationality, formationColor, echelon: echelon ?? source?.echelon ?? '',
     combatCategory: source?.category ?? 'OTHER', defensiveOnly: source?.symbol === 'ENGINEER',
     rebuildable: true, showRe: (source?.steps ?? 0) > 1,
     transportPoints: source?.kind === 'TRANSPORT' ? TRUCK_COUNTER_POINTS : null,
