@@ -15,6 +15,7 @@ import {
   type MapGenerationStyle,
   type NewGameRequest,
   type OobScale,
+  OOB_DIVISION_LIMITS,
 } from '../index.js';
 import { createUiController, type UiController } from './controller.js';
 import { counterView, counterSvgBody, counterSvg } from './counter.js';
@@ -83,7 +84,7 @@ let seedVersion = 0;
 
 /** Which settings to change for a failed build, and the fields to flag. */
 const NEW_GAME_FIXES: readonly { readonly codes: readonly string[]; readonly text: string; readonly fields: readonly string[] }[] = [
-  { codes: ['INITIAL_OVERSTACK', 'DEPLOYMENT_INVALID'], text: 'Too many units for the starting areas of this map: make the map wider or taller, or lower Scale or Formations per side.', fields: ['new-game-width', 'new-game-height', 'new-game-scale', 'new-game-formations'] },
+  { codes: ['INITIAL_OVERSTACK', 'DEPLOYMENT_INVALID'], text: 'Too many units for the starting areas of this map: make the map wider or taller, or lower Scale or Divisions per side.', fields: ['new-game-width', 'new-game-height', 'new-game-scale', 'new-game-divisions'] },
   { codes: ['CALENDAR_EXCEEDS_WEATHER_TABLE', 'INVALID_START_MONTH'], text: 'The game would run past April: start earlier or lower the Turn limit.', fields: ['new-game-start-month', 'new-game-turn-limit'] },
   { codes: ['INVALID_TURN_LIMIT'], text: 'Turn limit must be from 1 to 20.', fields: ['new-game-turn-limit'] },
   { codes: ['MAP_WIDTH_OUT_OF_RANGE'], text: `Width must be from ${NEW_GAME_MAP_LIMITS.minWidth} to ${NEW_GAME_MAP_LIMITS.maxWidth} hexes.`, fields: ['new-game-width'] },
@@ -93,6 +94,8 @@ const newGameGuidance = (): string => NEW_GAME_FIXES.filter(({ codes }) => newGa
 const newGameInvalidFields = (): readonly string[] => [
   ...NEW_GAME_FIXES.filter(({ codes }) => newGameErrors.some(({ code }) => codes.includes(code))).flatMap(({ fields }) => fields),
   ...newGameErrors.filter(({ code }) => code === 'INVALID_SEED').map(({ path }) => `new-game-${String(path[1])}-seed`),
+  ...newGameErrors.filter(({ stage, code }) => stage === 'OOB' && code === 'INVALID_OPTIONS')
+    .flatMap(({ path }) => path[0] === 'divisionsPerSide' ? ['new-game-divisions'] : path[0] === 'armoredDivisionsPerSide' ? ['new-game-armored'] : []),
 ];
 const deck: DeckState = { search: '', working: false };
 let rosterOpen = false;
@@ -498,7 +501,8 @@ const onNewGameInput = (event: Event): void => {
   if (id === 'new-game-height') newGameSettings = { ...newGameSettings, map: { ...newGameSettings.map, height: value } };
   if (id === 'new-game-style') newGameSettings = { ...newGameSettings, map: { ...newGameSettings.map, style: input.value as MapGenerationStyle } };
   if (id === 'new-game-scale') newGameSettings = { ...newGameSettings, oob: { ...newGameSettings.oob, scale: input.value as OobScale } };
-  if (id === 'new-game-formations') newGameSettings = { ...newGameSettings, oob: { ...newGameSettings.oob, formationsPerSide: value } };
+  if (id === 'new-game-divisions') newGameSettings = { ...newGameSettings, oob: { ...newGameSettings.oob, divisionsPerSide: value } };
+  if (id === 'new-game-armored') newGameSettings = { ...newGameSettings, oob: { ...newGameSettings.oob, armoredDivisionsPerSide: value } };
   if (id === 'new-game-air') newGameSettings = { ...newGameSettings, oob: { ...newGameSettings.oob, air: input.value as AirForceLevel } };
   if (id === 'new-game-turn-limit') newGameSettings = { ...newGameSettings, turnLimit: value };
   if (id === 'new-game-start-month') newGameSettings = { ...newGameSettings, startMonth: value };
@@ -590,7 +594,9 @@ const newGameDialog = () => {
         </fieldset>
         <fieldset><legend>Order of battle</legend>
           ${select('new-game-scale', 'Scale', [['COMPACT', 'Compact'], ['STANDARD', 'Standard'], ['LARGE', 'Large']], newGameSettings.oob.scale)}
-          ${number('new-game-formations', 'Formations per side', 1, 6, newGameSettings.oob.formationsPerSide)}
+          ${number('new-game-divisions', 'Divisions per side', OOB_DIVISION_LIMITS.minDivisions, OOB_DIVISION_LIMITS.maxDivisions, newGameSettings.oob.divisionsPerSide)}
+          ${number('new-game-armored', 'of which armored', 0, OOB_DIVISION_LIMITS.maxArmored, newGameSettings.oob.armoredDivisionsPerSide)}
+          <p class="field-help">The other divisions are infantry, about one in four airborne.</p>
           ${select('new-game-air', 'Air forces', [['NONE', 'None (ground duel)'], ['STANDARD', 'Fighters, bombers and Air Bases']], newGameSettings.oob.air ?? 'NONE')}
         </fieldset>
         <fieldset><legend>Game rules</legend>

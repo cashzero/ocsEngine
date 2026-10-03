@@ -253,9 +253,15 @@ describe('OCS 4.3 reinforcements and Supply Table (2.3, 13.6)', () => {
     expect(codes(applyRuleAction(state, ALLIED, { kind: 'PLACE_REINFORCEMENT', pieceId: U.alLeg2, hexId: '-3,6' as HexId }))).toContain('ENTRY_BLOCKED_BY_ENEMY');
     const options = ruleEngine.getActionCandidates(state, { actorId: ALLIED, kind: 'PLACE_REINFORCEMENT', pieceId: U.alLeg2, budget: 20 }).actions
       .flatMap((action) => action.kind === 'PLACE_REINFORCEMENT' ? [action.hexId] : []);
-    expect(options.length).toBeGreaterThan(0);
-    expect(options.every((hexId) => hexDistanceBetween(hexId, '-3,6' as HexId) === 1)).toBe(true);
-    expect(applyRuleAction(state, ALLIED, { kind: 'PLACE_REINFORCEMENT', pieceId: U.alLeg2, hexId: options[0]! }).ok).toBe(true);
+    // The side's other entry Hexes stay open; the blocked one is replaced by its nearest open map-edge Hexes.
+    const otherEntries = state.scenario.entries.filter(({ sideDefinitionId, hexId }) => sideDefinitionId === 'side:allied' && hexId !== '-3,6')
+      .map(({ hexId }) => String(hexId));
+    expect(otherEntries.length).toBeGreaterThan(0);
+    expect(options).toEqual(expect.arrayContaining(otherEntries));
+    const substitutes = options.filter((hexId) => !otherEntries.includes(String(hexId)));
+    expect(substitutes.length).toBeGreaterThan(0);
+    expect(substitutes.every((hexId) => hexDistanceBetween(hexId, '-3,6' as HexId) === 1)).toBe(true);
+    expect(applyRuleAction(state, ALLIED, { kind: 'PLACE_REINFORCEMENT', pieceId: U.alLeg2, hexId: substitutes[0]! }).ok).toBe(true);
   });
 });
 

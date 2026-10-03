@@ -8,7 +8,7 @@ counters. Unit-level preview fidelity is reopened under
 
 The original M7 delivery exposed Random OOB independently at `#random-oob`. That route was retired by the reopened M8/U10 integration gate because it did not prove deployment or active-game integration.
 
-The current New Game flow controls scale, formations per side and uint32 OOB/deployment seeds, then shows both force packages beside the generated map and deployment metrics. **Start this operation** is unavailable until the combined package validates. Canonical OOB JSON remains covered at the generation API/serialization boundary rather than as a disconnected player workflow.
+The current New Game flow controls scale, divisions per side, how many of them are armored, and uint32 OOB/deployment seeds, then shows both force packages beside the generated map and deployment metrics. **Start this operation** is unavailable until the combined package validates. Canonical OOB JSON remains covered at the generation API/serialization boundary rather than as a disconnected player workflow.
 
 The retired surface displayed Allied and Axis formation archetypes, organic counter
 summaries, independent support/logistics, combat/action/movement values, and artillery

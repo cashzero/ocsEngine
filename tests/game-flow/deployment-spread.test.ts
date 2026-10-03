@@ -65,7 +65,7 @@ describe('default deployment spacing', () => {
   it('keeps supply dumps off the entry edge, apart from each other and from the troops', () => {
     const request: NewGameRequest = {
       ...DEFAULT_NEW_GAME_REQUEST,
-      oob: { scale: 'LARGE', formationsPerSide: 4 },
+      oob: { scale: 'LARGE', divisionsPerSide: 4, armoredDivisionsPerSide: 2 },
     };
     const onMap = deployed(request);
     for (const owner of new Set(onMap.map((entry) => entry.owner))) {

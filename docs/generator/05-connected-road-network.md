@@ -5,7 +5,7 @@ spanning tree, which left roughly half of all open ground two or more Hexes from
 classes map to the BtR TEC: `edge:primary-road` is the main road (Secondary Road, ½ MP) and
 `edge:road` is a Track (1 MP).
 
-1. **Main-road tree**: Major City cores, Minor Cities and both entries are joined nearest-first, so the
+1. **Main-road tree**: Major City cores, Minor Cities and every entry Hex of both sides are joined nearest-first, so the
    network starts as one component.
 2. **Main-road loops**: every pair of those places up to 10 Hexes apart gets a direct main road unless
    the main network already joins them within 1.4× their Hex distance.

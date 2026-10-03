@@ -1,7 +1,7 @@
 import type { DefinitionId, ValidationIssue } from '../../core/index.js';
 import type { PieceDefinitionCatalog } from '../../domain/piece/index.js';
 
-export const OOB_GENERATOR_VERSION = '0.1.0' as const;
+export const OOB_GENERATOR_VERSION = '0.2.0' as const;
 
 export const OOB_SCALES = ['COMPACT', 'STANDARD', 'LARGE'] as const;
 export type OobScale = (typeof OOB_SCALES)[number];
@@ -28,10 +28,20 @@ export type OobUnitRole =
 export const AIR_FORCE_LEVELS = ['NONE', 'STANDARD'] as const;
 export type AirForceLevel = (typeof AIR_FORCE_LEVELS)[number];
 
+/** Divisions a side may field, and how many of them may be armored. */
+export const OOB_DIVISION_LIMITS = { minDivisions: 1, maxDivisions: 20, maxArmored: 6 } as const;
+
 export interface RandomOobOptions {
   readonly seed: number;
   readonly scale: OobScale;
-  readonly formationsPerSide: number;
+  /** Every division a side fields: its armored divisions plus its foot (infantry and airborne) divisions. */
+  readonly divisionsPerSide: number;
+  /**
+   * How many of `divisionsPerSide` are armored: an HQ plus regiment-sized units (Allied armored divisions;
+   * Axis Panzer divisions, every second one a Panzergrenadier division). The rest are single-counter foot
+   * divisions, about one in four of them airborne.
+   */
+  readonly armoredDivisionsPerSide: number;
   /** Absent means NONE, so ground-only requests generate exactly what they did before air power. */
   readonly air?: AirForceLevel;
 }

@@ -74,8 +74,8 @@ export const validateGeneratedOob = (
     issues.push(issue('OOB_CATALOG_UNIT_MISMATCH', 'Generated units and Piece Definitions must form an exact one-to-one set.'));
   }
   for (const [sideIndex, side] of generated.sides.entries()) {
-    if (side.formations.length !== generated.options.formationsPerSide) {
-      issues.push(issue('FORMATION_COUNT_MISMATCH', 'Each side must contain the requested formation count.', ['sides', sideIndex, 'formations']));
+    if (side.formations.length !== generated.options.divisionsPerSide) {
+      issues.push(issue('FORMATION_COUNT_MISMATCH', 'Each side must contain the requested division count.', ['sides', sideIndex, 'formations']));
     }
     for (const [formationIndex, formation] of side.formations.entries()) {
       const basePath = ['sides', sideIndex, 'formations', formationIndex] as const;
