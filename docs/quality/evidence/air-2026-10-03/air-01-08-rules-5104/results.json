@@ -1,0 +1,164 @@
+{
+  "title": "AIR-01 to AIR-06, AIR-08: air operations through the command deck",
+  "rows": [
+    {
+      "id": "AIR-01",
+      "expectation": "The preview lists each side's aircraft and Air Bases as counters",
+      "observed": "Air forces: 10 aircraft, 2 Air Base(s) F P-51 136 6 4 365th FG P-51 F P-51 136 6 4 48th FG P-51 F P-38 186 5 10 354th FG P-38 T A-20 150 (2) 10 391st BG A-20 T A-20 150 (2) 10 397th BG A-20 Tpt C-47 229 (0) 1T 315th TCG C-47 Tpt C-47+Gldr 229 (0) 2T 314th TCG C-47+Gldr Tpt C-47 229 (0) 1T 61st TCG C-47 F P-51 136 6 4 362nd FG P-51 T A-26 200 (3) 15 394th BG A-26 2 Allied Air Base 1 2 Allied Air Ba",
+      "status": "PASS"
+    },
+    {
+      "id": "AIR-01",
+      "expectation": "Allied seat: its own Air Bases show every aircraft and unit",
+      "observed": "Hex 0305 · woods · US Parachute Infantry Battalion, 314th TCG C-47+Gldr, 397th BG A-20, 354th FG P-38, 365th FG P-51, Allied Air Base 1, Supply dump | Hex 0504 · rough · 61st TCG C-47, 315th TCG C-47, 391st BG A-20, 48th FG P-51, Allied Air Base 2",
+      "status": "PASS"
+    },
+    {
+      "id": "AIR-01",
+      "expectation": "Allied seat: an enemy Air Base shows only the base, its top Active plane and top combat unit; the rest are counted as hidden (4.9a)",
+      "observed": "Hex 1407 · clear · city · enemy Ge Fallschirmjäger Battalion, enemy JG 3 Fw-190d, enemy Axis Air Base 1, 4 hidden | Hex 1707 · clear · enemy JG 4 Bf.109, enemy Axis Air Base 2, 3 hidden",
+      "status": "PASS"
+    },
+    {
+      "id": "AIR-03",
+      "expectation": "Both seats answer during the sweep, with the screen handed over between them",
+      "observed": "Axis commander [handoff]: Air Combat over 1407 against 354th FG P-38: abort any aircraft before it starts? / Axis commander: Air Combat round 1: 354th FG P-38 (Air Combat 5) attacks. Choose the aircraft th / Axis commander: Air Combat round 2: 354th FG P-38 (Air Combat 5) attacks. Choose the aircraft th / Allied commander [handoff]: 354th FG P-38 (Air Combat 5) returns to base and becomes Inactive: choose a frie",
+      "status": "PASS"
+    },
+    {
+      "id": "AIR-03",
+      "expectation": "Voluntary aborts are offered (14.4c)",
+      "observed": "Axis commander: Fight with all 4 aircraft | Abort KG 51 Ju.88 (Air Combat (2)) | Abort JG 300 Fw-190d (Air Combat 6) | Abort JG 3 Fw-190d (Air Combat 6) | Abort TG 30 Ju.52 (Air Combat (0))",
+      "status": "PASS"
+    },
+    {
+      "id": "AIR-03",
+      "expectation": "Air Combat picks alternate and each round result is shown",
+      "observed": "COMBAT RESULT Allied commander air mission on 1407 354th FG P-38 vs KG 51 Ju.88: 11 (roll 8), KG 51 Ju.88 aborts. 354th FG P-38 vs JG 300 Fw-190d: 5 (roll 6), 354th FG P-38 aborts. No mission aircraft remain; the mission is over. OK",
+      "status": "PASS"
+    },
+    {
+      "id": "AIR-03",
+      "expectation": "The fighters return to an Air Base (original first)",
+      "observed": "Original Air Base at 0305 (12 hexes)",
+      "status": "PASS"
+    },
+    {
+      "id": "AIR-03",
+      "expectation": "The P-38 is Inactive at its base afterwards",
+      "observed": "354th FG P-38 0305 · Inactive Range 186 hexes · flies missi",
+      "status": "PASS"
+    },
+    {
+      "id": "AIR-08",
+      "expectation": "A second mission with the same aircraft is unavailable: the P-38 is no longer offered",
+      "observed": "offered: F P-51 136 6 4 365th FG P-51 0305 / T A-20 150 (2) 10 397th BG A-20 0305 / Tpt C-47+Gldr 229 (0) 2T 314th TCG C-47+Gldr 0305 / F P-51 136 6 4 48th FG P-51 0504 / T A-20 150 (2) 10 391st BG A-20 0504 / Tpt C-47 229 (0) 1T 315th TCG C-47 0504 / Tpt C-47 229 (0) 1T 61st TCG C-47 0504",
+      "status": "PASS"
+    },
+    {
+      "id": "AIR-04",
+      "expectation": "The Barrage Segment offers Air Barrage",
+      "observed": "Movement · Barrage",
+      "status": "PASS"
+    },
+    {
+      "id": "AIR-04",
+      "expectation": "The barrage preview shows the column, shifts, Flak with its modifiers and that the hex is in an enemy Patrol Zone",
+      "observed": "Air Barrage 1503 Mission hex 1503 Table column 17-24 → 5-7 Shifts Density 0, No spotter -3 Barrage strength 24 Flak +2 (Three or more aircraft +1, Enemy Patrol Zone, mission has a Fighter +1); 11+ on 2d6 costs a step Enemy Patrol Zone yes: an enemy Fighter may intercept Tick up to 4 aircraft; they may come from different bases. Every mission aircraft becomes Inactive at a base afterwards. F P-51 136 6 4 365th FG P-51",
+      "status": "PASS"
+    },
+    {
+      "id": "AIR-04",
+      "expectation": "The Axis owner decides interception after a handoff",
+      "observed": "Axis commander after a handoff: Intercept with JG 300 Fw-190d (Air Combat 6) from 1407",
+      "status": "PASS"
+    },
+    {
+      "id": "AIR-04",
+      "expectation": "Air Combat, Flak with its roll, Mission Loss (if any) and the barrage result are shown",
+      "observed": "COMBAT RESULT Allied commander air mission on 1503 · 24 · 5-7 JG 300 Fw-190d intercepts. JG 300 Fw-190d vs 365th FG P-51: 6 (roll 6), JG 300 Fw-190d aborts. The interceptor was driven off. Flak: 9 (roll 7 +1 +1), no effect. Barrage 24 on the 17-24 column, shifted to 5-7: roll 10, DG, DG. 3.FJ Disorganized OK",
+      "status": "PASS"
+    },
+    {
+      "id": "AIR-08",
+      "expectation": "A second barrage on 1503 in this segment is not offered (10.0e)",
+      "observed": "targets now: 1407 1710 1707 1809 1810 1704 1702 1801",
+      "status": "PASS"
+    },
+    {
+      "id": "AIR-01",
+      "expectation": "Axis seat: the Allied Air Bases show only the base, the top Active plane and top combat unit (4.9a)",
+      "observed": "Hex 0305 · woods · enemy US Parachute Infantry Battalion, enemy 314th TCG C-47+Gldr, enemy Allied Air Base 1, 4 hidden | Hex 0504 · rough · enemy 48th FG P-51, enemy Allied Air Base 2, 3 hidden",
+      "status": "PASS"
+    },
+    {
+      "id": "AIR-05",
+      "expectation": "Axis Trainbusting on 0103, beside the Allied Engineer at 0203: the roll and the marker",
+      "observed": "COMBAT RESULT Axis commander air mission on 0103 No interception. Flak: 6 (roll 4 +1 +1), no effect. Barrage vs Facility 3 (3-4): die 3, no effect; no Trainbusting. OK | map: Hex 0103 · woods · no units",
+      "status": "PASS"
+    },
+    {
+      "id": "AIR-06",
+      "expectation": "An Air Base is barraged on the Facility Table; the result is shown and the Level never drops below 1",
+      "observed": "Air Barrage 0305 Combat units Air Base (Facility Table) Mission hex 0305 Table column 11-20 Barrage strength 12 Flak +4 (Air Base Level 2 +2, Enemy Patrol Zone, mission has no Fighter +2); 11+ on 2d6 costs a step Enemy P | result: COMBAT RESULT Axis commander air mission on 0305 Only aircraft with parenthesized ratings remain; they ignore each other. No interception. Flak: 13 (roll 9 +2 +2), one mission aircraft step is lost. KG 76 Ju.88 is reduced by Flak. Barrage vs Facility 6 (5-10): die 4, *(6); 354th FG P-38 loses a step (6). KG 76 Ju.88 lost a step 354th FG P-38 lost a step OK | before: Hex 0305 · woods · enemy US Parachute Infantry Battalion, enemy 314th TCG C-47+Gldr, enemy Allied Air Base 1, 4 hidden",
+      "status": "PASS"
+    },
+    {
+      "id": "AIR-02",
+      "expectation": "The Refit panel shows the 1T cost per base, the 2 × Level capacity, the ZOC restriction and the Active limit",
+      "observed": "Aircraft Refit Phase. No unit selected Click one of your units on the map, or open All units. Refit 2 Log All units (25) COMBAT RESULT Allied commander air mission on 1503 · 24 · 5-7 JG 300 Fw-190d intercepts. JG 300 Fw-190d vs 365th FG P-51: 6 (roll 6), JG 300 Fw-190d aborts. The interceptor was driven off. Flak: 9 (roll 7 +1 +1), no effect. Barrage 24 on the 17-24 column, shifted to 5-7: roll 10, DG, DG. 3.FJ Disorganized OK Aircraft refit Each Air Base refits once: up to 2 × Level Inactive aircraft for 1T drawn or thrown to the base (15.1). A base in an un-negated enemy ZOC cannot refit (15",
+      "status": "PASS"
+    },
+    {
+      "id": "AIR-02",
+      "expectation": "Refitting pays 1T and makes the aircraft Active",
+      "observed": "notice \"Refit 3 aircraft at 0305 (1T).\" (546 ms)",
+      "status": "PASS"
+    },
+    {
+      "id": "AIR-02",
+      "expectation": "The refitted aircraft are offered for missions again",
+      "observed": "Tpt C-47+Gldr 229 (0) 2T 314th TCG C-47+Gldr 0305 / F P-38 186 4 5 354th FG P-38 0305 / F P-51 136 6 4 365th FG P-51 0305 / T A-20 150 (2) 10 397th BG A-20 0305 / F P-51 136 6 4 48th FG P-51 0504 / Tpt C-47 229 (0) 1T 315th TCG C-47 0504 / Tpt C-47 229 (0) 1T 61st TCG C-47 0504",
+      "status": "PASS"
+    },
+    {
+      "id": "AIR-06",
+      "expectation": "A Fighter Base Transferred within its range is at the new base and stays Active (14.11)",
+      "observed": "COMBAT RESULT Allied commander air mission on 0305 Base Transfer complete. OK | 0305: Hex 0305 · woods · 48th FG P-51, 397th BG A-20, 365th FG P-51, 354th FG P-38, US Parachute Infantry Battalion, 314th TCG C-47+Gldr, Allied Air Base 1, Supply dump | 48th FG: 48th FG P-51 0305 · Active Range 136 hexes · flies missi",
+      "status": "PASS"
+    },
+    {
+      "id": "AIR-01",
+      "expectation": "No browser console or page error during the run",
+      "observed": "0 errors",
+      "status": "PASS"
+    }
+  ],
+  "timings": [
+    {
+      "label": "Fighter Sweep on 1407",
+      "elapsed": 548
+    },
+    {
+      "label": "Air Barrage on 1503",
+      "elapsed": 538
+    },
+    {
+      "label": "Trainbusting on 0103",
+      "elapsed": 545
+    },
+    {
+      "label": "Axis Air Barrage on the Allied Air Base at 0305 (Facility Table)",
+      "elapsed": 541
+    },
+    {
+      "label": "Refit one Air Base",
+      "elapsed": 546
+    },
+    {
+      "label": "Base Transfer 48th FG P-51 0504 → 0305",
+      "elapsed": 537
+    }
+  ],
+  "errors": []
+}

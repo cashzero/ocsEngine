@@ -207,10 +207,11 @@ export interface GameplaySaveActionMetadata {
 export interface GameplaySaveEnvelope {
   readonly schemaVersion: 1;
   /**
-   * 0.3.0: adds air power (aircraft, Air Bases, air missions). 0.2.0 saves (ground rules before air)
+   * 0.4.0: adds Air Base construction, Drop Plans and the unload ledger to the air bookkeeping. 0.3.0 added air power
+   * (aircraft, Air Bases, air missions). 0.2.0 saves (ground rules before air)
    * are still read: their snapshots are upgraded with empty air bookkeeping when loaded.
    */
-  readonly gameplayVersion: '0.2.0' | '0.3.0';
+  readonly gameplayVersion: '0.2.0' | '0.3.0' | '0.4.0';
   readonly sessionId: SessionId;
   readonly label: string;
   readonly createdAtMs: number;

@@ -218,6 +218,8 @@ export interface PieceUsageState {
   readonly blown: boolean;
   /** Tokens unloaded into this dump this phase, which cannot be loaded again (12.2a). */
   readonly unloadedTokens: number;
+  /** Carried by air this phase: the unit may spend no more than half its MA in all (4.7d, 14.9d). */
+  readonly airCarried?: boolean | undefined;
 }
 
 export interface ResourceReservation {
@@ -317,7 +319,31 @@ export interface RuleTransaction {
 }
 
 /** 14.2e mission types implemented here; Air Transport and Air Drop (14.9, 14.10) are not. */
-export type AirMissionKind = 'FIGHTER_SWEEP' | 'BARRAGE' | 'HIP_SHOOT' | 'TRAINBUSTING' | 'BASE_TRANSFER';
+export type AirMissionKind = 'FIGHTER_SWEEP' | 'BARRAGE' | 'HIP_SHOOT' | 'TRAINBUSTING' | 'BASE_TRANSFER' | 'AIR_TRANSPORT' | 'AIR_DROP';
+
+/**
+ * 14.9e: how a Transport flies, treating each plane separately. DOUBLE flies at twice its range and ends Inactive at the
+ * destination Air Base; NORMAL at its range, returning to any base within it; HALF at half its range with doubled capacity,
+ * returning within half its range. NORMAL and HALF may also end Inactive at the destination (14.9f: "Transports in excess of
+ * the unloading limit become Inactive in the destination hex").
+ */
+export type AirRoute = 'DOUBLE' | 'NORMAL' | 'NORMAL_STAY' | 'HALF' | 'HALF_STAY';
+export const AIR_ROUTES: readonly AirRoute[] = ['DOUBLE', 'NORMAL', 'NORMAL_STAY', 'HALF', 'HALF_STAY'];
+
+/** What an Air Transport or Air Drop carries and how each carrying plane flies (14.9, 14.10). */
+export interface AirCargoDeclaration {
+  /** The Air Base the cargo is loaded at; the carrying planes are the mission aircraft based there. */
+  readonly baseHexId: HexId;
+  readonly unitIds: readonly PieceId[];
+  /** Tokens loaded from dumps in the base hex. */
+  readonly supply: readonly { readonly sourcePieceId: PieceId; readonly tokens: number }[];
+  readonly routes: readonly { readonly pieceId: PieceId; readonly route: AirRoute }[];
+}
+
+export interface AirCargoState extends AirCargoDeclaration {
+  /** How an Air Drop lands: by parachute, or by glider when every carrier has an integral glider (14.10e, 14.10f). Null for an Air Transport. */
+  readonly drop: 'PARACHUTE' | 'GLIDER' | null;
+}
 
 /** 10.0d: the general target announced for a barrage mission. */
 export type AirBarrageTarget = 'COMBAT_UNITS' | 'AIR_BASE';
@@ -358,6 +384,10 @@ export interface AirReturn {
   readonly pieceId: PieceId;
   /** Hex the aircraft returns from: the mission hex. */
   readonly fromHexId: HexId;
+  /** The Air Base the aircraft took off from; the return choice lists it first and says so. Absent in saves from before it was kept. */
+  readonly originHexId?: HexId | undefined;
+  /** Farthest base it may return to, in hexes, when that is not its whole range (a Transport flying at half range, 14.9e C). */
+  readonly rangeHexes?: number | undefined;
   /** 14.1c: aircraft aborting over a friendly Air Base must return to that base. */
   readonly requiredHexId: HexId | null;
   /** 14.11: a Fighter transferring within normal range stays Active. */
@@ -381,6 +411,8 @@ export interface AirMissionState {
   readonly returns: readonly AirReturn[];
   /** Player-readable record of what happened, for the decision panel. */
   readonly log: readonly string[];
+  /** The cargo of an Air Transport or Air Drop (14.9, 14.10); absent in other missions. */
+  readonly cargo?: AirCargoState | null | undefined;
 }
 
 /** 14.8: a Trainbusting marker, removed in the next Clean Up Phase of its owner's enemy. */
@@ -398,6 +430,32 @@ export interface AirState {
   /** Air Bases reduced this phase (15.4). */
   readonly reducedBaseIds: readonly PieceId[];
   readonly trainbusting: readonly TrainbustingMarker[];
+  /** Hexes where an Air Base or Air Strip was built or improved this phase: a Level rises by one per turn (15.3). */
+  readonly builtHexIds: readonly HexId[];
+  /** Engineer-Capable units that already performed construction this phase (13.8d: one hex, one task). */
+  readonly builderIds: readonly PieceId[];
+  /** 14.10b: planned Air Drops of combat units, kept until they are flown, delayed or cancelled. */
+  readonly dropPlans: readonly DropPlan[];
+  /** 14.9f: cargo already unloaded at each Air Base in this Movement Segment, in tokens. */
+  readonly unloaded: readonly AirUnloadRecord[];
+  /** Units that made a planned Air Drop this player turn: they need no trace supply on the turn they drop (12.6h). */
+  readonly droppedIds: readonly PieceId[];
+}
+
+/** 14.10b: a written record of the hex where each combat unit will drop and the Game Turn of the mission. */
+export interface DropPlan {
+  /** Stable key: the player and the units on the plan. */
+  readonly id: string;
+  readonly ownerId: PlayerId;
+  readonly unitIds: readonly PieceId[];
+  readonly hexId: HexId;
+  /** Game Turn of the scheduled drop. */
+  readonly turn: number;
+}
+
+export interface AirUnloadRecord {
+  readonly hexId: HexId;
+  readonly tokens: number;
 }
 
 export type PendingDecisionKind =
@@ -417,13 +475,15 @@ export type PendingDecisionKind =
   | 'INTERCEPTION'
   | 'MISSION_LOSS'
   | 'AIR_RETURN'
+  /** 14.4g: Flak cut a Transport's capacity; the owner picks cargo to destroy. */
+  | 'CARGO_LOSS'
   /** 20.0d/20.0g: the owner picks which of several eligible units absorbs a Breakdown as the phase ends. */
   | 'BREAKDOWN_ABSORPTION';
 
 export const PENDING_DECISION_KINDS: readonly PendingDecisionKind[] = [
   'FIRST_PLAYER', 'SUPPLY_SOURCE', 'DEFENDER_LEAD', 'DEFENDER_TERRAIN', 'STEP_LOSS', 'OPTION_SPLIT',
   'RETREAT_HEX', 'ADVANCE_HEX', 'DISPLACEMENT_HEX', 'ATTRITION_LOSS', 'OVERSTACK_ELIMINATION',
-  'AIR_ABORT', 'AIR_COMBAT_PICK', 'INTERCEPTION', 'MISSION_LOSS', 'AIR_RETURN', 'BREAKDOWN_ABSORPTION',
+  'AIR_ABORT', 'AIR_COMBAT_PICK', 'INTERCEPTION', 'MISSION_LOSS', 'AIR_RETURN', 'CARGO_LOSS', 'BREAKDOWN_ABSORPTION',
 ];
 
 /** Decisions that may exist outside a combat: sequence of play, attrition, and movement captures. */
@@ -581,9 +641,38 @@ export type GameAction =
     readonly targetHexId: HexId;
     /** 10.0d: required for BARRAGE and HIP_SHOOT, null otherwise. */
     readonly target: AirBarrageTarget | null;
+    /** The load of an Air Transport or Air Drop; null for every other mission. */
+    readonly cargo?: AirCargoDeclaration | null;
   })
   /** 15.4: one RE of Combat Mode units that do not move reduces a friendly Air Base one Level. */
-  | (ActionEnvelope & { readonly kind: 'REDUCE_AIR_BASE'; readonly baseId: PieceId; readonly pieceIds: readonly PieceId[] })
+  | (ActionEnvelope & {
+    readonly kind: 'REDUCE_AIR_BASE';
+    readonly baseId: PieceId;
+    readonly pieceIds: readonly PieceId[];
+    /** 15.4, 13.8d: an Engineer-Capable unit within 2 hexes can do the work instead of 1 RE of units in the hex. */
+    readonly engineerId?: PieceId | null;
+  })
+  /** 13.8d, 15.2, 15.3: an Engineer-Capable unit builds or improves an Air Base or Air Strip, paying the exact cost in Tokens. */
+  | (ActionEnvelope & {
+    readonly kind: 'BUILD_AIR_BASE';
+    readonly engineerId: PieceId;
+    readonly hexId: HexId;
+    readonly facility: 'AIR_STRIP' | 'AIR_BASE';
+    readonly payments: readonly { readonly sourcePieceId: PieceId; readonly tokens: number }[];
+  })
+  /** 13.5f: Eq expended at an HQ rebuild aircraft: Dead Pile aircraft arrive Active at a friendly Air Base, reduced ones stacked with the Eq are made whole. */
+  | (ActionEnvelope & {
+    readonly kind: 'REBUILD_AIRCRAFT';
+    readonly eqPieceId: PieceId;
+    readonly hqId: PieceId;
+    readonly aircraftIds: readonly PieceId[];
+    /** Air Base the Dead Pile aircraft arrive at; null when only reduced aircraft are rebuilt in place. */
+    readonly baseId: PieceId | null;
+  })
+  /** 14.10b: plan the Air Drop of combat units: where and on which Game Turn. Made in the Aircraft Refit Phase. */
+  | (ActionEnvelope & { readonly kind: 'PLAN_AIR_DROP'; readonly unitIds: readonly PieceId[]; readonly hexId: HexId; readonly turn: number })
+  /** 14.10c: delay (one turn later) or cancel all or part of a Drop Plan, in an Aircraft Refit Phase. */
+  | (ActionEnvelope & { readonly kind: 'UPDATE_AIR_DROP_PLAN'; readonly planId: string; readonly unitIds: readonly PieceId[]; readonly change: 'DELAY' | 'CANCEL' })
   /** 13.9-4: two reduced aircraft of the same type, values and status in one hex combine into one full-strength aircraft. */
   | (ActionEnvelope & { readonly kind: 'COMBINE_AIRCRAFT'; readonly aircraftIds: readonly PieceId[] });
 
@@ -632,6 +721,14 @@ export type RuleEvent =
   | { readonly kind: 'AIR_COMBAT_ROUND'; readonly sequence: number; readonly attackerPieceId: PieceId; readonly defenderPieceId: PieceId; readonly modifiedRoll: number; readonly result: string; readonly lossDie: number }
   | { readonly kind: 'FLAK_ROLLED'; readonly sequence: number; readonly modifiedRoll: number; readonly hit: boolean }
   | { readonly kind: 'AIR_BASE_LEVEL_CHANGED'; readonly sequence: number; readonly pieceId: PieceId; readonly level: number }
+  | { readonly kind: 'REPLACEMENTS_ARRIVED'; readonly sequence: number; readonly playerId: PlayerId; readonly pieceId: PieceId; readonly equipment: number }
+  | { readonly kind: 'AIRCRAFT_REBUILT'; readonly sequence: number; readonly pieceId: PieceId; readonly hexId: HexId | null }
+  | { readonly kind: 'AIR_CARGO_DELIVERED'; readonly sequence: number; readonly hexId: HexId; readonly unitIds: readonly PieceId[]; readonly tokens: number; readonly drop: boolean }
+  | { readonly kind: 'AIR_CARGO_LOST'; readonly sequence: number; readonly unitIds: readonly PieceId[]; readonly tokens: number; readonly reason: 'FLAK' | 'LANDING' }
+  | { readonly kind: 'DROP_PLAN_CHANGED'; readonly sequence: number; readonly planId: string; readonly change: 'PLANNED' | 'DELAYED' | 'CANCELLED' | 'FLOWN'; readonly turn: number }
+  /** 9.14f: an Air Base taken by the enemy; each aircraft there rolled on the Air Base Capture Table (step lost on `stepLossMaximum` or less). */
+  | { readonly kind: 'AIR_BASE_CAPTURED'; readonly sequence: number; readonly hexId: HexId; readonly capturerId: PlayerId; readonly baseCaptured: boolean; readonly stepLossMaximum: number; readonly rolls: readonly { readonly pieceId: PieceId; readonly roll: number; readonly total: number; readonly stepLost: boolean; readonly eliminated: boolean }[] }
+  | { readonly kind: 'AIR_BASE_BUILT'; readonly sequence: number; readonly pieceId: PieceId; readonly hexId: HexId; readonly level: number; readonly strip: boolean }
   | { readonly kind: 'TRAINBUSTING_CHANGED'; readonly sequence: number; readonly hexId: HexId; readonly ownerId: PlayerId; readonly placed: boolean };
 
 export interface RuleViolation {

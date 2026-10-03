@@ -299,6 +299,20 @@ export class MapView {
     this.#cameraMoved();
   }
 
+  /** Pan so the hex is on screen: a choice made from the deck (a build site, a mission hex) must not happen out of sight. */
+  ensureVisible(hexId: string): void {
+    const cell = this.#geometry?.byId.get(hexId);
+    if (!cell || this.#cssWidth === 0 || this.#cssHeight === 0) return;
+    const at = this.#toCss(cell.x, cell.y);
+    const margin = 80;
+    if (at.x >= margin && at.y >= margin && at.x <= this.#cssWidth - margin && at.y <= this.#cssHeight - margin) return;
+    const fit = this.#fit();
+    const offset = this.#frameOffset();
+    this.camera.x = (this.#cssWidth / 2 - offset.x) / fit - this.camera.zoom * cell.x;
+    this.camera.y = (this.#cssHeight / 2 - offset.y) / fit - this.camera.zoom * cell.y;
+    this.#cameraMoved();
+  }
+
   /** The hex's bounding box in client (viewport) pixels, for popups anchored beside it. */
   hexClientRect(hexId: string): DOMRect | null {
     const cell = this.#geometry?.byId.get(hexId);

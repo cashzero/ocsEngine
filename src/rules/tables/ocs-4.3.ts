@@ -279,7 +279,7 @@ export const AIR_BASE_CAPTURE = { stepLossMaximum: 6, activeModifier: 2, advance
 
 /**
  * 14.10d Air Transport Success Table: the highest failing modified 2d6 by hex status and terrain.
- * Transcribed for the air transport slice; nothing consumes it until Air Drop is implemented.
+ * Used by Air Drop landings (rules/air/transport.ts); gliders add +1 to the roll, the game-specific -1 modifiers are not applied.
  */
 export const AIR_TRANSPORT_FAILURE_MAXIMUM: Readonly<Record<'FRIENDLY' | 'ENEMY', Readonly<Record<'CLEAR' | 'CLOSED', number>>>> = {
   FRIENDLY: { CLEAR: 4, CLOSED: 5 },

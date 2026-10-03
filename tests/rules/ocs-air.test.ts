@@ -15,6 +15,9 @@ import {
   generateRandomOob,
   generatedPieceId,
   isActiveAircraft,
+  isAirStrip,
+  isEngineerCapable,
+  largestFirstPayments,
   parseFacilityResult,
   parseGameStateJson,
   prepareNewGame,
@@ -24,6 +27,8 @@ import {
   serializeGameState,
   settleDecisions,
   withAircraftActive,
+  withAirBaseLevel,
+  ruleEngine,
   type GameState,
   type HexId,
   type NewGameRequest,
@@ -303,6 +308,23 @@ describe('Air Bases (9.14f, 13.9, 14.11, 15.4)', () => {
     expect(codes(mission(state, ALLIED, { mission: 'BASE_TRANSFER', aircraftIds: [S.aF1], targetHexId: ALLIED_BASE }))).toContain('AIRCRAFT_ALREADY_FLEW');
   });
 
+  it('offers the base the aircraft took off from first and names it when it chooses where to return', () => {
+    // The target is next to the first base, so that base is the nearer one, but the bomber took off from the second.
+    let state = atStep(standardState({ [S.aB1]: [second, null], [S.aF1]: [second, null] }), 'MOVEMENT', 'BARRAGE', ALLIED);
+    state = ok(mission(state, ALLIED, { mission: 'BARRAGE', aircraftIds: [S.aB1], targetHexId: hex(2), target: 'COMBAT_UNITS' }));
+    let guard = 0;
+    while (state.pendingDecision && state.pendingDecision.kind !== 'AIR_RETURN' && guard++ < 20) {
+      const decision = state.pendingDecision;
+      state = ok(applyRuleAction(state, decision.ownerId, { kind: 'RESPOND_DECISION', decisionId: decision.id, choiceId: decision.kind === 'INTERCEPTION' ? 'decline' : decision.options[0]!.id }));
+    }
+    const decision = state.pendingDecision!;
+    expect(decision.kind).toBe('AIR_RETURN');
+    expect(decision.options.map(({ hexId }) => hexId)).toEqual([second, ALLIED_BASE]);
+    expect(decision.options[0]!.label).toMatch(/^Original Air Base at /u);
+    expect(decision.options[1]!.label).toMatch(/^Air Base at /u);
+    expect(decision.prompt).toContain(`It took off from ${second}.`);
+  });
+
   it('captures an Air Base: aircraft roll and displace Inactive to another base or are lost (9.14f)', () => {
     let state = atStep(standardState(), 'MOVEMENT', 'MOVEMENT', AXIS);
     state = ok(applyRuleAction(state, AXIS, { kind: 'MOVE_PIECE', pieceId: S.xTrk, path: [hex(2), ALLIED_BASE] }));
@@ -334,6 +356,80 @@ describe('Air Bases (9.14f, 13.9, 14.11, 15.4)', () => {
     state = ok(applyRuleAction(state, ALLIED, { kind: 'COMBINE_AIRCRAFT', aircraftIds: [U.aF1, U.aF2] }));
     expect(piece(state, U.aF1).remainingSteps).toBe(2);
     expect(piece(state, U.aF2).location).toEqual({ kind: 'ELIMINATED' });
+  });
+});
+
+describe('Air Base construction (13.8d, 15.2, 15.3)', () => {
+  const SITE = hex(3);
+  // The Allied HQ stands two hexes from the site in Combat Mode; the Allied dump sits at its Air Base next to it.
+  const buildState = (mode: 'COMBAT' | 'MOVE' = 'COMBAT') => atStep(airState({ [U.aHq]: [hex(2), mode, mode === 'COMBAT' ? 'combat' : 'move'] }), 'MOVEMENT', 'MOVEMENT', ALLIED);
+  const build = (state: GameState, facility: 'AIR_STRIP' | 'AIR_BASE', cost: number, hexId: HexId = SITE, engineerId: PieceId = U.aHq) =>
+    applyRuleAction(state, ALLIED, { kind: 'BUILD_AIR_BASE', engineerId, hexId, facility, payments: largestFirstPayments(state, ALLIED, hexId, cost) ?? [] });
+  const baseAt = (state: GameState, hexId: HexId) => state.pieceState.pieces.find((entry) => entry.location.kind === 'ON_MAP' && entry.location.hexId === hexId && /air-built|air-base/u.test(String(entry.id)) && entry.ownerId === ALLIED);
+
+  it('lets an HQ in Combat Mode build an Air Strip for 1T, and then it cannot move', () => {
+    const start = buildState();
+    expect(isEngineerCapable(start, piece(start, U.aHq))).toBe(true);
+    const tokensBefore = start.pieceState.pieces.filter(({ definitionId }) => String(definitionId).includes('supply')).reduce((sum, entry) => sum + (entry.ownerId === ALLIED ? entry.resourceQuantity ?? 0 : 0), 0);
+    const state = ok(build(start, 'AIR_STRIP', 1));
+    const strip = baseAt(state, SITE)!;
+    expect(isAirStrip(state, strip)).toBe(true);
+    expect(airBaseLevel(state, strip)).toBe(0);
+    expect(state.air.builtHexIds).toEqual([SITE]);
+    expect(state.air.builderIds).toEqual([U.aHq]);
+    const after = state.pieceState.pieces.filter(({ definitionId }) => String(definitionId).includes('supply')).reduce((sum, entry) => sum + (entry.ownerId === ALLIED ? entry.resourceQuantity ?? 0 : 0), 0);
+    expect(tokensBefore - after).toBe(1);
+    expect(codes(applyRuleAction(state, ALLIED, { kind: 'MOVE_PIECE', pieceId: U.aHq, path: [hex(2), hex(1)] }))).toContain('ENGINEER_BUILT');
+    // One hex, one task per phase (13.8d).
+    expect(codes(build(state, 'AIR_STRIP', 1, hex(4)))).toContain('ENGINEER_ALREADY_BUILT');
+  });
+
+  it('builds a Level-1 Air Base for 1 SP, improves it one Level per turn up to 3 (15.3)', () => {
+    // Three Levels cost 3 SP: give the dump 12T and more.
+    let state = ok(build(withPiece(buildState(), U.aSup, (entry) => ({ ...entry, resourceQuantity: 40 })), 'AIR_BASE', 4));
+    expect(airBaseLevel(state, baseAt(state, SITE)!)).toBe(1);
+    // A second engineer or the same phase cannot raise it again.
+    expect(codes(build(state, 'AIR_BASE', 4))).toEqual(expect.arrayContaining(['LEVEL_ONE_PER_TURN']));
+    for (const expected of [2, 3]) {
+      state = { ...state, air: { ...state.air, builtHexIds: [], builderIds: [] }, usage: [] };
+      state = ok(build(state, 'AIR_BASE', 4));
+      expect(airBaseLevel(state, baseAt(state, SITE)!)).toBe(expected);
+    }
+    state = { ...state, air: { ...state.air, builtHexIds: [], builderIds: [] }, usage: [] };
+    expect(codes(build(state, 'AIR_BASE', 4))).toContain('AIR_BASE_MAXIMUM_LEVEL');
+  });
+
+  it('upgrades an Air Strip to a Level-1 Air Base for 3T and keeps one base per hex (15.2A, 15.0a)', () => {
+    let state = ok(build(buildState(), 'AIR_STRIP', 1));
+    const stripId = baseAt(state, SITE)!.id;
+    state = { ...state, air: { ...state.air, builtHexIds: [], builderIds: [] }, usage: [] };
+    expect(codes(build(state, 'AIR_STRIP', 1))).toContain('ALREADY_AIR_STRIP');
+    state = ok(build(state, 'AIR_BASE', 3));
+    const base = baseAt(state, SITE)!;
+    expect(base.id).toBe(stripId);
+    expect(isAirStrip(state, base)).toBe(false);
+    expect(airBaseLevel(state, base)).toBe(1);
+  });
+
+  it('refuses the wrong cost, a unit that is not Engineer-Capable, a site beyond 2 hexes, and other phases', () => {
+    const start = buildState();
+    expect(codes(applyRuleAction(start, ALLIED, { kind: 'BUILD_AIR_BASE', engineerId: U.aHq, hexId: SITE, facility: 'AIR_BASE', payments: largestFirstPayments(start, ALLIED, SITE, 3) ?? [] }))).toContain('CONSTRUCTION_COST');
+    expect(codes(build(buildState('MOVE'), 'AIR_STRIP', 1))).toContain('NOT_ENGINEER_CAPABLE');
+    expect(codes(build(start, 'AIR_STRIP', 1, hex(8)))).toContain('CONSTRUCTION_OUT_OF_RANGE');
+    expect(codes(build(atStep(start, 'MOVEMENT', 'BARRAGE', ALLIED), 'AIR_STRIP', 1))).toContain('INVALID_CONSTRUCTION_PHASE');
+    expect(codes(build(start, 'AIR_STRIP', 1, AXIS_BASE))).toEqual(expect.arrayContaining(['CONSTRUCTION_OUT_OF_RANGE']));
+  });
+
+  it('offers builds as legal candidates and lets an HQ reduce an Air Base without a garrison (13.8d, 15.4)', () => {
+    const start = buildState();
+    const offered = ruleEngine.getActionCandidates(start, { actorId: ALLIED, kind: 'BUILD_AIR_BASE', pieceId: U.aHq, budget: 50 });
+    expect(offered.actions.length).toBeGreaterThan(0);
+    for (const action of offered.actions) expect(ruleEngine.validateAction(start, action).allowed).toBe(true);
+    // Raise the Allied base next to the HQ to Level 2, then reduce it with the HQ alone.
+    const level2 = withPiece(start, U.aBase, (entry) => withAirBaseLevel(entry, 2));
+    const reduced = ok(applyRuleAction(level2, ALLIED, { kind: 'REDUCE_AIR_BASE', baseId: U.aBase, pieceIds: [], engineerId: U.aHq }));
+    expect(airBaseLevel(reduced, piece(reduced, U.aBase))).toBe(1);
+    expect(reduced.air.builderIds).toContain(U.aHq);
   });
 });
 

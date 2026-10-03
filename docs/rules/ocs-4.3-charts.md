@@ -96,7 +96,7 @@ Surprise（9.8）：Overrun 修正後 ≥9 攻方、≤6 守方；一般攻擊 �
 - Flak：修正後 2d6 ≥11 損 1 step。修正：任務 ≥3 架 +1；目標格有 HQ +1；機場 Level（Air Strip 0）；地圖／艦艇 Flak（產生地圖沒有）；目標在敵 PZ 且任務有 Fighter +1、沒有 Fighter +2、Trainbusting 再 +1。
 - Mission Loss（一顆骰）：2 架 `#1 #1 #1 #2 #2 #2`；3 架 `#1 #1 #2 #2 #3 #3`；4 架 `#1 #2 #3 #4 W S`。
 - Air Base Capture：每架 2d6，≤6 損 1 step；Active +2、推進佔領 +2。
-- Air Transport Success：Friendly Clear ≤4 失敗、Closed ≤5；Enemy Clear ≤5、Closed ≤6（只轉錄，空運 A5 未實作）。
+- Air Transport Success：Friendly Clear ≤4 失敗、Closed ≤5；Enemy Clear ≤5、Closed ≤6。滑翔機降落擲骰 +1（14.10e）。表上的 −1（ETO 1944 年 8 月前、蘇軍空降）是遊戲專屬修正，產生劇本不套用。Friendly＝該格在本階段開始時有友軍單位；Clear＝地形 Clear（城市、城鎮除外）、Village 或有機場的格。
 - Barrage vs Facility（一顆骰 × 8 欄：1 以下、2、3-4、5-10、11-20、21-40、41-80、81+）：
 
 | 骰 | 1 以下 | 2 | 3-4 | 5-10 | 11-20 | 21-40 | 41-80 | 81+ |

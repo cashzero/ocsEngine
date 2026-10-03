@@ -35,6 +35,8 @@ import {
   roundOcs,
 } from '../tables/ocs-4.3.js';
 import { violation } from '../validation/violation.js';
+import { settleInterrupts } from '../lifecycle/interrupts.js';
+import { applyCargoLoss, cargoLoss, isTransportMission, resolveCargo, routeFlight, routeReach, routeStays, startingCargo, transportTargets, validateTransportMission } from './transport.js';
 import {
   activeAircraftAt,
   activeAircraftLimit,
@@ -70,6 +72,8 @@ export const AIR_MISSION_LABELS: Readonly<Record<AirMissionKind, string>> = {
   HIP_SHOOT: 'Hip Shoot',
   TRAINBUSTING: 'Trainbusting',
   BASE_TRANSFER: 'Base Transfer',
+  AIR_TRANSPORT: 'Air Transport',
+  AIR_DROP: 'Air Drop',
 };
 
 /** 14.2e, 14.6-14.11: the segment in which each mission is flown. */
@@ -122,7 +126,8 @@ export const validateAirMission = (state: GameState, action: AirMissionDeclarati
     if (!isActiveAircraft(piece)) issues.push(violation('AIRCRAFT_INACTIVE', path, `${name} is Inactive and must refit first.`, '14.1a'));
     if (state.air.missionFlownIds.includes(piece.id)) issues.push(violation('AIRCRAFT_ALREADY_FLEW', path, `${name} already flew a mission this phase.`, '14.2e'));
     const range = aircraftRange(state, piece) * (transfer ? 2 : 1);
-    if (hexId && hexDistanceBetween(hexId, action.targetHexId) > range) {
+    // A Transport's range depends on how it flies (14.9e), which the cargo checks below validate.
+    if (!isTransportMission(action.mission) && hexId && hexDistanceBetween(hexId, action.targetHexId) > range) {
       issues.push(violation('MISSION_OUT_OF_RANGE', path, `${name} has a range of ${range} hexes${transfer ? ' for a transfer' : ''}.`, transfer ? '14.11' : '14.2d'));
     }
   }
@@ -139,6 +144,7 @@ export const validateAirMission = (state: GameState, action: AirMissionDeclarati
   } else if (action.target !== null) {
     issues.push(violation('UNEXPECTED_BARRAGE_TARGET', ['target'], 'Only barrage missions announce a target type.', '10.0d'));
   }
+  if (!isTransportMission(action.mission) && action.cargo) issues.push(violation('UNEXPECTED_CARGO', ['cargo'], 'Only Air Transport and Air Drop carry cargo.', '14.9'));
   if (barrage || action.mission === 'TRAINBUSTING') {
     if (strength < 1) issues.push(violation('BARRAGE_STRENGTH_TOO_LOW', ['aircraftIds'], 'It takes at least one Barrage Strength point to get on the table.', '10.0'));
   }
@@ -172,6 +178,10 @@ export const validateAirMission = (state: GameState, action: AirMissionDeclarati
       }
       break;
     }
+    case 'AIR_TRANSPORT':
+    case 'AIR_DROP':
+      issues.push(...validateTransportMission(state, action, pieces));
+      break;
     case 'BARRAGE':
       break;
   }
@@ -239,6 +249,7 @@ export const declareAirMission = (state: GameState, action: AirMissionDeclaratio
       targetLosses: 0,
       returns: [],
       log: [`${AIR_MISSION_LABELS[action.mission]} on ${action.targetHexId}: ${names}.`],
+      cargo: startingCargo(state, action),
     },
   };
   // 10.0eA: a declared barrage counts against the hex limit even if Flak or Interception stops it.
@@ -289,7 +300,10 @@ const abortMissionAircraft = (state: GameState, pieceId: PieceId): GameState => 
   const required = friendlyAirBaseAt(state, owner, state.activeTransaction!.targetHexId) ? state.activeTransaction!.targetHexId : null;
   return withAir(state, {
     aircraft: air.aircraft.filter((entry) => entry.pieceId !== pieceId),
-    returns: [...air.returns, { pieceId, fromHexId: state.activeTransaction!.targetHexId, requiredHexId: required, staysActive: false }],
+    returns: [...air.returns, {
+      pieceId, fromHexId: state.activeTransaction!.targetHexId, originHexId: air.aircraft.find((entry) => entry.pieceId === pieceId)?.baseHexId,
+      requiredHexId: required, staysActive: false,
+    }],
   });
 };
 
@@ -455,6 +469,9 @@ const subjectToFlak = (state: GameState): boolean => {
     case 'BARRAGE':
     case 'HIP_SHOOT':
     case 'TRAINBUSTING': return true;
+    // 14.4a: Air Transport, Air Drop and Base Transfer roll Flak only inside an enemy Patrol Zone.
+    case 'AIR_TRANSPORT':
+    case 'AIR_DROP':
     case 'BASE_TRANSFER': return inPatrolZoneOf(state, transaction.defenderOwnerId, transaction.targetHexId);
     case 'FIGHTER_SWEEP': return false;
   }
@@ -652,11 +669,23 @@ const resolveFacility = (input: GameState, events: RuleEvent[]): GameState => {
   return logLine(state, `${lines}.`);
 };
 
-const resolveMission = (input: GameState, events: RuleEvent[]): GameState => {
+const resolveMission = (input: GameState, events: RuleEvent[]): Transition | GameState => {
   let state = input;
   const air = airOf(state);
   if (air.aircraft.length === 0) return logLine(withAir(state, { stage: 'RETURN' }), 'No mission aircraft remain; the mission is over.');
   switch (air.mission) {
+    case 'AIR_TRANSPORT':
+    case 'AIR_DROP': {
+      // 14.4g: Flak may have cut the Transports' capacity below the load; the owner picks what is destroyed.
+      const loss = air.cargo ? cargoLoss(state, air.cargo, air.aircraft.map(({ pieceId }) => pieceId)) : { excess: 0, options: [] };
+      if (loss.options.length > 0) {
+        return ask(state, events, decisionFor(state, 'CARGO_LOSS', state.activeTransaction!.ownerId,
+          `Flak cut the Transports' capacity: the load is ${loss.excess / 2}T too heavy. Choose cargo to destroy.`,
+          loss.options.map((option) => ({ id: option.id, label: option.label, hexId: null }))));
+      }
+      state = resolveCargo(state, events);
+      break;
+    }
     case 'FIGHTER_SWEEP':
       state = logLine(state, 'The sweep is complete.');
       break;
@@ -680,7 +709,7 @@ export const returnBases = (state: GameState, entry: AirReturn): readonly HexId[
   const piece = pieceById(state, entry.pieceId)!;
   const bases = friendlyAirBases(state, piece.ownerId).map((base) => hexOf(base)!);
   if (entry.requiredHexId !== null && bases.includes(entry.requiredHexId)) return [entry.requiredHexId];
-  return bases.filter((hexId) => hexDistanceBetween(entry.fromHexId, hexId) <= aircraftRange(state, piece));
+  return bases.filter((hexId) => hexDistanceBetween(entry.fromHexId, hexId) <= (entry.rangeHexes ?? aircraftRange(state, piece)));
 };
 
 const landAt = (input: GameState, entry: AirReturn, hexId: HexId | null, events: RuleEvent[]): GameState => {
@@ -709,9 +738,12 @@ const returnStep = (state: GameState, events: RuleEvent[]): Transition | GameSta
     const transfer = air.mission === 'BASE_TRANSFER';
     const returns: AirReturn[] = air.aircraft.filter(({ pieceId }) => alive(state, pieceId)).map(({ pieceId, baseHexId }) => {
       const piece = pieceById(state, pieceId)!;
+      // 14.9e: a carrying Transport returns the way it flew: Inactive where it landed, or to a base within its normal or half range.
+      const route = air.cargo?.routes.find((entry) => entry.pieceId === pieceId)?.route;
       return {
-        pieceId, fromHexId: transaction.targetHexId,
-        requiredHexId: transfer ? transaction.targetHexId : null,
+        pieceId, fromHexId: transaction.targetHexId, originHexId: baseHexId,
+        rangeHexes: route && routeFlight(route) === 'HALF' ? routeReach(state, piece, route) : undefined,
+        requiredHexId: transfer || (route !== undefined && routeStays(route) && air.mission === 'AIR_TRANSPORT') ? transaction.targetHexId : null,
         staysActive: transfer && isFighter(state, piece) && hexDistanceBetween(baseHexId, transaction.targetHexId) <= aircraftRange(state, piece),
       };
     });
@@ -723,10 +755,16 @@ const returnStep = (state: GameState, events: RuleEvent[]): Transition | GameSta
   const bases = returnBases(state, entry);
   if (bases.length <= 1) return landAt(state, entry, bases[0] ?? null, events);
   const piece = pieceById(state, entry.pieceId)!;
+  const origin = entry.originHexId !== undefined && bases.includes(entry.originHexId) ? entry.originHexId : null;
+  // The base it took off from comes first and is named, so the default choice is the obvious one; the rest are nearest first.
+  const ordered = stableSort(bases, (left, right) => Number(right === origin) - Number(left === origin)
+    || hexDistanceBetween(entry.fromHexId, left) - hexDistanceBetween(entry.fromHexId, right) || String(left).localeCompare(String(right)));
   return ask(state, events, decisionFor(state, 'AIR_RETURN', piece.ownerId,
-    `${ratingLabel(state, piece)} returns to base${entry.staysActive ? ' and stays Active' : ' and becomes Inactive'}: choose a friendly Air Base within ${aircraftRange(state, piece)} hexes of ${entry.fromHexId}.`,
-    stableSort(bases, (left, right) => hexDistanceBetween(entry.fromHexId, left) - hexDistanceBetween(entry.fromHexId, right) || String(left).localeCompare(String(right)))
-      .map((hexId) => ({ id: `base:${hexId}`, label: `Air Base at ${hexId} (${hexDistanceBetween(entry.fromHexId, hexId)} hexes)`, hexId }))));
+    `${ratingLabel(state, piece)} returns to base${entry.staysActive ? ' and stays Active' : ' and becomes Inactive'}: choose a friendly Air Base within ${aircraftRange(state, piece)} hexes of ${entry.fromHexId}.${origin === null ? '' : ` It took off from ${origin}.`}`,
+    ordered.map((hexId) => ({
+      id: `base:${hexId}`, hexId,
+      label: `${hexId === origin ? 'Original Air Base' : 'Air Base'} at ${hexId} (${hexDistanceBetween(entry.fromHexId, hexId)} hexes)`,
+    }))));
 };
 
 const finishMission = (state: GameState, events: RuleEvent[]): Transition => {
@@ -734,7 +772,10 @@ const finishMission = (state: GameState, events: RuleEvent[]): Transition => {
   const air = airOf(state);
   // The result names everything that happened after the declaration, for the history and notices.
   events.push({ kind: 'TRANSACTION_RESOLVED', sequence: events.length, transactionId: transaction.id, result: air.log.slice(1).join(' ') || `${AIR_MISSION_LABELS[air.mission]} complete.` });
-  return { state: { ...state, activeTransaction: null, pendingDecision: null }, events };
+  // 9.14f: a drop that captured an Air Base leaves its aircraft to displace; their owner places them now, as after a move.
+  const settled = settleInterrupts({ ...state, activeTransaction: null, pendingDecision: null }, null);
+  for (const event of settled.events) events.push({ ...event, sequence: events.length });
+  return { state: settled.state, events };
 };
 
 const targetLossStep = (state: GameState, events: RuleEvent[]): Transition | GameState => {
@@ -847,6 +888,9 @@ export const resolveAirDecision = (input: GameState, choiceId: string): Transiti
     case 'MISSION_LOSS':
       state = withAir(flakLoss(state, choiceId.slice('loss:'.length) as PieceId, events), { stage: 'RESOLVE' });
       break;
+    case 'CARGO_LOSS':
+      state = applyCargoLoss(state, choiceId, events);
+      break;
     case 'STEP_LOSS':
       state = applyTargetLoss(state, choiceId.slice('piece:'.length) as PieceId, events);
       break;
@@ -873,6 +917,7 @@ export const readyAircraft = (state: GameState, playerId: PlayerId): readonly Pi
  * aircraft and holding the right kind of target. Trainbusting may target any hex in range.
  */
 export const airMissionTargets = (state: GameState, playerId: PlayerId, mission: AirMissionKind): readonly { readonly hexId: HexId; readonly target: AirMissionState['target'] }[] => {
+  if (mission === 'AIR_TRANSPORT' || mission === 'AIR_DROP') return transportTargets(state, playerId, mission).map((hexId) => ({ hexId, target: null }));
   const ready = readyAircraft(state, playerId).filter((piece) => mission !== 'HIP_SHOOT' || (mayHipShoot(state, piece) && !isStrategicBomber(state, piece)));
   if (ready.length === 0) return [];
   const inRange = (hexId: HexId, factor = 1) => ready.some((piece) => hexOf(piece) !== hexId && hexDistanceBetween(hexOf(piece)!, hexId) <= aircraftRange(state, piece) * factor);
@@ -910,4 +955,4 @@ export const aircraftForTarget = (state: GameState, playerId: PlayerId, mission:
   (left, right) => (mission === 'FIGHTER_SWEEP' ? Number(isFighter(state, right)) - Number(isFighter(state, left)) || airCombatRating(state, right) - airCombatRating(state, left) : 0)
     || aircraftBarrageStrength(state, right) - aircraftBarrageStrength(state, left) || String(left.id).localeCompare(String(right.id)));
 
-export const AIR_MISSION_KINDS: readonly AirMissionKind[] = ['FIGHTER_SWEEP', 'BASE_TRANSFER', 'HIP_SHOOT', 'BARRAGE', 'TRAINBUSTING'];
+export const AIR_MISSION_KINDS: readonly AirMissionKind[] = ['FIGHTER_SWEEP', 'BASE_TRANSFER', 'AIR_TRANSPORT', 'AIR_DROP', 'HIP_SHOOT', 'BARRAGE', 'TRAINBUSTING'];

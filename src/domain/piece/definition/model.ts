@@ -14,6 +14,8 @@ export const PIECE_FAMILIES = [
   'AIR',
   'NAVAL',
   'FACILITY',
+  /** Equipment (Eq) replacement counters (13.5): spent to rebuild lost aircraft steps (13.5f). */
+  'REPLACEMENT',
   'MARKER',
   'DEFERRED',
 ] as const;

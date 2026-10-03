@@ -49,6 +49,10 @@ const ACTION_LABELS: Readonly<Record<GameAction['kind'], string>> = {
   REFIT_AIRCRAFT: 'Refit aircraft',
   DECLARE_AIR_MISSION: 'Air mission',
   REDUCE_AIR_BASE: 'Reduce Air Base',
+  BUILD_AIR_BASE: 'Build Air Base',
+  REBUILD_AIRCRAFT: 'Rebuild aircraft',
+  PLAN_AIR_DROP: 'Plan Air Drop',
+  UPDATE_AIR_DROP_PLAN: 'Change Drop Plan',
   COMBINE_AIRCRAFT: 'Combine aircraft',
 };
 
@@ -71,6 +75,16 @@ export const printedHexLabel = (hexId: string): string => {
   const { q, r } = parsed.value;
   const column = q + Math.floor(r / 2) + 1;
   return `${String(column).padStart(2, '0')}${String(r + 1).padStart(2, '0')}`;
+};
+
+/** The hex a printed number names ("0507"), or null when it is not a number of this map. */
+export const hexFromPrintedLabel = (text: string): string | null => {
+  const match = /^\s*(\d{2})(\d{2})\s*$/u.exec(text);
+  if (!match) return null;
+  const column = Number(match[1]) - 1;
+  const r = Number(match[2]) - 1;
+  const q = column - Math.floor(r / 2);
+  return Number.isSafeInteger(q) && r >= 0 && column >= 0 ? `${q},${r}` : null;
 };
 
 export const actionSummary = (action: GameAction): string => {
@@ -103,6 +117,10 @@ export const actionSummary = (action: GameAction): string => {
     case 'REFIT_AIRCRAFT': return `Refit ${action.aircraftIds.length} aircraft (1T)`;
     case 'DECLARE_AIR_MISSION': return `${AIR_MISSION_LABELS[action.mission]} ${printedHexLabel(action.targetHexId)} with ${action.aircraftIds.length} aircraft`;
     case 'REDUCE_AIR_BASE': return 'Reduce the Air Base one Level';
+    case 'PLAN_AIR_DROP': return `Plan a drop of ${action.unitIds.length} unit${action.unitIds.length === 1 ? '' : 's'} at ${printedHexLabel(action.hexId)} on turn ${action.turn}`;
+    case 'UPDATE_AIR_DROP_PLAN': return action.change === 'DELAY' ? 'Delay the drop one turn' : 'Cancel the drop';
+    case 'REBUILD_AIRCRAFT': return `Rebuild ${action.aircraftIds.length} aircraft with Eq`;
+    case 'BUILD_AIR_BASE': return `${action.facility === 'AIR_STRIP' ? 'Build an Air Strip' : 'Build or improve an Air Base'} at ${printedHexLabel(action.hexId)}`;
     case 'COMBINE_AIRCRAFT': return 'Combine two reduced aircraft';
   }
 };

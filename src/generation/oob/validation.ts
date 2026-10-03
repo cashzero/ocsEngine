@@ -72,7 +72,9 @@ export const validateGeneratedOob = (
   const breakdownIds = new Set(generated.pieceDefinitionCatalog.definitions.flatMap(({ capabilities }) => capabilities
     .filter(({ id }) => id === 'BREAKDOWN').flatMap(({ parameters }) => parameters
       .flatMap((parameter) => parameter.key === 'definitionId' && parameter.kind === 'TEXT' ? [parameter.value] : []))));
-  const definitionIds = new Set(generated.pieceDefinitionCatalog.definitions.map(({ id }) => id).filter((id) => !breakdownIds.has(id)));
+  // The Air Base and Air Strip templates (15.2, 15.3) likewise have no starting unit: engineers make Air Bases from them in play.
+  const templateIds = new Set(generated.pieceDefinitionCatalog.definitions.filter(({ family, capabilities }) => family === 'REPLACEMENT' || capabilities.some(({ id }) => id === 'AIR_FACILITY_TEMPLATE')).map(({ id }) => id));
+  const definitionIds = new Set(generated.pieceDefinitionCatalog.definitions.map(({ id }) => id).filter((id) => !breakdownIds.has(id) && !templateIds.has(id)));
   if (allUnits.some(({ definitionId }) => !definitionIds.has(definitionId))
     || definitionIds.size !== allUnits.length
     || [...breakdownIds].some((id) => !generated.pieceDefinitionCatalog.definitions.some((definition) => definition.id === id))) {

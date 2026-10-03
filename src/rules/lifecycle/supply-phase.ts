@@ -50,7 +50,8 @@ export const determineSupply = (state: GameState, playerId: PlayerId, events: Ru
     if (piece.ownerId !== playerId || piece.location.kind !== 'ON_MAP') continue;
     const combat = isCombatUnit(state, piece);
     if (!combat && !isTransportPoint(state, piece)) continue;
-    const trace = combat ? pieceHasTrace(state, piece) : traceSupplyAvailableAt(state, playerId, piece.location.hexId);
+    // 12.6h, 14.10b: a unit that made its planned Air Drop this turn needs no trace supply.
+    const trace = state.air.droppedIds.includes(piece.id) || (combat ? pieceHasTrace(state, piece) : traceSupplyAvailableAt(state, playerId, piece.location.hexId));
     // 12.8e: remember when a unit was first found out of trace (eating off the map does not reset it).
     let updated = trace ? withStatus(piece, OUT_OF_TRACE_SINCE_STATUS, null)
       : outOfTraceSince(piece) === null ? withStatus(piece, OUT_OF_TRACE_SINCE_STATUS, { kind: 'INTEGER', value: turn }) : piece;

@@ -7,6 +7,7 @@ import {
   parsePieceId,
   parsePlayerId,
   revision,
+  type PieceId,
   type Result,
 } from '../core/index.js';
 import { canonicalJson } from '../serialization/index.js';
@@ -14,6 +15,9 @@ import {
   parseRuleActionId,
   parseRuleDecisionId,
   parseRuleTransactionId,
+  AIR_ROUTES,
+  type AirCargoDeclaration,
+  type AirRoute,
   type GameAction,
 } from '../rules/index.js';
 import {
@@ -120,9 +124,14 @@ const parseAction = (input: unknown, path: Path, issues: GameplayError[]): GameA
     REFIT_AIRCRAFT: ['baseId', 'aircraftIds', 'sourcePieceId'],
     DECLARE_AIR_MISSION: ['mission', 'aircraftIds', 'targetHexId', 'target'],
     REDUCE_AIR_BASE: ['baseId', 'pieceIds'], COMBINE_AIRCRAFT: ['aircraftIds'],
+    BUILD_AIR_BASE: ['engineerId', 'hexId', 'facility', 'payments'],
+    REBUILD_AIRCRAFT: ['eqPieceId', 'hqId', 'aircraftIds', 'baseId'],
+    PLAN_AIR_DROP: ['unitIds', 'hexId', 'turn'], UPDATE_AIR_DROP_PLAN: ['planId', 'unitIds', 'change'],
   };
   if (!(kind in fields)) issues.push(issue('SAVE_INVALID', [...path, 'kind'], `Unknown action kind ${kind}.`));
-  exactKeys(record, ['actionId', 'actorId', 'expectedRevision', 'kind', ...(fields[kind] ?? [])], path, issues);
+  // REDUCE_AIR_BASE gained an optional engineer; logs written before it do not carry the key.
+  // REDUCE_AIR_BASE gained an optional engineer and DECLARE_AIR_MISSION an optional cargo; logs written before them do not carry the keys.
+  exactKeys(record, ['actionId', 'actorId', 'expectedRevision', 'kind', ...(fields[kind] ?? []), ...(kind === 'REDUCE_AIR_BASE' && 'engineerId' in record ? ['engineerId'] : []), ...(kind === 'DECLARE_AIR_MISSION' && 'cargo' in record ? ['cargo'] : [])], path, issues);
   const actionText = textAt(record, 'actionId', path, issues);
   const actorText = textAt(record, 'actorId', path, issues);
   const parsedActionId = parseRuleActionId(actionText);
@@ -205,12 +214,36 @@ const parseAction = (input: unknown, path: Path, issues: GameplayError[]): GameA
     case 'REFIT_AIRCRAFT': return { ...base, baseId: piece('baseId'), aircraftIds: pieces('aircraftIds'), sourcePieceId: piece('sourcePieceId') } as GameAction;
     case 'DECLARE_AIR_MISSION': {
       const mission = textAt(record, 'mission', path, issues);
-      if (!['FIGHTER_SWEEP', 'BARRAGE', 'HIP_SHOOT', 'TRAINBUSTING', 'BASE_TRANSFER'].includes(mission)) issues.push(issue('SAVE_INVALID', [...path, 'mission'], 'Invalid air mission.'));
+      if (!['FIGHTER_SWEEP', 'BARRAGE', 'HIP_SHOOT', 'TRAINBUSTING', 'BASE_TRANSFER', 'AIR_TRANSPORT', 'AIR_DROP'].includes(mission)) issues.push(issue('SAVE_INVALID', [...path, 'mission'], 'Invalid air mission.'));
       const target = record.target === null ? null : textAt(record, 'target', path, issues);
       if (target !== null && !['COMBAT_UNITS', 'AIR_BASE'].includes(target)) issues.push(issue('SAVE_INVALID', [...path, 'target'], 'Invalid barrage target.'));
-      return { ...base, mission, aircraftIds: pieces('aircraftIds'), targetHexId: hex('targetHexId'), target } as GameAction;
+      return { ...base, mission, aircraftIds: pieces('aircraftIds'), targetHexId: hex('targetHexId'), target, ...('cargo' in record ? { cargo: parseCargo(record.cargo, [...path, 'cargo'], issues) } : {}) } as GameAction;
     }
-    case 'REDUCE_AIR_BASE': return { ...base, baseId: piece('baseId'), pieceIds: pieces('pieceIds') } as GameAction;
+    case 'REDUCE_AIR_BASE': return { ...base, baseId: piece('baseId'), pieceIds: pieces('pieceIds'), ...('engineerId' in record ? { engineerId: record.engineerId === null ? null : piece('engineerId') } : {}) } as GameAction;
+    case 'PLAN_AIR_DROP': return { ...base, unitIds: pieces('unitIds'), hexId: hex('hexId'), turn: integerAt(record, 'turn', path, issues) } as GameAction;
+    case 'UPDATE_AIR_DROP_PLAN': {
+      const change = textAt(record, 'change', path, issues);
+      if (!['DELAY', 'CANCEL'].includes(change)) issues.push(issue('SAVE_INVALID', [...path, 'change'], 'Invalid Drop Plan change.'));
+      return { ...base, planId: textAt(record, 'planId', path, issues), unitIds: pieces('unitIds'), change } as GameAction;
+    }
+    case 'REBUILD_AIRCRAFT': return { ...base, eqPieceId: piece('eqPieceId'), hqId: piece('hqId'), aircraftIds: pieces('aircraftIds'), baseId: record.baseId === null ? null : piece('baseId') } as GameAction;
+    case 'BUILD_AIR_BASE': {
+      const facility = textAt(record, 'facility', path, issues);
+      if (!['AIR_STRIP', 'AIR_BASE'].includes(facility)) issues.push(issue('SAVE_INVALID', [...path, 'facility'], 'Invalid facility.'));
+      const payments = Array.isArray(record.payments) ? record.payments : [];
+      if (!Array.isArray(record.payments)) issues.push(issue('SAVE_INVALID', [...path, 'payments'], 'Expected an array.'));
+      return {
+        ...base, engineerId: piece('engineerId'), hexId: hex('hexId'), facility,
+        payments: payments.map((entry, index) => {
+          const payment = recordAt(entry, [...path, 'payments', index], issues) ?? {};
+          exactKeys(payment, ['sourcePieceId', 'tokens'], [...path, 'payments', index], issues);
+          const sourceText = textAt(payment, 'sourcePieceId', [...path, 'payments', index], issues);
+          const parsed = parsePieceId(sourceText);
+          if (!parsed.ok) issues.push(issue('SAVE_INVALID', [...path, 'payments', index, 'sourcePieceId'], 'Invalid Piece ID.'));
+          return { sourcePieceId: parsed.ok ? parsed.value : sourceText as never, tokens: integerAt(payment, 'tokens', [...path, 'payments', index], issues) };
+        }),
+      } as GameAction;
+    }
     case 'COMBINE_AIRCRAFT': return { ...base, aircraftIds: pieces('aircraftIds') } as GameAction;
     case 'DIVIDE_TRANSPORT': return { ...base, truckId: piece('truckId'), points: integerAt(record, 'points', path, issues) } as GameAction;
     case 'FORM_EXTENDER': return { ...base, truckId: piece('truckId') } as GameAction;
@@ -218,6 +251,40 @@ const parseAction = (input: unknown, path: Path, issues: GameplayError[]): GameA
     case 'COLLAPSE_EXTENDER': return { ...base, extenderId: piece('extenderId'), hexId: hex('hexId') } as GameAction;
     default: return base as GameAction;
   }
+};
+
+const parseCargo = (input: unknown, path: Path, issues: GameplayError[]): AirCargoDeclaration | null => {
+  if (input === null) return null;
+  const cargo = recordAt(input, path, issues) ?? {};
+  exactKeys(cargo, ['baseHexId', 'unitIds', 'supply', 'routes'], path, issues);
+  const baseHexId = textAt(cargo, 'baseHexId', path, issues);
+  if (!parseHexCoordinateId(baseHexId).ok) issues.push(issue('SAVE_INVALID', [...path, 'baseHexId'], 'Invalid Hex ID.'));
+  const pieceAt = (value: unknown, at: Path): PieceId => {
+    const text = typeof value === 'string' ? value : '';
+    const parsed = parsePieceId(text);
+    if (!parsed.ok) issues.push(issue('SAVE_INVALID', at, 'Invalid Piece ID.'));
+    return parsed.ok ? parsed.value : text as never;
+  };
+  const list = (key: string): readonly unknown[] => {
+    if (!Array.isArray(cargo[key])) { issues.push(issue('SAVE_INVALID', [...path, key], 'Expected an array.')); return []; }
+    return cargo[key] as readonly unknown[];
+  };
+  return {
+    baseHexId: baseHexId as never,
+    unitIds: list('unitIds').map((value, index) => pieceAt(value, [...path, 'unitIds', index])),
+    supply: list('supply').map((entry, index) => {
+      const row = recordAt(entry, [...path, 'supply', index], issues) ?? {};
+      exactKeys(row, ['sourcePieceId', 'tokens'], [...path, 'supply', index], issues);
+      return { sourcePieceId: pieceAt(row.sourcePieceId, [...path, 'supply', index, 'sourcePieceId']), tokens: integerAt(row, 'tokens', [...path, 'supply', index], issues) };
+    }),
+    routes: list('routes').map((entry, index) => {
+      const row = recordAt(entry, [...path, 'routes', index], issues) ?? {};
+      exactKeys(row, ['pieceId', 'route'], [...path, 'routes', index], issues);
+      const route = textAt(row, 'route', [...path, 'routes', index], issues);
+      if (!AIR_ROUTES.includes(route as AirRoute)) issues.push(issue('SAVE_INVALID', [...path, 'routes', index, 'route'], 'Invalid flight style.'));
+      return { pieceId: pieceAt(row.pieceId, [...path, 'routes', index, 'pieceId']), route: route as AirRoute };
+    }),
+  };
 };
 
 const hexFromArray = (input: unknown, index: number, path: Path, issues: GameplayError[]) => {
@@ -272,10 +339,10 @@ const parseActionMetadata = (
 };
 
 /** Version written into every Gameplay save and the only one this build reads. */
-export const GAMEPLAY_SAVE_VERSION = '0.3.0' as const;
+export const GAMEPLAY_SAVE_VERSION = '0.4.0' as const;
 
 /** Older versions this build still reads, upgrading their snapshots on load (see `migrateLegacySave`). */
-export const LEGACY_GAMEPLAY_SAVE_VERSIONS: readonly string[] = ['0.2.0'];
+export const LEGACY_GAMEPLAY_SAVE_VERSIONS: readonly string[] = ['0.2.0', '0.3.0'];
 
 export const serializeGameplaySave = (
   envelope: GameplaySaveEnvelope,

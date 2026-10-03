@@ -206,6 +206,10 @@ export const describeRecord = (record: HistoryRecord, context: NarrativeContext)
     case 'DECLARE_COMBAT': title = `${who} ${action.combatKind === 'OVERRUN' ? 'overran' : 'attacked'} ${hex(action.targetHexId)}`; break;
     case 'DECLARE_BARRAGE': title = `${who} barraged ${hex(action.targetHexId)}`; break;
     case 'DECLARE_AIR_MISSION': title = `${who} flew ${action.mission.replaceAll('_', ' ').toLowerCase()} at ${hex(action.targetHexId)}`; break;
+    case 'BUILD_AIR_BASE': title = `${who} ${action.facility === 'AIR_STRIP' ? 'built an Air Strip' : 'built or improved an Air Base'} at ${hex(action.hexId)}`; break;
+    case 'REBUILD_AIRCRAFT': title = `${who} rebuilt ${action.aircraftIds.length === 1 ? 'an aircraft' : `${action.aircraftIds.length} aircraft`} with Eq`; break;
+    case 'PLAN_AIR_DROP': title = own ? `You planned an Air Drop at ${hex(action.hexId)} for turn ${action.turn}` : `${who} made a plan`; break;
+    case 'UPDATE_AIR_DROP_PLAN': title = own ? `You ${action.change === 'DELAY' ? 'delayed' : 'cancelled'} a Drop Plan` : `${who} changed a plan`; break;
     case 'RESPOND_DECISION': title = `${who} ${decisionVerb(String(action.decisionId))}`; break;
     case 'PLACE_REINFORCEMENT': title = own ? `${name(action.pieceId)} entered at ${hex(action.hexId)}` : `Enemy reinforcements entered at ${hex(action.hexId)}`; break;
     case 'END_MOVE': title = own ? `${name(action.pieceId)} finished moving` : 'An enemy unit finished moving'; break;
@@ -223,6 +227,16 @@ export const describeRecord = (record: HistoryRecord, context: NarrativeContext)
     switch (event.kind) {
       case 'WEATHER_DETERMINED': lines.push(`Weather: ${event.groundCondition.toLowerCase()} ground${event.roll === null ? '' : ` (roll ${event.roll})`}.`); break;
       case 'FIRST_PLAYER_ROLLED': lines.push(`First player roll: ${event.rolls.map(({ playerId, total }) => `${context.playerName(playerId)} ${total}`).join(', ')}; ${context.playerName(event.winnerId)} chooses.`); break;
+      case 'AIR_BASE_BUILT': lines.push(event.strip ? `An Air Strip stands at ${hex(event.hexId)}.` : `The Air Base at ${hex(event.hexId)} is Level ${event.level}.`); break;
+      // 9.14f: both players see the capture and each aircraft's roll; displaced aircraft follow as PIECE_DISPLACED.
+      case 'AIR_BASE_CAPTURED':
+        lines.push(`${context.playerName(event.capturerId)} ${event.baseCaptured ? 'captured the Air Base at' : 'took'} ${hex(event.hexId)}.`);
+        for (const roll of event.rolls) lines.push(`${name(roll.pieceId)}: ${roll.total}${roll.total === roll.roll ? '' : ` (roll ${roll.roll} +${roll.total - roll.roll})`} on the Air Base Capture Table, ${roll.eliminated ? 'destroyed' : roll.stepLost ? 'loses a step and displaces' : 'displaces'}.`);
+        break;
+      case 'PIECE_DISPLACED': lines.push(event.toHexId === null ? `${name(event.pieceId)} had nowhere to go and was lost.` : `${name(event.pieceId)} was displaced to ${hex(event.toHexId)}.`); break;
+      case 'AIRCRAFT_REBUILT': lines.push(`${name(event.pieceId)} was rebuilt${event.hexId ? ` at ${hex(event.hexId)}` : ''}.`); break;
+      case 'REPLACEMENTS_ARRIVED': if (event.playerId === context.viewerId) lines.push(`${event.equipment} Eq arrived.`); break;
+      case 'DROP_PLAN_CHANGED': if (record.action.actorId === context.viewerId) lines.push(`Drop Plan ${event.change.toLowerCase()} (turn ${event.turn}).`); break;
       case 'STEP_LOST': lines.push(event.remainingSteps === null ? `${name(event.pieceId)} was eliminated.` : `${name(event.pieceId)} lost a step (${event.remainingSteps} left).`); break;
       case 'PIECE_RETREATED': lines.push(`${name(event.pieceId)} retreated to ${hex(event.toHexId)}.`); break;
       case 'PIECE_ADVANCED': lines.push(`${name(event.pieceId)} advanced into ${hex(event.toHexId)}.`); break;
@@ -327,6 +341,7 @@ export const buildCombatReports = (
 export const combatHeadline = (report: CombatReport, context: NarrativeContext): string => {
   const what = report.kind === 'AIR_MISSION' ? 'Air mission' : report.kind === 'BARRAGE' ? 'Barrage' : report.kind === 'OVERRUN' ? 'Overrun' : 'Attack';
   const facts = report.facts;
-  const odds = facts ? ` · ${facts.attackerStrength}${facts.defenderStrength === null ? '' : ` : ${facts.defenderStrength}`} · ${facts.odds}${facts.drm === null ? '' : ` · DRM ${signed(facts.drm)}`}` : '';
+  // A mission that carries cargo has no Barrage Strength to print; its headline is just the mission and the hex.
+  const odds = facts && !(report.kind === 'AIR_MISSION' && facts.attackerStrength === 0) ? ` · ${facts.attackerStrength}${facts.defenderStrength === null ? '' : ` : ${facts.defenderStrength}`} · ${facts.odds}${facts.drm === null ? '' : ` · DRM ${signed(facts.drm)}`}` : '';
   return `${context.playerName(report.attackerId)} ${what.toLowerCase()} on ${hex(report.targetHexId)}${odds}`;
 };

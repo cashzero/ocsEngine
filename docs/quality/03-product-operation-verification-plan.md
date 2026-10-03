@@ -161,23 +161,46 @@ is `BLOCKED`, not `PASS`; the missing scenario/setup path is a product gap to re
 | UI-04 | P0 | Run NG-07 and ACT-14 while collecting console/runtime errors | Zero uncaught exception or error log; failures appear in the UI | UNVERIFIED |
 | UI-05 | P1 | Keyboard traverse New Game, map selection, actions, modal, handoff | Focus remains visible and modal focus cannot escape into private content | UNVERIFIED |
 
-## F. Air power (added 2026-10-01 with M11-Air A9)
+## F. Air power (added 2026-10-01 with M11-Air A9; AIR-10 to AIR-15 added 2026-10-03)
 
-Run on a New Game with **Air forces: Fighters, bombers and Air Bases**. Air Transport and Air Drop
-(14.9, 14.10) are not implemented and have no row; Hip Shoots are unreachable because no air force is
-listed as able to Hip Shoot (game-specific rules were left out), so that part of AIR-05 is `BLOCKED`.
+Run on a New Game with **Air forces: Fighters, bombers and Air Bases** (and, from 2026-10-03, **Air transport** and
+**Air support** set to their non-None options). Hip Shoots are unreachable because no air force is listed as able to Hip
+Shoot (game-specific rules were left out), so that part of AIR-05 is `BLOCKED`.
+
+Amendment 2026-10-03 (user request: implement Air Transport/Air Drop, Air Base construction and air replacements/
+reinforcements, then "完成後把全部的驗收做完"): rows AIR-10 to AIR-15 cover the new features; the former note that Air
+Transport and Air Drop had no row is withdrawn. No existing expectation was changed.
+
+Execution 2026-10-03: every row was run in Chromium (Playwright, 1920×1080) against the built application, driving only
+visible controls (deck buttons, roster, hex chips, the map's arrow-key hex cursor and Enter, the menu's file chooser).
+Scripts: `scripts/air-acceptance/`. Evidence (inputs and seeds, every step, observed text, elapsed times, console
+errors, ending turn/phase or final revision, screenshots, saves): `docs/quality/evidence/air-2026-10-03/RUNS.md` and its run folders. All runs used the
+same final build. The state revision is printed only on the Game End dialog, so runs that stop mid-game record turn,
+player and phase instead. Dice-dependent checks use the rules seed named in the evidence folder; a run whose dice did not
+reach a case (for example seed 5105, where the interceptor drove off the whole raid before Flak, so AIR-04's barrage
+result was not shown) is kept as evidence and the case is taken from the run that reached it.
 
 | ID | Pri | Player operation | Required visible result | Status |
 |---|---:|---|---|---|
-| AIR-01 | P0 | Inspect both sides' aircraft and Air Bases in the preview, then on the mounted map from each seat | Printed values, Active status and Level match the preview; the enemy sees only the Air Base, its top Active plane and top combat unit (4.9a) | UNVERIFIED |
-| AIR-02 | P0 | Refit Inactive aircraft in the Aircraft Refit Phase | 1T cost, 2 × Level capacity, the un-negated ZOC restriction and the Active limit are visible; refitted aircraft become Active | UNVERIFIED |
-| AIR-03 | P0 | Fly a Fighter Sweep against an enemy Air Base | Voluntary aborts, alternating picks across hot-seat handoffs, round results, return to base Inactive | UNVERIFIED |
-| AIR-04 | P0 | Fly an air barrage into an enemy Patrol Zone and have it intercepted | The owner decides interception after a handoff; Air Combat, Flak with its modifiers, Mission Loss, the barrage result, and the one-barrage-per-hex limit are visible | UNVERIFIED |
-| AIR-05 | P1 | Fly Trainbusting; Hip Shoot where allowed | Marker shown; enemy movement costs +1 MP in the zone; marker removed at the enemy Clean Up. Hip Shoot: BLOCKED (see above) | UNVERIFIED |
-| AIR-06 | P1 | Base Transfer; barrage an Air Base on the Facility Table | Fighter within range stays Active; Level never drops below 1 | UNVERIFIED |
-| AIR-07 | P0 | Capture an Air Base with a ground unit | Capture rolls, displacement choice to a base within twice the range (or loss), aircraft Inactive | UNVERIFIED |
-| AIR-08 | P1 | Try a second barrage on the same hex and a second mission with the same aircraft | Both unavailable with the rule explained (10.0e, 14.2e) | UNVERIFIED |
-| AIR-09 | P0 | Play a whole turn with air forces, then to Game End; save, load and replay | No dead end; console has no errors; the loaded and replayed game matches | UNVERIFIED |
+| AIR-01 | P0 | Inspect both sides' aircraft and Air Bases in the preview, then on the mounted map from each seat | Printed values, Active status and Level match the preview; the enemy sees only the Air Base, its top Active plane and top combat unit (4.9a) | PASS (2026-10-03, `air-01-08-rules-5104`) |
+| AIR-02 | P0 | Refit Inactive aircraft in the Aircraft Refit Phase | 1T cost, 2 × Level capacity, the un-negated ZOC restriction and the Active limit are visible; refitted aircraft become Active | PASS (2026-10-03, after fixing the panel to show the ZOC rule and Active limit per base; `air-01-08-rules-5104`) |
+| AIR-03 | P0 | Fly a Fighter Sweep against an enemy Air Base | Voluntary aborts, alternating picks across hot-seat handoffs, round results, return to base Inactive | PASS (2026-10-03, `air-01-08-rules-5104`) |
+| AIR-04 | P0 | Fly an air barrage into an enemy Patrol Zone and have it intercepted | The owner decides interception after a handoff; Air Combat, Flak with its modifiers, Mission Loss, the barrage result, and the one-barrage-per-hex limit are visible | Interception, Air Combat, Flak with modifiers, the barrage result and the one-barrage limit PASS (2026-10-03, `air-01-08-rules-5104`); Mission Loss UNVERIFIED (no run reached a Flak hit on a multi-aircraft barrage) |
+| AIR-05 | P1 | Fly Trainbusting; Hip Shoot where allowed | Marker shown; enemy movement costs +1 MP in the zone; marker removed at the enemy Clean Up. Hip Shoot: BLOCKED (see above) | Trainbusting PASS (2026-10-03, after naming the marker in the hover text; `air-01-08-rules-5105`); Hip Shoot BLOCKED |
+| AIR-06 | P1 | Base Transfer; barrage an Air Base on the Facility Table | Fighter within range stays Active; Level never drops below 1 | PASS (2026-10-03, `air-01-08-rules-5104` and `air-06-facility-rules-5104`: Level 2 → 1, then a reducing result on Level 1 left it at Level 1) |
+| AIR-07 | P0 | Capture an Air Base with a ground unit | Capture rolls, displacement choice to a base within twice the range (or loss), aircraft Inactive | PASS (2026-10-03, after fixing unreported capture rolls and deferred displacement; `air-07-rules-5105`, captured by a paratroop battalion's Air Drop landing; capture by a ground move was not operated in the browser) |
+| AIR-08 | P1 | Try a second barrage on the same hex and a second mission with the same aircraft | Both unavailable with the rule explained (10.0e, 14.2e) | FAIL (2026-10-03, `air-01-08-rules-5104`): both are unavailable, but the UI only stops offering the hex and the aircraft; the rule (10.0e, 14.2e) is not explained |
+| AIR-09 | P0 | Play a whole turn with air forces, then to Game End; save, load and replay | No dead end; console has no errors; the loaded and replayed game matches | PASS (2026-10-03, after fixing Game End not reappearing on load; `air-09`, 3 turns, file save/load through the file chooser, replay hash re-run) |
+| AIR-10 | P0 | Build an Air Strip with an Engineer-Capable unit, upgrade it, and raise the base to Level 3 (13.8d, 15.2, 15.3) | Only a unit in Combat Mode is offered Construction; hexes within 2 Leg MP are listed; Air Strip 1T, upgrade 3T, new Level 1 4T, +1 Level 4T once per turn, never above Level 3; paid at once and shown in the ledger; one construction per phase | PASS (2026-10-03, `air-10`) |
+| AIR-11 | P0 | Receive Eq and rebuild an aircraft lost in Air Combat (13.5f) | Eq arrive in the Reinforcement Phase; the Rebuild tab lists the Dead Pile or reduced aircraft and the Eq beside an HQ in Combat Mode; rebuilding spends whole Eq and the aircraft arrives Active at the chosen base | PASS (2026-10-03, `air-11-12`) |
+| AIR-12 | P1 | Place a reinforcing aircraft on its turn (13.6) | It is listed in Arrivals and can be placed only at a friendly Air Base with Active room, arriving Active | PASS (2026-10-03, `air-11-12`) |
+| AIR-13 | P0 | Air Transport a unit and supply to another Air Base (14.9) | Load against capacity; over capacity refused with the rule; Half range doubles capacity; the unloading limit and its exemptions shown; the carried unit has half its MA | PASS (2026-10-03, `air-13-15`) |
+| AIR-14 | P0 | Plan, delay and cancel Drop Plans, then fly a parachute drop and a glider drop (14.10) | Plans made in the Aircraft Refit Phase; an unplanned combat-unit drop is refused; the Success Table number (with the glider +1) is the same in the preview and the result; the landing is rolled and reported | PASS (2026-10-03, after making the glider preview match the result; `air-13-15`) |
+| AIR-15 | P1 | Fly a full Transport through an enemy Patrol Zone (14.9g) | Flak is rolled with its modifiers; a hit cuts capacity and the owner chooses the cargo lost | PASS (2026-10-03, `air-13-15`, rules seed 5106) |
+
+The Air power section passes as a set only together with the rest of this plan's gate rules; the remaining gaps of the
+implementation (Glider Points, game-specific Success Table modifiers, generator-defined para counters, fixed Eq
+allotment, and others) are TODO items in `docs/reports/M11-air-power.md` §6.3 and the rules manifest.
 
 ## G. Supply and logistics (added 2026-10-02, plan `docs/roadmap/09-supply-logistics-ux-wbs.md`)
 

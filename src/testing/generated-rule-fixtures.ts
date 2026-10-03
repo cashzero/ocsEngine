@@ -51,6 +51,12 @@ export const AIR_NEW_GAME_REQUEST: NewGameRequest = {
   oob: { ...RULE_FIXTURE_NEW_GAME_REQUEST.oob, air: 'STANDARD' },
 };
 
+/** The air scenario with transports, paratroops, the Eq allotment and aircraft reinforcements as well. */
+export const FULL_AIR_NEW_GAME_REQUEST: NewGameRequest = {
+  ...RULE_FIXTURE_NEW_GAME_REQUEST,
+  oob: { ...RULE_FIXTURE_NEW_GAME_REQUEST.oob, air: 'STANDARD', airTransport: 'STANDARD', airSupport: 'STANDARD' },
+};
+
 const preparedCache = new Map<NewGameRequest, ReturnType<typeof prepareNewGame>>();
 const prepared = (request: NewGameRequest = RULE_FIXTURE_NEW_GAME_REQUEST) => {
   let entry = preparedCache.get(request);
