@@ -259,10 +259,13 @@ export const deployGeneratedForces = (
     // Dense fallback: three slots per Hex, used only when the spread slots cannot take a unit.
     const denseSlots = ranked.flatMap(({ hex }) => [hex.id, hex.id, hex.id]);
     const units = allUnits(oob).filter((unit) => unit.side === side);
-    const supplyUnits = units.filter(({ role }) => role === 'SUPPLY');
+    const supplyUnits = units.filter(({ role, staging }) => role === 'SUPPLY' && staging !== 'AIR_BASE');
     const airBases = units.filter(({ role }) => role === 'AIR_BASE');
-    const aircraft = units.filter(({ role }) => role === 'AIRCRAFT');
-    const fieldUnits = units.filter(({ role }) => role !== 'SUPPLY' && role !== 'AIR_BASE' && role !== 'AIRCRAFT');
+    const aircraft = units.filter(({ role, arrivalTurn }) => role === 'AIRCRAFT' && arrivalTurn === undefined);
+    // 13.6: reinforcing aircraft wait in the side's reinforcement box and arrive Active on their Game Turn.
+    const arrivingAircraft = units.filter(({ role, arrivalTurn }) => role === 'AIRCRAFT' && arrivalTurn !== undefined);
+    const stagedUnits = units.filter(({ staging }) => staging === 'AIR_BASE');
+    const fieldUnits = units.filter(({ role, staging }) => role !== 'SUPPLY' && role !== 'AIR_BASE' && role !== 'AIRCRAFT' && staging !== 'AIR_BASE');
     const groupOf = (unit: GeneratedOobUnit): string => groups.get(unit.id) ?? 'independent';
     const reinforcement = fieldUnits.find((unit) => groupOf(unit) === 'independent') ?? fieldUnits.at(-1);
     if (fieldUnits.length > denseSlots.length || sideSupply[side].length === 0) {
@@ -368,7 +371,22 @@ export const deployGeneratedForces = (
     placements.push(
       ...airBases.map((unit, index) => ({ unit, hexId: baseHexes[index]! })),
       ...aircraftPlacements,
+      // Paratroops wait at the first Air Base (14.9c); without an Air Base they deploy as ordinary field units would not, so the map must have one.
+      ...stagedUnits.flatMap((unit) => baseHexes[0] === undefined ? [] : [{ unit, hexId: baseHexes[0] }]),
     );
+    for (const [arrivalIndex, unit] of arrivingAircraft.entries()) {
+      const definition = definitionById.get(unit.definitionId);
+      const parsedId = parsePieceId(unit.id);
+      if (!definition || !parsedId.ok) return { ok: false, error: [deploymentFailure(`OOB unit ${unit.id} cannot be converted to runtime state.`)] };
+      pieces.push({
+        id: parsedId.value, definitionId: unit.definitionId, ownerId: sidePlayer(side, players),
+        location: { kind: 'OFF_MAP_BOX', boxId: GENERATED_REINFORCEMENT_BOXES[side] },
+        currentFaceId: deployedFace(definition)?.id ?? null, remainingSteps: fullStrength(definition), mode: null,
+        statuses: [{ statusDefinitionId: 'status:return-turn' as never, value: { kind: 'INTEGER', value: unit.arrivalTurn! } }],
+        // Order 0 in the box belongs to the reinforcing ground unit; each arriving aircraft takes the next order.
+        stackOrder: 1 + arrivalIndex, resourceQuantity: null,
+      });
+    }
     for (const { unit, hexId } of placements) {
       const definition = definitionById.get(unit.definitionId);
       const parsedId = parsePieceId(unit.id);

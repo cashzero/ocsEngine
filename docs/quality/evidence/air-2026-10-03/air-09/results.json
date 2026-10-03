@@ -1,0 +1,64 @@
+{
+  "title": "AIR-09 whole air game, save/load and replay (3 turns)",
+  "final": {
+    "turn": "Turn 3 / 3",
+    "player": "Axis player turn",
+    "phase": "Game over Phase",
+    "revision": "120"
+  },
+  "rows": [
+    {
+      "id": "AIR-09",
+      "expectation": "A whole game turn with air forces is completed through the deck (refits, sweeps, barrages, handoffs)",
+      "observed": "now Turn 2 / 3; flights so far: Turn 1 Allied FIGHTER_SWEEP, Turn 1 Allied BARRAGE, Turn 1 Axis FIGHTER_SWEEP, Turn 1 Axis BARRAGE, Turn 2 Allied FIGHTER_SWEEP",
+      "status": "PASS"
+    },
+    {
+      "id": "AIR-09",
+      "expectation": "Loading the mid-game save restores the saved turn, phase, seat, Log and stacks",
+      "observed": "changed to \"Movement · Barrage\" then loaded (564 ms): Turn 2 / 3 Allied player turn Movement Allied commander; stacks equal true; log equal true (47 entries)",
+      "status": "PASS"
+    },
+    {
+      "id": "AIR-09",
+      "expectation": "The game reaches Game End with no dead end",
+      "observed": "GAME END Draw The operation ends without a sole winner. Allied 0 Axis 0 Result: TURN LIMIT · final revision 120 Download final save Download replay View final map New Game",
+      "status": "PASS"
+    },
+    {
+      "id": "AIR-09",
+      "expectation": "The final save and the replay download as nonempty, parseable files",
+      "observed": "final save 708047 bytes, replay 254357 bytes with 120 actions",
+      "status": "PASS"
+    },
+    {
+      "id": "AIR-09",
+      "expectation": "Re-running the replay file reproduces its final state hash",
+      "observed": "replayed ok; hash sha256:1eb9b99380d04f2b984c50e65e3a26fe31545f0680b46a6bef4482848971facf vs sha256:1eb9b99380d04f2b984c50e65e3a26fe31545f0680b46a6bef4482848971facf",
+      "status": "PASS"
+    },
+    {
+      "id": "AIR-09",
+      "expectation": "Loading the final save shows the same Game End: winner, scores, reason and final revision",
+      "observed": "GAME END Draw The operation ends without a sole winner. Allied 0 Axis 0 Result: TURN LIMIT · final revision 120 Download final save Download replay View final map New Game (1174 ms)",
+      "status": "PASS"
+    },
+    {
+      "id": "AIR-09",
+      "expectation": "No browser console or page error during the run",
+      "observed": "0 errors",
+      "status": "PASS"
+    }
+  ],
+  "timings": [
+    {
+      "label": "load docs\\quality\\evidence\\air-2026-10-03\\air-09\\mid-game-save.json",
+      "elapsed": 564
+    },
+    {
+      "label": "load docs\\quality\\evidence\\air-2026-10-03\\air-09\\final-save.json",
+      "elapsed": 1174
+    }
+  ],
+  "errors": []
+}

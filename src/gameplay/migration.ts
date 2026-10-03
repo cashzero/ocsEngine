@@ -15,7 +15,7 @@ const sha256 = async (text: string): Promise<ContentHash> => {
 };
 
 /**
- * Upgrade one 0.2.0 snapshot. Its text must still hash to the hash recorded beside it, so a
+ * Upgrade one 0.2.0 or 0.3.0 snapshot. Its text must still hash to the hash recorded beside it, so a
  * tampered save is rejected exactly as before; the upgraded snapshot gets its new canonical hash.
  */
 const upgradeSnapshot = async (text: string, recorded: ContentHash, path: readonly (string | number)[]) => {

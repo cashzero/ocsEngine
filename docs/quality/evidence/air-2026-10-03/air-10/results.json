@@ -1,0 +1,103 @@
+{
+  "title": "AIR-10 Air Base construction",
+  "final": {
+    "turn": "Turn 5 / 8",
+    "player": "Allied player turn",
+    "phase": "Movement",
+    "revision": null
+  },
+  "rows": [
+    {
+      "id": "AIR-10",
+      "expectation": "Construction is offered in the Movement Phase",
+      "observed": "Turn 1 / 8, Allied player turn, Movement",
+      "status": "PASS"
+    },
+    {
+      "id": "AIR-10",
+      "expectation": "A unit in Move Mode is not Engineer-Capable (13.8a): no Construction section",
+      "observed": "no Construction section",
+      "status": "PASS"
+    },
+    {
+      "id": "AIR-10",
+      "expectation": "The hexes within 2 Leg MP are listed and highlighted",
+      "observed": "18 hexes: 0103 0104 0205 0105 0106 0207 0101 0102 0203 0204 0201 0202 0303 0304 0301 0302 0403 0402",
+      "status": "PASS"
+    },
+    {
+      "id": "AIR-10",
+      "expectation": "Both ways to build in an empty hex are priced: Air Base Level 1 = 4T (1 SP), Air Strip = 1T",
+      "observed": "Build a Level 1 Air Base · 4T (1 SP) | Build an Air Strip · 1T",
+      "status": "PASS"
+    },
+    {
+      "id": "AIR-10",
+      "expectation": "Building an Air Strip costs 1T, paid at once, in the same phase",
+      "observed": "notice \"Build an Air Strip at 0103 (1T).\" (341 ms)",
+      "status": "PASS"
+    },
+    {
+      "id": "AIR-10",
+      "expectation": "The supply ledger shows the 1T paid",
+      "observed": "Supply this turn 1T paid · 1 entry 1T drawn from a dump.",
+      "status": "PASS"
+    },
+    {
+      "id": "AIR-10",
+      "expectation": "The Engineer constructs in one hex per phase (13.8d): no second Construction offer",
+      "observed": "not offered",
+      "status": "PASS"
+    },
+    {
+      "id": "AIR-10",
+      "expectation": "Turn 2: Upgrade the Air Strip to a Level 1 Air Base for 3T, and nothing else at 0103",
+      "observed": "Upgrade the Air Strip to a Level 1 Air Base · 3T",
+      "status": "PASS"
+    },
+    {
+      "id": "AIR-10",
+      "expectation": "Turn 2: the ledger shows 3T paid",
+      "observed": "3T paid",
+      "status": "PASS"
+    },
+    {
+      "id": "AIR-10",
+      "expectation": "Turn 3: Improve the Air Base to Level 2 for 4T, and nothing else at 0103",
+      "observed": "Improve the Air Base to Level 2 · 4T (1 SP)",
+      "status": "PASS"
+    },
+    {
+      "id": "AIR-10",
+      "expectation": "Turn 3: the ledger shows 4T paid",
+      "observed": "4T paid",
+      "status": "PASS"
+    },
+    {
+      "id": "AIR-10",
+      "expectation": "Turn 4: Improve the Air Base to Level 3 for 4T, and nothing else at 0103",
+      "observed": "Improve the Air Base to Level 3 · 4T (1 SP)",
+      "status": "PASS"
+    },
+    {
+      "id": "AIR-10",
+      "expectation": "Turn 4: the ledger shows 4T paid",
+      "observed": "4T paid",
+      "status": "PASS"
+    },
+    {
+      "id": "AIR-10",
+      "expectation": "Turn 5: a Level-3 Air Base cannot be improved further (15.3)",
+      "observed": "site 0103 not offered",
+      "status": "PASS"
+    },
+    {
+      "id": "AIR-10",
+      "expectation": "No browser console or page error during the run",
+      "observed": "0 errors",
+      "status": "PASS"
+    }
+  ],
+  "timings": [],
+  "errors": []
+}

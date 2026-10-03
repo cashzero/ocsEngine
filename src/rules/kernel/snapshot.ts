@@ -26,6 +26,7 @@ import {
   decoder,
   literalDecoder,
   nullableDecoder,
+  optionalDecoder,
   taggedUnionDecoder,
   objectDecoder,
   refinedDecoder,
@@ -165,6 +166,7 @@ const usageDecoder: Decoder<PieceUsageState> = objectDecoder({
   breakoutAttempted: booleanDecoder,
   blown: booleanDecoder,
   unloadedTokens: safeIntegerDecoder,
+  airCarried: optionalDecoder(booleanDecoder),
 });
 
 const ledgerDecoder: Decoder<SegmentLedger> = objectDecoder({
@@ -250,9 +252,16 @@ const airMissionDecoder: Decoder<AirMissionState> = objectDecoder({
   flakTotal: nullableDecoder(safeIntegerDecoder),
   targetLosses: safeIntegerDecoder,
   returns: arrayDecoder(objectDecoder({
-    pieceId: pieceIdDecoder, fromHexId: hexIdDecoder, requiredHexId: nullableDecoder(hexIdDecoder), staysActive: booleanDecoder,
+    pieceId: pieceIdDecoder, fromHexId: hexIdDecoder, originHexId: optionalDecoder(hexIdDecoder), rangeHexes: optionalDecoder(safeIntegerDecoder), requiredHexId: nullableDecoder(hexIdDecoder), staysActive: booleanDecoder,
   })),
   log: arrayDecoder(stringDecoder),
+  cargo: optionalDecoder(nullableDecoder(objectDecoder({
+    baseHexId: hexIdDecoder,
+    unitIds: arrayDecoder(pieceIdDecoder),
+    supply: arrayDecoder(objectDecoder({ sourcePieceId: pieceIdDecoder, tokens: safeIntegerDecoder })),
+    routes: arrayDecoder(objectDecoder({ pieceId: pieceIdDecoder, route: literalDecoder('DOUBLE', 'NORMAL', 'NORMAL_STAY', 'HALF', 'HALF_STAY') })),
+    drop: nullableDecoder(literalDecoder('PARACHUTE', 'GLIDER')),
+  }))),
 });
 
 const airStateDecoder: Decoder<AirState> = objectDecoder({
@@ -260,10 +269,19 @@ const airStateDecoder: Decoder<AirState> = objectDecoder({
   refittedBaseIds: arrayDecoder(pieceIdDecoder),
   reducedBaseIds: arrayDecoder(pieceIdDecoder),
   trainbusting: arrayDecoder(objectDecoder({ hexId: hexIdDecoder, ownerId: playerIdDecoder })),
+  builtHexIds: arrayDecoder(hexIdDecoder),
+  builderIds: arrayDecoder(pieceIdDecoder),
+  dropPlans: arrayDecoder(objectDecoder({
+    id: stringDecoder, ownerId: playerIdDecoder, unitIds: arrayDecoder(pieceIdDecoder), hexId: hexIdDecoder, turn: safeIntegerDecoder,
+  })),
+  unloaded: arrayDecoder(objectDecoder({ hexId: hexIdDecoder, tokens: safeIntegerDecoder })),
+  droppedIds: arrayDecoder(pieceIdDecoder),
 });
 
 /** Air bookkeeping of a state with no air activity yet (also the value 0.2.0 snapshots migrate to). */
-export const EMPTY_AIR_STATE: AirState = { missionFlownIds: [], refittedBaseIds: [], reducedBaseIds: [], trainbusting: [] };
+export const EMPTY_AIR_STATE: AirState = {
+  missionFlownIds: [], refittedBaseIds: [], reducedBaseIds: [], trainbusting: [], builtHexIds: [], builderIds: [], dropPlans: [], unloaded: [], droppedIds: [],
+};
 
 const transactionDecoder: Decoder<RuleTransaction> = objectDecoder({
   id: transactionIdDecoder,
@@ -482,9 +500,11 @@ export const upgradeLegacyGameStateInput = (input: unknown): unknown => {
   if (typeof input !== 'object' || input === null || Array.isArray(input)) return input;
   const record = input as Readonly<Record<string, unknown>>;
   const transaction = record.activeTransaction;
+  const air = typeof record.air === 'object' && record.air !== null && !Array.isArray(record.air) ? record.air as Readonly<Record<string, unknown>> : null;
   return {
     ...record,
-    air: record.air ?? EMPTY_AIR_STATE,
+    // 0.3.0 air bookkeeping gains the construction ledger, Drop Plans and the unload ledger (empty in any older game).
+    air: air ? { ...EMPTY_AIR_STATE, ...air } : EMPTY_AIR_STATE,
     activeTransaction: typeof transaction === 'object' && transaction !== null && !Array.isArray(transaction)
       ? { air: null, ...(transaction as Readonly<Record<string, unknown>>) } : transaction ?? null,
   };

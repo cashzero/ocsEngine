@@ -17,7 +17,7 @@ import {
   type PieceStepProfile,
 } from '../../domain/piece/index.js';
 import { canonicalJson } from '../../serialization/index.js';
-import { ALLIED_AIRBORNE_DIVISION_GPIDS, COUNTER_CORPUS, TRUCK_COUNTER_POINTS, corpusCounter, corpusFaces } from './counter-corpus.js';
+import { ALLIED_AIRBORNE_DIVISION_GPIDS, ALLIED_PARA_GPID, AXIS_PARA_GPID, COUNTER_CORPUS, TRUCK_COUNTER_POINTS, corpusCounter, corpusFaces } from './counter-corpus.js';
 import { createSeededRandom, mixUint32 } from '../map/rng.js';
 import {
   BTR_BUILD_FILE_SHA256,
@@ -127,6 +127,9 @@ interface UnitBuildContext {
   readonly localId: string;
   /** Overrides the archetype's counter, for divisions whose printed regiments differ (US airborne). */
   readonly counterGpid?: number;
+  /** Overrides the echelon printed on the counter (a paratroop battalion is not a division). */
+  readonly echelon?: string;
+  readonly pointCost?: number;
 }
 
 const buildUnit = (context: UnitBuildContext): {
@@ -148,7 +151,7 @@ const buildUnit = (context: UnitBuildContext): {
       context.formationId ? `F${context.formationId.split(':').at(-1)}` : '',
       context.side === 'ALLIED' ? 'US' : 'GERMAN',
       context.formationId ? ['#75c3af', '#e2638b', '#6c9cd2', '#e4c063', '#ae87c7', '#c59064'][Number(context.formationId.split(':').at(-1)) - 1]! : null,
-      echelonFor(context.side, context.role, context.formationArchetype, context.formationId !== null)),
+      context.echelon ?? echelonFor(context.side, context.role, context.formationArchetype, context.formationId !== null)),
     id,
     family: source.family,
     name: context.name,
@@ -191,7 +194,7 @@ const buildUnit = (context: UnitBuildContext): {
     unit: {
       id: `${idBase}:unit`, definitionId: id, side: context.side,
       formationId: context.formationId, role: context.role,
-      sourceArchetypeId: source.id, pointCost: source.pointCost,
+      sourceArchetypeId: source.id, pointCost: context.pointCost ?? source.pointCost,
     },
     definition,
   };
@@ -225,8 +228,21 @@ export const normalizeRandomOobOptions = (
   if (options.air !== undefined && !(AIR_FORCE_LEVELS as readonly string[]).includes(options.air)) {
     errors.push({ code: 'INVALID_OPTIONS', message: 'Air forces must be NONE or STANDARD.', path: ['air'] });
   }
-  const { air, ...ground } = options;
-  return errors.length > 0 ? err(errors) : ok(air === 'STANDARD' ? { ...ground, air } : ground);
+  for (const key of ['airTransport', 'airSupport'] as const) {
+    const level = options[key];
+    if (level !== undefined && !(AIR_FORCE_LEVELS as readonly string[]).includes(level)) {
+      errors.push({ code: 'INVALID_OPTIONS', message: `${key} must be NONE or STANDARD.`, path: [key] });
+    } else if (level === 'STANDARD' && options.air !== 'STANDARD') {
+      errors.push({ code: 'INVALID_OPTIONS', message: `${key} needs the air forces option.`, path: [key] });
+    }
+  }
+  const { air, airTransport, airSupport, ...ground } = options;
+  return errors.length > 0 ? err(errors) : ok({
+    ...ground,
+    ...(air === 'STANDARD' ? { air } : {}),
+    ...(air === 'STANDARD' && airTransport === 'STANDARD' ? { airTransport } : {}),
+    ...(air === 'STANDARD' && airSupport === 'STANDARD' ? { airSupport } : {}),
+  });
 };
 
 const formationPlan = (
@@ -321,7 +337,25 @@ const buildSide = (
     return built.unit;
   });
   const air = options.air === 'STANDARD' ? buildAirForces(side, options, definitions) : [];
-  return { side, formations, independentUnits: [...independentUnits, ...air] };
+  // 14.10: one paratroop battalion (a Para symbol unit, 14.10a) per side for Air Drops; air transports carry them.
+  const paratroops = options.air === 'STANDARD' && options.airTransport === 'STANDARD' ? (() => {
+    const built = buildUnit({
+      options, side, role: 'COMBAT', formationArchetype: 'AIRBORNE', formationId: null,
+      name: side === 'ALLIED' ? 'US Parachute Infantry Battalion' : 'Ge Fallschirmjäger Battalion',
+      localId: 'independent-para-1', counterGpid: side === 'ALLIED' ? ALLIED_PARA_GPID : AXIS_PARA_GPID, echelon: 'II', pointCost: 6,
+    });
+    definitions.push(built.definition);
+    return [{ ...built.unit, staging: 'AIR_BASE' as const }];
+  })() : [];
+  // 14.9c: 1 SP waits at the first Air Base too, so the first Air Transport has supply to carry (supply must stand in the base hex).
+  const staged = options.air === 'STANDARD' && options.airTransport === 'STANDARD' ? (() => {
+    const built = buildUnit({
+      options, side, role: 'SUPPLY', formationId: null, name: unitName(side, 'SUPPLY', 90, options.seed, undefined, ''), localId: 'independent-supply-staged',
+    });
+    definitions.push(built.definition);
+    return [{ ...built.unit, staging: 'AIR_BASE' as const }];
+  })() : [];
+  return { side, formations, independentUnits: [...independentUnits, ...paratroops, ...staged, ...air] };
 };
 
 export const generateRandomOob = (

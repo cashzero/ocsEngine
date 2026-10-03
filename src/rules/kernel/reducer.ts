@@ -3,6 +3,9 @@ import { setHexControl } from '../../domain/map/index.js';
 import { upsertPieceState } from '../../domain/piece/index.js';
 import { declareBarrage, declareCombat, nextStackOrder, resolveDecision } from '../combat/combat.js';
 import { applyCombineAircraft, applyReduceAirBase, applyRefit } from '../air/base.js';
+import { applyBuildAirBase } from '../air/construction.js';
+import { applyRebuildAircraft } from '../air/replacement.js';
+import { applyPlanAirDrop, applyUpdateDropPlan } from '../air/transport.js';
 import { declareAirMission, resolveAirDecision } from '../air/mission.js';
 import { applyInterruptChoice, settleInterrupts } from '../lifecycle/interrupts.js';
 import {
@@ -234,6 +237,14 @@ const dispatch = (state: GameState, action: GameAction): Transition => {
       return applyRefit(state, action);
     case 'REDUCE_AIR_BASE':
       return applyReduceAirBase(state, action);
+    case 'BUILD_AIR_BASE':
+      return applyBuildAirBase(state, action);
+    case 'REBUILD_AIRCRAFT':
+      return applyRebuildAircraft(state, action);
+    case 'PLAN_AIR_DROP':
+      return applyPlanAirDrop(state, action);
+    case 'UPDATE_AIR_DROP_PLAN':
+      return applyUpdateDropPlan(state, action);
     case 'COMBINE_AIRCRAFT':
       return applyCombineAircraft(state, action);
     case 'RESPOND_DECISION': {

@@ -20,6 +20,9 @@ import {
 } from '../pieces.js';
 import { combatActionRating } from '../combat/strength.js';
 import { combineCandidates, refitCandidates } from '../air/base.js';
+import { constructionHexes, constructionOptions, isEngineerCapable, largestFirstPayments } from '../air/construction.js';
+import { defaultRebuild, rebuildOptions } from '../air/replacement.js';
+import { dropPlanCandidates, transportCandidates } from '../air/transport.js';
 import { AIR_MISSION_KINDS, aircraftForTarget, airMissionTargets, missionSegment } from '../air/mission.js';
 import { airBaseLevel, friendlyAirBases, isAirStrip } from '../air/aircraft.js';
 import {
@@ -28,7 +31,7 @@ import {
   unitsNeedingRecovery,
   unitsNeedingSupply,
 } from '../supply/supply.js';
-import { definitionOf, locatedHexOf, reTicksOf, usageOf } from '../pieces.js';
+import { definitionOf, locatedHexOf, pieceById, reTicksOf, usageOf } from '../pieces.js';
 import type { ActionFamily, CandidateRequest } from './model.js';
 
 const actionId = (value: string): RuleActionId => {
@@ -290,6 +293,14 @@ export const candidateActions = (
     case 'DECLARE_AIR_MISSION': {
       if (state.activeTransaction !== null || state.pendingDecision !== null) break;
       for (const mission of AIR_MISSION_KINDS.filter((kind) => missionSegment(kind) === state.sequence.segment)) {
+        if (mission === 'AIR_TRANSPORT' || mission === 'AIR_DROP') {
+          // The load is part of the order, so these missions are built from the cargo that is at each base.
+          for (const body of transportCandidates(state, request.actorId, mission, 40)) {
+            if (request.pieceId !== null && !body.aircraftIds.includes(request.pieceId)) continue;
+            if (add({ ...base(state, request.actorId, `air:${mission}:${body.targetHexId}:${body.aircraftIds.join('+')}`), ...body })) return actions;
+          }
+          continue;
+        }
         for (const { hexId, target } of airMissionTargets(state, request.actorId, mission)) {
           const eligible = aircraftForTarget(state, request.actorId, mission, hexId).filter(({ id }) => request.pieceId === null || id === request.pieceId);
           if (eligible.length === 0) continue;
@@ -309,6 +320,44 @@ export const candidateActions = (
         const units = owned.filter((piece) => hexOf(piece) === hexOf(airBase) && piece.mode === 'COMBAT' && !usageOf(state, piece).moved);
         if (units.length === 0) continue;
         if (add({ ...base(state, request.actorId, `reduce:${airBase.id}`), kind: 'REDUCE_AIR_BASE', baseId: airBase.id, pieceIds: units.map(({ id }) => id) })) return actions;
+      }
+      // 15.4, 13.8d: an Engineer-Capable unit within its 2-hex radius can also do the work.
+      for (const engineer of owned.filter((piece) => (request.pieceId === null || piece.id === request.pieceId) && isEngineerCapable(state, piece))) {
+        for (const airBase of friendlyAirBases(state, request.actorId).filter((piece) => !isAirStrip(state, piece) && airBaseLevel(state, piece) > 1 && constructionHexes(state, engineer).includes(hexOf(piece)!))) {
+          if (add({ ...base(state, request.actorId, `reduce:${airBase.id}:by:${engineer.id}`), kind: 'REDUCE_AIR_BASE', baseId: airBase.id, pieceIds: [], engineerId: engineer.id })) return actions;
+        }
+      }
+      break;
+    case 'PLAN_AIR_DROP':
+      for (const body of dropPlanCandidates(state, request.actorId)) {
+        if (request.pieceId !== null && !body.unitIds.includes(request.pieceId)) continue;
+        if (add({ ...base(state, request.actorId, `plan-drop:${body.unitIds.join('+')}:${body.hexId}`), ...body })) return actions;
+      }
+      break;
+    case 'UPDATE_AIR_DROP_PLAN':
+      for (const plan of state.air.dropPlans.filter((entry) => entry.ownerId === request.actorId && entry.turn <= state.sequence.gameTurn + 1)) {
+        if (request.pieceId !== null && !plan.unitIds.includes(request.pieceId)) continue;
+        if (add({ ...base(state, request.actorId, `delay-drop:${plan.id}`), kind: 'UPDATE_AIR_DROP_PLAN', planId: plan.id, unitIds: [...plan.unitIds], change: 'DELAY' })) return actions;
+      }
+      break;
+    case 'REBUILD_AIRCRAFT':
+      for (const option of rebuildOptions(state, request.actorId)) {
+        if (request.pieceId !== null && option.eq.id !== request.pieceId && option.hq.id !== request.pieceId && !option.aircraftIds.includes(request.pieceId)) continue;
+        const aircraftIds = defaultRebuild(state, option);
+        if (aircraftIds.length === 0) continue;
+        const arriving = aircraftIds.some((id) => pieceById(state, id)?.location.kind === 'ELIMINATED');
+        for (const baseId of arriving ? option.baseIds : [null]) {
+          if (add({ ...base(state, request.actorId, `rebuild:${option.eq.id}:${baseId ?? 'here'}`), kind: 'REBUILD_AIRCRAFT', eqPieceId: option.eq.id, hqId: option.hq.id, aircraftIds: [...aircraftIds], baseId })) return actions;
+        }
+      }
+      break;
+    case 'BUILD_AIR_BASE':
+      for (const engineer of owned.filter((piece) => request.pieceId === null || piece.id === request.pieceId)) {
+        for (const { hexId, plan } of constructionOptions(state, engineer)) {
+          const payments = largestFirstPayments(state, request.actorId, hexId, plan.cost);
+          if (payments === null) continue;
+          if (add({ ...base(state, request.actorId, `build:${engineer.id}:${hexId}:${plan.facility}`), kind: 'BUILD_AIR_BASE', engineerId: engineer.id, hexId, facility: plan.facility, payments })) return actions;
+        }
       }
       break;
     case 'COMBINE_AIRCRAFT':
@@ -333,7 +382,7 @@ export const ALL_ACTION_KINDS: readonly GameAction['kind'][] = [
   'CANCEL_TRANSACTION', 'PLACE_REINFORCEMENT', 'PAY_FUEL', 'RECOVER_INTERNALS', 'CHOOSE_FORMATION_TRACE',
   'ATTEMPT_BREAKOUT', 'BLOW_DUMP', 'LOAD_SUPPLY', 'UNLOAD_SUPPLY', 'COMBINE_TRANSPORT', 'DIVIDE_TRANSPORT',
   'FORM_EXTENDER', 'DISSOLVE_EXTENDER', 'COLLAPSE_EXTENDER',
-  'REFIT_AIRCRAFT', 'DECLARE_AIR_MISSION', 'REDUCE_AIR_BASE', 'COMBINE_AIRCRAFT',
+  'REFIT_AIRCRAFT', 'DECLARE_AIR_MISSION', 'REDUCE_AIR_BASE', 'BUILD_AIR_BASE', 'REBUILD_AIRCRAFT', 'PLAN_AIR_DROP', 'UPDATE_AIR_DROP_PLAN', 'COMBINE_AIRCRAFT',
 ];
 
 /**
@@ -380,7 +429,11 @@ export const kindMayBeLegal = (state: GameState, actorId: PlayerId, kind: GameAc
     case 'COLLAPSE_EXTENDER': return phase === 'MOVEMENT' && segment === 'MOVEMENT';
     case 'REFIT_AIRCRAFT': return phase === 'AIRCRAFT_REFIT';
     case 'DECLARE_AIR_MISSION': return (segment === 'MOVEMENT' || segment === 'BARRAGE') && ['MOVEMENT', 'REACTION', 'EXPLOITATION'].includes(phase);
-    case 'REDUCE_AIR_BASE': return phase === 'MOVEMENT' && segment === 'MOVEMENT';
+    case 'REDUCE_AIR_BASE':
+    case 'BUILD_AIR_BASE': return phase === 'MOVEMENT' && segment === 'MOVEMENT';
+    case 'REBUILD_AIRCRAFT': return phase === 'REINFORCEMENT';
+    case 'PLAN_AIR_DROP':
+    case 'UPDATE_AIR_DROP_PLAN': return phase === 'AIRCRAFT_REFIT';
     case 'COMBINE_AIRCRAFT': return true;
     case 'RESPOND_DECISION':
     case 'COMMIT_TRANSACTION':

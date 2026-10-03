@@ -44,6 +44,10 @@ export interface RandomOobOptions {
   readonly armoredDivisionsPerSide: number;
   /** Absent means NONE, so ground-only requests generate exactly what they did before air power. */
   readonly air?: AirForceLevel;
+  /** Absent means NONE. STANDARD adds transport aircraft (14.9) and a paratroop battalion per side for Air Drops (14.10). Needs `air`. */
+  readonly airTransport?: AirForceLevel;
+  /** Absent means NONE. STANDARD adds the Eq allotment (13.5f) and aircraft reinforcements (13.6). Needs `air`. */
+  readonly airSupport?: AirForceLevel;
 }
 
 export interface NormalizedRandomOobOptions extends RandomOobOptions {}
@@ -56,6 +60,10 @@ export interface GeneratedOobUnit {
   readonly role: OobUnitRole;
   readonly sourceArchetypeId: string;
   readonly pointCost: number;
+  /** Aircraft that reinforce: the Game Turn they arrive Active at a friendly Air Base (13.6). */
+  readonly arrivalTurn?: number;
+  /** Paratroops start in the hex of an Air Base, ready to be carried (14.9c). */
+  readonly staging?: 'AIR_BASE';
 }
 
 export interface GeneratedOobFormation {

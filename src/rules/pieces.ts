@@ -317,6 +317,8 @@ export const movementAllowanceTicks = (state: GameState, piece: PieceState): num
   if (state.sequence.phase === 'REACTION' && released) allowance /= 2;
   if (piece.mode === 'DG') allowance /= 2;
   if (piece.mode === 'EXPLOITATION') allowance /= 2;
+  // 4.7d, 14.9d: a unit carried by air this phase has half its MA in all; in the Reaction Phase that comes on top of the halving above.
+  if (usageOf(state, piece).airCarried) allowance /= 2;
   return allowance;
 };
 

@@ -59,6 +59,19 @@ export const aircraftDesignation = (state: GameState, piece: PieceState): string
 export const isFighter = (state: GameState, piece: PieceState): boolean => aircraftTypes(state, piece).includes('F');
 export const isStrategicBomber = (state: GameState, piece: PieceState): boolean => aircraftTypes(state, piece).includes('S');
 
+/** 14.9a: the Transport capacity printed on the current side, in half-Tokens (1T = 2); 0 for aircraft that carry nothing. */
+export const aircraftTransportCapacity = (state: GameState, piece: PieceState): number => {
+  const step = stepOf(state, piece);
+  return typeof step?.ratings.find(({ ratingDefinitionId }) => ratingDefinitionId === TRANSPORT_CAPACITY_RATING)?.value === 'number'
+    ? Number(step!.ratings.find(({ ratingDefinitionId }) => ratingDefinitionId === TRANSPORT_CAPACITY_RATING)!.value) : 0;
+};
+
+/** 14.10f: a Transport that always tows its own glider (the C-47+Gldr). */
+export const hasIntegralGlider = (state: GameState, piece: PieceState): boolean => {
+  const value = aircraftParameter(state, piece, 'integralGlider');
+  return value?.kind === 'FLAG' && value.value;
+};
+
 /** 14.3a: an aircraft with a parenthesized Air Combat Rating cannot initiate Air Combat. */
 export const hasParenthesizedRating = (state: GameState, piece: PieceState): boolean => {
   const value = aircraftParameter(state, piece, 'parenthesized');
