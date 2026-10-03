@@ -16,6 +16,7 @@ import type {
   RuleViolation,
 } from '../kernel/model.js';
 import { rollDie, rollTwoDice } from '../kernel/rng.js';
+import { applyCreateBreakdown, mayCreateBreakdown, pieceNameOf } from '../breakdown/breakdown.js';
 import { settleInterrupts, applyInterruptChoice } from '../lifecycle/interrupts.js';
 import {
   adjacentHexIds,
@@ -87,7 +88,18 @@ export { calculateCombatOdds } from './strength.js';
 type Transition = { readonly state: GameState; readonly events: readonly RuleEvent[] };
 
 export const unitName = (state: GameState, piece: PieceState | undefined): string =>
-  piece ? definitionOf(state, piece)?.name ?? 'Unit' : 'Unit';
+  piece ? pieceNameOf(piece) ?? definitionOf(state, piece)?.name ?? 'Unit' : 'Unit';
+
+const BREAKDOWN_RETREAT_PREFIX = 'breakdown:';
+const BREAKDOWN_ADVANCE_PREFIX = 'advance-breakdown:';
+
+/** 20.0a: detach a Breakdown as a unit begins to retreat or advance; returns the state and the new Breakdown's ID. */
+const detachInCombat = (state: GameState, parentId: PieceId, events: RuleEvent[]): { readonly state: GameState; readonly breakdownId: PieceId } => {
+  const created = applyCreateBreakdown(state, parentId);
+  events.push(...created.events.map((event) => ({ ...event, sequence: events.length })));
+  const event = created.events.find((entry) => entry.kind === 'BREAKDOWN_CREATED');
+  return { state: created.state, breakdownId: (event?.kind === 'BREAKDOWN_CREATED' ? event.breakdownId : parentId) };
+};
 
 const stepsOf = (piece: PieceState): number => piece.remainingSteps ?? 0;
 
@@ -885,7 +897,7 @@ const retreatOptions = (state: GameState, step: Extract<ResolutionStep, { kind: 
   if (step.side === 'ATTACKER') {
     // 9.12d: combat units in the Hex that did not attack may join the retreat.
     const hexId = hexOf(alive[0]!)!;
-    const tagalongs = friendlyCombatUnitsAt(state, transaction.ownerId, hexId).filter((piece) => !transaction.attackerIds.includes(piece.id));
+    const tagalongs = friendlyCombatUnitsAt(state, transaction.ownerId, hexId).filter((piece) => !transaction.attackerIds.includes(piece.id) && !step.pieceIds.includes(piece.id));
     if (tagalongs.length > 0) {
       for (const plan of retreatPlans(state, [...alive, ...tagalongs], step.hexes, blocked)) {
         options.push({ id: `with:${plan.destination}`, label: `Retreat to ${plan.destination} with the ${tagalongs.length} non-attacking unit${tagalongs.length === 1 ? '' : 's'} in the Hex`, hexId: plan.destination });
@@ -893,6 +905,12 @@ const retreatOptions = (state: GameState, step: Extract<ResolutionStep, { kind: 
     }
   }
   if (alive.length > 1) options.push({ id: 'split', label: 'Retreat the units separately', hexId: null });
+  // 20.0a: a multi-step unit may detach Breakdowns as it begins to retreat; they retreat too, together or separately.
+  if (options.length > 0) {
+    for (const piece of alive.filter((candidate) => mayCreateBreakdown(state, candidate))) {
+      options.push({ id: `${BREAKDOWN_RETREAT_PREFIX}${piece.id}`, label: `Detach a Breakdown from ${unitName(state, piece)} first (it retreats too)`, hexId: null });
+    }
+  }
   return options;
 };
 
@@ -947,7 +965,7 @@ export const processQueue = (input: GameState): Transition => {
         const alive = survivors(state, step.pieceIds);
         if (alive.length === 0) { state = withQueue(state, rest); break; }
         const options = retreatOptions(state, step);
-        const destinations = options.filter(({ id }) => id !== 'split');
+        const destinations = options.filter(({ id }) => id !== 'split' && !id.startsWith(BREAKDOWN_RETREAT_PREFIX));
         if (destinations.length === 0) {
           if (alive.length > 1) {
             // No common path: each unit retreats on its own (9.12c).
@@ -996,6 +1014,10 @@ export const processQueue = (input: GameState): Transition => {
             { id: 'advance:done', label: advanced ? 'Stop advancing' : 'Do not advance', hexId: null },
             ...(advancers.length > 1 ? [{ id: 'advance:all', label: `Advance all ${advancers.length} remaining attackers`, hexId: null }] : []),
             ...advancers.map((piece) => ({ id: `advance:${piece.id}`, label: `Advance ${unitName(state, piece)}`, hexId: null })),
+            // 20.0a: a multi-step attacker may detach Breakdowns as it begins to advance, so part of it can advance alone.
+            ...advancers.filter((piece) => mayCreateBreakdown(state, piece)).map((piece) => ({
+              id: `${BREAKDOWN_ADVANCE_PREFIX}${piece.id}`, label: `Detach a Breakdown from ${unitName(state, piece)} (it may advance on its own)`, hexId: null,
+            })),
           ]);
         events.push({ kind: 'DECISION_REQUESTED', sequence: events.length, decision: pending });
         return { state: { ...state, pendingDecision: pending }, events };
@@ -1041,11 +1063,16 @@ const applyRetreatChoice = (
   const transaction = state.activeTransaction!;
   const alive = survivors(state, step.pieceIds);
   if (choiceId === 'split') return withQueue(state, [...alive.map((piece) => ({ ...step, pieceIds: [piece.id] })), ...rest]);
+  if (choiceId.startsWith(BREAKDOWN_RETREAT_PREFIX)) {
+    // The retreat is asked again with the new Breakdown in it (20.0a).
+    const detached = detachInCombat(state, choiceId.slice(BREAKDOWN_RETREAT_PREFIX.length) as PieceId, events);
+    return withQueue(detached.state, [{ ...step, pieceIds: [...step.pieceIds, detached.breakdownId] }, ...rest]);
+  }
   const withTagalongs = choiceId.startsWith('with:');
   const destination = choiceId.slice(withTagalongs ? 'with:'.length : 'hex:'.length);
   const hexId = hexOf(alive[0]!)!;
   const group = withTagalongs
-    ? [...alive, ...friendlyCombatUnitsAt(state, transaction.ownerId, hexId).filter((piece) => !transaction.attackerIds.includes(piece.id))]
+    ? [...alive, ...friendlyCombatUnitsAt(state, transaction.ownerId, hexId).filter((piece) => !transaction.attackerIds.includes(piece.id) && !step.pieceIds.includes(piece.id))]
     : alive;
   const plan = retreatPlans(state, group, step.hexes, retreatBlocks(transaction, step.side)).find((candidate) => candidate.destination === destination)!;
   const moved = applyRetreat(withQueue(state, rest), step.side, group, plan, events);
@@ -1085,7 +1112,12 @@ export const resolveDecision = (state: GameState, choiceId: string): Transition 
   } else if (pending.kind === 'RETREAT_HEX' && step?.kind === 'RETREAT') {
     next = applyRetreatChoice(cleared, step, rest, choiceId, events);
   } else if (pending.kind === 'ADVANCE_HEX' && step?.kind === 'ADVANCE') {
-    if (choiceId === 'advance:done') next = withQueue(cleared, rest);
+    if (choiceId.startsWith(BREAKDOWN_ADVANCE_PREFIX)) {
+      // The new Breakdown joins the attackers that may advance; the advance step stays queued (20.0a).
+      const detached = detachInCombat(cleared, choiceId.slice(BREAKDOWN_ADVANCE_PREFIX.length) as PieceId, events);
+      const current = detached.state.activeTransaction!;
+      next = { ...detached.state, activeTransaction: { ...current, attackerIds: [...current.attackerIds, detached.breakdownId] } };
+    } else if (choiceId === 'advance:done') next = withQueue(cleared, rest);
     else if (choiceId === 'advance:all') next = advanceInto(withQueue(cleared, rest), advanceCandidates(cleared).map(({ id }) => id), events);
     // One unit advances; the step stays queued so more may follow.
     else next = advanceInto(cleared, [choiceId.slice('advance:'.length) as PieceId], events);

@@ -5,6 +5,7 @@ import type { GameAction, GameState } from '../kernel/model.js';
 import { validateGameAction } from '../kernel/validate.js';
 import { arrivingReinforcements, reinforcementHexes } from '../lifecycle/lifecycle.js';
 import { breakoutCandidates } from '../lifecycle/supply-phase.js';
+import { breakdownProfile } from '../breakdown/breakdown.js';
 import { fuelOptions } from '../supply/fuel.js';
 import { capacityTokens, cargoOf, loadedTokens } from '../supply/transport.js';
 import { queryReachableHexes } from '../movement/movement.js';
@@ -156,6 +157,11 @@ export const candidateActions = (
     case 'END_MOVE':
       if (state.currentMoverId !== null && (request.pieceId === null || request.pieceId === state.currentMoverId)) {
         add({ ...base(state, request.actorId, `end-move:${state.currentMoverId}`), kind: 'END_MOVE', pieceId: state.currentMoverId });
+      }
+      break;
+    case 'CREATE_BREAKDOWN':
+      for (const piece of owned.filter((candidate) => breakdownProfile(state, candidate) !== null)) {
+        if (add({ ...base(state, request.actorId, `breakdown:${piece.id}`), kind: 'CREATE_BREAKDOWN', pieceId: piece.id })) return actions;
       }
       break;
     case 'CHECK_SUPPLY':
@@ -332,7 +338,7 @@ export const candidateActions = (
 const DUMP_THREAT_HEXES = 1;
 
 export const ALL_ACTION_KINDS: readonly GameAction['kind'][] = [
-  'ADVANCE_SEQUENCE', 'CHANGE_MODE', 'RELEASE_RESERVE', 'MOVE_PIECE', 'END_MOVE', 'CHECK_SUPPLY',
+  'ADVANCE_SEQUENCE', 'CHANGE_MODE', 'RELEASE_RESERVE', 'MOVE_PIECE', 'END_MOVE', 'CREATE_BREAKDOWN', 'CHECK_SUPPLY',
   'DECLARE_COMBAT', 'DECLARE_BARRAGE', 'RESPOND_DECISION', 'COMMIT_TRANSACTION',
   'CANCEL_TRANSACTION', 'PLACE_REINFORCEMENT', 'PAY_FUEL', 'RECOVER_INTERNALS', 'CHOOSE_FORMATION_TRACE',
   'ATTEMPT_BREAKOUT', 'BLOW_DUMP', 'LOAD_SUPPLY', 'UNLOAD_SUPPLY', 'COMBINE_TRANSPORT', 'DIVIDE_TRANSPORT',
@@ -363,7 +369,8 @@ export const kindMayBeLegal = (state: GameState, actorId: PlayerId, kind: GameAc
     case 'CHANGE_MODE': return phase === 'MOVEMENT' && segment === 'MOVEMENT';
     case 'RELEASE_RESERVE': return phase === 'REACTION' || phase === 'EXPLOITATION';
     case 'MOVE_PIECE':
-    case 'END_MOVE': return segment === 'MOVEMENT' && ['MOVEMENT', 'REACTION', 'EXPLOITATION'].includes(phase);
+    case 'END_MOVE':
+    case 'CREATE_BREAKDOWN': return segment === 'MOVEMENT' && ['MOVEMENT', 'REACTION', 'EXPLOITATION'].includes(phase);
     case 'CHECK_SUPPLY': return phase === 'SUPPLY';
     case 'DECLARE_COMBAT': return (segment === 'COMBAT' && (phase === 'COMBAT' || phase === 'EXPLOITATION'))
       || (segment === 'MOVEMENT' && ['MOVEMENT', 'REACTION', 'EXPLOITATION'].includes(phase));

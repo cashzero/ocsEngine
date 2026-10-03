@@ -45,6 +45,7 @@ import {
 import { validateGeneratedOob } from './validation.js';
 import { formationNameCapacity, formationNames, unitName } from './names.js';
 import { buildAirForces } from './air.js';
+import { withBreakdowns } from './breakdowns.js';
 
 const SIDES: readonly OobSide[] = ['ALLIED', 'AXIS'];
 // Plan slots shared by both sides. Armored slots alternate Panzer and Panzergrenadier/Führer packages, which only
@@ -291,7 +292,9 @@ const buildSide = (
         ...(side === 'ALLIED' && archetype === 'AIRBORNE' && ALLIED_AIRBORNE_DIVISION_GPIDS[formationName] !== undefined
           ? { counterGpid: ALLIED_AIRBORNE_DIVISION_GPIDS[formationName] } : {}),
       });
-      definitions.push(built.definition);
+      // 20.0: a single-counter division can detach Breakdowns.
+      definitions.push(isSingleUnitDivision(side, archetype) && role === 'COMBAT'
+        ? withBreakdowns(built.definition, side, archetype, options.seed, definitions) : built.definition);
       return built.unit;
     });
     return { id: formationId, side, name: formationName, archetype, units };

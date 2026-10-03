@@ -416,17 +416,19 @@ export type PendingDecisionKind =
   | 'AIR_COMBAT_PICK'
   | 'INTERCEPTION'
   | 'MISSION_LOSS'
-  | 'AIR_RETURN';
+  | 'AIR_RETURN'
+  /** 20.0d/20.0g: the owner picks which of several eligible units absorbs a Breakdown as the phase ends. */
+  | 'BREAKDOWN_ABSORPTION';
 
 export const PENDING_DECISION_KINDS: readonly PendingDecisionKind[] = [
   'FIRST_PLAYER', 'SUPPLY_SOURCE', 'DEFENDER_LEAD', 'DEFENDER_TERRAIN', 'STEP_LOSS', 'OPTION_SPLIT',
   'RETREAT_HEX', 'ADVANCE_HEX', 'DISPLACEMENT_HEX', 'ATTRITION_LOSS', 'OVERSTACK_ELIMINATION',
-  'AIR_ABORT', 'AIR_COMBAT_PICK', 'INTERCEPTION', 'MISSION_LOSS', 'AIR_RETURN',
+  'AIR_ABORT', 'AIR_COMBAT_PICK', 'INTERCEPTION', 'MISSION_LOSS', 'AIR_RETURN', 'BREAKDOWN_ABSORPTION',
 ];
 
 /** Decisions that may exist outside a combat: sequence of play, attrition, and movement captures. */
 export const SEQUENCE_DECISION_KINDS: readonly PendingDecisionKind[] = [
-  'FIRST_PLAYER', 'OVERSTACK_ELIMINATION', 'ATTRITION_LOSS', 'DISPLACEMENT_HEX',
+  'FIRST_PLAYER', 'OVERSTACK_ELIMINATION', 'BREAKDOWN_ABSORPTION', 'ATTRITION_LOSS', 'DISPLACEMENT_HEX',
 ];
 
 export interface PendingDecisionOption {
@@ -534,6 +536,8 @@ export type GameAction =
   | (ActionEnvelope & { readonly kind: 'MOVE_PIECE'; readonly pieceId: PieceId; readonly path: readonly HexId[] })
   /** Declare the current mover finished (6.1g) without starting another unit; its unspent MP are lost for the phase. */
   | (ActionEnvelope & { readonly kind: 'END_MOVE'; readonly pieceId: PieceId })
+  /** Detach the next numbered Breakdown ("1/101.Abn") from a multi-step unit as it begins to move (20.0, 20.0a). */
+  | (ActionEnvelope & { readonly kind: 'CREATE_BREAKDOWN'; readonly pieceId: PieceId })
   | (ActionEnvelope & { readonly kind: 'CHECK_SUPPLY'; readonly pieceIds: readonly PieceId[]; readonly sourcePieceId: PieceId | null })
   | (ActionEnvelope & {
     readonly kind: 'DECLARE_COMBAT';
@@ -595,6 +599,9 @@ export type RuleEvent =
   | { readonly kind: 'MODE_CHANGED'; readonly sequence: number; readonly pieceId: PieceId; readonly from: OcsMode | null; readonly to: OcsMode }
   | { readonly kind: 'PIECE_MOVED'; readonly sequence: number; readonly pieceId: PieceId; readonly path: readonly HexId[]; readonly spentTicks: number }
   | { readonly kind: 'MOVE_ENDED'; readonly sequence: number; readonly pieceId: PieceId }
+  | { readonly kind: 'BREAKDOWN_CREATED'; readonly sequence: number; readonly pieceId: PieceId; readonly breakdownId: PieceId; readonly name: string }
+  /** 20.0d: `pieceId` absorbed the Breakdown at the end of a phase and regained a step. */
+  | { readonly kind: 'BREAKDOWN_ABSORBED'; readonly sequence: number; readonly pieceId: PieceId; readonly breakdownId: PieceId; readonly name: string }
   | { readonly kind: 'SUPPLY_STATUS_CHANGED'; readonly sequence: number; readonly pieceId: PieceId; readonly inSupply: boolean }
   | { readonly kind: 'SUPPLY_SPENT'; readonly sequence: number; readonly resourcePieceId: PieceId; readonly quantity: number }
   | { readonly kind: 'SUPPLY_CAPTURED'; readonly sequence: number; readonly resourcePieceId: PieceId; readonly captured: number; readonly destroyed: number }
