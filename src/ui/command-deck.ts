@@ -502,12 +502,16 @@ const fuelSection = (snapshot: UiSnapshot, state: DeckState): View => {
   const pieceId = snapshot.selection.pieceId ?? '';
   // One method is the only choice; otherwise the pick is remembered for this unit only.
   const picked = state.fuelMethod?.pieceId === pieceId && methods.includes(state.fuelMethod.method) ? state.fuelMethod.method : methods.length === 1 ? methods[0]! : null;
+  const fuelsOf = (method: string): readonly string[] => entries.find((entry) => methodOf(entry) === method)?.fuels ?? [];
   const step1 = html`<div class="fuel-step"><small class="step-title">1 · What to fuel</small><div class="chip-row">${methods.map((method) => {
     const info = FUEL_METHODS[method] ?? { title: method, detail: '' };
-    return html`<button data-fuel-method=${method} aria-pressed=${String(method === picked)} class=${method === picked ? 'is-picked' : ''}>${info.title}<small> · ${info.detail}</small></button>`;
+    const count = fuelsOf(method).length;
+    return html`<button data-fuel-method=${method} aria-pressed=${String(method === picked)} class=${method === picked ? 'is-picked' : ''}>${info.title}<small> · ${info.detail}${count > 0 ? ` · fuels ${count}` : ''}</small></button>`;
   })}</div></div>`;
+  const fueled = picked === null ? [] : fuelsOf(picked);
+  const fuels = fueled.length > 0 ? html`<p class="hint fuel-covers">Fuels ${fueled.length} unit${fueled.length === 1 ? '' : 's'}: ${fueled.join(', ')}</p>` : nothing;
   const dumps = picked === null ? html`<p class="hint">Choose what to fuel first; then you pick the supply dump that pays.</p>`
-    : html`<div class="fuel-step"><small class="step-title">2 · Pay from which dump</small><div class="action-list">${entries.filter((entry) => methodOf(entry) === picked).map(({ key, label, action }) => {
+    : html`<div class="fuel-step"><small class="step-title">2 · Pay from which dump</small>${fuels}<div class="action-list">${entries.filter((entry) => methodOf(entry) === picked).map(({ key, label, action }) => {
       const hex = sourceHex(snapshot, (action as { sourcePieceId: string }).sourcePieceId);
       return html`<button data-unit-action=${key} data-highlight-hex=${hex ?? nothing}>${withHexLabels(label.replace(/^.*? from /u, ''))}</button>`;
     })}</div><p class="hint">Hover a dump to see its hex on the map.</p></div>`;

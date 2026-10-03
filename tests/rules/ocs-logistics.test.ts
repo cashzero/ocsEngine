@@ -143,6 +143,19 @@ describe('OCS 4.3 fuel (12.5)', () => {
     // An unfueled independent unit in its throw range still makes the HQ Method worth offering.
     const withIndependent = formationFueled({ [U.alHq]: ['1,6', 'COMBAT', 'combat'], [U.alTrk]: ['1,5', 'COMBAT', 'combat'], [U.alEng]: ['2,6', 'MOVE', 'move'], [U.alSup]: ['0,6', null] });
     expect(hqMethods(withIndependent).length).toBeGreaterThan(0);
+    // The preview names the units the payment newly fuels: the independent one, not the HQ that Formation fuel already covers.
+    const preview = ruleEngine.queryFuelPreview(withIndependent, ALLIED, U.alHq).value!.find(({ method }) => method === 'HQ');
+    expect(preview?.fueledPieceIds).toEqual([U.alEng]);
+    expect(preview?.tokens).toBe(4);
+  });
+
+  it('previews what each fuel payment buys, for the HQ and for a single unit', () => {
+    const state = unfueled({ [U.alHq]: ['1,6', 'COMBAT', 'combat'], [U.alEng]: ['2,6', 'MOVE', 'move'], [U.alSup]: ['0,6', null] });
+    const methods = ruleEngine.queryFuelPreview(state, ALLIED, U.alHq).value!;
+    expect(methods.find(({ method }) => method === 'SINGLE_UNIT')?.fueledPieceIds).toEqual([U.alHq]);
+    expect(methods.find(({ method }) => method === 'HQ')?.fueledPieceIds).toEqual(expect.arrayContaining([U.alHq, U.alEng]));
+    // Someone else's unit is not previewed.
+    expect(ruleEngine.queryFuelPreview(state, AXIS, U.alHq).allowed).toBe(false);
   });
 
   it('requires fuel to overrun even from a standing start (12.5b)', () => {

@@ -1,6 +1,7 @@
 import type { HexId, PieceId, PlayerId } from '../../core/index.js';
 import type { PieceState } from '../../domain/piece/index.js';
 import type { FuelMethod, GameState, RuleEvent, RuleViolation } from '../kernel/model.js';
+import type { RuleQueryResult } from '../query/model.js';
 import {
   formationOf,
   hexOf,
@@ -88,7 +89,14 @@ export interface FuelOption {
   readonly sources: readonly DumpAccess[];
   /** Units the payment fuels. */
   readonly coveredPieceIds: readonly PieceId[];
+  /** The covered units the payment actually helps now: they need fuel, are not fueled yet and may move this phase. */
+  readonly fueledPieceIds: readonly PieceId[];
 }
+
+const awaitingFuel = (state: GameState, ids: readonly PieceId[]): readonly PieceId[] => ids.filter((id) => {
+  const unit = pieceById(state, id);
+  return unit !== undefined && needsFuel(state, unit) && fuelCoverage(state, unit) === null && isEligibleMover(state, unit);
+});
 
 /** Formation Method coverage from one dump: the common route that reaches the most members (12.5c A). */
 const formationCoverage = (state: GameState, playerId: PlayerId, formationId: NonNullable<ReturnType<typeof formationOf>>, dumpId: PieceId): readonly PieceId[] => {
@@ -114,15 +122,16 @@ export const fuelOptions = (state: GameState, piece: PieceState): readonly FuelO
   // Fuel is paid when a unit is about to spend MP (12.5c): only for units that may move this phase.
   if (needsFuel(state, piece) && fuelCoverage(state, piece) === null && isEligibleMover(state, piece)) {
     const single = dumps.filter(({ availableQuantity }) => availableQuantity >= FUEL_COSTS.singleUnit);
-    if (single.length > 0) options.push({ method: 'SINGLE_UNIT', pieceId: piece.id, tokens: FUEL_COSTS.singleUnit, sources: single, coveredPieceIds: [piece.id] });
+    if (single.length > 0) options.push({ method: 'SINGLE_UNIT', pieceId: piece.id, tokens: FUEL_COSTS.singleUnit, sources: single, coveredPieceIds: [piece.id], fueledPieceIds: [piece.id] });
     const formationId = formationOf(state, piece);
     if (isMultiUnitFormation(state, formationId) && !state.fuel.formations.some((entry) => entry.playerId === piece.ownerId && entry.formationId === formationId)) {
       const sources = dumps.filter(({ pieceId, availableQuantity }) => availableQuantity >= FUEL_COSTS.formation
         && formationCoverage(state, piece.ownerId, formationId!, pieceId).includes(piece.id));
       if (sources.length > 0) {
+        const coveredPieceIds = formationCoverage(state, piece.ownerId, formationId!, sources[0]!.pieceId);
         options.push({
           method: 'FORMATION', pieceId: piece.id, tokens: FUEL_COSTS.formation, sources,
-          coveredPieceIds: formationCoverage(state, piece.ownerId, formationId!, sources[0]!.pieceId),
+          coveredPieceIds, fueledPieceIds: awaitingFuel(state, coveredPieceIds),
         });
       }
     }
@@ -134,14 +143,32 @@ export const fuelOptions = (state: GameState, piece: PieceState): readonly FuelO
         && needsFuel(state, other) && isIndependent(state, other) && throwReachesFrom(state, piece, hexId, hexOf(other)!)).map(({ id }) => id);
       // The 1 SP must buy something: an eligible mover among the HQ and its independents that is not already fueled
       // (e.g. an HQ the Formation Method already fueled does not need to pay again for itself).
-      const movers = [piece.id, ...covered].some((id) => {
-        const unit = pieceById(state, id);
-        return unit !== undefined && needsFuel(state, unit) && fuelCoverage(state, unit) === null && isEligibleMover(state, unit);
-      });
-      if (movers) options.push({ method: 'HQ', pieceId: piece.id, tokens: FUEL_COSTS.hq, sources, coveredPieceIds: [...new Set([piece.id, ...covered])] });
+      const coveredPieceIds = [...new Set([piece.id, ...covered])];
+      const fueledPieceIds = awaitingFuel(state, coveredPieceIds);
+      if (fueledPieceIds.length > 0) options.push({ method: 'HQ', pieceId: piece.id, tokens: FUEL_COSTS.hq, sources, coveredPieceIds, fueledPieceIds });
     }
   }
   return options;
+};
+
+export interface FuelPreview {
+  readonly method: FuelMethod;
+  readonly pieceId: PieceId;
+  /** Cost in Tokens (Supply Points count 4T each). */
+  readonly tokens: number;
+  /** Units this payment would newly fuel, in the order the rules list them. */
+  readonly fueledPieceIds: readonly PieceId[];
+}
+
+/** What each fuel payment available to one of the asking player's units would buy, for the player to compare before paying (12.5c). */
+export const queryFuelPreview = (state: GameState, actorId: PlayerId, pieceId: PieceId): RuleQueryResult<readonly FuelPreview[]> => {
+  const piece = pieceById(state, pieceId);
+  const dependencies = [{ aggregate: 'GAME' as const, revision: state.revision, key: `fuel:${pieceId}` }];
+  if (!piece || piece.ownerId !== actorId) {
+    return { allowed: false, value: [], reasons: [{ code: 'INVALID_FUEL_TARGET', allowed: false, message: 'Fuel your own units.', rule: '12.5' }], facts: [], dependencies };
+  }
+  const value = fuelOptions(state, piece).map(({ method, tokens, fueledPieceIds }) => ({ method, pieceId, tokens, fueledPieceIds }));
+  return { allowed: value.length > 0, value, reasons: [], facts: [], dependencies };
 };
 
 export const validateFuelPayment = (

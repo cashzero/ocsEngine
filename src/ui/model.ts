@@ -105,6 +105,8 @@ export interface UnitAction {
   readonly group: 'FUEL' | 'SUPPLY' | 'BREAKOUT' | 'BREAKDOWN' | 'TRANSPORT' | 'DUMP' | 'TRACE' | 'AIR';
   readonly label: string;
   readonly action: GameAction;
+  /** Fuel payments: the units this payment would newly fuel, named with their hex. */
+  readonly fuels?: readonly string[];
 }
 
 export interface EndStep {
