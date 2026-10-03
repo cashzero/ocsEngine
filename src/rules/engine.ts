@@ -9,6 +9,7 @@ import { applyGameAction } from './kernel/reducer.js';
 import { validateGameAction } from './kernel/validate.js';
 import { queryMovementPath, queryReachableHexes } from './movement/movement.js';
 import { queryTraceCoverage } from './supply/supply.js';
+import { queryFuelPreview } from './supply/fuel.js';
 import { queryTransportOptions } from './supply/transport.js';
 import { actionFamilies, candidateActions, kindMayBeLegal } from './query/candidates.js';
 import { projectRuleState } from './query/projection.js';
@@ -126,6 +127,7 @@ const engine: RuleEngine = {
     : { allowed: false, value: [], reasons: [{ code: 'MOVEMENT_NOT_ALLOWED', allowed: false, message: 'No movement in this step.', rule: '6.1' }], facts: [], dependencies: [] }),
   queryTransportOptions,
   queryTraceCoverage,
+  queryFuelPreview,
 };
 
 export const ruleEngine: RuleEngine = Object.freeze(engine);
