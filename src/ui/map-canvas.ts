@@ -74,9 +74,12 @@ export const EMPTY_MAP_STATE: MapState = {
 };
 
 /** Internal scale of the normal framing; the zoom readout is relative to it, so this framing reads 100%. */
-export const DEFAULT_ZOOM = 1.4;
-const MIN_ZOOM = 0.6 * DEFAULT_ZOOM;
-const MAX_ZOOM = 2.6 * DEFAULT_ZOOM;
+export const DEFAULT_ZOOM = 1.68;
+/** Wheel notches and +/− move the readout by this many percentage points, landing on multiples of it. */
+const ZOOM_STEP_PERCENT = 10;
+/** Mostly room to zoom out: about 60% fits the whole map, 30% leaves it small enough to see around the panels. */
+const MIN_ZOOM_PERCENT = 30;
+const MAX_ZOOM_PERCENT = 150;
 const TILE = 512;
 const MAX_TILES = 96;
 /** Pattern tiles are rasterized once at this many pixels per map unit, then resampled for each zoom level. */
@@ -271,12 +274,19 @@ export class MapView {
   /** Detail level of the counters at the current zoom (counter.ts). */
   get lod(): CounterLod { return counterLod(70 * this.#fit() * this.camera.zoom); }
 
+  /** One zoom step in or out (direction ±1), snapping the readout to the next multiple of ZOOM_STEP_PERCENT. */
+  zoomStep(direction: 1 | -1, anchorX?: number, anchorY?: number): void {
+    const steps = (this.camera.zoom / DEFAULT_ZOOM) * 100 / ZOOM_STEP_PERCENT;
+    // The tolerance keeps float noise (89.9999%) from skipping or repeating a step.
+    const target = (direction > 0 ? Math.floor(steps + 1e-6) + 1 : Math.ceil(steps - 1e-6) - 1) * ZOOM_STEP_PERCENT;
+    this.#zoomTo((Math.max(MIN_ZOOM_PERCENT, Math.min(MAX_ZOOM_PERCENT, target)) / 100) * DEFAULT_ZOOM, anchorX, anchorY);
+  }
+
   /** Zoom keeping the point under (anchorX, anchorY), in framing units, fixed on screen. */
-  zoomAt(factor: number, anchorX?: number, anchorY?: number): void {
+  #zoomTo(next: number, anchorX?: number, anchorY?: number): void {
     const layout = this.#scene?.theater.layout;
     const ax = anchorX ?? (layout?.width ?? 0) / 2;
     const ay = anchorY ?? (layout?.height ?? 0) / 2;
-    const next = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, this.camera.zoom * factor));
     const ratio = next / this.camera.zoom;
     this.camera.x = ax - (ax - this.camera.x) * ratio;
     this.camera.y = ay - (ay - this.camera.y) * ratio;
@@ -326,7 +336,7 @@ export class MapView {
     return { x: offset.x + fit * (this.camera.x + this.camera.zoom * x), y: offset.y + fit * (this.camera.y + this.camera.zoom * y) };
   }
 
-  /** Canvas CSS pixel to framing units (before the camera), the space zoomAt anchors in. */
+  /** Canvas CSS pixel to framing units (before the camera), the space zoomStep anchors in. */
   #toFraming(cssX: number, cssY: number): Point {
     const fit = this.#fit();
     const offset = this.#frameOffset();
@@ -411,7 +421,7 @@ export class MapView {
     canvas.addEventListener('wheel', (event) => {
       event.preventDefault();
       const anchor = this.#toFraming(local(event).x, local(event).y);
-      this.zoomAt(event.deltaY < 0 ? 1.12 : 1 / 1.12, anchor.x, anchor.y);
+      if (event.deltaY !== 0) this.zoomStep(event.deltaY < 0 ? 1 : -1, anchor.x, anchor.y);
     }, { passive: false });
     canvas.addEventListener('keydown', (event) => this.#key(event));
     canvas.addEventListener('focus', () => { this.#cursorHex ??= this.#state.selectedHexId ?? this.#scene?.theater.cells[0]?.id ?? null; this.#announce(); this.requestRender(); });
@@ -435,8 +445,8 @@ export class MapView {
     const cursor = this.#cursorHex ?? this.#state.selectedHexId ?? this.#scene?.theater.cells[0]?.id;
     if (!cursor) return;
     if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); this.#events.hexClick(cursor); return; }
-    if (event.key === '+' || event.key === '=') { event.preventDefault(); this.zoomAt(1.2); return; }
-    if (event.key === '-') { event.preventDefault(); this.zoomAt(1 / 1.2); return; }
+    if (event.key === '+' || event.key === '=') { event.preventDefault(); this.zoomStep(1); return; }
+    if (event.key === '-') { event.preventDefault(); this.zoomStep(-1); return; }
     if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(event.key)) return;
     event.preventDefault();
     const [q, r] = cursor.split(',').map(Number);
