@@ -32,10 +32,13 @@ describe('M7 deterministic random OOB pipeline', () => {
       const supply = definitions.filter((definition) => definition.family === 'RESOURCE');
       expect(supply.length).toBeGreaterThan(0);
       expect(supply.every((definition) => definition.name === 'Supply Dump')).toBe(true);
-      const names = definitions.filter((definition) => definition.family !== 'RESOURCE').map((definition) => definition.name);
+      // A truck is a generic counter as well (user decision 2026-10-03: the original has no truck names, and no printed number).
+      const trucks = definitions.filter((definition) => definition.counter?.kind === 'TRANSPORT');
+      expect(trucks.length).toBeGreaterThan(0);
+      expect(trucks.every((definition) => definition.name === 'Truck' && definition.counter?.designation === '')).toBe(true);
+      const names = definitions.filter((definition) => definition.family !== 'RESOURCE' && definition.counter?.kind !== 'TRANSPORT').map((definition) => definition.name);
       expect(new Set(names).size).toBe(names.length);
       expect(names.every((name) => !/Independent|combat \d|undefined/.test(name))).toBe(true);
-      expect(names.some((name) => name.includes('Truck Co'))).toBe(true);
       // Engineer counters print a brigade (X) echelon, so their names follow it.
       expect(names.some((name) => name.includes('Pi Bde'))).toBe(true);
     }

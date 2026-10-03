@@ -320,7 +320,8 @@ describe('phase-specific command deck', () => {
     await controller.clickHex(destination);
     const warned = movePopupHtml(controller.getSnapshot());
     expect(warned).toContain('class="warning"');
-    expect(warned).toContain('Truck Co');
+    expect(warned).toContain('the move of Truck');
+    expect(warned).not.toContain('Truck Co');
     expect(warned).toContain('4T');
     expect(warned).toContain('6.1g');
     expect(warned).toMatch(/id="confirm-move"[^>]*>Confirm anyway</u);
