@@ -15,4 +15,4 @@ M6 outputs a deterministic, validated Foundation `MapDefinition`. It does not ge
 | M6.8 | `docs/generator/08-ui-preview-and-download.md` | Style/size/seed preview and download |
 | M6.9 | `docs/generator/09-seed-sweep-protocol.md` | 1,000 seeds, zero invalid/exception |
 | M6.10 | `docs/reports/M6-random-map-gate.md` | Full check and visual smoke |
-
+| M6.11 | `docs/generator/10-btr-scale-density.md` | BtR-scale road mesh and settlement density; coverage validated |

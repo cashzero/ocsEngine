@@ -1,7 +1,7 @@
 import type { HexId, ValidationIssue } from '../../core/index.js';
 import type { MapDefinition } from '../../domain/map/index.js';
 
-export const MAP_GENERATOR_VERSION = '0.2.0' as const;
+export const MAP_GENERATOR_VERSION = '0.3.0' as const;
 
 export type MapGenerationStyle = 'TEMPERATE_INLAND' | 'MEDITERRANEAN_COAST';
 
@@ -39,6 +39,10 @@ export interface GeneratedMapMetrics {
   readonly majorRiverEdges: number;
   readonly settlements: number;
   readonly connectedRoadComponents: number;
+  /** Largest distance in Hexes from a road to any open, wooded or hill Hex. */
+  readonly maximumRoadGap: number;
+  /** How far the worst Hex exceeds its terrain's road-gap limit; 0 when every Hex is served. */
+  readonly roadGapExcess: number;
 }
 
 export interface GeneratedMap {

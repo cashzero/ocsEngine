@@ -43,9 +43,9 @@ export const normalizeMapGenerationOptions = (
   if (options.style !== 'TEMPERATE_INLAND' && options.style !== 'MEDITERRANEAN_COAST') {
     errors.push({ code: 'INVALID_OPTIONS', message: 'Unknown map style.', path: ['style'] });
   }
-  const settlementDensity = options.settlementDensity ?? 0.055;
-  if (!Number.isFinite(settlementDensity) || settlementDensity < 0.02 || settlementDensity > 0.12) {
-    errors.push({ code: 'INVALID_OPTIONS', message: 'Settlement density must be 0.02 to 0.12.', path: ['settlementDensity'] });
+  const settlementDensity = options.settlementDensity ?? 0.1;
+  if (!Number.isFinite(settlementDensity) || settlementDensity < 0.02 || settlementDensity > 0.16) {
+    errors.push({ code: 'INVALID_OPTIONS', message: 'Settlement density must be 0.02 to 0.16.', path: ['settlementDensity'] });
   }
   return errors.length > 0 ? err(errors) : ok({ ...options, settlementDensity });
 };
@@ -86,7 +86,7 @@ export const generateRandomMap = (
   const warnings = [
     validation.metrics.terrainCounts.MOUNTAIN / validation.metrics.landHexes > 0.25
       ? 'Mountain density is high; operational mobility may be constrained.' : null,
-    validation.metrics.roadEdges / validation.metrics.landHexes < 0.12
+    validation.metrics.roadEdges / validation.metrics.landHexes < 0.35
       ? 'Road density is low; expect slower operational movement.' : null,
   ].filter((warning): warning is string => warning !== null);
   return ok({
