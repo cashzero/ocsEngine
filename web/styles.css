@@ -324,8 +324,10 @@ small, .supporting { font-size: 13px; color: var(--muted); }
 .counter .counter-designation, .unit-counter .counter-designation, .counter .counter-affiliation, .unit-counter .counter-affiliation { font-size: 17px; font-weight: 800; }
 .counter .counter-re, .unit-counter .counter-re { font-size: 15px; font-weight: 900; }
 .counter .counter-range, .unit-counter .counter-range { font-size: 17px; }
-/* A formation HQ's symbol box prints the formation's short name instead of an icon. */
-.counter .hq-formation, .unit-counter .hq-formation { font-size: 20px; font-weight: 900; stroke: none; }
+/* A corps HQ prints a nation flag instead of a unit symbol, the formation name rotated beside it and a large range-movement rating. */
+.counter .hq-echelon, .unit-counter .hq-echelon { font-size: 17px; font-weight: 900; paint-order: stroke; stroke: currentColor; stroke-width: .6px; }
+.counter .hq-designation, .unit-counter .hq-designation { font-size: 24px; font-weight: 900; transform: rotate(-90deg); transform-origin: 21px 37px; }
+.counter .hq-rating, .unit-counter .hq-rating { font-size: 40px; font-weight: 900; font-stretch: condensed; paint-order: stroke; stroke: currentColor; stroke-width: .8px; stroke-linejoin: round; }
 .counter .mobility-leg, .unit-counter .mobility-leg { fill: #fff; paint-order: stroke; stroke: #151810; stroke-width: 2.4; }
 .counter .mobility-tracked, .unit-counter .mobility-tracked { fill: #c11d20; }
 .tracked-box, .barrage-box, .re-dot { fill: #f5df20; }

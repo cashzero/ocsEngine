@@ -161,6 +161,28 @@ const airBaseBody = (view: Extract<CounterViewModel, { kind: 'air-base' }>): str
     <g class="counter-symbol air-base-runways"><path d="M18 66L82 34M22 40L74 72M50 18V60"/></g>
     <g class="counter-values"><circle class="air-base-level" cx="72" cy="74" r="15"/>${svgText(72,84,view.level,'counter-number air-base-level-text')}</g>`;
 
+// A corps HQ prints its nation's flag where other counters print the unit symbol (BTR S01 R10 C02 and the other HQ images):
+// the flag sits right of the rotated formation name, under a heavy "XXX" and over a large "range-movement" rating. The US
+// canton's stars are a plain dot grid, and the German flag is the black cross on white with red corners as the HQ images show it.
+const HQ_FLAG = { x: 30, y: 17, w: 55, h: 40 } as const;
+const hqFlag = (nationality: string): string => {
+  const { x, y, w, h } = HQ_FLAG;
+  const frame = `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="none" stroke="#151810" stroke-width="1.6"/>`;
+  const ground = `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#f4f1e6" stroke="none"/>`;
+  if (nationality === 'GERMAN') {
+    const cw = 16, ch = 13;
+    const corners = [[x, y], [x + w - cw, y], [x, y + h - ch], [x + w - cw, y + h - ch]]
+      .map(([cx, cy]) => `<rect x="${cx}" y="${cy}" width="${cw}" height="${ch}" fill="#c4161c" stroke="none"/>`).join('');
+    return `${ground}${corners}<rect x="${x}" y="${y + h / 2 - 6}" width="${w}" height="12" fill="#151810" stroke="none"/>`
+      + `<rect x="${x + w / 2 - 7}" y="${y}" width="14" height="${h}" fill="#151810" stroke="none"/>${frame}`;
+  }
+  const stripe = h / 13;
+  const stripes = Array.from({ length: 7 }, (_, index) => `<rect x="${x}" y="${(y + index * 2 * stripe).toFixed(2)}" width="${w}" height="${stripe.toFixed(2)}" fill="#a3182b" stroke="none"/>`).join('');
+  const canton = { w: w * 0.4, h: stripe * 7 };
+  const stars = Array.from({ length: 12 }, (_, index) => `<circle cx="${(x + 3 + (index % 4) * ((canton.w - 6) / 3)).toFixed(2)}" cy="${(y + 3.2 + Math.floor(index / 4) * ((canton.h - 6.4) / 2)).toFixed(2)}" r=".9" fill="#fff" stroke="none"/>`).join('');
+  return `${ground}${stripes}<rect x="${x}" y="${y}" width="${canton.w}" height="${canton.h.toFixed(2)}" fill="#1c2a58" stroke="none"/>${stars}${frame}`;
+};
+
 export const counterSvgBody = (view: CounterViewModel): string => {
   if (view.redacted) return '<rect class="counter-paper concealed" width="100" height="100"/><path class="counter-unknown" d="M32 36C32 12 70 12 70 36C70 47 50 48 50 65M50 75V81"/>';
   if (view.kind === 'aircraft') return aircraftBody(view);
@@ -171,13 +193,24 @@ export const counterSvgBody = (view: CounterViewModel): string => {
   const strength = view.step?.combatStrength;
   const flags = [view.mode && !['MOVE','COMBAT'].includes(view.mode) ? ({ RESERVE:'RES', STRAT:'STRAT', DG:'DG', EXPLOITATION:'EXP' } as Record<string,string>)[view.mode] : '',
     view.statuses.includes('status:out-of-supply') ? 'OOS' : ''].filter(Boolean);
-  // A formation HQ prints its formation's short name ("82.Abn") in the symbol box, as the board-game counter does; its unit name is "HQ / 82.Abn".
-  const hqFormation = c.kind === 'HQ' ? view.label.split(' / ').slice(1).join(' / ') : '';
+  const moveBand = view.face?.id === 'move' ? '<path class="move-band" d="M3 9H97"/>' : '';
+  const stateBar = flags.length ? `<g class="counter-state"><rect x="2" y="88" width="96" height="12"/>${text(50,98,flags.join(' · '))}</g>` : '';
+  if (c.kind === 'HQ') {
+    // The formation's short name ("82.Abn") is printed rotated beside the flag, as the board-game counter does; the unit name is "HQ / 82.Abn".
+    const formation = view.label.split(' / ').slice(1).join(' / ');
+    const rating = `${view.step?.range}-${ma}`;
+    const squeeze = (element: string, length: number) => element.replace('<text ', `<text textLength="${length}" lengthAdjust="spacingAndGlyphs" `);
+    return `<rect class="counter-paper nation-${c.nationality}" width="100" height="100"/>
+    ${moveBand}
+    <g class="counter-identification">${squeeze(text(HQ_FLAG.x + HQ_FLAG.w / 2, 14, c.echelon, 'hq-echelon'), 9 * c.echelon.length)}${formation ? squeeze(text(21, 37, formation, 'hq-designation'), formation.length > 3 ? 40 : 17 * formation.length) : ''}</g>
+    <g class="counter-symbol hq-flag">${hqFlag(c.nationality)}</g>
+    <g class="counter-values">${squeeze(text(56, 90, rating, 'hq-rating'), rating.length > 3 ? 56 : 44)}</g>
+    ${stateBar}`;
+  }
   const strengthText = strength == null ? '' : c.defensiveOnly ? `(${strength})` : strength;
   let ratings = '';
-  if (c.kind === 'HQ') ratings = text(50,84,`${view.step?.range}–${ma}`,'counter-number');
   // An enemy dump's size is hidden (null in the projection): print "? SP" (an emptied dump is removed, so 0 is never real).
-  else if (c.kind === 'SUPPLY') ratings = text(50,84,`${view.quantity == null ? '?' : view.quantity / 4} SP`,'counter-number');
+  if (c.kind === 'SUPPLY') ratings = text(50,84,`${view.quantity == null ? '?' : view.quantity / 4} SP`,'counter-number');
   else {
     ratings = (c.kind === 'ARTILLERY' ? '<rect class="barrage-box" x="6" y="59" width="34" height="30"/>' : '')
       + text(24,85,c.kind === 'ARTILLERY' ? view.barrage : c.kind === 'TRANSPORT' ? view.transportPoints : strengthText,'counter-number')
@@ -196,12 +229,12 @@ export const counterSvgBody = (view: CounterViewModel): string => {
         + `${text(50, 80, view.load.tokens > 0 ? `${view.load.tokens}T` : '', 'counter-load-text')}</g>`;
     })() : '';
   return `<rect class="counter-paper nation-${c.nationality}" width="100" height="100"/>
-    ${view.face?.id === 'move' ? '<path class="move-band" d="M3 9H97"/>' : ''}
+    ${moveBand}
     ${c.formationColor ? `<path class="formation-band" stroke="${escape(c.formationColor)}" d="M3 51H97"/>` : ''}
     <g class="counter-identification">${text(50,20,c.echelon,'counter-echelon')}${fit(text(20,57,c.designation,'counter-designation'), c.designation, 32)}${fit(text(88,34,c.affiliation,'counter-affiliation'), c.affiliation, 44)}
     ${c.showRe ? `<circle class="re-dot" cx="13" cy="14" r="9"/>${text(13,19,(view.step?.regimentalEquivalentTicks ?? 0)/4,'counter-re')}` : ''}</g>
-    <g class="counter-symbol category-${c.combatCategory}">${!['TRUCK','SUPPLY'].includes(c.symbol) ? '<rect class="symbol-box" x="28" y="24" width="44" height="25"/>' : ''}${hqFormation ? text(50,43,hqFormation,'hq-formation').replace('<text ', `<text${hqFormation.length > 5 ? ` textLength="40" lengthAdjust="spacingAndGlyphs"` : ''} `) : symbolPaths[c.symbol]}</g>
+    <g class="counter-symbol category-${c.combatCategory}">${!['TRUCK','SUPPLY'].includes(c.symbol) ? '<rect class="symbol-box" x="28" y="24" width="44" height="25"/>' : ''}${symbolPaths[c.symbol]}</g>
     <g class="counter-values">${ratings}</g>${gauge}
-    ${flags.length ? `<g class="counter-state"><rect x="2" y="88" width="96" height="12"/>${text(50,98,flags.join(' · '))}</g>` : ''}`;
+    ${stateBar}`;
 };
 export const counterSvg = (view: CounterViewModel): string => `<svg class="unit-counter" viewBox="0 0 100 100" role="img" aria-label="${escape(view.label)}">${counterSvgBody(view)}</svg>`;
