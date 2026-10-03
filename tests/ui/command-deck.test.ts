@@ -7,6 +7,8 @@ import {
   createNewGameOrchestrator,
   createUiController,
 } from '../../src/index.js';
+import { describeRecord } from '../../src/ui/narrative.js';
+import { unitLabel } from '../../src/ui/presenter.js';
 import {
   activeDeckTab, deckTabs, selectDeckTab, syncDeckTab, type DeckState,
 } from '../../src/ui/command-deck.js';
@@ -231,6 +233,56 @@ describe('phase-specific command deck', () => {
     controller.selectPiece(mover!);
     expect(controller.getSnapshot().selectedIsMoving).toBe(true);
     expect(controller.getSnapshot().reachable.size).toBeGreaterThan(0);
+  });
+
+  it('detaches numbered Breakdowns ("1/101.Abn") from a division and lets Undo take one back (20.0)', async () => {
+    const controller = await startGame();
+    const deck = newDeck();
+    for (const arrival of controller.getSnapshot().arrivals) {
+      controller.selectPiece(arrival.pieceId);
+      await controller.clickHex(arrival.entryHexIds[0]!);
+    }
+    await controller.endStep();
+    const own = () => controller.getSnapshot().view.projection!.stacks.flatMap(({ pieces }) => pieces)
+      .filter((piece) => piece.ownerId === controller.getSnapshot().view.playerId && piece.location.kind === 'ON_MAP');
+    const division = own().find((piece) => { controller.selectPiece(piece.id); return controller.getSnapshot().unitActions.some(({ group }) => group === 'BREAKDOWN'); });
+    expect(division, 'the default game has a division that can detach Breakdowns').toBeDefined();
+    controller.selectPiece(division!.id);
+    let snapshot = controller.getSnapshot();
+    const html = commandDeckHtml(snapshot, deck);
+    expect(html).toContain('<strong>Breakdowns</strong>');
+    const offers = snapshot.unitActions.filter(({ group }) => group === 'BREAKDOWN');
+    expect(offers.map(({ label }) => label)).toEqual(['Detach a Breakdown (5-4-3, 1 RE; the division loses a step)']);
+    const before = own().length;
+    const steps = division!.remainingSteps!;
+    const divisionName = unitLabel(snapshot.scenario, division!);
+    const breakdownNames = () => own().flatMap((piece) => piece.statusValues.some(({ statusDefinitionId }) => statusDefinitionId === 'status:unit-name')
+      ? [unitLabel(controller.getSnapshot().scenario, piece)] : []).sort();
+
+    await controller.runAction(offers[0]!.key);
+    snapshot = controller.getSnapshot();
+    expect(own()).toHaveLength(before + 1);
+    expect(own().find(({ id }) => id === division!.id)?.remainingSteps).toBe(steps - 1);
+    expect(breakdownNames()).toEqual([`1/${divisionName}`]);
+    expect(snapshot.feed.at(-1)?.title).toBe(`${divisionName} detached 1/${divisionName}`);
+    // 20.0d: left with its reduced division, it will be absorbed when the phase ends; End phase says so beforehand.
+    expect(phaseControlsHtml(snapshot, deck)).toContain(`When this phase ends: 1/${divisionName} rejoins ${divisionName}`);
+    // 4.9a: the opponent's log does not reveal which division lost a step.
+    const enemyView = describeRecord(snapshot.history.at(-1)!, { viewerId: 'player:axis' as never, playerName: () => 'Axis commander', piece: () => null });
+    expect(enemyView.title).toBe('An enemy unit reorganized');
+    expect(enemyView.lines.join(' ')).not.toContain(divisionName);
+    // The next one is number 2.
+    controller.selectPiece(division!.id);
+    await controller.runAction(controller.getSnapshot().unitActions.find(({ group }) => group === 'BREAKDOWN')!.key);
+    expect(breakdownNames()).toEqual([`1/${divisionName}`, `2/${divisionName}`]);
+
+    expect(controller.getSnapshot().undoStep?.scope).toBe('ACTION');
+    await controller.undoStep();
+    expect(breakdownNames()).toEqual([`1/${divisionName}`]);
+    expect(controller.getSnapshot().undoStep?.scope).toBe('ACTION');
+    await controller.undoStep();
+    expect(own()).toHaveLength(before);
+    expect(own().find(({ id }) => id === division!.id)?.remainingSteps).toBe(steps);
   });
 
   it('warns in the move popup that moving another unit ends a loaded truck\'s move (6.1g)', async () => {

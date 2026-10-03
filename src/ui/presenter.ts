@@ -26,6 +26,7 @@ const ACTION_LABELS: Readonly<Record<GameAction['kind'], string>> = {
   RELEASE_RESERVE: 'Release reserve',
   MOVE_PIECE: 'Move',
   END_MOVE: 'Finish move',
+  CREATE_BREAKDOWN: 'Detach Breakdown',
   CHECK_SUPPLY: 'Eat off the map',
   DECLARE_COMBAT: 'Attack',
   DECLARE_BARRAGE: 'Barrage',
@@ -79,6 +80,7 @@ export const actionSummary = (action: GameAction): string => {
     case 'RELEASE_RESERVE': return 'Release from reserve';
     case 'MOVE_PIECE': return `Move to ${printedHexLabel(action.path.at(-1) ?? '')}`;
     case 'END_MOVE': return 'Finish this unit\'s move';
+    case 'CREATE_BREAKDOWN': return 'Detach a Breakdown';
     case 'CHECK_SUPPLY': return 'Draw supply from a dump';
     case 'DECLARE_COMBAT': return `${action.combatKind === 'OVERRUN' ? 'Overrun' : 'Attack'} ${printedHexLabel(action.targetHexId)}`;
     case 'DECLARE_BARRAGE': return `Barrage ${printedHexLabel(action.targetHexId)}`;
@@ -110,10 +112,16 @@ export const pieceDefinition = (
   piece: Pick<ProjectedPiece, 'definitionId'>,
 ): PieceDefinition | null => scenario.pieceCatalog.definitions.find(({ id }) => id === piece.definitionId) ?? null;
 
-export const unitLabel = (scenario: ScenarioDefinition, piece: Pick<ProjectedPiece, 'definitionId'>): string => {
+/** The Piece's own name (a Breakdown's "1/101.Abn", 20.0) when it has one; null when its Definition names it. */
+export const pieceOwnName = (piece: { readonly statusValues?: ProjectedPiece['statusValues'] }): string | null => {
+  const value = piece.statusValues?.find(({ statusDefinitionId }) => statusDefinitionId === 'status:unit-name')?.value;
+  return typeof value === 'string' && value.length > 0 ? value : null;
+};
+
+export const unitLabel = (scenario: ScenarioDefinition, piece: Pick<ProjectedPiece, 'definitionId'> & { readonly statusValues?: ProjectedPiece['statusValues'] }): string => {
   const definition = pieceDefinition(scenario, piece);
   // A supply dump has no name on the board-game counter, whatever an older save or package called it.
-  return definition?.family === 'RESOURCE' ? 'Supply dump' : definition?.name ?? 'Unit';
+  return definition?.family === 'RESOURCE' ? 'Supply dump' : pieceOwnName(piece) ?? definition?.name ?? 'Unit';
 };
 
 /** Label for a counter as the viewer is allowed to see it. */

@@ -182,8 +182,9 @@ input[aria-invalid=true] { border-color: var(--danger); }
 .phase-actions { display: flex; align-items: center; gap: 8px; min-width: 0; }
 .phase-actions .end-anchor { position: relative; display: flex; }
 .phase-actions button.warning { border-color: #ff9d6b; color: #2a1206; background: #ffb488; }
-/* Why the phase cannot end yet: a note hanging under End phase, over the map's corner. */
-.end-note { position: absolute; z-index: 45; top: calc(100% + 6px); left: 0; right: auto; width: max-content; max-width: 380px; margin: 0; padding: 8px 12px; border: 1px solid var(--line-bright); border-left: 4px solid #ffcf9a; border-radius: 6px; background: #211f16; box-shadow: 0 10px 30px rgba(0, 0, 0, .45); color: #ffcf9a; font-size: 13px; line-height: 1.4; white-space: normal; }
+/* Notes under End phase stack in one hanging column: why it cannot end yet, and what ending it will do (20.0d). */
+.end-notes { position: absolute; z-index: 45; top: calc(100% + 6px); left: 0; display: grid; gap: 6px; width: max-content; max-width: 380px; }
+.end-note { width: max-content; max-width: 380px; margin: 0; padding: 8px 12px; border: 1px solid var(--line-bright); border-left: 4px solid #ffcf9a; border-radius: 6px; background: #211f16; box-shadow: 0 10px 30px rgba(0, 0, 0, .45); color: #ffcf9a; font-size: 13px; line-height: 1.4; white-space: normal; }
 .combat-card { display: grid; gap: 6px; padding: 10px; border: 1px solid var(--line-bright); border-left: 4px solid #ffb488; border-radius: 6px; background: #1d211a; }
 .combat-card.status-cancelled { border-left-color: var(--muted); }
 .combat-card header strong { font-size: 14px; }

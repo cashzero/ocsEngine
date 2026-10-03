@@ -75,6 +75,8 @@ export interface RuleProjection {
   readonly sequence: GameState['sequence'];
   /** The viewer's own unit that is still moving and may spend more MP (6.1g); null otherwise and for the opponent. */
   readonly currentMoverId: PieceId | null;
+  /** The viewer's Breakdowns that reduced units will absorb when the phase ends (20.0d), with who may take each. */
+  readonly breakdownAbsorptions: readonly { readonly breakdownId: PieceId; readonly absorberIds: readonly PieceId[] }[];
   readonly stacks: readonly ProjectedStack[];
   readonly pendingDecision: GameState['pendingDecision'];
   readonly victory: GameState['victory'];

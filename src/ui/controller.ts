@@ -141,7 +141,7 @@ const UNDO_DEPTH = 30;
  * nothing. Anything else (combat, barrage, decisions, ending a step, air missions, blowing a dump...) clears Undo.
  */
 const UNDOABLE_ACTIONS: ReadonlySet<GameAction['kind']> = new Set([
-  'MOVE_PIECE', 'END_MOVE', 'CHANGE_MODE', 'RELEASE_RESERVE', 'PLACE_REINFORCEMENT', 'PAY_FUEL', 'RECOVER_INTERNALS', 'CHOOSE_FORMATION_TRACE',
+  'MOVE_PIECE', 'END_MOVE', 'CREATE_BREAKDOWN', 'CHANGE_MODE', 'RELEASE_RESERVE', 'PLACE_REINFORCEMENT', 'PAY_FUEL', 'RECOVER_INTERNALS', 'CHOOSE_FORMATION_TRACE',
   'LOAD_SUPPLY', 'UNLOAD_SUPPLY', 'COMBINE_TRANSPORT', 'DIVIDE_TRANSPORT', 'FORM_EXTENDER', 'DISSOLVE_EXTENDER',
 ]);
 
@@ -357,6 +357,12 @@ class DefaultUiController implements UiController {
     for (const piece of this.#scenario.initialPieceState.pieces) {
       known.set(String(piece.id), { name: definitions.get(String(piece.definitionId))?.name ?? 'Unit', ownerId: piece.ownerId });
     }
+    // A Breakdown absorbed back into its pool (20.0d) is no longer in play; its creation still names it in the log.
+    for (const record of this.#history()) {
+      for (const event of record.events) {
+        if (event.kind === 'BREAKDOWN_CREATED') known.set(String(event.breakdownId), { name: event.name, ownerId: record.action.actorId });
+      }
+    }
     for (const piece of this.#pieces()) known.set(String(piece.id), { name: unitLabel(this.#scenario, piece), ownerId: piece.ownerId });
     return {
       viewerId,
@@ -391,6 +397,7 @@ class DefaultUiController implements UiController {
         case 'ADVANCE_HEX': return `Choose units to advance after combat${where}.`;
         case 'FIRST_PLAYER': return 'Choose who takes the first Player Turn (2.3).';
         case 'OVERSTACK_ELIMINATION': return 'Remove units from an overstacked Hex (4.8a).';
+        case 'BREAKDOWN_ABSORPTION': return 'Choose which unit absorbs a Breakdown as the phase ends (20.0d).';
         case 'ATTRITION_LOSS': return 'Choose the units lost to attrition (12.8).';
         case 'DISPLACEMENT_HEX': return 'Place displaced trucks (9.14).';
       }
@@ -888,6 +895,14 @@ class DefaultUiController implements UiController {
       const add = (group: UnitAction['group'], label: string, action: GameAction | null | undefined) => {
         if (action) actions.push({ key: `${group}:${actions.length}:${action.kind}`, group, label, action });
       };
+      if (enabled('CREATE_BREAKDOWN')) {
+        // 20.0: the Breakdown's printed values come from the division's pool; the engine numbers it ("1/101.Abn").
+        const definitions = this.#scenario.pieceCatalog.definitions;
+        const pool = definitions.find(({ id }) => id === piece.definitionId)?.capabilities.find(({ id }) => id === 'BREAKDOWN')
+          ?.parameters.find(({ key }) => key === 'definitionId');
+        const counter = pool?.kind === 'TEXT' ? definitions.find(({ id }) => id === pool.value)?.name.replace(/^.*Brkdwn /u, '') : undefined;
+        add('BREAKDOWN', `Detach a Breakdown${counter ? ` (${counter}, 1 RE; the division loses a step)` : ''}`, this.#candidates('CREATE_BREAKDOWN', piece.id)[0]);
+      }
       if (enabled('PAY_FUEL')) {
         for (const action of this.#candidates('PAY_FUEL', piece.id)) {
           if (action.kind !== 'PAY_FUEL') continue;

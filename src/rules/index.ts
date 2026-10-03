@@ -6,6 +6,7 @@ export * from './lifecycle/index.js';
 export * from './kernel/index.js';
 export * from './query/index.js';
 export * from './sequence/index.js';
+export * from './breakdown/index.js';
 export * from './mode/index.js';
 export * from './movement/index.js';
 export * from './stacking/index.js';

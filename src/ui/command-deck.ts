@@ -523,7 +523,7 @@ const unitTab = (snapshot: UiSnapshot, state: DeckState): TemplateResult => {
     parts.push(html`<div class="mode-actions"><strong>Mode</strong><div class="chip-row">${snapshot.modeOptions.map(({ mode }) => html`<button data-mode=${mode}>${modeName(mode)}</button>`)}${snapshot.releaseAction ? html`<button id="release-reserve">Release reserve</button>` : nothing}</div></div>`);
   }
   if (snapshot.unitActions.length > 0 || snapshot.transportOptions) {
-    const groups: [string, string][] = [['FUEL', 'Fuel'], ['SUPPLY', 'Supply'], ['BREAKOUT', 'Breakout'], ['TRANSPORT', 'Trucks'], ['DUMP', 'Dump'], ['AIR', 'Air']];
+    const groups: [string, string][] = [['BREAKDOWN', 'Breakdowns'], ['FUEL', 'Fuel'], ['SUPPLY', 'Supply'], ['BREAKOUT', 'Breakout'], ['TRANSPORT', 'Trucks'], ['DUMP', 'Dump'], ['AIR', 'Air']];
     // Loading, unloading and splitting live in the truck's supply area; the buttons that remain are the other truck actions.
     const inPanel = (kind: string) => ['LOAD_SUPPLY', 'UNLOAD_SUPPLY', 'DIVIDE_TRANSPORT'].includes(kind);
     parts.push(...groups.flatMap(([group, title]): View[] => {
@@ -716,8 +716,22 @@ export const phaseControlsView = (snapshot: UiSnapshot, state: DeckState): Templ
     <span class="end-anchor"><button id="end-phase" class="bar-button ${confirming ? 'warning' : snapshot.endStep.enabled ? 'primary' : ''}" ?disabled=${disabled}><span class="bar-label">${confirming
       ? `Finish anyway: ${unmoved} unit${unmoved === 1 ? ' has' : 's have'} not moved`
       : endLabel}</span><small class="bar-sub">${confirming ? 'Press again to confirm' : `Next: ${nextLabel}`}</small></button>
-    ${reasons.length > 0 ? html`<p class="end-note" role="status">${reasons.join(' ')}</p>` : nothing}</span>
+    ${reasons.length > 0 || (!handingOver && absorptionNote(snapshot) !== nothing)
+      ? html`<div class="end-notes">${reasons.length > 0 ? html`<p class="end-note" role="status">${reasons.join(' ')}</p>` : nothing}${handingOver ? nothing : absorptionNote(snapshot)}</div>`
+      : nothing}</span>
   </div>`;
+};
+
+/** 20.0d: name the player's Breakdowns that reduced units will absorb when the phase ends, before End is pressed. */
+const absorptionNote = (snapshot: UiSnapshot): TemplateResult | typeof nothing => {
+  const absorptions = snapshot.view.projection?.breakdownAbsorptions ?? [];
+  if (absorptions.length === 0) return nothing;
+  const pieces = new Map((snapshot.view.projection?.stacks ?? []).flatMap(({ pieces: stack }) => stack).map((piece) => [String(piece.id), piece]));
+  const name = (pieceId: string) => { const piece = pieces.get(pieceId); return piece ? pieceLabel(snapshot.scenario, piece) : 'a unit'; };
+  const lines = absorptions.map(({ breakdownId, absorberIds }) => absorberIds.length === 1
+    ? `${name(breakdownId)} rejoins ${name(absorberIds[0]!)}`
+    : `${name(breakdownId)} is absorbed by ${absorberIds.map(name).join(' or ')} (you choose)`);
+  return html`<p class="end-note absorb-note" role="status">When this phase ends: ${lines.join('; ')} <cite>20.0d</cite></p>`;
 };
 
 /**
