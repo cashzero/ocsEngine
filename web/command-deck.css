@@ -287,3 +287,8 @@ details.list-group summary { cursor: pointer; padding: 4px 0; }
 
 .fuel-panel .step-title { display: block; margin: .35rem 0 .2rem; opacity: .75; }
 .fuel-panel button.is-picked { outline: 2px solid #ffe078; }
+
+/* 4.8a: an overstacked hex is a loss of units at the end of the step, so its warning is louder than the other end notes. */
+.overstack-warning, .end-note.overstack-note { border-left: 4px solid #ff6b5a; color: #ffb3a8; font-weight: 600; }
+.overstack-warning { padding: 6px 8px; border-radius: 6px; background: rgba(255, 107, 90, .12); }
+.end-note.overstack-note { border-left-color: #ff6b5a; background: #2a1613; }
