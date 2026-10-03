@@ -16,9 +16,9 @@ vi.setConfig({ testTimeout: 30000 });
 
 const newDeck = (): DeckState => ({ search: '', working: false });
 
-const startMovement = async () => {
+const startMovement = async (request = DEFAULT_NEW_GAME_REQUEST) => {
   const engine = createGameplayEngine(createMemoryGameplayPorts());
-  const created = await createNewGameOrchestrator(engine).create(DEFAULT_NEW_GAME_REQUEST);
+  const created = await createNewGameOrchestrator(engine).create(request);
   if (!created.ok) throw new Error('Default game must be created.');
   const { session, scenario, bindings } = created.value;
   const controller = createUiController({ engine, session, scenario, bindings });
@@ -144,7 +144,7 @@ describe('the truck\'s supply area (A2)', () => {
     expect(trucks.length, 'the default game has trucks').toBeGreaterThan(0);
     for (const dump of dumps) expect(html).not.toContain(`data-roster-pick="${dump.id}"`);
     expect(html).not.toContain('Supply dump');
-    const countable = own().filter(({ role, location }) => role !== 'DUMP' && role !== 'CARGO' && location.kind !== 'ELIMINATED').length;
+    const countable = own().filter(({ role, location }) => role !== 'DUMP' && role !== 'CARGO' && role !== 'AIR_BASE' && location.kind !== 'ELIMINATED').length;
     expect(html).toContain(`My units · ${countable}`);
     expect(commandDeckHtml(snapshot, newDeck())).toContain(`All units (${countable})`);
 
@@ -158,6 +158,30 @@ describe('the truck\'s supply area (A2)', () => {
     const picked = (group: HTMLElement) => [...group.querySelectorAll<HTMLElement>('[data-roster-pick]')].map((button) => button.dataset.rosterPick);
     expect(picked(transport).sort()).toEqual(trucks.map(({ id }) => String(id)).sort());
     for (const group of groups.slice(0, -1)) for (const truck of trucks) expect(picked(group)).not.toContain(String(truck.id));
+    controller.dispose();
+  });
+
+  it('lists air units in an Air group of their own and leaves air bases out, like supply dumps', async () => {
+    const { controller, own } = await startMovement({ ...DEFAULT_NEW_GAME_REQUEST, oob: { ...DEFAULT_NEW_GAME_REQUEST.oob, air: 'STANDARD' } });
+    const html = unitRosterHtml(controller.getSnapshot(), newDeck());
+    const aircraft = own().filter(({ role, location }) => role === 'AIRCRAFT' && location.kind !== 'ELIMINATED');
+    const airBases = own().filter(({ role }) => role === 'AIR_BASE');
+    expect(aircraft.length, 'the game with air forces has air units').toBeGreaterThan(0);
+    expect(airBases.length, 'the game with air forces has air bases').toBeGreaterThan(0);
+    const countable = own().filter(({ role, location }) => role !== 'DUMP' && role !== 'CARGO' && role !== 'AIR_BASE' && location.kind !== 'ELIMINATED').length;
+    expect(html).toContain(`My units · ${countable}`);
+    for (const base of airBases) expect(html).not.toContain(`data-roster-pick="${base.id}"`);
+
+    // The Air group sits after the formations and before Trucks, holds every air unit, and no formation group holds one.
+    const host = document.createElement('div');
+    host.innerHTML = html;
+    const groups = [...host.querySelectorAll<HTMLElement>('details.roster-group:not(.roster-eliminated)')];
+    const airIndex = groups.findIndex((group) => group.classList.contains('roster-air'));
+    expect(airIndex).toBe(groups.length - 2);
+    expect(groups[airIndex]!.querySelector('summary')!.textContent).toContain('Air');
+    const picked = (group: HTMLElement) => [...group.querySelectorAll<HTMLElement>('[data-roster-pick]')].map((button) => button.dataset.rosterPick);
+    expect(picked(groups[airIndex]!).sort()).toEqual(aircraft.map(({ id }) => String(id)).sort());
+    for (const group of groups.slice(0, airIndex)) for (const plane of aircraft) expect(picked(group)).not.toContain(String(plane.id));
     controller.dispose();
   });
 

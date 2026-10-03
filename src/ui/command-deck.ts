@@ -631,11 +631,12 @@ const unitFormation = (snapshot: UiSnapshot, piece: ProjectedPiece): string => {
 
 /**
  * Every unit the player commands. A supply dump is supply lying on the map, not a unit, so it is never listed or counted here (it is
- * reached on the map and in the stack picker); SP a truck carries is part of that truck, not another unit.
+ * reached on the map and in the stack picker); SP a truck carries is part of that truck, not another unit. An air base is a facility
+ * on the map in the same way, so it is left out too.
  */
 const rosterOwn = (snapshot: UiSnapshot): ProjectedPiece[] =>
   (snapshot.view.projection?.stacks ?? []).flatMap((stack) => stack.pieces)
-    .filter(({ ownerId, role }) => ownerId === snapshot.view.playerId && role !== 'CARGO' && role !== 'DUMP');
+    .filter((piece) => piece.ownerId === snapshot.view.playerId && piece.role !== 'CARGO' && piece.role !== 'DUMP' && !isAirBase(snapshot, piece));
 
 /** Trucks and extenders haul supply rather than fight, so the roster lists them in a group of their own after the formations. */
 const isTransport = ({ role }: ProjectedPiece): boolean => role === 'TRUCK' || role === 'EXTENDER';
@@ -651,16 +652,19 @@ export const unitRosterBodyView = (snapshot: UiSnapshot, state: DeckState): Temp
   const active = all.filter(({ location }) => location.kind !== 'ELIMINATED')
     .filter((piece) => filter === 'all' || (filter === 'moved') === snapshot.movedThisPhase.has(String(piece.id)));
   const groups = new Map<string, ProjectedPiece[]>();
-  for (const piece of active.filter((piece) => !isTransport(piece))) {
+  for (const piece of active.filter((piece) => !isTransport(piece) && !isAir(snapshot, piece))) {
     const name = unitFormation(snapshot, piece) || 'Independent units';
     groups.set(name, [...(groups.get(name) ?? []), piece]);
   }
   const row = (piece: ProjectedPiece): TemplateResult => html`<button class="roster-unit${piece.id === snapshot.selection.pieceId ? ' is-selected' : ''}" data-piece=${piece.id} data-roster-pick=${piece.id} aria-label=${`${pieceLabel(snapshot.scenario, piece)}, ${pieceHex(piece)}`}>
     <span class="roster-art" aria-hidden="true">${counterFor(snapshot, piece)}</span><span class="roster-text">${pieceLabel(snapshot.scenario, piece)}<small>${pieceHex(piece)} · ${statusName(snapshot, piece)}</small></span>${badges(snapshot, piece)}</button>`;
   const rows = (pieces: ProjectedPiece[]) => repeat(pieces.sort(byName), (piece) => piece.id, row);
+  // Air units fly missions from air bases rather than move with a formation, so they get a group of their own before the Trucks.
+  const air = active.filter((piece) => isAir(snapshot, piece));
   const transport = active.filter(isTransport);
   const sorted: { key: string; name: string; pieces: ProjectedPiece[]; extra: string }[] = [
     ...[...groups.entries()].sort(([left], [right]) => left.localeCompare(right)).map(([name, pieces]) => ({ key: `formation:${name}`, name, pieces, extra: '' })),
+    ...(air.length > 0 ? [{ key: 'air', name: 'Air', pieces: air, extra: ' roster-air' }] : []),
     ...(transport.length > 0 ? [{ key: 'transport', name: 'Trucks', pieces: transport, extra: ' roster-transport' }] : []),
   ];
   const eliminated = all.filter(({ location }) => location.kind === 'ELIMINATED');
