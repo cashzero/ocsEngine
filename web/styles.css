@@ -317,16 +317,20 @@ small, .supporting { font-size: 13px; color: var(--muted); }
 .category-MECH .symbol-box { fill: #df3d32; }
 .move-band { stroke: #f9f5e6; stroke-width: 7; }
 .formation-band { stroke-width: 8; }
-.counter .counter-number, .unit-counter .counter-number { font-size: 31px; font-stretch: condensed; }
-.counter .counter-ar, .unit-counter .counter-ar { font-size: 24px; }
+/* The printed counters set every rating in large heavy type: the stroke in the text's own colour thickens the glyphs. */
+.counter .counter-number, .unit-counter .counter-number { font-size: 33px; font-weight: 800; font-stretch: condensed; paint-order: stroke; stroke: currentColor; stroke-width: .5px; stroke-linejoin: round; }
+.counter .counter-ar, .unit-counter .counter-ar { font-size: 26px; font-weight: 800; paint-order: stroke; stroke: currentColor; stroke-width: .4px; stroke-linejoin: round; }
+.counter .counter-echelon, .unit-counter .counter-echelon { font-size: 20px; font-weight: 900; }
+.counter .counter-designation, .unit-counter .counter-designation, .counter .counter-affiliation, .unit-counter .counter-affiliation { font-size: 17px; font-weight: 800; }
+.counter .counter-re, .unit-counter .counter-re { font-size: 15px; font-weight: 900; }
 .counter .counter-range, .unit-counter .counter-range { font-size: 17px; }
 /* A formation HQ's symbol box prints the formation's short name instead of an icon. */
-.counter .hq-formation, .unit-counter .hq-formation { font-size: 17px; stroke: none; }
-.counter .mobility-leg, .unit-counter .mobility-leg { fill: #fff; paint-order: stroke; stroke: #333; stroke-width: .7; }
+.counter .hq-formation, .unit-counter .hq-formation { font-size: 20px; font-weight: 900; stroke: none; }
+.counter .mobility-leg, .unit-counter .mobility-leg { fill: #fff; paint-order: stroke; stroke: #151810; stroke-width: 2.4; }
 .counter .mobility-tracked, .unit-counter .mobility-tracked { fill: #c11d20; }
 .tracked-box, .barrage-box, .re-dot { fill: #f5df20; }
-.counter-designation { transform: rotate(-90deg); transform-origin: 13px 56px; }
-.counter-affiliation { transform: rotate(-90deg); transform-origin: 87px 38px; }
+.counter-designation { transform: rotate(-90deg); transform-origin: 20px 57px; text-anchor: start; }
+.counter-affiliation { transform: rotate(-90deg); transform-origin: 88px 34px; }
 .counter-state rect { fill: #f8e9ae; }
 .counter .counter-state text, .unit-counter .counter-state text { font-size: 11px; }
 /* A friendly truck's load gauge: an empty outline, a part-filled bar, or a full bar, with the Tokens carried. */
@@ -451,14 +455,29 @@ small, .supporting { font-size: 13px; color: var(--muted); }
 }
 
 /* Air units (3.5, 14.1) and Air Bases (15.0). */
-.air-badge { fill: #f2efe0; stroke: #8b1d1d; stroke-width: 2; }
-.air-badge.fighter { fill: #c62828; stroke: #5a0f0f; }
-.counter text.air-type, .unit-counter text.air-type { font-size: 13px; fill: #151810; }
-.counter .air-badge.fighter + text.air-type, .unit-counter .air-badge.fighter + text.air-type { fill: #fff; }
-.counter text.air-designation, .unit-counter text.air-designation { font-size: 15px; }
-.air-range-box { fill: #f5e663; stroke: none; }
-.counter text.air-range, .unit-counter text.air-range { font-size: 15px; }
-.air-silhouette { stroke: #1e2a1c; stroke-width: 3; fill: #3f513a; }
+/* As printed: a red Fighter triangle with a yellow rim and white F; a yellow bomber oval with a red rim and dark red T. */
+.air-badge { fill: #e2c21c; stroke: #9a2a10; stroke-width: 2; }
+.air-badge.fighter { fill: #c0261c; stroke: #e5c21a; stroke-width: 2.2; stroke-linejoin: round; }
+.counter text.air-type, .unit-counter text.air-type { font-family: Georgia, 'Times New Roman', serif; font-size: 13px; font-weight: 700; fill: #5a1010; }
+.counter .air-badge.fighter + text.air-type, .unit-counter .air-badge.fighter + text.air-type { font-size: 15px; fill: #fff; }
+.counter text.air-designation, .unit-counter text.air-designation { font-size: 20px; font-weight: 700; font-stretch: condensed; text-anchor: end; paint-order: stroke; stroke: currentColor; stroke-width: .7px; }
+.air-range-box { fill: #f5e22a; stroke: none; }
+.counter text.air-range, .unit-counter text.air-range { font-size: 16px; font-weight: 700; font-stretch: condensed; }
+.counter-paper.air.nation-US { fill: #a09a4e; }
+.counter-paper.air.nation-GERMAN { fill: #8bcdef; }
+.counter .air-number, .unit-counter .air-number { font-family: Georgia, 'Times New Roman', serif; font-size: 30px; font-stretch: normal; }
+/* Aircraft art in the printed finishes: olive drab, natural metal (P-47 wings with invasion stripes, P-51) and Luftwaffe green. */
+.air-silhouette { stroke: #151a10; stroke-width: .9; stroke-linejoin: round; }
+.air-silhouette .pl { fill: #34472a; stroke: #151a10; }
+.air-silhouette.paint-metal .pl { fill: #d3d4d6; stroke: #55575c; }
+.air-silhouette .pl.od { fill: #3a4d26; stroke: #151a10; }
+.air-silhouette.paint-luft .pl { fill: #2f5747; stroke: #142019; }
+.air-silhouette .plane-prop { fill: none; stroke: #151a10; stroke-width: 1.8; stroke-linecap: round; }
+.air-silhouette .plane-stripe { fill: none; stroke: #111; stroke-width: 2.2; }
+.air-silhouette .plane-spinner { fill: #d4c00c; stroke: #151a10; stroke-width: .6; }
+.air-silhouette .roundel-us { fill: #22356e; stroke: #eceae2; stroke-width: .8; }
+.air-silhouette .roundel-star { fill: #f2f2f2; stroke: none; }
+.air-silhouette .roundel-de { fill: none; stroke: #111; stroke-width: 1.8; }
 .counter-paper.is-reduced { stroke-dasharray: 6 3; }
 .air-base-disc { fill: #c9b892; stroke: #24271e; stroke-width: 2; }
 .air-base-disc.nation-US { fill: #c9c27e; }
