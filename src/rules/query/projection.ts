@@ -4,6 +4,7 @@ import type { PieceState } from '../../domain/piece/index.js';
 import type { GameState } from '../kernel/model.js';
 import { INTERNAL_STOCKS_STATUS, OUT_OF_TRACE_SINCE_STATUS, RETURN_TURN_STATUS, definitionOf, isCombatUnit } from '../pieces.js';
 import { exertsZoc } from '../zoc/zoc.js';
+import { pendingAbsorptions } from '../breakdown/breakdown.js';
 import { calculateCombatOdds } from '../combat/strength.js';
 import { previewBarrage } from '../combat/combat.js';
 import { BARRAGE_TABLE_COLUMNS } from '../tables/ocs-4.3.js';
@@ -107,6 +108,7 @@ export const projectRuleState = (state: GameState, viewerId: PlayerId): RuleProj
     sequence: { ...state.sequence },
     currentMoverId: state.currentMoverId !== null && state.pieceState.pieces.some(({ id, ownerId }) => id === state.currentMoverId && ownerId === viewerId)
       ? state.currentMoverId : null,
+    breakdownAbsorptions: pendingAbsorptions(state, viewerId),
     stacks: stableSort(stacks, (left, right) => {
       const leftKey = stableKey([pieceLocationKey(left.location)]);
       const rightKey = stableKey([pieceLocationKey(right.location)]);

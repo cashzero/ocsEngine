@@ -36,6 +36,9 @@
     "US 255 FA Gp, 0113",
     "US 255 Truck Co, 0318"
   ],
+  "warning": [
+    "When this phase ends: 2/101.Abn rejoins 101.Abn 20.0d"
+  ],
   "absorb": {
     "before": 11,
     "after": 10
@@ -56,55 +59,55 @@
   "steps": [
     {
       "operation": "select 101.Abn from All units",
-      "elapsedMs": 306
+      "elapsedMs": 246
     },
     {
       "operation": "detach 1/101.Abn",
-      "elapsedMs": 217
+      "elapsedMs": 239
     },
     {
       "operation": "select the Breakdown",
-      "elapsedMs": 32
+      "elapsedMs": 71
     },
     {
       "operation": "preview move to 0214",
-      "elapsedMs": 158
+      "elapsedMs": 155
     },
     {
       "operation": "confirm move",
-      "elapsedMs": 201
+      "elapsedMs": 180
     },
     {
       "operation": "detach 2/101.Abn",
-      "elapsedMs": 272
+      "elapsedMs": 227
     },
     {
       "operation": "Undo the detach",
-      "elapsedMs": 249
+      "elapsedMs": 244
     },
     {
       "operation": "detach 2/101.Abn again",
-      "elapsedMs": 224
+      "elapsedMs": 228
     },
     {
       "operation": "confirm End Movement Segment",
-      "elapsedMs": 173
+      "elapsedMs": 169
     },
     {
       "operation": "hand over to Axis",
-      "elapsedMs": 589
+      "elapsedMs": 620
     },
     {
       "operation": "select 5.FJ from All units",
-      "elapsedMs": 184
+      "elapsedMs": 152
     },
     {
       "operation": "detach 1/5.FJ",
-      "elapsedMs": 215
+      "elapsedMs": 216
     },
     {
       "operation": "confirm Axis Breakdown move",
-      "elapsedMs": 175
+      "elapsedMs": 278
     }
   ],
   "consoleErrors": []

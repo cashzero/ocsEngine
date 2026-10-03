@@ -416,17 +416,19 @@ export type PendingDecisionKind =
   | 'AIR_COMBAT_PICK'
   | 'INTERCEPTION'
   | 'MISSION_LOSS'
-  | 'AIR_RETURN';
+  | 'AIR_RETURN'
+  /** 20.0d/20.0g: the owner picks which of several eligible units absorbs a Breakdown as the phase ends. */
+  | 'BREAKDOWN_ABSORPTION';
 
 export const PENDING_DECISION_KINDS: readonly PendingDecisionKind[] = [
   'FIRST_PLAYER', 'SUPPLY_SOURCE', 'DEFENDER_LEAD', 'DEFENDER_TERRAIN', 'STEP_LOSS', 'OPTION_SPLIT',
   'RETREAT_HEX', 'ADVANCE_HEX', 'DISPLACEMENT_HEX', 'ATTRITION_LOSS', 'OVERSTACK_ELIMINATION',
-  'AIR_ABORT', 'AIR_COMBAT_PICK', 'INTERCEPTION', 'MISSION_LOSS', 'AIR_RETURN',
+  'AIR_ABORT', 'AIR_COMBAT_PICK', 'INTERCEPTION', 'MISSION_LOSS', 'AIR_RETURN', 'BREAKDOWN_ABSORPTION',
 ];
 
 /** Decisions that may exist outside a combat: sequence of play, attrition, and movement captures. */
 export const SEQUENCE_DECISION_KINDS: readonly PendingDecisionKind[] = [
-  'FIRST_PLAYER', 'OVERSTACK_ELIMINATION', 'ATTRITION_LOSS', 'DISPLACEMENT_HEX',
+  'FIRST_PLAYER', 'OVERSTACK_ELIMINATION', 'BREAKDOWN_ABSORPTION', 'ATTRITION_LOSS', 'DISPLACEMENT_HEX',
 ];
 
 export interface PendingDecisionOption {

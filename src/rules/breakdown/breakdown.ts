@@ -1,6 +1,7 @@
 import { stableSort, type HexId, type PieceId, type PlayerId } from '../../core/index.js';
 import { upsertPieceRelation, upsertPieceState, type PieceDefinition, type PieceState } from '../../domain/piece/index.js';
-import type { GameState, RuleEvent, RuleViolation } from '../kernel/model.js';
+import { parseRuleDecisionId } from '../kernel/ids.js';
+import type { GameState, PendingDecision, RuleEvent, RuleViolation } from '../kernel/model.js';
 import { phaseAllowsMovement } from '../movement/movement.js';
 import {
   INTERNAL_STOCKS_STATUS,
@@ -101,24 +102,37 @@ export const validateCreateBreakdown = (state: GameState, actorId: PlayerId, pie
   if (actorId !== state.sequence.actingPlayerId) issues.push(violation('WRONG_ACTOR', ['actorId'], 'Only the player now moving units can detach Breakdowns.', '20.0a'));
   if (!phaseAllowsMovement(state)) issues.push(violation('INVALID_MOVEMENT_PHASE', ['sequence'], 'Breakdowns are detached when a unit begins to move, in a Movement Segment.', '20.0a'));
   if (piece.location.kind !== 'ON_MAP') issues.push(violation('PIECE_NOT_ON_MAP', ['pieceId'], 'The unit must be on the map.', '20.0'));
-  const profile = breakdownProfile(state, piece);
-  if (!profile || printedSteps(state, piece) < 2) {
-    issues.push(violation('BREAKDOWN_NOT_CAPABLE', ['pieceId'], 'Only multi-step units with a Breakdown pool can detach Breakdowns.', '20.0'));
-    return issues;
-  }
-  if (combatClass(state, piece) !== 'OTHER') issues.push(violation('BREAKDOWN_ARMOR_OR_MECH', ['pieceId'], 'Armor and Mech units cannot create Breakdowns; only "Other" units can.', '20.0'));
-  if ((piece.remainingSteps ?? 0) < 2) issues.push(violation('BREAKDOWN_LAST_STEP', ['pieceId'], 'A unit\'s last step can never become a Breakdown.', '20.0'));
-  if (issues.length > 0) return issues;
+  const capability = breakdownCapabilityViolations(state, piece);
+  if (capability.length > 0 || issues.length > 0) return [...issues, ...capability];
   if (!isEligibleMover(state, piece)) issues.push(violation('BREAKDOWN_NOT_MOVING', ['pieceId'], 'Only a unit that may move in this phase can detach Breakdowns.', '20.0a'));
   const usage = usageOf(state, piece);
   if (usage.moved && state.currentMoverId !== piece.id) issues.push(violation('MOVEMENT_ALREADY_FINISHED', ['pieceId'], 'This unit has finished moving this phase.', '6.1g'));
   else if (usage.movementSpentTicks > 0) issues.push(violation('BREAKDOWN_AFTER_MOVE_BEGAN', ['pieceId'], 'Breakdowns are detached as the unit begins to move, before it spends any MP.', '20.0a'));
   if (usage.negationLocked) issues.push(violation('NEGATING_UNIT_LOCKED', ['pieceId'], 'This unit negated an enemy ZOC and cannot move this phase.', '4.5b'));
+  return issues;
+};
+
+/**
+ * Whether this unit can create a Breakdown at all, whatever the timing (20.0, 20.0b): a multi-step "Other" unit with a
+ * pool, not on its last step, whose pool's Breakdown has an Action Rating no higher than its own. Retreats and advances
+ * after combat (20.0a) check only this.
+ */
+export const breakdownCapabilityViolations = (state: GameState, piece: PieceState): readonly RuleViolation[] => {
+  const profile = breakdownProfile(state, piece);
+  if (!profile || printedSteps(state, piece) < 2) {
+    return [violation('BREAKDOWN_NOT_CAPABLE', ['pieceId'], 'Only multi-step units with a Breakdown pool can detach Breakdowns.', '20.0')];
+  }
+  const issues: RuleViolation[] = [];
+  if (combatClass(state, piece) !== 'OTHER') issues.push(violation('BREAKDOWN_ARMOR_OR_MECH', ['pieceId'], 'Armor and Mech units cannot create Breakdowns; only "Other" units can.', '20.0'));
+  if ((piece.remainingSteps ?? 0) < 2) issues.push(violation('BREAKDOWN_LAST_STEP', ['pieceId'], 'A unit\'s last step can never become a Breakdown.', '20.0'));
   if (breakdownRating(profile, piece) > ratingOf(state, piece)) {
     issues.push(violation('BREAKDOWN_RATING_TOO_HIGH', ['pieceId'], 'A unit can only create a Breakdown with an Action Rating equal to or less than its own.', '20.0b'));
   }
   return issues;
 };
+
+export const mayCreateBreakdown = (state: GameState, piece: PieceState): boolean =>
+  piece.location.kind === 'ON_MAP' && breakdownCapabilityViolations(state, piece).length === 0;
 
 /** Statuses a Breakdown takes over from its parent (20.0c: the same marker and mode status). */
 const inheritedStatuses = (parent: PieceState): PieceState['statuses'] => parent.statuses.filter(({ statusDefinitionId }) =>
@@ -177,36 +191,112 @@ const mayAbsorb = (state: GameState, absorber: PieceState, breakdown: PieceState
     && markerKey(absorber) === markerKey(breakdown);
 };
 
+const byPieceId = (left: PieceState, right: PieceState): number => String(left.id).localeCompare(String(right.id));
+
+/** Reduced units stacked with the Breakdown that may absorb it (20.0b-d, 20.0g). */
+export const absorberCandidates = (state: GameState, breakdown: PieceState): readonly PieceState[] => {
+  const hexId = hexOf(breakdown) as HexId | null;
+  if (hexId === null) return [];
+  return stableSort(state.pieceState.pieces.filter((piece) => piece.location.kind === 'ON_MAP' && piece.location.hexId === hexId
+    && piece.id !== breakdown.id && mayAbsorb(state, piece, breakdown)), byPieceId);
+};
+
 /**
- * 20.0d: at the end of every phase, reduced multi-step units must absorb the eligible Breakdowns they are stacked with,
- * each taking back one step. A Breakdown goes back to the division that detached it when that division can take it;
- * otherwise to another eligible unit of its pool (20.0g).
+ * Who absorbs the Breakdown when the phase ends: its own division if that can take it, otherwise the only eligible unit.
+ * Null when nobody can, or when the owner must choose among several (see `absorptionDecision`).
  */
-export const absorbBreakdowns = (state: GameState): Transition => {
-  let next = state;
-  const events: RuleEvent[] = [];
-  const breakdowns = stableSort(state.pieceState.pieces.filter((piece) => piece.location.kind === 'ON_MAP' && isBreakdown(state, piece)),
-    (left, right) => String(left.id).localeCompare(String(right.id)));
-  for (const { id } of breakdowns) {
-    const breakdown = pieceById(next, id)!;
-    const hexId = hexOf(breakdown) as HexId;
-    const candidates = stableSort(next.pieceState.pieces.filter((piece) => piece.location.kind === 'ON_MAP' && piece.location.hexId === hexId
-      && piece.id !== breakdown.id && mayAbsorb(next, piece, breakdown)), (left, right) => String(left.id).localeCompare(String(right.id)));
-    const parentId = breakdownParentId(next, breakdown);
-    const absorber = candidates.find((piece) => piece.id === parentId) ?? candidates[0];
-    if (!absorber) continue;
-    // The absorbed Breakdown goes back to the pool: it leaves play (it was not eliminated, so it is not in the dead pile).
-    const pieceState = upsertPieceState(next.pieceState, { ...absorber, remainingSteps: (absorber.remainingSteps ?? 0) + 1 });
-    next = {
-      ...next,
+const settledAbsorber = (state: GameState, breakdown: PieceState): PieceState | null => {
+  const candidates = absorberCandidates(state, breakdown);
+  return candidates.find(({ id }) => id === breakdownParentId(state, breakdown)) ?? (candidates.length === 1 ? candidates[0]! : null);
+};
+
+const onMapBreakdowns = (state: GameState): readonly PieceState[] =>
+  stableSort(state.pieceState.pieces.filter((piece) => piece.location.kind === 'ON_MAP' && isBreakdown(state, piece)), byPieceId);
+
+/** One absorption: the absorber regains a step and the Breakdown returns to the pool (it leaves play, not to the dead pile). */
+export const absorbInto = (state: GameState, breakdownId: PieceId, absorberId: PieceId): Transition => {
+  const breakdown = pieceById(state, breakdownId)!;
+  const absorber = pieceById(state, absorberId)!;
+  const pieceState = upsertPieceState(state.pieceState, { ...absorber, remainingSteps: (absorber.remainingSteps ?? 0) + 1 });
+  return {
+    state: {
+      ...state,
       pieceState: {
         ...pieceState,
         pieces: pieceState.pieces.filter((entry) => entry.id !== breakdown.id),
         relations: pieceState.relations.filter((relation) => !(relation.kind === 'PARENT' && relation.childId === breakdown.id)),
       },
-      usage: next.usage.filter(({ pieceId }) => pieceId !== breakdown.id),
-    };
-    events.push({ kind: 'BREAKDOWN_ABSORBED', sequence: events.length, pieceId: absorber.id, breakdownId: breakdown.id, name: pieceNameOf(breakdown) ?? 'Breakdown' });
+      usage: state.usage.filter(({ pieceId }) => pieceId !== breakdown.id),
+    },
+    events: [{ kind: 'BREAKDOWN_ABSORBED', sequence: 0, pieceId: absorber.id, breakdownId: breakdown.id, name: pieceNameOf(breakdown) ?? 'Breakdown' }],
+  };
+};
+
+/**
+ * 20.0d: at the end of every phase, reduced multi-step units must absorb the eligible Breakdowns they are stacked with,
+ * each taking back one step. A Breakdown goes back to the division that detached it when that division can take it;
+ * otherwise to another eligible unit of its pool (20.0g). When several could and none is its division, the owner has
+ * already chosen through `absorptionDecision`; the first by Piece ID is only a fallback for states that skipped it.
+ */
+export const absorbBreakdowns = (state: GameState): Transition => {
+  let next = state;
+  const events: RuleEvent[] = [];
+  for (const { id } of onMapBreakdowns(state)) {
+    const breakdown = pieceById(next, id)!;
+    const absorber = settledAbsorber(next, breakdown) ?? absorberCandidates(next, breakdown)[0];
+    if (!absorber) continue;
+    const absorbed = absorbInto(next, breakdown.id, absorber.id);
+    next = absorbed.state;
+    events.push(...absorbed.events.map((event) => ({ ...event, sequence: events.length })));
   }
   return { state: next, events };
 };
+
+export const BREAKDOWN_ABSORB_CHOICE_PREFIX = 'absorb:';
+const CHOICE_SEPARATOR = '|';
+
+/**
+ * 20.0d with 20.0g: before a phase ends, the owner chooses which unit absorbs a Breakdown that several eligible units
+ * (none of them its own division) could take. Null when every absorption is settled. The acting player decides first.
+ */
+export const absorptionDecision = (state: GameState): PendingDecision | null => {
+  const owners = [state.sequence.actingPlayerId, ...state.scenario.players.map(({ id }) => id).filter((id) => id !== state.sequence.actingPlayerId)];
+  for (const owner of owners) {
+    for (const breakdown of onMapBreakdowns(state).filter((piece) => piece.ownerId === owner)) {
+      const candidates = absorberCandidates(state, breakdown);
+      if (candidates.length < 2 || settledAbsorber(state, breakdown)) continue;
+      const name = pieceNameOf(breakdown) ?? 'a Breakdown';
+      const id = parseRuleDecisionId(`decision:breakdown-absorb:${state.revision}:${candidates.length}`);
+      if (!id.ok) throw new Error('Breakdown absorption decision ID is invalid.');
+      return {
+        id: id.value, kind: 'BREAKDOWN_ABSORPTION', ownerId: owner, transactionId: null,
+        prompt: `The phase ends: ${name} must be absorbed by a reduced unit in its hex (20.0d). Choose which one.`,
+        options: candidates.map((piece) => ({
+          id: `${BREAKDOWN_ABSORB_CHOICE_PREFIX}${breakdown.id}${CHOICE_SEPARATOR}${piece.id}`,
+          label: `${definitionOf(state, piece)?.name ?? 'Unit'} absorbs ${name}`,
+          hexId: hexOf(breakdown),
+        })),
+      };
+    }
+  }
+  return null;
+};
+
+export const parseAbsorptionChoice = (choiceId: string): { readonly breakdownId: PieceId; readonly absorberId: PieceId } => {
+  const [breakdownId = '', absorberId = ''] = choiceId.slice(BREAKDOWN_ABSORB_CHOICE_PREFIX.length).split(CHOICE_SEPARATOR);
+  return { breakdownId: breakdownId as PieceId, absorberId: absorberId as PieceId };
+};
+
+/** A Breakdown of `playerId` that will be absorbed when the phase ends, and the units that may take it. */
+export interface PendingAbsorption {
+  readonly breakdownId: PieceId;
+  readonly absorberIds: readonly PieceId[];
+}
+
+/** What 20.0d will do to the player's Breakdowns if the phase ended now (one absorber, or the owner's choice among several). */
+export const pendingAbsorptions = (state: GameState, playerId: PlayerId): readonly PendingAbsorption[] =>
+  onMapBreakdowns(state).filter((piece) => piece.ownerId === playerId).flatMap((breakdown) => {
+    const settled = settledAbsorber(state, breakdown);
+    const absorberIds = settled ? [settled.id] : absorberCandidates(state, breakdown).map(({ id }) => id);
+    return absorberIds.length > 0 ? [{ breakdownId: breakdown.id, absorberIds }] : [];
+  });

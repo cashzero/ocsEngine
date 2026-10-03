@@ -147,6 +147,10 @@ export const resolveFirstPlayerDecision = (state: GameState, choiceId: string): 
   };
 };
 
+/** Moving from `from` to `to` ends a phase (not only a segment). */
+export const phaseEnds = (from: TurnSequenceState, to: TurnSequenceState): boolean =>
+  from.phase !== to.phase || from.playerTurnIndex !== to.playerTurnIndex || from.gameTurn !== to.gameTurn;
+
 /** Apply the hooks attached to leaving `state.sequence` and entering `to`. */
 export const applySequenceLifecycle = (
   state: GameState,
@@ -155,8 +159,8 @@ export const applySequenceLifecycle = (
   const from = state.sequence;
   const events: RuleEvent[] = [{ kind: 'SEQUENCE_ADVANCED', sequence: 0, from, to }];
   let next: GameState = { ...state, sequence: to, currentMoverId: null };
-  const phaseEnds = from.phase !== to.phase || from.playerTurnIndex !== to.playerTurnIndex || from.gameTurn !== to.gameTurn;
-  if (phaseEnds) {
+  const ending = phaseEnds(from, to);
+  if (ending) {
     // 20.0d: reduced multi-step units absorb the eligible Breakdowns stacked with them at the end of every phase.
     const absorbed = absorbBreakdowns(next);
     next = absorbed.state;
@@ -167,7 +171,7 @@ export const applySequenceLifecycle = (
   if (from.phase === 'CLEAN_UP') next = clearFuel(cleanupPlayer(next, from.phasingPlayerId, events), from.phasingPlayerId);
   if (to.phase === 'SUPPLY' && from.phase !== 'SUPPLY') next = { ...next, formationTraces: [] };
   if (to.phase === 'REINFORCEMENT' && from.phase !== 'REINFORCEMENT') next = arriveSupply(next, to.phasingPlayerId, events);
-  if (phaseEnds) {
+  if (ending) {
     // MA, attacks and barrages are all counted per phase (6.1b, 9.1c, 10.0e).
     next = { ...next, usage: [], ledger: { attackedHexIds: [], barragedHexIds: [] }, air: { ...next.air, missionFlownIds: [], refittedBaseIds: [], reducedBaseIds: [] } };
   } else if (from.segment !== to.segment) {

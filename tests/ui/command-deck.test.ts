@@ -264,6 +264,8 @@ describe('phase-specific command deck', () => {
     expect(own().find(({ id }) => id === division!.id)?.remainingSteps).toBe(steps - 1);
     expect(breakdownNames()).toEqual([`1/${divisionName}`]);
     expect(snapshot.feed.at(-1)?.title).toBe(`${divisionName} detached 1/${divisionName}`);
+    // 20.0d: left with its reduced division, it will be absorbed when the phase ends; End phase says so beforehand.
+    expect(phaseControlsHtml(snapshot, deck)).toContain(`When this phase ends: 1/${divisionName} rejoins ${divisionName}`);
     // 4.9a: the opponent's log does not reveal which division lost a step.
     const enemyView = describeRecord(snapshot.history.at(-1)!, { viewerId: 'player:axis' as never, playerName: () => 'Axis commander', piece: () => null });
     expect(enemyView.title).toBe('An enemy unit reorganized');

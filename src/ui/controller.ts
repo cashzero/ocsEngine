@@ -397,6 +397,7 @@ class DefaultUiController implements UiController {
         case 'ADVANCE_HEX': return `Choose units to advance after combat${where}.`;
         case 'FIRST_PLAYER': return 'Choose who takes the first Player Turn (2.3).';
         case 'OVERSTACK_ELIMINATION': return 'Remove units from an overstacked Hex (4.8a).';
+        case 'BREAKDOWN_ABSORPTION': return 'Choose which unit absorbs a Breakdown as the phase ends (20.0d).';
         case 'ATTRITION_LOSS': return 'Choose the units lost to attrition (12.8).';
         case 'DISPLACEMENT_HEX': return 'Place displaced trucks (9.14).';
       }
