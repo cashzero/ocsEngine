@@ -507,3 +507,11 @@ small, .supporting { font-size: 13px; color: var(--muted); }
 .legend-ring.air-zone.enemy { border-color: #e06b5a; }
 #toggle-air-zones[aria-pressed="true"] { outline: 2px solid #5aa0d8; }
 #toggle-trace-coverage[aria-pressed="true"] { outline: 2px solid #6fcf8e; }
+/* Air Strip (15.2): a smaller, plainer disc than an Air Base; Equipment replacement counters (13.5). */
+.air-base-disc.air-strip { fill: #d8d2b4; stroke-dasharray: 8 4; }
+.air-base-disc.air-strip.nation-US { fill: #d4d19a; }
+.counter .air-strip-text, .unit-counter .air-strip-text { font-size: 17px; }
+.counter-paper.replacement { fill: #d7d2b8; }
+.counter-paper.replacement.nation-US { fill: #b9c9a2; }
+.counter-paper.replacement.nation-GERMAN { fill: #aab8c8; }
+.counter .replacement-label, .unit-counter .replacement-label { font-size: 30px; font-weight: 700; fill: #1c1f18; }

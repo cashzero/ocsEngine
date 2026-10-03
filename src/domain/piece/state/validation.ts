@@ -138,6 +138,11 @@ const validateResourceState = (
   piece: PieceState,
   definition: PieceDefinition,
 ): readonly ValidationIssue[] => {
+  // An Eq replacement counter (13.5) holds a count of Eq; it is not a supply resource and has no capacity.
+  if (definition.family === 'REPLACEMENT') {
+    return piece.resourceQuantity !== null && Number.isSafeInteger(piece.resourceQuantity) && piece.resourceQuantity >= 0 ? []
+      : [error('INVALID_RESOURCE_STATE', ['resourceQuantity'], 'Replacement counter quantity must be a non-negative safe integer.')];
+  }
   if (definition.resource === null) {
     return piece.resourceQuantity === null
       ? []

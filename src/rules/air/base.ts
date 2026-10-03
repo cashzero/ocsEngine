@@ -7,6 +7,7 @@ import { definitionOf, hexDistanceBetween, hexOf, isCombatUnit, pieceById, reTic
 import { dumpsReaching, spendReservations } from '../supply/supply.js';
 import { AIR_BASE_CAPTURE } from '../tables/ocs-4.3.js';
 import { violation } from '../validation/violation.js';
+import { constructionHexes, hasConstructed, isEngineerCapable } from './construction.js';
 import {
   activeAircraftAt,
   activeAircraftLimit,
@@ -117,6 +118,19 @@ export const validateReduceAirBase = (state: GameState, action: Extract<GameActi
   else if (airBaseLevel(state, base) <= 1) issues.push(violation('AIR_BASE_MINIMUM_LEVEL', ['baseId'], 'An Air Base is never reduced below Level 1.', '15.4'));
   if (state.air.reducedBaseIds.includes(base.id)) issues.push(violation('BASE_ALREADY_REDUCED', ['baseId'], 'A friendly Air Base is reduced only once per phase.', '15.4'));
   let ticks = 0;
+  const engineer = action.engineerId ? pieceById(state, action.engineerId) : undefined;
+  if (action.engineerId) {
+    // 15.4, 13.8d: an Engineer-Capable unit within the construction radius can do the work, and then cannot move.
+    if (!engineer || engineer.ownerId !== action.actorId || !isEngineerCapable(state, engineer)) {
+      issues.push(violation('NOT_ENGINEER_CAPABLE', ['engineerId'], 'Only an HQ or Engineer in Combat Mode (or DG oriented to Combat Mode) can do engineer work.', '13.8a'));
+    } else {
+      const usage = usageOf(state, engineer);
+      if (hasConstructed(state, engineer.id)) issues.push(violation('ENGINEER_ALREADY_BUILT', ['engineerId'], 'An Engineer-Capable unit constructs in a single hex per phase.', '13.8d'));
+      else if (usage.moved || usage.movementSpentTicks > 0) issues.push(violation('ENGINEER_MOVED', ['engineerId'], 'An Engineer-Capable unit cannot move in the phase it performs construction.', '13.8d'));
+      if (!constructionHexes(state, engineer).includes(hexOf(base)!)) issues.push(violation('CONSTRUCTION_OUT_OF_RANGE', ['baseId'], "The Air Base must be within the engineer's 2-hex radius.", '13.8d'));
+    }
+    ticks = 4;
+  }
   for (const [index, id] of action.pieceIds.entries()) {
     const piece = pieceById(state, id);
     const usage = piece ? usageOf(state, piece) : null;
@@ -141,7 +155,9 @@ export const applyReduceAirBase = (state: GameState, action: Extract<GameAction,
     air: { ...state.air, reducedBaseIds: [...state.air.reducedBaseIds, base.id] },
   };
   // 15.4: the units "do not move" this phase.
-  for (const id of action.pieceIds) next = { ...next, usage: withUsage(next, { ...usageOf(next, pieceById(next, id)!), moved: true }) };
+  const workers = action.engineerId ? [...action.pieceIds, action.engineerId] : action.pieceIds;
+  for (const id of workers) next = { ...next, usage: withUsage(next, { ...usageOf(next, pieceById(next, id)!), moved: true }) };
+  if (action.engineerId) next = { ...next, air: { ...next.air, builderIds: [...next.air.builderIds, action.engineerId] } };
   return { state: next, events: [{ kind: 'AIR_BASE_LEVEL_CHANGED', sequence: 0, pieceId: base.id, level }] };
 };
 
@@ -205,24 +221,37 @@ export const captureAirBase = (state: GameState, capturerId: PlayerId, hexId: He
   let next = state;
   if (base && base.ownerId !== capturerId) next = { ...next, pieceState: upsertPieceState(next.pieceState, { ...base, ownerId: capturerId }) };
   const survivors: PieceId[] = [];
+  const rolls: { pieceId: PieceId; roll: number; total: number; stepLost: boolean; eliminated: boolean }[] = [];
   for (const plane of stableSort(planes, (left, right) => String(left.id).localeCompare(String(right.id)))) {
     const roll = rollTwoDice(next.rng);
     next = { ...next, rng: roll.rng };
     const total = roll.roll.total + (isActiveAircraft(plane) ? AIR_BASE_CAPTURE.activeModifier : 0) + (byAdvance ? AIR_BASE_CAPTURE.advanceModifier : 0);
     let current = pieceById(next, plane.id)!;
-    if (total <= AIR_BASE_CAPTURE.stepLossMaximum) {
+    const stepLost = total <= AIR_BASE_CAPTURE.stepLossMaximum;
+    if (stepLost) {
       const remaining = (current.remainingSteps ?? 1) - 1;
       current = remaining > 0 ? { ...current, remainingSteps: remaining } : { ...current, location: { kind: 'ELIMINATED' } };
       events.push({ kind: 'STEP_LOST', sequence: events.length, pieceId: plane.id, remainingSteps: remaining > 0 ? remaining : null });
     }
+    rolls.push({ pieceId: plane.id, roll: roll.roll.total, total, stepLost, eliminated: current.location.kind === 'ELIMINATED' });
     // Survivors become Inactive regardless of their status before the roll.
     next = { ...next, pieceState: upsertPieceState(next.pieceState, withAircraftActive(current, false)) };
     if (current.location.kind === 'ON_MAP') survivors.push(plane.id);
   }
+  events.push({ kind: 'AIR_BASE_CAPTURED', sequence: events.length, hexId, capturerId, baseCaptured: !!base && base.ownerId !== capturerId, stepLossMaximum: AIR_BASE_CAPTURE.stepLossMaximum, rolls });
   const owner = planes[0]?.ownerId;
   return survivors.length > 0 && owner
     ? { ...next, interrupts: [...next.interrupts, { kind: 'AIR_DISPLACEMENT', ownerId: owner, fromHexId: hexId, pieceIds: survivors }] }
     : next;
+};
+
+/** The capture as sentences: who took the base, and each aircraft's Air Base Capture Table roll (9.14f). */
+export const describeAirBaseCapture = (state: GameState, event: Extract<RuleEvent, { kind: 'AIR_BASE_CAPTURED' }>): string[] => {
+  const capturer = state.scenario.players.find(({ id }) => id === event.capturerId)?.name ?? 'The enemy';
+  return [
+    event.baseCaptured ? `${capturer} captures the Air Base at ${event.hexId}` : `${capturer} takes ${event.hexId}`,
+    ...event.rolls.map(({ pieceId, roll, total, stepLost, eliminated }) => `${aircraftName(state, pieceById(state, pieceId))}: ${total}${total === roll ? '' : ` (roll ${roll} +${total - roll})`} on the Air Base Capture Table (a step is lost on ${event.stepLossMaximum} or less), ${eliminated ? 'is destroyed' : stepLost ? 'loses a step and must displace' : 'must displace'}`),
+  ];
 };
 
 /** Friendly Air Bases within twice the aircraft's range of the captured base (9.14f). */

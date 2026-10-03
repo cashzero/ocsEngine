@@ -53,8 +53,49 @@ A5（空運、空降）與 A6（BTR 專屬規則）不在本次範圍。下列�
 - **瀏覽器尚未操作**：Trainbusting 標記與 TZ 移動成本、Base Transfer（COMPACT 只有一座機場）、機場被佔領的轉場決策、打機場（Facility 表）、REDUCE／COMBINE、Mission Loss 的 W／S 選擇、1680×1050 版面、鍵盤操作。關閉證據：依新增 AIR 列逐項在瀏覽器中操作並記錄截圖、延遲與 console。
 - **Hip Shoot 在產品中不可達**：14.7d-B 由遊戲規則指定國籍，BTR 規則依使用者決定不加，沒有國籍具備能力。規則已實作並以單元測試涵蓋拒絕路徑；關閉證據同 1.4（BTR 規則）。
 - **天候不限制空中任務**（BTR Flight Conditions 未加，見計畫 1.4）。
-- **A5 空運／空降未實作**：產生劇本不放運輸機；manifest `air.transport-and-drop` 為 DEFERRED。
-- **機場建造與 Air Strip（15.2、15.3）**：依賴 13.8 工兵，未實作；產生劇本給定機場。
-- **空中補充與空中增援（13.5f、13.6）**：產生劇本沒有。
+- ~~A5 空運／空降未實作~~、~~機場建造與 Air Strip~~、~~空中補充與空中增援~~：2026-10-03 已實作，見第 6 節；剩餘缺口列在第 6.3 節。
 - **可用性**：第 4 節的「每段都停下」問題需要使用者決定處理方式。
 - 規則稽核探針 `scripts/audit/rules-conformance-probe.mjs` 尚未加入空軍檢查（覆蓋改由 `ocs-air.test.ts`）。
+
+## 6. 2026-10-03 增補：空運與空降、機場建造、空中補充與增援
+
+使用者要求：「空運與空降（14.9、14.10）……機場建造與 Air Strip（15.2、15.3）……空中補充與增援（13.5f、13.6）完成這樣功能」，
+以及「完成後把全部的驗收做完」。選擇（AskUserQuestion）：Eq 每回合固定配給；允許 Air Strip；運輸機併入 New Game 的 Air forces 選項（子選項預設 None）。
+
+### 6.1 實作
+
+| 功能 | 內容 | 程式與測試 |
+|---|---|---|
+| 機場建造（13.8d、15.2、15.3） | Engineer-Capable（HQ 或工兵，Combat Mode）在 2 Leg MP 內建造，每相位一處、之後不能移動；Air Strip 1T、Strip 升 Level 1 3T、新建 Level 1 4T、每回合 +1 Level 4T、最高 Level 3；從能 draw 到該格的補給堆付款 | `src/rules/air/construction.ts`；`ocs-air.test.ts`；Unit 分頁的 Construction 區塊 |
+| 空中補充（13.5f） | Eq 每個 Reinforcement Phase 抵達（Compact／Standard 1、Large 2），放在入口格或友方 HQ 2 格內；HQ Combat Mode、Eq 不在未抵銷敵 ZOC 時，1 Eq 重建 2 個飛機 step（Dead Pile 的飛機以 Active 抵達選定機場；減損飛機與 Eq 同格則補滿）；Eq 不拆用 | `src/rules/air/replacement.ts`；`ocs-air-support.test.ts`；Rebuild 分頁 |
+| 空中增援（13.6） | 增援飛機在其回合出現在 Arrivals，只能放在有 Active 空位的友方機場，以 Active 抵達 | `src/rules/lifecycle/lifecycle.ts`；`ocs-air-support.test.ts` |
+| 空運（14.9） | C-47、C-47+Gldr、Ju.52；SP 與 Move Mode、Leg MA ≤10、已用 MA ≤ 一半的單位；Double／Normal（可留下）／Half（容量加倍，可留下）；卸載上限 2T×Level（Strip 2T），留下或內建滑翔機的運輸機不計；載運單位當相位 MA 減半；敵 PZ 內 Flak 減少容量時由擁有者選擇損失的貨物（有利存活取整） | `src/rules/air/transport.ts`；`ocs-air-transport.test.ts`；Air 分頁的 Air Transport 面板 |
+| 空降（14.10） | Refit Phase 擬定 Drop Plan（兩回合後；遊戲第一個 Refit Phase 可指定任何回合）、延後、取消、過期；Para 單位跳傘、內建滑翔機運輸機可載任何合格 Leg 單位；補給空投不需計畫；每單位與每 1T 擲 Air Transport Success Table（滑翔機 +1）；降在敵作戰單位上即毀；空降單位當回合免追蹤補給（12.6h）；降在敵機場即佔領（9.14f） | 同上；Refit 分頁的 Drop Plans、Air Drop 面板 |
+| 產生器 | 運輸機與每方一個傘兵營（暫存在第一座機場，附 1 SP）；增援飛機；Eq 配給；新機場與 Air Strip 的範本 | `src/generation/oob/air.ts`、`air-corpus.ts`、`generator.ts` |
+| 存檔 | 0.4.0；0.2.0／0.3.0 可遷移 | `src/gameplay/persistence.ts`、`migration.ts` |
+
+### 6.2 瀏覽器驗收中發現並修正的問題（2026-10-03）
+
+修正後所有 AIR 列都在同一個最終 build 上重跑；結果見計畫 03 第 F 節與 `docs/quality/evidence/air-2026-10-03/RUNS.md`。
+
+| 問題 | 修正 |
+|---|---|
+| 滑翔機空降預覽寫「4 以下失敗」，結果寫「擲骰 +1，5 以下失敗」：數學上相同，但兩處數字不一致 | 預覽改為與結果同一寫法（表上數字，另標 +1 glider） |
+| Refit 面板沒有寫出未抵銷敵 ZOC 不可 Refit 與 Active 上限；因 ZOC 或補給無法 Refit 的機場直接消失；Air Strip 顯示可 Refit 2 架（應為 1） | 每座機場顯示 Level、可 Refit 架數、Active 數／上限、是否在敵 ZOC；不能 Refit 的機場仍列出並說明原因；架數取自規則層 |
+| Trainbusting 標記只畫在地圖上，懸停與鍵盤游標的文字沒有提到 | 懸停列與鍵盤游標描述寫出標記、屬於誰、誰要多付 +1 MP |
+| 敵方 Eq 與補給堆的數量是隱藏資訊，卻畫成「0」與「0 SP」 | 隱藏時畫「?」與「? SP」；`tests/ui/counter-hidden-quantity.test.ts` |
+| 空降降落在敵機場時，Air Base Capture Table 的擲骰沒有任何地方顯示；飛機的轉場要等玩家結束該段才處理，降落後地圖上敵機仍停在被佔領的機場 | 新事件 `AIR_BASE_CAPTURED`，任務結果與 Log 列出每架飛機的擲骰；任務結束時立即處理轉場（只有一座合格機場時自動轉場，兩座以上由擁有者選）；`ocs-air-transport.test.ts` 新測試 |
+| 關掉 Game End 對話框（View final map）後再載入已結束的存檔，不會再顯示 Game End | 載入存檔時重新顯示 Game End |
+
+### 6.3 剩餘缺口（TODO，不得標為完成）
+
+- **Glider Points（14.10f）**：產生劇本不提供獨立的滑翔機點數，只有內建滑翔機的運輸機能做滑翔降落。關閉證據：產生器加入 Glider Points 並在瀏覽器以滑翔機點數降落一個非 Para 單位。
+- **Success Table 的 −1 修正**（ETO 1944/8 前、蘇軍）屬遊戲專屬規則，產生劇本不套用。
+- **傘兵營 counter 為產生器自訂**（TODO(para-gpid)）；**運輸機輪廓為目測繪製**（TODO(transport-art)）。關閉證據：換成 BTR 語料的真實 counter 與 VASSAL 圖檔，逐張比對。
+- **Eq 來源為固定配給**，不是遊戲的增援表；Eq 不是作戰單位（沒有 ZOC、堆疊、損失或補給）；地面單位補充（13.5a-e）未實作。
+- **機場建造的補給**只從能 draw 到建造格的補給堆支付（對 15.0d 的解讀）；Air Strip 在產生劇本中固定允許。
+- **狀態 revision 只在 Game End 顯示**：遊戲中途的證據只能記錄回合、玩家與階段。
+- **空戰與攔截的交接次數**、**「每段都停下」**的可用性問題（第 4 節）仍未處理，需要使用者決定。
+- **AIR-08 未通過**：同一格第二次砲擊與同一架飛機第二次任務都不可用，但 UI 只是不再列出該格／該機，沒有說明規則（10.0e、14.2e）。關閉證據：任務面板列出不可用的格與飛機並附規則說明，在瀏覽器重跑 AIR-08。
+- **AIR-04 的 Mission Loss 未觀察到**：驗收執行中沒有多機砲擊被 Flak 擊中。關閉證據：在瀏覽器中觀察一次 Mission Loss 擲骰與（W／S 時）擁有者選擇。
+- **AIR-05 的 Hip Shoot**：產生劇本沒有國籍具備能力，仍為 BLOCKED。

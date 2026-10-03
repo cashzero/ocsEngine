@@ -43,7 +43,7 @@ export interface RuleExplanation {
  * What a counter is used for, so the UI never has to guess it from field combinations. A supply counter is a
  * `DUMP` on the map and `CARGO` while a Transport Point carries it; a truck is an `EXTENDER` on its other face.
  */
-export type PieceRole = 'COMBAT' | 'ARTILLERY' | 'HQ' | 'TRUCK' | 'EXTENDER' | 'DUMP' | 'CARGO' | 'AIRCRAFT' | 'AIR_BASE' | 'OTHER';
+export type PieceRole = 'COMBAT' | 'ARTILLERY' | 'HQ' | 'TRUCK' | 'EXTENDER' | 'DUMP' | 'CARGO' | 'AIRCRAFT' | 'AIR_BASE' | 'REPLACEMENT' | 'OTHER';
 
 export interface ProjectedPiece {
   readonly role: PieceRole;
@@ -88,8 +88,49 @@ export interface RuleProjection {
 
 /** Air facts both players can see: Trainbusting markers and Patrol Zones (Active Fighters are on top, 4.8e). */
 export interface ProjectedAir {
+  /** The viewer's Transports, loadable units and dumps at each Air Base they can fly from now (14.9). */
+  readonly transport: readonly ProjectedTransportBase[];
+  /** The viewer's Drop Plans (14.10b) and the earliest Game Turn a new one may name. */
+  readonly dropPlans: readonly { readonly id: string; readonly unitIds: readonly PieceId[]; readonly hexId: string; readonly turn: number }[];
+  readonly earliestDropTurn: number;
   readonly trainbusting: GameState['air']['trainbusting'];
   readonly patrolZones: readonly { readonly playerId: PlayerId; readonly hexIds: readonly string[] }[];
+  /** The viewer's own Eq counters that can rebuild aircraft now (13.5f); empty for the other player's data. */
+  readonly rebuilds: readonly ProjectedRebuild[];
+  /** The viewer's own Air Bases and Air Strips: Level, Active aircraft against the limit (14.2a), and the refit ZOC bar (15.1C). */
+  readonly bases: readonly ProjectedAirBase[];
+}
+
+export interface ProjectedAirBase {
+  readonly id: PieceId;
+  readonly hexId: string;
+  /** 0 for an Air Strip. */
+  readonly level: number;
+  readonly active: number;
+  readonly activeLimit: number;
+  /** Aircraft it refits in one Aircraft Refit Phase (15.1B, 15.2B). */
+  readonly refitCapacity: number;
+  readonly inactive: number;
+  /** In an un-negated enemy ZOC with no friendly combat unit: it cannot refit (15.1C). */
+  readonly refitBlockedByZoc: boolean;
+}
+
+/** What the viewer can load and fly from one Air Base: ready Transports, units in Move Mode that qualify, and dumps (14.9a, 14.9c). */
+export interface ProjectedTransportBase {
+  readonly hexId: string;
+  readonly transports: readonly { readonly id: PieceId; readonly definitionId: DefinitionId; readonly capacity: number; readonly range: number; readonly integralGlider: boolean }[];
+  readonly units: readonly { readonly id: PieceId; readonly definitionId: DefinitionId; readonly cost: number }[];
+  readonly dumps: readonly { readonly id: PieceId; readonly tokens: number }[];
+}
+
+/** One Eq counter of the viewer: what it could rebuild, and where Dead Pile aircraft may arrive. */
+export interface ProjectedRebuild {
+  readonly eqPieceId: PieceId;
+  readonly hqId: PieceId;
+  readonly hexId: string;
+  readonly equipment: number;
+  readonly aircraft: readonly { readonly id: PieceId; readonly definitionId: DefinitionId; readonly steps: number; readonly deadPile: boolean }[];
+  readonly baseIds: readonly PieceId[];
 }
 
 /** 4.9c/d: an air mission reveals its aircraft, the Flak roll, and the result. */

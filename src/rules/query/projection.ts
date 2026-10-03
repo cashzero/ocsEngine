@@ -10,7 +10,10 @@ import { previewBarrage } from '../combat/combat.js';
 import { BARRAGE_TABLE_COLUMNS } from '../tables/ocs-4.3.js';
 import type { PieceRole, ProjectedCombat, ProjectedPiece, ProjectedStack, RuleProjection } from './model.js';
 import { AIR_MISSION_LABELS, previewAirBarrage } from '../air/mission.js';
-import { aircraftName, isActiveAircraft, isAirBase, isAircraft, isFighter, patrolZoneHexes } from '../air/aircraft.js';
+import { activeAircraftLimit, airBaseLevel, aircraftName, isActiveAircraft, isAirBase, isAircraft, isFighter, patrolZoneHexes, refitBlockedByZoc, refitCapacity } from '../air/aircraft.js';
+import { equipmentIn, rebuildOptions, stepsToRebuild } from '../air/replacement.js';
+import { aircraftRange, aircraftTransportCapacity, hasIntegralGlider } from '../air/aircraft.js';
+import { baseDumps, earliestPlanTurn, loadableUnits, readyTransports } from '../air/transport.js';
 
 /** 4.9a: internal stocks and other private bookkeeping are never shown to the enemy. */
 const PRIVATE_STATUSES: readonly string[] = [INTERNAL_STOCKS_STATUS, OUT_OF_TRACE_SINCE_STATUS, RETURN_TURN_STATUS];
@@ -23,6 +26,7 @@ export const roleOf = (state: GameState, piece: PieceState): PieceRole => {
   if (!definition) return 'OTHER';
   if (isAircraft(state, piece)) return 'AIRCRAFT';
   if (isAirBase(state, piece)) return 'AIR_BASE';
+  if (definition.family === 'REPLACEMENT') return 'REPLACEMENT';
   if (definition.family === 'RESOURCE') return piece.location.kind === 'CONTAINER' ? 'CARGO' : 'DUMP';
   switch (definition.counter?.kind) {
     case 'TRANSPORT': return piece.currentFaceId === 'extender' ? 'EXTENDER' : 'TRUCK';
@@ -121,8 +125,35 @@ export const projectRuleState = (state: GameState, viewerId: PlayerId): RuleProj
     // Fuel markers and fueled Formation markers are on the map for both players to see.
     fuel: state.fuel,
     air: {
+      // 14.9: what the viewer could fly from each base, only while it is his own Movement Segment.
+      transport: state.sequence.actingPlayerId === viewerId && state.sequence.segment === 'MOVEMENT' && ['MOVEMENT', 'REACTION', 'EXPLOITATION'].includes(state.sequence.phase)
+        ? [...new Set(readyTransports(state, viewerId).map((plane) => String(plane.location.kind === 'ON_MAP' ? plane.location.hexId : '')))].map((hexId) => ({
+          hexId,
+          transports: readyTransports(state, viewerId).filter((plane) => plane.location.kind === 'ON_MAP' && plane.location.hexId === hexId).map((plane) => ({
+            id: plane.id, definitionId: plane.definitionId, capacity: aircraftTransportCapacity(state, plane), range: aircraftRange(state, plane), integralGlider: hasIntegralGlider(state, plane),
+          })),
+          units: loadableUnits(state, viewerId, hexId as never).map(({ unit, cost }) => ({ id: unit.id, definitionId: unit.definitionId, cost })),
+          dumps: baseDumps(state, viewerId, hexId as never).map((dump) => ({ id: dump.id, tokens: dump.resourceQuantity ?? 0 })),
+        })) : [],
+      dropPlans: state.air.dropPlans.filter((plan) => plan.ownerId === viewerId).map(({ id, unitIds, hexId, turn }) => ({ id, unitIds, hexId: String(hexId), turn })),
+      earliestDropTurn: earliestPlanTurn(state),
       trainbusting: state.air.trainbusting,
       patrolZones: state.scenario.players.map(({ id }) => ({ playerId: id, hexIds: patrolZoneHexes(state, id) })).filter(({ hexIds }) => hexIds.length > 0),
+      // 4.9a: only the viewer's own replacements and Dead Pile are shown.
+      rebuilds: rebuildOptions(state, viewerId).map((option) => ({
+        eqPieceId: option.eq.id, hqId: option.hq.id, hexId: String(option.eq.location.kind === 'ON_MAP' ? option.eq.location.hexId : ''), equipment: equipmentIn(option.eq),
+        aircraft: option.aircraftIds.map((id) => {
+          const plane = state.pieceState.pieces.find((entry) => entry.id === id)!;
+          return { id, definitionId: plane.definitionId, steps: stepsToRebuild(plane), deadPile: plane.location.kind === 'ELIMINATED' };
+        }),
+        baseIds: option.baseIds,
+      })),
+      bases: state.pieceState.pieces.filter((piece) => piece.ownerId === viewerId && piece.location.kind === 'ON_MAP' && isAirBase(state, piece)).map((base) => {
+        const hexId = base.location.kind === 'ON_MAP' ? base.location.hexId : null;
+        const planes = state.pieceState.pieces.filter((piece) => piece.ownerId === viewerId && piece.location.kind === 'ON_MAP' && piece.location.hexId === hexId && isAircraft(state, piece));
+        const active = planes.filter((piece) => isActiveAircraft(piece)).length;
+        return { id: base.id, hexId: String(hexId), level: airBaseLevel(state, base), active, activeLimit: activeAircraftLimit(state, base), refitCapacity: refitCapacity(state, base), inactive: planes.length - active, refitBlockedByZoc: refitBlockedByZoc(state, base) };
+      }),
     },
   };
 };

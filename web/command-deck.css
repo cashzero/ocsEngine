@@ -194,6 +194,15 @@ input[aria-invalid=true] { border-color: var(--danger); }
 .combat-card ul { margin: 0; padding-left: 18px; }
 .combat-card .combat-result b { color: #ffe09a; font-size: 13px; }
 .combat-card .combat-result small { color: var(--muted); font-size: 13px; }
+/* Air combat text (air-text.ts): who flew, the roll, and what it cost, picked out of the sentence. */
+.air-log b { font-weight: 700; }
+.air-log .air-name, .decision-panel .air-name { color: #f3f6f2; }
+.air-log .air-num, .decision-panel .air-num { color: #ffe09a; font-variant-numeric: tabular-nums; }
+.air-log .air-term, .decision-panel .air-term { color: #9fd0ff; }
+.air-log .air-loss, .decision-panel .air-loss { color: #ff8f7a; }
+.air-log .air-abort, .decision-panel .air-abort { color: #ffb84d; }
+.air-log .air-ok, .decision-panel .air-ok { color: #7fe0a0; }
+.combat-card .air-log, .deck-event .air-log { display: grid; gap: 4px; margin: 0; padding-left: 18px; }
 .combat-card button { justify-self: end; min-height: 34px; padding: 4px 18px; }
 .result-card { border-left: 4px solid #ffb488; background: #1b1d17; }
 .away-report { background: #1a2420; border-left: 4px solid var(--green); }
@@ -292,3 +301,10 @@ details.list-group summary { cursor: pointer; padding: 4px 0; }
 .overstack-warning, .end-note.overstack-note { border-left: 4px solid #ff6b5a; color: #ffb3a8; font-weight: 600; }
 .overstack-warning { padding: 6px 8px; border-radius: 6px; background: rgba(255, 107, 90, .12); }
 .end-note.overstack-note { border-left-color: #ff6b5a; background: #2a1613; }
+/* Air Transport and Air Drop (14.9, 14.10): each Transport names how it flies. */
+.air-panel .field { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+.air-panel .field input[type="number"], .combat-facts input[type="number"] { width: 72px; min-height: 30px; }
+.drop-plans .refit-base { padding: 6px 0; border-top: 1px solid var(--line); }
+.participant.plain { grid-template-columns: 22px 1fr; }
+.carrier-row { display: grid; gap: 4px; }
+.carrier-row select { width: 100%; min-height: 32px; font-size: 13px; }

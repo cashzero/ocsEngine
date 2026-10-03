@@ -2,6 +2,7 @@ import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import {
+  ALL_ACTION_KINDS,
   ALLIED,
   AXIS,
   CONTACT_NEW_GAME_REQUEST,
@@ -150,7 +151,7 @@ describe('Rule Engine integration over the generated contact scenario', () => {
     expect(all.actions.length).toBeGreaterThan(1);
     expect(all.actions.every((candidate) => ruleEngine.validateAction(state, candidate).allowed)).toBe(true);
     expect(bounded.truncated).toBe(true);
-    expect(ruleEngine.getActionFamilies(state, ALLIED)).toHaveLength(29);
+    expect(ruleEngine.getActionFamilies(state, ALLIED)).toHaveLength(ALL_ACTION_KINDS.length);
     const key = ruleQueryCacheKey(state, ALLIED, 'candidate-proof');
     const enabled = createRuleQueryCache(true);
     let computations = 0;

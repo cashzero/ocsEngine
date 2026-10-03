@@ -28,7 +28,7 @@ import {
   commandDeckView, endOverstack, movePopupView, phaseControlsView, selectDeckTab, syncDeckTab, unitRosterView, unmovedUnits, withHexLabels, type DeckState, type UnitFilter,
 } from './command-deck.js';
 import type { UiSnapshot } from './model.js';
-import { phaseLabel, pieceLabel, printedHexLabel } from './presenter.js';
+import { hexFromPrintedLabel, phaseLabel, pieceLabel, printedHexLabel } from './presenter.js';
 
 const root = document.querySelector<HTMLElement>('#app') ?? (() => {
   throw new Error('UI root was not found.');
@@ -210,7 +210,10 @@ const hoverText = (snapshot: UiSnapshot, hexId: string): string => {
   const range = snapshot.moveRange.get(hexId);
   const cost = range ? ` · ${range.costTicks / 4} MP, ${range.remainingAfterTicks / 4} left${range.endsMovement ? ', move ends here' : ''}`
     : snapshot.moveRange.size > 0 && snapshot.selectedPiece?.location.kind === 'ON_MAP' && snapshot.selectedPiece.location.hexId !== hexId ? ' · out of reach' : '';
-  return `Hex ${printedHexLabel(cell.id)} · ${cell.terrain.toLowerCase()}${cell.settlement ? ` · ${cell.settlement.toLowerCase()}` : ''}${currentGame.deployment.objectiveHexIds.includes(cell.id as never) ? ' · objective' : ''}${cost}`;
+  // 14.8: the marker is otherwise only painted, so the hover line (and the keyboard cursor) names it and who pays.
+  const marker = snapshot.air.trainbusting.find((entry) => entry.hexId === hexId);
+  const trainbusting = marker ? ` · Trainbusting marker (${marker.own ? 'yours' : 'enemy'}): ${marker.own ? 'the enemy pays' : 'you pay'} +1 MP here and, except Leg units, beside it` : '';
+  return `Hex ${printedHexLabel(cell.id)} · ${cell.terrain.toLowerCase()}${cell.settlement ? ` · ${cell.settlement.toLowerCase()}` : ''}${currentGame.deployment.objectiveHexIds.includes(cell.id as never) ? ' · objective' : ''}${trainbusting}${cost}`;
 };
 
 /** What a screen reader hears for the map's keyboard cursor: the hover line, what the hex is a target for, then the units there. */
@@ -292,7 +295,12 @@ const mapStateOf = (snapshot: UiSnapshot): MapState => {
     retreat: new Set([...snapshot.decisionHexes, ...snapshot.collapseHexes]),
     highlight: new Set(sourceHighlightHex ? [sourceHighlightHex] : []),
     traceCoverage: snapshot.traceCoverage,
-    airTargets: new Set(snapshot.air.targetHexes),
+    airTargets: new Set([
+      ...snapshot.air.targetHexes, ...(snapshot.air.construction?.planning ? snapshot.air.construction.hexes : []),
+      // Planned Air Drops of this turn are marked while the player plans or flies them (14.10b).
+      ...snapshot.air.dropPlans.filter((plan) => plan.dueNow || snapshot.air.dropDraft !== null).map(({ hexId }) => hexId),
+      ...(snapshot.air.dropDraft?.hexId ? [snapshot.air.dropDraft.hexId] : []),
+    ]),
     destinationHexId: snapshot.movePreview?.destinationHexId ?? null,
     targetHexIds: new Set([snapshot.draft?.targetHexId, combatHex].filter((id): id is string => typeof id === 'string')),
     path: snapshot.movePreview?.path ?? [],
@@ -504,7 +512,13 @@ const onNewGameInput = (event: Event): void => {
   if (id === 'new-game-scale') newGameSettings = { ...newGameSettings, oob: { ...newGameSettings.oob, scale: input.value as OobScale } };
   if (id === 'new-game-divisions') newGameSettings = { ...newGameSettings, oob: { ...newGameSettings.oob, divisionsPerSide: value } };
   if (id === 'new-game-armored') newGameSettings = { ...newGameSettings, oob: { ...newGameSettings.oob, armoredDivisionsPerSide: value } };
-  if (id === 'new-game-air') newGameSettings = { ...newGameSettings, oob: { ...newGameSettings.oob, air: input.value as AirForceLevel } };
+  if (id === 'new-game-air') {
+    const air = input.value as AirForceLevel;
+    // The air extras need air forces: switching them off switches the extras off too.
+    newGameSettings = { ...newGameSettings, oob: air === 'STANDARD' ? { ...newGameSettings.oob, air } : (({ airTransport: _t, airSupport: _s, ...rest }) => ({ ...rest, air }))(newGameSettings.oob) };
+  }
+  if (id === 'new-game-air-transport') newGameSettings = { ...newGameSettings, oob: { ...newGameSettings.oob, airTransport: input.value as AirForceLevel } };
+  if (id === 'new-game-air-support') newGameSettings = { ...newGameSettings, oob: { ...newGameSettings.oob, airSupport: input.value as AirForceLevel } };
   if (id === 'new-game-turn-limit') newGameSettings = { ...newGameSettings, turnLimit: value };
   if (id === 'new-game-start-month') newGameSettings = { ...newGameSettings, startMonth: value };
   for (const key of ['map', 'oob', 'deployment', 'rules'] as const) if (id === `new-game-${key}-seed`) newGameSettings = { ...newGameSettings, seeds: { ...newGameSettings.seeds, [key]: value } };
@@ -599,6 +613,8 @@ const newGameDialog = () => {
           ${number('new-game-armored', 'of which armored', 0, OOB_DIVISION_LIMITS.maxArmored, newGameSettings.oob.armoredDivisionsPerSide)}
           <p class="field-help">The other divisions are infantry, about one in four airborne.</p>
           ${select('new-game-air', 'Air forces', [['NONE', 'None (ground duel)'], ['STANDARD', 'Fighters, bombers and Air Bases']], newGameSettings.oob.air ?? 'NONE')}
+          ${newGameSettings.oob.air === 'STANDARD' ? html`${select('new-game-air-transport', 'Air transport', [['NONE', 'None'], ['STANDARD', 'Transports and a paratroop battalion per side']], newGameSettings.oob.airTransport ?? 'NONE')}
+          ${select('new-game-air-support', 'Air support', [['NONE', 'None'], ['STANDARD', 'Equipment replacements and aircraft reinforcements']], newGameSettings.oob.airSupport ?? 'NONE')}` : nothing}
         </fieldset>
         <fieldset><legend>Game rules</legend>
           ${number('new-game-turn-limit', 'Turn limit', 1, 20, newGameSettings.turnLimit)}
@@ -657,7 +673,8 @@ const menuDialog = (snapshot: UiSnapshot) => {
       <div class="menu-row"><button class="primary" id="open-new-game" @click=${openNewGame}>New Game…</button><button id="save-game" @click=${() => downloadJson(controller.serializeSave(), `ocs-${snapshot.view.metadata.id}.json`)}>Download save</button><button id="load-game" @click=${() => root.querySelector<HTMLInputElement>('#save-file')?.click()}>Load save…</button></div>
       <input id="save-file" type="file" accept="application/json,.json" hidden @change=${(event: Event) => {
         const file = (event.currentTarget as HTMLInputElement).files?.[0];
-        if (file) { utilityOpen = null; void file.text().then((text) => controller.loadSave(text)); }
+        // A loaded save is a fresh view of its game: if it is finished, its Game End is shown again even if the previous one was dismissed.
+        if (file) { utilityOpen = null; gameEndDismissed = false; void file.text().then((text) => controller.loadSave(text)); }
       }}>
       <p class="supporting">${currentGame.summary.unitCount} units · ${currentGame.summary.formationCount} formations · ${currentGame.summary.turnLimit} turns · seeds map ${currentGame.request.seeds.map}, OOB ${currentGame.request.seeds.oob}, deployment ${currentGame.request.seeds.deployment}, rules ${currentGame.request.seeds.rules}</p>
     </section>
@@ -739,9 +756,14 @@ const render = (snapshot: UiSnapshot): void => {
   }
   syncDeckTab(snapshot, deck);
   mapView.update(mapStateOf(snapshot));
+  // A hex chosen from a list in the deck (a build site, a mission or drop hex) comes into view.
+  const chosenHex = snapshot.air.construction?.hexId ?? snapshot.air.draft?.targetHexId ?? snapshot.air.dropDraft?.hexId ?? null;
+  if (chosenHex !== null && chosenHex !== lastChosenHex) mapView.ensureVisible(chosenHex);
+  lastChosenHex = chosenHex;
   renderTemplate(appView(snapshot), root);
   afterRender();
 };
+let lastChosenHex: string | null = null;
 
 /** Focus, scroll and popup placement that follow from what was just drawn. */
 const afterRender = (): void => {
@@ -800,6 +822,17 @@ root.addEventListener('click', (event) => {
   if (byId('release-reserve')) { void runUi(controller.releaseReserve); return; }
   if (byId('declare-air-mission')) { void runUi(controller.declareAirMission); return; }
   if (byId('cancel-air-mission')) { controller.cancelAirMission(); return; }
+  if (byId('start-drop-plan')) { controller.startDropPlan(); return; }
+  if (byId('cancel-drop-plan')) { controller.cancelDropPlan(); return; }
+  if (byId('confirm-drop-plan')) { void runUi(controller.confirmDropPlan); return; }
+  const dropChange = closest('[data-drop-change]');
+  if (dropChange) { void runUi(() => controller.changeDropPlan(dropChange.dataset.dropPlan!, dropChange.dataset.dropChange as 'DELAY' | 'CANCEL')); return; }
+  const transportBase = closest('[data-transport-base]');
+  if (transportBase) { controller.setTransportBase(transportBase.dataset.transportBase!); return; }
+  if (byId('plan-construction')) { controller.planConstruction(); return; }
+  if (byId('cancel-construction')) { controller.cancelConstruction(); return; }
+  const build = closest('[data-build-facility]');
+  if (build) { void runUi(() => controller.buildAirBase(build.dataset.buildFacility as never)); return; }
   if (byId('open-roster')) { rosterOpen = !rosterOpen; stackPickerHex = null; render(controller.getSnapshot()); return; }
   if (byId('close-roster')) { rosterOpen = false; render(controller.getSnapshot()); return; }
   const pick = closest('[data-roster-pick]');
@@ -843,6 +876,10 @@ root.addEventListener('click', (event) => {
   if (mission) { controller.planAirMission(mission.dataset.airMission as never); return; }
   const airTarget = closest('[data-air-target]');
   if (airTarget) { controller.setAirTarget(airTarget.dataset.airTarget as never); return; }
+  const rebuildBase = closest('[data-rebuild-base]');
+  if (rebuildBase) { controller.setRebuildBase(rebuildBase.dataset.rebuildEq!, rebuildBase.dataset.rebuildBase!); return; }
+  const rebuild = closest('[data-rebuild]');
+  if (rebuild) { void runUi(() => controller.rebuildAircraft(rebuild.dataset.rebuild!)); return; }
   const refit = closest('[data-refit]');
   if (refit) { void runUi(() => controller.refitBase(refit.dataset.refit!)); return; }
   const unit = closest('.deck-unit[data-piece]');
@@ -868,6 +905,15 @@ root.addEventListener('change', (event) => {
   if (input.dataset.participant) controller.toggleParticipant(input.dataset.participant);
   else if (input.dataset.lead) controller.setLead(input.dataset.lead);
   else if (input.dataset.airAircraft) controller.toggleAirAircraft(input.dataset.airAircraft);
+  else if (input.dataset.transportCarrier) controller.toggleTransportCarrier(input.dataset.transportCarrier);
+  else if (input.dataset.transportUnit) controller.toggleTransportUnit(input.dataset.transportUnit);
+  else if (input.dataset.transportEscort) controller.toggleTransportEscort(input.dataset.transportEscort);
+  else if (input.dataset.transportRoute) controller.setTransportRoute(input.dataset.transportRoute, (event.target as unknown as HTMLSelectElement).value);
+  else if (input.id === 'transport-tokens') controller.setTransportTokens(Number(input.value));
+  else if (input.dataset.dropUnit) controller.toggleDropUnit(input.dataset.dropUnit);
+  else if (input.id === 'drop-hex') { const hexId = hexFromPrintedLabel(input.value); if (hexId) void runUi(() => controller.clickHex(hexId)); }
+  else if (input.id === 'drop-turn') controller.setDropTurn(Number(input.value));
+  else if (input.dataset.rebuildAircraft) controller.toggleRebuildAircraft(input.dataset.rebuildEq!, input.dataset.rebuildAircraft);
   else if (input.dataset.refitAircraft) controller.toggleRefitAircraft(input.dataset.refitBase!, input.dataset.refitAircraft);
 });
 

@@ -2,8 +2,11 @@ import { parseRuleActionId } from './ids.js';
 import type { ActionValidation, GameAction, GameState, RuleViolation } from './model.js';
 import { validateBarrageDeclaration, validateCombatDeclaration } from '../combat/combat.js';
 import { validateCombineAircraft, validateReduceAirBase, validateRefit } from '../air/base.js';
+import { validateBuildAirBase } from '../air/construction.js';
+import { validateRebuildAircraft } from '../air/replacement.js';
+import { validatePlanAirDrop, validateUpdateDropPlan } from '../air/transport.js';
 import { validateAirMission } from '../air/mission.js';
-import { arrivingReinforcements, validateReinforcementPlacement } from '../lifecycle/lifecycle.js';
+import { arrivingReinforcements, reinforcementHexes, validateReinforcementPlacement } from '../lifecycle/lifecycle.js';
 import { validateCreateBreakdown } from '../breakdown/breakdown.js';
 import { validateModeChange, validateReserveRelease } from '../mode/mode.js';
 import { queryMovementPath, validateEndMove } from '../movement/movement.js';
@@ -47,7 +50,8 @@ const commonViolations = (state: GameState, action: GameAction): RuleViolation[]
 export const validateAdvance = (state: GameState, actorId: GameAction['actorId']): RuleViolation[] => {
   const issues: RuleViolation[] = [];
   if (actorId !== state.sequence.actingPlayerId) issues.push(violation('WRONG_ACTOR', ['actorId'], 'Actor does not own the sequence step.', '2.2'));
-  if (state.sequence.phase === 'REINFORCEMENT' && arrivingReinforcements(state, actorId).length > 0) {
+  // An arrival with nowhere to go (every Air Base full, say) waits for the next turn instead of blocking the phase.
+  if (state.sequence.phase === 'REINFORCEMENT' && arrivingReinforcements(state, actorId).some((piece) => reinforcementHexes(state, actorId, piece.id).length > 0)) {
     issues.push(violation('REINFORCEMENTS_CANNOT_BE_DELAYED', ['kind'], 'Every arriving reinforcement must be placed before the phase ends.', '13.6'));
   }
   if (state.sequence.phase === 'SUPPLY' && unitsNeedingRecovery(state, actorId).length > 0) {
@@ -92,6 +96,10 @@ export const validateGameAction = (state: GameState, action: GameAction): Action
       case 'DECLARE_AIR_MISSION': issues.push(...validateAirMission(state, action)); break;
       case 'REFIT_AIRCRAFT': issues.push(...validateRefit(state, action)); break;
       case 'REDUCE_AIR_BASE': issues.push(...validateReduceAirBase(state, action)); break;
+      case 'BUILD_AIR_BASE': issues.push(...validateBuildAirBase(state, action)); break;
+      case 'REBUILD_AIRCRAFT': issues.push(...validateRebuildAircraft(state, action)); break;
+      case 'PLAN_AIR_DROP': issues.push(...validatePlanAirDrop(state, action)); break;
+      case 'UPDATE_AIR_DROP_PLAN': issues.push(...validateUpdateDropPlan(state, action)); break;
       case 'COMBINE_AIRCRAFT': issues.push(...validateCombineAircraft(state, action)); break;
     }
   }
