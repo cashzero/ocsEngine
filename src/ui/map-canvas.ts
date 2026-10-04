@@ -1,6 +1,6 @@
 import { counterLod, type CounterLod } from './counter.js';
 import {
-  WAVE_GLYPH_PATH, coastlinePath, hexGridPath, hexNumberPlacement, mapArtDefsHtml, objectiveArt, regionEdgePaths, riverStrokes, roadStrokes,
+  WAVE_GLYPH_PATH, coastlinePath, hexGridPath, hexNumberPlacement, mapArtDefsHtml, objectiveArt, regionEdgePaths, railStrokes, riverStrokes, roadStrokes,
   settlementArt, strategicBandCorners, supplySourceArt, terrainFillCorners, terrainGlyphPlacements, type Point,
 } from './map-art.js';
 import type { GeneratedMapPreview, GeneratedMapPreviewCell } from './map-generator-presenter.js';
@@ -56,6 +56,8 @@ export interface MapState {
   readonly traceCoverage: ReadonlySet<string>;
   /** The part of `traceCoverage` that traces straight to a Supply Source; the rest is reached only through an HQ throw. */
   readonly traceDirect: ReadonlySet<string>;
+  /** Supply Sources marked with the trace overlay: detrainable rail Hex (RAIL) and Extender (EXT); map-edge sources have their own disc. */
+  readonly supplySources: readonly { readonly hexId: string; readonly kind: 'MAP_EDGE' | 'DETRAINABLE' | 'EXTENDER' }[];
   readonly ownZone: ReadonlySet<string>;
   readonly enemyZone: ReadonlySet<string>;
   readonly trainbusting: readonly { readonly hexId: string; readonly own: boolean }[];
@@ -74,7 +76,7 @@ export interface MapEvents {
 
 export const EMPTY_MAP_STATE: MapState = {
   selectedHexId: null, reachable: new Map(), dimmed: new Set(), attack: new Set(), barrage: new Set(), placement: new Set(), retreat: new Set(), highlight: new Set(),
-  airTargets: new Set(), destinationHexId: null, targetHexIds: new Set(), path: [], traceCoverage: new Set(), traceDirect: new Set(), ownZone: new Set(), enemyZone: new Set(), trainbusting: [], counters: [], badges: [],
+  airTargets: new Set(), destinationHexId: null, targetHexIds: new Set(), path: [], traceCoverage: new Set(), traceDirect: new Set(), supplySources: [], ownZone: new Set(), enemyZone: new Set(), trainbusting: [], counters: [], badges: [],
 };
 
 /**
@@ -120,6 +122,7 @@ interface Geometry {
   readonly regionEdges: readonly { readonly kind: string; readonly path: Path2D }[];
   readonly rivers: readonly { readonly kind: string; readonly path: Path2D }[];
   readonly roads: readonly { readonly kind: string; readonly path: Path2D }[];
+  readonly rails: readonly { readonly kind: string; readonly line: Path2D; readonly ties: Path2D }[];
   readonly objectives: ReadonlySet<string>;
 }
 
@@ -246,6 +249,7 @@ export class MapView {
       regionEdges: regionEdgePaths(theater.cells, size).map(({ kind, d }) => ({ kind, path: new Path2D(d) })),
       rivers: riverStrokes(theater.edges, size).map(({ kind, d }) => ({ kind, path: new Path2D(d) })),
       roads: roadStrokes(theater.edges, theater.cells, size).map(({ kind, d }) => ({ kind, path: new Path2D(d) })),
+      rails: railStrokes(theater.edges, size).map(({ kind, line, ties }) => ({ kind, line: new Path2D(line), ties: new Path2D(ties) })),
       objectives: new Set(scene.objectiveHexIds),
     };
     this.resetCamera();
@@ -560,6 +564,7 @@ export class MapView {
     blit('ground');
     this.#withMapTransform(() => { this.#drawDimming(); this.#drawTraceCoverage(); this.#drawHexHighlights(); });
     blit('lines');
+    this.#withMapTransform(() => this.#drawSupplySources());
     this.#withMapTransform(() => {
       this.#drawHexNumbers();
       this.#drawAirMarks();
@@ -755,6 +760,17 @@ export class MapView {
     stroke(geometry.rivers, { RIVER: ['#95cdee', 3.2], MAJOR_RIVER: ['#8cc7ec', 7.6] });
     stroke(geometry.roads, { ROAD: ['#1d150a', 6.4], PRIMARY_ROAD: ['#1d150a', 10.4] });
     stroke(geometry.roads, { ROAD: ['#c4ab5e', 3.4], PRIMARY_ROAD: ['#a88b35', 7.4] });
+    // Railroads over the roads: track, then cross-ties (single track first, as railStrokes orders them).
+    ctx.save();
+    ctx.lineCap = 'butt';
+    ctx.strokeStyle = '#7a1c16';
+    geometry.rails.forEach(({ kind, line, ties }) => {
+      ctx.lineWidth = kind === 'MULTI_RAIL' ? 3.4 : 2.2;
+      ctx.stroke(line);
+      ctx.lineWidth = kind === 'MULTI_RAIL' ? 1.6 : 1.4;
+      ctx.stroke(ties);
+    });
+    ctx.restore();
     cells.forEach((cell) => {
       if (cell.strategic) {
         ctx.save();
@@ -881,6 +897,39 @@ export class MapView {
       return ctx.createPattern(tile, 'repeat');
     })();
     if (this.#throwHatch) { ctx.fillStyle = this.#throwHatch; ctx.fill(thrown); }
+    ctx.restore();
+  }
+
+  /** Trace Supply overlay: a tag on each Supply Source, at the top of its hex so counters do not hide it. */
+  #drawSupplySources(): void {
+    const { supplySources } = this.#state;
+    if (supplySources.length === 0) return;
+    const ctx = this.#ctx;
+    const size = this.#scene?.theater.layout.hexSize ?? 0;
+    // Map-edge sources already carry their side's "S" disc on the map; the overlay tags the ones rail and Extenders add.
+    const labels = { MAP_EDGE: null, DETRAINABLE: 'RAIL', EXTENDER: 'EXT' } as const;
+    ctx.save();
+    ctx.font = `800 ${Math.round(size * 0.2)}px ui-sans-serif, system-ui, sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    supplySources.forEach(({ hexId, kind }) => {
+      const cell = this.#geometry!.byId.get(hexId);
+      const text = labels[kind];
+      if (!cell || text === null) return;
+      const width = ctx.measureText(text).width + size * 0.16;
+      const height = size * 0.3;
+      const x = cell.x - width / 2;
+      const y = cell.y - size * 0.72;
+      ctx.beginPath();
+      ctx.roundRect(x, y, width, height, height / 2);
+      ctx.fillStyle = kind === 'DETRAINABLE' ? '#1d4d2f' : kind === 'EXTENDER' ? '#5a4a12' : '#14532d';
+      ctx.fill();
+      ctx.lineWidth = 1.5;
+      ctx.strokeStyle = '#b8f0c8';
+      ctx.stroke();
+      ctx.fillStyle = '#eafff0';
+      ctx.fillText(text, cell.x, y + height / 2 + 0.5);
+    });
     ctx.restore();
   }
 

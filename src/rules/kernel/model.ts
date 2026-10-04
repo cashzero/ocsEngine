@@ -163,6 +163,22 @@ export interface SupplyArrivalConfiguration {
   }[];
 }
 
+/** One railroad hexside feature (13.3); multi-track lines halve Rail Cap costs (13.3a). */
+export interface RailLineDefinition {
+  readonly featureDefinitionId: DefinitionId;
+  readonly multiTrack: boolean;
+}
+
+/**
+ * The game's railroads (13.3). Railroad hexsides are also roads for movement (6.2a), so their MP
+ * cost belongs in `roadMovementCosts`; this block gives them their rail meaning for trace supply.
+ */
+export interface RailroadConfiguration {
+  readonly lines: readonly RailLineDefinition[];
+  /** Hex features that make a rail hex detrainable (13.3c): villages, cities of any size, ports. */
+  readonly detrainableFeatureDefinitionIds: readonly DefinitionId[];
+}
+
 export interface RuleConfiguration {
   readonly schemaVersion: SchemaVersion;
   readonly id: DefinitionId;
@@ -185,6 +201,8 @@ export interface RuleConfiguration {
   readonly reinforcementBoxes: readonly { readonly playerId: PlayerId; readonly boxId: MapBoxId }[];
   readonly turnLimit: number;
   readonly objectives: readonly ObjectiveDefinition[];
+  /** Absent when the game has no railroads (and in saves made before railroads existed). */
+  readonly railroads?: RailroadConfiguration | undefined;
 }
 
 export interface RulesRngState {

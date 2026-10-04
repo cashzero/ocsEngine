@@ -58,6 +58,17 @@ export const validateRuleConfiguration = (
       issues.push(issue('INVALID_RULE_CONFIGURATION_QUANTITY', [field], `${field} costs cannot be negative.`));
     }
   }
+  if (configuration.railroads) {
+    const lines = configuration.railroads.lines.map(({ featureDefinitionId }) => String(featureDefinitionId));
+    if (new Set(lines).size !== lines.length) {
+      issues.push(issue('DUPLICATE_RULE_CONFIGURATION_ID', ['railroads', 'lines'], 'Railroad lines contain duplicate Definition IDs.'));
+    }
+    // 6.2a: a railroad is a road for movement, so every line needs a road cost.
+    const roads = new Set(configuration.roadMovementCosts.map(({ featureDefinitionId }) => String(featureDefinitionId)));
+    lines.forEach((line, index) => {
+      if (!roads.has(line)) issues.push(issue('RAILROAD_WITHOUT_ROAD_COST', ['railroads', 'lines', index], `Railroad ${line} has no road movement cost (6.2a).`));
+    });
+  }
   const weather = configuration.weather;
   if (weather !== null) {
     const days = (month: number, day: number) => month >= 1 && month <= 12 && day >= 1 && day <= 31;

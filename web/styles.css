@@ -292,6 +292,12 @@ small, .supporting { font-size: 13px; color: var(--muted); }
 .road-casing.primary-road { stroke: #1d150a; stroke-width: 10.4; }
 .map-edge.road, .generated-edge.road { stroke: #c4ab5e; stroke-width: 3.4; }
 .map-edge.primary-road, .generated-edge.primary-road { stroke: #a88b35; stroke-width: 7.4; }
+/* Railroads: a dark red track with cross-ties, heavier and double-tied for multi-track (BtR map style). */
+.rail-line, .rail-ties { pointer-events: none; fill: none; stroke: #7a1c16; stroke-linecap: butt; }
+.rail-line.rail { stroke-width: 2.2; }
+.rail-line.multi-rail { stroke-width: 3.4; }
+.rail-ties.rail { stroke-width: 1.4; }
+.rail-ties.multi-rail { stroke-width: 1.6; }
 .settlement, .strategic-zone, .objective-marker, .settlement-marker, .preview-entry, .preview-objective { pointer-events: none; }
 .settlement-block { fill: #2a2520; stroke: rgba(236, 232, 200, .55); stroke-width: .5; }
 .settlement-block.alt { fill: #5c564b; }
@@ -380,6 +386,7 @@ small, .supporting { font-size: 13px; color: var(--muted); }
 .terrain-key.water { background: #a4d3ea; }
 .line-key { color: var(--muted); background: transparent; border-bottom: 3px solid #a88b35; border-radius: 0; }
 .line-key.river { border-color: #4f8fb6; }
+.line-key.rail { border-bottom: 3px solid transparent; border-image: repeating-linear-gradient(90deg, #e08a80 0 2px, #7a1c16 2px 6px) 3; }
 
 .command-rail .panel { margin: 0 0 12px; border-radius: 7px; box-shadow: none; background: #17211d; }
 .command-rail .panel-heading { padding: 10px 11px; }

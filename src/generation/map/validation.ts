@@ -56,6 +56,8 @@ const componentCount = (edges: readonly (readonly [HexId, HexId])[]): number => 
   return components;
 };
 
+const RAIL_PATTERN = /^edge:(?:multi-track-)?rail$/u;
+
 /** Open ground lies within two Hexes of a road, woods and hills within three (BtR scale, see docs/generator/10). */
 const ROAD_GAP_LIMIT: Readonly<Partial<Record<GeneratedTerrainKind, number>>> = { CLEAR: 2, WOODS: 3, ROUGH: 3 };
 
@@ -89,6 +91,8 @@ export const measureGeneratedMap = (map: MapDefinition): GeneratedMapMetrics => 
   map.hexes.forEach((hex) => { terrainCounts[terrainKind(hex.terrainDefinitionIds[0]!)] += 1; });
   const roadEdges = featureEdges(map, /^edge:(?:primary-)?road$/u);
   const gaps = roadGaps(map, roadEdges);
+  const railEdges = featureEdges(map, RAIL_PATTERN);
+  const railHexes = new Set(railEdges.flat());
   return {
     terrainCounts,
     landHexes: map.hexes.length - terrainCounts.WATER,
@@ -100,6 +104,11 @@ export const measureGeneratedMap = (map: MapDefinition): GeneratedMapMetrics => 
     connectedRoadComponents: componentCount(roadEdges),
     maximumRoadGap: Math.max(0, ...Object.values(gaps)),
     roadGapExcess: Math.max(0, ...Object.entries(gaps).map(([kind, gap]) => gap - ROAD_GAP_LIMIT[kind as GeneratedTerrainKind]!)),
+    railEdges: railEdges.length,
+    multiTrackRailEdges: featureEdges(map, /^edge:multi-track-rail$/u).length,
+    railStations: map.hexes.filter(({ id, features }) => railHexes.has(id)
+      && features.some(({ definitionId }) => String(definitionId).startsWith('settlement:'))).length,
+    connectedRailComponents: componentCount(railEdges),
   };
 };
 
@@ -155,6 +164,12 @@ export const validateGeneratedMap = (
   if (strategic.some((hexId) => !land.has(hexId))) issues.push(error('STRATEGIC_REGION_ON_WATER', 'Entry, supply, and settlement Hexes must be on land.'));
   const roadReach = reachable(map, strategic[0]!, land, true);
   if (strategic.some((hexId) => !roadReach.has(hexId))) issues.push(error('STRATEGIC_NODE_OFF_ROAD', 'Every strategic node must join the road network.'));
+  // 12.6a: entry Hexes are the map-edge railroad Supply Sources, so each lies on the one rail network.
+  if (metrics.connectedRailComponents !== 1) issues.push(error('DISCONNECTED_RAIL_NETWORK', 'All generated railroads must form one component.'));
+  const railHexes = new Set(featureEdges(map, RAIL_PATTERN).flat());
+  if ([...regions.firstEntryHexIds, ...regions.secondEntryHexIds].some((hexId) => !railHexes.has(hexId))) {
+    issues.push(error('ENTRY_OFF_RAIL', 'Every entry Hex must be a railroad Hex, the map-edge Supply Source of 12.6a.'));
+  }
   const landReach = reachable(map, regions.firstEntryHexIds[0]!, land, false);
   if (!landReach.has(regions.secondEntryHexIds[0]!)) issues.push(error('NO_OPERATIONAL_CORRIDOR', 'Opposing entry regions require a continuous land corridor.'));
   const severe = metrics.terrainCounts.MOUNTAIN + metrics.terrainCounts.MARSH;

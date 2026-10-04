@@ -44,6 +44,10 @@ const hexside = (definitionId: string, entry: ReturnType<typeof columns>): Hexsi
 const road = (definitionId: string, entry: ReturnType<typeof columns>): RoadMovementCost =>
   ({ featureDefinitionId: id(definitionId), ...entry });
 
+/** Generated railroad hexside features (13.3): single-track and multi-track lines. */
+export const GENERATED_RAIL = 'edge:rail';
+export const GENERATED_MULTI_TRACK_RAIL = 'edge:multi-track-rail';
+
 export const GENERATED_TERRAIN_MOVEMENT_COSTS: readonly TerrainMovementCost[] = [
   // Open
   terrain('terrain:clear', columns(row(mp(1), mp(1), mp(1)), row(mp(4), mp(8), mp(2)), row(mp(2), mp(2), mp(2)))),
@@ -77,4 +81,7 @@ export const GENERATED_ROAD_MOVEMENT_COSTS: readonly RoadMovementCost[] = [
   road('edge:primary-road', columns(row(mp(0.5), mp(0.5), mp(0.5)), row(mp(1), mp(2), mp(1)), row(mp(1), mp(1), mp(1)))),
   // Track
   road('edge:road', columns(row(mp(1), mp(1), mp(1)), row(mp(1), mp(4), mp(1)), row(mp(1), mp(1), mp(1)))),
+  // Railroad: a road for movement (6.2a). BtR prints one Railroad line for single- and multi-track.
+  road(GENERATED_RAIL, columns(row(mp(1), mp(1), mp(1)), row(mp(1), mp(4), mp(1)), row(mp(1), mp(1), mp(1)))),
+  road(GENERATED_MULTI_TRACK_RAIL, columns(row(mp(1), mp(1), mp(1)), row(mp(1), mp(4), mp(1)), row(mp(1), mp(1), mp(1)))),
 ];

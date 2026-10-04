@@ -1,7 +1,7 @@
 import type { HexId, ValidationIssue } from '../../core/index.js';
 import type { MapDefinition } from '../../domain/map/index.js';
 
-export const MAP_GENERATOR_VERSION = '0.3.1' as const;
+export const MAP_GENERATOR_VERSION = '0.4.0' as const;
 
 export type MapGenerationStyle = 'TEMPERATE_INLAND' | 'MEDITERRANEAN_COAST';
 
@@ -43,6 +43,12 @@ export interface GeneratedMapMetrics {
   readonly maximumRoadGap: number;
   /** How far the worst Hex exceeds its terrain's road-gap limit; 0 when every Hex is served. */
   readonly roadGapExcess: number;
+  /** Railroad hexsides of either class (13.3). */
+  readonly railEdges: number;
+  readonly multiTrackRailEdges: number;
+  /** Rail Hexes with a village or city: where a side can detrain and trace supply (13.3c). */
+  readonly railStations: number;
+  readonly connectedRailComponents: number;
 }
 
 export interface GeneratedMap {

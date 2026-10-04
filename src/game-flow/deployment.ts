@@ -9,6 +9,7 @@ import {
   type Result,
 } from '../core/index.js';
 import {
+  parseHexsideId,
   parseMapBoxId,
   type HexDefinition,
   type MapBoxId,
@@ -31,6 +32,8 @@ import {
 } from './configuration.js';
 import {
   GENERATED_HEXSIDE_MOVEMENT_COSTS,
+  GENERATED_MULTI_TRACK_RAIL,
+  GENERATED_RAIL,
   GENERATED_ROAD_MOVEMENT_COSTS,
   GENERATED_TERRAIN_MOVEMENT_COSTS,
 } from './movement-tec.js';
@@ -229,6 +232,13 @@ export const deployGeneratedForces = (
   }
 
   const truckModel = truckCostModel(map);
+  const railFeatures = new Set([GENERATED_RAIL, GENERATED_MULTI_TRACK_RAIL]);
+  const railHexes = new Set(map.mapDefinition.hexsides
+    .filter(({ featureDefinitionIds }) => featureDefinitionIds.some((id) => railFeatures.has(String(id))))
+    .flatMap(({ hexsideId }) => {
+      const parsed = parseHexsideId(hexsideId);
+      return parsed.ok ? [parsed.value.firstHexId, parsed.value.secondHexId] : [];
+    }));
   const reachCache = new Map<HexId, ReadonlySet<HexId>>();
   const supplyReachOf = (hexId: HexId): ReadonlySet<HexId> => {
     let reach = reachCache.get(hexId);
@@ -426,10 +436,17 @@ export const deployGeneratedForces = (
         && !map.strategicRegions.firstSupplyHexIds.includes(hexId))
       .map((hexId) => ({ hexId, controllerId: players.AXIS })),
   );
+  // 13.3h: initial railroad control follows the front line, here the split between the deployment
+  // zones. Objective Hexes stay uncontrolled so no side starts with victory points.
+  const objectiveHexId = selectObjective(map);
+  const seeded = new Set(controlled.map(({ hexId }) => hexId));
+  const railControl = (['ALLIED', 'AXIS'] as const).flatMap((side) => zones[side]
+    .filter(({ id }) => railHexes.has(id) && !seeded.has(id) && id !== objectiveHexId)
+    .map(({ id }) => ({ hexId: id, controllerId: players[side] })));
   const initialMapState: MapState = {
     schemaVersion: FOUNDATION_SCHEMA_VERSION,
     revision: initialRevision.value,
-    hexControl: controlled,
+    hexControl: [...controlled, ...railControl].sort((left, right) => String(left.hexId).localeCompare(String(right.hexId))),
     features: [],
   };
   const initialPieceState: PieceRuntimeState = {
@@ -451,7 +468,7 @@ export const deployGeneratedForces = (
   return { ok: true, value: {
     initialMapState,
     initialPieceState,
-    objectiveHexIds: [selectObjective(map)],
+    objectiveHexIds: [objectiveHexId],
     metrics: {
       pieces: pieces.length,
       occupiedHexes: new Set(pieces.flatMap((piece) => piece.location.kind === 'ON_MAP' ? [piece.location.hexId] : [])).size,
