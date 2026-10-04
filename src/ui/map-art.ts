@@ -323,7 +323,47 @@ export const roadsHtml = (
   return `<g class="road-casings" aria-hidden="true">${casings}</g>${surfaces}`;
 };
 
-const NAME_PREFIXES = ['Ber', 'Mont', 'Vel', 'Hal', 'Dor', 'Kes', 'Ant', 'Lor', 'Rou', 'Sant', 'Bre', 'Gen', 'Tul', 'Mar', 'Vau', 'Ost', 'Lin', 'Cor', 'Ham', 'Wes'];
+export interface RailStroke {
+  readonly kind: 'RAIL' | 'MULTI_RAIL';
+  /** The track, hex centre to hex centre. */
+  readonly line: string;
+  /** Cross-ties across the track: one per tie on single track, paired on multi-track. */
+  readonly ties: string;
+}
+
+/**
+ * Railroads are drawn as on the BtR map: a dark red line straight between hex centres with short
+ * cross-ties, heavier and double-tied for multi-track. Ties are spaced evenly along each hexside
+ * and stop short of the centres, so junctions stay clean.
+ */
+export const railStrokes = (edges: readonly GeneratedMapPreviewEdge[], hexSize: number): RailStroke[] =>
+  edges.filter((edge): edge is GeneratedMapPreviewEdge & { kind: RailStroke['kind'] } => edge.kind === 'RAIL' || edge.kind === 'MULTI_RAIL')
+    // Single track first, so the trunk paints over junctions.
+    .sort((first, second) => Number(first.kind === 'MULTI_RAIL') - Number(second.kind === 'MULTI_RAIL'))
+    .map((edge) => {
+      const dx = edge.x2 - edge.x1;
+      const dy = edge.y2 - edge.y1;
+      const length = Math.hypot(dx, dy) || 1;
+      const ux = dx / length;
+      const uy = dy / length;
+      const multi = edge.kind === 'MULTI_RAIL';
+      const half = hexSize * (multi ? 0.15 : 0.12);
+      const offsets = multi ? [-hexSize * 0.035, hexSize * 0.035] : [0];
+      const ties: string[] = [];
+      for (const t of [0.22, 0.5, 0.78]) for (const offset of offsets) {
+        const cx = edge.x1 + dx * t + ux * offset;
+        const cy = edge.y1 + dy * t + uy * offset;
+        ties.push(`M${fixed(cx - uy * half)} ${fixed(cy + ux * half)}L${fixed(cx + uy * half)} ${fixed(cy - ux * half)}`);
+      }
+      return { kind: edge.kind, line: `M${fixed(edge.x1)} ${fixed(edge.y1)}L${fixed(edge.x2)} ${fixed(edge.y2)}`, ties: ties.join('') };
+    });
+
+/** Track then ties, over the roads. */
+export const railsHtml = (edges: readonly GeneratedMapPreviewEdge[], hexSize: number): string =>
+  railStrokes(edges, hexSize).map(({ kind, line, ties }) =>
+    `<path class="rail-line ${edgeClass(kind)}" d="${line}"></path><path class="rail-ties ${edgeClass(kind)}" d="${ties}"></path>`).join('');
+
+const NAME_PREFIXES =['Ber', 'Mont', 'Vel', 'Hal', 'Dor', 'Kes', 'Ant', 'Lor', 'Rou', 'Sant', 'Bre', 'Gen', 'Tul', 'Mar', 'Vau', 'Ost', 'Lin', 'Cor', 'Ham', 'Wes'];
 const NAME_SUFFIXES = ['burg', 'ville', 'dorf', 'stad', 'court', 'heim', 'mont', 'wyck', 'bach', 'lay', 'ford', 'mar'];
 
 /** Cosmetic place name derived from the Hex ID; carries no meaning for rules, scenarios or the OOB. */

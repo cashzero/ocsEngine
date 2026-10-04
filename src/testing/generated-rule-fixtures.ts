@@ -1,4 +1,5 @@
-import type { HexId, PieceId, PlayerId } from '../core/index.js';
+import { findNeighborDirection, parseHexCoordinateId, type HexId, type PieceId, type PlayerId } from '../core/index.js';
+import { canonicalizeHexside, directedHexside, type HexsideFeatureCollection } from '../domain/map/index.js';
 import type { OcsMode } from '../domain/piece/index.js';
 import { prepareNewGame } from '../game-flow/index.js';
 import type { NewGameRequest } from '../game-flow/index.js';
@@ -83,10 +84,32 @@ export interface GeneratedRuleScenario {
   readonly configuration: GameState['configuration'];
 }
 
+/**
+ * Map additions for a rule test: extra hexside features (e.g. railroads), printed Hex features (e.g. a
+ * village), and initial Hex control.
+ */
+export interface MapAdditions {
+  readonly hexsides?: readonly HexsideFeatureCollection[];
+  readonly features?: Readonly<Record<string, readonly string[]>>;
+  readonly control?: Readonly<Record<string, PlayerId | null>>;
+}
+
+/** Hexside features along a path of adjacent Hexes, e.g. a railroad line. */
+export const featuresAlong = (hexIds: readonly string[], featureDefinitionId = 'edge:rail'): readonly HexsideFeatureCollection[] =>
+  hexIds.slice(1).map((hexId, index) => {
+    const from = parseHexCoordinateId(hexIds[index]!);
+    const to = parseHexCoordinateId(hexId);
+    const direction = from.ok && to.ok ? findNeighborDirection(from.value, to.value) : null;
+    if (!from.ok || !direction) throw new Error(`Hexes ${hexIds[index]} and ${hexId} are not adjacent.`);
+    const canonical = canonicalizeHexside(directedHexside(from.value, direction));
+    if (!canonical.ok) throw new Error('Hexside is invalid.');
+    return { hexsideId: canonical.value.id, featureDefinitionIds: [featureDefinitionId as never] };
+  });
+
 export const buildGeneratedRuleScenario = (
   placement: Placement,
   terrain: Readonly<Record<string, string>> = {},
-  options: { readonly sources?: GameState['scenario']['sources']; readonly keepHexsides?: boolean; readonly request?: NewGameRequest } = {},
+  options: { readonly sources?: GameState['scenario']['sources']; readonly keepHexsides?: boolean; readonly request?: NewGameRequest } & MapAdditions = {},
 ): GeneratedRuleScenario => {
   const source = prepared(options.request);
   const orders = new Map<string, number>();
@@ -107,14 +130,25 @@ export const buildGeneratedRuleScenario = (
     hexes: source.scenario.mapDefinition.hexes.map((hex) => ({
       ...hex,
       terrainDefinitionIds: [(terrain[hex.id] ?? 'terrain:clear') as never],
-      features: hex.features.filter(({ kind }) => kind !== 'PRINTED_FEATURE'),
+      features: [
+        ...hex.features.filter(({ kind }) => kind !== 'PRINTED_FEATURE'),
+        ...(options.features?.[hex.id] ?? []).map((definitionId) => ({ kind: 'PRINTED_FEATURE' as const, definitionId: definitionId as never })),
+      ],
     })),
-    hexsides: options.keepHexsides ? source.scenario.mapDefinition.hexsides : [],
+    hexsides: [...(options.keepHexsides ? source.scenario.mapDefinition.hexsides : []), ...(options.hexsides ?? [])],
+  };
+  const control = new Map(source.scenario.initialMapState.hexControl.map((entry) => [String(entry.hexId), entry.controllerId]));
+  for (const [hexId, controllerId] of Object.entries(options.control ?? {})) control.set(hexId, controllerId);
+  const initialMapState = {
+    ...source.scenario.initialMapState,
+    hexControl: [...control.entries()].sort(([left], [right]) => left.localeCompare(right))
+      .map(([hexId, controllerId]) => ({ hexId: hexId as HexId, controllerId })),
   };
   return {
     scenario: {
       ...source.scenario,
       mapDefinition,
+      initialMapState,
       initialPieceState: { ...source.scenario.initialPieceState, pieces },
       sources: options.sources ?? source.scenario.sources,
     },
@@ -129,7 +163,7 @@ export const buildGeneratedRuleScenario = (
 export const buildGeneratedRuleState = (
   placement: Placement,
   terrain: Readonly<Record<string, string>> = {},
-  options: { readonly sources?: GameState['scenario']['sources']; readonly keepHexsides?: boolean; readonly fueled?: boolean; readonly request?: NewGameRequest } = {},
+  options: { readonly sources?: GameState['scenario']['sources']; readonly keepHexsides?: boolean; readonly fueled?: boolean; readonly request?: NewGameRequest } & MapAdditions = {},
 ): GameState => {
   const built = buildGeneratedRuleScenario(placement, terrain, options);
   const created = createInitialGameState(built.scenario, built.configuration, 7);

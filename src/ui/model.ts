@@ -277,6 +277,8 @@ export interface UiSnapshot {
    * for a selected HQ, where it can stand and still throw (12.3b).
    */
   readonly traceDirect: ReadonlySet<string>;
+  /** The seat's Supply Sources marked by the same overlay (12.6a); empty while it is off. */
+  readonly supplySources: readonly { readonly hexId: string; readonly kind: 'MAP_EDGE' | 'DETRAINABLE' | 'EXTENDER' }[];
   /** The selected unit the overlay is drawn for; null when it shows where any friendly unit would trace. */
   readonly traceCoverageFor: string | null;
   readonly showTraceCoverage: boolean;

@@ -23,6 +23,11 @@ package is generated only when the player presses **Generate operation**. NG-02 
 default settings; NG-03 and NG-05 additionally require that no generation runs until Generate operation is pressed. Every
 row stays `UNVERIFIED`.
 
+Rail amendment (2026-10-04, requested by the user: "考慮到rail對OCS的supply規則極重要 安排加入rail 包含map generate
+以及對應的supply規則", with the follow-up "rail不應該跟road一樣dense 應該要少一點"): generated maps carry a railway net
+much sparser than the roads, and trace supply follows it (12.6a, 13.3c, 13.3h, 13.8c, 12.7a). Section H adds RAIL rows;
+plan `docs/roadmap/10-rail-wbs.md`. No existing row changes status or expectation.
+
 Supply UX amendment (2026-10-02, explicitly approved by the user: "OK" to adding the SUP rows proposed in
 `docs/roadmap/09-supply-logistics-ux-wbs.md` §4): section G adds Supply and logistics rows. Every new row
 starts `UNVERIFIED`; no existing row changes status or expectation. The 2026-10-02 A0 baseline
@@ -245,6 +250,26 @@ SUP-A10: the user moved file-based save/load out of scope on 2026-10-02; the che
 | SUP-B06 | P1 | Take a shortfall from the estimate into the planner | Destination and quantity are prefilled and a plan can be built | UNVERIFIED |
 | SUP-B07 | P1 | Run the Supply Phase prediction | The predicted Out of Supply list matches the real result at the end of the Supply Phase | UNVERIFIED |
 | SUP-B08 | P0 | Play a whole turn using only the helpers, then save, load and replay | No dead end, no console error, and the loaded and replayed game match | UNVERIFIED |
+
+## H. Railroads (added 2026-10-04, plan `docs/roadmap/10-rail-wbs.md`)
+
+Run on the default New Game unless a row says otherwise. Evidence: `docs/quality/evidence/rail-2026-10-04/README.md`.
+
+| ID | Pri | Player operation | Required visible result | Status |
+|---|---:|---|---|---|
+| RAIL-01 | P0 | Generate operation on the default settings | The preview shows a connected rail net, a heavier multi-track trunk between the two sides, every entry hex on rail, and clearly fewer rail lines than roads | PASS (2026-10-04, 119 rail vs 387 road segments, `01-preview-map.jpg`) |
+| RAIL-02 | P0 | Start the game and look at the map and legend | Rails are drawn as track with ties over the roads; the legend names Railroad | PASS (2026-10-04, `02-game-start.jpg`) |
+| RAIL-03 | P0 | Turn on Trace Supply for each seat in turn | Map-edge rail entries show the side's S disc; each seat sees RAIL tags only on its own detrainable stations and EXT on its own linked Extenders | PASS (2026-10-04, Allied and Axis views, `03-trace-overlay.jpg`, `05-axis-overlay.jpg`) |
+| RAIL-04 | P0 | Play a whole Game Turn with the rail map | No dead end; console has no errors | PASS (2026-10-04, passive turn: arrivals placed, no unit moved, `04-supply-phase.jpg`) |
+| RAIL-05 | P0 | Move a unit beyond its draw range from the map edge but near a friendly station on a rail line, then reach the Supply Phase | The unit is in trace supply (no Out of Supply prompt), and the overlay covers its hex from the RAIL source | UNVERIFIED |
+| RAIL-06 | P0 | Put an enemy combat unit (or an un-negated ZOC) on the rail line between a station and the map edge | The station loses its RAIL tag and units that relied on it are listed out of trace in the Supply Phase | UNVERIFIED |
+| RAIL-07 | P0 | Enter an enemy-controlled station with a combat unit | Control changes; the station becomes a RAIL source for the mover once its rail path is clear, and no longer for the enemy | UNVERIFIED |
+| RAIL-08 | P1 | Put an HQ in Combat Mode on a bare rail hex reached by rail | That hex gains a RAIL tag (13.8c); switching the HQ to Move Mode removes it | UNVERIFIED |
+| RAIL-09 | P1 | Form an Extender next to a separate rail line | The Extender gets an EXT tag and the stations on the separate line gain RAIL tags (12.7a) | UNVERIFIED |
+| RAIL-10 | P1 | Move a Truck unit along a railroad through woods | The move costs 1 MP per rail hexside (BtR Railroad, 6.2a) in the move preview | UNVERIFIED |
+
+RAIL-05 to RAIL-10 are covered by `tests/rules/ocs-rail-supply.test.ts` and `tests/rules/rail-supply-flow.test.ts`, which are
+regression support only and do not promote these rows.
 
 ## Execution order and stop conditions
 

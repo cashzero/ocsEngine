@@ -8,7 +8,7 @@ export interface GeneratedMapPreviewEdge {
   readonly y1: number;
   readonly x2: number;
   readonly y2: number;
-  readonly kind: 'RIVER' | 'MAJOR_RIVER' | 'ROAD' | 'PRIMARY_ROAD';
+  readonly kind: 'RIVER' | 'MAJOR_RIVER' | 'ROAD' | 'PRIMARY_ROAD' | 'RAIL' | 'MULTI_RAIL';
 }
 
 export interface GeneratedMapPreviewCell {
@@ -35,13 +35,15 @@ const terrain = (value: string): GeneratedTerrainKind => {
     || kind === 'MARSH' || kind === 'WATER' ? kind : 'CLEAR';
 };
 
-/** A hexside may carry both a watercourse and a road (a bridge); each is drawn on its own layer. */
+/** A hexside may carry a watercourse, a road and a railroad (bridges); each is drawn on its own layer. */
 const edgeKinds = (definitions: readonly string[]): GeneratedMapPreviewEdge['kind'][] => {
   const road = definitions.includes('edge:primary-road') ? 'PRIMARY_ROAD' as const
     : definitions.includes('edge:road') ? 'ROAD' as const : null;
   const river = definitions.includes('edge:major-river') ? 'MAJOR_RIVER' as const
     : definitions.includes('edge:river') ? 'RIVER' as const : null;
-  return [river, road].filter((kind) => kind !== null);
+  const rail = definitions.includes('edge:multi-track-rail') ? 'MULTI_RAIL' as const
+    : definitions.includes('edge:rail') ? 'RAIL' as const : null;
+  return [river, road, rail].filter((kind) => kind !== null);
 };
 
 export const buildGeneratedMapPreview = (generated: GeneratedMap, hexSize = 36): GeneratedMapPreview => {
