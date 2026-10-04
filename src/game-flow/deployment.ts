@@ -23,7 +23,7 @@ import type {
 } from '../domain/piece/index.js';
 import { createSeededRandom, mixUint32, type GeneratedMap } from '../generation/map/index.js';
 import type { GeneratedOob, GeneratedOobUnit, OobSide } from '../generation/oob/index.js';
-import { adjacentHexIds, movementCostModel, type MobilityType, type MovementCostModel } from '../rules/index.js';
+import { adjacentHexIds, FIRST_ARRIVAL_TURN, movementCostModel, type MobilityType, type MovementCostModel } from '../rules/index.js';
 import type { GameFlowFailure, GeneratedDeployment } from './model.js';
 import {
   GENERATED_DEFAULT_TERRAIN_COST_TICKS,
@@ -501,7 +501,10 @@ export const deployGeneratedForces = (
         mode: definition.family === 'GROUND' ? 'MOVE' : null,
         statuses: unit.role === 'AIR_BASE'
           ? [{ statusDefinitionId: 'status:air-base-level' as never, value: { kind: 'INTEGER', value: initialAirBaseLevel(definition) ?? 1 } }]
-          : [],
+          // 13.6: the held-back unit is a reinforcement for Game Turn 2; Game Turn 1 has no arrivals.
+          : awaitingReinforcement
+            ? [{ statusDefinitionId: 'status:return-turn' as never, value: { kind: 'INTEGER', value: FIRST_ARRIVAL_TURN } }]
+            : [],
         stackOrder,
         resourceQuantity: definition.resource?.printedQuantity ?? null,
       });

@@ -20,6 +20,7 @@ import {
   type TurnSequenceState,
   type UiController,
 } from '../../src/index.js';
+import { playUntil } from './play-turn.js';
 
 const controllerFor = async () => {
   const fixture = await createGameplayFixture();
@@ -172,7 +173,7 @@ describe('UI flow narrative (2026-10-01 review)', () => {
     expect(new Set(loaded.listCheckpoints().map(({ id }) => id)).size).toBe(loaded.listCheckpoints().length);
   });
 
-  /** 8x8 contact game (seeds 92001-92004): Axis moves into contact, so Allied's Reaction offers only dump blowing. */
+  /** 8x8 contact game (seeds 92001-92004): on Game Turn 3 Axis moves into contact, so Allied's Reaction offers only dump blowing. */
   const reactionGame = async (skipDumpOnlySteps: boolean) => {
     // 8x8 is below the New Game minimum, so build it the way rule tests do rather than through the player orchestrator.
     const engine = createGameplayEngine(createMemoryGameplayPorts());
@@ -184,10 +185,9 @@ describe('UI flow narrative (2026-10-01 review)', () => {
     });
     session.start();
     const controller = createUiController({ engine, session, scenario: game.scenario, bindings: game.bindings, skipDumpOnlySteps });
-    const place = async () => { for (let i = 0; i < 6; i += 1) { const arrival = controller.getSnapshot().arrivals[0]; if (!arrival) break; controller.selectPiece(arrival.pieceId); await controller.clickHex(arrival.entryHexIds[0]!); } };
-    await place(); await controller.endStep(); await controller.endStep(); await controller.endStep();
-    handOff(controller);
-    await place(); await controller.endStep();
+    // Allied's dump is the supply that arrives at its first entry Hex. Nothing arrives on Game Turn 1 (13.6), and Axis wins the
+    // Game Turn 2 turn order and moves before Allied's supply arrives, so the contact is made on Game Turn 3.
+    await playUntil(controller, 3, 'MOVEMENT', game.bindings[1]!.playerId);
     const bremer = controller.getSnapshot().view.projection!.stacks.flatMap(({ pieces }) => pieces).find((piece) => unitLabel(game.scenario, piece).startsWith('KG Bremer'))!;
     controller.selectPiece(bremer.id);
     await controller.runAction(controller.getSnapshot().unitActions.find(({ label }) => label.includes('whole formation'))!.key);

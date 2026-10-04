@@ -195,6 +195,9 @@ export const atStep = (
   phasing: PlayerId = actor,
 ): GameState => ({ ...state, sequence: { ...state.sequence, phase, segment, actingPlayerId: actor, phasingPlayerId: phasing } });
 
+/** The same position on another Game Turn; arrivals (13.6) start on Game Turn 2. */
+export const onGameTurn = (state: GameState, gameTurn: number): GameState => ({ ...state, sequence: { ...state.sequence, gameTurn } });
+
 type DistributiveOmit<T, K extends PropertyKey> = T extends unknown ? Omit<T, K> : never;
 export type GameActionBody = DistributiveOmit<GameAction, 'actionId' | 'actorId' | 'expectedRevision'>;
 

@@ -21,11 +21,7 @@ describe('acting after a save is loaded into a new page', () => {
   it('is not refused as a duplicate of a request the saved game already made', async () => {
     // One page plays a few actions and saves.
     const first = await newController();
-    for (const arrival of first.getSnapshot().arrivals) {
-      first.selectPiece(arrival.pieceId);
-      await first.clickHex(arrival.entryHexIds[0]!);
-    }
-    await first.endStep();
+    // Nothing arrives on Game Turn 1 (13.6): play opens in the Movement Phase.
     const own = (controller: typeof first) => controller.getSnapshot().view.projection!.stacks.flatMap(({ pieces }) => pieces)
       .filter((piece) => piece.ownerId === controller.getSnapshot().view.playerId && piece.location.kind === 'ON_MAP');
     first.selectPiece(own(first).find(({ role }) => role === 'TRUCK')!.id);

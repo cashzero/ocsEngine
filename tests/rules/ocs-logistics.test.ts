@@ -7,6 +7,7 @@ import {
   applyRuleAction,
   arrivingReinforcements,
   atStep,
+  onGameTurn,
   breakoutStatus,
   buildGeneratedRuleScenario,
   buildGeneratedRuleState,
@@ -359,8 +360,17 @@ describe('OCS 4.3 breakout (12.8e)', () => {
 });
 
 describe('OCS 4.3 reinforcements and Supply Table (2.3, 13.6)', () => {
+  it('brings nothing on Game Turn 1: the setup already holds its supply and Repls (13.6)', () => {
+    const state = atStep(buildGeneratedRuleState({ [U.alLeg]: ['1,5', 'COMBAT', 'combat'] }, {}, { replacements: true }), 'AIRCRAFT_REFIT', 'NONE', ALLIED);
+    expect(state.sequence.gameTurn).toBe(1);
+    const result = applyRuleAction(state, ALLIED, { kind: 'ADVANCE_SEQUENCE' });
+    ok(result);
+    expect(result.events.filter(({ kind }) => kind === 'SUPPLY_ARRIVED' || kind === 'REPLACEMENTS_ARRIVED')).toEqual([]);
+    expect(arrivingReinforcements(atStep(result.state, 'REINFORCEMENT', 'NONE', ALLIED), ALLIED)).toEqual([]);
+  });
+
   it('rolls the Supply Table on entering the Reinforcement Phase and the SP must be placed', () => {
-    const state = atStep(buildGeneratedRuleState({ [U.alLeg]: ['1,5', 'COMBAT', 'combat'] }), 'AIRCRAFT_REFIT', 'NONE', ALLIED);
+    const state = atStep(onGameTurn(buildGeneratedRuleState({ [U.alLeg]: ['1,5', 'COMBAT', 'combat'] }), 2), 'AIRCRAFT_REFIT', 'NONE', ALLIED);
     const result = applyRuleAction(state, ALLIED, { kind: 'ADVANCE_SEQUENCE' });
     const advanced = ok(result);
     const arrived = result.events.find((event) => event.kind === 'SUPPLY_ARRIVED');
