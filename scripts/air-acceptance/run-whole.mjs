@@ -62,7 +62,7 @@ const load = async (path) => {
 
 try {
   await newGame(h, { seeds, turnLimit });
-  h.note(`New Game: Standard scale, air forces + transports + support, ${turnLimit} turns, seeds ${JSON.stringify(seeds)}`);
+  h.note(`New Game: Standard scale, air forces (aircraft reinforcements built in) + transports, ${turnLimit} turns, seeds ${JSON.stringify(seeds)}`);
   let saved = null;
   const ended = async () => has(h, '#download-final-save');
   await advanceTo(h, ended, {

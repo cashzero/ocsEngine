@@ -46,9 +46,18 @@ const airBaseView = (definition: PieceDefinition, piece: CounterPiece) => {
   };
 };
 
-/** 13.5: an Equipment replacement counter prints "Repl EQ" and shows how many it holds ("?" when the count is hidden from this seat, 4.9a). */
+/** "Pax" or "Eq": what a replacement counter is called for its kind (13.5). */
+export const replacementAbbreviation = (definition: PieceDefinition): 'Pax' | 'Eq' => {
+  const kind = definition.capabilities.find(({ id }) => id === 'REPLACEMENT')?.parameters.find(({ key }) => key === 'kind');
+  return kind?.kind === 'TEXT' && kind.value === 'PAX' ? 'Pax' : 'Eq';
+};
+
+/**
+ * 13.5: a replacement counter prints "Repl EQ" or "Repl PAX" and shows how many it holds ("?" when the count is hidden from
+ * this seat, 4.9a). The Pax counter reuses the Eq counter's BTR artwork with its own label.
+ */
 const replacementView = (definition: PieceDefinition, piece: CounterPiece) =>
-  ({ redacted: false as const, kind: 'replacement' as const, label: definition.name, nation: nationOf(definition), quantity: piece.resourceQuantity === null || piece.resourceQuantity === undefined ? '?' : String(piece.resourceQuantity) });
+  ({ redacted: false as const, kind: 'replacement' as const, label: definition.name, abbreviation: replacementAbbreviation(definition), nation: nationOf(definition), quantity: piece.resourceQuantity === null || piece.resourceQuantity === undefined ? '?' : String(piece.resourceQuantity) });
 
 export const counterView = (definition: PieceDefinition, piece: CounterPiece) => {
   if (definition.family === 'AIR') return aircraftView(definition, piece);
@@ -229,7 +238,7 @@ const squeezed = (element: string, length: number): string => element.replace('<
 const replacementBody = (view: Extract<CounterViewModel, { kind: 'replacement' }>): string =>
   `<rect class="counter-paper replacement nation-${view.nation}" width="100" height="100"/>
     <g class="counter-identification">${view.nation === 'US' ? svgText(11.5,29,'A','eq-army') : ''}${squeezed(svgText(30.5,28,'Repl','eq-repl'), 30).replace('<text ', '<text transform="rotate(-90 30.5 28)" ')}<path class="eq-leader" d="M31 21.5H37.5"/></g>
-    <g class="counter-symbol"><rect class="eq-box nation-${view.nation}" x="37.5" y="16.5" width="33.5" height="26"/>${squeezed(svgText(54,38,'EQ','eq-label'), 21)}</g>
+    <g class="counter-symbol"><rect class="eq-box nation-${view.nation}" x="37.5" y="16.5" width="33.5" height="26"/>${squeezed(svgText(54,38,view.abbreviation.toUpperCase(),'eq-label'), 21)}</g>
     <g class="counter-values">${squeezed(svgText(29.5,82.5,'0','eq-number eq-shadow'), 17)}${squeezed(svgText(28,81,'0','eq-number eq-white'), 17)}${squeezed(svgText(43.5,65,'0','eq-superscript'), 10)}
     <rect class="eq-move-box" x="50" y="49.5" width="34" height="36.5"/>${squeezed(svgText(67,82,'10','eq-number eq-move'), 29)}</g>
     <g class="counter-quantity"><circle class="eq-count-disc" cx="87" cy="13" r="10"/>${svgText(87,18,view.quantity,'eq-count')}</g>`;

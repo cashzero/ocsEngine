@@ -55,7 +55,7 @@ export const AIR_NEW_GAME_REQUEST: NewGameRequest = {
 /** The air scenario with transports, paratroops, the Eq allotment and aircraft reinforcements as well. */
 export const FULL_AIR_NEW_GAME_REQUEST: NewGameRequest = {
   ...RULE_FIXTURE_NEW_GAME_REQUEST,
-  oob: { ...RULE_FIXTURE_NEW_GAME_REQUEST.oob, air: 'STANDARD', airTransport: 'STANDARD', airSupport: 'STANDARD' },
+  oob: { ...RULE_FIXTURE_NEW_GAME_REQUEST.oob, air: 'STANDARD', airTransport: 'STANDARD' },
 };
 
 const preparedCache = new Map<NewGameRequest, ReturnType<typeof prepareNewGame>>();
@@ -77,7 +77,9 @@ export type Placement = Readonly<Record<string, readonly [HexId | string, OcsMod
 
 /**
  * Initial state with only the listed Pieces on the map (others eliminated), terrain set to Clear
- * except `terrain`, no hexside features, and the default Supply Sources unless replaced.
+ * except `terrain`, no hexside features, and the default Supply Sources unless replaced. Pax and Eq
+ * (13.5) arrive only with `replacements`: every generated game has them, but a test of another rule
+ * should not have to place them each Reinforcement Phase.
  */
 export interface GeneratedRuleScenario {
   readonly scenario: GameState['scenario'];
@@ -109,7 +111,7 @@ export const featuresAlong = (hexIds: readonly string[], featureDefinitionId = '
 export const buildGeneratedRuleScenario = (
   placement: Placement,
   terrain: Readonly<Record<string, string>> = {},
-  options: { readonly sources?: GameState['scenario']['sources']; readonly keepHexsides?: boolean; readonly request?: NewGameRequest } & MapAdditions = {},
+  options: { readonly sources?: GameState['scenario']['sources']; readonly keepHexsides?: boolean; readonly request?: NewGameRequest; readonly replacements?: boolean } & MapAdditions = {},
 ): GeneratedRuleScenario => {
   const source = prepared(options.request);
   const orders = new Map<string, number>();
@@ -150,6 +152,10 @@ export const buildGeneratedRuleScenario = (
       mapDefinition,
       initialMapState,
       initialPieceState: { ...source.scenario.initialPieceState, pieces },
+      pieceCatalog: options.replacements ? source.scenario.pieceCatalog : {
+        ...source.scenario.pieceCatalog,
+        definitions: source.scenario.pieceCatalog.definitions.filter(({ family }) => family !== 'REPLACEMENT'),
+      },
       sources: options.sources ?? source.scenario.sources,
     },
     configuration: source.configuration,
@@ -163,7 +169,7 @@ export const buildGeneratedRuleScenario = (
 export const buildGeneratedRuleState = (
   placement: Placement,
   terrain: Readonly<Record<string, string>> = {},
-  options: { readonly sources?: GameState['scenario']['sources']; readonly keepHexsides?: boolean; readonly fueled?: boolean; readonly request?: NewGameRequest } & MapAdditions = {},
+  options: { readonly sources?: GameState['scenario']['sources']; readonly keepHexsides?: boolean; readonly fueled?: boolean; readonly request?: NewGameRequest; readonly replacements?: boolean } & MapAdditions = {},
 ): GameState => {
   const built = buildGeneratedRuleScenario(placement, terrain, options);
   const created = createInitialGameState(built.scenario, built.configuration, 7);

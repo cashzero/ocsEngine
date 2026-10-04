@@ -537,6 +537,11 @@ small, .supporting { font-size: 13px; color: var(--muted); }
 .counter .eq-move, .unit-counter .eq-move { fill: #84000c; stroke: #84000c; stroke-width: .6px; }
 .counter .eq-count-disc, .unit-counter .eq-count-disc { fill: #151810; stroke: #f4f1e6; stroke-width: 1.5; }
 .counter .eq-count, .unit-counter .eq-count { fill: #fff; font-size: 15px; font-weight: 900; }
+/* Ground rebuilds (13.5a-e): each unit row may open a steps field and a placement mode under its checkbox. */
+.rebuild-unit { display: grid; gap: 4px; }
+.rebuild-unit .rebuild-steps, .rebuild-unit .rebuild-mode, .rebuild-trucks { display: flex; align-items: center; gap: 8px; margin-left: 26px; font-size: 13px; color: var(--muted); }
+.rebuild-trucks { margin-left: 0; }
+.rebuild-unit input[type="number"], .rebuild-trucks input[type="number"] { width: 64px; }
 .map-toggles { display: flex; gap: 5px; margin-left: 4px; padding-left: 9px; border-left: 1px solid var(--line); }
 .map-toggle { --toggle-on: #6fcf8e; display: inline-flex; align-items: center; gap: 7px; min-height: 42px; padding: 6px 10px; border: 1px solid var(--line); border-radius: 6px; color: var(--muted); background: #18221d; cursor: pointer; font-size: 13px; font-weight: 650; white-space: nowrap; user-select: none; }
 .map-toggle.air-zones { --toggle-on: #5aa0d8; }

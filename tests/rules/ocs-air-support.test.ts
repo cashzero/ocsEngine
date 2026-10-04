@@ -43,7 +43,7 @@ const base = () => buildGeneratedRuleState({
   [U.aBase]: [BASE, null], [U.aF1]: [BASE, null], [U.aB1]: [BASE, null], [U.aSup]: [BASE, null],
   [U.aHq]: [hex(2), 'COMBAT', 'combat'], [U.aLeg]: [hex(3), 'COMBAT', 'combat'],
   [U.xTrk]: [hex(14), 'COMBAT', 'combat'],
-}, {}, { request: REQUEST });
+}, {}, { request: REQUEST, replacements: true });
 
 /** The fixture eliminates pieces it is not told to place; this puts the reinforcing fighter back in its Box, due on Game Turn 3. */
 const waiting = (state: GameState): GameState => withPiece(state, U.aReinforce, (entry) => ({
@@ -56,7 +56,7 @@ describe('Eq replacements arrive each Reinforcement Phase (13.5)', () => {
     let state = atStep(base(), 'AIRCRAFT_REFIT', 'NONE', ALLIED);
     state = ok(applyRuleAction(state, ALLIED, { kind: 'ADVANCE_SEQUENCE' }));
     expect(state.sequence.phase).toBe('REINFORCEMENT');
-    const eq = state.pieceState.pieces.find((entry) => String(entry.id).startsWith('repl-arrival:'))!;
+    const eq = state.pieceState.pieces.find((entry) => String(entry.id).startsWith('repl-arrival:') && !String(entry.id).endsWith(':pax'))!;
     expect(eq.location.kind).toBe('OFF_MAP_BOX');
     expect(eq.resourceQuantity).toBe(1);
     expect(arrivingReinforcements(state, ALLIED).map(({ id: arrived }) => arrived)).toContain(eq.id);
@@ -66,10 +66,13 @@ describe('Eq replacements arrive each Reinforcement Phase (13.5)', () => {
     expect(piece(state, eq.id).location).toEqual({ kind: 'ON_MAP', hexId: entry });
   });
 
-  it('gives no Eq in a game without the support option', () => {
-    const plain = buildGeneratedRuleState({ [id('allied:independent-hq-1')]: [hex(2), 'COMBAT', 'combat'] }, {}, { request: { ...REQUEST, oob: { ...REQUEST.oob, airSupport: undefined } } });
+  it('is built in: a game without air forces still receives Eq (and Pax) every turn', () => {
+    const request = { ...REQUEST, oob: { ...REQUEST.oob, air: 'NONE' as const, airTransport: 'NONE' as const } };
+    const plain = buildGeneratedRuleState({ [generatedPieceId('allied:independent-hq-1', request)]: [hex(2), 'COMBAT', 'combat'] }, {}, { request, replacements: true });
     const started = ok(applyRuleAction(atStep(plain, 'AIRCRAFT_REFIT', 'NONE', ALLIED), ALLIED, { kind: 'ADVANCE_SEQUENCE' }));
-    expect(started.pieceState.pieces.some((entry) => String(entry.id).startsWith('repl-arrival:'))).toBe(false);
+    const arrived = started.pieceState.pieces.filter((entry) => String(entry.id).startsWith('repl-arrival:')).map(({ id: arrivedId }) => String(arrivedId));
+    expect(arrived.some((arrivedId) => arrivedId.endsWith(':pax'))).toBe(true);
+    expect(arrived.some((arrivedId) => !arrivedId.endsWith(':pax'))).toBe(true);
   });
 });
 
@@ -105,7 +108,7 @@ describe('Aircraft reinforcements (13.6)', () => {
 describe('Aircraft rebuilt with Eq (13.5f)', () => {
   const eqState = (eq = 1) => {
     const state = atStep(base(), 'REINFORCEMENT', 'NONE', ALLIED);
-    const definition = state.scenario.pieceCatalog.definitions.find((candidate) => candidate.family === 'REPLACEMENT' && String(candidate.id).includes(':allied:'))!;
+    const definition = state.scenario.pieceCatalog.definitions.find((candidate) => candidate.family === 'REPLACEMENT' && String(candidate.id).includes(':allied:equipment'))!;
     const counter: PieceState = {
       id: 'repl:test' as PieceId, definitionId: definition.id, ownerId: ALLIED, location: { kind: 'ON_MAP', hexId: BASE },
       currentFaceId: null, remainingSteps: null, mode: null, statuses: [], resourceQuantity: eq, stackOrder: 9,

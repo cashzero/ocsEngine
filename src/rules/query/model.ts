@@ -84,6 +84,33 @@ export interface RuleProjection {
   readonly weather: GameState['weather'];
   readonly fuel: GameState['fuel'];
   readonly air: ProjectedAir;
+  readonly replacements: ProjectedReplacements;
+}
+
+/** The viewer's own ground rebuilds (13.5a-e); empty for the other player's data (4.9a). */
+export interface ProjectedReplacements {
+  readonly rebuilds: readonly ProjectedUnitRebuild[];
+  /** 13.5e: truck points the viewer lost to enemy action and may rebuild with Eq. */
+  readonly lostTruckPoints: number;
+}
+
+/** One hex of the viewer's Repls near an HQ that can rebuild: what they could bring back and what each step costs. */
+export interface ProjectedUnitRebuild {
+  readonly hexId: string;
+  readonly hqId: PieceId;
+  readonly pax: number;
+  readonly eq: number;
+  readonly units: readonly {
+    readonly id: PieceId;
+    readonly definitionId: DefinitionId;
+    /** Rebuild Table cost per step. */
+    readonly cost: 'PAX' | 'EQ';
+    readonly missing: number;
+    readonly deadPile: boolean;
+    /** Voluntary modes a Dead Pile unit may be placed in (13.5b); empty for a reduced unit, which keeps its mode. */
+    readonly modes: readonly string[];
+  }[];
+  readonly truckPoints: number;
 }
 
 /** Air facts both players can see: Trainbusting markers and Patrol Zones (Active Fighters are on top, 4.8e). */

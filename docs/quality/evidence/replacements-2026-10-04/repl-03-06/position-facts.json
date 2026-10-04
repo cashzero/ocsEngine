@@ -1,0 +1,37 @@
+{
+  "rulesSeed": 1,
+  "axisHq": {
+    "name": "Ge HQ 86th Corps",
+    "hex": "2612"
+  },
+  "division": {
+    "name": "79.VG",
+    "hex": "2612"
+  },
+  "victim": {
+    "name": "1+3/1/12 Pz Bn (-) / 12.SS",
+    "hex": "2412"
+  },
+  "attackers": [
+    {
+      "name": "9.Inf",
+      "hex": "2411"
+    },
+    {
+      "name": "84.Inf",
+      "hex": "2312"
+    },
+    {
+      "name": "83.Inf",
+      "hex": "2413"
+    }
+  ],
+  "truck": {
+    "name": "Truck",
+    "hex": "2816"
+  },
+  "capturer": {
+    "name": "17.Abn",
+    "hex": "2716"
+  }
+}

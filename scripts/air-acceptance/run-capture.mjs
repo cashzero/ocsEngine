@@ -14,7 +14,7 @@ const facts = () => h.page.evaluate(() => Object.fromEntries([...document.queryS
 
 try {
   await newGame(h, { seeds, turnLimit: 4 });
-  h.note(`New Game: Standard scale, air forces + transports + support, seeds ${JSON.stringify(seeds)}`);
+  h.note(`New Game: Standard scale, air forces (aircraft reinforcements built in) + transports, seeds ${JSON.stringify(seeds)}`);
   const before = await gotoHex(h, '0504');
   h.note(`0504 from the Allied seat before: ${before}`);
 

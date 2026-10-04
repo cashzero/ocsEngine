@@ -12,6 +12,8 @@ import type { PieceRole, ProjectedCombat, ProjectedPiece, ProjectedStack, RulePr
 import { AIR_MISSION_LABELS, previewAirBarrage } from '../air/mission.js';
 import { activeAircraftLimit, airBaseLevel, aircraftName, isActiveAircraft, isAirBase, isAircraft, isFighter, patrolZoneHexes, refitBlockedByZoc, refitCapacity } from '../air/aircraft.js';
 import { equipmentIn, rebuildOptions, stepsToRebuild } from '../air/replacement.js';
+import { lostTruckPoints } from '../replacement/ledger.js';
+import { unitRebuildOptions } from '../replacement/replacement.js';
 import { aircraftRange, aircraftTransportCapacity, hasIntegralGlider } from '../air/aircraft.js';
 import { baseDumps, earliestPlanTurn, loadableUnits, readyTransports } from '../air/transport.js';
 
@@ -154,6 +156,14 @@ export const projectRuleState = (state: GameState, viewerId: PlayerId): RuleProj
         const active = planes.filter((piece) => isActiveAircraft(piece)).length;
         return { id: base.id, hexId: String(hexId), level: airBaseLevel(state, base), active, activeLimit: activeAircraftLimit(state, base), refitCapacity: refitCapacity(state, base), inactive: planes.length - active, refitBlockedByZoc: refitBlockedByZoc(state, base) };
       }),
+    },
+    // 4.9a: only the viewer's own Repls, Dead Pile and lost trucks are shown.
+    replacements: {
+      rebuilds: unitRebuildOptions(state, viewerId).map((option) => ({
+        hexId: String(option.hexId), hqId: option.hq.id, pax: option.pax, eq: option.eq, truckPoints: option.truckPoints,
+        units: option.units.map(({ piece, cost, missing, modes }) => ({ id: piece.id, definitionId: piece.definitionId, cost, missing, deadPile: piece.location.kind === 'ELIMINATED', modes })),
+      })),
+      lostTruckPoints: lostTruckPoints(state, viewerId),
     },
   };
 };

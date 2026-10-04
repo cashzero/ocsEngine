@@ -51,6 +51,7 @@ const ACTION_LABELS: Readonly<Record<GameAction['kind'], string>> = {
   REDUCE_AIR_BASE: 'Reduce Air Base',
   BUILD_AIR_BASE: 'Build Air Base',
   REBUILD_AIRCRAFT: 'Rebuild aircraft',
+  REBUILD_UNITS: 'Rebuild units',
   PLAN_AIR_DROP: 'Plan Air Drop',
   UPDATE_AIR_DROP_PLAN: 'Change Drop Plan',
   COMBINE_AIRCRAFT: 'Combine aircraft',
@@ -120,6 +121,7 @@ export const actionSummary = (action: GameAction): string => {
     case 'PLAN_AIR_DROP': return `Plan a drop of ${action.unitIds.length} unit${action.unitIds.length === 1 ? '' : 's'} at ${printedHexLabel(action.hexId)} on turn ${action.turn}`;
     case 'UPDATE_AIR_DROP_PLAN': return action.change === 'DELAY' ? 'Delay the drop one turn' : 'Cancel the drop';
     case 'REBUILD_AIRCRAFT': return `Rebuild ${action.aircraftIds.length} aircraft with Eq`;
+    case 'REBUILD_UNITS': return `Rebuild ${action.units.length} unit${action.units.length === 1 ? '' : 's'}${action.truckPoints > 0 ? ` and ${action.truckPoints} truck point${action.truckPoints === 1 ? '' : 's'}` : ''} at ${printedHexLabel(action.hexId)}`;
     case 'BUILD_AIR_BASE': return `${action.facility === 'AIR_STRIP' ? 'Build an Air Strip' : 'Build or improve an Air Base'} at ${printedHexLabel(action.hexId)}`;
     case 'COMBINE_AIRCRAFT': return 'Combine two reduced aircraft';
   }

@@ -1,89 +1,25 @@
-import { stableSort, type HexId, type PieceId, type PlayerId } from '../../core/index.js';
+import type { PieceId, PlayerId } from '../../core/index.js';
 import { upsertPieceState, type PieceState } from '../../domain/piece/index.js';
 import { nextStackOrder } from '../combat/combat.js';
 import type { GameAction, GameState, RuleEvent, RuleViolation } from '../kernel/model.js';
-import { definitionOf, faceMode, friendlyCombatUnitsAt, hexDistanceBetween, hexOf, isHq, nextOrderAt, pieceById } from '../pieces.js';
+import { hexDistanceBetween, hexOf, pieceById } from '../pieces.js';
+import { REBUILD_HQ_RADIUS, hqCanRebuild, isEquipment, replacementHexInEnemyZoc, replacementsIn, spendReplacements } from '../replacement/replacement.js';
 import { violation } from '../validation/violation.js';
-import { inEnemyZoc } from '../zoc/zoc.js';
 import { activeAircraftAt, activeAircraftLimit, aircraftName, friendlyAirBaseAt, friendlyAirBases, isAircraft, withAircraftActive } from './aircraft.js';
 
 /**
- * Equipment replacements (13.5) and the aircraft they rebuild (13.5f). Eq arrive in the Reinforcement Phase as counters
- * placed at an entry hex; spent at an HQ, each Eq rebuilds two aircraft steps at any friendly Air Base, arriving Active.
- * The per-turn allotment is the generator's own table (it replaces a game's Variable Replacement Table); see
- * docs/reports/M11-air-power.md.
+ * The aircraft Eq rebuild (13.5f): spent at an HQ, each Eq rebuilds two aircraft steps at any friendly Air Base, arriving
+ * Active. The Repls themselves (arrival, placement, the HQ and ZOC conditions) are rules/replacement.
  */
 
 type Transition = { readonly state: GameState; readonly events: readonly RuleEvent[] };
 type RebuildAction = Extract<GameAction, { readonly kind: 'REBUILD_AIRCRAFT' }>;
 
-export const REPLACEMENT_CAPABILITY = 'REPLACEMENT';
-
-/** 13.5a: Eq must be at or within 2 hexes of a friendly HQ. */
-export const REBUILD_HQ_RADIUS = 2;
 /** 13.5f: each Eq rebuilds two aircraft steps. */
 export const STEPS_PER_EQ = 2;
 
-const capabilityParameter = (state: GameState, piece: PieceState, key: string) =>
-  definitionOf(state, piece)?.capabilities.find(({ id }) => id === REPLACEMENT_CAPABILITY)?.parameters.find((parameter) => parameter.key === key);
-
-export const isReplacement = (state: GameState, piece: PieceState): boolean => definitionOf(state, piece)?.family === 'REPLACEMENT';
-
-export const isEquipment = (state: GameState, piece: PieceState): boolean => {
-  const kind = capabilityParameter(state, piece, 'kind');
-  return isReplacement(state, piece) && kind?.kind === 'TEXT' && kind.value === 'EQ';
-};
-
 /** Eq in one counter. */
-export const equipmentIn = (piece: PieceState): number => piece.resourceQuantity ?? 0;
-
-/** 13.5: Eq a side receives each Reinforcement Phase, from its Definition. */
-export const equipmentPerTurn = (state: GameState, playerId: PlayerId): { readonly definitionId: PieceState['definitionId']; readonly perTurn: number } | null => {
-  const side = state.scenario.players.find(({ id }) => id === playerId)?.sideDefinitionId ?? null;
-  for (const definition of state.scenario.pieceCatalog.definitions) {
-    if (definition.family !== 'REPLACEMENT' || definition.ownership.sideDefinitionId !== side) continue;
-    const capability = definition.capabilities.find(({ id }) => id === REPLACEMENT_CAPABILITY);
-    const kind = capability?.parameters.find(({ key }) => key === 'kind');
-    const perTurn = capability?.parameters.find(({ key }) => key === 'perTurn');
-    if (kind?.kind === 'TEXT' && kind.value === 'EQ' && perTurn?.kind === 'INTEGER' && perTurn.value > 0) return { definitionId: definition.id, perTurn: perTurn.value };
-  }
-  return null;
-};
-
-/** 2.3, 13.5: the new Eq wait in the player's reinforcement Box and must be placed at an entry hex. */
-export const arriveReplacements = (state: GameState, playerId: PlayerId, events: RuleEvent[]): GameState => {
-  const allotment = equipmentPerTurn(state, playerId);
-  const boxId = state.configuration.reinforcementBoxes.find((candidate) => candidate.playerId === playerId)?.boxId;
-  if (!allotment || !boxId) return state;
-  const definition = state.scenario.pieceCatalog.definitions.find(({ id }) => id === allotment.definitionId)!;
-  const pieceId = `repl-arrival:${playerId}:${state.sequence.gameTurn}` as PieceId;
-  events.push({ kind: 'REPLACEMENTS_ARRIVED', sequence: events.length, playerId, pieceId, equipment: allotment.perTurn });
-  return {
-    ...state,
-    pieceState: upsertPieceState(state.pieceState, {
-      id: pieceId, definitionId: definition.id, ownerId: playerId, location: { kind: 'OFF_MAP_BOX', boxId },
-      currentFaceId: null, remainingSteps: null, mode: null, statuses: [], resourceQuantity: allotment.perTurn,
-      stackOrder: nextOrderAt(state.pieceState.pieces, { kind: 'OFF_MAP_BOX', boxId }, pieceId),
-    }),
-  };
-};
-
-/** Eq placed in a hex join the Eq already there: one counter per owner and hex. */
-export const mergeReplacementsAt = (state: GameState, hexId: HexId, ownerId: PlayerId): GameState => {
-  const here = stableSort(state.pieceState.pieces.filter((piece) => piece.ownerId === ownerId && hexOf(piece) === hexId && isEquipment(state, piece)),
-    (left, right) => equipmentIn(right) - equipmentIn(left) || String(left.id).localeCompare(String(right.id)));
-  const [keeper, ...others] = here;
-  if (!keeper || others.length === 0) return state;
-  let pieceState = state.pieceState;
-  for (const other of others) pieceState = upsertPieceState(pieceState, { ...other, resourceQuantity: 0, location: { kind: 'ELIMINATED' } });
-  return { ...state, pieceState: upsertPieceState(pieceState, { ...keeper, resourceQuantity: here.reduce((total, piece) => total + equipmentIn(piece), 0) }) };
-};
-
-// ─── 13.5f Air rebuilds ─────────────────────────────────────────────────────────────────────────
-
-/** 13.5a: an HQ in Combat Mode, or in DG Mode oriented toward Combat Mode (5.10e). */
-export const hqCanRebuild = (state: GameState, piece: PieceState): boolean =>
-  piece.location.kind === 'ON_MAP' && isHq(state, piece) && (piece.mode === 'COMBAT' || (piece.mode === 'DG' && faceMode(piece) === 'COMBAT'));
+export const equipmentIn = replacementsIn;
 
 /** Steps an aircraft needs to be whole again: a Dead Pile aircraft needs both, a reduced one on the map needs one. */
 export const stepsToRebuild = (piece: PieceState): number => piece.location.kind === 'ELIMINATED' ? 2 : piece.remainingSteps === 1 ? 1 : 0;
@@ -94,10 +30,6 @@ export const equipmentFor = (steps: number): number => Math.ceil(steps / STEPS_P
 export const aircraftInDeadPile = (state: GameState, playerId: PlayerId): readonly PieceState[] =>
   state.pieceState.pieces.filter((piece) => piece.ownerId === playerId && piece.location.kind === 'ELIMINATED' && isAircraft(state, piece))
     .sort((left, right) => String(left.id).localeCompare(String(right.id)));
-
-/** 4.5a: the hex of the Eq may not be in an enemy ZOC (a friendly combat unit negates it, 4.5b). */
-const zocBlocked = (state: GameState, playerId: PlayerId, hexId: HexId): boolean =>
-  inEnemyZoc(state, playerId, hexId) && friendlyCombatUnitsAt(state, playerId, hexId).length === 0;
 
 export const validateRebuildAircraft = (state: GameState, action: RebuildAction): readonly RuleViolation[] => {
   const issues: RuleViolation[] = [];
@@ -115,7 +47,7 @@ export const validateRebuildAircraft = (state: GameState, action: RebuildAction)
   } else if (hexDistanceBetween(hexOf(hq)!, eqHex) > REBUILD_HQ_RADIUS) {
     issues.push(violation('EQUIPMENT_FAR_FROM_HQ', ['eqPieceId'], 'The Eq must be at or within 2 hexes of the HQ.', '13.5a'));
   }
-  if (zocBlocked(state, action.actorId, eqHex)) issues.push(violation('EQUIPMENT_IN_ENEMY_ZOC', ['eqPieceId'], 'The Eq may not be in an enemy ZOC.', '13.5a'));
+  if (replacementHexInEnemyZoc(state, action.actorId, eqHex)) issues.push(violation('EQUIPMENT_IN_ENEMY_ZOC', ['eqPieceId'], 'The Eq may not be in an enemy ZOC.', '13.5a'));
   if (action.aircraftIds.length === 0 || new Set(action.aircraftIds).size !== action.aircraftIds.length) {
     return [...issues, violation('INVALID_REBUILD_AIRCRAFT', ['aircraftIds'], 'Choose one or more distinct aircraft to rebuild.', '13.5f')];
   }
@@ -165,9 +97,7 @@ export const applyRebuildAircraft = (state: GameState, action: RebuildAction): T
     }
     events.push({ kind: 'AIRCRAFT_REBUILT', sequence: events.length, pieceId: id, hexId: plane.location.kind === 'ELIMINATED' ? baseHex : hexOf(plane) });
   }
-  const spent = equipmentFor(steps);
-  const left = equipmentIn(eq) - spent;
-  pieceState = upsertPieceState(pieceState, left > 0 ? { ...eq, resourceQuantity: left } : { ...eq, resourceQuantity: 0, location: { kind: 'ELIMINATED' } });
+  pieceState = spendReplacements(pieceState, eq, equipmentFor(steps));
   return { state: { ...state, pieceState }, events };
 };
 
@@ -184,7 +114,7 @@ export const rebuildOptions = (state: GameState, playerId: PlayerId): readonly {
   const dead = aircraftInDeadPile(state, playerId);
   for (const eq of state.pieceState.pieces.filter((piece) => piece.ownerId === playerId && piece.location.kind === 'ON_MAP' && isEquipment(state, piece) && equipmentIn(piece) > 0)) {
     const hex = hexOf(eq)!;
-    if (zocBlocked(state, playerId, hex)) continue;
+    if (replacementHexInEnemyZoc(state, playerId, hex)) continue;
     const hq = hqs.find((candidate) => hexDistanceBetween(hexOf(candidate)!, hex) <= REBUILD_HQ_RADIUS);
     if (!hq) continue;
     const reduced = state.pieceState.pieces.filter((piece) => piece.ownerId === playerId && piece.location.kind === 'ON_MAP' && hexOf(piece) === hex && isAircraft(state, piece) && piece.remainingSteps === 1);
