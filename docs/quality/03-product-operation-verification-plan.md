@@ -16,6 +16,13 @@ Generated maps give each side one entry Hex per six map rows along its edge (at 
 Source. NG-04, NG-06 and NG-07 are restated in these terms (NG-07's former "4 per side" plan cannot be expressed
 as a division mix, so its headline counts are recomputed for 4 divisions, 2 armored); every row stays `UNVERIFIED`.
 
+Explicit-generation amendment (2026-10-04, explicitly requested by the user: "map/oob generation 應該是設定完按generate才產生
+而不是每改一個設定就generate依次"): New Game no longer generates on open, on every settings change, or on "Randomize all
+seeds". Changing settings only marks an existing preview "Preview invalidated" and disables Start; the Map/OOB/deployment
+package is generated only when the player presses **Generate operation**. NG-02 means pressing Generate operation on the
+default settings; NG-03 and NG-05 additionally require that no generation runs until Generate operation is pressed. Every
+row stays `UNVERIFIED`.
+
 Supply UX amendment (2026-10-02, explicitly approved by the user: "OK" to adding the SUP rows proposed in
 `docs/roadmap/09-supply-logistics-ux-wbs.md` §4): section G adds Supply and logistics rows. Every new row
 starts `UNVERIFIED`; no existing row changes status or expectation. The 2026-10-02 A0 baseline
