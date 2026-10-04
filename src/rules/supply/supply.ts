@@ -26,6 +26,7 @@ import { INTERNAL_RECOVERY_TOKENS_PER_LEVEL } from '../tables/ocs-4.3.js';
 import { supplyPathCostModel } from '../terrain.js';
 import { violation } from '../validation/violation.js';
 import { hasEnemyCombatUnit, queryZoc } from '../zoc/zoc.js';
+import { detrainableHexesFrom, isRailHex, railNetworkOf, railTracePassable } from './rail.js';
 
 /**
  * Supply paths (12.3): draw, throw and trace are counted like the movement of a non-combat unit,
@@ -197,36 +198,72 @@ const extenderLinks = (state: GameState, playerId: PlayerId, extender: PieceStat
   return [...sources].some((source) => reaches(costs, source));
 };
 
-const sourceCache = new WeakMap<GameState, Map<string, readonly HexId[]>>();
+/**
+ * Why a Hex is a Supply Source (12.6a): `MAP_EDGE` for a source the scenario declares (map-edge
+ * railroad entry Hexes and other game-specific sources), `DETRAINABLE` for a detrainable rail Hex
+ * (13.3c), `EXTENDER` for a linked Extender (12.7a).
+ */
+export interface SupplySourceHex {
+  readonly hexId: HexId;
+  readonly kind: 'MAP_EDGE' | 'DETRAINABLE' | 'EXTENDER';
+}
+
+const sourceCache = new WeakMap<GameState, Map<string, readonly SupplySourceHex[]>>();
 
 /**
- * 12.6a Supply Sources: the side's map-edge sources plus Extenders linked to one, directly or in a
- * daisy chain (12.7a, 12.7c).
+ * 12.6a Supply Sources: the side's map-edge sources; detrainable Hexes with a rail path free of enemy
+ * ZOC back to a source (13.3c, 13.3h, 13.8c); and Extenders linked to any of these, directly or in a
+ * daisy chain (12.7a A, 12.7c). An Extender also joins the rail Hexes in or adjacent to its Hex
+ * (12.7g) to its source, so the rail line beyond it becomes detrainable (12.7a B and C).
  */
-export const friendlySourceHexes = (state: GameState, playerId: PlayerId): readonly HexId[] => {
+export const friendlySupplySources = (state: GameState, playerId: PlayerId): readonly SupplySourceHex[] => {
   let cache = sourceCache.get(state);
   if (!cache) { cache = new Map(); sourceCache.set(state, cache); }
   const cached = cache.get(String(playerId));
   if (cached) return cached;
   const side = sideOf(state, playerId);
-  const sources = new Set<HexId>(state.scenario.sources
-    .filter(({ sideDefinitionId }) => sideDefinitionId === null || sideDefinitionId === side)
-    .map(({ hexId }) => hexId)
-    .filter((hexId) => sourceUsable(state, playerId, hexId)));
+  const kinds = new Map<HexId, SupplySourceHex['kind']>();
+  for (const { hexId, sideDefinitionId } of state.scenario.sources) {
+    if ((sideDefinitionId === null || sideDefinitionId === side) && sourceUsable(state, playerId, hexId)) kinds.set(hexId, 'MAP_EDGE');
+  }
+  const sources = (): ReadonlySet<HexId> => new Set(kinds.keys());
   const extenders = state.pieceState.pieces.filter((piece) => piece.ownerId === playerId && hexOf(piece) !== null && isExtender(state, piece));
+  const hasRail = railNetworkOf(state).neighbors.size > 0;
   let added = true;
   while (added) {
     added = false;
+    if (hasRail) {
+      const seeds = [...kinds.keys()];
+      for (const [hexId, kind] of kinds) {
+        if (kind !== 'EXTENDER') continue;
+        seeds.push(...[hexId, ...adjacentHexIds(hexId)].filter((rail) => isRailHex(state, rail) && railTracePassable(state, playerId, rail)));
+      }
+      for (const hexId of detrainableHexesFrom(state, playerId, seeds)) {
+        if (kinds.has(hexId) || !sourceUsable(state, playerId, hexId)) continue;
+        kinds.set(hexId, 'DETRAINABLE');
+        added = true;
+      }
+    }
     for (const extender of extenders) {
       const hexId = hexOf(extender)!;
-      if (sources.has(hexId) || !sourceUsable(state, playerId, hexId) || !extenderLinks(state, playerId, extender, sources)) continue;
-      sources.add(hexId);
+      if (kinds.has(hexId) || !sourceUsable(state, playerId, hexId) || !extenderLinks(state, playerId, extender, sources())) continue;
+      kinds.set(hexId, 'EXTENDER');
       added = true;
     }
   }
-  const result = [...sources].sort();
+  const result = [...kinds.entries()].map(([hexId, kind]) => ({ hexId, kind }))
+    .sort((left, right) => String(left.hexId).localeCompare(String(right.hexId)));
   cache.set(String(playerId), result);
   return result;
+};
+
+/** Every Supply Source Hex of the player (12.6a); see `friendlySupplySources` for why each one counts. */
+const sourceHexCache = new WeakMap<readonly SupplySourceHex[], readonly HexId[]>();
+export const friendlySourceHexes = (state: GameState, playerId: PlayerId): readonly HexId[] => {
+  const sources = friendlySupplySources(state, playerId);
+  let hexes = sourceHexCache.get(sources);
+  if (!hexes) { hexes = sources.map(({ hexId }) => hexId); sourceHexCache.set(sources, hexes); }
+  return hexes;
 };
 
 /**
@@ -353,6 +390,15 @@ export const queryTraceCoverage = (state: GameState, actorId: PlayerId, pieceId:
     dependencies: [{ aggregate: 'PIECE', revision: state.pieceState.revision, key: `supply:coverage:${pieceId ?? 'any'}` }],
   };
 };
+
+/** The actor's Supply Sources (12.6a) and why each counts: map edge, detrainable rail Hex, or Extender. */
+export const querySupplySources = (state: GameState, actorId: PlayerId): RuleQueryResult<readonly SupplySourceHex[]> => ({
+  allowed: true,
+  value: friendlySupplySources(state, actorId),
+  reasons: [{ code: 'SUPPLY_SOURCES', allowed: true, message: 'Map-edge sources, detrainable rail Hexes and linked Extenders.', rule: '12.6a' }],
+  facts: [],
+  dependencies: [{ aggregate: 'PIECE', revision: state.pieceState.revision, key: 'supply:sources' }],
+});
 
 /** 12.6c: 1T feeds up to 2 RE; fractions round up. */
 export const eatOffMapCost = (reTicks: number): number => Math.max(1, Math.ceil(reTicks / 8));

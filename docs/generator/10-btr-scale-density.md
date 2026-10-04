@@ -50,10 +50,12 @@ clusters with no browser errors.
 
 ## TODO
 
-- **Railways.** Missing behavior: rail lines (and rail movement/capacity). User-visible impact: maps
-  show no rail net, although BtR prints one as dense as the roads. Close when the map domain has a rail
-  Hexside feature with rules support, generated and rendered, with a screenshot. (Also tracked in
-  `docs/ui/12-map-appearance.md`.)
+- **Railways — DONE in generator 0.4.0 (2026-10-04)**, except Rail Cap transport. The BtR calibration above
+  ("railways about as dense as roads") is deliberately not followed: the user decided "rail不應該跟road一樣dense
+  應該要少一點", so the generated net is a multi-track trunk, lines to every entry Hex and the larger Minor Cities,
+  and few loops, at about a quarter to a third of the road density on the default map. Rules support is trace
+  supply (12.6a, 13.3c, 13.3h, 13.8c, 12.7a) and road movement (6.2a). Rail Cap transport remains
+  `TODO rail-cap`; see `docs/roadmap/10-rail-wbs.md` for the measurements, evidence and remaining TODOs.
 - **Autobahn.** Missing behavior: no 1/3-MP road class. User-visible impact: German road movement
   cannot reproduce BtR autobahns. Close when the TEC models 1/3 MP (quarter-MP ticks cannot) and the
   generator emits it on a few long main routes, with a movement test.

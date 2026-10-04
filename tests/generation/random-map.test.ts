@@ -106,6 +106,40 @@ describe('M6 deterministic random map pipeline', () => {
     }
   });
 
+  it('lays one railway network, much sparser than the roads, with a multi-track trunk and every entry on the rails (12.6a, 13.3)', () => {
+    for (const style of ['TEMPERATE_INLAND', 'MEDITERRANEAN_COAST'] as const) for (const seed of [3, 1943, 31337, 2024]) {
+      const generated = generateRandomMap({ width: 32, height: 24, seed, style });
+      expect(generated.ok).toBe(true);
+      if (!generated.ok) continue;
+      const { metrics, mapDefinition, strategicRegions } = generated.value;
+      expect(metrics.connectedRailComponents).toBe(1);
+      // Railways are a sparse strategic net: well under half the road density, but present.
+      expect(metrics.railEdges / metrics.roadEdges).toBeGreaterThan(0.12);
+      expect(metrics.railEdges / metrics.roadEdges).toBeLessThan(0.4);
+      expect(metrics.railStations).toBeGreaterThan(0);
+      const rail = new Map<string, string[]>();
+      const multi = new Map<string, string[]>();
+      for (const { hexsideId, featureDefinitionIds } of mapDefinition.hexsides) {
+        const ids = featureDefinitionIds.map(String);
+        if (!ids.some((id) => /^edge:(?:multi-track-)?rail$/u.test(id))) continue;
+        const parsed = parseHexsideId(hexsideId);
+        if (!parsed.ok) continue;
+        const { firstHexId: a, secondHexId: b } = parsed.value;
+        for (const target of ids.includes('edge:multi-track-rail') ? [rail, multi] : [rail]) {
+          target.set(a, [...(target.get(a) ?? []), b]);
+          target.set(b, [...(target.get(b) ?? []), a]);
+        }
+      }
+      for (const entry of [...strategicRegions.firstEntryHexIds, ...strategicRegions.secondEntryHexIds]) expect(rail.has(entry)).toBe(true);
+      // The trunk: the two main entries are joined by multi-track alone.
+      const start = strategicRegions.firstEntryHexIds[0]!;
+      const seen = new Set<string>([start]);
+      const queue: string[] = [start];
+      while (queue.length > 0) for (const next of multi.get(queue.shift()!) ?? []) if (!seen.has(next)) { seen.add(next); queue.push(next); }
+      expect(seen.has(strategicRegions.secondEntryHexIds[0]!)).toBe(true);
+    }
+  });
+
   it('rejects invalid generation options without partial output', () => {
     const generated = generateRandomMap({ width: 4, height: 99, seed: -1, style: 'TEMPERATE_INLAND' });
     expect(generated.ok).toBe(false);

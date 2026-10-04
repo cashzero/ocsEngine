@@ -677,6 +677,10 @@ class DefaultUiController implements UiController {
         return { traceCoverage: new Set<string>(coverage?.hexIds ?? []), traceDirect: new Set<string>(coverage?.directHexIds ?? []) };
       })
       : { traceCoverage: new Set<string>(), traceDirect: new Set<string>() };
+    // The same overlay marks the seat's Supply Sources: map edge, detrainable rail Hexes (13.3c) and Extenders (12.7).
+    const supplySources = this.#showTraceCoverage && view.projection !== null
+      ? this.#cached('sources', () => this.#session.getSupplySources(seatId).value) ?? []
+      : [];
     const unitActions = ownSelected ? this.#unitActions(ownSelected, enabled) : [];
     const transportOptions = ownSelected?.role === 'TRUCK' && view.metadata.lifecycle === 'ACTIVE' && !view.privacyLocked
       && view.projection?.sequence.phase === 'MOVEMENT' && segment === 'MOVEMENT'
@@ -720,6 +724,7 @@ class DefaultUiController implements UiController {
       moveBlockers,
       traceCoverage,
       traceDirect,
+      supplySources,
       traceCoverageFor: this.#showTraceCoverage ? traceUnitId : null,
       showTraceCoverage: this.#showTraceCoverage,
       remainingTicks,
