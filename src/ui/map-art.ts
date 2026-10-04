@@ -403,6 +403,25 @@ export const objectiveArtHtml = (cell: GeneratedMapPreviewCell, hexSize: number)
   return `<circle cx="${fixed(cx)}" cy="${fixed(cy)}" r="${fixed(r)}"></circle><polygon points="${star.map(({ x, y }) => `${fixed(x)},${fixed(y)}`).join(' ')}"></polygon>`;
 };
 
+/**
+ * Supply Source (12.6a): a disc in the owning side's colour lettered "S", in the hex's bottom point like the objective star.
+ * A hex that is also an objective moves its disc up and left so both stay visible.
+ */
+export const supplySourceArt = (cell: GeneratedMapPreviewCell, hexSize: number, besideObjective = false): { readonly cx: number; readonly cy: number; readonly r: number; readonly fontSize: number } => {
+  const unit = hexSize / GLYPH_HEX_SIZE;
+  return {
+    cx: Number(fixed(cell.x - (besideObjective ? 18 : 0) * unit)),
+    cy: Number(fixed(cell.y + (besideObjective ? 32 : 39) * unit)),
+    r: Number(fixed(8.5 * unit)),
+    fontSize: Number(fixed(11 * unit)),
+  };
+};
+
+export const supplySourceArtHtml = (cell: GeneratedMapPreviewCell, hexSize: number, besideObjective = false): string => {
+  const { cx, cy, r, fontSize } = supplySourceArt(cell, hexSize, besideObjective);
+  return `<circle cx="${fixed(cx)}" cy="${fixed(cy)}" r="${fixed(r)}"></circle><text x="${fixed(cx)}" y="${fixed(cy + fontSize * 0.36)}" font-size="${fixed(fontSize)}" text-anchor="middle">S</text>`;
+};
+
 /** Entry / supply zone: a band in the owning side's colour along the hex's inner rim. */
 export const strategicBandCorners = (cell: GeneratedMapPreviewCell, hexSize: number): Point[] =>
   Array.from({ length: 6 }, (_, index) => {

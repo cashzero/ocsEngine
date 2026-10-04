@@ -276,12 +276,12 @@ describe('OCS 4.3 internal stocks, trace supply and attrition (12.6, 12.8, 12.10
     }), 'SUPPLY', 'NONE', ALLIED);
     const any = ruleEngine.queryTraceCoverage(state, ALLIED, null);
     expect(any.allowed).toBe(true);
-    const anyHexes = any.value!;
+    const anyHexes = any.value!.hexIds;
     expect(anyHexes.length).toBeGreaterThan(0);
     expect(anyHexes.length).toBeLessThan(state.scenario.mapDefinition.hexes.length);
     // A unit's own coverage contains its hex exactly when the Supply Phase would find it in trace.
     for (const id of [U.alTrk, U.alTrk2, U.alEng, U.alHq]) {
-      const own = ruleEngine.queryTraceCoverage(state, ALLIED, id).value!;
+      const own = ruleEngine.queryTraceCoverage(state, ALLIED, id).value!.hexIds;
       expect(own.includes(piece(state, id).location.kind === 'ON_MAP' ? (piece(state, id).location as { hexId: string }).hexId : ''), id).toBe(pieceHasTrace(state, piece(state, id)));
       // Whatever one unit may use, some friendly unit may use too.
       expect(own.every((hexId) => anyHexes.includes(hexId))).toBe(true);
@@ -291,7 +291,7 @@ describe('OCS 4.3 internal stocks, trace supply and attrition (12.6, 12.8, 12.10
 
   it('shows a selected HQ where it can trace for itself, and its regiments where the HQ throws (12.3b, 12.6)', () => {
     const at = (placements: Parameters<typeof buildGeneratedRuleState>[0]) => atStep(buildGeneratedRuleState(placements), 'SUPPLY', 'NONE', ALLIED);
-    const coverage = (state: GameState, id: PieceId | null) => new Set(ruleEngine.queryTraceCoverage(state, ALLIED, id).value);
+    const coverage = (state: GameState, id: PieceId | null) => new Set(ruleEngine.queryTraceCoverage(state, ALLIED, id).value!.hexIds);
     // With the HQ cut off at 8,6, "any unit" coverage is the bare draw area around the sources.
     const drawArea = coverage(at({ [U.alHq]: ['8,6', 'COMBAT', 'combat'] }), null);
     const connected = at({ [U.alHq]: ['-1,6', 'COMBAT', 'combat'], [U.alTrk]: ['6,6', 'COMBAT', 'combat'] });
@@ -306,6 +306,28 @@ describe('OCS 4.3 internal stocks, trace supply and attrition (12.6, 12.8, 12.10
     const cutOff = at({ [U.alHq]: ['8,6', 'COMBAT', 'combat'] });
     expect(pieceHasTrace(cutOff, piece(cutOff, U.alHq))).toBe(false);
     expect(coverage(cutOff, U.alHq)).toEqual(drawArea);
+  });
+
+  it('separates trace that runs straight to a Supply Source from trace that only an HQ throw delivers (12.3a, 12.3b)', () => {
+    const at = (placements: Parameters<typeof buildGeneratedRuleState>[0]) => atStep(buildGeneratedRuleState(placements), 'SUPPLY', 'NONE', ALLIED);
+    const query = (state: GameState, id: PieceId | null) => {
+      const { hexIds, directHexIds } = ruleEngine.queryTraceCoverage(state, ALLIED, id).value!;
+      return { all: new Set(hexIds), direct: new Set(directHexIds) };
+    };
+    const drawArea = query(at({ [U.alHq]: ['8,6', 'COMBAT', 'combat'] }), null).all;
+    const connected = at({ [U.alHq]: ['-1,6', 'COMBAT', 'combat'], [U.alTrk]: ['6,6', 'COMBAT', 'combat'] });
+    const any = query(connected, null);
+    // Direct trace is the bare draw area; the HQ's throw adds hexes that are covered but not direct.
+    expect(any.direct).toEqual(drawArea);
+    expect([...any.direct].every((hexId) => any.all.has(hexId))).toBe(true);
+    expect([...any.all].some((hexId) => !any.direct.has(hexId))).toBe(true);
+    // A selected HQ only shows its own draw, all of it direct: where it can stand and still throw.
+    const hq = query(connected, U.alHq);
+    expect(hq.direct).toEqual(hq.all);
+    // The regiment's formation traces through the HQ (12.6f), so none of its coverage is direct.
+    const regiment = query(connected, U.alTrk);
+    expect(regiment.all.has('6,6')).toBe(true);
+    expect(regiment.direct.size).toBe(0);
   });
 });
 

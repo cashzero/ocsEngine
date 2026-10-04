@@ -1,7 +1,7 @@
 import { counterLod, type CounterLod } from './counter.js';
 import {
   WAVE_GLYPH_PATH, coastlinePath, hexGridPath, hexNumberPlacement, mapArtDefsHtml, objectiveArt, regionEdgePaths, riverStrokes, roadStrokes,
-  settlementArt, strategicBandCorners, terrainFillCorners, terrainGlyphPlacements, type Point,
+  settlementArt, strategicBandCorners, supplySourceArt, terrainFillCorners, terrainGlyphPlacements, type Point,
 } from './map-art.js';
 import type { GeneratedMapPreview, GeneratedMapPreviewCell } from './map-generator-presenter.js';
 
@@ -54,6 +54,8 @@ export interface MapState {
   readonly path: readonly string[];
   /** Hexes where trace supply reaches (12.6), drawn as a green wash; empty while the overlay is off. */
   readonly traceCoverage: ReadonlySet<string>;
+  /** The part of `traceCoverage` that traces straight to a Supply Source; the rest is reached only through an HQ throw. */
+  readonly traceDirect: ReadonlySet<string>;
   readonly ownZone: ReadonlySet<string>;
   readonly enemyZone: ReadonlySet<string>;
   readonly trainbusting: readonly { readonly hexId: string; readonly own: boolean }[];
@@ -72,7 +74,7 @@ export interface MapEvents {
 
 export const EMPTY_MAP_STATE: MapState = {
   selectedHexId: null, reachable: new Map(), dimmed: new Set(), attack: new Set(), barrage: new Set(), placement: new Set(), retreat: new Set(), highlight: new Set(),
-  airTargets: new Set(), destinationHexId: null, targetHexIds: new Set(), path: [], traceCoverage: new Set(), ownZone: new Set(), enemyZone: new Set(), trainbusting: [], counters: [], badges: [],
+  airTargets: new Set(), destinationHexId: null, targetHexIds: new Set(), path: [], traceCoverage: new Set(), traceDirect: new Set(), ownZone: new Set(), enemyZone: new Set(), trainbusting: [], counters: [], badges: [],
 };
 
 /**
@@ -196,6 +198,8 @@ export class MapView {
   #cursorHex: string | null = null;
   #drag: { readonly x: number; readonly y: number; readonly cameraX: number; readonly cameraY: number; moved: boolean } | null = null;
   #playerColors: readonly [string, string] = ['#d9b54a', '#7fb2e5'];
+  /** Diagonal stripes marking trace that arrives only through an HQ throw. */
+  #throwHatch: CanvasPattern | null = null;
 
   constructor(host: HTMLElement, events: MapEvents) {
     this.#host = host;
@@ -807,6 +811,21 @@ export class MapView {
         ctx.fillStyle = '#ffd766';
         ctx.fill(polygon(star));
       }
+      if (cell.supplySource) {
+        const { cx, cy, r, fontSize } = supplySourceArt(cell, size, geometry.objectives.has(cell.id));
+        ctx.beginPath();
+        ctx.arc(cx, cy, r, 0, Math.PI * 2);
+        ctx.fillStyle = cell.supplySource === 'SECOND' ? this.#playerColors[1] : this.#playerColors[0];
+        ctx.fill();
+        ctx.strokeStyle = '#1a1408';
+        ctx.lineWidth = 1.8;
+        ctx.stroke();
+        ctx.font = `900 ${fontSize}px ui-sans-serif, system-ui, sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'alphabetic';
+        ctx.fillStyle = '#1a1408';
+        ctx.fillText('S', cx, cy + fontSize * 0.36);
+      }
     });
   }
 
@@ -830,16 +849,38 @@ export class MapView {
     ctx.restore();
   }
 
-  /** Trace Supply overlay: a green wash over the hexes trace supply reaches, so the rest reads as out of trace. */
+  /**
+   * Trace Supply overlay, so the rest reads as out of trace: a green wash where trace runs straight to a Supply Source
+   * (an HQ standing there can throw), and a hatched blue wash where it arrives only through an HQ throw.
+   */
   #drawTraceCoverage(): void {
-    const { traceCoverage } = this.#state;
+    const { traceCoverage, traceDirect } = this.#state;
     if (traceCoverage.size === 0) return;
     const ctx = this.#ctx;
-    const path = new Path2D();
-    traceCoverage.forEach((hexId) => { const corners = this.#geometry!.fillCorners.get(hexId); if (corners) path.addPath(polygon(corners)); });
+    const direct = new Path2D();
+    const thrown = new Path2D();
+    traceCoverage.forEach((hexId) => {
+      const corners = this.#geometry!.fillCorners.get(hexId);
+      if (corners) (traceDirect.has(hexId) ? direct : thrown).addPath(polygon(corners));
+    });
     ctx.save();
-    ctx.fillStyle = 'rgba(111, 207, 142, .26)';
-    ctx.fill(path);
+    ctx.fillStyle = 'rgba(111, 207, 142, .3)';
+    ctx.fill(direct);
+    ctx.fillStyle = 'rgba(110, 160, 225, .22)';
+    ctx.fill(thrown);
+    this.#throwHatch ??= (() => {
+      const tile = canvasOf(12);
+      const tileCtx = tile.getContext('2d')!;
+      tileCtx.strokeStyle = 'rgba(70, 120, 200, .55)';
+      tileCtx.lineWidth = 2;
+      tileCtx.beginPath();
+      tileCtx.moveTo(-3, 15); tileCtx.lineTo(15, -3);
+      tileCtx.moveTo(-3, 3); tileCtx.lineTo(3, -3);
+      tileCtx.moveTo(9, 15); tileCtx.lineTo(15, 9);
+      tileCtx.stroke();
+      return ctx.createPattern(tile, 'repeat');
+    })();
+    if (this.#throwHatch) { ctx.fillStyle = this.#throwHatch; ctx.fill(thrown); }
     ctx.restore();
   }
 
