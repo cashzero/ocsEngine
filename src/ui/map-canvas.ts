@@ -75,15 +75,24 @@ export const EMPTY_MAP_STATE: MapState = {
   airTargets: new Set(), destinationHexId: null, targetHexIds: new Set(), path: [], traceCoverage: new Set(), ownZone: new Set(), enemyZone: new Set(), trainbusting: [], counters: [], badges: [],
 };
 
-/** Internal scale that the zoom readout is measured against: this framing reads 100%. */
-export const ZOOM_REFERENCE = 1.68;
-/** The readout of the default framing (new game, Reset): 110% is the smallest zoom at which counter text reliably shows. */
-export const DEFAULT_ZOOM_PERCENT = 110;
+/**
+ * Internal scale that the zoom readout is measured against: this framing reads 100%. It is the default framing (user decision
+ * 2026-10-04: the view that read 110% at the former reference 1.68 keeps its size and now reads 100%).
+ */
+export const ZOOM_REFERENCE = 1.68 * 1.1;
+/** The readout of the default framing (new game, Reset, first render). */
+export const DEFAULT_ZOOM_PERCENT = 100;
 export const DEFAULT_ZOOM = ZOOM_REFERENCE * (DEFAULT_ZOOM_PERCENT / 100);
 /** Wheel notches and +/− move the readout by this many percentage points, landing on multiples of it. */
 const ZOOM_STEP_PERCENT = 10;
-/** Mostly room to zoom out: about 60% fits the whole map, 30% leaves it small enough to see around the panels. */
-const MIN_ZOOM_PERCENT = 30;
+/**
+ * The canvas frames a fixed area of this many hex columns and rows (the default New Game map) at zoom 1, whatever the size
+ * of the map on show, so a zoom readout means the same hex size on every map: a larger map is bigger on screen, not drawn smaller.
+ */
+const FRAME_COLUMNS = 32;
+const FRAME_ROWS = 24;
+/** Mostly room to zoom out: about 54% fits a 32x24 map and about 27% a 64x48 one (the largest New Game map). */
+const MIN_ZOOM_PERCENT = 20;
 const MAX_ZOOM_PERCENT = 150;
 const TILE = 512;
 const MAX_TILES = 96;
@@ -266,11 +275,13 @@ export class MapView {
 
   // ---------------------------------------------------------------- camera
 
+  /** Default zoom with the map's centre in the middle of the canvas. */
   resetCamera(): void {
     const layout = this.#scene?.theater.layout;
+    const frame = this.#framing();
     this.camera.zoom = DEFAULT_ZOOM;
-    this.camera.x = ((layout?.width ?? 0) / 2) * (1 - DEFAULT_ZOOM);
-    this.camera.y = ((layout?.height ?? 0) / 2) * (1 - DEFAULT_ZOOM);
+    this.camera.x = frame.width / 2 - DEFAULT_ZOOM * ((layout?.width ?? 0) / 2);
+    this.camera.y = frame.height / 2 - DEFAULT_ZOOM * ((layout?.height ?? 0) / 2);
     this.#cameraMoved();
   }
 
@@ -289,9 +300,9 @@ export class MapView {
 
   /** Zoom keeping the point under (anchorX, anchorY), in framing units, fixed on screen. */
   #zoomTo(next: number, anchorX?: number, anchorY?: number): void {
-    const layout = this.#scene?.theater.layout;
-    const ax = anchorX ?? (layout?.width ?? 0) / 2;
-    const ay = anchorY ?? (layout?.height ?? 0) / 2;
+    const frame = this.#framing();
+    const ax = anchorX ?? frame.width / 2;
+    const ay = anchorY ?? frame.height / 2;
     const ratio = next / this.camera.zoom;
     this.camera.x = ax - (ax - this.camera.x) * ratio;
     this.camera.y = ay - (ay - this.camera.y) * ratio;
@@ -336,17 +347,25 @@ export class MapView {
 
   // ---------------------------------------------------------------- coordinates
 
-  /** CSS pixels per framing unit: the map is fitted into the canvas like an SVG viewBox (xMidYMid meet). */
+  /** The framed area in map units: the layout box of a FRAME_COLUMNS x FRAME_ROWS map (presenter.ts layoutMapDefinition), not of this map. */
+  #framing(): { readonly width: number; readonly height: number } {
+    const size = this.#scene?.theater.layout.hexSize ?? 0;
+    const padding = 2 * (size + 8);
+    return { width: SQRT3 * size * (FRAME_COLUMNS - 0.5) + padding, height: 1.5 * size * (FRAME_ROWS - 1) + padding };
+  }
+
+  /** CSS pixels per framing unit: the frame is fitted into the canvas like an SVG viewBox (xMidYMid meet). */
   #fit(): number {
-    const layout = this.#scene?.theater.layout;
-    if (!layout || this.#cssWidth === 0 || this.#cssHeight === 0) return 1;
-    return Math.min(this.#cssWidth / layout.width, this.#cssHeight / layout.height);
+    const frame = this.#framing();
+    if (!this.#scene || this.#cssWidth === 0 || this.#cssHeight === 0) return 1;
+    return Math.min(this.#cssWidth / frame.width, this.#cssHeight / frame.height);
   }
 
   #frameOffset(): Point {
-    const layout = this.#scene?.theater.layout;
+    if (!this.#scene) return { x: 0, y: 0 };
+    const frame = this.#framing();
     const fit = this.#fit();
-    return layout ? { x: (this.#cssWidth - layout.width * fit) / 2, y: (this.#cssHeight - layout.height * fit) / 2 } : { x: 0, y: 0 };
+    return { x: (this.#cssWidth - frame.width * fit) / 2, y: (this.#cssHeight - frame.height * fit) / 2 };
   }
 
   #toCss(x: number, y: number): Point {
