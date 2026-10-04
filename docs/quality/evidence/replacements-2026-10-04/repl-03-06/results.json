@@ -1,0 +1,130 @@
+{
+  "title": "REPL-03 to REPL-06 on the replacement test position (Menu → Load save, then UI only)",
+  "final": {
+    "turn": "Turn 3 / 8",
+    "player": "Allied player turn",
+    "phase": "First Player Phase",
+    "revision": null
+  },
+  "rows": [
+    {
+      "id": "REPL-06",
+      "expectation": "The Allied Leg unit at 2716 moves into the lone Axis truck at 2816 and captures part of it",
+      "observed": "Abn moved 2716 → 2816 Allied commander captured 3 of 5 transport points at 2816 (roll 4); the rest must displace.",
+      "status": "PASS"
+    },
+    {
+      "id": "REPL-03",
+      "expectation": "The Allied attack on 2412 eliminates the one-step Axis Armor unit",
+      "observed": "SS eliminated OK You chose the advance after combat Result Ao1/DL1o1: Attacker takes 1 option (each a step loss or a hex of retreat); defender loses 1 step and takes 1 option (each a step loss or a hex of retreat).",
+      "status": "PASS"
+    },
+    {
+      "id": "REPL-02",
+      "expectation": "Turn 1 Axis: Pax and Eq arrive",
+      "observed": "Reinforcements arriving (4) Select a unit, then click a blue entry hex on the map (aircraft arrive at an Air Base; Pax and Eq at an entry hex or within 2 hexes of an HQ, where they rebuild units). III",
+      "status": "PASS"
+    },
+    {
+      "id": "REPL-03",
+      "expectation": "Turn 1 Axis: a Rebuild tab is offered once the Repls stand in the HQ hex",
+      "observed": "Arrivals, Rebuild, Unit, Log",
+      "status": "PASS"
+    },
+    {
+      "id": "REPL-03",
+      "expectation": "The Rebuild tab lists the Dead Pile Armor unit at 1 Eq a step, with its placement mode",
+      "observed": "All reinforcements are placed. 7 SP Supply dump 3213 · Supply · 28T (7 SP) Cannot move in this step Deselect Arrivals Rebuild Unit Log All units (22) Rebuild units Repls in a hex at or within 2 hexes of an HQ in Combat Mode, and not in an enemy ZOC, rebuild units: each step of an Armor, Mech or artillery unit costs 1 Eq, each step of any other unit 1 Pax. A Dead Pile unit returns in the Repls' hex; a reduced unit must be stacked with them. Units with the no-rebuild dot never return (13.5c). 1 Pa",
+      "status": "PASS"
+    },
+    {
+      "id": "REPL-04",
+      "expectation": "The Rebuild tab lists the reduced Axis division in the Repls' hex at 1 Pax a step",
+      "observed": "All reinforcements are placed. 7 SP Supply dump 3213 · Supply · 28T (7 SP) Cannot move in this step Deselect Arrivals Rebuild Unit Log All units (22) Rebuild units Repls in a hex at or within 2 hexes of an HQ in Combat Mode, and not in an enemy ZOC, rebuild units: each step of an Armor, Mech or arti",
+      "status": "PASS"
+    },
+    {
+      "id": "REPL-06",
+      "expectation": "The captured truck points can be rebuilt with Eq (13.5e)",
+      "observed": "Truck points lost to the enemy to rebuild (1 Eq each, up to 1)",
+      "status": "PASS"
+    },
+    {
+      "id": "REPL-03",
+      "expectation": "Asking for one truck point as well (2 Eq in all) is refused: the Eq in the hex are not enough",
+      "observed": "This rebuild takes 2 Eq; the hex holds 1.; button disabled: true",
+      "status": "PASS"
+    },
+    {
+      "id": "REPL-03",
+      "expectation": "Rebuilding spends 1 Pax and 1 Eq (431 ms, budget 1,500 ms)",
+      "observed": "placement mode COMBAT; notice \"Rebuilt 2 units with 1 Pax and 1 Eq.\"",
+      "status": "PASS"
+    },
+    {
+      "id": "REPL-03",
+      "expectation": "The Armor unit returns from the Dead Pile in the HQ hex",
+      "observed": "SS returned from the Dead Pile with 1 step at 2612.",
+      "status": "PASS"
+    },
+    {
+      "id": "REPL-04",
+      "expectation": "The reduced division regains a step in place",
+      "observed": "VG regained with 1 step at 2612.",
+      "status": "PASS"
+    },
+    {
+      "id": "REPL-02",
+      "expectation": "Turn 2 Axis: Pax and Eq arrive",
+      "observed": "Reinforcements arriving (3) Select a unit, then click a blue entry hex on the map (aircraft arrive at an Air Base; Pax and Eq at an entry hex or within 2 hexes of an HQ, where they rebuild units). Rep",
+      "status": "PASS"
+    },
+    {
+      "id": "REPL-06",
+      "expectation": "Turn 2 Axis: a Rebuild tab is offered once the Repls stand in the HQ hex",
+      "observed": "Arrivals, Rebuild, Unit, Log",
+      "status": "PASS"
+    },
+    {
+      "id": "REPL-06",
+      "expectation": "Turn 2 Axis: one captured truck point is rebuilt for 1 Eq as a truck in the Eq hex",
+      "observed": "Truck points lost to the enemy to rebuild (1 Eq each, up to 1); notice \"Rebuilt 1 unit and 1 truck point with 1 Pax and 1 Eq.\"",
+      "status": "PASS"
+    },
+    {
+      "id": "REPL-06",
+      "expectation": "The Log reports the rebuilt truck point",
+      "observed": " 1 truck point rebuilt at 2612.",
+      "status": "PASS"
+    },
+    {
+      "id": "REPL-05",
+      "expectation": "Game Turns 1 and 2 are completed through the deck with the rebuilds, including hot-seat handoffs",
+      "observed": "now Turn 3 / 8 Allied player turn First Player Phase",
+      "status": "PASS"
+    },
+    {
+      "id": "REPL-05",
+      "expectation": "Saving after the rebuilds and loading the file restores the same turn, phase and HQ hex (1542 ms)",
+      "observed": "Turn 3 / 8 First Player Phase → Turn 3 / 8 First Player Phase; hex 2612: \"Hex 2612 · clear · enemy 1+3/1/12 Pz Bn (-) / 12.SS, 3 hidden\" → \"Hex 2612 · clear · enemy 1+3/1/12 Pz Bn (-) / 12.SS, 3 hidden\"",
+      "status": "PASS"
+    },
+    {
+      "id": "REPL-05",
+      "expectation": "No browser console or page error during the run",
+      "observed": "0 errors",
+      "status": "PASS"
+    }
+  ],
+  "timings": [
+    {
+      "label": "rebuild units",
+      "elapsed": 431
+    },
+    {
+      "label": "load save",
+      "elapsed": 1542
+    }
+  ],
+  "errors": []
+}

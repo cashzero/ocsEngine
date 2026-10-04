@@ -4,6 +4,7 @@ import { validateBarrageDeclaration, validateCombatDeclaration } from '../combat
 import { validateCombineAircraft, validateReduceAirBase, validateRefit } from '../air/base.js';
 import { validateBuildAirBase } from '../air/construction.js';
 import { validateRebuildAircraft } from '../air/replacement.js';
+import { validateRebuildUnits } from '../replacement/replacement.js';
 import { validatePlanAirDrop, validateUpdateDropPlan } from '../air/transport.js';
 import { validateAirMission } from '../air/mission.js';
 import { arrivingReinforcements, reinforcementHexes, validateReinforcementPlacement } from '../lifecycle/lifecycle.js';
@@ -98,6 +99,7 @@ export const validateGameAction = (state: GameState, action: GameAction): Action
       case 'REDUCE_AIR_BASE': issues.push(...validateReduceAirBase(state, action)); break;
       case 'BUILD_AIR_BASE': issues.push(...validateBuildAirBase(state, action)); break;
       case 'REBUILD_AIRCRAFT': issues.push(...validateRebuildAircraft(state, action)); break;
+      case 'REBUILD_UNITS': issues.push(...validateRebuildUnits(state, action)); break;
       case 'PLAN_AIR_DROP': issues.push(...validatePlanAirDrop(state, action)); break;
       case 'UPDATE_AIR_DROP_PLAN': issues.push(...validateUpdateDropPlan(state, action)); break;
       case 'COMBINE_AIRCRAFT': issues.push(...validateCombineAircraft(state, action)); break;

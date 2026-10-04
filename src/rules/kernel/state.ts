@@ -144,6 +144,7 @@ export const createInitialGameState = (
       reason: null,
     },
     air: { missionFlownIds: [], refittedBaseIds: [], reducedBaseIds: [], trainbusting: [], builtHexIds: [], builderIds: [], dropPlans: [], unloaded: [], droppedIds: [] },
+    replacements: { lostTrucks: [] },
   };
   const settled = settleInitialSequence(state);
   const invariant = validateGameState(settled);

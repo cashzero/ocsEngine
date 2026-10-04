@@ -51,11 +51,13 @@ const nextAction = (state: GameState, movedThisPhase: Set<string>): GameAction =
   }
   const actor = state.sequence.actingPlayerId;
   const candidates = (kind: GameAction['kind'], budget = 20) => ruleEngine.getActionCandidates(state, { actorId: actor, kind, pieceId: null, budget }).actions;
-  for (const kind of ['PLACE_REINFORCEMENT', 'RECOVER_INTERNALS', 'CHECK_SUPPLY', 'DECLARE_BARRAGE', 'DECLARE_COMBAT'] as const) {
+  for (const kind of ['PLACE_REINFORCEMENT', 'REBUILD_UNITS', 'RECOVER_INTERNALS', 'CHECK_SUPPLY', 'DECLARE_BARRAGE', 'DECLARE_COMBAT'] as const) {
     const [first] = candidates(kind, 1);
     if (first) return first;
   }
-  const enemyHexes = state.pieceState.pieces.filter((piece) => piece.ownerId !== actor && piece.location.kind === 'ON_MAP')
+  // Head for enemy ground units: Pax and Eq counters (13.5) cannot be attacked here.
+  const ground = new Set(state.scenario.pieceCatalog.definitions.filter(({ family }) => family === 'GROUND').map(({ id: definitionId }) => definitionId));
+  const enemyHexes = state.pieceState.pieces.filter((piece) => piece.ownerId !== actor && piece.location.kind === 'ON_MAP' && ground.has(piece.definitionId))
     .map((piece) => (piece.location as { hexId: HexId }).hexId);
   for (const piece of state.pieceState.pieces.filter((candidate) => candidate.ownerId === actor && !movedThisPhase.has(candidate.id))) {
     const moves = ruleEngine.getActionCandidates(state, { actorId: actor, kind: 'MOVE_PIECE', pieceId: piece.id, budget: 400 }).actions;

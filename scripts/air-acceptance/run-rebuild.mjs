@@ -16,7 +16,7 @@ let reinforced = false;
 const once = (key) => { if (done.has(key)) return false; done.add(key); return true; };
 try {
   await newGame(h, { seeds, turnLimit: maxTurn });
-  h.note(`New Game: Standard scale, air forces + transports + support, seeds ${JSON.stringify(seeds)}`);
+  h.note(`New Game: Standard scale, air forces (aircraft reinforcements built in) + transports, seeds ${JSON.stringify(seeds)}`);
   const goal = (state) => rebuilt !== null && reinforced && state.phase === 'Movement';
   await advanceTo(h, goal, {
     before: async (state) => {

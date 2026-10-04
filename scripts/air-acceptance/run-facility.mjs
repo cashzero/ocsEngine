@@ -17,7 +17,7 @@ const levelOf = (text) => Number(text.match(/Air Base Level (\d) \+/)?.[1] ?? Na
 
 try {
   await newGame(h, { seeds, turnLimit });
-  h.note(`New Game: Standard scale, air forces + transports + support, ${turnLimit} turns, seeds ${JSON.stringify(seeds)}; target ${target}`);
+  h.note(`New Game: Standard scale, air forces (aircraft reinforcements built in) + transports, ${turnLimit} turns, seeds ${JSON.stringify(seeds)}; target ${target}`);
   // A Level-reducing result reads "die N, L..." with L the Levels lost; the floor shows when the preview after such a hit on Level 1 still says Level 1.
   const reduces = (outcome) => Number(outcome?.match(/die \d, (\d)/)?.[1] ?? 0) > 0;
   const finished = () => strikes.some(({ before, outcome }, index) => before === 1 && reduces(outcome) && strikes[index + 1]?.before === 1);

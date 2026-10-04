@@ -439,6 +439,26 @@ export interface TrainbustingMarker {
   readonly ownerId: PlayerId;
 }
 
+/** 13.5e: Transport Points of one Definition that a player lost to enemy action (eliminated or captured). */
+export interface LostTruckRecord {
+  readonly ownerId: PlayerId;
+  readonly definitionId: DefinitionId;
+  readonly points: number;
+}
+
+/** Replacement bookkeeping (13.5) that is not part of a Piece. */
+export interface ReplacementState {
+  /** 13.5e: trucks lost to enemy action, which Eq may rebuild; a player never gets back more than this. */
+  readonly lostTrucks: readonly LostTruckRecord[];
+}
+
+/** 13.5a-b: steps one ground unit regains; a Dead Pile unit is placed in a voluntary mode, a reduced unit keeps its own (null). */
+export interface UnitRebuild {
+  readonly pieceId: PieceId;
+  readonly steps: number;
+  readonly mode: OcsMode | null;
+}
+
 /** Air bookkeeping (14.0-15.0) that is not part of a Piece. The phase ledgers are cleared when the phase changes. */
 export interface AirState {
   /** Aircraft that flew a mission this phase (14.2e: one mission per phase). */
@@ -599,6 +619,7 @@ export interface GameState {
   readonly formationTraces: readonly FormationTraceChoice[];
   readonly victory: VictoryState;
   readonly air: AirState;
+  readonly replacements: ReplacementState;
 }
 
 interface ActionEnvelope {
@@ -687,6 +708,17 @@ export type GameAction =
     /** Air Base the Dead Pile aircraft arrive at; null when only reduced aircraft are rebuilt in place. */
     readonly baseId: PieceId | null;
   })
+  /**
+   * 13.5a-e: the Pax and Eq in one hex, at or within 2 hexes of an HQ that can rebuild, are spent by the Rebuild Table: Dead Pile
+   * units are placed in that hex, reduced units stacked there regain steps, and Eq rebuild trucks lost to the enemy (13.5e).
+   */
+  | (ActionEnvelope & {
+    readonly kind: 'REBUILD_UNITS';
+    readonly hexId: HexId;
+    readonly hqId: PieceId;
+    readonly units: readonly UnitRebuild[];
+    readonly truckPoints: number;
+  })
   /** 14.10b: plan the Air Drop of combat units: where and on which Game Turn. Made in the Aircraft Refit Phase. */
   | (ActionEnvelope & { readonly kind: 'PLAN_AIR_DROP'; readonly unitIds: readonly PieceId[]; readonly hexId: HexId; readonly turn: number })
   /** 14.10c: delay (one turn later) or cancel all or part of a Drop Plan, in an Aircraft Refit Phase. */
@@ -739,7 +771,11 @@ export type RuleEvent =
   | { readonly kind: 'AIR_COMBAT_ROUND'; readonly sequence: number; readonly attackerPieceId: PieceId; readonly defenderPieceId: PieceId; readonly modifiedRoll: number; readonly result: string; readonly lossDie: number }
   | { readonly kind: 'FLAK_ROLLED'; readonly sequence: number; readonly modifiedRoll: number; readonly hit: boolean }
   | { readonly kind: 'AIR_BASE_LEVEL_CHANGED'; readonly sequence: number; readonly pieceId: PieceId; readonly level: number }
-  | { readonly kind: 'REPLACEMENTS_ARRIVED'; readonly sequence: number; readonly playerId: PlayerId; readonly pieceId: PieceId; readonly equipment: number }
+  | { readonly kind: 'REPLACEMENTS_ARRIVED'; readonly sequence: number; readonly playerId: PlayerId; readonly pieceId: PieceId; readonly replacement: 'PAX' | 'EQ'; readonly quantity: number }
+  | { readonly kind: 'UNIT_REBUILT'; readonly sequence: number; readonly pieceId: PieceId; readonly hexId: HexId; readonly steps: number; readonly fromDeadPile: boolean }
+  /** 9.14c: Transport Points (or wagons) in a hex an enemy entered: the die, the points there, and how many changed hands. */
+  | { readonly kind: 'TRANSPORT_CAPTURED'; readonly sequence: number; readonly hexId: HexId; readonly ownerId: PlayerId; readonly capturerId: PlayerId; readonly roll: number; readonly points: number; readonly captured: number }
+  | { readonly kind: 'TRUCKS_REBUILT'; readonly sequence: number; readonly pieceIds: readonly PieceId[]; readonly hexId: HexId; readonly points: number }
   | { readonly kind: 'AIRCRAFT_REBUILT'; readonly sequence: number; readonly pieceId: PieceId; readonly hexId: HexId | null }
   | { readonly kind: 'AIR_CARGO_DELIVERED'; readonly sequence: number; readonly hexId: HexId; readonly unitIds: readonly PieceId[]; readonly tokens: number; readonly drop: boolean }
   | { readonly kind: 'AIR_CARGO_LOST'; readonly sequence: number; readonly unitIds: readonly PieceId[]; readonly tokens: number; readonly reason: 'FLAK' | 'LANDING' }
