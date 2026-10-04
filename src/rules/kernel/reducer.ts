@@ -5,6 +5,7 @@ import { declareBarrage, declareCombat, nextStackOrder, resolveDecision } from '
 import { applyCombineAircraft, applyReduceAirBase, applyRefit } from '../air/base.js';
 import { applyBuildAirBase } from '../air/construction.js';
 import { applyRebuildAircraft } from '../air/replacement.js';
+import { applyRebuildUnits } from '../replacement/replacement.js';
 import { applyPlanAirDrop, applyUpdateDropPlan } from '../air/transport.js';
 import { declareAirMission, resolveAirDecision } from '../air/mission.js';
 import { applyInterruptChoice, settleInterrupts } from '../lifecycle/interrupts.js';
@@ -241,6 +242,8 @@ const dispatch = (state: GameState, action: GameAction): Transition => {
       return applyBuildAirBase(state, action);
     case 'REBUILD_AIRCRAFT':
       return applyRebuildAircraft(state, action);
+    case 'REBUILD_UNITS':
+      return applyRebuildUnits(state, action);
     case 'PLAN_AIR_DROP':
       return applyPlanAirDrop(state, action);
     case 'UPDATE_AIR_DROP_PLAN':

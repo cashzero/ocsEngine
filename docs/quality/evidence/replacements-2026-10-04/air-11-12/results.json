@@ -1,0 +1,49 @@
+{
+  "title": "AIR-11 / AIR-12 Eq rebuild and air reinforcements (rules seed 5104)",
+  "final": {
+    "turn": "Turn 3 / 8",
+    "player": "Axis player turn",
+    "phase": "Movement",
+    "revision": null
+  },
+  "rows": [
+    {
+      "id": "AIR-12",
+      "expectation": "Turn 2: a reinforcing aircraft was due and arrived through the Arrivals tab",
+      "observed": "P-51 lost a step JG 300 Fw-190d lost a step OK Reinforcements arriving",
+      "status": "PASS"
+    },
+    {
+      "id": "AIR-11",
+      "expectation": "Turn 3 (Axis): the Rebuild tab lists the lost aircraft and the Eq counter beside the HQ",
+      "observed": "All reinforcements are placed. 0 SP Supply dump eliminated · Supply · 0T (0 SP) Cannot move in this step Deselect Arrivals Rebuild Unit Ledger Log All units (27) COMBAT RESULT Axis commander air mission on 0504 JG 3 Fw-190d vs 391st BG A-20: 10 (roll 6), 391st BG A-20 aborts. JG ",
+      "status": "PASS"
+    },
+    {
+      "id": "AIR-11",
+      "expectation": "Turn 3 (Axis): rebuilding spends the Eq and returns the aircraft",
+      "observed": "notice \"Rebuilt 1 aircraft with 1 Eq.\"",
+      "status": "PASS"
+    },
+    {
+      "id": "AIR-11",
+      "expectation": "An aircraft was lost to Air Combat and rebuilt with Eq within the turn limit",
+      "observed": "Turn 3, Axis",
+      "status": "PASS"
+    },
+    {
+      "id": "AIR-12",
+      "expectation": "A reinforcing aircraft arrived Active at an Air Base on its turn",
+      "observed": "yes",
+      "status": "PASS"
+    },
+    {
+      "id": "AIR-11",
+      "expectation": "No browser console or page error during the run",
+      "observed": "0 errors",
+      "status": "PASS"
+    }
+  ],
+  "timings": [],
+  "errors": []
+}

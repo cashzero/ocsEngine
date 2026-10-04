@@ -124,37 +124,12 @@ export const initialAirBaseLevel = (definition: PieceDefinition): number | null 
  */
 /** Transport aircraft per side by scale (14.9); a side's own mix is drawn from its counters. */
 const TRANSPORTS: Readonly<Record<OobScale, number>> = { COMPACT: 2, STANDARD: 3, LARGE: 4 };
-/** Eq a side receives each Reinforcement Phase (13.5f). This generator's table stands in for a game's Variable Replacement Table. */
-export const EQUIPMENT_PER_TURN: Readonly<Record<OobScale, number>> = { COMPACT: 1, STANDARD: 1, LARGE: 2 };
 /** Reinforcing aircraft by scale (13.6): type and the Game Turn they arrive Active at a friendly Air Base. */
 const AIR_REINFORCEMENTS: Readonly<Record<OobScale, readonly { readonly type: 'F' | 'T'; readonly turn: number }[]>> = {
   COMPACT: [{ type: 'F', turn: 3 }],
   STANDARD: [{ type: 'F', turn: 3 }, { type: 'T', turn: 5 }],
   LARGE: [{ type: 'F', turn: 3 }, { type: 'T', turn: 4 }, { type: 'F', turn: 5 }],
 };
-
-const replacementDefinition = (id: DefinitionId, name: string, side: OobSide, perTurn: number): PieceDefinition => ({
-  counter: null,
-  id,
-  family: 'REPLACEMENT',
-  name,
-  categoryDefinitionId: definitionId('category:oob:replacement'),
-  ownership: {
-    sideDefinitionId: definitionId(`side:${side.toLowerCase()}`),
-    factionDefinitionId: null,
-    nationalityDefinitionId: definitionId(`nationality:${side.toLowerCase()}`),
-    formationDefinitionId: null,
-    groupDefinitionId: null,
-  },
-  faces: [],
-  capabilities: [{ id: must(parseCapabilityId('REPLACEMENT')), parameters: [{ key: 'kind', kind: 'TEXT', value: 'EQ' }, { key: 'perTurn', kind: 'INTEGER', value: perTurn }] }],
-  resource: null, facility: null, marker: null, deferredClassification: null,
-  source: { records: [{
-    field: 'replacement-allotment', rawValue: 'generator-defined', normalizedValue: `${perTurn} Eq each Reinforcement Phase`,
-    source: { document: 'docs/reports/M11-air-power.md', locator: 'Replacement allotment' },
-    confidence: 'MEDIUM', reviewStatus: 'REVIEWED',
-  }] },
-});
 
 export const buildAirForces = (
   side: OobSide,
@@ -192,18 +167,14 @@ export const buildAirForces = (
     }
   }
   // 13.6: reinforcing aircraft wait off the map and arrive Active at a friendly Air Base on their Game Turn.
-  if (options.airSupport === 'STANDARD') {
-    AIR_REINFORCEMENTS[options.scale].forEach(({ type, turn }, index) => {
-      const candidates = pool.filter((source) => source.type === type);
-      const source = candidates[Math.floor(rng.next() * candidates.length)]!;
-      const idBase = `generated-oob:${options.seed}:${side.toLowerCase()}:air-reinforcement-${index + 1}`;
-      const id = definitionId(idBase);
-      definitions.push(aircraftDefinition(id, `${GROUP_NAMES[side][type][(index + 5) % GROUP_NAMES[side][type].length]} ${source.designation}`, side, source));
-      units.push({ id: `${idBase}:unit`, definitionId: id, side, formationId: null, role: 'AIRCRAFT', sourceArchetypeId: `air:${source.gpid}`, pointCost: AIRCRAFT_POINT_COST, arrivalTurn: turn });
-    });
-    // 13.5: the Eq counter this side receives each turn is a Definition only; its counters are created in play.
-    definitions.push(replacementDefinition(definitionId(`generated-oob:${options.seed}:${side.toLowerCase()}:equipment`), `${side === 'ALLIED' ? 'Allied' : 'Axis'} Equipment replacements`, side, EQUIPMENT_PER_TURN[options.scale]));
-  }
+  AIR_REINFORCEMENTS[options.scale].forEach(({ type, turn }, index) => {
+    const candidates = pool.filter((source) => source.type === type);
+    const source = candidates[Math.floor(rng.next() * candidates.length)]!;
+    const idBase = `generated-oob:${options.seed}:${side.toLowerCase()}:air-reinforcement-${index + 1}`;
+    const id = definitionId(idBase);
+    definitions.push(aircraftDefinition(id, `${GROUP_NAMES[side][type][(index + 5) % GROUP_NAMES[side][type].length]} ${source.designation}`, side, source));
+    units.push({ id: `${idBase}:unit`, definitionId: id, side, formationId: null, role: 'AIRCRAFT', sourceArchetypeId: `air:${source.gpid}`, pointCost: AIRCRAFT_POINT_COST, arrivalTurn: turn });
+  });
   mix.bases.forEach((level, index) => {
     const idBase = `generated-oob:${options.seed}:${side.toLowerCase()}:air-base-${index + 1}`;
     const id = definitionId(idBase);

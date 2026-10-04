@@ -45,6 +45,7 @@ import {
 import { validateGeneratedOob } from './validation.js';
 import { counterIdentification, formationNameCapacity, hqName, formationNames, unitName } from './names.js';
 import { buildAirForces } from './air.js';
+import { buildReplacementDefinitions } from './replacements.js';
 import { withBreakdowns } from './breakdowns.js';
 
 const SIDES: readonly OobSide[] = ['ALLIED', 'AXIS'];
@@ -238,20 +239,18 @@ export const normalizeRandomOobOptions = (
   if (options.air !== undefined && !(AIR_FORCE_LEVELS as readonly string[]).includes(options.air)) {
     errors.push({ code: 'INVALID_OPTIONS', message: 'Air forces must be NONE or STANDARD.', path: ['air'] });
   }
-  for (const key of ['airTransport', 'airSupport'] as const) {
-    const level = options[key];
-    if (level !== undefined && !(AIR_FORCE_LEVELS as readonly string[]).includes(level)) {
-      errors.push({ code: 'INVALID_OPTIONS', message: `${key} must be NONE or STANDARD.`, path: [key] });
-    } else if (level === 'STANDARD' && options.air !== 'STANDARD') {
-      errors.push({ code: 'INVALID_OPTIONS', message: `${key} needs the air forces option.`, path: [key] });
-    }
+  const level = options.airTransport;
+  if (level !== undefined && !(AIR_FORCE_LEVELS as readonly string[]).includes(level)) {
+    errors.push({ code: 'INVALID_OPTIONS', message: 'airTransport must be NONE or STANDARD.', path: ['airTransport'] });
+  } else if (level === 'STANDARD' && options.air !== 'STANDARD') {
+    errors.push({ code: 'INVALID_OPTIONS', message: 'airTransport needs the air forces option.', path: ['airTransport'] });
   }
-  const { air, airTransport, airSupport, ...ground } = options;
+  // Older requests may still carry the retired `airSupport` option: Eq and aircraft reinforcements are now built in.
+  const { air, airTransport, airSupport: _retired, ...ground } = options as RandomOobOptions & { readonly airSupport?: unknown };
   return errors.length > 0 ? err(errors) : ok({
     ...ground,
     ...(air === 'STANDARD' ? { air } : {}),
     ...(air === 'STANDARD' && airTransport === 'STANDARD' ? { airTransport } : {}),
-    ...(air === 'STANDARD' && airSupport === 'STANDARD' ? { airSupport } : {}),
   });
 };
 
@@ -351,6 +350,8 @@ const buildSide = (
     definitions.push(built.definition);
     return built.unit;
   });
+  // 13.5: every game gives both sides Pax and Eq; their counters are created in play as they arrive.
+  definitions.push(...buildReplacementDefinitions(side, options));
   const air = options.air === 'STANDARD' ? buildAirForces(side, options, definitions) : [];
   // 14.10: one paratroop battalion (a Para symbol unit, 14.10a) per side for Air Drops; air transports carry them.
   const paratroops = options.air === 'STANDARD' && options.airTransport === 'STANDARD' ? (() => {

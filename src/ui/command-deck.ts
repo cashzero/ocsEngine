@@ -5,7 +5,7 @@ import type { ProjectedPiece } from '../rules/index.js';
 import type { UiSnapshot } from './model.js';
 import { ROUTE_LABELS, halfTokenText, isMultiStepDefinition } from '../rules/index.js';
 import { airSentences, emphasizeAir } from './air-text.js';
-import { counterSvg, counterView } from './counter.js';
+import { counterSvg, counterView, replacementAbbreviation } from './counter.js';
 import { combatHeadline, combatOutlook, type CombatReport, type FeedEntry, type NarrativeContext } from './narrative.js';
 import { ownOverstackedHexes, type OverstackedHex, phaseLabel, pieceDefinition, pieceLabel, printedHexLabel, STACKING_LIMIT_RE_TICKS, stackingReTicks } from './presenter.js';
 
@@ -91,7 +91,7 @@ const supplyDetails = (snapshot: UiSnapshot, piece: ProjectedPiece): string => {
     parts.push(piece.currentFaceId === 'extender' ? 'Extender (trace supply source)' : `${points} truck point${points === 1 ? '' : 's'} · load ${load}/${Number(points) * 4}T`);
   }
   // A quantity hidden from this seat (4.9a) is null: print "?" rather than a misleading 0.
-  if (definition?.family === 'REPLACEMENT') parts.push(`${piece.resourceQuantity ?? '?'} Eq`);
+  if (definition?.family === 'REPLACEMENT') parts.push(`${piece.resourceQuantity ?? '?'} ${replacementAbbreviation(definition)}`);
   if (definition?.family === 'RESOURCE') parts.push(piece.resourceQuantity == null ? '? SP (size hidden)' : `${piece.resourceQuantity}T (${piece.resourceQuantity / 4} SP)`);
   return parts.join(' · ');
 };
@@ -364,8 +364,24 @@ const constructionPanel = (snapshot: UiSnapshot, state: DeckState): TemplateResu
     <div class="button-grid"><button id="cancel-construction">Cancel</button></div></section>`;
 };
 
+const MODE_NAMES: Readonly<Record<string, string>> = { COMBAT: 'Combat Mode', MOVE: 'Move Mode', RESERVE: 'Reserve Mode', STRAT: 'Strat Mode' };
+
+/** Pax and Eq in the Reinforcement Phase: rebuild ground units and trucks lost to the enemy (13.5a-e). */
+const groundRebuildPanel = (snapshot: UiSnapshot, state: DeckState): View => snapshot.groundRebuilds.length === 0 ? nothing : html`<div class="air-panel"><strong>Rebuild units</strong>
+  <p class="hint">Repls in a hex at or within 2 hexes of an HQ in Combat Mode, and not in an enemy ZOC, rebuild units: each step of an Armor, Mech or artillery unit costs 1 Eq, each step of any other unit 1 Pax. A Dead Pile unit returns in the Repls' hex; a reduced unit must be stacked with them. Units with the no-rebuild dot never return (13.5c).</p>
+  ${snapshot.groundRebuilds.map((rebuild) => html`<div class="refit-base"><small>${rebuild.pax} Pax and ${rebuild.eq} Eq at ${printedHexLabel(rebuild.hexId)} · this rebuild costs ${rebuild.cost.pax} Pax and ${rebuild.cost.eq} Eq</small>
+    <div class="participants">${rebuild.units.map((unit) => html`<div class="rebuild-unit"><label class="participant plain"><input type="checkbox" data-rebuild-hex=${rebuild.hexId} data-rebuild-unit=${unit.id} .checked=${unit.selected}><span>${unit.label}<small>${unit.deadPile ? 'Dead Pile' : 'reduced here'} · ${unit.missing} step${unit.missing === 1 ? '' : 's'} missing · 1 ${unit.cost === 'PAX' ? 'Pax' : 'Eq'} a step</small></span></label>
+      ${unit.selected && unit.missing > 1 ? html`<label class="rebuild-steps">Steps <input type="number" min="1" max=${unit.missing} .value=${String(unit.steps)} data-rebuild-hex=${rebuild.hexId} data-rebuild-steps=${unit.id}></label>` : nothing}
+      ${unit.selected && unit.deadPile ? html`<label class="rebuild-mode">Place in <select data-rebuild-hex=${rebuild.hexId} data-rebuild-mode=${unit.id}>${unit.modes.map((mode) => html`<option value=${mode} ?selected=${mode === unit.mode}>${MODE_NAMES[mode] ?? mode}</option>`)}</select></label>` : nothing}</div>`)}</div>
+    ${rebuild.truckMax > 0 ? html`<label class="rebuild-trucks">Truck points lost to the enemy to rebuild (1 Eq each, up to ${rebuild.truckMax}) <input type="number" min="0" max=${rebuild.truckMax} .value=${String(rebuild.truckPoints)} data-rebuild-hex=${rebuild.hexId} data-rebuild-trucks="1"></label>` : nothing}
+    ${explanationBlock(rebuild.explanation)}
+    <button class="primary" data-rebuild-units=${rebuild.hexId} ?disabled=${!(rebuild.explanation?.allowed && !busyOf(snapshot, state))}>Rebuild (${rebuild.cost.pax} Pax, ${rebuild.cost.eq} Eq)</button></div>`)}</div>`;
+
+/** The Rebuild tab: ground units and trucks first, then aircraft. */
+const rebuildTab = (snapshot: UiSnapshot, state: DeckState): TemplateResult => html`${groundRebuildPanel(snapshot, state)}${airRebuildPanel(snapshot, state)}`;
+
 /** Eq in the Reinforcement Phase: rebuild lost aircraft at any friendly Air Base (13.5f). */
-const rebuildTab = (snapshot: UiSnapshot, state: DeckState): TemplateResult => html`<div class="air-panel"><strong>Rebuild aircraft</strong>
+const airRebuildPanel = (snapshot: UiSnapshot, state: DeckState): View => snapshot.air.rebuilds.length === 0 ? nothing : html`<div class="air-panel"><strong>Rebuild aircraft</strong>
   <p class="hint">Each Eq rebuilds two aircraft steps: a Dead Pile aircraft (two steps) arrives Active at the Air Base you pick; a reduced aircraft stacked with the Eq becomes whole. Eq are never partly used (13.5d).</p>
   ${snapshot.air.rebuilds.map((rebuild) => html`<div class="refit-base"><small>${rebuild.equipment} Eq at ${printedHexLabel(rebuild.hexId)} · this rebuild costs ${rebuild.cost} Eq</small>
     <div class="participants">${rebuild.aircraft.map((plane) => html`<label class="participant plain"><input type="checkbox" data-rebuild-eq=${rebuild.eqPieceId} data-rebuild-aircraft=${plane.id} .checked=${plane.selected}><span>${plane.label}<small>${plane.deadPile ? 'Dead Pile · 2 steps' : 'reduced here · 1 step'}</small></span></label>`)}</div>
@@ -443,8 +459,8 @@ export const deckTabs = (snapshot: UiSnapshot): DeckTab[] => {
     tabs.push({ id: 'supply', label: segment === 'BREAKOUT' ? 'Breakout' : 'Supply', badge: snapshot.supplyNeeds.length + snapshot.stepActions.length });
   }
   if (phase === 'AIRCRAFT_REFIT' || snapshot.air.refits.length > 0) tabs.push({ id: 'refit', label: 'Refit', badge: snapshot.air.refits.length });
-  // Eq replacements are optional work, so the tab never carries a count.
-  if (snapshot.air.rebuilds.length > 0) tabs.push({ id: 'rebuild', label: 'Rebuild', badge: 0 });
+  // Rebuilding with Pax and Eq is optional work, so the tab never carries a count.
+  if (snapshot.groundRebuilds.length > 0 || snapshot.air.rebuilds.length > 0) tabs.push({ id: 'rebuild', label: 'Rebuild', badge: 0 });
   if (phase === 'COMBAT' || phase === 'EXPLOITATION' || segment === 'COMBAT' || segment === 'BARRAGE') {
     tabs.push({ id: 'targets', label: 'Targets', badge: new Set([...snapshot.attackTargets, ...snapshot.barrageTargets]).size });
   }
@@ -486,7 +502,7 @@ const arrivalsTab = (snapshot: UiSnapshot): TemplateResult => {
   if (snapshot.arrivals.length === 0) return html`<p class="hint">All reinforcements are placed.</p>`;
   const pieces = snapshot.view.projection?.stacks.flatMap(({ pieces: stackPieces }) => stackPieces) ?? [];
   // Unit first, then hex: the entry hexes are picked on the map, where they show blue; the panel lists only the units.
-  return html`<div class="arrivals"><strong>Reinforcements arriving (${snapshot.arrivals.length})</strong><p class="hint">Select a unit, then click a blue entry hex on the map (aircraft arrive at an Air Base, Eq at an entry hex or beside an HQ).</p>${snapshot.arrivals.map(({ pieceId }) => {
+  return html`<div class="arrivals"><strong>Reinforcements arriving (${snapshot.arrivals.length})</strong><p class="hint">Select a unit, then click a blue entry hex on the map (aircraft arrive at an Air Base; Pax and Eq at an entry hex or within 2 hexes of an HQ, where they rebuild units).</p>${snapshot.arrivals.map(({ pieceId }) => {
     const piece = pieces.find(({ id }) => id === pieceId);
     return piece ? unitRow(snapshot, piece, ' · arriving') : nothing;
   })}</div>`;

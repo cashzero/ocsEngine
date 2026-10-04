@@ -126,6 +126,7 @@ const parseAction = (input: unknown, path: Path, issues: GameplayError[]): GameA
     REDUCE_AIR_BASE: ['baseId', 'pieceIds'], COMBINE_AIRCRAFT: ['aircraftIds'],
     BUILD_AIR_BASE: ['engineerId', 'hexId', 'facility', 'payments'],
     REBUILD_AIRCRAFT: ['eqPieceId', 'hqId', 'aircraftIds', 'baseId'],
+    REBUILD_UNITS: ['hexId', 'hqId', 'units', 'truckPoints'],
     PLAN_AIR_DROP: ['unitIds', 'hexId', 'turn'], UPDATE_AIR_DROP_PLAN: ['planId', 'unitIds', 'change'],
   };
   if (!(kind in fields)) issues.push(issue('SAVE_INVALID', [...path, 'kind'], `Unknown action kind ${kind}.`));
@@ -227,6 +228,24 @@ const parseAction = (input: unknown, path: Path, issues: GameplayError[]): GameA
       return { ...base, planId: textAt(record, 'planId', path, issues), unitIds: pieces('unitIds'), change } as GameAction;
     }
     case 'REBUILD_AIRCRAFT': return { ...base, eqPieceId: piece('eqPieceId'), hqId: piece('hqId'), aircraftIds: pieces('aircraftIds'), baseId: record.baseId === null ? null : piece('baseId') } as GameAction;
+    case 'REBUILD_UNITS': {
+      const units = Array.isArray(record.units) ? record.units : [];
+      if (!Array.isArray(record.units)) issues.push(issue('SAVE_INVALID', [...path, 'units'], 'Expected an array.'));
+      return {
+        ...base, hexId: hex('hexId'), hqId: piece('hqId'), truckPoints: integerAt(record, 'truckPoints', path, issues),
+        units: units.map((entry, index) => {
+          const at = [...path, 'units', index];
+          const unit = recordAt(entry, at, issues) ?? {};
+          exactKeys(unit, ['pieceId', 'steps', 'mode'], at, issues);
+          const pieceText = textAt(unit, 'pieceId', at, issues);
+          const parsed = parsePieceId(pieceText);
+          if (!parsed.ok) issues.push(issue('SAVE_INVALID', [...at, 'pieceId'], 'Invalid Piece ID.'));
+          const mode = unit.mode === null ? null : textAt(unit, 'mode', at, issues);
+          if (mode !== null && !['COMBAT', 'MOVE', 'RESERVE', 'STRAT'].includes(mode)) issues.push(issue('SAVE_INVALID', [...at, 'mode'], 'Invalid voluntary mode.'));
+          return { pieceId: parsed.ok ? parsed.value : pieceText as never, steps: integerAt(unit, 'steps', at, issues), mode };
+        }),
+      } as GameAction;
+    }
     case 'BUILD_AIR_BASE': {
       const facility = textAt(record, 'facility', path, issues);
       if (!['AIR_STRIP', 'AIR_BASE'].includes(facility)) issues.push(issue('SAVE_INVALID', [...path, 'facility'], 'Invalid facility.'));
@@ -339,10 +358,10 @@ const parseActionMetadata = (
 };
 
 /** Version written into every Gameplay save and the only one this build reads. */
-export const GAMEPLAY_SAVE_VERSION = '0.4.0' as const;
+export const GAMEPLAY_SAVE_VERSION = '0.5.0' as const;
 
 /** Older versions this build still reads, upgrading their snapshots on load (see `migrateLegacySave`). */
-export const LEGACY_GAMEPLAY_SAVE_VERSIONS: readonly string[] = ['0.2.0', '0.3.0'];
+export const LEGACY_GAMEPLAY_SAVE_VERSIONS: readonly string[] = ['0.2.0', '0.3.0', '0.4.0'];
 
 export const serializeGameplaySave = (
   envelope: GameplaySaveEnvelope,

@@ -522,10 +522,9 @@ const onNewGameInput = (event: Event): void => {
   if (id === 'new-game-air') {
     const air = input.value as AirForceLevel;
     // The air extras need air forces: switching them off switches the extras off too.
-    newGameSettings = { ...newGameSettings, oob: air === 'STANDARD' ? { ...newGameSettings.oob, air } : (({ airTransport: _t, airSupport: _s, ...rest }) => ({ ...rest, air }))(newGameSettings.oob) };
+    newGameSettings = { ...newGameSettings, oob: air === 'STANDARD' ? { ...newGameSettings.oob, air } : (({ airTransport: _t, ...rest }) => ({ ...rest, air }))(newGameSettings.oob) };
   }
   if (id === 'new-game-air-transport') newGameSettings = { ...newGameSettings, oob: { ...newGameSettings.oob, airTransport: input.value as AirForceLevel } };
-  if (id === 'new-game-air-support') newGameSettings = { ...newGameSettings, oob: { ...newGameSettings.oob, airSupport: input.value as AirForceLevel } };
   if (id === 'new-game-turn-limit') newGameSettings = { ...newGameSettings, turnLimit: value };
   if (id === 'new-game-start-month') newGameSettings = { ...newGameSettings, startMonth: value };
   for (const key of ['map', 'oob', 'deployment', 'rules'] as const) if (id === `new-game-${key}-seed`) newGameSettings = { ...newGameSettings, seeds: { ...newGameSettings.seeds, [key]: value } };
@@ -619,10 +618,9 @@ const newGameDialog = () => {
           ${select('new-game-scale', 'Scale', [['COMPACT', 'Compact'], ['STANDARD', 'Standard'], ['LARGE', 'Large']], newGameSettings.oob.scale)}
           ${number('new-game-divisions', 'Divisions per side', OOB_DIVISION_LIMITS.minDivisions, OOB_DIVISION_LIMITS.maxDivisions, newGameSettings.oob.divisionsPerSide)}
           ${number('new-game-armored', 'of which armored', 0, OOB_DIVISION_LIMITS.maxArmored, newGameSettings.oob.armoredDivisionsPerSide)}
-          <p class="field-help">The other divisions are infantry, about one in four airborne.</p>
-          ${select('new-game-air', 'Air forces', [['NONE', 'None (ground duel)'], ['STANDARD', 'Fighters, bombers and Air Bases']], newGameSettings.oob.air ?? 'NONE')}
-          ${newGameSettings.oob.air === 'STANDARD' ? html`${select('new-game-air-transport', 'Air transport', [['NONE', 'None'], ['STANDARD', 'Transports and a paratroop battalion per side']], newGameSettings.oob.airTransport ?? 'NONE')}
-          ${select('new-game-air-support', 'Air support', [['NONE', 'None'], ['STANDARD', 'Equipment replacements and aircraft reinforcements']], newGameSettings.oob.airSupport ?? 'NONE')}` : nothing}
+          <p class="field-help">The other divisions are infantry, about one in four airborne. Each side receives Pax and Eq replacements every turn.</p>
+          ${select('new-game-air', 'Air forces', [['NONE', 'None (ground duel)'], ['STANDARD', 'Fighters, bombers, Air Bases and aircraft reinforcements']], newGameSettings.oob.air ?? 'NONE')}
+          ${newGameSettings.oob.air === 'STANDARD' ? select('new-game-air-transport', 'Air transport', [['NONE', 'None'], ['STANDARD', 'Transports and a paratroop battalion per side']], newGameSettings.oob.airTransport ?? 'NONE') : nothing}
         </fieldset>
         <fieldset><legend>Game rules</legend>
           ${number('new-game-turn-limit', 'Turn limit', 1, 20, newGameSettings.turnLimit)}
@@ -886,6 +884,8 @@ root.addEventListener('click', (event) => {
   if (airTarget) { controller.setAirTarget(airTarget.dataset.airTarget as never); return; }
   const rebuildBase = closest('[data-rebuild-base]');
   if (rebuildBase) { controller.setRebuildBase(rebuildBase.dataset.rebuildEq!, rebuildBase.dataset.rebuildBase!); return; }
+  const rebuildUnits = closest('[data-rebuild-units]');
+  if (rebuildUnits) { void runUi(() => controller.rebuildUnits(rebuildUnits.dataset.rebuildUnits!)); return; }
   const rebuild = closest('[data-rebuild]');
   if (rebuild) { void runUi(() => controller.rebuildAircraft(rebuild.dataset.rebuild!)); return; }
   const refit = closest('[data-refit]');
@@ -922,6 +922,10 @@ root.addEventListener('change', (event) => {
   else if (input.id === 'drop-hex') { const hexId = hexFromPrintedLabel(input.value); if (hexId) void runUi(() => controller.clickHex(hexId)); }
   else if (input.id === 'drop-turn') controller.setDropTurn(Number(input.value));
   else if (input.dataset.rebuildAircraft) controller.toggleRebuildAircraft(input.dataset.rebuildEq!, input.dataset.rebuildAircraft);
+  else if (input.dataset.rebuildUnit) controller.toggleRebuildUnit(input.dataset.rebuildHex!, input.dataset.rebuildUnit);
+  else if (input.dataset.rebuildSteps) controller.setRebuildUnitSteps(input.dataset.rebuildHex!, input.dataset.rebuildSteps, Number(input.value));
+  else if (input.dataset.rebuildMode) controller.setRebuildUnitMode(input.dataset.rebuildHex!, input.dataset.rebuildMode, input.value);
+  else if (input.dataset.rebuildTrucks) controller.setRebuildTrucks(input.dataset.rebuildHex!, Number(input.value));
   else if (input.dataset.refitAircraft) controller.toggleRefitAircraft(input.dataset.refitBase!, input.dataset.refitAircraft);
 });
 

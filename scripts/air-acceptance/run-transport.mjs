@@ -48,7 +48,7 @@ const fly = async (label) => {
 
 try {
   await newGame(h, { seeds, turnLimit: 6 });
-  h.note(`New Game: Standard scale, air forces + transports + support, seeds ${JSON.stringify(seeds)}`);
+  h.note(`New Game: Standard scale, air forces (aircraft reinforcements built in) + transports, seeds ${JSON.stringify(seeds)}`);
 
   // ── Allied Turn 1 Aircraft Refit Phase: Drop Plans (14.10b, 14.10c) ──
   const refit = await where(h);

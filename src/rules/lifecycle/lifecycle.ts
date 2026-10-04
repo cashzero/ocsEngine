@@ -29,7 +29,7 @@ import {
 } from '../pieces.js';
 import { absorbBreakdowns } from '../breakdown/breakdown.js';
 import { activeAircraftAt, activeAircraftLimit, friendlyAirBases, isAircraft, withAircraftActive } from '../air/aircraft.js';
-import { arriveReplacements, mergeReplacementsAt } from '../air/replacement.js';
+import { arriveReplacements, mergeReplacementsAt } from '../replacement/replacement.js';
 import { lapseDropPlans } from '../air/transport.js';
 import { clearFuel } from '../supply/fuel.js';
 import { mergeSupplyAt } from '../supply/transport.js';
@@ -234,7 +234,7 @@ const mapEdgeHexes = (state: GameState): readonly HexId[] => {
  */
 export const reinforcementHexes = (state: GameState, playerId: PlayerId, pieceId: PieceId | null = null): readonly HexId[] => {
   const piece = pieceId ? pieceById(state, pieceId) : undefined;
-  // 13.5: Eq arrive at an entry hex, or beside a friendly HQ (within the 2 hexes they must stand to be spent, 13.5a), as this game's replacement rule.
+  // 13.5: Repls (Pax and Eq) arrive at an entry hex, or beside a friendly HQ (within the 2 hexes they must stand to be spent, 13.5a), as this game's replacement rule.
   if (piece && definitionOf(state, piece)?.family === 'REPLACEMENT') {
     const hqHexes = state.pieceState.pieces.filter((candidate) => candidate.ownerId === playerId && candidate.location.kind === 'ON_MAP' && isHq(state, candidate)).map((hq) => hexOf(hq)!);
     const nearHq = state.scenario.mapDefinition.hexes.map(({ id }) => id).filter((hexId) => hqHexes.some((hq) => hexDistanceBetween(hq, hexId) <= 2) && !blockedByEnemy(state, playerId, hexId));
