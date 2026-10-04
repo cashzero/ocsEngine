@@ -27,8 +27,10 @@ describe('Generated games trace supply along their railways (12.6a, 13.3c, 13.3h
       // Rail carries supply forward: stations behind the side's own front are sources from the start.
       expect(sources.filter(({ kind }) => kind === 'DETRAINABLE').length).toBeGreaterThan(0);
     }
-    // 13.3h control follows the front line, but the objective starts uncontrolled (no free victory points).
-    const objective = state.configuration.objectives[0]!.hexId;
-    expect(state.mapState.hexControl.find(({ hexId }) => hexId === objective)).toBeUndefined();
+    // 13.3h control follows the front line; objectives follow it too, each side holding the same VP.
+    const held = (playerId: string): number => state.configuration.objectives.reduce((total, { hexId, points }) =>
+      total + (state.mapState.hexControl.find((entry) => entry.hexId === hexId)?.controllerId === playerId ? points : 0), 0);
+    expect(held(ALLIED)).toBeGreaterThan(0);
+    expect(held(ALLIED)).toBe(held(AXIS));
   });
 });
