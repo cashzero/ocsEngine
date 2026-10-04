@@ -10,6 +10,7 @@ import {
   type GeneratedCell,
 } from './internal.js';
 import type { GeneratedSettlement } from './settlements.js';
+import type { MapStyleProfile } from './styles.js';
 
 /** Single-track railroad (13.3), the standard rail feature. */
 export const RAIL = definitionId('edge:rail');
@@ -38,14 +39,6 @@ const SETTLEMENT_FACTOR = 0.8;
 const SHARED_RAIL_FACTOR = 0.3;
 /** A loop line only follows existing track where it runs the same way. */
 const LOOP_SHARE_FACTOR = 0.85;
-/**
- * Railways are much sparser than roads (about a quarter of the road density): only the larger Minor
- * Cities, the best-placed share by the settlement score, get a line of their own.
- */
-const TOWN_RAIL_SHARE = 0.4;
-/** A loop line is built only between stations whose rail detour is very long. */
-const LOOP_RANGE = 8;
-const LOOP_DETOUR_LIMIT = 2.5;
 
 class RailNetwork {
   readonly #adjacency = new Map<HexId, Map<HexId, RailClass>>();
@@ -161,7 +154,10 @@ const nearestFirst = (nodes: readonly HexId[], joined: readonly HexId[]): { node
 
 /**
  * Adds railroad hexsides to `hexsides`. `primaryEntries` are the two sides' main entry Hexes (the
- * trunk's ends); `entries` are every entry Hex, each of which becomes a rail Hex.
+ * trunk's ends); `entries` are every entry Hex, each of which becomes a rail Hex. Railways are much
+ * sparser than roads: only the style's share of the larger Minor Cities (best-placed first by the
+ * settlement score) get a line of their own, and a loop line is built only between stations within the
+ * style's loop range whose rail detour is very long (styles.ts).
  */
 export const generateRailNetwork = (
   cells: ReadonlyMap<HexId, GeneratedCell>,
@@ -169,13 +165,14 @@ export const generateRailNetwork = (
   settlements: readonly GeneratedSettlement[],
   primaryEntries: readonly HexId[],
   entries: readonly HexId[],
+  { townRailShare, loopRange, loopDetourLimit }: MapStyleProfile['rails'],
 ): void => {
   const network = new RailNetwork();
   const context: RailContext = { cells, hexsides, settled: new Set(settlements.map(({ cell }) => cell.id)), network };
   const cities = settlements.filter(({ rank, cell, coreId }) => rank === 'CITY' && cell.id === coreId).map(({ cell }) => cell.id);
   // Settlements come ranked best first (selectSettlements), so the leading towns are the larger ones.
   const allTowns = settlements.filter(({ rank }) => rank === 'TOWN').map(({ cell }) => cell.id);
-  const towns = allTowns.slice(0, Math.ceil(allTowns.length * TOWN_RAIL_SHARE));
+  const towns = allTowns.slice(0, Math.ceil(allTowns.length * townRailShare));
 
   // 1. Multi-track trunk: a tree over the main entries and the Major Cities, nearest first.
   const trunk = [...new Set([...primaryEntries, ...cities])];
@@ -201,11 +198,11 @@ export const generateRailNetwork = (
   const pairs: { left: HexId; right: HexId; distance: number }[] = [];
   for (let i = 0; i < stations.length; i += 1) for (let j = i + 1; j < stations.length; j += 1) {
     const distance = hexDistance(coordinateFor(stations[i]!), coordinateFor(stations[j]!));
-    if (distance <= LOOP_RANGE) pairs.push({ left: stations[i]!, right: stations[j]!, distance });
+    if (distance <= loopRange) pairs.push({ left: stations[i]!, right: stations[j]!, distance });
   }
   pairs.sort((a, b) => a.distance - b.distance || `${a.left}|${a.right}`.localeCompare(`${b.left}|${b.right}`));
   for (const { left, right, distance } of pairs) {
-    const limit = Math.floor(distance * LOOP_DETOUR_LIMIT);
+    const limit = Math.floor(distance * loopDetourLimit);
     if (network.distance(left, right, limit) <= limit) continue;
     network.add(route(context, left, (hexId) => hexId === right, right, LOOP_SHARE_FACTOR), 'SINGLE');
   }

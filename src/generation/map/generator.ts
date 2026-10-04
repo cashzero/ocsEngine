@@ -16,9 +16,10 @@ import type {
   MapGenerationOptions,
   NormalizedMapGenerationOptions,
 } from './model.js';
-import { MAP_GENERATOR_VERSION } from './model.js';
+import { MAP_GENERATION_STYLES, MAP_GENERATOR_VERSION } from './model.js';
 import { generateStrategicNetwork } from './network.js';
-import { generateTerrainCells } from './terrain.js';
+import { MAP_STYLE_PROFILES } from './styles.js';
+import { generateTerrainCells, growRiverbankWoods } from './terrain.js';
 import { validateGeneratedMap } from './validation.js';
 
 const TERRAIN_IDS: Readonly<Record<string, DefinitionId>> = {
@@ -40,10 +41,11 @@ export const normalizeMapGenerationOptions = (
   if (!Number.isSafeInteger(options.seed) || options.seed < 0 || options.seed > 0xffff_ffff) {
     errors.push({ code: 'INVALID_OPTIONS', message: 'Seed must be a uint32.', path: ['seed'] });
   }
-  if (options.style !== 'TEMPERATE_INLAND' && options.style !== 'MEDITERRANEAN_COAST') {
+  const known = MAP_GENERATION_STYLES.includes(options.style);
+  if (!known) {
     errors.push({ code: 'INVALID_OPTIONS', message: 'Unknown map style.', path: ['style'] });
   }
-  const settlementDensity = options.settlementDensity ?? 0.1;
+  const settlementDensity = options.settlementDensity ?? (known ? MAP_STYLE_PROFILES[options.style].settlementDensity : 0.1);
   if (!Number.isFinite(settlementDensity) || settlementDensity < 0.02 || settlementDensity > 0.16) {
     errors.push({ code: 'INVALID_OPTIONS', message: 'Settlement density must be 0.02 to 0.16.', path: ['settlementDensity'] });
   }
@@ -59,6 +61,7 @@ export const generateRandomMap = (
   const cells = generateTerrainCells(options);
   const hexsideFeatures = new Map<HexsideId, Set<DefinitionId>>();
   generateHydrology(cells, hexsideFeatures, options);
+  growRiverbankWoods(cells, hexsideFeatures, options);
   const strategicRegions = generateStrategicNetwork(cells, hexsideFeatures, options);
   const mapId = parseDefinitionId(`generated-map:${options.style.toLowerCase()}:${options.width}x${options.height}:${options.seed}`);
   if (!mapId.ok) throw new Error('Generated Map ID is invalid.');
@@ -86,7 +89,7 @@ export const generateRandomMap = (
   const warnings = [
     validation.metrics.terrainCounts.MOUNTAIN / validation.metrics.landHexes > 0.25
       ? 'Mountain density is high; operational mobility may be constrained.' : null,
-    validation.metrics.roadEdges / validation.metrics.landHexes < 0.35
+    validation.metrics.roadEdges / validation.metrics.landHexes < MAP_STYLE_PROFILES[options.style].lowRoadDensity
       ? 'Road density is low; expect slower operational movement.' : null,
   ].filter((warning): warning is string => warning !== null);
   return ok({

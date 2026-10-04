@@ -10,6 +10,7 @@ import {
 } from './internal.js';
 import { mixUint32 } from './rng.js';
 import type { NormalizedMapGenerationOptions } from './model.js';
+import { MAP_STYLE_PROFILES } from './styles.js';
 
 export const CITY = definitionId('settlement:city');
 export const TOWN = definitionId('settlement:town');
@@ -21,11 +22,11 @@ const MAJOR_RIVER = 'edge:major-river';
  * Settlement hierarchy at Beyond the Rhine scale (3.5-mile Hexes). Measured on the BtR map
  * (docs/generator/10-btr-scale-density.md): populated lowland carries a named place in roughly one
  * land Hex in nine, about half Minor Cities and half villages; forest and hills carry far fewer.
- * Major Cities are clusters of two or three Hexes and stand roughly a dozen Hexes apart.
+ * Major Cities are clusters of two or three Hexes and stand roughly a dozen Hexes apart. The
+ * eastern theme thins this (settlement density, Major Cities and Minor City share come from the style).
  */
-export const LAND_HEXES_PER_MAJOR_CITY = 450;
+export const LAND_HEXES_PER_MAJOR_CITY = MAP_STYLE_PROFILES.TEMPERATE_INLAND.landHexesPerMajorCity;
 const MAJOR_CITY_SPACING = 9;
-const TOWN_SHARE = 0.42;
 const TOWN_SPACING = 3;
 const VILLAGE_SPACING = 2;
 
@@ -95,7 +96,8 @@ export const selectSettlements = (
     taken.every((other) => (rank && !rank.includes(other.rank)) || hexDistance(other.cell.coordinate, cell.coordinate) >= spacing);
 
   const total = Math.max(4, Math.round(land.length * options.settlementDensity));
-  const cityCount = Math.max(1, Math.round(land.length / LAND_HEXES_PER_MAJOR_CITY));
+  const profile = MAP_STYLE_PROFILES[options.style];
+  const cityCount = Math.max(1, Math.round(land.length / profile.landHexesPerMajorCity));
   const urban = [...scored].sort((left, right) => right.urban - left.urban || byId(left.cell, right.cell));
   const urbanScore = new Map(scored.map(({ cell, urban: score }) => [cell.id, score]));
   let cities = 0;
@@ -113,7 +115,7 @@ export const selectSettlements = (
       .forEach((suburb) => taken.push({ cell: suburb, rank: 'CITY', coreId: cell.id }));
   }
 
-  const townCount = Math.max(2, Math.round(total * TOWN_SHARE));
+  const townCount = Math.max(2, Math.round(total * profile.townShare));
   let towns = 0;
   for (const { cell } of urban) {
     if (towns >= townCount) break;

@@ -17,6 +17,7 @@ import type {
   GeneratedTerrainKind,
   MapGenerationStyle,
 } from './model.js';
+import { roadGapLimitFor } from './styles.js';
 
 const error = (code: string, message: string, path: readonly (string | number)[] = []): ValidationIssue => ({
   code, message, path, severity: 'ERROR',
@@ -58,11 +59,8 @@ const componentCount = (edges: readonly (readonly [HexId, HexId])[]): number => 
 
 const RAIL_PATTERN = /^edge:(?:multi-track-)?rail$/u;
 
-/** Open ground lies within two Hexes of a road, woods and hills within three (BtR scale, see docs/generator/10). */
-const ROAD_GAP_LIMIT: Readonly<Partial<Record<GeneratedTerrainKind, number>>> = { CLEAR: 2, WOODS: 3, ROUGH: 3 };
-
 /** Largest distance from any road, in Hexes, of each passable Hex kind that must be served. */
-const roadGaps = (map: MapDefinition, roadEdges: readonly (readonly [HexId, HexId])[]) => {
+const roadGaps = (map: MapDefinition, roadEdges: readonly (readonly [HexId, HexId])[], style: MapGenerationStyle) => {
   const roadHexes = [...new Set(roadEdges.flat())].flatMap((id) => {
     const parsed = parseHexCoordinateId(id);
     return parsed.ok ? [parsed.value] : [];
@@ -70,7 +68,7 @@ const roadGaps = (map: MapDefinition, roadEdges: readonly (readonly [HexId, HexI
   const gaps: Partial<Record<GeneratedTerrainKind, number>> = {};
   for (const hex of map.hexes) {
     const kind = terrainKind(hex.terrainDefinitionIds[0]!);
-    if (ROAD_GAP_LIMIT[kind] === undefined) continue;
+    if (roadGapLimitFor(style, kind) === undefined) continue;
     const parsed = parseHexCoordinateId(hex.id);
     if (!parsed.ok) continue;
     let nearest = Number.POSITIVE_INFINITY;
@@ -84,13 +82,17 @@ const roadGaps = (map: MapDefinition, roadEdges: readonly (readonly [HexId, HexI
   return gaps;
 };
 
-export const measureGeneratedMap = (map: MapDefinition): GeneratedMapMetrics => {
+/**
+ * Road-gap limits are the style's (docs/generator/10 and 11): in the western themes open ground lies within
+ * two Hexes of a road and woods and hills within three; eastern steppe allows four and five.
+ */
+export const measureGeneratedMap = (map: MapDefinition, style: MapGenerationStyle = 'TEMPERATE_INLAND'): GeneratedMapMetrics => {
   const terrainCounts: Record<GeneratedTerrainKind, number> = {
     CLEAR: 0, WOODS: 0, ROUGH: 0, MOUNTAIN: 0, MARSH: 0, WATER: 0,
   };
   map.hexes.forEach((hex) => { terrainCounts[terrainKind(hex.terrainDefinitionIds[0]!)] += 1; });
   const roadEdges = featureEdges(map, /^edge:(?:primary-)?road$/u);
-  const gaps = roadGaps(map, roadEdges);
+  const gaps = roadGaps(map, roadEdges, style);
   const railEdges = featureEdges(map, RAIL_PATTERN);
   const railHexes = new Set(railEdges.flat());
   return {
@@ -103,7 +105,7 @@ export const measureGeneratedMap = (map: MapDefinition): GeneratedMapMetrics => 
     settlements: map.hexes.filter(({ features }) => features.some(({ definitionId }) => String(definitionId).startsWith('settlement:'))).length,
     connectedRoadComponents: componentCount(roadEdges),
     maximumRoadGap: Math.max(0, ...Object.values(gaps)),
-    roadGapExcess: Math.max(0, ...Object.entries(gaps).map(([kind, gap]) => gap - ROAD_GAP_LIMIT[kind as GeneratedTerrainKind]!)),
+    roadGapExcess: Math.max(0, ...Object.entries(gaps).map(([kind, gap]) => gap - roadGapLimitFor(style, kind as GeneratedTerrainKind)!)),
     railEdges: railEdges.length,
     multiTrackRailEdges: featureEdges(map, /^edge:multi-track-rail$/u).length,
     railStations: map.hexes.filter(({ id, features }) => railHexes.has(id)
@@ -151,7 +153,7 @@ export const validateGeneratedMap = (
   style: MapGenerationStyle,
 ): GeneratedMapValidation => {
   const issues = [...validateMapDefinition(map)];
-  const metrics = measureGeneratedMap(map);
+  const metrics = measureGeneratedMap(map, style);
   const land = new Set(map.hexes
     .filter(({ terrainDefinitionIds }) => terrainKind(terrainDefinitionIds[0]!) !== 'WATER')
     .map(({ id }) => id));
@@ -160,7 +162,7 @@ export const validateGeneratedMap = (
   if (metrics.settlements < 4) issues.push(error('TOO_FEW_SETTLEMENTS', 'Generated map requires at least four settlements.'));
   if (metrics.riverEdges < 1) issues.push(error('MISSING_RIVER_NETWORK', 'Generated map requires at least one river.'));
   if (metrics.connectedRoadComponents !== 1) issues.push(error('DISCONNECTED_ROAD_NETWORK', 'All generated roads must form one component.'));
-  if (metrics.roadGapExcess > 0) issues.push(error('ROAD_COVERAGE_GAP', 'Open ground must lie within two Hexes of a road, woods and hills within three.'));
+  if (metrics.roadGapExcess > 0) issues.push(error('ROAD_COVERAGE_GAP', 'Open ground, woods and hills must lie within the map style\'s distance of a road.'));
   if (strategic.some((hexId) => !land.has(hexId))) issues.push(error('STRATEGIC_REGION_ON_WATER', 'Entry, supply, and settlement Hexes must be on land.'));
   const roadReach = reachable(map, strategic[0]!, land, true);
   if (strategic.some((hexId) => !roadReach.has(hexId))) issues.push(error('STRATEGIC_NODE_OFF_ROAD', 'Every strategic node must join the road network.'));
@@ -175,7 +177,7 @@ export const validateGeneratedMap = (
   const severe = metrics.terrainCounts.MOUNTAIN + metrics.terrainCounts.MARSH;
   if (severe / Math.max(1, metrics.landHexes) > 0.4) issues.push(error('EXCESS_SEVERE_TERRAIN', 'Mountain and marsh exceed 40% of land.'));
   const waterRatio = metrics.terrainCounts.WATER / map.hexes.length;
-  if (style === 'TEMPERATE_INLAND' && waterRatio > 0.02) issues.push(error('INLAND_WATER_EXCESS', 'Inland style cannot contain a sea.'));
+  if (style !== 'MEDITERRANEAN_COAST' && waterRatio > 0.02) issues.push(error('INLAND_WATER_EXCESS', 'Inland style cannot contain a sea.'));
   if (style === 'MEDITERRANEAN_COAST' && (waterRatio < 0.06 || waterRatio > 0.35)) {
     issues.push(error('COAST_WATER_RATIO', 'Coastal style water must occupy 6% to 35% of the map.'));
   }

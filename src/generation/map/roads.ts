@@ -12,6 +12,7 @@ import {
 } from './internal.js';
 import { mixUint32 } from './rng.js';
 import type { NormalizedMapGenerationOptions } from './model.js';
+import { MAP_STYLE_PROFILES, type MapStyleProfile } from './styles.js';
 import type { GeneratedSettlement } from './settlements.js';
 
 /** BtR "Secondary Road" (1/2 MP); the main road class of a generated map. */
@@ -27,18 +28,13 @@ type RoadClass = 'MAIN' | 'TRACK';
  * Scale (docs/generator/10-btr-scale-density.md): at 3.5 miles a Hex, the BtR map runs a
  * Secondary Road every three to five Hexes in settled country, so no open Hex lies more than two
  * Hexes from a road, and forest or hills more than three. A generated map is a window on such a
- * landscape: roads leave every land border, towns are junctions, and the network has loops.
+ * landscape: roads leave every land border, towns are junctions, and the network has loops. Link
+ * ranges, detour limits, border exits and the coverage gap come from the map style (styles.ts): the
+ * eastern theme keeps the same structure with far fewer, longer roads.
  */
-const MAIN_LINK_RANGE = 10;
-const MAIN_DETOUR_LIMIT = 1.4;
-const TRACK_LINK_RANGE = 5;
-const TRACK_DETOUR_LIMIT = 1.7;
-const BORDER_EXIT_SPACING = 5;
-const BORDER_HEXES_PER_EXIT = 6;
-/** A Hex this far or farther from every road receives a through track. */
-const COVERAGE_GAP: Readonly<Record<GeneratedCell['terrain'], number>> = {
-  CLEAR: 3, WOODS: 4, ROUGH: 4, MARSH: Number.POSITIVE_INFINITY, MOUNTAIN: Number.POSITIVE_INFINITY, WATER: Number.POSITIVE_INFINITY,
-};
+/** A Hex this far or farther from every road receives a through track: one beyond the style's road-gap limit. */
+const coverageGap = (profile: MapStyleProfile, terrain: GeneratedCell['terrain']): number =>
+  (terrain === 'CLEAR' || terrain === 'WOODS' || terrain === 'ROUGH' ? profile.roadGapLimit[terrain] + 1 : Number.POSITIVE_INFINITY);
 const ROUTE_TERRAIN_COST: Readonly<Record<GeneratedCell['terrain'], number>> = {
   CLEAR: 1, WOODS: 1.7, ROUGH: 2.1, MARSH: 4.5, MOUNTAIN: 7, WATER: Number.POSITIVE_INFINITY,
 };
@@ -128,6 +124,7 @@ interface RoutingContext {
   readonly settled: ReadonlySet<HexId>;
   readonly network: RoadNetwork;
   readonly onBorder: (cell: GeneratedCell) => boolean;
+  readonly profile: MapStyleProfile;
 }
 
 const stepCost = (
@@ -221,6 +218,7 @@ const selectBorderExits = (
   reserved: readonly HexId[],
 ): readonly HexId[] => {
   const { width, height, seed } = options;
+  const { borderExitSpacing, borderHexesPerExit } = MAP_STYLE_PROFILES[options.style].roads;
   const sides: GeneratedCell[][] = [[], [], [], []];
   for (const cell of cells.values()) {
     const column = columnOf(cell.coordinate);
@@ -232,7 +230,7 @@ const selectBorderExits = (
   const chosen: HexId[] = [];
   const taken = [...reserved];
   sides.forEach((side, sideIndex) => {
-    const target = Math.max(1, Math.floor(side.length / BORDER_HEXES_PER_EXIT));
+    const target = Math.max(1, Math.floor(side.length / borderHexesPerExit));
     const candidates = side
       .filter(({ terrain }) => terrain === 'CLEAR' || terrain === 'WOODS' || terrain === 'ROUGH')
       .map((cell) => ({
@@ -244,7 +242,7 @@ const selectBorderExits = (
     let count = 0;
     for (const { cell } of candidates) {
       if (count >= target) break;
-      if (taken.some((other) => hexDistance(coordinateFor(other), cell.coordinate) < BORDER_EXIT_SPACING)) continue;
+      if (taken.some((other) => hexDistance(coordinateFor(other), cell.coordinate) < borderExitSpacing)) continue;
       chosen.push(cell.id);
       taken.push(cell.id);
       count += 1;
@@ -276,8 +274,9 @@ const fillCoverageGaps = (context: RoutingContext): void => {
     const distance = roadDistances(context.cells, context.network);
     let worst: { cell: GeneratedCell; excess: number } | null = null;
     for (const cell of context.cells.values()) {
-      const excess = (distance.get(cell.id) ?? Number.POSITIVE_INFINITY) - COVERAGE_GAP[cell.terrain];
-      if (excess < 0 || !Number.isFinite(COVERAGE_GAP[cell.terrain])) continue;
+      const gap = coverageGap(context.profile, cell.terrain);
+      const excess = (distance.get(cell.id) ?? Number.POSITIVE_INFINITY) - gap;
+      if (excess < 0 || !Number.isFinite(gap)) continue;
       if (!worst || excess > worst.excess || (excess === worst.excess && String(cell.id) < String(worst.cell.id))) worst = { cell, excess };
     }
     if (!worst) return;
@@ -296,7 +295,7 @@ const fillCoverageGaps = (context: RoutingContext): void => {
       // Dot product in axial space with the s component, i.e. cube coordinates.
       return away.q * toward.q + away.r * toward.r + (away.q + away.r) * (toward.q + toward.r) < 0;
     }, 'TRACK');
-    if (second.length > 0 && second.length <= TRACK_LINK_RANGE + 3) context.network.add(second, 'TRACK');
+    if (second.length > 0 && second.length <= context.profile.roads.trackLinkRange + 3) context.network.add(second, 'TRACK');
   }
 };
 
@@ -323,7 +322,9 @@ export const generateRoadNetwork = (
   const network = new RoadNetwork();
   const onBorder = (cell: GeneratedCell): boolean => cell.coordinate.r === 0 || cell.coordinate.r === options.height - 1
     || columnOf(cell.coordinate) === 0 || columnOf(cell.coordinate) === options.width - 1;
-  const context: RoutingContext = { cells, hexsides, settled: new Set(settlements.map(({ cell }) => cell.id)), network, onBorder };
+  const profile = MAP_STYLE_PROFILES[options.style];
+  const { mainLinkRange, mainDetourLimit, trackLinkRange, trackDetourLimit } = profile.roads;
+  const context: RoutingContext = { cells, hexsides, settled: new Set(settlements.map(({ cell }) => cell.id)), network, onBorder, profile };
   const centres = [...new Set([
     ...entries,
     ...settlements.filter(({ rank, cell, coreId }) => rank === 'TOWN' || (rank === 'CITY' && cell.id === coreId)).map(({ cell }) => cell.id),
@@ -345,7 +346,7 @@ export const generateRoadNetwork = (
     pending.delete(best!.node);
   }
   // 2. Loops: towns a short way apart get a direct main road unless one already runs nearly straight.
-  densify(context, centres, 'MAIN', MAIN_LINK_RANGE, MAIN_DETOUR_LIMIT);
+  densify(context, centres, 'MAIN', mainLinkRange, mainDetourLimit);
   // 3. Main roads continue off every land border toward the world beyond the map.
   for (const exit of selectBorderExits(cells, options, entries)) {
     const nearest = [...centres].sort((left, right) => hexDistance(coordinateFor(exit), coordinateFor(left))
@@ -359,7 +360,7 @@ export const generateRoadNetwork = (
   // 5. Tracks: villages join their neighbours and the road network.
   const places = settlements.map(({ cell }) => cell.id);
   const villages = new Set(settlements.filter(({ rank }) => rank === 'VILLAGE').map(({ cell }) => cell.id));
-  densify(context, places, 'TRACK', TRACK_LINK_RANGE, TRACK_DETOUR_LIMIT, (left, right) => villages.has(left) || villages.has(right));
+  densify(context, places, 'TRACK', trackLinkRange, trackDetourLimit, (left, right) => villages.has(left) || villages.has(right));
   for (const village of villages) {
     if (!network.has(village)) network.add(route(context, village, (hexId) => network.has(hexId), 'TRACK'), 'TRACK');
   }

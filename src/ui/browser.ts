@@ -610,7 +610,7 @@ const newGameDialog = () => {
       ${newGameError ? html`<div class="generator-error new-game-error" role="alert">${newGameGuidance() ? html`<p><strong>${newGameGuidance()}</strong></p>` : nothing}<p>${newGameError}</p></div>` : nothing}
       <div class="settings-basic">
         <fieldset><legend>Operational map</legend>
-          ${select('new-game-style', 'Style', [['TEMPERATE_INLAND', 'Temperate inland'], ['MEDITERRANEAN_COAST', 'Mediterranean coast']], newGameSettings.map.style)}
+          ${select('new-game-style', 'Style', [['TEMPERATE_INLAND', 'Temperate inland'], ['MEDITERRANEAN_COAST', 'Mediterranean coast'], ['EASTERN_EUROPE', 'Eastern Europe (Russia)']], newGameSettings.map.style)}
           ${number('new-game-width', 'Width', NEW_GAME_MAP_LIMITS.minWidth, NEW_GAME_MAP_LIMITS.maxWidth, newGameSettings.map.width)}
           ${number('new-game-height', 'Height', NEW_GAME_MAP_LIMITS.minHeight, NEW_GAME_MAP_LIMITS.maxHeight, newGameSettings.map.height)}
         </fieldset>

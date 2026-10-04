@@ -25,7 +25,7 @@ describe('M6 deterministic random map pipeline', () => {
     expect(validateMapDefinition(first.value.mapDefinition)).toEqual([]);
   });
 
-  it.each(['TEMPERATE_INLAND', 'MEDITERRANEAN_COAST'] as const)(
+  it.each(['TEMPERATE_INLAND', 'MEDITERRANEAN_COAST', 'EASTERN_EUROPE'] as const)(
     'generates valid %s terrain, rivers, strategic regions, and roads',
     (style) => {
       const generated = generateRandomMap({ ...options, style, seed: style.length * 101 });
@@ -137,6 +137,50 @@ describe('M6 deterministic random map pipeline', () => {
       const queue: string[] = [start];
       while (queue.length > 0) for (const next of multi.get(queue.shift()!) ?? []) if (!seen.has(next)) { seen.add(next); queue.push(next); }
       expect(seen.has(strategicRegions.secondEntryHexIds[0]!)).toBe(true);
+    }
+  });
+
+  it('makes Eastern Europe flatter and emptier than BtR: fewer roads, railways and towns on the same seeds (docs/generator/11)', () => {
+    for (const seed of [3, 1943, 31337, 2024]) {
+      const western = generateRandomMap({ width: 32, height: 24, seed, style: 'TEMPERATE_INLAND' });
+      const generated = generateRandomMap({ width: 32, height: 24, seed, style: 'EASTERN_EUROPE' });
+      expect(western.ok && generated.ok).toBe(true);
+      if (!western.ok || !generated.ok) continue;
+      const west = western.value.metrics;
+      const { metrics, mapDefinition, strategicRegions, options: normalized } = generated.value;
+      const share = (value: number, of: typeof metrics) => value / of.landHexes;
+      // Flatter: steppe and farmland, low hills in patches, no mountains, no sea.
+      expect(metrics.terrainCounts.MOUNTAIN).toBe(0);
+      expect(metrics.terrainCounts.WATER).toBe(0);
+      expect(share(metrics.terrainCounts.CLEAR, metrics)).toBeGreaterThan(0.7);
+      expect(share(metrics.terrainCounts.ROUGH, metrics)).toBeLessThan(share(west.terrainCounts.ROUGH, west) / 2);
+      // Emptier: about half the places, half the roads, and a thinner rail net than the BtR calibration.
+      expect(normalized.settlementDensity).toBe(0.05);
+      expect(share(metrics.settlements, metrics)).toBeLessThan(share(west.settlements, west) * 0.7);
+      expect(share(metrics.roadEdges, metrics)).toBeLessThan(share(west.roadEdges, west) * 0.6);
+      expect(share(metrics.roadEdges, metrics)).toBeGreaterThan(0.18);
+      expect(share(metrics.primaryRoadEdges, metrics)).toBeLessThan(share(west.primaryRoadEdges, west) * 0.6);
+      expect(share(metrics.railEdges, metrics)).toBeLessThan(share(west.railEdges, west) * 0.85);
+      // Steppe may lie four Hexes from a road (five in woods and hills), but no farther.
+      expect(metrics.roadGapExcess).toBe(0);
+      expect(metrics.maximumRoadGap).toBeLessThanOrEqual(5);
+      expect(metrics.maximumRoadGap).toBeGreaterThan(west.maximumRoadGap);
+      // The structural guarantees still hold: one road net reaching every place, one rail net reaching every entry.
+      expect(metrics.connectedRoadComponents).toBe(1);
+      expect(metrics.connectedRailComponents).toBe(1);
+      const roadHexes = new Set<string>();
+      const railHexes = new Set<string>();
+      for (const { hexsideId, featureDefinitionIds } of mapDefinition.hexsides) {
+        const parsed = parseHexsideId(hexsideId);
+        if (!parsed.ok) continue;
+        const ids = featureDefinitionIds.map(String);
+        const ends = [parsed.value.firstHexId, parsed.value.secondHexId];
+        if (ids.some((id) => /^edge:(?:primary-)?road$/u.test(id))) ends.forEach((id) => roadHexes.add(id));
+        if (ids.some((id) => /^edge:(?:multi-track-)?rail$/u.test(id))) ends.forEach((id) => railHexes.add(id));
+      }
+      expect(mapDefinition.hexes.filter(({ features }) => features.some(({ definitionId }) => String(definitionId).startsWith('settlement:')))
+        .every(({ id }) => roadHexes.has(id))).toBe(true);
+      expect([...strategicRegions.firstEntryHexIds, ...strategicRegions.secondEntryHexIds].every((id) => railHexes.has(id))).toBe(true);
     }
   });
 
