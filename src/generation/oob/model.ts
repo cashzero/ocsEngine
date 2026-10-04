@@ -1,7 +1,7 @@
 import type { DefinitionId, ValidationIssue } from '../../core/index.js';
 import type { PieceDefinitionCatalog } from '../../domain/piece/index.js';
 
-export const OOB_GENERATOR_VERSION = '0.2.0' as const;
+export const OOB_GENERATOR_VERSION = '0.3.0' as const;
 
 export const OOB_SCALES = ['COMPACT', 'STANDARD', 'LARGE'] as const;
 export type OobScale = (typeof OOB_SCALES)[number];
@@ -9,12 +9,13 @@ export type OobSide = 'ALLIED' | 'AXIS';
 export type OobFormationArchetype = 'ARMORED' | 'INFANTRY' | 'MOBILE_INFANTRY' | 'AIRBORNE';
 /**
  * Infantry and airborne divisions are one XX counter (the Rule Engine's Breakdown rule, 20.0, lets them detach
- * regiments in play); armored and mobile-infantry divisions are an HQ plus regiment-sized units.
+ * regiments in play); armored and mobile-infantry divisions are regiment-sized units. No division contains an HQ: an
+ * HQ is an independent unit (3.2f) that belongs to no formation.
  */
 export const isSingleUnitDivision = (_side: OobSide, archetype: OobFormationArchetype): boolean =>
   archetype === 'INFANTRY' || archetype === 'AIRBORNE';
 export type OobUnitRole =
-  | 'FORMATION_COMMAND'
+  | 'HQ'
   | 'COMBAT'
   | 'ARTILLERY'
   | 'RECONNAISSANCE'
@@ -37,7 +38,7 @@ export interface RandomOobOptions {
   /** Every division a side fields: its armored divisions plus its foot (infantry and airborne) divisions. */
   readonly divisionsPerSide: number;
   /**
-   * How many of `divisionsPerSide` are armored: an HQ plus regiment-sized units (Allied armored divisions;
+   * How many of `divisionsPerSide` are armored: regiment-sized units (Allied armored divisions;
    * Axis Panzer divisions, every second one a Panzergrenadier division). The rest are single-counter foot
    * divisions, about one in four of them airborne.
    */

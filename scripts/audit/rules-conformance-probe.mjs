@@ -10,7 +10,7 @@ const AL = 'player:allied', AX = 'player:axis';
 const find = (s) => P.scenario.initialPieceState.pieces.find((p) => p.id.includes(s))?.id;
 const U = {
   alTrk: find('allied:f1-combat-1'), alTrk2: find('allied:f1-combat-2'), alLeg: find('allied:f2-combat-1'), alLeg2: find('allied:f2-combat-2'),
-  alArt: find('allied:f1-artillery-1'), alEng: find('allied:independent-engineer-1'), alHq: find('allied:f1-command'),
+  alArt: find('allied:f1-artillery-1'), alEng: find('allied:independent-engineer-1'), alHq: find('allied:independent-hq-1'),
   alSup: find('allied:independent-supply-1'),
   axTrk: find('axis:f1-combat-1'), axTrk2: find('axis:f1-combat-2'), axTruck: find('axis:f2-combat-1'), axTruck2: find('axis:f2-combat-2'),
   axSup: find('axis:independent-supply-1'),
