@@ -34,6 +34,11 @@ sides Pax and Eq each Reinforcement Phase, and aircraft reinforcements come with
 REPL-06; section F's run note is restated accordingly (no AIR expectation changed), and AIR-11/AIR-12, whose code was refactored,
 were re-run on the new build. No other row changes.
 
+Map theme amendment (2026-10-04, requested by the user: "增加新的map theme, eastern europe (aka russia) 參考
+E:\work\CaseBlue GBII v6_24_0 應該相比BTR 鐵路道路密度都要更低 地形更平坦"): New Game's Style adds **Eastern Europe
+(Russia)**, calibrated on Case Blue / GBII (`docs/generator/11-eastern-europe-theme.md`). Section B adds MAP-06. No
+existing row changes status or expectation.
+
 Supply UX amendment (2026-10-02, explicitly approved by the user: "OK" to adding the SUP rows proposed in
 `docs/roadmap/09-supply-logistics-ux-wbs.md` §4): section G adds Supply and logistics rows. Every new row
 starts `UNVERIFIED`; no existing row changes status or expectation. The 2026-10-02 A0 baseline
@@ -111,6 +116,7 @@ A completed transition does not pass when it exceeds its budget or temporarily a
 | MAP-03 | P0 | Click and keyboard-activate a Hex and a counter | Selection is visible; stack panel identifies the Hex and visible pieces | FAIL (2026-10-04, `evidence/product-2026-10-04/map`): mouse PASS (empty Hex, own and enemy stacks: the stack list names the Hex and visible pieces). Keyboard Enter on an own two-unit stack selects only the top unit; no stack list, so the second piece is not shown (only the screen-reader announcement names it) |
 | MAP-04 | P0 | Compare OOB preview with mounted counters/stacks | Both sides/formations and every generated unit remain traceable; projection/stack hiding explains any count difference | FAIL (2026-10-04, `evidence/product-2026-10-04/map`): all 56 non-dump preview units are in the two rosters, but preview and menu say 64 units while the rosters list 28 + 28; the 8 supply dumps are absent from "All units" and nothing on screen explains the difference |
 | MAP-05 | P1 | Inspect enemy stacks from each hot-seat side | Owner-visible data and enemy redaction follow the active seat; no private data leaks | PASS (2026-10-04, `evidence/product-2026-10-04/map`): each seat sees the enemy top unit plus "n hidden"; the owner sees all; the hand-over screen hides the map; no hidden name in the other seat's DOM |
+| MAP-06 | P1 | Pick Style **Eastern Europe (Russia)**, Generate on the same seeds as a Temperate inland preview, Start it, and play one whole Game Turn | The style is offered; the eastern preview is visibly flatter (mostly open, few hills, no mountains) with clearly fewer roads and railways than the temperate one; the started map is the eastern preview; arrivals, phase ends and hot-seat handoffs reach Game Turn 2 | PASS (2026-10-04, `evidence/map-theme-2026-10-04`): same seeds, eastern vs temperate: 578/11/0 vs 452/118/0 clear/rough/mountain fills, 207 vs 387 road paths, 83 vs 119 rail paths; mounted `32×24 · eastern europe`; both sides placed 4 arrivals on entry hexes and Game Turn 2 was reached with no browser errors (no unit moved or attacked in this run) |
 
 ## B1. Printed unit-counter fidelity
 

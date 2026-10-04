@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { sweepRandomMapSeeds } from '../../src/index.js';
 
 describe('M6 map seed sweep', () => {
-  it.each(['TEMPERATE_INLAND', 'MEDITERRANEAN_COAST'] as const)(
+  it.each(['TEMPERATE_INLAND', 'MEDITERRANEAN_COAST', 'EASTERN_EUROPE'] as const)(
     'has no invalid maps or exceptions across 500 %s seeds',
     (style) => {
       const report = sweepRandomMapSeeds({ width: 18, height: 12, style }, 500, style.length * 10_000);
