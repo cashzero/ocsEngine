@@ -5,6 +5,7 @@ import type { GeneratedMapStrategicRegions, NormalizedMapGenerationOptions } fro
 import { generateRailNetwork } from './rails.js';
 import { generateRoadNetwork } from './roads.js';
 import { CITY, selectSettlements, TOWN, VILLAGE } from './settlements.js';
+import { MAP_STYLE_PROFILES } from './styles.js';
 
 const FIRST_ENTRY = definitionId('entry:first');
 const SECOND_ENTRY = definitionId('entry:second');
@@ -107,7 +108,8 @@ export const generateStrategicNetwork = (
   // Every entry Hex is a main-road centre, so reinforcements arrive on a road.
   generateRoadNetwork(cells, hexsides, options, settlements, [...firstEntries, ...secondEntries].map(({ id }) => id));
   // Every entry Hex is also a map-edge railroad Hex, the OCS Supply Source (12.6a).
-  generateRailNetwork(cells, hexsides, settlements, [firstEntry.id, secondEntry.id], [...firstEntries, ...secondEntries].map(({ id }) => id));
+  generateRailNetwork(cells, hexsides, settlements, [firstEntry.id, secondEntry.id], [...firstEntries, ...secondEntries].map(({ id }) => id),
+    MAP_STYLE_PROFILES[options.style].rails);
   return {
     firstEntryHexIds: firstEntries.map(({ id }) => id), secondEntryHexIds: secondEntries.map(({ id }) => id),
     firstSupplyHexIds: firstEntries.map(({ id }) => id), secondSupplyHexIds: secondEntries.map(({ id }) => id),
