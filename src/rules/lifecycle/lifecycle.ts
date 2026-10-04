@@ -79,6 +79,12 @@ const cleanupPlayer = (state: GameState, playerId: PlayerId, events: RuleEvent[]
 };
 
 /**
+ * First Game Turn on which anything arrives (13.6). The setup already holds the forces and supply of
+ * Game Turn 1, so no Supply Table roll, Repls, or held-back units enter until Game Turn 2.
+ */
+export const FIRST_ARRIVAL_TURN = 2;
+
+/**
  * 2.3 Reinforcement Phase: the phasing player rolls on his Supply Table. The new SP wait in his
  * reinforcement Box and must be placed at an entry Hex this phase (13.6).
  */
@@ -181,7 +187,7 @@ export const applySequenceLifecycle = (
   if (from.phase === 'SUPPLY') next = determineSupply(next, from.phasingPlayerId, events);
   if (from.phase === 'CLEAN_UP') next = clearFuel(cleanupPlayer(next, from.phasingPlayerId, events), from.phasingPlayerId);
   if (to.phase === 'SUPPLY' && from.phase !== 'SUPPLY') next = { ...next, formationTraces: [] };
-  if (to.phase === 'REINFORCEMENT' && from.phase !== 'REINFORCEMENT') next = arriveReplacements(arriveSupply(next, to.phasingPlayerId, events), to.phasingPlayerId, events);
+  if (to.phase === 'REINFORCEMENT' && from.phase !== 'REINFORCEMENT' && to.gameTurn >= FIRST_ARRIVAL_TURN) next = arriveReplacements(arriveSupply(next, to.phasingPlayerId, events), to.phasingPlayerId, events);
   if (ending) {
     // MA, attacks and barrages are all counted per phase (6.1b, 9.1c, 10.0e).
     next = { ...next, usage: [], ledger: { attackedHexIds: [], barragedHexIds: [] }, air: { ...next.air, missionFlownIds: [], refittedBaseIds: [], reducedBaseIds: [], builtHexIds: [], builderIds: [], unloaded: [] } };
