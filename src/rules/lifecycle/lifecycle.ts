@@ -214,9 +214,17 @@ export const arrivingReinforcements = (state: GameState, playerId: PlayerId) =>
 const blockedByEnemy = (state: GameState, playerId: PlayerId, hexId: HexId): boolean =>
   state.pieceState.pieces.some((other) => other.ownerId !== playerId && other.location.kind === 'ON_MAP' && other.location.hexId === hexId);
 
-const isMapEdge = (state: GameState, hexId: HexId): boolean => {
-  const onMap = new Set(state.scenario.mapDefinition.hexes.map(({ id }) => String(id)));
-  return adjacentHexIds(hexId).filter((adjacent) => onMap.has(String(adjacent))).length < 6;
+/** Map-edge Hexes depend only on the map, so they are found once per map, not per query (64×48 is 3,072 Hexes). */
+const mapEdgeCache = new WeakMap<GameState['scenario']['mapDefinition'], readonly HexId[]>();
+const mapEdgeHexes = (state: GameState): readonly HexId[] => {
+  const map = state.scenario.mapDefinition;
+  const cached = mapEdgeCache.get(map);
+  if (cached) return cached;
+  const onMap = new Set(map.hexes.map(({ id }) => String(id)));
+  const edge = map.hexes.map(({ id }) => id)
+    .filter((hexId) => adjacentHexIds(hexId).filter((adjacent) => onMap.has(String(adjacent))).length < 6);
+  mapEdgeCache.set(map, edge);
+  return edge;
 };
 
 /**
@@ -240,11 +248,14 @@ export const reinforcementHexes = (state: GameState, playerId: PlayerId, pieceId
   const model = mobility ? movementCostModel(state, mobility, true, 'DRY') : null;
   const enterable = (hexId: HexId): boolean => model === null
     || adjacentHexIds(hexId).some((adjacent) => model.evaluate(adjacent, hexId).kind === 'COST');
+  const enemyHexes = new Set(state.pieceState.pieces.flatMap((other) =>
+    other.ownerId !== playerId && other.location.kind === 'ON_MAP' ? [String(other.location.hexId)] : []));
   const entries = entryHexesFor(state, playerId).map(({ hexId }) => hexId);
-  const open = entries.filter((hexId) => !blockedByEnemy(state, playerId, hexId));
-  const blocked = entries.filter((hexId) => blockedByEnemy(state, playerId, hexId));
-  const edge = state.scenario.mapDefinition.hexes.map(({ id }) => id)
-    .filter((hexId) => isMapEdge(state, hexId) && !blockedByEnemy(state, playerId, hexId) && enterable(hexId));
+  const open = entries.filter((hexId) => !enemyHexes.has(String(hexId)));
+  const blocked = entries.filter((hexId) => enemyHexes.has(String(hexId)));
+  // Substitute edge Hexes matter only when an entry Hex is blocked.
+  const edge = blocked.length === 0 ? [] : mapEdgeHexes(state)
+    .filter((hexId) => !enemyHexes.has(String(hexId)) && enterable(hexId));
   const substitutes = blocked.flatMap((hexId) => {
     const nearest = Math.min(...edge.map((candidate) => hexDistanceBetween(hexId, candidate)));
     return edge.filter((candidate) => hexDistanceBetween(hexId, candidate) === nearest);
