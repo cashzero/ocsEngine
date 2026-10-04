@@ -19,6 +19,8 @@ export interface GeneratedMapPreviewCell {
   readonly terrain: GeneratedTerrainKind;
   readonly settlement: 'CITY' | 'TOWN' | 'VILLAGE' | null;
   readonly strategic: 'FIRST' | 'SECOND' | null;
+  /** Whose Supply Source (12.6a) this hex is, so the map can mark it; null for an ordinary hex. */
+  readonly supplySource: 'FIRST' | 'SECOND' | null;
 }
 
 export interface GeneratedMapPreview {
@@ -57,6 +59,8 @@ export const buildGeneratedMapPreview = (generated: GeneratedMap, hexSize = 36):
       terrain: terrain(definition.terrainDefinitionIds[0]!),
       settlement: settlementId ? String(settlementId).split(':').at(-1)!.toUpperCase() as 'CITY' | 'TOWN' | 'VILLAGE' : null,
       strategic: first ? 'FIRST' as const : second ? 'SECOND' as const : null,
+      supplySource: generated.strategicRegions.firstSupplyHexIds.includes(cell.id) ? 'FIRST' as const
+        : generated.strategicRegions.secondSupplyHexIds.includes(cell.id) ? 'SECOND' as const : null,
     };
   });
   const edges = generated.mapDefinition.hexsides.flatMap((edge) => {

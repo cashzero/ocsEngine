@@ -671,9 +671,12 @@ class DefaultUiController implements UiController {
     }
     // Trace Supply overlay: the selected unit's own reach (13.1d, 12.6f), else where any friendly unit would trace.
     const traceUnitId = ownSelected?.location.kind === 'ON_MAP' ? ownSelected.id : null;
-    const traceCoverage = this.#showTraceCoverage && view.projection !== null
-      ? this.#cached(`trace|${traceUnitId}`, () => new Set<string>(this.#session.getTraceCoverage(seatId, traceUnitId as PieceId | null).value))
-      : new Set<string>();
+    const { traceCoverage, traceDirect } = this.#showTraceCoverage && view.projection !== null
+      ? this.#cached(`trace|${traceUnitId}`, () => {
+        const coverage = this.#session.getTraceCoverage(seatId, traceUnitId as PieceId | null).value;
+        return { traceCoverage: new Set<string>(coverage?.hexIds ?? []), traceDirect: new Set<string>(coverage?.directHexIds ?? []) };
+      })
+      : { traceCoverage: new Set<string>(), traceDirect: new Set<string>() };
     const unitActions = ownSelected ? this.#unitActions(ownSelected, enabled) : [];
     const transportOptions = ownSelected?.role === 'TRUCK' && view.metadata.lifecycle === 'ACTIVE' && !view.privacyLocked
       && view.projection?.sequence.phase === 'MOVEMENT' && segment === 'MOVEMENT'
@@ -716,6 +719,7 @@ class DefaultUiController implements UiController {
       moveRange,
       moveBlockers,
       traceCoverage,
+      traceDirect,
       traceCoverageFor: this.#showTraceCoverage ? traceUnitId : null,
       showTraceCoverage: this.#showTraceCoverage,
       remainingTicks,

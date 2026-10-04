@@ -21,7 +21,7 @@ import { createUiController, type UiController } from './controller.js';
 import { counterView, counterSvgBody, counterSvg } from './counter.js';
 import {
   coastlineHtml, hexGridHtml, mapArtDefsHtml, objectiveArtHtml, placeNameFor, regionEdgesHtml, riversHtml, roadsHtml, settlementArtHtml,
-  strategicBandPoints, terrainFillHtml, terrainGlyphsHtml,
+  strategicBandPoints, supplySourceArtHtml, terrainFillHtml, terrainGlyphsHtml,
 } from './map-art.js';
 import { MapView, type MapCounter, type MapState } from './map-canvas.js';
 import {
@@ -214,7 +214,9 @@ const hoverText = (snapshot: UiSnapshot, hexId: string): string => {
   const trainbusting = marker ? ` · Trainbusting marker (${marker.own ? 'yours' : 'enemy'}): ${marker.own ? 'the enemy pays' : 'you pay'} +1 MP here and, except Leg units, beside it` : '';
   // A settlement hex names its place (the map prints it beside cities and towns), so the line can be matched to the map.
   const placeName = cell.settlement ? ` · ${placeNameFor(cell.id)}` : '';
-  return `Hex ${printedHexLabel(cell.id)}${placeName} · ${cell.terrain.toLowerCase()}${cell.settlement ? ` · ${cell.settlement.toLowerCase()}` : ''}${currentGame.deployment.objectiveHexIds.includes(cell.id as never) ? ' · objective' : ''}${trainbusting}${cost}`;
+  // 12.6a: the painted "S" disc is named too, with whose trace starts here.
+  const source = cell.supplySource ? ` · ${scenario.players[cell.supplySource === 'SECOND' ? 1 : 0]?.name ?? ''} Supply Source` : '';
+  return `Hex ${printedHexLabel(cell.id)}${placeName} · ${cell.terrain.toLowerCase()}${cell.settlement ? ` · ${cell.settlement.toLowerCase()}` : ''}${currentGame.deployment.objectiveHexIds.includes(cell.id as never) ? ' · objective' : ''}${source}${trainbusting}${cost}`;
 };
 
 /** What a screen reader hears for the map's keyboard cursor: the hover line, what the hex is a target for, then the units there. */
@@ -296,6 +298,7 @@ const mapStateOf = (snapshot: UiSnapshot): MapState => {
     retreat: new Set([...snapshot.decisionHexes, ...snapshot.collapseHexes]),
     highlight: new Set(sourceHighlightHex ? [sourceHighlightHex] : []),
     traceCoverage: snapshot.traceCoverage,
+    traceDirect: snapshot.traceDirect,
     airTargets: new Set([
       ...snapshot.air.targetHexes, ...(snapshot.air.construction?.planning ? snapshot.air.construction.hexes : []),
       // Planned Air Drops of this turn are marked while the player plans or flies them (14.10b).
@@ -470,6 +473,7 @@ const operationPreviewHtml = (prepared: GeneratedScenarioPackage): string => {
     cell.strategic ? `<polygon class="preview-entry side-${cell.strategic.toLowerCase()}" points="${strategicBandPoints(cell, hexSize)}"></polygon>` : '',
     cell.settlement ? `<g class="settlement-marker">${settlementArtHtml(cell, hexSize)}</g>` : '',
     objectives.has(cell.id) ? `<g class="preview-objective">${objectiveArtHtml(cell, hexSize)}</g>` : '',
+    cell.supplySource ? `<g class="preview-supply-source side-${cell.supplySource.toLowerCase()}">${supplySourceArtHtml(cell, hexSize, objectives.has(cell.id))}</g>` : '',
   ].join('')).join('');
   const rivers = coastlineHtml(map.cells, hexSize) + riversHtml(map.edges, hexSize, 'generated-edge');
   const roads = roadsHtml(map.edges, map.cells, hexSize, 'generated-edge');
@@ -737,8 +741,8 @@ const appView = (snapshot: UiSnapshot): TemplateResult => {
           <div class="map-viewport" id="map-viewport">
             ${mapHost}
             ${stackPicker(snapshot)}${rosterOpen ? unitRosterView(snapshot, deck) : movePopupView(snapshot, deck)}
-            <div class="map-controls" aria-label="Map controls"><button id="zoom-out" aria-label="Zoom out" @click=${() => mapView.zoomStep(-1)}>−</button><output id="zoom-level"></output><button id="zoom-in" aria-label="Zoom in" @click=${() => mapView.zoomStep(1)}>+</button><button id="zoom-reset" @click=${() => mapView.resetCamera()}>Reset</button><span class="map-toggles" role="group" aria-label="Map overlays"><label class="map-toggle air-zones" title="Show the 10-hex Patrol Zones of Air Bases with Active Fighters (14.4c)"><input type="checkbox" id="toggle-air-zones" .checked=${snapshot.air.showZones} @change=${() => controller.toggleAirZones()}>Patrol Zones</label><label class="map-toggle trace-coverage" title="Show where trace supply reaches (12.6): for the selected unit, or for any unit when none is selected"><input type="checkbox" id="toggle-trace-coverage" .checked=${snapshot.showTraceCoverage} @change=${() => controller.toggleTraceCoverage()}>Trace Supply</label></span></div>
-            <div class="map-legend"><span class="terrain-key clear">Clear</span><span class="terrain-key woods">Woods</span><span class="terrain-key rough">Rough</span><span class="terrain-key mountain">Mountain</span><span class="terrain-key marsh">Marsh</span><span class="terrain-key water">Water</span><span class="line-key road">Road</span><span class="line-key river">River</span><span class="legend-mark objective">Objective</span><span class="legend-ring move">Move</span><span class="legend-ring move-stop" title="You must stop here (for example on entering an enemy ZOC)">Move ends here</span><span class="legend-ring attack">Attack</span><span class="legend-ring barrage">Barrage</span>${snapshot.air.showZones ? html`<span class="legend-ring air-zone">Your Patrol Zone</span><span class="legend-ring air-zone enemy">Enemy Patrol Zone</span>` : nothing}</div>
+            <div class="map-controls" aria-label="Map controls"><button id="zoom-out" aria-label="Zoom out" @click=${() => mapView.zoomStep(-1)}>−</button><output id="zoom-level"></output><button id="zoom-in" aria-label="Zoom in" @click=${() => mapView.zoomStep(1)}>+</button><button id="zoom-reset" @click=${() => mapView.resetCamera()}>Reset</button><span class="map-toggles" role="group" aria-label="Map overlays"><label class="map-toggle air-zones" title="Show the 10-hex Patrol Zones of Air Bases with Active Fighters (14.4c)"><input type="checkbox" id="toggle-air-zones" .checked=${snapshot.air.showZones} @change=${() => controller.toggleAirZones()}>Patrol Zones</label><label class="map-toggle trace-coverage" title="Show where trace supply reaches (12.6), for the selected unit or any unit: green traces straight to a Supply Source, hatched blue only through an HQ throw"><input type="checkbox" id="toggle-trace-coverage" .checked=${snapshot.showTraceCoverage} @change=${() => controller.toggleTraceCoverage()}>Trace Supply</label></span></div>
+            <div class="map-legend"><span class="terrain-key clear">Clear</span><span class="terrain-key woods">Woods</span><span class="terrain-key rough">Rough</span><span class="terrain-key mountain">Mountain</span><span class="terrain-key marsh">Marsh</span><span class="terrain-key water">Water</span><span class="line-key road">Road</span><span class="line-key river">River</span><span class="legend-mark objective">Objective</span><span class="legend-mark supply-source" title="Supply Source (12.6a): trace supply starts here; an HQ must draw within 5 MP of one to throw trace">Supply source</span>${snapshot.moveRange.size > 0 ? html`<span class="legend-ring move">Move</span>` : nothing}${[...snapshot.moveRange.values()].some(({ endsMovement }) => endsMovement) ? html`<span class="legend-ring move-stop" title="You must stop here (for example on entering an enemy ZOC)">Move ends here</span>` : nothing}${snapshot.attackTargets.length > 0 ? html`<span class="legend-ring attack">Attack</span>` : nothing}${snapshot.barrageTargets.length > 0 ? html`<span class="legend-ring barrage">Barrage</span>` : nothing}${snapshot.showTraceCoverage ? html`<span class="legend-wash trace-direct" title="Traces straight to a Supply Source (12.3a); an HQ standing here can throw supply (12.3b)">Trace from source</span><span class="legend-wash trace-thrown" title="Trace arrives only through an HQ throw; an HQ standing here is supplied but has nothing to throw on">Trace via HQ throw</span>` : nothing}${snapshot.air.showZones ? html`<span class="legend-ring air-zone">Your Patrol Zone</span><span class="legend-ring air-zone enemy">Enemy Patrol Zone</span>` : nothing}</div>
             <div class="hover-info" aria-live="off"></div>
           </div>
         </section>
