@@ -1,0 +1,22 @@
+{
+ "track": [
+  "✓Reinforcement [is-done]",
+  "✓Movement [is-done]",
+  "–Supply [is-skipped]",
+  "✓ReactionAxis [is-done]",
+  "✓Combat [is-done]",
+  "▸ExploitationMovement [is-current]",
+  "Clean Up [is-upcoming]"
+ ],
+ "supplyLines": [
+  "Axis commander chose a combat supply source Ge HQ 30th Corps was eliminated.",
+  "You chose a combat supply source",
+  "You chose a combat supply source Result -: No effect.",
+  "You finished Movement · Movement Segment Passed automatically, no legal actions: Movement barrage segment, Supply. Now: Reaction · Movement Segment · Axis commander.",
+  "Axis commander chose a combat supply source Ge Pi Bde 688 was eliminated. Brown TF / 7.A advanced into 1410. Result Ae2/DL2o3DG: Attacker is unaffected; defender loses 2 steps and takes 3 options (each a step loss or a hex of retreat); the defenders become Disorganized; attackers with Action Rating 2+ may enter Exploit mode.",
+  "You chose a combat supply source",
+  "Supply dump entered at 0107"
+ ],
+ "count": 25
+}
+-- 1869 ms; page errors so far 0

@@ -1,0 +1,21 @@
+{
+ "w": {
+  "turn": "Turn 1 / 3",
+  "player": "Axis player turn · Allied to act",
+  "phase": "Reinforcement",
+  "seat": "Allied commander",
+  "end": "End Reinforcement PhaseNext: Movement Phase",
+  "endDisabled": true,
+  "notice": "Decision recorded.",
+  "handoff": true,
+  "complete": false,
+  "decision": []
+ },
+ "deck": "All reinforcements are placed. No unit selectedClick one of your units on the map, or open All units. HAND OVERAxis commander to actTheir Player Turn begins: Reinforcement Phase. Hand the screen to Axis commander Decision recorded.",
+ "shots": [
+  "No unit selected",
+  "Axis commander to act"
+ ],
+ "files": 0
+}
+-- 180 ms; page errors so far 0

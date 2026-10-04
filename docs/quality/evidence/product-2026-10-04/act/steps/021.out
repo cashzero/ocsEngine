@@ -1,0 +1,57 @@
+{
+ "plan": "Attack 1305 Strength 9 : 1 Odds 9:1 (open) If defender withholds supply 18:1 AR DRM 3 − 3 = 0 Your supply cost 4T Before Surprise: you lose a mandatory step on 3% of rolls (a loss or option on 58%); the defender loses, retreats or is DG on 100%; expl",
+ "attackSteps": [
+  {
+   "seat": "Axis commander",
+   "prompt": "ATTACK 1305 Combat supply Defender decides Roll Results Attack on 1305 · 9 : 1 · 9:1 · DRM +0 3.FJ: 4T of combat supply still to pay. Choose where it comes from. Click a highlighted hex on the map, or choose below. Pay a",
+   "options": [
+    "Pay 4T from the dump at 1607 (12T available)",
+    "Pay 1T from the dump at 1607 (12T available)",
+    "Pay 2T from the dump at 1307 (2T available)",
+    "Pay 1T from the dump at 1307 (2T available)"
+   ],
+   "chosen": "Pay 4T from the dump at 1607 (12T available)",
+   "ms": 396
+  },
+  {
+   "handoff": "HAND OVER Allied commander to act Defend against the attack at 1305: combat supply, Action Rating unit and terrain. Hand the screen to Allied commander",
+   "mapVisible": false
+  },
+  {
+   "seat": "Allied commander",
+   "prompt": "DEFEND 1305 Combat supply AR unit Terrain Roll Results Attack on 1305 · 9 : 1 · 9:1 · DRM +0 Defending 1305: 1T of combat supply still to pay. Choose where it comes from. Click a highlighted hex on the map, or choose bel",
+   "options": [
+    "Pay 1T from the dump at 0407 (4T available)",
+    "Pay 1T from the dump at 0107 (4T available)",
+    "No combat supply: defend at half strength"
+   ],
+   "chosen": "Pay 1T from the dump at 0407 (4T available)",
+   "ms": 386
+  },
+  {
+   "handoff": "HAND OVER Axis commander to act Choose units to advance after combat at 1305. Hand the screen to Axis commander",
+   "mapVisible": false
+  },
+  {
+   "seat": "Axis commander",
+   "prompt": "ATTACK 1305 Combat supply Defender decides Roll Results Attack on 1305 · 9 : 1 · 9:1 · DRM +0 · Ae4/DL1o2 (roll 8) ✓ Pay 4T from the dump at 1607 (12T available) 1305 is vacant: choose attackers to advance after combat, ",
+   "options": [
+    "Do not advance",
+    "Advance 3.FJ",
+    "Detach a Breakdown from 3.FJ (it may advance on its own)"
+   ],
+   "chosen": "Do not advance",
+   "ms": 379
+  }
+ ],
+ "result": "COMBAT RESULT Axis commander attack on 1305 · 9 : 1 · 9:1 · DRM 0 Ae4/DL1o2 surprise roll 8 · combat roll 8 Attacker is unaffected; defender loses 1 step and takes 2 options (each a step loss or a hex of retreat); attackers with Action Rating 4+ may enter Exploit mode. Div Arty I / 7.A eliminated OK",
+ "trail": [
+  "Axis player turn Combat [Axis commander] → End",
+  "Axis player turn Exploitation · Movement [Axis commander] → End",
+  "handoff: HAND OVER Allied commander to act Choose who takes the first Player Turn (2.3). Hand the screen to Allied commander",
+  "decision [Allied commander] \"YOUR DECISION You won the First Player roll for turn 2. Take the first or the second Player Turn? Go first Go second\" → Go first",
+  "reached Turn 2 / 2 Allied player turn Reinforcement [Allied commander]"
+ ],
+ "logCount": 38
+}
+-- 8007 ms; page errors so far 0

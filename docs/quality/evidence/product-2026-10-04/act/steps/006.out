@@ -1,0 +1,30 @@
+{
+ "Brown TF": {
+  "tabs": [
+   "Unit",
+   "Ledger",
+   "Log"
+  ],
+  "chips": [],
+  "card": "III1F1 7414 Brown TF / 7.A 0107 · Move mode 14 MP left · 186 hexes reachableDeselect UnitLedgerLogAll units (9) ModeCombat modeReserveStrat mode Moved"
+ },
+ "Chap TF": {
+  "tabs": [
+   "Unit",
+   "Ledger",
+   "Log"
+  ],
+  "chips": [],
+  "card": "III2F1 7414 Chap TF / 7.A 1206 · Move mode 6 MP left · 118 hexes reachableDone UnitLedgerLogAll units (9) Click a highlighted hex to preview the move;"
+ },
+ "87 Recon Bn": {
+  "tabs": [
+   "Unit",
+   "Ledger",
+   "Log"
+  ],
+  "chips": [],
+  "card": "IIreconF1 3416 87 Recon Bn / 7.A 0207 · Move mode 16 MP left · 186 hexes reachableDeselect UnitLedgerLogAll units (9) ModeCombat modeReserveStrat mode"
+ }
+}
+-- 2955 ms; page errors so far 0

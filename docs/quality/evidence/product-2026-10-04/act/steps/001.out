@@ -1,0 +1,31 @@
+{
+ "generate": 385,
+ "mount": 359,
+ "where": {
+  "turn": "Turn 1 / 2",
+  "player": "Allied player turn",
+  "phase": "Reinforcement",
+  "seat": "Allied commander",
+  "end": "End Reinforcement PhaseNext: Movement Phase",
+  "endDisabled": true,
+  "notice": "Select a unit on the map to see where it can move and what it can attack.",
+  "handoff": false,
+  "complete": false,
+  "decision": []
+ },
+ "occupied": [
+  "Hex 0104 · clear · 82.Abn",
+  "Hex 1404 · clear · enemy 3.FJ",
+  "Hex 0107 · clear · Chap TF / 7.A, Brown TF / 7.A",
+  "Hex 0207 · clear · 87 Recon Bn / 7.A, Div Arty I / 7.A",
+  "Hex 0407 · clear · Supply dump",
+  "Hex 1307 · clear · enemy Supply dump",
+  "Hex 1507 · clear · enemy Stephan KG / 116.Pz, 1 hidden",
+  "Hex 1607 · clear · enemy II/16 Pz Bn / 116.Pz, 1 hidden",
+  "Hex 0109 · clear · US HQ 13th Corps, Truck",
+  "Hex 1509 · clear · enemy Ge HQ 30th Corps, 1 hidden",
+  "Hex 0110 · clear · US 652 Engr Gp",
+  "Hex 1410 · clear · enemy Ge Pi Bde 688"
+ ]
+}
+-- 22365 ms; page errors so far 0

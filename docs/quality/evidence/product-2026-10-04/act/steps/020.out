@@ -1,0 +1,29 @@
+{
+ "privacy": {
+  "mapVisible": false,
+  "text": "HOT-SEAT PRIVACY Pass the screen to Axis commander Their Player Turn begins: Reinforcement Phase. The map stays hidden until they confirm. I am Axis commander"
+ },
+ "log": [
+  "away report: COMBAT RESULT Allied commander overrun on 1410 · 14 : 0 · 1:0 · DRM +4 Ae2/DL2o3DG surprise roll 8 · combat roll 8 Attacker is unaffected; defender loses 2 steps and takes 3 options (each a step loss or a hex of retreat); the defenders become Disorganized; attackers with Action Rating 2+ may enter E",
+  "Axis player turn Movement [Axis commander]"
+ ],
+ "move": {
+  "moved": true,
+  "preview": "",
+  "elapsed": 435
+ },
+ "w": {
+  "turn": "Turn 1 / 2",
+  "player": "Axis player turn",
+  "phase": "Combat",
+  "seat": "Axis commander",
+  "end": "End Combat SegmentNext: Exploitation Phase",
+  "endDisabled": false,
+  "notice": "Movement · Movement Segment finished.",
+  "handoff": false,
+  "complete": false,
+  "decision": []
+ },
+ "deck": "Click a red-ringed enemy hex to plan an attack (9.0). No unit selectedClick one of your units on the map, or open All units. Targets 1UnitLogAll units (7) COMBAT RESULT Allied commander overrun on 1410 · 14 : 0 · 1:0 · DRM +4 Ae2/DL2o3DG surprise roll 8 · combat roll 8 Attacker is unaffected; defender loses 2 steps and takes 3 options (each a step loss or a hex of retreat); the defenders become Disorganized; attackers with Action Rating 2+ may enter Exploit mode. Ge Pi Bde 688 DisorganizedGe Pi Bde 688 eliminatedBrown TF / 7.A advanced into 1410 OK Enemy hexes you can attackAttack 1305 Movement · Movement Segment finished."
+}
+-- 8654 ms; page errors so far 0

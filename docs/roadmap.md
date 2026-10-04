@@ -76,7 +76,7 @@ src/ai/           bot strategy、planning、scoring、telemetry、self-play
 | M8 | Random Scenario Integration | M6–M7、M4–M5 | 生成後立即人工遊玩 |
 | M9 | AI Bot | M8、完整 legal actions | Bot 可完成 generated scenario |
 | M10 | Paired Self-play／品質 Gate | M9 | 跨 map/OOB seed 評估與 regression |
-| M11 | Air、Naval、Optional、進階 generator | M10 | 擴展完整 OCS 系列能力（Air 計畫：[M11-Air WBS](roadmap/08-air-power-wbs.md)，PLANNED） |
+| M11 | Air、Naval、Optional、進階 generator | M10 | 擴展完整 OCS 系列能力（Air 計畫：[M11-Air WBS](roadmap/08-air-power-wbs.md)，IN PROGRESS） |
 
 Hex/Unit Foundation 是所有後續工作的起點。AI 是產品目標，但只有在同一
 generated scenario 已能由人類透過 UI 完整操作後才進入。
@@ -455,6 +455,10 @@ moduledata + buildFile.xml
 ## 12. M8：Random Scenario Integration
 
 實作狀態：**IN PROGRESS**。Random Map 與 Random OOB 已合成可人工操作的 generated scenario，且真實瀏覽器已完成 default、Large 與 contact 主流程；但 lifecycle、real save/load、Game End/final replay 與其餘產品操作 gate 尚未全數驗證，M8.10 不得標為完成。
+
+2026-10-04 瀏覽器驗收（doc 03「Execution record 2026-10-04」）：New Game、Map、counter 與規則行動列多數通過，
+但 NG-07（部署格數與凍結期望不符）、NG-10（產生中多個階段同時 active）、MAP-03、MAP-04 為 FAIL，SES 與 UI 列尚未執行，
+M8 維持 **IN PROGRESS**。
 
 M8 同時是正式的 Game Flow Integration milestone；詳細 WBS 與架構圖：
 

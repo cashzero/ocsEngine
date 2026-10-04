@@ -1,0 +1,30 @@
+{
+ "reach": "Hex 1305 · clear · 6.5 MP, 7.5 left · reachable · no units",
+ "move": {
+  "moved": true,
+  "preview": "",
+  "elapsed": 432
+ },
+ "before": "End Movement SegmentNext: Barrage Segment",
+ "second": null,
+ "after": {
+  "turn": "Turn 1 / 2",
+  "player": "Allied player turn",
+  "phase": "Movement",
+  "seat": "Allied commander",
+  "end": "Finish anyway: 6 units have not movedPress again to confirm",
+  "endDisabled": false,
+  "notice": "Move finished.",
+  "handoff": false,
+  "complete": false,
+  "decision": []
+ },
+ "deck": "Move units one at a time: select a unit to see its range. Red rings mark overrun targets. No unit selectedClick one of your units on the map, or open All units. UnitLedgerLogAll units (9) Select a unit on the map, or open All units, to see its actions.6 units have not moved yet. Move finished.",
+ "deckTabs": [
+  "Unit",
+  "Ledger",
+  "Log"
+ ],
+ "at1404": "Hex 1404 · clear · enemy 3.FJ"
+}
+-- 3297 ms; page errors so far 0

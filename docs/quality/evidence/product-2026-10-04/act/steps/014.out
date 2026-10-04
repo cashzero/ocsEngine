@@ -1,0 +1,25 @@
+{
+ "planMs": 458,
+ "plan": "Barrage 1404 Barrage strength 9 Shifts Density 0, No spotter -3 Spotter none (3 left) Supply 2T Tick the artillery that fires. Supply is paid from dumps in reach; if several can pay you will choose, or pay automatically. III 1 F1 9 3 2 14 Div Arty I / 7.A 1305 Cancel Barrage",
+ "participants": [
+  "III 1 F1 9 3 2 14 Div Arty I / 7.A 1305 [x]"
+ ],
+ "declareMs": 345,
+ "steps": [
+  {
+   "seat": "Allied commander",
+   "prompt": "BARRAGE 1404 Combat supply Defender decides Roll Results Barrage on 1404 · 9 · 2 Barrage on 1404: 2T of combat supply still to pay. Choose where it comes from. Click a highlighted hex on the map, or choose below. Pay aut",
+   "options": [
+    "Pay 2T from the dump at 0107 (7T available)",
+    "Pay 1T from the dump at 0107 (7T available)",
+    "Pay 2T from the dump at 0407 (4T available)",
+    "Pay 1T from the dump at 0407 (4T available)"
+   ],
+   "chosen": "Pay 2T from the dump at 0107 (7T available)",
+   "ms": 411
+  }
+ ],
+ "after": "Hex 1404 · clear · enemy 3.FJ",
+ "log": "No barrage targets in range. III 1 F1 9 3 2 14 Div Arty I / 7.A 1305 · Move mode Cannot move in this step Deselect Targets Unit Ledger Log All units (9) COMBAT RESULT Allied commander barrage on 1404 · 9 · 2 - barrage roll 9 No effect. No unit was lost or moved. OK You chose a combat supply source Result -: No effect. You barraged 1404 Reaction · Movement Segment of Axis commander passed: only dump blowing was possible Passed automatically, no legal actions: Reaction barrage segment. Now: Combat · Barrage Segment · Allied commander. You finished Movement · Movement Segment Passed automatically"
+}
+-- 2332 ms; page errors so far 0

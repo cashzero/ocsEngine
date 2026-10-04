@@ -1,0 +1,54 @@
+{
+ "planMs": 501,
+ "plan": "Attack 1509 Strength 14 : 1 Odds 14:1 (open) If defender withholds supply 28:1 AR DRM 4 − 0 = 4 Your supply cost 1T Before Surprise: you lose a mandatory step on 0% of rolls (a loss or option on 0%); the defender loses, retreats or is DG on 100%; exploitation on 100%. Tick the attacking units; the radio button picks the unit whose Action Rating leads. Supply is paid from dumps in reach; if several can pay you will choose, or pay automatically. III 1 F1 7 4 14 Brown TF / 7.A 1410 Cancel Attack",
+ "participants": [
+  "III 1 F1 7 4 14 Brown TF / 7.A 1410 [x]"
+ ],
+ "enabled": true,
+ "declareMs": 367,
+ "steps": [
+  {
+   "seat": "Allied commander",
+   "prompt": "ATTACK 1509 Combat supply Defender decides Roll Results Attack on 1509 · 14 : 1 · 14:1 · DRM +4 Brown TF / 7.A: 1T of combat supply still to pay. Choose where it comes from. Click a highlighted hex on the map, or choose ",
+   "options": [
+    "Pay 1T from the dump at 0107 (5T available)",
+    "Pay 1T from the dump at 0407 (4T available)"
+   ],
+   "chosen": "Pay 1T from the dump at 0107 (5T available)",
+   "ms": 395
+  },
+  {
+   "handoff": "HAND OVER Axis commander to act Defend against the attack at 1509: combat supply, Action Rating unit and terrain. Hand the screen to Axis commander",
+   "mapVisible": false
+  },
+  {
+   "seat": "Axis commander",
+   "prompt": "DEFEND 1509 Combat supply AR unit Terrain Roll Results Attack on 1509 · 14 : 1 · 14:1 · DRM +4 Defending 1509: 1T of combat supply still to pay. Choose where it comes from. Click a highlighted hex on the map, or choose b",
+   "options": [
+    "Pay 1T from the dump at 1307 (3T available)",
+    "No combat supply: defend at half strength"
+   ],
+   "chosen": "Pay 1T from the dump at 1307 (3T available)",
+   "ms": 397
+  },
+  {
+   "handoff": "HAND OVER Allied commander to act Choose units to advance after combat at 1509. Hand the screen to Allied commander",
+   "mapVisible": false
+  },
+  {
+   "seat": "Allied commander",
+   "prompt": "ATTACK 1509 Combat supply Defender decides Roll Results Attack on 1509 · 14 : 0.5 · 28:1 · DRM +4 · Ae2/DL2o3DG (roll 8, surprise 1 col) ✓ Pay 1T from the dump at 0107 (5T available) 1509 is vacant: choose attackers to a",
+   "options": [
+    "Do not advance",
+    "Advance Brown TF / 7.A"
+   ],
+   "chosen": "Do not advance",
+   "ms": 500
+  }
+ ],
+ "result": "COMBAT RESULT Allied commander attack on 1509 · 14 : 1 · 14:1 · DRM +4 Ae2/DL2o3DG surprise roll 10 · combat roll 8 Attacker is unaffected; defender loses 2 steps and takes 3 options (each a step loss or a hex of retreat); the defenders become Disorganized; attackers with Action Rating 2+ may enter Exploit mode. Ge HQ 30th Corps Disorganized Ge HQ 30th Corps eliminated OK",
+ "before": "Hex 1509 · clear · attack target · enemy Ge HQ 30th Corps, 1 hidden",
+ "after": "Hex 1509 · clear · enemy Truck",
+ "log": "No enemy hex can be attacked. No unit selected Click one of your units on the map, or open All units. Targets Unit Ledger Log All units (9) COMBAT RESULT Allied commander attack on 1509 · 14 : 1 · 14:1 · DRM +4 Ae2/DL2o3DG surprise roll 10 · combat roll 8 Attacker is unaffected; defender loses 2 steps and takes 3 options (each a step loss or a hex of retreat); the defenders become Disorganized; attackers with Action Rating 2+ may enter Exploit mode. Ge HQ 30th Corps Disorganized Ge HQ 30th Corps eliminated OK You chose the advance after combat Result Ae2/DL2o3DG: Attacker is unaffected; defender loses 2 steps and takes 3 options (each a step loss or a hex of retreat); the defenders become Di"
+}
+-- 7742 ms; page errors so far 0

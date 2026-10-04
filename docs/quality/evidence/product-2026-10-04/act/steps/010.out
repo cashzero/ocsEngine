@@ -1,0 +1,52 @@
+{
+ "draftMs": 526,
+ "draft1": "Overrun 1410 Strength 14 : 0 Odds 1:0 (open) If defender withholds supply 1:0 AR DRM 4 − 0 = 4 Your supply cost 1T Before Surprise: you lose a mandatory step on 0% of rolls (a loss or option on 0%); the defender loses, retreats or is DG on 100%; exploitation on 100%. Overrun costs 3 MP; if it succeeds the units must enter the hex (8.0). Supply is paid from dumps in reach; if several can pay you will choose, or pay automatically. III 1 F1 7 4 14 Brown TF / 7.A 1310 Cancel Overrun",
+ "afterCancel": {
+  "card": "6 MP left",
+  "draftOpen": false
+ },
+ "draft2": "Overrun 1410 Strength 14 : 0 Odds 1:0 (open) If defender withholds supply 1:0 AR DRM 4 − 0 = 4 Your supply cost 1T Before Surprise: you lose a mandatory step on 0% of rolls (a loss or option on 0%); the defender loses, retreats or is DG on 100%; exploitation on 100%. Overrun costs 3 MP; if it succeeds the units must enter the hex (8.0). Supply is paid from dumps in reach; if several can pay you will choose, or pay automatically. III 1 F1 7 4 14 Brown TF / 7.A 1310 Cancel Overrun",
+ "declareMs": 552,
+ "steps": [
+  {
+   "seat": "Allied commander",
+   "prompt": "OVERRUN 1410 Combat supply Defender decides Roll Results Overrun on 1410 · 14 : 0 · 1:0 · DRM +4 Brown TF / 7.A: 1T of combat supply still to pay. Choose where it comes from. Click a highlighted hex on the map, or choose below. Pay automatically from the large",
+   "options": [
+    "Pay 1T from the dump at 0107 (8T available)",
+    "Pay 1T from the dump at 0407 (4T available)"
+   ],
+   "chosen": "Pay 1T from the dump at 0107 (8T available)",
+   "mapVisible": true,
+   "ms": 385
+  },
+  {
+   "handoff": "HAND OVER Axis commander to act Defend against the overrun at 1410: combat supply, Action Rating unit and terrain. Hand the screen to Axis commander",
+   "privacy": {
+    "mapVisible": false,
+    "text": "HOT-SEAT PRIVACY Pass the screen to Axis commander Defend against the overrun at 1410: combat supply, Action Rating unit and terrain. The map stays hidden until they confirm. I am Axis commander"
+   }
+  },
+  {
+   "seat": "Axis commander",
+   "prompt": "DEFEND 1410 Combat supply AR unit Terrain Roll Results Overrun on 1410 · 14 : 0 · 1:0 · DRM +4 Defending 1410: 1T of combat supply still to pay. Choose where it comes from. Click a highlighted hex on the map, or choose below. Pay automatically from the largest",
+   "options": [
+    "Pay 1T from the dump at 1307 (4T available)",
+    "No combat supply: defend at half strength"
+   ],
+   "chosen": "Pay 1T from the dump at 1307 (4T available)",
+   "mapVisible": true,
+   "ms": 398
+  },
+  {
+   "handoff": "HAND OVER Allied commander to act Continue their Player Turn: Movement · Movement Segment. Hand the screen to Allied commander",
+   "privacy": {
+    "mapVisible": false,
+    "text": "HOT-SEAT PRIVACY Pass the screen to Allied commander Continue their Player Turn: Movement · Movement Segment. The map stays hidden until they confirm. I am Allied commander"
+   }
+  }
+ ],
+ "result": "",
+ "at1410": "Hex 1410 · clear · Brown TF / 7.A",
+ "log": "defenders become Disorganized; attackers with Action Rating 2+ may enter Exploit mode. You chose a combat supply source You overran 1410 Brown TF / 7.A moved 0107 → 1310 Chap TF / 7.A moved 0107 → 1206 You: pay fuel Fuel paid: 4T. 82.Abn changed to reserve mode You finished Reinforcement Phase Passed automatically, no legal actions: Movement breakout segment. Now: Movement · Movement Segment · Allied commander. Supply dump entered at 0107 US 652 FA Gp entered at 0107 Your turn, Allied commander."
+}
+-- 6656 ms; page errors so far 0
