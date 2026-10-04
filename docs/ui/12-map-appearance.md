@@ -29,9 +29,16 @@ is generated in `src/ui/map-art.ts` (SVG for the New Game preview; the same geom
 ## TODO / known limitations
 
 - **Railways — DONE (2026-10-04).** Rail hexside features (`edge:rail`, `edge:multi-track-rail`) are generated and
-  drawn as on the VASSAL map: a dark red track straight between hex centres with cross-ties, heavier and double-tied
-  for multi-track, over the roads (`railStrokes` in `map-art.ts`, painted by the SVG preview and the game canvas).
-  Screenshots: `docs/quality/evidence/rail-2026-10-04/`. Plan: `docs/roadmap/10-rail-wbs.md`.
+  drawn as on the VASSAL map: a dark red track with cross-ties, heavier and double-tied for multi-track, over the
+  roads (`railStrokes` in `map-art.ts`, painted by the SVG preview and the game canvas). Screenshots:
+  `docs/quality/evidence/rail-2026-10-04/`. Plan: `docs/roadmap/10-rail-wbs.md`.
+- **Railway look beside roads (2026-10-04).** The track keeps to one side of each hex centre so it runs beside a road
+  that shares its hexside instead of on top of it, clearing the road's bows as well as its ends, and rounds its bends
+  only near each waypoint, tighter than a road (`railWaypoints` in `map-art.ts`). Checked in the game canvas at 140%
+  zoom on a generated New Game map. The track may still cross a road (the user's standard, 2026-10-04: crossing is
+  fine, lying on the road is not). Where a road cuts diagonally across a shared hexside the track crosses it; over 24
+  generated maps (1,581 road-sharing rail hexsides) the most any hexside's track runs inside a road's drawn casing is
+  37% of its length, and none reaches half.
 - **TODO — place names are cosmetic.** Names come from `placeNameFor(hexId)`, a deterministic
   syllable generator, not from scenario or map data. They carry no rules meaning and do not
   appear in the roster, log or OOB. Close when the map model carries real names, or the user

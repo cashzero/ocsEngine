@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { generateRandomMap } from '../../src/index.js';
 import { buildGeneratedMapPreview } from '../../src/ui/map-generator-presenter.js';
 import {
-  coastlineHtml, hexGridHtml, mapArtDefsHtml, placeNameFor, regionEdgesHtml, riversHtml, roadsHtml, settlementArtHtml, terrainFillHtml,
+  coastlineHtml, hexGridHtml, mapArtDefsHtml, placeNameFor, railStrokes, regionEdgesHtml, riversHtml, roadStrokes, roadsHtml, settlementArtHtml, terrainFillHtml,
   terrainGlyphsHtml,
 } from '../../src/ui/map-art.js';
 
@@ -51,6 +51,47 @@ describe('printed-map artwork', () => {
       && preview.edges.some((edge) => edge.kind.endsWith('ROAD') && edge.x1 === x && edge.y1 === y));
     expect(settled.length).toBeGreaterThan(0);
     settled.forEach(({ x, y }) => expect(roads).toContain(`M${x.toFixed(1)} ${y.toFixed(1)}C`));
+  });
+
+  it('rounds railway bends and never lays the track along a road that shares its hexside', () => {
+    const cubic = (d: string): number[] => d.match(/-?[\d.]+/gu)!.map(Number);
+    const sample = (d: string): { x: number; y: number }[] => {
+      const [x0, y0, x1, y1, x2, y2, x3, y3] = cubic(d) as [number, number, number, number, number, number, number, number];
+      return Array.from({ length: 21 }, (_, index) => {
+        const t = index / 20;
+        const s = 1 - t;
+        return {
+          x: s * s * s * x0 + 3 * s * s * t * x1 + 3 * s * t * t * x2 + t * t * t * x3,
+          y: s * s * s * y0 + 3 * s * s * t * y1 + 3 * s * t * t * y2 + t * t * t * y3,
+        };
+      });
+    };
+    const pair = ({ x1, y1, x2, y2 }: { x1: number; y1: number; x2: number; y2: number }): string =>
+      [`${x1},${y1}`, `${x2},${y2}`].sort().join('|');
+    const railEdges = preview.edges.filter(({ kind }) => kind.endsWith('RAIL'))
+      .sort((first, second) => Number(first.kind === 'MULTI_RAIL') - Number(second.kind === 'MULTI_RAIL'));
+    const roadEdges = preview.edges.filter(({ kind }) => kind.endsWith('ROAD'))
+      .sort((first, second) => Number(first.kind === 'PRIMARY_ROAD') - Number(second.kind === 'PRIMARY_ROAD'));
+    const rails = railStrokes(preview.edges, preview.cells, 50);
+    const roads = new Map(roadStrokes(preview.edges, preview.cells, 50).map(({ d }, index) => [pair(roadEdges[index]!), d]));
+    expect(rails).toHaveLength(railEdges.length);
+    rails.forEach(({ line }) => expect(line).toMatch(/^M[\d.]+ [\d.]+C/u));
+    // The track never passes through a hex centre: it keeps to one side.
+    railEdges.forEach(({ x1, y1 }, index) => {
+      const [x, y] = cubic(rails[index]!.line);
+      expect(Math.hypot(x! - x1, y! - y1)).toBeGreaterThan(50 * 0.3);
+    });
+    const shared = railEdges.map((edge, index) => ({ rail: rails[index]!.line, road: roads.get(pair(edge)) }))
+      .filter((entry): entry is { rail: string; road: string } => entry.road !== undefined);
+    expect(shared.length).toBeGreaterThan(0);
+    // The track may cross a road, but never lies on it: at most part of a hexside runs inside the road's drawn
+    // casing (a primary road's half-width, 5.2 at hex size 36).
+    const casing = 5.2 * 50 / 36;
+    shared.forEach(({ rail, road }) => {
+      const roadPoints = sample(road);
+      const onRoad = sample(rail).filter(({ x, y }) => roadPoints.some((point) => Math.hypot(point.x - x, point.y - y) < casing));
+      expect(onRoad.length / 21).toBeLessThan(0.5);
+    });
   });
 
   it('nudges fill corners identically for neighbouring hexes so the ground tiles without gaps', () => {

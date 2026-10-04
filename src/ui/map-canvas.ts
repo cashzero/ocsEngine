@@ -249,7 +249,7 @@ export class MapView {
       regionEdges: regionEdgePaths(theater.cells, size).map(({ kind, d }) => ({ kind, path: new Path2D(d) })),
       rivers: riverStrokes(theater.edges, size).map(({ kind, d }) => ({ kind, path: new Path2D(d) })),
       roads: roadStrokes(theater.edges, theater.cells, size).map(({ kind, d }) => ({ kind, path: new Path2D(d) })),
-      rails: railStrokes(theater.edges, size).map(({ kind, line, ties }) => ({ kind, line: new Path2D(line), ties: new Path2D(ties) })),
+      rails: railStrokes(theater.edges, theater.cells, size).map(({ kind, line, ties }) => ({ kind, line: new Path2D(line), ties: new Path2D(ties) })),
       objectives: new Set(scene.objectiveHexIds),
     };
     this.resetCamera();
