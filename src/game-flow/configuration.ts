@@ -1,9 +1,11 @@
 import { FOUNDATION_SCHEMA_VERSION, parseDefinitionId, type DefinitionId, type PlayerId, type Result } from '../core/index.js';
 import type { GeneratedOob, OobSide } from '../generation/oob/index.js';
-import type { RuleConfiguration } from '../rules/index.js';
+import type { RailroadConfiguration, RuleConfiguration } from '../rules/index.js';
 import type { GeneratedDeployment, NewGameRequest } from './model.js';
 import {
   GENERATED_HEXSIDE_MOVEMENT_COSTS,
+  GENERATED_MULTI_TRACK_RAIL,
+  GENERATED_RAIL,
   GENERATED_ROAD_MOVEMENT_COSTS,
   GENERATED_TERRAIN_MOVEMENT_COSTS,
 } from './movement-tec.js';
@@ -66,4 +68,14 @@ export const createGeneratedRuleConfiguration = (
   reinforcementBoxes: (['ALLIED', 'AXIS'] as const).map((side) => ({ playerId: players[side], boxId: GENERATED_REINFORCEMENT_BOXES[side] })),
   turnLimit: request.turnLimit,
   objectives: deployment.objectiveHexIds.map((hexId) => ({ hexId, points: 5 })),
+  railroads: GENERATED_RAILROADS,
 });
+
+/** 13.3: generated railroads, and the settlements that make a rail Hex detrainable (13.3c). */
+export const GENERATED_RAILROADS: RailroadConfiguration = {
+  lines: [
+    { featureDefinitionId: id(GENERATED_RAIL), multiTrack: false },
+    { featureDefinitionId: id(GENERATED_MULTI_TRACK_RAIL), multiTrack: true },
+  ],
+  detrainableFeatureDefinitionIds: [id('settlement:village'), id('settlement:town'), id('settlement:city')],
+};

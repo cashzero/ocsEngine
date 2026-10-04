@@ -28,11 +28,10 @@ is generated in `src/ui/map-art.ts` (SVG for the New Game preview; the same geom
 
 ## TODO / known limitations
 
-- **TODO — railways.** The VASSAL map prints railways (dark red with ties). The engine's map
-  model has no rail hexside feature (`GeneratedMapPreviewEdge.kind` is river/road only), so
-  none are drawn. Missing behavior: rail lines. User-visible impact: the map shows fewer
-  line features than the printed map. Close when a rail feature exists in the map domain and
-  is rendered, with a screenshot of a generated map that contains rail.
+- **Railways — DONE (2026-10-04).** Rail hexside features (`edge:rail`, `edge:multi-track-rail`) are generated and
+  drawn as on the VASSAL map: a dark red track straight between hex centres with cross-ties, heavier and double-tied
+  for multi-track, over the roads (`railStrokes` in `map-art.ts`, painted by the SVG preview and the game canvas).
+  Screenshots: `docs/quality/evidence/rail-2026-10-04/`. Plan: `docs/roadmap/10-rail-wbs.md`.
 - **TODO — place names are cosmetic.** Names come from `placeNameFor(hexId)`, a deterministic
   syllable generator, not from scenario or map data. They carry no rules meaning and do not
   appear in the roster, log or OOB. Close when the map model carries real names, or the user

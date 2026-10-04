@@ -12,6 +12,7 @@ import type {
   CandidateRequest,
   CandidateResult,
   FuelPreview,
+  SupplySourceHex,
   GameAction,
   PendingDecisionKind,
   RuleEvent,
@@ -287,6 +288,8 @@ export interface GameSession {
   readonly getTransportOptions: (seatId: SeatId, truckId: PieceId) => RuleQueryResult<TransportOptions | null>;
   /** Hexes where the seat's trace supply reaches, for one of its units or (null) any unit; empty when not interactive. */
   readonly getTraceCoverage: (seatId: SeatId, pieceId: PieceId | null) => RuleQueryResult<TraceCoverage>;
+  /** The seat's Supply Sources (12.6a) and why each counts; empty when not interactive. */
+  readonly getSupplySources: (seatId: SeatId) => RuleQueryResult<readonly SupplySourceHex[]>;
   /** Each fuel payment open to one of the seat's units with the units it would newly fuel (12.5c). */
   readonly getFuelPreview: (seatId: SeatId, pieceId: PieceId) => RuleQueryResult<readonly FuelPreview[]>;
   readonly createDraft: (seatId: SeatId, action: GameAction) => ActionDraft;

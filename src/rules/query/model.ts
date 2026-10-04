@@ -193,6 +193,8 @@ export interface RuleEngine {
   readonly queryTransportOptions: (state: GameState, actorId: PlayerId, truckId: PieceId) => RuleQueryResult<import('../supply/transport.js').TransportOptions | null>;
   /** Hexes where the actor's trace supply reaches: for the given unit (13.1d and 12.6f apply), or for any unit when null (12.6). */
   readonly queryTraceCoverage: (state: GameState, actorId: PlayerId, pieceId: PieceId | null) => RuleQueryResult<import('../supply/supply.js').TraceCoverage>;
+  /** The actor's Supply Sources (12.6a) with why each counts: map edge, detrainable rail Hex (13.3c) or Extender (12.7a). */
+  readonly querySupplySources: (state: GameState, actorId: PlayerId) => RuleQueryResult<readonly import('../supply/supply.js').SupplySourceHex[]>;
   /** Each fuel payment open to one own unit with the units it would newly fuel (12.5c). */
   readonly queryFuelPreview: (state: GameState, actorId: PlayerId, pieceId: PieceId) => RuleQueryResult<readonly import('../supply/fuel.js').FuelPreview[]>;
 }

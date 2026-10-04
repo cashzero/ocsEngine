@@ -133,6 +133,10 @@ const configurationDecoder: Decoder<RuleConfiguration> = objectDecoder({
   reinforcementBoxes: arrayDecoder(objectDecoder({ playerId: playerIdDecoder, boxId: boxIdDecoder })),
   turnLimit: safeIntegerDecoder,
   objectives: arrayDecoder(objectDecoder({ hexId: hexIdDecoder, points: safeIntegerDecoder })),
+  railroads: optionalDecoder(objectDecoder({
+    lines: arrayDecoder(objectDecoder({ featureDefinitionId: definitionIdDecoder, multiTrack: booleanDecoder })),
+    detrainableFeatureDefinitionIds: arrayDecoder(definitionIdDecoder),
+  })),
 });
 
 const sequenceDecoder: Decoder<TurnSequenceState> = objectDecoder({
@@ -422,6 +426,10 @@ const canonicalStateValue = (state: GameState): GameState => {
       terrainCombatEffects: stableSort(state.configuration.terrainCombatEffects, byText(({ terrainDefinitionId }) => String(terrainDefinitionId))),
       hexsideCombatEffects: stableSort(state.configuration.hexsideCombatEffects, byText(({ featureDefinitionId }) => String(featureDefinitionId))),
       objectives: stableSort(state.configuration.objectives, byText(({ hexId }) => String(hexId))),
+      ...(state.configuration.railroads ? { railroads: {
+        lines: stableSort(state.configuration.railroads.lines, byText(({ featureDefinitionId }) => String(featureDefinitionId))),
+        detrainableFeatureDefinitionIds: stableSort(state.configuration.railroads.detrainableFeatureDefinitionIds, byText(String)),
+      } } : {}),
     },
     sequence: { ...state.sequence },
     mapState: currentEnvelope.initialMapState,
