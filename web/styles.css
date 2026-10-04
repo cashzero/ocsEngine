@@ -529,10 +529,10 @@ small, .supporting { font-size: 13px; color: var(--muted); }
 .counter .eq-repl, .unit-counter .eq-repl { font-size: 19px; font-weight: 800; }
 .counter .eq-army, .unit-counter .eq-army { font-size: 19px; font-weight: 400; font-family: Arial, sans-serif; }
 .counter .eq-label, .unit-counter .eq-label { font-size: 21px; font-weight: 900; stroke: none; }
-.counter .eq-number, .unit-counter .eq-number { font-size: 45px; font-weight: 900; font-stretch: condensed; stroke-linejoin: round; paint-order: stroke; }
+.counter .eq-digit, .unit-counter .eq-digit { fill-rule: evenodd; stroke-linejoin: round; paint-order: stroke; }
 .counter .eq-white, .unit-counter .eq-white { fill: #fff; stroke: #151810; stroke-width: 1.4px; }
 .counter .eq-shadow, .unit-counter .eq-shadow { fill: #151810; stroke: #151810; stroke-width: 1.4px; }
-.counter .eq-superscript, .unit-counter .eq-superscript { font-size: 25px; font-weight: 900; font-stretch: condensed; }
+.counter .eq-superscript, .unit-counter .eq-superscript { fill: #151810; }
 .counter .eq-move-box, .unit-counter .eq-move-box { fill: #f2e215; stroke: none; }
 .counter .eq-move, .unit-counter .eq-move { fill: #84000c; stroke: #84000c; stroke-width: .6px; }
 .counter .eq-count-disc, .unit-counter .eq-count-disc { fill: #151810; stroke: #f4f1e6; stroke-width: 1.5; }

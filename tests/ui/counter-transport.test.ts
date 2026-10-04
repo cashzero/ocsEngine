@@ -14,11 +14,7 @@ const startMovement = async () => {
   if (!created.ok) throw new Error('Default game must be created.');
   const { session, scenario, bindings } = created.value;
   const controller = createUiController({ engine, session, scenario, bindings });
-  for (const arrival of controller.getSnapshot().arrivals) {
-    controller.selectPiece(arrival.pieceId);
-    await controller.clickHex(arrival.entryHexIds[0]!);
-  }
-  await controller.endStep();
+  // Nothing arrives on Game Turn 1 (13.6): play opens in the Movement Phase.
   return controller;
 };
 

@@ -235,12 +235,24 @@ const airBaseBody = (view: Extract<CounterViewModel, { kind: 'air-base' }>): str
 // by a short leader, an "A" before it on the US counter, and the printed 0-0-10 ratings below (a white 0, a superscript 0, and a
 // red 10 on a yellow box). One engine counter holds several replacements, so their number sits in a badge in the free top-right corner.
 const squeezed = (element: string, length: number): string => element.replace('<text ', `<text textLength="${length}" lengthAdjust="spacingAndGlyphs" `);
+// The printed 0-0-10 never changes, so its digits are drawn as shapes. As text they took whatever font the browser had, and
+// the widths forced to fit a narrow face squashed a wider fallback (Arial, where Arial Narrow is not installed) into slivers.
+/** A condensed "0": a stadium-shaped ring `width` × `height` around (cx, cy), `stroke` thick (filled even-odd). */
+const zeroDigit = (cx: number, cy: number, width: number, height: number, stroke: number): string => {
+  const outer = width / 2;
+  const inner = outer - stroke;
+  const top = cy - height / 2 + outer;
+  const bottom = cy + height / 2 - outer;
+  const loop = (radius: number): string => `M${cx - radius} ${top}A${radius} ${radius} 0 0 1 ${cx + radius} ${top}V${bottom}A${radius} ${radius} 0 0 1 ${cx - radius} ${bottom}Z`;
+  return loop(outer) + loop(inner);
+};
+const REPLACEMENT_ZERO = zeroDigit(28, 65.5, 19, 32, 6.5);
 const replacementBody = (view: Extract<CounterViewModel, { kind: 'replacement' }>): string =>
   `<rect class="counter-paper replacement nation-${view.nation}" width="100" height="100"/>
     <g class="counter-identification">${view.nation === 'US' ? svgText(11.5,29,'A','eq-army') : ''}${squeezed(svgText(30.5,28,'Repl','eq-repl'), 30).replace('<text ', '<text transform="rotate(-90 30.5 28)" ')}<path class="eq-leader" d="M31 21.5H37.5"/></g>
     <g class="counter-symbol"><rect class="eq-box nation-${view.nation}" x="37.5" y="16.5" width="33.5" height="26"/>${squeezed(svgText(54,38,view.abbreviation.toUpperCase(),'eq-label'), 21)}</g>
-    <g class="counter-values">${squeezed(svgText(29.5,82.5,'0','eq-number eq-shadow'), 17)}${squeezed(svgText(28,81,'0','eq-number eq-white'), 17)}${squeezed(svgText(43.5,65,'0','eq-superscript'), 10)}
-    <rect class="eq-move-box" x="50" y="49.5" width="34" height="36.5"/>${squeezed(svgText(67,82,'10','eq-number eq-move'), 29)}</g>
+    <g class="counter-values"><path class="eq-digit eq-shadow" transform="translate(1.5 1.5)" d="${REPLACEMENT_ZERO}"/><path class="eq-digit eq-white" d="${REPLACEMENT_ZERO}"/><path class="eq-digit eq-superscript" d="${zeroDigit(43.5, 56, 10, 18, 3.5)}"/>
+    <rect class="eq-move-box" x="50" y="49.5" width="34" height="36.5"/><path class="eq-digit eq-move" d="M56.5 50H62.5V81.5H56.5V57L52 59.5V54Z${zeroDigit(74.5, 65.75, 17, 31.5, 5.5)}"/></g>
     <g class="counter-quantity"><circle class="eq-count-disc" cx="87" cy="13" r="10"/>${svgText(87,18,view.quantity,'eq-count')}</g>`;
 
 // A corps HQ prints its nation's flag where other counters print the unit symbol (BTR S01 R10 C02 and the other HQ images):

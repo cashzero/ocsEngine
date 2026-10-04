@@ -6,6 +6,7 @@ import {
   applyRuleAction,
   arrivingReinforcements,
   atStep,
+  onGameTurn,
   buildGeneratedRuleState,
   generatedPieceId,
   isActiveAircraft,
@@ -53,7 +54,7 @@ const waiting = (state: GameState): GameState => withPiece(state, U.aReinforce, 
 
 describe('Eq replacements arrive each Reinforcement Phase (13.5)', () => {
   it('creates an Eq counter in the reinforcement Box that must be placed at an entry hex', () => {
-    let state = atStep(base(), 'AIRCRAFT_REFIT', 'NONE', ALLIED);
+    let state = atStep(onGameTurn(base(), 2), 'AIRCRAFT_REFIT', 'NONE', ALLIED);
     state = ok(applyRuleAction(state, ALLIED, { kind: 'ADVANCE_SEQUENCE' }));
     expect(state.sequence.phase).toBe('REINFORCEMENT');
     const eq = state.pieceState.pieces.find((entry) => String(entry.id).startsWith('repl-arrival:') && !String(entry.id).endsWith(':pax'))!;
@@ -69,7 +70,7 @@ describe('Eq replacements arrive each Reinforcement Phase (13.5)', () => {
   it('is built in: a game without air forces still receives Eq (and Pax) every turn', () => {
     const request = { ...REQUEST, oob: { ...REQUEST.oob, air: 'NONE' as const, airTransport: 'NONE' as const } };
     const plain = buildGeneratedRuleState({ [generatedPieceId('allied:independent-hq-1', request)]: [hex(2), 'COMBAT', 'combat'] }, {}, { request, replacements: true });
-    const started = ok(applyRuleAction(atStep(plain, 'AIRCRAFT_REFIT', 'NONE', ALLIED), ALLIED, { kind: 'ADVANCE_SEQUENCE' }));
+    const started = ok(applyRuleAction(atStep(onGameTurn(plain, 2), 'AIRCRAFT_REFIT', 'NONE', ALLIED), ALLIED, { kind: 'ADVANCE_SEQUENCE' }));
     const arrived = started.pieceState.pieces.filter((entry) => String(entry.id).startsWith('repl-arrival:')).map(({ id: arrivedId }) => String(arrivedId));
     expect(arrived.some((arrivedId) => arrivedId.endsWith(':pax'))).toBe(true);
     expect(arrived.some((arrivedId) => !arrivedId.endsWith(':pax'))).toBe(true);

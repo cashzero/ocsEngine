@@ -6,6 +6,7 @@ import {
   createNewGameOrchestrator,
   createUiController,
 } from '../../src/index.js';
+import { playUntil } from './play-turn.js';
 
 const elapsed = async (operation: () => unknown): Promise<number> => {
   const started = performance.now();
@@ -29,6 +30,8 @@ describe('Reinforcement Phase on the largest map', () => {
       bindings: bindings.map((binding, index) => ({ ...binding, label: index === 0 ? 'Allied' : 'Axis' })),
     });
     expect(await elapsed(() => controller.start())).toBeLessThan(1_500);
+    // Nothing arrives on Game Turn 1 (13.6): the first Reinforcement Phase with arrivals is on Game Turn 2.
+    await playUntil(controller, 2, 'REINFORCEMENT');
     const snapshot = controller.getSnapshot();
     expect(snapshot.view.projection?.sequence.phase).toBe('REINFORCEMENT');
     expect(await elapsed(() => controller.endStep())).toBeLessThan(1_500);

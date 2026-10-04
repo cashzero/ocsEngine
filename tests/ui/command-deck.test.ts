@@ -13,6 +13,7 @@ import {
   activeDeckTab, deckTabs, selectDeckTab, syncDeckTab, type DeckState,
 } from '../../src/ui/command-deck.js';
 import { commandDeckHtml, movePopupHtml, phaseControlsHtml } from './render-view.js';
+import { playUntil } from './play-turn.js';
 
 const startGame = async () => {
   const engine = createGameplayEngine(createMemoryGameplayPorts());
@@ -21,11 +22,17 @@ const startGame = async () => {
   const { session, scenario, bindings } = created.value;
   return createUiController({ engine, session, scenario, bindings });
 };
+/** Nothing arrives on Game Turn 1 (13.6), so the Reinforcement Phase is tested on Game Turn 2. */
+const startReinforcement = async () => {
+  const controller = await startGame();
+  await playUntil(controller, 2, 'REINFORCEMENT');
+  return controller;
+};
 const newDeck = (): DeckState => ({ search: '', working: false });
 
 describe('phase-specific command deck', () => {
   it('opens each phase on its required tab and keeps a picked tab only within that phase', async () => {
-    const controller = await startGame();
+    const controller = await startReinforcement();
     const deck = newDeck();
 
     // Reinforcement: arrivals first, with the number still to place.
@@ -75,7 +82,7 @@ describe('phase-specific command deck', () => {
   });
 
   it('moves End phase out of the deck and shows why it cannot end yet', async () => {
-    const controller = await startGame();
+    const controller = await startReinforcement();
     const snapshot = controller.getSnapshot();
     const deck = newDeck();
     expect(commandDeckHtml(snapshot, deck)).not.toContain('id="end-phase"');
@@ -87,7 +94,7 @@ describe('phase-specific command deck', () => {
   });
 
   it('names the step End phase finishes without repeating the phase, and keeps Undo in place when nothing can be undone', async () => {
-    const controller = await startGame();
+    const controller = await startReinforcement();
     const deck = newDeck();
     let controls = phaseControlsHtml(controller.getSnapshot(), deck);
     expect(controls).toContain('End Reinforcement Phase');
@@ -124,11 +131,7 @@ describe('phase-specific command deck', () => {
 
   it('confirms a previewed move in a popup anchored to the destination, not in the deck', async () => {
     const controller = await startGame();
-    for (const arrival of controller.getSnapshot().arrivals) {
-      controller.selectPiece(arrival.pieceId);
-      await controller.clickHex(arrival.entryHexIds[0]!);
-    }
-    await controller.endStep();
+    // Nothing arrives on Game Turn 1 (13.6): play opens in the Movement Phase.
     const before = controller.getSnapshot();
     expect(movePopupHtml(before)).toBe('');
     const mover = before.view.projection!.stacks.flatMap(({ pieces }) => pieces)
@@ -179,11 +182,7 @@ describe('phase-specific command deck', () => {
   it('offers Deselect for an idle pick but only Done for a unit part-way through its move (6.1g)', async () => {
     const controller = await startGame();
     const deck = newDeck();
-    for (const arrival of controller.getSnapshot().arrivals) {
-      controller.selectPiece(arrival.pieceId);
-      await controller.clickHex(arrival.entryHexIds[0]!);
-    }
-    await controller.endStep();
+    // Nothing arrives on Game Turn 1 (13.6): play opens in the Movement Phase.
     const own = () => controller.getSnapshot().view.projection!.stacks.flatMap(({ pieces }) => pieces)
       .filter((piece) => piece.ownerId === controller.getSnapshot().view.playerId && piece.location.kind === 'ON_MAP');
     let mover: string | undefined;
@@ -238,11 +237,7 @@ describe('phase-specific command deck', () => {
   it('detaches numbered Breakdowns ("1/101.Abn") from a division and lets Undo take one back (20.0)', async () => {
     const controller = await startGame();
     const deck = newDeck();
-    for (const arrival of controller.getSnapshot().arrivals) {
-      controller.selectPiece(arrival.pieceId);
-      await controller.clickHex(arrival.entryHexIds[0]!);
-    }
-    await controller.endStep();
+    // Nothing arrives on Game Turn 1 (13.6): play opens in the Movement Phase.
     const own = () => controller.getSnapshot().view.projection!.stacks.flatMap(({ pieces }) => pieces)
       .filter((piece) => piece.ownerId === controller.getSnapshot().view.playerId && piece.location.kind === 'ON_MAP');
     const division = own().find((piece) => { controller.selectPiece(piece.id); return controller.getSnapshot().unitActions.some(({ group }) => group === 'BREAKDOWN'); });
@@ -287,11 +282,7 @@ describe('phase-specific command deck', () => {
 
   it('warns in the move popup that moving another unit ends a loaded truck\'s move (6.1g)', async () => {
     const controller = await startGame();
-    for (const arrival of controller.getSnapshot().arrivals) {
-      controller.selectPiece(arrival.pieceId);
-      await controller.clickHex(arrival.entryHexIds[0]!);
-    }
-    await controller.endStep();
+    // Nothing arrives on Game Turn 1 (13.6): play opens in the Movement Phase.
     const own = () => controller.getSnapshot().view.projection!.stacks.flatMap(({ pieces }) => pieces)
       .filter((piece) => piece.ownerId === controller.getSnapshot().view.playerId && piece.location.kind === 'ON_MAP');
     const kindOf = (id: string) => {

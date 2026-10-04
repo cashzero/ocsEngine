@@ -15,11 +15,7 @@ describe('map-based movement selection on the generated default game', () => {
     const { session, scenario, bindings } = created.value;
     const controller = createUiController({ engine, session, scenario, bindings });
     // Reinforcements arrive first and cannot be delayed (13.6).
-    for (const arrival of controller.getSnapshot().arrivals) {
-      controller.selectPiece(arrival.pieceId);
-      await controller.clickHex(arrival.entryHexIds[0]!);
-    }
-    await controller.endStep();
+    // Nothing arrives on Game Turn 1 (13.6): play opens in the Movement Phase.
     const snapshot = controller.getSnapshot();
     expect(snapshot.view.projection?.sequence.phase).toBe('MOVEMENT');
     const mover = snapshot.view.projection!.stacks.flatMap(({ pieces }) => pieces)

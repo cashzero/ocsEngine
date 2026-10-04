@@ -10,6 +10,7 @@ import {
   applyRuleAction,
   arrivingReinforcements,
   atStep,
+  onGameTurn,
   buildGeneratedRuleState,
   generateRandomOob,
   generatedPieceId,
@@ -105,7 +106,7 @@ describe('Pax and Eq are built into every generated game (13.5)', () => {
 
 describe('Repls arrive and are placed (13.5)', () => {
   it('creates a Pax and an Eq counter in the reinforcement Box each Reinforcement Phase', () => {
-    let state = atStep(buildGeneratedRuleState({ [U.hq]: [hex(2), 'COMBAT', 'combat'] }, {}, { replacements: true }), 'AIRCRAFT_REFIT', 'NONE', ALLIED);
+    let state = atStep(onGameTurn(buildGeneratedRuleState({ [U.hq]: [hex(2), 'COMBAT', 'combat'] }, {}, { replacements: true }), 2), 'AIRCRAFT_REFIT', 'NONE', ALLIED);
     state = ok(applyRuleAction(state, ALLIED, { kind: 'ADVANCE_SEQUENCE' }));
     expect(state.sequence.phase).toBe('REINFORCEMENT');
     const turn = state.sequence.gameTurn;
