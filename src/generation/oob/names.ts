@@ -142,3 +142,21 @@ export const unitName = (
   if ((role === 'COMBAT' && echelon === 'XX') || role === 'SUPPLY' || role === 'TRANSPORT') return label;
   return formation ? `${label} / ${formationName}` : `${allied ? 'US' : 'Ge'} ${label}`;
 };
+
+/**
+ * What a counter prints rotated beside its symbol: the unit's own number, read from its name ("22 Arm Regt" 22,
+ * "I/16 Pz Bn" I/16, "Ge Arty Rgt 600" 600, "Div Arty II" II, "Alanis TF" Alanis, division "101.Abn" 101), and the
+ * short name of the division it belongs to ("22 Arm Regt / 11.A" prints 11.A). A name without a number (a supply dump,
+ * "FB Pz Rgt") prints nothing: the generator's own ids are never shown to the player.
+ */
+export const counterIdentification = (name: string, inFormation: boolean): { readonly designation: string; readonly affiliation: string } => {
+  const split = name.lastIndexOf(' / ');
+  const affiliation = inFormation && split >= 0 ? name.slice(split + 3) : '';
+  const own = (split >= 0 ? name.slice(0, split) : name).replace(/^(US|Ge) /u, '').replace(/ \(Det\. \d+\)$/u, '');
+  const words = own.split(' ');
+  const numbered = words.find((word) => /\d/u.test(word));
+  if (numbered) return { designation: /^\d+\./u.test(numbered) ? numbered.slice(0, numbered.indexOf('.')) : numbered, affiliation };
+  if (/ (TF|KG)$/u.test(own)) return { designation: words[0]!, affiliation };
+  const last = words.at(-1)!;
+  return { designation: ROMAN.includes(last) ? last : '', affiliation };
+};
