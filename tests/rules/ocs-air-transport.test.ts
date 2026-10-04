@@ -33,7 +33,7 @@ const id = (fragment: string) => generatedPieceId(fragment, REQUEST);
 const U = {
   base1: id('allied:air-base-1'), base2: id('allied:air-base-2'), dump: id('allied:independent-supply-1'),
   c47a: id('allied:air-transport-1'), glider: id('allied:air-transport-2'), c47b: id('allied:air-transport-3'),
-  fighter: id('allied:air-fighter-1'), para: id('allied:independent-para-1'), hq: id('allied:f1-command'),
+  fighter: id('allied:air-fighter-1'), para: id('allied:independent-para-1'), hq: id('allied:independent-hq-1'),
   xTrk: id('axis:f1-combat-1'), xBase: id('axis:air-base-1'),
 };
 const hex = (column: number, row = 4): HexId => `${column - Math.floor(row / 2)},${row}` as HexId;

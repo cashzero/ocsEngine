@@ -3,6 +3,7 @@ import {
   ALLIED,
   AXIS,
   BTR_SUPPLY_TABLE,
+  RULE_FIXTURE_NEW_GAME_REQUEST,
   applyRuleAction,
   arrivingReinforcements,
   atStep,
@@ -38,7 +39,7 @@ import {
 
 const U = {
   alTrk: generatedPieceId('allied:f1-combat-1'), alTrk2: generatedPieceId('allied:f1-combat-2'),
-  alHq: generatedPieceId('allied:f1-command'), alArt: generatedPieceId('allied:f1-artillery-1'), alRecon: generatedPieceId('allied:f1-recon'),
+  alHq: generatedPieceId('allied:independent-hq-1'), alArt: generatedPieceId('allied:f1-artillery-1'), alRecon: generatedPieceId('allied:f1-recon'),
   alLeg: generatedPieceId('allied:f2-combat-1'), // Formation 2 is a single-unit infantry division, so the second "leg" slot borrows formation 1's second regiment.
   alLeg2: generatedPieceId('allied:f1-combat-2'),
   alEng: generatedPieceId('allied:independent-engineer-1'), alTruck: generatedPieceId('allied:independent-transport-1'),
@@ -615,12 +616,19 @@ describe('OCS 4.3 transport, Extenders and dumps (9.14, 12.2, 12.7, 12.11, 13.2)
     expect(checked).toBe(true);
   });
 
-  it('counts a multi-unit formation as at most 3 RE for barrage density (10.0a)', () => {
-    const state = atStep(buildGeneratedRuleState({
-      [U.alHq]: ['6,5', 'COMBAT', 'combat'], [U.alTrk]: ['6,5', 'COMBAT', 'combat'], [U.alTrk2]: ['6,5', 'COMBAT', 'combat'],
-      [U.alArt]: ['6,5', 'COMBAT', 'combat'], [U.alRecon]: ['6,5', 'COMBAT', 'combat'], [U.axArt]: ['8,5', 'COMBAT', 'combat'], [U.axSup]: ['9,5', null],
-    }), 'COMBAT', 'BARRAGE', AXIS);
-    const density = previewBarrage(state, AXIS, [U.axArt], '6,5' as HexId).shifts.find(({ reason }) => reason === 'Density');
-    expect(density?.shift).toBe(0);
+  it('counts a multi-unit formation as at most 3 RE for barrage density (10.0a), and an independent HQ outside that cap', () => {
+    // STANDARD scale: three 1-RE regiments, artillery and recon make the formation 4 RE in one hex.
+    const request = { ...RULE_FIXTURE_NEW_GAME_REQUEST, oob: { ...RULE_FIXTURE_NEW_GAME_REQUEST.oob, scale: 'STANDARD' as const } };
+    const pid = (fragment: string) => generatedPieceId(fragment, request);
+    const formation = Object.fromEntries(['allied:f1-combat-1', 'allied:f1-combat-2', 'allied:f1-combat-3', 'allied:f1-artillery-1', 'allied:f1-recon']
+      .map((fragment) => [pid(fragment), ['6,5', 'COMBAT', 'combat'] as const]));
+    const enemy = { [pid('axis:f1-artillery-1')]: ['8,5', 'COMBAT', 'combat'] as const, [pid('axis:independent-supply-1')]: ['9,5', null] as const };
+    const density = (placement: Parameters<typeof buildGeneratedRuleState>[0]) => previewBarrage(
+      atStep(buildGeneratedRuleState(placement, {}, { request }), 'COMBAT', 'BARRAGE', AXIS), AXIS, [pid('axis:f1-artillery-1')], '6,5' as HexId,
+    ).shifts.find(({ reason }) => reason === 'Density')?.shift;
+    // 4 RE counted as 3: no shift (uncapped, 4 RE would shift one column right).
+    expect(density({ ...formation, ...enemy })).toBe(0);
+    // The HQ belongs to no formation (3.2f), so its 1/2 RE adds to the capped 3 RE: 3.5 RE shifts one column.
+    expect(density({ ...formation, [pid('allied:independent-hq-1')]: ['6,5', 'COMBAT', 'combat'], ...enemy })).toBe(1);
   });
 });

@@ -48,6 +48,41 @@ const fromPool = (pool: readonly string[], ordinal: number): string => {
 
 const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI'];
 
+export interface HqName {
+  /** The VASSAL entryName without its nation prefix ("HQ 3rd Corps" of "US HQ 3rd Corps"). */
+  readonly name: string;
+  /** What the counter prints rotated beside the flag (BTR S01 R10 C01 "3", S01 R10 C10 "18 Abn", S04 R12 C20 "39 Pz"). */
+  readonly designation: string;
+  /** The HQ's own BTR PieceSlot; its faces (range-MA per mode, echelon) are transcribed in the counter corpus. */
+  readonly gpid: number;
+}
+
+/** BTR names its HQs "HQ <n> Corps"; the pool lists each as [<n>, printed number, GPID]. */
+const corpsHqs = (entries: readonly (readonly [string, string, number])[]): readonly HqName[] =>
+  entries.map(([corps, designation, gpid]) => ({ name: `HQ ${corps} Corps`, designation, gpid }));
+
+/**
+ * HQs of the BTR VASSAL module (US and Heer; SS and Luftwaffe HQs print different art and are left out). An HQ is an
+ * independent unit (3.2f) that no formation contains; BTR's happen to be corps HQs, but nothing else assumes an HQ's level.
+ * Each is built from its own GPID, so it prints its own counter's values (US 14-0 / 9-16, 18th Abn 8-0 / 6-16; German
+ * panzer corps 10-0 / 7-14, other corps 8-0 / 5-10).
+ */
+const HQ_NAMES: Readonly<Record<OobSide, readonly HqName[]>> = {
+  ALLIED: corpsHqs([['3rd', '3', 319], ['5th', '5', 320], ['6th', '6', 1724], ['7th', '7', 322], ['8th', '8', 323], ['12th', '12', 324],
+    ['13th', '13', 325], ['15th', '15', 326], ['16th', '16', 327], ['18th Abn', '18 Abn', 328], ['19th', '19', 335], ['20th', '20', 336],
+    ['21st', '21', 337], ['22nd', '22', 338]]),
+  AXIS: corpsHqs([['39th Pz', '39 Pz', 1103], ['47th Pz', '47 Pz', 1104], ['58th Pz', '58 Pz', 1105], ['12th', '12', 1106],
+    ['13th', '13', 1107], ['30th', '30', 1108], ['53rd', '53', 1109], ['63rd', '63', 1110], ['64th', '64', 1111], ['66th', '66', 1112],
+    ['67th', '67', 1113], ['74th', '74', 1114], ['80th', '80', 1115], ['81st', '81', 1116], ['82nd', '82', 1117], ['85th', '85', 1118],
+    ['86th', '86', 1119], ['88th', '88', 1120], ['89th', '89', 1121], ['90th', '90', 1122], ['Ems', 'Ems', 1123], ['Hohne', 'Hohne', 1124]]),
+};
+
+/** The side's `ordinal`-th HQ (1-based), drawn from its own naming stream so it never consumes the composition RNG. */
+export const hqName = (seed: number, side: OobSide, ordinal: number): HqName => {
+  const pool = createSeededRandom(mixUint32(seed ^ (side === 'ALLIED' ? 0x4855 : 0x4847))).shuffle(HQ_NAMES[side]);
+  return pool[(ordinal - 1) % pool.length]!;
+};
+
 /**
  * Keep the unit-size word consistent with the counter's echelon symbol: battalion names
  * ("I/914 Inf Bn") become their regiment ("914 Inf Rgt") on a III counter, and a XX counter is
@@ -73,7 +108,8 @@ export const unitName = (
   const number = rng.integer(200, 850) + ordinal;
   const label = (() => {
     switch (role) {
-      case 'FORMATION_COMMAND': return allied ? 'HQ' : 'Stab';
+      // An HQ keeps the module's name, "US HQ 3rd Corps" / "Ge HQ 39th Pz Corps".
+      case 'HQ': return hqName(seed, side, ordinal).name;
       case 'COMBAT': {
         if (!formation) throw new Error('Combat names require a formation profile.');
         if (echelon === 'XX') return sizedCombatName('', echelon, allied, formationName, ordinal);

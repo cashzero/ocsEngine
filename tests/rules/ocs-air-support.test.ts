@@ -23,8 +23,8 @@ const REQUEST = FULL_AIR_NEW_GAME_REQUEST;
 const id = (fragment: string) => generatedPieceId(fragment, REQUEST);
 const U = {
   aF1: id('allied:air-fighter-1'), aB1: id('allied:air-bomber-1'), aBase: id('allied:air-base-1'), aSup: id('allied:independent-supply-1'),
-  aHq: id('allied:f1-command'), aLeg: id('allied:f2-combat-1'), aReinforce: id('allied:air-reinforcement-1'),
-  xHq: id('axis:f1-command'), xTrk: id('axis:f1-combat-1'),
+  aHq: id('allied:independent-hq-1'), aLeg: id('allied:f2-combat-1'), aReinforce: id('allied:air-reinforcement-1'),
+  xHq: id('axis:independent-hq-1'), xTrk: id('axis:f1-combat-1'),
 };
 const hex = (column: number, row = 4): HexId => `${column - Math.floor(row / 2)},${row}` as HexId;
 const BASE = hex(1);
@@ -67,7 +67,7 @@ describe('Eq replacements arrive each Reinforcement Phase (13.5)', () => {
   });
 
   it('gives no Eq in a game without the support option', () => {
-    const plain = buildGeneratedRuleState({ [id('allied:f1-command')]: [hex(2), 'COMBAT', 'combat'] }, {}, { request: { ...REQUEST, oob: { ...REQUEST.oob, airSupport: undefined } } });
+    const plain = buildGeneratedRuleState({ [id('allied:independent-hq-1')]: [hex(2), 'COMBAT', 'combat'] }, {}, { request: { ...REQUEST, oob: { ...REQUEST.oob, airSupport: undefined } } });
     const started = ok(applyRuleAction(atStep(plain, 'AIRCRAFT_REFIT', 'NONE', ALLIED), ALLIED, { kind: 'ADVANCE_SEQUENCE' }));
     expect(started.pieceState.pieces.some((entry) => String(entry.id).startsWith('repl-arrival:'))).toBe(false);
   });

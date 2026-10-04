@@ -22,8 +22,11 @@ export interface ReviewedOobArchetype {
 }
 
 const ALL_FORMATIONS: readonly OobFormationArchetype[] = ['ARMORED', 'INFANTRY', 'MOBILE_INFANTRY', 'AIRBORNE'];
-/** Divisions built from an HQ plus regiments; infantry and airborne divisions are a single XX counter. */
-const HQ_FORMATIONS: readonly OobFormationArchetype[] = ['ARMORED', 'MOBILE_INFANTRY'];
+/**
+ * Independent units (3.2f) belong to no formation. None of the BTR module's HQ PieceSlots carries the Formation mark
+ * that its divisional units do, so an HQ is never a formation member.
+ */
+const INDEPENDENT: readonly OobFormationArchetype[] = [];
 /** Organic artillery and armored reconnaissance: only the multi-unit divisions carry them. */
 const MECHANIZED_FORMATIONS: readonly OobFormationArchetype[] = ['ARMORED', 'MOBILE_INFANTRY'];
 
@@ -32,7 +35,7 @@ const MECHANIZED_FORMATIONS: readonly OobFormationArchetype[] = ['ARMORED', 'MOB
  * generator design values documented in M7 normalization decisions, not decoded claims.
  */
 export const REVIEWED_OOB_ARCHETYPES: readonly ReviewedOobArchetype[] = Object.freeze([
-  { id: 'allied-command', side: 'ALLIED', role: 'FORMATION_COMMAND', formationArchetypes: HQ_FORMATIONS, rawName: 'US HQ 3rd Corps', gpid: 319, family: 'GROUND', combatStrength: 0, actionRating: 3, movementPoints: 4, regimentalEquivalents: 0.5, range: 0, steps: 1, pointCost: 2 },
+  { id: 'allied-command', side: 'ALLIED', role: 'HQ', formationArchetypes: INDEPENDENT, rawName: 'US HQ 3rd Corps', gpid: 319, family: 'GROUND', combatStrength: 0, actionRating: 3, movementPoints: 4, regimentalEquivalents: 0.5, range: 0, steps: 1, pointCost: 2 },
   { id: 'allied-armored-combat', side: 'ALLIED', role: 'COMBAT', formationArchetypes: ['ARMORED'], rawName: 'US 2.A CCA', gpid: 160, family: 'GROUND', combatStrength: 10, actionRating: 4, movementPoints: 8, regimentalEquivalents: 1, range: 0, steps: 2, pointCost: 10 },
   { id: 'allied-infantry-combat', side: 'ALLIED', role: 'COMBAT', formationArchetypes: ['INFANTRY'], rawName: 'US Infantry Division', gpid: 339, family: 'GROUND', combatStrength: 24, actionRating: 4, movementPoints: 10, regimentalEquivalents: 4, range: 0, steps: 4, pointCost: 24 },
   { id: 'allied-airborne-combat', side: 'ALLIED', role: 'COMBAT', formationArchetypes: ['AIRBORNE'], rawName: 'US Airborne Division (sum of the printed regiments, sheet 2B; see counter-corpus TODO)', gpid: ALLIED_AIRBORNE_GPID, family: 'GROUND', combatStrength: 16, actionRating: 4, movementPoints: 5, regimentalEquivalents: 4, range: 0, steps: 4, pointCost: 24 },
@@ -41,7 +44,7 @@ export const REVIEWED_OOB_ARCHETYPES: readonly ReviewedOobArchetype[] = Object.f
   { id: 'allied-engineer', side: 'ALLIED', role: 'ENGINEER', formationArchetypes: ALL_FORMATIONS, rawName: 'US Pontoon', gpid: 466, family: 'GROUND', combatStrength: 1, actionRating: 3, movementPoints: 4, regimentalEquivalents: 0.5, range: 0, steps: 1, pointCost: 3 },
   { id: 'allied-transport', side: 'ALLIED', role: 'TRANSPORT', formationArchetypes: ALL_FORMATIONS, rawName: 'US Truck', gpid: 77, family: 'GROUND', combatStrength: 0, actionRating: 2, movementPoints: 12, regimentalEquivalents: 0.5, range: 0, steps: 1, pointCost: 2 },
   { id: 'allied-supply', side: 'ALLIED', role: 'SUPPLY', formationArchetypes: ALL_FORMATIONS, rawName: 'Allied Supply Dump', gpid: 321, family: 'RESOURCE', combatStrength: null, actionRating: null, movementPoints: null, regimentalEquivalents: null, range: null, steps: 0, pointCost: 2 },
-  { id: 'axis-command', side: 'AXIS', role: 'FORMATION_COMMAND', formationArchetypes: HQ_FORMATIONS, rawName: 'Ge HQ 39th Pz Corps', gpid: 1103, family: 'GROUND', combatStrength: 0, actionRating: 3, movementPoints: 4, regimentalEquivalents: 0.5, range: 0, steps: 1, pointCost: 2 },
+  { id: 'axis-command', side: 'AXIS', role: 'HQ', formationArchetypes: INDEPENDENT, rawName: 'Ge HQ 39th Pz Corps', gpid: 1103, family: 'GROUND', combatStrength: 0, actionRating: 3, movementPoints: 4, regimentalEquivalents: 0.5, range: 0, steps: 1, pointCost: 2 },
   { id: 'axis-armored-combat', side: 'AXIS', role: 'COMBAT', formationArchetypes: ['ARMORED'], rawName: 'Ge 2.Pz 1-3 Pz Bn', gpid: 733, family: 'GROUND', combatStrength: 10, actionRating: 4, movementPoints: 8, regimentalEquivalents: 1, range: 0, steps: 2, pointCost: 10 },
   { id: 'axis-infantry-combat', side: 'AXIS', role: 'COMBAT', formationArchetypes: ['INFANTRY'], rawName: 'Ge Infantry Division', gpid: 826, family: 'GROUND', combatStrength: 16, actionRating: 3, movementPoints: 4, regimentalEquivalents: 4, range: 0, steps: 4, pointCost: 24 },
   { id: 'axis-mobile-combat', side: 'AXIS', role: 'COMBAT', formationArchetypes: ['MOBILE_INFANTRY'], rawName: 'Ge 3.PG 8 Inf Rgt', gpid: 806, family: 'GROUND', combatStrength: 9, actionRating: 4, movementPoints: 5, regimentalEquivalents: 1, range: 0, steps: 2, pointCost: 9 },

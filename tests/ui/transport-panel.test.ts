@@ -161,6 +161,22 @@ describe('the truck\'s supply area (A2)', () => {
     controller.dispose();
   });
 
+  it('lists every HQ in an HQ group of its own, first and apart from the formations and independent units (3.2f)', async () => {
+    const { controller, own } = await startMovement();
+    const host = document.createElement('div');
+    host.innerHTML = unitRosterHtml(controller.getSnapshot(), newDeck());
+    const hqs = own().filter(({ role, location }) => role === 'HQ' && location.kind !== 'ELIMINATED');
+    expect(hqs.length, 'the default game has HQs').toBeGreaterThan(0);
+    const groups = [...host.querySelectorAll<HTMLElement>('details.roster-group:not(.roster-eliminated)')];
+    const hqGroup = groups[0]!;
+    expect(hqGroup.classList.contains('roster-hq')).toBe(true);
+    expect(hqGroup.querySelector('summary')!.textContent).toMatch(/^HQ\b/u);
+    const picked = (group: HTMLElement) => [...group.querySelectorAll<HTMLElement>('[data-roster-pick]')].map((button) => button.dataset.rosterPick);
+    expect(picked(hqGroup).sort()).toEqual(hqs.map(({ id }) => String(id)).sort());
+    for (const group of groups.slice(1)) for (const hq of hqs) expect(picked(group)).not.toContain(String(hq.id));
+    controller.dispose();
+  });
+
   it('lists air units in an Air group of their own and leaves air bases out, like supply dumps', async () => {
     const { controller, own } = await startMovement({ ...DEFAULT_NEW_GAME_REQUEST, oob: { ...DEFAULT_NEW_GAME_REQUEST.oob, air: 'STANDARD' } });
     const html = unitRosterHtml(controller.getSnapshot(), newDeck());

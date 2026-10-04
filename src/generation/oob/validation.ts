@@ -11,7 +11,7 @@ import type {
 
 const SIDES: readonly OobSide[] = ['ALLIED', 'AXIS'];
 const ROLES: readonly OobUnitRole[] = [
-  'FORMATION_COMMAND', 'COMBAT', 'ARTILLERY', 'RECONNAISSANCE',
+  'HQ', 'COMBAT', 'ARTILLERY', 'RECONNAISSANCE',
   'ENGINEER', 'TRANSPORT', 'SUPPLY', 'AIRCRAFT', 'AIR_BASE',
 ];
 
@@ -20,7 +20,7 @@ const issue = (code: string, message: string, path: readonly (string | number)[]
 });
 
 const emptyRoleCounts = (): Record<OobUnitRole, number> => ({
-  FORMATION_COMMAND: 0, COMBAT: 0, ARTILLERY: 0, RECONNAISSANCE: 0,
+  HQ: 0, COMBAT: 0, ARTILLERY: 0, RECONNAISSANCE: 0,
   ENGINEER: 0, TRANSPORT: 0, SUPPLY: 0, AIRCRAFT: 0, AIR_BASE: 0,
 });
 
@@ -100,8 +100,9 @@ export const validateGeneratedOob = (
         }
         continue;
       }
-      if (count('FORMATION_COMMAND') !== 1) {
-        issues.push(issue('FORMATION_COMMAND_INVARIANT', 'Each multi-unit formation requires exactly one command element.', [...basePath, 'units']));
+      // HQs are independent of every formation (3.2f): a formation never contains one.
+      if (count('HQ') !== 0) {
+        issues.push(issue('FORMATION_HQ_INVARIANT', 'A formation never contains an HQ; HQs are independent units.', [...basePath, 'units']));
       }
       if (count('COMBAT') < 2) {
         issues.push(issue('FORMATION_COMBAT_INVARIANT', 'Each multi-unit formation requires at least two combat elements.', [...basePath, 'units']));
@@ -113,7 +114,7 @@ export const validateGeneratedOob = (
     if (side.independentUnits.some((unit) => unit.side !== side.side || unit.formationId !== null)) {
       issues.push(issue('INDEPENDENT_UNIT_OWNERSHIP', 'Independent units must belong to the side and have no formation.', ['sides', sideIndex, 'independentUnits']));
     }
-    for (const required of ['ARTILLERY', 'ENGINEER', 'TRANSPORT', 'SUPPLY'] as const) {
+    for (const required of ['HQ', 'ARTILLERY', 'ENGINEER', 'TRANSPORT', 'SUPPLY'] as const) {
       if (!side.independentUnits.some(({ role }) => role === required)) {
         issues.push(issue('MISSING_INDEPENDENT_PACKAGE', `Side ${side.side} requires independent ${required}.`, ['sides', sideIndex, 'independentUnits']));
       }
