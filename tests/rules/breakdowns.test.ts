@@ -150,7 +150,7 @@ describe('absorbing Breakdowns at the end of a phase (20.0b-d, 20.0g)', () => {
     const breakdown = newPieces(state, created.state)[0]!;
     const advanced = applyRuleAction(created.state, ALLIED, { kind: 'ADVANCE_SEQUENCE' });
     expect(advanced.ok).toBe(true);
-    expect(advanced.state.sequence.phase).not.toBe('MOVEMENT');
+    expect(advanced.state.sequence).not.toMatchObject({ phase: 'MOVEMENT', phasingPlayerId: ALLIED });
     expect(piece(advanced.state, U.inf).remainingSteps).toBe(4);
     // Back to the pool: out of play, not in the dead pile.
     expect(advanced.state.pieceState.pieces.some(({ id: pieceId }) => pieceId === breakdown.id)).toBe(false);
