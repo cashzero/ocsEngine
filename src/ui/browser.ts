@@ -477,7 +477,7 @@ const operationPreviewHtml = (prepared: GeneratedScenarioPackage): string => {
     cell.supplySource ? `<g class="preview-supply-source side-${cell.supplySource.toLowerCase()}">${supplySourceArtHtml(cell, hexSize, objectives.has(cell.id))}</g>` : '',
   ].join('')).join('');
   const rivers = coastlineHtml(map.cells, hexSize) + riversHtml(map.edges, hexSize, 'generated-edge');
-  const roads = roadsHtml(map.edges, map.cells, hexSize, 'generated-edge') + railsHtml(map.edges, hexSize);
+  const roads = roadsHtml(map.edges, map.cells, hexSize, 'generated-edge') + railsHtml(map.edges, map.cells, hexSize);
   const forces = oob.sides.map((side) => `<section class="preview-force side-${side.side.toLowerCase()}">
     <header><strong>${escapeHtml(side.side)}</strong><span>${prepared.generatedOob.metrics.pointsBySide[side.side]} points</span></header>
     ${side.independentUnits.some(({ role }) => role === 'HQ') ? `<details class="counter-formation preview-hq"><summary><span>HQ</span><small>${side.independentUnits.filter(({ role }) => role === 'HQ').length} units</small></summary><div class="counter-grid">${side.independentUnits.filter(({ role }) => role === 'HQ').map(previewCounter).join('')}</div></details>` : ''}
