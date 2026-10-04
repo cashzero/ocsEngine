@@ -43,7 +43,7 @@ import {
   type RandomOobOptions,
 } from './model.js';
 import { validateGeneratedOob } from './validation.js';
-import { formationNameCapacity, hqName, formationNames, unitName } from './names.js';
+import { counterIdentification, formationNameCapacity, hqName, formationNames, unitName } from './names.js';
 import { buildAirForces } from './air.js';
 import { withBreakdowns } from './breakdowns.js';
 
@@ -152,10 +152,12 @@ const buildUnit = (context: UnitBuildContext): {
     locator: `VASSAL.build.widget.PieceSlot[gpid=${source.gpid}]`,
     note: `SHA-256 ${BTR_BUILD_FILE_SHA256}; reviewed raw entryName: ${source.rawName}`,
   } as const;
+  // The counter prints the unit's own number and division, read from its name; internal ids are never printed.
+  const printed = counterIdentification(context.name, context.formationId !== null);
   const definition: PieceDefinition = {
     counter: corpusCounter(source.gpid,
-      context.designation ?? context.localId.split('-').at(-1) ?? '',
-      context.formationId ? `F${context.formationId.split(':').at(-1)}` : '',
+      context.designation ?? printed.designation,
+      printed.affiliation,
       context.side === 'ALLIED' ? 'US' : 'GERMAN',
       context.formationId ? ['#75c3af', '#e2638b', '#6c9cd2', '#e4c063', '#ae87c7', '#c59064'][Number(context.formationId.split(':').at(-1)) - 1]! : null,
       // The counter's own echelon (Gruppe Hohne's HQ prints "Grp", not XXX).
