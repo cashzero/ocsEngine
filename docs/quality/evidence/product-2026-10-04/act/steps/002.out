@@ -1,0 +1,15 @@
+{
+ "name": "III",
+ "chips": [
+  "0107",
+  "0102"
+ ],
+ "afterWrong": {
+  "arrivals": 2,
+  "notice": "Select a unit on the map to see where it can move and what it can attack."
+ },
+ "elapsed": 241,
+ "placedAt": "Hex 0107 · clear · Chap TF / 7.A, Brown TF / 7.A, US 652 FA Gp",
+ "log": "Place every arriving unit: select it, then click a blue entry hex. III 1 9 3 2 14 US 652 FA Gp 0107 · Move mode Cannot move in this step Deselect Arrivals 1 Unit Log All units (9) US 652 FA Gp entered at 0107 US 652 FA Gp placed at 0107."
+}
+-- 5088 ms; page errors so far 0

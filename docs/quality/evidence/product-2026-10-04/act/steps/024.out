@@ -1,0 +1,17 @@
+{
+ "w": {
+  "turn": "Turn 2 / 2",
+  "player": "Axis player turn · Allied to act",
+  "phase": "Reinforcement",
+  "seat": "Allied commander",
+  "end": "End Reinforcement PhaseNext: Movement Phase",
+  "endDisabled": true,
+  "notice": "Movement · Movement Segment finished. Passed without a hand-over (only dump blowing was possible): Axis commander: Reaction · Movement Segment.",
+  "handoff": true,
+  "complete": false,
+  "decision": []
+ },
+ "tabs": [],
+ "deck": "All reinforcements are placed. No unit selectedClick one of your units on the map, or open All units. HAND OVERAxis commander to actTheir Player Turn begins: Reinforcement Phase. Hand the screen to Axis commander Movement · Movement Segment finished. Passed without a hand-over (only dump blowing was possible): Axis commander: Reaction · Movement Segment."
+}
+-- 59 ms; page errors so far 0

@@ -1,0 +1,25 @@
+{
+ "w": {
+  "turn": "Turn 1 / 2",
+  "player": "Allied player turn",
+  "phase": "Combat",
+  "seat": "Allied commander",
+  "end": "End Combat SegmentNext: Exploitation Phase",
+  "endDisabled": false,
+  "notice": "Combat · Barrage Segment finished.",
+  "handoff": false,
+  "complete": false,
+  "decision": []
+ },
+ "deckTabs": [
+  "Targets 1",
+  "Unit",
+  "Ledger",
+  "Log"
+ ],
+ "chips": [
+  "Attack 1509"
+ ],
+ "deck": "Click a red-ringed enemy hex to plan an attack (9.0). No unit selectedClick one of your units on the map, or open All units. Targets 1UnitLedgerLogAll units (9) Enemy hexes you can attackAttack 1509 Combat · Barrage Segment finished."
+}
+-- 1978 ms; page errors so far 0

@@ -1,0 +1,30 @@
+{
+ "w": {
+  "turn": "Turn 1 / 2",
+  "player": "Allied player turn",
+  "phase": "Movement",
+  "seat": "Allied commander",
+  "end": "End Movement SegmentNext: Barrage Segment",
+  "endDisabled": false,
+  "notice": "Reinforcement Phase finished.",
+  "handoff": false,
+  "complete": false,
+  "decision": []
+ },
+ "before": {
+  "card": "XX1 3 845",
+  "text": "Move units one at a time: select a unit to see its range. Red rings mark overrun targets. XX1 3 845 82.Abn 0104 · Move mode 5 MP left · 74 hexes reachableDeselect UnitLogAll units (9) ModeCombat modeR",
+  "modes": [
+   "Combat mode",
+   "Reserve",
+   "Strat mode"
+  ]
+ },
+ "after": {
+  "card": "XX1 3 845 RES",
+  "text": "Move units one at a time: select a unit to see its range. Red rings mark overrun targets. XX1 3 845 RES82.Abn 0104 · Reserve 1.25 MP left · 5 hexes reachableDone UnitLogAll units (9) ModeCombat modeMove modeStrat modeBreakdownsDetach a Breakdown (5-4-3, 1 RE; "
+ },
+ "elapsed": 469,
+ "log": "e. Red rings mark overrun targets. XX 1 3 8 4 5 RES 82.Abn 0104 · Reserve 1.25 MP left · 5 hexes reachable Done Unit Log All units (9) 82.Abn changed to reserve mode You finished Reinforcement Phase Passed automatically, no legal actions: Movement breakout segment. Now: Movement · Movement Segment · Allied commander. Supply dump entered at 0107 US 652 FA Gp entered at 0107 Mode changed to reserve."
+}
+-- 4825 ms; page errors so far 0

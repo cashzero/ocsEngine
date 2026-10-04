@@ -1,0 +1,32 @@
+{
+ "path": [
+  "Allied player turn Exploitation · Movement [Allied commander]",
+  "Axis player turn · Allied to act Reinforcement [Allied commander]"
+ ],
+ "w": {
+  "turn": "Turn 1 / 2",
+  "player": "Axis player turn · Allied to act",
+  "phase": "Reinforcement",
+  "seat": "Allied commander",
+  "end": "End Reinforcement PhaseNext: Movement Phase",
+  "endDisabled": true,
+  "notice": "Exploitation · Movement Segment finished.",
+  "handoff": true,
+  "complete": false,
+  "decision": []
+ },
+ "panel": "HAND OVER Axis commander to act Their Player Turn begins: Reinforcement Phase. Hand the screen to Axis commander",
+ "attempts": {
+  "rosterButton": false,
+  "afterClickOwnUnit": "All reinforcements are placed. III2F1 7414 Chap TF / 7.A 1206 · Move mode Cannot move in this stepDeselect HAND OVERAxis commander to actTheir Player Turn begins: Reinforcement Phase. Hand the screen to Axis commander Exploitation · Movement Segment finished.",
+  "modeButtons": 0,
+  "announceTarget": "Hex 1207 · clear · town · no units",
+  "confirmMove": false,
+  "endPhase": {
+   "text": "End Reinforcement PhaseNext: Movement Phase",
+   "disabled": true
+  },
+  "stillHandoff": true
+ }
+}
+-- 127072 ms; page errors so far 0

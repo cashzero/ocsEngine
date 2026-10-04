@@ -90,27 +90,27 @@ A completed transition does not pass when it exceeds its budget or temporarily a
 
 | ID | Pri | Player operation | Required visible result | Status |
 |---|---:|---|---|---|
-| BOOT-01 | P0 | Open the built application | No boot error; an obvious New Game entry is available | UNVERIFIED |
-| NG-01 | P0 | Open New Game, close it, reopen it | Dialog lifecycle is reversible and does not mutate the active game | UNVERIFIED |
-| NG-02 | P0 | Build the default preview | Map, both OOB sides, deployment metrics, warnings, and Start are visible | UNVERIFIED |
-| NG-03 | P0 | Change one option after preview | Existing preview is visibly stale and Start is disabled | UNVERIFIED |
-| NG-04 | P0 | Enter invalid width, division count, armored division count, seed, and turn limit | Each invalid request is rejected with a player-readable field/stage error | UNVERIFIED |
-| NG-05 | P1 | Use Randomize all seeds | All four displayed seeds change; preview becomes invalid | UNVERIFIED |
-| NG-06 | P0 | Build and start default `32×24 / COMPACT / 6 divisions per side, 2 armored / 8 turns` (amended 2026-10-01 and 2026-10-03, see above) | Preview and mounted map size, style, units, formations, objectives, seeds, and turn limit agree | UNVERIFIED |
-| NG-07 | P0 | Build and start `MEDITERRANEAN_COAST / 18×12 / LARGE / 4 divisions per side, 2 armored`, seeds `91001/91002/91003/91004`, 3 turns | Preview and mounted package agree; expected headline counts are 216 Hexes, 64 units, 8 formations, 38 deployed Hexes | UNVERIFIED |
-| NG-08 | P0 | Repeat NG-07 from a fresh page | Map terrain/feature signature, OOB identity/stats, and deployment are identical | UNVERIFIED |
-| NG-09 | P1 | Change only each seed in four separate runs | Only the documented Map/OOB/deployment/rules dimension changes | UNVERIFIED |
-| NG-10 | P0 | Observe generation and Start states | Configure, Map, OOB, Deployment, and Gameplay have truthful current/completed states; no simultaneous “active” ambiguity | UNVERIFIED |
+| BOOT-01 | P0 | Open the built application | No boot error; an obvious New Game entry is available | PASS (2026-10-04, `evidence/product-2026-10-04/newgame`): boots into the default game, "☰ Menu" → "New Game…", 0 console errors |
+| NG-01 | P0 | Open New Game, close it, reopen it | Dialog lifecycle is reversible and does not mutate the active game | PASS (2026-10-04, `evidence/product-2026-10-04/newgame`): close/reopen works; active game summary, turn and phase identical before and after |
+| NG-02 | P0 | Build the default preview | Map, both OOB sides, deployment metrics, warnings, and Start are visible | PASS (2026-10-04, `evidence/product-2026-10-04/newgame`): Generate 488 ms → map, both sides, metrics incl. Deployed hexes/Warnings, Start enabled |
+| NG-03 | P0 | Change one option after preview | Existing preview is visibly stale and Start is disabled | PASS (2026-10-04, `evidence/product-2026-10-04/newgame`): "Preview invalidated", preview dimmed, Start disabled ("Generate to apply changes"), preview content unchanged |
+| NG-04 | P0 | Enter invalid width, division count, armored division count, seed, and turn limit | Each invalid request is rejected with a player-readable field/stage error | PASS (2026-10-04, `evidence/product-2026-10-04/newgame`): width 10, divisions 0, armored 7, seed −1, turn limit 0 each rejected beside the field; armored > divisions rejected with an OOB stage message |
+| NG-05 | P1 | Use Randomize all seeds | All four displayed seeds change; preview becomes invalid | PASS (2026-10-04, `evidence/product-2026-10-04/newgame`): all four seeds changed, "Preview invalidated", Start disabled, nothing generated |
+| NG-06 | P0 | Build and start default `32×24 / COMPACT / 6 divisions per side, 2 armored / 8 turns` (amended 2026-10-01 and 2026-10-03, see above) | Preview and mounted map size, style, units, formations, objectives, seeds, and turn limit agree | PASS (2026-10-04, `evidence/product-2026-10-04/newgame`): 32×24 Temperate inland, 48 units, 12 formations, 8 turns, seeds; mounted size, every Hex's terrain and 32 occupied Hexes equal the preview (keyboard sweep); 1 objective on both (screenshots); Generate 371 ms, Start 885 ms |
+| NG-07 | P0 | Build and start `MEDITERRANEAN_COAST / 18×12 / LARGE / 4 divisions per side, 2 armored`, seeds `91001/91002/91003/91004`, 3 turns | Preview and mounted package agree; expected headline counts are 216 Hexes, 64 units, 8 formations, 38 deployed Hexes | FAIL (2026-10-04, `evidence/product-2026-10-04/newgame`): preview and mounted package agree (216 Hexes, 64 units, 8 formations, terrain hex by hex, 40 occupied Hexes), but the frozen expectation says 38 deployed Hexes and the product shows 40. Changing the expected count needs the user's approval |
+| NG-08 | P0 | Repeat NG-07 from a fresh page | Map terrain/feature signature, OOB identity/stats, and deployment are identical | PASS (2026-10-04, `evidence/product-2026-10-04/newgame`): fresh page: terrain/feature, OOB and deployment signatures and the mounted keyboard sweep identical |
+| NG-09 | P1 | Change only each seed in four separate runs | Only the documented Map/OOB/deployment/rules dimension changes | PASS (2026-10-04, `evidence/product-2026-10-04/newgame`): map seed → map (+ deployment, which sits on the map); OOB seed → OOB only; deployment seed → deployment only; rules seed → nothing in the preview |
+| NG-10 | P0 | Observe generation and Start states | Configure, Map, OOB, Deployment, and Gameplay have truthful current/completed states; no simultaneous “active” ambiguity | FAIL (2026-10-04, `evidence/product-2026-10-04/newgame`): while generating, 2 Map, 3 OOB and 4 Deployment are all `is-active` at once (the ambiguity this row forbids); before and after, the states are truthful |
 
 ## B. Map and OOB operation
 
 | ID | Pri | Player operation | Required visible result | Status |
 |---|---:|---|---|---|
-| MAP-01 | P0 | Inspect the preview and mounted map | Terrain uses visual fill/pattern; roads, rivers, settlements, entry areas, and objectives are distinguishable without terrain-name labels on Hexes | UNVERIFIED |
-| MAP-02 | P0 | Drag the map, wheel zoom, use +/−, then Reset | Camera changes after each input and Reset returns to 100% without selecting/moving a unit | UNVERIFIED |
-| MAP-03 | P0 | Click and keyboard-activate a Hex and a counter | Selection is visible; stack panel identifies the Hex and visible pieces | UNVERIFIED |
-| MAP-04 | P0 | Compare OOB preview with mounted counters/stacks | Both sides/formations and every generated unit remain traceable; projection/stack hiding explains any count difference | UNVERIFIED |
-| MAP-05 | P1 | Inspect enemy stacks from each hot-seat side | Owner-visible data and enemy redaction follow the active seat; no private data leaks | UNVERIFIED |
+| MAP-01 | P0 | Inspect the preview and mounted map | Terrain uses visual fill/pattern; roads, rivers, settlements, entry areas, and objectives are distinguishable without terrain-name labels on Hexes | PASS (2026-10-04, `evidence/product-2026-10-04/map`, judged on map01-*.png): fills/patterns, roads, rivers, settlements, objective star, blue entry-hex outlines; no terrain-name labels on Hexes |
+| MAP-02 | P0 | Drag the map, wheel zoom, use +/−, then Reset | Camera changes after each input and Reset returns to 100% without selecting/moving a unit | PASS (2026-10-04, `evidence/product-2026-10-04/map`): drag moved the view, wheel 110%, + 120%, −− 100%, Reset 100%; no selection or move; all ≤ 397 ms |
+| MAP-03 | P0 | Click and keyboard-activate a Hex and a counter | Selection is visible; stack panel identifies the Hex and visible pieces | FAIL (2026-10-04, `evidence/product-2026-10-04/map`): mouse PASS (empty Hex, own and enemy stacks: the stack list names the Hex and visible pieces). Keyboard Enter on an own two-unit stack selects only the top unit; no stack list, so the second piece is not shown (only the screen-reader announcement names it) |
+| MAP-04 | P0 | Compare OOB preview with mounted counters/stacks | Both sides/formations and every generated unit remain traceable; projection/stack hiding explains any count difference | FAIL (2026-10-04, `evidence/product-2026-10-04/map`): all 56 non-dump preview units are in the two rosters, but preview and menu say 64 units while the rosters list 28 + 28; the 8 supply dumps are absent from "All units" and nothing on screen explains the difference |
+| MAP-05 | P1 | Inspect enemy stacks from each hot-seat side | Owner-visible data and enemy redaction follow the active seat; no private data leaks | PASS (2026-10-04, `evidence/product-2026-10-04/map`): each seat sees the enemy top unit plus "n hidden"; the owner sees all; the hand-over screen hides the map; no hidden name in the other seat's DOM |
 
 ## B1. Printed unit-counter fidelity
 
@@ -120,14 +120,14 @@ summary, or isolated counter laboratory is not acceptable evidence.
 
 | ID | Pri | Player operation | Required visible result | Status |
 |---|---:|---|---|---|
-| CTR-01 | P0 | Inspect Allied and Axis unit counters in the combined New Game preview | Both sides expose the generated unit counters, not formation counts alone; HQ, combat, artillery, reconnaissance, engineer, transport, and supply templates are visibly distinct | UNVERIFIED |
-| CTR-02 | P0 | Compare a basic combat counter with its reviewed definition and rulebook template | Designation, echelon, symbol, affiliation, Combat Strength, Action Rating, MA/mobility, combat category, and applicable RE are in the correct counter grammar and match the generated definition | UNVERIFIED |
-| CTR-03 | P0 | Inspect HQ, artillery, transport, and supply counters | Each uses its role-specific printed fields; not-applicable ratings are omitted rather than shown as zero, question mark, or a generic role label | UNVERIFIED |
-| CTR-04 | P0 | Start the exact previewed package and find the sampled counters on the mounted map and in stack inspection | Identity, current printed face, values, symbol, side, and formation marking agree across preview, map, and inspector | UNVERIFIED |
-| CTR-05 | P0 | Operate a legal face/mode change and a reachable step/resource change | Printed face and per-step/resource values update from authoritative state; mode/status appears separately and no stale printed value remains | UNVERIFIED |
-| CTR-06 | P0 | Inspect a three-counter stack at normal zoom, zoom limits, selection, hover, and keyboard focus | Square aspect/field order remain stable; counter identity and critical ratings are not obscured by stack offset or interaction chrome | UNVERIFIED |
-| CTR-07 | P0 | Inspect the same enemy stack before and after a valid hot-seat handoff | Counter back/redaction, accessible name, DOM, and stack count reveal only rule-allowed information | UNVERIFIED |
-| CTR-08 | P0 | Repeat CTR-01 through CTR-07 at 1920×1080 and 1680×1050 while recording console and timing evidence | Required counters and controls remain reachable; no clipped/overlapping critical field, uncaught error, or over-budget interaction | UNVERIFIED |
+| CTR-01 | P0 | Inspect Allied and Axis unit counters in the combined New Game preview | Both sides expose the generated unit counters, not formation counts alone; HQ, combat, artillery, reconnaissance, engineer, transport, and supply templates are visibly distinct | PASS at 1920×1080 (2026-10-04, `evidence/product-2026-10-04/counters-1920x1080`, judged on ctr01-*.png): 64 counters, HQ/combat/artillery/recon/engineer/transport/supply templates distinct on both sides, no role-label or "?" fillers; 1680×1050 repeat also PASS |
+| CTR-02 | P0 | Compare a basic combat counter with its reviewed definition and rulebook template | Designation, echelon, symbol, affiliation, Combat Strength, Action Rating, MA/mobility, combat category, and applicable RE are in the correct counter grammar and match the generated definition | PASS (2026-10-04, `evidence/product-2026-10-04/counters-1920x1080`): Standish TF / 10.A prints III 2 F2 7-4-14, equal to its generated Move face; tracked/mech colours on the image |
+| CTR-03 | P0 | Inspect HQ, artillery, transport, and supply counters | Each uses its role-specific printed fields; not-applicable ratings are omitted rather than shown as zero, question mark, or a generic role label | PASS (2026-10-04, `evidence/product-2026-10-04/counters-1920x1080`): HQ XXX 21 9-16 (range-MA), artillery 9 / 3 / range 2 / 14, truck 5 · 45, supply "1 SP"; no CS/AR filler |
+| CTR-04 | P0 | Start the exact previewed package and find the sampled counters on the mounted map and in stack inspection | Identity, current printed face, values, symbol, side, and formation marking agree across preview, map, and inspector | PASS at 1920×1080 (2026-10-04, `evidence/product-2026-10-04/counters-1920x1080`): six sampled pieces print the same fields in preview, roster, unit card and on the map (ctr04-map-*.png) |
+| CTR-05 | P0 | Operate a legal face/mode change and a reachable step/resource change | Printed face and per-step/resource values update from authoritative state; mode/status appears separately and no stale printed value remains | UNVERIFIED — partial (2026-10-04, `evidence/product-2026-10-04/counters-1920x1080`): Combat mode turned 13.Abn's face from 7-4-5 to 13-4-3 with "Combat mode" shown separately; a Breakdown dropped its RE from 3 to 2 on the counter; the fuel payment's dump fell 16T → 15T in the Ledger, but the dump counter itself was covered by other counters and was not seen updating |
+| CTR-06 | P0 | Inspect a three-counter stack at normal zoom, zoom limits, selection, hover, and keyboard focus | Square aspect/field order remain stable; counter identity and critical ratings are not obscured by stack offset or interaction chrome | UNVERIFIED — partial (2026-10-04, `evidence/product-2026-10-04/counters-1920x1080`): a three-counter stack is legible at 100% and at the 150% maximum, selected and under keyboard focus; the minimum-zoom screenshot missed the stack and hover showed no change, so those two are not evidenced |
+| CTR-07 | P0 | Inspect the same enemy stack before and after a valid hot-seat handoff | Counter back/redaction, accessible name, DOM, and stack count reveal only rule-allowed information | PASS at 1920×1080 (2026-10-04, `evidence/product-2026-10-04/counters-1920x1080`): Allied seat sees the top enemy counter + "1 hidden"; after the hand-over (map hidden) the owner sees all; no hidden name in the Allied DOM |
+| CTR-08 | P0 | Repeat CTR-01 through CTR-07 at 1920×1080 and 1680×1050 while recording console and timing evidence | Required counters and controls remain reachable; no clipped/overlapping critical field, uncaught error, or over-budget interaction | UNVERIFIED (2026-10-04): 1920×1080 run had 0 console errors and every timed action ≤ 1,026 ms; the 1680×1050 repeat stopped after CTR-03 when the test browser tab crashed inside the harness's mouse scan (`evidence/product-2026-10-04/counters-1680x1050`) |
 
 ## C. Rule actions through the actual UI
 
@@ -136,21 +136,21 @@ execute it, and confirm revision/history/state effects. A direct Rule test is no
 
 | ID | Pri | Required operation | Expected product result | Status |
 |---|---:|---|---|---|
-| ACT-01 | P0 | `ADVANCE_SEQUENCE` through every phase/segment in one whole turn | Sequence reaches the next game turn with no dead end | UNVERIFIED |
-| ACT-02 | P0 | Select a friendly counter and execute `MOVE_PIECE` | Candidate list is bounded/responsive; counter changes Hex; movement usage and history update | UNVERIFIED |
-| ACT-03 | P0 | Execute `CHANGE_MODE` on a legal unit | Counter/detail mode and history update; illegal modes are absent or explained | UNVERIFIED |
-| ACT-04 | P0 | Execute `RELEASE_RESERVE` | A reachable reserve unit becomes released and can act in its legal segment | UNVERIFIED |
-| ACT-05 | P0 | Execute `PLACE_REINFORCEMENT` | An off-map reinforcement is placed only on a legal entry Hex | UNVERIFIED |
-| ACT-06 | P0 | Execute `CHECK_SUPPLY` in Supply | Supply result/payment requirement is visible and state/history update | UNVERIFIED |
-| ACT-07 | P0 | Execute `DECLARE_COMBAT` as regular combat | Legal participants/target are visible and transaction starts | UNVERIFIED |
-| ACT-08 | P0 | Execute `DECLARE_COMBAT` as overrun | Movement-segment overrun starts only in a legal state | UNVERIFIED |
-| ACT-09 | P0 | Execute `DECLARE_BARRAGE` | Legal firer/target are visible and transaction starts | UNVERIFIED |
-| ACT-10 | P0 | Resolve `RESPOND_DECISION` from the owning seat | Modal hides the map as required, accepts a choice, and advances transaction/revision | UNVERIFIED |
-| ACT-11 | P0 | Execute `COMMIT_TRANSACTION` | Reserved resources resolve once and the final result is visible in history/state | UNVERIFIED |
-| ACT-12 | P0 | Execute `CANCEL_TRANSACTION` in a cancellable state | Reservation is released and no combat/barrage result is applied | UNVERIFIED |
-| ACT-13 | P0 | Attempt an operation from the wrong hot-seat side | Private candidates are unavailable; the UI gives an obvious handoff path | UNVERIFIED |
-| ACT-14 | P0 | Complete a whole turn containing at least one unit action, all required handoffs, and any decisions | Turn increments; no phase was skipped by a test-only/direct API shortcut | UNVERIFIED |
-| ACT-15 | P0 | Move a unit into a Hex so it holds more than 10 RE, confirm it, then press End on the Movement segment | The move preview warns of the overstack and its button reads Confirm anyway; after the move a warning stays beside End naming the Hex and its RE; End needs a second press (Finish anyway: n hex is overstacked); the 4.8a elimination decision then follows. Moves within 10 RE show none of this; Trucks and dumps are not counted. Added 2026-10-03. Evidence so far is automated only (`tests/ui/overstack-warning.test.ts`) plus a styling check of injected markup in the served page; the full browser flow has not been operated | UNVERIFIED |
+| ACT-01 | P0 | `ADVANCE_SEQUENCE` through every phase/segment in one whole turn | Sequence reaches the next game turn with no dead end | PASS (2026-10-04, `evidence/product-2026-10-04/act`): Turn 1 → Turn 2 through every phase of both Player Turns and the First Player decision; phases with no legal action passed with the reason in the Log |
+| ACT-02 | P0 | Select a friendly counter and execute `MOVE_PIECE` | Candidate list is bounded/responsive; counter changes Hex; movement usage and history update | PASS (2026-10-04, `evidence/product-2026-10-04/act`): select 874 ms, fuel 921 ms, preview "Cost 8 MP · 6 MP left" 661 ms, Confirm 156 ms; counter 0107 → 1206; Log "moved 0107 → 1206" |
+| ACT-03 | P0 | Execute `CHANGE_MODE` on a legal unit | Counter/detail mode and history update; illegal modes are absent or explained | PASS (2026-10-04, `evidence/product-2026-10-04/act`): 82.Abn offered Combat/Reserve/Strat; Reserve in 469 ms: RES on the counter, "Reserve · 1.25 MP left", Log entry |
+| ACT-04 | P0 | Execute `RELEASE_RESERVE` | A reachable reserve unit becomes released and can act in its legal segment | PASS (2026-10-04, `evidence/product-2026-10-04/act`): in Exploitation, Release reserve (475 ms) returned 82.Abn to Move mode with 5 MP; it then moved 0104 → 0205; Log entries |
+| ACT-05 | P0 | Execute `PLACE_REINFORCEMENT` | An off-map reinforcement is placed only on a legal entry Hex | PASS (2026-10-04, `evidence/product-2026-10-04/act`): US 652 FA Gp offered only entry Hexes 0107/0102; Enter on 0808 placed nothing; click on 0107 placed it in 241 ms; Log "entered at 0107" |
+| ACT-06 | P0 | Execute `CHECK_SUPPLY` in Supply | Supply result/payment requirement is visible and state/history update | UNVERIFIED (2026-10-04): the Supply Phase passed automatically four times (both packages, both sides: "Passed automatically, no legal actions: Supply") because every unit traced supply; a unit that needs to draw from a dump was not set up |
+| ACT-07 | P0 | Execute `DECLARE_COMBAT` as regular combat | Legal participants/target are visible and transaction starts | PASS (2026-10-04, `evidence/product-2026-10-04/act`): Attack 1509 plan 501 ms (14:1, DRM +4, 1T), Declare 367 ms; supply choices, defender after a hand-over, advance decision; result Ae2/DL2o3DG |
+| ACT-08 | P0 | Execute `DECLARE_COMBAT` as overrun | Movement-segment overrun starts only in a legal state | PASS (2026-10-04, `evidence/product-2026-10-04/act`): no target until Brown TF stood beside the enemy; Enter on the red-ringed 1410 opened the overrun plan (526 ms); Cancel left 6 MP; Overrun declared (552 ms) and Brown TF entered 1410 |
+| ACT-09 | P0 | Execute `DECLARE_BARRAGE` | Legal firer/target are visible and transaction starts | PASS (2026-10-04, `evidence/product-2026-10-04/act`): Barrage 1404 chip → plan 458 ms (strength 9, shifts, 2T, firer Div Arty I), Declare 345 ms, supply choice, result "No effect" in the Log |
+| ACT-10 | P0 | Resolve `RESPOND_DECISION` from the owning seat | Modal hides the map as required, accepts a choice, and advances transaction/revision | PASS (2026-10-04, `evidence/product-2026-10-04/act`): the defending owner answered after a hand-over whose screen hid the map ("The map stays hidden until they confirm"); every answer ≤ 500 ms and the transaction went on |
+| ACT-11 | P0 | Execute `COMMIT_TRANSACTION` | Reserved resources resolve once and the final result is visible in history/state | BLOCKED (2026-10-04, `evidence/product-2026-10-04/act`): no control issues COMMIT_TRANSACTION (the rule engine rejects it as never legal); combats close by themselves after the last decision. Equivalent outcome seen: each 1T paid once (Ledger) |
+| ACT-12 | P0 | Execute `CANCEL_TRANSACTION` in a cancellable state | Reservation is released and no combat/barrage result is applied | BLOCKED (2026-10-04, `evidence/product-2026-10-04/act`): no control issues CANCEL_TRANSACTION; after Declare every decision offers only payment/advance choices. Only the plan can be cancelled before declaring (verified, no state change) |
+| ACT-13 | P0 | Attempt an operation from the wrong hot-seat side | Private candidates are unavailable; the UI gives an obvious handoff path | PASS (2026-10-04, `evidence/product-2026-10-04/act`): with the hand-over pending, own unit shows "Cannot move in this step", no mode buttons, no move confirm, End disabled; the deck shows "Hand the screen to Axis commander" |
+| ACT-14 | P0 | Complete a whole turn containing at least one unit action, all required handoffs, and any decisions | Turn increments; no phase was skipped by a test-only/direct API shortcut | PASS (2026-10-04, `evidence/product-2026-10-04/act`): Turn 1 with placements, Reserve/release, fuel, moves, overrun, barrage, two attacks, all decisions by the owning seat and every hand-over through the deck; no hidden control or API call |
+| ACT-15 | P0 | Move a unit into a Hex so it holds more than 10 RE, confirm it, then press End on the Movement segment | The move preview warns of the overstack and its button reads Confirm anyway; after the move a warning stays beside End naming the Hex and its RE; End needs a second press (Finish anyway: n hex is overstacked); the 4.8a elimination decision then follows. Moves within 10 RE show none of this; Trucks and dumps are not counted. Added 2026-10-03. Evidence so far is automated only (`tests/ui/overstack-warning.test.ts`) plus a styling check of injected markup in the served page; the full browser flow has not been operated | PASS (2026-10-04, `evidence/product-2026-10-04/act-overstack-supply`): 10 moves into 0502 within 10 RE showed no warning; the 11th previewed "⚠ Overstack … 10.5 RE … 4.8a" with "Confirm anyway"; warning beside End; a Truck did not change the RE; End needed "Finish anyway: 1 hex is overstacked"; the 4.8a decision listed only combat units |
 
 If the generated product cannot create a legal state for ACT-04, ACT-05, or another action, that row
 is `BLOCKED`, not `PASS`; the missing scenario/setup path is a product gap to resolve.
@@ -249,14 +249,14 @@ After the fixes of the same day, SUP-A02 (dumps of one kind in a Hex are one cou
 SUP-A15 passes: the user confirmed the Undo semantics ("OK"). SUP-A14: the user decided that a truck is close to a unit, so a split truck counts as two (15 to 16); the row's expectation was changed accordingly and the earlier observation now meets it.
 SUP-A10: the user moved file-based save/load out of scope on 2026-10-02; the checkpoint route passed and the file route stays UNAVAILABLE (needs a real file chooser). A whole game turn (both player turns, hot-seat handoffs, the First Player decision) was then played with real clicks; see the evidence README. 
 
-| SUP-B01 | P0 | Enter "8T, from dump A to Hex B" | A plan preview lists trucks, route, MP per step, and resulting stock; game state is unchanged until confirmed | UNVERIFIED |
-| SUP-B02 | P0 | Confirm that plan | Hex B gains 8T and the final state equals the manual run of the same actions | UNVERIFIED |
-| SUP-B03 | P0 | Enter a task that exceeds the available MP | A shortfall report states how much can be delivered and why, with alternatives | UNVERIFIED |
-| SUP-B04 | P1 | Choose a destination that breaks the unload condition (13.2f) | The planner says so and suggests legal Hexes | UNVERIFIED |
-| SUP-B05 | P0 | Run the fuel estimate for chosen units | Needs and available sources are correct, and the later real payment matches the estimate | UNVERIFIED |
-| SUP-B06 | P1 | Take a shortfall from the estimate into the planner | Destination and quantity are prefilled and a plan can be built | UNVERIFIED |
-| SUP-B07 | P1 | Run the Supply Phase prediction | The predicted Out of Supply list matches the real result at the end of the Supply Phase | UNVERIFIED |
-| SUP-B08 | P0 | Play a whole turn using only the helpers, then save, load and replay | No dead end, no console error, and the loaded and replayed game match | UNVERIFIED |
+| SUP-B01 | P0 | Enter "8T, from dump A to Hex B" | A plan preview lists trucks, route, MP per step, and resulting stock; game state is unchanged until confirmed | UNVERIFIED (2026-10-04): Phase B is not implemented; the built UI has no planner, estimate or prediction control |
+| SUP-B02 | P0 | Confirm that plan | Hex B gains 8T and the final state equals the manual run of the same actions | UNVERIFIED (2026-10-04): Phase B is not implemented; the built UI has no planner, estimate or prediction control |
+| SUP-B03 | P0 | Enter a task that exceeds the available MP | A shortfall report states how much can be delivered and why, with alternatives | UNVERIFIED (2026-10-04): Phase B is not implemented; the built UI has no planner, estimate or prediction control |
+| SUP-B04 | P1 | Choose a destination that breaks the unload condition (13.2f) | The planner says so and suggests legal Hexes | UNVERIFIED (2026-10-04): Phase B is not implemented; the built UI has no planner, estimate or prediction control |
+| SUP-B05 | P0 | Run the fuel estimate for chosen units | Needs and available sources are correct, and the later real payment matches the estimate | UNVERIFIED (2026-10-04): Phase B is not implemented; the built UI has no planner, estimate or prediction control |
+| SUP-B06 | P1 | Take a shortfall from the estimate into the planner | Destination and quantity are prefilled and a plan can be built | UNVERIFIED (2026-10-04): Phase B is not implemented; the built UI has no planner, estimate or prediction control |
+| SUP-B07 | P1 | Run the Supply Phase prediction | The predicted Out of Supply list matches the real result at the end of the Supply Phase | UNVERIFIED (2026-10-04): Phase B is not implemented; the built UI has no planner, estimate or prediction control |
+| SUP-B08 | P0 | Play a whole turn using only the helpers, then save, load and replay | No dead end, no console error, and the loaded and replayed game match | UNVERIFIED (2026-10-04): Phase B is not implemented; the built UI has no planner, estimate or prediction control |
 
 ## H. Railroads (added 2026-10-04, plan `docs/roadmap/10-rail-wbs.md`)
 
@@ -318,6 +318,43 @@ ordinary play from a fresh New Game and then rebuilding it is **not** yet exerci
 
 The gate may be marked `PASS` only when every P0 row is `PASS`, no P1 row has a player-blocking
 failure, evidence belongs to the same final build, and the observed-issue list contains no open P0.
+
+## Execution record 2026-10-04 (partial run)
+
+Requested by the user ("把UNVERIFIED 全部確認一次 後更新到文件"; then "先就目前完成的部分更新文件"). Build: worktree
+`worktree-todo-inventory-docs` at `780812a` (main `6745ecd` plus documentation only), `npm run build`, served from `web/` + `dist/`.
+Browser: Playwright Chromium, 1920×1080 unless stated. Every operation was a click, key press or typed value on a visible
+control; observations were read from the page. Scripts: `scripts/product-acceptance/` (`run-newgame.mjs`, `run-map.mjs`,
+`run-counters.mjs`, and `session.mjs` for the step-by-step ACT runs, whose step files are kept with the evidence). Evidence:
+`docs/quality/evidence/product-2026-10-04/` (`results.json`, `log.md`, screenshots per run). Console/page errors: 0 in every run.
+
+Covered: §A, §B, §B1 (1920×1080; the 1680×1050 repeat stopped after CTR-03), §C. Not yet executed: §D (SES-01 to SES-09) and
+§E (UI-01 to UI-05). SUP-B rows wait for Phase B (no planner exists in the product).
+
+This run: 29 PASS, 4 FAIL (NG-07, NG-10, MAP-03, MAP-04), 2 BLOCKED (ACT-11, ACT-12); CTR-05, CTR-06 and CTR-08 (partial
+evidence) and ACT-06 (state not reached) stay `UNVERIFIED`. Whole matrix after this record: 55 PASS, 5 FAIL (the four above and
+AIR-08), 2 BLOCKED, 3 partly passed (AIR-04, AIR-05, SUP-A10), 26 UNVERIFIED (CTR-05, CTR-06, CTR-08, ACT-06, SES-01–09,
+UI-01–05, SUP-B01–08).
+
+Observed issues (open; none is closed by this record):
+
+- O-1 (NG-10, P0): during Generate, stages 2–4 are `is-active` together — the exploratory finding below is reproduced.
+- O-2 (NG-07, spec): the frozen package now deploys on 40 Hexes, not 38; preview and mount agree. Needs a user decision to
+  amend the expectation or a generator fix.
+- O-3 (MAP-03, P0): keyboard Enter on an own stack selects the top unit without the stack list that a click opens.
+- O-4 (MAP-04, P0): "64 units" in the preview and menu vs "All units (28)" per side; the 8 supply dumps are counted in one place
+  and not the other, with no explanation on screen.
+- O-5 (usability): when the screen holder is not the seat that must act, the top bar reads "<holder> to act" while the deck
+  reads "<other seat> commander to act" (seen after a manual hand-over in the Allied Reinforcement Phase and at every Player
+  Turn change).
+- O-6 (correctness of text): after the Allied attack on 1509 eliminated the HQ, the advance prompt said "1509 is vacant" while
+  the map still announced "enemy Truck" there.
+- O-7 (ACT-11/ACT-12): COMMIT_TRANSACTION and CANCEL_TRANSACTION have no player control; whether those rows should be restated
+  (for example "the last decision commits the transaction once") is a specification decision for the user.
+- O-8 (SES-01, not yet executed): the menu has no Pause control (`src/ui/controller.ts`: "A turn-based game has no pause"); SES-01
+  will be `BLOCKED` unless the row is restated.
+
+M8 and U10 remain `IN PROGRESS`.
 
 ## Exploratory findings that do not count as PASS
 

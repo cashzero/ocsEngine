@@ -1,0 +1,76 @@
+{
+ "moves": [
+  {
+   "name": "Standish TF / 10.A",
+   "preview": "Move to 0502 Cost 1 MP · 13 MP left after the move. Cancel Confirm",
+   "button": "Confirm",
+   "warned": false
+  },
+  {
+   "name": "Chmbln TF / 10.A",
+   "preview": "Move to 0502 Cost 1 MP · 13 MP left after the move. Cancel Confirm",
+   "button": "Confirm",
+   "warned": false
+  },
+  {
+   "name": "Div Arty I / 10.A",
+   "preview": "Move to 0502 Cost 0.5 MP · 13.5 MP left after the move. Cancel Confirm",
+   "button": "Confirm",
+   "warned": false
+  },
+  {
+   "name": "Div Arty II / 10.A",
+   "preview": "Move to 0502 Cost 0.5 MP · 13.5 MP left after the move. Cancel Confirm",
+   "button": "Confirm",
+   "warned": false
+  },
+  {
+   "name": "90 Recon Bn",
+   "preview": "Move to 0502 Cost 1 MP · 15 MP left after the move. Cancel Confirm",
+   "button": "Confirm",
+   "warned": false
+  },
+  {
+   "name": "Rhea TF",
+   "preview": "Move to 0502 Cost 3.5 MP · 10.5 MP left after the move. Cancel Confirm",
+   "button": "Confirm",
+   "warned": false
+  },
+  {
+   "name": "Wemple TF",
+   "preview": "Move to 0502 Cost 3.5 MP · 10.5 MP left after the move. Cancel Confirm",
+   "button": "Confirm",
+   "warned": false
+  },
+  {
+   "name": "Chap TF",
+   "preview": "Move to 0502 Cost 3 MP · 11 MP left after the move. Cancel Confirm",
+   "button": "Confirm",
+   "warned": false
+  },
+  {
+   "name": "Brown TF",
+   "preview": "Move to 0502 Cost 3 MP · 11 MP left after the move. Cancel Confirm",
+   "button": "Confirm",
+   "warned": false
+  },
+  {
+   "name": "Div Arty I / 7.A",
+   "preview": "Move to 0502 Cost 2.5 MP · 11.5 MP left after the move. Cancel Confirm",
+   "button": "Confirm",
+   "warned": false
+  },
+  {
+   "name": "Div Arty II / 7.A",
+   "preview": "Move to 0502 Cost 2.5 MP · 11.5 MP left after the move. ⚠ Overstack: ending here puts 10.5 RE in one hex (limit 10). Unless it is back to 10 RE or fewer when the segment ends, you must eliminate units 4.8a Cancel Confirm anyway",
+   "button": "Confirm anyway",
+   "warned": true
+  }
+ ],
+ "stack": "Hex 0502 · clear · Brown TF / 7.A, Chap TF / 7.A, Wemple TF / 7.A, Rhea TF / 7.A, 90 Recon Bn / 10.A, Chmbln TF / 10.A, Standish TF / 10.A, Chmbln TF (Det. 2) / 10.A, Riley TF / 10.A, Div Arty II / 7.A, Div Arty I / 7.A, Div Arty II / 10.A, Div Arty I / 10.A",
+ "endBefore": {
+  "end": "End Movement Segment Next: Barrage Segment",
+  "warning": "⚠ Overstacked: 0502 holds 10.5 RE (limit 10). Move units out before ending this step or you must eliminate units 4.8a"
+ }
+}
+-- 31787 ms; page errors so far 0

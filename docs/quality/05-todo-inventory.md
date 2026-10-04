@@ -6,12 +6,16 @@
 
 ## 1. 產品驗收矩陣（doc 03）
 
+2026-10-04 依使用者指示在瀏覽器實際操作 §A、§B、§B1、§C（紀錄見 doc 03「Execution record 2026-10-04」，證據在
+`docs/quality/evidence/product-2026-10-04/`）。更新後：
+
 | 狀態 | 列數 | 列 |
 |---|---|---|
-| UNVERIFIED | 61 | §A–E 全部 53 列（BOOT-01、NG-01~10、MAP-01~05、CTR-01~08、ACT-01~15、SES-01~09、UI-01~05）；§G SUP-B01~08 |
-| PASS | 26 | AIR 與 SUP-A 大部分列 |
+| PASS | 55 | AIR 與 SUP-A 大部分列；2026-10-04 新增 BOOT-01、NG-01~06、NG-08、NG-09、MAP-01、MAP-02、MAP-05、CTR-01~04、CTR-07、ACT-01~05、ACT-07~10、ACT-13~15 |
+| FAIL | 5 | NG-07（部署 40 格，凍結期望 38）、NG-10（產生中三個階段同時 active）、MAP-03（鍵盤啟動疊堆不開堆疊清單）、MAP-04（64 units 與名冊 28+28 差 8 個補給堆，畫面無說明）、AIR-08 |
+| BLOCKED | 2 | ACT-11、ACT-12（COMMIT／CANCEL_TRANSACTION 沒有玩家可操作的控制項） |
 | 部分 | 3 | AIR-04（Mission Loss 未觀察到）、AIR-05（Hip Shoot BLOCKED）、SUP-A10（檔案路徑依使用者決定移出 scope） |
-| FAIL | 1 | AIR-08（不可用的格／飛機沒有規則說明，10.0e、14.2e） |
+| UNVERIFIED | 26 | CTR-05、CTR-06、CTR-08（證據不完整）、ACT-06（未到達需要 CHECK_SUPPLY 的狀態）、SES-01~09、UI-01~05（尚未執行）、SUP-B01~08（Phase B 未實作） |
 
 因此 M8 Generated game flow 與 U10 Operable UI 維持 `IN PROGRESS`（`01-delivery-status-and-todo-policy.md`）。
 
@@ -53,6 +57,14 @@
 2. 補給 B3（付費來源偏好）、B4（定期補給線）。
 3. Breakdowns 提議的 doc 03 驗收列。
 4. 整疊移動（6.1f）是否解除暫緩（影響 R9、D3、`movement.ground`）。
+5. NG-07 的凍結期望（38 deployed Hexes）是否改為產品現在的 40，或修正產生器（doc 03 O-2）。
+6. ACT-11／ACT-12 是否改寫為「最後一個決策只結算一次交易」等可操作的敘述（O-7）；SES-01 Pause 在產品中已移除，是否改寫該列（O-8）。
+
+## 5a. 2026-10-04 驗收發現的未關閉問題
+
+見 doc 03「Execution record 2026-10-04」O-1～O-8：NG-10 階段同時 active、MAP-03 鍵盤無堆疊清單、MAP-04 單位數不一致、
+頂部列「X to act」與左欄交接對象相反、戰後提示「vacant」但仍有敵方 Truck，以及上面三項待決定事項。
+剩餘未執行：SES-01~09、UI-01~05、CTR-08 的 1680×1050 重跑、CTR-05／CTR-06 的補證、ACT-06。
 
 ## 6. 本次盤點同步修正的文件
 

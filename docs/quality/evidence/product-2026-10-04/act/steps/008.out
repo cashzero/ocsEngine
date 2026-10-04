@@ -1,0 +1,4 @@
+ERROR SyntaxError: Identifier 'tabs' has already been declared
+    at new AsyncFunction (<anonymous>)
+    at file:///E:/work/ocsEngine/.claude/worktrees/todo-inventory-docs/scripts/product-acceptance/session.mjs:36:18
+-- 1 ms; page errors so far 0
