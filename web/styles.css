@@ -513,10 +513,23 @@ small, .supporting { font-size: 13px; color: var(--muted); }
 .air-base-disc.air-strip { fill: #d8d2b4; stroke-dasharray: 8 4; }
 .air-base-disc.air-strip.nation-US { fill: #d4d19a; }
 .counter .air-strip-text, .unit-counter .air-strip-text { font-size: 17px; }
-.counter-paper.replacement { fill: #d7d2b8; }
-.counter-paper.replacement.nation-US { fill: #b9c9a2; }
-.counter-paper.replacement.nation-GERMAN { fill: #aab8c8; }
-.counter .replacement-label, .unit-counter .replacement-label { font-size: 30px; font-weight: 700; fill: #1c1f18; }
+/* Colours sampled from the BTR module's German EQ Replacement.png and US-Repl-EQ.png. */
+.counter-paper.replacement { fill: #b4ae99; }
+.counter-paper.replacement.nation-US { fill: #559155; }
+.counter .eq-box, .unit-counter .eq-box { fill: #bfb9a3; stroke: #151810; stroke-width: 2.2; }
+.counter .eq-box.nation-US, .unit-counter .eq-box.nation-US { fill: #5c9e5c; }
+.counter .eq-leader, .unit-counter .eq-leader { stroke: #151810; stroke-width: 2.2; }
+.counter .eq-repl, .unit-counter .eq-repl { font-size: 19px; font-weight: 800; }
+.counter .eq-army, .unit-counter .eq-army { font-size: 19px; font-weight: 400; font-family: Arial, sans-serif; }
+.counter .eq-label, .unit-counter .eq-label { font-size: 21px; font-weight: 900; stroke: none; }
+.counter .eq-number, .unit-counter .eq-number { font-size: 45px; font-weight: 900; font-stretch: condensed; stroke-linejoin: round; paint-order: stroke; }
+.counter .eq-white, .unit-counter .eq-white { fill: #fff; stroke: #151810; stroke-width: 1.4px; }
+.counter .eq-shadow, .unit-counter .eq-shadow { fill: #151810; stroke: #151810; stroke-width: 1.4px; }
+.counter .eq-superscript, .unit-counter .eq-superscript { font-size: 25px; font-weight: 900; font-stretch: condensed; }
+.counter .eq-move-box, .unit-counter .eq-move-box { fill: #f2e215; stroke: none; }
+.counter .eq-move, .unit-counter .eq-move { fill: #84000c; stroke: #84000c; stroke-width: .6px; }
+.counter .eq-count-disc, .unit-counter .eq-count-disc { fill: #151810; stroke: #f4f1e6; stroke-width: 1.5; }
+.counter .eq-count, .unit-counter .eq-count { fill: #fff; font-size: 15px; font-weight: 900; }
 .map-toggles { display: flex; gap: 5px; margin-left: 4px; padding-left: 9px; border-left: 1px solid var(--line); }
 .map-toggle { --toggle-on: #6fcf8e; display: inline-flex; align-items: center; gap: 7px; min-height: 42px; padding: 6px 10px; border: 1px solid var(--line); border-radius: 6px; color: var(--muted); background: #18221d; cursor: pointer; font-size: 13px; font-weight: 650; white-space: nowrap; user-select: none; }
 .map-toggle.air-zones { --toggle-on: #5aa0d8; }
