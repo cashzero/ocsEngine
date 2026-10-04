@@ -215,7 +215,7 @@ export class GameplaySession implements GameSession {
   getTraceCoverage = (seatId: SeatId, pieceId: Parameters<GameSession['getTraceCoverage']>[1]): ReturnType<GameSession['getTraceCoverage']> => {
     const binding = this.#binding(seatId);
     if (this.#lifecycle !== 'ACTIVE' || this.#handoff !== null) {
-      return { allowed: false, value: [], reasons: [{ code: 'SESSION_NOT_INTERACTIVE', allowed: false, message: 'Session is not accepting interaction.', rule: 'gameplay' }], facts: [], dependencies: [] };
+      return { allowed: false, value: { hexIds: [], directHexIds: [] }, reasons: [{ code: 'SESSION_NOT_INTERACTIVE', allowed: false, message: 'Session is not accepting interaction.', rule: 'gameplay' }], facts: [], dependencies: [] };
     }
     return cloneValue(this.#ports.rules.queryTraceCoverage(this.#state, binding.playerId, pieceId));
   };

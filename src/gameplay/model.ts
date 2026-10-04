@@ -18,6 +18,7 @@ import type {
   RuleExplanation,
   RuleProjection,
   RuleViolation,
+  TraceCoverage,
   RuleConfiguration,
   ReachableHex,
   RuleQueryResult,
@@ -285,7 +286,7 @@ export interface GameSession {
   /** What the seat's Transport Point can load or unload where it stands, with Token ranges, MP cost and the rule behind anything not offered. */
   readonly getTransportOptions: (seatId: SeatId, truckId: PieceId) => RuleQueryResult<TransportOptions | null>;
   /** Hexes where the seat's trace supply reaches, for one of its units or (null) any unit; empty when not interactive. */
-  readonly getTraceCoverage: (seatId: SeatId, pieceId: PieceId | null) => RuleQueryResult<readonly string[]>;
+  readonly getTraceCoverage: (seatId: SeatId, pieceId: PieceId | null) => RuleQueryResult<TraceCoverage>;
   /** Each fuel payment open to one of the seat's units with the units it would newly fuel (12.5c). */
   readonly getFuelPreview: (seatId: SeatId, pieceId: PieceId) => RuleQueryResult<readonly FuelPreview[]>;
   readonly createDraft: (seatId: SeatId, action: GameAction) => ActionDraft;
