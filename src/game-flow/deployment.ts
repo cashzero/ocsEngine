@@ -191,7 +191,25 @@ const formationCenters = (
   return [];
 };
 
-const selectObjective = (map: GeneratedMap): HexId => {
+/** Victory points of an objective: a Major City outweighs a town. Villages and open country are never objectives. */
+export const GENERATED_MAJOR_CITY_OBJECTIVE_POINTS = 3;
+export const GENERATED_TOWN_OBJECTIVE_POINTS = 1;
+/** Each side's half of the map holds about one objective VP per this many of its land Hexes. */
+export const GENERATED_LAND_HEXES_PER_OBJECTIVE_POINT = 64;
+const MINIMUM_OBJECTIVE_POINTS_PER_SIDE = 2;
+
+const CITY_FEATURE = 'settlement:city';
+const TOWN_FEATURE = 'settlement:town';
+
+export interface GeneratedObjective {
+  readonly hexId: HexId;
+  readonly points: number;
+  /** The side whose deployment zone holds the objective; it controls the Hex at the start. */
+  readonly side: OobSide;
+}
+
+/** Fallback when the map has no Major City or town at all: the settlement (or land Hex) nearest the centre. */
+const centralObjective = (map: GeneratedMap): HexId => {
   // Generated maps are odd-r offset rectangles, so the centre is measured in map columns.
   const centerColumn = (map.options.width - 1) / 2;
   const centerR = (map.mapDefinition.bounds.minR + map.mapDefinition.bounds.maxR) / 2;
@@ -207,6 +225,71 @@ const selectObjective = (map: GeneratedMap): HexId => {
     const rd = Math.abs(column(r.value.q, r.value.r) - centerColumn) + Math.abs(r.value.r - centerR);
     return ld - rd || String(left).localeCompare(String(right));
   })[0]!;
+};
+
+/**
+ * Objectives stand in Major Cities and towns, as on a printed OCS map: one per Major City (on its core
+ * Hex) and a set of towns. Each side's half of the map gets the same VP total, filled with its Major
+ * Cities first and then the towns nearest the front (the larger town on a tie), so both sides start level,
+ * only captures change the score, and the towns at stake lie where the armies meet.
+ */
+const selectObjectives = (
+  map: GeneratedMap,
+  sideOf: (hexId: HexId) => OobSide,
+  frontDistance: (hexId: HexId) => number,
+  sideLand: Readonly<Record<OobSide, number>>,
+): { readonly objectives: readonly GeneratedObjective[]; readonly warnings: readonly string[] } => {
+  const hexById = new Map(map.mapDefinition.hexes.map((hex) => [hex.id, hex]));
+  const edgeHexes = new Set([
+    ...map.strategicRegions.firstEntryHexIds, ...map.strategicRegions.secondEntryHexIds,
+    ...map.strategicRegions.firstSupplyHexIds, ...map.strategicRegions.secondSupplyHexIds,
+  ]);
+  const candidates: Record<OobSide, { hexId: HexId; points: number; city: boolean }[]> = { ALLIED: [], AXIS: [] };
+  const cityCores: HexId[] = [];
+  // Settlement Hex IDs come ranked: each Major City core before its suburbs, then towns largest first.
+  for (const hexId of map.strategicRegions.settlementHexIds) {
+    const features = hexById.get(hexId)?.features.map(({ definitionId }) => String(definitionId)) ?? [];
+    const city = features.includes(CITY_FEATURE);
+    if (city) {
+      // A suburb adjoins its core; Major Cities stand far apart, so an adjacent earlier city Hex is the core.
+      if (cityCores.some((core) => distance(core, hexId) <= 1)) continue;
+      cityCores.push(hexId);
+    } else if (!features.includes(TOWN_FEATURE)) continue;
+    if (edgeHexes.has(hexId)) continue;
+    candidates[sideOf(hexId)].push({
+      hexId, city, points: city ? GENERATED_MAJOR_CITY_OBJECTIVE_POINTS : GENERATED_TOWN_OBJECTIVE_POINTS,
+    });
+  }
+  const sum = (entries: readonly { points: number }[]): number => entries.reduce((total, { points }) => total + points, 0);
+  const sides = ['ALLIED', 'AXIS'] as const;
+  const wanted = Math.max(MINIMUM_OBJECTIVE_POINTS_PER_SIDE,
+    Math.round(Math.min(sideLand.ALLIED, sideLand.AXIS) / GENERATED_LAND_HEXES_PER_OBJECTIVE_POINT));
+  // Every Major City counts, so the target rises to the side with the most city VP; it cannot exceed
+  // what the poorer side can field, or the sides would start unequal.
+  const target = Math.min(
+    Math.max(wanted, ...sides.map((side) => sum(candidates[side].filter(({ city }) => city)))),
+    ...sides.map((side) => sum(candidates[side])),
+  );
+  const objectives: GeneratedObjective[] = [];
+  const totals = { ALLIED: 0, AXIS: 0 };
+  for (const side of sides) {
+    const size = new Map(candidates[side].map(({ hexId }, order) => [hexId, order]));
+    const byFront = [...candidates[side]].sort((left, right) => Number(right.city) - Number(left.city)
+      || frontDistance(left.hexId) - frontDistance(right.hexId) || size.get(left.hexId)! - size.get(right.hexId)!);
+    for (const { hexId, points, city } of byFront) {
+      if (!city && totals[side] + points > target) continue;
+      objectives.push({ hexId, points, side });
+      totals[side] += points;
+    }
+  }
+  if (objectives.length === 0) {
+    const hexId = centralObjective(map);
+    return { objectives: [{ hexId, points: GENERATED_TOWN_OBJECTIVE_POINTS, side: sideOf(hexId) }], warnings: [] };
+  }
+  const warnings = totals.ALLIED === totals.AXIS ? [] : [
+    `Objectives are unbalanced (Allied ${totals.ALLIED} VP, Axis ${totals.AXIS} VP); the map has too few towns on one side.`,
+  ];
+  return { objectives: objectives.sort((left, right) => String(left.hexId).localeCompare(String(right.hexId))), warnings };
 };
 
 const deploymentFailure = (message: string, path: readonly (string | number)[] = []): GameFlowFailure => ({
@@ -437,16 +520,24 @@ export const deployGeneratedForces = (
       .map((hexId) => ({ hexId, controllerId: players.AXIS })),
   );
   // 13.3h: initial railroad control follows the front line, here the split between the deployment
-  // zones. Objective Hexes stay uncontrolled so no side starts with victory points.
-  const objectiveHexId = selectObjective(map);
+  // zones. Each side also holds the objectives in its zone; both hold the same VP, so the score starts level.
+  const allied = new Set(zones.ALLIED.map(({ id }) => id));
+  const { objectives, warnings: objectiveWarnings } = selectObjectives(
+    map,
+    (hexId) => allied.has(hexId) ? 'ALLIED' : 'AXIS',
+    // The front is the split between the deployment zones: equally far from both entry anchors.
+    (hexId) => Math.abs(distance(hexId, firstAnchor) - distance(hexId, secondAnchor)),
+    { ALLIED: zones.ALLIED.length, AXIS: zones.AXIS.length },
+  );
   const seeded = new Set(controlled.map(({ hexId }) => hexId));
-  const railControl = (['ALLIED', 'AXIS'] as const).flatMap((side) => zones[side]
-    .filter(({ id }) => railHexes.has(id) && !seeded.has(id) && id !== objectiveHexId)
+  const objectiveSides = new Map(objectives.map(({ hexId, side }) => [hexId, side]));
+  const zoneControl = (['ALLIED', 'AXIS'] as const).flatMap((side) => zones[side]
+    .filter(({ id }) => !seeded.has(id) && (railHexes.has(id) || objectiveSides.get(id) === side))
     .map(({ id }) => ({ hexId: id, controllerId: players[side] })));
   const initialMapState: MapState = {
     schemaVersion: FOUNDATION_SCHEMA_VERSION,
     revision: initialRevision.value,
-    hexControl: [...controlled, ...railControl].sort((left, right) => String(left.hexId).localeCompare(String(right.hexId))),
+    hexControl: [...controlled, ...zoneControl].sort((left, right) => String(left.hexId).localeCompare(String(right.hexId))),
     features: [],
   };
   const initialPieceState: PieceRuntimeState = {
@@ -462,13 +553,15 @@ export const deployGeneratedForces = (
     usedByHex.set(piece.location.hexId, (usedByHex.get(piece.location.hexId) ?? 0) + reTicks(piece, definition));
   }
   const maximumStackReTicks = Math.max(0, ...usedByHex.values());
-  const warnings = maximumStackReTicks > 32
-    ? ['At least one initial stack uses more than 8 RE; review deployment before competitive play.']
-    : [];
+  const warnings = [
+    ...maximumStackReTicks > 32 ? ['At least one initial stack uses more than 8 RE; review deployment before competitive play.'] : [],
+    ...objectiveWarnings,
+  ];
   return { ok: true, value: {
     initialMapState,
     initialPieceState,
-    objectiveHexIds: [objectiveHexId],
+    objectives: objectives.map(({ hexId, points }) => ({ hexId, points })),
+    objectiveHexIds: objectives.map(({ hexId }) => hexId),
     metrics: {
       pieces: pieces.length,
       occupiedHexes: new Set(pieces.flatMap((piece) => piece.location.kind === 'ON_MAP' ? [piece.location.hexId] : [])).size,
