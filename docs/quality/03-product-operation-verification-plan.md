@@ -332,9 +332,10 @@ Covered: §A, §B, §B1 (1920×1080; the 1680×1050 repeat stopped after CTR-03)
 §E (UI-01 to UI-05). SUP-B rows wait for Phase B (no planner exists in the product).
 
 This run: 29 PASS, 4 FAIL (NG-07, NG-10, MAP-03, MAP-04), 2 BLOCKED (ACT-11, ACT-12); CTR-05, CTR-06 and CTR-08 (partial
-evidence) and ACT-06 (state not reached) stay `UNVERIFIED`. Whole matrix after this record: 55 PASS, 5 FAIL (the four above and
-AIR-08), 2 BLOCKED, 3 partly passed (AIR-04, AIR-05, SUP-A10), 26 UNVERIFIED (CTR-05, CTR-06, CTR-08, ACT-06, SES-01–09,
-UI-01–05, SUP-B01–08).
+evidence) and ACT-06 (state not reached) stay `UNVERIFIED`. Whole matrix after this record, including sections H and I added
+the same day by the rail and replacement work: 65 PASS, 5 FAIL (the four above and AIR-08), 2 BLOCKED, 3 partly passed (AIR-04,
+AIR-05, SUP-A10), 32 UNVERIFIED (CTR-05, CTR-06, CTR-08, ACT-06, SES-01–09, UI-01–05, SUP-B01–08, RAIL-05–10). This run's build
+predates sections H and I; it does not cover them.
 
 Observed issues (open; none is closed by this record):
 
