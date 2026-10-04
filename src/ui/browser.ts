@@ -20,7 +20,7 @@ import {
 import { createUiController, type UiController } from './controller.js';
 import { counterView, counterSvgBody, counterSvg } from './counter.js';
 import {
-  coastlineHtml, hexGridHtml, mapArtDefsHtml, objectiveArtHtml, regionEdgesHtml, riversHtml, roadsHtml, settlementArtHtml,
+  coastlineHtml, hexGridHtml, mapArtDefsHtml, objectiveArtHtml, placeNameFor, regionEdgesHtml, riversHtml, roadsHtml, settlementArtHtml,
   strategicBandPoints, terrainFillHtml, terrainGlyphsHtml,
 } from './map-art.js';
 import { MapView, type MapCounter, type MapState } from './map-canvas.js';
@@ -202,7 +202,7 @@ const stackOrder = <T extends { readonly definitionId: string; readonly id: stri
   .sort((left, right) => left.rank - right.rank || left.index - right.index)
   .map(({ piece }) => piece);
 
-/** Terrain of the hovered hex and, while a unit is selected, the MP it would cost to get there. */
+/** Terrain (and place name, for a settlement) of the hovered hex and, while a unit is selected, the MP it would cost to get there. */
 const hoverText = (snapshot: UiSnapshot, hexId: string): string => {
   const cell = cellsById.get(hexId);
   if (!cell) return 'Hover a hex for terrain.';
@@ -212,7 +212,9 @@ const hoverText = (snapshot: UiSnapshot, hexId: string): string => {
   // 14.8: the marker is otherwise only painted, so the hover line (and the keyboard cursor) names it and who pays.
   const marker = snapshot.air.trainbusting.find((entry) => entry.hexId === hexId);
   const trainbusting = marker ? ` · Trainbusting marker (${marker.own ? 'yours' : 'enemy'}): ${marker.own ? 'the enemy pays' : 'you pay'} +1 MP here and, except Leg units, beside it` : '';
-  return `Hex ${printedHexLabel(cell.id)} · ${cell.terrain.toLowerCase()}${cell.settlement ? ` · ${cell.settlement.toLowerCase()}` : ''}${currentGame.deployment.objectiveHexIds.includes(cell.id as never) ? ' · objective' : ''}${trainbusting}${cost}`;
+  // A settlement hex names its place (the map prints it beside cities and towns), so the line can be matched to the map.
+  const placeName = cell.settlement ? ` · ${placeNameFor(cell.id)}` : '';
+  return `Hex ${printedHexLabel(cell.id)}${placeName} · ${cell.terrain.toLowerCase()}${cell.settlement ? ` · ${cell.settlement.toLowerCase()}` : ''}${currentGame.deployment.objectiveHexIds.includes(cell.id as never) ? ' · objective' : ''}${trainbusting}${cost}`;
 };
 
 /** What a screen reader hears for the map's keyboard cursor: the hover line, what the hex is a target for, then the units there. */
