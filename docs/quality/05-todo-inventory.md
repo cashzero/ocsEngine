@@ -45,6 +45,7 @@
 | 地圖 | `docs/ui/12-map-appearance.md`、`docs/generator/10-btr-scale-density.md` | 鐵路已於 #56 完成（Rail Cap 運輸仍缺）；Autobahn、地名僅裝飾、一格一地形、並行道路、覆蓋填補耗時、新外觀未重跑整合驗收 |
 | OOB 命名 | `docs/reports/random-oob-naming.md` | UI 驗收 UNVERIFIED |
 | Breakdowns | `docs/reports/breakdowns-2026-10-03.md` | 無開放 TODO；提議的驗收列待使用者核准 |
+| 效能（大地圖） | `docs/reports/large-map-performance-2026-10-04.md` §8 | PERF-1 Trace Supply 覆蓋（64x48 每次點擊凍結 1～2 s）；PERF-2 地圖產生（道路網 中心點³）；PERF-3 情境驗證／建立 session（棋子×格數）；PERF-4 End step；PERF-5 增援候選；PERF-6 每次點擊固定成本 |
 
 ## 4. 程式碼內的 TODO
 

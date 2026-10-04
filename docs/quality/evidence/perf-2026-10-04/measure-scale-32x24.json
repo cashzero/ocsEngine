@@ -1,0 +1,2925 @@
+{
+ "generatedAt": "2026-10-04T10:14:15.687Z",
+ "node": "v24.11.1",
+ "sizes": [
+  {
+   "size": "32x24",
+   "facts": {
+    "hexes": 768,
+    "hexsides": 490,
+    "features": null,
+    "pieces": 51,
+    "onMap": 46,
+    "saveBytes": 590438,
+    "stateBytes": 261643
+   },
+   "micro": {
+    "rules.queryTraceCoverage(any unit)": {
+     "median": 102.23250000000007,
+     "min": 98.0661,
+     "max": 179.14509999999996
+    },
+    "rules.querySupplySources": {
+     "median": 0.0031999999998788553,
+     "min": 0.0028999999999541615,
+     "max": 0.06140000000004875
+    },
+    "rules.getActionFamilies": {
+     "median": 0.20280000000002474,
+     "min": 0.1572000000001026,
+     "max": 0.35410000000001673
+    },
+    "rules.projectForViewer": {
+     "median": 0.32760000000007494,
+     "min": 0.2950999999998203,
+     "max": 0.36000000000012733
+    },
+    "hashGameState": {
+     "median": 7.915200000000141,
+     "min": 6.6638000000000375,
+     "max": 8.587299999999914
+    },
+    "serializeGameState": {
+     "median": 6.080400000000054,
+     "min": 5.135699999999815,
+     "max": 6.5176000000001295
+    },
+    "session.serializeSave (start)": {
+     "median": 14.45750000000021,
+     "min": 13.836900000000242,
+     "max": 15.64280000000008
+    },
+    "rules.queryTraceCoverage(one unit)": {
+     "median": 100.38009999999986,
+     "min": 93.12710000000015,
+     "max": 111.18049999999994
+    }
+   },
+   "byKind": [
+    {
+     "kind": "new game: create",
+     "count": 1,
+     "ms": 760.3248000000001,
+     "max": 760.3248000000001,
+     "calls": {}
+    },
+    {
+     "kind": "ui: create controller",
+     "count": 1,
+     "ms": 61.9704999999999,
+     "max": 61.9704999999999,
+     "calls": {
+      "session.getHistory": {
+       "count": 2,
+       "ms": 0.09400000000005093,
+       "max": 0.08290000000010878
+      },
+      "session.getPendingDecision": {
+       "count": 6,
+       "ms": 0.0884000000000924,
+       "max": 0.07539999999994507
+      },
+      "rules.projectForViewer": {
+       "count": 13,
+       "ms": 9.890299999999797,
+       "max": 2.380899999999883
+      },
+      "session.getView": {
+       "count": 13,
+       "ms": 12.560700000000452,
+       "max": 2.5865000000001146
+      },
+      "session.createCheckpoint": {
+       "count": 1,
+       "ms": 7.763300000000072,
+       "max": 7.763300000000072
+      },
+      "rules.getActionFamilies": {
+       "count": 1,
+       "ms": 2.6079999999999472,
+       "max": 2.6079999999999472
+      },
+      "session.getActionFamilies": {
+       "count": 1,
+       "ms": 2.670799999999872,
+       "max": 2.670799999999872
+      },
+      "rules.getActionCandidates[PLACE_REINFORCEMENT]": {
+       "count": 1,
+       "ms": 32.64830000000006,
+       "max": 32.64830000000006
+      },
+      "session.getActionCandidates[PLACE_REINFORCEMENT]": {
+       "count": 1,
+       "ms": 32.70170000000007,
+       "max": 32.70170000000007
+      },
+      "rules.getActionCandidates[ADVANCE_SEQUENCE]": {
+       "count": 1,
+       "ms": 0.12669999999980064,
+       "max": 0.12669999999980064
+      },
+      "session.getActionCandidates[ADVANCE_SEQUENCE]": {
+       "count": 1,
+       "ms": 0.13340000000016516,
+       "max": 0.13340000000016516
+      },
+      "rules.explain": {
+       "count": 1,
+       "ms": 0.542699999999968,
+       "max": 0.542699999999968
+      },
+      "session.validateDraft": {
+       "count": 1,
+       "ms": 0.5785999999998239,
+       "max": 0.5785999999998239
+      },
+      "session.listCheckpoints": {
+       "count": 2,
+       "ms": 0.03749999999990905,
+       "max": 0.03289999999992688
+      }
+     }
+    },
+    {
+     "kind": "ui: toggle Trace Supply on",
+     "count": 1,
+     "ms": 144.29509999999982,
+     "max": 144.29509999999982,
+     "calls": {
+      "rules.projectForViewer": {
+       "count": 9,
+       "ms": 3.078100000000177,
+       "max": 0.44000000000005457
+      },
+      "session.getView": {
+       "count": 9,
+       "ms": 4.483600000000479,
+       "max": 0.6289000000001579
+      },
+      "rules.queryTraceCoverage": {
+       "count": 1,
+       "ms": 138.83740000000034,
+       "max": 138.83740000000034
+      },
+      "session.getTraceCoverage": {
+       "count": 1,
+       "ms": 139.02750000000015,
+       "max": 139.02750000000015
+      },
+      "rules.querySupplySources": {
+       "count": 1,
+       "ms": 0.013299999999617285,
+       "max": 0.013299999999617285
+      },
+      "session.getSupplySources": {
+       "count": 1,
+       "ms": 0.07859999999982392,
+       "max": 0.07859999999982392
+      },
+      "session.getPendingDecision": {
+       "count": 4,
+       "ms": 0.013000000000374712,
+       "max": 0.004600000000209548
+      },
+      "session.listCheckpoints": {
+       "count": 2,
+       "ms": 0.011200000000371801,
+       "max": 0.007399999999961437
+      }
+     }
+    },
+    {
+     "kind": "select on-map unit, trace on",
+     "count": 4,
+     "ms": 516.6215000000002,
+     "max": 162.41010000000006,
+     "calls": {
+      "rules.projectForViewer": {
+       "count": 50,
+       "ms": 14.565500000001975,
+       "max": 0.7839999999996508
+      },
+      "session.getView": {
+       "count": 50,
+       "ms": 21.935699999999542,
+       "max": 0.9229999999997744
+      },
+      "rules.queryTraceCoverage": {
+       "count": 4,
+       "ms": 487.56060000000025,
+       "max": 156.57100000000037
+      },
+      "session.getTraceCoverage": {
+       "count": 4,
+       "ms": 488.1599999999994,
+       "max": 156.7184000000002
+      },
+      "session.getPendingDecision": {
+       "count": 16,
+       "ms": 0.027200000001357694,
+       "max": 0.010399999999663123
+      },
+      "session.listCheckpoints": {
+       "count": 8,
+       "ms": 0.03240000000005239,
+       "max": 0.0079000000000633
+      },
+      "rules.queryMovementRange": {
+       "count": 2,
+       "ms": 2.6127999999989697,
+       "max": 2.277999999999338
+      },
+      "session.getMovementRange": {
+       "count": 2,
+       "ms": 2.799900000000889,
+       "max": 2.4099000000005617
+      },
+      "rules.getActionCandidates[CHANGE_MODE]": {
+       "count": 2,
+       "ms": 0.14289999999982683,
+       "max": 0.07769999999982247
+      },
+      "session.getActionCandidates[CHANGE_MODE]": {
+       "count": 2,
+       "ms": 0.1504000000004453,
+       "max": 0.08100000000013097
+      },
+      "rules.getActionCandidates[CREATE_BREAKDOWN]": {
+       "count": 2,
+       "ms": 0.11769999999978609,
+       "max": 0.06239999999979773
+      },
+      "session.getActionCandidates[CREATE_BREAKDOWN]": {
+       "count": 2,
+       "ms": 0.12660000000050786,
+       "max": 0.06720000000041182
+      },
+      "rules.queryFuelPreview": {
+       "count": 2,
+       "ms": 0.33910000000014406,
+       "max": 0.21519999999964057
+      },
+      "session.getFuelPreview": {
+       "count": 2,
+       "ms": 0.42259999999987485,
+       "max": 0.2737999999999374
+      },
+      "rules.getActionCandidates[PAY_FUEL]": {
+       "count": 2,
+       "ms": 0.3695000000006985,
+       "max": 0.3095000000002983
+      },
+      "session.getActionCandidates[PAY_FUEL]": {
+       "count": 2,
+       "ms": 0.37480000000050495,
+       "max": 0.3132000000005064
+      },
+      "rules.getActionCandidates[FORM_EXTENDER]": {
+       "count": 2,
+       "ms": 0.06530000000020664,
+       "max": 0.04110000000036962
+      },
+      "session.getActionCandidates[FORM_EXTENDER]": {
+       "count": 2,
+       "ms": 0.07179999999971187,
+       "max": 0.04579999999987194
+      }
+     }
+    },
+    {
+     "kind": "deselect",
+     "count": 4,
+     "ms": 18.602699999999913,
+     "max": 5.452100000000428,
+     "calls": {
+      "rules.projectForViewer": {
+       "count": 36,
+       "ms": 11.244999999996708,
+       "max": 0.5683999999996558
+      },
+      "session.getView": {
+       "count": 36,
+       "ms": 17.737600000002658,
+       "max": 1.1602999999995518
+      },
+      "session.getPendingDecision": {
+       "count": 16,
+       "ms": 0.024499999999989086,
+       "max": 0.007500000000163709
+      },
+      "session.listCheckpoints": {
+       "count": 8,
+       "ms": 0.03980000000092332,
+       "max": 0.01319999999986976
+      }
+     }
+    },
+    {
+     "kind": "reinforcement: select arrival",
+     "count": 8,
+     "ms": 705.4974000000002,
+     "max": 127.17109999999957,
+     "calls": {
+      "rules.projectForViewer": {
+       "count": 80,
+       "ms": 25.983300000002146,
+       "max": 0.7759000000005472
+      },
+      "session.getView": {
+       "count": 80,
+       "ms": 38.31989999999996,
+       "max": 1.014999999999418
+      },
+      "session.getPendingDecision": {
+       "count": 32,
+       "ms": 0.03450000000066211,
+       "max": 0.003400000000056025
+      },
+      "session.listCheckpoints": {
+       "count": 16,
+       "ms": 0.05750000000034561,
+       "max": 0.005600000000413274
+      },
+      "rules.queryTraceCoverage": {
+       "count": 6,
+       "ms": 664.1677000000009,
+       "max": 121.71669999999995
+      },
+      "session.getTraceCoverage": {
+       "count": 6,
+       "ms": 665.0602000000008,
+       "max": 121.86880000000019
+      }
+     }
+    },
+    {
+     "kind": "reinforcement: place",
+     "count": 8,
+     "ms": 2031.8824000000009,
+     "max": 299.91340000000037,
+     "calls": {
+      "rules.projectForViewer": {
+       "count": 416,
+       "ms": 150.15430000000333,
+       "max": 3.5349999999998545
+      },
+      "session.getView": {
+       "count": 416,
+       "ms": 217.91049999999132,
+       "max": 3.8294999999998254
+      },
+      "session.getPendingDecision": {
+       "count": 240,
+       "ms": 0.24199999999791544,
+       "max": 0.026200000000244472
+      },
+      "session.listCheckpoints": {
+       "count": 80,
+       "ms": 0.3050999999986743,
+       "max": 0.018099999999776628
+      },
+      "rules.getActionCandidates[PLACE_REINFORCEMENT]": {
+       "count": 14,
+       "ms": 145.6895000000004,
+       "max": 34.65970000000016
+      },
+      "session.getActionCandidates[PLACE_REINFORCEMENT]": {
+       "count": 14,
+       "ms": 145.7547000000004,
+       "max": 34.66679999999997
+      },
+      "session.createCheckpoint": {
+       "count": 8,
+       "ms": 52.33890000000201,
+       "max": 7.019500000000335
+      },
+      "rules.applyAction": {
+       "count": 8,
+       "ms": 20.13220000000092,
+       "max": 3.7678000000000793
+      },
+      "session.getHistory": {
+       "count": 8,
+       "ms": 0.5062000000011722,
+       "max": 0.12560000000030414
+      },
+      "rules.getActionFamilies": {
+       "count": 8,
+       "ms": 9.419400000001588,
+       "max": 2.8793000000000575
+      },
+      "session.getActionFamilies": {
+       "count": 8,
+       "ms": 9.45359999999937,
+       "max": 2.8917999999998756
+      },
+      "rules.queryTraceCoverage": {
+       "count": 8,
+       "ms": 1365.9656,
+       "max": 197.38910000000033
+      },
+      "session.getTraceCoverage": {
+       "count": 8,
+       "ms": 1367.3535999999986,
+       "max": 197.54479999999967
+      },
+      "rules.querySupplySources": {
+       "count": 8,
+       "ms": 0.08129999999937354,
+       "max": 0.023799999999937427
+      },
+      "session.getSupplySources": {
+       "count": 8,
+       "ms": 0.2465000000006512,
+       "max": 0.04309999999986758
+      },
+      "rules.getActionCandidates[ADVANCE_SEQUENCE]": {
+       "count": 8,
+       "ms": 2.9849999999996726,
+       "max": 0.8478999999997541
+      },
+      "session.getActionCandidates[ADVANCE_SEQUENCE]": {
+       "count": 8,
+       "ms": 3.017000000000735,
+       "max": 0.8524999999999636
+      },
+      "rules.explain": {
+       "count": 6,
+       "ms": 2.5994999999988977,
+       "max": 0.7426000000000386
+      },
+      "session.validateDraft": {
+       "count": 6,
+       "ms": 2.663100000000213,
+       "max": 0.7570999999998094
+      },
+      "session.serializeSave": {
+       "count": 8,
+       "ms": 130.83199999999852,
+       "max": 17.275500000000648
+      },
+      "session.dispatch": {
+       "count": 8,
+       "ms": 1808.628499999999,
+       "max": 278.8819000000003
+      }
+     }
+    },
+    {
+     "kind": "end step",
+     "count": 4,
+     "ms": 1520.5371999999998,
+     "max": 445.5793999999996,
+     "calls": {
+      "rules.projectForViewer": {
+       "count": 182,
+       "ms": 54.70100000000002,
+       "max": 0.926300000000083
+      },
+      "session.getView": {
+       "count": 182,
+       "ms": 83.1684000000032,
+       "max": 1.0645999999997002
+      },
+      "rules.queryTraceCoverage": {
+       "count": 6,
+       "ms": 851.6233999999995,
+       "max": 171.76980000000003
+      },
+      "session.getTraceCoverage": {
+       "count": 6,
+       "ms": 852.5578999999998,
+       "max": 171.92289999999957
+      },
+      "session.getPendingDecision": {
+       "count": 90,
+       "ms": 0.15570000000479922,
+       "max": 0.08060000000023138
+      },
+      "session.listCheckpoints": {
+       "count": 26,
+       "ms": 0.08840000000054715,
+       "max": 0.016300000000228465
+      },
+      "rules.applyAction": {
+       "count": 4,
+       "ms": 409.6793000000007,
+       "max": 159.60650000000078
+      },
+      "session.removeCheckpoint": {
+       "count": 11,
+       "ms": 0.15609999999924185,
+       "max": 0.05490000000008877
+      },
+      "session.createCheckpoint": {
+       "count": 3,
+       "ms": 23.827900000001137,
+       "max": 10.73950000000059
+      },
+      "session.getHistory": {
+       "count": 4,
+       "ms": 0.39950000000044383,
+       "max": 0.14050000000042928
+      },
+      "rules.getActionFamilies": {
+       "count": 5,
+       "ms": 51.687300000000505,
+       "max": 29.403800000000047
+      },
+      "session.getActionFamilies": {
+       "count": 5,
+       "ms": 51.70600000000013,
+       "max": 29.407600000000457
+      },
+      "rules.querySupplySources": {
+       "count": 4,
+       "ms": 0.03110000000015134,
+       "max": 0.013799999999719148
+      },
+      "session.getSupplySources": {
+       "count": 4,
+       "ms": 0.11020000000007713,
+       "max": 0.03569999999945139
+      },
+      "rules.getActionCandidates[ADVANCE_SEQUENCE]": {
+       "count": 4,
+       "ms": 0.07819999999992433,
+       "max": 0.03330000000005384
+      },
+      "session.getActionCandidates[ADVANCE_SEQUENCE]": {
+       "count": 4,
+       "ms": 0.09239999999954307,
+       "max": 0.037299999999959255
+      },
+      "session.serializeSave": {
+       "count": 4,
+       "ms": 55.586200000001554,
+       "max": 14.659500000000662
+      },
+      "session.dispatch": {
+       "count": 4,
+       "ms": 1260.5763000000006,
+       "max": 359.3101999999999
+      },
+      "rules.explain": {
+       "count": 2,
+       "ms": 0.05209999999988213,
+       "max": 0.036499999999250576
+      },
+      "session.validateDraft": {
+       "count": 2,
+       "ms": 0.061400000000503496,
+       "max": 0.04320000000006985
+      }
+     }
+    },
+    {
+     "kind": "handoff: begin",
+     "count": 1,
+     "ms": 4.955299999999625,
+     "max": 4.955299999999625,
+     "calls": {
+      "rules.projectForViewer": {
+       "count": 10,
+       "ms": 2.795599999998558,
+       "max": 0.2966999999998734
+      },
+      "session.getView": {
+       "count": 28,
+       "ms": 4.183499999999185,
+       "max": 0.4882000000006883
+      },
+      "session.getPendingDecision": {
+       "count": 10,
+       "ms": 0.00439999999889551,
+       "max": 0.0010999999994965037
+      },
+      "session.listCheckpoints": {
+       "count": 3,
+       "ms": 0.0065999999997075065,
+       "max": 0.0027000000000043656
+      },
+      "session.beginHandoff": {
+       "count": 1,
+       "ms": 0.19419999999990978,
+       "max": 0.19419999999990978
+      },
+      "rules.getActionFamilies": {
+       "count": 1,
+       "ms": 0.0078000000003157766,
+       "max": 0.0078000000003157766
+      },
+      "session.getActionFamilies": {
+       "count": 1,
+       "ms": 0.04239999999936117,
+       "max": 0.04239999999936117
+      },
+      "session.getActionCandidates[ADVANCE_SEQUENCE]": {
+       "count": 1,
+       "ms": 0.008700000000317232,
+       "max": 0.008700000000317232
+      },
+      "rules.explain": {
+       "count": 1,
+       "ms": 0.02410000000054424,
+       "max": 0.02410000000054424
+      },
+      "session.validateDraft": {
+       "count": 1,
+       "ms": 0.02819999999974243,
+       "max": 0.02819999999974243
+      },
+      "session.getHistory": {
+       "count": 1,
+       "ms": 0.10850000000027649,
+       "max": 0.10850000000027649
+      }
+     }
+    },
+    {
+     "kind": "handoff: complete",
+     "count": 1,
+     "ms": 346.15120000000024,
+     "max": 346.15120000000024,
+     "calls": {
+      "rules.projectForViewer": {
+       "count": 26,
+       "ms": 8.083999999998014,
+       "max": 0.46750000000065484
+      },
+      "session.getView": {
+       "count": 26,
+       "ms": 11.86949999999888,
+       "max": 0.6297000000004118
+      },
+      "session.getHistory": {
+       "count": 2,
+       "ms": 0.15560000000095897,
+       "max": 0.0794000000005326
+      },
+      "rules.getActionFamilies": {
+       "count": 2,
+       "ms": 0.43770000000040454,
+       "max": 0.23250000000007276
+      },
+      "session.getActionFamilies": {
+       "count": 2,
+       "ms": 0.44729999999890424,
+       "max": 0.23439999999936845
+      },
+      "rules.getActionCandidates[PLACE_REINFORCEMENT]": {
+       "count": 2,
+       "ms": 54.998899999999594,
+       "max": 28.409300000000258
+      },
+      "session.getActionCandidates[PLACE_REINFORCEMENT]": {
+       "count": 2,
+       "ms": 55.00619999999981,
+       "max": 28.41309999999976
+      },
+      "rules.queryTraceCoverage": {
+       "count": 2,
+       "ms": 276.6714000000002,
+       "max": 166.05079999999998
+      },
+      "session.getTraceCoverage": {
+       "count": 2,
+       "ms": 276.96890000000076,
+       "max": 166.19790000000012
+      },
+      "rules.querySupplySources": {
+       "count": 2,
+       "ms": 0.008199999999305874,
+       "max": 0.0046999999995023245
+      },
+      "session.getSupplySources": {
+       "count": 2,
+       "ms": 0.05870000000049913,
+       "max": 0.03300000000035652
+      },
+      "session.getPendingDecision": {
+       "count": 10,
+       "ms": 0.025100000001657463,
+       "max": 0.01900000000023283
+      },
+      "rules.getActionCandidates[ADVANCE_SEQUENCE]": {
+       "count": 2,
+       "ms": 0.1477999999997337,
+       "max": 0.07439999999951397
+      },
+      "session.getActionCandidates[ADVANCE_SEQUENCE]": {
+       "count": 2,
+       "ms": 0.15410000000065338,
+       "max": 0.07810000000063155
+      },
+      "rules.explain": {
+       "count": 2,
+       "ms": 0.08889999999883003,
+       "max": 0.04599999999936699
+      },
+      "session.validateDraft": {
+       "count": 2,
+       "ms": 0.09799999999995634,
+       "max": 0.0510999999996784
+      },
+      "session.listCheckpoints": {
+       "count": 4,
+       "ms": 0.011800000000221189,
+       "max": 0.004100000000107684
+      },
+      "session.completeHandoff": {
+       "count": 1,
+       "ms": 201.20649999999932,
+       "max": 201.20649999999932
+      }
+     }
+    }
+   ],
+   "operations": [
+    {
+     "name": "new game: create (generate map/OOB, deploy, compose, start session)",
+     "calls": {},
+     "ms": 760.3248000000001
+    },
+    {
+     "name": "ui: create controller (+ first snapshot)",
+     "calls": {
+      "session.getHistory": {
+       "count": 2,
+       "ms": 0.09400000000005093,
+       "max": 0.08290000000010878
+      },
+      "session.getPendingDecision": {
+       "count": 6,
+       "ms": 0.0884000000000924,
+       "max": 0.07539999999994507
+      },
+      "rules.projectForViewer": {
+       "count": 13,
+       "ms": 9.890299999999797,
+       "max": 2.380899999999883
+      },
+      "session.getView": {
+       "count": 13,
+       "ms": 12.560700000000452,
+       "max": 2.5865000000001146
+      },
+      "session.createCheckpoint": {
+       "count": 1,
+       "ms": 7.763300000000072,
+       "max": 7.763300000000072
+      },
+      "rules.getActionFamilies": {
+       "count": 1,
+       "ms": 2.6079999999999472,
+       "max": 2.6079999999999472
+      },
+      "session.getActionFamilies": {
+       "count": 1,
+       "ms": 2.670799999999872,
+       "max": 2.670799999999872
+      },
+      "rules.getActionCandidates[PLACE_REINFORCEMENT]": {
+       "count": 1,
+       "ms": 32.64830000000006,
+       "max": 32.64830000000006
+      },
+      "session.getActionCandidates[PLACE_REINFORCEMENT]": {
+       "count": 1,
+       "ms": 32.70170000000007,
+       "max": 32.70170000000007
+      },
+      "rules.getActionCandidates[ADVANCE_SEQUENCE]": {
+       "count": 1,
+       "ms": 0.12669999999980064,
+       "max": 0.12669999999980064
+      },
+      "session.getActionCandidates[ADVANCE_SEQUENCE]": {
+       "count": 1,
+       "ms": 0.13340000000016516,
+       "max": 0.13340000000016516
+      },
+      "rules.explain": {
+       "count": 1,
+       "ms": 0.542699999999968,
+       "max": 0.542699999999968
+      },
+      "session.validateDraft": {
+       "count": 1,
+       "ms": 0.5785999999998239,
+       "max": 0.5785999999998239
+      },
+      "session.listCheckpoints": {
+       "count": 2,
+       "ms": 0.03749999999990905,
+       "max": 0.03289999999992688
+      }
+     },
+     "ms": 61.9704999999999
+    },
+    {
+     "name": "ui: toggle Trace Supply on",
+     "calls": {
+      "rules.projectForViewer": {
+       "count": 9,
+       "ms": 3.078100000000177,
+       "max": 0.44000000000005457
+      },
+      "session.getView": {
+       "count": 9,
+       "ms": 4.483600000000479,
+       "max": 0.6289000000001579
+      },
+      "rules.queryTraceCoverage": {
+       "count": 1,
+       "ms": 138.83740000000034,
+       "max": 138.83740000000034
+      },
+      "session.getTraceCoverage": {
+       "count": 1,
+       "ms": 139.02750000000015,
+       "max": 139.02750000000015
+      },
+      "rules.querySupplySources": {
+       "count": 1,
+       "ms": 0.013299999999617285,
+       "max": 0.013299999999617285
+      },
+      "session.getSupplySources": {
+       "count": 1,
+       "ms": 0.07859999999982392,
+       "max": 0.07859999999982392
+      },
+      "session.getPendingDecision": {
+       "count": 4,
+       "ms": 0.013000000000374712,
+       "max": 0.004600000000209548
+      },
+      "session.listCheckpoints": {
+       "count": 2,
+       "ms": 0.011200000000371801,
+       "max": 0.007399999999961437
+      }
+     },
+     "ms": 144.29509999999982
+    },
+    {
+     "name": "select on-map unit, trace on (T1 0 REINFORCEMENT/NONE player:allied)",
+     "calls": {
+      "rules.projectForViewer": {
+       "count": 10,
+       "ms": 3.095100000000002,
+       "max": 0.375
+      },
+      "session.getView": {
+       "count": 10,
+       "ms": 4.68979999999965,
+       "max": 0.6120999999998276
+      },
+      "rules.queryTraceCoverage": {
+       "count": 1,
+       "ms": 156.57100000000037,
+       "max": 156.57100000000037
+      },
+      "session.getTraceCoverage": {
+       "count": 1,
+       "ms": 156.7184000000002,
+       "max": 156.7184000000002
+      },
+      "session.getPendingDecision": {
+       "count": 4,
+       "ms": 0.01239999999961583,
+       "max": 0.010399999999663123
+      },
+      "session.listCheckpoints": {
+       "count": 2,
+       "ms": 0.011599999999816646,
+       "max": 0.0079000000000633
+      }
+     },
+     "ms": 162.41010000000006
+    },
+    {
+     "name": "deselect (T1 0 REINFORCEMENT/NONE player:allied)",
+     "calls": {
+      "rules.projectForViewer": {
+       "count": 9,
+       "ms": 3.0995999999991,
+       "max": 0.5683999999996558
+      },
+      "session.getView": {
+       "count": 9,
+       "ms": 4.808700000000044,
+       "max": 0.8395999999997912
+      },
+      "session.getPendingDecision": {
+       "count": 4,
+       "ms": 0.010099999999965803,
+       "max": 0.007500000000163709
+      },
+      "session.listCheckpoints": {
+       "count": 2,
+       "ms": 0.0215000000002874,
+       "max": 0.01319999999986976
+      }
+     },
+     "ms": 5.215099999999893
+    },
+    {
+     "name": "reinforcement: select arrival (T1 0 REINFORCEMENT/NONE player:allied)",
+     "calls": {
+      "rules.projectForViewer": {
+       "count": 10,
+       "ms": 3.346400000000358,
+       "max": 0.6613999999999578
+      },
+      "session.getView": {
+       "count": 10,
+       "ms": 5.118499999999585,
+       "max": 0.8034999999999854
+      },
+      "session.getPendingDecision": {
+       "count": 4,
+       "ms": 0.003499999999803549,
+       "max": 0.0016999999998006388
+      },
+      "session.listCheckpoints": {
+       "count": 2,
+       "ms": 0.006699999999909778,
+       "max": 0.003499999999803549
+      }
+     },
+     "ms": 5.449899999999616
+    },
+    {
+     "name": "reinforcement: place (T1 0 REINFORCEMENT/NONE player:allied)",
+     "calls": {
+      "rules.projectForViewer": {
+       "count": 52,
+       "ms": 23.93079999999918,
+       "max": 3.5349999999998545
+      },
+      "session.getView": {
+       "count": 52,
+       "ms": 34.327000000001135,
+       "max": 3.8294999999998254
+      },
+      "session.getPendingDecision": {
+       "count": 30,
+       "ms": 0.039999999999054126,
+       "max": 0.016200000000026193
+      },
+      "session.listCheckpoints": {
+       "count": 10,
+       "ms": 0.03260000000045693,
+       "max": 0.00430000000005748
+      },
+      "rules.getActionCandidates[PLACE_REINFORCEMENT]": {
+       "count": 2,
+       "ms": 34.9059000000002,
+       "max": 34.65970000000016
+      },
+      "session.getActionCandidates[PLACE_REINFORCEMENT]": {
+       "count": 2,
+       "ms": 34.919900000000325,
+       "max": 34.66679999999997
+      },
+      "session.createCheckpoint": {
+       "count": 1,
+       "ms": 6.1754000000000815,
+       "max": 6.1754000000000815
+      },
+      "rules.applyAction": {
+       "count": 1,
+       "ms": 3.7678000000000793,
+       "max": 3.7678000000000793
+      },
+      "session.getHistory": {
+       "count": 1,
+       "ms": 0.03120000000035361,
+       "max": 0.03120000000035361
+      },
+      "rules.getActionFamilies": {
+       "count": 1,
+       "ms": 2.8793000000000575,
+       "max": 2.8793000000000575
+      },
+      "session.getActionFamilies": {
+       "count": 1,
+       "ms": 2.8917999999998756,
+       "max": 2.8917999999998756
+      },
+      "rules.queryTraceCoverage": {
+       "count": 1,
+       "ms": 180.82280000000037,
+       "max": 180.82280000000037
+      },
+      "session.getTraceCoverage": {
+       "count": 1,
+       "ms": 180.9998999999998,
+       "max": 180.9998999999998
+      },
+      "rules.querySupplySources": {
+       "count": 1,
+       "ms": 0.012200000000120781,
+       "max": 0.012200000000120781
+      },
+      "session.getSupplySources": {
+       "count": 1,
+       "ms": 0.03249999999979991,
+       "max": 0.03249999999979991
+      },
+      "rules.getActionCandidates[ADVANCE_SEQUENCE]": {
+       "count": 1,
+       "ms": 0.7583999999997104,
+       "max": 0.7583999999997104
+      },
+      "session.getActionCandidates[ADVANCE_SEQUENCE]": {
+       "count": 1,
+       "ms": 0.7667000000001281,
+       "max": 0.7667000000001281
+      },
+      "rules.explain": {
+       "count": 1,
+       "ms": 0.7426000000000386,
+       "max": 0.7426000000000386
+      },
+      "session.validateDraft": {
+       "count": 1,
+       "ms": 0.7570999999998094,
+       "max": 0.7570999999998094
+      },
+      "session.serializeSave": {
+       "count": 1,
+       "ms": 17.140100000000075,
+       "max": 17.140100000000075
+      },
+      "session.dispatch": {
+       "count": 1,
+       "ms": 278.8819000000003,
+       "max": 278.8819000000003
+      }
+     },
+     "ms": 299.91340000000037
+    },
+    {
+     "name": "reinforcement: select arrival (T1 0 REINFORCEMENT/NONE player:allied)",
+     "calls": {
+      "rules.projectForViewer": {
+       "count": 10,
+       "ms": 2.8895000000002256,
+       "max": 0.3396000000002459
+      },
+      "session.getView": {
+       "count": 10,
+       "ms": 4.421499999999924,
+       "max": 0.49479999999994106
+      },
+      "rules.queryTraceCoverage": {
+       "count": 1,
+       "ms": 105.36070000000018,
+       "max": 105.36070000000018
+      },
+      "session.getTraceCoverage": {
+       "count": 1,
+       "ms": 105.51020000000017,
+       "max": 105.51020000000017
+      },
+      "session.getPendingDecision": {
+       "count": 4,
+       "ms": 0.004900000000361615,
+       "max": 0.003400000000056025
+      },
+      "session.listCheckpoints": {
+       "count": 2,
+       "ms": 0.0072000000000116415,
+       "max": 0.004899999999906868
+      }
+     },
+     "ms": 110.19650000000001
+    },
+    {
+     "name": "reinforcement: place (T1 0 REINFORCEMENT/NONE player:allied)",
+     "calls": {
+      "rules.projectForViewer": {
+       "count": 52,
+       "ms": 19.10539999999901,
+       "max": 0.7378999999996267
+      },
+      "session.getView": {
+       "count": 52,
+       "ms": 28.406200000000354,
+       "max": 0.960399999999936
+      },
+      "session.getPendingDecision": {
+       "count": 30,
+       "ms": 0.02919999999949141,
+       "max": 0.004600000000209548
+      },
+      "session.listCheckpoints": {
+       "count": 10,
+       "ms": 0.06829999999990832,
+       "max": 0.018099999999776628
+      },
+      "rules.getActionCandidates[PLACE_REINFORCEMENT]": {
+       "count": 2,
+       "ms": 26.342200000000048,
+       "max": 13.386899999999969
+      },
+      "session.getActionCandidates[PLACE_REINFORCEMENT]": {
+       "count": 2,
+       "ms": 26.35220000000072,
+       "max": 13.392700000000332
+      },
+      "session.createCheckpoint": {
+       "count": 1,
+       "ms": 6.3223000000002685,
+       "max": 6.3223000000002685
+      },
+      "rules.applyAction": {
+       "count": 1,
+       "ms": 2.389599999999973,
+       "max": 2.389599999999973
+      },
+      "session.getHistory": {
+       "count": 1,
+       "ms": 0.01999999999998181,
+       "max": 0.01999999999998181
+      },
+      "rules.getActionFamilies": {
+       "count": 1,
+       "ms": 1.8900000000003274,
+       "max": 1.8900000000003274
+      },
+      "session.getActionFamilies": {
+       "count": 1,
+       "ms": 1.8940999999999804,
+       "max": 1.8940999999999804
+      },
+      "rules.queryTraceCoverage": {
+       "count": 1,
+       "ms": 178.94129999999996,
+       "max": 178.94129999999996
+      },
+      "session.getTraceCoverage": {
+       "count": 1,
+       "ms": 179.20519999999988,
+       "max": 179.20519999999988
+      },
+      "rules.querySupplySources": {
+       "count": 1,
+       "ms": 0.010600000000067666,
+       "max": 0.010600000000067666
+      },
+      "session.getSupplySources": {
+       "count": 1,
+       "ms": 0.03190000000040527,
+       "max": 0.03190000000040527
+      },
+      "rules.getActionCandidates[ADVANCE_SEQUENCE]": {
+       "count": 1,
+       "ms": 0.660200000000259,
+       "max": 0.660200000000259
+      },
+      "session.getActionCandidates[ADVANCE_SEQUENCE]": {
+       "count": 1,
+       "ms": 0.6658999999999651,
+       "max": 0.6658999999999651
+      },
+      "rules.explain": {
+       "count": 1,
+       "ms": 0.668699999999717,
+       "max": 0.668699999999717
+      },
+      "session.validateDraft": {
+       "count": 1,
+       "ms": 0.6727999999998246,
+       "max": 0.6727999999998246
+      },
+      "session.serializeSave": {
+       "count": 1,
+       "ms": 17.252500000000055,
+       "max": 17.252500000000055
+      },
+      "session.dispatch": {
+       "count": 1,
+       "ms": 238.2511999999997,
+       "max": 238.2511999999997
+      }
+     },
+     "ms": 272.5736999999999
+    },
+    {
+     "name": "reinforcement: select arrival (T1 0 REINFORCEMENT/NONE player:allied)",
+     "calls": {
+      "rules.projectForViewer": {
+       "count": 10,
+       "ms": 3.3346999999998843,
+       "max": 0.4375999999997475
+      },
+      "session.getView": {
+       "count": 10,
+       "ms": 4.708000000000084,
+       "max": 0.5878999999999905
+      },
+      "rules.queryTraceCoverage": {
+       "count": 1,
+       "ms": 105.75950000000012,
+       "max": 105.75950000000012
+      },
+      "session.getTraceCoverage": {
+       "count": 1,
+       "ms": 105.9025999999999,
+       "max": 105.9025999999999
+      },
+      "session.getPendingDecision": {
+       "count": 4,
+       "ms": 0.005000000000563887,
+       "max": 0.0033000000003085006
+      },
+      "session.listCheckpoints": {
+       "count": 2,
+       "ms": 0.00680000000011205,
+       "max": 0.004200000000309956
+      }
+     },
+     "ms": 110.94530000000032
+    },
+    {
+     "name": "reinforcement: place (T1 0 REINFORCEMENT/NONE player:allied)",
+     "calls": {
+      "rules.projectForViewer": {
+       "count": 52,
+       "ms": 16.94119999999748,
+       "max": 0.6411999999995714
+      },
+      "session.getView": {
+       "count": 52,
+       "ms": 24.797999999998865,
+       "max": 0.8111999999996442
+      },
+      "session.getPendingDecision": {
+       "count": 30,
+       "ms": 0.04780000000118889,
+       "max": 0.026200000000244472
+      },
+      "session.listCheckpoints": {
+       "count": 10,
+       "ms": 0.036000000000512955,
+       "max": 0.005600000000413274
+      },
+      "rules.getActionCandidates[PLACE_REINFORCEMENT]": {
+       "count": 2,
+       "ms": 13.298699999999826,
+       "max": 13.194100000000162
+      },
+      "session.getActionCandidates[PLACE_REINFORCEMENT]": {
+       "count": 2,
+       "ms": 13.314300000000003,
+       "max": 13.200800000000072
+      },
+      "session.createCheckpoint": {
+       "count": 1,
+       "ms": 6.96080000000029,
+       "max": 6.96080000000029
+      },
+      "rules.applyAction": {
+       "count": 1,
+       "ms": 3.629699999999957,
+       "max": 3.629699999999957
+      },
+      "session.getHistory": {
+       "count": 1,
+       "ms": 0.024699999999938882,
+       "max": 0.024699999999938882
+      },
+      "rules.getActionFamilies": {
+       "count": 1,
+       "ms": 0.18699999999989814,
+       "max": 0.18699999999989814
+      },
+      "session.getActionFamilies": {
+       "count": 1,
+       "ms": 0.19030000000020664,
+       "max": 0.19030000000020664
+      },
+      "rules.queryTraceCoverage": {
+       "count": 1,
+       "ms": 147.06979999999976,
+       "max": 147.06979999999976
+      },
+      "session.getTraceCoverage": {
+       "count": 1,
+       "ms": 147.21759999999995,
+       "max": 147.21759999999995
+      },
+      "rules.querySupplySources": {
+       "count": 1,
+       "ms": 0.018000000000029104,
+       "max": 0.018000000000029104
+      },
+      "session.getSupplySources": {
+       "count": 1,
+       "ms": 0.036300000000210275,
+       "max": 0.036300000000210275
+      },
+      "rules.getActionCandidates[ADVANCE_SEQUENCE]": {
+       "count": 1,
+       "ms": 0.07290000000011787,
+       "max": 0.07290000000011787
+      },
+      "session.getActionCandidates[ADVANCE_SEQUENCE]": {
+       "count": 1,
+       "ms": 0.07589999999981956,
+       "max": 0.07589999999981956
+      },
+      "rules.explain": {
+       "count": 1,
+       "ms": 0.04469999999992069,
+       "max": 0.04469999999992069
+      },
+      "session.validateDraft": {
+       "count": 1,
+       "ms": 0.05140000000028522,
+       "max": 0.05140000000028522
+      },
+      "session.serializeSave": {
+       "count": 1,
+       "ms": 15.877599999999802,
+       "max": 15.877599999999802
+      },
+      "session.dispatch": {
+       "count": 1,
+       "ms": 188.38910000000033,
+       "max": 188.38910000000033
+      }
+     },
+     "ms": 221.85980000000018
+    },
+    {
+     "name": "reinforcement: select arrival (T1 0 REINFORCEMENT/NONE player:allied)",
+     "calls": {
+      "rules.projectForViewer": {
+       "count": 10,
+       "ms": 3.1829999999990832,
+       "max": 0.41059999999970387
+      },
+      "session.getView": {
+       "count": 10,
+       "ms": 4.623700000000554,
+       "max": 0.5740999999998166
+      },
+      "rules.queryTraceCoverage": {
+       "count": 1,
+       "ms": 100.3143,
+       "max": 100.3143
+      },
+      "session.getTraceCoverage": {
+       "count": 1,
+       "ms": 100.46619999999984,
+       "max": 100.46619999999984
+      },
+      "session.getPendingDecision": {
+       "count": 4,
+       "ms": 0.004299999999602733,
+       "max": 0.002800000000206637
+      },
+      "session.listCheckpoints": {
+       "count": 2,
+       "ms": 0.00930000000016662,
+       "max": 0.005200000000058935
+      }
+     },
+     "ms": 105.31840000000011
+    },
+    {
+     "name": "reinforcement: place (T1 0 REINFORCEMENT/NONE player:allied)",
+     "calls": {
+      "rules.projectForViewer": {
+       "count": 52,
+       "ms": 16.862700000003315,
+       "max": 0.7148999999999432
+      },
+      "session.getView": {
+       "count": 52,
+       "ms": 24.21359999999777,
+       "max": 0.8697000000001935
+      },
+      "session.getPendingDecision": {
+       "count": 30,
+       "ms": 0.032300000001669105,
+       "max": 0.017700000000331784
+      },
+      "session.listCheckpoints": {
+       "count": 10,
+       "ms": 0.03430000000162181,
+       "max": 0.004600000000209548
+      },
+      "rules.getActionCandidates[PLACE_REINFORCEMENT]": {
+       "count": 1,
+       "ms": 0.08470000000033906,
+       "max": 0.08470000000033906
+      },
+      "session.getActionCandidates[PLACE_REINFORCEMENT]": {
+       "count": 1,
+       "ms": 0.08719999999993888,
+       "max": 0.08719999999993888
+      },
+      "session.createCheckpoint": {
+       "count": 1,
+       "ms": 6.658200000000306,
+       "max": 6.658200000000306
+      },
+      "rules.applyAction": {
+       "count": 1,
+       "ms": 1.9661000000000968,
+       "max": 1.9661000000000968
+      },
+      "session.getHistory": {
+       "count": 1,
+       "ms": 0.027399999999943248,
+       "max": 0.027399999999943248
+      },
+      "rules.getActionFamilies": {
+       "count": 1,
+       "ms": 0.11839999999983775,
+       "max": 0.11839999999983775
+      },
+      "session.getActionFamilies": {
+       "count": 1,
+       "ms": 0.12120000000004438,
+       "max": 0.12120000000004438
+      },
+      "rules.queryTraceCoverage": {
+       "count": 1,
+       "ms": 136.1211000000003,
+       "max": 136.1211000000003
+      },
+      "session.getTraceCoverage": {
+       "count": 1,
+       "ms": 136.2770999999998,
+       "max": 136.2770999999998
+      },
+      "rules.querySupplySources": {
+       "count": 1,
+       "ms": 0.023799999999937427,
+       "max": 0.023799999999937427
+      },
+      "session.getSupplySources": {
+       "count": 1,
+       "ms": 0.04309999999986758,
+       "max": 0.04309999999986758
+      },
+      "rules.getActionCandidates[ADVANCE_SEQUENCE]": {
+       "count": 1,
+       "ms": 0.030699999999342253,
+       "max": 0.030699999999342253
+      },
+      "session.getActionCandidates[ADVANCE_SEQUENCE]": {
+       "count": 1,
+       "ms": 0.03330000000005384,
+       "max": 0.03330000000005384
+      },
+      "session.serializeSave": {
+       "count": 1,
+       "ms": 17.275500000000648,
+       "max": 17.275500000000648
+      },
+      "session.dispatch": {
+       "count": 1,
+       "ms": 175.6863999999996,
+       "max": 175.6863999999996
+      }
+     },
+     "ms": 195.1001000000001
+    },
+    {
+     "name": "end step (T1 0 REINFORCEMENT/NONE player:allied)",
+     "calls": {
+      "rules.projectForViewer": {
+       "count": 45,
+       "ms": 13.801499999999578,
+       "max": 0.5770000000002256
+      },
+      "session.getView": {
+       "count": 45,
+       "ms": 20.820400000002337,
+       "max": 0.8437000000003536
+      },
+      "rules.queryTraceCoverage": {
+       "count": 2,
+       "ms": 237.21249999999964,
+       "max": 139.51729999999952
+      },
+      "session.getTraceCoverage": {
+       "count": 2,
+       "ms": 237.5047000000004,
+       "max": 139.66240000000016
+      },
+      "session.getPendingDecision": {
+       "count": 24,
+       "ms": 0.017100000002756133,
+       "max": 0.0024999999995998223
+      },
+      "session.listCheckpoints": {
+       "count": 8,
+       "ms": 0.02310000000125001,
+       "max": 0.005100000000311411
+      },
+      "rules.applyAction": {
+       "count": 1,
+       "ms": 48.86909999999989,
+       "max": 48.86909999999989
+      },
+      "session.removeCheckpoint": {
+       "count": 5,
+       "ms": 0.12089999999989232,
+       "max": 0.05490000000008877
+      },
+      "session.createCheckpoint": {
+       "count": 1,
+       "ms": 7.080700000000434,
+       "max": 7.080700000000434
+      },
+      "session.getHistory": {
+       "count": 1,
+       "ms": 0.057999999999992724,
+       "max": 0.057999999999992724
+      },
+      "rules.getActionFamilies": {
+       "count": 1,
+       "ms": 21.82430000000022,
+       "max": 21.82430000000022
+      },
+      "session.getActionFamilies": {
+       "count": 1,
+       "ms": 21.829200000000128,
+       "max": 21.829200000000128
+      },
+      "rules.querySupplySources": {
+       "count": 1,
+       "ms": 0.013799999999719148,
+       "max": 0.013799999999719148
+      },
+      "session.getSupplySources": {
+       "count": 1,
+       "ms": 0.03569999999945139,
+       "max": 0.03569999999945139
+      },
+      "rules.getActionCandidates[ADVANCE_SEQUENCE]": {
+       "count": 1,
+       "ms": 0.03330000000005384,
+       "max": 0.03330000000005384
+      },
+      "session.getActionCandidates[ADVANCE_SEQUENCE]": {
+       "count": 1,
+       "ms": 0.037299999999959255,
+       "max": 0.037299999999959255
+      },
+      "session.serializeSave": {
+       "count": 1,
+       "ms": 14.659500000000662,
+       "max": 14.659500000000662
+      },
+      "session.dispatch": {
+       "count": 1,
+       "ms": 256.2983000000004,
+       "max": 256.2983000000004
+      }
+     },
+     "ms": 364.15470000000005
+    },
+    {
+     "name": "select on-map unit, trace on (T1 0 MOVEMENT/MOVEMENT player:allied)",
+     "calls": {
+      "rules.projectForViewer": {
+       "count": 19,
+       "ms": 5.708400000002257,
+       "max": 0.7839999999996508
+      },
+      "session.getView": {
+       "count": 19,
+       "ms": 8.376299999999901,
+       "max": 0.9229999999997744
+      },
+      "rules.queryMovementRange": {
+       "count": 1,
+       "ms": 0.33479999999963184,
+       "max": 0.33479999999963184
+      },
+      "session.getMovementRange": {
+       "count": 1,
+       "ms": 0.3900000000003274,
+       "max": 0.3900000000003274
+      },
+      "rules.getActionCandidates[CHANGE_MODE]": {
+       "count": 1,
+       "ms": 0.06520000000000437,
+       "max": 0.06520000000000437
+      },
+      "session.getActionCandidates[CHANGE_MODE]": {
+       "count": 1,
+       "ms": 0.06940000000031432,
+       "max": 0.06940000000031432
+      },
+      "rules.queryTraceCoverage": {
+       "count": 1,
+       "ms": 102.70290000000023,
+       "max": 102.70290000000023
+      },
+      "session.getTraceCoverage": {
+       "count": 1,
+       "ms": 102.84959999999955,
+       "max": 102.84959999999955
+      },
+      "rules.getActionCandidates[CREATE_BREAKDOWN]": {
+       "count": 1,
+       "ms": 0.06239999999979773,
+       "max": 0.06239999999979773
+      },
+      "session.getActionCandidates[CREATE_BREAKDOWN]": {
+       "count": 1,
+       "ms": 0.06720000000041182,
+       "max": 0.06720000000041182
+      },
+      "rules.queryFuelPreview": {
+       "count": 1,
+       "ms": 0.21519999999964057,
+       "max": 0.21519999999964057
+      },
+      "session.getFuelPreview": {
+       "count": 1,
+       "ms": 0.2737999999999374,
+       "max": 0.2737999999999374
+      },
+      "rules.getActionCandidates[PAY_FUEL]": {
+       "count": 1,
+       "ms": 0.3095000000002983,
+       "max": 0.3095000000002983
+      },
+      "session.getActionCandidates[PAY_FUEL]": {
+       "count": 1,
+       "ms": 0.3132000000005064,
+       "max": 0.3132000000005064
+      },
+      "rules.getActionCandidates[FORM_EXTENDER]": {
+       "count": 1,
+       "ms": 0.04110000000036962,
+       "max": 0.04110000000036962
+      },
+      "session.getActionCandidates[FORM_EXTENDER]": {
+       "count": 1,
+       "ms": 0.04579999999987194,
+       "max": 0.04579999999987194
+      },
+      "session.getPendingDecision": {
+       "count": 4,
+       "ms": 0.006200000001626904,
+       "max": 0.004899999999906868
+      },
+      "session.listCheckpoints": {
+       "count": 2,
+       "ms": 0.0078000000003157766,
+       "max": 0.005800000000817818
+      }
+     },
+     "ms": 113.34659999999985
+    },
+    {
+     "name": "deselect (T1 0 MOVEMENT/MOVEMENT player:allied)",
+     "calls": {
+      "rules.projectForViewer": {
+       "count": 9,
+       "ms": 2.7737000000006446,
+       "max": 0.40350000000034925
+      },
+      "session.getView": {
+       "count": 9,
+       "ms": 4.380800000002637,
+       "max": 0.6278000000002066
+      },
+      "session.getPendingDecision": {
+       "count": 4,
+       "ms": 0.0072000000000116415,
+       "max": 0.0059000000001105946
+      },
+      "session.listCheckpoints": {
+       "count": 2,
+       "ms": 0.00830000000041764,
+       "max": 0.005700000000615546
+      }
+     },
+     "ms": 4.543399999999565
+    },
+    {
+     "name": "end step (T1 0 MOVEMENT/MOVEMENT player:allied)",
+     "calls": {
+      "rules.projectForViewer": {
+       "count": 51,
+       "ms": 15.905800000000454,
+       "max": 0.4988000000003012
+      },
+      "session.getView": {
+       "count": 51,
+       "ms": 23.855499999999665,
+       "max": 0.8679999999994834
+      },
+      "session.getPendingDecision": {
+       "count": 24,
+       "ms": 0.015399999999317515,
+       "max": 0.0024000000003070454
+      },
+      "session.listCheckpoints": {
+       "count": 5,
+       "ms": 0.012599999999110878,
+       "max": 0.0030999999999039574
+      },
+      "rules.applyAction": {
+       "count": 1,
+       "ms": 136.1196,
+       "max": 136.1196
+      },
+      "session.removeCheckpoint": {
+       "count": 1,
+       "ms": 0.008100000000013097,
+       "max": 0.008100000000013097
+      },
+      "session.createCheckpoint": {
+       "count": 1,
+       "ms": 6.0077000000001135,
+       "max": 6.0077000000001135
+      },
+      "session.getHistory": {
+       "count": 1,
+       "ms": 0.08109999999942374,
+       "max": 0.08109999999942374
+      },
+      "rules.getActionFamilies": {
+       "count": 2,
+       "ms": 0.2901000000001659,
+       "max": 0.2800999999999476
+      },
+      "session.getActionFamilies": {
+       "count": 2,
+       "ms": 0.29649999999946886,
+       "max": 0.28259999999954744
+      },
+      "rules.queryTraceCoverage": {
+       "count": 1,
+       "ms": 152.33799999999974,
+       "max": 152.33799999999974
+      },
+      "session.getTraceCoverage": {
+       "count": 1,
+       "ms": 152.52649999999994,
+       "max": 152.52649999999994
+      },
+      "rules.querySupplySources": {
+       "count": 1,
+       "ms": 0.0052999999998064595,
+       "max": 0.0052999999998064595
+      },
+      "session.getSupplySources": {
+       "count": 1,
+       "ms": 0.026000000000749424,
+       "max": 0.026000000000749424
+      },
+      "rules.getActionCandidates[ADVANCE_SEQUENCE]": {
+       "count": 1,
+       "ms": 0.01040000000011787,
+       "max": 0.01040000000011787
+      },
+      "session.getActionCandidates[ADVANCE_SEQUENCE]": {
+       "count": 1,
+       "ms": 0.014299999999821011,
+       "max": 0.014299999999821011
+      },
+      "rules.explain": {
+       "count": 1,
+       "ms": 0.036499999999250576,
+       "max": 0.036499999999250576
+      },
+      "session.validateDraft": {
+       "count": 1,
+       "ms": 0.04320000000006985,
+       "max": 0.04320000000006985
+      },
+      "session.serializeSave": {
+       "count": 1,
+       "ms": 13.469600000000355,
+       "max": 13.469600000000355
+      },
+      "session.dispatch": {
+       "count": 1,
+       "ms": 331.4503000000004,
+       "max": 331.4503000000004
+      }
+     },
+     "ms": 342.8765000000003
+    },
+    {
+     "name": "handoff: begin (T1 1 REINFORCEMENT/NONE player:axis)",
+     "calls": {
+      "rules.projectForViewer": {
+       "count": 10,
+       "ms": 2.795599999998558,
+       "max": 0.2966999999998734
+      },
+      "session.getView": {
+       "count": 28,
+       "ms": 4.183499999999185,
+       "max": 0.4882000000006883
+      },
+      "session.getPendingDecision": {
+       "count": 10,
+       "ms": 0.00439999999889551,
+       "max": 0.0010999999994965037
+      },
+      "session.listCheckpoints": {
+       "count": 3,
+       "ms": 0.0065999999997075065,
+       "max": 0.0027000000000043656
+      },
+      "session.beginHandoff": {
+       "count": 1,
+       "ms": 0.19419999999990978,
+       "max": 0.19419999999990978
+      },
+      "rules.getActionFamilies": {
+       "count": 1,
+       "ms": 0.0078000000003157766,
+       "max": 0.0078000000003157766
+      },
+      "session.getActionFamilies": {
+       "count": 1,
+       "ms": 0.04239999999936117,
+       "max": 0.04239999999936117
+      },
+      "session.getActionCandidates[ADVANCE_SEQUENCE]": {
+       "count": 1,
+       "ms": 0.008700000000317232,
+       "max": 0.008700000000317232
+      },
+      "rules.explain": {
+       "count": 1,
+       "ms": 0.02410000000054424,
+       "max": 0.02410000000054424
+      },
+      "session.validateDraft": {
+       "count": 1,
+       "ms": 0.02819999999974243,
+       "max": 0.02819999999974243
+      },
+      "session.getHistory": {
+       "count": 1,
+       "ms": 0.10850000000027649,
+       "max": 0.10850000000027649
+      }
+     },
+     "ms": 4.955299999999625
+    },
+    {
+     "name": "handoff: complete (locked)",
+     "calls": {
+      "rules.projectForViewer": {
+       "count": 26,
+       "ms": 8.083999999998014,
+       "max": 0.46750000000065484
+      },
+      "session.getView": {
+       "count": 26,
+       "ms": 11.86949999999888,
+       "max": 0.6297000000004118
+      },
+      "session.getHistory": {
+       "count": 2,
+       "ms": 0.15560000000095897,
+       "max": 0.0794000000005326
+      },
+      "rules.getActionFamilies": {
+       "count": 2,
+       "ms": 0.43770000000040454,
+       "max": 0.23250000000007276
+      },
+      "session.getActionFamilies": {
+       "count": 2,
+       "ms": 0.44729999999890424,
+       "max": 0.23439999999936845
+      },
+      "rules.getActionCandidates[PLACE_REINFORCEMENT]": {
+       "count": 2,
+       "ms": 54.998899999999594,
+       "max": 28.409300000000258
+      },
+      "session.getActionCandidates[PLACE_REINFORCEMENT]": {
+       "count": 2,
+       "ms": 55.00619999999981,
+       "max": 28.41309999999976
+      },
+      "rules.queryTraceCoverage": {
+       "count": 2,
+       "ms": 276.6714000000002,
+       "max": 166.05079999999998
+      },
+      "session.getTraceCoverage": {
+       "count": 2,
+       "ms": 276.96890000000076,
+       "max": 166.19790000000012
+      },
+      "rules.querySupplySources": {
+       "count": 2,
+       "ms": 0.008199999999305874,
+       "max": 0.0046999999995023245
+      },
+      "session.getSupplySources": {
+       "count": 2,
+       "ms": 0.05870000000049913,
+       "max": 0.03300000000035652
+      },
+      "session.getPendingDecision": {
+       "count": 10,
+       "ms": 0.025100000001657463,
+       "max": 0.01900000000023283
+      },
+      "rules.getActionCandidates[ADVANCE_SEQUENCE]": {
+       "count": 2,
+       "ms": 0.1477999999997337,
+       "max": 0.07439999999951397
+      },
+      "session.getActionCandidates[ADVANCE_SEQUENCE]": {
+       "count": 2,
+       "ms": 0.15410000000065338,
+       "max": 0.07810000000063155
+      },
+      "rules.explain": {
+       "count": 2,
+       "ms": 0.08889999999883003,
+       "max": 0.04599999999936699
+      },
+      "session.validateDraft": {
+       "count": 2,
+       "ms": 0.09799999999995634,
+       "max": 0.0510999999996784
+      },
+      "session.listCheckpoints": {
+       "count": 4,
+       "ms": 0.011800000000221189,
+       "max": 0.004100000000107684
+      },
+      "session.completeHandoff": {
+       "count": 1,
+       "ms": 201.20649999999932,
+       "max": 201.20649999999932
+      }
+     },
+     "ms": 346.15120000000024
+    },
+    {
+     "name": "select on-map unit, trace on (T1 1 REINFORCEMENT/NONE player:axis)",
+     "calls": {
+      "rules.projectForViewer": {
+       "count": 10,
+       "ms": 2.752999999998792,
+       "max": 0.3190999999997075
+      },
+      "session.getView": {
+       "count": 10,
+       "ms": 4.151600000000144,
+       "max": 0.46860000000015134
+      },
+      "rules.queryTraceCoverage": {
+       "count": 1,
+       "ms": 110.23409999999967,
+       "max": 110.23409999999967
+      },
+      "session.getTraceCoverage": {
+       "count": 1,
+       "ms": 110.3827999999994,
+       "max": 110.3827999999994
+      },
+      "session.getPendingDecision": {
+       "count": 4,
+       "ms": 0.004800000000614091,
+       "max": 0.002800000000206637
+      },
+      "session.listCheckpoints": {
+       "count": 2,
+       "ms": 0.006699999999909778,
+       "max": 0.004600000000209548
+      }
+     },
+     "ms": 114.75
+    },
+    {
+     "name": "deselect (T1 1 REINFORCEMENT/NONE player:axis)",
+     "calls": {
+      "rules.projectForViewer": {
+       "count": 9,
+       "ms": 3.256999999999607,
+       "max": 0.4333999999998923
+      },
+      "session.getView": {
+       "count": 9,
+       "ms": 5.261700000000928,
+       "max": 1.1602999999995518
+      },
+      "session.getPendingDecision": {
+       "count": 4,
+       "ms": 0.003299999999399006,
+       "max": 0.0014999999993960955
+      },
+      "session.listCheckpoints": {
+       "count": 2,
+       "ms": 0.006199999999807915,
+       "max": 0.003800000000410364
+      }
+     },
+     "ms": 5.452100000000428
+    },
+    {
+     "name": "reinforcement: select arrival (T1 1 REINFORCEMENT/NONE player:axis)",
+     "calls": {
+      "rules.projectForViewer": {
+       "count": 10,
+       "ms": 3.105800000000272,
+       "max": 0.3510000000005675
+      },
+      "session.getView": {
+       "count": 10,
+       "ms": 4.739600000000792,
+       "max": 0.5488999999997759
+      },
+      "session.getPendingDecision": {
+       "count": 4,
+       "ms": 0.0049000000008163624,
+       "max": 0.0030000000006111804
+      },
+      "session.listCheckpoints": {
+       "count": 2,
+       "ms": 0.006499999999505235,
+       "max": 0.0039999999999054126
+      }
+     },
+     "ms": 4.971000000000458
+    },
+    {
+     "name": "reinforcement: place (T1 1 REINFORCEMENT/NONE player:axis)",
+     "calls": {
+      "rules.projectForViewer": {
+       "count": 52,
+       "ms": 15.512900000001537,
+       "max": 0.7210999999997512
+      },
+      "session.getView": {
+       "count": 52,
+       "ms": 23.976700000000164,
+       "max": 1.0096000000003187
+      },
+      "session.getPendingDecision": {
+       "count": 30,
+       "ms": 0.021499999998013664,
+       "max": 0.002599999999802094
+      },
+      "session.listCheckpoints": {
+       "count": 10,
+       "ms": 0.02669999999943684,
+       "max": 0.004100000000107684
+      },
+      "rules.getActionCandidates[PLACE_REINFORCEMENT]": {
+       "count": 2,
+       "ms": 26.769600000000537,
+       "max": 26.595100000000457
+      },
+      "session.getActionCandidates[PLACE_REINFORCEMENT]": {
+       "count": 2,
+       "ms": 26.775499999999738,
+       "max": 26.59900000000016
+      },
+      "session.createCheckpoint": {
+       "count": 1,
+       "ms": 6.702400000000125,
+       "max": 6.702400000000125
+      },
+      "rules.applyAction": {
+       "count": 1,
+       "ms": 1.909099999999853,
+       "max": 1.909099999999853
+      },
+      "session.getHistory": {
+       "count": 1,
+       "ms": 0.12560000000030414,
+       "max": 0.12560000000030414
+      },
+      "rules.getActionFamilies": {
+       "count": 1,
+       "ms": 1.88970000000063,
+       "max": 1.88970000000063
+      },
+      "session.getActionFamilies": {
+       "count": 1,
+       "ms": 1.8941999999997279,
+       "max": 1.8941999999997279
+      },
+      "rules.queryTraceCoverage": {
+       "count": 1,
+       "ms": 174.7498999999998,
+       "max": 174.7498999999998
+      },
+      "session.getTraceCoverage": {
+       "count": 1,
+       "ms": 174.90409999999974,
+       "max": 174.90409999999974
+      },
+      "rules.querySupplySources": {
+       "count": 1,
+       "ms": 0.004200000000309956,
+       "max": 0.004200000000309956
+      },
+      "session.getSupplySources": {
+       "count": 1,
+       "ms": 0.024999999999636202,
+       "max": 0.024999999999636202
+      },
+      "rules.getActionCandidates[ADVANCE_SEQUENCE]": {
+       "count": 1,
+       "ms": 0.5420000000003711,
+       "max": 0.5420000000003711
+      },
+      "session.getActionCandidates[ADVANCE_SEQUENCE]": {
+       "count": 1,
+       "ms": 0.5452000000004773,
+       "max": 0.5452000000004773
+      },
+      "rules.explain": {
+       "count": 1,
+       "ms": 0.5392000000001644,
+       "max": 0.5392000000001644
+      },
+      "session.validateDraft": {
+       "count": 1,
+       "ms": 0.5461999999997715,
+       "max": 0.5461999999997715
+      },
+      "session.serializeSave": {
+       "count": 1,
+       "ms": 15.071599999999307,
+       "max": 15.071599999999307
+      },
+      "session.dispatch": {
+       "count": 1,
+       "ms": 240.2562999999991,
+       "max": 240.2562999999991
+      }
+     },
+     "ms": 260.96200000000044
+    },
+    {
+     "name": "reinforcement: select arrival (T1 1 REINFORCEMENT/NONE player:axis)",
+     "calls": {
+      "rules.projectForViewer": {
+       "count": 10,
+       "ms": 2.8134000000000015,
+       "max": 0.33920000000034634
+      },
+      "session.getView": {
+       "count": 10,
+       "ms": 4.230499999998756,
+       "max": 0.47329999999965366
+      },
+      "rules.queryTraceCoverage": {
+       "count": 1,
+       "ms": 113.85860000000048,
+       "max": 113.85860000000048
+      },
+      "session.getTraceCoverage": {
+       "count": 1,
+       "ms": 114.00640000000021,
+       "max": 114.00640000000021
+      },
+      "session.getPendingDecision": {
+       "count": 4,
+       "ms": 0.0039999999999054126,
+       "max": 0.0027000000000043656
+      },
+      "session.listCheckpoints": {
+       "count": 2,
+       "ms": 0.006000000000312866,
+       "max": 0.003899999999703141
+      }
+     },
+     "ms": 118.48809999999958
+    },
+    {
+     "name": "reinforcement: place (T1 1 REINFORCEMENT/NONE player:axis)",
+     "calls": {
+      "rules.projectForViewer": {
+       "count": 52,
+       "ms": 23.263400000003458,
+       "max": 2.9558999999999287
+      },
+      "session.getView": {
+       "count": 52,
+       "ms": 31.938900000000103,
+       "max": 3.127400000000307
+      },
+      "session.getPendingDecision": {
+       "count": 30,
+       "ms": 0.023599999999532884,
+       "max": 0.0030999999999039574
+      },
+      "session.listCheckpoints": {
+       "count": 10,
+       "ms": 0.03889999999955762,
+       "max": 0.0059999999994033715
+      },
+      "rules.getActionCandidates[PLACE_REINFORCEMENT]": {
+       "count": 2,
+       "ms": 29.85819999999967,
+       "max": 16.08269999999993
+      },
+      "session.getActionCandidates[PLACE_REINFORCEMENT]": {
+       "count": 2,
+       "ms": 29.865700000000288,
+       "max": 16.08690000000024
+      },
+      "session.createCheckpoint": {
+       "count": 1,
+       "ms": 7.019500000000335,
+       "max": 7.019500000000335
+      },
+      "rules.applyAction": {
+       "count": 1,
+       "ms": 2.2292999999999665,
+       "max": 2.2292999999999665
+      },
+      "session.getHistory": {
+       "count": 1,
+       "ms": 0.09010000000034779,
+       "max": 0.09010000000034779
+      },
+      "rules.getActionFamilies": {
+       "count": 1,
+       "ms": 2.17240000000038,
+       "max": 2.17240000000038
+      },
+      "session.getActionFamilies": {
+       "count": 1,
+       "ms": 2.1750999999994747,
+       "max": 2.1750999999994747
+      },
+      "rules.queryTraceCoverage": {
+       "count": 1,
+       "ms": 197.38910000000033,
+       "max": 197.38910000000033
+      },
+      "session.getTraceCoverage": {
+       "count": 1,
+       "ms": 197.54479999999967,
+       "max": 197.54479999999967
+      },
+      "rules.querySupplySources": {
+       "count": 1,
+       "ms": 0.0027999999992971425,
+       "max": 0.0027999999992971425
+      },
+      "session.getSupplySources": {
+       "count": 1,
+       "ms": 0.02040000000033615,
+       "max": 0.02040000000033615
+      },
+      "rules.getActionCandidates[ADVANCE_SEQUENCE]": {
+       "count": 1,
+       "ms": 0.8478999999997541,
+       "max": 0.8478999999997541
+      },
+      "session.getActionCandidates[ADVANCE_SEQUENCE]": {
+       "count": 1,
+       "ms": 0.8524999999999636,
+       "max": 0.8524999999999636
+      },
+      "rules.explain": {
+       "count": 1,
+       "ms": 0.5882999999994354,
+       "max": 0.5882999999994354
+      },
+      "session.validateDraft": {
+       "count": 1,
+       "ms": 0.6166000000002896,
+       "max": 0.6166000000002896
+      },
+      "session.serializeSave": {
+       "count": 1,
+       "ms": 17.150899999999638,
+       "max": 17.150899999999638
+      },
+      "session.dispatch": {
+       "count": 1,
+       "ms": 261.3735999999999,
+       "max": 261.3735999999999
+      }
+     },
+     "ms": 299.1188999999995
+    },
+    {
+     "name": "reinforcement: select arrival (T1 1 REINFORCEMENT/NONE player:axis)",
+     "calls": {
+      "rules.projectForViewer": {
+       "count": 10,
+       "ms": 3.8152000000018234,
+       "max": 0.7759000000005472
+      },
+      "session.getView": {
+       "count": 10,
+       "ms": 5.416699999999764,
+       "max": 1.014999999999418
+      },
+      "rules.queryTraceCoverage": {
+       "count": 1,
+       "ms": 117.15790000000015,
+       "max": 117.15790000000015
+      },
+      "session.getTraceCoverage": {
+       "count": 1,
+       "ms": 117.3060000000005,
+       "max": 117.3060000000005
+      },
+      "session.getPendingDecision": {
+       "count": 4,
+       "ms": 0.004299999999602733,
+       "max": 0.002599999999802094
+      },
+      "session.listCheckpoints": {
+       "count": 2,
+       "ms": 0.007500000000618456,
+       "max": 0.005600000000413274
+      }
+     },
+     "ms": 122.95710000000054
+    },
+    {
+     "name": "reinforcement: place (T1 1 REINFORCEMENT/NONE player:axis)",
+     "calls": {
+      "rules.projectForViewer": {
+       "count": 52,
+       "ms": 17.64559999999892,
+       "max": 0.9917999999997846
+      },
+      "session.getView": {
+       "count": 52,
+       "ms": 26.098299999996016,
+       "max": 1.1795000000001892
+      },
+      "session.getPendingDecision": {
+       "count": 30,
+       "ms": 0.029799999998431304,
+       "max": 0.004899999999906868
+      },
+      "session.listCheckpoints": {
+       "count": 10,
+       "ms": 0.03649999999743159,
+       "max": 0.004999999999199645
+      },
+      "rules.getActionCandidates[PLACE_REINFORCEMENT]": {
+       "count": 2,
+       "ms": 14.344500000000153,
+       "max": 14.130100000000311
+      },
+      "session.getActionCandidates[PLACE_REINFORCEMENT]": {
+       "count": 2,
+       "ms": 14.351799999999457,
+       "max": 14.133499999999913
+      },
+      "session.createCheckpoint": {
+       "count": 1,
+       "ms": 6.6952000000001135,
+       "max": 6.6952000000001135
+      },
+      "rules.applyAction": {
+       "count": 1,
+       "ms": 2.515900000000329,
+       "max": 2.515900000000329
+      },
+      "session.getHistory": {
+       "count": 1,
+       "ms": 0.09879999999975553,
+       "max": 0.09879999999975553
+      },
+      "rules.getActionFamilies": {
+       "count": 1,
+       "ms": 0.17920000000049185,
+       "max": 0.17920000000049185
+      },
+      "session.getActionFamilies": {
+       "count": 1,
+       "ms": 0.181999999999789,
+       "max": 0.181999999999789
+      },
+      "rules.queryTraceCoverage": {
+       "count": 1,
+       "ms": 177.683,
+       "max": 177.683
+      },
+      "session.getTraceCoverage": {
+       "count": 1,
+       "ms": 177.83550000000014,
+       "max": 177.83550000000014
+      },
+      "rules.querySupplySources": {
+       "count": 1,
+       "ms": 0.0027999999992971425,
+       "max": 0.0027999999992971425
+      },
+      "session.getSupplySources": {
+       "count": 1,
+       "ms": 0.019800000000032014,
+       "max": 0.019800000000032014
+      },
+      "rules.getActionCandidates[ADVANCE_SEQUENCE]": {
+       "count": 1,
+       "ms": 0.04309999999986758,
+       "max": 0.04309999999986758
+      },
+      "session.getActionCandidates[ADVANCE_SEQUENCE]": {
+       "count": 1,
+       "ms": 0.04529999999977008,
+       "max": 0.04529999999977008
+      },
+      "rules.explain": {
+       "count": 1,
+       "ms": 0.01599999999962165,
+       "max": 0.01599999999962165
+      },
+      "session.validateDraft": {
+       "count": 1,
+       "ms": 0.01900000000023283,
+       "max": 0.01900000000023283
+      },
+      "session.serializeSave": {
+       "count": 1,
+       "ms": 15.770799999999326,
+       "max": 15.770799999999326
+      },
+      "session.dispatch": {
+       "count": 1,
+       "ms": 216.77670000000035,
+       "max": 216.77670000000035
+      }
+     },
+     "ms": 252.16049999999996
+    },
+    {
+     "name": "reinforcement: select arrival (T1 1 REINFORCEMENT/NONE player:axis)",
+     "calls": {
+      "rules.projectForViewer": {
+       "count": 10,
+       "ms": 3.4953000000004977,
+       "max": 0.7215000000005602
+      },
+      "session.getView": {
+       "count": 10,
+       "ms": 5.0614000000005035,
+       "max": 0.867500000000291
+      },
+      "rules.queryTraceCoverage": {
+       "count": 1,
+       "ms": 121.71669999999995,
+       "max": 121.71669999999995
+      },
+      "session.getTraceCoverage": {
+       "count": 1,
+       "ms": 121.86880000000019,
+       "max": 121.86880000000019
+      },
+      "session.getPendingDecision": {
+       "count": 4,
+       "ms": 0.0036000000000058208,
+       "max": 0.0020000000004074536
+      },
+      "session.listCheckpoints": {
+       "count": 2,
+       "ms": 0.007499999999708962,
+       "max": 0.004299999999602733
+      }
+     },
+     "ms": 127.17109999999957
+    },
+    {
+     "name": "reinforcement: place (T1 1 REINFORCEMENT/NONE player:axis)",
+     "calls": {
+      "rules.projectForViewer": {
+       "count": 52,
+       "ms": 16.892300000000432,
+       "max": 2.1190000000005966
+      },
+      "session.getView": {
+       "count": 52,
+       "ms": 24.15179999999691,
+       "max": 2.2596000000003187
+      },
+      "session.getPendingDecision": {
+       "count": 30,
+       "ms": 0.017800000000534055,
+       "max": 0.002300000000104774
+      },
+      "session.listCheckpoints": {
+       "count": 10,
+       "ms": 0.03179999999974825,
+       "max": 0.004300000000512227
+      },
+      "rules.getActionCandidates[PLACE_REINFORCEMENT]": {
+       "count": 1,
+       "ms": 0.08569999999963329,
+       "max": 0.08569999999963329
+      },
+      "session.getActionCandidates[PLACE_REINFORCEMENT]": {
+       "count": 1,
+       "ms": 0.08809999999994034,
+       "max": 0.08809999999994034
+      },
+      "session.createCheckpoint": {
+       "count": 1,
+       "ms": 5.805100000000493,
+       "max": 5.805100000000493
+      },
+      "rules.applyAction": {
+       "count": 1,
+       "ms": 1.7247000000006665,
+       "max": 1.7247000000006665
+      },
+      "session.getHistory": {
+       "count": 1,
+       "ms": 0.08840000000054715,
+       "max": 0.08840000000054715
+      },
+      "rules.getActionFamilies": {
+       "count": 1,
+       "ms": 0.10339999999996508,
+       "max": 0.10339999999996508
+      },
+      "session.getActionFamilies": {
+       "count": 1,
+       "ms": 0.10490000000027067,
+       "max": 0.10490000000027067
+      },
+      "rules.queryTraceCoverage": {
+       "count": 1,
+       "ms": 173.1885999999995,
+       "max": 173.1885999999995
+      },
+      "session.getTraceCoverage": {
+       "count": 1,
+       "ms": 173.3693999999996,
+       "max": 173.3693999999996
+      },
+      "rules.querySupplySources": {
+       "count": 1,
+       "ms": 0.006900000000314321,
+       "max": 0.006900000000314321
+      },
+      "session.getSupplySources": {
+       "count": 1,
+       "ms": 0.0375000000003638,
+       "max": 0.0375000000003638
+      },
+      "rules.getActionCandidates[ADVANCE_SEQUENCE]": {
+       "count": 1,
+       "ms": 0.029800000000250293,
+       "max": 0.029800000000250293
+      },
+      "session.getActionCandidates[ADVANCE_SEQUENCE]": {
+       "count": 1,
+       "ms": 0.03220000000055734,
+       "max": 0.03220000000055734
+      },
+      "session.serializeSave": {
+       "count": 1,
+       "ms": 15.292999999999665,
+       "max": 15.292999999999665
+      },
+      "session.dispatch": {
+       "count": 1,
+       "ms": 209.01329999999962,
+       "max": 209.01329999999962
+      }
+     },
+     "ms": 230.19400000000041
+    },
+    {
+     "name": "end step (T1 1 REINFORCEMENT/NONE player:axis)",
+     "calls": {
+      "rules.projectForViewer": {
+       "count": 45,
+       "ms": 13.918899999999667,
+       "max": 0.926300000000083
+      },
+      "session.getView": {
+       "count": 45,
+       "ms": 20.353699999997843,
+       "max": 1.0645999999997002
+      },
+      "rules.queryTraceCoverage": {
+       "count": 2,
+       "ms": 294.4326000000001,
+       "max": 171.76980000000003
+      },
+      "session.getTraceCoverage": {
+       "count": 2,
+       "ms": 294.7371999999996,
+       "max": 171.92289999999957
+      },
+      "session.getPendingDecision": {
+       "count": 24,
+       "ms": 0.01890000000184955,
+       "max": 0.0024000000003070454
+      },
+      "session.listCheckpoints": {
+       "count": 8,
+       "ms": 0.03899999999975989,
+       "max": 0.016300000000228465
+      },
+      "rules.applyAction": {
+       "count": 1,
+       "ms": 65.08410000000003,
+       "max": 65.08410000000003
+      },
+      "session.removeCheckpoint": {
+       "count": 5,
+       "ms": 0.027099999999336433,
+       "max": 0.009799999999813735
+      },
+      "session.createCheckpoint": {
+       "count": 1,
+       "ms": 10.73950000000059,
+       "max": 10.73950000000059
+      },
+      "session.getHistory": {
+       "count": 1,
+       "ms": 0.11990000000059808,
+       "max": 0.11990000000059808
+      },
+      "rules.getActionFamilies": {
+       "count": 1,
+       "ms": 29.403800000000047,
+       "max": 29.403800000000047
+      },
+      "session.getActionFamilies": {
+       "count": 1,
+       "ms": 29.407600000000457,
+       "max": 29.407600000000457
+      },
+      "rules.querySupplySources": {
+       "count": 1,
+       "ms": 0.007400000000416185,
+       "max": 0.007400000000416185
+      },
+      "session.getSupplySources": {
+       "count": 1,
+       "ms": 0.025899999999637657,
+       "max": 0.025899999999637657
+      },
+      "rules.getActionCandidates[ADVANCE_SEQUENCE]": {
+       "count": 1,
+       "ms": 0.026899999999841384,
+       "max": 0.026899999999841384
+      },
+      "session.getActionCandidates[ADVANCE_SEQUENCE]": {
+       "count": 1,
+       "ms": 0.0294000000003507,
+       "max": 0.0294000000003507
+      },
+      "session.serializeSave": {
+       "count": 1,
+       "ms": 14.634500000000116,
+       "max": 14.634500000000116
+      },
+      "session.dispatch": {
+       "count": 1,
+       "ms": 313.5174999999999,
+       "max": 313.5174999999999
+      }
+     },
+     "ms": 445.5793999999996
+    },
+    {
+     "name": "select on-map unit, trace on (T1 1 MOVEMENT/MOVEMENT player:axis)",
+     "calls": {
+      "rules.projectForViewer": {
+       "count": 11,
+       "ms": 3.009000000000924,
+       "max": 0.38690000000042346
+      },
+      "session.getView": {
+       "count": 11,
+       "ms": 4.717999999999847,
+       "max": 0.6824999999998909
+      },
+      "rules.queryMovementRange": {
+       "count": 1,
+       "ms": 2.277999999999338,
+       "max": 2.277999999999338
+      },
+      "session.getMovementRange": {
+       "count": 1,
+       "ms": 2.4099000000005617,
+       "max": 2.4099000000005617
+      },
+      "rules.getActionCandidates[CHANGE_MODE]": {
+       "count": 1,
+       "ms": 0.07769999999982247,
+       "max": 0.07769999999982247
+      },
+      "session.getActionCandidates[CHANGE_MODE]": {
+       "count": 1,
+       "ms": 0.08100000000013097,
+       "max": 0.08100000000013097
+      },
+      "rules.queryTraceCoverage": {
+       "count": 1,
+       "ms": 118.05259999999998,
+       "max": 118.05259999999998
+      },
+      "session.getTraceCoverage": {
+       "count": 1,
+       "ms": 118.20920000000024,
+       "max": 118.20920000000024
+      },
+      "rules.getActionCandidates[CREATE_BREAKDOWN]": {
+       "count": 1,
+       "ms": 0.05529999999998836,
+       "max": 0.05529999999998836
+      },
+      "session.getActionCandidates[CREATE_BREAKDOWN]": {
+       "count": 1,
+       "ms": 0.05940000000009604,
+       "max": 0.05940000000009604
+      },
+      "rules.queryFuelPreview": {
+       "count": 1,
+       "ms": 0.1239000000005035,
+       "max": 0.1239000000005035
+      },
+      "session.getFuelPreview": {
+       "count": 1,
+       "ms": 0.14879999999993743,
+       "max": 0.14879999999993743
+      },
+      "rules.getActionCandidates[PAY_FUEL]": {
+       "count": 1,
+       "ms": 0.06000000000040018,
+       "max": 0.06000000000040018
+      },
+      "session.getActionCandidates[PAY_FUEL]": {
+       "count": 1,
+       "ms": 0.061599999999998545,
+       "max": 0.061599999999998545
+      },
+      "rules.getActionCandidates[FORM_EXTENDER]": {
+       "count": 1,
+       "ms": 0.02419999999983702,
+       "max": 0.02419999999983702
+      },
+      "session.getActionCandidates[FORM_EXTENDER]": {
+       "count": 1,
+       "ms": 0.02599999999983993,
+       "max": 0.02599999999983993
+      },
+      "session.getPendingDecision": {
+       "count": 4,
+       "ms": 0.0037999999995008693,
+       "max": 0.002300000000104774
+      },
+      "session.listCheckpoints": {
+       "count": 2,
+       "ms": 0.006300000000010186,
+       "max": 0.004299999999602733
+      }
+     },
+     "ms": 126.11480000000029
+    },
+    {
+     "name": "deselect (T1 1 MOVEMENT/MOVEMENT player:axis)",
+     "calls": {
+      "rules.projectForViewer": {
+       "count": 9,
+       "ms": 2.114699999997356,
+       "max": 0.23959999999988213
+      },
+      "session.getView": {
+       "count": 9,
+       "ms": 3.2863999999990483,
+       "max": 0.37119999999958964
+      },
+      "session.getPendingDecision": {
+       "count": 4,
+       "ms": 0.0039000000006126356,
+       "max": 0.002599999999802094
+      },
+      "session.listCheckpoints": {
+       "count": 2,
+       "ms": 0.003800000000410364,
+       "max": 0.002500000000509317
+      }
+     },
+     "ms": 3.3921000000000276
+    },
+    {
+     "name": "end step (T1 1 MOVEMENT/MOVEMENT player:axis)",
+     "calls": {
+      "rules.projectForViewer": {
+       "count": 41,
+       "ms": 11.074800000000323,
+       "max": 0.47450000000026193
+      },
+      "session.getView": {
+       "count": 41,
+       "ms": 18.138800000003357,
+       "max": 0.9951999999993859
+      },
+      "session.getPendingDecision": {
+       "count": 18,
+       "ms": 0.10430000000087603,
+       "max": 0.08060000000023138
+      },
+      "session.listCheckpoints": {
+       "count": 5,
+       "ms": 0.013700000000426371,
+       "max": 0.003800000000410364
+      },
+      "rules.applyAction": {
+       "count": 1,
+       "ms": 159.60650000000078,
+       "max": 159.60650000000078
+      },
+      "session.getHistory": {
+       "count": 1,
+       "ms": 0.14050000000042928,
+       "max": 0.14050000000042928
+      },
+      "rules.getActionFamilies": {
+       "count": 1,
+       "ms": 0.1691000000000713,
+       "max": 0.1691000000000713
+      },
+      "session.getActionFamilies": {
+       "count": 1,
+       "ms": 0.17270000000007713,
+       "max": 0.17270000000007713
+      },
+      "rules.queryTraceCoverage": {
+       "count": 1,
+       "ms": 167.64030000000002,
+       "max": 167.64030000000002
+      },
+      "session.getTraceCoverage": {
+       "count": 1,
+       "ms": 167.78949999999986,
+       "max": 167.78949999999986
+      },
+      "rules.querySupplySources": {
+       "count": 1,
+       "ms": 0.004600000000209548,
+       "max": 0.004600000000209548
+      },
+      "session.getSupplySources": {
+       "count": 1,
+       "ms": 0.02260000000023865,
+       "max": 0.02260000000023865
+      },
+      "rules.getActionCandidates[ADVANCE_SEQUENCE]": {
+       "count": 1,
+       "ms": 0.007599999999911233,
+       "max": 0.007599999999911233
+      },
+      "session.getActionCandidates[ADVANCE_SEQUENCE]": {
+       "count": 1,
+       "ms": 0.011399999999412103,
+       "max": 0.011399999999412103
+      },
+      "rules.explain": {
+       "count": 1,
+       "ms": 0.015600000000631553,
+       "max": 0.015600000000631553
+      },
+      "session.validateDraft": {
+       "count": 1,
+       "ms": 0.018200000000433647,
+       "max": 0.018200000000433647
+      },
+      "session.serializeSave": {
+       "count": 1,
+       "ms": 12.82260000000042,
+       "max": 12.82260000000042
+      },
+      "session.dispatch": {
+       "count": 1,
+       "ms": 359.3101999999999,
+       "max": 359.3101999999999
+      }
+     },
+     "ms": 367.9265999999998
+    }
+   ]
+  }
+ ]
+}
