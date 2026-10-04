@@ -36,6 +36,16 @@ describe('M7 deterministic random OOB pipeline', () => {
       const trucks = definitions.filter((definition) => definition.counter?.kind === 'TRANSPORT');
       expect(trucks.length).toBeGreaterThan(0);
       expect(trucks.every((definition) => definition.name === 'Truck' && definition.counter?.designation === '')).toBe(true);
+      // Counters print the unit's own number and division, never the generator's ids (user report 2026-10-04: a supply
+      // dump printed "4", a regiment "3" and "F1").
+      expect(supply.every((definition) => definition.counter?.designation === '' && definition.counter?.affiliation === '')).toBe(true);
+      for (const definition of definitions) {
+        const counter = definition.counter;
+        if (!counter) continue;
+        expect(counter.affiliation).not.toMatch(/^F\d+$/u);
+        if (counter.designation !== '' && counter.designation !== 'Brkdwn') expect(definition.name).toContain(counter.designation);
+        if (counter.affiliation !== '') expect(definition.name.endsWith(` / ${counter.affiliation}`)).toBe(true);
+      }
       const names = definitions.filter((definition) => definition.family !== 'RESOURCE' && definition.counter?.kind !== 'TRANSPORT').map((definition) => definition.name);
       expect(new Set(names).size).toBe(names.length);
       expect(names.every((name) => !/Independent|combat \d|undefined/.test(name))).toBe(true);
