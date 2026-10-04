@@ -456,6 +456,10 @@ moduledata + buildFile.xml
 
 實作狀態：**IN PROGRESS**。Random Map 與 Random OOB 已合成可人工操作的 generated scenario，且真實瀏覽器已完成 default、Large 與 contact 主流程；但 lifecycle、real save/load、Game End/final replay 與其餘產品操作 gate 尚未全數驗證，M8.10 不得標為完成。
 
+2026-10-04 瀏覽器驗收（doc 03「Execution record 2026-10-04」）：New Game、Map、counter 與規則行動列多數通過，
+但 NG-07（部署格數與凍結期望不符）、NG-10（產生中多個階段同時 active）、MAP-03、MAP-04 為 FAIL，SES 與 UI 列尚未執行，
+M8 維持 **IN PROGRESS**。
+
 M8 同時是正式的 Game Flow Integration milestone；詳細 WBS 與架構圖：
 
 - [M8 Game Flow Integration WBS](roadmap/07-game-flow-integration-wbs.md)

@@ -370,4 +370,15 @@ These findings triggered this plan and must be reproduced after the current code
 - Required handoff was discoverable only in collapsed Session tools; the exploratory driver clicked
   the hidden DOM control, which is invalid under this plan.
 
+Re-check 2026-10-04 (see "Execution record 2026-10-04"; the findings above are kept as the trail):
+
+- Large package continuity: the current NG-07 package (64 units, 8 formations) matched preview and mount Hex by Hex; only the
+  frozen deployed-Hex count differs (NG-07 FAIL, O-2).
+- No unit action in the whole turn: superseded; ACT-14 PASS with moves, an overrun, a barrage and two attacks.
+- `MOVE_PIECE` without a selected unit: not re-run as described. The current deck has no separate action-family list; moves
+  start from a selected unit, and every selection, preview and confirmation measured stayed under 1,000 ms.
+- Stages 2–4 active together: **reproduced** (NG-10 FAIL, O-1).
+- Hand-over only in collapsed tools: no longer true; the deck itself shows "Hand the screen to …" whenever a hand-over is
+  required (ACT-10, ACT-13), and the privacy screen hides the map.
+
 Therefore M8 and U10 remain `IN PROGRESS`.
