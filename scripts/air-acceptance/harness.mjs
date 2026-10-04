@@ -219,18 +219,24 @@ export const selectUnit = async (h, text, index = 0) => {
   await h.page.waitForTimeout(300);
 };
 
-/** Place every arriving reinforcement: select its row in the Arrivals tab, then choose an entry hex chip (`prefer` may pick the hex). */
+/**
+ * Place every arriving reinforcement as a player does: select its row in the Arrivals tab, then pick one of the blue
+ * entry hexes on the map with the map's own cursor (`prefer` may pick the hex). The panel offers no hex list.
+ */
 export const placeArrivals = async (h, prefer = (hexes) => hexes[0]) => {
   for (let guard = 0; guard < 12; guard += 1) {
     const rows = h.page.locator('.arrivals .deck-unit[data-piece]');
     if ((await rows.count()) === 0) return;
     await rows.first().click();
     await h.page.waitForTimeout(250);
-    const hexes = await h.page.evaluate(() => [...document.querySelectorAll('.hex-chips [data-target-hex]')].map((node) => ({ id: node.dataset.targetHex, text: node.textContent.trim() })));
-    if (hexes.length === 0) throw new Error('No entry hex offered for the selected arrival.');
+    // The blue entry hexes the map is showing, by printed number (presenter.ts printedHexLabel).
+    const hexes = await h.page.evaluate(() => [...window.ocsMap.state.placement].map((id) => {
+      const [q, r] = id.split(',').map(Number);
+      return { id, text: `${String(q + Math.floor(r / 2) + 1).padStart(2, '0')}${String(r + 1).padStart(2, '0')}` };
+    }));
+    if (hexes.length === 0) throw new Error('No blue entry hex shown on the map for the selected arrival.');
     const chosen = prefer(hexes) ?? hexes[0];
-    await h.page.locator(`.hex-chips [data-target-hex="${chosen.id}"]`).first().click();
-    await h.page.waitForTimeout(300);
+    await gotoHex(h, chosen.text, { enter: true });
   }
 };
 

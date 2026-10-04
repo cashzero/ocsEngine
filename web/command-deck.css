@@ -87,6 +87,7 @@ html, body { min-width: 1280px; height: 100%; overflow: hidden; }
 .deck-unit > span { min-width: 0; overflow-wrap: anywhere; font-size: 13px; }
 .deck-unit small { display: block; margin-top: 3px; font-size: 13px; }
 .deck-unit.is-selected { background: #303a2c; border-color: var(--accent); }
+.arrivals > .hint { margin-bottom: 10px; }
 .deck-event { border-bottom: 1px solid var(--line); padding: 8px; font-size: 13px; }
 .deck-event p { margin: 4px 0; overflow-wrap: anywhere; color: var(--muted); }
 .command-rail > .deck-footer { padding: 8px 16px; border-top: 1px solid var(--line); border-bottom: 0; }
