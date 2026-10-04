@@ -39,6 +39,18 @@ is generated in `src/ui/map-art.ts` (SVG for the New Game preview; the same geom
   fine, lying on the road is not). Where a road cuts diagonally across a shared hexside the track crosses it; over 24
   generated maps (1,581 road-sharing rail hexsides) the most any hexside's track runs inside a road's drawn casing is
   37% of its length, and none reaches half.
+- **Roads and railways run off the map edge (2026-10-04).** A generated map is a window on a wider landscape, so a
+  road or railway that ends in a border hex, or reaches an entry hex, is drawn on across that hex's outer hexside
+  to the map edge instead of stopping at the hex centre (`withMapExits` in `map-art.ts`; the user's report: 道路/鐵路
+  如果連接到map edge 應該要畫出來 不是停在edge hex). Checked in the game canvas at 100% along all four edges of a
+  generated New Game map, including the entry hexes, where road and track leave side by side.
+- **TODO — a few generator road exits are not drawn off the map.** The generator links a main road from each
+  border exit (`selectBorderExits` in `generation/map/roads.ts`) but the map data does not record which border hexes
+  are exits, so the renderer infers them: a line that dead-ends in a border hex, or any entry hex. Where another road
+  also passes through the exit hex, the exit is not drawn: 13 of 189 exits over 24 generated 32×24 maps. Impact: on
+  those hexes the road appears to run along or touch the border without leaving the map. Close when the generated
+  map records its road exits (a schema change to `GeneratedMapStrategicRegions` with save compatibility) and the
+  renderer draws exactly those, with a sweep showing every generator exit drawn to the edge.
 - **TODO — place names are cosmetic.** Names come from `placeNameFor(hexId)`, a deterministic
   syllable generator, not from scenario or map data. They carry no rules meaning and do not
   appear in the roster, log or OOB. Close when the map model carries real names, or the user
