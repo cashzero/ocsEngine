@@ -42,9 +42,9 @@ const ids = (request: NewGameRequest) => {
   const id = (fragment: string) => generatedPieceId(fragment, request);
   return {
     aF1: id('allied:air-fighter-1'), aF2: id('allied:air-fighter-2'), aB1: id('allied:air-bomber-1'), aBase: id('allied:air-base-1'),
-    aSup: id('allied:independent-supply-1'), aLeg: id('allied:f2-combat-1'), aHq: id('allied:f1-command'),
+    aSup: id('allied:independent-supply-1'), aLeg: id('allied:f2-combat-1'), aHq: id('allied:independent-hq-1'),
     xF1: id('axis:air-fighter-1'), xF2: id('axis:air-fighter-2'), xB1: id('axis:air-bomber-1'), xBase: id('axis:air-base-1'),
-    xTrk: id('axis:f1-combat-1'), xHq: id('axis:f1-command'), xSup: id('axis:independent-supply-1'),
+    xTrk: id('axis:f1-combat-1'), xHq: id('axis:independent-hq-1'), xSup: id('axis:independent-supply-1'),
   };
 };
 const U = ids(AIR_NEW_GAME_REQUEST);

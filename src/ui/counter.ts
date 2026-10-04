@@ -262,13 +262,13 @@ export const counterSvgBody = (view: CounterViewModel): string => {
   const overlay = stateOverlay(flags);
   const moveBand = view.face?.id === 'move' ? '<path class="move-band" d="M3 9H97"/>' : '';
   if (c.kind === 'HQ') {
-    // The formation's short name ("82.Abn") is printed rotated beside the flag, as the board-game counter does; the unit name is "HQ / 82.Abn".
-    const formation = view.label.split(' / ').slice(1).join(' / ');
+    // The HQ's own number ("3", "39 Pz") is printed rotated beside the flag, as the board-game counter does; an HQ belongs to no formation.
+    const number = c.designation;
     const rating = `${view.step?.range}-${ma}`;
     const squeeze = (element: string, length: number) => element.replace('<text ', `<text textLength="${length}" lengthAdjust="spacingAndGlyphs" `);
     return `<rect class="counter-paper nation-${c.nationality}" width="100" height="100"/>${overlay.under}
     ${moveBand}
-    <g class="counter-identification">${squeeze(text(HQ_FLAG.x + HQ_FLAG.w / 2, 14, c.echelon, 'hq-echelon'), 9 * c.echelon.length)}${formation ? squeeze(text(21, 37, formation, 'hq-designation'), formation.length > 3 ? 40 : 17 * formation.length) : ''}</g>
+    <g class="counter-identification">${squeeze(text(HQ_FLAG.x + HQ_FLAG.w / 2, 14, c.echelon, 'hq-echelon'), 9 * c.echelon.length)}${number ? squeeze(text(21, 37, number, 'hq-designation'), number.length > 3 ? 40 : 17 * number.length) : ''}</g>
     <g class="counter-symbol hq-flag">${hqFlag(c.nationality)}</g>
     <g class="counter-values">${squeeze(text(56, flags.length ? 84 : 90, rating, flags.length ? 'hq-rating hq-rating-flagged' : 'hq-rating'), rating.length > 3 ? 56 : 44)}</g>
     ${overlay.over}${stateBar(flags)}`;

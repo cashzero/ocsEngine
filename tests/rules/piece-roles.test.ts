@@ -15,7 +15,7 @@ const U = {
   truck: generatedPieceId('allied:independent-transport-1'),
   dump: generatedPieceId('allied:independent-supply-1'),
   leg: generatedPieceId('allied:f2-combat-1'),
-  hq: generatedPieceId('allied:f1-command'),
+  hq: generatedPieceId('allied:independent-hq-1'),
   artillery: generatedPieceId('allied:f1-artillery-1'),
 };
 const roles = (state: GameState, viewer = ALLIED): Map<PieceId, string> =>

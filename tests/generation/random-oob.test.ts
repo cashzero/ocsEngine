@@ -66,7 +66,7 @@ describe('M7 deterministic random OOB pipeline', () => {
       for (const side of generated.value.sides) {
         expect(side.formations).toHaveLength(options.divisionsPerSide);
         expect(side.independentUnits.map(({ role }) => role)).toEqual(expect.arrayContaining([
-          'ARTILLERY', 'ENGINEER', 'TRANSPORT', 'SUPPLY',
+          'HQ', 'ARTILLERY', 'ENGINEER', 'TRANSPORT', 'SUPPLY',
         ]));
         for (const formation of side.formations) {
           const roles = formation.units.map(({ role }) => role);
@@ -74,13 +74,45 @@ describe('M7 deterministic random OOB pipeline', () => {
             expect(roles).toEqual(['COMBAT']);
             continue;
           }
-          expect(roles.filter((role) => role === 'FORMATION_COMMAND')).toHaveLength(1);
+          // HQs are independent of every formation (3.2f).
+          expect(roles).not.toContain('HQ');
           expect(roles.filter((role) => role === 'COMBAT').length).toBeGreaterThanOrEqual(2);
           expect(roles.includes('ARTILLERY')).toBe(formation.archetype !== 'AIRBORNE');
         }
       }
     },
   );
+
+  // BTR VASSAL 1.27.0: the 343 PieceSlots carrying the Formation mark are all divisional units; none of the HQ
+  // PieceSlots carries it. The Formation marker only records Formation Method fuel (12.5c A).
+  it('generates HQs as independent units, never as members of a formation', () => {
+    for (const [divisionsPerSide, armoredDivisionsPerSide] of [[1, 0], [3, 1], [4, 2], [7, 3]] as const) {
+      const generated = generateRandomOob({ ...options, seed: 31 + divisionsPerSide, divisionsPerSide, armoredDivisionsPerSide });
+      expect(generated.ok).toBe(true);
+      if (!generated.ok) return;
+      const definitions = new Map(generated.value.pieceDefinitionCatalog.definitions.map((definition) => [definition.id, definition]));
+      for (const side of generated.value.sides) {
+        expect(side.formations.flatMap(({ units }) => units).some(({ role }) => role === 'HQ')).toBe(false);
+        const hqs = side.independentUnits.filter(({ role }) => role === 'HQ');
+        // One HQ for every three divisions, and at least one even when every division is a single foot counter.
+        expect(hqs).toHaveLength(Math.max(1, Math.ceil(divisionsPerSide / 3)));
+        const names = hqs.map(({ definitionId }) => definitions.get(definitionId)!.name);
+        expect(new Set(names).size).toBe(hqs.length);
+        for (const hq of hqs) {
+          const definition = definitions.get(hq.definitionId)!;
+          expect(hq.formationId).toBeNull();
+          expect(definition.ownership.formationDefinitionId).toBeNull();
+          expect(definition.name).toMatch(side.side === 'ALLIED' ? /^US HQ /u : /^Ge HQ /u);
+          // No formation affiliation or colour band; the counter prints the HQ's own number ("3", "18 Abn", "39 Pz").
+          expect(definition.counter).toMatchObject({ kind: 'HQ', affiliation: '', formationColor: null });
+          const printed = definition.counter!.designation;
+          expect(printed).not.toBe('');
+          expect(definition.name).toContain(printed.split(' ')[0]!);
+          expect(side.formations.map(({ name }) => name)).not.toContain(printed);
+        }
+      }
+    }
+  });
 
   it('builds infantry and airborne divisions as single XX units, with airborne leg-mobile and never filed as mobile infantry', () => {
     const seen = new Set<string>();
@@ -156,7 +188,7 @@ describe('M7 deterministic random OOB pipeline', () => {
     const definitionsById = new Map(generated.value.pieceDefinitionCatalog.definitions
       .map((definition) => [definition.id, definition]));
     const expectedCapabilities = new Map([
-      ['FORMATION_COMMAND', 'HQ'],
+      ['HQ', 'HQ'],
       ['ARTILLERY', 'ARTILLERY'],
       ['RECONNAISSANCE', 'RECONNAISSANCE'],
       ['ENGINEER', 'ENGINEER_CAPABLE'],
