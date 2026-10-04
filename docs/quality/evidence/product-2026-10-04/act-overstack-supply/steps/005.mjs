@@ -1,0 +1,5 @@
+// Record ACT-15 from steps 002–004 (screenshots 02, 04, 05), then play to the Allied Movement Phase of Turn 2.
+const m = state.moves;
+record(h, 'ACT-15', 'Overstack: the move preview warns and reads Confirm anyway; a warning beside End names the hex and RE; End needs a second press; the 4.8a elimination decision follows; moves within 10 RE show none; Trucks and dumps are not counted', `${m.length - 1} moves into 0502 within 10 RE previewed with no warning (e.g. "${m[0].preview}"); the 11th, Div Arty II / 7.A, previewed "${m.at(-1).preview}" with "${m.at(-1).button}" (02-act15-preview-11.jpg); beside End "⚠ Overstacked: 0502 holds 10.5 RE (limit 10)…4.8a" stayed at 10.5 RE after a Truck entered 0502; the first End press read "Finish anyway: 1 hex is overstacked — Press again to confirm" (04); the second raised "Hex 0502 holds more than 10 RE as the step ends: choose a unit to eliminate" listing the 13 combat units and no Truck (05); Div Arty I / 7.A was eliminated and play went on`, true);
+const r = await playUntil(h, async (s) => /Turn 2/.test(s.turn) && /Allied player turn/.test(s.player) && s.phase === 'Movement', { placeArrivals });
+return r.state;

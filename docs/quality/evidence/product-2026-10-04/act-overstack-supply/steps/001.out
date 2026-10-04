@@ -1,0 +1,41 @@
+{
+ "w": {
+  "turn": "Turn 1 / 3",
+  "player": "Allied player turn",
+  "phase": "Movement",
+  "seat": "Allied commander",
+  "end": "End Movement SegmentNext: Barrage Segment",
+  "endDisabled": false,
+  "notice": "Fuel its whole formation until Clean Up (1 SP) from the 12T dump at 0307: done.",
+  "handoff": false,
+  "complete": false,
+  "decision": []
+ },
+ "fuel": {
+  "Standish TF": "the 16T dump at 0307",
+  "Brown TF": "the 12T dump at 0307"
+ },
+ "own": [
+  "Hex 0501 · clear · 90 Recon Bn / 10.A",
+  "Hex 0601 · woods · Standish TF / 10.A, Chmbln TF / 10.A",
+  "Hex 0502 · clear · Chmbln TF (Det. 2) / 10.A, Riley TF / 10.A",
+  "Hex 0602 · clear · Div Arty II / 10.A, Div Arty I / 10.A",
+  "Hex 0403 · clear · Supply dump",
+  "Hex 0306 · clear · Div Arty II / 7.A, Div Arty I / 7.A",
+  "Hex 0606 · clear · Supply dump",
+  "Hex 0307 · clear · town · Chap TF / 7.A, Brown TF / 7.A, US 748 FA Gp, Supply dump",
+  "Hex 0407 · clear · Wemple TF / 7.A, Rhea TF / 7.A",
+  "Hex 0907 · clear · 13.Abn",
+  "Hex 0308 · clear · 87 Recon Bn / 7.A",
+  "Hex 0508 · clear · Supply dump",
+  "Hex 0809 · clear · US 749 Engr Gp, US 748 Engr Gp",
+  "Hex 0909 · clear · Truck, Truck",
+  "Hex 0410 · woods · Supply dump",
+  "Hex 0710 · woods · US 751 FA Gp, US 750 FA Gp",
+  "Hex 0810 · clear · US 749 FA Gp",
+  "Hex 0910 · clear · US HQ 21st Corps, US HQ 22nd Corps",
+  "Hex 0811 · clear · Truck, Truck",
+  "Hex 0612 · clear · 83.Inf"
+ ]
+}
+-- 19813 ms; page errors so far 0

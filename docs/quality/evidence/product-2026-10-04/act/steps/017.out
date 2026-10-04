@@ -1,0 +1,27 @@
+{
+ "w": {
+  "turn": "Turn 1 / 2",
+  "player": "Allied player turn",
+  "phase": "Exploitation · Movement",
+  "seat": "Allied commander",
+  "end": "End Movement SegmentNext: Barrage Segment",
+  "endDisabled": false,
+  "notice": "Combat · Combat Segment finished.",
+  "handoff": false,
+  "complete": false,
+  "decision": []
+ },
+ "handoffSeen": [],
+ "before": "X1 3 845 RES82.Abn 0104 · Reserve Only Exploit Mode units and released Reserves can move in the Exploitation Phase. (11.0a) · The unit has no Movement Allowance in this mode and phase. (6.1b)Deselect TargetsUnitLedgerLogAll units (9) ModeRelease reserve Combat",
+ "releaseOffered": true,
+ "releaseMs": 475,
+ "after": "X1 3 845 82.Abn 0104 · Move mode 5 MP left · 74 hexes reachableDeselect TargetsUnitLedgerLogAll units (9) BreakdownsDetach a Breakdown (5-4-3, 1 RE; the division loses a step) Reserve released.",
+ "move": {
+  "moved": true,
+  "preview": "",
+  "elapsed": 595
+ },
+ "at": "Hex 0205 · woods · 82.Abn",
+ "log": "Exploit-mode units and released Reserves may move and attack (11.0). No unit selected Click one of your units on the map, or open All units. Targets Unit Ledger Log All units (9) 82.Abn finished moving 82.Abn moved 0104 → 0205 82.Abn released from Reserve You finished Combat · Combat Segment Now: Exploitation · Movement Segment · Allied commander. You chose the advance after combat Result Ae2/DL2o3DG: Attacker is unaffected; defender loses 2 steps and takes 3 options (each a step loss or a hex o"
+}
+-- 8514 ms; page errors so far 0
