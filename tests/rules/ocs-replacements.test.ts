@@ -5,6 +5,8 @@ import {
   REPLACEMENTS_PER_TURN,
   RULE_FIXTURE_NEW_GAME_REQUEST,
   applyDisplacement,
+  captureAt,
+  createRulesRng,
   applyRuleAction,
   arrivingReinforcements,
   atStep,
@@ -23,6 +25,7 @@ import {
   type OcsMode,
   type PieceId,
   type PieceState,
+  type RuleEvent,
   type TransitionResult,
   type UnitRebuild,
 } from '../../src/index.js';
@@ -204,6 +207,21 @@ describe('Truck rebuilds (13.5e)', () => {
     const state = withTruckLost();
     expect(lostTruckPoints(state, ALLIED)).toBe(5);
     expect(lostTruckPoints(state, AXIS)).toBe(0);
+  });
+
+  it('records trucks the enemy captures (9.14c) and reports the roll to both players', () => {
+    const base = withPiece(setup(0, 1), U.truck, (entry) => ({ ...entry, location: { kind: 'ON_MAP', hexId: hex(6) }, mode: 'MOVE', stackOrder: 0 }));
+    // The capture die decides how much is taken (1-2 take nothing): find a seed where some points change hands.
+    for (let seed = 1; seed <= 30; seed += 1) {
+      const events: RuleEvent[] = [];
+      const captured = captureAt({ ...base, rng: createRulesRng(seed) }, AXIS, hex(6), events);
+      const event = events.find((entry): entry is Extract<RuleEvent, { kind: 'TRANSPORT_CAPTURED' }> => entry.kind === 'TRANSPORT_CAPTURED');
+      expect(event).toMatchObject({ ownerId: ALLIED, capturerId: AXIS, points: 5 });
+      if (event!.captured === 0) { expect(lostTruckPoints(captured, ALLIED)).toBe(0); continue; }
+      expect(lostTruckPoints(captured, ALLIED)).toBe(event!.captured);
+      return;
+    }
+    throw new Error('No seed captured a truck point.');
   });
 
   it('rebuilds lost truck points for 1 Eq each as a new truck counter in the Eq hex', () => {

@@ -28,6 +28,12 @@ Rail amendment (2026-10-04, requested by the user: "考慮到rail對OCS的supply
 much sparser than the roads, and trace supply follows it (12.6a, 13.3c, 13.3h, 13.8c, 12.7a). Section H adds RAIL rows;
 plan `docs/roadmap/10-rail-wbs.md`. No existing row changes status or expectation.
 
+Replacement amendment (2026-10-04, explicitly requested by the user: "目前 PAX/EQ的 設計為何還需要option來打開 應該是內建的吧",
+then choosing "B": implement 13.5a-e and build Pax/Eq in): the New Game **Air support** option is removed. Every New Game gives both
+sides Pax and Eq each Reinforcement Phase, and aircraft reinforcements come with **Air forces**. Section I adds rows REPL-01 to
+REPL-06; section F's run note is restated accordingly (no AIR expectation changed), and AIR-11/AIR-12, whose code was refactored,
+were re-run on the new build. No other row changes.
+
 Supply UX amendment (2026-10-02, explicitly approved by the user: "OK" to adding the SUP rows proposed in
 `docs/roadmap/09-supply-logistics-ux-wbs.md` §4): section G adds Supply and logistics rows. Every new row
 starts `UNVERIFIED`; no existing row changes status or expectation. The 2026-10-02 A0 baseline
@@ -176,7 +182,8 @@ is `BLOCKED`, not `PASS`; the missing scenario/setup path is a product gap to re
 ## F. Air power (added 2026-10-01 with M11-Air A9; AIR-10 to AIR-15 added 2026-10-03)
 
 Run on a New Game with **Air forces: Fighters, bombers and Air Bases** (and, from 2026-10-03, **Air transport** and
-**Air support** set to their non-None options). Hip Shoots are unreachable because no air force is listed as able to Hip
+**Air support** set to their non-None options; from 2026-10-04 there is no Air support option: Eq and aircraft reinforcements
+are built in, see section I). Hip Shoots are unreachable because no air force is listed as able to Hip
 Shoot (game-specific rules were left out), so that part of AIR-05 is `BLOCKED`.
 
 Amendment 2026-10-03 (user request: implement Air Transport/Air Drop, Air Base construction and air replacements/
@@ -204,8 +211,8 @@ result was not shown) is kept as evidence and the case is taken from the run tha
 | AIR-08 | P1 | Try a second barrage on the same hex and a second mission with the same aircraft | Both unavailable with the rule explained (10.0e, 14.2e) | FAIL (2026-10-03, `air-01-08-rules-5104`): both are unavailable, but the UI only stops offering the hex and the aircraft; the rule (10.0e, 14.2e) is not explained |
 | AIR-09 | P0 | Play a whole turn with air forces, then to Game End; save, load and replay | No dead end; console has no errors; the loaded and replayed game matches | PASS (2026-10-03, after fixing Game End not reappearing on load; `air-09`, 3 turns, file save/load through the file chooser, replay hash re-run) |
 | AIR-10 | P0 | Build an Air Strip with an Engineer-Capable unit, upgrade it, and raise the base to Level 3 (13.8d, 15.2, 15.3) | Only a unit in Combat Mode is offered Construction; hexes within 2 Leg MP are listed; Air Strip 1T, upgrade 3T, new Level 1 4T, +1 Level 4T once per turn, never above Level 3; paid at once and shown in the ledger; one construction per phase | PASS (2026-10-03, `air-10`) |
-| AIR-11 | P0 | Receive Eq and rebuild an aircraft lost in Air Combat (13.5f) | Eq arrive in the Reinforcement Phase; the Rebuild tab lists the Dead Pile or reduced aircraft and the Eq beside an HQ in Combat Mode; rebuilding spends whole Eq and the aircraft arrives Active at the chosen base | PASS (2026-10-03, `air-11-12`) |
-| AIR-12 | P1 | Place a reinforcing aircraft on its turn (13.6) | It is listed in Arrivals and can be placed only at a friendly Air Base with Active room, arriving Active | PASS (2026-10-03, `air-11-12`) |
+| AIR-11 | P0 | Receive Eq and rebuild an aircraft lost in Air Combat (13.5f) | Eq arrive in the Reinforcement Phase; the Rebuild tab lists the Dead Pile or reduced aircraft and the Eq beside an HQ in Combat Mode; rebuilding spends whole Eq and the aircraft arrives Active at the chosen base | PASS (2026-10-03, `air-11-12`; re-run PASS 2026-10-04 on the build without the Air support option, `replacements-2026-10-04/air-11-12`) |
+| AIR-12 | P1 | Place a reinforcing aircraft on its turn (13.6) | It is listed in Arrivals and can be placed only at a friendly Air Base with Active room, arriving Active | PASS (2026-10-03, `air-11-12`; re-run PASS 2026-10-04, `replacements-2026-10-04/air-11-12`) |
 | AIR-13 | P0 | Air Transport a unit and supply to another Air Base (14.9) | Load against capacity; over capacity refused with the rule; Half range doubles capacity; the unloading limit and its exemptions shown; the carried unit has half its MA | PASS (2026-10-03, `air-13-15`) |
 | AIR-14 | P0 | Plan, delay and cancel Drop Plans, then fly a parachute drop and a glider drop (14.10) | Plans made in the Aircraft Refit Phase; an unplanned combat-unit drop is refused; the Success Table number (with the glider +1) is the same in the preview and the result; the landing is rolled and reported | PASS (2026-10-03, after making the glider preview match the result; `air-13-15`) |
 | AIR-15 | P1 | Fly a full Transport through an enemy Patrol Zone (14.9g) | Flak is rolled with its modifiers; a hit cuts capacity and the owner chooses the cargo lost | PASS (2026-10-03, `air-13-15`, rules seed 5106) |
@@ -270,6 +277,29 @@ Run on the default New Game unless a row says otherwise. Evidence: `docs/quality
 
 RAIL-05 to RAIL-10 are covered by `tests/rules/ocs-rail-supply.test.ts` and `tests/rules/rail-supply-flow.test.ts`, which are
 regression support only and do not promote these rows.
+
+## I. Replacements (added 2026-10-04, see the replacement amendment above)
+
+Rows REPL-01 and REPL-02 run from the New Game form (Air forces None). A ground unit could not be lost the natural way within
+a reasonable run: a first attempt flew Air Barrages every Barrage Segment for 8 turns with the generated air forces and never
+inflicted a ground step loss, and the harness has no generic ground-movement policy. REPL-03 to REPL-06 therefore start, like
+the breakdown gate, from a **test position**: the very New Game the UI makes with default settings, Air forces None and seeds
+6101/6102/6103/6104, with a few units placed for Turn 1 Allied Movement (`scripts/replacement-acceptance/make-position.mjs`:
+an Axis HQ in Combat Mode with a reduced division in its hex, a one-step Axis Armor unit beside three Allied divisions, a lone
+Axis truck beside an Allied Leg unit; rules seed chosen so the capture and the elimination happen). It is loaded through
+Menu → Load save…, which checks the hash and replays it; every later step is a click on the page. Losing a unit through
+ordinary play from a fresh New Game and then rebuilding it is **not** yet exercised in the browser (TODO in
+`docs/reports/replacements-2026-10-04.md`). Scripts: `scripts/replacement-acceptance/`; evidence:
+`docs/quality/evidence/replacements-2026-10-04/RUNS.md`.
+
+| ID | Pri | Player operation | Required visible result | Status |
+|---|---:|---|---|---|
+| REPL-01 | P0 | Open the New Game form | No Air support option; the form says both sides receive Pax and Eq every turn | PASS (2026-10-04, `repl-01-02`) |
+| REPL-02 | P0 | Start a ground duel (Air forces None) and play a whole game turn | Pax and Eq are listed in Arrivals each Reinforcement Phase, print "Pax"/"Eq" with their quantity, can be placed at an entry hex or within 2 hexes of an HQ, stack as one Pax and one Eq counter; the turn completes | PASS (2026-10-04, `repl-01-02` from New Game; also `repl-03-06` Turns 1-2) |
+| REPL-03 | P0 | Lose a ground unit in combat, then rebuild it from the Dead Pile with Repls beside an HQ in Combat Mode (13.5a-c) | The Rebuild tab lists the unit with its cost per step by the Rebuild Table and a placement mode; a rebuild the Repls cannot pay is refused with the reason; rebuilding spends the Repls and the unit returns in the Repls' hex, reported in the Log | PASS on the test position (2026-10-04, `repl-03-06`); from a fresh New Game: UNVERIFIED |
+| REPL-04 | P0 | Rebuild steps of a reduced unit stacked with Pax (13.5a-2, 13.5b) | Listed as "reduced here" with the steps missing; any number of steps up to the Repls; it keeps its mode | PASS on the test position (2026-10-04, `repl-03-06`) |
+| REPL-05 | P0 | Complete the game turn with the rebuilds, then save and load | No dead end through the hot-seat handoffs; the loaded game shows the same turn, phase and stacks; no console error | PASS (2026-10-04, `repl-03-06`, Turns 1-2) |
+| REPL-06 | P1 | Lose trucks to an enemy move into their hex, then rebuild them with Eq (9.14c, 13.5e) | The capture roll and the points taken are reported; the Rebuild tab offers at most the points lost (and the Eq held); 1 Eq rebuilds one point as a truck in the Eq hex | PASS on the test position (2026-10-04, `repl-03-06`) |
 
 ## Execution order and stop conditions
 

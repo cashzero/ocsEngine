@@ -636,6 +636,8 @@ export const captureAt = (state: GameState, capturerId: PlayerId, hexId: HexId, 
     }
     const total = group.reduce((sum, piece) => sum + transportPointsOf(next, piece), 0);
     let toCapture = roundOcs(total * percent / 100);
+    // 9.14c: both players see the roll and how many points were taken; 13.5e lets the owner rebuild the trucks among them.
+    events.push({ kind: 'TRANSPORT_CAPTURED', sequence: events.length, hexId, ownerId: owner, capturerId, roll: die.value, points: total, captured: Math.min(total, toCapture) });
     const displaced: PieceId[] = [];
     const captured: PieceId[] = [];
     for (const truck of stableSort(group, (left, right) => transportPointsOf(next, right) - transportPointsOf(next, left))) {

@@ -7,7 +7,7 @@ const h = await open({ evidenceDir });
 const seeds = { map: 5101, oob: 5102, deployment: 5103, rules: 5104 };
 try {
   await newGame(h, { seeds, turnLimit: 8 });
-  h.note(`New Game: Standard scale, 3 divisions (1 armored), air forces + transports + support, seeds ${JSON.stringify(seeds)}`);
+  h.note(`New Game: Standard scale, 3 divisions (1 armored), air forces (aircraft reinforcements built in) + transports, seeds ${JSON.stringify(seeds)}`);
   await endPhase(h); await placeArrivals(h); await endPhase(h);
   const movement = await where(h);
   record(h, 'AIR-10', 'Construction is offered in the Movement Phase', `${movement.turn}, ${movement.player}, ${movement.phase}`, movement.phase === 'Movement');

@@ -261,6 +261,7 @@ export const describeRecord = (record: HistoryRecord, context: NarrativeContext)
       case 'ATTRITION_ROLLED': lines.push(`Attrition at ${hex(event.hexId)}: roll ${event.total}, ${plural(event.steps, 'step')} lost.`); break;
       case 'BREAKOUT_ROLLED': lines.push(isOwn(event.pieceId) ? `${name(event.pieceId)} breakout roll ${event.roll}: ${event.succeeded ? 'escaped' : 'lost'}.` : `An enemy unit attempted a breakout and ${event.succeeded ? 'escaped' : 'was lost'}.`); break;
       case 'SUPPLY_CAPTURED': lines.push(`Supply captured: ${event.captured}T taken, ${event.destroyed}T destroyed.`); break;
+      case 'TRANSPORT_CAPTURED': lines.push(`${context.playerName(event.capturerId)} captured ${event.captured} of ${event.points} transport point${event.points === 1 ? '' : 's'} at ${hex(event.hexId)} (roll ${event.roll})${event.captured < event.points ? '; the rest must displace' : ''}.`); break;
       case 'DUMP_BLOWN': if (isOwn(event.resourcePieceId)) lines.push(`Dump blown: ${event.destroyed}T destroyed.`); break;
       case 'VICTORY_RECORDED': lines.push(event.winnerId ? `${context.playerName(event.winnerId)} wins (${event.reason.replaceAll('_', ' ').toLowerCase()}).` : `The game ends in a draw (${event.reason.replaceAll('_', ' ').toLowerCase()}).`); break;
       default: break;

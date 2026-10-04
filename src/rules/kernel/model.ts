@@ -773,6 +773,8 @@ export type RuleEvent =
   | { readonly kind: 'AIR_BASE_LEVEL_CHANGED'; readonly sequence: number; readonly pieceId: PieceId; readonly level: number }
   | { readonly kind: 'REPLACEMENTS_ARRIVED'; readonly sequence: number; readonly playerId: PlayerId; readonly pieceId: PieceId; readonly replacement: 'PAX' | 'EQ'; readonly quantity: number }
   | { readonly kind: 'UNIT_REBUILT'; readonly sequence: number; readonly pieceId: PieceId; readonly hexId: HexId; readonly steps: number; readonly fromDeadPile: boolean }
+  /** 9.14c: Transport Points (or wagons) in a hex an enemy entered: the die, the points there, and how many changed hands. */
+  | { readonly kind: 'TRANSPORT_CAPTURED'; readonly sequence: number; readonly hexId: HexId; readonly ownerId: PlayerId; readonly capturerId: PlayerId; readonly roll: number; readonly points: number; readonly captured: number }
   | { readonly kind: 'TRUCKS_REBUILT'; readonly sequence: number; readonly pieceIds: readonly PieceId[]; readonly hexId: HexId; readonly points: number }
   | { readonly kind: 'AIRCRAFT_REBUILT'; readonly sequence: number; readonly pieceId: PieceId; readonly hexId: HexId | null }
   | { readonly kind: 'AIR_CARGO_DELIVERED'; readonly sequence: number; readonly hexId: HexId; readonly unitIds: readonly PieceId[]; readonly tokens: number; readonly drop: boolean }

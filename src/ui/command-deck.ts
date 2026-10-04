@@ -502,7 +502,7 @@ const arrivalsTab = (snapshot: UiSnapshot): TemplateResult => {
   if (snapshot.arrivals.length === 0) return html`<p class="hint">All reinforcements are placed.</p>`;
   const pieces = snapshot.view.projection?.stacks.flatMap(({ pieces: stackPieces }) => stackPieces) ?? [];
   // Unit first, then hex: the entry hexes are picked on the map, where they show blue; the panel lists only the units.
-  return html`<div class="arrivals"><strong>Reinforcements arriving (${snapshot.arrivals.length})</strong><p class="hint">Select a unit, then click a blue entry hex on the map (aircraft arrive at an Air Base, Eq at an entry hex or beside an HQ).</p>${snapshot.arrivals.map(({ pieceId }) => {
+  return html`<div class="arrivals"><strong>Reinforcements arriving (${snapshot.arrivals.length})</strong><p class="hint">Select a unit, then click a blue entry hex on the map (aircraft arrive at an Air Base; Pax and Eq at an entry hex or within 2 hexes of an HQ, where they rebuild units).</p>${snapshot.arrivals.map(({ pieceId }) => {
     const piece = pieces.find(({ id }) => id === pieceId);
     return piece ? unitRow(snapshot, piece, ' · arriving') : nothing;
   })}</div>`;
