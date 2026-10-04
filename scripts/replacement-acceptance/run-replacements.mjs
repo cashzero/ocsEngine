@@ -81,8 +81,8 @@ const nearHqOf = (hq, side) => (hexes) => hq[side] ? [...hexes].sort((a, b) => h
           if (arrived < 2) {
             record(h, 'REPL-02', `Turn ${turn} (${side}): Pax and Eq are listed among the arrivals in a game without air forces`, text.slice(0, 260), pax && eq);
             // The counters drawn in the list are the ones the map draws (the same counter art): one prints "Pax", the other "Eq".
-            const printed = await h.page.evaluate(() => [...document.querySelectorAll('.arrivals .replacement-label')].map((node) => node.textContent.trim()));
-            record(h, 'REPL-02', `Turn ${turn} (${side}): the replacement counters print "Pax" and "Eq" with their quantity`, `printed: ${printed.join(', ')}`, printed.includes('Pax') && printed.includes('Eq'));
+            const printed = await h.page.evaluate(() => [...document.querySelectorAll('.arrivals .eq-label')].map((node) => node.textContent.trim()));
+            record(h, 'REPL-02', `Turn ${turn} (${side}): the replacement counters print "Repl PAX" and "Repl EQ" with their quantity`, `printed: ${printed.join(', ')}`, printed.includes('PAX') && printed.includes('EQ'));
             await h.shot(`turn-${turn}-${side}-arrivals`);
           }
           // Every arrival goes to the same hex here, so the Pax and Eq end up stacked together.

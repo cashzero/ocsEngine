@@ -29,13 +29,13 @@
 | `REBUILD_UNITS` | 一格 Repl、2 格內有 Combat Mode（或朝 Combat 的 DG）HQ、不在未抵銷敵 ZOC；任意步數（13.5b）；Dead Pile 單位在 Repl 格以所選自願模式出現，清除補給／內部存量／非自願模式／Breakout 標記；減損單位須與 Repl 同格且保留模式；成本依 Rebuild Table；卡車點 1 Eq 一點 | 同上；`kernel/model.ts`、`validate.ts`、`reducer.ts`、`candidates.ts`、`projection.ts`、`persistence.ts` |
 | 卡車帳 | 被俘（`captureAt`）與位移無處可去（`applyDisplacement`）記帳；新事件 `TRANSPORT_CAPTURED` 讓雙方看到俘獲擲骰與點數（原本卡車被俘完全沒有 Log） | `src/rules/replacement/ledger.ts`、`src/rules/supply/transport.ts` |
 | 飛機重建 | `rules/air/replacement.ts` 只保留 13.5f，HQ／ZOC／扣除等共用部分移到 `rules/replacement` | `ocs-air-support.test.ts` |
-| UI | Rebuild 分頁：每個 Repl 格一張卡（單位、步數欄、Dead Pile 單位的放置模式、卡車點欄、Pax／Eq 花費與規則說明），飛機重建在其下；計數器印「Pax」或「Eq」；Log 與動作摘要描述 Pax 抵達、單位與卡車重建、卡車被俘；Arrivals 提示改寫 | `src/ui/command-deck.ts`、`controller.ts`、`counter.ts`、`narrative.ts`、`presenter.ts`、`browser.ts`、`web/styles.css` |
+| UI | Rebuild 分頁：每個 Repl 格一張卡（單位、步數欄、Dead Pile 單位的放置模式、卡車點欄、Pax／Eq 花費與規則說明），飛機重建在其下；計數器沿用 main 的 BTR「Repl EQ」圖，依種類印 EQ 或 PAX；Log 與動作摘要描述 Pax 抵達、單位與卡車重建、卡車被俘；Arrivals 提示改寫 | `src/ui/command-deck.ts`、`controller.ts`、`counter.ts`、`narrative.ts`、`presenter.ts`、`browser.ts`、`web/styles.css` |
 | 存檔 | 0.5.0；`replacements` 快照欄位；舊快照補空帳；遷移重播推帳 | `src/rules/kernel/snapshot.ts`、`src/gameplay/migration.ts` |
 
 規則測試：`tests/rules/ocs-replacements.test.ts` 19 項（產生器、抵達與合併、Rebuild Table 成本、HQ／距離／ZOC／同格條件、步數、
 放置模式、黃點、卡車被俘與位移記帳、卡車重建、候選動作與停步、視角限制、快照與舊快照升級）。其他規則測試的夾具預設不帶 Repl
 （`{ replacements: true }` 才帶），避免每個測試都要放置 Repl；整局自動對局測試會放置並重建，並改為只朝敵方地面單位前進。
-`npm run check`（typecheck、全部 399 個測試、build、dist smoke）通過。dist smoke 原本寫死 29 個 action family，main 上已是 33，
+`npm run check`（typecheck、全部 410 個測試（rebase 到 main 41b78b6 後）、build、dist smoke）通過。dist smoke 原本寫死 29 個 action family，main 上已是 33，
 改為對照 `ALL_ACTION_KINDS`。
 
 ## 4. 瀏覽器驗收（計畫 03 第 I 節）
@@ -45,11 +45,11 @@ Chromium（Playwright，1920×1080），對 build 後的應用只操作可見控
 | 列 | 起點 | 結果 |
 |---|---|---|
 | REPL-01 | New Game 表單 | PASS：沒有 Air support 選項；說明「Each side receives Pax and Eq replacements every turn.」 |
-| REPL-02 | New Game（Air forces None，Standard，seeds 6101-6104） | PASS：雙方 Arrivals 列出 Pax 2 與 Eq 1，計數器印「Pax」「Eq」，放置後同格兩個計數器；完成第 1 回合 |
-| REPL-03 | 測試局面（Menu → Load save） | PASS：三個 Allied 師攻擊 2508，一步的 Axis 裝甲營被消滅；Axis Reinforcement 把 Pax／Eq 放進 HQ 格後出現 Rebuild 分頁，列出「Dead Pile · 1 step missing · 1 Eq a step」與放置模式（預設 Combat Mode）；多選 1 個卡車點時顯示「This rebuild takes 2 Eq; the hex holds 1.」且按鈕停用；重建 434 ms，單位回到 2708 |
+| REPL-02 | New Game（Air forces None，Standard，seeds 6101-6104） | PASS：雙方 Arrivals 列出 Pax 2 與 Eq 1，計數器印「Repl PAX」「Repl EQ」，放置後同格兩個計數器；完成第 1 回合 |
+| REPL-03 | 測試局面（Menu → Load save） | PASS：三個 Allied 師攻擊 2412，一步的 Axis 裝甲營被消滅；Axis Reinforcement 把 Pax／Eq 放進 HQ 格後出現 Rebuild 分頁，列出「Dead Pile · 1 step missing · 1 Eq a step」與放置模式（預設 Combat Mode）；多選 1 個卡車點時顯示「This rebuild takes 2 Eq; the hex holds 1.」且按鈕停用；重建 431 ms，單位回到 2612 |
 | REPL-04 | 同上 | PASS：79.VG「reduced here · 3 steps missing · 1 Pax a step」，補 1 步 |
 | REPL-05 | 同上 | PASS：完成第 1、2 回合（含交接），存檔再讀檔，回合、階段與 HQ 格一致；console 0 錯誤 |
-| REPL-06 | 同上 | PASS：17.Abn 開進 2912，Log「captured 3 of 5 transport points at 2912 (roll 4); the rest must displace.」；第 2 回合以 1 Eq 重建 1 點卡車 |
+| REPL-06 | 同上 | PASS：17.Abn 開進 2816，Log「captured 3 of 5 transport points at 2816 (roll 4); the rest must displace.」；第 2 回合以 1 Eq 重建 1 點卡車 |
 
 AIR-11／AIR-12（飛機重建與增援）因程式重構與表單改變，在新 build 重跑，結果見 RUNS.md。
 
@@ -78,4 +78,6 @@ AIR-11／AIR-12（飛機重建與增援）因程式重構與表單改變，在�
   關閉證據：從 New Game 開始的瀏覽器紀錄，包含一次地面損失與其重建，並完成該回合。
 - **TODO(load-scenario-mismatch)**（既有問題）：讀檔只比對 scenarioId，不同地圖大小但同種子的存檔會被接受且地圖不重建。
   影響：載入後地圖、游標與單位名稱錯亂。關閉證據：讀檔比對 scenario hash 或依存檔重建地圖，瀏覽器在不同大小的局中讀檔一次。
+- **TODO(pax-counter-art)**：Pax 計數器沿用 BTR「Repl EQ」的圖（2026-10-04 rebase 到 main #54 後），只把框內字改成 PAX；
+  BTR 的 Pax counter 未取樣比對。影響：Pax 計數器的顏色與版面可能和原遊戲不同。關閉證據：取樣 BTR Pax 補充 counter 圖檔並逐項比對。
 - **Unit Consolidation（13.9）** 仍未實作。

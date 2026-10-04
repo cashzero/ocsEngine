@@ -16,7 +16,7 @@
     {
       "id": "AIR-11",
       "expectation": "Turn 3 (Axis): the Rebuild tab lists the lost aircraft and the Eq counter beside the HQ",
-      "observed": "All reinforcements are placed. 1 0 SP Supply dump eliminated · Supply · 0T (0 SP) Cannot move in this step Deselect Arrivals Rebuild Unit Ledger Log All units (27) COMBAT RESULT Axis commander air mission on 0504 JG 3 Fw-190d vs 391st BG A-20: 10 (roll 6), 391st BG A-20 aborts. J",
+      "observed": "All reinforcements are placed. 0 SP Supply dump eliminated · Supply · 0T (0 SP) Cannot move in this step Deselect Arrivals Rebuild Unit Ledger Log All units (27) COMBAT RESULT Axis commander air mission on 0504 JG 3 Fw-190d vs 391st BG A-20: 10 (roll 6), 391st BG A-20 aborts. JG ",
       "status": "PASS"
     },
     {
