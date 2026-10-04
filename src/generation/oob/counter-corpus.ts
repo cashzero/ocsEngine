@@ -16,7 +16,10 @@ interface SourceCounter {
   re: number;
 }
 const basic = (symbol: SourceCounter['symbol'], echelon: string, category: SourceCounter['category'], combat: Values, move: Values, mobility: SourceCounter['mobility'], steps = 1, re = .5): SourceCounter => ({ symbol, echelon, category, combat, move, mobility, steps, re, kind: 'COMBAT' });
-const hq = (combat: Values, move: Values): SourceCounter => ({ ...basic('HQ', 'XXX', 'OTHER', combat, move, ['truck', 'truck']), kind: 'HQ' });
+const hq = (combat: Values, move: Values, echelon = 'XXX'): SourceCounter => ({ ...basic('HQ', echelon, 'OTHER', combat, move, ['truck', 'truck']), kind: 'HQ' });
+/** An HQ prints "range-MA" on each face (13.1a): its Combat Mode front (MA 0) and its Move Mode back. */
+const hqFaces = (front: readonly [number, number], back: readonly [number, number], echelon = 'XXX'): SourceCounter =>
+  hq([0, 0, front[1], front[0]], [0, 0, back[1], back[0]], echelon);
 const artillery = (symbol: SourceCounter['symbol'], combat: Values, move: Values, mobility: SourceCounter['mobility']): SourceCounter => ({ ...basic(symbol, 'III', 'OTHER', combat, move, mobility), kind: 'ARTILLERY' });
 /** Placeholder key for the German airborne division counter; not a real BTR GPID. */
 export const AXIS_AIRBORNE_GPID = 900_001;
@@ -36,14 +39,23 @@ export const AXIS_PARA_GPID = 900_007;
 const airborneDivision = (moveStrength: number, regiments: number, combatStrength: number): SourceCounter =>
   basic('AIRBORNE', 'XX', 'OTHER', [combatStrength, 4, 3, 0], [moveStrength, 4, 5, 0], ['leg', 'leg'], regiments, regiments);
 export const COUNTER_CORPUS: Readonly<Record<number, SourceCounter>> = {
-  319: hq([0,0,0,14], [0,0,16,9]),
+  // HQs, read from each PieceSlot's front image and its "B" back image (BTR S01 R10-R11 US, S04 R12-R14 and S05 R07 German):
+  // front Combat Mode "range-0", back Move Mode "range-MA", truck MP on both faces.
+  // US corps HQs: 14-0 / 9-16 (S01 R10 C01-C09, R11 C01-C04); US 18th Abn Corps: 8-0 / 6-16 (S01 R10 C10).
+  ...Object.fromEntries([319, 320, 1724, 322, 323, 324, 325, 326, 327, 335, 336, 337, 338].map((gpid) => [gpid, hqFaces([14, 0], [9, 16])])),
+  328: hqFaces([8, 0], [6, 16]),
+  // German panzer corps HQs (39, 47, 58 Pz; S04 R12 C20, R13 C11-C12): 10-0 / 7-14.
+  ...Object.fromEntries([1103, 1104, 1105].map((gpid) => [gpid, hqFaces([10, 0], [7, 14])])),
+  // German corps HQs (S04 R13 C13-C20, R14 C11-C20): 8-0 / 5-10. Gruppe Hohne (S05 R07 C10) prints "Grp", not XXX.
+  ...Object.fromEntries([1106, 1107, 1108, 1109, 1110, 1111, 1112, 1113, 1114, 1115, 1116, 1117, 1118, 1119, 1120, 1121, 1122, 1123]
+    .map((gpid) => [gpid, hqFaces([8, 0], [5, 10])])),
+  1124: hqFaces([8, 0], [5, 10], 'Grp'),
   160: basic('ARMOR', 'III', 'MECH', [14,4,6,0], [7,4,14,0], ['tracked','tracked'], 1, 1),
   339: basic('INFANTRY', 'XX', 'OTHER', [24,4,3,0], [12,4,10,0], ['leg','truck'], 4, 4),
   385: basic('GLIDER', 'III', 'OTHER', [4,4,3,0], [2,4,5,0], ['leg','leg'], 1, 1),
   164: artillery('SP_ARTILLERY', [17,3,5,2], [9,3,14,2], ['tracked','tracked']),
   163: basic('RECON', 'II', 'MECH', [5,4,7,0], [3,4,16,0], ['tracked','tracked']),
   466: basic('ENGINEER', 'X', 'OTHER', [1,0,0,0], [0,0,12,0], ['truck','truck'], 1, 1),
-  1103: hq([0,0,0,10], [0,0,14,7]),
   733: basic('ARMOR', 'II', 'ARMOR', [6,5,7,0], [3,5,14,0], ['tracked','tracked']),
   826: basic('INFANTRY', 'XX', 'OTHER', [16,3,3,0], [8,3,4,0], ['leg','leg'], 4, 4),
   // German Fallschirmjäger division (XX, 4 steps): counter sheets 3F (18-3-3) / 3B (9-3-4), leg on both faces.

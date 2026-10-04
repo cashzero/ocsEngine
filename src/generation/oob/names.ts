@@ -53,26 +53,28 @@ export interface HqName {
   readonly name: string;
   /** What the counter prints rotated beside the flag (BTR S01 R10 C01 "3", S01 R10 C10 "18 Abn", S04 R12 C20 "39 Pz"). */
   readonly designation: string;
+  /** The HQ's own BTR PieceSlot; its faces (range-MA per mode, echelon) are transcribed in the counter corpus. */
+  readonly gpid: number;
 }
 
-/** BTR names its HQs "HQ <n> Corps"; the pool lists each as [<n>, printed number]. */
-const corpsHqs = (entries: readonly (readonly [string, string])[]): readonly HqName[] =>
-  entries.map(([corps, designation]) => ({ name: `HQ ${corps} Corps`, designation }));
+/** BTR names its HQs "HQ <n> Corps"; the pool lists each as [<n>, printed number, GPID]. */
+const corpsHqs = (entries: readonly (readonly [string, string, number])[]): readonly HqName[] =>
+  entries.map(([corps, designation, gpid]) => ({ name: `HQ ${corps} Corps`, designation, gpid }));
 
 /**
- * HQ names from the BTR VASSAL module (US and Heer; SS and Luftwaffe HQs print different art and are left out). An HQ is an
+ * HQs of the BTR VASSAL module (US and Heer; SS and Luftwaffe HQs print different art and are left out). An HQ is an
  * independent unit (3.2f) that no formation contains; BTR's happen to be corps HQs, but nothing else assumes an HQ's level.
- * TODO(hq-values): a generated HQ prints its side's reviewed archetype values (US HQ 3rd Corps, GPID 319; Ge HQ 39th Pz
- * Corps, GPID 1103) whichever name it draws. User-visible impact: an HQ named after one whose real counter prints 8-0
- * throws as far as the archetype's 14-0 / 10-0. Closes when each pooled HQ's faces are transcribed into the counter
- * corpus and the HQ is built from its own GPID.
+ * Each is built from its own GPID, so it prints its own counter's values (US 14-0 / 9-16, 18th Abn 8-0 / 6-16; German
+ * panzer corps 10-0 / 7-14, other corps 8-0 / 5-10).
  */
 const HQ_NAMES: Readonly<Record<OobSide, readonly HqName[]>> = {
-  ALLIED: corpsHqs([['3rd', '3'], ['5th', '5'], ['6th', '6'], ['7th', '7'], ['8th', '8'], ['12th', '12'], ['13th', '13'],
-    ['15th', '15'], ['16th', '16'], ['18th Abn', '18 Abn'], ['19th', '19'], ['20th', '20'], ['21st', '21'], ['22nd', '22']]),
-  AXIS: corpsHqs([['39th Pz', '39 Pz'], ['47th Pz', '47 Pz'], ['58th Pz', '58 Pz'], ['12th', '12'], ['13th', '13'], ['30th', '30'],
-    ['53rd', '53'], ['63rd', '63'], ['64th', '64'], ['66th', '66'], ['67th', '67'], ['74th', '74'], ['80th', '80'], ['81st', '81'],
-    ['82nd', '82'], ['85th', '85'], ['86th', '86'], ['88th', '88'], ['89th', '89'], ['90th', '90'], ['Ems', 'Ems'], ['Hohne', 'Hohne']]),
+  ALLIED: corpsHqs([['3rd', '3', 319], ['5th', '5', 320], ['6th', '6', 1724], ['7th', '7', 322], ['8th', '8', 323], ['12th', '12', 324],
+    ['13th', '13', 325], ['15th', '15', 326], ['16th', '16', 327], ['18th Abn', '18 Abn', 328], ['19th', '19', 335], ['20th', '20', 336],
+    ['21st', '21', 337], ['22nd', '22', 338]]),
+  AXIS: corpsHqs([['39th Pz', '39 Pz', 1103], ['47th Pz', '47 Pz', 1104], ['58th Pz', '58 Pz', 1105], ['12th', '12', 1106],
+    ['13th', '13', 1107], ['30th', '30', 1108], ['53rd', '53', 1109], ['63rd', '63', 1110], ['64th', '64', 1111], ['66th', '66', 1112],
+    ['67th', '67', 1113], ['74th', '74', 1114], ['80th', '80', 1115], ['81st', '81', 1116], ['82nd', '82', 1117], ['85th', '85', 1118],
+    ['86th', '86', 1119], ['88th', '88', 1120], ['89th', '89', 1121], ['90th', '90', 1122], ['Ems', 'Ems', 1123], ['Hohne', 'Hohne', 1124]]),
 };
 
 /** The side's `ordinal`-th HQ (1-based), drawn from its own naming stream so it never consumes the composition RNG. */

@@ -112,7 +112,7 @@ const stepsFor = (archetype: ReviewedOobArchetype): readonly PieceStepProfile[] 
   });
 };
 
-/** Echelon printed on the unit's counter, from its BTR counter (the HQs transcribed so far print XXX). */
+/** Echelon printed on the archetype's BTR counter; it picks the size word in unit names. */
 const echelonFor = (side: OobSide, role: OobUnitRole, archetype: OobFormationArchetype | undefined): string =>
   COUNTER_CORPUS[findReviewedOobArchetype(side, role, archetype).gpid]?.echelon ?? '';
 
@@ -127,8 +127,10 @@ interface UnitBuildContext {
   readonly formationId: DefinitionId | null;
   readonly name: string;
   readonly localId: string;
-  /** Overrides the archetype's counter, for divisions whose printed regiments differ (US airborne). */
+  /** Overrides the archetype's counter: divisions whose printed regiments differ (US airborne), each HQ's own counter. */
   readonly counterGpid?: number;
+  /** The VASSAL entryName of `counterGpid`, when it is not the archetype's. */
+  readonly rawName?: string;
   /** Overrides the echelon printed on the counter (a paratroop battalion is not a division). */
   readonly echelon?: string;
   /** Overrides the designation printed on the counter (an HQ prints its number, "3" or "39 Pz"). */
@@ -141,7 +143,8 @@ const buildUnit = (context: UnitBuildContext): {
   readonly definition: PieceDefinition;
 } => {
   const archetypeSource = findReviewedOobArchetype(context.side, context.role, context.formationArchetype);
-  const source = context.counterGpid === undefined ? archetypeSource : { ...archetypeSource, gpid: context.counterGpid };
+  const source = context.counterGpid === undefined ? archetypeSource
+    : { ...archetypeSource, gpid: context.counterGpid, rawName: context.rawName ?? archetypeSource.rawName };
   const idBase = `generated-oob:${context.options.seed}:${context.side.toLowerCase()}:${context.localId}`;
   const id = definitionId(idBase);
   const sourceReference = {
@@ -155,7 +158,8 @@ const buildUnit = (context: UnitBuildContext): {
       context.formationId ? `F${context.formationId.split(':').at(-1)}` : '',
       context.side === 'ALLIED' ? 'US' : 'GERMAN',
       context.formationId ? ['#75c3af', '#e2638b', '#6c9cd2', '#e4c063', '#ae87c7', '#c59064'][Number(context.formationId.split(':').at(-1)) - 1]! : null,
-      context.echelon ?? echelonFor(context.side, context.role, context.formationArchetype)),
+      // The counter's own echelon (Gruppe Hohne's HQ prints "Grp", not XXX).
+      context.echelon ?? COUNTER_CORPUS[source.gpid]?.echelon ?? ''),
     id,
     family: source.family,
     name: context.name,
@@ -334,11 +338,13 @@ const buildSide = (
   const independentUnits = independentRequests.map((role) => {
     const ordinal = (roleCounts.get(role) ?? 0) + 1;
     roleCounts.set(role, ordinal);
+    const name = unitName(side, role, ordinal, options.seed, undefined, echelonFor(side, role, undefined));
+    // An HQ is built from its own counter, so it prints its own number, echelon and range-MA faces.
+    const hq = role === 'HQ' ? hqName(options.seed, side, ordinal) : null;
     const built = buildUnit({
-      options, side, role, formationId: null,
-      name: unitName(side, role, ordinal, options.seed, undefined, echelonFor(side, role, undefined)),
+      options, side, role, formationId: null, name,
       localId: `independent-${role.toLowerCase()}-${ordinal}`,
-      ...(role === 'HQ' ? { designation: hqName(options.seed, side, ordinal).designation } : {}),
+      ...(hq ? { designation: hq.designation, counterGpid: hq.gpid, rawName: name } : {}),
     });
     definitions.push(built.definition);
     return built.unit;

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { FORMATION_NAME_PROFILES } from '../../src/generation/oob/name-catalog.js';
-import { ALLIED_AIRBORNE_DIVISION_GPIDS, corpusFaces } from '../../src/generation/oob/counter-corpus.js';
-import { formationNameCapacity, shortFormationName } from '../../src/generation/oob/names.js';
+import { ALLIED_AIRBORNE_DIVISION_GPIDS, corpusCounter, corpusFaces } from '../../src/generation/oob/counter-corpus.js';
+import { formationNameCapacity, hqName, shortFormationName } from '../../src/generation/oob/names.js';
 import {
   BTR_BUILD_FILE_SHA256,
   generateRandomOob,
@@ -109,6 +109,42 @@ describe('M7 deterministic random OOB pipeline', () => {
           expect(printed).not.toBe('');
           expect(definition.name).toContain(printed.split(' ')[0]!);
           expect(side.formations.map(({ name }) => name)).not.toContain(printed);
+        }
+      }
+    }
+  });
+
+  // Transcribed from each HQ PieceSlot's front ("range-0", Combat Mode) and back ("range-MA", Move Mode) images.
+  it('builds each HQ from its own BTR counter, with that counter\'s printed range-MA faces and echelon', () => {
+    const faces = (gpid: number) => Object.fromEntries(corpusFaces(gpid).map(({ id, steps }) =>
+      [String(id), `${steps[0]!.range}-${steps[0]!.movementPointTicks! / 4}`]));
+    const expected: Record<number, readonly [string, string, string]> = {
+      319: ['14-0', '9-16', 'XXX'], 1724: ['14-0', '9-16', 'XXX'], 338: ['14-0', '9-16', 'XXX'], 328: ['8-0', '6-16', 'XXX'],
+      1103: ['10-0', '7-14', 'XXX'], 1105: ['10-0', '7-14', 'XXX'], 1106: ['8-0', '5-10', 'XXX'], 1123: ['8-0', '5-10', 'XXX'],
+      1124: ['8-0', '5-10', 'Grp'],
+    };
+    for (const [gpid, [combat, move, echelon]] of Object.entries(expected)) {
+      expect(faces(Number(gpid)), `GPID ${gpid}`).toEqual({ combat, move });
+      expect(corpusCounter(Number(gpid), '', '', 'US', null).echelon, `GPID ${gpid}`).toBe(echelon);
+    }
+    // Every HQ either side can draw has its own transcribed counter, and every generated HQ is built from it.
+    const pool = (side: 'ALLIED' | 'AXIS') => new Map(Array.from({ length: 22 }, (_, index) => hqName(1944, side, index + 1)).map((hq) => [hq.gpid, hq]));
+    expect(pool('ALLIED').size).toBe(14);
+    expect(pool('AXIS').size).toBe(22);
+    for (const hq of [...pool('ALLIED').values(), ...pool('AXIS').values()]) expect(faces(hq.gpid).combat).toMatch(/^\d+-0$/u);
+    for (const seed of [3, 1944, 77_001]) {
+      const generated = generateRandomOob({ ...options, seed, divisionsPerSide: 12, armoredDivisionsPerSide: 4 });
+      expect(generated.ok).toBe(true);
+      if (!generated.ok) return;
+      const definitions = new Map(generated.value.pieceDefinitionCatalog.definitions.map((definition) => [definition.id, definition]));
+      for (const side of generated.value.sides) {
+        for (const unit of side.independentUnits.filter(({ role }) => role === 'HQ')) {
+          const definition = definitions.get(unit.definitionId)!;
+          const hq = [...pool(side.side).values()].find(({ name }) => definition.name.endsWith(name))!;
+          expect(definition.faces).toEqual(corpusFaces(hq.gpid));
+          expect(definition.counter!.echelon).toBe(corpusCounter(hq.gpid, '', '', 'US', null).echelon);
+          expect(definition.source.records[0]!.source.locator).toBe(`VASSAL.build.widget.PieceSlot[gpid=${hq.gpid}]`);
+          expect(definition.source.records[0]!.rawValue).toBe(definition.name);
         }
       }
     }
