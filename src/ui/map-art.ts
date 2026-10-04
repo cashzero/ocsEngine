@@ -1,3 +1,4 @@
+import type { HexsideId } from '../domain/map/index.js';
 import type { GeneratedMapPreviewCell, GeneratedMapPreviewEdge } from './map-generator-presenter.js';
 
 /**
@@ -208,7 +209,12 @@ export const riverPathData = (edge: GeneratedMapPreviewEdge, hexSize: number): s
     + `Q${fixed(middleX + dx / length * bow)} ${fixed(middleY + dy / length * bow)} ${fixed(end.x)} ${fixed(end.y)}`;
 };
 
-export interface EdgeStroke { readonly kind: GeneratedMapPreviewEdge['kind']; readonly d: string }
+export interface EdgeStroke {
+  readonly kind: GeneratedMapPreviewEdge['kind'];
+  readonly d: string;
+  /** A road's last stretch, from its border hex out to the map edge (see withMapExits). */
+  readonly exit?: true;
+}
 
 /** One path per watercourse hexside. */
 export const riverStrokes = (edges: readonly GeneratedMapPreviewEdge[], hexSize: number): EdgeStroke[] =>
@@ -311,6 +317,82 @@ const cubicAt = ([p0, p1, p2, p3]: Cubic, t: number): { readonly point: Point; r
   return { point, direction };
 };
 
+/** The part of `cubic` before it crosses the line through `first` and `second`, and the parameter where it crosses. */
+const cutCubic = (cubic: Cubic, [first, second]: readonly [Point, Point]): { readonly cubic: Cubic; readonly t: number } => {
+  const side = (t: number): boolean => {
+    const { point } = cubicAt(cubic, t);
+    return (second.x - first.x) * (point.y - first.y) - (second.y - first.y) * (point.x - first.x) >= 0;
+  };
+  let low = 0;
+  let high = 1;
+  if (side(low) === side(high)) return { cubic, t: 1 };
+  for (let round = 0; round < 24; round += 1) {
+    const middle = (low + high) / 2;
+    if (side(middle) === side(0)) low = middle; else high = middle;
+  }
+  const t = (low + high) / 2;
+  const lerp = (from: Point, to: Point): Point => ({ x: from.x + (to.x - from.x) * t, y: from.y + (to.y - from.y) * t });
+  const [p0, p1, p2, p3] = cubic;
+  const p01 = lerp(p0, p1);
+  const p12 = lerp(p1, p2);
+  const p012 = lerp(p01, p12);
+  const end = lerp(p012, lerp(p12, lerp(p2, p3)));
+  return { cubic: [p0, p01, p012, end], t };
+};
+
+const SQRT3 = Math.sqrt(3);
+/** Headings from a hex centre to its six neighbours; the hexside toward neighbour `i` runs from corner `i` to corner `i + 1`. */
+const NEIGHBOUR_HEADINGS: readonly Point[] = Array.from({ length: 6 }, (_, index) => ({ x: Math.cos(index * Math.PI / 3), y: Math.sin(index * Math.PI / 3) }));
+
+/**
+ * A generated map is a window on a wider landscape: main roads leave across every land border and every entry
+ * hex is a map-edge railroad (generation/map/roads.ts, rails.ts). So a line that ends in a border hex, or
+ * reaches an entry hex, runs on off the map instead of stopping at the hex centre. Each such hex gains a
+ * hexside to the off-map neighbour facing most squarely away from its links there, so the line carries on the
+ * way it was going; `borders` holds the map-edge hexside (its corners as the terrain fill draws them) where
+ * that hexside's drawing is cut off.
+ */
+const withMapExits = <Edge extends GeneratedMapPreviewEdge>(
+  lines: readonly Edge[], cells: readonly GeneratedMapPreviewCell[], hexSize: number,
+): { readonly lines: Edge[]; readonly borders: ReadonlyMap<Edge, readonly [Point, Point]> } => {
+  const byCentre = new Map(cells.map((cell) => [pointKey(cell.x, cell.y), cell]));
+  const origin = cells[0] ?? { x: 0, y: 0 };
+  // Hex centres on an integer grid of half-columns and rows, so a neighbour's position is looked up exactly.
+  const gridKey = (x: number, y: number): string =>
+    `${Math.round((x - origin.x) / (hexSize * SQRT3 / 2))},${Math.round((y - origin.y) / (hexSize * 1.5))}`;
+  const onMap = new Set(cells.map(({ x, y }) => gridKey(x, y)));
+  const links = new Map<string, { edge: Edge; toward: Point }[]>();
+  lines.forEach((edge) => {
+    const add = (from: Point, to: Point): void => {
+      const key = pointKey(from.x, from.y);
+      links.set(key, [...(links.get(key) ?? []), { edge, toward: heading(from, to) }]);
+    };
+    add({ x: edge.x1, y: edge.y1 }, { x: edge.x2, y: edge.y2 });
+    add({ x: edge.x2, y: edge.y2 }, { x: edge.x1, y: edge.y1 });
+  });
+  const exits: Edge[] = [];
+  const borders = new Map<Edge, readonly [Point, Point]>();
+  links.forEach((here, key) => {
+    const cell = byCentre.get(key);
+    if (!cell || (here.length > 1 && !cell.strategic)) return;
+    const outward = NEIGHBOUR_HEADINGS
+      .map((direction, index) => ({ direction, index, facing: Math.max(...here.map(({ toward }) => dot(direction, toward))) }))
+      .filter(({ direction }) => !onMap.has(gridKey(cell.x + direction.x * SQRT3 * hexSize, cell.y + direction.y * SQRT3 * hexSize)))
+      .sort((first, second) => first.facing - second.facing || first.index - second.index)[0];
+    if (!outward) return;
+    const { direction, index } = outward;
+    // The exit continues the link running most directly into it, in that link's class.
+    const { edge: from } = here.reduce((best, link) => (dot(direction, link.toward) < dot(direction, best.toward) ? link : best));
+    const exit: Edge = {
+      ...from, id: `${cell.id}:map-edge` as HexsideId,
+      x1: cell.x, y1: cell.y, x2: cell.x + direction.x * SQRT3 * hexSize, y2: cell.y + direction.y * SQRT3 * hexSize,
+    };
+    exits.push(exit);
+    borders.set(exit, [cornerOf(cell, index, hexSize), cornerOf(cell, (index + 1) % 6, hexSize)]);
+  });
+  return { lines: [...lines, ...exits], borders };
+};
+
 /**
  * Where a road crosses each hex: nudged a little off-centre by an amount keyed on the hex position,
  * except in a settlement, where roads must meet at the centre.
@@ -334,33 +416,37 @@ const roadWaypoints = (cells: readonly GeneratedMapPreviewCell[], hexSize: numbe
 
 const isRoad = ({ kind }: GeneratedMapPreviewEdge): boolean => kind === 'ROAD' || kind === 'PRIMARY_ROAD';
 
-type RoadCubic = { readonly edge: GeneratedMapPreviewEdge; readonly cubic: Cubic };
+/** `cubic` runs waypoint to waypoint; `drawn` is the part on the map, cut at the map edge for a road leaving it. */
+type RoadCubic = { readonly edge: GeneratedMapPreviewEdge; readonly cubic: Cubic; readonly drawn: Cubic; readonly exit: boolean };
 
 /**
  * Roads run between hex centres as smooth curves. Each waypoint is nudged a
  * little off-centre (never in a settlement, where roads must meet), and the
  * tangent at a waypoint follows the straightest continuation so a road flows
- * through junctions instead of kinking at every hex.
+ * through junctions instead of kinking at every hex. A road leaving the map
+ * runs on to the map edge.
  */
 const roadCubics = (
   edges: readonly GeneratedMapPreviewEdge[], cells: readonly GeneratedMapPreviewCell[], hexSize: number,
 ): RoadCubic[] => {
   const waypoint = roadWaypoints(cells, hexSize);
-  const roads = edges.filter(isRoad)
+  const { lines, borders } = withMapExits(edges.filter(isRoad), cells, hexSize);
+  const roads = lines
     // Minor roads first so primary roads paint over junctions.
     .sort((first, second) => Number(first.kind === 'PRIMARY_ROAD') - Number(second.kind === 'PRIMARY_ROAD'));
   // One road network across both classes, so a minor road merges into a primary one.
   const links = networkLinks(roads.map(({ kind, x1, y1, x2, y2 }) => ({ from: waypoint(x1, y1), to: waypoint(x2, y2), major: kind === 'PRIMARY_ROAD' })));
-  return roads.map((edge) => ({
-    edge,
-    cubic: networkCubic(links, waypoint(edge.x1, edge.y1), waypoint(edge.x2, edge.y2), (alignment) => 0.18 + 0.16 * Math.max(0, alignment)),
-  }));
+  return roads.map((edge) => {
+    const cubic = networkCubic(links, waypoint(edge.x1, edge.y1), waypoint(edge.x2, edge.y2), (alignment) => 0.18 + 0.16 * Math.max(0, alignment));
+    const border = borders.get(edge);
+    return { edge, cubic, drawn: border ? cutCubic(cubic, border).cubic : cubic, exit: border !== undefined };
+  });
 };
 
 /** One curved path per road hexside; a dark casing (see roadsHtml) keeps it legible over every terrain. */
 export const roadStrokes = (
   edges: readonly GeneratedMapPreviewEdge[], cells: readonly GeneratedMapPreviewCell[], hexSize: number,
-): EdgeStroke[] => roadCubics(edges, cells, hexSize).map(({ edge, cubic }) => ({ kind: edge.kind, d: cubicPath(cubic) }));
+): EdgeStroke[] => roadCubics(edges, cells, hexSize).map(({ edge, drawn, exit }) => ({ kind: edge.kind, d: cubicPath(drawn), ...(exit ? { exit } : {}) }));
 
 /** Casings first, then surfaces, minor roads under primary ones. */
 export const roadsHtml = (
@@ -378,6 +464,8 @@ export interface RailStroke {
   readonly line: string;
   /** Cross-ties across the track: one per tie on single track, paired on multi-track. */
   readonly ties: string;
+  /** A railway's last stretch, from its border hex out to the map edge (see withMapExits). */
+  readonly exit?: true;
 }
 
 /**
@@ -510,31 +598,36 @@ const railWaypoints = (
  * double-tied for multi-track. The track runs beside the roads (see railWaypoints) and rounds its
  * bends only close to each waypoint, about half as wide as a road does, so it reads as a stiffer,
  * engineered line. Ties are spaced evenly along each hexside and stop short of the waypoints, so
- * junctions stay clean.
+ * junctions stay clean. A railway leaving the map runs on to the map edge.
  */
 export const railStrokes = (
   edges: readonly GeneratedMapPreviewEdge[], cells: readonly GeneratedMapPreviewCell[], hexSize: number,
 ): RailStroke[] => {
-  const rails = edges.filter((edge): edge is GeneratedMapPreviewEdge & { kind: RailStroke['kind'] } => edge.kind === 'RAIL' || edge.kind === 'MULTI_RAIL')
+  const { lines, borders } = withMapExits(
+    edges.filter((edge): edge is GeneratedMapPreviewEdge & { kind: RailStroke['kind'] } => edge.kind === 'RAIL' || edge.kind === 'MULTI_RAIL'), cells, hexSize);
+  const rails = lines
     // Single track first, so the trunk paints over junctions.
     .sort((first, second) => Number(first.kind === 'MULTI_RAIL') - Number(second.kind === 'MULTI_RAIL'));
   const waypoint = railWaypoints(rails, roadCubics(edges, cells, hexSize), hexSize);
   const links = networkLinks(rails.map(({ kind, x1, y1, x2, y2 }) => ({ from: waypoint(x1, y1), to: waypoint(x2, y2), major: kind === 'MULTI_RAIL' })));
   return rails.map((edge) => {
-    const cubic = networkCubic(links, waypoint(edge.x1, edge.y1), waypoint(edge.x2, edge.y2), (alignment) => 0.08 + 0.08 * Math.max(0, alignment));
+    const full = networkCubic(links, waypoint(edge.x1, edge.y1), waypoint(edge.x2, edge.y2), (alignment) => 0.08 + 0.08 * Math.max(0, alignment));
+    const border = borders.get(edge);
+    const { cubic, t: cut } = border ? cutCubic(full, border) : { cubic: full, t: 1 };
     const multi = edge.kind === 'MULTI_RAIL';
     const half = hexSize * (multi ? 0.15 : 0.12);
     const offsets = multi ? [-hexSize * 0.035, hexSize * 0.035] : [0];
     const ties: string[] = [];
-    for (const t of [0.22, 0.5, 0.78]) {
-      const { point, direction: { x: ux, y: uy } } = cubicAt(cubic, t);
+    // Ties keep their spacing on a stretch cut at the map edge, with none on the edge itself.
+    for (const t of [0.22, 0.5, 0.78].filter((at) => at < cut - 0.05)) {
+      const { point, direction: { x: ux, y: uy } } = cubicAt(full, t);
       for (const offset of offsets) {
         const cx = point.x + ux * offset;
         const cy = point.y + uy * offset;
         ties.push(`M${fixed(cx - uy * half)} ${fixed(cy + ux * half)}L${fixed(cx + uy * half)} ${fixed(cy - ux * half)}`);
       }
     }
-    return { kind: edge.kind, line: cubicPath(cubic), ties: ties.join('') };
+    return { kind: edge.kind, line: cubicPath(cubic), ties: ties.join(''), ...(border ? { exit: true as const } : {}) };
   });
 };
 
