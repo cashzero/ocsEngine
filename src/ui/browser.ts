@@ -74,7 +74,6 @@ let preparingPreview = false;
 let newGameError = '';
 let newGamePreview: GeneratedScenarioPackage | null = null;
 let newGameErrors: readonly { readonly stage: string; readonly code: string; readonly message: string; readonly path: readonly (string | number)[] }[] = [];
-let previewTimer: ReturnType<typeof setTimeout> | null = null;
 /** The field the browser rejected last (its "invalid" event), shown beside the field. */
 let fieldError: { readonly id: string; readonly message: string } | null = null;
 /** Fields the player has edited since the last failed build: their error mark is withdrawn. */
@@ -497,7 +496,7 @@ const closeNewGame = (): void => {
   render(controller.getSnapshot());
 };
 
-/** Settings change as the player types; the preview is rebuilt shortly after they stop. */
+/** Settings change as the player types; the preview is only marked stale until they press Generate. */
 const onNewGameInput = (event: Event): void => {
   const input = event.target as HTMLInputElement | HTMLSelectElement;
   const value = Number(input.value);
@@ -523,7 +522,6 @@ const onNewGameInput = (event: Event): void => {
   if (id === 'new-game-start-month') newGameSettings = { ...newGameSettings, startMonth: value };
   for (const key of ['map', 'oob', 'deployment', 'rules'] as const) if (id === `new-game-${key}-seed`) newGameSettings = { ...newGameSettings, seeds: { ...newGameSettings.seeds, [key]: value } };
   render(controller.getSnapshot());
-  schedulePreview();
 };
 
 /** checkValidity fires "invalid" per bad field: open the tab that holds it and say what is wrong beside it. */
@@ -566,7 +564,6 @@ const randomizeSeeds = (): void => {
   previewStale = true;
   seedVersion += 1;
   render(controller.getSnapshot());
-  schedulePreview(0);
 };
 
 const newGameDialog = () => {
@@ -589,7 +586,10 @@ const newGameDialog = () => {
     const mark = marks(id);
     return html`<label>${label}<select id=${id} aria-invalid=${mark.invalid} aria-describedby=${mark.described}>${options.map(([option, name]) => html`<option value=${option} ?selected=${option === value}>${name}</option>`)}</select>${error(id)}</label>`;
   };
-  const status = preparingPreview ? 'Generating map, forces and deployment…' : newGameErrors.length > 0 ? 'Cannot build this operation' : previewStale ? 'Updating preview…' : newGamePreview ? 'Preview ready' : 'Configure operation';
+  const status = preparingPreview ? 'Generating map, forces and deployment…' : newGameErrors.length > 0 ? 'Cannot build this operation' : newGamePreview && previewStale ? 'Preview invalidated' : newGamePreview ? 'Preview ready' : 'Configure operation';
+  const hint = newGameErrors.length > 0 ? 'Adjust the highlighted settings, then generate again.'
+    : newGamePreview && previewStale ? 'Settings changed since this preview. Press Generate operation to apply them.'
+    : newGamePreview ? 'Start plays exactly this package.' : 'Set the map and force options, then press Generate operation.';
   let previewHtml = '';
   if (newGamePreview) {
     previewHtml = previewMarkup.get(newGamePreview) ?? operationPreviewHtml(newGamePreview);
@@ -631,13 +631,13 @@ const newGameDialog = () => {
       </fieldset>`)}
     </form><section class="operation-preview" aria-label="Combined generated operation preview">${newGamePreview
       ? html`<div class="operation-preview-content${previewStale ? ' is-stale' : ''}">${unsafeHTML(previewHtml)}</div>`
-      : html`<div class="operation-preview-empty"><strong>No operation built yet</strong><p>Choose map and force options, then build one combined preview. Starting is unavailable until map, OOB and deployment all validate together.</p></div>`}</section></div>
+      : html`<div class="operation-preview-empty"><strong>No operation generated yet</strong><p>Choose map and force options, then press Generate operation to build one combined preview. Starting is unavailable until map, OOB and deployment all validate together.</p></div>`}</section></div>
     <footer class="new-game-footer">
       <div class="new-game-submit">
-        <div><strong>${status}</strong><p>${newGameErrors.length > 0 ? 'Adjust the highlighted settings.' : 'The preview updates as you change settings; Start plays exactly this package.'}</p></div>
-        <button type="submit" form="new-game-form" ?disabled=${newGameBusy}>${preparingPreview ? 'Building preview…' : 'Rebuild operation preview'}</button>
+        <div><strong>${status}</strong><p>${hint}</p></div>
+        <button type="submit" form="new-game-form" ?disabled=${newGameBusy}>${preparingPreview ? 'Generating…' : 'Generate operation'}</button>
       </div>
-      ${newGamePreview ? html`<button id="start-previewed-game" class="primary wide" ?disabled=${newGameBusy || previewStale} @click=${startPreviewedGame}>${newGameBusy ? 'Starting operation…' : previewStale ? 'Updating preview…' : 'Start this operation'}</button>` : nothing}
+      ${newGamePreview ? html`<button id="start-previewed-game" class="primary wide" ?disabled=${newGameBusy || previewStale} @click=${startPreviewedGame}>${newGameBusy ? 'Starting operation…' : previewStale ? 'Generate to apply changes' : 'Start this operation'}</button>` : nothing}
     </footer>
   </section></div>`;
 };
@@ -946,24 +946,15 @@ const openNewGame = (): void => {
   editedFields = new Set();
   history.replaceState(null, '', '#new-game');
   render(controller.getSnapshot());
-  schedulePreview(0);
 };
 
-/** Rebuild the combined preview shortly after the settings stop changing (it takes ~0.1 s). */
-const schedulePreview = (delay = 350): void => {
-  if (previewTimer !== null) clearTimeout(previewTimer);
-  previewTimer = setTimeout(() => { previewTimer = null; void buildPreview(); }, delay);
-};
-
+/** Generate the combined package from the current settings; runs only when the player presses Generate. */
 const buildPreview = async (): Promise<void> => {
-  if (!newGameOpen) return;
-  if (newGameBusy) { schedulePreview(); return; }
+  if (!newGameOpen || newGameBusy) return;
   const form = root.querySelector<HTMLFormElement>('#new-game-form');
-  // checkValidity fires the per-field "invalid" handler without stealing focus from the field being typed in.
-  if (form && !form.checkValidity()) {
-    newGamePreview = null;
-    return;
-  }
+  // checkValidity fires the per-field "invalid" handler, which opens the tab holding the bad field and explains it.
+  // An earlier preview stays visible but stale, so Start stays disabled until a valid Generate.
+  if (form && !form.checkValidity()) return;
   newGameError = '';
   newGameErrors = [];
   editedFields = new Set();
