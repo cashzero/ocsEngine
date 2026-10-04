@@ -1,6 +1,6 @@
 import { stableSort, type HexId, type PieceId, type PlayerId } from '../../core/index.js';
 import { setHexControl } from '../../domain/map/index.js';
-import { upsertPieceState } from '../../domain/piece/index.js';
+import { upsertPieceState, type PieceState } from '../../domain/piece/index.js';
 import { parseRuleDecisionId } from '../kernel/ids.js';
 import type {
   GameAction,
@@ -205,11 +205,20 @@ const AWAITING_ENTRY = ['OFF_MAP_BOX', 'HOLDING_AREA', 'POOL', 'TURN_TRACK'];
  * Units and SP of `playerId` due to enter this turn (13.6): Turn-track Pieces on their turn, units
  * returning from Breakout on their return turn (12.8e), and new SP (2.3).
  */
-export const arrivingReinforcements = (state: GameState, playerId: PlayerId) =>
-  state.pieceState.pieces.filter((piece) => piece.ownerId === playerId && AWAITING_ENTRY.includes(piece.location.kind)
+const arrivingCache = new WeakMap<GameState, Map<string, readonly PieceState[]>>();
+
+export const arrivingReinforcements = (state: GameState, playerId: PlayerId): readonly PieceState[] => {
+  let cache = arrivingCache.get(state);
+  if (!cache) { cache = new Map(); arrivingCache.set(state, cache); }
+  const cached = cache.get(String(playerId));
+  if (cached) return cached;
+  const arriving = Object.freeze(state.pieceState.pieces.filter((piece) => piece.ownerId === playerId && AWAITING_ENTRY.includes(piece.location.kind)
     && (piece.location.kind !== 'TURN_TRACK' || piece.location.position <= state.sequence.gameTurn)
     && (returnTurnOf(piece) ?? 0) <= state.sequence.gameTurn
-    && (isCombatUnit(state, piece) || ['RESOURCE', 'GROUND', 'AIR', 'REPLACEMENT'].includes(definitionOf(state, piece)?.family ?? '')));
+    && (isCombatUnit(state, piece) || ['RESOURCE', 'GROUND', 'AIR', 'REPLACEMENT'].includes(definitionOf(state, piece)?.family ?? ''))));
+  cache.set(String(playerId), arriving);
+  return arriving;
+};
 
 const blockedByEnemy = (state: GameState, playerId: PlayerId, hexId: HexId): boolean =>
   state.pieceState.pieces.some((other) => other.ownerId !== playerId && other.location.kind === 'ON_MAP' && other.location.hexId === hexId);
@@ -232,12 +241,43 @@ const mapEdgeHexes = (state: GameState): readonly HexId[] => {
  * units, the nearest unblocked map-edge Hexes to it may be used instead. Hexes the unit could never
  * enter (prohibited terrain) are excluded.
  */
+/**
+ * Found once per state, arrival and player: candidate generation validates every (arrival, Hex) pair, and
+ * each validation asked for the whole list again (64x48: a placement spent ~100 ms here).
+ */
+const reinforcementHexCache = new WeakMap<GameState, Map<string, readonly HexId[]>>();
+
 export const reinforcementHexes = (state: GameState, playerId: PlayerId, pieceId: PieceId | null = null): readonly HexId[] => {
+  let cache = reinforcementHexCache.get(state);
+  if (!cache) { cache = new Map(); reinforcementHexCache.set(state, cache); }
+  const key = `${playerId}|${pieceId ?? ''}`;
+  const cached = cache.get(key);
+  if (cached) return cached;
+  const hexes = Object.freeze(computeReinforcementHexes(state, playerId, pieceId));
+  cache.set(key, hexes);
+  return hexes;
+};
+
+const computeReinforcementHexes = (state: GameState, playerId: PlayerId, pieceId: PieceId | null): HexId[] => {
   const piece = pieceId ? pieceById(state, pieceId) : undefined;
   // 13.5: Repls (Pax and Eq) arrive at an entry hex, or beside a friendly HQ (within the 2 hexes they must stand to be spent, 13.5a), as this game's replacement rule.
   if (piece && definitionOf(state, piece)?.family === 'REPLACEMENT') {
-    const hqHexes = state.pieceState.pieces.filter((candidate) => candidate.ownerId === playerId && candidate.location.kind === 'ON_MAP' && isHq(state, candidate)).map((hq) => hexOf(hq)!);
-    const nearHq = state.scenario.mapDefinition.hexes.map(({ id }) => id).filter((hexId) => hqHexes.some((hq) => hexDistanceBetween(hq, hexId) <= 2) && !blockedByEnemy(state, playerId, hexId));
+    // Hexes within 2 of a friendly HQ, found by stepping out from each HQ rather than measuring from every map Hex.
+    const near = new Set<HexId>();
+    for (const hq of state.pieceState.pieces) {
+      if (hq.ownerId !== playerId || hq.location.kind !== 'ON_MAP' || !isHq(state, hq)) continue;
+      // Each HQ steps out on its own: a Hex another HQ already reached must still be stepped through.
+      const reached = new Set<HexId>([hq.location.hexId]);
+      let ring: readonly HexId[] = [hq.location.hexId];
+      for (let step = 0; step < 2; step += 1) {
+        ring = ring.flatMap((hexId) => adjacentHexIds(hexId).filter((adjacent) => !reached.has(adjacent)));
+        for (const hexId of ring) reached.add(hexId);
+      }
+      for (const hexId of reached) near.add(hexId);
+    }
+    const enemyHexes = new Set(state.pieceState.pieces.flatMap((other) =>
+      other.ownerId !== playerId && other.location.kind === 'ON_MAP' ? [other.location.hexId] : []));
+    const nearHq = state.scenario.mapDefinition.hexes.map(({ id }) => id).filter((hexId) => near.has(hexId) && !enemyHexes.has(hexId));
     return [...new Set([...reinforcementHexes(state, playerId, null), ...nearHq])].sort();
   }
   // 13.6: reinforcing aircraft arrive Active on any friendly Air Base, within its stacking limit (13.6a, 14.2a).

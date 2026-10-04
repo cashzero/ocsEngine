@@ -113,6 +113,8 @@ await measure('map: drag pan 300px', pan(1));
 await measure('map: zoom in', () => page.click('#zoom-in'));
 await measure('map: zoom out', () => page.click('#zoom-out'));
 if (traceOn) await measure('ui: toggle Trace Supply on', () => page.click('#toggle-trace-coverage'));
+// PERF_SHOT=1 keeps a picture of the overlay as drawn, so a faster trace can be checked by eye as well.
+if (traceOn && process.env.PERF_SHOT) await page.screenshot({ path: `${out}/trace-overlay-${width}x${height}.jpg`, type: 'jpeg', quality: 80 });
 // PERF_TRACE=once: measure turning the overlay on and off, then play the turn without it (large maps).
 if (traceOn) await measure('map: drag pan 300px, Trace Supply on', pan(-1));
 if (traceMode === 'once') await measure('ui: toggle Trace Supply off', () => page.click('#toggle-trace-coverage'));
