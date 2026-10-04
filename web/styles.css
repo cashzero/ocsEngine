@@ -303,6 +303,10 @@ small, .supporting { font-size: 13px; color: var(--muted); }
 .strategic-zone.side-second, .preview-entry.side-second { stroke: var(--player-two); }
 .objective-marker circle, .preview-objective circle { fill: #2a2112; stroke: #ffd766; stroke-width: 1.8; }
 .objective-marker polygon, .preview-objective polygon { fill: #ffd766; }
+.preview-supply-source { pointer-events: none; }
+.preview-supply-source circle { fill: var(--player-one); stroke: #1a1408; stroke-width: 1.8; }
+.preview-supply-source.side-second circle { fill: var(--player-two); }
+.preview-supply-source text { fill: #1a1408; font-family: ui-sans-serif, system-ui, sans-serif; font-weight: 900; }
 .unit-counter { display: block; width: 112px; height: 112px; flex-shrink: 0; overflow: visible; }
 .counter, .unit-counter { color: #151810; }
 .counter text, .unit-counter text { pointer-events: none; fill: #151810; font-family: 'Arial Narrow', Arial, sans-serif; font-size: 14px; font-weight: 700; }

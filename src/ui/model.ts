@@ -272,6 +272,11 @@ export interface UiSnapshot {
   readonly moveRange: ReadonlyMap<string, MoveRangeEntry>;
   /** Hexes where the overlay shows trace supply reaching (12.6); empty while the overlay is off. */
   readonly traceCoverage: ReadonlySet<string>;
+  /**
+   * The part of `traceCoverage` that traces straight to a Supply Source rather than through another HQ's throw;
+   * for a selected HQ, where it can stand and still throw (12.3b).
+   */
+  readonly traceDirect: ReadonlySet<string>;
   /** The selected unit the overlay is drawn for; null when it shows where any friendly unit would trace. */
   readonly traceCoverageFor: string | null;
   readonly showTraceCoverage: boolean;

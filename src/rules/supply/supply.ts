@@ -312,12 +312,20 @@ export const validateFormationTraceChoice = (
  * (its divisional HQ limit, 13.1d, and its formation's common route, 12.6f, apply), or where any friendly
  * unit would when `piece` is null. Draw is always counted in Truck MP, so a unit's own MA does not matter.
  * Other HQs throw from where they stand; a selected HQ only draws for itself, so it never shows its own throw.
+ * `directHexIds` are the covered hexes that trace straight to a Supply Source (12.3a), not through another HQ's
+ * throw. For a selected HQ they are where it can stand and still throw (12.3b): a throw it merely receives keeps
+ * the HQ itself in supply but gives it nothing to pass on.
  */
-export const queryTraceCoverage = (state: GameState, actorId: PlayerId, pieceId: PieceId | null): RuleQueryResult<readonly HexId[]> => {
+export interface TraceCoverage {
+  readonly hexIds: readonly string[];
+  readonly directHexIds: readonly string[];
+}
+
+export const queryTraceCoverage = (state: GameState, actorId: PlayerId, pieceId: PieceId | null): RuleQueryResult<TraceCoverage> => {
   const piece = pieceId === null ? null : pieceById(state, pieceId);
   if (pieceId !== null && (!piece || piece.ownerId !== actorId)) {
     return {
-      allowed: false, value: [],
+      allowed: false, value: { hexIds: [], directHexIds: [] },
       reasons: [{ code: 'SUPPLY_CONSUMER_UNAVAILABLE', allowed: false, message: 'Choose one of your own units.', rule: '12.6' }],
       facts: [], dependencies: [],
     };
@@ -325,14 +333,21 @@ export const queryTraceCoverage = (state: GameState, actorId: PlayerId, pieceId:
   const formationId = piece ? formationOf(state, piece) : null;
   // A formation with no member in trace has no common route yet: whichever route this unit finds would become it.
   const common = piece && isMultiUnitFormation(state, formationId) ? formationRoute(state, actorId, formationId!) : null;
-  const covered = state.scenario.mapDefinition.hexes.map(({ id }) => id).filter((hexId) => {
-    if (!piece) return traceSupplyAvailableAt(state, actorId, hexId);
-    const routes = traceRoutesFor(state, piece, hexId);
-    return common === null ? routes.length > 0 : routes.includes(common);
-  });
+  // A selected HQ's own route is its draw from the source, so it counts as direct.
+  const direct = new Set<TraceRouteKey>(['DRAW', ...(piece ? [`HQ:${piece.id}`] : [])]);
+  const hexIds: HexId[] = [];
+  const directHexIds: HexId[] = [];
+  for (const { id: hexId } of state.scenario.mapDefinition.hexes) {
+    const routes = piece ? traceRoutesFor(state, piece, hexId)
+      : [...new Set(friendlySourceHexes(state, actorId).flatMap((source) => routesFrom(state, actorId, source, hexId, null).map(routeKey)))];
+    const usable = common === null ? routes : routes.filter((key) => key === common);
+    if (usable.length === 0) continue;
+    hexIds.push(hexId);
+    if (usable.some((key) => direct.has(key))) directHexIds.push(hexId);
+  }
   return {
     allowed: true,
-    value: covered,
+    value: { hexIds, directHexIds },
     reasons: [{ code: 'TRACE_COVERAGE', allowed: true, message: 'Hexes where trace supply reaches.', rule: '12.6' }],
     facts: [],
     dependencies: [{ aggregate: 'PIECE', revision: state.pieceState.revision, key: `supply:coverage:${pieceId ?? 'any'}` }],
