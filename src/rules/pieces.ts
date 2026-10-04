@@ -138,9 +138,20 @@ export const isMultiUnitFormation = (state: GameState, formationId: DefinitionId
   return (sizes.get(String(formationId)) ?? 0) > 1;
 };
 
-/** 3.2f: units that are not part of a multi-unit formation. */
+/**
+ * 3.2d: a multi-step ground unit (usually an infantry division on one counter, with an RE dot). It stays one after
+ * losing steps, so this counts the printed steps, not the remaining ones.
+ */
+export const isMultiStepDefinition = (definition: PieceDefinition | null | undefined): boolean =>
+  definition?.family === 'GROUND'
+  && definition.faces.some(({ steps }) => steps.some(({ remainingSteps }) => remainingSteps > 1));
+
+export const isMultiStepUnit = (state: GameState, piece: PieceState): boolean =>
+  isMultiStepDefinition(definitionOf(state, piece));
+
+/** 3.2f: units that are neither part of a multi-unit formation nor a multi-step unit. */
 export const isIndependent = (state: GameState, piece: PieceState): boolean =>
-  !isMultiUnitFormation(state, formationOf(state, piece));
+  !isMultiUnitFormation(state, formationOf(state, piece)) && !isMultiStepUnit(state, piece);
 
 /**
  * 13.1d: a divisional HQ belongs to a multi-unit formation. A series rule for games that print divisional HQs;

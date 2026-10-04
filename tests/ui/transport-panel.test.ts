@@ -201,6 +201,33 @@ describe('the truck\'s supply area (A2)', () => {
     controller.dispose();
   });
 
+  it('lists single-counter divisions apart from the independent units, after the formations (3.2d, 3.2f)', async () => {
+    const { controller, own } = await startMovement();
+    const snapshot = controller.getSnapshot();
+    const host = document.createElement('div');
+    host.innerHTML = unitRosterHtml(snapshot, newDeck());
+    const groups = [...host.querySelectorAll<HTMLElement>('details.roster-group:not(.roster-eliminated)')];
+    const picked = (group: HTMLElement) => [...group.querySelectorAll<HTMLElement>('[data-roster-pick]')].map((button) => button.dataset.rosterPick);
+    const definitionOf = (piece: { readonly definitionId: unknown }) => snapshot.scenario.pieceCatalog.definitions.find(({ id }) => id === piece.definitionId)!;
+    const loose = own().filter((piece) => piece.role === 'COMBAT' && piece.location.kind !== 'ELIMINATED' && definitionOf(piece).ownership.formationDefinitionId === null);
+    const multiStep = loose.filter((piece) => definitionOf(piece).faces.some(({ steps }) => steps.length > 1));
+    const oneStep = loose.filter((piece) => !multiStep.includes(piece));
+    expect(multiStep.length, 'the default game has single-counter divisions').toBeGreaterThan(0);
+    expect(oneStep.length, 'the default game has independent combat units').toBeGreaterThan(0);
+
+    const divisionIndex = groups.findIndex((group) => group.classList.contains('roster-multi-step'));
+    const independentIndex = groups.findIndex((group) => group.classList.contains('roster-independent'));
+    expect(groups[divisionIndex]!.querySelector('summary')!.textContent).toContain('Multi-step divisions');
+    expect(groups[independentIndex]!.querySelector('summary')!.textContent).toContain('Independent units');
+    // HQs, then the formations, then the divisions, then the independents (Air and Trucks follow).
+    expect(groups[0]!.classList.contains('roster-hq')).toBe(true);
+    expect(independentIndex).toBe(divisionIndex + 1);
+    for (const group of groups.slice(1, divisionIndex)) expect(group.className).toBe('roster-group');
+    expect(picked(groups[divisionIndex]!).sort()).toEqual(multiStep.map(({ id }) => String(id)).sort());
+    for (const piece of oneStep) expect(picked(groups[independentIndex]!)).toContain(String(piece.id));
+    controller.dispose();
+  });
+
   it('does not list a merged or used-up dump as an eliminated unit, but still lists an eliminated combat unit', async () => {
     // Found in the whole-turn run: a reinforcement dump merged into the dump already in the Hex left "Supply dump, eliminated" in the roster.
     const { controller, own } = await startMovement();
