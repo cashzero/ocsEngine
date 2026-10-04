@@ -1,0 +1,19 @@
+{
+ "abn": {
+  "1107": "Hex 1107 · clear · 2 MP, 3 left · reachable · no units",
+  "1108": "Hex 1108 · clear · 4 MP, 1 left · reachable · enemy Truck, 1 hidden",
+  "1206": "Hex 1206 · clear · 4.5 MP, 0.5 left · reachable · enemy Truck, 1 hidden",
+  "1207": "Hex 1207 · clear · out of reach · enemy Ge Arty Rgt 304",
+  "1208": "Hex 1208 · rough · out of reach · enemy Ge Pi Bde 304, 1 hidden"
+ },
+ "truckCard": "d rings mark overrun targets. 545 Truck 0502 · Move mode · 5 truck points · load 0/20T 45 MP left · 166 hexes reachableDeselect UnitLogAll units (27) Trucks 5 truck points · carrying 0/20T · 45 MP left No friendly supply dump in this hex to load from.Split the counter Points Split offNo MP cost (13.2c) Form an Extender here (half MA; a tr",
+ "truck": {
+  "1107": "Hex 1107 · clear · 5 MP, 40 left · reachable · no units",
+  "1206": "Hex 1206 · clear · out of reach · enemy Truck, 1 hidden",
+  "1207": "Hex 1207 · clear · out of reach · enemy Ge Arty Rgt 304",
+  "1208": "Hex 1208 · rough · out of reach · enemy Ge Pi Bde 304, 1 hidden",
+  "0606": "Hex 0606 · clear · 4.5 MP, 40.5 left · reachable · Supply dump",
+  "0508": "Hex 0508 · clear · 4.5 MP, 40.5 left · reachable · Supply dump"
+ }
+}
+-- 3011 ms; page errors so far 0

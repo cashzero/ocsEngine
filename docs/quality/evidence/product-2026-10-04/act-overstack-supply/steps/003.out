@@ -1,0 +1,8 @@
+ERROR locator.waitFor: Timeout 8000ms exceeded.
+Call log:
+[2m  - waiting for locator('[data-deck-tab]').filter({ hasText: '/^\\s*Log/u' }).first() to be visible[22m
+
+    at tab (E:\work\ocsEngine\.claude\worktrees\todo-inventory-docs\scripts\air-acceptance\harness.mjs:159:16)
+    at eval (<anonymous>:28:7)
+    at async file:///E:/work/ocsEngine/.claude/worktrees/todo-inventory-docs/scripts/product-acceptance/session.mjs:37:16
+-- 13516 ms; page errors so far 0

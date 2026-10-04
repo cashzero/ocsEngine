@@ -1,0 +1,26 @@
+{
+ "w": {
+  "turn": "Turn 1 / 2",
+  "player": "Allied player turn",
+  "phase": "Combat · Barrage",
+  "seat": "Allied commander",
+  "end": "End Barrage SegmentNext: Combat Segment",
+  "endDisabled": false,
+  "notice": "Movement · Movement Segment finished. Passed without a hand-over (only dump blowing was possible): Axis commander: Reaction · Movement Segment.",
+  "handoff": false,
+  "complete": false,
+  "decision": []
+ },
+ "deckTabs": [
+  "Targets 1",
+  "Unit",
+  "Ledger",
+  "Log"
+ ],
+ "chips": [
+  "Barrage 1404"
+ ],
+ "card": "II1F1 93214 Div Arty I / 7.A 1305 · Move mode Cannot move in this stepDeselect Targets 1UnitLedgerLogAll units (9) This unit has no actions in this step. Movement · Movement Segment finished. Passed without a hand-over (only dump blowing was possible): Axis commander: Reaction · Movement Segment.",
+ "at1404": "Hex 1404 · clear · barrage target · enemy 3.FJ"
+}
+-- 2544 ms; page errors so far 0

@@ -1,0 +1,62 @@
+# doc 03 acceptance session (1920×1080)
+
+- screenshot 01-start.jpg
+- screenshot 02-act05-arrival-selected.jpg
+- screenshot 03-act05-placed.jpg
+- FAIL ACT-05: An off-map reinforcement is placed only on a legal entry Hex — observed: "III": entry hexes offered 0107, 0102 (cursor: "Hex 0107 · clear · entry hex · Chap TF / 7.A, Brown TF / 7.A"); Enter on non-entry 0808 left 2/2 arrivals waiting (notice "Select a unit on the map to see where it can move and what it can attack."); clicking 0107 placed it in 241 ms → "Hex 0107 · clear · Chap TF / 7.A, Brown TF / 7.A, US 652 FA Gp"; Log: "Place every arriving unit: select it, then click a blue entry hex. III 1 9 3 2 14 US 652 FA Gp 0107 · Move mode Cannot move in this step Deselect Arrivals 1 Unit Log All units (9) US 652 FA Gp entered at 0107 US 652 FA Gp placed at 0107."
+- screenshot 04-act03-reserve.jpg
+- PASS ACT-03: Counter/detail mode and history update; illegal modes are absent or explained — observed: 82.Abn offered modes Combat mode, Reserve, Strat mode; before "Move units one at a time: select a unit to see its range. Red rings mark overrun targets. XX1 3 845 82.Abn 0104 · Move m"; Reserve pressed → 469 ms → "Move units one at a time: select a unit to see its range. Red rings mark overrun targets. XX1 3 845 RES82.Abn 0104 · Reserve 1.25 MP left · 5 hexes reachableDon"; card tokens XX1 3 845 → XX1 3 845 RES; map cursor "Hex 0104 · clear · 82.Abn"; Log tail "e. Red rings mark overrun targets. XX 1 3 8 4 5 RES 82.Abn 0104 · Reserve 1.25 MP left · 5 hexes reachable Done Unit Log All units (9) 82.Abn changed to reserve mode You finished Reinforcement Phase Passed automatically, no legal actions: Movement breakout segment. Now: Movement · Movement Segment · Allied commander. Supply dump entered at 0107 US 652 FA Gp entered at 0107 Mode changed to reserve."
+- screenshot 05-act02-move-preview.jpg
+- screenshot 06-act02-moved.jpg
+- PASS ACT-02: Candidate list is bounded/responsive; counter changes Hex; movement usage and history update — observed: select Chap TF 874 ms ("undefined"); fuel whole 7.A 921 ms from "the 12T dump at 0107" → "14 MP left · 186 hexes reachable"; Enter on 1206 → preview in 661 ms: "Move to 1206 Cost 8 MP · 6 MP left after the move. Cancel Confirm"; Confirm 156 ms; 1206 now "Hex 1206 · rough · Chap TF / 7.A", 0107 now "Hex 0107 · clear · out of reach · Brown TF / 7.A, US 652 FA Gp, Supply dump"; card "Move units one at a time: select a unit to see its range. Red rings mark overrun targets. III2F1 7414 Chap TF / 7.A 1206 · Move mode 6 MP left · 118 hexes reach"; Log tail "ved 0107 → 1206 You: pay fuel Fuel paid: 4T. 82.Abn changed to reserve mode You finished Reinforcement Phase Passed automatically, no legal actions: Movement breakout segment. Now: Movement · Movement Segment · Allied commander. Supply dump entered at 0107 US 652 FA Gp entered at 0107 Moved to 1206."
+- screenshot 07-act08-overrun-target.jpg
+- screenshot 08-act08-overrun-draft.jpg
+- screenshot 09-act10-decision-0.jpg
+- screenshot 10-act10-handoff-2.jpg
+- screenshot 11-act10-decision-2.jpg
+- screenshot 12-act10-handoff-4.jpg
+- screenshot 13-act08-overrun-result.jpg
+- screenshot 14-act11-ledger.jpg
+- PASS ACT-08: Movement-segment overrun starts only in a legal state — observed: Brown TF moved to 1310 (6 MP left); the deck offered no target until it stood beside the enemy; 1410 then announced "attack target"; Enter on 1410 opened the plan in 526 ms: "Overrun 1410 Strength 14 : 0 Odds 1:0 (open) If defender withholds supply 1:0 AR DRM 4 − 0 = 4 Your supply cost 1T Before Surprise: you lose a mandatory step on 0% of rolls (a loss or option on 0%); the defender loses, retreats or"; Cancel left "6 MP left" and no plan; Overrun declared in 552 ms; afterwards 1410 "Hex 1410 · clear · Brown TF / 7.A"; Log "defenders become Disorganized; attackers with Action Rating 2+ may enter Exploit mode. You chose a combat supply source You overran 1410 Brown TF / 7.A moved 01"
+- PASS ACT-10: Decision from the owning seat: the map is hidden while the screen passes, a choice is accepted and the transaction/revision advances — observed: Allied commander: "OVERRUN 1410 Combat supply Defender decides Roll Results Overrun on 1410 · 14 : 0 · 1:0 · …" options [Pay 1T from the dump at 0107 (8T available) | Pay 1T from the dump at 0407 (4T available)] → "Pay 1T from the dump at 0107 (8T available)" (385 ms) ‖ Axis commander: "DEFEND 1410 Combat supply AR unit Terrain Roll Results Overrun on 1410 · 14 : 0 · 1:0 · DR…" options [Pay 1T from the dump at 1307 (4T available) | No combat supply: defend at half strength] → "Pay 1T from the dump at 1307 (4T available)" (398 ms) ‖ hand-overs: "HAND OVER Axis commander to act Defend against the overrun at 1410: combat suppl" map hidden true; "HAND OVER Allied commander to act Continue their Player Turn: Movement · Movemen" map hidden true
+- BLOCKED ACT-11: Execute COMMIT_TRANSACTION: reserved resources resolve once and the final result is visible — observed: No control issues COMMIT_TRANSACTION (the rule engine rejects it as never legal: src/rules/kernel/reducer.ts); the overrun transaction closed by itself after the last decision. Equivalent outcome observed: each side paid its 1T once and the Ledger reads " Log All units (9) Supply this turn 5T paid · 2 entries Fuel 4T for Chap TF / 7.A (its whole formation) from the dump at 0107 (7T there now). Combat or barrage supply 1T from the dump at 0107 (7T there now). Your turn, Allied commander."
+- BLOCKED ACT-12: Execute CANCEL_TRANSACTION in a cancellable state: reservation released, no result applied — observed: No control issues CANCEL_TRANSACTION: after Declare, every decision offered only payment choices (2/2 options, none cancels). Only the plan before declaring can be cancelled (#cancel-draft, verified: MP and state unchanged), which is not a transaction.
+- screenshot 15-after-movement-segment.jpg
+- screenshot 16-barrage-segment.jpg
+- screenshot 17-act09-barrage-plan.jpg
+- screenshot 18-act09-decision-0.jpg
+- screenshot 19-act09-barrage-done.jpg
+- PASS ACT-09: Legal firer/target are visible and the barrage transaction starts — observed: Barrage 1404 chip → plan in 458 ms: "Barrage 1404 Barrage strength 9 Shifts Density 0, No spotter -3 Spotter none (3 left) Supply 2T Tick the artillery that fires. Supply is paid from dumps in reach; if several can pay you will choose, or pay automatically. III 1 F1 9 3 2 14 Div Arty I / 7.A 1305"; firers III 1 F1 9 3 2 14 Div Arty I / 7.A 1305 [x]; Declare 345 ms; decisions Allied commander: Pay 2T from the dump at 0107 (7T available); 1404 afterwards "Hex 1404 · clear · enemy 3.FJ"; Log "No barrage targets in range. III 1 F1 9 3 2 14 Div Arty I / 7.A 1305 · Move mode Cannot move in this step Deselect Targets Unit Ledger Log All units (9) COMBAT RESULT Allied commander barrage on 1404 "
+- screenshot 20-combat-segment.jpg
+- screenshot 21-act07-attack-plan.jpg
+- screenshot 22-act07-decision-0.jpg
+- screenshot 23-act07-handoff-2.jpg
+- screenshot 24-act07-decision-2.jpg
+- screenshot 25-act07-handoff-4.jpg
+- screenshot 26-act07-decision-4.jpg
+- screenshot 27-act07-attack-result.jpg
+- PASS ACT-07: Regular combat: legal participants and target are visible and the transaction starts — observed: Attack 1509 chip → plan in 501 ms: "Attack 1509 Strength 14 : 1 Odds 14:1 (open) If defender withholds supply 28:1 AR DRM 4 − 0 = 4 Your supply cost 1T Before Surprise: you lose a mandatory step on 0% of rolls (a loss or option on 0%); the defender loses, retreats or is DG on 100%; exploitation on 100%. Tick the attacking units; the r"; participants III 1 F1 7 4 14 Brown TF / 7.A 1410 [x]; Declare 367 ms; decisions Allied commander: "ATTACK 1509 Combat supply Defender decides Roll Results Attack on 1509" → Pay 1T from the dump at 0107 (5T available) → handoff (map hidden true) → Axis commander: "DEFEND 1509 Combat supply AR unit Terrain Roll Results Attack on 1509 " → Pay 1T from the dump at 1307 (3T available) → handoff (map hidden true) → Allied commander: "ATTACK 1509 Combat supply Defender decides Roll Results Attack on 1509" → Do not advance; result "COMBAT RESULT Allied commander attack on 1509 · 14 : 1 · 14:1 · DRM +4 Ae2/DL2o3DG surprise roll 10 · combat roll 8 Attacker is unaffected; defender loses 2 steps and takes 3 options (each a step loss"; 1509 before "Hex 1509 · clear · attack target · enemy Ge HQ 30th Corps, 1 hidden" after "Hex 1509 · clear · enemy Truck"
+- screenshot 28-act04-released.jpg
+- PASS ACT-04: A reachable reserve unit becomes released and can act in its legal segment — observed: Turn 1 / 2 Allied player turn Exploitation · Movement (no interruptions); 82.Abn before "X1 3 845 RES82.Abn 0104 · Reserve Only Exploit Mode units and released Reserves can move in the Exploitation Phase. (11.0a) · The unit has no Movement Allowance in this mode and phase. (6.1b)Deselect TargetsUnitLedgerLogAll units (9) ModeRelease reserve Combat"; Release reserve offered true → 475 ms → "X1 3 845 82.Abn 0104 · Move mode 5 MP left · 74 hexes reachableDeselect TargetsUnitLedgerLogAll units (9) BreakdownsDetach a Breakdown (5-4-3, 1 RE; the division loses a step) Reserve released."; then moved to 0205: {"moved":true,"preview":"","elapsed":595} → "Hex 0205 · woods · 82.Abn"; Log "Exploit-mode units and released Reserves may move and attack (11.0). No unit selected Click one of your units on the map, or open All units. Targets Unit Ledger Log All units (9) 82.Abn finished moving 82.Abn moved 0104 → 0205 82.Abn released from Re"
+- screenshot 29-phase-track.jpg
+- screenshot 30-act13-handoff-required.jpg
+- screenshot 31-act13-wrong-seat-attempt.jpg
+- PASS ACT-13: Attempting an operation from the wrong hot-seat side: private candidates are unavailable and the UI gives an obvious handoff path — observed: Turn 1 / 2 Axis player turn · Allied to act Reinforcement, screen held by Allied commander; deck: "HAND OVER Axis commander to act Their Player Turn begins: Reinforcement Phase. Hand the screen to Axis commander"; clicking own Chap TF → "All reinforcements are placed. III2F1 7414 Chap TF / 7.A 1206 · Move mode Cannot move in this stepDeselect HAND OVERAxis commander to actTheir Player Turn begin"; mode buttons 0; Enter on 1207 → "Hex 1207 · clear · town · no units", Confirm move offered false; End button {"text":"End Reinforcement PhaseNext: Movement Phase","disabled":true}; hand-over button still shown true
+- screenshot 32-axis-after-movement.jpg
+- screenshot 33-axis-attack-decision-0.jpg
+- screenshot 34-axis-attack-handoff-2.jpg
+- screenshot 35-axis-attack-decision-2.jpg
+- screenshot 36-axis-attack-handoff-4.jpg
+- screenshot 37-axis-attack-decision-4.jpg
+- screenshot 38-turn-2-start.jpg
+- PASS ACT-01: Advancing through every phase/segment of one whole turn reaches the next game turn with no dead end — observed: Turn 1 ran Allied Reinforcement → Movement (Movement, Barrage) → Supply (passed automatically, no legal action) → Axis Reaction (passed: only dump blowing) → Combat (Barrage, Combat) → Exploitation → Clean Up → Axis Player Turn (same phases) → First Player decision → "reached Turn 2 / 2 Allied player turn Reinforcement [Allied commander]"; 38 Log entries; no step needed a hidden control or a direct API call
+- PASS ACT-14: A whole turn with at least one unit action, all required hand-overs and decisions; turn increments; no phase skipped by a shortcut — observed: Unit actions: place reinforcements (both sides), Reserve and release, fuel, 5 moves, overrun 1410, barrage 1404, attack 1509 (Allied), attack 1305 (Axis); decisions answered by the owning seat (supply sources, advance after combat, First Player); hand-overs with the map hidden: overrun ×2, Allied attack ×2, Axis turn start, Axis attack ×2, First Player; skipped phases were passed by the product itself with the reason in the Log ("Passed automatically, no legal actions")
+- screenshot 39-end-disabled.jpg
+
+Ended at: Turn 2 / 2, Axis player turn · Allied to act, Reinforcement
+
+Console/page errors: 0
+
+
+
+Reviewer correction: ACT-05 is PASS, not FAIL — Status corrected by the reviewer: the automatic check compared the placed hex with the echelon text "III" (step 002 read it as the name). The observation shows US 652 FA Gp placed on entry hex 0107 and refused on non-entry 0808.

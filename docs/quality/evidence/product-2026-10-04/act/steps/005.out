@@ -1,0 +1,14 @@
+{
+ "selectMs": 874,
+ "paidFrom": "the 12T dump at 0107",
+ "fuelMs": 921,
+ "afterFuel": "14 MP left · 186 hexes reachable",
+ "previewMs": 661,
+ "preview": "Move to 1206 Cost 8 MP · 6 MP left after the move. Cancel Confirm",
+ "confirmMs": 156,
+ "at": "Hex 1206 · rough · Chap TF / 7.A",
+ "from": "Hex 0107 · clear · out of reach · Brown TF / 7.A, US 652 FA Gp, Supply dump",
+ "card": "Move units one at a time: select a unit to see its range. Red rings mark overrun targets. III2F1 7414 Chap TF / 7.A 1206 · Move mode 6 MP left · 118 hexes reachableDone UnitLedgerLogAll units (9) Click a highlighted hex to preview the move; darker hexes are out of reach. Moved to 1206.",
+ "log": "ved 0107 → 1206 You: pay fuel Fuel paid: 4T. 82.Abn changed to reserve mode You finished Reinforcement Phase Passed automatically, no legal actions: Movement breakout segment. Now: Movement · Movement Segment · Allied commander. Supply dump entered at 0107 US 652 FA Gp entered at 0107 Moved to 1206."
+}
+-- 3545 ms; page errors so far 0

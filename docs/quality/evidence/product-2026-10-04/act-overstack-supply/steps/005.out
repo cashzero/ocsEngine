@@ -1,0 +1,13 @@
+{
+ "turn": "Turn 2 / 3",
+ "player": "Allied player turn",
+ "phase": "Movement",
+ "seat": "Allied commander",
+ "end": "End Movement SegmentNext: Barrage Segment",
+ "endDisabled": false,
+ "notice": "Reinforcement Phase finished.",
+ "handoff": false,
+ "complete": false,
+ "decision": []
+}
+-- 15434 ms; page errors so far 0

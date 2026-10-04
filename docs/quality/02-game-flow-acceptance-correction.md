@@ -61,6 +61,11 @@ After rebuilding, `scripts/ui-flow-gate.mjs` operated the real Edge UI for defau
 
 This resolves the specific Reinforcement stall and whole-turn blocker. It does not promote the entire M8/U10 gate: session persistence, Game End downloads, remaining New Game/Map/layout/error operations, and keyboard traversal remain governed by `03-product-operation-verification-plan.md` and are still unverified until operated.
 
+2026-10-04: the frozen matrix was run in the browser for §A (New Game), §B/§B1 (map, OOB and counters) and §C (rule actions);
+see doc 03 "Execution record 2026-10-04" and `docs/quality/evidence/product-2026-10-04/`. One complete contact turn was again
+operated through the real UI with every decision answered by the owning seat and every hand-over hiding the map. Four rows
+failed (NG-07, NG-10, MAP-03, MAP-04) and the session, layout and keyboard rows were not yet run, so M8/U10 remain `IN PROGRESS`.
+
 ## Correct acceptance boundary
 
 M8/U10 remain `IN PROGRESS` until browser runs prove all of the following:

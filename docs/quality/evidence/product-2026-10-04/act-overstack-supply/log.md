@@ -1,0 +1,16 @@
+# doc 03 acceptance session (1920×1080)
+
+- screenshot 01-trace-coverage.jpg
+- screenshot 02-act15-preview-11.jpg
+- screenshot 03-act15-after-moves.jpg
+- screenshot 04-act15-end-first-press.jpg
+- screenshot 05-act15-decision-0.jpg
+- screenshot 06-after-second-end.jpg
+- PASS ACT-15: Overstack: the move preview warns and reads Confirm anyway; a warning beside End names the hex and RE; End needs a second press; the 4.8a elimination decision follows; moves within 10 RE show none; Trucks and dumps are not counted — observed: 10 moves into 0502 within 10 RE previewed with no warning (e.g. "Move to 0502 Cost 1 MP · 13 MP left after the move. Cancel Confirm"); the 11th, Div Arty II / 7.A, previewed "Move to 0502 Cost 2.5 MP · 11.5 MP left after the move. ⚠ Overstack: ending here puts 10.5 RE in one hex (limit 10). Unless it is back to 10 RE or fewer when the segment ends, you must eliminate units 4.8a Cancel Confirm anyway" with "Confirm anyway" (02-act15-preview-11.jpg); beside End "⚠ Overstacked: 0502 holds 10.5 RE (limit 10)…4.8a" stayed at 10.5 RE after a Truck entered 0502; the first End press read "Finish anyway: 1 hex is overstacked — Press again to confirm" (04); the second raised "Hex 0502 holds more than 10 RE as the step ends: choose a unit to eliminate" listing the 13 combat units and no Truck (05); Div Arty I / 7.A was eliminated and play went on
+- screenshot 07-handoff-privacy.jpg
+- screenshot 08-trace-coverage-turn2.jpg
+
+Ended at: Turn 2 / 3, Allied player turn, Movement
+
+Console/page errors: 0
+
