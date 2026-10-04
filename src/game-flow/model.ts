@@ -46,6 +46,8 @@ export interface NewGameRequest {
 export interface GeneratedDeployment {
   readonly initialMapState: MapState;
   readonly initialPieceState: PieceRuntimeState;
+  /** Objective Hexes in Major Cities (3 VP) and towns (1 VP); each side starts holding the ones in its zone. */
+  readonly objectives: readonly { readonly hexId: HexId; readonly points: number }[];
   readonly objectiveHexIds: readonly HexId[];
   readonly metrics: {
     readonly pieces: number;
