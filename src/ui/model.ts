@@ -149,6 +149,37 @@ export interface AirRebuild {
   readonly cost: number;
 }
 
+/** One unit a hex of Repls could rebuild (13.5a-b): a reduced unit stacked with them, or one from the Dead Pile. */
+export interface GroundRebuildUnit {
+  readonly id: PieceId;
+  readonly label: string;
+  /** Rebuild Table cost of each step. */
+  readonly cost: 'PAX' | 'EQ';
+  readonly missing: number;
+  readonly deadPile: boolean;
+  readonly selected: boolean;
+  /** Steps chosen to regain (13.5b: any number up to those missing). */
+  readonly steps: number;
+  /** The voluntary mode a Dead Pile unit is placed in; null for a reduced unit, which keeps its mode. */
+  readonly mode: OcsMode | null;
+  readonly modes: readonly OcsMode[];
+}
+
+/** One hex of the player's Pax and Eq near an HQ that can rebuild ground units and trucks in the Reinforcement Phase (13.5a-e). */
+export interface GroundRebuild {
+  readonly hexId: string;
+  readonly pax: number;
+  readonly eq: number;
+  readonly units: readonly GroundRebuildUnit[];
+  /** 13.5e: truck points lost to the enemy that these Eq could rebuild, and how many are chosen. */
+  readonly truckMax: number;
+  readonly truckPoints: number;
+  /** Pax and Eq the current selection costs. */
+  readonly cost: { readonly pax: number; readonly eq: number };
+  readonly action: GameAction | null;
+  readonly explanation: RuleExplanation | null;
+}
+
 /** One way an Engineer-Capable unit can build or improve in the chosen hex (13.8d, 15.2, 15.3). */
 export interface BuildOption {
   readonly facility: 'AIR_STRIP' | 'AIR_BASE';
@@ -320,6 +351,8 @@ export interface UiSnapshot {
   readonly handoffPending: boolean;
   readonly requiredSeatId: SeatId | null;
   readonly air: AirOverview;
+  /** Hexes of the player's Repls that can rebuild ground units or trucks now (13.5a-e). */
+  readonly groundRebuilds: readonly GroundRebuild[];
   readonly handoff: HandoffInfo | null;
   readonly feed: readonly FeedEntry[];
   readonly combatReports: readonly CombatReport[];

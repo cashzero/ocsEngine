@@ -208,6 +208,7 @@ export const describeRecord = (record: HistoryRecord, context: NarrativeContext)
     case 'DECLARE_AIR_MISSION': title = `${who} flew ${action.mission.replaceAll('_', ' ').toLowerCase()} at ${hex(action.targetHexId)}`; break;
     case 'BUILD_AIR_BASE': title = `${who} ${action.facility === 'AIR_STRIP' ? 'built an Air Strip' : 'built or improved an Air Base'} at ${hex(action.hexId)}`; break;
     case 'REBUILD_AIRCRAFT': title = `${who} rebuilt ${action.aircraftIds.length === 1 ? 'an aircraft' : `${action.aircraftIds.length} aircraft`} with Eq`; break;
+    case 'REBUILD_UNITS': title = own ? `You rebuilt ${[action.units.length > 0 ? `${action.units.length} unit${action.units.length === 1 ? '' : 's'}` : '', action.truckPoints > 0 ? `${action.truckPoints} truck point${action.truckPoints === 1 ? '' : 's'}` : ''].filter(Boolean).join(' and ')} at ${hex(action.hexId)}` : `${who} rebuilt units with replacements`; break;
     case 'PLAN_AIR_DROP': title = own ? `You planned an Air Drop at ${hex(action.hexId)} for turn ${action.turn}` : `${who} made a plan`; break;
     case 'UPDATE_AIR_DROP_PLAN': title = own ? `You ${action.change === 'DELAY' ? 'delayed' : 'cancelled'} a Drop Plan` : `${who} changed a plan`; break;
     case 'RESPOND_DECISION': title = `${who} ${decisionVerb(String(action.decisionId))}`; break;
@@ -235,7 +236,10 @@ export const describeRecord = (record: HistoryRecord, context: NarrativeContext)
         break;
       case 'PIECE_DISPLACED': lines.push(event.toHexId === null ? `${name(event.pieceId)} had nowhere to go and was lost.` : `${name(event.pieceId)} was displaced to ${hex(event.toHexId)}.`); break;
       case 'AIRCRAFT_REBUILT': lines.push(`${name(event.pieceId)} was rebuilt${event.hexId ? ` at ${hex(event.hexId)}` : ''}.`); break;
-      case 'REPLACEMENTS_ARRIVED': if (event.playerId === context.viewerId) lines.push(`${event.equipment} Eq arrived.`); break;
+      case 'REPLACEMENTS_ARRIVED': if (event.playerId === context.viewerId) lines.push(`${event.quantity} ${event.replacement === 'PAX' ? 'Pax' : 'Eq'} arrived.`); break;
+      // 4.9a: a rebuilt unit shows up on the map, but how many steps it regained is the owner's to know.
+      case 'UNIT_REBUILT': lines.push(own ? `${name(event.pieceId)} ${event.fromDeadPile ? 'returned from the Dead Pile' : 'regained'} with ${event.steps} step${event.steps === 1 ? '' : 's'} at ${hex(event.hexId)}.` : `An enemy unit was rebuilt at ${hex(event.hexId)}.`); break;
+      case 'TRUCKS_REBUILT': lines.push(own ? `${event.points} truck point${event.points === 1 ? '' : 's'} rebuilt at ${hex(event.hexId)}.` : `Enemy trucks were rebuilt at ${hex(event.hexId)}.`); break;
       case 'DROP_PLAN_CHANGED': if (record.action.actorId === context.viewerId) lines.push(`Drop Plan ${event.change.toLowerCase()} (turn ${event.turn}).`); break;
       case 'STEP_LOST': lines.push(event.remainingSteps === null ? `${name(event.pieceId)} was eliminated.` : `${name(event.pieceId)} lost a step (${event.remainingSteps} left).`); break;
       case 'PIECE_RETREATED': lines.push(`${name(event.pieceId)} retreated to ${hex(event.toHexId)}.`); break;

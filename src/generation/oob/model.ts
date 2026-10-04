@@ -47,8 +47,6 @@ export interface RandomOobOptions {
   readonly air?: AirForceLevel;
   /** Absent means NONE. STANDARD adds transport aircraft (14.9) and a paratroop battalion per side for Air Drops (14.10). Needs `air`. */
   readonly airTransport?: AirForceLevel;
-  /** Absent means NONE. STANDARD adds the Eq allotment (13.5f) and aircraft reinforcements (13.6). Needs `air`. */
-  readonly airSupport?: AirForceLevel;
 }
 
 export interface NormalizedRandomOobOptions extends RandomOobOptions {}

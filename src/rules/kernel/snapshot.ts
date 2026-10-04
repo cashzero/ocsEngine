@@ -39,6 +39,7 @@ import { PENDING_DECISION_KINDS } from './model.js';
 import type {
   AirMissionState,
   AirState,
+  ReplacementState,
   CombatMultiplier,
   FuelState,
   GameState,
@@ -287,6 +288,13 @@ export const EMPTY_AIR_STATE: AirState = {
   missionFlownIds: [], refittedBaseIds: [], reducedBaseIds: [], trainbusting: [], builtHexIds: [], builderIds: [], dropPlans: [], unloaded: [], droppedIds: [],
 };
 
+const replacementStateDecoder: Decoder<ReplacementState> = objectDecoder({
+  lostTrucks: arrayDecoder(objectDecoder({ ownerId: playerIdDecoder, definitionId: definitionIdDecoder, points: safeIntegerDecoder })),
+});
+
+/** Replacement bookkeeping of a state where no truck was lost yet (also the value older snapshots migrate to). */
+export const EMPTY_REPLACEMENT_STATE: ReplacementState = { lostTrucks: [] };
+
 const transactionDecoder: Decoder<RuleTransaction> = objectDecoder({
   id: transactionIdDecoder,
   kind: literalDecoder('COMBAT', 'OVERRUN', 'BARRAGE', 'AIR_MISSION'),
@@ -381,6 +389,7 @@ interface RawGameState {
   readonly formationTraces: GameState['formationTraces'];
   readonly victory: VictoryState;
   readonly air: AirState;
+  readonly replacements: ReplacementState;
 }
 
 const rawGameStateDecoder: Decoder<RawGameState> = objectDecoder({
@@ -404,6 +413,7 @@ const rawGameStateDecoder: Decoder<RawGameState> = objectDecoder({
   formationTraces: arrayDecoder(objectDecoder({ formationId: definitionIdDecoder, routeKey: stringDecoder })),
   victory: victoryDecoder,
   air: airStateDecoder,
+  replacements: replacementStateDecoder,
 });
 
 const byText = <T>(key: (value: T) => string) => (left: T, right: T): number => key(left).localeCompare(key(right));
@@ -443,6 +453,9 @@ const canonicalStateValue = (state: GameState): GameState => {
     air: {
       ...state.air,
       trainbusting: stableSort(state.air.trainbusting, byText(({ hexId, ownerId }) => `${hexId}|${ownerId}`)),
+    },
+    replacements: {
+      lostTrucks: stableSort(state.replacements.lostTrucks, byText(({ ownerId, definitionId }) => `${ownerId}|${definitionId}`)),
     },
     victory: {
       ...state.victory,
@@ -495,6 +508,7 @@ export const parseGameState = (input: unknown): Result<GameState, readonly Valid
     formationTraces: raw.value.formationTraces,
     victory: raw.value.victory,
     air: raw.value.air,
+    replacements: raw.value.replacements,
   };
   const issues = [...validateGameState(state)];
   return issues.length > 0 ? err(issues) : ok(state);
@@ -513,6 +527,8 @@ export const upgradeLegacyGameStateInput = (input: unknown): unknown => {
     ...record,
     // 0.3.0 air bookkeeping gains the construction ledger, Drop Plans and the unload ledger (empty in any older game).
     air: air ? { ...EMPTY_AIR_STATE, ...air } : EMPTY_AIR_STATE,
+    // Ground replacements (13.5a-e) add the lost-truck ledger: no truck was recorded as lost in an older game.
+    replacements: typeof record.replacements === 'object' && record.replacements !== null ? record.replacements : EMPTY_REPLACEMENT_STATE,
     activeTransaction: typeof transaction === 'object' && transaction !== null && !Array.isArray(transaction)
       ? { air: null, ...(transaction as Readonly<Record<string, unknown>>) } : transaction ?? null,
   };

@@ -4,6 +4,7 @@ import type { PieceRuntimeState, PieceState } from '../../domain/piece/index.js'
 import type { GameState, RuleEvent, RuleViolation } from '../kernel/model.js';
 import type { RuleQueryResult, RuleReason } from '../query/model.js';
 import { rollDie } from '../kernel/rng.js';
+import { isTruck, recordTrucksLost } from '../replacement/ledger.js';
 import {
   TRANSPORT_POINTS_STATUS,
   dedupeStackOrders,
@@ -639,6 +640,8 @@ export const captureAt = (state: GameState, capturerId: PlayerId, hexId: HexId, 
     const captured: PieceId[] = [];
     for (const truck of stableSort(group, (left, right) => transportPointsOf(next, right) - transportPointsOf(next, left))) {
       const size = transportPointsOf(next, truck);
+      // 13.5e: trucks the enemy captures may be rebuilt by their former owner.
+      if (toCapture > 0 && isTruck(next, truck)) next = recordTrucksLost(next, owner, truck.definitionId, Math.min(toCapture, size));
       if (toCapture >= size) {
         next = { ...next, pieceState: upsert(next.pieceState, { ...pieceById(next, truck.id)!, ownerId: capturerId }) };
         captured.push(truck.id);
@@ -698,7 +701,9 @@ export const applyDisplacement = (state: GameState, pieceId: PieceId, hexId: Hex
   if (hexId === null) {
     let pieceState = upsert(state.pieceState, { ...piece, location: { kind: 'ELIMINATED' } });
     for (const cargo of cargoOf(state, piece)) pieceState = setCargo(upsert(pieceState, { ...cargo, location: { kind: 'ELIMINATED' } }), cargo.id, null, 0, unitOf(state, cargo));
-    return { ...state, pieceState };
+    // 13.5e: a truck with nowhere to go is destroyed by enemy action, so its owner may rebuild it.
+    const lost = isTruck(state, piece) ? transportPointsOf(state, piece) : 0;
+    return recordTrucksLost({ ...state, pieceState }, piece.ownerId, piece.definitionId, lost);
   }
   return {
     ...state,

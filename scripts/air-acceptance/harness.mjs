@@ -79,10 +79,7 @@ export const newGame = async (h, options = {}) => {
   await type('divisions', options.divisions ?? 3);
   await type('armored', options.armored ?? 1);
   await set('air', options.air ?? 'STANDARD');
-  if ((options.air ?? 'STANDARD') === 'STANDARD') {
-    await set('air-transport', options.transport ?? 'STANDARD');
-    await set('air-support', options.support ?? 'STANDARD');
-  }
+  if ((options.air ?? 'STANDARD') === 'STANDARD') await set('air-transport', options.transport ?? 'STANDARD');
   await type('turn-limit', options.turnLimit ?? 8);
   await set('start-month', options.month);
   if (options.seeds) {

@@ -14,10 +14,10 @@ import {
 } from '../gameplay/index.js';
 import {
   AIR_MISSION_KINDS, AIR_MISSION_LABELS, FUEL_COSTS, distanceBetween, missionSegment, parseRuleActionId, routesForRange,
-  type AirMissionKind, type AirRoute, type GameAction, type ProjectedCombat, type ProjectedPiece, type RuleEvent, type RuleExplanation,
+  type AirMissionKind, type AirRoute, type GameAction, type ProjectedCombat, type ProjectedPiece, type RuleEvent, type RuleExplanation, type UnitRebuild,
 } from '../rules/index.js';
 import type {
-  AirDraft, AirOverview, AirRefit, Arrival, AttackDraft, AwayReport, AirRebuild, BuildOption, ConstructionOverview, CombatSheet, EndStep, HandoffInfo, MoveBlocker, MovePreview, MoveRangeEntry,
+  AirDraft, AirOverview, AirRefit, Arrival, AttackDraft, AwayReport, AirRebuild, BuildOption, GroundRebuild, ConstructionOverview, CombatSheet, EndStep, HandoffInfo, MoveBlocker, MovePreview, MoveRangeEntry,
   DropPlanDraft, DropPlanView, LedgerLine, SupplyNeed, TransportCarrier, UiListener, UiSelection, UiSnapshot, UnitAction,
 } from './model.js';
 import {
@@ -93,6 +93,12 @@ export interface UiController {
   readonly toggleRebuildAircraft: (eqPieceId: string, pieceId: string) => void;
   readonly setRebuildBase: (eqPieceId: string, baseId: string) => void;
   readonly rebuildAircraft: (eqPieceId: string) => Promise<void>;
+  /** 13.5a-e: choose what the Repls in a hex rebuild: units, the steps each regains, a Dead Pile unit's mode, and trucks. */
+  readonly toggleRebuildUnit: (hexId: string, pieceId: string) => void;
+  readonly setRebuildUnitSteps: (hexId: string, pieceId: string, steps: number) => void;
+  readonly setRebuildUnitMode: (hexId: string, pieceId: string, mode: string) => void;
+  readonly setRebuildTrucks: (hexId: string, points: number) => void;
+  readonly rebuildUnits: (hexId: string) => Promise<void>;
   readonly toggleTransportCarrier: (pieceId: string) => void;
   readonly setTransportRoute: (pieceId: string, route: string) => void;
   readonly toggleTransportEscort: (pieceId: string) => void;
@@ -193,6 +199,9 @@ export const distinctLabels = <T extends { readonly label: string }>(items: read
 
 const formationNameOf = (unitName: string): string => unitName.includes(' / ') ? unitName.slice(unitName.lastIndexOf(' / ') + 3) : unitName;
 
+/** A rebuilt Dead Pile unit is placed in Combat Mode when its counter has that side, otherwise the first mode it may take (13.5b). */
+const defaultPlacementMode = (modes: readonly OcsMode[]): OcsMode | null => modes.includes('COMBAT') ? 'COMBAT' : modes[0] ?? null;
+
 class DefaultUiController implements UiController {
   readonly #engine: GameplayEngine;
   readonly #scenario: ScenarioDefinition;
@@ -215,6 +224,8 @@ class DefaultUiController implements UiController {
   #buildDraft: { readonly engineerId: string; readonly hexId: string | null } | null = null;
   #dropDraft: { readonly unitIds: readonly PieceId[]; readonly hexId: string | null; readonly turn: number | null } | null = null;
   #rebuildSelection = new Map<string, { readonly aircraftIds: readonly PieceId[] | null; readonly baseId: PieceId | null }>();
+  /** Per hex of Repls: the units chosen (null: the default rebuild) and the truck points (null: the default). */
+  #unitRebuildSelection = new Map<string, { readonly units: readonly UnitRebuild[] | null; readonly truckPoints: number | null }>();
   #refitSelection = new Map<string, readonly PieceId[]>();
   #showAirZones = false;
   #showTraceCoverage = false;
@@ -753,6 +764,7 @@ class DefaultUiController implements UiController {
       handoffPending: this.#handoffToken !== null,
       requiredSeatId,
       air: this.#airOverview(enabled, ownSelected),
+      groundRebuilds: this.#groundRebuilds(enabled),
       handoff,
       feed: view.privacyLocked ? [] : this.#feed(seatId),
       combatReports: reports,
@@ -966,6 +978,90 @@ class DefaultUiController implements UiController {
     this.#rebuildSelection.delete(eqPieceId);
     await this.#dispatch({ ...rebuild.action, actionId: this.#actionId('rebuild'), expectedRevision: this.#session.getRevision() } as GameAction,
       `Rebuilt ${rebuild.action.kind === 'REBUILD_AIRCRAFT' ? rebuild.action.aircraftIds.length : 0} aircraft with ${rebuild.cost} Eq.`);
+  };
+
+  #groundRebuilds(enabled: (kind: GameAction['kind']) => boolean): readonly GroundRebuild[] {
+    if (!enabled('REBUILD_UNITS')) return [];
+    const view = this.#session.getView(this.#activeSeat());
+    return (view.projection?.replacements.rebuilds ?? []).map((option): GroundRebuild => {
+      const choice = this.#unitRebuildSelection.get(option.hexId);
+      // Default: reduced units here first, then the Dead Pile, as many steps as the Repls pay for; trucks with the Eq left.
+      const left = { PAX: option.pax, EQ: option.eq };
+      const defaults: UnitRebuild[] = [];
+      for (const unit of option.units) {
+        const steps = Math.min(unit.missing, left[unit.cost]);
+        if (steps <= 0) continue;
+        left[unit.cost] -= steps;
+        defaults.push({ pieceId: unit.id, steps, mode: unit.deadPile ? defaultPlacementMode(unit.modes as readonly OcsMode[]) : null });
+      }
+      const chosen = (choice?.units ?? defaults).filter(({ pieceId }) => option.units.some(({ id }) => id === pieceId));
+      const truckPoints = Math.max(0, Math.min(option.truckPoints, choice?.truckPoints ?? left.EQ));
+      const cost = { pax: 0, eq: truckPoints };
+      for (const entry of chosen) {
+        if (option.units.find(({ id }) => id === entry.pieceId)?.cost === 'PAX') cost.pax += entry.steps; else cost.eq += entry.steps;
+      }
+      const action: GameAction | null = chosen.length > 0 || truckPoints > 0 ? {
+        actionId: this.#actionId('rebuild-units'), actorId: view.playerId, expectedRevision: this.#session.getRevision(),
+        kind: 'REBUILD_UNITS', hexId: option.hexId as HexId, hqId: option.hqId, units: chosen, truckPoints,
+      } : null;
+      return {
+        hexId: option.hexId, pax: option.pax, eq: option.eq, truckMax: option.truckPoints, truckPoints, cost,
+        units: option.units.map((unit) => {
+          const entry = chosen.find(({ pieceId }) => pieceId === unit.id);
+          const modes = unit.modes as readonly OcsMode[];
+          return {
+            id: unit.id, label: this.#rebuildUnitLabel(unit.id, unit.definitionId), cost: unit.cost, missing: unit.missing, deadPile: unit.deadPile,
+            selected: entry !== undefined, steps: entry?.steps ?? unit.missing, mode: unit.deadPile ? entry?.mode ?? defaultPlacementMode(modes) : null, modes,
+          };
+        }),
+        action, explanation: action ? this.#explain(action) : null,
+      };
+    });
+  }
+
+  /** A Dead Pile unit is not among the projected stacks, so its name may come from its Definition. */
+  #rebuildUnitLabel(pieceId: PieceId, definitionId: string): string {
+    const piece = this.#pieces().find(({ id }) => id === pieceId);
+    return piece ? unitLabel(this.#scenario, piece) : this.#definition({ definitionId: definitionId as never })?.name ?? 'Unit';
+  }
+
+  #updateUnitRebuild(hexId: string, change: (units: readonly UnitRebuild[], rebuild: GroundRebuild) => readonly UnitRebuild[]): void {
+    const rebuild = this.getSnapshot().groundRebuilds.find((entry) => entry.hexId === hexId);
+    if (!rebuild) return;
+    const current = rebuild.units.filter(({ selected }) => selected).map(({ id, steps, mode }) => ({ pieceId: id, steps, mode }));
+    this.#unitRebuildSelection.set(hexId, { units: change(current, rebuild), truckPoints: rebuild.truckPoints });
+    this.#emit();
+  }
+
+  toggleRebuildUnit = (hexId: string, pieceId: string): void => this.#updateUnitRebuild(hexId, (units, rebuild) => {
+    if (units.some((entry) => entry.pieceId === pieceId)) return units.filter((entry) => entry.pieceId !== pieceId);
+    const unit = rebuild.units.find(({ id }) => id === pieceId);
+    return unit ? [...units, { pieceId: unit.id, steps: unit.missing, mode: unit.deadPile ? unit.mode : null }] : units;
+  });
+
+  setRebuildUnitSteps = (hexId: string, pieceId: string, steps: number): void => this.#updateUnitRebuild(hexId, (units) =>
+    units.map((entry) => entry.pieceId === pieceId && Number.isSafeInteger(steps) ? { ...entry, steps } : entry));
+
+  setRebuildUnitMode = (hexId: string, pieceId: string, mode: string): void => this.#updateUnitRebuild(hexId, (units) =>
+    units.map((entry) => entry.pieceId === pieceId && entry.mode !== null ? { ...entry, mode: mode as OcsMode } : entry));
+
+  setRebuildTrucks = (hexId: string, points: number): void => {
+    const rebuild = this.getSnapshot().groundRebuilds.find((entry) => entry.hexId === hexId);
+    if (!rebuild || !Number.isSafeInteger(points)) return;
+    const units = rebuild.units.filter(({ selected }) => selected).map(({ id, steps, mode }) => ({ pieceId: id, steps, mode }));
+    this.#unitRebuildSelection.set(hexId, { units, truckPoints: Math.max(0, points) });
+    this.#emit();
+  };
+
+  rebuildUnits = async (hexId: string): Promise<void> => {
+    const rebuild = this.getSnapshot().groundRebuilds.find((entry) => entry.hexId === hexId);
+    if (!rebuild?.action || !rebuild.explanation?.allowed || rebuild.action.kind !== 'REBUILD_UNITS') return;
+    this.#unitRebuildSelection.delete(hexId);
+    const { units, truckPoints } = rebuild.action;
+    const parts = [units.length > 0 ? `${units.length} unit${units.length === 1 ? '' : 's'}` : '', truckPoints > 0 ? `${truckPoints} truck point${truckPoints === 1 ? '' : 's'}` : ''].filter(Boolean);
+    const spent = [rebuild.cost.pax > 0 ? `${rebuild.cost.pax} Pax` : '', rebuild.cost.eq > 0 ? `${rebuild.cost.eq} Eq` : ''].filter(Boolean);
+    await this.#dispatch({ ...rebuild.action, actionId: this.#actionId('rebuild-units'), expectedRevision: this.#session.getRevision() } as GameAction,
+      `Rebuilt ${parts.join(' and ')} with ${spent.join(' and ')}.`);
   };
 
   /** The player's Drop Plans and the one being made (14.10b), for the Aircraft Refit Phase. */

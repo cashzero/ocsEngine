@@ -93,7 +93,8 @@ describe('generated air forces (A7)', () => {
     if (!ground.ok || !explicitNone.ok || !air.ok) return;
     expect(serializeGeneratedOob(explicitNone.value)).toEqual(serializeGeneratedOob(ground.value));
     for (const side of ['ALLIED', 'AXIS'] as const) {
-      expect(air.value.metrics.rolesBySide[side].AIRCRAFT).toBe(3);
+      // Two Fighters and a Tactical Bomber at start, and one Fighter reinforcement (13.6), built in with air forces.
+      expect(air.value.metrics.rolesBySide[side].AIRCRAFT).toBe(4);
       expect(air.value.metrics.rolesBySide[side].AIR_BASE).toBe(1);
       expect(air.value.metrics.rolesBySide[side].COMBAT).toBe(ground.value.metrics.rolesBySide[side].COMBAT);
     }
@@ -108,7 +109,8 @@ describe('generated air forces (A7)', () => {
       const pieces = prepared.value.scenario.initialPieceState.pieces;
       const definitions = new Map(prepared.value.scenario.pieceCatalog.definitions.map((definition) => [definition.id, definition]));
       const bases = pieces.filter((entry) => definitions.get(entry.definitionId)?.family === 'FACILITY');
-      const planes = pieces.filter((entry) => definitions.get(entry.definitionId)?.family === 'AIR');
+      // Reinforcing aircraft (13.6) wait in the reinforcement Box until their Game Turn.
+      const planes = pieces.filter((entry) => definitions.get(entry.definitionId)?.family === 'AIR' && entry.location.kind !== 'OFF_MAP_BOX');
       expect(bases.length).toBe(request === STANDARD_AIR ? 4 : 2);
       for (const plane of planes) {
         expect(plane.statuses).toEqual([]);
