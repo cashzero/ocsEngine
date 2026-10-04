@@ -10,6 +10,7 @@ import {
 } from '../../core/index.js';
 import {
   createMapDefinitionIndex,
+  type MapDefinitionIndex,
   parseMapBoxId,
   parseMapTrackId,
   parsePiecePoolId,
@@ -56,9 +57,9 @@ const validateLocationReference = (
   location: PieceLocation,
   pieceIndex: number,
   scenario: ScenarioDefinition,
+  mapIndex: MapDefinitionIndex,
 ): readonly ValidationIssue[] => {
   const path = ['initialPieceState', 'pieces', pieceIndex, 'location'] as const;
-  const mapIndex = createMapDefinitionIndex(scenario.mapDefinition);
   switch (location.kind) {
     case 'ON_MAP':
       return mapIndex.getHex(location.hexId)
@@ -251,7 +252,7 @@ export const validateScenarioDefinition = (
     if (!playerIds.has(piece.ownerId)) {
       issues.push(error('UNKNOWN_SCENARIO_PLAYER', ['initialPieceState', 'pieces', index, 'ownerId'], `Unknown Player ${piece.ownerId}.`));
     }
-    issues.push(...validateLocationReference(piece.location, index, scenario));
+    issues.push(...validateLocationReference(piece.location, index, scenario, mapIndex));
   });
 
   scenario.provenance.forEach((source, index) => {
