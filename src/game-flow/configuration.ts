@@ -67,7 +67,7 @@ export const createGeneratedRuleConfiguration = (
   },
   reinforcementBoxes: (['ALLIED', 'AXIS'] as const).map((side) => ({ playerId: players[side], boxId: GENERATED_REINFORCEMENT_BOXES[side] })),
   turnLimit: request.turnLimit,
-  objectives: deployment.objectiveHexIds.map((hexId) => ({ hexId, points: 5 })),
+  objectives: deployment.objectives.map(({ hexId, points }) => ({ hexId, points })),
   railroads: GENERATED_RAILROADS,
 });
 
