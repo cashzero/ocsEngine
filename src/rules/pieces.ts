@@ -142,7 +142,10 @@ export const isMultiUnitFormation = (state: GameState, formationId: DefinitionId
 export const isIndependent = (state: GameState, piece: PieceState): boolean =>
   !isMultiUnitFormation(state, formationOf(state, piece));
 
-/** 13.1d: a divisional HQ belongs to a multi-unit formation. */
+/**
+ * 13.1d: a divisional HQ belongs to a multi-unit formation. A series rule for games that print divisional HQs;
+ * Beyond the Rhine has none (every HQ is independent), so generated scenarios never meet one.
+ */
 export const isDivisionalHq = (state: GameState, piece: PieceState): boolean =>
   isHq(state, piece) && isMultiUnitFormation(state, formationOf(state, piece));
 

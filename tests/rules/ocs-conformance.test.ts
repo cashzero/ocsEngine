@@ -28,7 +28,7 @@ const U = {
   alTrk: generatedPieceId('allied:f1-combat-1'), alTrk2: generatedPieceId('allied:f1-combat-2'),
   alLeg: generatedPieceId('allied:f2-combat-1'), alLeg2: generatedPieceId('allied:f1-combat-2'),
   alArt: generatedPieceId('allied:f1-artillery-1'), alEng: generatedPieceId('allied:independent-engineer-1'),
-  alHq: generatedPieceId('allied:f1-command'), alSup: generatedPieceId('allied:independent-supply-1'),
+  alHq: generatedPieceId('allied:independent-hq-1'), alSup: generatedPieceId('allied:independent-supply-1'),
   axTrk: generatedPieceId('axis:f1-combat-1'), axTrk2: generatedPieceId('axis:f1-combat-2'),
   axTruck: generatedPieceId('axis:f2-combat-1'), axArt: generatedPieceId('axis:f1-artillery-1'),
 };

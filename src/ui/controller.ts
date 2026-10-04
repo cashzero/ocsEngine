@@ -587,7 +587,7 @@ class DefaultUiController implements UiController {
         const formation = definition.ownership.formationDefinitionId;
         if (!formation || !owned.has(String(definition.id))) continue;
         const name = formationNameOf(definition.name);
-        if (!names.has(String(formation)) || definition.counter?.kind === 'HQ') names.set(String(formation), name);
+        if (!names.has(String(formation))) names.set(String(formation), name);
       }
       return names;
     });

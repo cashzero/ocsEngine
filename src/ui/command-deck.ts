@@ -760,6 +760,9 @@ const rosterOwn = (snapshot: UiSnapshot): ProjectedPiece[] =>
 /** Trucks and extenders haul supply rather than fight, so the roster lists them in a group of their own after the formations. */
 const isTransport = ({ role }: ProjectedPiece): boolean => role === 'TRUCK' || role === 'EXTENDER';
 
+/** HQs belong to no formation (3.2f) and throw supply and fuel, so the roster lists them first in a group of their own. */
+const isHqPiece = ({ role }: ProjectedPiece): boolean => role === 'HQ';
+
 /** The scrolling part of the roster; rows are keyed by unit so filtering moves them instead of redrawing their counters. */
 export const unitRosterBodyView = (snapshot: UiSnapshot, state: DeckState): TemplateResult => {
   const search = state.search.trim().toLowerCase();
@@ -771,7 +774,7 @@ export const unitRosterBodyView = (snapshot: UiSnapshot, state: DeckState): Temp
   const active = all.filter(({ location }) => location.kind !== 'ELIMINATED')
     .filter((piece) => filter === 'all' || (filter === 'moved') === snapshot.movedThisPhase.has(String(piece.id)));
   const groups = new Map<string, ProjectedPiece[]>();
-  for (const piece of active.filter((piece) => !isTransport(piece) && !isAir(snapshot, piece))) {
+  for (const piece of active.filter((piece) => !isHqPiece(piece) && !isTransport(piece) && !isAir(snapshot, piece))) {
     const name = unitFormation(snapshot, piece) || 'Independent units';
     groups.set(name, [...(groups.get(name) ?? []), piece]);
   }
@@ -781,7 +784,9 @@ export const unitRosterBodyView = (snapshot: UiSnapshot, state: DeckState): Temp
   // Air units fly missions from air bases rather than move with a formation, so they get a group of their own before the Trucks.
   const air = active.filter((piece) => isAir(snapshot, piece));
   const transport = active.filter(isTransport);
+  const hqs = active.filter(isHqPiece);
   const sorted: { key: string; name: string; pieces: ProjectedPiece[]; extra: string }[] = [
+    ...(hqs.length > 0 ? [{ key: 'hq', name: 'HQ', pieces: hqs, extra: ' roster-hq' }] : []),
     ...[...groups.entries()].sort(([left], [right]) => left.localeCompare(right)).map(([name, pieces]) => ({ key: `formation:${name}`, name, pieces, extra: '' })),
     ...(air.length > 0 ? [{ key: 'air', name: 'Air', pieces: air, extra: ' roster-air' }] : []),
     ...(transport.length > 0 ? [{ key: 'transport', name: 'Trucks', pieces: transport, extra: ' roster-transport' }] : []),

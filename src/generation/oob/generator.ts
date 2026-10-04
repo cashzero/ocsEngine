@@ -43,7 +43,7 @@ import {
   type RandomOobOptions,
 } from './model.js';
 import { validateGeneratedOob } from './validation.js';
-import { formationNameCapacity, formationNames, unitName } from './names.js';
+import { formationNameCapacity, hqName, formationNames, unitName } from './names.js';
 import { buildAirForces } from './air.js';
 import { withBreakdowns } from './breakdowns.js';
 
@@ -71,7 +71,7 @@ const SCALE_COMBAT_UNITS: Readonly<Record<OobScale, number>> = {
 
 const capabilitiesFor = (role: OobUnitRole): readonly CapabilityDeclaration[] => {
   switch (role) {
-    case 'FORMATION_COMMAND': return [{ id: capabilityId('HQ'), parameters: [] }];
+    case 'HQ': return [{ id: capabilityId('HQ'), parameters: [] }];
     case 'ARTILLERY': return [{ id: capabilityId('ARTILLERY'), parameters: [] }];
     case 'RECONNAISSANCE': return [{ id: capabilityId('RECONNAISSANCE'), parameters: [] }];
     case 'ENGINEER': return [{ id: capabilityId('ENGINEER_CAPABLE'), parameters: [] }];
@@ -112,10 +112,12 @@ const stepsFor = (archetype: ReviewedOobArchetype): readonly PieceStepProfile[] 
   });
 };
 
-/** Echelon printed on the unit's counter; a formation HQ commands a division (XX). */
-const echelonFor = (side: OobSide, role: OobUnitRole, archetype: OobFormationArchetype | undefined, inFormation: boolean): string =>
-  role === 'FORMATION_COMMAND' && inFormation ? 'XX'
-    : COUNTER_CORPUS[findReviewedOobArchetype(side, role, archetype).gpid]?.echelon ?? '';
+/** Echelon printed on the archetype's BTR counter; it picks the size word in unit names. */
+const echelonFor = (side: OobSide, role: OobUnitRole, archetype: OobFormationArchetype | undefined): string =>
+  COUNTER_CORPUS[findReviewedOobArchetype(side, role, archetype).gpid]?.echelon ?? '';
+
+/** HQs per side: one for every three divisions it fields, at least one so the side can throw supply (13.1b). */
+const hqCount = (divisionsPerSide: number): number => Math.max(1, Math.ceil(divisionsPerSide / 3));
 
 interface UnitBuildContext {
   readonly options: NormalizedRandomOobOptions;
@@ -125,10 +127,14 @@ interface UnitBuildContext {
   readonly formationId: DefinitionId | null;
   readonly name: string;
   readonly localId: string;
-  /** Overrides the archetype's counter, for divisions whose printed regiments differ (US airborne). */
+  /** Overrides the archetype's counter: divisions whose printed regiments differ (US airborne), each HQ's own counter. */
   readonly counterGpid?: number;
+  /** The VASSAL entryName of `counterGpid`, when it is not the archetype's. */
+  readonly rawName?: string;
   /** Overrides the echelon printed on the counter (a paratroop battalion is not a division). */
   readonly echelon?: string;
+  /** Overrides the designation printed on the counter (an HQ prints its number, "3" or "39 Pz"). */
+  readonly designation?: string;
   readonly pointCost?: number;
 }
 
@@ -137,7 +143,8 @@ const buildUnit = (context: UnitBuildContext): {
   readonly definition: PieceDefinition;
 } => {
   const archetypeSource = findReviewedOobArchetype(context.side, context.role, context.formationArchetype);
-  const source = context.counterGpid === undefined ? archetypeSource : { ...archetypeSource, gpid: context.counterGpid };
+  const source = context.counterGpid === undefined ? archetypeSource
+    : { ...archetypeSource, gpid: context.counterGpid, rawName: context.rawName ?? archetypeSource.rawName };
   const idBase = `generated-oob:${context.options.seed}:${context.side.toLowerCase()}:${context.localId}`;
   const id = definitionId(idBase);
   const sourceReference = {
@@ -147,11 +154,12 @@ const buildUnit = (context: UnitBuildContext): {
   } as const;
   const definition: PieceDefinition = {
     counter: corpusCounter(source.gpid,
-      context.localId.split('-').at(-1) ?? '',
+      context.designation ?? context.localId.split('-').at(-1) ?? '',
       context.formationId ? `F${context.formationId.split(':').at(-1)}` : '',
       context.side === 'ALLIED' ? 'US' : 'GERMAN',
       context.formationId ? ['#75c3af', '#e2638b', '#6c9cd2', '#e4c063', '#ae87c7', '#c59064'][Number(context.formationId.split(':').at(-1)) - 1]! : null,
-      context.echelon ?? echelonFor(context.side, context.role, context.formationArchetype, context.formationId !== null)),
+      // The counter's own echelon (Gruppe Hohne's HQ prints "Grp", not XXX).
+      context.echelon ?? COUNTER_CORPUS[source.gpid]?.echelon ?? ''),
     id,
     family: source.family,
     name: context.name,
@@ -283,15 +291,14 @@ const buildSide = (
     const occurrence = archetypes.slice(0, formationIndex).filter((value) => value === archetype).length;
     const namingProfile = formationNames(options.seed, side, archetype)[occurrence]!;
     const formationName = namingProfile.name;
-    // Infantry and airborne divisions are a single XX counter; armored and mobile-infantry divisions are an HQ plus
-    // regiment-sized units.
+    // Infantry and airborne divisions are a single XX counter; armored and mobile-infantry divisions are regiment-sized
+    // units. Neither contains an HQ: HQs are generated below as independent units.
     const combatRequests = Array.from({ length: SCALE_COMBAT_UNITS[options.scale] }, (_, index) => ({
       role: 'COMBAT' as const, suffix: `combat-${index + 1}`,
     }));
     const requests: Array<{ role: OobUnitRole; suffix: string }> = isSingleUnitDivision(side, archetype)
       ? [{ role: 'COMBAT', suffix: 'combat-1' }]
       : [
-        { role: 'FORMATION_COMMAND', suffix: 'command' },
         ...combatRequests,
         { role: 'ARTILLERY' as const, suffix: 'artillery-1' },
         ...(options.scale === 'LARGE' ? [{ role: 'ARTILLERY' as const, suffix: 'artillery-2' }] : []),
@@ -303,7 +310,7 @@ const buildSide = (
       const built = buildUnit({
         options, side, role, formationArchetype: archetype, formationId: memberOf,
         name: unitName(side, role, Number(suffix.split('-').at(-1)) || 1, options.seed, namingProfile,
-          echelonFor(side, role, archetype, true)),
+          echelonFor(side, role, archetype)),
         localId: `f${sequence}-${suffix}`,
         ...(side === 'ALLIED' && archetype === 'AIRBORNE' && ALLIED_AIRBORNE_DIVISION_GPIDS[formationName] !== undefined
           ? { counterGpid: ALLIED_AIRBORNE_DIVISION_GPIDS[formationName] } : {}),
@@ -323,15 +330,21 @@ const buildSide = (
     ...Array.from({ length: options.scale === 'LARGE' ? Math.ceil(options.divisionsPerSide / 2) : 1 }, () => 'ENGINEER' as const),
     ...Array.from({ length: supportCount }, () => 'TRANSPORT' as const),
     ...Array.from({ length: supportCount }, () => 'SUPPLY' as const),
+    // 3.2f: HQs are independent units, never part of a formation. They come last so the first
+    // independent field unit (held back as the side's reinforcement) is not an HQ.
+    ...Array.from({ length: hqCount(options.divisionsPerSide) }, () => 'HQ' as const),
   ];
   const roleCounts = new Map<OobUnitRole, number>();
   const independentUnits = independentRequests.map((role) => {
     const ordinal = (roleCounts.get(role) ?? 0) + 1;
     roleCounts.set(role, ordinal);
+    const name = unitName(side, role, ordinal, options.seed, undefined, echelonFor(side, role, undefined));
+    // An HQ is built from its own counter, so it prints its own number, echelon and range-MA faces.
+    const hq = role === 'HQ' ? hqName(options.seed, side, ordinal) : null;
     const built = buildUnit({
-      options, side, role, formationId: null,
-      name: unitName(side, role, ordinal, options.seed, undefined, echelonFor(side, role, undefined, false)),
+      options, side, role, formationId: null, name,
       localId: `independent-${role.toLowerCase()}-${ordinal}`,
+      ...(hq ? { designation: hq.designation, counterGpid: hq.gpid, rawName: name } : {}),
     });
     definitions.push(built.definition);
     return built.unit;
