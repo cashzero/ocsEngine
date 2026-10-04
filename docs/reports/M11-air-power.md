@@ -51,6 +51,8 @@ A5（空運、空降）與 A6（BTR 專屬規則）不在本次範圍。下列�
 ## 5. TODO（未完成，不得標為完成）
 
 - **瀏覽器尚未操作**：Trainbusting 標記與 TZ 移動成本、Base Transfer（COMPACT 只有一座機場）、機場被佔領的轉場決策、打機場（Facility 表）、REDUCE／COMBINE、Mission Loss 的 W／S 選擇、1680×1050 版面、鍵盤操作。關閉證據：依新增 AIR 列逐項在瀏覽器中操作並記錄截圖、延遲與 console。
+  2026-10-04 補註：Trainbusting（AIR-05）、Base Transfer 與打機場（AIR-06）、機場被佔領的轉場（AIR-07）已於 2026-10-03 在瀏覽器通過（doc 03 §F）。
+  仍未操作：REDUCE／COMBINE、Mission Loss 的 W／S 選擇（AIR-04 未觀察到）、1680×1050 版面、鍵盤操作。
 - **Hip Shoot 在產品中不可達**：14.7d-B 由遊戲規則指定國籍，BTR 規則依使用者決定不加，沒有國籍具備能力。規則已實作並以單元測試涵蓋拒絕路徑；關閉證據同 1.4（BTR 規則）。
 - **天候不限制空中任務**（BTR Flight Conditions 未加，見計畫 1.4）。
 - ~~A5 空運／空降未實作~~、~~機場建造與 Air Strip~~、~~空中補充與空中增援~~：2026-10-03 已實作，見第 6 節；剩餘缺口列在第 6.3 節。
