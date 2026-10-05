@@ -1,0 +1,19 @@
+component | k (hexes, fit 32x24:6..128x96:6) | k last step | k (units, 64x48) | ms @64x48 | ms @128x96:6 | 100 ms at | 1 s at | 5 s at
+ui.previewSvg | 1.21 | 1.58 | -0.05 | 237.2 | 1528.4 | 1462 (44x33) | 9823 (114x86) | 37191 (223x167)
+newgame.map | 1.08 | 1.36 | 0.06 | 218.7 | 1217.9 | 1318 (42x31) | 11087 (122x91) | 49110 (256x192)
+ui.theaterModel | 1.33 | 1.84 | -0.01 | 76.1 | 401.9 | 4724 (79x60) | 26543 (188x141) | 88704 (344x258)
+newgame.session | 0.74 | 0.94 | 0.07 | 119.4 | 373.3 | 2335 (56x42) | 52951 (266x199) | 469230 (791x593)
+turn1.applyAction(total) | 0.61 | 0.96 | 1.02 | 90.2 | 259.4 | 3295 (66x50) | 146646 (442x332) | >1M hexes
+turn1.advance(max) | 0.83 | 1.18 | 0.83 | 34.8 | 147.9 | 9557 (113x85) | 150731 (448x336) | >1M hexes
+newgame.deploy | 0.61 | 0.94 | 0.37 | 33.2 | 97.1 | 14549 (139x104) | 643130 (926x695) | >1M hexes
+save.hashGameState(cold) | 0.79 | 1.29 | 0.43 | 13.4 | 56.1 | 34283 (214x160) | 625660 (913x685) | >1M hexes
+trace.overlay(any unit) | 0.69 | 1.02 | 0.61 | 16 | 43.2 | 48142 (253x190) | >1M hexes | >1M hexes
+move.range(strat) | 0.62 | 0.91 | 0.44 | 18.1 | 42.8 | 55052 (271x203) | >1M hexes | >1M hexes
+trace.overlay(one unit) | 0.73 | 1.12 | 0.51 | 15.8 | 42 | 46174 (248x186) | >1M hexes | >1M hexes
+save.serializeState(cold) | 0.68 | 0.95 | 0.23 | 11.5 | 38.1 | 63519 (291x218) | >1M hexes | >1M hexes
+newgame.validate | 0.80 | 1.19 | 0.15 | 8.2 | 30.4 | 59492 (282x211) | >1M hexes | >1M hexes
+trace.sources(cold) | 0.64 | 0.81 | 0.26 | 2.6 | 4.3 | >1M hexes | >1M hexes | >1M hexes
+reinf.candidates(all) | 0.42 | 1.11 | 0.26 | 0.7 | 1.7 | >1M hexes | >1M hexes | >1M hexes
+newgame.oob | -0.15 | 0.00 | 0.97 | 1.7 | 1.4 | never | never | never
+ui.getView(project+clone) | 0.08 | 0.39 | 0.58 | 0.8 | 1 | >1M hexes | >1M hexes | >1M hexes
+move.range | -0.12 | -0.50 | -0.41 | 0.6 | 0.3 | never | never | never

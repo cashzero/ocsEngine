@@ -39,8 +39,12 @@ const time = (fn, runs = 5, budgetMs = 1500) => {
   return Math.round(times[Math.floor(times.length / 2)] * 10) / 10;
 };
 const timeAsync = async (fn, runs = 5) => { const times = []; for (let i = 0; i < runs; i += 1) { const s = performance.now(); await fn(); times.push(performance.now() - s); } times.sort((a, b) => a - b); return Math.round(times[Math.floor(times.length / 2)] * 10) / 10; };
-/** A shallow copy has a new identity, so WeakMap caches keyed by the state (paths, sources) start cold. */
-const fresh = (state) => ({ ...state });
+/**
+ * A copy with a new state and a new piece collection, as every accepted action produces: caches keyed by the
+ * state (serialization) or by the pieces (supply paths, sources, trace) start cold, as they do after an action.
+ * Caches tied only to the map and TEC (step costs, neighbours) stay warm, as they do in play.
+ */
+const fresh = (state) => ({ ...state, pieceState: { ...state.pieceState } });
 
 const results = [];
 for (const { width, height, divisions } of configs) {
@@ -117,7 +121,10 @@ for (const { width, height, divisions } of configs) {
     // Per-click session overhead.
     t['ui.getActionFamilies'] = time(() => ruleEngine.getActionFamilies(fresh(state), actor), 5);
     t['ui.getView(project+clone)'] = time(() => session.getView(pkg.bindings[0].seatId), 5);
-    t['save.hashGameState'] = await timeAsync(() => hashGameState(state), 3);
+    // Per accepted action: the new state is serialized once (cold) and hashed; the save and the next Undo
+    // checkpoint reuse that text, so after it they cost only what the warm rows show.
+    t['save.serializeState(cold)'] = time(() => serializeGameState(fresh(state)), 3);
+    t['save.hashGameState(cold)'] = await timeAsync(() => hashGameState(fresh(state)), 3);
     t['save.serializeSave'] = time(() => session.serializeSave(), 3);
     t['save.createCheckpoint'] = time(() => { const c = session.createCheckpoint('perf'); session.removeCheckpoint(c.id); }, 3);
 

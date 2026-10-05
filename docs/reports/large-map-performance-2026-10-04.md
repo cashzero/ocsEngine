@@ -1,8 +1,9 @@
 # 大地圖效能量測與瓶頸預測 — 2026-10-04
 
-狀態：**IN PROGRESS**。§1～§9 是修正前的量測（未改程式時的原貌，保留作為證據）。使用者 2026-10-04 決定「產生地圖可以慢一點、
-未來再改善，但 Trace Supply 要先修好」，§10 記錄 PERF-1（Trace Supply）與 PERF-5（增援候選）的修正與修正後量測。
-PERF-1 的 Trace 成本已解決，但其驗收「每次 < 200 ms」只有平均達標，單次最大值仍略超（§10.4），所以不標為完成；PERF-2、3、4、6 仍開放。
+狀態：**DONE**（2026-10-05）。§1～§9 是修正前的量測（未改程式時的原貌，保留作為證據）；§10 是 PERF-1（Trace Supply）與
+PERF-5（增援候選）的修正，§11 是 PERF-2（地圖產生）、PERF-3（建立 session）、PERF-6（每次動作的存檔成本）、PERF-4（End step）的修正。
+PERF-1～6 都依 §8 的驗收條件關閉；唯一例外是 PERF-1 中「遊戲第一次放置增援」單次 218 ms，使用者 2026-10-05 決定不追究（§11.5）。
+仍開放的只有放寬地圖上限時才會出現的 PERF-7（§11.6）。
 
 ## 1. 使用者要求
 
@@ -217,12 +218,12 @@ k 為 ms ∝ hexes^k 的擬合指數（6 師，32x24～128x96）；「末段 k�
 
 | ID | 缺少的行為 | 使用者可見影響 | 關閉證據 |
 |---|---|---|---|
-| PERF-1 Trace 覆蓋（**IN PROGRESS**，§10：Trace 成本已解決，剩單次最大值略超） | 覆蓋圖成本與 格×來源×棋子 成正比，且 UI 每次 revision 重算 1～2 次 | 64x48 開 Trace Supply 時每次點擊凍結 1～2 s，每個增援約 3 s | `browser-scale.mjs` 64x48 Trace 開：選取 arrival、放置、End step 每次 < 200 ms；`scaling-curve.mjs` 128x96 20 師覆蓋 < 1 s；trace 規則測試不變 |
-| PERF-2 地圖產生 | 道路網主幹 Prim 為 中心點³，補空隙為 格² | 64x48 Generate 約 1.2 s；放寬地圖上限後 96x72 4.6 s、128x96 22 s | `scaling-curve.mjs` 128x96 `newgame.map` < 2 s，且同種子產生的地圖與現在逐格相同（generator seed-sweep 測試） |
-| PERF-3 情境驗證／建立 session | 每個棋子重建並排序整張 map index；一次 New Game 重複驗證 3～4 次 | 64x48 Start 約 3 s；20 師 128x96 達 27 s；讀檔同樣慢 | `scaling-curve.mjs` 128x96 20 師 `newgame.session` < 2 s；驗證錯誤訊息與 path 不變 |
-| PERF-4 End step | 補給階段與 Breakout 判定重複計算編隊 trace（成員²），自動跳步試算全部動作種類 | 64x48 End step 0.4～0.7 s（Trace 關），128x96 20 師 4.7 s | 64x48 每次 End step < 200 ms（瀏覽器量測），補給／Breakout 規則測試不變 |
-| PERF-5 增援候選（**已修正**，§10：128x96 20 師 1.1 ms，達標） | 每個候選格重跑完整驗證，Pax／Eq 掃全地圖 | 64x48 每次放置約 90 ms，隨兵力平方成長（20 師 128x96 1.6 s） | `scaling-curve.mjs` `reinf.candidates(all)` 在 128x96 20 師 < 100 ms |
-| PERF-6 每次點擊固定成本 | 每個 dispatch 序列化整個存檔（含靜態地圖兩份）、hash 整個 state、checkpoint 再存一次；`getView` 每次點擊 52 次深拷貝 | 64x48 約 80 ms／點擊（另加 getView 約 30 ms），128x96 約 250～400 ms | 64x48 Trace 關時放置一個增援 < 100 ms（瀏覽器量測）；存檔／讀檔／重播驗證測試不變 |
+| PERF-1 Trace 覆蓋（**DONE**，§10、§11.5：第一次放置單次 218 ms 由使用者決定不追究） | 覆蓋圖成本與 格×來源×棋子 成正比，且 UI 每次 revision 重算 1～2 次 | 64x48 開 Trace Supply 時每次點擊凍結 1～2 s，每個增援約 3 s | `browser-scale.mjs` 64x48 Trace 開：選取 arrival、放置、End step 每次 < 200 ms；`scaling-curve.mjs` 128x96 20 師覆蓋 < 1 s；trace 規則測試不變 |
+| PERF-2 地圖產生（**DONE**，§11：128x96 22 s → 1.2 s，輸出逐 byte 相同） | 道路網主幹 Prim 為 中心點³，補空隙為 格² | 64x48 Generate 約 1.2 s；放寬地圖上限後 96x72 4.6 s、128x96 22 s | `scaling-curve.mjs` 128x96 `newgame.map` < 2 s，且同種子產生的地圖與現在逐格相同（generator seed-sweep 測試） |
+| PERF-3 情境驗證／建立 session（**DONE**，§11：128x96 20 師 26.6 s → 0.47 s） | 每個棋子重建並排序整張 map index；一次 New Game 重複驗證 3～4 次 | 64x48 Start 約 3 s；20 師 128x96 達 27 s；讀檔同樣慢 | `scaling-curve.mjs` 128x96 20 師 `newgame.session` < 2 s；驗證錯誤訊息與 path 不變 |
+| PERF-4 End step（**DONE**，§11：瀏覽器 64x48 最大 125 ms） | 補給階段與 Breakout 判定重複計算編隊 trace（成員²），自動跳步試算全部動作種類 | 64x48 End step 0.4～0.7 s（Trace 關），128x96 20 師 4.7 s | 64x48 每次 End step < 200 ms（瀏覽器量測），補給／Breakout 規則測試不變 |
+| PERF-5 增援候選（**DONE**，§10：128x96 20 師 1.1 ms） | 每個候選格重跑完整驗證，Pax／Eq 掃全地圖 | 64x48 每次放置約 90 ms，隨兵力平方成長（20 師 128x96 1.6 s） | `scaling-curve.mjs` `reinf.candidates(all)` 在 128x96 20 師 < 100 ms |
+| PERF-6 每次點擊固定成本（**DONE**，§11：Trace 關時放置最大 71 ms） | 每個 dispatch 序列化整個存檔（含靜態地圖兩份）、hash 整個 state、checkpoint 再存一次；`getView` 每次點擊 52 次深拷貝 | 64x48 約 80 ms／點擊（另加 getView 約 30 ms），128x96 約 250～400 ms | 64x48 Trace 關時放置一個增援 < 100 ms（瀏覽器量測）；存檔／讀檔／重播驗證測試不變 |
 
 地圖上限目前是 64x48（`NEW_GAME_MAP_LIMITS`）。在 PERF-1～3 關閉前放寬上限，New Game 與 Trace Supply 會在 96x72 左右進入 5 秒級。
 
@@ -302,8 +303,13 @@ PERF-1 驗收對照：
 
 超出的單次最大值不是 Trace 造成的：Trace 關閉時 End step 最大 261 ms，Trace 開與關的差距只有約 40 ms。剩下的是每次點擊的固定成本
 （PERF-6：存檔序列化 33 ms、state hash 17 ms、Undo checkpoint 15 ms、`getView` 多次深拷貝）與 End step 的步驟推進（PERF-4）。
-依「不得在任何驗收條件未滿足時標為完成」，PERF-1 維持 **IN PROGRESS**。關閉方式二擇一：修 PERF-6 讓單次最大值降到 200 ms 以下，
+依「不得在任何驗收條件未滿足時標為完成」，PERF-1 當時維持 **IN PROGRESS**。關閉方式二擇一：修 PERF-6 讓單次最大值降到 200 ms 以下，
 或由使用者決定把 PERF-1 的標準改成只衡量 Trace 本身（例如 Trace 開與關的差距 < 50 ms）；在使用者決定前不改標準。
+（後續：使用者選擇修 PERF-6，見 §11；PERF-1 的關閉見 §11.5。）
+
+註：本節 §10.3 的大地圖量測與 §10.4 的瀏覽器量測，使用的 build 早於 Pax／Eq「兩個 HQ 相鄰時漏格」的修正（commit 前由
+`reinforcement-hexes-equivalence.test.ts` 抓到並修正，見 §10.2）。該修正只在兩個 HQ 相距 3 格內時多出少數可放置格，不改變任何計算量，
+所以不影響本節數字；§11 的量測都使用含此修正的 build。
 
 PERF-5 驗收（`reinf.candidates(all)` 在 128x96 20 師 < 100 ms）：1.1 ms，達標。
 
@@ -314,3 +320,102 @@ PERF-5 驗收（`reinf.candidates(all)` 在 128x96 20 師 < 100 ms）：1.1 ms�
 3. **建立 session／情境驗證**（PERF-3）：64x48 1.3 s，128x96 5.3 s，128x96 20 師 12.8 s；與 棋子 × 格數 成正比。
 4. **每次點擊的固定成本**（PERF-6）成為 64x48 一般操作的主要成本：存檔、hash、checkpoint 合計約 65 ms，128x96 約 240 ms；也是 §10.4 單次最大值超過 200 ms 的原因。
 5. 增援候選、移動範圍、`getView`、OOB 產生、地圖繪製：都不是瓶頸。
+
+## 11. 修正：地圖產生（PERF-2）、建立 session（PERF-3）、每次動作的存檔成本（PERF-6）、End step（PERF-4）— 2026-10-05
+
+> 修正地圖產生跟session
+
+> 修每次動作的存檔成本
+
+> 修正 End step
+
+> 第一次放置偶爾 218 ms 的原因還沒確認 -> 這個不用管了
+
+### 11.1 改動
+
+| 檔案 | 改動 |
+|---|---|
+| `src/generation/map/internal.ts` | `coordinateFor`（Hex ID → 座標）與 `hexsideBetween`（兩格之間的 Hexside ID）記憶結果 |
+| `src/generation/map/roads.ts` | 主幹道樹（Prim）改為每個未接入中心點記住「最近的已接入點」，每加入一點只更新一次：中心點³ → 中心點²，平手時的取捨規則不變（比較 `node\|anchor` 字串）。補道路空隙時，新道路只從新加入的道路格往外降低距離，而不是每補一次就重算全圖距離 |
+| `src/generation/map/validation.ts` | 道路空隙量測改為從所有道路格同時往外走（在無邊界的六角格上一步正好是一格距離），取代「每格 × 每個道路格」的距離計算 |
+| `src/domain/map/map-index.ts` | 排序後的 Hex／Hexside 清單改為需要時才排序，且每個 Hex ID 只 parse 一次（排序結果相同） |
+| `src/domain/scenario/validation.ts` | 棋子位置檢查共用同一個 map index，不再每個棋子重建一次 |
+| `src/rules/kernel/snapshot.ts` | `serializeGameState` 對同一個（不可變的）state 只序列化一次；每個動作的 hash、自動存檔、下一個 Undo checkpoint 共用 |
+| `src/gameplay/persistence.ts` | 存檔文字：先把各 snapshot 換成唯一的佔位字串再編碼信封，再把快取的 snapshot JSON 放回原位；結果與 `canonicalJson(envelope)` 逐字相同，任何佔位字串不是恰好出現一次就退回原本的編碼。快取最近 64 份 snapshot JSON |
+| `src/ui/controller.ts` | 玩家視角（`getView`：projection＋深拷貝）在同一 revision、lifecycle、座位、交接狀態內只算一次（原本一次點擊 50～80 次） |
+| `src/rules/supply/supply.ts` | 補給路徑、Supply Source、trace index、單位 trace route、編隊 route 選項的快取，改以它們實際讀取的部分（棋子、map state、天氣、scenario、configuration）為鍵，而不是整個 state：一次 End step 會經過好幾個只改變 sequence 的 state，原本每個都從頭算 |
+
+規則、存檔格式、state hash、產生器輸出都沒有改變。
+
+### 11.2 結果不變的證據
+
+- `scripts/perf/compare-generation.mjs`：同一個請求在修正前（commit `8cb7d52` 的 build）與修正後產生的整個 New Game 內容
+  （地圖、OOB、部署、scenario）取 SHA-256 比較：16x12～64x48 與 24x40，三種地圖風格，每種 2 個種子，**42/42 相同**；
+  80x60、96x72、128x96 三種風格（放寬上限的量測複本）**9/9 相同**（`after-gen-save-endstep/compare-generation-*.log`）。
+- `tests/gameplay/save-serialization.test.ts`：存檔快速路徑的文字與 `canonicalJson(envelope)` 逐字相同（含 checkpoint 標籤帶引號、
+  反斜線、`\u0000`、以及長得像佔位字串的文字），且能讀回。
+- 全部測試 69 個檔案、419 個測試通過（包含 §10 的 trace 與增援等價測試）；`npm run typecheck`、`npm run smoke` 通過。
+
+### 11.3 引擎量測（`scaling-curve.mjs`；「冷」＝新的 state 與新的棋子集合，正如每個動作之後）
+
+`scaling-curve.mjs` 的冷快取複製在此一併修正：原本只淺拷貝 state，而 trace 快取現在以棋子集合為鍵，淺拷貝會誤命中快取；
+現在也複製棋子集合，並新增「冷序列化」與「冷 hash」兩列。
+
+| 元件 | 64x48 前 → 後 | 128x96 前 → 後 | 128x96 20 師 前 → 後 |
+|---|---|---|---|
+| New Game：地圖產生 | 1,161 → **219** | 21,969 → **1,218** | 27,572 → **1,399** |
+| New Game：建立 session | 1,443 → **119** | 5,639 → **373** | 26,621 → **465** |
+| New Game：package 驗證 | 616 → **8** | 1,981 → **30** | 10,290 → **43** |
+| Turn 1 最慢的一次 End step（applyAction） | 678 → **35** | 2,429 → **148** | 4,688 → **192** |
+| Turn 1 全部 applyAction | 1,928 → **90** | 5,528 → **259** | 11,639 → **464** |
+| 每個動作的存檔：hash＋存檔＋Undo checkpoint | 24＋45＋20 → **13**＋0.1＋0 | 79＋120＋54 → **56**＋0.1＋0 | 127＋166＋103 → **64**＋0.1＋0 |
+
+（「前」為 §5.1 的修正前量測。每個動作後只剩一次冷序列化加 SHA-256，存檔與 checkpoint 重用同一份文字。）
+
+存檔原本隨 Undo 堆疊變大：64x48 存檔在 0／30 個 checkpoint 時 33／77 ms、1.3／20.7 MB，每個動作都要重寫一次；修正後每次約 0.1 ms
+（`measure-save-before.txt`／`measure-save-after.txt`；修正後的數字是同一 state 重複呼叫，實際每個動作的成本見下面的 controller 量測）。
+
+UI controller 實際流程（`measure-scale.mjs`，64x48，Trace 開，`PERF_MOVES=20` 讓玩家移動單位、Undo 堆疊增長）：
+移動確認 140～205 ms → **平均 64、最大 82 ms**；放置增援平均 45、最大 57 ms；End step 平均 51、最大 58 ms；每個動作的存檔約 2 ms
+（`measure-scale-64x48-moves.json`）。
+
+### 11.4 瀏覽器（Chromium，從可見控制項操作 New Game 與完整 Turn 1）
+
+64x48（產品 build），單位 ms：
+
+| 操作 | 本報告開始時（Trace 開） | 修正後 Trace 開（平均／最大） | 修正後 Trace 關（平均／最大） |
+|---|---|---|---|
+| New Game：Generate preview | 1,805 | **1,083** | 1,097 |
+| New Game：Start | 2,915 | **1,074** | 1,102 |
+| 放置增援 | 1,741 | **86／218** | 29／71 |
+| 選取增援 | 1,007 | **27／30** | 29／48 |
+| End step | 1,803 | **83／125** | 93／138 |
+| 交接完成 | 3,471 | **186** | 136 |
+| 開啟 Trace Supply | 1,406 | **103** | — |
+
+頁面錯誤 0。128x96（放寬上限的量測複本，PERF-2／3 修正後、PERF-6／4 修正前的 build）：Generate preview 18,871 → **4,053**、
+Start 22,982 → **4,549**、頁面錯誤 0（`browser-128x96-trace-once.json`）。
+
+### 11.5 驗收對照（§8）
+
+| TODO | 驗收條件 | 結果 |
+|---|---|---|
+| PERF-2 | 128x96 `newgame.map` < 2 s；同種子產生的地圖相同 | 1.2 s；整個 New Game 內容 51/51 相同。**DONE** |
+| PERF-3 | 128x96 20 師 `newgame.session` < 2 s；驗證錯誤訊息與 path 不變 | 0.47 s；只改為共用同一個 map index，驗證測試全過。**DONE** |
+| PERF-4 | 64x48 每次 End step < 200 ms（瀏覽器）；補給／Breakout 規則測試不變 | 最大 125 ms（Trace 開）／138 ms（Trace 關）；規則測試全過。**DONE** |
+| PERF-6 | 64x48 Trace 關時放置一個增援 < 100 ms（瀏覽器）；存檔／讀檔／重播驗證測試不變 | 最大 71 ms；測試全過，存檔文字逐字相同。**DONE** |
+| PERF-1 | 64x48 Trace 開：選取、放置、End step 每次 < 200 ms；128x96 20 師覆蓋 < 1 s；trace 規則不變 | 選取最大 30、End step 最大 125；覆蓋 59 ms；等價測試通過。放置 8 次中 7 次 ≤ 82 ms，**遊戲第一次放置 218 ms**（其中主執行緒 long task 只有 56 ms）。這個值出現在量測腳本於放置前先截圖（`PERF_SHOT=1`）的執行中；不截圖重跑時同一次放置為 80 ms（`browser-64x48-trace-on-no-screenshot.json`），原因未確認。使用者 2026-10-05：「這個不用管了」。依使用者決定 **DONE** |
+
+### 11.6 全部修正後的瓶頸預測（`after-gen-save-endstep/fit-scaling.txt`）
+
+- 引擎各項在約 120x91 以前都不到 1 秒：Trace 覆蓋到 100 ms 約在 253x190，每個動作的冷 hash 到 100 ms 約在 214x160，
+  End step 到 1 s 約在 448x336。
+- **下一個限制在 New Game 畫面**：預覽 SVG 字串 64x48 237 ms、128x96 1.5 s（成長指數 1.2～1.6，另加瀏覽器建立 DOM），
+  地圖產生 128x96 1.2 s（約 122x91 到 1 s），theater model 128x96 0.4 s。瀏覽器實測 128x96 Generate 4.1 s、Start 4.5 s。
+- 產品目前上限 64x48，New Game 的 Generate 與 Start 各約 1.1 s，不是阻擋問題。
+
+| ID | 缺少的行為 | 使用者可見影響 | 關閉證據 |
+|---|---|---|---|
+| PERF-7 New Game 預覽與開始（**TODO**，僅在放寬地圖上限時需要） | 預覽 SVG 以整張地圖字串建立，地圖產生與 theater model 隨地圖約線性以上成長 | 64x48 各約 1.1 s；若放寬到 128x96，Generate 約 4 s、Start 約 4.5 s | 放寬上限前：`browser-scale.mjs` 128x96 Generate preview 與 Start 各 < 2 s，且 `compare-generation.mjs` 輸出不變 |
+
+本節證據：`docs/quality/evidence/perf-2026-10-04/after-gen-save-endstep/`。
