@@ -35,13 +35,28 @@ const settle = () => page.evaluate(() => new Promise((resolve) => {
 }));
 const rows = [];
 const measure = async (name, action) => {
-  const t0 = await page.evaluate(() => performance.now());
+  // PERF_FRAMES=1 also lists the gaps between animation frames inside each measurement (where the time went).
+  const t0 = await page.evaluate((frames) => {
+    if (frames) {
+      window.__frames = [];
+      const tick = (now) => { if (window.__frames) { window.__frames.push(now); requestAnimationFrame(tick); } };
+      requestAnimationFrame(tick);
+    }
+    return performance.now();
+  }, Boolean(process.env.PERF_FRAMES));
   await action();
   const t1 = await settle();
   const long = await page.evaluate((from) => window.__long.filter(({ start }) => start >= from - 1), t0);
   const row = { name, ms: Math.round(t1 - t0), longTasks: long.length, longestMs: Math.round(Math.max(0, ...long.map(({ ms }) => ms))), longTotalMs: Math.round(long.reduce((sum, { ms }) => sum + ms, 0)) };
+  if (process.env.PERF_FRAMES) {
+    row.frames = await page.evaluate((from) => {
+      const frames = window.__frames ?? [];
+      window.__frames = null;
+      return frames.map((at, index) => [Math.round(at - from), Math.round(at - (index > 0 ? frames[index - 1] : from))]).filter(([, gap]) => gap > 20);
+    }, t0);
+  }
   rows.push(row);
-  console.log(`${String(row.ms).padStart(6)} ms  long ${String(row.longTotalMs).padStart(6)} ms (${row.longTasks}, max ${row.longestMs})  ${name}`);
+  console.log(`${String(row.ms).padStart(6)} ms  long ${String(row.longTotalMs).padStart(6)} ms (${row.longTasks}, max ${row.longestMs})  ${name}${row.frames ? `  frame gaps [at, ms]: ${JSON.stringify(row.frames)}` : ''}`);
   return row;
 };
 /**

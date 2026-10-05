@@ -36,7 +36,35 @@ import { detrainableHexesFrom, isRailHex, railNetworkOf, railTracePassable } fro
 
 type CostMap = ReadonlyMap<HexId, number>;
 
-const pathCaches = new WeakMap<GameState, Map<string, CostMap>>();
+/**
+ * Caches for supply paths and trace (12.3, 12.6). They read only the pieces, the map state (rail control), the
+ * weather (path costs), the scenario and the configuration, so they are kept per combination of those objects
+ * rather than per state: one End step passes through several states that change only the sequence, and a cache
+ * per state started cold at each of them.
+ */
+interface TraceScope {
+  readonly mapState: GameState['mapState'];
+  readonly weather: GameState['weather'];
+  readonly scenario: GameState['scenario'];
+  readonly configuration: GameState['configuration'];
+  readonly caches: Map<string, unknown>;
+}
+
+const traceScopes = new WeakMap<GameState['pieceState'], TraceScope[]>();
+
+const traceScopeCache = <T>(state: GameState, name: string, create: () => T): T => {
+  let scopes = traceScopes.get(state.pieceState);
+  if (!scopes) { scopes = []; traceScopes.set(state.pieceState, scopes); }
+  let scope = scopes.find((candidate) => candidate.mapState === state.mapState && candidate.weather === state.weather
+    && candidate.scenario === state.scenario && candidate.configuration === state.configuration);
+  if (!scope) {
+    scope = { mapState: state.mapState, weather: state.weather, scenario: state.scenario, configuration: state.configuration, caches: new Map() };
+    scopes.push(scope);
+  }
+  let cache = scope.caches.get(name) as T | undefined;
+  if (cache === undefined) { cache = create(); scope.caches.set(name, cache); }
+  return cache;
+};
 
 /**
  * What blocks a supply path for one player in one state, shared by every path traced in it (a large map
@@ -47,11 +75,8 @@ interface SupplyPathBlocks {
   readonly zoc: Map<HexId, boolean>;
 }
 
-const pathBlocks = new WeakMap<GameState, Map<string, SupplyPathBlocks>>();
-
 const supplyPathBlocks = (state: GameState, playerId: PlayerId): SupplyPathBlocks => {
-  let cache = pathBlocks.get(state);
-  if (!cache) { cache = new Map(); pathBlocks.set(state, cache); }
+  const cache = traceScopeCache(state, 'path-blocks', () => new Map<string, SupplyPathBlocks>());
   const cached = cache.get(String(playerId));
   if (cached) return cached;
   const enemyCombat = new Set<HexId>();
@@ -111,8 +136,7 @@ export const supplyPathCosts = (
   mobility: MobilityType,
   maximumTicks: number,
 ): CostMap => {
-  let cache = pathCaches.get(state);
-  if (!cache) { cache = new Map(); pathCaches.set(state, cache); }
+  const cache = traceScopeCache(state, 'paths', () => new Map<string, CostMap>());
   const key = `${playerId}|${originHexId}|${mobility}|${maximumTicks}`;
   const cached = cache.get(key);
   if (cached) return cached;
@@ -275,7 +299,6 @@ export interface SupplySourceHex {
   readonly kind: 'MAP_EDGE' | 'DETRAINABLE' | 'EXTENDER';
 }
 
-const sourceCache = new WeakMap<GameState, Map<string, readonly SupplySourceHex[]>>();
 
 /**
  * 12.6a Supply Sources: the side's map-edge sources; detrainable Hexes with a rail path free of enemy
@@ -284,8 +307,7 @@ const sourceCache = new WeakMap<GameState, Map<string, readonly SupplySourceHex[
  * (12.7g) to its source, so the rail line beyond it becomes detrainable (12.7a B and C).
  */
 export const friendlySupplySources = (state: GameState, playerId: PlayerId): readonly SupplySourceHex[] => {
-  let cache = sourceCache.get(state);
-  if (!cache) { cache = new Map(); sourceCache.set(state, cache); }
+  const cache = traceScopeCache(state, 'sources', () => new Map<string, readonly SupplySourceHex[]>());
   const cached = cache.get(String(playerId));
   if (cached) return cached;
   const side = sideOf(state, playerId);
@@ -378,11 +400,9 @@ const withAdjacent = (maps: readonly CostMap[]): Set<HexId> => {
   return reached;
 };
 
-const traceIndexes = new WeakMap<GameState, Map<string, TraceIndex>>();
 
 const traceIndex = (state: GameState, playerId: PlayerId): TraceIndex => {
-  let cache = traceIndexes.get(state);
-  if (!cache) { cache = new Map(); traceIndexes.set(state, cache); }
+  const cache = traceScopeCache(state, 'trace-index', () => new Map<string, TraceIndex>());
   const cached = cache.get(String(playerId));
   if (cached) return cached;
   const sources = friendlySourceHexes(state, playerId);
@@ -444,25 +464,42 @@ export const formationRouteOptions = (
 ): readonly { readonly routeKey: TraceRouteKey; readonly pieceIds: readonly PieceId[] }[] => {
   const byKey = new Map<TraceRouteKey, PieceId[]>();
   for (const piece of formationMembers(state, playerId, formationId)) {
-    for (const key of traceRoutesFor(state, piece)) byKey.set(key, [...(byKey.get(key) ?? []), piece.id]);
+    for (const key of pieceRoutes(state, piece)) byKey.set(key, [...(byKey.get(key) ?? []), piece.id]);
   }
   return stableSort([...byKey.entries()].map(([key, pieceIds]) => ({ routeKey: key, pieceIds })),
     (left, right) => right.pieceIds.length - left.pieceIds.length || left.routeKey.localeCompare(right.routeKey));
 };
 
+/**
+ * A unit's own trace routes at its Hex, and each formation's route options, kept in the trace scope: the end of
+ * a step asks whether every unit traces (12.6), Breakout asks again for every other unit (12.8e), and each answer
+ * for a formation member needed the whole formation's routes. Keyed by the exact Piece object (immutable).
+ */
+const pieceRoutes = (state: GameState, piece: PieceState): readonly TraceRouteKey[] => {
+  const cache = traceScopeCache(state, 'piece-routes', () => new WeakMap<PieceState, readonly TraceRouteKey[]>());
+  let routes = cache.get(piece);
+  if (!routes) { routes = traceRoutesFor(state, piece); cache.set(piece, routes); }
+  return routes;
+};
+
 /** The formation's common route: the player's choice this Supply Phase, else the one covering most units. */
 export const formationRoute = (state: GameState, playerId: PlayerId, formationId: DefinitionId): TraceRouteKey | null => {
-  const options = formationRouteOptions(state, playerId, formationId);
+  const cache = traceScopeCache(state, 'formation-options', () => new Map<string, ReturnType<typeof formationRouteOptions>>());
+  const key = `${playerId}|${formationId}`;
+  let options = cache.get(key);
+  if (!options) { options = formationRouteOptions(state, playerId, formationId); cache.set(key, options); }
   const chosen = state.formationTraces.find((choice) => choice.formationId === formationId)?.routeKey;
-  return options.find(({ routeKey: key }) => key === chosen)?.routeKey ?? options[0]?.routeKey ?? null;
+  return options.find(({ routeKey: option }) => option === chosen)?.routeKey ?? options[0]?.routeKey ?? null;
 };
 
 /**
  * 12.6, 12.6f: does `piece` make its trace "for free"? A member of a multi-unit formation must use
  * the formation's common route; any other unit may use any route.
  */
-export const pieceHasTrace = (state: GameState, piece: PieceState): boolean => {
-  const routes = traceRoutesFor(state, piece);
+export const pieceHasTrace = (state: GameState, piece: PieceState): boolean => computePieceHasTrace(state, piece);
+
+const computePieceHasTrace = (state: GameState, piece: PieceState): boolean => {
+  const routes = pieceRoutes(state, piece);
   if (routes.length === 0) return false;
   const formationId = formationOf(state, piece);
   if (!isMultiUnitFormation(state, formationId)) return true;

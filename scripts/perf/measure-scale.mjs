@@ -129,6 +129,9 @@ for (const [width, height] of sizes) {
 
   const phaseOf = (snap) => { const s = snap.view.projection?.sequence; return s ? `T${s.gameTurn} ${s.playerTurnIndex} ${s.phase}/${s.segment} ${s.actingPlayerId}` : 'locked'; };
   const sampledPhases = new Set();
+  const moveBudget = Number(process.env.PERF_MOVES ?? 0);
+  const triedMovers = new Map();
+  const movedIds = new Set();
   let stuck = 0;
   let lastRevision = -1;
   for (let step = 0; step < 600; step += 1) {
@@ -137,7 +140,7 @@ for (const [width, height] of sizes) {
     if (sequence && sequence.gameTurn >= 2) { console.log('reached Game Turn 2 at step', step); break; }
     if (session.getRevision() === lastRevision && !snap.view.privacyLocked && !snap.handoff) stuck += 1; else stuck = 0;
     lastRevision = session.getRevision();
-    if (stuck > 5) { console.log('stuck at', phaseOf(snap), snap.notice); break; }
+    if (stuck > 5 + moveBudget * 3) { console.log('stuck at', phaseOf(snap), snap.notice); break; }
     const phase = phaseOf(snap);
     if (snap.view.privacyLocked) { await op(`handoff: complete (${phase})`, () => controller.completeHandoff()); continue; }
     if (snap.handoff) { await op(`handoff: begin (${phase})`, () => controller.beginHandoff()); continue; }
@@ -162,6 +165,29 @@ for (const [width, height] of sizes) {
       const hexId = controller.getSnapshot().placementHexes[0];
       await op(`reinforcement: place (${phase})`, () => controller.clickHex(hexId));
       continue;
+    }
+    // PERF_MOVES=N: in each Movement Phase move up to N units (select, preview the farthest reachable Hex, confirm),
+    // as a player would, so the Undo stack fills and per-action costs that grow with it show up.
+    const sequenceNow = snap.view.projection?.sequence;
+    if (moveBudget > 0 && sequenceNow?.phase === 'MOVEMENT' && sequenceNow.segment === 'MOVEMENT') {
+      const tried = triedMovers.get(phase) ?? new Set();
+      triedMovers.set(phase, tried);
+      const mover = tried.size < moveBudget * 3 && snap.view.projection.stacks.flatMap(({ pieces }) => pieces)
+        .find((piece) => piece.ownerId === snap.view.playerId && piece.location.kind === 'ON_MAP' && !tried.has(piece.id));
+      if (mover && [...tried].filter((id) => movedIds.has(id)).length < moveBudget) {
+        tried.add(mover.id);
+        await op(`move: select unit (${phase})`, () => controller.selectPiece(mover.id));
+        const range = [...controller.getSnapshot().moveRange.entries()].sort((a, b) => b[1].costTicks - a[1].costTicks);
+        if (range.length > 0) {
+          const [destination] = range[0];
+          await op(`move: preview (${phase})`, () => controller.clickHex(destination));
+          const before = session.getRevision();
+          await op(`move: confirm (${phase})`, () => controller.clickHex(destination));
+          if (session.getRevision() !== before) movedIds.add(mover.id);
+        }
+        controller.clearSelection();
+        continue;
+      }
     }
     if (!snap.endStep.enabled) { console.log('end step blocked at', phase, snap.endStep.blockers); break; }
     await op(`end step (${phase})`, () => controller.endStep());

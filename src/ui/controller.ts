@@ -267,6 +267,11 @@ class DefaultUiController implements UiController {
 
   #activeSeat(): SeatId { return this.#session.getMetadata().activeSeatId; }
 
+  /** The seat's view, projected and copied once per revision, lifecycle, active seat and hand-over (one click read it ~50 times). */
+  #view(seatId: SeatId): ReturnType<GameSession['getView']> {
+    return this.#cached(`view|${seatId}`, () => this.#session.getView(seatId));
+  }
+
   #playerOf(seatId: SeatId): PlayerId { return this.#bindings.find((binding) => binding.seatId === seatId)!.playerId; }
 
   #cached<T>(key: string, compute: () => T): T {
@@ -300,7 +305,7 @@ class DefaultUiController implements UiController {
   }
 
   #pieces(): readonly ProjectedPiece[] {
-    return (this.#session.getView(this.#activeSeat()).projection?.stacks ?? []).flatMap(({ pieces }) => pieces);
+    return (this.#view(this.#activeSeat()).projection?.stacks ?? []).flatMap(({ pieces }) => pieces);
   }
 
   #decision() {
@@ -329,7 +334,7 @@ class DefaultUiController implements UiController {
       for (const [seat, seen] of this.#seen) this.#seen.set(seat, Math.min(seen, length));
     }
     if (this.#openTransaction !== null) {
-      const view = this.#session.getView(this.#activeSeat());
+      const view = this.#view(this.#activeSeat());
       const combat = view.projection?.combat;
       // Keep the odds as declared: after the roll, losses change the strengths shown in the projection.
       if (combat && combat.result === null) this.#combatFacts.set(this.#openTransaction, combat);
@@ -338,7 +343,7 @@ class DefaultUiController implements UiController {
   }
 
   #stepKey(): string | null {
-    const sequence = this.#session.getView(this.#activeSeat()).projection?.sequence;
+    const sequence = this.#view(this.#activeSeat()).projection?.sequence;
     return sequence ? `${sequence.gameTurn}:${sequence.playerTurnIndex}:${sequence.phase}:${sequence.segment}:${sequence.actingPlayerId}` : null;
   }
 
@@ -348,7 +353,7 @@ class DefaultUiController implements UiController {
     if (metadata.lifecycle !== 'ACTIVE' || this.#handoffToken !== null || this.#decision() !== null) return;
     const key = this.#stepKey();
     if (key === null || this.#autoCheckpoint?.stepKey === key) return;
-    const sequence = this.#session.getView(this.#activeSeat()).projection!.sequence;
+    const sequence = this.#view(this.#activeSeat()).projection!.sequence;
     const label = `Auto: start of ${phaseLabel(sequence.phase, sequence.segment)} (turn ${sequence.gameTurn})`;
     if (this.#autoCheckpoint) this.#session.removeCheckpoint(this.#autoCheckpoint.id);
     const checkpoint = this.#session.createCheckpoint(label);
@@ -358,7 +363,7 @@ class DefaultUiController implements UiController {
 
   #buildDraftAction(input: DraftInput): GameAction | null {
     if (input.selectedIds.length === 0) return null;
-    const view = this.#session.getView(this.#activeSeat());
+    const view = this.#view(this.#activeSeat());
     const actor = view.playerId;
     if (input.kind === 'BARRAGE') {
       const targets = this.#candidates('DECLARE_BARRAGE').find((action) => action.kind === 'DECLARE_BARRAGE' && action.targetHexId === input.targetHexId);
@@ -379,7 +384,7 @@ class DefaultUiController implements UiController {
   }
 
   #endStep(): EndStep {
-    const view = this.#session.getView(this.#activeSeat());
+    const view = this.#view(this.#activeSeat());
     const sequence = view.projection?.sequence;
     const label = sequence ? `Finish ${phaseLabel(sequence.phase, sequence.segment)}` : 'End step';
     const next = sequence ? nominalNextStep(sequence) : '';
@@ -427,7 +432,7 @@ class DefaultUiController implements UiController {
 
   #handoffReason(toSeatId: SeatId): string {
     const pending = this.#decision();
-    const combat = this.#session.getView(this.#activeSeat()).projection?.combat;
+    const combat = this.#view(this.#activeSeat()).projection?.combat;
     const where = combat ? ` at ${printedHexLabel(combat.targetHexId)}` : '';
     const what = combat?.kind === 'BARRAGE' ? 'barrage' : combat?.kind === 'OVERRUN' ? 'overrun' : 'attack';
     if (pending && pending.seatId === toSeatId) {
@@ -444,7 +449,7 @@ class DefaultUiController implements UiController {
         case 'DISPLACEMENT_HEX': return 'Place displaced trucks (9.14).';
       }
     }
-    const sequence = this.#session.getView(this.#activeSeat()).projection?.sequence;
+    const sequence = this.#view(this.#activeSeat()).projection?.sequence;
     if (!sequence) return 'Their turn to act.';
     if (sequence.phase === 'REACTION') return 'Reaction Phase: move released Reserves and fire barrages (7.0).';
     const phasing = this.#bindings.find(({ playerId }) => playerId === sequence.phasingPlayerId)?.seatId === toSeatId;
@@ -579,7 +584,7 @@ class DefaultUiController implements UiController {
 
   #combatSheet(decision: NonNullable<UiSnapshot['decision']>, playerId: PlayerId): CombatSheet | null {
     if (!decision.transactionId) return null;
-    const combat = this.#session.getView(this.#activeSeat()).projection?.combat;
+    const combat = this.#view(this.#activeSeat()).projection?.combat;
     const role = combat && combat.attackerOwnerId === playerId ? 'ATTACKER' : 'DEFENDER';
     const labels = role === 'ATTACKER' ? ['Combat supply', 'Defender decides', 'Roll', 'Results'] : ['Combat supply', 'AR unit', 'Terrain', 'Roll', 'Results'];
     const current = decision.kind === 'SUPPLY_SOURCE' ? 0 : decision.kind === 'DEFENDER_LEAD' ? 1 : decision.kind === 'DEFENDER_TERRAIN' ? 2 : labels.length - 1;
@@ -606,7 +611,7 @@ class DefaultUiController implements UiController {
 
   getSnapshot = (): UiSnapshot => {
     const seatId = this.#activeSeat();
-    const view = this.#session.getView(seatId);
+    const view = this.#view(seatId);
     const families = this.#cached('families', () => this.#session.getActionFamilies(seatId));
     const enabled = (kind: GameAction['kind']) => families.some((family) => family.kind === kind && family.enabled);
     const pieces = this.#pieces();
@@ -784,7 +789,7 @@ class DefaultUiController implements UiController {
   #airOptions(): ReadonlyMap<AirMissionKind, ReadonlyMap<string, ReadonlyMap<string, readonly PieceId[]>>> {
     return this.#cached('air-options', () => {
       const options = new Map<AirMissionKind, Map<string, Map<string, PieceId[]>>>();
-      const view = this.#session.getView(this.#activeSeat());
+      const view = this.#view(this.#activeSeat());
       const own = this.#pieces().filter((piece) => piece.ownerId === view.playerId && piece.location.kind === 'ON_MAP'
         && this.#definition(piece)?.family === 'AIR' && !piece.statuses.includes('status:air-inactive'));
       for (const plane of own) {
@@ -808,7 +813,7 @@ class DefaultUiController implements UiController {
 
   /** Air Transport and Air Drop: the cargo is part of the order, so the draft carries Transports, routes, units and Tokens. */
   #transportDraftView(input: AirDraftInput): AirDraft {
-    const view = this.#session.getView(this.#activeSeat());
+    const view = this.#view(this.#activeSeat());
     const bases = view.projection?.air.transport ?? [];
     const target = input.targetHexId as HexId | null;
     const drop = input.mission === 'AIR_DROP';
@@ -890,7 +895,7 @@ class DefaultUiController implements UiController {
     const selected = input.selectedIds.filter((id) => eligible.includes(id));
     let action: GameAction | null = null;
     if (input.targetHexId && selected.length > 0) {
-      const view = this.#session.getView(this.#activeSeat());
+      const view = this.#view(this.#activeSeat());
       action = {
         actionId: this.#actionId('air'), actorId: view.playerId, expectedRevision: this.#session.getRevision(),
         kind: 'DECLARE_AIR_MISSION', mission: input.mission, aircraftIds: selected, targetHexId: input.targetHexId as never, target: input.target,
@@ -925,9 +930,9 @@ class DefaultUiController implements UiController {
   }
 
   #rebuilds(enabled: (kind: GameAction['kind']) => boolean): readonly AirRebuild[] {
-    const projected = this.#session.getView(this.#activeSeat()).projection?.air.rebuilds ?? [];
+    const projected = this.#view(this.#activeSeat()).projection?.air.rebuilds ?? [];
     if (!enabled('REBUILD_AIRCRAFT')) return [];
-    const view = this.#session.getView(this.#activeSeat());
+    const view = this.#view(this.#activeSeat());
     return projected.map((option): AirRebuild => {
       const choice = this.#rebuildSelection.get(option.eqPieceId);
       // Default: as many aircraft as the Eq pay for (two steps each), reduced ones here first.
@@ -982,7 +987,7 @@ class DefaultUiController implements UiController {
 
   #groundRebuilds(enabled: (kind: GameAction['kind']) => boolean): readonly GroundRebuild[] {
     if (!enabled('REBUILD_UNITS')) return [];
-    const view = this.#session.getView(this.#activeSeat());
+    const view = this.#view(this.#activeSeat());
     return (view.projection?.replacements.rebuilds ?? []).map((option): GroundRebuild => {
       const choice = this.#unitRebuildSelection.get(option.hexId);
       // Default: reduced units here first, then the Dead Pile, as many steps as the Repls pay for; trucks with the Eq left.
@@ -1066,7 +1071,7 @@ class DefaultUiController implements UiController {
 
   /** The player's Drop Plans and the one being made (14.10b), for the Aircraft Refit Phase. */
   #dropPlanning(enabled: (kind: GameAction['kind']) => boolean): { readonly dropPlans: readonly DropPlanView[]; readonly dropDraft: DropPlanDraft | null; readonly dropPlanning: boolean } {
-    const view = this.#session.getView(this.#activeSeat());
+    const view = this.#view(this.#activeSeat());
     const projection = view.projection;
     const turn = projection?.sequence.gameTurn ?? 0;
     const label = (pieceId: string) => { const piece = this.#pieces().find(({ id }) => id === pieceId); return piece ? unitLabel(this.#scenario, piece) : 'Unit'; };
@@ -1137,7 +1142,7 @@ class DefaultUiController implements UiController {
     if (!plan) return;
     await this.#dispatch({
       kind: 'UPDATE_AIR_DROP_PLAN', planId, unitIds: plan.units.map(({ id }) => id), change,
-      actionId: this.#actionId('drop-plan'), actorId: this.#session.getView(this.#activeSeat()).playerId, expectedRevision: this.#session.getRevision(),
+      actionId: this.#actionId('drop-plan'), actorId: this.#view(this.#activeSeat()).playerId, expectedRevision: this.#session.getRevision(),
     } as GameAction, change === 'DELAY' ? `Drop at ${printedHexLabel(plan.hexId)} delayed to turn ${plan.turn + 1}.` : `Drop at ${printedHexLabel(plan.hexId)} cancelled.`);
   };
 
@@ -1181,7 +1186,7 @@ class DefaultUiController implements UiController {
   };
 
   #airOverview(enabled: (kind: GameAction['kind']) => boolean, selected: ProjectedPiece | null): AirOverview {
-    const view = this.#session.getView(this.#activeSeat());
+    const view = this.#view(this.#activeSeat());
     const projection = view.projection;
     const segment = projection?.sequence.segment;
     const missionsEnabled = enabled('DECLARE_AIR_MISSION') && !this.#decision();
@@ -1356,7 +1361,7 @@ class DefaultUiController implements UiController {
   }
 
   #probe(action: Omit<GameAction, 'actionId' | 'actorId' | 'expectedRevision'>): GameAction | null {
-    const view = this.#session.getView(this.#activeSeat());
+    const view = this.#view(this.#activeSeat());
     const full = { ...action, actionId: this.#actionId('probe'), actorId: view.playerId, expectedRevision: this.#session.getRevision() } as GameAction;
     return this.#explain(full).allowed ? full : null;
   }
@@ -1438,7 +1443,7 @@ class DefaultUiController implements UiController {
     return this.#cached('step-actions', () => {
       const actions: UnitAction[] = [];
       const name = (pieceId: string) => { const piece = this.#pieces().find(({ id }) => id === pieceId); return piece ? unitLabel(this.#scenario, piece) : 'Unit'; };
-      const formations = this.#formationNames(this.#session.getView(this.#activeSeat()).playerId);
+      const formations = this.#formationNames(this.#view(this.#activeSeat()).playerId);
       if (enabled('RECOVER_INTERNALS')) {
         for (const action of this.#candidates('RECOVER_INTERNALS')) {
           if (action.kind === 'RECOVER_INTERNALS') actions.push({ key: `recover:${action.pieceId}`, group: 'SUPPLY', label: `${name(action.pieceId)}: recover internal stocks`, action });
@@ -1469,7 +1474,7 @@ class DefaultUiController implements UiController {
     const action = kind === 'LOAD'
       ? { kind: 'LOAD_SUPPLY', truckId: truck.id, dumpId: dumpId as PieceId, tokens }
       : { kind: 'UNLOAD_SUPPLY', truckId: truck.id, tokens };
-    await this.#dispatch({ ...action, actionId: this.#actionId('transfer'), actorId: this.#session.getView(this.#activeSeat()).playerId, expectedRevision: this.#session.getRevision() } as GameAction,
+    await this.#dispatch({ ...action, actionId: this.#actionId('transfer'), actorId: this.#view(this.#activeSeat()).playerId, expectedRevision: this.#session.getRevision() } as GameAction,
       kind === 'LOAD' ? `Loaded ${tokens}T onto the truck at ${where}.` : `Unloaded ${tokens}T at ${where}.`);
   };
 
@@ -1479,7 +1484,7 @@ class DefaultUiController implements UiController {
     if (!truck || !Number.isSafeInteger(points) || points < 1) return;
     await this.#dispatch({
       kind: 'DIVIDE_TRANSPORT', truckId: truck.id, points,
-      actionId: this.#actionId('divide'), actorId: this.#session.getView(this.#activeSeat()).playerId, expectedRevision: this.#session.getRevision(),
+      actionId: this.#actionId('divide'), actorId: this.#view(this.#activeSeat()).playerId, expectedRevision: this.#session.getRevision(),
     } as GameAction, `Split off ${points} truck point${points === 1 ? '' : 's'}.`);
   };
 
@@ -1491,7 +1496,7 @@ class DefaultUiController implements UiController {
   };
 
   #emit(): void {
-    const view = this.#session.getView(this.#activeSeat());
+    const view = this.#view(this.#activeSeat());
     if (!view.privacyLocked) this.#seen.set(this.#activeSeat(), this.#history().length);
     const snapshot = this.getSnapshot();
     for (const listener of this.#listeners) listener(snapshot);
@@ -1525,11 +1530,11 @@ class DefaultUiController implements UiController {
     if (!action) return;
     await this.#dispatch(action, 'Move finished.');
     // Keep the selection when the game refused, so the notice explains why the unit is still held.
-    if (this.#session.getView(this.#activeSeat()).projection?.currentMoverId !== pieceId) this.clearSelection();
+    if (this.#view(this.#activeSeat()).projection?.currentMoverId !== pieceId) this.clearSelection();
   };
 
   #openDraft(kind: AttackDraft['kind'], targetHexId: string): void {
-    const snapshotSegment = this.#session.getView(this.#activeSeat()).projection?.sequence.segment;
+    const snapshotSegment = this.#view(this.#activeSeat()).projection?.sequence.segment;
     if (kind === 'BARRAGE') {
       const candidates = this.#candidates('DECLARE_BARRAGE').filter((action) => action.kind === 'DECLARE_BARRAGE' && action.targetHexId === targetHexId);
       const eligible = [...new Set(candidates.flatMap((action) => action.kind === 'DECLARE_BARRAGE' ? action.firerIds : []))];
@@ -1679,7 +1684,7 @@ class DefaultUiController implements UiController {
     const passed: string[] = [];
     for (let guard = 0; guard < 12; guard += 1) {
       if (this.#session.getMetadata().lifecycle !== 'ACTIVE' || this.#handoffToken !== null || this.#decision() !== null) break;
-      const sequence = this.#session.getView(this.#activeSeat()).projection?.sequence;
+      const sequence = this.#view(this.#activeSeat()).projection?.sequence;
       const seat = this.#bindings.find(({ playerId }) => playerId === sequence?.actingPlayerId);
       if (!sequence || !seat || seat.seatId === this.#activeSeat()) break;
       const enabled = this.#session.getActionFamilies(seat.seatId).filter(({ enabled: on }) => on).map(({ kind }) => kind);
@@ -1797,7 +1802,7 @@ class DefaultUiController implements UiController {
   });
 
   endStep = async (): Promise<void> => {
-    const view = this.#session.getView(this.#activeSeat());
+    const view = this.#view(this.#activeSeat());
     const action: GameAction = {
       actionId: this.#actionId('advance'), actorId: view.playerId, expectedRevision: this.#session.getRevision(), kind: 'ADVANCE_SEQUENCE',
     };
