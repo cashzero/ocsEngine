@@ -58,6 +58,10 @@ export interface MapState {
   readonly traceDirect: ReadonlySet<string>;
   /** Supply Sources marked with the trace overlay: detrainable rail Hex (RAIL) and Extender (EXT); map-edge sources have their own disc. */
   readonly supplySources: readonly { readonly hexId: string; readonly kind: 'MAP_EDGE' | 'DETRAINABLE' | 'EXTENDER' }[];
+  /** Trace Supply overlay: control of each rail Hex (13.3h), drawn along the track; empty while the overlay is off. */
+  readonly railControl: readonly { readonly hexId: string; readonly control: 'OWN' | 'ENEMY' | 'NEUTRAL' }[];
+  /** Every objective with its VP and the index of the player holding it now (null: neutral); always drawn. */
+  readonly objectives: readonly { readonly hexId: string; readonly points: number; readonly holder: 0 | 1 | null }[];
   readonly ownZone: ReadonlySet<string>;
   readonly enemyZone: ReadonlySet<string>;
   readonly trainbusting: readonly { readonly hexId: string; readonly own: boolean }[];
@@ -76,7 +80,7 @@ export interface MapEvents {
 
 export const EMPTY_MAP_STATE: MapState = {
   selectedHexId: null, reachable: new Map(), dimmed: new Set(), attack: new Set(), barrage: new Set(), placement: new Set(), retreat: new Set(), highlight: new Set(),
-  airTargets: new Set(), destinationHexId: null, targetHexIds: new Set(), path: [], traceCoverage: new Set(), traceDirect: new Set(), supplySources: [], ownZone: new Set(), enemyZone: new Set(), trainbusting: [], counters: [], badges: [],
+  airTargets: new Set(), destinationHexId: null, targetHexIds: new Set(), path: [], traceCoverage: new Set(), traceDirect: new Set(), supplySources: [], railControl: [], objectives: [], ownZone: new Set(), enemyZone: new Set(), trainbusting: [], counters: [], badges: [],
 };
 
 /**
@@ -564,12 +568,14 @@ export class MapView {
     blit('ground');
     this.#withMapTransform(() => { this.#drawDimming(); this.#drawTraceCoverage(); this.#drawHexHighlights(); });
     blit('lines');
-    this.#withMapTransform(() => this.#drawSupplySources());
+    this.#withMapTransform(() => { this.#drawRailControl(); this.#drawSupplySources(); });
     this.#withMapTransform(() => {
       this.#drawHexNumbers();
       this.#drawAirMarks();
       this.#drawPath();
       this.#drawCounters();
+      // Over the counters: who holds an objective must stay readable while a unit stands on it.
+      this.#drawObjectives();
       this.#drawBadges();
       this.#drawTargets();
       this.#drawCursor();
@@ -815,18 +821,6 @@ export class MapView {
           ctx.fillText(text, x, y);
         }
       }
-      if (geometry.objectives.has(cell.id)) {
-        const { cx, cy, r, star } = objectiveArt(cell, size);
-        ctx.beginPath();
-        ctx.arc(cx, cy, r, 0, Math.PI * 2);
-        ctx.fillStyle = '#2a2112';
-        ctx.fill();
-        ctx.strokeStyle = '#ffd766';
-        ctx.lineWidth = 1.8;
-        ctx.stroke();
-        ctx.fillStyle = '#ffd766';
-        ctx.fill(polygon(star));
-      }
       if (cell.supplySource) {
         const { cx, cy, r, fontSize } = supplySourceArt(cell, size, geometry.objectives.has(cell.id));
         ctx.beginPath();
@@ -898,6 +892,95 @@ export class MapView {
     })();
     if (this.#throwHatch) { ctx.fillStyle = this.#throwHatch; ctx.fill(thrown); }
     ctx.restore();
+  }
+
+  /**
+   * Objectives, drawn every frame because their holder changes in play: a disc in the hex's bottom point holding the
+   * holder's mark (first player a white star, second player a black cross, neutral a gold diamond, so the holder reads
+   * without colour too), ringed in the holder's colour, with the VP beside it.
+   */
+  #drawObjectives(): void {
+    const { objectives } = this.#state;
+    const geometry = this.#geometry;
+    const size = this.#scene?.theater.layout.hexSize ?? 0;
+    if (objectives.length === 0 || !geometry) return;
+    const ctx = this.#ctx;
+    ctx.save();
+    objectives.forEach(({ hexId, points, holder }) => {
+      const cell = geometry.byId.get(hexId);
+      if (!cell) return;
+      const art = objectiveArt(cell, size);
+      const { cx, cy } = art;
+      // Larger than the printed-map star so the holder's mark and the VP read at normal zoom.
+      const r = art.r * 1.4;
+      const star = art.star.map(({ x, y }) => ({ x: cx + (x - cx) * 1.4, y: cy + (y - cy) * 1.4 }));
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, 0, Math.PI * 2);
+      ctx.fillStyle = '#2a2112';
+      ctx.fill();
+      ctx.lineWidth = r * 0.24;
+      ctx.strokeStyle = holder === null ? '#ffd766' : this.#playerColors[holder];
+      ctx.stroke();
+      const mark = new Path2D();
+      if (holder === 0) mark.addPath(polygon(star));
+      else if (holder === 1) {
+        const a = r * 0.7;
+        const b = r * 0.24;
+        mark.addPath(polygon([[-b, -a], [b, -a], [b, -b], [a, -b], [a, b], [b, b], [b, a], [-b, a], [-b, b], [-a, b], [-a, -b], [-b, -b]]
+          .map(([x, y]) => ({ x: cx + x!, y: cy + y! }))));
+      } else {
+        const a = r * 0.62;
+        mark.addPath(polygon([{ x: cx, y: cy - a }, { x: cx + a * 0.75, y: cy }, { x: cx, y: cy + a }, { x: cx - a * 0.75, y: cy }]));
+      }
+      ctx.fillStyle = holder === 0 ? '#ffffff' : holder === 1 ? '#111111' : '#ffd766';
+      ctx.fill(mark);
+      ctx.lineWidth = r * 0.12;
+      ctx.strokeStyle = holder === 1 ? '#ffffff' : '#1a1408';
+      ctx.stroke(mark);
+      const fontSize = r * 1.1;
+      ctx.font = `800 ${fontSize}px ui-sans-serif, system-ui, sans-serif`;
+      ctx.textAlign = 'start';
+      ctx.textBaseline = 'middle';
+      ctx.lineWidth = fontSize * 0.28;
+      ctx.strokeStyle = '#15120a';
+      ctx.strokeText(String(points), cx + r * 1.2, cy + 0.5);
+      ctx.fillStyle = '#ffe9a8';
+      ctx.fillText(String(points), cx + r * 1.2, cy + 0.5);
+    });
+    ctx.restore();
+  }
+
+  /**
+   * Trace Supply overlay: a band along the track of each rail Hex, clipped to the Hex, coloured by who controls it
+   * (13.3h): green own, red enemy, white dashed neutral. Only stations a side controls are detrainable (13.3c).
+   */
+  #drawRailControl(): void {
+    const { railControl } = this.#state;
+    const geometry = this.#geometry;
+    if (railControl.length === 0 || !geometry) return;
+    const regions = { OWN: new Path2D(), ENEMY: new Path2D(), NEUTRAL: new Path2D() };
+    railControl.forEach(({ hexId, control }) => {
+      const path = geometry.hexPath.get(hexId);
+      if (path) regions[control].addPath(path);
+    });
+    const styles = [
+      ['OWN', 'rgba(46, 170, 90, .6)', []],
+      ['ENEMY', 'rgba(214, 48, 40, .6)', []],
+      ['NEUTRAL', 'rgba(250, 248, 240, .9)', [6, 5]],
+    ] as const;
+    const ctx = this.#ctx;
+    for (const [control, colour, dash] of styles) {
+      ctx.save();
+      ctx.clip(regions[control]);
+      ctx.lineCap = 'butt';
+      ctx.strokeStyle = colour;
+      ctx.setLineDash([...dash]);
+      geometry.rails.forEach(({ kind, line }) => {
+        ctx.lineWidth = kind === 'MULTI_RAIL' ? 9 : 7;
+        ctx.stroke(line);
+      });
+      ctx.restore();
+    }
   }
 
   /** Trace Supply overlay: a tag on each Supply Source, at the top of its hex so counters do not hide it. */

@@ -894,7 +894,10 @@ const advanceInto = (state: GameState, ids: readonly PieceId[], events: RuleEven
   if (ids.length > 0) {
     // 9.12gC: advancing captures or displaces enemy non-combat units per 9.14.
     next = captureAt(next, transaction.ownerId, transaction.targetHexId, events, true);
-    next = { ...next, mapState: setHexControl(next.mapState, transaction.targetHexId, transaction.ownerId) };
+    // 13.3h: only a combat unit entering a Hex changes its control.
+    if (ids.some((id) => { const piece = pieceById(next, id); return piece !== undefined && isCombatUnit(next, piece); })) {
+      next = { ...next, mapState: setHexControl(next.mapState, transaction.targetHexId, transaction.ownerId) };
+    }
   }
   return next;
 };

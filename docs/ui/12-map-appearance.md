@@ -44,6 +44,18 @@ is generated in `src/ui/map-art.ts` (SVG for the New Game preview; the same geom
   to the map edge instead of stopping at the hex centre (`withMapExits` in `map-art.ts`; the user's report: 道路/鐵路
   如果連接到map edge 應該要畫出來 不是停在edge hex). Checked in the game canvas at 100% along all four edges of a
   generated New Game map, including the entry hexes, where road and track leave side by side.
+- **Rail control with the Trace Supply overlay (2026-10-05).** Only while Trace Supply is on, each rail hex's track
+  carries a band clipped to the hex, coloured by who controls it (13.3h): green yours, red the enemy's, white dashed
+  neutral (`#drawRailControl` in `map-canvas.ts`, fed by the `queryRailControl` rule query; the user's choice: "只有在
+  開啟trace supply的時候顯示rail控制權"). The map legend adds Your rail / Enemy rail / Neutral rail with the overlay.
+  Checked in the built UI: `docs/quality/evidence/control-2026-10-05/`. Control of open country is not drawn.
+- **Objectives show their holder and VP (2026-10-05).** Modelled on bcsEngine's victory markers (the user's request:
+  "VP的顯示可以參考E:\work\bcsEngine"): every objective is always drawn, over the counters, as a dark disc in the hex's
+  bottom point holding the holder's mark (first player a white star, second player a black cross, neutral a gold
+  diamond, so it reads without colour), ringed in the holder's colour, with its VP beside it (`#drawObjectives` in
+  `map-canvas.ts`, from the live `objectives` of the player projection). The hover line adds "objective, N VP, held
+  by X" or "neutral", and the top bar shows the VP each side holds now and how many are neutral. The New Game
+  preview still draws the plain gold star.
 - **TODO — a few generator road exits are not drawn off the map.** The generator links a main road from each
   border exit (`selectBorderExits` in `generation/map/roads.ts`) but the map data does not record which border hexes
   are exits, so the renderer infers them: a line that dead-ends in a border hex, or any entry hex. Where another road
