@@ -9,7 +9,6 @@ import {
   type Result,
 } from '../core/index.js';
 import {
-  parseHexsideId,
   parseMapBoxId,
   type HexDefinition,
   type MapBoxId,
@@ -32,8 +31,6 @@ import {
 } from './configuration.js';
 import {
   GENERATED_HEXSIDE_MOVEMENT_COSTS,
-  GENERATED_MULTI_TRACK_RAIL,
-  GENERATED_RAIL,
   GENERATED_ROAD_MOVEMENT_COSTS,
   GENERATED_TERRAIN_MOVEMENT_COSTS,
 } from './movement-tec.js';
@@ -204,7 +201,7 @@ const TOWN_FEATURE = 'settlement:town';
 export interface GeneratedObjective {
   readonly hexId: HexId;
   readonly points: number;
-  /** The side whose deployment zone holds the objective; it controls the Hex at the start. */
+  /** The side whose deployment zone holds the objective; it controls the Hex only if behind that side's front. */
   readonly side: OobSide;
 }
 
@@ -230,8 +227,8 @@ const centralObjective = (map: GeneratedMap): HexId => {
 /**
  * Objectives stand in Major Cities and towns, as on a printed OCS map: one per Major City (on its core
  * Hex) and a set of towns. Each side's half of the map gets the same VP total, filled with its Major
- * Cities first and then the towns nearest the front (the larger town on a tie), so both sides start level,
- * only captures change the score, and the towns at stake lie where the armies meet.
+ * Cities first and then the towns nearest the front (the larger town on a tie), so the towns at stake lie
+ * where the armies meet. Who holds an objective at the start follows the initial control (13.3h).
  */
 const selectObjectives = (
   map: GeneratedMap,
@@ -315,13 +312,6 @@ export const deployGeneratedForces = (
   }
 
   const truckModel = truckCostModel(map);
-  const railFeatures = new Set([GENERATED_RAIL, GENERATED_MULTI_TRACK_RAIL]);
-  const railHexes = new Set(map.mapDefinition.hexsides
-    .filter(({ featureDefinitionIds }) => featureDefinitionIds.some((id) => railFeatures.has(String(id))))
-    .flatMap(({ hexsideId }) => {
-      const parsed = parseHexsideId(hexsideId);
-      return parsed.ok ? [parsed.value.firstHexId, parsed.value.secondHexId] : [];
-    }));
   const reachCache = new Map<HexId, ReadonlySet<HexId>>();
   const supplyReachOf = (hexId: HexId): ReadonlySet<HexId> => {
     let reach = reachCache.get(hexId);
@@ -522,8 +512,10 @@ export const deployGeneratedForces = (
         && !map.strategicRegions.firstSupplyHexIds.includes(hexId))
       .map((hexId) => ({ hexId, controllerId: players.AXIS })),
   );
-  // 13.3h: initial railroad control follows the front line, here the split between the deployment
-  // zones. Each side also holds the objectives in its zone; both hold the same VP, so the score starts level.
+  // 13.3h: initial control follows the front line. A Hex's depth is its distance from the side's own map
+  // edge (its nearest entry or supply Hex); the side's front is the depth of its most forward deployed piece.
+  // A side controls every land Hex of its zone up to that front (railroads, objectives and open country
+  // alike); the ground between the two fronts starts neutral, railroads included.
   const allied = new Set(zones.ALLIED.map(({ id }) => id));
   const { objectives, warnings: objectiveWarnings } = selectObjectives(
     map,
@@ -533,9 +525,16 @@ export const deployGeneratedForces = (
     { ALLIED: zones.ALLIED.length, AXIS: zones.AXIS.length },
   );
   const seeded = new Set(controlled.map(({ hexId }) => hexId));
-  const objectiveSides = new Map(objectives.map(({ hexId, side }) => [hexId, side]));
+  const edgeHexes: Readonly<Record<OobSide, readonly HexId[]>> = {
+    ALLIED: [...map.strategicRegions.firstEntryHexIds, ...map.strategicRegions.firstSupplyHexIds],
+    AXIS: [...map.strategicRegions.secondEntryHexIds, ...map.strategicRegions.secondSupplyHexIds],
+  };
+  const depth = (side: OobSide, hexId: HexId): number => Math.min(...edgeHexes[side].map((edge) => distance(hexId, edge)));
+  const frontOf = (side: OobSide): number => Math.max(-Infinity, ...pieces.flatMap((piece) =>
+    piece.ownerId === players[side] && piece.location.kind === 'ON_MAP' ? [depth(side, piece.location.hexId)] : []));
+  const fronts: Readonly<Record<OobSide, number>> = { ALLIED: frontOf('ALLIED'), AXIS: frontOf('AXIS') };
   const zoneControl = (['ALLIED', 'AXIS'] as const).flatMap((side) => zones[side]
-    .filter(({ id }) => !seeded.has(id) && (railHexes.has(id) || objectiveSides.get(id) === side))
+    .filter(({ id }) => !seeded.has(id) && depth(side, id) <= fronts[side])
     .map(({ id }) => ({ hexId: id, controllerId: players[side] })));
   const initialMapState: MapState = {
     schemaVersion: FOUNDATION_SCHEMA_VERSION,

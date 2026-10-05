@@ -319,7 +319,8 @@ export const placeReinforcement = (
       location: { kind: 'ON_MAP', hexId: action.hexId },
       stackOrder: nextStackOrder(state.pieceState.pieces, action.hexId, piece.id),
     }),
-    mapState: setHexControl(state.mapState, action.hexId, action.actorId),
+    // 13.3h: only a combat unit entering a Hex changes its control; trucks, SP and Pax/Eq never do.
+    mapState: isCombatUnit(state, piece) ? setHexControl(state.mapState, action.hexId, action.actorId) : state.mapState,
   };
   return {
     // A dump placed where the same kind of supply already lies joins it: one hex, one dump.

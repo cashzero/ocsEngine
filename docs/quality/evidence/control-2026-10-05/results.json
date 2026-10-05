@@ -1,0 +1,43 @@
+{
+  "title": "Hex control acceptance (13.3h) 2026-10-05",
+  "final": {
+    "turn": "Turn 2 / 8",
+    "player": "Allied player turn",
+    "phase": "Movement",
+    "revision": null
+  },
+  "rows": [
+    {
+      "id": "CTL-1",
+      "expectation": "Rail control is drawn only while the Trace Supply overlay is on, with own, enemy and neutral rail hexes",
+      "observed": "off: 0; on: {\"OWN\":29,\"NEUTRAL\":56,\"ENEMY\":33}",
+      "status": "PASS"
+    },
+    {
+      "id": "CTL-2",
+      "expectation": "A truck entering a neutral rail hex leaves it neutral (13.3h)",
+      "observed": "{\"id\":\"generated-oob:206569474:allied:independent-transport-1:unit\",\"name\":\"Truck\",\"hex\":\"2506\",\"before\":\"NEUTRAL\",\"after\":\"NEUTRAL\",\"announced\":\"Hex 2506 · Marburg · clear · village · Truck\"}",
+      "status": "PASS"
+    },
+    {
+      "id": "CTL-3",
+      "expectation": "A combat unit entering a neutral rail hex takes control of it (13.3h)",
+      "observed": "{\"id\":\"generated-oob:206569474:allied:f3-combat-1:unit\",\"name\":\"101.Abn\",\"hex\":\"0813\",\"before\":\"NEUTRAL\",\"after\":\"OWN\",\"announced\":\"Hex 0813 · clear · 101.Abn\"}",
+      "status": "PASS"
+    },
+    {
+      "id": "CTL-4",
+      "expectation": "One whole Game Turn completes with handoffs and Game Turn 2 arrivals placed",
+      "observed": "Turn 2 / 8 · Movement; arrivals 4",
+      "status": "PASS"
+    },
+    {
+      "id": "CTL-5",
+      "expectation": "Objectives show VP and holder on the map, in the hover line and in a live top-bar VP score; a combat unit taking a neutral objective updates all three",
+      "observed": "start \"VP HELD ★ Allied 0 ✚ Axis 3 ◆ 9 neutral\", neutral objective line \"Hex 1323 · Berburg · clear · town · objective, 1 VP, neutral · no units\"; after 101.Abn → 1516: holder 0, line \"Hex 1516 · Wesmar · clear · town · objective, 1 VP, held by Allied · 101.Abn\", top bar \"VP HELD ★ Allied 1 ✚ Axis 3 ◆ 8 neutral\"",
+      "status": "PASS"
+    }
+  ],
+  "timings": [],
+  "errors": []
+}

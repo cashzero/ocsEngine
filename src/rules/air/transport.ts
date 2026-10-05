@@ -409,7 +409,8 @@ const landUnit = (state: GameState, unit: PieceState, hexId: HexId, finished: bo
   let next: GameState = {
     ...state,
     pieceState: upsertPieceState(state.pieceState, { ...unit, location: { kind: 'ON_MAP', hexId }, stackOrder: nextStackOrder(state.pieceState.pieces, hexId, unit.id) }),
-    mapState: setHexControl(state.mapState, hexId, unit.ownerId),
+    // 13.3h: only a combat unit entering a Hex changes its control.
+    mapState: isCombatUnit(state, unit) ? setHexControl(state.mapState, hexId, unit.ownerId) : state.mapState,
   };
   const usage = usageOf(state, unit);
   const allowance = movementAllowanceTicks(next, unit);
