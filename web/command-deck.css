@@ -8,6 +8,12 @@ html, body { min-width: 1280px; height: 100%; overflow: hidden; }
 /* Information cells (Turn, Phase) share one type system, small label over value; only Undo and End phase are buttons. */
 .turn-strip .turn-cell, .phase-picker { flex: none; display: flex; flex-direction: column; justify-content: center; gap: 2px; min-width: 0; padding: 0 18px; border-right: 1px solid var(--line); }
 .turn-strip .turn-cell { width: 132px; }
+.turn-strip .vp-cell { flex: none; display: flex; flex-direction: column; justify-content: center; gap: 2px; padding: 0 16px; border-right: 1px solid var(--line); }
+.turn-strip .vp-cell small { color: var(--muted); font-size: 13px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; }
+.turn-strip .vp-cell strong { display: flex; gap: 10px; color: var(--ink); font-size: 15px; font-weight: 700; line-height: 1.2; white-space: nowrap; }
+.vp-side.first { color: var(--player-one); }
+.vp-side.second { color: var(--player-two); }
+.vp-side.neutral { color: #ffd766; }
 .turn-strip .turn-cell small, .phase-picker small { color: var(--muted); font-size: 13px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; }
 .turn-strip .turn-cell strong, .phase-picker strong { display: flex; align-items: center; color: var(--ink); font-size: 15px; font-weight: 700; line-height: 1.2; white-space: nowrap; }
 .bar-controls { display: flex; align-items: center; gap: 8px; padding: 0 16px; min-width: 0; }
@@ -112,6 +118,10 @@ p.warning cite { font-style: normal; opacity: 0.8; }
 .legend-mark.objective::before { content: "★ "; }
 .legend-wash { padding: 1px 7px; border-radius: 3px; color: #e7f1e9; }
 .legend-wash.trace-direct { background: rgba(111, 207, 142, .45); }
+.legend-rail::before { content: ""; display: inline-block; width: 22px; height: 6px; margin-right: 5px; vertical-align: 2px; border-radius: 1px; }
+.legend-rail.own::before { background: rgba(46, 170, 90, .9); }
+.legend-rail.enemy::before { background: rgba(214, 48, 40, .9); }
+.legend-rail.neutral::before { background: repeating-linear-gradient(90deg, rgba(250, 248, 240, .95) 0 5px, rgba(122, 28, 22, .9) 5px 9px); }
 .legend-wash.trace-thrown { background: repeating-linear-gradient(-45deg, rgba(70, 120, 200, .75) 0 2px, rgba(110, 160, 225, .35) 2px 6px); }
 .legend-mark.supply-source::before { content: "S"; display: inline-grid; place-items: center; width: 15px; height: 15px; margin-right: 5px; border: 1.5px solid #1a1408; border-radius: 50%; color: #1a1408; background: linear-gradient(90deg, var(--player-one) 50%, var(--player-two) 50%); font-size: 10px; font-weight: 900; vertical-align: -3px; }
 

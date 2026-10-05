@@ -21,7 +21,7 @@ import { applyBreakout } from '../lifecycle/supply-phase.js';
 import { absorbInto, absorptionDecision, applyCreateBreakdown, parseAbsorptionChoice } from '../breakdown/breakdown.js';
 import { applyModeChange, applyReserveRelease } from '../mode/mode.js';
 import { queryMovementPath } from '../movement/movement.js';
-import { hexOf, pieceById, reTicksOf, usageOf, withInternalStocks, withUsage } from '../pieces.js';
+import { hexOf, isCombatUnit, pieceById, reTicksOf, usageOf, withInternalStocks, withUsage } from '../pieces.js';
 import { hasOptionalActions } from '../query/candidates.js';
 import { nextSequence } from '../sequence/sequence.js';
 import { commitFuelForMove, payFuel } from '../supply/fuel.js';
@@ -163,9 +163,11 @@ const dispatch = (state: GameState, action: GameAction): Transition => {
       }
       const events: RuleEvent[] = [{ kind: 'PIECE_MOVED', sequence: 0, pieceId: piece.id, path: action.path, spentTicks: query.spentTicks }];
       // 9.14: entering enemy non-combat units captures or displaces them.
+      // 13.3h: only a combat unit entering a Hex changes its control; trucks never do.
+      const takesControl = isCombatUnit(next, piece);
       for (const hexId of action.path.slice(1)) {
         next = captureAt(next, action.actorId, hexId, events);
-        next = { ...next, mapState: setHexControl(next.mapState, hexId, action.actorId) };
+        if (takesControl) next = { ...next, mapState: setHexControl(next.mapState, hexId, action.actorId) };
       }
       const settled = settleInterrupts(next, null);
       return { state: settled.state, events: renumber([...events, ...settled.events]) };

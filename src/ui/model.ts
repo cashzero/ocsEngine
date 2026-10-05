@@ -310,6 +310,8 @@ export interface UiSnapshot {
   readonly traceDirect: ReadonlySet<string>;
   /** The seat's Supply Sources marked by the same overlay (12.6a); empty while it is off. */
   readonly supplySources: readonly { readonly hexId: string; readonly kind: 'MAP_EDGE' | 'DETRAINABLE' | 'EXTENDER' }[];
+  /** Control of each rail Hex from the seat's side (13.3h), marked by the same overlay; empty while it is off. */
+  readonly railControl: readonly { readonly hexId: string; readonly control: 'OWN' | 'ENEMY' | 'NEUTRAL' }[];
   /** The selected unit the overlay is drawn for; null when it shows where any friendly unit would trace. */
   readonly traceCoverageFor: string | null;
   readonly showTraceCoverage: boolean;

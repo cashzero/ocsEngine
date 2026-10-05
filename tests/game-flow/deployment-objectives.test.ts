@@ -44,13 +44,32 @@ describe('generated objectives', () => {
     expect(objectives.some(({ settlement }) => settlement === 'settlement:city')).toBe(true);
   });
 
-  it('starts both sides holding the same VP, every objective held by the side whose zone it is in', () => {
+  it('starts each objective held only when it lies behind a side front, the rest neutral (13.3h)', () => {
     for (const style of ['TEMPERATE_INLAND', 'EASTERN_EUROPE'] as const) {
-      const { objectives, held, players, warnings } = objectivesOf({ ...DEFAULT_NEW_GAME_REQUEST, map: { ...DEFAULT_NEW_GAME_REQUEST.map, style } });
-      expect(objectives.every(({ controller }) => controller !== null)).toBe(true);
-      expect(held(players[0]!)).toBeGreaterThan(0);
-      expect(held(players[0]!)).toBe(held(players[1]!));
+      const { objectives, players, warnings } = objectivesOf({ ...DEFAULT_NEW_GAME_REQUEST, map: { ...DEFAULT_NEW_GAME_REQUEST.map, style } });
+      // Objectives stand in the towns nearest the front, so most lie in the neutral ground between the armies.
+      expect(objectives.some(({ controller }) => controller === null)).toBe(true);
+      expect(objectives.every(({ controller }) => controller === null || players.includes(String(controller)))).toBe(true);
+      // The VP allotted to each side's zone is still equal.
       expect(warnings.some((warning) => warning.startsWith('Objectives are unbalanced'))).toBe(false);
+    }
+  });
+
+  it('leaves the ground between the two deployed armies neutral, railroads included (13.3h)', () => {
+    const prepared = prepareNewGame(DEFAULT_NEW_GAME_REQUEST);
+    if (!prepared.ok) throw new Error('Game must prepare.');
+    const { scenario } = prepared.value;
+    const control = new Map(scenario.initialMapState.hexControl.map(({ hexId, controllerId }) => [String(hexId), controllerId]));
+    const land = scenario.mapDefinition.hexes.filter((hex) => !hex.terrainDefinitionIds.includes('terrain:water' as never));
+    const neutral = land.filter(({ id }) => (control.get(String(id)) ?? null) === null).map(({ id }) => String(id));
+    expect(neutral.length).toBeGreaterThan(land.length / 4);
+    const railHexes = new Set(scenario.mapDefinition.hexsides
+      .filter(({ featureDefinitionIds }) => featureDefinitionIds.some((id) => String(id).startsWith('edge:rail')))
+      .flatMap(({ hexsideId }) => String(hexsideId).split('|')));
+    expect(neutral.some((id) => railHexes.has(id))).toBe(true);
+    // Every deployed piece stands on ground its own side controls.
+    for (const piece of scenario.initialPieceState.pieces) {
+      if (piece.location.kind === 'ON_MAP') expect(control.get(String(piece.location.hexId))).toBe(piece.ownerId);
     }
   });
 
@@ -72,6 +91,5 @@ describe('generated objectives', () => {
     const large = objectivesOf({ ...DEFAULT_NEW_GAME_REQUEST, map: { ...DEFAULT_NEW_GAME_REQUEST.map, width: 64, height: 48 } });
     expect(small.objectives.length).toBeGreaterThanOrEqual(2);
     expect(large.objectives.length).toBeGreaterThan(3 * small.objectives.length);
-    expect(large.held(large.players[0]!)).toBe(large.held(large.players[1]!));
   });
 });

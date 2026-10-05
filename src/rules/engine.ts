@@ -13,6 +13,7 @@ import { queryMovementPath, queryReachableHexes } from './movement/movement.js';
 import { querySupplySources, queryTraceCoverage } from './supply/supply.js';
 import { queryFuelPreview } from './supply/fuel.js';
 import { queryTransportOptions } from './supply/transport.js';
+import { queryRailControl } from './supply/rail.js';
 import { actionFamilies, candidateActions, kindMayBeLegal } from './query/candidates.js';
 import { projectRuleState } from './query/projection.js';
 import type {
@@ -153,6 +154,7 @@ const engine: RuleEngine = {
   queryTransportOptions,
   queryTraceCoverage,
   querySupplySources,
+  queryRailControl,
   queryFuelPreview,
 };
 

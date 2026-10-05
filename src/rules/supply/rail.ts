@@ -1,6 +1,7 @@
 import type { HexId, PlayerId } from '../../core/index.js';
 import { parseHexsideId, type MapDefinition } from '../../domain/map/index.js';
 import type { GameState, RailroadConfiguration } from '../kernel/model.js';
+import type { RuleQueryResult } from '../query/model.js';
 import { faceMode, isHq, piecesAt } from '../pieces.js';
 import { mapIndexOf } from '../terrain.js';
 import { hasEnemyCombatUnit, queryZoc } from '../zoc/zoc.js';
@@ -117,4 +118,27 @@ export const detrainableHexesFrom = (state: GameState, playerId: PlayerId, seeds
     }
   }
   return found.sort();
+};
+
+/** Who controls a rail Hex, seen from one player (13.3h). */
+export interface RailControlHex {
+  readonly hexId: HexId;
+  readonly control: 'OWN' | 'ENEMY' | 'NEUTRAL';
+}
+
+/** Control of every rail Hex from the actor's side (13.3h). Hex control is public, so both players see the same split. */
+export const queryRailControl = (state: GameState, actorId: PlayerId): RuleQueryResult<readonly RailControlHex[]> => {
+  const control = new Map(state.mapState.hexControl.map(({ hexId, controllerId }) => [hexId, controllerId]));
+  const value = [...railNetworkOf(state).neighbors.keys()].sort((left, right) => String(left).localeCompare(String(right)))
+    .map((hexId): RailControlHex => {
+      const controllerId = control.get(hexId) ?? null;
+      return { hexId, control: controllerId === null ? 'NEUTRAL' : controllerId === actorId ? 'OWN' : 'ENEMY' };
+    });
+  return {
+    allowed: true,
+    value,
+    reasons: [{ code: 'RAIL_CONTROL', allowed: true, message: 'Control of each rail Hex.', rule: '13.3h' }],
+    facts: [],
+    dependencies: [{ aggregate: 'MAP', revision: state.mapState.revision, key: 'rail:control' }],
+  };
 };
