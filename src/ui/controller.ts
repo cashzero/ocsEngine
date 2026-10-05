@@ -692,6 +692,10 @@ class DefaultUiController implements UiController {
     const supplySources = this.#showTraceCoverage && view.projection !== null
       ? this.#cached('sources', () => this.#session.getSupplySources(seatId).value) ?? []
       : [];
+    // ...and who controls each rail Hex (13.3h): only controlled stations carry supply forward.
+    const railControl = this.#showTraceCoverage && view.projection !== null
+      ? this.#cached('rail-control', () => this.#session.getRailControl(seatId).value) ?? []
+      : [];
     const unitActions = ownSelected ? this.#unitActions(ownSelected, enabled) : [];
     const transportOptions = ownSelected?.role === 'TRUCK' && view.metadata.lifecycle === 'ACTIVE' && !view.privacyLocked
       && view.projection?.sequence.phase === 'MOVEMENT' && segment === 'MOVEMENT'
@@ -736,6 +740,7 @@ class DefaultUiController implements UiController {
       traceCoverage,
       traceDirect,
       supplySources,
+      railControl,
       traceCoverageFor: this.#showTraceCoverage ? traceUnitId : null,
       showTraceCoverage: this.#showTraceCoverage,
       remainingTicks,

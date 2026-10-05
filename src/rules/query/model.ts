@@ -1,4 +1,4 @@
-import type { DefinitionId, PieceId, PlayerId, Revision } from '../../core/index.js';
+import type { DefinitionId, HexId, PieceId, PlayerId, Revision } from '../../core/index.js';
 import type { PieceLocation } from '../../domain/map/index.js';
 import type { OcsMode } from '../../domain/piece/index.js';
 import type { GameAction, GameState, RuleViolation } from '../kernel/model.js';
@@ -80,6 +80,11 @@ export interface RuleProjection {
   readonly stacks: readonly ProjectedStack[];
   readonly pendingDecision: GameState['pendingDecision'];
   readonly victory: GameState['victory'];
+  /**
+   * Every objective with its VP and who controls its Hex now (null: neutral). Hex control is public, and this is live,
+   * unlike `victory`, which is scored at Clean Up.
+   */
+  readonly objectives: readonly { readonly hexId: HexId; readonly points: number; readonly controllerId: PlayerId | null }[];
   readonly combat: ProjectedCombat | null;
   readonly weather: GameState['weather'];
   readonly fuel: GameState['fuel'];
@@ -222,6 +227,8 @@ export interface RuleEngine {
   readonly queryTraceCoverage: (state: GameState, actorId: PlayerId, pieceId: PieceId | null) => RuleQueryResult<import('../supply/supply.js').TraceCoverage>;
   /** The actor's Supply Sources (12.6a) with why each counts: map edge, detrainable rail Hex (13.3c) or Extender (12.7a). */
   readonly querySupplySources: (state: GameState, actorId: PlayerId) => RuleQueryResult<readonly import('../supply/supply.js').SupplySourceHex[]>;
+  /** Control of every rail Hex from the actor's side: own, enemy or neutral (13.3h). */
+  readonly queryRailControl: (state: GameState, actorId: PlayerId) => RuleQueryResult<readonly import('../supply/rail.js').RailControlHex[]>;
   /** Each fuel payment open to one own unit with the units it would newly fuel (12.5c). */
   readonly queryFuelPreview: (state: GameState, actorId: PlayerId, pieceId: PieceId) => RuleQueryResult<readonly import('../supply/fuel.js').FuelPreview[]>;
 }

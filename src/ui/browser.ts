@@ -216,8 +216,26 @@ const hoverText = (snapshot: UiSnapshot, hexId: string): string => {
   const placeName = cell.settlement ? ` · ${placeNameFor(cell.id)}` : '';
   // 12.6a: the painted "S" disc is named too, with whose trace starts here.
   const source = cell.supplySource ? ` · ${scenario.players[cell.supplySource === 'SECOND' ? 1 : 0]?.name ?? ''} Supply Source` : '';
-  const objective = currentGame.deployment.objectives.find((entry) => entry.hexId === cell.id);
-  return `Hex ${printedHexLabel(cell.id)}${placeName} · ${cell.terrain.toLowerCase()}${cell.settlement ? ` · ${cell.settlement.toLowerCase()}` : ''}${objective ? ` · objective, ${objective.points} VP` : ''}${source}${trainbusting}${cost}`;
+  // The objective names its VP and who holds it now (13.3h control, live).
+  const objective = snapshot.view.projection?.objectives.find((entry) => String(entry.hexId) === cell.id);
+  const holder = objective ? scenario.players.find(({ id }) => id === objective.controllerId)?.name ?? 'neutral' : '';
+  return `Hex ${printedHexLabel(cell.id)}${placeName} · ${cell.terrain.toLowerCase()}${cell.settlement ? ` · ${cell.settlement.toLowerCase()}` : ''}${objective ? ` · objective, ${objective.points} VP, ${holder === 'neutral' ? 'neutral' : `held by ${holder}`}` : ''}${source}${trainbusting}${cost}`;
+};
+
+/**
+ * The VP each player holds now, from the live control of the objectives (the winner is scored at the turn limit), and
+ * how many are still neutral; each name carries its objective mark from the map (star, cross, diamond).
+ */
+const vpCell = (snapshot: UiSnapshot): TemplateResult | typeof nothing => {
+  const objectives = snapshot.view.projection?.objectives ?? [];
+  if (objectives.length === 0) return nothing;
+  const held = (playerId: string | null): number => objectives.reduce((total, { points, controllerId }) => total + (controllerId === playerId ? points : 0), 0);
+  const total = objectives.reduce((sum, { points }) => sum + points, 0);
+  const [first, second] = scenario.players;
+  const neutral = held(null);
+  const label = `${first?.name ?? ''} ${held(first?.id ?? null)} VP, ${second?.name ?? ''} ${held(second?.id ?? null)} VP, ${neutral} VP neutral, of ${total}`;
+  return html`<span class="vp-cell" title=${`Objective VP held now (${objectives.length} objectives, ${total} VP); the winner is scored at the turn limit`} aria-label=${label}>
+    <small>VP held</small><strong><span class="vp-side first">★ ${first?.name ?? ''} ${held(first?.id ?? null)}</span><span class="vp-side second">✚ ${second?.name ?? ''} ${held(second?.id ?? null)}</span>${neutral > 0 ? html`<span class="vp-side neutral">◆ ${neutral} neutral</span>` : nothing}</strong></span>`;
 };
 
 /** What a screen reader hears for the map's keyboard cursor: the hover line, what the hex is a target for, then the units there. */
@@ -301,6 +319,11 @@ const mapStateOf = (snapshot: UiSnapshot): MapState => {
     traceCoverage: snapshot.traceCoverage,
     traceDirect: snapshot.traceDirect,
     supplySources: snapshot.supplySources,
+    railControl: snapshot.railControl,
+    objectives: (snapshot.view.projection?.objectives ?? []).map(({ hexId, points, controllerId }) => {
+      const index = scenario.players.findIndex(({ id }) => id === controllerId);
+      return { hexId: String(hexId), points, holder: index === 0 || index === 1 ? index : null };
+    }),
     airTargets: new Set([
       ...snapshot.air.targetHexes, ...(snapshot.air.construction?.planning ? snapshot.air.construction.hexes : []),
       // Planned Air Drops of this turn are marked while the player plans or flies them (14.10b).
@@ -723,6 +746,7 @@ const appView = (snapshot: UiSnapshot): TemplateResult => {
       <header class="topbar" data-active-seat=${activeBinding?.label ?? snapshot.view.playerId}>
         <div class="turn-strip" aria-label="Current turn state">
           <span class="turn-cell"><small>Turn ${sequence?.gameTurn ?? '–'} / ${currentGame.summary.turnLimit}</small><strong>${weatherLabel(snapshot)}</strong></span>
+          ${vpCell(snapshot)}
           <div class="phase-picker" tabindex="0" aria-label=${`${playerName(sequence?.phasingPlayerId)} Player Turn`}>
             ${phaseTrackCurrent(snapshot, sequence)}
             <ol class="phase-track phase-popup" aria-label=${`${playerName(sequence?.phasingPlayerId)} Player Turn phases`}>
@@ -742,7 +766,7 @@ const appView = (snapshot: UiSnapshot): TemplateResult => {
             ${mapHost}
             ${stackPicker(snapshot)}${rosterOpen ? unitRosterView(snapshot, deck) : movePopupView(snapshot, deck)}
             <div class="map-controls" aria-label="Map controls"><button id="zoom-out" aria-label="Zoom out" @click=${() => mapView.zoomStep(-1)}>−</button><output id="zoom-level"></output><button id="zoom-in" aria-label="Zoom in" @click=${() => mapView.zoomStep(1)}>+</button><button id="zoom-reset" @click=${() => mapView.resetCamera()}>Reset</button><span class="map-toggles" role="group" aria-label="Map overlays"><label class="map-toggle air-zones" title="Show the 10-hex Patrol Zones of Air Bases with Active Fighters (14.4c)"><input type="checkbox" id="toggle-air-zones" .checked=${snapshot.air.showZones} @change=${() => controller.toggleAirZones()}>Patrol Zones</label><label class="map-toggle trace-coverage" title="Show where trace supply reaches (12.6), for the selected unit or any unit: green traces straight to a Supply Source, hatched blue only through an HQ throw. Tags mark your rail Supply Sources: RAIL detrainable rail hexes (13.3c), EXT Extenders (12.7)"><input type="checkbox" id="toggle-trace-coverage" .checked=${snapshot.showTraceCoverage} @change=${() => controller.toggleTraceCoverage()}>Trace Supply</label></span></div>
-            <div class="map-legend"><span class="terrain-key clear">Clear</span><span class="terrain-key woods">Woods</span><span class="terrain-key rough">Rough</span><span class="terrain-key mountain">Mountain</span><span class="terrain-key marsh">Marsh</span><span class="terrain-key water">Water</span><span class="line-key road">Road</span><span class="line-key rail" title="Railroad (13.3): counts as a road for movement; a rail line back to a supply source makes villages and towns on it Supply Sources (12.6a, 13.3c)">Railroad</span><span class="line-key river">River</span><span class="legend-mark objective">Objective</span><span class="legend-mark supply-source" title="Supply Source (12.6a): trace supply starts here; an HQ must draw within 5 MP of one to throw trace">Supply source</span>${snapshot.moveRange.size > 0 ? html`<span class="legend-ring move">Move</span>` : nothing}${[...snapshot.moveRange.values()].some(({ endsMovement }) => endsMovement) ? html`<span class="legend-ring move-stop" title="You must stop here (for example on entering an enemy ZOC)">Move ends here</span>` : nothing}${snapshot.attackTargets.length > 0 ? html`<span class="legend-ring attack">Attack</span>` : nothing}${snapshot.barrageTargets.length > 0 ? html`<span class="legend-ring barrage">Barrage</span>` : nothing}${snapshot.showTraceCoverage ? html`<span class="legend-wash trace-direct" title="Traces straight to a Supply Source (12.3a); an HQ standing here can throw supply (12.3b)">Trace from source</span><span class="legend-wash trace-thrown" title="Trace arrives only through an HQ throw; an HQ standing here is supplied but has nothing to throw on">Trace via HQ throw</span>` : nothing}${snapshot.air.showZones ? html`<span class="legend-ring air-zone">Your Patrol Zone</span><span class="legend-ring air-zone enemy">Enemy Patrol Zone</span>` : nothing}</div>
+            <div class="map-legend"><span class="terrain-key clear">Clear</span><span class="terrain-key woods">Woods</span><span class="terrain-key rough">Rough</span><span class="terrain-key mountain">Mountain</span><span class="terrain-key marsh">Marsh</span><span class="terrain-key water">Water</span><span class="line-key road">Road</span><span class="line-key rail" title="Railroad (13.3): counts as a road for movement; a rail line back to a supply source makes villages and towns on it Supply Sources (12.6a, 13.3c)">Railroad</span><span class="line-key river">River</span><span class="legend-mark objective" title=${`Objective, with its VP beside it. The mark shows who holds it now: white star ${scenario.players[0]?.name ?? 'first player'}, black cross ${scenario.players[1]?.name ?? 'second player'}, gold diamond neutral`}>Objective</span><span class="legend-mark supply-source" title="Supply Source (12.6a): trace supply starts here; an HQ must draw within 5 MP of one to throw trace">Supply source</span>${snapshot.moveRange.size > 0 ? html`<span class="legend-ring move">Move</span>` : nothing}${[...snapshot.moveRange.values()].some(({ endsMovement }) => endsMovement) ? html`<span class="legend-ring move-stop" title="You must stop here (for example on entering an enemy ZOC)">Move ends here</span>` : nothing}${snapshot.attackTargets.length > 0 ? html`<span class="legend-ring attack">Attack</span>` : nothing}${snapshot.barrageTargets.length > 0 ? html`<span class="legend-ring barrage">Barrage</span>` : nothing}${snapshot.showTraceCoverage ? html`<span class="legend-wash trace-direct" title="Traces straight to a Supply Source (12.3a); an HQ standing here can throw supply (12.3b)">Trace from source</span><span class="legend-wash trace-thrown" title="Trace arrives only through an HQ throw; an HQ standing here is supplied but has nothing to throw on">Trace via HQ throw</span>${snapshot.railControl.length > 0 ? html`<span class="legend-rail own" title="A rail hex you control (13.3h): its station can be a Supply Source">Your rail</span><span class="legend-rail enemy" title="A rail hex the enemy controls (13.3h)">Enemy rail</span><span class="legend-rail neutral" title="A rail hex nobody controls yet; a combat unit entering takes it (13.3h)">Neutral rail</span>` : nothing}` : nothing}${snapshot.air.showZones ? html`<span class="legend-ring air-zone">Your Patrol Zone</span><span class="legend-ring air-zone enemy">Enemy Patrol Zone</span>` : nothing}</div>
             <div class="hover-info" aria-live="off"></div>
           </div>
         </section>

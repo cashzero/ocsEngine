@@ -29,7 +29,8 @@ export const serve = () => new Promise((resolve) => {
 export const open = async ({ evidenceDir, viewport = { width: 1920, height: 1080 } }) => {
   await mkdir(evidenceDir, { recursive: true });
   const server = await serve();
-  const browser = await chromium.launch();
+  // OCS_CHROMIUM: a Chromium-family browser executable such as Edge, when Playwright's own Chromium is not installed.
+  const browser = await chromium.launch(process.env.OCS_CHROMIUM ? { executablePath: process.env.OCS_CHROMIUM, args: ['--no-sandbox'] } : {});
   const page = await browser.newPage({ viewport });
   const log = [];
   const errors = [];

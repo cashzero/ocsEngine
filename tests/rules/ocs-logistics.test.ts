@@ -481,6 +481,25 @@ describe('OCS 4.3 combat choices (9.2-9.4, 9.12, 4.8a)', () => {
 });
 
 describe('OCS 4.3 transport, Extenders and dumps (9.14, 12.2, 12.7, 12.11, 13.2)', () => {
+  it('changes Hex control only when a combat unit enters, never a truck (13.3h)', () => {
+    const control = { '2,5': AXIS, '3,5': AXIS } as const;
+    const state = atStep(buildGeneratedRuleState({ [U.alTruck]: ['1,5', null], [U.alLeg]: ['1,6', 'MOVE', 'combat'] }, {}, { control }), 'MOVEMENT', 'MOVEMENT', ALLIED);
+    const controller = (current: GameState, hexId: string) => current.mapState.hexControl.find((entry) => entry.hexId === hexId)?.controllerId ?? null;
+    const trucked = ok(applyRuleAction(state, ALLIED, { kind: 'MOVE_PIECE', pieceId: U.alTruck, path: path('1,5', '2,5', '3,5') }));
+    expect([controller(trucked, '2,5'), controller(trucked, '3,5')]).toEqual([AXIS, AXIS]);
+    const marched = ok(applyRuleAction(state, ALLIED, { kind: 'MOVE_PIECE', pieceId: U.alLeg, path: path('1,6', '2,5') }));
+    expect(controller(marched, '2,5')).toBe(ALLIED);
+  });
+
+  it('projects each objective with its holder at once, before Clean Up scores the game', () => {
+    const base = atStep(buildGeneratedRuleState({ [U.alLeg]: ['1,6', 'MOVE', 'combat'] }, {}, { control: { '2,5': null } }), 'MOVEMENT', 'MOVEMENT', ALLIED);
+    const state = { ...base, configuration: { ...base.configuration, objectives: [{ hexId: '2,5' as HexId, points: 3 }] } };
+    const holder = (current: GameState, viewer: typeof ALLIED) => ruleEngine.projectForViewer(current, viewer).objectives;
+    expect(holder(state, AXIS)).toEqual([{ hexId: '2,5', points: 3, controllerId: null }]);
+    const marched = ok(applyRuleAction(state, ALLIED, { kind: 'MOVE_PIECE', pieceId: U.alLeg, path: path('1,6', '2,5') }));
+    expect(holder(marched, AXIS)).toEqual([{ hexId: '2,5', points: 3, controllerId: ALLIED }]);
+  });
+
   it('loads and unloads at 10% of MA, uses SP aboard, and forbids leapfrogging (13.2f, 12.1b, 12.2a)', () => {
     const state = atStep(buildGeneratedRuleState({ [U.alTruck]: ['1,5', null], [U.alSup]: ['1,5', null], [U.alLeg]: ['4,5', 'COMBAT', 'combat'] }), 'MOVEMENT', 'MOVEMENT', ALLIED);
     const loaded = ok(applyRuleAction(state, ALLIED, { kind: 'LOAD_SUPPLY', truckId: U.alTruck, dumpId: U.alSup, tokens: 4 }));
