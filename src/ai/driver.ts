@@ -52,6 +52,7 @@ export const runBotMatch = async (options: BotMatchOptions): Promise<BotMatchRes
   const started = now();
   const errors: BotError[] = [];
   const actionCounts: Record<string, number> = {};
+  const actionCountsBySeat: Record<string, Record<string, number>> = {};
   const memories = new Map<string, BotPhaseMemory>();
   let accepted = 0;
   let rejected = 0;
@@ -62,7 +63,7 @@ export const runBotMatch = async (options: BotMatchOptions): Promise<BotMatchRes
   let decisionsAtRevision = 0;
 
   const stop = (stopReason: BotMatchResult['stopReason']): BotMatchResult => ({
-    stopReason, accepted, rejected, errors, actionCounts, decideMs, dispatchMs, elapsedMs: now() - started,
+    stopReason, accepted, rejected, errors, actionCounts, actionCountsBySeat, decideMs, dispatchMs, elapsedMs: now() - started,
   });
   const fail = (code: BotErrorCode, message: string, seat: BotSeat | null, stepKey: string, action: GameAction | null, violations: readonly string[] = []) => {
     errors.push({
@@ -141,6 +142,8 @@ export const runBotMatch = async (options: BotMatchOptions): Promise<BotMatchRes
     accepted += 1;
     memories.set(seat.seatId, { ...memory, actions: memory.actions + 1 });
     actionCounts[chosen.kind] = (actionCounts[chosen.kind] ?? 0) + 1;
+    const seatCounts = actionCountsBySeat[seat.seatId] ??= {};
+    seatCounts[chosen.kind] = (seatCounts[chosen.kind] ?? 0) + 1;
   }
   return session.getMetadata().lifecycle === 'FINISHED' ? stop('FINISHED') : stop('MAX_ACTIONS');
 };
