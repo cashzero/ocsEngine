@@ -122,9 +122,9 @@ export const projectRuleState = (state: GameState, viewerId: PlayerId): RuleProj
     }),
     pendingDecision: state.pendingDecision?.ownerId === viewerId ? state.pendingDecision : null,
     victory: state.victory,
-    objectives: state.configuration.objectives.map(({ hexId, points }) => ({
-      hexId, points, controllerId: state.mapState.hexControl.find((entry) => entry.hexId === hexId)?.controllerId ?? null,
-    })),
+    // Who holds each objective is on the map for both players (the last side to enter a hex controls it).
+    objectives: stableSort(state.configuration.objectives, (left, right) => String(left.hexId) < String(right.hexId) ? -1 : String(left.hexId) > String(right.hexId) ? 1 : 0)
+      .map(({ hexId, points }) => ({ hexId, points, controllerId: state.mapState.hexControl.find((entry) => entry.hexId === hexId)?.controllerId ?? null })),
     combat: projectCombat(state),
     weather: state.weather,
     // Fuel markers and fueled Formation markers are on the map for both players to see.
