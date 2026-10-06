@@ -268,10 +268,28 @@ const roadDistances = (cells: ReadonlyMap<HexId, GeneratedCell>, network: RoadNe
   return distance;
 };
 
+/**
+ * Lower `distance` (from `roadDistances`) after `added` Hexes join the network: distances only shrink,
+ * so a search out from the new road Hexes alone gives what a fresh `roadDistances` would.
+ */
+const lowerRoadDistances = (cells: ReadonlyMap<HexId, GeneratedCell>, distance: Map<HexId, number>, added: readonly HexId[]): void => {
+  let frontier = added.filter((hexId) => cells.has(hexId) && distance.get(hexId) !== 0);
+  frontier.forEach((hexId) => distance.set(hexId, 0));
+  for (let steps = 1; frontier.length > 0; steps += 1) {
+    const next: HexId[] = [];
+    for (const hexId of frontier) for (const other of neighborCells(cells.get(hexId)!, cells)) {
+      if ((distance.get(other.id) ?? Number.POSITIVE_INFINITY) <= steps) continue;
+      distance.set(other.id, steps);
+      next.push(other.id);
+    }
+    frontier = next;
+  }
+};
+
 /** Run a through track across every open district the network leaves empty. */
 const fillCoverageGaps = (context: RoutingContext): void => {
+  const distance = roadDistances(context.cells, context.network);
   for (let guard = 0; guard < context.cells.size; guard += 1) {
-    const distance = roadDistances(context.cells, context.network);
     let worst: { cell: GeneratedCell; excess: number } | null = null;
     for (const cell of context.cells.values()) {
       const gap = coverageGap(context.profile, cell.terrain);
@@ -286,6 +304,7 @@ const fillCoverageGaps = (context: RoutingContext): void => {
     const joined = coordinateFor(first.at(-1)!);
     const away = { q: joined.q - origin.q, r: joined.r - origin.r };
     context.network.add(first, 'TRACK');
+    lowerRoadDistances(context.cells, distance, first);
     const firstSet = new Set(first);
     // Continue out the far side, so the gap gets a through road rather than a dead end.
     const second = route(context, worst.cell.id, (hexId) => {
@@ -295,7 +314,10 @@ const fillCoverageGaps = (context: RoutingContext): void => {
       // Dot product in axial space with the s component, i.e. cube coordinates.
       return away.q * toward.q + away.r * toward.r + (away.q + away.r) * (toward.q + toward.r) < 0;
     }, 'TRACK');
-    if (second.length > 0 && second.length <= context.profile.roads.trackLinkRange + 3) context.network.add(second, 'TRACK');
+    if (second.length > 0 && second.length <= context.profile.roads.trackLinkRange + 3) {
+      context.network.add(second, 'TRACK');
+      lowerRoadDistances(context.cells, distance, second);
+    }
   }
 };
 
@@ -331,19 +353,28 @@ export const generateRoadNetwork = (
   ])];
 
   // 1. Main-road tree over cities, towns and entries (nearest-first), so the network starts connected.
-  const joined: HexId[] = [centres[0]!];
+  // Each step joins the closest (pending, joined) pair, ties broken by "node|anchor". Every pending centre
+  // keeps its closest joined anchor (ties by anchor ID, which orders "node|anchor" for a fixed node), updated
+  // as centres join, so a step costs one pass over the pending centres instead of every pair.
   const pending = new Set(centres.slice(1));
+  const nearest = new Map<HexId, { anchor: HexId; distance: number }>();
+  const consider = (node: HexId, anchor: HexId): void => {
+    const distance = hexDistance(coordinateFor(node), coordinateFor(anchor));
+    const current = nearest.get(node);
+    if (!current || distance < current.distance || (distance === current.distance && anchor < current.anchor)) nearest.set(node, { anchor, distance });
+  };
+  for (const node of pending) consider(node, centres[0]!);
   while (pending.size > 0) {
     let best: { node: HexId; anchor: HexId; distance: number } | null = null;
-    for (const node of pending) for (const anchor of joined) {
-      const distance = hexDistance(coordinateFor(node), coordinateFor(anchor));
+    for (const node of pending) {
+      const { anchor, distance } = nearest.get(node)!;
       if (!best || distance < best.distance || (distance === best.distance && `${node}|${anchor}` < `${best.node}|${best.anchor}`)) {
         best = { node, anchor, distance };
       }
     }
     link(context, best!.anchor, best!.node, 'MAIN');
-    joined.push(best!.node);
     pending.delete(best!.node);
+    for (const node of pending) consider(node, best!.node);
   }
   // 2. Loops: towns a short way apart get a direct main road unless one already runs nearly straight.
   densify(context, centres, 'MAIN', mainLinkRange, mainDetourLimit);

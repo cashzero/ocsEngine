@@ -1,0 +1,8 @@
+64x48: hashGameState 22.9 ms, serializeGameState 16.1 ms, getView 0.77 ms
+checkpoints  0: serializeSave    32.9 ms, 1.3 MB; createCheckpoint 15.9 ms
+checkpoints  5: serializeSave    40.9 ms, 4.5 MB; createCheckpoint 15.7 ms
+checkpoints 10: serializeSave    45.0 ms, 7.8 MB; createCheckpoint 15.5 ms
+checkpoints 15: serializeSave    55.2 ms, 11.0 MB; createCheckpoint 17.2 ms
+checkpoints 20: serializeSave    60.3 ms, 14.2 MB; createCheckpoint 15.7 ms
+checkpoints 25: serializeSave    68.6 ms, 17.5 MB; createCheckpoint 14.5 ms
+checkpoints 30: serializeSave    77.1 ms, 20.7 MB; createCheckpoint 15.2 ms

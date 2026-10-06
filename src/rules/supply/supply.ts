@@ -36,7 +36,98 @@ import { detrainableHexesFrom, isRailHex, railNetworkOf, railTracePassable } fro
 
 type CostMap = ReadonlyMap<HexId, number>;
 
-const pathCaches = new WeakMap<GameState, Map<string, CostMap>>();
+/**
+ * Caches for supply paths and trace (12.3, 12.6). They read only the pieces, the map state (rail control), the
+ * weather (path costs), the scenario and the configuration, so they are kept per combination of those objects
+ * rather than per state: one End step passes through several states that change only the sequence, and a cache
+ * per state started cold at each of them.
+ */
+interface TraceScope {
+  readonly mapState: GameState['mapState'];
+  readonly weather: GameState['weather'];
+  readonly scenario: GameState['scenario'];
+  readonly configuration: GameState['configuration'];
+  readonly caches: Map<string, unknown>;
+}
+
+const traceScopes = new WeakMap<GameState['pieceState'], TraceScope[]>();
+
+const traceScopeCache = <T>(state: GameState, name: string, create: () => T): T => {
+  let scopes = traceScopes.get(state.pieceState);
+  if (!scopes) { scopes = []; traceScopes.set(state.pieceState, scopes); }
+  let scope = scopes.find((candidate) => candidate.mapState === state.mapState && candidate.weather === state.weather
+    && candidate.scenario === state.scenario && candidate.configuration === state.configuration);
+  if (!scope) {
+    scope = { mapState: state.mapState, weather: state.weather, scenario: state.scenario, configuration: state.configuration, caches: new Map() };
+    scopes.push(scope);
+  }
+  let cache = scope.caches.get(name) as T | undefined;
+  if (cache === undefined) { cache = create(); scope.caches.set(name, cache); }
+  return cache;
+};
+
+/**
+ * What blocks a supply path for one player in one state, shared by every path traced in it (a large map
+ * traces from dozens of sources): Hexes holding enemy combat units, and Hexes in un-negated enemy ZOC.
+ */
+interface SupplyPathBlocks {
+  readonly enemyCombat: ReadonlySet<HexId>;
+  readonly zoc: Map<HexId, boolean>;
+}
+
+const supplyPathBlocks = (state: GameState, playerId: PlayerId): SupplyPathBlocks => {
+  const cache = traceScopeCache(state, 'path-blocks', () => new Map<string, SupplyPathBlocks>());
+  const cached = cache.get(String(playerId));
+  if (cached) return cached;
+  const enemyCombat = new Set<HexId>();
+  for (const piece of state.pieceState.pieces) {
+    if (piece.ownerId === playerId || piece.location.kind !== 'ON_MAP' || enemyCombat.has(piece.location.hexId)) continue;
+    if (hasEnemyCombatUnit(state, playerId, piece.location.hexId)) enemyCombat.add(piece.location.hexId);
+  }
+  const blocks: SupplyPathBlocks = { enemyCombat, zoc: new Map() };
+  cache.set(String(playerId), blocks);
+  return blocks;
+};
+
+/** A binary min-heap of [Hex, cost], cheapest first (ties by Hex ID, so the visit order is reproducible). */
+class Frontier {
+  readonly #items: Array<readonly [HexId, number]> = [];
+  get size(): number { return this.#items.length; }
+  static #less(left: readonly [HexId, number], right: readonly [HexId, number]): boolean {
+    return left[1] < right[1] || (left[1] === right[1] && left[0] < right[0]);
+  }
+  push(item: readonly [HexId, number]): void {
+    const items = this.#items;
+    items.push(item);
+    let index = items.length - 1;
+    while (index > 0) {
+      const parent = (index - 1) >> 1;
+      if (!Frontier.#less(items[index]!, items[parent]!)) break;
+      [items[index], items[parent]] = [items[parent]!, items[index]!];
+      index = parent;
+    }
+  }
+  pop(): readonly [HexId, number] {
+    const items = this.#items;
+    const top = items[0]!;
+    const last = items.pop()!;
+    if (items.length > 0) {
+      items[0] = last;
+      let index = 0;
+      for (;;) {
+        const left = index * 2 + 1;
+        const right = left + 1;
+        let smallest = index;
+        if (left < items.length && Frontier.#less(items[left]!, items[smallest]!)) smallest = left;
+        if (right < items.length && Frontier.#less(items[right]!, items[smallest]!)) smallest = right;
+        if (smallest === index) break;
+        [items[index], items[smallest]] = [items[smallest]!, items[index]!];
+        index = smallest;
+      }
+    }
+    return top;
+  }
+}
 
 export const supplyPathCosts = (
   state: GameState,
@@ -45,29 +136,29 @@ export const supplyPathCosts = (
   mobility: MobilityType,
   maximumTicks: number,
 ): CostMap => {
-  let cache = pathCaches.get(state);
-  if (!cache) { cache = new Map(); pathCaches.set(state, cache); }
+  const cache = traceScopeCache(state, 'paths', () => new Map<string, CostMap>());
   const key = `${playerId}|${originHexId}|${mobility}|${maximumTicks}`;
   const cached = cache.get(key);
   if (cached) return cached;
   const costs = supplyPathCostModel(state, mobility);
-  const blocked = new Map<HexId, boolean>();
+  const blocks = supplyPathBlocks(state, playerId);
   const zocBlocks = (hexId: HexId): boolean => {
     if (mobility !== 'truck') return false;
-    if (!blocked.has(hexId)) blocked.set(hexId, !queryZoc(state, playerId, hexId, 'SUPPLY_PATH').allowed);
-    return blocked.get(hexId)!;
+    let blocked = blocks.zoc.get(hexId);
+    if (blocked === undefined) { blocked = !queryZoc(state, playerId, hexId, 'SUPPLY_PATH').allowed; blocks.zoc.set(hexId, blocked); }
+    return blocked;
   };
   const best = new Map<HexId, number>([[originHexId, 0]]);
-  const frontier: Array<[HexId, number]> = [[originHexId, 0]];
+  const frontier = new Frontier();
+  frontier.push([originHexId, 0]);
   const done = new Set<HexId>();
-  while (frontier.length > 0) {
-    frontier.sort((left, right) => left[1] - right[1] || String(left[0]).localeCompare(String(right[0])));
-    const [hexId, cost] = frontier.shift()!;
+  while (frontier.size > 0) {
+    const [hexId, cost] = frontier.pop();
     if (done.has(hexId)) continue;
     done.add(hexId);
     if (zocBlocks(hexId)) continue;
     for (const next of adjacentHexIds(hexId)) {
-      if (done.has(next) || hasEnemyCombatUnit(state, playerId, next) || zocBlocks(next)) continue;
+      if (done.has(next) || blocks.enemyCombat.has(next) || zocBlocks(next)) continue;
       const step = costs.evaluate(hexId, next);
       if (step.kind !== 'COST' || step.all) continue;
       const total = cost + step.cost.totalTicks;
@@ -208,7 +299,6 @@ export interface SupplySourceHex {
   readonly kind: 'MAP_EDGE' | 'DETRAINABLE' | 'EXTENDER';
 }
 
-const sourceCache = new WeakMap<GameState, Map<string, readonly SupplySourceHex[]>>();
 
 /**
  * 12.6a Supply Sources: the side's map-edge sources; detrainable Hexes with a rail path free of enemy
@@ -217,8 +307,7 @@ const sourceCache = new WeakMap<GameState, Map<string, readonly SupplySourceHex[
  * (12.7g) to its source, so the rail line beyond it becomes detrainable (12.7a B and C).
  */
 export const friendlySupplySources = (state: GameState, playerId: PlayerId): readonly SupplySourceHex[] => {
-  let cache = sourceCache.get(state);
-  if (!cache) { cache = new Map(); sourceCache.set(state, cache); }
+  const cache = traceScopeCache(state, 'sources', () => new Map<string, readonly SupplySourceHex[]>());
   const cached = cache.get(String(playerId));
   if (cached) return cached;
   const side = sideOf(state, playerId);
@@ -272,21 +361,95 @@ export const friendlySourceHexes = (state: GameState, playerId: PlayerId): reado
  */
 export type TraceRouteKey = string;
 
-const routeKey = (route: SupplyRoute): TraceRouteKey => route.method === 'DRAW' ? 'DRAW' : `HQ:${route.hqId}`;
+/**
+ * Where trace supply reaches for one player, worked out once from the Supply Sources outward rather than
+ * per Hex and per source (`routesFrom` for every source at every Hex grew with Hexes × sources × pieces):
+ * a Hex has the DRAW route when it lies in or next to (12.3c) the truck draw of any source, and an HQ's
+ * route when the HQ stands in or next to its own draw from a source and the Hex lies in or next to its
+ * throw. An HQ tracing for itself draws where it stands (`selfReach`). Same answers as routing per Hex.
+ */
+interface TraceHq {
+  readonly hq: PieceState;
+  readonly key: TraceRouteKey;
+  /** The HQ can draw from some Supply Source where it stands now (12.3b), so it throws. */
+  readonly fed: boolean;
+  /** Hexes in or adjacent to its throw; empty when not fed. */
+  readonly throwReach: ReadonlySet<HexId>;
+  /** Hexes in or adjacent to its own draw from any source, for the HQ tracing for itself. */
+  readonly selfReach: () => ReadonlySet<HexId>;
+}
+
+interface TraceIndex {
+  /** Hexes in or adjacent to the truck draw from any Supply Source (12.3a, 12.3c). */
+  readonly draw: ReadonlySet<HexId>;
+  readonly hqs: readonly TraceHq[];
+}
+
+/** The Hexes of the cost maps and every Hex adjacent to one (12.3c: adjacent is close enough). */
+const withAdjacent = (maps: readonly CostMap[]): Set<HexId> => {
+  const reached = new Set<HexId>();
+  const expanded = new Set<HexId>();
+  for (const costs of maps) {
+    for (const hexId of costs.keys()) {
+      if (expanded.has(hexId)) continue;
+      expanded.add(hexId);
+      reached.add(hexId);
+      for (const adjacent of adjacentHexIds(hexId)) reached.add(adjacent);
+    }
+  }
+  return reached;
+};
+
+
+const traceIndex = (state: GameState, playerId: PlayerId): TraceIndex => {
+  const cache = traceScopeCache(state, 'trace-index', () => new Map<string, TraceIndex>());
+  const cached = cache.get(String(playerId));
+  if (cached) return cached;
+  const sources = friendlySourceHexes(state, playerId);
+  const range = state.configuration.supplyDrawRangeTicks;
+  const drawFrom = (mobility: MobilityType) => sources.map((source) => supplyPathCosts(state, playerId, source, mobility, range));
+  const hqs = throwingHqs(state, playerId).map((hq): TraceHq => {
+    const mobility = hqMobility(state, hq);
+    const hqHexId = hexOf(hq)!;
+    const fed = sources.some((source) => reaches(supplyPathCosts(state, playerId, source, mobility, range), hqHexId));
+    let self: ReadonlySet<HexId> | null = null;
+    return {
+      hq, key: `HQ:${hq.id}`, fed,
+      throwReach: fed ? withAdjacent([supplyPathCosts(state, hq.ownerId, hqHexId, mobility, throwRangeTicks(state, hq))]) : new Set(),
+      selfReach: () => (self ??= withAdjacent(drawFrom(mobility))),
+    };
+  });
+  const index: TraceIndex = { draw: withAdjacent(drawFrom('truck')), hqs };
+  cache.set(String(playerId), index);
+  return index;
+};
+
+/**
+ * The trace routes open at a Hex to `consumer` (or to any friendly unit when null), sorted: DRAW, and
+ * each HQ that may supply the consumer (13.1d) and reaches it.
+ */
+const traceRoutesAt = (state: GameState, playerId: PlayerId, consumer: PieceState | null): ((hexId: HexId) => TraceRouteKey[]) => {
+  const index = traceIndex(state, playerId);
+  const hqs = index.hqs.filter(({ hq }) => hqMaySupply(state, hq, consumer));
+  return (hexId) => {
+    const keys: TraceRouteKey[] = [];
+    if (index.draw.has(hexId)) keys.push('DRAW');
+    for (const entry of hqs) {
+      // An HQ supplying itself stands at `hexId`: it draws there and has nothing to throw, wherever it stands now.
+      const supplied = consumer?.id === entry.hq.id ? entry.selfReach().has(hexId) : entry.fed && entry.throwReach.has(hexId);
+      if (supplied) keys.push(entry.key);
+    }
+    return keys.sort();
+  };
+};
 
 /** Every trace route open to `piece` from any Supply Source. */
-export const traceRoutesFor = (state: GameState, piece: PieceState, hexId: HexId | null = locatedHexOf(state, piece)): readonly TraceRouteKey[] => {
-  if (hexId === null) return [];
-  const keys = new Set<TraceRouteKey>();
-  for (const source of friendlySourceHexes(state, piece.ownerId)) {
-    for (const route of routesFrom(state, piece.ownerId, source, hexId, piece)) keys.add(routeKey(route));
-  }
-  return [...keys].sort();
-};
+export const traceRoutesFor = (state: GameState, piece: PieceState, hexId: HexId | null = locatedHexOf(state, piece)): readonly TraceRouteKey[] =>
+  hexId === null ? [] : traceRoutesAt(state, piece.ownerId, piece)(hexId);
 
 /** Trace routes reachable at a Hex by any friendly unit, ignoring formation and divisional limits. */
 export const traceSupplyAvailableAt = (state: GameState, playerId: PlayerId, hexId: HexId): boolean =>
-  friendlySourceHexes(state, playerId).some((source) => routesFrom(state, playerId, source, hexId, null).length > 0);
+  traceRoutesAt(state, playerId, null)(hexId).length > 0;
 
 /** Members of a multi-unit formation that are combat units on the map (13.7a). */
 export const formationMembers = (state: GameState, playerId: PlayerId, formationId: DefinitionId): readonly PieceState[] =>
@@ -301,25 +464,42 @@ export const formationRouteOptions = (
 ): readonly { readonly routeKey: TraceRouteKey; readonly pieceIds: readonly PieceId[] }[] => {
   const byKey = new Map<TraceRouteKey, PieceId[]>();
   for (const piece of formationMembers(state, playerId, formationId)) {
-    for (const key of traceRoutesFor(state, piece)) byKey.set(key, [...(byKey.get(key) ?? []), piece.id]);
+    for (const key of pieceRoutes(state, piece)) byKey.set(key, [...(byKey.get(key) ?? []), piece.id]);
   }
   return stableSort([...byKey.entries()].map(([key, pieceIds]) => ({ routeKey: key, pieceIds })),
     (left, right) => right.pieceIds.length - left.pieceIds.length || left.routeKey.localeCompare(right.routeKey));
 };
 
+/**
+ * A unit's own trace routes at its Hex, and each formation's route options, kept in the trace scope: the end of
+ * a step asks whether every unit traces (12.6), Breakout asks again for every other unit (12.8e), and each answer
+ * for a formation member needed the whole formation's routes. Keyed by the exact Piece object (immutable).
+ */
+const pieceRoutes = (state: GameState, piece: PieceState): readonly TraceRouteKey[] => {
+  const cache = traceScopeCache(state, 'piece-routes', () => new WeakMap<PieceState, readonly TraceRouteKey[]>());
+  let routes = cache.get(piece);
+  if (!routes) { routes = traceRoutesFor(state, piece); cache.set(piece, routes); }
+  return routes;
+};
+
 /** The formation's common route: the player's choice this Supply Phase, else the one covering most units. */
 export const formationRoute = (state: GameState, playerId: PlayerId, formationId: DefinitionId): TraceRouteKey | null => {
-  const options = formationRouteOptions(state, playerId, formationId);
+  const cache = traceScopeCache(state, 'formation-options', () => new Map<string, ReturnType<typeof formationRouteOptions>>());
+  const key = `${playerId}|${formationId}`;
+  let options = cache.get(key);
+  if (!options) { options = formationRouteOptions(state, playerId, formationId); cache.set(key, options); }
   const chosen = state.formationTraces.find((choice) => choice.formationId === formationId)?.routeKey;
-  return options.find(({ routeKey: key }) => key === chosen)?.routeKey ?? options[0]?.routeKey ?? null;
+  return options.find(({ routeKey: option }) => option === chosen)?.routeKey ?? options[0]?.routeKey ?? null;
 };
 
 /**
  * 12.6, 12.6f: does `piece` make its trace "for free"? A member of a multi-unit formation must use
  * the formation's common route; any other unit may use any route.
  */
-export const pieceHasTrace = (state: GameState, piece: PieceState): boolean => {
-  const routes = traceRoutesFor(state, piece);
+export const pieceHasTrace = (state: GameState, piece: PieceState): boolean => computePieceHasTrace(state, piece);
+
+const computePieceHasTrace = (state: GameState, piece: PieceState): boolean => {
+  const routes = pieceRoutes(state, piece);
   if (routes.length === 0) return false;
   const formationId = formationOf(state, piece);
   if (!isMultiUnitFormation(state, formationId)) return true;
@@ -374,9 +554,9 @@ export const queryTraceCoverage = (state: GameState, actorId: PlayerId, pieceId:
   const direct = new Set<TraceRouteKey>(['DRAW', ...(piece ? [`HQ:${piece.id}`] : [])]);
   const hexIds: HexId[] = [];
   const directHexIds: HexId[] = [];
+  const routesAt = traceRoutesAt(state, actorId, piece ?? null);
   for (const { id: hexId } of state.scenario.mapDefinition.hexes) {
-    const routes = piece ? traceRoutesFor(state, piece, hexId)
-      : [...new Set(friendlySourceHexes(state, actorId).flatMap((source) => routesFrom(state, actorId, source, hexId, null).map(routeKey)))];
+    const routes = routesAt(hexId);
     const usable = common === null ? routes : routes.filter((key) => key === common);
     if (usable.length === 0) continue;
     hexIds.push(hexId);

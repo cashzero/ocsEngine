@@ -274,9 +274,16 @@ export const enemyCombatUnitsAt = (state: GameState, playerId: PlayerId, hexId: 
 export const friendlyCombatUnitsAt = (state: GameState, playerId: PlayerId, hexId: HexId): readonly PieceState[] =>
   piecesAt(state, hexId).filter((piece) => piece.ownerId === playerId && isCombatUnit(state, piece));
 
+/** Neighbours of each Hex ID seen so far: supply and movement ask for them millions of times on a large map. */
+const adjacentCache = new Map<HexId, readonly HexId[]>();
+
 export const adjacentHexIds = (hexId: HexId): readonly HexId[] => {
+  const cached = adjacentCache.get(hexId);
+  if (cached) return cached;
   const parsed = parseHexCoordinateId(hexId);
-  return parsed.ok ? neighbors(parsed.value).map(formatHexId) : [];
+  const adjacent = Object.freeze(parsed.ok ? neighbors(parsed.value).map(formatHexId) : []);
+  adjacentCache.set(hexId, adjacent);
+  return adjacent;
 };
 
 export const hexDistanceBetween = (left: HexId, right: HexId): number => {

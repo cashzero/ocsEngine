@@ -136,7 +136,7 @@ export const movementCostModel = (
     return result;
   };
 
-  const evaluate = (fromHexId: HexId, toHexId: HexId): StepEvaluation => {
+  const evaluateStep = (fromHexId: HexId, toHexId: HexId): StepEvaluation => {
     const target = hexCost(toHexId);
     const origin = hexCost(fromHexId);
     const from = parseHexCoordinateId(fromHexId);
@@ -170,6 +170,16 @@ export const movementCostModel = (
       kind: 'COST', all,
       cost: { fromHexId, toHexId, terrainTicks, hexsideTicks, totalTicks: Math.max(0, terrainTicks + hexsideTicks), road: false },
     };
+  };
+  // A step's cost depends only on the map and the TEC, both fixed for the model: path searches from many
+  // origins (supply sources, every selected unit) cross the same hexsides again and again.
+  const steps = new Map<HexId, Map<HexId, StepEvaluation>>();
+  const evaluate = (fromHexId: HexId, toHexId: HexId): StepEvaluation => {
+    let from = steps.get(fromHexId);
+    if (!from) { from = new Map(); steps.set(fromHexId, from); }
+    let step = from.get(toHexId);
+    if (!step) { step = evaluateStep(fromHexId, toHexId); from.set(toHexId, step); }
+    return step;
   };
   const model = { evaluate };
   perConfiguration.set(key, model);
