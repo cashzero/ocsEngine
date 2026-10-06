@@ -18,7 +18,10 @@ import {
 } from '../../core/index.js';
 import {
   canonicalJson,
+  canonicalizeMapState,
+  canonicalizePieceState,
   canonicalizeScenarioDefinition,
+  internCanonicalJson,
   parseScenarioDefinition,
   type Decoder,
   arrayDecoder,
@@ -418,13 +421,20 @@ const rawGameStateDecoder: Decoder<RawGameState> = objectDecoder({
 
 const byText = <T>(key: (value: T) => string) => (left: T, right: T): number => key(left).localeCompare(key(right));
 
+/** Every GameState of a game shares its immutable Scenario; canonicalize and serialize it once. */
+const canonicalScenarios = new WeakMap<GameState['scenario'], GameState['scenario']>();
+
+const canonicalScenarioOf = (scenario: GameState['scenario']): GameState['scenario'] => {
+  let canonical = canonicalScenarios.get(scenario);
+  if (canonical === undefined) {
+    canonical = internCanonicalJson(canonicalizeScenarioDefinition(scenario));
+    canonicalScenarios.set(scenario, canonical);
+  }
+  return canonical;
+};
+
 const canonicalStateValue = (state: GameState): GameState => {
-  const staticScenario = canonicalizeScenarioDefinition(state.scenario);
-  const currentEnvelope = canonicalizeScenarioDefinition({
-    ...state.scenario,
-    initialMapState: state.mapState,
-    initialPieceState: state.pieceState,
-  });
+  const staticScenario = canonicalScenarioOf(state.scenario);
   return {
     ...state,
     scenario: staticScenario,
@@ -442,8 +452,8 @@ const canonicalStateValue = (state: GameState): GameState => {
       } } : {}),
     },
     sequence: { ...state.sequence },
-    mapState: currentEnvelope.initialMapState,
-    pieceState: currentEnvelope.initialPieceState,
+    mapState: canonicalizeMapState(state.mapState),
+    pieceState: canonicalizePieceState(state.pieceState),
     usage: stableSort(state.usage, byText(({ pieceId }) => String(pieceId))),
     fuel: {
       formations: stableSort(state.fuel.formations, byText(({ formationId }) => String(formationId))),
