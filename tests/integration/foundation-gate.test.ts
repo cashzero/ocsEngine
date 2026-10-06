@@ -171,8 +171,8 @@ describe('F10 Foundation integration gate', () => {
                 : relative.startsWith('/generation/')
                   ? /from\s+['"][^'"]*(?:rules|gameplay|ui|\/ai(?:\/|['"]))/gu
                   : relative.startsWith('/ai/')
-                    // The bot sees what a player sees: the Gameplay session and Rule Engine types, never rule functions.
-                    ? /from\s+['"][^'"]*(?:serialization|testing|ui|generation|game-flow)|^import\s+(?!type\b)[^;]*from\s+['"][^'"]*rules\//gmu
+                    // The bot sees what a player sees: the Gameplay session, Rule Engine types and the printed charts, never rule functions.
+                    ? /from\s+['"][^'"]*(?:serialization|testing|ui|generation|game-flow)|^import\s+(?!type\b)[^;]*from\s+['"][^'"]*rules\/(?!tables\/)/gmu
                     : /$a/gu;
       return [...content.matchAll(prohibitedImports), ...content.matchAll(layerPattern)]
         .map((match) => ({ path, importText: match[0] }));
