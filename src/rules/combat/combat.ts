@@ -427,6 +427,19 @@ const reservation = (state: GameState, dumpId: PieceId, quantity: number): Resou
   unitDefinitionId: definitionOf(state, pieceById(state, dumpId)!)!.resource!.unitDefinitionId,
 });
 
+/**
+ * After a part payment only dumps can pay the rest (internal stocks are offered before anything is paid), and a
+ * barrage narrows the dumps to those sharing the paid dump's route (10.1b). Offer a part payment only when the
+ * dumps still payable afterwards cover the rest, so a choice never leads to a payment with no legal option.
+ */
+const partialPaymentCompletes = (state: GameState, dumpId: PieceId, tokens: number, remaining: number): boolean => {
+  const transaction = state.activeTransaction!;
+  const payment = transaction.payment!;
+  const reserved = withReservation(state, payment.side, reservation(state, dumpId, tokens));
+  const after: GameState = { ...reserved, activeTransaction: { ...reserved.activeTransaction!, payment: { ...payment, paid: payment.paid + tokens } } };
+  return payableDumps(after).reduce((total, dump) => total + dump.availableQuantity, 0) >= remaining - tokens;
+};
+
 const paymentOptions = (state: GameState): PendingDecision['options'] => {
   const transaction = state.activeTransaction!;
   const payment = transaction.payment!;
@@ -445,6 +458,7 @@ const paymentOptions = (state: GameState): PendingDecision['options'] => {
           const probe = withReservation(state, 'ATTACKER', reservation(state, dump.pieceId, tokens));
           if (tokens === remaining && !exhaustedRemainFeasible(probe)) continue;
         }
+        if (tokens < remaining && !partialPaymentCompletes(state, dump.pieceId, tokens, remaining)) continue;
         options.push({ id: `pay:${dump.pieceId}:${tokens}`, label: `Pay ${tokens}T from the dump at ${dump.hexId} (${dump.availableQuantity}T available)`, hexId: dump.hexId });
       }
     }
