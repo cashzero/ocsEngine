@@ -1,0 +1,678 @@
+{
+ "generatedAt": "2026-10-04T13:21:48.148Z",
+ "node": "v24.11.1",
+ "dist": "file:///E:/work/ocsEngine/.claude/worktrees/perf-64x48/tmp/unlimited/dist",
+ "results": [
+  {
+   "label": "16x12:6",
+   "width": 16,
+   "height": 12,
+   "divisions": 6,
+   "hexes": 192,
+   "ms": {
+    "newgame.map": 53.2,
+    "newgame.oob": 8.9,
+    "newgame.deploy": 41.4,
+    "newgame.compose": 0.8,
+    "newgame.validate": 34.8,
+    "newgame.session": 138.5,
+    "ui.previewSvg": 23.8,
+    "ui.theaterModel": 1.9,
+    "trace.sources(cold)": 0.5,
+    "trace.overlay(any unit)": 36.7,
+    "trace.overlay(one unit)": 29.7,
+    "reinf.candidates(all)": 8.1,
+    "reinf.validate(one)": 0.1,
+    "ui.getActionFamilies": 0.2,
+    "ui.getView(project+clone)": 0.9,
+    "save.hashGameState": 5.2,
+    "save.serializeSave": 11.2,
+    "save.createCheckpoint": 5.8,
+    "move.range": 1.4,
+    "move.range(strat)": 22.7,
+    "turn1.applyAction(total)": 256,
+    "turn1.advance(max)": 111.9
+   },
+   "facts": {
+    "previewSvgBytes": 81586,
+    "pieces": 51,
+    "onMap": 46,
+    "sources": 4,
+    "stateBytes": 184712,
+    "saveBytes": 415508,
+    "phase": "REINFORCEMENT player:allied",
+    "placementCandidates": 38,
+    "mover": "generated-oob:206569474:allied:f3-combat-1:unit MA 5",
+    "reach": 75,
+    "stratReach": 164
+   },
+   "turn1": {
+    "PLACE_REINFORCEMENT": {
+     "count": 8,
+     "ms": 16.347500000000082,
+     "max": 7.532600000000002
+    },
+    "advance from REINFORCEMENT": {
+     "count": 2,
+     "ms": 46.003600000000006,
+     "max": 23.07770000000005
+    },
+    "advance from MOVEMENT": {
+     "count": 2,
+     "ms": 193.64229999999998,
+     "max": 111.86689999999999
+    }
+   }
+  },
+  {
+   "label": "24x18:6",
+   "width": 24,
+   "height": 18,
+   "divisions": 6,
+   "hexes": 432,
+   "ms": {
+    "newgame.map": 71.9,
+    "newgame.oob": 7,
+    "newgame.deploy": 57.4,
+    "newgame.compose": 0.1,
+    "newgame.validate": 89.8,
+    "newgame.session": 248,
+    "ui.previewSvg": 34.8,
+    "ui.theaterModel": 4.2,
+    "trace.sources(cold)": 0.5,
+    "trace.overlay(any unit)": 95.6,
+    "trace.overlay(one unit)": 89.2,
+    "reinf.candidates(all)": 21.8,
+    "reinf.validate(one)": 0,
+    "ui.getActionFamilies": 0.3,
+    "ui.getView(project+clone)": 1.3,
+    "save.hashGameState": 7.2,
+    "save.serializeSave": 10.9,
+    "save.createCheckpoint": 4.9,
+    "move.range": 2.1,
+    "move.range(strat)": 42.6,
+    "turn1.applyAction(total)": 443.3,
+    "turn1.advance(max)": 158.8
+   },
+   "facts": {
+    "previewSvgBytes": 179083,
+    "pieces": 51,
+    "onMap": 46,
+    "sources": 10,
+    "stateBytes": 219062,
+    "saveBytes": 493596,
+    "phase": "REINFORCEMENT player:allied",
+    "placementCandidates": 66,
+    "mover": "generated-oob:206569474:allied:f3-combat-1:unit MA 5",
+    "reach": 118,
+    "stratReach": 293
+   },
+   "turn1": {
+    "PLACE_REINFORCEMENT": {
+     "count": 8,
+     "ms": 15.198199999999815,
+     "max": 4.682299999999941
+    },
+    "advance from REINFORCEMENT": {
+     "count": 2,
+     "ms": 121.85509999999977,
+     "max": 66.52349999999979
+    },
+    "advance from MOVEMENT": {
+     "count": 2,
+     "ms": 306.23359999999957,
+     "max": 158.7869999999998
+    }
+   }
+  },
+  {
+   "label": "32x24:6",
+   "width": 32,
+   "height": 24,
+   "divisions": 6,
+   "hexes": 768,
+   "ms": {
+    "newgame.map": 101.6,
+    "newgame.oob": 2,
+    "newgame.deploy": 42.1,
+    "newgame.compose": 0.1,
+    "newgame.validate": 139.6,
+    "newgame.session": 378.8,
+    "ui.previewSvg": 51.6,
+    "ui.theaterModel": 9,
+    "trace.sources(cold)": 1.3,
+    "trace.overlay(any unit)": 146.9,
+    "trace.overlay(one unit)": 143.8,
+    "reinf.candidates(all)": 28.3,
+    "reinf.validate(one)": 0,
+    "ui.getActionFamilies": 0.1,
+    "ui.getView(project+clone)": 0.5,
+    "save.hashGameState": 8,
+    "save.serializeSave": 13.4,
+    "save.createCheckpoint": 5.7,
+    "move.range": 1.1,
+    "move.range(strat)": 52.3,
+    "turn1.applyAction(total)": 418.3,
+    "turn1.advance(max)": 159.1
+   },
+   "facts": {
+    "previewSvgBytes": 298552,
+    "pieces": 51,
+    "onMap": 46,
+    "sources": 16,
+    "stateBytes": 261643,
+    "saveBytes": 590418,
+    "phase": "REINFORCEMENT player:allied",
+    "placementCandidates": 52,
+    "mover": "generated-oob:206569474:allied:f3-combat-1:unit MA 5",
+    "reach": 99,
+    "stratReach": 262
+   },
+   "turn1": {
+    "PLACE_REINFORCEMENT": {
+     "count": 8,
+     "ms": 18.36960000000181,
+     "max": 2.666500000000269
+    },
+    "advance from REINFORCEMENT": {
+     "count": 2,
+     "ms": 111.72409999999945,
+     "max": 63.29860000000008
+    },
+    "advance from MOVEMENT": {
+     "count": 2,
+     "ms": 288.1808999999994,
+     "max": 159.1295999999993
+    }
+   }
+  },
+  {
+   "label": "48x36:6",
+   "width": 48,
+   "height": 36,
+   "divisions": 6,
+   "hexes": 1728,
+   "ms": {
+    "newgame.map": 312.4,
+    "newgame.oob": 1.7,
+    "newgame.deploy": 61.9,
+    "newgame.compose": 0.1,
+    "newgame.validate": 375.6,
+    "newgame.session": 892.4,
+    "ui.previewSvg": 115.3,
+    "ui.theaterModel": 27,
+    "trace.sources(cold)": 1.5,
+    "trace.overlay(any unit)": 536.5,
+    "trace.overlay(one unit)": 615,
+    "reinf.candidates(all)": 96.9,
+    "reinf.validate(one)": 0,
+    "ui.getActionFamilies": 0.1,
+    "ui.getView(project+clone)": 0.8,
+    "save.hashGameState": 12.3,
+    "save.serializeSave": 23.7,
+    "save.createCheckpoint": 9.5,
+    "move.range": 1.6,
+    "move.range(strat)": 103.1,
+    "turn1.applyAction(total)": 1031.6,
+    "turn1.advance(max)": 451.3
+   },
+   "facts": {
+    "previewSvgBytes": 670689,
+    "pieces": 51,
+    "onMap": 46,
+    "sources": 29,
+    "stateBytes": 389312,
+    "saveBytes": 880320,
+    "phase": "REINFORCEMENT player:allied",
+    "placementCandidates": 82,
+    "mover": "generated-oob:206569474:allied:f3-combat-1:unit MA 5",
+    "reach": 139,
+    "stratReach": 480
+   },
+   "turn1": {
+    "PLACE_REINFORCEMENT": {
+     "count": 8,
+     "ms": 36.9301000000014,
+     "max": 5.650100000000748
+    },
+    "advance from REINFORCEMENT": {
+     "count": 2,
+     "ms": 288.48859999999877,
+     "max": 187.261199999999
+    },
+    "advance from MOVEMENT": {
+     "count": 2,
+     "ms": 706.1792999999998,
+     "max": 451.28210000000036
+    }
+   }
+  },
+  {
+   "label": "64x48:6",
+   "width": 64,
+   "height": 48,
+   "divisions": 6,
+   "hexes": 3072,
+   "ms": {
+    "newgame.map": 1160.8,
+    "newgame.oob": 1.6,
+    "newgame.deploy": 84.3,
+    "newgame.compose": 0.1,
+    "newgame.validate": 616.3,
+    "newgame.session": 1443.3,
+    "ui.previewSvg": 221.8,
+    "ui.theaterModel": 72,
+    "trace.sources(cold)": 2,
+    "trace.overlay(any unit)": 1908.4,
+    "trace.overlay(one unit)": 1688.9,
+    "reinf.candidates(all)": 154.8,
+    "reinf.validate(one)": 0,
+    "ui.getActionFamilies": 0.2,
+    "ui.getView(project+clone)": 0.7,
+    "save.hashGameState": 23.8,
+    "save.serializeSave": 44.9,
+    "save.createCheckpoint": 19.5,
+    "move.range": 2.1,
+    "move.range(strat)": 207.6,
+    "turn1.applyAction(total)": 1927.9,
+    "turn1.advance(max)": 677.7
+   },
+   "facts": {
+    "previewSvgBytes": 1186058,
+    "pieces": 51,
+    "onMap": 46,
+    "sources": 56,
+    "stateBytes": 571566,
+    "saveBytes": 1294132,
+    "phase": "REINFORCEMENT player:allied",
+    "placementCandidates": 70,
+    "mover": "generated-oob:206569474:allied:f3-combat-1:unit MA 5",
+    "reach": 120,
+    "stratReach": 410
+   },
+   "turn1": {
+    "PLACE_REINFORCEMENT": {
+     "count": 8,
+     "ms": 92.90640000000349,
+     "max": 26.436499999999796
+    },
+    "advance from REINFORCEMENT": {
+     "count": 2,
+     "ms": 640.4209999999985,
+     "max": 401.2720999999983
+    },
+    "advance from MOVEMENT": {
+     "count": 2,
+     "ms": 1194.5934000000052,
+     "max": 677.7179000000033
+    }
+   }
+  },
+  {
+   "label": "80x60:6",
+   "width": 80,
+   "height": 60,
+   "divisions": 6,
+   "hexes": 4800,
+   "ms": {
+    "newgame.map": 2716.3,
+    "newgame.oob": 1.9,
+    "newgame.deploy": 136.6,
+    "newgame.compose": 0.2,
+    "newgame.validate": 968.6,
+    "newgame.session": 2291.6,
+    "ui.previewSvg": 430.3,
+    "ui.theaterModel": 165.6,
+    "trace.sources(cold)": 3.2,
+    "trace.overlay(any unit)": 2723.2,
+    "trace.overlay(one unit)": 2569.3,
+    "reinf.candidates(all)": 274.1,
+    "reinf.validate(one)": 0,
+    "ui.getActionFamilies": 0.2,
+    "ui.getView(project+clone)": 0.6,
+    "save.hashGameState": 33.2,
+    "save.serializeSave": 49.7,
+    "save.createCheckpoint": 24.7,
+    "move.range": 1.5,
+    "move.range(strat)": 205.2,
+    "turn1.applyAction(total)": 2192.5,
+    "turn1.advance(max)": 912.1
+   },
+   "facts": {
+    "previewSvgBytes": 1836276,
+    "pieces": 51,
+    "onMap": 46,
+    "sources": 62,
+    "stateBytes": 787981,
+    "saveBytes": 1785322,
+    "phase": "REINFORCEMENT player:allied",
+    "placementCandidates": 90,
+    "mover": "generated-oob:206569474:allied:f3-combat-1:unit MA 5",
+    "reach": 120,
+    "stratReach": 473
+   },
+   "turn1": {
+    "PLACE_REINFORCEMENT": {
+     "count": 8,
+     "ms": 104.61170000002312,
+     "max": 22.575900000003458
+    },
+    "advance from REINFORCEMENT": {
+     "count": 2,
+     "ms": 701.322500000002,
+     "max": 477.28800000000047
+    },
+    "advance from MOVEMENT": {
+     "count": 2,
+     "ms": 1386.5541000000012,
+     "max": 912.1259999999966
+    }
+   }
+  },
+  {
+   "label": "96x72:6",
+   "width": 96,
+   "height": 72,
+   "divisions": 6,
+   "hexes": 6912,
+   "ms": {
+    "newgame.map": 4594.3,
+    "newgame.oob": 1.5,
+    "newgame.deploy": 113.6,
+    "newgame.compose": 0.2,
+    "newgame.validate": 1139.7,
+    "newgame.session": 3465.7,
+    "ui.previewSvg": 634.8,
+    "ui.theaterModel": 182,
+    "trace.sources(cold)": 2.6,
+    "trace.overlay(any unit)": 4340.4,
+    "trace.overlay(one unit)": 4410.1,
+    "reinf.candidates(all)": 348.9,
+    "reinf.validate(one)": 0,
+    "ui.getActionFamilies": 0.2,
+    "ui.getView(project+clone)": 0.9,
+    "save.hashGameState": 39.4,
+    "save.serializeSave": 68,
+    "save.createCheckpoint": 32.3,
+    "move.range": 1.3,
+    "move.range(strat)": 269,
+    "turn1.applyAction(total)": 2831.1,
+    "turn1.advance(max)": 1231.2
+   },
+   "facts": {
+    "previewSvgBytes": 2626268,
+    "pieces": 51,
+    "onMap": 46,
+    "sources": 78,
+    "stateBytes": 1061333,
+    "saveBytes": 2405950,
+    "phase": "REINFORCEMENT player:allied",
+    "placementCandidates": 80,
+    "mover": "generated-oob:206569474:allied:f3-combat-1:unit MA 5",
+    "reach": 109,
+    "stratReach": 435
+   },
+   "turn1": {
+    "PLACE_REINFORCEMENT": {
+     "count": 8,
+     "ms": 124.2161999999953,
+     "max": 19.288200000009965
+    },
+    "advance from REINFORCEMENT": {
+     "count": 2,
+     "ms": 876.9689999999973,
+     "max": 599.3730999999971
+    },
+    "advance from MOVEMENT": {
+     "count": 2,
+     "ms": 1829.9180999999953,
+     "max": 1231.1806999999972
+    }
+   }
+  },
+  {
+   "label": "128x96:6",
+   "width": 128,
+   "height": 96,
+   "divisions": 6,
+   "hexes": 12288,
+   "ms": {
+    "newgame.map": 21968.5,
+    "newgame.oob": 1.8,
+    "newgame.deploy": 171.8,
+    "newgame.compose": 0.1,
+    "newgame.validate": 1981.2,
+    "newgame.session": 5638.7,
+    "ui.previewSvg": 1318.3,
+    "ui.theaterModel": 406.2,
+    "trace.sources(cold)": 4.7,
+    "trace.overlay(any unit)": 13023.9,
+    "trace.overlay(one unit)": 14021.2,
+    "reinf.candidates(all)": 744.2,
+    "reinf.validate(one)": 0,
+    "ui.getActionFamilies": 0.2,
+    "ui.getView(project+clone)": 1,
+    "save.hashGameState": 78.9,
+    "save.serializeSave": 119.6,
+    "save.createCheckpoint": 53.9,
+    "move.range": 1.1,
+    "move.range(strat)": 449.3,
+    "turn1.applyAction(total)": 5528.1,
+    "turn1.advance(max)": 2428.9
+   },
+   "facts": {
+    "previewSvgBytes": 4674330,
+    "pieces": 51,
+    "onMap": 46,
+    "sources": 132,
+    "stateBytes": 1759569,
+    "saveBytes": 3989275,
+    "phase": "REINFORCEMENT player:allied",
+    "placementCandidates": 90,
+    "mover": "generated-oob:206569474:allied:f3-combat-1:unit MA 5",
+    "reach": 95,
+    "stratReach": 393
+   },
+   "turn1": {
+    "PLACE_REINFORCEMENT": {
+     "count": 8,
+     "ms": 217.79740000001038,
+     "max": 33.96249999999418
+    },
+    "advance from REINFORCEMENT": {
+     "count": 2,
+     "ms": 1846.6554999999935,
+     "max": 1246.4640999999829
+    },
+    "advance from MOVEMENT": {
+     "count": 2,
+     "ms": 3463.6487000000197,
+     "max": 2428.8501000000106
+    }
+   }
+  },
+  {
+   "label": "64x48:12",
+   "width": 64,
+   "height": 48,
+   "divisions": 12,
+   "hexes": 3072,
+   "ms": {
+    "newgame.map": 787.3,
+    "newgame.oob": 3,
+    "newgame.deploy": 72.8,
+    "newgame.compose": 0.1,
+    "newgame.validate": 755.8,
+    "newgame.session": 2241.8,
+    "ui.previewSvg": 230.2,
+    "ui.theaterModel": 85.2,
+    "trace.sources(cold)": 2.4,
+    "trace.overlay(any unit)": 3313.4,
+    "trace.overlay(one unit)": 3361.9,
+    "reinf.candidates(all)": 366.2,
+    "reinf.validate(one)": 0,
+    "ui.getActionFamilies": 0.2,
+    "ui.getView(project+clone)": 1.1,
+    "save.hashGameState": 26.4,
+    "save.serializeSave": 39.3,
+    "save.createCheckpoint": 17.2,
+    "move.range": 1.9,
+    "move.range(strat)": 214.7,
+    "turn1.applyAction(total)": 2007,
+    "turn1.advance(max)": 809.7
+   },
+   "facts": {
+    "previewSvgBytes": 1186058,
+    "pieces": 85,
+    "onMap": 80,
+    "sources": 56,
+    "stateBytes": 664838,
+    "saveBytes": 1502205,
+    "phase": "REINFORCEMENT player:allied",
+    "placementCandidates": 104,
+    "mover": "generated-oob:206569474:allied:f12-combat-1:unit MA 5",
+    "reach": 168,
+    "stratReach": 520
+   },
+   "turn1": {
+    "PLACE_REINFORCEMENT": {
+     "count": 8,
+     "ms": 63.79310000000987,
+     "max": 10.080400000006193
+    },
+    "advance from REINFORCEMENT": {
+     "count": 2,
+     "ms": 577.2185999999929,
+     "max": 357.9122999999963
+    },
+    "advance from MOVEMENT": {
+     "count": 2,
+     "ms": 1365.9438999999838,
+     "max": 809.7262999999803
+    }
+   }
+  },
+  {
+   "label": "64x48:20",
+   "width": 64,
+   "height": 48,
+   "divisions": 20,
+   "hexes": 3072,
+   "ms": {
+    "newgame.map": 795.1,
+    "newgame.oob": 4,
+    "newgame.deploy": 80.1,
+    "newgame.compose": 0.1,
+    "newgame.validate": 1204,
+    "newgame.session": 3701.8,
+    "ui.previewSvg": 264.1,
+    "ui.theaterModel": 73.8,
+    "trace.sources(cold)": 3.3,
+    "trace.overlay(any unit)": 5205.2,
+    "trace.overlay(one unit)": 4664.7,
+    "reinf.candidates(all)": 858.2,
+    "reinf.validate(one)": 0,
+    "ui.getActionFamilies": 0.4,
+    "ui.getView(project+clone)": 1.3,
+    "save.hashGameState": 27,
+    "save.serializeSave": 44.7,
+    "save.createCheckpoint": 21.1,
+    "move.range": 1.4,
+    "move.range(strat)": 186.3,
+    "turn1.applyAction(total)": 3194.4,
+    "turn1.advance(max)": 1290.3
+   },
+   "facts": {
+    "previewSvgBytes": 1186058,
+    "pieces": 131,
+    "onMap": 126,
+    "sources": 56,
+    "stateBytes": 791080,
+    "saveBytes": 1783873,
+    "phase": "REINFORCEMENT player:allied",
+    "placementCandidates": 134,
+    "mover": "generated-oob:206569474:allied:f12-combat-1:unit MA 5",
+    "reach": 90,
+    "stratReach": 383
+   },
+   "turn1": {
+    "PLACE_REINFORCEMENT": {
+     "count": 8,
+     "ms": 94.76989999998477,
+     "max": 16.817199999990407
+    },
+    "advance from REINFORCEMENT": {
+     "count": 2,
+     "ms": 888.1865999999864,
+     "max": 520.1016999999993
+    },
+    "advance from MOVEMENT": {
+     "count": 2,
+     "ms": 2211.470100000006,
+     "max": 1290.3401000000013
+    }
+   }
+  },
+  {
+   "label": "128x96:20",
+   "width": 128,
+   "height": 96,
+   "divisions": 20,
+   "hexes": 12288,
+   "ms": {
+    "newgame.map": 27571.9,
+    "newgame.oob": 4.5,
+    "newgame.deploy": 626.7,
+    "newgame.compose": 0.1,
+    "newgame.validate": 10290.2,
+    "newgame.session": 26621.1,
+    "ui.previewSvg": 2326.9,
+    "ui.theaterModel": 760.2,
+    "trace.sources(cold)": 9.7,
+    "trace.overlay(any unit)": 56582.2,
+    "trace.overlay(one unit)": 54835.9,
+    "reinf.candidates(all)": 1629.9,
+    "reinf.validate(one)": 0,
+    "ui.getActionFamilies": 0.4,
+    "ui.getView(project+clone)": 1.9,
+    "save.hashGameState": 127.2,
+    "save.serializeSave": 166.3,
+    "save.createCheckpoint": 102.8,
+    "move.range": 2.5,
+    "move.range(strat)": 782.4,
+    "turn1.applyAction(total)": 11638.5,
+    "turn1.advance(max)": 4687.9
+   },
+   "facts": {
+    "previewSvgBytes": 4674330,
+    "pieces": 131,
+    "onMap": 126,
+    "sources": 132,
+    "stateBytes": 1979103,
+    "saveBytes": 4479056,
+    "phase": "REINFORCEMENT player:allied",
+    "placementCandidates": 70,
+    "mover": "generated-oob:206569474:allied:f12-combat-1:unit MA 5",
+    "reach": 149,
+    "stratReach": 538
+   },
+   "turn1": {
+    "PLACE_REINFORCEMENT": {
+     "count": 8,
+     "ms": 318.28149999998277,
+     "max": 57.81559999997262
+    },
+    "advance from REINFORCEMENT": {
+     "count": 2,
+     "ms": 3827.114799999981,
+     "max": 2761.352899999998
+    },
+    "advance from MOVEMENT": {
+     "count": 2,
+     "ms": 7493.092799999984,
+     "max": 4687.882799999963
+    }
+   }
+  }
+ ]
+}

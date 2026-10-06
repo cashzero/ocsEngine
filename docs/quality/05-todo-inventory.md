@@ -51,6 +51,7 @@
 | 到達時程 | `docs/quality/evidence/turn1-arrivals-2026-10-04/README.md` | #62 新增：第 2 回合的到達（延後單位、SP、Pax/Eq）未在瀏覽器操作，綁 ACT-05a、ACT-05、REPL-02、MAP-06 |
 | OOB 命名 | `docs/reports/random-oob-naming.md` | UI 驗收 UNVERIFIED |
 | Breakdowns | `docs/reports/breakdowns-2026-10-03.md` | 無開放 TODO；提議的驗收列待使用者核准 |
+| 效能（大地圖） | `docs/reports/large-map-performance-2026-10-04.md` §8、§10、§11 | PERF-1～6 皆 DONE（2026-10-05；PERF-1 的遊戲第一次放置單次 218 ms 由使用者決定不追究）。開放：PERF-7 New Game 預覽與開始，僅在放寬 64x48 地圖上限時需要（128x96 Generate 約 4 s、Start 約 4.5 s） |
 
 ## 4. 程式碼內的 TODO
 
