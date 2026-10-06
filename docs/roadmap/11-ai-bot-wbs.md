@@ -146,6 +146,9 @@ Air 與 CARGO_LOSS 仍用第一個選項（TODO `bot-air`）。測試：`tests/a
 （對隨機電腦 38/40 = 95%，雙方座位各 95%；攻擊勝率比中位數 14:1；終局 97% 部隊在補給中）；地中海 10/10；
 **東歐 32/40 = 80%，未達 90%**（TODO `bot-eastern-front`）；B5-7 人工檢視已做並修正 11 項。因東歐未達標，B5 維持 IN PROGRESS。
 
+heuristic@2（2026-10-06，[對局紀錄研究](../reports/M9-replay-study.md)）：對 heuristic@1 在 150 局未用過的 seed 上 75:48（p = 0.009）；
+B5-1～B5-6 不退步檢查全部 PASS。東歐 `bot-eastern-front` 仍未關閉。
+
 ### B6 Logistics-aware（M9.3，PLANNED）
 
 - SP 需求估計、卡車運補、dump 位置安全、extender、炸 dump、fuel 方法選擇、Supply Phase 的 SP 預算。
@@ -201,3 +204,35 @@ Air 與 CARGO_LOSS 仍用第一個選項（TODO `bot-air`）。測試：`tests/a
 3. 電腦回合在畫面上的呈現：逐步播放每個行動（可調速），或整個 phase 瞬間完成後只給摘要？
 4. New Game 預設：雙方都是玩家（目前行為），或預設人類 Allied 對電腦 Axis？
 5. §4 驗收列草案是否同意加入驗收計畫？
+
+## 6. 自我對戰提升（M10 前置，IN PROGRESS）
+
+需求來源（使用者，2026-10-06）：「應該要讓bot自我對戰 不斷提升勝率」。
+
+做法：heuristic 的所有數值改為一組命名權重（`src/ai/policies/heuristic-weights.ts`，預設值等於 heuristic@1）；`scripts/ai-train.mjs`
+反覆產生挑戰者（隨機微調少數權重），與目前冠軍以「從未使用過的 seed、交換座位成對」對戰；挑戰者顯著勝出且通過不退步關卡才升為冠軍。
+
+驗收（門檻為提案，使用者確認前只能提高）：
+
+| 列 | 條件 | 量測 |
+|---|---|---|
+| T1 | 預設權重的 heuristic 與重構前行為完全相同 | 同 seed 對局最終 state hash 相同 |
+| T2 | 訓練可無人值守持續執行、可中斷後續跑；每個挑戰者的 seed、比分、權重差異、判定都寫入紀錄 | `tmp/ai-train/<run>/log.jsonl`、`state.json` |
+| T3 | 升級條件：對冠軍的成對對局符號檢定 p < 0.05（不計和局），且不退步關卡：零錯誤、存檔重播相符、對 random-legal（新 seed，交換座位）勝率 ≥ 90% | log 中每次升級的證據 |
+| T4 | 提升有證據：最終冠軍對 heuristic@1 預設權重，在 40 局未用過的 seed 上得分顯著 > 50%（p < 0.05） | 訓練結束後的獨立對局 |
+| T5 | 東歐風格不退步：冠軍對 random-legal 的東歐勝率不低於 heuristic@1（80%），目標 90%（`bot-eastern-front`） | 20 局未用過的東歐 seed |
+
+冠軍權重寫回 `DEFAULT_HEURISTIC_WEIGHTS` 前，須附 T4、T5 的證據並重跑 B5 驗收；只調權重無法改變的行為（補給接力、Reserve、空軍）仍是各自的 TODO。
+
+實作與狀態（2026-10-06）：
+
+- 權重：`src/ai/policies/heuristic-weights.ts`（59 個命名權重）；`createHeuristicPolicy(facts, { weights, label })`；
+  `scripts/ai-match.mjs --allied heuristic:<weights.json>`。**T1 PASS**：預設權重重跑 seed 10000–10003，4 局最終 state hash 與重構前完全相同。
+- 訓練：`node scripts/ai-train.mjs --run <名稱> --hours <h>`（或 `--generations <n>`）；`--evaluate <pairs>` 做 T4。
+  每代改 1–3 個權重；挑戰者對冠軍每批 6 組交換座位、溫帶與東歐輪替；至少 12 組後 p < 0.05 才進入關卡（對 random-legal 10 組、含 replay），
+  12 組後勝場不多於負場（或得分 < 45%）即淘汰，30 組仍不顯著則放棄；突變幅度預設為 log-normal σ = 0.5。seed 範圍：訓練 200000 起、關卡 600000 起、評估 900000 起，各自遞增不重複。
+  統計與突變在 `src/ai/training.ts`（測試 `tests/ai/training.test.ts`）。
+- 已知限制：每次升級各自以 p < 0.05 判定，連續多代會有偶然升級的機率，因此最終以 T4（對 heuristic@1、未用過的 seed）作為整體提升的證據。
+- 使用者決定（2026-10-06）：「我覺得用權重不太對 應該研究replay並改善策略」。權重訓練暫停（4 代皆無顯著改善，見
+  [M10 訓練紀錄](../reports/M10-self-play-training.md)），T2～T5 不再追求；訓練工具保留。改為以重播研究改進策略：
+  [M9 對局紀錄研究與 heuristic@2](../reports/M9-replay-study.md)。
