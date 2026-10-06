@@ -1,0 +1,239 @@
+{
+ "width": 96,
+ "height": 72,
+ "traceOn": true,
+ "rows": [
+  {
+   "name": "new game: generate preview 96x72",
+   "ms": 5990,
+   "longTasks": 2,
+   "longestMs": 4991,
+   "longTotalMs": 5774
+  },
+  {
+   "name": "new game: start previewed game",
+   "ms": 8878,
+   "longTasks": 5,
+   "longestMs": 7810,
+   "longTotalMs": 8639
+  },
+  {
+   "name": "map: drag pan 300px",
+   "ms": 260,
+   "longTasks": 1,
+   "longestMs": 60,
+   "longTotalMs": 60
+  },
+  {
+   "name": "map: zoom in",
+   "ms": 124,
+   "longTasks": 1,
+   "longestMs": 88,
+   "longTotalMs": 88
+  },
+  {
+   "name": "map: zoom out",
+   "ms": 37,
+   "longTasks": 0,
+   "longestMs": 0,
+   "longTotalMs": 0
+  },
+  {
+   "name": "ui: toggle Trace Supply on",
+   "ms": 3690,
+   "longTasks": 1,
+   "longestMs": 3634,
+   "longTotalMs": 3634
+  },
+  {
+   "name": "map: drag pan 300px, Trace Supply on",
+   "ms": 387,
+   "longTasks": 0,
+   "longestMs": 0,
+   "longTotalMs": 0
+  },
+  {
+   "name": "ui: toggle Trace Supply off",
+   "ms": 45,
+   "longTasks": 0,
+   "longestMs": 0,
+   "longTotalMs": 0
+  },
+  {
+   "name": "reinforcement: select arrival (ALLIED PLAYER TURN Reinforcement ▾)",
+   "ms": 42,
+   "longTasks": 0,
+   "longestMs": 0,
+   "longTotalMs": 0
+  },
+  {
+   "name": "reinforcement: place (ALLIED PLAYER TURN Reinforcement ▾)",
+   "ms": 550,
+   "longTasks": 1,
+   "longestMs": 512,
+   "longTotalMs": 512
+  },
+  {
+   "name": "reinforcement: select arrival (ALLIED PLAYER TURN Reinforcement ▾)",
+   "ms": 55,
+   "longTasks": 0,
+   "longestMs": 0,
+   "longTotalMs": 0
+  },
+  {
+   "name": "reinforcement: place (ALLIED PLAYER TURN Reinforcement ▾)",
+   "ms": 547,
+   "longTasks": 1,
+   "longestMs": 522,
+   "longTotalMs": 522
+  },
+  {
+   "name": "reinforcement: select arrival (ALLIED PLAYER TURN Reinforcement ▾)",
+   "ms": 44,
+   "longTasks": 0,
+   "longestMs": 0,
+   "longTotalMs": 0
+  },
+  {
+   "name": "reinforcement: place (ALLIED PLAYER TURN Reinforcement ▾)",
+   "ms": 387,
+   "longTasks": 1,
+   "longestMs": 350,
+   "longTotalMs": 350
+  },
+  {
+   "name": "reinforcement: select arrival (ALLIED PLAYER TURN Reinforcement ▾)",
+   "ms": 47,
+   "longTasks": 0,
+   "longestMs": 0,
+   "longTotalMs": 0
+  },
+  {
+   "name": "reinforcement: place (ALLIED PLAYER TURN Reinforcement ▾)",
+   "ms": 236,
+   "longTasks": 1,
+   "longestMs": 200,
+   "longTotalMs": 200
+  },
+  {
+   "name": "end step (ALLIED PLAYER TURN Reinforcement ▾)",
+   "ms": 625,
+   "longTasks": 1,
+   "longestMs": 563,
+   "longTotalMs": 563
+  },
+  {
+   "name": "end step (ALLIED PLAYER TURN Movement ▾)",
+   "ms": 34,
+   "longTasks": 0,
+   "longestMs": 0,
+   "longTotalMs": 0
+  },
+  {
+   "name": "end step (ALLIED PLAYER TURN Movement ▾)",
+   "ms": 894,
+   "longTasks": 1,
+   "longestMs": 828,
+   "longTotalMs": 828
+  },
+  {
+   "name": "handoff: begin (AXIS PLAYER TURN · ALLIED TO ACT Reinforcement ▾)",
+   "ms": 156,
+   "longTasks": 0,
+   "longestMs": 0,
+   "longTotalMs": 0
+  },
+  {
+   "name": "handoff: complete ()",
+   "ms": 611,
+   "longTasks": 1,
+   "longestMs": 508,
+   "longTotalMs": 508
+  },
+  {
+   "name": "dismiss away report",
+   "ms": 59,
+   "longTasks": 0,
+   "longestMs": 0,
+   "longTotalMs": 0
+  },
+  {
+   "name": "reinforcement: select arrival (AXIS PLAYER TURN Reinforcement ▾)",
+   "ms": 48,
+   "longTasks": 0,
+   "longestMs": 0,
+   "longTotalMs": 0
+  },
+  {
+   "name": "reinforcement: place (AXIS PLAYER TURN Reinforcement ▾)",
+   "ms": 554,
+   "longTasks": 1,
+   "longestMs": 517,
+   "longTotalMs": 517
+  },
+  {
+   "name": "reinforcement: select arrival (AXIS PLAYER TURN Reinforcement ▾)",
+   "ms": 34,
+   "longTasks": 0,
+   "longestMs": 0,
+   "longTotalMs": 0
+  },
+  {
+   "name": "reinforcement: place (AXIS PLAYER TURN Reinforcement ▾)",
+   "ms": 507,
+   "longTasks": 1,
+   "longestMs": 482,
+   "longTotalMs": 482
+  },
+  {
+   "name": "reinforcement: select arrival (AXIS PLAYER TURN Reinforcement ▾)",
+   "ms": 31,
+   "longTasks": 0,
+   "longestMs": 0,
+   "longTotalMs": 0
+  },
+  {
+   "name": "reinforcement: place (AXIS PLAYER TURN Reinforcement ▾)",
+   "ms": 377,
+   "longTasks": 1,
+   "longestMs": 342,
+   "longTotalMs": 342
+  },
+  {
+   "name": "reinforcement: select arrival (AXIS PLAYER TURN Reinforcement ▾)",
+   "ms": 42,
+   "longTasks": 0,
+   "longestMs": 0,
+   "longTotalMs": 0
+  },
+  {
+   "name": "reinforcement: place (AXIS PLAYER TURN Reinforcement ▾)",
+   "ms": 241,
+   "longTasks": 1,
+   "longestMs": 218,
+   "longTotalMs": 218
+  },
+  {
+   "name": "end step (AXIS PLAYER TURN Reinforcement ▾)",
+   "ms": 1009,
+   "longTasks": 1,
+   "longestMs": 946,
+   "longTotalMs": 946
+  },
+  {
+   "name": "end step (AXIS PLAYER TURN Movement ▾)",
+   "ms": 32,
+   "longTasks": 0,
+   "longestMs": 0,
+   "longTotalMs": 0
+  },
+  {
+   "name": "end step (AXIS PLAYER TURN Movement ▾)",
+   "ms": 1542,
+   "longTasks": 1,
+   "longestMs": 1476,
+   "longTotalMs": 1476
+  }
+ ],
+ "errors": []
+}

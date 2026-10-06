@@ -1,7 +1,9 @@
 import {
-  hexDistance,
+  formatHexId,
   neighbor,
+  neighbors,
   parseHexCoordinateId,
+  type HexCoordinate,
   type HexId,
   type ValidationIssue,
 } from '../../core/index.js';
@@ -61,21 +63,37 @@ const RAIL_PATTERN = /^edge:(?:multi-track-)?rail$/u;
 
 /** Largest distance from any road, in Hexes, of each passable Hex kind that must be served. */
 const roadGaps = (map: MapDefinition, roadEdges: readonly (readonly [HexId, HexId])[], style: MapGenerationStyle) => {
-  const roadHexes = [...new Set(roadEdges.flat())].flatMap((id) => {
+  const measured = map.hexes.filter((hex) => roadGapLimitFor(style, terrainKind(hex.terrainDefinitionIds[0]!)) !== undefined
+    && parseHexCoordinateId(hex.id).ok);
+  // Hex distance to the nearest road Hex, by stepping out from every road Hex at once over the unbounded hex grid
+  // (a step there is exactly one unit of hex distance), until every measured Hex is reached.
+  const nearestRoad = new Map<string, number>();
+  let frontier: HexCoordinate[] = [];
+  for (const id of new Set(roadEdges.flat())) {
     const parsed = parseHexCoordinateId(id);
-    return parsed.ok ? [parsed.value] : [];
-  });
-  const gaps: Partial<Record<GeneratedTerrainKind, number>> = {};
-  for (const hex of map.hexes) {
-    const kind = terrainKind(hex.terrainDefinitionIds[0]!);
-    if (roadGapLimitFor(style, kind) === undefined) continue;
-    const parsed = parseHexCoordinateId(hex.id);
-    if (!parsed.ok) continue;
-    let nearest = Number.POSITIVE_INFINITY;
-    for (const road of roadHexes) {
-      nearest = Math.min(nearest, hexDistance(parsed.value, road));
-      if (nearest === 0) break;
+    if (!parsed.ok || nearestRoad.has(String(id))) continue;
+    nearestRoad.set(String(id), 0);
+    frontier.push(parsed.value);
+  }
+  let remaining = measured.filter((hex) => !nearestRoad.has(String(hex.id))).length;
+  const isMeasured = new Set(measured.map((hex) => String(hex.id)));
+  for (let steps = 1; frontier.length > 0 && remaining > 0; steps += 1) {
+    const next: HexCoordinate[] = [];
+    for (const coordinate of frontier) {
+      for (const adjacent of neighbors(coordinate)) {
+        const key = formatHexId(adjacent);
+        if (nearestRoad.has(key)) continue;
+        nearestRoad.set(key, steps);
+        if (isMeasured.has(key)) remaining -= 1;
+        next.push(adjacent);
+      }
     }
+    frontier = next;
+  }
+  const gaps: Partial<Record<GeneratedTerrainKind, number>> = {};
+  for (const hex of measured) {
+    const kind = terrainKind(hex.terrainDefinitionIds[0]!);
+    const nearest = nearestRoad.get(String(hex.id)) ?? Number.POSITIVE_INFINITY;
     // A map without roads reports its size, so the metric stays a finite, serializable number.
     gaps[kind] = Math.max(gaps[kind] ?? 0, Number.isFinite(nearest) ? nearest : map.hexes.length);
   }

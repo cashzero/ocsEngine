@@ -1,4 +1,5 @@
 import {
+  compareHexCoordinates,
   compareHexIds,
   compareText,
   formatHexId,
@@ -48,9 +49,20 @@ export const createMapDefinitionIndex = (
     }
   }
 
-  const orderedHexes = Object.freeze(stableSort(definition.hexes, (left, right) =>
-    compareHexIds(left.id, right.id)));
-  const orderedHexsides = Object.freeze(stableSort(definition.hexsides, (left, right) =>
+  // Sorted only when asked for (most users only look Hexes up), and each Hex ID is parsed once rather
+  // than in every comparison; the order is the same as `compareHexIds`.
+  let orderedHexes: readonly HexDefinition[] | null = null;
+  const sortHexes = (): readonly HexDefinition[] => {
+    const coordinates = new Map(definition.hexes.map(({ id }) => [id, parseHexCoordinateId(id)] as const));
+    return Object.freeze(stableSort(definition.hexes, (left, right) => {
+      const leftCoordinate = coordinates.get(left.id)!;
+      const rightCoordinate = coordinates.get(right.id)!;
+      return leftCoordinate.ok && rightCoordinate.ok ? compareHexCoordinates(leftCoordinate.value, rightCoordinate.value)
+        : compareHexIds(left.id, right.id);
+    }));
+  };
+  let orderedHexsides: readonly HexsideFeatureCollection[] | null = null;
+  const sortHexsides = (): readonly HexsideFeatureCollection[] => Object.freeze(stableSort(definition.hexsides, (left, right) =>
     compareText(left.hexsideId, right.hexsideId)));
 
   const getNeighbor = (
@@ -78,8 +90,8 @@ export const createMapDefinitionIndex = (
     getHexside: (hexsideId: HexsideId) => hexsideById.get(hexsideId),
     getNeighbor,
     getHexsideAt,
-    orderedHexes: () => orderedHexes,
-    orderedHexsides: () => orderedHexsides,
+    orderedHexes: () => (orderedHexes ??= sortHexes()),
+    orderedHexsides: () => (orderedHexsides ??= sortHexsides()),
   });
 };
 

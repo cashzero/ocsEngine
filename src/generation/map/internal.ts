@@ -38,10 +38,17 @@ export const definitionId = (value: string): DefinitionId => {
 
 export const coordinateKey = (coordinate: HexCoordinate): string => formatHexId(coordinate);
 
+/** Parsed coordinates by Hex ID: road and rail routing compare the same Hexes hundreds of thousands of times. */
+const coordinates = new Map<HexId, HexCoordinate>();
+
 export const coordinateFor = (id: HexId): HexCoordinate => {
+  const cached = coordinates.get(id);
+  if (cached) return cached;
   const parsed = parseHexCoordinateId(id);
   if (!parsed.ok) throw new Error(`Invalid generated Hex ID: ${id}`);
-  return parsed.value;
+  const coordinate = Object.freeze(parsed.value);
+  coordinates.set(id, coordinate);
+  return coordinate;
 };
 
 /**
@@ -65,7 +72,18 @@ export const neighborCells = (
 export const distanceBetween = (left: HexId, right: HexId): number =>
   hexDistance(coordinateFor(left), coordinateFor(right));
 
+/** Hexside IDs by Hex pair: every routing step asks for the Hexside it crosses. */
+const hexsideIds = new Map<HexId, Map<HexId, HexsideId>>();
+
 export const hexsideBetween = (left: HexId, right: HexId): HexsideId => {
+  let fromLeft = hexsideIds.get(left);
+  if (!fromLeft) { fromLeft = new Map(); hexsideIds.set(left, fromLeft); }
+  let id = fromLeft.get(right);
+  if (id === undefined) { id = computeHexsideBetween(left, right); fromLeft.set(right, id); }
+  return id;
+};
+
+const computeHexsideBetween = (left: HexId, right: HexId): HexsideId => {
   const leftCoordinate = coordinateFor(left);
   const rightCoordinate = coordinateFor(right);
   const direction = findNeighborDirection(leftCoordinate, rightCoordinate);

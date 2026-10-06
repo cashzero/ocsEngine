@@ -464,10 +464,19 @@ const canonicalStateValue = (state: GameState): GameState => {
   };
 };
 
+/**
+ * One serialization per state: game states are immutable, and every accepted action serializes the new
+ * state for its hash, the automatic save and the next Undo checkpoint (64x48: ~15 ms each).
+ */
+const serializedStates = new WeakMap<GameState, Result<string, readonly ValidationIssue[]>>();
+
 export const serializeGameState = (state: GameState): Result<string, readonly ValidationIssue[]> => {
+  const cached = serializedStates.get(state);
+  if (cached) return cached;
   const issues = [...validateGameState(state)];
-  if (issues.length > 0) return err(issues);
-  return canonicalJson(canonicalStateValue(state));
+  const result = issues.length > 0 ? err(issues) : canonicalJson(canonicalStateValue(state));
+  serializedStates.set(state, result);
+  return result;
 };
 
 export const parseGameState = (input: unknown): Result<GameState, readonly ValidationIssue[]> => {

@@ -363,10 +363,59 @@ export const GAMEPLAY_SAVE_VERSION = '0.5.0' as const;
 /** Older versions this build still reads, upgrading their snapshots on load (see `migrateLegacySave`). */
 export const LEGACY_GAMEPLAY_SAVE_VERSIONS: readonly string[] = ['0.2.0', '0.3.0', '0.4.0'];
 
+/**
+ * JSON text of recent snapshot strings. A save is written after every accepted action and carries the initial
+ * and current snapshots plus one per checkpoint (up to ~30 Undo points: 20 MB at 64x48); the same snapshot
+ * strings recur save after save, so each is escaped once. Bounded, least recently used first out.
+ */
+const snapshotJson = new Map<string, string>();
+const SNAPSHOT_JSON_LIMIT = 64;
+
+const jsonOfSnapshot = (snapshot: string): string => {
+  let json = snapshotJson.get(snapshot);
+  if (json === undefined) json = JSON.stringify(snapshot);
+  else snapshotJson.delete(snapshot);
+  snapshotJson.set(snapshot, json);
+  if (snapshotJson.size > SNAPSHOT_JSON_LIMIT) snapshotJson.delete(snapshotJson.keys().next().value!);
+  return json;
+};
+
+/**
+ * The canonical JSON of the envelope (exactly `canonicalJson(envelope)`): the small remainder is encoded with
+ * each snapshot replaced by a unique placeholder string, then the snapshots' JSON text is put in their place.
+ * Strings encode as `JSON.stringify` does in canonical JSON, so the text is identical; if any placeholder is
+ * not found exactly once, the plain encoding is used instead.
+ */
+const canonicalSaveJson = (envelope: GameplaySaveEnvelope): ReturnType<typeof canonicalJson> => {
+  const nonce = `\u0000ocs-snapshot:${Math.random().toString(36).slice(2)}:`;
+  const snapshots: string[] = [];
+  const hold = (snapshot: string): string => { snapshots.push(snapshot); return `${nonce}${snapshots.length - 1}`; };
+  const skeleton = canonicalJson({
+    ...envelope,
+    initialSnapshot: hold(envelope.initialSnapshot),
+    currentSnapshot: hold(envelope.currentSnapshot),
+    checkpoints: envelope.checkpoints.map((checkpoint) => ({ ...checkpoint, snapshot: hold(checkpoint.snapshot) })),
+  });
+  if (!skeleton.ok) return canonicalJson(envelope);
+  const marker = JSON.stringify(nonce).slice(1, -1);
+  const parts = skeleton.value.split(new RegExp(`"${marker.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&')}(\\d+)"`, 'u'));
+  // split with one capture group: text, index, text, index, ..., text.
+  if (parts.length !== snapshots.length * 2 + 1) return canonicalJson(envelope);
+  const seen = new Set<number>();
+  let text = parts[0]!;
+  for (let index = 1; index < parts.length; index += 2) {
+    const slot = Number(parts[index]);
+    if (seen.has(slot) || !(slot < snapshots.length)) return canonicalJson(envelope);
+    seen.add(slot);
+    text += jsonOfSnapshot(snapshots[slot]!) + parts[index + 1]!;
+  }
+  return { ok: true, value: text };
+};
+
 export const serializeGameplaySave = (
   envelope: GameplaySaveEnvelope,
 ): Result<string, readonly GameplayError[]> => {
-  const serialized = canonicalJson(envelope);
+  const serialized = canonicalSaveJson(envelope);
   return serialized.ok ? ok(serialized.value) : err(serialized.error.map((entry) =>
     issue('SAVE_INVALID', entry.path, entry.message)));
 };
