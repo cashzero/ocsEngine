@@ -151,10 +151,13 @@ describe('F10 Foundation integration gate', () => {
 
   it('keeps package dependencies one-way and records every F0-F10 study output', () => {
     const sourceRoot = join(process.cwd(), 'src');
-    const prohibitedImports = /from\s+['"][^'"]*(?:react|\/ai(?:\/|['"]))/giu;
     const boundaryLeaks = sourceFiles(sourceRoot).flatMap((path) => {
       const content = readFileSync(path, 'utf8');
       const relative = path.slice(sourceRoot.length).replaceAll('\\', '/');
+      // Only the package root may re-export the bot; no engine layer may depend on it.
+      const prohibitedImports = relative === '/index.ts'
+        ? /from\s+['"][^'"]*react/giu
+        : /from\s+['"][^'"]*(?:react|\/ai(?:\/|['"]))/giu;
       const layerPattern = relative.startsWith('/core/')
         ? /from\s+['"][^'"]*(?:domain|serialization|testing|rules|gameplay|ui|generation)/gu
         : relative.startsWith('/domain/')
@@ -167,7 +170,10 @@ describe('F10 Foundation integration gate', () => {
                 ? /from\s+['"][^'"]*(?:ui|generation)/gu
                 : relative.startsWith('/generation/')
                   ? /from\s+['"][^'"]*(?:rules|gameplay|ui|\/ai(?:\/|['"]))/gu
-                  : /$a/gu;
+                  : relative.startsWith('/ai/')
+                    // The bot sees what a player sees: the Gameplay session and Rule Engine types, never rule functions.
+                    ? /from\s+['"][^'"]*(?:serialization|testing|ui|generation|game-flow)|^import\s+(?!type\b)[^;]*from\s+['"][^'"]*rules\//gmu
+                    : /$a/gu;
       return [...content.matchAll(prohibitedImports), ...content.matchAll(layerPattern)]
         .map((match) => ({ path, importText: match[0] }));
     });
