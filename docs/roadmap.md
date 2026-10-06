@@ -515,8 +515,12 @@ UI 正常入口已移除 fixed synthetic fixture；M6/M7 preview 保留為診斷
 
 ## 13. M9：AI Bot
 
+狀態：**IN PROGRESS**（2026-10-06）。使用者同意先做不碰 UI 的 headless 部分（B0–B4）以快速疊代；UI 整合（B7）仍受 §12 M8 gate 阻擋。工作分解與驗收列草案見
+[M9 AI Bot WBS](roadmap/11-ai-bot-wbs.md)，設計見 [Bot 架構](ai/M9-bot-architecture.md) 與
+[評分與規劃](ai/M9-scoring-and-planning.md)。
+
 M9 開始前研究 BCS strategy、legal actions、executor、telemetry、paired self-play，
-輸出 `docs/generator-study/05-bcs-ai-and-selfplay.md`。只保留架構與評估方式，
+輸出 [`docs/generator-study/05-bcs-ai-and-selfplay.md`](generator-study/05-bcs-ai-and-selfplay.md)（已撰寫）。只保留架構與評估方式，
 不移植 BCS activation/formation policies 或 handler-coupled executor。
 
 ### M9.1 Random-legal smoke bot
