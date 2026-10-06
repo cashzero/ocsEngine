@@ -28,6 +28,47 @@ const sourceKey = (source: SourceReference): string =>
 const sortSources = (sources: readonly SourceReference[]): readonly SourceReference[] =>
   stableSort(sources, compareKey(sourceKey));
 
+/** A deeply detached Map State with its unordered collections sorted. */
+export const canonicalizeMapState = (
+  mapState: ScenarioDefinition['initialMapState'],
+): ScenarioDefinition['initialMapState'] => ({
+  ...mapState,
+  hexControl: stableSort(
+    mapState.hexControl,
+    compareKey(({ hexId }) => hexId),
+  ).map((control) => ({ ...control })),
+  features: stableSort(
+    mapState.features,
+    compareKey(({ id }) => id),
+  ).map((feature) => ({
+    ...feature,
+    location: { ...feature.location },
+    statusDefinitionIds: sortText(feature.statusDefinitionIds),
+  })),
+});
+
+/** A deeply detached Piece runtime state with its unordered collections sorted. */
+export const canonicalizePieceState = (
+  pieceState: ScenarioDefinition['initialPieceState'],
+): ScenarioDefinition['initialPieceState'] => ({
+  ...pieceState,
+  pieces: stableSort(
+    pieceState.pieces,
+    compareKey(({ id }) => id),
+  ).map((piece) => ({
+    ...piece,
+    location: { ...piece.location },
+    statuses: stableSort(
+      piece.statuses,
+      compareKey(({ statusDefinitionId }) => statusDefinitionId),
+    ).map((status) => ({ ...status, value: { ...status.value } })),
+  })),
+  relations: stableSort(
+    pieceState.relations,
+    compareKey(pieceRelationKey),
+  ).map((relation) => ({ ...relation })),
+});
+
 /** Returns a deeply detached Scenario with all semantically unordered collections sorted. */
 export const canonicalizeScenarioDefinition = (
   scenario: ScenarioDefinition,
@@ -54,21 +95,7 @@ export const canonicalizeScenarioDefinition = (
     provenance: sortSources(scenario.mapDefinition.provenance),
     overrideDefinitionIds: sortText(scenario.mapDefinition.overrideDefinitionIds),
   },
-  initialMapState: {
-    ...scenario.initialMapState,
-    hexControl: stableSort(
-      scenario.initialMapState.hexControl,
-      compareKey(({ hexId }) => hexId),
-    ).map((control) => ({ ...control })),
-    features: stableSort(
-      scenario.initialMapState.features,
-      compareKey(({ id }) => id),
-    ).map((feature) => ({
-      ...feature,
-      location: { ...feature.location },
-      statusDefinitionIds: sortText(feature.statusDefinitionIds),
-    })),
-  },
+  initialMapState: canonicalizeMapState(scenario.initialMapState),
   pieceCatalog: {
     ...scenario.pieceCatalog,
     definitions: stableSort(
@@ -117,24 +144,7 @@ export const canonicalizeScenarioDefinition = (
     })),
     provenance: sortSources(scenario.pieceCatalog.provenance),
   },
-  initialPieceState: {
-    ...scenario.initialPieceState,
-    pieces: stableSort(
-      scenario.initialPieceState.pieces,
-      compareKey(({ id }) => id),
-    ).map((piece) => ({
-      ...piece,
-      location: { ...piece.location },
-      statuses: stableSort(
-        piece.statuses,
-        compareKey(({ statusDefinitionId }) => statusDefinitionId),
-      ).map((status) => ({ ...status, value: { ...status.value } })),
-    })),
-    relations: stableSort(
-      scenario.initialPieceState.relations,
-      compareKey(pieceRelationKey),
-    ).map((relation) => ({ ...relation })),
-  },
+  initialPieceState: canonicalizePieceState(scenario.initialPieceState),
   players: stableSort(scenario.players, compareKey(({ id }) => id)).map((player) => ({ ...player })),
   turnStart: { ...scenario.turnStart },
   boxes: stableSort(scenario.boxes, compareKey(({ id }) => id)).map((box) => ({ ...box })),
@@ -167,36 +177,53 @@ interface CanonicalJsonContext {
   readonly ancestors: WeakSet<object>;
 }
 
-const canonicalJsonValue = (value: unknown, context: CanonicalJsonContext): unknown => {
-  if (value === null || typeof value === 'string' || typeof value === 'boolean') return value;
+/** Canonical JSON text of objects that never change (a Scenario shared by every GameState of a game). */
+const staticCanonicalJson = new WeakMap<object, string>();
+
+/** Canonical JSON: object keys sorted, -0 written as 0; static objects reuse their remembered text. */
+const writeCanonicalJson = (value: unknown, context: CanonicalJsonContext): string => {
+  if (value === null) return 'null';
+  if (typeof value === 'string') return JSON.stringify(value);
+  if (typeof value === 'boolean') return value ? 'true' : 'false';
   if (typeof value === 'number') {
     if (!Number.isFinite(value)) throw new TypeError('Canonical JSON rejects non-finite numbers.');
-    return Object.is(value, -0) ? 0 : value;
+    return JSON.stringify(Object.is(value, -0) ? 0 : value);
   }
   if (typeof value !== 'object') throw new TypeError(`Canonical JSON rejects ${typeof value}.`);
+  const cached = staticCanonicalJson.get(value);
+  if (cached !== undefined) return cached;
   if (context.ancestors.has(value)) throw new TypeError('Canonical JSON rejects cyclic values.');
   context.ancestors.add(value);
   try {
     if (Array.isArray(value)) {
-      return value.map((entry) => {
+      return `[${value.map((entry) => {
         if (entry === undefined) throw new TypeError('Canonical JSON rejects undefined array entries.');
-        return canonicalJsonValue(entry, context);
-      });
+        return writeCanonicalJson(entry, context);
+      }).join(',')}]`;
     }
     const record = value as Readonly<Record<string, unknown>>;
-    const output: Record<string, unknown> = {};
-    Object.keys(record).sort().forEach((key) => {
-      if (record[key] !== undefined) output[key] = canonicalJsonValue(record[key], context);
-    });
-    return output;
+    const members: string[] = [];
+    for (const key of Object.keys(record).sort()) {
+      if (record[key] !== undefined) members.push(`${JSON.stringify(key)}:${writeCanonicalJson(record[key], context)}`);
+    }
+    return `{${members.join(',')}}`;
   } finally {
     context.ancestors.delete(value);
   }
 };
 
+/**
+ * Remembers the canonical JSON text of an object the caller guarantees is never mutated, so every later
+ * serialization that contains it reuses the text. Returns the object for chaining.
+ */
+export const internCanonicalJson = <T extends object>(value: T): T => {
+  if (!staticCanonicalJson.has(value)) staticCanonicalJson.set(value, writeCanonicalJson(value, { ancestors: new WeakSet() }));
+  return value;
+};
+
 export const canonicalJson = (value: unknown): Result<string, readonly ValidationIssue[]> => {
   try {
-    return ok(JSON.stringify(canonicalJsonValue(value, { ancestors: new WeakSet() })));
+    return ok(writeCanonicalJson(value, { ancestors: new WeakSet() }));
   } catch (cause) {
     return err([{
       code: 'NON_CANONICAL_JSON_VALUE',

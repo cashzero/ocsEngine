@@ -84,7 +84,7 @@ export class DefaultGameplayEngine implements GameplayEngine {
       bindings: request.bindings, scenarioHash: scenarioHash.value,
       initialStateHash: initialHash, stateHash: initialHash,
       initialState: detached.value, state: detached.value, history: [], checkpoints: [],
-      ports: this.#ports,
+      ports: this.#ports, persistence: request.persistence ?? 'AUTOSAVE',
     });
   };
 
