@@ -1,4 +1,4 @@
-import { stableSort, type HexId, type PieceId, type PlayerId } from '../../core/index.js';
+import { PriorityQueue, stableSort, type HexId, type PieceId, type PlayerId } from '../../core/index.js';
 import { trainbustingTicks } from '../air/aircraft.js';
 import type { PieceState } from '../../domain/piece/index.js';
 import type { GameState, MobilityType, RuleViolation } from '../kernel/model.js';
@@ -256,7 +256,11 @@ export const queryReachableHexes = (
   const minimumMove = unmoved && allowance > 0 && state.configuration.minimumMoveTicks > 0;
   const costs = movementCostModel(state, mobility);
   const best = new Map<HexId, ReachableHex>();
+  // Open Hexes: one live entry per Hex; the queue may hold superseded entries, skipped when popped.
   const frontier = new Map<HexId, ReachableHex>([[originHexId, { hexId: originHexId, costTicks: 0, path: [originHexId] }]]);
+  const open = new PriorityQueue<ReachableHex>((left, right) => left.costTicks - right.costTicks
+    || (String(left.hexId) < String(right.hexId) ? -1 : String(left.hexId) > String(right.hexId) ? 1 : 0));
+  open.push(frontier.get(originHexId)!);
   const terminal = new Set<HexId>();
   const hexAllowed = new Map<HexId, boolean>();
   const stopsIn = new Map<HexId, boolean>();
@@ -269,12 +273,10 @@ export const queryReachableHexes = (
     return hexAllowed.get(hexId)!;
   };
   while (frontier.size > 0) {
-    let current: ReachableHex | undefined;
-    for (const entry of frontier.values()) {
-      if (!current || entry.costTicks < current.costTicks
-        || (entry.costTicks === current.costTicks && String(entry.hexId) < String(current.hexId))) current = entry;
-    }
-    frontier.delete(current!.hexId);
+    const current = open.pop();
+    if (current === undefined) break;
+    if (frontier.get(current.hexId) !== current) continue;
+    frontier.delete(current.hexId);
     best.set(current!.hexId, current!);
     if (terminal.has(current!.hexId)) continue;
     for (const next of adjacentOf(current!.hexId)) {
@@ -288,7 +290,9 @@ export const queryReachableHexes = (
       if (!withinBudget && !(fromOrigin && minimumMove)) continue;
       const existing = frontier.get(next);
       if (existing && existing.costTicks <= costTicks) continue;
-      frontier.set(next, { hexId: next, costTicks, path: [...current!.path, next] });
+      const entry = { hexId: next, costTicks, path: [...current!.path, next] };
+      frontier.set(next, entry);
+      open.push(entry);
       if (stopsIn.get(next) || !withinBudget || step.all) terminal.add(next);
       else terminal.delete(next);
     }
