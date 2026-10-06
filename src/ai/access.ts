@@ -11,7 +11,7 @@ export const createBotActionAccess = (session: GameSession, seatId: SeatId): Bot
   let families: readonly GameAction['kind'][] | null = null;
   const candidateCache = new Map<string, readonly GameAction[]>();
   const rangeCache = new Map<PieceId, readonly ReachableHex[]>();
-  let coverage: TraceCoverage | null = null;
+  const coverageCache = new Map<string, TraceCoverage>();
   return {
     families: () => families ??= session.getActionFamilies(seatId).filter(({ enabled }) => enabled).map(({ kind }) => kind),
     candidates: (kind, pieceId = null, budget = DEFAULT_CANDIDATE_BUDGET) => {
@@ -32,6 +32,13 @@ export const createBotActionAccess = (session: GameSession, seatId: SeatId): Bot
       return range;
     },
     explain: (action) => session.validateDraft(session.createDraft(seatId, action)),
-    traceCoverage: () => coverage ??= session.getTraceCoverage(seatId, null).value ?? { hexIds: [], directHexIds: [] },
+    traceCoverage: (pieceId = null) => {
+      let coverage = coverageCache.get(String(pieceId));
+      if (coverage === undefined) {
+        coverage = session.getTraceCoverage(seatId, pieceId).value ?? { hexIds: [], directHexIds: [] };
+        coverageCache.set(String(pieceId), coverage);
+      }
+      return coverage;
+    },
   };
 };

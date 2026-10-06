@@ -7,7 +7,7 @@
 //
 // Every match varies the map, OOB, deployment and rules seeds from the match index; --fix-map / --fix-oob hold one
 // dimension fixed. Exit code 1 when any match stops for a reason other than FINISHED or fails the replay check.
-import { mkdirSync, writeFileSync, appendFileSync } from 'node:fs';
+import { appendFileSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { availableParallelism } from 'node:os';
 import { join, resolve } from 'node:path';
 import { pathToFileURL, fileURLToPath } from 'node:url';
@@ -99,9 +99,20 @@ const runMatch = async (baseOptions, matchIndex) => {
   session.start();
   const t1 = performance.now();
   const facts = { scenario: prepared.value.scenario, turnLimit: options.turns };
+  // heuristic@<dist dir>: the bot from another build (a frozen baseline), playing through this build's session.
+  const builds = new Map();
+  for (const id of Object.values(options.policies)) {
+    if (id.startsWith('heuristic@') && !builds.has(id)) builds.set(id, await import(pathToFileURL(join(resolve(root, id.slice('heuristic@'.length)), 'index.js')).href));
+  }
   const policyFor = (id) => {
+    if (builds.has(id)) return builds.get(id).createHeuristicPolicy(facts, { label: id.slice('heuristic@'.length) });
     if (id === 'random-legal') return m.createRandomLegalPolicy();
     if (id === 'heuristic') return m.createHeuristicPolicy(facts);
+    // heuristic:<file.json>: tuned weights, as written by scripts/ai-train.mjs ({ label, weights } or a bare weights object).
+    if (id.startsWith('heuristic:')) {
+      const file = JSON.parse(readFileSync(resolve(root, id.slice('heuristic:'.length)), 'utf8'));
+      return m.createHeuristicPolicy(facts, { weights: m.heuristicWeights(file.weights ?? file), label: file.label ?? id.slice('heuristic:'.length) });
+    }
     throw new Error(`Unknown policy ${id}`);
   };
   const sideOf = (playerId) => String(playerId).endsWith('axis') ? 'axis' : 'allied';
@@ -120,6 +131,11 @@ const runMatch = async (baseOptions, matchIndex) => {
   const projection = view.projection;
   let replay = null;
   const diagnostics = session.getDiagnostics();
+  if (diagnostics.lifecycle !== 'FAULTED') {
+    // The final save is always kept (scripts/ai-replay-study.mjs reads it); --no-replay only skips reloading it.
+    const serialized = session.serializeSave();
+    writeFileSync(join(options.out, `match-${matchIndex}.save.json`), serialized);
+  }
   if (options.replay && diagnostics.lifecycle !== 'FAULTED') {
     const serialized = session.serializeSave();
     const t3 = performance.now();
@@ -129,7 +145,6 @@ const runMatch = async (baseOptions, matchIndex) => {
     } catch (error) {
       replay = { ok: false, ms: Math.round(performance.now() - t3), error: error instanceof Error ? error.message : String(error) };
     }
-    writeFileSync(join(options.out, `match-${matchIndex}.save.json`), serialized);
   }
   // Logistics: replay the game and count SP each side spent straight out of a truck's cargo (12.3: cargo is
   // drawn like a dump), which with unloads shows SP hauled to where the army used it.
