@@ -102,25 +102,49 @@ Bot 對局已找到並修正的規則缺陷（各有「修正前失敗、修正�
 - 完成證據：預設規模 100 局（map／OOB／deployment／rules seed 各自變化）全部打到 Game End，Error 為零；
   另含 Large 地圖 20 局與開啟 Air 的 20 局；記錄每局耗時與決策延遲分布；發現的規則或 gameplay 缺陷各自開 TODO 或修正，不在 bot 端繞過。
 
-### B3 觀察、belief 與情勢分析（PLANNED）
+### B3 觀察、belief 與情勢分析（IN PROGRESS）
+
+已實作（heuristic@1 所需的部分）：`src/ai/knowledge.ts`（公開的印刷數值）、`src/ai/analysis.ts`（己方單位、敵方 stack 含隱藏數估計、
+objective 控制、最近敵軍、威脅值）；projection 新增 `objectives`（每個 objective 的 VP 與目前控制方，雙方可見）。
+未完成：距離場（目前以 hex 距離近似）、跨 phase 的 belief 記憶、資訊洩漏測試、64×48 分析耗時記錄。
 
 - `BotObservation`（projection + PublicGameFacts + 公開歷史）、隱藏敵軍 belief、`AnalysisCache`（距離場、威脅／支援影響圖、前線、
   補給覆蓋、objective 價值、地形防禦）。Pathfinding 用 binary heap。
 - 完成證據：資訊洩漏測試（替換敵方隱藏單位，決策不變）；分析結果在小型 fixture 上的期望值測試；
   64×48 地圖上一次完整分析的耗時記錄。
 
-### B4 Pending decision responders（PLANNED）
+### B4 Pending decision responders（IN PROGRESS）
+
+已實作 `src/ai/decisions.ts`：FIRST_PLAYER（最後一回合選後手）、SUPPLY_SOURCE、DEFENDER_LEAD、DEFENDER_TERRAIN、STEP_LOSS／ATTRITION_LOSS／
+OVERSTACK_ELIMINATION、OPTION_SPLIT、RETREAT_HEX／DISPLACEMENT_HEX、ADVANCE_HEX、BREAKDOWN_ABSORPTION；每個回答在 trace 寫出 responder 名稱。
+Air 與 CARGO_LOSS 仍用第一個選項（TODO `bot-air`）。測試：`tests/ai/heuristic.test.ts`（以假 context 驗證選擇）；尚缺每種 decision 的規則 fixture 測試。
 
 - 依 [評分與規劃](../ai/M9-scoring-and-planning.md) §6 為每種 decision 寫 responder，皆有 random-legal 後備與 `RESPONDER_FALLBACK` Warning。
 - 完成證據：每種 decision 至少一個規則 fixture 測試；B2 runner 中 ground decision 的 fallback 次數為零。
 
-### B5 Heuristic baseline（M9.2，PLANNED）
+### B5 Heuristic baseline（M9.2，IN PROGRESS）
 
 - Operational plan、各 phase planner（Reinforcement、Movement、Supply、Reaction、Barrage、Combat、Exploitation）、move score、combat EV、
   防病態規則。權重寫在 versioned 設定檔。
-- 完成證據：heuristic 對 random-legal 在 40 局（交換座位成對）中 objective 得分顯著較高；
-  Error 為零；Warning 統計與 trace 抽查寫入 `docs/reports/M9-bot-behavior-baseline.md`；
-  人工檢視至少 3 局完整 trace（不同 map 風格）並記錄觀察到的不合理行為。
+
+使用者要求（2026-10-06）：「開始做會看局勢的電腦：會選目標、計算攻擊勝率、守方決策選對自己有利的選項」；
+「先確定bot會正確完成 正確包含使用可用資源獲得勝利」。驗收（數值門檻為提案，使用者確認前不得放寬，只能提高）：
+
+| 項目 | 條件 | 量測 |
+|---|---|---|
+| B5-1 完成 | heuristic 對 random-legal 20 組交換座位（40 局）與 heuristic 對 heuristic 20 局：全部 FINISHED，Error 為零，最終存檔 replay hash 相符 | runner summary |
+| B5-2 獲勝 | 對 random-legal 勝率 ≥ 90%（40 局，雙方座位各半），且每個座位勝率都 ≥ 80% | runner summary |
+| B5-3 奪取目標 | ≥ 80% 的局在結束時控制至少一個開局時不屬於自己的 objective | 每局 objective 控制前後對照 |
+| B5-4 會打仗 | 有接敵的局中 ≥ 90% 宣告過地面攻擊；平均攻擊 odds 欄位不低於 3:1（OPEN 欄等值）；barrage 在射程內有目標的局中 ≥ 50% 使用 | 每座位 action 統計與 trace |
+| B5-5 用資源 | 機械化單位移動前付 fuel；增援全部放上地圖；有可重建選項時當回合重建；卡車在局中至少一次把 SP 運往前線 HQ；終局時 ≥ 80% 戰鬥單位在補給中 | 每座位 action 統計與終局 projection |
+| B5-6 守方決策 | 每種 ground pending decision 都由規則化 responder 回答（非隨機後備），且選擇理由寫入 trace | trace 中 responder 名稱 |
+| B5-7 可讀 | 人工檢視 3 局完整 trace（不同 map 風格）並記錄不合理行為；明顯錯誤（攻擊 1:2、把卡車開到敵軍旁）列為修正項 | `docs/reports/M9-bot-behavior-baseline.md` |
+
+空軍（`bot-air`）不在 B5 範圍：開啟空軍時電腦只以隨機合法方式處理空軍行動，見 §3 TODO。
+
+結果（2026-10-06，最終程式碼、全新 seed，詳見 [行為基準報告](../reports/M9-bot-behavior-baseline.md)）：預設地圖 B5-1～B5-6 全部 PASS
+（對隨機電腦 38/40 = 95%，雙方座位各 95%；攻擊勝率比中位數 14:1；終局 97% 部隊在補給中）；地中海 10/10；
+**東歐 32/40 = 80%，未達 90%**（TODO `bot-eastern-front`）；B5-7 人工檢視已做並修正 11 項。因東歐未達標，B5 維持 IN PROGRESS。
 
 ### B6 Logistics-aware（M9.3，PLANNED）
 
@@ -154,6 +178,7 @@ Bot 對局已找到並修正的規則缺陷（各有「修正前失敗、修正�
 | `bot-air` | 電腦不主動 refit、派空軍任務、air drop、建 air base；air pending decisions 只用隨機合法後備 | 開啟 Air 時電腦明顯偏弱 | 電腦在開啟 Air 的 generated game 中主動派 barrage／interdiction 並通過驗收列 |
 | `bot-rail-cap` | Rail Cap 規則（rail WBS R4）實作後電腦才會用鐵路運兵運補 | 同 rail R4 | rail R4 完成後，電腦在 runner 與 UI 中使用 Rail Cap |
 | `bot-difficulty` | 無難度等級 | 只有一種強度 | 需使用者決定是否要做 |
+| `bot-eastern-front` | 長距離推進的補給接力（extender、分段卸貨、前線 HQ 轉移）與守住遠方奪下的目標 | 東歐地圖上電腦常打成和局（對隨機電腦 80%） | 東歐風格 20 局（交換座位、未用於調參的 seed）勝率 ≥ 90% |
 
 ## 4. 驗收列草案（BOT，待使用者同意後加入驗收計畫）
 
