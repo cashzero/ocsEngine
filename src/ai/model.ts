@@ -27,8 +27,8 @@ export interface BotActionAccess {
   readonly movementRange: (pieceId: PieceId) => readonly ReachableHex[];
   /** Whether an action built by the policy is legal now, with the facts a player sees (odds, DRM, cost). */
   readonly explain: (action: GameAction) => DraftValidation;
-  /** Hexes the seat's trace supply reaches (12.6). */
-  readonly traceCoverage: () => TraceCoverage;
+  /** Hexes the seat's trace supply reaches for any unit (12.6), or for one unit with 12.6f and 13.1d applied. */
+  readonly traceCoverage: (pieceId?: PieceId | null) => TraceCoverage;
 }
 
 /** What one seat remembers within the current phase/segment; reset when the step changes. */

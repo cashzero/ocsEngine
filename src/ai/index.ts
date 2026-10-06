@@ -6,5 +6,7 @@ export * from './knowledge.js';
 export * from './model.js';
 export * from './odds.js';
 export * from './policies/heuristic.js';
+export * from './policies/heuristic-weights.js';
 export * from './policies/random-legal.js';
 export * from './rng.js';
+export * from './training.js';
