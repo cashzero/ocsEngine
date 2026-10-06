@@ -6,7 +6,7 @@ import type {
   GameSession,
   SeatId,
 } from '../gameplay/index.js';
-import type { ActionFamily, GameAction, ReachableHex } from '../rules/index.js';
+import type { ActionFamily, GameAction, ReachableHex, TraceCoverage } from '../rules/index.js';
 
 export type BotPolicyId = string;
 
@@ -27,6 +27,8 @@ export interface BotActionAccess {
   readonly movementRange: (pieceId: PieceId) => readonly ReachableHex[];
   /** Whether an action built by the policy is legal now, with the facts a player sees (odds, DRM, cost). */
   readonly explain: (action: GameAction) => DraftValidation;
+  /** Hexes the seat's trace supply reaches (12.6). */
+  readonly traceCoverage: () => TraceCoverage;
 }
 
 /** What one seat remembers within the current phase/segment; reset when the step changes. */
@@ -137,6 +139,8 @@ export interface BotMatchResult {
   readonly rejected: number;
   readonly errors: readonly BotError[];
   readonly actionCounts: Readonly<Record<string, number>>;
+  /** Accepted actions by seat and kind. */
+  readonly actionCountsBySeat: Readonly<Record<string, Readonly<Record<string, number>>>>;
   readonly decideMs: number;
   readonly dispatchMs: number;
   readonly elapsedMs: number;
