@@ -24,7 +24,7 @@ export type PieceFamily = (typeof PIECE_FAMILIES)[number];
 
 export interface CounterDefinition {
   readonly kind: 'COMBAT' | 'ARTILLERY' | 'HQ' | 'TRANSPORT' | 'SUPPLY';
-  readonly symbol: 'INFANTRY' | 'AIRBORNE' | 'ARMOR' | 'GLIDER' | 'RECON' | 'ARTILLERY' | 'SP_ARTILLERY' | 'ENGINEER' | 'HQ' | 'TRUCK' | 'SUPPLY';
+  readonly symbol: 'INFANTRY' | 'AIRBORNE' | 'ARMOR' | 'ANTI_TANK' | 'ASSAULT_GUN' | 'TIGER' | 'GLIDER' | 'RECON' | 'ARTILLERY' | 'SP_ARTILLERY' | 'ENGINEER' | 'HQ' | 'TRUCK' | 'SUPPLY';
   readonly designation: string;
   readonly affiliation: string;
   readonly echelon: string;

@@ -49,12 +49,16 @@ const counterFor = (snapshot: UiSnapshot, piece: ProjectedPiece): View => {
 };
 
 const isAir = (snapshot: UiSnapshot, piece: ProjectedPiece): boolean => pieceDefinition(snapshot.scenario, piece)?.family === 'AIR';
-const isAirBase = (snapshot: UiSnapshot, piece: ProjectedPiece): boolean => pieceDefinition(snapshot.scenario, piece)?.facility?.facilityTypeDefinitionId === 'facility:air-base';
+const isAirBase = (snapshot: UiSnapshot, piece: ProjectedPiece): boolean => ['facility:air-base', 'facility:off-map-airfield']
+  .includes(String(pieceDefinition(snapshot.scenario, piece)?.facility?.facilityTypeDefinitionId));
+const isOffMapAirfield = (snapshot: UiSnapshot, piece: ProjectedPiece): boolean =>
+  pieceDefinition(snapshot.scenario, piece)?.facility?.facilityTypeDefinitionId === 'facility:off-map-airfield';
 const isAirStrip = (snapshot: UiSnapshot, piece: ProjectedPiece): boolean => pieceDefinition(snapshot.scenario, piece)?.facility?.facilityTypeDefinitionId === 'facility:air-strip';
 
 /** Status word under a unit name: mode for ground units, Active/Inactive for aircraft (14.1a), Level for bases. */
 const statusName = (snapshot: UiSnapshot, piece: ProjectedPiece): string => {
   if (isAir(snapshot, piece)) return `${piece.statuses.includes('status:air-inactive') ? 'Inactive' : 'Active'}${piece.remainingSteps === 1 ? ' · reduced' : ''}`;
+  if (isOffMapAirfield(snapshot, piece)) return 'Off-map airfield';
   if (isAirBase(snapshot, piece)) {
     const level = piece.statusValues.find(({ statusDefinitionId }) => statusDefinitionId === 'status:air-base-level')?.value;
     return `Air Base Level ${level ?? 1}`;
@@ -68,8 +72,14 @@ const modeName = (mode: string | null): string => mode === null ? 'Supply' : ({
   COMBAT: 'Combat mode', MOVE: 'Move mode', RESERVE: 'Reserve', STRAT: 'Strat mode', DG: 'Disorganized', EXPLOITATION: 'Exploit',
 } as Record<string, string>)[mode] ?? mode;
 
-const pieceHex = (piece: ProjectedPiece): string => piece.location.kind === 'ON_MAP' ? printedHexLabel(piece.location.hexId)
-  : piece.location.kind === 'ELIMINATED' ? 'eliminated' : 'off map';
+/** Where a piece is: its printed hex, or the off-map box it is in by name (an off-map airfield, §6), or eliminated. */
+const pieceHex = (snapshot: UiSnapshot, piece: ProjectedPiece): string => {
+  const location = piece.location;
+  if (location.kind === 'ON_MAP') return printedHexLabel(location.hexId);
+  if (location.kind === 'ELIMINATED') return 'eliminated';
+  const box = location.kind === 'OFF_MAP_BOX' ? snapshot.scenario.boxes.find(({ id }) => id === location.boxId) : undefined;
+  return box && /airfield/i.test(box.name) ? box.name : 'off map';
+};
 
 /** Replace raw Hex IDs ("q,r") in engine text with printed Hex numbers. */
 export const withHexLabels = (value: string): string => value.replace(/-?\d+,-?\d+/gu, (hexId) => printedHexLabel(hexId));
@@ -107,8 +117,8 @@ const badges = (snapshot: UiSnapshot, piece: ProjectedPiece): View => {
 
 const unitRow = (snapshot: UiSnapshot, piece: ProjectedPiece, extra = ''): TemplateResult => {
   const details = supplyDetails(snapshot, piece);
-  return html`<button class="deck-unit ${piece.id === snapshot.selection.pieceId ? 'is-selected' : ''}" data-piece=${piece.id} data-hex=${piece.location.kind === 'ON_MAP' ? piece.location.hexId : nothing} aria-label=${`${pieceLabel(snapshot.scenario, piece)}, ${pieceHex(piece)}`}>
-    <span class="deck-unit-art" aria-hidden="true">${counterFor(snapshot, piece)}</span><span>${pieceLabel(snapshot.scenario, piece)}<small>${pieceHex(piece)} · ${statusName(snapshot, piece)}${details ? ` · ${details}` : ''}${extra}</small>${badges(snapshot, piece)}</span></button>`;
+  return html`<button class="deck-unit ${piece.id === snapshot.selection.pieceId ? 'is-selected' : ''}" data-piece=${piece.id} data-hex=${piece.location.kind === 'ON_MAP' ? piece.location.hexId : nothing} aria-label=${`${pieceLabel(snapshot.scenario, piece)}, ${pieceHex(snapshot, piece)}`}>
+    <span class="deck-unit-art" aria-hidden="true">${counterFor(snapshot, piece)}</span><span>${pieceLabel(snapshot.scenario, piece)}<small>${pieceHex(snapshot, piece)} · ${statusName(snapshot, piece)}${details ? ` · ${details}` : ''}${extra}</small>${badges(snapshot, piece)}</span></button>`;
 };
 
 /** What the current step asks of the player, in one sentence. */
@@ -119,7 +129,12 @@ export const stepObjective = (snapshot: UiSnapshot): string => {
   if (snapshot.view.metadata.lifecycle === 'PAUSED') return '';
   if (snapshot.view.metadata.lifecycle === 'FINISHED') return 'The operation has ended.';
   if (sequence.segment === 'BREAKOUT') return 'Units out of trace supply may attempt a breakout (12.8e); otherwise finish this segment.';
-  if (sequence.segment === 'BARRAGE') return snapshot.barrageTargets.length > 0 ? 'Orange-ringed enemy hexes are in artillery range: click one to plan a barrage.' : 'No barrage targets in range.';
+  if (sequence.segment === 'BARRAGE') {
+    // Artillery and aircraft barrage in the same segment: say so when only the aircraft can (14.7).
+    const air = snapshot.air.missions.some(({ mission, available }) => mission === 'BARRAGE' && available);
+    if (snapshot.barrageTargets.length > 0) return 'Orange-ringed enemy hexes are in artillery range: click one to plan a barrage.';
+    return air ? 'No enemy hex is in artillery range; aircraft can still fly an Air Barrage from the Air tab.' : 'No barrage targets in range.';
+  }
   switch (sequence.phase) {
     case 'REINFORCEMENT': return snapshot.arrivals.length > 0 ? 'Place every arriving unit: select it, then click a blue entry hex.' : 'All reinforcements are placed.';
     case 'MOVEMENT': return 'Move units one at a time: select a unit to see its range. Red rings mark overrun targets.';
@@ -141,7 +156,7 @@ const selectedCard = (snapshot: UiSnapshot): TemplateResult => {
   if (isAir(snapshot, piece) || isAirBase(snapshot, piece)) {
     const step = pieceDefinition(snapshot.scenario, piece)?.faces[0]?.steps.find(({ remainingSteps }) => remainingSteps === (piece.remainingSteps ?? 2));
     return html`${counterFor(snapshot, piece)}<div><strong>${pieceLabel(snapshot.scenario, piece)}</strong>
-      <p>${pieceHex(piece)} · ${statusName(snapshot, piece)}</p>
+      <p>${pieceHex(snapshot, piece)} · ${statusName(snapshot, piece)}</p>
       <small>${isAir(snapshot, piece) ? `Range ${step?.range ?? '–'} hexes · flies missions from its Air Base (14.2)` : 'Holds 4 + Level Active aircraft; refits 2 × Level for 1T (15.0-15.1)'}</small></div>`;
   }
   const arriving = snapshot.arrivals.some(({ pieceId }) => pieceId === piece.id);
@@ -160,7 +175,7 @@ const selectedCard = (snapshot: UiSnapshot): TemplateResult => {
                 : snapshot.moveBlockers.length > 0 ? snapshot.moveBlockers.map(({ message, rule }) => `${withHexLabels(message)} (${rule})`).join(' · ')
                   : 'Cannot move in this step';
   return html`${counterFor(snapshot, piece)}<div><strong>${pieceLabel(snapshot.scenario, piece)}</strong>
-    <p>${pieceHex(piece)} · ${statusName(snapshot, piece)}${details ? ` · ${details}` : ''}</p>
+    <p>${pieceHex(snapshot, piece)} · ${statusName(snapshot, piece)}${details ? ` · ${details}` : ''}</p>
     <small>${status}${piece.statuses.includes('status:out-of-supply') ? ' · Out of supply' : ''}</small></div>`;
 };
 
@@ -241,7 +256,7 @@ const draftPanel = (snapshot: UiSnapshot, state: DeckState): TemplateResult => {
   const participants = units.map((piece) => {
     const checked = draft.selectedIds.includes(piece.id);
     return html`<label class="participant"><input type="checkbox" data-participant=${piece.id} .checked=${checked}>
-      ${counterFor(snapshot, piece)}<span>${pieceLabel(snapshot.scenario, piece)}<small>${pieceHex(piece)}</small></span>
+      ${counterFor(snapshot, piece)}<span>${pieceLabel(snapshot.scenario, piece)}<small>${pieceHex(snapshot, piece)}</small></span>
       ${draft.kind !== 'BARRAGE' && checked ? html`<input type="radio" name="lead" data-lead=${piece.id} .checked=${draft.leadId === piece.id} aria-label="Lead with this unit's Action Rating">` : nothing}</label>`;
   });
   const note = draft.kind === 'OVERRUN' ? 'Overrun costs 3 MP; if it succeeds the units must enter the hex (8.0).'
@@ -320,7 +335,7 @@ const airDraftPanel = (snapshot: UiSnapshot, state: DeckState): TemplateResult =
     const piece = pieceById(snapshot, id);
     if (!piece) return [];
     return [html`<label class="participant"><input type=${draft.maximum === 1 ? 'radio' : 'checkbox'} name="air-aircraft" data-air-aircraft=${id} .checked=${draft.selectedIds.includes(id)}>
-      ${counterFor(snapshot, piece)}<span>${pieceLabel(snapshot.scenario, piece)}<small>${pieceHex(piece)}</small></span></label>`];
+      ${counterFor(snapshot, piece)}<span>${pieceLabel(snapshot.scenario, piece)}<small>${pieceHex(snapshot, piece)}</small></span></label>`];
   });
   const rows: [string, unknown][] = [
     ['Mission hex', printedHexLabel(draft.targetHexId)],
@@ -392,10 +407,12 @@ const airRebuildPanel = (snapshot: UiSnapshot, state: DeckState): View => snapsh
 const refitPanel = (snapshot: UiSnapshot, state: DeckState): View => snapshot.air.refits.length === 0 ? nothing : html`<div class="air-panel"><strong>Aircraft refit</strong>
   <p class="hint">Each Air Base refits once: up to 2 × Level Inactive aircraft for 1T drawn or thrown to the base (15.1).</p>
   <p class="hint">A base in an un-negated enemy ZOC cannot refit (15.1C), and no base holds more Active aircraft than its limit (14.2a).</p>
-  ${snapshot.air.refits.map((refit) => html`<div class="refit-base"><small>${refit.level === 0 ? 'Air Strip' : `Air Base Level ${refit.level}`} ${printedHexLabel(refit.hexId)} · refits up to ${refit.capacity} · Active ${refit.active} of ${refit.activeLimit} · ${refit.zocBlocked ? html`<strong class="is-blocked">in an enemy ZOC: cannot refit</strong>` : 'not in an enemy ZOC'}</small>
+  ${snapshot.air.refits.map((refit) => html`<div class="refit-base"><small>${refit.offMap
+    ? 'Off-map airfield · refits every aircraft from its own stocks, no SP · no Active limit'
+    : html`${refit.level === 0 ? 'Air Strip' : `Air Base Level ${refit.level}`} ${printedHexLabel(refit.hexId)} · refits up to ${refit.capacity} · Active ${refit.active} of ${refit.activeLimit} · ${refit.zocBlocked ? html`<strong class="is-blocked">in an enemy ZOC: cannot refit</strong>` : 'not in an enemy ZOC'}`}</small>
     <div class="participants">${refit.inactiveIds.map((id) => { const piece = pieceById(snapshot, id); return piece ? html`<label class="participant"><input type="checkbox" data-refit-base=${refit.baseId} data-refit-aircraft=${id} .checked=${refit.selectedIds.includes(id)}>${counterFor(snapshot, piece)}<span>${pieceLabel(snapshot.scenario, piece)}</span></label>` : nothing; })}</div>
     ${explanationBlock(refit.explanation)}${refit.sourceIds.length === 0 && !refit.zocBlocked ? html`<p class="hint">No supply dump can pay 1T to this base now (12.9c).</p>` : nothing}
-    <button class="primary" data-refit=${refit.baseId} ?disabled=${!(refit.explanation?.allowed && !busyOf(snapshot, state))}>Refit ${refit.selectedIds.length} for 1T</button></div>`)}</div>`;
+    <button class="primary" data-refit=${refit.baseId} ?disabled=${!(refit.explanation?.allowed && !busyOf(snapshot, state))}>Refit ${refit.selectedIds.length}${refit.offMap ? '' : ' for 1T'}</button></div>`)}</div>`;
 
 const airMissionButtons = (snapshot: UiSnapshot): View => snapshot.air.missions.length === 0 ? nothing : html`<div class="air-panel"><strong>Air missions</strong>
   <div class="chip-row">${snapshot.air.missions.map(({ mission, label, available }) => html`<button data-air-mission=${mission} ?disabled=${!available}>${label}</button>`)}</div></div>`;
@@ -533,7 +550,7 @@ const supplyTab = (snapshot: UiSnapshot): TemplateResult => {
       if (!piece) return nothing;
       return html`<div class="supply-need">${unitRow(snapshot, piece)}<div class="chip-row">${need.options.map(({ dumpId }) => {
         const dump = pieces.find(({ id }) => id === dumpId);
-        return html`<button data-feed=${need.pieceId} data-dump=${dumpId}>Feed from ${dump ? `${dump.resourceQuantity ?? 0}T at ${pieceHex(dump)}` : 'dump'}</button>`;
+        return html`<button data-feed=${need.pieceId} data-dump=${dumpId}>Feed from ${dump ? `${dump.resourceQuantity ?? 0}T at ${pieceHex(snapshot, dump)}` : 'dump'}</button>`;
       })}</div></div>`;
     })}</div>`);
   }
@@ -570,7 +587,8 @@ const targetsTab = (snapshot: UiSnapshot): TemplateResult => {
   const chips = (title: string, verb: string, hexes: readonly string[]): View => hexes.length === 0 ? nothing
     : html`<div class="target-list"><strong>${title}</strong><div class="chip-row">${hexes.map((hexId) => html`<button data-target-hex=${hexId}>${verb} ${printedHexLabel(hexId)}</button>`)}</div></div>`;
   if (snapshot.attackTargets.length === 0 && snapshot.barrageTargets.length === 0) {
-    return html`<p class="hint">${segment === 'BARRAGE' ? 'No barrage targets in range.' : 'No enemy hex can be attacked.'}</p>`;
+    const air = snapshot.air.missions.some(({ mission, available }) => mission === 'BARRAGE' && available);
+    return html`<p class="hint">${segment === 'BARRAGE' ? (air ? 'No enemy hex is in artillery range; aircraft can fly an Air Barrage from the Air tab.' : 'No barrage targets in range.') : 'No enemy hex can be attacked.'}</p>`;
   }
   return html`${chips(segment === 'COMBAT' ? 'Enemy hexes you can attack' : 'Enemy hexes the selected unit can overrun', segment === 'COMBAT' ? 'Attack' : 'Overrun', snapshot.attackTargets)}${chips('Enemy hexes in artillery range', 'Barrage', snapshot.barrageTargets)}`;
 };
@@ -786,7 +804,7 @@ export const unitRosterBodyView = (snapshot: UiSnapshot, state: DeckState): Temp
   const filter = state.filter ?? 'all';
   const byName = (left: ProjectedPiece, right: ProjectedPiece): number =>
     pieceLabel(snapshot.scenario, left).localeCompare(pieceLabel(snapshot.scenario, right)) || String(left.id).localeCompare(String(right.id));
-  const matches = (piece: ProjectedPiece): boolean => search === '' || `${pieceLabel(snapshot.scenario, piece)} ${unitFormation(snapshot, piece)} ${pieceHex(piece)}`.toLowerCase().includes(search);
+  const matches = (piece: ProjectedPiece): boolean => search === '' || `${pieceLabel(snapshot.scenario, piece)} ${unitFormation(snapshot, piece)} ${pieceHex(snapshot, piece)}`.toLowerCase().includes(search);
   const all = rosterOwn(snapshot).filter(matches);
   const active = all.filter(({ location }) => location.kind !== 'ELIMINATED')
     .filter((piece) => filter === 'all' || (filter === 'moved') === snapshot.movedThisPhase.has(String(piece.id)));
@@ -800,8 +818,8 @@ export const unitRosterBodyView = (snapshot: UiSnapshot, state: DeckState): Temp
     else if (isMultiStepDefinition(pieceDefinition(snapshot.scenario, piece))) divisions.push(piece);
     else independents.push(piece);
   }
-  const row = (piece: ProjectedPiece): TemplateResult => html`<button class="roster-unit${piece.id === snapshot.selection.pieceId ? ' is-selected' : ''}" data-piece=${piece.id} data-roster-pick=${piece.id} aria-label=${`${pieceLabel(snapshot.scenario, piece)}, ${pieceHex(piece)}`}>
-    <span class="roster-art" aria-hidden="true">${counterFor(snapshot, piece)}</span><span class="roster-text">${pieceLabel(snapshot.scenario, piece)}<small>${pieceHex(piece)} · ${statusName(snapshot, piece)}</small></span>${badges(snapshot, piece)}</button>`;
+  const row = (piece: ProjectedPiece): TemplateResult => html`<button class="roster-unit${piece.id === snapshot.selection.pieceId ? ' is-selected' : ''}" data-piece=${piece.id} data-roster-pick=${piece.id} aria-label=${`${pieceLabel(snapshot.scenario, piece)}, ${pieceHex(snapshot, piece)}`}>
+    <span class="roster-art" aria-hidden="true">${counterFor(snapshot, piece)}</span><span class="roster-text">${pieceLabel(snapshot.scenario, piece)}<small>${pieceHex(snapshot, piece)} · ${statusName(snapshot, piece)}</small></span>${badges(snapshot, piece)}</button>`;
   const rows = (pieces: ProjectedPiece[]) => repeat(pieces.sort(byName), (piece) => piece.id, row);
   // Air units fly missions from air bases rather than move with a formation, so they get a group of their own before the Trucks.
   const air = active.filter((piece) => isAir(snapshot, piece));

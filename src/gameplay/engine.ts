@@ -80,11 +80,12 @@ export class DefaultGameplayEngine implements GameplayEngine {
     return new GameplaySession({
       id: this.#nextSessionId(request.scenario), label: request.label,
       createdAtMs: this.#ports.clock.nowMs(), lifecycle: 'READY',
-      activeSeatId: request.bindings[0]!.seatId,
+      // The screen starts with whoever acts first (an attack's attacker may not be the first seat).
+      activeSeatId: request.bindings.find(({ playerId }) => playerId === detached.value.sequence.actingPlayerId)?.seatId ?? request.bindings[0]!.seatId,
       bindings: request.bindings, scenarioHash: scenarioHash.value,
       initialStateHash: initialHash, stateHash: initialHash,
       initialState: detached.value, state: detached.value, history: [], checkpoints: [],
-      ports: this.#ports,
+      ports: this.#ports, persistence: request.persistence ?? 'AUTOSAVE',
     });
   };
 

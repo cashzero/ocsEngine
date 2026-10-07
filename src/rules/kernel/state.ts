@@ -238,6 +238,10 @@ export const validateGameState = (state: GameState): readonly ValidationIssue[] 
   for (const [hexId, set] of owners) {
     if (set.size > 1) issues.push(issue('OPPOSING_COMBAT_UNITS_SHARE_HEX', ['pieceState', hexId], `Hex ${hexId} holds combat units of both sides.`));
   }
+  const attack = state.configuration.attackVictory;
+  if (attack && (!playerIds.has(attack.attackerId) || !Number.isSafeInteger(attack.attackerPoints) || attack.attackerPoints < 1)) {
+    issues.push(issue('INVALID_ATTACK_VICTORY', ['configuration', 'attackVictory'], 'An attack needs a Scenario Player as attacker and a VP target of at least 1.'));
+  }
   const scoreIds = state.victory.scores.map(({ playerId }) => playerId);
   if (new Set(scoreIds).size !== scoreIds.length || scoreIds.length !== playerIds.size || scoreIds.some((id) => !playerIds.has(id))) {
     issues.push(issue('INVALID_VICTORY_SCORE_PLAYERS', ['victory', 'scores'], 'Victory scores must contain each Scenario Player exactly once.'));

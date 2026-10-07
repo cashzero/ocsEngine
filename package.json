@@ -16,7 +16,8 @@
     "test:watch": "vitest",
     "typecheck": "tsc -p tsconfig.json",
     "ui:serve": "npm run build && node scripts/serve-ui.mjs",
-    "ui:layout-audit": "node scripts/ui-layout-audit.mjs"
+    "ui:layout-audit": "node scripts/ui-layout-audit.mjs",
+    "ai:match": "npm run build && node scripts/ai-match.mjs"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",

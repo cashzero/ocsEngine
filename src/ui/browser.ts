@@ -9,6 +9,9 @@ import {
   createNewGameOrchestrator,
   buildGeneratedMapPreview,
   buildGeneratedOobPreview,
+  attackerOf,
+  ATTACKER_FORCE_RATIO,
+  type Engagement,
   type CreatedNewGame,
   type GeneratedScenarioPackage,
   type AirForceLevel,
@@ -468,6 +471,31 @@ const privacyView = (snapshot: UiSnapshot) => html`
 
 const oobRoleLabel = (role: string): string => role.replaceAll('_', ' ').toLowerCase();
 
+const ENGAGEMENT_OPTIONS: readonly (readonly [Engagement, string])[] = [
+  ['MEETING', 'Meeting engagement'], ['ALLIED_ATTACKS', 'Allied attack'], ['AXIS_ATTACKS', 'Axis attack'],
+];
+
+/** What the situation means for each side and how it is won (docs/roadmap/13-engagement-scenarios-wbs.md). */
+const engagementHelp = (engagement: Engagement): string => {
+  const attacker = attackerOf(engagement);
+  if (attacker === null) return 'Both armies start about ten hexes apart and each holds the same objective VP. The side holding more VP when the last turn ends wins; equal VP is a draw.';
+  const [attacking, defending] = attacker === 'ALLIED' ? ['Allied', 'Axis'] : ['Axis', 'Allied'];
+  return `${defending} holds most of the map and every objective, its line in Combat Mode, with garrisons on its objectives and on key rail towns and road junctions; ${attacking} fields ${ATTACKER_FORCE_RATIO} times the divisions plus off-map air (Fighters and Tactical Bombers at an airfield off the map, flying in over its own map edge and back), assembles a few hexes away and moves first. ${attacking} wins by holding at least half the objective VP when the last turn ends; otherwise ${defending} wins.`;
+};
+
+const engagementLabel = (engagement: Engagement): string => {
+  const attacker = attackerOf(engagement);
+  return attacker === null ? 'Meeting engagement' : attacker === 'ALLIED' ? 'Allied attack' : 'Axis attack';
+};
+
+/** The side's air bases as the preview names them: an off-map airfield apart from on-map Air Bases. */
+const airBasesLabel = (prepared: GeneratedScenarioPackage, side: string): string => {
+  const units = prepared.generatedOob.sides.find((entry) => entry.side === side)?.independentUnits ?? [];
+  const offMap = units.some(({ role, staging }) => role === 'AIR_BASE' && staging === 'OFF_MAP_AIRFIELD');
+  const onMap = units.filter(({ role, staging }) => role === 'AIR_BASE' && staging !== 'OFF_MAP_AIRFIELD').length;
+  return [...offMap ? ['off-map airfield'] : [], ...onMap > 0 ? [`${onMap} Air Base(s)`] : []].join(', ');
+};
+
 /** The combined preview: map with starting stacks, metrics and both forces, as one string drawn from the shared art. */
 const operationPreviewHtml = (prepared: GeneratedScenarioPackage): string => {
   const map = buildGeneratedMapPreview(prepared.generatedMap, 32);
@@ -507,10 +535,10 @@ const operationPreviewHtml = (prepared: GeneratedScenarioPackage): string => {
     ${side.independentUnits.some(({ role }) => role === 'HQ') ? `<details class="counter-formation preview-hq"><summary><span>HQ</span><small>${side.independentUnits.filter(({ role }) => role === 'HQ').length} units</small></summary><div class="counter-grid">${side.independentUnits.filter(({ role }) => role === 'HQ').map(previewCounter).join('')}</div></details>` : ''}
     ${side.formations.map((formation) => `<details class="counter-formation"><summary><span>${escapeHtml(formation.name)}</span><small>${formation.units.length} units · ${escapeHtml(oobRoleLabel(formation.archetype))}</small></summary><div class="counter-grid">${formation.units.map(previewCounter).join('')}</div></details>`).join('')}
     <details class="counter-formation"><summary>${side.independentUnits.filter(({ role }) => role !== 'HQ' && role !== 'AIRCRAFT' && role !== 'AIR_BASE').length} independent support / logistics units</summary><div class="counter-grid">${side.independentUnits.filter(({ role }) => role !== 'HQ' && role !== 'AIRCRAFT' && role !== 'AIR_BASE').map(previewCounter).join('')}</div></details>
-    ${side.independentUnits.some(({ role }) => role === 'AIRCRAFT') ? `<details class="counter-formation"><summary>Air forces: ${side.independentUnits.filter(({ role }) => role === 'AIRCRAFT').length} aircraft, ${side.independentUnits.filter(({ role }) => role === 'AIR_BASE').length} Air Base(s)</summary><div class="counter-grid">${side.independentUnits.filter(({ role }) => role === 'AIRCRAFT' || role === 'AIR_BASE').map(previewCounter).join('')}</div></details>` : ''}
+    ${side.independentUnits.some(({ role }) => role === 'AIRCRAFT') ? `<details class="counter-formation"><summary>Air forces: ${side.independentUnits.filter(({ role }) => role === 'AIRCRAFT').length} aircraft, ${airBasesLabel(prepared, side.side)}</summary><div class="counter-grid">${side.independentUnits.filter(({ role }) => role === 'AIRCRAFT' || role === 'AIR_BASE').map(previewCounter).join('')}</div></details>` : ''}
   </section>`).join('');
-  return `<div class="operation-map-wrap"><svg class="operation-map" viewBox="0 0 ${map.layout.width} ${map.layout.height}" role="img" aria-label="Generated operation map preview with starting positions">${mapArtDefsHtml()}${cells}${rivers}${roads}${features}${deploymentMarks}</svg><p class="preview-key"><span class="key owner-1">${escapeHtml(prepared.scenario.players[0]?.name ?? '')}</span><span class="key owner-2">${escapeHtml(prepared.scenario.players[1]?.name ?? '')}</span> starting stacks (unit count)</p></div>
-    <dl class="operation-metrics"><div><dt>Map</dt><dd>${escapeHtml(prepared.summary.mapSize)}</dd></div><div><dt>Units</dt><dd>${prepared.summary.unitCount}</dd></div><div><dt>Formations</dt><dd>${prepared.summary.formationCount}</dd></div><div><dt>Deployed hexes</dt><dd>${prepared.deployment.metrics.occupiedHexes}</dd></div><div><dt>Objectives</dt><dd>${prepared.summary.objectiveCount} · ${prepared.deployment.objectives.reduce((total, { points }) => total + points, 0)} VP</dd></div><div><dt>Warnings</dt><dd>${prepared.warnings.length}</dd></div></dl>
+  return `<div class="operation-map-wrap"><svg class="operation-map" viewBox="0 0 ${map.layout.width} ${map.layout.height}" role="img" aria-label="Generated operation map preview with starting positions">${mapArtDefsHtml()}${cells}${rivers}${roads}${features}${deploymentMarks}</svg><p class="preview-key"><span class="key owner-1">${escapeHtml(prepared.scenario.players[0]?.name ?? '')}</span><span class="key owner-2">${escapeHtml(prepared.scenario.players[1]?.name ?? '')}</span> starting stacks (unit count)</p><p class="preview-engagement">${escapeHtml(engagementHelp(prepared.summary.engagement))}</p></div>
+    <dl class="operation-metrics"><div><dt>Scenario</dt><dd>${escapeHtml(engagementLabel(prepared.summary.engagement))}</dd></div><div><dt>Map</dt><dd>${escapeHtml(prepared.summary.mapSize)}</dd></div><div><dt>Units</dt><dd>${prepared.summary.unitCount}</dd></div><div><dt>Formations</dt><dd>${prepared.summary.formationCount}</dd></div><div><dt>Deployed hexes</dt><dd>${prepared.deployment.metrics.occupiedHexes}</dd></div><div><dt>Objectives</dt><dd>${prepared.summary.objectiveCount} · ${prepared.deployment.objectives.reduce((total, { points }) => total + points, 0)} VP</dd></div><div><dt>Warnings</dt><dd>${prepared.warnings.length}</dd></div></dl>
     <div class="preview-forces">${forces}</div>
     ${prepared.warnings.length > 0 ? `<details class="preview-warnings"><summary>${prepared.warnings.length} generation warning(s)</summary><ul>${prepared.warnings.map((warning) => `<li>${escapeHtml(warning)}</li>`).join('')}</ul></details>` : ''}`;
 };
@@ -549,6 +577,7 @@ const onNewGameInput = (event: Event): void => {
     newGameSettings = { ...newGameSettings, oob: air === 'STANDARD' ? { ...newGameSettings.oob, air } : (({ airTransport: _t, ...rest }) => ({ ...rest, air }))(newGameSettings.oob) };
   }
   if (id === 'new-game-air-transport') newGameSettings = { ...newGameSettings, oob: { ...newGameSettings.oob, airTransport: input.value as AirForceLevel } };
+  if (id === 'new-game-engagement') newGameSettings = { ...newGameSettings, engagement: input.value as Engagement };
   if (id === 'new-game-turn-limit') newGameSettings = { ...newGameSettings, turnLimit: value };
   if (id === 'new-game-start-month') newGameSettings = { ...newGameSettings, startMonth: value };
   for (const key of ['map', 'oob', 'deployment', 'rules'] as const) if (id === `new-game-${key}-seed`) newGameSettings = { ...newGameSettings, seeds: { ...newGameSettings.seeds, [key]: value } };
@@ -633,6 +662,10 @@ const newGameDialog = () => {
       <nav class="settings-tabs" aria-label="New Game settings">${(['basic', 'advanced'] as const).map((tab) => html`<button type="button" data-settings=${tab} aria-pressed=${String(settingsTab === tab)} @click=${() => { settingsTab = tab; render(controller.getSnapshot()); }}>${tab === 'basic' ? 'Basic' : 'Advanced seeds'}</button>`)}</nav>
       ${newGameError ? html`<div class="generator-error new-game-error" role="alert">${newGameGuidance() ? html`<p><strong>${newGameGuidance()}</strong></p>` : nothing}<p>${newGameError}</p></div>` : nothing}
       <div class="settings-basic">
+        <fieldset><legend>Scenario</legend>
+          ${select('new-game-engagement', 'Situation', ENGAGEMENT_OPTIONS, newGameSettings.engagement ?? 'MEETING')}
+          <p class="field-help">${engagementHelp(newGameSettings.engagement ?? 'MEETING')}</p>
+        </fieldset>
         <fieldset><legend>Operational map</legend>
           ${select('new-game-style', 'Style', [['TEMPERATE_INLAND', 'Temperate inland'], ['MEDITERRANEAN_COAST', 'Mediterranean coast'], ['EASTERN_EUROPE', 'Eastern Europe (Russia)']], newGameSettings.map.style)}
           ${number('new-game-width', 'Width', NEW_GAME_MAP_LIMITS.minWidth, NEW_GAME_MAP_LIMITS.maxWidth, newGameSettings.map.width)}
@@ -706,7 +739,7 @@ const menuDialog = (snapshot: UiSnapshot) => {
         // A loaded save is a fresh view of its game: if it is finished, its Game End is shown again even if the previous one was dismissed.
         if (file) { utilityOpen = null; gameEndDismissed = false; void file.text().then((text) => controller.loadSave(text)); }
       }}>
-      <p class="supporting">${currentGame.summary.unitCount} units · ${currentGame.summary.formationCount} formations · ${currentGame.summary.turnLimit} turns · seeds map ${currentGame.request.seeds.map}, OOB ${currentGame.request.seeds.oob}, deployment ${currentGame.request.seeds.deployment}, rules ${currentGame.request.seeds.rules}</p>
+      <p class="supporting">${engagementLabel(currentGame.summary.engagement ?? 'MEETING')} · ${currentGame.summary.unitCount} units · ${currentGame.summary.formationCount} formations · ${currentGame.summary.turnLimit} turns · seeds map ${currentGame.request.seeds.map}, OOB ${currentGame.request.seeds.oob}, deployment ${currentGame.request.seeds.deployment}, rules ${currentGame.request.seeds.rules}</p>
     </section>
     <section class="menu-section" aria-labelledby="menu-seats"><h3 id="menu-seats">Hot seat</h3>
       <p class="supporting">${activeBinding?.label ?? ''} has the screen.</p>

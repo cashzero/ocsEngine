@@ -35,7 +35,9 @@ const startMovement = async (request = DEFAULT_NEW_GAME_REQUEST) => {
   const truck = () => own().find(({ id }) => id === truckId)!;
   const truckParts = () => own().filter(({ id, role, location }) => role === 'TRUCK' && location.kind === 'ON_MAP'
     && (id === truckId || !startingTrucks.has(id)));
-  const dumpAway = () => own().find((piece) => piece.role === 'DUMP' && hexOf(piece) !== hexOf(truck()) && (piece.resourceQuantity ?? 0) > 0)!;
+  // The fullest dump elsewhere: garrisons stand on small 2T stocks of their own, too small for these loads.
+  const dumpAway = () => own().filter((piece) => piece.role === 'DUMP' && hexOf(piece) !== hexOf(truck()) && (piece.resourceQuantity ?? 0) > 0)
+    .sort((left, right) => (right.resourceQuantity ?? 0) - (left.resourceQuantity ?? 0))[0]!;
   return { controller, own, hexOf, truck, truckParts, dumpAway };
 };
 
@@ -245,7 +247,9 @@ describe('the truck\'s supply area (A2)', () => {
   it('draws a truck\'s load on its counter: empty, part-loaded, full (A3)', async () => {
     const { controller, truck, truckParts, dumpAway, hexOf, own } = await startMovement();
     const gaugeOf = () => {
-      const piece = own().find(({ id }) => id === truck().id)!;
+      // Look the truck up once: truck() itself reads the whole roster.
+      const truckId = truck().id;
+      const piece = own().find(({ id }) => id === truckId)!;
       const definition = controller.getSnapshot().scenario.pieceCatalog.definitions.find(({ id }) => id === piece.definitionId)!;
       return counterSvgBody(counterView(definition, piece));
     };

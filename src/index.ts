@@ -7,3 +7,4 @@ export * from './gameplay/index.js';
 export * from './ui/index.js';
 export * from './generation/index.js';
 export * from './game-flow/index.js';
+export * from './ai/index.js';

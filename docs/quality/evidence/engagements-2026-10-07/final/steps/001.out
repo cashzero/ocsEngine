@@ -1,0 +1,24 @@
+{
+ "options": [
+  "MEETING=Meeting engagement (selected)",
+  "ALLIED_ATTACKS=Allied attack",
+  "AXIS_ATTACKS=Axis attack"
+ ],
+ "meetingHelp": "Both armies start about ten hexes apart and each holds the same objective VP. The side holding more VP when the last turn ends wins; equal VP is a draw.",
+ "alliedHelp": "Axis holds most of the map and every objective, its line in Combat Mode; Allied fields 1.5 times the divisions, assembles a few hexes away and moves first. Allied wins by holding at least half the objective VP when the last turn ends; otherwise Axis wins.",
+ "status": "Preview ready",
+ "ms": 435,
+ "metrics": {
+  "Scenario": "Allied attack",
+  "Map": "32×24",
+  "Units": "70",
+  "Formations": "15",
+  "Deployed hexes": "51",
+  "Objectives": "8 · 12 VP",
+  "Warnings": "0"
+ },
+ "fits": true,
+ "objectivesOwned": 8,
+ "errors": []
+}
+-- 2163 ms; page errors so far 0

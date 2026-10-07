@@ -35,7 +35,36 @@ export interface MapDefinitionIndex {
   readonly orderedHexsides: () => readonly HexsideFeatureCollection[];
 }
 
+/**
+ * Indexes are pure functions of a Map Definition; reuse them while the definition's hex and hexside
+ * arrays are the same objects with the same lengths (a definition is never edited after creation).
+ */
+const indexCache = new WeakMap<MapDefinition, {
+  readonly hexes: MapDefinition['hexes'];
+  readonly hexCount: number;
+  readonly hexsides: MapDefinition['hexsides'];
+  readonly hexsideCount: number;
+  readonly index: MapDefinitionIndex;
+}>();
+
 export const createMapDefinitionIndex = (
+  definition: MapDefinition,
+): MapDefinitionIndex => {
+  const cached = indexCache.get(definition);
+  if (cached !== undefined
+    && cached.hexes === definition.hexes && cached.hexCount === definition.hexes.length
+    && cached.hexsides === definition.hexsides && cached.hexsideCount === definition.hexsides.length) {
+    return cached.index;
+  }
+  const index = buildMapDefinitionIndex(definition);
+  indexCache.set(definition, {
+    hexes: definition.hexes, hexCount: definition.hexes.length,
+    hexsides: definition.hexsides, hexsideCount: definition.hexsides.length, index,
+  });
+  return index;
+};
+
+const buildMapDefinitionIndex = (
   definition: MapDefinition,
 ): MapDefinitionIndex => {
   const hexById = new Map<HexId, HexDefinition>();

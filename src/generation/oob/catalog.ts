@@ -1,5 +1,5 @@
 import type { PieceFamily } from '../../domain/piece/index.js';
-import { ALLIED_AIRBORNE_GPID, AXIS_AIRBORNE_GPID } from './counter-corpus.js';
+import { ALLIED_AIRBORNE_GPID, AXIS_AIRBORNE_GPID, GARRISON_GPID } from './counter-corpus.js';
 import type { OobFormationArchetype, OobSide, OobUnitRole } from './model.js';
 
 export const BTR_BUILD_FILE_SHA256 = '686ECB3090F89AC3952E01C28B3E6446A2315424428652D22DCA3FB5F75212AD' as const;
@@ -41,6 +41,10 @@ export const REVIEWED_OOB_ARCHETYPES: readonly ReviewedOobArchetype[] = Object.f
   { id: 'allied-airborne-combat', side: 'ALLIED', role: 'COMBAT', formationArchetypes: ['AIRBORNE'], rawName: 'US Airborne Division (sum of the printed regiments, sheet 2B; see counter-corpus TODO)', gpid: ALLIED_AIRBORNE_GPID, family: 'GROUND', combatStrength: 16, actionRating: 4, movementPoints: 5, regimentalEquivalents: 4, range: 0, steps: 4, pointCost: 24 },
   { id: 'allied-artillery', side: 'ALLIED', role: 'ARTILLERY', formationArchetypes: MECHANIZED_FORMATIONS, rawName: 'US 2.A Arty', gpid: 164, family: 'GROUND', combatStrength: 4, actionRating: 3, movementPoints: 4, regimentalEquivalents: 0.5, range: 4, steps: 1, pointCost: 7 },
   { id: 'allied-recon', side: 'ALLIED', role: 'RECONNAISSANCE', formationArchetypes: MECHANIZED_FORMATIONS, rawName: "US 2.A 82 Arm'd Recon Bn", gpid: 163, family: 'GROUND', combatStrength: 3, actionRating: 4, movementPoints: 10, regimentalEquivalents: 0.5, range: 0, steps: 1, pointCost: 4 },
+  // OOB 0.4.0 independents: values are the printed combat faces in counter-corpus.ts.
+  { id: 'allied-tank', side: 'ALLIED', role: 'TANK', formationArchetypes: INDEPENDENT, rawName: 'US 745 Tk Bn', gpid: 222, family: 'GROUND', combatStrength: 6, actionRating: 3, movementPoints: 6, regimentalEquivalents: 0.5, range: 0, steps: 1, pointCost: 6 },
+  { id: 'allied-anti-tank', side: 'ALLIED', role: 'ANTI_TANK', formationArchetypes: INDEPENDENT, rawName: 'US 803 TD Bn', gpid: 450, family: 'GROUND', combatStrength: 5, actionRating: 3, movementPoints: 7, regimentalEquivalents: 0.5, range: 0, steps: 1, pointCost: 5 },
+  { id: 'allied-garrison', side: 'ALLIED', role: 'COMBAT', formationArchetypes: INDEPENDENT, rawName: 'Objective garrison (generator rule, not a BTR counter)', gpid: GARRISON_GPID, family: 'GROUND', combatStrength: 1, actionRating: 1, movementPoints: 0, regimentalEquivalents: 0.5, range: 0, steps: 1, pointCost: 0 },
   { id: 'allied-engineer', side: 'ALLIED', role: 'ENGINEER', formationArchetypes: ALL_FORMATIONS, rawName: 'US Pontoon', gpid: 466, family: 'GROUND', combatStrength: 1, actionRating: 3, movementPoints: 4, regimentalEquivalents: 0.5, range: 0, steps: 1, pointCost: 3 },
   { id: 'allied-transport', side: 'ALLIED', role: 'TRANSPORT', formationArchetypes: ALL_FORMATIONS, rawName: 'US Truck', gpid: 77, family: 'GROUND', combatStrength: 0, actionRating: 2, movementPoints: 12, regimentalEquivalents: 0.5, range: 0, steps: 1, pointCost: 2 },
   { id: 'allied-supply', side: 'ALLIED', role: 'SUPPLY', formationArchetypes: ALL_FORMATIONS, rawName: 'Allied Supply Dump', gpid: 321, family: 'RESOURCE', combatStrength: null, actionRating: null, movementPoints: null, regimentalEquivalents: null, range: null, steps: 0, pointCost: 2 },
@@ -55,10 +59,24 @@ export const REVIEWED_OOB_ARCHETYPES: readonly ReviewedOobArchetype[] = Object.f
   { id: 'axis-airborne-combat', side: 'AXIS', role: 'COMBAT', formationArchetypes: ['AIRBORNE'], rawName: 'Ge Fallschirmjäger Division (counter sheet 3F/3B)', gpid: AXIS_AIRBORNE_GPID, family: 'GROUND', combatStrength: 18, actionRating: 3, movementPoints: 4, regimentalEquivalents: 4, range: 0, steps: 4, pointCost: 24 },
   { id: 'axis-artillery', side: 'AXIS', role: 'ARTILLERY', formationArchetypes: MECHANIZED_FORMATIONS, rawName: 'Ge 2.Pz 74 Arty Rgt', gpid: 739, family: 'GROUND', combatStrength: 4, actionRating: 3, movementPoints: 4, regimentalEquivalents: 0.5, range: 4, steps: 1, pointCost: 7 },
   { id: 'axis-recon', side: 'AXIS', role: 'RECONNAISSANCE', formationArchetypes: MECHANIZED_FORMATIONS, rawName: 'Ge 2.Pz 2 Aufk Bn', gpid: 737, family: 'GROUND', combatStrength: 3, actionRating: 4, movementPoints: 10, regimentalEquivalents: 0.5, range: 0, steps: 1, pointCost: 4 },
+  { id: 'axis-tank', side: 'AXIS', role: 'TANK', formationArchetypes: INDEPENDENT, rawName: 'Ge 243 AG Bn', gpid: 985, family: 'GROUND', combatStrength: 4, actionRating: 4, movementPoints: 6, regimentalEquivalents: 0.5, range: 0, steps: 1, pointCost: 5 },
+  { id: 'axis-anti-tank', side: 'AXIS', role: 'ANTI_TANK', formationArchetypes: INDEPENDENT, rawName: 'Ge 1 PJ Bn', gpid: 996, family: 'GROUND', combatStrength: 5, actionRating: 4, movementPoints: 3, regimentalEquivalents: 0.5, range: 0, steps: 1, pointCost: 4 },
+  // Balancing units for a weaker Axis side (listed after the base archetypes, which role lookups find first).
+  { id: 'axis-heavy-tank', side: 'AXIS', role: 'TANK', formationArchetypes: INDEPENDENT, rawName: 'Ge 506 Tgr Bn', gpid: 971, family: 'GROUND', combatStrength: 9, actionRating: 5, movementPoints: 4, regimentalEquivalents: 0.5, range: 0, steps: 1, pointCost: 9 },
+  { id: 'axis-heavy-anti-tank', side: 'AXIS', role: 'ANTI_TANK', formationArchetypes: INDEPENDENT, rawName: 'Ge 654 PJ Bn', gpid: 1015, family: 'GROUND', combatStrength: 6, actionRating: 5, movementPoints: 6, regimentalEquivalents: 0.5, range: 0, steps: 1, pointCost: 6 },
+  { id: 'axis-garrison', side: 'AXIS', role: 'COMBAT', formationArchetypes: INDEPENDENT, rawName: 'Objective garrison (generator rule, not a BTR counter)', gpid: GARRISON_GPID, family: 'GROUND', combatStrength: 1, actionRating: 1, movementPoints: 0, regimentalEquivalents: 0.5, range: 0, steps: 1, pointCost: 0 },
   { id: 'axis-engineer', side: 'AXIS', role: 'ENGINEER', formationArchetypes: ALL_FORMATIONS, rawName: 'Ge Pontoon', gpid: 713, family: 'GROUND', combatStrength: 1, actionRating: 3, movementPoints: 4, regimentalEquivalents: 0.5, range: 0, steps: 1, pointCost: 3 },
   { id: 'axis-transport', side: 'AXIS', role: 'TRANSPORT', formationArchetypes: ALL_FORMATIONS, rawName: 'German Truck', gpid: 71, family: 'GROUND', combatStrength: 0, actionRating: 2, movementPoints: 12, regimentalEquivalents: 0.5, range: 0, steps: 1, pointCost: 2 },
   { id: 'axis-supply', side: 'AXIS', role: 'SUPPLY', formationArchetypes: ALL_FORMATIONS, rawName: 'Axis Supply Dump', gpid: 359, family: 'RESOURCE', combatStrength: null, actionRating: null, movementPoints: null, regimentalEquivalents: null, range: null, steps: 0, pointCost: 2 },
 ]);
+
+/** The archetype that balances a weaker side: German heavy battalions, or the side's base archetype for the role. */
+export const findBalancingArchetype = (side: OobSide, role: 'TANK' | 'ANTI_TANK'): ReviewedOobArchetype =>
+  REVIEWED_OOB_ARCHETYPES.find(({ id }) => id === `${side.toLowerCase()}-heavy-${role === 'TANK' ? 'tank' : 'anti-tank'}`)
+    ?? findReviewedOobArchetype(side, role);
+
+export const findGarrisonArchetype = (side: OobSide): ReviewedOobArchetype =>
+  REVIEWED_OOB_ARCHETYPES.find(({ id }) => id === `${side.toLowerCase()}-garrison`)!;
 
 export const findReviewedOobArchetype = (
   side: OobSide,

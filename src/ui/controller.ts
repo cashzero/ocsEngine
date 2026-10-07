@@ -140,6 +140,10 @@ const initialSelection = (): UiSelection => ({ hexId: null, pieceId: null });
 /** Replace raw Hex IDs ("q,r") in engine text with printed Hex numbers. */
 const withPrintedHexes = (text: string): string => text.replace(/-?\d+,-?\d+/gu, (hexId) => printedHexLabel(hexId));
 
+/** Two Piece locations are the same hex or the same off-map box. */
+const sameLocation = (left: { readonly kind: string; readonly hexId?: unknown; readonly boxId?: unknown }, right: { readonly kind: string; readonly hexId?: unknown; readonly boxId?: unknown }): boolean =>
+  left.kind === right.kind && (left.kind === 'ON_MAP' ? left.hexId === right.hexId : left.kind === 'OFF_MAP_BOX' ? left.boxId === right.boxId : false);
+
 interface DraftInput {
   readonly kind: AttackDraft['kind'];
   readonly targetHexId: string;
@@ -795,7 +799,8 @@ class DefaultUiController implements UiController {
     return this.#cached('air-options', () => {
       const options = new Map<AirMissionKind, Map<string, Map<string, PieceId[]>>>();
       const view = this.#view(this.#activeSeat());
-      const own = this.#pieces().filter((piece) => piece.ownerId === view.playerId && piece.location.kind === 'ON_MAP'
+      // Aircraft at their bases on the map, and at an off-map airfield (its box); the rules say which can fly now.
+      const own = this.#pieces().filter((piece) => piece.ownerId === view.playerId && (piece.location.kind === 'ON_MAP' || piece.location.kind === 'OFF_MAP_BOX')
         && this.#definition(piece)?.family === 'AIR' && !piece.statuses.includes('status:air-inactive'));
       for (const plane of own) {
         for (const action of this.#candidates('DECLARE_AIR_MISSION', plane.id, 5000)) {
@@ -1208,10 +1213,10 @@ class DefaultUiController implements UiController {
       for (const candidate of this.#candidates('REFIT_AIRCRAFT', null, 50)) {
         if (candidate.kind !== 'REFIT_AIRCRAFT' || refits.some(({ baseId }) => baseId === candidate.baseId)) continue;
         const base = this.#pieces().find(({ id }) => id === candidate.baseId);
-        if (!base || base.location.kind !== 'ON_MAP') continue;
-        const hexId = base.location.hexId;
-        const inactive = this.#pieces().filter((piece) => piece.ownerId === view.playerId && piece.location.kind === 'ON_MAP'
-          && piece.location.hexId === hexId && piece.statuses.includes('status:air-inactive')).map(({ id }) => id);
+        if (!base || (base.location.kind !== 'ON_MAP' && base.location.kind !== 'OFF_MAP_BOX')) continue;
+        const hexId = base.location.kind === 'ON_MAP' ? base.location.hexId : '';
+        const inactive = this.#pieces().filter((piece) => piece.ownerId === view.playerId && sameLocation(piece.location, base.location)
+          && piece.statuses.includes('status:air-inactive')).map(({ id }) => id);
         const sources = this.#candidates('REFIT_AIRCRAFT', null, 50).flatMap((action) => action.kind === 'REFIT_AIRCRAFT' && action.baseId === candidate.baseId ? [action.sourcePieceId] : []);
         const selected = (this.#refitSelection.get(candidate.baseId) ?? candidate.aircraftIds).filter((id) => inactive.includes(id));
         const action: GameAction | null = selected.length > 0 ? { ...candidate, actionId: this.#actionId('refit'), aircraftIds: selected } : null;
@@ -1220,6 +1225,7 @@ class DefaultUiController implements UiController {
           baseId: candidate.baseId, hexId, capacity: facts?.refitCapacity ?? 2,
           inactiveIds: inactive, selectedIds: selected, sourceIds: sources, action, explanation: action ? this.#explain(action) : null,
           level: facts?.level ?? 1, active: facts?.active ?? 0, activeLimit: facts?.activeLimit ?? 0, zocBlocked: facts?.refitBlockedByZoc ?? false,
+          offMap: facts?.offMap ?? false,
         });
       }
     }
@@ -1227,11 +1233,12 @@ class DefaultUiController implements UiController {
     if (projection?.sequence.phase === 'AIRCRAFT_REFIT' && projection.sequence.actingPlayerId === view.playerId) {
       for (const facts of projection.air.bases) {
         if (facts.inactive === 0 || refits.some(({ baseId }) => baseId === facts.id)) continue;
-        const inactive = this.#pieces().filter((piece) => piece.ownerId === view.playerId && piece.location.kind === 'ON_MAP'
-          && piece.location.hexId === facts.hexId && piece.statuses.includes('status:air-inactive')).map(({ id }) => id);
+        const field = this.#pieces().find(({ id }) => id === facts.id);
+        const inactive = this.#pieces().filter((piece) => piece.ownerId === view.playerId && piece.statuses.includes('status:air-inactive')
+          && (facts.offMap ? field !== undefined && sameLocation(piece.location, field.location) : piece.location.kind === 'ON_MAP' && piece.location.hexId === facts.hexId)).map(({ id }) => id);
         refits.push({
           baseId: facts.id, hexId: facts.hexId, capacity: facts.refitCapacity, inactiveIds: inactive, selectedIds: [], sourceIds: [], action: null, explanation: null,
-          level: facts.level, active: facts.active, activeLimit: facts.activeLimit, zocBlocked: facts.refitBlockedByZoc,
+          level: facts.level, active: facts.active, activeLimit: facts.activeLimit, zocBlocked: facts.refitBlockedByZoc, offMap: facts.offMap,
         });
       }
     }
@@ -1350,7 +1357,7 @@ class DefaultUiController implements UiController {
     if (!refit?.action || !refit.explanation?.allowed) return;
     this.#refitSelection.delete(baseId);
     await this.#dispatch({ ...refit.action, actionId: this.#actionId('refit'), expectedRevision: this.#session.getRevision() } as GameAction,
-      `Refit ${refit.selectedIds.length} aircraft at ${printedHexLabel(refit.hexId)} (1T).`);
+      (refit.offMap ? `Refit ${refit.selectedIds.length} aircraft at the off-map airfield, from its own stocks.` : `Refit ${refit.selectedIds.length} aircraft at ${printedHexLabel(refit.hexId)} (1T).`));
   };
 
   toggleAirZones = (): void => { this.#showAirZones = !this.#showAirZones; this.#emit(); };

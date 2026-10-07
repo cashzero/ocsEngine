@@ -26,6 +26,9 @@ import {
   isAirBase,
   isAircraft,
   isAirStrip,
+  isOffMapAirfield,
+  aircraftAtBase,
+  offMapAirfields,
   refitBlockedByZoc,
   refitCapacity,
   withAircraftActive,
@@ -39,9 +42,14 @@ export const REFIT_TOKENS = 1;
 
 const tokenUnit = (state: GameState, dump: PieceState) => definitionOf(state, dump)!.resource!.unitDefinitionId;
 
-/** Dumps that can pay the 1T refit cost by direct draw or HQ throw to the base hex (12.9c). */
-export const refitSources = (state: GameState, base: PieceState) =>
-  hexOf(base) === null ? [] : dumpsReaching(state, base.ownerId, hexOf(base)!).filter(({ availableQuantity }) => availableQuantity >= REFIT_TOKENS);
+/**
+ * Dumps that can pay the 1T refit cost by direct draw or HQ throw to the base hex (12.9c). An off-map airfield pays
+ * from its own stocks: its only source is itself, and nothing is spent.
+ */
+export const refitSources = (state: GameState, base: PieceState): readonly { readonly pieceId: PieceId; readonly availableQuantity: number }[] =>
+  isOffMapAirfield(state, base) ? [{ pieceId: base.id, availableQuantity: REFIT_TOKENS }]
+    : hexOf(base) === null ? []
+      : dumpsReaching(state, base.ownerId, hexOf(base)!).filter(({ availableQuantity }) => availableQuantity >= REFIT_TOKENS);
 
 export const validateRefit = (state: GameState, action: Extract<GameAction, { readonly kind: 'REFIT_AIRCRAFT' }>): readonly RuleViolation[] => {
   const issues: RuleViolation[] = [];
@@ -49,9 +57,10 @@ export const validateRefit = (state: GameState, action: Extract<GameAction, { re
     issues.push(violation('INVALID_REFIT_PHASE', ['sequence'], 'Aircraft refit in their owner\'s Aircraft Refit Phase.', '15.1'));
   }
   const base = pieceById(state, action.baseId);
-  if (!base || !isAirBase(state, base) || base.ownerId !== action.actorId || hexOf(base) === null) {
+  if (!base || !isAirBase(state, base) || base.ownerId !== action.actorId || (hexOf(base) === null && !isOffMapAirfield(state, base))) {
     return [...issues, violation('UNKNOWN_AIR_BASE', ['baseId'], 'Refit happens at a friendly Air Base.', '15.1')];
   }
+  const based = new Set(aircraftAtBase(state, base).map(({ id }) => id));
   if (state.air.refittedBaseIds.includes(base.id)) issues.push(violation('BASE_ALREADY_REFIT', ['baseId'], 'An Air Base refits once per Aircraft Refit Phase.', '15.1A'));
   if (refitBlockedByZoc(state, base)) issues.push(violation('REFIT_IN_ENEMY_ZOC', ['baseId'], 'An Air Base in an un-negated enemy ZOC cannot refit.', '15.1C'));
   if (action.aircraftIds.length === 0 || new Set(action.aircraftIds).size !== action.aircraftIds.length) {
@@ -61,13 +70,13 @@ export const validateRefit = (state: GameState, action: Extract<GameAction, { re
   if (action.aircraftIds.length > capacity) issues.push(violation('REFIT_CAPACITY', ['aircraftIds'], `A Level ${airBaseLevel(state, base)} base refits up to ${capacity} aircraft.`, isAirStrip(state, base) ? '15.2B' : '15.1B'));
   for (const [index, id] of action.aircraftIds.entries()) {
     const piece = pieceById(state, id);
-    if (!piece || !isAircraft(state, piece) || piece.ownerId !== action.actorId || hexOf(piece) !== hexOf(base)) {
+    if (!piece || !isAircraft(state, piece) || piece.ownerId !== action.actorId || !based.has(piece.id)) {
       issues.push(violation('AIRCRAFT_NOT_AT_BASE', ['aircraftIds', index], 'Only aircraft at this base can refit here.', '15.1B'));
     } else if (isActiveAircraft(piece)) {
       issues.push(violation('AIRCRAFT_ALREADY_ACTIVE', ['aircraftIds', index], `${aircraftName(state, piece)} is already Active.`, '14.1d'));
     }
   }
-  if (activeAircraftAt(state, action.actorId, hexOf(base)!).length + action.aircraftIds.length > activeAircraftLimit(state, base)) {
+  if (aircraftAtBase(state, base).filter((piece) => isActiveAircraft(piece)).length + action.aircraftIds.length > activeAircraftLimit(state, base)) {
     issues.push(violation('BASE_ACTIVE_LIMIT', ['aircraftIds'], `This base can hold ${activeAircraftLimit(state, base)} Active aircraft.`, '14.2a'));
   }
   if (!refitSources(state, base).some(({ pieceId }) => pieceId === action.sourcePieceId)) {
@@ -78,8 +87,10 @@ export const validateRefit = (state: GameState, action: Extract<GameAction, { re
 
 export const applyRefit = (state: GameState, action: Extract<GameAction, { readonly kind: 'REFIT_AIRCRAFT' }>): Transition => {
   const dump = pieceById(state, action.sourcePieceId)!;
-  let next: GameState = { ...state, pieceState: spendReservations(state, [{ resourcePieceId: dump.id, quantity: REFIT_TOKENS, unitDefinitionId: tokenUnit(state, dump) }]) };
-  const events: RuleEvent[] = [{ kind: 'SUPPLY_SPENT', sequence: 0, resourcePieceId: dump.id, quantity: REFIT_TOKENS }];
+  const offMap = dump.id === action.baseId && isOffMapAirfield(state, dump);
+  let next: GameState = offMap ? state
+    : { ...state, pieceState: spendReservations(state, [{ resourcePieceId: dump.id, quantity: REFIT_TOKENS, unitDefinitionId: tokenUnit(state, dump) }]) };
+  const events: RuleEvent[] = offMap ? [] : [{ kind: 'SUPPLY_SPENT', sequence: 0, resourcePieceId: dump.id, quantity: REFIT_TOKENS }];
   for (const id of action.aircraftIds) {
     const piece = pieceById(next, id)!;
     next = { ...next, pieceState: upsertPieceState(next.pieceState, withAircraftActive(piece, true)) };
@@ -91,10 +102,11 @@ export const applyRefit = (state: GameState, action: Extract<GameAction, { reado
 
 /** Bases with Inactive aircraft that could refit now, for candidate generation. */
 export const refitCandidates = (state: GameState, playerId: PlayerId): readonly { readonly base: PieceState; readonly aircraftIds: readonly PieceId[]; readonly sourceIds: readonly PieceId[] }[] =>
-  friendlyAirBases(state, playerId).flatMap((base) => {
+  [...friendlyAirBases(state, playerId), ...offMapAirfields(state, playerId)].flatMap((base) => {
     if (state.air.refittedBaseIds.includes(base.id) || refitBlockedByZoc(state, base)) return [];
-    const inactive = aircraftAt(state, hexOf(base)!).filter((piece) => piece.ownerId === playerId && !isActiveAircraft(piece));
-    const room = Math.min(refitCapacity(state, base), activeAircraftLimit(state, base) - activeAircraftAt(state, playerId, hexOf(base)!).length);
+    const based = aircraftAtBase(state, base);
+    const inactive = based.filter((piece) => !isActiveAircraft(piece));
+    const room = Math.min(refitCapacity(state, base), activeAircraftLimit(state, base) - based.filter((piece) => isActiveAircraft(piece)).length);
     const sources = refitSources(state, base).map(({ pieceId }) => pieceId);
     if (inactive.length === 0 || room <= 0 || sources.length === 0) return [];
     // Prefer full-strength aircraft first; the player may pick a different set.
