@@ -137,6 +137,7 @@ const configurationDecoder: Decoder<RuleConfiguration> = objectDecoder({
   reinforcementBoxes: arrayDecoder(objectDecoder({ playerId: playerIdDecoder, boxId: boxIdDecoder })),
   turnLimit: safeIntegerDecoder,
   objectives: arrayDecoder(objectDecoder({ hexId: hexIdDecoder, points: safeIntegerDecoder })),
+  attackVictory: optionalDecoder(objectDecoder({ attackerId: playerIdDecoder, attackerPoints: safeIntegerDecoder })),
   railroads: optionalDecoder(objectDecoder({
     lines: arrayDecoder(objectDecoder({ featureDefinitionId: definitionIdDecoder, multiTrack: booleanDecoder })),
     detrainableFeatureDefinitionIds: arrayDecoder(definitionIdDecoder),

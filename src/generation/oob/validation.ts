@@ -1,6 +1,6 @@
 import type { ValidationIssue } from '../../core/index.js';
 import { validatePieceDefinitionCatalog, type PieceDefinition } from '../../domain/piece/index.js';
-import { isSingleUnitDivision } from './model.js';
+import { isSingleUnitDivision, sideDivisions } from './model.js';
 import type {
   GeneratedOob,
   GeneratedOobMetrics,
@@ -119,7 +119,7 @@ export const validateGeneratedOob = (
     issues.push(issue('OOB_CATALOG_UNIT_MISMATCH', 'Generated units and Piece Definitions must form an exact one-to-one set, plus the Breakdown Definitions the divisions name.'));
   }
   for (const [sideIndex, side] of generated.sides.entries()) {
-    if (side.formations.length !== generated.options.divisionsPerSide) {
+    if (side.formations.length !== sideDivisions(generated.options, side.side).divisionsPerSide) {
       issues.push(issue('FORMATION_COUNT_MISMATCH', 'Each side must contain the requested division count.', ['sides', sideIndex, 'formations']));
     }
     for (const [formationIndex, formation] of side.formations.entries()) {

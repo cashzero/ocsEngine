@@ -47,6 +47,13 @@ export const calculateVictory = (state: GameState): VictoryState => {
       return total + (controller === id ? objective.points : 0);
     }, 0),
   }));
+  const attack = state.configuration.attackVictory;
+  if (attack) {
+    // An attack: the attacker wins by holding its VP target, the defender by denying it.
+    const held = scores.find(({ playerId }) => playerId === attack.attackerId)?.points ?? 0;
+    const defenderId = scores.find(({ playerId }) => playerId !== attack.attackerId)?.playerId ?? null;
+    return { scores, winnerId: held >= attack.attackerPoints ? attack.attackerId : defenderId, reason: null };
+  }
   const ordered = stableSort(scores, (left, right) => right.points - left.points
     || String(left.playerId).localeCompare(String(right.playerId)));
   const winnerId = ordered.length > 0 && ordered[0]!.points > (ordered[1]?.points ?? -1) ? ordered[0]!.playerId : null;

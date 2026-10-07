@@ -120,6 +120,15 @@ export interface ObjectiveDefinition {
   readonly points: number;
 }
 
+/**
+ * A game-specific victory condition for an attack: the attacker wins by holding at least `attackerPoints` objective VP
+ * when the game ends; otherwise the other player wins. There is no draw.
+ */
+export interface AttackVictoryCondition {
+  readonly attackerId: PlayerId;
+  readonly attackerPoints: number;
+}
+
 /** One die range of a Weather Table row (17.0); 1-6 is "Auto". */
 export interface WeatherGroundRange {
   readonly condition: GroundCondition;
@@ -201,6 +210,8 @@ export interface RuleConfiguration {
   readonly reinforcementBoxes: readonly { readonly playerId: PlayerId; readonly boxId: MapBoxId }[];
   readonly turnLimit: number;
   readonly objectives: readonly ObjectiveDefinition[];
+  /** Absent: the player holding the most objective VP wins and equal VP is a draw (and in saves made before attacks existed). */
+  readonly attackVictory?: AttackVictoryCondition | undefined;
   /** Absent when the game has no railroads (and in saves made before railroads existed). */
   readonly railroads?: RailroadConfiguration | undefined;
 }

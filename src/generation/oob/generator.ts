@@ -31,6 +31,8 @@ import {
   OOB_SCALES,
   AIR_FORCE_LEVELS,
   OOB_DIVISION_LIMITS,
+  ATTACKER_FORCE_RATIO,
+  sideDivisions,
   type GeneratedOob,
   type GeneratedOobFormation,
   type GeneratedOobSide,
@@ -271,6 +273,9 @@ export const normalizeRandomOobOptions = (
   }
   // Older requests may still carry the retired `airSupport` option: Eq and aircraft reinforcements are now built in.
   const { air, airTransport, airSupport: _retired, ...ground } = options as RandomOobOptions & { readonly airSupport?: unknown };
+  if (options.attacker !== undefined && options.attacker !== 'ALLIED' && options.attacker !== 'AXIS') {
+    errors.push({ code: 'INVALID_OPTIONS', message: 'The attacker must be ALLIED or AXIS.', path: ['attacker'] });
+  }
   return errors.length > 0 ? err(errors) : ok({
     ...ground,
     ...(air === 'STANDARD' ? { air } : {}),
@@ -420,10 +425,12 @@ const balanceSides = (
   definitions: PieceDefinition[],
 ): { readonly sides: readonly GeneratedOobSide[]; readonly warnings: readonly string[] } => {
   const result = [...sides];
-  const cap = Math.max(8, 2 * options.divisionsPerSide);
+  const cap = Math.max(8, 2 * sideDivisions(options, options.attacker ?? 'ALLIED').divisionsPerSide);
+  // An attacker should stand ATTACKER_FORCE_RATIO times as strong: values are compared after dividing by that weight.
+  const weight = (side: GeneratedOobSide): number => side.side === options.attacker ? ATTACKER_FORCE_RATIO : 1;
   let added = 0;
   for (; added < cap; added += 1) {
-    const values = result.map((side) => combatValueOf(side, definitions));
+    const values = result.map((side) => combatValueOf(side, definitions) / weight(side));
     const weakIndex = values[0]! < values[1]! ? 0 : 1;
     if (values[weakIndex]! >= 0.9 * values[1 - weakIndex]!) break;
     const weak = result[weakIndex]!;
@@ -441,7 +448,7 @@ const balanceSides = (
     definitions.push(built.definition);
     result[weakIndex] = { ...weak, independentUnits: [...weak.independentUnits, built.unit] };
   }
-  const values = result.map((side) => combatValueOf(side, definitions));
+  const values = result.map((side) => combatValueOf(side, definitions) / weight(side));
   const ratio = Math.min(...values) / Math.max(...values);
   return {
     sides: result,
@@ -455,9 +462,10 @@ export const generateRandomOob = (
   const normalized = normalizeRandomOobOptions(requested);
   if (!normalized.ok) return normalized;
   const options = normalized.value;
-  const plan = formationPlan(options);
   const definitions: PieceDefinition[] = [];
-  const balanced = balanceSides(SIDES.map((side) => buildSide(side, plan, options, definitions)), options, definitions);
+  // Each side is built from its own division count: equal in a meeting engagement, larger for an attacker.
+  const sideOptions = (side: OobSide): NormalizedRandomOobOptions => ({ ...options, ...sideDivisions(options, side) });
+  const balanced = balanceSides(SIDES.map((side) => buildSide(side, formationPlan(sideOptions(side)), sideOptions(side), definitions)), options, definitions);
   const sides = balanced.sides;
   const pieceDefinitionCatalog: PieceDefinitionCatalog = {
     id: definitionId(`catalog:generated-oob:${options.seed}`),

@@ -1,0 +1,34 @@
+{
+ "status": "Preview ready",
+ "metrics": {
+  "Scenario": "Axis attack",
+  "Map": "32×24",
+  "Units": "75",
+  "Formations": "15",
+  "Deployed hexes": "58",
+  "Objectives": "12 · 12 VP",
+  "Warnings": "0"
+ },
+ "text": "Allied holds most of the map and every objective, its line in Combat Mode; Axis fields 1.5 times the divisions, assembles a few hexes away and moves first. Axis wins by holding at least half the objective VP when the last turn ends; otherwise Allied wins.",
+ "startMs": 504,
+ "at": {
+  "turn": "Turn 1 / 8",
+  "player": "Axis player turn",
+  "phase": "Movement",
+  "seat": "Axis commander",
+  "end": "End Movement SegmentNext: Barrage Segment",
+  "endDisabled": false,
+  "notice": "Select a unit on the map to see where it can move and what it can attack.",
+  "handoff": false,
+  "complete": false,
+  "decision": []
+ },
+ "summary": "Axis attack · 75 units · 15 formations · 8 turns · seeds map 206569473, OOB 206569474, deployment 206569475, rules 206569476",
+ "objectives": 12,
+ "objectiveSample": [
+  "Hex 1302 · Berbach · clear · town · objective, 1 VP · enemy US Objective Garrison",
+  "Hex 1602 · Marlay · clear · town · objective, 1 VP · enemy US Objective Garrison",
+  "Hex 2103 · Lorstad · clear · town · objective, 1 VP · enemy US Objective Garrison"
+ ]
+}
+-- 17242 ms; page errors so far 0

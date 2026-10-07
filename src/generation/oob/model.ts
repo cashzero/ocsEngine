@@ -36,6 +36,26 @@ export type AirForceLevel = (typeof AIR_FORCE_LEVELS)[number];
 /** Divisions a side may field, and how many of them may be armored. */
 export const OOB_DIVISION_LIMITS = { minDivisions: 1, maxDivisions: 20, maxArmored: 6 } as const;
 
+/**
+ * An attacking side fields this many times the divisions of the other, armored ones included, and the balancing aims
+ * at this ratio of combat value (user, 2026-10-07: "進攻方兵力要比較多吧 至於是1.5倍還是2或3 看你";
+ * docs/roadmap/13-engagement-scenarios-wbs.md §4). With equal forces the bot attacker won 10 of 40 games; at 1.5 it won 18.
+ */
+export const ATTACKER_FORCE_RATIO = 1.5;
+
+/** Divisions `side` fields: the requested count, or ATTACKER_FORCE_RATIO times it (within the limits) for the attacker. */
+export const sideDivisions = (
+  options: Pick<RandomOobOptions, 'divisionsPerSide' | 'armoredDivisionsPerSide' | 'attacker'>,
+  side: OobSide,
+): { readonly divisionsPerSide: number; readonly armoredDivisionsPerSide: number } => {
+  if (options.attacker !== side) return { divisionsPerSide: options.divisionsPerSide, armoredDivisionsPerSide: options.armoredDivisionsPerSide };
+  const divisionsPerSide = Math.min(OOB_DIVISION_LIMITS.maxDivisions, Math.round(options.divisionsPerSide * ATTACKER_FORCE_RATIO));
+  return {
+    divisionsPerSide,
+    armoredDivisionsPerSide: Math.min(OOB_DIVISION_LIMITS.maxArmored, divisionsPerSide, Math.round(options.armoredDivisionsPerSide * ATTACKER_FORCE_RATIO)),
+  };
+};
+
 export interface RandomOobOptions {
   readonly seed: number;
   readonly scale: OobScale;
@@ -47,6 +67,8 @@ export interface RandomOobOptions {
    * divisions, about one in four of them airborne.
    */
   readonly armoredDivisionsPerSide: number;
+  /** The side that attacks (sideDivisions); absent in a meeting engagement, where both sides are equal. */
+  readonly attacker?: OobSide;
   /** Absent means NONE, so ground-only requests generate exactly what they did before air power. */
   readonly air?: AirForceLevel;
   /** Absent means NONE. STANDARD adds transport aircraft (14.9) and a paratroop battalion per side for Air Drops (14.10). Needs `air`. */

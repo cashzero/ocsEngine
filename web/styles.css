@@ -421,7 +421,7 @@ small, .supporting { font-size: 13px; color: var(--muted); }
 .operation-preview-content.is-stale { opacity: .55; }
 .operation-map-wrap { height: 360px; overflow: hidden; border: 1px solid var(--line); border-radius: 8px; background: #17251e; }
 .operation-map { width: 100%; height: 100%; }
-.operation-metrics { display: grid; grid-template-columns: repeat(6, 1fr); gap: 1px; margin: 0; border: 1px solid var(--line); background: var(--line); }
+.operation-metrics { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; margin: 0; border: 1px solid var(--line); background: var(--line); }
 .operation-metrics div { min-width: 0; padding: 8px; background: #111a16; }
 .operation-metrics dt { color: var(--muted); font-size: 13px; }
 .operation-metrics dd { margin: 1px 0 0; color: var(--accent); font-size: 17px; font-weight: 850; }
