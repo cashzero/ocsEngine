@@ -44,12 +44,12 @@ describe('generated objectives', () => {
     expect(objectives.some(({ settlement }) => settlement === 'settlement:city')).toBe(true);
   });
 
-  it('starts each objective held only when it lies behind a side front, the rest neutral (13.3h)', () => {
+  it('starts each objective held by the side whose garrison stands on it (13.3h, OOB 0.4.0)', () => {
     for (const style of ['TEMPERATE_INLAND', 'EASTERN_EUROPE'] as const) {
       const { objectives, players, warnings } = objectivesOf({ ...DEFAULT_NEW_GAME_REQUEST, map: { ...DEFAULT_NEW_GAME_REQUEST.map, style } });
-      // Objectives stand in the towns nearest the front, so most lie in the neutral ground between the armies.
-      expect(objectives.some(({ controller }) => controller === null)).toBe(true);
-      expect(objectives.every(({ controller }) => controller === null || players.includes(String(controller)))).toBe(true);
+      // Every objective has a garrison (user decision 2026-10-07: no objective is taken by simply walking in), and a
+      // combat unit in a hex controls it, so none starts neutral even where it lies in the ground between the armies.
+      expect(objectives.every(({ controller }) => controller !== null && players.includes(String(controller)))).toBe(true);
       // The VP allotted to each side's zone is still equal.
       expect(warnings.some((warning) => warning.startsWith('Objectives are unbalanced'))).toBe(false);
     }
@@ -62,7 +62,8 @@ describe('generated objectives', () => {
     const control = new Map(scenario.initialMapState.hexControl.map(({ hexId, controllerId }) => [String(hexId), controllerId]));
     const land = scenario.mapDefinition.hexes.filter((hex) => !hex.terrainDefinitionIds.includes('terrain:water' as never));
     const neutral = land.filter(({ id }) => (control.get(String(id)) ?? null) === null).map(({ id }) => String(id));
-    expect(neutral.length).toBeGreaterThan(land.length / 4);
+    // The armies start about ten hexes apart (user request 2026-10-07), so the neutral strip is narrower than it was.
+    expect(neutral.length).toBeGreaterThan(land.length / 8);
     const railHexes = new Set(scenario.mapDefinition.hexsides
       .filter(({ featureDefinitionIds }) => featureDefinitionIds.some((id) => String(id).startsWith('edge:rail')))
       .flatMap(({ hexsideId }) => String(hexsideId).split('|')));
