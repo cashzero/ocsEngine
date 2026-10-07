@@ -152,7 +152,7 @@ const studyGame = (record, save, purposes = new Map()) => {
         const near = (filter) => Math.min(99, ...before.pieceState.pieces.filter((other) => other.ownerId === piece.ownerId && other.location.kind === 'ON_MAP' && filter(other))
           .map((other) => m.hexDistanceBetween(other.location.hexId, hexId)));
         side.attrition = side.attrition ?? [];
-        side.attrition.push({ where, hexId, onObjective: objectives.some((objective) => objective.hexId === hexId), nearestSupply: near((other) => ['DUMP', 'TRUCK'].includes(roles.get(String(other.id))) && (other.resourceQuantity ?? 1) > 0),
+        side.attrition.push({ where, hexId, role: roles.get(String(piece.id)) ?? '?', garrison: /Garrison/.test(state.scenario.pieceCatalog.definitions.find(({ id }) => id === piece.definitionId)?.name ?? ''), onObjective: objectives.some((objective) => objective.hexId === hexId), nearestSupply: near((other) => ['DUMP', 'TRUCK'].includes(roles.get(String(other.id))) && (other.resourceQuantity ?? 1) > 0),
           nearestHq: near((other) => roles.get(String(other.id)) === 'HQ'), nearestEnemy: Math.min(99, ...before.pieceState.pieces
             .filter((other) => other.ownerId !== piece.ownerId && other.location.kind === 'ON_MAP' && roles.get(String(other.id)) !== 'DUMP')
             .map((other) => m.hexDistanceBetween(other.location.hexId, hexId))) });

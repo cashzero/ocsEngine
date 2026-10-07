@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   DEFAULT_NEW_GAME_REQUEST,
+  GENERATED_KEY_POINT_GARRISON_SHARE,
   OFF_MAP_AIR_MIX,
   isActiveAircraft,
   isOffMapAirfield,
@@ -192,6 +193,26 @@ describe('off-map air (AIR-OM1)', () => {
       const mix = OFF_MAP_AIR_MIX[prepared.request.oob.scale];
       expect(planes).toHaveLength(mix.fighters + mix.bombers);
       expect(planes.every((plane) => plane.ownerId === field.ownerId && isActiveAircraft(plane))).toBe(true);
+    }
+  });
+});
+
+describe('garrisons in an attack (user, 2026-10-07)', () => {
+  it('gives the attacker none and the defender one per objective plus single garrisons on key points', () => {
+    for (const index of [0, 1, 2]) {
+      const { prepared, state } = started(requestFor('AXIS_ATTACKS', index));
+      const garrisons = new Set(prepared.generatedOob.sides.map(({ garrisonDefinitionId }) => garrisonDefinitionId));
+      const placed = state.pieceState.pieces.filter((piece) => garrisons.has(piece.definitionId));
+      expect(placed.filter(({ ownerId }) => String(ownerId) === 'player:axis')).toEqual([]);
+      const hexes = placed.map(hexOf);
+      // Never two garrisons in one hex.
+      expect(new Set(hexes).size).toBe(hexes.length);
+      const objectiveHexes = new Set(prepared.deployment.objectives.map(({ hexId }) => String(hexId)));
+      const keyPoints = placed.filter(({ id }) => String(id).includes(':key-point-'));
+      expect(keyPoints.length).toBeGreaterThan(0);
+      expect(keyPoints.length).toBeLessThanOrEqual(Math.ceil(prepared.deployment.objectives.length * GENERATED_KEY_POINT_GARRISON_SHARE));
+      expect(keyPoints.every((piece) => !objectiveHexes.has(String(hexOf(piece))))).toBe(true);
+      expect(placed.length).toBe(prepared.deployment.objectives.length + keyPoints.length);
     }
   });
 });

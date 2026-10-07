@@ -148,6 +148,16 @@ export const GENERATED_ATTACK_SPLIT_SHIFT = 0.4;
 /** Settlements that make a rail Hex detrainable (13.3c), so a Supply Source (12.6a). */
 const DETRAINABLE_FEATURES = new Set(['settlement:village', 'settlement:town', 'settlement:city']);
 
+/** Tokens of supply under every garrison at the start: two turns of eating for it (1T each, 12.6c). */
+export const GENERATED_GARRISON_STOCK_TOKENS = 2;
+
+/** In an attack the defender garrisons this many key points per objective (rounded up): supply nodes and road junctions. */
+export const GENERATED_KEY_POINT_GARRISON_SHARE = 0.5;
+/** Key-point garrisons stand at least this many hexes from each other and from the objectives. */
+const GENERATED_KEY_POINT_SPACING_HEXES = 3;
+/** A road junction joins at least this many roads (hexsides with a road). */
+const GENERATED_ROAD_JUNCTION_DEGREE = 3;
+
 /** Roles a defender deploys in Combat Mode: the units that hold the line. Artillery, HQs and trucks start as usual. */
 const DEFENDER_COMBAT_ROLES = new Set(['COMBAT', 'RECONNAISSANCE', 'TANK', 'ANTI_TANK', 'ENGINEER']);
 /** Candidate Hexes nearest the start line compared by draw coverage when siting a dump. */
@@ -357,6 +367,17 @@ export const deployGeneratedForces = (
       return parsed.ok ? [[parsed.value.firstHexId, parsed.value.secondHexId] as const] : [];
     });
   const railHexes = new Set(railLinks.flat());
+  // Roads meeting in each hex (rail lines do not count: a junction is where roads cross).
+  const roadFeatures = new Set(['edge:primary-road', 'edge:road']);
+  const roadDegree = new Map<HexId, number>();
+  for (const { hexsideId, featureDefinitionIds } of map.mapDefinition.hexsides) {
+    if (!featureDefinitionIds.some((id) => roadFeatures.has(String(id)))) continue;
+    const parsed = parseHexsideId(hexsideId);
+    if (!parsed.ok) continue;
+    for (const hexId of [parsed.value.firstHexId, parsed.value.secondHexId]) roadDegree.set(hexId, (roadDegree.get(hexId) ?? 0) + 1);
+  }
+  /** Rail towns each side's railroad joins to its map edge inside its zone: its supply nodes (13.3c). */
+  const supplyNodes: Record<OobSide, Set<HexId>> = { ALLIED: new Set(), AXIS: new Set() };
   const railNeighbors = new Map<HexId, HexId[]>();
   for (const [first, second] of railLinks) {
     railNeighbors.set(first, [...railNeighbors.get(first) ?? [], second]);
@@ -442,6 +463,9 @@ export const deployGeneratedForces = (
         railed.add(next);
         railQueue.push(next);
       }
+    }
+    for (const hexId of railed) {
+      if (!sideSupply[side].includes(hexId) && hexById.get(hexId)?.features.some(({ definitionId }) => DETRAINABLE_FEATURES.has(String(definitionId)))) supplyNodes[side].add(hexId);
     }
     const traceReach = new Set([...sideSupply[side], ...[...railed]
       .filter((hexId) => hexById.get(hexId)?.features.some(({ definitionId }) => DETRAINABLE_FEATURES.has(String(definitionId))))]
@@ -656,22 +680,71 @@ export const deployGeneratedForces = (
   );
   const seeded = new Set(controlled.map(({ hexId }) => hexId));
   // OOB 0.4.0: one objective garrison (1-1-0, MA 0) on every objective a side holds, in Combat Mode so it exerts a ZOC
-  // (4.4b): no objective can be taken by simply walking into it.
-  for (const [index, { hexId, side }] of objectives.entries()) {
+  // (4.4b): no objective can be taken by simply walking into it. In an attack the attacker holds none, so it has none.
+  const garrisonPiece = (side: OobSide, hexId: HexId, pieceId: string): PieceState | null => {
     const garrisonDefinitionId = oob.sides.find((entry) => entry.side === side)?.garrisonDefinitionId;
     const definition = garrisonDefinitionId === undefined ? undefined : definitionById.get(garrisonDefinitionId);
-    const parsedId = parsePieceId(`${garrisonDefinitionId}:objective-${index + 1}`);
-    if (!definition || !parsedId.ok) {
-      return { ok: false, error: [deploymentFailure(`Objective ${hexId} cannot receive its ${side} garrison.`)] };
-    }
+    const parsedId = parsePieceId(`${garrisonDefinitionId}:${pieceId}`);
+    if (!definition || !parsedId.ok) return null;
     const stackOrder = stackCounts.get(hexId) ?? 0;
     stackCounts.set(hexId, stackOrder + 1);
-    pieces.push({
+    return {
       id: parsedId.value, definitionId: definition.id, ownerId: sidePlayer(side, players),
-      location: { kind: 'ON_MAP', hexId: hexId as HexId },
+      location: { kind: 'ON_MAP', hexId },
       currentFaceId: definition.faces.find(({ id }) => String(id) === 'combat')?.id ?? definition.faces[0]?.id ?? null,
       remainingSteps: fullStrength(definition), mode: 'COMBAT', statuses: [], stackOrder, resourceQuantity: null,
-    });
+    };
+  };
+  // Every garrison stands on a small dump of its own (user, 2026-10-07: supply to match the garrisons): it eats from it
+  // when cut off instead of suffering attrition (12.6c, 12.8). The enemy may capture it (9.14b) unless blown (12.11a).
+  const garrisonStock = (side: OobSide, hexId: HexId, pieceId: string): PieceState | null => {
+    const dumpDefinitionId = oob.sides.find((entry) => entry.side === side)?.independentUnits.find(({ role, staging }) => role === 'SUPPLY' && staging === undefined)?.definitionId;
+    const dumpDefinition = dumpDefinitionId === undefined ? undefined : definitionById.get(dumpDefinitionId);
+    const parsedId = parsePieceId(`${dumpDefinitionId}:${pieceId}`);
+    if (!dumpDefinition || !parsedId.ok) return null;
+    const stackOrder = stackCounts.get(hexId) ?? 0;
+    stackCounts.set(hexId, stackOrder + 1);
+    return {
+      id: parsedId.value, definitionId: dumpDefinition.id, ownerId: sidePlayer(side, players), location: { kind: 'ON_MAP', hexId },
+      currentFaceId: deployedFace(dumpDefinition)?.id ?? null, remainingSteps: fullStrength(dumpDefinition), mode: null, statuses: [],
+      stackOrder, resourceQuantity: GENERATED_GARRISON_STOCK_TOKENS,
+    };
+  };
+  for (const [index, { hexId, side }] of objectives.entries()) {
+    const garrison = garrisonPiece(side, hexId as HexId, `objective-${index + 1}`);
+    const stock = garrisonStock(side, hexId as HexId, `objective-stock-${index + 1}`);
+    if (!garrison || !stock) return { ok: false, error: [deploymentFailure(`Objective ${hexId} cannot receive its ${side} garrison.`)] };
+    pieces.push(garrison, stock);
+  }
+  // In an attack the defender also garrisons key points that score no VP (user, 2026-10-07): supply nodes (rail towns
+  // its railroad joins to its map edge, 13.3c) first, then road junctions; one garrison per hex, behind its start line,
+  // nearest the front first, apart from each other and from the objectives.
+  if (attacker !== null) {
+    const defender: OobSide = attacker === 'ALLIED' ? 'AXIS' : 'ALLIED';
+    const objectiveHexes = new Set(objectives.map(({ hexId }) => hexId as HexId));
+    const edge = new Set([...sideSupply.ALLIED, ...sideSupply.AXIS]);
+    const occupiedByEnemy = new Set(pieces.filter((piece) => piece.ownerId !== players[defender] && piece.location.kind === 'ON_MAP')
+      .map((piece) => piece.location.kind === 'ON_MAP' ? piece.location.hexId : null));
+    const candidates = zones[defender]
+      .map(({ id }) => id)
+      .filter((hexId) => !objectiveHexes.has(hexId) && !edge.has(hexId) && !occupiedByEnemy.has(hexId)
+        && depthOf(defender, hexId) >= GENERATED_FRONT_STANDOFF_HEXES.DEFENDER
+        && (supplyNodes[defender].has(hexId) || (roadDegree.get(hexId) ?? 0) >= GENERATED_ROAD_JUNCTION_DEGREE))
+      .sort((left, right) => Number(supplyNodes[defender].has(right)) - Number(supplyNodes[defender].has(left))
+        || depthOf(defender, left) - depthOf(defender, right) || String(left).localeCompare(String(right)));
+    const wanted = Math.ceil(objectives.length * GENERATED_KEY_POINT_GARRISON_SHARE);
+    const chosen: HexId[] = [];
+    for (const hexId of candidates) {
+      if (chosen.length >= wanted) break;
+      if ([...chosen, ...objectiveHexes].some((other) => distance(other, hexId) < GENERATED_KEY_POINT_SPACING_HEXES)) continue;
+      chosen.push(hexId);
+    }
+    for (const [index, hexId] of chosen.entries()) {
+      const garrison = garrisonPiece(defender, hexId, `key-point-${index + 1}`);
+      const stock = garrisonStock(defender, hexId, `key-point-stock-${index + 1}`);
+      if (!garrison || !stock) return { ok: false, error: [deploymentFailure(`Key point ${hexId} cannot receive its ${defender} garrison.`)] };
+      pieces.push(garrison, stock);
+    }
   }
   const edgeHexes: Readonly<Record<OobSide, readonly HexId[]>> = {
     ALLIED: [...map.strategicRegions.firstEntryHexIds, ...map.strategicRegions.firstSupplyHexIds],

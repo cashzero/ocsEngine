@@ -91,7 +91,7 @@ assert.ok(generatedOob.value.metrics.balanceRatio >= 0.9);
 assert.equal(generatedOob.value.sides.length, 2);
 const generatedGame = prepareNewGame(DEFAULT_NEW_GAME_REQUEST);
 assert.equal(generatedGame.ok, true);
-// Every OOB unit plus one objective garrison per objective (OOB 0.4.0).
+// Every OOB unit plus one objective garrison (OOB 0.4.0) and its 2T stock per objective.
 assert.equal(generatedGame.value.scenario.initialPieceState.pieces.length,
-  generatedGame.value.generatedOob.metrics.unitCount + generatedGame.value.deployment.objectives.length);
+  generatedGame.value.generatedOob.metrics.unitCount + 2 * generatedGame.value.deployment.objectives.length);
 assert.equal(sweepGameFlowSeedOrthogonality(DEFAULT_NEW_GAME_REQUEST).passed, true);
