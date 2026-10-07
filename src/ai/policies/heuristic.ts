@@ -76,6 +76,8 @@ interface StepNotes {
   /** Trucks that already moved this step: they may still unload, nothing else. */
   readonly truckMoved: Set<PieceId>;
   readonly incomingRe: Map<HexId, number>;
+  /** Tokens still unpromised in each friendly dump or loaded truck, by hex: units ending out of trace eat from them (12.6c). */
+  feedBudget: Map<HexId, number> | null;
   targets: Map<PieceId, Target> | null;
   effort?: MainEffort | null;
 }
@@ -83,7 +85,7 @@ interface StepNotes {
 const notesOf = (context: BotDecisionContext): StepNotes => {
   let notes = context.memory.notes.get('heuristic') as StepNotes | undefined;
   if (!notes) {
-    notes = { done: new Set(), modeSet: new Set(), fueled: new Set(), loaded: new Set(), truckMoved: new Set(), incomingRe: new Map(), targets: null };
+    notes = { done: new Set(), modeSet: new Set(), fueled: new Set(), loaded: new Set(), truckMoved: new Set(), incomingRe: new Map(), feedBudget: null, targets: null };
     context.memory.notes.set('heuristic', notes);
   }
   return notes;
@@ -130,6 +132,11 @@ const planTargets = (situation: Situation, coverage: ReadonlySet<string>, unitCo
   ];
   for (const stack of situation.enemy.values()) {
     if (!stack.hasCombatUnit) continue;
+    // A weak stack near our units (an objective garrison) blocks our trace with its ZOC: clear it first.
+    if (stack.strength <= w.clearStrength && combat.some((unit) => hexesBetween(unit.hexId, stack.hexId) <= w.clearRadius)) {
+      wanted.push({ hexId: stack.hexId, value: w.clearValue, purpose: 'HUNT', limit: 1 });
+      continue;
+    }
     // Behind our lines: inside our trace supply area with our combat units close by.
     const infiltrated = coverage.has(stack.hexId) && combat.some((unit) => hexesBetween(unit.hexId, stack.hexId) <= w.huntInfiltrationRadius);
     if (!infiltrated && !anchors.some((hexId) => hexesBetween(hexId, stack.hexId) <= w.huntAnchorRadius)) continue;
@@ -277,10 +284,10 @@ const scoreDestination = (
     }
     add('exposure', -Math.max(0, threat - (strength + support) * w.exposureSupport));
     // Out of trace supply a unit must eat SP or suffer attrition (12.8): stay inside, except to grab VP at the end.
-    // Beyond trace a unit can still eat from SP close by (12.3a, a dump or a loaded truck): only bare ground is dangerous.
+    // Beyond trace a unit can still eat from SP close by (12.3a, a dump or a loaded truck), if that SP is not already
+    // promised to other units ending out of trace this step: only unfed ground is dangerous.
     if (coverage && !coverage.has(destination)) {
-      const fed = situation.own.some(({ piece, hexId }) => ((piece.role === 'DUMP' && (piece.resourceQuantity ?? 0) > 0)
-        || (piece.role === 'TRUCK' && (piece.carriedTokens ?? 0) > 0)) && hexesBetween(hexId, destination) <= w.fedRadius);
+      const fed = feedSourceFor(situation, notes, unit, destination, w) !== null;
       add('out-of-supply', situation.turnsLeft <= 1 || fed ? -w.outOfSupplyFed : -w.outOfSupply);
     }
     // Supply that depends on an HQ's throw is lost when the HQ moves or falls: prefer direct trace.
@@ -309,6 +316,25 @@ const scoreDestination = (
 };
 
 const sum = (terms: readonly BotScoreTerm[]) => terms.reduce((total, { value }) => total + value, 0);
+
+/** Tokens a unit eats off the map out of trace (12.6c): 1T per 2 RE, at least 1T. */
+const eatingCost = (unit: OwnUnit): number => Math.max(1, Math.ceil((unit.profile?.re ?? 1) / 2));
+
+/** The hex of friendly SP within reach of `destination` that still has Tokens for `unit` this step, or null. */
+const feedSourceFor = (situation: Situation, notes: StepNotes, unit: OwnUnit, destination: HexId, w: HeuristicWeights): HexId | null => {
+  if (notes.feedBudget === null) {
+    notes.feedBudget = new Map();
+    for (const { piece, hexId } of situation.own) {
+      const tokens = piece.role === 'DUMP' ? piece.resourceQuantity ?? 0 : piece.role === 'TRUCK' ? piece.carriedTokens ?? 0 : 0;
+      if (tokens > 0) notes.feedBudget.set(hexId, (notes.feedBudget.get(hexId) ?? 0) + tokens);
+    }
+  }
+  const cost = eatingCost(unit);
+  for (const [hexId, tokens] of notes.feedBudget) {
+    if (tokens >= cost && hexesBetween(hexId, destination) <= w.fedRadius) return hexId;
+  }
+  return null;
+};
 
 /** Logistics: an empty truck heads for the fullest dump and loads, a loaded one heads for the forward HQ and unloads. */
 const truckStep = (context: BotDecisionContext, situation: Situation, unit: OwnUnit, notes: StepNotes, w: HeuristicWeights, effort: MainEffort | null): BotDecision | null => {
@@ -430,6 +456,11 @@ const movementStep = (context: BotDecisionContext, situation: Situation, facts: 
     if (best && sum(best.terms) > stay) {
       const destination = destinationOf(best.action)!;
       notes.incomingRe.set(destination, (notes.incomingRe.get(destination) ?? 0) + reOf(unit));
+      // A unit ending out of trace counts on eating: promise it the SP it will need.
+      if (unit.piece.role === 'COMBAT' && !reach.has(destination)) {
+        const source = feedSourceFor(situation, notes, unit, destination, w);
+        if (source !== null) notes.feedBudget!.set(source, notes.feedBudget!.get(source)! - eatingCost(unit));
+      }
       return decision(best.action, `${unit.piece.role.toLowerCase()} to ${destination}${target ? ` (${target.purpose.toLowerCase()} ${target.hexId})` : ''}`, best.terms, moves);
     }
   }
@@ -471,6 +502,8 @@ const bestCombat = (context: BotDecisionContext, situation: Situation, facts: Bo
     // Enemy units behind the front cut trace supply and pick up empty objectives: clear them.
     const nearHeld = situation.objectives.some(({ hexId, controllerId }) => controllerId === situation.playerId && hexesBetween(hexId, action.targetHexId) <= 1);
     if (nearHeld) terms.push({ term: 'protect-objective', value: vacate * w.protectObjective });
+    // A weak stack's ZOC cuts our supply paths: removing it is worth more than its steps.
+    if (enemy !== undefined && enemy.strength <= w.clearStrength) terms.push({ term: 'clear-zoc', value: vacate * w.clearCombat });
     if (forecast.defenderDisorganized > 0) terms.push({ term: 'disorganize', value: forecast.defenderDisorganized * w.disorganize });
     if (!best || sum(terms) > sum(best.terms)) best = { action, terms, odds: forecast.odds };
   }
@@ -586,7 +619,7 @@ export const createHeuristicPolicy = (facts: BotGameFacts, options: HeuristicPol
   const choose = decide(facts, options.weights ?? DEFAULT_HEURISTIC_WEIGHTS);
   return {
     id: 'heuristic',
-    version: options.label === undefined ? '4' : `4+${options.label}`,
+    version: options.label === undefined ? '5' : `5+${options.label}`,
     decide: (context) => {
       debug = options.debug ?? null;
       try { return choose(context); } finally { debug = null; }
