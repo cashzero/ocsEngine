@@ -1,0 +1,17 @@
+{
+ "ms": 957,
+ "at": {
+  "turn": "Turn 1 / 8",
+  "player": "Axis player turn · Allied to act",
+  "phase": "Movement",
+  "seat": "Allied commander",
+  "end": "End Movement SegmentNext: Barrage Segment",
+  "endDisabled": true,
+  "notice": "Select a unit on the map to see where it can move and what it can attack.",
+  "handoff": true,
+  "complete": false,
+  "decision": []
+ },
+ "summary": "Axis attack · 75 units · 15 formations · 8 turns · seeds map 206569473, OOB 206569474, deployment 206569475, rules 206569476"
+}
+-- 1794 ms; page errors so far 0

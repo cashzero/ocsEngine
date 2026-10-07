@@ -1,5 +1,5 @@
 import { FOUNDATION_SCHEMA_VERSION, parseDefinitionId, type DefinitionId, type PlayerId, type Result } from '../core/index.js';
-import type { GeneratedOob, OobSide } from '../generation/oob/index.js';
+import { sideDivisions, type GeneratedOob, type OobSide } from '../generation/oob/index.js';
 import type { RailroadConfiguration, RuleConfiguration } from '../rules/index.js';
 import type { GeneratedDeployment, NewGameRequest } from './model.js';
 import {
@@ -35,6 +35,9 @@ const supplyDefinitionFor = (oob: GeneratedOob, side: OobSide): DefinitionId => 
   return unit.definitionId;
 };
 
+/** The VP an attacker must hold at the end to win: half of all objective VP, rounded up. */
+export const attackVictoryPoints = (totalPoints: number): number => Math.max(1, Math.ceil(totalPoints / 2));
+
 /** Production-owned ground-game configuration; test fixtures are deliberately not imported. */
 export const createGeneratedRuleConfiguration = (
   deployment: GeneratedDeployment,
@@ -60,14 +63,19 @@ export const createGeneratedRuleConfiguration = (
     rows: BTR_SUPPLY_TABLE,
     players: (['ALLIED', 'AXIS'] as const).map((side) => ({
       playerId: players[side],
-      // Supply Status column: one per division, so income scales with the force.
-      status: Math.max(1, Math.min(12, request.oob.divisionsPerSide)),
+      // Supply Status column: one per division, so income scales with the force (an attacker's larger one too).
+      status: Math.max(1, Math.min(12, sideDivisions(oob.options, side).divisionsPerSide)),
       resourceDefinitionId: supplyDefinitionFor(oob, side),
     })),
   },
   reinforcementBoxes: (['ALLIED', 'AXIS'] as const).map((side) => ({ playerId: players[side], boxId: GENERATED_REINFORCEMENT_BOXES[side] })),
   turnLimit: request.turnLimit,
   objectives: deployment.objectives.map(({ hexId, points }) => ({ hexId, points })),
+  // An attack is won by taking half the defender's VP (docs/roadmap/13-engagement-scenarios-wbs.md §4).
+  ...(deployment.attacker === null ? {} : { attackVictory: {
+    attackerId: players[deployment.attacker],
+    attackerPoints: attackVictoryPoints(deployment.objectives.reduce((total, { points }) => total + points, 0)),
+  } }),
   railroads: GENERATED_RAILROADS,
 });
 

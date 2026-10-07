@@ -1,7 +1,7 @@
 import { validateScenarioDefinition } from '../domain/scenario/index.js';
 import { createPieceDefinitionCatalogIndex } from '../domain/piece/index.js';
 import { validateRuleConfiguration } from '../rules/index.js';
-import type { GameFlowFailure, GeneratedScenarioPackage, NewGameRequest } from './model.js';
+import { ENGAGEMENTS, type GameFlowFailure, type GeneratedScenarioPackage, type NewGameRequest } from './model.js';
 import { BTR_CAMPAIGN_MONTHS, btrTurnDate } from './weather-supply-tables.js';
 
 const uint32 = (value: number): boolean => Number.isSafeInteger(value) && value >= 0 && value <= 0xffff_ffff;
@@ -9,6 +9,7 @@ const uint32 = (value: number): boolean => Number.isSafeInteger(value) && value 
 export const validateNewGameRequest = (request: NewGameRequest): readonly GameFlowFailure[] => {
   const failures: GameFlowFailure[] = [];
   if (request.templateId !== 'GROUND_DUEL') failures.push({ stage: 'OPTIONS', code: 'UNKNOWN_TEMPLATE', message: 'Only GROUND_DUEL is currently supported.', path: ['templateId'] });
+  if (request.engagement !== undefined && !ENGAGEMENTS.includes(request.engagement)) failures.push({ stage: 'OPTIONS', code: 'UNKNOWN_ENGAGEMENT', message: 'Engagement must be MEETING, ALLIED_ATTACKS or AXIS_ATTACKS.', path: ['engagement'] });
   for (const [name, value] of Object.entries(request.seeds)) {
     if (!uint32(value)) failures.push({ stage: 'OPTIONS', code: 'INVALID_SEED', message: `${name} seed must be uint32.`, path: ['seeds', name] });
   }
