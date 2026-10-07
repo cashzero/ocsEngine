@@ -80,6 +80,8 @@ interface StepNotes {
   feedBudget: Map<HexId, number> | null;
   targets: Map<PieceId, Target> | null;
   effort?: MainEffort | null;
+  /** Cut-off groups that need a supply run this step, and the trucks already sent to each (heuristic@7). */
+  relief?: { readonly hexIds: readonly HexId[]; readonly sent: Map<HexId, PieceId> };
 }
 
 const notesOf = (context: BotDecisionContext): StepNotes => {
@@ -152,6 +154,9 @@ const planTargets = (situation: Situation, coverage: ReadonlySet<string>, unitCo
     for (const unit of combat) {
       const own = unitCoverage(unit);
       if (own.size === 0 || own.has(unit.hexId) || fed(unit.hexId)) continue;
+      // The only unit on an objective we hold waits for a supply run rather than leave the objective empty (heuristic@8).
+      if (holdsAlone(situation, unit) && situation.own.some(({ piece, hexId }) => piece.role === 'TRUCK' && (piece.carriedTokens ?? 0) > 0
+        && hexesBetween(hexId, unit.hexId) <= w.holdTruckReach)) continue;
       // The assault group stays forward while an HQ is close enough to throw supply to it (12.3b).
       if (effort?.unitIds.has(unit.piece.id) && situation.own.some(({ piece, hexId }) => piece.role === 'HQ' && hexesBetween(hexId, unit.hexId) <= 3)) continue;
       let back: HexId | null = null;
@@ -336,11 +341,71 @@ const feedSourceFor = (situation: Situation, notes: StepNotes, unit: OwnUnit, de
   return null;
 };
 
-/** Logistics: an empty truck heads for the fullest dump and loads, a loaded one heads for the forward HQ and unloads. */
-const truckStep = (context: BotDecisionContext, situation: Situation, unit: OwnUnit, notes: StepNotes, w: HeuristicWeights, effort: MainEffort | null): BotDecision | null => {
+/** `unit` is the only friendly combat unit on an objective we hold. */
+const holdsAlone = (situation: Situation, unit: OwnUnit): boolean =>
+  situation.objectives.some(({ hexId, controllerId }) => hexId === unit.hexId && controllerId === situation.playerId)
+  && situation.friendlyAt(unit.hexId).filter((other) => situation.isCombatUnit(other)).length === 1;
+
+/**
+ * Cut-off groups (heuristic@7): friendly combat units outside the side's trace with no SP close enough to eat or fuel
+ * from (12.6c, 12.5), as the hex of the strongest such group, strongest first, when it is worth a supply run.
+ */
+const reliefTargets = (situation: Situation, coverage: ReadonlySet<string>, w: HeuristicWeights): readonly HexId[] => {
+  const sp = situation.own.filter(({ piece }) => (piece.role === 'DUMP' && (piece.resourceQuantity ?? 0) > 0) || (piece.role === 'TRUCK' && (piece.carriedTokens ?? 0) > 0));
+  const stranded = situation.own.filter((unit) => situation.isCombatUnit(unit) && !coverage.has(unit.hexId)
+    && !sp.some(({ hexId }) => hexesBetween(hexId, unit.hexId) <= w.fedRadius));
+  // A unit holding an objective alone is worth a run whatever its strength (heuristic@8): its VP first. So is a garrison
+  // (MA 0, it can never walk back to supply) whose own stock is gone: the scenario gives each one 2T for a start.
+  const objectivePoints = (hexId: HexId) => situation.objectives.find((entry) => entry.hexId === hexId && entry.controllerId === situation.playerId)?.points ?? 0;
+  const groups = stranded.map((unit) => ({
+    hexId: unit.hexId,
+    points: holdsAlone(situation, unit) ? objectivePoints(unit.hexId) : (unit.profile?.movement ?? 1) === 0 ? 1 : 0,
+    strength: stranded.filter((other) => hexesBetween(other.hexId, unit.hexId) <= w.reliefRadius).reduce((total, other) => total + (other.profile?.strength ?? 0), 0),
+  })).filter(({ strength, points }) => points > 0 || strength >= w.reliefMinStrength)
+    .sort((left, right) => right.points - left.points || right.strength - left.strength || String(left.hexId).localeCompare(String(right.hexId)));
+  const chosen: HexId[] = [];
+  for (const { hexId } of groups) if (!chosen.some((other) => hexesBetween(other, hexId) <= 2 * w.reliefRadius)) chosen.push(hexId);
+  return chosen;
+};
+
+/**
+ * Logistics: an empty truck heads for the fullest dump and loads, a loaded one heads for the forward HQ and unloads.
+ * First, though, one loaded truck runs to each cut-off group and unloads beside it (heuristic@7).
+ */
+const truckStep = (context: BotDecisionContext, situation: Situation, unit: OwnUnit, notes: StepNotes, w: HeuristicWeights, effort: MainEffort | null, coverage: ReadonlySet<string>): BotDecision | null => {
   const { actions } = context;
   const id = unit.piece.id;
   const carried = unit.piece.carriedTokens ?? 0;
+  notes.relief ??= { hexIds: reliefTargets(situation, coverage, w), sent: new Map() };
+  let relief = [...notes.relief.sent].find(([, truckId]) => truckId === id)?.[0];
+  if (relief === undefined && carried > 0) {
+    relief = notes.relief.hexIds.filter((hexId) => !notes.relief!.sent.has(hexId))
+      .sort((left, right) => hexesBetween(unit.hexId, left) - hexesBetween(unit.hexId, right))[0];
+    if (relief !== undefined) notes.relief.sent.set(relief, id);
+  }
+  if (relief !== undefined && carried > 0) {
+    // Unload beside the cut-off units even with the enemy close: that SP is what lets them eat and fuel (12.6c, 12.5).
+    if (hexesBetween(unit.hexId, relief) <= w.reliefRadius) {
+      const unload = [...actions.candidates('UNLOAD_SUPPLY', id)].sort((left, right) =>
+        (right.kind === 'UNLOAD_SUPPLY' ? right.tokens : 0) - (left.kind === 'UNLOAD_SUPPLY' ? left.tokens : 0))[0];
+      notes.done.add(id);
+      return unload ? decision(unload, `unload ${carried}T for the cut-off units at ${relief}`, [{ term: 'relief', value: carried }]) : null;
+    }
+    if (notes.truckMoved.has(id)) { notes.done.add(id); return null; }
+    let best: { action: GameAction; terms: BotScoreTerm[] } | null = null;
+    for (const move of actions.candidates('MOVE_PIECE', id)) {
+      const destination = destinationOf(move)!;
+      const terms: BotScoreTerm[] = [{ term: 'toward-relief', value: (hexesBetween(unit.hexId, relief) - hexesBetween(destination, relief)) * w.truckTowardGoal }];
+      // A truck in an enemy-adjacent hex is easy prey (8.0); the rest of the danger is the price of the run.
+      if (situation.nearestEnemy(destination).distance <= 1) terms.push({ term: 'truck-exposed', value: -w.truckExposed });
+      if (!best || sum(terms) > sum(best.terms)) best = { action: move, terms };
+    }
+    if (best && sum(best.terms) > 0) {
+      notes.truckMoved.add(id);
+      return decision(best.action, `truck to the cut-off units at ${relief}`, best.terms);
+    }
+    // Cannot get closer this step: deliver to the army as usual.
+  }
   // SP is worth most where the army can draw it (12.3a): unload beside the army's centre, behind the front.
   // With a main effort SP goes to its lead units; otherwise to the army's centre.
   const center = effort?.lead ?? armyCenter(situation);
@@ -403,7 +468,7 @@ const movementStep = (context: BotDecisionContext, situation: Situation, facts: 
   for (const unit of units) {
     const id = unit.piece.id;
     if (unit.piece.role === 'TRUCK') {
-      const step = truckStep(context, situation, unit, notes, w, effort);
+      const step = truckStep(context, situation, unit, notes, w, effort, coverage);
       if (step) return step;
       continue;
     }
@@ -649,7 +714,7 @@ export const createHeuristicPolicy = (facts: BotGameFacts, options: HeuristicPol
   const choose = decide(facts, options.weights ?? DEFAULT_HEURISTIC_WEIGHTS);
   return {
     id: 'heuristic',
-    version: options.label === undefined ? '6' : `6+${options.label}`,
+    version: options.label === undefined ? '9' : `9+${options.label}`,
     decide: (context) => {
       debug = options.debug ?? null;
       try { return choose(context); } finally { debug = null; }
