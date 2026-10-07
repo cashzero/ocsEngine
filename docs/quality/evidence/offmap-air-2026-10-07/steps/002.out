@@ -1,0 +1,8 @@
+ERROR locator.waitFor: Timeout 8000ms exceeded.
+Call log:
+[2m  - waiting for locator('[data-deck-tab]').filter({ hasText: '/^\\s*Air/u' }).first() to be visible[22m
+
+    at tab (E:\work\ocsEngine\scripts\air-acceptance\harness.mjs:156:16)
+    at eval (<anonymous>:6:7)
+    at async file:///E:/work/ocsEngine/scripts/product-acceptance/session.mjs:37:16
+-- 8559 ms; page errors so far 0

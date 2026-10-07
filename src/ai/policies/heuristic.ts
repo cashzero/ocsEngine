@@ -538,6 +538,32 @@ const bestBarrage = (context: BotDecisionContext, situation: Situation, w: Heuri
     : null;
 };
 
+/**
+ * Air barrage (14.7, heuristic@6): before the ground barrages, the bombers and their fighter escort hit the stack the
+ * main effort will attack, else a stack our units stand next to; an objective under it counts extra. A target that no
+ * friendly unit is about to attack is not worth risking aircraft on. The mission flies as many aircraft as it can (4).
+ */
+const bestAirBarrage = (context: BotDecisionContext, situation: Situation, w: HeuristicWeights, effort: MainEffort | null): BotDecision | null => {
+  const missions = context.actions.candidates('DECLARE_AIR_MISSION', null, 400)
+    .filter((action) => action.kind === 'DECLARE_AIR_MISSION' && action.mission === 'BARRAGE' && action.target === 'COMBAT_UNITS');
+  let best: { action: GameAction; terms: BotScoreTerm[] } | null = null;
+  for (const action of missions) {
+    if (action.kind !== 'DECLARE_AIR_MISSION') continue;
+    const adjacentOwn = situation.own.some((unit) => situation.isCombatUnit(unit) && hexesBetween(unit.hexId, action.targetHexId) <= 1);
+    const isEffort = effort?.hexId === action.targetHexId;
+    if (!adjacentOwn && !isEffort) continue;
+    const terms: BotScoreTerm[] = [
+      { term: 'before-attack', value: w.barrageDisruptBeforeAttack },
+      { term: 'aircraft', value: action.aircraftIds.length },
+      { term: 'strength', value: (situation.enemy.get(action.targetHexId)?.strength ?? 0) / 4 },
+    ];
+    if (isEffort) terms.push({ term: 'main-effort', value: w.barrageMainEffort * 2 });
+    if (situation.objectives.some(({ hexId }) => hexesBetween(hexId, action.targetHexId) <= 1)) terms.push({ term: 'objective', value: w.barrageNearObjective });
+    if (!best || sum(terms) > sum(best.terms)) best = { action, terms };
+  }
+  return best ? decision(best.action, `air barrage ${best.action.kind === 'DECLARE_AIR_MISSION' ? best.action.targetHexId : ''}`, best.terms, missions) : null;
+};
+
 // ─── Other steps ───────────────────────────────────────────────────────────────────────────────
 
 const reinforcementStep = (context: BotDecisionContext, situation: Situation): BotDecision | null => {
@@ -601,7 +627,11 @@ const decide = (facts: BotGameFacts, w: HeuristicWeights) => (context: BotDecisi
   else if (phase === 'AIRCRAFT_REFIT') chosen = refitStep(context);
   else if (phase === 'SUPPLY') chosen = supplyStep(context, situation);
   else if (segment === 'MOVEMENT' && (phase === 'MOVEMENT' || phase === 'EXPLOITATION')) chosen = movementStep(context, situation, facts, w);
-  else if (segment === 'BARRAGE') chosen = bestBarrage(context, situation, w, chooseMainEffort(situation, w));
+  else if (segment === 'BARRAGE') {
+    const effort = chooseMainEffort(situation, w);
+    // Aircraft first: they take the main effort's hex (one barrage per hex, 10.0e) and the guns the next one.
+    chosen = (phase === 'MOVEMENT' ? bestAirBarrage(context, situation, w, effort) : null) ?? bestBarrage(context, situation, w, effort);
+  }
   else if (segment === 'COMBAT') chosen = bestCombat(context, situation, facts, w, context.actions.candidates('DECLARE_COMBAT', null, 200), w.attackThreshold, chooseMainEffort(situation, w));
   return chosen ?? advance(context, `nothing worth doing in ${phase.toLowerCase()} ${segment.toLowerCase()}`);
 };
@@ -619,7 +649,7 @@ export const createHeuristicPolicy = (facts: BotGameFacts, options: HeuristicPol
   const choose = decide(facts, options.weights ?? DEFAULT_HEURISTIC_WEIGHTS);
   return {
     id: 'heuristic',
-    version: options.label === undefined ? '5' : `5+${options.label}`,
+    version: options.label === undefined ? '6' : `6+${options.label}`,
     decide: (context) => {
       debug = options.debug ?? null;
       try { return choose(context); } finally { debug = null; }

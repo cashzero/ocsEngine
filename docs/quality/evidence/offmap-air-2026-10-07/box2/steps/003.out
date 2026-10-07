@@ -1,0 +1,20 @@
+{
+ "before": "Hex 0124 · clear · no units",
+ "at": {
+  "turn": "Turn 2 / 8",
+  "player": "Axis player turn",
+  "phase": "Aircraft Refit Phase",
+  "seat": "Axis commander",
+  "end": "End Aircraft Refit PhaseNext: Reinforcement Phase",
+  "endDisabled": false,
+  "notice": "Decision recorded.",
+  "handoff": false,
+  "complete": false,
+  "decision": []
+ },
+ "panel": "Aircraft refit | Each Air Base refits once: up to 2 × Level Inactive aircraft for 1T drawn or thrown to the base (15.1). | A base in an un-negated enemy ZOC cannot refit (15.1C), and no base holds more Active aircraft than its limit (14.2a). | Off-map airfield · refits every aircraft from its own stocks, no SP · no Active limit | F | Fw-190d | 74 | 6 | 2 | INACTIVE | JG 301 Fw-190d | F | Bf.109 | 76 | 4 | 1 | INACTIVE | JG 300 Bf.109 | T | Ju.88 | 106 | (2) | 9 | INACTIVE | KG 76 Ju.88 | T | Ju.88 | 106 | (2) | 9 | INACTIVE | KG 66 Ju.88 | Refit 4",
+ "refitted": 1,
+ "after": "",
+ "notice": "Refit 4 aircraft at the off-map airfield, from its own stocks."
+}
+-- 4891 ms; page errors so far 0

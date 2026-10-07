@@ -145,6 +145,8 @@ export interface ProjectedAirBase {
   readonly inactive: number;
   /** In an un-negated enemy ZOC with no friendly combat unit: it cannot refit (15.1C). */
   readonly refitBlockedByZoc: boolean;
+  /** A game-specific off-map airfield (its `hexId` is empty): no Active limit, refits every aircraft without SP. */
+  readonly offMap: boolean;
 }
 
 /** What the viewer can load and fly from one Air Base: ready Transports, units in Move Mode that qualify, and dumps (14.9a, 14.9c). */

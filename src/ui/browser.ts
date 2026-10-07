@@ -480,12 +480,20 @@ const engagementHelp = (engagement: Engagement): string => {
   const attacker = attackerOf(engagement);
   if (attacker === null) return 'Both armies start about ten hexes apart and each holds the same objective VP. The side holding more VP when the last turn ends wins; equal VP is a draw.';
   const [attacking, defending] = attacker === 'ALLIED' ? ['Allied', 'Axis'] : ['Axis', 'Allied'];
-  return `${defending} holds most of the map and every objective, its line in Combat Mode; ${attacking} fields ${ATTACKER_FORCE_RATIO} times the divisions, assembles a few hexes away and moves first. ${attacking} wins by holding at least half the objective VP when the last turn ends; otherwise ${defending} wins.`;
+  return `${defending} holds most of the map and every objective, its line in Combat Mode; ${attacking} fields ${ATTACKER_FORCE_RATIO} times the divisions plus off-map air (Fighters and Tactical Bombers at an airfield off the map, flying in over its own map edge and back), assembles a few hexes away and moves first. ${attacking} wins by holding at least half the objective VP when the last turn ends; otherwise ${defending} wins.`;
 };
 
 const engagementLabel = (engagement: Engagement): string => {
   const attacker = attackerOf(engagement);
   return attacker === null ? 'Meeting engagement' : attacker === 'ALLIED' ? 'Allied attack' : 'Axis attack';
+};
+
+/** The side's air bases as the preview names them: an off-map airfield apart from on-map Air Bases. */
+const airBasesLabel = (prepared: GeneratedScenarioPackage, side: string): string => {
+  const units = prepared.generatedOob.sides.find((entry) => entry.side === side)?.independentUnits ?? [];
+  const offMap = units.some(({ role, staging }) => role === 'AIR_BASE' && staging === 'OFF_MAP_AIRFIELD');
+  const onMap = units.filter(({ role, staging }) => role === 'AIR_BASE' && staging !== 'OFF_MAP_AIRFIELD').length;
+  return [...offMap ? ['off-map airfield'] : [], ...onMap > 0 ? [`${onMap} Air Base(s)`] : []].join(', ');
 };
 
 /** The combined preview: map with starting stacks, metrics and both forces, as one string drawn from the shared art. */
@@ -527,7 +535,7 @@ const operationPreviewHtml = (prepared: GeneratedScenarioPackage): string => {
     ${side.independentUnits.some(({ role }) => role === 'HQ') ? `<details class="counter-formation preview-hq"><summary><span>HQ</span><small>${side.independentUnits.filter(({ role }) => role === 'HQ').length} units</small></summary><div class="counter-grid">${side.independentUnits.filter(({ role }) => role === 'HQ').map(previewCounter).join('')}</div></details>` : ''}
     ${side.formations.map((formation) => `<details class="counter-formation"><summary><span>${escapeHtml(formation.name)}</span><small>${formation.units.length} units · ${escapeHtml(oobRoleLabel(formation.archetype))}</small></summary><div class="counter-grid">${formation.units.map(previewCounter).join('')}</div></details>`).join('')}
     <details class="counter-formation"><summary>${side.independentUnits.filter(({ role }) => role !== 'HQ' && role !== 'AIRCRAFT' && role !== 'AIR_BASE').length} independent support / logistics units</summary><div class="counter-grid">${side.independentUnits.filter(({ role }) => role !== 'HQ' && role !== 'AIRCRAFT' && role !== 'AIR_BASE').map(previewCounter).join('')}</div></details>
-    ${side.independentUnits.some(({ role }) => role === 'AIRCRAFT') ? `<details class="counter-formation"><summary>Air forces: ${side.independentUnits.filter(({ role }) => role === 'AIRCRAFT').length} aircraft, ${side.independentUnits.filter(({ role }) => role === 'AIR_BASE').length} Air Base(s)</summary><div class="counter-grid">${side.independentUnits.filter(({ role }) => role === 'AIRCRAFT' || role === 'AIR_BASE').map(previewCounter).join('')}</div></details>` : ''}
+    ${side.independentUnits.some(({ role }) => role === 'AIRCRAFT') ? `<details class="counter-formation"><summary>Air forces: ${side.independentUnits.filter(({ role }) => role === 'AIRCRAFT').length} aircraft, ${airBasesLabel(prepared, side.side)}</summary><div class="counter-grid">${side.independentUnits.filter(({ role }) => role === 'AIRCRAFT' || role === 'AIR_BASE').map(previewCounter).join('')}</div></details>` : ''}
   </section>`).join('');
   return `<div class="operation-map-wrap"><svg class="operation-map" viewBox="0 0 ${map.layout.width} ${map.layout.height}" role="img" aria-label="Generated operation map preview with starting positions">${mapArtDefsHtml()}${cells}${rivers}${roads}${features}${deploymentMarks}</svg><p class="preview-key"><span class="key owner-1">${escapeHtml(prepared.scenario.players[0]?.name ?? '')}</span><span class="key owner-2">${escapeHtml(prepared.scenario.players[1]?.name ?? '')}</span> starting stacks (unit count)</p><p class="preview-engagement">${escapeHtml(engagementHelp(prepared.summary.engagement))}</p></div>
     <dl class="operation-metrics"><div><dt>Scenario</dt><dd>${escapeHtml(engagementLabel(prepared.summary.engagement))}</dd></div><div><dt>Map</dt><dd>${escapeHtml(prepared.summary.mapSize)}</dd></div><div><dt>Units</dt><dd>${prepared.summary.unitCount}</dd></div><div><dt>Formations</dt><dd>${prepared.summary.formationCount}</dd></div><div><dt>Deployed hexes</dt><dd>${prepared.deployment.metrics.occupiedHexes}</dd></div><div><dt>Objectives</dt><dd>${prepared.summary.objectiveCount} · ${prepared.deployment.objectives.reduce((total, { points }) => total + points, 0)} VP</dd></div><div><dt>Warnings</dt><dd>${prepared.warnings.length}</dd></div></dl>

@@ -1,0 +1,22 @@
+{
+ "help": "Allied holds most of the map and every objective, its line in Combat Mode; Axis fields 1.5 times the divisions plus off-map air (Fighters and Tactical Bombers at an off-map airfield on its map edge that the enemy cannot reach), assembles a few hexes away and moves first. Axis wins by holding at least half the objective VP when the last turn ends; otherwise Allied wins.",
+ "forces": [
+  "ALLIED: ",
+  "AXIS: Air forces: 4 aircraft, 1 Air Base(s)"
+ ],
+ "field": "Hex 3214 · clear · KG 66 Ju.88, KG 76 Ju.88, JG 300 Bf.109, JG 301 Fw-190d, Axis off-map airfield",
+ "deck": "Move units one at a time: select a unit to see its range. Red rings mark overrun targets.\nT\nJu.88\n106\n(2)\n9\nKG 66 Ju.88\n3214 · Active\nRange 106 hexes · flies missions from its Air Base (14.2)\nDeselect\nUnit\nLog\nAll units (47)\nThis unit has no actions in this step.\nSelect a unit on the map to see where it can move and what it can attack.",
+ "at": {
+  "turn": "Turn 1 / 8",
+  "player": "Axis player turn",
+  "phase": "Movement",
+  "seat": "Axis commander",
+  "end": "End Movement SegmentNext: Barrage Segment",
+  "endDisabled": false,
+  "notice": "Select a unit on the map to see where it can move and what it can attack.",
+  "handoff": false,
+  "complete": false,
+  "decision": []
+ }
+}
+-- 16510 ms; page errors so far 0

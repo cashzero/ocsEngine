@@ -32,7 +32,8 @@ export const prepareNewGame = (
   if (!map.ok) return { ok: false, error: generatorFailures('MAP', map.error) };
   // An attacker fields more divisions (ATTACKER_FORCE_RATIO); a meeting engagement keeps the sides equal.
   const attacker = attackerOf(request.engagement ?? 'MEETING');
-  const oob = generateRandomOob({ ...request.oob, ...(attacker === null ? {} : { attacker }), seed: request.seeds.oob });
+  // The attacker also flies from an off-map airfield (docs/roadmap/13-engagement-scenarios-wbs.md §6).
+  const oob = generateRandomOob({ ...request.oob, ...(attacker === null ? {} : { attacker, offMapAir: attacker }), seed: request.seeds.oob });
   if (!oob.ok) return { ok: false, error: generatorFailures('OOB', oob.error) };
   const deployment = deployGeneratedForces(map.value, oob.value, request.seeds.deployment, GENERATED_PLAYERS, request.engagement ?? 'MEETING');
   if (!deployment.ok) return deployment;
