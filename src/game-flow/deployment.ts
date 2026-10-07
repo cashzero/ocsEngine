@@ -525,6 +525,24 @@ export const deployGeneratedForces = (
     { ALLIED: zones.ALLIED.length, AXIS: zones.AXIS.length },
   );
   const seeded = new Set(controlled.map(({ hexId }) => hexId));
+  // OOB 0.4.0: one objective garrison (1-1-0, MA 0) on every objective a side holds, in Combat Mode so it exerts a ZOC
+  // (4.4b): no objective can be taken by simply walking into it.
+  for (const [index, { hexId, side }] of objectives.entries()) {
+    const garrisonDefinitionId = oob.sides.find((entry) => entry.side === side)?.garrisonDefinitionId;
+    const definition = garrisonDefinitionId === undefined ? undefined : definitionById.get(garrisonDefinitionId);
+    const parsedId = parsePieceId(`${garrisonDefinitionId}:objective-${index + 1}`);
+    if (!definition || !parsedId.ok) {
+      return { ok: false, error: [deploymentFailure(`Objective ${hexId} cannot receive its ${side} garrison.`)] };
+    }
+    const stackOrder = stackCounts.get(hexId) ?? 0;
+    stackCounts.set(hexId, stackOrder + 1);
+    pieces.push({
+      id: parsedId.value, definitionId: definition.id, ownerId: sidePlayer(side, players),
+      location: { kind: 'ON_MAP', hexId: hexId as HexId },
+      currentFaceId: definition.faces.find(({ id }) => String(id) === 'combat')?.id ?? definition.faces[0]?.id ?? null,
+      remainingSteps: fullStrength(definition), mode: 'COMBAT', statuses: [], stackOrder, resourceQuantity: null,
+    });
+  }
   const edgeHexes: Readonly<Record<OobSide, readonly HexId[]>> = {
     ALLIED: [...map.strategicRegions.firstEntryHexIds, ...map.strategicRegions.firstSupplyHexIds],
     AXIS: [...map.strategicRegions.secondEntryHexIds, ...map.strategicRegions.secondSupplyHexIds],

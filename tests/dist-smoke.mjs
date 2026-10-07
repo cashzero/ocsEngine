@@ -86,9 +86,12 @@ assert.equal(generatedMap.ok, true);
 assert.equal(generatedMap.value.metrics.connectedRoadComponents, 1);
 const generatedOob = generateRandomOob({ seed: 1944, scale: 'STANDARD', divisionsPerSide: 3, armoredDivisionsPerSide: 1 });
 assert.equal(generatedOob.ok, true);
-assert.equal(generatedOob.value.metrics.balanceRatio, 1);
+// OOB 0.4.0: balance is the ratio of combat values, kept at 90% or better.
+assert.ok(generatedOob.value.metrics.balanceRatio >= 0.9);
 assert.equal(generatedOob.value.sides.length, 2);
 const generatedGame = prepareNewGame(DEFAULT_NEW_GAME_REQUEST);
 assert.equal(generatedGame.ok, true);
-assert.equal(generatedGame.value.scenario.initialPieceState.pieces.length, generatedGame.value.generatedOob.metrics.unitCount);
+// Every OOB unit plus one objective garrison per objective (OOB 0.4.0).
+assert.equal(generatedGame.value.scenario.initialPieceState.pieces.length,
+  generatedGame.value.generatedOob.metrics.unitCount + generatedGame.value.deployment.objectives.length);
 assert.equal(sweepGameFlowSeedOrthogonality(DEFAULT_NEW_GAME_REQUEST).passed, true);
