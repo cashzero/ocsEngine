@@ -20,7 +20,23 @@ const m = await import(pathToFileURL(join(root, 'dist', 'index.js')).href);
 const OOS = 'status:out-of-supply';
 const sideOf = (playerId) => (String(playerId).endsWith('axis') ? 'axis' : 'allied');
 
-const studyGame = (record, save) => {
+/** Each unit's moves with the bot's stated purpose, from an ai-match --trace file: pieceId → [{ revision, purpose }]. */
+const purposesFrom = (tracePath) => {
+  const moves = new Map();
+  if (!existsSync(tracePath)) return moves;
+  for (const line of readFileSync(tracePath, 'utf8').split('\n')) {
+    if (!line) continue;
+    const trace = JSON.parse(line);
+    if (trace.status !== 'ACCEPTED' || trace.action.kind !== 'MOVE_PIECE') continue;
+    const purpose = /\((capture|garrison|hunt|front|resupply) /u.exec(trace.intent)?.[1] ?? trace.intent.split(' ')[0];
+    const list = moves.get(String(trace.action.pieceId)) ?? [];
+    list.push({ revision: trace.revision, purpose });
+    moves.set(String(trace.action.pieceId), list);
+  }
+  return moves;
+};
+
+const studyGame = (record, save, purposes = new Map()) => {
   let state = m.parseGameStateJson(save.initialSnapshot).value;
   const objectives = state.configuration.objectives;
   const players = state.scenario.players.map(({ id }) => id);
@@ -80,7 +96,8 @@ const studyGame = (record, save) => {
       const stayed = action.kind === 'MOVE_PIECE' ? action.path.at(-1) === objective.hexId : true;
       const heldSince = heldFrom.get(objective.hexId) ?? null;
       heldFrom.set(objective.hexId, where);
-      const flip = { where, hexId: objective.hexId, points: objective.points, how, wasEmpty: !defended, nearestDefender, stayed, heldSince };
+      // An advance after combat enters a hex the defenders just left: it was defended until the attack, not empty.
+      const flip = { where, hexId: objective.hexId, points: objective.points, how, wasEmpty: !defended && !how.endsWith('advance'), nearestDefender, stayed, heldSince };
       if (to !== null) sides[sideOf(to)].flipsGained.push(flip);
       if (from !== null) sides[sideOf(from)].flipsLost.push(flip);
     }
@@ -103,8 +120,16 @@ const studyGame = (record, save) => {
         const neighbours = before.pieceState.pieces.filter((piece) => piece.ownerId === tx.defenderOwnerId && piece.location.kind === 'ON_MAP'
           && roles.get(String(piece.id)) === 'COMBAT' && m.hexDistanceBetween(piece.location.hexId, tx.targetHexId) === 1).length;
         defender.defended = defender.defended ?? [];
+        const defenders = before.pieceState.pieces.filter((piece) => tx.defenderIds.includes(piece.id));
+        // What the defenders were doing: the purpose of each one's last move before this combat, or that it had not moved.
+        const lastPurpose = (pieceId) => (purposes.get(String(pieceId)) ?? []).filter(({ revision }) => revision < before.revision).at(-1)?.purpose ?? 'never moved';
+        const friends = before.pieceState.pieces.filter((piece) => piece.ownerId === tx.defenderOwnerId && piece.location.kind === 'ON_MAP'
+          && roles.get(String(piece.id)) === 'COMBAT');
+        const within = (radius) => friends.filter((piece) => m.hexDistanceBetween(piece.location.hexId, tx.targetHexId) <= radius).length;
         defender.defended.push({ where, hexId: tx.targetHexId, kind: tx.kind, result: event.result, defenders: tx.defenderIds.length,
-          attackers: tx.attackerIds.length, neighbours, onObjective: objectives.some(({ hexId }) => hexId === tx.targetHexId) });
+          attackers: tx.attackerIds.length, neighbours, onObjective: objectives.some(({ hexId }) => hexId === tx.targetHexId),
+          purposes: defenders.map((piece) => lastPurpose(piece.id)), modes: defenders.map((piece) => piece.mode),
+          roles: defenders.map((piece) => roles.get(String(piece.id)) ?? '?'), friendsWithin3: within(3) - defenders.length });
       }
       if (event.kind === 'TRANSACTION_RESOLVED' && before.activeTransaction) {
         const side = sides[sideOf(before.activeTransaction.ownerId)];
@@ -150,7 +175,7 @@ for (const dir of dirs) {
   for (const record of summary.records) {
     const savePath = join(dir, `match-${record.match}.save.json`);
     if (!existsSync(savePath) || record.stopReason !== 'FINISHED') continue;
-    games.push({ dir, ...studyGame(record, JSON.parse(readFileSync(savePath, 'utf8'))) });
+    games.push({ dir, ...studyGame(record, JSON.parse(readFileSync(savePath, 'utf8')), purposesFrom(join(dir, `match-${record.match}.trace.jsonl`))) });
   }
 }
 mkdirSync(out, { recursive: true });
