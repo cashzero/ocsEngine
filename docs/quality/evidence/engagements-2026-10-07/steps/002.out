@@ -1,0 +1,26 @@
+{
+ "help": "Allied holds most of the map and every objective, its line in Combat Mode; Axis fields 1.5 times the divisions, assembles a few hexes away and moves first. Axis wins by holding at least half the objective VP when the last turn ends; otherwise Allied wins.",
+ "status": "Preview ready",
+ "ms": 657,
+ "metrics": {
+  "Scenario": "Axis attack · Allied defends",
+  "Map": "32×24",
+  "Units": "75",
+  "Formations": "15",
+  "Deployed hexes": "58",
+  "Objectives": "12 · 12 VP",
+  "Warnings": "0"
+ },
+ "text": "Allied holds most of the map and every objective, its line in Combat Mode; Axis fields 1.5 times the divisions, assembles a few hexes away and moves first. Axis wins by holding at least half the objective VP when the last turn ends; otherwise Allied wins.",
+ "stacks": {
+  "allied": 28,
+  "axis": 30,
+  "objectives": 12
+ },
+ "sides": [
+  "ALLIED",
+  "AXIS"
+ ],
+ "warnings": ""
+}
+-- 1240 ms; page errors so far 0

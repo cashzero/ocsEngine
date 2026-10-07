@@ -1,0 +1,10 @@
+{
+ "options": [
+  "MEETING=Meeting engagement (selected)",
+  "ALLIED_ATTACKS=Allied attack",
+  "AXIS_ATTACKS=Axis attack"
+ ],
+ "help": "Both armies start about ten hexes apart and each holds the same objective VP. The side holding more VP when the last turn ends wins; equal VP is a draw.",
+ "errors": []
+}
+-- 1882 ms; page errors so far 0

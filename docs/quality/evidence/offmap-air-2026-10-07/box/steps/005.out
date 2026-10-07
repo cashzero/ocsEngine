@@ -1,0 +1,6 @@
+ERROR Error: Control is disabled: #end-phase
+    at click (file:///E:/work/ocsEngine/scripts/air-acceptance/harness.mjs:120:41)
+    at async playUntil (file:///E:/work/ocsEngine/scripts/product-acceptance/lib.mjs:228:5)
+    at async eval (eval at <anonymous> (file:///E:/work/ocsEngine/scripts/product-acceptance/session.mjs:36:18), <anonymous>:5:16)
+    at async file:///E:/work/ocsEngine/scripts/product-acceptance/session.mjs:37:16
+-- 115834 ms; page errors so far 0

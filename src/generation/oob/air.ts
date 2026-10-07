@@ -82,7 +82,7 @@ const aircraftDefinition = (id: DefinitionId, name: string, side: OobSide, sourc
   };
 };
 
-const airBaseDefinition = (id: DefinitionId, name: string, side: OobSide, level: number, template: 'air-base' | 'air-strip' | null = null): PieceDefinition => ({
+const airBaseDefinition = (id: DefinitionId, name: string, side: OobSide, level: number, template: 'air-base' | 'air-strip' | 'off-map' | null = null): PieceDefinition => ({
   counter: null,
   id,
   family: 'FACILITY',
@@ -99,14 +99,15 @@ const airBaseDefinition = (id: DefinitionId, name: string, side: OobSide, level:
   capabilities: [
     { id: must(parseCapabilityId('AIR_BASE')), parameters: [{ key: 'initialLevel', kind: 'INTEGER', value: level }] },
     // Not a counter on the map: the Definition engineers make new Air Bases and Air Strips from (15.2, 15.3).
-    ...(template ? [{ id: must(parseCapabilityId('AIR_FACILITY_TEMPLATE')), parameters: [] }] : []),
+    ...(template === 'air-base' || template === 'air-strip' ? [{ id: must(parseCapabilityId('AIR_FACILITY_TEMPLATE')), parameters: [] }] : []),
   ],
   resource: null,
-  facility: { facilityTypeDefinitionId: definitionId(template === 'air-strip' ? 'facility:air-strip' : 'facility:air-base') },
+  facility: { facilityTypeDefinitionId: definitionId(template === 'air-strip' ? 'facility:air-strip' : template === 'off-map' ? 'facility:off-map-airfield' : 'facility:air-base') },
   marker: null,
   deferredClassification: null,
   source: { records: [{
-    field: 'air-base', rawValue: `${AIR_BASE_COUNTER.entryName} (gpid ${AIR_BASE_COUNTER.gpid})`, normalizedValue: template === 'air-strip' ? 'Air Strip' : `Air Base Level ${level}`,
+    field: 'air-base', rawValue: `${AIR_BASE_COUNTER.entryName} (gpid ${AIR_BASE_COUNTER.gpid})`,
+    normalizedValue: template === 'air-strip' ? 'Air Strip' : template === 'off-map' ? 'Off-map airfield (game-specific)' : `Air Base Level ${level}`,
     source: { document: 'Beyond the Rhine VASSAL buildFile.xml v1.27.0', locator: `VASSAL.build.widget.PieceSlot[gpid=${AIR_BASE_COUNTER.gpid}]` },
     confidence: 'HIGH', reviewStatus: 'REVIEWED',
   }] },
@@ -129,6 +130,45 @@ const AIR_REINFORCEMENTS: Readonly<Record<OobScale, readonly { readonly type: 'F
   COMPACT: [{ type: 'F', turn: 3 }],
   STANDARD: [{ type: 'F', turn: 3 }, { type: 'T', turn: 5 }],
   LARGE: [{ type: 'F', turn: 3 }, { type: 'T', turn: 4 }, { type: 'F', turn: 5 }],
+};
+
+/** Off-map air by scale: Fighters and Tactical Bombers at the side's off-map airfield. */
+export const OFF_MAP_AIR_MIX: Readonly<Record<OobScale, { readonly fighters: number; readonly bombers: number }>> = {
+  COMPACT: { fighters: 2, bombers: 2 },
+  STANDARD: { fighters: 3, bombers: 3 },
+  LARGE: { fighters: 4, bombers: 4 },
+};
+
+/**
+ * The off-map airfield and its aircraft (docs/roadmap/13-engagement-scenarios-wbs.md §6), on their own random stream so
+ * they never change the rest of the OOB. Every aircraft is staged at the airfield.
+ */
+export const buildOffMapAir = (
+  side: OobSide,
+  options: NormalizedRandomOobOptions,
+  definitions: PieceDefinition[],
+): readonly GeneratedOobUnit[] => {
+  const rng = createSeededRandom(mixUint32(options.seed ^ (side === 'ALLIED' ? 0x0ff3_a001 : 0x0ff3_a002)));
+  const mix = OFF_MAP_AIR_MIX[options.scale];
+  const pool = AIR_COUNTER_CORPUS.filter((source) => source.side === side);
+  const units: GeneratedOobUnit[] = [];
+  const sideName = side === 'ALLIED' ? 'Allied' : 'Axis';
+  const airfieldBase = `generated-oob:${options.seed}:${side.toLowerCase()}:off-map-airfield`;
+  definitions.push(airBaseDefinition(definitionId(airfieldBase), `${sideName} off-map airfield`, side, 3, 'off-map'));
+  units.push({ id: `${airfieldBase}:unit`, definitionId: definitionId(airfieldBase), side, formationId: null, role: 'AIR_BASE', sourceArchetypeId: `air-base:${AIR_BASE_COUNTER.gpid}`, pointCost: AIR_BASE_POINT_COST, staging: 'OFF_MAP_AIRFIELD' });
+  for (const [type, count] of [['F', mix.fighters], ['T', mix.bombers]] as const) {
+    const candidates = pool.filter((source) => source.type === type);
+    // Group names after the on-map ones, so the two never repeat a name.
+    const names = GROUP_NAMES[side][type];
+    for (let index = 0; index < count; index += 1) {
+      const source = candidates[Math.floor(rng.next() * candidates.length)]!;
+      const idBase = `generated-oob:${options.seed}:${side.toLowerCase()}:off-map-${type === 'F' ? 'fighter' : 'bomber'}-${index + 1}`;
+      const id = definitionId(idBase);
+      definitions.push(aircraftDefinition(id, `${names[(names.length - 1 - index) % names.length]} ${source.designation}`, side, source));
+      units.push({ id: `${idBase}:unit`, definitionId: id, side, formationId: null, role: 'AIRCRAFT', sourceArchetypeId: `air:${source.gpid}`, pointCost: AIRCRAFT_POINT_COST, staging: 'OFF_MAP_AIRFIELD' });
+    }
+  }
+  return units;
 };
 
 export const buildAirForces = (

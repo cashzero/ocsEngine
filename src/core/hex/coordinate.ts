@@ -77,15 +77,23 @@ export const cubeToAxial = (
 export const formatHexId = (coordinate: HexCoordinate): HexId =>
   `${coordinate.q},${coordinate.r}` as HexId;
 
+/** Parsed Hex IDs: a game uses a few thousand, parsed millions of times. Results are frozen. */
+const parsedHexIds = new Map<string, Result<HexCoordinate, HexIdParseError>>();
+const PARSED_HEX_ID_LIMIT = 65_536;
+
 export const parseHexCoordinateId = (value: string): Result<HexCoordinate, HexIdParseError> => {
+  const cached = parsedHexIds.get(value);
+  if (cached !== undefined) return cached;
   if (!HEX_ID_PATTERN.test(value)) return err({ code: 'INVALID_HEX_ID', value });
 
   const [qText, rText] = value.split(',');
   const q = Number(qText);
   const r = Number(rText);
-  return Number.isSafeInteger(q) && Number.isSafeInteger(r)
-    ? ok({ q, r })
-    : err({ code: 'INVALID_HEX_ID', value });
+  if (!Number.isSafeInteger(q) || !Number.isSafeInteger(r)) return err({ code: 'INVALID_HEX_ID', value });
+  const parsed = Object.freeze(ok(Object.freeze({ q, r })));
+  if (parsedHexIds.size >= PARSED_HEX_ID_LIMIT) parsedHexIds.clear();
+  parsedHexIds.set(value, parsed);
+  return parsed;
 };
 
 export const compareHexCoordinates = (

@@ -1,0 +1,32 @@
+{
+ "status": "Preview ready",
+ "metrics": {
+  "Scenario": "Meeting engagement",
+  "Map": "32×24",
+  "Units": "60",
+  "Formations": "12",
+  "Deployed hexes": "45",
+  "Objectives": "8 · 12 VP",
+  "Warnings": "0"
+ },
+ "help": "Both armies start about ten hexes apart and each holds the same objective VP. The side holding more VP when the last turn ends wins; equal VP is a draw.",
+ "summary": "Meeting engagement · 60 units · 12 formations · 8 turns · seeds map 206569473, OOB 206569474, deployment 206569475, rules 206569476",
+ "mounted": {
+  "size": "32×24",
+  "occupied": 45,
+  "terrainMismatch": 0
+ },
+ "at": {
+  "turn": "Turn 1 / 8",
+  "player": "Allied player turn",
+  "phase": "Movement",
+  "seat": "Allied commander",
+  "end": "End Movement SegmentNext: Barrage Segment",
+  "endDisabled": false,
+  "notice": "Select a unit on the map to see where it can move and what it can attack.",
+  "handoff": false,
+  "complete": false,
+  "decision": []
+ }
+}
+-- 19049 ms; page errors so far 0

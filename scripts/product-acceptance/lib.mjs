@@ -16,6 +16,7 @@ export const openNewGame = async (h) => {
 export const configure = async (h, options = {}) => {
   const { page } = h;
   const type = async (id, value) => { if (value !== undefined) { await page.fill(`#new-game-${id}`, String(value)); await page.press(`#new-game-${id}`, 'Tab'); } };
+  if (options.engagement) await page.selectOption('#new-game-engagement', options.engagement);
   if (options.style) await page.selectOption('#new-game-style', options.style);
   await type('width', options.width);
   await type('height', options.height);
@@ -123,9 +124,14 @@ export const sweepMap = async (h) => {
     await page.keyboard.press('ArrowDown');
     if ((await label()) === before) break;
   }
+  // A named settlement announces its name before the terrain ("Hex 2701 · Antmar · clear · village · no units").
+  const terrains = new Set(['clear', 'woods', 'rough', 'mountain', 'marsh', 'water']);
   const cells = rows.flat().map((text) => {
-    const [, hex, terrain, units] = text.match(/^Hex (\d{4}) · ([^·]+?)(?: · (.*))?$/) ?? [];
-    return { hex, terrain: terrain?.trim(), units: units?.trim() ?? '', text };
+    const [, hex, rest] = text.match(/^Hex (\d{4}) · (.*)$/) ?? [];
+    const fields = (rest ?? '').split(' · ');
+    const at = fields.findIndex((field) => terrains.has(field.trim()));
+    const index = at < 0 ? 0 : at;
+    return { hex, terrain: fields[index]?.trim(), units: fields.slice(index + 1).join(' · ').trim(), text };
   });
   return { width: rows[0]?.length ?? 0, height: rows.length, cells };
 };
