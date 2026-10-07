@@ -1,0 +1,53 @@
+{
+ "at": {
+  "turn": "Turn 1 / 8",
+  "player": "Axis player turn",
+  "phase": "Movement · Barrage",
+  "seat": "Axis commander",
+  "end": "End Barrage SegmentNext: Supply Phase",
+  "endDisabled": false,
+  "notice": "Movement · Movement Segment finished.",
+  "handoff": false,
+  "complete": false,
+  "decision": []
+ },
+ "buttons": [
+  "BARRAGE",
+  "TRAINBUSTING"
+ ],
+ "chips": [
+  "1612",
+  "1714",
+  "1815",
+  "1813",
+  "1814",
+  "1916",
+  "1302",
+  "1914"
+ ],
+ "aircraft": [
+  "F\nFw-190d\n74\n6\n2\nJG 301 Fw-190d\n3214",
+  "F\nBf.109\n76\n4\n1\nJG 300 Bf.109\n3214",
+  "T\nJu.88\n106\n(2)\n9\nKG 76 Ju.88\n3214",
+  "T\nJu.88\n106\n(2)\n9\nKG 66 Ju.88\n3214"
+ ],
+ "history": [
+  "▸MovementBarrage",
+  "Barrage 21 on the 17-24 column, shifted to 2: roll 8, -, no effect.",
+  "Barrage 21 on the 17-24 column, shifted to 2: roll 8, -, no effect."
+ ],
+ "fieldText": "Hex 3214 · clear · KG 66 Ju.88, KG 76 Ju.88, JG 300 Bf.109, JG 301 Fw-190d, Axis off-map airfield",
+ "after": {
+  "turn": "Turn 1 / 8",
+  "player": "Axis player turn",
+  "phase": "Movement · Barrage",
+  "seat": "Axis commander",
+  "end": "End Barrage SegmentNext: Supply Phase",
+  "endDisabled": false,
+  "notice": "Air Barrage on 1612 flown. Flak: 7 (roll 6 +1), no effect. Barrage 21 on the 17-24 column, shifted to 2: roll 8, -, no effect.",
+  "handoff": false,
+  "complete": false,
+  "decision": []
+ }
+}
+-- 3305 ms; page errors so far 0

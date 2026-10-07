@@ -313,7 +313,10 @@ describe('phase-specific command deck', () => {
     expect(warned).toContain('class="warning"');
     expect(warned).toContain('the move of Truck');
     expect(warned).not.toContain('Truck Co');
-    expect(warned).toContain('4T');
+    // The popup names what the truck carries (the dump's size since OOB 0.4.0 scales starting supply with divisions).
+    const carried = own().find((piece) => piece.id === truck.id)!.carriedTokens;
+    expect(carried).toBeGreaterThan(0);
+    expect(warned).toContain(`${carried}T`);
     expect(warned).toContain('6.1g');
     expect(warned).toMatch(/id="confirm-move"[^>]*>Confirm anyway</u);
     expect(warned).not.toMatch(/id="confirm-move"\s+disabled/u);

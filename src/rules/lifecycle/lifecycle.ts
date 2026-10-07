@@ -28,7 +28,7 @@ import {
   withStatus,
 } from '../pieces.js';
 import { absorbBreakdowns } from '../breakdown/breakdown.js';
-import { activeAircraftAt, activeAircraftLimit, friendlyAirBases, isAircraft, withAircraftActive } from '../air/aircraft.js';
+import { activeAircraftAt, activeAircraftLimit, atOffMapAirfield, friendlyAirBases, isAircraft, withAircraftActive } from '../air/aircraft.js';
 import { arriveReplacements, mergeReplacementsAt } from '../replacement/replacement.js';
 import { lapseDropPlans } from '../air/transport.js';
 import { clearFuel } from '../supply/fuel.js';
@@ -47,6 +47,13 @@ export const calculateVictory = (state: GameState): VictoryState => {
       return total + (controller === id ? objective.points : 0);
     }, 0),
   }));
+  const attack = state.configuration.attackVictory;
+  if (attack) {
+    // An attack: the attacker wins by holding its VP target, the defender by denying it.
+    const held = scores.find(({ playerId }) => playerId === attack.attackerId)?.points ?? 0;
+    const defenderId = scores.find(({ playerId }) => playerId !== attack.attackerId)?.playerId ?? null;
+    return { scores, winnerId: held >= attack.attackerPoints ? attack.attackerId : defenderId, reason: null };
+  }
   const ordered = stableSort(scores, (left, right) => right.points - left.points
     || String(left.playerId).localeCompare(String(right.playerId)));
   const winnerId = ordered.length > 0 && ordered[0]!.points > (ordered[1]?.points ?? -1) ? ordered[0]!.playerId : null;
@@ -219,6 +226,8 @@ export const arrivingReinforcements = (state: GameState, playerId: PlayerId): re
   const cached = cache.get(String(playerId));
   if (cached) return cached;
   const arriving = Object.freeze(state.pieceState.pieces.filter((piece) => piece.ownerId === playerId && AWAITING_ENTRY.includes(piece.location.kind)
+    // Aircraft at an off-map airfield are based there, not waiting to enter (§6).
+    && !atOffMapAirfield(state, piece)
     && (piece.location.kind !== 'TURN_TRACK' || piece.location.position <= state.sequence.gameTurn)
     && (returnTurnOf(piece) ?? 0) <= state.sequence.gameTurn
     && (isCombatUnit(state, piece) || ['RESOURCE', 'GROUND', 'AIR', 'REPLACEMENT'].includes(definitionOf(state, piece)?.family ?? ''))));

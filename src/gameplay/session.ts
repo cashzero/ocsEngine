@@ -44,6 +44,7 @@ import type {
   SessionLifecycle,
   SessionListener,
   SessionMetadata,
+  SessionPersistence,
   SessionMetrics,
   SessionNotification,
   Unsubscribe,
@@ -73,6 +74,8 @@ export interface GameplaySessionOptions {
   readonly history: readonly HistoryRecord[];
   readonly checkpoints: readonly GameplaySaveCheckpoint[];
   readonly ports: GameplayPorts;
+  /** Defaults to AUTOSAVE. */
+  readonly persistence?: SessionPersistence;
 }
 
 const cloneValue = <T>(value: T): T => JSON.parse(JSON.stringify(value)) as T;
@@ -101,6 +104,7 @@ const initialMetrics = (): SessionMetrics => ({
 
 export class GameplaySession implements GameSession {
   readonly #ports: GameplayPorts;
+  readonly #persistence: SessionPersistence;
   readonly #id: SessionId;
   readonly #label: string;
   readonly #createdAtMs: number;
@@ -126,6 +130,7 @@ export class GameplaySession implements GameSession {
 
   constructor(options: GameplaySessionOptions) {
     this.#ports = options.ports;
+    this.#persistence = options.persistence ?? 'AUTOSAVE';
     this.#id = options.id;
     this.#label = options.label;
     this.#createdAtMs = options.createdAtMs;
@@ -376,11 +381,13 @@ export class GameplaySession implements GameSession {
       this.#lifecycle = 'FINISHED';
       warnings.push(...this.#notify({ kind: 'LIFECYCLE_CHANGED', lifecycle: 'FINISHED', revision: this.#state.revision }));
     }
-    try { await this.#ports.saves.save(this.#id, this.serializeSave()); }
-    catch {
-      this.#metrics = { ...this.#metrics, persistenceFailures: this.#metrics.persistenceFailures + 1 };
-      warnings.push({ code: 'PERSISTENCE_FAILURE', message: 'Accepted state is live but automatic persistence failed.' });
-      this.#log('WARN', 'PERSISTENCE_FAILURE');
+    if (this.#persistence === 'AUTOSAVE') {
+      try { await this.#ports.saves.save(this.#id, this.serializeSave()); }
+      catch {
+        this.#metrics = { ...this.#metrics, persistenceFailures: this.#metrics.persistenceFailures + 1 };
+        warnings.push({ code: 'PERSISTENCE_FAILURE', message: 'Accepted state is live but automatic persistence failed.' });
+        this.#log('WARN', 'PERSISTENCE_FAILURE');
+      }
     }
     const result: DispatchResult = {
       status: 'ACCEPTED', requestId: request.requestId, revision: this.#state.revision,

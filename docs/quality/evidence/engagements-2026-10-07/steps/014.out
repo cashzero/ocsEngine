@@ -1,0 +1,32 @@
+{
+ "ms": 5708,
+ "privacy": {
+  "text": "HOT-SEAT PRIVACY Pass the screen to Allied commander Continue their Player Turn: Movement · Breakout Segment. The map stays hidden until they confirm. I am Allied commander",
+  "mapVisible": false
+ },
+ "at": {
+  "turn": "Turn 2 / 8",
+  "player": "Allied player turn",
+  "phase": "First Player Phase",
+  "seat": "Allied commander",
+  "end": "End First Player PhaseNext: Aircraft Refit Phase",
+  "endDisabled": true,
+  "notice": "Decision recorded.",
+  "handoff": false,
+  "complete": false,
+  "decision": [
+   "Go first",
+   "Go second"
+  ]
+ },
+ "seen": [
+  "Turn 1 / 8 | Axis player turn | Movement",
+  "Turn 1 / 8 | Axis player turn | Exploitation · Movement",
+  "Turn 1 / 8 | Allied player turn | Movement · Breakout",
+  "Turn 1 / 8 | Allied player turn | Movement",
+  "Turn 1 / 8 | Allied player turn | Supply",
+  "Turn 1 / 8 | Allied player turn | Reaction · Movement",
+  "Turn 2 / 8 | Allied player turn | First Player Phase"
+ ]
+}
+-- 5709 ms; page errors so far 0

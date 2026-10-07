@@ -12,7 +12,7 @@ import { parseSeatId, type SeatBinding } from '../gameplay/index.js';
 import type { GeneratedMap } from '../generation/map/index.js';
 import type { GeneratedOob, OobSide } from '../generation/oob/index.js';
 import { createGeneratedRuleConfiguration } from './configuration.js';
-import { GENERATED_REINFORCEMENT_BOXES } from './deployment.js';
+import { GENERATED_OFF_MAP_AIRFIELD_BOXES, GENERATED_REINFORCEMENT_BOXES } from './deployment.js';
 import type {
   GameFlowFailure,
   GeneratedDeployment,
@@ -54,7 +54,9 @@ export const composeGeneratedScenario = (
   deployment: GeneratedDeployment,
 ): Result<GeneratedScenarioPackage, readonly GameFlowFailure[]> => {
   const parsedScenarioId = parseScenarioId(
-    `scenario:generated:${request.map.style.toLowerCase()}:${request.seeds.map}:${request.seeds.oob}:${request.seeds.deployment}`,
+    `scenario:generated:${request.map.style.toLowerCase()}:${request.seeds.map}:${request.seeds.oob}:${request.seeds.deployment}`
+      // A meeting engagement keeps the ID it had before engagements existed.
+      + (request.engagement === undefined || request.engagement === 'MEETING' ? '' : `:${request.engagement.toLowerCase().replace('_', '-')}`),
   );
   if (!parsedScenarioId.ok) return { ok: false, error: [{
     stage: 'SCENARIO', code: 'INVALID_SCENARIO_ID', message: 'Generated Scenario ID is invalid.', path: ['scenario', 'id'],
@@ -70,7 +72,8 @@ export const composeGeneratedScenario = (
       { id: GENERATED_PLAYERS.ALLIED, sideDefinitionId: definitionId('side:allied'), name: 'Allied' },
       { id: GENERATED_PLAYERS.AXIS, sideDefinitionId: definitionId('side:axis'), name: 'Axis' },
     ],
-    turnStart: { turn: 1, firstPlayerId: GENERATED_PLAYERS.ALLIED },
+    // The attacker opens an attack; a meeting engagement keeps Allied first. Later turns roll for it (2.3).
+    turnStart: { turn: 1, firstPlayerId: GENERATED_PLAYERS[deployment.attacker ?? 'ALLIED'] },
     boxes: [
       {
         id: GENERATED_REINFORCEMENT_BOXES.ALLIED,
@@ -84,6 +87,13 @@ export const composeGeneratedScenario = (
         name: 'Axis reinforcements',
         linkedHexId: generatedMap.strategicRegions.secondEntryHexIds[0] ?? null,
       },
+      // §6: the attacker's off-map airfield; its aircraft fly in over that side's entry hexes.
+      ...(deployment.attacker === null ? [] : [{
+        id: GENERATED_OFF_MAP_AIRFIELD_BOXES[deployment.attacker],
+        kind: 'OFF_MAP' as const,
+        name: `${deployment.attacker === 'ALLIED' ? 'Allied' : 'Axis'} off-map airfield`,
+        linkedHexId: (deployment.attacker === 'ALLIED' ? generatedMap.strategicRegions.firstEntryHexIds : generatedMap.strategicRegions.secondEntryHexIds)[0] ?? null,
+      }]),
     ], tracks: [], pools: [],
     entries: [
       ...declarations('entry', generatedMap.strategicRegions.firstEntryHexIds, 'ALLIED'),
@@ -126,6 +136,7 @@ export const composeGeneratedScenario = (
     summary: {
       mapSize: `${generatedMap.options.width}×${generatedMap.options.height}`,
       mapStyle: generatedMap.options.style,
+      engagement: request.engagement ?? 'MEETING',
       unitCount: generatedOob.metrics.unitCount,
       formationCount: generatedOob.metrics.formationCount,
       objectiveCount: deployment.objectiveHexIds.length,

@@ -20,7 +20,18 @@ describe('generated New Game flow', () => {
     expect(validateGeneratedScenarioPackage(prepared.value)).toEqual([]);
     expect(prepared.value.scenario.mapDefinition).toEqual(prepared.value.generatedMap.mapDefinition);
     expect(prepared.value.scenario.pieceCatalog).toEqual(prepared.value.generatedOob.pieceDefinitionCatalog);
-    expect(prepared.value.scenario.initialPieceState.pieces).toHaveLength(prepared.value.generatedOob.metrics.unitCount);
+    // Every OOB unit plus one objective garrison (OOB 0.4.0) and its 2T stock per objective.
+    const objectives = prepared.value.deployment.objectives;
+    expect(prepared.value.scenario.initialPieceState.pieces).toHaveLength(prepared.value.generatedOob.metrics.unitCount + 2 * objectives.length);
+    const garrisonIds = new Set(prepared.value.generatedOob.sides.map(({ garrisonDefinitionId }) => garrisonDefinitionId));
+    const controller = (hexId: string) => prepared.value.scenario.initialMapState.hexControl.find((entry) => entry.hexId === hexId)?.controllerId;
+    for (const { hexId } of objectives) {
+      const garrisons = prepared.value.scenario.initialPieceState.pieces.filter((piece) => garrisonIds.has(piece.definitionId)
+        && piece.location.kind === 'ON_MAP' && piece.location.hexId === hexId);
+      expect(garrisons).toHaveLength(1);
+      expect(garrisons[0]!.ownerId).toBe(controller(hexId));
+      expect(garrisons[0]!.mode).toBe('COMBAT');
+    }
     expect(prepared.value.deployment.metrics.maximumStackReTicks).toBeLessThanOrEqual(40);
     expect(prepared.value.bindings).toHaveLength(2);
   });

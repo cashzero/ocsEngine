@@ -1,0 +1,32 @@
+ERROR locator.click: Timeout 30000ms exceeded.
+Call log:
+[2m  - waiting for locator('#open-menu').first()[22m
+[2m    - locator resolved to <button id="open-menu" class="bar-button" aria-haspopup="dialog">…</button>[22m
+[2m  - attempting click action[22m
+[2m    2 × waiting for element to be visible, enabled and stable[22m
+[2m      - element is visible, enabled and stable[22m
+[2m      - scrolling into view if needed[22m
+[2m      - done scrolling[22m
+[2m      - <header class="generator-header">…</header> from <div class="modal-backdrop new-game-backdrop">…</div> subtree intercepts pointer events[22m
+[2m    - retrying click action[22m
+[2m    - waiting 20ms[22m
+[2m    2 × waiting for element to be visible, enabled and stable[22m
+[2m      - element is visible, enabled and stable[22m
+[2m      - scrolling into view if needed[22m
+[2m      - done scrolling[22m
+[2m      - <header class="generator-header">…</header> from <div class="modal-backdrop new-game-backdrop">…</div> subtree intercepts pointer events[22m
+[2m    - retrying click action[22m
+[2m      - waiting 100ms[22m
+[2m    48 × waiting for element to be visible, enabled and stable[22m
+[2m       - element is visible, enabled and stable[22m
+[2m       - scrolling into view if needed[22m
+[2m       - done scrolling[22m
+[2m       - <header class="generator-header">…</header> from <div class="modal-backdrop new-game-backdrop">…</div> subtree intercepts pointer events[22m
+[2m     - retrying click action[22m
+[2m       - waiting 500ms[22m
+
+    at click (E:\work\ocsEngine\scripts\air-acceptance\harness.mjs:121:17)
+    at async openNewGame (E:\work\ocsEngine\scripts\product-acceptance\lib.mjs:10:42)
+    at async eval (<anonymous>:4:1)
+    at async file:///E:/work/ocsEngine/scripts/product-acceptance/session.mjs:37:16
+-- 30673 ms; page errors so far 0

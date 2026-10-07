@@ -1,0 +1,30 @@
+{
+ "pick": "II1033.PG 2518 103 Aufk Bn / 3.PG2611 · Move mode",
+ "card": "II1033.PG 2518",
+ "fuel": "the 15T dump at 2710",
+ "reachable": 560,
+ "before": "20,10",
+ "target": {
+  "id": "-4,11",
+  "text": "0212"
+ },
+ "moved": {
+  "moved": true,
+  "preview": "",
+  "elapsed": 639
+ },
+ "log": [],
+ "at": {
+  "turn": "Turn 1 / 8",
+  "player": "Axis player turn",
+  "phase": "Movement",
+  "seat": "Axis commander",
+  "end": "End Movement SegmentNext: Barrage Segment",
+  "endDisabled": false,
+  "notice": "Moved to 0212. This cannot be undone: dice were rolled or the other player must decide.",
+  "handoff": false,
+  "complete": false,
+  "decision": []
+ }
+}
+-- 4548 ms; page errors so far 0

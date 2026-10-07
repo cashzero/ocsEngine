@@ -47,7 +47,14 @@ export interface CreateSessionRequest {
   readonly rulesSeed: number;
   readonly bindings: readonly SeatBinding[];
   readonly label: string;
+  /**
+   * AUTOSAVE (default) hands a full save to the save port after every accepted dispatch. MANUAL skips it for
+   * fast simulation such as bot-against-bot matches; `save()`/`serializeSave()` still work on demand.
+   */
+  readonly persistence?: SessionPersistence;
 }
+
+export type SessionPersistence = 'AUTOSAVE' | 'MANUAL';
 
 export interface CreateStoredSessionRequest {
   readonly scenarioId: ScenarioId;

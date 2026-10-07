@@ -401,6 +401,20 @@ export const ALL_ACTION_KINDS: readonly GameAction['kind'][] = [
  */
 const NON_STOPPING_KINDS: readonly GameAction['kind'][] = ['COMBINE_AIRCRAFT', 'END_MOVE'];
 
+/** Whether the actor has at least one legal action of a kind; asked repeatedly of one state (families, auto-pass). */
+const candidateExists = new WeakMap<GameState, Map<string, boolean>>();
+const hasCandidate = (state: GameState, actorId: PlayerId, kind: GameAction['kind']): boolean => {
+  let cache = candidateExists.get(state);
+  if (!cache) { cache = new Map(); candidateExists.set(state, cache); }
+  const key = `${actorId}|${kind}`;
+  let exists = cache.get(key);
+  if (exists === undefined) {
+    exists = candidateActions(state, { actorId, kind, pieceId: null, budget: 1 }, 1).length > 0;
+    cache.set(key, exists);
+  }
+  return exists;
+};
+
 /** Cheap phase/actor filter before generating candidates. */
 export const kindMayBeLegal = (state: GameState, actorId: PlayerId, kind: GameAction['kind']): boolean => {
   if (state.sequence.phase === 'COMPLETE') return false;
@@ -452,16 +466,12 @@ export const kindMayBeLegal = (state: GameState, actorId: PlayerId, kind: GameAc
 };
 
 export const actionFamilies = (state: GameState, actorId: PlayerId): readonly ActionFamily[] =>
-  ALL_ACTION_KINDS.map((kind) => ({
-    kind,
-    enabled: kindMayBeLegal(state, actorId, kind)
-      && candidateActions(state, { actorId, kind, pieceId: null, budget: 1 }, 1).length > 0,
-  }));
+  ALL_ACTION_KINDS.map((kind) => ({ kind, enabled: kindMayBeLegal(state, actorId, kind) && hasCandidate(state, actorId, kind) }));
 
 /** True when the acting player has any legal choice other than ending the step. */
 export const hasOptionalActions = (state: GameState): boolean => {
   if (state.pendingDecision !== null || state.activeTransaction !== null) return true;
   const actorId = state.sequence.actingPlayerId;
   return ALL_ACTION_KINDS.some((kind) => kind !== 'ADVANCE_SEQUENCE' && !NON_STOPPING_KINDS.includes(kind) && kindMayBeLegal(state, actorId, kind)
-    && candidateActions(state, { actorId, kind, pieceId: null, budget: 1 }, 1).length > 0);
+    && hasCandidate(state, actorId, kind));
 };

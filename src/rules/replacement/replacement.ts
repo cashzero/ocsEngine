@@ -6,7 +6,7 @@ import { lostTruckPoints } from './ledger.js';
 import { applyModeChange } from '../mode/mode.js';
 import {
   INTERNAL_STOCKS_STATUS, OUT_OF_SUPPLY_STATUS, OUT_OF_TRACE_SINCE_STATUS, PRIOR_MODE_STATUS, RETURN_TURN_STATUS, TRANSPORT_POINTS_STATUS,
-  definitionOf, faceMode, friendlyCombatUnitsAt, hexDistanceBetween, hexOf, isHq, isTransportPoint, nextOrderAt, pieceById, printedSteps,
+  definitionOf, enemyCombatUnitsAt, faceMode, friendlyCombatUnitsAt, hexDistanceBetween, hexOf, isHq, isTransportPoint, nextOrderAt, pieceById, printedSteps,
 } from '../pieces.js';
 import { violation } from '../validation/violation.js';
 import { inEnemyZoc } from '../zoc/zoc.js';
@@ -119,6 +119,13 @@ export const hqCanRebuild = (state: GameState, piece: PieceState): boolean =>
 export const replacementHexInEnemyZoc = (state: GameState, playerId: PlayerId, hexId: HexId): boolean =>
   inEnemyZoc(state, playerId, hexId) && friendlyCombatUnitsAt(state, playerId, hexId).length === 0;
 
+/**
+ * Repls are not yet combat units here (see replacements-rebuilds in the manifest), so enemy units can stand on them;
+ * nothing can be rebuilt into a hex that holds enemy combat units.
+ */
+const enemyHoldsReplacementHex = (state: GameState, playerId: PlayerId, hexId: HexId): boolean =>
+  enemyCombatUnitsAt(state, playerId, hexId).length > 0;
+
 /** An HQ of the player that can rebuild with Repls in `hexId` (13.5a), nearest first. */
 export const rebuildHqsFor = (state: GameState, playerId: PlayerId, hexId: HexId): readonly PieceState[] =>
   stableSort(state.pieceState.pieces.filter((piece) => piece.ownerId === playerId && hqCanRebuild(state, piece) && hexDistanceBetween(hexOf(piece)!, hexId) <= REBUILD_HQ_RADIUS),
@@ -194,6 +201,7 @@ export const validateRebuildUnits = (state: GameState, action: RebuildUnitsActio
     issues.push(violation('REPLACEMENTS_FAR_FROM_HQ', ['hexId'], 'The Repls must be at or within 2 hexes of the HQ.', '13.5a'));
   }
   if (replacementHexInEnemyZoc(state, action.actorId, action.hexId)) issues.push(violation('REPLACEMENTS_IN_ENEMY_ZOC', ['hexId'], 'The Repls may not be in an enemy ZOC.', '13.5a'));
+  if (enemyHoldsReplacementHex(state, action.actorId, action.hexId)) issues.push(violation('REPLACEMENTS_WITH_ENEMY', ['hexId'], 'Enemy combat units hold the hex of these Repls; nothing can be rebuilt there.', '13.5a'));
   if (!Number.isSafeInteger(action.truckPoints) || action.truckPoints < 0) {
     return [...issues, violation('INVALID_TRUCK_REBUILD', ['truckPoints'], 'Truck points must be a whole number, zero or more.', '13.5e')];
   }
@@ -317,7 +325,7 @@ export const unitRebuildOptions = (state: GameState, playerId: PlayerId): readon
   const lost = lostTruckPoints(state, playerId);
   const options: UnitRebuildOption[] = [];
   for (const hexId of hexes) {
-    if (replacementHexInEnemyZoc(state, playerId, hexId)) continue;
+    if (replacementHexInEnemyZoc(state, playerId, hexId) || enemyHoldsReplacementHex(state, playerId, hexId)) continue;
     const hq = rebuildHqsFor(state, playerId, hexId)[0];
     if (!hq) continue;
     const pax = replacementsAt(state, playerId, hexId, 'PAX');

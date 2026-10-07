@@ -132,6 +132,8 @@ export interface AirRefit {
   readonly activeLimit: number;
   /** In an un-negated enemy ZOC with no friendly combat unit: the base cannot refit (15.1C). */
   readonly zocBlocked: boolean;
+  /** The side's off-map airfield: refits every aircraft without SP and has no Active limit. */
+  readonly offMap: boolean;
 }
 
 /** One Eq counter that can rebuild aircraft in the Reinforcement Phase (13.5f). */

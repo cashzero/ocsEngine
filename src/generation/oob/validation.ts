@@ -1,9 +1,10 @@
 import type { ValidationIssue } from '../../core/index.js';
-import { validatePieceDefinitionCatalog } from '../../domain/piece/index.js';
-import { isSingleUnitDivision } from './model.js';
+import { validatePieceDefinitionCatalog, type PieceDefinition } from '../../domain/piece/index.js';
+import { isSingleUnitDivision, sideDivisions } from './model.js';
 import type {
   GeneratedOob,
   GeneratedOobMetrics,
+  GeneratedOobSide,
   GeneratedOobValidation,
   OobSide,
   OobUnitRole,
@@ -11,21 +12,49 @@ import type {
 
 const SIDES: readonly OobSide[] = ['ALLIED', 'AXIS'];
 const ROLES: readonly OobUnitRole[] = [
-  'HQ', 'COMBAT', 'ARTILLERY', 'RECONNAISSANCE',
+  'HQ', 'COMBAT', 'ARTILLERY', 'RECONNAISSANCE', 'TANK', 'ANTI_TANK',
   'ENGINEER', 'TRANSPORT', 'SUPPLY', 'AIRCRAFT', 'AIR_BASE',
 ];
+
+/** Combat units fielded by the side that weigh in the balance, by role. */
+const BALANCED_ROLES: ReadonlySet<OobUnitRole> = new Set(['COMBAT', 'TANK', 'ANTI_TANK', 'RECONNAISSANCE', 'ENGINEER', 'ARTILLERY']);
+
+/**
+ * A side's combat value from its printed Combat Mode faces at full strength: strength weighed by Action Rating
+ * (×0.7 at AR 0 up to ×1.2 at AR 5), defensive-only units at half, artillery at a quarter of its barrage strength.
+ * HQs, trucks, supply and objective garrisons do not count.
+ */
+export const combatValueOf = (side: GeneratedOobSide, definitions: readonly PieceDefinition[]): number => {
+  const byId = new Map(definitions.map((definition) => [definition.id, definition]));
+  let total = 0;
+  for (const unit of [...side.formations.flatMap(({ units }) => units), ...side.independentUnits]) {
+    if (!BALANCED_ROLES.has(unit.role)) continue;
+    const definition = byId.get(unit.definitionId);
+    const face = definition?.faces.find(({ id }) => String(id) === 'combat') ?? definition?.faces[0];
+    const step = face?.steps.reduce((best, entry) => entry.remainingSteps > best.remainingSteps ? entry : best, face.steps[0]!);
+    if (!definition || !step) continue;
+    if (unit.role === 'ARTILLERY') {
+      const barrage = Number(step.ratings.find(({ ratingDefinitionId }) => String(ratingDefinitionId) === 'rating:barrage-strength')?.value ?? 0);
+      total += barrage * 0.25;
+      continue;
+    }
+    const strength = (step.combatStrength ?? 0) * (0.7 + 0.1 * (step.actionRating ?? 3));
+    total += definition.counter?.defensiveOnly ? strength / 2 : strength;
+  }
+  return total;
+};
 
 const issue = (code: string, message: string, path: readonly (string | number)[] = []): ValidationIssue => ({
   code, message, path, severity: 'ERROR',
 });
 
 const emptyRoleCounts = (): Record<OobUnitRole, number> => ({
-  HQ: 0, COMBAT: 0, ARTILLERY: 0, RECONNAISSANCE: 0,
+  HQ: 0, COMBAT: 0, ARTILLERY: 0, RECONNAISSANCE: 0, TANK: 0, ANTI_TANK: 0,
   ENGINEER: 0, TRANSPORT: 0, SUPPLY: 0, AIRCRAFT: 0, AIR_BASE: 0,
 });
 
 export const measureGeneratedOob = (
-  generated: Pick<GeneratedOob, 'sides'>,
+  generated: Pick<GeneratedOob, 'sides'> & Partial<Pick<GeneratedOob, 'pieceDefinitionCatalog'>>,
 ): GeneratedOobMetrics => {
   const unitsBySide: Record<OobSide, number> = { ALLIED: 0, AXIS: 0 };
   const pointsBySide: Record<OobSide, number> = { ALLIED: 0, AXIS: 0 };
@@ -40,11 +69,15 @@ export const measureGeneratedOob = (
     pointsBySide[side.side] += units.reduce((sum, unit) => sum + unit.pointCost, 0);
     for (const unit of units) rolesBySide[side.side][unit.role] += 1;
   }
-  const lowest = Math.min(pointsBySide.ALLIED, pointsBySide.AXIS);
-  const highest = Math.max(pointsBySide.ALLIED, pointsBySide.AXIS);
+  // OOB 0.4.0: balance is the ratio of combat values (printed strength weighed by AR), not of point costs.
+  const definitions = 'pieceDefinitionCatalog' in generated ? (generated as Pick<GeneratedOob, 'pieceDefinitionCatalog'>).pieceDefinitionCatalog.definitions : [];
+  const combatValueBySide: Record<OobSide, number> = { ALLIED: 0, AXIS: 0 };
+  for (const side of generated.sides) combatValueBySide[side.side] = Math.round(10 * combatValueOf(side, definitions)) / 10;
+  const lowest = Math.min(combatValueBySide.ALLIED, combatValueBySide.AXIS);
+  const highest = Math.max(combatValueBySide.ALLIED, combatValueBySide.AXIS);
   return {
     unitCount: unitsBySide.ALLIED + unitsBySide.AXIS,
-    formationCount, unitsBySide, pointsBySide,
+    formationCount, unitsBySide, pointsBySide, combatValueBySide,
     balanceRatio: highest === 0 ? 1 : lowest / highest,
     rolesBySide,
   };
@@ -74,14 +107,19 @@ export const validateGeneratedOob = (
       .flatMap((parameter) => parameter.key === 'definitionId' && parameter.kind === 'TEXT' ? [parameter.value] : []))));
   // The Air Base and Air Strip templates (15.2, 15.3) likewise have no starting unit: engineers make Air Bases from them in play.
   const templateIds = new Set(generated.pieceDefinitionCatalog.definitions.filter(({ family, capabilities }) => family === 'REPLACEMENT' || capabilities.some(({ id }) => id === 'AIR_FACILITY_TEMPLATE')).map(({ id }) => id));
-  const definitionIds = new Set(generated.pieceDefinitionCatalog.definitions.map(({ id }) => id).filter((id) => !breakdownIds.has(id) && !templateIds.has(id)));
+  // Objective garrisons have one Definition per side and no OOB unit: deployment places one on every held objective.
+  const garrisonIds = new Set(generated.sides.map(({ garrisonDefinitionId }) => garrisonDefinitionId));
+  if (generated.sides.some(({ garrisonDefinitionId }) => !generated.pieceDefinitionCatalog.definitions.some(({ id }) => id === garrisonDefinitionId))) {
+    issues.push(issue('MISSING_GARRISON_DEFINITION', 'Each side requires its objective garrison Piece Definition.', ['sides']));
+  }
+  const definitionIds = new Set(generated.pieceDefinitionCatalog.definitions.map(({ id }) => id).filter((id) => !breakdownIds.has(id) && !templateIds.has(id) && !garrisonIds.has(id)));
   if (allUnits.some(({ definitionId }) => !definitionIds.has(definitionId))
     || definitionIds.size !== allUnits.length
     || [...breakdownIds].some((id) => !generated.pieceDefinitionCatalog.definitions.some((definition) => definition.id === id))) {
     issues.push(issue('OOB_CATALOG_UNIT_MISMATCH', 'Generated units and Piece Definitions must form an exact one-to-one set, plus the Breakdown Definitions the divisions name.'));
   }
   for (const [sideIndex, side] of generated.sides.entries()) {
-    if (side.formations.length !== generated.options.divisionsPerSide) {
+    if (side.formations.length !== sideDivisions(generated.options, side.side).divisionsPerSide) {
       issues.push(issue('FORMATION_COUNT_MISMATCH', 'Each side must contain the requested division count.', ['sides', sideIndex, 'formations']));
     }
     for (const [formationIndex, formation] of side.formations.entries()) {
@@ -120,8 +158,9 @@ export const validateGeneratedOob = (
       }
     }
   }
-  if (metrics.balanceRatio < 0.9) {
-    issues.push(issue('OOB_FORCE_IMBALANCE', 'Opposing point totals must remain within a 90% balance ratio.', ['metrics', 'balanceRatio']));
+  // A combat-value gap beyond 10% is reported as a generator warning (balancing has a unit cap), not rejected here.
+  if (!(metrics.balanceRatio > 0)) {
+    issues.push(issue('OOB_FORCE_IMBALANCE', 'Each side requires a positive combat value.', ['metrics', 'balanceRatio']));
   }
   if (allUnits.some(({ pointCost }) => !Number.isSafeInteger(pointCost) || pointCost < 1)) {
     issues.push(issue('INVALID_OOB_POINT_COST', 'Every generated unit requires a positive integer point cost.'));
