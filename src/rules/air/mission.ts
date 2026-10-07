@@ -41,6 +41,12 @@ import {
   activeAircraftAt,
   activeAircraftLimit,
   airBaseAt,
+  airDistance,
+  OFF_MAP_AIRFIELD_DISTANCE,
+  airLaunchHex,
+  aircraftAtAirfield,
+  atOffMapAirfield,
+  offMapAirfields,
   airBaseLevel,
   airCombatRating,
   aircraftAt,
@@ -122,12 +128,13 @@ export const validateAirMission = (state: GameState, action: AirMissionDeclarati
     const name = aircraftName(state, piece);
     const hexId = hexOf(piece);
     if (piece.ownerId !== action.actorId) issues.push(violation('NOT_PIECE_OWNER', path, `${name} is not yours.`, '14.2'));
-    if (!hexId || !friendlyAirBaseAt(state, piece.ownerId, hexId)) issues.push(violation('AIRCRAFT_NOT_AT_BASE', path, `${name} is not at a friendly Air Base.`, '14.2c'));
+    if ((!hexId || !friendlyAirBaseAt(state, piece.ownerId, hexId)) && !atOffMapAirfield(state, piece)) issues.push(violation('AIRCRAFT_NOT_AT_BASE', path, `${name} is not at a friendly Air Base.`, '14.2c'));
+    if (transfer && atOffMapAirfield(state, piece)) issues.push(violation('OFF_MAP_AIRFIELD_TRANSFER', path, `${name} is based off the map and stays there.`, 'game-specific'));
     if (!isActiveAircraft(piece)) issues.push(violation('AIRCRAFT_INACTIVE', path, `${name} is Inactive and must refit first.`, '14.1a'));
     if (state.air.missionFlownIds.includes(piece.id)) issues.push(violation('AIRCRAFT_ALREADY_FLEW', path, `${name} already flew a mission this phase.`, '14.2e'));
     const range = aircraftRange(state, piece) * (transfer ? 2 : 1);
     // A Transport's range depends on how it flies (14.9e), which the cargo checks below validate.
-    if (!isTransportMission(action.mission) && hexId && hexDistanceBetween(hexId, action.targetHexId) > range) {
+    if (!isTransportMission(action.mission) && airDistance(state, piece, action.targetHexId) > range) {
       issues.push(violation('MISSION_OUT_OF_RANGE', path, `${name} has a range of ${range} hexes${transfer ? ' for a transfer' : ''}.`, transfer ? '14.11' : '14.2d'));
     }
   }
@@ -241,7 +248,8 @@ export const declareAirMission = (state: GameState, action: AirMissionDeclaratio
       mission: action.mission,
       target: action.target,
       stage: 'AIR_COMBAT',
-      aircraft: action.aircraftIds.map((pieceId) => ({ pieceId, baseHexId: hexOf(pieceById(state, pieceId)!)! })),
+      // An off-map airfield's aircraft count from the map-edge hex they fly in over.
+      aircraft: action.aircraftIds.map((pieceId) => ({ pieceId, baseHexId: airLaunchHex(state, pieceById(state, pieceId)!, action.targetHexId)! })),
       combat: null,
       interceptorId: null,
       interceptionOffered: false,
@@ -270,7 +278,7 @@ export const declareAirMission = (state: GameState, action: AirMissionDeclaratio
 
 const setActive = (state: GameState, pieceId: PieceId, active: boolean, events: RuleEvent[]): GameState => {
   const piece = pieceById(state, pieceId);
-  if (!piece || piece.location.kind !== 'ON_MAP' || isActiveAircraft(piece) === active) return state;
+  if (!piece || !based(state, piece) || isActiveAircraft(piece) === active) return state;
   events.push({ kind: 'AIRCRAFT_STATUS_CHANGED', sequence: events.length, pieceId, active, hexId: hexOf(piece) });
   return { ...state, pieceState: upsertPieceState(state.pieceState, withAircraftActive(piece, active)) };
 };
@@ -278,7 +286,7 @@ const setActive = (state: GameState, pieceId: PieceId, active: boolean, events: 
 /** 14.1b: two steps; the second loss sends the aircraft to the Dead Pile. */
 const aircraftStepLoss = (state: GameState, pieceId: PieceId, events: RuleEvent[]): GameState => {
   const piece = pieceById(state, pieceId);
-  if (!piece || piece.location.kind !== 'ON_MAP') return state;
+  if (!piece || !based(state, piece)) return state;
   const remaining = (piece.remainingSteps ?? 1) - 1;
   events.push({ kind: 'STEP_LOST', sequence: events.length, pieceId, remainingSteps: remaining > 0 ? remaining : null });
   return {
@@ -287,7 +295,9 @@ const aircraftStepLoss = (state: GameState, pieceId: PieceId, events: RuleEvent[
   };
 };
 
-const alive = (state: GameState, pieceId: PieceId): boolean => pieceById(state, pieceId)?.location.kind === 'ON_MAP';
+/** An aircraft still in play: on the map, or at its off-map airfield. */
+const based = (state: GameState, piece: PieceState): boolean => piece.location.kind === 'ON_MAP' || atOffMapAirfield(state, piece);
+const alive = (state: GameState, pieceId: PieceId): boolean => { const piece = pieceById(state, pieceId); return piece !== undefined && based(state, piece); };
 
 const isMissionAircraft = (state: GameState, pieceId: PieceId): boolean => airOf(state).aircraft.some((entry) => entry.pieceId === pieceId);
 
@@ -336,7 +346,7 @@ const withCombat = (state: GameState, patch: Partial<AirCombatState> | null): Ga
   withAir(state, { combat: patch === null ? null : { ...airOf(state).combat!, ...patch } });
 
 const fighting = (state: GameState, ids: readonly PieceId[]): readonly PieceId[] =>
-  ids.filter((id) => { const piece = pieceById(state, id); return piece !== undefined && piece.location.kind === 'ON_MAP' && isActiveAircraft(piece); });
+  ids.filter((id) => { const piece = pieceById(state, id); return piece !== undefined && based(state, piece) && isActiveAircraft(piece); });
 
 const sideOf = (state: GameState, combat: AirCombatState, playerId: PlayerId): readonly PieceId[] =>
   playerId === state.activeTransaction!.ownerId ? combat.missionSideIds : combat.opposingSideIds;
@@ -590,7 +600,10 @@ export const previewAirBarrage = (
   const target = barrageTargetShifts(state, ownerId, targetHexId, !strategic);
   const shifts = [...target.shifts];
   // 14.7c: right one when every aircraft is within 10 hexes of its base; never for Strategic Bombers.
-  if (!strategic && aircraft.length > 0 && aircraft.every(({ baseHexId }) => hexDistanceBetween(baseHexId, targetHexId) <= SHORT_RANGE_HEXES)) {
+  // An off-map airfield's aircraft fly in over `baseHexId` (their launch hex) from one hex further out.
+  const offMap = (pieceId: PieceId) => { const piece = pieceById(state, pieceId); return piece !== undefined && atOffMapAirfield(state, piece); };
+  if (!strategic && aircraft.length > 0 && aircraft.every(({ pieceId, baseHexId }) =>
+    hexDistanceBetween(baseHexId, targetHexId) + (offMap(pieceId) ? OFF_MAP_AIRFIELD_DISTANCE : 0) <= SHORT_RANGE_HEXES)) {
     shifts.push({ reason: 'Short range', shift: 1 });
   }
   const finalColumn = Math.max(0, Math.min(BARRAGE_TABLE_COLUMNS.length - 1, initialColumn + shifts.reduce((total, { shift }) => total + shift, 0)));
@@ -730,6 +743,13 @@ const landAt = (input: GameState, entry: AirReturn, hexId: HexId | null, events:
   return state;
 };
 
+const landOffMap = (input: GameState, entry: AirReturn, events: RuleEvent[]): GameState => {
+  const state = withAir(input, { returns: airOf(input).returns.filter(({ pieceId }) => pieceId !== entry.pieceId) });
+  const piece = pieceById(state, entry.pieceId)!;
+  events.push({ kind: 'AIRCRAFT_STATUS_CHANGED', sequence: events.length, pieceId: piece.id, active: entry.staysActive, hexId: null });
+  return { ...state, pieceState: upsertPieceState(state.pieceState, withAircraftActive(piece, entry.staysActive)) };
+};
+
 const returnStep = (state: GameState, events: RuleEvent[]): Transition | GameState => {
   const transaction = state.activeTransaction!;
   const air = airOf(state);
@@ -752,6 +772,8 @@ const returnStep = (state: GameState, events: RuleEvent[]): Transition | GameSta
   const entry = air.returns[0];
   if (!entry) return finishMission(state, events);
   if (!alive(state, entry.pieceId)) return withAir(state, { returns: air.returns.slice(1) });
+  // An off-map airfield's aircraft fly back to it, normally Inactive (§6).
+  if (atOffMapAirfield(state, pieceById(state, entry.pieceId)!)) return landOffMap(state, entry, events);
   const bases = returnBases(state, entry);
   if (bases.length <= 1) return landAt(state, entry, bases[0] ?? null, events);
   const piece = pieceById(state, entry.pieceId)!;
@@ -908,7 +930,8 @@ export const resolveAirDecision = (input: GameState, choiceId: string): Transiti
 
 /** Active aircraft of `playerId` at friendly bases that have not flown this phase. */
 export const readyAircraft = (state: GameState, playerId: PlayerId): readonly PieceState[] =>
-  friendlyAirBases(state, playerId).flatMap((base) => activeAircraftAt(state, playerId, hexOf(base)!))
+  [...friendlyAirBases(state, playerId).flatMap((base) => activeAircraftAt(state, playerId, hexOf(base)!)),
+    ...offMapAirfields(state, playerId).flatMap((field) => aircraftAtAirfield(state, field).filter((piece) => isActiveAircraft(piece)))]
     .filter((piece) => !state.air.missionFlownIds.includes(piece.id))
     .sort((left, right) => String(left.id).localeCompare(String(right.id)));
 
@@ -920,7 +943,7 @@ export const airMissionTargets = (state: GameState, playerId: PlayerId, mission:
   if (mission === 'AIR_TRANSPORT' || mission === 'AIR_DROP') return transportTargets(state, playerId, mission).map((hexId) => ({ hexId, target: null }));
   const ready = readyAircraft(state, playerId).filter((piece) => mission !== 'HIP_SHOOT' || (mayHipShoot(state, piece) && !isStrategicBomber(state, piece)));
   if (ready.length === 0) return [];
-  const inRange = (hexId: HexId, factor = 1) => ready.some((piece) => hexOf(piece) !== hexId && hexDistanceBetween(hexOf(piece)!, hexId) <= aircraftRange(state, piece) * factor);
+  const inRange = (hexId: HexId, factor = 1) => ready.some((piece) => hexOf(piece) !== hexId && airDistance(state, piece, hexId) <= aircraftRange(state, piece) * factor);
   const enemy = opponentOf(state, playerId);
   const results: { hexId: HexId; target: AirMissionState['target'] }[] = [];
   for (const { id: hexId } of state.scenario.mapDefinition.hexes) {
@@ -950,7 +973,7 @@ export const airMissionTargets = (state: GameState, playerId: PlayerId, mission:
 /** Ready aircraft able to reach `hexId` for this mission, best first. */
 export const aircraftForTarget = (state: GameState, playerId: PlayerId, mission: AirMissionKind, hexId: HexId): readonly PieceState[] =>
   stableSort(readyAircraft(state, playerId).filter((piece) => hexOf(piece) !== hexId
-    && hexDistanceBetween(hexOf(piece)!, hexId) <= aircraftRange(state, piece) * (mission === 'BASE_TRANSFER' ? 2 : 1)
+    && airDistance(state, piece, hexId) <= aircraftRange(state, piece) * (mission === 'BASE_TRANSFER' ? 2 : 1)
     && (mission !== 'HIP_SHOOT' || (mayHipShoot(state, piece) && !isStrategicBomber(state, piece)))),
   (left, right) => (mission === 'FIGHTER_SWEEP' ? Number(isFighter(state, right)) - Number(isFighter(state, left)) || airCombatRating(state, right) - airCombatRating(state, left) : 0)
     || aircraftBarrageStrength(state, right) - aircraftBarrageStrength(state, left) || String(left.id).localeCompare(String(right.id)));

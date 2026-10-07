@@ -1,0 +1,58 @@
+{
+ "at": {
+  "turn": "Turn 1 / 8",
+  "player": "Axis player turn",
+  "phase": "Movement · Barrage",
+  "seat": "Axis commander",
+  "end": "End Barrage SegmentNext: Supply Phase",
+  "endDisabled": false,
+  "notice": "Movement · Movement Segment finished.",
+  "handoff": false,
+  "complete": false,
+  "decision": []
+ },
+ "buttons": [
+  "BARRAGE",
+  "TRAINBUSTING"
+ ],
+ "chips": [
+  "1612",
+  "1714",
+  "1815",
+  "1813",
+  "1814",
+  "1916",
+  "1302",
+  "1914"
+ ],
+ "aircraft": [
+  "F\nFw-190d\n74\n6\n2\nJG 301 Fw-190d\nAxis off-map airfield",
+  "F\nBf.109\n76\n4\n1\nJG 300 Bf.109\nAxis off-map airfield",
+  "T\nJu.88\n106\n(2)\n9\nKG 76 Ju.88\nAxis off-map airfield",
+  "T\nJu.88\n106\n(2)\n9\nKG 66 Ju.88\nAxis off-map airfield"
+ ],
+ "history": [
+  "▸MovementBarrage",
+  "Barrage 21 on the 17-24 column, shifted to 2: roll 8, -, no effect.",
+  "Barrage 21 on the 17-24 column, shifted to 2: roll 8, -, no effect."
+ ],
+ "roster": [
+  "FBf.109 76 41 INACTIVEJG 300 Bf.109Axis off-map airfield · Inactive",
+  "FFw-190d 74 62 INACTIVEJG 301 Fw-190dAxis off-map airfield · Inactive",
+  "TJu.88 106 (2)9 INACTIVEKG 66 Ju.88Axis off-map airfield · Inactive",
+  "TJu.88 106 (2)9 INACTIVEKG 76 Ju.88Axis off-map airfield · Inactive"
+ ],
+ "after": {
+  "turn": "Turn 1 / 8",
+  "player": "Axis player turn",
+  "phase": "Movement · Barrage",
+  "seat": "Axis commander",
+  "end": "End Barrage SegmentNext: Supply Phase",
+  "endDisabled": false,
+  "notice": "Air Barrage on 1612 flown. Flak: 7 (roll 6 +1), no effect. Barrage 21 on the 17-24 column, shifted to 2: roll 8, -, no effect.",
+  "handoff": false,
+  "complete": false,
+  "decision": []
+ }
+}
+-- 4617 ms; page errors so far 0

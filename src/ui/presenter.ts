@@ -115,7 +115,8 @@ export const actionSummary = (action: GameAction): string => {
     case 'FORM_EXTENDER': return 'Form Extender';
     case 'DISSOLVE_EXTENDER': return 'Flip Extender back to trucks';
     case 'COLLAPSE_EXTENDER': return `Collapse to ${printedHexLabel(action.hexId)}`;
-    case 'REFIT_AIRCRAFT': return `Refit ${action.aircraftIds.length} aircraft (1T)`;
+    // An off-map airfield refits from its own stocks: the base is its own source (no SP).
+    case 'REFIT_AIRCRAFT': return `Refit ${action.aircraftIds.length} aircraft${action.sourcePieceId === action.baseId ? '' : ' (1T)'}`;
     case 'DECLARE_AIR_MISSION': return `${AIR_MISSION_LABELS[action.mission]} ${printedHexLabel(action.targetHexId)} with ${action.aircraftIds.length} aircraft`;
     case 'REDUCE_AIR_BASE': return 'Reduce the Air Base one Level';
     case 'PLAN_AIR_DROP': return `Plan a drop of ${action.unitIds.length} unit${action.unitIds.length === 1 ? '' : 's'} at ${printedHexLabel(action.hexId)} on turn ${action.turn}`;

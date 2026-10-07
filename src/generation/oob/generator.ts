@@ -48,7 +48,7 @@ import {
 } from './model.js';
 import { combatValueOf, validateGeneratedOob } from './validation.js';
 import { counterIdentification, formationNameCapacity, hqName, formationNames, tigerBattalionName, unitName } from './names.js';
-import { buildAirForces } from './air.js';
+import { buildAirForces, buildOffMapAir } from './air.js';
 import { buildReplacementDefinitions } from './replacements.js';
 import { withBreakdowns } from './breakdowns.js';
 
@@ -276,6 +276,9 @@ export const normalizeRandomOobOptions = (
   if (options.attacker !== undefined && options.attacker !== 'ALLIED' && options.attacker !== 'AXIS') {
     errors.push({ code: 'INVALID_OPTIONS', message: 'The attacker must be ALLIED or AXIS.', path: ['attacker'] });
   }
+  if (options.offMapAir !== undefined && options.offMapAir !== 'ALLIED' && options.offMapAir !== 'AXIS') {
+    errors.push({ code: 'INVALID_OPTIONS', message: 'Off-map air must belong to ALLIED or AXIS.', path: ['offMapAir'] });
+  }
   return errors.length > 0 ? err(errors) : ok({
     ...ground,
     ...(air === 'STANDARD' ? { air } : {}),
@@ -385,7 +388,10 @@ const buildSide = (
   });
   // 13.5: every game gives both sides Pax and Eq; their counters are created in play as they arrive.
   definitions.push(...buildReplacementDefinitions(side, options));
-  const air = options.air === 'STANDARD' ? buildAirForces(side, options, definitions) : [];
+  const air = [
+    ...options.air === 'STANDARD' ? buildAirForces(side, options, definitions) : [],
+    ...options.offMapAir === side ? buildOffMapAir(side, options, definitions) : [],
+  ];
   // 14.10: one paratroop battalion (a Para symbol unit, 14.10a) per side for Air Drops; air transports carry them.
   const paratroops = options.air === 'STANDARD' && options.airTransport === 'STANDARD' ? (() => {
     const built = buildUnit({

@@ -1,0 +1,21 @@
+{
+ "at": {
+  "turn": "Turn 1 / 8",
+  "player": "Axis player turn",
+  "phase": "Movement",
+  "seat": "Axis commander",
+  "end": "Finish anyway: 42 units have not movedPress again to confirm",
+  "endDisabled": false,
+  "notice": "Select a unit on the map to see where it can move and what it can attack.",
+  "handoff": false,
+  "complete": false,
+  "decision": []
+ },
+ "deckTabs": [
+  "Unit",
+  "Log"
+ ],
+ "buttons": [],
+ "deck": "Move units one at a time: select a unit to see its range. Red rings mark overrun targets.\nT\nJu.88\n106\n(2)\n9\nKG 66 Ju.88\n3214 · Active\nRange 106 hexes · flies missions from its Air Base (14.2)\nDeselect\nUnit\nLog\nAll units (47)\nThis unit has no actions in this step.\nSelect a unit on the map to see where it can move and what it can attack."
+}
+-- 67 ms; page errors so far 0

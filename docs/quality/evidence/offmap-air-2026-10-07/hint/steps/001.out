@@ -1,0 +1,16 @@
+{
+ "at": {
+  "turn": "Turn 1 / 8",
+  "player": "Axis player turn",
+  "phase": "Movement · Barrage",
+  "seat": "Axis commander",
+  "end": "End Barrage SegmentNext: Supply Phase",
+  "endDisabled": false,
+  "notice": "Movement · Movement Segment finished.",
+  "handoff": false,
+  "complete": false,
+  "decision": []
+ },
+ "hint": "No enemy hex is in artillery range; aircraft can still fly an Air Barrage from the Air tab. |  | No unit selected"
+}
+-- 3967 ms; page errors so far 0

@@ -1,6 +1,6 @@
 # 劇本 0.5.0：拉近遭遇戰、加入攻守劇本
 
-狀態：**IN PROGRESS**（2026-10-07 建立）。S1–S6 完成；SCN-R3 有 1 個 seed 未達標（§5），S7 地圖外空軍尚未開始。
+狀態：**IN PROGRESS**（2026-10-07 建立）。S1–S7 完成；SCN-R3 有 1 個 seed 未達標（§5 TODO）。
 
 需求來源（使用者，2026-10-07）：「目前的劇本是遭遇戰 但我覺得初始距離過遠 請拉近。並且加入一方進攻一方防守的不對稱劇本配置。
 先關注溫帶地圖就好 東歐地圖先不管了」；之後補充：「進攻方兵力要比較多吧 至於是1.5倍還是2或3 看你」、
@@ -40,7 +40,7 @@
 | S4 | 溫帶地圖電腦互打研究與平衡調整 | DONE（§4 攻守平衡） |
 | S5 | UI：New Game 劇本選單、預覽與遊戲中顯示攻守與勝利條件 | DONE（Situation 選單、說明文字、預覽 Scenario 欄、選單摘要） |
 | S6 | 真實瀏覽器驗證（§3 SCN-R7） | DONE（`docs/quality/evidence/engagements-2026-10-07`；產品驗收列 NG-11） |
-| S7 | 地圖外空軍（只給攻方）：飛機在地圖外機場框，航程自己方地圖邊緣起算、不能被攻擊或佔領、整補不耗地圖上補給；規則、電腦、UI 與驗收列另行撰寫 | PLANNED（S1–S6 完成後） |
+| S7 | 地圖外空軍（只給攻方），設計與驗收見 §6 | DONE（§6 驗收結果） |
 
 ## 3. 驗收
 
@@ -151,4 +151,72 @@ TODO（SCN-R3）：
 電腦觀察（不屬於本劇本驗收，記入電腦的待改進）：
 - 攻方的斷補單位回合偏高（每局 10–14）。
 - heuristic 當守方時，有 2 局輸給 1.5 倍兵力的隨機攻方。
+
+## 6. S7 地圖外空軍（只給攻方）
+
+需求：「可以加入off map 空軍」；使用者決定只給進攻方，攻守劇本完成後再做（2026-10-07）。
+OCS 系列規則沒有地圖外機場（屬遊戲專屬規則，例如 BTR 的英國基地）。下面是本專案的設計，已記錄可隨時調整。
+
+### 設計
+
+| 項目 | 內容 |
+|---|---|
+| 表示方式 | 機場與飛機都在**地圖外的 off-map box**（每個攻方一個，名稱如「Axis off-map airfield」），地圖上沒有任何東西。飛機從己方地圖邊緣的進場格飛入：航程 = 到目標最近的己方進場格距離 + 1 格；任務結束回到 box。單位清單、任務與整補畫面顯示「Axis off-map airfield」 |
+| 不受攻擊 | 不在地圖上，所以敵方無法砲擊、佔領或縮減；敵方也看不到 box 內容（4.9）。不能 Base Transfer 離開 box（`OFF_MAP_AIRFIELD_TRANSFER`）。box 內的戰鬥機沒有巡邏區、不能攔截（巡邏區以地圖上的機場為中心，14.4c） |
+| 容量 | 沒有 Active 飛機上限；整補時所有 Inactive 飛機都可整補 |
+| 整補 | 不耗地圖上的 SP，也不受敵方 ZOC 限制（地圖外的補給，比照 12.3e 地圖外 holding box 有自己的補給） |
+| 其他規則 | 任務、空戰、攔截、防空、巡邏區（10 格）都照系列規則 |
+| 兵力 | 攻守戰的攻方一律有地圖外空軍：Compact 2 戰鬥機＋2 戰術轟炸機，Standard 3＋3，Large 4＋4；與 New Game 的「Air forces」選項無關，選了地圖上空軍則兩者都有 |
+| 電腦 | 目前電腦只會整補、不會出任務。S7b 讓電腦（攻方）用空中砲擊支援主攻，S7a 只做規則、生成與 UI |
+
+### 步驟
+
+| # | 內容 | 狀態 |
+|---|---|---|
+| S7a | 規則（設施類型與上述效果）、OOB 與部署、UI 標示；測試 | DONE（`tests/rules/off-map-airfield.test.ts` 7 項、`engagements.test.ts` AIR-OM1） |
+| S7b | 電腦用空中砲擊：主攻目標在攻擊前先轟炸；重跑攻守平衡 | DONE（heuristic@6） |
+| S7c | 真實瀏覽器：攻守戰預覽與遊戲中看得到地圖外機場與飛機；從那裡出一次空中砲擊並整補 | DONE（`docs/quality/evidence/offmap-air-2026-10-07`；產品驗收列 NG-12） |
+
+### 驗收
+
+| 列 | 條件 | 量測 |
+|---|---|---|
+| AIR-OM1 | 攻守戰的攻方有地圖外機場與上表數量的飛機，開局 Active；遭遇戰與守方沒有 | 生成／部署測試 |
+| AIR-OM2 | 地圖外機場與飛機在 off-map box、不在任何格；不會被當成增援；沒有 Active 上限；整補全部飛機、不耗 SP | 規則測試（逐項） |
+| AIR-OM3 | 從地圖外機場出空中砲擊、空戰、攔截、返航、整補，以及存檔讀回，都照規則運作 | 規則測試 |
+| AIR-OM4 | 電腦互打（攻守戰 2 種 × 20 局）：0 錯誤；攻方確實出空中砲擊（每局 ≥ 1 次）；攻方勝率仍在 30%–70%，超出則調整兵力倍數並記錄 | `ai-match` |
+| AIR-OM5 | 真實瀏覽器（S7c） | 產品操作驗證 |
+
+### 實作紀錄
+
+- 第一版把機場放在攻方地圖邊緣的一格（畫面上看得到），使用者指出「off map 怎麼在場內」，改成真正的地圖外 box。
+- 規則：設施類型 `facility:off-map-airfield`（`isOffMapAirfield`）放在 off-map box，同一 box 的己方飛機算駐在該機場（`atOffMapAirfield`）。
+  - 航程：`airDistance` = 最近己方進場格到目標的距離 + `OFF_MAP_AIRFIELD_DISTANCE`（1）；任務起點記為該進場格（`airLaunchHex`）。短程右移（14.7c）也用這個距離。
+  - 任務：驗證、候選（`readyAircraft`、目標範圍）、空戰／損失、返航都把 box 內的飛機算作在基地；返航時留在 box，通常 Inactive。
+  - 整補：來源是機場本身、不扣 SP；上限 99（代表無上限）。
+  - 增援：box 內的飛機不算待進場的增援（`arrivingReinforcements`）。
+- 生成：OOB 選項 `offMapAir`（攻守戰設為攻方）產生機場（Level 3）與上表的戰鬥機、轟炸機，`staging: 'OFF_MAP_AIRFIELD'`。
+  部署放進 `GENERATED_OFF_MAP_AIRFIELD_BOXES[side]`，劇本宣告這個 box（`kind: OFF_MAP`、名稱「… off-map airfield」）。
+- UI：
+  - 單位清單、任務與整補畫面的位置顯示 box 名稱。
+  - 整補面板寫「Off-map airfield · refits every aircraft from its own stocks, no SP · no Active limit」。
+  - 任務選項也算 box 內的飛機（原本只看地圖上的飛機，按鈕會是灰的；`tests/ui/off-map-air.test.ts`）。
+  - 砲擊段只有飛機能砲擊時，提示改指向 Air 分頁。
+  - New Game 說明與預覽提到地圖外空軍。
+- 電腦（heuristic@6）：自己的 Movement Phase 砲擊段先用飛機（全部可用的、最多 4 架，含戰鬥機護航）轟炸主攻目標，
+  否則轟炸我方單位相鄰的敵方堆疊；再用砲兵打其他格。
+
+### S7 驗收結果（off-map box 版）
+
+| 列 | 結果 | 證據 |
+|---|---|---|
+| AIR-OM1 | PASS：攻方 Compact 2＋2 架、開局 Active，與機場一起在劇本宣告的 off-map box；遭遇戰與守方沒有 | `engagements.test.ts` |
+| AIR-OM2 | PASS：機場與飛機在 box、不在任何格；第 3 回合增援階段不會被當成增援；上限 ≥ 99；整補 4 架不耗 SP 且留在 box | `tests/rules/off-map-airfield.test.ts`（8 項） |
+| AIR-OM3 | PASS：航程 = 最近己方進場格距離 + 1；從 box 出空中砲擊並回到 box（Inactive）；不能 Base Transfer 離開；存檔讀回仍在 box。空戰與攔截沿用既有規則與測試 | 同上、`ocs-air.test.ts` |
+| AIR-OM4 | PASS：heuristic@6 互打（seed 40000／40500）攻方 26／40（65%；Allied 進攻 14-6、Axis 進攻 12-8），40 局全部打完、replay 相符、0 錯誤；攻方每局空中砲擊 5–8 次。與第一版（機場在地圖邊緣一格）結果相同，因為這張地圖遠小於飛機航程 | `ai-match`、`scripts/ai-air-count.mjs` |
+| AIR-OM5 | PASS（2026-10-07，真實瀏覽器，box 版） | `docs/quality/evidence/offmap-air-2026-10-07/README.md`；產品驗收列 NG-12 |
+
+- 攻方勝率從沒有空軍時的 45% 升到 65%，仍在 30%–70% 之內，但接近上限。
+  若要接近五五波，可以減少地圖外飛機數，或把兵力倍數降到 1.4；目前維持設計值，待使用者決定。
+- box 內的戰鬥機不能攔截敵方任務（沒有地圖上的巡邏區）。這是設計上的簡化，已寫在設計表。
 

@@ -12,7 +12,7 @@ import { parseSeatId, type SeatBinding } from '../gameplay/index.js';
 import type { GeneratedMap } from '../generation/map/index.js';
 import type { GeneratedOob, OobSide } from '../generation/oob/index.js';
 import { createGeneratedRuleConfiguration } from './configuration.js';
-import { GENERATED_REINFORCEMENT_BOXES } from './deployment.js';
+import { GENERATED_OFF_MAP_AIRFIELD_BOXES, GENERATED_REINFORCEMENT_BOXES } from './deployment.js';
 import type {
   GameFlowFailure,
   GeneratedDeployment,
@@ -87,6 +87,13 @@ export const composeGeneratedScenario = (
         name: 'Axis reinforcements',
         linkedHexId: generatedMap.strategicRegions.secondEntryHexIds[0] ?? null,
       },
+      // §6: the attacker's off-map airfield; its aircraft fly in over that side's entry hexes.
+      ...(deployment.attacker === null ? [] : [{
+        id: GENERATED_OFF_MAP_AIRFIELD_BOXES[deployment.attacker],
+        kind: 'OFF_MAP' as const,
+        name: `${deployment.attacker === 'ALLIED' ? 'Allied' : 'Axis'} off-map airfield`,
+        linkedHexId: (deployment.attacker === 'ALLIED' ? generatedMap.strategicRegions.firstEntryHexIds : generatedMap.strategicRegions.secondEntryHexIds)[0] ?? null,
+      }]),
     ], tracks: [], pools: [],
     entries: [
       ...declarations('entry', generatedMap.strategicRegions.firstEntryHexIds, 'ALLIED'),
