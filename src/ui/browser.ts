@@ -480,7 +480,7 @@ const engagementHelp = (engagement: Engagement): string => {
   const attacker = attackerOf(engagement);
   if (attacker === null) return 'Both armies start about ten hexes apart and each holds the same objective VP. The side holding more VP when the last turn ends wins; equal VP is a draw.';
   const [attacking, defending] = attacker === 'ALLIED' ? ['Allied', 'Axis'] : ['Axis', 'Allied'];
-  return `${defending} holds most of the map and every objective, its line in Combat Mode; ${attacking} fields ${ATTACKER_FORCE_RATIO} times the divisions plus off-map air (Fighters and Tactical Bombers at an airfield off the map, flying in over its own map edge and back), assembles a few hexes away and moves first. ${attacking} wins by holding at least half the objective VP when the last turn ends; otherwise ${defending} wins.`;
+  return `${defending} holds most of the map and every objective, its line in Combat Mode, with garrisons on its objectives and on key rail towns and road junctions; ${attacking} fields ${ATTACKER_FORCE_RATIO} times the divisions plus off-map air (Fighters and Tactical Bombers at an airfield off the map, flying in over its own map edge and back), assembles a few hexes away and moves first. ${attacking} wins by holding at least half the objective VP when the last turn ends; otherwise ${defending} wins.`;
 };
 
 const engagementLabel = (engagement: Engagement): string => {
