@@ -751,11 +751,16 @@ export const deployGeneratedForces = (
     AXIS: [...map.strategicRegions.secondEntryHexIds, ...map.strategicRegions.secondSupplyHexIds],
   };
   const depth = (side: OobSide, hexId: HexId): number => Math.min(...edgeHexes[side].map((edge) => distance(hexId, edge)));
+  // The front is where the field army stands: garrisons (objectives, key points) and their stocks hold only their own
+  // hex (13.3h: a combat unit in a hex controls it), so the ground between the armies stays neutral.
+  const garrisonIds = new Set(oob.sides.map(({ garrisonDefinitionId }) => garrisonDefinitionId));
+  const holdsOwnHex = (piece: PieceState): boolean => garrisonIds.has(piece.definitionId) || String(piece.id).includes('-stock-');
   const frontOf = (side: OobSide): number => Math.max(-Infinity, ...pieces.flatMap((piece) =>
-    piece.ownerId === players[side] && piece.location.kind === 'ON_MAP' ? [depth(side, piece.location.hexId)] : []));
+    piece.ownerId === players[side] && piece.location.kind === 'ON_MAP' && !holdsOwnHex(piece) ? [depth(side, piece.location.hexId)] : []));
   const fronts: Readonly<Record<OobSide, number>> = { ALLIED: frontOf('ALLIED'), AXIS: frontOf('AXIS') };
+  const garrisoned = new Map(pieces.flatMap((piece) => holdsOwnHex(piece) && piece.location.kind === 'ON_MAP' ? [[piece.location.hexId, piece.ownerId] as const] : []));
   const zoneControl = (['ALLIED', 'AXIS'] as const).flatMap((side) => zones[side]
-    .filter(({ id }) => !seeded.has(id) && depth(side, id) <= fronts[side])
+    .filter(({ id }) => !seeded.has(id) && (depth(side, id) <= fronts[side] || garrisoned.get(id) === players[side]))
     .map(({ id }) => ({ hexId: id, controllerId: players[side] })));
   const initialMapState: MapState = {
     schemaVersion: FOUNDATION_SCHEMA_VERSION,
