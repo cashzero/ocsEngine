@@ -1,7 +1,7 @@
 /**
  * Every number the heuristic policy weighs with, so self-play training (scripts/ai-train.mjs) can tune them.
- * Defaults: heuristic@2 (heuristic@1 as accepted in docs/reports/M9-bot-behavior-baseline.md, plus the replay-study
- * changes in docs/reports/M9-replay-study.md).
+ * Defaults: heuristic@3 (heuristic@1 as accepted in docs/reports/M9-bot-behavior-baseline.md, plus the replay-study
+ * changes of heuristic@2 and @3 in docs/reports/M9-replay-study.md).
  */
 export interface HeuristicWeights {
   // Operational plan.
@@ -29,6 +29,16 @@ export interface HeuristicWeights {
   readonly progressFront: number;
   readonly progressTarget: number;
   readonly huntAdjacent: number;
+  // Main effort (bot-offensive-axis): one defended enemy objective attacked by a group with HQ and SP behind it.
+  /** Assault group strength over the defenders' before the effort is launched and while it gathers. */
+  readonly assaultRatio: number;
+  /** Friendly combat units counted within this many hexes when judging whether an effort is feasible. */
+  readonly assaultReach: number;
+  readonly assaultMaxUnits: number;
+  readonly assaultPosition: number;
+  /** Multiplies the objective term of a combat against the main effort's target. */
+  readonly assaultObjective: number;
+  readonly barrageMainEffort: number;
   readonly garrisonStay: number;
   readonly contactGood: number;
   readonly contactBad: number;
@@ -47,6 +57,9 @@ export interface HeuristicWeights {
   readonly artilleryBeyondRange: number;
   readonly artilleryWithArmy: number;
   readonly artilleryExposed: number;
+  /** Artillery within this many hexes of the enemy needs a friendly combat unit in its hex (replays: half the units attacked were lone artillery). */
+  readonly artilleryEscortDistance: number;
+  readonly artilleryUnescorted: number;
   readonly artilleryExposure: number;
   readonly rearExposure: number;
   readonly rearExposed: number;
@@ -84,10 +97,10 @@ export const DEFAULT_HEURISTIC_WEIGHTS: HeuristicWeights = Object.freeze({
   garrisonThreatened: 1.3, garrisonEmpty: 1.5, garrisonCalm: 0.8, garrisonSecondUnitThreat: 6, captureBaseUnits: 2, captureStrengthPerUnit: 6,
   huntValue: 3, huntInfiltrationRadius: 3, huntAnchorRadius: 2, huntStrengthPerUnit: 5,
   capture: 40, passThroughShare: 0.25, abandonObjective: 30, holdAtEnd: 15, crowding: 3, stratNearEnemy: 60, stratSafeDistance: 3, progressFront: 6, progressTarget: 10,
-  huntAdjacent: 15, garrisonStay: 30, contactGood: 6, contactBad: 8, contactRatio: 1.5, exposureSupport: 1.5,
+  huntAdjacent: 15, assaultRatio: 2.5, assaultReach: 8, assaultMaxUnits: 6, assaultPosition: 20, assaultObjective: 2, barrageMainEffort: 5, garrisonStay: 30, contactGood: 6, contactBad: 8, contactRatio: 1.5, exposureSupport: 1.5,
   outOfSupply: 60, outOfSupplyFed: 10, fedRadius: 3, hqDependentSupply: 8,
   hqWithArmy: 6, hqExposed: 60, hqOutOfSupply: 60, hqExposure: 2,
-  artilleryInRange: 20, artilleryBeyondRange: 4, artilleryWithArmy: 6, artilleryExposed: 60, artilleryExposure: 1.5,
+  artilleryInRange: 20, artilleryBeyondRange: 4, artilleryWithArmy: 6, artilleryExposed: 60, artilleryEscortDistance: 3, artilleryUnescorted: 40, artilleryExposure: 1.5,
   rearExposure: 4, rearExposed: 80, truckTowardGoal: 5, truckExposed: 80, truckExposure: 4,
   combatModeDistance: 3, stratModeEnemyDistance: 10, stratModeTargetDistance: 8, hqCombatModeRadius: 3,
   attackThreshold: 4, overrunThresholdFactor: 2, defenderLoss: 10, defenderOption: 5, attackerLoss: 10, attackerOption: 3,
@@ -97,7 +110,7 @@ export const DEFAULT_HEURISTIC_WEIGHTS: HeuristicWeights = Object.freeze({
 
 /** Weights that count hexes or units: mutations keep them whole numbers of at least 1. */
 export const WHOLE_NUMBER_WEIGHTS: readonly (keyof HeuristicWeights)[] = [
-  'garrisonSecondUnitThreat', 'captureBaseUnits', 'huntInfiltrationRadius', 'huntAnchorRadius', 'stratSafeDistance', 'fedRadius',
+  'garrisonSecondUnitThreat', 'artilleryEscortDistance', 'assaultReach', 'assaultMaxUnits', 'captureBaseUnits', 'huntInfiltrationRadius', 'huntAnchorRadius', 'stratSafeDistance', 'fedRadius',
   'combatModeDistance', 'stratModeEnemyDistance', 'stratModeTargetDistance', 'hqCombatModeRadius',
 ];
 
