@@ -1,0 +1,30 @@
+{
+ "forces": [
+  "ALLIED: ",
+  "AXIS: Air forces: 4 aircraft, off-map airfield"
+ ],
+ "onMap": [],
+ "roster": [
+  "FBf.109 76 41 JG 300 Bf.109Axis off-map airfield · Active",
+  "FFw-190d 74 62 JG 301 Fw-190dAxis off-map airfield · Active",
+  "TJu.88 106 (2)9 KG 66 Ju.88Axis off-map airfield · Active",
+  "TJu.88 106 (2)9 KG 76 Ju.88Axis off-map airfield · Active"
+ ],
+ "deckTabs": [
+  "Unit",
+  "Log"
+ ],
+ "at": {
+  "turn": "Turn 1 / 8",
+  "player": "Axis player turn",
+  "phase": "Movement",
+  "seat": "Axis commander",
+  "end": "End Movement SegmentNext: Barrage Segment",
+  "endDisabled": false,
+  "notice": "Select a unit on the map to see where it can move and what it can attack.",
+  "handoff": false,
+  "complete": false,
+  "decision": []
+ }
+}
+-- 64962 ms; page errors so far 0

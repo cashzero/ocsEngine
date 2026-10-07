@@ -58,6 +58,9 @@ export const FULL_AIR_NEW_GAME_REQUEST: NewGameRequest = {
   oob: { ...RULE_FIXTURE_NEW_GAME_REQUEST.oob, air: 'STANDARD', airTransport: 'STANDARD' },
 };
 
+/** A placement that keeps the Piece's scenario location (e.g. an off-map box) instead of putting it on a hex. */
+export const KEEP_LOCATION = 'KEEP';
+
 /** Tokens in every placed supply dump of a rule fixture, whatever the OOB generator starts a game with. */
 export const RULE_FIXTURE_DUMP_TOKENS = 4;
 
@@ -122,6 +125,8 @@ export const buildGeneratedRuleScenario = (
     const spec = placement[piece.id];
     if (!spec) return { ...piece, location: { kind: 'ELIMINATED' as const }, stackOrder: 0 };
     const [hexId, mode, face] = spec;
+    // KEEP leaves an off-map Piece (an off-map airfield and its aircraft) where the scenario put it.
+    if (hexId === KEEP_LOCATION) return { ...piece, ...(piece.resourceQuantity !== null ? { resourceQuantity: RULE_FIXTURE_DUMP_TOKENS } : {}) };
     return {
       ...piece,
       location: { kind: 'ON_MAP' as const, hexId: hexId as HexId },

@@ -52,6 +52,12 @@ export const GENERATED_REINFORCEMENT_BOXES: Readonly<Record<OobSide, MapBoxId>> 
   AXIS: reinforcementBoxId('box:generated:axis-reinforcements'),
 };
 
+/** The off-map box holding a side's off-map airfield and its aircraft (docs/roadmap/13-engagement-scenarios-wbs.md §6). */
+export const GENERATED_OFF_MAP_AIRFIELD_BOXES: Readonly<Record<OobSide, MapBoxId>> = {
+  ALLIED: reinforcementBoxId('box:generated:allied-off-map-airfield'),
+  AXIS: reinforcementBoxId('box:generated:axis-off-map-airfield'),
+};
+
 const distance = (first: HexId, second: HexId): number => {
   const left = parseHexCoordinateId(first);
   const right = parseHexCoordinateId(second);
@@ -404,8 +410,10 @@ export const deployGeneratedForces = (
     const denseSlots = ranked.flatMap(({ hex }) => [hex.id, hex.id, hex.id]);
     const units = allUnits(oob).filter((unit) => unit.side === side);
     const supplyUnits = units.filter(({ role, staging }) => role === 'SUPPLY' && staging !== 'AIR_BASE');
-    const airBases = units.filter(({ role }) => role === 'AIR_BASE');
-    const aircraft = units.filter(({ role, arrivalTurn }) => role === 'AIRCRAFT' && arrivalTurn === undefined);
+    const airBases = units.filter(({ role, staging }) => role === 'AIR_BASE' && staging === undefined);
+    const aircraft = units.filter(({ role, arrivalTurn, staging }) => role === 'AIRCRAFT' && arrivalTurn === undefined && staging === undefined);
+    // The off-map airfield and its aircraft are in the side's off-map airfield box, not on the map (§6).
+    const offMapAir = units.filter(({ staging }) => staging === 'OFF_MAP_AIRFIELD');
     // 13.6: reinforcing aircraft wait in the side's reinforcement box and arrive Active on their Game Turn.
     const arrivingAircraft = units.filter(({ role, arrivalTurn }) => role === 'AIRCRAFT' && arrivalTurn !== undefined);
     const stagedUnits = units.filter(({ staging }) => staging === 'AIR_BASE');
@@ -558,6 +566,20 @@ export const deployGeneratedForces = (
       // Paratroops wait at the first Air Base (14.9c); without an Air Base they deploy as ordinary field units would not, so the map must have one.
       ...stagedUnits.flatMap((unit) => baseHexes[0] === undefined ? [] : [{ unit, hexId: baseHexes[0] }]),
     );
+    for (const [order, unit] of offMapAir.entries()) {
+      const definition = definitionById.get(unit.definitionId);
+      const parsedId = parsePieceId(unit.id);
+      if (!definition || !parsedId.ok) return { ok: false, error: [deploymentFailure(`OOB unit ${unit.id} cannot be converted to runtime state.`)] };
+      pieces.push({
+        id: parsedId.value, definitionId: unit.definitionId, ownerId: sidePlayer(side, players),
+        location: { kind: 'OFF_MAP_BOX', boxId: GENERATED_OFF_MAP_AIRFIELD_BOXES[side] },
+        currentFaceId: deployedFace(definition)?.id ?? null, remainingSteps: fullStrength(definition), mode: null,
+        // The airfield keeps a Level like any Air Base (15.0b); its aircraft start Active (IV-E).
+        statuses: unit.role === 'AIR_BASE'
+          ? [{ statusDefinitionId: 'status:air-base-level' as never, value: { kind: 'INTEGER', value: initialAirBaseLevel(definition) ?? 1 } }] : [],
+        stackOrder: order, resourceQuantity: null,
+      });
+    }
     for (const [arrivalIndex, unit] of arrivingAircraft.entries()) {
       const definition = definitionById.get(unit.definitionId);
       const parsedId = parsePieceId(unit.id);

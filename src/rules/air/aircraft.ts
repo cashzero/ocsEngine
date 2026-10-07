@@ -20,6 +20,17 @@ export const AIR_BASE_LEVEL_STATUS = statusId('status:air-base-level');
 
 export const AIR_BASE_FACILITY = 'facility:air-base';
 export const AIR_STRIP_FACILITY = 'facility:air-strip';
+/**
+ * A game-specific off-map airfield (docs/roadmap/13-engagement-scenarios-wbs.md §6): a facility in an off-map box, with
+ * its aircraft in the same box. They fly in over their side's map edge (range counted from the nearest of its entry
+ * hexes, plus OFF_MAP_AIRFIELD_DISTANCE) and come back to the box. Nothing on the map can reach it; it holds any number
+ * of Active aircraft and refits every one each Aircraft Refit Phase from its own stocks (cf. 12.3e).
+ */
+export const OFF_MAP_AIRFIELD_FACILITY = 'facility:off-map-airfield';
+/** Stands in for "no limit" on an off-map airfield's Active aircraft and refits. */
+const OFF_MAP_AIRFIELD_LIMIT = 99;
+/** Hexes between an off-map airfield and its side's map edge. */
+export const OFF_MAP_AIRFIELD_DISTANCE = 1;
 /** Capability carrying the aircraft type and the parenthesized Air Combat Rating flag (3.5, 14.1, 14.3a). */
 export const AIRCRAFT_CAPABILITY = 'AIRCRAFT';
 /** 14.7d B: nationalities the game-specific rules allow to Hip Shoot. */
@@ -35,7 +46,54 @@ export const isAircraft = (state: GameState, piece: PieceState): boolean => defi
 
 export const isAirBase = (state: GameState, piece: PieceState): boolean => {
   const facility = definitionOf(state, piece)?.facility?.facilityTypeDefinitionId;
-  return facility === AIR_BASE_FACILITY || facility === AIR_STRIP_FACILITY;
+  return facility === AIR_BASE_FACILITY || facility === AIR_STRIP_FACILITY || facility === OFF_MAP_AIRFIELD_FACILITY;
+};
+
+export const isOffMapAirfield = (state: GameState, piece: PieceState): boolean =>
+  definitionOf(state, piece)?.facility?.facilityTypeDefinitionId === OFF_MAP_AIRFIELD_FACILITY;
+
+const sameBox = (left: PieceState, right: PieceState): boolean => left.location.kind === 'OFF_MAP_BOX' && right.location.kind === 'OFF_MAP_BOX'
+  && left.location.boxId === right.location.boxId;
+
+/** A player's off-map airfields (in their boxes). */
+export const offMapAirfields = (state: GameState, playerId: PlayerId): readonly PieceState[] =>
+  state.pieceState.pieces.filter((piece) => piece.ownerId === playerId && piece.location.kind === 'OFF_MAP_BOX' && isOffMapAirfield(state, piece));
+
+/** The off-map airfield in the box where `piece` stands, if it stands in one. */
+export const offMapAirfieldOf = (state: GameState, piece: PieceState): PieceState | undefined => piece.location.kind !== 'OFF_MAP_BOX' ? undefined
+  : offMapAirfields(state, piece.ownerId).find((field) => sameBox(field, piece));
+
+/** An aircraft based at an off-map airfield. */
+export const atOffMapAirfield = (state: GameState, piece: PieceState): boolean => isAircraft(state, piece) && offMapAirfieldOf(state, piece) !== undefined;
+
+/** The aircraft at an off-map airfield. */
+export const aircraftAtAirfield = (state: GameState, field: PieceState): readonly PieceState[] =>
+  state.pieceState.pieces.filter((piece) => piece.ownerId === field.ownerId && sameBox(piece, field) && isAircraft(state, piece));
+
+/** The aircraft at a base: in its hex on the map, or in its box off the map. */
+export const aircraftAtBase = (state: GameState, base: PieceState): readonly PieceState[] => isOffMapAirfield(state, base)
+  ? aircraftAtAirfield(state, base) : hexOf(base) === null ? [] : aircraftAt(state, hexOf(base)!).filter((piece) => piece.ownerId === base.ownerId);
+
+/** The map-edge hexes an off-map airfield's aircraft fly in over: their side's entry hexes. */
+const launchHexes = (state: GameState, playerId: PlayerId): readonly HexId[] => {
+  const side = state.scenario.players.find(({ id }) => id === playerId)?.sideDefinitionId;
+  return state.scenario.entries.filter(({ sideDefinitionId }) => sideDefinitionId === side).map(({ hexId }) => hexId);
+};
+
+/** Where `piece` flies from toward `targetHexId`: its base hex, or for an off-map airfield the nearest launch hex. */
+export const airLaunchHex = (state: GameState, piece: PieceState, targetHexId: HexId): HexId | null => {
+  const hexId = hexOf(piece);
+  if (hexId !== null) return hexId;
+  if (!atOffMapAirfield(state, piece)) return null;
+  return [...launchHexes(state, piece.ownerId)].sort((left, right) => hexDistanceBetween(left, targetHexId) - hexDistanceBetween(right, targetHexId)
+    || String(left).localeCompare(String(right)))[0] ?? null;
+};
+
+/** Hexes `piece` flies to reach `targetHexId` (14.2d); an off-map airfield adds the way to the map edge. */
+export const airDistance = (state: GameState, piece: PieceState, targetHexId: HexId): number => {
+  const launch = airLaunchHex(state, piece, targetHexId);
+  if (launch === null) return Number.POSITIVE_INFINITY;
+  return hexDistanceBetween(launch, targetHexId) + (hexOf(piece) === null ? OFF_MAP_AIRFIELD_DISTANCE : 0);
 };
 
 /** 15.2: Air Strips are small bases with fixed limits. */
@@ -112,10 +170,12 @@ export const withAirBaseLevel = (piece: PieceState, level: number): PieceState =
   withStatus(piece, AIR_BASE_LEVEL_STATUS, { kind: 'INTEGER', value: level });
 
 /** 15.0bA, 15.2B: aircraft an Air Base may refit in one Aircraft Refit Phase. */
-export const refitCapacity = (state: GameState, base: PieceState): number => isAirStrip(state, base) ? 1 : 2 * airBaseLevel(state, base);
+export const refitCapacity = (state: GameState, base: PieceState): number =>
+  isOffMapAirfield(state, base) ? OFF_MAP_AIRFIELD_LIMIT : isAirStrip(state, base) ? 1 : 2 * airBaseLevel(state, base);
 
 /** 14.2a, 15.0bD, 15.2D: Active aircraft allowed at a friendly Air Base. */
-export const activeAircraftLimit = (state: GameState, base: PieceState): number => 4 + airBaseLevel(state, base);
+export const activeAircraftLimit = (state: GameState, base: PieceState): number =>
+  isOffMapAirfield(state, base) ? OFF_MAP_AIRFIELD_LIMIT : 4 + airBaseLevel(state, base);
 
 export const airBaseAt = (state: GameState, hexId: HexId): PieceState | undefined =>
   state.pieceState.pieces.find((piece) => piece.location.kind === 'ON_MAP' && piece.location.hexId === hexId && isAirBase(state, piece));

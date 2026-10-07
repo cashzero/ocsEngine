@@ -43,6 +43,7 @@ const airBaseView = (definition: PieceDefinition, piece: CounterPiece) => {
   return {
     redacted: false as const, kind: 'air-base' as const, label: definition.name, nation: nationOf(definition),
     level: typeof level === 'number' ? level : 1, strip: definition.facility?.facilityTypeDefinitionId === 'facility:air-strip',
+    offMap: definition.facility?.facilityTypeDefinitionId === 'facility:off-map-airfield',
   };
 };
 
@@ -61,7 +62,7 @@ const replacementView = (definition: PieceDefinition, piece: CounterPiece) =>
 
 export const counterView = (definition: PieceDefinition, piece: CounterPiece) => {
   if (definition.family === 'AIR') return aircraftView(definition, piece);
-  if (definition.facility?.facilityTypeDefinitionId === 'facility:air-base' || definition.facility?.facilityTypeDefinitionId === 'facility:air-strip') return airBaseView(definition, piece);
+  if (['facility:air-base', 'facility:air-strip', 'facility:off-map-airfield'].includes(String(definition.facility?.facilityTypeDefinitionId))) return airBaseView(definition, piece);
   if (definition.family === 'REPLACEMENT') return replacementView(definition, piece);
   // A visible enemy counter shows its face; steps lost are hidden (4.9a), so show the printed face.
   if (piece.redacted && piece.currentFaceId === null && definition.counter?.kind !== 'SUPPLY') return { redacted: true as const, label: 'Enemy unit' };
@@ -229,7 +230,12 @@ const aircraftBody = (view: Extract<CounterViewModel, { kind: 'aircraft' }>): st
 /** Transport capacity as the counter prints it: 1T, 1/2T, 2T (the value is in half-Tokens). */
 const capacityText = (halfTokens: number): string => halfTokens % 2 === 0 ? `${halfTokens / 2}T` : `${(halfTokens - 1) / 2 === 0 ? '' : (halfTokens - 1) / 2}${(halfTokens - 1) / 2 === 0 ? '' : ' '}1/2T`;
 
-const airBaseBody = (view: Extract<CounterViewModel, { kind: 'air-base' }>): string => view.strip
+// An off-map airfield (game-specific) prints "OFF MAP" where an Air Base prints its Level.
+const airBaseBody = (view: Extract<CounterViewModel, { kind: 'air-base' }>): string => view.offMap
+  ? `<circle class="air-base-disc nation-${view.nation}" cx="50" cy="50" r="47"/>
+    <g class="counter-symbol air-base-runways"><path d="M18 66L82 34M22 40L74 72M50 18V60"/></g>
+    <g class="counter-values">${svgText(50,86,'OFF MAP','counter-number air-strip-text')}</g>`
+  : view.strip
   ? `<circle class="air-base-disc air-strip nation-${view.nation}" cx="50" cy="50" r="47"/>
     <g class="counter-symbol air-base-runways"><path d="M20 62L80 38"/></g>
     <g class="counter-values">${svgText(50,84,'STRIP','counter-number air-strip-text')}</g>`

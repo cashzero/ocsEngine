@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import {
   DEFAULT_NEW_GAME_REQUEST,
+  OFF_MAP_AIR_MIX,
+  isActiveAircraft,
+  isOffMapAirfield,
+  atOffMapAirfield,
   calculateVictory,
   parseGameStateJson,
   serializeGameState,
@@ -169,5 +173,25 @@ describe('attack victory (SCN-R4)', () => {
     const parsed = parseGameStateJson(serialized.value);
     expect(parsed.ok && parsed.value.configuration.attackVictory).toEqual(state.configuration.attackVictory);
     expect(started(requestFor('MEETING', 0)).state.configuration.attackVictory).toBeUndefined();
+  });
+});
+
+describe('off-map air (AIR-OM1)', () => {
+  it('gives only an attacker an off-map airfield with its Fighters and Tactical Bombers, all Active, in an off-map box', () => {
+    for (const engagement of ['MEETING', 'ALLIED_ATTACKS', 'AXIS_ATTACKS'] as const) {
+      const { prepared, state } = started(requestFor(engagement, 1));
+      const fields = state.pieceState.pieces.filter((piece) => isOffMapAirfield(state, piece));
+      const attacker = prepared.deployment.attacker;
+      if (attacker === null) { expect(fields).toEqual([]); continue; }
+      expect(fields.map(({ ownerId }) => String(ownerId))).toEqual([`player:${attacker.toLowerCase()}`]);
+      const field = fields[0]!;
+      // Off the map: in its own declared box, not on any hex.
+      expect(field.location.kind).toBe('OFF_MAP_BOX');
+      expect(state.scenario.boxes.some(({ id }) => field.location.kind === 'OFF_MAP_BOX' && id === field.location.boxId)).toBe(true);
+      const planes = state.pieceState.pieces.filter((piece) => atOffMapAirfield(state, piece));
+      const mix = OFF_MAP_AIR_MIX[prepared.request.oob.scale];
+      expect(planes).toHaveLength(mix.fighters + mix.bombers);
+      expect(planes.every((plane) => plane.ownerId === field.ownerId && isActiveAircraft(plane))).toBe(true);
+    }
   });
 });

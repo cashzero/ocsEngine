@@ -10,7 +10,8 @@ import { previewBarrage } from '../combat/combat.js';
 import { BARRAGE_TABLE_COLUMNS } from '../tables/ocs-4.3.js';
 import type { PieceRole, ProjectedCombat, ProjectedPiece, ProjectedStack, RuleProjection } from './model.js';
 import { AIR_MISSION_LABELS, previewAirBarrage } from '../air/mission.js';
-import { activeAircraftLimit, airBaseLevel, aircraftName, isActiveAircraft, isAirBase, isAircraft, isFighter, patrolZoneHexes, refitBlockedByZoc, refitCapacity } from '../air/aircraft.js';
+import { activeAircraftLimit, airBaseLevel, aircraftName, isActiveAircraft, isAirBase,
+  offMapAirfields, aircraftAtAirfield, isAircraft, isFighter, patrolZoneHexes, refitBlockedByZoc, refitCapacity } from '../air/aircraft.js';
 import { equipmentIn, rebuildOptions, stepsToRebuild } from '../air/replacement.js';
 import { lostTruckPoints } from '../replacement/ledger.js';
 import { unitRebuildOptions } from '../replacement/replacement.js';
@@ -157,8 +158,13 @@ export const projectRuleState = (state: GameState, viewerId: PlayerId): RuleProj
         const hexId = base.location.kind === 'ON_MAP' ? base.location.hexId : null;
         const planes = state.pieceState.pieces.filter((piece) => piece.ownerId === viewerId && piece.location.kind === 'ON_MAP' && piece.location.hexId === hexId && isAircraft(state, piece));
         const active = planes.filter((piece) => isActiveAircraft(piece)).length;
-        return { id: base.id, hexId: String(hexId), level: airBaseLevel(state, base), active, activeLimit: activeAircraftLimit(state, base), refitCapacity: refitCapacity(state, base), inactive: planes.length - active, refitBlockedByZoc: refitBlockedByZoc(state, base) };
-      }),
+        return { id: base.id, hexId: String(hexId), level: airBaseLevel(state, base), active, activeLimit: activeAircraftLimit(state, base), refitCapacity: refitCapacity(state, base), inactive: planes.length - active, refitBlockedByZoc: refitBlockedByZoc(state, base), offMap: false };
+      }).concat(offMapAirfields(state, viewerId).map((field) => {
+        // An off-map airfield has no hex (§6): its aircraft are in its box.
+        const planes = aircraftAtAirfield(state, field);
+        const active = planes.filter((piece) => isActiveAircraft(piece)).length;
+        return { id: field.id, hexId: '', level: airBaseLevel(state, field), active, activeLimit: activeAircraftLimit(state, field), refitCapacity: refitCapacity(state, field), inactive: planes.length - active, refitBlockedByZoc: false, offMap: true };
+      })),
     },
     // 4.9a: only the viewer's own Repls, Dead Pile and lost trucks are shown.
     replacements: {
