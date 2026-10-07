@@ -155,6 +155,11 @@ B5 不退步全部 PASS（對 random-legal 98%）。攻堅需要補給支撐的�
 heuristic@4（2026-10-07，主攻方向）：對 v3 在 60 局新 seed 上 33:13（p = 0.002）；攻擊推進拿下目標每局 0.87 次（v3 為 0.33）。
 在 OOB 0.4.0 上的 B5 重驗見 [OOB 改版 WBS](12-oob-revision-wbs.md) O6。
 
+heuristic@5（2026-10-07，拔除駐守單位、補給預算）：OOB 0.4.0 上對 v4 在 60 局新 seed 上 32:13（p = 0.003）；
+斷補單位回合每方每局 8.3 → 3.7。見 [對局紀錄研究](../reports/M9-replay-study.md) 第 7 節。
+B5 重驗（v5，OOB 0.4.0，seed 33000–33039 對 random-legal、33500–33519 互打）：全部 PASS；對 random-legal 39/40（Allied 19/20、Axis 20/20），
+60 局皆完成、無錯誤、重播 hash 相符；回合結束時在補給內 91%。
+
 ### B6 Logistics-aware（M9.3，PLANNED）
 
 - SP 需求估計、卡車運補、dump 位置安全、extender、炸 dump、fuel 方法選擇、Supply Phase 的 SP 預算。
@@ -187,7 +192,7 @@ heuristic@4（2026-10-07，主攻方向）：對 v3 在 60 局新 seed 上 33:13
 | `bot-air` | 電腦不主動 refit、派空軍任務、air drop、建 air base；air pending decisions 只用隨機合法後備 | 開啟 Air 時電腦明顯偏弱 | 電腦在開啟 Air 的 generated game 中主動派 barrage／interdiction 並通過驗收列 |
 | `bot-rail-cap` | Rail Cap 規則（rail WBS R4）實作後電腦才會用鐵路運兵運補 | 同 rail R4 | rail R4 完成後，電腦在 runner 與 UI 中使用 Rail Cap |
 | `bot-difficulty` | 無難度等級 | 只有一種強度 | 需使用者決定是否要做 |
-| `bot-offensive-axis` | 選定主攻方向，HQ、補給堆與攻擊群一起推進並攻下有守軍的目標 | 雙方電腦幾乎從不攻下有守軍的目標，勝負取決於第一回合誰先搶到空目標 | 重播研究中「有守軍時被拿走」明顯 > 0，且對 heuristic@3 在新 seed 上顯著勝出 |
+| `bot-offensive-axis`（**已關閉** 2026-10-07：heuristic@4 對 @3 33:13，p = 0.002；攻擊推進拿下目標每方每局 0.87 → OOB 0.4.0 上 v5 1.63） | 選定主攻方向，HQ、補給堆與攻擊群一起推進並攻下有守軍的目標 | 雙方電腦幾乎從不攻下有守軍的目標，勝負取決於第一回合誰先搶到空目標 | 重播研究中「有守軍時被拿走」明顯 > 0，且對 heuristic@3 在新 seed 上顯著勝出 |
 | `bot-eastern-front` | 長距離推進的補給接力（extender、分段卸貨、前線 HQ 轉移）與守住遠方奪下的目標 | 東歐地圖上電腦常打成和局（對隨機電腦 80%） | 東歐風格 20 局（交換座位、未用於調參的 seed）勝率 ≥ 90% |
 
 ## 4. 驗收列草案（BOT，待使用者同意後加入驗收計畫）
