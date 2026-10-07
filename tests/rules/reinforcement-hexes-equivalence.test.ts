@@ -27,7 +27,19 @@ const opening = async (seed: number): Promise<GameState> => {
   if (!created.ok) throw new Error(created.error.map(({ code }) => code).join(','));
   const parsed = parseGameStateJson(JSON.parse(created.value.session.serializeSave()).currentSnapshot);
   if (!parsed.ok) throw new Error('snapshot');
-  return parsed.value;
+  // Pax and Eq first arrive in a Reinforcement Phase from Game Turn 2 on (13.6): end steps until one has them waiting.
+  let state = parsed.value;
+  for (let guard = 0; guard < 400; guard += 1) {
+    const actor = state.pendingDecision?.ownerId ?? state.sequence.actingPlayerId;
+    if (state.sequence.phase === 'REINFORCEMENT' && arrivingReinforcements(state, actor).some((piece) => definitionOf(state, piece)?.family === 'REPLACEMENT')) return state;
+    const kind = state.pendingDecision ? 'RESPOND_DECISION' as const : 'ADVANCE_SEQUENCE' as const;
+    const [action] = ruleEngine.getActionCandidates(state, { actorId: actor, kind, pieceId: null, budget: 1 }).actions;
+    if (!action) throw new Error(`no ${kind} in ${state.sequence.phase}`);
+    const next = ruleEngine.applyAction(state, action);
+    if (!next.ok) throw new Error(`${kind} rejected`);
+    state = next.state;
+  }
+  throw new Error('no Reinforcement Phase with Pax or Eq waiting');
 };
 
 /** The earlier rule: an entry Hex, or any map Hex within 2 of a friendly HQ that holds no enemy unit. */
