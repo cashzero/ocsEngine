@@ -16,6 +16,14 @@ export interface HeuristicWeights {
   readonly huntInfiltrationRadius: number;
   readonly huntAnchorRadius: number;
   readonly huntStrengthPerUnit: number;
+  /**
+   * Weak enemy stacks (objective garrisons) near our units: their ZOC cuts our trace supply (12.3d), so they are cleared
+   * first (replays with OOB 0.4.0: mass out-of-supply beside enemy garrisons).
+   */
+  readonly clearStrength: number;
+  readonly clearRadius: number;
+  readonly clearValue: number;
+  readonly clearCombat: number;
   // Combat units moving.
   readonly capture: number;
   /** Share of the capture value when the unit only passes through and nobody stays (it is taken back next turn). */
@@ -96,9 +104,10 @@ export interface HeuristicWeights {
 export const DEFAULT_HEURISTIC_WEIGHTS: HeuristicWeights = Object.freeze({
   garrisonThreatened: 1.3, garrisonEmpty: 1.5, garrisonCalm: 0.8, garrisonSecondUnitThreat: 6, captureBaseUnits: 2, captureStrengthPerUnit: 6,
   huntValue: 3, huntInfiltrationRadius: 3, huntAnchorRadius: 2, huntStrengthPerUnit: 5,
+  clearStrength: 2, clearRadius: 5, clearValue: 4, clearCombat: 8,
   capture: 40, passThroughShare: 0.25, abandonObjective: 30, holdAtEnd: 15, crowding: 3, stratNearEnemy: 60, stratSafeDistance: 3, progressFront: 6, progressTarget: 10,
   huntAdjacent: 15, assaultRatio: 2.5, assaultReach: 8, assaultMaxUnits: 6, assaultPosition: 20, assaultObjective: 2, barrageMainEffort: 5, garrisonStay: 30, contactGood: 6, contactBad: 8, contactRatio: 1.5, exposureSupport: 1.5,
-  outOfSupply: 60, outOfSupplyFed: 10, fedRadius: 3, hqDependentSupply: 8,
+  outOfSupply: 60, outOfSupplyFed: 10, fedRadius: 2, hqDependentSupply: 8,
   hqWithArmy: 6, hqExposed: 60, hqOutOfSupply: 60, hqExposure: 2,
   artilleryInRange: 20, artilleryBeyondRange: 4, artilleryWithArmy: 6, artilleryExposed: 60, artilleryEscortDistance: 3, artilleryUnescorted: 40, artilleryExposure: 1.5,
   rearExposure: 4, rearExposed: 80, truckTowardGoal: 5, truckExposed: 80, truckExposure: 4,
@@ -110,7 +119,7 @@ export const DEFAULT_HEURISTIC_WEIGHTS: HeuristicWeights = Object.freeze({
 
 /** Weights that count hexes or units: mutations keep them whole numbers of at least 1. */
 export const WHOLE_NUMBER_WEIGHTS: readonly (keyof HeuristicWeights)[] = [
-  'garrisonSecondUnitThreat', 'artilleryEscortDistance', 'assaultReach', 'assaultMaxUnits', 'captureBaseUnits', 'huntInfiltrationRadius', 'huntAnchorRadius', 'stratSafeDistance', 'fedRadius',
+  'garrisonSecondUnitThreat', 'artilleryEscortDistance', 'clearRadius', 'assaultReach', 'assaultMaxUnits', 'captureBaseUnits', 'huntInfiltrationRadius', 'huntAnchorRadius', 'stratSafeDistance', 'fedRadius',
   'combatModeDistance', 'stratModeEnemyDistance', 'stratModeTargetDistance', 'hqCombatModeRadius',
 ];
 
