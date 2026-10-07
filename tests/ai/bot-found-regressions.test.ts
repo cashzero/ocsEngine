@@ -1,34 +1,18 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { gunzipSync } from 'node:zlib';
 import { describe, expect, it } from 'vitest';
-import {
-  DEFAULT_NEW_GAME_REQUEST,
-  createInitialGameState,
-  prepareNewGame,
-  ruleEngine,
-  type GameAction,
-  type GameState,
-} from '../../src/index.js';
+import { parseGameStateJson, ruleEngine, type GameState } from '../../src/index.js';
 
-/** A generated game replayed to the position where a bot match found a fault. */
-interface BotFoundPosition {
-  readonly note: string;
-  readonly seeds: { readonly map: number; readonly oob: number; readonly deployment: number; readonly rules: number };
-  readonly turnLimit: number;
-  readonly actions: readonly GameAction[];
-}
-
+/**
+ * The position where a bot match found a fault, stored as a canonical GameState snapshot (gzip JSON) so the test does
+ * not depend on today's generators: the fixtures were played with OOB generator 0.3.0.
+ */
 const replayPosition = (fixture: string): GameState => {
-  const position = JSON.parse(readFileSync(join(__dirname, 'fixtures', fixture), 'utf8')) as BotFoundPosition;
-  const prepared = prepareNewGame({ ...DEFAULT_NEW_GAME_REQUEST, seeds: position.seeds, turnLimit: position.turnLimit });
-  if (!prepared.ok) throw new Error('fixture game did not generate');
-  const created = createInitialGameState(prepared.value.scenario, prepared.value.configuration, position.seeds.rules);
-  if (!created.ok) throw new Error('fixture game did not start');
-  return position.actions.reduce((state, action) => {
-    const next = ruleEngine.applyAction(state, action);
-    if (!next.ok) throw new Error(`fixture action ${action.kind} was rejected`);
-    return next.state;
-  }, created.value);
+  const stored = JSON.parse(gunzipSync(readFileSync(join(__dirname, 'fixtures', fixture))).toString('utf8')) as { snapshot: string };
+  const parsed = parseGameStateJson(stored.snapshot);
+  if (!parsed.ok) throw new Error(`fixture ${fixture} is not a valid GameState`);
+  return parsed.value;
 };
 
 /** Answers every option of every decision reachable from `state` and returns the options that threw. */
@@ -49,7 +33,7 @@ const deadEnds = (state: GameState, depth = 0): string[] => {
 
 describe('positions found by bot matches', () => {
   it('offers no rebuild into a hex where enemy combat units stand on the Repls (13.5a)', () => {
-    const state = replayPosition('rebuild-under-enemy.json');
+    const state = replayPosition('rebuild-under-enemy.state.json.gz');
     const actorId = state.sequence.actingPlayerId;
     const offered = ruleEngine.getActionCandidates(state, { actorId, kind: 'REBUILD_UNITS', pieceId: null, budget: 99 }).actions;
     expect(offered.length).toBeGreaterThan(0);
@@ -57,7 +41,7 @@ describe('positions found by bot matches', () => {
   });
 
   it('never offers a barrage part payment the remaining dumps cannot complete (10.1b)', () => {
-    const state = replayPosition('barrage-part-payment.json');
+    const state = replayPosition('barrage-part-payment.state.json.gz');
     expect(state.pendingDecision?.kind).toBe('SUPPLY_SOURCE');
     expect(deadEnds(state)).toEqual([]);
   });

@@ -1,7 +1,7 @@
 import type { DefinitionId, ValidationIssue } from '../../core/index.js';
 import type { PieceDefinitionCatalog } from '../../domain/piece/index.js';
 
-export const OOB_GENERATOR_VERSION = '0.3.0' as const;
+export const OOB_GENERATOR_VERSION = '0.4.0' as const;
 
 export const OOB_SCALES = ['COMPACT', 'STANDARD', 'LARGE'] as const;
 export type OobScale = (typeof OOB_SCALES)[number];
@@ -19,6 +19,10 @@ export type OobUnitRole =
   | 'COMBAT'
   | 'ARTILLERY'
   | 'RECONNAISSANCE'
+  /** Independent armor (US tank battalions, German assault-gun battalions): a side's flexible tank support. */
+  | 'TANK'
+  /** Independent anti-tank units (US tank destroyers, German Panzerjäger): Heavy AT effects in defence (9.4e). */
+  | 'ANTI_TANK'
   | 'ENGINEER'
   | 'TRANSPORT'
   | 'SUPPLY'
@@ -77,6 +81,11 @@ export interface GeneratedOobSide {
   readonly side: OobSide;
   readonly formations: readonly GeneratedOobFormation[];
   readonly independentUnits: readonly GeneratedOobUnit[];
+  /**
+   * The side's objective garrison (a generator rule, not a BTR counter: 1-1-0, one step, it cannot move). Deployment
+   * places one on every objective the side holds at the start, so no objective is taken by simply walking in.
+   */
+  readonly garrisonDefinitionId: DefinitionId;
 }
 
 export interface GeneratedOobMetrics {
@@ -84,6 +93,8 @@ export interface GeneratedOobMetrics {
   readonly formationCount: number;
   readonly unitsBySide: Readonly<Record<OobSide, number>>;
   readonly pointsBySide: Readonly<Record<OobSide, number>>;
+  /** Combat value per side (printed Combat Mode strength weighed by AR; see combatValueOf). */
+  readonly combatValueBySide: Readonly<Record<OobSide, number>>;
   readonly balanceRatio: number;
   readonly rolesBySide: Readonly<Record<OobSide, Readonly<Record<OobUnitRole, number>>>>;
 }

@@ -21,6 +21,8 @@ import { ALLIED_AIRBORNE_DIVISION_GPIDS, ALLIED_PARA_GPID, AXIS_PARA_GPID, COUNT
 import { createSeededRandom, mixUint32 } from '../map/rng.js';
 import {
   BTR_BUILD_FILE_SHA256,
+  findBalancingArchetype,
+  findGarrisonArchetype,
   findReviewedOobArchetype,
   type ReviewedOobArchetype,
 } from './catalog.js';
@@ -42,8 +44,8 @@ import {
   type OobUnitRole,
   type RandomOobOptions,
 } from './model.js';
-import { validateGeneratedOob } from './validation.js';
-import { counterIdentification, formationNameCapacity, hqName, formationNames, unitName } from './names.js';
+import { combatValueOf, validateGeneratedOob } from './validation.js';
+import { counterIdentification, formationNameCapacity, hqName, formationNames, tigerBattalionName, unitName } from './names.js';
 import { buildAirForces } from './air.js';
 import { buildReplacementDefinitions } from './replacements.js';
 import { withBreakdowns } from './breakdowns.js';
@@ -85,6 +87,8 @@ const capabilitiesFor = (role: OobUnitRole): readonly CapabilityDeclaration[] =>
       }],
     }];
     case 'COMBAT':
+    case 'TANK':
+    case 'ANTI_TANK':
     case 'SUPPLY':
     case 'AIRCRAFT':
     case 'AIR_BASE': return [];
@@ -117,6 +121,22 @@ const stepsFor = (archetype: ReviewedOobArchetype): readonly PieceStepProfile[] 
 const echelonFor = (side: OobSide, role: OobUnitRole, archetype: OobFormationArchetype | undefined): string =>
   COUNTER_CORPUS[findReviewedOobArchetype(side, role, archetype).gpid]?.echelon ?? '';
 
+/**
+ * Starting supply per division, in Tokens (OOB 0.4.0: 2 SP; replays showed attrition from too little supply). It is
+ * shared among the side's usual dumps, so the deployment keeps as many dump counters as before, each holding more.
+ */
+const SUPPLY_TOKENS_PER_DIVISION = 8;
+
+/**
+ * Independent units per side (OOB 0.4.0, user decision 2026-10-07): armor and anti-tank battalions alongside fewer
+ * artillery units. Compact 2 / Standard 3 / Large half the divisions; artillery one per three divisions (Large: half).
+ */
+export const independentPackage = (options: Pick<NormalizedRandomOobOptions, 'scale' | 'divisionsPerSide'>): { readonly artillery: number; readonly armor: number; readonly antiTank: number } => {
+  const armor = options.scale === 'LARGE' ? Math.ceil(options.divisionsPerSide / 2) : options.scale === 'STANDARD' ? 3 : 2;
+  const artillery = options.scale === 'LARGE' ? Math.ceil(options.divisionsPerSide / 2) : Math.max(1, Math.ceil(options.divisionsPerSide / 3));
+  return { artillery, armor, antiTank: armor };
+};
+
 /** HQs per side: one for every three divisions it fields, at least one so the side can throw supply (13.1b). */
 const hqCount = (divisionsPerSide: number): number => Math.max(1, Math.ceil(divisionsPerSide / 3));
 
@@ -137,13 +157,17 @@ interface UnitBuildContext {
   /** Overrides the designation printed on the counter (an HQ prints its number, "3" or "39 Pz"). */
   readonly designation?: string;
   readonly pointCost?: number;
+  /** Builds from this archetype instead of the side/role lookup (the objective garrison). */
+  readonly archetype?: ReviewedOobArchetype;
+  /** Tokens a supply dump starts with (generic dumps hold any number of SP, 12.1c). */
+  readonly resourceQuantity?: number;
 }
 
 const buildUnit = (context: UnitBuildContext): {
   readonly unit: GeneratedOobUnit;
   readonly definition: PieceDefinition;
 } => {
-  const archetypeSource = findReviewedOobArchetype(context.side, context.role, context.formationArchetype);
+  const archetypeSource = context.archetype ?? findReviewedOobArchetype(context.side, context.role, context.formationArchetype);
   const source = context.counterGpid === undefined ? archetypeSource
     : { ...archetypeSource, gpid: context.counterGpid, rawName: context.rawName ?? archetypeSource.rawName };
   const idBase = `generated-oob:${context.options.seed}:${context.side.toLowerCase()}:${context.localId}`;
@@ -179,7 +203,7 @@ const buildUnit = (context: UnitBuildContext): {
     resource: source.family === 'RESOURCE' ? {
       resourceDefinitionId: definitionId('resource:supply'),
       unitDefinitionId: definitionId('quantity:supply-token'),
-      printedQuantity: 4,
+      printedQuantity: context.resourceQuantity ?? 4,
       // 12.1c: generic dumps hold any number of SP.
       capacity: 400,
     } : null,
@@ -326,8 +350,11 @@ const buildSide = (
 
   const supportCount = options.scale === 'LARGE'
     ? options.divisionsPerSide : Math.max(1, Math.ceil(options.divisionsPerSide / 2));
+  const { artillery, armor, antiTank } = independentPackage(options);
   const independentRequests: OobUnitRole[] = [
-    ...Array.from({ length: supportCount }, () => 'ARTILLERY' as const),
+    ...Array.from({ length: artillery }, () => 'ARTILLERY' as const),
+    ...Array.from({ length: armor }, () => 'TANK' as const),
+    ...Array.from({ length: antiTank }, () => 'ANTI_TANK' as const),
     ...Array.from({ length: options.scale === 'LARGE' ? Math.ceil(options.divisionsPerSide / 2) : 1 }, () => 'ENGINEER' as const),
     ...Array.from({ length: supportCount }, () => 'TRANSPORT' as const),
     ...Array.from({ length: supportCount }, () => 'SUPPLY' as const),
@@ -346,6 +373,7 @@ const buildSide = (
       options, side, role, formationId: null, name,
       localId: `independent-${role.toLowerCase()}-${ordinal}`,
       ...(hq ? { designation: hq.designation, counterGpid: hq.gpid, rawName: name } : {}),
+      ...(role === 'SUPPLY' ? { resourceQuantity: Math.ceil(SUPPLY_TOKENS_PER_DIVISION * options.divisionsPerSide / supportCount) } : {}),
     });
     definitions.push(built.definition);
     return built.unit;
@@ -371,7 +399,54 @@ const buildSide = (
     definitions.push(built.definition);
     return [{ ...built.unit, staging: 'AIR_BASE' as const }];
   })() : [];
-  return { side, formations, independentUnits: [...independentUnits, ...paratroops, ...staged, ...air] };
+  const garrison = buildUnit({
+    options, side, role: 'COMBAT', formationId: null, archetype: findGarrisonArchetype(side),
+    name: side === 'ALLIED' ? 'US Objective Garrison' : 'Ge Objective Garrison', localId: 'garrison', designation: '',
+  });
+  definitions.push(garrison.definition);
+  return {
+    side, formations, independentUnits: [...independentUnits, ...paratroops, ...staged, ...air],
+    garrisonDefinitionId: garrison.definition.id,
+  };
+};
+
+/**
+ * Balance by combat value, not point cost (OOB 0.4.0: equal points had left one side 57% stronger): while the weaker
+ * side is more than 10% behind, it receives independent armor and anti-tank battalions in turn, up to a cap.
+ */
+const balanceSides = (
+  sides: readonly GeneratedOobSide[],
+  options: NormalizedRandomOobOptions,
+  definitions: PieceDefinition[],
+): { readonly sides: readonly GeneratedOobSide[]; readonly warnings: readonly string[] } => {
+  const result = [...sides];
+  const cap = Math.max(8, 2 * options.divisionsPerSide);
+  let added = 0;
+  for (; added < cap; added += 1) {
+    const values = result.map((side) => combatValueOf(side, definitions));
+    const weakIndex = values[0]! < values[1]! ? 0 : 1;
+    if (values[weakIndex]! >= 0.9 * values[1 - weakIndex]!) break;
+    const weak = result[weakIndex]!;
+    const role = added % 2 === 0 ? 'TANK' as const : 'ANTI_TANK' as const;
+    const ordinal = weak.independentUnits.filter((unit) => unit.role === role).length + 1;
+    // A weaker Axis receives Tiger and Jagdpanther battalions: few counters close the gap that the heavier US divisions open.
+    const archetype = findBalancingArchetype(weak.side, role);
+    const heavyCount = weak.independentUnits.filter((unit) => unit.sourceArchetypeId === archetype.id).length + 1;
+    const name = archetype.gpid === 971 ? tigerBattalionName(options.seed, heavyCount)
+      : unitName(weak.side, role, ordinal, options.seed, undefined, echelonFor(weak.side, role, undefined));
+    const built = buildUnit({
+      options, side: weak.side, role, formationId: null, archetype, name,
+      localId: `independent-${role.toLowerCase().replace('_', '-')}-${ordinal}`,
+    });
+    definitions.push(built.definition);
+    result[weakIndex] = { ...weak, independentUnits: [...weak.independentUnits, built.unit] };
+  }
+  const values = result.map((side) => combatValueOf(side, definitions));
+  const ratio = Math.min(...values) / Math.max(...values);
+  return {
+    sides: result,
+    warnings: ratio < 0.9 ? [`Combat value still differs by ${Math.round(100 * (1 - ratio))}% after ${added} balancing units.`] : [],
+  };
 };
 
 export const generateRandomOob = (
@@ -382,7 +457,8 @@ export const generateRandomOob = (
   const options = normalized.value;
   const plan = formationPlan(options);
   const definitions: PieceDefinition[] = [];
-  const sides = SIDES.map((side) => buildSide(side, plan, options, definitions));
+  const balanced = balanceSides(SIDES.map((side) => buildSide(side, plan, options, definitions)), options, definitions);
+  const sides = balanced.sides;
   const pieceDefinitionCatalog: PieceDefinitionCatalog = {
     id: definitionId(`catalog:generated-oob:${options.seed}`),
     schemaVersion: FOUNDATION_SCHEMA_VERSION,
@@ -405,8 +481,11 @@ export const generateRandomOob = (
     code: 'GENERATION_INVALID', message: 'Generated OOB failed composition or Foundation validation.',
     path: [], issues: validation.issues,
   }]);
-  const warnings = options.armoredDivisionsPerSide === options.divisionsPerSide && options.divisionsPerSide > 1
-    ? ['All divisions are armored; transport and fuel pressure will be unusually high.'] : [];
+  const warnings = [
+    ...(options.armoredDivisionsPerSide === options.divisionsPerSide && options.divisionsPerSide > 1
+      ? ['All divisions are armored; transport and fuel pressure will be unusually high.'] : []),
+    ...balanced.warnings,
+  ];
   return ok({ ...draft, metrics: validation.metrics, warnings });
 };
 

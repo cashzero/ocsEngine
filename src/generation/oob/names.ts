@@ -98,6 +98,26 @@ export const sizedCombatName = (name: string, echelon: string, allied: boolean, 
   return `${regiment}${detachment}`;
 };
 
+/** Battalion numbers printed on BTR 1.27.0 PieceSlots ("US 745 Tk Bn", "US 803 TD Bn", "Ge 243 AG Bn", "Ge 1 PJ Bn"). */
+const US_TANK_BATTALIONS = [70, 101, 191, 701, 702, 707, 709, 712, 717, 735, 736, 737, 740, 741, 745, 746, 747, 748, 749, 750, 753, 756, 761, 771, 772, 774, 777, 778, 781, 782, 784, 786, 787];
+const US_TANK_DESTROYER_BATTALIONS = [601, 602, 603, 605, 607, 609, 610, 612, 614, 628, 629, 630, 633, 634, 635, 636, 638, 643, 644, 645, 648, 654, 656, 661, 679, 691, 692, 702, 703, 704, 705, 771, 772, 773, 774, 776, 801, 802, 803, 807, 808, 809, 811, 813, 814, 817, 818, 820, 821, 822, 823, 824, 825, 827, 893, 899];
+const GERMAN_ASSAULT_GUN_BATTALIONS = [243, 244, 280, 341, 394, 667, 902, 905];
+const GERMAN_PANZERJAGER_BATTALIONS = [1, 93, 468, 483, 484, 485, 486, 487, 501, 502, 503, 504, 512, 519, 559, 560, 653, 654, 655, 657, 668, 681, 682, 683, 686, 708, 741];
+
+/** German heavy tank units printed in BTR 1.27.0 ("Ge 506 Tgr Bn", "Ge 3-510 Tgr Coy", "Ge 3-511 Tgr Coy"). */
+const GERMAN_TIGER_UNITS = [506, 510, 511];
+
+/** A balancing German heavy tank battalion's name. */
+export const tigerBattalionName = (seed: number, ordinal: number): string => `Ge ${pickBattalion(GERMAN_TIGER_UNITS, seed, ordinal, false)} Tgr Bn`;
+
+/** The `ordinal`-th distinct number of a seeded shuffle of `pool`; past the pool's size numbers repeat with a suffix. */
+const pickBattalion = (pool: readonly number[], seed: number, ordinal: number, allied: boolean): string => {
+  const order = createSeededRandom(mixUint32(seed ^ pool.length ^ (allied ? 0x544b : 0x4147))).shuffle(pool);
+  const index = (ordinal - 1) % order.length;
+  const round = Math.floor((ordinal - 1) / order.length);
+  return `${order[index]!}${round > 0 ? `-${round + 1}` : ''}`;
+};
+
 export const unitName = (
   side: OobSide, role: OobUnitRole, ordinal: number, seed: number,
   formation?: FormationNameProfile, echelon = '',
@@ -127,6 +147,9 @@ export const unitName = (
       case 'RECONNAISSANCE': return formation?.recon.length
         ? fromPool(formation.recon, ordinal)
         : `${allied ? 'Rcn Det' : 'Aufkl Abt'} ${ordinal}`;
+      // Independent battalions take a number the module itself prints for that kind of unit, drawn per seed.
+      case 'TANK': return `${pickBattalion(allied ? US_TANK_BATTALIONS : GERMAN_ASSAULT_GUN_BATTALIONS, seed, ordinal, allied)} ${allied ? 'Tk Bn' : 'AG Bn'}`;
+      case 'ANTI_TANK': return `${pickBattalion(allied ? US_TANK_DESTROYER_BATTALIONS : GERMAN_PANZERJAGER_BATTALIONS, seed, ordinal, allied)} ${allied ? 'TD Bn' : 'PJ Bn'}`;
       case 'ENGINEER': return echelon === 'X'
         ? (allied ? `${number} Engr Gp` : `Pi Bde ${number}`)
         : `${number} ${allied ? 'Engr Bn' : 'Pi Bn'}`;

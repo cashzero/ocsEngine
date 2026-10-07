@@ -94,6 +94,12 @@ const symbolPaths = {
   // canopy resting on the bottom edge inside the symbol box.
   AIRBORNE: '<path d="M29 25L71 48M71 25L29 48"/><path d="M34 47C35 36 65 36 66 47Q58 42 50 47Q42 42 34 47Z"/>',
   ARMOR: '<ellipse cx="50" cy="36.5" rx="17" ry="8"/>',
+  // NATO anti-tank: an inverted V from the bottom corners to the top edge (BTR TD and PJ battalions).
+  ANTI_TANK: '<path d="M29 48L50 25L71 48"/>',
+  // BTR prints German assault-gun battalions with the letters AG inside the symbol box.
+  ASSAULT_GUN: '<text class="symbol-letters" x="50" y="42" text-anchor="middle" font-size="15" font-weight="700" fill="currentColor" stroke="none">AG</text>',
+  // German heavy tank battalions print "Tgr" in the symbol box.
+  TIGER: '<text class="symbol-letters" x="50" y="42" text-anchor="middle" font-size="14" font-weight="700" fill="currentColor" stroke="none">Tgr</text>',
   GLIDER: '<path d="M29 25L71 48M71 25L29 48M34 30H66L50 40Z"/>',
   RECON: '<ellipse cx="50" cy="36.5" rx="16" ry="8"/><path d="M29 48L71 25"/>',
   ARTILLERY: '<circle cx="50" cy="36.5" r="3" fill="currentColor"/>',

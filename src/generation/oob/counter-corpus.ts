@@ -14,6 +14,8 @@ interface SourceCounter {
   mobility: readonly ['leg' | 'truck' | 'tracked', 'leg' | 'truck' | 'tracked'];
   steps: number;
   re: number;
+  /** Parenthesized strength: defensive only, not Attack-Capable (3.2b, 4.4). */
+  defensive?: boolean;
 }
 const basic = (symbol: SourceCounter['symbol'], echelon: string, category: SourceCounter['category'], combat: Values, move: Values, mobility: SourceCounter['mobility'], steps = 1, re = .5): SourceCounter => ({ symbol, echelon, category, combat, move, mobility, steps, re, kind: 'COMBAT' });
 const hq = (combat: Values, move: Values, echelon = 'XXX'): SourceCounter => ({ ...basic('HQ', echelon, 'OTHER', combat, move, ['truck', 'truck']), kind: 'HQ' });
@@ -36,6 +38,12 @@ export const ALLIED_AIRBORNE_DIVISION_GPIDS: Readonly<Record<string, number>> = 
  */
 export const ALLIED_PARA_GPID = 900_006;
 export const AXIS_PARA_GPID = 900_007;
+/**
+ * Objective garrison (user decision 2026-10-07, docs/roadmap/12-oob-revision-wbs.md): a generator-defined counter for both
+ * sides, not a BTR piece and not a placeholder for one. 1-1-0 on both faces, one step, leg, un-parenthesized so it is
+ * Attack-Capable and exerts a ZOC in Combat Mode; with MA 0 it never moves.
+ */
+export const GARRISON_GPID = 900_008;
 const airborneDivision = (moveStrength: number, regiments: number, combatStrength: number): SourceCounter =>
   basic('AIRBORNE', 'XX', 'OTHER', [combatStrength, 4, 3, 0], [moveStrength, 4, 5, 0], ['leg', 'leg'], regiments, regiments);
 export const COUNTER_CORPUS: Readonly<Record<number, SourceCounter>> = {
@@ -84,6 +92,20 @@ export const COUNTER_CORPUS: Readonly<Record<number, SourceCounter>> = {
   709: basic('INFANTRY', 'III', 'OTHER', [3,4,2,0], [2,4,4,0], ['leg','leg'], 1, 1),
   710: basic('INFANTRY', 'III', 'OTHER', [3,3,2,0], [2,3,4,0], ['leg','leg'], 1, 1),
   1207: basic('INFANTRY', 'III', 'OTHER', [4,3,2,0], [2,3,4,0], ['leg','leg'], 1, 1),
+  // Independent armor and anti-tank battalions (OOB 0.4.0), read from each PieceSlot's front and "B" back image:
+  // US 745 Tk Bn (S01 R04 C20): 6-3-6 / 3-3-12, tracked, yellow (Armor) box.
+  222: basic('ARMOR', 'II', 'ARMOR', [6,3,6,0], [3,3,12,0], ['tracked','tracked']),
+  // US 803 TD Bn (S03 R05 C01): 5-3-7 / 2-3-14, tracked, anti-tank symbol in a yellow (Armor) box.
+  450: basic('ANTI_TANK', 'II', 'ARMOR', [5,3,7,0], [2,3,14,0], ['tracked','tracked']),
+  // Ge 243 AG Bn (S05 R11 C18): 4-4-6 / 2-4-12, tracked, "AG" in a yellow (Armor) box.
+  985: basic('ASSAULT_GUN', 'II', 'ARMOR', [4,4,6,0], [2,4,12,0], ['tracked','tracked']),
+  // Ge 1 PJ Bn (S05 R01 C01): (5)-4-3 / (3)-4-14, black MA (truck), anti-tank symbol in a white box: defensive only.
+  996: { ...basic('ANTI_TANK', 'II', 'OTHER', [5,4,3,0], [3,4,14,0], ['truck','truck']), defensive: true },
+  // Heavier German independents, used to balance a weaker Axis side: Ge 506 Tgr Bn (S05 R09 C17): 9-5-4 / 5-5-8, tracked,
+  // "Tgr" in a yellow box; Ge 654 PJ Bn (S05 R02 C08): 6-5-6 / 3-5-12, tracked, anti-tank symbol in a yellow box.
+  971: basic('TIGER', 'II', 'ARMOR', [9,5,4,0], [5,5,8,0], ['tracked','tracked']),
+  1015: basic('ANTI_TANK', 'II', 'ARMOR', [6,5,6,0], [3,5,12,0], ['tracked','tracked']),
+  [GARRISON_GPID]: basic('INFANTRY', 'II', 'OTHER', [1,1,0,0], [1,1,0,0], ['leg','leg']),
   77: { ...basic('TRUCK', '', 'OTHER', [0,0,45,0], [0,0,45,0], ['truck','truck']), kind: 'TRANSPORT', re: 0 },
   71: { ...basic('TRUCK', '', 'OTHER', [0,0,45,0], [0,0,45,0], ['truck','truck']), kind: 'TRANSPORT', re: 0 },
 };
@@ -132,7 +154,7 @@ export const corpusCounter = (gpid: number, designation: string, affiliation: st
     kind: source?.kind ?? 'SUPPLY', symbol: source?.symbol ?? 'SUPPLY',
     // A truck prints no designation: the board-game counter shows only its symbol, points and MPs.
     designation: source?.kind === 'TRANSPORT' ? '' : designation, affiliation, nationality, formationColor, echelon: echelon ?? source?.echelon ?? '',
-    combatCategory: source?.category ?? 'OTHER', defensiveOnly: source?.symbol === 'ENGINEER',
+    combatCategory: source?.category ?? 'OTHER', defensiveOnly: source?.symbol === 'ENGINEER' || source?.defensive === true,
     rebuildable: true, showRe: (source?.steps ?? 0) > 1,
     transportPoints: source?.kind === 'TRANSPORT' ? TRUCK_COUNTER_POINTS : null,
   };
