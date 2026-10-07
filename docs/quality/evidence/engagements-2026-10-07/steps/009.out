@@ -1,0 +1,14 @@
+{
+ "status": "Preview ready",
+ "metrics": {
+  "Scenario": "Axis attack",
+  "Map": "32×24",
+  "Units": "75",
+  "Formations": "15",
+  "Deployed hexes": "58",
+  "Objectives": "12 · 12 VP",
+  "Warnings": "0"
+ },
+ "fits": true
+}
+-- 1598 ms; page errors so far 0

@@ -1,0 +1,22 @@
+{
+ "status": "Preview ready",
+ "layout": {
+  "map": [
+   150,
+   492
+  ],
+  "text": [
+   448,
+   491
+  ],
+  "metrics": [
+   502,
+   566
+  ],
+  "forces": [
+   576,
+   956
+  ]
+ }
+}
+-- 2720 ms; page errors so far 0

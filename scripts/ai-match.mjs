@@ -4,6 +4,7 @@
 //   node scripts/ai-match.mjs --matches 20 --parallel 4 --turns 8 --out tmp/ai-match/smoke
 //   node scripts/ai-match.mjs --matches 1 --start 7 --trace        # replay one match with a decision trace
 //   node scripts/ai-match.mjs --air STANDARD --air-transport STANDARD --size 64x48 --scale LARGE
+//   node scripts/ai-match.mjs --engagement AXIS_ATTACKS --allied heuristic --axis heuristic --swap   # MEETING (default), ALLIED_ATTACKS, AXIS_ATTACKS
 //
 // Every match varies the map, OOB, deployment and rules seeds from the match index; --fix-map / --fix-oob hold one
 // dimension fixed. Exit code 1 when any match stops for a reason other than FINISHED or fails the replay check.
@@ -18,7 +19,7 @@ const root = resolve(fileURLToPath(new URL('..', import.meta.url)));
 const parseArgs = (argv) => {
   const options = {
     matches: 10, start: 0, parallel: Math.max(1, Math.min(4, availableParallelism() - 1)), turns: 8,
-    width: null, height: null, scale: null, style: null, divisions: null, armored: null, air: null, airTransport: null,
+    width: null, height: null, scale: null, style: null, engagement: null, divisions: null, armored: null, air: null, airTransport: null,
     fixMap: null, fixOob: null, policies: { allied: 'random-legal', axis: 'random-legal' },
     maxActions: 60_000, replay: true, trace: false, out: null, swap: false,
   };
@@ -37,6 +38,7 @@ const parseArgs = (argv) => {
       case '--air-transport': options.airTransport = value(); break;
       case '--scale': options.scale = value(); break;
       case '--style': options.style = value(); break;
+      case '--engagement': options.engagement = value(); break;
       case '--fix-map': options.fixMap = Number(value()); break;
       case '--fix-oob': options.fixOob = Number(value()); break;
       case '--allied': options.policies.allied = value(); break;
@@ -84,6 +86,7 @@ const runMatch = async (baseOptions, matchIndex) => {
       ...(options.airTransport !== null ? { airTransport: options.airTransport } : {}),
       ...(options.scale !== null ? { scale: options.scale } : {}),
     },
+    ...(options.engagement ? { engagement: options.engagement } : {}),
     seeds: { map: seeds.map, oob: seeds.oob, deployment: seeds.deployment, rules: seeds.rules },
     turnLimit: options.turns,
   };

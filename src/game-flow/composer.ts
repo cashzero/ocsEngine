@@ -54,7 +54,9 @@ export const composeGeneratedScenario = (
   deployment: GeneratedDeployment,
 ): Result<GeneratedScenarioPackage, readonly GameFlowFailure[]> => {
   const parsedScenarioId = parseScenarioId(
-    `scenario:generated:${request.map.style.toLowerCase()}:${request.seeds.map}:${request.seeds.oob}:${request.seeds.deployment}`,
+    `scenario:generated:${request.map.style.toLowerCase()}:${request.seeds.map}:${request.seeds.oob}:${request.seeds.deployment}`
+      // A meeting engagement keeps the ID it had before engagements existed.
+      + (request.engagement === undefined || request.engagement === 'MEETING' ? '' : `:${request.engagement.toLowerCase().replace('_', '-')}`),
   );
   if (!parsedScenarioId.ok) return { ok: false, error: [{
     stage: 'SCENARIO', code: 'INVALID_SCENARIO_ID', message: 'Generated Scenario ID is invalid.', path: ['scenario', 'id'],
@@ -70,7 +72,8 @@ export const composeGeneratedScenario = (
       { id: GENERATED_PLAYERS.ALLIED, sideDefinitionId: definitionId('side:allied'), name: 'Allied' },
       { id: GENERATED_PLAYERS.AXIS, sideDefinitionId: definitionId('side:axis'), name: 'Axis' },
     ],
-    turnStart: { turn: 1, firstPlayerId: GENERATED_PLAYERS.ALLIED },
+    // The attacker opens an attack; a meeting engagement keeps Allied first. Later turns roll for it (2.3).
+    turnStart: { turn: 1, firstPlayerId: GENERATED_PLAYERS[deployment.attacker ?? 'ALLIED'] },
     boxes: [
       {
         id: GENERATED_REINFORCEMENT_BOXES.ALLIED,
@@ -126,6 +129,7 @@ export const composeGeneratedScenario = (
     summary: {
       mapSize: `${generatedMap.options.width}×${generatedMap.options.height}`,
       mapStyle: generatedMap.options.style,
+      engagement: request.engagement ?? 'MEETING',
       unitCount: generatedOob.metrics.unitCount,
       formationCount: generatedOob.metrics.formationCount,
       objectiveCount: deployment.objectiveHexIds.length,

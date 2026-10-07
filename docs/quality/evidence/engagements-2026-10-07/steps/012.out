@@ -1,0 +1,16 @@
+{
+ "ms": 499,
+ "at": {
+  "turn": "Turn 1 / 8",
+  "player": "Axis player turn",
+  "phase": "Movement",
+  "seat": "Axis commander",
+  "end": "End Movement SegmentNext: Barrage Segment",
+  "endDisabled": false,
+  "notice": "Select a unit on the map to see where it can move and what it can attack.",
+  "handoff": false,
+  "complete": false,
+  "decision": []
+ }
+}
+-- 2092 ms; page errors so far 0

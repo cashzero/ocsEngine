@@ -3,6 +3,7 @@ import { generateRandomOob } from '../generation/oob/index.js';
 import type { ValidationIssue } from '../core/index.js';
 import { composeGeneratedScenario, GENERATED_PLAYERS } from './composer.js';
 import { deployGeneratedForces } from './deployment.js';
+import { attackerOf } from './model.js';
 import type {
   CreatedNewGame,
   GameFlowEngine,
@@ -29,9 +30,11 @@ export const prepareNewGame = (
   if (optionFailures.length > 0) return { ok: false, error: optionFailures };
   const map = generateRandomMap({ ...request.map, seed: request.seeds.map });
   if (!map.ok) return { ok: false, error: generatorFailures('MAP', map.error) };
-  const oob = generateRandomOob({ ...request.oob, seed: request.seeds.oob });
+  // An attacker fields more divisions (ATTACKER_FORCE_RATIO); a meeting engagement keeps the sides equal.
+  const attacker = attackerOf(request.engagement ?? 'MEETING');
+  const oob = generateRandomOob({ ...request.oob, ...(attacker === null ? {} : { attacker }), seed: request.seeds.oob });
   if (!oob.ok) return { ok: false, error: generatorFailures('OOB', oob.error) };
-  const deployment = deployGeneratedForces(map.value, oob.value, request.seeds.deployment, GENERATED_PLAYERS);
+  const deployment = deployGeneratedForces(map.value, oob.value, request.seeds.deployment, GENERATED_PLAYERS, request.engagement ?? 'MEETING');
   if (!deployment.ok) return deployment;
   const composed = composeGeneratedScenario(request, map.value, oob.value, deployment.value);
   if (!composed.ok) return composed;
@@ -77,8 +80,8 @@ export const createNewGameOrchestrator = (engine: GameFlowEngine): NewGameOrches
 });
 
 /**
- * The operation offered when the UI opens (user decision 2026-10-01: larger map, more turns).
- * Sides start 25-30 hexes apart, so contact comes around turn 2-3 with turns left to fight.
+ * The operation offered when the UI opens (user decision 2026-10-01: larger map, more turns): a meeting engagement.
+ * Since 2026-10-07 the armies start about ten hexes apart (they started 20-28 apart, too far for the user).
  */
 export const DEFAULT_NEW_GAME_REQUEST: NewGameRequest = {
   templateId: 'GROUND_DUEL',

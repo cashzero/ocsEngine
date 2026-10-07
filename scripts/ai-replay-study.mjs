@@ -166,7 +166,7 @@ const studyGame = (record, save, purposes = new Map()) => {
     side.neverMoved = state.pieceState.pieces.filter((piece) => piece.ownerId === player && roles.get(String(piece.id)) === 'COMBAT'
       && piece.location.kind === 'ON_MAP' && !moved.has(String(piece.id))).length;
   }
-  return { match: record.match, winner: record.winner, style: record.summary?.mapStyle ?? null, sides };
+  return { match: record.match, winner: record.winner, style: record.summary?.mapStyle ?? null, engagement: record.summary?.engagement ?? 'MEETING', sides };
 };
 
 const games = [];
@@ -186,7 +186,9 @@ const groups = new Map();
 for (const game of games) {
   for (const [sideName, side] of Object.entries(game.sides)) {
     const outcome = game.winner === 'draw' ? 'draw' : game.winner === sideName ? 'won' : 'lost';
-    const key = `${side.policy} ${outcome}`;
+    // In an attack, a side's role matters as much as its policy.
+    const attacker = game.engagement === 'ALLIED_ATTACKS' ? 'allied' : game.engagement === 'AXIS_ATTACKS' ? 'axis' : null;
+    const key = `${side.policy}${attacker === null ? '' : attacker === sideName ? ' attacker' : ' defender'} ${outcome}`;
     const group = groups.get(key) ?? { sides: 0, losses: {}, lostEmpty: 0, lostDefended: 0, lostHow: {}, gained: 0, oos: 0, attacks: 0, neverMoved: 0, stepsKept: 0, finalVp: 0 };
     group.sides += 1;
     for (const [cause, count] of Object.entries(side.losses)) group.losses[cause] = (group.losses[cause] ?? 0) + count;
