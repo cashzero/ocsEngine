@@ -330,7 +330,7 @@ const pieceDefinitionSourceDecoder: Decoder<PieceDefinitionSource> = objectDecod
 
 const counterDecoder: Decoder<CounterDefinition> = objectDecoder({
   kind: literalDecoder('COMBAT', 'ARTILLERY', 'HQ', 'TRANSPORT', 'SUPPLY'),
-  symbol: literalDecoder('INFANTRY', 'AIRBORNE', 'ARMOR', 'GLIDER', 'RECON', 'ARTILLERY', 'SP_ARTILLERY', 'ENGINEER', 'HQ', 'TRUCK', 'SUPPLY'),
+  symbol: literalDecoder('INFANTRY', 'AIRBORNE', 'ARMOR', 'ANTI_TANK', 'ASSAULT_GUN', 'TIGER', 'GLIDER', 'RECON', 'ARTILLERY', 'SP_ARTILLERY', 'ENGINEER', 'HQ', 'TRUCK', 'SUPPLY'),
   designation: stringDecoder,
   affiliation: stringDecoder,
   echelon: stringDecoder,

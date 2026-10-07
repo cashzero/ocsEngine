@@ -206,7 +206,8 @@ export const combatClass = (state: GameState, piece: PieceState): CombatClass =>
 export const antiTankLevel = (state: GameState, piece: PieceState): number => {
   const counter = definitionOf(state, piece)?.counter;
   if (!counter) return 0;
-  if (counter.combatCategory === 'ARMOR') return 2;
+  // 9.4e: Heavy for Yellow-coded units, Red-coded units with a Tank symbol and units with an Anti-Tank symbol; Light for other Red-coded units.
+  if (counter.combatCategory === 'ARMOR' || counter.symbol === 'ANTI_TANK') return 2;
   if (counter.combatCategory === 'MECH') return counter.symbol === 'ARMOR' ? 2 : 1;
   return 0;
 };

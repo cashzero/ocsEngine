@@ -58,6 +58,9 @@ export const FULL_AIR_NEW_GAME_REQUEST: NewGameRequest = {
   oob: { ...RULE_FIXTURE_NEW_GAME_REQUEST.oob, air: 'STANDARD', airTransport: 'STANDARD' },
 };
 
+/** Tokens in every placed supply dump of a rule fixture, whatever the OOB generator starts a game with. */
+export const RULE_FIXTURE_DUMP_TOKENS = 4;
+
 const preparedCache = new Map<NewGameRequest, ReturnType<typeof prepareNewGame>>();
 const prepared = (request: NewGameRequest = RULE_FIXTURE_NEW_GAME_REQUEST) => {
   let entry = preparedCache.get(request);
@@ -125,6 +128,8 @@ export const buildGeneratedRuleScenario = (
       stackOrder: (() => { const next = orders.get(hexId) ?? 0; orders.set(hexId, next + 1); return next; })(),
       mode: mode === null ? piece.mode : mode,
       currentFaceId: (face ?? piece.currentFaceId) as typeof piece.currentFaceId,
+      // Rule tests count Tokens in a 4T dump; the generator's starting dumps grew with OOB 0.4.0 supply scaling.
+      ...(piece.resourceQuantity !== null ? { resourceQuantity: RULE_FIXTURE_DUMP_TOKENS } : {}),
     };
   });
   const mapDefinition = {

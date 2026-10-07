@@ -217,7 +217,8 @@ describe('M7 deterministic random OOB pipeline', () => {
 
   it('uses reviewed BTR locators while keeping ratings explicitly synthetic', () => {
     expect(BTR_BUILD_FILE_SHA256).toMatch(/^[A-F0-9]{64}$/u);
-    expect(REVIEWED_OOB_ARCHETYPES).toHaveLength(19);
+    // 19 of M7, plus OOB 0.4.0's independent armor and anti-tank (heavy German balancing variants) and both garrisons.
+    expect(REVIEWED_OOB_ARCHETYPES).toHaveLength(27);
     expect(REVIEWED_OOB_ARCHETYPES.every(({ rawName, gpid }) => rawName.length > 0 && gpid >= 0)).toBe(true);
     expect(REVIEWED_OOB_ARCHETYPES.some(({ rawName }) => /combat train/iu.test(rawName))).toBe(false);
     const generated = generateRandomOob(options);
