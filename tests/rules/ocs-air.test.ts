@@ -450,7 +450,9 @@ describe('air state persistence', () => {
 
   it('keeps ground-only games unchanged: the default request has no air units', () => {
     const prepared = prepareNewGame(DEFAULT_NEW_GAME_REQUEST);
-    expect(prepared.ok && prepared.value.scenario.pieceCatalog.definitions.some(({ family }) => family === 'AIR' || family === 'FACILITY')).toBe(false);
+    expect(prepared.ok && prepared.value.scenario.pieceCatalog.definitions.some(({ family, facility }) => family === 'AIR'
+      // Hedgehogs (16.0) are ground facilities every game has; no Air Base or Air Strip is generated.
+      || (family === 'FACILITY' && facility?.facilityTypeDefinitionId !== 'facility:hedgehog'))).toBe(false);
     void allEvents;
   });
 });

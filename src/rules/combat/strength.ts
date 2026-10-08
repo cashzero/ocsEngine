@@ -25,6 +25,7 @@ import {
   multiplierValue,
 } from '../terrain.js';
 import type { CombatMultiplier } from '../kernel/model.js';
+import { defendingHedgehogLevel } from '../hedgehog/hedgehog.js';
 
 /** Printed or rules-assigned base strength: HQs 5/1 (13.1c), artillery 1 (13.4b). */
 const baseStrength = (state: GameState, piece: PieceState): number => {
@@ -94,7 +95,10 @@ export interface CombatOdds {
   readonly oddsText: string;
   readonly columnIndex: number;
   readonly columns: readonly OddsColumn[];
+  /** 9.6: lead attacker AR minus lead defender AR, applied to both the Surprise and the combat roll. */
   readonly drm: number;
+  /** 16.0d: Level of the defender's hedgehog (0 when none): -Level on the combat roll and -1 on the Surprise roll. */
+  readonly hedgehogLevel: number;
   readonly leadAttackerRating: number;
   readonly leadDefenderRating: number;
 }
@@ -181,7 +185,9 @@ export const calculateCombatOdds = (
 ): CombatOdds => {
   const attackers = attackerIds.flatMap((id) => pieceById(state, id) ?? []);
   const defenders = defenderIds.flatMap((id) => pieceById(state, id) ?? []);
-  const defenderAntiTank = Math.max(0, ...defenders.map((piece) => antiTankLevel(state, piece)));
+  const hedgehogLevel = defenders[0] ? defendingHedgehogLevel(state, defenders[0].ownerId, targetHexId) : 0;
+  // 16.0e: a hedgehog gives the combat units in its hex Heavy AT (9.4e).
+  const defenderAntiTank = Math.max(hedgehogLevel > 0 ? 2 : 0, ...defenders.map((piece) => antiTankLevel(state, piece)));
   const byHex = new Map<HexId, PieceState[]>();
   for (const piece of attackers) {
     const hexId = hexOf(piece);
@@ -213,6 +219,7 @@ export const calculateCombatOdds = (
     columnIndex: chosen.column.index,
     columns: chosen.columns,
     drm: leadAttackerRating - leadDefenderRating,
+    hedgehogLevel,
     leadAttackerRating,
     leadDefenderRating,
   };

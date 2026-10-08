@@ -151,6 +151,12 @@ const DETRAINABLE_FEATURES = new Set(['settlement:village', 'settlement:town', '
 /** Tokens of supply under every garrison at the start: two turns of eating for it (1T each, 12.6c). */
 export const GENERATED_GARRISON_STOCK_TOKENS = 2;
 
+/**
+ * In an attack the defender's garrisons start dug in (16.0): a hedgehog of this Level under every objective garrison
+ * and every key-point garrison. The attacker starts with none; both sides may build more in play (2 SP a Level).
+ */
+export const GENERATED_HEDGEHOG_LEVELS: Readonly<{ readonly OBJECTIVE: number; readonly KEY_POINT: number }> = { OBJECTIVE: 2, KEY_POINT: 1 };
+
 /** In an attack the defender garrisons this many key points per objective (rounded up): supply nodes and road junctions. */
 export const GENERATED_KEY_POINT_GARRISON_SHARE = 0.5;
 /** Key-point garrisons stand at least this many hexes from each other and from the objectives. */
@@ -710,11 +716,31 @@ export const deployGeneratedForces = (
       stackOrder, resourceQuantity: GENERATED_GARRISON_STOCK_TOKENS,
     };
   };
+  // 16.0: the defender's field works in an attack; the hedgehog is the top ground counter of its hex (4.8bF).
+  const hedgehogDefinitionIds = new Set(oob.pieceDefinitionCatalog.definitions.filter(({ facility }) => facility?.facilityTypeDefinitionId === 'facility:hedgehog').map(({ id }) => id));
+  const hedgehogPiece = (side: OobSide, hexId: HexId, pieceId: string, level: number): PieceState | null => {
+    const definition = oob.pieceDefinitionCatalog.definitions.find((candidate) => hedgehogDefinitionIds.has(candidate.id)
+      && candidate.ownership.sideDefinitionId === `side:${side.toLowerCase()}`);
+    const parsedId = parsePieceId(`${definition?.id}:${pieceId}`);
+    if (!definition || !parsedId.ok) return null;
+    const stackOrder = stackCounts.get(hexId) ?? 0;
+    stackCounts.set(hexId, stackOrder + 1);
+    return {
+      id: parsedId.value, definitionId: definition.id, ownerId: sidePlayer(side, players), location: { kind: 'ON_MAP', hexId },
+      currentFaceId: null, remainingSteps: null, mode: null, stackOrder, resourceQuantity: null,
+      statuses: [{ statusDefinitionId: 'status:hedgehog-level' as never, value: { kind: 'INTEGER', value: level } }],
+    };
+  };
   for (const [index, { hexId, side }] of objectives.entries()) {
     const garrison = garrisonPiece(side, hexId as HexId, `objective-${index + 1}`);
     const stock = garrisonStock(side, hexId as HexId, `objective-stock-${index + 1}`);
     if (!garrison || !stock) return { ok: false, error: [deploymentFailure(`Objective ${hexId} cannot receive its ${side} garrison.`)] };
     pieces.push(garrison, stock);
+    if (attacker !== null) {
+      const hog = hedgehogPiece(side, hexId as HexId, `objective-hog-${index + 1}`, GENERATED_HEDGEHOG_LEVELS.OBJECTIVE);
+      if (!hog) return { ok: false, error: [deploymentFailure(`Objective ${hexId} cannot receive its ${side} hedgehog.`)] };
+      pieces.push(hog);
+    }
   }
   // In an attack the defender also garrisons key points that score no VP (user, 2026-10-07): supply nodes (rail towns
   // its railroad joins to its map edge, 13.3c) first, then road junctions; one garrison per hex, behind its start line,
@@ -742,8 +768,9 @@ export const deployGeneratedForces = (
     for (const [index, hexId] of chosen.entries()) {
       const garrison = garrisonPiece(defender, hexId, `key-point-${index + 1}`);
       const stock = garrisonStock(defender, hexId, `key-point-stock-${index + 1}`);
-      if (!garrison || !stock) return { ok: false, error: [deploymentFailure(`Key point ${hexId} cannot receive its ${defender} garrison.`)] };
-      pieces.push(garrison, stock);
+      const hog = hedgehogPiece(defender, hexId, `key-point-hog-${index + 1}`, GENERATED_HEDGEHOG_LEVELS.KEY_POINT);
+      if (!garrison || !stock || !hog) return { ok: false, error: [deploymentFailure(`Key point ${hexId} cannot receive its ${defender} garrison.`)] };
+      pieces.push(garrison, stock, hog);
     }
   }
   const edgeHexes: Readonly<Record<OobSide, readonly HexId[]>> = {
@@ -754,7 +781,8 @@ export const deployGeneratedForces = (
   // The front is where the field army stands: garrisons (objectives, key points) and their stocks hold only their own
   // hex (13.3h: a combat unit in a hex controls it), so the ground between the armies stays neutral.
   const garrisonIds = new Set(oob.sides.map(({ garrisonDefinitionId }) => garrisonDefinitionId));
-  const holdsOwnHex = (piece: PieceState): boolean => garrisonIds.has(piece.definitionId) || String(piece.id).includes('-stock-');
+  const holdsOwnHex = (piece: PieceState): boolean => garrisonIds.has(piece.definitionId) || hedgehogDefinitionIds.has(piece.definitionId)
+    || String(piece.id).includes('-stock-');
   const frontOf = (side: OobSide): number => Math.max(-Infinity, ...pieces.flatMap((piece) =>
     piece.ownerId === players[side] && piece.location.kind === 'ON_MAP' && !holdsOwnHex(piece) ? [depth(side, piece.location.hexId)] : []));
   const fronts: Readonly<Record<OobSide, number>> = { ALLIED: frontOf('ALLIED'), AXIS: frontOf('AXIS') };

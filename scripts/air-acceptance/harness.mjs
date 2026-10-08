@@ -74,6 +74,7 @@ export const newGame = async (h, options = {}) => {
   await page.click('#open-new-game');
   await page.waitForSelector('#new-game-air');
   await set('style', options.style);
+  await set('engagement', options.engagement);
   await type('width', options.width ?? 18);
   await type('height', options.height ?? 12);
   await set('scale', options.scale ?? 'STANDARD');

@@ -167,7 +167,7 @@ const levelScale = (level: number): number => 2 ** (level / 2);
 
 /** Rules of the page stylesheets that style counter artwork, for counters rasterized outside the document. */
 const counterCss = (): string => {
-  const pattern = /counter|symbol|category-|move-band|formation-band|tracked-box|barrage-box|re-dot|load-|air-|nation-|mobility|concealed/u;
+  const pattern = /counter|symbol|category-|move-band|formation-band|tracked-box|barrage-box|re-dot|load-|air-|hedgehog-|nation-|mobility|concealed/u;
   const rules: string[] = [];
   for (const sheet of [...document.styleSheets]) {
     let list: CSSRuleList;

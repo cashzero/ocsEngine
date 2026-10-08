@@ -112,6 +112,15 @@ export interface HeuristicWeights {
   readonly barrageSteps: number;
   readonly barrageSupply: number;
   readonly barrageNearObjective: number;
+  /**
+   * Hedgehogs (heuristic@10, 16.0): after moving, units that stayed dig in (2 SP a Level) where the enemy is within
+   * `hedgehogThreatRadius` hexes: held objectives up to `hedgehogObjectiveLevel`, other hexes next to the enemy up to
+   * `hedgehogFrontLevel`, only while the side's dumps keep `hedgehogSupplyReserve` Tokens after paying.
+   */
+  readonly hedgehogThreatRadius: number;
+  readonly hedgehogObjectiveLevel: number;
+  readonly hedgehogFrontLevel: number;
+  readonly hedgehogSupplyReserve: number;
 }
 
 export const DEFAULT_HEURISTIC_WEIGHTS: HeuristicWeights = Object.freeze({
@@ -128,12 +137,14 @@ export const DEFAULT_HEURISTIC_WEIGHTS: HeuristicWeights = Object.freeze({
   attackThreshold: 4, overrunThresholdFactor: 2, defenderLoss: 10, defenderOption: 5, attackerLoss: 10, attackerOption: 3,
   combatSupply: 1.5, objectiveTaken: 25, vacateOptionShare: 0.7, protectObjective: 8, disorganize: 4, minimumOdds: 1,
   barrageThreshold: 2, barrageDisruptBeforeAttack: 10, barrageDisrupt: 4, barrageSteps: 10, barrageSupply: 1.2, barrageNearObjective: 2,
+  hedgehogThreatRadius: 3, hedgehogObjectiveLevel: 3, hedgehogFrontLevel: 1, hedgehogSupplyReserve: 12,
 });
 
 /** Weights that count hexes or units: mutations keep them whole numbers of at least 1. */
 export const WHOLE_NUMBER_WEIGHTS: readonly (keyof HeuristicWeights)[] = [
   'garrisonSecondUnitThreat', 'artilleryEscortDistance', 'clearRadius', 'reliefRadius', 'holdTruckReach', 'assaultReach', 'assaultMaxUnits', 'captureBaseUnits', 'huntInfiltrationRadius', 'huntAnchorRadius', 'stratSafeDistance', 'fedRadius',
   'combatModeDistance', 'stratModeEnemyDistance', 'stratModeTargetDistance', 'hqCombatModeRadius',
+  'hedgehogThreatRadius', 'hedgehogObjectiveLevel', 'hedgehogFrontLevel',
 ];
 
 /** Complete weights from a partial set (unknown keys are rejected so a typo cannot silently fall back to a default). */
