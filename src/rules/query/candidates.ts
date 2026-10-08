@@ -23,6 +23,7 @@ import { combineCandidates, refitCandidates } from '../air/base.js';
 import { constructionHexes, constructionOptions, isEngineerCapable, largestFirstPayments } from '../air/construction.js';
 import { defaultRebuild, rebuildOptions } from '../air/replacement.js';
 import { defaultUnitRebuild, unitRebuildOptions } from '../replacement/replacement.js';
+import { hedgehogBuildOptions, hedgehogPayments, hedgehogReduceOptions } from '../hedgehog/hedgehog.js';
 import { dropPlanCandidates, transportCandidates } from '../air/transport.js';
 import { AIR_MISSION_KINDS, aircraftForTarget, airMissionTargets, missionSegment } from '../air/mission.js';
 import { airBaseLevel, friendlyAirBases, isAirStrip } from '../air/aircraft.js';
@@ -369,6 +370,18 @@ export const candidateActions = (
         }
       }
       break;
+    case 'BUILD_HEDGEHOG':
+      for (const { hexId, pieceIds, engineerId } of hedgehogBuildOptions(state, request.actorId, request.pieceId)) {
+        const payments = hedgehogPayments(state, request.actorId, hexId);
+        if (payments === null) continue;
+        if (add({ ...base(state, request.actorId, `hedgehog:${hexId}:${engineerId ?? 'crew'}`), kind: 'BUILD_HEDGEHOG', hexId, pieceIds: [...pieceIds], engineerId, payments })) return actions;
+      }
+      break;
+    case 'REDUCE_HEDGEHOG':
+      for (const { hedgehogId, pieceIds, engineerId } of hedgehogReduceOptions(state, request.actorId, request.pieceId)) {
+        if (add({ ...base(state, request.actorId, `reduce-hedgehog:${hedgehogId}:${engineerId ?? 'crew'}`), kind: 'REDUCE_HEDGEHOG', hedgehogId, pieceIds: [...pieceIds], engineerId })) return actions;
+      }
+      break;
     case 'COMBINE_AIRCRAFT':
       for (const pair of combineCandidates(state, request.actorId).filter((ids) => request.pieceId === null || ids.includes(request.pieceId))) {
         if (add({ ...base(state, request.actorId, `combine-air:${pair.join('+')}`), kind: 'COMBINE_AIRCRAFT', aircraftIds: [...pair] })) return actions;
@@ -391,7 +404,7 @@ export const ALL_ACTION_KINDS: readonly GameAction['kind'][] = [
   'CANCEL_TRANSACTION', 'PLACE_REINFORCEMENT', 'PAY_FUEL', 'RECOVER_INTERNALS', 'CHOOSE_FORMATION_TRACE',
   'ATTEMPT_BREAKOUT', 'BLOW_DUMP', 'LOAD_SUPPLY', 'UNLOAD_SUPPLY', 'COMBINE_TRANSPORT', 'DIVIDE_TRANSPORT',
   'FORM_EXTENDER', 'DISSOLVE_EXTENDER', 'COLLAPSE_EXTENDER',
-  'REFIT_AIRCRAFT', 'DECLARE_AIR_MISSION', 'REDUCE_AIR_BASE', 'BUILD_AIR_BASE', 'REBUILD_AIRCRAFT', 'REBUILD_UNITS', 'PLAN_AIR_DROP', 'UPDATE_AIR_DROP_PLAN', 'COMBINE_AIRCRAFT',
+  'REFIT_AIRCRAFT', 'DECLARE_AIR_MISSION', 'REDUCE_AIR_BASE', 'BUILD_AIR_BASE', 'BUILD_HEDGEHOG', 'REDUCE_HEDGEHOG', 'REBUILD_AIRCRAFT', 'REBUILD_UNITS', 'PLAN_AIR_DROP', 'UPDATE_AIR_DROP_PLAN', 'COMBINE_AIRCRAFT',
 ];
 
 /**
@@ -453,7 +466,9 @@ export const kindMayBeLegal = (state: GameState, actorId: PlayerId, kind: GameAc
     case 'REFIT_AIRCRAFT': return phase === 'AIRCRAFT_REFIT';
     case 'DECLARE_AIR_MISSION': return (segment === 'MOVEMENT' || segment === 'BARRAGE') && ['MOVEMENT', 'REACTION', 'EXPLOITATION'].includes(phase);
     case 'REDUCE_AIR_BASE':
-    case 'BUILD_AIR_BASE': return phase === 'MOVEMENT' && segment === 'MOVEMENT';
+    case 'BUILD_AIR_BASE':
+    case 'BUILD_HEDGEHOG':
+    case 'REDUCE_HEDGEHOG': return phase === 'MOVEMENT' && segment === 'MOVEMENT';
     case 'REBUILD_AIRCRAFT':
     case 'REBUILD_UNITS': return phase === 'REINFORCEMENT';
     case 'PLAN_AIR_DROP':

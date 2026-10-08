@@ -105,8 +105,8 @@ export const validateGeneratedOob = (
   const breakdownIds = new Set(generated.pieceDefinitionCatalog.definitions.flatMap(({ capabilities }) => capabilities
     .filter(({ id }) => id === 'BREAKDOWN').flatMap(({ parameters }) => parameters
       .flatMap((parameter) => parameter.key === 'definitionId' && parameter.kind === 'TEXT' ? [parameter.value] : []))));
-  // The Air Base and Air Strip templates (15.2, 15.3) likewise have no starting unit: engineers make Air Bases from them in play.
-  const templateIds = new Set(generated.pieceDefinitionCatalog.definitions.filter(({ family, capabilities }) => family === 'REPLACEMENT' || capabilities.some(({ id }) => id === 'AIR_FACILITY_TEMPLATE')).map(({ id }) => id));
+  // The Air Base and Air Strip templates (15.2, 15.3) and the hedgehog (16.0) likewise have no starting unit: they are made in play.
+  const templateIds = new Set(generated.pieceDefinitionCatalog.definitions.filter(({ family, capabilities }) => family === 'REPLACEMENT' || capabilities.some(({ id }) => id === 'AIR_FACILITY_TEMPLATE' || id === 'HEDGEHOG_TEMPLATE')).map(({ id }) => id));
   // Objective garrisons have one Definition per side and no OOB unit: deployment places one on every held objective.
   const garrisonIds = new Set(generated.sides.map(({ garrisonDefinitionId }) => garrisonDefinitionId));
   if (generated.sides.some(({ garrisonDefinitionId }) => !generated.pieceDefinitionCatalog.definitions.some(({ id }) => id === garrisonDefinitionId))) {

@@ -50,6 +50,8 @@ const ACTION_LABELS: Readonly<Record<GameAction['kind'], string>> = {
   DECLARE_AIR_MISSION: 'Air mission',
   REDUCE_AIR_BASE: 'Reduce Air Base',
   BUILD_AIR_BASE: 'Build Air Base',
+  BUILD_HEDGEHOG: 'Build hedgehog',
+  REDUCE_HEDGEHOG: 'Reduce hedgehog',
   REBUILD_AIRCRAFT: 'Rebuild aircraft',
   REBUILD_UNITS: 'Rebuild units',
   PLAN_AIR_DROP: 'Plan Air Drop',
@@ -124,6 +126,8 @@ export const actionSummary = (action: GameAction): string => {
     case 'REBUILD_AIRCRAFT': return `Rebuild ${action.aircraftIds.length} aircraft with Eq`;
     case 'REBUILD_UNITS': return `Rebuild ${action.units.length} unit${action.units.length === 1 ? '' : 's'}${action.truckPoints > 0 ? ` and ${action.truckPoints} truck point${action.truckPoints === 1 ? '' : 's'}` : ''} at ${printedHexLabel(action.hexId)}`;
     case 'BUILD_AIR_BASE': return `${action.facility === 'AIR_STRIP' ? 'Build an Air Strip' : 'Build or improve an Air Base'} at ${printedHexLabel(action.hexId)}`;
+    case 'BUILD_HEDGEHOG': return `Build or improve a hedgehog at ${printedHexLabel(action.hexId)} (2 SP${action.engineerId ? ', engineer' : ''})`;
+    case 'REDUCE_HEDGEHOG': return 'Reduce the hedgehog one Level';
     case 'COMBINE_AIRCRAFT': return 'Combine two reduced aircraft';
   }
 };

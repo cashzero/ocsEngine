@@ -1,3 +1,4 @@
+import { defendingHedgehogLevel, hedgehogAt, hedgehogLevel, HEDGEHOG_BARRAGE_SHIFT, HEDGEHOG_BRACKETED_LEVEL, HEDGEHOG_SURPRISE_DRM } from '../hedgehog/hedgehog.js';
 import { stableSort, type HexId, type PieceId, type PlayerId } from '../../core/index.js';
 import { setHexControl } from '../../domain/map/index.js';
 import { upsertPieceState, type PieceState } from '../../domain/piece/index.js';
@@ -638,12 +639,12 @@ const rollCombat = (state: GameState): Transition => {
       next = { ...next, usage: withUsage(next, { ...usage, moved: true, movementSpentTicks: usage.movementSpentTicks + 12 }) };
     }
   }
-  // 9.8 Surprise: 2d6 + AR DRM; on Surprise one die gives the number of column shifts.
+  // 9.8 Surprise: 2d6 + AR DRM (-1 with a defending hedgehog, 16.0d); on Surprise one die gives the number of column shifts.
   const surprise = rollTwoDice(next.rng);
   next = { ...next, rng: surprise.rng };
   events.push({ kind: 'DICE_ROLLED', sequence: events.length, transactionId: transaction.id, purpose: 'SURPRISE', roll: surprise.roll });
   const threshold = SURPRISE_THRESHOLDS[overrun ? 'OVERRUN' : 'REGULAR'];
-  const surpriseTotal = surprise.roll.total + odds.drm;
+  const surpriseTotal = surprise.roll.total + odds.drm + (odds.hedgehogLevel > 0 ? HEDGEHOG_SURPRISE_DRM : 0);
   let shift = 0;
   let shiftDie: number | null = null;
   if (surpriseTotal >= threshold.attacker || surpriseTotal <= threshold.defender) {
@@ -656,7 +657,8 @@ const rollCombat = (state: GameState): Transition => {
   const roll = rollTwoDice(next.rng);
   next = { ...next, rng: roll.rng };
   events.push({ kind: 'DICE_ROLLED', sequence: events.length, transactionId: transaction.id, purpose: 'COMBAT', roll: roll.roll });
-  const cell = COMBAT_TABLE_ROWS[combatTableRowIndex(roll.roll.total + odds.drm)]![column]!;
+  // 9.9, 16.0d: subtract the full Level of the defender's hedgehog from the combat roll.
+  const cell = COMBAT_TABLE_ROWS[combatTableRowIndex(roll.roll.total + odds.drm - odds.hedgehogLevel)]![column]!;
   const result = parseCombatResult(cell);
   // 5.7d: Reserve markers come off defending stacks that receive any result.
   let pieceState = next.pieceState;
@@ -1211,6 +1213,9 @@ export const barrageTargetShifts = (
   const terrainShift = Math.min(0, ...hexCombatTerrains(state, targetHexId).map(({ line }) =>
     line === 'EXTREMELY_CLOSE' ? -2 : line === 'CLOSE' || line === 'VERY_CLOSE' ? -1 : 0));
   if (terrainShift !== 0) shifts.push({ reason: 'Terrain', shift: terrainShift });
+  // 10.0a: a hedgehog of any Level in the target hex shifts one column left.
+  const hog = hedgehogAt(state, targetHexId);
+  if (hog && hog.ownerId !== actorId) shifts.push({ reason: `Hedgehog L${hedgehogLevel(hog)}`, shift: HEDGEHOG_BARRAGE_SHIFT });
   const spotter = spotted && hasCorrectSpotter(state, actorId, targetHexId);
   if (!spotter) shifts.push({ reason: 'No spotter', shift: -3 });
   if (targets.some((piece) => piece.mode === 'STRAT')) shifts.push({ reason: 'Strat Mode target', shift: 3 });
@@ -1317,8 +1322,11 @@ const rollBarrage = (state: GameState): Transition => {
   events.push({ kind: 'DICE_ROLLED', sequence: events.length, transactionId: transaction.id, purpose: 'BARRAGE', roll: roll.roll });
   const cell = BARRAGE_TABLE_ROWS[roll.roll.total]![preview.finalColumn]!;
   let result = parseBarrageResult(cell);
-  // [1/2] is DG without a correct spotter (no hedgehogs, air, or ships in the ground game), else 1/2.
-  if (result.kind === 'BRACKETED_HALF') result = preview.spotter ? { ...result, kind: 'HALF' } : { ...result, kind: 'DG' };
+  // 10.0c: [1/2] is DG without a correct spotter or against a Level-3+ hedgehog (no air or ships in the ground game), else 1/2.
+  if (result.kind === 'BRACKETED_HALF') {
+    const dug = defendingHedgehogLevel(state, transaction.defenderOwnerId, transaction.targetHexId) >= HEDGEHOG_BRACKETED_LEVEL;
+    result = preview.spotter && !dug ? { ...result, kind: 'HALF' } : { ...result, kind: 'DG' };
+  }
   let losses = result.kind === 'STEPS' ? result.steps : 0;
   if (result.kind === 'HALF') {
     const die = rollDie(next.rng);
