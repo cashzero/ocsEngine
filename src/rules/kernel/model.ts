@@ -710,6 +710,24 @@ export type GameAction =
     readonly facility: 'AIR_STRIP' | 'AIR_BASE';
     readonly payments: readonly { readonly sourcePieceId: PieceId; readonly tokens: number }[];
   })
+  /**
+   * 16.0b: one RE of Combat Mode units in the hex that do not move (`pieceIds`), or an Engineer-Capable unit within
+   * 2 hexes (`engineerId`, 13.8d), builds or improves a hedgehog one Level for exactly 2 SP.
+   */
+  | (ActionEnvelope & {
+    readonly kind: 'BUILD_HEDGEHOG';
+    readonly hexId: HexId;
+    readonly pieceIds: readonly PieceId[];
+    readonly engineerId: PieceId | null;
+    readonly payments: readonly { readonly sourcePieceId: PieceId; readonly tokens: number }[];
+  })
+  /** 16.0c: the same work reduces a friendly hedgehog one Level for free; below Level 1 it is removed. */
+  | (ActionEnvelope & {
+    readonly kind: 'REDUCE_HEDGEHOG';
+    readonly hedgehogId: PieceId;
+    readonly pieceIds: readonly PieceId[];
+    readonly engineerId: PieceId | null;
+  })
   /** 13.5f: Eq expended at an HQ rebuild aircraft: Dead Pile aircraft arrive Active at a friendly Air Base, reduced ones stacked with the Eq are made whole. */
   | (ActionEnvelope & {
     readonly kind: 'REBUILD_AIRCRAFT';
@@ -794,6 +812,10 @@ export type RuleEvent =
   /** 9.14f: an Air Base taken by the enemy; each aircraft there rolled on the Air Base Capture Table (step lost on `stepLossMaximum` or less). */
   | { readonly kind: 'AIR_BASE_CAPTURED'; readonly sequence: number; readonly hexId: HexId; readonly capturerId: PlayerId; readonly baseCaptured: boolean; readonly stepLossMaximum: number; readonly rolls: readonly { readonly pieceId: PieceId; readonly roll: number; readonly total: number; readonly stepLost: boolean; readonly eliminated: boolean }[] }
   | { readonly kind: 'AIR_BASE_BUILT'; readonly sequence: number; readonly pieceId: PieceId; readonly hexId: HexId; readonly level: number; readonly strip: boolean }
+  /** 16.0b-c: a hedgehog's new Level; 0 means it was reduced below Level 1 and removed. */
+  | { readonly kind: 'HEDGEHOG_LEVEL_CHANGED'; readonly sequence: number; readonly pieceId: PieceId; readonly hexId: HexId; readonly level: number }
+  /** 9.14e: an enemy Attack-Capable unit entered the hex and took the hedgehog. */
+  | { readonly kind: 'HEDGEHOG_CAPTURED'; readonly sequence: number; readonly pieceId: PieceId; readonly hexId: HexId; readonly capturerId: PlayerId; readonly level: number }
   | { readonly kind: 'TRAINBUSTING_CHANGED'; readonly sequence: number; readonly hexId: HexId; readonly ownerId: PlayerId; readonly placed: boolean };
 
 export interface RuleViolation {

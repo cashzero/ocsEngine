@@ -45,6 +45,8 @@ const actionFacts = (state: GameState, action: GameAction): readonly RuleFact[] 
       publicFact('combat.attackerActionRating', preview.supplied.leadAttackerRating),
       publicFact('combat.defenderActionRating', preview.supplied.leadDefenderRating),
       publicFact('combat.drm', preview.supplied.drm),
+      // 16.0d: the defender's hedgehog (always visible, 4.9a): -Level on the combat roll, -1 on Surprise.
+      publicFact('combat.hedgehogLevel', preview.supplied.hedgehogLevel),
       publicFact('combat.attackerSupplyTokens', preview.attackerSupplyTokens),
       publicFact('combat.defenderSupplyTokens', preview.defenderSupplyTokens),
       publicFact('combat.defenderCanPay', preview.defenderCanPay),

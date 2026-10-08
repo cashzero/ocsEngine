@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import {
+  GENERATED_HEDGEHOG_LEVELS,
+  hedgehogAt,
+  hedgehogLevel,
+  isHedgehog,
   DEFAULT_NEW_GAME_REQUEST,
   GENERATED_KEY_POINT_GARRISON_SHARE,
   OFF_MAP_AIR_MIX,
@@ -214,5 +218,26 @@ describe('garrisons in an attack (user, 2026-10-07)', () => {
       expect(keyPoints.every((piece) => !objectiveHexes.has(String(hexOf(piece))))).toBe(true);
       expect(placed.length).toBe(prepared.deployment.objectives.length + keyPoints.length);
     }
+  });
+});
+
+describe('hedgehogs in an attack (16.0)', () => {
+  it('digs in every defender garrison: Level 2 on objectives, Level 1 on key points; the attacker and a meeting engagement have none', () => {
+    for (const engagement of ['AXIS_ATTACKS', 'ALLIED_ATTACKS'] as const) {
+      const { prepared, state } = started(requestFor(engagement, 0));
+      const defender = engagement === 'AXIS_ATTACKS' ? 'player:allied' : 'player:axis';
+      const garrisons = new Set(prepared.generatedOob.sides.map(({ garrisonDefinitionId }) => garrisonDefinitionId));
+      const hogs = state.pieceState.pieces.filter((piece) => piece.location.kind === 'ON_MAP' && isHedgehog(state, piece));
+      expect(hogs.every(({ ownerId }) => String(ownerId) === defender)).toBe(true);
+      const garrisoned = state.pieceState.pieces.filter((piece) => garrisons.has(piece.definitionId) && piece.location.kind === 'ON_MAP');
+      expect(hogs.length).toBe(garrisoned.length);
+      const objectiveHexes = new Set(prepared.deployment.objectives.map(({ hexId }) => String(hexId)));
+      for (const garrison of garrisoned) {
+        const hog = hedgehogAt(state, hexOf(garrison) as never)!;
+        expect(hedgehogLevel(hog)).toBe(objectiveHexes.has(String(hexOf(garrison))) ? GENERATED_HEDGEHOG_LEVELS.OBJECTIVE : GENERATED_HEDGEHOG_LEVELS.KEY_POINT);
+      }
+    }
+    const meeting = started(requestFor('MEETING', 0)).state;
+    expect(meeting.pieceState.pieces.some((piece) => isHedgehog(meeting, piece))).toBe(false);
   });
 });
