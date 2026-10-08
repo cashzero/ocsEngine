@@ -11,6 +11,9 @@ import {
   buildGeneratedOobPreview,
   attackerOf,
   ATTACKER_FORCE_RATIO,
+  MAXIMUM_RAIL_CAP,
+  RAIL_CAP_PER_DIVISION,
+  defaultRailCap,
   GENERATED_HEDGEHOG_LEVELS,
   type Engagement,
   type CreatedNewGame,
@@ -90,6 +93,7 @@ const NEW_GAME_FIXES: readonly { readonly codes: readonly string[]; readonly tex
   { codes: ['INITIAL_OVERSTACK', 'DEPLOYMENT_INVALID'], text: 'Too many units for the starting areas of this map: make the map wider or taller, or lower Scale or Divisions per side.', fields: ['new-game-width', 'new-game-height', 'new-game-scale', 'new-game-divisions'] },
   { codes: ['CALENDAR_EXCEEDS_WEATHER_TABLE', 'INVALID_START_MONTH'], text: 'The game would run past April: start earlier or lower the Turn limit.', fields: ['new-game-start-month', 'new-game-turn-limit'] },
   { codes: ['INVALID_TURN_LIMIT'], text: 'Turn limit must be from 1 to 20.', fields: ['new-game-turn-limit'] },
+  { codes: ['INVALID_RAIL_CAP'], text: `Rail Cap must be from 0 to ${MAXIMUM_RAIL_CAP} points.`, fields: ['new-game-rail-cap-allied', 'new-game-rail-cap-axis'] },
   { codes: ['MAP_WIDTH_OUT_OF_RANGE'], text: `Width must be from ${NEW_GAME_MAP_LIMITS.minWidth} to ${NEW_GAME_MAP_LIMITS.maxWidth} hexes.`, fields: ['new-game-width'] },
   { codes: ['MAP_HEIGHT_OUT_OF_RANGE'], text: `Height must be from ${NEW_GAME_MAP_LIMITS.minHeight} to ${NEW_GAME_MAP_LIMITS.maxHeight} hexes.`, fields: ['new-game-height'] },
 ];
@@ -325,7 +329,7 @@ const mapStateOf = (snapshot: UiSnapshot): MapState => {
     attack,
     barrage: new Set(snapshot.barrageTargets),
     placement: new Set(snapshot.placementHexes),
-    retreat: new Set([...snapshot.decisionHexes, ...snapshot.collapseHexes]),
+    retreat: new Set([...snapshot.decisionHexes, ...snapshot.collapseHexes, ...(snapshot.rail?.destinations.map(({ hexId }) => hexId) ?? [])]),
     highlight: new Set(sourceHighlightHex ? [sourceHighlightHex] : []),
     traceCoverage: snapshot.traceCoverage,
     traceDirect: snapshot.traceDirect,
@@ -360,7 +364,7 @@ const mapStateOf = (snapshot: UiSnapshot): MapState => {
 const clickCounter = (snapshot: UiSnapshot, pieceId: string, hexId: string): Promise<void> | void => {
   const targetsHex = snapshot.reachable.has(hexId) || snapshot.attackTargets.includes(hexId) || snapshot.air.targetHexes.includes(hexId)
     || snapshot.barrageTargets.includes(hexId) || snapshot.placementHexes.includes(hexId) || snapshot.decisionHexes.includes(hexId)
-    || snapshot.collapseHexes.includes(hexId);
+    || snapshot.collapseHexes.includes(hexId) || (snapshot.rail?.destinations.some((entry) => entry.hexId === hexId) ?? false);
   if (targetsHex) { stackPickerHex = null; return controller.clickHex(hexId); }
   const stack = onMapStacks(snapshot).get(hexId);
   const piece = stack?.pieces.find(({ id }) => id === pieceId);
@@ -491,6 +495,12 @@ const engagementHelp = (engagement: Engagement): string => {
   return `${defending} holds most of the map and every objective, its line in Combat Mode, with garrisons dug into hedgehogs on its objectives (Level ${GENERATED_HEDGEHOG_LEVELS.OBJECTIVE}) and on key rail towns and road junctions (Level ${GENERATED_HEDGEHOG_LEVELS.KEY_POINT}); ${attacking} fields ${ATTACKER_FORCE_RATIO} times the divisions plus off-map air (Fighters and Tactical Bombers at an airfield off the map, flying in over its own map edge and back), assembles a few hexes away and moves first. ${attacking} wins by holding at least half the objective VP when the last turn ends; otherwise ${defending} wins.`;
 };
 
+/** "Allied 4 · Axis 2" per Movement Phase, from the configuration the game will use. */
+const railCapText = (prepared: GeneratedScenarioPackage): string => {
+  const points = (index: number) => prepared.configuration.railCapacity?.find(({ playerId }) => playerId === prepared.scenario.players[index]?.id)?.points ?? 0;
+  return `${prepared.scenario.players[0]?.name ?? ''} ${points(0)} · ${prepared.scenario.players[1]?.name ?? ''} ${points(1)}`;
+};
+
 const engagementLabel = (engagement: Engagement): string => {
   const attacker = attackerOf(engagement);
   return attacker === null ? 'Meeting engagement' : attacker === 'ALLIED' ? 'Allied attack' : 'Axis attack';
@@ -546,7 +556,7 @@ const operationPreviewHtml = (prepared: GeneratedScenarioPackage): string => {
     ${side.independentUnits.some(({ role }) => role === 'AIRCRAFT') ? `<details class="counter-formation"><summary>Air forces: ${side.independentUnits.filter(({ role }) => role === 'AIRCRAFT').length} aircraft, ${airBasesLabel(prepared, side.side)}</summary><div class="counter-grid">${side.independentUnits.filter(({ role }) => role === 'AIRCRAFT' || role === 'AIR_BASE').map(previewCounter).join('')}</div></details>` : ''}
   </section>`).join('');
   return `<div class="operation-map-wrap"><svg class="operation-map" viewBox="0 0 ${map.layout.width} ${map.layout.height}" role="img" aria-label="Generated operation map preview with starting positions">${mapArtDefsHtml()}${cells}${rivers}${roads}${features}${deploymentMarks}</svg><p class="preview-key"><span class="key owner-1">${escapeHtml(prepared.scenario.players[0]?.name ?? '')}</span><span class="key owner-2">${escapeHtml(prepared.scenario.players[1]?.name ?? '')}</span> starting stacks (unit count)</p><p class="preview-engagement">${escapeHtml(engagementHelp(prepared.summary.engagement))}</p></div>
-    <dl class="operation-metrics"><div><dt>Scenario</dt><dd>${escapeHtml(engagementLabel(prepared.summary.engagement))}</dd></div><div><dt>Map</dt><dd>${escapeHtml(prepared.summary.mapSize)}</dd></div><div><dt>Units</dt><dd>${prepared.summary.unitCount}</dd></div><div><dt>Formations</dt><dd>${prepared.summary.formationCount}</dd></div><div><dt>Deployed hexes</dt><dd>${prepared.deployment.metrics.occupiedHexes}</dd></div><div><dt>Objectives</dt><dd>${prepared.summary.objectiveCount} · ${prepared.deployment.objectives.reduce((total, { points }) => total + points, 0)} VP</dd></div><div><dt>Warnings</dt><dd>${prepared.warnings.length}</dd></div></dl>
+    <dl class="operation-metrics"><div><dt>Scenario</dt><dd>${escapeHtml(engagementLabel(prepared.summary.engagement))}</dd></div><div><dt>Map</dt><dd>${escapeHtml(prepared.summary.mapSize)}</dd></div><div><dt>Units</dt><dd>${prepared.summary.unitCount}</dd></div><div><dt>Formations</dt><dd>${prepared.summary.formationCount}</dd></div><div><dt>Deployed hexes</dt><dd>${prepared.deployment.metrics.occupiedHexes}</dd></div><div><dt>Objectives</dt><dd>${prepared.summary.objectiveCount} · ${prepared.deployment.objectives.reduce((total, { points }) => total + points, 0)} VP</dd></div><div><dt>Rail Cap</dt><dd>${escapeHtml(railCapText(prepared))}</dd></div><div><dt>Warnings</dt><dd>${prepared.warnings.length}</dd></div></dl>
     <div class="preview-forces">${forces}</div>
     ${prepared.warnings.length > 0 ? `<details class="preview-warnings"><summary>${prepared.warnings.length} generation warning(s)</summary><ul>${prepared.warnings.map((warning) => `<li>${escapeHtml(warning)}</li>`).join('')}</ul></details>` : ''}`;
 };
@@ -588,6 +598,11 @@ const onNewGameInput = (event: Event): void => {
   if (id === 'new-game-engagement') newGameSettings = { ...newGameSettings, engagement: input.value as Engagement };
   if (id === 'new-game-turn-limit') newGameSettings = { ...newGameSettings, turnLimit: value };
   if (id === 'new-game-start-month') newGameSettings = { ...newGameSettings, startMonth: value };
+  // Rail Cap follows the forces until the player sets it; from then on it keeps the player's numbers.
+  if (id === 'new-game-rail-cap-allied' || id === 'new-game-rail-cap-axis') {
+    const current = newGameSettings.railCap ?? defaultRailCap(newGameSettings);
+    newGameSettings = { ...newGameSettings, railCap: { ...current, [id.endsWith('allied') ? 'allied' : 'axis']: value } };
+  }
   for (const key of ['map', 'oob', 'deployment', 'rules'] as const) if (id === `new-game-${key}-seed`) newGameSettings = { ...newGameSettings, seeds: { ...newGameSettings.seeds, [key]: value } };
   render(controller.getSnapshot());
 };
@@ -691,6 +706,9 @@ const newGameDialog = () => {
           ${number('new-game-turn-limit', 'Turn limit', 1, 20, newGameSettings.turnLimit)}
           ${select('new-game-start-month', 'Start month', START_MONTHS, newGameSettings.startMonth)}
           <p class="field-help">The month sets the weather: September is always dry, autumn brings mud, and midwinter snow.</p>
+          ${number('new-game-rail-cap-allied', 'Allied Rail Cap', 0, MAXIMUM_RAIL_CAP, (newGameSettings.railCap ?? defaultRailCap(newGameSettings)).allied)}
+          ${number('new-game-rail-cap-axis', 'Axis Rail Cap', 0, MAXIMUM_RAIL_CAP, (newGameSettings.railCap ?? defaultRailCap(newGameSettings)).axis)}
+          <p class="field-help">SP or RE each side can move by rail every Movement Phase (13.3b), from the map edge to its railhead; trucks carry supply on to the front. ${newGameSettings.railCap === undefined ? `Default: ${RAIL_CAP_PER_DIVISION} point per division.` : html`<button type="button" id="reset-rail-cap" @click=${() => { const { railCap: _cap, ...rest } = newGameSettings; newGameSettings = rest; previewStale = true; render(controller.getSnapshot()); }}>Use the default (${RAIL_CAP_PER_DIVISION} per division)</button>`}</p>
         </fieldset>
       </div>
       ${keyed(seedVersion, html`<fieldset class="settings-advanced"><legend>Reproducible seeds</legend>
@@ -934,6 +952,7 @@ root.addEventListener('click', (event) => {
     void runUi(() => controller.transferSupply(transfer.dataset.transfer as 'LOAD' | 'UNLOAD', transfer.dataset.dump ?? null, tokens));
     return;
   }
+  if (closest('#confirm-rail')) { void runUi(() => controller.confirmRailMove()); return; }
   const divide = closest('[data-divide]');
   if (divide) {
     const field = divide.closest('.transfer-row')?.querySelector<HTMLInputElement>('.divide-points');
@@ -994,6 +1013,9 @@ root.addEventListener('change', (event) => {
   else if (input.dataset.rebuildMode) controller.setRebuildUnitMode(input.dataset.rebuildHex!, input.dataset.rebuildMode, input.value);
   else if (input.dataset.rebuildTrucks) controller.setRebuildTrucks(input.dataset.rebuildHex!, Number(input.value));
   else if (input.dataset.refitAircraft) controller.toggleRefitAircraft(input.dataset.refitBase!, input.dataset.refitAircraft);
+  else if (input.dataset.railUnit) controller.toggleRailUnit(input.dataset.railUnit);
+  else if (input.dataset.railDump) controller.setRailTokens(input.dataset.railDump, Number(input.value));
+  else if (input.id === 'rail-destination') controller.chooseRailDestination((event.target as unknown as HTMLSelectElement).value);
 });
 
 /** Typing in the roster search filters its rows; the rows are keyed, so the counters already drawn are kept. */

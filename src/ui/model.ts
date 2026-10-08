@@ -363,6 +363,8 @@ export interface UiSnapshot {
   readonly stepActions: readonly UnitAction[];
   /** Hexes the selected Extender may collapse to (9.14d). */
   readonly collapseHexes: readonly string[];
+  /** Rail transport from the selected unit's or dump's hex (13.3); null when nothing can entrain there now. */
+  readonly rail: RailPanel | null;
   readonly endStep: EndStep;
   readonly decision: PendingDecisionDescriptor | null;
   readonly decisionSeatId: SeatId | null;
@@ -393,6 +395,23 @@ export interface UiSnapshot {
   readonly autoPay: boolean;
   /** Display name of each formation of the viewer, by formation Definition ID. */
   readonly formationNames: ReadonlyMap<string, string>;
+}
+
+/** A rail move being put together in one entraining hex (13.3): the cargo ticked, the destination, its cost. */
+export interface RailPanel {
+  readonly hexId: string;
+  readonly capacityPoints: number;
+  readonly remainingQuarters: number;
+  /** 13.6b: Tokens that arrived here this turn and may entrain off-map; null when the hex is detrainable anyway. */
+  readonly arrivalTokens: number | null;
+  readonly units: readonly { readonly pieceId: string; readonly label: string; readonly quarters: number; readonly problem: string | null; readonly selected: boolean }[];
+  readonly dumps: readonly { readonly pieceId: string; readonly holds: number; readonly loadableTokens: number; readonly tokens: number }[];
+  readonly destinations: readonly { readonly hexId: string; readonly halves: 1 | 2 | 4; readonly hexes: number }[];
+  readonly toHexId: string | null;
+  /** Rail Cap the move costs in quarters; null until there is cargo and a destination. */
+  readonly costQuarters: number | null;
+  readonly allowed: boolean;
+  readonly blockers: readonly string[];
 }
 
 export type UiListener = (snapshot: UiSnapshot) => void;

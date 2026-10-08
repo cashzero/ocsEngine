@@ -110,6 +110,7 @@ export const cargoUnitProblem = (state: GameState, unit: PieceState, ownerId: Pl
   if (mobilityOf(state, unit) !== 'leg') return 'only Leg units fly (14.9c)';
   if (Number(stepOf(state, unit)?.movementPointTicks ?? 0) > MAXIMUM_CARGO_MA_TICKS) return 'its MA is over 10 Leg MP (14.9c)';
   const usage = usageOf(state, unit);
+  if (usage.railCarried) return 'it already moved by rail this phase (4.7d)';
   const printed = movementAllowanceTicks({ ...state, usage: withUsage(state, { ...usage, airCarried: false }) }, unit);
   if (usage.movementSpentTicks > printed / 2) return 'it has already spent more than half its MA (14.9d)';
   return null;

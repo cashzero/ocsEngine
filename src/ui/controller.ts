@@ -18,7 +18,7 @@ import {
 } from '../rules/index.js';
 import type {
   AirDraft, AirOverview, AirRefit, Arrival, AttackDraft, AwayReport, AirRebuild, BuildOption, GroundRebuild, ConstructionOverview, CombatSheet, EndStep, HandoffInfo, MoveBlocker, MovePreview, MoveRangeEntry,
-  DropPlanDraft, DropPlanView, LedgerLine, SupplyNeed, TransportCarrier, UiListener, UiSelection, UiSnapshot, UnitAction,
+  DropPlanDraft, DropPlanView, LedgerLine, RailPanel, SupplyNeed, TransportCarrier, UiListener, UiSelection, UiSnapshot, UnitAction,
 } from './model.js';
 import {
   buildCombatReports, describeRecord, nominalNextStep, playerTurnTrack,
@@ -66,6 +66,11 @@ export interface UiController {
   readonly transferSupply: (kind: 'LOAD' | 'UNLOAD', dumpId: string | null, tokens: number) => Promise<void>;
   /** Split a chosen number of Transport Points off the selected truck (13.2c). */
   readonly divideTruck: (points: number) => Promise<void>;
+  /** Rail transport from the selected hex (13.3): tick cargo, set Tokens per dump, pick the detraining hex, confirm. */
+  readonly toggleRailUnit: (pieceId: string) => void;
+  readonly setRailTokens: (dumpId: string, tokens: number) => void;
+  readonly chooseRailDestination: (hexId: string) => void;
+  readonly confirmRailMove: () => Promise<void>;
   readonly respondToDecision: (choiceId: string) => Promise<void>;
   /** Pay the pending combat-supply decision from the largest dumps, consumer by consumer. */
   readonly autoPay: () => Promise<void>;
@@ -213,6 +218,19 @@ const formationNameOf = (unitName: string): string => unitName.includes(' / ') ?
 /** A rebuilt Dead Pile unit is placed in Combat Mode when its counter has that side, otherwise the first mode it may take (13.5b). */
 const defaultPlacementMode = (modes: readonly OcsMode[]): OcsMode | null => modes.includes('COMBAT') ? 'COMBAT' : modes[0] ?? null;
 
+/** Quarters from the engine's Rail Cap text ("2 1/4" is nine). */
+const quartersOf = (text: string): number => {
+  const [whole, part] = text.includes(' ') ? text.split(' ') : text.includes('/') ? ['0', text] : [text, ''];
+  return Number(whole) * 4 + (({ '1/4': 1, '1/2': 2, '3/4': 3 } as Record<string, number>)[part ?? ''] ?? 0);
+};
+
+/** "2 1/4" for nine quarters. */
+export const quartersLabel = (quarters: number): string => {
+  const whole = Math.floor(quarters / 4);
+  const part = ['', '1/4', '1/2', '3/4'][quarters % 4]!;
+  return whole === 0 ? (part || '0') : part ? `${whole} ${part}` : String(whole);
+};
+
 class DefaultUiController implements UiController {
   readonly #engine: GameplayEngine;
   readonly #scenario: ScenarioDefinition;
@@ -234,6 +252,8 @@ class DefaultUiController implements UiController {
   #airDraft: AirDraftInput | null = null;
   #buildDraft: { readonly engineerId: string; readonly hexId: string | null } | null = null;
   #dropDraft: { readonly unitIds: readonly PieceId[]; readonly hexId: string | null; readonly turn: number | null } | null = null;
+  /** A rail move being put together (13.3): units ticked, Tokens per dump, and the destination; kept while the hex stays selected. */
+  #railDraft: { readonly fromHexId: string; readonly unitIds: ReadonlySet<string>; readonly tokens: ReadonlyMap<string, number>; readonly toHexId: string | null } | null = null;
   #rebuildSelection = new Map<string, { readonly aircraftIds: readonly PieceId[] | null; readonly baseId: PieceId | null }>();
   /** Per hex of Repls: the units chosen (null: the default rebuild) and the truck points (null: the default). */
   #unitRebuildSelection = new Map<string, { readonly units: readonly UnitRebuild[] | null; readonly truckPoints: number | null }>();
@@ -719,6 +739,8 @@ class DefaultUiController implements UiController {
       && view.projection?.sequence.phase === 'MOVEMENT' && segment === 'MOVEMENT'
       ? this.#cached(`transport|${ownSelected.id}`, () => this.#session.getTransportOptions(seatId, ownSelected.id).value) : null;
     const stepActions = this.#stepActions(enabled);
+    const rail = ownSelected?.location.kind === 'ON_MAP' && view.metadata.lifecycle === 'ACTIVE' && !view.privacyLocked && enabled('RAIL_MOVE')
+      ? this.#railPanel(ownSelected.location.hexId) : null;
     const collapseHexes = ownSelected && ownSelected.currentFaceId === 'extender' && ownSelected.location.kind === 'ON_MAP' && enabled('COLLAPSE_EXTENDER')
       ? this.#cached(`collapse|${ownSelected.id}`, () => this.#session.getActionFamilies(seatId) && this.#collapseHexes(ownSelected)) : [];
     const pending = this.#decision();
@@ -777,6 +799,7 @@ class DefaultUiController implements UiController {
       transportOptions,
       stepActions,
       collapseHexes,
+      rail,
       endStep: this.#endStep(),
       decision: ownDecision ? { ...ownDecision, options: distinctLabels(ownDecision.options) } : null,
       decisionSeatId: pending?.seatId ?? null,
@@ -1522,6 +1545,94 @@ class DefaultUiController implements UiController {
     });
   }
 
+  /** The rail move from `hexId` as the player has ticked it so far, with what it costs and why it may not go (13.3). */
+  #railPanel(hexId: string): RailPanel | null {
+    const seatId = this.#activeSeat();
+    const options = this.#cached(`rail|${hexId}`, () => this.#session.getRailMoveOptions(seatId, hexId as never).value);
+    if (!options || options.capacityPoints === null || options.entrainProblem !== null || options.destinations.length === 0) return null;
+    const draft = this.#railDraft?.fromHexId === hexId ? this.#railDraft : null;
+    const pieces = this.#pieces();
+    const units = options.units.map(({ pieceId, quarters, problem }) => {
+      const piece = pieces.find(({ id }) => id === pieceId);
+      return { pieceId, label: piece ? unitLabel(this.#scenario, piece) : 'Unit', quarters, problem, selected: draft?.unitIds.has(pieceId) === true };
+    });
+    const dumps = options.dumps.map(({ pieceId, loadableTokens }) => ({
+      pieceId, holds: pieces.find(({ id }) => id === pieceId)?.resourceQuantity ?? 0, loadableTokens, tokens: Math.min(loadableTokens, draft?.tokens.get(pieceId) ?? 0),
+    }));
+    const destinations = options.destinations.map(({ hexId: to, halves, path }) => ({ hexId: to, halves, hexes: path.length - 1 }));
+    const toHexId = draft?.toHexId && destinations.some(({ hexId: to }) => to === draft.toHexId) ? draft.toHexId : null;
+    const supply = dumps.filter(({ tokens }) => tokens > 0).map(({ pieceId, tokens }) => ({ sourcePieceId: pieceId as PieceId, tokens }));
+    const unitIds = units.filter(({ selected }) => selected).map(({ pieceId }) => pieceId as PieceId);
+    let costQuarters: number | null = null;
+    let allowed = false;
+    let blockers: string[] = [];
+    if (toHexId !== null && (supply.length > 0 || unitIds.length > 0)) {
+      const explanation = this.#explain(this.#railAction(hexId, toHexId, unitIds, supply));
+      const cost = explanation.facts.find(({ key }) => key === 'rail.cost')?.value;
+      costQuarters = typeof cost === 'string' && cost !== '' ? quartersOf(cost) : null;
+      allowed = explanation.allowed;
+      blockers = explanation.reasons.filter(({ allowed: ok }) => !ok).map(({ message }) => message);
+    }
+    return {
+      hexId, capacityPoints: options.capacityPoints, remainingQuarters: options.remainingQuarters,
+      arrivalTokens: options.arrival && options.dumps.length > 0 ? options.arrival.tokens : null,
+      units, dumps, destinations, toHexId, costQuarters, allowed, blockers,
+    };
+  }
+
+  #railAction(fromHexId: string, toHexId: string, unitIds: readonly PieceId[], supply: readonly { readonly sourcePieceId: PieceId; readonly tokens: number }[]): GameAction {
+    return {
+      kind: 'RAIL_MOVE', fromHexId, toHexId, unitIds, supply,
+      actionId: this.#actionId('rail'), actorId: this.#view(this.#activeSeat()).playerId, expectedRevision: this.#session.getRevision(),
+    } as GameAction;
+  }
+
+  #railDraftFor(hexId: string) {
+    return this.#railDraft?.fromHexId === hexId ? this.#railDraft : { fromHexId: hexId, unitIds: new Set<string>(), tokens: new Map<string, number>(), toHexId: null };
+  }
+
+  /** Tick or untick a unit (or truck) for the rail move from the selected hex. */
+  toggleRailUnit = (pieceId: string): void => {
+    const panel = this.getSnapshot().rail;
+    if (!panel) return;
+    const draft = this.#railDraftFor(panel.hexId);
+    const unitIds = new Set(draft.unitIds);
+    if (unitIds.has(pieceId)) unitIds.delete(pieceId); else unitIds.add(pieceId);
+    this.#railDraft = { ...draft, unitIds };
+    this.#emit();
+  };
+
+  /** Tokens of one dump to entrain. */
+  setRailTokens = (dumpId: string, tokens: number): void => {
+    const panel = this.getSnapshot().rail;
+    if (!panel || !Number.isSafeInteger(tokens) || tokens < 0) return;
+    const draft = this.#railDraftFor(panel.hexId);
+    this.#railDraft = { ...draft, tokens: new Map([...draft.tokens, [dumpId, tokens]]) };
+    this.#emit();
+  };
+
+  /** The detraining hex: chosen from the list or by clicking a highlighted hex on the map. */
+  chooseRailDestination = (hexId: string): void => {
+    const panel = this.getSnapshot().rail;
+    if (!panel || !panel.destinations.some(({ hexId: to }) => to === hexId)) return;
+    this.#railDraft = { ...this.#railDraftFor(panel.hexId), toHexId: hexId };
+    this.#emit();
+  };
+
+  confirmRailMove = async (): Promise<void> => {
+    const panel = this.getSnapshot().rail;
+    if (!panel || !panel.allowed || panel.toHexId === null) return;
+    const unitIds = panel.units.filter(({ selected }) => selected).map(({ pieceId }) => pieceId as PieceId);
+    const supply = panel.dumps.filter(({ tokens }) => tokens > 0).map(({ pieceId, tokens }) => ({ sourcePieceId: pieceId as PieceId, tokens }));
+    const tokens = supply.reduce((total, { tokens: quantity }) => total + quantity, 0);
+    const cargo = [unitIds.length > 0 ? `${unitIds.length} unit${unitIds.length === 1 ? '' : 's'}` : '', tokens > 0 ? `${tokens}T` : ''].filter(Boolean).join(' and ');
+    const to = panel.toHexId;
+    this.#railDraft = null;
+    this.#selection = { ...this.#selection, hexId: to };
+    await this.#dispatch(this.#railAction(panel.hexId, to, unitIds, supply),
+      `Moved ${cargo} by rail from ${printedHexLabel(panel.hexId)} to ${printedHexLabel(to)} for ${quartersLabel(panel.costQuarters ?? 0)} Rail Cap.`);
+  };
+
   #collapseHexes(piece: ProjectedPiece): readonly string[] {
     if (piece.location.kind !== 'ON_MAP') return [];
     const origin = piece.location.hexId;
@@ -1572,7 +1683,7 @@ class DefaultUiController implements UiController {
     return () => this.#listeners.delete(listener);
   };
 
-  #resetIntent(): void { this.#destination = null; this.#draft = null; this.#airDraft = null; this.#buildDraft = null; this.#dropDraft = null; }
+  #resetIntent(): void { this.#destination = null; this.#draft = null; this.#airDraft = null; this.#buildDraft = null; this.#dropDraft = null; this.#railDraft = null; }
 
   selectPiece = (pieceId: string | null): void => {
     const piece = this.#pieces().find(({ id }) => id === pieceId);
@@ -1641,6 +1752,10 @@ class DefaultUiController implements UiController {
     if (this.#airDraft && snapshot.air.targetHexes.includes(hexId)) {
       this.#chooseAirTarget(hexId);
       this.#emit();
+      return;
+    }
+    if (snapshot.rail && snapshot.rail.destinations.some(({ hexId: to }) => to === hexId)) {
+      this.chooseRailDestination(hexId);
       return;
     }
     if (snapshot.collapseHexes.includes(hexId) && snapshot.selectedPiece) {

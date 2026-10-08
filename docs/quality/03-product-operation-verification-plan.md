@@ -289,6 +289,17 @@ Run on the default New Game unless a row says otherwise. Evidence: `docs/quality
 RAIL-05 to RAIL-10 are covered by `tests/rules/ocs-rail-supply.test.ts` and `tests/rules/rail-supply-flow.test.ts`, which are
 regression support only and do not promote these rows.
 
+Rail Cap rows (added 2026-10-08, plan `docs/roadmap/15-rail-cap-wbs.md`). Evidence: `docs/quality/evidence/rail-cap-2026-10-08/README.md`.
+
+| ID | Pri | Player operation | Required visible result | Status |
+|---|---|---|---|---|
+| RAIL-11 | P0 | New Game: read the Rail Cap fields, type other values, Generate | The form shows each side's default Rail Cap and what it is for; the preview shows the typed values | PASS (2026-10-08, defaults 2 / 2, typed 5 / 1, preview "Allied 5 · Axis 1") |
+| RAIL-12 | P0 | In the Movement Phase select a unit at a station, tick it, click a highlighted station, Move by rail | The panel shows the Rail Cap left, the cargo with its cost, the reachable stations highlighted and listed, the price of the move; the unit is drawn at the station | PASS (2026-10-08, 0720 → 0202 for 1 of 5) |
+| RAIL-13 | P0 | Play the rest of that Game Turn | Both player turns end through the page with their hand-overs; no dead end | PASS (2026-10-08, Turn 1 → Turn 2; the Axis side ended its phases without acting) |
+| RAIL-14 | P0 | Game Turn 2: place the new SP at a rail entry, select them in the Movement Phase, send Tokens by rail | The panel says this turn's arrivals may entrain at the entry (13.6b) and how many Tokens; the move is priced and done | PASS (2026-10-08, 8T 0123 → 0907 for 2) |
+| RAIL-15 | P1 | Advance an attack past an enemy station so the enemy can no longer reach it, end the phase | The station turns to your rail control on the Trace Supply overlay (13.3h front line) | UNVERIFIED (rule tests only: `tests/rules/rail-cap.test.ts`) |
+| RAIL-16 | P1 | Try to detrain next to an enemy unit, or send more than the Rail Cap left | The move is refused with the rule (13.3e enemy ZOC, 13.3a cost) | UNVERIFIED (rule tests only) |
+
 ## I. Replacements (added 2026-10-04, see the replacement amendment above)
 
 Rows REPL-01 and REPL-02 run from the New Game form (Air forces None). A ground unit could not be lost the natural way within
