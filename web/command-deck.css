@@ -324,3 +324,11 @@ details.list-group summary { cursor: pointer; padding: 4px 0; }
 .participant.plain { grid-template-columns: 22px 1fr; }
 .carrier-row { display: grid; gap: 4px; }
 .carrier-row select { width: 100%; min-height: 32px; font-size: 13px; }
+
+.deck-status { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 8px; padding: 6px 10px; border: 1px solid var(--line, #3b4638); border-radius: 6px; }
+.status-mark { position: relative; padding: 2px 7px; white-space: nowrap; border-radius: 5px; font-size: 12px; font-weight: 800; letter-spacing: .03em; text-align: center; color: #10140f; background: #aab5a6; cursor: help; }
+.status-mark.tone-ok { background: #9fc9b2; }
+.status-mark.tone-warn { background: #d6c27c; }
+.status-mark.tone-bad { background: #e58d80; }
+.status-mark::after { content: attr(data-tip); position: absolute; z-index: 20; left: 0; top: calc(100% + 6px); width: max-content; max-width: 280px; padding: 6px 8px; border: 1px solid #5b6a57; border-radius: 6px; background: #0e1612; color: #e8efe5; font-size: 13px; font-weight: 400; letter-spacing: 0; text-align: left; white-space: normal; pointer-events: none; opacity: 0; visibility: hidden; }
+.status-mark:hover::after, .status-mark:focus-visible::after { opacity: 1; visibility: visible; }

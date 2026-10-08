@@ -11,6 +11,7 @@ import type {
   ActionFamily,
   CandidateRequest,
   CandidateResult,
+  FuelCoverage,
   FuelPreview,
   SupplySourceHex,
   RailControlHex,
@@ -304,6 +305,8 @@ export interface GameSession {
   /** Control of every rail Hex from the seat's side (13.3h); empty when not interactive. */
   readonly getRailControl: (seatId: SeatId) => RuleQueryResult<readonly RailControlHex[]>;
   /** Each fuel payment open to one of the seat's units with the units it would newly fuel (12.5c). */
+  /** How one of the seat's units is fueled now (12.5): a coverage method, 'NOT_NEEDED', or null when it needs fuel and has none. */
+  readonly getFuelCoverage: (seatId: SeatId, pieceId: PieceId) => RuleQueryResult<FuelCoverage>;
   readonly getFuelPreview: (seatId: SeatId, pieceId: PieceId) => RuleQueryResult<readonly FuelPreview[]>;
   readonly createDraft: (seatId: SeatId, action: GameAction) => ActionDraft;
   readonly validateDraft: (draft: ActionDraft) => DraftValidation;

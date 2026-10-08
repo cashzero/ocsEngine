@@ -6,6 +6,7 @@ import type { UiSnapshot } from './model.js';
 import { ROUTE_LABELS, halfTokenText, isMultiStepDefinition } from '../rules/index.js';
 import { airSentences, emphasizeAir } from './air-text.js';
 import { counterSvg, counterView, replacementAbbreviation } from './counter.js';
+import { unitStatusRows } from './unit-status.js';
 import { combatHeadline, combatOutlook, type CombatReport, type FeedEntry, type NarrativeContext } from './narrative.js';
 import { ownOverstackedHexes, type OverstackedHex, phaseLabel, pieceDefinition, pieceLabel, printedHexLabel, STACKING_LIMIT_RE_TICKS, stackingReTicks } from './presenter.js';
 
@@ -177,6 +178,17 @@ const selectedCard = (snapshot: UiSnapshot): TemplateResult => {
   return html`${counterFor(snapshot, piece)}<div><strong>${pieceLabel(snapshot.scenario, piece)}</strong>
     <p>${pieceHex(snapshot, piece)} · ${statusName(snapshot, piece)}${details ? ` · ${details}` : ''}</p>
     <small>${status}${piece.statuses.includes('status:out-of-supply') ? ' · Out of supply' : ''}</small></div>`;
+};
+
+/** The selected ground unit's markers written out, so no one has to read a counter stack (3.6). */
+const statusPanel = (snapshot: UiSnapshot): View => {
+  const piece = snapshot.selectedPiece;
+  const rows = piece ? unitStatusRows(snapshot, piece) : [];
+  if (rows.length === 0) return nothing;
+  // One small mark per marker; the explanation is the tooltip (hover or keyboard focus) so the panel stays a single row.
+  const tip = (row: ReturnType<typeof unitStatusRows>[number]): string =>
+    [`${row.label}: ${row.value}${row.rule ? ` (${row.rule})` : ''}`, row.note ?? ''].filter(Boolean).join('. ');
+  return html`<section class="deck-status" aria-label="Unit status">${rows.map((row) => html`<span class="status-mark tone-${row.tone}" data-status=${row.key} data-tip=${tip(row)} aria-label=${tip(row)} role="img" tabindex="0">${row.icon}</span>`)}</section>`;
 };
 
 const explanationBlock = (explanation: NonNullable<UiSnapshot['movePreview']>['explanation'] | null): View => {
@@ -962,6 +974,7 @@ export const commandDeckView = (snapshot: UiSnapshot, state: DeckState): Templat
   return html`${objective ? html`<p class="deck-objective">${objective}</p>` : nothing}
     ${view.metadata.lifecycle === 'PAUSED' ? html`<p class="paused-banner" role="status">This game was saved paused. <button id="resume-game" class="bar-button">Resume</button></p>` : nothing}
     <section class="deck-selection" aria-label="Selected unit">${selectedCard(snapshot)}${selectionButton(snapshot, busy)}</section>
+    ${statusPanel(snapshot)}
     ${body}
     <footer class="deck-footer"><div class="deck-notice" role="status">${snapshot.busy ? 'Working…' : withHexLabels(state.error || state.hint || snapshot.notice)}</div></footer>`;
 };
