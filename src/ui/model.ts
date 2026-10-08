@@ -327,6 +327,8 @@ export interface UiSnapshot {
   /** MP the selected unit has left this phase, in quarter-MP ticks; null when it cannot move. */
   readonly remainingTicks: number | null;
   readonly movePreview: MovePreview | null;
+  /** How the selected own unit is fueled now (12.5); null when none is selected or it needs fuel and has none. */
+  readonly selectedFuel: import('../rules/index.js').FuelCoverage;
   /** Enemy Hexes the current segment allows attacking (overruns only for the selected unit). */
   readonly attackTargets: readonly string[];
   readonly barrageTargets: readonly string[];

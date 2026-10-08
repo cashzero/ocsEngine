@@ -11,7 +11,7 @@ import { applyGameAction } from './kernel/reducer.js';
 import { validateGameAction } from './kernel/validate.js';
 import { queryMovementPath, queryReachableHexes } from './movement/movement.js';
 import { queryFeedCoverage, querySupplySources, queryTraceCoverage } from './supply/supply.js';
-import { queryFuelPreview } from './supply/fuel.js';
+import { queryFuelCoverage, queryFuelPreview } from './supply/fuel.js';
 import { queryTransportOptions } from './supply/transport.js';
 import { queryRailControl } from './supply/rail.js';
 import { actionFamilies, candidateActions, kindMayBeLegal } from './query/candidates.js';
@@ -158,6 +158,7 @@ const engine: RuleEngine = {
   queryFeedCoverage,
   querySupplySources,
   queryRailControl,
+  queryFuelCoverage,
   queryFuelPreview,
 };
 

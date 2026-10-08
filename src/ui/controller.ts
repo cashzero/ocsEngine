@@ -643,6 +643,7 @@ class DefaultUiController implements UiController {
         });
       }
     }
+    const selectedFuel = ownSelected ? this.#cached(`fuel-coverage|${ownSelected.id}`, () => this.#session.getFuelCoverage(seatId, ownSelected.id)).value ?? null : null;
     let movePreview: MovePreview | null = null;
     if (ownSelected && this.#destination !== null && reachable.has(this.#destination)) {
       const action: GameAction = {
@@ -754,6 +755,7 @@ class DefaultUiController implements UiController {
       showTraceCoverage: this.#showTraceCoverage,
       remainingTicks,
       movePreview,
+      selectedFuel,
       attackTargets,
       barrageTargets,
       draft,
