@@ -47,6 +47,7 @@ const parseArgs = (argv) => {
       case '--swap': options.swap = true; break;
       case '--no-replay': options.replay = false; break;
       case '--trace': options.trace = true; break;
+      case '--debug': options.debug = true; break;
       case '--out': options.out = value(); break;
       case '--help': console.log('see the header of scripts/ai-match.mjs'); process.exit(0);
       default: throw new Error(`Unknown option ${flag}`);
@@ -110,7 +111,8 @@ const runMatch = async (baseOptions, matchIndex) => {
   const policyFor = (id) => {
     if (builds.has(id)) return builds.get(id).createHeuristicPolicy(facts, { label: id.slice('heuristic@'.length) });
     if (id === 'random-legal') return m.createRandomLegalPolicy();
-    if (id === 'heuristic') return m.createHeuristicPolicy(facts);
+    // --debug: the movement planner's per-unit lines (this build's heuristic only), for diagnosing behavior.
+    if (id === 'heuristic') return m.createHeuristicPolicy(facts, options.debug ? { debug: (line) => appendFileSync(join(options.out, `match-${matchIndex}.debug.log`), `${line}\n`) } : {});
     // heuristic:<file.json>: tuned weights, as written by scripts/ai-train.mjs ({ label, weights } or a bare weights object).
     if (id.startsWith('heuristic:')) {
       const file = JSON.parse(readFileSync(resolve(root, id.slice('heuristic:'.length)), 'utf8'));
@@ -152,6 +154,8 @@ const runMatch = async (baseOptions, matchIndex) => {
   // Logistics: replay the game and count SP each side spent straight out of a truck's cargo (12.3: cargo is
   // drawn like a dump), which with unloads shows SP hauled to where the army used it.
   const cargoSpent = { allied: 0, axis: 0 };
+  // Steps each side lost, by any cause (combat, barrage, attrition, overstack): the other side's kills for a K/D ratio.
+  const stepsLost = { allied: 0, axis: 0 };
   {
     const save = session.save();
     let state = m.parseGameStateJson(save.initialSnapshot);
@@ -160,6 +164,10 @@ const runMatch = async (baseOptions, matchIndex) => {
       const next = m.ruleEngine.applyAction(state, action);
       if (!next.ok) break;
       for (const event of next.events) {
+        if (event.kind === 'STEP_LOST') {
+          const lost = state.pieceState.pieces.find(({ id }) => id === event.pieceId) ?? next.state.pieceState.pieces.find(({ id }) => id === event.pieceId);
+          if (lost) stepsLost[sideOf(lost.ownerId)] += 1;
+        }
         const pieceId = event.kind === 'SUPPLY_SPENT' ? event.resourcePieceId : event.kind === 'RESOURCE_CONSUMED' ? event.reservation.resourcePieceId : null;
         const quantity = event.kind === 'SUPPLY_SPENT' ? event.quantity : event.kind === 'RESOURCE_CONSUMED' ? event.reservation.quantity : 0;
         const piece = pieceId === null ? null : state.pieceState.pieces.find(({ id }) => id === pieceId);
@@ -183,6 +191,8 @@ const runMatch = async (baseOptions, matchIndex) => {
       combatUnits: combat.length,
       outOfSupply: combat.filter(({ statuses }) => statuses.includes('status:out-of-supply')).length,
       cargoSpent: cargoSpent[side],
+      stepsLost: stepsLost[side],
+      stepsKilled: stepsLost[side === 'allied' ? 'axis' : 'allied'],
       actions: result.actionCountsBySeat[seat.seatId] ?? {},
     }];
   }));

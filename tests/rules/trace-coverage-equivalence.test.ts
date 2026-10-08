@@ -2,11 +2,13 @@ import { describe, expect, it } from 'vitest';
 import {
   DEFAULT_NEW_GAME_REQUEST,
   createInitialGameState,
+  dumpsReaching,
   formationMembers,
   friendlySourceHexes,
   hasEnemyCombatUnit,
   prepareNewGame,
   queryZoc,
+  queryFeedCoverage,
   queryTraceCoverage,
   stableSort,
   supplyPathCostModel,
@@ -194,5 +196,25 @@ describe('trace supply computed from the sources outward (PERF-1)', () => {
     expect(seen.hqRoutes).toBeGreaterThan(0);
     expect(seen.unfedHqs).toBeGreaterThan(0);
     expect(seen.uncovered).toBeGreaterThan(0);
+  }, 120_000);
+
+  // The bot asks where each dump can feed a unit out of trace (12.6c) for the whole map at once: the same dumps the
+  // Supply Phase offers hex by hex.
+  it('feed coverage lists the dumps that reach each hex', () => {
+    let fed = 0;
+    for (const state of [generated(16, 12, 61), scrambled(generated(16, 12, 41), 9), scrambled(generated(20, 16, 31), 10)]) {
+      for (const { id: playerId } of state.scenario.players) {
+        const own = state.pieceState.pieces.filter((piece) => piece.ownerId === playerId && piece.location.kind === 'ON_MAP');
+        for (const consumer of [null, ...own.filter((piece) => !isHq(state, piece)).filter((_, index) => index % 6 === 0)]) {
+          const feeds = queryFeedCoverage(state, playerId, consumer?.id ?? null).value!;
+          for (const { id: hexId } of state.scenario.mapDefinition.hexes.filter((_, index) => index % 3 === 0)) {
+            const expected = dumpsReaching(state, playerId, hexId, consumer).map(({ pieceId }) => String(pieceId)).sort();
+            expect(feeds.filter(({ hexIds }) => hexIds.includes(hexId)).map(({ dumpId }) => String(dumpId)).sort(), `${consumer?.id ?? 'any'} at ${hexId}`).toEqual(expected);
+            fed += expected.length;
+          }
+        }
+      }
+    }
+    expect(fed).toBeGreaterThan(0);
   }, 120_000);
 });

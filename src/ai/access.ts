@@ -1,6 +1,6 @@
 import type { PieceId } from '../core/index.js';
 import type { GameSession, SeatId } from '../gameplay/index.js';
-import type { GameAction, ReachableHex, TraceCoverage } from '../rules/index.js';
+import type { FeedSource, GameAction, ReachableHex, TraceCoverage } from '../rules/index.js';
 import type { BotActionAccess } from './model.js';
 
 /** Default candidate budget: enough for every option a policy weighs, bounded for large stacks of combinations. */
@@ -12,6 +12,7 @@ export const createBotActionAccess = (session: GameSession, seatId: SeatId): Bot
   const candidateCache = new Map<string, readonly GameAction[]>();
   const rangeCache = new Map<PieceId, readonly ReachableHex[]>();
   const coverageCache = new Map<string, TraceCoverage>();
+  const feedCache = new Map<string, readonly FeedSource[]>();
   return {
     families: () => families ??= session.getActionFamilies(seatId).filter(({ enabled }) => enabled).map(({ kind }) => kind),
     candidates: (kind, pieceId = null, budget = DEFAULT_CANDIDATE_BUDGET) => {
@@ -39,6 +40,14 @@ export const createBotActionAccess = (session: GameSession, seatId: SeatId): Bot
         coverageCache.set(String(pieceId), coverage);
       }
       return coverage;
+    },
+    feedCoverage: (pieceId = null) => {
+      let feeds = feedCache.get(String(pieceId));
+      if (feeds === undefined) {
+        feeds = session.getFeedCoverage(seatId, pieceId).value ?? [];
+        feedCache.set(String(pieceId), feeds);
+      }
+      return feeds;
     },
   };
 };
