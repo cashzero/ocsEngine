@@ -28,6 +28,7 @@ import {
   withStatus,
 } from '../pieces.js';
 import { absorbBreakdowns } from '../breakdown/breakdown.js';
+import { applyFrontControl, recordRailArrival } from '../supply/rail-cap.js';
 import { activeAircraftAt, activeAircraftLimit, atOffMapAirfield, friendlyAirBases, isAircraft, withAircraftActive } from '../air/aircraft.js';
 import { arriveReplacements, mergeReplacementsAt } from '../replacement/replacement.js';
 import { lapseDropPlans } from '../air/transport.js';
@@ -203,6 +204,8 @@ export const applySequenceLifecycle = (
     next = { ...next, ledger: { ...next.ledger, attackedHexIds: [] }, air: { ...next.air, unloaded: [] } };
   }
   if (from.phase === 'TURN_END') next = lapseDropPlans(next);
+  // 13.3h: stations now clearly on one side of the front change hands as each step of the turn ends.
+  if (ending || from.segment !== to.segment) next = applyFrontControl(next, events);
   if (to.phase === 'FIRST_PLAYER') next = determineFirstPlayer(next, events);
   if (to.phase === 'COMPLETE') {
     const victory: VictoryState = { ...calculateVictory(next), reason: 'TURN_LIMIT' };
@@ -372,8 +375,9 @@ export const placeReinforcement = (
     mapState: isCombatUnit(state, piece) ? setHexControl(state.mapState, action.hexId, action.actorId) : state.mapState,
   };
   return {
-    // A dump placed where the same kind of supply already lies joins it: one hex, one dump.
-    state: mergeReplacementsAt(mergeSupplyAt(placed, action.hexId, piece.ownerId), action.hexId, piece.ownerId),
+    // A dump placed where the same kind of supply already lies joins it: one hex, one dump. 13.6b: arrivals at a rail
+    // entry may entrain there "off-map" in this turn's Movement Phase.
+    state: recordRailArrival(mergeReplacementsAt(mergeSupplyAt(placed, action.hexId, piece.ownerId), action.hexId, piece.ownerId), piece, action.hexId),
     events: [{ kind: 'REINFORCEMENT_PLACED', sequence: 0, pieceId: action.pieceId, hexId: action.hexId }],
   };
 };

@@ -667,6 +667,39 @@ const transportSection = (snapshot: UiSnapshot, others: readonly { key: string; 
     ${others.length > 0 ? actionButtons(others) : nothing}</div>`;
 };
 
+/** "2 1/4" for nine quarters of Rail Cap. */
+const railPoints = (quarters: number): string => {
+  const whole = Math.floor(quarters / 4);
+  const part = ['', '1/4', '1/2', '3/4'][quarters % 4]!;
+  return whole === 0 ? (part || '0') : part ? `${whole} ${part}` : String(whole);
+};
+
+/**
+ * Rail transport from this hex (13.3): tick units, set Tokens per dump, pick a highlighted detraining hex, then confirm.
+ * The cost and anything that stops the move come from the Rule Engine.
+ */
+const railSection = (snapshot: UiSnapshot): TemplateResult => {
+  const rail = snapshot.rail!;
+  const units = rail.units.map(({ pieceId, label, quarters, problem, selected }) => html`<label class=${problem ? 'rail-cargo is-blocked' : 'rail-cargo'}>
+    <input type="checkbox" data-rail-unit=${pieceId} .checked=${selected} ?disabled=${problem !== null}><span>${label}</span><small>${problem ? withHexLabels(problem) : `${railPoints(quarters)} Rail Cap`}</small></label>`);
+  const dumps = rail.dumps.map(({ pieceId, holds, loadableTokens, tokens }) => html`<label class="rail-cargo"><span>Supply ${supplyText(holds)} · Tokens to send</span>
+    <input type="number" class="rail-tokens" data-rail-dump=${pieceId} min="0" max=${loadableTokens} .value=${String(tokens)} inputmode="numeric" aria-label=${`Tokens to send by rail, 0 to ${loadableTokens}`}>
+    <small>of ${loadableTokens}T that may entrain${loadableTokens < holds ? ' (the rest was unloaded this phase, 12.2a, or did not arrive this turn, 13.6b)' : ''} · 1T = 1/4 Rail Cap</small></label>`);
+  const where = (halves: 1 | 2 | 4) => halves === 1 ? ' · all multi-track, half cost' : halves === 4 ? ' · through a Trainbusting Zone, double cost' : '';
+  const destination = html`<label class="rail-destination">Detrain at <select id="rail-destination">
+    <option value="" ?selected=${rail.toHexId === null} disabled>Choose a station (or click a highlighted hex)</option>
+    ${rail.destinations.map(({ hexId, halves, hexes }) => html`<option value=${hexId} ?selected=${hexId === rail.toHexId}>${printedHexLabel(hexId)} · ${hexes} hexes${where(halves)}</option>`)}
+  </select></label>`;
+  const cost = rail.costQuarters === null ? html`<p class="hint">Tick units or enter Tokens, then choose where to detrain.</p>`
+    : html`<p class="summary-line">Costs ${railPoints(rail.costQuarters)} of ${railPoints(rail.remainingQuarters)} Rail Cap left</p>`;
+  const blockers = rail.blockers.length > 0 ? html`<ul class="blockers">${rail.blockers.map((message) => html`<li>${withHexLabels(message)}</li>`)}</ul>` : nothing;
+  return html`<div class="unit-actions rail-panel"><strong>Rail from ${printedHexLabel(rail.hexId)}</strong>
+    <p class="summary-line">Rail Cap ${railPoints(rail.remainingQuarters)} of ${rail.capacityPoints} left this Movement Phase <cite>13.3b</cite>${rail.arrivalTokens !== null ? html` · this turn's arrivals may entrain here (${rail.arrivalTokens}T) <cite>13.6b</cite>` : nothing}</p>
+    ${units}${dumps}${destination}${cost}${blockers}
+    <button id="confirm-rail" class="primary" ?disabled=${!rail.allowed}>Move by rail</button>
+    <p class="hint">Units may not move again after detraining, and SP detrained cannot be loaded on trucks this phase (13.3e, 12.2a).</p></div>`;
+};
+
 const FUEL_METHODS: Readonly<Record<string, { readonly title: string; readonly detail: string }>> = {
   SINGLE_UNIT: { title: 'This unit only', detail: '1T, this phase' },
   FORMATION: { title: 'Whole formation', detail: '1 SP, until Clean Up' },
@@ -738,6 +771,7 @@ const unitTab = (snapshot: UiSnapshot, state: DeckState): TemplateResult => {
       ? html`<p class="hint">Select a truck in this hex to choose how many Tokens to load from this ${supplyText(dump.resourceQuantity ?? 0)} dump.</p>${trucks.map((truck) => unitRow(snapshot, truck))}`
       : html`<p class="hint">No friendly truck in this hex. Move one here to load from this dump.</p>`}</div>`);
   }
+  if (snapshot.rail) parts.push(railSection(snapshot));
   if (snapshot.air.construction && !snapshot.air.construction.planning) parts.push(constructionSection(snapshot));
   if (snapshot.collapseHexes.length > 0) {
     parts.push(html`<p class="hint">Or collapse the Extender (9.14d): click a highlighted hex in trace supply within its range.</p>`);

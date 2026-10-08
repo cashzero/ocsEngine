@@ -130,6 +130,7 @@ const parseAction = (input: unknown, path: Path, issues: GameplayError[]): GameA
     REBUILD_UNITS: ['hexId', 'hqId', 'units', 'truckPoints'],
     PLAN_AIR_DROP: ['unitIds', 'hexId', 'turn'], UPDATE_AIR_DROP_PLAN: ['planId', 'unitIds', 'change'],
     BUILD_HEDGEHOG: ['hexId', 'pieceIds', 'engineerId', 'payments'], REDUCE_HEDGEHOG: ['hedgehogId', 'pieceIds', 'engineerId'],
+    RAIL_MOVE: ['fromHexId', 'toHexId', 'unitIds', 'supply'],
   };
   if (!(kind in fields)) issues.push(issue('SAVE_INVALID', [...path, 'kind'], `Unknown action kind ${kind}.`));
   // REDUCE_AIR_BASE gained an optional engineer; logs written before it do not carry the key.
@@ -169,20 +170,21 @@ const parseAction = (input: unknown, path: Path, issues: GameplayError[]): GameA
     if (!parseHexCoordinateId(value).ok) issues.push(issue('SAVE_INVALID', [...path, key], 'Invalid Hex ID.'));
     return value as never;
   };
-  const payments = () => {
-    const entries = Array.isArray(record.payments) ? record.payments : [];
-    if (!Array.isArray(record.payments)) issues.push(issue('SAVE_INVALID', [...path, 'payments'], 'Expected an array.'));
+  const payments = (key = 'payments') => {
+    const entries = Array.isArray(record[key]) ? record[key] as unknown[] : [];
+    if (!Array.isArray(record[key])) issues.push(issue('SAVE_INVALID', [...path, key], 'Expected an array.'));
     return entries.map((entry, index) => {
-      const payment = recordAt(entry, [...path, 'payments', index], issues) ?? {};
-      exactKeys(payment, ['sourcePieceId', 'tokens'], [...path, 'payments', index], issues);
-      const sourceText = textAt(payment, 'sourcePieceId', [...path, 'payments', index], issues);
+      const payment = recordAt(entry, [...path, key, index], issues) ?? {};
+      exactKeys(payment, ['sourcePieceId', 'tokens'], [...path, key, index], issues);
+      const sourceText = textAt(payment, 'sourcePieceId', [...path, key, index], issues);
       const parsed = parsePieceId(sourceText);
-      if (!parsed.ok) issues.push(issue('SAVE_INVALID', [...path, 'payments', index, 'sourcePieceId'], 'Invalid Piece ID.'));
-      return { sourcePieceId: parsed.ok ? parsed.value : sourceText as never, tokens: integerAt(payment, 'tokens', [...path, 'payments', index], issues) };
+      if (!parsed.ok) issues.push(issue('SAVE_INVALID', [...path, key, index, 'sourcePieceId'], 'Invalid Piece ID.'));
+      return { sourcePieceId: parsed.ok ? parsed.value : sourceText as never, tokens: integerAt(payment, 'tokens', [...path, key, index], issues) };
     });
   };
   switch (kind) {
     case 'ADVANCE_SEQUENCE': return base as GameAction;
+    case 'RAIL_MOVE': return { ...base, fromHexId: hex('fromHexId'), toHexId: hex('toHexId'), unitIds: pieces('unitIds'), supply: payments('supply') } as GameAction;
     case 'CHANGE_MODE': {
       const mode = textAt(record, 'mode', path, issues);
       if (!['COMBAT', 'MOVE', 'RESERVE', 'STRAT'].includes(mode)) issues.push(issue('SAVE_INVALID', [...path, 'mode'], 'Invalid voluntary mode.'));

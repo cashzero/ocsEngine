@@ -4,6 +4,9 @@ import { validateRuleConfiguration } from '../rules/index.js';
 import { ENGAGEMENTS, type GameFlowFailure, type GeneratedScenarioPackage, type NewGameRequest } from './model.js';
 import { BTR_CAMPAIGN_MONTHS, btrTurnDate } from './weather-supply-tables.js';
 
+/** Rail Cap points a New Game may give a side each Movement Phase. */
+export const MAXIMUM_RAIL_CAP = 30;
+
 const uint32 = (value: number): boolean => Number.isSafeInteger(value) && value >= 0 && value <= 0xffff_ffff;
 
 export const validateNewGameRequest = (request: NewGameRequest): readonly GameFlowFailure[] => {
@@ -15,6 +18,14 @@ export const validateNewGameRequest = (request: NewGameRequest): readonly GameFl
   }
   if (!Number.isSafeInteger(request.turnLimit) || request.turnLimit < 1 || request.turnLimit > 20) {
     failures.push({ stage: 'OPTIONS', code: 'INVALID_TURN_LIMIT', message: 'Turn limit must be an integer from 1 through 20.', path: ['turnLimit'] });
+  }
+  if (request.railCap !== undefined) {
+    for (const side of ['allied', 'axis'] as const) {
+      const points = request.railCap[side];
+      if (!Number.isSafeInteger(points) || points < 0 || points > MAXIMUM_RAIL_CAP) {
+        failures.push({ stage: 'OPTIONS', code: 'INVALID_RAIL_CAP', message: `Rail Cap must be a whole number of points from 0 through ${MAXIMUM_RAIL_CAP}.`, path: ['railCap', side] });
+      }
+    }
   }
   if (!BTR_CAMPAIGN_MONTHS.includes(request.startMonth)) {
     failures.push({ stage: 'OPTIONS', code: 'INVALID_START_MONTH', message: 'The campaign starts in a month from September through April.', path: ['startMonth'] });

@@ -54,6 +54,11 @@ export interface NewGameRequest {
   readonly turnLimit: number;
   /** Month of the first Game Turn (September through April), which selects the Weather Table rows (17.0). */
   readonly startMonth: number;
+  /**
+   * Rail Cap points each side gets in its Movement Phase (13.3b). Absent means the engagement's default
+   * (`defaultRailCap`), so requests made before Rail Cap existed get the default.
+   */
+  readonly railCap?: { readonly allied: number; readonly axis: number };
 }
 
 export interface GeneratedDeployment {

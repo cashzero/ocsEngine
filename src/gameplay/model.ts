@@ -1,6 +1,7 @@
 import type {
   Brand,
   ContentHash,
+  HexId,
   PieceId,
   PlayerId,
   Revision,
@@ -17,6 +18,7 @@ import type {
   FuelPreview,
   SupplySourceHex,
   RailControlHex,
+  RailMoveOptions,
   GameAction,
   PendingDecisionKind,
   RuleEvent,
@@ -306,6 +308,8 @@ export interface GameSession {
   readonly getSupplySources: (seatId: SeatId) => RuleQueryResult<readonly SupplySourceHex[]>;
   /** Control of every rail Hex from the seat's side (13.3h); empty when not interactive. */
   readonly getRailControl: (seatId: SeatId) => RuleQueryResult<readonly RailControlHex[]>;
+  /** What a rail move from one Hex could carry for the seat, where it could detrain, and the Rail Cap left (13.3). */
+  readonly getRailMoveOptions: (seatId: SeatId, fromHexId: HexId) => RuleQueryResult<RailMoveOptions | null>;
   /** Each fuel payment open to one of the seat's units with the units it would newly fuel (12.5c). */
   /** How one of the seat's units is fueled now (12.5): a coverage method, 'NOT_NEEDED', or null when it needs fuel and has none. */
   readonly getFuelCoverage: (seatId: SeatId, pieceId: PieceId) => RuleQueryResult<FuelCoverage>;

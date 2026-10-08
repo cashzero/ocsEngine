@@ -1,4 +1,5 @@
 import { revision, type PieceId } from '../../core/index.js';
+import { applyRailMove } from '../supply/rail-cap.js';
 import { setHexControl } from '../../domain/map/index.js';
 import { upsertPieceState } from '../../domain/piece/index.js';
 import { declareBarrage, declareCombat, nextStackOrder, resolveDecision } from '../combat/combat.js';
@@ -235,6 +236,8 @@ const dispatch = (state: GameState, action: GameAction): Transition => {
       return declareCombat(state, action);
     case 'DECLARE_BARRAGE':
       return declareBarrage(state, action);
+    case 'RAIL_MOVE':
+      return applyRailMove(state, action);
     case 'DECLARE_AIR_MISSION':
       return declareAirMission(state, action);
     case 'REFIT_AIRCRAFT':

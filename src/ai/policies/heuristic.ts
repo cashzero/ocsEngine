@@ -103,6 +103,8 @@ interface StepNotes {
   secondary?: readonly MainEffort[];
   /** Cut-off groups that need a supply run this step, and the trucks already sent to each (heuristic@7). */
   relief?: { readonly hexIds: readonly HexId[]; readonly sent: Map<HexId, PieceId> };
+  /** Nothing more is worth sending by rail this step (heuristic@12). */
+  railDone?: boolean;
 }
 
 const notesOf = (context: BotDecisionContext): StepNotes => {
@@ -499,6 +501,38 @@ const truckStep = (context: BotDecisionContext, situation: Situation, unit: OwnU
   return decision(best.action, `truck toward ${goal}`, best.terms, moves);
 };
 
+/** Rail moves shorter than this many hexes toward the front are not worth the Rail Cap. */
+const RAIL_MIN_GAIN_HEXES = 3;
+/** SP detrain at a station at least this far from the enemy (13.3e keeps them out of enemy ZOC; this keeps them off the line). */
+const RAIL_SAFE_DISTANCE = 3;
+
+/**
+ * heuristic@12, rail (13.3): before trucks move, Rail Cap ships SP and far-off units from stations in the rear to the
+ * station nearest the front that is safe from the enemy, the largest gain toward the front first. Trucks then carry the
+ * SP on from that railhead (they cannot load SP detrained this phase, 12.2a, so the haul continues next turn).
+ */
+const railStep = (context: BotDecisionContext, situation: Situation, notes: StepNotes, front: HexId | null): BotDecision | null => {
+  if (notes.railDone || front === null) return null;
+  let best: { action: GameAction; value: number; gain: number } | null = null;
+  for (const action of context.actions.candidates('RAIL_MOVE', null, 400)) {
+    if (action.kind !== 'RAIL_MOVE') continue;
+    if (situation.nearestEnemy(action.toHexId).distance < RAIL_SAFE_DISTANCE) continue;
+    const gain = hexesBetween(action.fromHexId, front) - hexesBetween(action.toHexId, front);
+    if (gain < RAIL_MIN_GAIN_HEXES) continue;
+    const tokens = action.supply.reduce((total, { tokens: quantity }) => total + quantity, 0);
+    // Units ride only when the front is far: a unit near it walks (and keeps its MA for the fight).
+    const units = action.unitIds.filter((id) => {
+      const unit = situation.own.find(({ piece }) => piece.id === id);
+      return unit !== undefined && unit.piece.role === 'COMBAT' && hexesBetween(unit.hexId, front) >= 10;
+    }).length;
+    if (action.unitIds.length > 0 && units === 0) continue;
+    const value = gain * (tokens + units * 8);
+    if (value > 0 && (!best || value > best.value)) best = { action, value, gain };
+  }
+  if (!best) { notes.railDone = true; return null; }
+  return decision(best.action, `rail ${best.gain} hexes toward the front`, [{ term: 'rail', value: best.value }]);
+};
+
 const movementStep = (context: BotDecisionContext, situation: Situation, facts: BotGameFacts, w: HeuristicWeights): BotDecision | null => {
   const { actions } = context;
   const notes = notesOf(context);
@@ -518,6 +552,10 @@ const movementStep = (context: BotDecisionContext, situation: Situation, facts: 
   notes.targets ??= planTargets(situation, coverage, unitCoverage, w, [...(effort ? [effort] : []), ...(notes.secondary ?? [])], fedHexes(sideFeeds));
   // HQs follow the main effort's lead (their own scores keep them in supply and away from the enemy), else the army.
   const front = effort?.lead ?? armyCenter(situation);
+  if (context.view.projection?.sequence.phase === 'MOVEMENT') {
+    const railed = railStep(context, situation, notes, front);
+    if (railed) return railed;
+  }
   // HQs move first: their throw range decides where the rest is in trace supply (12.3b).
   const order = (unit: OwnUnit) => unit.piece.role === 'HQ' ? 0 : unit.piece.role === 'COMBAT' ? 1 : unit.piece.role === 'ARTILLERY' ? 2 : unit.piece.role === 'TRUCK' ? 3 : 9;
   const units = situation.own.filter((unit) => order(unit) < 9 && !notes.done.has(unit.piece.id))
@@ -811,7 +849,7 @@ export const createHeuristicPolicy = (facts: BotGameFacts, options: HeuristicPol
   const choose = decide(facts, options.weights ?? DEFAULT_HEURISTIC_WEIGHTS);
   return {
     id: 'heuristic',
-    version: options.label === undefined ? '11' : `11+${options.label}`,
+    version: options.label === undefined ? '12' : `12+${options.label}`,
     decide: (context) => {
       const sink = options.debug;
       debug = sink ? (line) => sink(`${context.memory.stepKey} ${String(context.playerId).split(':').at(-1)} ${line}`) : null;
