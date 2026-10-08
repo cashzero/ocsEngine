@@ -183,7 +183,8 @@ const expectSame = (state: GameState): void => {
   }
 };
 
-describe('trace supply computed from the sources outward (PERF-1)', () => {
+// Compares against the earlier implementation; slow. Run it with `npm run test:sweep` after changing this module.
+describe.skipIf(!process.env.OCS_SWEEP)('trace supply computed from the sources outward (PERF-1)', () => {
   it('matches Hex-by-Hex routing on generated openings', () => {
     for (const [width, height, seed] of [[16, 12, 11], [24, 18, 21], [20, 16, 31]] as const) expectSame(generated(width, height, seed));
   }, 120_000);

@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { sweepRandomOobSeeds } from '../../src/index.js';
 
-describe('M7 Random OOB seed stability', () => {
+// Slow (1,000 OOBs); opt in with `npm run test:sweep`.
+describe.skipIf(!process.env.OCS_SWEEP)('M7 Random OOB seed stability', () => {
   it('passes 1,000 deterministic seeds with all formation archetypes represented', () => {
     const report = sweepRandomOobSeeds({ scale: 'STANDARD', divisionsPerSide: 4, armoredDivisionsPerSide: 2 }, 1_000, 1);
     expect(report).toMatchObject({ requested: 1_000, generated: 1_000, invalid: 0, exceptions: 0 });
