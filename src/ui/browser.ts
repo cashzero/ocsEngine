@@ -11,6 +11,7 @@ import {
   buildGeneratedOobPreview,
   attackerOf,
   ATTACKER_FORCE_RATIO,
+  GENERATED_HEDGEHOG_LEVELS,
   type Engagement,
   type CreatedNewGame,
   type GeneratedScenarioPackage,
@@ -222,7 +223,11 @@ const hoverText = (snapshot: UiSnapshot, hexId: string): string => {
   // The objective names its VP and who holds it now (13.3h control, live).
   const objective = snapshot.view.projection?.objectives.find((entry) => String(entry.hexId) === cell.id);
   const holder = objective ? scenario.players.find(({ id }) => id === objective.controllerId)?.name ?? 'neutral' : '';
-  return `Hex ${printedHexLabel(cell.id)}${placeName} · ${cell.terrain.toLowerCase()}${cell.settlement ? ` · ${cell.settlement.toLowerCase()}` : ''}${objective ? ` · objective, ${objective.points} VP, ${holder === 'neutral' ? 'neutral' : `held by ${holder}`}` : ''}${source}${trainbusting}${cost}`;
+  // 16.0d: a hedgehog (always visible, 4.9a) names its Level and what it does to an attack.
+  const hog = onMapStacks(snapshot).get(hexId)?.pieces.find(({ role }) => role === 'HEDGEHOG');
+  const hogLevel = hog?.statusValues.find(({ statusDefinitionId }) => statusDefinitionId === 'status:hedgehog-level')?.value ?? 1;
+  const hedgehog = hog ? ` · ${hog.ownerId === snapshot.view.playerId ? 'your' : 'enemy'} hedgehog Level ${hogLevel} (−${hogLevel} combat roll, −1 Surprise, Heavy AT; barrage 1 left)` : '';
+  return `Hex ${printedHexLabel(cell.id)}${placeName} · ${cell.terrain.toLowerCase()}${cell.settlement ? ` · ${cell.settlement.toLowerCase()}` : ''}${objective ? ` · objective, ${objective.points} VP, ${holder === 'neutral' ? 'neutral' : `held by ${holder}`}` : ''}${hedgehog}${source}${trainbusting}${cost}`;
 };
 
 /**
@@ -288,7 +293,9 @@ const mapStateOf = (snapshot: UiSnapshot): MapState => {
     // Supply lies in the hex rather than in the stack: a hex's dump is one small marker at its corner and does not take one of the
     // three counter places or count towards the hidden ones.
     const dumps = allPieces.filter(({ role }) => role === 'DUMP').sort((left, right) => (right.resourceQuantity ?? 0) - (left.resourceQuantity ?? 0));
-    const pieces = allPieces.filter(({ role }) => role !== 'DUMP');
+    // 4.8bF: a hedgehog is always seen; it is a marker on the hex (drawn over the stack's corner), not one of its counter places.
+    const hedgehog = allPieces.find(({ role }) => role === 'HEDGEHOG');
+    const pieces = allPieces.filter(({ role }) => role !== 'DUMP' && role !== 'HEDGEHOG');
     // Draw the bottom of the stack first; at most three counters are shown, the rest are counted.
     const visible = pieces.slice(-3);
     const selectedPiece = pieces.find(({ id }) => id === snapshot.selection.pieceId);
@@ -305,6 +312,7 @@ const mapStateOf = (snapshot: UiSnapshot): MapState => {
     const dump = dumps[0];
     if (dump) place(dump, cell.x - 4, cell.y - 2, 0.5);
     visible.forEach((piece, index) => place(piece, cell.x - 35 + index * 6, cell.y - 35 - index * 6, 0.7));
+    if (hedgehog) place(hedgehog, cell.x - 46, cell.y + 2, 0.44);
     const hiddenCount = stack.hiddenCount + Math.max(0, pieces.length - visible.length) + Math.max(0, dumps.length - 1);
     if (hiddenCount > 0) badges.push({ hexId: cell.id, count: hiddenCount });
   }
@@ -480,7 +488,7 @@ const engagementHelp = (engagement: Engagement): string => {
   const attacker = attackerOf(engagement);
   if (attacker === null) return 'Both armies start about ten hexes apart and each holds the same objective VP. The side holding more VP when the last turn ends wins; equal VP is a draw.';
   const [attacking, defending] = attacker === 'ALLIED' ? ['Allied', 'Axis'] : ['Axis', 'Allied'];
-  return `${defending} holds most of the map and every objective, its line in Combat Mode, with garrisons on its objectives and on key rail towns and road junctions; ${attacking} fields ${ATTACKER_FORCE_RATIO} times the divisions plus off-map air (Fighters and Tactical Bombers at an airfield off the map, flying in over its own map edge and back), assembles a few hexes away and moves first. ${attacking} wins by holding at least half the objective VP when the last turn ends; otherwise ${defending} wins.`;
+  return `${defending} holds most of the map and every objective, its line in Combat Mode, with garrisons dug into hedgehogs on its objectives (Level ${GENERATED_HEDGEHOG_LEVELS.OBJECTIVE}) and on key rail towns and road junctions (Level ${GENERATED_HEDGEHOG_LEVELS.KEY_POINT}); ${attacking} fields ${ATTACKER_FORCE_RATIO} times the divisions plus off-map air (Fighters and Tactical Bombers at an airfield off the map, flying in over its own map edge and back), assembles a few hexes away and moves first. ${attacking} wins by holding at least half the objective VP when the last turn ends; otherwise ${defending} wins.`;
 };
 
 const engagementLabel = (engagement: Engagement): string => {

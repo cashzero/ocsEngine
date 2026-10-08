@@ -4,6 +4,7 @@ import { upsertPieceState } from '../../domain/piece/index.js';
 import { declareBarrage, declareCombat, nextStackOrder, resolveDecision } from '../combat/combat.js';
 import { applyCombineAircraft, applyReduceAirBase, applyRefit } from '../air/base.js';
 import { applyBuildAirBase } from '../air/construction.js';
+import { applyBuildHedgehog, applyReduceHedgehog } from '../hedgehog/hedgehog.js';
 import { applyRebuildAircraft } from '../air/replacement.js';
 import { applyRebuildUnits } from '../replacement/replacement.js';
 import { applyPlanAirDrop, applyUpdateDropPlan } from '../air/transport.js';
@@ -242,6 +243,10 @@ const dispatch = (state: GameState, action: GameAction): Transition => {
       return applyReduceAirBase(state, action);
     case 'BUILD_AIR_BASE':
       return applyBuildAirBase(state, action);
+    case 'BUILD_HEDGEHOG':
+      return applyBuildHedgehog(state, action);
+    case 'REDUCE_HEDGEHOG':
+      return applyReduceHedgehog(state, action);
     case 'REBUILD_AIRCRAFT':
       return applyRebuildAircraft(state, action);
     case 'REBUILD_UNITS':

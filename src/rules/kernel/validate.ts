@@ -3,6 +3,7 @@ import type { ActionValidation, GameAction, GameState, RuleViolation } from './m
 import { validateBarrageDeclaration, validateCombatDeclaration } from '../combat/combat.js';
 import { validateCombineAircraft, validateReduceAirBase, validateRefit } from '../air/base.js';
 import { validateBuildAirBase } from '../air/construction.js';
+import { validateBuildHedgehog, validateReduceHedgehog } from '../hedgehog/hedgehog.js';
 import { validateRebuildAircraft } from '../air/replacement.js';
 import { validateRebuildUnits } from '../replacement/replacement.js';
 import { validatePlanAirDrop, validateUpdateDropPlan } from '../air/transport.js';
@@ -98,6 +99,8 @@ export const validateGameAction = (state: GameState, action: GameAction): Action
       case 'REFIT_AIRCRAFT': issues.push(...validateRefit(state, action)); break;
       case 'REDUCE_AIR_BASE': issues.push(...validateReduceAirBase(state, action)); break;
       case 'BUILD_AIR_BASE': issues.push(...validateBuildAirBase(state, action)); break;
+      case 'BUILD_HEDGEHOG': issues.push(...validateBuildHedgehog(state, action)); break;
+      case 'REDUCE_HEDGEHOG': issues.push(...validateReduceHedgehog(state, action)); break;
       case 'REBUILD_AIRCRAFT': issues.push(...validateRebuildAircraft(state, action)); break;
       case 'REBUILD_UNITS': issues.push(...validateRebuildUnits(state, action)); break;
       case 'PLAN_AIR_DROP': issues.push(...validatePlanAirDrop(state, action)); break;

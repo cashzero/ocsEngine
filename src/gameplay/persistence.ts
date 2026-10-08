@@ -128,6 +128,7 @@ const parseAction = (input: unknown, path: Path, issues: GameplayError[]): GameA
     REBUILD_AIRCRAFT: ['eqPieceId', 'hqId', 'aircraftIds', 'baseId'],
     REBUILD_UNITS: ['hexId', 'hqId', 'units', 'truckPoints'],
     PLAN_AIR_DROP: ['unitIds', 'hexId', 'turn'], UPDATE_AIR_DROP_PLAN: ['planId', 'unitIds', 'change'],
+    BUILD_HEDGEHOG: ['hexId', 'pieceIds', 'engineerId', 'payments'], REDUCE_HEDGEHOG: ['hedgehogId', 'pieceIds', 'engineerId'],
   };
   if (!(kind in fields)) issues.push(issue('SAVE_INVALID', [...path, 'kind'], `Unknown action kind ${kind}.`));
   // REDUCE_AIR_BASE gained an optional engineer; logs written before it do not carry the key.
@@ -162,6 +163,18 @@ const parseAction = (input: unknown, path: Path, issues: GameplayError[]): GameA
     const value = textAt(record, key, path, issues);
     if (!parseHexCoordinateId(value).ok) issues.push(issue('SAVE_INVALID', [...path, key], 'Invalid Hex ID.'));
     return value as never;
+  };
+  const payments = () => {
+    const entries = Array.isArray(record.payments) ? record.payments : [];
+    if (!Array.isArray(record.payments)) issues.push(issue('SAVE_INVALID', [...path, 'payments'], 'Expected an array.'));
+    return entries.map((entry, index) => {
+      const payment = recordAt(entry, [...path, 'payments', index], issues) ?? {};
+      exactKeys(payment, ['sourcePieceId', 'tokens'], [...path, 'payments', index], issues);
+      const sourceText = textAt(payment, 'sourcePieceId', [...path, 'payments', index], issues);
+      const parsed = parsePieceId(sourceText);
+      if (!parsed.ok) issues.push(issue('SAVE_INVALID', [...path, 'payments', index, 'sourcePieceId'], 'Invalid Piece ID.'));
+      return { sourcePieceId: parsed.ok ? parsed.value : sourceText as never, tokens: integerAt(payment, 'tokens', [...path, 'payments', index], issues) };
+    });
   };
   switch (kind) {
     case 'ADVANCE_SEQUENCE': return base as GameAction;
@@ -249,20 +262,12 @@ const parseAction = (input: unknown, path: Path, issues: GameplayError[]): GameA
     case 'BUILD_AIR_BASE': {
       const facility = textAt(record, 'facility', path, issues);
       if (!['AIR_STRIP', 'AIR_BASE'].includes(facility)) issues.push(issue('SAVE_INVALID', [...path, 'facility'], 'Invalid facility.'));
-      const payments = Array.isArray(record.payments) ? record.payments : [];
-      if (!Array.isArray(record.payments)) issues.push(issue('SAVE_INVALID', [...path, 'payments'], 'Expected an array.'));
-      return {
-        ...base, engineerId: piece('engineerId'), hexId: hex('hexId'), facility,
-        payments: payments.map((entry, index) => {
-          const payment = recordAt(entry, [...path, 'payments', index], issues) ?? {};
-          exactKeys(payment, ['sourcePieceId', 'tokens'], [...path, 'payments', index], issues);
-          const sourceText = textAt(payment, 'sourcePieceId', [...path, 'payments', index], issues);
-          const parsed = parsePieceId(sourceText);
-          if (!parsed.ok) issues.push(issue('SAVE_INVALID', [...path, 'payments', index, 'sourcePieceId'], 'Invalid Piece ID.'));
-          return { sourcePieceId: parsed.ok ? parsed.value : sourceText as never, tokens: integerAt(payment, 'tokens', [...path, 'payments', index], issues) };
-        }),
-      } as GameAction;
+      return { ...base, engineerId: piece('engineerId'), hexId: hex('hexId'), facility, payments: payments() } as GameAction;
     }
+    case 'BUILD_HEDGEHOG':
+      return { ...base, hexId: hex('hexId'), pieceIds: pieces('pieceIds'), engineerId: record.engineerId === null ? null : piece('engineerId'), payments: payments() } as GameAction;
+    case 'REDUCE_HEDGEHOG':
+      return { ...base, hedgehogId: piece('hedgehogId'), pieceIds: pieces('pieceIds'), engineerId: record.engineerId === null ? null : piece('engineerId') } as GameAction;
     case 'COMBINE_AIRCRAFT': return { ...base, aircraftIds: pieces('aircraftIds') } as GameAction;
     case 'DIVIDE_TRANSPORT': return { ...base, truckId: piece('truckId'), points: integerAt(record, 'points', path, issues) } as GameAction;
     case 'FORM_EXTENDER': return { ...base, truckId: piece('truckId') } as GameAction;
