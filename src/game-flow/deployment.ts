@@ -444,7 +444,9 @@ export const deployGeneratedForces = (
     // 13.6: reinforcing aircraft wait in the side's reinforcement box and arrive Active on their Game Turn.
     const arrivingAircraft = units.filter(({ role, arrivalTurn }) => role === 'AIRCRAFT' && arrivalTurn !== undefined);
     const stagedUnits = units.filter(({ staging }) => staging === 'AIR_BASE');
-    const fieldUnits = units.filter(({ role, staging }) => role !== 'SUPPLY' && role !== 'AIR_BASE' && role !== 'AIRCRAFT' && staging !== 'AIR_BASE');
+    // 13.6: ground units with an arrival turn (later trucks, OOB 0.5.0) wait in the reinforcement box for it.
+    const arrivingGround = units.filter(({ role, arrivalTurn }) => role !== 'AIRCRAFT' && arrivalTurn !== undefined);
+    const fieldUnits = units.filter(({ role, staging, arrivalTurn }) => role !== 'SUPPLY' && role !== 'AIR_BASE' && role !== 'AIRCRAFT' && staging !== 'AIR_BASE' && arrivalTurn === undefined);
     const groupOf = (unit: GeneratedOobUnit): string => groups.get(unit.id) ?? 'independent';
     const reinforcement = fieldUnits.find((unit) => groupOf(unit) === 'independent') ?? fieldUnits.at(-1);
     if (fieldUnits.length > denseSlots.length || sideSupply[side].length === 0) {
@@ -621,6 +623,19 @@ export const deployGeneratedForces = (
         statuses: [{ statusDefinitionId: 'status:return-turn' as never, value: { kind: 'INTEGER', value: unit.arrivalTurn! } }],
         // Order 0 in the box belongs to the reinforcing ground unit; each arriving aircraft takes the next order.
         stackOrder: 1 + arrivalIndex, resourceQuantity: null,
+      });
+    }
+    for (const [arrivalIndex, unit] of arrivingGround.entries()) {
+      const definition = definitionById.get(unit.definitionId);
+      const parsedId = parsePieceId(unit.id);
+      if (!definition || !parsedId.ok) return { ok: false, error: [deploymentFailure(`OOB unit ${unit.id} cannot be converted to runtime state.`)] };
+      pieces.push({
+        id: parsedId.value, definitionId: unit.definitionId, ownerId: sidePlayer(side, players),
+        location: { kind: 'OFF_MAP_BOX', boxId: GENERATED_REINFORCEMENT_BOXES[side] },
+        currentFaceId: deployedFace(definition)?.id ?? null, remainingSteps: fullStrength(definition), mode: definition.family === 'GROUND' ? 'MOVE' : null,
+        statuses: [{ statusDefinitionId: 'status:return-turn' as never, value: { kind: 'INTEGER', value: unit.arrivalTurn! } }],
+        // After the held-back unit, the arriving aircraft and the units with no room.
+        stackOrder: 1 + arrivingAircraft.length + fieldUnits.length + arrivalIndex, resourceQuantity: null,
       });
     }
     for (const { unit, hexId } of placements) {
