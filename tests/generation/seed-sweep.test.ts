@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { sweepRandomMapSeeds } from '../../src/index.js';
 
-describe('M6 map seed sweep', () => {
+// Slow (1,500 maps); opt in with `npm run test:sweep`.
+describe.skipIf(!process.env.OCS_SWEEP)('M6 map seed sweep', () => {
   it.each(['TEMPERATE_INLAND', 'MEDITERRANEAN_COAST', 'EASTERN_EUROPE'] as const)(
     'has no invalid maps or exceptions across 500 %s seeds',
     (style) => {

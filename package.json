@@ -13,6 +13,7 @@
     "check": "npm run typecheck && npm test && npm run build && npm run smoke",
     "smoke": "node tests/dist-smoke.mjs",
     "test": "vitest run",
+    "test:sweep": "OCS_SWEEP=1 vitest run tests/generation/seed-sweep.test.ts tests/generation/oob-seed-sweep.test.ts tests/rules/trace-coverage-equivalence.test.ts tests/rules/reinforcement-hexes-equivalence.test.ts",
     "test:watch": "vitest",
     "typecheck": "tsc -p tsconfig.json",
     "ui:serve": "npm run build && node scripts/serve-ui.mjs",
