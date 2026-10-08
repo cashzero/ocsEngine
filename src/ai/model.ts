@@ -6,7 +6,7 @@ import type {
   GameSession,
   SeatId,
 } from '../gameplay/index.js';
-import type { ActionFamily, GameAction, ReachableHex, TraceCoverage } from '../rules/index.js';
+import type { ActionFamily, FeedSource, GameAction, ReachableHex, TraceCoverage } from '../rules/index.js';
 
 export type BotPolicyId = string;
 
@@ -29,6 +29,8 @@ export interface BotActionAccess {
   readonly explain: (action: GameAction) => DraftValidation;
   /** Hexes the seat's trace supply reaches for any unit (12.6), or for one unit with 12.6f and 13.1d applied. */
   readonly traceCoverage: (pieceId?: PieceId | null) => TraceCoverage;
+  /** Where each friendly dump can feed a unit out of trace (12.6c): for one unit (13.1d applies) or any unit. */
+  readonly feedCoverage: (pieceId?: PieceId | null) => readonly FeedSource[];
 }
 
 /** What one seat remembers within the current phase/segment; reset when the step changes. */

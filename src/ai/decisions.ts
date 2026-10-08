@@ -119,7 +119,18 @@ export const respondToDecision = (context: BotDecisionContext, situation: Situat
     case 'ADVANCE_HEX': {
       const objective = targetHex !== undefined && situation.objectives.some(({ hexId, controllerId }) => hexId === targetHex && controllerId !== context.playerId);
       const threat = targetHex === undefined ? 0 : situation.threatAt(targetHex);
-      const advance = options.find(({ id }) => id === 'advance:all') ?? options.find(({ id }) => id.startsWith('advance:') && id !== 'advance:done');
+      // One attacker at a time, never the only garrison of an objective we hold (heuristic@11: replays showed held
+      // objectives left empty by advancing their garrison, then walked into). Into an enemy objective, a garrison
+      // advances only when no other attacker can.
+      const byId = new Map(situation.own.map((unit) => [String(unit.piece.id), unit]));
+      const holdsObjective = (unit: OwnUnit | undefined) => unit !== undefined
+        && situation.objectives.some(({ hexId, controllerId }) => hexId === unit.hexId && controllerId === context.playerId)
+        && situation.friendlyAt(unit.hexId).filter((other) => situation.isCombatUnit(other)).length <= 1;
+      const advancers = options.filter(({ id }) => id.startsWith('advance:') && id !== 'advance:done' && id !== 'advance:all')
+        .map((option) => ({ option, unit: byId.get(option.id.slice('advance:'.length)) }))
+        .filter(({ unit }) => unit === undefined || unit.hexId !== targetHex);
+      const free = advancers.filter(({ unit }) => !holdsObjective(unit));
+      const advance = (free[0] ?? (objective && !options.some(({ label }) => /^Stop advancing/u.test(label)) ? advancers[0] : undefined))?.option;
       if (advance && (objective || threat < 8)) {
         return respond(actions, advance.id, 'advance', objective ? 'take the objective' : 'take the ground the defender left');
       }
