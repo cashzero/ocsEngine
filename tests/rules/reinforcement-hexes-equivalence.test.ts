@@ -71,7 +71,8 @@ const crowded = (state: GameState, owner: string, step: number): GameState => {
   };
 };
 
-describe('reinforcement entry Hexes found once per state (PERF-5)', () => {
+// Compares against the earlier implementation; slow. Run it with `npm run test:sweep` after changing this module.
+describe.skipIf(!process.env.OCS_SWEEP)('reinforcement entry Hexes found once per state (PERF-5)', () => {
   it('match the per-Hex distance scan for Pax and Eq, and placement candidates follow them', async () => {
     let checked = 0;
     for (const seed of [101, 202]) {

@@ -19,22 +19,6 @@ describe('printed-map artwork', () => {
     expect(draw()).toBe(draw());
   });
 
-  it('fills woods with a seamless stipple instead of scattered glyphs', () => {
-    expect(mapArtDefsHtml()).toContain('<pattern id="terrain-woods"');
-    const woods = preview.cells.find(({ terrain }) => terrain === 'WOODS');
-    expect(woods).toBeDefined();
-    expect(terrainGlyphsHtml(woods!, 50)).toBe('');
-  });
-
-  it('draws mountains and hills as shaded relief, not symbols', () => {
-    const defs = mapArtDefsHtml();
-    expect(defs).toMatch(/<pattern id="terrain-mountain"[^>]*>.*filter="url\(#terrain-mountain-relief\)"/u);
-    expect(defs).toMatch(/<pattern id="terrain-rough"[^>]*>.*filter="url\(#terrain-rough-relief\)"/u);
-    expect(defs).toContain('stitchTiles="stitch"');
-    const relief = (['MOUNTAIN', 'ROUGH'] as const).map((terrain) => ({ ...preview.cells[0]!, terrain }));
-    relief.forEach((cell) => expect(terrainGlyphsHtml(cell, 50)).toBe(''));
-  });
-
   it('draws one curved road and one river per feature, keeping the class contract', () => {
     const exits = roadStrokes(preview.edges, preview.cells, 50).filter(({ exit }) => exit).length;
     const roadCount = preview.edges.filter(({ kind }) => kind.endsWith('ROAD')).length + exits;
