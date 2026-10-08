@@ -47,6 +47,12 @@ const airBaseView = (definition: PieceDefinition, piece: CounterPiece) => {
   };
 };
 
+/** 16.0a: a hedgehog counter shows its Level (1-4). The enemy sees it too (4.9a). */
+const hedgehogView = (definition: PieceDefinition, piece: CounterPiece) => {
+  const level = piece.statusValues?.find(({ statusDefinitionId }) => statusDefinitionId === 'status:hedgehog-level')?.value;
+  return { redacted: false as const, kind: 'hedgehog' as const, label: definition.name, nation: nationOf(definition), level: typeof level === 'number' ? level : 1 };
+};
+
 /** "Pax" or "Eq": what a replacement counter is called for its kind (13.5). */
 export const replacementAbbreviation = (definition: PieceDefinition): 'Pax' | 'Eq' => {
   const kind = definition.capabilities.find(({ id }) => id === 'REPLACEMENT')?.parameters.find(({ key }) => key === 'kind');
@@ -63,6 +69,7 @@ const replacementView = (definition: PieceDefinition, piece: CounterPiece) =>
 export const counterView = (definition: PieceDefinition, piece: CounterPiece) => {
   if (definition.family === 'AIR') return aircraftView(definition, piece);
   if (['facility:air-base', 'facility:air-strip', 'facility:off-map-airfield'].includes(String(definition.facility?.facilityTypeDefinitionId))) return airBaseView(definition, piece);
+  if (definition.facility?.facilityTypeDefinitionId === 'facility:hedgehog') return hedgehogView(definition, piece);
   if (definition.family === 'REPLACEMENT') return replacementView(definition, piece);
   // A visible enemy counter shows its face; steps lost are hidden (4.9a), so show the printed face.
   if (piece.redacted && piece.currentFaceId === null && definition.counter?.kind !== 'SUPPLY') return { redacted: true as const, label: 'Enemy unit' };
@@ -243,6 +250,14 @@ const airBaseBody = (view: Extract<CounterViewModel, { kind: 'air-base' }>): str
     <g class="counter-symbol air-base-runways"><path d="M18 66L82 34M22 40L74 72M50 18V60"/></g>
     <g class="counter-values"><circle class="air-base-level" cx="72" cy="74" r="15"/>${svgText(72,84,view.level,'counter-number air-base-level-text')}</g>`;
 
+// As the BTR module draws it (images/misc_hog-1..4.png): a tan counter, a dark toothed ring (wire and obstacles) and the Level
+// in a white disc at its centre.
+const HEDGEHOG_TEETH = 'M50.0 10.0L55.9 20.6L65.3 13.0L66.7 25.1L78.3 21.7L74.9 33.3L87.0 34.7L79.4 44.1L90.0 50.0L79.4 55.9L87.0 65.3L74.9 66.7L78.3 78.3L66.7 74.9L65.3 87.0L55.9 79.4L50.0 90.0L44.1 79.4L34.7 87.0L33.3 74.9L21.7 78.3L25.1 66.7L13.0 65.3L20.6 55.9L10.0 50.0L20.6 44.1L13.0 34.7L25.1 33.3L21.7 21.7L33.3 25.1L34.7 13.0L44.1 20.6Z';
+const hedgehogBody = (view: Extract<CounterViewModel, { kind: 'hedgehog' }>): string =>
+  `<rect class="counter-paper hedgehog-paper nation-${view.nation}" width="100" height="100"/>
+    <g class="counter-symbol hedgehog-ring"><path d="${HEDGEHOG_TEETH}"/></g>
+    <g class="counter-values"><circle class="hedgehog-level" cx="50" cy="50" r="24"/>${svgText(50,62,view.level,'counter-number hedgehog-level-text')}</g>`;
+
 // As the BTR module draws it (images/German EQ Replacement.png, US-Repl-EQ.png): "Repl" rotated beside a boxed "EQ" tied to it
 // by a short leader, an "A" before it on the US counter, and the printed 0-0-10 ratings below (a white 0, a superscript 0, and a
 // red 10 on a yellow box). One engine counter holds several replacements, so their number sits in a badge in the free top-right corner.
@@ -293,6 +308,7 @@ export const counterSvgBody = (view: CounterViewModel): string => {
   if (view.redacted) return '<rect class="counter-paper concealed" width="100" height="100"/><path class="counter-unknown" d="M32 36C32 12 70 12 70 36C70 47 50 48 50 65M50 75V81"/>';
   if (view.kind === 'aircraft') return aircraftBody(view);
   if (view.kind === 'air-base') return airBaseBody(view);
+  if (view.kind === 'hedgehog') return hedgehogBody(view);
   if (view.kind === 'replacement') return replacementBody(view);
   const c = view.counter;
   const text = svgText;

@@ -293,6 +293,11 @@ export interface HedgehogWork {
 /** Hexes where `playerId` could raise a hedgehog now and who would do it, crews in the hex before engineers. */
 export const hedgehogBuildOptions = (state: GameState, playerId: PlayerId, pieceId: PieceId | null): readonly HedgehogWork[] => {
   if (!hedgehogTemplate(state, playerId)) return [];
+  // Asked about a hedgehog itself: every way to improve it.
+  const asked = pieceId === null ? undefined : pieceById(state, pieceId);
+  if (asked && isHedgehog(state, asked)) {
+    return hexOf(asked) === null ? [] : hedgehogBuildOptions(state, playerId, null).filter(({ hexId }) => hexId === hexOf(asked));
+  }
   const own = state.pieceState.pieces.filter((piece) => piece.ownerId === playerId && piece.location.kind === 'ON_MAP');
   const options: HedgehogWork[] = [];
   const hexes = [...new Set(own.filter((piece) => isCombatUnit(state, piece) && piece.mode === 'COMBAT').map((piece) => hexOf(piece)!))].sort();
