@@ -171,6 +171,19 @@ export const queryFuelPreview = (state: GameState, actorId: PlayerId, pieceId: P
   return { allowed: value.length > 0, value, reasons: [], facts: [], dependencies };
 };
 
+/**
+ * How one of the asking player's units is fueled right now (12.5): null when it needs fuel and has none, 'NOT_NEEDED'
+ * for leg units, trucks and other units that never pay. The same answer that lets or stops its MP.
+ */
+export const queryFuelCoverage = (state: GameState, actorId: PlayerId, pieceId: PieceId): RuleQueryResult<FuelCoverage> => {
+  const piece = pieceById(state, pieceId);
+  const dependencies = [{ aggregate: 'GAME' as const, revision: state.revision, key: `fuel:${pieceId}` }];
+  if (!piece || piece.ownerId !== actorId) {
+    return { allowed: false, value: null, reasons: [{ code: 'INVALID_FUEL_TARGET', allowed: false, message: 'Fuel your own units.', rule: '12.5' }], facts: [], dependencies };
+  }
+  return { allowed: true, value: fuelCoverage(state, piece), reasons: [], facts: [], dependencies };
+};
+
 export const validateFuelPayment = (
   state: GameState,
   actorId: PlayerId,
