@@ -235,5 +235,7 @@ export interface RuleEngine {
   /** Control of every rail Hex from the actor's side: own, enemy or neutral (13.3h). */
   readonly queryRailControl: (state: GameState, actorId: PlayerId) => RuleQueryResult<readonly import('../supply/rail.js').RailControlHex[]>;
   /** Each fuel payment open to one own unit with the units it would newly fuel (12.5c). */
+  /** How one own unit is fueled now (12.5a): the coverage method, 'NOT_NEEDED', or null when it needs fuel and has none. */
+  readonly queryFuelCoverage: (state: GameState, actorId: PlayerId, pieceId: PieceId) => RuleQueryResult<import('../supply/fuel.js').FuelCoverage>;
   readonly queryFuelPreview: (state: GameState, actorId: PlayerId, pieceId: PieceId) => RuleQueryResult<readonly import('../supply/fuel.js').FuelPreview[]>;
 }

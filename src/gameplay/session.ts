@@ -249,6 +249,14 @@ export class GameplaySession implements GameSession {
     return cloneValue(this.#ports.rules.queryRailControl(this.#state, binding.playerId));
   };
 
+  getFuelCoverage = (seatId: SeatId, pieceId: Parameters<GameSession['getFuelCoverage']>[1]): ReturnType<GameSession['getFuelCoverage']> => {
+    const binding = this.#binding(seatId);
+    if (this.#lifecycle !== 'ACTIVE' || this.#handoff !== null) {
+      return { allowed: false, value: null, reasons: [{ code: 'SESSION_NOT_INTERACTIVE', allowed: false, message: 'Session is not accepting interaction.', rule: 'gameplay' }], facts: [], dependencies: [] };
+    }
+    return cloneValue(this.#ports.rules.queryFuelCoverage(this.#state, binding.playerId, pieceId));
+  };
+
   getFuelPreview = (seatId: SeatId, pieceId: Parameters<GameSession['getFuelPreview']>[1]): ReturnType<GameSession['getFuelPreview']> => {
     const binding = this.#binding(seatId);
     if (this.#lifecycle !== 'ACTIVE' || this.#handoff !== null) {
