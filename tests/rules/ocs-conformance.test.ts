@@ -21,7 +21,7 @@ import {
   type HexId,
   type TransitionResult,
 } from '../../src/index.js';
-import { retreatPlans } from '../../src/rules/combat/combat.js';
+import { attackerSupplyOptions, retreatPlans } from '../../src/rules/combat/combat.js';
 import { adjacentHexIds, hexDistanceBetween, isAdjacent } from '../../src/rules/pieces.js';
 
 const U = {
@@ -165,6 +165,53 @@ describe('OCS 4.3 ground combat (9.0-9.13)', () => {
     const exhausted = { ...noDump, pieceState: { ...noDump.pieceState, pieces: noDump.pieceState.pieces.map((entry) => entry.id !== U.alTrk ? entry
       : { ...entry, statuses: [{ statusDefinitionId: 'status:internal-stocks' as never, value: { kind: 'TEXT' as const, value: 'EXHAUSTED' } }] }) } };
     expect(codes(declareTestCombat(exhausted, ALLIED, 'REGULAR', [U.alTrk], '6,5'))).toContain('ATTACKER_COMBAT_SUPPLY_UNAVAILABLE');
+  });
+
+  it('lets only an attacker that cannot obtain its own SP use internal stocks (12.10a, 9.5)', () => {
+    const base = atStep(buildGeneratedRuleState({ ...duel, [U.alTrk2]: ['5,5', 'COMBAT', 'combat'] }), 'COMBAT', 'COMBAT', ALLIED);
+    const withDump = (quantity: number): GameState => ({ ...base, pieceState: { ...base.pieceState, pieces: base.pieceState.pieces.map((entry) => entry.id === U.alSup ? { ...entry, resourceQuantity: quantity } : entry) } });
+    const lowCount = (state: GameState): number => [U.alTrk, U.alTrk2].filter((id) => piece(state, id).statuses.some(({ statusDefinitionId }) => statusDefinitionId === 'status:internal-stocks')).length;
+    const attack = (state: GameState) => settleDecisions(declareTestCombat(state, ALLIED, 'REGULAR', [U.alTrk, U.alTrk2], '6,5').state, (decision) => decision.options.find(({ id }) => id.startsWith('pay:') || id === 'withhold')?.id ?? decision.options[0]!.id).state;
+    // Enough SP for both: nobody may fall back on internal stocks.
+    expect(lowCount(attack(withDump(40)))).toBe(0);
+    // One unit's worth of SP: the first attacker is paid, so only the second is marked.
+    expect(lowCount(attack(withDump(1)))).toBe(1);
+    // Neither attacker is ever offered a choice: the one with SP must pay, the other has only internal stocks left.
+    expect(declareTestCombat(withDump(1), ALLIED, 'REGULAR', [U.alTrk, U.alTrk2], '6,5').state.pendingDecision?.ownerId).toBe(AXIS);
+  });
+
+  it('declares each attacker\'s combat supply with the attack, internal stocks only when SP is out of reach (9.5, 12.10a)', () => {
+    const base = atStep(buildGeneratedRuleState({ ...duel, [U.alTrk2]: ['5,5', 'COMBAT', 'combat'] }), 'COMBAT', 'COMBAT', ALLIED);
+    const state: GameState = { ...base, pieceState: { ...base.pieceState, pieces: base.pieceState.pieces.map((entry) => entry.id === U.alSup ? { ...entry, resourceQuantity: 1 } : entry) } };
+    const declare = (attackerSupply: NonNullable<Extract<Parameters<typeof applyRuleAction>[2], { kind: 'DECLARE_COMBAT' }>['attackerSupply']>) => applyRuleAction(state, ALLIED, {
+      kind: 'DECLARE_COMBAT', combatKind: 'REGULAR', attackerIds: [U.alTrk, U.alTrk2], defenderIds: [U.axTrk], targetHexId: '6,5' as HexId, leadAttackerId: U.alTrk, attackerSupply,
+    });
+    const fromDump = (pieceId: typeof U.alTrk) => ({ pieceId, method: 'DUMPS' as const, dumpIds: [U.alSup] });
+    const internal = (pieceId: typeof U.alTrk) => ({ pieceId, method: 'INTERNAL' as const });
+    // The first unit can draw the only 1T, so it may not fall back on internal stocks; the second then must.
+    expect(attackerSupplyOptions(state, ALLIED, [], U.alTrk)!.options.map(({ id }) => id)).toEqual(['hex:5,6']);
+    expect(attackerSupplyOptions(state, ALLIED, [fromDump(U.alTrk)], U.alTrk2)!.options.map(({ id }) => id)).toEqual(['internal']);
+    expect(codes(declare([internal(U.alTrk), fromDump(U.alTrk2)]))).toContain('ON_MAP_SUPPLY_AVAILABLE');
+    expect(codes(declare([fromDump(U.alTrk), fromDump(U.alTrk2)]))).toContain('INVALID_ATTACKER_SUPPLY_SOURCE');
+    expect(codes(declare([fromDump(U.alTrk)]))).toContain('ATTACKER_SUPPLY_MISMATCH');
+    const declared = declare([fromDump(U.alTrk), internal(U.alTrk2)]);
+    expect(declared.ok).toBe(true);
+    // Paid with the declaration: the attacker is never asked again; the defender decides next.
+    expect(declared.state.pendingDecision?.ownerId).toBe(AXIS);
+    const rolled = settleDecisions(declared.state).state;
+    expect(piece(rolled, U.alTrk).statuses.some(({ statusDefinitionId }) => statusDefinitionId === 'status:internal-stocks')).toBe(false);
+    expect(piece(rolled, U.alTrk2).statuses).toContainEqual({ statusDefinitionId: 'status:internal-stocks', value: { kind: 'TEXT', value: 'LOW' } });
+    expect(piece(rolled, U.alSup).resourceQuantity ?? 0).toBe(0);
+    // An Exhausted unit left without SP by the units above it cannot join (12.10c).
+    const exhausted: GameState = { ...state, pieceState: { ...state.pieceState, pieces: state.pieceState.pieces.map((entry) => entry.id !== U.alTrk2 ? entry
+      : { ...entry, statuses: [{ statusDefinitionId: 'status:internal-stocks' as never, value: { kind: 'TEXT' as const, value: 'EXHAUSTED' } }] }) } };
+    const blocked = attackerSupplyOptions(exhausted, ALLIED, [fromDump(U.alTrk)], U.alTrk2)!;
+    expect(blocked.options).toEqual([]);
+    expect(blocked.reason).toMatch(/Exhausted/u);
+    expect(codes(applyRuleAction(exhausted, ALLIED, { kind: 'DECLARE_COMBAT', combatKind: 'REGULAR', attackerIds: [U.alTrk, U.alTrk2], defenderIds: [U.axTrk], targetHexId: '6,5' as HexId, leadAttackerId: U.alTrk, attackerSupply: [fromDump(U.alTrk), internal(U.alTrk2)] })))
+      .toContain('INTERNAL_STOCKS_EXHAUSTED');
+    // Ticked the other way round, the Exhausted unit takes the SP and the other uses internal stocks.
+    expect(attackerSupplyOptions(exhausted, ALLIED, [fromDump(U.alTrk2)], U.alTrk)!.options.map(({ id }) => id)).toEqual(['internal']);
   });
 
   it('combines attackers from several hexes and attacks a hex only once per segment (9.1c)', () => {

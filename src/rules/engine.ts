@@ -1,5 +1,5 @@
 import type { PlayerId } from '../core/index.js';
-import { previewBarrage, previewCombat } from './combat/combat.js';
+import { attackerSupplyOptions, previewBarrage, previewCombat } from './combat/combat.js';
 import { inPatrolZoneOf } from './air/aircraft.js';
 import { AIR_MISSION_LABELS, flakModifiers, missionBarrageStrength, previewAirBarrage } from './air/mission.js';
 import { cargoCapacity, cargoWeight, countedUnloadTokens, dropMethod, halfTokenText, landingFailureMaximum, unloadLimitTokens, unloadedAt } from './air/transport.js';
@@ -31,7 +31,7 @@ const publicFact = (key: string, value: string | number | boolean): RuleFact => 
 const actionFacts = (state: GameState, action: GameAction): readonly RuleFact[] => {
   if (action.kind === 'MOVE_PIECE') return queryMovementPath(state, action.actorId, action.pieceId, action.path).facts;
   if (action.kind === 'DECLARE_COMBAT') {
-    const preview = previewCombat(state, action.actorId, action.attackerIds, action.targetHexId, action.leadAttackerId);
+    const preview = previewCombat(state, action.actorId, action.attackerIds, action.targetHexId, action.leadAttackerId, action.attackerSupply ?? null);
     return [
       publicFact('combat.attackerStrength', preview.supplied.attackerStrength),
       publicFact('combat.defenderStrength', preview.supplied.defenderStrength),
@@ -48,6 +48,7 @@ const actionFacts = (state: GameState, action: GameAction): readonly RuleFact[] 
       // 16.0d: the defender's hedgehog (always visible, 4.9a): -Level on the combat roll, -1 on Surprise.
       publicFact('combat.hedgehogLevel', preview.supplied.hedgehogLevel),
       publicFact('combat.attackerSupplyTokens', preview.attackerSupplyTokens),
+      publicFact('combat.attackerInternalCount', preview.attackerInternalCount),
       publicFact('combat.defenderSupplyTokens', preview.defenderSupplyTokens),
       publicFact('combat.defenderCanPay', preview.defenderCanPay),
     ];
@@ -160,6 +161,12 @@ const engine: RuleEngine = {
   queryRailControl,
   queryFuelCoverage,
   queryFuelPreview,
+  queryAttackerSupplyOptions: (state, actorId, prior, pieceId) => {
+    const value = attackerSupplyOptions(state, actorId, prior, pieceId);
+    return value
+      ? { allowed: value.options.length > 0, value, reasons: value.reason ? [{ code: 'NO_ATTACKER_SUPPLY', allowed: false, message: value.reason, rule: '12.10c' }] : [], facts: [], dependencies: [] }
+      : { allowed: false, value: null, reasons: [{ code: 'UNKNOWN_ATTACKER', allowed: false, message: 'Not an own unit on the map.', rule: '9.1' }], facts: [], dependencies: [] };
+  },
 };
 
 export const ruleEngine: RuleEngine = Object.freeze(engine);

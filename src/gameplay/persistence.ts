@@ -17,6 +17,7 @@ import {
   parseRuleTransactionId,
   AIR_ROUTES,
   type AirCargoDeclaration,
+  type AttackerSupplyChoice,
   type AirRoute,
   type GameAction,
 } from '../rules/index.js';
@@ -132,8 +133,9 @@ const parseAction = (input: unknown, path: Path, issues: GameplayError[]): GameA
   };
   if (!(kind in fields)) issues.push(issue('SAVE_INVALID', [...path, 'kind'], `Unknown action kind ${kind}.`));
   // REDUCE_AIR_BASE gained an optional engineer; logs written before it do not carry the key.
-  // REDUCE_AIR_BASE gained an optional engineer and DECLARE_AIR_MISSION an optional cargo; logs written before them do not carry the keys.
-  exactKeys(record, ['actionId', 'actorId', 'expectedRevision', 'kind', ...(fields[kind] ?? []), ...(kind === 'REDUCE_AIR_BASE' && 'engineerId' in record ? ['engineerId'] : []), ...(kind === 'DECLARE_AIR_MISSION' && 'cargo' in record ? ['cargo'] : [])], path, issues);
+  // REDUCE_AIR_BASE gained an optional engineer, DECLARE_AIR_MISSION an optional cargo and DECLARE_COMBAT optional declared
+  // attacker supply; logs written before them do not carry the keys.
+  exactKeys(record, ['actionId', 'actorId', 'expectedRevision', 'kind', ...(fields[kind] ?? []), ...(kind === 'REDUCE_AIR_BASE' && 'engineerId' in record ? ['engineerId'] : []), ...(kind === 'DECLARE_AIR_MISSION' && 'cargo' in record ? ['cargo'] : []), ...(kind === 'DECLARE_COMBAT' && 'attackerSupply' in record ? ['attackerSupply'] : [])], path, issues);
   const actionText = textAt(record, 'actionId', path, issues);
   const actorText = textAt(record, 'actorId', path, issues);
   const parsedActionId = parseRuleActionId(actionText);
@@ -191,7 +193,10 @@ const parseAction = (input: unknown, path: Path, issues: GameplayError[]): GameA
     case 'DECLARE_COMBAT': {
       const combatKind = textAt(record, 'combatKind', path, issues);
       if (!['REGULAR', 'OVERRUN'].includes(combatKind)) issues.push(issue('SAVE_INVALID', [...path, 'combatKind'], 'Invalid combat kind.'));
-      return { ...base, combatKind, attackerIds: pieces('attackerIds'), defenderIds: pieces('defenderIds'), targetHexId: hex('targetHexId'), leadAttackerId: piece('leadAttackerId') } as GameAction;
+      return {
+        ...base, combatKind, attackerIds: pieces('attackerIds'), defenderIds: pieces('defenderIds'), targetHexId: hex('targetHexId'), leadAttackerId: piece('leadAttackerId'),
+        ...('attackerSupply' in record ? { attackerSupply: parseAttackerSupply(record.attackerSupply, [...path, 'attackerSupply'], issues) } : {}),
+      } as GameAction;
     }
     case 'DECLARE_BARRAGE': return { ...base, firerIds: pieces('firerIds'), targetPieceIds: pieces('targetPieceIds'), targetHexId: hex('targetHexId') } as GameAction;
     case 'RESPOND_DECISION': {
@@ -275,6 +280,31 @@ const parseAction = (input: unknown, path: Path, issues: GameplayError[]): GameA
     case 'COLLAPSE_EXTENDER': return { ...base, extenderId: piece('extenderId'), hexId: hex('hexId') } as GameAction;
     default: return base as GameAction;
   }
+};
+
+const parseAttackerSupply = (input: unknown, path: Path, issues: GameplayError[]): readonly AttackerSupplyChoice[] => {
+  if (!Array.isArray(input)) { issues.push(issue('SAVE_INVALID', path, 'Expected an array.')); return []; }
+  const pieceAt = (value: unknown, at: Path): PieceId => {
+    const text = typeof value === 'string' ? value : '';
+    const parsed = parsePieceId(text);
+    if (!parsed.ok) issues.push(issue('SAVE_INVALID', at, 'Invalid Piece ID.'));
+    return parsed.ok ? parsed.value : text as never;
+  };
+  return input.map((entry, index): AttackerSupplyChoice => {
+    const at = [...path, index];
+    const row = recordAt(entry, at, issues) ?? {};
+    const method = textAt(row, 'method', at, issues);
+    const pieceId = pieceAt(row.pieceId, [...at, 'pieceId']);
+    if (method === 'INTERNAL') {
+      exactKeys(row, ['pieceId', 'method'], at, issues);
+      return { pieceId, method };
+    }
+    if (method !== 'DUMPS') issues.push(issue('SAVE_INVALID', [...at, 'method'], 'Invalid attacker supply method.'));
+    exactKeys(row, ['pieceId', 'method', 'dumpIds'], at, issues);
+    const dumpIds = Array.isArray(row.dumpIds) ? row.dumpIds : [];
+    if (!Array.isArray(row.dumpIds)) issues.push(issue('SAVE_INVALID', [...at, 'dumpIds'], 'Expected an array.'));
+    return { pieceId, method: 'DUMPS', dumpIds: dumpIds.map((value, dumpIndex) => pieceAt(value, [...at, 'dumpIds', dumpIndex])) };
+  });
 };
 
 const parseCargo = (input: unknown, path: Path, issues: GameplayError[]): AirCargoDeclaration | null => {

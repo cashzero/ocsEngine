@@ -12,6 +12,8 @@ import type {
   CandidateRequest,
   CandidateResult,
   FuelCoverage,
+  AttackerSupplyChoice,
+  AttackerSupplyOptions,
   FuelPreview,
   SupplySourceHex,
   RailControlHex,
@@ -308,6 +310,8 @@ export interface GameSession {
   /** How one of the seat's units is fueled now (12.5): a coverage method, 'NOT_NEEDED', or null when it needs fuel and has none. */
   readonly getFuelCoverage: (seatId: SeatId, pieceId: PieceId) => RuleQueryResult<FuelCoverage>;
   readonly getFuelPreview: (seatId: SeatId, pieceId: PieceId) => RuleQueryResult<readonly FuelPreview[]>;
+  /** Combat supply sources one of the seat's units may declare after the attackers already declared (9.5, 12.10a). */
+  readonly getAttackerSupplyOptions: (seatId: SeatId, prior: readonly AttackerSupplyChoice[], pieceId: PieceId) => RuleQueryResult<AttackerSupplyOptions | null>;
   readonly createDraft: (seatId: SeatId, action: GameAction) => ActionDraft;
   readonly validateDraft: (draft: ActionDraft) => DraftValidation;
   readonly getPendingDecision: (seatId: SeatId) => PendingDecisionDescriptor | null;

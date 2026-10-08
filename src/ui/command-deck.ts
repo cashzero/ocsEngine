@@ -1,4 +1,5 @@
 import { html, nothing, type TemplateResult } from 'lit-html';
+import { live } from 'lit-html/directives/live.js';
 import { repeat } from 'lit-html/directives/repeat.js';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import type { ProjectedPiece } from '../rules/index.js';
@@ -264,22 +265,38 @@ const draftPanel = (snapshot: UiSnapshot, state: DeckState): TemplateResult => {
         <div><dt>If defender withholds supply</dt><dd>${text(fact(facts, 'combat.oddsUnsupplied') ?? '–')}</dd></div>
         <div><dt>AR DRM</dt><dd>${text(fact(facts, 'combat.attackerActionRating') ?? '–')} − ${text(fact(facts, 'combat.defenderActionRating') ?? '?')} = ${text(fact(facts, 'combat.drm') ?? '–')}</dd></div>
         ${hedgehog > 0 ? html`<div><dt>Hedgehog</dt><dd>Level ${hedgehog}: −${hedgehog} combat roll, −1 Surprise, Heavy AT</dd></div>` : nothing}
-        <div><dt>Your supply cost</dt><dd>${text(fact(facts, 'combat.attackerSupplyTokens') ?? '–')}T</dd></div></dl>`;
+        <div><dt>Your supply cost</dt><dd>${text(fact(facts, 'combat.attackerSupplyTokens') ?? '–')}T${Number(fact(facts, 'combat.attackerInternalCount') ?? 0) > 0 ? ` · ${text(fact(facts, 'combat.attackerInternalCount'))} on internal stocks` : ''}</dd></div></dl>`;
   const outlookView = draft.kind === 'BARRAGE' ? nothing
     : outlook ? html`<p class="outlook${outlook.attackerStep > outlook.defenderHurt ? ' is-poor' : ''}">Before Surprise: you lose a mandatory step on ${percent(outlook.attackerStep)} of rolls (a loss or option on ${percent(outlook.attackerHurt)}); the defender loses, retreats or is DG on ${percent(outlook.defenderHurt)}${outlook.exploit > 0 ? `; exploitation on ${percent(outlook.exploit)}` : ''}.</p>`
       : facts?.allowed ? html`<p class="outlook is-poor">These odds are off the Combat Table columns.</p>` : nothing;
-  const participants = units.map((piece) => {
+  // 9.5, 12.10a: ticked attackers pay in the order they were ticked, so they are listed first, in that order.
+  const order = (piece: ProjectedPiece): number => { const index = draft.selectedIds.indexOf(piece.id); return index < 0 ? draft.selectedIds.length : index; };
+  const ordered = draft.kind === 'BARRAGE' ? units : [...units].sort((left, right) => order(left) - order(right));
+  const participants = ordered.map((piece) => {
     const checked = draft.selectedIds.includes(piece.id);
-    return html`<label class="participant"><input type="checkbox" data-participant=${piece.id} .checked=${checked}>
-      ${counterFor(snapshot, piece)}<span>${pieceLabel(snapshot.scenario, piece)}<small>${pieceHex(snapshot, piece)}</small></span>
-      ${draft.kind !== 'BARRAGE' && checked ? html`<input type="radio" name="lead" data-lead=${piece.id} .checked=${draft.leadId === piece.id} aria-label="Lead with this unit's Action Rating">` : nothing}</label>`;
+    const row = draft.supply.find(({ pieceId }) => pieceId === piece.id);
+    const blocked = draft.kind !== 'BARRAGE' && !checked && row !== undefined && row.options.length === 0;
+    const chosen = row?.options.find(({ id }) => id === row.chosenId);
+    const source = draft.kind === 'BARRAGE' || !row ? nothing
+      : checked && row.options.length > 1
+        ? html`<select class="attack-supply" data-attack-supply=${piece.id} aria-label="Combat supply for ${pieceLabel(snapshot.scenario, piece)}" data-highlight-hex=${chosen?.hexIds[0] ?? nothing}>
+            ${row.options.map((option) => html`<option value=${option.id} .selected=${live(option.id === row.chosenId)}>${option.label}</option>`)}</select>`
+        : checked && chosen ? html`<small class="attack-supply" data-highlight-hex=${chosen.hexIds[0] ?? nothing}>Supply: ${chosen.label}</small>`
+          : blocked ? html`<small class="attack-supply is-blocked">${row.reason}</small>`
+            : html`<small class="attack-supply">Would use: ${row.options[0]!.label}</small>`;
+    // live(): ticking re-sorts the rows, so a row's box may now show another unit than the one clicked; compare with the DOM.
+    return html`<div class="participant-row"><label class="participant"><input type="checkbox" data-participant=${piece.id} .checked=${live(checked)} ?disabled=${blocked}>
+      ${counterFor(snapshot, piece)}<span>${checked && draft.kind !== 'BARRAGE' ? `${order(piece) + 1}. ` : ''}${pieceLabel(snapshot.scenario, piece)}<small>${pieceHex(snapshot, piece)}</small></span>
+      ${draft.kind !== 'BARRAGE' && checked ? html`<input type="radio" name="lead" data-lead=${piece.id} .checked=${live(draft.leadId === piece.id)} aria-label="Lead with this unit's Action Rating">` : nothing}</label>${source}</div>`;
   });
   const note = draft.kind === 'OVERRUN' ? 'Overrun costs 3 MP; if it succeeds the units must enter the hex (8.0).'
     : draft.kind === 'BARRAGE' ? 'Tick the artillery that fires.' : 'Tick the attacking units; the radio button picks the unit whose Action Rating leads.';
+  const supplyNote = draft.kind === 'BARRAGE' ? 'Supply is paid from dumps in reach; if several can pay you will choose, or pay automatically.'
+    : 'Each unit declares its combat supply as it is ticked, in that order: a dump in reach, or its internal stocks only when the dumps in reach cannot cover it after the units above (12.10a).';
   return html`<section class="deck-context combat-draft" aria-label="${title} plan">
     <h2>${title} ${printedHexLabel(draft.targetHexId)}</h2>
     ${rows}${outlookView}
-    <p class="hint">${note} Supply is paid from dumps in reach; if several can pay you will choose, or pay automatically.</p>
+    <p class="hint">${note} ${supplyNote}</p>
     <div class="participants">${participants.length > 0 ? participants : html`<p>No eligible units.</p>`}</div>
     ${explanationBlock(facts)}
     <div class="button-grid"><button id="cancel-draft">Cancel</button><button class="primary" id="declare-draft" ?disabled=${!(facts?.allowed && !busyOf(snapshot, state))}>${title}</button></div>

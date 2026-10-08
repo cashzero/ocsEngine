@@ -1,0 +1,124 @@
+{
+  "title": "Attack supply declared with the attack (9.5, 12.10a)",
+  "final": {
+    "turn": "Turn 2 / 8",
+    "player": "Axis player turn",
+    "phase": "First Player Phase",
+    "revision": null
+  },
+  "rows": [
+    {
+      "id": "CMB-SUP",
+      "expectation": "A fresh New Game reaches a Combat Segment with an attack target",
+      "observed": "Turn 1 / 3, Axis player turn, Combat; 1 targets",
+      "status": "PASS"
+    },
+    {
+      "id": "CMB-SUP",
+      "expectation": "Each ticked attacker shows its declared combat supply in the plan before Declare",
+      "observed": "☑ 1. I/3 Pz Bn / 2.Pz 1509 — Supply: 1T from the dump at 2008 (25T there); ☑ 2. II/3 Pz Bn / 2.Pz 1509 — Supply: 1T from the dump at 2008 (24T there); ☑ 3. vBohm Recon KG / 2.Pz 1509 — Supply: 1T from the dump at 2008 (23T there)",
+      "status": "PASS"
+    },
+    {
+      "id": "CMB-SUP",
+      "expectation": "A unit with SP in reach is not offered internal stocks",
+      "observed": "☑ 1. I/3 Pz Bn / 2.Pz 1509 — Supply: 1T from the dump at 2008 (25T there); ☑ 2. II/3 Pz Bn / 2.Pz 1509 — Supply: 1T from the dump at 2008 (24T there); ☑ 3. vBohm Recon KG / 2.Pz 1509 — Supply: 1T from the dump at 2008 (23T there)",
+      "status": "PASS"
+    },
+    {
+      "id": "CMB-SUP",
+      "expectation": "After Declare the attacker is not asked for its supply again",
+      "observed": "4 prompts, none to the attacker about supply",
+      "status": "PASS"
+    },
+    {
+      "id": "CMB-SUP",
+      "expectation": "The Game Turn with the attack finishes",
+      "observed": "Turn 2 / 3, Axis player turn, First Player Phase",
+      "status": "PASS"
+    },
+    {
+      "id": "CMB-SUP",
+      "expectation": "The first ticked unit draws the 1T in reach; internal stocks are not offered to it (12.10a)",
+      "observed": "☑ 1. Oden TF / 4.A 1612 — Supply: 1T from the dump at 1612 (1T there); ☐ Alanis TF / 4.A 1612 — Would use: Internal stocks (marked Low); ☐ US Objective Garrison 1612 — Would use: Internal stocks (marked Low)",
+      "status": "PASS"
+    },
+    {
+      "id": "CMB-SUP",
+      "expectation": "The unticked unit shows it would have to use internal stocks",
+      "observed": "Would use: Internal stocks (marked Low)",
+      "status": "PASS"
+    },
+    {
+      "id": "CMB-SUP",
+      "expectation": "Ticked second, it declares internal stocks; the plan says one unit is on internal stocks",
+      "observed": "☑ 1. Oden TF / 4.A 1612 — Supply: 1T from the dump at 1612 (1T there); ☑ 2. Alanis TF / 4.A 1612 — Supply: Internal stocks (marked Low); ☐ US Objective Garrison 1612 — Would use: Internal stocks (marked Low); Strength 42 : 6 Odds 7:1 (open) If defender withholds supply 14:1 AR DRM 4 − 5 = -1 Your supply cost 2T · 1 on internal stocks",
+      "status": "PASS"
+    },
+    {
+      "id": "CMB-SUP",
+      "expectation": "Unticking the first moves the 1T to the second, whose internal option disappears",
+      "observed": "☑ 1. Alanis TF / 4.A 1612 — Supply: 1T from the dump at 1612 (1T there); ☐ Oden TF / 4.A 1612 — Would use: Internal stocks (marked Low); ☐ US Objective Garrison 1612 — Would use: Internal stocks (marked Low)",
+      "status": "PASS"
+    },
+    {
+      "id": "CMB-SUP",
+      "expectation": "Ticked again, the first unit comes second and is left internal stocks only",
+      "observed": "☑ 1. Alanis TF / 4.A 1612 — Supply: 1T from the dump at 1612 (1T there); ☑ 2. Oden TF / 4.A 1612 — Supply: Internal stocks (marked Low); ☐ US Objective Garrison 1612 — Would use: Internal stocks (marked Low)",
+      "status": "PASS"
+    },
+    {
+      "id": "CMB-SUP",
+      "expectation": "After Declare the attacker is not asked for its supply; the defender decides after a hand-over",
+      "observed": "Axis commander: Defending 1712: 1T of combat supply still to pay. Choose where it comes from. / Allied commander: 1712 is vacant: choose attackers to advance after combat, one at a time or all together.",
+      "status": "PASS"
+    },
+    {
+      "id": "CMB-SUP",
+      "expectation": "The unit that used internal stocks is marked Low; the one that drew SP is not",
+      "observed": "Oden TF / 4.A: Internal stocks Low; Alanis TF / 4.A: no marker",
+      "status": "PASS"
+    },
+    {
+      "id": "CMB-SUP",
+      "expectation": "With the 1T taken, the Exhausted unit cannot be ticked and the plan says why (12.10c)",
+      "observed": "☑ 1. Oden TF / 4.A 1612 — Supply: 1T from the dump at 1612 (1T there); ⊘ Alanis TF / 4.A 1612 — Needs 1T but no SP is in reach after the units above, and its internal stocks are Exhausted (12.10c).; ☐ US Objective Garrison 1612 — Would use: Internal stocks (marked Low)",
+      "status": "PASS"
+    },
+    {
+      "id": "CMB-SUP",
+      "expectation": "Ticked first, the Exhausted unit draws the 1T and the other uses internal stocks",
+      "observed": "☑ 1. Alanis TF / 4.A 1612 — Supply: 1T from the dump at 1612 (1T there); ☑ 2. Oden TF / 4.A 1612 — Supply: Internal stocks (marked Low); ☐ US Objective Garrison 1612 — Would use: Internal stocks (marked Low)",
+      "status": "PASS"
+    },
+    {
+      "id": "CMB-SUP",
+      "expectation": "The attack declares and resolves without asking the attacker for supply",
+      "observed": "Axis commander: Defending 1712: 1T of combat supply still to pay. Choose where it comes from. / Allied commander: 1712 is vacant: choose attackers to advance after combat, one at a time or all together.",
+      "status": "PASS"
+    },
+    {
+      "id": "CMB-SUP",
+      "expectation": "Game Turn 1 of the test position ends",
+      "observed": "Turn 2 / 8, Axis player turn, First Player Phase",
+      "status": "PASS"
+    },
+    {
+      "id": "CMB-SUP",
+      "expectation": "No browser console or page error during the run",
+      "observed": "0 errors",
+      "status": "PASS"
+    }
+  ],
+  "timings": [
+    {
+      "label": "open attack plan",
+      "elapsed": 976
+    },
+    {
+      "label": "declare B1",
+      "elapsed": 441
+    }
+  ],
+  "errors": []
+}
