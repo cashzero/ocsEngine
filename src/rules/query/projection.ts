@@ -16,12 +16,13 @@ import { equipmentIn, rebuildOptions, stepsToRebuild } from '../air/replacement.
 import { lostTruckPoints } from '../replacement/ledger.js';
 import { unitRebuildOptions } from '../replacement/replacement.js';
 import { aircraftRange, aircraftTransportCapacity, hasIntegralGlider } from '../air/aircraft.js';
+import { isHedgehog } from '../hedgehog/hedgehog.js';
 import { baseDumps, earliestPlanTurn, loadableUnits, readyTransports } from '../air/transport.js';
 
 /** 4.9a: internal stocks and other private bookkeeping are never shown to the enemy. */
 const PRIVATE_STATUSES: readonly string[] = [INTERNAL_STOCKS_STATUS, OUT_OF_TRACE_SINCE_STATUS, RETURN_TURN_STATUS];
 /** Status values the enemy may read because they are printed on the counter itself (a Breakdown's "1/101.Abn" too, 20.0). */
-const PUBLIC_VALUE_STATUSES: readonly string[] = ['status:air-base-level', 'status:transport-points', 'status:unit-name'];
+const PUBLIC_VALUE_STATUSES: readonly string[] = ['status:air-base-level', 'status:hedgehog-level', 'status:transport-points', 'status:unit-name'];
 
 /** What the counter is for, from its definition and where it is (not from which fields happen to be set). */
 export const roleOf = (state: GameState, piece: PieceState): PieceRole => {
@@ -29,6 +30,7 @@ export const roleOf = (state: GameState, piece: PieceState): PieceRole => {
   if (!definition) return 'OTHER';
   if (isAircraft(state, piece)) return 'AIRCRAFT';
   if (isAirBase(state, piece)) return 'AIR_BASE';
+  if (isHedgehog(state, piece)) return 'HEDGEHOG';
   if (definition.family === 'REPLACEMENT') return 'REPLACEMENT';
   if (definition.family === 'RESOURCE') return piece.location.kind === 'CONTAINER' ? 'CARGO' : 'DUMP';
   switch (definition.counter?.kind) {
@@ -79,7 +81,9 @@ const visibleEnemyTop = (state: GameState, enemy: readonly PieceState[]): readon
   const base = enemy.find((piece) => isAirBase(state, piece));
   const active = enemy.filter((piece) => isAircraft(state, piece) && isActiveAircraft(piece));
   const plane = active.find((piece) => isFighter(state, piece)) ?? active[0];
-  const visible = [top, base, plane].filter((piece): piece is PieceState => piece !== undefined);
+  // 4.8bF, 4.9a: the enemy may always see the hedgehog.
+  const hog = enemy.find((piece) => isHedgehog(state, piece));
+  const visible = [top, hog, base, plane].filter((piece): piece is PieceState => piece !== undefined);
   return visible.length > 0 ? visible : enemy.slice(0, 1);
 };
 
@@ -215,7 +219,7 @@ const projectCombat = (state: GameState): ProjectedCombat | null => {
     : transaction.defenderSupplied ? transaction.defenderIds : transaction.defenderInternalIds;
   const odds = calculateCombatOdds(state, transaction.attackerIds, transaction.defenderIds, transaction.targetHexId,
     supplied, transaction.leadAttackerId, transaction.leadDefenderId, transaction.defenderTerrainId);
-  return { ...base, attackerStrength: odds.attackerStrength, defenderStrength: odds.defenderStrength, odds: odds.oddsText, line: odds.line, drm: odds.drm };
+  return { ...base, attackerStrength: odds.attackerStrength, defenderStrength: odds.defenderStrength, odds: odds.oddsText, line: odds.line, drm: odds.drm - odds.hedgehogLevel };
 };
 
 export const ruleQueryCacheKey = (

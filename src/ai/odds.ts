@@ -38,7 +38,8 @@ export const forecastCombat = (facts: readonly RuleFact[]): CombatForecast | nul
   const line = fact(facts, 'combat.line') as CombatLine | undefined;
   const column = String(fact(facts, 'combat.column') ?? '');
   const odds = String(fact(facts, 'combat.odds') ?? column);
-  const drm = Number(fact(facts, 'combat.drm') ?? 0);
+  // 16.0d: the defender's hedgehog subtracts its Level from the combat roll.
+  const drm = Number(fact(facts, 'combat.drm') ?? 0) - Number(fact(facts, 'combat.hedgehogLevel') ?? 0);
   if (!line || !COMBAT_TABLE_COLUMNS[line]) return null;
   const columns = COMBAT_TABLE_COLUMNS[line];
   let columnIndex = columns.findIndex(({ attacker, defender }) => `${attacker}:${defender}` === column);

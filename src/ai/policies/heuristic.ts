@@ -532,6 +532,41 @@ const movementStep = (context: BotDecisionContext, situation: Situation, facts: 
   return null;
 };
 
+/** Hexes already dug in (or refused) this step, so each is considered once. */
+const DUG_HEXES = 'heuristic.hedgehogs';
+const HEDGEHOG_LEVEL_TOKENS = 8;
+
+/**
+ * heuristic@10: once every unit has moved, the ones that stayed dig in where the enemy is close (16.0b): held objectives
+ * first, then other hexes next to the enemy, a crew in the hex before an engineer, while the dumps keep a reserve.
+ */
+const hedgehogStep = (context: BotDecisionContext, situation: Situation, w: HeuristicWeights): BotDecision | null => {
+  if (!context.actions.families().includes('BUILD_HEDGEHOG')) return null;
+  const dug = (context.memory.notes.get(DUG_HEXES) as Set<HexId> | undefined) ?? new Set<HexId>();
+  context.memory.notes.set(DUG_HEXES, dug);
+  const tokens = situation.own.reduce((total, { piece }) => total + (piece.role === 'DUMP' ? piece.resourceQuantity ?? 0 : 0), 0);
+  if (tokens - HEDGEHOG_LEVEL_TOKENS < w.hedgehogSupplyReserve) return null;
+  const levelAt = (hexId: HexId): number => {
+    const value = situation.friendlyAt(hexId).find(({ piece }) => piece.role === 'HEDGEHOG')?.piece.statusValues
+      .find(({ statusDefinitionId }) => statusDefinitionId === 'status:hedgehog-level')?.value;
+    return typeof value === 'number' ? value : situation.friendlyAt(hexId).some(({ piece }) => piece.role === 'HEDGEHOG') ? 1 : 0;
+  };
+  let best: { action: GameAction; score: number; hexId: HexId; wanted: number } | null = null;
+  for (const action of context.actions.candidates('BUILD_HEDGEHOG', null, 200)) {
+    if (action.kind !== 'BUILD_HEDGEHOG' || dug.has(action.hexId)) continue;
+    const distance = situation.nearestEnemy(action.hexId).distance;
+    if (distance > w.hedgehogThreatRadius) continue;
+    const objective = situation.objectives.find(({ hexId, controllerId }) => hexId === action.hexId && controllerId === situation.playerId);
+    const wanted = objective ? w.hedgehogObjectiveLevel : distance <= 1 ? w.hedgehogFrontLevel : 0;
+    if (levelAt(action.hexId) >= wanted) continue;
+    const score = (objective ? 10 * objective.points : 0) + situation.threatAt(action.hexId) + (action.engineerId === null ? 1 : 0);
+    if (!best || score > best.score) best = { action, score, hexId: action.hexId, wanted };
+  }
+  if (!best) return null;
+  dug.add(best.hexId);
+  return decision(best.action, `dig in at ${best.hexId} (hedgehog toward Level ${best.wanted})`, [{ term: 'hedgehog', value: best.score }]);
+};
+
 const fuelRank = (action: GameAction): number => action.kind !== 'PAY_FUEL' ? 9 : action.method === 'FORMATION' ? 0 : action.method === 'HQ' ? 1 : 2;
 
 // ─── Combat and barrage ────────────────────────────────────────────────────────────────────────
@@ -552,7 +587,7 @@ const bestCombat = (context: BotDecisionContext, situation: Situation, facts: Bo
     if (oddsFor / Math.max(1e-9, oddsAgainst) < w.minimumOdds && !lastGrab) continue;
     const enemy = situation.enemy.get(action.targetHexId);
     // Steps the defender can lose before the hex empties: printed steps of the visible counters, two per hidden one.
-    const defenderSteps = Math.max(1, (enemy?.pieces ?? []).filter(({ role }) => role !== 'DUMP' && role !== 'TRUCK')
+    const defenderSteps = Math.max(1, (enemy?.pieces ?? []).filter(({ role }) => role !== 'DUMP' && role !== 'TRUCK' && role !== 'HEDGEHOG')
       .reduce((total, piece) => total + (knowledgeOf(facts).profile(piece)?.steps ?? 1), 0) + (enemy?.hidden ?? 0) * 2);
     const vacate = Math.min(1, (forecast.defenderLosses + forecast.defenderOptions * w.vacateOptionShare) / defenderSteps);
     const terms: BotScoreTerm[] = [
@@ -691,7 +726,9 @@ const decide = (facts: BotGameFacts, w: HeuristicWeights) => (context: BotDecisi
   if (phase === 'REINFORCEMENT') chosen = reinforcementStep(context, situation);
   else if (phase === 'AIRCRAFT_REFIT') chosen = refitStep(context);
   else if (phase === 'SUPPLY') chosen = supplyStep(context, situation);
-  else if (segment === 'MOVEMENT' && (phase === 'MOVEMENT' || phase === 'EXPLOITATION')) chosen = movementStep(context, situation, facts, w);
+  else if (segment === 'MOVEMENT' && (phase === 'MOVEMENT' || phase === 'EXPLOITATION')) {
+    chosen = movementStep(context, situation, facts, w) ?? (phase === 'MOVEMENT' ? hedgehogStep(context, situation, w) : null);
+  }
   else if (segment === 'BARRAGE') {
     const effort = chooseMainEffort(situation, w);
     // Aircraft first: they take the main effort's hex (one barrage per hex, 10.0e) and the guns the next one.
@@ -714,7 +751,7 @@ export const createHeuristicPolicy = (facts: BotGameFacts, options: HeuristicPol
   const choose = decide(facts, options.weights ?? DEFAULT_HEURISTIC_WEIGHTS);
   return {
     id: 'heuristic',
-    version: options.label === undefined ? '9' : `9+${options.label}`,
+    version: options.label === undefined ? '10' : `10+${options.label}`,
     decide: (context) => {
       debug = options.debug ?? null;
       try { return choose(context); } finally { debug = null; }

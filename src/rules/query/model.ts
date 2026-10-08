@@ -43,7 +43,7 @@ export interface RuleExplanation {
  * What a counter is used for, so the UI never has to guess it from field combinations. A supply counter is a
  * `DUMP` on the map and `CARGO` while a Transport Point carries it; a truck is an `EXTENDER` on its other face.
  */
-export type PieceRole = 'COMBAT' | 'ARTILLERY' | 'HQ' | 'TRUCK' | 'EXTENDER' | 'DUMP' | 'CARGO' | 'AIRCRAFT' | 'AIR_BASE' | 'REPLACEMENT' | 'OTHER';
+export type PieceRole = 'COMBAT' | 'ARTILLERY' | 'HQ' | 'TRUCK' | 'EXTENDER' | 'DUMP' | 'CARGO' | 'AIRCRAFT' | 'AIR_BASE' | 'HEDGEHOG' | 'REPLACEMENT' | 'OTHER';
 
 export interface ProjectedPiece {
   readonly role: PieceRole;
@@ -187,6 +187,7 @@ export interface ProjectedCombat {
   readonly defenderStrength: number | null;
   readonly odds: string;
   readonly line: string | null;
+  /** The combat roll's net DRM: the AR difference less the defender's hedgehog Level (9.6, 16.0d). */
   readonly drm: number | null;
   readonly defenderSupplied: boolean | null;
   readonly result: string | null;

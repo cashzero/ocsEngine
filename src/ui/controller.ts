@@ -113,7 +113,7 @@ export interface UiController {
   readonly changeDropPlan: (planId: string, change: 'DELAY' | 'CANCEL') => Promise<void>;
   readonly planConstruction: () => void;
   readonly cancelConstruction: () => void;
-  readonly buildAirBase: (facility: 'AIR_STRIP' | 'AIR_BASE') => Promise<void>;
+  readonly buildAirBase: (facility: 'AIR_STRIP' | 'AIR_BASE' | 'HEDGEHOG') => Promise<void>;
   readonly toggleRefitAircraft: (baseId: string, pieceId: string) => void;
   readonly refitBase: (baseId: string) => Promise<void>;
   readonly toggleAirZones: () => void;
@@ -1157,21 +1157,42 @@ class DefaultUiController implements UiController {
   };
 
   #constructionOverview(enabled: (kind: GameAction['kind']) => boolean, selected: ProjectedPiece | null): ConstructionOverview | null {
-    if (!selected || !enabled('BUILD_AIR_BASE') || this.#decision()) return null;
-    const byHex = new Map<string, Extract<GameAction, { readonly kind: 'BUILD_AIR_BASE' }>[]>();
-    for (const action of this.#candidates('BUILD_AIR_BASE', selected.id, 5000)) {
-      if (action.kind === 'BUILD_AIR_BASE' && action.engineerId === selected.id) byHex.set(action.hexId, [...(byHex.get(action.hexId) ?? []), action]);
+    if (!selected || !(enabled('BUILD_AIR_BASE') || enabled('BUILD_HEDGEHOG')) || this.#decision()) return null;
+    type Build = Extract<GameAction, { readonly kind: 'BUILD_AIR_BASE' | 'BUILD_HEDGEHOG' }>;
+    const byHex = new Map<string, Build[]>();
+    const kinds = (['BUILD_AIR_BASE', 'BUILD_HEDGEHOG'] as const).filter((kind) => enabled(kind));
+    for (const action of kinds.flatMap((kind) => this.#candidates(kind, selected.id, 5000))) {
+      // 13.8d: only the work this unit does as an engineer; a crew digging in its own hex is a unit action.
+      if ((action.kind === 'BUILD_AIR_BASE' || action.kind === 'BUILD_HEDGEHOG') && action.engineerId === selected.id) byHex.set(action.hexId, [...(byHex.get(action.hexId) ?? []), action]);
     }
     if (byHex.size === 0) return null;
+    const all = [...byHex.values()].flat();
+    const facilities = [...(all.some(({ kind }) => kind === 'BUILD_AIR_BASE') ? ['AIR' as const] : []), ...(all.some(({ kind }) => kind === 'BUILD_HEDGEHOG') ? ['HEDGEHOG' as const] : [])];
     const draft = this.#buildDraft && this.#buildDraft.engineerId === selected.id ? this.#buildDraft : null;
     const hexId = draft?.hexId && byHex.has(draft.hexId) ? draft.hexId : null;
-    const options = hexId === null ? [] : (byHex.get(hexId) ?? []).map((action): BuildOption => ({
-      facility: action.facility,
-      label: this.#buildLabel(action.facility, hexId),
-      cost: action.payments.reduce((total, { tokens }) => total + tokens, 0),
-      action, explanation: this.#explain(action),
-    }));
-    return { engineerId: selected.id, hexes: [...byHex.keys()].sort(), planning: draft !== null, hexId, options };
+    const options = hexId === null ? [] : (byHex.get(hexId) ?? []).map((action): BuildOption => {
+      const facility = action.kind === 'BUILD_HEDGEHOG' ? 'HEDGEHOG' as const : action.facility;
+      return {
+        facility,
+        label: facility === 'HEDGEHOG' ? this.#hedgehogLabel(hexId) : this.#buildLabel(facility, hexId),
+        cost: action.payments.reduce((total, { tokens }) => total + tokens, 0),
+        action, explanation: this.#explain(action),
+      };
+    });
+    return { engineerId: selected.id, facilities, hexes: [...byHex.keys()].sort(), planning: draft !== null, hexId, options };
+  }
+
+  /** "Build a Level 1 hedgehog" or "Improve the hedgehog to Level N" (16.0b). */
+  #hedgehogLabel(hexId: string): string {
+    const level = this.#hedgehogLevelAt(hexId);
+    return level === null ? 'Build a Level 1 hedgehog' : `Improve the hedgehog to Level ${level + 1}`;
+  }
+
+  #hedgehogLevelAt(hexId: string): number | null {
+    const hog = this.#pieces().find((piece) => piece.role === 'HEDGEHOG' && piece.location.kind === 'ON_MAP' && piece.location.hexId === hexId);
+    if (!hog) return null;
+    const level = hog.statusValues.find(({ statusDefinitionId }) => statusDefinitionId === 'status:hedgehog-level')?.value;
+    return typeof level === 'number' ? level : 1;
   }
 
   planConstruction = (): void => {
@@ -1186,7 +1207,7 @@ class DefaultUiController implements UiController {
 
   cancelConstruction = (): void => { this.#buildDraft = null; this.#emit(); };
 
-  buildAirBase = async (facility: 'AIR_STRIP' | 'AIR_BASE'): Promise<void> => {
+  buildAirBase = async (facility: 'AIR_STRIP' | 'AIR_BASE' | 'HEDGEHOG'): Promise<void> => {
     const option = this.getSnapshot().air.construction?.options.find((entry) => entry.facility === facility);
     if (!option?.explanation.allowed) return;
     const hexId = this.getSnapshot().air.construction!.hexId!;
@@ -1444,6 +1465,27 @@ class DefaultUiController implements UiController {
           if (action.kind !== 'REDUCE_AIR_BASE' || action.engineerId !== piece.id) continue;
           const base = this.#pieces().find(({ id }) => id === action.baseId);
           add('AIR', `Reduce the Air Base at ${printedHexLabel(base?.location.kind === 'ON_MAP' ? base.location.hexId : '')} one Level (engineer work, no SP; this unit cannot move)`, action);
+        }
+      }
+      // 16.0b-c: one RE of Combat Mode units in the hex digs in (2 SP) or reduces its own hedgehog (free); none of them may move after.
+      const crewNames = (ids: readonly string[]) => ids.map((id) => { const unit = this.#pieces().find((candidate) => candidate.id === id); return unit ? unitLabel(this.#scenario, unit) : 'a unit'; });
+      if (enabled('BUILD_HEDGEHOG')) {
+        for (const action of this.#candidates('BUILD_HEDGEHOG', piece.id)) {
+          if (action.kind !== 'BUILD_HEDGEHOG' || action.engineerId !== null) continue;
+          const sources = action.payments.map(({ sourcePieceId }) => this.#dumpLabel(sourcePieceId)).join(', ');
+          add('HEDGEHOG', `${this.#hedgehogLabel(action.hexId)} at ${printedHexLabel(action.hexId)} (2 SP from ${sources}; crew ${crewNames(action.pieceIds).join(', ')} cannot move this phase)`, action);
+        }
+      }
+      if (enabled('REDUCE_HEDGEHOG')) {
+        for (const action of this.#candidates('REDUCE_HEDGEHOG', piece.id)) {
+          if (action.kind !== 'REDUCE_HEDGEHOG') continue;
+          const hog = this.#pieces().find(({ id }) => id === action.hedgehogId);
+          const where = hog?.location.kind === 'ON_MAP' ? hog.location.hexId : '';
+          const level = this.#hedgehogLevelAt(where) ?? 1;
+          const result = level > 1 ? `to Level ${level - 1}` : '(it is removed)';
+          add('HEDGEHOG', action.engineerId
+            ? `Reduce the hedgehog at ${printedHexLabel(where)} ${result} (engineer work, no SP; ${action.engineerId === piece.id ? 'this unit' : crewNames([action.engineerId])[0]} cannot move)`
+            : `Reduce the hedgehog at ${printedHexLabel(where)} ${result} (no SP; crew ${crewNames(action.pieceIds).join(', ')} cannot move this phase)`, action);
         }
       }
       if (enabled('COMBINE_AIRCRAFT')) add('AIR', 'Combine with the other reduced aircraft of the same type here', this.#candidates('COMBINE_AIRCRAFT', piece.id)[0]);
@@ -1744,7 +1786,8 @@ class DefaultUiController implements UiController {
       attackerOwnerId: action.actorId, attackerCount: action.kind === 'DECLARE_COMBAT' ? action.attackerIds.length : action.kind === 'DECLARE_BARRAGE' ? action.firerIds.length : 0,
       defenderCount: 0, attackerStrength: number(barrage ? 'barrage.strength' : 'combat.attackerStrength') ?? 0,
       defenderStrength: barrage ? null : number('combat.defenderStrength'), odds: String(fact(barrage ? 'barrage.finalColumn' : 'combat.odds') ?? ''),
-      line: barrage ? null : String(fact('combat.line') ?? ''), drm: barrage ? null : number('combat.drm'),
+      line: barrage ? null : String(fact('combat.line') ?? ''), // The combat roll's net DRM: the AR difference less the defender's hedgehog Level (16.0d).
+      drm: barrage ? null : (number('combat.drm') ?? 0) - (number('combat.hedgehogLevel') ?? 0),
       defenderSupplied: null, result: null, rollTotal: null, surpriseTotal: null, shiftDie: null, air: null,
     });
   }

@@ -207,6 +207,9 @@ export const describeRecord = (record: HistoryRecord, context: NarrativeContext)
     case 'DECLARE_BARRAGE': title = `${who} barraged ${hex(action.targetHexId)}`; break;
     case 'DECLARE_AIR_MISSION': title = `${who} flew ${action.mission.replaceAll('_', ' ').toLowerCase()} at ${hex(action.targetHexId)}`; break;
     case 'BUILD_AIR_BASE': title = `${who} ${action.facility === 'AIR_STRIP' ? 'built an Air Strip' : 'built or improved an Air Base'} at ${hex(action.hexId)}`; break;
+    // 4.9a: the enemy always sees a hedgehog, so the work is public.
+    case 'BUILD_HEDGEHOG': title = `${who} dug in at ${hex(action.hexId)}`; break;
+    case 'REDUCE_HEDGEHOG': title = `${who} reduced a hedgehog`; break;
     case 'REBUILD_AIRCRAFT': title = `${who} rebuilt ${action.aircraftIds.length === 1 ? 'an aircraft' : `${action.aircraftIds.length} aircraft`} with Eq`; break;
     case 'REBUILD_UNITS': title = own ? `You rebuilt ${[action.units.length > 0 ? `${action.units.length} unit${action.units.length === 1 ? '' : 's'}` : '', action.truckPoints > 0 ? `${action.truckPoints} truck point${action.truckPoints === 1 ? '' : 's'}` : ''].filter(Boolean).join(' and ')} at ${hex(action.hexId)}` : `${who} rebuilt units with replacements`; break;
     case 'PLAN_AIR_DROP': title = own ? `You planned an Air Drop at ${hex(action.hexId)} for turn ${action.turn}` : `${who} made a plan`; break;
@@ -234,6 +237,8 @@ export const describeRecord = (record: HistoryRecord, context: NarrativeContext)
         lines.push(`${context.playerName(event.capturerId)} ${event.baseCaptured ? 'captured the Air Base at' : 'took'} ${hex(event.hexId)}.`);
         for (const roll of event.rolls) lines.push(`${name(roll.pieceId)}: ${roll.total}${roll.total === roll.roll ? '' : ` (roll ${roll.roll} +${roll.total - roll.roll})`} on the Air Base Capture Table, ${roll.eliminated ? 'destroyed' : roll.stepLost ? 'loses a step and displaces' : 'displaces'}.`);
         break;
+      case 'HEDGEHOG_LEVEL_CHANGED': lines.push(event.level > 0 ? `The hedgehog at ${hex(event.hexId)} is Level ${event.level}.` : `The hedgehog at ${hex(event.hexId)} was removed.`); break;
+      case 'HEDGEHOG_CAPTURED': lines.push(`${context.playerName(event.capturerId)} captured the Level ${event.level} hedgehog at ${hex(event.hexId)}.`); break;
       case 'PIECE_DISPLACED': lines.push(event.toHexId === null ? `${name(event.pieceId)} had nowhere to go and was lost.` : `${name(event.pieceId)} was displaced to ${hex(event.toHexId)}.`); break;
       case 'AIRCRAFT_REBUILT': lines.push(`${name(event.pieceId)} was rebuilt${event.hexId ? ` at ${hex(event.hexId)}` : ''}.`); break;
       case 'REPLACEMENTS_ARRIVED': if (event.playerId === context.viewerId) lines.push(`${event.quantity} ${event.replacement === 'PAX' ? 'Pax' : 'Eq'} arrived.`); break;
