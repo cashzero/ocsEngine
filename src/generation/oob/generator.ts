@@ -124,6 +124,10 @@ const stepsFor = (archetype: ReviewedOobArchetype): readonly PieceStepProfile[] 
 const echelonFor = (side: OobSide, role: OobUnitRole, archetype: OobFormationArchetype | undefined): string =>
   COUNTER_CORPUS[findReviewedOobArchetype(side, role, archetype).gpid]?.echelon ?? '';
 
+/** Share of each side's trucks on the map at the start (OOB 0.5.0); the others arrive one a turn from Game Turn 2. */
+export const TRUCKS_AT_START_SHARE = 0.5;
+const FIRST_TRUCK_ARRIVAL_TURN = 2;
+
 /**
  * Starting supply per division, in Tokens (OOB 0.4.0: 2 SP; replays showed attrition from too little supply). It is
  * shared among the side's usual dumps, so the deployment keeps as many dump counters as before, each holding more.
@@ -386,6 +390,12 @@ const buildSide = (
     });
     definitions.push(built.definition);
     return built.unit;
+  }).map((unit) => {
+    // OOB 0.5.0 (user, 2026-10-08: "把卡車一部分改成援軍"): only the first share of the trucks starts on the map; the
+    // rest arrive as reinforcements, one a Game Turn from Turn 2 (13.6), so early lift is short.
+    const ordinal = Number(/independent-transport-(\d+)$/u.exec(unit.id.replace(/:unit$/u, ''))?.[1] ?? 0);
+    const atStart = Math.max(1, Math.ceil(supportCount * TRUCKS_AT_START_SHARE));
+    return unit.role === 'TRANSPORT' && ordinal > atStart ? { ...unit, arrivalTurn: FIRST_TRUCK_ARRIVAL_TURN + ordinal - atStart - 1 } : unit;
   });
   // 13.5: every game gives both sides Pax and Eq; their counters are created in play as they arrive.
   definitions.push(...buildReplacementDefinitions(side, options));

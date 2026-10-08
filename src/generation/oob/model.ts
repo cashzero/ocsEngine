@@ -1,7 +1,7 @@
 import type { DefinitionId, ValidationIssue } from '../../core/index.js';
 import type { PieceDefinitionCatalog } from '../../domain/piece/index.js';
 
-export const OOB_GENERATOR_VERSION = '0.4.0' as const;
+export const OOB_GENERATOR_VERSION = '0.5.0' as const;
 
 export const OOB_SCALES = ['COMPACT', 'STANDARD', 'LARGE'] as const;
 export type OobScale = (typeof OOB_SCALES)[number];
@@ -87,7 +87,7 @@ export interface GeneratedOobUnit {
   readonly role: OobUnitRole;
   readonly sourceArchetypeId: string;
   readonly pointCost: number;
-  /** Aircraft that reinforce: the Game Turn they arrive Active at a friendly Air Base (13.6). */
+  /** Aircraft and trucks that reinforce: the Game Turn they arrive (13.6); aircraft arrive Active at a friendly Air Base, trucks at an entry hex. */
   readonly arrivalTurn?: number;
   /** Paratroops start in the hex of an Air Base, ready to be carried (14.9c). */
   /** AIR_BASE: waits at the first Air Base (paratroops, 14.9c). OFF_MAP_AIRFIELD: based at the side's off-map airfield. */
