@@ -1,0 +1,73 @@
+{
+  "title": "Rail Cap through the page (RAIL-11 to RAIL-14)",
+  "final": {
+    "turn": "Turn 2 / 4",
+    "player": "Allied player turn",
+    "phase": "Movement",
+    "revision": null
+  },
+  "rows": [
+    {
+      "id": "RAIL-11",
+      "expectation": "The form shows each side's default Rail Cap (0.4 per division: Allied 2, Axis 2) and what it is for",
+      "observed": "Allied 2, Axis 2; help: \"SP or RE each side can move by rail every Movement Phase (13.3b), from the map edge to its railhead; trucks carry supply on to the front. Default: 0.4 point per division.\"",
+      "status": "PASS"
+    },
+    {
+      "id": "RAIL-11",
+      "expectation": "The preview shows the Rail Cap the player set (Allied 5, Axis 1)",
+      "observed": "Allied 5 · Axis 1",
+      "status": "PASS"
+    },
+    {
+      "id": "RAIL-12",
+      "expectation": "Selecting a unit at a station shows Rail from <hex> with the Rail Cap left (5 of 5)",
+      "observed": "Rail from 0720 Rail Cap 5 of 5 left this Movement Phase 13.3b Oden TF / 4.A 1 Rail Cap Alanis TF / 4.A 1 Rail Cap Detrain at Choose a station (or click a highli",
+      "status": "PASS"
+    },
+    {
+      "id": "RAIL-12",
+      "expectation": "The stations the cargo can reach are highlighted on the map",
+      "observed": "12 highlighted: 0223, 0412, 0207, 0208, 0515, 0211",
+      "status": "PASS"
+    },
+    {
+      "id": "RAIL-12",
+      "expectation": "Clicking a highlighted station picks it and the panel prices the move",
+      "observed": "Costs 1 of 5 Rail Cap left",
+      "status": "PASS"
+    },
+    {
+      "id": "RAIL-12",
+      "expectation": "Move by rail: the unit detrains at the station and the notice names the cost",
+      "observed": "Moved 1 unit by rail from 0720 to 0202 for 1 Rail Cap. (1251 ms from map click to result)",
+      "status": "PASS"
+    },
+    {
+      "id": "RAIL-12",
+      "expectation": "The unit is drawn at the destination station",
+      "observed": "generated-oob:9112:allied:f2-combat-1:unit at 0202",
+      "status": "PASS"
+    },
+    {
+      "id": "RAIL-13",
+      "expectation": "Game Turn 1 is played to its end through both players' phases and hand-offs",
+      "observed": "6 steps seen; now Turn 2 / 4",
+      "status": "PASS"
+    },
+    {
+      "id": "RAIL-14",
+      "expectation": "The new SP at the rail entry show the rail panel, saying this turn's arrivals may entrain there (13.6b)",
+      "observed": "Rail Cap 5 of 5 left this Movement Phase 13.3b · this turn's arrivals may entrain here (20T) 13.6b",
+      "status": "PASS"
+    },
+    {
+      "id": "RAIL-14",
+      "expectation": "8T of the new SP go by rail from the entry to 0907",
+      "observed": "Costs 2 of 5 Rail Cap left → Moved 8T by rail from 0123 to 0907 for 2 Rail Cap.",
+      "status": "PASS"
+    }
+  ],
+  "timings": [],
+  "errors": []
+}

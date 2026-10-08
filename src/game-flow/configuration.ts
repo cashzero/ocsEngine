@@ -1,7 +1,7 @@
 import { FOUNDATION_SCHEMA_VERSION, parseDefinitionId, type DefinitionId, type PlayerId, type Result } from '../core/index.js';
 import { sideDivisions, type GeneratedOob, type OobSide } from '../generation/oob/index.js';
 import type { RailroadConfiguration, RuleConfiguration } from '../rules/index.js';
-import type { GeneratedDeployment, NewGameRequest } from './model.js';
+import { attackerOf, type GeneratedDeployment, type NewGameRequest } from './model.js';
 import {
   GENERATED_HEXSIDE_MOVEMENT_COSTS,
   GENERATED_MULTI_TRACK_RAIL,
@@ -33,6 +33,21 @@ const supplyDefinitionFor = (oob: GeneratedOob, side: OobSide): DefinitionId => 
   const unit = oob.sides.find((candidate) => candidate.side === side)?.independentUnits.find(({ role }) => role === 'SUPPLY');
   if (!unit) throw new Error(`Generated OOB has no ${side} supply dump Definition.`);
   return unit.definitionId;
+};
+
+/**
+ * Default Rail Cap points per Movement Phase (13.3b) for each side of a New Game: this many points per division, at least 1.
+ * Rail Cap carries SP from the map edge to the railhead; trucks take it on to the front. Bot-against-bot games
+ * (docs/roadmap/15-rail-cap-wbs.md §5) used every point offered, and a Rail Cap near the Supply Table income (1 per
+ * division) let the attacker carry all of it forward; 0.4 leaves it short of lift, as the user asked (2026-10-08).
+ */
+export const RAIL_CAP_PER_DIVISION = 0.4;
+
+export const defaultRailCap = (request: NewGameRequest): { readonly allied: number; readonly axis: number } => {
+  const attacker = attackerOf(request.engagement ?? 'MEETING');
+  const points = (side: OobSide): number =>
+    Math.max(1, Math.round(sideDivisions({ ...request.oob, ...(attacker === null ? {} : { attacker }) }, side).divisionsPerSide * RAIL_CAP_PER_DIVISION));
+  return { allied: points('ALLIED'), axis: points('AXIS') };
 };
 
 /** The VP an attacker must hold at the end to win: half of all objective VP, rounded up. */
@@ -77,6 +92,10 @@ export const createGeneratedRuleConfiguration = (
     attackerPoints: attackVictoryPoints(deployment.objectives.reduce((total, { points }) => total + points, 0)),
   } }),
   railroads: GENERATED_RAILROADS,
+  railCapacity: (() => {
+    const cap = request.railCap ?? defaultRailCap(request);
+    return [{ playerId: players.ALLIED, points: cap.allied }, { playerId: players.AXIS, points: cap.axis }];
+  })(),
 });
 
 /** 13.3: generated railroads, and the settlements that make a rail Hex detrainable (13.3c). */

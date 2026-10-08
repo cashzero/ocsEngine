@@ -1,6 +1,6 @@
 # M13-Rail：鐵路（地圖生成、trace supply、Rail Cap）
 
-狀態：**IN PROGRESS**（2026-10-04 建立）。R1 地圖生成、R2 trace supply 規則、R3 UI 已實作；R4 Rail Cap 運輸與 R5 進階規則為 TODO。
+狀態：**IN PROGRESS**（2026-10-04 建立）。R1 地圖生成、R2 trace supply 規則、R3 UI 已實作；R4 Rail Cap 運輸與 R5 的前線控制判定（rail-front-control）於 2026-10-08 實作，計畫與驗收見 `docs/roadmap/15-rail-cap-wbs.md`（IN PROGRESS）；R5 的軌距與港口仍為 TODO。
 本文件是計畫，不是完成宣告；驗收列見 `docs/quality/03-product-operation-verification-plan.md` §H，RAIL-05～RAIL-10 仍為 `UNVERIFIED`。
 
 需求來源（使用者，2026-10-04）：「考慮到rail對OCS的supply規則極重要 安排加入rail 包含map generate 以及對應的supply規則」；
@@ -55,7 +55,7 @@ Rail Cap 屬於「運輸」（13.3 移動與 12.2 SP 移動），不是 trace su
 - 地圖邊緣 source 沿用 #53 的 S 圓標；Trace Supply overlay 只在自己的 detrainable source 標 `RAIL`、在 Extender 標 `EXT`（`querySupplySources` → `GameSession.getSupplySources`）。
 - 驗收腳本：`scripts/rail-acceptance.mjs`。
 
-## R4 Rail Cap 運輸（TODO rail-cap）
+## R4 Rail Cap 運輸（2026-10-08 實作，見 `docs/roadmap/15-rail-cap-wbs.md`；以下為原 TODO 紀錄）
 
 - 缺少的行為：以 Rail Cap 移動部隊（Move Mode、上車前最多半個 MA、下車後不得再移動）、運輸點與 SP；entrain／move／detrain 只在 Movement Phase；
   全程多軌時成本減半、經過 Trainbusting zone 加倍；增援可在鐵路 entry 從地圖外上車（13.6b）；12.2a 一種運輸方式的 leapfrog 限制。

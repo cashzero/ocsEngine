@@ -69,6 +69,13 @@ export const validateRuleConfiguration = (
       if (!roads.has(line)) issues.push(issue('RAILROAD_WITHOUT_ROAD_COST', ['railroads', 'lines', index], `Railroad ${line} has no road movement cost (6.2a).`));
     });
   }
+  if (configuration.railCapacity) {
+    const players = configuration.railCapacity.map(({ playerId }) => String(playerId));
+    if (new Set(players).size !== players.length) issues.push(issue('DUPLICATE_RULE_CONFIGURATION_ID', ['railCapacity'], 'Rail Cap lists a player twice.'));
+    configuration.railCapacity.forEach(({ points }, index) => {
+      if (!Number.isSafeInteger(points) || points < 0) issues.push(issue('INVALID_RULE_CONFIGURATION_QUANTITY', ['railCapacity', index, 'points'], 'Rail Cap is a whole number of points, 0 or more (13.3b).'));
+    });
+  }
   const weather = configuration.weather;
   if (weather !== null) {
     const days = (month: number, day: number) => month >= 1 && month <= 12 && day >= 1 && day <= 31;

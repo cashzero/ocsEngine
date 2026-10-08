@@ -192,6 +192,16 @@ input[aria-invalid=true] { border-color: var(--danger); }
 .transfer-row input[type="number"] { width: 64px; min-height: 32px; font-size: 13px; }
 .transfer-row button { min-height: 34px; padding: 4px 12px; font-size: 13px; }
 .transfer-row.is-blocked { opacity: 0.9; border-style: dashed; }
+/* Rail transport (13.3): one row per unit or dump, then the destination, the cost and the button. */
+.rail-panel .summary-line { margin: 6px 0; }
+.rail-panel .rail-cargo { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 2px 8px; margin-top: 6px; padding: 6px 8px; border: 1px solid #3b4a3a; border-radius: 6px; font-size: 13px; }
+.rail-panel .rail-cargo small { grid-column: 1 / -1; opacity: 0.85; }
+.rail-panel .rail-cargo.is-blocked { border-style: dashed; opacity: 0.8; }
+.rail-panel .rail-cargo input[type="number"] { width: 64px; min-height: 30px; font-size: 13px; }
+.rail-panel .rail-destination { display: grid; gap: 4px; margin-top: 8px; font-size: 13px; }
+.rail-panel .rail-destination select { min-height: 32px; font-size: 13px; }
+.rail-panel .blockers { margin: 6px 0; padding-left: 18px; font-size: 13px; color: #f2b8a2; }
+.rail-panel #confirm-rail { margin-top: 8px; }
 .action-list button { min-height: 36px; padding: 6px 10px; text-align: left; font-size: 13px; line-height: 1.3; }
 
 /* Command deck flow (2026-10-01 review D1-D5). */
