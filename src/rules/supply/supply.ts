@@ -538,6 +538,32 @@ export interface TraceCoverage {
   readonly directHexIds: readonly string[];
 }
 
+/**
+ * Where a unit out of trace could still eat (12.6c): one friendly dump (or truck cargo) with the Tokens it holds and
+ * every hex its SP reaches by draw (12.3a) or through an HQ throw (12.3b; for a selected unit the divisional HQ limit
+ * of 13.1d applies).
+ */
+export interface FeedSource {
+  readonly dumpId: string;
+  readonly tokens: number;
+  readonly hexIds: readonly string[];
+}
+
+/** The hexes each friendly dump's SP reaches for `consumer` (any unit when null), as routesFrom decides for one hex. */
+const feedCoverage = (state: GameState, playerId: PlayerId, consumer: PieceState | null): FeedSource[] => {
+  const dumps = state.pieceState.pieces.filter((piece) => isFriendlyDump(state, playerId, piece) && availableTokens(state, piece) > 0);
+  if (dumps.length === 0) return [];
+  const hqs = throwingHqs(state, playerId).filter((hq) => hq.id !== consumer?.id && hqMaySupply(state, hq, consumer));
+  return dumps.map((dump) => {
+    const origin = locatedHexOf(state, dump)!;
+    const draw = supplyPathCosts(state, playerId, origin, 'truck', state.configuration.supplyDrawRangeTicks);
+    const maps = [draw, ...hqs.filter((hq) => reaches(supplyPathCosts(state, playerId, origin, hqMobility(state, hq), state.configuration.supplyDrawRangeTicks), hexOf(hq)!))
+      .map((hq) => supplyPathCosts(state, playerId, hexOf(hq)!, hqMobility(state, hq), throwRangeTicks(state, hq)))];
+    const hexIds = state.scenario.mapDefinition.hexes.map(({ id }) => id).filter((hexId) => maps.some((map) => reaches(map, hexId)));
+    return { dumpId: dump.id, tokens: availableTokens(state, dump), hexIds };
+  });
+};
+
 export const queryTraceCoverage = (state: GameState, actorId: PlayerId, pieceId: PieceId | null): RuleQueryResult<TraceCoverage> => {
   const piece = pieceId === null ? null : pieceById(state, pieceId);
   if (pieceId !== null && (!piece || piece.ownerId !== actorId)) {
@@ -568,6 +594,25 @@ export const queryTraceCoverage = (state: GameState, actorId: PlayerId, pieceId:
     reasons: [{ code: 'TRACE_COVERAGE', allowed: true, message: 'Hexes where trace supply reaches.', rule: '12.6' }],
     facts: [],
     dependencies: [{ aggregate: 'PIECE', revision: state.pieceState.revision, key: `supply:coverage:${pieceId ?? 'any'}` }],
+  };
+};
+
+/** Where each of the actor's dumps can feed `pieceId` (any unit when null) out of trace (12.6c). */
+export const queryFeedCoverage = (state: GameState, actorId: PlayerId, pieceId: PieceId | null): RuleQueryResult<readonly FeedSource[]> => {
+  const piece = pieceId === null ? null : pieceById(state, pieceId);
+  if (pieceId !== null && (!piece || piece.ownerId !== actorId)) {
+    return {
+      allowed: false, value: [],
+      reasons: [{ code: 'SUPPLY_CONSUMER_UNAVAILABLE', allowed: false, message: 'Choose one of your own units.', rule: '12.6c' }],
+      facts: [], dependencies: [],
+    };
+  }
+  return {
+    allowed: true,
+    value: feedCoverage(state, actorId, piece ?? null),
+    reasons: [{ code: 'FEED_COVERAGE', allowed: true, message: 'Hexes where each dump can feed a unit out of trace.', rule: '12.6c' }],
+    facts: [],
+    dependencies: [{ aggregate: 'PIECE', revision: state.pieceState.revision, key: `supply:feeds:${pieceId ?? 'any'}` }],
   };
 };
 

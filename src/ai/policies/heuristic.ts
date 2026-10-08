@@ -1,5 +1,5 @@
 import type { HexId, PieceId } from '../../core/index.js';
-import type { GameAction } from '../../rules/index.js';
+import type { FeedSource, GameAction } from '../../rules/index.js';
 import { analyze, type OwnUnit, type Situation } from '../analysis.js';
 import { respondToDecision } from '../decisions.js';
 import { hexesBetween, knowledgeOf, type BotGameFacts } from '../knowledge.js';
@@ -39,17 +39,36 @@ interface MainEffort {
  * policy picks the defended enemy objective that is worth most for its distance and where enough friendly strength is
  * near, and sends the nearest units against it with HQs and SP following.
  */
-const chooseMainEffort = (situation: Situation, w: HeuristicWeights): MainEffort | null => {
+const chooseMainEffort = (situation: Situation, w: HeuristicWeights): MainEffort | null => chooseEfforts(situation, w, 1)[0] ?? null;
+
+/**
+ * heuristic@11: up to `count` efforts, each against a different defended enemy objective with units not already given
+ * to an earlier one. Replays of turn 1: the side moving first attacked one garrisoned objective with everything at
+ * 24:1 while the units sent to the others, uncoordinated, stopped short of them.
+ */
+const chooseEfforts = (situation: Situation, w: HeuristicWeights, count: number): MainEffort[] => {
+  const efforts: MainEffort[] = [];
+  const used = new Set<PieceId>();
+  while (efforts.length < count) {
+    const next = chooseEffort(situation, w, used, new Set(efforts.map(({ hexId }) => hexId)));
+    if (!next) break;
+    efforts.push(next);
+    for (const unitId of next.unitIds) used.add(unitId);
+  }
+  return efforts;
+};
+
+const chooseEffort = (situation: Situation, w: HeuristicWeights, used: ReadonlySet<PieceId>, taken: ReadonlySet<HexId>): MainEffort | null => {
   const me = situation.playerId;
   const combat = situation.own.filter((unit) => situation.isCombatUnit(unit));
   const garrisons = new Set(situation.objectives.filter(({ controllerId }) => controllerId === me)
     .flatMap(({ hexId }) => situation.friendlyAt(hexId).filter((unit) => situation.isCombatUnit(unit)).slice(0, 1).map(({ piece }) => piece.id)));
   let best: { hexId: HexId; defenders: number; units: OwnUnit[]; value: number } | null = null;
   for (const objective of situation.objectives) {
-    if (objective.controllerId === me) continue;
+    if (objective.controllerId === me || taken.has(objective.hexId)) continue;
     const enemy = situation.enemy.get(objective.hexId);
     if (!enemy?.hasCombatUnit || enemy.strength <= 0) continue;
-    const available = combat.filter((unit) => !garrisons.has(unit.piece.id) && hexesBetween(unit.hexId, objective.hexId) <= w.assaultReach)
+    const available = combat.filter((unit) => !garrisons.has(unit.piece.id) && !used.has(unit.piece.id) && hexesBetween(unit.hexId, objective.hexId) <= w.assaultReach)
       .sort((left, right) => hexesBetween(left.hexId, objective.hexId) - hexesBetween(right.hexId, objective.hexId) || String(left.piece.id).localeCompare(String(right.piece.id)));
     const units: OwnUnit[] = [];
     let strength = 0;
@@ -76,10 +95,12 @@ interface StepNotes {
   /** Trucks that already moved this step: they may still unload, nothing else. */
   readonly truckMoved: Set<PieceId>;
   readonly incomingRe: Map<HexId, number>;
-  /** Tokens still unpromised in each friendly dump or loaded truck, by hex: units ending out of trace eat from them (12.6c). */
-  feedBudget: Map<HexId, number> | null;
+  /** Tokens still unpromised in each friendly dump or truck cargo, by its id: units ending out of trace eat from them (12.6c). */
+  feedBudget: Map<string, number> | null;
   targets: Map<PieceId, Target> | null;
   effort?: MainEffort | null;
+  /** Further efforts beyond the main one (heuristic@11): their units assault, HQs and SP still follow the main one. */
+  secondary?: readonly MainEffort[];
   /** Cut-off groups that need a supply run this step, and the trucks already sent to each (heuristic@7). */
   relief?: { readonly hexIds: readonly HexId[]; readonly sent: Map<HexId, PieceId> };
 }
@@ -107,10 +128,10 @@ const reOf = (unit: OwnUnit): number => unit.profile?.re ?? 1;
 
 // ─── Operational plan: where each unit goes this step ──────────────────────────────────────────
 
-const planTargets = (situation: Situation, coverage: ReadonlySet<string>, unitCoverage: (unit: OwnUnit) => ReadonlySet<string>, w: HeuristicWeights, effort: MainEffort | null): Map<PieceId, Target> => {
+const planTargets = (situation: Situation, coverage: ReadonlySet<string>, unitCoverage: (unit: OwnUnit) => ReadonlySet<string>, w: HeuristicWeights, efforts: readonly MainEffort[], fedAt: ReadonlySet<string>): Map<PieceId, Target> => {
   const me = situation.playerId;
   const targets = new Map<PieceId, Target>();
-  if (effort) for (const unitId of effort.unitIds) targets.set(unitId, { hexId: effort.hexId, purpose: 'ASSAULT' });
+  for (const effort of efforts) for (const unitId of effort.unitIds) targets.set(unitId, { hexId: effort.hexId, purpose: 'ASSAULT' });
   const combat = situation.own.filter((unit) => situation.isCombatUnit(unit));
   // Held objectives keep a garrison (an occupied hex cannot be entered without a fight); others are worth taking.
   const wanted: { readonly hexId: HexId; readonly value: number; readonly purpose: Target['purpose']; readonly limit: number }[] = situation.objectives.map((objective) => {
@@ -124,7 +145,7 @@ const planTargets = (situation: Situation, coverage: ReadonlySet<string>, unitCo
         : objective.points * (!garrisoned ? w.garrisonEmpty : threat > 0 || situation.turnsLeft <= 2 ? w.garrisonThreatened : w.garrisonCalm),
       purpose: mine ? 'GARRISON' : 'CAPTURE',
       // A garrison is one unit, two under threat; an attack brings enough to beat what is there.
-      limit: mine ? (threat > w.garrisonSecondUnitThreat ? 2 : 1) : w.captureBaseUnits + Math.ceil((situation.enemy.get(objective.hexId)?.strength ?? 0) / w.captureStrengthPerUnit),
+      limit: mine ? holdLimit(situation, objective.hexId, threat, w) : w.captureBaseUnits + Math.ceil((situation.enemy.get(objective.hexId)?.strength ?? 0) / w.captureStrengthPerUnit),
     };
   });
   // Enemy stacks next to what we hold (objectives, HQs, dumps) cut supply and take empty objectives: hunt them.
@@ -145,9 +166,18 @@ const planTargets = (situation: Situation, coverage: ReadonlySet<string>, unitCo
     wanted.push({ hexId: stack.hexId, value: w.huntValue, purpose: 'HUNT', limit: 1 + Math.ceil(stack.strength / w.huntStrengthPerUnit) });
   }
   const assigned = new Map<HexId, number>();
+  // heuristic@11: the only garrison of a held objective stays on it. Replays of heuristic@10 games: 40 of 90 objectives
+  // lost while empty had been left by their only garrison sent to hunt a weak enemy stack nearby.
+  for (const objective of situation.objectives) {
+    if (objective.controllerId !== me) continue;
+    const garrison = situation.friendlyAt(objective.hexId).filter((unit) => situation.isCombatUnit(unit) && !targets.has(unit.piece.id))
+      .sort((left, right) => (left.profile?.strength ?? 0) - (right.profile?.strength ?? 0) || String(left.piece.id).localeCompare(String(right.piece.id)))[0];
+    if (!garrison) continue;
+    targets.set(garrison.piece.id, { hexId: objective.hexId, purpose: 'GARRISON' });
+    assigned.set(objective.hexId, 1);
+  }
   // A unit out of trace supply with no SP close by goes back to supply first (12.8 attrition), unless it holds an objective.
-  const fed = (hexId: HexId) => situation.own.some(({ piece, hexId: at }) => ((piece.role === 'DUMP' && (piece.resourceQuantity ?? 0) > 0)
-    || (piece.role === 'TRUCK' && (piece.carriedTokens ?? 0) > 0)) && hexesBetween(at, hexId) <= w.fedRadius);
+  const fed = (hexId: HexId) => fedAt.has(hexId);
   // Out of supply at the Supply Phase means an Attrition roll every turn (12.8b): only the last turns justify starving
   // on an objective; earlier even a garrison goes back to supply.
   if (situation.turnsLeft > 2) {
@@ -158,7 +188,7 @@ const planTargets = (situation: Situation, coverage: ReadonlySet<string>, unitCo
       if (holdsAlone(situation, unit) && situation.own.some(({ piece, hexId }) => piece.role === 'TRUCK' && (piece.carriedTokens ?? 0) > 0
         && hexesBetween(hexId, unit.hexId) <= w.holdTruckReach)) continue;
       // The assault group stays forward while an HQ is close enough to throw supply to it (12.3b).
-      if (effort?.unitIds.has(unit.piece.id) && situation.own.some(({ piece, hexId }) => piece.role === 'HQ' && hexesBetween(hexId, unit.hexId) <= 3)) continue;
+      if (efforts.some(({ unitIds }) => unitIds.has(unit.piece.id)) && situation.own.some(({ piece, hexId }) => piece.role === 'HQ' && hexesBetween(hexId, unit.hexId) <= 3)) continue;
       let back: HexId | null = null;
       let best = Number.POSITIVE_INFINITY;
       for (const hexId of own) {
@@ -197,6 +227,17 @@ const planTargets = (situation: Situation, coverage: ReadonlySet<string>, unitCo
 };
 
 /**
+ * Units a held objective should have (heuristic@11): one, plus enough to bring the strength in the hex up to
+ * `holdRatio` of the enemy strength that can reach it, at most `holdMaxExtra` more. Replays: the side's most attacked
+ * stacks were the scenario's lone objective garrisons (MA 0, strength 1-2), attacked at high odds and the objective lost.
+ */
+const holdLimit = (situation: Situation, hexId: HexId, threat: number, w: HeuristicWeights): number => {
+  const held = situation.friendlyAt(hexId).filter((unit) => situation.isCombatUnit(unit)).reduce((total, unit) => total + (unit.profile?.strength ?? 0), 0);
+  const extra = Math.ceil(Math.max(0, threat * w.holdRatio - held) / w.holdStrengthPerUnit);
+  return Math.max(threat > w.garrisonSecondUnitThreat ? 2 : 1, 1 + Math.min(w.holdMaxExtra, extra));
+};
+
+/**
  * Where the army is: the own combat unit with the most friendly combat strength within 3 hexes. HQs, dumps and
  * trucks head for it; their own scores keep them inside trace supply and away from the enemy, so an HQ that
  * follows a group that ran ahead of supply stops at the edge of trace and throws supply forward to it (12.3b).
@@ -232,6 +273,7 @@ const scoreDestination = (
   direct: ReadonlySet<string>,
   front: HexId | null,
   w: HeuristicWeights,
+  feeds: readonly FeedSource[],
 ): BotScoreTerm[] => {
   const me = situation.playerId;
   const destination = path.at(-1)!;
@@ -292,8 +334,10 @@ const scoreDestination = (
     // Beyond trace a unit can still eat from SP close by (12.3a, a dump or a loaded truck), if that SP is not already
     // promised to other units ending out of trace this step: only unfed ground is dangerous.
     if (coverage && !coverage.has(destination)) {
-      const fed = feedSourceFor(situation, notes, unit, destination, w) !== null;
-      add('out-of-supply', situation.turnsLeft <= 1 || fed ? -w.outOfSupplyFed : -w.outOfSupply);
+      const fed = feedSourceFor(notes, feeds, unit, destination) !== null;
+      // heuristic@11: only the last turn (not the last two) excuses starving: a unit out of supply on turn 7 rolls
+      // Attrition on turns 7 and 8 (12.8b).
+      add('out-of-supply', situation.turnsLeft <= 0 || fed ? -w.outOfSupplyFed : -w.outOfSupply);
     }
     // Supply that depends on an HQ's throw is lost when the HQ moves or falls: prefer direct trace.
     else if (!direct.has(destination) && situation.turnsLeft > 1) add('hq-dependent-supply', -w.hqDependentSupply);
@@ -313,6 +357,8 @@ const scoreDestination = (
     const escorted = situation.friendlyAt(destination).some((other) => other.piece.id !== unit.piece.id && situation.isCombatUnit(other));
     if (!escorted && distance <= w.artilleryEscortDistance) add('artillery-unescorted', -w.artilleryUnescorted);
     add('exposure', -threat * w.artilleryExposure);
+    // heuristic@11: artillery is a combat unit for Attrition too (12.8); replays showed it the most starved role.
+    if (coverage && !coverage.has(destination)) add('out-of-supply', feedSourceFor(notes, feeds, unit, destination) !== null ? -w.outOfSupplyFed : -w.outOfSupply);
   } else {
     add('exposure', -threat * w.rearExposure);
     if (adjacentEnemy) add('rear-exposed', -w.rearExposed);
@@ -325,21 +371,23 @@ const sum = (terms: readonly BotScoreTerm[]) => terms.reduce((total, { value }) 
 /** Tokens a unit eats off the map out of trace (12.6c): 1T per 2 RE, at least 1T. */
 const eatingCost = (unit: OwnUnit): number => Math.max(1, Math.ceil((unit.profile?.re ?? 1) / 2));
 
-/** The hex of friendly SP within reach of `destination` that still has Tokens for `unit` this step, or null. */
-const feedSourceFor = (situation: Situation, notes: StepNotes, unit: OwnUnit, destination: HexId, w: HeuristicWeights): HexId | null => {
-  if (notes.feedBudget === null) {
-    notes.feedBudget = new Map();
-    for (const { piece, hexId } of situation.own) {
-      const tokens = piece.role === 'DUMP' ? piece.resourceQuantity ?? 0 : piece.role === 'TRUCK' ? piece.carriedTokens ?? 0 : 0;
-      if (tokens > 0) notes.feedBudget.set(hexId, (notes.feedBudget.get(hexId) ?? 0) + tokens);
-    }
-  }
+/**
+ * The friendly dump (or truck cargo) whose SP reaches `destination` for `unit` and still has Tokens for it this step,
+ * or null. heuristic@11: the reach is the Rule Engine's draw and throw routes (12.3, 12.6c), not "SP within 2 hexes",
+ * which sent units to starve beside dumps they could not draw from (replays: attrition was the largest step loss).
+ */
+const feedSourceFor = (notes: StepNotes, feeds: readonly FeedSource[], unit: OwnUnit, destination: HexId): string | null => {
+  notes.feedBudget ??= new Map();
   const cost = eatingCost(unit);
-  for (const [hexId, tokens] of notes.feedBudget) {
-    if (tokens >= cost && hexesBetween(hexId, destination) <= w.fedRadius) return hexId;
+  for (const { dumpId, tokens, hexIds } of feeds) {
+    if (!notes.feedBudget.has(dumpId)) notes.feedBudget.set(dumpId, tokens);
+    if (notes.feedBudget.get(dumpId)! >= cost && hexIds.includes(destination)) return dumpId;
   }
   return null;
 };
+
+/** Hexes where some friendly SP can be eaten (12.6c), for any unit. */
+const fedHexes = (feeds: readonly FeedSource[]): ReadonlySet<string> => new Set(feeds.filter(({ tokens }) => tokens > 0).flatMap(({ hexIds }) => hexIds));
 
 /** `unit` is the only friendly combat unit on an objective we hold. */
 const holdsAlone = (situation: Situation, unit: OwnUnit): boolean =>
@@ -417,16 +465,19 @@ const truckStep = (context: BotDecisionContext, situation: Situation, unit: OwnU
     if (unload) return decision(unload, `unload ${carried}T beside the army`, [{ term: 'deliver', value: carried }]);
     return null;
   }
-  // A truck that already moved this step may only unload (above) once it stands beside the army.
-  if (notes.truckMoved.has(id)) { notes.done.add(id); return null; }
+  // heuristic@11: a truck that drove to a dump loads there with the MP it has left (13.2f) and sets off again, instead
+  // of waiting a turn: replays showed a 3-turn round trip per 20T while SP piled up in the rear.
   if (carried === 0 && !notes.loaded.has(id)) {
     const load = [...actions.candidates('LOAD_SUPPLY', id)].sort((left, right) =>
       (right.kind === 'LOAD_SUPPLY' ? right.tokens : 0) - (left.kind === 'LOAD_SUPPLY' ? left.tokens : 0))[0];
     if (load && load.kind === 'LOAD_SUPPLY' && (!forwardHq || hexesBetween(unit.hexId, forwardHq.hexId) > 2)) {
       notes.loaded.add(id);
+      notes.truckMoved.delete(id);
       return decision(load, `load ${load.tokens}T for the front`, [{ term: 'haul', value: load.tokens }]);
     }
   }
+  // A truck that already moved this step may only unload (above) once it stands beside the army.
+  if (notes.truckMoved.has(id)) { notes.done.add(id); return null; }
   const dumps = situation.own.filter(({ piece }) => piece.role === 'DUMP' && (piece.resourceQuantity ?? 0) > 0);
   const goal = carried > 0 || notes.loaded.has(id)
     ? forwardHq?.hexId
@@ -455,10 +506,16 @@ const movementStep = (context: BotDecisionContext, situation: Situation, facts: 
   const coverage = new Set(traced.hexIds);
   const direct = new Set(traced.directHexIds);
   const unitCoverage = (unit: OwnUnit): ReadonlySet<string> => new Set(context.actions.traceCoverage(unit.piece.id).hexIds);
-  if (notes.effort === undefined) notes.effort = chooseMainEffort(situation, w);
+  const unitFeeds = (unit: OwnUnit): readonly FeedSource[] => context.actions.feedCoverage(unit.piece.id);
+  const sideFeeds = context.actions.feedCoverage();
+  if (notes.effort === undefined) {
+    const efforts = chooseEfforts(situation, w, w.assaultMaxEfforts);
+    notes.effort = efforts[0] ?? null;
+    notes.secondary = efforts.slice(1);
+  }
   const effort = notes.effort;
   if (effort) debug?.(`MAIN EFFORT ${effort.hexId} vs ${effort.defenders.toFixed(1)} with ${effort.unitIds.size} unit(s), lead ${effort.lead}`);
-  notes.targets ??= planTargets(situation, coverage, unitCoverage, w, effort);
+  notes.targets ??= planTargets(situation, coverage, unitCoverage, w, [...(effort ? [effort] : []), ...(notes.secondary ?? [])], fedHexes(sideFeeds));
   // HQs follow the main effort's lead (their own scores keep them in supply and away from the enemy), else the army.
   const front = effort?.lead ?? armyCenter(situation);
   // HQs move first: their throw range decides where the rest is in trace supply (12.3b).
@@ -503,27 +560,30 @@ const movementStep = (context: BotDecisionContext, situation: Situation, facts: 
     notes.done.add(id);
     moves = actions.candidates('MOVE_PIECE', id);
     if (moves.length === 0) {
-      debug?.(`${unit.piece.role} ${id} at ${unit.hexId} mode ${unit.piece.mode} target ${target?.purpose ?? '-'} ${target?.hexId ?? ''} enemy ${enemyDistance}: no moves `
+      debug?.(`${unit.piece.role} ${id} at ${unit.hexId} mode ${unit.piece.mode} ${unitCoverage(unit).has(unit.hexId) ? 'in-trace' : 'OUT-OF-TRACE'} target ${target?.purpose ?? '-'} ${target?.hexId ?? ''} enemy ${enemyDistance}: no moves `
         + `(fuel offers ${actions.candidates('PAY_FUEL', id).length})`);
       continue;
     }
     // A combat unit's own trace applies 12.6f (the formation's common route) and 13.1d; others use the side's trace.
-    const reach = unit.piece.role === 'COMBAT' ? unitCoverage(unit) : coverage;
-    const stay = sum(scoreDestination(situation, unit, target, [unit.hexId], notes, reach, direct, front, w));
+    // heuristic@11: HQs and artillery too: an HQ's own throw does not supply itself (12.3b), and an HQ only supplies its
+    // own division (13.1d).
+    const reach = unit.piece.role === 'COMBAT' || unit.piece.role === 'HQ' || unit.piece.role === 'ARTILLERY' ? unitCoverage(unit) : coverage;
+    const feeds = unit.piece.role === 'COMBAT' || unit.piece.role === 'ARTILLERY' ? unitFeeds(unit) : sideFeeds;
+    const stay = sum(scoreDestination(situation, unit, target, [unit.hexId], notes, reach, direct, front, w, feeds));
     let best: { action: GameAction; terms: BotScoreTerm[] } | null = null;
     for (const move of moves) {
       if (move.kind !== 'MOVE_PIECE') continue;
-      const terms = scoreDestination(situation, unit, target, move.path, notes, reach, direct, front, w);
+      const terms = scoreDestination(situation, unit, target, move.path, notes, reach, direct, front, w, feeds);
       if (!best || sum(terms) > sum(best.terms)) best = { action: move, terms };
     }
-    debug?.(`${unit.piece.role} ${id} at ${unit.hexId} mode ${unit.piece.mode} target ${target?.purpose ?? '-'} ${target?.hexId ?? ''} `
+    debug?.(`${unit.piece.role} ${id} at ${unit.hexId} mode ${unit.piece.mode} ${reach.has(unit.hexId) ? 'in-trace' : 'OUT-OF-TRACE'} target ${target?.purpose ?? '-'} ${target?.hexId ?? ''} `
       + `enemy ${enemyDistance} moves ${moves.length} stay ${stay.toFixed(1)} best ${best ? `${sum(best.terms).toFixed(1)} to ${destinationOf(best.action)} ${JSON.stringify(best.terms)}` : '-'}`);
     if (best && sum(best.terms) > stay) {
       const destination = destinationOf(best.action)!;
       notes.incomingRe.set(destination, (notes.incomingRe.get(destination) ?? 0) + reOf(unit));
       // A unit ending out of trace counts on eating: promise it the SP it will need.
-      if (unit.piece.role === 'COMBAT' && !reach.has(destination)) {
-        const source = feedSourceFor(situation, notes, unit, destination, w);
+      if ((unit.piece.role === 'COMBAT' || unit.piece.role === 'ARTILLERY') && !reach.has(destination)) {
+        const source = feedSourceFor(notes, feeds, unit, destination);
         if (source !== null) notes.feedBudget!.set(source, notes.feedBudget!.get(source)! - eatingCost(unit));
       }
       return decision(best.action, `${unit.piece.role.toLowerCase()} to ${destination}${target ? ` (${target.purpose.toLowerCase()} ${target.hexId})` : ''}`, best.terms, moves);
@@ -751,9 +811,10 @@ export const createHeuristicPolicy = (facts: BotGameFacts, options: HeuristicPol
   const choose = decide(facts, options.weights ?? DEFAULT_HEURISTIC_WEIGHTS);
   return {
     id: 'heuristic',
-    version: options.label === undefined ? '10' : `10+${options.label}`,
+    version: options.label === undefined ? '11' : `11+${options.label}`,
     decide: (context) => {
-      debug = options.debug ?? null;
+      const sink = options.debug;
+      debug = sink ? (line) => sink(`${context.memory.stepKey} ${String(context.playerId).split(':').at(-1)} ${line}`) : null;
       try { return choose(context); } finally { debug = null; }
     },
   };
