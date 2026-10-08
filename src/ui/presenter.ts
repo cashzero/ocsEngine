@@ -57,6 +57,7 @@ const ACTION_LABELS: Readonly<Record<GameAction['kind'], string>> = {
   PLAN_AIR_DROP: 'Plan Air Drop',
   UPDATE_AIR_DROP_PLAN: 'Change Drop Plan',
   COMBINE_AIRCRAFT: 'Combine aircraft',
+  RAIL_MOVE: 'Move by rail',
 };
 
 export const actionKindLabel = (kind: GameAction['kind']): string => ACTION_LABELS[kind];
@@ -129,6 +130,11 @@ export const actionSummary = (action: GameAction): string => {
     case 'BUILD_HEDGEHOG': return `Build or improve a hedgehog at ${printedHexLabel(action.hexId)} (2 SP${action.engineerId ? ', engineer' : ''})`;
     case 'REDUCE_HEDGEHOG': return 'Reduce the hedgehog one Level';
     case 'COMBINE_AIRCRAFT': return 'Combine two reduced aircraft';
+    case 'RAIL_MOVE': {
+      const tokens = action.supply.reduce((total, { tokens: quantity }) => total + quantity, 0);
+      const cargo = [action.unitIds.length > 0 ? `${action.unitIds.length} unit${action.unitIds.length === 1 ? '' : 's'}` : '', tokens > 0 ? `${tokens}T` : ''].filter(Boolean).join(' and ');
+      return `Rail ${cargo} from ${printedHexLabel(action.fromHexId)} to ${printedHexLabel(action.toHexId)}`;
+    }
   }
 };
 

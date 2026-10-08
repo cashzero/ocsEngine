@@ -9,6 +9,7 @@ import { breakdownProfile } from '../breakdown/breakdown.js';
 import { fuelOptions } from '../supply/fuel.js';
 import { capacityTokens, cargoOf, loadedTokens } from '../supply/transport.js';
 import { queryReachableHexes } from '../movement/movement.js';
+import { queryRailMoveOptions, railCapRemainingQuarters, railEntrainHexes, railMoveQuarters } from '../supply/rail-cap.js';
 import {
   adjacentHexIds,
   enemyCombatUnitsAt,
@@ -256,6 +257,28 @@ export const candidateActions = (
         }
       }
       break;
+    case 'RAIL_MOVE': {
+      // One candidate per cargo and destination: each dump's loadable SP (as much as the Rail Cap left pays for), and each unit alone.
+      const left = railCapRemainingQuarters(state, request.actorId);
+      if (left <= 0) break;
+      for (const fromHexId of railEntrainHexes(state, request.actorId)) {
+        const options = queryRailMoveOptions(state, request.actorId, fromHexId).value!;
+        if (options.entrainProblem !== null) continue;
+        for (const { hexId } of options.destinations) {
+          for (const dump of options.dumps) {
+            if (request.pieceId !== null && dump.pieceId !== request.pieceId) continue;
+            const perToken = railMoveQuarters(state, request.actorId, fromHexId, hexId, [], 4) ?? 4;
+            const tokens = Math.min(dump.loadableTokens, Math.floor(left * 4 / Math.max(1, perToken)));
+            if (tokens > 0 && add({ ...base(state, request.actorId, `rail:${dump.pieceId}:${hexId}`), kind: 'RAIL_MOVE', fromHexId, toHexId: hexId, unitIds: [], supply: [{ sourcePieceId: dump.pieceId, tokens }] })) return actions;
+          }
+          for (const unit of options.units) {
+            if (unit.problem !== null || (request.pieceId !== null && unit.pieceId !== request.pieceId)) continue;
+            if (add({ ...base(state, request.actorId, `rail:${unit.pieceId}:${hexId}`), kind: 'RAIL_MOVE', fromHexId, toHexId: hexId, unitIds: [unit.pieceId], supply: [] })) return actions;
+          }
+        }
+      }
+      break;
+    }
     case 'UNLOAD_SUPPLY':
       for (const truck of owned.filter((piece) => cargoOf(state, piece).length > 0)) {
         if (add({ ...base(state, request.actorId, `unload:${truck.id}`), kind: 'UNLOAD_SUPPLY', truckId: truck.id, tokens: loadedTokens(state, truck) })) return actions;
@@ -409,6 +432,7 @@ export const ALL_ACTION_KINDS: readonly GameAction['kind'][] = [
   'ATTEMPT_BREAKOUT', 'BLOW_DUMP', 'LOAD_SUPPLY', 'UNLOAD_SUPPLY', 'COMBINE_TRANSPORT', 'DIVIDE_TRANSPORT',
   'FORM_EXTENDER', 'DISSOLVE_EXTENDER', 'COLLAPSE_EXTENDER',
   'REFIT_AIRCRAFT', 'DECLARE_AIR_MISSION', 'REDUCE_AIR_BASE', 'BUILD_AIR_BASE', 'BUILD_HEDGEHOG', 'REDUCE_HEDGEHOG', 'REBUILD_AIRCRAFT', 'REBUILD_UNITS', 'PLAN_AIR_DROP', 'UPDATE_AIR_DROP_PLAN', 'COMBINE_AIRCRAFT',
+  'RAIL_MOVE',
 ];
 
 /**
@@ -466,7 +490,8 @@ export const kindMayBeLegal = (state: GameState, actorId: PlayerId, kind: GameAc
     case 'DIVIDE_TRANSPORT':
     case 'FORM_EXTENDER':
     case 'DISSOLVE_EXTENDER':
-    case 'COLLAPSE_EXTENDER': return phase === 'MOVEMENT' && segment === 'MOVEMENT';
+    case 'COLLAPSE_EXTENDER':
+    case 'RAIL_MOVE': return phase === 'MOVEMENT' && segment === 'MOVEMENT';
     case 'REFIT_AIRCRAFT': return phase === 'AIRCRAFT_REFIT';
     case 'DECLARE_AIR_MISSION': return (segment === 'MOVEMENT' || segment === 'BARRAGE') && ['MOVEMENT', 'REACTION', 'EXPLOITATION'].includes(phase);
     case 'REDUCE_AIR_BASE':

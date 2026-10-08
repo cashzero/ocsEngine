@@ -14,6 +14,7 @@ import { queryFeedCoverage, querySupplySources, queryTraceCoverage } from './sup
 import { queryFuelCoverage, queryFuelPreview } from './supply/fuel.js';
 import { queryTransportOptions } from './supply/transport.js';
 import { queryRailControl } from './supply/rail.js';
+import { queryRailMoveOptions, quartersText, railCapRemainingQuarters, railMoveQuarters } from './supply/rail-cap.js';
 import { actionFamilies, candidateActions, kindMayBeLegal } from './query/candidates.js';
 import { projectRuleState } from './query/projection.js';
 import type {
@@ -51,6 +52,14 @@ const actionFacts = (state: GameState, action: GameAction): readonly RuleFact[] 
       publicFact('combat.attackerInternalCount', preview.attackerInternalCount),
       publicFact('combat.defenderSupplyTokens', preview.defenderSupplyTokens),
       publicFact('combat.defenderCanPay', preview.defenderCanPay),
+    ];
+  }
+  if (action.kind === 'RAIL_MOVE') {
+    const tokens = action.supply.reduce((total, { tokens: quantity }) => total + quantity, 0);
+    const cost = railMoveQuarters(state, action.actorId, action.fromHexId, action.toHexId, action.unitIds, tokens);
+    return [
+      publicFact('rail.cost', cost === null ? '' : quartersText(cost)),
+      publicFact('rail.remaining', quartersText(railCapRemainingQuarters(state, action.actorId))),
     ];
   }
   if (action.kind === 'DECLARE_BARRAGE') {
@@ -160,6 +169,7 @@ const engine: RuleEngine = {
   querySupplySources,
   queryRailControl,
   queryFuelCoverage,
+  queryRailMoveOptions,
   queryFuelPreview,
   queryAttackerSupplyOptions: (state, actorId, prior, pieceId) => {
     const value = attackerSupplyOptions(state, actorId, prior, pieceId);

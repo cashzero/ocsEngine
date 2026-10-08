@@ -214,6 +214,13 @@ export interface RuleConfiguration {
   readonly attackVictory?: AttackVictoryCondition | undefined;
   /** Absent when the game has no railroads (and in saves made before railroads existed). */
   readonly railroads?: RailroadConfiguration | undefined;
+  /** 13.3b: Rail Cap points each player gets in every friendly Movement Phase. Absent: nobody moves cargo by rail. */
+  readonly railCapacity?: readonly RailCapacity[] | undefined;
+}
+
+export interface RailCapacity {
+  readonly playerId: PlayerId;
+  readonly points: number;
 }
 
 export interface RulesRngState {
@@ -249,6 +256,8 @@ export interface PieceUsageState {
   readonly unloadedTokens: number;
   /** Carried by air this phase: the unit may spend no more than half its MA in all (4.7d, 14.9d). */
   readonly airCarried?: boolean | undefined;
+  /** Moved by rail this phase: the unit may not move again or use another transport (13.3e, 4.7d). */
+  readonly railCarried?: boolean | undefined;
 }
 
 export interface ResourceReservation {
@@ -608,6 +617,29 @@ export interface FormationTraceChoice {
   readonly routeKey: string;
 }
 
+/** Rail Cap spent in one Movement Phase, in quarter points (13.3b: it is never saved for later). */
+export interface RailCapSpent {
+  readonly playerId: PlayerId;
+  readonly gameTurn: number;
+  readonly playerTurnIndex: 0 | 1;
+  readonly quarters: number;
+}
+
+/** 13.6b: reinforcements and new SP placed at a rail entry Hex this Game Turn, which may entrain there "off-map". */
+export interface RailArrival {
+  readonly playerId: PlayerId;
+  readonly gameTurn: number;
+  readonly hexId: HexId;
+  readonly tokens: number;
+  readonly pieceIds: readonly PieceId[];
+}
+
+/** Rail transport bookkeeping (13.3). */
+export interface RailState {
+  readonly spent: readonly RailCapSpent[];
+  readonly arrivals: readonly RailArrival[];
+}
+
 export interface GameState {
   readonly schemaVersion: SchemaVersion;
   readonly revision: Revision;
@@ -631,6 +663,8 @@ export interface GameState {
   readonly victory: VictoryState;
   readonly air: AirState;
   readonly replacements: ReplacementState;
+  /** Absent until the first rail move or rail arrival (and in saves made before Rail Cap existed). */
+  readonly rail?: RailState | undefined;
 }
 
 interface ActionEnvelope {
@@ -754,6 +788,17 @@ export type GameAction =
   | (ActionEnvelope & { readonly kind: 'PLAN_AIR_DROP'; readonly unitIds: readonly PieceId[]; readonly hexId: HexId; readonly turn: number })
   /** 14.10c: delay (one turn later) or cancel all or part of a Drop Plan, in an Aircraft Refit Phase. */
   | (ActionEnvelope & { readonly kind: 'UPDATE_AIR_DROP_PLAN'; readonly planId: string; readonly unitIds: readonly PieceId[]; readonly change: 'DELAY' | 'CANCEL' })
+  /**
+   * 13.3a, 13.3e: entrain units (trucks with their loads) and SP from ground dumps in `fromHexId`, move them by rail and detrain
+   * them in `toHexId`, paying Rail Cap. The engine picks the cheapest legal rail path (13.3a multi-track halving, 14.8c doubling).
+   */
+  | (ActionEnvelope & {
+    readonly kind: 'RAIL_MOVE';
+    readonly fromHexId: HexId;
+    readonly toHexId: HexId;
+    readonly unitIds: readonly PieceId[];
+    readonly supply: readonly { readonly sourcePieceId: PieceId; readonly tokens: number }[];
+  })
   /** 13.9-4: two reduced aircraft of the same type, values and status in one hex combine into one full-strength aircraft. */
   | (ActionEnvelope & { readonly kind: 'COMBINE_AIRCRAFT'; readonly aircraftIds: readonly PieceId[] });
 
@@ -826,6 +871,9 @@ export type RuleEvent =
   | { readonly kind: 'HEDGEHOG_LEVEL_CHANGED'; readonly sequence: number; readonly pieceId: PieceId; readonly hexId: HexId; readonly level: number }
   /** 9.14e: an enemy Attack-Capable unit entered the hex and took the hedgehog. */
   | { readonly kind: 'HEDGEHOG_CAPTURED'; readonly sequence: number; readonly pieceId: PieceId; readonly hexId: HexId; readonly capturerId: PlayerId; readonly level: number }
+  | { readonly kind: 'RAIL_MOVED'; readonly sequence: number; readonly playerId: PlayerId; readonly path: readonly HexId[]; readonly unitIds: readonly PieceId[]; readonly tokens: number; readonly quarters: number }
+  /** 13.3h: a station changed hands because it now lies clearly on one side's side of the front. */
+  | { readonly kind: 'RAIL_CONTROL_CHANGED'; readonly sequence: number; readonly hexId: HexId; readonly controllerId: PlayerId }
   | { readonly kind: 'TRAINBUSTING_CHANGED'; readonly sequence: number; readonly hexId: HexId; readonly ownerId: PlayerId; readonly placed: boolean };
 
 export interface RuleViolation {

@@ -43,6 +43,7 @@ import type {
   AirMissionState,
   AirState,
   ReplacementState,
+  RailState,
   CombatMultiplier,
   FuelState,
   GameState,
@@ -142,6 +143,7 @@ const configurationDecoder: Decoder<RuleConfiguration> = objectDecoder({
     lines: arrayDecoder(objectDecoder({ featureDefinitionId: definitionIdDecoder, multiTrack: booleanDecoder })),
     detrainableFeatureDefinitionIds: arrayDecoder(definitionIdDecoder),
   })),
+  railCapacity: optionalDecoder(arrayDecoder(objectDecoder({ playerId: playerIdDecoder, points: safeIntegerDecoder }))),
 });
 
 const sequenceDecoder: Decoder<TurnSequenceState> = objectDecoder({
@@ -176,6 +178,19 @@ const usageDecoder: Decoder<PieceUsageState> = objectDecoder({
   blown: booleanDecoder,
   unloadedTokens: safeIntegerDecoder,
   airCarried: optionalDecoder(booleanDecoder),
+  railCarried: optionalDecoder(booleanDecoder),
+});
+
+const railStateDecoder: Decoder<RailState> = objectDecoder({
+  spent: arrayDecoder(objectDecoder({
+    playerId: playerIdDecoder,
+    gameTurn: safeIntegerDecoder,
+    playerTurnIndex: refinedDecoder(safeIntegerDecoder, (value) => value === 0 || value === 1 ? ok(value as 0 | 1) : err(undefined), 'INVALID_PLAYER_TURN_INDEX', String),
+    quarters: safeIntegerDecoder,
+  })),
+  arrivals: arrayDecoder(objectDecoder({
+    playerId: playerIdDecoder, gameTurn: safeIntegerDecoder, hexId: hexIdDecoder, tokens: safeIntegerDecoder, pieceIds: arrayDecoder(pieceIdDecoder),
+  })),
 });
 
 const ledgerDecoder: Decoder<SegmentLedger> = objectDecoder({
@@ -394,6 +409,7 @@ interface RawGameState {
   readonly victory: VictoryState;
   readonly air: AirState;
   readonly replacements: ReplacementState;
+  readonly rail?: RailState | undefined;
 }
 
 const rawGameStateDecoder: Decoder<RawGameState> = objectDecoder({
@@ -418,6 +434,7 @@ const rawGameStateDecoder: Decoder<RawGameState> = objectDecoder({
   victory: victoryDecoder,
   air: airStateDecoder,
   replacements: replacementStateDecoder,
+  rail: optionalDecoder(railStateDecoder),
 });
 
 const byText = <T>(key: (value: T) => string) => (left: T, right: T): number => key(left).localeCompare(key(right));
@@ -465,6 +482,10 @@ const canonicalStateValue = (state: GameState): GameState => {
       ...state.air,
       trainbusting: stableSort(state.air.trainbusting, byText(({ hexId, ownerId }) => `${hexId}|${ownerId}`)),
     },
+    ...(state.rail ? { rail: {
+      spent: stableSort(state.rail.spent, byText(({ playerId }) => String(playerId))),
+      arrivals: stableSort(state.rail.arrivals, byText(({ playerId, hexId }) => `${playerId}|${hexId}`)),
+    } } : {}),
     replacements: {
       lostTrucks: stableSort(state.replacements.lostTrucks, byText(({ ownerId, definitionId }) => `${ownerId}|${definitionId}`)),
     },
@@ -529,6 +550,7 @@ export const parseGameState = (input: unknown): Result<GameState, readonly Valid
     victory: raw.value.victory,
     air: raw.value.air,
     replacements: raw.value.replacements,
+    ...(raw.value.rail ? { rail: raw.value.rail } : {}),
   };
   const issues = [...validateGameState(state)];
   return issues.length > 0 ? err(issues) : ok(state);

@@ -5,6 +5,7 @@
 //   node scripts/ai-match.mjs --matches 1 --start 7 --trace        # replay one match with a decision trace
 //   node scripts/ai-match.mjs --air STANDARD --air-transport STANDARD --size 64x48 --scale LARGE
 //   node scripts/ai-match.mjs --engagement AXIS_ATTACKS --allied heuristic --axis heuristic --swap   # MEETING (default), ALLIED_ATTACKS, AXIS_ATTACKS
+//   node scripts/ai-match.mjs --engagement ALLIED_ATTACKS --rail-cap 4,6     # Rail Cap points per Movement Phase, Allied,Axis (13.3b)
 //
 // Every match varies the map, OOB, deployment and rules seeds from the match index; --fix-map / --fix-oob hold one
 // dimension fixed. Exit code 1 when any match stops for a reason other than FINISHED or fails the replay check.
@@ -21,7 +22,7 @@ const parseArgs = (argv) => {
     matches: 10, start: 0, parallel: Math.max(1, Math.min(4, availableParallelism() - 1)), turns: 8,
     width: null, height: null, scale: null, style: null, engagement: null, divisions: null, armored: null, air: null, airTransport: null,
     fixMap: null, fixOob: null, policies: { allied: 'random-legal', axis: 'random-legal' },
-    maxActions: 60_000, replay: true, trace: false, out: null, swap: false,
+    maxActions: 60_000, replay: true, trace: false, out: null, swap: false, railCap: null,
   };
   for (let index = 0; index < argv.length; index += 1) {
     const flag = argv[index];
@@ -39,6 +40,7 @@ const parseArgs = (argv) => {
       case '--scale': options.scale = value(); break;
       case '--style': options.style = value(); break;
       case '--engagement': options.engagement = value(); break;
+      case '--rail-cap': { const [allied, axis] = value().split(',').map(Number); options.railCap = { allied, axis: axis ?? allied }; break; }
       case '--fix-map': options.fixMap = Number(value()); break;
       case '--fix-oob': options.fixOob = Number(value()); break;
       case '--allied': options.policies.allied = value(); break;
@@ -88,6 +90,7 @@ const runMatch = async (baseOptions, matchIndex) => {
       ...(options.scale !== null ? { scale: options.scale } : {}),
     },
     ...(options.engagement ? { engagement: options.engagement } : {}),
+    ...(options.railCap ? { railCap: options.railCap } : {}),
     seeds: { map: seeds.map, oob: seeds.oob, deployment: seeds.deployment, rules: seeds.rules },
     turnLimit: options.turns,
   };
