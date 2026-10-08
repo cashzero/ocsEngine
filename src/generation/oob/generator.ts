@@ -49,6 +49,7 @@ import {
 import { combatValueOf, validateGeneratedOob } from './validation.js';
 import { counterIdentification, formationNameCapacity, hqName, formationNames, tigerBattalionName, unitName } from './names.js';
 import { buildAirForces, buildOffMapAir } from './air.js';
+import { buildHedgehogDefinition } from './hedgehog.js';
 import { buildReplacementDefinitions } from './replacements.js';
 import { withBreakdowns } from './breakdowns.js';
 
@@ -415,6 +416,8 @@ const buildSide = (
     name: side === 'ALLIED' ? 'US Objective Garrison' : 'Ge Objective Garrison', localId: 'garrison', designation: '',
   });
   definitions.push(garrison.definition);
+  // 16.0: every side can dig in; its hedgehogs are counters of this Definition.
+  definitions.push(buildHedgehogDefinition(side, options));
   return {
     side, formations, independentUnits: [...independentUnits, ...paratroops, ...staged, ...air],
     garrisonDefinitionId: garrison.definition.id,

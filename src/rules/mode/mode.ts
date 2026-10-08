@@ -11,6 +11,7 @@ import {
 } from '../pieces.js';
 import { violation } from '../validation/violation.js';
 import { inEnemyZoc } from '../zoc/zoc.js';
+import { hedgehogAt } from '../hedgehog/hedgehog.js';
 
 const voluntaryModes: readonly OcsMode[] = ['COMBAT', 'MOVE', 'RESERVE', 'STRAT'];
 
@@ -59,6 +60,10 @@ export const validateModeChange = (
   const hexId = hexOf(piece);
   if ((targetMode === 'RESERVE' || targetMode === 'STRAT') && hexId && inEnemyZoc(state, actorId, hexId)) {
     issues.push(violation('MODE_CHANGE_IN_ENEMY_ZOC', ['mode'], `${targetMode === 'RESERVE' ? 'Reserve' : 'Strat'} Mode cannot be entered in an enemy ZOC.`, targetMode === 'RESERVE' ? '5.7c' : '5.8a'));
+  }
+  // 5.7g, 16.0f: a Reserve unit stays put, so it would end the Movement Segment stacked with the hedgehog.
+  if (targetMode === 'RESERVE' && hexId && hedgehogAt(state, hexId)) {
+    issues.push(violation('RESERVE_IN_HEDGEHOG', ['mode'], 'No unit in Reserve Mode can be stacked with a hedgehog.', '5.7g'));
   }
   return issues;
 };

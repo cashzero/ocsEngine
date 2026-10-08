@@ -43,7 +43,7 @@ export interface RuleExplanation {
  * What a counter is used for, so the UI never has to guess it from field combinations. A supply counter is a
  * `DUMP` on the map and `CARGO` while a Transport Point carries it; a truck is an `EXTENDER` on its other face.
  */
-export type PieceRole = 'COMBAT' | 'ARTILLERY' | 'HQ' | 'TRUCK' | 'EXTENDER' | 'DUMP' | 'CARGO' | 'AIRCRAFT' | 'AIR_BASE' | 'REPLACEMENT' | 'OTHER';
+export type PieceRole = 'COMBAT' | 'ARTILLERY' | 'HQ' | 'TRUCK' | 'EXTENDER' | 'DUMP' | 'CARGO' | 'AIRCRAFT' | 'AIR_BASE' | 'HEDGEHOG' | 'REPLACEMENT' | 'OTHER';
 
 export interface ProjectedPiece {
   readonly role: PieceRole;
