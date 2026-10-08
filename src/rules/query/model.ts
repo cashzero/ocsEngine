@@ -187,6 +187,7 @@ export interface ProjectedCombat {
   readonly defenderStrength: number | null;
   readonly odds: string;
   readonly line: string | null;
+  /** The combat roll's net DRM: the AR difference less the defender's hedgehog Level (9.6, 16.0d). */
   readonly drm: number | null;
   readonly defenderSupplied: boolean | null;
   readonly result: string | null;

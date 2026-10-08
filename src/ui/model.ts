@@ -182,9 +182,9 @@ export interface GroundRebuild {
   readonly explanation: RuleExplanation | null;
 }
 
-/** One way an Engineer-Capable unit can build or improve in the chosen hex (13.8d, 15.2, 15.3). */
+/** One way an Engineer-Capable unit can build or improve in the chosen hex (13.8d, 15.2, 15.3, 16.0b). */
 export interface BuildOption {
-  readonly facility: 'AIR_STRIP' | 'AIR_BASE';
+  readonly facility: 'AIR_STRIP' | 'AIR_BASE' | 'HEDGEHOG';
   readonly label: string;
   /** Tokens of supply it costs. */
   readonly cost: number;
@@ -192,9 +192,11 @@ export interface BuildOption {
   readonly explanation: RuleExplanation;
 }
 
-/** Air Base construction by the selected Engineer-Capable unit: where it can build, and the hex being planned. */
+/** Construction by the selected Engineer-Capable unit (Air Bases, Air Strips, hedgehogs): where it can build, and the hex being planned. */
 export interface ConstructionOverview {
   readonly engineerId: PieceId;
+  /** What the unit can build somewhere now, for the button that starts planning. */
+  readonly facilities: readonly ('AIR' | 'HEDGEHOG')[];
   /** Hexes within the unit's 2-hex radius where something can be built now. */
   readonly hexes: readonly string[];
   /** True while the player is planning: the hexes are highlighted and a click picks one. */
@@ -237,7 +239,7 @@ export interface Arrival {
 /** A one-click rules action offered in the command deck (fuel, breakout, trucks, dumps...). */
 export interface UnitAction {
   readonly key: string;
-  readonly group: 'FUEL' | 'SUPPLY' | 'BREAKOUT' | 'BREAKDOWN' | 'TRANSPORT' | 'DUMP' | 'TRACE' | 'AIR';
+  readonly group: 'FUEL' | 'SUPPLY' | 'BREAKOUT' | 'BREAKDOWN' | 'TRANSPORT' | 'DUMP' | 'TRACE' | 'AIR' | 'HEDGEHOG';
   readonly label: string;
   readonly action: GameAction;
   /** Fuel payments: the units this payment would newly fuel, named with their hex. */

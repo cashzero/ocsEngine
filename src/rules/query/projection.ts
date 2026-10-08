@@ -219,7 +219,7 @@ const projectCombat = (state: GameState): ProjectedCombat | null => {
     : transaction.defenderSupplied ? transaction.defenderIds : transaction.defenderInternalIds;
   const odds = calculateCombatOdds(state, transaction.attackerIds, transaction.defenderIds, transaction.targetHexId,
     supplied, transaction.leadAttackerId, transaction.leadDefenderId, transaction.defenderTerrainId);
-  return { ...base, attackerStrength: odds.attackerStrength, defenderStrength: odds.defenderStrength, odds: odds.oddsText, line: odds.line, drm: odds.drm };
+  return { ...base, attackerStrength: odds.attackerStrength, defenderStrength: odds.defenderStrength, odds: odds.oddsText, line: odds.line, drm: odds.drm - odds.hedgehogLevel };
 };
 
 export const ruleQueryCacheKey = (

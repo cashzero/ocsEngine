@@ -27,11 +27,12 @@
 25 列（rebase 到 main `ca555b4` 後；到 `f0d453b` 無變動）：9 `IMPLEMENTED`、11 `PARTIAL`、4 `DEFERRED`、1 `GAME_SPECIFIC`。
 
 - PARTIAL：`sequence.ground-turn`、`lifecycle.ground`（沒有 Variable Reinforcement Table）、
-  `movement.ground`（整疊移動 6.1f，使用者暫緩）、`barrage.artillery`（刺蝟、港口）、`supply.trace-and-draw`、
+  `movement.ground`（整疊移動 6.1f，使用者暫緩）、`barrage.artillery`（港口；刺蝟已實作，2026-10-08）、`supply.trace-and-draw`、
   `supply.rail-trace`（TODO rail-front-control；單一軌距，無 Railhead／換軌／修復；無港口）、
   `replacements-rebuilds`（Pax／Eq 為固定配給，Rebuild Table 為通用規則）、
   `air.bases-and-refit`、`air.missions`、`air.transport-and-drop`（Glider Points 14.10f）、`air.replacements-and-reinforcements`。
-- DEFERRED：`hedgehogs-engineering`、`movement.rail-sea-air`、`naval-shipping`、`optional-rules`。
+- IMPLEMENTED（2026-10-08）：`hedgehogs`（`docs/roadmap/14-hedgehogs-wbs.md`）。
+- DEFERRED：`engineering.bridging`（13.8b）、`movement.rail-sea-air`、`naval-shipping`、`optional-rules`。
 - GAME_SPECIFIC：`victory.game-table`。
 - 規則落差分析仍開啟：TODO-R1（逐條登記 §1–21）、R9（整疊移動／連續 overrun）、R11（MA 不捨入）、R14（未實作系統）；
   其餘 R 項程式已實作、待實機驗證（`docs/study/09-rules-vs-plan-gap-analysis.md` §4）。

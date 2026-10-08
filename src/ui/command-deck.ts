@@ -238,8 +238,10 @@ const draftPanel = (snapshot: UiSnapshot, state: DeckState): TemplateResult => {
   const units = draft.eligibleIds.map((id) => snapshot.view.projection?.stacks.flatMap(({ pieces }) => pieces).find((piece) => piece.id === id)).filter((piece): piece is ProjectedPiece => piece !== undefined);
   const facts = draft.explanation;
   const title = draft.kind === 'BARRAGE' ? 'Barrage' : draft.kind === 'OVERRUN' ? 'Overrun' : 'Attack';
+  const hedgehog = Number(fact(facts, 'combat.hedgehogLevel') ?? 0);
   const outlook = draft.kind === 'BARRAGE' ? null
-    : combatOutlook(String(fact(facts, 'combat.line') ?? ''), String(fact(facts, 'combat.column') ?? ''), Number(fact(facts, 'combat.drm') ?? 0));
+    // 16.0d: the defender's hedgehog comes off the combat roll on top of the AR DRM.
+    : combatOutlook(String(fact(facts, 'combat.line') ?? ''), String(fact(facts, 'combat.column') ?? ''), Number(fact(facts, 'combat.drm') ?? 0) - hedgehog);
   const rows = draft.kind === 'BARRAGE'
     ? html`<dl class="combat-facts"><div><dt>Barrage strength</dt><dd>${text(fact(facts, 'barrage.strength') ?? '–')}</dd></div>
         <div><dt>Shifts</dt><dd>${text(fact(facts, 'barrage.shifts') || 'none')}</dd></div>
@@ -249,6 +251,7 @@ const draftPanel = (snapshot: UiSnapshot, state: DeckState): TemplateResult => {
         <div><dt>Odds</dt><dd>${text(fact(facts, 'combat.odds') ?? '–')} (${String(fact(facts, 'combat.line') ?? '').replace('_', ' ').toLowerCase()})</dd></div>
         <div><dt>If defender withholds supply</dt><dd>${text(fact(facts, 'combat.oddsUnsupplied') ?? '–')}</dd></div>
         <div><dt>AR DRM</dt><dd>${text(fact(facts, 'combat.attackerActionRating') ?? '–')} − ${text(fact(facts, 'combat.defenderActionRating') ?? '?')} = ${text(fact(facts, 'combat.drm') ?? '–')}</dd></div>
+        ${hedgehog > 0 ? html`<div><dt>Hedgehog</dt><dd>Level ${hedgehog}: −${hedgehog} combat roll, −1 Surprise, Heavy AT</dd></div>` : nothing}
         <div><dt>Your supply cost</dt><dd>${text(fact(facts, 'combat.attackerSupplyTokens') ?? '–')}T</dd></div></dl>`;
   const outlookView = draft.kind === 'BARRAGE' ? nothing
     : outlook ? html`<p class="outlook${outlook.attackerStep > outlook.defenderHurt ? ' is-poor' : ''}">Before Surprise: you lose a mandatory step on ${percent(outlook.attackerStep)} of rolls (a loss or option on ${percent(outlook.attackerHurt)}); the defender loses, retreats or is DG on ${percent(outlook.defenderHurt)}${outlook.exploit > 0 ? `; exploitation on ${percent(outlook.exploit)}` : ''}.</p>`
@@ -355,13 +358,14 @@ const airDraftPanel = (snapshot: UiSnapshot, state: DeckState): TemplateResult =
   </section>`;
 };
 
-/** Offered in the Unit tab of an Engineer-Capable unit that can build or improve an Air Base or Air Strip now (13.8d, 15.3). */
+/** Offered in the Unit tab of an Engineer-Capable unit that can build or improve an Air Base, Air Strip or hedgehog now (13.8d, 15.3, 16.0b). */
 const constructionSection = (snapshot: UiSnapshot): View => {
   const construction = snapshot.air.construction;
   if (!construction || construction.planning) return nothing;
+  const what = [...(construction.facilities.includes('AIR') ? ['an Air Base or Air Strip'] : []), ...(construction.facilities.includes('HEDGEHOG') ? ['a hedgehog (2 SP a Level)'] : [])].join(' or ');
   return html`<div class="unit-actions"><strong>Construction</strong>
-    <p class="hint">Build or improve an Air Base or Air Strip in a hex within 2 hexes (Leg MP). The supply is paid from dumps in reach, and this unit cannot move afterwards.</p>
-    <button id="plan-construction">Build an Air Base or Air Strip… (${construction.hexes.length} hex${construction.hexes.length === 1 ? '' : 'es'})</button></div>`;
+    <p class="hint">Build or improve ${what} in a hex within 2 hexes (Leg MP). The supply is paid from dumps in reach, and this unit cannot move afterwards.</p>
+    <button id="plan-construction">Build ${what.replace(' (2 SP a Level)', '')}… (${construction.hexes.length} hex${construction.hexes.length === 1 ? '' : 'es'})</button></div>`;
 };
 
 /** The hex being built in: each thing that can be done there, its cost, and why one cannot. */
@@ -682,7 +686,7 @@ const unitTab = (snapshot: UiSnapshot, state: DeckState): TemplateResult => {
     parts.push(html`<div class="mode-actions"><strong>Mode</strong><div class="chip-row">${snapshot.modeOptions.map(({ mode }) => html`<button data-mode=${mode}>${modeName(mode)}</button>`)}${snapshot.releaseAction ? html`<button id="release-reserve">Release reserve</button>` : nothing}</div></div>`);
   }
   if (snapshot.unitActions.length > 0 || snapshot.transportOptions) {
-    const groups: [string, string][] = [['BREAKDOWN', 'Breakdowns'], ['FUEL', 'Fuel'], ['SUPPLY', 'Supply'], ['BREAKOUT', 'Breakout'], ['TRANSPORT', 'Trucks'], ['DUMP', 'Dump'], ['AIR', 'Air']];
+    const groups: [string, string][] = [['BREAKDOWN', 'Breakdowns'], ['FUEL', 'Fuel'], ['SUPPLY', 'Supply'], ['BREAKOUT', 'Breakout'], ['TRANSPORT', 'Trucks'], ['DUMP', 'Dump'], ['HEDGEHOG', 'Hedgehog'], ['AIR', 'Air']];
     // Loading, unloading and splitting live in the truck's supply area; the buttons that remain are the other truck actions.
     const inPanel = (kind: string) => ['LOAD_SUPPLY', 'UNLOAD_SUPPLY', 'DIVIDE_TRANSPORT'].includes(kind);
     parts.push(...groups.flatMap(([group, title]): View[] => {
@@ -790,7 +794,8 @@ const unitFormation = (snapshot: UiSnapshot, piece: ProjectedPiece): string => {
  */
 const rosterOwn = (snapshot: UiSnapshot): ProjectedPiece[] =>
   (snapshot.view.projection?.stacks ?? []).flatMap((stack) => stack.pieces)
-    .filter((piece) => piece.ownerId === snapshot.view.playerId && piece.role !== 'CARGO' && piece.role !== 'DUMP' && !isAirBase(snapshot, piece));
+    // Facilities (Air Bases, hedgehogs) are not units: they are picked on the map, and their work is offered to the units in reach.
+    .filter((piece) => piece.ownerId === snapshot.view.playerId && piece.role !== 'CARGO' && piece.role !== 'DUMP' && piece.role !== 'HEDGEHOG' && !isAirBase(snapshot, piece));
 
 /** Trucks and extenders haul supply rather than fight, so the roster lists them in a group of their own after the formations. */
 const isTransport = ({ role }: ProjectedPiece): boolean => role === 'TRUCK' || role === 'EXTENDER';
