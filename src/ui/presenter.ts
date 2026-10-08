@@ -148,6 +148,11 @@ export const unitLabel = (scenario: ScenarioDefinition, piece: Pick<ProjectedPie
   // A supply dump and a truck have no name on the board-game counter, whatever an older save or package called them.
   if (definition?.family === 'RESOURCE') return 'Supply dump';
   if (definition?.counter?.kind === 'TRANSPORT') return 'Truck';
+  // 16.0a: a hedgehog's Level is printed on the counter, so it is part of its name.
+  if (definition?.facility?.facilityTypeDefinitionId === 'facility:hedgehog') {
+    const level = piece.statusValues?.find(({ statusDefinitionId }) => statusDefinitionId === 'status:hedgehog-level')?.value;
+    return `Hedgehog Level ${typeof level === 'number' ? level : 1}`;
+  }
   return pieceOwnName(piece) ?? definition?.name ?? 'Unit';
 };
 

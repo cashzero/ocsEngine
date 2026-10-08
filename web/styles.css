@@ -518,6 +518,11 @@ small, .supporting { font-size: 13px; color: var(--muted); }
 .legend-ring.air-zone.enemy { border-color: #e06b5a; }
 /* Air Strip (15.2): a smaller, plainer disc than an Air Base; Equipment replacement counters (13.5). */
 .air-base-disc.air-strip { fill: #d8d2b4; stroke-dasharray: 8 4; }
+/* 16.0: hedgehog (BTR misc_hog-N.png): tan counter, dark toothed ring, Level in a white disc. */
+.counter-paper.hedgehog-paper { fill: #c8a77a; }
+.hedgehog-ring { fill: #57534b; stroke: #24271e; stroke-width: 1.5; }
+.hedgehog-level { fill: #f7f4ea; stroke: #24271e; stroke-width: 2; }
+.counter .hedgehog-level-text, .unit-counter .hedgehog-level-text { font-size: 34px; fill: #24271e; }
 .air-base-disc.air-strip.nation-US { fill: #d4d19a; }
 .counter .air-strip-text, .unit-counter .air-strip-text { font-size: 17px; }
 /* Colours sampled from the BTR module's German EQ Replacement.png and US-Repl-EQ.png. */
