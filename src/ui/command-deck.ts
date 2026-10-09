@@ -6,7 +6,7 @@ import type { ProjectedPiece } from '../rules/index.js';
 import type { UiSnapshot } from './model.js';
 import { ROUTE_LABELS, halfTokenText, isMultiStepDefinition } from '../rules/index.js';
 import { airSentences, emphasizeAir } from './air-text.js';
-import { counterSvg, counterView, replacementAbbreviation } from './counter.js';
+import { counterSvg, counterView, playerNation, replacementAbbreviation } from './counter.js';
 import { modeNote, unitStatusRows } from './unit-status.js';
 import { combatHeadline, combatOutlook, type CombatReport, type FeedEntry, type NarrativeContext } from './narrative.js';
 import { ownOverstackedHexes, type OverstackedHex, phaseLabel, pieceDefinition, pieceLabel, printedHexLabel, STACKING_LIMIT_RE_TICKS, stackingReTicks } from './presenter.js';
@@ -47,7 +47,7 @@ const text = (value: unknown): string => value === null || value === undefined ?
 /** Counter art is markup built (and escaped) by counter.ts. */
 const counterFor = (snapshot: UiSnapshot, piece: ProjectedPiece): View => {
   const definition = pieceDefinition(snapshot.scenario, piece);
-  return definition ? html`${unsafeHTML(counterSvg(counterView(definition, piece)))}` : nothing;
+  return definition ? html`${unsafeHTML(counterSvg(counterView(definition, piece, playerNation(snapshot.scenario.players, piece.ownerId))))}` : nothing;
 };
 
 const isAir = (snapshot: UiSnapshot, piece: ProjectedPiece): boolean => pieceDefinition(snapshot.scenario, piece)?.family === 'AIR';
