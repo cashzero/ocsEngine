@@ -8,7 +8,7 @@ import { pendingAbsorptions } from '../breakdown/breakdown.js';
 import { calculateCombatOdds } from '../combat/strength.js';
 import { previewBarrage } from '../combat/combat.js';
 import { BARRAGE_TABLE_COLUMNS } from '../tables/ocs-4.3.js';
-import type { PieceRole, ProjectedCombat, ProjectedPiece, ProjectedStack, RuleProjection } from './model.js';
+import type { PieceRole, ProjectedBridge, ProjectedCombat, ProjectedPiece, ProjectedStack, RuleProjection } from './model.js';
 import { AIR_MISSION_LABELS, previewAirBarrage } from '../air/mission.js';
 import { activeAircraftLimit, airBaseLevel, aircraftName, isActiveAircraft, isAirBase,
   offMapAirfields, aircraftAtAirfield, isAircraft, isFighter, patrolZoneHexes, refitBlockedByZoc, refitCapacity } from '../air/aircraft.js';
@@ -19,6 +19,9 @@ import { aircraftRange, aircraftTransportCapacity, hasIntegralGlider } from '../
 import { isHedgehog } from '../hedgehog/hedgehog.js';
 import { railCapRemainingQuarters, railCapacityPoints } from '../supply/rail-cap.js';
 import { baseDumps, earliestPlanTurn, loadableUnits, readyTransports } from '../air/transport.js';
+import { bridgeHexes, bridgingEnabled } from '../movement/bridging.js';
+import { adjacentHexIds } from '../pieces.js';
+import { hexsideFeatureIds } from '../terrain.js';
 
 /** 4.9a: internal stocks and other private bookkeeping are never shown to the enemy. */
 const PRIVATE_STATUSES: readonly string[] = [INTERNAL_STOCKS_STATUS, OUT_OF_TRACE_SINCE_STATUS, RETURN_TURN_STATUS];
@@ -88,6 +91,17 @@ const visibleEnemyTop = (state: GameState, enemy: readonly PieceState[]): readon
   return visible.length > 0 ? visible : enemy.slice(0, 1);
 };
 
+/** 13.8b: every river hexside of a hex holding one of the viewer's Engineer-Capable units. */
+const projectBridges = (state: GameState, viewerId: PlayerId): readonly ProjectedBridge[] => {
+  const majors = new Set((state.configuration.rivers?.majorFeatureDefinitionIds ?? []).map(String));
+  const minors = new Set((state.configuration.rivers?.minorFeatureDefinitionIds ?? []).map(String));
+  return [...bridgeHexes(state, viewerId)].sort().flatMap((hexId) => adjacentHexIds(hexId).flatMap((acrossHexId) => {
+    const features = hexsideFeatureIds(state, hexId, acrossHexId);
+    const major = features.some((id) => majors.has(id));
+    return major || features.some((id) => minors.has(id)) ? [{ hexId, acrossHexId, major }] : [];
+  }));
+};
+
 export const projectRuleState = (state: GameState, viewerId: PlayerId): RuleProjection => {
   const groups = new Map<string, { location: PieceLocation; pieces: PieceState[] }>();
   for (const piece of state.pieceState.pieces) {
@@ -135,6 +149,7 @@ export const projectRuleState = (state: GameState, viewerId: PlayerId): RuleProj
     ...(state.configuration.railCapacity && state.configuration.railroads && railCapacityPoints(state, viewerId) !== null ? { railCap: [{
       playerId: viewerId, points: railCapacityPoints(state, viewerId) ?? 0, remainingQuarters: railCapRemainingQuarters(state, viewerId),
     }] } : {}),
+    ...(bridgingEnabled(state) ? { bridges: projectBridges(state, viewerId) } : {}),
     combat: projectCombat(state),
     weather: state.weather,
     // Fuel markers and fueled Formation markers are on the map for both players to see.

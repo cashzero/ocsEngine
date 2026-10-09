@@ -1,6 +1,6 @@
 import { FOUNDATION_SCHEMA_VERSION, parseDefinitionId, type DefinitionId, type PlayerId, type Result } from '../core/index.js';
 import { sideDivisions, type GeneratedOob, type OobSide } from '../generation/oob/index.js';
-import type { RailroadConfiguration, RuleConfiguration } from '../rules/index.js';
+import type { RailroadConfiguration, RiverConfiguration, RuleConfiguration } from '../rules/index.js';
 import { attackerOf, type GeneratedDeployment, type NewGameRequest } from './model.js';
 import {
   GENERATED_HEXSIDE_MOVEMENT_COSTS,
@@ -92,11 +92,18 @@ export const createGeneratedRuleConfiguration = (
     attackerPoints: attackVictoryPoints(deployment.objectives.reduce((total, { points }) => total + points, 0)),
   } }),
   railroads: GENERATED_RAILROADS,
+  rivers: GENERATED_RIVERS,
   railCapacity: (() => {
     const cap = request.railCap ?? defaultRailCap(request);
     return [{ playerId: players.ALLIED, points: cap.allied }, { playerId: players.AXIS, points: cap.axis }];
   })(),
 });
+
+/** 13.8b: the generated Minor and Major Rivers that Engineer-Capable units bridge. */
+export const GENERATED_RIVERS: RiverConfiguration = {
+  minorFeatureDefinitionIds: [id('edge:river')],
+  majorFeatureDefinitionIds: [id('edge:major-river')],
+};
 
 /** 13.3: generated railroads, and the settlements that make a rail Hex detrainable (13.3c). */
 export const GENERATED_RAILROADS: RailroadConfiguration = {

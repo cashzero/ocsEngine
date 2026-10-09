@@ -81,6 +81,19 @@ export const unitStatusRows = (snapshot: UiSnapshot, piece: ProjectedPiece): rea
     if (fueledBy) rows.push({ key: 'fuel', icon: 'FUEL', label: 'Fuel', value: `Fueled · ${fueledBy}`, tone: 'ok', note: 'Truck and Tracked MP can be spent. Single-unit fuel lasts this phase; the others until your next Clean Up Phase.', rule: '12.5c' });
   }
 
+  // 13.8b: an Engineer-Capable HQ or Engineer standing at a river bridges it (the projection lists the viewer's bridges).
+  const engineerType = definition.counter?.kind === 'HQ' || definition.counter?.symbol === 'ENGINEER';
+  const hexId = piece.location.kind === 'ON_MAP' ? String(piece.location.hexId) : null;
+  const bridged = own && engineerType && hexId !== null
+    ? (snapshot.view.projection?.bridges ?? []).filter((entry) => String(entry.hexId) === hexId) : [];
+  if (bridged.length > 0) {
+    rows.push({
+      key: 'bridging', icon: 'BRIDGE', label: 'Bridging', tone: 'ok', rule: '13.8b',
+      value: `${bridged.length} river hexside${bridged.length === 1 ? '' : 's'} at this hex`,
+      note: 'Your units moving into or out of this hex pay no extra MP for a Minor River and Minor River cost for a Major River. Ends if this unit leaves Combat Mode; never for overruns.',
+    });
+  }
+
   const id = String(piece.id);
   if (own && snapshot.movedThisPhase.has(id)) rows.push({ key: 'moved', icon: 'MOVED', label: 'Moved', value: 'This phase', tone: 'none' });
   if (own && snapshot.attackedThisPhase.has(id)) rows.push({ key: 'attacked', icon: 'ATTACKED', label: 'Attacked', value: 'This phase', tone: 'warn' });
