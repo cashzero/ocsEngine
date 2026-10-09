@@ -235,6 +235,23 @@ const hoverText = (snapshot: UiSnapshot, hexId: string): string => {
 };
 
 /**
+ * The viewer's own Rail Cap (13.3b) in the top bar: in his Movement Phase what is left of it, otherwise its points per
+ * Movement Phase. The other side's Rail Cap is not shown (user, 2026-10-09).
+ */
+const railCapCell = (snapshot: UiSnapshot): TemplateResult | typeof nothing => {
+  const cap = snapshot.view.projection?.railCap?.find(({ playerId }) => playerId === snapshot.view.playerId);
+  if (!cap) return nothing;
+  const sequence = snapshot.view.projection?.sequence;
+  const whole = Math.floor(cap.remainingQuarters / 4);
+  const part = ['', '¼', '½', '¾'][cap.remainingQuarters % 4]!;
+  const left = whole === 0 && part ? part : `${whole}${part}`;
+  const moving = sequence?.phasingPlayerId === snapshot.view.playerId && sequence.phase === 'MOVEMENT';
+  const label = moving ? `${left} of ${cap.points} left this Movement Phase` : `${cap.points} per Movement Phase`;
+  return html`<span class="rail-cap-cell" title="Your Rail Cap (13.3b): SP or RE you can move by rail in your Movement Phase; unused Rail Cap is lost. In your Movement Phase it shows what is left." aria-label=${`Rail Cap: ${label}`}>
+    <small>Rail Cap</small><strong><span class=${moving ? 'rail-side is-moving' : 'rail-side'}>${moving ? `${left} / ${cap.points}` : `${cap.points} per turn`}</span></strong></span>`;
+};
+
+/**
  * The VP each player holds now, from the live control of the objectives (the winner is scored at the turn limit), and
  * how many are still neutral; each name carries its objective mark from the map (star, cross, diamond).
  */
@@ -806,6 +823,7 @@ const appView = (snapshot: UiSnapshot): TemplateResult => {
         <div class="turn-strip" aria-label="Current turn state">
           <span class="turn-cell"><small>Turn ${sequence?.gameTurn ?? '–'} / ${currentGame.summary.turnLimit}</small><strong>${weatherLabel(snapshot)}</strong></span>
           ${vpCell(snapshot)}
+          ${railCapCell(snapshot)}
           <div class="phase-picker" tabindex="0" aria-label=${`${playerName(sequence?.phasingPlayerId)} Player Turn`}>
             ${phaseTrackCurrent(snapshot, sequence)}
             <ol class="phase-track phase-popup" aria-label=${`${playerName(sequence?.phasingPlayerId)} Player Turn phases`}>

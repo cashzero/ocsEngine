@@ -52,7 +52,13 @@ describe('rail transport in the command deck (13.3)', () => {
     expect(html).toMatch(/Costs [\d /]+ of [\d /]+ Rail Cap left/u);
     expect(html).toContain('id="confirm-rail"');
 
+    const seat = () => controller.getSnapshot().view.playerId;
+    const capOf = () => controller.getSnapshot().view.projection!.railCap!.find(({ playerId }) => playerId === seat())!;
+    // The top bar reads the same figures from the projection: the viewer's own Rail Cap only.
+    expect(controller.getSnapshot().view.projection!.railCap!.map(({ playerId }) => playerId)).toEqual([seat()]);
+    expect(capOf()).toEqual({ playerId: seat(), points, remainingQuarters: points * 4 });
     await controller.confirmRailMove();
+    expect(capOf().remainingQuarters).toBe(points * 4 - ready.costQuarters!);
     const arrived = own().find((piece) => piece.role === 'DUMP' && piece.location.kind === 'ON_MAP' && piece.location.hexId === destination);
     expect(arrived?.resourceQuantity).toBeGreaterThanOrEqual(4);
     expect(controller.getSnapshot().notice).toMatch(/Moved 4T by rail/u);
