@@ -126,7 +126,6 @@ for (const viewport of viewports) {
   };
   await page.goto(baseUrl); await page.waitForSelector('#open-menu', { timeout: 30000 });
   await page.click('#open-menu'); await page.click('#open-new-game'); await audit('new-game', 'configure-basic');
-  await page.click('[data-settings="advanced"]'); await audit('new-game', 'configure-advanced'); await page.click('[data-settings="basic"]');
   await page.click('button[form="new-game-form"]'); await page.waitForSelector('#start-previewed-game:not(:disabled)', { timeout: 60000 }); await audit('new-game', 'preview');
   await page.click('#start-previewed-game'); await page.waitForFunction(() => !document.querySelector('.new-game-dialog'), null, { timeout: 60000 }); await idle();
   await page.click('#open-menu'); await audit('menu', 'open'); await page.click('#close-utility');

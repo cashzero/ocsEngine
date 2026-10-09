@@ -123,13 +123,29 @@ export interface CreatedNewGame extends GeneratedScenarioPackage {
   readonly session: GameSession;
 }
 
+/** The generation steps of a New Game package, in the order they run. */
+export type NewGamePreparationStage = 'MAP' | 'OOB' | 'DEPLOYMENT' | 'SCENARIO';
+
+export type PreparedNewGame = { readonly ok: true; readonly value: GeneratedScenarioPackage }
+  | { readonly ok: false; readonly error: readonly GameFlowFailure[] };
+
 export interface NewGameOrchestrator {
-  readonly prepare: (
+  readonly prepare: (request: NewGameRequest) => PreparedNewGame;
+  /**
+   * The same package as `prepare`, built one step at a time: `beforeStage` is awaited before each step, so a UI can
+   * show the step and repaint. Returning `false` from it stops the build (the result is then `null`).
+   */
+  readonly prepareInStages: (
     request: NewGameRequest,
-  ) => { readonly ok: true; readonly value: GeneratedScenarioPackage }
-    | { readonly ok: false; readonly error: readonly GameFlowFailure[] };
+    beforeStage: (stage: NewGamePreparationStage) => Promise<boolean | void> | boolean | void,
+  ) => Promise<PreparedNewGame | null>;
   readonly create: (
     request: NewGameRequest,
+  ) => Promise<{ readonly ok: true; readonly value: CreatedNewGame }
+    | { readonly ok: false; readonly error: readonly GameFlowFailure[] }>;
+  /** Open a session on a package `prepare` already built, without building it again (what `create` does after preparing). */
+  readonly start: (
+    prepared: GeneratedScenarioPackage,
   ) => Promise<{ readonly ok: true; readonly value: CreatedNewGame }
     | { readonly ok: false; readonly error: readonly GameFlowFailure[] }>;
 }

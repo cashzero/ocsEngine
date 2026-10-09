@@ -8,9 +8,10 @@ import type {
   CreatedNewGame,
   GameFlowEngine,
   GameFlowFailure,
-  GeneratedScenarioPackage,
   NewGameOrchestrator,
+  NewGamePreparationStage,
   NewGameRequest,
+  PreparedNewGame,
 } from './model.js';
 import { validateGeneratedScenarioPackage, validateNewGameMapSize, validateNewGameRequest } from './validation.js';
 
@@ -22,25 +23,34 @@ const generatorFailures = (
   ...(error.issues === undefined ? {} : { issues: error.issues }),
 }));
 
-export const prepareNewGame = (
-  request: NewGameRequest,
-): { readonly ok: true; readonly value: GeneratedScenarioPackage }
-  | { readonly ok: false; readonly error: readonly GameFlowFailure[] } => {
+/** The package build as steps: it yields each stage before running it and returns the package or the failures. */
+function* prepareNewGameSteps(request: NewGameRequest): Generator<NewGamePreparationStage, PreparedNewGame, void> {
   const optionFailures = validateNewGameRequest(request);
   if (optionFailures.length > 0) return { ok: false, error: optionFailures };
+  yield 'MAP';
   const map = generateRandomMap({ ...request.map, seed: request.seeds.map });
   if (!map.ok) return { ok: false, error: generatorFailures('MAP', map.error) };
+  yield 'OOB';
   // An attacker fields more divisions (ATTACKER_FORCE_RATIO); a meeting engagement keeps the sides equal.
   const attacker = attackerOf(request.engagement ?? 'MEETING');
   // The attacker also flies from an off-map airfield (docs/roadmap/13-engagement-scenarios-wbs.md §6).
   const oob = generateRandomOob({ ...request.oob, ...(attacker === null ? {} : { attacker, offMapAir: attacker }), seed: request.seeds.oob });
   if (!oob.ok) return { ok: false, error: generatorFailures('OOB', oob.error) };
+  yield 'DEPLOYMENT';
   const deployment = deployGeneratedForces(map.value, oob.value, request.seeds.deployment, GENERATED_PLAYERS, request.engagement ?? 'MEETING');
   if (!deployment.ok) return deployment;
+  yield 'SCENARIO';
   const composed = composeGeneratedScenario(request, map.value, oob.value, deployment.value);
   if (!composed.ok) return composed;
   const failures = validateGeneratedScenarioPackage(composed.value);
   return failures.length > 0 ? { ok: false, error: failures } : composed;
+}
+
+export const prepareNewGame = (request: NewGameRequest): PreparedNewGame => {
+  const steps = prepareNewGameSteps(request);
+  let step = steps.next();
+  while (!step.done) step = steps.next();
+  return step.value;
 };
 
 /** The player-facing preparation: New Game map limits first, then the full package. */
@@ -49,25 +59,34 @@ const preparePlayerNewGame: NewGameOrchestrator['prepare'] = (request) => {
   return sizeFailures.length > 0 ? { ok: false, error: sizeFailures } : prepareNewGame(request);
 };
 
-export const createNewGameOrchestrator = (engine: GameFlowEngine): NewGameOrchestrator => ({
-  prepare: preparePlayerNewGame,
-  create: async (request: NewGameRequest) => {
-    const prepared = preparePlayerNewGame(request);
-    if (!prepared.ok) return prepared;
+const preparePlayerNewGameInStages: NewGameOrchestrator['prepareInStages'] = async (request, beforeStage) => {
+  const sizeFailures = validateNewGameMapSize(request);
+  if (sizeFailures.length > 0) return { ok: false, error: sizeFailures };
+  const steps = prepareNewGameSteps(request);
+  let step = steps.next();
+  while (!step.done) {
+    if (await beforeStage(step.value) === false) return null;
+    step = steps.next();
+  }
+  return step.value;
+};
+
+export const createNewGameOrchestrator = (engine: GameFlowEngine): NewGameOrchestrator => {
+  const start: NewGameOrchestrator['start'] = async (prepared) => {
     try {
       const session = await engine.createSession({
-        scenario: prepared.value.scenario,
-        configuration: prepared.value.configuration,
-        rulesSeed: request.seeds.rules,
-        bindings: prepared.value.bindings,
-        label: `Generated ${prepared.value.summary.mapSize} ground duel`,
+        scenario: prepared.scenario,
+        configuration: prepared.configuration,
+        rulesSeed: prepared.request.seeds.rules,
+        bindings: prepared.bindings,
+        label: `Generated ${prepared.summary.mapSize} ground duel`,
       });
       const started = session.start();
       if (!started.ok) return { ok: false as const, error: [{
         stage: 'GAMEPLAY_BOOTSTRAP' as const, code: started.code,
         message: 'Gameplay session could not enter ACTIVE lifecycle.', path: ['session', 'lifecycle'],
       }] };
-      const value: CreatedNewGame = { ...prepared.value, session };
+      const value: CreatedNewGame = { ...prepared, session };
       return { ok: true as const, value };
     } catch (caught) {
       return { ok: false as const, error: [{
@@ -77,8 +96,17 @@ export const createNewGameOrchestrator = (engine: GameFlowEngine): NewGameOrches
         path: ['session'],
       }] };
     }
-  },
-});
+  };
+  return {
+    prepare: preparePlayerNewGame,
+    prepareInStages: preparePlayerNewGameInStages,
+    create: async (request: NewGameRequest) => {
+      const prepared = preparePlayerNewGame(request);
+      return prepared.ok ? start(prepared.value) : prepared;
+    },
+    start,
+  };
+};
 
 /**
  * The operation offered when the UI opens (user decision 2026-10-01: larger map, more turns): a meeting engagement.

@@ -61,9 +61,7 @@ try {
     await click('#close-new-game'); await click('#open-menu'); await click('#open-new-game');
     if (scale === 'large') {
       await select('#new-game-style',1); await select('#new-game-scale',2); await fill('#new-game-formations',4); await fill('#new-game-turn-limit',3);
-      await click('[data-settings="advanced"]');
       for(const [dimension,seed] of [['map',91001],['oob',91002],['deployment',91003],['rules',91004]]) await fill(`#new-game-${dimension}-seed`,seed);
-      await click('[data-settings="basic"]');
     }
     await capture(`${scale}-configure`);
     await click('button[form="new-game-form"]');
