@@ -137,11 +137,6 @@ const canEnterForCombat = (state: GameState, piece: PieceState, targetHexId: Hex
   return null;
 };
 
-export interface CombatSupplyPlan {
-  readonly payments: readonly ResourceReservation[];
-  readonly tokens: number;
-}
-
 const attackerNeed = (piece: PieceState): number => stepsOf(piece) * COMBAT_SUPPLY.attackerTokensPerStep;
 
 const reserveInto = (state: GameState, reservations: readonly ResourceReservation[]): GameState => ({
@@ -152,22 +147,6 @@ const reserveInto = (state: GameState, reservations: readonly ResourceReservatio
   }, state.pieceState),
 });
 
-/** 12.4: an on-map plan paying 1T per attacking step, each unit drawing from dumps that reach it. */
-export const planAttackerSupply = (state: GameState, attackers: readonly PieceState[]): CombatSupplyPlan | null => {
-  let working = state;
-  const payments: ResourceReservation[] = [];
-  let tokens = 0;
-  for (const piece of attackers) {
-    const need = attackerNeed(piece);
-    tokens += need;
-    const allocation = hexOf(piece) ? allocateSupply(working, piece.ownerId, [piece], need) : null;
-    if (!allocation) return null;
-    payments.push(...allocation);
-    working = reserveInto(working, allocation);
-  }
-  return { payments: mergePayments(payments), tokens };
-};
-
 const mergePayments = (payments: readonly ResourceReservation[]): readonly ResourceReservation[] => {
   const merged = new Map<string, ResourceReservation>();
   for (const payment of payments) {
@@ -176,13 +155,6 @@ const mergePayments = (payments: readonly ResourceReservation[]): readonly Resou
   }
   return stableSort([...merged.values()], (left, right) => String(left.resourcePieceId).localeCompare(String(right.resourcePieceId)));
 };
-
-/**
- * 9.5A, 12.10c: an attack can be supplied when every Exhausted attacker can be paid from on-map SP;
- * the others may fall back on internal stocks when on-map SP is short.
- */
-export const attackerSupplyFeasible = (state: GameState, attackers: readonly PieceState[]): boolean =>
-  planAttackerSupply(state, attackers.filter((piece) => internalStocksOf(piece) === 'EXHAUSTED')) !== null;
 
 /** An attacker's combat supply settled in declaration order: what it draws, or that it uses its internal stocks. */
 export interface DeclaredAttackerSupply {
@@ -326,6 +298,24 @@ export const attackerSupplyOptions = (
   return { pieceId, need, reachable, options, reason };
 };
 
+/**
+ * A legal declaration for these attackers when nobody chooses (AI candidates, tests): Exhausted units declare first, so the SP
+ * in reach goes to those that cannot attack without it (12.10c), and each unit takes its first option. Null when some unit has none.
+ */
+export const defaultAttackerSupply = (state: GameState, actorId: PlayerId, attackerIds: readonly PieceId[]): readonly AttackerSupplyChoice[] | null => {
+  const attackers = attackerIds.flatMap((id) => pieceById(state, id) ?? []);
+  if (attackers.length !== attackerIds.length) return null;
+  const ordered = stableSort(attackers, (left, right) =>
+    Number(internalStocksOf(right) === 'EXHAUSTED') - Number(internalStocksOf(left) === 'EXHAUSTED'));
+  const choices: AttackerSupplyChoice[] = [];
+  for (const piece of ordered) {
+    const option = attackerSupplyOptions(state, actorId, choices, piece.id)?.options[0];
+    if (!option) return null;
+    choices.push(option.choice);
+  }
+  return choices;
+};
+
 export const defenderSupplyTokens = (state: GameState, defenders: readonly PieceState[]): number =>
   defenders.reduce((total, piece) => total + reTicksOf(state, piece), 0) <= COMBAT_SUPPLY.smallDefenderMaximumReTicks
     ? COMBAT_SUPPLY.smallDefenderTokens : COMBAT_SUPPLY.defenderTokens;
@@ -401,11 +391,8 @@ export const validateCombatDeclaration = (state: GameState, action: CombatDeclar
     const stackTicks = [...friendlyCombatUnitsAt(state, action.actorId, hexes[0]!)].reduce((total, piece) => total + reTicksOf(state, piece), 0);
     if (stackTicks > state.configuration.stackingLimitReTicks) issues.push(violation('OVERRUN_OVERSTACKED', ['attackerIds'], 'Overrunning units and friendly units in their Hex cannot exceed 10 RE.', '4.8a'));
   }
-  if (issues.length === 0 && action.attackerSupply) {
+  if (issues.length === 0) {
     issues.push(...settleDeclaredAttackerSupply(state, action.actorId, action.attackerIds, action.attackerSupply).violations);
-  } else if (issues.length === 0 && !attackerSupplyFeasible(state, pieces)) {
-    issues.push(violation('ATTACKER_COMBAT_SUPPLY_UNAVAILABLE', ['attackerIds'],
-      'Attackers need 1T per attacking step; units with Exhausted internal stocks must get it from a dump they can draw or be thrown from.', '9.5A'));
   }
   return issues;
 };
@@ -427,23 +414,13 @@ export const previewCombat = (
   attackerIds: readonly PieceId[],
   targetHexId: HexId,
   leadAttackerId: PieceId,
-  attackerSupply: readonly AttackerSupplyChoice[] | null = null,
+  attackerSupply: readonly AttackerSupplyChoice[],
 ): CombatPreview => {
   const defenders = enemyCombatUnitsAt(state, actorId, targetHexId);
   const attackers = attackerIds.flatMap((id) => pieceById(state, id) ?? []);
   const tokens = defenderSupplyTokens(state, defenders);
   const defenderOwner = defenders[0]?.ownerId ?? opponentOf(state, actorId);
-  let internal = 0;
-  if (attackerSupply) {
-    internal = settleDeclaredAttackerSupply(state, actorId, attackerIds, attackerSupply).internalIds.length;
-  } else {
-    let working = state;
-    for (const piece of attackers) {
-      const allocation = allocateSupply(working, actorId, [piece], attackerNeed(piece));
-      if (allocation) working = reserveInto(working, allocation);
-      else internal += 1;
-    }
-  }
+  const internal = settleDeclaredAttackerSupply(state, actorId, attackerIds, attackerSupply).internalIds.length;
   const defenderIds = defenders.map(({ id }) => id);
   return {
     supplied: calculateCombatOdds(state, attackerIds, defenderIds, targetHexId, defenderIds, leadAttackerId, null),
@@ -488,10 +465,8 @@ const emptyTransaction = (
 export const declareCombat = (state: GameState, action: CombatDeclaration): Transition => {
   const attackers = action.attackerIds.map((id) => pieceById(state, id)!);
   const overrun = action.combatKind === 'OVERRUN';
-  // 12.10c: units with Exhausted stocks pay first so on-map SP goes to those that cannot do without it.
-  const ordered = stableSort(attackers, (left, right) =>
-    Number(internalStocksOf(right) === 'EXHAUSTED') - Number(internalStocksOf(left) === 'EXHAUSTED'));
-  const declared = action.attackerSupply ? settleDeclaredAttackerSupply(state, action.actorId, action.attackerIds, action.attackerSupply) : null;
+  // 9.5: the attackers' supply was declared with the attack and is paid with it.
+  const declared = settleDeclaredAttackerSupply(state, action.actorId, action.attackerIds, action.attackerSupply);
   const transaction: RuleTransaction = {
     ...emptyTransaction(state, action.actionId, overrun ? 'OVERRUN' : 'COMBAT', action.actorId),
     step: 'ATTACKER_SUPPLY',
@@ -499,9 +474,9 @@ export const declareCombat = (state: GameState, action: CombatDeclaration): Tran
     defenderIds: [...action.defenderIds],
     targetHexId: action.targetHexId,
     leadAttackerId: action.leadAttackerId,
-    // Declared sources are paid with the declaration; otherwise each attacker is asked in turn.
-    ...(declared ? { attackerPayments: declared.payments, attackerInternalIds: declared.internalIds } : {}),
-    payment: { side: 'ATTACKER', queue: declared ? [] : ordered.map((piece) => ({ pieceIds: [piece.id], tokens: attackerNeed(piece) })), paid: 0 },
+    attackerPayments: declared.payments,
+    attackerInternalIds: declared.internalIds,
+    payment: { side: 'ATTACKER', queue: [], paid: 0 },
     blockedHexIds: [...new Set(state.pieceState.pieces
       .filter((piece) => piece.ownerId === action.actorId && isCombatUnit(state, piece) && hexOf(piece) !== null)
       .map((piece) => hexOf(piece)!))],
@@ -550,13 +525,6 @@ const payableDumps = (state: GameState): readonly DumpAccess[] => {
     .some((key) => key.startsWith('HQ:') && shared.every((set) => set.has(key))));
 };
 
-/** Exhausted attackers still in the queue after the current one can all still be paid. */
-const exhaustedRemainFeasible = (state: GameState): boolean => {
-  const payment = state.activeTransaction!.payment!;
-  const later = payment.queue.slice(1).flatMap((consumer) => consumerPieces(state, consumer)).filter((piece) => internalStocksOf(piece) === 'EXHAUSTED');
-  return planAttackerSupply(state, later) !== null;
-};
-
 const withReservation = (state: GameState, side: CombatSide, reservation: ResourceReservation): GameState => {
   const transaction = state.activeTransaction!;
   const key = side === 'ATTACKER' ? 'attackerPayments' : 'defenderPayments';
@@ -596,22 +564,14 @@ const paymentOptions = (state: GameState): PendingDecision['options'] => {
       const take = Math.min(remaining, dump.availableQuantity);
       const candidates = take > 1 && dumps.length > 1 ? [take, 1] : [take];
       for (const tokens of candidates) {
-        if (payment.side === 'ATTACKER' && transaction.kind !== 'BARRAGE') {
-          const probe = withReservation(state, 'ATTACKER', reservation(state, dump.pieceId, tokens));
-          if (tokens === remaining && !exhaustedRemainFeasible(probe)) continue;
-        }
         if (tokens < remaining && !partialPaymentCompletes(state, dump.pieceId, tokens, remaining)) continue;
         options.push({ id: `pay:${dump.pieceId}:${tokens}`, label: `Pay ${tokens}T from the dump at ${dump.hexId} (${dump.availableQuantity}T available)`, hexId: dump.hexId });
       }
     }
   }
-  const unit = pieces[0];
+  // Attackers declare their supply with the attack (9.5); after it only the defender and a barrage pay here.
   if (transaction.kind !== 'BARRAGE' && payment.paid === 0) {
     const waste = available > 0 && available < remaining ? ` (the ${available}T in reach is spent anyway)` : '';
-    if (payment.side === 'ATTACKER' && unit && internalStocksOf(unit) !== 'EXHAUSTED'
-      && available < remaining) {
-      options.push({ id: 'internal', label: `${unitName(state, unit)} uses internal stocks (marked ${internalStocksOf(unit) === 'LOW' ? 'Exhausted' : 'Low'})${printedSteps(state, unit) > 1 ? waste : ''}`, hexId: null });
-    }
     if (payment.side === 'DEFENDER' && available < remaining && pieces.some((piece) => internalStocksOf(piece) !== 'EXHAUSTED')) {
       options.push({ id: 'internal', label: `Defenders use internal stocks (each is marked)${waste}`, hexId: null });
     }
@@ -639,13 +599,11 @@ const applyPaymentChoice = (state: GameState, choiceId: string): GameState => {
     const available = dumps.reduce((total, dump) => total + dump.availableQuantity, 0);
     let next = state;
     const remaining = consumer.tokens - payment.paid;
-    const wasteApplies = available > 0 && available < remaining && (payment.side === 'DEFENDER' || printedSteps(state, pieces[0]!) > 1);
-    if (wasteApplies) {
+    // Only the defender is offered internal stocks here (attackers declare theirs, 9.5).
+    if (available > 0 && available < remaining) {
       for (const dump of dumps) next = withReservation(next, payment.side, reservation(next, dump.pieceId, dump.availableQuantity));
     }
-    return payment.side === 'ATTACKER'
-      ? popConsumer(next, { attackerInternalIds: [...next.activeTransaction!.attackerInternalIds, pieces[0]!.id] })
-      : popConsumer(next, { defenderInternalIds: pieces.filter((piece) => internalStocksOf(piece) !== 'EXHAUSTED').map(({ id }) => id) });
+    return popConsumer(next, { defenderInternalIds: pieces.filter((piece) => internalStocksOf(piece) !== 'EXHAUSTED').map(({ id }) => id) });
   }
   // `pay:<dump id>:<tokens>`; dump IDs themselves contain colons.
   const body = choiceId.slice('pay:'.length);

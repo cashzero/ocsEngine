@@ -18,6 +18,7 @@ import {
   isAttackCapable,
   stepOf,
 } from '../pieces.js';
+import { defaultAttackerSupply } from '../combat/combat.js';
 import { combatActionRating } from '../combat/strength.js';
 import { combineCandidates, refitCandidates } from '../air/base.js';
 import { constructionHexes, constructionOptions, isEngineerCapable, largestFirstPayments } from '../air/construction.js';
@@ -79,10 +80,13 @@ export const combatCandidatesFor = (
       : [adjacent, ...adjacent.map((piece) => [piece])];
     for (const group of groups) {
       if (pieceId !== null && !group.some(({ id }) => id === pieceId)) continue;
+      // 9.5: the supply each attacker declares, Exhausted units first; a group some unit cannot supply is no candidate.
+      const attackerSupply = defaultAttackerSupply(state, actorId, group.map(({ id }) => id));
+      if (!attackerSupply) continue;
       const action: GameAction = {
         ...base(state, actorId, `combat:${combatKind}:${target}:${group.map(({ id }) => id).join('+')}`),
         kind: 'DECLARE_COMBAT', combatKind, attackerIds: group.map(({ id }) => id), defenderIds,
-        targetHexId: target, leadAttackerId: leadOf(state, group),
+        targetHexId: target, leadAttackerId: leadOf(state, group), attackerSupply,
       };
       if (validateGameAction(state, action).allowed) {
         actions.push(action);

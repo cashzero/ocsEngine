@@ -2,7 +2,8 @@
 
 Real Chromium (Playwright) on the built application at 1920×1080, driven by `scripts/attack-supply/acceptance.mjs`. Every step is
 a click, key press or file chosen on the page; every check reads the page (`log.md`, `results.json`). Result: **17/17 PASS,
-0 page errors**.
+0 page errors**. Re-run after `attackerSupply` became required on every declaration (the AI's included): again 17/17,
+0 page errors; the screenshots and `results.json` are from that run.
 
 Rule (user correction 2026-10-08): each attacking unit's combat supply is declared before it takes part in the attack (9.5,
 12.4). A unit may use its internal stocks only when it cannot get the SP it needs from dumps in reach (12.10a); the 9.5 example

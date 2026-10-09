@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  defaultAttackerSupply,
   ALLIED,
   AXIS,
   applyRuleAction,
@@ -157,6 +158,7 @@ describe('hedgehog effects (9.4e, 9.8, 9.9, 10.0, 16.0d-e)', () => {
     const facts = ruleEngine.validateAction(atStep(dug, 'COMBAT', 'COMBAT', AXIS), {
       actionId: 'test:attack' as never, actorId: AXIS, expectedRevision: dug.revision, kind: 'DECLARE_COMBAT', combatKind: 'REGULAR',
       attackerIds: [U.xInf1, U.xInf2], defenderIds: crew, targetHexId: SITE, leadAttackerId: U.xInf1,
+      attackerSupply: defaultAttackerSupply(atStep(dug, 'COMBAT', 'COMBAT', AXIS), AXIS, [U.xInf1, U.xInf2])!,
     });
     expect(facts.allowed).toBe(true);
   });
@@ -173,6 +175,7 @@ describe('hedgehog effects (9.4e, 9.8, 9.9, 10.0, 16.0d-e)', () => {
       const start = level === 0 ? siteState({ [U.xInf1]: [hex(5), 'COMBAT', 'combat'], [U.xInf2]: [hex(5), 'COMBAT', 'combat'] }) : defended(level);
       let state = ok(applyRuleAction(atStep(start, 'COMBAT', 'COMBAT', AXIS), AXIS, {
         kind: 'DECLARE_COMBAT', combatKind: 'REGULAR', attackerIds: [U.xInf1, U.xInf2], defenderIds: crew, targetHexId: SITE, leadAttackerId: U.xInf1,
+        attackerSupply: defaultAttackerSupply(start, AXIS, [U.xInf1, U.xInf2])!,
       }));
       // Answer supply, lead and terrain choices; the odds are read just before the dice are rolled.
       const events: RuleEvent[] = [];

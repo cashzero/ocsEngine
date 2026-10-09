@@ -31,7 +31,7 @@ const publicFact = (key: string, value: string | number | boolean): RuleFact => 
 const actionFacts = (state: GameState, action: GameAction): readonly RuleFact[] => {
   if (action.kind === 'MOVE_PIECE') return queryMovementPath(state, action.actorId, action.pieceId, action.path).facts;
   if (action.kind === 'DECLARE_COMBAT') {
-    const preview = previewCombat(state, action.actorId, action.attackerIds, action.targetHexId, action.leadAttackerId, action.attackerSupply ?? null);
+    const preview = previewCombat(state, action.actorId, action.attackerIds, action.targetHexId, action.leadAttackerId, action.attackerSupply);
     return [
       publicFact('combat.attackerStrength', preview.supplied.attackerStrength),
       publicFact('combat.defenderStrength', preview.supplied.defenderStrength),

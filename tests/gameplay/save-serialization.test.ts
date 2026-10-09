@@ -36,7 +36,7 @@ describe('save serialization fast path (PERF-6)', () => {
 });
 
 describe('declared attacker supply in saves (9.5, 12.10a)', () => {
-  it('reads DECLARE_COMBAT with and without attackerSupply, and rejects an unknown method', async () => {
+  it('reads DECLARE_COMBAT with attackerSupply, refuses one without it as incompatible, and rejects an unknown method', async () => {
     const created = await createNewGameOrchestrator(createGameplayEngine(createMemoryGameplayPorts())).create({
       ...DEFAULT_NEW_GAME_REQUEST, map: { ...DEFAULT_NEW_GAME_REQUEST.map, width: 20, height: 16 },
     });
@@ -53,12 +53,13 @@ describe('declared attacker supply in saves (9.5, 12.10a)', () => {
       acceptedActionMetadata: actions.map((_, index) => ({ requestId: `ui:request:${String(index + 1).padStart(6, '0')}`, seatId, acceptedAtMs: 0, durationMs: 0 })),
     });
     const declared = [{ pieceId: 'piece:a', method: 'DUMPS', dumpIds: ['piece:d'] }, { pieceId: 'piece:b', method: 'INTERNAL' }];
-    const parsed = parseGameplaySave(withActions([combat(1, {}), combat(2, { attackerSupply: declared })]));
+    const parsed = parseGameplaySave(withActions([combat(1, { attackerSupply: declared })]));
     expect(parsed.ok).toBe(true);
-    if (parsed.ok) {
-      expect('attackerSupply' in parsed.value.acceptedActions[0]!).toBe(false);
-      expect((parsed.value.acceptedActions[1] as { attackerSupply?: unknown }).attackerSupply).toEqual(declared);
-    }
+    if (parsed.ok) expect((parsed.value.acceptedActions[0] as { attackerSupply?: unknown }).attackerSupply).toEqual(declared);
+    // Written before attackers declared their supply: refused with the reason, not replayed into a different game.
+    const legacy = parseGameplaySave(withActions([combat(1, {})]));
+    expect(legacy.ok).toBe(false);
+    if (!legacy.ok) expect(legacy.error.map(({ code }) => code)).toContain('SAVE_INCOMPATIBLE');
     expect(parseGameplaySave(withActions([combat(1, { attackerSupply: [{ pieceId: 'piece:a', method: 'BORROW' }] })])).ok).toBe(false);
   }, 60_000);
 });

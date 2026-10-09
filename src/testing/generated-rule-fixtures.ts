@@ -5,6 +5,7 @@ import { prepareNewGame } from '../game-flow/index.js';
 import type { NewGameRequest } from '../game-flow/index.js';
 import {
   createInitialGameState,
+  defaultAttackerSupply,
   parseRuleActionId,
   ruleEngine,
   type GameAction,
@@ -238,6 +239,8 @@ export const declareTestCombat = (
 ): TransitionResult => applyRuleAction(state, actor, {
   kind: 'DECLARE_COMBAT', combatKind, attackerIds, defenderIds: combatDefenders(state, actor, targetHexId),
   targetHexId: targetHexId as HexId, leadAttackerId,
+  // 9.5: each attacker's default declared supply; with none legal, internal stocks, which the engine then refuses.
+  attackerSupply: defaultAttackerSupply(state, actor, attackerIds) ?? attackerIds.map((pieceId) => ({ pieceId, method: 'INTERNAL' as const })),
 });
 
 /** Answer pending decisions with `pick` (default: the first option) until none remains. */

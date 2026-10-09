@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   ALLIED,
+  defaultAttackerSupply,
   AXIS,
   applyRuleAction,
   atStep,
@@ -153,7 +154,7 @@ describe('OCS 4.3 ground combat (9.0-9.13)', () => {
 
   it('requires every combat unit in the hex to defend and attackers to have combat supply (9.1d, 9.5A)', () => {
     const state = atStep(buildGeneratedRuleState({ ...duel, [U.axTrk2]: ['6,5', 'COMBAT', 'combat'] }), 'COMBAT', 'COMBAT', ALLIED);
-    const partial = applyRuleAction(state, ALLIED, { kind: 'DECLARE_COMBAT', combatKind: 'REGULAR', attackerIds: [U.alTrk], defenderIds: [U.axTrk], targetHexId: '6,5' as HexId, leadAttackerId: U.alTrk });
+    const partial = applyRuleAction(state, ALLIED, { kind: 'DECLARE_COMBAT', combatKind: 'REGULAR', attackerIds: [U.alTrk], defenderIds: [U.axTrk], targetHexId: '6,5' as HexId, leadAttackerId: U.alTrk, attackerSupply: defaultAttackerSupply(state, ALLIED, [U.alTrk])! });
     expect(codes(partial)).toContain('WHOLE_HEX_MUST_DEFEND');
     // 12.10: with no dump in reach the attacker falls back on internal stocks and is marked Low...
     const noDump = atStep(buildGeneratedRuleState({ [U.alTrk]: ['5,5', 'COMBAT', 'combat'], [U.axTrk]: ['6,5', 'COMBAT', 'combat'] }), 'COMBAT', 'COMBAT', ALLIED);
@@ -164,7 +165,7 @@ describe('OCS 4.3 ground combat (9.0-9.13)', () => {
     // ...but an Exhausted unit cannot attack without on-map SP (12.10c, 9.5A).
     const exhausted = { ...noDump, pieceState: { ...noDump.pieceState, pieces: noDump.pieceState.pieces.map((entry) => entry.id !== U.alTrk ? entry
       : { ...entry, statuses: [{ statusDefinitionId: 'status:internal-stocks' as never, value: { kind: 'TEXT' as const, value: 'EXHAUSTED' } }] }) } };
-    expect(codes(declareTestCombat(exhausted, ALLIED, 'REGULAR', [U.alTrk], '6,5'))).toContain('ATTACKER_COMBAT_SUPPLY_UNAVAILABLE');
+    expect(codes(declareTestCombat(exhausted, ALLIED, 'REGULAR', [U.alTrk], '6,5'))).toContain('INTERNAL_STOCKS_EXHAUSTED');
   });
 
   it('lets only an attacker that cannot obtain its own SP use internal stocks (12.10a, 9.5)', () => {
@@ -183,7 +184,7 @@ describe('OCS 4.3 ground combat (9.0-9.13)', () => {
   it('declares each attacker\'s combat supply with the attack, internal stocks only when SP is out of reach (9.5, 12.10a)', () => {
     const base = atStep(buildGeneratedRuleState({ ...duel, [U.alTrk2]: ['5,5', 'COMBAT', 'combat'] }), 'COMBAT', 'COMBAT', ALLIED);
     const state: GameState = { ...base, pieceState: { ...base.pieceState, pieces: base.pieceState.pieces.map((entry) => entry.id === U.alSup ? { ...entry, resourceQuantity: 1 } : entry) } };
-    const declare = (attackerSupply: NonNullable<Extract<Parameters<typeof applyRuleAction>[2], { kind: 'DECLARE_COMBAT' }>['attackerSupply']>) => applyRuleAction(state, ALLIED, {
+    const declare = (attackerSupply: Extract<Parameters<typeof applyRuleAction>[2], { kind: 'DECLARE_COMBAT' }>['attackerSupply']) => applyRuleAction(state, ALLIED, {
       kind: 'DECLARE_COMBAT', combatKind: 'REGULAR', attackerIds: [U.alTrk, U.alTrk2], defenderIds: [U.axTrk], targetHexId: '6,5' as HexId, leadAttackerId: U.alTrk, attackerSupply,
     });
     const fromDump = (pieceId: typeof U.alTrk) => ({ pieceId, method: 'DUMPS' as const, dumpIds: [U.alSup] });

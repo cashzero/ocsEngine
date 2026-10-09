@@ -113,11 +113,11 @@
   "timings": [
     {
       "label": "open attack plan",
-      "elapsed": 976
+      "elapsed": 390
     },
     {
       "label": "declare B1",
-      "elapsed": 441
+      "elapsed": 436
     }
   ],
   "errors": []

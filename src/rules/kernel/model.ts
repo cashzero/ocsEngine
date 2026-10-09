@@ -658,11 +658,8 @@ export type GameAction =
     readonly targetHexId: HexId;
     /** Attacking unit whose Action Rating leads the combat (9.6). */
     readonly leadAttackerId: PieceId;
-    /**
-     * Each attacker's combat supply, declared with the attack and paid in this order (9.5, 12.4, 12.10).
-     * Omitted, the engine asks for each attacker's source after the declaration.
-     */
-    readonly attackerSupply?: readonly AttackerSupplyChoice[];
+    /** Each attacker's combat supply, declared with the attack and paid in this order (9.5, 12.4, 12.10). */
+    readonly attackerSupply: readonly AttackerSupplyChoice[];
   })
   | (ActionEnvelope & {
     readonly kind: 'DECLARE_BARRAGE';
