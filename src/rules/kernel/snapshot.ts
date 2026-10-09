@@ -144,6 +144,10 @@ const configurationDecoder: Decoder<RuleConfiguration> = objectDecoder({
     detrainableFeatureDefinitionIds: arrayDecoder(definitionIdDecoder),
   })),
   railCapacity: optionalDecoder(arrayDecoder(objectDecoder({ playerId: playerIdDecoder, points: safeIntegerDecoder }))),
+  rivers: optionalDecoder(objectDecoder({
+    minorFeatureDefinitionIds: arrayDecoder(definitionIdDecoder),
+    majorFeatureDefinitionIds: arrayDecoder(definitionIdDecoder),
+  })),
 });
 
 const sequenceDecoder: Decoder<TurnSequenceState> = objectDecoder({
@@ -179,6 +183,7 @@ const usageDecoder: Decoder<PieceUsageState> = objectDecoder({
   unloadedTokens: safeIntegerDecoder,
   airCarried: optionalDecoder(booleanDecoder),
   railCarried: optionalDecoder(booleanDecoder),
+  ownBridgeHexId: optionalDecoder(hexIdDecoder),
 });
 
 const railStateDecoder: Decoder<RailState> = objectDecoder({

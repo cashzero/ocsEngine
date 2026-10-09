@@ -33,7 +33,7 @@ import {
   attritionResult,
   attritionSteps,
 } from '../tables/ocs-4.3.js';
-import { movementCostModel } from '../terrain.js';
+import { playerCostModel } from '../movement/bridging.js';
 import { violation } from '../validation/violation.js';
 import { enemyCombatUnitsAt } from '../pieces.js';
 import { queryZoc } from '../zoc/zoc.js';
@@ -122,7 +122,7 @@ export const breakoutStatus = (state: GameState, piece: PieceState): BreakoutSta
   // A) a path free of enemy combat units and prohibited terrain (and un-negated enemy ZOC for Truck MP).
   const mobility = moveModeMobility(state, piece);
   if (mobility === null) return no('The unit cannot move in Move Mode.');
-  const model = movementCostModel(state, mobility);
+  const model = playerCostModel(state, piece.ownerId, mobility);
   const targets = new Set(anchors.map((other) => hexOf(other)!));
   const seen = new Set<HexId>([hexId]);
   const queue: HexId[] = [hexId];

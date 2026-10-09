@@ -23,7 +23,8 @@ import { applyBreakout } from '../lifecycle/supply-phase.js';
 import { absorbInto, absorptionDecision, applyCreateBreakdown, parseAbsorptionChoice } from '../breakdown/breakdown.js';
 import { applyModeChange, applyReserveRelease } from '../mode/mode.js';
 import { queryMovementPath } from '../movement/movement.js';
-import { hexOf, isCombatUnit, pieceById, reTicksOf, usageOf, withInternalStocks, withUsage } from '../pieces.js';
+import { hexOf, isCombatUnit, isEngineerCapable, pieceById, reTicksOf, usageOf, withInternalStocks, withUsage } from '../pieces.js';
+import { bridgingEnabled } from '../movement/bridging.js';
 import { hasOptionalActions } from '../query/candidates.js';
 import { nextSequence } from '../sequence/sequence.js';
 import { commitFuelForMove, payFuel } from '../supply/fuel.js';
@@ -109,7 +110,11 @@ const dispatch = (state: GameState, action: GameAction): Transition => {
       const piece = pieceById(state, action.pieceId)!;
       const changed = applyModeChange(piece, action.mode);
       // 5.4: changing mode is how a unit begins its move, which ends the previous unit's move (6.1g).
-      const next = beginMoving(state, piece.id);
+      let next = beginMoving(state, piece.id);
+      // 13.8b Exception: a unit that stops being Engineer-Capable may still use its own bridge to leave the hex.
+      if (bridgingEnabled(state) && isEngineerCapable(state, piece) && !isEngineerCapable(state, changed)) {
+        next = { ...next, usage: withUsage(next, { ...usageOf(next, piece), ownBridgeHexId: hexOf(piece)! }) };
+      }
       return {
         state: { ...next, currentMoverId: piece.id, pieceState: upsertPieceState(next.pieceState, changed) },
         events: [{ kind: 'MODE_CHANGED', sequence: 0, pieceId: piece.id, from: piece.mode, to: changed.mode ?? action.mode }],

@@ -188,6 +188,17 @@ export interface RailroadConfiguration {
   readonly detrainableFeatureDefinitionIds: readonly DefinitionId[];
 }
 
+/**
+ * The game's river hexside features, for Bridging (13.8b). Their MP costs stay in `hexsideMovementCosts`; this block
+ * says which are Minor and which are Major so an Engineer-Capable unit can downgrade them.
+ */
+export interface RiverConfiguration {
+  /** Minor Rivers (and canals): bridged, they cost no additional MP. */
+  readonly minorFeatureDefinitionIds: readonly DefinitionId[];
+  /** Major Rivers: bridged, they cost what the first Minor River costs. */
+  readonly majorFeatureDefinitionIds: readonly DefinitionId[];
+}
+
 export interface RuleConfiguration {
   readonly schemaVersion: SchemaVersion;
   readonly id: DefinitionId;
@@ -216,6 +227,8 @@ export interface RuleConfiguration {
   readonly railroads?: RailroadConfiguration | undefined;
   /** 13.3b: Rail Cap points each player gets in every friendly Movement Phase. Absent: nobody moves cargo by rail. */
   readonly railCapacity?: readonly RailCapacity[] | undefined;
+  /** Absent when nobody can bridge (and in saves made before Bridging existed, 13.8b). */
+  readonly rivers?: RiverConfiguration | undefined;
 }
 
 export interface RailCapacity {
@@ -258,6 +271,11 @@ export interface PieceUsageState {
   readonly airCarried?: boolean | undefined;
   /** Moved by rail this phase: the unit may not move again or use another transport (13.3e, 4.7d). */
   readonly railCarried?: boolean | undefined;
+  /**
+   * Hex an Engineer-Capable unit stopped being Engineer-Capable in by changing mode this phase: it may still use its
+   * own bridge to leave that hex (13.8b Exception).
+   */
+  readonly ownBridgeHexId?: HexId | undefined;
 }
 
 export interface ResourceReservation {
