@@ -6,6 +6,8 @@ import {
   NEW_GAME_MAP_LIMITS,
   createGameplayEngine,
   createMemoryGameplayPorts,
+  GENERATED_MAJOR_CITY_OBJECTIVE_POINTS,
+  GENERATED_TOWN_OBJECTIVE_POINTS,
   createNewGameOrchestrator,
   buildGeneratedMapPreview,
   buildGeneratedOobPreview,
@@ -20,6 +22,7 @@ import {
   type GeneratedScenarioPackage,
   type AirForceLevel,
   type MapGenerationStyle,
+  type NewGamePreparationStage,
   type NewGameRequest,
   type OobScale,
   OOB_DIVISION_LIMITS,
@@ -78,6 +81,10 @@ let newGameSettings: NewGameRequest = {
 let newGameOpen = location.hash === '#new-game';
 let newGameBusy = false;
 let preparingPreview = false;
+/** The generation step running now, shown on the loading page; null between builds. */
+let preparingStage: NewGamePreparationStage | null = null;
+/** Bumped by each build and by Cancel: a build whose number is no longer current stops at its next step. */
+let generationRun = 0;
 let newGameError = '';
 let newGamePreview: GeneratedScenarioPackage | null = null;
 let newGameErrors: readonly { readonly stage: string; readonly code: string; readonly message: string; readonly path: readonly (string | number)[] }[] = [];
@@ -117,7 +124,10 @@ let gameEndDismissed = false;
 /** Scroll position of each list by its scroll key, so a tab's list comes back where the player left it. */
 const listPositions = new Map<string, number>();
 const listKeys = new WeakMap<Element, string>();
-let settingsTab = 'basic';
+/** The New Game page on show: the settings form, or the generated operation it built. */
+let newGamePage: 'settings' | 'preview' = 'settings';
+/** The side whose forces the preview lists; the other side waits behind its tab. */
+let previewForceSide = 'ALLIED';
 let previewStale = false;
 let hoverHexId: string | null = null;
 let stackPickerHex: string | null = null;
@@ -535,10 +545,16 @@ const airBasesLabel = (prepared: GeneratedScenarioPackage, side: string): string
 const operationPreviewHtml = (prepared: GeneratedScenarioPackage): string => {
   const map = buildGeneratedMapPreview(prepared.generatedMap, 32);
   const oob = buildGeneratedOobPreview(prepared.generatedOob);
+  // Every list entry names the Hexes its units start in, so hovering it can mark them on the map.
+  const startHex = (id: string): string | null => {
+    const location = prepared.scenario.initialPieceState.pieces.find((piece) => piece.id === id)?.location;
+    return location?.kind === 'ON_MAP' ? location.hexId : null;
+  };
+  const traced = (units: readonly { readonly id: string }[]): string => ` data-trace-hexes="${escapeHtml([...new Set(units.flatMap(({ id }) => startHex(id) ?? []))].join(' '))}"`;
   const previewCounter = (unit: {id:string}): string => {
     const piece = prepared.scenario.initialPieceState.pieces.find(({id}) => id === unit.id)!;
     const definition = prepared.scenario.pieceCatalog.definitions.find(({id}) => id === piece.definitionId)!;
-    return `<figure class="preview-counter">${counterSvg(counterView(definition, {...piece, statuses: [], statusValues: piece.statuses.flatMap(({ statusDefinitionId, value }) => value.kind === 'INTEGER' ? [{ statusDefinitionId, value: value.value }] : []), redacted: false}))}<figcaption>${escapeHtml(definition.name)}</figcaption></figure>`;
+    return `<figure class="preview-counter"${traced([unit])}>${counterSvg(counterView(definition, {...piece, statuses: [], statusValues: piece.statuses.flatMap(({ statusDefinitionId, value }) => value.kind === 'INTEGER' ? [{ statusDefinitionId, value: value.value }] : []), redacted: false}))}<figcaption>${escapeHtml(definition.name)}</figcaption></figure>`;
   };
   const objectives = new Set<string>(prepared.deployment.objectiveHexIds);
   const hexSize = map.layout.hexSize;
@@ -552,7 +568,7 @@ const operationPreviewHtml = (prepared: GeneratedScenarioPackage): string => {
   }
   const deploymentMarks = map.cells.flatMap((cell) => {
     const entry = deployed.get(cell.id);
-    return entry ? [`<g class="preview-deployment owner-${entry.owner + 1}"><rect x="${cell.x - 12}" y="${cell.y - 12}" width="24" height="24" rx="3"></rect><text x="${cell.x}" y="${cell.y + 5}" text-anchor="middle">${entry.count}</text></g>`] : [];
+    return entry ? [`<g class="preview-deployment owner-${entry.owner + 1}" data-hex="${escapeHtml(cell.id)}"><circle class="trace-ring" cx="${cell.x}" cy="${cell.y}" r="${Math.round(hexSize * 1.3)}"></circle><rect x="${cell.x - 12}" y="${cell.y - 12}" width="24" height="24" rx="3"></rect><text x="${cell.x}" y="${cell.y + 5}" text-anchor="middle">${entry.count}</text></g>`] : [];
   }).join('');
   const cells = `<g class="terrain-layer">${map.cells.map((cell) => terrainFillHtml(cell, hexSize)).join('')}</g>`
     + `<g class="grid-layer">${regionEdgesHtml(map.cells, hexSize)}${hexGridHtml(map.cells, hexSize)}</g>`
@@ -567,16 +583,50 @@ const operationPreviewHtml = (prepared: GeneratedScenarioPackage): string => {
   const roads = roadsHtml(map.edges, map.cells, hexSize, 'generated-edge') + railsHtml(map.edges, map.cells, hexSize);
   const forces = oob.sides.map((side) => `<section class="preview-force side-${side.side.toLowerCase()}">
     <header><strong>${escapeHtml(side.side)}</strong><span>${prepared.generatedOob.metrics.pointsBySide[side.side]} points</span></header>
-    ${side.independentUnits.some(({ role }) => role === 'HQ') ? `<details class="counter-formation preview-hq"><summary><span>HQ</span><small>${side.independentUnits.filter(({ role }) => role === 'HQ').length} units</small></summary><div class="counter-grid">${side.independentUnits.filter(({ role }) => role === 'HQ').map(previewCounter).join('')}</div></details>` : ''}
-    ${side.formations.map((formation) => `<details class="counter-formation"><summary><span>${escapeHtml(formation.name)}</span><small>${formation.units.length} units · ${escapeHtml(oobRoleLabel(formation.archetype))}</small></summary><div class="counter-grid">${formation.units.map(previewCounter).join('')}</div></details>`).join('')}
-    <details class="counter-formation"><summary>${side.independentUnits.filter(({ role }) => role !== 'HQ' && role !== 'AIRCRAFT' && role !== 'AIR_BASE').length} independent support / logistics units</summary><div class="counter-grid">${side.independentUnits.filter(({ role }) => role !== 'HQ' && role !== 'AIRCRAFT' && role !== 'AIR_BASE').map(previewCounter).join('')}</div></details>
-    ${side.independentUnits.some(({ role }) => role === 'AIRCRAFT') ? `<details class="counter-formation"><summary>Air forces: ${side.independentUnits.filter(({ role }) => role === 'AIRCRAFT').length} aircraft, ${airBasesLabel(prepared, side.side)}</summary><div class="counter-grid">${side.independentUnits.filter(({ role }) => role === 'AIRCRAFT' || role === 'AIR_BASE').map(previewCounter).join('')}</div></details>` : ''}
+    ${side.independentUnits.some(({ role }) => role === 'HQ') ? `<details class="counter-formation preview-hq"${traced(side.independentUnits.filter(({ role }) => role === 'HQ'))}><summary><span>HQ</span><small>${side.independentUnits.filter(({ role }) => role === 'HQ').length} units</small></summary><div class="counter-grid">${side.independentUnits.filter(({ role }) => role === 'HQ').map(previewCounter).join('')}</div></details>` : ''}
+    ${side.formations.map((formation) => `<details class="counter-formation"${traced(formation.units)}><summary><span>${escapeHtml(formation.name)}</span><small>${formation.units.length} units · ${escapeHtml(oobRoleLabel(formation.archetype))}</small></summary><div class="counter-grid">${formation.units.map(previewCounter).join('')}</div></details>`).join('')}
+    <details class="counter-formation"${traced(side.independentUnits.filter(({ role }) => role !== 'HQ' && role !== 'AIRCRAFT' && role !== 'AIR_BASE'))}><summary>${side.independentUnits.filter(({ role }) => role !== 'HQ' && role !== 'AIRCRAFT' && role !== 'AIR_BASE').length} independent support / logistics units</summary><div class="counter-grid">${side.independentUnits.filter(({ role }) => role !== 'HQ' && role !== 'AIRCRAFT' && role !== 'AIR_BASE').map(previewCounter).join('')}</div></details>
+    ${side.independentUnits.some(({ role }) => role === 'AIRCRAFT') ? `<details class="counter-formation"${traced(side.independentUnits.filter(({ role }) => role === 'AIRCRAFT' || role === 'AIR_BASE'))}><summary>Air forces: ${side.independentUnits.filter(({ role }) => role === 'AIRCRAFT').length} aircraft, ${airBasesLabel(prepared, side.side)}</summary><div class="counter-grid">${side.independentUnits.filter(({ role }) => role === 'AIRCRAFT' || role === 'AIR_BASE').map(previewCounter).join('')}</div></details>` : ''}
   </section>`).join('');
-  return `<div class="operation-map-wrap"><svg class="operation-map" viewBox="0 0 ${map.layout.width} ${map.layout.height}" role="img" aria-label="Generated operation map preview with starting positions">${mapArtDefsHtml()}${cells}${rivers}${roads}${features}${deploymentMarks}</svg><p class="preview-key"><span class="key owner-1">${escapeHtml(prepared.scenario.players[0]?.name ?? '')}</span><span class="key owner-2">${escapeHtml(prepared.scenario.players[1]?.name ?? '')}</span> starting stacks (unit count)</p><p class="preview-engagement">${escapeHtml(engagementHelp(prepared.summary.engagement))}</p></div>
-    <dl class="operation-metrics"><div><dt>Scenario</dt><dd>${escapeHtml(engagementLabel(prepared.summary.engagement))}</dd></div><div><dt>Map</dt><dd>${escapeHtml(prepared.summary.mapSize)}</dd></div><div><dt>Units</dt><dd>${prepared.summary.unitCount}</dd></div><div><dt>Formations</dt><dd>${prepared.summary.formationCount}</dd></div><div><dt>Deployed hexes</dt><dd>${prepared.deployment.metrics.occupiedHexes}</dd></div><div><dt>Objectives</dt><dd>${prepared.summary.objectiveCount} · ${prepared.deployment.objectives.reduce((total, { points }) => total + points, 0)} VP</dd></div><div><dt>Rail Cap</dt><dd>${escapeHtml(railCapText(prepared))}</dd></div><div><dt>Warnings</dt><dd>${prepared.warnings.length}</dd></div></dl>
+  return `<div class="operation-map-wrap"><svg class="operation-map" viewBox="0 0 ${map.layout.width} ${map.layout.height}" role="img" aria-label="Generated operation map preview with starting positions">${mapArtDefsHtml()}${cells}${rivers}${roads}${features}${deploymentMarks}</svg><div class="preview-key"><span><span class="key owner-1">${escapeHtml(prepared.scenario.players[0]?.name ?? '')}</span><span class="key owner-2">${escapeHtml(prepared.scenario.players[1]?.name ?? '')}</span> starting stacks (unit count)</span><dl class="operation-metrics preview-minor"><div><dt>Divisions</dt><dd>${escapeHtml(divisionsText(prepared))}</dd></div><div><dt>Deployed hexes</dt><dd>${prepared.deployment.metrics.occupiedHexes}</dd></div><div><dt>Rail Cap</dt><dd>${escapeHtml(railCapText(prepared))}</dd></div><div><dt>Warnings</dt><dd>${prepared.warnings.length}</dd></div></dl></div></div>
     <div class="preview-forces">${forces}</div>
     ${prepared.warnings.length > 0 ? `<details class="preview-warnings"><summary>${prepared.warnings.length} generation warning(s)</summary><ul>${prepared.warnings.map((warning) => `<li>${escapeHtml(warning)}</li>`).join('')}</ul></details>` : ''}`;
 };
+/** Divisions (formations) by side: "6 per side", or each side's count when an attacker fields more. */
+const divisionsText = (prepared: GeneratedScenarioPackage): string => {
+  const counts = prepared.generatedOob.sides.map(({ side, formations }) => ({ side, count: formations.length }));
+  return counts.every(({ count }) => count === counts[0]?.count)
+    ? `${counts[0]?.count ?? 0} per side`
+    : counts.map(({ side, count }) => `${side === 'ALLIED' ? 'Allied' : 'Axis'} ${count}`).join(' · ');
+};
+
+/** Objective Hexes and the VP they carry: split evenly in a meeting engagement, all the defender's in an attack. */
+const objectivesText = (prepared: GeneratedScenarioPackage): string => {
+  const objectives = prepared.deployment.objectives;
+  const total = objectives.reduce((sum, { points }) => sum + points, 0);
+  const attacker = attackerOf(prepared.summary.engagement);
+  const holders = attacker === null ? `${total / 2} each side` : `all held by ${attacker === 'ALLIED' ? 'Axis' : 'Allied'}`;
+  return `${objectives.length} hexes · ${total} VP (${holders})`;
+};
+
+/** Mark on the preview map the starting Hexes of the list entry under the pointer or focus; clear them when it leaves. */
+const tracePreviewUnits = (event: Event): void => {
+  const content = event.currentTarget as HTMLElement;
+  const map = content.querySelector('.operation-map');
+  if (!map) return;
+  const entry = event.type === 'mouseout' || event.type === 'focusout' ? null : (event.target as Element).closest<HTMLElement>('[data-trace-hexes]');
+  const hexes = new Set(entry?.dataset.traceHexes?.split(' ').filter(Boolean) ?? []);
+  map.classList.toggle('is-tracing', entry !== null);
+  for (const mark of map.querySelectorAll<SVGGElement>('.preview-deployment')) mark.classList.toggle('is-traced', hexes.has(mark.dataset.hex ?? ''));
+};
+
+/** The preview's headline figures, shown in the dialog bar; the minor ones sit under the map. */
+const operationSummary = (prepared: GeneratedScenarioPackage) => html`<dl class="operation-metrics preview-summary">
+  <div><dt>Scenario</dt><dd>${engagementLabel(prepared.summary.engagement)}</dd></div>
+  <div><dt>Map</dt><dd>${prepared.summary.mapSize}</dd></div>
+  <div><dt>Units</dt><dd>${prepared.summary.unitCount}</dd></div>
+  <div title=${`Major City ${GENERATED_MAJOR_CITY_OBJECTIVE_POINTS} VP, town ${GENERATED_TOWN_OBJECTIVE_POINTS} VP; the total grows with the map's land area.`}><dt>Objectives</dt><dd>${objectivesText(prepared)}</dd></div>
+</dl>`;
 /** The preview markup is built once per prepared package (a few hundred kilobytes for a large operation). */
 const previewMarkup = new WeakMap<GeneratedScenarioPackage, string>();
 
@@ -624,10 +674,10 @@ const onNewGameInput = (event: Event): void => {
   render(controller.getSnapshot());
 };
 
-/** checkValidity fires "invalid" per bad field: open the tab that holds it and say what is wrong beside it. */
+/** checkValidity fires "invalid" per bad field: go back to the settings page and say what is wrong beside it. */
 const onNewGameInvalid = (event: Event): void => {
   const input = event.target as HTMLInputElement;
-  settingsTab = input.id.endsWith('-seed') ? 'advanced' : 'basic';
+  newGamePage = 'settings';
   fieldError = { id: input.id, message: input.validationMessage };
   editedFields.delete(input.id);
   render(controller.getSnapshot());
@@ -637,19 +687,22 @@ const startPreviewedGame = (): void => {
   if (newGameBusy || !newGamePreview || previewStale) return;
   newGameBusy = true;
   newGameError = '';
-  const request = newGamePreview.request;
+  // The previewed package itself is opened: it is not built a second time.
+  const prepared = newGamePreview;
   render(controller.getSnapshot());
-  void afterPaint().then(() => newGameOrchestrator.create(request)).then(async (created) => {
+  void afterPaint().then(() => newGameOrchestrator.start(prepared)).then(async (created) => {
     if (created.ok) await mountCreatedGame(created.value);
     else {
       newGameBusy = false;
+      newGamePage = 'settings';
       newGameErrors = created.error;
       newGameError = created.error.map(({ stage, message }) => `${stage}: ${withHexLabels(message)}`).join(' ');
       render(controller.getSnapshot());
     }
   }).catch(error => {
     newGameBusy = false;
-    newGameError = `${error instanceof Error ? error.message : 'Operation could not start.'} Build a new preview to retry.`;
+    newGamePage = 'settings';
+    newGameError = `${error instanceof Error ? error.message : 'Operation could not start.'} Press Preview to build it again.`;
     render(controller.getSnapshot());
   });
 };
@@ -666,13 +719,50 @@ const randomizeSeeds = (): void => {
   render(controller.getSnapshot());
 };
 
+/** The build steps the loading page lists, with what each one makes. */
+const PREPARATION_STEPS: readonly { readonly stage: NewGamePreparationStage; readonly name: string; readonly detail: string }[] = [
+  { stage: 'MAP', name: 'Map', detail: 'Terrain, rivers, roads and rails' },
+  { stage: 'OOB', name: 'Forces', detail: 'Order of battle for both sides' },
+  { stage: 'DEPLOYMENT', name: 'Deployment', detail: 'Starting positions and objectives' },
+  { stage: 'SCENARIO', name: 'Scenario', detail: 'Assembling and checking the package' },
+];
+
+const cancelGeneration = (): void => {
+  generationRun += 1;
+  newGameBusy = false;
+  preparingPreview = false;
+  preparingStage = null;
+  render(controller.getSnapshot());
+};
+
+/** Shown while the package is built (step by step, with Cancel) or while Start mounts it. */
+const loadingPage = () => {
+  const request = preparingPreview ? newGameSettings : newGamePreview?.request ?? newGameSettings;
+  // Start opens the previewed package; its one step is the session.
+  const current = preparingPreview ? PREPARATION_STEPS.findIndex(({ stage }) => stage === preparingStage) : 0;
+  const steps = preparingPreview ? PREPARATION_STEPS : [{ stage: 'SESSION', name: 'Session', detail: 'Opening the operation for play' }];
+  return html`<section class="new-game-loading" role="status" aria-live="polite">
+    <div class="loading-card">
+      <div class="loading-spinner" aria-hidden="true"></div>
+      <h3>${preparingPreview ? 'Generating operation' : 'Starting operation'}</h3>
+      <p class="loading-summary">${request.map.width}×${request.map.height} · ${request.oob.divisionsPerSide} divisions per side (${request.oob.armoredDivisionsPerSide} armored) · ${request.turnLimit} turns</p>
+      <ol class="loading-steps">${steps.map(({ name, detail }, index) => {
+        const state = index < current ? 'is-complete' : index === current ? 'is-active' : '';
+        return html`<li class=${state} aria-current=${state === 'is-active' ? 'step' : nothing}><strong>${name}</strong><small>${detail}</small></li>`;
+      })}</ol>
+      ${preparingPreview ? html`<button type="button" id="cancel-generation" @click=${cancelGeneration}>Cancel</button>` : nothing}
+    </div>
+  </section>`;
+};
+
 const newGameDialog = () => {
   if (!newGameOpen) return nothing;
   // Every stage reports its real state: current, generating, done, or the stage that failed.
   const ready = newGamePreview !== null && !previewStale;
   const failed = new Set(newGameErrors.map(({ stage }) => stage));
   const stageClass = (stages: readonly string[]): string => stages.some((stage) => failed.has(stage)) ? 'is-error'
-    : preparingPreview ? 'is-active' : ready ? 'is-complete' : '';
+    : preparingStage ? (stages.includes(preparingStage) ? 'is-active' : PREPARATION_STEPS.findIndex(({ stage }) => stage === stages[0]) < PREPARATION_STEPS.findIndex(({ stage }) => stage === preparingStage) ? 'is-complete' : '')
+    : preparingPreview ? '' : ready ? 'is-complete' : '';
   const configuredClass = failed.has('OPTIONS') ? 'is-error' : ready || preparingPreview ? 'is-complete' : 'is-active';
   const gameplayClass = failed.has('GAMEPLAY_BOOTSTRAP') ? 'is-error' : newGameBusy && !preparingPreview ? 'is-active' : '';
   const invalid = new Set(newGameInvalidFields().filter((id) => !editedFields.has(id)));
@@ -686,65 +776,93 @@ const newGameDialog = () => {
     const mark = marks(id);
     return html`<label>${label}<select id=${id} aria-invalid=${mark.invalid} aria-describedby=${mark.described}>${options.map(([option, name]) => html`<option value=${option} ?selected=${option === value}>${name}</option>`)}</select>${error(id)}</label>`;
   };
-  const status = preparingPreview ? 'Generating map, forces and deployment…' : newGameErrors.length > 0 ? 'Cannot build this operation' : newGamePreview && previewStale ? 'Preview invalidated' : newGamePreview ? 'Preview ready' : 'Configure operation';
-  const hint = newGameErrors.length > 0 ? 'Adjust the highlighted settings, then generate again.'
-    : newGamePreview && previewStale ? 'Settings changed since this preview. Press Generate operation to apply them.'
-    : newGamePreview ? 'Start plays exactly this package.' : 'Set the map and force options, then press Generate operation.';
   let previewHtml = '';
   if (newGamePreview) {
     previewHtml = previewMarkup.get(newGamePreview) ?? operationPreviewHtml(newGamePreview);
     previewMarkup.set(newGamePreview, previewHtml);
   }
-  return html`<div class="modal-backdrop new-game-backdrop"><section class="new-game-dialog" role="dialog" aria-modal="true" aria-labelledby="new-game-title" @keydown=${trapFocus}>
-    <header class="generator-header"><div><p class="eyebrow">NEW OPERATION</p><h2 id="new-game-title">Build, inspect, then deploy</h2><p>Map, OOB and deployment are generated as one deterministic package. The preview below is the operation Gameplay will mount.</p></div><button id="close-new-game" ?disabled=${newGameBusy} @click=${closeNewGame}>Close</button></header>
-    <div class="flow-steps" aria-label="New Game generation sequence"><span class=${configuredClass} aria-current=${configuredClass === 'is-active' ? 'step' : nothing}>1 Configure</span><span class=${stageClass(['MAP'])}>2 Map</span><span class=${stageClass(['OOB'])}>3 OOB</span><span class=${stageClass(['DEPLOYMENT', 'SCENARIO'])}>4 Deployment</span><span class=${gameplayClass} aria-current=${gameplayClass === 'is-active' ? 'step' : nothing}>5 Gameplay</span></div>
-    <div class="new-game-body"><form id="new-game-form" class="new-game-form" data-settings-tab=${settingsTab} @submit=${(event: Event) => { event.preventDefault(); void buildPreview(); }} @input=${onNewGameInput} @invalid=${{ handleEvent: onNewGameInvalid, capture: true }}>
-      <nav class="settings-tabs" aria-label="New Game settings">${(['basic', 'advanced'] as const).map((tab) => html`<button type="button" data-settings=${tab} aria-pressed=${String(settingsTab === tab)} @click=${() => { settingsTab = tab; render(controller.getSnapshot()); }}>${tab === 'basic' ? 'Basic' : 'Advanced seeds'}</button>`)}</nav>
-      ${newGameError ? html`<div class="generator-error new-game-error" role="alert">${newGameGuidance() ? html`<p><strong>${newGameGuidance()}</strong></p>` : nothing}<p>${newGameError}</p></div>` : nothing}
-      <div class="settings-basic">
+  // Two pages: Settings, whose Preview button always generates afresh, and the Preview it built, which only goes Back or Start.
+  // While a build or a Start runs, a loading page stands in for both; the settings form stays in the page, hidden.
+  const page = newGameBusy ? 'loading' : newGamePreview && !previewStale ? newGamePage : 'settings';
+  const title = page === 'preview' ? 'Preview' : page === 'loading' ? (preparingPreview ? 'Generating' : 'Starting') : 'Settings';
+  const status = page === 'preview' ? 'Preview ready' : preparingPreview ? 'Generating map, forces and deployment…' : newGameErrors.length > 0 ? 'Cannot build this operation' : 'Configure operation';
+  const hint = page === 'preview' ? 'Start plays exactly this package; Back returns to the settings.'
+    : newGameErrors.length > 0 ? 'Adjust the highlighted settings, then press Preview again.' : 'Set the map and force options, then press Preview.';
+  const forceSide = newGamePreview?.generatedOob.sides.some(({ side }) => side === previewForceSide) ? previewForceSide : newGamePreview?.generatedOob.sides[0]?.side ?? 'ALLIED';
+  const backToSettings = (): void => { newGamePage = 'settings'; render(controller.getSnapshot()); };
+  const railCap = newGameSettings.railCap ?? defaultRailCap(newGameSettings);
+  return html`<div class="modal-backdrop new-game-backdrop"><section class="new-game-dialog" role="dialog" aria-modal="true" aria-label=${`New operation: ${title.toLowerCase()}`} @keydown=${trapFocus}>
+    <form id="new-game-form" class="new-game-form" data-new-game-page=${page} @submit=${(event: Event) => { event.preventDefault(); void buildPreview(); }} @input=${onNewGameInput} @invalid=${{ handleEvent: onNewGameInvalid, capture: true }}>
+    <header class="new-game-bar">
+      <h2 id="new-game-title">${title}</h2>
+      ${page === 'preview' && newGamePreview ? operationSummary(newGamePreview) : nothing}
+      <div class="new-game-submit">
+        <div class="new-game-status"><strong>${status}</strong><p>${hint}</p>
+          <div class="flow-steps" aria-label="New Game generation sequence"><span class=${configuredClass} aria-current=${configuredClass === 'is-active' ? 'step' : nothing}>Configure</span><span class=${stageClass(['MAP'])}>Map</span><span class=${stageClass(['OOB'])}>OOB</span><span class=${stageClass(['DEPLOYMENT', 'SCENARIO'])}>Deployment</span><span class=${gameplayClass} aria-current=${gameplayClass === 'is-active' ? 'step' : nothing}>Gameplay</span></div>
+        </div>
+        ${page === 'loading' ? nothing : page === 'settings'
+          ? html`<button type="submit" form="new-game-form" class="primary" ?disabled=${newGameBusy}>Preview →</button>`
+          : html`<button type="button" id="back-to-settings" ?disabled=${newGameBusy} @click=${backToSettings}>← Back</button>
+            <button type="button" id="start-previewed-game" class="primary" ?disabled=${newGameBusy} @click=${startPreviewedGame}>${newGameBusy ? 'Starting operation…' : 'Start this operation'}</button>`}
+      </div>
+      <button type="button" id="close-new-game" class="new-game-close" aria-label="Close" title="Close" ?disabled=${newGameBusy} @click=${closeNewGame}>✕</button>
+    </header>
+    ${newGameError && page === 'settings' ? html`<div class="generator-error new-game-error" role="alert">${newGameGuidance() ? html`<p><strong>${newGameGuidance()}</strong></p>` : nothing}<p>${newGameError}</p></div>` : nothing}
+    ${page === 'loading' ? loadingPage() : nothing}
+    <div class="new-game-settings" ?hidden=${page !== 'settings'}>
+      <div class="settings-column">
         <fieldset><legend>Scenario</legend>
           ${select('new-game-engagement', 'Situation', ENGAGEMENT_OPTIONS, newGameSettings.engagement ?? 'MEETING')}
           <p class="field-help">${engagementHelp(newGameSettings.engagement ?? 'MEETING')}</p>
         </fieldset>
         <fieldset><legend>Operational map</legend>
           ${select('new-game-style', 'Style', [['TEMPERATE_INLAND', 'Temperate inland'], ['MEDITERRANEAN_COAST', 'Mediterranean coast'], ['EASTERN_EUROPE', 'Eastern Europe (Russia)']], newGameSettings.map.style)}
-          ${number('new-game-width', 'Width', NEW_GAME_MAP_LIMITS.minWidth, NEW_GAME_MAP_LIMITS.maxWidth, newGameSettings.map.width)}
-          ${number('new-game-height', 'Height', NEW_GAME_MAP_LIMITS.minHeight, NEW_GAME_MAP_LIMITS.maxHeight, newGameSettings.map.height)}
+          <div class="field-pair">
+            ${number('new-game-width', 'Width', NEW_GAME_MAP_LIMITS.minWidth, NEW_GAME_MAP_LIMITS.maxWidth, newGameSettings.map.width)}
+            ${number('new-game-height', 'Height', NEW_GAME_MAP_LIMITS.minHeight, NEW_GAME_MAP_LIMITS.maxHeight, newGameSettings.map.height)}
+          </div>
+          <p class="field-help">Hexes across and down: ${NEW_GAME_MAP_LIMITS.minWidth}–${NEW_GAME_MAP_LIMITS.maxWidth} by ${NEW_GAME_MAP_LIMITS.minHeight}–${NEW_GAME_MAP_LIMITS.maxHeight}.</p>
         </fieldset>
+      </div>
+      <div class="settings-column">
         <fieldset><legend>Order of battle</legend>
           ${select('new-game-scale', 'Scale', [['COMPACT', 'Compact'], ['STANDARD', 'Standard'], ['LARGE', 'Large']], newGameSettings.oob.scale)}
-          ${number('new-game-divisions', 'Divisions per side', OOB_DIVISION_LIMITS.minDivisions, OOB_DIVISION_LIMITS.maxDivisions, newGameSettings.oob.divisionsPerSide)}
-          ${number('new-game-armored', 'of which armored', 0, OOB_DIVISION_LIMITS.maxArmored, newGameSettings.oob.armoredDivisionsPerSide)}
+          <div class="field-pair">
+            ${number('new-game-divisions', 'Divisions per side', OOB_DIVISION_LIMITS.minDivisions, OOB_DIVISION_LIMITS.maxDivisions, newGameSettings.oob.divisionsPerSide)}
+            ${number('new-game-armored', 'of which armored', 0, OOB_DIVISION_LIMITS.maxArmored, newGameSettings.oob.armoredDivisionsPerSide)}
+          </div>
           <p class="field-help">The other divisions are infantry, about one in four airborne. Each side receives Pax and Eq replacements every turn.</p>
           ${select('new-game-air', 'Air forces', [['NONE', 'None (ground duel)'], ['STANDARD', 'Fighters, bombers, Air Bases and aircraft reinforcements']], newGameSettings.oob.air ?? 'NONE')}
           ${newGameSettings.oob.air === 'STANDARD' ? select('new-game-air-transport', 'Air transport', [['NONE', 'None'], ['STANDARD', 'Transports and a paratroop battalion per side']], newGameSettings.oob.airTransport ?? 'NONE') : nothing}
         </fieldset>
+      </div>
+      <div class="settings-column">
         <fieldset><legend>Game rules</legend>
-          ${number('new-game-turn-limit', 'Turn limit', 1, 20, newGameSettings.turnLimit)}
-          ${select('new-game-start-month', 'Start month', START_MONTHS, newGameSettings.startMonth)}
+          <div class="field-pair">
+            ${number('new-game-turn-limit', 'Turn limit', 1, 20, newGameSettings.turnLimit)}
+            ${select('new-game-start-month', 'Start month', START_MONTHS, newGameSettings.startMonth)}
+          </div>
           <p class="field-help">The month sets the weather: September is always dry, autumn brings mud, and midwinter snow.</p>
-          ${number('new-game-rail-cap-allied', 'Allied Rail Cap', 0, MAXIMUM_RAIL_CAP, (newGameSettings.railCap ?? defaultRailCap(newGameSettings)).allied)}
-          ${number('new-game-rail-cap-axis', 'Axis Rail Cap', 0, MAXIMUM_RAIL_CAP, (newGameSettings.railCap ?? defaultRailCap(newGameSettings)).axis)}
+          <div class="field-pair">
+            ${number('new-game-rail-cap-allied', 'Allied Rail Cap', 0, MAXIMUM_RAIL_CAP, railCap.allied)}
+            ${number('new-game-rail-cap-axis', 'Axis Rail Cap', 0, MAXIMUM_RAIL_CAP, railCap.axis)}
+          </div>
           <p class="field-help">SP or RE each side can move by rail every Movement Phase (13.3b), from the map edge to its railhead; trucks carry supply on to the front. ${newGameSettings.railCap === undefined ? `Default: ${RAIL_CAP_PER_DIVISION} point per division.` : html`<button type="button" id="reset-rail-cap" @click=${() => { const { railCap: _cap, ...rest } = newGameSettings; newGameSettings = rest; previewStale = true; render(controller.getSnapshot()); }}>Use the default (${RAIL_CAP_PER_DIVISION} per division)</button>`}</p>
         </fieldset>
+        ${keyed(seedVersion, html`<fieldset class="settings-seeds"><legend>Reproducible seeds</legend>
+          <div class="field-pair">
+            ${number('new-game-map-seed', 'Map', 0, 4294967295, newGameSettings.seeds.map)}
+            ${number('new-game-oob-seed', 'OOB', 0, 4294967295, newGameSettings.seeds.oob)}
+            ${number('new-game-deployment-seed', 'Deployment', 0, 4294967295, newGameSettings.seeds.deployment)}
+            ${number('new-game-rules-seed', 'Rules', 0, 4294967295, newGameSettings.seeds.rules)}
+          </div>
+          <button type="button" id="randomize-new-game" @click=${randomizeSeeds}>Randomize all seeds</button>
+        </fieldset>`)}
       </div>
-      ${keyed(seedVersion, html`<fieldset class="settings-advanced"><legend>Reproducible seeds</legend>
-        ${number('new-game-map-seed', 'Map seed', 0, 4294967295, newGameSettings.seeds.map)}
-        ${number('new-game-oob-seed', 'OOB seed', 0, 4294967295, newGameSettings.seeds.oob)}
-        ${number('new-game-deployment-seed', 'Deployment seed', 0, 4294967295, newGameSettings.seeds.deployment)}
-        ${number('new-game-rules-seed', 'Rules seed', 0, 4294967295, newGameSettings.seeds.rules)}
-        <button type="button" id="randomize-new-game" @click=${randomizeSeeds}>Randomize all seeds</button>
-      </fieldset>`)}
-    </form><section class="operation-preview" aria-label="Combined generated operation preview">${newGamePreview
-      ? html`<div class="operation-preview-content${previewStale ? ' is-stale' : ''}">${unsafeHTML(previewHtml)}</div>`
-      : html`<div class="operation-preview-empty"><strong>No operation generated yet</strong><p>Choose map and force options, then press Generate operation to build one combined preview. Starting is unavailable until map, OOB and deployment all validate together.</p></div>`}</section></div>
-    <footer class="new-game-footer">
-      <div class="new-game-submit">
-        <div><strong>${status}</strong><p>${hint}</p></div>
-        <button type="submit" form="new-game-form" ?disabled=${newGameBusy}>${preparingPreview ? 'Generating…' : 'Generate operation'}</button>
-      </div>
-      ${newGamePreview ? html`<button id="start-previewed-game" class="primary wide" ?disabled=${newGameBusy || previewStale} @click=${startPreviewedGame}>${newGameBusy ? 'Starting operation…' : previewStale ? 'Generate to apply changes' : 'Start this operation'}</button>` : nothing}
-    </footer>
+    </div>
+    ${page === 'preview' ? html`<section class="operation-preview" aria-label="Combined generated operation preview"><div class="operation-preview-content" data-force-side=${forceSide.toLowerCase()} @mouseover=${tracePreviewUnits} @mouseout=${tracePreviewUnits} @focusin=${tracePreviewUnits} @focusout=${tracePreviewUnits}>${unsafeHTML(previewHtml)}
+      <div class="preview-force-tabs" role="tablist" aria-label="Forces">${newGamePreview!.generatedOob.sides.map(({ side }) => html`<button type="button" role="tab" id=${`preview-forces-${side.toLowerCase()}`} class=${`side-${side.toLowerCase()}`} aria-selected=${String(side === forceSide)} @click=${() => { previewForceSide = side; render(controller.getSnapshot()); }}>${side === 'ALLIED' ? 'Allied' : side === 'AXIS' ? 'Axis' : side}<small>${newGamePreview!.generatedOob.metrics.pointsBySide[side]} points</small></button>`)}</div></div></section>` : nothing}
+    </form>
   </section></div>`;
 };
 
@@ -1056,7 +1174,7 @@ const downloadJson = (content: string, filename: string): void => {
 const openNewGame = (): void => {
   utilityOpen = null;
   previewStale = false;
-  settingsTab = 'basic';
+  newGamePage = 'settings';
   newGameOpen = true;
   newGamePreview = null;
   newGameError = '';
@@ -1079,22 +1197,36 @@ const buildPreview = async (): Promise<void> => {
   editedFields = new Set();
   newGameBusy = true;
   preparingPreview = true;
+  preparingStage = null;
+  const run = ++generationRun;
   render(controller.getSnapshot());
-  await afterPaint();
   try {
-    const prepared = newGameOrchestrator.prepare(newGameSettings);
-    if (prepared.ok) newGamePreview = prepared.value;
+    // Each step is shown and painted before it runs; Cancel (a newer run number) stops the build at the next step.
+    const prepared = await newGameOrchestrator.prepareInStages(newGameSettings, async (stage) => {
+      if (run !== generationRun) return false;
+      preparingStage = stage;
+      render(controller.getSnapshot());
+      await afterPaint();
+      return run === generationRun;
+    });
+    if (prepared === null || run !== generationRun) return;
+    if (prepared.ok) {
+      newGamePreview = prepared.value;
+      newGamePage = 'preview';
+    }
     else {
       newGamePreview = null;
       newGameErrors = prepared.error;
       newGameError = prepared.error.map(({ stage, message }) => `${stage}: ${withHexLabels(message)}`).join(' ');
     }
   } catch (error) {
+    if (run !== generationRun) return;
     newGamePreview = null;
     newGameError = `${error instanceof Error ? error.message : 'Preview failed.'} Adjust the settings and try again.`;
   }
   newGameBusy = false;
   preparingPreview = false;
+  preparingStage = null;
   previewStale = false;
   render(controller.getSnapshot());
 };

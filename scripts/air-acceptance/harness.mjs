@@ -85,9 +85,7 @@ export const newGame = async (h, options = {}) => {
   await type('turn-limit', options.turnLimit ?? 8);
   await set('start-month', options.month);
   if (options.seeds) {
-    await page.click('[data-settings="advanced"]');
     for (const [name, seed] of Object.entries(options.seeds)) await type(`${name}-seed`, seed);
-    await page.click('[data-settings="basic"]');
   }
   await page.click('button[form="new-game-form"]');
   await page.waitForFunction(() => !!document.querySelector('#start-previewed-game:not([disabled])'), { timeout: 30000 });

@@ -54,9 +54,7 @@ try {
     `Allied ${defaults.allied}, Axis ${defaults.axis}; help: "${help}"`, defaults.allied === '2' && defaults.axis === '2' && /Movement Phase/u.test(help) && /0\.4 point per division/u.test(help));
   await page.fill('#new-game-rail-cap-allied', '5'); await page.press('#new-game-rail-cap-allied', 'Tab');
   await page.fill('#new-game-rail-cap-axis', '1'); await page.press('#new-game-rail-cap-axis', 'Tab');
-  await page.click('[data-settings="advanced"]');
   for (const [name, seed] of Object.entries(seeds)) { await page.fill(`#new-game-${name}-seed`, String(seed)); await page.press(`#new-game-${name}-seed`, 'Tab'); }
-  await page.click('[data-settings="basic"]');
   await page.click('button[form="new-game-form"]');
   await page.waitForFunction(() => !!document.querySelector('#start-previewed-game:not([disabled])'), { timeout: 60000 });
   await page.waitForTimeout(600);

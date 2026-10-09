@@ -12,9 +12,10 @@ export const openNewGame = async (h) => {
   await h.page.waitForSelector('#new-game-form');
 };
 
-/** Type the settings on the form (the dialog must be open). Seeds go through the Advanced seeds tab. */
+/** Type the settings on the form (the dialog must be open). After a Generate the dialog shows the preview page, so go back to Settings first. */
 export const configure = async (h, options = {}) => {
   const { page } = h;
+  if (await page.$('#back-to-settings')) await page.click('#back-to-settings');
   const type = async (id, value) => { if (value !== undefined) { await page.fill(`#new-game-${id}`, String(value)); await page.press(`#new-game-${id}`, 'Tab'); } };
   if (options.engagement) await page.selectOption('#new-game-engagement', options.engagement);
   if (options.style) await page.selectOption('#new-game-style', options.style);
@@ -25,9 +26,7 @@ export const configure = async (h, options = {}) => {
   await type('armored', options.armored);
   await type('turn-limit', options.turnLimit);
   if (options.seeds) {
-    await page.click('[data-settings="advanced"]');
     for (const [name, seed] of Object.entries(options.seeds)) await type(`${name}-seed`, seed);
-    await page.click('[data-settings="basic"]');
   }
 };
 

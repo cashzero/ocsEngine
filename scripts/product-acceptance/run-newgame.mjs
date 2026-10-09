@@ -8,6 +8,8 @@ const evidenceDir = join(process.argv[2] ?? 'docs/quality/evidence/product-2026-
 const NG07 = { style: 'MEDITERRANEAN_COAST', width: 18, height: 12, scale: 'LARGE', divisions: 4, armored: 2, turnLimit: 3, seeds: { map: 91001, oob: 91002, deployment: 91003, rules: 91004 } };
 const extra = {};
 
+/** The preview shows divisions per side ("6 per side", or each side's count in an attack); the menu counts them all. */
+const divisionTotal = (text) => { const counts = (text.match(/\d+/g) ?? []).map(Number); return counts.length === 1 ? 2 * counts[0] : counts.reduce((a, b) => a + b, 0); };
 /** Compare a preview with the mounted game: size and terrain hex by hex, occupied hexes, units, formations, turns, seeds. */
 const continuity = async (h, id, preview, request) => {
   const summary = await menuSummary(h);
@@ -23,7 +25,7 @@ const continuity = async (h, id, preview, request) => {
     terrain: terrainMismatch.length === 0 && swept.cells.length === preview.terrain.length,
     occupied: String(occupied) === preview.metrics['Deployed hexes'],
     units: summary.includes(`${preview.metrics.Units} units`),
-    formations: summary.includes(`${preview.metrics.Formations} formations`),
+    formations: summary.includes(`${divisionTotal(preview.metrics.Divisions)} formations`),
     turns: summary.includes(`${request.turnLimit} turns`) && turnText.includes(`/ ${request.turnLimit}`),
     seeds: summary.includes(seeds),
   };
@@ -111,7 +113,7 @@ try {
 
   // NG-05: Randomize all seeds.
   await generate(h);
-  await page.click('[data-settings="advanced"]');
+  await page.click('#back-to-settings');
   const seedValues = () => page.evaluate(() => ['map', 'oob', 'deployment', 'rules'].map((k) => document.querySelector(`#new-game-${k}-seed`)?.value));
   const seedsBefore = await seedValues();
   const sigBefore = sha(await previewSignature(h));
@@ -120,7 +122,6 @@ try {
   const randState = await dialogState(h);
   const sigAfter = sha(await previewSignature(h));
   await h.shot('ng05-randomized');
-  await page.click('[data-settings="basic"]');
   record(h, 'NG-05', 'All four displayed seeds change; preview becomes invalid; no generation until Generate', `seeds ${seedsBefore.join('/')} → ${seedsAfter.join('/')}; status "${randState.status}"; Start disabled ${randState.start?.disabled}; preview content unchanged ${sigBefore === sigAfter}`,
     seedsBefore.every((seed, index) => seed !== seedsAfter[index]) && randState.status === 'Preview invalidated' && randState.start?.disabled === true && sigBefore === sigAfter);
   await click(h, '#close-new-game');
@@ -156,7 +157,7 @@ try {
   const ng07Mount = await start(h);
   await h.shot('ng07-mounted');
   const ng07 = await continuity(h, 'NG-07', ng07Preview, NG07);
-  const expected = { Map: '18×12', Units: '64', Formations: '8', 'Deployed hexes': '38' };
+  const expected = { Map: '18×12', Units: '64', Divisions: '4 per side', 'Deployed hexes': '38' };
   const headline = Object.entries(expected).map(([key, value]) => `${key} ${ng07Preview.metrics[key]} (expected ${value})`).join(', ');
   record(h, 'NG-07', 'Preview and mounted package agree; expected headline counts are 216 Hexes, 64 units, 8 formations, 38 deployed Hexes', `${headline}; ${ng07Preview.terrain.length} hexes; Generate ${ng07Gen.elapsed} ms, Start ${ng07Mount} ms; mounted checks ${JSON.stringify(ng07.checks)}; menu "${ng07.summary}"`,
     Object.entries(expected).every(([key, value]) => ng07Preview.metrics[key] === value) && ng07Preview.terrain.length === 216 && Object.values(ng07.checks).every(Boolean));
