@@ -193,6 +193,10 @@ completion claim, reopen the gate immediately」。
 > R14 中的 Breakdown（20.0）已是 `breakdowns` IMPLEMENTED（`docs/reports/breakdowns-2026-10-03.md`，待驗收列核准）；
 > Rebuild（13.5a-e）已是 `replacements-rebuilds` PARTIAL（#57）；刺蝟／工兵仍是 DEFERRED（`hedgehogs-engineering`）。R1、R9、R11 狀態不變。
 > 集中清單見 `docs/quality/05-todo-inventory.md`。
+>
+> **2026-10-09 補註（依 main `84d9fea`）**：manifest 現有 28 列（10 IMPLEMENTED、13 PARTIAL、4 DEFERRED、1 GAME_SPECIFIC）。
+> R14 中的刺蝟（16.0）已是 `hedgehogs` IMPLEMENTED；工兵只剩架橋（13.8b）為 `engineering.bridging` DEFERRED。
+> R11：程式已保留分數 MA（`src/rules/pieces.ts`，6.1h），但尚無關閉證據要求的分數 MA 測試，**仍開啟**。R1、R9 狀態不變。
 
 每一項都依 `AGENTS.md` 寫明：缺少的行為、對使用者的影響、關閉所需的證據。
 
