@@ -90,11 +90,23 @@ export interface RuleProjection {
    * full amount outside the viewer's Movement Phase). Only the viewer's entry is listed. Absent in games without Rail Cap.
    */
   readonly railCap?: readonly { readonly playerId: PlayerId; readonly points: number; readonly remainingQuarters: number }[] | undefined;
+  /**
+   * River hexsides the viewer's Engineer-Capable units bridge now (13.8b): `hexId` holds the unit, `acrossHexId` is the
+   * far bank. Only the viewer's own bridges are listed. Absent in games without Bridging.
+   */
+  readonly bridges?: readonly ProjectedBridge[] | undefined;
   readonly combat: ProjectedCombat | null;
   readonly weather: GameState['weather'];
   readonly fuel: GameState['fuel'];
   readonly air: ProjectedAir;
   readonly replacements: ProjectedReplacements;
+}
+
+export interface ProjectedBridge {
+  readonly hexId: HexId;
+  readonly acrossHexId: HexId;
+  /** A Major River, bridged to Minor River cost; otherwise a Minor River, bridged to no additional cost. */
+  readonly major: boolean;
 }
 
 /** The viewer's own ground rebuilds (13.5a-e); empty for the other player's data (4.9a). */

@@ -241,7 +241,12 @@ const hoverText = (snapshot: UiSnapshot, hexId: string): string => {
   const hog = onMapStacks(snapshot).get(hexId)?.pieces.find(({ role }) => role === 'HEDGEHOG');
   const hogLevel = hog?.statusValues.find(({ statusDefinitionId }) => statusDefinitionId === 'status:hedgehog-level')?.value ?? 1;
   const hedgehog = hog ? ` · ${hog.ownerId === snapshot.view.playerId ? 'your' : 'enemy'} hedgehog Level ${hogLevel} (−${hogLevel} combat roll, −1 Surprise, Heavy AT; barrage 1 left)` : '';
-  return `Hex ${printedHexLabel(cell.id)}${placeName} · ${cell.terrain.toLowerCase()}${cell.settlement ? ` · ${cell.settlement.toLowerCase()}` : ''}${objective ? ` · objective, ${objective.points} VP, ${holder === 'neutral' ? 'neutral' : `held by ${holder}`}` : ''}${hedgehog}${source}${trainbusting}${cost}`;
+  // 13.8b: the viewer's bridges are only painted, so the line names what they do.
+  const bridged = (snapshot.view.projection?.bridges ?? []).filter((entry) => String(entry.hexId) === hexId);
+  const bridges = bridged.length === 0 ? '' : ` · your engineer bridges ${bridged.length} river hexside${bridged.length === 1 ? '' : 's'} here (${[
+    bridged.some(({ major }) => !major) ? 'Minor River: no extra MP' : '', bridged.some(({ major }) => major) ? 'Major River: Minor River cost' : '',
+  ].filter(Boolean).join('; ')}) for your units moving in or out; not for overruns`;
+  return `Hex ${printedHexLabel(cell.id)}${placeName} · ${cell.terrain.toLowerCase()}${cell.settlement ? ` · ${cell.settlement.toLowerCase()}` : ''}${objective ? ` · objective, ${objective.points} VP, ${holder === 'neutral' ? 'neutral' : `held by ${holder}`}` : ''}${hedgehog}${bridges}${source}${trainbusting}${cost}`;
 };
 
 /**
@@ -379,6 +384,7 @@ const mapStateOf = (snapshot: UiSnapshot): MapState => {
     ownZone: new Set(snapshot.air.showZones ? snapshot.air.patrolZones.own : []),
     enemyZone: new Set(snapshot.air.showZones ? snapshot.air.patrolZones.enemy : []),
     trainbusting: snapshot.air.trainbusting,
+    bridges: (snapshot.view.projection?.bridges ?? []).map(({ hexId, acrossHexId, major }) => ({ hexId: String(hexId), acrossHexId: String(acrossHexId), major })),
     counters: snapshot.hideUnits ? [] : [...counters, ...selectedCounters],
     badges: snapshot.hideUnits ? [] : badges,
   };

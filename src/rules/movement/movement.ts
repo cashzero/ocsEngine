@@ -17,7 +17,8 @@ import {
   piecesAt,
   usageOf,
 } from '../pieces.js';
-import { movementCostModel, type MovementStepCost } from '../terrain.js';
+import type { MovementStepCost } from '../terrain.js';
+import { moverCostModel } from './bridging.js';
 import { violation } from '../validation/violation.js';
 import { inEnemyZoc } from '../zoc/zoc.js';
 import { traceSupplyAvailableAt } from '../supply/supply.js';
@@ -155,7 +156,7 @@ export const queryMovementPath = (
   const negatorIds: PieceId[] = [];
   let enteredAll = false;
   if (piece && mobility !== null) {
-    const costs = movementCostModel(state, mobility);
+    const costs = moverCostModel(state, piece, mobility);
     for (let index = 1; index < path.length; index += 1) {
       const step = costs.evaluate(path[index - 1]!, path[index]!);
       if (step.kind === 'NON_ADJACENT') { violations.push(violation('NON_ADJACENT_PATH_STEP', ['path', index], 'Path step is absent or non-adjacent.', '6.1')); continue; }
@@ -254,7 +255,7 @@ export const queryReachableHexes = (
   const remaining = allowance - usage.movementSpentTicks;
   const unmoved = usage.movementSpentTicks === 0 && !usage.moved;
   const minimumMove = unmoved && allowance > 0 && state.configuration.minimumMoveTicks > 0;
-  const costs = movementCostModel(state, mobility);
+  const costs = moverCostModel(state, piece, mobility);
   const best = new Map<HexId, ReachableHex>();
   // Open Hexes: one live entry per Hex; the queue may hold superseded entries, skipped when popped.
   const frontier = new Map<HexId, ReachableHex>([[originHexId, { hexId: originHexId, costTicks: 0, path: [originHexId] }]]);

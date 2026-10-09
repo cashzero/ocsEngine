@@ -52,7 +52,7 @@ const mapIndexes = new WeakMap<MapDefinition, ReturnType<typeof createMapDefinit
 export interface MovementCostContext {
   readonly scenario: { readonly mapDefinition: MapDefinition };
   readonly configuration: Pick<GameState['configuration'],
-    'terrainMovementCosts' | 'hexsideMovementCosts' | 'roadMovementCosts' | 'defaultTerrainCostTicks'>;
+    'terrainMovementCosts' | 'hexsideMovementCosts' | 'roadMovementCosts' | 'defaultTerrainCostTicks' | 'rivers'>;
   readonly weather: { readonly groundCondition: GroundCondition };
 }
 
@@ -92,19 +92,22 @@ const columnFor = (
 
 /**
  * TEC movement costs (6.2) for one mobility type under a ground condition (the current weather by
- * default). `useRoads` false ignores road features, as overruns must (8.1c).
+ * default). `useRoads` false ignores road features, as overruns must (8.1c). `bridged` prices every river
+ * hexside as an Engineer-Capable unit's bridge does (13.8b): a Major River as a Minor River, a Minor River at
+ * no additional cost. Callers decide which steps an Engineer-Capable unit actually bridges (movement/bridging).
  */
 export const movementCostModel = (
   state: MovementCostContext,
   mobility: MobilityType,
   useRoads = true,
   condition: GroundCondition = state.weather.groundCondition,
+  bridged = false,
 ): MovementCostModel => {
   let perMap = modelCache.get(state.scenario.mapDefinition);
   if (!perMap) { perMap = new WeakMap(); modelCache.set(state.scenario.mapDefinition, perMap); }
   let perConfiguration = perMap.get(state.configuration);
   if (!perConfiguration) { perConfiguration = new Map(); perMap.set(state.configuration, perConfiguration); }
-  const key = `${String(state.scenario.mapDefinition.id)}|${mobility}|${useRoads}|${condition}`;
+  const key = `${String(state.scenario.mapDefinition.id)}|${mobility}|${useRoads}|${condition}|${bridged}`;
   const cached = perConfiguration.get(key);
   if (cached) return cached;
   const configuration = state.configuration;
@@ -112,6 +115,15 @@ export const movementCostModel = (
     .map((entry) => [String(entry.terrainDefinitionId), columnFor(entry, condition)[mobility]]));
   const hexsideCosts = new Map(configuration.hexsideMovementCosts
     .map((entry) => [String(entry.featureDefinitionId), columnFor(entry, condition)[mobility]]));
+  if (bridged && configuration.rivers) {
+    // 13.8b: Minor Rivers cost nothing extra; Major Rivers cost what a Minor River does (frozen rivers alike, by column).
+    const minorCost = hexsideCosts.get(String(configuration.rivers.minorFeatureDefinitionIds[0]));
+    for (const minor of configuration.rivers.minorFeatureDefinitionIds) hexsideCosts.delete(String(minor));
+    for (const major of configuration.rivers.majorFeatureDefinitionIds) {
+      if (minorCost) hexsideCosts.set(String(major), minorCost);
+      else hexsideCosts.delete(String(major));
+    }
+  }
   const roadCosts = new Map(configuration.roadMovementCosts
     .map((entry) => [String(entry.featureDefinitionId), columnFor(entry, condition)[mobility]]));
   const hexCosts = new Map<HexId, HexCost | undefined>();
@@ -190,10 +202,10 @@ export const movementCostModel = (
  * Supply paths (12.3d, 17.0c) use normal costs, ignoring weather that increases them, but may use
  * costs weather temporarily reduces: each step takes the cheaper legal evaluation.
  */
-export const supplyPathCostModel = (state: GameState, mobility: MobilityType): MovementCostModel => {
-  const normal = movementCostModel(state, mobility, true, 'DRY');
+export const supplyPathCostModel = (state: GameState, mobility: MobilityType, bridged = false): MovementCostModel => {
+  const normal = movementCostModel(state, mobility, true, 'DRY', bridged);
   if (state.weather.groundCondition === 'DRY') return normal;
-  const current = movementCostModel(state, mobility, true, state.weather.groundCondition);
+  const current = movementCostModel(state, mobility, true, state.weather.groundCondition, bridged);
   return {
     evaluate: (fromHexId, toHexId) => {
       const dry = normal.evaluate(fromHexId, toHexId);

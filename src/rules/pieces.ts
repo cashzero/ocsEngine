@@ -251,6 +251,18 @@ export const throwRangeTicks = (state: GameState, piece: PieceState): number =>
  */
 export const faceMode = (piece: PieceState): 'COMBAT' | 'MOVE' => piece.currentFaceId === 'combat' ? 'COMBAT' : 'MOVE';
 
+/** An HQ or an Engineer: the only units that can be Engineer-Capable (13.8). */
+export const isEngineerType = (state: GameState, piece: PieceState): boolean => {
+  const definition = definitionOf(state, piece);
+  return definition?.family === 'GROUND' && (isHq(state, piece) || definition.counter?.symbol === 'ENGINEER');
+};
+
+/** 13.8a: an HQ or Engineer in Combat Mode, or in DG Mode oriented toward Combat Mode (5.10e). */
+export const isEngineerCapable = (state: GameState, piece: PieceState): boolean => {
+  if (piece.location.kind !== 'ON_MAP' || !isEngineerType(state, piece)) return false;
+  return piece.mode === 'COMBAT' || (piece.mode === 'DG' && faceMode(piece) === 'COMBAT');
+};
+
 /** Enter DG or Exploitation Mode; the orientation (face) is kept for Clean Up (5.9, 5.10). */
 export const withInvoluntaryMode = (piece: PieceState, mode: 'DG' | 'EXPLOITATION'): PieceState => ({
   ...piece,

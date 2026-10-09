@@ -69,6 +69,21 @@ export const validateRuleConfiguration = (
       if (!roads.has(line)) issues.push(issue('RAILROAD_WITHOUT_ROAD_COST', ['railroads', 'lines', index], `Railroad ${line} has no road movement cost (6.2a).`));
     });
   }
+  if (configuration.rivers) {
+    const { minorFeatureDefinitionIds: minor, majorFeatureDefinitionIds: major } = configuration.rivers;
+    const ids = [...minor, ...major].map(String);
+    if (new Set(ids).size !== ids.length) {
+      issues.push(issue('DUPLICATE_RULE_CONFIGURATION_ID', ['rivers'], 'A river feature is listed twice.'));
+    }
+    // 13.8b: a bridged Major River costs what a Minor River does, so there must be one to copy.
+    if (major.length > 0 && minor.length === 0) {
+      issues.push(issue('MAJOR_RIVER_WITHOUT_MINOR', ['rivers', 'minorFeatureDefinitionIds'], 'Bridging a Major River needs a Minor River cost (13.8b).'));
+    }
+    const hexsides = new Set(configuration.hexsideMovementCosts.map(({ featureDefinitionId }) => String(featureDefinitionId)));
+    ids.forEach((river) => {
+      if (!hexsides.has(river)) issues.push(issue('RIVER_WITHOUT_HEXSIDE_COST', ['rivers'], `River ${river} has no hexside movement cost (6.2b).`));
+    });
+  }
   if (configuration.railCapacity) {
     const players = configuration.railCapacity.map(({ playerId }) => String(playerId));
     if (new Set(players).size !== players.length) issues.push(issue('DUPLICATE_RULE_CONFIGURATION_ID', ['railCapacity'], 'Rail Cap lists a player twice.'));
