@@ -305,7 +305,8 @@ export interface SupplySourceHex {
  * 12.6a Supply Sources: the side's map-edge sources; detrainable Hexes with a rail path free of enemy
  * ZOC back to a source (13.3c, 13.3h, 13.8c); and Extenders linked to any of these, directly or in a
  * daisy chain (12.7a A, 12.7c). An Extender also joins the rail Hexes in or adjacent to its Hex
- * (12.7g) to its source, so the rail line beyond it becomes detrainable (12.7a B and C).
+ * (12.7g) to its source, so the rail line beyond it becomes detrainable (12.7a B and C); one with no
+ * source in range still does so when it reaches a rail Hex whose line leads back to a source (12.7a B).
  */
 export const friendlySupplySources = (state: GameState, playerId: PlayerId): readonly SupplySourceHex[] => {
   const cache = traceScopeCache(state, 'sources', () => new Map<string, readonly SupplySourceHex[]>());
@@ -319,16 +320,21 @@ export const friendlySupplySources = (state: GameState, playerId: PlayerId): rea
   const sources = (): ReadonlySet<HexId> => new Set(kinds.keys());
   const extenders = state.pieceState.pieces.filter((piece) => piece.ownerId === playerId && hexOf(piece) !== null && isExtender(state, piece));
   const hasRail = railNetworkOf(state).neighbors.size > 0;
+  // 12.7a B: Extenders that join a rail line leading to a source but are not themselves sources (no source in range).
+  const connectors = new Set<HexId>();
+  const railSeeds = (): HexId[] => {
+    const seeds = [...kinds.keys()];
+    for (const [hexId, kind] of [...kinds.entries(), ...[...connectors].map((hexId) => [hexId, 'EXTENDER'] as const)]) {
+      if (kind !== 'EXTENDER') continue;
+      seeds.push(...[hexId, ...adjacentHexIds(hexId)].filter((rail) => isRailHex(state, rail) && railTracePassable(state, playerId, rail)));
+    }
+    return seeds;
+  };
   let added = true;
   while (added) {
     added = false;
     if (hasRail) {
-      const seeds = [...kinds.keys()];
-      for (const [hexId, kind] of kinds) {
-        if (kind !== 'EXTENDER') continue;
-        seeds.push(...[hexId, ...adjacentHexIds(hexId)].filter((rail) => isRailHex(state, rail) && railTracePassable(state, playerId, rail)));
-      }
-      for (const hexId of detrainableHexesFrom(state, playerId, seeds)) {
+      for (const hexId of detrainableHexesFrom(state, playerId, railSeeds())) {
         if (kinds.has(hexId) || !sourceUsable(state, playerId, hexId)) continue;
         kinds.set(hexId, 'DETRAINABLE');
         added = true;
@@ -338,6 +344,16 @@ export const friendlySupplySources = (state: GameState, playerId: PlayerId): rea
       const hexId = hexOf(extender)!;
       if (kinds.has(hexId) || !sourceUsable(state, playerId, hexId) || !extenderLinks(state, playerId, extender, sources())) continue;
       kinds.set(hexId, 'EXTENDER');
+      connectors.delete(hexId);
+      added = true;
+    }
+    if (!hasRail || added) continue;
+    // 12.7a B: the "back" rail line need not hold a station; any rail Hex a trace path reaches from a source will do.
+    const backLine = new Set(railTraceReach(state, playerId, railSeeds()));
+    for (const extender of extenders) {
+      const hexId = hexOf(extender)!;
+      if (kinds.has(hexId) || connectors.has(hexId) || !sourceUsable(state, playerId, hexId) || !extenderLinks(state, playerId, extender, backLine)) continue;
+      connectors.add(hexId);
       added = true;
     }
   }
