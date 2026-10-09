@@ -423,7 +423,9 @@ const buildSide = (
   })() : [];
   const garrison = buildUnit({
     options, side, role: 'COMBAT', formationId: null, archetype: findGarrisonArchetype(side),
-    name: side === 'ALLIED' ? 'US Objective Garrison' : 'Ge Objective Garrison', localId: 'garrison', designation: '',
+    // Garrisons hold objectives and key points alike, so the name says neither; it follows the abbreviated unit-name style
+    // ("Engr Bn", "Pi Bn"): the counter prints II. Landesschützen were the Wehrmacht's static guard battalions.
+    name: side === 'ALLIED' ? 'US Garrison Bn' : 'Ge Landesschützen Bn', localId: 'garrison', designation: '',
   });
   definitions.push(garrison.definition);
   // 16.0: every side can dig in; its hedgehogs are counters of this Definition.
