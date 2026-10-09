@@ -62,6 +62,8 @@ describe('G3-G5 discovery, pending decisions, and projection access', () => {
       expectedRevision: fixture.session.getRevision(), kind: 'DECLARE_COMBAT', combatKind: 'REGULAR',
       attackerIds: [fixture.units.attacker], defenderIds: [fixture.units.defender, fixture.units.secondDefender],
       targetHexId: '6,5' as never, leadAttackerId: fixture.units.attacker,
+      // 9.5: the attacker declares its supply with the attack, as the session offers it.
+      attackerSupply: [fixture.session.getAttackerSupplyOptions(fixture.seats[0], [], fixture.units.attacker).value!.options[0]!.choice],
     };
     const declared = await fixture.session.dispatch({
       requestId: gameplayRequestId('declare-combat'), seatId: fixture.seats[0], action: declare,
