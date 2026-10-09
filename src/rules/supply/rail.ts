@@ -93,10 +93,10 @@ export const railTracePassable = (state: GameState, playerId: PlayerId, hexId: H
   && (!isRailStation(state, hexId) || hexControllerOf(state, hexId) === playerId);
 
 /**
- * Detrainable Hexes (13.3c) reached along railroads from `seeds`, which are rail Hexes already
- * connected to a supply source. Each Hex the rail path enters must be passable for trace.
+ * Rail Hexes a trace path reaches from `seeds` (rail Hexes already connected to a supply source), each Hex entered being
+ * passable for trace. The seeds themselves are included.
  */
-export const detrainableHexesFrom = (state: GameState, playerId: PlayerId, seeds: Iterable<HexId>): readonly HexId[] => {
+export const railTraceReach = (state: GameState, playerId: PlayerId, seeds: Iterable<HexId>): readonly HexId[] => {
   const { neighbors } = railNetworkOf(state);
   if (neighbors.size === 0) return [];
   const seen = new Set<HexId>();
@@ -106,39 +106,47 @@ export const detrainableHexesFrom = (state: GameState, playerId: PlayerId, seeds
     seen.add(seed);
     queue.push(seed);
   }
-  const found: HexId[] = [];
   for (let head = 0; head < queue.length; head += 1) {
-    const hexId = queue[head]!;
-    if (detrainableCandidate(state, playerId, hexId)) found.push(hexId);
-    for (const next of neighbors.get(hexId) ?? []) {
+    for (const next of neighbors.get(queue[head]!) ?? []) {
       if (seen.has(next)) continue;
       seen.add(next);
       if (!railTracePassable(state, playerId, next)) continue;
       queue.push(next);
     }
   }
-  return found.sort();
+  return queue;
 };
+
+/**
+ * Detrainable Hexes (13.3c) reached along railroads from `seeds`, which are rail Hexes already
+ * connected to a supply source. Each Hex the rail path enters must be passable for trace.
+ */
+export const detrainableHexesFrom = (state: GameState, playerId: PlayerId, seeds: Iterable<HexId>): readonly HexId[] =>
+  railTraceReach(state, playerId, seeds).filter((hexId) => detrainableCandidate(state, playerId, hexId)).sort();
 
 /** Who controls a rail Hex, seen from one player (13.3h). */
 export interface RailControlHex {
   readonly hexId: HexId;
-  readonly control: 'OWN' | 'ENEMY' | 'NEUTRAL';
+  readonly control: 'OWN' | 'ENEMY';
 }
 
-/** Control of every rail Hex from the actor's side (13.3h). Hex control is public, so both players see the same split. */
-export const queryRailControl = (state: GameState, actorId: PlayerId): RuleQueryResult<readonly RailControlHex[]> => {
-  const control = new Map(state.mapState.hexControl.map(({ hexId, controllerId }) => [hexId, controllerId]));
+/**
+ * Every rail Hex as the actor sees the two sides' rail paths (13.3c, 13.3h): OWN where his trace path from his Supply
+ * Sources reaches (`own`), ENEMY where only the enemy's reaches (`enemy`); rail neither reaches is left out. Recorded Hex
+ * control is not shown: a unit passing a plain rail Hex flips it without changing any rail path, and a station's
+ * control already decides whether the paths run through it.
+ */
+export const railControlWith = (state: GameState, own: ReadonlySet<HexId>, enemy: ReadonlySet<HexId>): RuleQueryResult<readonly RailControlHex[]> => {
   const value = [...railNetworkOf(state).neighbors.keys()].sort((left, right) => String(left).localeCompare(String(right)))
-    .map((hexId): RailControlHex => {
-      const controllerId = control.get(hexId) ?? null;
-      return { hexId, control: controllerId === null ? 'NEUTRAL' : controllerId === actorId ? 'OWN' : 'ENEMY' };
-    });
+    .flatMap((hexId): RailControlHex[] => own.has(hexId) ? [{ hexId, control: 'OWN' }] : enemy.has(hexId) ? [{ hexId, control: 'ENEMY' }] : []);
   return {
     allowed: true,
     value,
-    reasons: [{ code: 'RAIL_CONTROL', allowed: true, message: 'Control of each rail Hex.', rule: '13.3h' }],
+    reasons: [{ code: 'RAIL_CONTROL', allowed: true, message: 'Rail each side\'s trace path reaches.', rule: '13.3h' }],
     facts: [],
-    dependencies: [{ aggregate: 'MAP', revision: state.mapState.revision, key: 'rail:control' }],
+    dependencies: [
+      { aggregate: 'MAP', revision: state.mapState.revision, key: 'rail:control' },
+      { aggregate: 'PIECE', revision: state.pieceState.revision, key: 'rail:paths' },
+    ],
   };
 };

@@ -21,12 +21,13 @@ import {
   stepOf,
   throwRangeTicks,
   usageOf,
+  opponentOf,
 } from '../pieces.js';
 import { INTERNAL_RECOVERY_TOKENS_PER_LEVEL } from '../tables/ocs-4.3.js';
 import { supplyPathCostModel } from '../terrain.js';
 import { violation } from '../validation/violation.js';
 import { hasEnemyCombatUnit, queryZoc } from '../zoc/zoc.js';
-import { detrainableHexesFrom, isRailHex, railNetworkOf, railTracePassable } from './rail.js';
+import { detrainableHexesFrom, isRailHex, railControlWith, railNetworkOf, railTraceReach, railTracePassable } from './rail.js';
 
 /**
  * Supply paths (12.3): draw, throw and trace are counted like the movement of a non-combat unit,
@@ -344,6 +345,12 @@ export const friendlySupplySources = (state: GameState, playerId: PlayerId): rea
     .sort((left, right) => String(left.hexId).localeCompare(String(right.hexId)));
   cache.set(String(playerId), result);
   return result;
+};
+
+/** Rail each side's trace path reaches from its Supply Sources (13.3c, 13.3h), as `actorId` sees it. */
+export const queryRailControl = (state: GameState, actorId: PlayerId) => {
+  const reach = (playerId: PlayerId) => new Set(railTraceReach(state, playerId, friendlySupplySources(state, playerId).map(({ hexId }) => hexId)));
+  return railControlWith(state, reach(actorId), reach(opponentOf(state, actorId)));
 };
 
 /** Every Supply Source Hex of the player (12.6a); see `friendlySupplySources` for why each one counts. */

@@ -13,7 +13,7 @@ import { queryMovementPath, queryReachableHexes } from './movement/movement.js';
 import { queryFeedCoverage, querySupplySources, queryTraceCoverage } from './supply/supply.js';
 import { queryFuelCoverage, queryFuelPreview } from './supply/fuel.js';
 import { queryTransportOptions } from './supply/transport.js';
-import { queryRailControl } from './supply/rail.js';
+import { queryRailControl } from './supply/supply.js';
 import { queryRailMoveOptions, quartersText, railCapRemainingQuarters, railMoveQuarters } from './supply/rail-cap.js';
 import { actionFamilies, candidateActions, kindMayBeLegal } from './query/candidates.js';
 import { projectRuleState } from './query/projection.js';
