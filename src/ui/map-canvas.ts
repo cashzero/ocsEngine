@@ -59,7 +59,7 @@ export interface MapState {
   /** Supply Sources marked with the trace overlay: detrainable rail Hex (RAIL) and Extender (EXT); map-edge sources have their own disc. */
   readonly supplySources: readonly { readonly hexId: string; readonly kind: 'MAP_EDGE' | 'DETRAINABLE' | 'EXTENDER' }[];
   /** Trace Supply overlay: control of each rail Hex (13.3h), drawn along the track; empty while the overlay is off. */
-  readonly railControl: readonly { readonly hexId: string; readonly control: 'OWN' | 'ENEMY' | 'NEUTRAL' }[];
+  readonly railControl: readonly { readonly hexId: string; readonly control: 'OWN' | 'ENEMY' }[];
   /** Every objective with its VP and the index of the player holding it now (null: neutral); always drawn. */
   readonly objectives: readonly { readonly hexId: string; readonly points: number; readonly holder: 0 | 1 | null }[];
   readonly ownZone: ReadonlySet<string>;
@@ -92,6 +92,10 @@ export const ZOOM_REFERENCE = 1.68 * 1.1;
 export const DEFAULT_ZOOM_PERCENT = 100;
 export const DEFAULT_ZOOM = ZOOM_REFERENCE * (DEFAULT_ZOOM_PERCENT / 100);
 /** Wheel notches and +/− move the readout by this many percentage points, landing on multiples of it. */
+/** A train seen from the front (24×24; Material Icons "train"): marks detrainable rail hexes on the Trace Supply overlay. */
+const TRAIN_PATH = 'M12 2c-4 0-8 .5-8 4v9.5C4 17.43 5.57 19 7.5 19L6 20.5v.5h2.23l2-2H14l2 2h2v-.5L16.5 19c1.93 0 3.5-1.57 3.5-3.5V6c0-3.5-3.58-4-8-4zM7.5 17c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm3.5-7H6V6h5v4zm2 0V6h5v4h-5zm3.5 7c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z';
+const TRAIN_ICON = new Path2D(TRAIN_PATH);
+
 const ZOOM_STEP_PERCENT = 10;
 /**
  * The canvas frames a fixed area of this many hex columns and rows (the default New Game map) at zoom 1, whatever the size
@@ -951,14 +955,14 @@ export class MapView {
   }
 
   /**
-   * Trace Supply overlay: a band along the track of each rail Hex, clipped to the Hex, coloured by who controls it
-   * (13.3h): green own, red enemy, white dashed neutral. Only stations a side controls are detrainable (13.3c).
+   * Trace Supply overlay: a band along the track of each rail Hex, clipped to the Hex: green where the player's rail path
+   * back to a Supply Source runs, red where only the enemy's runs (13.3c, 13.3h); other rail keeps the map's own drawing.
    */
   #drawRailControl(): void {
     const { railControl } = this.#state;
     const geometry = this.#geometry;
     if (railControl.length === 0 || !geometry) return;
-    const regions = { OWN: new Path2D(), ENEMY: new Path2D(), NEUTRAL: new Path2D() };
+    const regions = { OWN: new Path2D(), ENEMY: new Path2D() };
     railControl.forEach(({ hexId, control }) => {
       const path = geometry.hexPath.get(hexId);
       if (path) regions[control].addPath(path);
@@ -966,7 +970,6 @@ export class MapView {
     const styles = [
       ['OWN', 'rgba(46, 170, 90, .6)', []],
       ['ENEMY', 'rgba(214, 48, 40, .6)', []],
-      ['NEUTRAL', 'rgba(250, 248, 240, .9)', [6, 5]],
     ] as const;
     const ctx = this.#ctx;
     for (const [control, colour, dash] of styles) {
@@ -983,35 +986,40 @@ export class MapView {
     }
   }
 
-  /** Trace Supply overlay: a tag on each Supply Source, at the top of its hex so counters do not hide it. */
+  /**
+   * Trace Supply overlay: an icon on each Supply Source, at the top of its hex so counters do not hide it. A detrainable
+   * rail hex carries a train and an Extender an "E"; the legend uses the same two icons.
+   */
   #drawSupplySources(): void {
     const { supplySources } = this.#state;
     if (supplySources.length === 0) return;
     const ctx = this.#ctx;
     const size = this.#scene?.theater.layout.hexSize ?? 0;
-    // Map-edge sources already carry their side's "S" disc on the map; the overlay tags the ones rail and Extenders add.
-    const labels = { MAP_EDGE: null, DETRAINABLE: 'RAIL', EXTENDER: 'EXT' } as const;
+    const side = size * 0.34;
     ctx.save();
-    ctx.font = `800 ${Math.round(size * 0.2)}px ui-sans-serif, system-ui, sans-serif`;
+    ctx.font = `800 ${Math.round(side * 0.75)}px ui-sans-serif, system-ui, sans-serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     supplySources.forEach(({ hexId, kind }) => {
+      // Map-edge sources already carry their side's "S" disc on the map; the overlay marks the ones rail and Extenders add.
       const cell = this.#geometry!.byId.get(hexId);
-      const text = labels[kind];
-      if (!cell || text === null) return;
-      const width = ctx.measureText(text).width + size * 0.16;
-      const height = size * 0.3;
-      const x = cell.x - width / 2;
-      const y = cell.y - size * 0.72;
+      if (!cell || kind === 'MAP_EDGE') return;
+      const x = cell.x - side / 2;
+      const y = cell.y - size * 0.8;
       ctx.beginPath();
-      ctx.roundRect(x, y, width, height, height / 2);
-      ctx.fillStyle = kind === 'DETRAINABLE' ? '#1d4d2f' : kind === 'EXTENDER' ? '#5a4a12' : '#14532d';
+      ctx.roundRect(x, y, side, side, side * 0.2);
+      ctx.fillStyle = kind === 'DETRAINABLE' ? '#1d4d2f' : '#5a4a12';
       ctx.fill();
       ctx.lineWidth = 1.5;
       ctx.strokeStyle = '#b8f0c8';
       ctx.stroke();
-      ctx.fillStyle = '#eafff0';
-      ctx.fillText(text, cell.x, y + height / 2 + 0.5);
+      ctx.strokeStyle = ctx.fillStyle = '#eafff0';
+      if (kind === 'EXTENDER') { ctx.fillText('E', cell.x, y + side / 2 + 0.5); return; }
+      ctx.save();
+      ctx.translate(x + side * 0.1, y + side * 0.1);
+      ctx.scale(side * 0.8 / 24, side * 0.8 / 24);
+      ctx.fill(TRAIN_ICON);
+      ctx.restore();
     });
     ctx.restore();
   }

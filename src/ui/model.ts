@@ -330,10 +330,12 @@ export interface UiSnapshot {
   /** The seat's Supply Sources marked by the same overlay (12.6a); empty while it is off. */
   readonly supplySources: readonly { readonly hexId: string; readonly kind: 'MAP_EDGE' | 'DETRAINABLE' | 'EXTENDER' }[];
   /** Control of each rail Hex from the seat's side (13.3h), marked by the same overlay; empty while it is off. */
-  readonly railControl: readonly { readonly hexId: string; readonly control: 'OWN' | 'ENEMY' | 'NEUTRAL' }[];
+  readonly railControl: readonly { readonly hexId: string; readonly control: 'OWN' | 'ENEMY' }[];
   /** The selected unit the overlay is drawn for; null when it shows where any friendly unit would trace. */
   readonly traceCoverageFor: string | null;
   readonly showTraceCoverage: boolean;
+  /** Counters are left off the map so the overlays underneath can be read whole; hex clicks still work. */
+  readonly hideUnits: boolean;
   /**
    * Why the selected own unit cannot begin or continue moving now (e.g. 12.5a fuel), so the deck can say so
    * instead of a bare "cannot move"; empty when it may move or no Movement Segment is open.

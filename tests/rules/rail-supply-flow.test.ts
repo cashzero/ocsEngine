@@ -31,7 +31,7 @@ describe('Generated games trace supply along their railways (12.6a, 13.3c, 13.3h
     }
   });
 
-  it('reports each rail Hex as own, enemy or neutral, the same split for both players (13.3h)', () => {
+  it('colours each rail Hex by whose trace path reaches it, mirrored for the two players (13.3c, 13.3h)', () => {
     const prepared = prepareNewGame(DEFAULT_NEW_GAME_REQUEST);
     if (!prepared.ok) throw new Error('Game must prepare.');
     const created = createInitialGameState(prepared.value.scenario, prepared.value.configuration, 1);
@@ -39,8 +39,9 @@ describe('Generated games trace supply along their railways (12.6a, 13.3c, 13.3h
     const allied = queryRailControl(created.value, ALLIED).value ?? [];
     const axis = new Map((queryRailControl(created.value, AXIS).value ?? []).map(({ hexId, control }) => [hexId, control]));
     expect(allied.length).toBeGreaterThan(0);
-    expect(new Set(allied.map(({ control }) => control))).toEqual(new Set(['OWN', 'ENEMY', 'NEUTRAL']));
-    const mirror = { OWN: 'ENEMY', ENEMY: 'OWN', NEUTRAL: 'NEUTRAL' } as const;
-    for (const { hexId, control } of allied) expect(axis.get(hexId)).toBe(mirror[control]);
+    expect(new Set(allied.map(({ control }) => control))).toEqual(new Set(['OWN', 'ENEMY']));
+    // A Hex both paths reach shows OWN to each player; everywhere else the two views mirror each other.
+    const mirror = { OWN: 'ENEMY', ENEMY: 'OWN' } as const;
+    for (const { hexId, control } of allied) if (!(control === 'OWN' && axis.get(hexId) === 'OWN')) expect(axis.get(hexId)).toBe(mirror[control]);
   });
 });
