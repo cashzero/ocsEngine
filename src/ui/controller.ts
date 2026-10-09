@@ -14,7 +14,7 @@ import {
 } from '../gameplay/index.js';
 import {
   AIR_MISSION_KINDS, AIR_MISSION_LABELS, FUEL_COSTS, distanceBetween, missionSegment, parseRuleActionId, routesForRange,
-  type AirMissionKind, type AirRoute, type GameAction, type ProjectedCombat, type ProjectedPiece, type RuleEvent, type RuleExplanation, type UnitRebuild,
+  type AirMissionKind, type AirRoute, type AttackerSupplyChoice, type AttackerSupplyOption, type GameAction, type ProjectedCombat, type ProjectedPiece, type RuleEvent, type RuleExplanation, type UnitRebuild,
 } from '../rules/index.js';
 import type {
   AirDraft, AirOverview, AirRefit, Arrival, AttackDraft, AwayReport, AirRebuild, BuildOption, GroundRebuild, ConstructionOverview, CombatSheet, EndStep, HandoffInfo, MoveBlocker, MovePreview, MoveRangeEntry,
@@ -53,6 +53,8 @@ export interface UiController {
   readonly confirmMove: () => Promise<void>;
   readonly toggleParticipant: (pieceId: string) => void;
   readonly setLead: (pieceId: string) => void;
+  /** Declare where a ticked attacker gets its combat supply (9.5, 12.10a). */
+  readonly chooseAttackerSupply: (pieceId: string, optionId: string) => void;
   readonly declareDraft: () => Promise<void>;
   readonly cancelDraft: () => void;
   readonly changeMode: (mode: OcsMode) => Promise<void>;
@@ -150,7 +152,12 @@ interface DraftInput {
   readonly eligibleIds: readonly PieceId[];
   readonly selectedIds: readonly PieceId[];
   readonly leadId: PieceId | null;
+  /** Declared combat supply of the ticked attackers, in the order they were ticked and pay. */
+  readonly supply: readonly AttackerSupplyChoice[];
 }
+
+const sameSupplyChoice = (left: AttackerSupplyChoice, right: AttackerSupplyChoice): boolean =>
+  left.method === right.method && (left.method === 'INTERNAL' || (right.method === 'DUMPS' && left.dumpIds.join('|') === right.dumpIds.join('|')));
 
 interface AutoCheckpoint {
   readonly id: CheckpointDescriptor['id'];
@@ -384,6 +391,7 @@ class DefaultUiController implements UiController {
       actionId: this.#actionId('combat'), actorId: actor, expectedRevision: this.#session.getRevision(),
       kind: 'DECLARE_COMBAT', combatKind: input.kind, attackerIds: input.selectedIds, defenderIds: template.defenderIds,
       targetHexId: template.targetHexId, leadAttackerId: input.leadId && input.selectedIds.includes(input.leadId) ? input.leadId : input.selectedIds[0]!,
+      attackerSupply: input.supply,
     };
   }
 
@@ -664,7 +672,7 @@ class DefaultUiController implements UiController {
     let draft: AttackDraft | null = null;
     if (this.#draft) {
       const action = this.#buildDraftAction(this.#draft);
-      draft = { ...this.#draft, action, explanation: action ? this.#explain(action) : null };
+      draft = { ...this.#draft, supply: this.#supplyRows(this.#draft), action, explanation: action ? this.#explain(action) : null };
     }
 
     const modeOptions = ownSelected && enabled('CHANGE_MODE')
@@ -1595,18 +1603,19 @@ class DefaultUiController implements UiController {
       const candidates = this.#candidates('DECLARE_BARRAGE').filter((action) => action.kind === 'DECLARE_BARRAGE' && action.targetHexId === targetHexId);
       const eligible = [...new Set(candidates.flatMap((action) => action.kind === 'DECLARE_BARRAGE' ? action.firerIds : []))];
       const first = candidates[0];
-      this.#draft = { kind, targetHexId, eligibleIds: eligible, selectedIds: first?.kind === 'DECLARE_BARRAGE' ? first.firerIds : [], leadId: null };
+      this.#draft = { kind, targetHexId, eligibleIds: eligible, selectedIds: first?.kind === 'DECLARE_BARRAGE' ? first.firerIds : [], leadId: null, supply: [] };
       return;
     }
     const pieceFilter = snapshotSegment === 'COMBAT' ? null : this.#selection.pieceId;
     const candidates = this.#candidates('DECLARE_COMBAT', pieceFilter).filter((action) => action.kind === 'DECLARE_COMBAT' && action.targetHexId === targetHexId);
     const eligible = [...new Set(candidates.flatMap((action) => action.kind === 'DECLARE_COMBAT' ? action.attackerIds : []))];
     const first = candidates[0];
-    this.#draft = {
+    this.#draft = this.#settleSupply({
       kind, targetHexId, eligibleIds: eligible,
       selectedIds: first?.kind === 'DECLARE_COMBAT' ? first.attackerIds : [],
       leadId: first?.kind === 'DECLARE_COMBAT' ? first.leadAttackerId : null,
-    };
+      supply: [],
+    });
   }
 
   clickHex = async (hexId: string): Promise<void> => {
@@ -1696,9 +1705,65 @@ class DefaultUiController implements UiController {
     const selected = this.#draft.selectedIds.includes(pieceId as PieceId)
       ? this.#draft.selectedIds.filter((id) => id !== pieceId)
       : [...this.#draft.selectedIds, pieceId as PieceId];
-    this.#draft = { ...this.#draft, selectedIds: selected, leadId: this.#draft.leadId && selected.includes(this.#draft.leadId) ? this.#draft.leadId : selected[0] ?? null };
+    this.#draft = this.#settleSupply({ ...this.#draft, selectedIds: selected });
     this.#emit();
   };
+
+  chooseAttackerSupply = (pieceId: string, optionId: string): void => {
+    const draft = this.#draft;
+    if (!draft || draft.kind === 'BARRAGE' || !draft.selectedIds.includes(pieceId as PieceId)) return;
+    const prior = draft.supply.slice(0, draft.supply.findIndex((choice) => choice.pieceId === pieceId));
+    const option = this.#supplyOptions(prior, pieceId as PieceId).find(({ id }) => id === optionId);
+    if (!option) return;
+    this.#draft = this.#settleSupply({ ...draft, supply: draft.supply.map((choice) => (choice.pieceId === pieceId ? option.choice : choice)) });
+    this.#emit();
+  };
+
+  #supplyOptions(prior: readonly AttackerSupplyChoice[], pieceId: PieceId): readonly AttackerSupplyOption[] {
+    return this.#cached(`attacker-supply|${pieceId}|${JSON.stringify(prior)}`,
+      () => this.#session.getAttackerSupplyOptions(this.#activeSeat(), prior, pieceId).value?.options ?? []);
+  }
+
+  /**
+   * 9.5, 12.10a: the ticked attackers declare their supply in tick order. Each keeps its source while it stays legal
+   * after the units above it, else takes the first legal one; a unit left with none leaves the attack, and the notice says why.
+   */
+  #settleSupply(input: DraftInput): DraftInput {
+    if (input.kind === 'BARRAGE') return input;
+    const supply: AttackerSupplyChoice[] = [];
+    const dropped: string[] = [];
+    for (const id of input.selectedIds) {
+      const options = this.#supplyOptions(supply, id);
+      const current = input.supply.find((choice) => choice.pieceId === id);
+      const pick = (current && options.find(({ choice }) => sameSupplyChoice(choice, current))) ?? options[0];
+      if (pick) supply.push(pick.choice);
+      else dropped.push(id);
+    }
+    if (dropped.length > 0) {
+      const names = dropped.map((id) => { const piece = this.#pieces().find((candidate) => candidate.id === id); return piece ? unitLabel(this.#scenario, piece) : 'Unit'; }).join(', ');
+      this.#notice = `${names} cannot join: no SP in reach after the units above and internal stocks Exhausted (12.10c).`;
+    }
+    const selectedIds = supply.map(({ pieceId }) => pieceId);
+    return { ...input, selectedIds, supply, leadId: input.leadId && selectedIds.includes(input.leadId) ? input.leadId : selectedIds[0] ?? null };
+  }
+
+  #supplyRows(input: DraftInput): AttackDraft['supply'] {
+    if (input.kind === 'BARRAGE') return [];
+    const seatId = this.#activeSeat();
+    return input.eligibleIds.map((pieceId) => {
+      const index = input.supply.findIndex((choice) => choice.pieceId === pieceId);
+      const prior = index >= 0 ? input.supply.slice(0, index) : input.supply;
+      const result = this.#cached(`attacker-supply-row|${pieceId}|${JSON.stringify(prior)}`,
+        () => this.#session.getAttackerSupplyOptions(seatId, prior, pieceId).value);
+      const options = result?.options ?? [];
+      return {
+        pieceId, need: result?.need ?? 0,
+        options: options.map(({ id, label, hexIds, wastedTokens }) => ({ id, label: withPrintedHexes(label), hexIds, wastedTokens })),
+        chosenId: index >= 0 ? options.find(({ choice }) => sameSupplyChoice(choice, input.supply[index]!))?.id ?? null : null,
+        reason: result?.reason ? withPrintedHexes(result.reason) : null,
+      };
+    });
+  }
 
   setLead = (pieceId: string): void => {
     if (!this.#draft || !this.#draft.selectedIds.includes(pieceId as PieceId)) return;

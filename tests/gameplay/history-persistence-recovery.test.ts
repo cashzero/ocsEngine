@@ -88,6 +88,8 @@ describe('G6-G8 history, persistence, and recovery', () => {
       expectedRevision: fixture.session.getRevision(), kind: 'DECLARE_COMBAT', combatKind: 'REGULAR',
       attackerIds: [fixture.units.attacker], defenderIds: [fixture.units.defender, fixture.units.secondDefender],
       targetHexId: '6,5' as never, leadAttackerId: fixture.units.attacker,
+      // 9.5: the attacker declares its supply with the attack, as the session offers it.
+      attackerSupply: [fixture.session.getAttackerSupplyOptions(fixture.seats[0], [], fixture.units.attacker).value!.options[0]!.choice],
     };
     expect((await fixture.session.dispatch({
       requestId: gameplayRequestId('pending-combat'), seatId: fixture.seats[0], action: declared,

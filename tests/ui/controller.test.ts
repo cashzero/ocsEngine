@@ -89,6 +89,11 @@ describe('UI controller: unit-first play through Gameplay only', () => {
     const facts = Object.fromEntries(draft.explanation!.facts.map(({ key, value }) => [key, value]));
     expect(facts).toMatchObject({ 'combat.line': 'OPEN', 'combat.attackerSupplyTokens': 1 });
     expect(typeof facts['combat.odds']).toBe('string');
+    // 9.5, 12.10a: the ticked attacker declares its supply in the draft; its dump is in reach, so internal stocks are not offered.
+    const row = draft.supply.find(({ pieceId }) => pieceId === fixture.units.attacker)!;
+    expect(row.chosenId).toMatch(/^hex:/u);
+    expect(row.options.map(({ id }) => id)).not.toContain('internal');
+    expect(draft.action).toMatchObject({ kind: 'DECLARE_COMBAT', attackerSupply: [{ pieceId: fixture.units.attacker, method: 'DUMPS' }] });
     await controller.declareDraft();
     // The defender can pay or withhold supply, so the Axis seat must decide before any die is rolled.
     const waiting = controller.getSnapshot();

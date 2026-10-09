@@ -51,6 +51,8 @@ const combat = (s, actor, kind, attackers, hex, lead = attackers[0]) => act(s, a
   kind: 'DECLARE_COMBAT', combatKind: kind, attackerIds: attackers,
   defenderIds: s.pieceState.pieces.filter((p) => p.ownerId !== actor && p.location.kind === 'ON_MAP' && p.location.hexId === hex && p.mode !== null && p.remainingSteps !== null).map((p) => p.id),
   targetHexId: hex, leadAttackerId: lead,
+  // 9.5: each attacker's supply is declared with the attack (Exhausted units first); with none legal, internal stocks.
+  attackerSupply: E.defaultAttackerSupply(s, actor, attackers) ?? attackers.map((pieceId) => ({ pieceId, method: 'INTERNAL' })),
 });
 /** Answer every pending decision with `pick(decision)` (default: first option). */
 const settle = (s, pick = (d) => d.options[0].id) => {
@@ -170,7 +172,7 @@ const settle = (s, pick = (d) => d.options[0].id) => {
   const unsupplied = odds(build(place), false).defenderStrength;
   report('DEFEND-unsupplied', '9.5B', `withheld supply halves defense (${baseDef / 2})`, `${unsupplied}`, unsupplied !== baseDef / 2);
   const s = seq(build({ ...place, [U.axTrk2]: ['6,5', 'COMBAT', 'combat'] }), 'COMBAT', 'COMBAT', AL);
-  const partial = act(s, AL, { kind: 'DECLARE_COMBAT', combatKind: 'REGULAR', attackerIds: [U.alTrk], defenderIds: [U.axTrk], targetHexId: '6,5', leadAttackerId: U.alTrk });
+  const partial = act(s, AL, { kind: 'DECLARE_COMBAT', combatKind: 'REGULAR', attackerIds: [U.alTrk], defenderIds: [U.axTrk], targetHexId: '6,5', leadAttackerId: U.alTrk, attackerSupply: E.defaultAttackerSupply(s, AL, [U.alTrk]) });
   report('COMBAT-partial-defender', '9.1d', 'all combat units in hex must defend', codes(partial), partial.ok);
   // 12.10: without on-map SP an attacker uses internal stocks; once Exhausted it cannot attack (12.10c).
   const dry = seq(build({ [U.alTrk]: ['5,5', 'COMBAT', 'combat'], [U.axTrk]: ['6,5', 'COMBAT', 'combat'] }), 'COMBAT', 'COMBAT', AL);
