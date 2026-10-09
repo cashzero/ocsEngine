@@ -37,7 +37,8 @@ describe('default deployment spacing', () => {
     const onMap = deployed(DEFAULT_NEW_GAME_REQUEST);
 
     const perHex = new Map<string, number>();
-    for (const { hexId } of onMap) perHex.set(hexId, (perHex.get(hexId) ?? 0) + 1);
+    // A dump is a marker in its hex, not a unit of the stack (it stands where the side's units hold the ground).
+    for (const { hexId } of onMap.filter(({ family }) => family !== 'RESOURCE')) perHex.set(hexId, (perHex.get(hexId) ?? 0) + 1);
     // Stacking is fine, but small: the old layout piled four units on one Hex.
     expect(Math.max(...perHex.values())).toBeLessThanOrEqual(2);
 
@@ -64,7 +65,7 @@ describe('default deployment spacing', () => {
     }
   });
 
-  it('keeps supply dumps off the entry edge, apart from each other and from the troops', () => {
+  it('keeps supply dumps off the entry edge and apart from each other', () => {
     const request: NewGameRequest = {
       ...DEFAULT_NEW_GAME_REQUEST,
       oob: { scale: 'LARGE', divisionsPerSide: 4, armoredDivisionsPerSide: 2 },
@@ -73,10 +74,8 @@ describe('default deployment spacing', () => {
     for (const owner of new Set(onMap.map((entry) => entry.owner))) {
       const side = onMap.filter((entry) => entry.owner === owner);
       const dumps = side.filter(({ family }) => family === 'RESOURCE').map(({ hexId }) => hexId);
-      const others = new Set(side.filter(({ family }) => family !== 'RESOURCE').map(({ hexId }) => hexId));
       expect(dumps.length, `${owner} dumps`).toBeGreaterThan(0);
       expect(new Set(dumps).size, `${owner} dump hexes`).toBe(dumps.length);
-      for (const dump of dumps) expect(others.has(dump), `${owner} dump ${dump} shares a Hex`).toBe(false);
       for (const [index, dump] of dumps.entries()) {
         for (const other of dumps.slice(index + 1)) expect(hexDistance(dump, other), `${owner} dump spacing`).toBeGreaterThanOrEqual(2);
       }

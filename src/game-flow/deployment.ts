@@ -129,8 +129,6 @@ const FIELD_UNITS_PER_HEX = 2;
 /** Supply dumps stand apart from each other and at least this many Hexes in from the entry Hex, not on the map edge. */
 const DUMP_MIN_DEPTH_HEXES = 3;
 const DUMP_SPACING_HEXES = 3;
-/** Supply dumps stand at least this many Hexes behind the line where a side's field units begin. */
-const DUMP_BEHIND_LINE_HEXES = 2;
 /** Air Bases stand further back still: at least this many Hexes behind the line where a side's field units begin (15.0). */
 const AIR_BASE_BEHIND_LINE_HEXES = 6;
 /**
@@ -138,6 +136,8 @@ const AIR_BASE_BEHIND_LINE_HEXES = 6;
  * begin, as near as it can to the centre of the divisions it was given, in trace supply and on the road net.
  */
 const HQ_BEHIND_LINE_HEXES = 1;
+/** HQs of one side stand at least this many Hexes apart when the front is that wide: one to a sector. */
+const HQ_SPACING_HEXES = 4;
 /** Cost, in Hexes of distance from its divisions, of an HQ Hex outside trace supply (12.3b) or off the road net. */
 const HQ_OUT_OF_TRACE_COST_HEXES = 3;
 const HQ_OFF_NETWORK_COST_HEXES = 1.5;
@@ -179,10 +179,16 @@ const GENERATED_ROAD_JUNCTION_DEGREE = 3;
 
 /** Roles a defender deploys in Combat Mode: the units that hold the line. Artillery, HQs and trucks start as usual. */
 const DEFENDER_COMBAT_ROLES = new Set(['COMBAT', 'RECONNAISSANCE', 'TANK', 'ANTI_TANK', 'ENGINEER']);
-/** Candidate Hexes nearest the start line compared by draw coverage when siting a dump. */
-const DUMP_CANDIDATE_LIMIT = 40;
+/** Divisions spread over the sectors first, so no sector gets two of them while another has none. */
+const MECHANIZED_ARCHETYPES = new Set(['ARMORED', 'MOBILE_INFANTRY']);
+/** The order independent units are shared out between the sectors: each role is spread before the next. */
+const INDEPENDENT_ROLE_ORDER: readonly string[] = ['TANK', 'ANTI_TANK', 'ENGINEER', 'RECONNAISSANCE', 'COMBAT', 'ARTILLERY'];
+/** Depth, in Hexes behind the start line, of the band in which the front's width and its main axes are measured. */
+const FRONT_BAND_HEXES = 3;
+/** Line units within this many Hexes behind the start line begin in Combat Mode (user, 2026-10-09). */
+const FRONT_COMBAT_MODE_HEXES = 2;
 
-const truckCostModel = (map: GeneratedMap): MovementCostModel => movementCostModel({
+const generatedCostModel = (map: GeneratedMap, mobility: MobilityType): MovementCostModel => movementCostModel({
   scenario: { mapDefinition: map.mapDefinition },
   configuration: {
     terrainMovementCosts: GENERATED_TERRAIN_MOVEMENT_COSTS,
@@ -191,21 +197,61 @@ const truckCostModel = (map: GeneratedMap): MovementCostModel => movementCostMod
     defaultTerrainCostTicks: GENERATED_DEFAULT_TERRAIN_COST_TICKS,
   },
   weather: { groundCondition: 'DRY' },
-}, 'truck');
+}, mobility);
+
+/** Printed Movement Allowance, in ticks, of a unit's deployed (Move Mode) face at full strength. */
+const deployedMovementTicks = (definition: PieceDefinition): number => {
+  const strength = fullStrength(definition);
+  return Number(deployedFace(definition)?.steps.find(({ remainingSteps }) => remainingSteps === strength)?.movementPointTicks ?? 0);
+};
+
+/**
+ * Hexes a unit at `originHexId` could enter in one Movement Segment with `allowanceTicks`: never a Hex in `blocked`
+ * (enemy-held), and it stops on entering a Hex in `stopIn` (a ZOC that halts Truck movers, 4.5a). A move that takes
+ * all of a unit's MP, and the one-Hex minimum move, count from the origin only.
+ */
+const firstMoveReach = (model: MovementCostModel, originHexId: HexId, allowanceTicks: number, blocked: ReadonlySet<HexId>, stopIn: ReadonlySet<HexId>): ReadonlySet<HexId> => {
+  const best = new Map<HexId, number>([[originHexId, 0]]);
+  const reached = new Set<HexId>();
+  const open: { hexId: HexId; cost: number }[] = [{ hexId: originHexId, cost: 0 }];
+  while (open.length > 0) {
+    open.sort((left, right) => left.cost - right.cost);
+    const current = open.shift()!;
+    if (reached.has(current.hexId) || current.cost > (best.get(current.hexId) ?? Number.POSITIVE_INFINITY)) continue;
+    reached.add(current.hexId);
+    const fromOrigin = current.hexId === originHexId;
+    if (!fromOrigin && stopIn.has(current.hexId)) continue;
+    for (const next of adjacentHexIds(current.hexId)) {
+      if (blocked.has(next) || reached.has(next)) continue;
+      const step = model.evaluate(current.hexId, next);
+      if (step.kind !== 'COST') continue;
+      const cost = current.cost + step.cost.totalTicks;
+      if (step.all || cost > allowanceTicks) {
+        if (fromOrigin && allowanceTicks > 0) { reached.add(next); best.set(next, cost); }
+        continue;
+      }
+      if (cost >= (best.get(next) ?? Number.POSITIVE_INFINITY)) continue;
+      best.set(next, cost);
+      open.push({ hexId: next, cost });
+    }
+  }
+  return reached;
+};
 
 /**
  * Hexes a supply dump at `originHexId` reaches by Truck draw (12.3a, 12.3d). Truck and Track units
  * need fuel from a dump within that range (12.5), so field units deploy inside it. Uses the same
- * movement cost model as play (weather ignored, 17.0c), so terrain, rivers and roads are respected.
+ * movement cost model as play (weather ignored, 17.0c), so terrain, rivers and roads are respected. A path never
+ * enters a Hex in `blocked` (an enemy ZOC, 4.5a B).
  */
-const supplyReach = (model: MovementCostModel, originHexId: HexId): ReadonlySet<HexId> => {
+const supplyReach = (model: MovementCostModel, originHexId: HexId, blocked: ReadonlySet<HexId> = new Set()): ReadonlySet<HexId> => {
   const best = new Map<HexId, number>([[originHexId, 0]]);
   const queue: HexId[] = [originHexId];
   for (let head = 0; head < queue.length; head += 1) {
     const hexId = queue[head]!;
     for (const next of adjacentHexIds(hexId)) {
       const step = model.evaluate(hexId, next);
-      if (step.kind !== 'COST' || step.all) continue;
+      if (step.kind !== 'COST' || step.all || blocked.has(next)) continue;
       const total = best.get(hexId)! + step.cost.totalTicks;
       if (total > GENERATED_SUPPLY_DRAW_RANGE_TICKS || total >= (best.get(next) ?? Number.POSITIVE_INFINITY)) continue;
       best.set(next, total);
@@ -213,36 +259,6 @@ const supplyReach = (model: MovementCostModel, originHexId: HexId): ReadonlySet<
     }
   }
   return new Set(best.keys());
-};
-
-/**
- * Centre Hexes for `count` formation groups, in `ranked` order, each at least `spacing` Hexes from every
- * reserved Hex (supply dumps, Air Bases) and from every earlier centre. Wider spacing is preferred, but
- * staying inside the first of `reaches` (supply) outranks it; both relax until `count` centres exist or `ranked` runs out.
- */
-const formationCenters = (
-  ranked: readonly HexId[],
-  reserved: readonly HexId[],
-  reaches: readonly ReadonlySet<HexId>[],
-  count: number,
-): HexId[] => {
-  const taken = [...reserved];
-  const chosen: HexId[] = [];
-  // Centre by centre: the best reach first, at the widest spacing it allows, before any Hex of a lesser reach.
-  for (const reach of [...reaches, null]) {
-    for (const spacing of [GENERATED_FORMATION_SPACING_HEXES, 2, 1]) {
-      for (const hexId of ranked) {
-        if (chosen.length === count) return chosen;
-        if (reach !== null && !reach.has(hexId)) continue;
-        if (taken.every((other) => distance(other, hexId) >= spacing)) {
-          chosen.push(hexId);
-          taken.push(hexId);
-        }
-      }
-    }
-  }
-  // Fewer centres than groups: the groups without one deploy through the fallback slots.
-  return chosen;
 };
 
 /** Victory points of an objective: a Major City outweighs a town. Villages and open country are never objectives. */
@@ -377,7 +393,7 @@ export const deployGeneratedForces = (
     return { ok: false, error: [deploymentFailure('Generated map has no usable opposing entry regions.')] };
   }
 
-  const truckModel = truckCostModel(map);
+  const truckModel = generatedCostModel(map, 'truck');
   const railFeatures = new Set([GENERATED_RAIL, GENERATED_MULTI_TRACK_RAIL]);
   const railLinks = map.mapDefinition.hexsides
     .filter(({ featureDefinitionIds }) => featureDefinitionIds.some((id) => railFeatures.has(String(id))))
@@ -395,6 +411,12 @@ export const deployGeneratedForces = (
     if (!parsed.ok) continue;
     for (const hexId of [parsed.value.firstHexId, parsed.value.secondHexId]) roadDegree.set(hexId, (roadDegree.get(hexId) ?? 0) + 1);
   }
+  const primaryRoadHexes = new Set(map.mapDefinition.hexsides
+    .filter(({ featureDefinitionIds }) => featureDefinitionIds.some((id) => String(id) === 'edge:primary-road'))
+    .flatMap(({ hexsideId }) => {
+      const parsed = parseHexsideId(hexsideId);
+      return parsed.ok ? [parsed.value.firstHexId, parsed.value.secondHexId] : [];
+    }));
   /** Rail towns each side's railroad joins to its map edge inside its zone: its supply nodes (13.3c). */
   const supplyNodes: Record<OobSide, Set<HexId>> = { ALLIED: new Set(), AXIS: new Set() };
   const railNeighbors = new Map<HexId, HexId[]>();
@@ -402,6 +424,10 @@ export const deployGeneratedForces = (
     railNeighbors.set(first, [...railNeighbors.get(first) ?? [], second]);
     railNeighbors.set(second, [...railNeighbors.get(second) ?? [], first]);
   }
+  /** Hexes in trace supply from `sources` (12.3): within draw range of one, or adjacent to that range (12.3c). */
+  const traceReachFrom = (sources: readonly HexId[], blocked?: ReadonlySet<HexId>): ReadonlySet<HexId> => new Set(sources
+    .flatMap((hexId) => [...(blocked === undefined ? supplyReachOf(hexId) : supplyReach(truckModel, hexId, blocked))])
+    .flatMap((reached) => [reached, ...adjacentHexIds(reached)]));
   const reachCache = new Map<HexId, ReadonlySet<HexId>>();
   const supplyReachOf = (hexId: HexId): ReadonlySet<HexId> => {
     let reach = reachCache.get(hexId);
@@ -430,9 +456,64 @@ export const deployGeneratedForces = (
   };
 
   const pieces: PieceState[] = [];
+  const planWarnings: string[] = [];
   const groups = deploymentGroups(oob);
+  const archetypeOf = new Map(oob.sides.flatMap((entry) => entry.formations.map((formation) => [String(formation.id), formation.archetype] as const)));
+  const onNetwork = (hexId: HexId): boolean => roadDegree.has(hexId) || railHexes.has(hexId);
+  // Across the front: a Hex's offset, in Hexes, from the line joining the two entry anchors.
+  const pointOf = (hexId: HexId): { readonly x: number; readonly y: number } => {
+    const parsed = parseHexCoordinateId(hexId);
+    return parsed.ok ? { x: Math.sqrt(3) * (parsed.value.q + parsed.value.r / 2), y: 1.5 * parsed.value.r } : { x: 0, y: 0 };
+  };
+  const anchorPoint = pointOf(firstAnchor);
+  const towardEnemy = (() => {
+    const far = pointOf(secondAnchor);
+    const length = Math.hypot(far.x - anchorPoint.x, far.y - anchorPoint.y) || 1;
+    return { x: (far.x - anchorPoint.x) / length, y: (far.y - anchorPoint.y) / length };
+  })();
+  const lateral = (hexId: HexId): number => {
+    const point = pointOf(hexId);
+    return ((point.x - anchorPoint.x) * towardEnemy.y - (point.y - anchorPoint.y) * towardEnemy.x) / Math.sqrt(3);
+  };
+  const costModels = new Map<MobilityType, MovementCostModel>();
+  const costModelOf = (mobility: MobilityType): MovementCostModel => {
+    let model = costModels.get(mobility);
+    if (!model) { model = generatedCostModel(map, mobility); costModels.set(mobility, model); }
+    return model;
+  };
+  type SidePlan = {
+    readonly rng: ReturnType<typeof createSeededRandom>;
+    readonly line: number;
+    readonly units: readonly GeneratedOobUnit[];
+    readonly supplyUnits: readonly GeneratedOobUnit[];
+    readonly fieldUnits: readonly GeneratedOobUnit[];
+    readonly reinforcement: GeneratedOobUnit | undefined;
+    readonly heldBack: Set<string>;
+    readonly fieldPlacements: { unit: GeneratedOobUnit; hexId: HexId }[];
+    readonly usedReTicks: Map<HexId, number>;
+    readonly fitsFor: (unit: GeneratedOobUnit) => (hexId: HexId) => boolean;
+    readonly place: (unit: GeneratedOobUnit, hexId: HexId) => void;
+    readonly placeFallback: (unit: GeneratedOobUnit) => boolean;
+    readonly sectors: readonly { readonly low: number; readonly high: number; readonly middle: number }[];
+    readonly sectorOfHex: (hexId: HexId) => number;
+    readonly hqHexes: readonly HexId[];
+    readonly traceReach: ReadonlySet<HexId>;
+    readonly traceSources: readonly HexId[];
+    readonly traceTier: (hexId: HexId) => number;
+    readonly combatModeIds: Set<string>;
+  };
   const relations: PieceRelation[] = [];
   const stackCounts = new Map<HexId, number>();
+  // The deployment is planned the way a commander would (user, 2026-10-09), in two phases:
+  //  1. Each side's front is split along its width into one sector per HQ, each around the strongest road or railroad
+  //     that crosses the start line there (a main axis); the HQ stands on its axis just behind the line. The divisions
+  //     (armored ones spread first) and the independent units are then shared out evenly between the sectors and spread
+  //     across each sector's width, instead of the independent units forming one group. Units near the front start in
+  //     Combat Mode, so the line has a ZOC from the first turn (4.5).
+  //  2. Only once both armies stand is the supply placed: each dump where its sector's units can draw from it and out of
+  //     reach of the enemy's first move. Tracked and Leg movement ignores ZOC (4.5a), so on open maps that usually means a
+  //     Hex the side's own units hold. Trucks stand with the dumps; the Air Bases go further back.
+  const plans = new Map<OobSide, SidePlan>();
   for (const side of ['ALLIED', 'AXIS'] as const) {
     const rng = createSeededRandom(mixUint32(deploymentSeed ^ (side === 'ALLIED' ? 0xa11ed : 0xa815)));
     // Field units fill the zone from the side's start line backwards, so the armies begin `standoff` Hexes behind the
@@ -450,6 +531,380 @@ export const deployGeneratedForces = (
     const denseSlots = ranked.flatMap(({ hex }) => [hex.id, hex.id, hex.id]);
     const units = allUnits(oob).filter((unit) => unit.side === side);
     const supplyUnits = units.filter(({ role, staging }) => role === 'SUPPLY' && staging !== 'AIR_BASE');
+    const fieldUnits = units.filter(({ role, staging, arrivalTurn }) => role !== 'SUPPLY' && role !== 'AIR_BASE' && role !== 'AIRCRAFT' && staging !== 'AIR_BASE' && arrivalTurn === undefined);
+    const groupOf = (unit: GeneratedOobUnit): string => groups.get(unit.id) ?? 'independent';
+    const reinforcement = fieldUnits.find((unit) => groupOf(unit) === 'independent') ?? fieldUnits.at(-1);
+    if (fieldUnits.length > denseSlots.length || sideSupply[side].length === 0) {
+      return { ok: false, error: [deploymentFailure(`Map cannot deploy every ${side} unit within its operational zone.`)] };
+    }
+    // Trace supply (12.3) starts at the side's map-edge sources and its detrainable rail Hexes (13.3c); a unit within
+    // draw range of one, or adjacent to that range (12.3c), traces directly. Units start there where the map allows,
+    // so the armies do not begin out of supply now that they stand forward. HQ throws can only add to this.
+    // A detrainable Hex counts when the railroad joins it to the side's map edge without leaving the ground behind the side's
+    // start line, which the side controls at the start (13.3h).
+    const zone = new Set(zones[side].map(({ id }) => id));
+    const railed = new Set(sideSupply[side]);
+    const railQueue = [...railed];
+    for (let head = 0; head < railQueue.length; head += 1) {
+      for (const next of railNeighbors.get(railQueue[head]!) ?? []) {
+        // Only rail the side will control at the start (behind its start line, 13.3h) carries trace supply.
+        if (railed.has(next) || !zone.has(next) || depthOf(side, next) < line) continue;
+        railed.add(next);
+        railQueue.push(next);
+      }
+    }
+    for (const hexId of railed) {
+      if (!sideSupply[side].includes(hexId) && hexById.get(hexId)?.features.some(({ definitionId }) => DETRAINABLE_FEATURES.has(String(definitionId)))) supplyNodes[side].add(hexId);
+    }
+    const traceSources = [...sideSupply[side], ...[...railed]
+      .filter((hexId) => hexById.get(hexId)?.features.some(({ definitionId }) => DETRAINABLE_FEATURES.has(String(definitionId))))];
+    const traceReach = traceReachFrom(traceSources);
+    // Inside a source's draw range is sure; a Hex only adjacent to it (12.3c) is at the margin, where the engine's own
+    // trace can disagree, so units stand inside the range where the map allows.
+    const traceCore = new Set(traceSources.flatMap((hexId) => [...supplyReachOf(hexId)]));
+    const traceTier = (hexId: HexId): number => traceCore.has(hexId) ? 0 : traceReach.has(hexId) ? 1 : 2;
+
+    // ── Sectors and main axes ──
+    const hqUnits = fieldUnits.filter((unit) => unit.role === 'HQ' && unit.id !== reinforcement?.id);
+    const sectorCount = Math.max(1, hqUnits.length);
+    const frontBandIds = zones[side].map(({ id }) => id).filter((hexId) => depthOf(side, hexId) >= line && depthOf(side, hexId) < line + FRONT_BAND_HEXES);
+    // The width that counts is the part of the front in trace supply, where the map has one.
+    const tracedFront = frontBandIds.filter((hexId) => traceReach.has(hexId));
+    const widthHexes = (tracedFront.length > 0 ? tracedFront : frontBandIds.length > 0 ? frontBandIds : zones[side].map(({ id }) => id)).map(lateral);
+    const lateralLow = Math.min(...widthHexes);
+    const sectorWidth = Math.max(1e-6, (Math.max(...widthHexes) - lateralLow) / sectorCount);
+    const sectors = Array.from({ length: sectorCount }, (_, index) => ({
+      low: lateralLow + index * sectorWidth, high: lateralLow + (index + 1) * sectorWidth, middle: lateralLow + (index + 0.5) * sectorWidth,
+    }));
+    const sectorOfHex = (hexId: HexId): number => Math.min(sectorCount - 1, Math.max(0, Math.floor((lateral(hexId) - lateralLow) / sectorWidth)));
+    // A main axis is the road or railroad Hex on the start line that carries the most: rail first, then primary roads, then junctions.
+    const axisWeight = (hexId: HexId): number => (railHexes.has(hexId) ? 4 : 0) + (primaryRoadHexes.has(hexId) ? 2 : 0) + (roadDegree.get(hexId) ?? 0);
+    const axes = sectors.map((sector, index) => {
+      const inSector = frontBandIds.filter((hexId) => sectorOfHex(hexId) === index);
+      const tracedInSector = inSector.filter((hexId) => traceReach.has(hexId));
+      // The axis runs through the middle half of its sector where a road or railroad does, so the HQ serves the whole
+      // sector; in trace supply first.
+      const central = (hexIds: readonly HexId[]) => hexIds.filter((hexId) => onNetwork(hexId) && Math.abs(lateral(hexId) - sector.middle) <= sectorWidth / 4);
+      const pool = [central(tracedInSector), central(inSector), tracedInSector, inSector, zones[side].map(({ id }) => id)].find((entry) => entry.length > 0)!;
+      return [...pool].sort((left, right) => axisWeight(right) - axisWeight(left)
+        || Math.abs(lateral(left) - sector.middle) - Math.abs(lateral(right) - sector.middle)
+        || depthOf(side, left) - depthOf(side, right) || String(left).localeCompare(String(right)))[0]!;
+    });
+    // Each HQ stands on its sector's axis just behind the line (13.1b), in trace supply and on the road net.
+    const hqHexes: HexId[] = [];
+    for (const [index, axis] of axes.entries()) {
+      if (index >= hqUnits.length) break;
+      // HQs stand apart (HQ_SPACING_HEXES where the front is wide enough) so each serves its own sector.
+      const spacing = Math.min(HQ_SPACING_HEXES, Math.floor(sectorWidth));
+      const pick = zones[side]
+        .filter((hex) => hqHexes.every((other) => distance(other, hex.id) >= Math.max(1, spacing)) && canDeployOn(hex, 'truck')
+          && depthOf(side, hex.id) >= line + HQ_BEHIND_LINE_HEXES && distance(hex.id, sideAnchors[side]) >= DUMP_MIN_DEPTH_HEXES)
+        .map((hex) => ({
+          hexId: hex.id,
+          cost: distance(axis, hex.id) + traceTier(hex.id) * HQ_OUT_OF_TRACE_COST_HEXES * 5
+            + (onNetwork(hex.id) ? 0 : HQ_OFF_NETWORK_COST_HEXES) + (sectorOfHex(hex.id) === index ? 0 : HQ_OFF_NETWORK_COST_HEXES),
+        }))
+        .sort((left, right) => left.cost - right.cost || String(left.hexId).localeCompare(String(right.hexId)))[0];
+      if (pick) hqHexes.push(pick.hexId);
+    }
+
+    // ── Sharing the units out between the sectors ──
+    const sectorUnits = sectors.map(() => 0);
+    const sectorMechanized = sectors.map(() => 0);
+    const divisionKeys = [...new Set(fieldUnits.map(groupOf))].filter((key) => key !== 'independent');
+    const divisions = divisionKeys.map((key) => {
+      const members = fieldUnits.filter((unit) => groupOf(unit) === key);
+      return { key, members, mechanized: MECHANIZED_ARCHETYPES.has(String(archetypeOf.get(key))) };
+    }).sort((left, right) => Number(right.mechanized) - Number(left.mechanized) || right.members.length - left.members.length
+      || left.key.localeCompare(right.key));
+    const divisionSector = new Map<string, number>();
+    for (const division of divisions) {
+      const sector = sectors.map((_, index) => index).sort((left, right) => (division.mechanized ? sectorMechanized[left]! - sectorMechanized[right]! : 0)
+        || sectorUnits[left]! - sectorUnits[right]! || left - right)[0]!;
+      divisionSector.set(division.key, sector);
+      sectorUnits[sector] = sectorUnits[sector]! + division.members.length;
+      if (division.mechanized) sectorMechanized[sector] = sectorMechanized[sector]! + 1;
+    }
+    // Independent units (not HQs or trucks) go one by one, each role spread over the sectors before any sector gets two.
+    const independents = fieldUnits.filter((unit) => groupOf(unit) === 'independent' && unit.id !== reinforcement?.id
+      && unit.role !== 'HQ' && unit.role !== 'TRANSPORT')
+      .sort((left, right) => INDEPENDENT_ROLE_ORDER.indexOf(left.role) - INDEPENDENT_ROLE_ORDER.indexOf(right.role) || left.id.localeCompare(right.id));
+    const sectorRoles = sectors.map(() => new Map<string, number>());
+    const independentSector = new Map<string, number>();
+    for (const unit of independents) {
+      const sector = sectors.map((_, index) => index).sort((left, right) => (sectorRoles[left]!.get(unit.role) ?? 0) - (sectorRoles[right]!.get(unit.role) ?? 0)
+        || sectorUnits[left]! - sectorUnits[right]! || left - right)[0]!;
+      independentSector.set(unit.id, sector);
+      sectorRoles[sector]!.set(unit.role, (sectorRoles[sector]!.get(unit.role) ?? 0) + 1);
+      sectorUnits[sector] = sectorUnits[sector]! + 1;
+    }
+
+    // ── Where each sector's units stand ──
+    const claimed = new Set<HexId>(hqHexes);
+    const rankedIds = ranked.map(({ hex }) => hex.id);
+    const behindLine = rankedIds.filter((hexId) => depthOf(side, hexId) >= line);
+    // Division centres: on the start line, spread across their sector's width, in trace supply where the map allows.
+    const centres: HexId[] = [];
+    const divisionCentre = new Map<string, HexId>();
+    for (const [index] of sectors.entries()) {
+      const own = divisions.filter(({ key }) => divisionSector.get(key) === index);
+      for (const [order, division] of own.entries()) {
+        const target = sectors[index]!.low + (order + 0.5) * sectorWidth / own.length;
+        const score = (hexId: HexId): number => Math.abs(lateral(hexId) - target) + (depthOf(side, hexId) - line);
+        let chosen: HexId | undefined;
+        // In trace supply first, at the widest spacing it allows; only then out of trace.
+        for (const worstTier of [0, 1, 2]) {
+          for (const spacing of [GENERATED_FORMATION_SPACING_HEXES, 2, 1]) {
+            chosen = (behindLine.length > 0 ? behindLine : rankedIds)
+              .filter((hexId) => traceTier(hexId) <= worstTier && !claimed.has(hexId) && centres.every((other) => distance(other, hexId) >= spacing))
+              .sort((left, right) => score(left) - score(right) || String(left).localeCompare(String(right)))[0];
+            if (chosen !== undefined) break;
+          }
+          if (chosen !== undefined) break;
+        }
+        if (chosen === undefined) continue;
+        centres.push(chosen);
+        claimed.add(chosen);
+        divisionCentre.set(division.key, chosen);
+      }
+    }
+    // Each division takes its centre, then the nearest free Hexes around it, FIELD_UNITS_PER_HEX slots each. No Hex
+    // belongs to two groups.
+    const groupSlots = new Map<string, HexId[]>();
+    for (const division of divisions) {
+      const centre = divisionCentre.get(division.key);
+      if (centre === undefined) continue;
+      const hexes = [centre];
+      const nearby = behindLine
+        .filter((hexId) => !claimed.has(hexId))
+        .sort((left, right) => traceTier(left) - traceTier(right))
+        .map((hexId, order) => ({ hexId, order, away: distance(hexId, centre) }))
+        .filter(({ away }) => away <= 3)
+        .sort((left, right) => left.away - right.away || left.order - right.order);
+      for (const { hexId } of nearby) {
+        if (hexes.length * FIELD_UNITS_PER_HEX >= division.members.length + 1) break;
+        hexes.push(hexId);
+        claimed.add(hexId);
+      }
+      groupSlots.set(division.key, hexes.flatMap((hexId) => Array<HexId>(FIELD_UNITS_PER_HEX).fill(hexId)));
+    }
+    // Units their group cannot take spill over to the nearest slots behind the start line, those in trace first;
+    // Hexes in front of the line are the last resort.
+    const tier = (hexId: HexId): number => (depthOf(side, hexId) >= line ? 0 : 3) + traceTier(hexId);
+    const fallbackSlots = denseSlots.map((hexId, order) => ({ hexId, order }))
+      .sort((left, right) => tier(left.hexId) - tier(right.hexId) || left.order - right.order).map(({ hexId }) => hexId);
+    const usedReTicks = new Map<HexId, number>();
+    const fieldPlacements: { unit: GeneratedOobUnit; hexId: HexId }[] = [];
+    // In an attack, a unit with no room behind its side's start line waits off the map and arrives on Game Turn 2
+    // (13.6) rather than starting next to the enemy; a crowded meeting engagement still fills toward the front.
+    const heldBack = new Set<string>();
+    const fitsFor = (unit: GeneratedOobUnit) => {
+      const definition = definitionById.get(unit.definitionId);
+      const unitReTicks = definition ? deployedReTicks(definition) : 0;
+      return (hexId: HexId): boolean => (definition === undefined || canDeployOn(hexById.get(hexId)!, deployedMobility(definition)))
+        && (usedReTicks.get(hexId) ?? 0) + unitReTicks <= GENERATED_STACKING_LIMIT_RE_TICKS;
+    };
+    const place = (unit: GeneratedOobUnit, hexId: HexId): void => {
+      const definition = definitionById.get(unit.definitionId);
+      usedReTicks.set(hexId, (usedReTicks.get(hexId) ?? 0) + (definition && unit.id !== reinforcement?.id ? deployedReTicks(definition) : 0));
+      fieldPlacements.push({ unit, hexId });
+    };
+    const placeFallback = (unit: GeneratedOobUnit): boolean => {
+      const fits = fitsFor(unit);
+      // A Hex that still has room (FIELD_UNITS_PER_HEX) first, so a spilled unit does not pile onto another group.
+      const roomy = fallbackSlots.findIndex((hexId) => fits(hexId) && !claimed.has(hexId)
+        && fieldPlacements.filter((entry) => entry.hexId === hexId && entry.unit.id !== reinforcement?.id).length < FIELD_UNITS_PER_HEX);
+      const fallbackIndex = roomy >= 0 ? roomy : fallbackSlots.findIndex(fits);
+      if (attacker !== null && (fallbackIndex < 0 || depthOf(side, fallbackSlots[fallbackIndex]!) < line)) {
+        heldBack.add(unit.id);
+        fieldPlacements.push({ unit, hexId: sideSupply[side][0]! });
+        return true;
+      }
+      if (fallbackIndex < 0) return false;
+      place(unit, fallbackSlots.splice(fallbackIndex, 1)[0]!);
+      return true;
+    };
+    if (reinforcement !== undefined) fieldPlacements.push({ unit: reinforcement, hexId: sideSupply[side][0]! });
+    // HQs take their planned Hexes first: an HQ out of trace supply cannot throw it (12.3b).
+    for (const [index, unit] of hqUnits.entries()) {
+      const planned = hqHexes[index];
+      if (planned !== undefined && fitsFor(unit)(planned)) place(unit, planned);
+      else if (!placeFallback(unit)) return { ok: false, error: [deploymentFailure(`Map cannot deploy every ${side} unit on terrain it can enter within stacking limits.`)] };
+    }
+    for (const division of divisions) {
+      const slots = groupSlots.get(division.key) ?? [];
+      for (const unit of division.members) {
+        const index = slots.findIndex(fitsFor(unit));
+        if (index >= 0) place(unit, slots.splice(index, 1)[0]!);
+        else if (!placeFallback(unit)) return { ok: false, error: [deploymentFailure(`Map cannot deploy every ${side} unit on terrain it can enter within stacking limits.`)] };
+      }
+    }
+    // Independent units spread across their sector's width just behind the divisions (artillery a row further back), one
+    // to a Hex where the map allows.
+    const independentHexes = new Set<HexId>();
+    for (const [index] of sectors.entries()) {
+      const own = independents.filter(({ id }) => independentSector.get(id) === index);
+      for (const [order, unit] of own.entries()) {
+        const target = sectors[index]!.low + (order + 0.5) * sectorWidth / own.length;
+        const targetDepth = line + (unit.role === 'ARTILLERY' ? 2 : 1);
+        const fits = fitsFor(unit);
+        const score = (hexId: HexId): number => Math.abs(lateral(hexId) - target) + Math.abs(depthOf(side, hexId) - targetDepth) + traceTier(hexId) * 100;
+        const chosen = behindLine.filter((hexId) => !claimed.has(hexId) && !independentHexes.has(hexId) && fits(hexId))
+          .sort((left, right) => score(left) - score(right) || String(left).localeCompare(String(right)))[0];
+        if (chosen !== undefined) {
+          independentHexes.add(chosen);
+          place(unit, chosen);
+        } else if (!placeFallback(unit)) {
+          return { ok: false, error: [deploymentFailure(`Map cannot deploy every ${side} unit on terrain it can enter within stacking limits.`)] };
+        }
+      }
+    }
+    // Units near the front start in Combat Mode (user, 2026-10-09), so they have a ZOC (4.5) from the first turn; in an
+    // attack the whole of the defender's line does: a prepared defence, not a march.
+    const combatModeIds = new Set(fieldPlacements.filter(({ unit, hexId }) => DEFENDER_COMBAT_ROLES.has(unit.role)
+      && unit.id !== reinforcement?.id && !heldBack.has(unit.id)
+      && definitionById.get(unit.definitionId)?.faces.some(({ id }) => String(id) === 'combat') === true
+      && ((attacker !== null && side !== attacker) || depthOf(side, hexId) < line + FRONT_COMBAT_MODE_HEXES)).map(({ unit }) => unit.id));
+    plans.set(side, {
+      rng, line, units, supplyUnits, fieldUnits, reinforcement, heldBack, fieldPlacements, usedReTicks, fitsFor, place, placeFallback,
+      sectors, sectorOfHex, hqHexes, traceReach, traceTier, traceSources, combatModeIds,
+    });
+  }
+
+  // A front in Combat Mode must not cut the other side's trace supply at the start (4.5a B: an enemy ZOC blocks supply
+  // paths traced with Truck MP; a friendly combat unit in the Hex negates it, 4.5b). Where it would, the enemy unit whose
+  // ZOC cuts the most starts in Move Mode instead, until every unit that traced without the ZOCs traces with them.
+  const placedOf = (plan: SidePlan) => plan.fieldPlacements.filter(({ unit }) => unit.id !== plan.reinforcement?.id && !plan.heldBack.has(unit.id));
+  for (const [side, enemySide] of [['ALLIED', 'AXIS'], ['AXIS', 'ALLIED']] as const) {
+    const plan = plans.get(side)!;
+    const enemy = plans.get(enemySide)!;
+    const negated = new Set(placedOf(plan).filter(({ unit }) => DEFENDER_COMBAT_ROLES.has(unit.role)).map(({ hexId }) => hexId));
+    const tracing = placedOf(plan).filter(({ hexId }) => plan.traceReach.has(hexId));
+    const cutCount = (combat: ReadonlySet<string>): number => {
+      const blocked = new Set(placedOf(enemy).filter(({ unit }) => combat.has(unit.id))
+        .flatMap(({ hexId }) => [hexId, ...adjacentHexIds(hexId)]).filter((hexId) => !negated.has(hexId)));
+      const reach = traceReachFrom(plan.traceSources, blocked);
+      return tracing.filter(({ hexId }) => !reach.has(hexId)).length;
+    };
+    for (let cut = cutCount(enemy.combatModeIds); cut > 0;) {
+      const options = [...enemy.combatModeIds].sort().map((id) => {
+        const without = new Set(enemy.combatModeIds);
+        without.delete(id);
+        return { id, cut: cutCount(without) };
+      }).sort((left, right) => left.cut - right.cut);
+      const best = options[0];
+      if (best === undefined || best.cut >= cut) break;
+      enemy.combatModeIds.delete(best.id);
+      cut = best.cut;
+    }
+  }
+
+  // ── Phase 2: supply, trucks and Air Bases, each side out of the other's first-move reach ──
+  for (const side of ['ALLIED', 'AXIS'] as const) {
+    const plan = plans.get(side)!;
+    const enemy = plans.get(side === 'ALLIED' ? 'AXIS' : 'ALLIED')!;
+    const { rng, line, units, supplyUnits, fieldUnits, reinforcement, heldBack, fieldPlacements, usedReTicks, fitsFor, place, placeFallback, sectors, sectorOfHex, hqHexes, traceReach, traceTier } = plan;
+    const onMap = (entry: { unit: GeneratedOobUnit }): boolean => entry.unit.id !== reinforcement?.id && !heldBack.has(entry.unit.id);
+    // Hexes the enemy's combat units could enter in their first Movement Segment (switching to Move Mode first): a Hex
+    // holding this side's units cannot be entered without combat; a Truck mover stops on entering a ZOC (4.5a).
+    const held = new Set(fieldPlacements.filter(onMap).map(({ hexId }) => hexId));
+    const zoc = new Set(fieldPlacements.filter((entry) => onMap(entry) && plan.combatModeIds.has(entry.unit.id))
+      .flatMap(({ hexId }) => [hexId, ...adjacentHexIds(hexId)]));
+    const threatened = new Set<HexId>();
+    for (const { unit, hexId } of enemy.fieldPlacements) {
+      if (!DEFENDER_COMBAT_ROLES.has(unit.role) || unit.id === enemy.reinforcement?.id || enemy.heldBack.has(unit.id)) continue;
+      const definition = definitionById.get(unit.definitionId);
+      const mobility = definition ? deployedMobility(definition) : null;
+      if (!definition || mobility === null) continue;
+      for (const reached of firstMoveReach(costModelOf(mobility), hexId, deployedMovementTicks(definition), held, mobility === 'truck' ? zoc : new Set())) threatened.add(reached);
+    }
+    // Supply dumps: shared between the sectors by their units, each where it covers the most of its sector's units by draw
+    // (12.5: Truck and Track units are fuelled from a dump in range), never in front of the line, apart from the other dumps.
+    const sectorCounts = sectors.map((_, index) => fieldPlacements.filter((entry) => onMap(entry) && sectorOfHex(entry.hexId) === index).length);
+    const dumpsPerSector = sectors.map(() => 0);
+    const dumpHexes: HexId[] = [];
+    // Draw from a dump is a Truck-MP path, which the enemy's starting ZOC blocks unless a friendly combat unit negates it (4.5a B, 4.5b).
+    const negated = new Set(fieldPlacements.filter((entry) => onMap(entry) && DEFENDER_COMBAT_ROLES.has(entry.unit.role)).map(({ hexId }) => hexId));
+    const enemyZoc = new Set(enemy.fieldPlacements.filter(({ unit }) => enemy.combatModeIds.has(unit.id) && unit.id !== enemy.reinforcement?.id && !enemy.heldBack.has(unit.id))
+      .flatMap(({ hexId }) => [hexId, ...adjacentHexIds(hexId)]).filter((hexId) => !negated.has(hexId)));
+    const drawCache = new Map<HexId, ReadonlySet<HexId>>();
+    const drawReachOf = (hexId: HexId): ReadonlySet<HexId> => {
+      let reach = drawCache.get(hexId);
+      if (!reach) { reach = supplyReach(truckModel, hexId, enemyZoc); drawCache.set(hexId, reach); }
+      return reach;
+    };
+    // Each dump first covers the units no earlier dump reaches (a greedy cover), its own sector's a little ahead of the rest.
+    const covered = new Set<string>();
+    for (const _ of supplyUnits) {
+      const sector = sectors.map((__, index) => index)
+        .sort((left, right) => sectorCounts[right]! / (dumpsPerSector[right]! + 1) - sectorCounts[left]! / (dumpsPerSector[left]! + 1) || left - right)[0]!;
+      dumpsPerSector[sector] = dumpsPerSector[sector]! + 1;
+      const served = fieldPlacements.filter((entry) => onMap(entry) && entry.unit.role !== 'TRANSPORT');
+      const coverage = (hexId: HexId): number => {
+        const reach = drawReachOf(hexId);
+        return served.reduce((sum, entry) => sum + (!reach.has(entry.hexId) ? 0
+          // An HQ counts thrice: it fuels the units around it (12.5e) but must be fuelled from a dump itself.
+          : ((covered.has(entry.unit.id) ? 0.1 : 1) + (sectorOfHex(entry.hexId) === sector ? 0.25 : 0)) * (entry.unit.role === 'HQ' ? 3 : 1)), 0);
+      };
+      const candidates = zones[side]
+        .filter((hex) => canDeployOn(hex, 'truck') && depthOf(side, hex.id) >= line && distance(hex.id, sideAnchors[side]) >= DUMP_MIN_DEPTH_HEXES)
+        .map((hex) => hex.id);
+      let chosen: HexId | undefined;
+      for (const [safeOnly, spacing] of [[true, DUMP_SPACING_HEXES], [true, 2], [true, 1], [false, 2], [false, 1]] as const) {
+        const open = candidates.filter((hexId) => (!safeOnly || !threatened.has(hexId)) && dumpHexes.every((used) => distance(used, hexId) >= spacing));
+        if (open.length === 0) continue;
+        // An HQ of this sector that no dump fuels yet must be in this one's draw range, where any candidate allows it.
+        const unfuelledHqs = served.filter((entry) => entry.unit.role === 'HQ' && !covered.has(entry.unit.id) && sectorOfHex(entry.hexId) === sector);
+        const fuellingHq = open.filter((hexId) => unfuelledHqs.every((entry) => drawReachOf(hexId).has(entry.hexId)));
+        const pool = fuellingHq.length > 0 ? fuellingHq : open;
+        const scored = pool.map((hexId) => ({
+          hexId,
+          score: coverage(hexId) * 10 + (onNetwork(hexId) ? 3 : 0) + (traceReach.has(hexId) ? 1 : 0)
+            - Math.abs(lateral(hexId) - sectors[sector]!.middle) * 0.5,
+        }));
+        chosen = scored.sort((left, right) => right.score - left.score || String(left.hexId).localeCompare(String(right.hexId)))[0]!.hexId;
+        if (!safeOnly) planWarnings.push(`A ${side} supply dump at ${chosen} can be reached by the enemy's first move.`);
+        break;
+      }
+      dumpHexes.push(chosen ?? sideSupply[side][0]!);
+      const reach = drawReachOf(dumpHexes.at(-1)!);
+      for (const entry of served) if (reach.has(entry.hexId)) covered.add(entry.unit.id);
+    }
+    // A Truck or Track unit no dump can fuel (12.5) moves to the nearest Hex one can, still behind the line and in trace
+    // where possible; only independent units move, a division keeps its ground.
+    const dumpReach = new Set(dumpHexes.flatMap((hexId) => [...drawReachOf(hexId)]));
+    // Units moved or placed now go where a Hex has room (FIELD_UNITS_PER_HEX), so stacks stay small.
+    const full = (hexId: HexId): boolean => fieldPlacements.filter((entry) => onMap(entry) && entry.hexId === hexId).length >= FIELD_UNITS_PER_HEX;
+    for (const entry of fieldPlacements) {
+      const definition = definitionById.get(entry.unit.definitionId);
+      if (!onMap(entry) || !definition || groups.get(entry.unit.id) !== undefined || entry.unit.role === 'HQ' || entry.unit.role === 'TRANSPORT'
+        || deployedMobility(definition) === 'leg' || dumpReach.has(entry.hexId)) continue;
+      const unitReTicks = deployedReTicks(definition);
+      usedReTicks.set(entry.hexId, (usedReTicks.get(entry.hexId) ?? 0) - unitReTicks);
+      const fits = fitsFor(entry.unit);
+      const from = entry.hexId;
+      const target = zones[side].map(({ id }) => id)
+        .filter((hexId) => dumpReach.has(hexId) && depthOf(side, hexId) >= line && fits(hexId))
+        .sort((left, right) => Number(full(left)) - Number(full(right))
+          || traceTier(left) * 100 - traceTier(right) * 100 + distance(from, left) - distance(from, right)
+          || String(left).localeCompare(String(right)))[0];
+      entry.hexId = target ?? from;
+      usedReTicks.set(entry.hexId, (usedReTicks.get(entry.hexId) ?? 0) + unitReTicks);
+    }
+    // Trucks stand next to the dumps they will carry from, out of the enemy's first-move reach where the map allows (they
+    // can be captured too, 9.14c), not on the dump itself: a truck loads where it starts its move.
+    const trucks = fieldUnits.filter((unit) => unit.role === 'TRANSPORT' && unit.id !== reinforcement?.id && groups.get(unit.id) === undefined);
+    for (const [index, unit] of trucks.entries()) {
+      const dump = dumpHexes[index % Math.max(1, dumpHexes.length)];
+      const fits = fitsFor(unit);
+      const hexId = dump === undefined ? undefined : zones[side].map(({ id }) => id)
+        .filter((candidate) => candidate !== dump && !dumpHexes.includes(candidate) && fits(candidate) && depthOf(side, candidate) >= line)
+        .sort((left, right) => Number(full(left)) - Number(full(right)) || Number(threatened.has(left)) - Number(threatened.has(right))
+          || traceTier(left) - traceTier(right) || distance(left, dump) - distance(right, dump) || String(left).localeCompare(String(right)))[0];
+      if (hexId !== undefined) place(unit, hexId);
+      else if (!placeFallback(unit)) return { ok: false, error: [deploymentFailure(`Map cannot deploy every ${side} unit on terrain it can enter within stacking limits.`)] };
+    }
+    const supplyAnchor = dumpHexes[0] ?? sideSupply[side][0]!;
     const airBases = units.filter(({ role, staging }) => role === 'AIR_BASE' && staging === undefined);
     const aircraft = units.filter(({ role, arrivalTurn, staging }) => role === 'AIRCRAFT' && arrivalTurn === undefined && staging === undefined);
     // The off-map airfield and its aircraft are in the side's off-map airfield box, not on the map (§6).
@@ -459,67 +914,16 @@ export const deployGeneratedForces = (
     const stagedUnits = units.filter(({ staging }) => staging === 'AIR_BASE');
     // 13.6: ground units with an arrival turn (later trucks, OOB 0.5.0) wait in the reinforcement box for it.
     const arrivingGround = units.filter(({ role, arrivalTurn }) => role !== 'AIRCRAFT' && arrivalTurn !== undefined);
-    const fieldUnits = units.filter(({ role, staging, arrivalTurn }) => role !== 'SUPPLY' && role !== 'AIR_BASE' && role !== 'AIRCRAFT' && staging !== 'AIR_BASE' && arrivalTurn === undefined);
-    const groupOf = (unit: GeneratedOobUnit): string => groups.get(unit.id) ?? 'independent';
-    const reinforcement = fieldUnits.find((unit) => groupOf(unit) === 'independent') ?? fieldUnits.at(-1);
-    if (fieldUnits.length > denseSlots.length || sideSupply[side].length === 0) {
-      return { ok: false, error: [deploymentFailure(`Map cannot deploy every ${side} unit within its operational zone.`)] };
-    }
-    // Supply dumps are spread too: each stands inside the zone, on ground trucks can enter, apart from
-    // the others (spacing relaxes only when the zone is too small), and where its draw range covers the
-    // most ground so the units around it can be fuelled. The first dump anchors the Air Bases.
-    // Trace supply (12.3) starts at the side's map-edge sources and its detrainable rail Hexes (13.3c); a unit within
-    // draw range of one, or adjacent to that range (12.3c), traces directly. Units start there where the map allows,
-    // so the armies do not begin out of supply now that they stand forward. HQ throws can only add to this.
-    // A detrainable Hex counts when the railroad joins it to the side's map edge without leaving the side's zone.
-    const zone = new Set(zones[side].map(({ id }) => id));
-    const railed = new Set(sideSupply[side]);
-    const railQueue = [...railed];
-    for (let head = 0; head < railQueue.length; head += 1) {
-      for (const next of railNeighbors.get(railQueue[head]!) ?? []) {
-        if (railed.has(next) || !zone.has(next)) continue;
-        railed.add(next);
-        railQueue.push(next);
-      }
-    }
-    for (const hexId of railed) {
-      if (!sideSupply[side].includes(hexId) && hexById.get(hexId)?.features.some(({ definitionId }) => DETRAINABLE_FEATURES.has(String(definitionId)))) supplyNodes[side].add(hexId);
-    }
-    const traceReach = new Set([...sideSupply[side], ...[...railed]
-      .filter((hexId) => hexById.get(hexId)?.features.some(({ definitionId }) => DETRAINABLE_FEATURES.has(String(definitionId))))]
-      .flatMap((hexId) => [...supplyReachOf(hexId)].flatMap((reached) => [reached, ...adjacentHexIds(reached)])));
-    // The rear area is planned as a whole, dumps first, then HQs, then Air Bases, each clear of the others. Trucks, HQ
-    // throws and refit SP all move on the road net, so every one of them stands on a road or railroad Hex when the zone has one.
-    const onNetwork = (hexId: HexId): boolean => roadDegree.has(hexId) || railHexes.has(hexId);
-    const dumpCandidates = ranked
-      .filter(({ hex }) => canDeployOn(hex, 'truck') && depthOf(side, hex.id) >= line + DUMP_BEHIND_LINE_HEXES
-        && distance(hex.id, sideAnchors[side]) >= DUMP_MIN_DEPTH_HEXES)
-      // Stable: Hexes on the road net come first, each group still nearest the line first.
-      .sort((left, right) => Number(onNetwork(right.hex.id)) - Number(onNetwork(left.hex.id)))
-      .slice(0, DUMP_CANDIDATE_LIMIT)
-      // A dump serves the units around it best where they can also trace supply.
-      .map(({ hex }, order) => ({ hexId: hex.id, order, coverage: [...supplyReachOf(hex.id)].filter((reached) => traceReach.has(reached)).length }))
-      .sort((left, right) => right.coverage - left.coverage || left.order - right.order);
-    const dumpHexes: HexId[] = [];
-    for (const spacing of [DUMP_SPACING_HEXES, 2, 1]) {
-      dumpHexes.length = 0;
-      for (const { hexId } of dumpCandidates) {
-        if (dumpHexes.length === supplyUnits.length) break;
-        if (dumpHexes.every((used) => distance(used, hexId) >= spacing)) dumpHexes.push(hexId);
-      }
-      if (dumpHexes.length === supplyUnits.length) break;
-    }
-    if (dumpHexes.length < supplyUnits.length) dumpHexes.push(...sideSupply[side].slice(0, supplyUnits.length - dumpHexes.length));
-    const supplyAnchor = dumpHexes[0] ?? sideSupply[side][0]!;
-    // Air Bases (15.0): in the rear, on the road net, at least AIR_BASE_SPACING_HEXES apart and clear of the dumps,
-    // as near the first dump as that allows so refit SP can reach them. A base short of the rear band is the last resort.
-    const rearArea = dumpHexes;
+    // Air Bases (15.0): in the rear, on the road net, at least AIR_BASE_SPACING_HEXES apart, clear of the dumps, HQs and
+    // troops, out of the enemy's first-move reach, as near the first dump as that allows so refit SP can reach them.
+    const rearArea = [...dumpHexes, ...hqHexes];
+    const occupied = new Set(fieldPlacements.filter(onMap).map(({ hexId }) => hexId));
     const baseCandidates = zones[side]
-      .filter((hex) => canDeployOn(hex, 'truck') && rearArea.every((used) => distance(used, hex.id) >= REAR_AREA_CLEARANCE_HEXES))
+      .filter((hex) => canDeployOn(hex, 'truck') && !occupied.has(hex.id) && rearArea.every((used) => distance(used, hex.id) >= REAR_AREA_CLEARANCE_HEXES))
       .map((hex) => ({
         hex,
-        score: (depthOf(side, hex.id) >= line + AIR_BASE_BEHIND_LINE_HEXES ? 0 : 2_000_000) + (onNetwork(hex.id) ? 0 : 1_000_000)
-          + distance(hex.id, supplyAnchor) * 10_000 + Math.floor(rng.next() * 10_000),
+        score: (depthOf(side, hex.id) >= line + AIR_BASE_BEHIND_LINE_HEXES ? 0 : 4_000_000) + (threatened.has(hex.id) ? 2_000_000 : 0)
+          + (onNetwork(hex.id) ? 0 : 1_000_000) + distance(hex.id, supplyAnchor) * 10_000 + Math.floor(rng.next() * 10_000),
       }))
       .sort((left, right) => left.score - right.score || String(left.hex.id).localeCompare(String(right.hex.id)));
     const baseHexes: HexId[] = [];
@@ -527,136 +931,6 @@ export const deployGeneratedForces = (
       const chosen = baseCandidates.find(({ hex }) => baseHexes.every((used) => distance(used, hex.id) >= AIR_BASE_SPACING_HEXES));
       if (!chosen) return { ok: false, error: [deploymentFailure(`Map has no room for every ${side} Air Base in the rear.`)] };
       baseHexes.push(chosen.hex.id);
-    }
-    // Field units deploy as formation groups rather than one blob: each formation gets its own centre,
-    // inside supply reach and clear of the dumps and Air Bases, and a unit takes the nearest slot of its
-    // group on a Hex its deployed face may enter (6.2c). Stacking (4.8) is respected so a displaced unit
-    // cannot overstack a later Hex.
-    const groupKeys = [...new Set(fieldUnits.map(groupOf))];
-    const dumpReach = new Set(dumpHexes.flatMap((hexId) => [...supplyReachOf(hexId)]));
-    const tracedDumpReach = new Set([...dumpReach].filter((hexId) => traceReach.has(hexId)));
-    const supplyTier = (hexId: HexId): number => tracedDumpReach.has(hexId) ? 0 : dumpReach.has(hexId) ? 1 : 2;
-    const reserved = new Set<HexId>([...dumpHexes, ...baseHexes]);
-    const rankedIds = ranked.map(({ hex }) => hex.id);
-    // In an attack no formation centres in front of its side's start line (it would start next to the enemy).
-    const centerHexes = attacker === null ? rankedIds : rankedIds.filter((hexId) => depthOf(side, hexId) >= line);
-    const centers = formationCenters(centerHexes, [...reserved], [tracedDumpReach, dumpReach], groupKeys.length);
-    // HQs go with the troops (13.1b): the divisions are split into as many sectors as there are HQs (farthest-first seeds,
-    // then nearest-seed assignment), and each HQ stands behind the line as near the middle of its sector as it can, in trace
-    // supply and on the road net. An HQ never decides where the divisions stand; it follows them.
-    const hqUnitCount = fieldUnits.filter(({ role }) => role === 'HQ').length;
-    const divisionCentres = groupKeys.flatMap((key, index) => key !== 'independent' && centers[index] !== undefined ? [centers[index]!] : []);
-    const hqHexes: HexId[] = [];
-    if (hqUnitCount > 0 && divisionCentres.length > 0) {
-      const sectorCount = Math.min(hqUnitCount, divisionCentres.length);
-      const seeds: HexId[] = [divisionCentres[0]!];
-      while (seeds.length < sectorCount) {
-        seeds.push(divisionCentres.filter((centre) => !seeds.includes(centre))
-          .sort((left, right) => Math.min(...seeds.map((seed) => distance(seed, right))) - Math.min(...seeds.map((seed) => distance(seed, left))))[0]!);
-      }
-      let sectors: HexId[][] = seeds.map(() => []);
-      for (let round = 0; round < 4; round += 1) {
-        sectors = seeds.map(() => []);
-        for (const centre of divisionCentres) {
-          sectors[seeds.reduce((best, seed, index) => distance(seed, centre) < distance(seeds[best]!, centre) ? index : best, 0)]!.push(centre);
-        }
-        // The next seed of each sector is the division centre nearest the sector's middle.
-        for (const [index, members] of sectors.entries()) {
-          if (members.length === 0) continue;
-          seeds[index] = members.reduce((best, member) => members.reduce((sum, other) => sum + distance(member, other), 0)
-            < members.reduce((sum, other) => sum + distance(best, other), 0) ? member : best, members[0]!);
-        }
-      }
-      const taken = new Set<HexId>([...reserved, ...centers]);
-      // The sectors with the most divisions get the HQs first; extra HQs (more HQs than sectors) join the largest sectors.
-      const assigned = [...sectors].sort((left, right) => right.length - left.length);
-      for (let index = 0; index < hqUnitCount; index += 1) {
-        const members = assigned[index % assigned.length]!;
-        if (members.length === 0) continue;
-        const pick = zones[side]
-          .filter((hex) => !taken.has(hex.id) && canDeployOn(hex, 'truck') && depthOf(side, hex.id) >= line + HQ_BEHIND_LINE_HEXES
-            && distance(hex.id, sideAnchors[side]) >= DUMP_MIN_DEPTH_HEXES)
-          .map((hex) => ({
-            hexId: hex.id,
-            cost: members.reduce((sum, member) => sum + distance(member, hex.id), 0) / members.length
-              + (traceReach.has(hex.id) ? 0 : HQ_OUT_OF_TRACE_COST_HEXES) + (onNetwork(hex.id) ? 0 : HQ_OFF_NETWORK_COST_HEXES),
-          }))
-          .sort((left, right) => left.cost - right.cost || String(left.hexId).localeCompare(String(right.hexId)))[0];
-        if (!pick) continue;
-        hqHexes.push(pick.hexId);
-        taken.add(pick.hexId);
-        reserved.add(pick.hexId);
-      }
-    }
-    // Each formation group takes its centre, then the nearest free Hexes around it (reach and the
-    // dumps/bases permitting), FIELD_UNITS_PER_HEX slots each. No Hex belongs to two groups.
-    const claimed = new Set<HexId>(centers);
-    const groupSlots = new Map<string, HexId[]>();
-    for (const [index, key] of groupKeys.entries()) {
-      const center = centers[index];
-      if (center === undefined) break;
-      const size = fieldUnits.filter((unit) => groupOf(unit) === key).length;
-      const hexes = [center];
-      const nearby = rankedIds
-        // A group spreads around its centre but never in front of the side's start line.
-        .filter((hexId) => !claimed.has(hexId) && !reserved.has(hexId) && depthOf(side, hexId) >= line && (dumpReach.size === 0 || dumpReach.has(hexId)))
-        // Slots that also trace supply come first; a group in reach of a dump alone still deploys.
-        .sort((left, right) => supplyTier(left) - supplyTier(right))
-        .map((hexId, order) => ({ hexId, order, away: distance(hexId, center) }))
-        .filter(({ away }) => away <= 3)
-        .sort((left, right) => left.away - right.away || left.order - right.order);
-      for (const { hexId } of nearby) {
-        if (hexes.length * FIELD_UNITS_PER_HEX >= size + 1) break;
-        hexes.push(hexId);
-        claimed.add(hexId);
-      }
-      groupSlots.set(key, hexes.flatMap((hexId) => Array<HexId>(FIELD_UNITS_PER_HEX).fill(hexId)));
-    }
-    // Units their group cannot take spill over to the nearest slots behind the start line, those in trace and in reach
-    // of a dump first; Hexes in front of the line are the last resort.
-    const tier = (hexId: HexId): number => (depthOf(side, hexId) >= line ? 0 : 3)
-      + supplyTier(hexId);
-    const fallbackSlots = denseSlots.map((hexId, order) => ({ hexId, order }))
-      .sort((left, right) => tier(left.hexId) - tier(right.hexId) || left.order - right.order).map(({ hexId }) => hexId);
-    const usedReTicks = new Map<HexId, number>();
-    const fieldPlacements: { unit: (typeof fieldUnits)[number]; hexId: HexId }[] = [];
-    // In an attack, a unit with no room behind its side's start line waits off the map and arrives on Game Turn 2
-    // (13.6) rather than starting next to the enemy; a crowded meeting engagement still fills toward the front.
-    const heldBack = new Set<string>();
-    const hqTaken = new Set<HexId>();
-    // HQs take their slots first and trucks last: an HQ out of trace supply cannot throw it (12.3b), a truck needs none.
-    const placementRank = (unit: GeneratedOobUnit): number => unit.role === 'HQ' ? 0 : unit.role === 'TRANSPORT' ? 2 : 1;
-    for (const unit of [...fieldUnits].sort((left, right) => placementRank(left) - placementRank(right))) {
-      const definition = definitionById.get(unit.definitionId);
-      const offMap = unit.id === reinforcement?.id;
-      const unitReTicks = definition && !offMap ? deployedReTicks(definition) : 0;
-      const fits = (hexId: HexId): boolean => (definition === undefined
-        || canDeployOn(hexById.get(hexId)!, deployedMobility(definition)))
-        && (usedReTicks.get(hexId) ?? 0) + unitReTicks <= GENERATED_STACKING_LIMIT_RE_TICKS;
-      // An HQ stands on the Hex the rear-area plan gave it (on the road net, apart from the other HQs).
-      if (unit.role === 'HQ' && !offMap) {
-        const planned = hqHexes.find((hexId) => !hqTaken.has(hexId) && fits(hexId));
-        if (planned !== undefined) {
-          hqTaken.add(planned);
-          usedReTicks.set(planned, (usedReTicks.get(planned) ?? 0) + unitReTicks);
-          fieldPlacements.push({ unit, hexId: planned });
-          continue;
-        }
-      }
-      const ownSlots = groupSlots.get(groupOf(unit)) ?? [];
-      const ownIndex = ownSlots.findIndex(fits);
-      const fallbackIndex = ownIndex < 0 ? fallbackSlots.findIndex(fits) : -1;
-      if (attacker !== null && !offMap && ownIndex < 0 && (fallbackIndex < 0 || depthOf(side, fallbackSlots[fallbackIndex]!) < line)) {
-        heldBack.add(unit.id);
-        fieldPlacements.push({ unit, hexId: sideSupply[side][0]! });
-        continue;
-      }
-      if (ownIndex < 0 && fallbackIndex < 0) {
-        return { ok: false, error: [deploymentFailure(`Map cannot deploy every ${side} unit on terrain it can enter within stacking limits.`)] };
-      }
-      const hexId = ownIndex >= 0 ? ownSlots.splice(ownIndex, 1)[0]! : fallbackSlots.splice(fallbackIndex, 1)[0]!;
-      usedReTicks.set(hexId, (usedReTicks.get(hexId) ?? 0) + unitReTicks);
-      fieldPlacements.push({ unit, hexId });
     }
     const placements = [
       ...supplyUnits.map((unit, index) => ({ unit, hexId: dumpHexes[index % dumpHexes.length]! })),
@@ -728,10 +1002,9 @@ export const deployGeneratedForces = (
       const awaitingReinforcement = unit.id === reinforcement?.id || heldBack.has(unit.id);
       // Order 0 in the box is the held-back reinforcement, then the arriving aircraft, then units with no room.
       const boxOrder = unit.id === reinforcement?.id ? 0 : 1 + arrivingAircraft.length + [...heldBack].indexOf(unit.id);
-      // A defender's line units start in Combat Mode (on their Combat face): a prepared defence, not a march.
+      // Line units near the front (and a defender's whole line) start in Combat Mode, on their Combat face (phase 1).
       const combatFace = definition.faces.find(({ id }) => String(id) === 'combat');
-      const holdsLine = attacker !== null && side !== attacker && !awaitingReinforcement && combatFace !== undefined
-        && DEFENDER_COMBAT_ROLES.has(unit.role);
+      const holdsLine = !awaitingReinforcement && combatFace !== undefined && plan.combatModeIds.has(unit.id);
       const stackOrder = awaitingReinforcement ? boxOrder : stackCounts.get(hexId) ?? 0;
       if (!awaitingReinforcement) stackCounts.set(hexId, stackOrder + 1);
       pieces.push({
@@ -884,7 +1157,8 @@ export const deployGeneratedForces = (
   const fronts: Readonly<Record<OobSide, number>> = { ALLIED: frontOf('ALLIED'), AXIS: frontOf('AXIS') };
   const garrisoned = new Map(pieces.flatMap((piece) => holdsOwnHex(piece) && piece.location.kind === 'ON_MAP' ? [[piece.location.hexId, piece.ownerId] as const] : []));
   const zoneControl = (['ALLIED', 'AXIS'] as const).flatMap((side) => zones[side]
-    .filter(({ id }) => !seeded.has(id) && (depth(side, id) <= fronts[side] || garrisoned.get(id) === players[side]))
+    // Everything behind the side's own start line is its rear area and its own too, whatever its distance from the edge.
+    .filter(({ id }) => !seeded.has(id) && (depth(side, id) <= fronts[side] || depthOf(side, id) >= standoff(side) || garrisoned.get(id) === players[side]))
     .map(({ id }) => ({ hexId: id, controllerId: players[side] })));
   const initialMapState: MapState = {
     schemaVersion: FOUNDATION_SCHEMA_VERSION,
@@ -908,6 +1182,7 @@ export const deployGeneratedForces = (
   const warnings = [
     ...maximumStackReTicks > 32 ? ['At least one initial stack uses more than 8 RE; review deployment before competitive play.'] : [],
     ...objectiveWarnings,
+    ...planWarnings,
   ];
   return { ok: true, value: {
     initialMapState,
