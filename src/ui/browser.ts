@@ -588,7 +588,10 @@ const operationPreviewHtml = (prepared: GeneratedScenarioPackage): string => {
     <details class="counter-formation"${traced(side.independentUnits.filter(({ role }) => role !== 'HQ' && role !== 'AIRCRAFT' && role !== 'AIR_BASE'))}><summary>${side.independentUnits.filter(({ role }) => role !== 'HQ' && role !== 'AIRCRAFT' && role !== 'AIR_BASE').length} independent support / logistics units</summary><div class="counter-grid">${side.independentUnits.filter(({ role }) => role !== 'HQ' && role !== 'AIRCRAFT' && role !== 'AIR_BASE').map(previewCounter).join('')}</div></details>
     ${side.independentUnits.some(({ role }) => role === 'AIRCRAFT') ? `<details class="counter-formation"${traced(side.independentUnits.filter(({ role }) => role === 'AIRCRAFT' || role === 'AIR_BASE'))}><summary>Air forces: ${side.independentUnits.filter(({ role }) => role === 'AIRCRAFT').length} aircraft, ${airBasesLabel(prepared, side.side)}</summary><div class="counter-grid">${side.independentUnits.filter(({ role }) => role === 'AIRCRAFT' || role === 'AIR_BASE').map(previewCounter).join('')}</div></details>` : ''}
   </section>`).join('');
-  return `<div class="operation-map-wrap"><svg class="operation-map" viewBox="0 0 ${map.layout.width} ${map.layout.height}" role="img" aria-label="Generated operation map preview with starting positions">${mapArtDefsHtml()}${cells}${rivers}${roads}${features}${deploymentMarks}</svg><div class="preview-key"><span><span class="key owner-1">${escapeHtml(prepared.scenario.players[0]?.name ?? '')}</span><span class="key owner-2">${escapeHtml(prepared.scenario.players[1]?.name ?? '')}</span> starting stacks (unit count)</span><dl class="operation-metrics preview-minor"><div><dt>Divisions</dt><dd>${escapeHtml(divisionsText(prepared))}</dd></div><div><dt>Deployed hexes</dt><dd>${prepared.deployment.metrics.occupiedHexes}</dd></div><div><dt>Rail Cap</dt><dd>${escapeHtml(railCapText(prepared))}</dd></div><div><dt>Warnings</dt><dd>${prepared.warnings.length}</dd></div></dl></div></div>
+  // The starting stacks sit in their own SVG over the art: hovering a list entry restyles only them, so the browser
+  // does not repaint the whole terrain SVG on every pointer move.
+  const viewBox = `0 0 ${map.layout.width} ${map.layout.height}`;
+  return `<div class="operation-map-wrap"><div class="operation-map" role="img" aria-label="Generated operation map preview with starting positions"><svg class="operation-map-art" viewBox="${viewBox}" aria-hidden="true">${mapArtDefsHtml()}${cells}${rivers}${roads}${features}</svg><svg class="operation-map-marks" viewBox="${viewBox}" aria-hidden="true">${deploymentMarks}</svg></div><div class="preview-key"><span><span class="key owner-1">${escapeHtml(prepared.scenario.players[0]?.name ?? '')}</span><span class="key owner-2">${escapeHtml(prepared.scenario.players[1]?.name ?? '')}</span> starting stacks (unit count)</span><dl class="operation-metrics preview-minor"><div><dt>Divisions</dt><dd>${escapeHtml(divisionsText(prepared))}</dd></div><div><dt>Deployed hexes</dt><dd>${prepared.deployment.metrics.occupiedHexes}</dd></div><div><dt>Rail Cap</dt><dd>${escapeHtml(railCapText(prepared))}</dd></div><div><dt>Warnings</dt><dd>${prepared.warnings.length}</dd></div></dl></div></div>
     <div class="preview-forces">${forces}</div>
     ${prepared.warnings.length > 0 ? `<details class="preview-warnings"><summary>${prepared.warnings.length} generation warning(s)</summary><ul>${prepared.warnings.map((warning) => `<li>${escapeHtml(warning)}</li>`).join('')}</ul></details>` : ''}`;
 };
@@ -610,14 +613,20 @@ const objectivesText = (prepared: GeneratedScenarioPackage): string => {
 };
 
 /** Mark on the preview map the starting Hexes of the list entry under the pointer or focus; clear them when it leaves. */
+let tracedEntry: HTMLElement | null = null;
 const tracePreviewUnits = (event: Event): void => {
   const content = event.currentTarget as HTMLElement;
-  const map = content.querySelector('.operation-map');
-  if (!map) return;
-  const entry = event.type === 'mouseout' || event.type === 'focusout' ? null : (event.target as Element).closest<HTMLElement>('[data-trace-hexes]');
+  const marks = content.querySelector('.operation-map-marks');
+  if (!marks) return;
+  // Leaving goes to whatever the pointer or focus moves into, so passing between a counter's own parts changes nothing.
+  const leaving = event.type === 'mouseout' || event.type === 'focusout';
+  const into = leaving ? (event as MouseEvent | FocusEvent).relatedTarget : event.target;
+  const entry = into instanceof Element && content.contains(into) ? into.closest<HTMLElement>('[data-trace-hexes]') : null;
+  if (entry === tracedEntry && marks.classList.contains('is-tracing') === (entry !== null)) return;
+  tracedEntry = entry;
   const hexes = new Set(entry?.dataset.traceHexes?.split(' ').filter(Boolean) ?? []);
-  map.classList.toggle('is-tracing', entry !== null);
-  for (const mark of map.querySelectorAll<SVGGElement>('.preview-deployment')) mark.classList.toggle('is-traced', hexes.has(mark.dataset.hex ?? ''));
+  marks.classList.toggle('is-tracing', entry !== null);
+  for (const mark of marks.querySelectorAll<SVGGElement>('.preview-deployment')) mark.classList.toggle('is-traced', hexes.has(mark.dataset.hex ?? ''));
 };
 
 /** The preview's headline figures, shown in the dialog bar; the minor ones sit under the map. */
