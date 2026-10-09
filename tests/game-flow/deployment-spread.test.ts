@@ -27,6 +27,7 @@ const deployed = (request: NewGameRequest) => {
       owner: piece.ownerId,
       hexId: piece.location.hexId as string,
       family: definitions.get(piece.definitionId)!.family,
+      category: String(definitions.get(piece.definitionId)!.categoryDefinitionId),
       formation: formations.get(piece.id as string) ?? null,
     }]
     : []);
@@ -37,8 +38,12 @@ describe('default deployment spacing', () => {
     const onMap = deployed(DEFAULT_NEW_GAME_REQUEST);
 
     const perHex = new Map<string, number>();
-    // A dump is a marker in its hex, not a unit of the stack (it stands where the side's units hold the ground).
-    for (const { hexId } of onMap.filter(({ family }) => family !== 'RESOURCE')) perHex.set(hexId, (perHex.get(hexId) ?? 0) + 1);
+    // A dump is a marker in its hex, not a unit of the stack (it stands where the side's units hold the ground); an engineer
+    // that stands with its HQ (user, 2026-10-10) is the HQ's, not a blob.
+    const hqHexes = new Set(onMap.filter(({ category }) => category.endsWith(':hq')).map(({ hexId }) => hexId));
+    for (const { hexId } of onMap.filter(({ family, category, hexId }) => family !== 'RESOURCE' && !(category.endsWith(':engineer') && hqHexes.has(hexId)))) {
+      perHex.set(hexId, (perHex.get(hexId) ?? 0) + 1);
+    }
     // Stacking is fine, but small: the old layout piled four units on one Hex.
     expect(Math.max(...perHex.values())).toBeLessThanOrEqual(2);
 

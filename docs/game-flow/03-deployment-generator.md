@@ -18,10 +18,14 @@ Deployment turns M7 force identities into Foundation runtime state.
      per Hex.
    - The independent units (not HQs or trucks) are shared out one by one, each role spread over the sectors before a
      sector gets a second, and stand across their sector's width a row behind the divisions (artillery two rows), one to
-     a Hex where the map allows. They no longer form one group.
+     a Hex where the map allows. They no longer form one group. Engineers are not line units (user, 2026-10-10): they
+     are placed with the supply in step 5.
+   - A unit that starts in Move Mode with Truck MA stands on the road net where it can (user, 2026-10-09): independent
+     units, division members (they take their group's road Hexes first) and HQs. A front unit in Combat Mode holds its
+     ground wherever it is.
    - Units stand inside a trace source's draw range where the map allows (a Hex merely adjacent to it is the fallback),
      counting only rail stations behind the side's start line, which it controls at the start.
-   - Line units within two Hexes behind the start line start in Combat Mode (user request 2026-10-09), so the front has
+   - Line units (not engineers) within two Hexes behind the start line start in Combat Mode (user request 2026-10-09), so the front has
      a ZOC on the first turn (4.5); in an attack the defender's whole line does. Where such a ZOC would cut the other
      side's trace supply at the start (4.5a B), the enemy unit whose ZOC cuts the most starts in Move Mode instead.
 5. Then place the supply, once both armies stand (user report 2026-10-09: the enemy's dumps could be taken on the
@@ -32,7 +36,10 @@ Deployment turns M7 force identities into Foundation runtime state.
    that is almost always a Hex the side's own units hold: the dump stands with them. Only if no such Hex exists does a
    dump stand within reach, and the deployment then warns; a dump leaves the road net only where no safe road Hex is
    left. Trucks stand on a road or railroad Hex within 3 Hexes of their dump, out of that reach where the map allows;
-   next to the dump, or on it when no other safe road Hex is near. A Truck or Track independent unit that no dump can fuel moves to the nearest Hex one can.
+   next to the dump, or on it when no other safe road Hex is near. A Truck or Track independent unit that no dump can
+   fuel moves to the nearest Hex one can (a road Hex first for Truck MA). Engineers (a Pontoon unit defends only, 3.2b;
+   its work is construction, 13.8d) start in Move Mode within 4 Hexes of their sector's HQ, out of that reach, more
+   than two Hexes behind the start line, on the road and in a dump's draw range where the map allows.
    Air Bases go last: in the rear, on the road net, clear of the dumps, HQs and troops, and out of that reach.
 6. Initialize owner, face, full steps, mode (step 4), resource quantity, stack order, and formation membership.
 7. Set initial control from the front line (13.3h; user request 2026-10-05: "也要有中立格 因為預設產生的劇本中間是沒有
