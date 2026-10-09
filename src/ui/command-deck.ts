@@ -7,7 +7,7 @@ import type { UiSnapshot } from './model.js';
 import { ROUTE_LABELS, halfTokenText, isMultiStepDefinition } from '../rules/index.js';
 import { airSentences, emphasizeAir } from './air-text.js';
 import { counterSvg, counterView, replacementAbbreviation } from './counter.js';
-import { unitStatusRows } from './unit-status.js';
+import { modeNote, unitStatusRows } from './unit-status.js';
 import { combatHeadline, combatOutlook, type CombatReport, type FeedEntry, type NarrativeContext } from './narrative.js';
 import { ownOverstackedHexes, type OverstackedHex, phaseLabel, pieceDefinition, pieceLabel, printedHexLabel, STACKING_LIMIT_RE_TICKS, stackingReTicks } from './presenter.js';
 
@@ -123,6 +123,14 @@ const unitRow = (snapshot: UiSnapshot, piece: ProjectedPiece, extra = ''): Templ
     <span class="deck-unit-art" aria-hidden="true">${counterFor(snapshot, piece)}</span><span>${pieceLabel(snapshot.scenario, piece)}<small>${pieceHex(snapshot, piece)} · ${statusName(snapshot, piece)}${details ? ` · ${details}` : ''}${extra}</small>${badges(snapshot, piece)}</span></button>`;
 };
 
+/** "3 of 4 steps" for a unit the viewer can see the strength of; null when hidden (4.9a) or not a stepped ground unit. */
+const stepsText = (snapshot: UiSnapshot, piece: ProjectedPiece): string | null => {
+  if (piece.remainingSteps === null) return null;
+  const face = pieceDefinition(snapshot.scenario, piece)?.faces.find(({ id }) => id === piece.currentFaceId);
+  const full = Math.max(0, ...(face?.steps.map(({ remainingSteps }) => remainingSteps) ?? []));
+  return full > 1 ? `${piece.remainingSteps} of ${full} steps` : null;
+};
+
 /** What the current step asks of the player, in one sentence. */
 export const stepObjective = (snapshot: UiSnapshot): string => {
   const sequence = snapshot.view.projection?.sequence;
@@ -171,13 +179,13 @@ const selectedCard = (snapshot: UiSnapshot): TemplateResult => {
     : paused ? 'Paused'
       : arriving ? 'Arriving: click a blue entry hex to place it'
         : needsFuel ? 'Needs fuel before it can move (12.5)'
-          : snapshot.reachable.size > 0 ? `${mp(snapshot.remainingTicks)} MP left · ${snapshot.reachable.size} hexes reachable`
+          : snapshot.reachable.size > 0 ? [`${mp(snapshot.remainingTicks)} MP left`, stepsText(snapshot, piece)].filter(Boolean).join(' · ')
             : snapshot.movedThisPhase.has(String(piece.id)) ? 'Already moved this phase'
               : unfuelable ? 'Needs fuel to move (12.5a), but no supply dump in range has the SP to pay for it: bring supply within range first'
                 : snapshot.moveBlockers.length > 0 ? snapshot.moveBlockers.map(({ message, rule }) => `${withHexLabels(message)} (${rule})`).join(' · ')
                   : 'Cannot move in this step';
   return html`${counterFor(snapshot, piece)}<div><strong>${pieceLabel(snapshot.scenario, piece)}</strong>
-    <p>${pieceHex(snapshot, piece)} · ${statusName(snapshot, piece)}${details ? ` · ${details}` : ''}</p>
+    <p title=${modeNote(piece.mode) ?? nothing}>${pieceHex(snapshot, piece)} · ${statusName(snapshot, piece)}${details ? ` · ${details}` : ''}</p>
     <small>${status}${piece.statuses.includes('status:out-of-supply') ? ' · Out of supply' : ''}</small></div>`;
 };
 
