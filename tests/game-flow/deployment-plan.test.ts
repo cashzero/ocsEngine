@@ -117,8 +117,10 @@ describe('deployment plan', () => {
     }
   });
 
-  // User report 2026-10-09 (default scenario): dumps and trucks stood on Hexes no road or railroad touches.
-  it('stands every supply dump and truck on the road net', { timeout: 120_000 }, () => {
+  // User report 2026-10-09 (default scenario): dumps, trucks and an engineer brigade (Truck MA) stood on Hexes no road or
+  // railroad touches. Every unit that starts in Move Mode with Truck MA stands on the road net; a front unit in Combat Mode
+  // holds its ground wherever it is.
+  it('stands every supply dump, truck and Move Mode Truck-MA unit on the road net', { timeout: 120_000 }, () => {
     for (const engagement of ENGAGEMENTS) {
       for (const index of SEEDS) {
         const game = opening(engagement, index);
@@ -129,7 +131,12 @@ describe('deployment plan', () => {
           if (parsed.ok) for (const hexId of [parsed.value.firstHexId, parsed.value.secondHexId]) network.add(String(hexId));
         }
         for (const side of ['allied', 'axis'] as const) {
-          for (const piece of [...game.dumps(side), ...game.trucks(side)]) {
+          const roadMovers = game.army(side).filter((piece) => {
+            const definition = game.definitions.get(piece.definitionId);
+            const move = definition?.faces.find(({ id }) => String(id) === 'move') ?? definition?.faces[0];
+            return piece.mode !== 'COMBAT' && String(move?.mobilityClassDefinitionId) === 'mobility:truck';
+          });
+          for (const piece of [...game.dumps(side), ...game.trucks(side), ...roadMovers]) {
             expect(network.has(String(game.hexOf(piece))), `${engagement} seed ${index} ${side} ${String(piece.id)} at ${game.hexOf(piece)} is off the road net`).toBe(true);
           }
         }
