@@ -36,6 +36,38 @@ describe('generated New Game flow', () => {
     expect(prepared.value.bindings).toHaveLength(2);
   });
 
+  it('builds the same package step by step, announcing each step first, and stops when told to', async () => {
+    const orchestrator = createNewGameOrchestrator(createGameplayEngine(createMemoryGameplayPorts()));
+    const stages: string[] = [];
+    const staged = await orchestrator.prepareInStages(DEFAULT_NEW_GAME_REQUEST, (stage) => { stages.push(stage); });
+    expect(stages).toEqual(['MAP', 'OOB', 'DEPLOYMENT', 'SCENARIO']);
+    expect(staged).toEqual(orchestrator.prepare(DEFAULT_NEW_GAME_REQUEST));
+    const stopped: string[] = [];
+    expect(await orchestrator.prepareInStages(DEFAULT_NEW_GAME_REQUEST, (stage) => { stopped.push(stage); return stage !== 'OOB'; })).toBeNull();
+    expect(stopped).toEqual(['MAP', 'OOB']);
+    // Invalid requests fail before any step runs.
+    const invalid: string[] = [];
+    const rejected = await orchestrator.prepareInStages({ ...DEFAULT_NEW_GAME_REQUEST, map: { ...DEFAULT_NEW_GAME_REQUEST.map, width: 4 } }, (stage) => { invalid.push(stage); });
+    expect(rejected?.ok).toBe(false);
+    expect(invalid).toEqual([]);
+  });
+
+  it('starts the previewed package as it stands, the same game create builds from the request', async () => {
+    const orchestrator = createNewGameOrchestrator(createGameplayEngine(createMemoryGameplayPorts()));
+    const prepared = orchestrator.prepare(DEFAULT_NEW_GAME_REQUEST);
+    expect(prepared.ok).toBe(true);
+    if (!prepared.ok) return;
+    const before = JSON.stringify(prepared.value.scenario);
+    const started = await orchestrator.start(prepared.value);
+    const created = await orchestrator.create(DEFAULT_NEW_GAME_REQUEST);
+    expect(started.ok && created.ok).toBe(true);
+    if (!started.ok || !created.ok) return;
+    expect(started.value.scenario).toBe(prepared.value.scenario);
+    expect(JSON.stringify(prepared.value.scenario)).toBe(before);
+    const [a, b] = [started.value.session.save(), created.value.session.save()];
+    expect([a.scenarioHash, a.initialStateHash, a.currentSnapshot]).toEqual([b.scenarioHash, b.initialStateHash, b.currentSnapshot]);
+  });
+
   it('owns map, OOB and deployment random streams independently', () => {
     const report = sweepGameFlowSeedOrthogonality(DEFAULT_NEW_GAME_REQUEST);
     expect(report.passed).toBe(true);
