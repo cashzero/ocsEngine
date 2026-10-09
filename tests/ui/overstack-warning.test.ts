@@ -38,14 +38,21 @@ describe('overstack warning (4.8a)', () => {
       .map(({ id }) => id);
 
     // Pile units into one hex: the preview stays quiet while the hex is within 10 RE and warns the moment it is not.
-    let target: string | null = null;
+    // The pile goes where the most movers can reach, so the test does not depend on how the deployment lays the army out.
+    const reachCounts = new Map<string, number>();
+    for (const id of movers) {
+      controller.selectPiece(id);
+      const fuel = controller.getSnapshot().unitActions.find(({ group }) => group === 'FUEL');
+      if (fuel) await controller.runAction(fuel.key);
+      for (const hexId of controller.getSnapshot().reachable.keys()) reachCounts.set(hexId, (reachCounts.get(hexId) ?? 0) + 1);
+    }
+    const target: string | null = [...reachCounts.entries()].sort((left, right) => right[1] - left[1] || left[0].localeCompare(right[0]))[0]?.[0] ?? null;
     let warnedAt: string | null = null;
     for (const id of movers) {
       controller.selectPiece(id);
       const fuel = controller.getSnapshot().unitActions.find(({ group }) => group === 'FUEL');
       if (fuel) await controller.runAction(fuel.key);
       const range = controller.getSnapshot();
-      target ??= [...range.reachable.keys()][Math.floor(range.reachable.size / 2)] ?? null;
       if (!target || !range.reachable.has(target)) continue;
       await controller.clickHex(target);
       const preview = controller.getSnapshot();
