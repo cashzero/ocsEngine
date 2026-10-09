@@ -119,7 +119,10 @@ describe('attack (SCN-R3, SCN-R4)', () => {
         const line = army(game, defender).filter((piece) => state.scenario.pieceCatalog.definitions
           .find(({ id }) => id === piece.definitionId)?.faces.some(({ id }) => String(id) === 'combat'));
         expect(line.filter((piece) => piece.mode === 'COMBAT').length).toBeGreaterThanOrEqual(line.length / 2);
-        expect(army(game, attacker).every((piece) => piece.mode !== 'COMBAT')).toBe(true);
+        // The attacker's front units stand in Combat Mode too (user, 2026-10-09); the rest of its army is in Move Mode.
+        const attackerModes = new Set(army(game, attacker).map(({ mode }) => mode));
+        expect(attackerModes.has('COMBAT')).toBe(true);
+        expect(attackerModes.has('MOVE')).toBe(true);
 
         // The attacker fields ATTACKER_FORCE_RATIO times the divisions and about that much combat value; the defender holds
         // most of the land.

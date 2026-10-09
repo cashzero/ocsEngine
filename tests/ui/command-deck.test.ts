@@ -303,7 +303,7 @@ describe('phase-specific command deck', () => {
     await controller.runAction(load!.key);
 
     // A unit that needs no fuel (it marches on its current face): moving it is allowed, but the popup says what it costs the truck.
-    const leg = own().find((piece) => piece.mode === 'MOVE' && piece.id !== truck.id && kindOf(piece.id) === 'COMBAT' && controller.getSnapshot().scenario.pieceCatalog.definitions
+    const leg = own().find((piece) => piece.id !== truck.id && kindOf(piece.id) === 'COMBAT' && controller.getSnapshot().scenario.pieceCatalog.definitions
       .find(({ id }) => id === piece.definitionId)?.faces.some(({ id, mobilityClassDefinitionId }) => id === piece.currentFaceId
         && String(mobilityClassDefinitionId) === 'mobility:leg'))!;
     controller.selectPiece(leg.id);
