@@ -112,6 +112,7 @@ p.warning cite { font-style: normal; opacity: 0.8; }
 .map-legend { display: flex; left: 16px; right: auto; bottom: 16px; max-width: calc(100% - 340px); }
 .hover-info { position: absolute; right: 16px; bottom: 16px; padding: 7px 12px; border: 1px solid var(--line); border-radius: 6px; background: rgba(13, 20, 16, .88); color: var(--ink); font-size: 13px; pointer-events: none; }
 .terrain-key { display: inline-block; }
+.map-legend > :is(.legend-mark, .legend-wash, .legend-rail, .legend-ring, .legend-chip) { display: inline-flex; align-items: center; min-height: 22px; box-sizing: border-box; line-height: 1; }
 .legend-ring { padding: 1px 7px; border: 2px solid; border-radius: 10px; }
 .legend-ring.move { border-color: #a5e4c6; }
 .legend-ring.move-stop { border-color: #ffc66b; border-style: dashed; }
