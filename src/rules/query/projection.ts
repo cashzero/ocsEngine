@@ -17,6 +17,7 @@ import { lostTruckPoints } from '../replacement/ledger.js';
 import { unitRebuildOptions } from '../replacement/replacement.js';
 import { aircraftRange, aircraftTransportCapacity, hasIntegralGlider } from '../air/aircraft.js';
 import { isHedgehog } from '../hedgehog/hedgehog.js';
+import { railCapRemainingQuarters, railCapacityPoints } from '../supply/rail-cap.js';
 import { baseDumps, earliestPlanTurn, loadableUnits, readyTransports } from '../air/transport.js';
 
 /** 4.9a: internal stocks and other private bookkeeping are never shown to the enemy. */
@@ -130,6 +131,10 @@ export const projectRuleState = (state: GameState, viewerId: PlayerId): RuleProj
     // Who holds each objective is on the map for both players (the last side to enter a hex controls it).
     objectives: stableSort(state.configuration.objectives, (left, right) => String(left.hexId) < String(right.hexId) ? -1 : String(left.hexId) > String(right.hexId) ? 1 : 0)
       .map(({ hexId, points }) => ({ hexId, points, controllerId: state.mapState.hexControl.find((entry) => entry.hexId === hexId)?.controllerId ?? null })),
+    // The viewer sees his own Rail Cap only (user, 2026-10-09).
+    ...(state.configuration.railCapacity && state.configuration.railroads && railCapacityPoints(state, viewerId) !== null ? { railCap: [{
+      playerId: viewerId, points: railCapacityPoints(state, viewerId) ?? 0, remainingQuarters: railCapRemainingQuarters(state, viewerId),
+    }] } : {}),
     combat: projectCombat(state),
     weather: state.weather,
     // Fuel markers and fueled Formation markers are on the map for both players to see.
