@@ -82,4 +82,39 @@ describe('default deployment spacing', () => {
       }
     }
   });
+  it('plans HQs, Air Bases and dumps together: HQs with the troops, Air Bases in the rear, none sharing a Hex', () => {
+    for (const seed of [1, 2, 3, 4, 5, 6]) {
+      const prepared = prepareNewGame({
+        ...DEFAULT_NEW_GAME_REQUEST,
+        seeds: { ...DEFAULT_NEW_GAME_REQUEST.seeds, map: seed, oob: seed, deployment: seed },
+        oob: { ...DEFAULT_NEW_GAME_REQUEST.oob, air: 'STANDARD' },
+      });
+      expect(prepared.ok).toBe(true);
+      if (!prepared.ok) return;
+      const { scenario } = prepared.value;
+      const definitions = new Map(scenario.pieceCatalog.definitions.map((definition) => [definition.id, definition]));
+      const onMap = scenario.initialPieceState.pieces.flatMap((piece) => piece.location.kind === 'ON_MAP'
+        ? [{ owner: piece.ownerId, hexId: piece.location.hexId as string, definition: definitions.get(piece.definitionId)! }] : []);
+      for (const owner of new Set(onMap.map((entry) => entry.owner))) {
+        const side = onMap.filter((entry) => entry.owner === owner);
+        const hqs = side.filter(({ definition }) => String(definition.categoryDefinitionId).endsWith(':hq')).map(({ hexId }) => hexId);
+        const bases = side.filter(({ definition }) => /Air Base \d/u.test(definition.name)).map(({ hexId }) => hexId);
+        const dumps = side.filter(({ definition }) => definition.family === 'RESOURCE').map(({ hexId }) => hexId);
+        expect(new Set(hqs).size, `seed ${seed} ${owner} HQs share a Hex`).toBe(hqs.length);
+        // HQs follow the troops (13.1b): each stands among the combat units, and every combat unit has an HQ near it.
+        const troops = side.filter(({ definition }) => definition.family === 'GROUND' && !/Garrison|Landesschützen/u.test(definition.name)
+          && !String(definition.categoryDefinitionId).endsWith(':hq')).map(({ hexId }) => hexId);
+        for (const hq of hqs) expect(Math.min(...troops.map((hexId) => hexDistance(hq, hexId))), `seed ${seed} ${owner} HQ ${hq} away from the troops`).toBeLessThanOrEqual(3);
+        const nearestHq = troops.map((hexId) => Math.min(...hqs.map((hq) => hexDistance(hq, hexId))));
+        expect(nearestHq.reduce((sum, value) => sum + value, 0) / nearestHq.length, `seed ${seed} ${owner} troops far from any HQ`).toBeLessThanOrEqual(6);
+        expect(bases.length, `seed ${seed} ${owner} bases`).toBeGreaterThan(0);
+        for (const base of bases) {
+          for (const used of [...hqs, ...dumps]) expect(hexDistance(base, used), `seed ${seed} ${owner} base ${base} next to ${used}`).toBeGreaterThanOrEqual(2);
+          // The armies start about ten Hexes apart; a base well behind its own line is far from the enemy's field units (garrisons hold the objectives forward).
+          const enemy = onMap.filter((entry) => entry.owner !== owner && entry.definition.family === 'GROUND' && !/Garrison|Landesschützen/u.test(entry.definition.name));
+          expect(Math.min(...enemy.map(({ hexId }) => hexDistance(base, hexId))), `seed ${seed} ${owner} base ${base} too far forward`).toBeGreaterThanOrEqual(12);
+        }
+      }
+    }
+  });
 });

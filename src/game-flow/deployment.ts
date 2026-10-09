@@ -131,6 +131,19 @@ const DUMP_MIN_DEPTH_HEXES = 3;
 const DUMP_SPACING_HEXES = 3;
 /** Supply dumps stand at least this many Hexes behind the line where a side's field units begin. */
 const DUMP_BEHIND_LINE_HEXES = 2;
+/** Air Bases stand further back still: at least this many Hexes behind the line where a side's field units begin (15.0). */
+const AIR_BASE_BEHIND_LINE_HEXES = 6;
+/**
+ * Each HQ serves the divisions around it (13.1b): it stands this many Hexes or more behind the line where the field units
+ * begin, as near as it can to the centre of the divisions it was given, in trace supply and on the road net.
+ */
+const HQ_BEHIND_LINE_HEXES = 1;
+/** Cost, in Hexes of distance from its divisions, of an HQ Hex outside trace supply (12.3b) or off the road net. */
+const HQ_OUT_OF_TRACE_COST_HEXES = 3;
+const HQ_OFF_NETWORK_COST_HEXES = 1.5;
+/** Air Bases stand apart from each other, and clear of dumps and HQs (15.0a: one base to a Hex). */
+const AIR_BASE_SPACING_HEXES = 3;
+const REAR_AREA_CLEARANCE_HEXES = 2;
 
 /**
  * How far behind the split between the deployment zones each side's field units begin, in Hexes (user request
@@ -452,9 +465,6 @@ export const deployGeneratedForces = (
     if (fieldUnits.length > denseSlots.length || sideSupply[side].length === 0) {
       return { ok: false, error: [deploymentFailure(`Map cannot deploy every ${side} unit within its operational zone.`)] };
     }
-    // 15.0: Air Bases sit in the rear near the side's supply hexes (so refit SP can reach them), on
-    // ground trucks can enter, at least three hexes apart; one Air Base per hex (15.0a).
-    const baseHexes: HexId[] = [];
     // Supply dumps are spread too: each stands inside the zone, on ground trucks can enter, apart from
     // the others (spacing relaxes only when the zone is too small), and where its draw range covers the
     // most ground so the units around it can be fuelled. The first dump anchors the Air Bases.
@@ -478,9 +488,14 @@ export const deployGeneratedForces = (
     const traceReach = new Set([...sideSupply[side], ...[...railed]
       .filter((hexId) => hexById.get(hexId)?.features.some(({ definitionId }) => DETRAINABLE_FEATURES.has(String(definitionId))))]
       .flatMap((hexId) => [...supplyReachOf(hexId)].flatMap((reached) => [reached, ...adjacentHexIds(reached)])));
+    // The rear area is planned as a whole, dumps first, then HQs, then Air Bases, each clear of the others. Trucks, HQ
+    // throws and refit SP all move on the road net, so every one of them stands on a road or railroad Hex when the zone has one.
+    const onNetwork = (hexId: HexId): boolean => roadDegree.has(hexId) || railHexes.has(hexId);
     const dumpCandidates = ranked
       .filter(({ hex }) => canDeployOn(hex, 'truck') && depthOf(side, hex.id) >= line + DUMP_BEHIND_LINE_HEXES
         && distance(hex.id, sideAnchors[side]) >= DUMP_MIN_DEPTH_HEXES)
+      // Stable: Hexes on the road net come first, each group still nearest the line first.
+      .sort((left, right) => Number(onNetwork(right.hex.id)) - Number(onNetwork(left.hex.id)))
       .slice(0, DUMP_CANDIDATE_LIMIT)
       // A dump serves the units around it best where they can also trace supply.
       .map(({ hex }, order) => ({ hexId: hex.id, order, coverage: [...supplyReachOf(hex.id)].filter((reached) => traceReach.has(reached)).length }))
@@ -496,12 +511,20 @@ export const deployGeneratedForces = (
     }
     if (dumpHexes.length < supplyUnits.length) dumpHexes.push(...sideSupply[side].slice(0, supplyUnits.length - dumpHexes.length));
     const supplyAnchor = dumpHexes[0] ?? sideSupply[side][0]!;
+    // Air Bases (15.0): in the rear, on the road net, at least AIR_BASE_SPACING_HEXES apart and clear of the dumps,
+    // as near the first dump as that allows so refit SP can reach them. A base short of the rear band is the last resort.
+    const rearArea = dumpHexes;
     const baseCandidates = zones[side]
-      .filter((hex) => canDeployOn(hex, 'truck') && distance(hex.id, supplyAnchor) >= 1)
-      .map((hex) => ({ hex, score: distance(hex.id, supplyAnchor) * 10_000 + Math.floor(rng.next() * 10_000) }))
+      .filter((hex) => canDeployOn(hex, 'truck') && rearArea.every((used) => distance(used, hex.id) >= REAR_AREA_CLEARANCE_HEXES))
+      .map((hex) => ({
+        hex,
+        score: (depthOf(side, hex.id) >= line + AIR_BASE_BEHIND_LINE_HEXES ? 0 : 2_000_000) + (onNetwork(hex.id) ? 0 : 1_000_000)
+          + distance(hex.id, supplyAnchor) * 10_000 + Math.floor(rng.next() * 10_000),
+      }))
       .sort((left, right) => left.score - right.score || String(left.hex.id).localeCompare(String(right.hex.id)));
+    const baseHexes: HexId[] = [];
     for (const _ of airBases) {
-      const chosen = baseCandidates.find(({ hex }) => baseHexes.every((used) => distance(used, hex.id) >= 3));
+      const chosen = baseCandidates.find(({ hex }) => baseHexes.every((used) => distance(used, hex.id) >= AIR_BASE_SPACING_HEXES));
       if (!chosen) return { ok: false, error: [deploymentFailure(`Map has no room for every ${side} Air Base in the rear.`)] };
       baseHexes.push(chosen.hex.id);
     }
@@ -518,6 +541,53 @@ export const deployGeneratedForces = (
     // In an attack no formation centres in front of its side's start line (it would start next to the enemy).
     const centerHexes = attacker === null ? rankedIds : rankedIds.filter((hexId) => depthOf(side, hexId) >= line);
     const centers = formationCenters(centerHexes, [...reserved], [tracedDumpReach, dumpReach], groupKeys.length);
+    // HQs go with the troops (13.1b): the divisions are split into as many sectors as there are HQs (farthest-first seeds,
+    // then nearest-seed assignment), and each HQ stands behind the line as near the middle of its sector as it can, in trace
+    // supply and on the road net. An HQ never decides where the divisions stand; it follows them.
+    const hqUnitCount = fieldUnits.filter(({ role }) => role === 'HQ').length;
+    const divisionCentres = groupKeys.flatMap((key, index) => key !== 'independent' && centers[index] !== undefined ? [centers[index]!] : []);
+    const hqHexes: HexId[] = [];
+    if (hqUnitCount > 0 && divisionCentres.length > 0) {
+      const sectorCount = Math.min(hqUnitCount, divisionCentres.length);
+      const seeds: HexId[] = [divisionCentres[0]!];
+      while (seeds.length < sectorCount) {
+        seeds.push(divisionCentres.filter((centre) => !seeds.includes(centre))
+          .sort((left, right) => Math.min(...seeds.map((seed) => distance(seed, right))) - Math.min(...seeds.map((seed) => distance(seed, left))))[0]!);
+      }
+      let sectors: HexId[][] = seeds.map(() => []);
+      for (let round = 0; round < 4; round += 1) {
+        sectors = seeds.map(() => []);
+        for (const centre of divisionCentres) {
+          sectors[seeds.reduce((best, seed, index) => distance(seed, centre) < distance(seeds[best]!, centre) ? index : best, 0)]!.push(centre);
+        }
+        // The next seed of each sector is the division centre nearest the sector's middle.
+        for (const [index, members] of sectors.entries()) {
+          if (members.length === 0) continue;
+          seeds[index] = members.reduce((best, member) => members.reduce((sum, other) => sum + distance(member, other), 0)
+            < members.reduce((sum, other) => sum + distance(best, other), 0) ? member : best, members[0]!);
+        }
+      }
+      const taken = new Set<HexId>([...reserved, ...centers]);
+      // The sectors with the most divisions get the HQs first; extra HQs (more HQs than sectors) join the largest sectors.
+      const assigned = [...sectors].sort((left, right) => right.length - left.length);
+      for (let index = 0; index < hqUnitCount; index += 1) {
+        const members = assigned[index % assigned.length]!;
+        if (members.length === 0) continue;
+        const pick = zones[side]
+          .filter((hex) => !taken.has(hex.id) && canDeployOn(hex, 'truck') && depthOf(side, hex.id) >= line + HQ_BEHIND_LINE_HEXES
+            && distance(hex.id, sideAnchors[side]) >= DUMP_MIN_DEPTH_HEXES)
+          .map((hex) => ({
+            hexId: hex.id,
+            cost: members.reduce((sum, member) => sum + distance(member, hex.id), 0) / members.length
+              + (traceReach.has(hex.id) ? 0 : HQ_OUT_OF_TRACE_COST_HEXES) + (onNetwork(hex.id) ? 0 : HQ_OFF_NETWORK_COST_HEXES),
+          }))
+          .sort((left, right) => left.cost - right.cost || String(left.hexId).localeCompare(String(right.hexId)))[0];
+        if (!pick) continue;
+        hqHexes.push(pick.hexId);
+        taken.add(pick.hexId);
+        reserved.add(pick.hexId);
+      }
+    }
     // Each formation group takes its centre, then the nearest free Hexes around it (reach and the
     // dumps/bases permitting), FIELD_UNITS_PER_HEX slots each. No Hex belongs to two groups.
     const claimed = new Set<HexId>(centers);
@@ -553,6 +623,7 @@ export const deployGeneratedForces = (
     // In an attack, a unit with no room behind its side's start line waits off the map and arrives on Game Turn 2
     // (13.6) rather than starting next to the enemy; a crowded meeting engagement still fills toward the front.
     const heldBack = new Set<string>();
+    const hqTaken = new Set<HexId>();
     // HQs take their slots first and trucks last: an HQ out of trace supply cannot throw it (12.3b), a truck needs none.
     const placementRank = (unit: GeneratedOobUnit): number => unit.role === 'HQ' ? 0 : unit.role === 'TRANSPORT' ? 2 : 1;
     for (const unit of [...fieldUnits].sort((left, right) => placementRank(left) - placementRank(right))) {
@@ -562,6 +633,16 @@ export const deployGeneratedForces = (
       const fits = (hexId: HexId): boolean => (definition === undefined
         || canDeployOn(hexById.get(hexId)!, deployedMobility(definition)))
         && (usedReTicks.get(hexId) ?? 0) + unitReTicks <= GENERATED_STACKING_LIMIT_RE_TICKS;
+      // An HQ stands on the Hex the rear-area plan gave it (on the road net, apart from the other HQs).
+      if (unit.role === 'HQ' && !offMap) {
+        const planned = hqHexes.find((hexId) => !hqTaken.has(hexId) && fits(hexId));
+        if (planned !== undefined) {
+          hqTaken.add(planned);
+          usedReTicks.set(planned, (usedReTicks.get(planned) ?? 0) + unitReTicks);
+          fieldPlacements.push({ unit, hexId: planned });
+          continue;
+        }
+      }
       const ownSlots = groupSlots.get(groupOf(unit)) ?? [];
       const ownIndex = ownSlots.findIndex(fits);
       const fallbackIndex = ownIndex < 0 ? fallbackSlots.findIndex(fits) : -1;

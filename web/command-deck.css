@@ -156,7 +156,7 @@ p.warning cite { font-style: normal; opacity: 0.8; }
 .new-game-form fieldset { margin: 0; padding: 10px; }
 .new-game-form label { margin-bottom: 8px; }
 .settings-basic fieldset:first-child { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.settings-basic fieldset:first-child label:first-of-type { grid-column: 1 / -1; }
+.settings-basic fieldset:first-child label:first-of-type, .settings-basic fieldset:first-child .field-help { grid-column: 1 / -1; }
 .new-game-form[data-settings-tab=basic] .settings-advanced, .new-game-form[data-settings-tab=advanced] .settings-basic { display: none; }
 .operation-preview { overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; }
 .operation-preview-content { height: 100%; min-height: 600px; display: grid; grid-template-rows: minmax(220px, .9fr) 64px minmax(120px, 1fr) auto; gap: 10px; }
