@@ -658,6 +658,8 @@ export type GameAction =
     readonly targetHexId: HexId;
     /** Attacking unit whose Action Rating leads the combat (9.6). */
     readonly leadAttackerId: PieceId;
+    /** Each attacker's combat supply, declared with the attack and paid in this order (9.5, 12.4, 12.10). */
+    readonly attackerSupply: readonly AttackerSupplyChoice[];
   })
   | (ActionEnvelope & {
     readonly kind: 'DECLARE_BARRAGE';
@@ -757,6 +759,14 @@ export type GameAction =
 
 /** 12.5c: Formation Method (1 SP), HQ Method (1 SP), or Single-Unit Method (1T). */
 export type FuelMethod = 'FORMATION' | 'HQ' | 'SINGLE_UNIT';
+
+/**
+ * One attacker's combat supply: drawn from these dumps, in order, or from its own internal stocks, which it
+ * may use only when the dumps in reach cannot cover it after the attackers declared before it (12.10a).
+ */
+export type AttackerSupplyChoice =
+  | { readonly pieceId: PieceId; readonly method: 'DUMPS'; readonly dumpIds: readonly PieceId[] }
+  | { readonly pieceId: PieceId; readonly method: 'INTERNAL' };
 
 /** Internal stocks marker under a unit (12.10); FULL means no marker. */
 export type InternalStocksLevel = 'FULL' | 'LOW' | 'EXHAUSTED';

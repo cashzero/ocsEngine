@@ -238,4 +238,8 @@ export interface RuleEngine {
   /** How one own unit is fueled now (12.5a): the coverage method, 'NOT_NEEDED', or null when it needs fuel and has none. */
   readonly queryFuelCoverage: (state: GameState, actorId: PlayerId, pieceId: PieceId) => RuleQueryResult<import('../supply/fuel.js').FuelCoverage>;
   readonly queryFuelPreview: (state: GameState, actorId: PlayerId, pieceId: PieceId) => RuleQueryResult<readonly import('../supply/fuel.js').FuelPreview[]>;
+  /** The combat supply sources one own unit may declare after the attackers already declared (9.5, 12.10a). */
+  readonly queryAttackerSupplyOptions: (
+    state: GameState, actorId: PlayerId, prior: readonly import('../kernel/model.js').AttackerSupplyChoice[], pieceId: PieceId,
+  ) => RuleQueryResult<import('../combat/combat.js').AttackerSupplyOptions | null>;
 }

@@ -978,6 +978,7 @@ root.addEventListener('change', (event) => {
   const input = event.target as HTMLInputElement;
   if (input.dataset.participant) controller.toggleParticipant(input.dataset.participant);
   else if (input.dataset.lead) controller.setLead(input.dataset.lead);
+  else if (input.dataset.attackSupply) controller.chooseAttackerSupply(input.dataset.attackSupply, (event.target as unknown as HTMLSelectElement).value);
   else if (input.dataset.airAircraft) controller.toggleAirAircraft(input.dataset.airAircraft);
   else if (input.dataset.transportCarrier) controller.toggleTransportCarrier(input.dataset.transportCarrier);
   else if (input.dataset.transportUnit) controller.toggleTransportUnit(input.dataset.transportUnit);

@@ -17,6 +17,7 @@ import {
   parseRuleTransactionId,
   AIR_ROUTES,
   type AirCargoDeclaration,
+  type AttackerSupplyChoice,
   type AirRoute,
   type GameAction,
 } from '../rules/index.js';
@@ -112,7 +113,7 @@ const parseAction = (input: unknown, path: Path, issues: GameplayError[]): GameA
   const fields: Readonly<Record<GameAction['kind'], readonly string[]>> = {
     ADVANCE_SEQUENCE: [], CHANGE_MODE: ['pieceId', 'mode'], RELEASE_RESERVE: ['pieceId'],
     MOVE_PIECE: ['pieceId', 'path'], END_MOVE: ['pieceId'], CREATE_BREAKDOWN: ['pieceId'], CHECK_SUPPLY: ['pieceIds', 'sourcePieceId'],
-    DECLARE_COMBAT: ['combatKind', 'attackerIds', 'defenderIds', 'targetHexId', 'leadAttackerId'],
+    DECLARE_COMBAT: ['combatKind', 'attackerIds', 'defenderIds', 'targetHexId', 'leadAttackerId', 'attackerSupply'],
     DECLARE_BARRAGE: ['firerIds', 'targetPieceIds', 'targetHexId'],
     RESPOND_DECISION: ['decisionId', 'choiceId'], COMMIT_TRANSACTION: ['transactionId'],
     CANCEL_TRANSACTION: ['transactionId'], PLACE_REINFORCEMENT: ['pieceId', 'hexId'],
@@ -133,6 +134,10 @@ const parseAction = (input: unknown, path: Path, issues: GameplayError[]): GameA
   if (!(kind in fields)) issues.push(issue('SAVE_INVALID', [...path, 'kind'], `Unknown action kind ${kind}.`));
   // REDUCE_AIR_BASE gained an optional engineer; logs written before it do not carry the key.
   // REDUCE_AIR_BASE gained an optional engineer and DECLARE_AIR_MISSION an optional cargo; logs written before them do not carry the keys.
+  // DECLARE_COMBAT without attackerSupply was written before attackers declared their supply (9.5): it cannot replay.
+  if (kind === 'DECLARE_COMBAT' && !('attackerSupply' in record)) {
+    issues.push(issue('SAVE_INCOMPATIBLE', [...path, 'attackerSupply'], 'This save has an attack made before each attacker declared its combat supply with the attack (9.5, 12.10a). Its moves replay rules that have since been corrected, so it cannot be loaded; start a new game.'));
+  }
   exactKeys(record, ['actionId', 'actorId', 'expectedRevision', 'kind', ...(fields[kind] ?? []), ...(kind === 'REDUCE_AIR_BASE' && 'engineerId' in record ? ['engineerId'] : []), ...(kind === 'DECLARE_AIR_MISSION' && 'cargo' in record ? ['cargo'] : [])], path, issues);
   const actionText = textAt(record, 'actionId', path, issues);
   const actorText = textAt(record, 'actorId', path, issues);
@@ -191,7 +196,10 @@ const parseAction = (input: unknown, path: Path, issues: GameplayError[]): GameA
     case 'DECLARE_COMBAT': {
       const combatKind = textAt(record, 'combatKind', path, issues);
       if (!['REGULAR', 'OVERRUN'].includes(combatKind)) issues.push(issue('SAVE_INVALID', [...path, 'combatKind'], 'Invalid combat kind.'));
-      return { ...base, combatKind, attackerIds: pieces('attackerIds'), defenderIds: pieces('defenderIds'), targetHexId: hex('targetHexId'), leadAttackerId: piece('leadAttackerId') } as GameAction;
+      return {
+        ...base, combatKind, attackerIds: pieces('attackerIds'), defenderIds: pieces('defenderIds'), targetHexId: hex('targetHexId'), leadAttackerId: piece('leadAttackerId'),
+        attackerSupply: 'attackerSupply' in record ? parseAttackerSupply(record.attackerSupply, [...path, 'attackerSupply'], issues) : [],
+      } as GameAction;
     }
     case 'DECLARE_BARRAGE': return { ...base, firerIds: pieces('firerIds'), targetPieceIds: pieces('targetPieceIds'), targetHexId: hex('targetHexId') } as GameAction;
     case 'RESPOND_DECISION': {
@@ -275,6 +283,31 @@ const parseAction = (input: unknown, path: Path, issues: GameplayError[]): GameA
     case 'COLLAPSE_EXTENDER': return { ...base, extenderId: piece('extenderId'), hexId: hex('hexId') } as GameAction;
     default: return base as GameAction;
   }
+};
+
+const parseAttackerSupply = (input: unknown, path: Path, issues: GameplayError[]): readonly AttackerSupplyChoice[] => {
+  if (!Array.isArray(input)) { issues.push(issue('SAVE_INVALID', path, 'Expected an array.')); return []; }
+  const pieceAt = (value: unknown, at: Path): PieceId => {
+    const text = typeof value === 'string' ? value : '';
+    const parsed = parsePieceId(text);
+    if (!parsed.ok) issues.push(issue('SAVE_INVALID', at, 'Invalid Piece ID.'));
+    return parsed.ok ? parsed.value : text as never;
+  };
+  return input.map((entry, index): AttackerSupplyChoice => {
+    const at = [...path, index];
+    const row = recordAt(entry, at, issues) ?? {};
+    const method = textAt(row, 'method', at, issues);
+    const pieceId = pieceAt(row.pieceId, [...at, 'pieceId']);
+    if (method === 'INTERNAL') {
+      exactKeys(row, ['pieceId', 'method'], at, issues);
+      return { pieceId, method };
+    }
+    if (method !== 'DUMPS') issues.push(issue('SAVE_INVALID', [...at, 'method'], 'Invalid attacker supply method.'));
+    exactKeys(row, ['pieceId', 'method', 'dumpIds'], at, issues);
+    const dumpIds = Array.isArray(row.dumpIds) ? row.dumpIds : [];
+    if (!Array.isArray(row.dumpIds)) issues.push(issue('SAVE_INVALID', [...at, 'dumpIds'], 'Expected an array.'));
+    return { pieceId, method: 'DUMPS', dumpIds: dumpIds.map((value, dumpIndex) => pieceAt(value, [...at, 'dumpIds', dumpIndex])) };
+  });
 };
 
 const parseCargo = (input: unknown, path: Path, issues: GameplayError[]): AirCargoDeclaration | null => {

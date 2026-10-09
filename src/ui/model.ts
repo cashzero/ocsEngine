@@ -46,8 +46,23 @@ export interface AttackDraft {
   readonly eligibleIds: readonly PieceId[];
   readonly selectedIds: readonly PieceId[];
   readonly leadId: PieceId | null;
+  /** Combat supply of each eligible attacker, ticked ones in the order they pay (9.5, 12.10a); empty for a barrage. */
+  readonly supply: readonly AttackerSupplyRow[];
   readonly action: GameAction | null;
   readonly explanation: RuleExplanation | null;
+}
+
+/**
+ * Where one eligible attacker would get its combat supply: a ticked unit's options after the units ticked before it,
+ * an unticked unit's after every ticked one. A unit with no option cannot join (12.10c).
+ */
+export interface AttackerSupplyRow {
+  readonly pieceId: PieceId;
+  readonly need: number;
+  readonly options: readonly { readonly id: string; readonly label: string; readonly hexIds: readonly string[]; readonly wastedTokens: number }[];
+  /** The declared source of a ticked unit. */
+  readonly chosenId: string | null;
+  readonly reason: string | null;
 }
 
 /** A Transport that may carry the cargo, and how it is set to fly (14.9e). */
