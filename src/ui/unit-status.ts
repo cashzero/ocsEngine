@@ -16,13 +16,24 @@ export interface StatusRow {
   readonly rule?: string;
 }
 
-const MODE_ROWS: Readonly<Record<string, Pick<StatusRow, 'icon' | 'value' | 'tone' | 'note' | 'rule'>>> = {
-  COMBAT: { icon: 'COMBAT', value: 'Combat', tone: 'none', note: 'Exerts a ZOC. Cannot use rail, air or shipping transport.', rule: '5.5' },
-  MOVE: { icon: 'MOVE', value: 'Move', tone: 'none', note: 'No ZOC. May use rail, air and shipping transport.', rule: '5.6' },
+/** Combat and Move have no marker: the side of the counter showing is the mode (5.2), and the selection card names it. */
+const MODE_ROWS: Readonly<Record<string, Pick<StatusRow, 'note' | 'rule'>>> = {
+  COMBAT: { note: 'Exerts a ZOC. Cannot use rail, air or shipping transport.', rule: '5.5' },
+  MOVE: { note: 'No ZOC. May use rail, air and shipping transport.', rule: '5.6' },
+};
+
+/** The other four modes are markers laid on top of the counter (5.2), so each is a mark in the panel. */
+const MARKER_ROWS: Readonly<Record<string, Pick<StatusRow, 'icon' | 'value' | 'tone' | 'note' | 'rule'>>> = {
   RESERVE: { icon: 'RESERVE', value: 'Reserve', tone: 'warn', note: 'Cannot attack, overrun or barrage until released. Moves 1/4 MA; defends at half strength.', rule: '5.7' },
   STRAT: { icon: 'STRAT', value: 'Strat', tone: 'warn', note: 'Moves at double MA, off roads. Combat Strength and Action Rating are 0; cannot attack, overrun or barrage.', rule: '5.8' },
   EXPLOITATION: { icon: 'EXPLOIT', value: 'Exploit', tone: 'ok', note: 'May move (half MA) and fight in the Exploitation Phase. Removed at Clean Up.', rule: '5.9' },
   DG: { icon: 'DG', value: 'Disorganized (DG)', tone: 'bad', note: 'Combat, barrage and movement values halved; Action Rating −1; no overrun or Exploit; no rail, air or shipping. Removed at Clean Up.', rule: '5.10' },
+};
+
+/** The rule effect of Combat or Move Mode, for the tooltip on the mode name in the selection card. */
+export const modeNote = (mode: string | null): string | undefined => {
+  const row = mode === null ? undefined : MODE_ROWS[mode];
+  return row ? `${row.note} (${row.rule})` : undefined;
 };
 
 const statusValue = (piece: ProjectedPiece, id: string): string | number | undefined =>
@@ -30,7 +41,7 @@ const statusValue = (piece: ProjectedPiece, id: string): string | number | undef
 
 /**
  * Status panel rows for a ground combat unit. Enemy units show only what 4.9a lets the viewer know
- * (mode, Out of Supply); everything else is hidden for them.
+ * (Out of Supply); everything else is hidden for them.
  * Rows are markers: a row is present only when its marker would be on the counter, absent means none.
  *
  * TODO: Reserve "released" and "barraged" are engine usage state the projection does not expose, so they have no row.
@@ -43,16 +54,13 @@ export const unitStatusRows = (snapshot: UiSnapshot, piece: ProjectedPiece): rea
   const own = piece.ownerId === snapshot.view.playerId;
   const rows: StatusRow[] = [];
 
-  const mode = MODE_ROWS[piece.mode];
+  // Combat and Move carry no marker, so no row: the selection card names them, with the rule effect as a tooltip.
+  // A marker mode also says which side of the counter is up (5.2, 5.7a).
+  const marker = MARKER_ROWS[piece.mode];
   const face = definition.faces.find(({ id }) => id === piece.currentFaceId);
-  if (mode) rows.push({ key: 'mode', label: 'Mode', ...mode, value: piece.mode === 'COMBAT' || piece.mode === 'MOVE' || !face?.name ? mode.value : `${mode.value} · ${face.name} side` });
+  if (marker) rows.push({ key: 'mode', label: 'Mode', ...marker, value: face?.name ? `${marker.value} · ${face.name} side` : marker.value });
 
   // Like the board game's markers, a row appears only when its marker would be on the counter; no row means none.
-  if (own && piece.remainingSteps !== null) {
-    const full = Math.max(0, ...(face?.steps.map(({ remainingSteps }) => remainingSteps) ?? []));
-    if (piece.remainingSteps < full) rows.push({ key: 'steps', icon: `${piece.remainingSteps}/${full}`, label: 'Step loss', value: `${piece.remainingSteps} of ${full} steps left`, tone: 'warn', rule: '9.11' });
-  }
-
   if (piece.statuses.includes('status:out-of-supply')) {
     rows.push({ key: 'supply', icon: 'OOS', label: 'Out of Supply', value: 'Marked', tone: 'bad', note: 'No ZOC. Attacks and defends at half strength with combat supply, otherwise cannot attack and defends at 1/4. Barrage and movement normal.', rule: '12.8d' });
   }
