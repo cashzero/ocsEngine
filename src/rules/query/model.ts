@@ -85,6 +85,11 @@ export interface RuleProjection {
    * unlike `victory`, which is scored at Clean Up.
    */
   readonly objectives: readonly { readonly hexId: HexId; readonly points: number; readonly controllerId: PlayerId | null }[];
+  /**
+   * The viewer's own Rail Cap (13.3b): points per Movement Phase and the quarters still unspent in the current one (the
+   * full amount outside the viewer's Movement Phase). Only the viewer's entry is listed. Absent in games without Rail Cap.
+   */
+  readonly railCap?: readonly { readonly playerId: PlayerId; readonly points: number; readonly remainingQuarters: number }[] | undefined;
   readonly combat: ProjectedCombat | null;
   readonly weather: GameState['weather'];
   readonly fuel: GameState['fuel'];
