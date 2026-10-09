@@ -185,8 +185,10 @@ const GENERATED_KEY_POINT_SPACING_HEXES = 3;
 /** A road junction joins at least this many roads (hexsides with a road). */
 const GENERATED_ROAD_JUNCTION_DEGREE = 3;
 
-/** Roles a defender deploys in Combat Mode: the units that hold the line. Artillery, HQs and trucks start as usual. */
+/** Combat units that can move onto the other side's ground and negate a ZOC: they count for first-move reach and draw paths. */
 const DEFENDER_COMBAT_ROLES = new Set(['COMBAT', 'RECONNAISSANCE', 'TANK', 'ANTI_TANK', 'ENGINEER']);
+/** An engineer looks this far from its sector's HQ for a road Hex before it settles for one off the road. */
+const ENGINEER_HQ_RADIUS_HEXES = 4;
 /** Divisions spread over the sectors first, so no sector gets two of them while another has none. */
 const MECHANIZED_ARCHETYPES = new Set(['ARMORED', 'MOBILE_INFANTRY']);
 /** The order independent units are shared out between the sectors: each role is spread before the next. */
@@ -195,6 +197,12 @@ const INDEPENDENT_ROLE_ORDER: readonly string[] = ['TANK', 'ANTI_TANK', 'ENGINEE
 const FRONT_BAND_HEXES = 3;
 /** Line units within this many Hexes behind the start line begin in Combat Mode (user, 2026-10-09). */
 const FRONT_COMBAT_MODE_HEXES = 2;
+/**
+ * Engineers do not hold the line (user, 2026-10-10): a Pontoon unit cannot attack (3.2b) and its work is construction near
+ * the HQs and dumps (13.8d). They start in Move Mode by their sector's HQ, behind the front band where the line units start
+ * in Combat Mode.
+ */
+const ENGINEER_BEHIND_LINE_HEXES = FRONT_COMBAT_MODE_HEXES;
 
 const generatedCostModel = (map: GeneratedMap, mobility: MobilityType): MovementCostModel => movementCostModel({
   scenario: { mapDefinition: map.mapDefinition },
@@ -510,6 +518,7 @@ export const deployGeneratedForces = (
     readonly traceTier: (hexId: HexId) => number;
     readonly combatModeIds: Set<string>;
     readonly roadOk: (unit: GeneratedOobUnit, hexId: HexId) => boolean;
+    readonly engineers: readonly { readonly unit: GeneratedOobUnit; readonly sector: number }[];
   };
   const relations: PieceRelation[] = [];
   const stackCounts = new Map<HexId, number>();
@@ -651,7 +660,7 @@ export const deployGeneratedForces = (
     // ── Where each sector's units stand ──
     // Units near the front start in Combat Mode (user, 2026-10-09), so they have a ZOC (4.5) from the first turn; in an
     // attack the whole of the defender's line does: a prepared defence, not a march.
-    const startsInCombatMode = (unit: GeneratedOobUnit, hexId: HexId): boolean => DEFENDER_COMBAT_ROLES.has(unit.role)
+    const startsInCombatMode = (unit: GeneratedOobUnit, hexId: HexId): boolean => DEFENDER_COMBAT_ROLES.has(unit.role) && unit.role !== 'ENGINEER'
       && definitionById.get(unit.definitionId)?.faces.some(({ id }) => String(id) === 'combat') === true
       && ((attacker !== null && side !== attacker) || depthOf(side, hexId) < line + FRONT_COMBAT_MODE_HEXES);
     // A unit that starts in Move Mode with Truck MA pays full terrain cost off the road, so it starts on the road net where
@@ -770,10 +779,11 @@ export const deployGeneratedForces = (
       }
     }
     // Independent units spread across their sector's width just behind the divisions (artillery a row further back), one
-    // to a Hex where the map allows.
+    // to a Hex where the map allows. Engineers go to the rear with the supply (phase 2).
     const independentHexes = new Set<HexId>();
+    const engineers = independents.filter(({ role }) => role === 'ENGINEER').map((unit) => ({ unit, sector: independentSector.get(unit.id) ?? 0 }));
     for (const [index] of sectors.entries()) {
-      const own = independents.filter(({ id }) => independentSector.get(id) === index);
+      const own = independents.filter(({ id, role }) => independentSector.get(id) === index && role !== 'ENGINEER');
       for (const [order, unit] of own.entries()) {
         const target = sectors[index]!.low + (order + 0.5) * sectorWidth / own.length;
         const targetDepth = line + (unit.role === 'ARTILLERY' ? 2 : 1);
@@ -794,7 +804,7 @@ export const deployGeneratedForces = (
       && startsInCombatMode(unit, hexId)).map(({ unit }) => unit.id));
     plans.set(side, {
       rng, line, units, supplyUnits, fieldUnits, reinforcement, heldBack, fieldPlacements, usedReTicks, fitsFor, place, placeFallback,
-      sectors, sectorOfHex, hqHexes, traceReach, traceTier, traceSources, combatModeIds, roadOk,
+      sectors, sectorOfHex, hqHexes, traceReach, traceTier, traceSources, combatModeIds, roadOk, engineers,
     });
   }
 
@@ -937,6 +947,24 @@ export const deployGeneratedForces = (
         .sort((left, right) => Number(full(left)) - Number(full(right)) || Number(threatened.has(left)) - Number(threatened.has(right))
           || Number(!truckRoadHex(left, dump)) - Number(!truckRoadHex(right, dump)) || Number(left === dump) - Number(right === dump)
           || traceTier(left) - traceTier(right) || distance(left, dump) - distance(right, dump) || String(left).localeCompare(String(right)))[0];
+      if (hexId !== undefined) place(unit, hexId);
+      else if (!placeFallback(unit)) return { ok: false, error: [deploymentFailure(`Map cannot deploy every ${side} unit on terrain it can enter within stacking limits.`)] };
+    }
+    // Engineers stand by their sector's HQ (within ENGINEER_HQ_RADIUS_HEXES: a safe Hex across the map is no use), out of the
+    // enemy's first-move reach, in a Hex with room (or the HQ's own: an engineer with its HQ is no blob), on the road, behind
+    // the front band (ENGINEER_BEHIND_LINE_HEXES) and where a dump fuels them, in that order, so they can reach a
+    // construction site with the SP to pay for it (13.8d).
+    for (const { unit, sector } of plan.engineers) {
+      const anchor = hqHexes[sector] ?? dumpHexes[0];
+      const fits = fitsFor(unit);
+      const hexId = anchor === undefined ? undefined : zones[side].map(({ id }) => id)
+        .filter((candidate) => fits(candidate) && depthOf(side, candidate) >= line)
+        .map((candidate) => ({ candidate, keys: [
+          Number(distance(candidate, anchor) > ENGINEER_HQ_RADIUS_HEXES), Number(threatened.has(candidate)), Number(candidate !== anchor && full(candidate)),
+          Number(!onNetwork(candidate)), Number(depthOf(side, candidate) < line + ENGINEER_BEHIND_LINE_HEXES),
+          Number(!dumpReach.has(candidate)), traceTier(candidate), distance(candidate, anchor)] }))
+        .sort((left, right) => left.keys.reduce((order, key, index) => order || key - right.keys[index]!, 0)
+          || String(left.candidate).localeCompare(String(right.candidate)))[0]?.candidate;
       if (hexId !== undefined) place(unit, hexId);
       else if (!placeFallback(unit)) return { ok: false, error: [deploymentFailure(`Map cannot deploy every ${side} unit on terrain it can enter within stacking limits.`)] };
     }
