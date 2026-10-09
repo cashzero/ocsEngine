@@ -11,11 +11,13 @@ import {
   movementCostModel,
   parseGameStateJson,
   pieceHasTrace,
+  RULE_FIXTURE_NEW_GAME_REQUEST,
   queryTraceCoverage,
   serializeGameState,
   validateRuleConfiguration,
   type GameState,
   type MapAdditions,
+  type NewGameRequest,
   type Placement,
 } from '../../src/index.js';
 
@@ -106,6 +108,39 @@ describe('OCS 4.3 HQ-made detrainable Hexes (13.8c) and Extender links (12.7a)',
     if (!formed.ok) return;
     expect(kindAt(formed.state, '8,6')).toBe('EXTENDER');
     expect(kindAt(formed.state, '11,5')).toBe('DETRAINABLE');
+  });
+});
+
+/**
+ * 12.7a B needs a map wider than an Extender's 20 MP range: on the rule fixture's 18 columns any Extender beside a railroad
+ * reaches a Supply Source along it (rail counts as road, 6.2a), so a link through the rail line itself never shows.
+ */
+const WIDE: NewGameRequest = { ...RULE_FIXTURE_NEW_GAME_REQUEST, map: { ...RULE_FIXTURE_NEW_GAME_REQUEST.map, width: 40 } };
+
+describe('OCS 4.3 Extender joining two rail lines (12.7a B) on a wide map', () => {
+  const truck = generatedPieceId('allied:independent-transport-1', WIDE);
+  // The back line runs bare (no station) from the Allied map-edge source -3,6 to 30,6; the forward branch 28,4-33,4 has a
+  // village at its end. The Extender at 28,5 is beside both lines and more than 20 MP from any source or station.
+  const backLine = featuresAlong(Array.from({ length: 34 }, (_, index) => `${index - 3},6`));
+  const branch = featuresAlong(['28,4', '29,4', '30,4', '31,4', '32,4', '33,4']);
+  const wide = (placement: Placement): GameState => buildGeneratedRuleState(placement, {}, {
+    request: WIDE, hexsides: [...backLine, ...branch], features: { '33,4': [VILLAGE] }, control: { '33,4': ALLIED },
+  });
+
+  it('makes the forward line detrainable when the back line leads to a source, though no source is in range', () => {
+    const before = wide({});
+    expect(kindAt(before, '-3,6')).toBe('MAP_EDGE');
+    expect(kindAt(before, '33,4')).toBeNull();
+    const linked = wide({ [truck]: ['28,5', null, 'extender'] });
+    expect(kindAt(linked, '33,4')).toBe('DETRAINABLE');
+  });
+
+  it('does not join a back line that is itself cut from every source', () => {
+    // An Axis combat unit on the back line at 2,6 cuts it (13.3e): what still leads to the source ends at 1,6, beyond the
+    // Extender's 20 MP, so it has nothing to join. (Cut nearer, the stub left would still be in range and join.)
+    const axis = generatedPieceId('axis:f1-combat-1', WIDE);
+    const cut = wide({ [truck]: ['28,5', null, 'extender'], [axis]: ['2,6', 'MOVE'] });
+    expect(kindAt(cut, '33,4')).toBeNull();
   });
 });
 
