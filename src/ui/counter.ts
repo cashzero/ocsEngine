@@ -66,7 +66,17 @@ export const replacementAbbreviation = (definition: PieceDefinition): 'Pax' | 'E
 const replacementView = (definition: PieceDefinition, piece: CounterPiece) =>
   ({ redacted: false as const, kind: 'replacement' as const, label: definition.name, abbreviation: replacementAbbreviation(definition), nation: nationOf(definition), quantity: piece.resourceQuantity === null || piece.resourceQuantity === undefined ? '?' : String(piece.resourceQuantity) });
 
-export const counterView = (definition: PieceDefinition, piece: CounterPiece) => {
+/** The nation whose colours a player's pieces wear: Axis players are German, the rest American. */
+export const playerNation = (players: readonly { readonly id: string; readonly sideDefinitionId: string }[], ownerId: string): 'US' | 'GERMAN' | undefined => {
+  const side = players.find(({ id }) => id === ownerId)?.sideDefinitionId;
+  return side === undefined ? undefined : String(side).includes('axis') ? 'GERMAN' : 'US';
+};
+
+/**
+ * `ownerNation`, when given, is the nation of the player who holds the piece now: captured supply and trucks (9.14b-c)
+ * change hands, so they wear their new owner's colours rather than the printed ones.
+ */
+export const counterView = (definition: PieceDefinition, piece: CounterPiece, ownerNation?: 'US' | 'GERMAN') => {
   if (definition.family === 'AIR') return aircraftView(definition, piece);
   if (['facility:air-base', 'facility:air-strip', 'facility:off-map-airfield'].includes(String(definition.facility?.facilityTypeDefinitionId))) return airBaseView(definition, piece);
   if (definition.facility?.facilityTypeDefinitionId === 'facility:hedgehog') return hedgehogView(definition, piece);
@@ -84,7 +94,9 @@ export const counterView = (definition: PieceDefinition, piece: CounterPiece) =>
   const ownName = piece.statusValues?.find(({ statusDefinitionId }) => statusDefinitionId === 'status:unit-name')?.value;
   const named = typeof ownName === 'string' && ownName.length > 0;
   const slash = named ? ownName.indexOf('/') : -1;
-  const counter = named ? { ...definition.counter, designation: slash < 0 ? ownName : ownName.slice(0, slash), affiliation: slash < 0 ? '' : ownName.slice(slash + 1) } : definition.counter;
+  const printed = ownerNation !== undefined && ['SUPPLY', 'TRANSPORT'].includes(definition.counter.kind) && ownerNation !== definition.counter.nationality
+    ? { ...definition.counter, nationality: ownerNation } : definition.counter;
+  const counter = named ? { ...printed, designation: slash < 0 ? ownName : ownName.slice(0, slash), affiliation: slash < 0 ? '' : ownName.slice(slash + 1) } : printed;
   return { redacted: false as const, kind: 'unit' as const, label: named ? ownName : definition.name, counter, face, step,
     mode: piece.mode, statuses: piece.statuses, quantity: piece.resourceQuantity,
     transportPoints: typeof points === 'number' ? points : definition.counter.transportPoints,
