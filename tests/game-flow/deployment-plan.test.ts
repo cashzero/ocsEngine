@@ -3,6 +3,7 @@ import {
   DEFAULT_NEW_GAME_REQUEST,
   createInitialGameState,
   hexDistanceBetween,
+  parseHexsideId,
   prepareNewGame,
   ruleEngine,
   type Engagement,
@@ -38,7 +39,8 @@ const opening = (engagement: Engagement, index: number) => {
     sequence: { ...state.sequence, phase: 'MOVEMENT', segment: 'MOVEMENT', actingPlayerId: `player:${side}` as never },
     fuel: { ...state.fuel, hqIds: army(side).map(({ id }) => id) },
   });
-  return { state, definitions, army, dumps, isHq, hexOf, moving };
+  const trucks = (side: 'allied' | 'axis') => onMap(side).filter((piece) => String(definitions.get(piece.definitionId)?.categoryDefinitionId).endsWith(':transport'));
+  return { state, definitions, army, dumps, trucks, isHq, hexOf, moving };
 };
 
 describe('deployment plan', () => {
@@ -109,6 +111,26 @@ describe('deployment plan', () => {
           for (const piece of army) {
             if (ruleEngine.queryFuelCoverage(state, piece.ownerId, piece.id).value === 'NOT_NEEDED') continue;
             expect((ruleEngine.queryFuelPreview(state, piece.ownerId, piece.id).value ?? []).length, `${engagement} seed ${index} ${side} ${String(piece.id)} cannot be fuelled`).toBeGreaterThan(0);
+          }
+        }
+      }
+    }
+  });
+
+  // User report 2026-10-09 (default scenario): dumps and trucks stood on Hexes no road or railroad touches.
+  it('stands every supply dump and truck on the road net', { timeout: 120_000 }, () => {
+    for (const engagement of ENGAGEMENTS) {
+      for (const index of SEEDS) {
+        const game = opening(engagement, index);
+        const network = new Set<string>();
+        for (const { hexsideId, featureDefinitionIds } of game.state.scenario.mapDefinition.hexsides) {
+          if (!featureDefinitionIds.some((id) => ['edge:primary-road', 'edge:road', 'edge:rail', 'edge:multi-track-rail'].includes(String(id)))) continue;
+          const parsed = parseHexsideId(hexsideId);
+          if (parsed.ok) for (const hexId of [parsed.value.firstHexId, parsed.value.secondHexId]) network.add(String(hexId));
+        }
+        for (const side of ['allied', 'axis'] as const) {
+          for (const piece of [...game.dumps(side), ...game.trucks(side)]) {
+            expect(network.has(String(game.hexOf(piece))), `${engagement} seed ${index} ${side} ${String(piece.id)} at ${game.hexOf(piece)} is off the road net`).toBe(true);
           }
         }
       }
