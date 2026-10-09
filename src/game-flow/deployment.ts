@@ -131,6 +131,10 @@ const DUMP_MIN_DEPTH_HEXES = 3;
 const DUMP_SPACING_HEXES = 3;
 /** A truck looks this far from its dump for a road or railroad Hex to stand on before it settles for one off the road net. */
 const TRUCK_ROAD_SEARCH_HEXES = 3;
+/** An independent Truck-MA unit takes a road Hex this many Hexes further from its planned spot over an off-road one. */
+const INDEPENDENT_OFF_ROAD_COST_HEXES = 6;
+/** A division centre takes a road Hex this many Hexes out of its place over an off-road one, when its units want a road. */
+const DIVISION_CENTRE_OFF_ROAD_COST_HEXES = 3;
 /** Air Bases stand further back still: at least this many Hexes behind the line where a side's field units begin (15.0). */
 const AIR_BASE_BEHIND_LINE_HEXES = 6;
 /**
@@ -140,9 +144,11 @@ const AIR_BASE_BEHIND_LINE_HEXES = 6;
 const HQ_BEHIND_LINE_HEXES = 1;
 /** HQs of one side stand at least this many Hexes apart when the front is that wide: one to a sector. */
 const HQ_SPACING_HEXES = 4;
-/** Cost, in Hexes of distance from its divisions, of an HQ Hex outside trace supply (12.3b) or off the road net. */
+/** Cost, in Hexes of distance from its divisions, of an HQ Hex outside trace supply (12.3b) or outside its own sector. */
 const HQ_OUT_OF_TRACE_COST_HEXES = 3;
 const HQ_OFF_NETWORK_COST_HEXES = 1.5;
+/** An HQ moves in Move Mode with Truck MA, so it takes a road Hex up to this many Hexes further from its axis (user, 2026-10-09). */
+const HQ_OFF_ROAD_COST_HEXES = 4;
 /** Air Bases stand apart from each other, and clear of dumps and HQs (15.0a: one base to a Hex). */
 const AIR_BASE_SPACING_HEXES = 3;
 const REAR_AREA_CLEARANCE_HEXES = 2;
@@ -503,6 +509,7 @@ export const deployGeneratedForces = (
     readonly traceSources: readonly HexId[];
     readonly traceTier: (hexId: HexId) => number;
     readonly combatModeIds: Set<string>;
+    readonly roadOk: (unit: GeneratedOobUnit, hexId: HexId) => boolean;
   };
   const relations: PieceRelation[] = [];
   const stackCounts = new Map<HexId, number>();
@@ -604,7 +611,7 @@ export const deployGeneratedForces = (
         .map((hex) => ({
           hexId: hex.id,
           cost: distance(axis, hex.id) + traceTier(hex.id) * HQ_OUT_OF_TRACE_COST_HEXES * 5
-            + (onNetwork(hex.id) ? 0 : HQ_OFF_NETWORK_COST_HEXES) + (sectorOfHex(hex.id) === index ? 0 : HQ_OFF_NETWORK_COST_HEXES),
+            + (onNetwork(hex.id) ? 0 : HQ_OFF_ROAD_COST_HEXES) + (sectorOfHex(hex.id) === index ? 0 : HQ_OFF_NETWORK_COST_HEXES),
         }))
         .sort((left, right) => left.cost - right.cost || String(left.hexId).localeCompare(String(right.hexId)))[0];
       if (pick) hqHexes.push(pick.hexId);
@@ -642,6 +649,18 @@ export const deployGeneratedForces = (
     }
 
     // ── Where each sector's units stand ──
+    // Units near the front start in Combat Mode (user, 2026-10-09), so they have a ZOC (4.5) from the first turn; in an
+    // attack the whole of the defender's line does: a prepared defence, not a march.
+    const startsInCombatMode = (unit: GeneratedOobUnit, hexId: HexId): boolean => DEFENDER_COMBAT_ROLES.has(unit.role)
+      && definitionById.get(unit.definitionId)?.faces.some(({ id }) => String(id) === 'combat') === true
+      && ((attacker !== null && side !== attacker) || depthOf(side, hexId) < line + FRONT_COMBAT_MODE_HEXES);
+    // A unit that starts in Move Mode with Truck MA pays full terrain cost off the road, so it starts on the road net where
+    // it can (user, 2026-10-09); a front unit in Combat Mode holds its ground wherever it is.
+    const wantsRoad = (unit: GeneratedOobUnit): boolean => {
+      const definition = definitionById.get(unit.definitionId);
+      return definition !== undefined && deployedMobility(definition) === 'truck';
+    };
+    const roadOk = (unit: GeneratedOobUnit, hexId: HexId): boolean => !wantsRoad(unit) || onNetwork(hexId) || startsInCombatMode(unit, hexId);
     const claimed = new Set<HexId>(hqHexes);
     const rankedIds = ranked.map(({ hex }) => hex.id);
     const behindLine = rankedIds.filter((hexId) => depthOf(side, hexId) >= line);
@@ -652,7 +671,10 @@ export const deployGeneratedForces = (
       const own = divisions.filter(({ key }) => divisionSector.get(key) === index);
       for (const [order, division] of own.entries()) {
         const target = sectors[index]!.low + (order + 0.5) * sectorWidth / own.length;
-        const score = (hexId: HexId): number => Math.abs(lateral(hexId) - target) + (depthOf(side, hexId) - line);
+        // A division's centre is its first unit's Hex: a road Hex where that unit would stand in Move Mode with Truck MA.
+        const first = division.members.find((unit) => unit.role !== 'HQ') ?? division.members[0];
+        const score = (hexId: HexId): number => Math.abs(lateral(hexId) - target) + (depthOf(side, hexId) - line)
+          + (first === undefined || roadOk(first, hexId) ? 0 : DIVISION_CENTRE_OFF_ROAD_COST_HEXES);
         let chosen: HexId | undefined;
         // In trace supply first, at the widest spacing it allows; only then out of trace.
         for (const worstTier of [0, 1, 2]) {
@@ -677,10 +699,13 @@ export const deployGeneratedForces = (
       const centre = divisionCentre.get(division.key);
       if (centre === undefined) continue;
       const hexes = [centre];
+      // A division with Truck-MA units takes a road Hex over an off-road one a Hex nearer, so those in Move Mode can stand
+      // on the road.
+      const roadUnits = division.members.filter(wantsRoad);
       const nearby = behindLine
         .filter((hexId) => !claimed.has(hexId))
         .sort((left, right) => traceTier(left) - traceTier(right))
-        .map((hexId, order) => ({ hexId, order, away: distance(hexId, centre) }))
+        .map((hexId, order) => ({ hexId, order, away: distance(hexId, centre) + (roadUnits.every((unit) => roadOk(unit, hexId)) ? 0 : 1) }))
         .filter(({ away }) => away <= 3)
         .sort((left, right) => left.away - right.away || left.order - right.order);
       for (const { hexId } of nearby) {
@@ -735,8 +760,11 @@ export const deployGeneratedForces = (
     }
     for (const division of divisions) {
       const slots = groupSlots.get(division.key) ?? [];
-      for (const unit of division.members) {
-        const index = slots.findIndex(fitsFor(unit));
+      // Truck-MA members choose first, and take the group's road Hexes where they fit.
+      for (const unit of [...division.members].sort((left, right) => Number(wantsRoad(right)) - Number(wantsRoad(left)))) {
+        const fits = fitsFor(unit);
+        const onRoad = wantsRoad(unit) ? slots.findIndex((hexId) => roadOk(unit, hexId) && fits(hexId)) : -1;
+        const index = onRoad >= 0 ? onRoad : slots.findIndex(fits);
         if (index >= 0) place(unit, slots.splice(index, 1)[0]!);
         else if (!placeFallback(unit)) return { ok: false, error: [deploymentFailure(`Map cannot deploy every ${side} unit on terrain it can enter within stacking limits.`)] };
       }
@@ -750,7 +778,8 @@ export const deployGeneratedForces = (
         const target = sectors[index]!.low + (order + 0.5) * sectorWidth / own.length;
         const targetDepth = line + (unit.role === 'ARTILLERY' ? 2 : 1);
         const fits = fitsFor(unit);
-        const score = (hexId: HexId): number => Math.abs(lateral(hexId) - target) + Math.abs(depthOf(side, hexId) - targetDepth) + traceTier(hexId) * 100;
+        const score = (hexId: HexId): number => Math.abs(lateral(hexId) - target) + Math.abs(depthOf(side, hexId) - targetDepth) + traceTier(hexId) * 100
+          + (roadOk(unit, hexId) ? 0 : INDEPENDENT_OFF_ROAD_COST_HEXES);
         const chosen = behindLine.filter((hexId) => !claimed.has(hexId) && !independentHexes.has(hexId) && fits(hexId))
           .sort((left, right) => score(left) - score(right) || String(left).localeCompare(String(right)))[0];
         if (chosen !== undefined) {
@@ -761,15 +790,11 @@ export const deployGeneratedForces = (
         }
       }
     }
-    // Units near the front start in Combat Mode (user, 2026-10-09), so they have a ZOC (4.5) from the first turn; in an
-    // attack the whole of the defender's line does: a prepared defence, not a march.
-    const combatModeIds = new Set(fieldPlacements.filter(({ unit, hexId }) => DEFENDER_COMBAT_ROLES.has(unit.role)
-      && unit.id !== reinforcement?.id && !heldBack.has(unit.id)
-      && definitionById.get(unit.definitionId)?.faces.some(({ id }) => String(id) === 'combat') === true
-      && ((attacker !== null && side !== attacker) || depthOf(side, hexId) < line + FRONT_COMBAT_MODE_HEXES)).map(({ unit }) => unit.id));
+    const combatModeIds = new Set(fieldPlacements.filter(({ unit, hexId }) => unit.id !== reinforcement?.id && !heldBack.has(unit.id)
+      && startsInCombatMode(unit, hexId)).map(({ unit }) => unit.id));
     plans.set(side, {
       rng, line, units, supplyUnits, fieldUnits, reinforcement, heldBack, fieldPlacements, usedReTicks, fitsFor, place, placeFallback,
-      sectors, sectorOfHex, hqHexes, traceReach, traceTier, traceSources, combatModeIds,
+      sectors, sectorOfHex, hqHexes, traceReach, traceTier, traceSources, combatModeIds, roadOk,
     });
   }
 
@@ -894,6 +919,7 @@ export const deployGeneratedForces = (
         .filter((hexId) => dumpReach.has(hexId) && depthOf(side, hexId) >= line && fits(hexId))
         .sort((left, right) => Number(full(left)) - Number(full(right))
           || traceTier(left) * 100 - traceTier(right) * 100 + distance(from, left) - distance(from, right)
+            + (Number(!plan.roadOk(entry.unit, left)) - Number(!plan.roadOk(entry.unit, right))) * INDEPENDENT_OFF_ROAD_COST_HEXES
           || String(left).localeCompare(String(right)))[0];
       entry.hexId = target ?? from;
       usedReTicks.set(entry.hexId, (usedReTicks.get(entry.hexId) ?? 0) + unitReTicks);
