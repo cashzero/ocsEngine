@@ -1160,10 +1160,36 @@ export const deployGeneratedForces = (
     // Everything behind the side's own start line is its rear area and its own too, whatever its distance from the edge.
     .filter(({ id }) => !seeded.has(id) && (depth(side, id) <= fronts[side] || depthOf(side, id) >= standoff(side) || garrisoned.get(id) === players[side]))
     .map(({ id }) => ({ hexId: id, controllerId: players[side] })));
+  // 13.3h "use common sense": a garrisoned station ahead of its army is held, and so is the railroad back to the ground
+  // the side controls. The stations on the shortest rail path (inside the side's zone) from each garrisoned station to
+  // that ground start under the side's control too, so the garrison is not cut off by a neutral station behind it.
+  const behindGarrisons = (['ALLIED', 'AXIS'] as const).flatMap((side) => {
+    const owner = players[side];
+    const held = new Set([...controlled, ...zoneControl].filter(({ controllerId }) => controllerId === owner).map(({ hexId }) => hexId));
+    const zone = new Set(zones[side].map(({ id }) => id));
+    const isStation = (hexId: HexId): boolean => hexById.get(hexId)?.features.some(({ definitionId }) => DETRAINABLE_FEATURES.has(String(definitionId))) ?? false;
+    const added = new Set<HexId>();
+    for (const [start, garrisonOwner] of garrisoned) {
+      if (garrisonOwner !== owner || !railNeighbors.has(start)) continue;
+      const parent = new Map<HexId, HexId | null>([[start, null]]);
+      const queue: HexId[] = [start];
+      let reached: HexId | null = null;
+      for (let head = 0; head < queue.length && reached === null; head += 1) {
+        for (const next of railNeighbors.get(queue[head]!) ?? []) {
+          if (parent.has(next) || !zone.has(next)) continue;
+          parent.set(next, queue[head]!);
+          if (held.has(next)) { reached = next; break; }
+          queue.push(next);
+        }
+      }
+      for (let at = reached; at !== null; at = parent.get(at) ?? null) if (!held.has(at) && isStation(at)) added.add(at);
+    }
+    return [...added].map((hexId) => ({ hexId, controllerId: owner }));
+  });
   const initialMapState: MapState = {
     schemaVersion: FOUNDATION_SCHEMA_VERSION,
     revision: initialRevision.value,
-    hexControl: [...controlled, ...zoneControl].sort((left, right) => String(left.hexId).localeCompare(String(right.hexId))),
+    hexControl: [...controlled, ...zoneControl, ...behindGarrisons].sort((left, right) => String(left.hexId).localeCompare(String(right.hexId))),
     features: [],
   };
   const initialPieceState: PieceRuntimeState = {

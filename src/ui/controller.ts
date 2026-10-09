@@ -125,6 +125,7 @@ export interface UiController {
   readonly refitBase: (baseId: string) => Promise<void>;
   readonly toggleAirZones: () => void;
   readonly toggleTraceCoverage: () => void;
+  readonly toggleHideUnits: () => void;
   readonly dispose: () => void;
 }
 
@@ -260,6 +261,7 @@ class DefaultUiController implements UiController {
   #refitSelection = new Map<string, readonly PieceId[]>();
   #showAirZones = false;
   #showTraceCoverage = false;
+  #hideUnits = false;
   /** Public combat facts per transaction, captured while the combat is open. */
   #combatFacts = new Map<string, ProjectedCombat>();
   #openTransaction: string | null = null;
@@ -783,6 +785,7 @@ class DefaultUiController implements UiController {
       railControl,
       traceCoverageFor: this.#showTraceCoverage ? traceUnitId : null,
       showTraceCoverage: this.#showTraceCoverage,
+      hideUnits: this.#hideUnits,
       remainingTicks,
       movePreview,
       selectedFuel,
@@ -1416,6 +1419,7 @@ class DefaultUiController implements UiController {
 
   toggleAirZones = (): void => { this.#showAirZones = !this.#showAirZones; this.#emit(); };
   toggleTraceCoverage = (): void => { this.#showTraceCoverage = !this.#showTraceCoverage; this.#emit(); };
+  toggleHideUnits = (): void => { this.#hideUnits = !this.#hideUnits; this.#emit(); };
 
   #dumpLabel(dumpId: string): string {
     const dump = this.#pieces().find(({ id }) => id === dumpId);

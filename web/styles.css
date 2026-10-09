@@ -518,6 +518,7 @@ small, .supporting { font-size: 13px; color: var(--muted); }
 .map-toggles { display: flex; gap: 5px; margin-left: 4px; padding-left: 9px; border-left: 1px solid var(--line); }
 .map-toggle { --toggle-on: #6fcf8e; display: inline-flex; align-items: center; gap: 7px; min-height: 42px; padding: 6px 10px; border: 1px solid var(--line); border-radius: 6px; color: var(--muted); background: #18221d; cursor: pointer; font-size: 13px; font-weight: 650; white-space: nowrap; user-select: none; }
 .map-toggle.air-zones { --toggle-on: #5aa0d8; }
+.map-toggle.hide-units { --toggle-on: #d8b15a; }
 .map-toggle input { width: 16px; height: 16px; margin: 0; accent-color: var(--toggle-on); cursor: pointer; }
 .map-toggle:hover { border-color: var(--accent); }
 .map-toggle:has(input:checked) { color: var(--ink); border-color: var(--toggle-on); background: color-mix(in srgb, var(--toggle-on) 18%, #18221d); }
