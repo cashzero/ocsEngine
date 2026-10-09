@@ -26,11 +26,13 @@ Deployment turns M7 force identities into Foundation runtime state.
      side's trace supply at the start (4.5a B), the enemy unit whose ZOC cuts the most starts in Move Mode instead.
 5. Then place the supply, once both armies stand (user report 2026-10-09: the enemy's dumps could be taken on the
    opening move). Each dump goes to a sector by its unit count and stands behind the line, where its draw range fuels
-   the most units no earlier dump reaches (an unfuelled HQ of its sector first), and outside the Hexes any enemy combat
+   the most units no earlier dump reaches (an unfuelled HQ of its sector first), on the road net (a road or railroad Hex;
+   user report 2026-10-09: dumps and trucks stood off the road), and outside the Hexes any enemy combat
    unit could enter in its first Movement Segment. Tracked and Leg movement ignores ZOC (4.5a), so on the generated maps
    that is almost always a Hex the side's own units hold: the dump stands with them. Only if no such Hex exists does a
-   dump stand within reach, and the deployment then warns. Trucks stand next to the dumps (not on them), out of that
-   reach where the map allows. A Truck or Track independent unit that no dump can fuel moves to the nearest Hex one can.
+   dump stand within reach, and the deployment then warns; a dump leaves the road net only where no safe road Hex is
+   left. Trucks stand on a road or railroad Hex within 3 Hexes of their dump, out of that reach where the map allows;
+   next to the dump, or on it when no other safe road Hex is near. A Truck or Track independent unit that no dump can fuel moves to the nearest Hex one can.
    Air Bases go last: in the rear, on the road net, clear of the dumps, HQs and troops, and out of that reach.
 6. Initialize owner, face, full steps, mode (step 4), resource quantity, stack order, and formation membership.
 7. Set initial control from the front line (13.3h; user request 2026-10-05: "也要有中立格 因為預設產生的劇本中間是沒有

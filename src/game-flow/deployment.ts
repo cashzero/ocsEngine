@@ -129,6 +129,8 @@ const FIELD_UNITS_PER_HEX = 2;
 /** Supply dumps stand apart from each other and at least this many Hexes in from the entry Hex, not on the map edge. */
 const DUMP_MIN_DEPTH_HEXES = 3;
 const DUMP_SPACING_HEXES = 3;
+/** A truck looks this far from its dump for a road or railroad Hex to stand on before it settles for one off the road net. */
+const TRUCK_ROAD_SEARCH_HEXES = 3;
 /** Air Bases stand further back still: at least this many Hexes behind the line where a side's field units begin (15.0). */
 const AIR_BASE_BEHIND_LINE_HEXES = 6;
 /**
@@ -850,8 +852,13 @@ export const deployGeneratedForces = (
         .filter((hex) => canDeployOn(hex, 'truck') && depthOf(side, hex.id) >= line && distance(hex.id, sideAnchors[side]) >= DUMP_MIN_DEPTH_HEXES)
         .map((hex) => hex.id);
       let chosen: HexId | undefined;
-      for (const [safeOnly, spacing] of [[true, DUMP_SPACING_HEXES], [true, 2], [true, 1], [false, 2], [false, 1]] as const) {
-        const open = candidates.filter((hexId) => (!safeOnly || !threatened.has(hexId)) && dumpHexes.every((used) => distance(used, hexId) >= spacing));
+      // A dump stands on the road net (a road or railroad Hex) wherever a safe one exists: its trucks load and move from it.
+      // Only a map with no safe road Hex left lets it go off the net, and only then into the enemy's first-move reach.
+      const tiers = [true, false].flatMap((safeOnly) => [true, false].flatMap((netOnly) =>
+        (safeOnly ? [DUMP_SPACING_HEXES, 2, 1] : [2, 1]).map((spacing) => [safeOnly, netOnly, spacing] as const)));
+      for (const [safeOnly, netOnly, spacing] of tiers) {
+        const open = candidates.filter((hexId) => (!safeOnly || !threatened.has(hexId)) && (!netOnly || onNetwork(hexId))
+          && dumpHexes.every((used) => distance(used, hexId) >= spacing));
         if (open.length === 0) continue;
         // An HQ of this sector that no dump fuels yet must be in this one's draw range, where any candidate allows it.
         const unfuelledHqs = served.filter((entry) => entry.unit.role === 'HQ' && !covered.has(entry.unit.id) && sectorOfHex(entry.hexId) === sector);
@@ -859,7 +866,7 @@ export const deployGeneratedForces = (
         const pool = fuellingHq.length > 0 ? fuellingHq : open;
         const scored = pool.map((hexId) => ({
           hexId,
-          score: coverage(hexId) * 10 + (onNetwork(hexId) ? 3 : 0) + (traceReach.has(hexId) ? 1 : 0)
+          score: coverage(hexId) * 10 + (traceReach.has(hexId) ? 1 : 0)
             - Math.abs(lateral(hexId) - sectors[sector]!.middle) * 0.5,
         }));
         chosen = scored.sort((left, right) => right.score - left.score || String(left.hexId).localeCompare(String(right.hexId)))[0]!.hexId;
@@ -892,14 +899,17 @@ export const deployGeneratedForces = (
       usedReTicks.set(entry.hexId, (usedReTicks.get(entry.hexId) ?? 0) + unitReTicks);
     }
     // Trucks stand next to the dumps they will carry from, out of the enemy's first-move reach where the map allows (they
-    // can be captured too, 9.14c), not on the dump itself: a truck loads where it starts its move.
+    // can be captured too, 9.14c), and on the road net near the dump (within TRUCK_ROAD_SEARCH_HEXES): off the road a truck
+    // pays full terrain cost. It stands on the dump itself only when no other safe road Hex is near (the dump is on the net).
     const trucks = fieldUnits.filter((unit) => unit.role === 'TRANSPORT' && unit.id !== reinforcement?.id && groups.get(unit.id) === undefined);
+    const truckRoadHex = (hexId: HexId, dump: HexId): boolean => onNetwork(hexId) && distance(hexId, dump) <= TRUCK_ROAD_SEARCH_HEXES;
     for (const [index, unit] of trucks.entries()) {
       const dump = dumpHexes[index % Math.max(1, dumpHexes.length)];
       const fits = fitsFor(unit);
       const hexId = dump === undefined ? undefined : zones[side].map(({ id }) => id)
-        .filter((candidate) => candidate !== dump && !dumpHexes.includes(candidate) && fits(candidate) && depthOf(side, candidate) >= line)
+        .filter((candidate) => (candidate === dump || !dumpHexes.includes(candidate)) && fits(candidate) && depthOf(side, candidate) >= line)
         .sort((left, right) => Number(full(left)) - Number(full(right)) || Number(threatened.has(left)) - Number(threatened.has(right))
+          || Number(!truckRoadHex(left, dump)) - Number(!truckRoadHex(right, dump)) || Number(left === dump) - Number(right === dump)
           || traceTier(left) - traceTier(right) || distance(left, dump) - distance(right, dump) || String(left).localeCompare(String(right)))[0];
       if (hexId !== undefined) place(unit, hexId);
       else if (!placeFallback(unit)) return { ok: false, error: [deploymentFailure(`Map cannot deploy every ${side} unit on terrain it can enter within stacking limits.`)] };
