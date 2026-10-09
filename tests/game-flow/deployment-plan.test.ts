@@ -85,9 +85,13 @@ describe('deployment plan', () => {
             shares[distances.indexOf(Math.min(...distances))]! += 1;
           }
           for (const share of shares) expect(share, `${engagement} seed ${index} ${side} sector shares ${shares.join('/')}`).toBeGreaterThanOrEqual(troops.length / hqs.length / 3);
-          // Independent units are not one group: no Hex holds more than two units.
+          // Independent units are not one group: no Hex holds more than two units (an engineer with its HQ is the HQ's).
           const perHex = new Map<string, number>();
-          for (const piece of army) perHex.set(String(game.hexOf(piece)), (perHex.get(String(game.hexOf(piece))) ?? 0) + 1);
+          const hqHexes = new Set(hqs.map(String));
+          const isEngineer = (piece: (typeof army)[number]) => String(game.definitions.get(piece.definitionId)?.categoryDefinitionId).endsWith(':engineer');
+          for (const piece of army.filter((entry) => !(isEngineer(entry) && hqHexes.has(String(game.hexOf(entry)))))) {
+            perHex.set(String(game.hexOf(piece)), (perHex.get(String(game.hexOf(piece))) ?? 0) + 1);
+          }
           expect(Math.max(...perHex.values()), `${engagement} seed ${index} ${side} stack`).toBeLessThanOrEqual(2);
         }
       }
@@ -138,6 +142,26 @@ describe('deployment plan', () => {
           });
           for (const piece of [...game.dumps(side), ...game.trucks(side), ...roadMovers]) {
             expect(network.has(String(game.hexOf(piece))), `${engagement} seed ${index} ${side} ${String(piece.id)} at ${game.hexOf(piece)} is off the road net`).toBe(true);
+          }
+        }
+      }
+    }
+  });
+
+  // User, 2026-10-10: an engineer (a Pontoon unit: defence only, 3.2b; construction near HQs and dumps, 13.8d) does not hold
+  // the line. It starts in Move Mode by its sector's HQ, on the road.
+  it('keeps every engineer off the line, in Move Mode by an HQ', () => {
+    for (const engagement of ENGAGEMENTS) {
+      for (const index of SEEDS) {
+        const game = opening(engagement, index);
+        for (const side of ['allied', 'axis'] as const) {
+          const hqs = game.army(side).filter(game.isHq).map((piece) => game.hexOf(piece)!);
+          const engineers = game.army(side).filter((piece) => String(game.definitions.get(piece.definitionId)?.categoryDefinitionId).endsWith(':engineer'));
+          expect(engineers.length, `${engagement} seed ${index} ${side} engineers`).toBeGreaterThan(0);
+          for (const engineer of engineers) {
+            const where = `${engagement} seed ${index} ${side} engineer at ${game.hexOf(engineer)}`;
+            expect(engineer.mode, where).not.toBe('COMBAT');
+            expect(Math.min(...hqs.map((hq) => hexDistanceBetween(hq, game.hexOf(engineer)!))), `${where}: distance to the nearest HQ`).toBeLessThanOrEqual(4);
           }
         }
       }
