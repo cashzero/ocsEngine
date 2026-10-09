@@ -75,6 +75,7 @@ import {
   roundOcs,
 } from '../tables/ocs-4.3.js';
 import { hexCombatTerrains, movementCostModel } from '../terrain.js';
+import { playerCostModel } from '../movement/bridging.js';
 import { violation } from '../validation/violation.js';
 import { inEnemyZoc } from '../zoc/zoc.js';
 import {
@@ -126,7 +127,9 @@ const canEnterForCombat = (state: GameState, piece: PieceState, targetHexId: Hex
   const origin = hexOf(piece);
   const mobility = mobilityOf(state, piece);
   if (!origin || !mobility) return violation('ATTACKER_CANNOT_MOVE', ['attackerIds'], 'Attackers must be able to move.', '9.1f');
-  const step = movementCostModel(state, mobility, !overrun).evaluate(origin, targetHexId);
+  // 13.8b: Bridging can enable an attack, but never an overrun across a river (8.1c).
+  const model = overrun ? movementCostModel(state, mobility, false) : playerCostModel(state, piece.ownerId, mobility);
+  const step = model.evaluate(origin, targetHexId);
   if (step.kind !== 'COST') {
     return violation('ATTACK_INTO_PROHIBITED_TERRAIN', ['attackerIds'], overrun
       ? 'Overruns cannot use roads to enter otherwise prohibited terrain.' : 'Units cannot attack a Hex they could not enter.', overrun ? '8.1c' : '9.1f');
@@ -873,7 +876,7 @@ export const retreatPlans = (
   if (!origin || hexes <= 0) return [];
   const owner = pieces[0]!.ownerId;
   const mobilities = [...new Set(pieces.map((piece) => mobilityOf(state, piece) ?? 'leg'))];
-  const models = mobilities.map((mobility) => movementCostModel(state, mobility));
+  const models = mobilities.map((mobility) => playerCostModel(state, owner, mobility));
   const strat = pieces.some((piece) => piece.mode === 'STRAT');
   // 4.8c: only Attack-Capable units may pass Hexes holding enemy non-combat units.
   const allAttackCapable = pieces.every((piece) => isAttackCapable(state, piece));

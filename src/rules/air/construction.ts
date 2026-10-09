@@ -2,7 +2,7 @@ import type { HexId, PieceId, PlayerId } from '../../core/index.js';
 import { upsertPieceState, type PieceDefinition, type PieceState } from '../../domain/piece/index.js';
 import { nextStackOrder } from '../combat/combat.js';
 import type { GameAction, GameState, RuleEvent, RuleViolation } from '../kernel/model.js';
-import { definitionOf, faceMode, hexOf, isHq, opponentOf, pieceById, usageOf, withUsage } from '../pieces.js';
+import { definitionOf, hexOf, isEngineerCapable, opponentOf, pieceById, usageOf, withUsage } from '../pieces.js';
 import { dumpsReaching, spendReservations, supplyPathCosts } from '../supply/supply.js';
 import { violation } from '../validation/violation.js';
 import { airBaseAt, airBaseLevel, AIR_BASE_FACILITY, AIR_STRIP_FACILITY, isAirStrip, withAirBaseLevel } from './aircraft.js';
@@ -40,14 +40,7 @@ export interface ConstructionPlan {
   readonly level: number;
 }
 
-/** 13.8a: an HQ or Engineer in Combat Mode, or in DG Mode oriented toward Combat Mode (5.10e). */
-export const isEngineerCapable = (state: GameState, piece: PieceState): boolean => {
-  if (piece.location.kind !== 'ON_MAP') return false;
-  const definition = definitionOf(state, piece);
-  if (!definition || definition.family !== 'GROUND') return false;
-  if (!(isHq(state, piece) || definition.counter?.symbol === 'ENGINEER')) return false;
-  return piece.mode === 'COMBAT' || (piece.mode === 'DG' && faceMode(piece) === 'COMBAT');
-};
+export { isEngineerCapable };
 
 const sideOf = (state: GameState, playerId: PlayerId) => state.scenario.players.find(({ id }) => id === playerId)?.sideDefinitionId ?? null;
 

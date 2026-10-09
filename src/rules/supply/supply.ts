@@ -24,7 +24,7 @@ import {
   opponentOf,
 } from '../pieces.js';
 import { INTERNAL_RECOVERY_TOKENS_PER_LEVEL } from '../tables/ocs-4.3.js';
-import { supplyPathCostModel } from '../terrain.js';
+import { playerSupplyPathCostModel } from '../movement/bridging.js';
 import { violation } from '../validation/violation.js';
 import { hasEnemyCombatUnit, queryZoc } from '../zoc/zoc.js';
 import { detrainableHexesFrom, isRailHex, railControlWith, railNetworkOf, railTraceReach, railTracePassable } from './rail.js';
@@ -141,7 +141,7 @@ export const supplyPathCosts = (
   const key = `${playerId}|${originHexId}|${mobility}|${maximumTicks}`;
   const cached = cache.get(key);
   if (cached) return cached;
-  const costs = supplyPathCostModel(state, mobility);
+  const costs = playerSupplyPathCostModel(state, playerId, mobility);
   const blocks = supplyPathBlocks(state, playerId);
   const zocBlocks = (hexId: HexId): boolean => {
     if (mobility !== 'truck') return false;

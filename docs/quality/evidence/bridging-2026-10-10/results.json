@@ -1,0 +1,79 @@
+{
+  "title": "Engineer bridging (13.8b): browser evidence",
+  "final": {
+    "turn": "Turn 2 / 3",
+    "player": "Axis player turn",
+    "phase": "Movement",
+    "revision": null
+  },
+  "rows": [
+    {
+      "id": "NG-14",
+      "expectation": "At the start no bridge is drawn: the engineer at 2114 is in Move Mode",
+      "observed": "no bridges",
+      "status": "PASS"
+    },
+    {
+      "id": "NG-14",
+      "expectation": "Unbridged, the tank at 2113 cannot reach 1915 across the river",
+      "observed": "Ge 506 Tgr Bn: Hex 1915 · woods · out of reach · no units",
+      "status": "PASS"
+    },
+    {
+      "id": "NG-14",
+      "expectation": "After the switch to Combat Mode the map draws the engineer's bridges on the river hexsides of its hex",
+      "observed": "Ge Pi Bde 508: 2114>2213, 2114>2014, 2114>2113",
+      "status": "PASS"
+    },
+    {
+      "id": "NG-14",
+      "expectation": "The engineer's status shows a BRIDGE mark explaining Bridging",
+      "observed": "Bridging: 3 river hexsides at this hex (13.8b). Your units moving into or out of this hex pay no extra MP for a Minor River and Minor River cost for a Major River. Ends if this unit leaves Combat Mode; never for overruns.",
+      "status": "PASS"
+    },
+    {
+      "id": "NG-14",
+      "expectation": "The hover line of the engineer's hex says what the bridge does",
+      "observed": "Hex 2114 · Antdorf · clear · town · your engineer bridges 3 river hexsides here (Minor River: no extra MP) for your units moving in or out; not for overruns · Ge Pi Bde 508, Ge HQ 12th Corps, Truck, Supply dump",
+      "status": "PASS"
+    },
+    {
+      "id": "NG-14",
+      "expectation": "With the bridge, the tank at 2113 reaches 1915",
+      "observed": "Hex 1915 · woods · 4 MP, 0 left · reachable · no units",
+      "status": "PASS"
+    },
+    {
+      "id": "NG-14",
+      "expectation": "Confirming moves the tank across the bridge",
+      "observed": "at 1915 now: Ge 506 Tgr Bn (535 ms)",
+      "status": "PASS"
+    },
+    {
+      "id": "NG-14",
+      "expectation": "Game Turn 1 ends and Turn 2 begins",
+      "observed": "Turn 2 / 3, Allied player turn, First Player Phase",
+      "status": "PASS"
+    },
+    {
+      "id": "NG-14",
+      "expectation": "The bridges stay while the engineer stays in Combat Mode",
+      "observed": "2114>2213, 2114>2014, 2114>2113",
+      "status": "PASS"
+    },
+    {
+      "id": "NG-14",
+      "expectation": "Switching the engineer back to Move Mode removes its bridges from the map",
+      "observed": "no bridges",
+      "status": "PASS"
+    },
+    {
+      "id": "NG-14",
+      "expectation": "No browser console or page error during the run",
+      "observed": "0 errors",
+      "status": "PASS"
+    }
+  ],
+  "timings": [],
+  "errors": []
+}

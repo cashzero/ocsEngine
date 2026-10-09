@@ -65,6 +65,8 @@ export interface MapState {
   readonly ownZone: ReadonlySet<string>;
   readonly enemyZone: ReadonlySet<string>;
   readonly trainbusting: readonly { readonly hexId: string; readonly own: boolean }[];
+  /** River hexsides the viewer's Engineer-Capable units bridge (13.8b): from the unit's hex across to the far bank. */
+  readonly bridges: readonly { readonly hexId: string; readonly acrossHexId: string; readonly major: boolean }[];
   /** Back to front; the selected counter last. */
   readonly counters: readonly MapCounter[];
   readonly badges: readonly { readonly hexId: string; readonly count: number }[];
@@ -80,7 +82,7 @@ export interface MapEvents {
 
 export const EMPTY_MAP_STATE: MapState = {
   selectedHexId: null, reachable: new Map(), dimmed: new Set(), attack: new Set(), barrage: new Set(), placement: new Set(), retreat: new Set(), highlight: new Set(),
-  airTargets: new Set(), destinationHexId: null, targetHexIds: new Set(), path: [], traceCoverage: new Set(), traceDirect: new Set(), supplySources: [], railControl: [], objectives: [], ownZone: new Set(), enemyZone: new Set(), trainbusting: [], counters: [], badges: [],
+  airTargets: new Set(), destinationHexId: null, targetHexIds: new Set(), path: [], traceCoverage: new Set(), traceDirect: new Set(), supplySources: [], railControl: [], objectives: [], ownZone: new Set(), enemyZone: new Set(), trainbusting: [], bridges: [], counters: [], badges: [],
 };
 
 /**
@@ -578,8 +580,10 @@ export class MapView {
       this.#drawAirMarks();
       this.#drawPath();
       this.#drawCounters();
-      // Over the counters: who holds an objective must stay readable while a unit stands on it.
+      // Over the counters: who holds an objective must stay readable while a unit stands on it, and a bridge between two
+      // occupied hexes would otherwise be hidden (counters fill the hex up to its sides).
       this.#drawObjectives();
+      this.#drawBridges();
       this.#drawBadges();
       this.#drawTargets();
       this.#drawCursor();
@@ -958,6 +962,54 @@ export class MapView {
    * Trace Supply overlay: a band along the track of each rail Hex, clipped to the Hex: green where the player's rail path
    * back to a Supply Source runs, red where only the enemy's runs (13.3c, 13.3h); other rail keeps the map's own drawing.
    */
+  /**
+   * Engineer bridges (13.8b): a short plank across each bridged river hexside, laid from the unit's hex to the far bank,
+   * wider over a Major River. Drawn over the counters, kept small so it covers only the edge of a counter there. Drawn
+   * every frame because they come and go with the units' modes.
+   */
+  #drawBridges(): void {
+    const { bridges } = this.#state;
+    const geometry = this.#geometry;
+    const size = this.#scene?.theater.layout.hexSize ?? 0;
+    if (bridges.length === 0 || !geometry) return;
+    const ctx = this.#ctx;
+    ctx.save();
+    bridges.forEach(({ hexId, acrossHexId, major }) => {
+      const from = geometry.byId.get(hexId);
+      const to = geometry.byId.get(acrossHexId);
+      if (!from || !to) return;
+      const angle = Math.atan2(to.y - from.y, to.x - from.x);
+      const length = size * 0.42;
+      const width = size * (major ? 0.22 : 0.17);
+      ctx.save();
+      ctx.translate((from.x + to.x) / 2, (from.y + to.y) / 2);
+      ctx.rotate(angle);
+      ctx.beginPath();
+      ctx.rect(-length / 2, -width / 2, length, width);
+      ctx.fillStyle = '#c9a26a';
+      ctx.fill();
+      // Slats across the deck, then the rails along both sides.
+      ctx.strokeStyle = 'rgba(70, 45, 18, .75)';
+      ctx.lineWidth = size * 0.018;
+      const slats = 4;
+      for (let index = 1; index < slats; index += 1) {
+        const x = -length / 2 + length * index / slats;
+        ctx.beginPath();
+        ctx.moveTo(x, -width / 2);
+        ctx.lineTo(x, width / 2);
+        ctx.stroke();
+      }
+      ctx.strokeStyle = '#3a2410';
+      ctx.lineWidth = size * 0.035;
+      ctx.beginPath();
+      ctx.moveTo(-length / 2, -width / 2); ctx.lineTo(length / 2, -width / 2);
+      ctx.moveTo(-length / 2, width / 2); ctx.lineTo(length / 2, width / 2);
+      ctx.stroke();
+      ctx.restore();
+    });
+    ctx.restore();
+  }
+
   #drawRailControl(): void {
     const { railControl } = this.#state;
     const geometry = this.#geometry;
