@@ -45,6 +45,10 @@ export interface MapState {
   readonly barrage: ReadonlySet<string>;
   readonly placement: ReadonlySet<string>;
   readonly retreat: ReadonlySet<string>;
+  /** Stations or ports a rail or sea shipment being planned can reach (13.3, 19.0f), drawn as clickable areas. */
+  readonly transit: ReadonlySet<string>;
+  /** The one of them the player picked. */
+  readonly transitChoice: string | null;
   /** The hex of a supply source the player is pointing at in the deck. */
   readonly highlight: ReadonlySet<string>;
   readonly airTargets: ReadonlySet<string>;
@@ -83,7 +87,7 @@ export interface MapEvents {
 }
 
 export const EMPTY_MAP_STATE: MapState = {
-  selectedHexId: null, reachable: new Map(), dimmed: new Set(), attack: new Set(), barrage: new Set(), placement: new Set(), retreat: new Set(), highlight: new Set(),
+  selectedHexId: null, reachable: new Map(), dimmed: new Set(), attack: new Set(), barrage: new Set(), placement: new Set(), retreat: new Set(), transit: new Set(), transitChoice: null, highlight: new Set(),
   airTargets: new Set(), destinationHexId: null, targetHexIds: new Set(), path: [], traceCoverage: new Set(), traceDirect: new Set(), supplySources: [], railControl: [], objectives: [], ports: [], ownZone: new Set(), enemyZone: new Set(), trainbusting: [], bridges: [], counters: [], badges: [],
 };
 
@@ -437,7 +441,7 @@ export class MapView {
   #isTarget(hexId: string): boolean {
     const state = this.#state;
     return state.reachable.has(hexId) || state.attack.has(hexId) || state.barrage.has(hexId) || state.placement.has(hexId)
-      || state.retreat.has(hexId) || state.airTargets.has(hexId);
+      || state.retreat.has(hexId) || state.transit.has(hexId) || state.airTargets.has(hexId);
   }
 
   // ---------------------------------------------------------------- input
@@ -1314,7 +1318,7 @@ export class MapView {
   #drawTargets(): void {
     const ctx = this.#ctx;
     const state = this.#state;
-    const hexIds = new Set([...state.attack, ...state.barrage, ...state.placement, ...state.retreat, ...state.highlight, ...state.targetHexIds, state.destinationHexId].filter((id): id is string => id !== null));
+    const hexIds = new Set([...state.attack, ...state.barrage, ...state.placement, ...state.retreat, ...state.transit, ...state.highlight, ...state.targetHexIds, state.destinationHexId].filter((id): id is string => id !== null));
     ctx.save();
     ctx.lineJoin = 'round';
     ctx.shadowColor = 'rgba(0, 0, 0, .9)';
@@ -1323,6 +1327,17 @@ export class MapView {
       const path = this.#geometry!.hexPath.get(hexId);
       if (!path) return;
       // When a hex is several kinds of target at once, the later kind wins, as the CSS cascade did.
+      if (state.transit.has(hexId) && !state.highlight.has(hexId)) {
+        // A station or port the cargo can reach: a teal wash and solid outline, white and brighter once picked.
+        const chosen = hexId === state.transitChoice;
+        ctx.fillStyle = chosen ? 'rgba(255, 255, 255, .38)' : 'rgba(64, 224, 208, .26)';
+        ctx.fill(path);
+        ctx.strokeStyle = chosen ? '#ffffff' : '#3fe0d0';
+        ctx.lineWidth = this.#px(chosen ? 6 : 4);
+        ctx.setLineDash([]);
+        ctx.stroke(path);
+        return;
+      }
       const style = state.highlight.has(hexId) ? ['#ffe078', 6, []] as const
         : state.targetHexIds.has(hexId) ? ['#ffffff', 5, []] as const
         : hexId === state.destinationHexId ? ['#ffdc80', 4, []] as const
