@@ -280,7 +280,7 @@ const supplyReach = (model: MovementCostModel, originHexId: HexId, blocked: Read
 /**
  * Victory points of an objective (user, 2026-10-10: supply is the heart of OCS, so the larger the settlement and the more
  * important the transport node, the more it is worth). An objective's VP is its settlement's points plus:
- * a port (19.0, by its capacity), a railroad through it (a detrainable station, 13.3c), one more if that railroad is double-track (multi-track, 13.3a), and a rail junction (2 more at three rail directions, 3 at four, 4 at five, 5 at six). A village counts only as a
+ * a port (19.0, by its capacity), a railroad through it (a detrainable station, 13.3c), and a rail junction (2 more at three rail directions, 3 at four, 4 at five, 5 at six; one more if a double-track (multi-track, 13.3a) railroad runs through that junction). A village counts only as a
  * transport node; open country is never an objective.
  */
 export const GENERATED_MAJOR_CITY_OBJECTIVE_POINTS = 3;
@@ -289,7 +289,7 @@ export const GENERATED_VILLAGE_OBJECTIVE_POINTS = 0;
 /** A port is worth one VP per this many Tokens of printed capacity (19.0a), at least one. */
 export const GENERATED_PORT_CAPACITY_TOKENS_PER_VP = 4;
 export const GENERATED_RAIL_OBJECTIVE_POINTS = 1;
-/** A double-track (multi-track) railroad through the Hex is worth this much more (user, 2026-10-10). */
+/** A rail junction (hub) with a double-track (multi-track) railroad through it is worth this much more (user, 2026-10-10). */
 export const GENERATED_MULTI_TRACK_OBJECTIVE_POINTS = 1;
 /** A rail junction is worth this much at the minimum degree, and {@link GENERATED_RAIL_JUNCTION_STEP_POINTS} more per extra rail direction (2, 3, 4, 5, ...). */
 export const GENERATED_RAIL_JUNCTION_OBJECTIVE_POINTS = 2;
@@ -309,7 +309,7 @@ export const objectivePoints = (settlement: 'CITY' | 'TOWN' | 'VILLAGE', transpo
   (settlement === 'CITY' ? GENERATED_MAJOR_CITY_OBJECTIVE_POINTS : settlement === 'TOWN' ? GENERATED_TOWN_OBJECTIVE_POINTS : GENERATED_VILLAGE_OBJECTIVE_POINTS)
   + (transport.portCapacityTokens > 0 ? Math.max(1, Math.round(transport.portCapacityTokens / GENERATED_PORT_CAPACITY_TOKENS_PER_VP)) : 0)
   + (transport.railDegree > 0 ? GENERATED_RAIL_OBJECTIVE_POINTS : 0)
-  + (transport.multiTrack === true ? GENERATED_MULTI_TRACK_OBJECTIVE_POINTS : 0)
+  + (transport.multiTrack === true && transport.railDegree >= GENERATED_RAIL_JUNCTION_DEGREE ? GENERATED_MULTI_TRACK_OBJECTIVE_POINTS : 0)
   + (transport.railDegree >=GENERATED_RAIL_JUNCTION_DEGREE
     ? GENERATED_RAIL_JUNCTION_OBJECTIVE_POINTS + GENERATED_RAIL_JUNCTION_STEP_POINTS * (transport.railDegree - GENERATED_RAIL_JUNCTION_DEGREE) : 0);
 
