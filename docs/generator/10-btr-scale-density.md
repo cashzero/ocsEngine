@@ -52,7 +52,8 @@ clusters with no browser errors.
 
 - **Railways — DONE in generator 0.4.0 (2026-10-04)**, except Rail Cap transport. The BtR calibration above
   ("railways about as dense as roads") is deliberately not followed: the user decided "rail不應該跟road一樣dense
-  應該要少一點", so the generated net is a multi-track trunk, lines to every entry Hex and the larger Minor Cities,
+  應該要少一點", so the generated net is a multi-track trunk, lines to each side's rail entry Hexes (a few per side, from
+  2026-10-10) and the larger Minor Cities,
   and few loops, at about a quarter to a third of the road density on the default map. Rules support is trace
   supply (12.6a, 13.3c, 13.3h, 13.8c, 12.7a) and road movement (6.2a). Rail Cap transport remains
   `TODO rail-cap`; see `docs/roadmap/10-rail-wbs.md` for the measurements, evidence and remaining TODOs.
