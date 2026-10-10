@@ -18,7 +18,7 @@ import {
 } from '../rules/index.js';
 import type {
   AirDraft, AirOverview, AirRefit, Arrival, AttackDraft, AwayReport, AirRebuild, BuildOption, GroundRebuild, ConstructionOverview, CombatSheet, EndStep, HandoffInfo, MoveBlocker, MovePreview, MoveRangeEntry,
-  DropPlanDraft, DropPlanView, LedgerLine, RailPanel, SeaPanel, SupplyNeed, TransportCarrier, UiListener, UiSelection, UiSnapshot, UnitAction,
+  DropPlanDraft, DropPlanView, LedgerLine, RailPanel, SeaPanel, SupplyNeed, TransportCarrier, UiListener, UiSelection, UiSnapshot, UnitAction, UnitFilterKind,
 } from './model.js';
 import {
   buildCombatReports, describeRecord, nominalNextStep, playerTurnTrack,
@@ -131,6 +131,7 @@ export interface UiController {
   readonly toggleAirZones: () => void;
   readonly toggleTraceCoverage: () => void;
   readonly toggleHideUnits: () => void;
+  readonly toggleUnitKind: (kind: UnitFilterKind) => void;
   readonly dispose: () => void;
 }
 
@@ -269,6 +270,7 @@ class DefaultUiController implements UiController {
   #showAirZones = false;
   #showTraceCoverage = false;
   #hideUnits = false;
+  #hiddenUnitKinds = new Set<UnitFilterKind>();
   /** Public combat facts per transaction, captured while the combat is open. */
   #combatFacts = new Map<string, ProjectedCombat>();
   #openTransaction: string | null = null;
@@ -798,6 +800,7 @@ class DefaultUiController implements UiController {
       traceCoverageFor: this.#showTraceCoverage ? traceUnitId : null,
       showTraceCoverage: this.#showTraceCoverage,
       hideUnits: this.#hideUnits,
+      hiddenUnitKinds: [...this.#hiddenUnitKinds],
       remainingTicks,
       movePreview,
       selectedFuel,
@@ -1433,6 +1436,10 @@ class DefaultUiController implements UiController {
   toggleAirZones = (): void => { this.#showAirZones = !this.#showAirZones; this.#emit(); };
   toggleTraceCoverage = (): void => { this.#showTraceCoverage = !this.#showTraceCoverage; this.#emit(); };
   toggleHideUnits = (): void => { this.#hideUnits = !this.#hideUnits; this.#emit(); };
+  toggleUnitKind = (kind: UnitFilterKind): void => {
+    if (!this.#hiddenUnitKinds.delete(kind)) this.#hiddenUnitKinds.add(kind);
+    this.#emit();
+  };
 
   #dumpLabel(dumpId: string): string {
     const dump = this.#pieces().find(({ id }) => id === dumpId);
