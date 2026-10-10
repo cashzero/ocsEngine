@@ -2,6 +2,7 @@ import type { DefinitionId, HexId } from '../../core/index.js';
 import type { HexsideId } from '../../domain/map/index.js';
 import { columnOf, definitionId, distanceBetween, neighborCells, type GeneratedCell } from './internal.js';
 import type { GeneratedMapStrategicRegions, NormalizedMapGenerationOptions } from './model.js';
+import { PORT, selectPorts } from './ports.js';
 import { generateRailNetwork } from './rails.js';
 import { generateRoadNetwork } from './roads.js';
 import { CITY, selectSettlements, TOWN, VILLAGE } from './settlements.js';
@@ -94,10 +95,13 @@ export const generateStrategicNetwork = (
   hexsides: Map<HexsideId, Set<DefinitionId>>,
   options: NormalizedMapGenerationOptions,
 ): GeneratedMapStrategicRegions => {
-  const settlements = selectSettlements(cells, hexsides, options);
+  const chosenSettlements = selectSettlements(cells, hexsides, options);
+  const { ports, addedTowns } = selectPorts(cells, chosenSettlements, options);
+  const settlements = [...chosenSettlements, ...addedTowns];
   settlements.forEach(({ cell, rank }) => cell.features.push({ kind: 'PRINTED_FEATURE', definitionId: RANK_FEATURE[rank] }));
   const firstEntry = selectEdgeHex(cells, 'FIRST', options.height);
   const secondEntry = selectEdgeHex(cells, 'SECOND', options.height);
+  ports.forEach(({ cell }) => cell.features.push({ kind: 'FACILITY', definitionId: PORT }));
   firstEntry.features.push({ kind: 'ENTRY', definitionId: FIRST_ENTRY }, { kind: 'SOURCE', definitionId: FIRST_SOURCE });
   secondEntry.features.push({ kind: 'ENTRY', definitionId: SECOND_ENTRY }, { kind: 'SOURCE', definitionId: SECOND_SOURCE });
   const firstEntries = selectEntryHexes(cells, firstEntry, 'FIRST', options);
@@ -114,5 +118,7 @@ export const generateStrategicNetwork = (
     firstEntryHexIds: firstEntries.map(({ id }) => id), secondEntryHexIds: secondEntries.map(({ id }) => id),
     firstSupplyHexIds: firstEntries.map(({ id }) => id), secondSupplyHexIds: secondEntries.map(({ id }) => id),
     settlementHexIds: settlements.map(({ cell }) => cell.id),
+    portHexIds: ports.map(({ cell }) => cell.id),
+    ports: ports.map(({ cell, capacityTokens }) => ({ hexId: cell.id, capacityTokens })),
   };
 };

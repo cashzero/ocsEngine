@@ -19,6 +19,7 @@ import type {
   SupplySourceHex,
   RailControlHex,
   RailMoveOptions,
+  SeaMoveOptions,
   GameAction,
   PendingDecisionKind,
   RuleEvent,
@@ -310,6 +311,8 @@ export interface GameSession {
   readonly getRailControl: (seatId: SeatId) => RuleQueryResult<readonly RailControlHex[]>;
   /** What a rail move from one Hex could carry for the seat, where it could detrain, and the Rail Cap left (13.3). */
   readonly getRailMoveOptions: (seatId: SeatId, fromHexId: HexId) => RuleQueryResult<RailMoveOptions | null>;
+  /** What a shipment from a port (or, null, the reinforcement Box) could carry for the seat, and where it could land (19.0f). */
+  readonly getSeaMoveOptions: (seatId: SeatId, fromHexId: HexId | null) => RuleQueryResult<SeaMoveOptions | null>;
   /** Each fuel payment open to one of the seat's units with the units it would newly fuel (12.5c). */
   /** How one of the seat's units is fueled now (12.5): a coverage method, 'NOT_NEEDED', or null when it needs fuel and has none. */
   readonly getFuelCoverage: (seatId: SeatId, pieceId: PieceId) => RuleQueryResult<FuelCoverage>;

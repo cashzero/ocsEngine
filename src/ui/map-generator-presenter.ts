@@ -21,6 +21,8 @@ export interface GeneratedMapPreviewCell {
   readonly strategic: 'FIRST' | 'SECOND' | null;
   /** Whose Supply Source (12.6a) this hex is, so the map can mark it; null for an ordinary hex. */
   readonly supplySource: 'FIRST' | 'SECOND' | null;
+  /** A port (19.0) is printed here. */
+  readonly port: boolean;
 }
 
 export interface GeneratedMapPreview {
@@ -63,6 +65,7 @@ export const buildGeneratedMapPreview = (generated: GeneratedMap, hexSize = 36):
       strategic: first ? 'FIRST' as const : second ? 'SECOND' as const : null,
       supplySource: generated.strategicRegions.firstSupplyHexIds.includes(cell.id) ? 'FIRST' as const
         : generated.strategicRegions.secondSupplyHexIds.includes(cell.id) ? 'SECOND' as const : null,
+      port: definition.features.some(({ kind, definitionId }) => kind === 'FACILITY' && String(definitionId) === 'facility:port'),
     };
   });
   const edges = generated.mapDefinition.hexsides.flatMap((edge) => {

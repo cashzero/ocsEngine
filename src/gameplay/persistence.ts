@@ -131,6 +131,8 @@ const parseAction = (input: unknown, path: Path, issues: GameplayError[]): GameA
     PLAN_AIR_DROP: ['unitIds', 'hexId', 'turn'], UPDATE_AIR_DROP_PLAN: ['planId', 'unitIds', 'change'],
     BUILD_HEDGEHOG: ['hexId', 'pieceIds', 'engineerId', 'payments'], REDUCE_HEDGEHOG: ['hedgehogId', 'pieceIds', 'engineerId'],
     RAIL_MOVE: ['fromHexId', 'toHexId', 'unitIds', 'supply'],
+    SEA_MOVE: ['fromHexId', 'toHexId', 'unitIds', 'supply'],
+    REDUCE_PORT: ['hexId', 'pieceIds', 'engineerId'], REPAIR_PORT: ['hexId', 'engineerId', 'payments'],
   };
   if (!(kind in fields)) issues.push(issue('SAVE_INVALID', [...path, 'kind'], `Unknown action kind ${kind}.`));
   // REDUCE_AIR_BASE gained an optional engineer; logs written before it do not carry the key.
@@ -185,6 +187,9 @@ const parseAction = (input: unknown, path: Path, issues: GameplayError[]): GameA
   switch (kind) {
     case 'ADVANCE_SEQUENCE': return base as GameAction;
     case 'RAIL_MOVE': return { ...base, fromHexId: hex('fromHexId'), toHexId: hex('toHexId'), unitIds: pieces('unitIds'), supply: payments('supply') } as GameAction;
+    case 'SEA_MOVE': return { ...base, fromHexId: record.fromHexId === null ? null : hex('fromHexId'), toHexId: hex('toHexId'), unitIds: pieces('unitIds'), supply: payments('supply') } as GameAction;
+    case 'REDUCE_PORT': return { ...base, hexId: hex('hexId'), pieceIds: pieces('pieceIds'), engineerId: record.engineerId === null ? null : piece('engineerId') } as GameAction;
+    case 'REPAIR_PORT': return { ...base, hexId: hex('hexId'), engineerId: piece('engineerId'), payments: payments() } as GameAction;
     case 'CHANGE_MODE': {
       const mode = textAt(record, 'mode', path, issues);
       if (!['COMBAT', 'MOVE', 'RESERVE', 'STRAT'].includes(mode)) issues.push(issue('SAVE_INVALID', [...path, 'mode'], 'Invalid voluntary mode.'));
@@ -240,7 +245,7 @@ const parseAction = (input: unknown, path: Path, issues: GameplayError[]): GameA
       const mission = textAt(record, 'mission', path, issues);
       if (!['FIGHTER_SWEEP', 'BARRAGE', 'HIP_SHOOT', 'TRAINBUSTING', 'BASE_TRANSFER', 'AIR_TRANSPORT', 'AIR_DROP'].includes(mission)) issues.push(issue('SAVE_INVALID', [...path, 'mission'], 'Invalid air mission.'));
       const target = record.target === null ? null : textAt(record, 'target', path, issues);
-      if (target !== null && !['COMBAT_UNITS', 'AIR_BASE'].includes(target)) issues.push(issue('SAVE_INVALID', [...path, 'target'], 'Invalid barrage target.'));
+      if (target !== null && !['COMBAT_UNITS', 'AIR_BASE', 'PORT'].includes(target)) issues.push(issue('SAVE_INVALID', [...path, 'target'], 'Invalid barrage target.'));
       return { ...base, mission, aircraftIds: pieces('aircraftIds'), targetHexId: hex('targetHexId'), target, ...('cargo' in record ? { cargo: parseCargo(record.cargo, [...path, 'cargo'], issues) } : {}) } as GameAction;
     }
     case 'REDUCE_AIR_BASE': return { ...base, baseId: piece('baseId'), pieceIds: pieces('pieceIds'), ...('engineerId' in record ? { engineerId: record.engineerId === null ? null : piece('engineerId') } : {}) } as GameAction;

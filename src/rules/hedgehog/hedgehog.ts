@@ -96,7 +96,7 @@ export const hedgehogTemplate = (state: GameState, playerId: PlayerId): PieceDef
 const changedThisTurn = (state: GameState, piece: PieceState | undefined, status: DefinitionId): boolean =>
   piece !== undefined && integerStatus(piece, status) === state.sequence.gameTurn;
 
-const movedThisPhase = (state: GameState, piece: PieceState): boolean => {
+export const movedThisPhase = (state: GameState, piece: PieceState): boolean => {
   const usage = usageOf(state, piece);
   return usage.moved || usage.movementSpentTicks > 0;
 };
@@ -112,7 +112,7 @@ const workPhaseIssues = (state: GameState, actorId: PlayerId, rule: string): Rul
  * Who does the work (16.0b, 16.0c): one RE of friendly Combat Mode units in the hex that have not moved, or an
  * Engineer-Capable unit (13.8a) that has not moved or constructed this phase, with the hex in its 2-hex radius (13.8d).
  */
-const workerIssues = (state: GameState, actorId: PlayerId, hexId: HexId, pieceIds: readonly PieceId[], engineerId: PieceId | null | undefined, rule: string): RuleViolation[] => {
+export const workerIssues = (state: GameState, actorId: PlayerId, hexId: HexId, pieceIds: readonly PieceId[], engineerId: PieceId | null | undefined, rule: string): RuleViolation[] => {
   const issues: RuleViolation[] = [];
   if (engineerId) {
     const engineer = pieceById(state, engineerId);
@@ -189,7 +189,7 @@ export const validateBuildHedgehog = (state: GameState, action: BuildAction): re
 };
 
 /** The units (and engineer) doing the work do not move this phase; an engineer has constructed (13.8d). */
-const markWorkers = (state: GameState, pieceIds: readonly PieceId[], engineerId: PieceId | null | undefined): GameState => {
+export const markWorkers = (state: GameState, pieceIds: readonly PieceId[], engineerId: PieceId | null | undefined): GameState => {
   let next = state;
   for (const id of engineerId ? [...pieceIds, engineerId] : pieceIds) {
     next = { ...next, usage: withUsage(next, { ...usageOf(next, pieceById(next, id)!), moved: true }) };

@@ -24,19 +24,18 @@
 
 ## 2. 規則 manifest（`src/rules/manifest.ts`）
 
-28 列（2026-10-09 依 main `84d9fea` 重新核對）：10 `IMPLEMENTED`、13 `PARTIAL`、4 `DEFERRED`、1 `GAME_SPECIFIC`。
+28 列（2026-10-09 依 main `84d9fea` 重新核對；2026-10-10 依 main `1b4e4d7` 再核對：`engineering.bridging` 已實作，港口與海運把 `movement.sea` 改為 PARTIAL）：11 `IMPLEMENTED`、14 `PARTIAL`、2 `DEFERRED`、1 `GAME_SPECIFIC`。
 各列缺口以 manifest 的 `GAP:` 文字為準，下面只列摘要。
 
 - DEFERRED（完全未實作，呼叫回 `UNSUPPORTED_RULE_FEATURE`）：
-  - `engineering.bridging`（13.8b）：工兵不能架橋。
-  - `movement.sea`（19.0）：海運；產生的地圖沒有港口。
-  - `naval-shipping`（18.0–19.0）。
+  - `naval-shipping`（18.0）：艦艇、登陸艇、兩棲登陸與灘頭突擊。
   - `optional-rules`（21.1–21.12）：含 Big Hogs 與刺蝟佔領降級（21.11a/c）。
 - PARTIAL（可用，但有已知缺口）：
   - `sequence.ground-turn`、`lifecycle.ground`、`replacements-rebuilds`、`air.replacements-and-reinforcements`：
     沒有 Variable Reinforcement／Replacement Table，Pax／Eq 為依地圖大小的固定配給；Rebuild Table 為通用規則，13.5d 成對重建不會發生；
     Repl 不是戰鬥單位（無 1/4 RE 疊放、ZOC、損失、補給、燃料，放下後不能移動）；Unit Consolidation（13.9）未實作。
   - `movement.ground`：整疊移動（6.1f）使用者暫緩。
+  - `movement.sea`（19.0、9.14h）：港口容量、損壞／自毀／修復、佔領、Supply Source 與 Sea Cap 海運已實作；砲兵不能轟擊港口（Facility Table 的砲兵補給成本未轉錄）；每次命中扣 1/4 容量尚未對照圖表第 4 頁的註記核對。
   - `supply.trace-and-draw`：12.6f 編制追蹤由引擎挑涵蓋最多成員的路線，玩家不能選。
   - `supply.rail-trace`：單一軌距，無 Railhead／Wrong Gauge／改軌／Rail Repair（13.3d、13.3f、13.3g）；無港口。
   - `movement.rail-cap`：卡車先花 MP 載運的 SP 仍可再上火車（12.2a 每批 SP 只能用一種運輸）。

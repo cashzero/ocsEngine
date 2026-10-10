@@ -735,6 +735,20 @@ export const supplySourceArtHtml = (cell: GeneratedMapPreviewCell, hexSize: numb
   return `<circle cx="${fixed(cx)}" cy="${fixed(cy)}" r="${fixed(r)}"></circle><text x="${fixed(cx)}" y="${fixed(cy + fontSize * 0.36)}" font-size="${fixed(fontSize)}" text-anchor="middle">S</text>`;
 };
 
+/** Anchor of a port (19.0), drawn as strokes in a 24-unit box centred on 12,12. */
+export const PORT_ANCHOR_PATH = 'M14.2 5a2.2 2.2 0 1 1-4.4 0a2.2 2.2 0 1 1 4.4 0M12 7.2V21M8 10.5h8M4.5 14.5a7.5 7.5 0 0 0 15 0M2.5 16l2-1.5 2 1.5M17.5 16l2-1.5 2 1.5';
+
+/** A port's anchor sits on a pale disc at the hex's left, clear of the hex number, the place's name and the bottom marks. */
+export const portArt = (cell: GeneratedMapPreviewCell, hexSize: number): { readonly cx: number; readonly cy: number; readonly r: number; readonly scale: number } => {
+  const unit = hexSize / GLYPH_HEX_SIZE;
+  return { cx: Number(fixed(cell.x - 25 * unit)), cy: Number(fixed(cell.y - 13 * unit)), r: Number(fixed(12.5 * unit)), scale: Number(fixed(18 * unit / 24)) };
+};
+
+export const portArtHtml = (cell: GeneratedMapPreviewCell, hexSize: number): string => {
+  const { cx, cy, r, scale } = portArt(cell, hexSize);
+  return `<circle cx="${fixed(cx)}" cy="${fixed(cy)}" r="${fixed(r)}"></circle><path d="${PORT_ANCHOR_PATH}" transform="translate(${fixed(cx - 12 * scale)} ${fixed(cy - 12 * scale)}) scale(${fixed(scale)})"></path>`;
+};
+
 /** Entry / supply zone: a band in the owning side's colour along the hex's inner rim. */
 export const strategicBandCorners = (cell: GeneratedMapPreviewCell, hexSize: number): Point[] =>
   Array.from({ length: 6 }, (_, index) => {

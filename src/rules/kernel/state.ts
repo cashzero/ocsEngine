@@ -91,6 +91,19 @@ export const validateRuleConfiguration = (
       if (!Number.isSafeInteger(points) || points < 0) issues.push(issue('INVALID_RULE_CONFIGURATION_QUANTITY', ['railCapacity', index, 'points'], 'Rail Cap is a whole number of points, 0 or more (13.3b).'));
     });
   }
+  if (configuration.seaCapacity) {
+    const players = configuration.seaCapacity.map(({ playerId }) => String(playerId));
+    if (new Set(players).size !== players.length) issues.push(issue('DUPLICATE_RULE_CONFIGURATION_ID', ['seaCapacity'], 'Sea Cap lists a player twice.'));
+    configuration.seaCapacity.forEach(({ points }, index) => {
+      if (!Number.isSafeInteger(points) || points < 0) issues.push(issue('INVALID_RULE_CONFIGURATION_QUANTITY', ['seaCapacity', index, 'points'], 'Sea Cap is a whole number of points, 0 or more (19.0f).'));
+    });
+  }
+  // A side landing everything by sea needs Sea Cap to land it with.
+  for (const [index, playerId] of (configuration.seaArrivals ?? []).entries()) {
+    if (!configuration.seaCapacity?.some((entry) => entry.playerId === playerId)) {
+      issues.push(issue('SEA_ARRIVALS_WITHOUT_SEA_CAP', ['seaArrivals', index], 'A side whose reinforcements come by sea needs Sea Cap (19.0f).'));
+    }
+  }
   const weather = configuration.weather;
   if (weather !== null) {
     const days = (month: number, day: number) => month >= 1 && month <= 12 && day >= 1 && day <= 31;

@@ -15,6 +15,7 @@ import { queryFuelCoverage, queryFuelPreview } from './supply/fuel.js';
 import { queryTransportOptions } from './supply/transport.js';
 import { queryRailControl } from './supply/supply.js';
 import { queryRailMoveOptions, quartersText, railCapRemainingQuarters, railMoveQuarters } from './supply/rail-cap.js';
+import { querySeaMoveOptions, seaCapRemainingQuarters, seaMoveQuarters } from './supply/sea-cap.js';
 import { actionFamilies, candidateActions, kindMayBeLegal } from './query/candidates.js';
 import { projectRuleState } from './query/projection.js';
 import type {
@@ -62,6 +63,13 @@ const actionFacts = (state: GameState, action: GameAction): readonly RuleFact[] 
       publicFact('rail.remaining', quartersText(railCapRemainingQuarters(state, action.actorId))),
     ];
   }
+  if (action.kind === 'SEA_MOVE') {
+    const tokens = action.supply.reduce((total, { tokens: quantity }) => total + quantity, 0);
+    return [
+      publicFact('sea.cost', quartersText(seaMoveQuarters(state, action.unitIds, tokens))),
+      publicFact('sea.remaining', quartersText(seaCapRemainingQuarters(state, action.actorId))),
+    ];
+  }
   if (action.kind === 'DECLARE_BARRAGE') {
     const preview = previewBarrage(state, action.actorId, action.firerIds, action.targetHexId);
     return [
@@ -95,7 +103,7 @@ const actionFacts = (state: GameState, action: GameAction): readonly RuleFact[] 
         publicFact('air.finalColumn', BARRAGE_TABLE_COLUMNS[preview.finalColumn]!.label),
         publicFact('air.shifts', preview.shifts.map(({ reason, shift }) => `${reason} ${shift > 0 ? '+' : ''}${shift}`).join(', ')),
       );
-    } else if (action.target === 'AIR_BASE' || action.mission === 'TRAINBUSTING') {
+    } else if (action.target === 'AIR_BASE' || action.target === 'PORT' || action.mission === 'TRAINBUSTING') {
       facts.push(publicFact('air.finalColumn', FACILITY_TABLE_COLUMNS[facilityColumnIndex(strength)]!.label));
     }
     if ((action.mission === 'AIR_TRANSPORT' || action.mission === 'AIR_DROP') && action.cargo) {
@@ -170,6 +178,7 @@ const engine: RuleEngine = {
   queryRailControl,
   queryFuelCoverage,
   queryRailMoveOptions,
+  querySeaMoveOptions,
   queryFuelPreview,
   queryAttackerSupplyOptions: (state, actorId, prior, pieceId) => {
     const value = attackerSupplyOptions(state, actorId, prior, pieceId);

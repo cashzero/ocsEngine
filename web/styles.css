@@ -293,6 +293,9 @@ small, .supporting { font-size: 13px; color: var(--muted); }
 .strategic-zone.side-second, .preview-entry.side-second { stroke: var(--player-two); }
 .objective-marker circle, .preview-objective circle { fill: #2a2112; stroke: #ffd766; stroke-width: 1.8; }
 .objective-marker polygon, .preview-objective polygon { fill: #ffd766; }
+.preview-port { pointer-events: none; }
+.preview-port circle { fill: #e8f1f6; stroke: #1d3f5a; stroke-width: 1.4; }
+.preview-port path { fill: none; stroke: #1d3f5a; stroke-width: 2.3; stroke-linecap: round; stroke-linejoin: round; }
 .preview-supply-source { pointer-events: none; }
 .preview-supply-source circle { fill: var(--player-one); stroke: #1a1408; stroke-width: 1.8; }
 .preview-supply-source.side-second circle { fill: var(--player-two); }
