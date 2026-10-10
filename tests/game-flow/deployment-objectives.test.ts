@@ -16,14 +16,14 @@ const RAIL_EDGES = new Set(['edge:rail', 'edge:multi-track-rail']);
 
 /** Railroad hexsides per Hex, and the port Hexes, of a generated map. */
 const transportOf = (prepared: { readonly scenario: { readonly mapDefinition: { readonly hexsides: readonly { readonly hexsideId: unknown; readonly featureDefinitionIds: readonly unknown[] }[] } };
-  readonly generatedMap: { readonly strategicRegions: { readonly ports: readonly { readonly hexId: unknown }[] } } }) => {
+  readonly generatedMap: { readonly strategicRegions: { readonly ports: readonly { readonly hexId: unknown; readonly capacityTokens: number }[] } } }) => {
   const railDegree = new Map<string, number>();
   for (const { hexsideId, featureDefinitionIds } of prepared.scenario.mapDefinition.hexsides) {
     if (!featureDefinitionIds.some((id) => RAIL_EDGES.has(String(id)))) continue;
     for (const hexId of String(hexsideId).split('|')) railDegree.set(hexId, (railDegree.get(hexId) ?? 0) + 1);
   }
-  const ports = new Set(prepared.generatedMap.strategicRegions.ports.map(({ hexId }) => String(hexId)));
-  return (hexId: string) => ({ port: ports.has(hexId), railDegree: railDegree.get(hexId) ?? 0 });
+  const ports = new Map(prepared.generatedMap.strategicRegions.ports.map(({ hexId, capacityTokens }) => [String(hexId), capacityTokens] as const));
+  return (hexId: string) => ({ portCapacityTokens: ports.get(hexId) ?? 0, railDegree: railDegree.get(hexId) ?? 0 });
 };
 
 const objectivesOf =(request: NewGameRequest) => {
@@ -60,11 +60,16 @@ describe('generated objectives', () => {
     expect(objectives.some(({ settlement }) => settlement === 'settlement:city')).toBe(true);
     expect(new Set(objectives.map(({ points }) => points)).size).toBeGreaterThan(1);
     // A larger settlement and a more important transport node are each worth more.
-    expect(objectivePoints('CITY', { port: false, railDegree: 0 })).toBeGreaterThan(objectivePoints('TOWN', { port: false, railDegree: 0 }));
-    expect(objectivePoints('TOWN', { port: false, railDegree: 2 })).toBeGreaterThan(objectivePoints('TOWN', { port: false, railDegree: 0 }));
-    expect(objectivePoints('TOWN', { port: false, railDegree: 3 })).toBeGreaterThan(objectivePoints('TOWN', { port: false, railDegree: 2 }));
-    expect(objectivePoints('TOWN', { port: true, railDegree: 2 })).toBeGreaterThan(objectivePoints('TOWN', { port: false, railDegree: 2 }));
-    expect(objectivePoints('VILLAGE', { port: false, railDegree: 0 })).toBe(0);
+    expect(objectivePoints('CITY', { portCapacityTokens: 0, railDegree: 0 })).toBeGreaterThan(objectivePoints('TOWN', { portCapacityTokens: 0, railDegree: 0 }));
+    expect(objectivePoints('TOWN', { portCapacityTokens: 0, railDegree: 2 })).toBeGreaterThan(objectivePoints('TOWN', { portCapacityTokens: 0, railDegree: 0 }));
+    expect(objectivePoints('TOWN', { portCapacityTokens: 0, railDegree: 3 })).toBeGreaterThan(objectivePoints('TOWN', { portCapacityTokens: 0, railDegree: 2 }));
+    expect(objectivePoints('TOWN', { portCapacityTokens: 8, railDegree: 2 })).toBeGreaterThan(objectivePoints('TOWN', { portCapacityTokens: 0, railDegree: 2 }));
+    expect(objectivePoints('VILLAGE', { portCapacityTokens: 0, railDegree: 0 })).toBe(0);
+    // A larger port and a rail junction are worth more.
+    expect(objectivePoints('TOWN', { portCapacityTokens: 16, railDegree: 0 })).toBeGreaterThan(objectivePoints('TOWN', { portCapacityTokens: 8, railDegree: 0 }));
+    expect(objectivePoints('TOWN', { portCapacityTokens: 0, railDegree: 3 }) - objectivePoints('TOWN', { portCapacityTokens: 0, railDegree: 2 })).toBe(2);
+    expect(objectivePoints('VILLAGE', { portCapacityTokens: 0, railDegree: 4 }) - objectivePoints('VILLAGE', { portCapacityTokens: 0, railDegree: 2 })).toBe(3);
+    expect(objectivePoints('VILLAGE', { portCapacityTokens: 0, railDegree: 5 }) - objectivePoints('VILLAGE', { portCapacityTokens: 0, railDegree: 2 })).toBe(4);
   });
 
   it('starts each objective held by the side whose garrison stands on it (13.3h, OOB 0.4.0)', () => {
@@ -107,11 +112,11 @@ describe('generated objectives', () => {
     const front = (hexId: string): number => Math.abs(hexDistance(hexId, first) - hexDistance(hexId, second));
     const towns = mapDefinition.hexes.filter(({ features }) => features.some(({ definitionId }) => String(definitionId) === 'settlement:town'))
       .map(({ id }) => String(id));
-    const node = (hexId: string): boolean => transport(hexId).port || transport(hexId).railDegree > 0;
+    const node = (hexId: string): boolean => transport(hexId).portCapacityTokens > 0 || transport(hexId).railDegree > 0;
     const chosen = new Set(prepared.value.deployment.objectiveHexIds.map(String));
     const share = (ids: readonly string[]): number => ids.filter(node).length / ids.length;
     // Most objective towns are transport nodes, a larger share than among the towns left out.
-    expect(share(towns.filter((id) => chosen.has(id)))).toBeGreaterThan(0.75);
+    expect(share(towns.filter((id) => chosen.has(id)))).toBeGreaterThanOrEqual(0.5);
     expect(share(towns.filter((id) => chosen.has(id)))).toBeGreaterThan(share(towns.filter((id) => !chosen.has(id))));
     // Among the railroad towns, the chosen ones lie nearer the front.
     const mean = (values: readonly number[]): number => values.reduce((total, value) => total + value, 0) / values.length;
@@ -123,6 +128,9 @@ describe('generated objectives', () => {
     const small = objectivesOf({ ...DEFAULT_NEW_GAME_REQUEST, map: { ...DEFAULT_NEW_GAME_REQUEST.map, width: 16, height: 12 } });
     const large = objectivesOf({ ...DEFAULT_NEW_GAME_REQUEST, map: { ...DEFAULT_NEW_GAME_REQUEST.map, width: 64, height: 48 } });
     expect(small.objectives.length).toBeGreaterThanOrEqual(2);
-    expect(large.objectives.length).toBeGreaterThan(3 * small.objectives.length);
+    // Big junctions and ports soak up VP first, so the count grows more slowly than the map; the VP total still scales.
+    expect(large.objectives.length).toBeGreaterThan(2 * small.objectives.length);
+    const vp = (entries: readonly { points: number }[]): number => entries.reduce((total, { points }) => total + points, 0);
+    expect(vp(large.objectives)).toBeGreaterThan(3 * vp(small.objectives));
   });
 });

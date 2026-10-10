@@ -279,16 +279,19 @@ const supplyReach = (model: MovementCostModel, originHexId: HexId, blocked: Read
 
 /**
  * Victory points of an objective (user, 2026-10-10: supply is the heart of OCS, so the larger the settlement and the more
- * important the transport node, the more it is worth). An objective's VP is its settlement's points plus one for each of:
- * a port (19.0), a railroad through it (a detrainable station, 13.3c), and a rail junction. A village counts only as a
+ * important the transport node, the more it is worth). An objective's VP is its settlement's points plus:
+ * a port (19.0, by its capacity), a railroad through it (a detrainable station, 13.3c), and a rail junction (2 more at three rail directions, 3 at four, 4 at five, 5 at six). A village counts only as a
  * transport node; open country is never an objective.
  */
 export const GENERATED_MAJOR_CITY_OBJECTIVE_POINTS = 3;
 export const GENERATED_TOWN_OBJECTIVE_POINTS = 1;
 export const GENERATED_VILLAGE_OBJECTIVE_POINTS = 0;
-export const GENERATED_PORT_OBJECTIVE_POINTS = 1;
+/** A port is worth one VP per this many Tokens of printed capacity (19.0a), at least one. */
+export const GENERATED_PORT_CAPACITY_TOKENS_PER_VP = 4;
 export const GENERATED_RAIL_OBJECTIVE_POINTS = 1;
-export const GENERATED_RAIL_JUNCTION_OBJECTIVE_POINTS = 1;
+/** A rail junction is worth this much at the minimum degree, and {@link GENERATED_RAIL_JUNCTION_STEP_POINTS} more per extra rail direction (2, 3, 4, 5, ...). */
+export const GENERATED_RAIL_JUNCTION_OBJECTIVE_POINTS = 2;
+export const GENERATED_RAIL_JUNCTION_STEP_POINTS = 1;
 /** A rail junction has railroad on at least this many of its hexsides. */
 const GENERATED_RAIL_JUNCTION_DEGREE = 3;
 /** Each side's half of the map holds about one objective VP per this many of its land Hexes. */
@@ -300,11 +303,12 @@ const TOWN_FEATURE = 'settlement:town';
 const VILLAGE_FEATURE = 'settlement:village';
 
 /** An objective Hex's VP: its settlement plus its transport value (port, railroad, rail junction). */
-export const objectivePoints = (settlement: 'CITY' | 'TOWN' | 'VILLAGE', transport: { readonly port: boolean; readonly railDegree: number }): number =>
+export const objectivePoints = (settlement: 'CITY' | 'TOWN' | 'VILLAGE', transport: { readonly portCapacityTokens: number; readonly railDegree: number }): number =>
   (settlement === 'CITY' ? GENERATED_MAJOR_CITY_OBJECTIVE_POINTS : settlement === 'TOWN' ? GENERATED_TOWN_OBJECTIVE_POINTS : GENERATED_VILLAGE_OBJECTIVE_POINTS)
-  + (transport.port ? GENERATED_PORT_OBJECTIVE_POINTS : 0)
+  + (transport.portCapacityTokens > 0 ? Math.max(1, Math.round(transport.portCapacityTokens / GENERATED_PORT_CAPACITY_TOKENS_PER_VP)) : 0)
   + (transport.railDegree > 0 ? GENERATED_RAIL_OBJECTIVE_POINTS : 0)
-  + (transport.railDegree >= GENERATED_RAIL_JUNCTION_DEGREE ? GENERATED_RAIL_JUNCTION_OBJECTIVE_POINTS : 0);
+  + (transport.railDegree >= GENERATED_RAIL_JUNCTION_DEGREE
+    ? GENERATED_RAIL_JUNCTION_OBJECTIVE_POINTS + GENERATED_RAIL_JUNCTION_STEP_POINTS * (transport.railDegree - GENERATED_RAIL_JUNCTION_DEGREE) : 0);
 
 export interface GeneratedObjective {
   readonly hexId: HexId;
@@ -353,7 +357,7 @@ const selectObjectives = (
     ...map.strategicRegions.firstEntryHexIds, ...map.strategicRegions.secondEntryHexIds,
     ...map.strategicRegions.firstSupplyHexIds, ...map.strategicRegions.secondSupplyHexIds,
   ]);
-  const candidates: Record<OobSide, { hexId: HexId; points: number; city: boolean }[]> = { ALLIED: [], AXIS: [] };
+  const candidates: Record<OobSide, { hexId: HexId; points: number; city: boolean; rank: number; roads: number }[]> = { ALLIED: [], AXIS: [] };
   const railFeatures = new Set([GENERATED_RAIL, GENERATED_MULTI_TRACK_RAIL]);
   const railDegree = new Map<HexId, number>();
   for (const { hexsideId, featureDefinitionIds } of map.mapDefinition.hexsides) {
@@ -362,7 +366,15 @@ const selectObjectives = (
     if (!parsed.ok) continue;
     for (const hexId of [parsed.value.firstHexId, parsed.value.secondHexId]) railDegree.set(hexId, (railDegree.get(hexId) ?? 0) + 1);
   }
-  const ports = new Set(map.strategicRegions.ports.map(({ hexId }) => hexId));
+  const roadFeatures = new Set(['edge:primary-road', 'edge:road']);
+  const roadDegree = new Map<HexId, number>();
+  for (const { hexsideId, featureDefinitionIds } of map.mapDefinition.hexsides) {
+    if (!featureDefinitionIds.some((id) => roadFeatures.has(String(id)))) continue;
+    const parsed = parseHexsideId(hexsideId);
+    if (!parsed.ok) continue;
+    for (const hexId of [parsed.value.firstHexId, parsed.value.secondHexId]) roadDegree.set(hexId, (roadDegree.get(hexId) ?? 0) + 1);
+  }
+  const portCapacity = new Map(map.strategicRegions.ports.map(({ hexId, capacityTokens }) => [hexId, capacityTokens] as const));
   const cityCores: HexId[] = [];
   // Settlement Hex IDs come ranked: each Major City core before its suburbs, then towns largest first.
   for (const hexId of map.strategicRegions.settlementHexIds) {
@@ -375,12 +387,14 @@ const selectObjectives = (
     } else if (!features.includes(TOWN_FEATURE) && !features.includes(VILLAGE_FEATURE)) continue;
     if (edgeHexes.has(hexId)) continue;
     const points = objectivePoints(city ? 'CITY' : features.includes(TOWN_FEATURE) ? 'TOWN' : 'VILLAGE',
-      { port: ports.has(hexId), railDegree: railDegree.get(hexId) ?? 0 });
+      { portCapacityTokens: portCapacity.get(hexId) ?? 0, railDegree: railDegree.get(hexId) ?? 0 });
     if (points <= 0) continue;
     // In an attack every objective lies in the defender's zone: the attacker has nothing to lose but its army.
     if (holder !== null && sideOf(hexId) !== holder) continue;
     candidates[sideOf(hexId)].push({
-      hexId, city, points,
+      hexId, city, points, roads: roadDegree.get(hexId) ?? 0,
+      // VP goes first to rail junctions, then ports, then Major Cities, then towns (user, 2026-10-10).
+      rank: (railDegree.get(hexId) ?? 0) >= GENERATED_RAIL_JUNCTION_DEGREE ? 0 : portCapacity.has(hexId) ? 1 : city ? 2 : 3,
     });
   }
   const sum = (entries: readonly { points: number }[]): number => entries.reduce((total, { points }) => total + points, 0);
@@ -400,10 +414,16 @@ const selectObjectives = (
   const totals = { ALLIED: 0, AXIS: 0 };
   for (const side of staked) {
     const size = new Map(candidates[side].map(({ hexId }, order) => [hexId, order]));
-    const byValue = [...candidates[side]].sort((left, right) => Number(right.city) - Number(left.city) || right.points - left.points
+    const byValue = [...candidates[side]].sort((left, right) => left.rank - right.rank || right.roads - left.roads || right.points - left.points
       || frontDistance(left.hexId) - frontDistance(right.hexId) || size.get(left.hexId)! - size.get(right.hexId)!);
+    // Every Major City is an objective, so its VP is set aside first; the rest of the target goes in priority order.
+    totals[side] = sum(byValue.filter(({ city }) => city));
     for (const { hexId, points, city } of byValue) {
-      if (!city && totals[side] + points > target) continue;
+      if (city) {
+        objectives.push({ hexId, points, side });
+        continue;
+      }
+      if (totals[side] + points > target) continue;
       objectives.push({ hexId, points, side });
       totals[side] += points;
     }

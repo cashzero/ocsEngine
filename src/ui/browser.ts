@@ -8,9 +8,10 @@ import {
   createMemoryGameplayPorts,
   GENERATED_MAJOR_CITY_OBJECTIVE_POINTS,
   GENERATED_TOWN_OBJECTIVE_POINTS,
-  GENERATED_PORT_OBJECTIVE_POINTS,
+  GENERATED_PORT_CAPACITY_TOKENS_PER_VP,
   GENERATED_RAIL_OBJECTIVE_POINTS,
   GENERATED_RAIL_JUNCTION_OBJECTIVE_POINTS,
+  GENERATED_RAIL_JUNCTION_STEP_POINTS,
   createNewGameOrchestrator,
   buildGeneratedMapPreview,
   buildGeneratedOobPreview,
@@ -724,7 +725,7 @@ const operationSummary = (prepared: GeneratedScenarioPackage) => html`<dl class=
   <div><dt>Scenario</dt><dd>${engagementLabel(prepared.summary.engagement)}</dd></div>
   <div><dt>Map</dt><dd>${prepared.summary.mapSize}</dd></div>
   <div><dt>Units</dt><dd>${prepared.summary.unitCount}</dd></div>
-  <div title=${`Major City ${GENERATED_MAJOR_CITY_OBJECTIVE_POINTS} VP, town ${GENERATED_TOWN_OBJECTIVE_POINTS} VP, plus ${GENERATED_PORT_OBJECTIVE_POINTS} for a port, ${GENERATED_RAIL_OBJECTIVE_POINTS} for a railroad and ${GENERATED_RAIL_JUNCTION_OBJECTIVE_POINTS} more for a rail junction (a village counts only as a port or station); ports and railroads are chosen first. The total grows with the map's land area.`}><dt>Objectives</dt><dd>${objectivesText(prepared)}</dd></div>
+  <div title=${`Major City ${GENERATED_MAJOR_CITY_OBJECTIVE_POINTS} VP, town ${GENERATED_TOWN_OBJECTIVE_POINTS} VP, plus 1 VP per ${GENERATED_PORT_CAPACITY_TOKENS_PER_VP} Tokens of port capacity, ${GENERATED_RAIL_OBJECTIVE_POINTS} for a railroad and ${GENERATED_RAIL_JUNCTION_OBJECTIVE_POINTS} more for a rail junction of three directions (+${GENERATED_RAIL_JUNCTION_STEP_POINTS} per further direction) (a village counts only as a port or station); ports and railroads are chosen first. The total grows with the map's land area.`}><dt>Objectives</dt><dd>${objectivesText(prepared)}</dd></div>
 </dl>`;
 /** The preview markup is built once per prepared package (a few hundred kilobytes for a large operation). */
 const previewMarkup = new WeakMap<GeneratedScenarioPackage, string>();
