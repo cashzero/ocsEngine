@@ -685,15 +685,20 @@ export const settlementArt = (cell: GeneratedMapPreviewCell, hexSize: number): S
   return { blocks, trees, name };
 };
 
-export const settlementArtHtml = (cell: GeneratedMapPreviewCell, hexSize: number): string => {
+/** The place name alone, so a map can draw every settlement's buildings first and all names above them. */
+export const settlementNameHtml = (cell: GeneratedMapPreviewCell, hexSize: number): string => {
+  const art = settlementArt(cell, hexSize);
+  if (!art?.name || !cell.settlement) return '';
+  return `<text class="place-name ${cell.settlement.toLowerCase()}" x="${fixed(art.name.x)}" y="${fixed(art.name.y)}" font-size="${fixed(art.name.fontSize)}" stroke-width="${fixed(art.name.strokeWidth)}">${art.name.text}</text>`;
+};
+
+export const settlementArtHtml = (cell: GeneratedMapPreviewCell, hexSize: number, includeName = true): string => {
   const art = settlementArt(cell, hexSize);
   if (!art || !cell.settlement) return '';
   const blocks = art.blocks.map(({ x, y, width, height, rotate, cx, cy, alt }) =>
     `<rect class="settlement-block${alt ? ' alt' : ''}" x="${fixed(x)}" y="${fixed(y)}" width="${fixed(width)}" height="${fixed(height)}" transform="rotate(${rotate} ${fixed(cx)} ${fixed(cy)})"></rect>`).join('');
   const trees = art.trees.map(({ cx, cy, r }) => `<circle class="settlement-tree" cx="${fixed(cx)}" cy="${fixed(cy)}" r="${fixed(r)}"></circle>`).join('');
-  const name = art.name
-    ? `<text class="place-name ${cell.settlement.toLowerCase()}" x="${fixed(art.name.x)}" y="${fixed(art.name.y)}" font-size="${fixed(art.name.fontSize)}" stroke-width="${fixed(art.name.strokeWidth)}">${art.name.text}</text>` : '';
-  return `${blocks}${trees}${name}`;
+  return `${blocks}${trees}${includeName ? settlementNameHtml(cell, hexSize) : ''}`;
 };
 
 /** Victory objective: a gold star medallion in the hex's bottom point, the strip a stacked counter leaves uncovered. */
