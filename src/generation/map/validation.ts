@@ -18,8 +18,9 @@ import type {
   GeneratedMapValidation,
   GeneratedTerrainKind,
   MapGenerationStyle,
+  MapSeaPlacement,
 } from './model.js';
-import { roadGapLimitFor } from './styles.js';
+import { MAP_STYLE_PROFILES, roadGapLimitFor } from './styles.js';
 
 const error = (code: string, message: string, path: readonly (string | number)[] = []): ValidationIssue => ({
   code, message, path, severity: 'ERROR',
@@ -58,6 +59,9 @@ const componentCount = (edges: readonly (readonly [HexId, HexId])[]): number => 
   }
   return components;
 };
+
+const isPort = ({ features }: MapDefinition['hexes'][number]): boolean =>
+  features.some(({ kind, definitionId }) => kind === 'FACILITY' && String(definitionId) === 'facility:port');
 
 const RAIL_PATTERN = /^edge:(?:multi-track-)?rail$/u;
 
@@ -129,6 +133,7 @@ export const measureGeneratedMap = (map: MapDefinition, style: MapGenerationStyl
     railStations: map.hexes.filter(({ id, features }) => railHexes.has(id)
       && features.some(({ definitionId }) => String(definitionId).startsWith('settlement:'))).length,
     connectedRailComponents: componentCount(railEdges),
+    ports: map.hexes.filter(isPort).length,
   };
 };
 
@@ -169,6 +174,7 @@ export const validateGeneratedMap = (
   map: MapDefinition,
   regions: GeneratedMapStrategicRegions,
   style: MapGenerationStyle,
+  sea: MapSeaPlacement = MAP_STYLE_PROFILES[style].sea,
 ): GeneratedMapValidation => {
   const issues = [...validateMapDefinition(map)];
   const metrics = measureGeneratedMap(map, style);
@@ -195,9 +201,22 @@ export const validateGeneratedMap = (
   const severe = metrics.terrainCounts.MOUNTAIN + metrics.terrainCounts.MARSH;
   if (severe / Math.max(1, metrics.landHexes) > 0.4) issues.push(error('EXCESS_SEVERE_TERRAIN', 'Mountain and marsh exceed 40% of land.'));
   const waterRatio = metrics.terrainCounts.WATER / map.hexes.length;
-  if (style !== 'MEDITERRANEAN_COAST' && waterRatio > 0.02) issues.push(error('INLAND_WATER_EXCESS', 'Inland style cannot contain a sea.'));
-  if (style === 'MEDITERRANEAN_COAST' && (waterRatio < 0.06 || waterRatio > 0.35)) {
-    issues.push(error('COAST_WATER_RATIO', 'Coastal style water must occupy 6% to 35% of the map.'));
+  if (sea === 'NONE' && waterRatio > 0.02) issues.push(error('INLAND_WATER_EXCESS', 'A map without a sea cannot contain one.'));
+  // 19.0: a port lies in a coastal place on the road network, and a sea has at least one.
+  const portHexes = map.hexes.filter(isPort);
+  if (sea === 'NONE' && portHexes.length > 0) issues.push(error('PORT_WITHOUT_SEA', 'A map without a sea cannot have a port.'));
+  if (sea !== 'NONE' && portHexes.length === 0) issues.push(error('SEA_WITHOUT_PORT', 'A map with a sea needs at least one port.'));
+  const water = new Set(map.hexes.filter(({ terrainDefinitionIds }) => terrainKind(terrainDefinitionIds[0]!) === 'WATER').map(({ id }) => String(id)));
+  for (const port of portHexes) {
+    const parsed = parseHexCoordinateId(port.id);
+    const onShore = land.has(port.id) && parsed.ok && neighbors(parsed.value).some((next) => water.has(formatHexId(next)));
+    const inPlace = port.features.some(({ definitionId }) => String(definitionId).startsWith('settlement:'));
+    if (!onShore || !inPlace || !roadReach.has(port.id)) {
+      issues.push(error('PORT_MISPLACED', `Port ${port.id} must be a coastal settlement on the road network.`, ['hexes', port.id]));
+    }
+  }
+  if (sea !== 'NONE' && (waterRatio < 0.06 || waterRatio > 0.35)) {
+    issues.push(error('COAST_WATER_RATIO', 'A map with a sea must give it 6% to 35% of the map.'));
   }
   return { valid: issues.length === 0, issues, metrics };
 };

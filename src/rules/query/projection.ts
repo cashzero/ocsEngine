@@ -18,6 +18,8 @@ import { unitRebuildOptions } from '../replacement/replacement.js';
 import { aircraftRange, aircraftTransportCapacity, hasIntegralGlider } from '../air/aircraft.js';
 import { isHedgehog } from '../hedgehog/hedgehog.js';
 import { railCapRemainingQuarters, railCapacityPoints } from '../supply/rail-cap.js';
+import { seaCapRemainingQuarters, seaCapacityPoints, seaPortSummaries } from '../supply/sea-cap.js';
+import { allPorts } from '../port/state.js';
 import { baseDumps, earliestPlanTurn, loadableUnits, readyTransports } from '../air/transport.js';
 import { bridgeHexes, bridgingEnabled } from '../movement/bridging.js';
 import { adjacentHexIds } from '../pieces.js';
@@ -150,6 +152,10 @@ export const projectRuleState = (state: GameState, viewerId: PlayerId): RuleProj
       playerId: viewerId, points: railCapacityPoints(state, viewerId) ?? 0, remainingQuarters: railCapRemainingQuarters(state, viewerId),
     }] } : {}),
     ...(bridgingEnabled(state) ? { bridges: projectBridges(state, viewerId) } : {}),
+    ...(seaCapacityPoints(state, viewerId) !== null ? { seaCap: [{
+      playerId: viewerId, points: seaCapacityPoints(state, viewerId) ?? 0, remainingQuarters: seaCapRemainingQuarters(state, viewerId),
+    }] } : {}),
+    ...(allPorts(state).length > 0 ? { ports: seaPortSummaries(state, viewerId) } : {}),
     combat: projectCombat(state),
     weather: state.weather,
     // Fuel markers and fueled Formation markers are on the map for both players to see.

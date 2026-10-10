@@ -16,7 +16,13 @@ import {
   MAXIMUM_RAIL_CAP,
   RAIL_CAP_PER_DIVISION,
   defaultRailCap,
+  MAXIMUM_SEA_CAP,
+  SEA_CAP_PER_DIVISION,
+  FLANK_SEA_CAP_PER_DIVISION,
+  defaultSeaCap,
+  shippingSides,
   GENERATED_HEDGEHOG_LEVELS,
+  newGameSeaOf,
   type Engagement,
   type CreatedNewGame,
   type GeneratedScenarioPackage,
@@ -24,6 +30,7 @@ import {
   type MapGenerationStyle,
   type NewGamePreparationStage,
   type NewGameRequest,
+  type NewGameSea,
   type OobScale,
   OOB_DIVISION_LIMITS,
 } from '../index.js';
@@ -31,7 +38,7 @@ import { createUiController, type UiController } from './controller.js';
 import { counterView, counterSvgBody, counterSvg, playerNation } from './counter.js';
 import {
   coastlineHtml, hexGridHtml, mapArtDefsHtml, objectiveArtHtml, placeNameFor, railsHtml, regionEdgesHtml, riversHtml, roadsHtml, settlementArtHtml,
-  strategicBandPoints, supplySourceArtHtml, terrainFillHtml, terrainGlyphsHtml,
+  strategicBandPoints, supplySourceArtHtml, portArtHtml, terrainFillHtml, terrainGlyphsHtml,
 } from './map-art.js';
 import { MapView, type MapCounter, type MapState } from './map-canvas.js';
 import {
@@ -234,6 +241,8 @@ const hoverText = (snapshot: UiSnapshot, hexId: string): string => {
   const placeName = cell.settlement ? ` · ${placeNameFor(cell.id)}` : '';
   // 12.6a: the painted "S" disc is named too, with whose trace starts here.
   const source = cell.supplySource ? ` · ${scenario.players[cell.supplySource === 'SECOND' ? 1 : 0]?.name ?? ''} Supply Source` : '';
+  // 19.0: a port names who holds it, its capacity after hits, and whether it is a Supply Source for its holder (19.0e).
+  const port = portHoverText(snapshot, cell.id);
   // The objective names its VP and who holds it now (13.3h control, live).
   const objective = snapshot.view.projection?.objectives.find((entry) => String(entry.hexId) === cell.id);
   const holder = objective ? scenario.players.find(({ id }) => id === objective.controllerId)?.name ?? 'neutral' : '';
@@ -246,7 +255,20 @@ const hoverText = (snapshot: UiSnapshot, hexId: string): string => {
   const bridges = bridged.length === 0 ? '' : ` · your engineer bridges ${bridged.length} river hexside${bridged.length === 1 ? '' : 's'} here (${[
     bridged.some(({ major }) => !major) ? 'Minor River: no extra MP' : '', bridged.some(({ major }) => major) ? 'Major River: Minor River cost' : '',
   ].filter(Boolean).join('; ')}) for your units moving in or out; not for overruns`;
-  return `Hex ${printedHexLabel(cell.id)}${placeName} · ${cell.terrain.toLowerCase()}${cell.settlement ? ` · ${cell.settlement.toLowerCase()}` : ''}${objective ? ` · objective, ${objective.points} VP, ${holder === 'neutral' ? 'neutral' : `held by ${holder}`}` : ''}${hedgehog}${bridges}${source}${trainbusting}${cost}`;
+  return `Hex ${printedHexLabel(cell.id)}${placeName} · ${cell.terrain.toLowerCase()}${cell.settlement ? ` · ${cell.settlement.toLowerCase()}` : ''}${objective ? ` · objective, ${objective.points} VP, ${holder === 'neutral' ? 'neutral' : `held by ${holder}`}` : ''}${hedgehog}${bridges}${source}${port}${trainbusting}${cost}`;
+};
+
+/** "Port held by Allied, capacity 1½ of 2 SP (1 hit), Supply Source; shut" for the hover line, or ''. */
+const portHoverText = (snapshot: UiSnapshot, hexId: string): string => {
+  const port = snapshot.view.projection?.ports?.find((entry) => entry.hexId === hexId);
+  if (!port) return '';
+  const scenario = snapshot.scenario;
+  const holder = scenario.players.find(({ id }) => id === port.controllerId);
+  const sp = (tokens: number) => { const whole = Math.floor(tokens / 4); const part = ['', '¼', '½', '¾'][tokens % 4]!; return whole === 0 && part ? part : `${whole}${part}`; };
+  const declared = scenario.sources.find(({ hexId: at }) => String(at) === hexId);
+  const source = declared !== undefined && (declared.sideDefinitionId === null || declared.sideDefinitionId === holder?.sideDefinitionId) && port.capacityTokens >= 4;
+  const hits = port.hits > 0 ? ` (${port.hits} hit${port.hits === 1 ? '' : 's'})` : '';
+  return ` · port held by ${holder?.name ?? 'nobody'}, capacity ${sp(port.capacityTokens)} of ${sp(port.printedTokens)} SP${hits}${source ? ', a Supply Source for its holder' : ''}${port.shut ? '; shut by an enemy unit or ZOC' : ''}`;
 };
 
 /**
@@ -264,6 +286,26 @@ const railCapCell = (snapshot: UiSnapshot): TemplateResult | typeof nothing => {
   const label = moving ? `${left} of ${cap.points} left this Movement Phase` : `${cap.points} per Movement Phase`;
   return html`<span class="rail-cap-cell" title="Your Rail Cap (13.3b): SP or RE you can move by rail in your Movement Phase; unused Rail Cap is lost. In your Movement Phase it shows what is left." aria-label=${`Rail Cap: ${label}`}>
     <small>Rail Cap</small><strong><span class=${moving ? 'rail-side is-moving' : 'rail-side'}>${moving ? `${left} / ${cap.points}` : `${cap.points} per turn`}</span></strong></span>`;
+};
+
+/**
+ * The viewer's own Sea Cap (19.0f) beside it, and, for a side that lands everything by sea, how many counters wait in its
+ * reinforcement Box: the shipping it has not done yet.
+ */
+const seaCapCell = (snapshot: UiSnapshot): TemplateResult | typeof nothing => {
+  const cap = snapshot.view.projection?.seaCap?.find(({ playerId }) => playerId === snapshot.view.playerId);
+  if (!cap) return nothing;
+  const sequence = snapshot.view.projection?.sequence;
+  const whole = Math.floor(cap.remainingQuarters / 4);
+  const part = ['', '¼', '½', '¾'][cap.remainingQuarters % 4]!;
+  const left = whole === 0 && part ? part : `${whole}${part}`;
+  const moving = sequence?.phasingPlayerId === snapshot.view.playerId && sequence.phase === 'MOVEMENT';
+  const waiting = (snapshot.view.projection?.stacks ?? []).filter(({ location }) => location.kind === 'OFF_MAP_BOX')
+    .flatMap(({ pieces }) => pieces).filter((piece) => piece.ownerId === snapshot.view.playerId && piece.role !== 'AIRCRAFT' && piece.role !== 'AIR_BASE' && ((piece.statusValues.find(({ statusDefinitionId }) => statusDefinitionId === 'status:return-turn')?.value as number | undefined) ?? 0) <= (snapshot.view.projection?.sequence.gameTurn ?? 0)).length;
+  const box = waiting > 0 ? ` · ${waiting} in Box` : '';
+  const label = moving ? `${left} of ${cap.points} left this Movement Phase${box}` : `${cap.points} per Movement Phase${box}`;
+  return html`<span class="rail-cap-cell" title="Your Sea Cap (19.0f): SP or RE you can ship in your Movement Phase, each port taking no more than its capacity; unused Sea Cap is lost. With nothing selected in your Movement Phase, the Box's cargo can be shipped." aria-label=${`Sea Cap: ${label}`}>
+    <small>Sea Cap</small><strong><span class=${moving ? 'rail-side is-moving' : 'rail-side'}>${moving ? `${left} / ${cap.points}` : `${cap.points} per turn`}${box}</span></strong></span>`;
 };
 
 /**
@@ -361,7 +403,7 @@ const mapStateOf = (snapshot: UiSnapshot): MapState => {
     attack,
     barrage: new Set(snapshot.barrageTargets),
     placement: new Set(snapshot.placementHexes),
-    retreat: new Set([...snapshot.decisionHexes, ...snapshot.collapseHexes, ...(snapshot.rail?.destinations.map(({ hexId }) => hexId) ?? [])]),
+    retreat: new Set([...snapshot.decisionHexes, ...snapshot.collapseHexes, ...(snapshot.rail?.destinations.map(({ hexId }) => hexId) ?? []), ...(snapshot.sea?.destinations.map(({ hexId }) => hexId) ?? [])]),
     highlight: new Set(sourceHighlightHex ? [sourceHighlightHex] : []),
     traceCoverage: snapshot.traceCoverage,
     traceDirect: snapshot.traceDirect,
@@ -370,6 +412,10 @@ const mapStateOf = (snapshot: UiSnapshot): MapState => {
     objectives: (snapshot.view.projection?.objectives ?? []).map(({ hexId, points, controllerId }) => {
       const index = scenario.players.findIndex(({ id }) => id === controllerId);
       return { hexId: String(hexId), points, holder: index === 0 || index === 1 ? index : null };
+    }),
+    ports: (snapshot.view.projection?.ports ?? []).map(({ hexId, controllerId, hits }) => {
+      const index = scenario.players.findIndex(({ id }) => id === controllerId);
+      return { hexId: String(hexId), holder: index === 0 || index === 1 ? index : null, hits };
     }),
     airTargets: new Set([
       ...snapshot.air.targetHexes, ...(snapshot.air.construction?.planning ? snapshot.air.construction.hexes : []),
@@ -397,7 +443,8 @@ const mapStateOf = (snapshot: UiSnapshot): MapState => {
 const clickCounter = (snapshot: UiSnapshot, pieceId: string, hexId: string): Promise<void> | void => {
   const targetsHex = snapshot.reachable.has(hexId) || snapshot.attackTargets.includes(hexId) || snapshot.air.targetHexes.includes(hexId)
     || snapshot.barrageTargets.includes(hexId) || snapshot.placementHexes.includes(hexId) || snapshot.decisionHexes.includes(hexId)
-    || snapshot.collapseHexes.includes(hexId) || (snapshot.rail?.destinations.some((entry) => entry.hexId === hexId) ?? false);
+    || snapshot.collapseHexes.includes(hexId) || (snapshot.rail?.destinations.some((entry) => entry.hexId === hexId) ?? false)
+    || (snapshot.sea?.destinations.some((entry) => entry.hexId === hexId) ?? false);
   if (targetsHex) { stackPickerHex = null; return controller.clickHex(hexId); }
   const stack = onMapStacks(snapshot).get(hexId);
   const piece = stack?.pieces.find(({ id }) => id === pieceId);
@@ -528,7 +575,24 @@ const engagementHelp = (engagement: Engagement): string => {
   return `${defending} holds most of the map and every objective, its line in Combat Mode, with garrisons dug into hedgehogs on its objectives (Level ${GENERATED_HEDGEHOG_LEVELS.OBJECTIVE}) and on key rail towns and road junctions (Level ${GENERATED_HEDGEHOG_LEVELS.KEY_POINT}); ${attacking} fields ${ATTACKER_FORCE_RATIO} times the divisions plus off-map air (Fighters and Tactical Bombers at an airfield off the map, flying in over its own map edge and back), assembles a few hexes away and moves first. ${attacking} wins by holding at least half the objective VP when the last turn ends; otherwise ${defending} wins.`;
 };
 
+const SEA_OPTIONS: readonly (readonly [NewGameSea, string])[] = [
+  ['NONE', 'No sea'], ['FLANK', 'Along the flank'], ['ATTACKER', 'Behind the attacker'],
+];
+
+/** Which map edge the sea takes: Allied enters from the west edge, Axis from the east. */
+const seaHelp = (sea: NewGameSea, engagement: Engagement): string => {
+  if (sea === 'NONE') return 'An all-land map.';
+  if (sea === 'FLANK') return 'The sea runs along the north edge; both sides advance west-east along the coast.';
+  const attacker = attackerOf(engagement);
+  if (attacker === null) return 'A meeting engagement has no attacker, so the sea lies behind the Allied side, on the west edge.';
+  return `The sea lies behind ${attacker === 'ALLIED' ? 'Allied, on the west' : 'Axis, on the east'} edge; its entry hexes are on the coast.`;
+};
+
 /** "Allied 4 · Axis 2" per Movement Phase, from the configuration the game will use. */
+/** "Allied 5" (the side the sea lies behind) or "Allied 2 · Axis 2" (a flank sea), from the configuration the game will use. */
+const seaCapText = (prepared: GeneratedScenarioPackage): string => (prepared.configuration.seaCapacity ?? [])
+  .map(({ playerId, points }) => `${prepared.scenario.players.find(({ id }) => id === playerId)?.name ?? ''} ${points}`).join(' · ');
+
 const railCapText = (prepared: GeneratedScenarioPackage): string => {
   const points = (index: number) => prepared.configuration.railCapacity?.find(({ playerId }) => playerId === prepared.scenario.players[index]?.id)?.points ?? 0;
   return `${prepared.scenario.players[0]?.name ?? ''} ${points(0)} · ${prepared.scenario.players[1]?.name ?? ''} ${points(1)}`;
@@ -583,6 +647,7 @@ const operationPreviewHtml = (prepared: GeneratedScenarioPackage): string => {
     cell.strategic ? `<polygon class="preview-entry side-${cell.strategic.toLowerCase()}" points="${strategicBandPoints(cell, hexSize)}"></polygon>` : '',
     cell.settlement ? `<g class="settlement-marker">${settlementArtHtml(cell, hexSize)}</g>` : '',
     objectives.has(cell.id) ? `<g class="preview-objective">${objectiveArtHtml(cell, hexSize)}</g>` : '',
+    cell.port ? `<g class="preview-port">${portArtHtml(cell, hexSize)}</g>` : '',
     cell.supplySource ? `<g class="preview-supply-source side-${cell.supplySource.toLowerCase()}">${supplySourceArtHtml(cell, hexSize, objectives.has(cell.id))}</g>` : '',
   ].join('')).join('');
   const rivers = coastlineHtml(map.cells, hexSize) + riversHtml(map.edges, hexSize, 'generated-edge');
@@ -597,7 +662,7 @@ const operationPreviewHtml = (prepared: GeneratedScenarioPackage): string => {
   // The starting stacks sit in their own SVG over the art: hovering a list entry restyles only them, so the browser
   // does not repaint the whole terrain SVG on every pointer move.
   const viewBox = `0 0 ${map.layout.width} ${map.layout.height}`;
-  return `<div class="operation-map-wrap"><div class="operation-map" role="img" aria-label="Generated operation map preview with starting positions"><svg class="operation-map-art" viewBox="${viewBox}" aria-hidden="true">${mapArtDefsHtml()}${cells}${rivers}${roads}${features}</svg><svg class="operation-map-marks" viewBox="${viewBox}" aria-hidden="true">${deploymentMarks}</svg></div><div class="preview-key"><span><span class="key owner-1">${escapeHtml(prepared.scenario.players[0]?.name ?? '')}</span><span class="key owner-2">${escapeHtml(prepared.scenario.players[1]?.name ?? '')}</span> starting stacks (unit count)</span><dl class="operation-metrics preview-minor"><div><dt>Divisions</dt><dd>${escapeHtml(divisionsText(prepared))}</dd></div><div><dt>Deployed hexes</dt><dd>${prepared.deployment.metrics.occupiedHexes}</dd></div><div><dt>Rail Cap</dt><dd>${escapeHtml(railCapText(prepared))}</dd></div><div><dt>Warnings</dt><dd>${prepared.warnings.length}</dd></div></dl></div></div>
+  return `<div class="operation-map-wrap"><div class="operation-map" role="img" aria-label="Generated operation map preview with starting positions"><svg class="operation-map-art" viewBox="${viewBox}" aria-hidden="true">${mapArtDefsHtml()}${cells}${rivers}${roads}${features}</svg><svg class="operation-map-marks" viewBox="${viewBox}" aria-hidden="true">${deploymentMarks}</svg></div><div class="preview-key"><span><span class="key owner-1">${escapeHtml(prepared.scenario.players[0]?.name ?? '')}</span><span class="key owner-2">${escapeHtml(prepared.scenario.players[1]?.name ?? '')}</span> starting stacks (unit count)</span><dl class="operation-metrics preview-minor"><div><dt>Divisions</dt><dd>${escapeHtml(divisionsText(prepared))}</dd></div><div><dt>Deployed hexes</dt><dd>${prepared.deployment.metrics.occupiedHexes}</dd></div><div><dt>Rail Cap</dt><dd>${escapeHtml(railCapText(prepared))}</dd></div>${prepared.generatedMap.strategicRegions.ports.length > 0 ? `<div><dt>Ports</dt><dd>${prepared.generatedMap.strategicRegions.ports.length}</dd></div>` : ''}${prepared.configuration.seaCapacity ? `<div><dt>Sea Cap</dt><dd>${escapeHtml(seaCapText(prepared))}</dd></div>` : ''}<div><dt>Warnings</dt><dd>${prepared.warnings.length}</dd></div></dl></div></div>
     <div class="preview-forces">${forces}</div>
     ${prepared.warnings.length > 0 ? `<details class="preview-warnings"><summary>${prepared.warnings.length} generation warning(s)</summary><ul>${prepared.warnings.map((warning) => `<li>${escapeHtml(warning)}</li>`).join('')}</ul></details>` : ''}`;
 };
@@ -668,6 +733,7 @@ const onNewGameInput = (event: Event): void => {
   if (id === 'new-game-width') newGameSettings = { ...newGameSettings, map: { ...newGameSettings.map, width: value } };
   if (id === 'new-game-height') newGameSettings = { ...newGameSettings, map: { ...newGameSettings.map, height: value } };
   if (id === 'new-game-style') newGameSettings = { ...newGameSettings, map: { ...newGameSettings.map, style: input.value as MapGenerationStyle } };
+  if (id === 'new-game-sea') newGameSettings = { ...newGameSettings, map: { ...newGameSettings.map, sea: input.value as NewGameSea } };
   if (id === 'new-game-scale') newGameSettings = { ...newGameSettings, oob: { ...newGameSettings.oob, scale: input.value as OobScale } };
   if (id === 'new-game-divisions') newGameSettings = { ...newGameSettings, oob: { ...newGameSettings.oob, divisionsPerSide: value } };
   if (id === 'new-game-armored') newGameSettings = { ...newGameSettings, oob: { ...newGameSettings.oob, armoredDivisionsPerSide: value } };
@@ -685,8 +751,31 @@ const onNewGameInput = (event: Event): void => {
     const current = newGameSettings.railCap ?? defaultRailCap(newGameSettings);
     newGameSettings = { ...newGameSettings, railCap: { ...current, [id.endsWith('allied') ? 'allied' : 'axis']: value } };
   }
+  // Sea Cap likewise follows the forces and the sea until the player sets it.
+  if (id === 'new-game-sea-cap-allied' || id === 'new-game-sea-cap-axis') {
+    const current = newGameSettings.seaCap ?? defaultSeaCap(newGameSettings) ?? { allied: 0, axis: 0 };
+    newGameSettings = { ...newGameSettings, seaCap: { ...current, [id.endsWith('allied') ? 'allied' : 'axis']: value } };
+  }
   for (const key of ['map', 'oob', 'deployment', 'rules'] as const) if (id === `new-game-${key}-seed`) newGameSettings = { ...newGameSettings, seeds: { ...newGameSettings.seeds, [key]: value } };
   render(controller.getSnapshot());
+};
+
+/** Sea Cap inputs (19.0f) for the sides that ship on this map: the side the sea lies behind, or both along a flank. */
+const seaCapFields = (number: (id: string, label: string, min: number, max: number, value: number) => TemplateResult): TemplateResult | typeof nothing => {
+  const sides = shippingSides(newGameSettings);
+  const seaCap = newGameSettings.seaCap ?? defaultSeaCap(newGameSettings);
+  if (sides.length === 0 || seaCap === null) return nothing;
+  const flank = sides.length === 2;
+  const perDivision = flank ? FLANK_SEA_CAP_PER_DIVISION : SEA_CAP_PER_DIVISION;
+  const reset = html`<button type="button" id="reset-sea-cap" @click=${() => { const { seaCap: _cap, ...rest } = newGameSettings; newGameSettings = rest; previewStale = true; render(controller.getSnapshot()); }}>Use the default (${perDivision} per division)</button>`;
+  return html`<div class="field-pair">
+      ${sides.includes('ALLIED') ? number('new-game-sea-cap-allied', 'Allied Sea Cap', 0, MAXIMUM_SEA_CAP, seaCap.allied) : nothing}
+      ${sides.includes('AXIS') ? number('new-game-sea-cap-axis', 'Axis Sea Cap', 0, MAXIMUM_SEA_CAP, seaCap.axis) : nothing}
+    </div>
+    <p class="field-help">${flank
+      ? 'SP or RE each side can ship between the ports it holds every Movement Phase (19.0f).'
+      : `SP or RE ${sides[0] === 'ALLIED' ? 'Allied' : 'Axis'} can ship every Movement Phase (19.0f). With the sea behind it, everything it receives (units, SP, Repls) lands by ship at a port it holds, within each port's capacity.`}
+      ${newGameSettings.seaCap === undefined ? `Default: ${perDivision} point per division.` : reset}</p>`;
 };
 
 /** checkValidity fires "invalid" per bad field: go back to the settings page and say what is wrong beside it. */
@@ -832,6 +921,8 @@ const newGameDialog = () => {
         </fieldset>
         <fieldset><legend>Operational map</legend>
           ${select('new-game-style', 'Style', [['TEMPERATE_INLAND', 'Temperate inland'], ['MEDITERRANEAN_COAST', 'Mediterranean coast'], ['EASTERN_EUROPE', 'Eastern Europe (Russia)']], newGameSettings.map.style)}
+          ${select('new-game-sea', 'Sea', SEA_OPTIONS, newGameSeaOf(newGameSettings))}
+          <p class="field-help">${seaHelp(newGameSeaOf(newGameSettings), newGameSettings.engagement ?? 'MEETING')}</p>
           <div class="field-pair">
             ${number('new-game-width', 'Width', NEW_GAME_MAP_LIMITS.minWidth, NEW_GAME_MAP_LIMITS.maxWidth, newGameSettings.map.width)}
             ${number('new-game-height', 'Height', NEW_GAME_MAP_LIMITS.minHeight, NEW_GAME_MAP_LIMITS.maxHeight, newGameSettings.map.height)}
@@ -863,6 +954,7 @@ const newGameDialog = () => {
             ${number('new-game-rail-cap-axis', 'Axis Rail Cap', 0, MAXIMUM_RAIL_CAP, railCap.axis)}
           </div>
           <p class="field-help">SP or RE each side can move by rail every Movement Phase (13.3b), from the map edge to its railhead; trucks carry supply on to the front. ${newGameSettings.railCap === undefined ? `Default: ${RAIL_CAP_PER_DIVISION} point per division.` : html`<button type="button" id="reset-rail-cap" @click=${() => { const { railCap: _cap, ...rest } = newGameSettings; newGameSettings = rest; previewStale = true; render(controller.getSnapshot()); }}>Use the default (${RAIL_CAP_PER_DIVISION} per division)</button>`}</p>
+          ${seaCapFields(number)}
         </fieldset>
         ${keyed(seedVersion, html`<fieldset class="settings-seeds"><legend>Reproducible seeds</legend>
           <div class="field-pair">
@@ -957,6 +1049,7 @@ const appView = (snapshot: UiSnapshot): TemplateResult => {
           <span class="turn-cell"><small>Turn ${sequence?.gameTurn ?? '–'} / ${currentGame.summary.turnLimit}</small><strong>${weatherLabel(snapshot)}</strong></span>
           ${vpCell(snapshot)}
           ${railCapCell(snapshot)}
+          ${seaCapCell(snapshot)}
           <div class="phase-picker" tabindex="0" aria-label=${`${playerName(sequence?.phasingPlayerId)} Player Turn`}>
             ${phaseTrackCurrent(snapshot, sequence)}
             <ol class="phase-track phase-popup" aria-label=${`${playerName(sequence?.phasingPlayerId)} Player Turn phases`}>
@@ -976,7 +1069,7 @@ const appView = (snapshot: UiSnapshot): TemplateResult => {
             ${mapHost}
             ${stackPicker(snapshot)}${rosterOpen ? unitRosterView(snapshot, deck) : movePopupView(snapshot, deck)}
             <div class="map-controls" aria-label="Map controls"><button id="zoom-out" aria-label="Zoom out" @click=${() => mapView.zoomStep(-1)}>−</button><output id="zoom-level"></output><button id="zoom-in" aria-label="Zoom in" @click=${() => mapView.zoomStep(1)}>+</button><button id="zoom-reset" @click=${() => mapView.resetCamera()}>Reset</button><span class="map-toggles" role="group" aria-label="Map overlays"><label class="map-toggle air-zones" title="Show the 10-hex Patrol Zones of Air Bases with Active Fighters (14.4c)"><input type="checkbox" id="toggle-air-zones" .checked=${snapshot.air.showZones} @change=${() => controller.toggleAirZones()}>Patrol Zones</label><label class="map-toggle trace-coverage" title="Show where trace supply reaches (12.6), for the selected unit or any unit: green traces straight to a Supply Source, hatched blue only through an HQ throw. Icons mark your rail Supply Sources: detrainable rail hexes (13.3c) and Extenders (12.7)"><input type="checkbox" id="toggle-trace-coverage" .checked=${snapshot.showTraceCoverage} @change=${() => controller.toggleTraceCoverage()}>Trace Supply</label><label class="map-toggle hide-units" title="Hide the unit counters so the overlays underneath can be read whole; clicking a hex still selects what is there"><input type="checkbox" id="toggle-hide-units" .checked=${snapshot.hideUnits} @change=${() => controller.toggleHideUnits()}>Hide units</label></span></div>
-            <div class="map-legend">${snapshot.showTraceCoverage ? html`<span class="legend-mark supply-source" title="Supply Source (12.6a): trace supply starts here; an HQ must draw within 5 MP of one to throw trace">Supply source</span><span class="legend-mark detrainable" title="Detrainable rail hex (13.3c): a station you control with a rail path back to a Supply Source; it is itself a Supply Source">Detrainable hex</span><span class="legend-mark extender" title="Extender (12.7): linked to a Supply Source, it creates a new place to draw trace supply">Extender</span><span class="legend-wash trace-direct" title="Traces straight to a Supply Source (12.3a); an HQ standing here can throw supply (12.3b)">Trace from source</span><span class="legend-wash trace-thrown" title="Trace arrives only through an HQ throw; an HQ standing here is supplied but has nothing to throw on">Trace via HQ throw</span>${snapshot.railControl.length > 0 ? html`<span class="legend-rail own" title="Rail your trace path reaches from a Supply Source (13.3c): your controlled stations on it are detrainable">Your rail</span><span class="legend-rail enemy" title="Rail only the enemy's trace path reaches (13.3c)">Enemy rail</span>` : nothing}` : html`<span class="terrain-key clear">Clear</span><span class="terrain-key woods">Woods</span><span class="terrain-key rough">Rough</span><span class="terrain-key mountain">Mountain</span><span class="terrain-key marsh">Marsh</span><span class="terrain-key water">Water</span><span class="line-key road">Road</span><span class="line-key rail" title="Railroad (13.3): counts as a road for movement; a rail line back to a supply source makes villages and towns on it Supply Sources (12.6a, 13.3c)">Railroad</span><span class="line-key river">River</span><span class="legend-mark objective" title=${`Objective, with its VP beside it. The mark shows who holds it now: white star ${scenario.players[0]?.name ?? 'first player'}, black cross ${scenario.players[1]?.name ?? 'second player'}, gold diamond neutral`}>Objective</span><span class="legend-mark supply-source" title="Supply Source (12.6a): trace supply starts here; an HQ must draw within 5 MP of one to throw trace">Supply source</span>${snapshot.moveRange.size > 0 ? html`<span class="legend-ring move">Move</span>` : nothing}${[...snapshot.moveRange.values()].some(({ endsMovement }) => endsMovement) ? html`<span class="legend-ring move-stop" title="You must stop here (for example on entering an enemy ZOC)">Move ends here</span>` : nothing}${snapshot.attackTargets.length > 0 ? html`<span class="legend-ring attack">Attack</span>` : nothing}${snapshot.barrageTargets.length > 0 ? html`<span class="legend-ring barrage">Barrage</span>` : nothing}${snapshot.air.showZones ? html`<span class="legend-ring air-zone">Your Patrol Zone</span><span class="legend-ring air-zone enemy">Enemy Patrol Zone</span>` : nothing}`}</div>
+            <div class="map-legend">${snapshot.showTraceCoverage ? html`<span class="legend-mark supply-source" title="Supply Source (12.6a): trace supply starts here; an HQ must draw within 5 MP of one to throw trace">Supply source</span><span class="legend-mark detrainable" title="Detrainable rail hex (13.3c): a station you control with a rail path back to a Supply Source; it is itself a Supply Source">Detrainable hex</span><span class="legend-mark extender" title="Extender (12.7): linked to a Supply Source, it creates a new place to draw trace supply">Extender</span>${snapshot.supplySources.some(({ kind }) => kind === 'PORT') ? html`<span class="legend-mark port-source" title="Port you can draw trace supply from now (19.0e): it is shut while an enemy combat unit or un-negated enemy ZOC is in it">Port source</span>` : nothing}<span class="legend-wash trace-direct" title="Traces straight to a Supply Source (12.3a); an HQ standing here can throw supply (12.3b)">Trace from source</span><span class="legend-wash trace-thrown" title="Trace arrives only through an HQ throw; an HQ standing here is supplied but has nothing to throw on">Trace via HQ throw</span>${snapshot.railControl.length > 0 ? html`<span class="legend-rail own" title="Rail your trace path reaches from a Supply Source (13.3c): your controlled stations on it are detrainable">Your rail</span><span class="legend-rail enemy" title="Rail only the enemy's trace path reaches (13.3c)">Enemy rail</span>` : nothing}` : html`<span class="terrain-key clear">Clear</span><span class="terrain-key woods">Woods</span><span class="terrain-key rough">Rough</span><span class="terrain-key mountain">Mountain</span><span class="terrain-key marsh">Marsh</span><span class="terrain-key water">Water</span><span class="line-key road">Road</span><span class="line-key rail" title="Railroad (13.3): counts as a road for movement; a rail line back to a supply source makes villages and towns on it Supply Sources (12.6a, 13.3c)">Railroad</span><span class="line-key river">River</span><span class="legend-mark objective" title=${`Objective, with its VP beside it. The mark shows who holds it now: white star ${scenario.players[0]?.name ?? 'first player'}, black cross ${scenario.players[1]?.name ?? 'second player'}, gold diamond neutral`}>Objective</span><span class="legend-mark supply-source" title="Supply Source (12.6a): trace supply starts here; an HQ must draw within 5 MP of one to throw trace">Supply source</span>${scenario.mapDefinition.hexes.some(({ features }) => features.some(({ definitionId }) => String(definitionId) === 'facility:port')) ? html`<span class="legend-mark port" title="Port (19.0). Hover it to see whose Supply Source it is (19.0e)">Port</span>` : nothing}${snapshot.moveRange.size > 0 ? html`<span class="legend-ring move">Move</span>` : nothing}${[...snapshot.moveRange.values()].some(({ endsMovement }) => endsMovement) ? html`<span class="legend-ring move-stop" title="You must stop here (for example on entering an enemy ZOC)">Move ends here</span>` : nothing}${snapshot.attackTargets.length > 0 ? html`<span class="legend-ring attack">Attack</span>` : nothing}${snapshot.barrageTargets.length > 0 ? html`<span class="legend-ring barrage">Barrage</span>` : nothing}${snapshot.air.showZones ? html`<span class="legend-ring air-zone">Your Patrol Zone</span><span class="legend-ring air-zone enemy">Enemy Patrol Zone</span>` : nothing}`}</div>
             <div class="hover-info" aria-live="off"></div>
           </div>
         </section>
@@ -1104,6 +1197,7 @@ root.addEventListener('click', (event) => {
     return;
   }
   if (closest('#confirm-rail')) { void runUi(() => controller.confirmRailMove()); return; }
+  if (closest('#confirm-sea')) { void runUi(() => controller.confirmSeaMove()); return; }
   const divide = closest('[data-divide]');
   if (divide) {
     const field = divide.closest('.transfer-row')?.querySelector<HTMLInputElement>('.divide-points');
@@ -1166,7 +1260,10 @@ root.addEventListener('change', (event) => {
   else if (input.dataset.refitAircraft) controller.toggleRefitAircraft(input.dataset.refitBase!, input.dataset.refitAircraft);
   else if (input.dataset.railUnit) controller.toggleRailUnit(input.dataset.railUnit);
   else if (input.dataset.railDump) controller.setRailTokens(input.dataset.railDump, Number(input.value));
+  else if (input.dataset.seaUnit) controller.toggleSeaUnit(input.dataset.seaUnit);
+  else if (input.dataset.seaDump) controller.setSeaTokens(input.dataset.seaDump, Number(input.value));
   else if (input.id === 'rail-destination') controller.chooseRailDestination((event.target as unknown as HTMLSelectElement).value);
+  else if (input.id === 'sea-destination') controller.chooseSeaDestination((event.target as unknown as HTMLSelectElement).value);
 });
 
 /** Typing in the roster search filters its rows; the rows are keyed, so the counters already drawn are kept. */

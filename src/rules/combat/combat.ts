@@ -1,3 +1,4 @@
+import { portAt } from '../port/state.js';
 import { defendingHedgehogLevel, hedgehogAt, hedgehogLevel, HEDGEHOG_BARRAGE_SHIFT, HEDGEHOG_BRACKETED_LEVEL, HEDGEHOG_SURPRISE_DRM } from '../hedgehog/hedgehog.js';
 import { stableSort, type HexId, type PieceId, type PlayerId } from '../../core/index.js';
 import { setHexControl } from '../../domain/map/index.js';
@@ -897,7 +898,7 @@ export const retreatPlans = (
     if (path.length - 1 >= hexes + 2) return;
     for (const next of adjacentHexIds(current)) {
       if (path.includes(next) || blocked.has(next) || enemyCombatUnitsAt(state, owner, next).length > 0) continue;
-      if (!allAttackCapable && piecesAt(state, next).some((piece) => piece.ownerId !== owner)) continue;
+      if (!allAttackCapable && (piecesAt(state, next).some((piece) => piece.ownerId !== owner) || enemyPortIn(state, owner, next))) continue;
       if (hexDistanceBetween(origin, next) < distance) continue;
       if (models.some((model) => model.evaluate(current, next).kind !== 'COST')) continue;
       const zocHere = inEnemyZoc(state, owner, next);
@@ -994,6 +995,12 @@ const exploitAllowed = (state: GameState): boolean => {
   const hexes = attackingHexes(state, transaction.attackerIds);
   // 9.13bC: at most two attacking stacks, and they must be adjacent to each other.
   return hexes.length === 1 || (hexes.length === 2 && isAdjacent(hexes[0]!, hexes[1]!));
+};
+
+/** 19.0, 3.3c: a port held by the other side counts as an enemy non-combat unit in its Hex. */
+const enemyPortIn = (state: GameState, owner: PlayerId, hexId: HexId): boolean => {
+  const port = portAt(state, hexId);
+  return port !== undefined && port.controllerId !== null && port.controllerId !== owner;
 };
 
 export const nextStackOrder = (pieces: readonly PieceState[], hexId: HexId, movingId: PieceId): number =>

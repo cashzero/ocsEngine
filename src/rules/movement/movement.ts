@@ -21,6 +21,7 @@ import type { MovementStepCost } from '../terrain.js';
 import { moverCostModel } from './bridging.js';
 import { violation } from '../validation/violation.js';
 import { inEnemyZoc } from '../zoc/zoc.js';
+import { portAt } from '../port/state.js';
 import { traceSupplyAvailableAt } from '../supply/supply.js';
 import { isFueled } from '../supply/fuel.js';
 import { needsFuel } from '../pieces.js';
@@ -110,7 +111,10 @@ const enterableHex = (state: GameState, piece: PieceState, hexId: HexId): RuleVi
   if (enemyCombatUnitsAt(state, piece.ownerId, hexId).length > 0) {
     return violation('ENEMY_OCCUPIED_HEX', ['path'], 'Units cannot enter a Hex with enemy combat units; declare an overrun instead.', '4.8c');
   }
-  const enemyOther = piecesAt(state, hexId).some((other) => other.ownerId !== piece.ownerId);
+  // 19.0, 3.3c: a printed port is a non-combat unit of whoever holds it.
+  const port = portAt(state, hexId);
+  const enemyOther = piecesAt(state, hexId).some((other) => other.ownerId !== piece.ownerId)
+    || (port !== undefined && port.controllerId !== null && port.controllerId !== piece.ownerId);
   if (enemyOther && !isAttackCapable(state, piece)) {
     return violation('NON_COMBAT_ENEMY_REQUIRES_ATTACK_CAPABLE', ['path'], 'Only Attack-Capable units can enter a Hex with enemy non-combat units.', '4.4c');
   }

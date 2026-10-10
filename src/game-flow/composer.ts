@@ -19,7 +19,7 @@ import type {
   GeneratedScenarioPackage,
   NewGameRequest,
 } from './model.js';
-import { GAME_FLOW_VERSION } from './model.js';
+import { GAME_FLOW_VERSION, newGameSeaOf, seaSideOf, styleSeaOf } from './model.js';
 
 const must = <T, E>(result: Result<T, E>): T => {
   if (!result.ok) throw new Error('Static game-flow ID is invalid.');
@@ -47,6 +47,20 @@ const declarations = (
   sideDefinitionId: definitionId(`side:${side.toLowerCase()}`),
 }));
 
+/**
+ * Ports as Supply Sources (19.0e, the generated game's game-specific rule): a sea behind one side's entry edge
+ * serves that side only (west: Allied, east: Axis); a sea along the flank serves both sides, each wherever no
+ * enemy combat unit or un-negated enemy ZOC shuts the port (12.6b, 19.0a).
+ */
+const portSources = (generatedMap: GeneratedMap) => {
+  const { sea } = generatedMap.options;
+  // Either way a port serves only the side holding it (9.14h), which the rules check as play goes on.
+  const side = sea === 'WEST' ? definitionId('side:allied') : sea === 'EAST' ? definitionId('side:axis') : null;
+  return generatedMap.strategicRegions.portHexIds.map((hexId, index) => ({
+    id: definitionId(`source:generated:port:${index + 1}`), hexId, sideDefinitionId: side,
+  }));
+};
+
 export const composeGeneratedScenario = (
   request: NewGameRequest,
   generatedMap: GeneratedMap,
@@ -56,7 +70,9 @@ export const composeGeneratedScenario = (
   const parsedScenarioId = parseScenarioId(
     `scenario:generated:${request.map.style.toLowerCase()}:${request.seeds.map}:${request.seeds.oob}:${request.seeds.deployment}`
       // A meeting engagement keeps the ID it had before engagements existed.
-      + (request.engagement === undefined || request.engagement === 'MEETING' ? '' : `:${request.engagement.toLowerCase().replace('_', '-')}`),
+      + (request.engagement === undefined || request.engagement === 'MEETING' ? '' : `:${request.engagement.toLowerCase().replace('_', '-')}`)
+      // So does a map with its style's own sea.
+      + (newGameSeaOf(request) === styleSeaOf(request.map.style) ? '' : `:sea-${newGameSeaOf(request).toLowerCase()}`),
   );
   if (!parsedScenarioId.ok) return { ok: false, error: [{
     stage: 'SCENARIO', code: 'INVALID_SCENARIO_ID', message: 'Generated Scenario ID is invalid.', path: ['scenario', 'id'],
@@ -95,13 +111,15 @@ export const composeGeneratedScenario = (
         linkedHexId: (deployment.attacker === 'ALLIED' ? generatedMap.strategicRegions.firstEntryHexIds : generatedMap.strategicRegions.secondEntryHexIds)[0] ?? null,
       }]),
     ], tracks: [], pools: [],
+    // The side the sea lies behind has no land entry edge: what reaches it comes by ship, and its sources are its ports.
     entries: [
-      ...declarations('entry', generatedMap.strategicRegions.firstEntryHexIds, 'ALLIED'),
-      ...declarations('entry', generatedMap.strategicRegions.secondEntryHexIds, 'AXIS'),
+      ...seaSideOf(request) === 'ALLIED' ? [] : declarations('entry', generatedMap.strategicRegions.firstEntryHexIds, 'ALLIED'),
+      ...seaSideOf(request) === 'AXIS' ? [] : declarations('entry', generatedMap.strategicRegions.secondEntryHexIds, 'AXIS'),
     ],
     sources: [
-      ...declarations('source', generatedMap.strategicRegions.firstSupplyHexIds, 'ALLIED'),
-      ...declarations('source', generatedMap.strategicRegions.secondSupplyHexIds, 'AXIS'),
+      ...seaSideOf(request) === 'ALLIED' ? [] : declarations('source', generatedMap.strategicRegions.firstSupplyHexIds, 'ALLIED'),
+      ...seaSideOf(request) === 'AXIS' ? [] : declarations('source', generatedMap.strategicRegions.secondSupplyHexIds, 'AXIS'),
+      ...portSources(generatedMap),
     ],
     configuration: {
       optionDefinitionIds: [definitionId('option:generated-ground-duel')],

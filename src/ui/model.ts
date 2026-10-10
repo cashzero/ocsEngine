@@ -97,9 +97,9 @@ export interface AirDraft {
   readonly mission: AirMissionKind;
   readonly label: string;
   readonly targetHexId: string | null;
-  readonly target: 'COMBAT_UNITS' | 'AIR_BASE' | null;
+  readonly target: 'COMBAT_UNITS' | 'AIR_BASE' | 'PORT' | null;
   /** Barrage targets available in the chosen hex (10.0d). */
-  readonly targetOptions: readonly ('COMBAT_UNITS' | 'AIR_BASE')[];
+  readonly targetOptions: readonly ('COMBAT_UNITS' | 'AIR_BASE' | 'PORT')[];
   readonly eligibleIds: readonly PieceId[];
   readonly selectedIds: readonly PieceId[];
   /** Most aircraft this mission may use: four, or one for sweeps, hip shoots and transfers as offered. */
@@ -254,7 +254,7 @@ export interface Arrival {
 /** A one-click rules action offered in the command deck (fuel, breakout, trucks, dumps...). */
 export interface UnitAction {
   readonly key: string;
-  readonly group: 'FUEL' | 'SUPPLY' | 'BREAKOUT' | 'BREAKDOWN' | 'TRANSPORT' | 'DUMP' | 'TRACE' | 'AIR' | 'HEDGEHOG';
+  readonly group: 'FUEL' | 'SUPPLY' | 'BREAKOUT' | 'BREAKDOWN' | 'TRANSPORT' | 'DUMP' | 'TRACE' | 'AIR' | 'HEDGEHOG' | 'PORT';
   readonly label: string;
   readonly action: GameAction;
   /** Fuel payments: the units this payment would newly fuel, named with their hex. */
@@ -328,7 +328,7 @@ export interface UiSnapshot {
    */
   readonly traceDirect: ReadonlySet<string>;
   /** The seat's Supply Sources marked by the same overlay (12.6a); empty while it is off. */
-  readonly supplySources: readonly { readonly hexId: string; readonly kind: 'MAP_EDGE' | 'DETRAINABLE' | 'EXTENDER' }[];
+  readonly supplySources: readonly { readonly hexId: string; readonly kind: 'MAP_EDGE' | 'PORT' | 'DETRAINABLE' | 'EXTENDER' }[];
   /** Control of each rail Hex from the seat's side (13.3h), marked by the same overlay; empty while it is off. */
   readonly railControl: readonly { readonly hexId: string; readonly control: 'OWN' | 'ENEMY' }[];
   /** The selected unit the overlay is drawn for; null when it shows where any friendly unit would trace. */
@@ -367,6 +367,7 @@ export interface UiSnapshot {
   readonly collapseHexes: readonly string[];
   /** Rail transport from the selected unit's or dump's hex (13.3); null when nothing can entrain there now. */
   readonly rail: RailPanel | null;
+  readonly sea: SeaPanel | null;
   readonly endStep: EndStep;
   readonly decision: PendingDecisionDescriptor | null;
   readonly decisionSeatId: SeatId | null;
@@ -411,6 +412,23 @@ export interface RailPanel {
   readonly destinations: readonly { readonly hexId: string; readonly halves: 1 | 2 | 4; readonly hexes: number }[];
   readonly toHexId: string | null;
   /** Rail Cap the move costs in quarters; null until there is cargo and a destination. */
+  readonly costQuarters: number | null;
+  readonly allowed: boolean;
+  readonly blockers: readonly string[];
+}
+
+/** A shipment being put together (19.0f): from a friendly port, or from the reinforcement Box when `fromHexId` is null. */
+export interface SeaPanel {
+  readonly fromHexId: string | null;
+  readonly capacityPoints: number;
+  readonly remainingQuarters: number;
+  /** Capacity the loading port has left this phase, in Tokens; null for the Box. */
+  readonly fromRemainingTokens: number | null;
+  readonly units: readonly { readonly pieceId: string; readonly label: string; readonly quarters: number; readonly problem: string | null; readonly selected: boolean }[];
+  readonly dumps: readonly { readonly pieceId: string; readonly holds: number; readonly loadableTokens: number; readonly tokens: number }[];
+  readonly destinations: readonly { readonly hexId: string; readonly remainingTokens: number }[];
+  readonly toHexId: string | null;
+  /** Sea Cap (and port capacity) the shipment takes, in quarters; null until there is cargo and a port. */
   readonly costQuarters: number | null;
   readonly allowed: boolean;
   readonly blockers: readonly string[];

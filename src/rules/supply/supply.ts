@@ -25,6 +25,7 @@ import {
 } from '../pieces.js';
 import { INTERNAL_RECOVERY_TOKENS_PER_LEVEL } from '../tables/ocs-4.3.js';
 import { playerSupplyPathCostModel } from '../movement/bridging.js';
+import { PORT_SOURCE_MINIMUM_TOKENS, portAt, portCapacityTokens } from '../port/state.js';
 import { violation } from '../validation/violation.js';
 import { hasEnemyCombatUnit, queryZoc } from '../zoc/zoc.js';
 import { detrainableHexesFrom, isRailHex, railControlWith, railNetworkOf, railTraceReach, railTracePassable } from './rail.js';
@@ -292,12 +293,12 @@ const extenderLinks = (state: GameState, playerId: PlayerId, extender: PieceStat
 
 /**
  * Why a Hex is a Supply Source (12.6a): `MAP_EDGE` for a source the scenario declares (map-edge
- * railroad entry Hexes and other game-specific sources), `DETRAINABLE` for a detrainable rail Hex
+ * railroad entry Hexes and other game-specific sources), `PORT` for a declared source in a port Hex (19.0e), `DETRAINABLE` for a detrainable rail Hex
  * (13.3c), `EXTENDER` for a linked Extender (12.7a).
  */
 export interface SupplySourceHex {
   readonly hexId: HexId;
-  readonly kind: 'MAP_EDGE' | 'DETRAINABLE' | 'EXTENDER';
+  readonly kind: 'MAP_EDGE' | 'PORT' | 'DETRAINABLE' | 'EXTENDER';
 }
 
 
@@ -315,7 +316,11 @@ export const friendlySupplySources = (state: GameState, playerId: PlayerId): rea
   const side = sideOf(state, playerId);
   const kinds = new Map<HexId, SupplySourceHex['kind']>();
   for (const { hexId, sideDefinitionId } of state.scenario.sources) {
-    if ((sideDefinitionId === null || sideDefinitionId === side) && sourceUsable(state, playerId, hexId)) kinds.set(hexId, 'MAP_EDGE');
+    if ((sideDefinitionId !== null && sideDefinitionId !== side) || !sourceUsable(state, playerId, hexId)) continue;
+    // 19.0e, 9.14h: a port the game makes a Supply Source serves only the side holding it, while it has 1 SP of capacity.
+    const port = portAt(state, hexId);
+    if (port && (port.controllerId !== playerId || portCapacityTokens(port) < PORT_SOURCE_MINIMUM_TOKENS)) continue;
+    kinds.set(hexId, port ? 'PORT' : 'MAP_EDGE');
   }
   const sources = (): ReadonlySet<HexId> => new Set(kinds.keys());
   const extenders = state.pieceState.pieces.filter((piece) => piece.ownerId === playerId && hexOf(piece) !== null && isExtender(state, piece));
@@ -604,7 +609,9 @@ export const queryTraceCoverage = (state: GameState, actorId: PlayerId, pieceId:
   const hexIds: HexId[] = [];
   const directHexIds: HexId[] = [];
   const routesAt = traceRoutesAt(state, actorId, piece ?? null);
-  for (const { id: hexId } of state.scenario.mapDefinition.hexes) {
+  for (const { id: hexId, terrainDefinitionIds } of state.scenario.mapDefinition.hexes) {
+    // No unit can stand at sea, so the sea beside a source or a port is never shown as covered.
+    if (terrainDefinitionIds.some((id) => String(id) === 'terrain:water')) continue;
     const routes = routesAt(hexId);
     const usable = common === null ? routes : routes.filter((key) => key === common);
     if (usable.length === 0) continue;

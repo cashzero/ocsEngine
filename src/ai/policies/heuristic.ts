@@ -105,6 +105,8 @@ interface StepNotes {
   relief?: { readonly hexIds: readonly HexId[]; readonly sent: Map<HexId, PieceId> };
   /** Nothing more is worth sending by rail this step (heuristic@12). */
   railDone?: boolean;
+  /** Nothing more is worth shipping this step (19.0f). */
+  seaDone?: boolean;
   /** Tokens of each rear dump already promised to an empty truck this step, and the dump each truck is heading for (heuristic@12). */
   claims?: { readonly tokens: Map<HexId, number>; readonly pickup: Map<PieceId, HexId> };
 }
@@ -617,6 +619,40 @@ const railStep = (context: BotDecisionContext, situation: Situation, notes: Step
   return decision(best.action, `rail ${best.gain} hexes toward the front`, [{ term: 'rail', value: best.value }]);
 };
 
+/** Ships land no closer than this to the enemy when a safer port is open. */
+const SEA_SAFE_DISTANCE = 3;
+
+/**
+ * Shipping (19.0f): what waits in the reinforcement Box is landed first, combat units before SP (an SP shipment fills a port
+ * to the last Token, which would leave the units waiting for ever), then SP, then Repls and trucks, at the open port nearest
+ * the front that is safe from the enemy; then cargo in a port far behind the front moves by sea to a port nearer it, as rail
+ * does. Sea Cap and port capacity decide how much lands each turn.
+ */
+const seaStep = (context: BotDecisionContext, situation: Situation, notes: StepNotes, front: HexId | null): BotDecision | null => {
+  if (notes.seaDone || front === null) return null;
+  const roleOf = new Map((context.view.projection?.stacks ?? []).flatMap(({ pieces }) => pieces).map((piece) => [String(piece.id), piece.role]));
+  let best: { action: GameAction; value: number; why: string } | null = null;
+  for (const action of context.actions.candidates('SEA_MOVE', null, 400)) {
+    if (action.kind !== 'SEA_MOVE') continue;
+    const tokens = action.supply.reduce((total, { tokens: quantity }) => total + quantity, 0);
+    const safe = situation.nearestEnemy(action.toHexId).distance >= SEA_SAFE_DISTANCE;
+    const closeness = 40 - hexesBetween(action.toHexId, front);
+    let value: number;
+    if (action.fromHexId === null) {
+      const role = action.unitIds.length > 0 ? roleOf.get(String(action.unitIds[0])) : undefined;
+      const combat = role === 'COMBAT' || role === 'ARTILLERY' || role === 'HQ';
+      value = 1000 + (combat ? 400 : tokens > 0 ? 200 + tokens : 100) + closeness + (safe ? 50 : 0);
+    } else {
+      const gain = hexesBetween(action.fromHexId, front) - hexesBetween(action.toHexId, front);
+      if (gain < RAIL_MIN_GAIN_HEXES || !safe || action.supply.some(({ sourcePieceId }) => String(sourcePieceId).includes('-stock-'))) continue;
+      value = gain * (tokens + action.unitIds.length * 8);
+    }
+    if (!best || value > best.value) best = { action, value, why: action.fromHexId === null ? `land ${tokens > 0 ? `${tokens}T` : 'a unit'} from the reinforcement Box at ${action.toHexId}` : `ship toward the front to ${action.toHexId}` };
+  }
+  if (!best) { notes.seaDone = true; return null; }
+  return decision(best.action, best.why, [{ term: 'sea', value: best.value }]);
+};
+
 const movementStep = (context: BotDecisionContext, situation: Situation, facts: BotGameFacts, w: HeuristicWeights): BotDecision | null => {
   const { actions } = context;
   const notes = notesOf(context);
@@ -637,6 +673,8 @@ const movementStep = (context: BotDecisionContext, situation: Situation, facts: 
   // HQs follow the main effort's lead (their own scores keep them in supply and away from the enemy), else the army.
   const front = effort?.lead ?? armyCenter(situation);
   if (context.view.projection?.sequence.phase === 'MOVEMENT') {
+    const shipped = seaStep(context, situation, notes, front);
+    if (shipped) return shipped;
     const railed = railStep(context, situation, notes, front);
     if (railed) return railed;
   }

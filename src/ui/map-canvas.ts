@@ -1,6 +1,6 @@
 import { counterLod, type CounterLod } from './counter.js';
 import {
-  WAVE_GLYPH_PATH, coastlinePath, hexGridPath, hexNumberPlacement, mapArtDefsHtml, objectiveArt, regionEdgePaths, railStrokes, riverStrokes, roadStrokes,
+  WAVE_GLYPH_PATH, PORT_ANCHOR_PATH, coastlinePath, portArt, hexGridPath, hexNumberPlacement, mapArtDefsHtml, objectiveArt, regionEdgePaths, railStrokes, riverStrokes, roadStrokes,
   settlementArt, strategicBandCorners, supplySourceArt, terrainFillCorners, terrainGlyphPlacements, type Point,
 } from './map-art.js';
 import type { GeneratedMapPreview, GeneratedMapPreviewCell } from './map-generator-presenter.js';
@@ -57,11 +57,13 @@ export interface MapState {
   /** The part of `traceCoverage` that traces straight to a Supply Source; the rest is reached only through an HQ throw. */
   readonly traceDirect: ReadonlySet<string>;
   /** Supply Sources marked with the trace overlay: detrainable rail Hex (RAIL) and Extender (EXT); map-edge sources have their own disc. */
-  readonly supplySources: readonly { readonly hexId: string; readonly kind: 'MAP_EDGE' | 'DETRAINABLE' | 'EXTENDER' }[];
+  readonly supplySources: readonly { readonly hexId: string; readonly kind: 'MAP_EDGE' | 'PORT' | 'DETRAINABLE' | 'EXTENDER' }[];
   /** Trace Supply overlay: control of each rail Hex (13.3h), drawn along the track; empty while the overlay is off. */
   readonly railControl: readonly { readonly hexId: string; readonly control: 'OWN' | 'ENEMY' }[];
   /** Every objective with its VP and the index of the player holding it now (null: neutral); always drawn. */
   readonly objectives: readonly { readonly hexId: string; readonly points: number; readonly holder: 0 | 1 | null }[];
+  /** Every port (19.0), with the index of the player holding it and its hits; always drawn. */
+  readonly ports: readonly { readonly hexId: string; readonly holder: 0 | 1 | null; readonly hits: number }[];
   readonly ownZone: ReadonlySet<string>;
   readonly enemyZone: ReadonlySet<string>;
   readonly trainbusting: readonly { readonly hexId: string; readonly own: boolean }[];
@@ -82,7 +84,7 @@ export interface MapEvents {
 
 export const EMPTY_MAP_STATE: MapState = {
   selectedHexId: null, reachable: new Map(), dimmed: new Set(), attack: new Set(), barrage: new Set(), placement: new Set(), retreat: new Set(), highlight: new Set(),
-  airTargets: new Set(), destinationHexId: null, targetHexIds: new Set(), path: [], traceCoverage: new Set(), traceDirect: new Set(), supplySources: [], railControl: [], objectives: [], ownZone: new Set(), enemyZone: new Set(), trainbusting: [], bridges: [], counters: [], badges: [],
+  airTargets: new Set(), destinationHexId: null, targetHexIds: new Set(), path: [], traceCoverage: new Set(), traceDirect: new Set(), supplySources: [], railControl: [], objectives: [], ports: [], ownZone: new Set(), enemyZone: new Set(), trainbusting: [], bridges: [], counters: [], badges: [],
 };
 
 /**
@@ -97,6 +99,7 @@ export const DEFAULT_ZOOM = ZOOM_REFERENCE * (DEFAULT_ZOOM_PERCENT / 100);
 /** A train seen from the front (24×24; Material Icons "train"): marks detrainable rail hexes on the Trace Supply overlay. */
 const TRAIN_PATH = 'M12 2c-4 0-8 .5-8 4v9.5C4 17.43 5.57 19 7.5 19L6 20.5v.5h2.23l2-2H14l2 2h2v-.5L16.5 19c1.93 0 3.5-1.57 3.5-3.5V6c0-3.5-3.58-4-8-4zM7.5 17c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm3.5-7H6V6h5v4zm2 0V6h5v4h-5zm3.5 7c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z';
 const TRAIN_ICON = new Path2D(TRAIN_PATH);
+const PORT_ICON = new Path2D(PORT_ANCHOR_PATH);
 
 const ZOOM_STEP_PERCENT = 10;
 /**
@@ -584,6 +587,7 @@ export class MapView {
       // occupied hexes would otherwise be hidden (counters fill the hex up to its sides).
       this.#drawObjectives();
       this.#drawBridges();
+      this.#drawPorts();
       this.#drawBadges();
       this.#drawTargets();
       this.#drawCursor();
@@ -829,6 +833,24 @@ export class MapView {
           ctx.fillText(text, x, y);
         }
       }
+      if (cell.port) {
+        const { cx, cy, r, scale } = portArt(cell, size);
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(cx, cy, r, 0, Math.PI * 2);
+        ctx.fillStyle = '#e8f1f6';
+        ctx.fill();
+        ctx.strokeStyle = '#1d3f5a';
+        ctx.lineWidth = 1.4;
+        ctx.stroke();
+        ctx.translate(cx - 12 * scale, cy - 12 * scale);
+        ctx.scale(scale, scale);
+        ctx.lineWidth = 2.3;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.stroke(PORT_ICON);
+        ctx.restore();
+      }
       if (cell.supplySource) {
         const { cx, cy, r, fontSize } = supplySourceArt(cell, size, geometry.objectives.has(cell.id));
         ctx.beginPath();
@@ -899,6 +921,43 @@ export class MapView {
       return ctx.createPattern(tile, 'repeat');
     })();
     if (this.#throwHatch) { ctx.fillStyle = this.#throwHatch; ctx.fill(thrown); }
+    ctx.restore();
+  }
+
+  /**
+   * Ports, drawn every frame over the printed anchor because who holds them and their hits change in play: the anchor's disc
+   * is ringed in the holder's colour, and hits (19.0b) show as a red count beside it.
+   */
+  #drawPorts(): void {
+    const { ports } = this.#state;
+    const geometry = this.#geometry;
+    const size = this.#scene?.theater.layout.hexSize ?? 0;
+    if (ports.length === 0 || !geometry) return;
+    const ctx = this.#ctx;
+    ctx.save();
+    ports.forEach(({ hexId, holder, hits }) => {
+      const cell = geometry.byId.get(hexId);
+      if (!cell) return;
+      const { cx, cy, r } = portArt(cell, size);
+      ctx.beginPath();
+      ctx.arc(cx, cy, r * 1.08, 0, Math.PI * 2);
+      ctx.lineWidth = r * 0.28;
+      ctx.strokeStyle = holder === null ? '#9aa4ab' : this.#playerColors[holder];
+      ctx.stroke();
+      if (hits <= 0) return;
+      const badge = r * 0.62;
+      const bx = cx + r * 0.85;
+      const by = cy - r * 0.85;
+      ctx.beginPath();
+      ctx.arc(bx, by, badge, 0, Math.PI * 2);
+      ctx.fillStyle = '#b3261e';
+      ctx.fill();
+      ctx.font = `900 ${badge * 1.5}px ui-sans-serif, system-ui, sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillStyle = '#ffffff';
+      ctx.fillText(String(hits), bx, by + 0.5);
+    });
     ctx.restore();
   }
 
@@ -1053,20 +1112,30 @@ export class MapView {
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     supplySources.forEach(({ hexId, kind }) => {
-      // Map-edge sources already carry their side's "S" disc on the map; the overlay marks the ones rail and Extenders add.
+      // Map-edge sources already carry their side's "S" disc on the map; the overlay marks the ones ports, rail and Extenders add.
       const cell = this.#geometry!.byId.get(hexId);
       if (!cell || kind === 'MAP_EDGE') return;
       const x = cell.x - side / 2;
       const y = cell.y - size * 0.8;
       ctx.beginPath();
       ctx.roundRect(x, y, side, side, side * 0.2);
-      ctx.fillStyle = kind === 'DETRAINABLE' ? '#1d4d2f' : '#5a4a12';
+      ctx.fillStyle = kind === 'DETRAINABLE' ? '#1d4d2f' : kind === 'PORT' ? '#1d3f5a' : '#5a4a12';
       ctx.fill();
       ctx.lineWidth = 1.5;
       ctx.strokeStyle = '#b8f0c8';
       ctx.stroke();
       ctx.strokeStyle = ctx.fillStyle = '#eafff0';
       if (kind === 'EXTENDER') { ctx.fillText('E', cell.x, y + side / 2 + 0.5); return; }
+      if (kind === 'PORT') {
+        ctx.save();
+        ctx.translate(x + side * 0.1, y + side * 0.1);
+        ctx.scale(side * 0.8 / 24, side * 0.8 / 24);
+        ctx.lineWidth = 2.6;
+        ctx.lineCap = 'round';
+        ctx.stroke(PORT_ICON);
+        ctx.restore();
+        return;
+      }
       ctx.save();
       ctx.translate(x + side * 0.1, y + side * 0.1);
       ctx.scale(side * 0.8 / 24, side * 0.8 / 24);

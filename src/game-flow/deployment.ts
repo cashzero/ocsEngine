@@ -23,7 +23,7 @@ import type {
 } from '../domain/piece/index.js';
 import { createSeededRandom, mixUint32, type GeneratedMap } from '../generation/map/index.js';
 import type { GeneratedOob, GeneratedOobUnit, OobSide } from '../generation/oob/index.js';
-import { adjacentHexIds, FIRST_ARRIVAL_TURN, movementCostModel, type MobilityType, type MovementCostModel } from '../rules/index.js';
+import { adjacentHexIds, FIRST_ARRIVAL_TURN, movementCostModel, portFeatureState, type MobilityType, type MovementCostModel } from '../rules/index.js';
 import { attackerOf, type Engagement, type GameFlowFailure, type GeneratedDeployment } from './model.js';
 import {
   GENERATED_DEFAULT_TERRAIN_COST_TICKS,
@@ -462,13 +462,23 @@ export const deployGeneratedForces = (
   const depthOf = (side: OobSide, hexId: HexId): number => (side === 'ALLIED' ? lean(hexId) - split : split - lean(hexId)) / 2;
   const standoff = (side: OobSide): number => GENERATED_FRONT_STANDOFF_HEXES[
     attacker === null ? 'MEETING' : attacker === side ? 'ATTACKER' : 'DEFENDER'];
-  const sideSupply: Readonly<Record<OobSide, readonly HexId[]>> = {
-    ALLIED: map.strategicRegions.firstSupplyHexIds,
-    AXIS: map.strategicRegions.secondSupplyHexIds,
-  };
   const zones: Readonly<Record<OobSide, readonly HexDefinition[]>> = {
     ALLIED: land.filter(({ id }) => lean(id) >= split),
     AXIS: land.filter(({ id }) => lean(id) < split),
+  };
+  // 19.0: each port starts held by the side whose zone it lies in. The side the sea lies behind has no land entry edge: its
+  // ports are its only Supply Sources and the only way in, so it always starts holding at least the port nearest its anchor.
+  const seaSide: OobSide | null = map.options.sea === 'WEST' ? 'ALLIED' : map.options.sea === 'EAST' ? 'AXIS' : null;
+  const portOwner = new Map<HexId, OobSide>(map.strategicRegions.ports.map(({ hexId }) => [hexId, lean(hexId) >= split ? 'ALLIED' : 'AXIS'] as const));
+  if (seaSide !== null && ![...portOwner.values()].includes(seaSide)) {
+    const nearest = [...portOwner.keys()].sort((left, right) => distance(left, sideAnchors[seaSide]) - distance(right, sideAnchors[seaSide]) || String(left).localeCompare(String(right)))[0];
+    if (nearest) portOwner.set(nearest, seaSide);
+  }
+  const portsOf = (side: OobSide): readonly HexId[] => [...portOwner.entries()].filter(([, owner]) => owner === side).map(([hexId]) => hexId)
+    .sort((left, right) => distance(left, sideAnchors[side]) - distance(right, sideAnchors[side]) || String(left).localeCompare(String(right)));
+  const sideSupply: Readonly<Record<OobSide, readonly HexId[]>> = {
+    ALLIED: seaSide === 'ALLIED' ? portsOf('ALLIED') : map.strategicRegions.firstSupplyHexIds,
+    AXIS: seaSide === 'AXIS' ? portsOf('AXIS') : map.strategicRegions.secondSupplyHexIds,
   };
 
   const pieces: PieceState[] = [];
@@ -1253,8 +1263,10 @@ export const deployGeneratedForces = (
   const initialMapState: MapState = {
     schemaVersion: FOUNDATION_SCHEMA_VERSION,
     revision: initialRevision.value,
-    hexControl: [...controlled, ...zoneControl, ...behindGarrisons].sort((left, right) => String(left.hexId).localeCompare(String(right.hexId))),
-    features: [],
+    hexControl: [...new Map([...controlled, ...zoneControl, ...behindGarrisons, ...[...portOwner].map(([hexId, owner]) => ({ hexId, controllerId: players[owner] }))]
+      .map((entry) => [entry.hexId, entry] as const)).values()].sort((left, right) => String(left.hexId).localeCompare(String(right.hexId))),
+    features: map.strategicRegions.ports.map(({ hexId, capacityTokens }) => portFeatureState(hexId, capacityTokens, players[portOwner.get(hexId)!]))
+      .sort((left, right) => String(left.id).localeCompare(String(right.id))),
   };
   const initialPieceState: PieceRuntimeState = {
     schemaVersion: FOUNDATION_SCHEMA_VERSION,

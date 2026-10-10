@@ -95,6 +95,10 @@ export interface RuleProjection {
    * far bank. Only the viewer's own bridges are listed. Absent in games without Bridging.
    */
   readonly bridges?: readonly ProjectedBridge[] | undefined;
+  /** The viewer's own Sea Cap (19.0f), when the game gives him any. */
+  readonly seaCap?: readonly { readonly playerId: PlayerId; readonly points: number; readonly remainingQuarters: number }[] | undefined;
+  /** Every printed port (19.0): who holds it, its capacity and hits. Ports and their damage are on the map for both sides. */
+  readonly ports?: readonly import('../supply/sea-cap.js').SeaPortSummary[] | undefined;
   readonly combat: ProjectedCombat | null;
   readonly weather: GameState['weather'];
   readonly fuel: GameState['fuel'];
@@ -253,6 +257,8 @@ export interface RuleEngine {
   readonly queryRailControl: (state: GameState, actorId: PlayerId) => RuleQueryResult<readonly import('../supply/rail.js').RailControlHex[]>;
   /** What a rail move from one Hex could carry, where it could detrain, and the Rail Cap left (13.3). */
   readonly queryRailMoveOptions: (state: GameState, actorId: PlayerId, fromHexId: HexId) => RuleQueryResult<import('../supply/rail-cap.js').RailMoveOptions>;
+  /** What a shipment from a port (or, null, the reinforcement Box) could carry, which ports could take it, and the Sea Cap left (19.0f). */
+  readonly querySeaMoveOptions: (state: GameState, actorId: PlayerId, fromHexId: HexId | null) => RuleQueryResult<import('../supply/sea-cap.js').SeaMoveOptions>;
   /** Each fuel payment open to one own unit with the units it would newly fuel (12.5c). */
   /** How one own unit is fueled now (12.5a): the coverage method, 'NOT_NEEDED', or null when it needs fuel and has none. */
   readonly queryFuelCoverage: (state: GameState, actorId: PlayerId, pieceId: PieceId) => RuleQueryResult<import('../supply/fuel.js').FuelCoverage>;

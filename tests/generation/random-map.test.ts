@@ -184,9 +184,51 @@ describe('M6 deterministic random map pipeline', () => {
     }
   });
 
+  it.each(['NORTH', 'WEST', 'EAST'] as const)(
+    'puts a %s sea along that map edge, keeping the entries and the corridor on land',
+    (sea) => {
+      for (const style of ['TEMPERATE_INLAND', 'EASTERN_EUROPE'] as const) for (const seed of [3, 1943]) {
+        const generated = generateRandomMap({ width: 32, height: 24, seed, style, sea });
+        expect(generated.ok).toBe(true);
+        if (!generated.ok) continue;
+        const { mapDefinition, metrics, options: normalized } = generated.value;
+        expect(normalized.sea).toBe(sea);
+        expect(String(mapDefinition.id)).toMatch(new RegExp(`:sea-${sea.toLowerCase()}$`, 'u'));
+        const water = mapDefinition.hexes.filter(({ terrainDefinitionIds }) => String(terrainDefinitionIds[0]) === 'terrain:water')
+          .map(({ id }) => { const parsed = parseHexCoordinateId(id); if (!parsed.ok) throw new Error('bad hex'); return parsed.value; });
+        expect(water.length / mapDefinition.hexes.length).toBeGreaterThanOrEqual(0.06);
+        expect(water.length / mapDefinition.hexes.length).toBeLessThanOrEqual(0.35);
+        // Every water Hex lies in the quarter of the map on the sea's edge.
+        const fromSea = ({ q, r }: { q: number; r: number }) => {
+          const column = q + Math.floor(r / 2);
+          return sea === 'NORTH' ? r / 24 : sea === 'WEST' ? column / 32 : (31 - column) / 32;
+        };
+        expect(Math.max(...water.map(fromSea))).toBeLessThan(0.3);
+        expect(metrics.landHexes).toBe(mapDefinition.hexes.length - water.length);
+      }
+    },
+  );
+
+  it('keeps each style\'s own sea, and its map IDs, when no sea is named', () => {
+    const coast = generateRandomMap({ ...options, style: 'MEDITERRANEAN_COAST' });
+    const explicit = generateRandomMap({ ...options, style: 'MEDITERRANEAN_COAST', sea: 'WEST' });
+    expect(coast.ok && explicit.ok).toBe(true);
+    if (!coast.ok || !explicit.ok) return;
+    expect(coast.value.options.sea).toBe('WEST');
+    expect(explicit.value).toEqual(coast.value);
+    expect(String(coast.value.mapDefinition.id)).toBe('generated-map:mediterranean_coast:18x12:1943');
+    const inland = generateRandomMap({ ...options, sea: 'NONE' });
+    expect(inland.ok && inland.value.options.sea).toBe('NONE');
+    const dry = generateRandomMap({ ...options, style: 'MEDITERRANEAN_COAST', sea: 'NONE' });
+    expect(dry.ok && dry.value.metrics.terrainCounts.WATER).toBe(0);
+  });
+
   it('rejects invalid generation options without partial output', () => {
     const generated = generateRandomMap({ width: 4, height: 99, seed: -1, style: 'TEMPERATE_INLAND' });
     expect(generated.ok).toBe(false);
     if (!generated.ok) expect(generated.error.map(({ path }) => path[0])).toEqual(['width', 'height', 'seed']);
+    const sea = generateRandomMap({ ...options, sea: 'SOUTH' as never });
+    expect(sea.ok).toBe(false);
+    if (!sea.ok) expect(sea.error.map(({ path }) => path[0])).toEqual(['sea']);
   });
 });

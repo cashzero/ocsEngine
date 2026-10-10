@@ -1,7 +1,7 @@
 import { FOUNDATION_SCHEMA_VERSION, parseDefinitionId, type DefinitionId, type PlayerId, type Result } from '../core/index.js';
 import { sideDivisions, type GeneratedOob, type OobSide } from '../generation/oob/index.js';
 import type { RailroadConfiguration, RiverConfiguration, RuleConfiguration } from '../rules/index.js';
-import { attackerOf, type GeneratedDeployment, type NewGameRequest } from './model.js';
+import { attackerOf, newGameSeaOf, seaSideOf, type GeneratedDeployment, type NewGameRequest } from './model.js';
 import {
   GENERATED_HEXSIDE_MOVEMENT_COSTS,
   GENERATED_MULTI_TRACK_RAIL,
@@ -48,6 +48,35 @@ export const defaultRailCap = (request: NewGameRequest): { readonly allied: numb
   const points = (side: OobSide): number =>
     Math.max(1, Math.round(sideDivisions({ ...request.oob, ...(attacker === null ? {} : { attacker }) }, side).divisionsPerSide * RAIL_CAP_PER_DIVISION));
   return { allied: points('ALLIED'), axis: points('AXIS') };
+};
+
+/**
+ * Default Sea Cap points per Movement Phase (19.0f), per division of the side. A side the sea lies behind lands everything by
+ * ship, so its Sea Cap is its lifeline, and it is set below what arrives each turn (about 1 SP per division from the Supply
+ * Table, plus units and Repls) so that shipping and port capacity, not the enemy alone, limit the attack (user, 2026-10-10).
+ * Along a flank the sea is a side route between friendly ports, and each side gets a little.
+ */
+export const SEA_CAP_PER_DIVISION = 0.6;
+export const FLANK_SEA_CAP_PER_DIVISION = 0.25;
+
+/** Sea Cap of each side by default; 0 for a side that cannot ship. Null on a map without a sea. */
+export const defaultSeaCap = (request: NewGameRequest): { readonly allied: number; readonly axis: number } | null => {
+  const sea = newGameSeaOf(request);
+  if (sea === 'NONE') return null;
+  const attacker = attackerOf(request.engagement ?? 'MEETING');
+  const divisions = (side: OobSide): number => sideDivisions({ ...request.oob, ...(attacker === null ? {} : { attacker }) }, side).divisionsPerSide;
+  const seaSide = seaSideOf(request);
+  const points = (side: OobSide): number => seaSide !== null
+    ? (side === seaSide ? Math.max(1, Math.round(divisions(side) * SEA_CAP_PER_DIVISION)) : 0)
+    : Math.max(1, Math.round(divisions(side) * FLANK_SEA_CAP_PER_DIVISION));
+  return { allied: points('ALLIED'), axis: points('AXIS') };
+};
+
+/** Sides that may ship in this New Game: the side the sea lies behind, or both along a flank. */
+export const shippingSides = (request: NewGameRequest): readonly OobSide[] => {
+  if (newGameSeaOf(request) === 'NONE') return [];
+  const seaSide = seaSideOf(request);
+  return seaSide === null ? ['ALLIED', 'AXIS'] : [seaSide];
 };
 
 /** The VP an attacker must hold at the end to win: half of all objective VP, rounded up. */
@@ -97,6 +126,13 @@ export const createGeneratedRuleConfiguration = (
     const cap = request.railCap ?? defaultRailCap(request);
     return [{ playerId: players.ALLIED, points: cap.allied }, { playerId: players.AXIS, points: cap.axis }];
   })(),
+  ...(shippingSides(request).length === 0 ? {} : {
+    seaCapacity: shippingSides(request).map((side) => {
+      const cap = request.seaCap ?? defaultSeaCap(request)!;
+      return { playerId: players[side], points: side === 'ALLIED' ? cap.allied : cap.axis };
+    }),
+  }),
+  ...(seaSideOf(request) === null ? {} : { seaArrivals: [players[seaSideOf(request)!]] }),
 });
 
 /** 13.8b: the generated Minor and Major Rivers that Engineer-Capable units bridge. */

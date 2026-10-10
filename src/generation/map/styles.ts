@@ -1,4 +1,4 @@
-import type { GeneratedTerrainKind, MapGenerationStyle } from './model.js';
+import type { GeneratedTerrainKind, MapGenerationStyle, MapSeaPlacement } from './model.js';
 
 /** Terrain kinds whose distance from a road is bounded; marsh and mountain may stay roadless. */
 export type RoadServedTerrain = 'CLEAR' | 'WOODS' | 'ROUGH';
@@ -9,8 +9,8 @@ export type RoadServedTerrain = 'CLEAR' | 'WOODS' | 'ROUGH';
  * calibration (docs/generator/11-eastern-europe-theme.md).
  */
 export interface MapStyleProfile {
-  /** A sea along the western map edge. */
-  readonly coast: boolean;
+  /** The sea a map of this style gets when the options name none. */
+  readonly sea: MapSeaPlacement;
   readonly terrain: 'WESTERN' | 'EASTERN';
   /** Share of land Hexes beside a river that become riverbank woods (the eastern wooded river valleys). */
   readonly riverbankWoods: number;
@@ -39,7 +39,7 @@ export interface MapStyleProfile {
   };
 }
 
-const WESTERN: Omit<MapStyleProfile, 'coast'> = {
+const WESTERN: Omit<MapStyleProfile, 'sea'> = {
   terrain: 'WESTERN',
   riverbankWoods: 0,
   settlementDensity: 0.1,
@@ -61,7 +61,7 @@ const WESTERN: Omit<MapStyleProfile, 'coast'> = {
  * its BtR Hex scale, so these are the BtR values thinned toward that picture, not a 5-mile rescale.
  */
 const EASTERN: MapStyleProfile = {
-  coast: false,
+  sea: 'NONE',
   terrain: 'EASTERN',
   riverbankWoods: 0.35,
   settlementDensity: 0.05,
@@ -77,8 +77,8 @@ const EASTERN: MapStyleProfile = {
 };
 
 export const MAP_STYLE_PROFILES: Readonly<Record<MapGenerationStyle, MapStyleProfile>> = {
-  TEMPERATE_INLAND: { ...WESTERN, coast: false },
-  MEDITERRANEAN_COAST: { ...WESTERN, coast: true },
+  TEMPERATE_INLAND: { ...WESTERN, sea: 'NONE' },
+  MEDITERRANEAN_COAST: { ...WESTERN, sea: 'WEST' },
   EASTERN_EUROPE: EASTERN,
 };
 
