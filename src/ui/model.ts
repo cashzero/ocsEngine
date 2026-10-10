@@ -372,6 +372,8 @@ export interface UiSnapshot {
   readonly collapseHexes: readonly string[];
   /** Rail transport from the selected unit's or dump's hex (13.3); null when nothing can entrain there now. */
   readonly rail: RailPanel | null;
+  /** Rail transport is possible for the selected piece but the player has not opened it: what it would carry. */
+  readonly railOffer: 'UNITS' | 'SUPPLY' | null;
   readonly sea: SeaPanel | null;
   readonly endStep: EndStep;
   readonly decision: PendingDecisionDescriptor | null;
