@@ -1,11 +1,13 @@
 import { validateScenarioDefinition } from '../domain/scenario/index.js';
 import { createPieceDefinitionCatalogIndex } from '../domain/piece/index.js';
 import { validateRuleConfiguration } from '../rules/index.js';
-import { ENGAGEMENTS, type GameFlowFailure, type GeneratedScenarioPackage, type NewGameRequest } from './model.js';
+import { ENGAGEMENTS, NEW_GAME_SEAS, type GameFlowFailure, type GeneratedScenarioPackage, type NewGameRequest } from './model.js';
 import { BTR_CAMPAIGN_MONTHS, btrTurnDate } from './weather-supply-tables.js';
 
 /** Rail Cap points a New Game may give a side each Movement Phase. */
 export const MAXIMUM_RAIL_CAP = 30;
+/** Sea Cap points a New Game may give a side each Movement Phase. */
+export const MAXIMUM_SEA_CAP = 30;
 
 const uint32 = (value: number): boolean => Number.isSafeInteger(value) && value >= 0 && value <= 0xffff_ffff;
 
@@ -13,6 +15,7 @@ export const validateNewGameRequest = (request: NewGameRequest): readonly GameFl
   const failures: GameFlowFailure[] = [];
   if (request.templateId !== 'GROUND_DUEL') failures.push({ stage: 'OPTIONS', code: 'UNKNOWN_TEMPLATE', message: 'Only GROUND_DUEL is currently supported.', path: ['templateId'] });
   if (request.engagement !== undefined && !ENGAGEMENTS.includes(request.engagement)) failures.push({ stage: 'OPTIONS', code: 'UNKNOWN_ENGAGEMENT', message: 'Engagement must be MEETING, ALLIED_ATTACKS or AXIS_ATTACKS.', path: ['engagement'] });
+  if (request.map.sea !== undefined && !NEW_GAME_SEAS.includes(request.map.sea)) failures.push({ stage: 'OPTIONS', code: 'UNKNOWN_SEA', message: 'Sea must be NONE, FLANK or ATTACKER.', path: ['map', 'sea'] });
   for (const [name, value] of Object.entries(request.seeds)) {
     if (!uint32(value)) failures.push({ stage: 'OPTIONS', code: 'INVALID_SEED', message: `${name} seed must be uint32.`, path: ['seeds', name] });
   }
@@ -24,6 +27,14 @@ export const validateNewGameRequest = (request: NewGameRequest): readonly GameFl
       const points = request.railCap[side];
       if (!Number.isSafeInteger(points) || points < 0 || points > MAXIMUM_RAIL_CAP) {
         failures.push({ stage: 'OPTIONS', code: 'INVALID_RAIL_CAP', message: `Rail Cap must be a whole number of points from 0 through ${MAXIMUM_RAIL_CAP}.`, path: ['railCap', side] });
+      }
+    }
+  }
+  if (request.seaCap !== undefined) {
+    for (const side of ['allied', 'axis'] as const) {
+      const points = request.seaCap[side];
+      if (!Number.isSafeInteger(points) || points < 0 || points > MAXIMUM_SEA_CAP) {
+        failures.push({ stage: 'OPTIONS', code: 'INVALID_SEA_CAP', message: `Sea Cap must be a whole number of points from 0 through ${MAXIMUM_SEA_CAP}.`, path: ['seaCap', side] });
       }
     }
   }
@@ -98,8 +109,13 @@ export const validateGeneratedScenarioPackage = (
     if (!generated.scenario.sources.some(({ sideDefinitionId }) => sideDefinitionId === player.sideDefinitionId)) failures.push({
       stage: 'DEPLOYMENT', code: 'MISSING_SIDE_SOURCE', message: `${player.name} has no supply source.`, path: ['scenario', 'sources'],
     });
-    if (!generated.scenario.entries.some(({ sideDefinitionId }) => sideDefinitionId === player.sideDefinitionId)) failures.push({
+    // A side the sea lies behind enters by ship through its ports instead (19.0f): it needs one at the start.
+    const bySea = generated.configuration.seaArrivals?.includes(player.id) ?? false;
+    if (!bySea && !generated.scenario.entries.some(({ sideDefinitionId }) => sideDefinitionId === player.sideDefinitionId)) failures.push({
       stage: 'DEPLOYMENT', code: 'MISSING_SIDE_ENTRY', message: `${player.name} has no entry region.`, path: ['scenario', 'entries'],
+    });
+    if (bySea && !generated.scenario.initialMapState.features.some(({ definitionId, controllerId }) => String(definitionId) === 'facility:port' && controllerId === player.id)) failures.push({
+      stage: 'DEPLOYMENT', code: 'MISSING_SIDE_PORT', message: `${player.name} lands everything by sea but holds no port.`, path: ['scenario', 'initialMapState', 'features'],
     });
     if (!generated.scenario.initialPieceState.pieces.some(({ ownerId, mode }) => ownerId === player.id && mode !== null)) failures.push({
       stage: 'DEPLOYMENT', code: 'MISSING_MANEUVER_UNIT', message: `${player.name} has no maneuver unit.`, path: ['deployment', 'pieces'],

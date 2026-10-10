@@ -6,6 +6,7 @@ import type { GameSession, GameplayEngine, SeatBinding } from '../gameplay/index
 import type {
   GeneratedMap,
   MapGenerationStyle,
+  MapSeaPlacement,
 } from '../generation/map/index.js';
 import type { AirForceLevel, GeneratedOob, OobScale, OobSide } from '../generation/oob/index.js';
 import type { RuleConfiguration } from '../rules/index.js';
@@ -25,6 +26,37 @@ export type Engagement = (typeof ENGAGEMENTS)[number];
 export const attackerOf = (engagement: Engagement): OobSide | null =>
   engagement === 'ALLIED_ATTACKS' ? 'ALLIED' : engagement === 'AXIS_ATTACKS' ? 'AXIS' : null;
 
+/**
+ * Where the operation's sea lies: none; along a flank both sides advance beside (the sea on the north edge, the
+ * front running west-east along the coast); or behind the attacker, on the attacker's entry edge. A meeting
+ * engagement has no attacker, so there the sea lies behind the Allied side, which moves first.
+ */
+export const NEW_GAME_SEAS = ['NONE', 'FLANK', 'ATTACKER'] as const;
+export type NewGameSea = (typeof NEW_GAME_SEAS)[number];
+
+/** The sea a style brings when the request names none: the Mediterranean coast's sea lies behind the attacker. */
+export const styleSeaOf = (style: MapGenerationStyle): NewGameSea => (style === 'MEDITERRANEAN_COAST' ? 'ATTACKER' : 'NONE');
+
+/** The request's sea, with the style's own sea standing in when the request names none. */
+export const newGameSeaOf = (request: NewGameRequest): NewGameSea => request.map.sea ?? styleSeaOf(request.map.style);
+
+/** The map edge the sea lies on. Allied enters from the west edge and Axis from the east, so a sea behind the attacker lies on the attacker's edge. */
+export const mapSeaPlacementOf = (request: NewGameRequest): MapSeaPlacement => {
+  const sea = newGameSeaOf(request);
+  if (sea === 'FLANK') return 'NORTH';
+  if (sea === 'ATTACKER') return attackerOf(request.engagement ?? 'MEETING') === 'AXIS' ? 'EAST' : 'WEST';
+  return 'NONE';
+};
+
+/**
+ * The side whose entry edge is the coast (a sea behind the attacker, or behind Allied in a meeting engagement): its
+ * reinforcements, SP and Repls reach the map only by ship, through ports, so Sea Cap and port capacity limit them.
+ */
+export const seaSideOf = (request: NewGameRequest): OobSide | null => {
+  const edge = mapSeaPlacementOf(request);
+  return edge === 'WEST' ? 'ALLIED' : edge === 'EAST' ? 'AXIS' : null;
+};
+
 /** Every random stream is explicit so changing one subsystem cannot perturb another. */
 export interface NewGameRequest {
   readonly templateId: NewGameTemplateId;
@@ -34,6 +66,8 @@ export interface NewGameRequest {
     readonly width: number;
     readonly height: number;
     readonly style: MapGenerationStyle;
+    /** Absent means the style's own sea (`styleSeaOf`): behind the attacker for the Mediterranean coast, none otherwise. */
+    readonly sea?: NewGameSea;
   };
   readonly oob: {
     readonly scale: OobScale;
@@ -59,6 +93,11 @@ export interface NewGameRequest {
    * (`defaultRailCap`), so requests made before Rail Cap existed get the default.
    */
   readonly railCap?: { readonly allied: number; readonly axis: number };
+  /**
+   * Sea Cap points each side gets in its Movement Phase (19.0f): only the side the sea lies behind ships when the sea is behind
+   * the attacker, both sides along a flank. Absent means `defaultSeaCap`; ignored on a map without a sea.
+   */
+  readonly seaCap?: { readonly allied: number; readonly axis: number };
 }
 
 export interface GeneratedDeployment {

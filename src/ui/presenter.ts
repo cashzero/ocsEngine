@@ -58,6 +58,9 @@ const ACTION_LABELS: Readonly<Record<GameAction['kind'], string>> = {
   UPDATE_AIR_DROP_PLAN: 'Change Drop Plan',
   COMBINE_AIRCRAFT: 'Combine aircraft',
   RAIL_MOVE: 'Move by rail',
+  SEA_MOVE: 'Ship by sea',
+  REDUCE_PORT: 'Damage port',
+  REPAIR_PORT: 'Repair port',
 };
 
 export const actionKindLabel = (kind: GameAction['kind']): string => ACTION_LABELS[kind];
@@ -130,6 +133,13 @@ export const actionSummary = (action: GameAction): string => {
     case 'BUILD_HEDGEHOG': return `Build or improve a hedgehog at ${printedHexLabel(action.hexId)} (2 SP${action.engineerId ? ', engineer' : ''})`;
     case 'REDUCE_HEDGEHOG': return 'Reduce the hedgehog one Level';
     case 'COMBINE_AIRCRAFT': return 'Combine two reduced aircraft';
+    case 'SEA_MOVE': {
+      const tokens = action.supply.reduce((total, { tokens: quantity }) => total + quantity, 0);
+      const cargo = [...(action.unitIds.length > 0 ? [`${action.unitIds.length} unit${action.unitIds.length === 1 ? '' : 's'}`] : []), ...(tokens > 0 ? [`${tokens}T`] : [])].join(' and ');
+      return `Ship ${cargo} ${action.fromHexId === null ? 'from the reinforcement Box' : `from ${printedHexLabel(action.fromHexId)}`} to ${printedHexLabel(action.toHexId)}`;
+    }
+    case 'REDUCE_PORT': return `Inflict a hit on the port at ${printedHexLabel(action.hexId)}${action.engineerId ? ' (engineer)' : ''}`;
+    case 'REPAIR_PORT': return `Repair a hit of the port at ${printedHexLabel(action.hexId)} (1 SP)`;
     case 'RAIL_MOVE': {
       const tokens = action.supply.reduce((total, { tokens: quantity }) => total + quantity, 0);
       const cargo = [action.unitIds.length > 0 ? `${action.unitIds.length} unit${action.unitIds.length === 1 ? '' : 's'}` : '', tokens > 0 ? `${tokens}T` : ''].filter(Boolean).join(' and ');

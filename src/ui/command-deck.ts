@@ -146,8 +146,12 @@ export const stepObjective = (snapshot: UiSnapshot): string => {
     return air ? 'No enemy hex is in artillery range; aircraft can still fly an Air Barrage from the Air tab.' : 'No barrage targets in range.';
   }
   switch (sequence.phase) {
-    case 'REINFORCEMENT': return snapshot.arrivals.length > 0 ? 'Place every arriving unit: select it, then click a blue entry hex.' : 'All reinforcements are placed.';
-    case 'MOVEMENT': return 'Move units one at a time: select a unit to see its range. Red rings mark overrun targets.';
+    case 'REINFORCEMENT': return snapshot.arrivals.length > 0 ? 'Place every arriving unit: select it, then click a blue entry hex.'
+      : boxWaiting(snapshot) > 0 ? `${boxWaiting(snapshot)} counter${boxWaiting(snapshot) === 1 ? '' : 's'} wait in your reinforcement Box: with the sea behind you, they land by ship at your ports in your Movement Phase (19.0f).`
+        : 'All reinforcements are placed.';
+    case 'MOVEMENT': return boxWaiting(snapshot) > 0 && snapshot.view.projection?.seaCap
+      ? `Move units one at a time. ${boxWaiting(snapshot)} counter${boxWaiting(snapshot) === 1 ? '' : 's'} wait in your reinforcement Box: with nothing selected, ship them to a port (19.0f).`
+      : 'Move units one at a time: select a unit to see its range. Red rings mark overrun targets.';
     case 'SUPPLY': return 'Pick formation trace routes and feed units out of trace supply; unfed units become Out of Supply when the phase ends (12.6).';
     case 'REACTION': return 'Only released Reserves may move (half MA) and attack by overrun (7.0).';
     case 'COMBAT': return snapshot.attackTargets.length > 0 ? 'Click a red-ringed enemy hex to plan an attack (9.0).' : 'No enemy hex can be attacked.';
@@ -370,7 +374,7 @@ const airDraftPanel = (snapshot: UiSnapshot, state: DeckState): TemplateResult =
   }
   if (draft.transport) return transportDraftPanel(snapshot, state);
   const targetChoice = draft.targetOptions.length > 1
-    ? html`<div class="chip-row" role="group" aria-label="Barrage target">${draft.targetOptions.map((target) => html`<button data-air-target=${target} aria-pressed=${String(draft.target === target)}>${target === 'AIR_BASE' ? 'Air Base (Facility Table)' : 'Combat units'}</button>`)}</div>` : nothing;
+    ? html`<div class="chip-row" role="group" aria-label="Barrage target">${draft.targetOptions.map((target) => html`<button data-air-target=${target} aria-pressed=${String(draft.target === target)}>${target === 'AIR_BASE' ? 'Air Base (Facility Table)' : target === 'PORT' ? 'Port (Facility Table, hits)' : 'Combat units'}</button>`)}</div>` : nothing;
   const aircraft = draft.eligibleIds.flatMap((id) => {
     const piece = pieceById(snapshot, id);
     if (!piece) return [];
@@ -556,6 +560,12 @@ export const syncDeckTab = (snapshot: UiSnapshot, state: DeckState): void => {
   state.lastPiece = piece;
 };
 
+/** Counters of the viewer waiting in his reinforcement Box to be shipped in (19.0f); aircraft fly in and do not count. */
+const boxWaiting = (snapshot: UiSnapshot): number => snapshot.view.projection?.seaCap
+  ? (snapshot.view.projection.stacks ?? []).filter(({ location }) => location.kind === 'OFF_MAP_BOX').flatMap(({ pieces }) => pieces)
+    .filter((piece) => piece.ownerId === snapshot.view.playerId && piece.role !== 'AIRCRAFT' && piece.role !== 'AIR_BASE' && ((piece.statusValues.find(({ statusDefinitionId }) => statusDefinitionId === 'status:return-turn')?.value as number | undefined) ?? 0) <= (snapshot.view.projection?.sequence.gameTurn ?? 0)).length
+  : 0;
+
 const arrivalsTab = (snapshot: UiSnapshot): TemplateResult => {
   if (snapshot.arrivals.length === 0) return html`<p class="hint">All reinforcements are placed.</p>`;
   const pieces = snapshot.view.projection?.stacks.flatMap(({ pieces: stackPieces }) => stackPieces) ?? [];
@@ -708,6 +718,33 @@ const railSection = (snapshot: UiSnapshot): TemplateResult => {
     <p class="hint">Units may not move again after detraining, and SP detrained cannot be loaded on trucks this phase (13.3e, 12.2a).</p></div>`;
 };
 
+/**
+ * Shipping (19.0f) from this port or from the reinforcement Box: tick units, set Tokens per dump, pick a friendly port, confirm.
+ * Sea Cap and each port's capacity limit what lands; the Rule Engine gives the cost and anything that stops it.
+ */
+const seaSection = (snapshot: UiSnapshot): TemplateResult => {
+  const sea = snapshot.sea!;
+  const units = sea.units.map(({ pieceId, label, quarters, problem, selected }) => html`<label class=${problem ? 'rail-cargo is-blocked' : 'rail-cargo'}>
+    <input type="checkbox" data-sea-unit=${pieceId} .checked=${selected} ?disabled=${problem !== null}><span>${label}</span><small>${problem ? withHexLabels(problem) : `${railPoints(quarters)} Sea Cap`}</small></label>`);
+  const dumps = sea.dumps.map(({ pieceId, holds, loadableTokens, tokens }) => html`<label class="rail-cargo"><span>Supply ${supplyText(holds)} · Tokens to ship</span>
+    <input type="number" class="rail-tokens" data-sea-dump=${pieceId} min="0" max=${loadableTokens} .value=${String(tokens)} inputmode="numeric" aria-label=${`Tokens to ship, 0 to ${loadableTokens}`}>
+    <small>of ${loadableTokens}T that may load · 1T = 1/4 Sea Cap and 1T of port capacity</small></label>`);
+  const destination = html`<label class="rail-destination">Unload at <select id="sea-destination">
+    <option value="" ?selected=${sea.toHexId === null} disabled>Choose a port (or click a highlighted port)</option>
+    ${sea.destinations.map(({ hexId, remainingTokens }) => html`<option value=${hexId} ?selected=${hexId === sea.toHexId}>${printedHexLabel(hexId)} · ${railPoints(remainingTokens)} SP of capacity left</option>`)}
+  </select></label>`;
+  const cost = sea.costQuarters === null ? html`<p class="hint">Tick units or enter Tokens, then choose the port to unload at.</p>`
+    : html`<p class="summary-line">Costs ${railPoints(sea.costQuarters)} of ${railPoints(sea.remainingQuarters)} Sea Cap left, and ${railPoints(sea.costQuarters)} SP of capacity at ${sea.fromHexId === null ? 'the unloading port' : 'both ports'}</p>`;
+  const blockers = sea.blockers.length > 0 ? html`<ul class="blockers">${sea.blockers.map((message) => html`<li>${withHexLabels(message)}</li>`)}</ul>` : nothing;
+  const from = sea.fromHexId === null ? 'the reinforcement Box' : `the port at ${printedHexLabel(sea.fromHexId)}`;
+  return html`<div class="unit-actions rail-panel sea-panel"><strong>Ship by sea from ${from}</strong>
+    <p class="summary-line">Sea Cap ${railPoints(sea.remainingQuarters)} of ${sea.capacityPoints} left this Movement Phase <cite>19.0f</cite>${sea.fromRemainingTokens !== null ? html` · this port can still load ${railPoints(sea.fromRemainingTokens)} SP <cite>19.0a</cite>` : nothing}</p>
+    ${sea.fromHexId === null ? html`<p class="hint">Your reinforcements, SP and Repls reach the map only by ship: they wait here until landed at a port you hold.</p>` : nothing}
+    ${units}${dumps}${destination}${cost}${blockers}
+    <button id="confirm-sea" class="primary" ?disabled=${!sea.allowed}>Ship</button>
+    <p class="hint">Combat units ship in Move Mode, may not move before or after, and use no other transport this phase; SP unloaded cannot be loaded again this phase (19.0f, 12.2a).</p></div>`;
+};
+
 const FUEL_METHODS: Readonly<Record<string, { readonly title: string; readonly detail: string }>> = {
   SINGLE_UNIT: { title: 'This unit only', detail: '1T, this phase' },
   FORMATION: { title: 'Whole formation', detail: '1 SP, until Clean Up' },
@@ -756,7 +793,7 @@ const unitTab = (snapshot: UiSnapshot, state: DeckState): TemplateResult => {
     parts.push(html`<div class="mode-actions"><strong>Mode</strong><div class="chip-row">${snapshot.modeOptions.map(({ mode }) => html`<button data-mode=${mode}>${modeName(mode)}</button>`)}${snapshot.releaseAction ? html`<button id="release-reserve">Release reserve</button>` : nothing}</div></div>`);
   }
   if (snapshot.unitActions.length > 0 || snapshot.transportOptions) {
-    const groups: [string, string][] = [['BREAKDOWN', 'Breakdowns'], ['FUEL', 'Fuel'], ['SUPPLY', 'Supply'], ['BREAKOUT', 'Breakout'], ['TRANSPORT', 'Trucks'], ['DUMP', 'Dump'], ['HEDGEHOG', 'Hedgehog'], ['AIR', 'Air']];
+    const groups: [string, string][] = [['BREAKDOWN', 'Breakdowns'], ['FUEL', 'Fuel'], ['SUPPLY', 'Supply'], ['BREAKOUT', 'Breakout'], ['TRANSPORT', 'Trucks'], ['DUMP', 'Dump'], ['HEDGEHOG', 'Hedgehog'], ['PORT', 'Port'], ['AIR', 'Air']];
     // Loading, unloading and splitting live in the truck's supply area; the buttons that remain are the other truck actions.
     const inPanel = (kind: string) => ['LOAD_SUPPLY', 'UNLOAD_SUPPLY', 'DIVIDE_TRANSPORT'].includes(kind);
     parts.push(...groups.flatMap(([group, title]): View[] => {
@@ -780,6 +817,7 @@ const unitTab = (snapshot: UiSnapshot, state: DeckState): TemplateResult => {
       : html`<p class="hint">No friendly truck in this hex. Move one here to load from this dump.</p>`}</div>`);
   }
   if (snapshot.rail) parts.push(railSection(snapshot));
+  if (snapshot.sea) parts.push(seaSection(snapshot));
   if (snapshot.air.construction && !snapshot.air.construction.planning) parts.push(constructionSection(snapshot));
   if (snapshot.collapseHexes.length > 0) {
     parts.push(html`<p class="hint">Or collapse the Extender (9.14d): click a highlighted hex in trace supply within its range.</p>`);

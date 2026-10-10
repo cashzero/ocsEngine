@@ -1,7 +1,7 @@
 import type { HexId, ValidationIssue } from '../../core/index.js';
 import type { MapDefinition } from '../../domain/map/index.js';
 
-export const MAP_GENERATOR_VERSION = '0.4.0' as const;
+export const MAP_GENERATOR_VERSION = '0.5.0' as const;
 
 /**
  * Map themes. The two western themes are calibrated on Beyond the Rhine (north-west Europe);
@@ -11,11 +11,20 @@ export const MAP_GENERATOR_VERSION = '0.4.0' as const;
 export const MAP_GENERATION_STYLES = ['TEMPERATE_INLAND', 'MEDITERRANEAN_COAST', 'EASTERN_EUROPE'] as const;
 export type MapGenerationStyle = (typeof MAP_GENERATION_STYLES)[number];
 
+/**
+ * Where the sea lies, by map edge: none; along the north edge, a flank both sides advance beside;
+ * or behind the west (first, Allied) or east (second, Axis) entry edge.
+ */
+export const MAP_SEA_PLACEMENTS = ['NONE', 'NORTH', 'WEST', 'EAST'] as const;
+export type MapSeaPlacement = (typeof MAP_SEA_PLACEMENTS)[number];
+
 export interface MapGenerationOptions {
   readonly width: number;
   readonly height: number;
   readonly seed: number;
   readonly style: MapGenerationStyle;
+  /** Defaults to the style's own sea: WEST for the Mediterranean coast, NONE otherwise. */
+  readonly sea?: MapSeaPlacement;
   /** Settlements per land Hex; defaults to the style's own density. */
   readonly settlementDensity?: number;
 }
@@ -24,6 +33,7 @@ export interface NormalizedMapGenerationOptions {
   readonly height: number;
   readonly seed: number;
   readonly style: MapGenerationStyle;
+  readonly sea: MapSeaPlacement;
   readonly settlementDensity: number;
 }
 
@@ -35,6 +45,15 @@ export interface GeneratedMapStrategicRegions {
   readonly firstSupplyHexIds: readonly HexId[];
   readonly secondSupplyHexIds: readonly HexId[];
   readonly settlementHexIds: readonly HexId[];
+  /** Ports (19.0), each in a coastal place; none on a map without a sea. */
+  readonly portHexIds: readonly HexId[];
+  /** Each port's printed capacity (19.0a) in Tokens, in `portHexIds` order. */
+  readonly ports: readonly GeneratedPort[];
+}
+
+export interface GeneratedPort {
+  readonly hexId: HexId;
+  readonly capacityTokens: number;
 }
 
 export interface GeneratedMapMetrics {
@@ -55,6 +74,7 @@ export interface GeneratedMapMetrics {
   readonly multiTrackRailEdges: number;
   /** Rail Hexes with a village or city: where a side can detrain and trace supply (13.3c). */
   readonly railStations: number;
+  readonly ports: number;
   readonly connectedRailComponents: number;
 }
 

@@ -229,6 +229,13 @@ export interface RuleConfiguration {
   readonly railCapacity?: readonly RailCapacity[] | undefined;
   /** Absent when nobody can bridge (and in saves made before Bridging existed, 13.8b). */
   readonly rivers?: RiverConfiguration | undefined;
+  /** 19.0f: Sea Cap (Shipping Allowance) points each player gets in every friendly Movement Phase. Absent: nobody ships. */
+  readonly seaCapacity?: readonly RailCapacity[] | undefined;
+  /**
+   * Players whose reinforcements, SP, Repls and returning units reach the map only by sea (game-specific rule of a map
+   * whose sea lies behind them): they wait in the reinforcement Box until shipped to a friendly port (19.0f).
+   */
+  readonly seaArrivals?: readonly PlayerId[] | undefined;
 }
 
 export interface RailCapacity {
@@ -276,6 +283,8 @@ export interface PieceUsageState {
    * own bridge to leave that hex (13.8b Exception).
    */
   readonly ownBridgeHexId?: HexId | undefined;
+  /** Shipped this phase: no movement before or after, and no other transport (19.0f C, 4.7d). */
+  readonly seaCarried?: boolean | undefined;
 }
 
 export interface ResourceReservation {
@@ -402,7 +411,7 @@ export interface AirCargoState extends AirCargoDeclaration {
 }
 
 /** 10.0d: the general target announced for a barrage mission. */
-export type AirBarrageTarget = 'COMBAT_UNITS' | 'AIR_BASE';
+export type AirBarrageTarget = 'COMBAT_UNITS' | 'AIR_BASE' | 'PORT';
 
 /** Where an air mission stands in the Air Mission Sequence (14.2f, steps C to G). */
 export type AirMissionStage =
@@ -652,6 +661,31 @@ export interface RailArrival {
   readonly pieceIds: readonly PieceId[];
 }
 
+/** Port capacity used in one phase, in Tokens (= quarter points): loading and unloading both count (19.0a). */
+export interface PortUse {
+  readonly hexId: HexId;
+  readonly gameTurn: number;
+  readonly playerTurnIndex: 0 | 1;
+  readonly phase: string;
+  readonly tokens: number;
+  /** A single oversized combat unit used the whole capacity (19.0a). */
+  readonly oversized: boolean;
+}
+
+/** Port work done this Game Turn: one voluntary hit (19.0c) and one repaired hit (19.0d) per port per turn. */
+export interface PortWork {
+  readonly hexId: HexId;
+  readonly gameTurn: number;
+  readonly kind: 'REDUCE' | 'REPAIR';
+}
+
+/** Shipping bookkeeping (19.0). */
+export interface SeaState {
+  readonly spent: readonly RailCapSpent[];
+  readonly portUse: readonly PortUse[];
+  readonly work: readonly PortWork[];
+}
+
 /** Rail transport bookkeeping (13.3). */
 export interface RailState {
   readonly spent: readonly RailCapSpent[];
@@ -683,6 +717,8 @@ export interface GameState {
   readonly replacements: ReplacementState;
   /** Absent until the first rail move or rail arrival (and in saves made before Rail Cap existed). */
   readonly rail?: RailState | undefined;
+  /** Absent until the first shipment or port work (and in saves made before Sea Cap existed). */
+  readonly sea?: SeaState | undefined;
 }
 
 interface ActionEnvelope {
@@ -817,6 +853,26 @@ export type GameAction =
     readonly unitIds: readonly PieceId[];
     readonly supply: readonly { readonly sourcePieceId: PieceId; readonly tokens: number }[];
   })
+  /**
+   * 19.0f: ship units (Move Mode combat units, Transport Points with their loads, Repls) and SP from `fromHexId`, a friendly port,
+   * or from the reinforcement Box when it is null, to the friendly port `toHexId`, paying Sea Cap and port capacity.
+   */
+  | (ActionEnvelope & {
+    readonly kind: 'SEA_MOVE';
+    readonly fromHexId: HexId | null;
+    readonly toHexId: HexId;
+    readonly unitIds: readonly PieceId[];
+    readonly supply: readonly { readonly sourcePieceId: PieceId; readonly tokens: number }[];
+  })
+  /** 19.0c: one RE of Combat Mode units in the port that do not move (or an Engineer-Capable unit, 13.8d) inflicts one hit on a friendly port. */
+  | (ActionEnvelope & { readonly kind: 'REDUCE_PORT'; readonly hexId: HexId; readonly pieceIds: readonly PieceId[]; readonly engineerId: PieceId | null })
+  /** 19.0d: an Engineer-Capable unit repairs one hit of a friendly port for 1 SP. */
+  | (ActionEnvelope & {
+    readonly kind: 'REPAIR_PORT';
+    readonly hexId: HexId;
+    readonly engineerId: PieceId;
+    readonly payments: readonly { readonly sourcePieceId: PieceId; readonly tokens: number }[];
+  })
   /** 13.9-4: two reduced aircraft of the same type, values and status in one hex combine into one full-strength aircraft. */
   | (ActionEnvelope & { readonly kind: 'COMBINE_AIRCRAFT'; readonly aircraftIds: readonly PieceId[] });
 
@@ -891,6 +947,10 @@ export type RuleEvent =
   | { readonly kind: 'HEDGEHOG_CAPTURED'; readonly sequence: number; readonly pieceId: PieceId; readonly hexId: HexId; readonly capturerId: PlayerId; readonly level: number }
   | { readonly kind: 'RAIL_MOVED'; readonly sequence: number; readonly playerId: PlayerId; readonly path: readonly HexId[]; readonly unitIds: readonly PieceId[]; readonly tokens: number; readonly quarters: number }
   /** 13.3h: a station changed hands because it now lies clearly on one side's side of the front. */
+  | { readonly kind: 'SEA_MOVED'; readonly sequence: number; readonly playerId: PlayerId; readonly fromHexId: HexId | null; readonly toHexId: HexId; readonly unitIds: readonly PieceId[]; readonly tokens: number; readonly quarters: number }
+  | { readonly kind: 'PORT_CAPTURED'; readonly sequence: number; readonly hexId: HexId; readonly capturerId: PlayerId }
+  | { readonly kind: 'PORT_DAMAGED'; readonly sequence: number; readonly hexId: HexId; readonly hits: number; readonly cause: 'BARRAGE' | 'REDUCTION' }
+  | { readonly kind: 'PORT_REPAIRED'; readonly sequence: number; readonly hexId: HexId; readonly hits: number }
   | { readonly kind: 'RAIL_CONTROL_CHANGED'; readonly sequence: number; readonly hexId: HexId; readonly controllerId: PlayerId }
   | { readonly kind: 'TRAINBUSTING_CHANGED'; readonly sequence: number; readonly hexId: HexId; readonly ownerId: PlayerId; readonly placed: boolean };
 

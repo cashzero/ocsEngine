@@ -18,7 +18,7 @@ import {
 } from '../rules/index.js';
 import type {
   AirDraft, AirOverview, AirRefit, Arrival, AttackDraft, AwayReport, AirRebuild, BuildOption, GroundRebuild, ConstructionOverview, CombatSheet, EndStep, HandoffInfo, MoveBlocker, MovePreview, MoveRangeEntry,
-  DropPlanDraft, DropPlanView, LedgerLine, RailPanel, SupplyNeed, TransportCarrier, UiListener, UiSelection, UiSnapshot, UnitAction,
+  DropPlanDraft, DropPlanView, LedgerLine, RailPanel, SeaPanel, SupplyNeed, TransportCarrier, UiListener, UiSelection, UiSnapshot, UnitAction,
 } from './model.js';
 import {
   buildCombatReports, describeRecord, nominalNextStep, playerTurnTrack,
@@ -71,6 +71,11 @@ export interface UiController {
   readonly setRailTokens: (dumpId: string, tokens: number) => void;
   readonly chooseRailDestination: (hexId: string) => void;
   readonly confirmRailMove: () => Promise<void>;
+  /** Shipping (19.0f) from the selected unit's port or, with nothing selected, from the reinforcement Box. */
+  readonly toggleSeaUnit: (pieceId: string) => void;
+  readonly setSeaTokens: (dumpId: string, tokens: number) => void;
+  readonly chooseSeaDestination: (hexId: string) => void;
+  readonly confirmSeaMove: () => Promise<void>;
   readonly respondToDecision: (choiceId: string) => Promise<void>;
   /** Pay the pending combat-supply decision from the largest dumps, consumer by consumer. */
   readonly autoPay: () => Promise<void>;
@@ -93,7 +98,7 @@ export interface UiController {
   /** Start planning an air mission of this type; then click a highlighted target hex. */
   readonly planAirMission: (mission: AirMissionKind) => void;
   readonly toggleAirAircraft: (pieceId: string) => void;
-  readonly setAirTarget: (target: 'COMBAT_UNITS' | 'AIR_BASE') => void;
+  readonly setAirTarget: (target: 'COMBAT_UNITS' | 'AIR_BASE' | 'PORT') => void;
   readonly declareAirMission: () => Promise<void>;
   readonly cancelAirMission: () => void;
   /** Start planning Air Base construction with the selected Engineer-Capable unit; then click a highlighted hex. */
@@ -132,7 +137,7 @@ export interface UiController {
 interface AirDraftInput {
   readonly mission: AirMissionKind;
   readonly targetHexId: string | null;
-  readonly target: 'COMBAT_UNITS' | 'AIR_BASE' | null;
+  readonly target: 'COMBAT_UNITS' | 'AIR_BASE' | 'PORT' | null;
   readonly selectedIds: readonly PieceId[];
   /** Air Transport and Air Drop: where the cargo is loaded, which Transports carry it and how they fly, the escorts, the units and Tokens. */
   readonly baseHexId?: string | null;
@@ -255,6 +260,8 @@ class DefaultUiController implements UiController {
   #dropDraft: { readonly unitIds: readonly PieceId[]; readonly hexId: string | null; readonly turn: number | null } | null = null;
   /** A rail move being put together (13.3): units ticked, Tokens per dump, and the destination; kept while the hex stays selected. */
   #railDraft: { readonly fromHexId: string; readonly unitIds: ReadonlySet<string>; readonly tokens: ReadonlyMap<string, number>; readonly toHexId: string | null } | null = null;
+  /** A shipment being put together (19.0f); `fromHexId` null is the reinforcement Box. */
+  #seaDraft: { readonly fromHexId: string | null; readonly unitIds: ReadonlySet<string>; readonly tokens: ReadonlyMap<string, number>; readonly toHexId: string | null } | null = null;
   #rebuildSelection = new Map<string, { readonly aircraftIds: readonly PieceId[] | null; readonly baseId: PieceId | null }>();
   /** Per hex of Repls: the units chosen (null: the default rebuild) and the truck points (null: the default). */
   #unitRebuildSelection = new Map<string, { readonly units: readonly UnitRebuild[] | null; readonly truckPoints: number | null }>();
@@ -743,6 +750,11 @@ class DefaultUiController implements UiController {
     const stepActions = this.#stepActions(enabled);
     const rail = ownSelected?.location.kind === 'ON_MAP' && view.metadata.lifecycle === 'ACTIVE' && !view.privacyLocked && enabled('RAIL_MOVE')
       ? this.#railPanel(ownSelected.location.hexId) : null;
+    // 19.0f: a selected unit in a friendly port ships from there; with nothing selected, the Box ships (a sea-landing side).
+    const seaOrigin = ownSelected?.location.kind === 'ON_MAP'
+      ? (view.projection?.ports?.some(({ hexId, controllerId }) => hexId === (ownSelected.location as { hexId: string }).hexId && controllerId === view.playerId) ? ownSelected.location.hexId : undefined)
+      : selectedPiece === null ? null : undefined;
+    const sea = seaOrigin !== undefined && view.metadata.lifecycle === 'ACTIVE' && !view.privacyLocked && enabled('SEA_MOVE') ? this.#seaPanel(seaOrigin) : null;
     const collapseHexes = ownSelected && ownSelected.currentFaceId === 'extender' && ownSelected.location.kind === 'ON_MAP' && enabled('COLLAPSE_EXTENDER')
       ? this.#cached(`collapse|${ownSelected.id}`, () => this.#session.getActionFamilies(seatId) && this.#collapseHexes(ownSelected)) : [];
     const pending = this.#decision();
@@ -803,6 +815,7 @@ class DefaultUiController implements UiController {
       stepActions,
       collapseHexes,
       rail,
+      sea,
       endStep: this.#endStep(),
       decision: ownDecision ? { ...ownDecision, options: distinctLabels(ownDecision.options) } : null,
       decisionSeatId: pending?.seatId ?? null,
@@ -935,7 +948,7 @@ class DefaultUiController implements UiController {
     if (input.mission === 'AIR_TRANSPORT' || input.mission === 'AIR_DROP') return this.#transportDraftView(input);
     const byHex = this.#airOptions().get(input.mission);
     const byTarget = input.targetHexId ? byHex?.get(input.targetHexId) : undefined;
-    const targetOptions = [...(byTarget?.keys() ?? [])].filter((key): key is 'COMBAT_UNITS' | 'AIR_BASE' => key !== 'HEX');
+    const targetOptions = [...(byTarget?.keys() ?? [])].filter((key): key is 'COMBAT_UNITS' | 'AIR_BASE' | 'PORT' => key !== 'HEX');
     const eligible = byTarget?.get(input.target ?? 'HEX') ?? [];
     const maximum = input.mission === 'BARRAGE' || input.mission === 'TRAINBUSTING' || input.mission === 'BASE_TRANSFER' ? 4 : 1;
     const selected = input.selectedIds.filter((id) => eligible.includes(id));
@@ -1329,7 +1342,7 @@ class DefaultUiController implements UiController {
     const draft = this.#airDraft!;
     const byTarget = this.#airOptions().get(draft.mission)?.get(hexId);
     if (!byTarget) return;
-    const target = byTarget.has('COMBAT_UNITS') ? 'COMBAT_UNITS' as const : byTarget.has('AIR_BASE') ? 'AIR_BASE' as const : null;
+    const target = byTarget.has('COMBAT_UNITS') ? 'COMBAT_UNITS' as const : byTarget.has('AIR_BASE') ? 'AIR_BASE' as const : byTarget.has('PORT') ? 'PORT' as const : null;
     const eligible = byTarget.get(target ?? 'HEX') ?? [];
     const maximum = draft.mission === 'BARRAGE' || draft.mission === 'TRAINBUSTING' || draft.mission === 'BASE_TRANSFER' ? 4 : 1;
     this.#airDraft = draft.mission === 'AIR_TRANSPORT' || draft.mission === 'AIR_DROP'
@@ -1384,7 +1397,7 @@ class DefaultUiController implements UiController {
     this.#emit();
   };
 
-  setAirTarget = (target: 'COMBAT_UNITS' | 'AIR_BASE'): void => {
+  setAirTarget = (target: 'COMBAT_UNITS' | 'AIR_BASE' | 'PORT'): void => {
     if (!this.#airDraft) return;
     const eligible = this.#airOptions().get(this.#airDraft.mission)?.get(this.#airDraft.targetHexId ?? '')?.get(target) ?? [];
     this.#airDraft = { ...this.#airDraft, target, selectedIds: eligible.slice(0, this.#airDraft.mission === 'BARRAGE' ? 4 : 1) };
@@ -1525,6 +1538,22 @@ class DefaultUiController implements UiController {
             : `Reduce the hedgehog at ${printedHexLabel(where)} ${result} (no SP; crew ${crewNames(action.pieceIds).join(', ')} cannot move this phase)`, action);
         }
       }
+      // 19.0c-d: wreck a friendly port one hit before the enemy takes it, or repair a hit (engineer, 1 SP).
+      if (enabled('REDUCE_PORT')) {
+        for (const action of this.#candidates('REDUCE_PORT', piece.id)) {
+          if (action.kind !== 'REDUCE_PORT') continue;
+          add('PORT', action.engineerId
+            ? `Inflict a hit on the port at ${printedHexLabel(action.hexId)} (engineer work, no SP; ${action.engineerId === piece.id ? 'this unit' : crewNames([action.engineerId])[0]} cannot move)`
+            : `Inflict a hit on this port (no SP; crew ${crewNames(action.pieceIds).join(', ')} cannot move this phase)`, action);
+        }
+      }
+      if (enabled('REPAIR_PORT')) {
+        for (const action of this.#candidates('REPAIR_PORT', piece.id)) {
+          if (action.kind !== 'REPAIR_PORT') continue;
+          const sources = action.payments.map(({ sourcePieceId }) => this.#dumpLabel(sourcePieceId)).join(', ');
+          add('PORT', `Repair one hit of the port at ${printedHexLabel(action.hexId)} (1 SP from ${sources}; this unit cannot move)`, action);
+        }
+      }
       if (enabled('COMBINE_AIRCRAFT')) add('AIR', 'Combine with the other reduced aircraft of the same type here', this.#candidates('COMBINE_AIRCRAFT', piece.id)[0]);
       return distinctLabels(actions);
     });
@@ -1637,6 +1666,91 @@ class DefaultUiController implements UiController {
       `Moved ${cargo} by rail from ${printedHexLabel(panel.hexId)} to ${printedHexLabel(to)} for ${quartersLabel(panel.costQuarters ?? 0)} Rail Cap.`);
   };
 
+  /** The shipment from `fromHexId` (null: the Box) as the player has ticked it so far, with its cost and what stops it (19.0f). */
+  #seaPanel(fromHexId: string | null): SeaPanel | null {
+    const seatId = this.#activeSeat();
+    const options = this.#cached(`sea|${fromHexId ?? 'box'}`, () => this.#session.getSeaMoveOptions(seatId, fromHexId as never).value);
+    if (!options || options.capacityPoints === null || options.problem !== null || options.destinations.length === 0) return null;
+    if (options.units.length === 0 && options.dumps.length === 0) return null;
+    const draft = this.#seaDraft?.fromHexId === fromHexId ? this.#seaDraft : null;
+    const pieces = this.#pieces();
+    const units = options.units.map(({ pieceId, quarters, problem }) => {
+      const piece = pieces.find(({ id }) => id === pieceId);
+      return { pieceId, label: piece ? unitLabel(this.#scenario, piece) : 'Unit', quarters, problem, selected: draft?.unitIds.has(pieceId) === true };
+    });
+    const dumps = options.dumps.map(({ pieceId, loadableTokens }) => ({
+      pieceId, holds: pieces.find(({ id }) => id === pieceId)?.resourceQuantity ?? 0, loadableTokens, tokens: Math.min(loadableTokens, draft?.tokens.get(pieceId) ?? 0),
+    }));
+    const destinations = options.destinations.map(({ hexId, remainingTokens }) => ({ hexId, remainingTokens }));
+    const toHexId = draft?.toHexId && destinations.some(({ hexId }) => hexId === draft.toHexId) ? draft.toHexId : null;
+    const supply = dumps.filter(({ tokens }) => tokens > 0).map(({ pieceId, tokens }) => ({ sourcePieceId: pieceId as PieceId, tokens }));
+    const unitIds = units.filter(({ selected }) => selected).map(({ pieceId }) => pieceId as PieceId);
+    let costQuarters: number | null = null;
+    let allowed = false;
+    let blockers: string[] = [];
+    if (toHexId !== null && (supply.length > 0 || unitIds.length > 0)) {
+      const explanation = this.#explain(this.#seaAction(fromHexId, toHexId, unitIds, supply));
+      const cost = explanation.facts.find(({ key }) => key === 'sea.cost')?.value;
+      costQuarters = typeof cost === 'string' && cost !== '' ? quartersOf(cost) : null;
+      allowed = explanation.allowed;
+      blockers = explanation.reasons.filter(({ allowed: ok }) => !ok).map(({ message }) => message);
+    }
+    const fromRemainingTokens = fromHexId === null ? null
+      : this.#view(seatId).projection?.ports?.find(({ hexId }) => hexId === fromHexId)?.remainingTokens ?? 0;
+    return { fromHexId, capacityPoints: options.capacityPoints, remainingQuarters: options.remainingQuarters, fromRemainingTokens, units, dumps, destinations, toHexId, costQuarters, allowed, blockers };
+  }
+
+  #seaAction(fromHexId: string | null, toHexId: string, unitIds: readonly PieceId[], supply: readonly { readonly sourcePieceId: PieceId; readonly tokens: number }[]): GameAction {
+    return {
+      kind: 'SEA_MOVE', fromHexId, toHexId, unitIds, supply,
+      actionId: this.#actionId('sea'), actorId: this.#view(this.#activeSeat()).playerId, expectedRevision: this.#session.getRevision(),
+    } as GameAction;
+  }
+
+  #seaDraftFor(fromHexId: string | null) {
+    return this.#seaDraft?.fromHexId === fromHexId ? this.#seaDraft : { fromHexId, unitIds: new Set<string>(), tokens: new Map<string, number>(), toHexId: null };
+  }
+
+  toggleSeaUnit = (pieceId: string): void => {
+    const panel = this.getSnapshot().sea;
+    if (!panel) return;
+    const draft = this.#seaDraftFor(panel.fromHexId);
+    const unitIds = new Set(draft.unitIds);
+    if (unitIds.has(pieceId)) unitIds.delete(pieceId); else unitIds.add(pieceId);
+    this.#seaDraft = { ...draft, unitIds };
+    this.#emit();
+  };
+
+  setSeaTokens = (dumpId: string, tokens: number): void => {
+    const panel = this.getSnapshot().sea;
+    if (!panel || !Number.isSafeInteger(tokens) || tokens < 0) return;
+    const draft = this.#seaDraftFor(panel.fromHexId);
+    this.#seaDraft = { ...draft, tokens: new Map([...draft.tokens, [dumpId, tokens]]) };
+    this.#emit();
+  };
+
+  /** The unloading port: chosen from the list or by clicking a highlighted port on the map. */
+  chooseSeaDestination = (hexId: string): void => {
+    const panel = this.getSnapshot().sea;
+    if (!panel || !panel.destinations.some(({ hexId: to }) => to === hexId)) return;
+    this.#seaDraft = { ...this.#seaDraftFor(panel.fromHexId), toHexId: hexId };
+    this.#emit();
+  };
+
+  confirmSeaMove = async (): Promise<void> => {
+    const panel = this.getSnapshot().sea;
+    if (!panel || !panel.allowed || panel.toHexId === null) return;
+    const unitIds = panel.units.filter(({ selected }) => selected).map(({ pieceId }) => pieceId as PieceId);
+    const supply = panel.dumps.filter(({ tokens }) => tokens > 0).map(({ pieceId, tokens }) => ({ sourcePieceId: pieceId as PieceId, tokens }));
+    const tokens = supply.reduce((total, { tokens: quantity }) => total + quantity, 0);
+    const cargo = [unitIds.length > 0 ? `${unitIds.length} unit${unitIds.length === 1 ? '' : 's'}` : '', tokens > 0 ? `${tokens}T` : ''].filter(Boolean).join(' and ');
+    const to = panel.toHexId;
+    const from = panel.fromHexId;
+    this.#seaDraft = null;
+    await this.#dispatch(this.#seaAction(from, to, unitIds, supply),
+      `Shipped ${cargo} ${from === null ? 'from the reinforcement Box' : `from ${printedHexLabel(from)}`} to ${printedHexLabel(to)} for ${quartersLabel(panel.costQuarters ?? 0)} Sea Cap.`);
+  };
+
   #collapseHexes(piece: ProjectedPiece): readonly string[] {
     if (piece.location.kind !== 'ON_MAP') return [];
     const origin = piece.location.hexId;
@@ -1687,7 +1801,7 @@ class DefaultUiController implements UiController {
     return () => this.#listeners.delete(listener);
   };
 
-  #resetIntent(): void { this.#destination = null; this.#draft = null; this.#airDraft = null; this.#buildDraft = null; this.#dropDraft = null; this.#railDraft = null; }
+  #resetIntent(): void { this.#destination = null; this.#draft = null; this.#airDraft = null; this.#buildDraft = null; this.#dropDraft = null; this.#railDraft = null; this.#seaDraft = null; }
 
   selectPiece = (pieceId: string | null): void => {
     const piece = this.#pieces().find(({ id }) => id === pieceId);
@@ -1760,6 +1874,10 @@ class DefaultUiController implements UiController {
     }
     if (snapshot.rail && snapshot.rail.destinations.some(({ hexId: to }) => to === hexId)) {
       this.chooseRailDestination(hexId);
+      return;
+    }
+    if (snapshot.sea && snapshot.sea.destinations.some(({ hexId: to }) => to === hexId) && (snapshot.sea.units.some(({ selected }) => selected) || snapshot.sea.dumps.some(({ tokens }) => tokens > 0))) {
+      this.chooseSeaDestination(hexId);
       return;
     }
     if (snapshot.collapseHexes.includes(hexId) && snapshot.selectedPiece) {

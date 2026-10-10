@@ -26,6 +26,8 @@ import {
   validateUnload,
 } from '../supply/transport.js';
 import { validateRailMove } from '../supply/rail-cap.js';
+import { validateSeaMove } from '../supply/sea-cap.js';
+import { validateReducePort, validateRepairPort } from '../port/port.js';
 import { validateDecisionResponse, validateTransactionCancel, validateTransactionCommit } from '../transaction/transaction.js';
 import { violation } from '../validation/violation.js';
 
@@ -108,6 +110,9 @@ export const validateGameAction = (state: GameState, action: GameAction): Action
       case 'UPDATE_AIR_DROP_PLAN': issues.push(...validateUpdateDropPlan(state, action)); break;
       case 'COMBINE_AIRCRAFT': issues.push(...validateCombineAircraft(state, action)); break;
       case 'RAIL_MOVE': issues.push(...validateRailMove(state, action)); break;
+      case 'SEA_MOVE': issues.push(...validateSeaMove(state, action)); break;
+      case 'REDUCE_PORT': issues.push(...validateReducePort(state, action)); break;
+      case 'REPAIR_PORT': issues.push(...validateRepairPort(state, action)); break;
     }
   }
   return { allowed: issues.length === 0, violations: issues };

@@ -3,6 +3,7 @@ export * from './engine.js';
 export * from './combat/index.js';
 export * from './air/index.js';
 export * from './hedgehog/index.js';
+export * from './port/index.js';
 export * from './replacement/index.js';
 export * from './lifecycle/index.js';
 export * from './kernel/index.js';

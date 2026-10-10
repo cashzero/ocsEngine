@@ -1,3 +1,4 @@
+import { capturePort } from '../port/port.js';
 import { stableSort, type HexId, type PieceId, type PlayerId } from '../../core/index.js';
 import { captureAirBase } from '../air/base.js';
 import { captureHedgehog } from '../hedgehog/hedgehog.js';
@@ -596,6 +597,8 @@ export const captureAt = (state: GameState, capturerId: PlayerId, hexId: HexId, 
   let next = captureAirBase(state, capturerId, hexId, byAdvance, events);
   // 9.14e: a hedgehog is simply captured.
   next = captureHedgehog(next, capturerId, hexId, events);
+  // 9.14h: so is a port, by an Attack-Capable unit.
+  next = capturePort(next, capturerId, hexId, events);
   const enemy = piecesAt(next, hexId).filter((piece) => piece.ownerId !== capturerId);
   // Extenders collapse first (9.14d); with no legal Hex they flip and are checked as trucks.
   for (const extender of enemy.filter((piece) => isExtender(next, piece))) {
