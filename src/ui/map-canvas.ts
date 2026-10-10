@@ -112,7 +112,7 @@ const ZOOM_STEP_PERCENT = 10;
  */
 const FRAME_COLUMNS = 32;
 const FRAME_ROWS = 24;
-/** Mostly room to zoom out: about 54% fits a 32x24 map and about 27% a 64x48 one (the largest New Game map). */
+/** Mostly room to zoom out: about 54% fits a 32x24 map and about 27% a 64x48 one. */
 const MIN_ZOOM_PERCENT = 20;
 const MAX_ZOOM_PERCENT = 150;
 const TILE = 512;

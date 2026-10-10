@@ -241,7 +241,7 @@ export const arrivingReinforcements = (state: GameState, playerId: PlayerId): re
 const blockedByEnemy = (state: GameState, playerId: PlayerId, hexId: HexId): boolean =>
   state.pieceState.pieces.some((other) => other.ownerId !== playerId && other.location.kind === 'ON_MAP' && other.location.hexId === hexId);
 
-/** Map-edge Hexes depend only on the map, so they are found once per map, not per query (64×48 is 3,072 Hexes). */
+/** Map-edge Hexes depend only on the map, so they are found once per map, not per query (256×256 is 65,536 Hexes). */
 const mapEdgeCache = new WeakMap<GameState['scenario']['mapDefinition'], readonly HexId[]>();
 const mapEdgeHexes = (state: GameState): readonly HexId[] => {
   const map = state.scenario.mapDefinition;

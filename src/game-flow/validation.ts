@@ -50,7 +50,7 @@ export const validateNewGameRequest = (request: NewGameRequest): readonly GameFl
  * Map sizes a player may choose for a New Game. The map generator itself accepts 8x8 and up so
  * rule tests can build small contact maps; operations smaller than this are not offered to players.
  */
-export const NEW_GAME_MAP_LIMITS = { minWidth: 16, maxWidth: 64, minHeight: 12, maxHeight: 48 } as const;
+export const NEW_GAME_MAP_LIMITS = { minWidth: 16, maxWidth: 256, minHeight: 12, maxHeight: 256 } as const;
 
 export const validateNewGameMapSize = (request: NewGameRequest): readonly GameFlowFailure[] => {
   const { minWidth, maxWidth, minHeight, maxHeight } = NEW_GAME_MAP_LIMITS;
