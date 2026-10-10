@@ -33,7 +33,10 @@ const findRailRow = async (wants) => {
   for (const [index, name] of names.entries()) {
     await pickRow(index);
     await tab(h, 'Unit').catch(() => {});
-    if (!(await has(h, '.rail-panel'))) continue;
+    // Rail transport opens only when the player presses its button.
+    if (await has(h, '.rail-panel')) throw new Error('The rail panel is open before Rail transport was pressed.');
+    if (!(await has(h, '#open-rail'))) continue;
+    await click(h, '#open-rail', { settle: 250 });
     if (await wants()) return { index, name };
   }
   return null;
@@ -72,15 +75,15 @@ try {
   if (!found) throw new Error('No Allied unit stands where it can entrain.');
   const first = await railText();
   h.note(`Rail panel for ${found.name}: ${first.slice(0, 300)}`);
-  record(h, 'RAIL-12', 'Selecting a unit at a station shows Rail from <hex> with the Rail Cap left (5 of 5)', first.slice(0, 160), /Rail from \d{4}/u.test(first) && /Rail Cap 5 of 5 left/u.test(first));
+  record(h, 'RAIL-12', 'Selecting a unit at a station shows Rail from <hex> with the Rail Cap left (5 of 5)', first.slice(0, 160), /Rail transport[a-z ]* from \d{4}/u.test(first) && /Rail Cap 5 of 5 left/u.test(first));
   const unitBox = page.locator('.rail-panel [data-rail-unit]:not([disabled])').first();
   const unitId = await unitBox.getAttribute('data-rail-unit');
-  await unitBox.check();
+  await unitBox.setChecked(true);
   await page.waitForTimeout(250);
   const destinations = await highlighted();
   record(h, 'RAIL-12', 'The stations the cargo can reach are highlighted on the map', `${destinations.length} highlighted: ${destinations.slice(0, 6).map(printed).join(', ')}`, destinations.length > 0);
   // The farthest highlighted station from the entraining hex, picked with the map's own cursor.
-  const fromLabel = first.match(/Rail from (\d{4})/u)[1];
+  const fromLabel = first.match(/Rail transport[a-z ]* from (\d{4})/u)[1];
   const far = destinations.map(printed).sort((left, right) => {
     const d = (label) => Math.abs(Number(label.slice(0, 2)) - Number(fromLabel.slice(0, 2))) + Math.abs(Number(label.slice(2)) - Number(fromLabel.slice(2)));
     return d(right) - d(left);
@@ -123,7 +126,7 @@ try {
   await field.press('Tab');
   await page.waitForTimeout(250);
   const spDestinations = (await highlighted()).map(printed);
-  const spFrom = offMap.match(/Rail from (\d{4})/u)[1];
+  const spFrom = offMap.match(/Rail transport[a-z ]* from (\d{4})/u)[1];
   const spTarget = spDestinations.sort((left, right) => Math.abs(Number(right.slice(0, 2)) - Number(spFrom.slice(0, 2))) - Math.abs(Number(left.slice(0, 2)) - Number(spFrom.slice(0, 2))))[0];
   await gotoHex(h, spTarget, { enter: true });
   const spReady = await railText();

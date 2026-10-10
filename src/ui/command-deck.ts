@@ -711,10 +711,11 @@ const railSection = (snapshot: UiSnapshot): TemplateResult => {
   const cost = rail.costQuarters === null ? html`<p class="hint">Tick units or enter Tokens, then choose where to detrain.</p>`
     : html`<p class="summary-line">Costs ${railPoints(rail.costQuarters)} of ${railPoints(rail.remainingQuarters)} Rail Cap left</p>`;
   const blockers = rail.blockers.length > 0 ? html`<ul class="blockers">${rail.blockers.map((message) => html`<li>${withHexLabels(message)}</li>`)}</ul>` : nothing;
-  return html`<div class="unit-actions rail-panel"><strong>Rail from ${printedHexLabel(rail.hexId)}</strong>
+  const what = rail.units.length > 0 ? 'Rail transport' : 'Rail transport of supply';
+  return html`<div class="unit-actions rail-panel"><strong>${what} from ${printedHexLabel(rail.hexId)}</strong>
     <p class="summary-line">Rail Cap ${railPoints(rail.remainingQuarters)} of ${rail.capacityPoints} left this Movement Phase <cite>13.3b</cite>${rail.arrivalTokens !== null ? html` · this turn's arrivals may entrain here (${rail.arrivalTokens}T) <cite>13.6b</cite>` : nothing}</p>
     ${units}${dumps}${destination}${cost}${blockers}
-    <button id="confirm-rail" class="primary" ?disabled=${!rail.allowed}>Move by rail</button>
+    <div class="chip-row"><button id="confirm-rail" class="primary" ?disabled=${!rail.allowed}>Move by rail</button><button id="close-rail">Cancel</button></div>
     <p class="hint">Units may not move again after detraining, and SP detrained cannot be loaded on trucks this phase (13.3e, 12.2a).</p></div>`;
 };
 
@@ -817,6 +818,7 @@ const unitTab = (snapshot: UiSnapshot, state: DeckState): TemplateResult => {
       : html`<p class="hint">No friendly truck in this hex. Move one here to load from this dump.</p>`}</div>`);
   }
   if (snapshot.rail) parts.push(railSection(snapshot));
+  else if (snapshot.railOffer) parts.push(html`<div class="unit-actions"><strong>Rail</strong><div class="chip-row"><button id="open-rail">${snapshot.railOffer === 'UNITS' ? 'Rail transport' : 'Rail transport (supply)'}</button></div></div>`);
   if (snapshot.sea) parts.push(seaSection(snapshot));
   if (snapshot.air.construction && !snapshot.air.construction.planning) parts.push(constructionSection(snapshot));
   if (snapshot.collapseHexes.length > 0) {

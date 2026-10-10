@@ -27,6 +27,10 @@ const start = async (request: NewGameRequest) => {
   const onRail = (role: string, accept: (panel: NonNullable<ReturnType<typeof controller.getSnapshot>['rail']>) => boolean = () => true) =>
     own().filter((piece) => piece.role === role).find((piece) => {
       controller.selectPiece(piece.id);
+      // The panel stays closed until the player presses Rail transport.
+      expect(controller.getSnapshot().rail).toBeNull();
+      if (controller.getSnapshot().railOffer === null) return false;
+      controller.openRail();
       const panel = controller.getSnapshot().rail;
       return panel !== null && accept(panel);
     });
@@ -39,6 +43,9 @@ describe('rail transport in the command deck (13.3)', () => {
     const { controller, own, onRail, configuration } = await start({ ...DEFAULT_NEW_GAME_REQUEST, seeds: { map: 1, oob: 1, deployment: 1, rules: 1 } });
     const dump = onRail('DUMP');
     expect(dump).toBeDefined();
+    // A dump offers only its SP, never the units standing with it.
+    expect(controller.getSnapshot().rail!.units).toEqual([]);
+    expect(controller.getSnapshot().rail!.dumps.map(({ pieceId }) => pieceId)).toEqual([dump!.id]);
     const before = controller.getSnapshot().rail!;
     const points = configuration.railCapacity!.find(({ playerId }) => playerId === controller.getSnapshot().view.playerId)!.points;
     expect(before).toMatchObject({ capacityPoints: points, remainingQuarters: points * 4, toHexId: null, costQuarters: null, allowed: false });
@@ -66,6 +73,7 @@ describe('rail transport in the command deck (13.3)', () => {
     expect(arrived?.resourceQuantity).toBeGreaterThanOrEqual(4);
     expect(controller.getSnapshot().notice).toMatch(/Moved 4T by rail/u);
     controller.selectPiece(arrived!.id);
+    controller.openRail();
     const after = controller.getSnapshot().rail;
     // 12.2a: what just detrained cannot entrain again this phase.
     if (after) expect(after.remainingQuarters).toBe(points * 4 - ready.costQuarters!);
@@ -88,7 +96,9 @@ describe('rail transport in the command deck (13.3)', () => {
     const panel = controller.getSnapshot().rail!;
     const rider = panel.units.find(({ problem, quarters }) => problem === null && quarters <= panel.remainingQuarters);
     expect(rider).toBeDefined();
-    controller.toggleRailUnit(rider!.pieceId);
+    expect(panel.dumps).toEqual([]);
+    // The selected unit comes ticked when the panel opens; the test only needs the rider ticked.
+    if (!controller.getSnapshot().rail!.units.find(({ pieceId }) => pieceId === rider!.pieceId)!.selected) controller.toggleRailUnit(rider!.pieceId);
     // The farthest destination the Rail Cap pays for.
     const destination = [...panel.destinations].reverse().find(({ hexId }) => {
       controller.chooseRailDestination(hexId);

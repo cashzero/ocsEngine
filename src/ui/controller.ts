@@ -70,6 +70,8 @@ export interface UiController {
   readonly toggleRailUnit: (pieceId: string) => void;
   readonly setRailTokens: (dumpId: string, tokens: number) => void;
   readonly chooseRailDestination: (hexId: string) => void;
+  readonly openRail: () => void;
+  readonly closeRail: () => void;
   readonly confirmRailMove: () => Promise<void>;
   /** Shipping (19.0f) from the selected unit's port or, with nothing selected, from the reinforcement Box. */
   readonly toggleSeaUnit: (pieceId: string) => void;
@@ -262,6 +264,8 @@ class DefaultUiController implements UiController {
   /** A rail move being put together (13.3): units ticked, Tokens per dump, and the destination; kept while the hex stays selected. */
   #railDraft: { readonly fromHexId: string; readonly unitIds: ReadonlySet<string>; readonly tokens: ReadonlyMap<string, number>; readonly toHexId: string | null } | null = null;
   /** A shipment being put together (19.0f); `fromHexId` null is the reinforcement Box. */
+  /** The piece whose Rail transport panel the player opened (13.3); the panel shows only while that piece stays selected. */
+  #railOpen: string | null = null;
   #seaDraft: { readonly fromHexId: string | null; readonly unitIds: ReadonlySet<string>; readonly tokens: ReadonlyMap<string, number>; readonly toHexId: string | null } | null = null;
   #rebuildSelection = new Map<string, { readonly aircraftIds: readonly PieceId[] | null; readonly baseId: PieceId | null }>();
   /** Per hex of Repls: the units chosen (null: the default rebuild) and the truck points (null: the default). */
@@ -750,8 +754,11 @@ class DefaultUiController implements UiController {
       && view.projection?.sequence.phase === 'MOVEMENT' && segment === 'MOVEMENT'
       ? this.#cached(`transport|${ownSelected.id}`, () => this.#session.getTransportOptions(seatId, ownSelected.id).value) : null;
     const stepActions = this.#stepActions(enabled);
-    const rail = ownSelected?.location.kind === 'ON_MAP' && view.metadata.lifecycle === 'ACTIVE' && !view.privacyLocked && enabled('RAIL_MOVE')
-      ? this.#railPanel(ownSelected.location.hexId) : null;
+    // A unit selected offers its units to entrain, a dump offers its SP; the panel opens only when the player asks for it.
+    const railFull = ownSelected?.location.kind === 'ON_MAP' && view.metadata.lifecycle === 'ACTIVE' && !view.privacyLocked && enabled('RAIL_MOVE')
+      ? this.#railPanel(ownSelected.location.hexId, ownSelected.role === 'DUMP' ? ownSelected.id : null) : null;
+    const rail = railFull && this.#railOpen === ownSelected?.id ? railFull : null;
+    const railOffer = railFull && !rail ? (railFull.units.length > 0 ? 'UNITS' as const : 'SUPPLY' as const) : null;
     // 19.0f: a selected unit in a friendly port ships from there; with nothing selected, the Box ships (a sea-landing side).
     const seaOrigin = ownSelected?.location.kind === 'ON_MAP'
       ? (view.projection?.ports?.some(({ hexId, controllerId }) => hexId === (ownSelected.location as { hexId: string }).hexId && controllerId === view.playerId) ? ownSelected.location.hexId : undefined)
@@ -818,6 +825,7 @@ class DefaultUiController implements UiController {
       stepActions,
       collapseHexes,
       rail,
+      railOffer,
       sea,
       endStep: this.#endStep(),
       decision: ownDecision ? { ...ownDecision, options: distinctLabels(ownDecision.options) } : null,
@@ -1586,17 +1594,17 @@ class DefaultUiController implements UiController {
   }
 
   /** The rail move from `hexId` as the player has ticked it so far, with what it costs and why it may not go (13.3). */
-  #railPanel(hexId: string): RailPanel | null {
+  #railPanel(hexId: string, dumpId: string | null): RailPanel | null {
     const seatId = this.#activeSeat();
     const options = this.#cached(`rail|${hexId}`, () => this.#session.getRailMoveOptions(seatId, hexId as never).value);
     if (!options || options.capacityPoints === null || options.entrainProblem !== null || options.destinations.length === 0) return null;
     const draft = this.#railDraft?.fromHexId === hexId ? this.#railDraft : null;
     const pieces = this.#pieces();
-    const units = options.units.map(({ pieceId, quarters, problem }) => {
+    const units = (dumpId === null ? options.units : []).map(({ pieceId, quarters, problem }) => {
       const piece = pieces.find(({ id }) => id === pieceId);
       return { pieceId, label: piece ? unitLabel(this.#scenario, piece) : 'Unit', quarters, problem, selected: draft?.unitIds.has(pieceId) === true };
     });
-    const dumps = options.dumps.map(({ pieceId, loadableTokens }) => ({
+    const dumps = options.dumps.filter(({ pieceId }) => pieceId === dumpId).map(({ pieceId, loadableTokens }) => ({
       pieceId, holds: pieces.find(({ id }) => id === pieceId)?.resourceQuantity ?? 0, loadableTokens, tokens: Math.min(loadableTokens, draft?.tokens.get(pieceId) ?? 0),
     }));
     const destinations = options.destinations.map(({ hexId: to, halves, path }) => ({ hexId: to, halves, hexes: path.length - 1 }));
@@ -1613,6 +1621,7 @@ class DefaultUiController implements UiController {
       allowed = explanation.allowed;
       blockers = explanation.reasons.filter(({ allowed: ok }) => !ok).map(({ message }) => message);
     }
+    if (units.length === 0 && dumps.length === 0) return null;
     return {
       hexId, capacityPoints: options.capacityPoints, remainingQuarters: options.remainingQuarters,
       arrivalTokens: options.arrival && options.dumps.length > 0 ? options.arrival.tokens : null,
@@ -1626,6 +1635,18 @@ class DefaultUiController implements UiController {
       actionId: this.#actionId('rail'), actorId: this.#view(this.#activeSeat()).playerId, expectedRevision: this.#session.getRevision(),
     } as GameAction;
   }
+
+  /** The Rail transport button: start a fresh draft for the selected piece (a unit comes ticked) and show the panel. */
+  openRail = (): void => {
+    const pieceId = this.#selection.pieceId;
+    const piece = this.#pieces().find(({ id }) => id === pieceId);
+    if (!piece || piece.location.kind !== 'ON_MAP') return;
+    this.#railDraft = { fromHexId: piece.location.hexId, unitIds: new Set(piece.role === 'DUMP' ? [] : [piece.id]), tokens: new Map(), toHexId: null };
+    this.#railOpen = piece.id;
+    this.#emit();
+  };
+
+  closeRail = (): void => { this.#railOpen = null; this.#railDraft = null; this.#emit(); };
 
   #railDraftFor(hexId: string) {
     return this.#railDraft?.fromHexId === hexId ? this.#railDraft : { fromHexId: hexId, unitIds: new Set<string>(), tokens: new Map<string, number>(), toHexId: null };
@@ -1668,6 +1689,7 @@ class DefaultUiController implements UiController {
     const cargo = [unitIds.length > 0 ? `${unitIds.length} unit${unitIds.length === 1 ? '' : 's'}` : '', tokens > 0 ? `${tokens}T` : ''].filter(Boolean).join(' and ');
     const to = panel.toHexId;
     this.#railDraft = null;
+    this.#railOpen = null;
     this.#selection = { ...this.#selection, hexId: to };
     await this.#dispatch(this.#railAction(panel.hexId, to, unitIds, supply),
       `Moved ${cargo} by rail from ${printedHexLabel(panel.hexId)} to ${printedHexLabel(to)} for ${quartersLabel(panel.costQuarters ?? 0)} Rail Cap.`);
@@ -1808,7 +1830,7 @@ class DefaultUiController implements UiController {
     return () => this.#listeners.delete(listener);
   };
 
-  #resetIntent(): void { this.#destination = null; this.#draft = null; this.#airDraft = null; this.#buildDraft = null; this.#dropDraft = null; this.#railDraft = null; this.#seaDraft = null; }
+  #resetIntent(): void { this.#destination = null; this.#draft = null; this.#airDraft = null; this.#buildDraft = null; this.#dropDraft = null; this.#railDraft = null; this.#railOpen = null; this.#seaDraft = null; }
 
   selectPiece = (pieceId: string | null): void => {
     const piece = this.#pieces().find(({ id }) => id === pieceId);
