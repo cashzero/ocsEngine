@@ -1217,6 +1217,8 @@ root.addEventListener('click', (event) => {
     void runUi(() => controller.transferSupply(transfer.dataset.transfer as 'LOAD' | 'UNLOAD', transfer.dataset.dump ?? null, tokens));
     return;
   }
+  if (closest('#open-rail')) { controller.openRail(); return; }
+  if (closest('#close-rail')) { controller.closeRail(); return; }
   if (closest('#confirm-rail')) { void runUi(() => controller.confirmRailMove()); return; }
   if (closest('#confirm-sea')) { void runUi(() => controller.confirmSeaMove()); return; }
   const divide = closest('[data-divide]');
