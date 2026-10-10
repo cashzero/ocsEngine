@@ -75,8 +75,9 @@ describe('generated objectives', () => {
     expect(objectivePoints('TOWN', { portCapacityTokens: 0, railDegree: 3 }) - objectivePoints('TOWN', { portCapacityTokens: 0, railDegree: 2 })).toBe(2);
     expect(objectivePoints('VILLAGE', { portCapacityTokens: 0, railDegree: 4 }) - objectivePoints('VILLAGE', { portCapacityTokens: 0, railDegree: 2 })).toBe(3);
     expect(objectivePoints('VILLAGE', { portCapacityTokens: 0, railDegree: 5 }) - objectivePoints('VILLAGE', { portCapacityTokens: 0, railDegree: 2 })).toBe(4);
-    // A double-track railroad through the Hex is worth one more.
-    expect(objectivePoints('TOWN', { portCapacityTokens: 0, railDegree: 2, multiTrack: true }) - objectivePoints('TOWN', { portCapacityTokens: 0, railDegree: 2 })).toBe(1);
+    // A rail junction with a double-track railroad through it is worth one more; a non-junction is not.
+    expect(objectivePoints('TOWN', { portCapacityTokens: 0, railDegree: 3, multiTrack: true }) - objectivePoints('TOWN', { portCapacityTokens: 0, railDegree: 3 })).toBe(1);
+    expect(objectivePoints('TOWN', { portCapacityTokens: 0, railDegree: 2, multiTrack: true })).toBe(objectivePoints('TOWN', { portCapacityTokens: 0, railDegree: 2 }));
   });
 
   it('starts each objective held by the side whose garrison stands on it (13.3h, OOB 0.4.0)', () => {
