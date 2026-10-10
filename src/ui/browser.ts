@@ -587,8 +587,10 @@ const engagementHelp = (engagement: Engagement): string => {
   return `${defending} holds most of the map and every objective, its line in Combat Mode, with garrisons dug into hedgehogs on its objectives (Level ${GENERATED_HEDGEHOG_LEVELS.OBJECTIVE}) and on key rail towns and road junctions (Level ${GENERATED_HEDGEHOG_LEVELS.KEY_POINT}); ${attacking} fields ${ATTACKER_FORCE_RATIO} times the divisions plus off-map air (Fighters and Tactical Bombers at an airfield off the map, flying in over its own map edge and back), assembles a few hexes away and moves first. ${attacking} wins by holding at least half the objective VP when the last turn ends; otherwise ${defending} wins.`;
 };
 
-const SEA_OPTIONS: readonly (readonly [NewGameSea, string])[] = [
-  ['NONE', 'No sea'], ['FLANK', 'Along the flank'], ['ATTACKER', 'Behind the attacker'],
+/** A meeting engagement has no attacker, so it offers no sea behind the attacker. */
+const seaOptionsOf = (engagement: Engagement): readonly (readonly [NewGameSea, string])[] => [
+  ['NONE', 'No sea'], ['FLANK', 'Along the flank'],
+  ...(attackerOf(engagement) === null ? [] : [['ATTACKER', 'Behind the attacker'] as const]),
 ];
 
 /** Which map edge the sea takes: Allied enters from the west edge, Axis from the east. */
@@ -596,7 +598,7 @@ const seaHelp = (sea: NewGameSea, engagement: Engagement): string => {
   if (sea === 'NONE') return 'An all-land map.';
   if (sea === 'FLANK') return 'The sea runs along the north edge; both sides advance west-east along the coast.';
   const attacker = attackerOf(engagement);
-  if (attacker === null) return 'A meeting engagement has no attacker, so the sea lies behind the Allied side, on the west edge.';
+  if (attacker === null) return 'A meeting engagement has no attacker, so there is no sea behind one.';
   return `The sea lies behind ${attacker === 'ALLIED' ? 'Allied, on the west' : 'Axis, on the east'} edge; its entry hexes are on the coast.`;
 };
 
@@ -756,6 +758,10 @@ const onNewGameInput = (event: Event): void => {
   }
   if (id === 'new-game-air-transport') newGameSettings = { ...newGameSettings, oob: { ...newGameSettings.oob, airTransport: input.value as AirForceLevel } };
   if (id === 'new-game-engagement') newGameSettings = { ...newGameSettings, engagement: input.value as Engagement };
+  // A meeting engagement has no attacker to put the sea behind, so a sea that would have been is moved to the flank.
+  if ((newGameSettings.engagement ?? 'MEETING') === 'MEETING' && newGameSeaOf(newGameSettings) === 'ATTACKER') {
+    newGameSettings = { ...newGameSettings, map: { ...newGameSettings.map, sea: 'FLANK' } };
+  }
   if (id === 'new-game-turn-limit') newGameSettings = { ...newGameSettings, turnLimit: value };
   if (id === 'new-game-start-month') newGameSettings = { ...newGameSettings, startMonth: value };
   // Rail Cap follows the forces until the player sets it; from then on it keeps the player's numbers.
@@ -933,7 +939,7 @@ const newGameDialog = () => {
         </fieldset>
         <fieldset><legend>Operational map</legend>
           ${select('new-game-style', 'Style', [['TEMPERATE_INLAND', 'Temperate inland'], ['MEDITERRANEAN_COAST', 'Mediterranean coast'], ['EASTERN_EUROPE', 'Eastern Europe (Russia)']], newGameSettings.map.style)}
-          ${select('new-game-sea', 'Sea', SEA_OPTIONS, newGameSeaOf(newGameSettings))}
+          ${select('new-game-sea', 'Sea', seaOptionsOf(newGameSettings.engagement ?? 'MEETING'), newGameSeaOf(newGameSettings))}
           <p class="field-help">${seaHelp(newGameSeaOf(newGameSettings), newGameSettings.engagement ?? 'MEETING')}</p>
           <div class="field-pair">
             ${number('new-game-width', 'Width', NEW_GAME_MAP_LIMITS.minWidth, NEW_GAME_MAP_LIMITS.maxWidth, newGameSettings.map.width)}
