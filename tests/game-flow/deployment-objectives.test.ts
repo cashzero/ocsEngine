@@ -18,12 +18,17 @@ const RAIL_EDGES = new Set(['edge:rail', 'edge:multi-track-rail']);
 const transportOf = (prepared: { readonly scenario: { readonly mapDefinition: { readonly hexsides: readonly { readonly hexsideId: unknown; readonly featureDefinitionIds: readonly unknown[] }[] } };
   readonly generatedMap: { readonly strategicRegions: { readonly ports: readonly { readonly hexId: unknown; readonly capacityTokens: number }[] } } }) => {
   const railDegree = new Map<string, number>();
+  const multiTrack = new Set<string>();
   for (const { hexsideId, featureDefinitionIds } of prepared.scenario.mapDefinition.hexsides) {
     if (!featureDefinitionIds.some((id) => RAIL_EDGES.has(String(id)))) continue;
-    for (const hexId of String(hexsideId).split('|')) railDegree.set(hexId, (railDegree.get(hexId) ?? 0) + 1);
+    const multi = featureDefinitionIds.some((id) => String(id) === 'edge:multi-track-rail');
+    for (const hexId of String(hexsideId).split('|')) {
+      railDegree.set(hexId, (railDegree.get(hexId) ?? 0) + 1);
+      if (multi) multiTrack.add(hexId);
+    }
   }
   const ports = new Map(prepared.generatedMap.strategicRegions.ports.map(({ hexId, capacityTokens }) => [String(hexId), capacityTokens] as const));
-  return (hexId: string) => ({ portCapacityTokens: ports.get(hexId) ?? 0, railDegree: railDegree.get(hexId) ?? 0 });
+  return (hexId: string) => ({ portCapacityTokens: ports.get(hexId) ?? 0, railDegree: railDegree.get(hexId) ?? 0, multiTrack: multiTrack.has(hexId) });
 };
 
 const objectivesOf =(request: NewGameRequest) => {
@@ -70,6 +75,8 @@ describe('generated objectives', () => {
     expect(objectivePoints('TOWN', { portCapacityTokens: 0, railDegree: 3 }) - objectivePoints('TOWN', { portCapacityTokens: 0, railDegree: 2 })).toBe(2);
     expect(objectivePoints('VILLAGE', { portCapacityTokens: 0, railDegree: 4 }) - objectivePoints('VILLAGE', { portCapacityTokens: 0, railDegree: 2 })).toBe(3);
     expect(objectivePoints('VILLAGE', { portCapacityTokens: 0, railDegree: 5 }) - objectivePoints('VILLAGE', { portCapacityTokens: 0, railDegree: 2 })).toBe(4);
+    // A double-track railroad through the Hex is worth one more.
+    expect(objectivePoints('TOWN', { portCapacityTokens: 0, railDegree: 2, multiTrack: true }) - objectivePoints('TOWN', { portCapacityTokens: 0, railDegree: 2 })).toBe(1);
   });
 
   it('starts each objective held by the side whose garrison stands on it (13.3h, OOB 0.4.0)', () => {
