@@ -32,11 +32,11 @@ export const normalizeMapGenerationOptions = (
   options: MapGenerationOptions,
 ): Result<NormalizedMapGenerationOptions, readonly MapGenerationError[]> => {
   const errors: MapGenerationError[] = [];
-  if (!Number.isSafeInteger(options.width) || options.width < 8 || options.width > 64) {
-    errors.push({ code: 'INVALID_OPTIONS', message: 'Width must be an integer from 8 to 64.', path: ['width'] });
+  if (!Number.isSafeInteger(options.width) || options.width < 8 || options.width > 256) {
+    errors.push({ code: 'INVALID_OPTIONS', message: 'Width must be an integer from 8 to 256.', path: ['width'] });
   }
-  if (!Number.isSafeInteger(options.height) || options.height < 8 || options.height > 48) {
-    errors.push({ code: 'INVALID_OPTIONS', message: 'Height must be an integer from 8 to 48.', path: ['height'] });
+  if (!Number.isSafeInteger(options.height) || options.height < 8 || options.height > 256) {
+    errors.push({ code: 'INVALID_OPTIONS', message: 'Height must be an integer from 8 to 256.', path: ['height'] });
   }
   if (!Number.isSafeInteger(options.seed) || options.seed < 0 || options.seed > 0xffff_ffff) {
     errors.push({ code: 'INVALID_OPTIONS', message: 'Seed must be a uint32.', path: ['seed'] });

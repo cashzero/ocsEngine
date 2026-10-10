@@ -224,7 +224,7 @@ describe('M6 deterministic random map pipeline', () => {
   });
 
   it('rejects invalid generation options without partial output', () => {
-    const generated = generateRandomMap({ width: 4, height: 99, seed: -1, style: 'TEMPERATE_INLAND' });
+    const generated = generateRandomMap({ width: 4, height: 257, seed: -1, style: 'TEMPERATE_INLAND' });
     expect(generated.ok).toBe(false);
     if (!generated.ok) expect(generated.error.map(({ path }) => path[0])).toEqual(['width', 'height', 'seed']);
     const sea = generateRandomMap({ ...options, sea: 'SOUTH' as never });
