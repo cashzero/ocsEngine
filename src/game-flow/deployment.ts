@@ -280,7 +280,7 @@ const supplyReach = (model: MovementCostModel, originHexId: HexId, blocked: Read
 /**
  * Victory points of an objective (user, 2026-10-10: supply is the heart of OCS, so the larger the settlement and the more
  * important the transport node, the more it is worth). An objective's VP is its settlement's points plus:
- * a port (19.0, by its capacity), a railroad through it (a detrainable station, 13.3c), and a rail junction (2 more at three rail directions, 3 at four, 4 at five, 5 at six). A village counts only as a
+ * a port (19.0, by its capacity), a railroad through it (a detrainable station, 13.3c), one more if that railroad is double-track (multi-track, 13.3a), and a rail junction (2 more at three rail directions, 3 at four, 4 at five, 5 at six). A village counts only as a
  * transport node; open country is never an objective.
  */
 export const GENERATED_MAJOR_CITY_OBJECTIVE_POINTS = 3;
@@ -289,6 +289,8 @@ export const GENERATED_VILLAGE_OBJECTIVE_POINTS = 0;
 /** A port is worth one VP per this many Tokens of printed capacity (19.0a), at least one. */
 export const GENERATED_PORT_CAPACITY_TOKENS_PER_VP = 4;
 export const GENERATED_RAIL_OBJECTIVE_POINTS = 1;
+/** A double-track (multi-track) railroad through the Hex is worth this much more (user, 2026-10-10). */
+export const GENERATED_MULTI_TRACK_OBJECTIVE_POINTS = 1;
 /** A rail junction is worth this much at the minimum degree, and {@link GENERATED_RAIL_JUNCTION_STEP_POINTS} more per extra rail direction (2, 3, 4, 5, ...). */
 export const GENERATED_RAIL_JUNCTION_OBJECTIVE_POINTS = 2;
 export const GENERATED_RAIL_JUNCTION_STEP_POINTS = 1;
@@ -303,11 +305,12 @@ const TOWN_FEATURE = 'settlement:town';
 const VILLAGE_FEATURE = 'settlement:village';
 
 /** An objective Hex's VP: its settlement plus its transport value (port, railroad, rail junction). */
-export const objectivePoints = (settlement: 'CITY' | 'TOWN' | 'VILLAGE', transport: { readonly portCapacityTokens: number; readonly railDegree: number }): number =>
+export const objectivePoints = (settlement: 'CITY' | 'TOWN' | 'VILLAGE', transport: { readonly portCapacityTokens: number; readonly railDegree: number; readonly multiTrack?: boolean }): number =>
   (settlement === 'CITY' ? GENERATED_MAJOR_CITY_OBJECTIVE_POINTS : settlement === 'TOWN' ? GENERATED_TOWN_OBJECTIVE_POINTS : GENERATED_VILLAGE_OBJECTIVE_POINTS)
   + (transport.portCapacityTokens > 0 ? Math.max(1, Math.round(transport.portCapacityTokens / GENERATED_PORT_CAPACITY_TOKENS_PER_VP)) : 0)
   + (transport.railDegree > 0 ? GENERATED_RAIL_OBJECTIVE_POINTS : 0)
-  + (transport.railDegree >= GENERATED_RAIL_JUNCTION_DEGREE
+  + (transport.multiTrack === true ? GENERATED_MULTI_TRACK_OBJECTIVE_POINTS : 0)
+  + (transport.railDegree >=GENERATED_RAIL_JUNCTION_DEGREE
     ? GENERATED_RAIL_JUNCTION_OBJECTIVE_POINTS + GENERATED_RAIL_JUNCTION_STEP_POINTS * (transport.railDegree - GENERATED_RAIL_JUNCTION_DEGREE) : 0);
 
 export interface GeneratedObjective {
@@ -360,11 +363,16 @@ const selectObjectives = (
   const candidates: Record<OobSide, { hexId: HexId; points: number; city: boolean; rank: number; roads: number }[]> = { ALLIED: [], AXIS: [] };
   const railFeatures = new Set([GENERATED_RAIL, GENERATED_MULTI_TRACK_RAIL]);
   const railDegree = new Map<HexId, number>();
+  const multiTrackHexes = new Set<HexId>();
   for (const { hexsideId, featureDefinitionIds } of map.mapDefinition.hexsides) {
     if (!featureDefinitionIds.some((id) => railFeatures.has(String(id)))) continue;
     const parsed = parseHexsideId(hexsideId);
     if (!parsed.ok) continue;
-    for (const hexId of [parsed.value.firstHexId, parsed.value.secondHexId]) railDegree.set(hexId, (railDegree.get(hexId) ?? 0) + 1);
+    const multi = featureDefinitionIds.some((id) => String(id) === GENERATED_MULTI_TRACK_RAIL);
+    for (const hexId of [parsed.value.firstHexId, parsed.value.secondHexId]) {
+      railDegree.set(hexId, (railDegree.get(hexId) ?? 0) + 1);
+      if (multi) multiTrackHexes.add(hexId);
+    }
   }
   const roadFeatures = new Set(['edge:primary-road', 'edge:road']);
   const roadDegree = new Map<HexId, number>();
@@ -387,7 +395,7 @@ const selectObjectives = (
     } else if (!features.includes(TOWN_FEATURE) && !features.includes(VILLAGE_FEATURE)) continue;
     if (edgeHexes.has(hexId)) continue;
     const points = objectivePoints(city ? 'CITY' : features.includes(TOWN_FEATURE) ? 'TOWN' : 'VILLAGE',
-      { portCapacityTokens: portCapacity.get(hexId) ?? 0, railDegree: railDegree.get(hexId) ?? 0 });
+      { portCapacityTokens: portCapacity.get(hexId) ?? 0, railDegree: railDegree.get(hexId) ?? 0, multiTrack: multiTrackHexes.has(hexId) });
     if (points <= 0) continue;
     // In an attack every objective lies in the defender's zone: the attacker has nothing to lose but its army.
     if (holder !== null && sideOf(hexId) !== holder) continue;
