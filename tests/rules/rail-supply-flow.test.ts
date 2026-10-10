@@ -24,7 +24,10 @@ describe('Generated games trace supply along their railways (12.6a, 13.3c, 13.3h
       const sources = friendlySupplySources(state, playerId);
       const edge = sources.filter(({ kind }) => kind === 'MAP_EDGE');
       expect(edge.length).toBeGreaterThan(0);
-      expect(edge.every(({ hexId }) => isRailHex(state, hexId))).toBe(true);
+      // A side's primary entry is a map-edge rail Hex; its other entries may be road-only (generation/map/network.ts).
+      const primary = prepared.value.scenario.entries.find(({ sideDefinitionId }) => sideDefinitionId === (playerId === ALLIED ? 'side:allied' : 'side:axis'));
+      expect(edge.some(({ hexId }) => isRailHex(state, hexId))).toBe(true);
+      expect(primary && isRailHex(state, primary.hexId)).toBe(true);
       // 13.3h: only stations behind the side's own front are detrainable; neutral ground is no source.
       const controller = (hexId: string) => state.mapState.hexControl.find((entry) => entry.hexId === hexId)?.controllerId ?? null;
       expect(sources.filter(({ kind }) => kind === 'DETRAINABLE').every(({ hexId }) => controller(hexId) === playerId)).toBe(true);

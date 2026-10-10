@@ -345,8 +345,8 @@ const SQRT3 = Math.sqrt(3);
 const NEIGHBOUR_HEADINGS: readonly Point[] = Array.from({ length: 6 }, (_, index) => ({ x: Math.cos(index * Math.PI / 3), y: Math.sin(index * Math.PI / 3) }));
 
 /**
- * A generated map is a window on a wider landscape: main roads leave across every land border and every entry
- * hex is a map-edge railroad (generation/map/roads.ts, rails.ts). So a line that ends in a border hex, or
+ * A generated map is a window on a wider landscape: main roads leave across every land border and a side's rail
+ * entry hexes are map-edge railroads (generation/map/roads.ts, rails.ts). So a line that ends in a border hex, or
  * reaches an entry hex, runs on off the map instead of stopping at the hex centre. Each such hex gains a
  * hexside to the off-map neighbour facing most squarely away from its links there, so the line carries on the
  * way it was going; `borders` holds the map-edge hexside (its corners as the terrain fill draws them) where

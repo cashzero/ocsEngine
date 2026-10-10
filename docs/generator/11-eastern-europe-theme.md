@@ -35,7 +35,7 @@ Other observations:
 Case Blue uses 5-mile Hexes, and BtR (and this generator) 3.5-mile Hexes. Drawn at 3.5 miles, the same
 landscape would have about 0.7× the per-Hex line density (road ~0.14, rail ~0.05). The theme keeps the
 generator's Hex scale and thins the BtR values toward this picture, so a 32×24 map stays playable. Every
-entry Hex must stay on a road and a railway (12.6a), and settlements need roads.
+entry Hex must stay on a road, each side's rail entries on a railway (12.6a), and settlements need roads.
 
 ## Implementation (generator 0.4.0, additive)
 
@@ -76,9 +76,10 @@ These are means over 30 seeds, using the same seeds for both themes (`1000 + 37�
 The 64×48 row used 10 seeds.
 
 On the 32×24 default map, the railway cut is smaller than the road cut. The two primary entries are joined by
-a trunk line across the map, and each side's other entry Hexes (one per six rows) each need a spur to the
-rail net (12.6a, enforced by `ENTRY_OFF_RAIL`). These are a fixed floor. On larger maps, town lines dominate
-and the full reduction shows.
+a trunk line across the map, and each side's rail entries (one per 14 rows on Eastern, the primary first,
+enforced by `ENTRY_OFF_RAIL`) each need a line to the rail net. A side's other entries are road-only Supply
+Sources (user decision, 2026-10-10). Before that decision every entry was a rail Hex, and the spurs chained
+along both side edges. On larger maps, town lines dominate and the full reduction shows.
 
 Tests: `tests/generation/random-map.test.ts` checks Eastern Europe validity and compares it with Temperate on
 the same seeds:
@@ -90,7 +91,7 @@ the same seeds:
 - under 0.85× the rails;
 - a larger road gap, still within the style's limits;
 - one road net reaching every place;
-- one rail net reaching every entry.
+- one rail net reaching each side's rail entries.
 
 `tests/generation/seed-sweep.test.ts` runs 500 Eastern Europe seeds at 18×12 with no invalid map.
 
@@ -99,12 +100,14 @@ UI acceptance: MAP-06 in `docs/quality/03-product-operation-verification-plan.md
 
 ## Not in scope / TODO
 
-- **Thinner railways on the default map.** The missing behavior: on 32×24, eastern rail is only about a third
-  thinner than BtR, because every entry Hex must be a rail Hex and the entry count is one per six rows on
-  every theme. The user-visible impact: the default eastern map shows rail spurs to every entry. To close it,
-  the user must decide whether eastern maps may have fewer entry Hexes, or entry Hexes off the railway with
-  a different Supply Source rule. Then a 30-seed measurement must show default-map rail ≤ 0.5× Temperate,
-  with all entries still Supply Sources.
+- **Thinner railways on the default map.** The user decided on 2026-10-10 that only a few entries per side are
+  rail Hexes (`rowsPerRailEntry`, styles.ts); the rest stay Supply Sources. Evidence:
+  `docs/quality/evidence/rail-entries-2026-10-10/`. The missing behavior: the 30-seed measurement
+  (seeds 1–30, rail Hexsides per land Hex) is 0.66× Temperate on 32×24 (worst seed 0.88×). On 64×40 it is
+  0.47× (worst seed 0.56×). On the small map the trunk between the primary entries is the floor. The
+  user-visible impact: the default-size eastern map still has about two-thirds of the BtR rail density. To
+  close it, a 30-seed measurement must show default-map rail ≤ 0.5× Temperate, with all entries still Supply
+  Sources.
 - **Case Blue terrain and weather.** These are not part of this request and are recorded so they are not
   mistaken for done. The terrain and weather rules are still BtR's:
   - Case Blue Hills are drawn as ROUGH.

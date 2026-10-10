@@ -36,6 +36,11 @@ export interface MapStyleProfile {
     readonly townRailShare: number;
     readonly loopRange: number;
     readonly loopDetourLimit: number;
+    /**
+     * Map rows per entry Hex that is also a railroad Hex. A side's other entries are road-only (still
+     * Supply Sources, 12.6a), so rail lines leave the map edge a realistic distance apart.
+     */
+    readonly rowsPerRailEntry: number;
   };
 }
 
@@ -51,7 +56,7 @@ const WESTERN: Omit<MapStyleProfile, 'sea'> = {
   },
   roadGapLimit: { CLEAR: 2, WOODS: 3, ROUGH: 3 },
   lowRoadDensity: 0.35,
-  rails: { townRailShare: 0.4, loopRange: 8, loopDetourLimit: 2.5 },
+  rails: { townRailShare: 0.4, loopRange: 8, loopDetourLimit: 2.5, rowsPerRailEntry: 10 },
 };
 
 /**
@@ -73,7 +78,7 @@ const EASTERN: MapStyleProfile = {
   },
   roadGapLimit: { CLEAR: 4, WOODS: 5, ROUGH: 5 },
   lowRoadDensity: 0.15,
-  rails: { townRailShare: 0.1, loopRange: 0, loopDetourLimit: 0 },
+  rails: { townRailShare: 0.1, loopRange: 0, loopDetourLimit: 0, rowsPerRailEntry: 14 },
 };
 
 export const MAP_STYLE_PROFILES: Readonly<Record<MapGenerationStyle, MapStyleProfile>> = {

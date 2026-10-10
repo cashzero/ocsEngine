@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { entryCountFor, railEntryCountFor } from '../../src/generation/map/network.js';
 import {
   generateRandomMap,
   hexDistance,
@@ -7,6 +8,7 @@ import {
   serializeGeneratedMap,
   validateGeneratedMap,
   validateMapDefinition,
+  type HexId,
 } from '../../src/index.js';
 
 const options = {
@@ -106,7 +108,7 @@ describe('M6 deterministic random map pipeline', () => {
     }
   });
 
-  it('lays one railway network, much sparser than the roads, with a multi-track trunk and every entry on the rails (12.6a, 13.3)', () => {
+  it('lays one railway network, much sparser than the roads, with a multi-track trunk and each rail entry on the rails (12.6a, 13.3)', () => {
     for (const style of ['TEMPERATE_INLAND', 'MEDITERRANEAN_COAST'] as const) for (const seed of [3, 1943, 31337, 2024]) {
       const generated = generateRandomMap({ width: 32, height: 24, seed, style });
       expect(generated.ok).toBe(true);
@@ -130,7 +132,10 @@ describe('M6 deterministic random map pipeline', () => {
           target.set(b, [...(target.get(b) ?? []), a]);
         }
       }
-      for (const entry of [...strategicRegions.firstEntryHexIds, ...strategicRegions.secondEntryHexIds]) expect(rail.has(entry)).toBe(true);
+      const railEntries = railEntryCountFor(style, 24);
+      for (const entries of [strategicRegions.firstEntryHexIds, strategicRegions.secondEntryHexIds]) {
+        for (const entry of entries.slice(0, railEntries)) expect(rail.has(entry)).toBe(true);
+      }
       // The trunk: the two main entries are joined by multi-track alone.
       const start = strategicRegions.firstEntryHexIds[0]!;
       const seen = new Set<string>([start]);
@@ -165,7 +170,7 @@ describe('M6 deterministic random map pipeline', () => {
       expect(metrics.roadGapExcess).toBe(0);
       expect(metrics.maximumRoadGap).toBeLessThanOrEqual(5);
       expect(metrics.maximumRoadGap).toBeGreaterThan(west.maximumRoadGap);
-      // The structural guarantees still hold: one road net reaching every place, one rail net reaching every entry.
+      // The structural guarantees still hold: one road net reaching every place, one rail net reaching each rail entry.
       expect(metrics.connectedRoadComponents).toBe(1);
       expect(metrics.connectedRailComponents).toBe(1);
       const roadHexes = new Set<string>();
@@ -180,9 +185,44 @@ describe('M6 deterministic random map pipeline', () => {
       }
       expect(mapDefinition.hexes.filter(({ features }) => features.some(({ definitionId }) => String(definitionId).startsWith('settlement:')))
         .every(({ id }) => roadHexes.has(id))).toBe(true);
-      expect([...strategicRegions.firstEntryHexIds, ...strategicRegions.secondEntryHexIds].every((id) => railHexes.has(id))).toBe(true);
+      const railEntries = railEntryCountFor('EASTERN_EUROPE', 24);
+      expect([strategicRegions.firstEntryHexIds, strategicRegions.secondEntryHexIds]
+        .every((entries) => entries.slice(0, railEntries).every((id) => railHexes.has(String(id))))).toBe(true);
     }
   });
+
+  it.each(['EASTERN_EUROPE', 'TEMPERATE_INLAND'] as const)(
+    'runs %s rail lines inland from a few spread entries instead of along the side edges', (style) => {
+      const [width, height] = [64, 40];
+      const railEntries = railEntryCountFor(style, height);
+      // Fewer rail exits than entries: lines leave the map edge as far apart as real ones do.
+      expect(railEntries).toBeLessThan(entryCountFor(height));
+      for (const seed of [1, 2, 3, 1943]) {
+        const generated = generateRandomMap({ width, height, seed, style });
+        expect(generated.ok).toBe(true);
+        if (!generated.ok) continue;
+        const { mapDefinition, strategicRegions } = generated.value;
+        expect(validateGeneratedMap(mapDefinition, strategicRegions, style).valid).toBe(true);
+        const railHexes = new Set<string>();
+        for (const { hexsideId, featureDefinitionIds } of mapDefinition.hexsides) {
+          if (!featureDefinitionIds.some((id) => /^edge:(?:multi-track-)?rail$/u.test(String(id)))) continue;
+          const parsed = parseHexsideId(hexsideId);
+          if (parsed.ok) [parsed.value.firstHexId, parsed.value.secondHexId].forEach((id) => railHexes.add(id));
+        }
+        for (const entries of [strategicRegions.firstEntryHexIds, strategicRegions.secondEntryHexIds]) {
+          expect(entries.slice(0, railEntries).every((id) => railHexes.has(id))).toBe(true);
+        }
+        // Before the fix every entry was a rail Hex and each spur ran to the next one, so 55-70 rail Hexes
+        // lay in the two outermost columns of each side; lines leaving the edge now take a few each.
+        const column = (id: string) => {
+          const parsed = parseHexCoordinateId(id as HexId);
+          return parsed.ok ? parsed.value.q + Math.floor(parsed.value.r / 2) : -1;
+        };
+        const nearEdge = [...railHexes].filter((id) => column(id) <= 1 || column(id) >= width - 2);
+        expect(nearEdge.length, `seed ${seed}`).toBeLessThanOrEqual(30);
+      }
+    },
+  );
 
   it.each(['NORTH', 'WEST', 'EAST'] as const)(
     'puts a %s sea along that map edge, keeping the entries and the corridor on land',
