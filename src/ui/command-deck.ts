@@ -705,7 +705,7 @@ const railSection = (snapshot: UiSnapshot): TemplateResult => {
     <small>of ${loadableTokens}T that may entrain${loadableTokens < holds ? ' (the rest was unloaded this phase, 12.2a, or did not arrive this turn, 13.6b)' : ''} · 1T = 1/4 Rail Cap</small></label>`);
   const where = (halves: 1 | 2 | 4) => halves === 1 ? ' · all multi-track, half cost' : halves === 4 ? ' · through a Trainbusting Zone, double cost' : '';
   const destination = html`<label class="rail-destination">Detrain at <select id="rail-destination">
-    <option value="" ?selected=${rail.toHexId === null} disabled>Choose a station (or click a highlighted hex)</option>
+    <option value="" ?selected=${rail.toHexId === null} disabled>Or pick from the list</option>
     ${rail.destinations.map(({ hexId, halves, hexes }) => html`<option value=${hexId} ?selected=${hexId === rail.toHexId}>${printedHexLabel(hexId)} · ${hexes} hexes${where(halves)}</option>`)}
   </select></label>`;
   const cost = rail.costQuarters === null ? html`<p class="hint">Tick units or enter Tokens, then choose where to detrain.</p>`
@@ -714,8 +714,8 @@ const railSection = (snapshot: UiSnapshot): TemplateResult => {
   const what = rail.units.length > 0 ? 'Rail transport' : 'Rail transport of supply';
   return html`<div class="unit-actions rail-panel"><strong>${what} from ${printedHexLabel(rail.hexId)}</strong>
     <p class="summary-line">Rail Cap ${railPoints(rail.remainingQuarters)} of ${rail.capacityPoints} left this Movement Phase <cite>13.3b</cite>${rail.arrivalTokens !== null ? html` · this turn's arrivals may entrain here (${rail.arrivalTokens}T) <cite>13.6b</cite>` : nothing}</p>
-    ${units}${dumps}${destination}${cost}${blockers}
-    <div class="chip-row"><button id="confirm-rail" class="primary" ?disabled=${!rail.allowed}>Move by rail</button><button id="close-rail">Cancel</button></div>
+    ${units}${dumps}<p class="hint">Click a teal station on the map to detrain there.</p>${destination}${cost}${blockers}
+    <div class="chip-row"><button id="confirm-rail" class="primary" ?disabled=${!rail.allowed}>OK</button><button id="close-rail">Cancel</button></div>
     <p class="hint">Units may not move again after detraining, and SP detrained cannot be loaded on trucks this phase (13.3e, 12.2a).</p></div>`;
 };
 
@@ -731,7 +731,7 @@ const seaSection = (snapshot: UiSnapshot): TemplateResult => {
     <input type="number" class="rail-tokens" data-sea-dump=${pieceId} min="0" max=${loadableTokens} .value=${String(tokens)} inputmode="numeric" aria-label=${`Tokens to ship, 0 to ${loadableTokens}`}>
     <small>of ${loadableTokens}T that may load · 1T = 1/4 Sea Cap and 1T of port capacity</small></label>`);
   const destination = html`<label class="rail-destination">Unload at <select id="sea-destination">
-    <option value="" ?selected=${sea.toHexId === null} disabled>Choose a port (or click a highlighted port)</option>
+    <option value="" ?selected=${sea.toHexId === null} disabled>Or pick from the list</option>
     ${sea.destinations.map(({ hexId, remainingTokens }) => html`<option value=${hexId} ?selected=${hexId === sea.toHexId}>${printedHexLabel(hexId)} · ${railPoints(remainingTokens)} SP of capacity left</option>`)}
   </select></label>`;
   const cost = sea.costQuarters === null ? html`<p class="hint">Tick units or enter Tokens, then choose the port to unload at.</p>`
@@ -741,7 +741,7 @@ const seaSection = (snapshot: UiSnapshot): TemplateResult => {
   return html`<div class="unit-actions rail-panel sea-panel"><strong>Ship by sea from ${from}</strong>
     <p class="summary-line">Sea Cap ${railPoints(sea.remainingQuarters)} of ${sea.capacityPoints} left this Movement Phase <cite>19.0f</cite>${sea.fromRemainingTokens !== null ? html` · this port can still load ${railPoints(sea.fromRemainingTokens)} SP <cite>19.0a</cite>` : nothing}</p>
     ${sea.fromHexId === null ? html`<p class="hint">Your reinforcements, SP and Repls reach the map only by ship: they wait here until landed at a port you hold.</p>` : nothing}
-    ${units}${dumps}${destination}${cost}${blockers}
+    ${units}${dumps}<p class="hint">Click a teal port on the map to unload there.</p>${destination}${cost}${blockers}
     <button id="confirm-sea" class="primary" ?disabled=${!sea.allowed}>Ship</button>
     <p class="hint">Combat units ship in Move Mode, may not move before or after, and use no other transport this phase; SP unloaded cannot be loaded again this phase (19.0f, 12.2a).</p></div>`;
 };
@@ -818,7 +818,7 @@ const unitTab = (snapshot: UiSnapshot, state: DeckState): TemplateResult => {
       : html`<p class="hint">No friendly truck in this hex. Move one here to load from this dump.</p>`}</div>`);
   }
   if (snapshot.rail) parts.push(railSection(snapshot));
-  else if (snapshot.railOffer) parts.push(html`<div class="unit-actions"><strong>Rail</strong><div class="chip-row"><button id="open-rail">${snapshot.railOffer === 'UNITS' ? 'Rail transport' : 'Rail transport (supply)'}</button></div></div>`);
+  else if (snapshot.railOffer) parts.push(html`<div class="unit-actions"><strong>Rail</strong><div class="chip-row"><button id="open-rail">${snapshot.railOffer === 'UNITS' ? 'Move by rail' : 'Move supply by rail'}</button></div></div>`);
   if (snapshot.sea) parts.push(seaSection(snapshot));
   if (snapshot.air.construction && !snapshot.air.construction.planning) parts.push(constructionSection(snapshot));
   if (snapshot.collapseHexes.length > 0) {
