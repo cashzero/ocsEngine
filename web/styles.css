@@ -285,10 +285,9 @@ small, .supporting { font-size: 13px; color: var(--muted); }
 .settlement, .strategic-zone, .objective-marker, .settlement-marker, .preview-entry, .preview-objective { pointer-events: none; }
 .settlement-block { fill: #2a2520; stroke: rgba(236, 232, 200, .55); stroke-width: .5; }
 .settlement-block.alt { fill: #5c564b; }
-.settlement-village .settlement-block, .settlement-marker .settlement-block.village { fill: #4a3426; }
 .settlement-tree { fill: #5d7d3a; stroke: #3f5a28; stroke-width: .6; }
 .place-name { pointer-events: none; fill: #15120a; font-family: Georgia, 'Times New Roman', serif; font-weight: 800; paint-order: stroke; stroke: rgba(236, 235, 205, .85); stroke-linejoin: round; text-anchor: start; }
-.place-name.town { font-weight: 700; }
+.place-name.town, .place-name.village { font-weight: 700; }
 .strategic-zone, .preview-entry { fill: none; stroke: var(--player-one); stroke-width: 4.5; stroke-dasharray: 9 5; opacity: .9; }
 .strategic-zone.side-second, .preview-entry.side-second { stroke: var(--player-two); }
 .objective-marker circle, .preview-objective circle { fill: #2a2112; stroke: #ffd766; stroke-width: 1.8; }

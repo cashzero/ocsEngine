@@ -647,7 +647,7 @@ export const placeNameFor = (hexId: string): string => {
 
 /**
  * A built-up area as the printed map draws it: a dense cluster of dark building blocks sized by settlement
- * class, with a bold serif name to its right (cities and towns only, so villages do not clutter the map).
+ * class, with a bold serif name to its right.
  */
 export interface SettlementArt {
   readonly blocks: readonly { readonly x: number; readonly y: number; readonly width: number; readonly height: number; readonly rotate: number; readonly cx: number; readonly cy: number; readonly alt: boolean }[];
@@ -661,10 +661,12 @@ export const settlementArt = (cell: GeneratedMapPreviewCell, hexSize: number): S
   const round = (value: number): number => Number(fixed(value));
   const unit = hexSize / GLYPH_HEX_SIZE;
   const random = seeded(`settlement:${cell.id}`);
+  // Each class is drawn one step larger than before (the old village mark was hard to read and is retired):
+  // village = the former town mark, town = the former city mark, city = a larger settlement in the same style.
   const plan = {
-    CITY: { blocks: 38, spread: 21, size: 3.6, font: 20 },
-    TOWN: { blocks: 16, spread: 12, size: 3.2, font: 16 },
-    VILLAGE: { blocks: 5, spread: 6, size: 3, font: 0 },
+    CITY: { blocks: 80, spread: 33, size: 4, font: 20 },
+    TOWN: { blocks: 38, spread: 21, size: 3.6, font: 16 },
+    VILLAGE: { blocks: 16, spread: 12, size: 3.2, font: 12 },
   }[cell.settlement];
   const blocks = Array.from({ length: plan.blocks }, (_, index) => {
     const angle = index * 2.4 + random();
@@ -676,13 +678,9 @@ export const settlementArt = (cell: GeneratedMapPreviewCell, hexSize: number): S
     const alt = random() < 0.22;
     return { x: round(x - width / 2), y: round(y - height / 2), width: round(width), height: round(height), rotate: Math.round(random() * 50 - 25), cx: round(x), cy: round(y), alt };
   });
-  // Villages are a few houses among trees.
-  const trees = cell.settlement === 'VILLAGE'
-    ? Array.from({ length: 3 }, (_, index) => {
-      const angle = index * 2.1 + random() * 1.2;
-      return { cx: round(cell.x + Math.cos(angle) * 7.5 * unit), cy: round(cell.y + Math.sin(angle) * 6 * unit), r: round((2 + random()) * unit) };
-    }) : [];
-  const name = plan.font > 0
+  const trees: SettlementArt['trees'] = [];
+  // A Major City's suburb Hexes are drawn but unnamed: the name stands once, at the core.
+  const name = plan.font > 0 && !(cell.settlement === 'CITY' && cell.urbanCore === false)
     ? { text: placeNameFor(cell.id), x: round(cell.x + (plan.spread + 6) * unit), y: round(cell.y + plan.font * 0.35 * unit), fontSize: round(plan.font * unit), strokeWidth: round(3 * unit) } : null;
   return { blocks, trees, name };
 };
