@@ -72,11 +72,15 @@ describe('generated objectives', () => {
     expect(objectivePoints('VILLAGE', { portCapacityTokens: 0, railDegree: 0 })).toBe(0);
     // A larger port and a rail junction are worth more.
     expect(objectivePoints('TOWN', { portCapacityTokens: 16, railDegree: 0 })).toBeGreaterThan(objectivePoints('TOWN', { portCapacityTokens: 8, railDegree: 0 }));
-    expect(objectivePoints('TOWN', { portCapacityTokens: 0, railDegree: 3 }) - objectivePoints('TOWN', { portCapacityTokens: 0, railDegree: 2 })).toBe(2);
-    expect(objectivePoints('VILLAGE', { portCapacityTokens: 0, railDegree: 4 }) - objectivePoints('VILLAGE', { portCapacityTokens: 0, railDegree: 2 })).toBe(3);
-    expect(objectivePoints('VILLAGE', { portCapacityTokens: 0, railDegree: 5 }) - objectivePoints('VILLAGE', { portCapacityTokens: 0, railDegree: 2 })).toBe(4);
+    expect(objectivePoints('TOWN', { portCapacityTokens: 0, railDegree: 3 }) - objectivePoints('TOWN', { portCapacityTokens: 0, railDegree: 2 })).toBe(1);
+    expect(objectivePoints('VILLAGE', { portCapacityTokens: 0, railDegree: 4 }) - objectivePoints('VILLAGE', { portCapacityTokens: 0, railDegree: 2 })).toBe(2);
+    expect(objectivePoints('VILLAGE', { portCapacityTokens: 0, railDegree: 5 }) - objectivePoints('VILLAGE', { portCapacityTokens: 0, railDegree: 2 })).toBe(3);
     // A rail junction with a double-track railroad through it is worth one more; a non-junction is not.
     expect(objectivePoints('TOWN', { portCapacityTokens: 0, railDegree: 3, multiTrack: true }) - objectivePoints('TOWN', { portCapacityTokens: 0, railDegree: 3 })).toBe(1);
+    for (const degree of [3, 4, 5, 6]) {
+      const plain = objectivePoints('VILLAGE', { portCapacityTokens: 0, railDegree: degree }) - objectivePoints('VILLAGE', { portCapacityTokens: 0, railDegree: 0 });
+      expect(plain).toBe(degree - 2 + 1);
+    }
     expect(objectivePoints('TOWN', { portCapacityTokens: 0, railDegree: 2, multiTrack: true })).toBe(objectivePoints('TOWN', { portCapacityTokens: 0, railDegree: 2 }));
   });
 
