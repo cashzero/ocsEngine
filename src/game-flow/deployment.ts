@@ -280,7 +280,7 @@ const supplyReach = (model: MovementCostModel, originHexId: HexId, blocked: Read
 /**
  * Victory points of an objective (user, 2026-10-10: supply is the heart of OCS, so the larger the settlement and the more
  * important the transport node, the more it is worth). An objective's VP is its settlement's points plus:
- * a port (19.0, by its capacity), a railroad through it (a detrainable station, 13.3c), and a rail junction (2 more at three rail directions, 3 at four, 4 at five, 5 at six; one more if a double-track (multi-track, 13.3a) railroad runs through that junction). A village counts only as a
+ * a port (19.0, by its capacity), a railroad through it (a detrainable station, 13.3c), and a rail junction (1 more at three rail directions, 2 at four, 3 at five, 4 at six; one more on each if a double-track (multi-track, 13.3a) railroad runs through that junction). A village counts only as a
  * transport node; open country is never an objective.
  */
 export const GENERATED_MAJOR_CITY_OBJECTIVE_POINTS = 3;
@@ -291,8 +291,8 @@ export const GENERATED_PORT_CAPACITY_TOKENS_PER_VP = 4;
 export const GENERATED_RAIL_OBJECTIVE_POINTS = 1;
 /** A rail junction (hub) with a double-track (multi-track) railroad through it is worth this much more (user, 2026-10-10). */
 export const GENERATED_MULTI_TRACK_OBJECTIVE_POINTS = 1;
-/** A rail junction is worth this much at the minimum degree, and {@link GENERATED_RAIL_JUNCTION_STEP_POINTS} more per extra rail direction (2, 3, 4, 5, ...). */
-export const GENERATED_RAIL_JUNCTION_OBJECTIVE_POINTS = 2;
+/** A rail junction is worth this much at the minimum degree, and {@link GENERATED_RAIL_JUNCTION_STEP_POINTS} more per extra rail direction (1, 2, 3, 4, ... without multi-track; one more with it). */
+export const GENERATED_RAIL_JUNCTION_OBJECTIVE_POINTS = 1;
 export const GENERATED_RAIL_JUNCTION_STEP_POINTS = 1;
 /** A rail junction has railroad on at least this many of its hexsides. */
 const GENERATED_RAIL_JUNCTION_DEGREE = 3;
