@@ -40,7 +40,7 @@ const start = async (request: NewGameRequest) => {
 describe('rail transport in the command deck (13.3)', () => {
   it('sends SP from a station by rail: Tokens, a highlighted destination, the cost and the Rail Cap left', async () => {
     // A seed whose start has a full dump standing on a station (dumps stand where the troops hold the ground, 2026-10-09).
-    const { controller, own, onRail, configuration } = await start({ ...DEFAULT_NEW_GAME_REQUEST, seeds: { map: 1, oob: 1, deployment: 1, rules: 1 } });
+    const { controller, own, onRail, configuration } = await start({ ...DEFAULT_NEW_GAME_REQUEST, seeds: { map: 2, oob: 1, deployment: 1, rules: 1 } });
     const dump = onRail('DUMP');
     expect(dump).toBeDefined();
     // A dump offers only its SP, never the units standing with it.
