@@ -793,6 +793,8 @@ export class MapView {
       ctx.stroke(ties);
     });
     ctx.restore();
+    // Place names are painted after every cell's buildings so a neighbouring settlement never covers them.
+    const names: { readonly name: NonNullable<ReturnType<typeof settlementArt>>['name']; readonly weight: number }[] = [];
     cells.forEach((cell) => {
       if (cell.strategic) {
         ctx.save();
@@ -826,16 +828,7 @@ export class MapView {
           ctx.lineWidth = 0.6;
           ctx.stroke();
         });
-        if (settlement.name) {
-          const { text, x, y, fontSize, strokeWidth } = settlement.name;
-          ctx.font = `${cell.settlement === 'CITY' ? 800 : 700} ${fontSize}px Georgia, 'Times New Roman', serif`;
-          ctx.textAlign = 'start';
-          ctx.lineWidth = strokeWidth;
-          ctx.strokeStyle = 'rgba(236, 235, 205, .85)';
-          ctx.fillStyle = '#15120a';
-          ctx.strokeText(text, x, y);
-          ctx.fillText(text, x, y);
-        }
+        if (settlement.name) names.push({ name: settlement.name, weight: cell.settlement === 'CITY' ? 800 : 700 });
       }
       if (cell.port) {
         const { cx, cy, r, scale } = portArt(cell, size);
@@ -870,6 +863,17 @@ export class MapView {
         ctx.fillStyle = '#1a1408';
         ctx.fillText('S', cx, cy + fontSize * 0.36);
       }
+    });
+    names.forEach(({ name, weight }) => {
+      if (!name) return;
+      const { text, x, y, fontSize, strokeWidth } = name;
+      ctx.font = `${weight} ${fontSize}px Georgia, 'Times New Roman', serif`;
+      ctx.textAlign = 'start';
+      ctx.lineWidth = strokeWidth;
+      ctx.strokeStyle = 'rgba(236, 235, 205, .85)';
+      ctx.fillStyle = '#15120a';
+      ctx.strokeText(text, x, y);
+      ctx.fillText(text, x, y);
     });
   }
 
