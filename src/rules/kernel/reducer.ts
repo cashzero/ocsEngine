@@ -1,5 +1,7 @@
 import { revision, type PieceId } from '../../core/index.js';
 import { applyRailMove } from '../supply/rail-cap.js';
+import { applySeaMove } from '../supply/sea-cap.js';
+import { applyReducePort, applyRepairPort } from '../port/port.js';
 import { setHexControl } from '../../domain/map/index.js';
 import { upsertPieceState } from '../../domain/piece/index.js';
 import { declareBarrage, declareCombat, nextStackOrder, resolveDecision } from '../combat/combat.js';
@@ -243,6 +245,12 @@ const dispatch = (state: GameState, action: GameAction): Transition => {
       return declareBarrage(state, action);
     case 'RAIL_MOVE':
       return applyRailMove(state, action);
+    case 'SEA_MOVE':
+      return applySeaMove(state, action);
+    case 'REDUCE_PORT':
+      return applyReducePort(state, action);
+    case 'REPAIR_PORT':
+      return applyRepairPort(state, action);
     case 'DECLARE_AIR_MISSION':
       return declareAirMission(state, action);
     case 'REFIT_AIRCRAFT':

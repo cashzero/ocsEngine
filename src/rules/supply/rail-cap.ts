@@ -96,6 +96,7 @@ export const railUnitProblem = (state: GameState, unit: PieceState, ownerId: Pla
   const usage = usageOf(state, unit);
   if (usage.railCarried) return 'it already moved by rail this phase';
   if (usage.airCarried) return 'it already moved by air this phase (4.7d)';
+  if (usage.seaCarried) return 'it was shipped this phase (4.7d)';
   if (usage.moved && state.currentMoverId !== unit.id) return 'it already finished moving this phase (6.1g)';
   if (usage.movementSpentTicks > movementAllowanceTicks(state, unit) / 2) return 'it has spent more than half its MA (4.7d)';
   return null;
@@ -115,9 +116,9 @@ export const railCargoPassable = (state: GameState, playerId: PlayerId, hexId: H
   !hasEnemyCombatUnit(state, playerId, hexId) && !inEnemyZoc(state, playerId, hexId)
   && (!isRailStation(state, hexId) || hexControllerOf(state, hexId) === playerId);
 
-/** 13.3c for cargo: the map-edge rail Supply Sources the player's rail paths start from (Extenders never count). */
+/** 13.3c for cargo: the map-edge and port rail Supply Sources the player's rail paths start from (Extenders never count). */
 const cargoSeeds = (state: GameState, playerId: PlayerId): readonly HexId[] =>
-  friendlySupplySources(state, playerId).filter(({ kind, hexId }) => kind === 'MAP_EDGE' && isRailHex(state, hexId) && railCargoPassable(state, playerId, hexId))
+  friendlySupplySources(state, playerId).filter(({ kind, hexId }) => (kind === 'MAP_EDGE' || kind === 'PORT') && isRailHex(state, hexId) && railCargoPassable(state, playerId, hexId))
     .map(({ hexId }) => hexId);
 
 const cargoNetworkCache = new WeakMap<GameState, Map<string, ReadonlySet<HexId>>>();

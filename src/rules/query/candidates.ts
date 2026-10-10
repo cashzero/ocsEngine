@@ -10,6 +10,9 @@ import { fuelOptions } from '../supply/fuel.js';
 import { capacityTokens, cargoOf, loadedTokens } from '../supply/transport.js';
 import { queryReachableHexes } from '../movement/movement.js';
 import { queryRailMoveOptions, railCapRemainingQuarters, railEntrainHexes, railMoveQuarters } from '../supply/rail-cap.js';
+import { arrivesBySea, querySeaMoveOptions, seaCapRemainingQuarters } from '../supply/sea-cap.js';
+import { allPorts, portHexOf, portRemainingTokens } from '../port/state.js';
+import { portReduceOptions, portRepairOptions } from '../port/port.js';
 import {
   adjacentHexIds,
   enemyCombatUnitsAt,
@@ -35,7 +38,7 @@ import {
   unitsNeedingRecovery,
   unitsNeedingSupply,
 } from '../supply/supply.js';
-import { definitionOf, locatedHexOf, pieceById, reTicksOf, usageOf } from '../pieces.js';
+import { definitionOf, locatedHexOf, pieceById, piecesAt, reTicksOf, usageOf } from '../pieces.js';
 import type { ActionFamily, CandidateRequest } from './model.js';
 
 const actionId = (value: string): RuleActionId => {
@@ -409,6 +412,40 @@ export const candidateActions = (
         if (add({ ...base(state, request.actorId, `reduce-hedgehog:${hedgehogId}:${engineerId ?? 'crew'}`), kind: 'REDUCE_HEDGEHOG', hedgehogId, pieceIds: [...pieceIds], engineerId })) return actions;
       }
       break;
+    case 'SEA_MOVE': {
+      // One candidate per origin, cargo and port: each unit alone, and each dump's SP as far as Sea Cap and both ports take.
+      const left = seaCapRemainingQuarters(state, request.actorId);
+      if (left <= 0) break;
+      const origins: (HexId | null)[] = [...(arrivesBySea(state, request.actorId) ? [null] : []),
+        ...allPorts(state).map(portHexOf).filter((hexId) => piecesAt(state, hexId).some((piece) => piece.ownerId === request.actorId))];
+      for (const fromHexId of origins) {
+        const options = querySeaMoveOptions(state, request.actorId, fromHexId).value!;
+        if (options.problem !== null) continue;
+        const fromLeft = fromHexId === null ? Number.POSITIVE_INFINITY : portRemainingTokens(state, request.actorId, fromHexId);
+        for (const { hexId, remainingTokens } of options.destinations) {
+          for (const unit of options.units) {
+            if (unit.problem !== null || (request.pieceId !== null && unit.pieceId !== request.pieceId)) continue;
+            if (add({ ...base(state, request.actorId, `sea:${unit.pieceId}:${hexId}`), kind: 'SEA_MOVE', fromHexId, toHexId: hexId, unitIds: [unit.pieceId], supply: [] })) return actions;
+          }
+          for (const dump of options.dumps) {
+            if (request.pieceId !== null && dump.pieceId !== request.pieceId) continue;
+            const tokens = Math.min(dump.loadableTokens, left, remainingTokens, fromLeft);
+            if (tokens > 0 && add({ ...base(state, request.actorId, `sea:${dump.pieceId}:${hexId}`), kind: 'SEA_MOVE', fromHexId, toHexId: hexId, unitIds: [], supply: [{ sourcePieceId: dump.pieceId, tokens }] })) return actions;
+          }
+        }
+      }
+      break;
+    }
+    case 'REDUCE_PORT':
+      for (const { hexId, pieceIds, engineerId } of portReduceOptions(state, request.actorId, request.pieceId)) {
+        if (add({ ...base(state, request.actorId, `reduce-port:${hexId}:${engineerId ?? 'crew'}`), kind: 'REDUCE_PORT', hexId, pieceIds: [...pieceIds], engineerId })) return actions;
+      }
+      break;
+    case 'REPAIR_PORT':
+      for (const { hexId, engineerId, payments } of portRepairOptions(state, request.actorId, request.pieceId)) {
+        if (add({ ...base(state, request.actorId, `repair-port:${hexId}:${engineerId}`), kind: 'REPAIR_PORT', hexId, engineerId, payments: [...payments] })) return actions;
+      }
+      break;
     case 'COMBINE_AIRCRAFT':
       for (const pair of combineCandidates(state, request.actorId).filter((ids) => request.pieceId === null || ids.includes(request.pieceId))) {
         if (add({ ...base(state, request.actorId, `combine-air:${pair.join('+')}`), kind: 'COMBINE_AIRCRAFT', aircraftIds: [...pair] })) return actions;
@@ -432,7 +469,7 @@ export const ALL_ACTION_KINDS: readonly GameAction['kind'][] = [
   'ATTEMPT_BREAKOUT', 'BLOW_DUMP', 'LOAD_SUPPLY', 'UNLOAD_SUPPLY', 'COMBINE_TRANSPORT', 'DIVIDE_TRANSPORT',
   'FORM_EXTENDER', 'DISSOLVE_EXTENDER', 'COLLAPSE_EXTENDER',
   'REFIT_AIRCRAFT', 'DECLARE_AIR_MISSION', 'REDUCE_AIR_BASE', 'BUILD_AIR_BASE', 'BUILD_HEDGEHOG', 'REDUCE_HEDGEHOG', 'REBUILD_AIRCRAFT', 'REBUILD_UNITS', 'PLAN_AIR_DROP', 'UPDATE_AIR_DROP_PLAN', 'COMBINE_AIRCRAFT',
-  'RAIL_MOVE',
+  'RAIL_MOVE', 'SEA_MOVE', 'REDUCE_PORT', 'REPAIR_PORT',
 ];
 
 /**
@@ -491,7 +528,10 @@ export const kindMayBeLegal = (state: GameState, actorId: PlayerId, kind: GameAc
     case 'FORM_EXTENDER':
     case 'DISSOLVE_EXTENDER':
     case 'COLLAPSE_EXTENDER':
-    case 'RAIL_MOVE': return phase === 'MOVEMENT' && segment === 'MOVEMENT';
+    case 'RAIL_MOVE':
+    case 'SEA_MOVE':
+    case 'REDUCE_PORT':
+    case 'REPAIR_PORT': return phase === 'MOVEMENT' && segment === 'MOVEMENT';
     case 'REFIT_AIRCRAFT': return phase === 'AIRCRAFT_REFIT';
     case 'DECLARE_AIR_MISSION': return (segment === 'MOVEMENT' || segment === 'BARRAGE') && ['MOVEMENT', 'REACTION', 'EXPLOITATION'].includes(phase);
     case 'REDUCE_AIR_BASE':

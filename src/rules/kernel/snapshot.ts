@@ -44,6 +44,7 @@ import type {
   AirState,
   ReplacementState,
   RailState,
+  SeaState,
   CombatMultiplier,
   FuelState,
   GameState,
@@ -148,6 +149,8 @@ const configurationDecoder: Decoder<RuleConfiguration> = objectDecoder({
     minorFeatureDefinitionIds: arrayDecoder(definitionIdDecoder),
     majorFeatureDefinitionIds: arrayDecoder(definitionIdDecoder),
   })),
+  seaCapacity: optionalDecoder(arrayDecoder(objectDecoder({ playerId: playerIdDecoder, points: safeIntegerDecoder }))),
+  seaArrivals: optionalDecoder(arrayDecoder(playerIdDecoder)),
 });
 
 const sequenceDecoder: Decoder<TurnSequenceState> = objectDecoder({
@@ -184,6 +187,17 @@ const usageDecoder: Decoder<PieceUsageState> = objectDecoder({
   airCarried: optionalDecoder(booleanDecoder),
   railCarried: optionalDecoder(booleanDecoder),
   ownBridgeHexId: optionalDecoder(hexIdDecoder),
+  seaCarried: optionalDecoder(booleanDecoder),
+});
+
+const playerTurnIndexDecoder = refinedDecoder(safeIntegerDecoder, (value) => value === 0 || value === 1 ? ok(value as 0 | 1) : err(undefined), 'INVALID_PLAYER_TURN_INDEX', String);
+
+const seaStateDecoder: Decoder<SeaState> = objectDecoder({
+  spent: arrayDecoder(objectDecoder({ playerId: playerIdDecoder, gameTurn: safeIntegerDecoder, playerTurnIndex: playerTurnIndexDecoder, quarters: safeIntegerDecoder })),
+  portUse: arrayDecoder(objectDecoder({
+    hexId: hexIdDecoder, gameTurn: safeIntegerDecoder, playerTurnIndex: playerTurnIndexDecoder, phase: stringDecoder, tokens: safeIntegerDecoder, oversized: booleanDecoder,
+  })),
+  work: arrayDecoder(objectDecoder({ hexId: hexIdDecoder, gameTurn: safeIntegerDecoder, kind: literalDecoder('REDUCE', 'REPAIR') })),
 });
 
 const railStateDecoder: Decoder<RailState> = objectDecoder({
@@ -264,7 +278,7 @@ const paymentDecoder: Decoder<PaymentProgress> = objectDecoder({
 
 const airMissionDecoder: Decoder<AirMissionState> = objectDecoder({
   mission: literalDecoder('FIGHTER_SWEEP', 'BARRAGE', 'HIP_SHOOT', 'TRAINBUSTING', 'BASE_TRANSFER'),
-  target: nullableDecoder(literalDecoder('COMBAT_UNITS', 'AIR_BASE')),
+  target: nullableDecoder(literalDecoder('COMBAT_UNITS', 'AIR_BASE', 'PORT')),
   stage: literalDecoder('AIR_COMBAT', 'INTERCEPTION', 'FLAK', 'RESOLVE', 'TARGET_LOSS', 'RETURN'),
   aircraft: arrayDecoder(objectDecoder({ pieceId: pieceIdDecoder, baseHexId: hexIdDecoder })),
   combat: nullableDecoder(objectDecoder({
@@ -415,6 +429,7 @@ interface RawGameState {
   readonly air: AirState;
   readonly replacements: ReplacementState;
   readonly rail?: RailState | undefined;
+  readonly sea?: SeaState | undefined;
 }
 
 const rawGameStateDecoder: Decoder<RawGameState> = objectDecoder({
@@ -440,6 +455,7 @@ const rawGameStateDecoder: Decoder<RawGameState> = objectDecoder({
   air: airStateDecoder,
   replacements: replacementStateDecoder,
   rail: optionalDecoder(railStateDecoder),
+  sea: optionalDecoder(seaStateDecoder),
 });
 
 const byText = <T>(key: (value: T) => string) => (left: T, right: T): number => key(left).localeCompare(key(right));
@@ -490,6 +506,11 @@ const canonicalStateValue = (state: GameState): GameState => {
     ...(state.rail ? { rail: {
       spent: stableSort(state.rail.spent, byText(({ playerId }) => String(playerId))),
       arrivals: stableSort(state.rail.arrivals, byText(({ playerId, hexId }) => `${playerId}|${hexId}`)),
+    } } : {}),
+    ...(state.sea ? { sea: {
+      spent: stableSort(state.sea.spent, byText(({ playerId }) => String(playerId))),
+      portUse: stableSort(state.sea.portUse, byText(({ hexId }) => String(hexId))),
+      work: stableSort(state.sea.work, byText(({ hexId, kind }) => `${hexId}|${kind}`)),
     } } : {}),
     replacements: {
       lostTrucks: stableSort(state.replacements.lostTrucks, byText(({ ownerId, definitionId }) => `${ownerId}|${definitionId}`)),
@@ -556,6 +577,7 @@ export const parseGameState = (input: unknown): Result<GameState, readonly Valid
     air: raw.value.air,
     replacements: raw.value.replacements,
     ...(raw.value.rail ? { rail: raw.value.rail } : {}),
+    ...(raw.value.sea ? { sea: raw.value.sea } : {}),
   };
   const issues = [...validateGameState(state)];
   return issues.length > 0 ? err(issues) : ok(state);

@@ -51,7 +51,7 @@ const classifyEastern = (
 export const generateTerrainCells = (
   options: NormalizedMapGenerationOptions,
 ): Map<HexId, GeneratedCell> => {
-  const { width, height, seed, style } = options;
+  const { width, height, seed, style, sea } = options;
   const result = new Map<HexId, GeneratedCell>();
   for (const coordinate of rectangularCoordinates(width, height)) {
     const column = columnOf(coordinate);
@@ -61,12 +61,16 @@ export const generateTerrainCells = (
     const moisture = fractalNoise2d(normalizedX * 3.5 + 11, normalizedY * 3.5 - 7, seed ^ 0x86b2a91);
     const roughness = fractalNoise2d(normalizedX * 7.5 - 3, normalizedY * 7.5 + 5, seed ^ 0x1473d5f);
     const temperature = 1 - normalizedY * 0.45 + fractalNoise2d(normalizedX * 2 + 19, normalizedY * 2, seed ^ 0x51c8d3a) * 0.25;
-    const coastNoise = fractalNoise2d(normalizedY * 2.3, 0.5, seed ^ 0xc04a57) - 0.5;
-    const coastColumn = Math.max(0, Math.min(width - 3, Math.floor(width * (0.12 + coastNoise * 0.12))));
     const profile = MAP_STYLE_PROFILES[style];
-    const water = profile.coast && column <= coastColumn;
-    const corridorRow = Math.floor(height / 2);
-    const corridor = Math.abs(coordinate.r - corridorRow) <= 1 && column > coastColumn;
+    // Hexes in from the sea edge, measured across the map from that edge; the coast wanders along it.
+    const fromSea = sea === 'NORTH' ? coordinate.r : sea === 'EAST' ? width - 1 - column : column;
+    const across = sea === 'NORTH' ? height : width;
+    const coastNoise = fractalNoise2d((sea === 'NORTH' ? normalizedX : normalizedY) * 2.3, 0.5, seed ^ 0xc04a57) - 0.5;
+    const coastDepth = Math.max(0, Math.min(across - 3, Math.floor(across * (0.12 + coastNoise * 0.12))));
+    const water = sea !== 'NONE' && fromSea <= coastDepth;
+    // An open band across the map joins the two entry edges; beside a northern sea it runs through the land below.
+    const corridorRow = sea === 'NORTH' ? Math.floor(height * 0.6) : Math.floor(height / 2);
+    const corridor = Math.abs(coordinate.r - corridorRow) <= 1 && fromSea > coastDepth;
     const id = coordinateKey(coordinate) as HexId;
     result.set(id, {
       coordinate, id,

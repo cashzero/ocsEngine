@@ -273,6 +273,14 @@ export class GameplaySession implements GameSession {
     return cloneValue(this.#ports.rules.queryRailMoveOptions(this.#state, binding.playerId, fromHexId));
   };
 
+  getSeaMoveOptions = (seatId: SeatId, fromHexId: Parameters<GameSession['getSeaMoveOptions']>[1]): ReturnType<GameSession['getSeaMoveOptions']> => {
+    const binding = this.#binding(seatId);
+    if (this.#lifecycle !== 'ACTIVE' || this.#handoff !== null) {
+      return { allowed: false, value: null, reasons: [{ code: 'SESSION_NOT_INTERACTIVE', allowed: false, message: 'Session is not accepting interaction.', rule: 'gameplay' }], facts: [], dependencies: [] };
+    }
+    return cloneValue(this.#ports.rules.querySeaMoveOptions(this.#state, binding.playerId, fromHexId));
+  };
+
   getFuelPreview = (seatId: SeatId, pieceId: Parameters<GameSession['getFuelPreview']>[1]): ReturnType<GameSession['getFuelPreview']> => {
     const binding = this.#binding(seatId);
     if (this.#lifecycle !== 'ACTIVE' || this.#handoff !== null) {

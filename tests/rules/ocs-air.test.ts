@@ -7,6 +7,10 @@ import {
   DEFAULT_NEW_GAME_REQUEST,
   MISSION_LOSS_TABLE,
   airBaseLevel,
+  airMissionTargets,
+  portAt,
+  portFeatureState,
+  upsertMapFeatureState,
   airCombatResult,
   applyRuleAction,
   atStep,
@@ -76,7 +80,7 @@ const airState = (extra: Record<string, readonly [string, null | 'COMBAT' | 'MOV
   ...extra,
 }, terrain, { request: AIR_NEW_GAME_REQUEST });
 
-const mission = (state: GameState, actor: typeof ALLIED, body: { mission: keyof typeof AIR_MISSION_LABELS; aircraftIds: PieceId[]; targetHexId: HexId; target?: 'COMBAT_UNITS' | 'AIR_BASE' | null }) =>
+const mission = (state: GameState, actor: typeof ALLIED, body: { mission: keyof typeof AIR_MISSION_LABELS; aircraftIds: PieceId[]; targetHexId: HexId; target?: 'COMBAT_UNITS' | 'AIR_BASE' | 'PORT' | null }) =>
   applyRuleAction(state, actor, { kind: 'DECLARE_AIR_MISSION', target: null, ...body });
 
 const allEvents: RuleEvent[] = [];
@@ -275,6 +279,28 @@ describe('Air missions (14.2-14.8)', () => {
     state = settle(state).state;
     expect(airBaseLevel(state, piece(state, U.xBase))).toBeGreaterThanOrEqual(1);
     expect(airBaseLevel(state, piece(state, U.xBase))).toBeLessThanOrEqual(2);
+  });
+
+  it('barrages an enemy port on the Facility Table: numbered results are hits, never more than four (10.0cB, 19.0b)', () => {
+    const port = hex(9);
+    const withPort = (holder: typeof ALLIED, damage = 0): GameState => {
+      const base = atStep(airState(), 'MOVEMENT', 'BARRAGE', ALLIED);
+      return { ...base, mapState: upsertMapFeatureState(base.mapState, { ...portFeatureState(port, 8, holder), damage }) };
+    };
+    expect(airMissionTargets(withPort(AXIS), ALLIED, 'BARRAGE').some(({ hexId, target }) => hexId === port && target === 'PORT')).toBe(true);
+    expect(codes(mission(withPort(ALLIED), ALLIED, { mission: 'BARRAGE', aircraftIds: [U.aF1], targetHexId: port, target: 'PORT' }))).toContain('NO_PORT_TARGET');
+    expect(codes(mission(withPort(AXIS, 4), ALLIED, { mission: 'BARRAGE', aircraftIds: [U.aF1], targetHexId: port, target: 'PORT' }))).toContain('NO_PORT_TARGET');
+    // Every die and column: the hits the port takes are the numbered result, capped at four.
+    let hitAtLeastOnce = false;
+    for (let seed = 1; seed <= 12; seed += 1) {
+      const start = { ...withPort(AXIS, 3), rng: { state: seed * 7919, draws: 0 } };
+      const flown = settle(ok(mission(start, ALLIED, { mission: 'BARRAGE', aircraftIds: [U.aF1, U.aF2, U.aB1], targetHexId: port, target: 'PORT' })));
+      const damage = portAt(flown.state, port)?.damage ?? 0;
+      expect(damage).toBeGreaterThanOrEqual(3);
+      expect(damage).toBeLessThanOrEqual(4);
+      if (damage === 4) hitAtLeastOnce = true;
+    }
+    expect(hitAtLeastOnce).toBe(true);
   });
 
   it('rejects Hip Shoots by air forces the game rules do not list (14.7d B)', () => {

@@ -278,6 +278,9 @@ export const reinforcementHexes = (state: GameState, playerId: PlayerId, pieceId
 
 const computeReinforcementHexes = (state: GameState, playerId: PlayerId, pieceId: PieceId | null): HexId[] => {
   const piece = pieceId ? pieceById(state, pieceId) : undefined;
+  // A side whose sea lies behind it lands everything but aircraft by ship (19.0f): units, SP and Repls wait in its
+  // reinforcement Box, and nothing of theirs is placed in the Reinforcement Phase.
+  if ((state.configuration.seaArrivals?.includes(playerId) ?? false) && !(piece && isAircraft(state, piece))) return [];
   // 13.5: Repls (Pax and Eq) arrive at an entry hex, or beside a friendly HQ (within the 2 hexes they must stand to be spent, 13.5a), as this game's replacement rule.
   if (piece && definitionOf(state, piece)?.family === 'REPLACEMENT') {
     // Hexes within 2 of a friendly HQ, found by stepping out from each HQ rather than measuring from every map Hex.

@@ -1,3 +1,5 @@
+import { damagePort } from '../port/port.js';
+import { PORT_MAXIMUM_HITS, portAt } from '../port/state.js';
 import { stableSort, type HexId, type PieceId, type PlayerId } from '../../core/index.js';
 import { upsertPieceState, type PieceState } from '../../domain/piece/index.js';
 import { barrageTargetShifts, hasCorrectSpotter, nextStackOrder, setModeForHex } from '../combat/combat.js';
@@ -147,6 +149,9 @@ export const validateAirMission = (state: GameState, action: AirMissionDeclarati
     }
     if (action.target === 'AIR_BASE' && !enemyAirBaseAt(state, action.actorId, action.targetHexId)) {
       issues.push(violation('NO_AIR_BASE_TARGET', ['targetHexId'], 'There is no enemy Air Base in the hex.', '10.0c'));
+    }
+    if (action.target === 'PORT' && !enemyPortTarget(state, action.actorId, action.targetHexId)) {
+      issues.push(violation('NO_PORT_TARGET', ['targetHexId'], 'There is no enemy port with hits left to take in the hex.', '10.0c'));
     }
   } else if (action.target !== null) {
     issues.push(violation('UNEXPECTED_BARRAGE_TARGET', ['target'], 'Only barrage missions announce a target type.', '10.0d'));
@@ -637,7 +642,13 @@ const resolveBarrageOnUnits = (input: GameState, events: RuleEvent[]): GameState
     `Barrage ${preview.strength} on the ${BARRAGE_TABLE_COLUMNS[preview.initialColumn]!.label} column, shifted to ${BARRAGE_TABLE_COLUMNS[preview.finalColumn]!.label}: roll ${roll.roll.total}, ${cell}${losses > 0 ? `, ${losses} step${losses === 1 ? '' : 's'} lost` : result.kind === 'NONE' ? ', no effect' : ', DG'}.`);
 };
 
-/** 10.0c Barrage vs Facility Table against an Air Base or for Trainbusting (one die, no shifts). */
+/** 10.0c: a port the other side holds that can still take a hit (19.0b: never more than four). */
+const enemyPortTarget = (state: GameState, playerId: PlayerId, hexId: HexId): boolean => {
+  const port = portAt(state, hexId);
+  return port !== undefined && port.controllerId !== null && port.controllerId !== playerId && port.damage < PORT_MAXIMUM_HITS;
+};
+
+/** 10.0c Barrage vs Facility Table against an Air Base or a port, or for Trainbusting (one die, no shifts). */
 const resolveFacility = (input: GameState, events: RuleEvent[]): GameState => {
   let state = input;
   const transaction = state.activeTransaction!;
@@ -656,6 +667,14 @@ const resolveFacility = (input: GameState, events: RuleEvent[]): GameState => {
     events.push({ kind: 'TRAINBUSTING_CHANGED', sequence: events.length, hexId: transaction.targetHexId, ownerId: transaction.ownerId, placed: true });
     state = { ...state, air: { ...state.air, trainbusting: [...state.air.trainbusting, { hexId: transaction.targetHexId, ownerId: transaction.ownerId }] } };
     return logLine(state, `${label}; a Trainbusting marker is placed.`);
+  }
+  // 10.0cB: against a port only the numbered results count, as hits (19.0b).
+  if (air.target === 'PORT') {
+    if (result.levels === 0) return logLine(state, `${label}; the port takes no damage.`);
+    const before = portAt(state, transaction.targetHexId)?.damage ?? 0;
+    state = damagePort(state, transaction.targetHexId, result.levels, 'BARRAGE', events);
+    const after = portAt(state, transaction.targetHexId)?.damage ?? before;
+    return logLine(state, `${label}; the port takes ${after - before} hit${after - before === 1 ? '' : 's'} (now ${after} of ${PORT_MAXIMUM_HITS}).`);
   }
   let lines = label;
   const base = enemyAirBaseAt(state, transaction.ownerId, transaction.targetHexId);
@@ -706,7 +725,7 @@ const resolveMission = (input: GameState, events: RuleEvent[]): Transition | Gam
       break;
     case 'BARRAGE':
     case 'HIP_SHOOT':
-      state = air.target === 'AIR_BASE' ? resolveFacility(state, events) : resolveBarrageOnUnits(state, events);
+      state = air.target === 'AIR_BASE' || air.target === 'PORT' ? resolveFacility(state, events) : resolveBarrageOnUnits(state, events);
       break;
     case 'TRAINBUSTING':
       state = resolveFacility(state, events);
@@ -963,6 +982,7 @@ export const airMissionTargets = (state: GameState, playerId: PlayerId, mission:
         if (mission === 'HIP_SHOOT' && !hasCorrectSpotter(state, playerId, hexId)) break;
         if (enemyCombatUnitsAt(state, playerId, hexId).length > 0) results.push({ hexId, target: 'COMBAT_UNITS' });
         if (enemyAirBaseAt(state, playerId, hexId)) results.push({ hexId, target: 'AIR_BASE' });
+        if (enemyPortTarget(state, playerId, hexId)) results.push({ hexId, target: 'PORT' });
         break;
       }
     }
