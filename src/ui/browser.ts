@@ -944,7 +944,7 @@ const newGameDialog = () => {
           <p class="field-help">${engagementHelp(newGameSettings.engagement ?? 'MEETING')}</p>
         </fieldset>
         <fieldset><legend>Operational map</legend>
-          ${select('new-game-style', 'Style', [['TEMPERATE_INLAND', 'Temperate inland'], ['MEDITERRANEAN_COAST', 'Mediterranean coast'], ['EASTERN_EUROPE', 'Eastern Europe (Russia)']], newGameSettings.map.style)}
+          ${select('new-game-style', 'Theater', [['TEMPERATE_INLAND', 'Western Europe'], ['EASTERN_EUROPE', 'Eastern Europe']], newGameSettings.map.style)}
           ${select('new-game-sea', 'Sea', seaOptionsOf(newGameSettings.engagement ?? 'MEETING'), newGameSeaOf(newGameSettings))}
           <p class="field-help">${seaHelp(newGameSeaOf(newGameSettings), newGameSettings.engagement ?? 'MEETING')}</p>
           <div class="field-pair">
