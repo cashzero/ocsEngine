@@ -289,19 +289,27 @@ export const AIR_TRANSPORT_FAILURE_MAXIMUM: Readonly<Record<'FRIENDLY' | 'ENEMY'
 export interface FacilityColumn {
   readonly label: string;
   readonly minimumStrength: number;
+  /** The supply cost printed under the column; it applies to artillery only (10.1b), aircraft pay nothing. */
+  readonly supplyTokens: number;
 }
 
-/** 10.0c Barrage vs Facility Table columns (the printed costs apply to artillery only). */
+/** 10.0c Barrage vs Facility Table columns and the artillery supply cost printed under each. */
 export const FACILITY_TABLE_COLUMNS: readonly FacilityColumn[] = [
-  { label: '1 or less', minimumStrength: 1 },
-  { label: '2', minimumStrength: 2 },
-  { label: '3-4', minimumStrength: 3 },
-  { label: '5-10', minimumStrength: 5 },
-  { label: '11-20', minimumStrength: 11 },
-  { label: '21-40', minimumStrength: 21 },
-  { label: '41-80', minimumStrength: 41 },
-  { label: '81+', minimumStrength: 81 },
+  { label: '1 or less', minimumStrength: 1, supplyTokens: 1 },
+  { label: '2', minimumStrength: 2, supplyTokens: 1 },
+  { label: '3-4', minimumStrength: 3, supplyTokens: 1 },
+  { label: '5-10', minimumStrength: 5, supplyTokens: 1 },
+  { label: '11-20', minimumStrength: 11, supplyTokens: 2 },
+  { label: '21-40', minimumStrength: 21, supplyTokens: 4 },
+  { label: '41-80', minimumStrength: 41, supplyTokens: 6 },
+  { label: '81+', minimumStrength: 81, supplyTokens: 8 },
 ];
+
+/**
+ * 19.0b Port Damage, printed beside the Barrage vs Facility Table: the percentage of printed capacity a port keeps
+ * after 0-4 hits, for ports without a Damage Track of their own (every generated port).
+ */
+export const PORT_DAMAGE_CAPACITY_PERCENT: readonly number[] = [100, 80, 60, 40, 20];
 
 /** Barrage vs Facility Table rows for one die (1-6); `*` is a successful Trainbusting. */
 export const FACILITY_TABLE_ROWS: Readonly<Record<number, readonly string[]>> = Object.fromEntries([

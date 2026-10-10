@@ -1,6 +1,7 @@
 # OCS v4.3 圖表與 BTR 戰鬥地形表轉錄
 
 來源：使用者提供的 Beyond the Rhine VASSAL 模組 1.27.0（`E:\work\Beyond the Rhine_1_27_0\images`）。
+全部表格的逐字轉錄（不論是否實作）：`ocs-4.3-charts-full.md`（系列圖表第 1～4 頁）、`btr-charts-full.md`（BTR 各表）；本文件記錄程式如何使用。
 規則引擎程式碼：`src/rules/tables/ocs-4.3.ts`（系列圖表）、`src/game-flow/combat-tec.ts`（BTR 戰鬥地形）、
 `src/game-flow/movement-tec.ts`（BTR 移動地形，見 `btr-movement-tec.md`）。
 
@@ -8,7 +9,7 @@
 |---|---|---|
 | `v4.3 Charts (final)-2 1000.png` | `0e5b8282b953d8bf389f3461ada4e30bee4ea8897e34390c031ee47d1cc3ad32` | Surprise Rolls（9.8）、Combat Supply（9.5）、Anti-Tank（9.4e）、Action Rating Mods（9.6）、戰果說明（9.10） |
 | `v4.3 Charts (final)-3 1000.png` | `5484b15276d54a8afd1896692671b6b56a6d0694162d20fbdce39542e16aa96a` | Combat Table（9.9），4 條地形列 × 13 欄 × 15 列 |
-| `v4.3 Charts (final)-4 1000.png` | `69b711ebb28640f9c2262677c8a7595b75765e7b130ec7dfc1b61818abbd94c9` | Barrage Table（10.0a）、Density／Additional Shifts |
+| `v4.3 Charts (final)-4 1000.png` | `69b711ebb28640f9c2262677c8a7595b75765e7b130ec7dfc1b61818abbd94c9` | Barrage Table（10.0a）、Density／Additional Shifts、Barrage vs Facility Table（10.0c）含砲兵成本、Port Damage（19.0b） |
 | `BTR TEC.jpg` | `70ca1a8564a6527db668fd5c347d423ec81384d45a7a7628162286b1b513a770` | Terrain Effects on Combat（BTR） |
 
 ## Combat Table（9.9）
@@ -97,7 +98,7 @@ Surprise（9.8）：Overrun 修正後 ≥9 攻方、≤6 守方；一般攻擊 �
 - Mission Loss（一顆骰）：2 架 `#1 #1 #1 #2 #2 #2`；3 架 `#1 #1 #2 #2 #3 #3`；4 架 `#1 #2 #3 #4 W S`。
 - Air Base Capture：每架 2d6，≤6 損 1 step；Active +2、推進佔領 +2。
 - Air Transport Success：Friendly Clear ≤4 失敗、Closed ≤5；Enemy Clear ≤5、Closed ≤6。滑翔機降落擲骰 +1（14.10e）。表上的 −1（ETO 1944 年 8 月前、蘇軍空降）是遊戲專屬修正，產生劇本不套用。Friendly＝該格在本階段開始時有友軍單位；Clear＝地形 Clear（城市、城鎮除外）、Village 或有機場的格。
-- Barrage vs Facility（一顆骰 × 8 欄：1 以下、2、3-4、5-10、11-20、21-40、41-80、81+）：
+- Barrage vs Facility（一顆骰 × 8 欄：1 以下、2、3-4、5-10、11-20、21-40、41-80、81+）。Cost 列（砲兵的補給成本，飛機不付，2026-10-10 轉錄）：`1T 1T 1T 1T 2T 4T 6T 8T`。
 
 | 骰 | 1 以下 | 2 | 3-4 | 5-10 | 11-20 | 21-40 | 41-80 | 81+ |
 |---|---|---|---|---|---|---|---|---|
@@ -107,6 +108,13 @@ Surprise（9.8）：Overrun 修正後 ≥9 攻方、≤6 守方；一般攻擊 �
 | 4 | - | - | - | \*(6) | 1\*(5) | 1\*(4) | 1\*(4) | 2\*(4) |
 | 5 | - | (6) | \*(6) | 1\*(5) | 1\*(4) | 2\*(4) | 2\*(4) | 2\*(3) |
 | 6 | (6) | \*(5) | 1\*(5) | 1\*(4) | 1\*(4) | 2\*(4) | 2\*(3) | 2\*(3) |
+
+結果說明：`-` 無效果；`*` Trainbusting 成功；`1` Air Base 降一級（最低 Level 1）或港口受 1 hit（最多 4 hits）；
+`2` Air Base 降兩級（最低 Level 1）或港口受 2 hits；`(#)` 目標為 Air Base 時，該基地每架飛機另擲一顆骰，# 以上損失一步。
+
+- Port Damage（19.0b，印在 Barrage vs Facility Table 旁；2026-10-10 轉錄）：沒有自己 Damage Track 的港口，容量降為印刷容量的
+  1 hit 80%、2 hits 60%、3 hits 40%、4 hits 20%，四捨五入到最近的 Token（圖表例：1 SP 的 80% 是 3T）。
+  程式：`PORT_DAMAGE_CAPACITY_PERCENT`、`portCapacityTokens`（`src/rules/port/state.ts`）。產生的港口都沒有 Damage Track。
 
 交叉檢查（`tests/rules/ocs-air.test.ts`）：
 

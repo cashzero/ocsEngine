@@ -1,6 +1,7 @@
 import type { HexId, PlayerId } from '../../core/index.js';
 import type { MapFeatureState } from '../../domain/map/index.js';
 import type { GameState, PortUse, SeaState } from '../kernel/model.js';
+import { PORT_DAMAGE_CAPACITY_PERCENT } from '../tables/ocs-4.3.js';
 import { hasEnemyCombatUnit, inEnemyZoc } from '../zoc/zoc.js';
 
 /**
@@ -38,12 +39,11 @@ export const portAt = (state: GameState, hexId: HexId): MapFeatureState | undefi
 export const portHexOf = (port: MapFeatureState): HexId => (port.location as { readonly hexId: HexId }).hexId;
 
 /**
- * 19.0b: each hit takes a quarter of the printed capacity, rounded to the nearest Token, so four hits close the port.
- * TODO(port-damage-chart): the generic hit effects are printed beside the Barrage vs Facility Table on chart page 4,
- * which is not transcribed in docs/rules/ocs-4.3-charts.md; this quarter-per-hit reading must be checked against it.
+ * 19.0b: the Port Damage table beside the Barrage vs Facility Table leaves 80%, 60%, 40% and 20% of the printed
+ * capacity after 1-4 hits, rounded to the nearest Token ("80% of 1 SP is 3T"), so even four hits never close a port.
  */
 export const portCapacityTokens = (port: MapFeatureState): number =>
-  Math.round(port.level * (PORT_MAXIMUM_HITS - Math.min(PORT_MAXIMUM_HITS, port.damage)) / PORT_MAXIMUM_HITS);
+  Math.round(port.level * PORT_DAMAGE_CAPACITY_PERCENT[Math.min(PORT_MAXIMUM_HITS, port.damage)]! / 100);
 
 /** A port is friendly to the player who controls it (9.14h). */
 export const isFriendlyPort = (state: GameState, playerId: PlayerId, hexId: HexId): boolean => portAt(state, hexId)?.controllerId === playerId;
