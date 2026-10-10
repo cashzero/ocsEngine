@@ -810,7 +810,7 @@ export class MapView {
           ctx.translate(cx, cy);
           ctx.rotate(rotate * Math.PI / 180);
           ctx.translate(-cx, -cy);
-          ctx.fillStyle = cell.settlement === 'VILLAGE' ? '#4a3426' : alt ? '#5c564b' : '#2a2520';
+          ctx.fillStyle = alt ? '#5c564b' : '#2a2520';
           ctx.strokeStyle = 'rgba(236, 232, 200, .55)';
           ctx.lineWidth = 0.5;
           ctx.fillRect(x, y, width, height);
@@ -828,7 +828,7 @@ export class MapView {
         });
         if (settlement.name) {
           const { text, x, y, fontSize, strokeWidth } = settlement.name;
-          ctx.font = `${cell.settlement === 'TOWN' ? 700 : 800} ${fontSize}px Georgia, 'Times New Roman', serif`;
+          ctx.font = `${cell.settlement === 'CITY' ? 800 : 700} ${fontSize}px Georgia, 'Times New Roman', serif`;
           ctx.textAlign = 'start';
           ctx.lineWidth = strokeWidth;
           ctx.strokeStyle = 'rgba(236, 235, 205, .85)';

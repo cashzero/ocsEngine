@@ -18,6 +18,8 @@ export interface GeneratedMapPreviewCell {
   readonly points: string;
   readonly terrain: GeneratedTerrainKind;
   readonly settlement: 'CITY' | 'TOWN' | 'VILLAGE' | null;
+  /** Core Hex of a Major City cluster: the only Hex of the cluster that carries the place name (map art only). */
+  readonly urbanCore?: boolean;
   readonly strategic: 'FIRST' | 'SECOND' | null;
   /** Whose Supply Source (12.6a) this hex is, so the map can mark it; null for an ordinary hex. */
   readonly supplySource: 'FIRST' | 'SECOND' | null;
@@ -51,6 +53,13 @@ const edgeKinds = (definitions: readonly string[]): GeneratedMapPreviewEdge['kin
 export const buildGeneratedMapPreview = (generated: GeneratedMap, hexSize = 36): GeneratedMapPreview => {
   const layout = layoutMapDefinition(generated.mapDefinition, hexSize);
   const positions = new Map(layout.cells.map((cell) => [cell.id, cell]));
+  const cityIds = layout.cells.filter(({ id }) => generated.mapDefinition.hexes.find((hex) => String(hex.id) === id)
+    ?.features.some(({ definitionId }) => String(definitionId) === 'settlement:city'));
+  const near = (left: { x: number; y: number }, right: { x: number; y: number }): boolean => Math.hypot(left.x - right.x, left.y - right.y) < hexSize * 1.9;
+  const cityNeighbors = (cell: { id: string; x: number; y: number }): number => cityIds.filter((other) => other.id !== cell.id && near(other, cell)).length;
+  // The core touches every suburb: most city neighbours wins, the smaller ID breaks a tie.
+  const cores = new Set(cityIds.filter((cell) => !cityIds.some((other) => other.id !== cell.id && near(other, cell)
+    && (cityNeighbors(other) > cityNeighbors(cell) || cityNeighbors(other) === cityNeighbors(cell) && other.id < cell.id))).map(({ id }) => id));
   const cells = layout.cells.map((cell) => {
     const definition = generated.mapDefinition.hexes.find(({ id }) => id === cell.id)!;
     const settlementId = definition.features.find(({ definitionId }) => String(definitionId).startsWith('settlement:'))?.definitionId;
@@ -62,6 +71,7 @@ export const buildGeneratedMapPreview = (generated: GeneratedMap, hexSize = 36):
       id: cell.id, x: cell.x, y: cell.y, points: cell.points,
       terrain: terrain(definition.terrainDefinitionIds[0]!),
       settlement: settlementId ? String(settlementId).split(':').at(-1)!.toUpperCase() as 'CITY' | 'TOWN' | 'VILLAGE' : null,
+      urbanCore: cores.has(cell.id),
       strategic: first ? 'FIRST' as const : second ? 'SECOND' as const : null,
       supplySource: generated.strategicRegions.firstSupplyHexIds.includes(cell.id) ? 'FIRST' as const
         : generated.strategicRegions.secondSupplyHexIds.includes(cell.id) ? 'SECOND' as const : null,
