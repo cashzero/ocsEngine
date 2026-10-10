@@ -364,16 +364,34 @@ const selectObjectives = (
   const railFeatures = new Set([GENERATED_RAIL, GENERATED_MULTI_TRACK_RAIL]);
   const railDegree = new Map<HexId, number>();
   const multiTrackHexes = new Set<HexId>();
+  const railEdges: { first: HexId; second: HexId; multi: boolean }[] = [];
   for (const { hexsideId, featureDefinitionIds } of map.mapDefinition.hexsides) {
     if (!featureDefinitionIds.some((id) => railFeatures.has(String(id)))) continue;
     const parsed = parseHexsideId(hexsideId);
     if (!parsed.ok) continue;
     const multi = featureDefinitionIds.some((id) => String(id) === GENERATED_MULTI_TRACK_RAIL);
+    railEdges.push({ first: parsed.value.firstHexId, second: parsed.value.secondHexId, multi });
     for (const hexId of [parsed.value.firstHexId, parsed.value.secondHexId]) {
       railDegree.set(hexId, (railDegree.get(hexId) ?? 0) + 1);
       if (multi) multiTrackHexes.add(hexId);
     }
   }
+  // A multi-hex Major City is one junction: its rail directions are the railroad hexsides leaving the whole city
+  // (rails between two of its own Hexes are internal), so a hub spread over several Hexes still counts as a hub.
+  const cityHexes = map.strategicRegions.settlementHexIds.filter((hexId) =>
+    hexById.get(hexId)?.features.some(({ definitionId }) => String(definitionId) === CITY_FEATURE) ?? false);
+  const cityClusterOf = (core: HexId): Set<HexId> => {
+    const cluster = new Set<HexId>([core]);
+    const queue: HexId[] = [core];
+    for (let next = queue.shift(); next !== undefined; next = queue.shift()) {
+      for (const hexId of cityHexes) {
+        if (cluster.has(hexId) || distance(next, hexId) > 1) continue;
+        cluster.add(hexId);
+        queue.push(hexId);
+      }
+    }
+    return cluster;
+  };
   const roadFeatures = new Set(['edge:primary-road', 'edge:road']);
   const roadDegree = new Map<HexId, number>();
   for (const { hexsideId, featureDefinitionIds } of map.mapDefinition.hexsides) {
@@ -384,6 +402,8 @@ const selectObjectives = (
   }
   const portCapacity = new Map(map.strategicRegions.ports.map(({ hexId, capacityTokens }) => [hexId, capacityTokens] as const));
   const cityCores: HexId[] = [];
+  /** Rail directions of each objective candidate (a multi-hex city counts its whole outline). */
+  const railDegreeOf = new Map<HexId, number>();
   // Settlement Hex IDs come ranked: each Major City core before its suburbs, then towns largest first.
   for (const hexId of map.strategicRegions.settlementHexIds) {
     const features = hexById.get(hexId)?.features.map(({ definitionId }) => String(definitionId)) ?? [];
@@ -394,15 +414,35 @@ const selectObjectives = (
       cityCores.push(hexId);
     } else if (!features.includes(TOWN_FEATURE) && !features.includes(VILLAGE_FEATURE)) continue;
     if (edgeHexes.has(hexId)) continue;
+    let hexRailDegree = railDegree.get(hexId) ?? 0;
+    let hexMultiTrack = multiTrackHexes.has(hexId);
+    if (city) {
+      const cluster = cityClusterOf(hexId);
+      const outgoing = railEdges.filter(({ first, second }) => cluster.has(first) !== cluster.has(second));
+      // Lines leaving through neighbouring Hexes (a doubled line, or a loop that rejoins at once) are one direction, not a hub.
+      const outside: HexId[] = [...new Set(outgoing.map(({ first, second }) => (cluster.has(first) ? second : first)))];
+      const groups: HexId[][] = [];
+      for (const outsideHex of outside) {
+        const touching = groups.filter((group) => group.some((other) => distance(other, outsideHex) <= 1));
+        const merged = [outsideHex, ...touching.flat()];
+        for (const group of touching) groups.splice(groups.indexOf(group), 1);
+        groups.push(merged);
+      }
+      hexRailDegree = groups.length;
+      hexMultiTrack = outgoing.some(({ multi }) => multi);
+      // Rail inside the city still makes it a station, even with no line leaving it.
+      if (hexRailDegree === 0 && [...cluster].some((id) => (railDegree.get(id) ?? 0) > 0)) hexRailDegree = 1;
+    }
+    railDegreeOf.set(hexId, hexRailDegree);
     const points = objectivePoints(city ? 'CITY' : features.includes(TOWN_FEATURE) ? 'TOWN' : 'VILLAGE',
-      { portCapacityTokens: portCapacity.get(hexId) ?? 0, railDegree: railDegree.get(hexId) ?? 0, multiTrack: multiTrackHexes.has(hexId) });
+      { portCapacityTokens: portCapacity.get(hexId) ?? 0, railDegree: hexRailDegree, multiTrack: hexMultiTrack });
     if (points <= 0) continue;
     // In an attack every objective lies in the defender's zone: the attacker has nothing to lose but its army.
     if (holder !== null && sideOf(hexId) !== holder) continue;
     candidates[sideOf(hexId)].push({
       hexId, city, points, roads: roadDegree.get(hexId) ?? 0,
       // VP goes first to rail junctions, then ports, then Major Cities, then towns (user, 2026-10-10).
-      rank: (railDegree.get(hexId) ?? 0) >= GENERATED_RAIL_JUNCTION_DEGREE ? 0 : portCapacity.has(hexId) ? 1 : city ? 2 : 3,
+      rank: (railDegreeOf.get(hexId) ?? 0) >= GENERATED_RAIL_JUNCTION_DEGREE ? 0 : portCapacity.has(hexId) ? 1 : city ? 2 : 3,
     });
   }
   const sum = (entries: readonly { points: number }[]): number => entries.reduce((total, { points }) => total + points, 0);
