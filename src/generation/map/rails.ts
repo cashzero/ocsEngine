@@ -2,6 +2,7 @@ import { hexDistance, type DefinitionId, type HexId } from '../../core/index.js'
 import type { HexsideId } from '../../domain/map/index.js';
 import {
   addHexsideFeature,
+  columnOf,
   coordinateFor,
   definitionId,
   hexsideBetween,
@@ -24,7 +25,8 @@ type RailClass = 'MULTI' | 'SINGLE';
 /**
  * Railways at Beyond the Rhine scale (docs/generator/10-btr-scale-density.md): a multi-track trunk
  * runs between the two sides' main entries through the Major Cities, single-track lines reach every
- * Minor City and every entry Hex (so each map-edge entry is a railroad Supply Source, 12.6a), and
+ * Minor City and each rail entry Hex (a few of a side's entries, so lines leave the map edge as far
+ * apart as real ones do), and
  * nearby towns get a direct line when the rail detour is long. Railways keep to low, open ground,
  * avoid hills more than roads do, and cross rivers at few bridges.
  */
@@ -39,6 +41,14 @@ const SETTLEMENT_FACTOR = 0.8;
 const SHARED_RAIL_FACTOR = 0.3;
 /** A loop line only follows existing track where it runs the same way. */
 const LOOP_SHARE_FACTOR = 0.85;
+/**
+ * A rail entry's line runs inland and joins the network at least this far from the side edges (in
+ * columns, scaled with the map width). New track keeps to a cone around the entry row: a Hex further
+ * from that row than from the edge costs much more, while riding existing track does not. Without it an
+ * entry joined the nearest track, often a line along the map edge, so maps got rail hugging both sides.
+ */
+const spurJoinDepthFor = (width: number): number => Math.max(3, Math.round(width / 10));
+const OUTSIDE_CONE_FACTOR = 8;
 
 class RailNetwork {
   readonly #adjacency = new Map<HexId, Map<HexId, RailClass>>();
@@ -89,17 +99,28 @@ interface RailContext {
   readonly hexsides: ReadonlyMap<HexsideId, ReadonlySet<DefinitionId>>;
   readonly settled: ReadonlySet<HexId>;
   readonly network: RailNetwork;
+  /** A rail entry's line: the map width and the entry's row, which bound its cone of new track. */
+  readonly spur?: { readonly width: number; readonly row: number };
 }
+
+const edgeDepth = (hexId: HexId, width: number): number => {
+  const column = columnOf(coordinateFor(hexId));
+  return Math.min(column, width - 1 - column);
+};
 
 const stepCost = (context: RailContext, from: GeneratedCell, to: GeneratedCell, share: number): number => {
   let cost = RAIL_TERRAIN_COST[to.terrain];
   if (!Number.isFinite(cost)) return cost;
+  const onRail = context.network.classBetween(from.id, to.id) !== undefined;
+  if (context.spur && !onRail && Math.abs(to.coordinate.r - context.spur.row) > edgeDepth(to.id, context.spur.width) + 1) {
+    cost *= OUTSIDE_CONE_FACTOR;
+  }
   for (const feature of context.hexsides.get(hexsideBetween(from.id, to.id)) ?? []) {
     if (String(feature) === MAJOR_RIVER) cost += MAJOR_RIVER_CROSSING_COST;
     else if (String(feature) === RIVER) cost += RIVER_CROSSING_COST;
   }
   if (context.settled.has(to.id)) cost *= SETTLEMENT_FACTOR;
-  if (context.network.classBetween(from.id, to.id)) cost *= share;
+  if (onRail) cost *= share;
   return cost;
 };
 
@@ -154,7 +175,7 @@ const nearestFirst = (nodes: readonly HexId[], joined: readonly HexId[]): { node
 
 /**
  * Adds railroad hexsides to `hexsides`. `primaryEntries` are the two sides' main entry Hexes (the
- * trunk's ends); `entries` are every entry Hex, each of which becomes a rail Hex. Railways are much
+ * trunk's ends); `entries` are the rail entry Hexes, each of which becomes a rail Hex. Railways are much
  * sparser than roads: only the style's share of the larger Minor Cities (best-placed first by the
  * settlement score) get a line of their own, and a loop line is built only between stations within the
  * style's loop range whose rail detour is very long (styles.ts).
@@ -166,6 +187,7 @@ export const generateRailNetwork = (
   primaryEntries: readonly HexId[],
   entries: readonly HexId[],
   { townRailShare, loopRange, loopDetourLimit }: MapStyleProfile['rails'],
+  width: number,
 ): void => {
   const network = new RailNetwork();
   const context: RailContext = { cells, hexsides, settled: new Set(settlements.map(({ cell }) => cell.id)), network };
@@ -184,14 +206,21 @@ export const generateRailNetwork = (
     joined.push(node);
     pending.delete(node);
   }
-  // 2. Single-track lines from every Minor City and entry Hex to the nearest point of the network.
+  // 2. Single-track lines from every Minor City and rail entry Hex to the nearest point of the network.
   const branches = [...new Set([...towns, ...entries])].filter((hexId) => !network.has(hexId))
     .sort((left, right) => {
       const nearest = (hexId: HexId): number => Math.min(...trunk.map((other) => hexDistance(coordinateFor(hexId), coordinateFor(other))));
       return nearest(left) - nearest(right) || String(left).localeCompare(String(right));
     });
+  const entrySet = new Set(entries);
+  const joinDepth = spurJoinDepthFor(width);
   for (const hexId of branches) {
-    if (!network.has(hexId)) network.add(route(context, hexId, (other) => network.has(other)), 'SINGLE');
+    if (network.has(hexId)) continue;
+    if (!entrySet.has(hexId)) { network.add(route(context, hexId, (other) => network.has(other)), 'SINGLE'); continue; }
+    // An entry line heads inland and joins the network away from the edge; failing that, anywhere.
+    const spurContext: RailContext = { ...context, spur: { width, row: coordinateFor(hexId).r } };
+    const spur = route(spurContext, hexId, (other) => network.has(other) && edgeDepth(other, width) >= joinDepth);
+    network.add(spur.length > 0 ? spur : route(context, hexId, (other) => network.has(other)), 'SINGLE');
   }
   // 3. Loops: towns and cities a short way apart get a direct line when the rail detour is long.
   const stations = [...new Set([...cities, ...towns])];

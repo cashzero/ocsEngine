@@ -21,6 +21,7 @@ import type {
   MapSeaPlacement,
 } from './model.js';
 import { MAP_STYLE_PROFILES, roadGapLimitFor } from './styles.js';
+import { railEntryCountFor } from './network.js';
 
 const error = (code: string, message: string, path: readonly (string | number)[] = []): ValidationIssue => ({
   code, message, path, severity: 'ERROR',
@@ -190,11 +191,12 @@ export const validateGeneratedMap = (
   if (strategic.some((hexId) => !land.has(hexId))) issues.push(error('STRATEGIC_REGION_ON_WATER', 'Entry, supply, and settlement Hexes must be on land.'));
   const roadReach = reachable(map, strategic[0]!, land, true);
   if (strategic.some((hexId) => !roadReach.has(hexId))) issues.push(error('STRATEGIC_NODE_OFF_ROAD', 'Every strategic node must join the road network.'));
-  // 12.6a: entry Hexes are the map-edge railroad Supply Sources, so each lies on the one rail network.
+  // 12.6a, 13.3: each side's leading entries are map-edge railroad Hexes on the one rail network.
   if (metrics.connectedRailComponents !== 1) issues.push(error('DISCONNECTED_RAIL_NETWORK', 'All generated railroads must form one component.'));
   const railHexes = new Set(featureEdges(map, RAIL_PATTERN).flat());
-  if ([...regions.firstEntryHexIds, ...regions.secondEntryHexIds].some((hexId) => !railHexes.has(hexId))) {
-    issues.push(error('ENTRY_OFF_RAIL', 'Every entry Hex must be a railroad Hex, the map-edge Supply Source of 12.6a.'));
+  const railEntries = railEntryCountFor(style, map.bounds.maxR - map.bounds.minR + 1);
+  if ([regions.firstEntryHexIds, regions.secondEntryHexIds].some((entries) => entries.slice(0, railEntries).some((hexId) => !railHexes.has(hexId)))) {
+    issues.push(error('ENTRY_OFF_RAIL', 'Each side\'s rail entry Hexes, its primary entry first, must be railroad Hexes.'));
   }
   const landReach = reachable(map, regions.firstEntryHexIds[0]!, land, false);
   if (!landReach.has(regions.secondEntryHexIds[0]!)) issues.push(error('NO_OPERATIONAL_CORRIDOR', 'Opposing entry regions require a continuous land corridor.'));

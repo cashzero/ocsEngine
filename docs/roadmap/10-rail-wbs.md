@@ -31,7 +31,7 @@ Rail Cap 屬於「運輸」（13.3 移動與 12.2 SP 移動），不是 trace su
 - 單軌支線（`edge:rail`）：每個 entry hex（因此每個 entry 都是 12.6a 的地圖邊緣鐵路 source）與較大的 Minor City（依聚落分數前 40%）。
 - 迴圈只在兩站間鐵路繞行超過直線 2.5 倍、距離 8 hex 內時建立。
 - 路線成本：偏好開闊低地、避開丘陵與山地，河流上的橋少；沿既有鐵路便宜，所以支線會併入網路。
-- 驗證：鐵路必須是單一連通網路（`DISCONNECTED_RAIL_NETWORK`），每個 entry hex 必須在鐵路上（`ENTRY_OFF_RAIL`）；500 seed sweep 全數通過。
+- 驗證：鐵路必須是單一連通網路（`DISCONNECTED_RAIL_NETWORK`），每邊的 rail entry hex（主 entry 優先，每 `rowsPerRailEntry` 列一個；2026-10-10 使用者決定，其餘 entry 只走公路、仍為 Supply Source）必須在鐵路上（`ENTRY_OFF_RAIL`）；500 seed sweep 全數通過。
 - 密度（每 land hex 的鐵路 hexside；道路約 0.55）：
 
 | 尺寸 | 鐵路 / land hex | 鐵路 / 道路 |

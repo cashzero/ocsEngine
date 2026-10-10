@@ -279,7 +279,7 @@ Run on the default New Game unless a row says otherwise. Evidence: `docs/quality
 
 | ID | Pri | Player operation | Required visible result | Status |
 |---|---:|---|---|---|
-| RAIL-01 | P0 | Generate operation on the default settings | The preview shows a connected rail net, a heavier multi-track trunk between the two sides, every entry hex on rail, and clearly fewer rail lines than roads | PASS (2026-10-04, 119 rail vs 387 road segments, `01-preview-map.jpg`) |
+| RAIL-01 | P0 | Generate operation on the default settings | The preview shows a connected rail net, a heavier multi-track trunk between the two sides, each side's rail entry hexes on rail (a few per side, primary first; other entries road-only since 2026-10-10), no rail line running along a side edge, and clearly fewer rail lines than roads | PASS (2026-10-10 re-run after the criterion changed: 112 rail vs 406 road segments, `rail-entries-2026-10-10/01-default-preview.jpg`; first run 2026-10-04) |
 | RAIL-02 | P0 | Start the game and look at the map and legend | Rails are drawn as track with ties over the roads; the legend names Railroad | PASS (2026-10-04, `02-game-start.jpg`) |
 | RAIL-03 | P0 | Turn on Trace Supply for each seat in turn | Map-edge rail entries show the side's S disc; each seat sees RAIL tags only on its own detrainable stations and EXT on its own linked Extenders | PASS (2026-10-04, Allied and Axis views, `03-trace-overlay.jpg`, `05-axis-overlay.jpg`) |
 | RAIL-04 | P0 | Play a whole Game Turn with the rail map | No dead end; console has no errors | PASS (2026-10-04, passive turn: arrivals placed, no unit moved, `04-supply-phase.jpg`) |
