@@ -1,10 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { parseHexCoordinateId } from '../../src/core/index.js';
 import { DEFAULT_NEW_GAME_REQUEST, prepareNewGame, type NewGameRequest } from '../../src/index.js';
-import {
-  GENERATED_MAJOR_CITY_OBJECTIVE_POINTS,
-  GENERATED_TOWN_OBJECTIVE_POINTS,
-} from '../../src/game-flow/deployment.js';
+import { objectivePoints } from '../../src/game-flow/deployment.js';
 
 const hexDistance = (first: string, second: string): number => {
   const a = parseHexCoordinateId(first as never);
@@ -13,6 +10,20 @@ const hexDistance = (first: string, second: string): number => {
   const dq = a.value.q - b.value.q;
   const dr = a.value.r - b.value.r;
   return (Math.abs(dq) + Math.abs(dr) + Math.abs(dq + dr)) / 2;
+};
+
+const RAIL_EDGES = new Set(['edge:rail', 'edge:multi-track-rail']);
+
+/** Railroad hexsides per Hex, and the port Hexes, of a generated map. */
+const transportOf = (prepared: { readonly scenario: { readonly mapDefinition: { readonly hexsides: readonly { readonly hexsideId: unknown; readonly featureDefinitionIds: readonly unknown[] }[] } };
+  readonly generatedMap: { readonly strategicRegions: { readonly ports: readonly { readonly hexId: unknown }[] } } }) => {
+  const railDegree = new Map<string, number>();
+  for (const { hexsideId, featureDefinitionIds } of prepared.scenario.mapDefinition.hexsides) {
+    if (!featureDefinitionIds.some((id) => RAIL_EDGES.has(String(id)))) continue;
+    for (const hexId of String(hexsideId).split('|')) railDegree.set(hexId, (railDegree.get(hexId) ?? 0) + 1);
+  }
+  const ports = new Set(prepared.generatedMap.strategicRegions.ports.map(({ hexId }) => String(hexId)));
+  return (hexId: string) => ({ port: ports.has(hexId), railDegree: railDegree.get(hexId) ?? 0 });
 };
 
 const objectivesOf =(request: NewGameRequest) => {
@@ -34,14 +45,26 @@ const objectivesOf =(request: NewGameRequest) => {
 };
 
 describe('generated objectives', () => {
-  it('places several objectives, only in Major Cities and towns, worth more in a Major City', () => {
+  it('places several objectives in settlements, worth more the larger the settlement and the more important the transport node', () => {
+    const prepared = prepareNewGame(DEFAULT_NEW_GAME_REQUEST);
+    if (!prepared.ok) throw new Error('Game must prepare.');
+    const transport = transportOf(prepared.value);
     const { objectives } = objectivesOf(DEFAULT_NEW_GAME_REQUEST);
-    expect(objectives.length).toBeGreaterThanOrEqual(6);
-    for (const { settlement, points } of objectives) {
-      expect(['settlement:city', 'settlement:town']).toContain(settlement);
-      expect(points).toBe(settlement === 'settlement:city' ? GENERATED_MAJOR_CITY_OBJECTIVE_POINTS : GENERATED_TOWN_OBJECTIVE_POINTS);
+    expect(objectives.length).toBeGreaterThanOrEqual(4);
+    const kind = { 'settlement:city': 'CITY', 'settlement:town': 'TOWN', 'settlement:village': 'VILLAGE' } as const;
+    for (const { hexId, settlement, points } of objectives) {
+      expect(Object.keys(kind)).toContain(settlement);
+      expect(points).toBe(objectivePoints(kind[settlement as keyof typeof kind], transport(String(hexId))));
+      expect(points).toBeGreaterThan(0);
     }
     expect(objectives.some(({ settlement }) => settlement === 'settlement:city')).toBe(true);
+    expect(new Set(objectives.map(({ points }) => points)).size).toBeGreaterThan(1);
+    // A larger settlement and a more important transport node are each worth more.
+    expect(objectivePoints('CITY', { port: false, railDegree: 0 })).toBeGreaterThan(objectivePoints('TOWN', { port: false, railDegree: 0 }));
+    expect(objectivePoints('TOWN', { port: false, railDegree: 2 })).toBeGreaterThan(objectivePoints('TOWN', { port: false, railDegree: 0 }));
+    expect(objectivePoints('TOWN', { port: false, railDegree: 3 })).toBeGreaterThan(objectivePoints('TOWN', { port: false, railDegree: 2 }));
+    expect(objectivePoints('TOWN', { port: true, railDegree: 2 })).toBeGreaterThan(objectivePoints('TOWN', { port: false, railDegree: 2 }));
+    expect(objectivePoints('VILLAGE', { port: false, railDegree: 0 })).toBe(0);
   });
 
   it('starts each objective held by the side whose garrison stands on it (13.3h, OOB 0.4.0)', () => {
@@ -74,17 +97,26 @@ describe('generated objectives', () => {
     }
   });
 
-  it('chooses the towns nearest the front, where the armies meet', () => {
-    const prepared = prepareNewGame(DEFAULT_NEW_GAME_REQUEST);
+  it('chooses railroad and port towns first (user, 2026-10-10), then those nearest the front', () => {
+    const request = { ...DEFAULT_NEW_GAME_REQUEST, map: { ...DEFAULT_NEW_GAME_REQUEST.map, width: 64, height: 48 } };
+    const prepared = prepareNewGame(request);
     if (!prepared.ok) throw new Error('Game must prepare.');
+    const transport = transportOf(prepared.value);
     const { strategicRegions, mapDefinition } = prepared.value.generatedMap;
     const [first, second] = [strategicRegions.firstEntryHexIds[0]!, strategicRegions.secondEntryHexIds[0]!];
     const front = (hexId: string): number => Math.abs(hexDistance(hexId, first) - hexDistance(hexId, second));
     const towns = mapDefinition.hexes.filter(({ features }) => features.some(({ definitionId }) => String(definitionId) === 'settlement:town'))
       .map(({ id }) => String(id));
+    const node = (hexId: string): boolean => transport(hexId).port || transport(hexId).railDegree > 0;
     const chosen = new Set(prepared.value.deployment.objectiveHexIds.map(String));
+    const share = (ids: readonly string[]): number => ids.filter(node).length / ids.length;
+    // Most objective towns are transport nodes, a larger share than among the towns left out.
+    expect(share(towns.filter((id) => chosen.has(id)))).toBeGreaterThan(0.75);
+    expect(share(towns.filter((id) => chosen.has(id)))).toBeGreaterThan(share(towns.filter((id) => !chosen.has(id))));
+    // Among the railroad towns, the chosen ones lie nearer the front.
     const mean = (values: readonly number[]): number => values.reduce((total, value) => total + value, 0) / values.length;
-    expect(mean(towns.filter((id) => chosen.has(id)).map(front))).toBeLessThan(mean(towns.filter((id) => !chosen.has(id)).map(front)) / 2);
+    const railTowns = towns.filter((id) => transport(id).railDegree > 0);
+    expect(mean(railTowns.filter((id) => chosen.has(id)).map(front))).toBeLessThan(mean(railTowns.filter((id) => !chosen.has(id)).map(front)));
   });
 
   it('scales the objective count with the map', () => {
