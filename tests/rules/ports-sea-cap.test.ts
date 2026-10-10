@@ -170,17 +170,20 @@ describe('9.14h capture and 19.0e ports as Supply Sources', () => {
     const ports = (state: GameState, playerId: PlayerId) => friendlySupplySources(state, playerId).filter(({ kind }) => kind === 'PORT').map(({ hexId }) => hexId);
     expect(ports(start, ALLIED)).toEqual([WEST]);
     expect(ports(start, AXIS)).toEqual([EAST]);
-    // Three hits leave a 2 SP port with 2T: below 1 SP it is no longer a source (19.0e).
+    // Three hits leave a 2 SP port 40%, 3T: below 1 SP it is no longer a source (19.0e).
     const damaged = seaState({}, [{ hexId: WEST, tokens: 8, holder: ALLIED, hits: 3 }], { declared: true });
-    expect(portCapacityTokens(portAt(damaged, WEST)!)).toBe(2);
+    expect(portCapacityTokens(portAt(damaged, WEST)!)).toBe(3);
     expect(ports(damaged, ALLIED)).toEqual([]);
   });
 });
 
 describe('19.0b-d port damage, voluntary reduction and repair', () => {
-  it('each hit takes a quarter of the printed capacity, four close the port', () => {
+  it('hits leave 80%, 60%, 40% and 20% of the printed capacity, rounded to the nearest Token (Port Damage table)', () => {
     const port = portFeatureState(WEST, 8, ALLIED);
-    expect([0, 1, 2, 3, 4].map((damage) => portCapacityTokens({ ...port, damage }))).toEqual([8, 6, 4, 2, 0]);
+    expect([0, 1, 2, 3, 4].map((damage) => portCapacityTokens({ ...port, damage }))).toEqual([8, 6, 5, 3, 2]);
+    // The chart's own example: 80% of 1 SP is 3T.
+    expect(portCapacityTokens({ ...portFeatureState(WEST, 4, ALLIED), damage: 1 })).toBe(3);
+    expect([0, 1, 2, 3, 4].map((damage) => portCapacityTokens({ ...portFeatureState(WEST, 16, ALLIED), damage }))).toEqual([16, 13, 10, 6, 3]);
   });
 
   it('one RE of Combat Mode units in the port inflicts one hit a turn on it', () => {

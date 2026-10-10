@@ -17,6 +17,17 @@ The Markdown preserves each PDF page boundary as an HTML comment such as
 `<!-- PDF page 14 -->`. Extracted figures are stored under
 `assets/ocs-series-rules-v4.3/`.
 
+## Charts and tables
+
+Every chart and table image of the Beyond the Rhine VASSAL module 1.27.0 is transcribed as text, whether or not the
+engine applies it, so the images need not be opened again:
+
+- [ocs-4.3-charts-full.md](ocs-4.3-charts-full.md): OCS v4.3 Charts and Tables, pages 1-4.
+- [btr-charts-full.md](btr-charts-full.md): Beyond the Rhine game charts (TEC, weather, supply, replacements,
+  rebuilds, shipping, Rhine bridges, terrain key).
+- [ocs-4.3-charts.md](ocs-4.3-charts.md): how the engine uses the series charts, generated-game choices and
+  cross-checks; [btr-movement-tec.md](btr-movement-tec.md): the movement TEC from the Japanese edition.
+
 ## Regenerating the transcription
 
 Install the isolated conversion dependency and pass a local copy of the PDF to

@@ -24,7 +24,7 @@
 
 ## 2. 規則 manifest（`src/rules/manifest.ts`）
 
-28 列（2026-10-09 依 main `84d9fea` 重新核對；2026-10-10 依 main `1b4e4d7` 再核對：`engineering.bridging` 已實作，港口與海運把 `movement.sea` 改為 PARTIAL）：11 `IMPLEMENTED`、14 `PARTIAL`、2 `DEFERRED`、1 `GAME_SPECIFIC`。
+28 列（2026-10-09 依 main `84d9fea` 重新核對；2026-10-10 依 main `1b4e4d7` 再核對：`engineering.bridging` 已實作，港口與海運把 `movement.sea` 改為 PARTIAL；同日依 `137e42e` 重新盤點，修正下面過時的缺口文字）：11 `IMPLEMENTED`、14 `PARTIAL`、2 `DEFERRED`、1 `GAME_SPECIFIC`。
 各列缺口以 manifest 的 `GAP:` 文字為準，下面只列摘要。
 
 - DEFERRED（完全未實作，呼叫回 `UNSUPPORTED_RULE_FEATURE`）：
@@ -35,21 +35,24 @@
     沒有 Variable Reinforcement／Replacement Table，Pax／Eq 為依地圖大小的固定配給；Rebuild Table 為通用規則，13.5d 成對重建不會發生；
     Repl 不是戰鬥單位（無 1/4 RE 疊放、ZOC、損失、補給、燃料，放下後不能移動）；Unit Consolidation（13.9）未實作。
   - `movement.ground`：整疊移動（6.1f）使用者暫緩。
-  - `movement.sea`（19.0、9.14h）：港口容量、損壞／自毀／修復、佔領、Supply Source 與 Sea Cap 海運已實作；砲兵不能轟擊港口（Facility Table 的砲兵補給成本未轉錄）；每次命中扣 1/4 容量尚未對照圖表第 4 頁的註記核對。
+  - `movement.sea`（19.0、9.14h）：港口容量、損壞／自毀／修復、佔領、Supply Source 與 Sea Cap 海運已實作；命中後容量依圖表第 4 頁 Port Damage 表為 80／60／40／20%（2026-10-10 轉錄並修正，原本每次扣 1/4）；砲兵仍不能轟擊港口（Facility Table 砲兵成本已轉錄，但 DECLARE_BARRAGE 沒有設施目標）。
   - `supply.trace-and-draw`：12.6f 編制追蹤由引擎挑涵蓋最多成員的路線，玩家不能選。
-  - `supply.rail-trace`：單一軌距，無 Railhead／Wrong Gauge／改軌／Rail Repair（13.3d、13.3f、13.3g）；無港口。
+  - `supply.rail-trace`：單一軌距，無 Railhead／Wrong Gauge／改軌／Rail Repair（13.3d、13.3f、13.3g）。（產生的港口一律位於 village／town／city，在鐵路上時即以該聚落成為可下車格，13.3c，不是缺口。）
   - `movement.rail-cap`：卡車先花 MP 載運的 SP 仍可再上火車（12.2a 每批 SP 只能用一種運輸）。
   - `supply.rail-front-control`：13.3h「明確位於敵方前線後方」沒有印出的演算法，現行判定為專案自訂
     （`docs/roadmap/15-rail-cap-wbs.md` §1）；目標點仍只在進入時易手；無 Rail Cap 的遊戲維持只在進入時易手。
-  - `barrage.artillery`：地面砲兵不會用 Barrage vs Facility Table（港口未實作、刺蝟不可被砲擊、Air Base 只由飛機轟炸）。
+  - `barrage.artillery`：地面砲兵不會用 Barrage vs Facility Table（該表的砲兵補給成本已轉錄，但 DECLARE_BARRAGE 沒有設施目標，港口與 Air Base 只由飛機轟炸；刺蝟不可被砲擊）。
   - `air.bases-and-refit`：Air Strip 固定允許；建造補給只能來自補給範圍到得了的 dump（15.0d 的解讀）；BTR 泥濘／雪地 refit 減半未套用。
   - `air.missions`：Flight Conditions 不擲，天氣不限制任務；沒有空軍可 Hip Shoot；沒有艦艇 Flak（以上為使用者指示不做的遊戲專屬規則或海軍範圍）。
   - `air.transport-and-drop`：沒有獨立 Glider Points（14.10f）；空投成功表的 ETO 8/44 前與蘇軍 -1 修正未套用；TODO para-gpid、transport-art。
 - IMPLEMENTED：`weather`（但 Flight Conditions 見 `air.missions`）、`mode.transition`、`stacking.ground`、`zoc.purpose`、`supply.fuel`、
-  `transport.trucks`、`combat.ground`、`overrun.ground`、`breakdowns`、`hedgehogs`（2026-10-08，`docs/roadmap/14-hedgehogs-wbs.md`）。
+  `transport.trucks`、`combat.ground`、`overrun.ground`、`breakdowns`、`hedgehogs`（2026-10-08，`docs/roadmap/14-hedgehogs-wbs.md`）、
+  `engineering.bridging`（2026-10-10，`docs/roadmap/16-bridging-wbs.md`，NG-14 PASS）。
 - GAME_SPECIFIC：`victory.game-table`（通用回合／目標點計分，劇本 VP 表為資料）。
 - 自 2026-10-04 盤點後的變動：`movement.rail-sea-air` 拆為 `movement.rail-cap`（PARTIAL）與 `movement.sea`（DEFERRED）；
   新增 `supply.rail-front-control`（PARTIAL）、`hedgehogs`（IMPLEMENTED）；`hedgehogs-engineering` 改為只剩 `engineering.bridging`。
+  2026-10-10：`engineering.bridging` 改為 IMPLEMENTED；`movement.sea` 改為 PARTIAL（港口與 Sea Cap）；`naval-shipping` 縮為 18.0。
+  港口與海運的 UI 驗收 MAP-07、MAP-08、MAP-09 仍 IN PROGRESS（doc 03）。
 - 規則落差分析仍開啟：TODO-R1（逐條登記 §1–21，未登記的規則可能存在）、R9（整疊移動／連續 overrun）、
   R11（程式已保留分數 MA，`src/rules/pieces.ts` 6.1h，但沒有關閉證據要求的分數 MA 測試）、R14（未實作系統）；
   其餘 R 項程式已實作、待實機驗證（`docs/study/09-rules-vs-plan-gap-analysis.md` §4）。

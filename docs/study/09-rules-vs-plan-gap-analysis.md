@@ -196,6 +196,9 @@ completion claim, reopen the gate immediately」。
 >
 > **2026-10-09 補註（依 main `84d9fea`）**：manifest 現有 28 列（10 IMPLEMENTED、13 PARTIAL、4 DEFERRED、1 GAME_SPECIFIC）。
 > R14 中的刺蝟（16.0）已是 `hedgehogs` IMPLEMENTED；工兵只剩架橋（13.8b）為 `engineering.bridging` DEFERRED。
+> 2026-10-10 再補註（依 main `137e42e`）：R2 的來源已解決（VASSAL 模組圖表，見下表 TODO-R2），只剩逐欄邊界測試，**仍開啟**。
+> 架橋已是 `engineering.bridging` IMPLEMENTED，R14 的工兵部分不再有 DEFERRED 項；
+> manifest 為 11 IMPLEMENTED、14 PARTIAL、2 DEFERRED（`naval-shipping` 18.0、`optional-rules` 21.0）、1 GAME_SPECIFIC。
 > R11：程式已保留分數 MA（`src/rules/pieces.ts`，6.1h），但尚無關閉證據要求的分數 MA 測試，**仍開啟**。R1、R9 狀態不變。
 
 每一項都依 `AGENTS.md` 寫明：缺少的行為、對使用者的影響、關閉所需的證據。
@@ -203,7 +206,7 @@ completion claim, reopen the gate immediately」。
 | TODO | 缺少的行為 | 對使用者的影響 | 關閉證據 |
 |---|---|---|---|
 | TODO-R1 | manifest 逐條登記 §1–21，不再有未登記的規則；拆開 G-A3 所列的粗項 | 無法判斷哪些規則是真的有做 | `manifest.test.ts` 斷言 §1.0–21.12 每個小節都有一列；每列 `IMPLEMENTED` 都指向實際測試 |
-| TODO-R2 | 取得經使用者核准來源的 CRT、Surprise、Barrage、Capture、Attrition 表 | 每場戰鬥與砲擊的結果都不是 OCS 的結果 | 表格資料附 provenance（來源、頁碼、checksum）與逐欄邊界測試；需要**使用者決定來源**（見 §5） |
+| TODO-R2 | 取得經使用者核准來源的 CRT、Surprise、Barrage、Capture、Attrition 表 | 每場戰鬥與砲擊的結果都不是 OCS 的結果 | 表格資料附 provenance（來源、頁碼、checksum）與逐欄邊界測試；需要**使用者決定來源**（見 §5）。**2026-10-10 狀態：部分完成**。來源已解決：使用者提供的 Beyond the Rhine VASSAL 模組 1.27.0 `v4.3 Charts (final)-1～4`，各表在 `src/rules/manifest.ts` `RULE_TABLE_PROVENANCE` 附圖檔、表名與 SHA-256，標為 `REVIEWED`，程式在 `src/rules/tables/ocs-4.3.ts`，轉錄在 `docs/rules/ocs-4.3-charts.md`。仍缺：CRT、Surprise、Barrage、Capture、Attrition 的逐欄邊界測試（目前只有規則書範例與功能測試間接涵蓋；空軍各表與 Barrage vs Facility 已有直接的表格測試） |
 | TODO-R3 | 戰鬥計算：賠率捨入（G-E1）、AR 選擇（G-E2）、Surprise（G-E3）、地形列與選擇（G-E4）、AT（G-E5）、全格合併防守與多格攻擊（G-E7） | 賠率、DRM、欄位都算錯 | 用規則書範例（§4.2 的 9.75:2 → 5:1、「Comprehensive Combat」、「Overrun with a Hipshoot」）當測試案例，重現書中的欄位與結果 |
 | TODO-R4 | 結果結構 L/o/e/DG、option 拆分、攻方先執行、§9.10c/d、§9.11c 損失分配、§9.12 撤退與 DG、§9.13 exploit | 沒有 exploit、沒有攻方 option 選擇 | §9.10 的範例 A–E 各一個測試；在實際 UI 中完成一次有 exploit 的攻擊 |
 | TODO-R5 | 依步數計的戰鬥補給成本、守方補給與拒付、內部存量（§12.10） | 補給經濟與攻擊可行性都錯 | §9.5b 範例（3T 對 1T）的測試；補給階段強制補回的測試 |
@@ -217,13 +220,15 @@ completion claim, reopen the gate immediately」。
 | TODO-R13 | 補給距離改為 MP 路徑、多 dump 加總、HQ throw 範圍、列出所有來源讓玩家選 | 補給可達範圍錯誤 | §12.3「Maximum Stretch of HQs」範例測試 |
 | TODO-R14 | 刺蝟、Capture、Attrition、Breakout、Rebuild、Breakdown 等尚未登記的系統 | 功能缺席 | 先在 manifest 登記為 `DEFERRED`（TODO-R1），各自再立關閉條件 |
 
-建議順序：R1 → R2（需要使用者決定）→ R3/R4/R5 → R7/R8/R11 → R6/R9/R10 → 其餘。
+建議順序：R1 → R2（來源已決定，剩邊界測試）→ R3/R4/R5 → R7/R8/R11 → R6/R9/R10 → 其餘。
 
 ## 5. 未決問題與外部依賴
 
 1. **規則表的來源**（阻擋 TODO-R2）：規則書正文不含 CRT、Surprise、Barrage、
    Capture、Attrition 表。要取用哪一份 player aid（例如 BTR 的 chart），需要使用者
    決定並核准授權方式。在此之前，這些表只能標為 `SYNTHETIC`，不能宣稱符合 OCS。
+   **已解決**：使用者提供 Beyond the Rhine VASSAL 模組 1.27.0 的 `v4.3 Charts (final)` 圖檔，
+   各表已轉錄並附 checksum（見 TODO-R2 的狀態）。
 2. **地形戰鬥類別**：隨機地圖的地形要對應到 Open/Close/Very Close/Extremely Close，
    並定出 hexside 修正，需要 TEC 的戰鬥欄。`docs/rules/btr-movement-tec.md` 目前只有移動欄。
 3. **轉錄品質**：本研究引用的條文在 PDF 轉錄中有少量亂碼（例如 §9.11d 標題）。

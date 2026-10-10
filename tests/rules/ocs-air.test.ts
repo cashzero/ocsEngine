@@ -40,6 +40,7 @@ import {
   type RuleEvent,
   type TransitionResult,
 } from '../../src/index.js';
+import { FACILITY_TABLE_COLUMNS, facilityColumnIndex } from '../../src/rules/tables/ocs-4.3.js';
 
 const STANDARD_AIR: NewGameRequest = { ...AIR_NEW_GAME_REQUEST, oob: { ...AIR_NEW_GAME_REQUEST.oob, scale: 'STANDARD' } };
 const ids = (request: NewGameRequest) => {
@@ -150,6 +151,13 @@ describe('Air Combat, Flak and Mission Loss tables (14.3e, 14.4e/f)', () => {
     expect(parseFacilityResult('2*(3)')).toEqual({ text: '2*(3)', levels: 2, trainbusting: true, aircraftCheck: 3 });
     expect(parseFacilityResult('(5)')).toEqual({ text: '(5)', levels: 0, trainbusting: false, aircraftCheck: 5 });
     expect(parseFacilityResult('-')).toEqual({ text: '-', levels: 0, trainbusting: false, aircraftCheck: null });
+  });
+
+  it('prints the artillery supply cost under each Barrage vs Facility column (10.0c, chart page 4)', () => {
+    expect(FACILITY_TABLE_COLUMNS.map(({ label, supplyTokens }) => `${label}:${supplyTokens}T`))
+      .toEqual(['1 or less:1T', '2:1T', '3-4:1T', '5-10:1T', '11-20:2T', '21-40:4T', '41-80:6T', '81+:8T']);
+    expect([1, 2, 4, 5, 10, 11, 20, 21, 40, 41, 80, 81].map((strength) => FACILITY_TABLE_COLUMNS[facilityColumnIndex(strength)]!.supplyTokens))
+      .toEqual([1, 1, 1, 1, 1, 2, 2, 4, 4, 6, 6, 8]);
   });
 });
 
