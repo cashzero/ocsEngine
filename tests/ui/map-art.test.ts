@@ -134,12 +134,24 @@ describe('printed-map artwork', () => {
     expect(regionEdgesHtml(preview.cells.map((cell) => ({ ...cell, terrain: 'CLEAR' as const })), 50)).toBe('');
   });
 
-  it('names cities and towns but leaves villages unlabelled', () => {
-    const settle = (settlement: 'CITY' | 'TOWN' | 'VILLAGE'): string => settlementArtHtml({ ...preview.cells[0]!, settlement }, 50);
+  it('names every settlement and draws each class larger than the one below', () => {
+    const settle = (settlement: 'CITY' | 'TOWN' | 'VILLAGE'): string => settlementArtHtml({ ...preview.cells[0]!, settlement, urbanCore: true }, 50);
     expect(settle('CITY')).toContain('class="place-name city"');
     expect(settle('TOWN')).toContain('class="place-name town"');
-    expect(settle('VILLAGE')).not.toContain('place-name');
+    expect(settle('VILLAGE')).toContain('class="place-name village"');
+    const blocks = (settlement: 'CITY' | 'TOWN' | 'VILLAGE'): number => settle(settlement).match(/settlement-block/gu)!.length;
+    expect(blocks('VILLAGE')).toBeLessThan(blocks('TOWN'));
+    expect(blocks('TOWN')).toBeLessThan(blocks('CITY'));
     expect(placeNameFor('3,4')).toBe(placeNameFor('3,4'));
+  });
+
+  it('names a Major City once, at its core Hex', () => {
+    const cell = preview.cells[0]!;
+    expect(settlementArtHtml({ ...cell, settlement: 'CITY', urbanCore: false }, 50)).not.toContain('place-name');
+    expect(settlementArtHtml({ ...cell, settlement: 'CITY', urbanCore: true }, 50)).toContain('place-name city');
+    const clusters = preview.cells.filter(({ settlement }) => settlement === 'CITY');
+    expect(clusters.some(({ urbanCore }) => urbanCore)).toBe(true);
+    expect(clusters.some(({ urbanCore }) => !urbanCore)).toBe(true);
   });
 
   it('outlines the coast where water meets land', () => {
