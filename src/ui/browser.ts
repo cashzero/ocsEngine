@@ -41,7 +41,7 @@ import {
 import { createUiController, type UiController } from './controller.js';
 import { counterView, counterSvgBody, counterSvg, playerNation } from './counter.js';
 import {
-  coastlineHtml, hexGridHtml, mapArtDefsHtml, objectiveArtHtml, placeNameFor, railsHtml, regionEdgesHtml, riversHtml, roadsHtml, settlementArtHtml,
+  coastlineHtml, hexGridHtml, mapArtDefsHtml, objectiveArtHtml, placeNameFor, railsHtml, regionEdgesHtml, riversHtml, roadsHtml, settlementArtHtml, settlementNameHtml,
   strategicBandPoints, supplySourceArtHtml, portArtHtml, terrainFillHtml, terrainGlyphsHtml,
 } from './map-art.js';
 import { MapView, type MapCounter, type MapState } from './map-canvas.js';
@@ -665,11 +665,13 @@ const operationPreviewHtml = (prepared: GeneratedScenarioPackage): string => {
     + `<g class="generated-cells">${map.cells.map((cell) => terrainGlyphsHtml(cell, hexSize)).join('')}</g>`;
   const features = map.cells.map((cell) => [
     cell.strategic ? `<polygon class="preview-entry side-${cell.strategic.toLowerCase()}" points="${strategicBandPoints(cell, hexSize)}"></polygon>` : '',
-    cell.settlement ? `<g class="settlement-marker">${settlementArtHtml(cell, hexSize)}</g>` : '',
+    cell.settlement ? `<g class="settlement-marker">${settlementArtHtml(cell, hexSize, false)}</g>` : '',
     objectives.has(cell.id) ? `<g class="preview-objective">${objectiveArtHtml(cell, hexSize)}</g>` : '',
     cell.port ? `<g class="preview-port">${portArtHtml(cell, hexSize)}</g>` : '',
     cell.supplySource ? `<g class="preview-supply-source side-${cell.supplySource.toLowerCase()}">${supplySourceArtHtml(cell, hexSize, objectives.has(cell.id))}</g>` : '',
-  ].join('')).join('');
+  ].join('')).join('')
+    // Names last: a neighbouring settlement's buildings must never cover a place name.
+    + map.cells.map((cell) => (cell.settlement ? settlementNameHtml(cell, hexSize) : '')).join('');
   const rivers = coastlineHtml(map.cells, hexSize) + riversHtml(map.edges, hexSize, 'generated-edge');
   const roads = roadsHtml(map.edges, map.cells, hexSize, 'generated-edge') + railsHtml(map.edges, map.cells, hexSize);
   const forces = oob.sides.map((side) => `<section class="preview-force side-${side.side.toLowerCase()}">
