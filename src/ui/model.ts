@@ -305,6 +305,9 @@ export interface CombatSheet {
   readonly answers: readonly string[];
 }
 
+/** The kinds of counter the map's unit filter can show or hide. */
+export type UnitFilterKind = 'HQ' | 'COMBAT' | 'LOGISTICS' | 'AIR';
+
 export interface UiSnapshot {
   readonly scenario: ScenarioDefinition;
   readonly view: GameplayView;
@@ -336,6 +339,8 @@ export interface UiSnapshot {
   readonly showTraceCoverage: boolean;
   /** Counters are left off the map so the overlays underneath can be read whole; hex clicks still work. */
   readonly hideUnits: boolean;
+  /** Unit kinds the player filtered off the map (the Hide units filter); empty shows every kind. */
+  readonly hiddenUnitKinds: readonly UnitFilterKind[];
   /**
    * Why the selected own unit cannot begin or continue moving now (e.g. 12.5a fuel), so the deck can say so
    * instead of a bare "cannot move"; empty when it may move or no Movement Segment is open.
