@@ -341,6 +341,13 @@ export const counterSvgBody = (view: CounterViewModel): string => {
     <g class="counter-values">${squeeze(text(56, flags.length ? 84 : 90, rating, flags.length ? 'hq-rating hq-rating-flagged' : 'hq-rating'), rating.length > 3 ? 56 : 44)}</g>
     ${overlay.over}${stateBar(flags)}`;
   }
+  // The left-hand value (strength / barrage / transport points) must not run into the Action Rating printed at x=50, so
+  // multi-glyph values are squeezed into the left third of the face and centred slightly further left.
+  const leftValue = (value: unknown): string => {
+    const element = text(String(value).length > 1 ? 22 : 24, 85, value, 'counter-number');
+    const length = String(value).length;
+    return length > 1 ? element.replace('<text ', `<text textLength="${length === 2 ? 34 : 40}" lengthAdjust="spacingAndGlyphs" `) : element;
+  };
   const strengthText = strength == null ? '' : c.defensiveOnly ? `(${strength})` : strength;
   let ratings = '';
   // An enemy dump's size is hidden (null in the projection): print "? SP" (an emptied dump is removed, so 0 is never real).
@@ -353,7 +360,7 @@ export const counterSvgBody = (view: CounterViewModel): string => {
   }
   else {
     ratings = (c.kind === 'ARTILLERY' ? '<rect class="barrage-box" x="6" y="59" width="34" height="30"/>' : '')
-      + text(24,85,c.kind === 'ARTILLERY' ? view.barrage : c.kind === 'TRANSPORT' ? view.transportPoints : strengthText,'counter-number')
+      + leftValue(c.kind === 'ARTILLERY' ? view.barrage : c.kind === 'TRANSPORT' ? view.transportPoints : strengthText)
       + (c.kind === 'TRANSPORT' ? '' : text(50,83,view.step?.actionRating ?? '', 'counter-ar'))
       + (c.kind === 'ARTILLERY' ? text(50,64,view.step?.range,'counter-range') : '')
       + (view.mobility === 'tracked' ? '<rect class="tracked-box" x="65" y="58" width="31" height="31"/>' : '')
