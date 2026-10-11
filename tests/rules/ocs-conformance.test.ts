@@ -235,10 +235,11 @@ describe('OCS 4.3 ground combat (9.0-9.13)', () => {
   });
 
   it('only disorganizes a one-hex retreat that enters an enemy ZOC (5.10a, 9.12)', () => {
-    const state = atStep(buildGeneratedRuleState({ [U.alTrk]: ['5,5', 'COMBAT', 'combat'], [U.axTrk]: ['6,5', 'COMBAT', 'combat'], [U.alSup]: ['4,5', null] }), 'COMBAT', 'COMBAT', ALLIED);
+    // A second attacker keeps one attacker alive after it takes its step loss, so the defender's option is not voidable (9.12).
+    const state = atStep(buildGeneratedRuleState({ [U.alTrk]: ['5,5', 'COMBAT', 'combat'], [U.alTrk2]: ['5,5', 'COMBAT', 'combat'], [U.axTrk]: ['6,5', 'COMBAT', 'combat'], [U.alSup]: ['4,5', null] }), 'COMBAT', 'COMBAT', ALLIED);
     let checked = 0;
     for (let seed = 1; seed < 400 && checked < 3; seed += 1) {
-      let declared = declareTestCombat({ ...state, rng: createRulesRng(seed) }, ALLIED, 'REGULAR', [U.alTrk], '6,5');
+      let declared = declareTestCombat({ ...state, rng: createRulesRng(seed) }, ALLIED, 'REGULAR', [U.alTrk, U.alTrk2], '6,5');
       const events = [...declared.events];
       // The defender's supply, lead unit and terrain are chosen before the dice are rolled.
       while (declared.state.pendingDecision && declared.state.activeTransaction?.result === null) {
@@ -249,7 +250,7 @@ describe('OCS 4.3 ground combat (9.0-9.13)', () => {
       if (!/\/Do1$/u.test(result)) continue;
       const settled = settleDecisions(declared.state, (decision) => decision.ownerId === AXIS && decision.kind === 'OPTION_SPLIT'
         ? decision.options.find(({ id }) => id === 'option:0:1')?.id ?? decision.options[0]!.id
-        : decision.kind === 'ADVANCE_HEX' ? 'advance:none' : decision.options[0]!.id).state;
+        : decision.kind === 'ADVANCE_HEX' ? (decision.options.find(({ id }) => id === 'advance:none') ?? decision.options[0]!).id : decision.options[0]!.id).state;
       const defender = piece(settled, U.axTrk);
       if (defender.location.kind !== 'ON_MAP' || defender.location.hexId === '6,5') continue;
       expect(defender.mode === 'DG').toBe(inEnemyZoc(settled, AXIS, defender.location.hexId));
