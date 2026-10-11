@@ -344,7 +344,13 @@ export const counterSvgBody = (view: CounterViewModel): string => {
   const strengthText = strength == null ? '' : c.defensiveOnly ? `(${strength})` : strength;
   let ratings = '';
   // An enemy dump's size is hidden (null in the projection): print "? SP" (an emptied dump is removed, so 0 is never real).
-  if (c.kind === 'SUPPLY') ratings = text(50,84,`${view.quantity == null ? '?' : view.quantity / 4} SP`,'counter-number');
+  if (c.kind === 'SUPPLY') {
+    const label = `${view.quantity == null ? '?' : view.quantity / 4} SP`;
+    // At 33px a label such as "0.5 SP" is wider than the counter face, so squeeze anything over four glyphs into the face.
+    ratings = label.length > 4
+      ? text(50,84,label,'counter-number').replace('<text ', '<text textLength="80" lengthAdjust="spacingAndGlyphs" ')
+      : text(50,84,label,'counter-number');
+  }
   else {
     ratings = (c.kind === 'ARTILLERY' ? '<rect class="barrage-box" x="6" y="59" width="34" height="30"/>' : '')
       + text(24,85,c.kind === 'ARTILLERY' ? view.barrage : c.kind === 'TRANSPORT' ? view.transportPoints : strengthText,'counter-number')
