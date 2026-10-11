@@ -951,7 +951,8 @@ const optionChoices = (state: GameState, side: CombatSide, points: number): Pend
   }
   if (side === 'DEFENDER') {
     const attackersGone = survivors(state, transaction.attackerIds).length === 0;
-    if (transaction.attackerRetreated || attackersGone) choices.unshift({ id: 'option:ignore', label: 'Ignore the option (attacker retreated or was destroyed)', hexId: null });
+    // Ignoring the option is strictly better than any loss/retreat split, so it is the only offer once it is allowed.
+    if (transaction.attackerRetreated || attackersGone) return [{ id: 'option:ignore', label: 'Ignore the option (attacker retreated or was destroyed)', hexId: null }];
   }
   // 9.12: with no legal retreat at all, the whole option must be taken as losses.
   if (choices.length === 0) choices.push({ id: `option:${points}:0`, label: `Lose ${Math.min(points, totalSteps)} step${points === 1 ? '' : 's'} (no legal retreat)`, hexId: null });
