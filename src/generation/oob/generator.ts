@@ -127,6 +127,8 @@ const echelonFor = (side: OobSide, role: OobUnitRole, archetype: OobFormationArc
 /** Share of each side's trucks on the map at the start (OOB 0.5.0); the others arrive one a turn from Game Turn 2. */
 export const TRUCKS_AT_START_SHARE = 0.5;
 const FIRST_TRUCK_ARRIVAL_TURN = 2;
+/** Divisions served by one truck in Compact and Standard OOBs (a Large OOB has one per two divisions). */
+export const TRUCK_DIVISIONS_PER_TRUCK = 3;
 
 /**
  * Starting supply per division, in Tokens (OOB 0.4.0: 2 SP; replays showed attrition from too little supply). It is
@@ -363,13 +365,16 @@ const buildSide = (
 
   const supportCount = options.scale === 'LARGE'
     ? options.divisionsPerSide : Math.max(1, Math.ceil(options.divisionsPerSide / 2));
+  // Trucks carry SP on from the railhead, so their number follows Rail Cap rather than the dump count: one per
+  // TRUCK_DIVISIONS_PER_TRUCK divisions (user, 2026-10-12: far more trucks than Rail Cap looked unreasonable).
+  const truckCount = Math.max(1, Math.ceil(options.divisionsPerSide / (options.scale === 'LARGE' ? 2 : TRUCK_DIVISIONS_PER_TRUCK)));
   const { artillery, armor, antiTank } = independentPackage(options);
   const independentRequests: OobUnitRole[] = [
     ...Array.from({ length: artillery }, () => 'ARTILLERY' as const),
     ...Array.from({ length: armor }, () => 'TANK' as const),
     ...Array.from({ length: antiTank }, () => 'ANTI_TANK' as const),
     ...Array.from({ length: options.scale === 'LARGE' ? Math.ceil(options.divisionsPerSide / 2) : 1 }, () => 'ENGINEER' as const),
-    ...Array.from({ length: supportCount }, () => 'TRANSPORT' as const),
+    ...Array.from({ length: truckCount }, () => 'TRANSPORT' as const),
     ...Array.from({ length: supportCount }, () => 'SUPPLY' as const),
     // 3.2f: HQs are independent units, never part of a formation. They come last so the first
     // independent field unit (held back as the side's reinforcement) is not an HQ.
@@ -394,7 +399,7 @@ const buildSide = (
     // OOB 0.5.0 (user, 2026-10-08: "把卡車一部分改成援軍"): only the first share of the trucks starts on the map; the
     // rest arrive as reinforcements, one a Game Turn from Turn 2 (13.6), so early lift is short.
     const ordinal = Number(/independent-transport-(\d+)$/u.exec(unit.id.replace(/:unit$/u, ''))?.[1] ?? 0);
-    const atStart = Math.max(1, Math.ceil(supportCount * TRUCKS_AT_START_SHARE));
+    const atStart = Math.max(1, Math.ceil(truckCount * TRUCKS_AT_START_SHARE));
     return unit.role === 'TRANSPORT' && ordinal > atStart ? { ...unit, arrivalTurn: FIRST_TRUCK_ARRIVAL_TURN + ordinal - atStart - 1 } : unit;
   });
   // 13.5: every game gives both sides Pax and Eq; their counters are created in play as they arrive.
