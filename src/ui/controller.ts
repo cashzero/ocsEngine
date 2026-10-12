@@ -1609,7 +1609,9 @@ class DefaultUiController implements UiController {
       return { pieceId, label: piece ? unitLabel(this.#scenario, piece) : 'Unit', quarters, problem, selected: draft?.unitIds.has(pieceId) === true };
     });
     const dumps = options.dumps.filter(({ pieceId }) => pieceId === dumpId).map(({ pieceId, loadableTokens }) => ({
-      pieceId, holds: pieces.find(({ id }) => id === pieceId)?.resourceQuantity ?? 0, loadableTokens, tokens: Math.min(loadableTokens, draft?.tokens.get(pieceId) ?? 0),
+      pieceId, holds: pieces.find(({ id }) => id === pieceId)?.resourceQuantity ?? 0, loadableTokens,
+      // Untouched, an open panel sends as much as may entrain and the Rail Cap left pays for (1T = 1/4 Rail Cap).
+      tokens: Math.min(loadableTokens, draft?.tokens.get(pieceId) ?? (draft ? options.remainingQuarters : 0)),
     }));
     const destinations = options.destinations.map(({ hexId: to, halves, path }) => ({ hexId: to, halves, hexes: path.length - 1 }));
     const toHexId = draft?.toHexId && destinations.some(({ hexId: to }) => to === draft.toHexId) ? draft.toHexId : null;

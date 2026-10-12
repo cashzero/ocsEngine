@@ -702,6 +702,7 @@ const railSection = (snapshot: UiSnapshot): TemplateResult => {
     <input type="checkbox" data-rail-unit=${pieceId} .checked=${selected} ?disabled=${problem !== null}><span>${label}</span><small>${problem ? withHexLabels(problem) : `${railPoints(quarters)} Rail Cap`}</small></label>`);
   const dumps = rail.dumps.map(({ pieceId, holds, loadableTokens, tokens }) => html`<label class="rail-cargo"><span>Supply ${supplyText(holds)} · Tokens to send</span>
     <input type="number" class="rail-tokens" data-rail-dump=${pieceId} min="0" max=${loadableTokens} .value=${String(tokens)} inputmode="numeric" aria-label=${`Tokens to send by rail, 0 to ${loadableTokens}`}>
+    <span class="chip-row rail-quick">${[['Max', Math.min(loadableTokens, rail.remainingQuarters)], ['Half', Math.floor(Math.min(loadableTokens, rail.remainingQuarters) / 2)], ['None', 0]].map(([name, value]) => html`<button type="button" data-rail-set=${pieceId} data-tokens=${String(value)}>${name}</button>`)}</span>
     <small>of ${loadableTokens}T that may entrain${loadableTokens < holds ? ' (the rest was unloaded this phase, 12.2a, or did not arrive this turn, 13.6b)' : ''} · 1T = 1/4 Rail Cap</small></label>`);
   const where = (halves: 1 | 2 | 4) => halves === 1 ? ' · all multi-track, half cost' : halves === 4 ? ' · through a Trainbusting Zone, double cost' : '';
   const destination = html`<label class="rail-destination">Detrain at <select id="rail-destination">
