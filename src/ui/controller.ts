@@ -757,11 +757,15 @@ class DefaultUiController implements UiController {
     // A unit selected offers its units to entrain, a dump offers its SP; the panel opens only when the player asks for it.
     const railFull = ownSelected?.location.kind === 'ON_MAP' && view.metadata.lifecycle === 'ACTIVE' && !view.privacyLocked && enabled('RAIL_MOVE')
       ? this.#railPanel(ownSelected.location.hexId, ownSelected.role === 'DUMP' ? ownSelected.id : null) : null;
-    const rail = railFull && this.#railOpen === ownSelected?.id ? railFull : null;
-    const railOffer = railFull && !rail ? (railFull.units.length > 0 ? 'UNITS' as const : 'SUPPLY' as const) : null;
-    // Rail transport needs the Movement segment (13.3b): outside it, still show the button, disabled, with the reason.
-    const railBlocked = ownSelected?.location.kind === 'ON_MAP' && !railFull && view.metadata.lifecycle === 'ACTIVE' && !view.privacyLocked
-      ? this.#railBlockedReason(ownSelected.location.hexId) : null;
+    // The selected unit itself must be able to entrain (13.3e: e.g. it must be in Move Mode); otherwise the button stays disabled.
+    const selectedRailProblem = ownSelected && ownSelected.role !== 'DUMP' ? railFull?.units.find(({ pieceId }) => pieceId === ownSelected.id)?.problem ?? null : null;
+    const railUsable = railFull && selectedRailProblem === null ? railFull : null;
+    const rail = railUsable && this.#railOpen === ownSelected?.id ? railUsable : null;
+    const railOffer = railUsable && !rail ? (railUsable.units.length > 0 ? 'UNITS' as const : 'SUPPLY' as const) : null;
+    // Rail transport needs the Movement segment (13.3b) and a unit in Move Mode: otherwise still show the button, disabled, with the reason.
+    const railBlocked = selectedRailProblem !== null ? selectedRailProblem.charAt(0).toUpperCase() + selectedRailProblem.slice(1)
+      : ownSelected?.location.kind === 'ON_MAP' && !railFull && view.metadata.lifecycle === 'ACTIVE' && !view.privacyLocked
+        ? this.#railBlockedReason(ownSelected.location.hexId) : null;
     // 19.0f: a selected unit in a friendly port ships from there; with nothing selected, the Box ships (a sea-landing side).
     const seaOrigin = ownSelected?.location.kind === 'ON_MAP'
       ? (view.projection?.ports?.some(({ hexId, controllerId }) => hexId === (ownSelected.location as { hexId: string }).hexId && controllerId === view.playerId) ? ownSelected.location.hexId : undefined)
