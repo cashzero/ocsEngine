@@ -819,6 +819,7 @@ const unitTab = (snapshot: UiSnapshot, state: DeckState): TemplateResult => {
   }
   if (snapshot.rail) parts.push(railSection(snapshot));
   else if (snapshot.railOffer) parts.push(html`<div class="unit-actions"><strong>Rail</strong><div class="chip-row"><button id="open-rail">${snapshot.railOffer === 'UNITS' ? 'Move by rail' : 'Move supply by rail'}</button></div></div>`);
+  else if (snapshot.railBlocked) parts.push(html`<div class="unit-actions"><strong>Rail</strong><div class="chip-row"><button id="open-rail" disabled title=${snapshot.railBlocked}>Move by rail</button></div><p class="hint">${snapshot.railBlocked}</p></div>`);
   if (snapshot.sea) parts.push(seaSection(snapshot));
   if (snapshot.air.construction && !snapshot.air.construction.planning) parts.push(constructionSection(snapshot));
   if (snapshot.collapseHexes.length > 0) {
