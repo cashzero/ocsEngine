@@ -39,9 +39,10 @@ const supplyDefinitionFor = (oob: GeneratedOob, side: OobSide): DefinitionId => 
  * Default Rail Cap points per Movement Phase (13.3b) for each side of a New Game: this many points per division, at least 1.
  * Rail Cap carries SP from the map edge to the railhead; trucks take it on to the front. Bot-against-bot games
  * (docs/roadmap/15-rail-cap-wbs.md §5) used every point offered, and a Rail Cap near the Supply Table income (1 per
- * division) let the attacker carry all of it forward; 0.4 leaves it short of lift, as the user asked (2026-10-08).
+ * division) let the attacker carry all of it forward. 0.4 left Rail Cap far below the trucks' lift (user, 2026-10-12:
+ * "many trucks, little Rail Cap looks unreasonable"), so it is raised to 0.75 while the truck count is cut.
  */
-export const RAIL_CAP_PER_DIVISION = 0.4;
+export const RAIL_CAP_PER_DIVISION = 0.75;
 
 export const defaultRailCap = (request: NewGameRequest): { readonly allied: number; readonly axis: number } => {
   const attacker = attackerOf(request.engagement ?? 'MEETING');

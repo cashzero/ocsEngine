@@ -106,7 +106,7 @@ Allied 進攻、heuristic@10 互打 6 局（seed 42000–42005，預設 32×24 �
 
 ### New Game 與 UI（RC3、RC4）
 
-- `NewGameRequest.railCap?: { allied, axis }`（0–30 整數）；缺省用 `defaultRailCap`：每方 `round(師數 × 0.4)`，至少 1（攻方用 1.5 倍後的師數）。
+- `NewGameRequest.railCap?: { allied, axis }`（0–30 整數）；缺省用 `defaultRailCap`：每方 `round(師數 × 0.75)`，至少 1（2026-10-12 由 0.4 調高）（攻方用 1.5 倍後的師數）。
 - 表單「Game rules」有 Allied／Axis Rail Cap 兩欄；玩家改過後保留其數值，旁邊可按「Use the default」。預覽 metrics 顯示「Rail Cap: Allied x · Axis y」。
 - 遊戲中：選到站在可上車格的己方單位或補給堆，Unit 分頁出現「Rail from 〈格〉」：剩餘 Rail Cap、該格每個單位（不能搭的會灰掉並寫原因）、
   補給堆可輸入 Token 數、可下車車站在地圖上高亮並列在下拉選單（含距離、減半／加倍）；成本與阻擋原因由規則引擎算。
@@ -171,9 +171,10 @@ TODO（RC-R6 瀏覽器）：
 
 ### 卡車增援（RC7，OOB 0.5.0）
 
+- 卡車總數 2026-10-12 起為每 3 師 1 輛（`TRUCK_DIVISIONS_PER_TRUCK`，Large 為每 2 師 1 輛，至少 1），不再等於補給堆數。
 - 每方的卡車只有 `max(1, ceil(數量 × 0.5))` 輛開局在地圖上（`TRUCKS_AT_START_SHARE`），其餘放在增援 box，從第 2 回合起每回合到 1 輛，
   在 Reinforcement Phase 放到進場格（13.6；未實作 13.6c「與 SP 同時到達時可載貨到達」，到達時是空車）。
-- 預設攻守戰（攻方 9 師、守方 6 師）：攻方 5 輛中 3 輛開局、2 輛在第 2、3 回合到；守方 3 輛中 2 輛開局、1 輛第 2 回合到。
+- 預設攻守戰（攻方 9 師、守方 6 師）原為攻方 5 輛、守方 3 輛；2026-10-12 起攻方 3 輛（2 輛開局、1 輛第 2 回合到）、守方 2 輛（1 輛開局、1 輛第 2 回合到）。
 
 ### 電腦後勤（RC8，heuristic@12）
 
@@ -247,3 +248,9 @@ TODO（平衡）：
 - 頂部列在 VP 旁加「Rail Cap」，只顯示自己的（使用者：「RAIL CAP應該只顯示自己的吧」）：自己的 Movement Phase 顯示「剩餘 / 總量」（例如「3 / 4」，以 ¼ 表示零頭），其他時候顯示「4 per turn」。
 - 數值來自 `RuleProjection.railCap`，只列出觀看者自己的（沒有 Rail Cap 的遊戲不顯示）。對手的 Rail Cap 仍在 New Game 預覽中可見（劇本設定）。
 - 驗證：`tests/ui/rail-panel.test.ts`（projection 的剩餘量在鐵路運輸後減少）；真實瀏覽器 RAIL-17 PASS（Allied「4 / 4」→「3 / 4」；換手後 Axis 只看到自己的「2 / 2」；0 頁面錯誤）。
+
+
+TODO（2026-10-12 預設調整，平衡 UNVERIFIED）：使用者指出預設卡車多、Rail Cap 少不合理，故卡車減為每 3 師 1 輛、Rail Cap 由 0.4 調為 0.75／師。
+- **缺少的行為**：§5、§7 的對局研究數字是舊預設（0.4／師、5＋3 輛卡車）的結果，新預設尚未重跑 `scripts/ai-match.mjs`／`scripts/ai-logistics-study.mjs`。
+- **影響**：攻方勝率與補給壓力可能改變（Rail Cap 近收入時補給壓力會下降）。
+- **關閉條件**：以新預設重跑攻守戰與遭遇戰對局，記錄勝率、鐵路用量、卡車裝載，並在真實瀏覽器 New Game 預覽確認顯示的卡車數與 Rail Cap。
