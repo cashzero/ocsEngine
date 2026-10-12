@@ -374,6 +374,8 @@ export interface UiSnapshot {
   readonly rail: RailPanel | null;
   /** Rail transport is possible for the selected piece but the player has not opened it: what it would carry. */
   readonly railOffer: 'UNITS' | 'SUPPLY' | null;
+  /** Why the Rail button is shown disabled for the selected piece (e.g. not the Movement segment); null when it is available or hidden. */
+  readonly railBlocked: string | null;
   readonly sea: SeaPanel | null;
   readonly endStep: EndStep;
   readonly decision: PendingDecisionDescriptor | null;
