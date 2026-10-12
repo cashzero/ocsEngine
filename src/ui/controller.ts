@@ -762,10 +762,8 @@ class DefaultUiController implements UiController {
     const railUsable = railFull && selectedRailProblem === null ? railFull : null;
     const rail = railUsable && this.#railOpen === ownSelected?.id ? railUsable : null;
     const railOffer = railUsable && !rail ? (railUsable.units.length > 0 ? 'UNITS' as const : 'SUPPLY' as const) : null;
-    // Rail transport needs the Movement segment (13.3b) and a unit in Move Mode: otherwise still show the button, disabled, with the reason.
-    const railBlocked = selectedRailProblem !== null ? selectedRailProblem.charAt(0).toUpperCase() + selectedRailProblem.slice(1)
-      : ownSelected?.location.kind === 'ON_MAP' && !railFull && view.metadata.lifecycle === 'ACTIVE' && !view.privacyLocked
-        ? this.#railBlockedReason(ownSelected.location.hexId) : null;
+    // A selected unit that cannot entrain (e.g. not in Move Mode, 13.3e) still shows the button, disabled, with the reason.
+    const railBlocked = selectedRailProblem !== null ? selectedRailProblem.charAt(0).toUpperCase() + selectedRailProblem.slice(1) : null;
     // 19.0f: a selected unit in a friendly port ships from there; with nothing selected, the Box ships (a sea-landing side).
     const seaOrigin = ownSelected?.location.kind === 'ON_MAP'
       ? (view.projection?.ports?.some(({ hexId, controllerId }) => hexId === (ownSelected.location as { hexId: string }).hexId && controllerId === view.playerId) ? ownSelected.location.hexId : undefined)
@@ -1637,14 +1635,6 @@ class DefaultUiController implements UiController {
       arrivalTokens: options.arrival && options.dumps.length > 0 ? options.arrival.tokens : null,
       units, dumps, destinations, toHexId, costQuarters, allowed, blockers,
     };
-  }
-
-  /** Why the Rail button is disabled at `hexId` (null: the game has no Rail Cap, so there is no button to show). */
-  #railBlockedReason(hexId: string): string | null {
-    const options = this.#cached(`rail|${hexId}`, () => this.#session.getRailMoveOptions(this.#activeSeat(), hexId as never).value);
-    if (!options || options.capacityPoints === null) return null;
-    if (options.entrainProblem !== null) return options.entrainProblem.charAt(0).toUpperCase() + options.entrainProblem.slice(1);
-    return options.destinations.length === 0 ? 'No other detrainable rail Hex is reachable from here.' : 'Nothing here can move by rail now.';
   }
 
   #railAction(fromHexId: string, toHexId: string, unitIds: readonly PieceId[], supply: readonly { readonly sourcePieceId: PieceId; readonly tokens: number }[]): GameAction {
