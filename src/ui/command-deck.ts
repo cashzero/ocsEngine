@@ -903,12 +903,20 @@ const unitFormation = (snapshot: UiSnapshot, piece: ProjectedPiece): string => {
 /**
  * Every unit the player commands. A supply dump is supply lying on the map, not a unit, so it is never listed or counted here (it is
  * reached on the map and in the stack picker); SP a truck carries is part of that truck, not another unit. An air base is a facility
- * on the map in the same way, so it is left out too.
+ * on the map in the same way, so it is left out too. Units waiting to enter belong to Arrivals, not this roster;
+ * aircraft already based at an off-map airfield are in service and remain listed.
  */
-const rosterOwn = (snapshot: UiSnapshot): ProjectedPiece[] =>
-  (snapshot.view.projection?.stacks ?? []).flatMap((stack) => stack.pieces)
+const rosterOwn = (snapshot: UiSnapshot): ProjectedPiece[] => {
+  const pieces = (snapshot.view.projection?.stacks ?? []).flatMap((stack) => stack.pieces);
+  const airfieldBoxes = new Set(pieces.filter((piece) => piece.ownerId === snapshot.view.playerId
+    && isOffMapAirfield(snapshot, piece) && piece.location.kind === 'OFF_MAP_BOX')
+    .map((piece) => piece.location.kind === 'OFF_MAP_BOX' ? piece.location.boxId : ''));
+  return pieces
+    .filter((piece) => piece.location.kind === 'ON_MAP' || piece.location.kind === 'ELIMINATED' || piece.location.kind === 'CONTAINER'
+      || (piece.role === 'AIRCRAFT' && piece.location.kind === 'OFF_MAP_BOX' && airfieldBoxes.has(piece.location.boxId)))
     // Facilities (Air Bases, hedgehogs) are not units: they are picked on the map, and their work is offered to the units in reach.
     .filter((piece) => piece.ownerId === snapshot.view.playerId && piece.role !== 'CARGO' && piece.role !== 'DUMP' && piece.role !== 'HEDGEHOG' && !isAirBase(snapshot, piece));
+};
 
 /** Trucks and extenders haul supply rather than fight, so the roster lists them in a group of their own after the formations. */
 const isTransport = ({ role }: ProjectedPiece): boolean => role === 'TRUCK' || role === 'EXTENDER';

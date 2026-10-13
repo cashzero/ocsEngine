@@ -42,6 +42,49 @@ const startMovement = async (request = DEFAULT_NEW_GAME_REQUEST) => {
 };
 
 describe('the truck\'s supply area (A2)', () => {
+  it('hides waiting reinforcements from roster rows, search and both counts until they enter', async () => {
+    const { controller, own } = await startMovement({ ...DEFAULT_NEW_GAME_REQUEST, oob: { ...DEFAULT_NEW_GAME_REQUEST.oob, air: 'STANDARD' } });
+    const snapshot = controller.getSnapshot();
+    const waiting = own().filter(({ location }) => location.kind === 'OFF_MAP_BOX');
+    expect(waiting.some(({ role }) => role === 'AIRCRAFT')).toBe(true);
+    expect(waiting.some(({ role }) => role === 'TRUCK')).toBe(true);
+    const before = unitRosterHtml(snapshot, newDeck());
+    for (const piece of waiting) {
+      expect(before).not.toContain(`data-roster-pick="${piece.id}"`);
+      const name = snapshot.scenario.pieceCatalog.definitions.find(({ id }) => id === piece.definitionId)!.name;
+      expect(unitRosterHtml(snapshot, { ...newDeck(), search: name })).not.toContain(`data-roster-pick="${piece.id}"`);
+    }
+    const arrival = waiting.find(({ role }) => role === 'TRUCK')!;
+    const hexId = own().find(({ location }) => location.kind === 'ON_MAP')!.location;
+    const entered = { ...snapshot, view: { ...snapshot.view, projection: { ...snapshot.view.projection!,
+      stacks: snapshot.view.projection!.stacks.map((stack) => ({ ...stack,
+        pieces: stack.pieces.map((piece) => piece.id === arrival.id ? { ...piece, location: hexId } : piece),
+      })),
+    } } };
+    expect(unitRosterHtml(entered, newDeck())).toContain(`data-roster-pick="${arrival.id}"`);
+    const count = Number(commandDeckHtml(snapshot, newDeck()).match(/All units \((\d+)\)/u)![1]);
+    expect(commandDeckHtml(entered, newDeck())).toContain(`All units (${count + 1})`);
+    expect(unitRosterHtml(entered, newDeck())).toContain(`My units · ${count + 1}`);
+    controller.dispose();
+  });
+
+  it('keeps aircraft already based at the attacker’s off-map airfield in the roster', async () => {
+    const { controller, own } = await startMovement({ ...DEFAULT_NEW_GAME_REQUEST,
+      engagement: 'ALLIED_ATTACKS',
+      oob: { ...DEFAULT_NEW_GAME_REQUEST.oob, air: 'STANDARD' },
+    });
+    const snapshot = controller.getSnapshot();
+    const field = own().find((piece) => snapshot.scenario.pieceCatalog.definitions.find(({ id }) => id === piece.definitionId)
+      ?.facility?.facilityTypeDefinitionId === 'facility:off-map-airfield')!;
+    expect(field.location.kind).toBe('OFF_MAP_BOX');
+    const based = own().filter((piece) => piece.role === 'AIRCRAFT' && piece.location.kind === 'OFF_MAP_BOX'
+      && field.location.kind === 'OFF_MAP_BOX' && piece.location.boxId === field.location.boxId);
+    expect(based.length).toBeGreaterThan(0);
+    const html = unitRosterHtml(snapshot, newDeck());
+    for (const plane of based) expect(html).toContain(`data-roster-pick="${plane.id}"`);
+    controller.dispose();
+  });
+
   it('says there is nothing to load when no dump is in the Hex, instead of offering nothing', async () => {
     const { controller, truck } = await startMovement();
     controller.selectPiece(truck().id);
@@ -137,12 +180,12 @@ describe('the truck\'s supply area (A2)', () => {
     const snapshot = controller.getSnapshot();
     const html = unitRosterHtml(snapshot, newDeck());
     const dumps = own().filter(({ role }) => role === 'DUMP');
-    const trucks = own().filter(({ role, location }) => (role === 'TRUCK' || role === 'EXTENDER') && location.kind !== 'ELIMINATED');
+    const trucks = own().filter(({ role, location }) => (role === 'TRUCK' || role === 'EXTENDER') && location.kind === 'ON_MAP');
     expect(dumps.length, 'the default game has dumps').toBeGreaterThan(0);
     expect(trucks.length, 'the default game has trucks').toBeGreaterThan(0);
     for (const dump of dumps) expect(html).not.toContain(`data-roster-pick="${dump.id}"`);
     expect(html).not.toContain('Supply dump');
-    const countable = own().filter(({ role, location }) => role !== 'DUMP' && role !== 'CARGO' && role !== 'AIR_BASE' && location.kind !== 'ELIMINATED').length;
+    const countable = own().filter(({ role, location }) => role !== 'DUMP' && role !== 'CARGO' && role !== 'AIR_BASE' && location.kind === 'ON_MAP').length;
     expect(html).toContain(`My units · ${countable}`);
     expect(commandDeckHtml(snapshot, newDeck())).toContain(`All units (${countable})`);
 
@@ -178,11 +221,11 @@ describe('the truck\'s supply area (A2)', () => {
   it('lists air units in an Air group of their own and leaves air bases out, like supply dumps', async () => {
     const { controller, own } = await startMovement({ ...DEFAULT_NEW_GAME_REQUEST, oob: { ...DEFAULT_NEW_GAME_REQUEST.oob, air: 'STANDARD' } });
     const html = unitRosterHtml(controller.getSnapshot(), newDeck());
-    const aircraft = own().filter(({ role, location }) => role === 'AIRCRAFT' && location.kind !== 'ELIMINATED');
+    const aircraft = own().filter(({ role, location }) => role === 'AIRCRAFT' && location.kind === 'ON_MAP');
     const airBases = own().filter(({ role }) => role === 'AIR_BASE');
     expect(aircraft.length, 'the game with air forces has air units').toBeGreaterThan(0);
     expect(airBases.length, 'the game with air forces has air bases').toBeGreaterThan(0);
-    const countable = own().filter(({ role, location }) => role !== 'DUMP' && role !== 'CARGO' && role !== 'AIR_BASE' && location.kind !== 'ELIMINATED').length;
+    const countable = own().filter(({ role, location }) => role !== 'DUMP' && role !== 'CARGO' && role !== 'AIR_BASE' && location.kind === 'ON_MAP').length;
     expect(html).toContain(`My units · ${countable}`);
     for (const base of airBases) expect(html).not.toContain(`data-roster-pick="${base.id}"`);
 
