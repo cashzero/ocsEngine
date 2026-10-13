@@ -1,5 +1,5 @@
 import { stableSort, type DefinitionId, type HexId, type PieceId, type PlayerId } from '../../core/index.js';
-import { upsertPieceState, type OcsMode, type PieceState } from '../../domain/piece/index.js';
+import { isGroundUnitDefinition, upsertPieceState, type OcsMode, type PieceState } from '../../domain/piece/index.js';
 import { nextStackOrder } from '../combat/combat.js';
 import type { GameAction, GameState, RuleEvent, RuleViolation, UnitRebuild } from '../kernel/model.js';
 import { lostTruckPoints } from './ledger.js';
@@ -57,32 +57,38 @@ export const replacementsPerTurn = (state: GameState, playerId: PlayerId): reado
   return stableSort(allotments, (left, right) => (left.kind === 'PAX' ? 0 : 1) - (right.kind === 'PAX' ? 0 : 1));
 };
 
-/** 2.3, 13.5: the new Repls wait in the player's reinforcement Box, one counter per kind, and must be placed on arrival. */
+/** 2.3, 13.5: each Repl is an independent one-step unit waiting in the reinforcement Box. */
 export const arriveReplacements = (state: GameState, playerId: PlayerId, events: RuleEvent[]): GameState => {
   const boxId = state.configuration.reinforcementBoxes.find((candidate) => candidate.playerId === playerId)?.boxId;
   if (!boxId) return state;
   let next = state;
   for (const allotment of replacementsPerTurn(state, playerId)) {
-    // Eq keep the id they had before Pax existed, so older replays name the same counter.
-    const pieceId = `repl-arrival:${playerId}:${state.sequence.gameTurn}${allotment.kind === 'PAX' ? ':pax' : ''}` as PieceId;
-    events.push({ kind: 'REPLACEMENTS_ARRIVED', sequence: events.length, playerId, pieceId, replacement: allotment.kind, quantity: allotment.perTurn });
-    next = {
-      ...next,
-      pieceState: upsertPieceState(next.pieceState, {
-        id: pieceId, definitionId: allotment.definitionId, ownerId: playerId, location: { kind: 'OFF_MAP_BOX', boxId },
-        currentFaceId: null, remainingSteps: null, mode: null, statuses: [], resourceQuantity: allotment.perTurn,
-        stackOrder: nextOrderAt(next.pieceState.pieces, { kind: 'OFF_MAP_BOX', boxId }, pieceId),
-      }),
-    };
+    const definition = state.scenario.pieceCatalog.definitions.find(({ id }) => id === allotment.definitionId)!;
+    const ground = isGroundUnitDefinition(definition);
+    for (let index = 0; index < (ground ? allotment.perTurn : 1); index += 1) {
+      // Eq keep the id they had before Pax existed, so older replays name the same counter.
+      const pieceId = `repl-arrival:${playerId}:${state.sequence.gameTurn}${allotment.kind === 'PAX' ? ':pax' : ''}${index > 0 ? `:${index + 1}` : ''}` as PieceId;
+      events.push({ kind: 'REPLACEMENTS_ARRIVED', sequence: events.length, playerId, pieceId, replacement: allotment.kind, quantity: ground ? 1 : allotment.perTurn });
+      next = {
+        ...next,
+        pieceState: upsertPieceState(next.pieceState, {
+          id: pieceId, definitionId: allotment.definitionId, ownerId: playerId, location: { kind: 'OFF_MAP_BOX', boxId },
+          currentFaceId: ground ? definition.faces[0]!.id : null, remainingSteps: ground ? 1 : null,
+          mode: ground ? 'MOVE' : null, statuses: [], resourceQuantity: ground ? 1 : allotment.perTurn,
+          stackOrder: nextOrderAt(next.pieceState.pieces, { kind: 'OFF_MAP_BOX', boxId }, pieceId),
+        }),
+      };
+    }
   }
   return next;
 };
 
-/** Repls placed in a hex join the Repls of the same kind already there: one Pax and one Eq counter per owner and hex. */
+/** Merge only historical face-less replacement counters when replaying older scenarios. */
 export const mergeReplacementsAt = (state: GameState, hexId: HexId, ownerId: PlayerId): GameState => {
   let next = state;
   for (const kind of ['PAX', 'EQ'] as const) {
-    const here = stableSort(next.pieceState.pieces.filter((piece) => piece.ownerId === ownerId && hexOf(piece) === hexId && replacementKindOf(next, piece) === kind),
+    // Legacy face-less counters retain their original replay behavior; combat replacements stay independent.
+    const here = stableSort(next.pieceState.pieces.filter((piece) => piece.ownerId === ownerId && hexOf(piece) === hexId && replacementKindOf(next, piece) === kind && !isGroundUnitDefinition(definitionOf(next, piece))),
       (left, right) => replacementsIn(right) - replacementsIn(left) || String(left.id).localeCompare(String(right.id)));
     const [keeper, ...others] = here;
     if (!keeper || others.length === 0) continue;
@@ -96,12 +102,27 @@ export const mergeReplacementsAt = (state: GameState, hexId: HexId, ownerId: Pla
 /** The owner's Repl counter of `kind` in a hex, if any. */
 export const replacementAt = (state: GameState, ownerId: PlayerId, hexId: HexId, kind: ReplacementKind): PieceState | undefined =>
   state.pieceState.pieces.find((piece) => piece.ownerId === ownerId && piece.location.kind === 'ON_MAP' && hexOf(piece) === hexId
-    && replacementKindOf(state, piece) === kind && replacementsIn(piece) > 0);
+    && replacementKindOf(state, piece) === kind && replacementsIn(piece) > 0 && (piece.mode === 'MOVE' || piece.mode === null));
 
 /** How many Repls of `kind` the owner has in a hex. */
 export const replacementsAt = (state: GameState, ownerId: PlayerId, hexId: HexId, kind: ReplacementKind): number => {
-  const counter = replacementAt(state, ownerId, hexId, kind);
-  return counter ? replacementsIn(counter) : 0;
+  return state.pieceState.pieces.filter((piece) => piece.ownerId === ownerId && hexOf(piece) === hexId
+    && replacementKindOf(state, piece) === kind && (piece.mode === 'MOVE' || piece.mode === null))
+    .reduce((total, piece) => total + replacementsIn(piece), 0);
+};
+
+/** Spend separate Move Mode replacement units deterministically, without merging their modes or movement usage. */
+export const spendReplacementsAt = (state: GameState, ownerId: PlayerId, hexId: HexId, kind: ReplacementKind, count: number): GameState['pieceState'] => {
+  let pieceState = state.pieceState;
+  let left = count;
+  for (const counter of stableSort(state.pieceState.pieces.filter((piece) => piece.ownerId === ownerId && hexOf(piece) === hexId
+    && replacementKindOf(state, piece) === kind && (piece.mode === 'MOVE' || piece.mode === null)), (a, b) => String(a.id).localeCompare(String(b.id)))) {
+    const used = Math.min(left, replacementsIn(counter));
+    pieceState = spendReplacements(pieceState, counter, used);
+    left -= used;
+    if (left === 0) break;
+  }
+  return pieceState;
 };
 
 /** Spend `count` Repls from a counter; an emptied counter leaves the map. */
@@ -115,14 +136,13 @@ export const spendReplacements = (pieceState: GameState['pieceState'], counter: 
 export const hqCanRebuild = (state: GameState, piece: PieceState): boolean =>
   piece.location.kind === 'ON_MAP' && isHq(state, piece) && (piece.mode === 'COMBAT' || (piece.mode === 'DG' && faceMode(piece) === 'COMBAT'));
 
-/** 4.5a: the hex of the Repls may not be in an enemy ZOC (a friendly combat unit negates it, 4.5b). */
-export const replacementHexInEnemyZoc = (state: GameState, playerId: PlayerId, hexId: HexId): boolean =>
-  inEnemyZoc(state, playerId, hexId) && friendlyCombatUnitsAt(state, playerId, hexId).length === 0;
+/** 4.5a K: Repl rebuilds cannot occur in enemy ZOC; retain the original calculation for historical face-less saves. */
+export const replacementHexInEnemyZoc = (state: GameState, playerId: PlayerId, hexId: HexId): boolean => {
+  const modern = state.scenario.pieceCatalog.definitions.some((definition) => definition.family === 'REPLACEMENT' && isGroundUnitDefinition(definition));
+  return inEnemyZoc(state, playerId, hexId) && (modern || friendlyCombatUnitsAt(state, playerId, hexId).length === 0);
+};
 
-/**
- * Repls are not yet combat units here (see replacements-rebuilds in the manifest), so enemy units can stand on them;
- * nothing can be rebuilt into a hex that holds enemy combat units.
- */
+/** Guard imported/legacy positions too: nothing can be rebuilt into an enemy-occupied hex. */
 const enemyHoldsReplacementHex = (state: GameState, playerId: PlayerId, hexId: HexId): boolean =>
   enemyCombatUnitsAt(state, playerId, hexId).length > 0;
 
@@ -232,7 +252,7 @@ export const validateRebuildUnits = (state: GameState, action: RebuildUnitsActio
     issues.push(violation('NO_TRUCKS_TO_REBUILD', ['truckPoints'], `Only trucks lost to enemy action can be rebuilt: ${lostTruckPoints(state, action.actorId)} point${lostTruckPoints(state, action.actorId) === 1 ? '' : 's'}.`, '13.5e'));
   }
   const cost = rebuildCost(state, action.units, action.truckPoints);
-  const held = { PAX: pax ? replacementsIn(pax) : 0, EQ: eq ? replacementsIn(eq) : 0 };
+  const held = { PAX: replacementsAt(state, action.actorId, action.hexId, 'PAX'), EQ: replacementsAt(state, action.actorId, action.hexId, 'EQ') };
   if (cost.PAX > held.PAX) issues.push(violation('NOT_ENOUGH_PAX', ['units'], `This rebuild takes ${cost.PAX} Pax; the hex holds ${held.PAX}.`, '13.5a'));
   if (cost.EQ > held.EQ) issues.push(violation('NOT_ENOUGH_EQUIPMENT', ['units'], `This rebuild takes ${cost.EQ} Eq; the hex holds ${held.EQ}.`, '13.5a'));
   return issues;
@@ -260,11 +280,8 @@ export const applyRebuildUnits = (state: GameState, action: RebuildUnitsAction):
   let next: GameState = { ...state, pieceState };
   if (action.truckPoints > 0) next = rebuildTrucks(next, action, events);
   const cost = rebuildCost(state, action.units, action.truckPoints);
-  const pax = replacementAt(state, action.actorId, action.hexId, 'PAX');
-  const eq = replacementAt(state, action.actorId, action.hexId, 'EQ');
-  pieceState = next.pieceState;
-  if (pax) pieceState = spendReplacements(pieceState, pieceById(next, pax.id)!, cost.PAX);
-  if (eq) pieceState = spendReplacements(pieceState, pieceById(next, eq.id)!, cost.EQ);
+  pieceState = spendReplacementsAt(next, action.actorId, action.hexId, 'PAX', cost.PAX);
+  pieceState = spendReplacementsAt({ ...next, pieceState }, action.actorId, action.hexId, 'EQ', cost.EQ);
   return { state: { ...next, pieceState }, events };
 };
 

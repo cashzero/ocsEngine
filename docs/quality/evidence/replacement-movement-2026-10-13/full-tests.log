@@ -1,0 +1,60 @@
+
+> ocs-engine@0.1.0 test
+> vitest run
+
+
+ RUN  v4.1.11 /home/cashlin/ocsEngine
+
+ ❯ tests/rules/air-integration.test.ts (1 test | 1 failed) 5127ms
+     × plays a whole generated game with air forces through public actions and reproduces it by replay 5119ms
+ ❯ tests/game-flow/deployment-plan.test.ts (5 tests | 1 failed) 90221ms
+     × spreads the HQs over the front and shares the units out between them 17123ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/game-flow/deployment-plan.test.ts > deployment plan > spreads the HQs over the front and shares the units out between them
+Error: Test timed out in 15000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ tests/game-flow/deployment-plan.test.ts:69:3
+     67|   });
+     68|
+     69|   it('spreads the HQs over the front and shares the units out between …
+       |   ^
+     70|     for (const engagement of ENGAGEMENTS) {
+     71|       for (const index of SEEDS) {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  tests/rules/air-integration.test.ts > Air power integration over a generated game (A9) > plays a whole generated game with air forces through public actions and reproduces it by replay
+AssertionError: expected [ 'DECLARE_AIR_MISSION', …(6) ] to deeply equal ArrayContaining{…}
+
+- Expected
++ Received
+
+- ArrayContaining [
++ [
+    "DECLARE_AIR_MISSION",
+-   "REFIT_AIRCRAFT",
+    "RESPOND_DECISION",
++   "PAY_FUEL",
++   "MOVE_PIECE",
++   "DECLARE_COMBAT",
++   "ADVANCE_SEQUENCE",
++   "PLACE_REINFORCEMENT",
+  ]
+
+ ❯ tests/rules/air-integration.test.ts:92:24
+     90|     }
+     91|     expect(state.sequence.phase).toBe('COMPLETE');
+     92|     expect([...kinds]).toEqual(expect.arrayContaining(['DECLARE_AIR_MI…
+       |                        ^
+     93|     expect([...missions]).toEqual(expect.arrayContaining(['BARRAGE', '…
+     94|     expect([...events]).toEqual(expect.arrayContaining(['AIR_COMBAT_RO…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  2 failed | 87 passed | 4 skipped (93)
+      Tests  2 failed | 579 passed | 8 skipped (589)
+   Start at  14:44:00
+   Duration  94.99s (transform 46.21s, setup 0ms, import 184.47s, tests 756.74s, environment 13.02s)

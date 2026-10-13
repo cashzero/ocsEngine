@@ -1,6 +1,6 @@
 import { parseHexCoordinateId, type HexId } from '../core/index.js';
 import { AIR_MISSION_LABELS } from '../rules/air/mission.js';
-import type { PieceDefinition } from '../domain/piece/index.js';
+import { isGroundUnitDefinition, type PieceDefinition } from '../domain/piece/index.js';
 import type { MapDefinition } from '../domain/map/index.js';
 import type { ScenarioDefinition } from '../domain/scenario/index.js';
 import type { GameAction, ProjectedPiece, RulePhase, RuleSegment } from '../rules/index.js';
@@ -182,7 +182,8 @@ export const STACKING_LIMIT_RE_TICKS = 40;
 export const stackingReTicks = (scenario: ScenarioDefinition, piece: ProjectedPiece): number => {
   if (piece.role === 'TRUCK' || piece.role === 'EXTENDER' || piece.remainingSteps === null) return 0;
   const definition = pieceDefinition(scenario, piece);
-  if (definition?.family !== 'GROUND') return 0;
+  if (!isGroundUnitDefinition(definition)) return 0;
+  if (!definition) return 0;
   return Number(definition.faces.find(({ id }) => id === piece.currentFaceId)?.steps
     .find(({ remainingSteps }) => remainingSteps === piece.remainingSteps)?.regimentalEquivalentTicks ?? 0);
 };

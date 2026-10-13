@@ -64,6 +64,8 @@ AIR-11／AIR-12（飛機重建與增援）因程式重構與表單改變，在�
 
 ## 6. 剩餘缺口（TODO，不得標為完成）
 
+2026-10-13：使用者要求把 Repl 做成可移動單位。新產生的局已接上單位規則；實際 UI 驗收與舊存檔界線記錄在 [replacement-movement-2026-10-13.md](replacement-movement-2026-10-13.md)。以下內容保留作為當時的缺口紀錄，不能據此宣稱整個 replacements gate 已完成。
+
 每項寫明缺少的行為、使用者可見的影響、關閉所需證據。
 
 - **TODO(repl-variable-table)**：Repl 是固定配給，不擲 Variable Replacement Table。影響：每回合 Repl 數量可預期，沒有遊戲的起伏。

@@ -66,7 +66,7 @@ const statusName = (snapshot: UiSnapshot, piece: ProjectedPiece): string => {
     return `Air Base Level ${level ?? 1}`;
   }
   if (isAirStrip(snapshot, piece)) return 'Air Strip';
-  if (pieceDefinition(snapshot.scenario, piece)?.family === 'REPLACEMENT') return 'Replacements';
+  if (pieceDefinition(snapshot.scenario, piece)?.family === 'REPLACEMENT' && piece.mode === null) return 'Replacements';
   return modeName(piece.mode);
 };
 
@@ -428,7 +428,7 @@ const MODE_NAMES: Readonly<Record<string, string>> = { COMBAT: 'Combat Mode', MO
 
 /** Pax and Eq in the Reinforcement Phase: rebuild ground units and trucks lost to the enemy (13.5a-e). */
 const groundRebuildPanel = (snapshot: UiSnapshot, state: DeckState): View => snapshot.groundRebuilds.length === 0 ? nothing : html`<div class="air-panel"><strong>Rebuild units</strong>
-  <p class="hint">Repls in a hex at or within 2 hexes of an HQ in Combat Mode, and not in an enemy ZOC, rebuild units: each step of an Armor, Mech or artillery unit costs 1 Eq, each step of any other unit 1 Pax. A Dead Pile unit returns in the Repls' hex; a reduced unit must be stacked with them. Units with the no-rebuild dot never return (13.5c).</p>
+  <p class="hint">Move Mode Repls in a hex at or within 2 hexes of an HQ in Combat Mode, and not in an enemy ZOC, rebuild units: each step of an Armor, Mech or artillery unit costs 1 Eq, each step of any other unit 1 Pax. A Dead Pile unit returns in the Repls' hex; a reduced unit must be stacked with them. Units with the no-rebuild dot never return (13.5c).</p>
   ${snapshot.groundRebuilds.map((rebuild) => html`<div class="refit-base"><small>${rebuild.pax} Pax and ${rebuild.eq} Eq at ${printedHexLabel(rebuild.hexId)} · this rebuild costs ${rebuild.cost.pax} Pax and ${rebuild.cost.eq} Eq</small>
     <div class="participants">${rebuild.units.map((unit) => html`<div class="rebuild-unit"><label class="participant plain"><input type="checkbox" data-rebuild-hex=${rebuild.hexId} data-rebuild-unit=${unit.id} .checked=${unit.selected}><span>${unit.label}<small>${unit.deadPile ? 'Dead Pile' : 'reduced here'} · ${unit.missing} step${unit.missing === 1 ? '' : 's'} missing · 1 ${unit.cost === 'PAX' ? 'Pax' : 'Eq'} a step</small></span></label>
       ${unit.selected && unit.missing > 1 ? html`<label class="rebuild-steps">Steps <input type="number" min="1" max=${unit.missing} .value=${String(unit.steps)} data-rebuild-hex=${rebuild.hexId} data-rebuild-steps=${unit.id}></label>` : nothing}

@@ -1,6 +1,7 @@
 import type { ProjectedPiece } from '../rules/index.js';
 import type { UiSnapshot } from './model.js';
 import { pieceDefinition } from './presenter.js';
+import { isGroundUnitDefinition } from '../domain/piece/index.js';
 
 /** One line of the selected unit's Status panel: what the board game shows with markers, written out. */
 export interface StatusRow {
@@ -50,7 +51,7 @@ const statusValue = (piece: ProjectedPiece, id: string): string | number | undef
  */
 export const unitStatusRows = (snapshot: UiSnapshot, piece: ProjectedPiece): readonly StatusRow[] => {
   const definition = pieceDefinition(snapshot.scenario, piece);
-  if (!definition || definition.family !== 'GROUND' || piece.mode === null || definition.counter?.kind === 'TRANSPORT') return [];
+  if (!definition || !isGroundUnitDefinition(definition) || piece.mode === null || definition.counter?.kind === 'TRANSPORT') return [];
   const own = piece.ownerId === snapshot.view.playerId;
   const rows: StatusRow[] = [];
 

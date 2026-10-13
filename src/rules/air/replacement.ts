@@ -3,7 +3,7 @@ import { upsertPieceState, type PieceState } from '../../domain/piece/index.js';
 import { nextStackOrder } from '../combat/combat.js';
 import type { GameAction, GameState, RuleEvent, RuleViolation } from '../kernel/model.js';
 import { hexDistanceBetween, hexOf, pieceById } from '../pieces.js';
-import { REBUILD_HQ_RADIUS, hqCanRebuild, isEquipment, replacementHexInEnemyZoc, replacementsIn, spendReplacements } from '../replacement/replacement.js';
+import { REBUILD_HQ_RADIUS, hqCanRebuild, isEquipment, replacementHexInEnemyZoc, replacementsIn, replacementsAt, spendReplacementsAt } from '../replacement/replacement.js';
 import { violation } from '../validation/violation.js';
 import { activeAircraftAt, activeAircraftLimit, aircraftName, friendlyAirBaseAt, friendlyAirBases, isAircraft, withAircraftActive } from './aircraft.js';
 
@@ -41,6 +41,7 @@ export const validateRebuildAircraft = (state: GameState, action: RebuildAction)
     return [...issues, violation('EQUIPMENT_NOT_ON_MAP', ['eqPieceId'], 'Rebuild with Eq counters of yours that are on the map.', '13.5a')];
   }
   const eqHex = hexOf(eq)!;
+  if (eq.mode !== null && eq.mode !== 'MOVE') issues.push(violation('REPLACEMENT_NOT_MOVE_MODE', ['eqPieceId'], 'Replacements must be in Move Mode to rebuild.', '13.5a'));
   const hq = pieceById(state, action.hqId);
   if (!hq || hq.ownerId !== action.actorId || !hqCanRebuild(state, hq)) {
     issues.push(violation('NO_REBUILD_HQ', ['hqId'], 'The Eq are expended at an HQ in Combat Mode (or DG oriented to Combat Mode).', '13.5a'));
@@ -66,7 +67,8 @@ export const validateRebuildAircraft = (state: GameState, action: RebuildAction)
     if (plane.location.kind === 'ELIMINATED') arriving += 1;
   }
   const needed = equipmentFor(steps);
-  if (needed > equipmentIn(eq)) issues.push(violation('NOT_ENOUGH_EQUIPMENT', ['eqPieceId'], `Rebuilding ${steps} step${steps === 1 ? '' : 's'} takes ${needed} Eq (each rebuilds two steps); this counter holds ${equipmentIn(eq)}.`, '13.5f'));
+  const available = replacementsAt(state, action.actorId, eqHex, 'EQ');
+  if (needed > available) issues.push(violation('NOT_ENOUGH_EQUIPMENT', ['eqPieceId'], `Rebuilding ${steps} step${steps === 1 ? '' : 's'} takes ${needed} Eq (each rebuilds two steps); this hex holds ${available}.`, '13.5f'));
   if (arriving > 0) {
     const base = action.baseId ? pieceById(state, action.baseId) : undefined;
     if (!base || base.ownerId !== action.actorId || base.location.kind !== 'ON_MAP' || !friendlyAirBaseAt(state, action.actorId, hexOf(base)!)) {
@@ -97,7 +99,7 @@ export const applyRebuildAircraft = (state: GameState, action: RebuildAction): T
     }
     events.push({ kind: 'AIRCRAFT_REBUILT', sequence: events.length, pieceId: id, hexId: plane.location.kind === 'ELIMINATED' ? baseHex : hexOf(plane) });
   }
-  pieceState = spendReplacements(pieceState, eq, equipmentFor(steps));
+  pieceState = spendReplacementsAt({ ...state, pieceState }, action.actorId, hexOf(eq)!, 'EQ', equipmentFor(steps));
   return { state: { ...state, pieceState }, events };
 };
 
@@ -110,10 +112,13 @@ export const rebuildOptions = (state: GameState, playerId: PlayerId): readonly {
 }[] => {
   if (state.sequence.phase !== 'REINFORCEMENT') return [];
   const options: { eq: PieceState; hq: PieceState; aircraftIds: PieceId[]; baseIds: PieceId[] }[] = [];
+  const seen = new Set<string>();
   const hqs = state.pieceState.pieces.filter((piece) => piece.ownerId === playerId && hqCanRebuild(state, piece));
   const dead = aircraftInDeadPile(state, playerId);
-  for (const eq of state.pieceState.pieces.filter((piece) => piece.ownerId === playerId && piece.location.kind === 'ON_MAP' && isEquipment(state, piece) && equipmentIn(piece) > 0)) {
+  for (const eq of state.pieceState.pieces.filter((piece) => piece.ownerId === playerId && piece.location.kind === 'ON_MAP' && isEquipment(state, piece) && equipmentIn(piece) > 0 && (piece.mode === 'MOVE' || piece.mode === null))) {
     const hex = hexOf(eq)!;
+    if (seen.has(hex)) continue;
+    seen.add(hex);
     if (replacementHexInEnemyZoc(state, playerId, hex)) continue;
     const hq = hqs.find((candidate) => hexDistanceBetween(hexOf(candidate)!, hex) <= REBUILD_HQ_RADIUS);
     if (!hq) continue;
@@ -130,7 +135,7 @@ export const rebuildOptions = (state: GameState, playerId: PlayerId): readonly {
 export const defaultRebuild = (state: GameState, option: ReturnType<typeof rebuildOptions>[number]): readonly PieceId[] => {
   const chosen: PieceId[] = [];
   let steps = 0;
-  const capacity = equipmentIn(option.eq) * STEPS_PER_EQ;
+  const capacity = replacementsAt(state, option.eq.ownerId, hexOf(option.eq)!, 'EQ') * STEPS_PER_EQ;
   for (const id of option.aircraftIds) {
     const cost = stepsToRebuild(pieceById(state, id)!);
     if (steps + cost > capacity) continue;

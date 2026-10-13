@@ -1,0 +1,67 @@
+{
+  "title": "Movable replacement units: actual UI acceptance",
+  "final": {
+    "turn": "Turn 2 / 8",
+    "player": "Axis player turn",
+    "phase": "Movement",
+    "revision": null
+  },
+  "rows": [
+    {
+      "id": "REPL-05",
+      "expectation": "The first fresh New Game completes Turn 1 with legal decisions and handoffs",
+      "observed": "{\"turn\":\"Turn 1 / 6\",\"player\":\"Allied player turn\",\"phase\":\"Movement\",\"seat\":\"Allied commander\",\"end\":\"End Movement SegmentNext: Barrage Segment\",\"endDisabled\":false,\"notice\":\"Select a unit on the map to see where it can move and what it can attack.\",\"handoff\":false,\"complete\":false,\"decision\":[]} → {\"turn\":\"Turn 2 / 6\",\"player\":\"Axis player turn\",\"phase\":\"Reinforcement\",\"seat\":\"Axis commander\",\"end\":\"End Reinforcement PhaseNext: Movement Phase\",\"endDisabled\":true,\"notice\":\"Decision recorded.\",\"handoff\":false,\"complete\":false,\"decision\":[]}",
+      "status": "PASS"
+    },
+    {
+      "id": "REPL-07",
+      "expectation": "Personnel replacements offers Reserve/Strat but no Combat Mode",
+      "observed": "Mode Reserve Strat mode",
+      "status": "PASS"
+    },
+    {
+      "id": "REPL-07",
+      "expectation": "Personnel replacements moves to 1306 with its MP recorded",
+      "observed": "Move units one at a time: select a unit to see its range. Red rings mark overrun targets. Repl PAX 1 Axis Personnel replacements 1406 · Move mode · 1 Pax 5 MP left Done Unit Log All units (26) Mode Reserve Strat mode Mode changed to move. → Move units one at a time: select a unit to see its range. Red rings mark overrun targets. Repl PAX 1 Axis Personnel replacements 1306 · Move mode · 1 Pax 4.5 MP left Done MOVED Unit Log All units (26) Click a highlighted hex to preview the move; darker hexes are out of reach. Moved to 1306.",
+      "status": "PASS"
+    },
+    {
+      "id": "REPL-08",
+      "expectation": "Eq movement requires fuel",
+      "observed": "Move units one at a time: select a unit to see its range. Red rings mark overrun targets. Repl EQ 1 Axis Equipment replacements 1406 · Move mode · 1 Eq Needs fuel before it can move (12.5) Deselect Unit Log All units (26) Mode Reserve Strat mode Fuel 1 · What to fuel This unit only · 1T, this phase · fuels 1 2 · Pay from which dump Fuels 1 unit: Axis Equipment replacements 1406 the 16T dump at 1807 the 12T dump at 1306 the 12T dump at 1509 Hover a dump to see its hex on the map. Moved to 1306.",
+      "status": "PASS"
+    },
+    {
+      "id": "REPL-07",
+      "expectation": "Equipment replacements moves to 1306 with its MP recorded",
+      "observed": "Move units one at a time: select a unit to see its range. Red rings mark overrun targets. Repl EQ 1 Axis Equipment replacements 1406 · Move mode · 1 Eq 10 MP left Deselect FUEL Unit Ledger Log All units (26) Mode Reserve Strat mode Fuel this unit for this phase (1T) from the 16T dump at 1807: done. → Move units one at a time: select a unit to see its range. Red rings mark overrun targets. Repl EQ 1 Axis Equipment replacements 1306 · Move mode · 1 Eq 9.5 MP left Done FUEL MOVED Unit Ledger Log All units (26) Click a highlighted hex to preview the move; darker hexes are out of reach. Moved to 1306.",
+      "status": "PASS"
+    },
+    {
+      "id": "REPL-05",
+      "expectation": "The fresh New Game completes the entire turn containing replacement movement",
+      "observed": "{\"turn\":\"Turn 3 / 6\",\"player\":\"Axis player turn\",\"phase\":\"First Player Phase\",\"seat\":\"Axis commander\",\"end\":\"End First Player PhaseNext: Aircraft Refit Phase\",\"endDisabled\":true,\"notice\":\"Your turn, Axis commander.\",\"handoff\":false,\"complete\":false,\"decision\":[\"Go first\",\"Go second\"]}",
+      "status": "PASS"
+    },
+    {
+      "id": "REPL-03",
+      "expectation": "The test-position ground unit is eliminated in actual UI combat",
+      "observed": "No enemy hex can be attacked. No unit selected Click one of your units on the map, or open All units. Targets Unit Ledger Log All units (26) COMBAT RESULT Allied commander attack on 2512 · 72 : 6 · 12:1 · DRM −1 Ae4/DL1o2 surprise roll 12 · combat roll 6 Attacker is unaffected; defender loses 1 step and takes 2 options (each a step loss or a hex of retreat); attackers with Action Rating 4+ may enter Exploit mode. 1+3/1/12 Pz Bn (-) / 12.SS eliminated OK You chose the advance after combat Result Ae4/DL1o2: Attacker is unaffected; defender loses 1 step and takes 2 options (each a step loss or a hex of retreat); attackers with Action Rating 4+ may enter Exploit mode. Axis commander chose the defending terrain 1+3/1/12 Pz Bn (-) / 12.SS was eliminated. Axis commander chose a combat supply source You attacked 2512 You finished Movement · Movement Segment 17.Abn is Out of Supply. Attrition at 2916: roll 6, 0 steps lost. Passed automatically, no legal actions: Movement barrage segment, Supply, Reaction (Axis commander), Combat barrage segment. Now: Combat · Combat Segment · Allied commander. Axis commander resolved attrition or displaced trucks Truck was displaced to 2816. 17.Abn moved 2816 → 2916 Allied commander captured 3 of 5 transport points at 2916 (roll 4); the rest must displace. Combat resolved. Result Ae4/DL1o2.",
+      "status": "PASS"
+    },
+    {
+      "id": "REPL-07",
+      "expectation": "Replacement movement acceptance finishes",
+      "observed": "locator.waitFor: Timeout 8000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#confirm-move').first() to be visible\u001b[22m\n\n    at click (/home/cashlin/ocsEngine/scripts/air-acceptance/harness.mjs:119:17)\n    at move (/home/cashlin/ocsEngine/scripts/replacement-acceptance/run-movement.mjs:31:9)\n    at async file:///home/cashlin/ocsEngine/scripts/replacement-acceptance/run-movement.mjs:96:3",
+      "status": "FAIL"
+    },
+    {
+      "id": "REPL-07",
+      "expectation": "No browser page/console errors",
+      "observed": "[]",
+      "status": "PASS"
+    }
+  ],
+  "timings": [],
+  "errors": []
+}

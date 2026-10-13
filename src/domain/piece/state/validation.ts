@@ -16,6 +16,7 @@ import {
 } from '../../map/index.js';
 import {
   createPieceDefinitionCatalogIndex,
+  isGroundUnitDefinition,
   type PieceDefinition,
   type PieceDefinitionCatalog,
   type PieceDefinitionCatalogIndex,
@@ -213,12 +214,16 @@ const validatePiece = (
     for (const issue of validateResourceState(piece, definition)) {
       issues.push({ ...issue, path: [...path, ...issue.path] });
     }
-    if ((definition.family === 'GROUND') !== (piece.mode !== null)) {
+    if (isGroundUnitDefinition(definition) !== (piece.mode !== null)) {
       issues.push(error(
         'MODE_STATE_FAMILY_MISMATCH',
         [...path, 'mode'],
         `Piece family ${definition.family} has inconsistent OCS mode state.`,
       ));
+    }
+    if (definition.family === 'REPLACEMENT' && definition.faces.length > 0) {
+      if (piece.mode === 'COMBAT') issues.push(error('REPLACEMENT_COMBAT_MODE', [...path, 'mode'], 'Replacements cannot enter Combat Mode (13.5).'));
+      if (piece.resourceQuantity !== 1 && !(piece.location.kind === 'ELIMINATED' && piece.resourceQuantity === 0)) issues.push(error('INVALID_REPLACEMENT_QUANTITY', [...path, 'resourceQuantity'], 'Each replacement unit holds one Repl; spent units hold zero and are eliminated.'));
     }
   }
 
