@@ -1,0 +1,115 @@
+[
+  {
+    "style": "temperate",
+    "match": 1210000,
+    "checked": 3,
+    "opportunities": [
+      {
+        "revision": 93,
+        "turn": 1,
+        "action": {
+          "actionId": "candidate:combat:OVERRUN:5,18:generated-oob:286911634:axis:independent-anti-tank-4:unit:93",
+          "actorId": "player:axis",
+          "attackerIds": [
+            "generated-oob:286911634:axis:independent-anti-tank-4:unit"
+          ],
+          "attackerSupply": [
+            {
+              "dumpIds": [
+                "generated-oob:286911634:axis:independent-supply-1:unit"
+              ],
+              "method": "DUMPS",
+              "pieceId": "generated-oob:286911634:axis:independent-anti-tank-4:unit"
+            }
+          ],
+          "combatKind": "OVERRUN",
+          "defenderIds": [
+            "generated-oob:286911634:allied:f1-artillery-1:unit"
+          ],
+          "expectedRevision": 93,
+          "kind": "DECLARE_COMBAT",
+          "leadAttackerId": "generated-oob:286911634:axis:independent-anti-tank-4:unit",
+          "targetHexId": "5,18"
+        },
+        "alternate": {
+          "actionId": "candidate:move:generated-oob:286911634:axis:independent-anti-tank-4:unit:3,21:93",
+          "actorId": "player:axis",
+          "expectedRevision": 93,
+          "kind": "MOVE_PIECE",
+          "pieceId": "generated-oob:286911634:axis:independent-anti-tank-4:unit",
+          "path": [
+            "5,19",
+            "4,20",
+            "3,21"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "style": "temperate",
+    "match": 1210001,
+    "checked": 0,
+    "opportunities": []
+  },
+  {
+    "style": "temperate",
+    "match": 1210002,
+    "checked": 0,
+    "opportunities": []
+  },
+  {
+    "style": "temperate",
+    "match": 1210003,
+    "checked": 1,
+    "opportunities": []
+  },
+  {
+    "style": "eastern",
+    "match": 1210100,
+    "checked": 0,
+    "opportunities": []
+  },
+  {
+    "style": "eastern",
+    "match": 1210101,
+    "checked": 1,
+    "opportunities": []
+  },
+  {
+    "style": "eastern",
+    "match": 1210102,
+    "checked": 2,
+    "opportunities": []
+  },
+  {
+    "style": "eastern",
+    "match": 1210103,
+    "checked": 1,
+    "opportunities": []
+  },
+  {
+    "style": "mediterranean",
+    "match": 1210200,
+    "checked": 0,
+    "opportunities": []
+  },
+  {
+    "style": "mediterranean",
+    "match": 1210201,
+    "checked": 0,
+    "opportunities": []
+  },
+  {
+    "style": "mediterranean",
+    "match": 1210202,
+    "checked": 1,
+    "opportunities": []
+  },
+  {
+    "style": "mediterranean",
+    "match": 1210203,
+    "checked": 1,
+    "opportunities": []
+  }
+]

@@ -758,10 +758,18 @@ const movementStep = (context: BotDecisionContext, situation: Situation, facts: 
       const terms = scoreDestination(situation, unit, target, move.path, notes, reach, direct, front, w, feeds);
       scored.push({ action: move, terms });
     }
-    // Inspect promising destinations in score order: neither an HQ nor a ZOC-negating unit may strand its friends.
-    // Checking only improving moves avoids expensive path queries for destinations the bot would never choose.
-    for (const candidate of scored.sort((left, right) => sum(right.terms) - sum(left.terms))) {
-      if (sum(candidate.terms) <= stay) break;
+    // A profitable, supplied capture beats merely approaching a hunt/assault target (VP > Kill > Loss).
+    // Keep the existing stay/exposure/garrison comparison, and count only captures ending on an objective;
+    // passing through an empty point remains subject to the ordinary position score.
+    const capturedVp = (action: GameAction): number => {
+      if (unit.piece.role !== 'COMBAT' || action.kind !== 'MOVE_PIECE'
+        || !situation.objectives.some(o => o.controllerId !== situation.playerId && o.hexId === action.path.at(-1))) return 0;
+      return situation.objectives.filter(o => o.controllerId !== situation.playerId && action.path.slice(1).includes(o.hexId))
+        .reduce((total, o) => total + o.points, 0);
+    };
+    const improving = scored.filter(candidate => sum(candidate.terms) > stay)
+      .sort((left, right) => capturedVp(right.action) - capturedVp(left.action) || sum(right.terms) - sum(left.terms));
+    for (const candidate of improving) {
       if (!preservesFriendlySupply(context, candidate.action)) continue;
       best = candidate;
       break;
@@ -776,7 +784,9 @@ const movementStep = (context: BotDecisionContext, situation: Situation, facts: 
         const source = feedSourceFor(notes, feeds, unit, destination);
         if (source !== null) notes.feedBudget!.set(source, notes.feedBudget!.get(source)! - eatingCost(unit));
       }
-      return decision(best.action, `${unit.piece.role.toLowerCase()} to ${destination}${target ? ` (${target.purpose.toLowerCase()} ${target.hexId})` : ''}`, best.terms);
+      const gain = capturedVp(best.action);
+      return decision(best.action, gain > 0 ? `capture ${gain} VP at ${destination}, preserving friendly supply`
+        : `${unit.piece.role.toLowerCase()} to ${destination}${target ? ` (${target.purpose.toLowerCase()} ${target.hexId})` : ''}`, best.terms);
     }
   }
   return null;
@@ -1014,7 +1024,7 @@ export const createHeuristicPolicy = (facts: BotGameFacts, options: HeuristicPol
   const choose = decide(facts, options.weights ?? DEFAULT_HEURISTIC_WEIGHTS);
   return {
     id: 'heuristic',
-    version: options.label === undefined ? '16' : `16+${options.label}`,
+    version: options.label === undefined ? '17' : `17+${options.label}`,
     decide: (context) => {
       const sink = options.debug;
       debug = sink ? (line) => sink(`${context.memory.stepKey} ${String(context.playerId).split(':').at(-1)} ${line}`) : null;
