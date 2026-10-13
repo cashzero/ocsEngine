@@ -1,6 +1,6 @@
 import { counterLod, type CounterLod } from './counter.js';
 import {
-  WAVE_GLYPH_PATH, PORT_ANCHOR_PATH, coastlinePath, portArt, hexGridPath, hexNumberPlacement, mapArtDefsHtml, objectiveArt, regionEdgePaths, railStrokes, riverStrokes, roadStrokes,
+  AIR_ENTRY_PLANE_PATH, airEntryArt, WAVE_GLYPH_PATH, PORT_ANCHOR_PATH, coastlinePath, portArt, hexGridPath, hexNumberPlacement, mapArtDefsHtml, objectiveArt, regionEdgePaths, railStrokes, riverStrokes, roadStrokes,
   settlementArt, strategicBandCorners, supplySourceArt, terrainFillCorners, terrainGlyphPlacements, type Point,
 } from './map-art.js';
 import type { GeneratedMapPreview, GeneratedMapPreviewCell } from './map-generator-presenter.js';
@@ -846,6 +846,26 @@ export class MapView {
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
         ctx.stroke(PORT_ICON);
+        ctx.restore();
+      }
+      if (cell.airEntry) {
+        const { x, y, scale } = airEntryArt(cell, size);
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.scale(scale, scale);
+        ctx.fillStyle = '#fff4cf';
+        ctx.strokeStyle = '#17334c';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.roundRect(-4, -3, 28, 42, 4);
+        ctx.fill();
+        ctx.stroke();
+        ctx.fillStyle = '#17334c';
+        ctx.fill(new Path2D(AIR_ENTRY_PLANE_PATH));
+        ctx.font = '900 10px ui-sans-serif, system-ui, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'alphabetic';
+        ctx.fillText('AEP', 10, 35);
         ctx.restore();
       }
       if (cell.supplySource) {

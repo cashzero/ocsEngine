@@ -144,7 +144,7 @@ export const buildGeneratedRuleScenario = (
       ...hex,
       terrainDefinitionIds: [(terrain[hex.id] ?? 'terrain:clear') as never],
       features: [
-        ...hex.features.filter(({ kind }) => kind !== 'PRINTED_FEATURE'),
+        ...hex.features.filter(({ kind, definitionId }) => kind !== 'PRINTED_FEATURE' || String(definitionId).startsWith('air-entry:')),
         ...(options.features?.[hex.id] ?? []).map((definitionId) => ({ kind: 'PRINTED_FEATURE' as const, definitionId: definitionId as never })),
       ],
     })),

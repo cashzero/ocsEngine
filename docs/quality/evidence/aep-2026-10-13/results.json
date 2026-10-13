@@ -1,0 +1,49 @@
+{
+  "title": "AEP integrated player operation",
+  "final": {
+    "turn": "Turn 1 / 8",
+    "player": "Axis player turn",
+    "phase": "Movement · Barrage",
+    "revision": null
+  },
+  "rows": [
+    {
+      "id": "AEP-01",
+      "expectation": "Small generated map shows one AEP per side",
+      "observed": "[{\"hex\":\"-3,6\",\"side\":\"FIRST\"},{\"hex\":\"12,6\",\"side\":\"SECOND\"}]",
+      "status": "PASS"
+    },
+    {
+      "id": "AEP-02",
+      "expectation": "Different map/OOB preview and same mounted package expose friendly and enemy AEPs",
+      "observed": "[{\"hex\":\"-4,9\",\"side\":\"FIRST\"},{\"hex\":\"19,9\",\"side\":\"SECOND\"}]",
+      "status": "PASS"
+    },
+    {
+      "id": "AEP-02",
+      "expectation": "Mounted FIRST AEP 0110 announces owner and range origin",
+      "observed": "Hex 0110 · woods · Allied Supply Source · Allied Air Entry Point (AEP): off-map aircraft enter here; range starts here +1 hex · no units",
+      "status": "PASS"
+    },
+    {
+      "id": "AEP-02",
+      "expectation": "Mounted SECOND AEP 2410 announces owner and range origin",
+      "observed": "Hex 2410 · clear · Axis Supply Source · Axis Air Entry Point (AEP): off-map aircraft enter here; range starts here +1 hex · no units",
+      "status": "PASS"
+    },
+    {
+      "id": "AEP-03",
+      "expectation": "Off-map sortie panel identifies Axis AEP and counts range from it",
+      "observed": "Air Barrage 1611\nOff-map entry\nAEP 2410 · range from nearest AEP +1 hex\nMission hex\n1611\nTable column\n17-24 → 3-4\nShifts\nDensity -1, Terrain -1, No spotter -3, Short range +1\nBarrage strength\n17\nFlak\n+2 (Three or more aircraft +1, Enemy Patrol Zone, mission has a Fighter +1); 11+ on 2d6 costs a step\nEnemy Patrol Zone\nyes: an enemy Fighter may intercept\n\nTick up to 4 aircraft; they may come from different bases. Every mission aircraft becomes Inactive at a base afterwards.\n\nF\nFw-190a\n71\n5\n2\nJG 27 Fw-190a\n2207\nT\nJu.88\n106\n(2)\n12\nKG 6 Ju.88\n2207\nF\nBf.109\n76\n5\n1\nJG 26 Bf.109\n2203\nF\nFw-190d\n74\n6\n2\nJG 53 Fw-190d\n2203\nT\nJu.88\n106\n(2)\n9\nKG 76 Ju.88\n2203\nF\nBf.109\n76\n4\n1\nJG 301 Bf.109\nAxis off-map airfield\nF\nFw-190a\n71\n4\n2\nJG 300 Fw-190a\nAxis off-map airfield\nF\nFw-190d\n74\n6\n2\nJG 53 Fw-190d\nAxis off-map airfield\nT\nJu.88\n106\n(2)\n9\nKG 76 Ju.88\nAxis off-map airfield\nT\nJu.88\n106\n(2)\n12\nKG 66 Ju.88\nAxis off-map airfield\nT\nJu.88\n106\n(2)\n12\nKG 51 Ju.88\nAxis off-map airfield\nCancel\nFly Air Barrage",
+      "status": "PASS"
+    },
+    {
+      "id": "AEP",
+      "expectation": "Integrated AEP flow completes",
+      "observed": "locator.innerText: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('.command-deck')\u001b[22m\n\n    at /home/cashlin/ocsEngine/scripts/air-acceptance/run-aep.mjs:43:53",
+      "status": "FAIL"
+    }
+  ],
+  "timings": [],
+  "errors": []
+}

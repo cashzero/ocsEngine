@@ -381,7 +381,12 @@ const airDraftPanel = (snapshot: UiSnapshot, state: DeckState): TemplateResult =
     return [html`<label class="participant"><input type=${draft.maximum === 1 ? 'radio' : 'checkbox'} name="air-aircraft" data-air-aircraft=${id} .checked=${draft.selectedIds.includes(id)}>
       ${counterFor(snapshot, piece)}<span>${pieceLabel(snapshot.scenario, piece)}<small>${pieceHex(snapshot, piece)}</small></span></label>`];
   });
+  const offMap = draft.eligibleIds.some((id) => pieceById(snapshot, id)?.location.kind === 'OFF_MAP_BOX');
+  const sideIndex = snapshot.scenario.players.findIndex(({ id }) => id === snapshot.view.playerId);
+  const aeps = snapshot.scenario.mapDefinition.hexes.filter(({ features }) => features.some(({ definitionId }) =>
+    definitionId === `air-entry:${sideIndex === 0 ? 'first' : 'second'}`)).map(({ id }) => printedHexLabel(id));
   const rows: [string, unknown][] = [
+    ...(offMap ? [['Off-map entry', `AEP ${aeps.join(', ') || 'missing'} · range from nearest AEP +1 hex`] as [string, unknown]] : []),
     ['Mission hex', printedHexLabel(draft.targetHexId)],
     ...(fact(facts, 'air.finalColumn') !== undefined ? [['Table column', `${text(fact(facts, 'air.initialColumn') ?? '')}${fact(facts, 'air.initialColumn') ? ' → ' : ''}${text(fact(facts, 'air.finalColumn'))}`] as [string, unknown]] : []),
     ...(fact(facts, 'air.shifts') ? [['Shifts', fact(facts, 'air.shifts')] as [string, unknown]] : []),

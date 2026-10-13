@@ -129,6 +129,9 @@ export const generateStrategicNetwork = (
   ports.forEach(({ cell }) => cell.features.push({ kind: 'FACILITY', definitionId: PORT }));
   firstEntry.features.push({ kind: 'ENTRY', definitionId: FIRST_ENTRY }, { kind: 'SOURCE', definitionId: FIRST_SOURCE });
   secondEntry.features.push({ kind: 'ENTRY', definitionId: SECOND_ENTRY }, { kind: 'SOURCE', definitionId: SECOND_SOURCE });
+  // Dedicated Air Entry Points: ground reinforcement entries never substitute for these.
+  firstEntry.features.push({ kind: 'PRINTED_FEATURE', definitionId: definitionId('air-entry:first') });
+  secondEntry.features.push({ kind: 'PRINTED_FEATURE', definitionId: definitionId('air-entry:second') });
   const railEntries = railEntryCountFor(options.style, options.height);
   const firstEntries = railEntriesFirst(selectEntryHexes(cells, firstEntry, 'FIRST', options), railEntries, options.height);
   const secondEntries = railEntriesFirst(selectEntryHexes(cells, secondEntry, 'SECOND', options), railEntries, options.height);

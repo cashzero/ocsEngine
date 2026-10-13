@@ -840,3 +840,14 @@ export const hexNumberHtml = (cell: GeneratedMapPreviewCell, label: string, hexS
   const { x, y, fontSize } = hexNumberPlacement(cell, hexSize);
   return `<text class="hex-coordinate" x="${fixed(x)}" y="${fixed(y)}" font-size="${fixed(fontSize)}" text-anchor="middle">${label}</text>`;
 };
+
+/** AEP badge at the lower right, clear of the central counter and the Supply Source disc. */
+export const airEntryArt = (cell: GeneratedMapPreviewCell, hexSize: number) => {
+  const unit = hexSize / GLYPH_HEX_SIZE;
+  return { x: cell.x + 16 * unit, y: cell.y + 8 * unit, scale: unit * 0.75 };
+};
+export const AIR_ENTRY_PLANE_PATH = 'M10 0L12 8L21 13V16L12 13L12 20L16 23V25L10 23L4 25V23L8 20L8 13L-1 16V13L8 8Z';
+export const airEntryArtHtml = (cell: GeneratedMapPreviewCell, hexSize: number): string => {
+  const { x, y, scale } = airEntryArt(cell, hexSize);
+  return `<g transform="translate(${fixed(x)} ${fixed(y)}) scale(${fixed(scale)})"><rect x="-4" y="-3" width="28" height="42" rx="4" fill="#fff4cf" stroke="#17334c" stroke-width="1.5"/><path d="${AIR_ENTRY_PLANE_PATH}" fill="#17334c"/><text x="10" y="35" text-anchor="middle" font-size="10" font-weight="900" fill="#17334c">AEP</text></g>`;
+};
