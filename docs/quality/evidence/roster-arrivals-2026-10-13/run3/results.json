@@ -1,0 +1,126 @@
+{
+  "title": "All units reinforcement entry acceptance",
+  "final": {
+    "turn": "Turn 2 / 8",
+    "player": "Allied player turn",
+    "phase": "Reinforcement",
+    "revision": null
+  },
+  "rows": [
+    {
+      "expectation": "Turn 1 roster has no reinforcement-box rows",
+      "status": "PASS"
+    },
+    {
+      "expectation": "Serving off-map aircraft remain in the roster",
+      "status": "PASS"
+    },
+    {
+      "expectation": "Roster count matches visible serving units",
+      "status": "PASS"
+    },
+    {
+      "expectation": "A legal move operated through the UI",
+      "status": "PASS"
+    },
+    {
+      "expectation": "Turn 2 Arrivals contains reinforcements",
+      "status": "PASS"
+    },
+    {
+      "expectation": "Awaiting entry generated-oob:9132:allied:independent-artillery-1:unit absent from roster",
+      "status": "PASS"
+    },
+    {
+      "expectation": "Awaiting entry generated-oob:9132:allied:independent-transport-2:unit absent from roster",
+      "status": "PASS"
+    },
+    {
+      "expectation": "Awaiting entry repl-arrival:player:allied:2 absent from roster",
+      "status": "PASS"
+    },
+    {
+      "expectation": "Awaiting entry repl-arrival:player:allied:2:pax absent from roster",
+      "status": "PASS"
+    },
+    {
+      "expectation": "Awaiting entry repl-arrival:player:allied:2:pax:2 absent from roster",
+      "status": "PASS"
+    },
+    {
+      "expectation": "Awaiting entry supply-arrival:player:allied:2 absent from roster",
+      "status": "PASS"
+    },
+    {
+      "expectation": "Searching replacements does not expose waiting arrivals",
+      "status": "PASS"
+    },
+    {
+      "expectation": "Entered generated-oob:9132:allied:independent-artillery-1:unit visible in roster",
+      "status": "PASS"
+    },
+    {
+      "expectation": "Entered generated-oob:9132:allied:independent-transport-2:unit visible in roster",
+      "status": "PASS"
+    },
+    {
+      "expectation": "Entered repl-arrival:player:allied:2 visible in roster",
+      "status": "PASS"
+    },
+    {
+      "expectation": "Entered repl-arrival:player:allied:2:pax visible in roster",
+      "status": "PASS"
+    },
+    {
+      "expectation": "Entered repl-arrival:player:allied:2:pax:2 visible in roster",
+      "status": "PASS"
+    },
+    {
+      "expectation": "Serving count grows after entry",
+      "status": "PASS"
+    },
+    {
+      "expectation": "Header count matches roster after entry",
+      "status": "PASS"
+    },
+    {
+      "expectation": "Entered reinforcement selectable from roster",
+      "status": "PASS"
+    },
+    {
+      "expectation": "No browser console/page errors",
+      "status": "PASS"
+    }
+  ],
+  "timings": [
+    {
+      "label": "Open roster and clear search",
+      "elapsed": 180
+    },
+    {
+      "label": "Open roster and clear search",
+      "elapsed": 152
+    },
+    {
+      "label": "Open roster and clear search",
+      "elapsed": 158
+    },
+    {
+      "label": "Open roster and clear search",
+      "elapsed": 156
+    },
+    {
+      "label": "Open roster and clear search",
+      "elapsed": 133
+    },
+    {
+      "label": "Open roster and clear search",
+      "elapsed": 143
+    },
+    {
+      "label": "Open roster and clear search",
+      "elapsed": 193
+    }
+  ],
+  "errors": []
+}
