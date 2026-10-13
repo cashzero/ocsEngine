@@ -1,0 +1,13 @@
+
+> ocs-engine@0.1.0 test
+> vitest run tests/ai/garrison-supply.test.ts tests/ai/hq-supply.test.ts tests/game-flow/garrison-supply.test.ts
+
+
+ RUN  v4.1.11 /home/cashlin/ocsEngine
+
+
+ Test Files  3 passed (3)
+      Tests  26 passed (26)
+   Start at  13:42:30
+   Duration  21.04s (transform 5.67s, setup 0ms, import 7.07s, tests 21.64s, environment 0ms)
+

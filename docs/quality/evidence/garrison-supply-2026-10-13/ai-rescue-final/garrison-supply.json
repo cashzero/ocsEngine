@@ -1,0 +1,162 @@
+{
+  "games": 1,
+  "feeds": 0,
+  "truckDeliveries": 0,
+  "feedsFromDelivered": 0,
+  "missedLegalFeeds": 0,
+  "attritionRolls": 5,
+  "losses": 3,
+  "records": [
+    {
+      "file": "match-10.save.json",
+      "feeds": [],
+      "truckDeliveries": [],
+      "supplyEnds": [
+        {
+          "turn": 2,
+          "total": 0,
+          "untraced": 0,
+          "unfed": []
+        },
+        {
+          "turn": 5,
+          "total": 0,
+          "untraced": 0,
+          "unfed": []
+        },
+        {
+          "turn": 6,
+          "total": 7,
+          "untraced": 2,
+          "unfed": [
+            {
+              "id": "generated-oob:169542604:allied:garrison:key-point-1",
+              "hex": "11,12",
+              "reachableTokens": 0
+            },
+            {
+              "id": "generated-oob:169542604:allied:garrison:key-point-3",
+              "hex": "8,5",
+              "reachableTokens": 0
+            }
+          ]
+        },
+        {
+          "turn": 6,
+          "total": 0,
+          "untraced": 0,
+          "unfed": []
+        },
+        {
+          "turn": 7,
+          "total": 4,
+          "untraced": 0,
+          "unfed": []
+        },
+        {
+          "turn": 8,
+          "total": 8,
+          "untraced": 4,
+          "unfed": [
+            {
+              "id": "generated-oob:169542604:allied:garrison:key-point-1",
+              "hex": "13,9",
+              "reachableTokens": 0
+            },
+            {
+              "id": "generated-oob:169542604:allied:garrison:key-point-2",
+              "hex": "14,8",
+              "reachableTokens": 0
+            },
+            {
+              "id": "generated-oob:169542604:allied:garrison:key-point-3",
+              "hex": "14,9",
+              "reachableTokens": 0
+            },
+            {
+              "id": "generated-oob:169542604:allied:garrison:objective-5",
+              "hex": "14,8",
+              "reachableTokens": 0
+            }
+          ]
+        }
+      ],
+      "missedLegalFeeds": [],
+      "attrition": [
+        {
+          "turn": 6,
+          "kind": "ATTRITION_ROLLED",
+          "sequence": 8,
+          "hexId": "11,12",
+          "total": 7,
+          "steps": 1,
+          "garrisons": [
+            "generated-oob:169542604:allied:garrison:key-point-1"
+          ]
+        },
+        {
+          "turn": 6,
+          "kind": "ATTRITION_ROLLED",
+          "sequence": 12,
+          "hexId": "8,5",
+          "total": 9,
+          "steps": 1,
+          "garrisons": [
+            "generated-oob:169542604:allied:garrison:key-point-3"
+          ]
+        },
+        {
+          "turn": 8,
+          "kind": "ATTRITION_ROLLED",
+          "sequence": 11,
+          "hexId": "13,9",
+          "total": 7,
+          "steps": 1,
+          "garrisons": [
+            "generated-oob:169542604:allied:garrison:key-point-1"
+          ]
+        },
+        {
+          "turn": 8,
+          "kind": "ATTRITION_ROLLED",
+          "sequence": 12,
+          "hexId": "14,8",
+          "total": 7,
+          "steps": 0,
+          "garrisons": [
+            "generated-oob:169542604:allied:garrison:key-point-2",
+            "generated-oob:169542604:allied:garrison:objective-5"
+          ]
+        },
+        {
+          "turn": 8,
+          "kind": "ATTRITION_ROLLED",
+          "sequence": 13,
+          "hexId": "14,9",
+          "total": 9,
+          "steps": 2,
+          "garrisons": [
+            "generated-oob:169542604:allied:garrison:key-point-3"
+          ]
+        }
+      ],
+      "losses": [
+        {
+          "turn": 6,
+          "id": "generated-oob:169542604:allied:garrison:key-point-3",
+          "hex": "8,5"
+        },
+        {
+          "turn": 8,
+          "id": "generated-oob:169542604:allied:garrison:key-point-1",
+          "hex": "13,9"
+        },
+        {
+          "turn": 8,
+          "id": "generated-oob:169542604:allied:garrison:key-point-3",
+          "hex": "14,9"
+        }
+      ]
+    }
+  ]
+}

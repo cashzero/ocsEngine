@@ -2,7 +2,9 @@ import { stableSort, stableKey, type PlayerId } from '../../core/index.js';
 import { pieceLocationKey, type PieceLocation } from '../../domain/map/index.js';
 import type { PieceState } from '../../domain/piece/index.js';
 import type { GameState } from '../kernel/model.js';
-import { INTERNAL_STOCKS_STATUS, OUT_OF_TRACE_SINCE_STATUS, RETURN_TURN_STATUS, definitionOf, isCombatUnit } from '../pieces.js';
+import { INTERNAL_STOCKS_STATUS, OUT_OF_TRACE_SINCE_STATUS, RETURN_TURN_STATUS, definitionOf, isCombatUnit, usageOf } from '../pieces.js';
+import { rationPlan } from '../supply/ration-budget.js';
+import { pieceHasTrace } from '../supply/supply.js';
 import { exertsZoc } from '../zoc/zoc.js';
 import { pendingAbsorptions } from '../breakdown/breakdown.js';
 import { calculateCombatOdds } from '../combat/strength.js';
@@ -132,6 +134,14 @@ export const projectRuleState = (state: GameState, viewerId: PlayerId): RuleProj
   }
   return {
     stateRevision: state.revision,
+    ...state.sequence.phasingPlayerId === viewerId && ['MOVEMENT', 'SUPPLY'].includes(state.sequence.phase) ? {
+      unfundedRationPieceIds: (() => {
+        const allocated = new Set(rationPlan(state, viewerId).demands.map(({ id }) => id));
+        return state.pieceState.pieces.filter(piece => piece.ownerId === viewerId && piece.location.kind === 'ON_MAP'
+          && isCombatUnit(state, piece) && piece.mode !== 'STRAT' && !usageOf(state, piece).supplyPaid
+          && !state.air.droppedIds.includes(piece.id) && !pieceHasTrace(state, piece) && !allocated.has(piece.id)).map(({ id }) => id);
+      })(),
+    } : {},
     viewerId,
     sequence: { ...state.sequence },
     currentMoverId: state.currentMoverId !== null && state.pieceState.pieces.some(({ id, ownerId }) => id === state.currentMoverId && ownerId === viewerId)

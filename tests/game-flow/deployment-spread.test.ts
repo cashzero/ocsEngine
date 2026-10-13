@@ -20,7 +20,7 @@ const deployed = (request: NewGameRequest) => {
   // Division slots of the OOB: a single-unit division has no Formation ID but still deploys as its own group.
   const formations = new Map(generatedOob.sides.flatMap((side) => side.formations.flatMap((formation) =>
     formation.units.map((unit) => [unit.id, String(formation.id)] as const))));
-  // Garrisons and their 2T stocks stand in the objectives and key points, not where the deployment puts the army.
+  // Garrisons and the emergency stocks at isolated objectives stand apart from the field army deployment.
   const garrisons = new Set(generatedOob.sides.map(({ garrisonDefinitionId }) => garrisonDefinitionId));
   return scenario.initialPieceState.pieces.flatMap((piece) => piece.location.kind === 'ON_MAP' && !garrisons.has(piece.definitionId) && !String(piece.id).includes('-stock-')
     ? [{

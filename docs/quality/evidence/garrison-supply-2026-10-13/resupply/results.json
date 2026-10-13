@@ -1,0 +1,70 @@
+{
+  "title": "Garrison emergency supply UI",
+  "final": {
+    "turn": "Turn 2 / 3",
+    "player": "Allied player turn",
+    "phase": "Supply",
+    "revision": null
+  },
+  "rows": [
+    {
+      "id": "GS-FEED",
+      "expectation": "Isolated VP garrisons have an available feeding payment",
+      "observed": "Feed from 12T at 0813 | Feed from 1T at 1015 | Feed from 1T at 1214 | Feed from 12T at 0813 | Feed from 1T at 1015 | Feed from 1T at 1214",
+      "status": "PASS"
+    },
+    {
+      "id": "GS-CONSUME",
+      "expectation": "Feeding from the 1T emergency stock removes one garrison from the unfed list",
+      "observed": "2 → 1",
+      "status": "PASS"
+    },
+    {
+      "id": "GS-STOCK",
+      "expectation": "The consumed 1T stock is no longer offered",
+      "observed": "false",
+      "status": "PASS"
+    },
+    {
+      "id": "GS-TURN",
+      "expectation": "The same generated package reaches Turn 2 through legal supply payments and handoffs",
+      "observed": "{\"turn\":\"Turn 2 / 3\",\"player\":\"Allied player turn\",\"phase\":\"First Player Phase\",\"seat\":\"Allied commander\",\"end\":\"End First Player PhaseNext: Aircraft Refit Phase\",\"endDisabled\":true,\"notice\":\"Your turn, Allied commander.\",\"handoff\":false,\"complete\":false,\"decision\":[\"Go first\",\"Go second\"]}",
+      "status": "PASS"
+    },
+    {
+      "id": "GS-DECISION",
+      "expectation": "The next first-player decision resolves through its visible choice",
+      "observed": "{\"turn\":\"Turn 2 / 3\",\"player\":\"Allied player turn\",\"phase\":\"Reinforcement\",\"seat\":\"Allied commander\",\"end\":\"End Reinforcement PhaseNext: Movement Phase\",\"endDisabled\":true,\"notice\":\"Decision recorded.\",\"handoff\":false,\"complete\":false,\"decision\":[]}",
+      "status": "PASS"
+    },
+    {
+      "id": "GS-DELIVERY",
+      "expectation": "A truck loads existing rear supply, moves to the isolated VP and unloads 1T",
+      "observed": "Trucks 5 truck points · carrying 0/20T · 22.5 MP left This truck is mid-move. Finish with it before moving another unit, or it loses its remaining MP and load (6.1g) 6.1g Dump here · 1T (0.25 SP) Load SP unloaded this phase cannot be loaded again this phase. 12.2a Split the counter Points Split off No MP cost (13.2c) Form an Extender here (half MA; a trace supply source, 20 Truck MP back)",
+      "status": "PASS"
+    },
+    {
+      "id": "GS-RESUPPLY",
+      "expectation": "After its emergency stock is exhausted, the VP garrison can eat delivered supply",
+      "observed": "2 → 1",
+      "status": "PASS"
+    },
+    {
+      "id": "GS-ERRORS",
+      "expectation": "No console or page errors",
+      "observed": "0",
+      "status": "PASS"
+    }
+  ],
+  "timings": [
+    {
+      "label": "generate",
+      "elapsed": 580
+    },
+    {
+      "label": "start",
+      "elapsed": 209
+    }
+  ],
+  "errors": []
+}

@@ -20,9 +20,10 @@ describe('generated New Game flow', () => {
     expect(validateGeneratedScenarioPackage(prepared.value)).toEqual([]);
     expect(prepared.value.scenario.mapDefinition).toEqual(prepared.value.generatedMap.mapDefinition);
     expect(prepared.value.scenario.pieceCatalog).toEqual(prepared.value.generatedOob.pieceDefinitionCatalog);
-    // Every OOB unit plus one objective garrison (OOB 0.4.0) and its 2T stock per objective.
+    // Every OOB unit plus one garrison per objective and emergency stocks only where trace fails.
     const objectives = prepared.value.deployment.objectives;
-    expect(prepared.value.scenario.initialPieceState.pieces).toHaveLength(prepared.value.generatedOob.metrics.unitCount + 2 * objectives.length);
+    const stocks = prepared.value.scenario.initialPieceState.pieces.filter(({ id }) => String(id).includes('-stock-'));
+    expect(prepared.value.scenario.initialPieceState.pieces).toHaveLength(prepared.value.generatedOob.metrics.unitCount + objectives.length + stocks.length);
     const garrisonIds = new Set(prepared.value.generatedOob.sides.map(({ garrisonDefinitionId }) => garrisonDefinitionId));
     const controller = (hexId: string) => prepared.value.scenario.initialMapState.hexControl.find((entry) => entry.hexId === hexId)?.controllerId;
     for (const { hexId } of objectives) {

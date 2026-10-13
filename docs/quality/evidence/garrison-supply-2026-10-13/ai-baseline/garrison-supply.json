@@ -1,0 +1,129 @@
+{
+  "games": 4,
+  "feeds": 0,
+  "truckDeliveries": 0,
+  "feedsFromDelivered": 0,
+  "missedLegalFeeds": 0,
+  "attritionRolls": 0,
+  "losses": 0,
+  "records": [
+    {
+      "file": "match-0.save.json",
+      "feeds": [],
+      "truckDeliveries": [],
+      "supplyEnds": [
+        {
+          "turn": 3,
+          "total": 0,
+          "untraced": 0,
+          "unfed": []
+        },
+        {
+          "turn": 4,
+          "total": 0,
+          "untraced": 0,
+          "unfed": []
+        },
+        {
+          "turn": 6,
+          "total": 0,
+          "untraced": 0,
+          "unfed": []
+        },
+        {
+          "turn": 8,
+          "total": 0,
+          "untraced": 0,
+          "unfed": []
+        }
+      ],
+      "missedLegalFeeds": [],
+      "attrition": [],
+      "losses": []
+    },
+    {
+      "file": "match-1.save.json",
+      "feeds": [],
+      "truckDeliveries": [],
+      "supplyEnds": [
+        {
+          "turn": 2,
+          "total": 0,
+          "untraced": 0,
+          "unfed": []
+        },
+        {
+          "turn": 3,
+          "total": 0,
+          "untraced": 0,
+          "unfed": []
+        },
+        {
+          "turn": 7,
+          "total": 0,
+          "untraced": 0,
+          "unfed": []
+        },
+        {
+          "turn": 8,
+          "total": 0,
+          "untraced": 0,
+          "unfed": []
+        },
+        {
+          "turn": 8,
+          "total": 0,
+          "untraced": 0,
+          "unfed": []
+        }
+      ],
+      "missedLegalFeeds": [],
+      "attrition": [],
+      "losses": []
+    },
+    {
+      "file": "match-2.save.json",
+      "feeds": [],
+      "truckDeliveries": [],
+      "supplyEnds": [
+        {
+          "turn": 4,
+          "total": 0,
+          "untraced": 0,
+          "unfed": []
+        }
+      ],
+      "missedLegalFeeds": [],
+      "attrition": [],
+      "losses": []
+    },
+    {
+      "file": "match-3.save.json",
+      "feeds": [],
+      "truckDeliveries": [],
+      "supplyEnds": [
+        {
+          "turn": 3,
+          "total": 0,
+          "untraced": 0,
+          "unfed": []
+        },
+        {
+          "turn": 4,
+          "total": 0,
+          "untraced": 0,
+          "unfed": []
+        },
+        {
+          "turn": 5,
+          "total": 0,
+          "untraced": 0,
+          "unfed": []
+        }
+      ],
+      "missedLegalFeeds": [],
+      "attrition": [],
+      "losses": []
+    }
+  ]
+}
