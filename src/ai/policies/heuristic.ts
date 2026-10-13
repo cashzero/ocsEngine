@@ -162,6 +162,7 @@ const planTargets = (situation: Situation, coverage: ReadonlySet<string>, unitCo
   ];
   for (const stack of situation.enemy.values()) {
     if (!stack.hasCombatUnit) continue;
+    if (stack.strength === 0 && stack.pieces.some(p => p.role === 'REPLACEMENT')) continue;
     // A weak stack near our units (an objective garrison) blocks our trace with its ZOC: clear it first.
     if (stack.strength <= w.clearStrength && combat.some((unit) => hexesBetween(unit.hexId, stack.hexId) <= w.clearRadius)) {
       wanted.push({ hexId: stack.hexId, value: w.clearValue, purpose: 'HUNT', limit: 1 });
@@ -281,6 +282,7 @@ const scoreDestination = (
   front: HexId | null,
   w: HeuristicWeights,
   feeds: readonly FeedSource[],
+  opponentTurnRemains: boolean,
 ): BotScoreTerm[] => {
   const me = situation.playerId;
   const destination = path.at(-1)!;
@@ -308,6 +310,17 @@ const scoreDestination = (
     && !situation.friendlyAt(origin.hexId).some((other) => other.piece.id !== unit.piece.id && situation.isCombatUnit(other))) {
     add('abandon-objective', -origin.points * w.abandonObjective);
   }
+  // A token garrison does not replace the departing main defender. Charge only the added
+  // defence shortfall, so spare troops remain free and the final second player can still attack.
+  if (origin && path.length > 1 && unit.piece.role === 'COMBAT' && opponentTurnRemains) {
+    const others = situation.friendlyAt(origin.hexId).filter(u => u.piece.id !== unit.piece.id && situation.isCombatUnit(u));
+    if (others.length > 0) {
+      const remaining = others.reduce((total, u) => total + (u.profile?.strength ?? 0), 0);
+      const required = Math.max(1, situation.threatAt(origin.hexId) * w.holdRatio);
+      const addedRisk = Math.max(0, required - remaining) - Math.max(0, required - remaining - strength);
+      add('weaken-objective', -origin.points * w.abandonObjective * Math.min(1, addedRisk / required));
+    }
+  }
   // Near the end a captured objective must stay occupied: the enemy moves after us and walks into empty ones.
   const endObjective = situation.objectives.find((entry) => entry.hexId === destination);
   if (endObjective && situation.turnsLeft <= 2 && unit.piece.role === 'COMBAT'
@@ -326,7 +339,9 @@ const scoreDestination = (
     if (assaulting) add('assault-position', w.assaultPosition);
     if (target) {
       const progress = hexesBetween(path[0]!, target.hexId) - hexesBetween(destination, target.hexId);
-      add('progress', progress * (target.purpose === 'FRONT' ? w.progressFront : w.progressTarget));
+      const progressWeight = target.purpose === 'FRONT' ? w.progressFront
+        : ['CAPTURE', 'GARRISON', 'ASSAULT'].includes(target.purpose) ? w.progressObjective : w.progressTarget;
+      add('progress', progress * progressWeight);
       // A hunter stops beside its quarry, ready to attack.
       if (target.purpose === 'HUNT' && hexesBetween(destination, target.hexId) === 1) add('hunt', w.huntAdjacent);
       if (target.purpose === 'GARRISON' && destination === target.hexId) add('garrison', w.garrisonStay);
@@ -745,7 +760,9 @@ const movementStep = (context: BotDecisionContext, situation: Situation, facts: 
     if (!notes.modeSet.has(id)) {
       notes.modeSet.add(id);
       const assaultClose = target?.purpose === 'ASSAULT' && hexesBetween(unit.hexId, target.hexId) <= w.combatModeDistance + 1;
-      const wanted = unit.piece.role === 'COMBAT' && (enemyDistance <= w.combatModeDistance || assaultClose) ? 'COMBAT'
+      const blockedCapture = target?.purpose === 'CAPTURE' && situation.enemy.get(target.hexId)?.hasCombatUnit
+        && hexesBetween(unit.hexId, target.hexId) <= w.combatModeDistance;
+      const wanted = unit.piece.role === 'COMBAT' && (enemyDistance <= w.combatModeDistance || assaultClose || blockedCapture) ? 'COMBAT'
         : unit.piece.role === 'COMBAT' && (unit.profile?.movement ?? 0) > 0 && enemyDistance >= w.stratModeEnemyDistance && target && hexesBetween(unit.hexId, target.hexId) >= w.stratModeTargetDistance ? 'STRAT'
           // An HQ with the army stays in Combat Mode to rebuild units (13.5a); one far behind moves up in Move Mode.
           : unit.piece.role === 'HQ' ? (front !== null && hexesBetween(unit.hexId, front) <= w.hqCombatModeRadius ? 'COMBAT' : 'MOVE') : null;
@@ -782,12 +799,13 @@ const movementStep = (context: BotDecisionContext, situation: Situation, facts: 
     // own division (13.1d).
     const reach = unit.piece.role === 'COMBAT' || unit.piece.role === 'HQ' || unit.piece.role === 'ARTILLERY' ? unitCoverage(unit) : coverage;
     const feeds = unit.piece.role === 'COMBAT' || unit.piece.role === 'ARTILLERY' ? unitFeeds(unit) : sideFeeds;
-    const stay = sum(scoreDestination(situation, unit, target, [unit.hexId], notes, reach, direct, front, w, feeds));
+    const opponentTurnRemains = situation.turnsLeft > 0 || context.view.projection!.sequence.playerTurnIndex === 0;
+    const stay = sum(scoreDestination(situation, unit, target, [unit.hexId], notes, reach, direct, front, w, feeds, opponentTurnRemains));
     let best: { action: GameAction; terms: BotScoreTerm[] } | null = null;
     const scored: { action: GameAction; terms: BotScoreTerm[] }[] = [];
     for (const move of moves) {
       if (move.kind !== 'MOVE_PIECE') continue;
-      const terms = scoreDestination(situation, unit, target, move.path, notes, reach, direct, front, w, feeds);
+      const terms = scoreDestination(situation, unit, target, move.path, notes, reach, direct, front, w, feeds, opponentTurnRemains);
       scored.push({ action: move, terms });
     }
     // A profitable, supplied capture beats merely approaching a hunt/assault target (VP > Kill > Loss).
@@ -799,6 +817,25 @@ const movementStep = (context: BotDecisionContext, situation: Situation, facts: 
       return situation.objectives.filter(o => o.controllerId !== situation.playerId && action.path.slice(1).includes(o.hexId))
         .reduce((total, o) => total + o.points, 0);
     };
+    // A move can negate enemy ZOC or open a captured rail/port route. Pre-move coverage then
+    // understates supply at the destination. Check promising moves against the real relocation preview.
+    const actuallyTraced = new Set<GameAction>();
+    const corrections = scored.filter(c => c.terms.some(t => t.term === 'out-of-supply')
+      && (unit.piece.role === 'COMBAT' || unit.piece.role === 'ARTILLERY' || unit.piece.role === 'HQ')
+      && sum(c.terms.filter(t => t.term !== 'out-of-supply')) > stay)
+      .sort((a, b) => capturedVp(b.action) - capturedVp(a.action)
+        || sum(b.terms.filter(t => t.term !== 'out-of-supply')) - sum(a.terms.filter(t => t.term !== 'out-of-supply'))).slice(0, 12);
+    for (const candidate of corrections) {
+      const { explanation } = actions.explain(candidate.action);
+      const value = (key: string) => explanation.facts.find(f => f.key === key)?.value;
+      if (!explanation.allowed || value('supply.relocationMoverHasTrace') !== true
+        || value('supply.relocationTraceLost') !== 0 || value('supply.relocationFeedLost') !== 0) continue;
+      actuallyTraced.add(candidate.action);
+      candidate.terms = candidate.terms.filter(t => t.term !== 'out-of-supply');
+      if (unit.piece.role === 'COMBAT' && situation.turnsLeft > 1 && !direct.has(destinationOf(candidate.action)!)) {
+        candidate.terms.push({ term: 'hq-dependent-supply', value: -w.hqDependentSupply });
+      }
+    }
     const improving = scored.filter(candidate => sum(candidate.terms) > stay)
       .sort((left, right) => capturedVp(right.action) - capturedVp(left.action) || sum(right.terms) - sum(left.terms));
     for (const candidate of improving) {
@@ -812,13 +849,32 @@ const movementStep = (context: BotDecisionContext, situation: Situation, facts: 
       const destination = destinationOf(best.action)!;
       notes.incomingRe.set(destination, (notes.incomingRe.get(destination) ?? 0) + reOf(unit));
       // A unit ending out of trace counts on eating: promise it the SP it will need.
-      if ((unit.piece.role === 'COMBAT' || unit.piece.role === 'ARTILLERY') && !reach.has(destination)) {
+      if ((unit.piece.role === 'COMBAT' || unit.piece.role === 'ARTILLERY') && !reach.has(destination) && !actuallyTraced.has(best.action)) {
         const source = feedSourceFor(notes, feeds, unit, destination);
         if (source !== null) notes.feedBudget!.set(source, notes.feedBudget!.get(source)! - eatingCost(unit));
       }
       const gain = capturedVp(best.action);
       return decision(best.action, gain > 0 ? `capture ${gain} VP at ${destination}, preserving friendly supply`
         : `${unit.piece.role.toLowerCase()} to ${destination}${target ? ` (${target.purpose.toLowerCase()} ${target.hexId})` : ''}`, best.terms);
+    }
+  }
+  // An HQ that could not advance must not spend the following Reinforcement phase in Move Mode
+  // beside unused replacements. Restore its rebuild role after movement, without breaking trace.
+  // Rear-area rebuilds need time to reach the front. Late activation regressed a recorded VP position.
+  if (situation.turnsLeft > 3) {
+    const knowledge = knowledgeOf(facts);
+    const ownPieces = context.view.projection!.stacks.flatMap(s => s.pieces).filter(p => p.ownerId === situation.playerId);
+    const mobileDead = ownPieces.some(p => p.location.kind === 'ELIMINATED' && ['COMBAT', 'ARTILLERY'].includes(p.role)
+      && knowledge.definition(p)?.counter?.rebuildable
+      && knowledge.definition(p)?.faces.some(f => f.steps.some(s => Number(s.movementPointTicks ?? 0) > 0)));
+    for (const hq of situation.own.filter(u => u.piece.role === 'HQ' && u.piece.mode === 'MOVE')) {
+      const replacements = situation.own.filter(u => u.piece.role === 'REPLACEMENT' && (u.piece.resourceQuantity ?? 0) > 0 && hexesBetween(u.hexId, hq.hexId) <= 2);
+      const reduced = replacements.some(r => situation.friendlyAt(r.hexId).some(u => ['COMBAT', 'ARTILLERY'].includes(u.piece.role)
+        && knowledge.definition(u.piece)?.counter?.rebuildable
+        && knowledge.definition(u.piece)!.faces.some(f => f.steps.some(s => s.remainingSteps > (u.piece.remainingSteps ?? 0)))));
+      if (!replacements.length || (!mobileDead && !reduced)) continue;
+      const change = actions.candidates('CHANGE_MODE', hq.piece.id).find(a => a.kind === 'CHANGE_MODE' && a.mode === 'COMBAT');
+      if (change && preservesFriendlySupply(context, change)) return decision(change, 'HQ Combat Mode to use nearby replacements next turn', [{ term: 'rebuild-readiness', value: 1 }]);
     }
   }
   return null;
@@ -993,7 +1049,8 @@ const chooseRebuild = (context: BotDecisionContext, situation: Situation, facts:
         const oldStrength = before === 0 ? 0 : face?.steps.find(s => s.remainingSteps === before)?.combatStrength ?? 0;
         const newStrength = face?.steps.find(s => s.remainingSteps === before + 1)?.combatStrength ?? oldStrength;
         return [{ u, mode, gain: newStrength - oldStrength, vp: piece.role === 'COMBAT' ? defenceVp : 0,
-          hq: Number(piece.role === 'HQ'), mobile: Number(!u.fixed) }];
+          hq: Number(piece.role === 'HQ' && !situation.own.some(other => other.piece.role === 'HQ'
+            && knowledgeOf(facts).definition(other.piece)?.ownership.formationDefinitionId === definition?.ownership.formationDefinitionId)), mobile: Number(!u.fixed) }];
       }).sort((a, b) => b.vp - a.vp || b.hq - a.hq || b.mobile - a.mobile || b.gain - a.gain || a.u.pieceId.localeCompare(b.u.pieceId));
       const next = choices[0];
       if (!next) break;
@@ -1031,14 +1088,22 @@ const reinforcementStep = (context: BotDecisionContext, situation: Situation, fa
   const projection = context.view.projection!;
   const roleOf = new Map(projection.stacks.flatMap(({ pieces }) => pieces).map((piece) => [String(piece.id), piece.role]));
   const hqs = situation.own.filter(({ piece }) => piece.role === 'HQ').map(({ hexId }) => hexId);
+  const traces = new Map<PieceId, ReadonlySet<string>>();
   const scored = placements.map((action) => {
     const hexId = action.kind === 'PLACE_REINFORCEMENT' ? action.hexId : ('' as HexId);
     // Repls rebuild only near an HQ (13.5a); everything else arrives as close to the objectives as it may.
     const goalsFor = action.kind === 'PLACE_REINFORCEMENT' && roleOf.get(String(action.pieceId)) === 'REPLACEMENT' && hqs.length > 0 ? hqs : aim;
     const distance = goalsFor.length > 0 ? Math.min(...goalsFor.map((goal) => hexesBetween(hexId, goal))) : 0;
-    return { action, score: -distance - situation.threatAt(hexId) };
-  }).sort((left, right) => right.score - left.score);
-  return decision(scored[0]!.action, 'place the arrival nearest the objectives', [{ term: 'placement', value: scored[0]!.score }]);
+    let traced = 0;
+    if (action.kind === 'PLACE_REINFORCEMENT' && ['COMBAT', 'HQ', 'ARTILLERY', 'REPLACEMENT'].includes(roleOf.get(String(action.pieceId)) ?? '')
+      && (roleOf.get(String(action.pieceId)) !== 'REPLACEMENT' || distance <= 2)) {
+      if (!traces.has(action.pieceId)) traces.set(action.pieceId, new Set(context.actions.traceCoverage(action.pieceId).hexIds));
+      traced = Number(traces.get(action.pieceId)!.has(hexId));
+    }
+    return { action, traced, score: -distance - situation.threatAt(hexId) };
+  }).sort((left, right) => right.traced - left.traced || right.score - left.score);
+  return decision(scored[0]!.action, scored[0]!.traced ? 'place a supplied arrival toward its mission' : 'place the arrival nearest its mission',
+    [{ term: 'placement-trace', value: scored[0]!.traced }, { term: 'placement', value: scored[0]!.score }]);
 };
 
 const rebuildSize = (action: GameAction): number => action.kind !== 'REBUILD_UNITS' ? 0
@@ -1086,7 +1151,7 @@ const decide = (facts: BotGameFacts, w: HeuristicWeights) => (context: BotDecisi
   const projection = context.view.projection;
   if (!projection) return null;
   const situation = analyze(projection, context.playerId, facts);
-  if (context.view.pendingDecision !== null) return respondToDecision(context, situation);
+  if (context.view.pendingDecision !== null) return respondToDecision(context, situation, w.holdRatio);
   const { phase, segment } = projection.sequence;
   let chosen: BotDecision | null = null;
   if (phase === 'REINFORCEMENT') chosen = reinforcementStep(context, situation, facts);
@@ -1117,7 +1182,7 @@ export const createHeuristicPolicy = (facts: BotGameFacts, options: HeuristicPol
   const choose = decide(facts, options.weights ?? DEFAULT_HEURISTIC_WEIGHTS);
   return {
     id: 'heuristic',
-    version: options.label === undefined ? '19' : `19+${options.label}`,
+    version: options.label === undefined ? '35' : `35+${options.label}`,
     decide: (context) => {
       const sink = options.debug;
       debug = sink ? (line) => sink(`${context.memory.stepKey} ${String(context.playerId).split(':').at(-1)} ${line}`) : null;

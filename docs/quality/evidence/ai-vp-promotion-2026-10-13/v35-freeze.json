@@ -1,0 +1,34 @@
+{
+  "candidate": "heuristic@35",
+  "baseCommit": "0e4c9c3",
+  "sourceAndFrozenBytesEqual": true,
+  "sha256": {
+    "src/ai/policies/heuristic.ts": "a343277c4cd6b137e19a65ccaa2fff393483cf073de80cb6cd8bae2bc860f40c",
+    "src/ai/analysis.ts": "662ef3cba8750eda771f261cdaef967316f3368da5f89c5d8df7e53c6155f4ba",
+    "src/ai/policies/heuristic-weights.ts": "77fe83a83d2a8cabdab120bf99d00e25862a0083b6f5a6fe1d3209f7b7c03f76",
+    "src/ai/decisions.ts": "43c3f8aab06145a8ec89762fe5fea0261dd5f8e62cd9a1aadaea092093d84356",
+    "src/rules/supply/relocation-impact.ts": "14e7639e3f4c6c70474d8f5a4ab53c77a62695838927e9da44f080594c90ad55"
+  },
+  "independentSeeds": {
+    "meeting": [
+      1269000,
+      1269100
+    ],
+    "axisAttacks": [
+      1270000,
+      1270100
+    ]
+  },
+  "eligibleTheaters": [
+    "TEMPERATE_INLAND",
+    "EASTERN_EUROPE"
+  ],
+  "rootAndFrozenBuildBytesEqual": true,
+  "buildSha256": {
+    "dist/ai/policies/heuristic.js": "e89bb4923b4680b5500dcd3dd98deb4c56d3348c6b110ba39c526cd4c94f5c29",
+    "dist/ai/analysis.js": "45928a9c6da54d6f2beac37a2377779588c5b0af931ea570bf403df61504f2e4",
+    "dist/ai/policies/heuristic-weights.js": "d132a1246de6a2173bb599296f83cd0adfab685b9ff8b504cdd625fba1ef735a",
+    "dist/ai/decisions.js": "a4754d33feef44aad1f0cbf24db18a4f9bf043f850227e40da098196647318da",
+    "dist/rules/supply/relocation-impact.js": "c418063fc868b7d85968b69a803bde664f6eed9b1079cead4e48ae38aeb257c8"
+  }
+}

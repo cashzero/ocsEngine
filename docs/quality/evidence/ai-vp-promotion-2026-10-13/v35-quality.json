@@ -1,0 +1,33 @@
+{
+  "candidate": "heuristic@35",
+  "typecheck": {
+    "exitCode": 0
+  },
+  "build": {
+    "exitCode": 0
+  },
+  "smoke": {
+    "exitCode": 0
+  },
+  "targetedTests": {
+    "passed": 13,
+    "failed": 0
+  },
+  "fullSuite": {
+    "exitCode": 0,
+    "passedFiles": 93,
+    "skippedFiles": 4,
+    "passedTests": 652,
+    "skippedTests": 8,
+    "failedTests": 0,
+    "seconds": 366.63
+  },
+  "uiOperationsPromoted": false,
+  "logs": {
+    "v35-typecheck.log": "d276a607924b69f3bf75479c9ff0bd362e2bc5a9c0047d63a951c8e899b4eb98",
+    "v35-root-build.log": "16e75c52f3437e8d781ab86a62fdbacea190d911e9bd3c0183117762ad23ee6a",
+    "v35-root-smoke.log": "57f4b11f8e16b9086ab757da51a782c8fdee53c661431fe12983397ac1a2493b",
+    "v35-targeted-tests.log": "207a2e3e14573f512f256dfd29d7d3f8b99f5f05248ff17451a3c318bb1bf58e",
+    "full-suite-v35.log": "9311daedbc6b226799e03240b5356009dd03c342e1f928f3a7e59b2b5f6aa4b7"
+  }
+}

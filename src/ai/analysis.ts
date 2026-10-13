@@ -70,13 +70,16 @@ export const analyze = (projection: RuleProjection, playerId: PlayerId, facts: B
     ? visibleStrengths.reduce((total, value) => total + value, 0) / visibleStrengths.length : AVERAGE_ENEMY_STRENGTH;
   const enemy = new Map<HexId, EnemyStack>();
   for (const [hexId, { pieces, hidden }] of enemyPieces) {
-    const combatPieces = pieces.filter(({ role }) => role === 'COMBAT' || role === 'ARTILLERY' || role === 'HQ');
+    const combatPieces = pieces.filter(piece => piece.role === 'COMBAT' || piece.role === 'ARTILLERY' || piece.role === 'HQ'
+      || (piece.role === 'REPLACEMENT' && knowledge.definition(piece)?.counter?.kind === 'COMBAT'));
     const strength = combatPieces.reduce((total, piece) => total + (knowledge.profile(piece)?.strength ?? 0), 0) + hidden * hiddenStrength;
     enemy.set(hexId, { hexId, pieces, hidden, hasCombatUnit: combatPieces.length > 0 || hidden > 0, strength });
   }
   const byHex = new Map<HexId, OwnUnit[]>();
   for (const unit of own) byHex.set(unit.hexId, [...(byHex.get(unit.hexId) ?? []), unit]);
-  const enemyStacks = [...enemy.values()].filter(({ hasCombatUnit }) => hasCombatUnit);
+  // A zero-strength replacement blocks entry, but cannot threaten a unit merely passing nearby.
+  const enemyStacks = [...enemy.values()].filter(stack => stack.hasCombatUnit && (stack.strength > 0
+    || stack.pieces.some(p => p.role === 'COMBAT' || p.role === 'ARTILLERY' || p.role === 'HQ')));
   const nearestCache = new Map<HexId, { stack: EnemyStack | null; distance: number }>();
   const threatCache = new Map<HexId, number>();
   return {
