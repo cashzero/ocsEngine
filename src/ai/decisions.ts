@@ -110,7 +110,26 @@ export const respondToDecision = (context: BotDecisionContext, situation: Situat
       const choice = ordered[0]?.option ?? options[0]!;
       return respond(actions, choice.id, 'combat-option', holdObjective ? `hold the objective: ${choice.label}` : `keep steps: ${choice.label}`);
     }
-    case 'RETREAT_HEX':
+    case 'RETREAT_HEX': {
+      const hexOptions = options.filter(({ id }) => id.startsWith('hex:') || id.startsWith('with:'));
+      const rated = hexOptions.flatMap(option => {
+        const action = actions.find(candidate => candidate.kind === 'RESPOND_DECISION' && candidate.choiceId === option.id);
+        if (!action) return [];
+        const { explanation } = context.actions.explain(action);
+        const value = (key: string) => explanation.facts.find(fact => fact.key === key)?.value;
+        const losses = value('supply.retreatForcedLosses');
+        const unfed = value('supply.retreatUnfed');
+        const trace = value('supply.retreatTraceLost');
+        return explanation.allowed && typeof losses === 'number' && typeof unfed === 'number' && typeof trace === 'number'
+          ? [{ option, losses, unfed, trace }] : [];
+      }).sort((a, b) => a.losses - b.losses || a.unfed - b.unfed || a.trace - b.trace);
+      const best = rated[0];
+      const tied = best ? rated.filter(r => r.losses === best.losses && r.unfed === best.unfed && r.trace === best.trace).map(r => r.option) : hexOptions;
+      const choice = safestHex(tied, situation) ?? options[0]!;
+      const result = respond(actions, choice.id, 'retreat-supply', `minimize forced losses and supply risk, then enemy threat (${choice.label})`);
+      // A dispatch rejection must not fall back to a retreat with unchecked supply risk.
+      return result ? { ...result, alternatives: [] } : null;
+    }
     case 'DISPLACEMENT_HEX': {
       const hexOptions = options.filter(({ id }) => id.startsWith('hex:') || id.startsWith('with:'));
       const choice = safestHex(hexOptions.length > 0 ? hexOptions : options, situation) ?? options[0]!;

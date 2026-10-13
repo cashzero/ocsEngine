@@ -1,0 +1,227 @@
+{
+  "date": "2026-10-12",
+  "baselinePolicy": "heuristic@13",
+  "candidatePolicy": "heuristic@14",
+  "runs": [
+    {
+      "group": "baseline",
+      "style": "temperate",
+      "matches": 8,
+      "relocationActions": 1656,
+      "relocationTraceBreaks": 51,
+      "relocationUnitBreaks": 51,
+      "otherUnitTraceBreaks": 3,
+      "hqBreaks": 0,
+      "attritionSteps": 45,
+      "attribution": {
+        "own-action": 8,
+        "opponent-action": 31,
+        "entered-map-out-of-trace": 6
+      },
+      "previewMismatches": 0
+    },
+    {
+      "group": "baseline",
+      "style": "eastern",
+      "matches": 8,
+      "relocationActions": 1766,
+      "relocationTraceBreaks": 82,
+      "relocationUnitBreaks": 85,
+      "otherUnitTraceBreaks": 7,
+      "hqBreaks": 0,
+      "attritionSteps": 109,
+      "attribution": {
+        "opponent-combat": 15,
+        "own-action": 41,
+        "opponent-action": 50,
+        "phase-transition-investigate": 3
+      },
+      "previewMismatches": 0
+    },
+    {
+      "group": "baseline",
+      "style": "mediterranean",
+      "matches": 8,
+      "relocationActions": 1744,
+      "relocationTraceBreaks": 40,
+      "relocationUnitBreaks": 44,
+      "otherUnitTraceBreaks": 9,
+      "hqBreaks": 0,
+      "attritionSteps": 62,
+      "attribution": {
+        "opponent-action": 36,
+        "own-action": 7,
+        "opponent-combat": 19
+      },
+      "previewMismatches": 0
+    },
+    {
+      "group": "candidate",
+      "style": "temperate",
+      "matches": 8,
+      "relocationActions": 1697,
+      "relocationTraceBreaks": 0,
+      "relocationUnitBreaks": 0,
+      "otherUnitTraceBreaks": 0,
+      "hqBreaks": 0,
+      "attritionSteps": 43,
+      "attribution": {
+        "opponent-action": 38,
+        "entered-map-out-of-trace": 5
+      },
+      "previewMismatches": 0
+    },
+    {
+      "group": "candidate",
+      "style": "eastern",
+      "matches": 8,
+      "relocationActions": 1815,
+      "relocationTraceBreaks": 0,
+      "relocationUnitBreaks": 0,
+      "otherUnitTraceBreaks": 0,
+      "hqBreaks": 0,
+      "attritionSteps": 90,
+      "attribution": {
+        "opponent-action": 56,
+        "opponent-combat": 23,
+        "entered-map-out-of-trace": 6,
+        "own-action": 5
+      },
+      "previewMismatches": 0
+    },
+    {
+      "group": "candidate",
+      "style": "mediterranean",
+      "matches": 8,
+      "relocationActions": 1639,
+      "relocationTraceBreaks": 0,
+      "relocationUnitBreaks": 0,
+      "otherUnitTraceBreaks": 0,
+      "hqBreaks": 0,
+      "attritionSteps": 54,
+      "attribution": {
+        "opponent-action": 30,
+        "opponent-combat": 22,
+        "own-action": 2
+      },
+      "previewMismatches": 0
+    },
+    {
+      "group": "holdout",
+      "style": "temperate",
+      "matches": 8,
+      "relocationActions": 1817,
+      "relocationTraceBreaks": 30,
+      "relocationUnitBreaks": 32,
+      "otherUnitTraceBreaks": 3,
+      "hqBreaks": 0,
+      "attritionSteps": 93,
+      "attribution": {
+        "opponent-action": 66,
+        "opponent-combat": 18,
+        "entered-map-out-of-trace": 7,
+        "own-action": 2
+      },
+      "previewMismatches": 0
+    },
+    {
+      "group": "holdout",
+      "style": "eastern",
+      "matches": 8,
+      "relocationActions": 1824,
+      "relocationTraceBreaks": 23,
+      "relocationUnitBreaks": 23,
+      "otherUnitTraceBreaks": 2,
+      "hqBreaks": 0,
+      "attritionSteps": 56,
+      "attribution": {
+        "own-action": 1,
+        "opponent-action": 43,
+        "phase-transition-investigate": 5,
+        "opponent-combat": 6,
+        "entered-map-out-of-trace": 1
+      },
+      "previewMismatches": 0
+    },
+    {
+      "group": "holdout",
+      "style": "mediterranean",
+      "matches": 8,
+      "relocationActions": 1612,
+      "relocationTraceBreaks": 6,
+      "relocationUnitBreaks": 8,
+      "otherUnitTraceBreaks": 1,
+      "hqBreaks": 0,
+      "attritionSteps": 24,
+      "attribution": {
+        "opponent-action": 23,
+        "own-action": 1
+      },
+      "previewMismatches": 0
+    }
+  ],
+  "holdoutPolicies": {
+    "heuristic@14": {
+      "games": 24,
+      "vp": 147,
+      "kills": 285,
+      "losses": 268,
+      "wins": 10,
+      "relocationTraceBreaks": 0,
+      "otherUnitTraceBreaks": 0,
+      "hqBreaks": 0,
+      "attritionSteps": 83,
+      "ownActionAttritionSteps": 0,
+      "draws": 5,
+      "defeats": 9,
+      "pairedVpMargin": 0.5833333333333334,
+      "pairedVpMarginSE": 0.9882516957442644,
+      "pairs": 12
+    },
+    "heuristic@13": {
+      "games": 24,
+      "vp": 133,
+      "kills": 268,
+      "losses": 285,
+      "defeats": 10,
+      "relocationTraceBreaks": 59,
+      "otherUnitTraceBreaks": 6,
+      "hqBreaks": 0,
+      "attritionSteps": 90,
+      "ownActionAttritionSteps": 4,
+      "draws": 5,
+      "wins": 9,
+      "pairedVpMargin": -0.5833333333333334,
+      "pairedVpMarginSE": 0.9882516957442644,
+      "pairs": 12
+    }
+  },
+  "validation": {
+    "typecheck": "passed",
+    "build": "passed",
+    "smoke": "passed",
+    "testFilesPassed": 85,
+    "testsPassed": 549,
+    "testFilesSkipped": 4,
+    "testsSkipped": 8,
+    "firstFullRun": "One deployment-plan timeout under concurrent match/audit load; all tests passed on clean rerun without changing tests/timeouts."
+  },
+  "sourceSha256": {
+    "src/ai/policies/heuristic.ts": "584dd72f3092cc5de8c0cde3e5e125ac638a50b8b9ba5b76d5742d3640a4cbfc",
+    "src/rules/engine.ts": "475f6d88afed917dff93d91f351460080ab8c2979018e6bad916edee832b6950",
+    "src/rules/supply/relocation-impact.ts": "4b2d2bfaa525eb76bb42ce08a8ac79f4e8833e51fa77729ad276461992932f82",
+    "scripts/ai-supply-study.mjs": "50ec47b9f04ce2697653a091ac4b09ef232ec89105156d33578f73977a39c00e",
+    "tests/ai/hq-supply.test.ts": "f278106d79e43b8decd17a004d7cf643cb0e36037b42184841978965c0484e90"
+  },
+  "caveats": [
+    "Own-action attribution identifies the latest trace break, not proven error or sole cause.",
+    "Frozen v13 policy and v14 use the same current engine in holdout games, including the corrected deterministic relocation forecast.",
+    "Conservative preservation of existing trace does not prove an SP logistics plan, safe rail/sea moves, or safe combat advances.",
+    "Runs were concurrent; selfplay and baseline audits were suspended during the clean test run. Timings are not latency benchmarks.",
+    "Headless bot evidence does not promote UI acceptance operations."
+  ],
+  "buildSha256": {
+    "tmp/ai-match/supply-continuity-2026-10-12/baseline-v13/ai/policies/heuristic.js": "551bce0f662fcfe4bd355ed8441234cc975c93c5b295e1eea877e2dc5536ebaf",
+    "tmp/ai-match/supply-continuity-2026-10-12/candidate-v14/ai/policies/heuristic.js": "8ea7470be14197a8fcd956d85fc162088889c6c3025a4bec4a14b31aa812688a"
+  }
+}

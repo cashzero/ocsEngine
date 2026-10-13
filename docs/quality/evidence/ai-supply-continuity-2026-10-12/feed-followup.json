@@ -1,0 +1,1889 @@
+[
+  {
+    "revision": 79,
+    "turn": 1,
+    "action": {
+      "actionId": "candidate:decision:decision:transaction:candidate:combat:REGULAR:15,5:generated-oob:286921528:axis:f4-combat-1:unit:75:ADVANCE_HEX:78:6:1:64:advance:generated-oob:286921528:axis:f4-combat-1:unit:79",
+      "actorId": "player:axis",
+      "choiceId": "advance:generated-oob:286921528:axis:f4-combat-1:unit",
+      "decisionId": "decision:transaction:candidate:combat:REGULAR:15,5:generated-oob:286921528:axis:f4-combat-1:unit:75:ADVANCE_HEX:78:6:1:64",
+      "expectedRevision": 79,
+      "kind": "RESPOND_DECISION"
+    },
+    "before": {
+      "mode": "EXPLOITATION",
+      "trace": true,
+      "hex": "15,6",
+      "sources": [
+        {
+          "id": "generated-oob:286921528:axis:independent-supply-1:objective-stock-4",
+          "tokens": 2
+        },
+        {
+          "id": "generated-oob:286921528:axis:independent-supply-1:objective-stock-6",
+          "tokens": 2
+        },
+        {
+          "id": "generated-oob:286921528:axis:independent-supply-1:unit",
+          "tokens": 8
+        },
+        {
+          "id": "generated-oob:286921528:axis:independent-supply-2:unit",
+          "tokens": 8
+        },
+        {
+          "id": "generated-oob:286921528:axis:independent-supply-3:unit",
+          "tokens": 4
+        }
+      ]
+    },
+    "after": {
+      "mode": "EXPLOITATION",
+      "trace": false,
+      "hex": "15,5",
+      "sources": [
+        {
+          "id": "generated-oob:286921528:axis:independent-supply-3:unit",
+          "tokens": 8
+        }
+      ]
+    },
+    "events": [
+      {
+        "kind": "PIECE_ADVANCED",
+        "sequence": 0,
+        "pieceId": "generated-oob:286921528:axis:f4-combat-1:unit",
+        "toHexId": "15,5"
+      },
+      {
+        "kind": "TRANSACTION_RESOLVED",
+        "sequence": 1,
+        "transactionId": "transaction:candidate:combat:REGULAR:15,5:generated-oob:286921528:axis:f4-combat-1:unit:75",
+        "result": "Ae2/DL2o3DG"
+      }
+    ]
+  },
+  {
+    "revision": 81,
+    "turn": 1,
+    "action": {
+      "actionId": "candidate:move:generated-oob:286921528:axis:f4-combat-1:unit:14,5:81",
+      "actorId": "player:axis",
+      "expectedRevision": 81,
+      "kind": "MOVE_PIECE",
+      "path": [
+        "15,5",
+        "14,5"
+      ],
+      "pieceId": "generated-oob:286921528:axis:f4-combat-1:unit"
+    },
+    "before": {
+      "mode": "EXPLOITATION",
+      "trace": false,
+      "hex": "15,5",
+      "sources": [
+        {
+          "id": "generated-oob:286921528:axis:independent-supply-3:unit",
+          "tokens": 8
+        }
+      ]
+    },
+    "after": {
+      "mode": "EXPLOITATION",
+      "trace": false,
+      "hex": "14,5",
+      "sources": [
+        {
+          "id": "generated-oob:286921528:axis:independent-supply-3:unit",
+          "tokens": 8
+        }
+      ]
+    },
+    "events": [
+      {
+        "kind": "PIECE_MOVED",
+        "sequence": 0,
+        "pieceId": "generated-oob:286921528:axis:f4-combat-1:unit",
+        "path": [
+          "15,5",
+          "14,5"
+        ],
+        "spentTicks": 4
+      }
+    ]
+  },
+  {
+    "revision": 82,
+    "turn": 1,
+    "action": {
+      "actionId": "candidate:advance:82",
+      "actorId": "player:axis",
+      "expectedRevision": 82,
+      "kind": "ADVANCE_SEQUENCE"
+    },
+    "before": {
+      "mode": "EXPLOITATION",
+      "trace": false,
+      "hex": "14,5",
+      "sources": [
+        {
+          "id": "generated-oob:286921528:axis:independent-supply-3:unit",
+          "tokens": 8
+        }
+      ]
+    },
+    "after": {
+      "mode": "MOVE",
+      "trace": false,
+      "hex": "14,5",
+      "sources": [
+        {
+          "id": "generated-oob:286921528:axis:independent-supply-3:unit",
+          "tokens": 8
+        }
+      ]
+    },
+    "events": [
+      {
+        "kind": "SEQUENCE_ADVANCED",
+        "sequence": 0,
+        "from": {
+          "gameTurn": 1,
+          "playerTurnIndex": 1,
+          "phase": "EXPLOITATION",
+          "segment": "MOVEMENT",
+          "firstPlayerId": "player:allied",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:axis"
+        },
+        "to": {
+          "gameTurn": 1,
+          "playerTurnIndex": 1,
+          "phase": "EXPLOITATION",
+          "segment": "BARRAGE",
+          "firstPlayerId": "player:allied",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:axis"
+        }
+      },
+      {
+        "kind": "SEQUENCE_ADVANCED",
+        "sequence": 1,
+        "from": {
+          "gameTurn": 1,
+          "playerTurnIndex": 1,
+          "phase": "EXPLOITATION",
+          "segment": "BARRAGE",
+          "firstPlayerId": "player:allied",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:axis"
+        },
+        "to": {
+          "gameTurn": 1,
+          "playerTurnIndex": 1,
+          "phase": "EXPLOITATION",
+          "segment": "COMBAT",
+          "firstPlayerId": "player:allied",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:axis"
+        }
+      },
+      {
+        "kind": "SEQUENCE_ADVANCED",
+        "sequence": 2,
+        "from": {
+          "gameTurn": 1,
+          "playerTurnIndex": 1,
+          "phase": "EXPLOITATION",
+          "segment": "COMBAT",
+          "firstPlayerId": "player:allied",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:axis"
+        },
+        "to": {
+          "gameTurn": 1,
+          "playerTurnIndex": 1,
+          "phase": "CLEAN_UP",
+          "segment": "NONE",
+          "firstPlayerId": "player:allied",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:axis"
+        }
+      },
+      {
+        "kind": "SEQUENCE_ADVANCED",
+        "sequence": 3,
+        "from": {
+          "gameTurn": 1,
+          "playerTurnIndex": 1,
+          "phase": "CLEAN_UP",
+          "segment": "NONE",
+          "firstPlayerId": "player:allied",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:axis"
+        },
+        "to": {
+          "gameTurn": 1,
+          "playerTurnIndex": 1,
+          "phase": "TURN_END",
+          "segment": "NONE",
+          "firstPlayerId": "player:allied",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:axis"
+        }
+      },
+      {
+        "kind": "MODE_CHANGED",
+        "sequence": 4,
+        "pieceId": "generated-oob:286921528:axis:f4-combat-1:unit",
+        "from": "EXPLOITATION",
+        "to": "MOVE"
+      },
+      {
+        "kind": "CLEANUP_COMPLETED",
+        "sequence": 5,
+        "playerId": "player:axis"
+      },
+      {
+        "kind": "SEQUENCE_ADVANCED",
+        "sequence": 6,
+        "from": {
+          "gameTurn": 1,
+          "playerTurnIndex": 1,
+          "phase": "TURN_END",
+          "segment": "NONE",
+          "firstPlayerId": "player:allied",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:axis"
+        },
+        "to": {
+          "gameTurn": 2,
+          "playerTurnIndex": 0,
+          "phase": "WEATHER",
+          "segment": "NONE",
+          "firstPlayerId": "player:allied",
+          "phasingPlayerId": "player:allied",
+          "actingPlayerId": "player:allied"
+        }
+      },
+      {
+        "kind": "SEQUENCE_ADVANCED",
+        "sequence": 7,
+        "from": {
+          "gameTurn": 2,
+          "playerTurnIndex": 0,
+          "phase": "WEATHER",
+          "segment": "NONE",
+          "firstPlayerId": "player:allied",
+          "phasingPlayerId": "player:allied",
+          "actingPlayerId": "player:allied"
+        },
+        "to": {
+          "gameTurn": 2,
+          "playerTurnIndex": 0,
+          "phase": "FIRST_PLAYER",
+          "segment": "NONE",
+          "firstPlayerId": "player:allied",
+          "phasingPlayerId": "player:allied",
+          "actingPlayerId": "player:allied"
+        }
+      },
+      {
+        "kind": "WEATHER_DETERMINED",
+        "sequence": 8,
+        "groundCondition": "DRY",
+        "roll": null
+      },
+      {
+        "kind": "FIRST_PLAYER_ROLLED",
+        "sequence": 9,
+        "rolls": [
+          {
+            "playerId": "player:allied",
+            "total": 8
+          },
+          {
+            "playerId": "player:axis",
+            "total": 4
+          }
+        ],
+        "winnerId": "player:allied"
+      },
+      {
+        "kind": "DECISION_REQUESTED",
+        "sequence": 10,
+        "decision": {
+          "id": "decision:first-player:2:10",
+          "kind": "FIRST_PLAYER",
+          "ownerId": "player:allied",
+          "transactionId": null,
+          "prompt": "You won the First Player roll for turn 2. Take the first or the second Player Turn?",
+          "options": [
+            {
+              "id": "first",
+              "label": "Go first",
+              "hexId": null
+            },
+            {
+              "id": "second",
+              "label": "Go second",
+              "hexId": null
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "revision": 113,
+    "turn": 2,
+    "action": {
+      "actionId": "candidate:move:generated-oob:286921528:allied:independent-tank-1:unit:17,11:113",
+      "actorId": "player:allied",
+      "expectedRevision": 113,
+      "kind": "MOVE_PIECE",
+      "path": [
+        "11,11",
+        "12,11",
+        "13,11",
+        "14,11",
+        "15,11",
+        "16,11",
+        "17,11"
+      ],
+      "pieceId": "generated-oob:286921528:allied:independent-tank-1:unit"
+    },
+    "before": {
+      "mode": "MOVE",
+      "trace": false,
+      "hex": "14,5",
+      "sources": [
+        {
+          "id": "generated-oob:286921528:axis:independent-supply-3:unit",
+          "tokens": 8
+        }
+      ]
+    },
+    "after": {
+      "mode": "MOVE",
+      "trace": false,
+      "hex": "14,5",
+      "sources": []
+    },
+    "events": [
+      {
+        "kind": "PIECE_MOVED",
+        "sequence": 0,
+        "pieceId": "generated-oob:286921528:allied:independent-tank-1:unit",
+        "path": [
+          "11,11",
+          "12,11",
+          "13,11",
+          "14,11",
+          "15,11",
+          "16,11",
+          "17,11"
+        ],
+        "spentTicks": 24
+      },
+      {
+        "kind": "SUPPLY_CAPTURED",
+        "sequence": 1,
+        "resourcePieceId": "generated-oob:286921528:axis:independent-supply-3:unit",
+        "captured": 0,
+        "destroyed": 8
+      }
+    ]
+  },
+  {
+    "revision": 167,
+    "turn": 2,
+    "action": {
+      "actionId": "candidate:mode:generated-oob:286921528:axis:f4-combat-1:unit:COMBAT:167",
+      "actorId": "player:axis",
+      "expectedRevision": 167,
+      "kind": "CHANGE_MODE",
+      "mode": "COMBAT",
+      "pieceId": "generated-oob:286921528:axis:f4-combat-1:unit"
+    },
+    "before": {
+      "mode": "MOVE",
+      "trace": false,
+      "hex": "14,5",
+      "sources": []
+    },
+    "after": {
+      "mode": "COMBAT",
+      "trace": false,
+      "hex": "14,5",
+      "sources": []
+    },
+    "events": [
+      {
+        "kind": "MODE_CHANGED",
+        "sequence": 0,
+        "pieceId": "generated-oob:286921528:axis:f4-combat-1:unit",
+        "from": "MOVE",
+        "to": "COMBAT"
+      }
+    ]
+  },
+  {
+    "revision": 168,
+    "turn": 2,
+    "action": {
+      "actionId": "candidate:move:generated-oob:286921528:axis:f4-combat-1:unit:17,2:168",
+      "actorId": "player:axis",
+      "expectedRevision": 168,
+      "kind": "MOVE_PIECE",
+      "path": [
+        "14,5",
+        "15,4",
+        "16,3",
+        "17,2"
+      ],
+      "pieceId": "generated-oob:286921528:axis:f4-combat-1:unit"
+    },
+    "before": {
+      "mode": "COMBAT",
+      "trace": false,
+      "hex": "14,5",
+      "sources": []
+    },
+    "after": {
+      "mode": "COMBAT",
+      "trace": false,
+      "hex": "17,2",
+      "sources": []
+    },
+    "events": [
+      {
+        "kind": "PIECE_MOVED",
+        "sequence": 0,
+        "pieceId": "generated-oob:286921528:axis:f4-combat-1:unit",
+        "path": [
+          "14,5",
+          "15,4",
+          "16,3",
+          "17,2"
+        ],
+        "spentTicks": 12
+      }
+    ]
+  },
+  {
+    "revision": 188,
+    "turn": 2,
+    "action": {
+      "actionId": "candidate:move:generated-oob:286921528:axis:independent-transport-2:unit:17,4:188",
+      "actorId": "player:axis",
+      "expectedRevision": 188,
+      "kind": "MOVE_PIECE",
+      "path": [
+        "25,12",
+        "25,11",
+        "24,11",
+        "23,11",
+        "22,11",
+        "21,11",
+        "20,11",
+        "19,11",
+        "19,10",
+        "19,9",
+        "19,8",
+        "18,8",
+        "18,7",
+        "17,7",
+        "17,6",
+        "17,5",
+        "17,4"
+      ],
+      "pieceId": "generated-oob:286921528:axis:independent-transport-2:unit"
+    },
+    "before": {
+      "mode": "COMBAT",
+      "trace": false,
+      "hex": "17,2",
+      "sources": []
+    },
+    "after": {
+      "mode": "COMBAT",
+      "trace": false,
+      "hex": "17,2",
+      "sources": [
+        {
+          "id": "supply-arrival:player:axis:2",
+          "tokens": 3
+        }
+      ]
+    },
+    "events": [
+      {
+        "kind": "PIECE_MOVED",
+        "sequence": 0,
+        "pieceId": "generated-oob:286921528:axis:independent-transport-2:unit",
+        "path": [
+          "25,12",
+          "25,11",
+          "24,11",
+          "23,11",
+          "22,11",
+          "21,11",
+          "20,11",
+          "19,11",
+          "19,10",
+          "19,9",
+          "19,8",
+          "18,8",
+          "18,7",
+          "17,7",
+          "17,6",
+          "17,5",
+          "17,4"
+        ],
+        "spentTicks": 78
+      }
+    ]
+  },
+  {
+    "revision": 192,
+    "turn": 2,
+    "action": {
+      "actionId": "candidate:supply:generated-oob:286921528:axis:f4-combat-1:unit:supply-arrival:player:axis:2:192",
+      "actorId": "player:axis",
+      "expectedRevision": 192,
+      "kind": "CHECK_SUPPLY",
+      "pieceIds": [
+        "generated-oob:286921528:axis:f4-combat-1:unit"
+      ],
+      "sourcePieceId": "supply-arrival:player:axis:2"
+    },
+    "before": {
+      "mode": "COMBAT",
+      "trace": false,
+      "hex": "17,2",
+      "sources": [
+        {
+          "id": "supply-arrival:player:axis:2",
+          "tokens": 3
+        }
+      ]
+    },
+    "after": {
+      "mode": "COMBAT",
+      "trace": false,
+      "hex": "17,2",
+      "sources": [
+        {
+          "id": "supply-arrival:player:axis:2",
+          "tokens": 1
+        }
+      ]
+    },
+    "events": [
+      {
+        "kind": "SUPPLY_SPENT",
+        "sequence": 0,
+        "resourcePieceId": "supply-arrival:player:axis:2",
+        "quantity": 2
+      }
+    ]
+  },
+  {
+    "revision": 195,
+    "turn": 2,
+    "action": {
+      "actionId": "candidate:supply:generated-oob:286921528:axis:f2-combat-2:unit:supply-arrival:player:axis:2:195",
+      "actorId": "player:axis",
+      "expectedRevision": 195,
+      "kind": "CHECK_SUPPLY",
+      "pieceIds": [
+        "generated-oob:286921528:axis:f2-combat-2:unit"
+      ],
+      "sourcePieceId": "supply-arrival:player:axis:2"
+    },
+    "before": {
+      "mode": "COMBAT",
+      "trace": false,
+      "hex": "17,2",
+      "sources": [
+        {
+          "id": "supply-arrival:player:axis:2",
+          "tokens": 1
+        }
+      ]
+    },
+    "after": {
+      "mode": "COMBAT",
+      "trace": false,
+      "hex": "17,2",
+      "sources": []
+    },
+    "events": [
+      {
+        "kind": "SUPPLY_SPENT",
+        "sequence": 0,
+        "resourcePieceId": "supply-arrival:player:axis:2",
+        "quantity": 1
+      }
+    ]
+  },
+  {
+    "revision": 265,
+    "turn": 3,
+    "action": {
+      "actionId": "candidate:move:generated-oob:286921528:axis:f4-combat-1:unit:17,5:265",
+      "actorId": "player:axis",
+      "expectedRevision": 265,
+      "kind": "MOVE_PIECE",
+      "path": [
+        "17,2",
+        "17,3",
+        "17,4",
+        "17,5"
+      ],
+      "pieceId": "generated-oob:286921528:axis:f4-combat-1:unit"
+    },
+    "before": {
+      "mode": "COMBAT",
+      "trace": false,
+      "hex": "17,2",
+      "sources": []
+    },
+    "after": {
+      "mode": "COMBAT",
+      "trace": false,
+      "hex": "17,5",
+      "sources": [
+        {
+          "id": "supply-arrival:player:axis:2#load183",
+          "tokens": 12
+        }
+      ]
+    },
+    "events": [
+      {
+        "kind": "PIECE_MOVED",
+        "sequence": 0,
+        "pieceId": "generated-oob:286921528:axis:f4-combat-1:unit",
+        "path": [
+          "17,2",
+          "17,3",
+          "17,4",
+          "17,5"
+        ],
+        "spentTicks": 12
+      }
+    ]
+  },
+  {
+    "revision": 268,
+    "turn": 3,
+    "action": {
+      "actionId": "candidate:fuel:SINGLE_UNIT:generated-oob:286921528:axis:independent-tank-2:unit:supply-arrival:player:axis:2#load183:268",
+      "actorId": "player:axis",
+      "expectedRevision": 268,
+      "kind": "PAY_FUEL",
+      "method": "SINGLE_UNIT",
+      "pieceId": "generated-oob:286921528:axis:independent-tank-2:unit",
+      "sourcePieceId": "supply-arrival:player:axis:2#load183"
+    },
+    "before": {
+      "mode": "COMBAT",
+      "trace": false,
+      "hex": "17,5",
+      "sources": [
+        {
+          "id": "supply-arrival:player:axis:2#load183",
+          "tokens": 12
+        }
+      ]
+    },
+    "after": {
+      "mode": "COMBAT",
+      "trace": false,
+      "hex": "17,5",
+      "sources": [
+        {
+          "id": "supply-arrival:player:axis:2#load183",
+          "tokens": 11
+        }
+      ]
+    },
+    "events": [
+      {
+        "kind": "FUEL_PAID",
+        "sequence": 0,
+        "method": "SINGLE_UNIT",
+        "pieceId": "generated-oob:286921528:axis:independent-tank-2:unit",
+        "resourcePieceId": "supply-arrival:player:axis:2#load183",
+        "tokens": 1
+      }
+    ]
+  },
+  {
+    "revision": 270,
+    "turn": 3,
+    "action": {
+      "actionId": "candidate:fuel:SINGLE_UNIT:generated-oob:286921528:axis:independent-tank-4:unit:supply-arrival:player:axis:2#load183:270",
+      "actorId": "player:axis",
+      "expectedRevision": 270,
+      "kind": "PAY_FUEL",
+      "method": "SINGLE_UNIT",
+      "pieceId": "generated-oob:286921528:axis:independent-tank-4:unit",
+      "sourcePieceId": "supply-arrival:player:axis:2#load183"
+    },
+    "before": {
+      "mode": "COMBAT",
+      "trace": false,
+      "hex": "17,5",
+      "sources": [
+        {
+          "id": "supply-arrival:player:axis:2#load183",
+          "tokens": 11
+        }
+      ]
+    },
+    "after": {
+      "mode": "COMBAT",
+      "trace": false,
+      "hex": "17,5",
+      "sources": [
+        {
+          "id": "supply-arrival:player:axis:2#load183",
+          "tokens": 10
+        }
+      ]
+    },
+    "events": [
+      {
+        "kind": "FUEL_PAID",
+        "sequence": 0,
+        "method": "SINGLE_UNIT",
+        "pieceId": "generated-oob:286921528:axis:independent-tank-4:unit",
+        "resourcePieceId": "supply-arrival:player:axis:2#load183",
+        "tokens": 1
+      }
+    ]
+  },
+  {
+    "revision": 273,
+    "turn": 3,
+    "action": {
+      "actionId": "candidate:supply:generated-oob:286921528:axis:f4-combat-1:unit:supply-arrival:player:axis:2#load183:273",
+      "actorId": "player:axis",
+      "expectedRevision": 273,
+      "kind": "CHECK_SUPPLY",
+      "pieceIds": [
+        "generated-oob:286921528:axis:f4-combat-1:unit"
+      ],
+      "sourcePieceId": "supply-arrival:player:axis:2#load183"
+    },
+    "before": {
+      "mode": "COMBAT",
+      "trace": false,
+      "hex": "17,5",
+      "sources": [
+        {
+          "id": "supply-arrival:player:axis:2#load183",
+          "tokens": 10
+        }
+      ]
+    },
+    "after": {
+      "mode": "COMBAT",
+      "trace": false,
+      "hex": "17,5",
+      "sources": [
+        {
+          "id": "supply-arrival:player:axis:2#load183",
+          "tokens": 8
+        }
+      ]
+    },
+    "events": [
+      {
+        "kind": "SUPPLY_SPENT",
+        "sequence": 0,
+        "resourcePieceId": "supply-arrival:player:axis:2#load183",
+        "quantity": 2
+      }
+    ]
+  },
+  {
+    "revision": 274,
+    "turn": 3,
+    "action": {
+      "actionId": "candidate:supply:generated-oob:286921528:axis:independent-tank-4:unit:supply-arrival:player:axis:2#load183:274",
+      "actorId": "player:axis",
+      "expectedRevision": 274,
+      "kind": "CHECK_SUPPLY",
+      "pieceIds": [
+        "generated-oob:286921528:axis:independent-tank-4:unit"
+      ],
+      "sourcePieceId": "supply-arrival:player:axis:2#load183"
+    },
+    "before": {
+      "mode": "COMBAT",
+      "trace": false,
+      "hex": "17,5",
+      "sources": [
+        {
+          "id": "supply-arrival:player:axis:2#load183",
+          "tokens": 8
+        }
+      ]
+    },
+    "after": {
+      "mode": "COMBAT",
+      "trace": false,
+      "hex": "17,5",
+      "sources": [
+        {
+          "id": "supply-arrival:player:axis:2#load183",
+          "tokens": 7
+        }
+      ]
+    },
+    "events": [
+      {
+        "kind": "SUPPLY_SPENT",
+        "sequence": 0,
+        "resourcePieceId": "supply-arrival:player:axis:2#load183",
+        "quantity": 1
+      }
+    ]
+  },
+  {
+    "revision": 275,
+    "turn": 3,
+    "action": {
+      "actionId": "candidate:supply:generated-oob:286921528:axis:f2-combat-1:unit:supply-arrival:player:axis:2#load183:275",
+      "actorId": "player:axis",
+      "expectedRevision": 275,
+      "kind": "CHECK_SUPPLY",
+      "pieceIds": [
+        "generated-oob:286921528:axis:f2-combat-1:unit"
+      ],
+      "sourcePieceId": "supply-arrival:player:axis:2#load183"
+    },
+    "before": {
+      "mode": "COMBAT",
+      "trace": false,
+      "hex": "17,5",
+      "sources": [
+        {
+          "id": "supply-arrival:player:axis:2#load183",
+          "tokens": 7
+        }
+      ]
+    },
+    "after": {
+      "mode": "COMBAT",
+      "trace": false,
+      "hex": "17,5",
+      "sources": [
+        {
+          "id": "supply-arrival:player:axis:2#load183",
+          "tokens": 6
+        }
+      ]
+    },
+    "events": [
+      {
+        "kind": "SUPPLY_SPENT",
+        "sequence": 0,
+        "resourcePieceId": "supply-arrival:player:axis:2#load183",
+        "quantity": 1
+      }
+    ]
+  },
+  {
+    "revision": 276,
+    "turn": 3,
+    "action": {
+      "actionId": "candidate:supply:generated-oob:286921528:axis:f2-combat-2:unit:supply-arrival:player:axis:2#load183:276",
+      "actorId": "player:axis",
+      "expectedRevision": 276,
+      "kind": "CHECK_SUPPLY",
+      "pieceIds": [
+        "generated-oob:286921528:axis:f2-combat-2:unit"
+      ],
+      "sourcePieceId": "supply-arrival:player:axis:2#load183"
+    },
+    "before": {
+      "mode": "COMBAT",
+      "trace": false,
+      "hex": "17,5",
+      "sources": [
+        {
+          "id": "supply-arrival:player:axis:2#load183",
+          "tokens": 6
+        }
+      ]
+    },
+    "after": {
+      "mode": "COMBAT",
+      "trace": false,
+      "hex": "17,5",
+      "sources": [
+        {
+          "id": "supply-arrival:player:axis:2#load183",
+          "tokens": 5
+        }
+      ]
+    },
+    "events": [
+      {
+        "kind": "SUPPLY_SPENT",
+        "sequence": 0,
+        "resourcePieceId": "supply-arrival:player:axis:2#load183",
+        "quantity": 1
+      }
+    ]
+  },
+  {
+    "revision": 277,
+    "turn": 3,
+    "action": {
+      "actionId": "candidate:supply:generated-oob:286921528:axis:independent-tank-2:unit:supply-arrival:player:axis:2#load183:277",
+      "actorId": "player:axis",
+      "expectedRevision": 277,
+      "kind": "CHECK_SUPPLY",
+      "pieceIds": [
+        "generated-oob:286921528:axis:independent-tank-2:unit"
+      ],
+      "sourcePieceId": "supply-arrival:player:axis:2#load183"
+    },
+    "before": {
+      "mode": "COMBAT",
+      "trace": false,
+      "hex": "17,5",
+      "sources": [
+        {
+          "id": "supply-arrival:player:axis:2#load183",
+          "tokens": 5
+        }
+      ]
+    },
+    "after": {
+      "mode": "COMBAT",
+      "trace": false,
+      "hex": "17,5",
+      "sources": [
+        {
+          "id": "supply-arrival:player:axis:2#load183",
+          "tokens": 4
+        }
+      ]
+    },
+    "events": [
+      {
+        "kind": "SUPPLY_SPENT",
+        "sequence": 0,
+        "resourcePieceId": "supply-arrival:player:axis:2#load183",
+        "quantity": 1
+      }
+    ]
+  },
+  {
+    "revision": 278,
+    "turn": 3,
+    "action": {
+      "actionId": "candidate:supply:generated-oob:286921528:axis:f2-recon:unit:supply-arrival:player:axis:2#load183:278",
+      "actorId": "player:axis",
+      "expectedRevision": 278,
+      "kind": "CHECK_SUPPLY",
+      "pieceIds": [
+        "generated-oob:286921528:axis:f2-recon:unit"
+      ],
+      "sourcePieceId": "supply-arrival:player:axis:2#load183"
+    },
+    "before": {
+      "mode": "COMBAT",
+      "trace": false,
+      "hex": "17,5",
+      "sources": [
+        {
+          "id": "supply-arrival:player:axis:2#load183",
+          "tokens": 4
+        }
+      ]
+    },
+    "after": {
+      "mode": "COMBAT",
+      "trace": false,
+      "hex": "17,5",
+      "sources": [
+        {
+          "id": "supply-arrival:player:axis:2#load183",
+          "tokens": 3
+        }
+      ]
+    },
+    "events": [
+      {
+        "kind": "SUPPLY_SPENT",
+        "sequence": 0,
+        "resourcePieceId": "supply-arrival:player:axis:2#load183",
+        "quantity": 1
+      }
+    ]
+  },
+  {
+    "revision": 280,
+    "turn": 3,
+    "action": {
+      "actionId": "candidate:combat:REGULAR:17,10:generated-oob:286921528:axis:f2-recon:unit+generated-oob:286921528:axis:independent-tank-2:unit:280",
+      "actorId": "player:axis",
+      "attackerIds": [
+        "generated-oob:286921528:axis:f2-recon:unit",
+        "generated-oob:286921528:axis:independent-tank-2:unit"
+      ],
+      "attackerSupply": [
+        {
+          "dumpIds": [
+            "supply-arrival:player:axis:2#load183"
+          ],
+          "method": "DUMPS",
+          "pieceId": "generated-oob:286921528:axis:f2-recon:unit"
+        },
+        {
+          "dumpIds": [
+            "supply-arrival:player:axis:2#load183"
+          ],
+          "method": "DUMPS",
+          "pieceId": "generated-oob:286921528:axis:independent-tank-2:unit"
+        }
+      ],
+      "combatKind": "REGULAR",
+      "defenderIds": [
+        "generated-oob:286921528:allied:independent-hq-2:unit"
+      ],
+      "expectedRevision": 280,
+      "kind": "DECLARE_COMBAT",
+      "leadAttackerId": "generated-oob:286921528:axis:f2-recon:unit",
+      "targetHexId": "17,10"
+    },
+    "before": {
+      "mode": "COMBAT",
+      "trace": false,
+      "hex": "17,5",
+      "sources": [
+        {
+          "id": "supply-arrival:player:axis:2#load183",
+          "tokens": 3
+        }
+      ]
+    },
+    "after": {
+      "mode": "COMBAT",
+      "trace": false,
+      "hex": "17,5",
+      "sources": [
+        {
+          "id": "supply-arrival:player:axis:2#load183",
+          "tokens": 1
+        }
+      ]
+    },
+    "events": [
+      {
+        "kind": "TRANSACTION_DECLARED",
+        "sequence": 0,
+        "transactionId": "transaction:candidate:combat:REGULAR:17,10:generated-oob:286921528:axis:f2-recon:unit+generated-oob:286921528:axis:independent-tank-2:unit:280",
+        "transactionKind": "COMBAT"
+      },
+      {
+        "kind": "DECISION_REQUESTED",
+        "sequence": 1,
+        "decision": {
+          "id": "decision:transaction:candidate:combat:REGULAR:17,10:generated-oob:286921528:axis:f2-recon:unit+generated-oob:286921528:axis:independent-tank-2:unit:280:SUPPLY_SOURCE:280:1:0",
+          "kind": "SUPPLY_SOURCE",
+          "ownerId": "player:allied",
+          "transactionId": "transaction:candidate:combat:REGULAR:17,10:generated-oob:286921528:axis:f2-recon:unit+generated-oob:286921528:axis:independent-tank-2:unit:280",
+          "prompt": "Defending 17,10: 1T of combat supply still to pay. Choose where it comes from.",
+          "options": [
+            {
+              "id": "pay:generated-oob:286921528:allied:independent-supply-2:unit:1",
+              "label": "Pay 1T from the dump at 20,13 (2T available)",
+              "hexId": "20,13"
+            },
+            {
+              "id": "withhold",
+              "label": "No combat supply: defend at half strength",
+              "hexId": null
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "revision": 281,
+    "turn": 3,
+    "action": {
+      "actionId": "candidate:decision:decision:transaction:candidate:combat:REGULAR:17,10:generated-oob:286921528:axis:f2-recon:unit+generated-oob:286921528:axis:independent-tank-2:unit:280:SUPPLY_SOURCE:280:1:0:pay:generated-oob:286921528:allied:independent-supply-2:unit:1:281",
+      "actorId": "player:allied",
+      "choiceId": "pay:generated-oob:286921528:allied:independent-supply-2:unit:1",
+      "decisionId": "decision:transaction:candidate:combat:REGULAR:17,10:generated-oob:286921528:axis:f2-recon:unit+generated-oob:286921528:axis:independent-tank-2:unit:280:SUPPLY_SOURCE:280:1:0",
+      "expectedRevision": 281,
+      "kind": "RESPOND_DECISION"
+    },
+    "before": {
+      "mode": "COMBAT",
+      "trace": false,
+      "hex": "17,5",
+      "sources": [
+        {
+          "id": "supply-arrival:player:axis:2#load183",
+          "tokens": 1
+        }
+      ]
+    },
+    "after": {
+      "mode": "COMBAT",
+      "trace": false,
+      "hex": "17,5",
+      "sources": []
+    },
+    "events": [
+      {
+        "kind": "RESOURCE_CONSUMED",
+        "sequence": 0,
+        "transactionId": "transaction:candidate:combat:REGULAR:17,10:generated-oob:286921528:axis:f2-recon:unit+generated-oob:286921528:axis:independent-tank-2:unit:280",
+        "reservation": {
+          "resourcePieceId": "supply-arrival:player:axis:2#load183",
+          "quantity": 2,
+          "unitDefinitionId": "quantity:supply-token"
+        }
+      },
+      {
+        "kind": "RESOURCE_CONSUMED",
+        "sequence": 1,
+        "transactionId": "transaction:candidate:combat:REGULAR:17,10:generated-oob:286921528:axis:f2-recon:unit+generated-oob:286921528:axis:independent-tank-2:unit:280",
+        "reservation": {
+          "resourcePieceId": "generated-oob:286921528:allied:independent-supply-2:unit",
+          "quantity": 1,
+          "unitDefinitionId": "quantity:supply-token"
+        }
+      },
+      {
+        "kind": "DICE_ROLLED",
+        "sequence": 2,
+        "transactionId": "transaction:candidate:combat:REGULAR:17,10:generated-oob:286921528:axis:f2-recon:unit+generated-oob:286921528:axis:independent-tank-2:unit:280",
+        "purpose": "SURPRISE",
+        "roll": {
+          "dice": [
+            2,
+            5
+          ],
+          "total": 7,
+          "stateBefore": 713905908,
+          "stateAfter": 3529059322
+        }
+      },
+      {
+        "kind": "DICE_ROLLED",
+        "sequence": 3,
+        "transactionId": "transaction:candidate:combat:REGULAR:17,10:generated-oob:286921528:axis:f2-recon:unit+generated-oob:286921528:axis:independent-tank-2:unit:280",
+        "purpose": "COMBAT",
+        "roll": {
+          "dice": [
+            2,
+            3
+          ],
+          "total": 5,
+          "stateBefore": 333716809,
+          "stateAfter": 3166402358
+        }
+      },
+      {
+        "kind": "MODE_CHANGED",
+        "sequence": 4,
+        "pieceId": "generated-oob:286921528:axis:f2-recon:unit",
+        "from": "COMBAT",
+        "to": "EXPLOITATION"
+      },
+      {
+        "kind": "MODE_CHANGED",
+        "sequence": 5,
+        "pieceId": "generated-oob:286921528:axis:independent-tank-2:unit",
+        "from": "COMBAT",
+        "to": "EXPLOITATION"
+      },
+      {
+        "kind": "MODE_CHANGED",
+        "sequence": 6,
+        "pieceId": "generated-oob:286921528:allied:independent-hq-2:unit",
+        "from": "MOVE",
+        "to": "DG"
+      },
+      {
+        "kind": "STEP_LOST",
+        "sequence": 7,
+        "pieceId": "generated-oob:286921528:allied:independent-hq-2:unit",
+        "remainingSteps": null
+      },
+      {
+        "kind": "DECISION_REQUESTED",
+        "sequence": 8,
+        "decision": {
+          "id": "decision:transaction:candidate:combat:REGULAR:17,10:generated-oob:286921528:axis:f2-recon:unit+generated-oob:286921528:axis:independent-tank-2:unit:280:ADVANCE_HEX:281:58:1:73",
+          "kind": "ADVANCE_HEX",
+          "ownerId": "player:axis",
+          "transactionId": "transaction:candidate:combat:REGULAR:17,10:generated-oob:286921528:axis:f2-recon:unit+generated-oob:286921528:axis:independent-tank-2:unit:280",
+          "prompt": "17,10 is vacant: choose attackers to advance after combat, one at a time or all together.",
+          "options": [
+            {
+              "id": "advance:done",
+              "label": "Do not advance",
+              "hexId": null
+            },
+            {
+              "id": "advance:all",
+              "label": "Advance all 2 remaining attackers",
+              "hexId": null
+            },
+            {
+              "id": "advance:generated-oob:286921528:axis:f2-recon:unit",
+              "label": "Advance Aufkl Abt 1 / FGB",
+              "hexId": null
+            },
+            {
+              "id": "advance:generated-oob:286921528:axis:independent-tank-2:unit",
+              "label": "Advance Ge 243 AG Bn",
+              "hexId": null
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "revision": 282,
+    "turn": 3,
+    "action": {
+      "actionId": "candidate:decision:decision:transaction:candidate:combat:REGULAR:17,10:generated-oob:286921528:axis:f2-recon:unit+generated-oob:286921528:axis:independent-tank-2:unit:280:ADVANCE_HEX:281:58:1:73:advance:done:282",
+      "actorId": "player:axis",
+      "choiceId": "advance:done",
+      "decisionId": "decision:transaction:candidate:combat:REGULAR:17,10:generated-oob:286921528:axis:f2-recon:unit+generated-oob:286921528:axis:independent-tank-2:unit:280:ADVANCE_HEX:281:58:1:73",
+      "expectedRevision": 282,
+      "kind": "RESPOND_DECISION"
+    },
+    "before": {
+      "mode": "COMBAT",
+      "trace": false,
+      "hex": "17,5",
+      "sources": []
+    },
+    "after": {
+      "mode": "COMBAT",
+      "trace": false,
+      "hex": "17,5",
+      "sources": [
+        {
+          "id": "supply-arrival:player:axis:2#load183",
+          "tokens": 1
+        }
+      ]
+    },
+    "events": [
+      {
+        "kind": "TRANSACTION_RESOLVED",
+        "sequence": 0,
+        "transactionId": "transaction:candidate:combat:REGULAR:17,10:generated-oob:286921528:axis:f2-recon:unit+generated-oob:286921528:axis:independent-tank-2:unit:280",
+        "result": "Ae2/DL2o3DG"
+      }
+    ]
+  },
+  {
+    "revision": 293,
+    "turn": 3,
+    "action": {
+      "actionId": "candidate:fuel:SINGLE_UNIT:generated-oob:286921528:axis:independent-tank-2:unit:supply-arrival:player:axis:2#load183:293",
+      "actorId": "player:axis",
+      "expectedRevision": 293,
+      "kind": "PAY_FUEL",
+      "method": "SINGLE_UNIT",
+      "pieceId": "generated-oob:286921528:axis:independent-tank-2:unit",
+      "sourcePieceId": "supply-arrival:player:axis:2#load183"
+    },
+    "before": {
+      "mode": "COMBAT",
+      "trace": false,
+      "hex": "17,5",
+      "sources": [
+        {
+          "id": "supply-arrival:player:axis:2#load183",
+          "tokens": 1
+        }
+      ]
+    },
+    "after": {
+      "mode": "COMBAT",
+      "trace": false,
+      "hex": "17,5",
+      "sources": []
+    },
+    "events": [
+      {
+        "kind": "FUEL_PAID",
+        "sequence": 0,
+        "method": "SINGLE_UNIT",
+        "pieceId": "generated-oob:286921528:axis:independent-tank-2:unit",
+        "resourcePieceId": "supply-arrival:player:axis:2#load183",
+        "tokens": 1
+      }
+    ]
+  },
+  {
+    "revision": 348,
+    "turn": 4,
+    "action": {
+      "actionId": "candidate:move:generated-oob:286921528:axis:f4-combat-1:unit:20,2:348",
+      "actorId": "player:axis",
+      "expectedRevision": 348,
+      "kind": "MOVE_PIECE",
+      "path": [
+        "17,5",
+        "18,4",
+        "19,3",
+        "20,2"
+      ],
+      "pieceId": "generated-oob:286921528:axis:f4-combat-1:unit"
+    },
+    "before": {
+      "mode": "COMBAT",
+      "trace": false,
+      "hex": "17,5",
+      "sources": []
+    },
+    "after": {
+      "mode": "COMBAT",
+      "trace": false,
+      "hex": "20,2",
+      "sources": []
+    },
+    "events": [
+      {
+        "kind": "PIECE_MOVED",
+        "sequence": 0,
+        "pieceId": "generated-oob:286921528:axis:f4-combat-1:unit",
+        "path": [
+          "17,5",
+          "18,4",
+          "19,3",
+          "20,2"
+        ],
+        "spentTicks": 12
+      }
+    ]
+  },
+  {
+    "revision": 352,
+    "turn": 4,
+    "action": {
+      "actionId": "candidate:move:generated-oob:286921528:axis:independent-transport-1:unit:20,1:352",
+      "actorId": "player:axis",
+      "expectedRevision": 352,
+      "kind": "MOVE_PIECE",
+      "path": [
+        "25,12",
+        "25,11",
+        "26,10",
+        "26,9",
+        "27,8",
+        "27,7",
+        "28,6",
+        "28,5",
+        "28,4",
+        "29,3",
+        "30,2",
+        "30,1",
+        "29,1",
+        "28,1",
+        "27,1",
+        "26,1",
+        "25,1",
+        "24,1",
+        "23,1",
+        "22,1",
+        "21,1",
+        "20,1"
+      ],
+      "pieceId": "generated-oob:286921528:axis:independent-transport-1:unit"
+    },
+    "before": {
+      "mode": "COMBAT",
+      "trace": false,
+      "hex": "20,2",
+      "sources": []
+    },
+    "after": {
+      "mode": "COMBAT",
+      "trace": false,
+      "hex": "20,2",
+      "sources": [
+        {
+          "id": "supply-arrival:player:axis:4#load351",
+          "tokens": 20
+        }
+      ]
+    },
+    "events": [
+      {
+        "kind": "PIECE_MOVED",
+        "sequence": 0,
+        "pieceId": "generated-oob:286921528:axis:independent-transport-1:unit",
+        "path": [
+          "25,12",
+          "25,11",
+          "26,10",
+          "26,9",
+          "27,8",
+          "27,7",
+          "28,6",
+          "28,5",
+          "28,4",
+          "29,3",
+          "30,2",
+          "30,1",
+          "29,1",
+          "28,1",
+          "27,1",
+          "26,1",
+          "25,1",
+          "24,1",
+          "23,1",
+          "22,1",
+          "21,1",
+          "20,1"
+        ],
+        "spentTicks": 62
+      }
+    ]
+  },
+  {
+    "revision": 360,
+    "turn": 4,
+    "action": {
+      "actionId": "candidate:supply:generated-oob:286921528:axis:f4-combat-1:unit:supply-arrival:player:axis:4#load351:360",
+      "actorId": "player:axis",
+      "expectedRevision": 360,
+      "kind": "CHECK_SUPPLY",
+      "pieceIds": [
+        "generated-oob:286921528:axis:f4-combat-1:unit"
+      ],
+      "sourcePieceId": "supply-arrival:player:axis:4#load351"
+    },
+    "before": {
+      "mode": "COMBAT",
+      "trace": false,
+      "hex": "20,2",
+      "sources": [
+        {
+          "id": "supply-arrival:player:axis:4#load351",
+          "tokens": 20
+        }
+      ]
+    },
+    "after": {
+      "mode": "COMBAT",
+      "trace": false,
+      "hex": "20,2",
+      "sources": [
+        {
+          "id": "supply-arrival:player:axis:4#load351",
+          "tokens": 18
+        }
+      ]
+    },
+    "events": [
+      {
+        "kind": "SUPPLY_SPENT",
+        "sequence": 0,
+        "resourcePieceId": "supply-arrival:player:axis:4#load351",
+        "quantity": 2
+      }
+    ]
+  },
+  {
+    "revision": 362,
+    "turn": 4,
+    "action": {
+      "actionId": "candidate:supply:generated-oob:286921528:axis:independent-anti-tank-3:unit:supply-arrival:player:axis:4#load351:362",
+      "actorId": "player:axis",
+      "expectedRevision": 362,
+      "kind": "CHECK_SUPPLY",
+      "pieceIds": [
+        "generated-oob:286921528:axis:independent-anti-tank-3:unit"
+      ],
+      "sourcePieceId": "supply-arrival:player:axis:4#load351"
+    },
+    "before": {
+      "mode": "COMBAT",
+      "trace": false,
+      "hex": "20,2",
+      "sources": [
+        {
+          "id": "supply-arrival:player:axis:4#load351",
+          "tokens": 18
+        }
+      ]
+    },
+    "after": {
+      "mode": "COMBAT",
+      "trace": false,
+      "hex": "20,2",
+      "sources": [
+        {
+          "id": "supply-arrival:player:axis:4#load351",
+          "tokens": 17
+        }
+      ]
+    },
+    "events": [
+      {
+        "kind": "SUPPLY_SPENT",
+        "sequence": 0,
+        "resourcePieceId": "supply-arrival:player:axis:4#load351",
+        "quantity": 1
+      }
+    ]
+  },
+  {
+    "revision": 382,
+    "turn": 5,
+    "action": {
+      "actionId": "candidate:move:generated-oob:286921528:axis:f4-combat-1:unit:18,1:382",
+      "actorId": "player:axis",
+      "expectedRevision": 382,
+      "kind": "MOVE_PIECE",
+      "path": [
+        "20,2",
+        "19,2",
+        "18,2",
+        "18,1"
+      ],
+      "pieceId": "generated-oob:286921528:axis:f4-combat-1:unit"
+    },
+    "before": {
+      "mode": "COMBAT",
+      "trace": false,
+      "hex": "20,2",
+      "sources": [
+        {
+          "id": "supply-arrival:player:axis:4#load351",
+          "tokens": 17
+        }
+      ]
+    },
+    "after": {
+      "mode": "COMBAT",
+      "trace": false,
+      "hex": "18,1",
+      "sources": [
+        {
+          "id": "supply-arrival:player:axis:4#load351",
+          "tokens": 17
+        }
+      ]
+    },
+    "events": [
+      {
+        "kind": "PIECE_MOVED",
+        "sequence": 0,
+        "pieceId": "generated-oob:286921528:axis:f4-combat-1:unit",
+        "path": [
+          "20,2",
+          "19,2",
+          "18,2",
+          "18,1"
+        ],
+        "spentTicks": 12
+      }
+    ]
+  },
+  {
+    "revision": 384,
+    "turn": 5,
+    "action": {
+      "actionId": "candidate:fuel:SINGLE_UNIT:generated-oob:286921528:axis:independent-anti-tank-3:unit:supply-arrival:player:axis:4#load351:384",
+      "actorId": "player:axis",
+      "expectedRevision": 384,
+      "kind": "PAY_FUEL",
+      "method": "SINGLE_UNIT",
+      "pieceId": "generated-oob:286921528:axis:independent-anti-tank-3:unit",
+      "sourcePieceId": "supply-arrival:player:axis:4#load351"
+    },
+    "before": {
+      "mode": "COMBAT",
+      "trace": false,
+      "hex": "18,1",
+      "sources": [
+        {
+          "id": "supply-arrival:player:axis:4#load351",
+          "tokens": 17
+        }
+      ]
+    },
+    "after": {
+      "mode": "COMBAT",
+      "trace": false,
+      "hex": "18,1",
+      "sources": [
+        {
+          "id": "supply-arrival:player:axis:4#load351",
+          "tokens": 16
+        }
+      ]
+    },
+    "events": [
+      {
+        "kind": "FUEL_PAID",
+        "sequence": 0,
+        "method": "SINGLE_UNIT",
+        "pieceId": "generated-oob:286921528:axis:independent-anti-tank-3:unit",
+        "resourcePieceId": "supply-arrival:player:axis:4#load351",
+        "tokens": 1
+      }
+    ]
+  },
+  {
+    "revision": 389,
+    "turn": 5,
+    "action": {
+      "actionId": "candidate:move:generated-oob:286921528:axis:independent-transport-1:unit:10,8:389",
+      "actorId": "player:axis",
+      "expectedRevision": 389,
+      "kind": "MOVE_PIECE",
+      "path": [
+        "20,1",
+        "19,2",
+        "18,3",
+        "17,4",
+        "16,5",
+        "15,6",
+        "14,6",
+        "13,6",
+        "12,6",
+        "11,7",
+        "10,8"
+      ],
+      "pieceId": "generated-oob:286921528:axis:independent-transport-1:unit"
+    },
+    "before": {
+      "mode": "COMBAT",
+      "trace": false,
+      "hex": "18,1",
+      "sources": [
+        {
+          "id": "supply-arrival:player:axis:4#load351",
+          "tokens": 16
+        }
+      ]
+    },
+    "after": {
+      "mode": "COMBAT",
+      "trace": false,
+      "hex": "18,1",
+      "sources": []
+    },
+    "events": [
+      {
+        "kind": "PIECE_MOVED",
+        "sequence": 0,
+        "pieceId": "generated-oob:286921528:axis:independent-transport-1:unit",
+        "path": [
+          "20,1",
+          "19,2",
+          "18,3",
+          "17,4",
+          "16,5",
+          "15,6",
+          "14,6",
+          "13,6",
+          "12,6",
+          "11,7",
+          "10,8"
+        ],
+        "spentTicks": 88
+      }
+    ]
+  },
+  {
+    "revision": 404,
+    "turn": 5,
+    "action": {
+      "actionId": "candidate:advance:404",
+      "actorId": "player:axis",
+      "expectedRevision": 404,
+      "kind": "ADVANCE_SEQUENCE"
+    },
+    "before": {
+      "mode": "COMBAT",
+      "trace": false,
+      "hex": "18,1",
+      "sources": []
+    },
+    "after": {
+      "mode": "COMBAT",
+      "trace": false,
+      "sources": []
+    },
+    "events": [
+      {
+        "kind": "SEQUENCE_ADVANCED",
+        "sequence": 0,
+        "from": {
+          "gameTurn": 5,
+          "playerTurnIndex": 0,
+          "phase": "SUPPLY",
+          "segment": "NONE",
+          "firstPlayerId": "player:axis",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:axis"
+        },
+        "to": {
+          "gameTurn": 5,
+          "playerTurnIndex": 0,
+          "phase": "REACTION",
+          "segment": "MOVEMENT",
+          "firstPlayerId": "player:axis",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:allied"
+        }
+      },
+      {
+        "kind": "SUPPLY_STATUS_CHANGED",
+        "sequence": 1,
+        "pieceId": "generated-oob:286921528:axis:f4-combat-1:unit",
+        "inSupply": false
+      },
+      {
+        "kind": "SUPPLY_STATUS_CHANGED",
+        "sequence": 2,
+        "pieceId": "generated-oob:286921528:axis:independent-anti-tank-3:unit",
+        "inSupply": false
+      },
+      {
+        "kind": "ATTRITION_ROLLED",
+        "sequence": 3,
+        "hexId": "12,1",
+        "total": 5,
+        "steps": 0
+      },
+      {
+        "kind": "ATTRITION_ROLLED",
+        "sequence": 4,
+        "hexId": "17,10",
+        "total": 10,
+        "steps": 1
+      },
+      {
+        "kind": "ATTRITION_ROLLED",
+        "sequence": 5,
+        "hexId": "18,1",
+        "total": 12,
+        "steps": 4
+      },
+      {
+        "kind": "STEP_LOST",
+        "sequence": 6,
+        "pieceId": "generated-oob:286921528:axis:independent-tank-2:unit",
+        "remainingSteps": null
+      },
+      {
+        "kind": "STEP_LOST",
+        "sequence": 7,
+        "pieceId": "generated-oob:286921528:axis:f4-combat-1:unit",
+        "remainingSteps": 3
+      },
+      {
+        "kind": "STEP_LOST",
+        "sequence": 8,
+        "pieceId": "generated-oob:286921528:axis:f4-combat-1:unit",
+        "remainingSteps": 2
+      },
+      {
+        "kind": "STEP_LOST",
+        "sequence": 9,
+        "pieceId": "generated-oob:286921528:axis:f4-combat-1:unit",
+        "remainingSteps": 1
+      },
+      {
+        "kind": "STEP_LOST",
+        "sequence": 10,
+        "pieceId": "generated-oob:286921528:axis:f4-combat-1:unit",
+        "remainingSteps": null
+      },
+      {
+        "kind": "SEQUENCE_ADVANCED",
+        "sequence": 11,
+        "from": {
+          "gameTurn": 5,
+          "playerTurnIndex": 0,
+          "phase": "REACTION",
+          "segment": "MOVEMENT",
+          "firstPlayerId": "player:axis",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:allied"
+        },
+        "to": {
+          "gameTurn": 5,
+          "playerTurnIndex": 0,
+          "phase": "REACTION",
+          "segment": "BARRAGE",
+          "firstPlayerId": "player:axis",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:allied"
+        }
+      },
+      {
+        "kind": "SEQUENCE_ADVANCED",
+        "sequence": 12,
+        "from": {
+          "gameTurn": 5,
+          "playerTurnIndex": 0,
+          "phase": "REACTION",
+          "segment": "BARRAGE",
+          "firstPlayerId": "player:axis",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:allied"
+        },
+        "to": {
+          "gameTurn": 5,
+          "playerTurnIndex": 0,
+          "phase": "COMBAT",
+          "segment": "BARRAGE",
+          "firstPlayerId": "player:axis",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:axis"
+        }
+      },
+      {
+        "kind": "SEQUENCE_ADVANCED",
+        "sequence": 13,
+        "from": {
+          "gameTurn": 5,
+          "playerTurnIndex": 0,
+          "phase": "COMBAT",
+          "segment": "BARRAGE",
+          "firstPlayerId": "player:axis",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:axis"
+        },
+        "to": {
+          "gameTurn": 5,
+          "playerTurnIndex": 0,
+          "phase": "COMBAT",
+          "segment": "COMBAT",
+          "firstPlayerId": "player:axis",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:axis"
+        }
+      }
+    ]
+  }
+]

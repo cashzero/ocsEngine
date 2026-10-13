@@ -1,0 +1,182 @@
+[
+  {
+    "match": 1210102,
+    "revision": 79,
+    "turn": 1,
+    "decision": "ADVANCE_HEX",
+    "selected": "advance:generated-oob:286921528:axis:f4-combat-1:unit",
+    "options": [
+      {
+        "choice": "advance:done",
+        "label": "Do not advance",
+        "lost": [],
+        "feeds": [],
+        "immediateLosses": [],
+        "rngChanged": false
+      },
+      {
+        "choice": "advance:generated-oob:286921528:axis:f4-combat-1:unit",
+        "label": "Advance 340.VG",
+        "lost": [
+          "generated-oob:286921528:axis:f4-combat-1:unit"
+        ],
+        "feeds": [
+          {
+            "pieceId": "generated-oob:286921528:axis:f4-combat-1:unit",
+            "hexId": "15,5",
+            "feedTokens": [
+              {
+                "id": "generated-oob:286921528:axis:independent-supply-3:unit",
+                "tokens": 8
+              }
+            ]
+          }
+        ],
+        "immediateLosses": [],
+        "rngChanged": false
+      },
+      {
+        "choice": "advance-breakdown:generated-oob:286921528:axis:f4-combat-1:unit",
+        "label": "Detach a Breakdown from 340.VG (it may advance on its own)",
+        "lost": [],
+        "feeds": [],
+        "immediateLosses": [],
+        "rngChanged": false
+      }
+    ]
+  },
+  {
+    "match": 1210106,
+    "revision": 465,
+    "turn": 5,
+    "decision": "RETREAT_HEX",
+    "selected": "hex:21,8",
+    "options": [
+      {
+        "choice": "hex:21,8",
+        "label": "Ge 506 Tgr Bn retreats to 21,8",
+        "lost": [
+          "generated-oob:286921916:axis:independent-tank-4:unit"
+        ],
+        "feeds": [
+          {
+            "pieceId": "generated-oob:286921916:axis:independent-tank-4:unit",
+            "hexId": "21,8",
+            "feedTokens": []
+          }
+        ],
+        "immediateLosses": [],
+        "rngChanged": false
+      },
+      {
+        "choice": "hex:22,8",
+        "label": "Ge 506 Tgr Bn retreats to 22,8",
+        "lost": [],
+        "feeds": [],
+        "immediateLosses": [],
+        "rngChanged": false
+      },
+      {
+        "choice": "hex:22,9",
+        "label": "Ge 506 Tgr Bn retreats to 22,9",
+        "lost": [],
+        "feeds": [],
+        "immediateLosses": [],
+        "rngChanged": false
+      }
+    ]
+  },
+  {
+    "match": 1210200,
+    "revision": 299,
+    "turn": 4,
+    "decision": "RETREAT_HEX",
+    "selected": "hex:19,4",
+    "options": [
+      {
+        "choice": "hex:18,3",
+        "label": "4.Inf retreats to 18,3",
+        "lost": [],
+        "feeds": [],
+        "immediateLosses": [
+          {
+            "kind": "STEP_LOST",
+            "sequence": 1,
+            "pieceId": "generated-oob:286931034:axis:independent-anti_tank-1:unit",
+            "remainingSteps": null
+          }
+        ],
+        "rngChanged": false
+      },
+      {
+        "choice": "hex:19,4",
+        "label": "4.Inf retreats to 19,4",
+        "lost": [
+          "generated-oob:286931034:allied:f3-combat-1:unit"
+        ],
+        "feeds": [
+          {
+            "pieceId": "generated-oob:286931034:allied:f3-combat-1:unit",
+            "hexId": "19,4",
+            "feedTokens": []
+          }
+        ],
+        "immediateLosses": [
+          {
+            "kind": "STEP_LOST",
+            "sequence": 1,
+            "pieceId": "generated-oob:286931034:axis:independent-anti_tank-1:unit",
+            "remainingSteps": null
+          }
+        ],
+        "rngChanged": false
+      },
+      {
+        "choice": "hex:17,4",
+        "label": "4.Inf retreats to 17,4 (through 1 enemy ZOC: DG)",
+        "lost": [],
+        "feeds": [],
+        "immediateLosses": [
+          {
+            "kind": "STEP_LOST",
+            "sequence": 2,
+            "pieceId": "generated-oob:286931034:axis:independent-anti_tank-1:unit",
+            "remainingSteps": null
+          }
+        ],
+        "rngChanged": false
+      },
+      {
+        "choice": "hex:18,5",
+        "label": "4.Inf retreats to 18,5 (through 1 enemy ZOC: DG)",
+        "lost": [
+          "generated-oob:286931034:allied:f3-combat-1:unit"
+        ],
+        "feeds": [
+          {
+            "pieceId": "generated-oob:286931034:allied:f3-combat-1:unit",
+            "hexId": "18,5",
+            "feedTokens": []
+          }
+        ],
+        "immediateLosses": [
+          {
+            "kind": "STEP_LOST",
+            "sequence": 2,
+            "pieceId": "generated-oob:286931034:axis:independent-anti_tank-1:unit",
+            "remainingSteps": null
+          }
+        ],
+        "rngChanged": false
+      },
+      {
+        "choice": "breakdown:generated-oob:286931034:allied:f3-combat-1:unit",
+        "label": "Detach a Breakdown from 4.Inf first (it retreats too)",
+        "lost": [],
+        "feeds": [],
+        "immediateLosses": [],
+        "rngChanged": false
+      }
+    ]
+  }
+]

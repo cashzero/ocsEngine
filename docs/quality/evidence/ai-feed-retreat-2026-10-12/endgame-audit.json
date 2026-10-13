@@ -1,0 +1,66 @@
+{
+  "checked": 10,
+  "checkpoints": [
+    {
+      "match": 1213000,
+      "revision": 612,
+      "legalMoves": 55,
+      "objectiveMoves": 0
+    },
+    {
+      "match": 1213003,
+      "revision": 623,
+      "legalMoves": 0,
+      "objectiveMoves": 0
+    },
+    {
+      "match": 1213007,
+      "revision": 563,
+      "legalMoves": 57,
+      "objectiveMoves": 0
+    },
+    {
+      "match": 1213101,
+      "revision": 597,
+      "legalMoves": 0,
+      "objectiveMoves": 0
+    },
+    {
+      "match": 1213102,
+      "revision": 639,
+      "legalMoves": 0,
+      "objectiveMoves": 0
+    },
+    {
+      "match": 1213106,
+      "revision": 600,
+      "legalMoves": 0,
+      "objectiveMoves": 0
+    },
+    {
+      "match": 1213201,
+      "revision": 518,
+      "legalMoves": 23,
+      "objectiveMoves": 0
+    },
+    {
+      "match": 1213202,
+      "revision": 526,
+      "legalMoves": 0,
+      "objectiveMoves": 0
+    },
+    {
+      "match": 1213205,
+      "revision": 440,
+      "legalMoves": 0,
+      "objectiveMoves": 0
+    },
+    {
+      "match": 1213207,
+      "revision": 475,
+      "legalMoves": 0,
+      "objectiveMoves": 0
+    }
+  ],
+  "findings": []
+}

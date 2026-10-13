@@ -30,7 +30,7 @@ import { bridgingEnabled } from '../movement/bridging.js';
 import { hasOptionalActions } from '../query/candidates.js';
 import { nextSequence } from '../sequence/sequence.js';
 import { commitFuelForMove, payFuel } from '../supply/fuel.js';
-import { dumpsReaching, eatOffMapCost, recoveryPlan, spendReservations } from '../supply/supply.js';
+import { eatOffMapCost, internalRecoveryPayments, spendReservations } from '../supply/supply.js';
 import {
   applyBlowDump,
   applyCollapseExtender,
@@ -45,7 +45,7 @@ import {
 import { violation } from '../validation/violation.js';
 import { validateGameState } from './state.js';
 import { validateAdvance, validateGameAction } from './validate.js';
-import type { GameAction, GameState, ResourceReservation, RuleEvent, TransitionResult } from './model.js';
+import type { GameAction, GameState, RuleEvent, TransitionResult } from './model.js';
 
 export { validateGameAction } from './validate.js';
 
@@ -191,18 +191,8 @@ const dispatch = (state: GameState, action: GameAction): Transition => {
     }
     case 'RECOVER_INTERNALS': {
       const piece = pieceById(state, action.pieceId)!;
-      const dumps = dumpsReaching(state, action.actorId, hexOf(piece)!, piece);
-      const ordered = action.sourcePieceIds.flatMap((id) => dumps.filter(({ pieceId }) => pieceId === id));
-      const plan = recoveryPlan(state, piece, ordered.reduce((total, dump) => total + dump.availableQuantity, 0));
-      const payments: ResourceReservation[] = [];
-      let left = plan.tokens;
-      for (const dump of ordered) {
-        if (left <= 0) break;
-        const quantity = Math.min(left, dump.availableQuantity);
-        left -= quantity;
-        const dumpPiece = pieceById(state, dump.pieceId)!;
-        payments.push({ resourcePieceId: dump.pieceId, quantity, unitDefinitionId: state.scenario.pieceCatalog.definitions.find(({ id }) => id === dumpPiece.definitionId)!.resource!.unitDefinitionId });
-      }
+      const plan = internalRecoveryPayments(state, piece, action.sourcePieceIds);
+      const payments = plan.payments;
       let next: GameState = { ...state, pieceState: spendReservations(state, payments) };
       next = { ...next, pieceState: upsertPieceState(next.pieceState, withInternalStocks(pieceById(next, piece.id)!, plan.level)) };
       next = { ...next, usage: withUsage(next, { ...usageOf(next, piece), recovered: true }) };

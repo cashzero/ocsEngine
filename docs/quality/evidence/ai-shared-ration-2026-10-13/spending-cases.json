@@ -1,0 +1,117 @@
+[
+  {
+    "name": "ration-fuel-1210100",
+    "action": {
+      "actionId": "candidate:fuel:SINGLE_UNIT:generated-oob:286921334:axis:independent-anti-tank-4:unit:generated-oob:286921334:axis:independent-supply-1:unit:396",
+      "actorId": "player:axis",
+      "expectedRevision": 396,
+      "kind": "PAY_FUEL",
+      "method": "SINGLE_UNIT",
+      "pieceId": "generated-oob:286921334:axis:independent-anti-tank-4:unit",
+      "sourcePieceId": "generated-oob:286921334:axis:independent-supply-1:unit"
+    },
+    "beforeGroups": [
+      {
+        "sourcePieceId": "generated-oob:286921334:axis:independent-supply-1:unit",
+        "pieceIds": [
+          "generated-oob:286921334:axis:f1-artillery-1:unit",
+          "generated-oob:286921334:axis:f2-artillery-1:unit",
+          "generated-oob:286921334:axis:independent-anti-tank-4:unit",
+          "generated-oob:286921334:axis:independent-tank-2:unit"
+        ],
+        "tokens": 1
+      },
+      {
+        "sourcePieceId": "supply-arrival:player:axis:4#load298",
+        "pieceIds": [
+          "generated-oob:286921334:axis:f3-combat-1:unit",
+          "generated-oob:286921334:axis:f5-combat-1:unit",
+          "generated-oob:286921334:axis:f2-recon:unit",
+          "generated-oob:286921334:axis:independent-anti_tank-2:unit"
+        ],
+        "tokens": 4
+      }
+    ],
+    "afterGroups": [
+      {
+        "sourcePieceId": "supply-arrival:player:axis:4#load298",
+        "pieceIds": [
+          "generated-oob:286921334:axis:f3-combat-1:unit",
+          "generated-oob:286921334:axis:f5-combat-1:unit",
+          "generated-oob:286921334:axis:f2-recon:unit",
+          "generated-oob:286921334:axis:independent-anti_tank-2:unit"
+        ],
+        "tokens": 4
+      }
+    ],
+    "committedBefore": 8,
+    "committedAfter": 4,
+    "events": [
+      {
+        "kind": "FUEL_PAID",
+        "sequence": 0,
+        "method": "SINGLE_UNIT",
+        "pieceId": "generated-oob:286921334:axis:independent-anti-tank-4:unit",
+        "resourcePieceId": "generated-oob:286921334:axis:independent-supply-1:unit",
+        "tokens": 1
+      }
+    ]
+  },
+  {
+    "name": "ration-hedgehog-1210002",
+    "action": {
+      "actionId": "candidate:hedgehog:23,3:crew:611",
+      "actorId": "player:allied",
+      "engineerId": null,
+      "expectedRevision": 611,
+      "hexId": "23,3",
+      "kind": "BUILD_HEDGEHOG",
+      "payments": [
+        {
+          "sourcePieceId": "supply-arrival:player:allied:3",
+          "tokens": 8
+        }
+      ],
+      "pieceIds": [
+        "generated-oob:286911828:allied:f6-combat-1:unit"
+      ]
+    },
+    "beforeGroups": [
+      {
+        "sourcePieceId": "supply-arrival:player:allied:3",
+        "pieceIds": [
+          "generated-oob:286911828:allied:f1-combat-2:unit",
+          "generated-oob:286911828:allied:f2-combat-2:unit",
+          "generated-oob:286911828:allied:f6-combat-1:unit",
+          "generated-oob:286911828:allied:independent-engineer-1:unit",
+          "generated-oob:286911828:allied:f2-artillery-1:unit",
+          "generated-oob:286911828:allied:f2-recon:unit",
+          "generated-oob:286911828:allied:garrison:objective-1",
+          "generated-oob:286911828:allied:garrison:objective-3",
+          "generated-oob:286911828:allied:independent-hq-1:unit",
+          "generated-oob:286911828:allied:independent-tank-1:unit",
+          "generated-oob:286911828:allied:independent-tank-2:unit"
+        ],
+        "tokens": 4
+      }
+    ],
+    "afterGroups": [],
+    "committedBefore": 11,
+    "committedAfter": 0,
+    "events": [
+      {
+        "kind": "SUPPLY_SPENT",
+        "sequence": 0,
+        "resourcePieceId": "supply-arrival:player:allied:3",
+        "quantity": 8
+      },
+      {
+        "kind": "HEDGEHOG_LEVEL_CHANGED",
+        "sequence": 1,
+        "pieceId": "hedgehog:player:allied:8:23,3",
+        "hexId": "23,3",
+        "level": 1
+      }
+    ]
+  }
+]

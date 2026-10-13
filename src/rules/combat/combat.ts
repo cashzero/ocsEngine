@@ -1,4 +1,5 @@
 import { portAt } from '../port/state.js';
+import { capturePort } from '../port/port.js';
 import { defendingHedgehogLevel, hedgehogAt, hedgehogLevel, HEDGEHOG_BARRAGE_SHIFT, HEDGEHOG_BRACKETED_LEVEL, HEDGEHOG_SURPRISE_DRM } from '../hedgehog/hedgehog.js';
 import { stableSort, type HexId, type PieceId, type PlayerId } from '../../core/index.js';
 import { setHexControl } from '../../domain/map/index.js';
@@ -959,7 +960,7 @@ const optionChoices = (state: GameState, side: CombatSide, points: number): Pend
   return choices;
 };
 
-const applyRetreat = (state: GameState, side: CombatSide, stack: readonly PieceState[], plan: RetreatPlan, events: RuleEvent[]): { state: GameState; zocLossIds: PieceId[] } => {
+const applyRetreat = (state: GameState, side: CombatSide, stack: readonly PieceState[], plan: RetreatPlan, events: RuleEvent[], preview = false): { state: GameState; zocLossIds: PieceId[] } => {
   let next = state;
   const owner = stack[0]!.ownerId;
   const zocLossIds: PieceId[] = [];
@@ -977,7 +978,7 @@ const applyRetreat = (state: GameState, side: CombatSide, stack: readonly PieceS
     }
     next = { ...next, pieceState };
     // 9.12f: retreats through enemy non-combat units handle them as movement does (9.14).
-    next = captureAt(next, owner, hexId, events);
+    next = preview ? capturePort(next, owner, hexId, events) : captureAt(next, owner, hexId, events);
     const secondHex = index === 1;
     const zoc = inEnemyZoc(next, owner, hexId);
     // 9.12a/e, 5.10a: second hex of retreat, or entering an enemy ZOC, disorganizes every combat unit in the Hex.
@@ -1210,6 +1211,7 @@ const applyRetreatChoice = (
   rest: readonly ResolutionStep[],
   choiceId: string,
   events: RuleEvent[],
+  preview = false,
 ): GameState => {
   const transaction = state.activeTransaction!;
   const alive = survivors(state, step.pieceIds);
@@ -1226,10 +1228,22 @@ const applyRetreatChoice = (
     ? [...alive, ...friendlyCombatUnitsAt(state, transaction.ownerId, hexId).filter((piece) => !transaction.attackerIds.includes(piece.id) && !step.pieceIds.includes(piece.id))]
     : alive;
   const plan = retreatPlans(state, group, step.hexes, retreatBlocks(transaction, step.side), retreatOpponentHexes(state, transaction, step.side)).find((candidate) => candidate.destination === destination)!;
-  const moved = applyRetreat(withQueue(state, rest), step.side, group, plan, events);
+  const moved = applyRetreat(withQueue(state, rest), step.side, group, plan, events, preview);
   return moved.zocLossIds.length > 0
     ? withQueue(moved.state, [{ kind: 'LOSS', side: step.side, count: 1, distribution: 'FREE', pieceIds: moved.zocLossIds }, ...moved.state.activeTransaction!.queue])
     : moved.state;
+};
+
+/** The chosen retreat's deterministic placement/mode effects, before further combat resolution.
+ * Reuses the real path and DG rules, but neither rolls captures nor resolves later queue entries.
+ * Call only for a validated retreat hex choice. */
+export const previewRetreatChoice = (state: GameState, choiceId: string): { state: GameState; additionalLosses: number } | null => {
+  const [step, ...rest] = state.activeTransaction?.queue ?? [];
+  if (state.pendingDecision?.kind !== 'RETREAT_HEX' || step?.kind !== 'RETREAT'
+    || !(choiceId.startsWith('hex:') || choiceId.startsWith('with:'))) return null;
+  const after = applyRetreatChoice(state, step, rest, choiceId, [], true);
+  const first = after.activeTransaction!.queue[0];
+  return { state: after, additionalLosses: first !== rest[0] && first?.kind === 'LOSS' ? first.count : 0 };
 };
 
 export const resolveDecision = (state: GameState, choiceId: string): Transition => {
