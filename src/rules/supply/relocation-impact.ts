@@ -28,6 +28,28 @@ export const relocationSupplyFacts = (state: GameState, action: GameAction): rea
     && piece.location.kind === 'ON_MAP' && isCombatUnit(state, piece));
   const fact = (key: string, value: string | number | boolean): RuleFact => ({ key, value, visibility: 'OWNER_ONLY', ownerId: action.actorId });
   if (action.kind === 'RESPOND_DECISION') {
+    // Reinforcing an already occupied friendly hex has no enemy capture roll to preview.
+    // Keep first entry into an enemy hex outside this deterministic supply forecast.
+    if (state.pendingDecision?.kind === 'ADVANCE_HEX' && action.choiceId.startsWith('advance:')
+      && !['advance:all', 'advance:done'].includes(action.choiceId)) {
+      const target = state.activeTransaction?.targetHexId;
+      const unit = state.pieceState.pieces.find(piece => piece.id === action.choiceId.slice('advance:'.length));
+      if (!target || !unit || unit.ownerId !== action.actorId || unit.location.kind !== 'ON_MAP'
+        || !isCombatUnit(state, unit)
+        || !state.mapState.hexControl.some(control => control.hexId === target && control.controllerId === action.actorId)
+        || state.pieceState.pieces.some(piece => piece.location.kind === 'ON_MAP' && piece.location.hexId === target && piece.ownerId !== action.actorId)) return [];
+      const relocated = { ...unit, location: { kind: 'ON_MAP' as const, hexId: target } };
+      const after = { ...state, pieceState: { ...state.pieceState,
+        pieces: state.pieceState.pieces.map(piece => piece.id === unit.id ? relocated : piece) } };
+      const units = own();
+      return [
+        fact('supply.advanceTraceLost', units.filter(piece => pieceHasTrace(state, piece)
+          && !pieceHasTrace(after, pieceById(after, piece.id)!)).length),
+        fact('supply.advanceFeedLost', units.filter(piece => !pieceHasTrace(state, piece)
+          && availableRationTokens(after, pieceById(after, piece.id)!) < availableRationTokens(state, piece)).length),
+        fact('supply.advanceMoverHasTrace', pieceHasTrace(after, relocated)),
+      ];
+    }
     const preview = previewRetreatChoice(state, action.choiceId);
     if (!preview) return [];
     const after = preview.state;

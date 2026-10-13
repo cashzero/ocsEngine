@@ -1,0 +1,17 @@
+{
+  "scope": "Last transition to out-of-trace preceding an attrition step; not proof of intent or an avoidable mistake",
+  "attritionByPolicy": {
+    "35": {
+      "opponent-action": 186,
+      "entered-map-out-of-trace": 47,
+      "opponent-combat": 59,
+      "phase-transition-investigate": 2
+    },
+    "19": {
+      "opponent-action": 290,
+      "entered-map-out-of-trace": 36,
+      "opponent-combat": 68,
+      "phase-transition-investigate": 6
+    }
+  }
+}

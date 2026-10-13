@@ -1,0 +1,29 @@
+{
+  "completeGames": 256,
+  "pairs": 128,
+  "rejected": 0,
+  "errors": 0,
+  "replayMismatches": 0,
+  "advancePreviewMismatches": 0,
+  "reinforcementViolations": 0,
+  "guardViolations": 0,
+  "sourceMatchesFrozen": true,
+  "attritionTriggerCounts": {
+    "35": {
+      "reinforcements": 101,
+      "opponent-action": 734,
+      "phase-transition-investigate": 11,
+      "entered-map-out-of-trace": 71,
+      "opponent-combat": 164,
+      "own-action": 3
+    },
+    "19": {
+      "opponent-action": 780,
+      "entered-map-out-of-trace": 112,
+      "opponent-combat": 119,
+      "phase-transition-investigate": 42,
+      "own-action": 2,
+      "initially-out-of-trace": 1
+    }
+  }
+}

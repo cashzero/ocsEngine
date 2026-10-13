@@ -1,0 +1,27 @@
+{
+  "candidate": "heuristic@31",
+  "sharedBase": "0e4c9c3",
+  "rootAndFrozenBytesEqual": true,
+  "sha256": {
+    "src/ai/policies/heuristic.ts": "55d5d40a4e1e4a22d235ca567d157570a7af4872384cd37cdbc48e229163d87f",
+    "src/ai/analysis.ts": "662ef3cba8750eda771f261cdaef967316f3368da5f89c5d8df7e53c6155f4ba",
+    "src/ai/policies/heuristic-weights.ts": "54e9a86b78894dc2c4070ed0e1d3829ed2a9249b790f8d23d8cecfa642b62d8a",
+    "dist/ai/policies/heuristic.js": "f6f9c8ca20e9413003fd24391e919423bc31f8d5295b516df98dc76b0277b95e",
+    "dist/ai/policies/heuristic-weights.js": "51b2faa804747d4c2082d568bbdbf1c79a2e2f85d67d3c5c4e84078d1a09b2ce",
+    "dist/ai/analysis.js": "45928a9c6da54d6f2beac37a2377779588c5b0af931ea570bf403df61504f2e4"
+  },
+  "independentSeeds": {
+    "meeting": [
+      1257000,
+      1257100
+    ],
+    "axisAttacks": [
+      1258000,
+      1258100
+    ]
+  },
+  "eligibleTheaters": [
+    "TEMPERATE_INLAND",
+    "EASTERN_EUROPE"
+  ]
+}

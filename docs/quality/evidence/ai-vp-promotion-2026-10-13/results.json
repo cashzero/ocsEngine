@@ -1,0 +1,3578 @@
+{
+  "baseCommit": "0e4c9c3",
+  "baseline": "heuristic@19",
+  "eligibleTheaters": [
+    "TEMPERATE_INLAND",
+    "EASTERN_EUROPE"
+  ],
+  "retiredTheater": "MEDITERRANEAN_COAST: historical runs excluded from promotion; no later runs",
+  "tables": {
+    "development": {
+      "21": {
+        "games": 16,
+        "vp": 103,
+        "kills": 269,
+        "losses": 254,
+        "draws": 9,
+        "attritionSteps": 90,
+        "traceBreaks": 0,
+        "feedBreaks": 0,
+        "spendingViolations": 0,
+        "defeats": 5,
+        "wins": 2,
+        "meanVp": 6.4375,
+        "pairedVpMargin": -1.625,
+        "pairedSE": 1.8413649828320293,
+        "pairs": 8
+      },
+      "19": {
+        "games": 16,
+        "vp": 129,
+        "kills": 254,
+        "losses": 269,
+        "draws": 9,
+        "attritionSteps": 109,
+        "traceBreaks": 0,
+        "feedBreaks": 0,
+        "spendingViolations": 0,
+        "wins": 5,
+        "defeats": 2,
+        "meanVp": 8.0625,
+        "pairedVpMargin": 1.625,
+        "pairedSE": 1.8413649828320293,
+        "pairs": 8
+      }
+    },
+    "development-v22": {
+      "22": {
+        "games": 16,
+        "vp": 108,
+        "kills": 237,
+        "losses": 237,
+        "defeats": 7,
+        "attritionSteps": 97,
+        "traceBreaks": 0,
+        "feedBreaks": 0,
+        "spendingViolations": 0,
+        "wins": 7,
+        "draws": 2,
+        "meanVp": 6.75,
+        "pairedVpMargin": 0,
+        "pairedSE": 0.0,
+        "pairs": 8
+      },
+      "19": {
+        "games": 16,
+        "vp": 108,
+        "kills": 237,
+        "losses": 237,
+        "wins": 7,
+        "attritionSteps": 97,
+        "traceBreaks": 0,
+        "feedBreaks": 0,
+        "spendingViolations": 0,
+        "defeats": 7,
+        "draws": 2,
+        "meanVp": 6.75,
+        "pairedVpMargin": 0,
+        "pairedSE": 0.0,
+        "pairs": 8
+      }
+    },
+    "development-v23": {
+      "23": {
+        "games": 16,
+        "vp": 109,
+        "kills": 236,
+        "losses": 236,
+        "wins": 7,
+        "attritionSteps": 78,
+        "traceBreaks": 0,
+        "feedBreaks": 0,
+        "spendingViolations": 0,
+        "defeats": 7,
+        "draws": 2,
+        "meanVp": 6.8125,
+        "pairedVpMargin": 0,
+        "pairedSE": 0.0,
+        "pairs": 8
+      },
+      "19": {
+        "games": 16,
+        "vp": 109,
+        "kills": 236,
+        "losses": 236,
+        "defeats": 7,
+        "attritionSteps": 78,
+        "traceBreaks": 0,
+        "feedBreaks": 0,
+        "spendingViolations": 0,
+        "wins": 7,
+        "draws": 2,
+        "meanVp": 6.8125,
+        "pairedVpMargin": 0,
+        "pairedSE": 0.0,
+        "pairs": 8
+      }
+    },
+    "development-v24": {
+      "24": {
+        "games": 16,
+        "vp": 96,
+        "kills": 246,
+        "losses": 249,
+        "wins": 6,
+        "attritionSteps": 93,
+        "traceBreaks": 0,
+        "feedBreaks": 0,
+        "spendingViolations": 0,
+        "defeats": 6,
+        "draws": 4,
+        "meanVp": 6.0,
+        "pairedVpMargin": 0.25,
+        "pairedSE": 0.25,
+        "pairs": 8
+      },
+      "19": {
+        "games": 16,
+        "vp": 92,
+        "kills": 249,
+        "losses": 246,
+        "defeats": 6,
+        "attritionSteps": 94,
+        "traceBreaks": 0,
+        "feedBreaks": 0,
+        "spendingViolations": 0,
+        "wins": 6,
+        "draws": 4,
+        "meanVp": 5.75,
+        "pairedVpMargin": -0.25,
+        "pairedSE": 0.25,
+        "pairs": 8
+      }
+    },
+    "development-v25": {
+      "25": {
+        "games": 16,
+        "vp": 100,
+        "kills": 238,
+        "losses": 229,
+        "defeats": 5,
+        "attritionSteps": 66,
+        "traceBreaks": 0,
+        "feedBreaks": 0,
+        "spendingViolations": 0,
+        "wins": 6,
+        "draws": 5,
+        "meanVp": 6.25,
+        "pairedVpMargin": 0.5,
+        "pairedSE": 0.32732683535398854,
+        "pairs": 8
+      },
+      "19": {
+        "games": 16,
+        "vp": 92,
+        "kills": 229,
+        "losses": 238,
+        "wins": 5,
+        "attritionSteps": 79,
+        "traceBreaks": 0,
+        "feedBreaks": 0,
+        "spendingViolations": 0,
+        "defeats": 6,
+        "draws": 5,
+        "meanVp": 5.75,
+        "pairedVpMargin": -0.5,
+        "pairedSE": 0.32732683535398854,
+        "pairs": 8
+      }
+    },
+    "development-v26": {
+      "26": {
+        "games": 16,
+        "vp": 103,
+        "kills": 175,
+        "losses": 206,
+        "draws": 6,
+        "attritionSteps": 70,
+        "traceBreaks": 0,
+        "feedBreaks": 0,
+        "spendingViolations": 0,
+        "wins": 6,
+        "defeats": 4,
+        "meanVp": 6.4375,
+        "pairedVpMargin": 0.875,
+        "pairedSE": 1.4812820219564633,
+        "pairs": 8
+      },
+      "19": {
+        "games": 16,
+        "vp": 89,
+        "kills": 206,
+        "losses": 175,
+        "draws": 6,
+        "attritionSteps": 43,
+        "traceBreaks": 0,
+        "feedBreaks": 0,
+        "spendingViolations": 0,
+        "defeats": 6,
+        "wins": 4,
+        "meanVp": 5.5625,
+        "pairedVpMargin": -0.875,
+        "pairedSE": 1.4812820219564633,
+        "pairs": 8
+      }
+    },
+    "development-v27": {
+      "27": {
+        "games": 16,
+        "vp": 103,
+        "kills": 137,
+        "losses": 165,
+        "wins": 6,
+        "attritionSteps": 44,
+        "traceBreaks": 0,
+        "feedBreaks": 0,
+        "spendingViolations": 0,
+        "defeats": 7,
+        "draws": 3,
+        "meanVp": 6.4375,
+        "pairedVpMargin": 0.625,
+        "pairedSE": 0.7777600621565202,
+        "pairs": 8
+      },
+      "19": {
+        "games": 16,
+        "vp": 93,
+        "kills": 165,
+        "losses": 137,
+        "defeats": 6,
+        "attritionSteps": 28,
+        "traceBreaks": 0,
+        "feedBreaks": 0,
+        "spendingViolations": 0,
+        "wins": 7,
+        "draws": 3,
+        "meanVp": 5.8125,
+        "pairedVpMargin": -0.625,
+        "pairedSE": 0.7777600621565202,
+        "pairs": 8
+      }
+    },
+    "development-v28": {
+      "28": {
+        "games": 16,
+        "vp": 101,
+        "kills": 236,
+        "losses": 224,
+        "defeats": 7,
+        "attritionSteps": 76,
+        "traceBreaks": 0,
+        "feedBreaks": 0,
+        "spendingViolations": 0,
+        "wins": 5,
+        "draws": 4,
+        "meanVp": 6.3125,
+        "pairedVpMargin": -0.375,
+        "pairedSE": 0.9624652127294189,
+        "pairs": 8
+      },
+      "19": {
+        "games": 16,
+        "vp": 107,
+        "kills": 224,
+        "losses": 236,
+        "wins": 7,
+        "attritionSteps": 84,
+        "traceBreaks": 0,
+        "feedBreaks": 0,
+        "spendingViolations": 0,
+        "defeats": 5,
+        "draws": 4,
+        "meanVp": 6.6875,
+        "pairedVpMargin": 0.375,
+        "pairedSE": 0.9624652127294189,
+        "pairs": 8
+      }
+    },
+    "development-v29": {
+      "29": {
+        "games": 16,
+        "vp": 104,
+        "kills": 158,
+        "losses": 161,
+        "draws": 8,
+        "attritionSteps": 56,
+        "traceBreaks": 0,
+        "feedBreaks": 0,
+        "spendingViolations": 0,
+        "wins": 4,
+        "defeats": 4,
+        "meanVp": 6.5,
+        "pairedVpMargin": 0,
+        "pairedSE": 0.3779644730092272,
+        "pairs": 8
+      },
+      "19": {
+        "games": 16,
+        "vp": 104,
+        "kills": 161,
+        "losses": 158,
+        "draws": 8,
+        "attritionSteps": 45,
+        "traceBreaks": 0,
+        "feedBreaks": 0,
+        "spendingViolations": 0,
+        "defeats": 4,
+        "wins": 4,
+        "meanVp": 6.5,
+        "pairedVpMargin": 0,
+        "pairedSE": 0.3779644730092272,
+        "pairs": 8
+      }
+    },
+    "development-v30": {
+      "30": {
+        "games": 16,
+        "vp": 92,
+        "kills": 206,
+        "losses": 208,
+        "defeats": 6,
+        "attritionSteps": 81,
+        "traceBreaks": 0,
+        "feedBreaks": 0,
+        "spendingViolations": 0,
+        "wins": 6,
+        "draws": 4,
+        "meanVp": 5.75,
+        "pairedVpMargin": 0.5,
+        "pairedSE": 0.9636241116594314,
+        "pairs": 8
+      },
+      "19": {
+        "games": 16,
+        "vp": 84,
+        "kills": 208,
+        "losses": 206,
+        "wins": 6,
+        "attritionSteps": 66,
+        "traceBreaks": 0,
+        "feedBreaks": 0,
+        "spendingViolations": 0,
+        "defeats": 6,
+        "draws": 4,
+        "meanVp": 5.25,
+        "pairedVpMargin": -0.5,
+        "pairedSE": 0.9636241116594314,
+        "pairs": 8
+      }
+    },
+    "development-v32": {
+      "32": {
+        "games": 16,
+        "vp": 93,
+        "kills": 201,
+        "losses": 259,
+        "defeats": 8,
+        "attritionSteps": 87,
+        "traceBreaks": 0,
+        "feedBreaks": 0,
+        "spendingViolations": 0,
+        "wins": 6,
+        "draws": 2,
+        "advancePreviewsChecked": 21,
+        "reinforcements": 3,
+        "reinforcementTraceBreaks": 0,
+        "reinforcementFeedBreaks": 0,
+        "meanVp": 5.8125,
+        "pairedVpMargin": -0.5,
+        "pairedSE": 2.1794494717703365,
+        "pairs": 8
+      },
+      "19": {
+        "games": 16,
+        "vp": 101,
+        "kills": 259,
+        "losses": 201,
+        "wins": 8,
+        "attritionSteps": 35,
+        "traceBreaks": 0,
+        "feedBreaks": 0,
+        "spendingViolations": 0,
+        "defeats": 6,
+        "draws": 2,
+        "advancePreviewsChecked": 13,
+        "reinforcements": 0,
+        "meanVp": 6.3125,
+        "pairedVpMargin": 0.5,
+        "pairedSE": 2.1794494717703365,
+        "pairs": 8
+      }
+    },
+    "development-v33": {
+      "33": {
+        "games": 16,
+        "vp": 91,
+        "kills": 201,
+        "losses": 183,
+        "draws": 4,
+        "attritionSteps": 48,
+        "traceBreaks": 0,
+        "feedBreaks": 0,
+        "spendingViolations": 0,
+        "wins": 6,
+        "defeats": 6,
+        "advancePreviewsChecked": 18,
+        "reinforcements": 8,
+        "reinforcementTraceBreaks": 0,
+        "reinforcementFeedBreaks": 0,
+        "meanVp": 5.6875,
+        "pairedVpMargin": -0.625,
+        "pairedSE": 1.5345718341888444,
+        "pairs": 8
+      },
+      "19": {
+        "games": 16,
+        "vp": 101,
+        "kills": 183,
+        "losses": 201,
+        "draws": 4,
+        "attritionSteps": 64,
+        "traceBreaks": 0,
+        "feedBreaks": 0,
+        "spendingViolations": 0,
+        "defeats": 6,
+        "wins": 6,
+        "advancePreviewsChecked": 10,
+        "reinforcements": 0,
+        "meanVp": 6.3125,
+        "pairedVpMargin": 0.625,
+        "pairedSE": 1.5345718341888444,
+        "pairs": 8
+      }
+    },
+    "development-v34": {
+      "34": {
+        "games": 16,
+        "vp": 103,
+        "kills": 217,
+        "losses": 198,
+        "draws": 5,
+        "attritionSteps": 55,
+        "traceBreaks": 0,
+        "feedBreaks": 0,
+        "spendingViolations": 0,
+        "wins": 5,
+        "defeats": 6,
+        "advancePreviewsChecked": 23,
+        "reinforcements": 1,
+        "reinforcementTraceBreaks": 0,
+        "reinforcementFeedBreaks": 0,
+        "meanVp": 6.4375,
+        "pairedVpMargin": 0,
+        "pairedSE": 0.823754471047914,
+        "pairs": 8
+      },
+      "19": {
+        "games": 16,
+        "vp": 103,
+        "kills": 198,
+        "losses": 217,
+        "draws": 5,
+        "attritionSteps": 74,
+        "traceBreaks": 0,
+        "feedBreaks": 0,
+        "spendingViolations": 0,
+        "defeats": 5,
+        "wins": 6,
+        "advancePreviewsChecked": 17,
+        "reinforcements": 0,
+        "meanVp": 6.4375,
+        "pairedVpMargin": 0,
+        "pairedSE": 0.823754471047914,
+        "pairs": 8
+      }
+    },
+    "development-v35": {
+      "35": {
+        "games": 16,
+        "vp": 120,
+        "kills": 170,
+        "losses": 180,
+        "draws": 2,
+        "attritionSteps": 36,
+        "traceBreaks": 0,
+        "feedBreaks": 0,
+        "spendingViolations": 0,
+        "wins": 8,
+        "defeats": 6,
+        "advancePreviewsChecked": 14,
+        "reinforcements": 3,
+        "reinforcementTraceBreaks": 0,
+        "reinforcementFeedBreaks": 0,
+        "meanVp": 7.5,
+        "pairedVpMargin": 1.75,
+        "pairedSE": 1.319496657279369,
+        "pairs": 8
+      },
+      "19": {
+        "games": 16,
+        "vp": 92,
+        "kills": 180,
+        "losses": 170,
+        "draws": 2,
+        "attritionSteps": 20,
+        "traceBreaks": 0,
+        "feedBreaks": 0,
+        "spendingViolations": 0,
+        "defeats": 8,
+        "wins": 6,
+        "advancePreviewsChecked": 9,
+        "reinforcements": 0,
+        "meanVp": 5.75,
+        "pairedVpMargin": -1.75,
+        "pairedSE": 1.319496657279369,
+        "pairs": 8
+      }
+    },
+    "validation-meeting": {
+      "24": {
+        "games": 32,
+        "vp": 207,
+        "kills": 434,
+        "losses": 419,
+        "wins": 14,
+        "attritionSteps": 163,
+        "traceBreaks": 0,
+        "feedBreaks": 0,
+        "spendingViolations": 0,
+        "defeats": 14,
+        "draws": 4,
+        "meanVp": 6.46875,
+        "pairedVpMargin": -0.0625,
+        "pairedSE": 0.0625,
+        "pairs": 16
+      },
+      "19": {
+        "games": 32,
+        "vp": 209,
+        "kills": 419,
+        "losses": 434,
+        "defeats": 14,
+        "attritionSteps": 176,
+        "traceBreaks": 0,
+        "feedBreaks": 0,
+        "spendingViolations": 0,
+        "wins": 14,
+        "draws": 4,
+        "meanVp": 6.53125,
+        "pairedVpMargin": 0.0625,
+        "pairedSE": 0.0625,
+        "pairs": 16
+      }
+    },
+    "validation-attack": {
+      "24": {
+        "games": 32,
+        "vp": 190,
+        "kills": 542,
+        "losses": 539,
+        "defeats": 18,
+        "attritionSteps": 190,
+        "traceBreaks": 0,
+        "feedBreaks": 0,
+        "spendingViolations": 0,
+        "wins": 14,
+        "meanVp": 5.9375,
+        "pairedVpMargin": -0.5,
+        "pairedSE": 0.3872983346207417,
+        "pairs": 16
+      },
+      "19": {
+        "games": 32,
+        "vp": 206,
+        "kills": 539,
+        "losses": 542,
+        "wins": 18,
+        "attritionSteps": 217,
+        "traceBreaks": 0,
+        "feedBreaks": 0,
+        "spendingViolations": 0,
+        "defeats": 14,
+        "meanVp": 6.4375,
+        "pairedVpMargin": 0.5,
+        "pairedSE": 0.3872983346207417,
+        "pairs": 16
+      }
+    },
+    "validation-v26-meeting": {
+      "26": {
+        "games": 32,
+        "vp": 203,
+        "kills": 416,
+        "losses": 349,
+        "wins": 13,
+        "attritionSteps": 58,
+        "traceBreaks": 0,
+        "feedBreaks": 0,
+        "spendingViolations": 0,
+        "defeats": 13,
+        "draws": 6,
+        "meanVp": 6.34375,
+        "pairedVpMargin": 0.3125,
+        "pairedSE": 0.3125,
+        "pairs": 16
+      },
+      "19": {
+        "games": 32,
+        "vp": 193,
+        "kills": 349,
+        "losses": 416,
+        "defeats": 13,
+        "attritionSteps": 129,
+        "traceBreaks": 0,
+        "feedBreaks": 0,
+        "spendingViolations": 0,
+        "wins": 13,
+        "draws": 6,
+        "meanVp": 6.03125,
+        "pairedVpMargin": -0.3125,
+        "pairedSE": 0.3125,
+        "pairs": 16
+      }
+    },
+    "validation-v26-attack": {
+      "26": {
+        "games": 32,
+        "vp": 182,
+        "kills": 403,
+        "losses": 366,
+        "defeats": 16,
+        "attritionSteps": 90,
+        "traceBreaks": 0,
+        "feedBreaks": 0,
+        "spendingViolations": 0,
+        "wins": 16,
+        "meanVp": 5.6875,
+        "pairedVpMargin": 0.1875,
+        "pairedSE": 0.5643488135305446,
+        "pairs": 16
+      },
+      "19": {
+        "games": 32,
+        "vp": 176,
+        "kills": 366,
+        "losses": 403,
+        "wins": 16,
+        "attritionSteps": 130,
+        "traceBreaks": 0,
+        "feedBreaks": 0,
+        "spendingViolations": 0,
+        "defeats": 16,
+        "meanVp": 5.5,
+        "pairedVpMargin": -0.1875,
+        "pairedSE": 0.5643488135305446,
+        "pairs": 16
+      }
+    },
+    "validation-v27-meeting": {
+      "27": {
+        "games": 32,
+        "vp": 184,
+        "kills": 474,
+        "losses": 488,
+        "wins": 12,
+        "attritionSteps": 137,
+        "traceBreaks": 0,
+        "feedBreaks": 0,
+        "spendingViolations": 0,
+        "draws": 6,
+        "defeats": 14,
+        "meanVp": 5.75,
+        "pairedVpMargin": -1,
+        "pairedSE": 1.0762589527308626,
+        "pairs": 16
+      },
+      "19": {
+        "games": 32,
+        "vp": 216,
+        "kills": 488,
+        "losses": 474,
+        "defeats": 12,
+        "attritionSteps": 148,
+        "traceBreaks": 0,
+        "feedBreaks": 0,
+        "spendingViolations": 0,
+        "draws": 6,
+        "wins": 14,
+        "meanVp": 6.75,
+        "pairedVpMargin": 1,
+        "pairedSE": 1.0762589527308626,
+        "pairs": 16
+      }
+    },
+    "validation-v27-attack": {
+      "27": {
+        "games": 32,
+        "vp": 196,
+        "kills": 325,
+        "losses": 297,
+        "defeats": 18,
+        "attritionSteps": 59,
+        "traceBreaks": 0,
+        "feedBreaks": 0,
+        "spendingViolations": 0,
+        "wins": 14,
+        "meanVp": 6.125,
+        "pairedVpMargin": -0.0625,
+        "pairedSE": 0.5512769267799986,
+        "pairs": 16
+      },
+      "19": {
+        "games": 32,
+        "vp": 198,
+        "kills": 297,
+        "losses": 325,
+        "wins": 18,
+        "attritionSteps": 80,
+        "traceBreaks": 0,
+        "feedBreaks": 0,
+        "spendingViolations": 0,
+        "defeats": 14,
+        "meanVp": 6.1875,
+        "pairedVpMargin": 0.0625,
+        "pairedSE": 0.5512769267799986,
+        "pairs": 16
+      }
+    },
+    "validation-v31-meeting": {
+      "31": {
+        "games": 32,
+        "vp": 210,
+        "kills": 484,
+        "losses": 417,
+        "defeats": 9,
+        "attritionSteps": 130,
+        "traceBreaks": 0,
+        "feedBreaks": 0,
+        "spendingViolations": 0,
+        "wins": 14,
+        "draws": 9,
+        "meanVp": 6.5625,
+        "pairedVpMargin": 0.1875,
+        "pairedSE": 0.7428478422036822,
+        "pairs": 16
+      },
+      "19": {
+        "games": 32,
+        "vp": 204,
+        "kills": 417,
+        "losses": 484,
+        "wins": 9,
+        "attritionSteps": 200,
+        "traceBreaks": 0,
+        "feedBreaks": 0,
+        "spendingViolations": 0,
+        "defeats": 14,
+        "draws": 9,
+        "meanVp": 6.375,
+        "pairedVpMargin": -0.1875,
+        "pairedSE": 0.7428478422036822,
+        "pairs": 16
+      }
+    },
+    "validation-v31-attack": {
+      "31": {
+        "games": 32,
+        "vp": 223,
+        "kills": 425,
+        "losses": 406,
+        "defeats": 15,
+        "attritionSteps": 106,
+        "traceBreaks": 0,
+        "feedBreaks": 0,
+        "spendingViolations": 0,
+        "wins": 17,
+        "meanVp": 6.96875,
+        "pairedVpMargin": 0.5,
+        "pairedSE": 1.755942292142123,
+        "pairs": 16
+      },
+      "19": {
+        "games": 32,
+        "vp": 207,
+        "kills": 406,
+        "losses": 425,
+        "wins": 15,
+        "attritionSteps": 150,
+        "traceBreaks": 0,
+        "feedBreaks": 0,
+        "spendingViolations": 0,
+        "defeats": 17,
+        "meanVp": 6.46875,
+        "pairedVpMargin": -0.5,
+        "pairedSE": 1.755942292142123,
+        "pairs": 16
+      }
+    },
+    "validation-v35-meeting": {
+      "35": {
+        "games": 32,
+        "vp": 220,
+        "kills": 560,
+        "losses": 469,
+        "defeats": 15,
+        "attritionSteps": 138,
+        "traceBreaks": 0,
+        "feedBreaks": 0,
+        "spendingViolations": 0,
+        "wins": 17,
+        "advancePreviewsChecked": 45,
+        "reinforcements": 11,
+        "reinforcementTraceBreaks": 0,
+        "reinforcementFeedBreaks": 0,
+        "meanVp": 6.875,
+        "pairedVpMargin": 0.5,
+        "pairedSE": 1.0645812948447542,
+        "pairs": 16
+      },
+      "19": {
+        "games": 32,
+        "vp": 204,
+        "kills": 469,
+        "losses": 560,
+        "wins": 15,
+        "attritionSteps": 219,
+        "traceBreaks": 0,
+        "feedBreaks": 0,
+        "spendingViolations": 0,
+        "defeats": 17,
+        "advancePreviewsChecked": 39,
+        "reinforcements": 0,
+        "meanVp": 6.375,
+        "pairedVpMargin": -0.5,
+        "pairedSE": 1.0645812948447542,
+        "pairs": 16
+      }
+    },
+    "validation-v35-attack": {
+      "35": {
+        "games": 32,
+        "vp": 234,
+        "kills": 487,
+        "losses": 453,
+        "defeats": 10,
+        "attritionSteps": 156,
+        "traceBreaks": 0,
+        "feedBreaks": 0,
+        "spendingViolations": 0,
+        "wins": 22,
+        "advancePreviewsChecked": 76,
+        "reinforcements": 26,
+        "reinforcementTraceBreaks": 0,
+        "reinforcementFeedBreaks": 0,
+        "meanVp": 7.3125,
+        "pairedVpMargin": 1.6875,
+        "pairedSE": 1.011264678509044,
+        "pairs": 16
+      },
+      "19": {
+        "games": 32,
+        "vp": 180,
+        "kills": 453,
+        "losses": 487,
+        "wins": 10,
+        "attritionSteps": 181,
+        "traceBreaks": 0,
+        "feedBreaks": 0,
+        "spendingViolations": 0,
+        "defeats": 22,
+        "advancePreviewsChecked": 26,
+        "reinforcements": 0,
+        "meanVp": 5.625,
+        "pairedVpMargin": -1.6875,
+        "pairedSE": 1.011264678509044,
+        "pairs": 16
+      }
+    },
+    "replication-v35-meeting": {
+      "35": {
+        "games": 128,
+        "vp": 947,
+        "kills": 1826,
+        "losses": 1669,
+        "defeats": 44,
+        "attritionSteps": 569,
+        "traceBreaks": 0,
+        "feedBreaks": 0,
+        "spendingViolations": 0,
+        "wins": 58,
+        "draws": 26,
+        "advancePreviewsChecked": 181,
+        "reinforcements": 42,
+        "reinforcementTraceBreaks": 0,
+        "reinforcementFeedBreaks": 0,
+        "meanVp": 7.3984375,
+        "pairedVpMargin": 1.546875,
+        "pairedSE": 0.5255994723242592,
+        "pairs": 64
+      },
+      "19": {
+        "games": 128,
+        "vp": 749,
+        "kills": 1669,
+        "losses": 1826,
+        "wins": 44,
+        "attritionSteps": 634,
+        "traceBreaks": 0,
+        "feedBreaks": 0,
+        "spendingViolations": 0,
+        "defeats": 58,
+        "draws": 26,
+        "advancePreviewsChecked": 84,
+        "reinforcements": 0,
+        "meanVp": 5.8515625,
+        "pairedVpMargin": -1.546875,
+        "pairedSE": 0.5255994723242592,
+        "pairs": 64
+      }
+    },
+    "replication-v35-attack": {
+      "35": {
+        "games": 128,
+        "vp": 891,
+        "kills": 1612,
+        "losses": 1506,
+        "wins": 65,
+        "attritionSteps": 414,
+        "traceBreaks": 0,
+        "feedBreaks": 0,
+        "spendingViolations": 0,
+        "defeats": 63,
+        "advancePreviewsChecked": 183,
+        "reinforcements": 59,
+        "reinforcementTraceBreaks": 0,
+        "reinforcementFeedBreaks": 0,
+        "meanVp": 6.9609375,
+        "pairedVpMargin": 1.015625,
+        "pairedSE": 0.4815505851121203,
+        "pairs": 64
+      },
+      "19": {
+        "games": 128,
+        "vp": 761,
+        "kills": 1506,
+        "losses": 1612,
+        "defeats": 65,
+        "attritionSteps": 422,
+        "traceBreaks": 0,
+        "feedBreaks": 0,
+        "spendingViolations": 0,
+        "wins": 63,
+        "advancePreviewsChecked": 141,
+        "reinforcements": 0,
+        "meanVp": 5.9453125,
+        "pairedVpMargin": -1.015625,
+        "pairedSE": 0.4815505851121203,
+        "pairs": 64
+      }
+    },
+    "weight-allocation-only": {
+      "29+allocation-only": {
+        "games": 16,
+        "vp": 119,
+        "kills": 249,
+        "losses": 208,
+        "wins": 7,
+        "attritionSteps": 41,
+        "traceBreaks": 0,
+        "feedBreaks": 0,
+        "spendingViolations": 0,
+        "defeats": 6,
+        "draws": 3,
+        "meanVp": 7.4375,
+        "pairedVpMargin": 1.5,
+        "pairedSE": 2.0788046015507495,
+        "pairs": 8
+      },
+      "19": {
+        "games": 16,
+        "vp": 95,
+        "kills": 208,
+        "losses": 249,
+        "defeats": 7,
+        "attritionSteps": 58,
+        "traceBreaks": 0,
+        "feedBreaks": 0,
+        "spendingViolations": 0,
+        "wins": 6,
+        "draws": 3,
+        "meanVp": 5.9375,
+        "pairedVpMargin": -1.5,
+        "pairedSE": 2.0788046015507495,
+        "pairs": 8
+      }
+    },
+    "weight-balanced": {
+      "29+balanced": {
+        "games": 16,
+        "vp": 96,
+        "kills": 205,
+        "losses": 294,
+        "draws": 3,
+        "attritionSteps": 124,
+        "traceBreaks": 0,
+        "feedBreaks": 0,
+        "spendingViolations": 0,
+        "defeats": 7,
+        "wins": 6,
+        "meanVp": 6.0,
+        "pairedVpMargin": -1.375,
+        "pairedSE": 1.1009330458427393,
+        "pairs": 8
+      },
+      "19": {
+        "games": 16,
+        "vp": 118,
+        "kills": 294,
+        "losses": 205,
+        "draws": 3,
+        "attritionSteps": 57,
+        "traceBreaks": 0,
+        "feedBreaks": 0,
+        "spendingViolations": 0,
+        "wins": 7,
+        "defeats": 6,
+        "meanVp": 7.375,
+        "pairedVpMargin": 1.375,
+        "pairedSE": 1.1009330458427393,
+        "pairs": 8
+      }
+    },
+    "weight-capture-plan": {
+      "29+capture-plan": {
+        "games": 16,
+        "vp": 120,
+        "kills": 266,
+        "losses": 267,
+        "wins": 7,
+        "attritionSteps": 71,
+        "traceBreaks": 0,
+        "feedBreaks": 0,
+        "spendingViolations": 0,
+        "defeats": 5,
+        "draws": 4,
+        "meanVp": 7.5,
+        "pairedVpMargin": 1.625,
+        "pairedSE": 1.4508310426392572,
+        "pairs": 8
+      },
+      "19": {
+        "games": 16,
+        "vp": 94,
+        "kills": 267,
+        "losses": 266,
+        "defeats": 7,
+        "attritionSteps": 74,
+        "traceBreaks": 0,
+        "feedBreaks": 0,
+        "spendingViolations": 0,
+        "wins": 5,
+        "draws": 4,
+        "meanVp": 5.875,
+        "pairedVpMargin": -1.625,
+        "pairedSE": 1.4508310426392572,
+        "pairs": 8
+      }
+    },
+    "weight-capture": {
+      "29+capture": {
+        "games": 16,
+        "vp": 120,
+        "kills": 242,
+        "losses": 258,
+        "wins": 7,
+        "attritionSteps": 77,
+        "traceBreaks": 0,
+        "feedBreaks": 0,
+        "spendingViolations": 0,
+        "defeats": 7,
+        "draws": 2,
+        "meanVp": 7.5,
+        "pairedVpMargin": 1.625,
+        "pairedSE": 1.1792476415070754,
+        "pairs": 8
+      },
+      "19": {
+        "games": 16,
+        "vp": 94,
+        "kills": 258,
+        "losses": 242,
+        "defeats": 7,
+        "attritionSteps": 94,
+        "traceBreaks": 0,
+        "feedBreaks": 0,
+        "spendingViolations": 0,
+        "wins": 7,
+        "draws": 2,
+        "meanVp": 5.875,
+        "pairedVpMargin": -1.625,
+        "pairedSE": 1.1792476415070754,
+        "pairs": 8
+      }
+    },
+    "weight-concentrated": {
+      "29+concentrated": {
+        "games": 16,
+        "vp": 103,
+        "kills": 302,
+        "losses": 236,
+        "defeats": 9,
+        "attritionSteps": 59,
+        "traceBreaks": 0,
+        "feedBreaks": 0,
+        "spendingViolations": 0,
+        "wins": 6,
+        "draws": 1,
+        "meanVp": 6.4375,
+        "pairedVpMargin": -0.5,
+        "pairedSE": 2.2038926600773587,
+        "pairs": 8
+      },
+      "19": {
+        "games": 16,
+        "vp": 111,
+        "kills": 236,
+        "losses": 302,
+        "wins": 9,
+        "attritionSteps": 135,
+        "traceBreaks": 0,
+        "feedBreaks": 0,
+        "spendingViolations": 0,
+        "defeats": 6,
+        "draws": 1,
+        "meanVp": 6.9375,
+        "pairedVpMargin": 0.5,
+        "pairedSE": 2.2038926600773587,
+        "pairs": 8
+      }
+    },
+    "weight-defence": {
+      "29+defence": {
+        "games": 16,
+        "vp": 75,
+        "kills": 220,
+        "losses": 229,
+        "draws": 5,
+        "attritionSteps": 60,
+        "traceBreaks": 0,
+        "feedBreaks": 0,
+        "spendingViolations": 0,
+        "defeats": 9,
+        "wins": 2,
+        "meanVp": 4.6875,
+        "pairedVpMargin": -4,
+        "pairedSE": 1.614664936493902,
+        "pairs": 8
+      },
+      "19": {
+        "games": 16,
+        "vp": 139,
+        "kills": 229,
+        "losses": 220,
+        "draws": 5,
+        "attritionSteps": 45,
+        "traceBreaks": 0,
+        "feedBreaks": 0,
+        "spendingViolations": 0,
+        "wins": 9,
+        "defeats": 2,
+        "meanVp": 8.6875,
+        "pairedVpMargin": 4,
+        "pairedSE": 1.614664936493902,
+        "pairs": 8
+      }
+    },
+    "weight-pace-only": {
+      "29+pace-only": {
+        "games": 16,
+        "vp": 116,
+        "kills": 208,
+        "losses": 265,
+        "wins": 8,
+        "attritionSteps": 85,
+        "traceBreaks": 0,
+        "feedBreaks": 0,
+        "spendingViolations": 0,
+        "defeats": 6,
+        "draws": 2,
+        "meanVp": 7.25,
+        "pairedVpMargin": 1.125,
+        "pairedSE": 1.1716517644517321,
+        "pairs": 8
+      },
+      "19": {
+        "games": 16,
+        "vp": 98,
+        "kills": 265,
+        "losses": 208,
+        "defeats": 8,
+        "attritionSteps": 38,
+        "traceBreaks": 0,
+        "feedBreaks": 0,
+        "spendingViolations": 0,
+        "wins": 6,
+        "draws": 2,
+        "meanVp": 6.125,
+        "pairedVpMargin": -1.125,
+        "pairedSE": 1.1716517644517321,
+        "pairs": 8
+      }
+    }
+  },
+  "runs": [
+    {
+      "group": "development",
+      "style": "temperate",
+      "policies": {
+        "21": {
+          "games": 8,
+          "vp": 50,
+          "kills": 130,
+          "losses": 143,
+          "draws": 4,
+          "attritionSteps": 56,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 4
+        },
+        "19": {
+          "games": 8,
+          "vp": 86,
+          "kills": 143,
+          "losses": 130,
+          "draws": 4,
+          "attritionSteps": 48,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 4
+        }
+      }
+    },
+    {
+      "group": "development",
+      "style": "eastern",
+      "policies": {
+        "21": {
+          "games": 8,
+          "vp": 53,
+          "kills": 139,
+          "losses": 111,
+          "draws": 5,
+          "attritionSteps": 34,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 2,
+          "defeats": 1
+        },
+        "19": {
+          "games": 8,
+          "vp": 43,
+          "kills": 111,
+          "losses": 139,
+          "draws": 5,
+          "attritionSteps": 61,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 2,
+          "wins": 1
+        }
+      }
+    },
+    {
+      "group": "development-v22",
+      "style": "temperate",
+      "policies": {
+        "22": {
+          "games": 8,
+          "vp": 64,
+          "kills": 129,
+          "losses": 129,
+          "defeats": 4,
+          "attritionSteps": 48,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 4
+        },
+        "19": {
+          "games": 8,
+          "vp": 64,
+          "kills": 129,
+          "losses": 129,
+          "wins": 4,
+          "attritionSteps": 48,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 4
+        }
+      }
+    },
+    {
+      "group": "development-v22",
+      "style": "eastern",
+      "policies": {
+        "22": {
+          "games": 8,
+          "vp": 44,
+          "kills": 108,
+          "losses": 108,
+          "wins": 3,
+          "attritionSteps": 49,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 3,
+          "draws": 2
+        },
+        "19": {
+          "games": 8,
+          "vp": 44,
+          "kills": 108,
+          "losses": 108,
+          "defeats": 3,
+          "attritionSteps": 49,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 3,
+          "draws": 2
+        }
+      }
+    },
+    {
+      "group": "development-v23",
+      "style": "temperate",
+      "policies": {
+        "23": {
+          "games": 8,
+          "vp": 62,
+          "kills": 123,
+          "losses": 123,
+          "wins": 3,
+          "attritionSteps": 46,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 3,
+          "draws": 2
+        },
+        "19": {
+          "games": 8,
+          "vp": 62,
+          "kills": 123,
+          "losses": 123,
+          "defeats": 3,
+          "attritionSteps": 46,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 3,
+          "draws": 2
+        }
+      }
+    },
+    {
+      "group": "development-v23",
+      "style": "eastern",
+      "policies": {
+        "23": {
+          "games": 8,
+          "vp": 47,
+          "kills": 113,
+          "losses": 113,
+          "wins": 4,
+          "attritionSteps": 32,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 4
+        },
+        "19": {
+          "games": 8,
+          "vp": 47,
+          "kills": 113,
+          "losses": 113,
+          "defeats": 4,
+          "attritionSteps": 32,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 4
+        }
+      }
+    },
+    {
+      "group": "development-v24",
+      "style": "temperate",
+      "policies": {
+        "24": {
+          "games": 8,
+          "vp": 50,
+          "kills": 139,
+          "losses": 145,
+          "wins": 3,
+          "attritionSteps": 70,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 3,
+          "draws": 2
+        },
+        "19": {
+          "games": 8,
+          "vp": 46,
+          "kills": 145,
+          "losses": 139,
+          "defeats": 3,
+          "attritionSteps": 66,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 3,
+          "draws": 2
+        }
+      }
+    },
+    {
+      "group": "development-v24",
+      "style": "eastern",
+      "policies": {
+        "24": {
+          "games": 8,
+          "vp": 46,
+          "kills": 107,
+          "losses": 104,
+          "wins": 3,
+          "attritionSteps": 23,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 3,
+          "draws": 2
+        },
+        "19": {
+          "games": 8,
+          "vp": 46,
+          "kills": 104,
+          "losses": 107,
+          "defeats": 3,
+          "attritionSteps": 28,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 3,
+          "draws": 2
+        }
+      }
+    },
+    {
+      "group": "development-v25",
+      "style": "temperate",
+      "policies": {
+        "25": {
+          "games": 8,
+          "vp": 52,
+          "kills": 127,
+          "losses": 116,
+          "defeats": 3,
+          "attritionSteps": 40,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 4,
+          "draws": 1
+        },
+        "19": {
+          "games": 8,
+          "vp": 44,
+          "kills": 116,
+          "losses": 127,
+          "wins": 3,
+          "attritionSteps": 55,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 4,
+          "draws": 1
+        }
+      }
+    },
+    {
+      "group": "development-v25",
+      "style": "eastern",
+      "policies": {
+        "25": {
+          "games": 8,
+          "vp": 48,
+          "kills": 111,
+          "losses": 113,
+          "wins": 2,
+          "attritionSteps": 26,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 2,
+          "draws": 4
+        },
+        "19": {
+          "games": 8,
+          "vp": 48,
+          "kills": 113,
+          "losses": 111,
+          "defeats": 2,
+          "attritionSteps": 24,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 2,
+          "draws": 4
+        }
+      }
+    },
+    {
+      "group": "development-v26",
+      "style": "temperate",
+      "policies": {
+        "26": {
+          "games": 8,
+          "vp": 58,
+          "kills": 83,
+          "losses": 70,
+          "draws": 6,
+          "attritionSteps": 10,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 2
+        },
+        "19": {
+          "games": 8,
+          "vp": 38,
+          "kills": 70,
+          "losses": 83,
+          "draws": 6,
+          "attritionSteps": 10,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 2
+        }
+      }
+    },
+    {
+      "group": "development-v26",
+      "style": "eastern",
+      "policies": {
+        "26": {
+          "games": 8,
+          "vp": 45,
+          "kills": 92,
+          "losses": 136,
+          "defeats": 4,
+          "attritionSteps": 60,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 4
+        },
+        "19": {
+          "games": 8,
+          "vp": 51,
+          "kills": 136,
+          "losses": 92,
+          "wins": 4,
+          "attritionSteps": 33,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 4
+        }
+      }
+    },
+    {
+      "group": "development-v27",
+      "style": "temperate",
+      "policies": {
+        "27": {
+          "games": 8,
+          "vp": 58,
+          "kills": 62,
+          "losses": 82,
+          "wins": 4,
+          "attritionSteps": 29,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 4
+        },
+        "19": {
+          "games": 8,
+          "vp": 46,
+          "kills": 82,
+          "losses": 62,
+          "defeats": 4,
+          "attritionSteps": 18,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 4
+        }
+      }
+    },
+    {
+      "group": "development-v27",
+      "style": "eastern",
+      "policies": {
+        "27": {
+          "games": 8,
+          "vp": 45,
+          "kills": 75,
+          "losses": 83,
+          "draws": 3,
+          "attritionSteps": 15,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 3,
+          "wins": 2
+        },
+        "19": {
+          "games": 8,
+          "vp": 47,
+          "kills": 83,
+          "losses": 75,
+          "draws": 3,
+          "attritionSteps": 10,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 3,
+          "defeats": 2
+        }
+      }
+    },
+    {
+      "group": "development-v28",
+      "style": "temperate",
+      "policies": {
+        "28": {
+          "games": 8,
+          "vp": 60,
+          "kills": 123,
+          "losses": 70,
+          "defeats": 2,
+          "attritionSteps": 18,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 3,
+          "draws": 3
+        },
+        "19": {
+          "games": 8,
+          "vp": 60,
+          "kills": 70,
+          "losses": 123,
+          "wins": 2,
+          "attritionSteps": 50,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 3,
+          "draws": 3
+        }
+      }
+    },
+    {
+      "group": "development-v28",
+      "style": "eastern",
+      "policies": {
+        "28": {
+          "games": 8,
+          "vp": 41,
+          "kills": 113,
+          "losses": 154,
+          "wins": 2,
+          "attritionSteps": 58,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 5,
+          "draws": 1
+        },
+        "19": {
+          "games": 8,
+          "vp": 47,
+          "kills": 154,
+          "losses": 113,
+          "defeats": 2,
+          "attritionSteps": 34,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 5,
+          "draws": 1
+        }
+      }
+    },
+    {
+      "group": "development-v29",
+      "style": "temperate",
+      "policies": {
+        "29": {
+          "games": 8,
+          "vp": 58,
+          "kills": 83,
+          "losses": 77,
+          "draws": 4,
+          "attritionSteps": 26,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 2,
+          "defeats": 2
+        },
+        "19": {
+          "games": 8,
+          "vp": 54,
+          "kills": 77,
+          "losses": 83,
+          "draws": 4,
+          "attritionSteps": 23,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 2,
+          "wins": 2
+        }
+      }
+    },
+    {
+      "group": "development-v29",
+      "style": "eastern",
+      "policies": {
+        "29": {
+          "games": 8,
+          "vp": 46,
+          "kills": 75,
+          "losses": 84,
+          "draws": 4,
+          "attritionSteps": 30,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 2,
+          "defeats": 2
+        },
+        "19": {
+          "games": 8,
+          "vp": 50,
+          "kills": 84,
+          "losses": 75,
+          "draws": 4,
+          "attritionSteps": 22,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 2,
+          "wins": 2
+        }
+      }
+    },
+    {
+      "group": "development-v30",
+      "style": "temperate",
+      "policies": {
+        "30": {
+          "games": 8,
+          "vp": 55,
+          "kills": 125,
+          "losses": 121,
+          "defeats": 3,
+          "attritionSteps": 44,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 4,
+          "draws": 1
+        },
+        "19": {
+          "games": 8,
+          "vp": 41,
+          "kills": 121,
+          "losses": 125,
+          "wins": 3,
+          "attritionSteps": 44,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 4,
+          "draws": 1
+        }
+      }
+    },
+    {
+      "group": "development-v30",
+      "style": "eastern",
+      "policies": {
+        "30": {
+          "games": 8,
+          "vp": 37,
+          "kills": 81,
+          "losses": 87,
+          "draws": 3,
+          "attritionSteps": 37,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 3,
+          "wins": 2
+        },
+        "19": {
+          "games": 8,
+          "vp": 43,
+          "kills": 87,
+          "losses": 81,
+          "draws": 3,
+          "attritionSteps": 22,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 3,
+          "defeats": 2
+        }
+      }
+    },
+    {
+      "group": "development-v32",
+      "style": "temperate",
+      "policies": {
+        "32": {
+          "games": 8,
+          "vp": 48,
+          "kills": 87,
+          "losses": 117,
+          "defeats": 4,
+          "attritionSteps": 34,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 2,
+          "draws": 2,
+          "advancePreviewsChecked": 6,
+          "reinforcements": 1,
+          "reinforcementTraceBreaks": 0,
+          "reinforcementFeedBreaks": 0
+        },
+        "19": {
+          "games": 8,
+          "vp": 56,
+          "kills": 117,
+          "losses": 87,
+          "wins": 4,
+          "attritionSteps": 17,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 2,
+          "draws": 2,
+          "advancePreviewsChecked": 11,
+          "reinforcements": 0
+        }
+      }
+    },
+    {
+      "group": "development-v32",
+      "style": "eastern",
+      "policies": {
+        "32": {
+          "games": 8,
+          "vp": 45,
+          "kills": 114,
+          "losses": 142,
+          "wins": 4,
+          "attritionSteps": 53,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 4,
+          "advancePreviewsChecked": 15,
+          "reinforcements": 2,
+          "reinforcementTraceBreaks": 0,
+          "reinforcementFeedBreaks": 0
+        },
+        "19": {
+          "games": 8,
+          "vp": 45,
+          "kills": 142,
+          "losses": 114,
+          "defeats": 4,
+          "attritionSteps": 18,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 4,
+          "advancePreviewsChecked": 2,
+          "reinforcements": 0
+        }
+      }
+    },
+    {
+      "group": "development-v33",
+      "style": "temperate",
+      "policies": {
+        "33": {
+          "games": 8,
+          "vp": 51,
+          "kills": 114,
+          "losses": 84,
+          "draws": 4,
+          "attritionSteps": 14,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 3,
+          "defeats": 1,
+          "advancePreviewsChecked": 6,
+          "reinforcements": 2,
+          "reinforcementTraceBreaks": 0,
+          "reinforcementFeedBreaks": 0
+        },
+        "19": {
+          "games": 8,
+          "vp": 45,
+          "kills": 84,
+          "losses": 114,
+          "draws": 4,
+          "attritionSteps": 44,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 3,
+          "wins": 1,
+          "advancePreviewsChecked": 4,
+          "reinforcements": 0
+        }
+      }
+    },
+    {
+      "group": "development-v33",
+      "style": "eastern",
+      "policies": {
+        "33": {
+          "games": 8,
+          "vp": 40,
+          "kills": 87,
+          "losses": 99,
+          "defeats": 5,
+          "attritionSteps": 34,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 3,
+          "advancePreviewsChecked": 12,
+          "reinforcements": 6,
+          "reinforcementTraceBreaks": 0,
+          "reinforcementFeedBreaks": 0
+        },
+        "19": {
+          "games": 8,
+          "vp": 56,
+          "kills": 99,
+          "losses": 87,
+          "wins": 5,
+          "attritionSteps": 20,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 3,
+          "advancePreviewsChecked": 6,
+          "reinforcements": 0
+        }
+      }
+    },
+    {
+      "group": "development-v34",
+      "style": "temperate",
+      "policies": {
+        "34": {
+          "games": 8,
+          "vp": 57,
+          "kills": 130,
+          "losses": 96,
+          "draws": 3,
+          "attritionSteps": 15,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 2,
+          "defeats": 3,
+          "advancePreviewsChecked": 10,
+          "reinforcements": 1,
+          "reinforcementTraceBreaks": 0,
+          "reinforcementFeedBreaks": 0
+        },
+        "19": {
+          "games": 8,
+          "vp": 55,
+          "kills": 96,
+          "losses": 130,
+          "draws": 3,
+          "attritionSteps": 42,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 2,
+          "wins": 3,
+          "advancePreviewsChecked": 6,
+          "reinforcements": 0
+        }
+      }
+    },
+    {
+      "group": "development-v34",
+      "style": "eastern",
+      "policies": {
+        "34": {
+          "games": 8,
+          "vp": 46,
+          "kills": 87,
+          "losses": 102,
+          "wins": 3,
+          "attritionSteps": 40,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 3,
+          "draws": 2,
+          "advancePreviewsChecked": 13,
+          "reinforcements": 0
+        },
+        "19": {
+          "games": 8,
+          "vp": 48,
+          "kills": 102,
+          "losses": 87,
+          "defeats": 3,
+          "attritionSteps": 32,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 3,
+          "draws": 2,
+          "advancePreviewsChecked": 11,
+          "reinforcements": 0
+        }
+      }
+    },
+    {
+      "group": "development-v35",
+      "style": "temperate",
+      "policies": {
+        "35": {
+          "games": 8,
+          "vp": 69,
+          "kills": 78,
+          "losses": 74,
+          "draws": 2,
+          "attritionSteps": 15,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 4,
+          "defeats": 2,
+          "advancePreviewsChecked": 8,
+          "reinforcements": 2,
+          "reinforcementTraceBreaks": 0,
+          "reinforcementFeedBreaks": 0
+        },
+        "19": {
+          "games": 8,
+          "vp": 47,
+          "kills": 74,
+          "losses": 78,
+          "draws": 2,
+          "attritionSteps": 4,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 4,
+          "wins": 2,
+          "advancePreviewsChecked": 7,
+          "reinforcements": 0
+        }
+      }
+    },
+    {
+      "group": "development-v35",
+      "style": "eastern",
+      "policies": {
+        "35": {
+          "games": 8,
+          "vp": 51,
+          "kills": 92,
+          "losses": 106,
+          "wins": 4,
+          "attritionSteps": 21,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 4,
+          "advancePreviewsChecked": 6,
+          "reinforcements": 1,
+          "reinforcementTraceBreaks": 0,
+          "reinforcementFeedBreaks": 0
+        },
+        "19": {
+          "games": 8,
+          "vp": 45,
+          "kills": 106,
+          "losses": 92,
+          "defeats": 4,
+          "attritionSteps": 16,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 4,
+          "advancePreviewsChecked": 2,
+          "reinforcements": 0
+        }
+      }
+    },
+    {
+      "group": "validation-meeting",
+      "style": "temperate",
+      "policies": {
+        "24": {
+          "games": 16,
+          "vp": 120,
+          "kills": 223,
+          "losses": 227,
+          "wins": 7,
+          "attritionSteps": 87,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 7,
+          "draws": 2
+        },
+        "19": {
+          "games": 16,
+          "vp": 120,
+          "kills": 227,
+          "losses": 223,
+          "defeats": 7,
+          "attritionSteps": 87,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 7,
+          "draws": 2
+        }
+      }
+    },
+    {
+      "group": "validation-meeting",
+      "style": "eastern",
+      "policies": {
+        "24": {
+          "games": 16,
+          "vp": 87,
+          "kills": 211,
+          "losses": 192,
+          "draws": 2,
+          "attritionSteps": 76,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 7,
+          "defeats": 7
+        },
+        "19": {
+          "games": 16,
+          "vp": 89,
+          "kills": 192,
+          "losses": 211,
+          "draws": 2,
+          "attritionSteps": 89,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 7,
+          "wins": 7
+        }
+      }
+    },
+    {
+      "group": "validation-attack",
+      "style": "temperate",
+      "policies": {
+        "24": {
+          "games": 16,
+          "vp": 112,
+          "kills": 238,
+          "losses": 241,
+          "defeats": 8,
+          "attritionSteps": 59,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 8
+        },
+        "19": {
+          "games": 16,
+          "vp": 112,
+          "kills": 241,
+          "losses": 238,
+          "wins": 8,
+          "attritionSteps": 60,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 8
+        }
+      }
+    },
+    {
+      "group": "validation-attack",
+      "style": "eastern",
+      "policies": {
+        "24": {
+          "games": 16,
+          "vp": 78,
+          "kills": 304,
+          "losses": 298,
+          "defeats": 10,
+          "attritionSteps": 131,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 6
+        },
+        "19": {
+          "games": 16,
+          "vp": 94,
+          "kills": 298,
+          "losses": 304,
+          "wins": 10,
+          "attritionSteps": 157,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 6
+        }
+      }
+    },
+    {
+      "group": "validation-v26-meeting",
+      "style": "temperate",
+      "policies": {
+        "26": {
+          "games": 16,
+          "vp": 112,
+          "kills": 192,
+          "losses": 158,
+          "wins": 7,
+          "attritionSteps": 35,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 5,
+          "draws": 4
+        },
+        "19": {
+          "games": 16,
+          "vp": 104,
+          "kills": 158,
+          "losses": 192,
+          "defeats": 7,
+          "attritionSteps": 77,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 5,
+          "draws": 4
+        }
+      }
+    },
+    {
+      "group": "validation-v26-meeting",
+      "style": "eastern",
+      "policies": {
+        "26": {
+          "games": 16,
+          "vp": 91,
+          "kills": 224,
+          "losses": 191,
+          "wins": 6,
+          "attritionSteps": 23,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 8,
+          "draws": 2
+        },
+        "19": {
+          "games": 16,
+          "vp": 89,
+          "kills": 191,
+          "losses": 224,
+          "defeats": 6,
+          "attritionSteps": 52,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 8,
+          "draws": 2
+        }
+      }
+    },
+    {
+      "group": "validation-v26-attack",
+      "style": "temperate",
+      "policies": {
+        "26": {
+          "games": 16,
+          "vp": 105,
+          "kills": 250,
+          "losses": 208,
+          "defeats": 8,
+          "attritionSteps": 62,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 8
+        },
+        "19": {
+          "games": 16,
+          "vp": 87,
+          "kills": 208,
+          "losses": 250,
+          "wins": 8,
+          "attritionSteps": 93,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 8
+        }
+      }
+    },
+    {
+      "group": "validation-v26-attack",
+      "style": "eastern",
+      "policies": {
+        "26": {
+          "games": 16,
+          "vp": 77,
+          "kills": 153,
+          "losses": 158,
+          "wins": 8,
+          "attritionSteps": 28,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 8
+        },
+        "19": {
+          "games": 16,
+          "vp": 89,
+          "kills": 158,
+          "losses": 153,
+          "defeats": 8,
+          "attritionSteps": 37,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 8
+        }
+      }
+    },
+    {
+      "group": "validation-v27-meeting",
+      "style": "temperate",
+      "policies": {
+        "27": {
+          "games": 16,
+          "vp": 109,
+          "kills": 231,
+          "losses": 227,
+          "wins": 6,
+          "attritionSteps": 52,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "draws": 3,
+          "defeats": 7
+        },
+        "19": {
+          "games": 16,
+          "vp": 135,
+          "kills": 227,
+          "losses": 231,
+          "defeats": 6,
+          "attritionSteps": 79,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "draws": 3,
+          "wins": 7
+        }
+      }
+    },
+    {
+      "group": "validation-v27-meeting",
+      "style": "eastern",
+      "policies": {
+        "27": {
+          "games": 16,
+          "vp": 75,
+          "kills": 243,
+          "losses": 261,
+          "defeats": 7,
+          "attritionSteps": 85,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 6,
+          "draws": 3
+        },
+        "19": {
+          "games": 16,
+          "vp": 81,
+          "kills": 261,
+          "losses": 243,
+          "wins": 7,
+          "attritionSteps": 69,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 6,
+          "draws": 3
+        }
+      }
+    },
+    {
+      "group": "validation-v27-attack",
+      "style": "temperate",
+      "policies": {
+        "27": {
+          "games": 16,
+          "vp": 115,
+          "kills": 219,
+          "losses": 186,
+          "defeats": 9,
+          "attritionSteps": 42,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 7
+        },
+        "19": {
+          "games": 16,
+          "vp": 109,
+          "kills": 186,
+          "losses": 219,
+          "wins": 9,
+          "attritionSteps": 68,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 7
+        }
+      }
+    },
+    {
+      "group": "validation-v27-attack",
+      "style": "eastern",
+      "policies": {
+        "27": {
+          "games": 16,
+          "vp": 81,
+          "kills": 106,
+          "losses": 111,
+          "wins": 7,
+          "attritionSteps": 17,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 9
+        },
+        "19": {
+          "games": 16,
+          "vp": 89,
+          "kills": 111,
+          "losses": 106,
+          "defeats": 7,
+          "attritionSteps": 12,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 9
+        }
+      }
+    },
+    {
+      "group": "validation-v31-meeting",
+      "style": "temperate",
+      "policies": {
+        "31": {
+          "games": 16,
+          "vp": 113,
+          "kills": 252,
+          "losses": 201,
+          "defeats": 5,
+          "attritionSteps": 48,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 7,
+          "draws": 4
+        },
+        "19": {
+          "games": 16,
+          "vp": 111,
+          "kills": 201,
+          "losses": 252,
+          "wins": 5,
+          "attritionSteps": 97,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 7,
+          "draws": 4
+        }
+      }
+    },
+    {
+      "group": "validation-v31-meeting",
+      "style": "eastern",
+      "policies": {
+        "31": {
+          "games": 16,
+          "vp": 97,
+          "kills": 232,
+          "losses": 216,
+          "defeats": 4,
+          "attritionSteps": 82,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 7,
+          "draws": 5
+        },
+        "19": {
+          "games": 16,
+          "vp": 93,
+          "kills": 216,
+          "losses": 232,
+          "wins": 4,
+          "attritionSteps": 103,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 7,
+          "draws": 5
+        }
+      }
+    },
+    {
+      "group": "validation-v31-attack",
+      "style": "temperate",
+      "policies": {
+        "31": {
+          "games": 16,
+          "vp": 120,
+          "kills": 239,
+          "losses": 223,
+          "defeats": 8,
+          "attritionSteps": 43,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 8
+        },
+        "19": {
+          "games": 16,
+          "vp": 120,
+          "kills": 223,
+          "losses": 239,
+          "wins": 8,
+          "attritionSteps": 81,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 8
+        }
+      }
+    },
+    {
+      "group": "validation-v31-attack",
+      "style": "eastern",
+      "policies": {
+        "31": {
+          "games": 16,
+          "vp": 103,
+          "kills": 186,
+          "losses": 183,
+          "wins": 9,
+          "attritionSteps": 63,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 7
+        },
+        "19": {
+          "games": 16,
+          "vp": 87,
+          "kills": 183,
+          "losses": 186,
+          "defeats": 9,
+          "attritionSteps": 69,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 7
+        }
+      }
+    },
+    {
+      "group": "validation-v35-meeting",
+      "style": "temperate",
+      "policies": {
+        "35": {
+          "games": 16,
+          "vp": 122,
+          "kills": 269,
+          "losses": 223,
+          "defeats": 9,
+          "attritionSteps": 61,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 7,
+          "advancePreviewsChecked": 29,
+          "reinforcements": 7,
+          "reinforcementTraceBreaks": 0,
+          "reinforcementFeedBreaks": 0
+        },
+        "19": {
+          "games": 16,
+          "vp": 126,
+          "kills": 223,
+          "losses": 269,
+          "wins": 9,
+          "attritionSteps": 95,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 7,
+          "advancePreviewsChecked": 24,
+          "reinforcements": 0
+        }
+      }
+    },
+    {
+      "group": "validation-v35-meeting",
+      "style": "eastern",
+      "policies": {
+        "35": {
+          "games": 16,
+          "vp": 98,
+          "kills": 291,
+          "losses": 246,
+          "defeats": 6,
+          "attritionSteps": 77,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 10,
+          "advancePreviewsChecked": 16,
+          "reinforcements": 4,
+          "reinforcementTraceBreaks": 0,
+          "reinforcementFeedBreaks": 0
+        },
+        "19": {
+          "games": 16,
+          "vp": 78,
+          "kills": 246,
+          "losses": 291,
+          "wins": 6,
+          "attritionSteps": 124,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 10,
+          "advancePreviewsChecked": 15,
+          "reinforcements": 0
+        }
+      }
+    },
+    {
+      "group": "validation-v35-attack",
+      "style": "temperate",
+      "policies": {
+        "35": {
+          "games": 16,
+          "vp": 122,
+          "kills": 295,
+          "losses": 250,
+          "defeats": 5,
+          "attritionSteps": 111,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 11,
+          "advancePreviewsChecked": 40,
+          "reinforcements": 11,
+          "reinforcementTraceBreaks": 0,
+          "reinforcementFeedBreaks": 0
+        },
+        "19": {
+          "games": 16,
+          "vp": 106,
+          "kills": 250,
+          "losses": 295,
+          "wins": 5,
+          "attritionSteps": 111,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 11,
+          "advancePreviewsChecked": 16,
+          "reinforcements": 0
+        }
+      }
+    },
+    {
+      "group": "validation-v35-attack",
+      "style": "eastern",
+      "policies": {
+        "35": {
+          "games": 16,
+          "vp": 112,
+          "kills": 192,
+          "losses": 203,
+          "wins": 11,
+          "attritionSteps": 45,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 5,
+          "advancePreviewsChecked": 36,
+          "reinforcements": 15,
+          "reinforcementTraceBreaks": 0,
+          "reinforcementFeedBreaks": 0
+        },
+        "19": {
+          "games": 16,
+          "vp": 74,
+          "kills": 203,
+          "losses": 192,
+          "defeats": 11,
+          "attritionSteps": 70,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 5,
+          "advancePreviewsChecked": 10,
+          "reinforcements": 0
+        }
+      }
+    },
+    {
+      "group": "replication-v35-meeting",
+      "style": "temperate",
+      "policies": {
+        "35": {
+          "games": 64,
+          "vp": 560,
+          "kills": 962,
+          "losses": 779,
+          "defeats": 21,
+          "attritionSteps": 225,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 30,
+          "draws": 13,
+          "advancePreviewsChecked": 102,
+          "reinforcements": 19,
+          "reinforcementTraceBreaks": 0,
+          "reinforcementFeedBreaks": 0
+        },
+        "19": {
+          "games": 64,
+          "vp": 400,
+          "kills": 779,
+          "losses": 962,
+          "wins": 21,
+          "attritionSteps": 328,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 30,
+          "draws": 13,
+          "advancePreviewsChecked": 47,
+          "reinforcements": 0
+        }
+      }
+    },
+    {
+      "group": "replication-v35-meeting",
+      "style": "eastern",
+      "policies": {
+        "35": {
+          "games": 64,
+          "vp": 387,
+          "kills": 864,
+          "losses": 890,
+          "wins": 28,
+          "attritionSteps": 344,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 23,
+          "draws": 13,
+          "advancePreviewsChecked": 79,
+          "reinforcements": 23,
+          "reinforcementTraceBreaks": 0,
+          "reinforcementFeedBreaks": 0
+        },
+        "19": {
+          "games": 64,
+          "vp": 349,
+          "kills": 890,
+          "losses": 864,
+          "defeats": 28,
+          "attritionSteps": 306,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 23,
+          "draws": 13,
+          "advancePreviewsChecked": 37,
+          "reinforcements": 0
+        }
+      }
+    },
+    {
+      "group": "replication-v35-attack",
+      "style": "temperate",
+      "policies": {
+        "35": {
+          "games": 64,
+          "vp": 469,
+          "kills": 724,
+          "losses": 772,
+          "wins": 29,
+          "attritionSteps": 202,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 35,
+          "advancePreviewsChecked": 72,
+          "reinforcements": 21,
+          "reinforcementTraceBreaks": 0,
+          "reinforcementFeedBreaks": 0
+        },
+        "19": {
+          "games": 64,
+          "vp": 435,
+          "kills": 772,
+          "losses": 724,
+          "defeats": 29,
+          "attritionSteps": 114,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 35,
+          "advancePreviewsChecked": 61,
+          "reinforcements": 0
+        }
+      }
+    },
+    {
+      "group": "replication-v35-attack",
+      "style": "eastern",
+      "policies": {
+        "35": {
+          "games": 64,
+          "vp": 422,
+          "kills": 888,
+          "losses": 734,
+          "wins": 36,
+          "attritionSteps": 212,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 28,
+          "advancePreviewsChecked": 111,
+          "reinforcements": 38,
+          "reinforcementTraceBreaks": 0,
+          "reinforcementFeedBreaks": 0
+        },
+        "19": {
+          "games": 64,
+          "vp": 326,
+          "kills": 734,
+          "losses": 888,
+          "defeats": 36,
+          "attritionSteps": 308,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 28,
+          "advancePreviewsChecked": 80,
+          "reinforcements": 0
+        }
+      }
+    },
+    {
+      "group": "weight-allocation-only",
+      "style": "temperate",
+      "policies": {
+        "29+allocation-only": {
+          "games": 8,
+          "vp": 72,
+          "kills": 141,
+          "losses": 117,
+          "wins": 4,
+          "attritionSteps": 26,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 3,
+          "draws": 1
+        },
+        "19": {
+          "games": 8,
+          "vp": 56,
+          "kills": 117,
+          "losses": 141,
+          "defeats": 4,
+          "attritionSteps": 36,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 3,
+          "draws": 1
+        }
+      }
+    },
+    {
+      "group": "weight-allocation-only",
+      "style": "eastern",
+      "policies": {
+        "29+allocation-only": {
+          "games": 8,
+          "vp": 47,
+          "kills": 108,
+          "losses": 91,
+          "wins": 3,
+          "attritionSteps": 15,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "draws": 2,
+          "defeats": 3
+        },
+        "19": {
+          "games": 8,
+          "vp": 39,
+          "kills": 91,
+          "losses": 108,
+          "defeats": 3,
+          "attritionSteps": 22,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "draws": 2,
+          "wins": 3
+        }
+      }
+    },
+    {
+      "group": "weight-balanced",
+      "style": "temperate",
+      "policies": {
+        "29+balanced": {
+          "games": 8,
+          "vp": 56,
+          "kills": 103,
+          "losses": 162,
+          "draws": 2,
+          "attritionSteps": 67,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 3,
+          "wins": 3
+        },
+        "19": {
+          "games": 8,
+          "vp": 72,
+          "kills": 162,
+          "losses": 103,
+          "draws": 2,
+          "attritionSteps": 36,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 3,
+          "defeats": 3
+        }
+      }
+    },
+    {
+      "group": "weight-balanced",
+      "style": "eastern",
+      "policies": {
+        "29+balanced": {
+          "games": 8,
+          "vp": 40,
+          "kills": 102,
+          "losses": 132,
+          "defeats": 4,
+          "attritionSteps": 57,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 3,
+          "draws": 1
+        },
+        "19": {
+          "games": 8,
+          "vp": 46,
+          "kills": 132,
+          "losses": 102,
+          "wins": 4,
+          "attritionSteps": 21,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 3,
+          "draws": 1
+        }
+      }
+    },
+    {
+      "group": "weight-capture-plan",
+      "style": "temperate",
+      "policies": {
+        "29+capture-plan": {
+          "games": 8,
+          "vp": 76,
+          "kills": 151,
+          "losses": 143,
+          "wins": 4,
+          "attritionSteps": 42,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 1,
+          "draws": 3
+        },
+        "19": {
+          "games": 8,
+          "vp": 52,
+          "kills": 143,
+          "losses": 151,
+          "defeats": 4,
+          "attritionSteps": 51,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 1,
+          "draws": 3
+        }
+      }
+    },
+    {
+      "group": "weight-capture-plan",
+      "style": "eastern",
+      "policies": {
+        "29+capture-plan": {
+          "games": 8,
+          "vp": 44,
+          "kills": 115,
+          "losses": 124,
+          "defeats": 4,
+          "attritionSteps": 29,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 3,
+          "draws": 1
+        },
+        "19": {
+          "games": 8,
+          "vp": 42,
+          "kills": 124,
+          "losses": 115,
+          "wins": 4,
+          "attritionSteps": 23,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 3,
+          "draws": 1
+        }
+      }
+    },
+    {
+      "group": "weight-capture",
+      "style": "temperate",
+      "policies": {
+        "29+capture": {
+          "games": 8,
+          "vp": 72,
+          "kills": 125,
+          "losses": 124,
+          "wins": 3,
+          "attritionSteps": 38,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 3,
+          "draws": 2
+        },
+        "19": {
+          "games": 8,
+          "vp": 56,
+          "kills": 124,
+          "losses": 125,
+          "defeats": 3,
+          "attritionSteps": 42,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 3,
+          "draws": 2
+        }
+      }
+    },
+    {
+      "group": "weight-capture",
+      "style": "eastern",
+      "policies": {
+        "29+capture": {
+          "games": 8,
+          "vp": 48,
+          "kills": 117,
+          "losses": 134,
+          "defeats": 4,
+          "attritionSteps": 39,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 4
+        },
+        "19": {
+          "games": 8,
+          "vp": 38,
+          "kills": 134,
+          "losses": 117,
+          "wins": 4,
+          "attritionSteps": 52,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 4
+        }
+      }
+    },
+    {
+      "group": "weight-concentrated",
+      "style": "temperate",
+      "policies": {
+        "29+concentrated": {
+          "games": 8,
+          "vp": 67,
+          "kills": 166,
+          "losses": 125,
+          "defeats": 4,
+          "attritionSteps": 27,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 4
+        },
+        "19": {
+          "games": 8,
+          "vp": 61,
+          "kills": 125,
+          "losses": 166,
+          "wins": 4,
+          "attritionSteps": 90,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 4
+        }
+      }
+    },
+    {
+      "group": "weight-concentrated",
+      "style": "eastern",
+      "policies": {
+        "29+concentrated": {
+          "games": 8,
+          "vp": 36,
+          "kills": 136,
+          "losses": 111,
+          "defeats": 5,
+          "attritionSteps": 32,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 2,
+          "draws": 1
+        },
+        "19": {
+          "games": 8,
+          "vp": 50,
+          "kills": 111,
+          "losses": 136,
+          "wins": 5,
+          "attritionSteps": 45,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 2,
+          "draws": 1
+        }
+      }
+    },
+    {
+      "group": "weight-defence",
+      "style": "temperate",
+      "policies": {
+        "29+defence": {
+          "games": 8,
+          "vp": 39,
+          "kills": 111,
+          "losses": 129,
+          "draws": 4,
+          "attritionSteps": 35,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 4
+        },
+        "19": {
+          "games": 8,
+          "vp": 89,
+          "kills": 129,
+          "losses": 111,
+          "draws": 4,
+          "attritionSteps": 28,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 4
+        }
+      }
+    },
+    {
+      "group": "weight-defence",
+      "style": "eastern",
+      "policies": {
+        "29+defence": {
+          "games": 8,
+          "vp": 36,
+          "kills": 109,
+          "losses": 100,
+          "defeats": 5,
+          "attritionSteps": 25,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "draws": 1,
+          "wins": 2
+        },
+        "19": {
+          "games": 8,
+          "vp": 50,
+          "kills": 100,
+          "losses": 109,
+          "wins": 5,
+          "attritionSteps": 17,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "draws": 1,
+          "defeats": 2
+        }
+      }
+    },
+    {
+      "group": "weight-pace-only",
+      "style": "temperate",
+      "policies": {
+        "29+pace-only": {
+          "games": 8,
+          "vp": 68,
+          "kills": 111,
+          "losses": 123,
+          "wins": 4,
+          "attritionSteps": 42,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 3,
+          "draws": 1
+        },
+        "19": {
+          "games": 8,
+          "vp": 60,
+          "kills": 123,
+          "losses": 111,
+          "defeats": 4,
+          "attritionSteps": 29,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 3,
+          "draws": 1
+        }
+      }
+    },
+    {
+      "group": "weight-pace-only",
+      "style": "eastern",
+      "policies": {
+        "29+pace-only": {
+          "games": 8,
+          "vp": 48,
+          "kills": 97,
+          "losses": 142,
+          "defeats": 3,
+          "attritionSteps": 43,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 4,
+          "draws": 1
+        },
+        "19": {
+          "games": 8,
+          "vp": 38,
+          "kills": 142,
+          "losses": 97,
+          "wins": 3,
+          "attritionSteps": 9,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 4,
+          "draws": 1
+        }
+      }
+    }
+  ],
+  "independentValidation": {
+    "24": {
+      "pairs": 32,
+      "mean": -0.28125,
+      "se": 0.19692379707602303,
+      "interval": [
+        -0.6947899738596484,
+        0.1322899738596484
+      ],
+      "bothEngagementsPositive": false,
+      "statisticalCriterionMet": false
+    },
+    "26": {
+      "pairs": 32,
+      "mean": 0.25,
+      "se": 0.3175003175004762,
+      "interval": [
+        -0.41675066675100003,
+        0.916750666751
+      ],
+      "bothEngagementsPositive": true,
+      "statisticalCriterionMet": false
+    },
+    "27": {
+      "pairs": 32,
+      "mean": -0.53125,
+      "se": 0.6007125724987488,
+      "interval": [
+        -1.7927464022473725,
+        0.7302464022473725
+      ],
+      "bothEngagementsPositive": false,
+      "statisticalCriterionMet": false
+    },
+    "31": {
+      "pairs": 32,
+      "mean": 0.34375,
+      "se": 0.9382221680889598,
+      "interval": [
+        -1.6265165529868155,
+        2.3140165529868155
+      ],
+      "bothEngagementsPositive": true,
+      "statisticalCriterionMet": false
+    },
+    "35": {
+      "pairs": 32,
+      "mean": 1.09375,
+      "se": 0.7300565806066656,
+      "interval": [
+        -0.43936881927399773,
+        2.626868819273998
+      ],
+      "bothEngagementsPositive": true,
+      "statisticalCriterionMet": false
+    },
+    "35-replication": {
+      "pairs": 128,
+      "mean": 1.28125,
+      "se": 0.35579730181708086,
+      "interval": [
+        0.5340756661841302,
+        2.02842433381587
+      ],
+      "bothEngagementsPositive": true,
+      "statisticalCriterionMet": true
+    }
+  },
+  "candidateSourceSha256": {
+    "21": "87f4fd7be4e5fa34aa6607fe59aeca8de2b090c06f9c37eaab0bad729989da78",
+    "22": "e7134e50c8b5bdff31506e7d2cfcd01d2c1b59f190798370f4158d9a1c5a36bd",
+    "23": "6ecd1ebbca13f77e047faa30b37b3463a6b99ee43547e2de85ea200b05d98a0c",
+    "24": "3f83419ba4ab08d3dcd8c6f0a8eac679ac37b0c68366acb8c567b2d92774e55e",
+    "25": "0bc1853b5537e3df434755cf8430e21d212fc4639919b6c4372dc69b15667b28",
+    "26": "8c503522503ed8d9fde6d599605feb32787965bd47a5d59a860bd4664a3de8c8",
+    "27": "005661a1539547edaa2307c40779ad462035b2d49414029bada2fd5cdcf6ce12",
+    "28": "bb381fca776794d5ee9af42a93482ec244c92da1e697cd9d94cb4b49ec8b1e2f",
+    "29": "04a20e554ed9ea838bad8094ff930e35f17d92fe95e1120fbd8fe8bc796211cf",
+    "30": "4dca82abc66edcba58684546667a2e3a619279d787661629cc57d7aa6b5a32d7",
+    "31": "55d5d40a4e1e4a22d235ca567d157570a7af4872384cd37cdbc48e229163d87f",
+    "32": "946712981595470e16e60807b6ec2239521aa30debef2f0ff1bcecf8ce2de848",
+    "33": "6c3505b6b60f1883f8243fc9458acaec080ebf1f86e3fdc5be621f589c9abb00",
+    "34": "e4eee1b0182e599d0f9a9db97cdc9832fa36bf1f7b84e9b326556cb95bbe7e0d",
+    "35": "a343277c4cd6b137e19a65ccaa2fff393483cf073de80cb6cd8bae2bc860f40c"
+  },
+  "candidateBuildSha256": {
+    "21": "b61a35f8992dafca62fc2ff3cf1a04e454f9d2a86832f3cc88da08149a2e0fca",
+    "22": "b211c621cd76745e277ce5cc35d679a301ba96a7a6a621e16f942d8417be483f",
+    "23": "993d3afb878d2d7f7d45fdd2a4e91b73bcb348fc27a55c772fcaabee649c42d0",
+    "24": "b00839fca121b6befb04ebf144d129a392fe8be23a804cf6983244f5e91e2377",
+    "25": "a8e8179d78f66615fec5170d5e45ea703e1f81fc00053c22b4f970341148b128",
+    "26": "7a44232b05e046b510d188a44b30b029ba738a192c8ac9c78e9d7996e066f815",
+    "27": "9367dafa5cf12513aeaa7eabd2b41a8cc8aa22d821707311e9d0932872a44ee3",
+    "28": "7720afc2012e7bc51396f7dff255cfa675d84e1222871ad01461ae2e3477b520",
+    "29": "4922475962c5381808e4ff6ffe95b3857f3858ee9e7c48280cc4bce2e0653586",
+    "30": "d856efd0d8bcf08153477c22cef90f46623133d2181f8884ca983411da8921cb",
+    "31": "f6f9c8ca20e9413003fd24391e919423bc31f8d5295b516df98dc76b0277b95e",
+    "32": "d2925e831dedef7b14584888583c2516dd46e2d37e243b8fec1423263e778987",
+    "33": "f64415e2fbe3a948f0b1c934f39f2ae7bb9e07cb002c708b267ba8cf9f423aa7",
+    "34": "4df9e39c100a52cbbf2faa245238ddca8fded6c999883e6a440da6352c3a4aae",
+    "35": "e89bb4923b4680b5500dcd3dd98deb4c56d3348c6b110ba39c526cd4c94f5c29"
+  },
+  "candidateAnalysisSha256": {
+    "28": "fe16d43b2e6633baa6823021d71f73badbf0e65bc2951f461c8c3b246de89d21",
+    "29": "662ef3cba8750eda771f261cdaef967316f3368da5f89c5d8df7e53c6155f4ba"
+  },
+  "baselineBuildSha256": "dd90348ec00d8f3dbec234248dc8bfce88a287ff01a36022242139683093a500",
+  "caveats": [
+    "Existing guard counts cover move/mode trace and individual food access plus optional fuel/hedgehog commitments, not all logistics decisions.",
+    "Headless battles do not promote UI operation rows.",
+    "The preregistered interval is an approximate conservative range, not proof of superiority in every position.",
+    "A statistical criterion alone does not complete promotion; source checks, real continuations and delivery remain required."
+  ],
+  "weightConfigurations": {
+    "allocation-only": {
+      "label": "allocation-only",
+      "weights": {
+        "assaultRatio": 2,
+        "assaultMaxEfforts": 3,
+        "assaultMaxUnits": 4
+      }
+    },
+    "balanced": {
+      "label": "balanced",
+      "weights": {
+        "garrisonThreatened": 2,
+        "garrisonEmpty": 2.5,
+        "holdRatio": 0.7,
+        "holdMaxExtra": 3,
+        "huntValue": 1,
+        "clearValue": 1.5,
+        "assaultMaxEfforts": 2,
+        "assaultRatio": 2,
+        "objectiveTaken": 40
+      }
+    },
+    "capture-plan": {
+      "label": "capture-plan",
+      "weights": {
+        "capture": 70,
+        "progressTarget": 15,
+        "assaultRatio": 2,
+        "assaultMaxEfforts": 3,
+        "assaultMaxUnits": 4
+      }
+    },
+    "capture": {
+      "label": "capture",
+      "weights": {
+        "huntValue": 0.5,
+        "clearValue": 1,
+        "capture": 70,
+        "progressTarget": 15,
+        "assaultRatio": 2,
+        "assaultMaxEfforts": 3,
+        "assaultMaxUnits": 4
+      }
+    },
+    "concentrated": {
+      "label": "concentrated",
+      "weights": {
+        "assaultRatio": 4,
+        "assaultMaxEfforts": 2,
+        "assaultMaxUnits": 8,
+        "objectiveTaken": 40,
+        "protectObjective": 16,
+        "huntValue": 1,
+        "clearValue": 2
+      }
+    },
+    "defence": {
+      "label": "defence",
+      "weights": {
+        "garrisonThreatened": 2.5,
+        "garrisonEmpty": 3,
+        "garrisonCalm": 1.1,
+        "holdRatio": 0.8,
+        "holdMaxExtra": 3,
+        "abandonObjective": 60,
+        "holdAtEnd": 30
+      }
+    },
+    "pace-only": {
+      "label": "pace-only",
+      "weights": {
+        "progressTarget": 15
+      }
+    }
+  }
+}

@@ -49,7 +49,7 @@ const ratio = (label: string): number => {
   return match ? Number(match[1]) / Number(match[2]) : Number.POSITIVE_INFINITY;
 };
 
-export const respondToDecision = (context: BotDecisionContext, situation: Situation): BotDecision | null => {
+export const respondToDecision = (context: BotDecisionContext, situation: Situation, holdRatio = 0.5): BotDecision | null => {
   const decision = context.view.pendingDecision!;
   const options = decision.options as readonly Option[];
   const actions = context.actions.candidates('RESPOND_DECISION');
@@ -60,10 +60,13 @@ export const respondToDecision = (context: BotDecisionContext, situation: Situat
   const first = () => respond(actions, options[0]!.id, 'first-option', 'no preference among the options');
 
   switch (decision.kind) {
-    case 'FIRST_PLAYER':
+    case 'FIRST_PLAYER': {
+      const ownVp = situation.objectives.filter(o => o.controllerId === context.playerId).reduce((total, o) => total + o.points, 0);
+      const otherVp = situation.objectives.filter(o => o.controllerId !== null && o.controllerId !== context.playerId).reduce((total, o) => total + o.points, 0);
       // On the last turn the side that moves second has the last word on who holds each objective.
-      if (situation.turnsLeft <= 0 && has('second')) return respond(actions, 'second', 'first-player', 'last turn: move second to have the last word on the objectives');
+      if ((situation.turnsLeft <= 0 || (situation.turnsLeft === 1 && ownVp < otherVp)) && has('second')) return respond(actions, 'second', 'first-player', 'late VP deficit: move second to answer the opponent on the objectives');
       return respond(actions, has('first') ? 'first' : options[0]!.id, 'first-player', 'moving first keeps the initiative');
+    }
     case 'SUPPLY_SOURCE': {
       // Pay from the dump that has the most left, the full amount where possible; internal stocks before going unsupplied.
       const pays = options.filter(({ id }) => id.startsWith('pay:')).map((option) => ({
@@ -149,6 +152,25 @@ export const respondToDecision = (context: BotDecisionContext, situation: Situat
         .map((option) => ({ option, unit: byId.get(option.id.slice('advance:'.length)) }))
         .filter(({ unit }) => unit === undefined || unit.hexId !== targetHex);
       const free = advancers.filter(({ unit }) => !holdsObjective(unit));
+      const heldPoint = targetHex === undefined ? undefined : situation.objectives.find(o => o.hexId === targetHex && o.controllerId === context.playerId);
+      const heldStrength = targetHex === undefined ? 0 : situation.friendlyAt(targetHex).filter(u => situation.isCombatUnit(u))
+        .reduce((total, u) => total + (u.profile?.strength ?? 0), 0);
+      if (heldPoint && heldStrength > 0 && heldStrength < threat * holdRatio
+        && (situation.turnsLeft > 0 || projection.sequence.playerTurnIndex === 0)) {
+        const reinforcements = free.filter(({ unit }) => unit && situation.isCombatUnit(unit)
+          && !situation.objectives.some(o => o.hexId === unit.hexId && o.controllerId === context.playerId))
+          .sort((a, b) => (b.unit?.profile?.strength ?? 0) - (a.unit?.profile?.strength ?? 0) || a.option.id.localeCompare(b.option.id));
+        for (const candidate of reinforcements) {
+          const action = actions.find(a => a.kind === 'RESPOND_DECISION' && a.choiceId === candidate.option.id);
+          if (!action) continue;
+          const { explanation } = context.actions.explain(action);
+          const value = (key: string) => explanation.facts.find(f => f.key === key)?.value;
+          if (explanation.allowed && value('supply.advanceTraceLost') === 0 && value('supply.advanceFeedLost') === 0
+            && value('supply.advanceMoverHasTrace') === true) {
+            return respond(actions, candidate.option.id, 'reinforce-vp', 'keep the captured objective supplied and strong enough to hold', heldPoint.points);
+          }
+        }
+      }
       const advance = (free[0] ?? (objective && !options.some(({ label }) => /^Stop advancing/u.test(label)) ? advancers[0] : undefined))?.option;
       if (advance && (objective || threat < 8)) {
         return respond(actions, advance.id, 'advance', objective ? 'take the objective' : 'take the ground the defender left');
