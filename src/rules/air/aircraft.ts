@@ -22,8 +22,8 @@ export const AIR_BASE_FACILITY = 'facility:air-base';
 export const AIR_STRIP_FACILITY = 'facility:air-strip';
 /**
  * A game-specific off-map airfield (docs/roadmap/13-engagement-scenarios-wbs.md §6): a facility in an off-map box, with
- * its aircraft in the same box. They fly in over their side's map edge (range counted from the nearest of its entry
- * hexes, plus OFF_MAP_AIRFIELD_DISTANCE) and come back to the box. Nothing on the map can reach it; it holds any number
+ * its aircraft in the same box. They fly in over their side's map edge (range counted from the nearest friendly Air Entry Point
+ * (AEP), plus OFF_MAP_AIRFIELD_DISTANCE) and come back to the box. Nothing on the map can reach it; it holds any number
  * of Active aircraft and refits every one each Aircraft Refit Phase from its own stocks (cf. 12.3e).
  */
 export const OFF_MAP_AIRFIELD_FACILITY = 'facility:off-map-airfield';
@@ -74,10 +74,13 @@ export const aircraftAtAirfield = (state: GameState, field: PieceState): readonl
 export const aircraftAtBase = (state: GameState, base: PieceState): readonly PieceState[] => isOffMapAirfield(state, base)
   ? aircraftAtAirfield(state, base) : hexOf(base) === null ? [] : aircraftAt(state, hexOf(base)!).filter((piece) => piece.ownerId === base.ownerId);
 
-/** The map-edge hexes an off-map airfield's aircraft fly in over: their side's entry hexes. */
-const launchHexes = (state: GameState, playerId: PlayerId): readonly HexId[] => {
-  const side = state.scenario.players.find(({ id }) => id === playerId)?.sideDefinitionId;
-  return state.scenario.entries.filter(({ sideDefinitionId }) => sideDefinitionId === side).map(({ hexId }) => hexId);
+/** Explicit friendly AEPs printed on the map; ground reinforcement entries are unrelated. */
+export const airEntryHexes = (state: GameState, playerId: PlayerId): readonly HexId[] => {
+  const index = state.scenario.players.findIndex(({ id }) => id === playerId);
+  if (index < 0) return [];
+  const feature = `air-entry:${index === 0 ? 'first' : index === 1 ? 'second' : 'unknown'}`;
+  return state.scenario.mapDefinition.hexes.filter(({ features }) => features.some(({ kind, definitionId }) =>
+    kind === 'PRINTED_FEATURE' && definitionId === feature)).map(({ id }) => id);
 };
 
 /** Where `piece` flies from toward `targetHexId`: its base hex, or for an off-map airfield the nearest launch hex. */
@@ -85,7 +88,7 @@ export const airLaunchHex = (state: GameState, piece: PieceState, targetHexId: H
   const hexId = hexOf(piece);
   if (hexId !== null) return hexId;
   if (!atOffMapAirfield(state, piece)) return null;
-  return [...launchHexes(state, piece.ownerId)].sort((left, right) => hexDistanceBetween(left, targetHexId) - hexDistanceBetween(right, targetHexId)
+  return [...airEntryHexes(state, piece.ownerId)].sort((left, right) => hexDistanceBetween(left, targetHexId) - hexDistanceBetween(right, targetHexId)
     || String(left).localeCompare(String(right)))[0] ?? null;
 };
 

@@ -6,6 +6,8 @@ import {
   OFF_MAP_AIRFIELD_DISTANCE,
   activeAircraftLimit,
   airDistance,
+  airEntryHexes,
+  airLaunchHex,
   applyRuleAction,
   arrivingReinforcements,
   atOffMapAirfield,
@@ -100,11 +102,54 @@ describe('off-map airfield (AIR-OM2)', () => {
 });
 
 describe('flying from the off-map airfield (AIR-OM3)', () => {
-  it('counts range from the nearest friendly entry hex on the map edge, one hex further', () => {
+  it('counts range from the friendly AEP, one hex further', () => {
     const state = fieldState();
-    const entries = state.scenario.entries.filter(({ sideDefinitionId }) => String(sideDefinitionId) === 'side:axis').map(({ hexId }) => hexId);
+    const entries = airEntryHexes(state, AXIS);
+    expect(entries).toHaveLength(1);
     const nearest = Math.min(...entries.map((hexId) => hexDistanceBetween(hexId, TARGET)));
     expect(airDistance(state, piece(state, U.xB1), TARGET)).toBe(nearest + OFF_MAP_AIRFIELD_DISTANCE);
+  });
+
+  it('does not use ordinary ground entries or enemy AEPs when a friendly AEP is absent', () => {
+    const original = atStep(fieldState(), 'MOVEMENT', 'BARRAGE', AXIS);
+    const state: GameState = { ...original, scenario: { ...original.scenario, mapDefinition: {
+      ...original.scenario.mapDefinition, hexes: original.scenario.mapDefinition.hexes.map((hex) => ({
+        ...hex, features: hex.features.filter(({ definitionId }) => definitionId !== 'air-entry:second'),
+      })),
+    } } };
+    expect(state.scenario.entries.length).toBeGreaterThan(0);
+    expect(state.scenario.mapDefinition.hexes.some(({ features }) => features.some(({ definitionId }) => definitionId === 'air-entry:first'))).toBe(true);
+    expect(airLaunchHex(state, piece(state, U.xB1), TARGET)).toBeNull();
+    expect(airDistance(state, piece(state, U.xB1), TARGET)).toBe(Infinity);
+    expect(codes(applyRuleAction(state, AXIS, { kind: 'DECLARE_AIR_MISSION', mission: 'BARRAGE', aircraftIds: [U.xB1], targetHexId: TARGET, target: 'COMBAT_UNITS' })))
+      .toContain('NO_AIR_ENTRY_POINT');
+    expect(ruleEngine.getActionCandidates(state, { actorId: AXIS, kind: 'DECLARE_AIR_MISSION', pieceId: null, budget: 200 }).actions).toEqual([]);
+  });
+
+  it('ignores a nearer ground entry and launches exclusively from the AEP', () => {
+    const state = fieldState();
+    const aep = airEntryHexes(state, AXIS)[0]!;
+    const other = state.scenario.entries.find(({ sideDefinitionId, hexId }) => String(sideDefinitionId) === 'side:axis' && hexId !== aep)!;
+    expect(other).toBeDefined();
+    expect(airLaunchHex(state, piece(state, U.xB1), other.hexId)).toBe(aep);
+    expect(airDistance(state, piece(state, U.xB1), other.hexId)).toBe(hexDistanceBetween(aep, other.hexId) + 1);
+  });
+
+  it('rejects an otherwise reachable ground-entry target when it exceeds range from the AEP', () => {
+    const original = fieldState();
+    const aep = airEntryHexes(original, AXIS)[0]!;
+    const target = original.scenario.entries.find(({ sideDefinitionId, hexId }) => String(sideDefinitionId) === 'side:axis' && hexId !== aep)!.hexId;
+    const base = atStep(fieldState({ [U.aLeg]: [target, 'COMBAT', 'combat'] }), 'MOVEMENT', 'BARRAGE', AXIS);
+    const state: GameState = { ...base, scenario: { ...base.scenario, pieceCatalog: {
+      ...base.scenario.pieceCatalog, definitions: base.scenario.pieceCatalog.definitions.map((definition) => definition.family !== 'AIR' ? definition : {
+        ...definition, faces: definition.faces.map((face) => ({ ...face, steps: face.steps.map((step) => ({ ...step, range: 1 })) })),
+      }),
+    } } };
+    expect(airDistance(state, piece(state, U.xB1), target)).toBeGreaterThan(1);
+    expect(codes(applyRuleAction(state, AXIS, { kind: 'DECLARE_AIR_MISSION', mission: 'BARRAGE', aircraftIds: [U.xB1], targetHexId: target, target: 'COMBAT_UNITS' })))
+      .toContain('MISSION_OUT_OF_RANGE');
+    expect(ruleEngine.getActionCandidates(state, { actorId: AXIS, kind: 'DECLARE_AIR_MISSION', pieceId: U.xB1, budget: 200 }).actions
+      .some((action) => action.kind === 'DECLARE_AIR_MISSION' && action.targetHexId === target)).toBe(false);
   });
 
   it('flies a barrage at an enemy unit and comes back to the off-map box Inactive', () => {
@@ -112,6 +157,7 @@ describe('flying from the off-map airfield (AIR-OM3)', () => {
     const offered = ruleEngine.getActionCandidates(state, { actorId: AXIS, kind: 'DECLARE_AIR_MISSION', pieceId: null, budget: 200 }).actions;
     expect(offered.some((action) => action.kind === 'DECLARE_AIR_MISSION' && action.targetHexId === TARGET && action.aircraftIds.includes(U.xB1))).toBe(true);
     const declared = ok(applyRuleAction(state, AXIS, { kind: 'DECLARE_AIR_MISSION', mission: 'BARRAGE', aircraftIds: [U.xB1, U.xB2], targetHexId: TARGET, target: 'COMBAT_UNITS' }));
+    expect(declared.activeTransaction?.air?.aircraft.every(({ baseHexId }) => airEntryHexes(state, AXIS).includes(baseHexId))).toBe(true);
     const settled = settleDecisions(declared, (decision) => decision.kind === 'INTERCEPTION' ? 'decline' : decision.options[0]!.id).state;
     expect(settled.activeTransaction).toBeNull();
     for (const pieceId of [U.xB1, U.xB2]) {

@@ -131,6 +131,7 @@ export const validateAirMission = (state: GameState, action: AirMissionDeclarati
     const hexId = hexOf(piece);
     if (piece.ownerId !== action.actorId) issues.push(violation('NOT_PIECE_OWNER', path, `${name} is not yours.`, '14.2'));
     if ((!hexId || !friendlyAirBaseAt(state, piece.ownerId, hexId)) && !atOffMapAirfield(state, piece)) issues.push(violation('AIRCRAFT_NOT_AT_BASE', path, `${name} is not at a friendly Air Base.`, '14.2c'));
+    if (atOffMapAirfield(state, piece) && airLaunchHex(state, piece, action.targetHexId) === null) issues.push(violation('NO_AIR_ENTRY_POINT', path, `${name} needs a friendly Air Entry Point (AEP) on this map.`, 'game-specific'));
     if (transfer && atOffMapAirfield(state, piece)) issues.push(violation('OFF_MAP_AIRFIELD_TRANSFER', path, `${name} is based off the map and stays there.`, 'game-specific'));
     if (!isActiveAircraft(piece)) issues.push(violation('AIRCRAFT_INACTIVE', path, `${name} is Inactive and must refit first.`, '14.1a'));
     if (state.air.missionFlownIds.includes(piece.id)) issues.push(violation('AIRCRAFT_ALREADY_FLEW', path, `${name} already flew a mission this phase.`, '14.2e'));
