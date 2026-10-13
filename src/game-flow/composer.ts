@@ -20,6 +20,7 @@ import type {
   NewGameRequest,
 } from './model.js';
 import { GAME_FLOW_VERSION, newGameSeaOf, seaSideOf, styleSeaOf } from './model.js';
+import { allocateGarrisonSupply } from './garrison-supply.js';
 
 const must = <T, E>(result: Result<T, E>): T => {
   if (!result.ok) throw new Error('Static game-flow ID is invalid.');
@@ -77,7 +78,7 @@ export const composeGeneratedScenario = (
   if (!parsedScenarioId.ok) return { ok: false, error: [{
     stage: 'SCENARIO', code: 'INVALID_SCENARIO_ID', message: 'Generated Scenario ID is invalid.', path: ['scenario', 'id'],
   }] };
-  const scenario: ScenarioDefinition = {
+  let scenario: ScenarioDefinition = {
     id: parsedScenarioId.value,
     schemaVersion: FOUNDATION_SCHEMA_VERSION,
     mapDefinition: generatedMap.mapDefinition,
@@ -143,13 +144,18 @@ export const composeGeneratedScenario = (
       ],
     },
   };
+  const configuration = createGeneratedRuleConfiguration(deployment, request, generatedOob, GENERATED_PLAYERS);
+  const allocated = allocateGarrisonSupply(scenario, configuration, deployment);
+  if (!allocated.ok) return allocated;
+  deployment = allocated.value;
+  scenario = { ...scenario, initialPieceState: deployment.initialPieceState };
   return { ok: true, value: {
     request,
     generatedMap,
     generatedOob,
     deployment,
     scenario,
-    configuration: createGeneratedRuleConfiguration(deployment, request, generatedOob, GENERATED_PLAYERS),
+    configuration,
     bindings: GENERATED_BINDINGS,
     summary: {
       mapSize: `${generatedMap.options.width}×${generatedMap.options.height}`,

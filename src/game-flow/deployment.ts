@@ -169,8 +169,8 @@ export const GENERATED_ATTACK_SPLIT_SHIFT = 0.4;
 /** Settlements that make a rail Hex detrainable (13.3c), so a Supply Source (12.6a). */
 const DETRAINABLE_FEATURES = new Set(['settlement:village', 'settlement:town', 'settlement:city']);
 
-/** Tokens of supply under every garrison at the start: two turns of eating for it (1T each, 12.6c). */
-export const GENERATED_GARRISON_STOCK_TOKENS = 2;
+/** Emergency stock for an isolated VP: one feeding payment (12.6c), allocated from the side's existing SP budget. */
+export const GENERATED_GARRISON_STOCK_TOKENS = 1;
 
 /**
  * In an attack the defender's garrisons start dug in (16.0): a hedgehog of this Level under every objective garrison
@@ -1253,8 +1253,8 @@ export const deployGeneratedForces = (
       remainingSteps: fullStrength(definition), mode: 'COMBAT', statuses: [], stackOrder, resourceQuantity: null,
     };
   };
-  // Every garrison stands on a small dump of its own (user, 2026-10-07: supply to match the garrisons): it eats from it
-  // when cut off instead of suffering attrition (12.6c, 12.8). The enemy may capture it (9.14b) unless blown (12.11a).
+  // Stock candidates only: composition checks actual trace supply and retains just isolated VP stocks,
+  // deducting them from the existing supply budget. Key-point stocks are discarded.
   const garrisonStock = (side: OobSide, hexId: HexId, pieceId: string): PieceState | null => {
     const dumpDefinitionId = oob.sides.find((entry) => entry.side === side)?.independentUnits.find(({ role, staging }) => role === 'SUPPLY' && staging === undefined)?.definitionId;
     const dumpDefinition = dumpDefinitionId === undefined ? undefined : definitionById.get(dumpDefinitionId);

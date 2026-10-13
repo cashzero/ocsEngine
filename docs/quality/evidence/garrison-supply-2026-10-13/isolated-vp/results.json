@@ -1,0 +1,31 @@
+{
+  "title": "Garrison emergency supply UI",
+  "final": {
+    "turn": "Turn 2 / 3",
+    "player": "Axis player turn",
+    "phase": "First Player Phase",
+    "revision": null
+  },
+  "rows": [
+    {
+      "id": "GS-FEED",
+      "expectation": "Isolated VP garrisons have an available feeding payment",
+      "observed": "Feed from 12T at 0813 | Feed from 1T at 1015 | Feed from 1T at 1214 | Feed from 12T at 0813 | Feed from 1T at 1015 | Feed from 1T at 1214",
+      "status": "PASS"
+    },
+    {
+      "id": "GS-TURN",
+      "expectation": "The same generated package reaches Turn 2 through legal supply payments and handoffs",
+      "observed": "{\"turn\":\"Turn 2 / 3\",\"player\":\"Axis player turn\",\"phase\":\"First Player Phase\",\"seat\":\"Axis commander\",\"end\":\"End First Player PhaseNext: Aircraft Refit Phase\",\"endDisabled\":true,\"notice\":\"Reaction · Barrage Segment finished.\",\"handoff\":false,\"complete\":false,\"decision\":[\"Go first\",\"Go second\"]}",
+      "status": "PASS"
+    },
+    {
+      "id": "GS-ERRORS",
+      "expectation": "No console or page errors",
+      "observed": "0",
+      "status": "PASS"
+    }
+  ],
+  "timings": [],
+  "errors": []
+}

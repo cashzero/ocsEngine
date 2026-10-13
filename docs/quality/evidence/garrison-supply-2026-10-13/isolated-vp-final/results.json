@@ -1,0 +1,58 @@
+{
+  "title": "Garrison emergency supply UI",
+  "final": {
+    "turn": "Turn 2 / 3",
+    "player": "Allied player turn",
+    "phase": "Reinforcement",
+    "revision": null
+  },
+  "rows": [
+    {
+      "id": "GS-FEED",
+      "expectation": "Isolated VP garrisons have an available feeding payment",
+      "observed": "Feed from 12T at 0813 | Feed from 1T at 1015 | Feed from 1T at 1214 | Feed from 12T at 0813 | Feed from 1T at 1015 | Feed from 1T at 1214",
+      "status": "PASS"
+    },
+    {
+      "id": "GS-CONSUME",
+      "expectation": "Feeding from the 1T emergency stock removes one garrison from the unfed list",
+      "observed": "2 → 1",
+      "status": "PASS"
+    },
+    {
+      "id": "GS-STOCK",
+      "expectation": "The consumed 1T stock is no longer offered",
+      "observed": "false",
+      "status": "PASS"
+    },
+    {
+      "id": "GS-TURN",
+      "expectation": "The same generated package reaches Turn 2 through legal supply payments and handoffs",
+      "observed": "{\"turn\":\"Turn 2 / 3\",\"player\":\"Allied player turn\",\"phase\":\"First Player Phase\",\"seat\":\"Allied commander\",\"end\":\"End First Player PhaseNext: Aircraft Refit Phase\",\"endDisabled\":true,\"notice\":\"Your turn, Allied commander.\",\"handoff\":false,\"complete\":false,\"decision\":[\"Go first\",\"Go second\"]}",
+      "status": "PASS"
+    },
+    {
+      "id": "GS-DECISION",
+      "expectation": "The next first-player decision resolves through its visible choice",
+      "observed": "{\"turn\":\"Turn 2 / 3\",\"player\":\"Allied player turn\",\"phase\":\"Reinforcement\",\"seat\":\"Allied commander\",\"end\":\"End Reinforcement PhaseNext: Movement Phase\",\"endDisabled\":true,\"notice\":\"Decision recorded.\",\"handoff\":false,\"complete\":false,\"decision\":[]}",
+      "status": "PASS"
+    },
+    {
+      "id": "GS-ERRORS",
+      "expectation": "No console or page errors",
+      "observed": "0",
+      "status": "PASS"
+    }
+  ],
+  "timings": [
+    {
+      "label": "generate",
+      "elapsed": 2044
+    },
+    {
+      "label": "start",
+      "elapsed": 1258
+    }
+  ],
+  "errors": []
+}

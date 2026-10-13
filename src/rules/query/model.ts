@@ -71,6 +71,8 @@ export interface ProjectedStack {
 
 export interface RuleProjection {
   readonly stateRevision: Revision;
+  /** Own combat units excluded from the shared next-ration allocation; present in the friendly Movement/Supply phases. */
+  readonly unfundedRationPieceIds?: readonly PieceId[];
   readonly viewerId: PlayerId;
   readonly sequence: GameState['sequence'];
   /** The viewer's own unit that is still moving and may spend more MP (6.1g); null otherwise and for the opponent. */

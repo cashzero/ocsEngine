@@ -1,0 +1,307 @@
+{
+  "games": 6,
+  "feeds": 1,
+  "truckDeliveries": 0,
+  "feedsFromDelivered": 0,
+  "missedLegalFeeds": 0,
+  "attritionRolls": 0,
+  "losses": 0,
+  "records": [
+    {
+      "file": "match-0.save.json",
+      "feeds": [
+        {
+          "turn": 8,
+          "garrisons": [
+            "generated-oob:169541634:allied:garrison:objective-5"
+          ],
+          "source": "rail-supply:153:9,5:supply-arrival:player:allied:5",
+          "delivered": false
+        }
+      ],
+      "truckDeliveries": [],
+      "supplyEnds": [
+        {
+          "turn": 3,
+          "total": 3,
+          "untraced": 0,
+          "unfed": []
+        },
+        {
+          "turn": 3,
+          "total": 2,
+          "untraced": 0,
+          "unfed": []
+        },
+        {
+          "turn": 4,
+          "total": 2,
+          "untraced": 0,
+          "unfed": []
+        },
+        {
+          "turn": 5,
+          "total": 2,
+          "untraced": 0,
+          "unfed": []
+        },
+        {
+          "turn": 7,
+          "total": 1,
+          "untraced": 0,
+          "unfed": []
+        },
+        {
+          "turn": 8,
+          "total": 1,
+          "untraced": 0,
+          "unfed": []
+        },
+        {
+          "turn": 8,
+          "total": 2,
+          "untraced": 1,
+          "unfed": []
+        }
+      ],
+      "missedLegalFeeds": [],
+      "attrition": [],
+      "losses": []
+    },
+    {
+      "file": "match-1.save.json",
+      "feeds": [],
+      "truckDeliveries": [],
+      "supplyEnds": [],
+      "missedLegalFeeds": [],
+      "attrition": [],
+      "losses": []
+    },
+    {
+      "file": "match-2.save.json",
+      "feeds": [],
+      "truckDeliveries": [],
+      "supplyEnds": [
+        {
+          "turn": 2,
+          "total": 1,
+          "untraced": 0,
+          "unfed": []
+        },
+        {
+          "turn": 2,
+          "total": 2,
+          "untraced": 0,
+          "unfed": []
+        },
+        {
+          "turn": 4,
+          "total": 1,
+          "untraced": 0,
+          "unfed": []
+        },
+        {
+          "turn": 5,
+          "total": 1,
+          "untraced": 0,
+          "unfed": []
+        },
+        {
+          "turn": 6,
+          "total": 1,
+          "untraced": 0,
+          "unfed": []
+        },
+        {
+          "turn": 7,
+          "total": 1,
+          "untraced": 0,
+          "unfed": []
+        },
+        {
+          "turn": 8,
+          "total": 1,
+          "untraced": 0,
+          "unfed": []
+        }
+      ],
+      "missedLegalFeeds": [],
+      "attrition": [],
+      "losses": []
+    },
+    {
+      "file": "match-3.save.json",
+      "feeds": [],
+      "truckDeliveries": [],
+      "supplyEnds": [
+        {
+          "turn": 3,
+          "total": 4,
+          "untraced": 0,
+          "unfed": []
+        },
+        {
+          "turn": 3,
+          "total": 2,
+          "untraced": 0,
+          "unfed": []
+        },
+        {
+          "turn": 4,
+          "total": 4,
+          "untraced": 0,
+          "unfed": []
+        },
+        {
+          "turn": 4,
+          "total": 2,
+          "untraced": 0,
+          "unfed": []
+        },
+        {
+          "turn": 5,
+          "total": 2,
+          "untraced": 0,
+          "unfed": []
+        },
+        {
+          "turn": 6,
+          "total": 4,
+          "untraced": 0,
+          "unfed": []
+        },
+        {
+          "turn": 6,
+          "total": 2,
+          "untraced": 0,
+          "unfed": []
+        },
+        {
+          "turn": 7,
+          "total": 2,
+          "untraced": 0,
+          "unfed": []
+        },
+        {
+          "turn": 8,
+          "total": 2,
+          "untraced": 0,
+          "unfed": []
+        }
+      ],
+      "missedLegalFeeds": [],
+      "attrition": [],
+      "losses": []
+    },
+    {
+      "file": "match-4.save.json",
+      "feeds": [],
+      "truckDeliveries": [],
+      "supplyEnds": [
+        {
+          "turn": 4,
+          "total": 1,
+          "untraced": 0,
+          "unfed": []
+        },
+        {
+          "turn": 5,
+          "total": 1,
+          "untraced": 0,
+          "unfed": []
+        },
+        {
+          "turn": 6,
+          "total": 1,
+          "untraced": 0,
+          "unfed": []
+        },
+        {
+          "turn": 7,
+          "total": 1,
+          "untraced": 0,
+          "unfed": []
+        }
+      ],
+      "missedLegalFeeds": [],
+      "attrition": [],
+      "losses": []
+    },
+    {
+      "file": "match-5.save.json",
+      "feeds": [],
+      "truckDeliveries": [],
+      "supplyEnds": [
+        {
+          "turn": 3,
+          "total": 4,
+          "untraced": 0,
+          "unfed": []
+        },
+        {
+          "turn": 3,
+          "total": 2,
+          "untraced": 0,
+          "unfed": []
+        },
+        {
+          "turn": 4,
+          "total": 2,
+          "untraced": 0,
+          "unfed": []
+        },
+        {
+          "turn": 4,
+          "total": 4,
+          "untraced": 0,
+          "unfed": []
+        },
+        {
+          "turn": 5,
+          "total": 4,
+          "untraced": 0,
+          "unfed": []
+        },
+        {
+          "turn": 6,
+          "total": 2,
+          "untraced": 0,
+          "unfed": []
+        },
+        {
+          "turn": 6,
+          "total": 4,
+          "untraced": 0,
+          "unfed": []
+        },
+        {
+          "turn": 7,
+          "total": 2,
+          "untraced": 0,
+          "unfed": []
+        },
+        {
+          "turn": 7,
+          "total": 4,
+          "untraced": 0,
+          "unfed": []
+        },
+        {
+          "turn": 8,
+          "total": 2,
+          "untraced": 0,
+          "unfed": []
+        },
+        {
+          "turn": 8,
+          "total": 4,
+          "untraced": 0,
+          "unfed": []
+        }
+      ],
+      "missedLegalFeeds": [],
+      "attrition": [],
+      "losses": []
+    }
+  ]
+}

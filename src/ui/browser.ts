@@ -588,9 +588,10 @@ const ENGAGEMENT_OPTIONS: readonly (readonly [Engagement, string])[] = [
 /** What the situation means for each side and how it is won (docs/roadmap/13-engagement-scenarios-wbs.md). */
 const engagementHelp = (engagement: Engagement): string => {
   const attacker = attackerOf(engagement);
-  if (attacker === null) return 'Both armies start about ten hexes apart and each holds the same objective VP. The side holding more VP when the last turn ends wins; equal VP is a draw.';
+  const supplyHelp = ' Only isolated objective garrisons start with 1T (0.25 SP) emergency supply, drawn from their side’s existing supply budget; key-point garrisons start connected to trace supply.';
+  if (attacker === null) return 'Both armies start about ten hexes apart and each holds the same objective VP. The side holding more VP when the last turn ends wins; equal VP is a draw.' + supplyHelp;
   const [attacking, defending] = attacker === 'ALLIED' ? ['Allied', 'Axis'] : ['Axis', 'Allied'];
-  return `${defending} holds most of the map and every objective, its line in Combat Mode, with garrisons dug into hedgehogs on its objectives (Level ${GENERATED_HEDGEHOG_LEVELS.OBJECTIVE}) and on key rail towns and road junctions (Level ${GENERATED_HEDGEHOG_LEVELS.KEY_POINT}); ${attacking} fields ${ATTACKER_FORCE_RATIO} times the divisions plus off-map air (Fighters and Tactical Bombers at an airfield off the map, flying in over its own map edge and back), assembles a few hexes away and moves first. ${attacking} wins by holding at least half the objective VP when the last turn ends; otherwise ${defending} wins.`;
+  return `${defending} holds most of the map and every objective, its line in Combat Mode, with garrisons dug into hedgehogs on its objectives (Level ${GENERATED_HEDGEHOG_LEVELS.OBJECTIVE}) and on key rail towns and road junctions (Level ${GENERATED_HEDGEHOG_LEVELS.KEY_POINT}); ${attacking} fields ${ATTACKER_FORCE_RATIO} times the divisions plus off-map air (Fighters and Tactical Bombers at an airfield off the map, flying in over its own map edge and back), assembles a few hexes away and moves first. ${attacking} wins by holding at least half the objective VP when the last turn ends; otherwise ${defending} wins.` + supplyHelp;
 };
 
 /** A meeting engagement has no attacker, so it offers no sea behind the attacker. */

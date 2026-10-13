@@ -1,0 +1,344 @@
+{
+  "games": 3,
+  "feeds": 3,
+  "truckDeliveries": 5,
+  "feedsFromDelivered": 3,
+  "missedLegalFeeds": 0,
+  "attritionRolls": 7,
+  "losses": 6,
+  "records": [
+    {
+      "file": "match-10.save.json",
+      "feeds": [],
+      "truckDeliveries": [],
+      "supplyEnds": [
+        {
+          "turn": 5,
+          "total": 0,
+          "untraced": 0,
+          "unfed": []
+        },
+        {
+          "turn": 6,
+          "total": 0,
+          "untraced": 0,
+          "unfed": []
+        },
+        {
+          "turn": 7,
+          "total": 9,
+          "untraced": 4,
+          "unfed": [
+            {
+              "id": "generated-oob:169542604:allied:garrison:key-point-1",
+              "hex": "11,12",
+              "reachableTokens": 0
+            },
+            {
+              "id": "generated-oob:169542604:allied:garrison:key-point-2",
+              "hex": "11,12",
+              "reachableTokens": 0
+            },
+            {
+              "id": "generated-oob:169542604:allied:garrison:key-point-3",
+              "hex": "8,5",
+              "reachableTokens": 0
+            },
+            {
+              "id": "generated-oob:169542604:allied:garrison:objective-6",
+              "hex": "9,12",
+              "reachableTokens": 0
+            }
+          ]
+        },
+        {
+          "turn": 7,
+          "total": 0,
+          "untraced": 0,
+          "unfed": []
+        }
+      ],
+      "missedLegalFeeds": [],
+      "attrition": [
+        {
+          "turn": 7,
+          "kind": "ATTRITION_ROLLED",
+          "sequence": 17,
+          "hexId": "11,12",
+          "total": 4,
+          "steps": 1,
+          "garrisons": [
+            "generated-oob:169542604:allied:garrison:key-point-1",
+            "generated-oob:169542604:allied:garrison:key-point-2"
+          ]
+        },
+        {
+          "turn": 7,
+          "kind": "ATTRITION_ROLLED",
+          "sequence": 21,
+          "hexId": "8,5",
+          "total": 3,
+          "steps": 1,
+          "garrisons": [
+            "generated-oob:169542604:allied:garrison:key-point-3"
+          ]
+        },
+        {
+          "turn": 7,
+          "kind": "ATTRITION_ROLLED",
+          "sequence": 22,
+          "hexId": "9,12",
+          "total": 10,
+          "steps": 1,
+          "garrisons": [
+            "generated-oob:169542604:allied:garrison:objective-6"
+          ]
+        }
+      ],
+      "losses": [
+        {
+          "turn": 7,
+          "id": "generated-oob:169542604:allied:garrison:key-point-1",
+          "hex": "11,12"
+        },
+        {
+          "turn": 7,
+          "id": "generated-oob:169542604:allied:garrison:key-point-3",
+          "hex": "8,5"
+        },
+        {
+          "turn": 7,
+          "id": "generated-oob:169542604:allied:garrison:objective-6",
+          "hex": "9,12"
+        }
+      ]
+    },
+    {
+      "file": "match-11.save.json",
+      "feeds": [],
+      "truckDeliveries": [],
+      "supplyEnds": [
+        {
+          "turn": 5,
+          "total": 6,
+          "untraced": 0,
+          "unfed": []
+        },
+        {
+          "turn": 8,
+          "total": 6,
+          "untraced": 0,
+          "unfed": []
+        }
+      ],
+      "missedLegalFeeds": [],
+      "attrition": [],
+      "losses": []
+    },
+    {
+      "file": "match-9.save.json",
+      "feeds": [
+        {
+          "turn": 4,
+          "garrisons": [
+            "generated-oob:169542507:allied:garrison:objective-10",
+            "generated-oob:169542507:allied:garrison:objective-2",
+            "generated-oob:169542507:allied:garrison:objective-4"
+          ],
+          "source": "generated-oob:169542507:allied:independent-supply-1:objective-stock-9",
+          "delivered": true
+        },
+        {
+          "turn": 5,
+          "garrisons": [
+            "generated-oob:169542507:allied:garrison:objective-10",
+            "generated-oob:169542507:allied:garrison:objective-2",
+            "generated-oob:169542507:allied:garrison:objective-4"
+          ],
+          "source": "supply-arrival:player:allied:3#load318",
+          "delivered": true
+        },
+        {
+          "turn": 6,
+          "garrisons": [
+            "generated-oob:169542507:allied:garrison:objective-4"
+          ],
+          "source": "supply-arrival:player:allied:4#load408#unload410",
+          "delivered": true
+        }
+      ],
+      "truckDeliveries": [
+        {
+          "turn": 1,
+          "hex": "9,3",
+          "tokens": 2,
+          "garrisons": [
+            "generated-oob:169542507:allied:garrison:objective-9"
+          ]
+        },
+        {
+          "turn": 4,
+          "hex": "7,14",
+          "tokens": 1,
+          "garrisons": [
+            "generated-oob:169542507:allied:garrison:key-point-1",
+            "generated-oob:169542507:allied:garrison:key-point-2",
+            "generated-oob:169542507:allied:garrison:objective-2",
+            "generated-oob:169542507:allied:garrison:objective-3"
+          ]
+        },
+        {
+          "turn": 5,
+          "hex": "10,8",
+          "tokens": 1,
+          "garrisons": [
+            "generated-oob:169542507:allied:garrison:objective-10",
+            "generated-oob:169542507:allied:garrison:objective-2",
+            "generated-oob:169542507:allied:garrison:objective-4"
+          ]
+        },
+        {
+          "turn": 5,
+          "hex": "12,3",
+          "tokens": 1,
+          "garrisons": [
+            "generated-oob:169542507:allied:garrison:objective-10",
+            "generated-oob:169542507:allied:garrison:objective-2",
+            "generated-oob:169542507:allied:garrison:objective-4"
+          ]
+        },
+        {
+          "turn": 6,
+          "hex": "12,3",
+          "tokens": 1,
+          "garrisons": [
+            "generated-oob:169542507:allied:garrison:objective-4"
+          ]
+        }
+      ],
+      "supplyEnds": [
+        {
+          "turn": 3,
+          "total": 0,
+          "untraced": 0,
+          "unfed": []
+        },
+        {
+          "turn": 4,
+          "total": 11,
+          "untraced": 7,
+          "unfed": [
+            {
+              "id": "generated-oob:169542507:allied:garrison:key-point-1",
+              "hex": "12,12",
+              "reachableTokens": 0
+            },
+            {
+              "id": "generated-oob:169542507:allied:garrison:key-point-2",
+              "hex": "7,14",
+              "reachableTokens": 0
+            },
+            {
+              "id": "generated-oob:169542507:allied:garrison:objective-3",
+              "hex": "11,12",
+              "reachableTokens": 0
+            },
+            {
+              "id": "generated-oob:169542507:allied:garrison:objective-9",
+              "hex": "9,3",
+              "reachableTokens": 0
+            }
+          ]
+        },
+        {
+          "turn": 4,
+          "total": 0,
+          "untraced": 0,
+          "unfed": []
+        },
+        {
+          "turn": 5,
+          "total": 7,
+          "untraced": 3,
+          "unfed": []
+        },
+        {
+          "turn": 6,
+          "total": 5,
+          "untraced": 1,
+          "unfed": []
+        },
+        {
+          "turn": 7,
+          "total": 4,
+          "untraced": 0,
+          "unfed": []
+        }
+      ],
+      "missedLegalFeeds": [],
+      "attrition": [
+        {
+          "turn": 4,
+          "kind": "ATTRITION_ROLLED",
+          "sequence": 15,
+          "hexId": "11,12",
+          "total": 7,
+          "steps": 1,
+          "garrisons": [
+            "generated-oob:169542507:allied:garrison:objective-3"
+          ]
+        },
+        {
+          "turn": 4,
+          "kind": "ATTRITION_ROLLED",
+          "sequence": 17,
+          "hexId": "12,12",
+          "total": 8,
+          "steps": 2,
+          "garrisons": [
+            "generated-oob:169542507:allied:garrison:key-point-1"
+          ]
+        },
+        {
+          "turn": 4,
+          "kind": "ATTRITION_ROLLED",
+          "sequence": 22,
+          "hexId": "7,14",
+          "total": 9,
+          "steps": 1,
+          "garrisons": [
+            "generated-oob:169542507:allied:garrison:key-point-2"
+          ]
+        },
+        {
+          "turn": 4,
+          "kind": "ATTRITION_ROLLED",
+          "sequence": 23,
+          "hexId": "9,3",
+          "total": 9,
+          "steps": 1,
+          "garrisons": [
+            "generated-oob:169542507:allied:garrison:objective-9"
+          ]
+        }
+      ],
+      "losses": [
+        {
+          "turn": 4,
+          "id": "generated-oob:169542507:allied:garrison:key-point-1",
+          "hex": "12,12"
+        },
+        {
+          "turn": 4,
+          "id": "generated-oob:169542507:allied:garrison:key-point-2",
+          "hex": "7,14"
+        },
+        {
+          "turn": 4,
+          "id": "generated-oob:169542507:allied:garrison:objective-9",
+          "hex": "9,3"
+        }
+      ]
+    }
+  ]
+}
