@@ -1,0 +1,528 @@
+{
+  "commit": "391140c4c5b679271a410681e3e87e5f2422447a",
+  "candidatePolicy": "heuristic@18",
+  "baselinePolicy": "heuristic@17",
+  "tables": {
+    "self": {
+      "18": {
+        "games": 48,
+        "vp": 287,
+        "kills": 618,
+        "losses": 618,
+        "draws": 22,
+        "attritionSteps": 176,
+        "ownRationTriggerSteps": 68,
+        "traceBreaks": 0,
+        "feedBreaks": 0,
+        "spendingViolations": 0,
+        "defeats": 13,
+        "wins": 13,
+        "meanVp": 5.979166666666667,
+        "meanKills": 12.875,
+        "meanLosses": 12.875
+      }
+    },
+    "paired-meeting": {
+      "18": {
+        "games": 24,
+        "vp": 129,
+        "kills": 270,
+        "losses": 301,
+        "defeats": 12,
+        "attritionSteps": 81,
+        "ownRationTriggerSteps": 33,
+        "traceBreaks": 0,
+        "feedBreaks": 0,
+        "spendingViolations": 0,
+        "wins": 5,
+        "draws": 7,
+        "meanVp": 5.375,
+        "meanKills": 11.25,
+        "meanLosses": 12.541666666666666,
+        "pairedVpMargin": -0.75,
+        "pairedSE": 0.9384464919119354,
+        "pairs": 12
+      },
+      "17": {
+        "games": 24,
+        "vp": 147,
+        "kills": 301,
+        "losses": 270,
+        "wins": 12,
+        "attritionSteps": 76,
+        "ownRationTriggerSteps": 34,
+        "traceBreaks": 0,
+        "feedBreaks": 0,
+        "spendingViolations": 0,
+        "defeats": 5,
+        "draws": 7,
+        "meanVp": 6.125,
+        "meanKills": 12.541666666666666,
+        "meanLosses": 11.25,
+        "pairedVpMargin": 0.75,
+        "pairedSE": 0.9384464919119354,
+        "pairs": 12
+      }
+    },
+    "paired-attack": {
+      "18": {
+        "games": 24,
+        "vp": 138,
+        "kills": 295,
+        "losses": 353,
+        "wins": 13,
+        "attritionSteps": 137,
+        "ownRationTriggerSteps": 81,
+        "traceBreaks": 0,
+        "feedBreaks": 0,
+        "spendingViolations": 0,
+        "defeats": 11,
+        "meanVp": 5.75,
+        "meanKills": 12.291666666666666,
+        "meanLosses": 14.708333333333334,
+        "pairedVpMargin": -0.6666666666666666,
+        "pairedSE": 0.963998407308295,
+        "pairs": 12
+      },
+      "17": {
+        "games": 24,
+        "vp": 154,
+        "kills": 353,
+        "losses": 295,
+        "defeats": 13,
+        "attritionSteps": 72,
+        "ownRationTriggerSteps": 26,
+        "traceBreaks": 0,
+        "feedBreaks": 0,
+        "spendingViolations": 0,
+        "wins": 11,
+        "meanVp": 6.416666666666667,
+        "meanKills": 14.708333333333334,
+        "meanLosses": 12.291666666666666,
+        "pairedVpMargin": 0.6666666666666666,
+        "pairedSE": 0.963998407308295,
+        "pairs": 12
+      }
+    },
+    "natural": {
+      "18": {
+        "games": 6,
+        "vp": 35,
+        "kills": 65,
+        "losses": 65,
+        "wins": 3,
+        "attritionSteps": 13,
+        "ownRationTriggerSteps": 0,
+        "traceBreaks": 0,
+        "feedBreaks": 0,
+        "spendingViolations": 0,
+        "defeats": 3,
+        "meanVp": 5.833333333333333,
+        "meanKills": 10.833333333333334,
+        "meanLosses": 10.833333333333334
+      }
+    }
+  },
+  "runs": [
+    {
+      "group": "self",
+      "style": "temperate",
+      "policies": {
+        "18": {
+          "games": 16,
+          "vp": 112,
+          "kills": 212,
+          "losses": 212,
+          "draws": 8,
+          "attritionSteps": 66,
+          "ownRationTriggerSteps": 29,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 4,
+          "wins": 4
+        }
+      },
+      "garrison": {
+        "games": 8,
+        "feeds": 1,
+        "truckDeliveries": 1,
+        "feedsFromDelivered": 1,
+        "missedLegalFeeds": 0,
+        "attritionRolls": 0,
+        "losses": 0
+      }
+    },
+    {
+      "group": "self",
+      "style": "eastern",
+      "policies": {
+        "18": {
+          "games": 16,
+          "vp": 93,
+          "kills": 208,
+          "losses": 208,
+          "draws": 4,
+          "attritionSteps": 54,
+          "ownRationTriggerSteps": 37,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 6,
+          "defeats": 6
+        }
+      },
+      "garrison": {
+        "games": 8,
+        "feeds": 7,
+        "truckDeliveries": 6,
+        "feedsFromDelivered": 2,
+        "missedLegalFeeds": 0,
+        "attritionRolls": 3,
+        "losses": 2
+      }
+    },
+    {
+      "group": "self",
+      "style": "mediterranean",
+      "policies": {
+        "18": {
+          "games": 16,
+          "vp": 82,
+          "kills": 198,
+          "losses": 198,
+          "draws": 10,
+          "attritionSteps": 56,
+          "ownRationTriggerSteps": 2,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 3,
+          "wins": 3
+        }
+      },
+      "garrison": {
+        "games": 8,
+        "feeds": 0,
+        "truckDeliveries": 0,
+        "feedsFromDelivered": 0,
+        "missedLegalFeeds": 0,
+        "attritionRolls": 0,
+        "losses": 0
+      }
+    },
+    {
+      "group": "paired-meeting",
+      "style": "temperate",
+      "policies": {
+        "18": {
+          "games": 8,
+          "vp": 57,
+          "kills": 90,
+          "losses": 73,
+          "defeats": 2,
+          "attritionSteps": 7,
+          "ownRationTriggerSteps": 0,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 2,
+          "draws": 4
+        },
+        "17": {
+          "games": 8,
+          "vp": 47,
+          "kills": 73,
+          "losses": 90,
+          "wins": 2,
+          "attritionSteps": 21,
+          "ownRationTriggerSteps": 14,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 2,
+          "draws": 4
+        }
+      },
+      "garrison": {
+        "games": 8,
+        "feeds": 0,
+        "truckDeliveries": 2,
+        "feedsFromDelivered": 0,
+        "missedLegalFeeds": 0,
+        "attritionRolls": 1,
+        "losses": 1
+      }
+    },
+    {
+      "group": "paired-meeting",
+      "style": "eastern",
+      "policies": {
+        "18": {
+          "games": 8,
+          "vp": 39,
+          "kills": 80,
+          "losses": 110,
+          "defeats": 4,
+          "attritionSteps": 31,
+          "ownRationTriggerSteps": 17,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "draws": 2,
+          "wins": 2
+        },
+        "17": {
+          "games": 8,
+          "vp": 53,
+          "kills": 110,
+          "losses": 80,
+          "wins": 4,
+          "attritionSteps": 21,
+          "ownRationTriggerSteps": 9,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "draws": 2,
+          "defeats": 2
+        }
+      },
+      "garrison": {
+        "games": 8,
+        "feeds": 5,
+        "truckDeliveries": 5,
+        "feedsFromDelivered": 4,
+        "missedLegalFeeds": 0,
+        "attritionRolls": 3,
+        "losses": 1
+      }
+    },
+    {
+      "group": "paired-meeting",
+      "style": "mediterranean",
+      "policies": {
+        "18": {
+          "games": 8,
+          "vp": 33,
+          "kills": 100,
+          "losses": 118,
+          "draws": 1,
+          "attritionSteps": 43,
+          "ownRationTriggerSteps": 16,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 6,
+          "wins": 1
+        },
+        "17": {
+          "games": 8,
+          "vp": 47,
+          "kills": 118,
+          "losses": 100,
+          "draws": 1,
+          "attritionSteps": 34,
+          "ownRationTriggerSteps": 11,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 6,
+          "defeats": 1
+        }
+      },
+      "garrison": {
+        "games": 8,
+        "feeds": 3,
+        "truckDeliveries": 1,
+        "feedsFromDelivered": 0,
+        "missedLegalFeeds": 0,
+        "attritionRolls": 2,
+        "losses": 2
+      }
+    },
+    {
+      "group": "paired-attack",
+      "style": "temperate",
+      "policies": {
+        "18": {
+          "games": 8,
+          "vp": 55,
+          "kills": 99,
+          "losses": 123,
+          "wins": 4,
+          "attritionSteps": 55,
+          "ownRationTriggerSteps": 28,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 4
+        },
+        "17": {
+          "games": 8,
+          "vp": 65,
+          "kills": 123,
+          "losses": 99,
+          "defeats": 4,
+          "attritionSteps": 30,
+          "ownRationTriggerSteps": 6,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 4
+        }
+      },
+      "garrison": {
+        "games": 8,
+        "feeds": 5,
+        "truckDeliveries": 6,
+        "feedsFromDelivered": 1,
+        "missedLegalFeeds": 0,
+        "attritionRolls": 8,
+        "losses": 9
+      }
+    },
+    {
+      "group": "paired-attack",
+      "style": "eastern",
+      "policies": {
+        "18": {
+          "games": 8,
+          "vp": 43,
+          "kills": 95,
+          "losses": 138,
+          "wins": 4,
+          "attritionSteps": 57,
+          "ownRationTriggerSteps": 40,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 4
+        },
+        "17": {
+          "games": 8,
+          "vp": 49,
+          "kills": 138,
+          "losses": 95,
+          "defeats": 4,
+          "attritionSteps": 20,
+          "ownRationTriggerSteps": 19,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 4
+        }
+      },
+      "garrison": {
+        "games": 8,
+        "feeds": 8,
+        "truckDeliveries": 8,
+        "feedsFromDelivered": 2,
+        "missedLegalFeeds": 0,
+        "attritionRolls": 12,
+        "losses": 11
+      }
+    },
+    {
+      "group": "paired-attack",
+      "style": "mediterranean",
+      "policies": {
+        "18": {
+          "games": 8,
+          "vp": 40,
+          "kills": 101,
+          "losses": 92,
+          "wins": 5,
+          "attritionSteps": 25,
+          "ownRationTriggerSteps": 13,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 3
+        },
+        "17": {
+          "games": 8,
+          "vp": 40,
+          "kills": 92,
+          "losses": 101,
+          "defeats": 5,
+          "attritionSteps": 22,
+          "ownRationTriggerSteps": 1,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 3
+        }
+      },
+      "garrison": {
+        "games": 8,
+        "feeds": 4,
+        "truckDeliveries": 2,
+        "feedsFromDelivered": 0,
+        "missedLegalFeeds": 0,
+        "attritionRolls": 1,
+        "losses": 1
+      }
+    },
+    {
+      "group": "natural",
+      "style": "eastern",
+      "policies": {
+        "18": {
+          "games": 6,
+          "vp": 35,
+          "kills": 65,
+          "losses": 65,
+          "wins": 3,
+          "attritionSteps": 13,
+          "ownRationTriggerSteps": 0,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 3
+        }
+      },
+      "garrison": {
+        "games": 3,
+        "feeds": 0,
+        "truckDeliveries": 1,
+        "feedsFromDelivered": 0,
+        "missedLegalFeeds": 0,
+        "attritionRolls": 0,
+        "losses": 0
+      }
+    }
+  ],
+  "validation": {
+    "commit": "391140c",
+    "isolatedCheckout": "tmp/ai-match/v18-battles-2026-10-13/engine-checkout",
+    "typecheck": "passed",
+    "build": "passed",
+    "smoke": "passed",
+    "targetedTests": {
+      "command": "npx vitest run tests/ai/vp-capture.test.ts tests/ai/garrison-supply.test.ts --maxWorkers=2",
+      "exitCode": 0,
+      "filesPassed": 2,
+      "testsPassed": 3,
+      "durationSeconds": 8.06,
+      "vp1210002": 8,
+      "vp1210201": 10,
+      "vpExpectationsChangedSinceD8d8029": false
+    }
+  },
+  "frozenSourceSha256": {
+    "src/ai/policies/heuristic.ts": "7f39fa8bd62983bd624cac4721b48c041f92f9ae843e6f6addeb4055cc945628",
+    "src/rules/engine.ts": "d08bda9a21c8108a8f6049976f11d58fa0ed78b558cdd884d7e3cfa53bdcbec9",
+    "src/rules/supply/ration-budget.ts": "1c71463fac4aeabd762b8868c66d6b43d8efee09afb4490158a98d62c2b6f5b4",
+    "src/game-flow/garrison-supply.ts": "857f721524428e954f895fd447282f7c359c59cdb1f8fc3191c47c2f08a377d5",
+    "scripts/ai-supply-study.mjs": "53fb4d3997b9d612c31a3e399a57368151abf9f86a951545fafc2e072de1b508",
+    "scripts/ai-garrison-supply-study.mjs": "5ad795f2d8249d80bb6490337722f33d18ac5e0be948d976208494d551c3dc40"
+  },
+  "diagnosticSourceSha256": "98eb812b8fa7afe8e46d4f3dafb41497c867c310f9d399e944daa25aa835ce57",
+  "caveats": [
+    "Both policies use the same latest generated scenarios and rules. Historical garrison-stock results are not interchangeable.",
+    "Own-ration triggers identify the last individual-access transition, not a proven mistake or sole cause.",
+    "Garrison missedLegalFeeds checks only Supply-end legal checks; it cannot establish that all earlier rescues were used.",
+    "Single-truck rescue diagnostics are bounded; no witness is not proof of forced starvation.",
+    "Headless results do not promote UI operation rows. Concurrent timings are not latency evidence."
+  ]
+}
