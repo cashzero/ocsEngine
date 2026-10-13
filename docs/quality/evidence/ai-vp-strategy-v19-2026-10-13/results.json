@@ -1,0 +1,950 @@
+{
+  "baseCommit": "391140c4c5b679271a410681e3e87e5f2422447a",
+  "candidatePolicy": "heuristic@19",
+  "tables": {
+    "development": {
+      "19": {
+        "games": 24,
+        "vp": 163,
+        "kills": 342,
+        "losses": 329,
+        "wins": 10,
+        "attritionSteps": 127,
+        "ownRationTriggerSteps": 71,
+        "traceBreaks": 0,
+        "feedBreaks": 0,
+        "spendingViolations": 0,
+        "defeats": 9,
+        "draws": 5,
+        "meanVp": 6.791666666666667,
+        "meanKills": 14.25,
+        "meanLosses": 13.708333333333334,
+        "pairedVpMargin": 0.6666666666666666,
+        "pairedSE": 0.497468338163091,
+        "pairs": 12
+      },
+      "18": {
+        "games": 24,
+        "vp": 147,
+        "kills": 329,
+        "losses": 342,
+        "defeats": 10,
+        "attritionSteps": 143,
+        "ownRationTriggerSteps": 72,
+        "traceBreaks": 0,
+        "feedBreaks": 0,
+        "spendingViolations": 0,
+        "wins": 9,
+        "draws": 5,
+        "meanVp": 6.125,
+        "meanKills": 13.708333333333334,
+        "meanLosses": 14.25,
+        "pairedVpMargin": -0.6666666666666666,
+        "pairedSE": 0.497468338163091,
+        "pairs": 12
+      }
+    },
+    "holdout": {
+      "19": {
+        "games": 24,
+        "vp": 144,
+        "kills": 341,
+        "losses": 340,
+        "wins": 11,
+        "attritionSteps": 123,
+        "ownRationTriggerSteps": 54,
+        "traceBreaks": 0,
+        "feedBreaks": 0,
+        "spendingViolations": 0,
+        "defeats": 9,
+        "draws": 4,
+        "meanVp": 6.0,
+        "meanKills": 14.208333333333334,
+        "meanLosses": 14.166666666666666,
+        "pairedVpMargin": 0,
+        "pairedSE": 0.4438126822992973,
+        "pairs": 12
+      },
+      "18": {
+        "games": 24,
+        "vp": 144,
+        "kills": 340,
+        "losses": 341,
+        "defeats": 11,
+        "attritionSteps": 92,
+        "ownRationTriggerSteps": 37,
+        "traceBreaks": 0,
+        "feedBreaks": 0,
+        "spendingViolations": 0,
+        "wins": 9,
+        "draws": 4,
+        "meanVp": 6.0,
+        "meanKills": 14.166666666666666,
+        "meanLosses": 14.208333333333334,
+        "pairedVpMargin": 0,
+        "pairedSE": 0.4438126822992973,
+        "pairs": 12
+      }
+    },
+    "reference-v17": {
+      "19": {
+        "games": 24,
+        "vp": 158,
+        "kills": 294,
+        "losses": 281,
+        "wins": 13,
+        "attritionSteps": 83,
+        "ownRationTriggerSteps": 33,
+        "traceBreaks": 0,
+        "feedBreaks": 0,
+        "spendingViolations": 0,
+        "defeats": 8,
+        "draws": 3,
+        "meanVp": 6.583333333333333,
+        "meanKills": 12.25,
+        "meanLosses": 11.708333333333334,
+        "pairedVpMargin": 0.8333333333333334,
+        "pairedSE": 0.6944949476585358,
+        "pairs": 12
+      },
+      "17": {
+        "games": 24,
+        "vp": 138,
+        "kills": 281,
+        "losses": 294,
+        "defeats": 13,
+        "attritionSteps": 72,
+        "ownRationTriggerSteps": 25,
+        "traceBreaks": 0,
+        "feedBreaks": 0,
+        "spendingViolations": 0,
+        "wins": 8,
+        "draws": 3,
+        "meanVp": 5.75,
+        "meanKills": 11.708333333333334,
+        "meanLosses": 12.25,
+        "pairedVpMargin": -0.8333333333333334,
+        "pairedSE": 0.6944949476585358,
+        "pairs": 12
+      }
+    },
+    "attack": {
+      "19": {
+        "games": 24,
+        "vp": 150,
+        "kills": 300,
+        "losses": 264,
+        "wins": 13,
+        "attritionSteps": 48,
+        "ownRationTriggerSteps": 22,
+        "traceBreaks": 0,
+        "feedBreaks": 0,
+        "spendingViolations": 0,
+        "defeats": 11,
+        "meanVp": 6.25,
+        "meanKills": 12.5,
+        "meanLosses": 11.0,
+        "pairedVpMargin": 0.3333333333333333,
+        "pairedSE": 0.3333333333333333,
+        "pairs": 12
+      },
+      "18": {
+        "games": 24,
+        "vp": 142,
+        "kills": 264,
+        "losses": 300,
+        "defeats": 13,
+        "attritionSteps": 70,
+        "ownRationTriggerSteps": 30,
+        "traceBreaks": 0,
+        "feedBreaks": 0,
+        "spendingViolations": 0,
+        "wins": 11,
+        "meanVp": 5.916666666666667,
+        "meanKills": 11.0,
+        "meanLosses": 12.5,
+        "pairedVpMargin": -0.3333333333333333,
+        "pairedSE": 0.3333333333333333,
+        "pairs": 12
+      }
+    }
+  },
+  "runs": [
+    {
+      "group": "development",
+      "style": "temperate",
+      "policies": {
+        "19": {
+          "games": 8,
+          "vp": 67,
+          "kills": 118,
+          "losses": 105,
+          "wins": 4,
+          "attritionSteps": 30,
+          "ownRationTriggerSteps": 21,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 3,
+          "draws": 1
+        },
+        "18": {
+          "games": 8,
+          "vp": 53,
+          "kills": 105,
+          "losses": 118,
+          "defeats": 4,
+          "attritionSteps": 48,
+          "ownRationTriggerSteps": 23,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 3,
+          "draws": 1
+        }
+      }
+    },
+    {
+      "group": "development",
+      "style": "eastern",
+      "policies": {
+        "19": {
+          "games": 8,
+          "vp": 44,
+          "kills": 118,
+          "losses": 118,
+          "draws": 2,
+          "attritionSteps": 56,
+          "ownRationTriggerSteps": 39,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 3,
+          "wins": 3
+        },
+        "18": {
+          "games": 8,
+          "vp": 42,
+          "kills": 118,
+          "losses": 118,
+          "draws": 2,
+          "attritionSteps": 54,
+          "ownRationTriggerSteps": 38,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 3,
+          "defeats": 3
+        }
+      }
+    },
+    {
+      "group": "development",
+      "style": "mediterranean",
+      "policies": {
+        "19": {
+          "games": 8,
+          "vp": 52,
+          "kills": 106,
+          "losses": 106,
+          "defeats": 3,
+          "attritionSteps": 41,
+          "ownRationTriggerSteps": 11,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 3,
+          "draws": 2
+        },
+        "18": {
+          "games": 8,
+          "vp": 52,
+          "kills": 106,
+          "losses": 106,
+          "wins": 3,
+          "attritionSteps": 41,
+          "ownRationTriggerSteps": 11,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 3,
+          "draws": 2
+        }
+      }
+    },
+    {
+      "group": "holdout",
+      "style": "temperate",
+      "policies": {
+        "19": {
+          "games": 8,
+          "vp": 47,
+          "kills": 105,
+          "losses": 112,
+          "wins": 2,
+          "attritionSteps": 37,
+          "ownRationTriggerSteps": 17,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 3,
+          "draws": 3
+        },
+        "18": {
+          "games": 8,
+          "vp": 57,
+          "kills": 112,
+          "losses": 105,
+          "defeats": 2,
+          "attritionSteps": 21,
+          "ownRationTriggerSteps": 8,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 3,
+          "draws": 3
+        }
+      }
+    },
+    {
+      "group": "holdout",
+      "style": "eastern",
+      "policies": {
+        "19": {
+          "games": 8,
+          "vp": 53,
+          "kills": 123,
+          "losses": 118,
+          "wins": 5,
+          "attritionSteps": 41,
+          "ownRationTriggerSteps": 32,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 2,
+          "draws": 1
+        },
+        "18": {
+          "games": 8,
+          "vp": 43,
+          "kills": 118,
+          "losses": 123,
+          "defeats": 5,
+          "attritionSteps": 26,
+          "ownRationTriggerSteps": 24,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 2,
+          "draws": 1
+        }
+      }
+    },
+    {
+      "group": "holdout",
+      "style": "mediterranean",
+      "policies": {
+        "19": {
+          "games": 8,
+          "vp": 44,
+          "kills": 113,
+          "losses": 110,
+          "defeats": 4,
+          "attritionSteps": 45,
+          "ownRationTriggerSteps": 5,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 4
+        },
+        "18": {
+          "games": 8,
+          "vp": 44,
+          "kills": 110,
+          "losses": 113,
+          "wins": 4,
+          "attritionSteps": 45,
+          "ownRationTriggerSteps": 5,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 4
+        }
+      }
+    },
+    {
+      "group": "reference-v17",
+      "style": "temperate",
+      "policies": {
+        "19": {
+          "games": 8,
+          "vp": 73,
+          "kills": 96,
+          "losses": 93,
+          "wins": 6,
+          "attritionSteps": 23,
+          "ownRationTriggerSteps": 9,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 2
+        },
+        "17": {
+          "games": 8,
+          "vp": 47,
+          "kills": 93,
+          "losses": 96,
+          "defeats": 6,
+          "attritionSteps": 22,
+          "ownRationTriggerSteps": 12,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 2
+        }
+      }
+    },
+    {
+      "group": "reference-v17",
+      "style": "eastern",
+      "policies": {
+        "19": {
+          "games": 8,
+          "vp": 39,
+          "kills": 99,
+          "losses": 84,
+          "wins": 3,
+          "attritionSteps": 27,
+          "ownRationTriggerSteps": 4,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 2,
+          "draws": 3
+        },
+        "17": {
+          "games": 8,
+          "vp": 41,
+          "kills": 84,
+          "losses": 99,
+          "defeats": 3,
+          "attritionSteps": 31,
+          "ownRationTriggerSteps": 11,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 2,
+          "draws": 3
+        }
+      }
+    },
+    {
+      "group": "reference-v17",
+      "style": "mediterranean",
+      "policies": {
+        "19": {
+          "games": 8,
+          "vp": 46,
+          "kills": 99,
+          "losses": 104,
+          "defeats": 4,
+          "attritionSteps": 33,
+          "ownRationTriggerSteps": 20,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 4
+        },
+        "17": {
+          "games": 8,
+          "vp": 50,
+          "kills": 104,
+          "losses": 99,
+          "wins": 4,
+          "attritionSteps": 19,
+          "ownRationTriggerSteps": 2,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 4
+        }
+      }
+    },
+    {
+      "group": "attack",
+      "style": "temperate",
+      "policies": {
+        "19": {
+          "games": 8,
+          "vp": 60,
+          "kills": 104,
+          "losses": 88,
+          "wins": 4,
+          "attritionSteps": 8,
+          "ownRationTriggerSteps": 2,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 4
+        },
+        "18": {
+          "games": 8,
+          "vp": 56,
+          "kills": 88,
+          "losses": 104,
+          "defeats": 4,
+          "attritionSteps": 17,
+          "ownRationTriggerSteps": 9,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 4
+        }
+      }
+    },
+    {
+      "group": "attack",
+      "style": "eastern",
+      "policies": {
+        "19": {
+          "games": 8,
+          "vp": 51,
+          "kills": 125,
+          "losses": 102,
+          "wins": 5,
+          "attritionSteps": 29,
+          "ownRationTriggerSteps": 15,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 3
+        },
+        "18": {
+          "games": 8,
+          "vp": 45,
+          "kills": 102,
+          "losses": 125,
+          "defeats": 5,
+          "attritionSteps": 43,
+          "ownRationTriggerSteps": 16,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 3
+        }
+      }
+    },
+    {
+      "group": "attack",
+      "style": "mediterranean",
+      "policies": {
+        "19": {
+          "games": 8,
+          "vp": 39,
+          "kills": 71,
+          "losses": 74,
+          "defeats": 4,
+          "attritionSteps": 11,
+          "ownRationTriggerSteps": 5,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "wins": 4
+        },
+        "18": {
+          "games": 8,
+          "vp": 41,
+          "kills": 74,
+          "losses": 71,
+          "wins": 4,
+          "attritionSteps": 10,
+          "ownRationTriggerSteps": 5,
+          "traceBreaks": 0,
+          "feedBreaks": 0,
+          "spendingViolations": 0,
+          "defeats": 4
+        }
+      }
+    }
+  ],
+  "cases": [
+    {
+      "name": "vp-rebuild-1217101-119",
+      "version": "18",
+      "completed": true,
+      "firstOwnSupply": {
+        "revision": 158,
+        "gameTurn": 2,
+        "rebuiltUnits": [
+          {
+            "pieceId": "generated-oob:287600431:axis:garrison:objective-2",
+            "location": {
+              "kind": "ON_MAP",
+              "hexId": "12,18"
+            },
+            "outOfSupply": false
+          }
+        ]
+      },
+      "victory": {
+        "scores": [
+          {
+            "playerId": "player:allied",
+            "points": 8
+          },
+          {
+            "playerId": "player:axis",
+            "points": 4
+          }
+        ],
+        "winnerId": "player:allied",
+        "reason": "TURN_LIMIT"
+      },
+      "attritionSteps": 7,
+      "finalUnfed": [],
+      "committedUnfed": [],
+      "firstAction": {
+        "revision": 119,
+        "action": {
+          "actionId": "candidate:rebuild-units:12,18:119",
+          "actorId": "player:axis",
+          "expectedRevision": 119,
+          "kind": "REBUILD_UNITS",
+          "hexId": "12,18",
+          "hqId": "generated-oob:287600431:axis:independent-hq-1:unit",
+          "units": [
+            {
+              "pieceId": "generated-oob:287600431:axis:garrison:objective-2",
+              "steps": 1,
+              "mode": "COMBAT"
+            }
+          ],
+          "truckPoints": 0
+        },
+        "intent": "rebuild 1 step(s)"
+      },
+      "paymentTokens": 211
+    },
+    {
+      "name": "vp-rebuild-1217101-119",
+      "version": "19",
+      "completed": true,
+      "firstOwnSupply": {
+        "revision": 157,
+        "gameTurn": 2,
+        "rebuiltUnits": []
+      },
+      "victory": {
+        "scores": [
+          {
+            "playerId": "player:allied",
+            "points": 8
+          },
+          {
+            "playerId": "player:axis",
+            "points": 4
+          }
+        ],
+        "winnerId": "player:allied",
+        "reason": "TURN_LIMIT"
+      },
+      "attritionSteps": 16,
+      "finalUnfed": [],
+      "committedUnfed": [],
+      "firstAction": {
+        "revision": 119,
+        "action": {
+          "actionId": "candidate:reinforcement:generated-oob:287600431:axis:independent-artillery-1:unit:25,12:119",
+          "actorId": "player:axis",
+          "expectedRevision": 119,
+          "kind": "PLACE_REINFORCEMENT",
+          "pieceId": "generated-oob:287600431:axis:independent-artillery-1:unit",
+          "hexId": "25,12"
+        },
+        "intent": "place the arrival nearest the objectives"
+      },
+      "paymentTokens": 180
+    },
+    {
+      "name": "vp-rebuild-1217101-270",
+      "version": "18",
+      "completed": true,
+      "firstOwnSupply": {
+        "revision": 308,
+        "gameTurn": 4,
+        "rebuiltUnits": [
+          {
+            "pieceId": "generated-oob:287600431:axis:garrison:objective-2",
+            "location": {
+              "kind": "ON_MAP",
+              "hexId": "5,23"
+            },
+            "outOfSupply": false
+          }
+        ]
+      },
+      "victory": {
+        "scores": [
+          {
+            "playerId": "player:allied",
+            "points": 8
+          },
+          {
+            "playerId": "player:axis",
+            "points": 4
+          }
+        ],
+        "winnerId": "player:allied",
+        "reason": "TURN_LIMIT"
+      },
+      "attritionSteps": 7,
+      "finalUnfed": [],
+      "committedUnfed": [],
+      "firstAction": {
+        "revision": 270,
+        "action": {
+          "actionId": "candidate:rebuild-units:5,23:270",
+          "actorId": "player:axis",
+          "expectedRevision": 270,
+          "kind": "REBUILD_UNITS",
+          "hexId": "5,23",
+          "hqId": "generated-oob:287600431:axis:independent-hq-1:unit",
+          "units": [
+            {
+              "pieceId": "generated-oob:287600431:axis:garrison:objective-2",
+              "steps": 1,
+              "mode": "COMBAT"
+            }
+          ],
+          "truckPoints": 0
+        },
+        "intent": "rebuild 1 step(s)"
+      },
+      "paymentTokens": 148
+    },
+    {
+      "name": "vp-rebuild-1217101-270",
+      "version": "19",
+      "completed": true,
+      "firstOwnSupply": {
+        "revision": 319,
+        "gameTurn": 4,
+        "rebuiltUnits": [
+          {
+            "pieceId": "generated-oob:287600431:axis:independent-hq-2:unit",
+            "location": {
+              "kind": "ON_MAP",
+              "hexId": "17,16"
+            },
+            "outOfSupply": false
+          }
+        ]
+      },
+      "victory": {
+        "scores": [
+          {
+            "playerId": "player:allied",
+            "points": 9
+          },
+          {
+            "playerId": "player:axis",
+            "points": 3
+          }
+        ],
+        "winnerId": "player:allied",
+        "reason": "TURN_LIMIT"
+      },
+      "attritionSteps": 7,
+      "finalUnfed": [],
+      "committedUnfed": [],
+      "firstAction": {
+        "revision": 270,
+        "action": {
+          "actionId": "candidate:rebuild-units:5,23:270",
+          "actorId": "player:axis",
+          "expectedRevision": 270,
+          "kind": "REBUILD_UNITS",
+          "hexId": "5,23",
+          "hqId": "generated-oob:287600431:axis:independent-hq-1:unit",
+          "units": [
+            {
+              "pieceId": "generated-oob:287600431:axis:independent-hq-2:unit",
+              "steps": 1,
+              "mode": "COMBAT"
+            }
+          ],
+          "truckPoints": 0
+        },
+        "intent": "rebuild for usable combat strength (1 step(s))"
+      },
+      "paymentTokens": 159
+    },
+    {
+      "name": "vp-rebuild-1217101-273",
+      "version": "18",
+      "completed": true,
+      "firstOwnSupply": {
+        "revision": 308,
+        "gameTurn": 4,
+        "rebuiltUnits": [
+          {
+            "pieceId": "generated-oob:287600431:axis:garrison:objective-3",
+            "location": {
+              "kind": "ON_MAP",
+              "hexId": "4,23"
+            },
+            "outOfSupply": false
+          }
+        ]
+      },
+      "victory": {
+        "scores": [
+          {
+            "playerId": "player:allied",
+            "points": 8
+          },
+          {
+            "playerId": "player:axis",
+            "points": 4
+          }
+        ],
+        "winnerId": "player:allied",
+        "reason": "TURN_LIMIT"
+      },
+      "attritionSteps": 7,
+      "finalUnfed": [],
+      "committedUnfed": [],
+      "firstAction": {
+        "revision": 273,
+        "action": {
+          "actionId": "candidate:rebuild-units:4,23:273",
+          "actorId": "player:axis",
+          "expectedRevision": 273,
+          "kind": "REBUILD_UNITS",
+          "hexId": "4,23",
+          "hqId": "generated-oob:287600431:axis:independent-hq-1:unit",
+          "units": [
+            {
+              "pieceId": "generated-oob:287600431:axis:garrison:objective-3",
+              "steps": 1,
+              "mode": "COMBAT"
+            }
+          ],
+          "truckPoints": 0
+        },
+        "intent": "rebuild 1 step(s)"
+      },
+      "paymentTokens": 148
+    },
+    {
+      "name": "vp-rebuild-1217101-273",
+      "version": "19",
+      "completed": true,
+      "firstOwnSupply": {
+        "revision": 319,
+        "gameTurn": 4,
+        "rebuiltUnits": [
+          {
+            "pieceId": "generated-oob:287600431:axis:independent-hq-2:unit",
+            "location": {
+              "kind": "ON_MAP",
+              "hexId": "17,16"
+            },
+            "outOfSupply": false
+          }
+        ]
+      },
+      "victory": {
+        "scores": [
+          {
+            "playerId": "player:allied",
+            "points": 9
+          },
+          {
+            "playerId": "player:axis",
+            "points": 3
+          }
+        ],
+        "winnerId": "player:allied",
+        "reason": "TURN_LIMIT"
+      },
+      "attritionSteps": 6,
+      "finalUnfed": [],
+      "committedUnfed": [],
+      "firstAction": {
+        "revision": 273,
+        "action": {
+          "actionId": "candidate:rebuild-units:4,23:273",
+          "actorId": "player:axis",
+          "expectedRevision": 273,
+          "kind": "REBUILD_UNITS",
+          "hexId": "4,23",
+          "hqId": "generated-oob:287600431:axis:independent-hq-1:unit",
+          "units": [
+            {
+              "pieceId": "generated-oob:287600431:axis:independent-hq-2:unit",
+              "steps": 1,
+              "mode": "COMBAT"
+            }
+          ],
+          "truckPoints": 0
+        },
+        "intent": "rebuild for usable combat strength (1 step(s))"
+      },
+      "paymentTokens": 159
+    }
+  ],
+  "frozenSourceSha256": {
+    "src/ai/policies/heuristic.ts": "01d23640c5ff3ad75c939816af88a5c8b0a390bf29a949c58b26a1218a0b5411",
+    "src/rules/engine.ts": "372292a4d4f85bcfae45380d6cbc85b9213161ae96e36a964083fb1cf80c980b",
+    "src/rules/replacement/forecast.ts": "fdea0373b191b4af3d7c54a8184ec68c9a01b38cc80edb0483498f0a90e7f23a"
+  },
+  "testSha256": "7a6fe3e93b96894b6a391de69e3eee03dc5f38d9b014aa882b5f1496697b2483",
+  "fixtureSha256": {
+    "vp-rebuild-1217101-270.state.json.gz": "8d5a8ad0f998a76f5e90501bb95fb664d2d005dc32c80b073b9a15681ce3a6d9",
+    "vp-rebuild-1217101-273.state.json.gz": "b7dacb214fd15e27b264f9c02ff8e21f5d533d67e16c051c23026cd15870538c",
+    "vp-rebuild-1217101-119.state.json.gz": "87d5e92e574b66182550a73b247856d345bf85eb5c8c0369205094f48a96bfc5"
+  },
+  "frozenPolicyBuildSha256": {
+    "v19": "dd90348ec00d8f3dbec234248dc8bfce88a287ff01a36022242139683093a500",
+    "v18": "d33847176f3005e8b05eba6572150858e495b2a1e43f679725e052b1dfb6c28e",
+    "v17": "3a95d1131a3f0b9f21312acb4cc97fb6d4292c83ed9bc1da87ab0a40e41e45f4"
+  },
+  "validation": {
+    "typecheck": "passed",
+    "build": "passed",
+    "smoke": "passed",
+    "fullSuite": {
+      "passedFiles": 90,
+      "passedTests": 646,
+      "skippedFiles": 4,
+      "skippedTests": 8,
+      "durationSeconds": 62.78
+    },
+    "afterRejectedExperimentRevert": {
+      "files": 3,
+      "passedTests": 7,
+      "durationSeconds": 18.08,
+      "command": "npx vitest run tests/ai/garrison-supply.test.ts tests/ai/vp-capture.test.ts tests/ai/rebuild-strategy.test.ts --maxWorkers=2"
+    },
+    "unchangedVpRegressionExpectations": [
+      8,
+      10
+    ],
+    "sourceBoundaryInitialFailure": "Two false positives from rebuild-preview filename matching the existing ui-path regex; renamed to forecast, without relaxing tests."
+  },
+  "rejectedExperiment": {
+    "policy": "v20 prototype, not shipped",
+    "sourceSha256": "fe1bbf3fd209069531bcc5bd41b61d9ae3585694716adb4e2da5212a3b5afd9a",
+    "acceptanceFailure": "Existing legal garrison rescue at 8,5 stopped feeding that garrison in both trial orderings. Policy restored byte-for-byte to frozen v19."
+  },
+  "caveats": [
+    "The holdout MEETING batch tied on VP; aggregate development improvement was not independently replicated there.",
+    "All reported paired standard errors use 12 map-seed pairs; these small samples do not establish statistical superiority.",
+    "Both policies use the same frozen latest engine, generator and garrison-stock configuration.",
+    "Historical rebuild continuations worsened axis VP by one in two snapshots; these are not independent matches or proof of VP gain.",
+    "Guard counts cover existing move/mode individual access and optional fuel/hedgehog shared commitments, not every supply decision.",
+    "Own-action ration triggers are transitions, not proof of a mistake or sole cause.",
+    "Headless results do not promote UI operation rows; concurrent timings are not latency evidence."
+  ]
+}

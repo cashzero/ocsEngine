@@ -1,4 +1,5 @@
 import type { HexId, PieceId } from '../../core/index.js';
+import type { OcsMode } from '../../domain/piece/index.js';
 import type { FeedSource, GameAction } from '../../rules/index.js';
 import { analyze, type OwnUnit, type Situation } from '../analysis.js';
 import { respondToDecision } from '../decisions.js';
@@ -958,9 +959,70 @@ const bestAirBarrage = (context: BotDecisionContext, situation: Situation, w: He
 
 // ─── Other steps ───────────────────────────────────────────────────────────────────────────────
 
-const reinforcementStep = (context: BotDecisionContext, situation: Situation): BotDecision | null => {
-  const rebuild = [...context.actions.candidates('REBUILD_UNITS', null, 40)].sort((left, right) => rebuildSize(right) - rebuildSize(left))[0];
-  if (rebuild) return decision(rebuild, `rebuild ${rebuildSize(rebuild)} step(s)`, [{ term: 'rebuild', value: rebuildSize(rebuild) }]);
+interface RebuildOptions {
+  readonly pax: number; readonly eq: number; readonly truckPoints: number;
+  readonly units: readonly { readonly pieceId: PieceId; readonly cost: 'PAX' | 'EQ'; readonly missing: number;
+    readonly modes: readonly OcsMode[]; readonly eliminated: boolean; readonly fixed: boolean; readonly originalHexId: HexId | null }[];
+}
+
+/** Spend replacements on defenders of VP and troops able to return to the front, using actual printed strength. */
+const chooseRebuild = (context: BotDecisionContext, situation: Situation, facts: BotGameFacts): BotDecision | null => {
+  const pieces = new Map(context.view.projection!.stacks.flatMap(s => s.pieces).filter(p => p.ownerId === situation.playerId).map(p => [p.id, p]));
+  let best: { action: GameAction; vp: number; strength: number } | null = null;
+  for (const candidate of context.actions.candidates('REBUILD_UNITS', null, 40)) {
+    if (candidate.kind !== 'REBUILD_UNITS') continue;
+    const encoded = context.actions.explain(candidate).explanation.facts.find(f => f.key === 'replacement.rebuildOptions')?.value;
+    if (typeof encoded !== 'string') continue;
+    const options = JSON.parse(encoded) as RebuildOptions;
+    const objective = situation.objectives.find(o => o.hexId === candidate.hexId && o.controllerId === situation.playerId);
+    const defenders = situation.friendlyAt(candidate.hexId).filter(u => situation.isCombatUnit(u)).reduce((sum, u) => sum + (u.profile?.strength ?? 0), 0);
+    const defenceVp = objective && defenders < Math.max(1, situation.threatAt(candidate.hexId)) ? objective.points : 0;
+    const left = { PAX: options.pax, EQ: options.eq };
+    const selected = new Map<PieceId, { steps: number; mode: OcsMode | null }>();
+    const usable = options.units.filter(u => !u.fixed || !u.eliminated || objective !== undefined || u.originalHexId === candidate.hexId);
+    for (;;) {
+      const choices = usable.flatMap(u => {
+        const allocated = selected.get(u.pieceId)?.steps ?? 0;
+        if (allocated >= u.missing || left[u.cost] < 1) return [];
+        const piece = pieces.get(u.pieceId);
+        if (!piece) return [];
+        const definition = knowledgeOf(facts).definition(piece);
+        const mode = u.eliminated ? (u.modes.includes('COMBAT') ? 'COMBAT' : u.modes[0]!) : null;
+        const face = definition?.faces.find(f => f.id === (mode?.toLowerCase() ?? piece.currentFaceId)) ?? definition?.faces[0];
+        const before = (u.eliminated ? 0 : piece.remainingSteps ?? 0) + allocated;
+        const oldStrength = before === 0 ? 0 : face?.steps.find(s => s.remainingSteps === before)?.combatStrength ?? 0;
+        const newStrength = face?.steps.find(s => s.remainingSteps === before + 1)?.combatStrength ?? oldStrength;
+        return [{ u, mode, gain: newStrength - oldStrength, vp: piece.role === 'COMBAT' ? defenceVp : 0,
+          hq: Number(piece.role === 'HQ'), mobile: Number(!u.fixed) }];
+      }).sort((a, b) => b.vp - a.vp || b.hq - a.hq || b.mobile - a.mobile || b.gain - a.gain || a.u.pieceId.localeCompare(b.u.pieceId));
+      const next = choices[0];
+      if (!next) break;
+      left[next.u.cost]--;
+      selected.set(next.u.pieceId, { steps: (selected.get(next.u.pieceId)?.steps ?? 0) + 1, mode: next.mode });
+    }
+    let action: Extract<GameAction, { kind: 'REBUILD_UNITS' }> = { ...candidate,
+      units: [...selected].map(([pieceId, u]) => ({ pieceId, ...u })), truckPoints: Math.min(options.truckPoints, left.EQ) };
+    if (!action.units.length && !action.truckPoints) continue;
+    // A fixed unit cannot move to supply after rebuilding: remove it if mandatory recovery and joint rations cannot pay.
+    const preview = context.actions.explain(action).explanation;
+    if (!preview.allowed) continue;
+    const unsupported = preview.facts.find(f => f.key === 'replacement.unsupportedFixedIds')?.value;
+    const unfed = new Set(typeof unsupported === 'string' ? JSON.parse(unsupported) as PieceId[] : []);
+    action = { ...action, units: action.units.filter(u => !unfed.has(u.pieceId)) };
+    if (!action.units.length && !action.truckPoints) continue;
+    const final = context.actions.explain(action).explanation;
+    if (!final.allowed) continue;
+    const strength = Number(final.facts.find(f => f.key === 'replacement.addedCombatStrength')?.value ?? 0);
+    const vp = defenceVp && action.units.some(u => pieces.get(u.pieceId)?.role === 'COMBAT') ? defenceVp : 0;
+    if (!best || vp > best.vp || (vp === best.vp && strength > best.strength)) best = { action, vp, strength };
+  }
+  return best ? decision(best.action, `rebuild for ${best.vp > 0 ? 'VP defence' : 'usable combat strength'} (${rebuildSize(best.action)} step(s))`,
+    [{ term: 'rebuild-vp', value: best.vp }, { term: 'rebuild-strength', value: best.strength }]) : null;
+};
+
+const reinforcementStep = (context: BotDecisionContext, situation: Situation, facts: BotGameFacts): BotDecision | null => {
+  const rebuild = chooseRebuild(context, situation, facts);
+  if (rebuild) return rebuild;
   const placements = context.actions.candidates('PLACE_REINFORCEMENT', null, 400);
   if (placements.length === 0) return null;
   const goals = situation.objectives.filter(({ controllerId }) => controllerId !== situation.playerId).map(({ hexId }) => hexId);
@@ -1027,7 +1089,7 @@ const decide = (facts: BotGameFacts, w: HeuristicWeights) => (context: BotDecisi
   if (context.view.pendingDecision !== null) return respondToDecision(context, situation);
   const { phase, segment } = projection.sequence;
   let chosen: BotDecision | null = null;
-  if (phase === 'REINFORCEMENT') chosen = reinforcementStep(context, situation);
+  if (phase === 'REINFORCEMENT') chosen = reinforcementStep(context, situation, facts);
   else if (phase === 'AIRCRAFT_REFIT') chosen = refitStep(context);
   else if (phase === 'SUPPLY') chosen = supplyStep(context, situation);
   else if (segment === 'MOVEMENT' && (phase === 'MOVEMENT' || phase === 'EXPLOITATION')) {
@@ -1055,7 +1117,7 @@ export const createHeuristicPolicy = (facts: BotGameFacts, options: HeuristicPol
   const choose = decide(facts, options.weights ?? DEFAULT_HEURISTIC_WEIGHTS);
   return {
     id: 'heuristic',
-    version: options.label === undefined ? '18' : `18+${options.label}`,
+    version: options.label === undefined ? '19' : `19+${options.label}`,
     decide: (context) => {
       const sink = options.debug;
       debug = sink ? (line) => sink(`${context.memory.stepKey} ${String(context.playerId).split(':').at(-1)} ${line}`) : null;
