@@ -1,0 +1,167 @@
+[
+  {
+    "style": "temperate",
+    "match": 1210000,
+    "checked": 46,
+    "missed": []
+  },
+  {
+    "style": "temperate",
+    "match": 1210001,
+    "checked": 73,
+    "missed": []
+  },
+  {
+    "style": "temperate",
+    "match": 1210002,
+    "checked": 50,
+    "missed": [
+      {
+        "revision": 465,
+        "turn": 6,
+        "phase": "MOVEMENT",
+        "actor": "player:axis",
+        "actualGain": 0,
+        "alternativeGain": 1,
+        "action": {
+          "actionId": "candidate:move:generated-oob:286911828:axis:f2-combat-1:unit:18,10:465",
+          "actorId": "player:axis",
+          "expectedRevision": 465,
+          "kind": "MOVE_PIECE",
+          "path": [
+            "19,6",
+            "18,7",
+            "17,8",
+            "17,9",
+            "17,10",
+            "18,10"
+          ],
+          "pieceId": "generated-oob:286911828:axis:f2-combat-1:unit"
+        },
+        "alternative": {
+          "actionId": "candidate:move:generated-oob:286911828:axis:f2-combat-1:unit:15,4:465",
+          "actorId": "player:axis",
+          "expectedRevision": 465,
+          "kind": "MOVE_PIECE",
+          "pieceId": "generated-oob:286911828:axis:f2-combat-1:unit",
+          "path": [
+            "19,6",
+            "19,5",
+            "19,4",
+            "18,4",
+            "17,4",
+            "16,4",
+            "15,4"
+          ]
+        },
+        "intent": "combat to 18,10 (capture 27,7)",
+        "breakdown": [
+          {
+            "term": "crowding",
+            "value": -3
+          },
+          {
+            "term": "exposure",
+            "value": -1.533333333333335
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "style": "temperate",
+    "match": 1210003,
+    "checked": 21,
+    "missed": []
+  },
+  {
+    "style": "eastern",
+    "match": 1210100,
+    "checked": 38,
+    "missed": []
+  },
+  {
+    "style": "eastern",
+    "match": 1210101,
+    "checked": 27,
+    "missed": []
+  },
+  {
+    "style": "eastern",
+    "match": 1210102,
+    "checked": 51,
+    "missed": []
+  },
+  {
+    "style": "eastern",
+    "match": 1210103,
+    "checked": 27,
+    "missed": []
+  },
+  {
+    "style": "mediterranean",
+    "match": 1210200,
+    "checked": 47,
+    "missed": []
+  },
+  {
+    "style": "mediterranean",
+    "match": 1210201,
+    "checked": 47,
+    "missed": [
+      {
+        "revision": 572,
+        "turn": 8,
+        "phase": "MOVEMENT",
+        "actor": "player:axis",
+        "actualGain": 0,
+        "alternativeGain": 1,
+        "action": {
+          "actionId": "candidate:move:generated-oob:286931131:axis:f5-combat-1:unit:4,11:572",
+          "actorId": "player:axis",
+          "expectedRevision": 572,
+          "kind": "MOVE_PIECE",
+          "path": [
+            "2,10",
+            "3,10",
+            "3,11",
+            "4,11"
+          ],
+          "pieceId": "generated-oob:286931131:axis:f5-combat-1:unit"
+        },
+        "alternative": {
+          "actionId": "candidate:move:generated-oob:286931131:axis:f5-combat-1:unit:2,7:572",
+          "actorId": "player:axis",
+          "expectedRevision": 572,
+          "kind": "MOVE_PIECE",
+          "pieceId": "generated-oob:286931131:axis:f5-combat-1:unit",
+          "path": [
+            "2,10",
+            "2,9",
+            "2,8",
+            "2,7"
+          ]
+        },
+        "intent": "combat to 4,11 (hunt 10,11)",
+        "breakdown": [
+          {
+            "term": "progress",
+            "value": 30
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "style": "mediterranean",
+    "match": 1210202,
+    "checked": 33,
+    "missed": []
+  },
+  {
+    "style": "mediterranean",
+    "match": 1210203,
+    "checked": 49,
+    "missed": []
+  }
+]

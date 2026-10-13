@@ -1,0 +1,51 @@
+[
+  {
+    "match": 1210201,
+    "checked": 161,
+    "truncated": 0,
+    "higherImmediateVpOptions": [
+      {
+        "revision": 572,
+        "turn": 8,
+        "phase": "MOVEMENT",
+        "actor": "player:axis",
+        "actualGain": 0,
+        "alternativeGain": 1,
+        "action": {
+          "actionId": "candidate:move:generated-oob:286931131:axis:f5-combat-1:unit:4,11:572",
+          "actorId": "player:axis",
+          "expectedRevision": 572,
+          "kind": "MOVE_PIECE",
+          "path": [
+            "2,10",
+            "3,10",
+            "3,11",
+            "4,11"
+          ],
+          "pieceId": "generated-oob:286931131:axis:f5-combat-1:unit"
+        },
+        "alternative": {
+          "actionId": "candidate:move:generated-oob:286931131:axis:f5-combat-1:unit:2,7:572",
+          "actorId": "player:axis",
+          "expectedRevision": 572,
+          "kind": "MOVE_PIECE",
+          "pieceId": "generated-oob:286931131:axis:f5-combat-1:unit",
+          "path": [
+            "2,10",
+            "2,9",
+            "2,8",
+            "2,7"
+          ]
+        },
+        "intent": "combat to 4,11 (hunt 10,11)",
+        "breakdown": [
+          {
+            "term": "progress",
+            "value": 30
+          }
+        ]
+      }
+    ],
+    "finalStateHash": "sha256:5d66adc758e37e6a4fe4147e0ed0222174130746b07d381a2d5f6be2cc0341da"
+  }
+]

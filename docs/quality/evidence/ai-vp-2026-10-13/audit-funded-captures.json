@@ -1,0 +1,387 @@
+[
+  {
+    "style": "temperate",
+    "match": 1210000,
+    "checked": 157,
+    "missed": []
+  },
+  {
+    "style": "temperate",
+    "match": 1210001,
+    "checked": 194,
+    "missed": []
+  },
+  {
+    "style": "temperate",
+    "match": 1210002,
+    "checked": 170,
+    "missed": []
+  },
+  {
+    "style": "temperate",
+    "match": 1210003,
+    "checked": 113,
+    "missed": []
+  },
+  {
+    "style": "eastern",
+    "match": 1210100,
+    "checked": 170,
+    "missed": []
+  },
+  {
+    "style": "eastern",
+    "match": 1210101,
+    "checked": 129,
+    "missed": []
+  },
+  {
+    "style": "eastern",
+    "match": 1210102,
+    "checked": 175,
+    "missed": [
+      {
+        "revision": 405,
+        "turn": 5,
+        "phase": "MOVEMENT",
+        "actor": "player:allied",
+        "actualGain": 0,
+        "alternativeGain": 4,
+        "action": {
+          "actionId": "candidate:move:generated-oob:286921528:allied:f1-combat-2:unit:14,15:405",
+          "actorId": "player:allied",
+          "expectedRevision": 405,
+          "kind": "MOVE_PIECE",
+          "path": [
+            "16,15",
+            "16,14",
+            "15,14",
+            "14,15"
+          ],
+          "pieceId": "generated-oob:286921528:allied:f1-combat-2:unit"
+        },
+        "alternative": {
+          "actionId": "candidate:move:generated-oob:286921528:allied:f1-combat-2:unit:22,17:405",
+          "actorId": "player:allied",
+          "expectedRevision": 405,
+          "kind": "MOVE_PIECE",
+          "pieceId": "generated-oob:286921528:allied:f1-combat-2:unit",
+          "path": [
+            "16,15",
+            "16,16",
+            "17,16",
+            "18,16",
+            "19,16",
+            "20,16",
+            "21,16",
+            "22,16",
+            "22,17"
+          ]
+        },
+        "intent": "combat to 14,15 (hunt 13,16)",
+        "breakdown": [
+          {
+            "term": "progress",
+            "value": 20
+          },
+          {
+            "term": "hunt",
+            "value": 15
+          },
+          {
+            "term": "contact",
+            "value": -8
+          },
+          {
+            "term": "exposure",
+            "value": -19.5
+          },
+          {
+            "term": "hq-dependent-supply",
+            "value": -8
+          }
+        ]
+      },
+      {
+        "revision": 407,
+        "turn": 5,
+        "phase": "MOVEMENT",
+        "actor": "player:allied",
+        "actualGain": 0,
+        "alternativeGain": 4,
+        "action": {
+          "actionId": "candidate:move:generated-oob:286921528:allied:f2-combat-1:unit:14,15:407",
+          "actorId": "player:allied",
+          "expectedRevision": 407,
+          "kind": "MOVE_PIECE",
+          "path": [
+            "16,15",
+            "16,14",
+            "15,14",
+            "14,15"
+          ],
+          "pieceId": "generated-oob:286921528:allied:f2-combat-1:unit"
+        },
+        "alternative": {
+          "actionId": "candidate:move:generated-oob:286921528:allied:f2-combat-1:unit:22,17:407",
+          "actorId": "player:allied",
+          "expectedRevision": 407,
+          "kind": "MOVE_PIECE",
+          "pieceId": "generated-oob:286921528:allied:f2-combat-1:unit",
+          "path": [
+            "16,15",
+            "16,16",
+            "17,16",
+            "18,16",
+            "19,16",
+            "20,16",
+            "21,16",
+            "22,16",
+            "22,17"
+          ]
+        },
+        "intent": "combat to 14,15 (hunt 13,16)",
+        "breakdown": [
+          {
+            "term": "crowding",
+            "value": -6
+          },
+          {
+            "term": "progress",
+            "value": 20
+          },
+          {
+            "term": "hunt",
+            "value": 15
+          },
+          {
+            "term": "contact",
+            "value": 6
+          },
+          {
+            "term": "hq-dependent-supply",
+            "value": -8
+          }
+        ]
+      },
+      {
+        "revision": 409,
+        "turn": 5,
+        "phase": "MOVEMENT",
+        "actor": "player:allied",
+        "actualGain": 0,
+        "alternativeGain": 4,
+        "action": {
+          "actionId": "candidate:move:generated-oob:286921528:allied:f2-recon:unit:14,15:409",
+          "actorId": "player:allied",
+          "expectedRevision": 409,
+          "kind": "MOVE_PIECE",
+          "path": [
+            "16,15",
+            "16,14",
+            "15,14",
+            "14,15"
+          ],
+          "pieceId": "generated-oob:286921528:allied:f2-recon:unit"
+        },
+        "alternative": {
+          "actionId": "candidate:move:generated-oob:286921528:allied:f2-recon:unit:22,17:409",
+          "actorId": "player:allied",
+          "expectedRevision": 409,
+          "kind": "MOVE_PIECE",
+          "pieceId": "generated-oob:286921528:allied:f2-recon:unit",
+          "path": [
+            "16,15",
+            "16,16",
+            "17,16",
+            "18,16",
+            "19,16",
+            "20,16",
+            "21,16",
+            "22,16",
+            "22,17"
+          ]
+        },
+        "intent": "combat to 14,15 (hunt 13,16)",
+        "breakdown": [
+          {
+            "term": "crowding",
+            "value": -12
+          },
+          {
+            "term": "progress",
+            "value": 20
+          },
+          {
+            "term": "hunt",
+            "value": 15
+          },
+          {
+            "term": "contact",
+            "value": 6
+          },
+          {
+            "term": "hq-dependent-supply",
+            "value": -8
+          }
+        ]
+      },
+      {
+        "revision": 414,
+        "turn": 5,
+        "phase": "MOVEMENT",
+        "actor": "player:allied",
+        "actualGain": 0,
+        "alternativeGain": 4,
+        "action": {
+          "actionId": "candidate:move:generated-oob:286921528:allied:independent-anti_tank-1:unit:14,15:414",
+          "actorId": "player:allied",
+          "expectedRevision": 414,
+          "kind": "MOVE_PIECE",
+          "path": [
+            "15,14",
+            "14,15"
+          ],
+          "pieceId": "generated-oob:286921528:allied:independent-anti_tank-1:unit"
+        },
+        "alternative": {
+          "actionId": "candidate:move:generated-oob:286921528:allied:independent-anti_tank-1:unit:22,17:414",
+          "actorId": "player:allied",
+          "expectedRevision": 414,
+          "kind": "MOVE_PIECE",
+          "pieceId": "generated-oob:286921528:allied:independent-anti_tank-1:unit",
+          "path": [
+            "15,14",
+            "14,15",
+            "15,15",
+            "15,16",
+            "15,17",
+            "16,17",
+            "17,17",
+            "18,17",
+            "19,16",
+            "20,16",
+            "21,16",
+            "22,16",
+            "22,17"
+          ]
+        },
+        "intent": "combat to 14,15 (hunt 13,16)",
+        "breakdown": [
+          {
+            "term": "crowding",
+            "value": -15
+          },
+          {
+            "term": "progress",
+            "value": 10
+          },
+          {
+            "term": "hunt",
+            "value": 15
+          },
+          {
+            "term": "contact",
+            "value": 6
+          },
+          {
+            "term": "hq-dependent-supply",
+            "value": -8
+          }
+        ]
+      },
+      {
+        "revision": 415,
+        "turn": 5,
+        "phase": "MOVEMENT",
+        "actor": "player:allied",
+        "actualGain": 0,
+        "alternativeGain": 4,
+        "action": {
+          "actionId": "candidate:move:generated-oob:286921528:allied:independent-anti_tank-2:unit:14,15:415",
+          "actorId": "player:allied",
+          "expectedRevision": 415,
+          "kind": "MOVE_PIECE",
+          "path": [
+            "16,15",
+            "16,14",
+            "15,14",
+            "14,15"
+          ],
+          "pieceId": "generated-oob:286921528:allied:independent-anti_tank-2:unit"
+        },
+        "alternative": {
+          "actionId": "candidate:move:generated-oob:286921528:allied:independent-anti_tank-2:unit:22,17:415",
+          "actorId": "player:allied",
+          "expectedRevision": 415,
+          "kind": "MOVE_PIECE",
+          "pieceId": "generated-oob:286921528:allied:independent-anti_tank-2:unit",
+          "path": [
+            "16,15",
+            "16,16",
+            "17,16",
+            "18,16",
+            "19,16",
+            "20,16",
+            "21,16",
+            "22,16",
+            "22,17"
+          ]
+        },
+        "intent": "combat to 14,15 (hunt 13,16)",
+        "breakdown": [
+          {
+            "term": "crowding",
+            "value": -18
+          },
+          {
+            "term": "progress",
+            "value": 20
+          },
+          {
+            "term": "hunt",
+            "value": 15
+          },
+          {
+            "term": "contact",
+            "value": 6
+          },
+          {
+            "term": "hq-dependent-supply",
+            "value": -8
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "style": "eastern",
+    "match": 1210103,
+    "checked": 156,
+    "missed": []
+  },
+  {
+    "style": "mediterranean",
+    "match": 1210200,
+    "checked": 172,
+    "missed": []
+  },
+  {
+    "style": "mediterranean",
+    "match": 1210201,
+    "checked": 161,
+    "missed": []
+  },
+  {
+    "style": "mediterranean",
+    "match": 1210202,
+    "checked": 144,
+    "missed": []
+  },
+  {
+    "style": "mediterranean",
+    "match": 1210203,
+    "checked": 168,
+    "missed": []
+  }
+]

@@ -1,0 +1,487 @@
+[
+  {
+    "style": "temperate",
+    "match": 1210000,
+    "checked": 157,
+    "missed": []
+  },
+  {
+    "style": "temperate",
+    "match": 1210001,
+    "checked": 194,
+    "missed": []
+  },
+  {
+    "style": "temperate",
+    "match": 1210002,
+    "checked": 170,
+    "missed": [
+      {
+        "revision": 259,
+        "turn": 4,
+        "phase": "MOVEMENT",
+        "actor": "player:axis",
+        "actualGain": 0,
+        "alternativeGain": 1,
+        "action": {
+          "actionId": "candidate:move:generated-oob:286911828:axis:f2-combat-1:unit:17,5:259",
+          "actorId": "player:axis",
+          "expectedRevision": 259,
+          "kind": "MOVE_PIECE",
+          "path": [
+            "17,4",
+            "17,5"
+          ],
+          "pieceId": "generated-oob:286911828:axis:f2-combat-1:unit"
+        },
+        "alternative": {
+          "actionId": "candidate:move:generated-oob:286911828:axis:f2-combat-1:unit:15,4:259",
+          "actorId": "player:axis",
+          "expectedRevision": 259,
+          "kind": "MOVE_PIECE",
+          "pieceId": "generated-oob:286911828:axis:f2-combat-1:unit",
+          "path": [
+            "17,4",
+            "16,4",
+            "15,4"
+          ]
+        },
+        "intent": "combat to 17,5 (resupply 17,5)",
+        "breakdown": [
+          {
+            "term": "progress",
+            "value": 10
+          },
+          {
+            "term": "contact",
+            "value": -8
+          },
+          {
+            "term": "exposure",
+            "value": -1
+          }
+        ]
+      },
+      {
+        "revision": 260,
+        "turn": 4,
+        "phase": "MOVEMENT",
+        "actor": "player:axis",
+        "actualGain": 0,
+        "alternativeGain": 1,
+        "action": {
+          "actionId": "candidate:move:generated-oob:286911828:axis:f2-combat-2:unit:17,5:260",
+          "actorId": "player:axis",
+          "expectedRevision": 260,
+          "kind": "MOVE_PIECE",
+          "path": [
+            "17,4",
+            "17,5"
+          ],
+          "pieceId": "generated-oob:286911828:axis:f2-combat-2:unit"
+        },
+        "alternative": {
+          "actionId": "candidate:move:generated-oob:286911828:axis:f2-combat-2:unit:15,4:260",
+          "actorId": "player:axis",
+          "expectedRevision": 260,
+          "kind": "MOVE_PIECE",
+          "pieceId": "generated-oob:286911828:axis:f2-combat-2:unit",
+          "path": [
+            "17,4",
+            "16,4",
+            "15,4"
+          ]
+        },
+        "intent": "combat to 17,5 (resupply 17,5)",
+        "breakdown": [
+          {
+            "term": "crowding",
+            "value": -6
+          },
+          {
+            "term": "progress",
+            "value": 10
+          },
+          {
+            "term": "contact",
+            "value": 6
+          }
+        ]
+      },
+      {
+        "revision": 264,
+        "turn": 4,
+        "phase": "MOVEMENT",
+        "actor": "player:axis",
+        "actualGain": 0,
+        "alternativeGain": 1,
+        "action": {
+          "actionId": "candidate:move:generated-oob:286911828:axis:f4-combat-1:unit:12,8:264",
+          "actorId": "player:axis",
+          "expectedRevision": 264,
+          "kind": "MOVE_PIECE",
+          "path": [
+            "14,5",
+            "13,6",
+            "13,7",
+            "12,8"
+          ],
+          "pieceId": "generated-oob:286911828:axis:f4-combat-1:unit"
+        },
+        "alternative": {
+          "actionId": "candidate:move:generated-oob:286911828:axis:f4-combat-1:unit:15,4:264",
+          "actorId": "player:axis",
+          "expectedRevision": 264,
+          "kind": "MOVE_PIECE",
+          "pieceId": "generated-oob:286911828:axis:f4-combat-1:unit",
+          "path": [
+            "14,5",
+            "15,4"
+          ]
+        },
+        "intent": "combat to 12,8 (resupply 11,8)",
+        "breakdown": [
+          {
+            "term": "progress",
+            "value": 20
+          },
+          {
+            "term": "contact",
+            "value": -8
+          },
+          {
+            "term": "exposure",
+            "value": -3.333333333333332
+          }
+        ]
+      },
+      {
+        "revision": 265,
+        "turn": 4,
+        "phase": "MOVEMENT",
+        "actor": "player:axis",
+        "actualGain": 0,
+        "alternativeGain": 1,
+        "action": {
+          "actionId": "candidate:move:generated-oob:286911828:axis:f5-combat-1:unit:14,8:265",
+          "actorId": "player:axis",
+          "expectedRevision": 265,
+          "kind": "MOVE_PIECE",
+          "path": [
+            "14,6",
+            "14,7",
+            "14,8"
+          ],
+          "pieceId": "generated-oob:286911828:axis:f5-combat-1:unit"
+        },
+        "alternative": {
+          "actionId": "candidate:move:generated-oob:286911828:axis:f5-combat-1:unit:15,4:265",
+          "actorId": "player:axis",
+          "expectedRevision": 265,
+          "kind": "MOVE_PIECE",
+          "pieceId": "generated-oob:286911828:axis:f5-combat-1:unit",
+          "path": [
+            "14,6",
+            "14,5",
+            "15,4"
+          ]
+        },
+        "intent": "combat to 14,8 (resupply 14,8)",
+        "breakdown": [
+          {
+            "term": "progress",
+            "value": 20
+          }
+        ]
+      },
+      {
+        "revision": 266,
+        "turn": 4,
+        "phase": "MOVEMENT",
+        "actor": "player:axis",
+        "actualGain": 0,
+        "alternativeGain": 1,
+        "action": {
+          "actionId": "candidate:move:generated-oob:286911828:axis:f6-combat-1:unit:10,8:266",
+          "actorId": "player:axis",
+          "expectedRevision": 266,
+          "kind": "MOVE_PIECE",
+          "path": [
+            "13,6",
+            "12,6",
+            "11,7",
+            "10,8"
+          ],
+          "pieceId": "generated-oob:286911828:axis:f6-combat-1:unit"
+        },
+        "alternative": {
+          "actionId": "candidate:move:generated-oob:286911828:axis:f6-combat-1:unit:15,4:266",
+          "actorId": "player:axis",
+          "expectedRevision": 266,
+          "kind": "MOVE_PIECE",
+          "pieceId": "generated-oob:286911828:axis:f6-combat-1:unit",
+          "path": [
+            "13,6",
+            "14,5",
+            "15,4"
+          ]
+        },
+        "intent": "combat to 10,8 (resupply 11,8)",
+        "breakdown": [
+          {
+            "term": "progress",
+            "value": 10
+          },
+          {
+            "term": "contact",
+            "value": 6
+          }
+        ]
+      },
+      {
+        "revision": 417,
+        "turn": 5,
+        "phase": "MOVEMENT",
+        "actor": "player:axis",
+        "actualGain": 0,
+        "alternativeGain": 1,
+        "action": {
+          "actionId": "candidate:move:generated-oob:286911828:axis:f6-combat-1:unit:10,9:417",
+          "actorId": "player:axis",
+          "expectedRevision": 417,
+          "kind": "MOVE_PIECE",
+          "path": [
+            "10,8",
+            "10,9"
+          ],
+          "pieceId": "generated-oob:286911828:axis:f6-combat-1:unit"
+        },
+        "alternative": {
+          "actionId": "candidate:move:generated-oob:286911828:axis:f6-combat-1:unit:15,4:417",
+          "actorId": "player:axis",
+          "expectedRevision": 417,
+          "kind": "MOVE_PIECE",
+          "pieceId": "generated-oob:286911828:axis:f6-combat-1:unit",
+          "path": [
+            "10,8",
+            "11,8",
+            "12,7",
+            "13,6",
+            "14,5",
+            "15,4"
+          ]
+        },
+        "intent": "combat to 10,9 (front 9,8)",
+        "breakdown": [
+          {
+            "term": "progress",
+            "value": -6
+          }
+        ]
+      },
+      {
+        "revision": 465,
+        "turn": 6,
+        "phase": "MOVEMENT",
+        "actor": "player:axis",
+        "actualGain": 0,
+        "alternativeGain": 1,
+        "action": {
+          "actionId": "candidate:move:generated-oob:286911828:axis:f2-combat-1:unit:18,10:465",
+          "actorId": "player:axis",
+          "expectedRevision": 465,
+          "kind": "MOVE_PIECE",
+          "path": [
+            "19,6",
+            "18,7",
+            "17,8",
+            "17,9",
+            "17,10",
+            "18,10"
+          ],
+          "pieceId": "generated-oob:286911828:axis:f2-combat-1:unit"
+        },
+        "alternative": {
+          "actionId": "candidate:move:generated-oob:286911828:axis:f2-combat-1:unit:15,4:465",
+          "actorId": "player:axis",
+          "expectedRevision": 465,
+          "kind": "MOVE_PIECE",
+          "pieceId": "generated-oob:286911828:axis:f2-combat-1:unit",
+          "path": [
+            "19,6",
+            "19,5",
+            "19,4",
+            "18,4",
+            "17,4",
+            "16,4",
+            "15,4"
+          ]
+        },
+        "intent": "combat to 18,10 (capture 27,7)",
+        "breakdown": [
+          {
+            "term": "crowding",
+            "value": -3
+          },
+          {
+            "term": "exposure",
+            "value": -1.533333333333335
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "style": "temperate",
+    "match": 1210003,
+    "checked": 113,
+    "missed": []
+  },
+  {
+    "style": "eastern",
+    "match": 1210100,
+    "checked": 170,
+    "missed": []
+  },
+  {
+    "style": "eastern",
+    "match": 1210101,
+    "checked": 129,
+    "missed": []
+  },
+  {
+    "style": "eastern",
+    "match": 1210102,
+    "checked": 175,
+    "missed": [
+      {
+        "revision": 408,
+        "turn": 5,
+        "phase": "MOVEMENT",
+        "actor": "player:allied",
+        "actualGain": 0,
+        "alternativeGain": 4,
+        "action": {
+          "actionId": "candidate:move:generated-oob:286921528:allied:f2-combat-2:unit:14,13:408",
+          "actorId": "player:allied",
+          "expectedRevision": 408,
+          "kind": "MOVE_PIECE",
+          "path": [
+            "21,16",
+            "20,16",
+            "19,16",
+            "18,17",
+            "17,17",
+            "16,17",
+            "15,17",
+            "15,16",
+            "15,15",
+            "14,15",
+            "14,14",
+            "14,13"
+          ],
+          "pieceId": "generated-oob:286921528:allied:f2-combat-2:unit"
+        },
+        "alternative": {
+          "actionId": "candidate:move:generated-oob:286921528:allied:f2-combat-2:unit:22,17:408",
+          "actorId": "player:allied",
+          "expectedRevision": 408,
+          "kind": "MOVE_PIECE",
+          "pieceId": "generated-oob:286921528:allied:f2-combat-2:unit",
+          "path": [
+            "21,16",
+            "22,16",
+            "22,17"
+          ]
+        },
+        "intent": "combat to 14,13 (hunt 14,7)",
+        "breakdown": [
+          {
+            "term": "progress",
+            "value": 100
+          },
+          {
+            "term": "exposure",
+            "value": -0.75
+          },
+          {
+            "term": "hq-dependent-supply",
+            "value": -8
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "style": "eastern",
+    "match": 1210103,
+    "checked": 156,
+    "missed": []
+  },
+  {
+    "style": "mediterranean",
+    "match": 1210200,
+    "checked": 172,
+    "missed": []
+  },
+  {
+    "style": "mediterranean",
+    "match": 1210201,
+    "checked": 161,
+    "missed": [
+      {
+        "revision": 572,
+        "turn": 8,
+        "phase": "MOVEMENT",
+        "actor": "player:axis",
+        "actualGain": 0,
+        "alternativeGain": 1,
+        "action": {
+          "actionId": "candidate:move:generated-oob:286931131:axis:f5-combat-1:unit:4,11:572",
+          "actorId": "player:axis",
+          "expectedRevision": 572,
+          "kind": "MOVE_PIECE",
+          "path": [
+            "2,10",
+            "3,10",
+            "3,11",
+            "4,11"
+          ],
+          "pieceId": "generated-oob:286931131:axis:f5-combat-1:unit"
+        },
+        "alternative": {
+          "actionId": "candidate:move:generated-oob:286931131:axis:f5-combat-1:unit:2,7:572",
+          "actorId": "player:axis",
+          "expectedRevision": 572,
+          "kind": "MOVE_PIECE",
+          "pieceId": "generated-oob:286931131:axis:f5-combat-1:unit",
+          "path": [
+            "2,10",
+            "2,9",
+            "2,8",
+            "2,7"
+          ]
+        },
+        "intent": "combat to 4,11 (hunt 10,11)",
+        "breakdown": [
+          {
+            "term": "progress",
+            "value": 30
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "style": "mediterranean",
+    "match": 1210202,
+    "checked": 144,
+    "missed": []
+  },
+  {
+    "style": "mediterranean",
+    "match": 1210203,
+    "checked": 168,
+    "missed": []
+  }
+]
