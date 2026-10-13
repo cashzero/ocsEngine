@@ -60,7 +60,23 @@ describe('Air power integration over a generated game (A9)', () => {
     const prepared = prepareNewGame(request);
     expect(prepared.ok, prepared.ok ? '' : JSON.stringify(prepared.error)).toBe(true);
     if (!prepared.ok) return;
-    const created = createInitialGameState(prepared.value.scenario, prepared.value.configuration, request.seeds.rules);
+    // This air integration fixture also pays for three turns of aggressive ground operations.
+    // The contact fixture's 2 SP per side can be exhausted before the first Aircraft Refit
+    // Phase. Give its existing supply dumps 8 SP each so the air lifecycle is reachable,
+    // without changing the policy's spending choices or the production generator.
+    const generated = prepared.value.scenario;
+    const supplyDefinitionIds = new Set(generated.pieceCatalog.definitions
+      .filter((definition) => definition.resource?.resourceDefinitionId === 'resource:supply')
+      .map(({ id }) => id));
+    const scenario = {
+      ...generated,
+      initialPieceState: {
+        ...generated.initialPieceState,
+        pieces: generated.initialPieceState.pieces.map((piece) => supplyDefinitionIds.has(piece.definitionId)
+          ? { ...piece, resourceQuantity: 32 } : piece),
+      },
+    };
+    const created = createInitialGameState(scenario, prepared.value.configuration, request.seeds.rules);
     expect(created.ok, created.ok ? '' : JSON.stringify(created.error)).toBe(true);
     if (!created.ok) return;
     let state = created.value;

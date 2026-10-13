@@ -176,6 +176,20 @@ describe('Air barrage shifts (14.7, rulebook Stuka example)', () => {
 });
 
 describe('Aircraft Refit (15.1)', () => {
+  it('offers no refit and rejects it when the available SP has been spent', () => {
+    const state = atStep(withPiece(inactive(airState(), U.aF1), U.aSup,
+      (dump) => ({ ...dump, resourceQuantity: 0 })), 'AIRCRAFT_REFIT', 'NONE', ALLIED);
+    expect(ruleEngine.getActionCandidates(state, {
+      actorId: ALLIED, kind: 'REFIT_AIRCRAFT', pieceId: U.aBase, budget: 20,
+    }).actions).toEqual([]);
+    const result = applyRuleAction(state, ALLIED, {
+      kind: 'REFIT_AIRCRAFT', baseId: U.aBase, aircraftIds: [U.aF1], sourcePieceId: U.aSup,
+    });
+    expect(codes(result)).toContain('REFIT_SUPPLY_UNAVAILABLE');
+    expect(isActiveAircraft(piece(result.state, U.aF1))).toBe(false);
+    expect(piece(result.state, U.aSup).resourceQuantity).toBe(0);
+  });
+
   it('refits up to twice the Level for 1T drawn to the base, once per phase', () => {
     let state = atStep(inactive(airState(), U.aF1, U.aF2, U.aB1), 'AIRCRAFT_REFIT', 'NONE', ALLIED);
     const before = piece(state, U.aSup).resourceQuantity!;
