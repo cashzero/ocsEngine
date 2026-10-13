@@ -1,5 +1,5 @@
-import { parseDefinitionId, type DefinitionId } from '../../core/index.js';
-import { parseCapabilityId, type PieceDefinition } from '../../domain/piece/index.js';
+import { movementPoints, regimentalEquivalents, parseDefinitionId, type DefinitionId } from '../../core/index.js';
+import { parseCapabilityId, parseFaceId, type PieceDefinition } from '../../domain/piece/index.js';
 import type { NormalizedRandomOobOptions, OobScale, OobSide } from './model.js';
 
 /**
@@ -41,10 +41,21 @@ const replacementDefinition = (seed: number, side: OobSide, kind: ReplacementKin
     formationDefinitionId: null,
     groupDefinitionId: null,
   },
-  faces: [],
+  faces: [{
+    id: must(parseFaceId('move')), name: 'Move',
+    mobilityClassDefinitionId: definitionId(kind === 'PAX' ? 'mobility:leg' : 'mobility:truck'),
+    steps: [{ remainingSteps: 1, combatStrength: 0, actionRating: 0,
+      movementPointTicks: must(movementPoints(kind === 'PAX' ? 5 : 10)),
+      regimentalEquivalentTicks: must(regimentalEquivalents(0.25)), range: null, ratings: [] }],
+  }],
   capabilities: [{ id: must(parseCapabilityId('REPLACEMENT')), parameters: [{ key: 'kind', kind: 'TEXT', value: kind }, { key: 'perTurn', kind: 'INTEGER', value: perTurn }] }],
   resource: null, facility: null, marker: null, deferredClassification: null,
   source: { records: [{
+    field: 'replacement-unit-ratings', rawValue: kind === 'PAX' ? '0-0-5 Leg' : '0-0-10 Truck',
+    normalizedValue: 'One replacement per counter; 1/4 RE; Move orientation only',
+    source: { document: 'Beyond the Rhine 1.27.0', locator: kind === 'PAX' ? 'images/US-Repl-Pax.png; German Pax Replacement.png; OCS 13.5' : 'images/US-Repl-EQ.png; German EQ Replacement.png; OCS 13.5' },
+    confidence: 'HIGH', reviewStatus: 'REVIEWED',
+  }, {
     field: 'replacement-allotment', rawValue: 'generator-defined', normalizedValue: `${perTurn} ${kind === 'PAX' ? 'Pax' : 'Eq'} each Reinforcement Phase`,
     source: { document: 'docs/reports/replacements-2026-10-04.md', locator: 'Replacement allotment' },
     confidence: 'MEDIUM', reviewStatus: 'REVIEWED',

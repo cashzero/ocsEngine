@@ -1,5 +1,5 @@
 import type { PieceId, PlayerId } from '../../core/index.js';
-import type { OcsMode, PieceState } from '../../domain/piece/index.js';
+import { isGroundUnitDefinition, type OcsMode, type PieceState } from '../../domain/piece/index.js';
 import type { GameState, RuleViolation } from '../kernel/model.js';
 import {
   definitionOf,
@@ -36,12 +36,15 @@ export const validateModeChange = (
   if (state.sequence.phase !== 'MOVEMENT' || state.sequence.segment !== 'MOVEMENT') {
     issues.push(violation('INVALID_MODE_CHANGE_PHASE', ['sequence'], 'Voluntary mode changes require the friendly Movement Segment.', '5.4'));
   }
-  if (definitionOf(state, piece)?.family !== 'GROUND' || piece.mode === null) {
+  if (!isGroundUnitDefinition(definitionOf(state, piece)) || piece.mode === null) {
     issues.push(violation('MODE_NOT_APPLICABLE', ['pieceId'], 'Only ground units use modes.', '5.1'));
     return issues;
   }
   if (piece.location.kind !== 'ON_MAP') issues.push(violation('PIECE_NOT_ON_MAP', ['pieceId'], 'Only units on the map change mode.', '5.4'));
   const usage = usageOf(state, piece);
+  if (definitionOf(state, piece)?.family === 'REPLACEMENT' && targetMode === 'COMBAT') {
+    issues.push(violation('REPLACEMENT_COMBAT_MODE', ['mode'], 'Replacement units cannot enter Combat Mode.', '13.5'));
+  }
   if (usage.moved) issues.push(violation('MODE_CHANGE_AFTER_MOVING', ['pieceId'], 'A mode change happens as the unit begins to move, not after it has moved.', '5.4'));
   if (usage.negationLocked) issues.push(violation('NEGATING_UNIT_LOCKED', ['pieceId'], 'This unit is negating an enemy ZOC and may not begin to move.', '4.5b'));
   if (!voluntaryModes.includes(targetMode)) issues.push(violation('INVOLUNTARY_MODE_REQUESTED', ['mode'], `${targetMode} cannot be chosen voluntarily.`, '5.3'));

@@ -1,6 +1,7 @@
 import type { HexId, PieceId } from '../../core/index.js';
 import {
   createPieceDefinitionCatalogIndex,
+  isGroundUnitDefinition,
   type PieceRuntimeState,
   type PieceState,
 } from '../../domain/piece/index.js';
@@ -9,7 +10,7 @@ import type { RuleQueryResult } from '../query/model.js';
 
 export const derivePieceReTicks = (state: GameState, piece: PieceState): number => {
   const definition = createPieceDefinitionCatalogIndex(state.scenario.pieceCatalog).get(piece.definitionId);
-  if (!definition || definition.family !== 'GROUND' || piece.currentFaceId === null || piece.remainingSteps === null) return 0;
+  if (!definition || !isGroundUnitDefinition(definition) || piece.currentFaceId === null || piece.remainingSteps === null) return 0;
   const face = definition.faces.find(({ id }) => id === piece.currentFaceId);
   return face?.steps.find(({ remainingSteps }) => remainingSteps === piece.remainingSteps)
     ?.regimentalEquivalentTicks ?? 0;

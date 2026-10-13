@@ -61,10 +61,10 @@ export const replacementAbbreviation = (definition: PieceDefinition): 'Pax' | 'E
 
 /**
  * 13.5: a replacement counter prints "Repl EQ" or "Repl PAX" and shows how many it holds ("?" when the count is hidden from
- * this seat, 4.9a). The Pax counter reuses the Eq counter's BTR artwork with its own label.
+ * this seat, 4.9a). Pax prints 5 Leg MP; Eq prints 10 Truck MP, as their BTR counters do.
  */
 const replacementView = (definition: PieceDefinition, piece: CounterPiece) =>
-  ({ redacted: false as const, kind: 'replacement' as const, label: definition.name, abbreviation: replacementAbbreviation(definition), nation: nationOf(definition), quantity: piece.resourceQuantity === null || piece.resourceQuantity === undefined ? '?' : String(piece.resourceQuantity) });
+  ({ redacted: false as const, kind: 'replacement' as const, label: definition.name, abbreviation: replacementAbbreviation(definition), nation: nationOf(definition), mode: piece.mode, statuses: piece.statuses, quantity: piece.resourceQuantity === null || piece.resourceQuantity === undefined ? '?' : String(piece.resourceQuantity) });
 
 /** The nation whose colours a player's pieces wear: Axis players are German, the rest American. */
 export const playerNation = (players: readonly { readonly id: string; readonly sideDefinitionId: string }[], ownerId: string): 'US' | 'GERMAN' | undefined => {
@@ -272,7 +272,7 @@ const hedgehogBody = (view: Extract<CounterViewModel, { kind: 'hedgehog' }>): st
 
 // As the BTR module draws it (images/German EQ Replacement.png, US-Repl-EQ.png): "Repl" rotated beside a boxed "EQ" tied to it
 // by a short leader, an "A" before it on the US counter, and the printed 0-0-10 ratings below (a white 0, a superscript 0, and a
-// red 10 on a yellow box). One engine counter holds several replacements, so their number sits in a badge in the free top-right corner.
+// red 10 on a yellow box). Pax has a plain white 5 (Leg MP) instead.
 const squeezed = (element: string, length: number): string => element.replace('<text ', `<text textLength="${length}" lengthAdjust="spacingAndGlyphs" `);
 // The printed 0-0-10 never changes, so its digits are drawn as shapes. As text they took whatever font the browser had, and
 // the widths forced to fit a narrow face squashed a wider fallback (Arial, where Arial Narrow is not installed) into slivers.
@@ -291,7 +291,7 @@ const replacementBody = (view: Extract<CounterViewModel, { kind: 'replacement' }
     <g class="counter-identification">${view.nation === 'US' ? svgText(11.5,29,'A','eq-army') : ''}${squeezed(svgText(30.5,28,'Repl','eq-repl'), 30).replace('<text ', '<text transform="rotate(-90 30.5 28)" ')}<path class="eq-leader" d="M31 21.5H37.5"/></g>
     <g class="counter-symbol"><rect class="eq-box nation-${view.nation}" x="37.5" y="16.5" width="33.5" height="26"/>${squeezed(svgText(54,38,view.abbreviation.toUpperCase(),'eq-label'), 21)}</g>
     <g class="counter-values"><path class="eq-digit eq-shadow" transform="translate(1.5 1.5)" d="${REPLACEMENT_ZERO}"/><path class="eq-digit eq-white" d="${REPLACEMENT_ZERO}"/><path class="eq-digit eq-superscript" d="${zeroDigit(43.5, 56, 10, 18, 3.5)}"/>
-    <rect class="eq-move-box" x="50" y="49.5" width="34" height="36.5"/><path class="eq-digit eq-move" d="M56.5 50H62.5V81.5H56.5V57L52 59.5V54Z${zeroDigit(74.5, 65.75, 17, 31.5, 5.5)}"/></g>
+    ${view.abbreviation === 'Eq' ? `<rect class="eq-move-box" x="50" y="49.5" width="34" height="36.5"/><path class="eq-digit eq-move" d="M56.5 50H62.5V81.5H56.5V57L52 59.5V54Z${zeroDigit(74.5, 65.75, 17, 31.5, 5.5)}"/>` : '<path class="eq-digit eq-white" d="M56 50H77V56H62V62H69C83 62 82 82 68 82C61 82 56 78 55 73H62C63 80 75 77 74 70C73 63 64 65 61 68H56Z"/>'}</g>
     <g class="counter-quantity"><circle class="eq-count-disc" cx="87" cy="13" r="10"/>${svgText(87,18,view.quantity,'eq-count')}</g>`;
 
 // A corps HQ prints its nation's flag where other counters print the unit symbol (BTR S01 R10 C02 and the other HQ images):
@@ -321,7 +321,11 @@ export const counterSvgBody = (view: CounterViewModel): string => {
   if (view.kind === 'aircraft') return aircraftBody(view);
   if (view.kind === 'air-base') return airBaseBody(view);
   if (view.kind === 'hedgehog') return hedgehogBody(view);
-  if (view.kind === 'replacement') return replacementBody(view);
+  if (view.kind === 'replacement') {
+    const flags = stateFlags(view.mode, view.statuses);
+    const overlay = stateOverlay(flags);
+    return replacementBody(view) + overlay.over + stateBar(flags);
+  }
   const c = view.counter;
   const text = svgText;
   const ma = view.step?.movementPointTicks == null ? '' : view.step.movementPointTicks / 4;

@@ -14,7 +14,7 @@ export const PIECE_FAMILIES = [
   'AIR',
   'NAVAL',
   'FACILITY',
-  /** Equipment (Eq) replacement counters (13.5): spent to rebuild lost aircraft steps (13.5f). */
+  /** Personnel / Equipment replacement combat units (13.5). */
   'REPLACEMENT',
   'MARKER',
   'DEFERRED',
@@ -120,6 +120,10 @@ export interface PieceDefinition {
   readonly deferredClassification: string | null;
   readonly source: PieceDefinitionSource;
 }
+
+/** Replacement units share ground movement, modes, supply and combat; older face-less counters do not. */
+export const isGroundUnitDefinition = (definition: PieceDefinition | null | undefined): boolean =>
+  definition?.family === 'GROUND' || (definition?.family === 'REPLACEMENT' && definition.faces.length > 0);
 
 export interface PieceDefinitionCatalog {
   readonly id: DefinitionId;

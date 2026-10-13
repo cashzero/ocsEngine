@@ -14,9 +14,9 @@ import type { PieceRole, ProjectedBridge, ProjectedCombat, ProjectedPiece, Proje
 import { AIR_MISSION_LABELS, previewAirBarrage } from '../air/mission.js';
 import { activeAircraftLimit, airBaseLevel, aircraftName, isActiveAircraft, isAirBase,
   offMapAirfields, aircraftAtAirfield, isAircraft, isFighter, patrolZoneHexes, refitBlockedByZoc, refitCapacity } from '../air/aircraft.js';
-import { equipmentIn, rebuildOptions, stepsToRebuild } from '../air/replacement.js';
+import { rebuildOptions, stepsToRebuild } from '../air/replacement.js';
 import { lostTruckPoints } from '../replacement/ledger.js';
-import { unitRebuildOptions } from '../replacement/replacement.js';
+import { replacementsAt, unitRebuildOptions } from '../replacement/replacement.js';
 import { aircraftRange, aircraftTransportCapacity, hasIntegralGlider } from '../air/aircraft.js';
 import { isHedgehog } from '../hedgehog/hedgehog.js';
 import { railCapRemainingQuarters, railCapacityPoints } from '../supply/rail-cap.js';
@@ -187,7 +187,7 @@ export const projectRuleState = (state: GameState, viewerId: PlayerId): RuleProj
       patrolZones: state.scenario.players.map(({ id }) => ({ playerId: id, hexIds: patrolZoneHexes(state, id) })).filter(({ hexIds }) => hexIds.length > 0),
       // 4.9a: only the viewer's own replacements and Dead Pile are shown.
       rebuilds: rebuildOptions(state, viewerId).map((option) => ({
-        eqPieceId: option.eq.id, hqId: option.hq.id, hexId: String(option.eq.location.kind === 'ON_MAP' ? option.eq.location.hexId : ''), equipment: equipmentIn(option.eq),
+        eqPieceId: option.eq.id, hqId: option.hq.id, hexId: String(option.eq.location.kind === 'ON_MAP' ? option.eq.location.hexId : ''), equipment: option.eq.location.kind === 'ON_MAP' ? replacementsAt(state, viewerId, option.eq.location.hexId, 'EQ') : 0,
         aircraft: option.aircraftIds.map((id) => {
           const plane = state.pieceState.pieces.find((entry) => entry.id === id)!;
           return { id, definitionId: plane.definitionId, steps: stepsToRebuild(plane), deadPile: plane.location.kind === 'ELIMINATED' };

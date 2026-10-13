@@ -19,6 +19,17 @@ import {
   parseGameStateJson,
   reinforcementHexes,
   ruleEngine,
+  queryMovementPath,
+  derivePieceReTicks,
+  queryStacking,
+  movementAllowanceTicks,
+  arriveReplacements,
+  mergeReplacementsAt,
+  determineSupply,
+  settleInterrupts,
+  declareTestCombat,
+  settleDecisions,
+  exertsZoc,
   serializeGameState,
   upgradeLegacyGameStateInput,
   type GameState,
@@ -30,6 +41,8 @@ import {
   type TransitionResult,
   type UnitRebuild,
 } from '../../src/index.js';
+
+import { isCombatUnit, isAttackCapable, needsFuel } from '../../src/rules/pieces.js';
 
 const id = (fragment: string) => generatedPieceId(fragment);
 const U = {
@@ -64,10 +77,14 @@ const setup = (pax = 2, eq = 1, over: { hqMode?: OcsMode; replsAt?: HexId } = {}
   let state = atStep(built, 'REINFORCEMENT', 'NONE', ALLIED);
   state = withPiece(state, U.division, (entry) => ({ ...entry, remainingSteps: 1 }));
   const at = over.replsAt ?? REPLS;
-  const counters: PieceState[] = [
-    { id: 'repl:pax' as PieceId, definitionId: replacementDefinition(state, 'personnel').id, ownerId: ALLIED, location: { kind: 'ON_MAP' as const, hexId: at }, currentFaceId: null, remainingSteps: null, mode: null, statuses: [], resourceQuantity: pax, stackOrder: 8 },
-    { id: 'repl:eq' as PieceId, definitionId: replacementDefinition(state, 'equipment').id, ownerId: ALLIED, location: { kind: 'ON_MAP' as const, hexId: at }, currentFaceId: null, remainingSteps: null, mode: null, statuses: [], resourceQuantity: eq, stackOrder: 9 },
-  ].filter((counter) => (counter.resourceQuantity ?? 0) > 0);
+  const counters: PieceState[] = (['pax', 'eq'] as const).flatMap((kind, k) =>
+    Array.from({ length: kind === 'pax' ? pax : eq }, (_, index): PieceState => ({
+      id: `repl:${kind}${index ? `:${index + 1}` : ''}` as PieceId,
+      definitionId: replacementDefinition(state, kind === 'pax' ? 'personnel' : 'equipment').id,
+      ownerId: ALLIED, location: { kind: 'ON_MAP', hexId: at },
+      currentFaceId: 'move' as never, remainingSteps: 1, mode: 'MOVE', statuses: [], resourceQuantity: 1, stackOrder: 8 + k * 20 + index,
+    })));
+
   return { ...state, pieceState: { ...state.pieceState, pieces: [...state.pieceState.pieces, ...counters] } };
 };
 const rebuild = (state: GameState, units: readonly UnitRebuild[], truckPoints = 0, over: Partial<{ hexId: HexId; hqId: PieceId }> = {}) =>
@@ -119,15 +136,15 @@ describe('Repls arrive and are placed (13.5)', () => {
     expect(reinforcementHexes(state, ALLIED, pax.id)).toContain(hex(3));
   });
 
-  it('merges Repls placed in one hex by kind: one Pax and one Eq counter', () => {
+  it('keeps Repls placed in one hex independent for movement, supply and losses', () => {
     let state = setup(1, 1);
     const box = state.configuration.reinforcementBoxes.find(({ playerId }) => playerId === ALLIED)!.boxId;
-    const extra: PieceState = { ...piece(state, 'repl:pax'), id: 'repl:pax2' as PieceId, location: { kind: 'OFF_MAP_BOX', boxId: box }, resourceQuantity: 2, stackOrder: 0 };
+    const extra: PieceState = { ...piece(state, 'repl:pax'), id: 'repl:pax2' as PieceId, location: { kind: 'OFF_MAP_BOX', boxId: box }, resourceQuantity: 1, stackOrder: 0 };
     state = { ...state, pieceState: { ...state.pieceState, pieces: [...state.pieceState.pieces, extra] } };
     state = ok(applyRuleAction(state, ALLIED, { kind: 'PLACE_REINFORCEMENT', pieceId: extra.id, hexId: REPLS }));
     const here = state.pieceState.pieces.filter((entry) => entry.location.kind === 'ON_MAP' && entry.location.hexId === REPLS && String(entry.id).startsWith('repl:'));
-    expect(here.map(({ id: hereId, resourceQuantity }) => [hereId, resourceQuantity])).toEqual(expect.arrayContaining([['repl:pax2', 3], ['repl:eq', 1]]));
-    expect(here).toHaveLength(2);
+    expect(here.map(({ id: hereId, resourceQuantity }) => [hereId, resourceQuantity])).toEqual(expect.arrayContaining([['repl:pax2', 1], ['repl:pax', 1], ['repl:eq', 1]]));
+    expect(here).toHaveLength(3);
   });
 });
 
@@ -142,7 +159,7 @@ describe('Ground rebuilds (13.5a-d)', () => {
   it('lets any number of steps be rebuilt (13.5b) and keeps the Pax left over', () => {
     const state = ok(rebuild(setup(2, 0), [{ pieceId: U.division, steps: 1, mode: null }]));
     expect(piece(state, U.division).remainingSteps).toBe(2);
-    expect(piece(state, 'repl:pax').resourceQuantity).toBe(1);
+    expect(piece(state, 'repl:pax:2').resourceQuantity).toBe(1);
     expect(codes(rebuild(setup(5, 0), [{ pieceId: U.division, steps: 3, mode: null }]))).toContain('INVALID_REBUILD_STEPS');
   });
 
@@ -232,7 +249,7 @@ describe('Truck rebuilds (13.5e)', () => {
     expect(rebuilt.mode).toBe('MOVE');
     expect(rebuilt.statuses).toEqual([{ statusDefinitionId: 'status:transport-points', value: { kind: 'INTEGER', value: 2 } }]);
     expect(lostTruckPoints(state, ALLIED)).toBe(3);
-    expect(piece(state, 'repl:eq').resourceQuantity).toBe(1);
+    expect(piece(state, 'repl:eq:3').resourceQuantity).toBe(1);
     expect(codes(rebuild(state, [], 2))).toContain('NOT_ENOUGH_EQUIPMENT');
   });
 });
@@ -269,5 +286,133 @@ describe('Rebuilds in the engine and the projection', () => {
 
   it('uses the fixture request the other rule tests use', () => {
     expect(RULE_FIXTURE_NEW_GAME_REQUEST.oob.scale).toBe('COMPACT');
+  });
+});
+
+
+describe('Historical replacement saves retain their recorded rules', () => {
+  it('replays arrival and merging of face-less counters without silently changing their quantities or modes', () => {
+    const base = setup(0, 0);
+    let state: GameState = { ...base, scenario: { ...base.scenario, pieceCatalog: { ...base.scenario.pieceCatalog,
+      definitions: base.scenario.pieceCatalog.definitions.map(def => def.family === 'REPLACEMENT' ? { ...def, faces: [] } : def) } } };
+    const events: RuleEvent[] = [];
+    state = arriveReplacements(state, ALLIED, events);
+    const arrived = state.pieceState.pieces.find(p => String(p.id).endsWith(':pax'))!;
+    expect(arrived.mode).toBe(null);
+    state = { ...state, pieceState: { ...state.pieceState, pieces: [...state.pieceState.pieces.map(p => p.id === arrived.id ? { ...p, stackOrder: 87, location: { kind: 'ON_MAP' as const, hexId: REPLS } } : p),
+      { ...arrived, id: 'repl:legacy-spare' as PieceId, location: { kind: 'ON_MAP', hexId: REPLS }, stackOrder: 88 }] } };
+    const merged = mergeReplacementsAt(state, REPLS, ALLIED);
+    const surviving = merged.pieceState.pieces.filter(p => String(p.id).includes('repl') && p.location.kind === 'ON_MAP');
+    expect(surviving).toHaveLength(1);
+    expect(surviving[0]!.resourceQuantity).toBe(2 * arrived.resourceQuantity!);
+    expect(serializeGameState(merged).ok).toBe(true);
+  });
+});
+
+describe('Replacement units move, fight and consume supply (13.5)', () => {
+  const pax = 'repl:pax' as PieceId;
+  const eq = 'repl:eq' as PieceId;
+  const supplyId = id('allied:independent-supply-1');
+  const movement = () => atStep(setup(), 'MOVEMENT', 'MOVEMENT', ALLIED);
+
+  it('moves Pax to the reduced unit, then spends it to refill steps in the next Reinforcement Phase', () => {
+    let state = withPiece(movement(), pax, (entry) => ({ ...entry, location: { kind: 'ON_MAP', hexId: hex(4) } }));
+    expect(movementAllowanceTicks(state, pax)).toBe(20);
+    expect(derivePieceReTicks(state, piece(state, pax))).toBe(1);
+    expect(isCombatUnit(state, piece(state, pax))).toBe(true);
+    const only = { ...state, configuration: { ...state.configuration, stackingLimitReTicks: 1 }, pieceState: { ...state.pieceState, pieces: state.pieceState.pieces.filter(p => p.id === pax || p.id === eq) } };
+    expect(queryStacking(only, REPLS).allowed).toBe(true);
+    expect(queryStacking(only, REPLS, pax).allowed).toBe(false);
+    expect(isAttackCapable(state, piece(state, pax))).toBe(true);
+    expect(exertsZoc(state, piece(state, pax))).toBe(false);
+    state = ok(applyRuleAction(state, ALLIED, { kind: 'MOVE_PIECE', pieceId: pax, path: [hex(4), REPLS] }));
+    expect(piece(state, pax).location).toEqual({ kind: 'ON_MAP', hexId: REPLS });
+    expect(state.usage.find(({ pieceId }) => pieceId === pax)?.movementSpentTicks).toBe(4);
+    state = atStep(onGameTurn(state, 2), 'REINFORCEMENT', 'NONE', ALLIED);
+    state = ok(rebuild(state, [{ pieceId: U.division, steps: 1, mode: null }]));
+    expect(piece(state, U.division).remainingSteps).toBe(2);
+    expect(piece(state, pax).location.kind).toBe('ELIMINATED');
+    expect(piece(state, 'repl:pax:2').location.kind).toBe('ON_MAP');
+  });
+
+  it('requires one Token of fuel for an Eq before moving and never for Pax', () => {
+    let state = withPiece(movement(), supplyId, (entry) => ({ ...entry, location: { kind: 'ON_MAP', hexId: REPLS }, stackOrder: 70 }));
+    expect(needsFuel(state, piece(state, eq))).toBe(true);
+    expect(needsFuel(state, piece(state, pax))).toBe(false);
+    expect(movementAllowanceTicks(state, eq)).toBe(40);
+    expect(codes(applyRuleAction(state, ALLIED, { kind: 'MOVE_PIECE', pieceId: eq, path: [REPLS, hex(4)] }))).toContain('FUEL_REQUIRED');
+    const before = piece(state, supplyId).resourceQuantity!;
+    state = ok(applyRuleAction(state, ALLIED, { kind: 'PAY_FUEL', method: 'SINGLE_UNIT', pieceId: eq, sourcePieceId: supplyId }));
+    expect(piece(state, supplyId).resourceQuantity).toBe(before - 1);
+    state = ok(applyRuleAction(state, ALLIED, { kind: 'MOVE_PIECE', pieceId: eq, path: [REPLS, hex(4)] }));
+    expect(piece(state, eq).location).toEqual({ kind: 'ON_MAP', hexId: hex(4) });
+    expect(piece(state, 'repl:pax:2').location).toEqual({ kind: 'ON_MAP', hexId: REPLS });
+  });
+
+  it('supports Reserve and Strat, halves DG movement, and rejects Combat Mode and non-Move rebuilding', () => {
+    const state = movement();
+    expect(codes(applyRuleAction(state, ALLIED, { kind: 'CHANGE_MODE', pieceId: pax, mode: 'COMBAT' }))).toContain('REPLACEMENT_COMBAT_MODE');
+    const strat = ok(applyRuleAction(state, ALLIED, { kind: 'CHANGE_MODE', pieceId: pax, mode: 'STRAT' }));
+    expect(movementAllowanceTicks(strat, pax)).toBe(40);
+    const reserve = ok(applyRuleAction(state, ALLIED, { kind: 'CHANGE_MODE', pieceId: pax, mode: 'RESERVE' }));
+    expect(movementAllowanceTicks(reserve, pax)).toBe(5);
+    const reaction = atStep(reserve, 'REACTION', 'MOVEMENT', ALLIED, AXIS);
+    expect(queryMovementPath(reaction, ALLIED, pax, [REPLS, hex(4)]).allowed).toBe(false);
+    const released = ok(applyRuleAction(reaction, ALLIED, { kind: 'RELEASE_RESERVE', pieceId: pax }));
+    expect(movementAllowanceTicks(released, pax)).toBe(10);
+    expect(queryMovementPath(released, ALLIED, pax, [REPLS, hex(4)]).allowed).toBe(true);
+    const dg = withPiece(state, pax, (entry) => ({ ...entry, mode: 'DG' }));
+    expect(movementAllowanceTicks(dg, pax)).toBe(10);
+    const noMove = atStep(withPiece(setup(1, 0), pax, (entry) => ({ ...entry, mode: 'RESERVE' })), 'REINFORCEMENT', 'NONE', ALLIED);
+    expect(codes(rebuild(noMove, [{ pieceId: U.division, steps: 1, mode: null }]))).toContain('NO_REPLACEMENTS_IN_HEX');
+  });
+
+  it('does not negate enemy ZOC for rebuilding, even with a friendly combat unit present (4.5a K)', () => {
+    const state = withPiece(setup(), U.enemy, (entry) => ({ ...entry, location: { kind: 'ON_MAP', hexId: hex(4) } }));
+    expect(codes(rebuild(state, [{ pieceId: U.division, steps: 1, mode: null }]))).toContain('REPLACEMENTS_IN_ENEMY_ZOC');
+  });
+
+  it('blocks enemy entry into a replacement hex and treats replacements as combat defenders', () => {
+    const state = atStep(withPiece(setup(1, 0), U.enemy, (entry) => ({ ...entry, location: { kind: 'ON_MAP', hexId: hex(4) } })), 'MOVEMENT', 'MOVEMENT', AXIS);
+    expect(queryMovementPath(state, AXIS, U.enemy, [hex(4), REPLS]).reasons.map(({ code }) => code)).toContain('ENEMY_OCCUPIED_HEX');
+    // An attack overwhelms the zero-strength replacement, resolving normal combat losses rather than capture.
+    for (let seed = 1; seed <= 20; seed += 1) {
+      const combat = atStep({ ...state, rng: createRulesRng(seed) }, 'COMBAT', 'COMBAT', AXIS);
+      const started = declareTestCombat(combat, AXIS, 'REGULAR', [U.enemy], REPLS, U.enemy);
+      if (!started.ok) continue;
+      const finished = settleDecisions(started.state).state;
+      if (piece(finished, pax).location.kind === 'ELIMINATED') { expect(isCombatUnit(finished, piece(finished, pax))).toBe(true); return; }
+    }
+    throw new Error('No normal combat loss eliminated a replacement in the deterministic seeds.');
+  });
+
+  it('includes replacements among barrage targets and permits their loss', () => {
+    const artilleryId = id('axis:f1-artillery-1');
+    const dumpId = id('axis:independent-supply-1');
+    let state = withPiece(setup(1, 0), U.division, p => ({ ...p, location: { kind: 'ELIMINATED' } }));
+    state = withPiece(state, artilleryId, p => ({ ...p, location: { kind: 'ON_MAP', hexId: hex(4) }, mode: 'COMBAT', currentFaceId: 'combat' as never, stackOrder: 60 }));
+    state = withPiece(state, dumpId, p => ({ ...p, location: { kind: 'ON_MAP', hexId: hex(4) }, stackOrder: 61 }));
+    state = atStep(state, 'COMBAT', 'BARRAGE', AXIS);
+    // Strat targets incur the normal +3 column shift. This remains a legal replacement mode.
+    state = withPiece(state, pax, p => ({ ...p, mode: 'STRAT' }));
+    for (let seed = 1; seed <= 100; seed++) {
+      const fired = applyRuleAction({ ...state, rng: createRulesRng(seed) }, AXIS, { kind: 'DECLARE_BARRAGE', firerIds: [artilleryId], targetPieceIds: [pax], targetHexId: REPLS });
+      expect(fired.ok).toBe(true);
+      const finished = settleDecisions(fired.state).state;
+      if (piece(finished, pax).location.kind === 'ELIMINATED') return;
+    }
+    throw new Error('No deterministic barrage seed caused a replacement loss.');
+  });
+
+  it('marks replacements out of supply and lets attrition eliminate them', () => {
+    const initial = setup(1, 0);
+    const state = { ...initial, scenario: { ...initial.scenario, sources: [] } };
+    const events: RuleEvent[] = [];
+    const checked = determineSupply(state, ALLIED, events);
+    expect(piece(checked, pax).statuses).toEqual(expect.arrayContaining([{ statusDefinitionId: 'status:out-of-supply', value: { kind: 'FLAG', value: true } }]));
+    const losing = { ...checked, interrupts: [{ kind: 'ATTRITION' as const, ownerId: ALLIED, hexId: REPLS, steps: 1, pieceIds: [pax] }] };
+    const lost = settleInterrupts(losing, null);
+    expect(piece(lost.state, pax).location.kind).toBe('ELIMINATED');
+    expect(lost.events).toEqual(expect.arrayContaining([expect.objectContaining({ kind: 'STEP_LOST', pieceId: pax })]));
   });
 });

@@ -112,10 +112,10 @@ describe('Aircraft rebuilt with Eq (13.5f)', () => {
     const definition = state.scenario.pieceCatalog.definitions.find((candidate) => candidate.family === 'REPLACEMENT' && String(candidate.id).includes(':allied:equipment'))!;
     const counter: PieceState = {
       id: 'repl:test' as PieceId, definitionId: definition.id, ownerId: ALLIED, location: { kind: 'ON_MAP', hexId: BASE },
-      currentFaceId: null, remainingSteps: null, mode: null, statuses: [], resourceQuantity: eq, stackOrder: 9,
+      currentFaceId: 'move' as never, remainingSteps: 1, mode: 'MOVE', statuses: [], resourceQuantity: 1, stackOrder: 9,
     };
     // The Allied fighter is in the Dead Pile; the reinforcement stays off the map.
-    const dead = withPiece({ ...state, pieceState: { ...state.pieceState, pieces: [...state.pieceState.pieces, counter] } }, U.aF1, (entry) => ({ ...entry, location: { kind: 'ELIMINATED' } }));
+    const dead = withPiece({ ...state, pieceState: { ...state.pieceState, pieces: [...state.pieceState.pieces, ...Array.from({ length: eq }, (_, index) => ({ ...counter, id: `repl:test${index ? `:${index + 1}` : ''}` as PieceId, stackOrder: 9 + index }))] } }, U.aF1, (entry) => ({ ...entry, location: { kind: 'ELIMINATED' } }));
     return dead;
   };
   const rebuild = (state: GameState, over: Partial<{ aircraftIds: PieceId[]; baseId: PieceId | null; hqId: PieceId; eqPieceId: PieceId }> = {}) =>
@@ -140,7 +140,7 @@ describe('Aircraft rebuilt with Eq (13.5f)', () => {
     // A Dead Pile aircraft (two steps) plus a reduced one (one step) needs two Eq.
     const mixed = withPiece(eqState(1), U.aB1, (entry) => ({ ...entry, remainingSteps: 1 }));
     expect(codes(rebuild(mixed, { aircraftIds: [U.aF1, U.aB1] }))).toContain('NOT_ENOUGH_EQUIPMENT');
-    expect(piece(ok(rebuild(eqState(2), { aircraftIds: [U.aF1] })), 'repl:test').resourceQuantity).toBe(1);
+    expect(piece(ok(rebuild(eqState(2), { aircraftIds: [U.aF1] })), 'repl:test:2').resourceQuantity).toBe(1);
   });
 
   it('needs an HQ in Combat Mode within 2 hexes, no enemy ZOC, the Reinforcement Phase, and a base with room', () => {

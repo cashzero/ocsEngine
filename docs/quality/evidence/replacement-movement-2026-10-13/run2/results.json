@@ -1,0 +1,61 @@
+{
+  "title": "Movable replacement units: actual UI acceptance",
+  "final": {
+    "turn": "Turn 1 / 8",
+    "player": "Allied player turn",
+    "phase": "Movement",
+    "revision": null
+  },
+  "rows": [
+    {
+      "id": "REPL-05",
+      "expectation": "The first fresh New Game completes Turn 1 with legal decisions and handoffs",
+      "observed": "{\"turn\":\"Turn 1 / 6\",\"player\":\"Allied player turn\",\"phase\":\"Movement\",\"seat\":\"Allied commander\",\"end\":\"End Movement SegmentNext: Barrage Segment\",\"endDisabled\":false,\"notice\":\"Select a unit on the map to see where it can move and what it can attack.\",\"handoff\":false,\"complete\":false,\"decision\":[]} → {\"turn\":\"Turn 2 / 6\",\"player\":\"Axis player turn\",\"phase\":\"Reinforcement\",\"seat\":\"Axis commander\",\"end\":\"End Reinforcement PhaseNext: Movement Phase\",\"endDisabled\":true,\"notice\":\"Decision recorded.\",\"handoff\":false,\"complete\":false,\"decision\":[]}",
+      "status": "PASS"
+    },
+    {
+      "id": "REPL-07",
+      "expectation": "Personnel replacements offers Reserve/Strat but no Combat Mode",
+      "observed": "Mode Reserve Strat mode",
+      "status": "PASS"
+    },
+    {
+      "id": "REPL-07",
+      "expectation": "Personnel replacements moves to 1306 with its MP recorded",
+      "observed": "Move units one at a time: select a unit to see its range. Red rings mark overrun targets. Repl PAX 1 Axis Personnel replacements 1406 · Move mode · 1 Pax 5 MP left Done Unit Log All units (26) Mode Reserve Strat mode Mode changed to move. → Move units one at a time: select a unit to see its range. Red rings mark overrun targets. Repl PAX 1 Axis Personnel replacements 1306 · Move mode · 1 Pax 4.5 MP left Done MOVED Unit Log All units (26) Click a highlighted hex to preview the move; darker hexes are out of reach. Moved to 1306.",
+      "status": "PASS"
+    },
+    {
+      "id": "REPL-08",
+      "expectation": "Eq movement requires fuel",
+      "observed": "Move units one at a time: select a unit to see its range. Red rings mark overrun targets. Repl EQ 1 Axis Equipment replacements 1406 · Move mode · 1 Eq Needs fuel before it can move (12.5) Deselect Unit Log All units (26) Mode Reserve Strat mode Fuel 1 · What to fuel This unit only · 1T, this phase · fuels 1 2 · Pay from which dump Fuels 1 unit: Axis Equipment replacements 1406 the 16T dump at 1807 the 12T dump at 1306 the 12T dump at 1509 Hover a dump to see its hex on the map. Moved to 1306.",
+      "status": "PASS"
+    },
+    {
+      "id": "REPL-07",
+      "expectation": "Equipment replacements moves to 1306 with its MP recorded",
+      "observed": "Move units one at a time: select a unit to see its range. Red rings mark overrun targets. Repl EQ 1 Axis Equipment replacements 1406 · Move mode · 1 Eq 10 MP left Deselect FUEL Unit Ledger Log All units (26) Mode Reserve Strat mode Fuel this unit for this phase (1T) from the 16T dump at 1807: done. → Move units one at a time: select a unit to see its range. Red rings mark overrun targets. Repl EQ 1 Axis Equipment replacements 1306 · Move mode · 1 Eq 9.5 MP left Done FUEL MOVED Unit Ledger Log All units (26) Click a highlighted hex to preview the move; darker hexes are out of reach. Moved to 1306.",
+      "status": "PASS"
+    },
+    {
+      "id": "REPL-05",
+      "expectation": "The fresh New Game completes the entire turn containing replacement movement",
+      "observed": "{\"turn\":\"Turn 3 / 6\",\"player\":\"Axis player turn\",\"phase\":\"First Player Phase\",\"seat\":\"Axis commander\",\"end\":\"End First Player PhaseNext: Aircraft Refit Phase\",\"endDisabled\":true,\"notice\":\"Your turn, Axis commander.\",\"handoff\":false,\"complete\":false,\"decision\":[\"Go first\",\"Go second\"]}",
+      "status": "PASS"
+    },
+    {
+      "id": "REPL-07",
+      "expectation": "Replacement movement acceptance finishes",
+      "observed": "locator.waitFor: Timeout 8000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#close-utility').first() to be visible\u001b[22m\n\n    at click (/home/cashlin/ocsEngine/scripts/air-acceptance/harness.mjs:119:17)\n    at /home/cashlin/ocsEngine/scripts/replacement-acceptance/run-movement.mjs:68:9",
+      "status": "FAIL"
+    },
+    {
+      "id": "REPL-07",
+      "expectation": "No browser page/console errors",
+      "observed": "[]",
+      "status": "PASS"
+    }
+  ],
+  "timings": [],
+  "errors": []
+}

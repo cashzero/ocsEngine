@@ -1,0 +1,31 @@
+{
+  "title": "Movable replacement units: actual UI acceptance",
+  "final": {
+    "turn": "Turn 2 / 6",
+    "player": "Axis player turn",
+    "phase": "Movement",
+    "revision": null
+  },
+  "rows": [
+    {
+      "id": "REPL-05",
+      "expectation": "The first fresh New Game completes Turn 1 with legal decisions and handoffs",
+      "observed": "{\"turn\":\"Turn 1 / 6\",\"player\":\"Allied player turn\",\"phase\":\"Movement\",\"seat\":\"Allied commander\",\"end\":\"End Movement SegmentNext: Barrage Segment\",\"endDisabled\":false,\"notice\":\"Select a unit on the map to see where it can move and what it can attack.\",\"handoff\":false,\"complete\":false,\"decision\":[]} → {\"turn\":\"Turn 2 / 6\",\"player\":\"Axis player turn\",\"phase\":\"Reinforcement\",\"seat\":\"Axis commander\",\"end\":\"End Reinforcement PhaseNext: Movement Phase\",\"endDisabled\":true,\"notice\":\"Decision recorded.\",\"handoff\":false,\"complete\":false,\"decision\":[]}",
+      "status": "PASS"
+    },
+    {
+      "id": "REPL-07",
+      "expectation": "Replacement movement acceptance finishes",
+      "observed": "TypeError: id.split is not a function\n    at label (file:///home/cashlin/ocsEngine/scripts/replacement-acceptance/run-movement.mjs:11:43)\n    at file:///home/cashlin/ocsEngine/scripts/replacement-acceptance/run-movement.mjs:53:18",
+      "status": "FAIL"
+    },
+    {
+      "id": "REPL-07",
+      "expectation": "No browser page/console errors",
+      "observed": "[]",
+      "status": "PASS"
+    }
+  ],
+  "timings": [],
+  "errors": []
+}

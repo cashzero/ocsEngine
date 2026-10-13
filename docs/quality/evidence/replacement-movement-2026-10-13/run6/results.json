@@ -1,0 +1,109 @@
+{
+  "title": "Movable replacement units: actual UI acceptance",
+  "final": {
+    "turn": "Turn 4 / 8",
+    "player": "Axis player turn",
+    "phase": "First Player Phase",
+    "revision": null
+  },
+  "rows": [
+    {
+      "id": "REPL-05",
+      "expectation": "The first fresh New Game completes Turn 1 with legal decisions and handoffs",
+      "observed": "{\"turn\":\"Turn 1 / 6\",\"player\":\"Allied player turn\",\"phase\":\"Movement\",\"seat\":\"Allied commander\",\"end\":\"End Movement SegmentNext: Barrage Segment\",\"endDisabled\":false,\"notice\":\"Select a unit on the map to see where it can move and what it can attack.\",\"handoff\":false,\"complete\":false,\"decision\":[]} → {\"turn\":\"Turn 2 / 6\",\"player\":\"Axis player turn\",\"phase\":\"Reinforcement\",\"seat\":\"Axis commander\",\"end\":\"End Reinforcement PhaseNext: Movement Phase\",\"endDisabled\":true,\"notice\":\"Decision recorded.\",\"handoff\":false,\"complete\":false,\"decision\":[]}",
+      "status": "PASS"
+    },
+    {
+      "id": "REPL-07",
+      "expectation": "Personnel replacements offers Reserve/Strat but no Combat Mode",
+      "observed": "Mode Reserve Strat mode",
+      "status": "PASS"
+    },
+    {
+      "id": "REPL-07",
+      "expectation": "Personnel replacements moves to 1306 with its MP recorded",
+      "observed": "Move units one at a time: select a unit to see its range. Red rings mark overrun targets. Repl PAX 1 Axis Personnel replacements 1406 · Move mode · 1 Pax 5 MP left Done Unit Log All units (26) Mode Reserve Strat mode Mode changed to move. → Move units one at a time: select a unit to see its range. Red rings mark overrun targets. Repl PAX 1 Axis Personnel replacements 1306 · Move mode · 1 Pax 4.5 MP left Done MOVED Unit Log All units (26) Click a highlighted hex to preview the move; darker hexes are out of reach. Moved to 1306.",
+      "status": "PASS"
+    },
+    {
+      "id": "REPL-08",
+      "expectation": "Eq movement requires fuel",
+      "observed": "Move units one at a time: select a unit to see its range. Red rings mark overrun targets. Repl EQ 1 Axis Equipment replacements 1406 · Move mode · 1 Eq Needs fuel before it can move (12.5) Deselect Unit Log All units (26) Mode Reserve Strat mode Fuel 1 · What to fuel This unit only · 1T, this phase · fuels 1 2 · Pay from which dump Fuels 1 unit: Axis Equipment replacements 1406 the 16T dump at 1807 the 12T dump at 1306 the 12T dump at 1509 Hover a dump to see its hex on the map. Moved to 1306.",
+      "status": "PASS"
+    },
+    {
+      "id": "REPL-07",
+      "expectation": "Equipment replacements moves to 1306 with its MP recorded",
+      "observed": "Move units one at a time: select a unit to see its range. Red rings mark overrun targets. Repl EQ 1 Axis Equipment replacements 1406 · Move mode · 1 Eq 10 MP left Deselect FUEL Unit Ledger Log All units (26) Mode Reserve Strat mode Fuel this unit for this phase (1T) from the 16T dump at 1807: done. → Move units one at a time: select a unit to see its range. Red rings mark overrun targets. Repl EQ 1 Axis Equipment replacements 1306 · Move mode · 1 Eq 9.5 MP left Done FUEL MOVED Unit Ledger Log All units (26) Click a highlighted hex to preview the move; darker hexes are out of reach. Moved to 1306.",
+      "status": "PASS"
+    },
+    {
+      "id": "REPL-05",
+      "expectation": "The fresh New Game completes the entire turn containing replacement movement",
+      "observed": "{\"turn\":\"Turn 3 / 6\",\"player\":\"Axis player turn\",\"phase\":\"First Player Phase\",\"seat\":\"Axis commander\",\"end\":\"End First Player PhaseNext: Aircraft Refit Phase\",\"endDisabled\":true,\"notice\":\"Your turn, Axis commander.\",\"handoff\":false,\"complete\":false,\"decision\":[\"Go first\",\"Go second\"]}",
+      "status": "PASS"
+    },
+    {
+      "id": "REPL-03",
+      "expectation": "The test-position ground unit is eliminated in actual UI combat",
+      "observed": "No enemy hex can be attacked. No unit selected Click one of your units on the map, or open All units. Targets Unit Ledger Log All units (26) COMBAT RESULT Allied commander attack on 2512 · 72 : 6 · 12:1 · DRM −1 Ae4/DL1o2 surprise roll 12 · combat roll 6 Attacker is unaffected; defender loses 1 step and takes 2 options (each a step loss or a hex of retreat); attackers with Action Rating 4+ may enter Exploit mode. 1+3/1/12 Pz Bn (-) / 12.SS eliminated OK You chose the advance after combat Result Ae4/DL1o2: Attacker is unaffected; defender loses 1 step and takes 2 options (each a step loss or a hex of retreat); attackers with Action Rating 4+ may enter Exploit mode. Axis commander chose the defending terrain 1+3/1/12 Pz Bn (-) / 12.SS was eliminated. Axis commander chose a combat supply source You attacked 2512 You finished Movement · Movement Segment 17.Abn is Out of Supply. Attrition at 2916: roll 6, 0 steps lost. Passed automatically, no legal actions: Movement barrage segment, Supply, Reaction (Axis commander), Combat barrage segment. Now: Combat · Combat Segment · Allied commander. Axis commander resolved attrition or displaced trucks Truck was displaced to 2816. 17.Abn moved 2816 → 2916 Allied commander captured 3 of 5 transport points at 2916 (roll 4); the rest must displace. Combat resolved. Result Ae4/DL1o2.",
+      "status": "PASS"
+    },
+    {
+      "id": "REPL-07",
+      "expectation": "Personnel replacements moves to 2712 with its MP recorded",
+      "observed": "Move units one at a time: select a unit to see its range. Red rings mark overrun targets. Repl PAX 1 Axis Personnel replacements 2612 · Move mode · 1 Pax 5 MP left Deselect Unit Log All units (29) Mode Reserve Strat mode Rail Move by rail Reinforcement Phase finished. → Move units one at a time: select a unit to see its range. Red rings mark overrun targets. Repl PAX 1 Axis Personnel replacements 2712 · Move mode · 1 Pax 4.5 MP left Done MOVED Unit Log All units (29) Rail Move by rail Moved to 2712.",
+      "status": "PASS"
+    },
+    {
+      "id": "REPL-08",
+      "expectation": "Eq movement requires fuel",
+      "observed": "Move units one at a time: select a unit to see its range. Red rings mark overrun targets. Repl EQ 1 Axis Equipment replacements 2612 · Move mode · 1 Eq Needs fuel before it can move (12.5) Deselect Unit Log All units (29) Mode Reserve Strat mode Fuel 1 · What to fuel This unit only · 1T, this phase · fuels 1 2 · Pay from which dump Fuels 1 unit: Axis Equipment replacements 2612 the 15T dump at 2305 Hover a dump to see its hex on the map. Rail Move by rail Moved to 2712.",
+      "status": "PASS"
+    },
+    {
+      "id": "REPL-07",
+      "expectation": "Equipment replacements moves to 2712 with its MP recorded",
+      "observed": "Move units one at a time: select a unit to see its range. Red rings mark overrun targets. Repl EQ 1 Axis Equipment replacements 2612 · Move mode · 1 Eq 10 MP left Deselect FUEL Unit Ledger Log All units (29) Mode Reserve Strat mode Rail Move by rail Fuel this unit for this phase (1T) from the 15T dump at 2305: done. → Move units one at a time: select a unit to see its range. Red rings mark overrun targets. Repl EQ 1 Axis Equipment replacements 2712 · Move mode · 1 Eq 9.5 MP left Done FUEL MOVED Unit Ledger Log All units (29) Rail Move by rail Moved to 2712.",
+      "status": "PASS"
+    },
+    {
+      "id": "REPL-04",
+      "expectation": "The moved replacements offer the reduced unit and eliminated unit for rebuilding",
+      "observed": "All reinforcements are placed. 0 SP Supply dump eliminated · Supply · 0T (0 SP) Cannot move in this step Deselect Arrivals Rebuild Unit Log All units (31) Rebuild units Repls in a hex at or within 2 hexes of an HQ in Combat Mode, and not in an enemy ZOC, rebuild units: each step of an Armor, Mech or artillery unit costs 1 Eq, each step of any other unit 1 Pax. A Dead Pile unit returns in the Repls' hex; a reduced unit must be stacked with them. Units with the no-rebuild dot never return (13.5c). 1 Pax and 1 Eq at 2612 · this rebuild costs 1 Pax and 1 Eq 1+3/1/12 Pz Bn (-) / 12.SS Dead Pile · 1 step missing · 1 Eq a step Place in Combat Mode Move Mode Reserve Mode Strat Mode Ge Landesschützen Bn Dead Pile · 1 step missing · 1 Pax a step Place in Combat Mode Move Mode Reserve Mode Strat Mode Ge 657 PJ Bn Dead Pile · 1 step missing · 1 Pax a step Truck points lost to the enemy to rebuild (1 Eq each, up to 1) Rebuild (1 Pax, 1 Eq) 1 Pax and 1 Eq at 2712 · this rebuild costs 1 Pax and 1 Eq 79.VG reduced here · 3 steps missing · 1 Pax a step Steps 1+3/1/12 Pz Bn (-) / 12.SS Dead Pile · 1 step missing · 1 Eq a step Place in Combat Mode Move Mode Reserve Mode Strat Mode Ge Landesschützen Bn Dead Pile · 1 step missing · 1 Pax a step Ge 657 PJ Bn Dead Pile · 1 step missing · 1 Pax a step Truck points lost to the enemy to rebuild (1 Eq each, up to 1) Rebuild (1 Pax, 1 Eq) Supply dump placed at 3223.",
+      "status": "PASS"
+    },
+    {
+      "id": "REPL-03",
+      "expectation": "Spending the moved Pax/Eq restores a step and rebuilds the eliminated unit",
+      "observed": "Rebuilt 2 units with 1 Pax and 1 Eq.",
+      "status": "PASS"
+    },
+    {
+      "id": "REPL-04",
+      "expectation": "The reduced unit actually regains a step at the moved replacements hex",
+      "observed": "All reinforcements are placed. 0 SP Supply dump eliminated · Supply · 0T (0 SP) Cannot move in this step Deselect Arrivals Rebuild Unit Log All units (30) You rebuilt 2 units at 2712 79.VG regained with 1 step at 2712. 1+3/1/12 Pz Bn (-) / 12.SS returned from the Dead Pile with 1 step at 2712. Supply dump entered at 3223 Axis Personnel replacements entered at 2612 Axis Equipment replacements entered at 2612 Allied commander finished Movement · Movement Segment 24T of supply arrived (Supply Table roll 7). 1 Pax arrived. 1 Eq arrived. Passed automatically, no legal actions: Movement barrage segment, Supply, Reaction (Axis commander), Combat, Exploitation, Clean Up, Aircraft Refit (Axis commander). Now: Reinforcement Phase · Axis commander. Allied commander finished Reinforcement Phase Passed automatically, no legal actions: Movement breakout segment. Now: Movement · Movement Segment · Allied commander. Enemy reinforcements entered at 0123 Enemy reinforcements entered at 0920 ×2 Allied commander chose the turn order Passed automatically, no legal actions: Aircraft Refit. Now: Reinforcement Phase · Allied commander. Allied commander finished Movement · Movement Segment Weather: dry ground. First player roll: Allied commander 12, Axis commander 8; Allied commander chooses. Passed automatically, no legal actions: Movement barrage segment, Supply, Reaction (Axis commander), Combat, Exploitation, Clean Up, Turn End, Weather (Axis commander). Now: First Player Phase · Axis commander. Allied commander finished Reinforcement Phase Passed automatically, no legal actions: Movement breakout segment. Now: Movement · Movement Segment · Allied commander. Enemy reinforcements entered at 0123 Enemy reinforcements entered at 0920 ×2 Enemy reinforcements entered at 0123 ×2 You finished Move",
+      "status": "PASS"
+    },
+    {
+      "id": "REPL-04",
+      "expectation": "Downloaded save corroborates that both moved replacements were spent",
+      "observed": "[{\"id\":\"repl-arrival:player:axis:2\",\"location\":{\"kind\":\"ELIMINATED\"},\"quantity\":0},{\"id\":\"repl-arrival:player:axis:2:pax\",\"location\":{\"kind\":\"ELIMINATED\"},\"quantity\":0}]",
+      "status": "PASS"
+    },
+    {
+      "id": "REPL-05",
+      "expectation": "Complete the rebuilding turn and save/load through verified action replay",
+      "observed": "{\"turn\":\"Turn 4 / 8\",\"player\":\"Axis player turn\",\"phase\":\"First Player Phase\",\"seat\":\"Axis commander\",\"end\":\"End First Player PhaseNext: Aircraft Refit Phase\",\"endDisabled\":true,\"notice\":\"Movement · Movement Segment finished.\",\"handoff\":false,\"complete\":false,\"decision\":[\"Go first\",\"Go second\"]} → {\"turn\":\"Turn 4 / 8\",\"player\":\"Axis player turn\",\"phase\":\"First Player Phase\",\"seat\":\"Axis commander\",\"end\":\"End First Player PhaseNext: Aircraft Refit Phase\",\"endDisabled\":true,\"notice\":\"Save loaded at revision 41.\",\"handoff\":false,\"complete\":false,\"decision\":[\"Go first\",\"Go second\"]}",
+      "status": "PASS"
+    },
+    {
+      "id": "REPL-07",
+      "expectation": "No browser page/console errors",
+      "observed": "[]",
+      "status": "PASS"
+    }
+  ],
+  "timings": [],
+  "errors": []
+}

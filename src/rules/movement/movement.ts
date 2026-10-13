@@ -1,6 +1,6 @@
 import { PriorityQueue, stableSort, type HexId, type PieceId, type PlayerId } from '../../core/index.js';
 import { trainbustingTicks } from '../air/aircraft.js';
-import type { PieceState } from '../../domain/piece/index.js';
+import { isGroundUnitDefinition, type PieceState } from '../../domain/piece/index.js';
 import type { GameState, MobilityType, RuleViolation } from '../kernel/model.js';
 import type { RuleFact, RuleQueryResult } from '../query/model.js';
 import {
@@ -73,7 +73,7 @@ export const moverViolations = (state: GameState, actorId: PlayerId, piece: Piec
   if (actorId !== state.sequence.actingPlayerId) issues.push(violation('WRONG_ACTOR', ['actorId'], 'Only the designated player can move units in this phase.', '6.3a'));
   if (!phaseAllowsMovement(state)) issues.push(violation('INVALID_MOVEMENT_PHASE', ['sequence'], 'Ground movement requires a Movement Segment.', '6.0'));
   if (piece.location.kind !== 'ON_MAP') issues.push(violation('PIECE_NOT_ON_MAP', ['pieceId'], 'Mover must begin on the map.', '6.1'));
-  if (piece.mode === null || definitionOf(state, piece)?.family !== 'GROUND') issues.push(violation('PIECE_CANNOT_MOVE', ['pieceId'], 'Only ground units move.', '6.1b'));
+  if (piece.mode === null || !isGroundUnitDefinition(definitionOf(state, piece))) issues.push(violation('PIECE_CANNOT_MOVE', ['pieceId'], 'Only ground units move.', '6.1b'));
   else if (mobilityOf(state, piece) === null) issues.push(violation('UNKNOWN_MOBILITY_TYPE', ['pieceId'], 'Piece face has no Leg, Truck, or Tracked mobility type.', '3.1a'));
   else if (!isEligibleMover(state, piece)) {
     issues.push(state.sequence.phase === 'REACTION'

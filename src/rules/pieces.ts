@@ -11,6 +11,7 @@ import {
 } from '../core/index.js';
 import {
   createPieceDefinitionCatalogIndex,
+  isGroundUnitDefinition,
   type PieceDefinition,
   type PieceDefinitionCatalog,
   type PieceState,
@@ -171,7 +172,7 @@ export const hqMaySupply = (state: GameState, hq: PieceState, consumer: PieceSta
 /** Combat units are ground units with a Combat Strength, including HQs and artillery (3.2, 13.1c, 13.4b). */
 export const isCombatUnit = (state: GameState, piece: PieceState): boolean => {
   const definition = definitionOf(state, piece);
-  return definition?.family === 'GROUND' && !isTransportPoint(state, piece) && piece.remainingSteps !== null;
+  return isGroundUnitDefinition(definition) && !isTransportPoint(state, piece) && piece.remainingSteps !== null;
 };
 
 export const isOnMapCombatUnit = (state: GameState, piece: PieceState): boolean =>
@@ -326,7 +327,7 @@ export const opponentOf = (state: GameState, playerId: PlayerId): PlayerId =>
 
 /** Friendly units that may move in the current phase (6.0, 7.0a, 11.0a). */
 export const isEligibleMover = (state: GameState, piece: PieceState): boolean => {
-  if (piece.mode === null || !(definitionOf(state, piece)?.family === 'GROUND')) return false;
+  if (piece.mode === null || !isGroundUnitDefinition(definitionOf(state, piece))) return false;
   const released = usageOf(state, piece).reserveReleased;
   switch (state.sequence.phase) {
     case 'MOVEMENT': return true;
