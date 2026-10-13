@@ -793,6 +793,22 @@ export const recoveryPlan = (
   return { tokens, level: remaining === 2 ? 'EXHAUSTED' : remaining === 1 ? 'LOW' : 'FULL' };
 };
 
+/** The exact ordered recovery payments, shared by execution and supply budgeting. */
+export const internalRecoveryPayments = (state: GameState, piece: PieceState, sourcePieceIds: readonly PieceId[]) => {
+  const dumps = dumpsReaching(state, piece.ownerId, hexOf(piece)!, piece);
+  const ordered = sourcePieceIds.flatMap(id => dumps.filter(dump => dump.pieceId === id));
+  const plan = recoveryPlan(state, piece, ordered.reduce((sum, dump) => sum + dump.availableQuantity, 0));
+  const payments: ResourceReservation[] = [];
+  let left = plan.tokens;
+  for (const dump of ordered) {
+    if (left <= 0) break;
+    const quantity = Math.min(left, dump.availableQuantity);
+    left -= quantity;
+    payments.push(reservationFor(state, dump.pieceId, quantity));
+  }
+  return { ...plan, payments };
+};
+
 export const validateRecovery = (
   state: GameState,
   actorId: PlayerId,

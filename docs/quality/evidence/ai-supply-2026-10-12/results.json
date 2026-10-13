@@ -1,0 +1,140 @@
+{
+  "baseCommit": "143f387b61657e59eb1830fd835c01e982af31fa",
+  "date": "2026-10-12",
+  "baselinePolicy": "heuristic@12",
+  "candidatePolicy": "heuristic@13",
+  "sourceSha256": {
+    "src/ai/policies/heuristic.ts": "aadd04655f2a3e3ee85fb71d0d50f3b43ff38c265cb7c970edf696ddba8085f7",
+    "src/rules/engine.ts": "b0afb47d7ba6eb21fc7684f520b539fad6fd71f11aecae4f5cd153c58fb0fffa",
+    "src/rules/supply/hq-impact.ts": "78eb3636049c7d3f13753b9d796c6cf7efb193d1230e4c453b0b1aa20b5448fd",
+    "scripts/ai-supply-study.mjs": "92bb182501498577d9c34926fe5a98f7865f4c1a9a76aab9e6356cc97542f1af",
+    "tests/ai/hq-supply.test.ts": "b96cb8d5d783b3b8a424c1858ae523fd838d30ab4503e4052a475541df6cc20b"
+  },
+  "runs": [
+    {
+      "run": "temperate-valid",
+      "matches": 8,
+      "hqActions": 187,
+      "hqBreaks": 14,
+      "traceUnitBreaks": 50,
+      "attritionSteps": 65,
+      "attribution": {
+        "own-action": 18,
+        "opponent-action": 41,
+        "entered-map-out-of-trace": 6
+      }
+    },
+    {
+      "run": "eastern",
+      "matches": 8,
+      "hqActions": 157,
+      "hqBreaks": 20,
+      "traceUnitBreaks": 61,
+      "attritionSteps": 78,
+      "attribution": {
+        "own-action": 41,
+        "opponent-action": 23,
+        "opponent-combat": 13,
+        "entered-map-out-of-trace": 1
+      }
+    },
+    {
+      "run": "mediterranean",
+      "matches": 8,
+      "hqActions": 173,
+      "hqBreaks": 19,
+      "traceUnitBreaks": 48,
+      "attritionSteps": 52,
+      "attribution": {
+        "opponent-action": 27,
+        "own-action": 17,
+        "opponent-combat": 8
+      }
+    },
+    {
+      "run": "final-temperate",
+      "matches": 8,
+      "hqActions": 172,
+      "hqBreaks": 0,
+      "traceUnitBreaks": 0,
+      "attritionSteps": 45,
+      "attribution": {
+        "own-action": 8,
+        "opponent-action": 31,
+        "entered-map-out-of-trace": 6
+      }
+    },
+    {
+      "run": "final-eastern",
+      "matches": 8,
+      "hqActions": 140,
+      "hqBreaks": 0,
+      "traceUnitBreaks": 0,
+      "attritionSteps": 109,
+      "attribution": {
+        "opponent-combat": 15,
+        "own-action": 41,
+        "opponent-action": 50,
+        "phase-transition-investigate": 3
+      }
+    },
+    {
+      "run": "final-mediterranean",
+      "matches": 8,
+      "hqActions": 139,
+      "hqBreaks": 0,
+      "traceUnitBreaks": 0,
+      "attritionSteps": 62,
+      "attribution": {
+        "opponent-action": 36,
+        "own-action": 7,
+        "opponent-combat": 19
+      }
+    },
+    {
+      "run": "holdout-temperate",
+      "matches": 8,
+      "hqActions": 160,
+      "hqBreaks": 9,
+      "traceUnitBreaks": 23,
+      "attritionSteps": 38,
+      "attribution": {
+        "opponent-action": 23,
+        "own-action": 15
+      }
+    },
+    {
+      "run": "holdout-eastern",
+      "matches": 8,
+      "hqActions": 182,
+      "hqBreaks": 11,
+      "traceUnitBreaks": 39,
+      "attritionSteps": 101,
+      "attribution": {
+        "opponent-action": 64,
+        "opponent-combat": 9,
+        "own-action": 28
+      }
+    },
+    {
+      "run": "holdout-mediterranean",
+      "matches": 8,
+      "hqActions": 150,
+      "hqBreaks": 5,
+      "traceUnitBreaks": 20,
+      "attritionSteps": 107,
+      "attribution": {
+        "opponent-combat": 60,
+        "own-action": 20,
+        "opponent-action": 27
+      }
+    }
+  ],
+  "limits": [
+    "Headless Gameplay session evidence only; no UI acceptance status changed.",
+    "Attrition attribution identifies the most recent trace break, not proof of intentional enemy strategy or an own mistake.",
+    "Three phase-transition cases in final-eastern require further diagnosis.",
+    "Initial invalid start index 202610120 caused eight INVALID_SEED generation failures; these were not games and are excluded.",
+    "Intermediate hq-* runs are exploratory; final-* runs verify the final policy and have matching final state hashes."
+  ]
+}

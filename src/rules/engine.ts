@@ -11,6 +11,8 @@ import { applyGameAction } from './kernel/reducer.js';
 import { validateGameAction } from './kernel/validate.js';
 import { queryMovementPath, queryReachableHexes } from './movement/movement.js';
 import { queryFeedCoverage, querySupplySources, queryTraceCoverage } from './supply/supply.js';
+import { relocationSupplyFacts } from './supply/relocation-impact.js';
+import { rationBudgetFacts } from './supply/ration-budget.js';
 import { queryFuelCoverage, queryFuelPreview } from './supply/fuel.js';
 import { queryTransportOptions } from './supply/transport.js';
 import { queryRailControl } from './supply/supply.js';
@@ -163,6 +165,8 @@ const engine: RuleEngine = {
         publicFact('state.revision', state.revision),
         publicFact('sequence.phase', state.sequence.phase),
         ...actionFacts(state, action),
+        ...(validation.allowed ? relocationSupplyFacts(state, action) : []),
+        ...(validation.allowed ? rationBudgetFacts(state, action) : []),
       ],
       citations: [...new Set(validation.violations.map(({ rule }) => rule))],
     };

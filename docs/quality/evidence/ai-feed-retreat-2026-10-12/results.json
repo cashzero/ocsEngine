@@ -1,0 +1,336 @@
+{
+  "date": "2026-10-12",
+  "baselinePolicy": "heuristic@14",
+  "candidatePolicy": "heuristic@15",
+  "runs": [
+    {
+      "group": "baseline",
+      "style": "temperate",
+      "matches": 8,
+      "relocationActions": 1697,
+      "relocationTraceBreaks": 0,
+      "relocationUnitBreaks": 0,
+      "supplyRelocationActions": 2097,
+      "feedBreaks": 5,
+      "truckFeedBreaks": 1,
+      "retreats": 56,
+      "worseRetreatRisk": 1,
+      "otherUnitTraceBreaks": 0,
+      "hqBreaks": 0,
+      "attritionSteps": 43,
+      "attribution": {
+        "opponent-action": 38,
+        "entered-map-out-of-trace": 5
+      },
+      "rationAttribution": {
+        "opponent-action": 10,
+        "own-action": 32,
+        "phase-transition-investigate": 1
+      },
+      "previewMismatches": 0
+    },
+    {
+      "group": "baseline",
+      "style": "eastern",
+      "matches": 8,
+      "relocationActions": 1815,
+      "relocationTraceBreaks": 0,
+      "relocationUnitBreaks": 0,
+      "supplyRelocationActions": 2228,
+      "feedBreaks": 16,
+      "truckFeedBreaks": 4,
+      "retreats": 45,
+      "worseRetreatRisk": 5,
+      "otherUnitTraceBreaks": 0,
+      "hqBreaks": 0,
+      "attritionSteps": 90,
+      "attribution": {
+        "opponent-action": 56,
+        "opponent-combat": 23,
+        "entered-map-out-of-trace": 6,
+        "own-action": 5
+      },
+      "rationAttribution": {
+        "own-action": 65,
+        "opponent-combat": 2,
+        "phase-transition-investigate": 12,
+        "opponent-action": 11
+      },
+      "previewMismatches": 0
+    },
+    {
+      "group": "baseline",
+      "style": "mediterranean",
+      "matches": 8,
+      "relocationActions": 1639,
+      "relocationTraceBreaks": 0,
+      "relocationUnitBreaks": 0,
+      "supplyRelocationActions": 1902,
+      "feedBreaks": 1,
+      "truckFeedBreaks": 0,
+      "retreats": 81,
+      "worseRetreatRisk": 8,
+      "otherUnitTraceBreaks": 0,
+      "hqBreaks": 0,
+      "attritionSteps": 54,
+      "attribution": {
+        "opponent-action": 30,
+        "opponent-combat": 22,
+        "own-action": 2
+      },
+      "rationAttribution": {
+        "opponent-action": 10,
+        "own-action": 22,
+        "opponent-combat": 17,
+        "phase-transition-investigate": 5
+      },
+      "previewMismatches": 0
+    },
+    {
+      "group": "candidate",
+      "style": "temperate",
+      "matches": 8,
+      "relocationActions": 1690,
+      "relocationTraceBreaks": 0,
+      "relocationUnitBreaks": 0,
+      "supplyRelocationActions": 2097,
+      "feedBreaks": 0,
+      "truckFeedBreaks": 0,
+      "retreats": 54,
+      "worseRetreatRisk": 0,
+      "otherUnitTraceBreaks": 0,
+      "hqBreaks": 0,
+      "attritionSteps": 54,
+      "attribution": {
+        "opponent-action": 43,
+        "entered-map-out-of-trace": 7,
+        "opponent-combat": 4
+      },
+      "rationAttribution": {
+        "opponent-action": 12,
+        "own-action": 36,
+        "phase-transition-investigate": 5,
+        "opponent-combat": 1
+      },
+      "previewMismatches": 0
+    },
+    {
+      "group": "candidate",
+      "style": "eastern",
+      "matches": 8,
+      "relocationActions": 1816,
+      "relocationTraceBreaks": 0,
+      "relocationUnitBreaks": 0,
+      "supplyRelocationActions": 2203,
+      "feedBreaks": 0,
+      "truckFeedBreaks": 0,
+      "retreats": 47,
+      "worseRetreatRisk": 0,
+      "otherUnitTraceBreaks": 0,
+      "hqBreaks": 0,
+      "attritionSteps": 76,
+      "attribution": {
+        "opponent-action": 56,
+        "phase-transition-investigate": 7,
+        "own-action": 1,
+        "opponent-combat": 9,
+        "entered-map-out-of-trace": 3
+      },
+      "rationAttribution": {
+        "own-action": 49,
+        "opponent-action": 20,
+        "phase-transition-investigate": 7
+      },
+      "previewMismatches": 0
+    },
+    {
+      "group": "candidate",
+      "style": "mediterranean",
+      "matches": 8,
+      "relocationActions": 1801,
+      "relocationTraceBreaks": 0,
+      "relocationUnitBreaks": 0,
+      "supplyRelocationActions": 2099,
+      "feedBreaks": 0,
+      "truckFeedBreaks": 0,
+      "retreats": 65,
+      "worseRetreatRisk": 0,
+      "otherUnitTraceBreaks": 0,
+      "hqBreaks": 0,
+      "attritionSteps": 59,
+      "attribution": {
+        "opponent-action": 43,
+        "opponent-combat": 16
+      },
+      "rationAttribution": {
+        "opponent-action": 19,
+        "own-action": 15,
+        "phase-transition-investigate": 10,
+        "opponent-combat": 15
+      },
+      "previewMismatches": 0
+    },
+    {
+      "group": "holdout",
+      "style": "temperate",
+      "matches": 8,
+      "relocationActions": 1674,
+      "relocationTraceBreaks": 0,
+      "relocationUnitBreaks": 0,
+      "supplyRelocationActions": 2071,
+      "feedBreaks": 3,
+      "truckFeedBreaks": 3,
+      "retreats": 41,
+      "worseRetreatRisk": 2,
+      "otherUnitTraceBreaks": 0,
+      "hqBreaks": 0,
+      "attritionSteps": 27,
+      "attribution": {
+        "opponent-action": 16,
+        "opponent-combat": 7,
+        "own-action": 2,
+        "entered-map-out-of-trace": 2
+      },
+      "rationAttribution": {
+        "own-action": 20,
+        "opponent-action": 4,
+        "phase-transition-investigate": 1,
+        "opponent-combat": 2
+      },
+      "previewMismatches": 0
+    },
+    {
+      "group": "holdout",
+      "style": "eastern",
+      "matches": 8,
+      "relocationActions": 1888,
+      "relocationTraceBreaks": 0,
+      "relocationUnitBreaks": 0,
+      "supplyRelocationActions": 2272,
+      "feedBreaks": 2,
+      "truckFeedBreaks": 1,
+      "retreats": 55,
+      "worseRetreatRisk": 2,
+      "otherUnitTraceBreaks": 0,
+      "hqBreaks": 0,
+      "attritionSteps": 76,
+      "attribution": {
+        "opponent-combat": 33,
+        "opponent-action": 39,
+        "entered-map-out-of-trace": 4
+      },
+      "rationAttribution": {
+        "own-action": 45,
+        "opponent-action": 23,
+        "phase-transition-investigate": 8
+      },
+      "previewMismatches": 0
+    },
+    {
+      "group": "holdout",
+      "style": "mediterranean",
+      "matches": 8,
+      "relocationActions": 1699,
+      "relocationTraceBreaks": 0,
+      "relocationUnitBreaks": 0,
+      "supplyRelocationActions": 1985,
+      "feedBreaks": 1,
+      "truckFeedBreaks": 0,
+      "retreats": 34,
+      "worseRetreatRisk": 0,
+      "otherUnitTraceBreaks": 0,
+      "hqBreaks": 0,
+      "attritionSteps": 38,
+      "attribution": {
+        "opponent-action": 32,
+        "opponent-combat": 6
+      },
+      "rationAttribution": {
+        "opponent-action": 32,
+        "own-action": 2,
+        "phase-transition-investigate": 4
+      },
+      "previewMismatches": 0
+    }
+  ],
+  "holdoutPolicies": {
+    "heuristic@15": {
+      "games": 24,
+      "vp": 140,
+      "kills": 252,
+      "losses": 214,
+      "wins": 10,
+      "relocationTraceBreaks": 0,
+      "otherUnitTraceBreaks": 0,
+      "feedBreaks": 0,
+      "truckFeedBreaks": 0,
+      "worseRetreatRisk": 0,
+      "hqBreaks": 0,
+      "attritionSteps": 68,
+      "ownRationActionAttritionSteps": 30,
+      "ownActionAttritionSteps": 1,
+      "defeats": 10,
+      "draws": 4,
+      "pairedVpMargin": -0.3333333333333333,
+      "pairedVpMarginSE": 0.6071959063489055,
+      "pairs": 12
+    },
+    "heuristic@14": {
+      "games": 24,
+      "vp": 148,
+      "kills": 214,
+      "losses": 252,
+      "defeats": 10,
+      "relocationTraceBreaks": 0,
+      "otherUnitTraceBreaks": 0,
+      "feedBreaks": 6,
+      "truckFeedBreaks": 4,
+      "worseRetreatRisk": 4,
+      "hqBreaks": 0,
+      "attritionSteps": 73,
+      "ownRationActionAttritionSteps": 37,
+      "ownActionAttritionSteps": 1,
+      "wins": 10,
+      "draws": 4,
+      "pairedVpMargin": 0.3333333333333333,
+      "pairedVpMarginSE": 0.6071959063489055,
+      "pairs": 12
+    }
+  },
+  "validation": {
+    "typecheck": "passed",
+    "build": "passed",
+    "smoke": "passed",
+    "testFilesPassed": 85,
+    "testsPassed": 556,
+    "testFilesSkipped": 4,
+    "testsSkipped": 8,
+    "firstFullRun": "A unit-test context mock lacked the existing explain API; updated it to equal supply risk, preserving the threat tie-break assertion, then reran the suite."
+  },
+  "sourceSha256": {
+    "src/ai/decisions.ts": "c7373fdd73258cbb29404e6f21d514b6b9555b3d2ab82b74552b588dd89b69e7",
+    "src/rules/combat/combat.ts": "d713916e974992029a9d526700ecdc3184e4cdcfa2f98fb7ed8a2a65bc144e19",
+    "tests/ai/heuristic.test.ts": "e6a604e88e51a3735354658d796b874e9242f592139011b2c35a9ee05a560add",
+    "src/ai/policies/heuristic.ts": "33a237991405ff7039ecf7870c6ab5f475200e7e21406723b30a7de300579163",
+    "src/rules/engine.ts": "475f6d88afed917dff93d91f351460080ab8c2979018e6bad916edee832b6950",
+    "src/rules/supply/relocation-impact.ts": "4ae3e60de41c260f36a7dba8387c962def7f9b3a24232b8a4be491b0b0f5431c",
+    "scripts/ai-supply-study.mjs": "d3d466c40e8acd79ace9b2bd8d7ecd0a8ab9ff3144729cf4f27883c9f6d44b97",
+    "tests/ai/hq-supply.test.ts": "42834d596f3c495d720abea54cda0cd8fd5f5fab36a43d390ec92d2e3814a9d7"
+  },
+  "caveats": [
+    "Trace and ration attribution identify the latest loss of access, not proven error or sole cause. Spending SP to feed another unit can be a necessary allocation.",
+    "Frozen v14 policy and v15 use the same current engine in holdout games, including the corrected deterministic relocation forecast.",
+    "Individual ration access is not a shared-stock allocation or a cross-phase logistics plan. Rail/sea moves, displacement and advances remain outside this policy guard. Retreat ranking forecasts deterministic placement before later combat resolution, without random captures.",
+    "Runs were concurrent. Timings are not latency benchmarks.",
+    "Headless bot evidence does not promote UI acceptance operations."
+  ],
+  "buildSha256": {
+    "tmp/ai-match/feed-retreat-2026-10-12/baseline-v14/ai/policies/heuristic.js": "8ea7470be14197a8fcd956d85fc162088889c6c3025a4bec4a14b31aa812688a",
+    "tmp/ai-match/feed-retreat-2026-10-12/candidate-v15/ai/policies/heuristic.js": "36262c971010c69d2f347ddf3d5c4c9b041976a75947c8e71c66e9e094926c46"
+  },
+  "fixtureSha256": {
+    "tests/ai/fixtures/truck-feed-1210102.state.json.gz": "debc4301d31c7511f32a0b7cbaeede9eb4cab2d80b5285be55cf6c7575f18be9",
+    "tests/ai/fixtures/retreat-supply-1210106.state.json.gz": "246546a4d82e310a1ff1e3a5505168a7a61ece3fe327837f2e368e33ed9961de",
+    "tests/ai/fixtures/retreat-supply-1210200.state.json.gz": "01074ae2a1f6d3264166fe6a1c712b188e5f0973debb7bbc618ba0cff38019b9"
+  }
+}

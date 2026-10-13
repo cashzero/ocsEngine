@@ -1,0 +1,1644 @@
+[
+  {
+    "name": "ration-fuel-1210100",
+    "version": "15",
+    "initialCommitted": [
+      "generated-oob:286921334:axis:f3-combat-1:unit",
+      "generated-oob:286921334:axis:f5-combat-1:unit",
+      "generated-oob:286921334:axis:independent-anti-tank-4:unit",
+      "generated-oob:286921334:axis:independent-anti_tank-2:unit",
+      "generated-oob:286921334:axis:independent-tank-2:unit",
+      "generated-oob:286921334:axis:f2-recon:unit",
+      "generated-oob:286921334:axis:f1-artillery-1:unit",
+      "generated-oob:286921334:axis:f2-artillery-1:unit"
+    ],
+    "finalUnfed": [],
+    "committedUnfed": [],
+    "attritionSteps": 1,
+    "payments": [
+      {
+        "kind": "PAY_FUEL",
+        "source": "supply-arrival:player:axis:4#load298",
+        "tokens": 4
+      },
+      {
+        "kind": "PAY_FUEL",
+        "source": "generated-oob:286921334:axis:independent-supply-1:unit",
+        "tokens": 1
+      },
+      {
+        "kind": "CHECK_SUPPLY",
+        "source": "supply-arrival:player:axis:5",
+        "tokens": 2
+      },
+      {
+        "kind": "CHECK_SUPPLY",
+        "source": "supply-arrival:player:axis:5",
+        "tokens": 2
+      },
+      {
+        "kind": "CHECK_SUPPLY",
+        "source": "supply-arrival:player:axis:5",
+        "tokens": 1
+      },
+      {
+        "kind": "CHECK_SUPPLY",
+        "source": "supply-arrival:player:axis:5",
+        "tokens": 1
+      }
+    ],
+    "actions": [
+      {
+        "revision": 396,
+        "action": {
+          "actionId": "candidate:fuel:HQ:generated-oob:286921334:axis:independent-hq-1:unit:supply-arrival:player:axis:4#load298:396",
+          "actorId": "player:axis",
+          "expectedRevision": 396,
+          "kind": "PAY_FUEL",
+          "method": "HQ",
+          "pieceId": "generated-oob:286921334:axis:independent-hq-1:unit",
+          "sourcePieceId": "supply-arrival:player:axis:4#load298"
+        },
+        "intent": "fuel to move (HQ)"
+      },
+      {
+        "revision": 397,
+        "action": {
+          "actionId": "candidate:move:generated-oob:286921334:axis:independent-anti-tank-3:unit:16,8:397",
+          "actorId": "player:axis",
+          "expectedRevision": 397,
+          "kind": "MOVE_PIECE",
+          "pieceId": "generated-oob:286921334:axis:independent-anti-tank-3:unit",
+          "path": [
+            "15,9",
+            "16,8"
+          ]
+        },
+        "intent": "combat to 16,8 (hunt 15,10)"
+      },
+      {
+        "revision": 398,
+        "action": {
+          "actionId": "candidate:move:generated-oob:286921334:axis:independent-anti-tank-4:unit:17,9:398",
+          "actorId": "player:axis",
+          "expectedRevision": 398,
+          "kind": "MOVE_PIECE",
+          "pieceId": "generated-oob:286921334:axis:independent-anti-tank-4:unit",
+          "path": [
+            "12,15",
+            "12,14",
+            "13,13",
+            "14,12",
+            "15,11",
+            "16,10",
+            "17,9"
+          ]
+        },
+        "intent": "combat to 17,9 (hunt 17,10)"
+      },
+      {
+        "revision": 399,
+        "action": {
+          "actionId": "candidate:move:generated-oob:286921334:axis:independent-tank-1:unit:16,8:399",
+          "actorId": "player:axis",
+          "expectedRevision": 399,
+          "kind": "MOVE_PIECE",
+          "pieceId": "generated-oob:286921334:axis:independent-tank-1:unit",
+          "path": [
+            "12,13",
+            "12,12",
+            "13,11",
+            "14,10",
+            "15,9",
+            "16,8"
+          ]
+        },
+        "intent": "combat to 16,8 (hunt 15,10)"
+      },
+      {
+        "revision": 400,
+        "action": {
+          "actionId": "candidate:move:generated-oob:286921334:axis:independent-tank-2:unit:17,9:400",
+          "actorId": "player:axis",
+          "expectedRevision": 400,
+          "kind": "MOVE_PIECE",
+          "pieceId": "generated-oob:286921334:axis:independent-tank-2:unit",
+          "path": [
+            "12,15",
+            "12,14",
+            "13,13",
+            "14,12",
+            "15,11",
+            "16,10",
+            "17,9"
+          ]
+        },
+        "intent": "combat to 17,9 (hunt 17,10)"
+      },
+      {
+        "revision": 401,
+        "action": {
+          "actionId": "candidate:move:generated-oob:286921334:axis:independent-tank-3:unit:16,10:401",
+          "actorId": "player:axis",
+          "expectedRevision": 401,
+          "kind": "MOVE_PIECE",
+          "pieceId": "generated-oob:286921334:axis:independent-tank-3:unit",
+          "path": [
+            "12,14",
+            "13,13",
+            "14,12",
+            "15,11",
+            "16,10"
+          ]
+        },
+        "intent": "combat to 16,10 (hunt 17,10)"
+      },
+      {
+        "revision": 402,
+        "action": {
+          "actionId": "candidate:move:generated-oob:286921334:axis:independent-tank-5:unit:16,10:402",
+          "actorId": "player:axis",
+          "expectedRevision": 402,
+          "kind": "MOVE_PIECE",
+          "pieceId": "generated-oob:286921334:axis:independent-tank-5:unit",
+          "path": [
+            "12,14",
+            "13,13",
+            "14,12",
+            "15,11",
+            "16,10"
+          ]
+        },
+        "intent": "combat to 16,10 (hunt 17,10)"
+      },
+      {
+        "revision": 403,
+        "action": {
+          "actionId": "candidate:fuel:SINGLE_UNIT:generated-oob:286921334:axis:f1-artillery-1:unit:generated-oob:286921334:axis:independent-supply-1:unit:403",
+          "actorId": "player:axis",
+          "expectedRevision": 403,
+          "kind": "PAY_FUEL",
+          "method": "SINGLE_UNIT",
+          "pieceId": "generated-oob:286921334:axis:f1-artillery-1:unit",
+          "sourcePieceId": "generated-oob:286921334:axis:independent-supply-1:unit"
+        },
+        "intent": "fuel to move (SINGLE_UNIT)"
+      },
+      {
+        "revision": 404,
+        "action": {
+          "actionId": "candidate:move:generated-oob:286921334:axis:f1-artillery-1:unit:16,8:404",
+          "actorId": "player:axis",
+          "expectedRevision": 404,
+          "kind": "MOVE_PIECE",
+          "pieceId": "generated-oob:286921334:axis:f1-artillery-1:unit",
+          "path": [
+            "12,15",
+            "12,14",
+            "12,13",
+            "12,12",
+            "12,11",
+            "12,10",
+            "13,9",
+            "14,8",
+            "15,8",
+            "16,8"
+          ]
+        },
+        "intent": "artillery to 16,8"
+      },
+      {
+        "revision": 405,
+        "action": {
+          "actionId": "candidate:move:generated-oob:286921334:axis:independent-artillery-1:unit:16,8:405",
+          "actorId": "player:axis",
+          "expectedRevision": 405,
+          "kind": "MOVE_PIECE",
+          "pieceId": "generated-oob:286921334:axis:independent-artillery-1:unit",
+          "path": [
+            "12,15",
+            "12,14",
+            "12,13",
+            "12,12",
+            "12,11",
+            "12,10",
+            "13,9",
+            "14,8",
+            "15,8",
+            "16,8"
+          ]
+        },
+        "intent": "artillery to 16,8"
+      },
+      {
+        "revision": 406,
+        "action": {
+          "actionId": "candidate:move:generated-oob:286921334:axis:independent-artillery-2:unit:16,8:406",
+          "actorId": "player:axis",
+          "expectedRevision": 406,
+          "kind": "MOVE_PIECE",
+          "pieceId": "generated-oob:286921334:axis:independent-artillery-2:unit",
+          "path": [
+            "12,15",
+            "12,14",
+            "12,13",
+            "12,12",
+            "12,11",
+            "12,10",
+            "13,9",
+            "14,8",
+            "15,8",
+            "16,8"
+          ]
+        },
+        "intent": "artillery to 16,8"
+      },
+      {
+        "revision": 407,
+        "action": {
+          "actionId": "candidate:load:generated-oob:286921334:axis:independent-transport-1:unit:rail-supply:266:24,9:supply-arrival:player:axis:4:407",
+          "actorId": "player:axis",
+          "expectedRevision": 407,
+          "kind": "LOAD_SUPPLY",
+          "truckId": "generated-oob:286921334:axis:independent-transport-1:unit",
+          "dumpId": "rail-supply:266:24,9:supply-arrival:player:axis:4",
+          "tokens": 8
+        },
+        "intent": "load 8T for the front"
+      },
+      {
+        "revision": 408,
+        "action": {
+          "actionId": "candidate:move:generated-oob:286921334:axis:independent-transport-1:unit:10,10:408",
+          "actorId": "player:axis",
+          "expectedRevision": 408,
+          "kind": "MOVE_PIECE",
+          "pieceId": "generated-oob:286921334:axis:independent-transport-1:unit",
+          "path": [
+            "24,9",
+            "24,8",
+            "24,7",
+            "23,7",
+            "22,7",
+            "21,7",
+            "20,7",
+            "19,7",
+            "18,7",
+            "17,8",
+            "16,8",
+            "15,8",
+            "14,8",
+            "13,9",
+            "12,10",
+            "11,10",
+            "10,10"
+          ]
+        },
+        "intent": "truck toward 13,8"
+      },
+      {
+        "revision": 409,
+        "action": {
+          "actionId": "candidate:move:generated-oob:286921334:axis:independent-transport-2:unit:25,12:409",
+          "actorId": "player:axis",
+          "expectedRevision": 409,
+          "kind": "MOVE_PIECE",
+          "pieceId": "generated-oob:286921334:axis:independent-transport-2:unit",
+          "path": [
+            "7,11",
+            "8,10",
+            "9,9",
+            "10,8",
+            "11,8",
+            "12,8",
+            "13,8",
+            "14,8",
+            "15,8",
+            "16,8",
+            "17,8",
+            "18,7",
+            "19,7",
+            "20,7",
+            "21,7",
+            "22,7",
+            "23,7",
+            "24,7",
+            "25,7",
+            "25,8",
+            "25,9",
+            "25,10",
+            "25,11",
+            "25,12"
+          ]
+        },
+        "intent": "truck toward 25,12"
+      },
+      {
+        "revision": 410,
+        "action": {
+          "actionId": "candidate:load:generated-oob:286921334:axis:independent-transport-2:unit:supply-arrival:player:axis:5:410",
+          "actorId": "player:axis",
+          "expectedRevision": 410,
+          "kind": "LOAD_SUPPLY",
+          "truckId": "generated-oob:286921334:axis:independent-transport-2:unit",
+          "dumpId": "supply-arrival:player:axis:5",
+          "tokens": 20
+        },
+        "intent": "load 20T for the front"
+      },
+      {
+        "revision": 411,
+        "action": {
+          "actionId": "candidate:move:generated-oob:286921334:axis:independent-transport-2:unit:10,10:411",
+          "actorId": "player:axis",
+          "expectedRevision": 411,
+          "kind": "MOVE_PIECE",
+          "pieceId": "generated-oob:286921334:axis:independent-transport-2:unit",
+          "path": [
+            "25,12",
+            "25,11",
+            "25,10",
+            "25,9",
+            "25,8",
+            "25,7",
+            "24,7",
+            "23,7",
+            "22,7",
+            "21,7",
+            "20,7",
+            "19,7",
+            "18,7",
+            "17,8",
+            "16,8",
+            "15,8",
+            "14,8",
+            "13,9",
+            "12,10",
+            "11,10",
+            "10,10"
+          ]
+        },
+        "intent": "truck toward 13,8"
+      },
+      {
+        "revision": 412,
+        "action": {
+          "actionId": "candidate:advance:412",
+          "actorId": "player:axis",
+          "expectedRevision": 412,
+          "kind": "ADVANCE_SEQUENCE"
+        },
+        "intent": "end step: nothing worth doing in movement movement"
+      },
+      {
+        "revision": 413,
+        "action": {
+          "actionId": "candidate:supply:generated-oob:286921334:axis:f3-combat-1:unit:supply-arrival:player:axis:5:413",
+          "actorId": "player:axis",
+          "expectedRevision": 413,
+          "kind": "CHECK_SUPPLY",
+          "pieceIds": [
+            "generated-oob:286921334:axis:f3-combat-1:unit"
+          ],
+          "sourcePieceId": "supply-arrival:player:axis:5"
+        },
+        "intent": "supply: feed the most valuable unit out of trace"
+      },
+      {
+        "revision": 414,
+        "action": {
+          "actionId": "candidate:supply:generated-oob:286921334:axis:f5-combat-1:unit:supply-arrival:player:axis:5:414",
+          "actorId": "player:axis",
+          "expectedRevision": 414,
+          "kind": "CHECK_SUPPLY",
+          "pieceIds": [
+            "generated-oob:286921334:axis:f5-combat-1:unit"
+          ],
+          "sourcePieceId": "supply-arrival:player:axis:5"
+        },
+        "intent": "supply: feed the most valuable unit out of trace"
+      },
+      {
+        "revision": 415,
+        "action": {
+          "actionId": "candidate:supply:generated-oob:286921334:axis:independent-anti_tank-2:unit:supply-arrival:player:axis:5:415",
+          "actorId": "player:axis",
+          "expectedRevision": 415,
+          "kind": "CHECK_SUPPLY",
+          "pieceIds": [
+            "generated-oob:286921334:axis:independent-anti_tank-2:unit"
+          ],
+          "sourcePieceId": "supply-arrival:player:axis:5"
+        },
+        "intent": "supply: feed the most valuable unit out of trace"
+      },
+      {
+        "revision": 416,
+        "action": {
+          "actionId": "candidate:supply:generated-oob:286921334:axis:f2-recon:unit:supply-arrival:player:axis:5:416",
+          "actorId": "player:axis",
+          "expectedRevision": 416,
+          "kind": "CHECK_SUPPLY",
+          "pieceIds": [
+            "generated-oob:286921334:axis:f2-recon:unit"
+          ],
+          "sourcePieceId": "supply-arrival:player:axis:5"
+        },
+        "intent": "supply: feed the most valuable unit out of trace"
+      },
+      {
+        "revision": 417,
+        "action": {
+          "actionId": "candidate:advance:417",
+          "actorId": "player:axis",
+          "expectedRevision": 417,
+          "kind": "ADVANCE_SEQUENCE"
+        },
+        "intent": "end step: nothing worth doing in supply none"
+      }
+    ]
+  },
+  {
+    "name": "ration-fuel-1210100",
+    "version": "16",
+    "initialCommitted": [
+      "generated-oob:286921334:axis:f3-combat-1:unit",
+      "generated-oob:286921334:axis:f5-combat-1:unit",
+      "generated-oob:286921334:axis:independent-anti-tank-4:unit",
+      "generated-oob:286921334:axis:independent-anti_tank-2:unit",
+      "generated-oob:286921334:axis:independent-tank-2:unit",
+      "generated-oob:286921334:axis:f2-recon:unit",
+      "generated-oob:286921334:axis:f1-artillery-1:unit",
+      "generated-oob:286921334:axis:f2-artillery-1:unit"
+    ],
+    "finalUnfed": [],
+    "committedUnfed": [],
+    "attritionSteps": 0,
+    "payments": [
+      {
+        "kind": "PAY_FUEL",
+        "source": "rail-supply:372:25,7:supply-arrival:player:axis:5",
+        "tokens": 4
+      },
+      {
+        "kind": "CHECK_SUPPLY",
+        "source": "generated-oob:286921334:axis:independent-supply-1:unit",
+        "tokens": 1
+      },
+      {
+        "kind": "CHECK_SUPPLY",
+        "source": "supply-arrival:player:axis:5",
+        "tokens": 4
+      }
+    ],
+    "actions": [
+      {
+        "revision": 396,
+        "action": {
+          "actionId": "candidate:fuel:HQ:generated-oob:286921334:axis:independent-hq-1:unit:rail-supply:372:25,7:supply-arrival:player:axis:5:396",
+          "actorId": "player:axis",
+          "expectedRevision": 396,
+          "kind": "PAY_FUEL",
+          "method": "HQ",
+          "pieceId": "generated-oob:286921334:axis:independent-hq-1:unit",
+          "sourcePieceId": "rail-supply:372:25,7:supply-arrival:player:axis:5"
+        },
+        "intent": "fuel to move (HQ)"
+      },
+      {
+        "revision": 397,
+        "action": {
+          "actionId": "candidate:move:generated-oob:286921334:axis:independent-anti-tank-3:unit:16,8:397",
+          "actorId": "player:axis",
+          "expectedRevision": 397,
+          "kind": "MOVE_PIECE",
+          "pieceId": "generated-oob:286921334:axis:independent-anti-tank-3:unit",
+          "path": [
+            "15,9",
+            "16,8"
+          ]
+        },
+        "intent": "combat to 16,8 (hunt 15,10)"
+      },
+      {
+        "revision": 398,
+        "action": {
+          "actionId": "candidate:move:generated-oob:286921334:axis:independent-anti-tank-4:unit:17,9:398",
+          "actorId": "player:axis",
+          "expectedRevision": 398,
+          "kind": "MOVE_PIECE",
+          "pieceId": "generated-oob:286921334:axis:independent-anti-tank-4:unit",
+          "path": [
+            "12,15",
+            "12,14",
+            "13,13",
+            "14,12",
+            "15,11",
+            "16,10",
+            "17,9"
+          ]
+        },
+        "intent": "combat to 17,9 (hunt 17,10)"
+      },
+      {
+        "revision": 399,
+        "action": {
+          "actionId": "candidate:move:generated-oob:286921334:axis:independent-tank-1:unit:16,8:399",
+          "actorId": "player:axis",
+          "expectedRevision": 399,
+          "kind": "MOVE_PIECE",
+          "pieceId": "generated-oob:286921334:axis:independent-tank-1:unit",
+          "path": [
+            "12,13",
+            "12,12",
+            "13,11",
+            "14,10",
+            "15,9",
+            "16,8"
+          ]
+        },
+        "intent": "combat to 16,8 (hunt 15,10)"
+      },
+      {
+        "revision": 400,
+        "action": {
+          "actionId": "candidate:move:generated-oob:286921334:axis:independent-tank-2:unit:17,9:400",
+          "actorId": "player:axis",
+          "expectedRevision": 400,
+          "kind": "MOVE_PIECE",
+          "pieceId": "generated-oob:286921334:axis:independent-tank-2:unit",
+          "path": [
+            "12,15",
+            "12,14",
+            "13,13",
+            "14,12",
+            "15,11",
+            "16,10",
+            "17,9"
+          ]
+        },
+        "intent": "combat to 17,9 (hunt 17,10)"
+      },
+      {
+        "revision": 401,
+        "action": {
+          "actionId": "candidate:move:generated-oob:286921334:axis:independent-tank-3:unit:16,10:401",
+          "actorId": "player:axis",
+          "expectedRevision": 401,
+          "kind": "MOVE_PIECE",
+          "pieceId": "generated-oob:286921334:axis:independent-tank-3:unit",
+          "path": [
+            "12,14",
+            "13,13",
+            "14,12",
+            "15,11",
+            "16,10"
+          ]
+        },
+        "intent": "combat to 16,10 (hunt 17,10)"
+      },
+      {
+        "revision": 402,
+        "action": {
+          "actionId": "candidate:move:generated-oob:286921334:axis:independent-tank-5:unit:16,10:402",
+          "actorId": "player:axis",
+          "expectedRevision": 402,
+          "kind": "MOVE_PIECE",
+          "pieceId": "generated-oob:286921334:axis:independent-tank-5:unit",
+          "path": [
+            "12,14",
+            "13,13",
+            "14,12",
+            "15,11",
+            "16,10"
+          ]
+        },
+        "intent": "combat to 16,10 (hunt 17,10)"
+      },
+      {
+        "revision": 403,
+        "action": {
+          "actionId": "candidate:move:generated-oob:286921334:axis:independent-artillery-1:unit:16,8:403",
+          "actorId": "player:axis",
+          "expectedRevision": 403,
+          "kind": "MOVE_PIECE",
+          "pieceId": "generated-oob:286921334:axis:independent-artillery-1:unit",
+          "path": [
+            "12,15",
+            "12,14",
+            "12,13",
+            "12,12",
+            "12,11",
+            "12,10",
+            "13,9",
+            "14,8",
+            "15,8",
+            "16,8"
+          ]
+        },
+        "intent": "artillery to 16,8"
+      },
+      {
+        "revision": 404,
+        "action": {
+          "actionId": "candidate:move:generated-oob:286921334:axis:independent-artillery-2:unit:16,8:404",
+          "actorId": "player:axis",
+          "expectedRevision": 404,
+          "kind": "MOVE_PIECE",
+          "pieceId": "generated-oob:286921334:axis:independent-artillery-2:unit",
+          "path": [
+            "12,15",
+            "12,14",
+            "12,13",
+            "12,12",
+            "12,11",
+            "12,10",
+            "13,9",
+            "14,8",
+            "15,8",
+            "16,8"
+          ]
+        },
+        "intent": "artillery to 16,8"
+      },
+      {
+        "revision": 405,
+        "action": {
+          "actionId": "candidate:load:generated-oob:286921334:axis:independent-transport-1:unit:rail-supply:266:24,9:supply-arrival:player:axis:4:405",
+          "actorId": "player:axis",
+          "expectedRevision": 405,
+          "kind": "LOAD_SUPPLY",
+          "truckId": "generated-oob:286921334:axis:independent-transport-1:unit",
+          "dumpId": "rail-supply:266:24,9:supply-arrival:player:axis:4",
+          "tokens": 8
+        },
+        "intent": "load 8T for the front"
+      },
+      {
+        "revision": 406,
+        "action": {
+          "actionId": "candidate:move:generated-oob:286921334:axis:independent-transport-1:unit:10,10:406",
+          "actorId": "player:axis",
+          "expectedRevision": 406,
+          "kind": "MOVE_PIECE",
+          "pieceId": "generated-oob:286921334:axis:independent-transport-1:unit",
+          "path": [
+            "24,9",
+            "24,8",
+            "24,7",
+            "23,7",
+            "22,7",
+            "21,7",
+            "20,7",
+            "19,7",
+            "18,7",
+            "17,8",
+            "16,8",
+            "15,8",
+            "14,8",
+            "13,9",
+            "12,10",
+            "11,10",
+            "10,10"
+          ]
+        },
+        "intent": "truck toward 13,8"
+      },
+      {
+        "revision": 407,
+        "action": {
+          "actionId": "candidate:move:generated-oob:286921334:axis:independent-transport-2:unit:25,12:407",
+          "actorId": "player:axis",
+          "expectedRevision": 407,
+          "kind": "MOVE_PIECE",
+          "pieceId": "generated-oob:286921334:axis:independent-transport-2:unit",
+          "path": [
+            "7,11",
+            "8,10",
+            "9,9",
+            "10,8",
+            "11,8",
+            "12,8",
+            "13,8",
+            "14,8",
+            "15,8",
+            "16,8",
+            "17,8",
+            "18,7",
+            "19,7",
+            "20,7",
+            "21,7",
+            "22,7",
+            "23,7",
+            "24,7",
+            "25,7",
+            "25,8",
+            "25,9",
+            "25,10",
+            "25,11",
+            "25,12"
+          ]
+        },
+        "intent": "truck toward 25,12"
+      },
+      {
+        "revision": 408,
+        "action": {
+          "actionId": "candidate:load:generated-oob:286921334:axis:independent-transport-2:unit:supply-arrival:player:axis:5:408",
+          "actorId": "player:axis",
+          "expectedRevision": 408,
+          "kind": "LOAD_SUPPLY",
+          "truckId": "generated-oob:286921334:axis:independent-transport-2:unit",
+          "dumpId": "supply-arrival:player:axis:5",
+          "tokens": 20
+        },
+        "intent": "load 20T for the front"
+      },
+      {
+        "revision": 409,
+        "action": {
+          "actionId": "candidate:move:generated-oob:286921334:axis:independent-transport-2:unit:10,10:409",
+          "actorId": "player:axis",
+          "expectedRevision": 409,
+          "kind": "MOVE_PIECE",
+          "pieceId": "generated-oob:286921334:axis:independent-transport-2:unit",
+          "path": [
+            "25,12",
+            "25,11",
+            "25,10",
+            "25,9",
+            "25,8",
+            "25,7",
+            "24,7",
+            "23,7",
+            "22,7",
+            "21,7",
+            "20,7",
+            "19,7",
+            "18,7",
+            "17,8",
+            "16,8",
+            "15,8",
+            "14,8",
+            "13,9",
+            "12,10",
+            "11,10",
+            "10,10"
+          ]
+        },
+        "intent": "truck toward 13,8"
+      },
+      {
+        "revision": 410,
+        "action": {
+          "actionId": "candidate:advance:410",
+          "actorId": "player:axis",
+          "expectedRevision": 410,
+          "kind": "ADVANCE_SEQUENCE"
+        },
+        "intent": "end step: nothing worth doing in movement movement"
+      },
+      {
+        "revision": 411,
+        "action": {
+          "actionId": "candidate:supply:generated-oob:286921334:axis:f3-combat-1:unit:supply-arrival:player:axis:5:411",
+          "actorId": "player:axis",
+          "expectedRevision": 411,
+          "kind": "CHECK_SUPPLY",
+          "pieceIds": [
+            "generated-oob:286921334:axis:f1-artillery-1:unit",
+            "generated-oob:286921334:axis:f2-artillery-1:unit"
+          ],
+          "sourcePieceId": "generated-oob:286921334:axis:independent-supply-1:unit"
+        },
+        "intent": "supply: feed 2 unit(s) together for 1T, preserving shared commitments"
+      },
+      {
+        "revision": 412,
+        "action": {
+          "actionId": "candidate:supply:generated-oob:286921334:axis:f3-combat-1:unit:supply-arrival:player:axis:5:412",
+          "actorId": "player:axis",
+          "expectedRevision": 412,
+          "kind": "CHECK_SUPPLY",
+          "pieceIds": [
+            "generated-oob:286921334:axis:f3-combat-1:unit",
+            "generated-oob:286921334:axis:f5-combat-1:unit",
+            "generated-oob:286921334:axis:f2-recon:unit",
+            "generated-oob:286921334:axis:independent-anti_tank-2:unit"
+          ],
+          "sourcePieceId": "supply-arrival:player:axis:5"
+        },
+        "intent": "supply: feed 4 unit(s) together for 4T, preserving shared commitments"
+      },
+      {
+        "revision": 413,
+        "action": {
+          "actionId": "candidate:advance:413",
+          "actorId": "player:axis",
+          "expectedRevision": 413,
+          "kind": "ADVANCE_SEQUENCE"
+        },
+        "intent": "end step: nothing worth doing in supply none"
+      }
+    ]
+  },
+  {
+    "name": "ration-hedgehog-1210002",
+    "version": "15",
+    "initialCommitted": [
+      "generated-oob:286911828:allied:independent-hq-1:unit",
+      "generated-oob:286911828:allied:f6-combat-1:unit",
+      "generated-oob:286911828:allied:f1-combat-2:unit",
+      "generated-oob:286911828:allied:f2-combat-2:unit",
+      "generated-oob:286911828:allied:independent-tank-1:unit",
+      "generated-oob:286911828:allied:independent-tank-2:unit",
+      "generated-oob:286911828:allied:f2-recon:unit",
+      "generated-oob:286911828:allied:garrison:objective-1",
+      "generated-oob:286911828:allied:garrison:objective-3",
+      "generated-oob:286911828:allied:independent-engineer-1:unit",
+      "generated-oob:286911828:allied:f2-artillery-1:unit"
+    ],
+    "finalUnfed": [
+      "generated-oob:286911828:allied:f1-combat-2:unit",
+      "generated-oob:286911828:allied:f2-artillery-1:unit",
+      "generated-oob:286911828:allied:f2-combat-2:unit",
+      "generated-oob:286911828:allied:f2-recon:unit",
+      "generated-oob:286911828:allied:f6-combat-1:unit",
+      "generated-oob:286911828:allied:independent-engineer-1:unit",
+      "generated-oob:286911828:allied:independent-tank-1:unit",
+      "generated-oob:286911828:allied:independent-tank-2:unit"
+    ],
+    "committedUnfed": [
+      "generated-oob:286911828:allied:f1-combat-2:unit",
+      "generated-oob:286911828:allied:f2-artillery-1:unit",
+      "generated-oob:286911828:allied:f2-combat-2:unit",
+      "generated-oob:286911828:allied:f2-recon:unit",
+      "generated-oob:286911828:allied:f6-combat-1:unit",
+      "generated-oob:286911828:allied:independent-engineer-1:unit",
+      "generated-oob:286911828:allied:independent-tank-1:unit",
+      "generated-oob:286911828:allied:independent-tank-2:unit"
+    ],
+    "attritionSteps": 3,
+    "payments": [
+      {
+        "kind": "PAY_FUEL",
+        "source": "supply-arrival:player:allied:3",
+        "tokens": 4
+      },
+      {
+        "kind": "PAY_FUEL",
+        "source": "supply-arrival:player:allied:3",
+        "tokens": 4
+      }
+    ],
+    "actions": [
+      {
+        "revision": 611,
+        "action": {
+          "actionId": "candidate:fuel:HQ:generated-oob:286911828:allied:independent-hq-1:unit:supply-arrival:player:allied:3:611",
+          "actorId": "player:allied",
+          "expectedRevision": 611,
+          "kind": "PAY_FUEL",
+          "method": "HQ",
+          "pieceId": "generated-oob:286911828:allied:independent-hq-1:unit",
+          "sourcePieceId": "supply-arrival:player:allied:3"
+        },
+        "intent": "fuel to move (HQ)"
+      },
+      {
+        "revision": 612,
+        "action": {
+          "actionId": "candidate:move:generated-oob:286911828:allied:independent-hq-1:unit:24,7:612",
+          "actorId": "player:allied",
+          "expectedRevision": 612,
+          "kind": "MOVE_PIECE",
+          "pieceId": "generated-oob:286911828:allied:independent-hq-1:unit",
+          "path": [
+            "21,8",
+            "22,7",
+            "23,6",
+            "23,7",
+            "24,7"
+          ]
+        },
+        "intent": "hq to 24,7"
+      },
+      {
+        "revision": 613,
+        "action": {
+          "actionId": "candidate:fuel:FORMATION:generated-oob:286911828:allied:f1-combat-2:unit:supply-arrival:player:allied:3:613",
+          "actorId": "player:allied",
+          "expectedRevision": 613,
+          "kind": "PAY_FUEL",
+          "method": "FORMATION",
+          "pieceId": "generated-oob:286911828:allied:f1-combat-2:unit",
+          "sourcePieceId": "supply-arrival:player:allied:3"
+        },
+        "intent": "fuel to move (FORMATION)"
+      },
+      {
+        "revision": 614,
+        "action": {
+          "actionId": "candidate:move:generated-oob:286911828:allied:f1-combat-2:unit:26,7:614",
+          "actorId": "player:allied",
+          "expectedRevision": 614,
+          "kind": "MOVE_PIECE",
+          "pieceId": "generated-oob:286911828:allied:f1-combat-2:unit",
+          "path": [
+            "25,7",
+            "26,7"
+          ]
+        },
+        "intent": "combat to 26,7 (assault 27,7)"
+      },
+      {
+        "revision": 615,
+        "action": {
+          "actionId": "candidate:move:generated-oob:286911828:allied:independent-anti_tank-2:unit:1,17:615",
+          "actorId": "player:allied",
+          "expectedRevision": 615,
+          "kind": "MOVE_PIECE",
+          "pieceId": "generated-oob:286911828:allied:independent-anti_tank-2:unit",
+          "path": [
+            "5,19",
+            "4,19",
+            "3,20",
+            "2,20",
+            "1,20",
+            "1,19",
+            "1,18",
+            "1,17"
+          ]
+        },
+        "intent": "combat to 1,17 (capture 2,14)"
+      },
+      {
+        "revision": 616,
+        "action": {
+          "actionId": "candidate:move:generated-oob:286911828:allied:independent-tank-1:unit:26,7:616",
+          "actorId": "player:allied",
+          "expectedRevision": 616,
+          "kind": "MOVE_PIECE",
+          "pieceId": "generated-oob:286911828:allied:independent-tank-1:unit",
+          "path": [
+            "25,8",
+            "25,7",
+            "26,7"
+          ]
+        },
+        "intent": "combat to 26,7 (assault 27,7)"
+      },
+      {
+        "revision": 617,
+        "action": {
+          "actionId": "candidate:move:generated-oob:286911828:allied:independent-tank-2:unit:26,7:617",
+          "actorId": "player:allied",
+          "expectedRevision": 617,
+          "kind": "MOVE_PIECE",
+          "pieceId": "generated-oob:286911828:allied:independent-tank-2:unit",
+          "path": [
+            "26,6",
+            "26,7"
+          ]
+        },
+        "intent": "combat to 26,7 (capture 27,7)"
+      },
+      {
+        "revision": 618,
+        "action": {
+          "actionId": "candidate:move:generated-oob:286911828:allied:independent-artillery-1:unit:17,13:618",
+          "actorId": "player:allied",
+          "expectedRevision": 618,
+          "kind": "MOVE_PIECE",
+          "pieceId": "generated-oob:286911828:allied:independent-artillery-1:unit",
+          "path": [
+            "5,19",
+            "6,19",
+            "7,19",
+            "8,19",
+            "9,19",
+            "10,19",
+            "11,19",
+            "12,18",
+            "13,17",
+            "14,16",
+            "15,15",
+            "16,14",
+            "17,13"
+          ]
+        },
+        "intent": "artillery to 17,13"
+      },
+      {
+        "revision": 619,
+        "action": {
+          "actionId": "candidate:move:generated-oob:286911828:allied:independent-artillery-2:unit:19,12:619",
+          "actorId": "player:allied",
+          "expectedRevision": 619,
+          "kind": "MOVE_PIECE",
+          "pieceId": "generated-oob:286911828:allied:independent-artillery-2:unit",
+          "path": [
+            "5,19",
+            "6,19",
+            "7,19",
+            "8,19",
+            "9,19",
+            "10,19",
+            "11,19",
+            "12,18",
+            "13,17",
+            "14,16",
+            "15,15",
+            "16,14",
+            "17,13",
+            "18,13",
+            "19,12"
+          ]
+        },
+        "intent": "artillery to 19,12"
+      },
+      {
+        "revision": 620,
+        "action": {
+          "actionId": "candidate:advance:620",
+          "actorId": "player:allied",
+          "expectedRevision": 620,
+          "kind": "ADVANCE_SEQUENCE"
+        },
+        "intent": "end step: nothing worth doing in movement movement"
+      },
+      {
+        "revision": 621,
+        "action": {
+          "actionId": "candidate:decision:decision:interrupt:620:153:2:5:2:piece:generated-oob:286911828:allied:garrison:objective-1:621",
+          "actorId": "player:allied",
+          "expectedRevision": 621,
+          "kind": "RESPOND_DECISION",
+          "decisionId": "decision:interrupt:620:153:2:5:2",
+          "choiceId": "piece:generated-oob:286911828:allied:garrison:objective-1"
+        },
+        "intent": "cheapest-loss: lose the least valuable unit (US Garrison Bn loses a step (1 left))"
+      },
+      {
+        "revision": 622,
+        "action": {
+          "actionId": "candidate:decision:decision:interrupt:621:153:2:5:1:piece:generated-oob:286911828:allied:garrison:objective-3:622",
+          "actorId": "player:allied",
+          "expectedRevision": 622,
+          "kind": "RESPOND_DECISION",
+          "decisionId": "decision:interrupt:621:153:2:5:1",
+          "choiceId": "piece:generated-oob:286911828:allied:garrison:objective-3"
+        },
+        "intent": "cheapest-loss: lose the least valuable unit (US Garrison Bn loses a step (1 left))"
+      }
+    ]
+  },
+  {
+    "name": "ration-hedgehog-1210002",
+    "version": "16",
+    "initialCommitted": [
+      "generated-oob:286911828:allied:independent-hq-1:unit",
+      "generated-oob:286911828:allied:f6-combat-1:unit",
+      "generated-oob:286911828:allied:f1-combat-2:unit",
+      "generated-oob:286911828:allied:f2-combat-2:unit",
+      "generated-oob:286911828:allied:independent-tank-1:unit",
+      "generated-oob:286911828:allied:independent-tank-2:unit",
+      "generated-oob:286911828:allied:f2-recon:unit",
+      "generated-oob:286911828:allied:garrison:objective-1",
+      "generated-oob:286911828:allied:garrison:objective-3",
+      "generated-oob:286911828:allied:independent-engineer-1:unit",
+      "generated-oob:286911828:allied:f2-artillery-1:unit"
+    ],
+    "finalUnfed": [],
+    "committedUnfed": [],
+    "attritionSteps": 0,
+    "payments": [
+      {
+        "kind": "PAY_FUEL",
+        "source": "supply-arrival:player:allied:3",
+        "tokens": 1
+      },
+      {
+        "kind": "PAY_FUEL",
+        "source": "supply-arrival:player:allied:3",
+        "tokens": 1
+      },
+      {
+        "kind": "RECOVER_INTERNALS",
+        "source": "supply-arrival:player:allied:3",
+        "tokens": 2
+      },
+      {
+        "kind": "CHECK_SUPPLY",
+        "source": "supply-arrival:player:allied:3",
+        "tokens": 4
+      }
+    ],
+    "actions": [
+      {
+        "revision": 611,
+        "action": {
+          "actionId": "candidate:fuel:SINGLE_UNIT:generated-oob:286911828:allied:independent-hq-1:unit:supply-arrival:player:allied:3:611",
+          "actorId": "player:allied",
+          "expectedRevision": 611,
+          "kind": "PAY_FUEL",
+          "method": "SINGLE_UNIT",
+          "pieceId": "generated-oob:286911828:allied:independent-hq-1:unit",
+          "sourcePieceId": "supply-arrival:player:allied:3"
+        },
+        "intent": "fuel to move (SINGLE_UNIT)"
+      },
+      {
+        "revision": 612,
+        "action": {
+          "actionId": "candidate:move:generated-oob:286911828:allied:independent-hq-1:unit:24,7:612",
+          "actorId": "player:allied",
+          "expectedRevision": 612,
+          "kind": "MOVE_PIECE",
+          "pieceId": "generated-oob:286911828:allied:independent-hq-1:unit",
+          "path": [
+            "21,8",
+            "22,7",
+            "23,6",
+            "23,7",
+            "24,7"
+          ]
+        },
+        "intent": "hq to 24,7"
+      },
+      {
+        "revision": 613,
+        "action": {
+          "actionId": "candidate:fuel:SINGLE_UNIT:generated-oob:286911828:allied:f1-combat-2:unit:supply-arrival:player:allied:3:613",
+          "actorId": "player:allied",
+          "expectedRevision": 613,
+          "kind": "PAY_FUEL",
+          "method": "SINGLE_UNIT",
+          "pieceId": "generated-oob:286911828:allied:f1-combat-2:unit",
+          "sourcePieceId": "supply-arrival:player:allied:3"
+        },
+        "intent": "fuel to move (SINGLE_UNIT)"
+      },
+      {
+        "revision": 614,
+        "action": {
+          "actionId": "candidate:move:generated-oob:286911828:allied:f1-combat-2:unit:26,7:614",
+          "actorId": "player:allied",
+          "expectedRevision": 614,
+          "kind": "MOVE_PIECE",
+          "pieceId": "generated-oob:286911828:allied:f1-combat-2:unit",
+          "path": [
+            "25,7",
+            "26,7"
+          ]
+        },
+        "intent": "combat to 26,7 (assault 27,7)"
+      },
+      {
+        "revision": 615,
+        "action": {
+          "actionId": "candidate:advance:615",
+          "actorId": "player:allied",
+          "expectedRevision": 615,
+          "kind": "ADVANCE_SEQUENCE"
+        },
+        "intent": "end step: nothing worth doing in movement movement"
+      },
+      {
+        "revision": 616,
+        "action": {
+          "actionId": "candidate:recover:generated-oob:286911828:allied:f6-combat-1:unit:616",
+          "actorId": "player:allied",
+          "expectedRevision": 616,
+          "kind": "RECOVER_INTERNALS",
+          "pieceId": "generated-oob:286911828:allied:f6-combat-1:unit",
+          "sourcePieceIds": [
+            "supply-arrival:player:allied:3"
+          ]
+        },
+        "intent": "supply: recover internals"
+      },
+      {
+        "revision": 617,
+        "action": {
+          "actionId": "candidate:supply:generated-oob:286911828:allied:independent-hq-1:unit:supply-arrival:player:allied:3:617",
+          "actorId": "player:allied",
+          "expectedRevision": 617,
+          "kind": "CHECK_SUPPLY",
+          "pieceIds": [
+            "generated-oob:286911828:allied:f1-combat-2:unit",
+            "generated-oob:286911828:allied:f2-combat-2:unit",
+            "generated-oob:286911828:allied:f6-combat-1:unit",
+            "generated-oob:286911828:allied:independent-engineer-1:unit",
+            "generated-oob:286911828:allied:f2-artillery-1:unit",
+            "generated-oob:286911828:allied:f2-recon:unit",
+            "generated-oob:286911828:allied:garrison:objective-1",
+            "generated-oob:286911828:allied:garrison:objective-3",
+            "generated-oob:286911828:allied:independent-hq-1:unit",
+            "generated-oob:286911828:allied:independent-tank-1:unit",
+            "generated-oob:286911828:allied:independent-tank-2:unit"
+          ],
+          "sourcePieceId": "supply-arrival:player:allied:3"
+        },
+        "intent": "supply: feed 11 unit(s) together for 4T, preserving shared commitments"
+      },
+      {
+        "revision": 618,
+        "action": {
+          "actionId": "candidate:advance:618",
+          "actorId": "player:allied",
+          "expectedRevision": 618,
+          "kind": "ADVANCE_SEQUENCE"
+        },
+        "intent": "end step: nothing worth doing in supply none"
+      }
+    ]
+  },
+  {
+    "name": "ration-group-1210102",
+    "version": "15",
+    "initialCommitted": [
+      "generated-oob:286921528:allied:independent-hq-1:unit",
+      "generated-oob:286921528:allied:independent-hq-2:unit",
+      "generated-oob:286921528:allied:f5-combat-1:unit",
+      "generated-oob:286921528:allied:f6-combat-1:unit",
+      "generated-oob:286921528:allied:f3-combat-1:unit",
+      "generated-oob:286921528:allied:f1-combat-1:unit",
+      "generated-oob:286921528:allied:f1-combat-2:unit",
+      "generated-oob:286921528:allied:f2-combat-1:unit",
+      "generated-oob:286921528:allied:f2-combat-2:unit",
+      "generated-oob:286921528:allied:independent-tank-1:unit",
+      "generated-oob:286921528:allied:independent-tank-2:unit",
+      "generated-oob:286921528:allied:f1-recon:unit",
+      "generated-oob:286921528:allied:f2-recon:unit",
+      "generated-oob:286921528:allied:independent-anti_tank-1:unit",
+      "generated-oob:286921528:allied:independent-anti_tank-2:unit",
+      "generated-oob:286921528:allied:f1-artillery-1:unit",
+      "generated-oob:286921528:allied:f2-artillery-1:unit",
+      "generated-oob:286921528:allied:independent-artillery-1:unit",
+      "generated-oob:286921528:allied:independent-artillery-2:unit"
+    ],
+    "finalUnfed": [
+      "generated-oob:286921528:allied:f2-artillery-1:unit",
+      "generated-oob:286921528:allied:f2-combat-2:unit",
+      "generated-oob:286921528:allied:independent-anti_tank-1:unit",
+      "generated-oob:286921528:allied:independent-artillery-2:unit"
+    ],
+    "committedUnfed": [
+      "generated-oob:286921528:allied:f2-artillery-1:unit",
+      "generated-oob:286921528:allied:f2-combat-2:unit",
+      "generated-oob:286921528:allied:independent-anti_tank-1:unit",
+      "generated-oob:286921528:allied:independent-artillery-2:unit"
+    ],
+    "attritionSteps": 7,
+    "payments": [
+      {
+        "kind": "CHECK_SUPPLY",
+        "source": "supply-arrival:player:allied:6#load492",
+        "tokens": 1
+      },
+      {
+        "kind": "CHECK_SUPPLY",
+        "source": "supply-arrival:player:allied:6#load492",
+        "tokens": 1
+      },
+      {
+        "kind": "CHECK_SUPPLY",
+        "source": "supply-arrival:player:allied:6#load492",
+        "tokens": 2
+      },
+      {
+        "kind": "CHECK_SUPPLY",
+        "source": "supply-arrival:player:allied:6#load492",
+        "tokens": 1
+      },
+      {
+        "kind": "CHECK_SUPPLY",
+        "source": "supply-arrival:player:allied:6#load492",
+        "tokens": 2
+      },
+      {
+        "kind": "CHECK_SUPPLY",
+        "source": "supply-arrival:player:allied:6#load492",
+        "tokens": 1
+      },
+      {
+        "kind": "CHECK_SUPPLY",
+        "source": "supply-arrival:player:allied:6#load492",
+        "tokens": 1
+      },
+      {
+        "kind": "CHECK_SUPPLY",
+        "source": "supply-arrival:player:allied:6#load492",
+        "tokens": 1
+      }
+    ],
+    "actions": [
+      {
+        "revision": 499,
+        "action": {
+          "actionId": "candidate:supply:generated-oob:286921528:allied:independent-hq-1:unit:supply-arrival:player:allied:6#load492:499",
+          "actorId": "player:allied",
+          "expectedRevision": 499,
+          "kind": "CHECK_SUPPLY",
+          "pieceIds": [
+            "generated-oob:286921528:allied:independent-hq-1:unit"
+          ],
+          "sourcePieceId": "supply-arrival:player:allied:6#load492"
+        },
+        "intent": "supply: feed the most valuable unit out of trace"
+      },
+      {
+        "revision": 500,
+        "action": {
+          "actionId": "candidate:supply:generated-oob:286921528:allied:independent-hq-2:unit:supply-arrival:player:allied:6#load492:500",
+          "actorId": "player:allied",
+          "expectedRevision": 500,
+          "kind": "CHECK_SUPPLY",
+          "pieceIds": [
+            "generated-oob:286921528:allied:independent-hq-2:unit"
+          ],
+          "sourcePieceId": "supply-arrival:player:allied:6#load492"
+        },
+        "intent": "supply: feed the most valuable unit out of trace"
+      },
+      {
+        "revision": 501,
+        "action": {
+          "actionId": "candidate:supply:generated-oob:286921528:allied:f5-combat-1:unit:supply-arrival:player:allied:6#load492:501",
+          "actorId": "player:allied",
+          "expectedRevision": 501,
+          "kind": "CHECK_SUPPLY",
+          "pieceIds": [
+            "generated-oob:286921528:allied:f5-combat-1:unit"
+          ],
+          "sourcePieceId": "supply-arrival:player:allied:6#load492"
+        },
+        "intent": "supply: feed the most valuable unit out of trace"
+      },
+      {
+        "revision": 502,
+        "action": {
+          "actionId": "candidate:supply:generated-oob:286921528:allied:f6-combat-1:unit:supply-arrival:player:allied:6#load492:502",
+          "actorId": "player:allied",
+          "expectedRevision": 502,
+          "kind": "CHECK_SUPPLY",
+          "pieceIds": [
+            "generated-oob:286921528:allied:f6-combat-1:unit"
+          ],
+          "sourcePieceId": "supply-arrival:player:allied:6#load492"
+        },
+        "intent": "supply: feed the most valuable unit out of trace"
+      },
+      {
+        "revision": 503,
+        "action": {
+          "actionId": "candidate:supply:generated-oob:286921528:allied:f3-combat-1:unit:supply-arrival:player:allied:6#load492:503",
+          "actorId": "player:allied",
+          "expectedRevision": 503,
+          "kind": "CHECK_SUPPLY",
+          "pieceIds": [
+            "generated-oob:286921528:allied:f3-combat-1:unit"
+          ],
+          "sourcePieceId": "supply-arrival:player:allied:6#load492"
+        },
+        "intent": "supply: feed the most valuable unit out of trace"
+      },
+      {
+        "revision": 504,
+        "action": {
+          "actionId": "candidate:supply:generated-oob:286921528:allied:f1-combat-1:unit:supply-arrival:player:allied:6#load492:504",
+          "actorId": "player:allied",
+          "expectedRevision": 504,
+          "kind": "CHECK_SUPPLY",
+          "pieceIds": [
+            "generated-oob:286921528:allied:f1-combat-1:unit"
+          ],
+          "sourcePieceId": "supply-arrival:player:allied:6#load492"
+        },
+        "intent": "supply: feed the most valuable unit out of trace"
+      },
+      {
+        "revision": 505,
+        "action": {
+          "actionId": "candidate:supply:generated-oob:286921528:allied:f1-combat-2:unit:supply-arrival:player:allied:6#load492:505",
+          "actorId": "player:allied",
+          "expectedRevision": 505,
+          "kind": "CHECK_SUPPLY",
+          "pieceIds": [
+            "generated-oob:286921528:allied:f1-combat-2:unit"
+          ],
+          "sourcePieceId": "supply-arrival:player:allied:6#load492"
+        },
+        "intent": "supply: feed the most valuable unit out of trace"
+      },
+      {
+        "revision": 506,
+        "action": {
+          "actionId": "candidate:supply:generated-oob:286921528:allied:f2-combat-1:unit:supply-arrival:player:allied:6#load492:506",
+          "actorId": "player:allied",
+          "expectedRevision": 506,
+          "kind": "CHECK_SUPPLY",
+          "pieceIds": [
+            "generated-oob:286921528:allied:f2-combat-1:unit"
+          ],
+          "sourcePieceId": "supply-arrival:player:allied:6#load492"
+        },
+        "intent": "supply: feed the most valuable unit out of trace"
+      },
+      {
+        "revision": 507,
+        "action": {
+          "actionId": "candidate:advance:507",
+          "actorId": "player:allied",
+          "expectedRevision": 507,
+          "kind": "ADVANCE_SEQUENCE"
+        },
+        "intent": "end step: nothing worth doing in supply none"
+      },
+      {
+        "revision": 508,
+        "action": {
+          "actionId": "candidate:decision:decision:interrupt:507:169:6:3:1:piece:generated-oob:286921528:allied:f1-artillery-1:unit:508",
+          "actorId": "player:allied",
+          "expectedRevision": 508,
+          "kind": "RESPOND_DECISION",
+          "decisionId": "decision:interrupt:507:169:6:3:1",
+          "choiceId": "piece:generated-oob:286921528:allied:f1-artillery-1:unit"
+        },
+        "intent": "cheapest-loss: lose the least valuable unit (Div Arty I / 4.A loses a step (1 left))"
+      }
+    ]
+  },
+  {
+    "name": "ration-group-1210102",
+    "version": "16",
+    "initialCommitted": [
+      "generated-oob:286921528:allied:independent-hq-1:unit",
+      "generated-oob:286921528:allied:independent-hq-2:unit",
+      "generated-oob:286921528:allied:f5-combat-1:unit",
+      "generated-oob:286921528:allied:f6-combat-1:unit",
+      "generated-oob:286921528:allied:f3-combat-1:unit",
+      "generated-oob:286921528:allied:f1-combat-1:unit",
+      "generated-oob:286921528:allied:f1-combat-2:unit",
+      "generated-oob:286921528:allied:f2-combat-1:unit",
+      "generated-oob:286921528:allied:f2-combat-2:unit",
+      "generated-oob:286921528:allied:independent-tank-1:unit",
+      "generated-oob:286921528:allied:independent-tank-2:unit",
+      "generated-oob:286921528:allied:f1-recon:unit",
+      "generated-oob:286921528:allied:f2-recon:unit",
+      "generated-oob:286921528:allied:independent-anti_tank-1:unit",
+      "generated-oob:286921528:allied:independent-anti_tank-2:unit",
+      "generated-oob:286921528:allied:f1-artillery-1:unit",
+      "generated-oob:286921528:allied:f2-artillery-1:unit",
+      "generated-oob:286921528:allied:independent-artillery-1:unit",
+      "generated-oob:286921528:allied:independent-artillery-2:unit"
+    ],
+    "finalUnfed": [],
+    "committedUnfed": [],
+    "attritionSteps": 0,
+    "payments": [
+      {
+        "kind": "CHECK_SUPPLY",
+        "source": "supply-arrival:player:allied:6#load492",
+        "tokens": 10
+      }
+    ],
+    "actions": [
+      {
+        "revision": 499,
+        "action": {
+          "actionId": "candidate:supply:generated-oob:286921528:allied:independent-hq-1:unit:supply-arrival:player:allied:6#load492:499",
+          "actorId": "player:allied",
+          "expectedRevision": 499,
+          "kind": "CHECK_SUPPLY",
+          "pieceIds": [
+            "generated-oob:286921528:allied:f5-combat-1:unit",
+            "generated-oob:286921528:allied:f3-combat-1:unit",
+            "generated-oob:286921528:allied:f6-combat-1:unit",
+            "generated-oob:286921528:allied:f1-combat-1:unit",
+            "generated-oob:286921528:allied:f1-combat-2:unit",
+            "generated-oob:286921528:allied:f2-combat-1:unit",
+            "generated-oob:286921528:allied:f2-combat-2:unit",
+            "generated-oob:286921528:allied:f1-artillery-1:unit",
+            "generated-oob:286921528:allied:f1-recon:unit",
+            "generated-oob:286921528:allied:f2-artillery-1:unit",
+            "generated-oob:286921528:allied:f2-recon:unit",
+            "generated-oob:286921528:allied:independent-anti_tank-1:unit",
+            "generated-oob:286921528:allied:independent-anti_tank-2:unit",
+            "generated-oob:286921528:allied:independent-artillery-1:unit",
+            "generated-oob:286921528:allied:independent-artillery-2:unit",
+            "generated-oob:286921528:allied:independent-hq-1:unit",
+            "generated-oob:286921528:allied:independent-hq-2:unit",
+            "generated-oob:286921528:allied:independent-tank-1:unit",
+            "generated-oob:286921528:allied:independent-tank-2:unit"
+          ],
+          "sourcePieceId": "supply-arrival:player:allied:6#load492"
+        },
+        "intent": "supply: feed 19 unit(s) together for 10T, preserving shared commitments"
+      },
+      {
+        "revision": 500,
+        "action": {
+          "actionId": "candidate:advance:500",
+          "actorId": "player:allied",
+          "expectedRevision": 500,
+          "kind": "ADVANCE_SEQUENCE"
+        },
+        "intent": "end step: nothing worth doing in supply none"
+      }
+    ]
+  },
+  {
+    "name": "ration-recovery-1210006",
+    "version": "15",
+    "initialCommitted": [],
+    "finalUnfed": [
+      "generated-oob:286912216:axis:f2-recon:unit",
+      "generated-oob:286912216:axis:f3-combat-1:unit",
+      "generated-oob:286912216:axis:independent-tank-1:unit",
+      "generated-oob:286912216:axis:independent-tank-5:unit"
+    ],
+    "committedUnfed": [],
+    "attritionSteps": 6,
+    "payments": [
+      {
+        "kind": "RECOVER_INTERNALS",
+        "source": "supply-arrival:player:axis:4",
+        "tokens": 2
+      }
+    ],
+    "actions": [
+      {
+        "revision": 327,
+        "action": {
+          "actionId": "candidate:recover:generated-oob:286912216:axis:independent-anti-tank-3:unit:327",
+          "actorId": "player:axis",
+          "expectedRevision": 327,
+          "kind": "RECOVER_INTERNALS",
+          "pieceId": "generated-oob:286912216:axis:independent-anti-tank-3:unit",
+          "sourcePieceIds": [
+            "supply-arrival:player:axis:4"
+          ]
+        },
+        "intent": "supply: recover internals"
+      },
+      {
+        "revision": 328,
+        "action": {
+          "actionId": "candidate:advance:328",
+          "actorId": "player:axis",
+          "expectedRevision": 328,
+          "kind": "ADVANCE_SEQUENCE"
+        },
+        "intent": "end step: nothing worth doing in supply none"
+      }
+    ]
+  },
+  {
+    "name": "ration-recovery-1210006",
+    "version": "16",
+    "initialCommitted": [],
+    "finalUnfed": [
+      "generated-oob:286912216:axis:f2-recon:unit",
+      "generated-oob:286912216:axis:f3-combat-1:unit",
+      "generated-oob:286912216:axis:independent-tank-1:unit",
+      "generated-oob:286912216:axis:independent-tank-5:unit"
+    ],
+    "committedUnfed": [],
+    "attritionSteps": 6,
+    "payments": [
+      {
+        "kind": "RECOVER_INTERNALS",
+        "source": "supply-arrival:player:axis:4",
+        "tokens": 2
+      }
+    ],
+    "actions": [
+      {
+        "revision": 327,
+        "action": {
+          "actionId": "candidate:recover:generated-oob:286912216:axis:independent-anti-tank-3:unit:327",
+          "actorId": "player:axis",
+          "expectedRevision": 327,
+          "kind": "RECOVER_INTERNALS",
+          "pieceId": "generated-oob:286912216:axis:independent-anti-tank-3:unit",
+          "sourcePieceIds": [
+            "supply-arrival:player:axis:4"
+          ]
+        },
+        "intent": "supply: recover internals"
+      },
+      {
+        "revision": 328,
+        "action": {
+          "actionId": "candidate:advance:328",
+          "actorId": "player:axis",
+          "expectedRevision": 328,
+          "kind": "ADVANCE_SEQUENCE"
+        },
+        "intent": "end step: nothing worth doing in supply none"
+      }
+    ]
+  }
+]

@@ -47,7 +47,9 @@ describe('pending decisions answered in the deciding side\'s favour', () => {
     const context = {
       playerId: 'player:axis',
       view: { pendingDecision: { id: 'd', kind, options, prompt: '', transactionId: null, stateRevision: 1 }, projection: { combat: null } },
-      actions: { candidates: () => actions },
+      actions: { candidates: () => actions, explain: () => ({ current: true, explanation: {
+        allowed: true, facts: facts({ 'supply.retreatForcedLosses': 0, 'supply.retreatUnfed': 0, 'supply.retreatTraceLost': 0 }),
+      } }) },
     } as unknown as BotDecisionContext;
     const situation = {
       own: [], objectives: [], playerId: 'player:axis',
@@ -70,7 +72,7 @@ describe('pending decisions answered in the deciding side\'s favour', () => {
     expect(respondToDecision(lead.context, lead.situation)?.action).toMatchObject({ choiceId: 'lead:c' });
   });
 
-  it('retreats to the least threatened hex and pays combat supply instead of defending unsupplied', () => {
+  it('breaks equal retreat supply risk by threat and pays combat supply instead of defending unsupplied', () => {
     const retreat = contextFor('RETREAT_HEX', [
       { id: 'hex:1,1', label: 'to 1,1', hexId: '1,1' },
       { id: 'hex:2,2', label: 'to 2,2', hexId: '2,2' },

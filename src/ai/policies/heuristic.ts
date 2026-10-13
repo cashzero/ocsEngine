@@ -506,14 +506,16 @@ const truckStep = (context: BotDecisionContext, situation: Situation, unit: OwnU
       return unload ? decision(unload, `unload ${carried}T for the cut-off units at ${relief}`, [{ term: 'relief', value: carried }]) : null;
     }
     if (notes.truckMoved.has(id)) { notes.done.add(id); return null; }
-    let best: { action: GameAction; terms: BotScoreTerm[] } | null = null;
+    const scored: { action: GameAction; terms: BotScoreTerm[] }[] = [];
     for (const move of actions.candidates('MOVE_PIECE', id, TRUCK_MOVE_BUDGET)) {
       const destination = destinationOf(move)!;
       const terms: BotScoreTerm[] = [{ term: 'toward-relief', value: (hexesBetween(unit.hexId, relief) - hexesBetween(destination, relief)) * w.truckTowardGoal }];
       // A truck in an enemy-adjacent hex is easy prey (8.0); the rest of the danger is the price of the run.
       if (situation.nearestEnemy(destination).distance <= 1) terms.push({ term: 'truck-exposed', value: -w.truckExposed });
-      if (!best || sum(terms) > sum(best.terms)) best = { action: move, terms };
+      scored.push({ action: move, terms });
     }
+    const best = scored.sort((a, b) => sum(b.terms) - sum(a.terms))
+      .find(candidate => sum(candidate.terms) > 0 && preservesFriendlySupply(context, candidate.action));
     if (best && sum(best.terms) > 0) {
       notes.truckMoved.add(id);
       return decision(best.action, `truck to the cut-off units at ${relief}`, best.terms);
@@ -562,14 +564,16 @@ const truckStep = (context: BotDecisionContext, situation: Situation, unit: OwnU
     : pickupFor(situation, notes, unit, forwardHq?.hexId ?? null);
   if (!goal) { debug?.(`TRUCK ${id} at ${unit.hexId} carried ${carried} no goal (claims ${JSON.stringify([...(notes.claims?.tokens ?? [])])})`); notes.done.add(id); return null; }
   const moves = actions.candidates('MOVE_PIECE', id, TRUCK_MOVE_BUDGET);
-  let best: { action: GameAction; terms: BotScoreTerm[] } | null = null;
+  const scored: { action: GameAction; terms: BotScoreTerm[] }[] = [];
   for (const move of moves) {
     const destination = destinationOf(move)!;
     const terms: BotScoreTerm[] = [{ term: 'toward-goal', value: (hexesBetween(unit.hexId, goal) - hexesBetween(destination, goal)) * w.truckTowardGoal }];
     if (situation.nearestEnemy(destination).distance <= 2) terms.push({ term: 'truck-exposed', value: -w.truckExposed });
     terms.push({ term: 'exposure', value: -situation.threatAt(destination) * w.truckExposure });
-    if (!best || sum(terms) > sum(best.terms)) best = { action: move, terms };
+    scored.push({ action: move, terms });
   }
+  const best = scored.sort((a, b) => sum(b.terms) - sum(a.terms))
+    .find(candidate => sum(candidate.terms) > 0 && preservesFriendlySupply(context, candidate.action));
   debug?.(`TRUCK ${id} at ${unit.hexId} carried ${carried} goal ${goal} center ${center} moves ${moves.length} best ${best ? `${sum(best.terms).toFixed(1)} to ${destinationOf(best.action)}` : '-'} enemy ${situation.nearestEnemy(unit.hexId).distance}`);
   if (!best || sum(best.terms) <= 0) {
     // Cannot get closer: rather than sit loaded, unload here when the army can draw from it.
@@ -581,7 +585,7 @@ const truckStep = (context: BotDecisionContext, situation: Situation, unit: OwnU
     return null;
   }
   notes.truckMoved.add(id);
-  return decision(best.action, `truck toward ${goal}`, best.terms, moves);
+  return decision(best.action, `truck toward ${goal}`, best.terms);
 };
 
 /** Rail moves shorter than this many hexes toward the front are not worth the Rail Cap. */
@@ -653,6 +657,20 @@ const seaStep = (context: BotDecisionContext, situation: Situation, notes: StepN
   return decision(best.action, best.why, [{ term: 'sea', value: best.value }]);
 };
 
+/** Preserve existing trace and individual SP ration access, including units left behind by a loaded truck. */
+const preservesFriendlySupply = (context: BotDecisionContext, action: GameAction): boolean => {
+  const { explanation } = context.actions.explain(action);
+  const lost = explanation.facts.find(({ key }) => key === 'supply.relocationTraceLost')?.value;
+  const feedLost = explanation.facts.find(({ key }) => key === 'supply.relocationFeedLost')?.value;
+  if (lost !== 0) debug?.(`keep friendly supply: ${action.kind} would strand ${lost ?? 'unknown'} unit(s)`);
+  return explanation.allowed && lost === 0 && feedLost === 0;
+};
+
+const preservesRations = (context: BotDecisionContext, action: GameAction): boolean => {
+  const { explanation } = context.actions.explain(action);
+  return explanation.allowed && explanation.facts.some(f => f.key === 'supply.rationCommitmentsPreserved' && f.value === true);
+};
+
 const movementStep = (context: BotDecisionContext, situation: Situation, facts: BotGameFacts, w: HeuristicWeights): BotDecision | null => {
   const { actions } = context;
   const notes = notesOf(context);
@@ -701,7 +719,9 @@ const movementStep = (context: BotDecisionContext, situation: Situation, facts: 
           : unit.piece.role === 'HQ' ? (front !== null && hexesBetween(unit.hexId, front) <= w.hqCombatModeRadius ? 'COMBAT' : 'MOVE') : null;
       if (wanted !== null && unit.piece.mode !== wanted) {
         const change = actions.candidates('CHANGE_MODE', id).find((action) => action.kind === 'CHANGE_MODE' && action.mode === wanted);
-        if (change) return decision(change, `${wanted} mode (${enemyDistance} hexes from the enemy)`, [{ term: 'mode', value: 1 }]);
+        if (change && preservesFriendlySupply(context, change)) {
+          return decision(change, `${wanted} mode (${enemyDistance} hexes from the enemy)`, [{ term: 'mode', value: 1 }]);
+        }
       }
     }
     // Overrun what is in the way when the table promises a clear result (8.0).
@@ -714,7 +734,8 @@ const movementStep = (context: BotDecisionContext, situation: Situation, facts: 
       notes.fueled.add(id);
       // Combat units fuel to reach their target; HQs and artillery always fuel to keep up with the front.
       const wantsToMove = unit.piece.role !== 'COMBAT' || (target !== undefined && hexesBetween(unit.hexId, target.hexId) > 0);
-      const fuel = [...actions.candidates('PAY_FUEL', id)].sort((left, right) => fuelRank(left) - fuelRank(right))[0];
+      const fuel = wantsToMove ? [...actions.candidates('PAY_FUEL', id)].sort((left, right) => fuelRank(left) - fuelRank(right))
+        .find(action => preservesRations(context, action)) : undefined;
       if (fuel && wantsToMove) return decision(fuel, `fuel to move (${fuel.kind === 'PAY_FUEL' ? fuel.method : ''})`, [{ term: 'fuel', value: 1 }]);
     }
     notes.done.add(id);
@@ -731,10 +752,19 @@ const movementStep = (context: BotDecisionContext, situation: Situation, facts: 
     const feeds = unit.piece.role === 'COMBAT' || unit.piece.role === 'ARTILLERY' ? unitFeeds(unit) : sideFeeds;
     const stay = sum(scoreDestination(situation, unit, target, [unit.hexId], notes, reach, direct, front, w, feeds));
     let best: { action: GameAction; terms: BotScoreTerm[] } | null = null;
+    const scored: { action: GameAction; terms: BotScoreTerm[] }[] = [];
     for (const move of moves) {
       if (move.kind !== 'MOVE_PIECE') continue;
       const terms = scoreDestination(situation, unit, target, move.path, notes, reach, direct, front, w, feeds);
-      if (!best || sum(terms) > sum(best.terms)) best = { action: move, terms };
+      scored.push({ action: move, terms });
+    }
+    // Inspect promising destinations in score order: neither an HQ nor a ZOC-negating unit may strand its friends.
+    // Checking only improving moves avoids expensive path queries for destinations the bot would never choose.
+    for (const candidate of scored.sort((left, right) => sum(right.terms) - sum(left.terms))) {
+      if (sum(candidate.terms) <= stay) break;
+      if (!preservesFriendlySupply(context, candidate.action)) continue;
+      best = candidate;
+      break;
     }
     debug?.(`${unit.piece.role} ${id} at ${unit.hexId} mode ${unit.piece.mode} ${reach.has(unit.hexId) ? 'in-trace' : 'OUT-OF-TRACE'} target ${target?.purpose ?? '-'} ${target?.hexId ?? ''} `
       + `enemy ${enemyDistance} moves ${moves.length} stay ${stay.toFixed(1)} best ${best ? `${sum(best.terms).toFixed(1)} to ${destinationOf(best.action)} ${JSON.stringify(best.terms)}` : '-'}`);
@@ -746,7 +776,7 @@ const movementStep = (context: BotDecisionContext, situation: Situation, facts: 
         const source = feedSourceFor(notes, feeds, unit, destination);
         if (source !== null) notes.feedBudget!.set(source, notes.feedBudget!.get(source)! - eatingCost(unit));
       }
-      return decision(best.action, `${unit.piece.role.toLowerCase()} to ${destination}${target ? ` (${target.purpose.toLowerCase()} ${target.hexId})` : ''}`, best.terms, moves);
+      return decision(best.action, `${unit.piece.role.toLowerCase()} to ${destination}${target ? ` (${target.purpose.toLowerCase()} ${target.hexId})` : ''}`, best.terms);
     }
   }
   return null;
@@ -779,6 +809,7 @@ const hedgehogStep = (context: BotDecisionContext, situation: Situation, w: Heur
     const objective = situation.objectives.find(({ hexId, controllerId }) => hexId === action.hexId && controllerId === situation.playerId);
     const wanted = objective ? w.hedgehogObjectiveLevel : distance <= 1 ? w.hedgehogFrontLevel : 0;
     if (levelAt(action.hexId) >= wanted) continue;
+    if (!preservesRations(context, action)) continue;
     const score = (objective ? 10 * objective.points : 0) + situation.threatAt(action.hexId) + (action.engineerId === null ? 1 : 0);
     if (!best || score > best.score) best = { action, score, hexId: action.hexId, wanted };
   }
@@ -922,6 +953,18 @@ const supplyStep = (context: BotDecisionContext, situation: Situation): BotDecis
   const checks = [...context.actions.candidates('CHECK_SUPPLY', null, 200)].sort((left, right) =>
     (right.kind === 'CHECK_SUPPLY' ? feedValue(situation, right.pieceIds[0]!) : 0) - (left.kind === 'CHECK_SUPPLY' ? feedValue(situation, left.pieceIds[0]!) : 0));
   if (checks[0]?.kind === 'CHECK_SUPPLY') {
+    const { explanation } = context.actions.explain(checks[0]);
+    const encoded = explanation.facts.find(f => f.key === 'supply.rationGroups')?.value;
+    if (typeof encoded === 'string') {
+      const groups = JSON.parse(encoded) as readonly { sourcePieceId: PieceId; pieceIds: readonly PieceId[]; tokens: number }[];
+      const first = groups[0];
+      if (first) {
+        const action: GameAction = { ...checks[0], sourcePieceId: first.sourcePieceId, pieceIds: first.pieceIds };
+        if (context.actions.explain(action).explanation.allowed) {
+          return decision(action, `supply: feed ${first.pieceIds.length} unit(s) together for ${first.tokens}T, preserving shared commitments`, [{ term: 'feed', value: first.pieceIds.length }]);
+        }
+      }
+    }
     return decision(checks[0], 'supply: feed the most valuable unit out of trace', [{ term: 'feed', value: feedValue(situation, checks[0].pieceIds[0]!) }]);
   }
   for (const kind of ['CHOOSE_FORMATION_TRACE', 'RECOVER_INTERNALS'] as const) {
@@ -971,7 +1014,7 @@ export const createHeuristicPolicy = (facts: BotGameFacts, options: HeuristicPol
   const choose = decide(facts, options.weights ?? DEFAULT_HEURISTIC_WEIGHTS);
   return {
     id: 'heuristic',
-    version: options.label === undefined ? '12' : `12+${options.label}`,
+    version: options.label === undefined ? '16' : `16+${options.label}`,
     decide: (context) => {
       const sink = options.debug;
       debug = sink ? (line) => sink(`${context.memory.stepKey} ${String(context.playerId).split(':').at(-1)} ${line}`) : null;
