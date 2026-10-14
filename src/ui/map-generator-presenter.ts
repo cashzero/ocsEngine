@@ -52,7 +52,15 @@ const edgeKinds = (definitions: readonly string[]): GeneratedMapPreviewEdge['kin
   return [river, road, rail].filter((kind) => kind !== null);
 };
 
-export const buildGeneratedMapPreview = (generated: GeneratedMap, hexSize = 36): GeneratedMapPreview => {
+/**
+ * `inland` says which sides' entry edges the game declares: a side without inland entry Hexes (it lands by sea) keeps
+ * its edge Hexes in the generated map but gets no entry band or Supply Source mark there.
+ */
+export const buildGeneratedMapPreview = (
+  generated: GeneratedMap,
+  hexSize = 36,
+  inland: { readonly FIRST: boolean; readonly SECOND: boolean } = { FIRST: true, SECOND: true },
+): GeneratedMapPreview => {
   const layout = layoutMapDefinition(generated.mapDefinition, hexSize);
   const positions = new Map(layout.cells.map((cell) => [cell.id, cell]));
   const cityIds = layout.cells.filter(({ id }) => generated.mapDefinition.hexes.find((hex) => String(hex.id) === id)
@@ -65,18 +73,18 @@ export const buildGeneratedMapPreview = (generated: GeneratedMap, hexSize = 36):
   const cells = layout.cells.map((cell) => {
     const definition = generated.mapDefinition.hexes.find(({ id }) => id === cell.id)!;
     const settlementId = definition.features.find(({ definitionId }) => String(definitionId).startsWith('settlement:'))?.definitionId;
-    const first = generated.strategicRegions.firstEntryHexIds.includes(cell.id)
-      || generated.strategicRegions.firstSupplyHexIds.includes(cell.id);
-    const second = generated.strategicRegions.secondEntryHexIds.includes(cell.id)
-      || generated.strategicRegions.secondSupplyHexIds.includes(cell.id);
+    const first = inland.FIRST && (generated.strategicRegions.firstEntryHexIds.includes(cell.id)
+      || generated.strategicRegions.firstSupplyHexIds.includes(cell.id));
+    const second = inland.SECOND && (generated.strategicRegions.secondEntryHexIds.includes(cell.id)
+      || generated.strategicRegions.secondSupplyHexIds.includes(cell.id));
     return {
       id: cell.id, x: cell.x, y: cell.y, points: cell.points,
       terrain: terrain(definition.terrainDefinitionIds[0]!),
       settlement: settlementId ? String(settlementId).split(':').at(-1)!.toUpperCase() as 'CITY' | 'TOWN' | 'VILLAGE' : null,
       urbanCore: cores.has(cell.id),
       strategic: first ? 'FIRST' as const : second ? 'SECOND' as const : null,
-      supplySource: generated.strategicRegions.firstSupplyHexIds.includes(cell.id) ? 'FIRST' as const
-        : generated.strategicRegions.secondSupplyHexIds.includes(cell.id) ? 'SECOND' as const : null,
+      supplySource: inland.FIRST && generated.strategicRegions.firstSupplyHexIds.includes(cell.id) ? 'FIRST' as const
+        : inland.SECOND && generated.strategicRegions.secondSupplyHexIds.includes(cell.id) ? 'SECOND' as const : null,
       airEntry: definition.features.some(({ definitionId }) => definitionId === 'air-entry:first') ? 'FIRST' as const
         : definition.features.some(({ definitionId }) => definitionId === 'air-entry:second') ? 'SECOND' as const : null,
       port: definition.features.some(({ kind, definitionId }) => kind === 'FACILITY' && String(definitionId) === 'facility:port'),

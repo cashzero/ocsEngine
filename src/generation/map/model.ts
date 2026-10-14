@@ -18,6 +18,14 @@ export type MapGenerationStyle = (typeof MAP_GENERATION_STYLES)[number];
 export const MAP_SEA_PLACEMENTS = ['NONE', 'NORTH', 'WEST', 'EAST'] as const;
 export type MapSeaPlacement = (typeof MAP_SEA_PLACEMENTS)[number];
 
+/** Entry edges: west for the first (Allied) side, east for the second (Axis). */
+export const MAP_LANDING_EDGES = ['WEST', 'EAST'] as const;
+export type MapLandingEdge = (typeof MAP_LANDING_EDGES)[number];
+/** How far in from its edge, as a share of the map width, a landing port lies. */
+export const LANDING_PORT_DEPTH_SHARE = 0.2;
+/** Columns from `edge` to the landing port farthest in that still counts as near the edge. */
+export const landingPortDepth = (width: number): number => Math.max(3, Math.round(width * LANDING_PORT_DEPTH_SHARE));
+
 export interface MapGenerationOptions {
   readonly width: number;
   readonly height: number;
@@ -25,6 +33,11 @@ export interface MapGenerationOptions {
   readonly style: MapGenerationStyle;
   /** Defaults to the style's own sea: WEST for the Mediterranean coast, NONE otherwise. */
   readonly sea?: MapSeaPlacement;
+  /**
+   * Entry edges of sides that reach the map only by sea (no inland entry Hexes): each gets a port within
+   * `landingPortDepth` columns of it. Needs a sea; absent means none.
+   */
+  readonly landingEdges?: readonly MapLandingEdge[];
   /** Settlements per land Hex; defaults to the style's own density. */
   readonly settlementDensity?: number;
 }
@@ -34,6 +47,7 @@ export interface NormalizedMapGenerationOptions {
   readonly seed: number;
   readonly style: MapGenerationStyle;
   readonly sea: MapSeaPlacement;
+  readonly landingEdges: readonly MapLandingEdge[];
   readonly settlementDensity: number;
 }
 

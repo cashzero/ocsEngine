@@ -3,6 +3,7 @@ import { entryCountFor, railEntryCountFor } from '../../src/generation/map/netwo
 import {
   generateRandomMap,
   hexDistance,
+  landingPortDepth,
   parseHexCoordinateId,
   parseHexsideId,
   serializeGeneratedMap,
@@ -270,5 +271,26 @@ describe('M6 deterministic random map pipeline', () => {
     const sea = generateRandomMap({ ...options, sea: 'SOUTH' as never });
     expect(sea.ok).toBe(false);
     if (!sea.ok) expect(sea.error.map(({ path }) => path[0])).toEqual(['sea']);
+    const landing = generateRandomMap({ ...options, sea: 'NONE', landingEdges: ['WEST'] });
+    expect(landing.ok).toBe(false);
+    if (!landing.ok) expect(landing.error.map(({ path }) => path[0])).toEqual(['landingEdges']);
+  });
+
+  it('gives each landing edge a port near it, and leaves maps without one unchanged', () => {
+    const plain = generateRandomMap({ ...options, sea: 'NORTH' });
+    expect(generateRandomMap({ ...options, sea: 'NORTH', landingEdges: [] })).toEqual(plain);
+    for (const landingEdges of [['WEST'], ['EAST'], ['WEST', 'EAST']] as const) {
+      const generated = generateRandomMap({ ...options, sea: 'NORTH', landingEdges });
+      expect(generated.ok).toBe(true);
+      if (!generated.ok) continue;
+      expect(String(generated.value.mapDefinition.id)).toContain(landingEdges.map((edge) => `:landing-${edge.toLowerCase()}`).join(''));
+      for (const edge of landingEdges) {
+        expect(generated.value.strategicRegions.portHexIds.some((hexId) => {
+          const parsed = parseHexCoordinateId(hexId);
+          const column = parsed.ok ? parsed.value.q + Math.floor(parsed.value.r / 2) : Number.NaN;
+          return (edge === 'WEST' ? column : options.width - 1 - column) <= landingPortDepth(options.width);
+        })).toBe(true);
+      }
+    }
   });
 });

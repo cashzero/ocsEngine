@@ -1,7 +1,8 @@
 import { validateScenarioDefinition } from '../domain/scenario/index.js';
 import { createPieceDefinitionCatalogIndex } from '../domain/piece/index.js';
 import { validateRuleConfiguration } from '../rules/index.js';
-import { ENGAGEMENTS, NEW_GAME_SEAS, type GameFlowFailure, type GeneratedScenarioPackage, type NewGameRequest } from './model.js';
+import { seaCapOf } from './configuration.js';
+import { ENGAGEMENTS, NEW_GAME_SEAS, newGameSeaOf, type GameFlowFailure, type GeneratedScenarioPackage, type NewGameRequest } from './model.js';
 import { BTR_CAMPAIGN_MONTHS, btrTurnDate } from './weather-supply-tables.js';
 
 /** Rail Cap points a New Game may give a side each Movement Phase. */
@@ -15,7 +16,7 @@ export const validateNewGameRequest = (request: NewGameRequest): readonly GameFl
   const failures: GameFlowFailure[] = [];
   if (request.templateId !== 'GROUND_DUEL') failures.push({ stage: 'OPTIONS', code: 'UNKNOWN_TEMPLATE', message: 'Only GROUND_DUEL is currently supported.', path: ['templateId'] });
   if (request.engagement !== undefined && !ENGAGEMENTS.includes(request.engagement)) failures.push({ stage: 'OPTIONS', code: 'UNKNOWN_ENGAGEMENT', message: 'Engagement must be MEETING, ALLIED_ATTACKS or AXIS_ATTACKS.', path: ['engagement'] });
-  if (request.map.sea !== undefined && !NEW_GAME_SEAS.includes(request.map.sea)) failures.push({ stage: 'OPTIONS', code: 'UNKNOWN_SEA', message: 'Sea must be NONE, FLANK or ATTACKER.', path: ['map', 'sea'] });
+  if (request.map.sea !== undefined && !NEW_GAME_SEAS.includes(request.map.sea)) failures.push({ stage: 'OPTIONS', code: 'UNKNOWN_SEA', message: 'Sea must be NONE or FLANK.', path: ['map', 'sea'] });
   for (const [name, value] of Object.entries(request.seeds)) {
     if (!uint32(value)) failures.push({ stage: 'OPTIONS', code: 'INVALID_SEED', message: `${name} seed must be uint32.`, path: ['seeds', name] });
   }
@@ -35,6 +36,19 @@ export const validateNewGameRequest = (request: NewGameRequest): readonly GameFl
       const points = request.seaCap[side];
       if (!Number.isSafeInteger(points) || points < 0 || points > MAXIMUM_SEA_CAP) {
         failures.push({ stage: 'OPTIONS', code: 'INVALID_SEA_CAP', message: `Sea Cap must be a whole number of points from 0 through ${MAXIMUM_SEA_CAP}.`, path: ['seaCap', side] });
+      }
+    }
+  }
+  if (request.inlandEntry !== undefined) {
+    for (const side of ['allied', 'axis'] as const) {
+      const entry = request.inlandEntry[side];
+      if (typeof entry !== 'boolean') {
+        failures.push({ stage: 'OPTIONS', code: 'INVALID_INLAND_ENTRY', message: 'Inland entry must be yes or no.', path: ['inlandEntry', side] });
+      } else if (!entry && newGameSeaOf(request) === 'NONE') {
+        failures.push({ stage: 'OPTIONS', code: 'INLAND_ENTRY_REQUIRED', message: 'Without a sea every side needs inland entry hexes.', path: ['inlandEntry', side] });
+      } else if (!entry && (seaCapOf(request)?.[side] ?? 0) < 1) {
+        // A side that lands everything by ship cannot do without Sea Cap (19.0f).
+        failures.push({ stage: 'OPTIONS', code: 'SEA_CAP_REQUIRED', message: 'A side without inland entry hexes needs at least 1 Sea Cap.', path: ['seaCap', side] });
       }
     }
   }
@@ -106,11 +120,12 @@ export const validateGeneratedScenarioPackage = (
     });
   }
   for (const player of generated.scenario.players) {
-    if (!generated.scenario.sources.some(({ sideDefinitionId }) => sideDefinitionId === player.sideDefinitionId)) failures.push({
+    // A side without inland entry enters by ship through its ports instead (19.0f): it needs one at the start, and its
+    // sources are ports, declared for its side or, when both sides use ports, for whoever holds them.
+    const bySea = generated.configuration.seaArrivals?.includes(player.id) ?? false;
+    if (!generated.scenario.sources.some(({ sideDefinitionId }) => sideDefinitionId === player.sideDefinitionId || (bySea && sideDefinitionId === null))) failures.push({
       stage: 'DEPLOYMENT', code: 'MISSING_SIDE_SOURCE', message: `${player.name} has no supply source.`, path: ['scenario', 'sources'],
     });
-    // A side the sea lies behind enters by ship through its ports instead (19.0f): it needs one at the start.
-    const bySea = generated.configuration.seaArrivals?.includes(player.id) ?? false;
     if (!bySea && !generated.scenario.entries.some(({ sideDefinitionId }) => sideDefinitionId === player.sideDefinitionId)) failures.push({
       stage: 'DEPLOYMENT', code: 'MISSING_SIDE_ENTRY', message: `${player.name} has no entry region.`, path: ['scenario', 'entries'],
     });

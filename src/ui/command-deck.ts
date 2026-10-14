@@ -147,7 +147,7 @@ export const stepObjective = (snapshot: UiSnapshot): string => {
   }
   switch (sequence.phase) {
     case 'REINFORCEMENT': return snapshot.arrivals.length > 0 ? 'Place every arriving unit: select it, then click a blue entry hex.'
-      : boxWaiting(snapshot) > 0 ? `${boxWaiting(snapshot)} counter${boxWaiting(snapshot) === 1 ? '' : 's'} wait in your reinforcement Box: with the sea behind you, they land by ship at your ports in your Movement Phase (19.0f).`
+      : boxWaiting(snapshot) > 0 ? `${boxWaiting(snapshot)} counter${boxWaiting(snapshot) === 1 ? '' : 's'} wait in your reinforcement Box: with no inland entry hexes, they land by ship at your ports in your Movement Phase (19.0f).`
         : 'All reinforcements are placed.';
     case 'MOVEMENT': return boxWaiting(snapshot) > 0 && snapshot.view.projection?.seaCap
       ? `Move units one at a time. ${boxWaiting(snapshot)} counter${boxWaiting(snapshot) === 1 ? '' : 's'} wait in your reinforcement Box: with nothing selected, ship them to a port (19.0f).`

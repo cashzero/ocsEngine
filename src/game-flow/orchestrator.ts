@@ -3,7 +3,7 @@ import { generateRandomOob } from '../generation/oob/index.js';
 import type { ValidationIssue } from '../core/index.js';
 import { composeGeneratedScenario, GENERATED_PLAYERS } from './composer.js';
 import { deployGeneratedForces } from './deployment.js';
-import { attackerOf, mapSeaPlacementOf } from './model.js';
+import { attackerOf, landingEdgesOf, mapSeaPlacementOf, seaArrivalSidesOf } from './model.js';
 import type {
   CreatedNewGame,
   GameFlowEngine,
@@ -28,7 +28,7 @@ function* prepareNewGameSteps(request: NewGameRequest): Generator<NewGamePrepara
   const optionFailures = validateNewGameRequest(request);
   if (optionFailures.length > 0) return { ok: false, error: optionFailures };
   yield 'MAP';
-  const map = generateRandomMap({ ...request.map, sea: mapSeaPlacementOf(request), seed: request.seeds.map });
+  const map = generateRandomMap({ ...request.map, sea: mapSeaPlacementOf(request), landingEdges: landingEdgesOf(request), seed: request.seeds.map });
   if (!map.ok) return { ok: false, error: generatorFailures('MAP', map.error) };
   yield 'OOB';
   // An attacker fields more divisions (ATTACKER_FORCE_RATIO); a meeting engagement keeps the sides equal.
@@ -37,7 +37,7 @@ function* prepareNewGameSteps(request: NewGameRequest): Generator<NewGamePrepara
   const oob = generateRandomOob({ ...request.oob, ...(attacker === null ? {} : { attacker, offMapAir: attacker }), seed: request.seeds.oob });
   if (!oob.ok) return { ok: false, error: generatorFailures('OOB', oob.error) };
   yield 'DEPLOYMENT';
-  const deployment = deployGeneratedForces(map.value, oob.value, request.seeds.deployment, GENERATED_PLAYERS, request.engagement ?? 'MEETING');
+  const deployment = deployGeneratedForces(map.value, oob.value, request.seeds.deployment, GENERATED_PLAYERS, request.engagement ?? 'MEETING', seaArrivalSidesOf(request));
   if (!deployment.ok) return deployment;
   yield 'SCENARIO';
   const composed = composeGeneratedScenario(request, map.value, oob.value, deployment.value);

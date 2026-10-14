@@ -4,6 +4,7 @@ import {
   createInitialGameState,
   formatHexId,
   friendlySupplySources,
+  landingPortDepth,
   neighbors,
   parseHexCoordinateId,
   prepareNewGame,
@@ -51,14 +52,19 @@ describe('New Game ports (19.0)', () => {
   });
 
   it.each([['ALLIED_ATTACKS', ALLIED, AXIS], ['AXIS_ATTACKS', AXIS, ALLIED]] as const)(
-    'in an %s with the sea behind the attacker, the attacker has no land entry: its sources are its ports and it ships everything in',
+    'in an %s whose attacker has no inland entry and whose defender has no Sea Cap, the attacker lands by sea and only it uses ports',
     (engagement, attacker, defender) => {
-      const { prepared, state } = started('ATTACKER', engagement);
+      const attackerKey = attacker === ALLIED ? 'allied' : 'axis';
+      const { prepared, state } = started('FLANK', engagement, {
+        inlandEntry: { allied: attackerKey !== 'allied', axis: attackerKey !== 'axis' },
+        seaCap: { allied: attackerKey === 'allied' ? 5 : 0, axis: attackerKey === 'axis' ? 5 : 0 },
+      });
       const side = (playerId: PlayerId) => prepared.scenario.players.find(({ id }) => id === playerId)!.sideDefinitionId;
+      expect(prepared.generatedMap.options.sea).toBe('NORTH');
       expect(prepared.scenario.entries.some(({ sideDefinitionId }) => sideDefinitionId === side(attacker))).toBe(false);
       expect(prepared.scenario.entries.some(({ sideDefinitionId }) => sideDefinitionId === side(defender))).toBe(true);
       expect(prepared.configuration.seaArrivals).toEqual([attacker]);
-      expect(prepared.configuration.seaCapacity?.map(({ playerId }) => playerId)).toEqual([attacker]);
+      expect(prepared.configuration.seaCapacity).toEqual([{ playerId: attacker, points: 5 }]);
       expect(sourceKinds(state, attacker).has('MAP_EDGE')).toBe(false);
       expect(sourceKinds(state, attacker).has('PORT')).toBe(true);
       expect(sourceKinds(state, defender).has('PORT')).toBe(false);
@@ -66,7 +72,32 @@ describe('New Game ports (19.0)', () => {
     },
   );
 
-  it('along a flank both sides keep their land entries and ship between the ports they hold', () => {
+  it('gives a side without inland entry a port near its own edge, even in a meeting engagement', () => {
+    for (const [key, edge] of [['allied', 'WEST'], ['axis', 'EAST']] as const) {
+      const { prepared, state } = started('FLANK', 'MEETING', { inlandEntry: { allied: key !== 'allied', axis: key !== 'axis' } });
+      const width = prepared.request.map.width;
+      const near = prepared.generatedMap.strategicRegions.portHexIds.filter((hexId) => {
+        const parsed = parseHexCoordinateId(hexId);
+        const column = parsed.ok ? parsed.value.q + Math.floor(parsed.value.r / 2) : Number.NaN;
+        return (edge === 'WEST' ? column : width - 1 - column) <= landingPortDepth(width);
+      });
+      expect(near.length).toBeGreaterThan(0);
+      expect(prepared.generatedMap.options.landingEdges).toEqual([edge]);
+      expect(String(prepared.scenario.id).endsWith(`:by-sea-${key}`)).toBe(true);
+      const player = key === 'allied' ? ALLIED : AXIS;
+      expect(prepared.configuration.seaArrivals).toEqual([player]);
+      expect(portHolders(state).some(({ controllerId }) => controllerId === player)).toBe(true);
+    }
+  });
+
+  it('both sides may land by sea', () => {
+    const { prepared, state } = started('FLANK', 'MEETING', { inlandEntry: { allied: false, axis: false } });
+    expect(prepared.scenario.entries).toEqual([]);
+    expect(prepared.configuration.seaArrivals).toEqual([ALLIED, AXIS]);
+    for (const playerId of [ALLIED, AXIS]) expect(sourceKinds(state, playerId).has('PORT')).toBe(true);
+  });
+
+  it('with inland entry on both sides and Sea Cap for both, each keeps its land entries and ships between the ports it holds', () => {
     const { prepared, state } = started('FLANK', 'AXIS_ATTACKS');
     expect(prepared.configuration.seaArrivals).toBeUndefined();
     expect(prepared.configuration.seaCapacity?.map(({ playerId }) => playerId).sort()).toEqual([ALLIED, AXIS].sort());
@@ -77,15 +108,29 @@ describe('New Game ports (19.0)', () => {
     }
   });
 
-  it('takes the player\'s Sea Cap, and refuses one out of range', () => {
-    const { prepared } = started('ATTACKER', 'ALLIED_ATTACKS', { seaCap: { allied: 7, axis: 0 } });
-    expect(prepared.configuration.seaCapacity).toEqual([{ playerId: ALLIED, points: 7 }]);
-    const refused = prepareNewGame({ ...DEFAULT_NEW_GAME_REQUEST, map: { ...DEFAULT_NEW_GAME_REQUEST.map, sea: 'FLANK' }, seaCap: { allied: 99, axis: 1 } });
-    expect(refused.ok ? [] : refused.error.map(({ code }) => code)).toContain('INVALID_SEA_CAP');
+  it('a side with Sea Cap 0 cannot use ports, and with none at all no port is a source', () => {
+    const one = started('FLANK', 'ALLIED_ATTACKS', { seaCap: { allied: 3, axis: 0 } });
+    expect(one.prepared.configuration.seaCapacity).toEqual([{ playerId: ALLIED, points: 3 }]);
+    expect(sourceKinds(one.state, AXIS).has('PORT')).toBe(false);
+    const none = started('FLANK', 'MEETING', { seaCap: { allied: 0, axis: 0 } });
+    expect(none.prepared.configuration.seaCapacity).toBeUndefined();
+    expect(none.prepared.scenario.sources.some(({ id }) => String(id).includes(':port:'))).toBe(false);
+  });
+
+  it('takes the player\'s Sea Cap, and refuses one out of range, 0 for a side without inland entry, or no inland entry without a sea', () => {
+    const { prepared } = started('FLANK', 'ALLIED_ATTACKS', { seaCap: { allied: 7, axis: 2 } });
+    expect(prepared.configuration.seaCapacity).toEqual([{ playerId: ALLIED, points: 7 }, { playerId: AXIS, points: 2 }]);
+    const codes = (extra: Partial<NewGameRequest>, sea: NewGameSea = 'FLANK') => {
+      const refused = prepareNewGame({ ...DEFAULT_NEW_GAME_REQUEST, map: { ...DEFAULT_NEW_GAME_REQUEST.map, sea }, ...extra });
+      return refused.ok ? [] : refused.error.map(({ code }) => code);
+    };
+    expect(codes({ seaCap: { allied: 99, axis: 1 } })).toContain('INVALID_SEA_CAP');
+    expect(codes({ seaCap: { allied: 0, axis: 1 }, inlandEntry: { allied: false, axis: true } })).toEqual(['SEA_CAP_REQUIRED']);
+    expect(codes({ inlandEntry: { allied: true, axis: false } }, 'NONE')).toEqual(['INLAND_ENTRY_REQUIRED']);
   });
 
   it('a hex beside the port is land, so the shipping panel and the bot can reach every port', () => {
-    const { state } = started('ATTACKER', 'AXIS_ATTACKS');
+    const { state } = started('FLANK', 'AXIS_ATTACKS', { inlandEntry: { allied: true, axis: false } });
     const land = new Set(state.scenario.mapDefinition.hexes.filter(({ terrainDefinitionIds }) => String(terrainDefinitionIds[0]) !== 'terrain:water').map(({ id }) => String(id)));
     for (const port of state.mapState.features) {
       const hexId = (port.location as { hexId: HexId }).hexId;

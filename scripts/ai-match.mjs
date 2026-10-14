@@ -6,7 +6,7 @@
 //   node scripts/ai-match.mjs --air STANDARD --air-transport STANDARD --size 64x48 --scale LARGE
 //   node scripts/ai-match.mjs --engagement AXIS_ATTACKS --allied heuristic --axis heuristic --swap   # MEETING (default), ALLIED_ATTACKS, AXIS_ATTACKS
 //   node scripts/ai-match.mjs --engagement ALLIED_ATTACKS --rail-cap 4,6     # Rail Cap points per Movement Phase, Allied,Axis (13.3b)
-//   node scripts/ai-match.mjs --engagement ALLIED_ATTACKS --sea ATTACKER --sea-cap 5,0   # sea NONE, FLANK or ATTACKER; Sea Cap Allied,Axis (19.0f)
+//   node scripts/ai-match.mjs --engagement ALLIED_ATTACKS --sea FLANK --sea-cap 5,0 --inland-entry no,yes   # sea NONE or FLANK; Sea Cap and inland entry hexes Allied,Axis (19.0f)
 //
 // Every match varies the map, OOB, deployment and rules seeds from the match index; --fix-map / --fix-oob hold one
 // dimension fixed. Exit code 1 when any match stops for a reason other than FINISHED or fails the replay check.
@@ -23,7 +23,7 @@ const parseArgs = (argv) => {
     matches: 10, start: 0, parallel: Math.max(1, Math.min(4, availableParallelism() - 1)), turns: 8,
     width: null, height: null, scale: null, style: null, engagement: null, divisions: null, armored: null, air: null, airTransport: null,
     fixMap: null, fixOob: null, policies: { allied: 'random-legal', axis: 'random-legal' },
-    maxActions: 60_000, replay: true, trace: false, out: null, swap: false, railCap: null, sea: null, seaCap: null,
+    maxActions: 60_000, replay: true, trace: false, out: null, swap: false, railCap: null, sea: null, seaCap: null, inlandEntry: null,
   };
   for (let index = 0; index < argv.length; index += 1) {
     const flag = argv[index];
@@ -44,6 +44,7 @@ const parseArgs = (argv) => {
       case '--rail-cap': { const [allied, axis] = value().split(',').map(Number); options.railCap = { allied, axis: axis ?? allied }; break; }
       case '--sea': options.sea = value(); break;
       case '--sea-cap': { const [allied, axis] = value().split(',').map(Number); options.seaCap = { allied, axis: axis ?? allied }; break; }
+      case '--inland-entry': { const [allied, axis] = value().split(',').map((entry) => entry === 'yes'); options.inlandEntry = { allied, axis: axis ?? allied }; break; }
       case '--fix-map': options.fixMap = Number(value()); break;
       case '--fix-oob': options.fixOob = Number(value()); break;
       case '--allied': options.policies.allied = value(); break;
@@ -95,6 +96,7 @@ const runMatch = async (baseOptions, matchIndex) => {
     ...(options.engagement ? { engagement: options.engagement } : {}),
     ...(options.railCap ? { railCap: options.railCap } : {}),
     ...(options.seaCap ? { seaCap: options.seaCap } : {}),
+    ...(options.inlandEntry ? { inlandEntry: options.inlandEntry } : {}),
     seeds: { map: seeds.map, oob: seeds.oob, deployment: seeds.deployment, rules: seeds.rules },
     turnLimit: options.turns,
   };

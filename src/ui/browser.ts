@@ -24,7 +24,7 @@ import {
   SEA_CAP_PER_DIVISION,
   FLANK_SEA_CAP_PER_DIVISION,
   defaultSeaCap,
-  shippingSides,
+  inlandEntryOf,
   GENERATED_HEDGEHOG_LEVELS,
   newGameSeaOf,
   type Engagement,
@@ -37,6 +37,7 @@ import {
   type NewGameSea,
   type OobScale,
   OOB_DIVISION_LIMITS,
+  type ScenarioDefinition,
 } from '../index.js';
 import { createUiController, type UiController } from './controller.js';
 import { counterView, counterSvgBody, counterSvg, playerNation } from './counter.js';
@@ -75,7 +76,12 @@ let scenario = currentGame.scenario;
 let bindings = currentGame.bindings;
 let skipDumpOnlySteps = true;
 let controller: UiController = createUiController({ engine, session: currentGame.session, scenario, bindings, skipDumpOnlySteps });
-let theater = buildGeneratedMapPreview(currentGame.generatedMap, 50);
+/** Which sides' map edges the scenario declares entries on: a side landing by sea has none. */
+const inlandEdgesOf = (game: { readonly scenario: ScenarioDefinition }) => {
+  const declares = (index: number) => game.scenario.entries.some(({ sideDefinitionId }) => sideDefinitionId === game.scenario.players[index]?.sideDefinitionId);
+  return { FIRST: declares(0), SECOND: declares(1) };
+};
+let theater = buildGeneratedMapPreview(currentGame.generatedMap, 50, inlandEdgesOf(currentGame));
 let cellsById = new Map(theater.cells.map((cell) => [cell.id, cell]));
 let unsubscribeController: (() => void) | null = null;
 /** The snapshot drawn last; the map's listeners and the keyboard handlers read it. */
@@ -595,23 +601,12 @@ const engagementHelp = (engagement: Engagement): string => {
   return `${defending} holds most of the map and every objective, its line in Combat Mode, with garrisons dug into hedgehogs on its objectives (Level ${GENERATED_HEDGEHOG_LEVELS.OBJECTIVE}) and on key rail towns and road junctions (Level ${GENERATED_HEDGEHOG_LEVELS.KEY_POINT}); ${attacking} fields ${ATTACKER_FORCE_RATIO} times the divisions plus off-map air (Fighters and Tactical Bombers at an airfield off the map, flying in over its own map edge and back), assembles a few hexes away and moves first. ${attacking} wins by holding at least half the objective VP when the last turn ends; otherwise ${defending} wins.` + supplyHelp;
 };
 
-/** A meeting engagement has no attacker, so it offers no sea behind the attacker. */
-const seaOptionsOf = (engagement: Engagement): readonly (readonly [NewGameSea, string])[] => [
-  ['NONE', 'No sea'], ['FLANK', 'Along the flank'],
-  ...(attackerOf(engagement) === null ? [] : [['ATTACKER', 'Behind the attacker'] as const]),
-];
+const SEA_OPTIONS: readonly (readonly [NewGameSea, string])[] = [['NONE', 'No sea'], ['FLANK', 'Along the flank']];
 
-/** Which map edge the sea takes: Allied enters from the west edge, Axis from the east. */
-const seaHelp = (sea: NewGameSea, engagement: Engagement): string => {
-  if (sea === 'NONE') return 'An all-land map.';
-  if (sea === 'FLANK') return 'The sea runs along the north edge; both sides advance west-east along the coast.';
-  const attacker = attackerOf(engagement);
-  if (attacker === null) return 'A meeting engagement has no attacker, so there is no sea behind one.';
-  return `The sea lies behind ${attacker === 'ALLIED' ? 'Allied, on the west' : 'Axis, on the east'} edge; its entry hexes are on the coast.`;
-};
+const seaHelp = (sea: NewGameSea): string => sea === 'NONE' ? 'An all-land map.'
+  : 'The sea runs along the north edge; both sides advance west-east along the coast. Set below which side may use ports and which lands only by sea.';
 
-/** "Allied 4 · Axis 2" per Movement Phase, from the configuration the game will use. */
-/** "Allied 5" (the side the sea lies behind) or "Allied 2 · Axis 2" (a flank sea), from the configuration the game will use. */
+/** "Allied 5 · Axis 2" (the sides with Sea Cap), from the configuration the game will use. */
 const seaCapText = (prepared: GeneratedScenarioPackage): string => (prepared.configuration.seaCapacity ?? [])
   .map(({ playerId, points }) => `${prepared.scenario.players.find(({ id }) => id === playerId)?.name ?? ''} ${points}`).join(' · ');
 
@@ -635,7 +630,7 @@ const airBasesLabel = (prepared: GeneratedScenarioPackage, side: string): string
 
 /** The combined preview: map with starting stacks, metrics and both forces, as one string drawn from the shared art. */
 const operationPreviewHtml = (prepared: GeneratedScenarioPackage): string => {
-  const map = buildGeneratedMapPreview(prepared.generatedMap, 32);
+  const map = buildGeneratedMapPreview(prepared.generatedMap, 32, inlandEdgesOf(prepared));
   const oob = buildGeneratedOobPreview(prepared.generatedOob);
   // Every list entry names the Hexes its units start in, so hovering it can mark them on the map.
   const startHex = (id: string): string | null => {
@@ -758,7 +753,20 @@ const onNewGameInput = (event: Event): void => {
   if (id === 'new-game-width') newGameSettings = { ...newGameSettings, map: { ...newGameSettings.map, width: value } };
   if (id === 'new-game-height') newGameSettings = { ...newGameSettings, map: { ...newGameSettings.map, height: value } };
   if (id === 'new-game-style') newGameSettings = { ...newGameSettings, map: { ...newGameSettings.map, style: input.value as MapGenerationStyle } };
-  if (id === 'new-game-sea') newGameSettings = { ...newGameSettings, map: { ...newGameSettings.map, sea: input.value as NewGameSea } };
+  if (id === 'new-game-sea') {
+    // Without a sea every side enters inland, so the per-side sea settings go back to their defaults.
+    const sea = input.value as NewGameSea;
+    const { inlandEntry: _entry, seaCap: _cap, ...rest } = newGameSettings;
+    newGameSettings = { ...(sea === 'NONE' ? rest : newGameSettings), map: { ...newGameSettings.map, sea } };
+  }
+  if (id === 'new-game-inland-entry-allied' || id === 'new-game-inland-entry-axis') {
+    const side = id.endsWith('allied') ? 'allied' : 'axis';
+    newGameSettings = { ...newGameSettings, inlandEntry: { ...inlandEntryOf(newGameSettings), [side]: input.value === 'YES' } };
+    // A side landing everything by ship needs Sea Cap: a player's 0 there gives way to the default.
+    if (input.value === 'NO' && newGameSettings.seaCap !== undefined && newGameSettings.seaCap[side] < 1) {
+      newGameSettings = { ...newGameSettings, seaCap: { ...newGameSettings.seaCap, [side]: defaultSeaCap(newGameSettings)![side] } };
+    }
+  }
   if (id === 'new-game-scale') newGameSettings = { ...newGameSettings, oob: { ...newGameSettings.oob, scale: input.value as OobScale } };
   if (id === 'new-game-divisions') newGameSettings = { ...newGameSettings, oob: { ...newGameSettings.oob, divisionsPerSide: value } };
   if (id === 'new-game-armored') newGameSettings = { ...newGameSettings, oob: { ...newGameSettings.oob, armoredDivisionsPerSide: value } };
@@ -769,10 +777,6 @@ const onNewGameInput = (event: Event): void => {
   }
   if (id === 'new-game-air-transport') newGameSettings = { ...newGameSettings, oob: { ...newGameSettings.oob, airTransport: input.value as AirForceLevel } };
   if (id === 'new-game-engagement') newGameSettings = { ...newGameSettings, engagement: input.value as Engagement };
-  // A meeting engagement has no attacker to put the sea behind, so a sea that would have been is moved to the flank.
-  if ((newGameSettings.engagement ?? 'MEETING') === 'MEETING' && newGameSeaOf(newGameSettings) === 'ATTACKER') {
-    newGameSettings = { ...newGameSettings, map: { ...newGameSettings.map, sea: 'FLANK' } };
-  }
   if (id === 'new-game-turn-limit') newGameSettings = { ...newGameSettings, turnLimit: value };
   if (id === 'new-game-start-month') newGameSettings = { ...newGameSettings, startMonth: value };
   // Rail Cap follows the forces until the player sets it; from then on it keeps the player's numbers.
@@ -789,22 +793,26 @@ const onNewGameInput = (event: Event): void => {
   render(controller.getSnapshot());
 };
 
-/** Sea Cap inputs (19.0f) for the sides that ship on this map: the side the sea lies behind, or both along a flank. */
-const seaCapFields = (number: (id: string, label: string, min: number, max: number, value: number) => TemplateResult): TemplateResult | typeof nothing => {
-  const sides = shippingSides(newGameSettings);
+/**
+ * Each side's use of the sea: whether it has inland entry hexes, and its Sea Cap (19.0f). Sea Cap 0 means the side
+ * cannot use ports; a side without inland entry lands everything by ship, so it needs at least 1.
+ */
+const seaSideFields = (
+  number: (id: string, label: string, min: number, max: number, value: number) => TemplateResult,
+  select: (id: string, label: string, options: readonly (readonly [string, string])[], value: string) => TemplateResult,
+): TemplateResult | typeof nothing => {
   const seaCap = newGameSettings.seaCap ?? defaultSeaCap(newGameSettings);
-  if (sides.length === 0 || seaCap === null) return nothing;
-  const flank = sides.length === 2;
-  const perDivision = flank ? FLANK_SEA_CAP_PER_DIVISION : SEA_CAP_PER_DIVISION;
-  const reset = html`<button type="button" id="reset-sea-cap" @click=${() => { const { seaCap: _cap, ...rest } = newGameSettings; newGameSettings = rest; previewStale = true; render(controller.getSnapshot()); }}>Use the default (${perDivision} per division)</button>`;
-  return html`<div class="field-pair">
-      ${sides.includes('ALLIED') ? number('new-game-sea-cap-allied', 'Allied Sea Cap', 0, MAXIMUM_SEA_CAP, seaCap.allied) : nothing}
-      ${sides.includes('AXIS') ? number('new-game-sea-cap-axis', 'Axis Sea Cap', 0, MAXIMUM_SEA_CAP, seaCap.axis) : nothing}
-    </div>
-    <p class="field-help">${flank
-      ? 'SP or RE each side can ship between the ports it holds every Movement Phase (19.0f).'
-      : `SP or RE ${sides[0] === 'ALLIED' ? 'Allied' : 'Axis'} can ship every Movement Phase (19.0f). With the sea behind it, everything it receives (units, SP, Repls) lands by ship at a port it holds, within each port's capacity.`}
-      ${newGameSettings.seaCap === undefined ? `Default: ${perDivision} point per division.` : reset}</p>`;
+  if (seaCap === null) return nothing;
+  const entry = inlandEntryOf(newGameSettings);
+  const side = (key: 'allied' | 'axis', name: string) => html`<div class="field-pair">
+      ${select(`new-game-inland-entry-${key}`, `${name} inland entry hexes`, [['YES', 'Yes'], ['NO', 'No: ports only']], entry[key] ? 'YES' : 'NO')}
+      ${number(`new-game-sea-cap-${key}`, `${name} Sea Cap`, entry[key] ? 0 : 1, MAXIMUM_SEA_CAP, seaCap[key])}
+    </div>`;
+  const reset = html`<button type="button" id="reset-sea-cap" @click=${() => { const { seaCap: _cap, ...rest } = newGameSettings; newGameSettings = rest; previewStale = true; render(controller.getSnapshot()); }}>Use the default</button>`;
+  return html`${side('allied', 'Allied')}${side('axis', 'Axis')}
+    <p class="field-help">Sea Cap: SP or RE the side can ship between the ports it holds every Movement Phase (19.0f); with 0 it cannot use ports, not even to draw supply.
+      A side without inland entry hexes has no map-edge entry or Supply Source: everything it receives (units, SP, Repls) lands by ship at a port it holds, within each port's capacity, and the map gives it a port near its own edge.
+      ${newGameSettings.seaCap === undefined ? `Default: ${FLANK_SEA_CAP_PER_DIVISION} point per division, ${SEA_CAP_PER_DIVISION} for a side without inland entry.` : reset}</p>`;
 };
 
 /** checkValidity fires "invalid" per bad field: go back to the settings page and say what is wrong beside it. */
@@ -950,8 +958,9 @@ const newGameDialog = () => {
         </fieldset>
         <fieldset><legend>Operational map</legend>
           ${select('new-game-style', 'Theater', [['TEMPERATE_INLAND', 'Western Europe'], ['EASTERN_EUROPE', 'Eastern Europe']], newGameSettings.map.style)}
-          ${select('new-game-sea', 'Sea', seaOptionsOf(newGameSettings.engagement ?? 'MEETING'), newGameSeaOf(newGameSettings))}
-          <p class="field-help">${seaHelp(newGameSeaOf(newGameSettings), newGameSettings.engagement ?? 'MEETING')}</p>
+          ${select('new-game-sea', 'Sea', SEA_OPTIONS, newGameSeaOf(newGameSettings))}
+          <p class="field-help">${seaHelp(newGameSeaOf(newGameSettings))}</p>
+          ${seaSideFields(number, select)}
           <div class="field-pair">
             ${number('new-game-width', 'Width', NEW_GAME_MAP_LIMITS.minWidth, NEW_GAME_MAP_LIMITS.maxWidth, newGameSettings.map.width)}
             ${number('new-game-height', 'Height', NEW_GAME_MAP_LIMITS.minHeight, NEW_GAME_MAP_LIMITS.maxHeight, newGameSettings.map.height)}
@@ -983,7 +992,6 @@ const newGameDialog = () => {
             ${number('new-game-rail-cap-axis', 'Axis Rail Cap', 0, MAXIMUM_RAIL_CAP, railCap.axis)}
           </div>
           <p class="field-help">SP or RE each side can move by rail every Movement Phase (13.3b), from the map edge to its railhead; trucks carry supply on to the front. ${newGameSettings.railCap === undefined ? `Default: ${RAIL_CAP_PER_DIVISION} point per division.` : html`<button type="button" id="reset-rail-cap" @click=${() => { const { railCap: _cap, ...rest } = newGameSettings; newGameSettings = rest; previewStale = true; render(controller.getSnapshot()); }}>Use the default (${RAIL_CAP_PER_DIVISION} per division)</button>`}</p>
-          ${seaCapFields(number)}
         </fieldset>
         ${keyed(seedVersion, html`<fieldset class="settings-seeds"><legend>Reproducible seeds</legend>
           <div class="field-pair">
@@ -1386,7 +1394,7 @@ const mountCreatedGame = async (created: CreatedNewGame): Promise<void> => {
   hoverHexId = null; stackPickerHex = null;
   scenario = created.scenario;
   bindings = created.bindings;
-  theater = buildGeneratedMapPreview(created.generatedMap, 50);
+  theater = buildGeneratedMapPreview(created.generatedMap, 50, inlandEdgesOf(created));
   cellsById = new Map(theater.cells.map((cell) => [cell.id, cell]));
   void showScene();
   newGameSettings = created.request;

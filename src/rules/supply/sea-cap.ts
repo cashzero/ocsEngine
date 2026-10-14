@@ -40,7 +40,7 @@ type SeaMove = Extract<GameAction, { readonly kind: 'SEA_MOVE' }>;
 export const seaCapacityPoints = (state: GameState, playerId: PlayerId): number | null =>
   state.configuration.seaCapacity?.find((entry) => entry.playerId === playerId)?.points ?? null;
 
-/** True when the player's arrivals reach the map only by ship (a sea behind his entry edge). */
+/** True when the player's arrivals reach the map only by ship (no inland entry Hexes). */
 export const arrivesBySea = (state: GameState, playerId: PlayerId): boolean => state.configuration.seaArrivals?.includes(playerId) ?? false;
 
 export const seaCapSpentQuarters = (state: GameState, playerId: PlayerId): number =>
