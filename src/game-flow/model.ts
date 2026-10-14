@@ -6,6 +6,7 @@ import type { GameSession, GameplayEngine, SeatBinding } from '../gameplay/index
 import type {
   GeneratedMap,
   MapGenerationStyle,
+  MapLandingEdge,
   MapSeaPlacement,
 } from '../generation/map/index.js';
 import type { AirForceLevel, GeneratedOob, OobScale, OobSide } from '../generation/oob/index.js';
@@ -27,35 +28,38 @@ export const attackerOf = (engagement: Engagement): OobSide | null =>
   engagement === 'ALLIED_ATTACKS' ? 'ALLIED' : engagement === 'AXIS_ATTACKS' ? 'AXIS' : null;
 
 /**
- * Where the operation's sea lies: none; along a flank both sides advance beside (the sea on the north edge, the
- * front running west-east along the coast); or behind the attacker, on the attacker's entry edge. A meeting
- * engagement has no attacker, so there the sea lies behind the Allied side, which moves first.
+ * Whether the operation has a sea: none, or along the flank (the north edge, the front running west-east along the
+ * coast). Who may use it is set per side: Sea Cap (`seaCap`) and whether the side has inland entry Hexes (`inlandEntry`).
  */
-export const NEW_GAME_SEAS = ['NONE', 'FLANK', 'ATTACKER'] as const;
+export const NEW_GAME_SEAS = ['NONE', 'FLANK'] as const;
 export type NewGameSea = (typeof NEW_GAME_SEAS)[number];
 
-/** The sea a style brings when the request names none: the Mediterranean coast's sea lies behind the attacker. */
-export const styleSeaOf = (style: MapGenerationStyle): NewGameSea => (style === 'MEDITERRANEAN_COAST' ? 'ATTACKER' : 'NONE');
+/** The sea a style brings when the request names none: the Mediterranean coast has one along the flank. */
+export const styleSeaOf = (style: MapGenerationStyle): NewGameSea => (style === 'MEDITERRANEAN_COAST' ? 'FLANK' : 'NONE');
 
 /** The request's sea, with the style's own sea standing in when the request names none. */
 export const newGameSeaOf = (request: NewGameRequest): NewGameSea => request.map.sea ?? styleSeaOf(request.map.style);
 
-/** The map edge the sea lies on. Allied enters from the west edge and Axis from the east, so a sea behind the attacker lies on the attacker's edge. */
-export const mapSeaPlacementOf = (request: NewGameRequest): MapSeaPlacement => {
-  const sea = newGameSeaOf(request);
-  if (sea === 'FLANK') return 'NORTH';
-  if (sea === 'ATTACKER') return attackerOf(request.engagement ?? 'MEETING') === 'AXIS' ? 'EAST' : 'WEST';
-  return 'NONE';
-};
+/** The map edge the sea lies on. */
+export const mapSeaPlacementOf = (request: NewGameRequest): MapSeaPlacement => (newGameSeaOf(request) === 'FLANK' ? 'NORTH' : 'NONE');
+
+/** Whether each side has inland entry Hexes on its map edge; absent means both do. */
+export const inlandEntryOf = (request: NewGameRequest): { readonly allied: boolean; readonly axis: boolean } =>
+  request.inlandEntry ?? { allied: true, axis: true };
 
 /**
- * The side whose entry edge is the coast (a sea behind the attacker, or behind Allied in a meeting engagement): its
- * reinforcements, SP and Repls reach the map only by ship, through ports, so Sea Cap and port capacity limit them.
+ * Sides without inland entry Hexes: their reinforcements, SP and Repls reach the map only by ship, through ports, so
+ * Sea Cap and port capacity limit them, and their ports are their only Supply Sources. Allied first. Empty without a sea.
  */
-export const seaSideOf = (request: NewGameRequest): OobSide | null => {
-  const edge = mapSeaPlacementOf(request);
-  return edge === 'WEST' ? 'ALLIED' : edge === 'EAST' ? 'AXIS' : null;
+export const seaArrivalSidesOf = (request: NewGameRequest): readonly OobSide[] => {
+  if (newGameSeaOf(request) === 'NONE') return [];
+  const entry = inlandEntryOf(request);
+  return [...entry.allied ? [] : ['ALLIED' as const], ...entry.axis ? [] : ['AXIS' as const]];
 };
+
+/** The map edges of the sides landing from the sea: Allied enters from the west edge, Axis from the east. */
+export const landingEdgesOf = (request: NewGameRequest): readonly MapLandingEdge[] =>
+  seaArrivalSidesOf(request).map((side) => (side === 'ALLIED' ? 'WEST' : 'EAST'));
 
 /** Every random stream is explicit so changing one subsystem cannot perturb another. */
 export interface NewGameRequest {
@@ -66,7 +70,7 @@ export interface NewGameRequest {
     readonly width: number;
     readonly height: number;
     readonly style: MapGenerationStyle;
-    /** Absent means the style's own sea (`styleSeaOf`): behind the attacker for the Mediterranean coast, none otherwise. */
+    /** Absent means the style's own sea (`styleSeaOf`): along the flank for the Mediterranean coast, none otherwise. */
     readonly sea?: NewGameSea;
   };
   readonly oob: {
@@ -94,10 +98,15 @@ export interface NewGameRequest {
    */
   readonly railCap?: { readonly allied: number; readonly axis: number };
   /**
-   * Sea Cap points each side gets in its Movement Phase (19.0f): only the side the sea lies behind ships when the sea is behind
-   * the attacker, both sides along a flank. Absent means `defaultSeaCap`; ignored on a map without a sea.
+   * Sea Cap points each side gets in its Movement Phase (19.0f). 0 means no Sea Cap: the side neither ships nor draws
+   * supply from ports. A side without inland entry needs at least 1. Absent means `defaultSeaCap`; ignored without a sea.
    */
   readonly seaCap?: { readonly allied: number; readonly axis: number };
+  /**
+   * Whether each side has inland entry Hexes (map-edge entries and Supply Sources). A side without them lands everything
+   * by sea at ports (19.0f), and the map gets a port near its edge. Needs a sea; absent means both sides have them.
+   */
+  readonly inlandEntry?: { readonly allied: boolean; readonly axis: boolean };
 }
 
 export interface GeneratedDeployment {

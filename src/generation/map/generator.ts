@@ -16,7 +16,7 @@ import type {
   MapGenerationOptions,
   NormalizedMapGenerationOptions,
 } from './model.js';
-import { MAP_GENERATION_STYLES, MAP_GENERATOR_VERSION, MAP_SEA_PLACEMENTS } from './model.js';
+import { MAP_GENERATION_STYLES, MAP_GENERATOR_VERSION, MAP_LANDING_EDGES, MAP_SEA_PLACEMENTS } from './model.js';
 import { generateStrategicNetwork } from './network.js';
 import { MAP_STYLE_PROFILES } from './styles.js';
 import { generateTerrainCells, growRiverbankWoods } from './terrain.js';
@@ -49,11 +49,15 @@ export const normalizeMapGenerationOptions = (
   if (!MAP_SEA_PLACEMENTS.includes(sea)) {
     errors.push({ code: 'INVALID_OPTIONS', message: 'Unknown sea placement.', path: ['sea'] });
   }
+  const landingEdges = MAP_LANDING_EDGES.filter((edge) => options.landingEdges?.includes(edge));
+  if (options.landingEdges !== undefined && (options.landingEdges.some((edge) => !MAP_LANDING_EDGES.includes(edge)) || (landingEdges.length > 0 && sea === 'NONE'))) {
+    errors.push({ code: 'INVALID_OPTIONS', message: 'Landing edges must be WEST or EAST, on a map with a sea.', path: ['landingEdges'] });
+  }
   const settlementDensity = options.settlementDensity ?? (known ? MAP_STYLE_PROFILES[options.style].settlementDensity : 0.1);
   if (!Number.isFinite(settlementDensity) || settlementDensity < 0.02 || settlementDensity > 0.16) {
     errors.push({ code: 'INVALID_OPTIONS', message: 'Settlement density must be 0.02 to 0.16.', path: ['settlementDensity'] });
   }
-  return errors.length > 0 ? err(errors) : ok({ ...options, sea, settlementDensity });
+  return errors.length > 0 ? err(errors) : ok({ ...options, sea, landingEdges, settlementDensity });
 };
 
 export const generateRandomMap = (
@@ -69,7 +73,8 @@ export const generateRandomMap = (
   const strategicRegions = generateStrategicNetwork(cells, hexsideFeatures, options);
   // A style's own sea keeps the ID maps of that style had before the sea was a separate option.
   const seaSuffix = options.sea === MAP_STYLE_PROFILES[options.style].sea ? '' : `:sea-${options.sea.toLowerCase()}`;
-  const mapId = parseDefinitionId(`generated-map:${options.style.toLowerCase()}:${options.width}x${options.height}:${options.seed}${seaSuffix}`);
+  const landingSuffix = options.landingEdges.map((edge) => `:landing-${edge.toLowerCase()}`).join('');
+  const mapId = parseDefinitionId(`generated-map:${options.style.toLowerCase()}:${options.width}x${options.height}:${options.seed}${seaSuffix}${landingSuffix}`);
   if (!mapId.ok) throw new Error('Generated Map ID is invalid.');
   const mapDefinition: MapDefinition = {
     id: mapId.value,
@@ -88,7 +93,7 @@ export const generateRandomMap = (
     }],
     overrideDefinitionIds: [],
   };
-  const validation = validateGeneratedMap(mapDefinition, strategicRegions, options.style, options.sea);
+  const validation = validateGeneratedMap(mapDefinition, strategicRegions, options.style, options.sea, options.landingEdges, options.width);
   if (!validation.valid) return err([{
     code: 'GENERATION_INVALID', message: 'Generated map failed topology or quality validation.', path: [], issues: validation.issues,
   }]);

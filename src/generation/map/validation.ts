@@ -18,8 +18,10 @@ import type {
   GeneratedMapValidation,
   GeneratedTerrainKind,
   MapGenerationStyle,
+  MapLandingEdge,
   MapSeaPlacement,
 } from './model.js';
+import { landingPortDepth } from './model.js';
 import { MAP_STYLE_PROFILES, roadGapLimitFor } from './styles.js';
 import { railEntryCountFor } from './network.js';
 
@@ -176,6 +178,8 @@ export const validateGeneratedMap = (
   regions: GeneratedMapStrategicRegions,
   style: MapGenerationStyle,
   sea: MapSeaPlacement = MAP_STYLE_PROFILES[style].sea,
+  landingEdges: readonly MapLandingEdge[] = [],
+  width = 0,
 ): GeneratedMapValidation => {
   const issues = [...validateMapDefinition(map)];
   const metrics = measureGeneratedMap(map, style);
@@ -216,6 +220,15 @@ export const validateGeneratedMap = (
     if (!onShore || !inPlace || !roadReach.has(port.id)) {
       issues.push(error('PORT_MISPLACED', `Port ${port.id} must be a coastal settlement on the road network.`, ['hexes', port.id]));
     }
+  }
+  // A side without inland entry Hexes lands at a port near its own edge.
+  for (const edge of landingEdges) {
+    const near = portHexes.some(({ id }) => {
+      const parsed = parseHexCoordinateId(id);
+      const column = parsed.ok ? parsed.value.q + Math.floor(parsed.value.r / 2) : Number.NaN;
+      return (edge === 'WEST' ? column : width - 1 - column) <= landingPortDepth(width);
+    });
+    if (!near) issues.push(error('LANDING_PORT_MISSING', `A side landing on the ${edge.toLowerCase()} edge needs a port within ${landingPortDepth(width)} columns of it.`));
   }
   if (sea !== 'NONE' && (waterRatio < 0.06 || waterRatio > 0.35)) {
     issues.push(error('COAST_WATER_RATIO', 'A map with a sea must give it 6% to 35% of the map.'));

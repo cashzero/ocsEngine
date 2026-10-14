@@ -249,7 +249,6 @@ describe('hedgehogs in an attack (16.0)', () => {
 describe('New Game sea', () => {
   it.each([
     ['NONE', 'ALLIED_ATTACKS', 'NONE'], ['FLANK', 'MEETING', 'NORTH'], ['FLANK', 'AXIS_ATTACKS', 'NORTH'],
-    ['ATTACKER', 'ALLIED_ATTACKS', 'WEST'], ['ATTACKER', 'AXIS_ATTACKS', 'EAST'], ['ATTACKER', 'MEETING', 'WEST'],
   ] as const)('puts a %s sea in a %s on the %s map edge', (sea, engagement, edge) => {
     const request: NewGameRequest = { ...requestFor(engagement, 40), map: { ...DEFAULT_NEW_GAME_REQUEST.map, sea } };
     expect(mapSeaPlacementOf(request)).toBe(edge);
@@ -262,8 +261,8 @@ describe('New Game sea', () => {
 
   it('keeps the style\'s own sea when the request names none, and rejects an unknown sea', () => {
     expect(mapSeaPlacementOf(DEFAULT_NEW_GAME_REQUEST)).toBe('NONE');
-    expect(mapSeaPlacementOf({ ...DEFAULT_NEW_GAME_REQUEST, map: { ...DEFAULT_NEW_GAME_REQUEST.map, style: 'MEDITERRANEAN_COAST' } })).toBe('WEST');
-    expect(validateNewGameRequest({ ...DEFAULT_NEW_GAME_REQUEST, map: { ...DEFAULT_NEW_GAME_REQUEST.map, sea: 'SOUTH' as never } })
+    expect(mapSeaPlacementOf({ ...DEFAULT_NEW_GAME_REQUEST, map: { ...DEFAULT_NEW_GAME_REQUEST.map, style: 'MEDITERRANEAN_COAST' } })).toBe('NORTH');
+    expect(validateNewGameRequest({ ...DEFAULT_NEW_GAME_REQUEST, map: { ...DEFAULT_NEW_GAME_REQUEST.map, sea: 'ATTACKER' as never } })
       .map(({ code }) => code)).toEqual(['UNKNOWN_SEA']);
   });
 });

@@ -498,6 +498,8 @@ export const deployGeneratedForces = (
   deploymentSeed: number,
   players: Readonly<Record<OobSide, PlayerId>>,
   engagement: Engagement = 'MEETING',
+  /** Sides without inland entry Hexes (`seaArrivalSidesOf`): they land by sea, and their ports are their Supply Sources. */
+  seaArrivalSides: readonly OobSide[] = [],
 ): Result<GeneratedDeployment, readonly GameFlowFailure[]> => {
   if (!uint32(deploymentSeed)) return { ok: false, error: [deploymentFailure('Deployment seed must be uint32.', ['seeds', 'deployment'])] };
   const initialRevision = revision(0);
@@ -568,19 +570,19 @@ export const deployGeneratedForces = (
     ALLIED: land.filter(({ id }) => lean(id) >= split),
     AXIS: land.filter(({ id }) => lean(id) < split),
   };
-  // 19.0: each port starts held by the side whose zone it lies in. The side the sea lies behind has no land entry edge: its
-  // ports are its only Supply Sources and the only way in, so it always starts holding at least the port nearest its anchor.
-  const seaSide: OobSide | null = map.options.sea === 'WEST' ? 'ALLIED' : map.options.sea === 'EAST' ? 'AXIS' : null;
+  // 19.0: each port starts held by the side whose zone it lies in. A side without inland entry has no land entry edge:
+  // its ports are its only Supply Sources and the only way in, so it always starts holding at least the port nearest its anchor.
   const portOwner = new Map<HexId, OobSide>(map.strategicRegions.ports.map(({ hexId }) => [hexId, lean(hexId) >= split ? 'ALLIED' : 'AXIS'] as const));
-  if (seaSide !== null && ![...portOwner.values()].includes(seaSide)) {
+  for (const seaSide of seaArrivalSides) {
+    if ([...portOwner.values()].includes(seaSide)) continue;
     const nearest = [...portOwner.keys()].sort((left, right) => distance(left, sideAnchors[seaSide]) - distance(right, sideAnchors[seaSide]) || String(left).localeCompare(String(right)))[0];
     if (nearest) portOwner.set(nearest, seaSide);
   }
   const portsOf = (side: OobSide): readonly HexId[] => [...portOwner.entries()].filter(([, owner]) => owner === side).map(([hexId]) => hexId)
     .sort((left, right) => distance(left, sideAnchors[side]) - distance(right, sideAnchors[side]) || String(left).localeCompare(String(right)));
   const sideSupply: Readonly<Record<OobSide, readonly HexId[]>> = {
-    ALLIED: seaSide === 'ALLIED' ? portsOf('ALLIED') : map.strategicRegions.firstSupplyHexIds,
-    AXIS: seaSide === 'AXIS' ? portsOf('AXIS') : map.strategicRegions.secondSupplyHexIds,
+    ALLIED: seaArrivalSides.includes('ALLIED') ? portsOf('ALLIED') : map.strategicRegions.firstSupplyHexIds,
+    AXIS: seaArrivalSides.includes('AXIS') ? portsOf('AXIS') : map.strategicRegions.secondSupplyHexIds,
   };
 
   const pieces: PieceState[] = [];

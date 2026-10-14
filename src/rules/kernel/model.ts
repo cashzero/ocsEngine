@@ -233,7 +233,7 @@ export interface RuleConfiguration {
   readonly seaCapacity?: readonly RailCapacity[] | undefined;
   /**
    * Players whose reinforcements, SP, Repls and returning units reach the map only by sea (game-specific rule of a map
-   * whose sea lies behind them): they wait in the reinforcement Box until shipped to a friendly port (19.0f).
+   * on which they have no inland entry Hexes): they wait in the reinforcement Box until shipped to a friendly port (19.0f).
    */
   readonly seaArrivals?: readonly PlayerId[] | undefined;
 }
