@@ -1,0 +1,43 @@
+{
+  "candidate": "48",
+  "baseline": "35",
+  "games": 80,
+  "pairs": 40,
+  "seedRanges": {
+    "meetingTemperate": [
+      1285000,
+      1285019
+    ],
+    "meetingEastern": [
+      1285100,
+      1285119
+    ],
+    "attackTemperate": [
+      1286000,
+      1286019
+    ],
+    "attackEastern": [
+      1286100,
+      1286119
+    ]
+  },
+  "sourceCommitBase": "6be0f3920806de80c59a83d1d1eef0a712626f4a",
+  "hashes": {
+    "src/ai/policies/heuristic.ts": "179f786b711b1eb028a6b6e0b677cab52ebe01b98c8b7b435d1b7503662de5f2",
+    "src/ai/policies/heuristic-weights.ts": "77fe83a83d2a8cabdab120bf99d00e25862a0083b6f5a6fe1d3209f7b7c03f76",
+    "src/ai/analysis.ts": "78c9ec413304ff644bf48502e8918f65d2cd181f193eb4c0a991413bb166f1fa",
+    "src/ai/decisions.ts": "522202cb813d46afd665e80134c23687229e7f0e2dbe8ac56ae16edf2c5e5576",
+    "src/rules/query/model.ts": "a2850fcb5fcaead9f8de27abd10bf3e1c3ac7a28e567825fa64fb3bcd059b628",
+    "src/rules/query/projection.ts": "27ac90940a0582ae92c45ee6d12df32a417658fb4ee7feeb23c1b2b43e5b0251",
+    "src/rules/supply/relocation-impact.ts": "203c629d9c01d7405697560518ba37e1528ba1739511cf8965701c7ba01df945",
+    "src/rules/supply/ration-budget.ts": "1aad76c7536630da2a2a6cf79b97c0528efef4aeb06b7366693b1d5402950a4f",
+    "dist/ai/policies/heuristic.js": "e5df9fb7c95ade634bbe97faa4f5e02731544f3e665a063ef0f6769d3cd2b622",
+    "dist/ai/policies/heuristic-weights.js": "d132a1246de6a2173bb599296f83cd0adfab685b9ff8b504cdd625fba1ef735a",
+    "dist/ai/analysis.js": "d631c61cb2e1ab40076530e1a8782e5354514727a8dea154230eba629606f883",
+    "dist/ai/decisions.js": "8d655b0b6c9c91c72c89f5287500e6dd23edbee4f2f2d2015fd068e8bcfa0cce",
+    "dist/rules/query/model.js": "a3d85b861c2f631080eabc73b2123c963dfc1a11959f7daa9a1015c26ab275cf",
+    "dist/rules/query/projection.js": "cd4b430b97a4258985728a3233a9fc8b443e67821547c77fc047591247d20c47",
+    "dist/rules/supply/relocation-impact.js": "5f133988ea4b8aa770afca90884d631457919c883827d03c9b7a03eab21bb731",
+    "dist/rules/supply/ration-budget.js": "872212521a88c68b80f68bb83063c3ba02ccddbbabf0e38814ff682b6a2f5633"
+  }
+}

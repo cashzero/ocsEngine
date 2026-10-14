@@ -1,12 +1,13 @@
 import { setHexControl } from '../../domain/map/index.js';
 import type { PieceState } from '../../domain/piece/index.js';
-import { previewRetreatChoice } from '../combat/combat.js';
+import { previewRetreatChoice, settleDeclaredAttackerSupply } from '../combat/combat.js';
 import { applyModeChange } from '../mode/mode.js';
-import { isCombatUnit, isHq, isTransportPoint, pieceById, reTicksOf } from '../pieces.js';
+import { internalStocksOf, isCombatUnit, isHq, isTransportPoint, mobilityOf, pieceById, reTicksOf, stepOf, withInternalStocks } from '../pieces.js';
 import { capturePort } from '../port/port.js';
 import type { GameAction, GameState } from '../kernel/model.js';
 import type { RuleFact } from '../query/model.js';
-import { dumpsReaching, eatOffMapCost, pieceHasTrace } from './supply.js';
+import { dumpsReaching, eatOffMapCost, pieceHasTrace, spendReservations } from './supply.js';
+import { advanceRationsPreserved } from './ration-budget.js';
 
 /** One unit's next ration, capped at its cost. CHECK_SUPPLY pays from a single source.
  * This is individual access, not an allocation of shared stock among competing consumers. */
@@ -27,20 +28,38 @@ export const relocationSupplyFacts = (state: GameState, action: GameAction): rea
   const own = () => state.pieceState.pieces.filter(piece => piece.ownerId === action.actorId
     && piece.location.kind === 'ON_MAP' && isCombatUnit(state, piece));
   const fact = (key: string, value: string | number | boolean): RuleFact => ({ key, value, visibility: 'OWNER_ONLY', ownerId: action.actorId });
+  if (action.kind === 'DECLARE_COMBAT' && action.combatKind === 'OVERRUN') {
+    // Conditional on clearing the target with all attackers surviving. Pay the real declared
+    // attack cost; remove target enemies without crediting random captures or predicting retreats.
+    const declared = settleDeclaredAttackerSupply(state, action.actorId, action.attackerIds, action.attackerSupply);
+    if (declared.violations.length) return [];
+    const spent = spendReservations(state, declared.payments);
+    const paid = { ...state, pieceState: { ...spent, pieces: spent.pieces.map(p => declared.internalIds.includes(p.id)
+      ? withInternalStocks(p, internalStocksOf(p) === 'FULL' ? 'LOW' : 'EXHAUSTED') : p) } };
+    const movers = action.attackerIds.filter(id => { const p = pieceById(state, id)!;
+      return mobilityOf(state, p) !== null && Number(stepOf(state, p)?.movementPointTicks ?? 0) > 0; });
+    let after: GameState = { ...paid, mapState: setHexControl(paid.mapState, action.targetHexId, action.actorId),
+      pieceState: { ...paid.pieceState, pieces: paid.pieceState.pieces
+        .filter(p => !(p.ownerId !== action.actorId && p.location.kind === 'ON_MAP' && p.location.hexId === action.targetHexId))
+        .map(p => movers.includes(p.id) ? { ...p, location: { kind: 'ON_MAP' as const, hexId: action.targetHexId } } : p) } };
+    after = capturePort(after, action.actorId, action.targetHexId, []);
+    return [fact('supply.overrunAdvanceFunded', advanceRationsPreserved(state, after, action.actorId, movers)),
+      fact('supply.overrunOtherTraceLost', own().filter(p => !movers.includes(p.id) && pieceHasTrace(state, p)
+        && !pieceHasTrace(after, pieceById(after, p.id)!)).length)];
+  }
   if (action.kind === 'RESPOND_DECISION') {
-    // Reinforcing an already occupied friendly hex has no enemy capture roll to preview.
-    // Keep first entry into an enemy hex outside this deterministic supply forecast.
+    // Use only existing friendly stock: random enemy resource captures may improve this bound.
     if (state.pendingDecision?.kind === 'ADVANCE_HEX' && action.choiceId.startsWith('advance:')
       && !['advance:all', 'advance:done'].includes(action.choiceId)) {
       const target = state.activeTransaction?.targetHexId;
       const unit = state.pieceState.pieces.find(piece => piece.id === action.choiceId.slice('advance:'.length));
       if (!target || !unit || unit.ownerId !== action.actorId || unit.location.kind !== 'ON_MAP'
-        || !isCombatUnit(state, unit)
-        || !state.mapState.hexControl.some(control => control.hexId === target && control.controllerId === action.actorId)
-        || state.pieceState.pieces.some(piece => piece.location.kind === 'ON_MAP' && piece.location.hexId === target && piece.ownerId !== action.actorId)) return [];
+        || !isCombatUnit(state, unit)) return [];
       const relocated = { ...unit, location: { kind: 'ON_MAP' as const, hexId: target } };
-      const after = { ...state, pieceState: { ...state.pieceState,
-        pieces: state.pieceState.pieces.map(piece => piece.id === unit.id ? relocated : piece) } };
+      let after: GameState = { ...state, mapState: setHexControl(state.mapState, target, action.actorId), pieceState: { ...state.pieceState,
+        pieces: state.pieceState.pieces.filter(p => !(p.ownerId !== action.actorId && p.location.kind === 'ON_MAP' && p.location.hexId === target))
+          .map(piece => piece.id === unit.id ? relocated : piece) } };
+      after = capturePort(after, action.actorId, target, []);
       const units = own();
       return [
         fact('supply.advanceTraceLost', units.filter(piece => pieceHasTrace(state, piece)
@@ -48,6 +67,7 @@ export const relocationSupplyFacts = (state: GameState, action: GameAction): rea
         fact('supply.advanceFeedLost', units.filter(piece => !pieceHasTrace(state, piece)
           && availableRationTokens(after, pieceById(after, piece.id)!) < availableRationTokens(state, piece)).length),
         fact('supply.advanceMoverHasTrace', pieceHasTrace(after, relocated)),
+        fact('supply.advanceFunded', advanceRationsPreserved(state, after, action.actorId, [unit.id])),
       ];
     }
     const preview = previewRetreatChoice(state, action.choiceId);

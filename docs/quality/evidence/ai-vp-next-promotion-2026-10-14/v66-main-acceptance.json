@@ -1,0 +1,74 @@
+{
+  "candidate": "66-main",
+  "baseline": "35",
+  "games": 80,
+  "pairs": 40,
+  "totals": {
+    "candidateVP": 935,
+    "baselineVP": 721,
+    "candidateStepLosses": 1100,
+    "baselineStepLosses": 1033,
+    "candidateAdvances": 229,
+    "candidateFundedAdvances": 223,
+    "candidateUntracedAdvances": 18,
+    "candidateSuccessfulOverruns": 31,
+    "candidateActuallyFundedOverruns": 31
+  },
+  "engagementVpDelta": {
+    "meeting": 84,
+    "attack": 130
+  },
+  "meanVpGain": 2.675,
+  "standardError": 0.8989933829367726,
+  "interval": [
+    0.7871138958327775,
+    4.562886104167222
+  ],
+  "vpGate": true,
+  "groups": [
+    {
+      "group": "meeting-v66-main-temperate",
+      "games": 20,
+      "allLegalComplete": true,
+      "allReplayHashesMatch": true,
+      "supplyGuardViolations": 0,
+      "advanceConservativeBoundViolations": 0
+    },
+    {
+      "group": "meeting-v66-main-eastern",
+      "games": 20,
+      "allLegalComplete": true,
+      "allReplayHashesMatch": true,
+      "supplyGuardViolations": 0,
+      "advanceConservativeBoundViolations": 0
+    },
+    {
+      "group": "attack-v66-main-temperate",
+      "games": 20,
+      "allLegalComplete": true,
+      "allReplayHashesMatch": true,
+      "supplyGuardViolations": 0,
+      "advanceConservativeBoundViolations": 0
+    },
+    {
+      "group": "attack-v66-main-eastern",
+      "games": 20,
+      "allLegalComplete": true,
+      "allReplayHashesMatch": true,
+      "supplyGuardViolations": 0,
+      "advanceConservativeBoundViolations": 0
+    }
+  ],
+  "quality": {
+    "typecheck": true,
+    "buildHashesMatch": true,
+    "testsPassed": 704,
+    "testsSkipped": 8,
+    "smoke": true
+  },
+  "sourceCommitBase": "45e700a8accbfc34ca6d86e65e528793ae0eff1e",
+  "verificationScope": "frozen-and-delivered",
+  "strategyVersion": "66",
+  "artifactBatchId": "66-main",
+  "baselineSourceCommit": "45e700a8accbfc34ca6d86e65e528793ae0eff1e"
+}

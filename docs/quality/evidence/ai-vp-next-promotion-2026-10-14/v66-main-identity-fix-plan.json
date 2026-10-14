@@ -1,0 +1,96 @@
+{
+  "artifactBatchId": "66-main",
+  "strategyVersion": "66",
+  "issue": "Artifact label was used to match trace policy version; candidate flags were false. Candidate-specific funded checks were therefore not proven. Reopen strict audit until owner-identified replay completes.",
+  "priorAudits": [
+    {
+      "group": "meeting-v66-main-temperate",
+      "sha256": "3525ede52e2f820b18b02535c236b9cfa936c5d020ea2b70073f492c237ad1a5",
+      "incorrectCandidateAdvanceCount": 0
+    },
+    {
+      "group": "meeting-v66-main-eastern",
+      "sha256": "41fb9c47f54d54adc0b9ec3324fb86aed6e35dca6773032113c88e0029665595",
+      "incorrectCandidateAdvanceCount": 0
+    },
+    {
+      "group": "attack-v66-main-temperate",
+      "sha256": "a280ba858833af59e3bc93175e1c4747f7b10bbf94558962890c150648c0d5c8",
+      "incorrectCandidateAdvanceCount": 0
+    },
+    {
+      "group": "attack-v66-main-eastern",
+      "sha256": "acf9609cb977ebf6b16d4dc18f599e5806f974f2ea015caf06846beb50564b72",
+      "incorrectCandidateAdvanceCount": 0
+    }
+  ],
+  "invalidatedAcceptance": {
+    "candidate": "66-main",
+    "baseline": "35",
+    "games": 80,
+    "pairs": 40,
+    "totals": {
+      "candidateVP": 935,
+      "baselineVP": 721,
+      "candidateStepLosses": 1100,
+      "baselineStepLosses": 1033
+    },
+    "engagementVpDelta": {
+      "meeting": 84,
+      "attack": 130
+    },
+    "meanVpGain": 2.675,
+    "standardError": 0.8989933829367726,
+    "interval": [
+      0.7871138958327775,
+      4.562886104167222
+    ],
+    "vpGate": true,
+    "groups": [
+      {
+        "group": "meeting-v66-main-temperate",
+        "games": 20,
+        "allLegalComplete": true,
+        "allReplayHashesMatch": true,
+        "supplyGuardViolations": 0,
+        "advanceConservativeBoundViolations": 0
+      },
+      {
+        "group": "meeting-v66-main-eastern",
+        "games": 20,
+        "allLegalComplete": true,
+        "allReplayHashesMatch": true,
+        "supplyGuardViolations": 0,
+        "advanceConservativeBoundViolations": 0
+      },
+      {
+        "group": "attack-v66-main-temperate",
+        "games": 20,
+        "allLegalComplete": true,
+        "allReplayHashesMatch": true,
+        "supplyGuardViolations": 0,
+        "advanceConservativeBoundViolations": 0
+      },
+      {
+        "group": "attack-v66-main-eastern",
+        "games": 20,
+        "allLegalComplete": true,
+        "allReplayHashesMatch": true,
+        "supplyGuardViolations": 0,
+        "advanceConservativeBoundViolations": 0
+      }
+    ],
+    "quality": {
+      "typecheck": true,
+      "buildHashesMatch": true,
+      "testsPassed": 704,
+      "testsSkipped": 8,
+      "smoke": true
+    },
+    "sourceCommitBase": "45e700a8accbfc34ca6d86e65e528793ae0eff1e",
+    "verificationScope": "frozen-and-delivered",
+    "strategyVersion": "66",
+    "artifactBatchId": "66-main",
+    "baselineSourceCommit": "45e700a8accbfc34ca6d86e65e528793ae0eff1e"
+  }
+}

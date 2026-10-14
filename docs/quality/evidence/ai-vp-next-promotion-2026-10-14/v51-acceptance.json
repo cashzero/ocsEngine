@@ -1,0 +1,69 @@
+{
+  "candidate": "51",
+  "baseline": "35",
+  "games": 80,
+  "pairs": 40,
+  "totals": {
+    "candidateVP": 491,
+    "baselineVP": 477,
+    "candidateStepLosses": 1144,
+    "baselineStepLosses": 937,
+    "candidateAdvances": 153,
+    "candidateFundedAdvances": 152,
+    "candidateUntracedAdvances": 5,
+    "candidateSuccessfulOverruns": 22,
+    "candidateActuallyFundedOverruns": 22
+  },
+  "engagementVpDelta": {
+    "meeting": -4,
+    "attack": 18
+  },
+  "meanVpGain": 0.175,
+  "standardError": 0.5682716712169386,
+  "interval": [
+    -1.018370509555571,
+    1.3683705095555712
+  ],
+  "vpGate": false,
+  "groups": [
+    {
+      "group": "meeting-v51-temperate",
+      "games": 20,
+      "allLegalComplete": true,
+      "allReplayHashesMatch": true,
+      "supplyGuardViolations": 0,
+      "advanceConservativeBoundViolations": 0
+    },
+    {
+      "group": "meeting-v51-eastern",
+      "games": 20,
+      "allLegalComplete": true,
+      "allReplayHashesMatch": true,
+      "supplyGuardViolations": 0,
+      "advanceConservativeBoundViolations": 0
+    },
+    {
+      "group": "attack-v51-temperate",
+      "games": 20,
+      "allLegalComplete": true,
+      "allReplayHashesMatch": true,
+      "supplyGuardViolations": 0,
+      "advanceConservativeBoundViolations": 0
+    },
+    {
+      "group": "attack-v51-eastern",
+      "games": 20,
+      "allLegalComplete": true,
+      "allReplayHashesMatch": true,
+      "supplyGuardViolations": 0,
+      "advanceConservativeBoundViolations": 0
+    }
+  ],
+  "quality": {
+    "typecheck": true,
+    "buildHashesMatch": true,
+    "testsPassed": 663,
+    "testsSkipped": 8,
+    "smoke": true
+  }
+}

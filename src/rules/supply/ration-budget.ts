@@ -105,6 +105,27 @@ export const rationPlan = (state: GameState, actorId: PlayerId): ReturnType<type
   return plan;
 };
 
+/** Keep every currently funded consumer and fund the advancing units from shared stock.
+ * This is a current-stock witness, not a promise about enemy moves or future arrivals. */
+export const advanceRationsPreserved = (before: GameState, after: GameState, actorId: PlayerId,
+  advancingIds: readonly PieceId[]): boolean => {
+  const nextSupply = (state: GameState): GameState => state.sequence.phase === 'MOVEMENT' ? state : {
+    ...state, usage: state.usage.map(entry => ({ ...entry, supplyPaid: false, recovered: false })),
+    air: { ...state.air, droppedIds: [] },
+    // Combat reservations end before the next Supply. Keeping them here can change which
+    // consumers the feeding priority admits merely when the transaction resolves.
+    activeTransaction: null, pendingDecision: null,
+  };
+  const original = nextSupply(before), future = afterRequiredRecovery(nextSupply(after), actorId);
+  const wanted = new Set([...rationPlan(original, actorId).demands.map(d => d.id), ...advancingIds]);
+  const { demands, sources } = problem(future, actorId);
+  const requested = demands.filter(d => wanted.has(d.id));
+  // STRAT cannot eat off-map even if a dump can reach it.
+  if (advancingIds.some(id => { const p = pieceById(future, id); return !p || (p.mode === 'STRAT' && !pieceHasTrace(future, p)); })) return false;
+  const admitted = new Set(rationPlan(future, actorId).demands.map(d => d.id));
+  return requested.every(d => admitted.has(d.id)) && assignRations(requested, sources).groups !== null;
+};
+
 /** Current-position commitments for the approaching friendly Supply phase. */
 export const rationBudgetFacts = (state: GameState, action: GameAction): readonly RuleFact[] => {
   if (!['PAY_FUEL', 'BUILD_HEDGEHOG', 'CHECK_SUPPLY'].includes(action.kind)) return [];

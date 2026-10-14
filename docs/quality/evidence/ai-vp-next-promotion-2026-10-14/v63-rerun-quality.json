@@ -1,0 +1,37 @@
+{
+  "candidate": "63",
+  "checks": {
+    "build": {
+      "command": "python3 freeze.py 63 (npm run build)",
+      "exitCode": 0
+    },
+    "typecheck": {
+      "command": "npm run typecheck",
+      "exitCode": 0
+    },
+    "isolatedContinuation": {
+      "command": "npx vitest run tests/ai/movement-trace-gain.test.ts --maxWorkers=1",
+      "exitCode": 0
+    },
+    "tests": {
+      "command": "npx vitest run --maxWorkers=2",
+      "exitCode": 0,
+      "log": "tests-v63-frozen-rerun.log",
+      "passed": 671,
+      "skipped": 8
+    },
+    "smoke": {
+      "command": "npm run smoke",
+      "exitCode": 0,
+      "log": "smoke-v63-frozen.log"
+    }
+  },
+  "logs": {
+    "freeze-v63.log": "2583654924104b4be0f7cfa2e6f4f74b9deacbc452cb04482cb0f19b74b8df05",
+    "typecheck-v63-frozen.log": "d276a607924b69f3bf75479c9ff0bd362e2bc5a9c0047d63a951c8e899b4eb98",
+    "trace-gain-v63-idle.log": "4582bc09fe8f0678d6d7fc37333cfb6a894acacbf36625edd0a0b60806a89cef",
+    "tests-v63-frozen-rerun.log": "9cf2144f073e5d57e758e74be5f14124ab746e97c907f5e0630c4f2291e9bc0d",
+    "smoke-v63-frozen.log": "57f4b11f8e16b9086ab757da51a782c8fdee53c661431fe12983397ac1a2493b"
+  },
+  "retryReason": "Retained first full-suite 60000 ms timeout under concurrent external full-suite load; isolated unchanged full continuation passed in 18.50 s."
+}

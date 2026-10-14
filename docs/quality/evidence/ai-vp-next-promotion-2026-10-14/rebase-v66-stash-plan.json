@@ -1,0 +1,17 @@
+{
+  "stash": "5b47d4b4a20fa83fb266caae2ab1a4e28905a423",
+  "paths": [
+    "docs/ai/M9-bot-architecture.md",
+    "docs/ai/M9-scoring-and-planning.md",
+    "src/ai/analysis.ts",
+    "src/ai/decisions.ts",
+    "src/ai/policies/heuristic.ts",
+    "src/rules/query/model.ts",
+    "src/rules/query/projection.ts",
+    "src/rules/supply/ration-budget.ts",
+    "src/rules/supply/relocation-impact.ts",
+    "tests/ai/reinforcement-supply.test.ts",
+    "tests/ai/vp-advance.test.ts",
+    "tests/game-flow/engagements.test.ts"
+  ]
+}

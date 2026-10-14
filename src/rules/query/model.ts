@@ -84,6 +84,10 @@ export interface RuleProjection {
   readonly stacks: readonly ProjectedStack[];
   readonly pendingDecision: GameState['pendingDecision'];
   readonly victory: GameState['victory'];
+  /** Public attack victory condition; absent for meeting engagements. */
+  readonly attackVictory?: GameState['configuration']['attackVictory'];
+  /** Potential distant raids from visible printed counters and public terrain, with unknown future fuel/bridging treated optimistically. */
+  readonly objectiveRaidThreats?: readonly { readonly pieceId: PieceId; readonly hexId: HexId; readonly strength: number }[];
   /**
    * Every objective with its VP and who controls its Hex now (null: neutral). Hex control is public, and this is live,
    * unlike `victory`, which is scored at Clean Up.

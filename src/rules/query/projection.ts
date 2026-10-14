@@ -1,7 +1,7 @@
-import { stableSort, stableKey, type PlayerId } from '../../core/index.js';
+import { stableSort, stableKey, type PlayerId, type HexId } from '../../core/index.js';
 import { pieceLocationKey, type PieceLocation } from '../../domain/map/index.js';
 import type { PieceState } from '../../domain/piece/index.js';
-import type { GameState } from '../kernel/model.js';
+import type { GameState, MobilityType } from '../kernel/model.js';
 import { INTERNAL_STOCKS_STATUS, OUT_OF_TRACE_SINCE_STATUS, RETURN_TURN_STATUS, definitionOf, isCombatUnit, usageOf } from '../pieces.js';
 import { rationPlan } from '../supply/ration-budget.js';
 import { pieceHasTrace } from '../supply/supply.js';
@@ -25,8 +25,57 @@ import { seaCapRemainingQuarters, seaCapacityPoints, seaPortSummaries } from '..
 import { allPorts } from '../port/state.js';
 import { baseDumps, earliestPlanTurn, loadableUnits, readyTransports } from '../air/transport.js';
 import { bridgeHexes, bridgingEnabled } from '../movement/bridging.js';
-import { adjacentHexIds } from '../pieces.js';
-import { hexsideFeatureIds } from '../terrain.js';
+import { adjacentHexIds, hexDistanceBetween } from '../pieces.js';
+import { hexsideFeatureIds, movementCostModel } from '../terrain.js';
+
+/** Printed geometry only, never hidden enemy fuel, movement usage or stack contents. */
+const raidRoutes = new WeakMap<GameState['scenario']['mapDefinition'], WeakMap<GameState['configuration'], Map<string, ReadonlySet<HexId>>>>();
+const raidReach = (state: GameState, origin: HexId, mobility: MobilityType, allowance: number, turns: number): ReadonlySet<HexId> => {
+  let perMap = raidRoutes.get(state.scenario.mapDefinition);
+  if (!perMap) { perMap = new WeakMap(); raidRoutes.set(state.scenario.mapDefinition, perMap); }
+  let cache = perMap.get(state.configuration);
+  if (!cache) { cache = new Map(); perMap.set(state.configuration, cache); }
+  const key = `${state.scenario.mapDefinition.id}:${origin}:${mobility}:${allowance}:${turns}:${state.weather.groundCondition}`;
+  const cached = cache.get(key); if (cached) return cached;
+  const model = movementCostModel(state, mobility, true, state.weather.groundCondition, true);
+  const costs = new Map<HexId, number>([[origin, 0]]), pending: HexId[] = [origin];
+  const budget = allowance * turns;
+  for (let i = 0; i < pending.length; i++) {
+    const from = pending[i]!, spent = costs.get(from)!;
+    for (const to of adjacentHexIds(from)) {
+      const step = model.evaluate(from, to); if (step.kind !== 'COST') continue;
+      const turn = Math.floor(spent / allowance), remaining = allowance - spent % allowance;
+      const cost = Math.min(allowance, step.cost.totalTicks);
+      const next = step.all ? (turn + 1) * allowance : cost <= remaining ? spent + cost : (turn + 1) * allowance + cost;
+      if (spent >= budget || next > budget || next >= (costs.get(to) ?? Infinity)) continue;
+      costs.set(to, next); pending.push(to);
+    }
+  }
+  const result = new Set(costs.keys()); cache.set(key, result); return result;
+};
+const projectRaidThreats = (state: GameState, viewerId: PlayerId, stacks: readonly ProjectedStack[]): NonNullable<RuleProjection['objectiveRaidThreats']> => {
+  const objectives = state.configuration.objectives.filter(o => state.mapState.hexControl.some(c => c.hexId === o.hexId && c.controllerId === viewerId));
+  // When we move first, the enemy may move second now and first next turn before we can reposition.
+  const turns = state.sequence.phasingPlayerId === viewerId && state.sequence.playerTurnIndex === 0 && state.sequence.gameTurn < state.configuration.turnLimit ? 2 : 1;
+  const types: Readonly<Record<string, MobilityType>> = { 'mobility:leg': 'leg', 'mobility:truck': 'truck', 'mobility:tracked': 'tracked' };
+  return stacks.flatMap(stack => stack.location.kind !== 'ON_MAP' ? [] : stack.pieces.flatMap(piece => {
+    if (piece.ownerId === viewerId || !['COMBAT', 'ARTILLERY', 'HQ'].includes(piece.role)) return [];
+    const origin = stack.location.kind === 'ON_MAP' ? stack.location.hexId : null;
+    if (!origin) return [];
+    const definition = state.scenario.pieceCatalog.definitions.find(d => d.id === piece.definitionId);
+    return objectives.filter(o => hexDistanceBetween(origin, o.hexId) > 4).flatMap(objective => {
+      const strength = Math.max(0, ...(definition?.faces ?? []).map(face => {
+        const step = face.steps.find(s => s.remainingSteps === piece.remainingSteps) ?? [...face.steps].sort((a,b) => b.remainingSteps-a.remainingSteps)[0];
+        const allowance = Number(step?.movementPointTicks ?? 0), mobility = types[String(face.mobilityClassDefinitionId)];
+        if (!mobility || allowance <= 0) return 0;
+        if (hexDistanceBetween(origin, objective.hexId) > allowance * turns / 2 + 1) return 0;
+        const reached = raidReach(state, origin, mobility, allowance, turns);
+        return reached.has(objective.hexId) || adjacentHexIds(objective.hexId).some(id => reached.has(id)) ? Number(step?.combatStrength ?? 0) : 0;
+      }));
+      return strength > 0 ? [{ pieceId: piece.id, hexId: objective.hexId, strength }] : [];
+    });
+  }));
+};
 
 /** 4.9a: internal stocks and other private bookkeeping are never shown to the enemy. */
 const PRIVATE_STATUSES: readonly string[] = [INTERNAL_STOCKS_STATUS, OUT_OF_TRACE_SINCE_STATUS, RETURN_TURN_STATUS];
@@ -157,6 +206,8 @@ export const projectRuleState = (state: GameState, viewerId: PlayerId): RuleProj
     }),
     pendingDecision: state.pendingDecision?.ownerId === viewerId ? state.pendingDecision : null,
     victory: state.victory,
+    ...(state.configuration.attackVictory ? { attackVictory: state.configuration.attackVictory } : {}),
+    objectiveRaidThreats: projectRaidThreats(state, viewerId, stacks),
     // Who holds each objective is on the map for both players (the last side to enter a hex controls it).
     objectives: stableSort(state.configuration.objectives, (left, right) => String(left.hexId) < String(right.hexId) ? -1 : String(left.hexId) > String(right.hexId) ? 1 : 0)
       .map(({ hexId, points }) => ({ hexId, points, controllerId: state.mapState.hexControl.find((entry) => entry.hexId === hexId)?.controllerId ?? null })),

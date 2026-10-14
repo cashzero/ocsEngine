@@ -1,11 +1,14 @@
 # M9 AI Bot 架構
 
-狀態：**PLANNED**（2026-10-06 設計）。本文件是設計，不是完成宣告；實作步驟與驗收見
+狀態：**PLANNED**（2026-10-06 設計）。本文件保留目標架構，不是全部元件已實作的宣告。
+2026-10-14 的實際查詢邊界、策略、補給與 VP 驗證見 [AI 現行策略與 VP 驗證](current-strategy.md)；標準 v66 已通過獨立 80 場 promotion，先前標準 v35 保留為對照。
+實作步驟與驗收見
 [M9 AI Bot WBS](../roadmap/11-ai-bot-wbs.md)，決策與評分見 [M9 評分與規劃](M9-scoring-and-planning.md)，
 BCS 研究見 [05-bcs-ai-and-selfplay](../generator-study/05-bcs-ai-and-selfplay.md)。
 
 Roadmap 規定 M9 在 M8 產品操作 gate 全部 P0 通過前不得開始實作（`docs/roadmap.md` §12、§13）。
 本設計不改變該 gate；WBS 中任何提前開始的步驟都需要使用者明確同意。
+使用者已授權本輪 bot 對戰、補給／VP 策略改善與下一次 promotion；該授權不將未操作的 UI 驗收列改成完成。
 
 ## 1. 目標與非目標
 
@@ -132,8 +135,7 @@ loop:
 
 ### 5.2 前置缺口（B0 需確認，可能需要小幅擴充 gameplay projection）
 
-- **Objective 控制權**：`mapState.hexControl` 目前沒有出現在 projection；UI 從 package 取 objective 位置，但電腦需要「現在誰控制」。
-  建議：projection 加入公開的 objective control（地圖上看得到的事實）。
+- **Objective 控制權**：原始設計的此項缺口已由 `RuleProjection.objectives[].controllerId` 提供。現有 `attackVictory` 與 `objectiveRaidThreats` 也透過公開 projection 提供；遠距威脅只使用可見 counter 的印刷值與公開地形，不讀敵方 fuel、隱藏單位或移動 usage。來源與預測範圍見 [現行查詢邊界](current-strategy.md#5-公開資訊與查詢邊界)。
 - **增援時程**：需確認 OCS 4.9 下對方增援時程是否公開；未確認前 belief 不使用對方增援資訊。
 - **Piece Definition 是否可公開查**：電腦要知道「看得到的敵方頂部單位」的印刷數值，人類也看得到同一個 counter，因此可以；
   但隱藏的 `hiddenCount` 單位只能用 belief 估計。
@@ -158,6 +160,8 @@ loop:
 - 最終 dispatch 的 action 必須是本 revision 由 session 產生或驗證過的物件；policy 不自行拼裝 action。
 
 ## 7. Policy 介面
+
+以下是原始設計介面；實際 `BotDecisionContext`、`BotPhaseMemory`、action access 與 driver 以 `src/ai/model.ts`、`src/ai/access.ts`、`src/ai/driver.ts` 為準，不能用此草案宣告跨回合 planner 或 UI controller 已完成。
 
 ```ts
 export interface BotPolicy {

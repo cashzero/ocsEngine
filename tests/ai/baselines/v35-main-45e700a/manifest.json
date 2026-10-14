@@ -1,0 +1,23 @@
+{
+  "version": "35",
+  "sourceCommit": "45e700a8accbfc34ca6d86e65e528793ae0eff1e",
+  "note": "Immutable current-main standard. Rebuild-price adaptation is upstream; no candidate changes. Earlier v35 snapshot remains unmodified. Only external import paths relocated; knowledge/odds/model reexports unchanged public modules.",
+  "files": {
+    "analysis.ts": {
+      "originalSha256": "662ef3cba8750eda771f261cdaef967316f3368da5f89c5d8df7e53c6155f4ba",
+      "relocatedSha256": "e9692877d8d1564bcf25c6d8a77aebe4c866f46c4baa553a9e82250171835df2"
+    },
+    "decisions.ts": {
+      "originalSha256": "43c3f8aab06145a8ec89762fe5fea0261dd5f8e62cd9a1aadaea092093d84356",
+      "relocatedSha256": "f9040db5a8e61908344a70a3d488a2e54e4585bdae61c05a4eec3fa0db827b1a"
+    },
+    "policies/heuristic.ts": {
+      "originalSha256": "4356db559d579e88555ffe36bce265f823fb709b424b233b87df00391f26cfc9",
+      "relocatedSha256": "c18e26eae23597848747d78dbc575f40be80cc4a6dce576cd0492cab0779b409"
+    },
+    "policies/heuristic-weights.ts": {
+      "originalSha256": "77fe83a83d2a8cabdab120bf99d00e25862a0083b6f5a6fe1d3209f7b7c03f76",
+      "relocatedSha256": "77fe83a83d2a8cabdab120bf99d00e25862a0083b6f5a6fe1d3209f7b7c03f76"
+    }
+  }
+}

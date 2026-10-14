@@ -1,0 +1,401 @@
+[
+  {
+    "match": 1291014,
+    "revision": 560,
+    "objective": {
+      "hexId": "20,4",
+      "points": 6,
+      "controllerId": "player:allied"
+    },
+    "options": [
+      {
+        "action": {
+          "actionId": "candidate:decision:decision:transaction:candidate:combat:REGULAR:20,4:generated-oob:294769992:allied:f1-combat-2:unit+generated-oob:294769992:allied:f1-recon:unit+generated-oob:294769992:allied:f2-combat-1:unit+generated-oob:294769992:allied:independent-tank-1:unit:557:ADVANCE_HEX:559:195:1:68:advance:generated-oob:294769992:allied:f1-recon:unit:560",
+          "actorId": "player:allied",
+          "expectedRevision": 560,
+          "kind": "RESPOND_DECISION",
+          "decisionId": "decision:transaction:candidate:combat:REGULAR:20,4:generated-oob:294769992:allied:f1-combat-2:unit+generated-oob:294769992:allied:f1-recon:unit+generated-oob:294769992:allied:f2-combat-1:unit+generated-oob:294769992:allied:independent-tank-1:unit:557:ADVANCE_HEX:559:195:1:68",
+          "choiceId": "advance:generated-oob:294769992:allied:f1-recon:unit"
+        },
+        "location": {
+          "kind": "ON_MAP",
+          "hexId": "20,3"
+        },
+        "facts": [
+          {
+            "key": "state.revision",
+            "value": 560,
+            "visibility": "PUBLIC",
+            "ownerId": null
+          },
+          {
+            "key": "sequence.phase",
+            "value": "COMBAT",
+            "visibility": "PUBLIC",
+            "ownerId": null
+          },
+          {
+            "key": "supply.advanceTraceLost",
+            "value": 0,
+            "visibility": "OWNER_ONLY",
+            "ownerId": "player:allied"
+          },
+          {
+            "key": "supply.advanceFeedLost",
+            "value": 0,
+            "visibility": "OWNER_ONLY",
+            "ownerId": "player:allied"
+          },
+          {
+            "key": "supply.advanceMoverHasTrace",
+            "value": true,
+            "visibility": "OWNER_ONLY",
+            "ownerId": "player:allied"
+          },
+          {
+            "key": "supply.advanceFunded",
+            "value": true,
+            "visibility": "OWNER_ONLY",
+            "ownerId": "player:allied"
+          }
+        ]
+      },
+      {
+        "action": {
+          "actionId": "candidate:decision:decision:transaction:candidate:combat:REGULAR:20,4:generated-oob:294769992:allied:f1-combat-2:unit+generated-oob:294769992:allied:f1-recon:unit+generated-oob:294769992:allied:f2-combat-1:unit+generated-oob:294769992:allied:independent-tank-1:unit:557:ADVANCE_HEX:559:195:1:68:advance:generated-oob:294769992:allied:f2-combat-1:unit:560",
+          "actorId": "player:allied",
+          "expectedRevision": 560,
+          "kind": "RESPOND_DECISION",
+          "decisionId": "decision:transaction:candidate:combat:REGULAR:20,4:generated-oob:294769992:allied:f1-combat-2:unit+generated-oob:294769992:allied:f1-recon:unit+generated-oob:294769992:allied:f2-combat-1:unit+generated-oob:294769992:allied:independent-tank-1:unit:557:ADVANCE_HEX:559:195:1:68",
+          "choiceId": "advance:generated-oob:294769992:allied:f2-combat-1:unit"
+        },
+        "location": {
+          "kind": "ON_MAP",
+          "hexId": "19,4"
+        },
+        "facts": [
+          {
+            "key": "state.revision",
+            "value": 560,
+            "visibility": "PUBLIC",
+            "ownerId": null
+          },
+          {
+            "key": "sequence.phase",
+            "value": "COMBAT",
+            "visibility": "PUBLIC",
+            "ownerId": null
+          },
+          {
+            "key": "supply.advanceTraceLost",
+            "value": 0,
+            "visibility": "OWNER_ONLY",
+            "ownerId": "player:allied"
+          },
+          {
+            "key": "supply.advanceFeedLost",
+            "value": 0,
+            "visibility": "OWNER_ONLY",
+            "ownerId": "player:allied"
+          },
+          {
+            "key": "supply.advanceMoverHasTrace",
+            "value": true,
+            "visibility": "OWNER_ONLY",
+            "ownerId": "player:allied"
+          },
+          {
+            "key": "supply.advanceFunded",
+            "value": true,
+            "visibility": "OWNER_ONLY",
+            "ownerId": "player:allied"
+          }
+        ]
+      },
+      {
+        "action": {
+          "actionId": "candidate:decision:decision:transaction:candidate:combat:REGULAR:20,4:generated-oob:294769992:allied:f1-combat-2:unit+generated-oob:294769992:allied:f1-recon:unit+generated-oob:294769992:allied:f2-combat-1:unit+generated-oob:294769992:allied:independent-tank-1:unit:557:ADVANCE_HEX:559:195:1:68:advance:generated-oob:294769992:allied:independent-tank-1:unit:560",
+          "actorId": "player:allied",
+          "expectedRevision": 560,
+          "kind": "RESPOND_DECISION",
+          "decisionId": "decision:transaction:candidate:combat:REGULAR:20,4:generated-oob:294769992:allied:f1-combat-2:unit+generated-oob:294769992:allied:f1-recon:unit+generated-oob:294769992:allied:f2-combat-1:unit+generated-oob:294769992:allied:independent-tank-1:unit:557:ADVANCE_HEX:559:195:1:68",
+          "choiceId": "advance:generated-oob:294769992:allied:independent-tank-1:unit"
+        },
+        "location": {
+          "kind": "ON_MAP",
+          "hexId": "20,3"
+        },
+        "facts": [
+          {
+            "key": "state.revision",
+            "value": 560,
+            "visibility": "PUBLIC",
+            "ownerId": null
+          },
+          {
+            "key": "sequence.phase",
+            "value": "COMBAT",
+            "visibility": "PUBLIC",
+            "ownerId": null
+          },
+          {
+            "key": "supply.advanceTraceLost",
+            "value": 0,
+            "visibility": "OWNER_ONLY",
+            "ownerId": "player:allied"
+          },
+          {
+            "key": "supply.advanceFeedLost",
+            "value": 0,
+            "visibility": "OWNER_ONLY",
+            "ownerId": "player:allied"
+          },
+          {
+            "key": "supply.advanceMoverHasTrace",
+            "value": true,
+            "visibility": "OWNER_ONLY",
+            "ownerId": "player:allied"
+          },
+          {
+            "key": "supply.advanceFunded",
+            "value": true,
+            "visibility": "OWNER_ONLY",
+            "ownerId": "player:allied"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "match": 1291014,
+    "revision": 566,
+    "options": [
+      {
+        "action": {
+          "actionId": "candidate:decision:decision:transaction:candidate:combat:REGULAR:18,7:generated-oob:294769992:allied:f2-combat-2:unit:564:ADVANCE_HEX:565:204:1:66:advance:generated-oob:294769992:allied:f2-combat-2:unit:566",
+          "actorId": "player:allied",
+          "expectedRevision": 566,
+          "kind": "RESPOND_DECISION",
+          "decisionId": "decision:transaction:candidate:combat:REGULAR:18,7:generated-oob:294769992:allied:f2-combat-2:unit:564:ADVANCE_HEX:565:204:1:66",
+          "choiceId": "advance:generated-oob:294769992:allied:f2-combat-2:unit"
+        },
+        "location": {
+          "kind": "ON_MAP",
+          "hexId": "18,6"
+        },
+        "facts": [
+          {
+            "key": "state.revision",
+            "value": 566,
+            "visibility": "PUBLIC",
+            "ownerId": null
+          },
+          {
+            "key": "sequence.phase",
+            "value": "COMBAT",
+            "visibility": "PUBLIC",
+            "ownerId": null
+          },
+          {
+            "key": "supply.advanceTraceLost",
+            "value": 0,
+            "visibility": "OWNER_ONLY",
+            "ownerId": "player:allied"
+          },
+          {
+            "key": "supply.advanceFeedLost",
+            "value": 0,
+            "visibility": "OWNER_ONLY",
+            "ownerId": "player:allied"
+          },
+          {
+            "key": "supply.advanceMoverHasTrace",
+            "value": true,
+            "visibility": "OWNER_ONLY",
+            "ownerId": "player:allied"
+          },
+          {
+            "key": "supply.advanceFunded",
+            "value": true,
+            "visibility": "OWNER_ONLY",
+            "ownerId": "player:allied"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "match": 1291008,
+    "revision": 513,
+    "options": [
+      {
+        "action": {
+          "actionId": "candidate:decision:decision:transaction:candidate:combat:REGULAR:19,3:generated-oob:294769410:allied:f2-combat-2:unit:507:ADVANCE_HEX:512:120:1:102:advance:generated-oob:294769410:allied:f2-combat-2:unit:513",
+          "actorId": "player:allied",
+          "expectedRevision": 513,
+          "kind": "RESPOND_DECISION",
+          "decisionId": "decision:transaction:candidate:combat:REGULAR:19,3:generated-oob:294769410:allied:f2-combat-2:unit:507:ADVANCE_HEX:512:120:1:102",
+          "choiceId": "advance:generated-oob:294769410:allied:f2-combat-2:unit"
+        },
+        "location": {
+          "kind": "ON_MAP",
+          "hexId": "19,4"
+        },
+        "facts": [
+          {
+            "key": "state.revision",
+            "value": 513,
+            "visibility": "PUBLIC",
+            "ownerId": null
+          },
+          {
+            "key": "sequence.phase",
+            "value": "COMBAT",
+            "visibility": "PUBLIC",
+            "ownerId": null
+          },
+          {
+            "key": "supply.advanceTraceLost",
+            "value": 0,
+            "visibility": "OWNER_ONLY",
+            "ownerId": "player:allied"
+          },
+          {
+            "key": "supply.advanceFeedLost",
+            "value": 0,
+            "visibility": "OWNER_ONLY",
+            "ownerId": "player:allied"
+          },
+          {
+            "key": "supply.advanceMoverHasTrace",
+            "value": true,
+            "visibility": "OWNER_ONLY",
+            "ownerId": "player:allied"
+          },
+          {
+            "key": "supply.advanceFunded",
+            "value": true,
+            "visibility": "OWNER_ONLY",
+            "ownerId": "player:allied"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "match": 1291016,
+    "revision": 553,
+    "options": [
+      {
+        "action": {
+          "actionId": "candidate:decision:decision:transaction:candidate:combat:REGULAR:6,9:generated-oob:294770186:allied:independent-tank-2:unit:551:ADVANCE_HEX:552:157:1:77:advance:generated-oob:294770186:allied:independent-tank-2:unit:553",
+          "actorId": "player:allied",
+          "expectedRevision": 553,
+          "kind": "RESPOND_DECISION",
+          "decisionId": "decision:transaction:candidate:combat:REGULAR:6,9:generated-oob:294770186:allied:independent-tank-2:unit:551:ADVANCE_HEX:552:157:1:77",
+          "choiceId": "advance:generated-oob:294770186:allied:independent-tank-2:unit"
+        },
+        "location": {
+          "kind": "ON_MAP",
+          "hexId": "7,8"
+        },
+        "facts": [
+          {
+            "key": "state.revision",
+            "value": 553,
+            "visibility": "PUBLIC",
+            "ownerId": null
+          },
+          {
+            "key": "sequence.phase",
+            "value": "EXPLOITATION",
+            "visibility": "PUBLIC",
+            "ownerId": null
+          },
+          {
+            "key": "supply.advanceTraceLost",
+            "value": 0,
+            "visibility": "OWNER_ONLY",
+            "ownerId": "player:allied"
+          },
+          {
+            "key": "supply.advanceFeedLost",
+            "value": 0,
+            "visibility": "OWNER_ONLY",
+            "ownerId": "player:allied"
+          },
+          {
+            "key": "supply.advanceMoverHasTrace",
+            "value": true,
+            "visibility": "OWNER_ONLY",
+            "ownerId": "player:allied"
+          },
+          {
+            "key": "supply.advanceFunded",
+            "value": true,
+            "visibility": "OWNER_ONLY",
+            "ownerId": "player:allied"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "match": 1291006,
+    "revision": 616,
+    "options": [
+      {
+        "action": {
+          "actionId": "candidate:decision:decision:transaction:candidate:combat:REGULAR:2,18:generated-oob:294769216:allied:f1-combat-1:unit:614:ADVANCE_HEX:615:174:1:86:advance:generated-oob:294769216:allied:f1-combat-1:unit:616",
+          "actorId": "player:allied",
+          "expectedRevision": 616,
+          "kind": "RESPOND_DECISION",
+          "decisionId": "decision:transaction:candidate:combat:REGULAR:2,18:generated-oob:294769216:allied:f1-combat-1:unit:614:ADVANCE_HEX:615:174:1:86",
+          "choiceId": "advance:generated-oob:294769216:allied:f1-combat-1:unit"
+        },
+        "location": {
+          "kind": "ON_MAP",
+          "hexId": "2,19"
+        },
+        "facts": [
+          {
+            "key": "state.revision",
+            "value": 616,
+            "visibility": "PUBLIC",
+            "ownerId": null
+          },
+          {
+            "key": "sequence.phase",
+            "value": "COMBAT",
+            "visibility": "PUBLIC",
+            "ownerId": null
+          },
+          {
+            "key": "supply.advanceTraceLost",
+            "value": 0,
+            "visibility": "OWNER_ONLY",
+            "ownerId": "player:allied"
+          },
+          {
+            "key": "supply.advanceFeedLost",
+            "value": 0,
+            "visibility": "OWNER_ONLY",
+            "ownerId": "player:allied"
+          },
+          {
+            "key": "supply.advanceMoverHasTrace",
+            "value": true,
+            "visibility": "OWNER_ONLY",
+            "ownerId": "player:allied"
+          },
+          {
+            "key": "supply.advanceFunded",
+            "value": true,
+            "visibility": "OWNER_ONLY",
+            "ownerId": "player:allied"
+          }
+        ]
+      }
+    ]
+  }
+]
