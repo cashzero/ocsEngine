@@ -1,0 +1,28 @@
+NO SEA per-side fields shown: 0
+FLANK fields: 4
+DEFAULT SEA CAP 2 1
+ALLIED min after NO: 1
+REFUSED: Value must be greater than or equal to 1. | still on settings: true
+HELP: Sea Cap: SP or RE the side can ship between the ports it holds every Movement Phase (19.0f); with 0 it cannot use ports, not even to draw supply. A side without inland entry hexes has no map-edge entry or Supply Source: everything it receives (units, SP, Repls) lands by ship at a port it holds, within each port's capacity, and the map gives it a port near its own edge. Use the default WIDTH HEIGHT Hexes across and down: 16–256 by 12–256. Order of battle SCALE Compact Standard Large DIVISIONS PER SIDE OF WHICH ARMORED The other divisions are infantry, about one in four airborne. Each side receives Pax and Eq replacements every turn. AIR FORCES None (ground duel) Fighters, bombers, Air Bases and aircraft reinforcements Game rules TURN LIMIT START MONTH September October November December January February March April The month sets the weather: September is always dry, autumn brings mud, and midwinter snow. ALLIED RAIL CAP AXIS RAIL CAP SP or RE each side can move by rail every Movement Phase (13.3b), from the map edge to its railhead; trucks carry supply on to the front. Default: 0.75 point per division.
+PREVIEW entry bands allied/axis: 0 3 | sources allied/axis: 0 3
+PREVIEW METRICS: SCENARIO Allied attack MAP 28×20 UNITS 54 OBJECTIVES 6 hexes · 19 VP (Allied 3 · Axis 16) | Allied Axis starting stacks (unit count) Divisions Allied 6 · Axis 4 Deployed hexes 39 Rail Cap Allied 5 · Axis 3 Ports 3 Sea Cap Allied 5 Warnings 0
+T1 TURN 1 / 8 1 Oct · Dry VP HELD ★ Allied 3 ✚ Axis 16 RAIL CAP 5 / 5 SEA CAP 5 / 5 ALLIED PLAYER TURN Movement ▾ ↶ Undo End Movement Segment Next: Barrage Segment ☰ Menu Move units one at a time: select a unit to see its range. Red rings mark
+end: End Movement Segment Next: Barrage Segment
+end: End Barrage Segment Next: Supply Phase
+end: End Barrage Segment Next: Combat Segment
+begin handoff
+handoff
+end: End Movement Segment Next: Barrage Segment
+begin handoff
+handoff
+end: End Barrage Segment Next: Combat Phase
+begin handoff
+handoff
+decision: Go second
+begin handoff
+handoff
+TOP TURN 2 / 8 5 Oct · Dry VP HELD ★ Allied 3 ✚ Axis 16 RAIL CAP 5 / 5 SEA CAP 5 / 5 · 5 in Box ALLIED PLAYER TURN Movement ▾ ↶ Undo End Movement Segment Next: Barrage Segment ☰ Menu Move units one at a time. 5 counters wait in your reinforceme
+PANEL Ship by sea from the reinforcement Box Sea Cap 5 of 5 left this Movement Phase 19.0f Your reinforcements, SP and Repls reach the map only by ship: they wait here until landed at a port you hold. US 255 FA Gp 1/2 Sea Cap Truck 5 Sea Cap Allied Equipment replacements 1/4 Sea Cap Allied Personnel replacements 1/4 Sea Cap Supply 24T (6 SP) · Tokens to ship of 24T that may load · 1T = 1/4 Sea Cap and 1T of port capacity Click a teal port on the map to unload there. Unload at Or pick from the list 0105 · 2 SP of capacity left Tick units or enter Tokens, then choose the port to unload at. Ship Combat units ship in Move Mode, may not move before or after, and use no other transport this phase; SP unloaded cannot be loaded again this phase (19.0f, 12.2a).
+DESTINATIONS ["Or pick from the list","0105 · 2 SP of capacity left"]
+AFTER SHIP TURN 2 / 8 5 Oct · Dry VP HELD ★ Allied 3 ✚ Axis 16 RAIL CAP 5 / 5 SEA CAP 4 / 5 · 5 in Box ALLIED PLAYER TURN Movement ▾ ↶ Undo End Movement Segment Next: Barrage Segment ☰ Menu Move units one at a time. 5 counters wait in your reinforceme
+ERRORS []

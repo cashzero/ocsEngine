@@ -97,12 +97,10 @@ describe('meeting engagement (SCN-R1, SCN-R3)', () => {
 
 describe('attack (SCN-R3, SCN-R4)', () => {
   for (const [engagement, attacker, defender] of [['ALLIED_ATTACKS', 'allied', 'axis'], ['AXIS_ATTACKS', 'axis', 'allied']] as const) {
-    it(`${engagement}: the defender holds and garrisons every objective, its line in Combat Mode; the attacker moves first`, () => {
+    it(`${engagement}: both sides hold and garrison their objectives, the defender’s line in Combat Mode; the attacker moves first`, () => {
       for (const index of SEEDS.slice(0, 3)) {
         const game = started(requestFor(engagement, index));
         const { prepared, state } = game;
-        const meeting = prepareNewGame(requestFor('MEETING', index));
-        if (!meeting.ok) throw new Error('meeting engagement did not prepare');
         const controller = (hexId: string) => state.mapState.hexControl.find((entry) => entry.hexId === hexId)?.controllerId;
         const garrisons = new Set(prepared.generatedOob.sides.map(({ garrisonDefinitionId }) => garrisonDefinitionId));
 
@@ -110,12 +108,13 @@ describe('attack (SCN-R3, SCN-R4)', () => {
         expect(state.scenario.turnStart.firstPlayerId).toBe(`player:${attacker}`);
         expect(String(state.scenario.id)).toContain(engagement.toLowerCase().replace('_', '-'));
         for (const { hexId } of prepared.deployment.objectives) {
-          expect(controller(hexId)).toBe(`player:${defender}`);
+          expect(['player:allied', 'player:axis']).toContain(controller(hexId));
           expect(state.pieceState.pieces.some((piece) => garrisons.has(piece.definitionId) && hexOf(piece) === hexId
-            && String(piece.ownerId) === `player:${defender}`)).toBe(true);
+            && piece.ownerId === controller(hexId))).toBe(true);
         }
-        const points = (objectives: readonly { readonly points: number }[]) => objectives.reduce((total, { points: value }) => total + value, 0);
-        expect(points(prepared.deployment.objectives)).toBe(points(meeting.value.deployment.objectives));
+        const held = (side: string) => prepared.deployment.objectives.reduce((total, { hexId, points }) => total + (controller(hexId) === `player:${side}` ? points : 0), 0);
+        expect(held(attacker)).toBe(0);
+        expect(held(defender)).toBeGreaterThan(0);
 
         const line = army(game, defender).filter((piece) => state.scenario.pieceCatalog.definitions
           .find(({ id }) => id === piece.definitionId)?.faces.some(({ id }) => String(id) === 'combat'));
@@ -168,10 +167,12 @@ describe('attack victory (SCN-R4)', () => {
     return chosen;
   };
 
-  it('needs half the VP, rounded up, and has no draw', () => {
-    expect(state.configuration.attackVictory).toEqual({ attackerId: 'player:axis', attackerPoints: Math.ceil(total / 2) });
+  it('needs its starting VP plus half the defender VP, rounded up, and has no draw', () => {
+    const starting = objectives.reduce((sum, { hexId, points }) => sum + (state.mapState.hexControl.find((entry) => entry.hexId === hexId)?.controllerId === 'player:axis' ? points : 0), 0);
+    const threshold = starting + Math.ceil((total - starting) / 2);
+    expect(state.configuration.attackVictory).toEqual({ attackerId: 'player:axis', attackerPoints: threshold });
     expect(calculateVictory(state).winnerId).toBe('player:allied');
-    const half = worth(Math.ceil(total / 2));
+    const half = worth(threshold);
     expect(calculateVictory(holding(half)).winnerId).toBe('player:axis');
     expect(calculateVictory(holding(half.slice(1))).winnerId).toBe('player:allied');
   });
@@ -206,7 +207,7 @@ describe('off-map air (AIR-OM1)', () => {
 });
 
 describe('garrisons in an attack (user, 2026-10-07)', () => {
-  it('gives the attacker none and the defender one per objective plus single garrisons on key points', () => {
+  it('gives both sides objective garrisons and the defender additional key-point garrisons', () => {
     for (const index of [0, 1, 2]) {
       const { prepared, state } = started(requestFor('AXIS_ATTACKS', index));
       const garrisons = new Set(prepared.generatedOob.sides.map(({ garrisonDefinitionId }) => garrisonDefinitionId));
@@ -233,7 +234,7 @@ describe('hedgehogs in an attack (16.0)', () => {
       const garrisons = new Set(prepared.generatedOob.sides.map(({ garrisonDefinitionId }) => garrisonDefinitionId));
       const hogs = state.pieceState.pieces.filter((piece) => piece.location.kind === 'ON_MAP' && isHedgehog(state, piece));
       expect(hogs.every(({ ownerId }) => String(ownerId) === defender)).toBe(true);
-      const garrisoned = state.pieceState.pieces.filter((piece) => garrisons.has(piece.definitionId) && piece.location.kind === 'ON_MAP');
+      const garrisoned = state.pieceState.pieces.filter((piece) => String(piece.ownerId) === defender && garrisons.has(piece.definitionId) && piece.location.kind === 'ON_MAP');
       expect(hogs.length).toBe(garrisoned.length);
       const objectiveHexes = new Set(prepared.deployment.objectives.map(({ hexId }) => String(hexId)));
       for (const garrison of garrisoned) {

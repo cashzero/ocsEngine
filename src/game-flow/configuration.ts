@@ -81,8 +81,8 @@ export const shippingSides = (request: NewGameRequest): readonly OobSide[] => {
   return cap === null ? [] : (['ALLIED', 'AXIS'] as const).filter((side) => (side === 'ALLIED' ? cap.allied : cap.axis) > 0);
 };
 
-/** The VP an attacker must hold at the end to win: half of all objective VP, rounded up. */
-export const attackVictoryPoints = (totalPoints: number): number => Math.max(1, Math.ceil(totalPoints / 2));
+/** The VP an attacker must hold at the end to win: its starting VP plus half the defender’s starting VP, rounded up. */
+export const attackVictoryPoints = (totalPoints: number, startingPoints = 0): number => startingPoints + Math.max(1, Math.ceil((totalPoints - startingPoints) / 2));
 
 /** Production-owned ground-game configuration; test fixtures are deliberately not imported. */
 export const createGeneratedRuleConfiguration = (
@@ -120,7 +120,11 @@ export const createGeneratedRuleConfiguration = (
   // An attack is won by taking half the defender's VP (docs/roadmap/13-engagement-scenarios-wbs.md §4).
   ...(deployment.attacker === null ? {} : { attackVictory: {
     attackerId: players[deployment.attacker],
-    attackerPoints: attackVictoryPoints(deployment.objectives.reduce((total, { points }) => total + points, 0)),
+    attackerPoints: attackVictoryPoints(
+      deployment.objectives.reduce((total, { points }) => total + points, 0),
+      deployment.objectives.reduce((total, { hexId, points }) => total + (deployment.initialMapState.hexControl
+        .find((entry) => entry.hexId === hexId)?.controllerId === players[deployment.attacker!] ? points : 0), 0),
+    ),
   } }),
   railroads: GENERATED_RAILROADS,
   rivers: GENERATED_RIVERS,

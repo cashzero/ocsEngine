@@ -49,20 +49,29 @@ Deployment turns M7 force identities into Foundation runtime state.
    than its front: railroads, objectives and open country alike. The
    ground between the two fronts starts neutral, railroads included, so a rail station there is not detrainable
    (13.3c) until a combat unit enters it. On the default 32×24 map each side controls about a fifth of the land.
-8. Choose objectives in Major Cities and towns only, never villages or open country (user request 2026-10-04: more
-   VP, and in towns). Each Major City is one objective on its core Hex worth 3 VP; a town is worth 1 VP. Each
-   side's zone gets the same VP total, about one VP per 64 of its land Hexes (at least 2), filled with its Major
-   Cities and then its towns nearest the front, so the towns at stake lie where the armies meet. An objective starts
-   controlled only when it lies behind a side's front (step 7); most stand in the neutral ground and start held by
-   nobody, so the opening score can differ between the sides (user decision 2026-10-05, replacing the earlier "each
-   side starts holding the objectives of its zone"). The default 32×24 Temperate inland map gets 8 objectives
-   (6 VP allotted to each zone).
+8. Choose objectives in settlement Hexes (Major City cores, towns, and villages with transport value).
+   VP equals settlement value plus port capacity and railroad value, including junction and multi-track bonuses.
+   User amendment 2026-10-14: every eligible port carries VP, including the attacker's own ports. Rail junctions and Major
+   Cities carry VP in both zones of a meeting engagement, or the defender's zone of an attack. The land-area quota (at least 2 VP per side) is a minimum, not a cap. An oversized candidate is added
+   whole, never skipped to fit a cheaper town into the quota. Priority is junction, port, city, other settlement;
+   if either side lacks inland entry, ports become rank 0 and junctions rank 1. Within a rank, higher VP comes first,
+   then road degree, distance to the front and settlement order. Entry/source ports remain eligible.
 
-   Known limitation: when one side's zone has too few towns to match the other's Major City VP (seen only on the
-   smallest Eastern Europe maps, 16×12), the zones are allotted unequal VP; the preview then lists an "Objectives are
-   unbalanced" warning. TODO: balance such maps (for example by starting the surplus objectives uncontrolled);
-   accepted when every 16×12 Eastern Europe preview on seeds 1, 0x0c500001 and 777 allots equal VP to both zones
-   and shows no such warning.
+   Only Meeting Engagement balances starting objective VP. In Attack, the defender stakes the land-area
+   quota for the whole map (as a minimum), attacker ports keep their base VP, and no side receives balancing VP. All objectives have
+   their own side’s garrison. In Meeting Engagement, fill the lower side from its remaining
+   candidates in priority order, allowing overshoot and then filling the other side. If the lower side has exhausted
+   its candidates, add the exact shortfall to its highest-priority objective (its printed VP then exceeds its base
+   transport value). A side with no eligible objective still produces an imbalance warning rather than silently
+   removing the other side's high-value objectives. Defender garrisons retain their hedgehogs; attacker garrisons have none.
+   Attack victory requires the attacker's starting VP plus half the defender's starting VP, rounded up, so the attacker’s
+   own ports do not count as progress toward capturing half the defender’s VP.
+
+   Historical limitation (superseded by the allocation above): small Eastern Europe maps could lack enough base
+   town VP for equality. Automated regression covers 16×12 seeds 1, 0x0c500001 and 777. TODO (small-map visual acceptance):
+   preview and start those three maps in the browser to confirm equal visible VP and no imbalance warning. User-visible
+   impact if wrong: preview or mounted scores may differ despite the generated package's equal allocation. Closing
+   evidence: screenshots and actual starting scores for all three seeds; unit tests alone do not close this check.
 
    TODO (2026-10-09, steps 4-5): the sector plan, the supply placed after the troops and the Combat Mode front are
    checked only by automated tests and seed scans (`tests/game-flow/deployment-plan.test.ts`; 100 seeds per engagement

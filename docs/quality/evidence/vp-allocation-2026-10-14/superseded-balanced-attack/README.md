@@ -1,0 +1,1 @@
+Superseded evidence: this run mistakenly balanced Attack at 16 VP per side. The user corrected this on 2026-10-14: only Meeting Engagement receives balancing VP. This run is not acceptance evidence for the corrected implementation. It also exposed incorrect preview ownership text, subsequently fixed.
