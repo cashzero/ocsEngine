@@ -1221,6 +1221,12 @@ root.addEventListener('click', (event) => {
   // Fuel step 1 only remembers the pick; the dump list (step 2) is drawn from it.
   const fuelMethod = closest('[data-fuel-method]');
   if (fuelMethod) { const current = controller.getSnapshot(); deck.fuelMethod = { pieceId: current.selection.pieceId ?? '', method: fuelMethod.dataset.fuelMethod! }; render(current); return; }
+  // 13.9-2/3: the Exchange button runs the Dead Pile counter picked in its list.
+  if (closest('#exchange-run')) {
+    const key = document.querySelector<HTMLSelectElement>('#exchange-choice')?.value;
+    if (key) void runUi(() => controller.runAction(key));
+    return;
+  }
   const action = closest('[data-unit-action]');
   if (action) { void runUi(() => controller.runAction(action.dataset.unitAction!)); return; }
   // The truck's supply area: the Token count is read from the row's own field when the button is pressed.

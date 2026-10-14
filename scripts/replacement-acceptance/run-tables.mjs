@@ -3,7 +3,7 @@
 // (make-tables-position.mjs). Every step after loading is a visible control; every observation is read from the page.
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
-import { open, newGame, where, advanceTo, placeArrivals, click, tab, has, record, textOf } from '../air-acceptance/harness.mjs';
+import { open, newGame, where, advanceTo, placeArrivals, click, tab, has, record, textOf, selectUnit } from '../air-acceptance/harness.mjs';
 
 const evidenceDir = process.argv[2] ?? 'docs/quality/evidence/replacement-tables-2026-10-14';
 const positionDir = process.argv[3] ?? 'tmp/replacement-tables-position';
@@ -64,19 +64,27 @@ try {
 
   await tab(h, 'Rebuild');
   const merge = `[data-consolidate="MERGE:${facts.keep.id}:${facts.give.id}"]`;
-  const swap = `[data-consolidate="SWAP:${facts.onMap.id}:${facts.twin.id}"]`;
   const panel = await textOf(h, '.command-rail');
-  record(h, 'REPL-11', 'Unit Consolidation offers Combine for the two reduced divisions and Exchange for the unit with a dead twin',
-    panel.slice(0, 1500), await has(h, merge) && await has(h, swap));
+  record(h, 'REPL-11', 'The Rebuild tab offers Combine for the two reduced divisions, and no Exchange (that starts from the unit)',
+    panel.slice(0, 1500), await has(h, merge) && !/Exchange/.test(panel) && (await h.page.locator('[data-consolidate]').count()) === 1);
   await h.shot('consolidation-offered');
   await click(h, merge);
   const merged = await log();
   record(h, 'REPL-11', 'Combine moves the steps to one division and sends the other to the Dead Pile (13.9-1)',
     merged.slice(0, 900), merged.includes(`${facts.give.name} joined ${facts.keep.name}`) && /1 step regained/.test(merged) && merged.includes('went to the Dead Pile'));
-  await tab(h, 'Rebuild');
-  await click(h, swap);
+  // 13.9-2: Exchange starts from the unit on the map: select it, then pick the Dead Pile counter in its Unit tab.
+  await selectUnit(h, facts.onMap.name);
+  if (await has(h, '#close-roster')) await click(h, '#close-roster');
+  await tab(h, 'Unit');
+  const unitPanel = await textOf(h, '.command-rail');
+  const choices = await h.page.locator('#exchange-choice option').allTextContents();
+  record(h, 'REPL-11', 'The selected unit\'s Unit tab offers Exchange with a list of its identical Dead Pile counters of other divisions',
+    `${JSON.stringify(choices)} · ${unitPanel.slice(0, 700)}`, choices.some((text) => text.includes(facts.twin.name)));
+  await h.page.selectOption('#exchange-choice', { label: choices.find((text) => text.includes(facts.twin.name)) });
+  await h.shot('exchange-offered');
+  await click(h, '#exchange-run');
   const swapped = await log();
-  record(h, 'REPL-11', 'Exchange puts the Dead Pile twin in the unit\'s place (13.9-2)', swapped.slice(0, 900), swapped.includes(`${facts.twin.name} took the place of ${facts.onMap.name}`));
+  record(h, 'REPL-11', 'Exchange puts the Dead Pile counter in the unit\'s place (13.9-2)', swapped.slice(0, 900), swapped.includes(`${facts.twin.name} took the place of ${facts.onMap.name}`));
   await h.shot('consolidated');
 
   // Rebuild Table prices in the training hex: two garrisons for 1 Pax; adding the dead HQ (1 Pax + 1 Eq) is refused.

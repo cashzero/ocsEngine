@@ -458,9 +458,9 @@ const replacementTablesPanel = (snapshot: UiSnapshot): View => snapshot.rebuildT
       <tbody>${snapshot.replacementTable.map((row) => html`<tr><td>${row.minimum === row.maximum ? row.minimum : `${row.minimum}-${row.maximum}`}</td><td>${row.pax}</td><td>${row.eq}</td></tr>`)}</tbody></table>`}
   </details>`;
 
-/** 13.9-1 to 3: combine two reduced identical units in a hex, or exchange a unit for an identical one of another division from the Dead Pile. */
+/** 13.9-1: combine two reduced identical units in a hex. Exchanges (13.9-2/3) are the selected unit's actions in the Unit tab. */
 const consolidationPanel = (snapshot: UiSnapshot, state: DeckState): View => snapshot.consolidations.length === 0 ? nothing : html`<div class="air-panel"><strong>Unit Consolidation</strong>
-  <p class="hint">Units identical on both sides of the counter, neither DG nor with Low or Exhausted internal stocks, may combine in one hex (the steps join one unit, the other goes to the Dead Pile; nothing grows beyond full strength), or a unit may be exchanged for an identical one of another division from the Dead Pile, keeping its mode, markers and steps (13.9).</p>
+  <p class="hint">Units identical on both sides of the counter, neither DG nor with Low or Exhausted internal stocks, may combine in one hex: the steps join one unit, the other goes to the Dead Pile; nothing grows beyond full strength (13.9). To exchange a unit for an identical counter of another division, select it and use its Unit tab.</p>
   <div class="action-list">${snapshot.consolidations.map((option) => html`<div class="consolidation"><small>${printedHexLabel(option.hexId)} · ${option.consolidation === 'MERGE'
     ? `${option.withLabel} joins ${option.label}: +${option.steps} step${option.steps === 1 ? '' : 's'}`
     : `${option.withLabel} (Dead Pile) replaces ${option.label}, ${option.steps} step${option.steps === 1 ? '' : 's'}`}</small>
@@ -823,6 +823,18 @@ const fuelSection = (snapshot: UiSnapshot, state: DeckState): View => {
   return html`<div class="unit-actions fuel-panel"><strong>Fuel</strong>${step1}${dumps}</div>`;
 };
 
+/**
+ * 13.9-2/3: exchange the selected unit for an identical counter of another division from the Dead Pile. The counter takes
+ * this unit's place, mode, markers and steps, and this unit goes to the Dead Pile; pick the counter, then press Exchange.
+ */
+const exchangeSection = (snapshot: UiSnapshot): View => {
+  const entries = snapshot.unitActions.filter((entry) => entry.group === 'EXCHANGE');
+  return entries.length === 0 ? nothing : html`<div class="unit-actions exchange"><strong>Exchange</strong>
+    <p class="hint">Swap this unit for an identical counter of another division in the Dead Pile: that counter takes this unit's place, mode, markers and steps, and this unit goes to the Dead Pile (13.9).</p>
+    <label>Dead Pile counter <select id="exchange-choice">${entries.map(({ key, label }) => html`<option value=${key}>${label}</option>`)}</select></label>
+    <div class="chip-row"><button id="exchange-run">Exchange</button></div></div>`;
+};
+
 const unitTab = (snapshot: UiSnapshot, state: DeckState): TemplateResult => {
   const parts: View[] = [];
   if (snapshot.movePreview && !snapshot.movePreview.explanation.allowed) parts.push(html`<div class="move-preview"><strong>Move to ${printedHexLabel(snapshot.movePreview.destinationHexId)} is not allowed</strong>${explanationBlock(snapshot.movePreview.explanation)}</div>`);
@@ -830,7 +842,7 @@ const unitTab = (snapshot: UiSnapshot, state: DeckState): TemplateResult => {
     parts.push(html`<div class="mode-actions"><strong>Mode</strong><div class="chip-row">${snapshot.modeOptions.map(({ mode }) => html`<button data-mode=${mode}>${modeName(mode)}</button>`)}${snapshot.releaseAction ? html`<button id="release-reserve">Release reserve</button>` : nothing}</div></div>`);
   }
   if (snapshot.unitActions.length > 0 || snapshot.transportOptions) {
-    const groups: [string, string][] = [['BREAKDOWN', 'Breakdowns'], ['FUEL', 'Fuel'], ['SUPPLY', 'Supply'], ['BREAKOUT', 'Breakout'], ['TRANSPORT', 'Trucks'], ['DUMP', 'Dump'], ['HEDGEHOG', 'Hedgehog'], ['PORT', 'Port'], ['AIR', 'Air']];
+    const groups: [string, string][] = [['BREAKDOWN', 'Breakdowns'], ['FUEL', 'Fuel'], ['SUPPLY', 'Supply'], ['BREAKOUT', 'Breakout'], ['TRANSPORT', 'Trucks'], ['DUMP', 'Dump'], ['HEDGEHOG', 'Hedgehog'], ['PORT', 'Port'], ['AIR', 'Air'], ['EXCHANGE', 'Exchange']];
     // Loading, unloading and splitting live in the truck's supply area; the buttons that remain are the other truck actions.
     const inPanel = (kind: string) => ['LOAD_SUPPLY', 'UNLOAD_SUPPLY', 'DIVIDE_TRANSPORT'].includes(kind);
     parts.push(...groups.flatMap(([group, title]): View[] => {
@@ -838,6 +850,7 @@ const unitTab = (snapshot: UiSnapshot, state: DeckState): TemplateResult => {
         return [transportSection(snapshot, snapshot.unitActions.filter((entry) => entry.group === 'TRANSPORT' && !inPanel(entry.action.kind)))];
       }
       if (group === 'FUEL') return [fuelSection(snapshot, state)];
+      if (group === 'EXCHANGE') return [exchangeSection(snapshot)];
       const entries = snapshot.unitActions.filter((entry) => entry.group === group);
       return entries.length === 0 ? [] : [html`<div class="unit-actions"><strong>${title}</strong>${actionButtons(entries)}</div>`];
     }));
