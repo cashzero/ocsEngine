@@ -37,6 +37,16 @@ describe('generated New Game flow', () => {
     expect(prepared.value.bindings).toHaveLength(2);
   });
 
+  it('does not count supply dumps as units in the headline unit count (MAP-04)', () => {
+    const prepared = prepareNewGame(DEFAULT_NEW_GAME_REQUEST);
+    expect(prepared.ok).toBe(true);
+    if (!prepared.ok) return;
+    const { generatedOob, summary } = prepared.value;
+    const dumps = generatedOob.metrics.rolesBySide.ALLIED.SUPPLY + generatedOob.metrics.rolesBySide.AXIS.SUPPLY;
+    expect(dumps).toBeGreaterThan(0);
+    expect(summary.unitCount).toBe(generatedOob.metrics.unitCount - dumps);
+  });
+
   it('builds the same package step by step, announcing each step first, and stops when told to', async () => {
     const orchestrator = createNewGameOrchestrator(createGameplayEngine(createMemoryGameplayPorts()));
     const stages: string[] = [];

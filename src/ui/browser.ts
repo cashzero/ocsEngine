@@ -352,7 +352,16 @@ const describeHex = (hexId: string): string => {
 const mapHost = document.createElement('div');
 mapHost.className = 'map-host';
 const mapView = new MapView(mapHost, {
-  hexClick: (hexId) => { stackPickerHex = null; void runUi(() => controller.clickHex(hexId)); },
+  hexClick: (hexId) => {
+    // Keyboard activation arrives here, not as a counter click: a hex holding several units must open the same stack list
+    // as clicking its counter, or the other units cannot be reached without a mouse (MAP-03).
+    const snapshot = shown;
+    const stack = snapshot ? onMapStacks(snapshot).get(hexId) : undefined;
+    const top = stack ? stackOrder(stack.pieces).at(-1) : undefined;
+    if (snapshot && stack && top && stack.pieces.length + stack.hiddenCount > 1) { void runUi(() => clickCounter(snapshot, top.id, hexId)); return; }
+    stackPickerHex = null;
+    void runUi(() => controller.clickHex(hexId));
+  },
   counterClick: (pieceId, hexId) => { if (shown) { const snapshot = shown; void runUi(() => clickCounter(snapshot, pieceId, hexId)); } },
   hover: (hexId) => {
     hoverHexId = hexId;

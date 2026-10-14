@@ -15,7 +15,7 @@ const cases = [
   },
   {
     id: 'large',
-    style: 'MEDITERRANEAN_COAST', width: 18, height: 12,
+    style: 'TEMPERATE_INLAND', width: 18, height: 12,
     scale: 'LARGE', formations: 4,
     mapSeed: 91_001, oobSeed: 91_002,
     deploymentSeed: 91_003, rulesSeed: 91_004,

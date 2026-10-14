@@ -57,7 +57,7 @@ try {
   // NG-07: the dialog, the preview, the mounted package.
   await openNewGame(h);
   await measure('new-game-configure');
-  await configure(h, { style: 'MEDITERRANEAN_COAST', width: 18, height: 12, scale: 'LARGE', divisions: 4, armored: 2, turnLimit: 3, seeds: { map: 91001, oob: 91002, deployment: 91003, rules: 91004 } });
+  await configure(h, { style: 'TEMPERATE_INLAND', width: 18, height: 12, scale: 'LARGE', divisions: 4, armored: 2, turnLimit: 3, seeds: { map: 91001, oob: 91002, deployment: 91003, rules: 91004 } });
   await generate(h);
   await measure('new-game-preview');
   await start(h);

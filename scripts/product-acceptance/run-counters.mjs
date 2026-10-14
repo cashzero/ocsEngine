@@ -10,7 +10,7 @@ import { cardTokens, configure, generate, hexOnScreen, moveSelectedTo, openNewGa
 
 const [width, height] = (process.argv[3] ?? '1920x1080').split('x').map(Number);
 const evidenceDir = join(process.argv[2] ?? 'docs/quality/evidence/product-2026-10-04', `counters-${width}x${height}`);
-const NG07 = { style: 'MEDITERRANEAN_COAST', width: 18, height: 12, scale: 'LARGE', divisions: 4, armored: 2, turnLimit: 3, seeds: { map: 91001, oob: 91002, deployment: 91003, rules: 91004 } };
+const NG07 = { style: 'TEMPERATE_INLAND', width: 18, height: 12, scale: 'LARGE', divisions: 4, armored: 2, turnLimit: 3, seeds: { map: 91001, oob: 91002, deployment: 91003, rules: 91004 } };
 const { definitions } = definitionsByName();
 const defOf = (name) => definitions.find((definition) => definition.name === name);
 const face = (definition, id) => definition.faces.find((entry) => entry.id === id)?.steps.at(-1);
