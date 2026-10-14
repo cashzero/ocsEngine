@@ -744,8 +744,13 @@ export interface GameState {
   readonly pieceState: PieceRuntimeState;
   readonly usage: readonly PieceUsageState[];
   readonly ledger: SegmentLedger;
-  /** The unit (or overrunning stack leader) whose movement is in progress (6.1g). */
+  /** The unit (or moving stack leader) whose movement is in progress (6.1g). */
   readonly currentMoverId: PieceId | null;
+  /**
+   * Every unit of the stack moving together with `currentMoverId`, leader first (6.1f, 8.1d). Absent when one unit
+   * moves alone; a unit dropped off the stack leaves this list and may not move again this phase.
+   */
+  readonly movingStackIds?: readonly PieceId[] | undefined;
   readonly rng: RulesRngState;
   readonly activeTransaction: RuleTransaction | null;
   readonly pendingDecision: PendingDecision | null;
@@ -772,7 +777,16 @@ export type GameAction =
   | (ActionEnvelope & { readonly kind: 'ADVANCE_SEQUENCE' })
   | (ActionEnvelope & { readonly kind: 'CHANGE_MODE'; readonly pieceId: PieceId; readonly mode: OcsMode })
   | (ActionEnvelope & { readonly kind: 'RELEASE_RESERVE'; readonly pieceId: PieceId })
-  | (ActionEnvelope & { readonly kind: 'MOVE_PIECE'; readonly pieceId: PieceId; readonly path: readonly HexId[] })
+  | (ActionEnvelope & {
+    readonly kind: 'MOVE_PIECE';
+    readonly pieceId: PieceId;
+    readonly path: readonly HexId[];
+    /**
+     * Other units moving along the same path as one stack with `pieceId` (6.1f). Units of the stack now moving that
+     * are left out are dropped off and finish their move.
+     */
+    readonly companionIds?: readonly PieceId[] | undefined;
+  })
   /** Declare the current mover finished (6.1g) without starting another unit; its unspent MP are lost for the phase. */
   | (ActionEnvelope & { readonly kind: 'END_MOVE'; readonly pieceId: PieceId })
   /** Detach the next numbered Breakdown ("1/101.Abn") from a multi-step unit as it begins to move (20.0, 20.0a). */

@@ -1180,6 +1180,9 @@ root.addEventListener('click', (event) => {
   }
   if (byId('deselect')) { controller.clearSelection(); return; }
   if (byId('finish-move')) { void runUi(controller.finishMove); return; }
+  if (byId('move-whole-stack')) { controller.moveWholeStack(); return; }
+  const stackMate = closest('[data-stack-mate]');
+  if (stackMate) { controller.toggleStackMate(stackMate.dataset.stackMate!); return; }
   if (byId('resume-game')) { controller.resume(); return; }
   if (byId('undo-step')) { void runUi(controller.undoStep); return; }
   if (byId('auto-pay')) { void runUi(controller.autoPay); return; }

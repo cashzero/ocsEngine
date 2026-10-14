@@ -8,13 +8,17 @@ import { arrivingReinforcements } from '../lifecycle/lifecycle.js';
 import {
   RETURN_TURN_STATUS,
   definitionOf,
+  handOverMove,
   isCombatUnit,
   isExtender,
+  isMoving,
   isTransportPoint,
   movementAllowanceTicks,
+  movingPieceIds,
   pieceById,
   piecesAt,
   usageOf,
+  withMovers,
   withStatus,
   withUsage,
 } from '../pieces.js';
@@ -74,7 +78,7 @@ export const seaUnitProblem = (state: GameState, unit: PieceState, ownerId: Play
   const usage = usageOf(state, unit);
   if (usage.seaCarried) return 'it was already shipped this phase';
   if (usage.railCarried || usage.airCarried) return 'it already used another transport this phase (4.7d)';
-  if (usage.moved || usage.movementSpentTicks > 0 || state.currentMoverId === unit.id) return 'it already moved this phase: no movement is allowed before shipping (19.0f C)';
+  if (usage.moved || usage.movementSpentTicks > 0 || isMoving(state, unit.id)) return 'it already moved this phase: no movement is allowed before shipping (19.0f C)';
   return null;
 };
 
@@ -175,10 +179,8 @@ export const applySeaMove = (state: GameState, action: SeaMove): Transition => {
   const quarters = cargoQuarters(state, action.unitIds, tokens);
   const single = action.unitIds.length === 1 && tokens === 0 && isCombatUnit(state, pieceById(state, action.unitIds[0]!)!);
   // Shipping is how these units act: the unit moving before them has finished (6.1g).
-  let next: GameState = state;
-  const previous = state.currentMoverId !== null && !action.unitIds.includes(state.currentMoverId) ? pieceById(state, state.currentMoverId) : undefined;
-  if (previous) next = { ...next, usage: withUsage(next, { ...usageOf(next, previous), moved: true }) };
-  next = { ...next, currentMoverId: null };
+  let next: GameState = withMovers(state, movingPieceIds(state).filter((id) => !action.unitIds.includes(id)));
+  next = handOverMove(next, []);
   for (const end of [action.fromHexId, action.toHexId]) {
     if (end !== null) next = usePortCapacity(next, end, quarters, portTakes(state, action.actorId, end, quarters, single).oversized);
   }

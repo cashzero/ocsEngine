@@ -136,12 +136,13 @@ const parseAction = (input: unknown, path: Path, issues: GameplayError[]): GameA
   };
   if (!(kind in fields)) issues.push(issue('SAVE_INVALID', [...path, 'kind'], `Unknown action kind ${kind}.`));
   // REDUCE_AIR_BASE gained an optional engineer; logs written before it do not carry the key.
-  // REDUCE_AIR_BASE gained an optional engineer and DECLARE_AIR_MISSION an optional cargo; logs written before them do not carry the keys.
+  // REDUCE_AIR_BASE gained an optional engineer, DECLARE_AIR_MISSION an optional cargo and MOVE_PIECE optional stack
+  // companions (6.1f); logs written before them do not carry the keys.
   // DECLARE_COMBAT without attackerSupply was written before attackers declared their supply (9.5): it cannot replay.
   if (kind === 'DECLARE_COMBAT' && !('attackerSupply' in record)) {
     issues.push(issue('SAVE_INCOMPATIBLE', [...path, 'attackerSupply'], 'This save has an attack made before each attacker declared its combat supply with the attack (9.5, 12.10a). Its moves replay rules that have since been corrected, so it cannot be loaded; start a new game.'));
   }
-  exactKeys(record, ['actionId', 'actorId', 'expectedRevision', 'kind', ...(fields[kind] ?? []), ...(kind === 'REDUCE_AIR_BASE' && 'engineerId' in record ? ['engineerId'] : []), ...(kind === 'DECLARE_AIR_MISSION' && 'cargo' in record ? ['cargo'] : [])], path, issues);
+  exactKeys(record, ['actionId', 'actorId', 'expectedRevision', 'kind', ...(fields[kind] ?? []), ...(kind === 'REDUCE_AIR_BASE' && 'engineerId' in record ? ['engineerId'] : []), ...(kind === 'DECLARE_AIR_MISSION' && 'cargo' in record ? ['cargo'] : []), ...(kind === 'MOVE_PIECE' && 'companionIds' in record ? ['companionIds'] : [])], path, issues);
   const actionText = textAt(record, 'actionId', path, issues);
   const actorText = textAt(record, 'actorId', path, issues);
   const parsedActionId = parseRuleActionId(actionText);
@@ -198,7 +199,10 @@ const parseAction = (input: unknown, path: Path, issues: GameplayError[]): GameA
     case 'RELEASE_RESERVE':
     case 'END_MOVE':
     case 'CREATE_BREAKDOWN': return { ...base, pieceId: piece('pieceId') } as GameAction;
-    case 'MOVE_PIECE': return { ...base, pieceId: piece('pieceId'), path: stringArray(record.path, [...path, 'path'], issues).map((_, index) => hexFromArray(record.path, index, path, issues)) } as GameAction;
+    case 'MOVE_PIECE': return {
+      ...base, pieceId: piece('pieceId'), path: stringArray(record.path, [...path, 'path'], issues).map((_, index) => hexFromArray(record.path, index, path, issues)),
+      ...('companionIds' in record ? { companionIds: pieces('companionIds') } : {}),
+    } as GameAction;
     case 'CHECK_SUPPLY': return { ...base, pieceIds: pieces('pieceIds'), sourcePieceId: record.sourcePieceId === null ? null : piece('sourcePieceId') } as GameAction;
     case 'DECLARE_COMBAT': {
       const combatKind = textAt(record, 'combatKind', path, issues);

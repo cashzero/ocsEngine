@@ -9,7 +9,7 @@ import { BARRAGE_TABLE_COLUMNS, FACILITY_TABLE_COLUMNS, facilityColumnIndex } fr
 import type { GameAction, GameState } from './kernel/model.js';
 import { applyGameAction } from './kernel/reducer.js';
 import { validateGameAction } from './kernel/validate.js';
-import { queryMovementPath, queryReachableHexes } from './movement/movement.js';
+import { queryStackMovementPath, queryStackReachableHexes } from './movement/movement.js';
 import { queryFeedCoverage, querySupplySources, queryTraceCoverage } from './supply/supply.js';
 import { relocationSupplyFacts } from './supply/relocation-impact.js';
 import { rationBudgetFacts } from './supply/ration-budget.js';
@@ -34,7 +34,7 @@ const publicFact = (key: string, value: string | number | boolean): RuleFact => 
 
 /** Facts a player sees before confirming an action: odds, DRM, supply, barrage column (4.9b/c). */
 const actionFacts = (state: GameState, action: GameAction): readonly RuleFact[] => {
-  if (action.kind === 'MOVE_PIECE') return queryMovementPath(state, action.actorId, action.pieceId, action.path).facts;
+  if (action.kind === 'MOVE_PIECE') return queryStackMovementPath(state, action.actorId, [action.pieceId, ...(action.companionIds ?? [])], action.path).facts;
   if (action.kind === 'DECLARE_COMBAT') {
     const preview = previewCombat(state, action.actorId, action.attackerIds, action.targetHexId, action.leadAttackerId, action.attackerSupply);
     return [
@@ -174,8 +174,8 @@ const engine: RuleEngine = {
     };
   },
   projectForViewer: projectRuleState,
-  queryMovementRange: (state, actorId, pieceId) => (kindMayBeLegal(state, actorId, 'MOVE_PIECE')
-    ? queryReachableHexes(state, actorId, pieceId)
+  queryMovementRange: (state, actorId, pieceId, companionIds = []) => (kindMayBeLegal(state, actorId, 'MOVE_PIECE')
+    ? queryStackReachableHexes(state, actorId, [pieceId, ...companionIds])
     : { allowed: false, value: [], reasons: [{ code: 'MOVEMENT_NOT_ALLOWED', allowed: false, message: 'No movement in this step.', rule: '6.1' }], facts: [], dependencies: [] }),
   queryTransportOptions,
   queryTraceCoverage,

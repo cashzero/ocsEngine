@@ -72,20 +72,28 @@ export const relocationSupplyFacts = (state: GameState, action: GameAction): rea
   if (action.kind === 'MOVE_PIECE' && !destination) return [];
   const relocated = action.kind === 'CHANGE_MODE' ? applyModeChange(unit, action.mode)
     : { ...unit, location: { kind: 'ON_MAP' as const, hexId: destination! } };
-  const mapState = action.kind === 'MOVE_PIECE' && isCombatUnit(state, unit)
+  // 6.1f: a stack's other units arrive with it.
+  const moved = new Map<string, PieceState>([[String(unit.id), relocated]]);
+  if (action.kind === 'MOVE_PIECE') {
+    for (const id of action.companionIds ?? []) {
+      const companion = pieceById(state, id);
+      if (companion) moved.set(String(id), { ...companion, location: { kind: 'ON_MAP', hexId: destination! } });
+    }
+  }
+  const at = (piece: PieceState): PieceState => moved.get(String(piece.id)) ?? piece;
+  const mapState = action.kind === 'MOVE_PIECE' && [...moved.values()].some((piece) => isCombatUnit(state, piece))
     ? action.path.slice(1).reduce((map, hexId) => setHexControl(map, hexId, action.actorId), state.mapState)
     : state.mapState;
-  let after: GameState = { ...state, mapState, pieceState: { ...state.pieceState,
-    pieces: state.pieceState.pieces.map(piece => piece.id === unit.id ? relocated : piece) } };
+  let after: GameState = { ...state, mapState, pieceState: { ...state.pieceState, pieces: state.pieceState.pieces.map(at) } };
   if (action.kind === 'MOVE_PIECE') {
     for (const hexId of action.path.slice(1)) after = capturePort(after, action.actorId, hexId, []);
   }
   const units = own();
   const traced = units.filter(piece => pieceHasTrace(state, piece));
-  const lost = traced.filter(piece => !pieceHasTrace(after, piece.id === unit.id ? relocated : piece));
+  const lost = traced.filter(piece => !pieceHasTrace(after, at(piece)));
   const feedLost = units.filter(piece => !pieceHasTrace(state, piece)
-    && availableRationTokens(after, piece.id === unit.id ? relocated : piece) < availableRationTokens(state, piece));
-  const others = lost.filter(piece => piece.id !== unit.id);
+    && availableRationTokens(after, at(piece)) < availableRationTokens(state, piece));
+  const others = lost.filter(piece => !moved.has(String(piece.id)));
   return [
     fact('supply.relocationFeedLost', feedLost.length),
     fact('supply.relocationFeedLostIds', feedLost.map(piece => piece.id).join(',')),

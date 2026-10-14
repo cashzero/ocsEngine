@@ -379,6 +379,10 @@ details.list-group summary { cursor: pointer; padding: 4px 0; }
 .carrier-row { display: grid; gap: 4px; }
 .carrier-row select { width: 100%; min-height: 32px; font-size: 13px; }
 
+.stack-together { margin: 0 0 8px; padding: 6px 10px; border: 1px solid var(--line, #3b4638); border-radius: 6px; }
+.stack-together .chip-row { margin-top: 4px; }
+.stack-together button.is-picked { outline: 2px solid #ffe078; }
+.stack-together .warning { margin: 6px 0 0; font-size: 13px; }
 .deck-status { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 8px; padding: 6px 10px; border: 1px solid var(--line, #3b4638); border-radius: 6px; }
 .status-mark { position: relative; padding: 2px 7px; white-space: nowrap; border-radius: 5px; font-size: 12px; font-weight: 800; letter-spacing: .03em; text-align: center; color: #10140f; background: #aab5a6; cursor: help; }
 .status-mark.tone-ok { background: #9fc9b2; }

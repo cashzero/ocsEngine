@@ -77,6 +77,8 @@ export interface RuleProjection {
   readonly sequence: GameState['sequence'];
   /** The viewer's own unit that is still moving and may spend more MP (6.1g); null otherwise and for the opponent. */
   readonly currentMoverId: PieceId | null;
+  /** The viewer's own units now moving together as one stack, leader first (6.1f); empty unless a stack is moving. */
+  readonly movingStackIds: readonly PieceId[];
   /** The viewer's Breakdowns that reduced units will absorb when the phase ends (20.0d), with who may take each. */
   readonly breakdownAbsorptions: readonly { readonly breakdownId: PieceId; readonly absorberIds: readonly PieceId[] }[];
   readonly stacks: readonly ProjectedStack[];
@@ -272,7 +274,8 @@ export interface RuleEngine {
   readonly explain: (state: GameState, action: GameAction) => RuleExplanation;
   readonly projectForViewer: (state: GameState, viewerId: PlayerId) => RuleProjection;
   /** Least-cost destinations of one own unit with their cost; facts carry `movement.remainingTicks`. */
-  readonly queryMovementRange: (state: GameState, actorId: PlayerId, pieceId: PieceId) => RuleQueryResult<readonly import('../movement/movement.js').ReachableHex[]>;
+  /** Reachable Hexes for one unit, or for it and `companionIds` moving together as one stack (6.1f). */
+  readonly queryMovementRange: (state: GameState, actorId: PlayerId, pieceId: PieceId, companionIds?: readonly PieceId[]) => RuleQueryResult<readonly import('../movement/movement.js').ReachableHex[]>;
   /** What one own Transport Point can load or unload in its Hex now: Token ranges, MP cost, and the rule behind anything not offered. */
   readonly queryTransportOptions: (state: GameState, actorId: PlayerId, truckId: PieceId) => RuleQueryResult<import('../supply/transport.js').TransportOptions | null>;
   /** Hexes where the actor's trace supply reaches: for the given unit (13.1d and 12.6f apply), or for any unit when null (12.6). */

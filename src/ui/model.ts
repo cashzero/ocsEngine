@@ -291,6 +291,15 @@ export interface MoveBlocker {
 }
 
 /** Cost of reaching one Hex of the selected unit's range (6.1). */
+/** A unit sharing the selected unit's Hex that may move off with it as one stack (6.1f). */
+export interface StackMate {
+  readonly piece: ProjectedPiece;
+  /** Ticked to move with the selected unit. */
+  readonly together: boolean;
+  /** Why it cannot move with the selected unit now; null when it can. */
+  readonly blocker: string | null;
+}
+
 export interface MoveRangeEntry {
   readonly path: readonly string[];
   readonly costTicks: number;
@@ -360,6 +369,13 @@ export interface UiSnapshot {
    * instead of a bare "cannot move"; empty when it may move or no Movement Segment is open.
    */
   readonly moveBlockers: readonly MoveBlocker[];
+  /**
+   * Other own units in the selected unit's Hex during a Movement Segment, and whether each moves with it as one stack
+   * (6.1f). Empty when there is no one to move with.
+   */
+  readonly stackMates: readonly StackMate[];
+  /** Units of the stack now moving that the previewed move leaves behind; they cannot move again this phase (6.1f). */
+  readonly droppedOffIds: readonly string[];
   /** MP the selected unit has left this phase, in quarter-MP ticks; null when it cannot move. */
   readonly remainingTicks: number | null;
   readonly movePreview: MovePreview | null;

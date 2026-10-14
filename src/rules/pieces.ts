@@ -322,6 +322,30 @@ export const withUsage = (state: GameState, usage: PieceUsageState): GameState['
   return [...others, usage].sort((left, right) => String(left.pieceId).localeCompare(String(right.pieceId)));
 };
 
+/** Units whose move is in progress: the moving stack (6.1f), or the single current mover (6.1g). */
+export const movingPieceIds = (state: GameState): readonly PieceId[] =>
+  state.currentMoverId === null ? [] : state.movingStackIds ?? [state.currentMoverId];
+
+export const isMoving = (state: GameState, pieceId: PieceId): boolean => movingPieceIds(state).includes(pieceId);
+
+/** The state with `pieceIds` (leader first) as the units now moving; empty means nobody is moving. */
+export const withMovers = (state: GameState, pieceIds: readonly PieceId[]): GameState => ({
+  ...state, currentMoverId: pieceIds[0] ?? null, movingStackIds: pieceIds.length > 1 ? [...pieceIds] : undefined,
+});
+
+/**
+ * `pieceIds` (leader first; empty for none) become the units now moving. Every unit that was moving and is not among
+ * them has finished its move (6.1g), including units dropped off a moving stack (6.1f).
+ */
+export const handOverMove = (state: GameState, pieceIds: readonly PieceId[]): GameState => {
+  let next = state;
+  for (const id of movingPieceIds(state)) {
+    const piece = pieceIds.includes(id) ? undefined : pieceById(next, id);
+    if (piece) next = { ...next, usage: withUsage(next, { ...usageOf(next, piece), moved: true }) };
+  }
+  return withMovers(next, pieceIds);
+};
+
 export const opponentOf = (state: GameState, playerId: PlayerId): PlayerId =>
   state.scenario.players.find(({ id }) => id !== playerId)?.id ?? playerId;
 

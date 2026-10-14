@@ -433,6 +433,7 @@ interface RawGameState {
   readonly usage: readonly PieceUsageState[];
   readonly ledger: SegmentLedger;
   readonly currentMoverId: GameState['currentMoverId'];
+  readonly movingStackIds?: GameState['movingStackIds'];
   readonly rng: RulesRngState;
   readonly activeTransaction: RuleTransaction | null;
   readonly pendingDecision: PendingDecision | null;
@@ -459,6 +460,7 @@ const rawGameStateDecoder: Decoder<RawGameState> = objectDecoder({
   usage: arrayDecoder(usageDecoder),
   ledger: ledgerDecoder,
   currentMoverId: nullableDecoder(pieceIdDecoder),
+  movingStackIds: optionalDecoder(arrayDecoder(pieceIdDecoder)),
   rng: rngDecoder,
   activeTransaction: nullableDecoder(transactionDecoder),
   pendingDecision: nullableDecoder(decisionDecoder),
@@ -581,6 +583,7 @@ export const parseGameState = (input: unknown): Result<GameState, readonly Valid
     usage: raw.value.usage,
     ledger: raw.value.ledger,
     currentMoverId: raw.value.currentMoverId,
+    ...(raw.value.movingStackIds ? { movingStackIds: raw.value.movingStackIds } : {}),
     rng: raw.value.rng,
     activeTransaction: raw.value.activeTransaction,
     pendingDecision: raw.value.pendingDecision,

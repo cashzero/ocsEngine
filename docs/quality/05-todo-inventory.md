@@ -36,7 +36,7 @@
     （含 13.5d 成對重建），地面 Unit Consolidation（13.9-1～3）已實作；兩張表都不是印刷版（TODO(repl-tables-generated)），
     機器人不會合併單位（TODO(consolidation-bot)），合併與計價只在測試局面上走過瀏覽器（TODO(repl-natural-loss-ui)）：
     `docs/reports/replacement-tables-2026-10-14.md` §6。Repl 自 2026-10-13 起為戰鬥單位（`replacement-movement-2026-10-13.md`）。
-  - `movement.ground`：整疊移動（6.1f）使用者暫緩。
+  - `movement.ground`：整疊移動（6.1f）與整疊 overrun 已實作（2026-10-14，doc 03 ACT-16／ACT-17）。TODO：AI 仍逐一移動與 overrun（缺：bot 不會整疊行動；影響：bot 的 overrun 戰力偏弱；驗收：bot 對局中出現 companionIds 的 MOVE_PIECE 與多單位 overrun）。TODO：overrun 結果顯示後選取被放開，玩家須再點堆疊才能續動（驗收：結果後仍選取存活的移動堆疊並可直接點目的地）。
   - `movement.sea`（19.0、9.14h）：港口容量、損壞／自毀／修復、佔領、Supply Source 與 Sea Cap 海運已實作；命中後容量依圖表第 4 頁 Port Damage 表為 80／60／40／20%（2026-10-10 轉錄並修正，原本每次扣 1/4）；砲兵仍不能轟擊港口（Facility Table 砲兵成本已轉錄，但 DECLARE_BARRAGE 沒有設施目標）。
   - `supply.trace-and-draw`：12.6f 編制追蹤由引擎挑涵蓋最多成員的路線，玩家不能選。
   - `supply.rail-trace`：單一軌距，無 Railhead／Wrong Gauge／改軌／Rail Repair（13.3d、13.3f、13.3g）。（產生的港口一律位於 village／town／city，在鐵路上時即以該聚落成為可下車格，13.3c，不是缺口。）
@@ -55,7 +55,7 @@
   新增 `supply.rail-front-control`（PARTIAL）、`hedgehogs`（IMPLEMENTED）；`hedgehogs-engineering` 改為只剩 `engineering.bridging`。
   2026-10-10：`engineering.bridging` 改為 IMPLEMENTED；`movement.sea` 改為 PARTIAL（港口與 Sea Cap）；`naval-shipping` 縮為 18.0。
   港口與海運的 UI 驗收 MAP-07、MAP-08、MAP-09 仍 IN PROGRESS（doc 03）；2026-10-13 起 New Game 海域改為側翼海＋各方 Sea Cap 與 inland entry，登陸方的平衡為 TODO（§5 第 8 項）。
-- 規則落差分析仍開啟：TODO-R1（逐條登記 §1–21，未登記的規則可能存在）、R9（整疊移動／連續 overrun）、
+- 規則落差分析仍開啟：TODO-R1（逐條登記 §1–21，未登記的規則可能存在）、R9（整疊移動／連續 overrun：規則與 UI 已實作並於瀏覽器驗收 ACT-16／ACT-17，2026-10-14；尚餘 AI 不會整疊行動）、
   R11（程式已保留分數 MA，`src/rules/pieces.ts` 6.1h，但沒有關閉證據要求的分數 MA 測試）、R14（未實作系統）；
   其餘 R 項程式已實作、待實機驗證（`docs/study/09-rules-vs-plan-gap-analysis.md` §4）。
 - 程式內與規則相關的 TODO：bot 的空中決策一律選第一個合法選項（`src/ai/decisions.ts`，bot-air）。
@@ -89,7 +89,7 @@
 1. 空中任務「每段都停下」與空戰交接次數。
 2. 補給 B3（付費來源偏好）、B4（定期補給線）。
 3. Breakdowns 提議的 doc 03 驗收列。
-4. 整疊移動（6.1f）是否解除暫緩（影響 R9、D3、`movement.ground`）。
+4. ~~整疊移動（6.1f）是否解除暫緩~~：使用者於 2026-10-14 要求實作，已解除。
 5. NG-07 的凍結期望（38 deployed Hexes）是否改為產品現在的 40，或修正產生器（doc 03 O-2）。
 6. ACT-11／ACT-12 是否改寫為「最後一個決策只結算一次交易」等可操作的敘述（O-7）；SES-01 Pause 在產品中已移除，是否改寫該列（O-8）。
 

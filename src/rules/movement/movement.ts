@@ -8,11 +8,14 @@ import {
   definitionOf,
   enemyCombatUnitsAt,
   friendlyCombatUnitsAt,
+  hexOf,
   isAttackCapable,
   isEligibleMover,
+  isMoving,
   isTransportPoint,
   mobilityOf,
   movementAllowanceTicks as allowanceFor,
+  movingPieceIds,
   pieceById,
   piecesAt,
   usageOf,
@@ -62,8 +65,7 @@ export const phaseAllowsMovement = (state: GameState): boolean =>
  * locked in place).
  */
 const negatorsAt = (state: GameState, mover: PieceState, hexId: HexId): readonly PieceState[] =>
-  friendlyCombatUnitsAt(state, mover.ownerId, hexId).filter((piece) => piece.id !== mover.id
-    && !(state.currentMoverId === piece.id));
+  friendlyCombatUnitsAt(state, mover.ownerId, hexId).filter((piece) => piece.id !== mover.id && !isMoving(state, piece.id));
 
 /** Why a unit may not begin or continue moving now, independent of the path. */
 export const moverViolations = (state: GameState, actorId: PlayerId, piece: PieceState | undefined): RuleViolation[] => {
@@ -83,7 +85,7 @@ export const moverViolations = (state: GameState, actorId: PlayerId, piece: Piec
   const usage = usageOf(state, piece);
   if (state.air.builderIds.includes(piece.id)) {
     issues.push(violation('ENGINEER_BUILT', ['pieceId'], 'An Engineer-Capable unit that performed construction cannot move in the same phase.', '13.8d'));
-  } else if (usage.moved && state.currentMoverId !== piece.id) {
+  } else if (usage.moved && !isMoving(state, piece.id)) {
     issues.push(violation('MOVEMENT_ALREADY_FINISHED', ['pieceId'], 'This unit finished moving when another unit began to move.', '6.1g'));
   }
   if (usage.negationLocked) issues.push(violation('NEGATING_UNIT_LOCKED', ['pieceId'], 'This unit negated an enemy ZOC for another unit and cannot spend MP this phase.', '4.5b'));
@@ -103,7 +105,7 @@ export const validateEndMove = (state: GameState, actorId: PlayerId, pieceId: Pi
   if (piece.ownerId !== actorId) issues.push(violation('NOT_PIECE_OWNER', ['actorId'], 'Actor does not own the mover.', '6.3a'));
   if (actorId !== state.sequence.actingPlayerId) issues.push(violation('WRONG_ACTOR', ['actorId'], 'Only the designated player can move units in this phase.', '6.3a'));
   if (!phaseAllowsMovement(state)) issues.push(violation('INVALID_MOVEMENT_PHASE', ['sequence'], 'Ground movement requires a Movement Segment.', '6.0'));
-  if (state.currentMoverId !== pieceId) issues.push(violation('NOT_CURRENT_MOVER', ['pieceId'], 'Only the unit now moving can finish its move.', '6.1g'));
+  if (!isMoving(state, pieceId)) issues.push(violation('NOT_CURRENT_MOVER', ['pieceId'], 'Only the unit now moving can finish its move.', '6.1g'));
   return issues;
 };
 
@@ -125,8 +127,8 @@ const enterableHex = (state: GameState, piece: PieceState, hexId: HexId): RuleVi
  * 6.1g: a unit beginning to move ends the previous unit's move. A Transport Point that has loaded, unloaded or
  * moved may still hold MP and SP, so the player is told what moving `movingId` would give up.
  */
-const endsOtherMoverFacts = (state: GameState, actorId: PlayerId, movingId: PieceId): RuleFact[] => {
-  const previous = state.currentMoverId !== null && state.currentMoverId !== movingId ? pieceById(state, state.currentMoverId) : undefined;
+const endsOtherMoverFacts = (state: GameState, actorId: PlayerId, movingIds: readonly PieceId[]): RuleFact[] => {
+  const previous = state.currentMoverId !== null && !movingIds.includes(state.currentMoverId) ? pieceById(state, state.currentMoverId) : undefined;
   if (!previous || previous.ownerId !== actorId || previous.location.kind !== 'ON_MAP' || !isTransportPoint(state, previous)) return [];
   const remainingTicks = allowanceFor(state, previous) - usageOf(state, previous).movementSpentTicks;
   if (remainingTicks <= 0) return [];
@@ -219,7 +221,7 @@ export const queryMovementPath = (
       { key: 'movement.totalTicks', value: totalTicks, visibility: 'PUBLIC', ownerId: null },
       { key: 'movement.allowanceTicks', value: allowanceTicks, visibility: 'OWNER_ONLY', ownerId: actorId },
       { key: 'movement.remainingTicks', value: Math.max(0, allowanceTicks - alreadySpent - spent), visibility: 'OWNER_ONLY', ownerId: actorId },
-      ...endsOtherMoverFacts(state, actorId, pieceId),
+      ...endsOtherMoverFacts(state, actorId, [pieceId]),
     ],
     dependencies: [{ aggregate: 'GAME', revision: state.revision, key: `movement:${pieceId}` }],
   };
@@ -229,6 +231,8 @@ export interface ReachableHex {
   readonly hexId: HexId;
   readonly costTicks: number;
   readonly path: readonly HexId[];
+  /** For a stack (6.1f): the fewest MP any of its units would have left on arriving. */
+  readonly remainingAfterTicks?: number;
   /** Movement must stop on entering: enemy ZOC for Truck units (4.5), an "All" cost, or a minimum move (6.1). */
   readonly endsMovement?: boolean;
 }
@@ -315,5 +319,187 @@ export const queryReachableHexes = (
       { key: 'movement.remainingTicks', value: remaining, visibility: 'OWNER_ONLY', ownerId: actorId },
     ],
     dependencies: [{ aggregate: 'GAME', revision: state.revision, key: `reachable:${pieceId}` }],
+  };
+};
+
+// ─── Stacks moving together (6.1f) ────────────────────────────────────────────────────────────
+
+/** The moving units have only begun: none has spent MP or entered a Hex yet (a mode change, 5.4). */
+export const movingStackBeginning = (state: GameState): boolean => movingPieceIds(state).every((id) => {
+  const piece = pieceById(state, id);
+  const usage = piece ? usageOf(state, piece) : null;
+  return usage !== null && usage.movementSpentTicks === 0 && !usage.moved;
+});
+
+/**
+ * 6.1f: why `pieceIds` may not move off together as one stack, apart from each unit's own path. A stack under way can
+ * drop units off but never pick up a unit that was not moving with it.
+ */
+export const stackMoveViolations = (state: GameState, pieceIds: readonly PieceId[]): RuleViolation[] => {
+  if (new Set(pieceIds).size !== pieceIds.length) return [violation('DUPLICATE_STACK_UNIT', ['companionIds'], 'Each unit can be listed once in a moving stack.', '6.1f')];
+  const moving = movingPieceIds(state);
+  const continuing = pieceIds.filter((id) => moving.includes(id));
+  if (pieceIds.length > 1 && continuing.length > 0 && continuing.length < pieceIds.length && !movingStackBeginning(state)) {
+    return [violation('STACK_CANNOT_PICK_UP', ['companionIds'], 'A moving stack can drop units off, but no unit can join it once it is under way.', '6.1f')];
+  }
+  return [];
+};
+
+const memberName = (state: GameState, pieceId: PieceId): string => {
+  const piece = pieceById(state, pieceId);
+  return (piece ? definitionOf(state, piece)?.name : undefined) ?? 'Unit';
+};
+
+/**
+ * One path for a stack (6.1f): every unit must be able to take it on its own, spending from its own MA (6.1e). The
+ * value lists each unit's result, leader first.
+ */
+export const queryStackMovementPath = (
+  state: GameState,
+  actorId: PlayerId,
+  pieceIds: readonly PieceId[],
+  path: readonly HexId[],
+): RuleQueryResult<readonly MovementPathValue[]> => {
+  const results = pieceIds.map((id) => queryMovementPath(state, actorId, id, path));
+  const stackIssues = stackMoveViolations(state, pieceIds);
+  const allowed = stackIssues.length === 0 && results.every(({ allowed: ok }) => ok);
+  const values = results.flatMap(({ value }) => value ? [value] : []);
+  const single = pieceIds.length === 1;
+  const remainingTicks = Math.min(...values.map(({ remainingTicks: left }) => left));
+  return {
+    allowed,
+    value: values,
+    reasons: allowed
+      ? results[0]!.reasons
+      : [
+        ...stackIssues.map((entry) => ({ code: entry.code, allowed: false, message: entry.message, rule: entry.rule })),
+        ...results.flatMap((result, index) => result.reasons.filter(({ allowed: ok }) => !ok)
+          .map((reason) => single ? reason : { ...reason, message: `${memberName(state, pieceIds[index]!)}: ${reason.message}` })),
+      ],
+    facts: [
+      ...results[0]!.facts.filter(({ key }) => !key.startsWith('movement.endsOtherMover.') && key !== 'movement.remainingTicks'),
+      // The stack goes on only as far as each unit's own MP allow: report the unit with the fewest left.
+      { key: 'movement.remainingTicks', value: Number.isFinite(remainingTicks) ? remainingTicks : 0, visibility: 'OWNER_ONLY', ownerId: actorId },
+      ...(single ? [] : [{ key: 'movement.stackSize', value: pieceIds.length, visibility: 'PUBLIC' as const, ownerId: null }]),
+      ...endsOtherMoverFacts(state, actorId, pieceIds),
+    ],
+    dependencies: [{ aggregate: 'GAME', revision: state.revision, key: `movement:${pieceIds.join('+')}` }],
+  };
+};
+
+interface StackLabel {
+  readonly hexId: HexId;
+  /** Ticks each member has spent on the path, in member order. */
+  readonly costs: readonly number[];
+  readonly path: readonly HexId[];
+  readonly terminal: boolean;
+}
+
+const dominates = (left: StackLabel, right: StackLabel): boolean =>
+  (!left.terminal || right.terminal) && left.costs.every((cost, index) => cost <= right.costs[index]! + 1e-9);
+
+/**
+ * Destinations a stack can reach together on one path (6.1f). Units of different mobility pay different costs (6.1e),
+ * so the search keeps every path not beaten for all members at once (Pareto labels), which keeps it exact. Each Hex is
+ * reported through its cheapest path in total, with the fewest MP any member would have left.
+ */
+export const queryStackReachableHexes = (
+  state: GameState,
+  actorId: PlayerId,
+  pieceIds: readonly PieceId[],
+): RuleQueryResult<readonly ReachableHex[]> => {
+  if (pieceIds.length === 1) return queryReachableHexes(state, actorId, pieceIds[0]!);
+  const pieces = pieceIds.map((id) => pieceById(state, id));
+  const blockers = [
+    ...stackMoveViolations(state, pieceIds),
+    ...pieces.flatMap((piece, index) => moverViolations(state, actorId, piece)
+      .map((entry) => ({ ...entry, message: `${memberName(state, pieceIds[index]!)}: ${entry.message}` }))),
+  ];
+  const origins = new Set(pieces.map((piece) => (piece ? hexOf(piece) : null)));
+  if (origins.size !== 1 || origins.has(null)) blockers.push(violation('STACK_NOT_TOGETHER', ['companionIds'], 'Only units in one Hex can move together as a stack.', '6.1f'));
+  if (blockers.length > 0 || pieces.some((piece) => !piece || mobilityOf(state, piece) === null)) {
+    return {
+      allowed: false, value: [],
+      reasons: blockers.length > 0 ? blockers.map((entry) => ({ code: entry.code, allowed: false, message: entry.message, rule: entry.rule }))
+        : [{ code: 'PIECE_CANNOT_MOVE', allowed: false, message: 'Piece cannot move.', rule: '6.1' }],
+      facts: [], dependencies: [],
+    };
+  }
+  const members = (pieces as PieceState[]).map((piece) => {
+    const mobility = mobilityOf(state, piece)!;
+    const allowance = movementAllowanceTicks_(state, piece);
+    const usage = usageOf(state, piece);
+    const unmoved = usage.movementSpentTicks === 0 && !usage.moved;
+    const hexAllowed = new Map<HexId, boolean>();
+    const stopsIn = new Map<HexId, boolean>();
+    return {
+      piece, mobility, remaining: allowance - usage.movementSpentTicks, unmoved,
+      minimumMove: unmoved && allowance > 0 && state.configuration.minimumMoveTicks > 0,
+      costs: moverCostModel(state, piece, mobility),
+      checkHex: (hexId: HexId): boolean => {
+        if (!hexAllowed.has(hexId)) {
+          const strat = piece.mode === 'STRAT' && inEnemyZoc(state, piece.ownerId, hexId);
+          hexAllowed.set(hexId, enterableHex(state, piece, hexId) === null && !strat);
+          stopsIn.set(hexId, mobility === 'truck' && inEnemyZoc(state, piece.ownerId, hexId) && negatorsAt(state, piece, hexId).length === 0);
+        }
+        return hexAllowed.get(hexId)!;
+      },
+      stopsIn: (hexId: HexId): boolean => stopsIn.get(hexId) === true,
+    };
+  });
+  const originHexId = hexOf(members[0]!.piece)!;
+  const total = (label: StackLabel) => label.costs.reduce((sum, cost) => sum + cost, 0);
+  const open = new PriorityQueue<StackLabel>((left, right) => total(left) - total(right)
+    || (String(left.hexId) < String(right.hexId) ? -1 : String(left.hexId) > String(right.hexId) ? 1 : 0));
+  const settled = new Map<HexId, StackLabel[]>();
+  open.push({ hexId: originHexId, costs: members.map(() => 0), path: [originHexId], terminal: false });
+  for (let label = open.pop(); label !== undefined; label = open.pop()) {
+    const atHex = settled.get(label.hexId) ?? [];
+    if (atHex.some((other) => dominates(other, label!))) continue;
+    settled.set(label.hexId, [...atHex, label]);
+    if (label.terminal) continue;
+    const fromOrigin = label.hexId === originHexId;
+    for (const next of adjacentOf(label.hexId)) {
+      if (next === originHexId || label.path.includes(next)) continue;
+      const costs: number[] = [];
+      let terminal = false;
+      let blocked = false;
+      for (const [index, member] of members.entries()) {
+        const step = member.costs.evaluate(label.hexId, next);
+        if (step.kind !== 'COST' || !member.checkHex(next)) { blocked = true; break; }
+        const stepTicks = step.all ? Math.max(step.cost.totalTicks, member.remaining)
+          : step.cost.totalTicks + trainbustingTicks(state, member.piece.ownerId, next, member.mobility === 'leg');
+        const cost = label.costs[index]! + stepTicks;
+        const withinBudget = cost <= member.remaining + 1e-9 && !(step.all && !member.unmoved);
+        if (!withinBudget && !(fromOrigin && member.minimumMove)) { blocked = true; break; }
+        costs.push(withinBudget ? cost : Math.max(cost, member.remaining));
+        terminal ||= member.stopsIn(next) || !withinBudget || step.all;
+      }
+      if (blocked) continue;
+      const entry: StackLabel = { hexId: next, costs, path: [...label.path, next], terminal };
+      if ((settled.get(next) ?? []).some((other) => dominates(other, entry))) continue;
+      open.push(entry);
+    }
+  }
+  let reachable: ReachableHex[] = [...settled.entries()].filter(([hexId]) => hexId !== originHexId).map(([hexId, labels]) => {
+    const best = labels[0]!;
+    const remainingAfterTicks = Math.max(0, Math.min(...members.map((member, index) => member.remaining - best.costs[index]!)));
+    return {
+      hexId, costTicks: best.costs[0]!, path: best.path, remainingAfterTicks,
+      ...(labels.every(({ terminal }) => terminal) ? { endsMovement: true } : {}),
+    };
+  });
+  if (members.some(({ piece }) => piece.mode === 'STRAT')) reachable = reachable.filter(({ hexId }) => traceSupplyAvailableAt(state, actorId, hexId));
+  const ordered = stableSort(reachable, (left, right) => left.costTicks - right.costTicks || String(left.hexId).localeCompare(String(right.hexId)));
+  const remaining = Math.min(...members.map((member) => member.remaining));
+  return {
+    allowed: true,
+    value: ordered,
+    reasons: [{ code: 'REACHABLE_HEXES_ENUMERATED', allowed: true, message: `${ordered.length} Hexes the stack can reach together.`, rule: '6.1f' }],
+    facts: [
+      { key: 'movement.reachableCount', value: ordered.length, visibility: 'OWNER_ONLY', ownerId: actorId },
+      { key: 'movement.remainingTicks', value: remaining, visibility: 'OWNER_ONLY', ownerId: actorId },
+    ],
+    dependencies: [{ aggregate: 'GAME', revision: state.revision, key: `reachable:${pieceIds.join('+')}` }],
   };
 };

@@ -147,6 +147,8 @@ export const projectRuleState = (state: GameState, viewerId: PlayerId): RuleProj
     sequence: { ...state.sequence },
     currentMoverId: state.currentMoverId !== null && state.pieceState.pieces.some(({ id, ownerId }) => id === state.currentMoverId && ownerId === viewerId)
       ? state.currentMoverId : null,
+    movingStackIds: state.movingStackIds !== undefined && state.pieceState.pieces.some(({ id, ownerId }) => id === state.currentMoverId && ownerId === viewerId)
+      ? [...state.movingStackIds] : [],
     breakdownAbsorptions: pendingAbsorptions(state, viewerId),
     stacks: stableSort(stacks, (left, right) => {
       const leftKey = stableKey([pieceLocationKey(left.location)]);
