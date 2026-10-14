@@ -129,6 +129,18 @@ export const validateRuleConfiguration = (
       issues.push(issue('INVALID_SUPPLY_STATUS', ['supplyArrivals', 'players'], 'Each Supply Status must name a table column.'));
     }
   }
+  for (const [index, { rows }] of (configuration.replacementArrivals?.players ?? []).entries()) {
+    const covered = Array.from({ length: 11 }, (_, total) => rows.filter(({ minimum, maximum }) => total + 2 >= minimum && total + 2 <= maximum).length);
+    if (covered.some((count) => count !== 1) || rows.some(({ pax, eq }) => ![pax, eq].every((value) => Number.isSafeInteger(value) && value >= 0))) {
+      issues.push(issue('INVALID_REPLACEMENT_TABLE', ['replacementArrivals', 'players', index, 'rows'], 'A Variable Replacement Table must cover every 2d6 total with one row of non-negative Pax and Eq.'));
+    }
+  }
+  for (const [index, { rows }] of (configuration.rebuildTables?.players ?? []).entries()) {
+    const listed = rows.flatMap(({ definitionIds }) => definitionIds.map(String));
+    if (new Set(listed).size !== listed.length || rows.some(({ pax, eq }) => ![pax, eq].every((value) => Number.isSafeInteger(value) && value >= 0) || pax + eq === 0)) {
+      issues.push(issue('INVALID_REBUILD_TABLE', ['rebuildTables', 'players', index, 'rows'], 'A Rebuild Table lists each unit once, at a cost of at least one Pax or Eq.'));
+    }
+  }
   for (const [field, entries] of [
     ['terrainCombatEffects', configuration.terrainCombatEffects],
     ['hexsideCombatEffects', configuration.hexsideCombatEffects],

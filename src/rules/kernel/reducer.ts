@@ -10,6 +10,7 @@ import { applyBuildAirBase } from '../air/construction.js';
 import { applyBuildHedgehog, applyReduceHedgehog } from '../hedgehog/hedgehog.js';
 import { applyRebuildAircraft } from '../air/replacement.js';
 import { applyRebuildUnits } from '../replacement/replacement.js';
+import { applyConsolidation } from '../replacement/consolidation.js';
 import { applyPlanAirDrop, applyUpdateDropPlan } from '../air/transport.js';
 import { declareAirMission, resolveAirDecision } from '../air/mission.js';
 import { applyInterruptChoice, settleInterrupts } from '../lifecycle/interrupts.js';
@@ -263,6 +264,8 @@ const dispatch = (state: GameState, action: GameAction): Transition => {
       return applyUpdateDropPlan(state, action);
     case 'COMBINE_AIRCRAFT':
       return applyCombineAircraft(state, action);
+    case 'CONSOLIDATE_UNITS':
+      return applyConsolidation(state, action);
     case 'RESPOND_DECISION': {
       const pending = state.pendingDecision!;
       if (pending.kind === 'FIRST_PLAYER') {

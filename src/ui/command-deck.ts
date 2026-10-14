@@ -433,17 +433,43 @@ const MODE_NAMES: Readonly<Record<string, string>> = { COMBAT: 'Combat Mode', MO
 
 /** Pax and Eq in the Reinforcement Phase: rebuild ground units and trucks lost to the enemy (13.5a-e). */
 const groundRebuildPanel = (snapshot: UiSnapshot, state: DeckState): View => snapshot.groundRebuilds.length === 0 ? nothing : html`<div class="air-panel"><strong>Rebuild units</strong>
-  <p class="hint">Move Mode Repls in a hex at or within 2 hexes of an HQ in Combat Mode, and not in an enemy ZOC, rebuild units: each step of an Armor, Mech or artillery unit costs 1 Eq, each step of any other unit 1 Pax. A Dead Pile unit returns in the Repls' hex; a reduced unit must be stacked with them. Units with the no-rebuild dot never return (13.5c).</p>
+  <p class="hint">Move Mode Repls in a hex at or within 2 hexes of an HQ in Combat Mode, and not in an enemy ZOC, rebuild units at the cost the Rebuild Table below gives. A Dead Pile unit returns in the Repls' hex; a reduced unit must be stacked with them. Units with the no-rebuild dot never return (13.5c).</p>
   ${snapshot.groundRebuilds.map((rebuild) => html`<div class="refit-base"><small>${rebuild.pax} Pax and ${rebuild.eq} Eq at ${printedHexLabel(rebuild.hexId)} · this rebuild costs ${rebuild.cost.pax} Pax and ${rebuild.cost.eq} Eq</small>
-    <div class="participants">${rebuild.units.map((unit) => html`<div class="rebuild-unit"><label class="participant plain"><input type="checkbox" data-rebuild-hex=${rebuild.hexId} data-rebuild-unit=${unit.id} .checked=${unit.selected}><span>${unit.label}<small>${unit.deadPile ? 'Dead Pile' : 'reduced here'} · ${unit.missing} step${unit.missing === 1 ? '' : 's'} missing · 1 ${unit.cost === 'PAX' ? 'Pax' : 'Eq'} a step</small></span></label>
+    <div class="participants">${rebuild.units.map((unit) => html`<div class="rebuild-unit"><label class="participant plain"><input type="checkbox" data-rebuild-hex=${rebuild.hexId} data-rebuild-unit=${unit.id} .checked=${unit.selected}><span>${unit.label}<small>${unit.deadPile ? 'Dead Pile' : 'reduced here'} · ${unit.missing} step${unit.missing === 1 ? '' : 's'} missing · ${priceLabel(unit.price)}</small></span></label>
       ${unit.selected && unit.missing > 1 ? html`<label class="rebuild-steps">Steps <input type="number" min="1" max=${unit.missing} .value=${String(unit.steps)} data-rebuild-hex=${rebuild.hexId} data-rebuild-steps=${unit.id}></label>` : nothing}
       ${unit.selected && unit.deadPile ? html`<label class="rebuild-mode">Place in <select data-rebuild-hex=${rebuild.hexId} data-rebuild-mode=${unit.id}>${unit.modes.map((mode) => html`<option value=${mode} ?selected=${mode === unit.mode}>${MODE_NAMES[mode] ?? mode}</option>`)}</select></label>` : nothing}</div>`)}</div>
     ${rebuild.truckMax > 0 ? html`<label class="rebuild-trucks">Truck points lost to the enemy to rebuild (1 Eq each, up to ${rebuild.truckMax}) <input type="number" min="0" max=${rebuild.truckMax} .value=${String(rebuild.truckPoints)} data-rebuild-hex=${rebuild.hexId} data-rebuild-trucks="1"></label>` : nothing}
     ${explanationBlock(rebuild.explanation)}
     <button class="primary" data-rebuild-units=${rebuild.hexId} ?disabled=${!(rebuild.explanation?.allowed && !busyOf(snapshot, state))}>Rebuild (${rebuild.cost.pax} Pax, ${rebuild.cost.eq} Eq)</button></div>`)}</div>`;
 
-/** The Rebuild tab: ground units and trucks first, then aircraft. */
-const rebuildTab = (snapshot: UiSnapshot, state: DeckState): TemplateResult => html`${groundRebuildPanel(snapshot, state)}${airRebuildPanel(snapshot, state)}`;
+/** "1 Pax a step", "1 Pax and 1 Eq a step", or "1 Pax for two units" (13.5d). */
+const priceLabel = (price: { readonly pax: number; readonly eq: number; readonly pairs: boolean }): string =>
+  `${[price.pax > 0 ? `${price.pax} Pax` : '', price.eq > 0 ? `${price.eq} Eq` : ''].filter(Boolean).join(' and ')} ${price.pairs ? 'for two units' : 'a step'}`;
+
+/** 13.5a, 13.5: the player's Rebuild Table and Variable Replacement Table, folded under the rebuild panels. */
+const replacementTablesPanel = (snapshot: UiSnapshot): View => snapshot.rebuildTable.length === 0 && snapshot.replacementTable.length === 0 ? nothing
+  : html`<details class="air-panel replacement-tables"><summary><strong>Rebuild and Replacement Tables</strong></summary>
+    ${snapshot.rebuildTable.length === 0 ? nothing : html`<table class="rebuild-table"><caption>Rebuild Table (13.5a)</caption>
+      <thead><tr><th>Units</th><th>Cost</th></tr></thead>
+      <tbody>${snapshot.rebuildTable.map((row) => html`<tr><td>${row.label}</td><td>${priceLabel(row)}</td></tr>`)}</tbody></table>
+      <p class="hint">Units not listed (no-rebuild dot, Breakdowns, Repls, trucks) never return as units; Eq rebuild trucks lost to the enemy (13.5e).</p>`}
+    ${snapshot.replacementTable.length === 0 ? nothing : html`<table class="replacement-table"><caption>Variable Replacement Table (2d6, each Reinforcement Phase)</caption>
+      <thead><tr><th>Roll</th><th>Pax</th><th>Eq</th></tr></thead>
+      <tbody>${snapshot.replacementTable.map((row) => html`<tr><td>${row.minimum === row.maximum ? row.minimum : `${row.minimum}-${row.maximum}`}</td><td>${row.pax}</td><td>${row.eq}</td></tr>`)}</tbody></table>`}
+  </details>`;
+
+/** 13.9-1 to 3: combine two reduced identical units in a hex, or exchange a unit for an identical one of another division from the Dead Pile. */
+const consolidationPanel = (snapshot: UiSnapshot, state: DeckState): View => snapshot.consolidations.length === 0 ? nothing : html`<div class="air-panel"><strong>Unit Consolidation</strong>
+  <p class="hint">Units identical on both sides of the counter, neither DG nor with Low or Exhausted internal stocks, may combine in one hex (the steps join one unit, the other goes to the Dead Pile; nothing grows beyond full strength), or a unit may be exchanged for an identical one of another division from the Dead Pile, keeping its mode, markers and steps (13.9).</p>
+  <div class="action-list">${snapshot.consolidations.map((option) => html`<div class="consolidation"><small>${printedHexLabel(option.hexId)} · ${option.consolidation === 'MERGE'
+    ? `${option.withLabel} joins ${option.label}: +${option.steps} step${option.steps === 1 ? '' : 's'}`
+    : `${option.withLabel} (Dead Pile) replaces ${option.label}, ${option.steps} step${option.steps === 1 ? '' : 's'}`}</small>
+    ${explanationBlock(option.explanation)}
+    <button data-consolidate=${option.key} ?disabled=${!option.explanation.allowed || busyOf(snapshot, state)}>${option.consolidation === 'MERGE' ? 'Combine' : 'Exchange'}</button></div>`)}</div></div>`;
+
+/** The Rebuild tab: ground units and trucks first, then aircraft, Unit Consolidation and the tables. */
+const rebuildTab = (snapshot: UiSnapshot, state: DeckState): TemplateResult =>
+  html`${groundRebuildPanel(snapshot, state)}${airRebuildPanel(snapshot, state)}${consolidationPanel(snapshot, state)}${replacementTablesPanel(snapshot)}`;
 
 /** Eq in the Reinforcement Phase: rebuild lost aircraft at any friendly Air Base (13.5f). */
 const airRebuildPanel = (snapshot: UiSnapshot, state: DeckState): View => snapshot.air.rebuilds.length === 0 ? nothing : html`<div class="air-panel"><strong>Rebuild aircraft</strong>
@@ -527,7 +553,8 @@ export const deckTabs = (snapshot: UiSnapshot): DeckTab[] => {
   }
   if (phase === 'AIRCRAFT_REFIT' || snapshot.air.refits.length > 0) tabs.push({ id: 'refit', label: 'Refit', badge: snapshot.air.refits.length });
   // Rebuilding with Pax and Eq is optional work, so the tab never carries a count.
-  if (snapshot.groundRebuilds.length > 0 || snapshot.air.rebuilds.length > 0) tabs.push({ id: 'rebuild', label: 'Rebuild', badge: 0 });
+  // The tables are only there in the player's own Reinforcement Phase, so the tab shows them then even with nothing to rebuild.
+  if (snapshot.groundRebuilds.length > 0 || snapshot.air.rebuilds.length > 0 || snapshot.consolidations.length > 0 || snapshot.rebuildTable.length > 0) tabs.push({ id: 'rebuild', label: 'Rebuild', badge: 0 });
   if (phase === 'COMBAT' || phase === 'EXPLOITATION' || segment === 'COMBAT' || segment === 'BARRAGE') {
     tabs.push({ id: 'targets', label: 'Targets', badge: new Set([...snapshot.attackTargets, ...snapshot.barrageTargets]).size });
   }

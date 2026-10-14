@@ -16,7 +16,8 @@ import { activeAircraftLimit, airBaseLevel, aircraftName, isActiveAircraft, isAi
   offMapAirfields, aircraftAtAirfield, isAircraft, isFighter, patrolZoneHexes, refitBlockedByZoc, refitCapacity } from '../air/aircraft.js';
 import { rebuildOptions, stepsToRebuild } from '../air/replacement.js';
 import { lostTruckPoints } from '../replacement/ledger.js';
-import { replacementsAt, unitRebuildOptions } from '../replacement/replacement.js';
+import { rebuildTableOf, replacementTableOf, replacementsAt, unitRebuildOptions } from '../replacement/replacement.js';
+import { consolidationOptions } from '../replacement/consolidation.js';
 import { aircraftRange, aircraftTransportCapacity, hasIntegralGlider } from '../air/aircraft.js';
 import { isHedgehog } from '../hedgehog/hedgehog.js';
 import { railCapRemainingQuarters, railCapacityPoints } from '../supply/rail-cap.js';
@@ -210,9 +211,15 @@ export const projectRuleState = (state: GameState, viewerId: PlayerId): RuleProj
     replacements: {
       rebuilds: unitRebuildOptions(state, viewerId).map((option) => ({
         hexId: String(option.hexId), hqId: option.hq.id, pax: option.pax, eq: option.eq, truckPoints: option.truckPoints,
-        units: option.units.map(({ piece, cost, missing, modes }) => ({ id: piece.id, definitionId: piece.definitionId, cost, missing, deadPile: piece.location.kind === 'ELIMINATED', modes })),
+        units: option.units.map(({ piece, price, missing, modes }) => ({ id: piece.id, definitionId: piece.definitionId, price, missing, deadPile: piece.location.kind === 'ELIMINATED', modes })),
       })),
       lostTruckPoints: lostTruckPoints(state, viewerId),
+      rebuildTable: rebuildTableOf(state, viewerId).map(({ id, label, pax, eq, pairs }) => ({ id, label, pax, eq, pairs })),
+      replacementTable: replacementTableOf(state, viewerId) ?? [],
+      consolidations: consolidationOptions(state, viewerId).map((option) => ({
+        consolidation: option.consolidation, pieceId: option.piece.id, withId: option.with.id, withDefinitionId: option.with.definitionId,
+        hexId: String(option.hexId), steps: option.steps,
+      })),
     },
   };
 };

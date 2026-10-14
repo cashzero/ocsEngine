@@ -170,8 +170,8 @@ export interface AirRebuild {
 export interface GroundRebuildUnit {
   readonly id: PieceId;
   readonly label: string;
-  /** Rebuild Table cost of each step. */
-  readonly cost: 'PAX' | 'EQ';
+  /** Rebuild Table row and price: per step, or per pair of units on a `pairs` row (13.5d). */
+  readonly price: { readonly row: string; readonly label: string; readonly pax: number; readonly eq: number; readonly pairs: boolean };
   readonly missing: number;
   readonly deadPile: boolean;
   readonly selected: boolean;
@@ -195,6 +195,20 @@ export interface GroundRebuild {
   readonly cost: { readonly pax: number; readonly eq: number };
   readonly action: GameAction | null;
   readonly explanation: RuleExplanation | null;
+}
+
+/** One Unit Consolidation (13.9): combine two reduced units in a hex, or exchange a unit for one of another division. */
+export interface Consolidation {
+  readonly key: string;
+  readonly consolidation: 'MERGE' | 'SWAP';
+  readonly hexId: string;
+  /** MERGE: the unit keeping the steps. SWAP: the unit on the map leaving for the Dead Pile. */
+  readonly label: string;
+  /** MERGE: the unit giving its steps. SWAP: the Dead Pile unit taking the place. */
+  readonly withLabel: string;
+  readonly steps: number;
+  readonly action: GameAction;
+  readonly explanation: RuleExplanation;
 }
 
 /** One way an Engineer-Capable unit can build or improve in the chosen hex (13.8d, 15.2, 15.3, 16.0b). */
@@ -390,6 +404,11 @@ export interface UiSnapshot {
   readonly air: AirOverview;
   /** Hexes of the player's Repls that can rebuild ground units or trucks now (13.5a-e). */
   readonly groundRebuilds: readonly GroundRebuild[];
+  /** The player's Rebuild Table (13.5a) and Variable Replacement Table (13.5); empty in a game saved before they existed. */
+  readonly rebuildTable: readonly { readonly label: string; readonly pax: number; readonly eq: number; readonly pairs: boolean }[];
+  readonly replacementTable: readonly { readonly minimum: number; readonly maximum: number; readonly pax: number; readonly eq: number }[];
+  /** Unit Consolidations the player could make now (13.9-1 to 3). */
+  readonly consolidations: readonly Consolidation[];
   readonly handoff: HandoffInfo | null;
   readonly feed: readonly FeedEntry[];
   readonly combatReports: readonly CombatReport[];

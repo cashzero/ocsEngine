@@ -1,5 +1,5 @@
 import { FOUNDATION_SCHEMA_VERSION, parseDefinitionId, type DefinitionId, type PlayerId, type Result } from '../core/index.js';
-import { sideDivisions, type GeneratedOob, type OobSide } from '../generation/oob/index.js';
+import { buildRebuildTable, sideDivisions, variableReplacementTable, type GeneratedOob, type OobSide } from '../generation/oob/index.js';
 import type { RailroadConfiguration, RiverConfiguration, RuleConfiguration } from '../rules/index.js';
 import { attackerOf, newGameSeaOf, seaArrivalSidesOf, type GeneratedDeployment, type NewGameRequest } from './model.js';
 import {
@@ -126,6 +126,9 @@ export const createGeneratedRuleConfiguration = (
         .find((entry) => entry.hexId === hexId)?.controllerId === players[deployment.attacker!] ? points : 0), 0),
     ),
   } }),
+  // 13.5: each side rolls its Variable Replacement Table and rebuilds by its Rebuild Table (docs/reports/replacements-2026-10-09.md).
+  replacementArrivals: { players: (['ALLIED', 'AXIS'] as const).map((side) => ({ playerId: players[side], rows: variableReplacementTable(oob.options.scale) })) },
+  rebuildTables: { players: (['ALLIED', 'AXIS'] as const).map((side) => ({ playerId: players[side], rows: buildRebuildTable(oob.pieceDefinitionCatalog.definitions, side) })) },
   railroads: GENERATED_RAILROADS,
   rivers: GENERATED_RIVERS,
   railCapacity: (() => {

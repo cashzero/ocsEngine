@@ -16,8 +16,8 @@ export const rebuildFacts = (state: GameState, action: GameAction): readonly Rul
   };
   const choices = {
     pax: option.pax, eq: option.eq, truckPoints: option.truckPoints,
-    units: option.units.map(({ piece, cost, missing, modes }) => ({
-      pieceId: piece.id, cost, missing, modes, eliminated: piece.location.kind === 'ELIMINATED', fixed: fixed(piece.id),
+    units: option.units.map(({ piece, price, missing, modes }) => ({
+      pieceId: piece.id, price, missing, modes, eliminated: piece.location.kind === 'ELIMINATED', fixed: fixed(piece.id),
       originalHexId: hexOf(state.scenario.initialPieceState.pieces.find(p => p.id === piece.id) ?? piece),
     })),
   };
