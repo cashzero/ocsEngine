@@ -29,6 +29,8 @@ export interface ObjectiveView {
 export interface Situation {
   readonly playerId: PlayerId;
   readonly turnsLeft: number;
+  readonly opponentTurnRemains: boolean;
+  readonly attack: boolean;
   readonly own: readonly OwnUnit[];
   readonly enemy: ReadonlyMap<HexId, EnemyStack>;
   readonly objectives: readonly ObjectiveView[];
@@ -82,9 +84,16 @@ export const analyze = (projection: RuleProjection, playerId: PlayerId, facts: B
     || stack.pieces.some(p => p.role === 'COMBAT' || p.role === 'ARTILLERY' || p.role === 'HQ')));
   const nearestCache = new Map<HexId, { stack: EnemyStack | null; distance: number }>();
   const threatCache = new Map<HexId, number>();
+  const turnsLeft = Math.max(0, facts.turnLimit - projection.sequence.gameTurn);
+  // Assess distant road raids against held VP without making every maneuver hex look exposed.
+  // The final second player has no later opposing turn to defend against.
+  const heldObjectives = new Set((turnsLeft > 0 || projection.sequence.playerTurnIndex === 0)
+    ? projection.objectives.filter(o => o.controllerId === playerId).map(o => o.hexId) : []);
   return {
     playerId,
-    turnsLeft: Math.max(0, facts.turnLimit - projection.sequence.gameTurn),
+    turnsLeft,
+    opponentTurnRemains: turnsLeft > 0 || projection.sequence.playerTurnIndex === 0,
+    attack: projection.attackVictory !== undefined,
     own,
     enemy,
     objectives: projection.objectives.map(({ hexId, points, controllerId }) => ({ hexId, points, controllerId })),
@@ -107,7 +116,22 @@ export const analyze = (projection: RuleProjection, playerId: PlayerId, facts: B
         threat = 0;
         for (const stack of enemyStacks) {
           const distance = hexesBetween(hexId, stack.hexId);
-          if (distance <= THREAT_RADIUS) threat += stack.strength / Math.max(1, distance);
+          let visibleStrength = 0;
+          for (const piece of stack.pieces) {
+            if (!['COMBAT', 'ARTILLERY', 'HQ'].includes(piece.role)) continue;
+            const profile = knowledge.profile(piece);
+            const strength = profile?.strength ?? 0;
+            visibleStrength += strength;
+            // A road costs as little as 0.5 MP per hex. Add one hex for an adjacent attack;
+            // a fixed four-hex radius missed real road advances against distant VP garrisons.
+            if (heldObjectives.has(hexId) && distance > THREAT_RADIUS && projection.objectiveRaidThreats) {
+              threat += (projection.objectiveRaidThreats.find(r => r.pieceId === piece.id && r.hexId === hexId)?.strength ?? 0) / Math.max(1, distance);
+            } else {
+              const reach = heldObjectives.has(hexId) ? Math.max(THREAT_RADIUS, Math.ceil(2 * (profile?.movement ?? 0)) + 1) : THREAT_RADIUS;
+              if (distance <= reach) threat += strength / Math.max(1, distance);
+            }
+          }
+          if (distance <= THREAT_RADIUS) threat += Math.max(0, stack.strength - visibleStrength) / Math.max(1, distance);
         }
         threatCache.set(hexId, threat);
       }

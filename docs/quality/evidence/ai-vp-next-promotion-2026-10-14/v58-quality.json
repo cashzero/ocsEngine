@@ -1,0 +1,29 @@
+{
+  "candidate": "58",
+  "checks": {
+    "typecheck": {
+      "command": "npm run typecheck",
+      "exitCode": 0
+    },
+    "build": {
+      "command": "npm run build",
+      "exitCode": 0
+    },
+    "tests": {
+      "command": "npx vitest run --maxWorkers=4",
+      "exitCode": 0,
+      "passed": 671,
+      "skipped": 8
+    },
+    "smoke": {
+      "command": "npm run smoke",
+      "exitCode": 0
+    }
+  },
+  "logs": {
+    "typecheck-v58-frozen.log": "d276a607924b69f3bf75479c9ff0bd362e2bc5a9c0047d63a951c8e899b4eb98",
+    "freeze-v58.log": "93b52803dd1a3ca4543da45828681a0f30999b4fdf1d97dfc64d4e3a04b073ac",
+    "tests-v58-frozen.log": "f4567301f51dc7a4b3e2bf8bb823a976b06ce78d8d67b7422e9d1a6932f84cba",
+    "smoke-v58-frozen.log": "57f4b11f8e16b9086ab757da51a782c8fdee53c661431fe12983397ac1a2493b"
+  }
+}

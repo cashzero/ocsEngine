@@ -1,0 +1,29 @@
+{
+  "candidate": "66",
+  "checks": {
+    "build": {
+      "command": "python3 freeze.py 66 (npm run build)",
+      "exitCode": 0
+    },
+    "typecheck": {
+      "command": "npm run typecheck",
+      "exitCode": 0
+    },
+    "tests": {
+      "command": "npx vitest run --maxWorkers=4",
+      "exitCode": 0,
+      "passed": 671,
+      "skipped": 8
+    },
+    "smoke": {
+      "command": "npm run smoke",
+      "exitCode": 0
+    }
+  },
+  "logs": {
+    "freeze-v66.log": "c21a965b22ba4747e73c11b230cc82ffd418c08ec8a71adb72aa51082bdfe5c9",
+    "typecheck-v66-frozen.log": "d276a607924b69f3bf75479c9ff0bd362e2bc5a9c0047d63a951c8e899b4eb98",
+    "tests-v66-frozen.log": "31888b1a13940558fc2f066f8294e5d52618d648d5a4389a3917546c18eb5dc5",
+    "smoke-v66-frozen.log": "57f4b11f8e16b9086ab757da51a782c8fdee53c661431fe12983397ac1a2493b"
+  }
+}

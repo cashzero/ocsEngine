@@ -1,6 +1,8 @@
 # M9 Bot 評分與規劃
 
-狀態：**PLANNED**（2026-10-06 設計）。架構與介面見 [M9 Bot 架構](M9-bot-architecture.md)；步驟與驗收見
+狀態：本文件保留 **2026-10-06 的 PLANNED 設計與 heuristic@1 歷史快照**，不是現行策略的完成宣告。
+現行實作、補給限制、VP 優先順序與 promotion 狀態見 [AI 現行策略與 VP 驗證](current-strategy.md)（2026-10-14 更新；標準 v66 已 promote，對照為凍結 v35）。
+架構與介面見 [M9 Bot 架構](M9-bot-architecture.md)；步驟與驗收見
 [M9 AI Bot WBS](../roadmap/11-ai-bot-wbs.md)。所有權重是初始值，必須在 B5／B6 以 seed batch 校準並寫入 versioned 設定檔，
 不得以固定 hex、unit／formation 名稱或 seed 特判調整行為。
 
@@ -167,11 +169,11 @@ Warning（需人工看 trace，跨 seed 比較）：
 | `RESPONDER_FALLBACK` | pending decision 用了 random-legal 後備 |
 | `SLOW_DECISION` | 單一決策超過延遲目標（只監控，不影響行為） |
 
-評估順序沿用 BCS：先零 Error，再看 Warning 與行為，最後才看勝率；勝率不得抵銷前兩層問題。
+上表是原始設計的 Error／Warning 分類，不能視為每個代碼都已實作。現行 VP promotion 先要求合法完整遊戲、重播與補給正確性，再依 **VP > Kill > Loss** 評估；勝率不能抵銷正確性問題，也不能取代 VP 條件。實際 runner 與獨立 80 場條件見 [現行策略](current-strategy.md#6-獨立-promotion-驗證)。
 
 ## 9. heuristic@1 的實作與本設計的差異（2026-10-06）
 
-`src/ai/policies/heuristic.ts`、`src/ai/decisions.ts`、`src/ai/odds.ts`。以 headless 對局調整後，與上面設計不同之處：
+以下是 2026-10-06 的 heuristic@1 歷史快照；其中「現行」指當時版本。2026-10-14 的策略、查詢與驗證更新見 [現行策略](current-strategy.md)。實作位於 `src/ai/policies/heuristic.ts`、`src/ai/decisions.ts`、`src/ai/odds.ts`。
 
 - **目標分配**：每個 player turn 依「價值 ÷ 路程」貪婪分配，每個目標有人數上限。已佔目標一定留守軍（受威脅時守軍價值高於新奪取）；
   深入我方補給區或貼近我方目標、HQ、補給堆的敵軍列為 `HUNT` 目標。最後一回合所有閒置單位改去奪取或守住最近的目標。

@@ -1,0 +1,2081 @@
+{
+  "status": "PROMOTED",
+  "baseline": "35",
+  "candidate": "66-main",
+  "tables": [
+    {
+      "group": "attack-v42-eastern",
+      "games": 20,
+      "vp": [
+        110,
+        114
+      ],
+      "delta": -4,
+      "stepLosses": [
+        193,
+        275
+      ],
+      "vpHigherLowerEqual": [
+        10,
+        10,
+        0
+      ]
+    },
+    {
+      "group": "attack-v42-temperate",
+      "games": 20,
+      "vp": [
+        140,
+        132
+      ],
+      "delta": 8,
+      "stepLosses": [
+        270,
+        306
+      ],
+      "vpHigherLowerEqual": [
+        9,
+        8,
+        3
+      ]
+    },
+    {
+      "group": "attack-v47-eastern",
+      "games": 20,
+      "vp": [
+        129,
+        97
+      ],
+      "delta": 32,
+      "stepLosses": [
+        233,
+        216
+      ],
+      "vpHigherLowerEqual": [
+        12,
+        8,
+        0
+      ]
+    },
+    {
+      "group": "attack-v47-temperate",
+      "games": 20,
+      "vp": [
+        172,
+        116
+      ],
+      "delta": 56,
+      "stepLosses": [
+        224,
+        304
+      ],
+      "vpHigherLowerEqual": [
+        11,
+        8,
+        1
+      ]
+    },
+    {
+      "group": "attack-v51-eastern",
+      "games": 20,
+      "vp": [
+        107,
+        89
+      ],
+      "delta": 18,
+      "stepLosses": [
+        238,
+        208
+      ],
+      "vpHigherLowerEqual": [
+        10,
+        9,
+        1
+      ]
+    },
+    {
+      "group": "attack-v51-temperate",
+      "games": 20,
+      "vp": [
+        132,
+        132
+      ],
+      "delta": 0,
+      "stepLosses": [
+        271,
+        234
+      ],
+      "vpHigherLowerEqual": [
+        9,
+        10,
+        1
+      ]
+    },
+    {
+      "group": "attack-v55-eastern",
+      "games": 20,
+      "vp": [
+        100,
+        132
+      ],
+      "delta": -32,
+      "stepLosses": [
+        357,
+        288
+      ],
+      "vpHigherLowerEqual": [
+        7,
+        11,
+        2
+      ]
+    },
+    {
+      "group": "attack-v55-temperate",
+      "games": 20,
+      "vp": [
+        156,
+        140
+      ],
+      "delta": 16,
+      "stepLosses": [
+        290,
+        260
+      ],
+      "vpHigherLowerEqual": [
+        9,
+        10,
+        1
+      ]
+    },
+    {
+      "group": "attack-v57-eastern",
+      "games": 20,
+      "vp": [
+        131,
+        99
+      ],
+      "delta": 32,
+      "stepLosses": [
+        240,
+        245
+      ],
+      "vpHigherLowerEqual": [
+        11,
+        7,
+        2
+      ]
+    },
+    {
+      "group": "attack-v57-temperate",
+      "games": 20,
+      "vp": [
+        175,
+        129
+      ],
+      "delta": 46,
+      "stepLosses": [
+        275,
+        259
+      ],
+      "vpHigherLowerEqual": [
+        9,
+        8,
+        3
+      ]
+    },
+    {
+      "group": "attack-v58-eastern",
+      "games": 20,
+      "vp": [
+        118,
+        114
+      ],
+      "delta": 4,
+      "stepLosses": [
+        171,
+        190
+      ],
+      "vpHigherLowerEqual": [
+        11,
+        9,
+        0
+      ]
+    },
+    {
+      "group": "attack-v58-temperate",
+      "games": 20,
+      "vp": [
+        160,
+        164
+      ],
+      "delta": -4,
+      "stepLosses": [
+        222,
+        243
+      ],
+      "vpHigherLowerEqual": [
+        10,
+        10,
+        0
+      ]
+    },
+    {
+      "group": "attack-v61-eastern",
+      "games": 20,
+      "vp": [
+        133,
+        109
+      ],
+      "delta": 24,
+      "stepLosses": [
+        274,
+        248
+      ],
+      "vpHigherLowerEqual": [
+        11,
+        7,
+        2
+      ]
+    },
+    {
+      "group": "attack-v61-temperate",
+      "games": 20,
+      "vp": [
+        209,
+        113
+      ],
+      "delta": 96,
+      "stepLosses": [
+        229,
+        268
+      ],
+      "vpHigherLowerEqual": [
+        13,
+        6,
+        1
+      ]
+    },
+    {
+      "group": "attack-v66-main-eastern",
+      "games": 20,
+      "vp": [
+        138,
+        98
+      ],
+      "delta": 40,
+      "stepLosses": [
+        202,
+        223
+      ],
+      "vpHigherLowerEqual": [
+        10,
+        9,
+        1
+      ]
+    },
+    {
+      "group": "attack-v66-main-temperate",
+      "games": 20,
+      "vp": [
+        221,
+        131
+      ],
+      "delta": 90,
+      "stepLosses": [
+        240,
+        267
+      ],
+      "vpHigherLowerEqual": [
+        12,
+        7,
+        1
+      ]
+    },
+    {
+      "group": "development-attack-v55-eastern",
+      "games": 8,
+      "vp": [
+        38,
+        42
+      ],
+      "delta": -4,
+      "stepLosses": [
+        134,
+        71
+      ],
+      "vpHigherLowerEqual": [
+        3,
+        4,
+        1
+      ]
+    },
+    {
+      "group": "development-attack-v55-temperate",
+      "games": 8,
+      "vp": [
+        65,
+        47
+      ],
+      "delta": 18,
+      "stepLosses": [
+        71,
+        87
+      ],
+      "vpHigherLowerEqual": [
+        5,
+        2,
+        1
+      ]
+    },
+    {
+      "group": "development-attack-v56-eastern",
+      "games": 8,
+      "vp": [
+        37,
+        43
+      ],
+      "delta": -6,
+      "stepLosses": [
+        130,
+        85
+      ],
+      "vpHigherLowerEqual": [
+        3,
+        5,
+        0
+      ]
+    },
+    {
+      "group": "development-attack-v56-temperate",
+      "games": 8,
+      "vp": [
+        58,
+        54
+      ],
+      "delta": 4,
+      "stepLosses": [
+        87,
+        77
+      ],
+      "vpHigherLowerEqual": [
+        4,
+        3,
+        1
+      ]
+    },
+    {
+      "group": "development-attack-v57-eastern",
+      "games": 8,
+      "vp": [
+        38,
+        42
+      ],
+      "delta": -4,
+      "stepLosses": [
+        134,
+        71
+      ],
+      "vpHigherLowerEqual": [
+        3,
+        4,
+        1
+      ]
+    },
+    {
+      "group": "development-attack-v57-temperate",
+      "games": 8,
+      "vp": [
+        65,
+        47
+      ],
+      "delta": 18,
+      "stepLosses": [
+        71,
+        87
+      ],
+      "vpHigherLowerEqual": [
+        5,
+        2,
+        1
+      ]
+    },
+    {
+      "group": "development-attack-v59-eastern",
+      "games": 8,
+      "vp": [
+        39,
+        43
+      ],
+      "delta": -4,
+      "stepLosses": [
+        109,
+        64
+      ],
+      "vpHigherLowerEqual": [
+        3,
+        4,
+        1
+      ]
+    },
+    {
+      "group": "development-attack-v59-temperate",
+      "games": 8,
+      "vp": [
+        67,
+        49
+      ],
+      "delta": 18,
+      "stepLosses": [
+        68,
+        92
+      ],
+      "vpHigherLowerEqual": [
+        4,
+        4,
+        0
+      ]
+    },
+    {
+      "group": "development-attack-v61-eastern",
+      "games": 8,
+      "vp": [
+        39,
+        43
+      ],
+      "delta": -4,
+      "stepLosses": [
+        130,
+        120
+      ],
+      "vpHigherLowerEqual": [
+        4,
+        3,
+        1
+      ]
+    },
+    {
+      "group": "development-attack-v61-temperate",
+      "games": 8,
+      "vp": [
+        75,
+        41
+      ],
+      "delta": 34,
+      "stepLosses": [
+        56,
+        69
+      ],
+      "vpHigherLowerEqual": [
+        5,
+        3,
+        0
+      ]
+    },
+    {
+      "group": "development-attack-v64-eastern",
+      "games": 8,
+      "vp": [
+        37,
+        45
+      ],
+      "delta": -8,
+      "stepLosses": [
+        105,
+        112
+      ],
+      "vpHigherLowerEqual": [
+        4,
+        4,
+        0
+      ]
+    },
+    {
+      "group": "development-attack-v64-temperate",
+      "games": 8,
+      "vp": [
+        79,
+        37
+      ],
+      "delta": 42,
+      "stepLosses": [
+        51,
+        73
+      ],
+      "vpHigherLowerEqual": [
+        6,
+        2,
+        0
+      ]
+    },
+    {
+      "group": "development-attack-v65-eastern",
+      "games": 8,
+      "vp": [
+        41,
+        41
+      ],
+      "delta": 0,
+      "stepLosses": [
+        111,
+        90
+      ],
+      "vpHigherLowerEqual": [
+        4,
+        4,
+        0
+      ]
+    },
+    {
+      "group": "development-attack-v65-temperate",
+      "games": 8,
+      "vp": [
+        84,
+        32
+      ],
+      "delta": 52,
+      "stepLosses": [
+        51,
+        71
+      ],
+      "vpHigherLowerEqual": [
+        6,
+        2,
+        0
+      ]
+    },
+    {
+      "group": "development-attack-v66-eastern",
+      "games": 8,
+      "vp": [
+        38,
+        44
+      ],
+      "delta": -6,
+      "stepLosses": [
+        113,
+        113
+      ],
+      "vpHigherLowerEqual": [
+        4,
+        3,
+        1
+      ]
+    },
+    {
+      "group": "development-attack-v66-main-eastern",
+      "games": 8,
+      "vp": [
+        39,
+        43
+      ],
+      "delta": -4,
+      "stepLosses": [
+        123,
+        101
+      ],
+      "vpHigherLowerEqual": [
+        3,
+        4,
+        1
+      ]
+    },
+    {
+      "group": "development-attack-v66-main-temperate",
+      "games": 8,
+      "vp": [
+        72,
+        44
+      ],
+      "delta": 28,
+      "stepLosses": [
+        62,
+        82
+      ],
+      "vpHigherLowerEqual": [
+        6,
+        2,
+        0
+      ]
+    },
+    {
+      "group": "development-attack-v66-temperate",
+      "games": 8,
+      "vp": [
+        77,
+        39
+      ],
+      "delta": 38,
+      "stepLosses": [
+        55,
+        81
+      ],
+      "vpHigherLowerEqual": [
+        5,
+        2,
+        1
+      ]
+    },
+    {
+      "group": "development-v36-eastern",
+      "games": 8,
+      "vp": [
+        51,
+        45
+      ],
+      "delta": 6,
+      "stepLosses": [
+        120,
+        144
+      ],
+      "vpHigherLowerEqual": [
+        2,
+        2,
+        4
+      ]
+    },
+    {
+      "group": "development-v36-temperate",
+      "games": 8,
+      "vp": [
+        46,
+        50
+      ],
+      "delta": -4,
+      "stepLosses": [
+        71,
+        88
+      ],
+      "vpHigherLowerEqual": [
+        2,
+        3,
+        3
+      ]
+    },
+    {
+      "group": "development-v37-eastern",
+      "games": 8,
+      "vp": [
+        51,
+        45
+      ],
+      "delta": 6,
+      "stepLosses": [
+        120,
+        144
+      ],
+      "vpHigherLowerEqual": [
+        2,
+        2,
+        4
+      ]
+    },
+    {
+      "group": "development-v37-temperate",
+      "games": 8,
+      "vp": [
+        46,
+        50
+      ],
+      "delta": -4,
+      "stepLosses": [
+        71,
+        88
+      ],
+      "vpHigherLowerEqual": [
+        2,
+        3,
+        3
+      ]
+    },
+    {
+      "group": "development-v38-eastern",
+      "games": 8,
+      "vp": [
+        51,
+        45
+      ],
+      "delta": 6,
+      "stepLosses": [
+        120,
+        144
+      ],
+      "vpHigherLowerEqual": [
+        2,
+        2,
+        4
+      ]
+    },
+    {
+      "group": "development-v38-temperate",
+      "games": 8,
+      "vp": [
+        46,
+        50
+      ],
+      "delta": -4,
+      "stepLosses": [
+        71,
+        88
+      ],
+      "vpHigherLowerEqual": [
+        2,
+        3,
+        3
+      ]
+    },
+    {
+      "group": "development-v39-eastern",
+      "games": 8,
+      "vp": [
+        45,
+        51
+      ],
+      "delta": -6,
+      "stepLosses": [
+        106,
+        110
+      ],
+      "vpHigherLowerEqual": [
+        3,
+        4,
+        1
+      ]
+    },
+    {
+      "group": "development-v39-temperate",
+      "games": 8,
+      "vp": [
+        41,
+        55
+      ],
+      "delta": -14,
+      "stepLosses": [
+        87,
+        71
+      ],
+      "vpHigherLowerEqual": [
+        2,
+        2,
+        4
+      ]
+    },
+    {
+      "group": "development-v40-eastern",
+      "games": 8,
+      "vp": [
+        45,
+        51
+      ],
+      "delta": -6,
+      "stepLosses": [
+        106,
+        110
+      ],
+      "vpHigherLowerEqual": [
+        3,
+        4,
+        1
+      ]
+    },
+    {
+      "group": "development-v40-temperate",
+      "games": 8,
+      "vp": [
+        41,
+        55
+      ],
+      "delta": -14,
+      "stepLosses": [
+        87,
+        71
+      ],
+      "vpHigherLowerEqual": [
+        2,
+        2,
+        4
+      ]
+    },
+    {
+      "group": "development-v41-eastern",
+      "games": 8,
+      "vp": [
+        52,
+        44
+      ],
+      "delta": 8,
+      "stepLosses": [
+        89,
+        137
+      ],
+      "vpHigherLowerEqual": [
+        4,
+        2,
+        2
+      ]
+    },
+    {
+      "group": "development-v41-temperate",
+      "games": 8,
+      "vp": [
+        47,
+        49
+      ],
+      "delta": -2,
+      "stepLosses": [
+        44,
+        102
+      ],
+      "vpHigherLowerEqual": [
+        2,
+        3,
+        3
+      ]
+    },
+    {
+      "group": "development-v42-eastern",
+      "games": 8,
+      "vp": [
+        52,
+        44
+      ],
+      "delta": 8,
+      "stepLosses": [
+        89,
+        137
+      ],
+      "vpHigherLowerEqual": [
+        4,
+        2,
+        2
+      ]
+    },
+    {
+      "group": "development-v42-temperate",
+      "games": 8,
+      "vp": [
+        47,
+        49
+      ],
+      "delta": -2,
+      "stepLosses": [
+        44,
+        102
+      ],
+      "vpHigherLowerEqual": [
+        2,
+        3,
+        3
+      ]
+    },
+    {
+      "group": "development-v43-eastern",
+      "games": 8,
+      "vp": [
+        44,
+        52
+      ],
+      "delta": -8,
+      "stepLosses": [
+        94,
+        118
+      ],
+      "vpHigherLowerEqual": [
+        1,
+        3,
+        4
+      ]
+    },
+    {
+      "group": "development-v43-temperate",
+      "games": 8,
+      "vp": [
+        38,
+        58
+      ],
+      "delta": -20,
+      "stepLosses": [
+        100,
+        56
+      ],
+      "vpHigherLowerEqual": [
+        1,
+        6,
+        1
+      ]
+    },
+    {
+      "group": "development-v44-eastern",
+      "games": 8,
+      "vp": [
+        50,
+        46
+      ],
+      "delta": 4,
+      "stepLosses": [
+        83,
+        104
+      ],
+      "vpHigherLowerEqual": [
+        2,
+        3,
+        3
+      ]
+    },
+    {
+      "group": "development-v44-temperate",
+      "games": 8,
+      "vp": [
+        55,
+        41
+      ],
+      "delta": 14,
+      "stepLosses": [
+        65,
+        76
+      ],
+      "vpHigherLowerEqual": [
+        4,
+        2,
+        2
+      ]
+    },
+    {
+      "group": "development-v45-eastern",
+      "games": 8,
+      "vp": [
+        51,
+        45
+      ],
+      "delta": 6,
+      "stepLosses": [
+        120,
+        144
+      ],
+      "vpHigherLowerEqual": [
+        2,
+        2,
+        4
+      ]
+    },
+    {
+      "group": "development-v45-temperate",
+      "games": 8,
+      "vp": [
+        46,
+        50
+      ],
+      "delta": -4,
+      "stepLosses": [
+        71,
+        88
+      ],
+      "vpHigherLowerEqual": [
+        2,
+        3,
+        3
+      ]
+    },
+    {
+      "group": "development-v46-eastern",
+      "games": 8,
+      "vp": [
+        51,
+        45
+      ],
+      "delta": 6,
+      "stepLosses": [
+        120,
+        144
+      ],
+      "vpHigherLowerEqual": [
+        2,
+        2,
+        4
+      ]
+    },
+    {
+      "group": "development-v46-temperate",
+      "games": 8,
+      "vp": [
+        43,
+        53
+      ],
+      "delta": -10,
+      "stepLosses": [
+        81,
+        88
+      ],
+      "vpHigherLowerEqual": [
+        3,
+        3,
+        2
+      ]
+    },
+    {
+      "group": "development-v47-eastern",
+      "games": 8,
+      "vp": [
+        50,
+        46
+      ],
+      "delta": 4,
+      "stepLosses": [
+        83,
+        104
+      ],
+      "vpHigherLowerEqual": [
+        2,
+        3,
+        3
+      ]
+    },
+    {
+      "group": "development-v47-temperate",
+      "games": 8,
+      "vp": [
+        55,
+        41
+      ],
+      "delta": 14,
+      "stepLosses": [
+        65,
+        76
+      ],
+      "vpHigherLowerEqual": [
+        4,
+        2,
+        2
+      ]
+    },
+    {
+      "group": "development-v48-eastern",
+      "games": 8,
+      "vp": [
+        51,
+        45
+      ],
+      "delta": 6,
+      "stepLosses": [
+        108,
+        160
+      ],
+      "vpHigherLowerEqual": [
+        3,
+        1,
+        4
+      ]
+    },
+    {
+      "group": "development-v48-temperate",
+      "games": 8,
+      "vp": [
+        36,
+        60
+      ],
+      "delta": -24,
+      "stepLosses": [
+        76,
+        58
+      ],
+      "vpHigherLowerEqual": [
+        2,
+        4,
+        2
+      ]
+    },
+    {
+      "group": "development-v49-eastern",
+      "games": 8,
+      "vp": [
+        48,
+        48
+      ],
+      "delta": 0,
+      "stepLosses": [
+        138,
+        110
+      ],
+      "vpHigherLowerEqual": [
+        2,
+        2,
+        4
+      ]
+    },
+    {
+      "group": "development-v49-temperate",
+      "games": 8,
+      "vp": [
+        42,
+        54
+      ],
+      "delta": -12,
+      "stepLosses": [
+        56,
+        40
+      ],
+      "vpHigherLowerEqual": [
+        1,
+        2,
+        5
+      ]
+    },
+    {
+      "group": "development-v50-eastern",
+      "games": 8,
+      "vp": [
+        52,
+        44
+      ],
+      "delta": 8,
+      "stepLosses": [
+        118,
+        129
+      ],
+      "vpHigherLowerEqual": [
+        3,
+        2,
+        3
+      ]
+    },
+    {
+      "group": "development-v50-temperate",
+      "games": 8,
+      "vp": [
+        58,
+        38
+      ],
+      "delta": 20,
+      "stepLosses": [
+        72,
+        75
+      ],
+      "vpHigherLowerEqual": [
+        3,
+        1,
+        4
+      ]
+    },
+    {
+      "group": "development-v51-eastern",
+      "games": 8,
+      "vp": [
+        50,
+        46
+      ],
+      "delta": 4,
+      "stepLosses": [
+        112,
+        133
+      ],
+      "vpHigherLowerEqual": [
+        2,
+        2,
+        4
+      ]
+    },
+    {
+      "group": "development-v51-temperate",
+      "games": 8,
+      "vp": [
+        58,
+        38
+      ],
+      "delta": 20,
+      "stepLosses": [
+        74,
+        76
+      ],
+      "vpHigherLowerEqual": [
+        3,
+        1,
+        4
+      ]
+    },
+    {
+      "group": "development-v52-eastern",
+      "games": 8,
+      "vp": [
+        50,
+        46
+      ],
+      "delta": 4,
+      "stepLosses": [
+        114,
+        96
+      ],
+      "vpHigherLowerEqual": [
+        3,
+        2,
+        3
+      ]
+    },
+    {
+      "group": "development-v52-temperate",
+      "games": 8,
+      "vp": [
+        50,
+        46
+      ],
+      "delta": 4,
+      "stepLosses": [
+        86,
+        79
+      ],
+      "vpHigherLowerEqual": [
+        2,
+        1,
+        5
+      ]
+    },
+    {
+      "group": "development-v53-eastern",
+      "games": 8,
+      "vp": [
+        53,
+        43
+      ],
+      "delta": 10,
+      "stepLosses": [
+        114,
+        106
+      ],
+      "vpHigherLowerEqual": [
+        4,
+        1,
+        3
+      ]
+    },
+    {
+      "group": "development-v53-temperate",
+      "games": 8,
+      "vp": [
+        49,
+        47
+      ],
+      "delta": 2,
+      "stepLosses": [
+        85,
+        85
+      ],
+      "vpHigherLowerEqual": [
+        3,
+        3,
+        2
+      ]
+    },
+    {
+      "group": "development-v55-eastern",
+      "games": 8,
+      "vp": [
+        50,
+        46
+      ],
+      "delta": 4,
+      "stepLosses": [
+        124,
+        96
+      ],
+      "vpHigherLowerEqual": [
+        2,
+        1,
+        5
+      ]
+    },
+    {
+      "group": "development-v55-temperate",
+      "games": 8,
+      "vp": [
+        52,
+        44
+      ],
+      "delta": 8,
+      "stepLosses": [
+        84,
+        89
+      ],
+      "vpHigherLowerEqual": [
+        3,
+        3,
+        2
+      ]
+    },
+    {
+      "group": "development-v56-eastern",
+      "games": 8,
+      "vp": [
+        50,
+        46
+      ],
+      "delta": 4,
+      "stepLosses": [
+        124,
+        96
+      ],
+      "vpHigherLowerEqual": [
+        2,
+        1,
+        5
+      ]
+    },
+    {
+      "group": "development-v56-temperate",
+      "games": 8,
+      "vp": [
+        52,
+        44
+      ],
+      "delta": 8,
+      "stepLosses": [
+        84,
+        89
+      ],
+      "vpHigherLowerEqual": [
+        3,
+        3,
+        2
+      ]
+    },
+    {
+      "group": "development-v58-eastern",
+      "games": 8,
+      "vp": [
+        50,
+        54
+      ],
+      "delta": -4,
+      "stepLosses": [
+        141,
+        115
+      ],
+      "vpHigherLowerEqual": [
+        3,
+        3,
+        2
+      ]
+    },
+    {
+      "group": "development-v58-temperate",
+      "games": 8,
+      "vp": [
+        121,
+        139
+      ],
+      "delta": -18,
+      "stepLosses": [
+        104,
+        103
+      ],
+      "vpHigherLowerEqual": [
+        3,
+        4,
+        1
+      ]
+    },
+    {
+      "group": "development-v59-eastern",
+      "games": 8,
+      "vp": [
+        50,
+        54
+      ],
+      "delta": -4,
+      "stepLosses": [
+        141,
+        115
+      ],
+      "vpHigherLowerEqual": [
+        3,
+        3,
+        2
+      ]
+    },
+    {
+      "group": "development-v59-temperate",
+      "games": 8,
+      "vp": [
+        123,
+        137
+      ],
+      "delta": -14,
+      "stepLosses": [
+        104,
+        102
+      ],
+      "vpHigherLowerEqual": [
+        3,
+        4,
+        1
+      ]
+    },
+    {
+      "group": "development-v60-eastern",
+      "games": 8,
+      "vp": [
+        47,
+        57
+      ],
+      "delta": -10,
+      "stepLosses": [
+        141,
+        116
+      ],
+      "vpHigherLowerEqual": [
+        3,
+        4,
+        1
+      ]
+    },
+    {
+      "group": "development-v60-temperate",
+      "games": 8,
+      "vp": [
+        127,
+        133
+      ],
+      "delta": -6,
+      "stepLosses": [
+        104,
+        96
+      ],
+      "vpHigherLowerEqual": [
+        4,
+        3,
+        1
+      ]
+    },
+    {
+      "group": "development-v61-eastern",
+      "games": 8,
+      "vp": [
+        46,
+        58
+      ],
+      "delta": -12,
+      "stepLosses": [
+        154,
+        76
+      ],
+      "vpHigherLowerEqual": [
+        2,
+        4,
+        2
+      ]
+    },
+    {
+      "group": "development-v61-temperate",
+      "games": 8,
+      "vp": [
+        177,
+        83
+      ],
+      "delta": 94,
+      "stepLosses": [
+        88,
+        130
+      ],
+      "vpHigherLowerEqual": [
+        7,
+        1,
+        0
+      ]
+    },
+    {
+      "group": "development-v62-eastern",
+      "games": 8,
+      "vp": [
+        53,
+        51
+      ],
+      "delta": 2,
+      "stepLosses": [
+        139,
+        111
+      ],
+      "vpHigherLowerEqual": [
+        3,
+        3,
+        2
+      ]
+    },
+    {
+      "group": "development-v62-temperate",
+      "games": 8,
+      "vp": [
+        137,
+        123
+      ],
+      "delta": 14,
+      "stepLosses": [
+        101,
+        110
+      ],
+      "vpHigherLowerEqual": [
+        5,
+        3,
+        0
+      ]
+    },
+    {
+      "group": "development-v64-eastern",
+      "games": 8,
+      "vp": [
+        42,
+        62
+      ],
+      "delta": -20,
+      "stepLosses": [
+        164,
+        86
+      ],
+      "vpHigherLowerEqual": [
+        1,
+        3,
+        4
+      ]
+    },
+    {
+      "group": "development-v64-temperate",
+      "games": 8,
+      "vp": [
+        154,
+        106
+      ],
+      "delta": 48,
+      "stepLosses": [
+        112,
+        145
+      ],
+      "vpHigherLowerEqual": [
+        6,
+        2,
+        0
+      ]
+    },
+    {
+      "group": "development-v65-eastern",
+      "games": 8,
+      "vp": [
+        52,
+        52
+      ],
+      "delta": 0,
+      "stepLosses": [
+        136,
+        107
+      ],
+      "vpHigherLowerEqual": [
+        2,
+        4,
+        2
+      ]
+    },
+    {
+      "group": "development-v65-temperate",
+      "games": 8,
+      "vp": [
+        141,
+        119
+      ],
+      "delta": 22,
+      "stepLosses": [
+        163,
+        87
+      ],
+      "vpHigherLowerEqual": [
+        3,
+        3,
+        2
+      ]
+    },
+    {
+      "group": "development-v66-eastern",
+      "games": 8,
+      "vp": [
+        69,
+        35
+      ],
+      "delta": 34,
+      "stepLosses": [
+        124,
+        107
+      ],
+      "vpHigherLowerEqual": [
+        4,
+        0,
+        4
+      ]
+    },
+    {
+      "group": "development-v66-main-eastern",
+      "games": 8,
+      "vp": [
+        62,
+        42
+      ],
+      "delta": 20,
+      "stepLosses": [
+        113,
+        96
+      ],
+      "vpHigherLowerEqual": [
+        5,
+        1,
+        2
+      ]
+    },
+    {
+      "group": "development-v66-main-temperate",
+      "games": 8,
+      "vp": [
+        150,
+        110
+      ],
+      "delta": 40,
+      "stepLosses": [
+        110,
+        80
+      ],
+      "vpHigherLowerEqual": [
+        4,
+        2,
+        2
+      ]
+    },
+    {
+      "group": "development-v66-temperate",
+      "games": 8,
+      "vp": [
+        129,
+        131
+      ],
+      "delta": -2,
+      "stepLosses": [
+        122,
+        96
+      ],
+      "vpHigherLowerEqual": [
+        4,
+        2,
+        2
+      ]
+    },
+    {
+      "group": "meeting-v42-eastern",
+      "games": 20,
+      "vp": [
+        102,
+        138
+      ],
+      "delta": -36,
+      "stepLosses": [
+        307,
+        244
+      ],
+      "vpHigherLowerEqual": [
+        6,
+        13,
+        1
+      ]
+    },
+    {
+      "group": "meeting-v42-temperate",
+      "games": 20,
+      "vp": [
+        141,
+        131
+      ],
+      "delta": 10,
+      "stepLosses": [
+        213,
+        297
+      ],
+      "vpHigherLowerEqual": [
+        10,
+        8,
+        2
+      ]
+    },
+    {
+      "group": "meeting-v47-eastern",
+      "games": 20,
+      "vp": [
+        100,
+        110
+      ],
+      "delta": -10,
+      "stepLosses": [
+        300,
+        278
+      ],
+      "vpHigherLowerEqual": [
+        7,
+        8,
+        5
+      ]
+    },
+    {
+      "group": "meeting-v47-temperate",
+      "games": 20,
+      "vp": [
+        135,
+        137
+      ],
+      "delta": -2,
+      "stepLosses": [
+        238,
+        275
+      ],
+      "vpHigherLowerEqual": [
+        8,
+        9,
+        3
+      ]
+    },
+    {
+      "group": "meeting-v51-eastern",
+      "games": 20,
+      "vp": [
+        126,
+        114
+      ],
+      "delta": 12,
+      "stepLosses": [
+        284,
+        259
+      ],
+      "vpHigherLowerEqual": [
+        6,
+        3,
+        11
+      ]
+    },
+    {
+      "group": "meeting-v51-temperate",
+      "games": 20,
+      "vp": [
+        126,
+        142
+      ],
+      "delta": -16,
+      "stepLosses": [
+        351,
+        236
+      ],
+      "vpHigherLowerEqual": [
+        6,
+        8,
+        6
+      ]
+    },
+    {
+      "group": "meeting-v55-eastern",
+      "games": 20,
+      "vp": [
+        154,
+        78
+      ],
+      "delta": 76,
+      "stepLosses": [
+        232,
+        320
+      ],
+      "vpHigherLowerEqual": [
+        14,
+        4,
+        2
+      ]
+    },
+    {
+      "group": "meeting-v55-temperate",
+      "games": 20,
+      "vp": [
+        167,
+        121
+      ],
+      "delta": 46,
+      "stepLosses": [
+        188,
+        220
+      ],
+      "vpHigherLowerEqual": [
+        9,
+        4,
+        7
+      ]
+    },
+    {
+      "group": "meeting-v57-eastern",
+      "games": 20,
+      "vp": [
+        110,
+        122
+      ],
+      "delta": -12,
+      "stepLosses": [
+        261,
+        193
+      ],
+      "vpHigherLowerEqual": [
+        4,
+        5,
+        11
+      ]
+    },
+    {
+      "group": "meeting-v57-temperate",
+      "games": 20,
+      "vp": [
+        158,
+        94
+      ],
+      "delta": 64,
+      "stepLosses": [
+        207,
+        230
+      ],
+      "vpHigherLowerEqual": [
+        11,
+        2,
+        7
+      ]
+    },
+    {
+      "group": "meeting-v58-eastern",
+      "games": 20,
+      "vp": [
+        135,
+        133
+      ],
+      "delta": 2,
+      "stepLosses": [
+        296,
+        252
+      ],
+      "vpHigherLowerEqual": [
+        9,
+        9,
+        2
+      ]
+    },
+    {
+      "group": "meeting-v58-temperate",
+      "games": 20,
+      "vp": [
+        378,
+        370
+      ],
+      "delta": 8,
+      "stepLosses": [
+        252,
+        257
+      ],
+      "vpHigherLowerEqual": [
+        8,
+        10,
+        2
+      ]
+    },
+    {
+      "group": "meeting-v61-eastern",
+      "games": 20,
+      "vp": [
+        155,
+        117
+      ],
+      "delta": 38,
+      "stepLosses": [
+        253,
+        249
+      ],
+      "vpHigherLowerEqual": [
+        9,
+        7,
+        4
+      ]
+    },
+    {
+      "group": "meeting-v61-temperate",
+      "games": 20,
+      "vp": [
+        344,
+        360
+      ],
+      "delta": -16,
+      "stepLosses": [
+        289,
+        233
+      ],
+      "vpHigherLowerEqual": [
+        10,
+        9,
+        1
+      ]
+    },
+    {
+      "group": "meeting-v66-main-eastern",
+      "games": 20,
+      "vp": [
+        154,
+        114
+      ],
+      "delta": 40,
+      "stepLosses": [
+        291,
+        297
+      ],
+      "vpHigherLowerEqual": [
+        8,
+        4,
+        8
+      ]
+    },
+    {
+      "group": "meeting-v66-main-temperate",
+      "games": 20,
+      "vp": [
+        422,
+        378
+      ],
+      "delta": 44,
+      "stepLosses": [
+        367,
+        246
+      ],
+      "vpHigherLowerEqual": [
+        8,
+        9,
+        3
+      ]
+    }
+  ],
+  "independentValidations": {
+    "42": {
+      "games": 80,
+      "pairs": 40,
+      "meanVpGain": -0.275,
+      "standardError": 0.6905845721430874,
+      "interval": [
+        -1.7252276015004835,
+        1.1752276015004837
+      ],
+      "engagementDelta": {
+        "meeting": -26,
+        "attack": 4
+      },
+      "vpGate": false
+    },
+    "47": {
+      "games": 80,
+      "pairs": 40,
+      "meanVpGain": 0.95,
+      "standardError": 0.7770341377842104,
+      "interval": [
+        -0.681771689346842,
+        2.5817716893468416
+      ],
+      "engagementDelta": {
+        "meeting": -12,
+        "attack": 88
+      },
+      "vpGate": false
+    },
+    "51": {
+      "games": 80,
+      "pairs": 40,
+      "meanVpGain": 0.175,
+      "standardError": 0.5682716712169386,
+      "interval": [
+        -1.018370509555571,
+        1.3683705095555712
+      ],
+      "engagementDelta": {
+        "meeting": -4,
+        "attack": 18
+      },
+      "vpGate": false
+    },
+    "55": {
+      "games": 80,
+      "pairs": 40,
+      "meanVpGain": 1.325,
+      "standardError": 0.6834935709562026,
+      "interval": [
+        -0.11033649900802556,
+        2.7603364990080257
+      ],
+      "engagementDelta": {
+        "meeting": 122,
+        "attack": -16
+      },
+      "vpGate": false
+    },
+    "57": {
+      "games": 80,
+      "pairs": 40,
+      "meanVpGain": 1.625,
+      "standardError": 0.5792208515512842,
+      "interval": [
+        0.408636211742303,
+        2.8413637882576968
+      ],
+      "engagementDelta": {
+        "meeting": 52,
+        "attack": 78
+      },
+      "vpGate": true
+    },
+    "58": {
+      "games": 80,
+      "pairs": 40,
+      "meanVpGain": 0.125,
+      "standardError": 0.7862500254779662,
+      "interval": [
+        -1.526125053503729,
+        1.776125053503729
+      ],
+      "engagementDelta": {
+        "meeting": 10,
+        "attack": 0
+      },
+      "vpGate": false,
+      "strategyVersion": "57",
+      "artifactBatchId": "58",
+      "currentMainRerun": true
+    },
+    "61": {
+      "games": 80,
+      "pairs": 40,
+      "meanVpGain": 1.775,
+      "standardError": 1.0047882159810388,
+      "interval": [
+        -0.33505525356018184,
+        3.8850552535601817
+      ],
+      "engagementDelta": {
+        "meeting": 22,
+        "attack": 120
+      },
+      "vpGate": false
+    },
+    "66-main": {
+      "games": 80,
+      "pairs": 40,
+      "meanVpGain": 2.675,
+      "standardError": 0.8989933829367726,
+      "interval": [
+        0.7871138958327775,
+        4.562886104167222
+      ],
+      "engagementDelta": {
+        "meeting": 84,
+        "attack": 130
+      },
+      "vpGate": true
+    }
+  },
+  "strategyVersion": "66",
+  "artifactBatchId": "66-main",
+  "sourceCommitBase": "45e700a8accbfc34ca6d86e65e528793ae0eff1e",
+  "standardStrategyVersion": "66",
+  "acceptanceArtifact": "v66-main-acceptance.json"
+}

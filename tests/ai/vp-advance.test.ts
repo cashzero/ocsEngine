@@ -4,7 +4,7 @@ import { gunzipSync } from 'node:zlib';
 import { describe, expect, it } from 'vitest';
 import { createBotRng, createHeuristicPolicy, parseGameStateJson, pieceHasTrace, ruleEngine,
   type BotDecisionContext, type BotPhaseMemory, type GameAction, type GameState } from '../../src/index.js';
-import { isCombatUnit } from '../../src/rules/pieces.js';
+import { isCombatUnit, stepOf } from '../../src/rules/pieces.js';
 import { availableRationTokens } from '../../src/rules/supply/relocation-impact.js';
 
 const fixture = (name = 'vp-advance-1258101') => {
@@ -31,6 +31,23 @@ const context = (state: GameState, memory: BotPhaseMemory): BotDecisionContext =
 };
 
 describe('reinforcing a captured VP in recorded combat', () => {
+  it('starts the real VP capture with a stronger supplied defender than the historical recon', () => {
+    const stored = fixture('vp-first-entry-1258101'), state = stored.state;
+    const old = ruleEngine.applyAction(state, stored.baselineAction);
+    if (!old.ok || stored.baselineAction.kind !== 'RESPOND_DECISION') throw new Error('Historical first advance rejected');
+    const oldId = stored.baselineAction.choiceId.slice('advance:'.length);
+    const oldUnit = old.state.pieceState.pieces.find(p => p.id === oldId)!;
+    expect(Number(stepOf(old.state, oldUnit)?.combatStrength)).toBe(3);
+    const chosen = createHeuristicPolicy({ scenario: state.scenario, turnLimit: 8 })
+      .decide(context(state, { stepKey: 'first-vp-entry', actions: 0, notes: new Map() }))!;
+    const next = ruleEngine.applyAction(state, chosen.action);
+    if (!next.ok || chosen.action.kind !== 'RESPOND_DECISION') throw new Error('New first advance rejected');
+    const moverId = chosen.action.choiceId.slice('advance:'.length);
+    const unit = next.state.pieceState.pieces.find(p => p.id === moverId)!;
+    expect(unit.location).toEqual({ kind: 'ON_MAP', hexId: '9,16' });
+    expect(Number(stepOf(next.state, unit)?.combatStrength)).toBeGreaterThanOrEqual(16);
+    expect(pieceHasTrace(next.state, unit)).toBe(true);
+  });
   it('uses a real legal advance to reinforce the weak garrison without taking friendly food or trace', () => {
     const stored = fixture(), state = stored.state;
     expect(state.pendingDecision?.kind).toBe('ADVANCE_HEX');

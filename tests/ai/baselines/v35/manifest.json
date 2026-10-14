@@ -1,0 +1,23 @@
+{
+  "version": "35",
+  "sourceCommit": "e801ce829f7438d054cbfebc3e22a5b1f54e44dc",
+  "note": "Frozen AI behavior; only import paths relocated. knowledge/odds/model were unchanged by the candidate and share production modules. Do not update to the candidate.",
+  "files": {
+    "analysis.ts": {
+      "originalSha256": "662ef3cba8750eda771f261cdaef967316f3368da5f89c5d8df7e53c6155f4ba",
+      "relocatedSha256": "e9692877d8d1564bcf25c6d8a77aebe4c866f46c4baa553a9e82250171835df2"
+    },
+    "decisions.ts": {
+      "originalSha256": "43c3f8aab06145a8ec89762fe5fea0261dd5f8e62cd9a1aadaea092093d84356",
+      "relocatedSha256": "f9040db5a8e61908344a70a3d488a2e54e4585bdae61c05a4eec3fa0db827b1a"
+    },
+    "policies/heuristic.ts": {
+      "originalSha256": "a343277c4cd6b137e19a65ccaa2fff393483cf073de80cb6cd8bae2bc860f40c",
+      "relocatedSha256": "a48ea2f572c71c349384e57c38b5ce56ef6c9774f94b09cde4eda7df90fdf824"
+    },
+    "policies/heuristic-weights.ts": {
+      "originalSha256": "77fe83a83d2a8cabdab120bf99d00e25862a0083b6f5a6fe1d3209f7b7c03f76",
+      "relocatedSha256": "77fe83a83d2a8cabdab120bf99d00e25862a0083b6f5a6fe1d3209f7b7c03f76"
+    }
+  }
+}

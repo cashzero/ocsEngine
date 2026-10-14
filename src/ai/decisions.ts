@@ -64,7 +64,9 @@ export const respondToDecision = (context: BotDecisionContext, situation: Situat
       const ownVp = situation.objectives.filter(o => o.controllerId === context.playerId).reduce((total, o) => total + o.points, 0);
       const otherVp = situation.objectives.filter(o => o.controllerId !== null && o.controllerId !== context.playerId).reduce((total, o) => total + o.points, 0);
       // On the last turn the side that moves second has the last word on who holds each objective.
-      if ((situation.turnsLeft <= 0 || (situation.turnsLeft === 1 && ownVp < otherVp)) && has('second')) return respond(actions, 'second', 'first-player', 'late VP deficit: move second to answer the opponent on the objectives');
+      // Meeting VP starts balanced: when behind, answer the enemy's move now rather than
+      // waiting until turn 7. Attack scenarios intentionally start with unequal VP totals.
+      if ((situation.turnsLeft <= 0 || (ownVp < otherVp && (situation.turnsLeft === 1 || !situation.attack))) && has('second')) return respond(actions, 'second', 'first-player', 'VP deficit: move second to answer the opponent on the objectives');
       return respond(actions, has('first') ? 'first' : options[0]!.id, 'first-player', 'moving first keeps the initiative');
     }
     case 'SUPPLY_SOURCE': {
@@ -171,11 +173,24 @@ export const respondToDecision = (context: BotDecisionContext, situation: Situat
           }
         }
       }
-      const advance = (free[0] ?? (objective && !options.some(({ label }) => /^Stop advancing/u.test(label)) ? advancers[0] : undefined))?.option;
+      const supplied = free.filter(({ option }) => {
+        const action = actions.find(a => a.kind === 'RESPOND_DECISION' && a.choiceId === option.id);
+        if (!action) return false;
+        const explanation = context.actions.explain(action).explanation;
+        const value = (key: string) => explanation.facts.find(f => f.key === key)?.value;
+        // Regular combat follows this turn's Supply; on the final turn no friendly ration remains.
+        return explanation.allowed && (situation.turnsLeft <= 0 || value('supply.advanceFunded') === true) && value('supply.advanceFeedLost') === 0
+          && (value('supply.advanceTraceLost') === 0 || value('supply.advanceMoverHasTrace') === false && value('supply.advanceTraceLost') === 1);
+      });
+      // The first defender of a newly captured VP must survive the opponent's answer.
+      // Prefer strength here rather than the arbitrary order of attacker IDs.
+      if (objective) supplied.sort((a, b) => (b.unit?.profile?.strength ?? 0) - (a.unit?.profile?.strength ?? 0)
+        || a.option.id.localeCompare(b.option.id));
+      const advance = supplied[0]?.option;
       if (advance && (objective || threat < 8)) {
         return respond(actions, advance.id, 'advance', objective ? 'take the objective' : 'take the ground the defender left');
       }
-      return respond(actions, has('advance:done') ? 'advance:done' : options[0]!.id, 'advance', 'the hex is too exposed to enter');
+      return respond(actions, has('advance:done') ? 'advance:done' : options[0]!.id, 'advance', 'no supplied advance worth the exposure');
     }
     case 'BREAKDOWN_ABSORPTION': {
       // The regained step goes to the unit worth most per step (20.0d).

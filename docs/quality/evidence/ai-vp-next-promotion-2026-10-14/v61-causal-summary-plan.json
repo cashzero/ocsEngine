@@ -1,0 +1,38 @@
+{
+  "strategyVersion": "61",
+  "artifactBatchId": "61",
+  "games": 80,
+  "groups": [
+    "meeting-v61-temperate",
+    "meeting-v61-eastern",
+    "attack-v61-temperate",
+    "attack-v61-eastern"
+  ],
+  "attritionEvents": {
+    "candidate": 313,
+    "baseline": 292
+  },
+  "eventsWithRecordedTriggers": {
+    "candidate": 313,
+    "baseline": 292
+  },
+  "triggerMechanisms": {
+    "candidate": {
+      "enemy-action": 308,
+      "enemy-initiated-combat": 79,
+      "friendly-resource-use-or-transfer": 180,
+      "unresolved": 29,
+      "rebuild-entry": 6,
+      "reinforcement-entry": 24
+    },
+    "baseline": {
+      "enemy-action": 262,
+      "unresolved": 46,
+      "rebuild-entry": 5,
+      "friendly-resource-use-or-transfer": 153,
+      "reinforcement-entry": 25,
+      "enemy-initiated-combat": 93
+    }
+  },
+  "interpretation": "Mechanism counts are trigger records, not unique attrition events or proof of bot mistakes. An event can have both trace and ration triggers. Enemy-initiated mechanisms identify adversarial actions; friendly resource use, entries and combat reactions require case inspection before calling them avoidable mistakes."
+}

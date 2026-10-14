@@ -1,7 +1,7 @@
 import type { HexId, PieceId } from '../../core/index.js';
 import type { OcsMode } from '../../domain/piece/index.js';
 import type { FeedSource, GameAction } from '../../rules/index.js';
-import { analyze, type OwnUnit, type Situation } from '../analysis.js';
+import { analyze, type ObjectiveView, type OwnUnit, type Situation } from '../analysis.js';
 import { respondToDecision } from '../decisions.js';
 import { hexesBetween, knowledgeOf, type BotGameFacts } from '../knowledge.js';
 import type { BotDecision, BotDecisionContext, BotPolicy, BotScoreTerm } from '../model.js';
@@ -35,6 +35,10 @@ interface MainEffort {
   readonly lead: HexId;
 }
 
+/** Taking enemy VP changes both scores; taking neutral VP changes only ours.
+ * A held point has the same two-score exposure if the opponent takes it. */
+const contestedVp = (objective: ObjectiveView): number => objective.points * (objective.controllerId === null ? 1 : 2);
+
 /**
  * Replays showed that defended objectives were never taken: both sides only picked up empty ones. Each step the
  * policy picks the defended enemy objective that is worth most for its distance and where enough friendly strength is
@@ -62,8 +66,7 @@ const chooseEfforts = (situation: Situation, w: HeuristicWeights, count: number)
 const chooseEffort = (situation: Situation, w: HeuristicWeights, used: ReadonlySet<PieceId>, taken: ReadonlySet<HexId>): MainEffort | null => {
   const me = situation.playerId;
   const combat = situation.own.filter((unit) => situation.isCombatUnit(unit));
-  const garrisons = new Set(situation.objectives.filter(({ controllerId }) => controllerId === me)
-    .flatMap(({ hexId }) => situation.friendlyAt(hexId).filter((unit) => situation.isCombatUnit(unit)).slice(0, 1).map(({ piece }) => piece.id)));
+  const garrisons = new Set(heldDefenders(situation, w).map(unit => unit.piece.id));
   let best: { hexId: HexId; defenders: number; units: OwnUnit[]; value: number } | null = null;
   for (const objective of situation.objectives) {
     if (objective.controllerId === me || taken.has(objective.hexId)) continue;
@@ -80,7 +83,7 @@ const chooseEffort = (situation: Situation, w: HeuristicWeights, used: ReadonlyS
     }
     if (units.length === 0 || strength < enemy.strength * w.assaultRatio) continue;
     const distance = units.reduce((total, unit) => total + hexesBetween(unit.hexId, objective.hexId), 0) / units.length;
-    const value = objective.points / (1 + distance / 4);
+    const value = contestedVp(objective) / (1 + distance / 4);
     if (!best || value > best.value) best = { hexId: objective.hexId, defenders: enemy.strength, units, value };
   }
   if (!best) return null;
@@ -138,6 +141,7 @@ const reOf = (unit: OwnUnit): number => unit.profile?.re ?? 1;
 const planTargets = (situation: Situation, coverage: ReadonlySet<string>, unitCoverage: (unit: OwnUnit) => ReadonlySet<string>, w: HeuristicWeights, efforts: readonly MainEffort[], fedAt: ReadonlySet<string>): Map<PieceId, Target> => {
   const me = situation.playerId;
   const targets = new Map<PieceId, Target>();
+  for (const unit of heldDefenders(situation, w)) targets.set(unit.piece.id, { hexId: unit.hexId, purpose: 'GARRISON' });
   for (const effort of efforts) for (const unitId of effort.unitIds) targets.set(unitId, { hexId: effort.hexId, purpose: 'ASSAULT' });
   const combat = situation.own.filter((unit) => situation.isCombatUnit(unit));
   // Held objectives keep a garrison (an occupied hex cannot be entered without a fight); others are worth taking.
@@ -148,8 +152,8 @@ const planTargets = (situation: Situation, coverage: ReadonlySet<string>, unitCo
     return {
       hexId: objective.hexId,
       // Holding is cheaper than retaking: an empty or threatened objective's garrison is worth more than a new capture.
-      value: !mine ? objective.points
-        : objective.points * (!garrisoned ? w.garrisonEmpty : threat > 0 || situation.turnsLeft <= 2 ? w.garrisonThreatened : w.garrisonCalm),
+      value: !mine ? contestedVp(objective)
+        : contestedVp(objective) * (!garrisoned ? w.garrisonEmpty : threat > 0 || situation.turnsLeft <= 2 ? w.garrisonThreatened : w.garrisonCalm),
       purpose: mine ? 'GARRISON' : 'CAPTURE',
       // A garrison is one unit, two under threat; an attack brings enough to beat what is there.
       limit: mine ? holdLimit(situation, objective.hexId, threat, w) : w.captureBaseUnits + Math.ceil((situation.enemy.get(objective.hexId)?.strength ?? 0) / w.captureStrengthPerUnit),
@@ -174,10 +178,12 @@ const planTargets = (situation: Situation, coverage: ReadonlySet<string>, unitCo
     wanted.push({ hexId: stack.hexId, value: w.huntValue, purpose: 'HUNT', limit: 1 + Math.ceil(stack.strength / w.huntStrengthPerUnit) });
   }
   const assigned = new Map<HexId, number>();
+  for (const target of targets.values()) if (target.purpose === 'GARRISON') assigned.set(target.hexId, (assigned.get(target.hexId) ?? 0) + 1);
   // heuristic@11: the only garrison of a held objective stays on it. Replays of heuristic@10 games: 40 of 90 objectives
   // lost while empty had been left by their only garrison sent to hunt a weak enemy stack nearby.
   for (const objective of situation.objectives) {
     if (objective.controllerId !== me) continue;
+    if (assigned.has(objective.hexId)) continue;
     const garrison = situation.friendlyAt(objective.hexId).filter((unit) => situation.isCombatUnit(unit) && !targets.has(unit.piece.id))
       .sort((left, right) => (left.profile?.strength ?? 0) - (right.profile?.strength ?? 0) || String(left.piece.id).localeCompare(String(right.piece.id)))[0];
     if (!garrison) continue;
@@ -245,6 +251,29 @@ const holdLimit = (situation: Situation, hexId: HexId, threat: number, w: Heuris
   return Math.max(threat > w.garrisonSecondUnitThreat ? 2 : 1, 1 + Math.min(w.holdMaxExtra, extra));
 };
 
+/** Reserve existing defenders before forming assaults, rather than sending them away and
+ * asking distant units to replace them. Spare strength remains available for captures. */
+const heldDefenders = (situation: Situation, w: HeuristicWeights): OwnUnit[] => {
+  const reserved: OwnUnit[] = [];
+  const enemyAnswer = situation.opponentTurnRemains;
+  for (const objective of situation.objectives) {
+    if (objective.controllerId !== situation.playerId) continue;
+    const present = situation.friendlyAt(objective.hexId).filter(unit => situation.isCombatUnit(unit))
+      .sort((a, b) => (a.profile?.strength ?? 0) - (b.profile?.strength ?? 0) || String(a.piece.id).localeCompare(String(b.piece.id)));
+    const anchor = present.shift();
+    if (!anchor) continue;
+    reserved.push(anchor);
+    let strength = anchor.profile?.strength ?? 0;
+    const required = enemyAnswer ? situation.threatAt(objective.hexId) * w.holdRatio : 0;
+    for (const unit of present.reverse()) {
+      if (strength >= required) break;
+      reserved.push(unit);
+      strength += unit.profile?.strength ?? 0;
+    }
+  }
+  return reserved;
+};
+
 /**
  * Where the army is: the own combat unit with the most friendly combat strength within 3 hexes. HQs, dumps and
  * trucks head for it; their own scores keep them inside trace supply and away from the enemy, so an HQ that
@@ -302,13 +331,13 @@ const scoreDestination = (
     const supplied = coverage === null || coverage.has(hexId) || situation.turnsLeft <= 2;
     const kept = (hexId === destination && supplied) || (notes.incomingRe.get(hexId) ?? 0) > 0
       || situation.friendlyAt(hexId).some((other) => other.piece.id !== unit.piece.id && situation.isCombatUnit(other));
-    add('capture', objective.points * w.capture * (kept ? 1 : w.passThroughShare));
+    add('capture', contestedVp(objective) * w.capture * (kept || !opponentTurnRemains ? 1 : w.passThroughShare));
   }
   // The only garrison of a held objective walking away hands it to the next enemy unit that passes.
   const origin = situation.objectives.find((entry) => entry.hexId === path[0] && entry.controllerId === me);
-  if (origin && path.length > 1 && unit.piece.role === 'COMBAT' && (coverage === null || coverage.has(origin.hexId) || situation.turnsLeft <= 2)
+  if (origin && path.length > 1 && unit.piece.role === 'COMBAT' && opponentTurnRemains && (coverage === null || coverage.has(origin.hexId) || situation.turnsLeft <= 2)
     && !situation.friendlyAt(origin.hexId).some((other) => other.piece.id !== unit.piece.id && situation.isCombatUnit(other))) {
-    add('abandon-objective', -origin.points * w.abandonObjective);
+    add('abandon-objective', -contestedVp(origin) * w.abandonObjective);
   }
   // A token garrison does not replace the departing main defender. Charge only the added
   // defence shortfall, so spare troops remain free and the final second player can still attack.
@@ -318,14 +347,14 @@ const scoreDestination = (
       const remaining = others.reduce((total, u) => total + (u.profile?.strength ?? 0), 0);
       const required = Math.max(1, situation.threatAt(origin.hexId) * w.holdRatio);
       const addedRisk = Math.max(0, required - remaining) - Math.max(0, required - remaining - strength);
-      add('weaken-objective', -origin.points * w.abandonObjective * Math.min(1, addedRisk / required));
+      add('weaken-objective', -contestedVp(origin) * w.abandonObjective * Math.min(1, addedRisk / required));
     }
   }
   // Near the end a captured objective must stay occupied: the enemy moves after us and walks into empty ones.
   const endObjective = situation.objectives.find((entry) => entry.hexId === destination);
-  if (endObjective && situation.turnsLeft <= 2 && unit.piece.role === 'COMBAT'
+  if (endObjective && situation.turnsLeft <= 2 && opponentTurnRemains && unit.piece.role === 'COMBAT'
     && situation.friendlyAt(destination).every((other) => other.piece.id === unit.piece.id || !situation.isCombatUnit(other))) {
-    add('hold-at-end', endObjective.points * w.holdAtEnd);
+    add('hold-at-end', contestedVp(endObjective) * w.holdAtEnd);
   }
   const incoming = (notes.incomingRe.get(destination) ?? 0) + situation.friendlyAt(destination).reduce((total, other) => total + reOf(other), 0);
   if (incoming + reOf(unit) > STACKING_LIMIT_RE && path.length > 1) add('overstack', -1000);
@@ -341,10 +370,17 @@ const scoreDestination = (
       const progress = hexesBetween(path[0]!, target.hexId) - hexesBetween(destination, target.hexId);
       const progressWeight = target.purpose === 'FRONT' ? w.progressFront
         : ['CAPTURE', 'GARRISON', 'ASSAULT'].includes(target.purpose) ? w.progressObjective : w.progressTarget;
-      add('progress', progress * progressWeight);
+      // Allocation knows a target's VP, but distance progress must value it too: one
+      // hex toward a major objective is worth more than one toward a minor point.
+      // Normalize by the public map mean, preserving the base scale on uniform maps.
+      const objective = target.purpose === 'CAPTURE' || target.purpose === 'ASSAULT'
+        ? situation.objectives.find(o => o.hexId === target.hexId) : undefined;
+      const meanPoints = situation.objectives.reduce((total, o) => total + o.points, 0) / Math.max(1, situation.objectives.length);
+      const valueScale = objective && meanPoints > 0 ? objective.points / meanPoints : 1;
+      add('progress', progress * progressWeight * valueScale);
       // A hunter stops beside its quarry, ready to attack.
       if (target.purpose === 'HUNT' && hexesBetween(destination, target.hexId) === 1) add('hunt', w.huntAdjacent);
-      if (target.purpose === 'GARRISON' && destination === target.hexId) add('garrison', w.garrisonStay);
+      if (target.purpose === 'GARRISON' && destination === target.hexId && opponentTurnRemains) add('garrison', w.garrisonStay);
     }
     if (adjacentEnemy && !assaulting) {
       const enemy = situation.nearestEnemy(destination).stack!;
@@ -700,13 +736,15 @@ const seaStep = (context: BotDecisionContext, situation: Situation, notes: StepN
   return decision(best.action, best.why, [{ term: 'sea', value: best.value }]);
 };
 
-/** Preserve existing trace and individual SP ration access, including units left behind by a loaded truck. */
+/** Keep ordinary movement inside supply; funded combat advances have their own guard. */
 const preservesFriendlySupply = (context: BotDecisionContext, action: GameAction): boolean => {
   const { explanation } = context.actions.explain(action);
   const lost = explanation.facts.find(({ key }) => key === 'supply.relocationTraceLost')?.value;
   const feedLost = explanation.facts.find(({ key }) => key === 'supply.relocationFeedLost')?.value;
-  if (lost !== 0) debug?.(`keep friendly supply: ${action.kind} would strand ${lost ?? 'unknown'} unit(s)`);
-  return explanation.allowed && lost === 0 && feedLost === 0;
+  const otherLost = explanation.facts.find(f => f.key === 'supply.relocationOtherTraceLost')?.value;
+  const safe = explanation.allowed && otherLost === 0 && feedLost === 0 && lost === 0;
+  if (!safe) debug?.(`keep friendly supply: ${action.kind} lacks preserved trace or allocated rations`);
+  return safe;
 };
 
 const preservesRations = (context: BotDecisionContext, action: GameAction): boolean => {
@@ -809,13 +847,13 @@ const movementStep = (context: BotDecisionContext, situation: Situation, facts: 
       scored.push({ action: move, terms });
     }
     // A profitable, supplied capture beats merely approaching a hunt/assault target (VP > Kill > Loss).
-    // Keep the existing stay/exposure/garrison comparison, and count only captures ending on an objective;
-    // passing through an empty point remains subject to the ordinary position score.
-    const capturedVp = (action: GameAction): number => {
+    // While an opposing turn remains, prefer captures ending on a VP. In the final second
+    // turn, control from passing through counts too; retaining an army there has no later-turn benefit.
+    const captureSwing = (action: GameAction): number => {
       if (unit.piece.role !== 'COMBAT' || action.kind !== 'MOVE_PIECE'
-        || !situation.objectives.some(o => o.controllerId !== situation.playerId && o.hexId === action.path.at(-1))) return 0;
+        || opponentTurnRemains && !situation.objectives.some(o => o.controllerId !== situation.playerId && o.hexId === action.path.at(-1))) return 0;
       return situation.objectives.filter(o => o.controllerId !== situation.playerId && action.path.slice(1).includes(o.hexId))
-        .reduce((total, o) => total + o.points, 0);
+        .reduce((total, o) => total + contestedVp(o), 0);
     };
     // A move can negate enemy ZOC or open a captured rail/port route. Pre-move coverage then
     // understates supply at the destination. Check promising moves against the real relocation preview.
@@ -823,7 +861,7 @@ const movementStep = (context: BotDecisionContext, situation: Situation, facts: 
     const corrections = scored.filter(c => c.terms.some(t => t.term === 'out-of-supply')
       && (unit.piece.role === 'COMBAT' || unit.piece.role === 'ARTILLERY' || unit.piece.role === 'HQ')
       && sum(c.terms.filter(t => t.term !== 'out-of-supply')) > stay)
-      .sort((a, b) => capturedVp(b.action) - capturedVp(a.action)
+      .sort((a, b) => captureSwing(b.action) - captureSwing(a.action)
         || sum(b.terms.filter(t => t.term !== 'out-of-supply')) - sum(a.terms.filter(t => t.term !== 'out-of-supply'))).slice(0, 12);
     for (const candidate of corrections) {
       const { explanation } = actions.explain(candidate.action);
@@ -837,7 +875,7 @@ const movementStep = (context: BotDecisionContext, situation: Situation, facts: 
       }
     }
     const improving = scored.filter(candidate => sum(candidate.terms) > stay)
-      .sort((left, right) => capturedVp(right.action) - capturedVp(left.action) || sum(right.terms) - sum(left.terms));
+      .sort((left, right) => captureSwing(right.action) - captureSwing(left.action) || sum(right.terms) - sum(left.terms));
     for (const candidate of improving) {
       if (!preservesFriendlySupply(context, candidate.action)) continue;
       best = candidate;
@@ -853,8 +891,8 @@ const movementStep = (context: BotDecisionContext, situation: Situation, facts: 
         const source = feedSourceFor(notes, feeds, unit, destination);
         if (source !== null) notes.feedBudget!.set(source, notes.feedBudget!.get(source)! - eatingCost(unit));
       }
-      const gain = capturedVp(best.action);
-      return decision(best.action, gain > 0 ? `capture ${gain} VP at ${destination}, preserving friendly supply`
+      const gain = captureSwing(best.action);
+      return decision(best.action, gain > 0 ? `take VP along this route (+${gain} score margin), preserving friendly supply`
         : `${unit.piece.role.toLowerCase()} to ${destination}${target ? ` (${target.purpose.toLowerCase()} ${target.hexId})` : ''}`, best.terms);
     }
   }
@@ -927,6 +965,9 @@ const bestCombat = (context: BotDecisionContext, situation: Situation, facts: Bo
     if (action.kind !== 'DECLARE_COMBAT') continue;
     const explained = context.actions.explain(action);
     if (!explained.explanation.allowed) continue;
+    const noRationRemains = situation.turnsLeft <= 0 && context.view.projection?.sequence.phase === 'EXPLOITATION';
+    if (action.combatKind === 'OVERRUN' && ((!noRationRemains && explained.explanation.facts.find(f => f.key === 'supply.overrunAdvanceFunded')?.value !== true)
+      || explained.explanation.facts.find(f => f.key === 'supply.overrunOtherTraceLost')?.value !== 0)) continue;
     const forecast = forecastCombat(explained.explanation.facts);
     if (!forecast) continue;
     const objective = situation.objectives.find(({ hexId }) => hexId === action.targetHexId);
@@ -946,7 +987,7 @@ const bestCombat = (context: BotDecisionContext, situation: Situation, facts: Bo
     ];
     const effortTarget = effort?.hexId === action.targetHexId;
     if (objective && objective.controllerId !== situation.playerId) {
-      terms.push({ term: 'objective', value: vacate * objective.points * w.objectiveTaken * (effortTarget ? w.assaultObjective : 1) });
+      terms.push({ term: 'objective', value: vacate * contestedVp(objective) * w.objectiveTaken * (effortTarget ? w.assaultObjective : 1) });
     }
     // Enemy units behind the front cut trace supply and pick up empty objectives: clear them.
     const nearHeld = situation.objectives.some(({ hexId, controllerId }) => controllerId === situation.playerId && hexesBetween(hexId, action.targetHexId) <= 1);
@@ -1190,7 +1231,7 @@ export const createHeuristicPolicy = (facts: BotGameFacts, options: HeuristicPol
   const choose = decide(facts, options.weights ?? DEFAULT_HEURISTIC_WEIGHTS);
   return {
     id: 'heuristic',
-    version: options.label === undefined ? '35' : `35+${options.label}`,
+    version: options.label === undefined ? '66' : `66+${options.label}`,
     decide: (context) => {
       const sink = options.debug;
       debug = sink ? (line) => sink(`${context.memory.stepKey} ${String(context.playerId).split(':').at(-1)} ${line}`) : null;

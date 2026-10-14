@@ -171,6 +171,9 @@ describe('attack victory (SCN-R4)', () => {
     const starting = objectives.reduce((sum, { hexId, points }) => sum + (state.mapState.hexControl.find((entry) => entry.hexId === hexId)?.controllerId === 'player:axis' ? points : 0), 0);
     const threshold = starting + Math.ceil((total - starting) / 2);
     expect(state.configuration.attackVictory).toEqual({ attackerId: 'player:axis', attackerPoints: threshold });
+    for (const player of state.scenario.players) {
+      expect(ruleEngine.projectForViewer(state, player.id).attackVictory).toEqual(state.configuration.attackVictory);
+    }
     expect(calculateVictory(state).winnerId).toBe('player:allied');
     const half = worth(threshold);
     expect(calculateVictory(holding(half)).winnerId).toBe('player:axis');
@@ -182,7 +185,11 @@ describe('attack victory (SCN-R4)', () => {
     if (!serialized.ok) throw new Error('state did not serialize');
     const parsed = parseGameStateJson(serialized.value);
     expect(parsed.ok && parsed.value.configuration.attackVictory).toEqual(state.configuration.attackVictory);
-    expect(started(requestFor('MEETING', 0)).state.configuration.attackVictory).toBeUndefined();
+    const meeting = started(requestFor('MEETING', 0)).state;
+    expect(meeting.configuration.attackVictory).toBeUndefined();
+    for (const player of meeting.scenario.players) {
+      expect(ruleEngine.projectForViewer(meeting, player.id).attackVictory).toBeUndefined();
+    }
   });
 });
 

@@ -1,0 +1,43 @@
+{
+  "candidate": "55",
+  "baseline": "35",
+  "sourceCommitBase": "84d9d946d3761eed4c49fcb6d0cd9678ca0af61b",
+  "hashes": {
+    "src/ai/analysis.ts": "0ddcd6a07975328f70731586986de011ced3703d5f7b7c4067dbea7d9f420093",
+    "src/ai/decisions.ts": "522202cb813d46afd665e80134c23687229e7f0e2dbe8ac56ae16edf2c5e5576",
+    "src/ai/policies/heuristic.ts": "c7ac5ff5e8ca96ebd78a35a11d411533994ffbe5b6eba468b816f3659a0c2b4d",
+    "src/rules/query/model.ts": "b3cb36fabf19b82c48b0d8d3d3d5873ead51ba22145e83897dc994b0138214a4",
+    "src/rules/query/projection.ts": "4d6f31b618b231fbe5a62d22939e0de42d155eff01b22467806d91778326b76c",
+    "src/rules/supply/ration-budget.ts": "92f7c144acaeb24cf5cb8bb758b58065850b016692a4748413ebab89abafc723",
+    "src/rules/supply/relocation-impact.ts": "203c629d9c01d7405697560518ba37e1528ba1739511cf8965701c7ba01df945",
+    "src/ai/policies/heuristic-weights.ts": "77fe83a83d2a8cabdab120bf99d00e25862a0083b6f5a6fe1d3209f7b7c03f76",
+    "dist/ai/analysis.js": "f307821c60353800880d482d0d2c7ee2c9bd29c6682f08c805c2ee0edf8e2f76",
+    "dist/ai/decisions.js": "8d655b0b6c9c91c72c89f5287500e6dd23edbee4f2f2d2015fd068e8bcfa0cce",
+    "dist/ai/policies/heuristic.js": "894aaf06052cf4778e1cb65cb46faba4b17dd8bd154d18cb2b27d15d0ff78246",
+    "dist/rules/query/model.js": "a3d85b861c2f631080eabc73b2123c963dfc1a11959f7daa9a1015c26ab275cf",
+    "dist/rules/query/projection.js": "cd1c23c5a70f43897520bd7aabcc3fe6bc9b24cea8038428ec4ea3694245176e",
+    "dist/rules/supply/ration-budget.js": "621b1a6f8f03d12bb5d8b99c6026039d68fa036d92da6f9b0abe699a23936758",
+    "dist/rules/supply/relocation-impact.js": "5f133988ea4b8aa770afca90884d631457919c883827d03c9b7a03eab21bb731",
+    "dist/ai/policies/heuristic-weights.js": "d132a1246de6a2173bb599296f83cd0adfab685b9ff8b504cdd625fba1ef735a"
+  },
+  "games": 80,
+  "pairs": 40,
+  "seedRanges": {
+    "meetingTemperate": [
+      1287000,
+      1287019
+    ],
+    "meetingEastern": [
+      1287100,
+      1287119
+    ],
+    "attackTemperate": [
+      1288000,
+      1288019
+    ],
+    "attackEastern": [
+      1288100,
+      1288119
+    ]
+  }
+}

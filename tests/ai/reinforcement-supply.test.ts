@@ -5,6 +5,7 @@ import { describe, expect, it } from 'vitest';
 import { createBotRng, createHeuristicPolicy, parseGameStateJson, pieceHasTrace, ruleEngine,
   type BotDecisionContext, type BotPhaseMemory, type GameAction, type GameState } from '../../src/index.js';
 import { hexesBetween } from '../../src/ai/knowledge.js';
+import { createHeuristicPolicy as referencePolicy } from './baselines/v35-main-45e700a/policies/heuristic.js';
 
 const fixture = () => {
   const stored = JSON.parse(gunzipSync(readFileSync(join(__dirname, 'fixtures', 'vp-placement-1235002.state.json.gz'))).toString()) as {
@@ -51,16 +52,17 @@ describe('replacement arrivals in recorded bot positions', () => {
       .some(p => p.ownerId === action.actorId && p.role === 'HQ' && p.location.kind === 'ON_MAP' && hexesBetween(p.location.hexId, destination) <= 2)).toBe(true);
   });
 
-  it('keeps the arrival supplied through Supply and completes the observed VP improvement', () => {
+  it.each(['same-policy', 'reference-opponent'] as const)('keeps the arrival supplied and completes the %s continuation', opponent => {
     const stored = fixture();
     let state = stored.state, supplied = false;
     const policy = createHeuristicPolicy({ scenario: state.scenario, turnLimit: 8 });
+    const opposing = opponent === 'reference-opponent' ? referencePolicy({ scenario: state.scenario, turnLimit: 8 }) : policy;
     const memories = new Map<string, BotPhaseMemory>();
     for (let i = 0; i < 2000 && state.sequence.phase !== 'COMPLETE'; i++) {
       const owner = state.pendingDecision?.ownerId ?? state.sequence.actingPlayerId;
       const key = `${owner}:${state.sequence.gameTurn}:${state.sequence.playerTurnIndex}:${state.sequence.phase}:${state.sequence.segment}`;
       if (!memories.has(key)) memories.set(key, { stepKey: key, actions: 0, notes: new Map() });
-      const chosen = policy.decide(context(state, memories.get(key)!));
+      const chosen = (owner === stored.action.actorId ? policy : opposing).decide(context(state, memories.get(key)!));
       if (!chosen) throw new Error('Bot stalled');
       const next = ruleEngine.applyAction(state, chosen.action);
       if (!next.ok) throw new Error('Bot action rejected');
@@ -74,7 +76,10 @@ describe('replacement arrivals in recorded bot positions', () => {
     expect(supplied).toBe(true);
     expect(state.sequence.phase).toBe('COMPLETE');
     expect(state.pendingDecision).toBeNull();
-    // The recorded v19 continuation ended at 0 VP; v24 retained 2 with the same engine/RNG state.
-    expect(state.victory?.scores.find(s => s.playerId === stored.action.actorId)?.points).toBeGreaterThanOrEqual(2);
+    // v35 retains 2 VP against v35 from this same state. Hold the opponent fixed to measure
+    // candidate strength; changing both policies can improve the opposing side instead.
+    if (opponent === 'reference-opponent') {
+      expect(state.victory?.scores.find(s => s.playerId === stored.action.actorId)?.points).toBeGreaterThanOrEqual(2);
+    }
   }, 60_000);
 });

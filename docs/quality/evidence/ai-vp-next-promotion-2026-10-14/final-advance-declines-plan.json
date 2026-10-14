@@ -1,0 +1,32 @@
+[
+  {
+    "group": "meeting-v58-temperate",
+    "match": 1291014,
+    "revision": 560,
+    "intent": "advance: no supplied advance worth the exposure"
+  },
+  {
+    "group": "meeting-v58-temperate",
+    "match": 1291014,
+    "revision": 566,
+    "intent": "advance: no supplied advance worth the exposure"
+  },
+  {
+    "group": "meeting-v58-temperate",
+    "match": 1291008,
+    "revision": 513,
+    "intent": "advance: no supplied advance worth the exposure"
+  },
+  {
+    "group": "meeting-v58-temperate",
+    "match": 1291016,
+    "revision": 553,
+    "intent": "advance: no supplied advance worth the exposure"
+  },
+  {
+    "group": "meeting-v58-temperate",
+    "match": 1291006,
+    "revision": 616,
+    "intent": "advance: no supplied advance worth the exposure"
+  }
+]

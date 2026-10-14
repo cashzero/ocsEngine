@@ -1,0 +1,23 @@
+{
+  "candidate": "50",
+  "baseline": "35",
+  "sourceCommitBase": "84d9d946d3761eed4c49fcb6d0cd9678ca0af61b",
+  "hashes": {
+    "src/ai/analysis.ts": "152840bcaf3be850ef92d37651b6a858443c74026c6035ed56aa0ebdfd8c5d5c",
+    "src/ai/decisions.ts": "522202cb813d46afd665e80134c23687229e7f0e2dbe8ac56ae16edf2c5e5576",
+    "src/ai/policies/heuristic.ts": "8ef25c40fbcbab5f26f25605800663dbfabb66fb7a165d55a1c6c677c45d34ba",
+    "src/rules/query/model.ts": "a2850fcb5fcaead9f8de27abd10bf3e1c3ac7a28e567825fa64fb3bcd059b628",
+    "src/rules/query/projection.ts": "27ac90940a0582ae92c45ee6d12df32a417658fb4ee7feeb23c1b2b43e5b0251",
+    "src/rules/supply/ration-budget.ts": "92f7c144acaeb24cf5cb8bb758b58065850b016692a4748413ebab89abafc723",
+    "src/rules/supply/relocation-impact.ts": "4f08d6272241298768d6b4df1fcacbf83d40b99db3b7b95afb8425a4a1a9df24",
+    "src/ai/policies/heuristic-weights.ts": "77fe83a83d2a8cabdab120bf99d00e25862a0083b6f5a6fe1d3209f7b7c03f76",
+    "dist/ai/analysis.js": "ad48f7faa784f020b77aada00d713017491ba12874579f3590767bff7b1e343d",
+    "dist/ai/decisions.js": "8d655b0b6c9c91c72c89f5287500e6dd23edbee4f2f2d2015fd068e8bcfa0cce",
+    "dist/ai/policies/heuristic.js": "293307b8a2843f84da518f9ea6367b62b2536b73164921e3ab3bf06e2eee747f",
+    "dist/rules/query/model.js": "a3d85b861c2f631080eabc73b2123c963dfc1a11959f7daa9a1015c26ab275cf",
+    "dist/rules/query/projection.js": "cd4b430b97a4258985728a3233a9fc8b443e67821547c77fc047591247d20c47",
+    "dist/rules/supply/ration-budget.js": "621b1a6f8f03d12bb5d8b99c6026039d68fa036d92da6f9b0abe699a23936758",
+    "dist/rules/supply/relocation-impact.js": "3202f37ec970216293e90624efaaccda71ff7c5bc5e2d5c38819997c3d38e43c",
+    "dist/ai/policies/heuristic-weights.js": "d132a1246de6a2173bb599296f83cd0adfab685b9ff8b504cdd625fba1ef735a"
+  }
+}
