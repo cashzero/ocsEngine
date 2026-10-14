@@ -1,0 +1,45 @@
+{
+  "objective": "持續改進策略直到vp改善 必須要好到可以promote成標準策略",
+  "auditedImplementationCommit": "e801ce829f7438d054cbfebc3e22a5b1f54e44dc",
+  "upstreamCommitAtAudit": "e801ce829f7438d054cbfebc3e22a5b1f54e44dc",
+  "standardPolicy": "heuristic@35",
+  "verification": {
+    "currentSourceMatchesFrozenSha256": true,
+    "currentBuildMatchesFrozenSha256": true,
+    "losslessArchivedQualityLogsMatchSha256": true,
+    "rawReplicationRecordsRecomputed": true,
+    "completedGames": 256,
+    "uniqueIndependentSeedPairs": 128,
+    "swappedPoliciesOnIdenticalSeeds": true,
+    "candidateVp": 1838,
+    "baselineVp": 1510,
+    "pairedMeanVpGain": 1.28125,
+    "pairedSE": 0.35579730181708086,
+    "preregisteredConservativeInterval": [0.5340756661841302, 2.02842433381587],
+    "bothEngagementsPositive": true,
+    "bothTheatersPositive": true,
+    "legalCompleteAndReplayHashesVerified": true,
+    "existingRelocationFeedAndSpendingGuardsVerified": true,
+    "reinforcementsCheckedAgainstReducer": 101,
+    "reinforcementViolations": 0,
+    "recordedFullSuitePassed": 652,
+    "recordedFullSuiteSkipped": 8,
+    "recordedFullSuiteFailed": 0
+  },
+  "scope": {
+    "eligibleTheaters": ["TEMPERATE_INLAND", "EASTERN_EUROPE"],
+    "retiredMediterraneanBattlesExcluded": true,
+    "first64GameFailurePreserved": true,
+    "replicationJudgedSeparatelyFromFirst64Games": true,
+    "firstEntryAndOverrunSupplyRiskTodoRetained": true,
+    "allLogisticsDeclaredComplete": false,
+    "uiOperationsPromoted": false
+  },
+  "evidence": [
+    "runs.json.gz",
+    "v35-freeze.json",
+    "v35-quality.json",
+    "v35-replication-acceptance.json",
+    "../../../reports/ai-vp-promotion-2026-10-13.md"
+  ]
+}
