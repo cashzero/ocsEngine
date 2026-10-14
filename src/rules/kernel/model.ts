@@ -155,6 +155,37 @@ export interface WeatherConfiguration {
   readonly table: readonly WeatherTableRow[];
 }
 
+/** 13.5: one row of a Variable Replacement Table: the Pax and Eq a 2d6 total brings. */
+export interface ReplacementTableRow {
+  readonly minimum: number;
+  readonly maximum: number;
+  readonly pax: number;
+  readonly eq: number;
+}
+
+/** 13.5: each player's Variable Replacement Table, rolled in every friendly Reinforcement Phase. */
+export interface ReplacementArrivalConfiguration {
+  readonly players: readonly { readonly playerId: PlayerId; readonly rows: readonly ReplacementTableRow[] }[];
+}
+
+/**
+ * 13.5a, 13.5d: one row of a Rebuild Table. A row prices each step of the units it lists in Pax and Eq; a `pairs` row lists
+ * very small one-step units that are rebuilt two for the row's cost (one unit alone still pays it in full).
+ */
+export interface RebuildTableRow {
+  readonly id: string;
+  readonly label: string;
+  readonly pax: number;
+  readonly eq: number;
+  readonly pairs: boolean;
+  readonly definitionIds: readonly DefinitionId[];
+}
+
+/** 13.5a: each player's Rebuild Table. A unit no row lists cannot be rebuilt. */
+export interface RebuildTableConfiguration {
+  readonly players: readonly { readonly playerId: PlayerId; readonly rows: readonly RebuildTableRow[] }[];
+}
+
 /** One row of a Supply Table: SP by Supply Status column (index 0 is status 1). */
 export interface SupplyTableRow {
   readonly minimum: number;
@@ -236,6 +267,16 @@ export interface RuleConfiguration {
    * on which they have no inland entry Hexes): they wait in the reinforcement Box until shipped to a friendly port (19.0f).
    */
   readonly seaArrivals?: readonly PlayerId[] | undefined;
+  /**
+   * 13.5: Variable Replacement Tables. Absent (games saved before the table existed): each side receives the fixed
+   * allotment its replacement Definitions state.
+   */
+  readonly replacementArrivals?: ReplacementArrivalConfiguration | undefined;
+  /**
+   * 13.5a: Rebuild Tables. Absent (games saved before the table existed): each step of an Armor, Mech or artillery unit
+   * costs 1 Eq and each step of any other rebuildable unit 1 Pax.
+   */
+  readonly rebuildTables?: RebuildTableConfiguration | undefined;
 }
 
 export interface RailCapacity {
@@ -874,7 +915,16 @@ export type GameAction =
     readonly payments: readonly { readonly sourcePieceId: PieceId; readonly tokens: number }[];
   })
   /** 13.9-4: two reduced aircraft of the same type, values and status in one hex combine into one full-strength aircraft. */
-  | (ActionEnvelope & { readonly kind: 'COMBINE_AIRCRAFT'; readonly aircraftIds: readonly PieceId[] });
+  | (ActionEnvelope & { readonly kind: 'COMBINE_AIRCRAFT'; readonly aircraftIds: readonly PieceId[] })
+  /**
+   * 13.9-1 to 13.9-3, in the friendly Reinforcement Phase. MERGE: `withId`, a multi-step unit identical to `pieceId` and in
+   * its hex, gives it its steps and goes to the Dead Pile. SWAP: `withId`, an identical unit of another formation in the
+   * Dead Pile, takes the place, mode, markers and steps of `pieceId`, which goes to the Dead Pile.
+   */
+  | (ActionEnvelope & { readonly kind: 'CONSOLIDATE_UNITS'; readonly consolidation: ConsolidationKind; readonly pieceId: PieceId; readonly withId: PieceId });
+
+/** 13.9: combine two multi-step units in one hex, or exchange a unit for an identical one of another formation. */
+export type ConsolidationKind = 'MERGE' | 'SWAP';
 
 /** 12.5c: Formation Method (1 SP), HQ Method (1 SP), or Single-Unit Method (1T). */
 export type FuelMethod = 'FORMATION' | 'HQ' | 'SINGLE_UNIT';
@@ -930,6 +980,9 @@ export type RuleEvent =
   | { readonly kind: 'FLAK_ROLLED'; readonly sequence: number; readonly modifiedRoll: number; readonly hit: boolean }
   | { readonly kind: 'AIR_BASE_LEVEL_CHANGED'; readonly sequence: number; readonly pieceId: PieceId; readonly level: number }
   | { readonly kind: 'REPLACEMENTS_ARRIVED'; readonly sequence: number; readonly playerId: PlayerId; readonly pieceId: PieceId; readonly replacement: 'PAX' | 'EQ'; readonly quantity: number }
+  /** 13.5: the Variable Replacement Table roll of one Reinforcement Phase. */
+  | { readonly kind: 'REPLACEMENT_TABLE_ROLLED'; readonly sequence: number; readonly playerId: PlayerId; readonly roll: number; readonly pax: number; readonly eq: number }
+  | { readonly kind: 'UNITS_CONSOLIDATED'; readonly sequence: number; readonly consolidation: ConsolidationKind; readonly pieceId: PieceId; readonly withId: PieceId; readonly hexId: HexId; readonly steps: number }
   | { readonly kind: 'UNIT_REBUILT'; readonly sequence: number; readonly pieceId: PieceId; readonly hexId: HexId; readonly steps: number; readonly fromDeadPile: boolean }
   /** 9.14c: Transport Points (or wagons) in a hex an enemy entered: the die, the points there, and how many changed hands. */
   | { readonly kind: 'TRANSPORT_CAPTURED'; readonly sequence: number; readonly hexId: HexId; readonly ownerId: PlayerId; readonly capturerId: PlayerId; readonly roll: number; readonly points: number; readonly captured: number }

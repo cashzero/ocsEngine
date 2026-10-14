@@ -15,9 +15,10 @@ import {
 import {
   AIR_MISSION_KINDS, AIR_MISSION_LABELS, FUEL_COSTS, distanceBetween, missionSegment, parseRuleActionId, routesForRange,
   type AirMissionKind, type AirRoute, type AttackerSupplyChoice, type AttackerSupplyOption, type GameAction, type ProjectedCombat, type ProjectedPiece, type RuleEvent, type RuleExplanation, type UnitRebuild,
+  allocateRebuild, priceRebuild,
 } from '../rules/index.js';
 import type {
-  AirDraft, AirOverview, AirRefit, Arrival, AttackDraft, AwayReport, AirRebuild, BuildOption, GroundRebuild, ConstructionOverview, CombatSheet, EndStep, HandoffInfo, MoveBlocker, MovePreview, MoveRangeEntry,
+  AirDraft, AirOverview, AirRefit, Arrival, AttackDraft, AwayReport, AirRebuild, BuildOption, Consolidation, GroundRebuild, ConstructionOverview, CombatSheet, EndStep, HandoffInfo, MoveBlocker, MovePreview, MoveRangeEntry,
   DropPlanDraft, DropPlanView, LedgerLine, RailPanel, SeaPanel, SupplyNeed, TransportCarrier, UiListener, UiSelection, UiSnapshot, UnitAction, UnitFilterKind,
 } from './model.js';
 import {
@@ -113,6 +114,8 @@ export interface UiController {
   readonly setRebuildUnitMode: (hexId: string, pieceId: string, mode: string) => void;
   readonly setRebuildTrucks: (hexId: string, points: number) => void;
   readonly rebuildUnits: (hexId: string) => Promise<void>;
+  /** 13.9-1 to 3: make one of the offered Unit Consolidations. */
+  readonly consolidate: (key: string) => Promise<void>;
   readonly toggleTransportCarrier: (pieceId: string) => void;
   readonly setTransportRoute: (pieceId: string, route: string) => void;
   readonly toggleTransportEscort: (pieceId: string) => void;
@@ -845,6 +848,8 @@ class DefaultUiController implements UiController {
       requiredSeatId,
       air: this.#airOverview(enabled, ownSelected),
       groundRebuilds: this.#groundRebuilds(enabled),
+      ...this.#replacementTables(),
+      consolidations: this.#consolidations(enabled),
       handoff,
       feed: view.privacyLocked ? [] : this.#feed(seatId),
       combatReports: reports,
@@ -1067,20 +1072,16 @@ class DefaultUiController implements UiController {
     return (view.projection?.replacements.rebuilds ?? []).map((option): GroundRebuild => {
       const choice = this.#unitRebuildSelection.get(option.hexId);
       // Default: reduced units here first, then the Dead Pile, as many steps as the Repls pay for; trucks with the Eq left.
-      const left = { PAX: option.pax, EQ: option.eq };
-      const defaults: UnitRebuild[] = [];
-      for (const unit of option.units) {
-        const steps = Math.min(unit.missing, left[unit.cost]);
-        if (steps <= 0) continue;
-        left[unit.cost] -= steps;
-        defaults.push({ pieceId: unit.id, steps, mode: unit.deadPile ? defaultPlacementMode(unit.modes as readonly OcsMode[]) : null });
-      }
+      const { chosen: allocated, left } = allocateRebuild(option.units, { PAX: option.pax, EQ: option.eq });
+      const defaults: UnitRebuild[] = allocated.map(({ entry: unit, steps }) => ({ pieceId: unit.id, steps, mode: unit.deadPile ? defaultPlacementMode(unit.modes as readonly OcsMode[]) : null }));
       const chosen = (choice?.units ?? defaults).filter(({ pieceId }) => option.units.some(({ id }) => id === pieceId));
       const truckPoints = Math.max(0, Math.min(option.truckPoints, choice?.truckPoints ?? left.EQ));
-      const cost = { pax: 0, eq: truckPoints };
-      for (const entry of chosen) {
-        if (option.units.find(({ id }) => id === entry.pieceId)?.cost === 'PAX') cost.pax += entry.steps; else cost.eq += entry.steps;
-      }
+      // Priced exactly as the rules price it, 13.5d pairs included.
+      const priced = priceRebuild(chosen.flatMap((entry) => {
+        const unit = option.units.find(({ id }) => id === entry.pieceId);
+        return unit ? [{ price: unit.price, steps: entry.steps }] : [];
+      }), truckPoints);
+      const cost = { pax: priced.PAX, eq: priced.EQ };
       const action: GameAction | null = chosen.length > 0 || truckPoints > 0 ? {
         actionId: this.#actionId('rebuild-units'), actorId: view.playerId, expectedRevision: this.#session.getRevision(),
         kind: 'REBUILD_UNITS', hexId: option.hexId as HexId, hqId: option.hqId, units: chosen, truckPoints,
@@ -1091,7 +1092,7 @@ class DefaultUiController implements UiController {
           const entry = chosen.find(({ pieceId }) => pieceId === unit.id);
           const modes = unit.modes as readonly OcsMode[];
           return {
-            id: unit.id, label: this.#rebuildUnitLabel(unit.id, unit.definitionId), cost: unit.cost, missing: unit.missing, deadPile: unit.deadPile,
+            id: unit.id, label: this.#rebuildUnitLabel(unit.id, unit.definitionId), price: unit.price, missing: unit.missing, deadPile: unit.deadPile,
             selected: entry !== undefined, steps: entry?.steps ?? unit.missing, mode: unit.deadPile ? entry?.mode ?? defaultPlacementMode(modes) : null, modes,
           };
         }),
@@ -1099,6 +1100,40 @@ class DefaultUiController implements UiController {
       };
     });
   }
+
+  /** The viewer's Rebuild Table and Variable Replacement Table (13.5), shown in the Rebuild tab of his own Reinforcement Phase. */
+  #replacementTables(): Pick<UiSnapshot, 'rebuildTable' | 'replacementTable'> {
+    const view = this.#view(this.#activeSeat());
+    const projection = view.projection;
+    if (projection?.sequence.phase !== 'REINFORCEMENT' || projection.sequence.actingPlayerId !== view.playerId) return { rebuildTable: [], replacementTable: [] };
+    return { rebuildTable: projection.replacements.rebuildTable, replacementTable: projection.replacements.replacementTable };
+  }
+
+  /** 13.9-1 to 3: consolidations the player could make now, each with its action and the engine's explanation. */
+  #consolidations(enabled: (kind: GameAction['kind']) => boolean): readonly Consolidation[] {
+    if (!enabled('CONSOLIDATE_UNITS')) return [];
+    const view = this.#view(this.#activeSeat());
+    return (view.projection?.replacements.consolidations ?? []).map((option): Consolidation => {
+      const action: GameAction = {
+        actionId: this.#actionId('consolidate'), actorId: view.playerId, expectedRevision: this.#session.getRevision(),
+        kind: 'CONSOLIDATE_UNITS', consolidation: option.consolidation, pieceId: option.pieceId, withId: option.withId,
+      };
+      return {
+        key: `${option.consolidation}:${option.pieceId}:${option.withId}`, consolidation: option.consolidation, hexId: option.hexId,
+        label: this.#rebuildUnitLabel(option.pieceId, ''), withLabel: this.#rebuildUnitLabel(option.withId, option.withDefinitionId),
+        steps: option.steps, action, explanation: this.#explain(action),
+      };
+    });
+  }
+
+  consolidate = async (key: string): Promise<void> => {
+    const option = this.getSnapshot().consolidations.find((entry) => entry.key === key);
+    if (!option?.explanation.allowed) return;
+    await this.#dispatch({ ...option.action, actionId: this.#actionId('consolidate'), expectedRevision: this.#session.getRevision() } as GameAction,
+      option.consolidation === 'MERGE'
+        ? `${option.withLabel} joined ${option.label}: ${option.steps} step${option.steps === 1 ? '' : 's'} regained at ${printedHexLabel(option.hexId)}.`
+        : `${option.withLabel} took the place of ${option.label} at ${printedHexLabel(option.hexId)}.`);
+  };
 
   /** A Dead Pile unit is not among the projected stacks, so its name may come from its Definition. */
   #rebuildUnitLabel(pieceId: PieceId, definitionId: string): string {

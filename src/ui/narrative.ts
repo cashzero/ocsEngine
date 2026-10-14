@@ -211,6 +211,7 @@ export const describeRecord = (record: HistoryRecord, context: NarrativeContext)
     case 'BUILD_HEDGEHOG': title = `${who} dug in at ${hex(action.hexId)}`; break;
     case 'REDUCE_HEDGEHOG': title = `${who} reduced a hedgehog`; break;
     case 'REBUILD_AIRCRAFT': title = `${who} rebuilt ${action.aircraftIds.length === 1 ? 'an aircraft' : `${action.aircraftIds.length} aircraft`} with Eq`; break;
+    case 'CONSOLIDATE_UNITS': title = own ? (action.consolidation === 'MERGE' ? 'You combined two reduced units' : 'You exchanged a unit for one of another division') : `${who} consolidated units`; break;
     case 'REBUILD_UNITS': title = own ? `You rebuilt ${[action.units.length > 0 ? `${action.units.length} unit${action.units.length === 1 ? '' : 's'}` : '', action.truckPoints > 0 ? `${action.truckPoints} truck point${action.truckPoints === 1 ? '' : 's'}` : ''].filter(Boolean).join(' and ')} at ${hex(action.hexId)}` : `${who} rebuilt units with replacements`; break;
     case 'PLAN_AIR_DROP': title = own ? `You planned an Air Drop at ${hex(action.hexId)} for turn ${action.turn}` : `${who} made a plan`; break;
     case 'UPDATE_AIR_DROP_PLAN': title = own ? `You ${action.change === 'DELAY' ? 'delayed' : 'cancelled'} a Drop Plan` : `${who} changed a plan`; break;
@@ -241,6 +242,12 @@ export const describeRecord = (record: HistoryRecord, context: NarrativeContext)
       case 'HEDGEHOG_CAPTURED': lines.push(`${context.playerName(event.capturerId)} captured the Level ${event.level} hedgehog at ${hex(event.hexId)}.`); break;
       case 'PIECE_DISPLACED': lines.push(event.toHexId === null ? `${name(event.pieceId)} had nowhere to go and was lost.` : `${name(event.pieceId)} was displaced to ${hex(event.toHexId)}.`); break;
       case 'AIRCRAFT_REBUILT': lines.push(`${name(event.pieceId)} was rebuilt${event.hexId ? ` at ${hex(event.hexId)}` : ''}.`); break;
+      // 4.9a: the roll and what it brought are the roller's own information.
+      case 'REPLACEMENT_TABLE_ROLLED': if (event.playerId === context.viewerId) lines.push(`Variable Replacement Table roll ${event.roll}: ${event.pax === 0 && event.eq === 0 ? 'no replacements' : [event.pax > 0 ? `${event.pax} Pax` : '', event.eq > 0 ? `${event.eq} Eq` : ''].filter(Boolean).join(' and ')}.`); break;
+      case 'UNITS_CONSOLIDATED': lines.push(own ? (event.consolidation === 'MERGE'
+        ? `${name(event.withId)} joined ${name(event.pieceId)} at ${hex(event.hexId)}: ${event.steps} step${event.steps === 1 ? '' : 's'} regained; ${name(event.withId)} went to the Dead Pile.`
+        : `${name(event.withId)} took the place of ${name(event.pieceId)} at ${hex(event.hexId)}; ${name(event.pieceId)} went to the Dead Pile.`)
+        : `Enemy units were consolidated at ${hex(event.hexId)}.`); break;
       case 'REPLACEMENTS_ARRIVED': if (event.playerId === context.viewerId) lines.push(`${event.quantity} ${event.replacement === 'PAX' ? 'Pax' : 'Eq'} arrived.`); break;
       // 4.9a: a rebuilt unit shows up on the map, but how many steps it regained is the owner's to know.
       case 'UNIT_REBUILT': lines.push(own ? `${name(event.pieceId)} ${event.fromDeadPile ? 'returned from the Dead Pile' : 'regained'} with ${event.steps} step${event.steps === 1 ? '' : 's'} at ${hex(event.hexId)}.` : `An enemy unit was rebuilt at ${hex(event.hexId)}.`); break;

@@ -124,7 +124,7 @@ const parseAction = (input: unknown, path: Path, issues: GameplayError[]): GameA
     DISSOLVE_EXTENDER: ['extenderId'], COLLAPSE_EXTENDER: ['extenderId', 'hexId'],
     REFIT_AIRCRAFT: ['baseId', 'aircraftIds', 'sourcePieceId'],
     DECLARE_AIR_MISSION: ['mission', 'aircraftIds', 'targetHexId', 'target'],
-    REDUCE_AIR_BASE: ['baseId', 'pieceIds'], COMBINE_AIRCRAFT: ['aircraftIds'],
+    REDUCE_AIR_BASE: ['baseId', 'pieceIds'], COMBINE_AIRCRAFT: ['aircraftIds'], CONSOLIDATE_UNITS: ['consolidation', 'pieceId', 'withId'],
     BUILD_AIR_BASE: ['engineerId', 'hexId', 'facility', 'payments'],
     REBUILD_AIRCRAFT: ['eqPieceId', 'hqId', 'aircraftIds', 'baseId'],
     REBUILD_UNITS: ['hexId', 'hqId', 'units', 'truckPoints'],
@@ -284,6 +284,11 @@ const parseAction = (input: unknown, path: Path, issues: GameplayError[]): GameA
     case 'REDUCE_HEDGEHOG':
       return { ...base, hedgehogId: piece('hedgehogId'), pieceIds: pieces('pieceIds'), engineerId: record.engineerId === null ? null : piece('engineerId') } as GameAction;
     case 'COMBINE_AIRCRAFT': return { ...base, aircraftIds: pieces('aircraftIds') } as GameAction;
+    case 'CONSOLIDATE_UNITS': {
+      const consolidation = textAt(record, 'consolidation', path, issues);
+      if (!['MERGE', 'SWAP'].includes(consolidation)) issues.push(issue('SAVE_INVALID', [...path, 'consolidation'], 'Invalid consolidation.'));
+      return { ...base, consolidation, pieceId: piece('pieceId'), withId: piece('withId') } as GameAction;
+    }
     case 'DIVIDE_TRANSPORT': return { ...base, truckId: piece('truckId'), points: integerAt(record, 'points', path, issues) } as GameAction;
     case 'FORM_EXTENDER': return { ...base, truckId: piece('truckId') } as GameAction;
     case 'DISSOLVE_EXTENDER': return { ...base, extenderId: piece('extenderId') } as GameAction;

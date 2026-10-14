@@ -1255,6 +1255,8 @@ root.addEventListener('click', (event) => {
   if (airTarget) { controller.setAirTarget(airTarget.dataset.airTarget as never); return; }
   const rebuildBase = closest('[data-rebuild-base]');
   if (rebuildBase) { controller.setRebuildBase(rebuildBase.dataset.rebuildEq!, rebuildBase.dataset.rebuildBase!); return; }
+  const consolidate = closest('[data-consolidate]');
+  if (consolidate) { void runUi(() => controller.consolidate(consolidate.dataset.consolidate!)); return; }
   const rebuildUnits = closest('[data-rebuild-units]');
   if (rebuildUnits) { void runUi(() => controller.rebuildUnits(rebuildUnits.dataset.rebuildUnits!)); return; }
   const rebuild = closest('[data-rebuild]');

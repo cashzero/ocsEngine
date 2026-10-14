@@ -120,6 +120,32 @@ export interface ProjectedReplacements {
   readonly rebuilds: readonly ProjectedUnitRebuild[];
   /** 13.5e: truck points the viewer lost to enemy action and may rebuild with Eq. */
   readonly lostTruckPoints: number;
+  /** 13.5a: the viewer's Rebuild Table; empty in a game saved before the tables existed. */
+  readonly rebuildTable: readonly { readonly id: string; readonly label: string; readonly pax: number; readonly eq: number; readonly pairs: boolean }[];
+  /** 13.5: the viewer's Variable Replacement Table (2d6); empty in a game saved before the tables existed. */
+  readonly replacementTable: readonly { readonly minimum: number; readonly maximum: number; readonly pax: number; readonly eq: number }[];
+  /** 13.9-1 to 3: consolidations the viewer could make now. */
+  readonly consolidations: readonly ProjectedConsolidation[];
+}
+
+/** Rebuild Table row price of one unit (13.5a): per step, or per pair of units on a `pairs` row (13.5d). */
+export interface ProjectedRebuildPrice {
+  readonly row: string;
+  readonly label: string;
+  readonly pax: number;
+  readonly eq: number;
+  readonly pairs: boolean;
+}
+
+export interface ProjectedConsolidation {
+  readonly consolidation: 'MERGE' | 'SWAP';
+  /** MERGE: the unit that keeps the steps. SWAP: the unit on the map that leaves for the Dead Pile. */
+  readonly pieceId: PieceId;
+  /** MERGE: the unit that gives its steps and leaves. SWAP: the Dead Pile unit that takes the place. */
+  readonly withId: PieceId;
+  readonly withDefinitionId: DefinitionId;
+  readonly hexId: string;
+  readonly steps: number;
 }
 
 /** One hex of the viewer's Repls near an HQ that can rebuild: what they could bring back and what each step costs. */
@@ -131,8 +157,8 @@ export interface ProjectedUnitRebuild {
   readonly units: readonly {
     readonly id: PieceId;
     readonly definitionId: DefinitionId;
-    /** Rebuild Table cost per step. */
-    readonly cost: 'PAX' | 'EQ';
+    /** Rebuild Table price. */
+    readonly price: ProjectedRebuildPrice;
     readonly missing: number;
     readonly deadPile: boolean;
     /** Voluntary modes a Dead Pile unit may be placed in (13.5b); empty for a reduced unit, which keeps its mode. */

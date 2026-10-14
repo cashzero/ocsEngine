@@ -151,6 +151,21 @@ const configurationDecoder: Decoder<RuleConfiguration> = objectDecoder({
   })),
   seaCapacity: optionalDecoder(arrayDecoder(objectDecoder({ playerId: playerIdDecoder, points: safeIntegerDecoder }))),
   seaArrivals: optionalDecoder(arrayDecoder(playerIdDecoder)),
+  replacementArrivals: optionalDecoder(objectDecoder({
+    players: arrayDecoder(objectDecoder({
+      playerId: playerIdDecoder,
+      rows: arrayDecoder(objectDecoder({ minimum: safeIntegerDecoder, maximum: safeIntegerDecoder, pax: safeIntegerDecoder, eq: safeIntegerDecoder })),
+    })),
+  })),
+  rebuildTables: optionalDecoder(objectDecoder({
+    players: arrayDecoder(objectDecoder({
+      playerId: playerIdDecoder,
+      rows: arrayDecoder(objectDecoder({
+        id: stringDecoder, label: stringDecoder, pax: safeIntegerDecoder, eq: safeIntegerDecoder, pairs: booleanDecoder,
+        definitionIds: arrayDecoder(definitionIdDecoder),
+      })),
+    })),
+  })),
 });
 
 const sequenceDecoder: Decoder<TurnSequenceState> = objectDecoder({

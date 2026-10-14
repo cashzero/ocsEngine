@@ -123,7 +123,10 @@ describe('Pax and Eq are built into every generated game (13.5)', () => {
 
 describe('Repls arrive and are placed (13.5)', () => {
   it('creates a Pax and an Eq counter in the reinforcement Box each Reinforcement Phase', () => {
-    let state = atStep(onGameTurn(buildGeneratedRuleState({ [U.hq]: [hex(2), 'COMBAT', 'combat'] }, {}, { replacements: true }), 2), 'AIRCRAFT_REFIT', 'NONE', ALLIED);
+    // The fixed allotment of a game without a Variable Replacement Table; the table is ocs-replacement-tables.test.ts.
+    const built = buildGeneratedRuleState({ [U.hq]: [hex(2), 'COMBAT', 'combat'] }, {}, { replacements: true });
+    const { replacementArrivals: _table, ...configuration } = built.configuration;
+    let state = atStep(onGameTurn({ ...built, configuration }, 2), 'AIRCRAFT_REFIT', 'NONE', ALLIED);
     state = ok(applyRuleAction(state, ALLIED, { kind: 'ADVANCE_SEQUENCE' }));
     expect(state.sequence.phase).toBe('REINFORCEMENT');
     const turn = state.sequence.gameTurn;
@@ -269,7 +272,7 @@ describe('Rebuilds in the engine and the projection', () => {
     const state = setup(2, 1);
     const own = ruleEngine.projectForViewer(state, ALLIED).replacements;
     expect(own.rebuilds).toHaveLength(1);
-    expect(own.rebuilds[0]!.units.find(({ id: unitId }) => unitId === U.division)).toMatchObject({ cost: 'PAX', missing: 2, deadPile: false });
+    expect(own.rebuilds[0]!.units.find(({ id: unitId }) => unitId === U.division)).toMatchObject({ price: { pax: 1, eq: 0, pairs: false }, missing: 2, deadPile: false });
     expect(ruleEngine.projectForViewer(state, AXIS).replacements.rebuilds).toEqual([]);
   });
 

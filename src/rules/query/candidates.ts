@@ -28,6 +28,7 @@ import { combineCandidates, refitCandidates } from '../air/base.js';
 import { constructionHexes, constructionOptions, isEngineerCapable, largestFirstPayments } from '../air/construction.js';
 import { defaultRebuild, rebuildOptions } from '../air/replacement.js';
 import { defaultUnitRebuild, unitRebuildOptions } from '../replacement/replacement.js';
+import { consolidationOptions } from '../replacement/consolidation.js';
 import { hedgehogBuildOptions, hedgehogPayments, hedgehogReduceOptions } from '../hedgehog/hedgehog.js';
 import { dropPlanCandidates, transportCandidates } from '../air/transport.js';
 import { AIR_MISSION_KINDS, aircraftForTarget, airMissionTargets, missionSegment } from '../air/mission.js';
@@ -451,6 +452,12 @@ export const candidateActions = (
         if (add({ ...base(state, request.actorId, `combine-air:${pair.join('+')}`), kind: 'COMBINE_AIRCRAFT', aircraftIds: [...pair] })) return actions;
       }
       break;
+    case 'CONSOLIDATE_UNITS':
+      for (const option of consolidationOptions(state, request.actorId)) {
+        if (request.pieceId !== null && option.piece.id !== request.pieceId && option.with.id !== request.pieceId) continue;
+        if (add({ ...base(state, request.actorId, `consolidate:${option.consolidation}:${option.piece.id}:${option.with.id}`), kind: 'CONSOLIDATE_UNITS', consolidation: option.consolidation, pieceId: option.piece.id, withId: option.with.id })) return actions;
+      }
+      break;
   }
   return actions;
 };
@@ -469,15 +476,17 @@ export const ALL_ACTION_KINDS: readonly GameAction['kind'][] = [
   'ATTEMPT_BREAKOUT', 'BLOW_DUMP', 'LOAD_SUPPLY', 'UNLOAD_SUPPLY', 'COMBINE_TRANSPORT', 'DIVIDE_TRANSPORT',
   'FORM_EXTENDER', 'DISSOLVE_EXTENDER', 'COLLAPSE_EXTENDER',
   'REFIT_AIRCRAFT', 'DECLARE_AIR_MISSION', 'REDUCE_AIR_BASE', 'BUILD_AIR_BASE', 'BUILD_HEDGEHOG', 'REDUCE_HEDGEHOG', 'REBUILD_AIRCRAFT', 'REBUILD_UNITS', 'PLAN_AIR_DROP', 'UPDATE_AIR_DROP_PLAN', 'COMBINE_AIRCRAFT',
-  'RAIL_MOVE', 'SEA_MOVE', 'REDUCE_PORT', 'REPAIR_PORT',
+  'CONSOLIDATE_UNITS', 'RAIL_MOVE', 'SEA_MOVE', 'REDUCE_PORT', 'REPAIR_PORT',
 ];
 
 /**
  * Bookkeeping that is legal in any step but never a reason to stop the sequence on its own: two
- * reduced aircraft may combine (13.9-4) in any step where play stops for something else, and the
- * current mover may be declared finished (6.1g).
+ * reduced aircraft may combine (13.9-4) in any step where play stops for something else, ground
+ * units may be consolidated (13.9-1 to 3) in a Reinforcement Phase that stops for arrivals or
+ * rebuilds (an exchange is open whenever an identical unit of another division is dead, which
+ * would otherwise stop every Reinforcement Phase), and the current mover may be declared finished (6.1g).
  */
-const NON_STOPPING_KINDS: readonly GameAction['kind'][] = ['COMBINE_AIRCRAFT', 'END_MOVE'];
+const NON_STOPPING_KINDS: readonly GameAction['kind'][] = ['COMBINE_AIRCRAFT', 'CONSOLIDATE_UNITS', 'END_MOVE'];
 
 /** Whether the actor has at least one legal action of a kind; asked repeatedly of one state (families, auto-pass). */
 const candidateExists = new WeakMap<GameState, Map<string, boolean>>();
@@ -539,7 +548,8 @@ export const kindMayBeLegal = (state: GameState, actorId: PlayerId, kind: GameAc
     case 'BUILD_HEDGEHOG':
     case 'REDUCE_HEDGEHOG': return phase === 'MOVEMENT' && segment === 'MOVEMENT';
     case 'REBUILD_AIRCRAFT':
-    case 'REBUILD_UNITS': return phase === 'REINFORCEMENT';
+    case 'REBUILD_UNITS':
+    case 'CONSOLIDATE_UNITS': return phase === 'REINFORCEMENT';
     case 'PLAN_AIR_DROP':
     case 'UPDATE_AIR_DROP_PLAN': return phase === 'AIRCRAFT_REFIT';
     case 'COMBINE_AIRCRAFT': return true;

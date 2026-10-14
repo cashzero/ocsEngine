@@ -1017,7 +1017,7 @@ const bestAirBarrage = (context: BotDecisionContext, situation: Situation, w: He
 
 interface RebuildOptions {
   readonly pax: number; readonly eq: number; readonly truckPoints: number;
-  readonly units: readonly { readonly pieceId: PieceId; readonly cost: 'PAX' | 'EQ'; readonly missing: number;
+  readonly units: readonly { readonly pieceId: PieceId; readonly price: { readonly row: string; readonly pax: number; readonly eq: number; readonly pairs: boolean }; readonly missing: number;
     readonly modes: readonly OcsMode[]; readonly eliminated: boolean; readonly fixed: boolean; readonly originalHexId: HexId | null }[];
 }
 
@@ -1035,11 +1035,14 @@ const chooseRebuild = (context: BotDecisionContext, situation: Situation, facts:
     const defenceVp = objective && defenders < Math.max(1, situation.threatAt(candidate.hexId)) ? objective.points : 0;
     const left = { PAX: options.pax, EQ: options.eq };
     const selected = new Map<PieceId, { steps: number; mode: OcsMode | null }>();
+    // 13.5d: a pairs row whose last unit was paid for rebuilds one more unit free.
+    const openPair = new Set<string>();
     const usable = options.units.filter(u => !u.fixed || !u.eliminated || objective !== undefined || u.originalHexId === candidate.hexId);
     for (;;) {
       const choices = usable.flatMap(u => {
         const allocated = selected.get(u.pieceId)?.steps ?? 0;
-        if (allocated >= u.missing || left[u.cost] < 1) return [];
+        const free = u.price.pairs && openPair.has(u.price.row);
+        if (allocated >= u.missing || (!free && (left.PAX < u.price.pax || left.EQ < u.price.eq))) return [];
         const piece = pieces.get(u.pieceId);
         if (!piece) return [];
         const definition = knowledgeOf(facts).definition(piece);
@@ -1054,7 +1057,12 @@ const chooseRebuild = (context: BotDecisionContext, situation: Situation, facts:
       }).sort((a, b) => b.vp - a.vp || b.hq - a.hq || b.mobile - a.mobile || b.gain - a.gain || a.u.pieceId.localeCompare(b.u.pieceId));
       const next = choices[0];
       if (!next) break;
-      left[next.u.cost]--;
+      if (next.u.price.pairs && openPair.has(next.u.price.row)) openPair.delete(next.u.price.row);
+      else {
+        left.PAX -= next.u.price.pax;
+        left.EQ -= next.u.price.eq;
+        if (next.u.price.pairs) openPair.add(next.u.price.row);
+      }
       selected.set(next.u.pieceId, { steps: (selected.get(next.u.pieceId)?.steps ?? 0) + 1, mode: next.mode });
     }
     let action: Extract<GameAction, { kind: 'REBUILD_UNITS' }> = { ...candidate,

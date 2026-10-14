@@ -6,6 +6,7 @@ import { validateBuildAirBase } from '../air/construction.js';
 import { validateBuildHedgehog, validateReduceHedgehog } from '../hedgehog/hedgehog.js';
 import { validateRebuildAircraft } from '../air/replacement.js';
 import { validateRebuildUnits } from '../replacement/replacement.js';
+import { validateConsolidation } from '../replacement/consolidation.js';
 import { validatePlanAirDrop, validateUpdateDropPlan } from '../air/transport.js';
 import { validateAirMission } from '../air/mission.js';
 import { arrivingReinforcements, reinforcementHexes, validateReinforcementPlacement } from '../lifecycle/lifecycle.js';
@@ -109,6 +110,7 @@ export const validateGameAction = (state: GameState, action: GameAction): Action
       case 'PLAN_AIR_DROP': issues.push(...validatePlanAirDrop(state, action)); break;
       case 'UPDATE_AIR_DROP_PLAN': issues.push(...validateUpdateDropPlan(state, action)); break;
       case 'COMBINE_AIRCRAFT': issues.push(...validateCombineAircraft(state, action)); break;
+      case 'CONSOLIDATE_UNITS': issues.push(...validateConsolidation(state, action)); break;
       case 'RAIL_MOVE': issues.push(...validateRailMove(state, action)); break;
       case 'SEA_MOVE': issues.push(...validateSeaMove(state, action)); break;
       case 'REDUCE_PORT': issues.push(...validateReducePort(state, action)); break;

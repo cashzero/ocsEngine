@@ -57,6 +57,7 @@ const ACTION_LABELS: Readonly<Record<GameAction['kind'], string>> = {
   PLAN_AIR_DROP: 'Plan Air Drop',
   UPDATE_AIR_DROP_PLAN: 'Change Drop Plan',
   COMBINE_AIRCRAFT: 'Combine aircraft',
+  CONSOLIDATE_UNITS: 'Consolidate units',
   RAIL_MOVE: 'Move by rail',
   SEA_MOVE: 'Ship by sea',
   REDUCE_PORT: 'Damage port',
@@ -133,6 +134,7 @@ export const actionSummary = (action: GameAction): string => {
     case 'BUILD_HEDGEHOG': return `Build or improve a hedgehog at ${printedHexLabel(action.hexId)} (2 SP${action.engineerId ? ', engineer' : ''})`;
     case 'REDUCE_HEDGEHOG': return 'Reduce the hedgehog one Level';
     case 'COMBINE_AIRCRAFT': return 'Combine two reduced aircraft';
+    case 'CONSOLIDATE_UNITS': return action.consolidation === 'MERGE' ? 'Combine two reduced units' : 'Exchange a unit for one of another division';
     case 'SEA_MOVE': {
       const tokens = action.supply.reduce((total, { tokens: quantity }) => total + quantity, 0);
       const cargo = [...(action.unitIds.length > 0 ? [`${action.unitIds.length} unit${action.unitIds.length === 1 ? '' : 's'}`] : []), ...(tokens > 0 ? [`${tokens}T`] : [])].join(' and ');
