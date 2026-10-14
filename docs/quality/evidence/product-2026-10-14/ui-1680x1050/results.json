@@ -1,0 +1,31 @@
+{
+  "title": "doc 03 §E: UI rows at 1680×1050",
+  "final": {
+    "turn": "Turn 1 / 2",
+    "player": "Axis player turn",
+    "phase": "Movement",
+    "revision": null
+  },
+  "rows": [
+    {
+      "id": "UI-02",
+      "expectation": "At 1680×1050: no page overflow, clipped content or whole-deck scrolling; only bounded lists scroll; map and commands reachable",
+      "observed": "page overflow on none; deck scrolling itself on none; layout issues on new-game-configure (content-clipped: p \"Set the map and force options, then press Preview.\" / tight-padding: button#close-new-game.new-game-close \"✕\"); new-game-preview (content-clipped: div.new-game-status \"Preview ready Start plays exactly this package; Back returns\" / content-clipped: div.new-game-status \"Preview ready Start plays exactly this package; Back returns\"); ng07-roster (content-clipped: span.roster-text \"Chmbln TF (Det. 2) / 10.A 0505 · Combat mode\" / ellipsis-truncated: span.roster-text \"Chmbln TF (Det. 2) / 10.A 0505 · Combat mode\"); End/phase hidden on none",
+      "status": "FAIL"
+    },
+    {
+      "id": "UI-03(1680)",
+      "expectation": "Minimum computed size of visible interface text is 12 px (relaxed from 13 px by the user, 2026-10-14); no illegible clipped labels (screenshots)",
+      "observed": "smallest per screen: new-game-configure 12px, new-game-preview 12px, ng07-mounted 13px, ng07-unit-selected 13px, ng07-roster 13px, menu 13px, contact-start 13px, fuel-panel 12px, move-preview 12px, handoff-prompt-2 13px, privacy-2 13px, other-seat-turn 13px; below 12 px: none",
+      "status": "PASS"
+    },
+    {
+      "id": "UI-04(1680)",
+      "expectation": "Zero uncaught exception or error log while repeating NG-07 and an overrun turn",
+      "observed": "0 errors",
+      "status": "PASS"
+    }
+  ],
+  "timings": [],
+  "errors": []
+}

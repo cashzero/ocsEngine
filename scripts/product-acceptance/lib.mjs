@@ -32,6 +32,11 @@ export const configure = async (h, options = {}) => {
 
 /** The footer status of the dialog, the stage classes and the Start button state. */
 export const dialogState = (h) => h.page.evaluate(() => ({
+  // The dialog has two pages (settings, preview) and a loading page between them; the preview is only on screen on its own page.
+  page: document.querySelector('#new-game-form')?.dataset.newGamePage ?? '',
+  previewShown: !!document.querySelector('.operation-preview'),
+  // The stage strip is drawn on the Settings page only; elsewhere it is a clipped box for screen readers.
+  stripDrawn: (() => { const box = document.querySelector('.flow-steps')?.closest('.new-game-status')?.getBoundingClientRect(); return !!box && box.width > 8 && box.height > 8; })(),
   status: document.querySelector('.new-game-submit strong')?.textContent.trim() ?? '',
   hint: document.querySelector('.new-game-submit p')?.textContent.trim() ?? '',
   stages: [...document.querySelectorAll('.flow-steps span')].map((node) => `${node.textContent.trim()}:${node.className || '-'}`),
@@ -41,10 +46,23 @@ export const dialogState = (h) => h.page.evaluate(() => ({
   fieldError: document.querySelector('#field-error') ? { field: document.querySelector('#field-error').closest('label')?.querySelector('input,select')?.id ?? '', text: document.querySelector('#field-error').textContent.trim() } : null,
 }));
 
-/** Watch the stage strip: every distinct class combination it shows is recorded until `stopStageWatch`. */
+/**
+ * Watch what the player sees of the build's progress: the stage strip in the dialog bar (Configure, Map, OOB, Deployment,
+ * Gameplay) while it is drawn (the Settings page), and the step list of the loading page while a package is built or started. Every distinct
+ * combination is recorded as "strip[…]" and/or "loading[…]" until `stopStageWatch`.
+ */
 export const startStageWatch = (h) => h.page.evaluate(() => {
   window.__stages = [];
-  const read = () => [...document.querySelectorAll('.flow-steps span')].map((node) => `${node.textContent.trim()}:${node.className || '-'}`).join(' | ');
+  // "Visible" means drawn: the dialog hides the strip on the preview and loading pages with a 1 px clipped box that only a screen reader reads.
+  const visible = (node) => { const box = (node?.closest('.new-game-status') ?? node)?.getBoundingClientRect(); return !!box && box.width > 8 && box.height > 8 && getComputedStyle(node).visibility !== 'hidden'; };
+  const read = () => {
+    const strip = document.querySelector('.flow-steps');
+    const loading = document.querySelector('.loading-steps');
+    return [
+      visible(strip) ? `strip[${[...strip.querySelectorAll('span')].map((node) => `${node.textContent.trim()}:${node.className || '-'}`).join(' | ')}]` : '',
+      visible(loading) ? `loading[${[...loading.querySelectorAll('li')].map((node) => `${node.querySelector('strong')?.textContent.trim()}:${node.className || '-'}`).join(' | ')}]` : '',
+    ].filter(Boolean).join(' + ');
+  };
   const push = () => { const now = read(); if (now && window.__stages.at(-1) !== now) window.__stages.push(now); };
   push();
   window.__stageObserver = new MutationObserver(push);
@@ -52,7 +70,7 @@ export const startStageWatch = (h) => h.page.evaluate(() => {
 });
 export const stopStageWatch = (h) => h.page.evaluate(() => { window.__stageObserver?.disconnect(); return window.__stages ?? []; });
 
-/** Press Generate operation and wait until the dialog reports a result; returns the elapsed time and the state. */
+/** Press Preview and wait until the dialog reports a result; returns the elapsed time and the state. */
 export const generate = async (h) => {
   const started = Date.now();
   await h.page.click('button[form="new-game-form"]');
@@ -189,10 +207,18 @@ export const locateNear = async (h, label, { around = null, radius = 260, step =
   return { x: hits.reduce((s, p) => s + p.x, 0) / hits.length, y: hits.reduce((s, p) => s + p.y, 0) / hits.length };
 };
 
-/** Bring a hex on screen with the keyboard cursor (the map follows it), then locate it with the mouse. */
+/**
+ * Where a printed hex is on screen (client pixels, centre), read from the map's own geometry (`hexClientRect`, which exists for
+ * scripted checks) after the map is panned to show it. No mouse scan: a hex that cannot be found returns null.
+ */
 export const hexOnScreen = async (h, label, gotoHex) => {
   await gotoHex(h, label);
-  return (await locateNear(h, label)) ?? (await screenHexes(h, { step: 30 })).get(label) ?? null;
+  const column = Number(label.slice(0, 2)) - 1;
+  const r = Number(label.slice(2, 4)) - 1;
+  const id = `${column - Math.floor(r / 2)},${r}`;
+  await h.page.evaluate((hexId) => window.ocsMap.ensureVisible(hexId), id);
+  await h.page.waitForTimeout(250);
+  return h.page.evaluate((hexId) => { const box = window.ocsMap.hexClientRect(hexId); return box ? { x: box.x + box.width / 2, y: box.y + box.height / 2 } : null; }, id);
 };
 
 /** Text of the left command deck. */
@@ -264,3 +290,38 @@ export const moveSelectedTo = async (h, label, gotoHex) => {
 };
 
 export { where };
+
+/**
+ * Press Preview with the CPU throttled (CDP) so the build lasts several seconds, and record what the compositor actually
+ * draws with a CDP screencast: a frame about every `everyMs`, saved as ng10-build-NN.jpg. A page screenshot cannot do this,
+ * because it waits for the page's main thread, which is busy for the whole step. Which step each frame shows is judged by
+ * eye; the stage-watch row is the programmatic observation. Timings taken under throttling are not used anywhere else.
+ */
+export const photographBuild = async (h, { evidenceDir, rate = 6, everyMs = 700, limit = 16, press = 'button[form="new-game-form"]', done = () => /Preview ready|Cannot build/.test(document.querySelector('.new-game-submit strong')?.textContent ?? ''), prefix = 'ng10-build' }) => {
+  const { writeFile } = await import('node:fs/promises');
+  const { join } = await import('node:path');
+  const cdp = await h.page.context().newCDPSession(h.page);
+  const frames = [];
+  let last = 0;
+  cdp.on('Page.screencastFrame', ({ data, metadata, sessionId }) => {
+    const at = metadata.timestamp * 1000;
+    if (at - last >= everyMs && frames.length < limit) { last = at; frames.push({ at, data }); }
+    cdp.send('Page.screencastFrameAck', { sessionId }).catch(() => {});
+  });
+  await cdp.send('Emulation.setCPUThrottlingRate', { rate });
+  await cdp.send('Page.startScreencast', { format: 'jpeg', quality: 60, everyNthFrame: 1 });
+  const started = Date.now();
+  await h.page.click(press);
+  await h.page.waitForFunction(done, null, { timeout: 120000 }).catch(() => {});
+  const elapsed = Date.now() - started;
+  await cdp.send('Page.stopScreencast');
+  await cdp.send('Emulation.setCPUThrottlingRate', { rate: 1 });
+  await cdp.detach();
+  const files = [];
+  for (const [index, { data }] of frames.entries()) {
+    const file = `${prefix}-${String(index + 1).padStart(2, '0')}.jpg`;
+    await writeFile(join(evidenceDir, file), Buffer.from(data, 'base64'));
+    files.push(file);
+  }
+  return { rate, elapsed, files };
+};

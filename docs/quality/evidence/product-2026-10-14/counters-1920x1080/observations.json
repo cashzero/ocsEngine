@@ -1,0 +1,616 @@
+{
+ "viewport": "1920×1080",
+ "previewCounters": [
+  {
+   "side": "ALLIED",
+   "name": "US HQ 22nd Corps",
+   "tokens": "XXX22 9-16",
+   "kind": "HQ",
+   "symbol": "HQ"
+  },
+  {
+   "side": "ALLIED",
+   "name": "US HQ 21st Corps",
+   "tokens": "XXX21 9-16",
+   "kind": "HQ",
+   "symbol": "HQ"
+  },
+  {
+   "side": "ALLIED",
+   "name": "Brown TF / 7.A",
+   "tokens": "IIIBrown7.A 1446",
+   "kind": "COMBAT",
+   "symbol": "ARMOR"
+  },
+  {
+   "side": "ALLIED",
+   "name": "Chap TF / 7.A",
+   "tokens": "IIIChap7.A 1446",
+   "kind": "COMBAT",
+   "symbol": "ARMOR"
+  },
+  {
+   "side": "ALLIED",
+   "name": "Rhea TF / 7.A",
+   "tokens": "IIIRhea7.A 1446",
+   "kind": "COMBAT",
+   "symbol": "ARMOR"
+  },
+  {
+   "side": "ALLIED",
+   "name": "Wemple TF / 7.A",
+   "tokens": "IIIWemple7.A 1446",
+   "kind": "COMBAT",
+   "symbol": "ARMOR"
+  },
+  {
+   "side": "ALLIED",
+   "name": "Div Arty I / 7.A",
+   "tokens": "IIII7.A 93214",
+   "kind": "ARTILLERY",
+   "symbol": "SP_ARTILLERY"
+  },
+  {
+   "side": "ALLIED",
+   "name": "Div Arty II / 7.A",
+   "tokens": "IIIII7.A 93214",
+   "kind": "ARTILLERY",
+   "symbol": "SP_ARTILLERY"
+  },
+  {
+   "side": "ALLIED",
+   "name": "87 Recon Bn / 7.A",
+   "tokens": "II877.A 547",
+   "kind": "COMBAT",
+   "symbol": "RECON"
+  },
+  {
+   "side": "ALLIED",
+   "name": "Chmbln TF / 10.A",
+   "tokens": "IIIChmbln10.A 1446",
+   "kind": "COMBAT",
+   "symbol": "ARMOR"
+  },
+  {
+   "side": "ALLIED",
+   "name": "Standish TF / 10.A",
+   "tokens": "IIIStandish10.A 1446",
+   "kind": "COMBAT",
+   "symbol": "ARMOR"
+  },
+  {
+   "side": "ALLIED",
+   "name": "Riley TF / 10.A",
+   "tokens": "IIIRiley10.A 1446",
+   "kind": "COMBAT",
+   "symbol": "ARMOR"
+  },
+  {
+   "side": "ALLIED",
+   "name": "Chmbln TF (Det. 2) / 10.A",
+   "tokens": "IIIChmbln10.A 1446",
+   "kind": "COMBAT",
+   "symbol": "ARMOR"
+  },
+  {
+   "side": "ALLIED",
+   "name": "Div Arty I / 10.A",
+   "tokens": "IIII10.A 93214",
+   "kind": "ARTILLERY",
+   "symbol": "SP_ARTILLERY"
+  },
+  {
+   "side": "ALLIED",
+   "name": "Div Arty II / 10.A",
+   "tokens": "IIIII10.A 93214",
+   "kind": "ARTILLERY",
+   "symbol": "SP_ARTILLERY"
+  },
+  {
+   "side": "ALLIED",
+   "name": "90 Recon Bn / 10.A",
+   "tokens": "II9010.A 547",
+   "kind": "COMBAT",
+   "symbol": "RECON"
+  },
+  {
+   "side": "ALLIED",
+   "name": "13.Abn",
+   "tokens": "XX13 3 1343",
+   "kind": "COMBAT",
+   "symbol": "AIRBORNE"
+  },
+  {
+   "side": "ALLIED",
+   "name": "83.Inf",
+   "tokens": "XX83 4 2443",
+   "kind": "COMBAT",
+   "symbol": "INFANTRY"
+  },
+  {
+   "side": "ALLIED",
+   "name": "US 748 FA Gp",
+   "tokens": "III748 93214",
+   "kind": "ARTILLERY",
+   "symbol": "SP_ARTILLERY"
+  },
+  {
+   "side": "ALLIED",
+   "name": "US 749 FA Gp",
+   "tokens": "III749 93214",
+   "kind": "ARTILLERY",
+   "symbol": "SP_ARTILLERY"
+  },
+  {
+   "side": "ALLIED",
+   "name": "US 702 Tk Bn",
+   "tokens": "II702 636",
+   "kind": "COMBAT",
+   "symbol": "ARMOR"
+  },
+  {
+   "side": "ALLIED",
+   "name": "US 786 Tk Bn",
+   "tokens": "II786 636",
+   "kind": "COMBAT",
+   "symbol": "ARMOR"
+  },
+  {
+   "side": "ALLIED",
+   "name": "US 809 TD Bn",
+   "tokens": "II809 2314",
+   "kind": "COMBAT",
+   "symbol": "ANTI_TANK"
+  },
+  {
+   "side": "ALLIED",
+   "name": "US 771 TD Bn",
+   "tokens": "II771 537",
+   "kind": "COMBAT",
+   "symbol": "ANTI_TANK"
+  },
+  {
+   "side": "ALLIED",
+   "name": "US 748 Engr Gp",
+   "tokens": "X748 (0)012",
+   "kind": "COMBAT",
+   "symbol": "ENGINEER"
+  },
+  {
+   "side": "ALLIED",
+   "name": "US 749 Engr Gp",
+   "tokens": "X749 (0)012",
+   "kind": "COMBAT",
+   "symbol": "ENGINEER"
+  },
+  {
+   "side": "ALLIED",
+   "name": "Truck",
+   "tokens": "545",
+   "kind": "TRANSPORT",
+   "symbol": "TRUCK"
+  },
+  {
+   "side": "ALLIED",
+   "name": "Truck",
+   "tokens": "545",
+   "kind": "TRANSPORT",
+   "symbol": "TRUCK"
+  },
+  {
+   "side": "ALLIED",
+   "name": "Supply Dump",
+   "tokens": "2 SP",
+   "kind": "SUPPLY",
+   "symbol": "SUPPLY"
+  },
+  {
+   "side": "ALLIED",
+   "name": "Supply Dump",
+   "tokens": "2 SP",
+   "kind": "SUPPLY",
+   "symbol": "SUPPLY"
+  },
+  {
+   "side": "ALLIED",
+   "name": "Supply Dump",
+   "tokens": "2 SP",
+   "kind": "SUPPLY",
+   "symbol": "SUPPLY"
+  },
+  {
+   "side": "ALLIED",
+   "name": "Supply Dump",
+   "tokens": "2 SP",
+   "kind": "SUPPLY",
+   "symbol": "SUPPLY"
+  },
+  {
+   "side": "AXIS",
+   "name": "Ge HQ 81st Corps",
+   "tokens": "XXX81 5-10",
+   "kind": "HQ",
+   "symbol": "HQ"
+  },
+  {
+   "side": "AXIS",
+   "name": "Ge HQ 67th Corps",
+   "tokens": "XXX67 5-10",
+   "kind": "HQ",
+   "symbol": "HQ"
+  },
+  {
+   "side": "AXIS",
+   "name": "II/130 Pz Bn / Pz Lehr",
+   "tokens": "IIII/130Pz Lehr 657",
+   "kind": "COMBAT",
+   "symbol": "ARMOR"
+  },
+  {
+   "side": "AXIS",
+   "name": "II/130 Pz Bn (Det. 2) / Pz Lehr",
+   "tokens": "IIII/130Pz Lehr 657",
+   "kind": "COMBAT",
+   "symbol": "ARMOR"
+  },
+  {
+   "side": "AXIS",
+   "name": "II/130 Pz Bn (Det. 3) / Pz Lehr",
+   "tokens": "IIII/130Pz Lehr 657",
+   "kind": "COMBAT",
+   "symbol": "ARMOR"
+  },
+  {
+   "side": "AXIS",
+   "name": "II/130 Pz Bn (Det. 4) / Pz Lehr",
+   "tokens": "IIII/130Pz Lehr 657",
+   "kind": "COMBAT",
+   "symbol": "ARMOR"
+  },
+  {
+   "side": "AXIS",
+   "name": "Div Arty I / Pz Lehr",
+   "tokens": "IIIIPz Lehr 133214",
+   "kind": "ARTILLERY",
+   "symbol": "ARTILLERY"
+  },
+  {
+   "side": "AXIS",
+   "name": "Div Arty II / Pz Lehr",
+   "tokens": "IIIIIPz Lehr 133214",
+   "kind": "ARTILLERY",
+   "symbol": "ARTILLERY"
+  },
+  {
+   "side": "AXIS",
+   "name": "vFallois KG / Pz Lehr",
+   "tokens": "IIvFalloisPz Lehr 358",
+   "kind": "COMBAT",
+   "symbol": "RECON"
+  },
+  {
+   "side": "AXIS",
+   "name": "104 Mot Inf Rgt / 15.PG",
+   "tokens": "III10415.PG 743",
+   "kind": "COMBAT",
+   "symbol": "INFANTRY"
+  },
+  {
+   "side": "AXIS",
+   "name": "115 Pz Rgt / 15.PG",
+   "tokens": "III11515.PG 743",
+   "kind": "COMBAT",
+   "symbol": "INFANTRY"
+  },
+  {
+   "side": "AXIS",
+   "name": "115 Mot Inf Rgt / 15.PG",
+   "tokens": "III11515.PG 743",
+   "kind": "COMBAT",
+   "symbol": "INFANTRY"
+  },
+  {
+   "side": "AXIS",
+   "name": "104 Mot Inf Rgt (Det. 2) / 15.PG",
+   "tokens": "III10415.PG 743",
+   "kind": "COMBAT",
+   "symbol": "INFANTRY"
+  },
+  {
+   "side": "AXIS",
+   "name": "Div Arty I / 15.PG",
+   "tokens": "IIII15.PG 133214",
+   "kind": "ARTILLERY",
+   "symbol": "ARTILLERY"
+  },
+  {
+   "side": "AXIS",
+   "name": "Div Arty II / 15.PG",
+   "tokens": "IIIII15.PG 133214",
+   "kind": "ARTILLERY",
+   "symbol": "ARTILLERY"
+  },
+  {
+   "side": "AXIS",
+   "name": "Aufkl Abt 1 / 15.PG",
+   "tokens": "II115.PG 358",
+   "kind": "COMBAT",
+   "symbol": "RECON"
+  },
+  {
+   "side": "AXIS",
+   "name": "3.FJ",
+   "tokens": "XX3 4 1833",
+   "kind": "COMBAT",
+   "symbol": "AIRBORNE"
+  },
+  {
+   "side": "AXIS",
+   "name": "326.VG",
+   "tokens": "XX326 4 1633",
+   "kind": "COMBAT",
+   "symbol": "INFANTRY"
+  },
+  {
+   "side": "AXIS",
+   "name": "Ge Arty Rgt 303",
+   "tokens": "III303 133214",
+   "kind": "ARTILLERY",
+   "symbol": "ARTILLERY"
+  },
+  {
+   "side": "AXIS",
+   "name": "Ge Arty Rgt 304",
+   "tokens": "III304 133214",
+   "kind": "ARTILLERY",
+   "symbol": "ARTILLERY"
+  },
+  {
+   "side": "AXIS",
+   "name": "Ge 244 AG Bn",
+   "tokens": "II244 AG 446",
+   "kind": "COMBAT",
+   "symbol": "ASSAULT_GUN"
+  },
+  {
+   "side": "AXIS",
+   "name": "Ge 394 AG Bn",
+   "tokens": "II394 AG 446",
+   "kind": "COMBAT",
+   "symbol": "ASSAULT_GUN"
+  },
+  {
+   "side": "AXIS",
+   "name": "Ge 512 PJ Bn",
+   "tokens": "II512 (5)43",
+   "kind": "COMBAT",
+   "symbol": "ANTI_TANK"
+  },
+  {
+   "side": "AXIS",
+   "name": "Ge 653 PJ Bn",
+   "tokens": "II653 (5)43",
+   "kind": "COMBAT",
+   "symbol": "ANTI_TANK"
+  },
+  {
+   "side": "AXIS",
+   "name": "Ge Pi Bde 303",
+   "tokens": "X303 (0)012",
+   "kind": "COMBAT",
+   "symbol": "ENGINEER"
+  },
+  {
+   "side": "AXIS",
+   "name": "Ge Pi Bde 304",
+   "tokens": "X304 (0)012",
+   "kind": "COMBAT",
+   "symbol": "ENGINEER"
+  },
+  {
+   "side": "AXIS",
+   "name": "Truck",
+   "tokens": "545",
+   "kind": "TRANSPORT",
+   "symbol": "TRUCK"
+  },
+  {
+   "side": "AXIS",
+   "name": "Truck",
+   "tokens": "545",
+   "kind": "TRANSPORT",
+   "symbol": "TRUCK"
+  },
+  {
+   "side": "AXIS",
+   "name": "Supply Dump",
+   "tokens": "2 SP",
+   "kind": "SUPPLY",
+   "symbol": "SUPPLY"
+  },
+  {
+   "side": "AXIS",
+   "name": "Supply Dump",
+   "tokens": "2 SP",
+   "kind": "SUPPLY",
+   "symbol": "SUPPLY"
+  },
+  {
+   "side": "AXIS",
+   "name": "Supply Dump",
+   "tokens": "2 SP",
+   "kind": "SUPPLY",
+   "symbol": "SUPPLY"
+  },
+  {
+   "side": "AXIS",
+   "name": "Supply Dump",
+   "tokens": "2 SP",
+   "kind": "SUPPLY",
+   "symbol": "SUPPLY"
+  },
+  {
+   "side": "AXIS",
+   "name": "Ge 506 Tgr Bn",
+   "tokens": "II506 Tgr 558",
+   "kind": "COMBAT",
+   "symbol": "TIGER"
+  },
+  {
+   "side": "AXIS",
+   "name": "Ge 654 PJ Bn",
+   "tokens": "II654 656",
+   "kind": "COMBAT",
+   "symbol": "ANTI_TANK"
+  },
+  {
+   "side": "AXIS",
+   "name": "Ge 511 Tgr Bn",
+   "tokens": "II511 Tgr 954",
+   "kind": "COMBAT",
+   "symbol": "TIGER"
+  },
+  {
+   "side": "AXIS",
+   "name": "Ge 1 PJ Bn",
+   "tokens": "II1 3512",
+   "kind": "COMBAT",
+   "symbol": "ANTI_TANK"
+  },
+  {
+   "side": "AXIS",
+   "name": "Ge 510 Tgr Bn",
+   "tokens": "II510 Tgr 954",
+   "kind": "COMBAT",
+   "symbol": "TIGER"
+  },
+  {
+   "side": "AXIS",
+   "name": "Ge 487 PJ Bn",
+   "tokens": "II487 656",
+   "kind": "COMBAT",
+   "symbol": "ANTI_TANK"
+  }
+ ],
+ "CTR-03": {
+  "expected03": {
+   "hq": "XXX 21 9-16",
+   "artillery": "III I 7.A 9 3 2 14",
+   "transport": "5 45"
+  },
+  "seen03": {
+   "hq": "XXX21 9-16",
+   "artillery": "IIII7.A 93214",
+   "transport": "545",
+   "supply": [
+    "2 SP",
+    "2 SP",
+    "2 SP",
+    "2 SP"
+   ]
+  }
+ },
+ "CTR-04": [
+  {
+   "name": "Standish TF / 10.A",
+   "hex": "0504",
+   "preview": "IIIStandish10.A 1446",
+   "roster": "IIIStandish10.A 1446",
+   "card": "IIIStandish10.A 1446",
+   "shot": "ctr04-map-Standish-TF-10-A.png"
+  },
+  {
+   "name": "US HQ 21st Corps",
+   "hex": "0402",
+   "preview": "XXX21 9-16",
+   "roster": "XXX21 9-16",
+   "card": "XXX21 9-16",
+   "shot": "ctr04-map-US-HQ-21st-Corps.png"
+  },
+  {
+   "name": "Div Arty I / 7.A",
+   "hex": "0509",
+   "preview": "IIII7.A 93214",
+   "roster": "IIII7.A 93214",
+   "card": "IIII7.A 93214",
+   "shot": "ctr04-map-Div-Arty-I-7-A.png"
+  },
+  {
+   "name": "90 Recon Bn / 10.A",
+   "hex": "0404",
+   "preview": "II9010.A 547",
+   "roster": "II9010.A 547",
+   "card": "II9010.A 547",
+   "shot": "ctr04-map-90-Recon-Bn-10-A.png"
+  },
+  {
+   "name": "US 748 Engr Gp",
+   "hex": "0307",
+   "preview": "X748 (0)012",
+   "roster": "X748 (0)012",
+   "card": "X748 (0)012",
+   "shot": "ctr04-map-US-748-Engr-Gp.png"
+  },
+  {
+   "name": "Truck",
+   "hex": "0308",
+   "preview": "545",
+   "roster": "545",
+   "card": "545",
+   "shot": "ctr04-map-Truck.png"
+  }
+ ],
+ "CTR-05": {
+  "abnBefore": "XX13 3 1343",
+  "abnAfterMode": "XX13 3 745",
+  "abnStatusBefore": "0507 · Combat mode",
+  "abnStatusAfter": "0507 · Move mode",
+  "breakdown": "XX13 2 745",
+  "fuelLabel": "the 8T dump at 0408",
+  "dumpHex": "0408",
+  "dumpBefore": "Hex 0408 · Berburg · clear · city · objective, 4 VP, held by Allied · US Garrison Bn, US HQ 22nd Corps, Supply dump",
+  "dumpAfter": "Hex 0408 · Berburg · clear · city · objective, 4 VP, held by Allied · 1 MP, 13 left · reachable · US Garrison Bn, US HQ 22nd Corps, Supply dump",
+  "dumpCounterAfter": "Fuel 1T for US 749 FA Gp (this unit) from the dump at 0408 (7T there now)",
+  "dumpsBefore": [
+   "0503",
+   "0507",
+   "0408",
+   "0511"
+  ]
+ },
+ "CTR-06": {
+  "moved": {
+   "existing": true,
+   "moved": false,
+   "preview": "no move needed: a three-counter stack already stood in the starting layout"
+  },
+  "stackAnnounce": "Hex 0503 · clear · 4 MP, 10 left · reachable · Div Arty II / 10.A, Div Arty I / 10.A, Supply dump",
+  "shots06": [
+   "100% 100%: ctr06-stack-zoom-100.png",
+   "300% 150%: ctr06-stack-zoom-300.png",
+   "30% 30%: ctr06-stack-zoom-30.png",
+   "hover: ctr06-stack-hover.png"
+  ],
+  "picker06": ""
+ },
+ "CTR-07": {
+  "before07": {
+   "announce": "Hex 1304 · clear · out of reach · enemy 115 Pz Rgt / 15.PG, 1 hidden",
+   "panel": "Hex 1304 · 2 units × III 115 15.PG 7 4 3 Enemy · 115 Pz Rgt / 15.PG 1 enemy unit hidden under the top counter.",
+   "shot": "ctr07-enemy-stack-allied-seat.png"
+  },
+  "after07": {
+   "announce": "Hex 1304 · clear · 115 Pz Rgt / 15.PG, 104 Mot Inf Rgt / 15.PG",
+   "panel": "Hex 1304 · 2 units × III 115 15.PG 7 4 3 115 Pz Rgt / 15.PG III 104 15.PG 7 4 3 104 Mot Inf Rgt / 15.PG",
+   "shot": "ctr07-same-stack-axis-seat.png"
+  },
+  "privacy": {
+   "text": "HOT-SEAT PRIVACY Pass the screen to Axis commander Continue their Player Turn: Movement · Movement Segment. The map stays hidden until they confirm. I am Axis commander",
+   "mapVisible": false
+  },
+  "hiddenNames": [
+   "104 Mot Inf Rgt / 15.PG"
+  ],
+  "leaked": []
+ }
+}

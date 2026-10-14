@@ -1,0 +1,223 @@
+[
+ {
+  "label": "new-game-configure",
+  "shot": "01-ui-new-game-configure.jpg",
+  "pageOverflow": {
+   "x": false,
+   "y": false
+  },
+  "mapShare": 75,
+  "deckScrolls": [],
+  "minFont": {
+   "size": 12,
+   "text": "Configure <span.is-active>"
+  },
+  "endVisible": true,
+  "phaseVisible": true,
+  "issues": [
+   "content-clipped: p \"Set the map and force options, then press Preview.\"",
+   "tight-padding: button#close-new-game.new-game-close \"✕\""
+  ]
+ },
+ {
+  "label": "new-game-preview",
+  "shot": "02-ui-new-game-preview.jpg",
+  "pageOverflow": {
+   "x": false,
+   "y": false
+  },
+  "mapShare": 75,
+  "deckScrolls": [],
+  "minFont": {
+   "size": 12,
+   "text": "Scenario <dt.>"
+  },
+  "endVisible": true,
+  "phaseVisible": true,
+  "issues": [
+   "content-clipped: div.new-game-status \"Preview ready Start plays exactly this package; Back returns\"",
+   "content-clipped: div.new-game-status \"Preview ready Start plays exactly this package; Back returns\"",
+   "outside-viewport: strong \"Preview ready\"",
+   "content-clipped: p \"Start plays exactly this package; Back returns to the settin\"",
+   "outside-viewport: div.flow-steps \"Configure Map OOB Deployment Gameplay\"",
+   "outside-viewport: span.is-complete \"Map\"",
+   "outside-viewport: span \"Gameplay\"",
+   "tight-padding: button#close-new-game.new-game-close \"✕\"",
+   "content-clipped: header \"ALLIED 222 points\"",
+   "controls-gap: button#preview-forces-allied.side-allied \"Allied 222 points\""
+  ]
+ },
+ {
+  "label": "ng07-mounted",
+  "shot": "03-ui-ng07-mounted.jpg",
+  "pageOverflow": {
+   "x": false,
+   "y": false
+  },
+  "mapShare": 75,
+  "deckScrolls": [],
+  "minFont": {
+   "size": 13,
+   "text": "Turn <small.>"
+  },
+  "endVisible": true,
+  "phaseVisible": true,
+  "issues": []
+ },
+ {
+  "label": "ng07-unit-selected",
+  "shot": "04-ui-ng07-unit-selected.jpg",
+  "pageOverflow": {
+   "x": false,
+   "y": false
+  },
+  "mapShare": 75,
+  "deckScrolls": [],
+  "minFont": {
+   "size": 13,
+   "text": "Turn <small.>"
+  },
+  "endVisible": true,
+  "phaseVisible": true,
+  "issues": []
+ },
+ {
+  "label": "ng07-roster",
+  "shot": "05-ui-ng07-roster.jpg",
+  "pageOverflow": {
+   "x": false,
+   "y": false
+  },
+  "mapShare": 75,
+  "deckScrolls": [],
+  "minFont": {
+   "size": 13,
+   "text": "Turn <small.>"
+  },
+  "endVisible": true,
+  "phaseVisible": true,
+  "issues": [
+   "content-clipped: span.roster-text \"Chmbln TF (Det. 2) / 10.A 0505 · Combat mode\"",
+   "ellipsis-truncated: span.roster-text \"Chmbln TF (Det. 2) / 10.A 0505 · Combat mode\""
+  ]
+ },
+ {
+  "label": "menu",
+  "shot": "06-ui-menu.jpg",
+  "pageOverflow": {
+   "x": false,
+   "y": false
+  },
+  "mapShare": 75,
+  "deckScrolls": [],
+  "minFont": {
+   "size": 13,
+   "text": "Turn <small.>"
+  },
+  "endVisible": true,
+  "phaseVisible": true,
+  "issues": []
+ },
+ {
+  "label": "contact-start",
+  "shot": "07-ui-contact-start.jpg",
+  "pageOverflow": {
+   "x": false,
+   "y": false
+  },
+  "mapShare": 75,
+  "deckScrolls": [],
+  "minFont": {
+   "size": 13,
+   "text": "Turn <small.>"
+  },
+  "endVisible": true,
+  "phaseVisible": true,
+  "issues": []
+ },
+ {
+  "label": "fuel-panel",
+  "shot": "08-ui-fuel-panel.jpg",
+  "pageOverflow": {
+   "x": false,
+   "y": false
+  },
+  "mapShare": 75,
+  "deckScrolls": [],
+  "minFont": {
+   "size": 12,
+   "text": "FUEL <span.status-mark>"
+  },
+  "endVisible": true,
+  "phaseVisible": true,
+  "issues": []
+ },
+ {
+  "label": "move-preview",
+  "shot": "09-ui-move-preview.jpg",
+  "pageOverflow": {
+   "x": false,
+   "y": false
+  },
+  "mapShare": 75,
+  "deckScrolls": [],
+  "minFont": {
+   "size": 12,
+   "text": "FUEL <span.status-mark>"
+  },
+  "endVisible": true,
+  "phaseVisible": true,
+  "issues": []
+ },
+ {
+  "label": "handoff-prompt-2",
+  "shot": "10-ui-handoff-prompt-2.jpg",
+  "pageOverflow": {
+   "x": false,
+   "y": false
+  },
+  "mapShare": 75,
+  "deckScrolls": [],
+  "minFont": {
+   "size": 13,
+   "text": "Turn <small.>"
+  },
+  "endVisible": true,
+  "phaseVisible": true,
+  "issues": []
+ },
+ {
+  "label": "privacy-2",
+  "shot": "11-ui-privacy-2.jpg",
+  "pageOverflow": {
+   "x": false,
+   "y": false
+  },
+  "mapShare": null,
+  "deckScrolls": [],
+  "minFont": {
+   "size": 13,
+   "text": "HOT-SEAT PRIVACY <p.eyebrow>"
+  },
+  "endVisible": false,
+  "phaseVisible": false,
+  "issues": []
+ },
+ {
+  "label": "other-seat-turn",
+  "shot": "12-ui-other-seat-turn.jpg",
+  "pageOverflow": {
+   "x": false,
+   "y": false
+  },
+  "mapShare": 75,
+  "deckScrolls": [],
+  "minFont": {
+   "size": 13,
+   "text": "Turn <small.>"
+  },
+  "endVisible": true,
+  "phaseVisible": true,
+  "issues": []
+ }
+]

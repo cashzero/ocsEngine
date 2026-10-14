@@ -1,0 +1,209 @@
+{
+ "MAP-06": {
+  "temperate": {
+   "hexes": 768,
+   "clear": 499,
+   "woods": 200,
+   "rough": 64,
+   "mountain": 3,
+   "marsh": 2,
+   "water": 0,
+   "roads": 428,
+   "rails": 96
+  },
+  "eastern": {
+   "hexes": 768,
+   "clear": 610,
+   "woods": 142,
+   "rough": 7,
+   "mountain": 0,
+   "marsh": 9,
+   "water": 0,
+   "roads": 199,
+   "rails": 62
+  }
+ },
+ "arrivals": [
+  {
+   "piece": "generated-oob:91002:axis:independent-artillery-1:unit",
+   "text": "III 303 13 3 2 14 Ge Arty Rgt 303 off map · Move mode · arriving",
+   "tokens": "III303 133214"
+  },
+  {
+   "piece": "generated-oob:91002:axis:independent-transport-2:unit",
+   "text": "5 45 Truck off map · Move mode · 5 truck points · load 0/20T · arriving",
+   "tokens": "545"
+  },
+  {
+   "piece": "repl-arrival:player:axis:2",
+   "text": "Repl EQ 1 Axis Equipment replacements off map · Move mode · 1 Eq · arriving",
+   "tokens": "Repl EQ 1"
+  },
+  {
+   "piece": "repl-arrival:player:axis:2:pax",
+   "text": "Repl PAX 1 Axis Personnel replacements off map · Move mode · 1 Pax · arriving",
+   "tokens": "Repl PAX 1"
+  },
+  {
+   "piece": "supply-arrival:player:axis:2",
+   "text": "5 SP Supply dump off map · Supply · 20T (5 SP) · arriving",
+   "tokens": "5 SP"
+  }
+ ],
+ "ACT-05": {
+  "piece": "III 303 13 3 2 14 Ge Arty Rgt 303 off map · Move mode · arriving",
+  "entry": [
+   "3223",
+   "3213",
+   "3207",
+   "3202"
+  ],
+  "outside": "0808",
+  "countBefore": 5,
+  "countAfterRefusal": 5,
+  "stillSelected": true,
+  "placedAt": "3223",
+  "countAfterPlace": 4
+ },
+ "REPL-02": {
+  "rows": [
+   "Repl EQ 1 Axis Equipment replacements off map · Move mode · 1 Eq · arriving [Repl EQ 1]",
+   "Repl PAX 1 Axis Personnel replacements off map · Move mode · 1 Pax · arriving [Repl PAX 1]"
+  ],
+  "replHexes": [
+   "2117",
+   "2118",
+   "2219",
+   "2116",
+   "2217",
+   "2218",
+   "2319",
+   "2215",
+   "2216",
+   "2317",
+   "2318",
+   "2419",
+   "2111",
+   "2112",
+   "2213",
+   "2315",
+   "2316",
+   "2417",
+   "2418",
+   "2211",
+   "2212",
+   "2313",
+   "2415",
+   "2416",
+   "2517",
+   "2110",
+   "2311",
+   "2312",
+   "2413",
+   "2209",
+   "2210",
+   "2411",
+   "2412",
+   "2309",
+   "2310",
+   "2511",
+   "2409",
+   "2410",
+   "3223",
+   "3213",
+   "3207",
+   "3202"
+  ],
+  "entryHexes": [
+   "3223",
+   "3213",
+   "3207",
+   "3202"
+  ],
+  "extraHexes": [
+   "2117",
+   "2118",
+   "2219",
+   "2116",
+   "2217",
+   "2218",
+   "2319",
+   "2215",
+   "2216",
+   "2317",
+   "2318",
+   "2419",
+   "2111",
+   "2112",
+   "2213",
+   "2315",
+   "2316",
+   "2417",
+   "2418",
+   "2211",
+   "2212",
+   "2313",
+   "2415",
+   "2416",
+   "2517",
+   "2110",
+   "2311",
+   "2312",
+   "2413",
+   "2209",
+   "2210",
+   "2411",
+   "2412",
+   "2309",
+   "2310",
+   "2511",
+   "2409",
+   "2410"
+  ]
+ },
+ "ACT-05a": {
+  "opening": {
+   "turn": "Turn 1 / 3",
+   "player": "Allied player turn",
+   "phase": "Movement",
+   "seat": "Allied commander",
+   "end": "End Movement SegmentNext: Barrage Segment",
+   "endDisabled": false,
+   "notice": "Select a unit on the map to see where it can move and what it can attack.",
+   "handoff": false,
+   "complete": false,
+   "decision": [],
+   "arrivalsTab": false,
+   "arrivalRows": 0
+  },
+  "firstSide": "Axis player turn",
+  "firstRows": [
+   "III 303 13 3 2 14 Ge Arty Rgt 303 off map · Move mode · arriving",
+   "5 45 Truck off map · Move mode · 5 truck points · load 0/20T · arriving",
+   "Repl EQ 1 Axis Equipment replacements off map · Move mode · 1 Eq · arriving",
+   "Repl PAX 1 Axis Personnel replacements off map · Move mode · 1 Pax · arriving",
+   "5 SP Supply dump off map · Supply · 20T (5 SP) · arriving"
+  ],
+  "secondSide": "Allied player turn",
+  "secondRows": [
+   "III 748 9 3 2 14 US 748 FA Gp off map · Move mode · arriving",
+   "5 45 Truck off map · Move mode · 5 truck points · load 0/20T · arriving",
+   "A Repl EQ 1 Allied Equipment replacements off map · Move mode · 1 Eq · arriving",
+   "A Repl PAX 1 Allied Personnel replacements off map · Move mode · 1 Pax · arriving",
+   "A Repl PAX 1 Allied Personnel replacements off map · Move mode · 1 Pax · arriving",
+   "6 SP Supply dump off map · Supply · 24T (6 SP) · arriving"
+  ]
+ },
+ "eastern": {
+  "sig": {
+   "Scenario": "Meeting engagement",
+   "Map": "32×24",
+   "Units": "51",
+   "Objectives": "6 hexes · 14 VP (Allied 7 · Axis 7)",
+   "Divisions": "6 per side",
+   "Deployed hexes": "42",
+   "Rail Cap": "Allied 5 · Axis 5",
+   "Warnings": "0"
+  }
+ }
+}

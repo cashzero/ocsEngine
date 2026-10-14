@@ -1,0 +1,215 @@
+{
+ "SES-04": {
+  "checkpoints": [
+   "Restore Auto: start of Movement · Movement Segment (turn 1) · R0",
+   "Restore Revision 0 · R0"
+  ],
+  "baseline": {
+   "turn": "Turn 1 / 1",
+   "player": "Allied player turn",
+   "phase": "Movement",
+   "seat": "Allied commander",
+   "mode": "Combat mode",
+   "log": "Move units one at a time: select a unit to see its range. Red rings mark overrun targets. No unit selected Click one of your units on the map, or open All units. Unit Log All units (15) No actions yet. Select a unit on the map to see where it can move and what it can attack."
+  },
+  "changed": {
+   "turn": "Turn 1 / 1",
+   "player": "Allied player turn",
+   "phase": "Movement",
+   "seat": "Allied commander",
+   "mode": "Move mode",
+   "log": "Move units one at a time: select a unit to see its range. Red rings mark overrun targets. III Brown 7.A 7 4 14 Brown TF / 7.A 0410 · Move mode Needs fuel before it can move (12.5) Done Unit Log All units (15) Brown TF / 7.A changed to move mode Mode changed to move."
+  },
+  "restored": {
+   "turn": "Turn 1 / 1",
+   "player": "Allied player turn",
+   "phase": "Movement",
+   "seat": "Allied commander",
+   "mode": "Combat mode",
+   "log": "Move units one at a time: select a unit to see its range. Red rings mark overrun targets. No unit selected Click one of your units on the map, or open All units. Unit Log All units (15) No actions yet. Restored Revision 0."
+  }
+ },
+ "SES-05": {
+  "savePath": "docs/quality/evidence/product-2026-10-14/session/ocs-session_scenario_generated_temperate_inland_7101_7102_7103_0002.json",
+  "saveBytes": 1026933,
+  "saved": {
+   "turn": "Turn 1 / 1",
+   "player": "Allied player turn",
+   "phase": "Movement",
+   "seat": "Allied commander",
+   "mode": "Combat mode",
+   "log": "Move units one at a time: select a unit to see its range. Red rings mark overrun targets. III Brown 7.A 14 4 6 Brown TF / 7.A 0410 · Combat mode Needs fuel before it can move (12.5) Done Unit Log All units (15) Brown TF / 7.A changed to combat mode Brown TF / 7.A changed to move mode Mode changed to combat."
+  },
+  "afterChange": {
+   "turn": "Turn 1 / 1",
+   "player": "Allied player turn",
+   "phase": "Movement",
+   "seat": "Allied commander",
+   "mode": "Move mode",
+   "log": "Move units one at a time: select a unit to see its range. Red rings mark overrun targets. III Brown 7.A 7 4 14 Brown TF / 7.A 0410 · Move mode Needs fuel before it can move (12.5) Done Unit Log All units (15) Brown TF / 7.A changed to move mode Brown TF / 7.A changed to combat mode Brown TF / 7.A changed to move mode Mode changed to move."
+  },
+  "loaded": {
+   "turn": "Turn 1 / 1",
+   "player": "Allied player turn",
+   "phase": "Movement",
+   "seat": "Allied commander",
+   "mode": "Combat mode",
+   "log": "Move units one at a time: select a unit to see its range. Red rings mark overrun targets. III Brown 7.A 14 4 6 Brown TF / 7.A 0410 · Combat mode Needs fuel before it can move (12.5) Done Unit Log All units (15) Brown TF / 7.A changed to combat mode Brown TF / 7.A changed to move mode Save loaded at revision 2."
+  }
+ },
+ "SES-02": {
+  "prompt": {
+   "text": "HAND OVER Axis commander to act Continue their Player Turn: Movement · Movement Segment. Hand the screen to Axis commander",
+   "button": "Hand the screen to Axis commander",
+   "menuOpen": false,
+   "mapVisible": true
+  },
+  "beforeSeat": "Allied commander"
+ },
+ "SES-03": {
+  "privacy": {
+   "text": "HOT-SEAT PRIVACY Pass the screen to Axis commander Continue their Player Turn: Movement · Movement Segment. The map stays hidden until they confirm. I am Axis commander",
+   "mapVisible": false,
+   "unitNames": false
+  },
+  "afterHandoff": {
+   "turn": "Turn 1 / 1",
+   "player": "Axis player turn",
+   "phase": "Movement",
+   "seat": "Axis commander",
+   "end": "End Movement SegmentNext: Barrage Segment",
+   "endDisabled": false,
+   "notice": "Your turn, Axis commander.",
+   "handoff": false,
+   "complete": false,
+   "decision": [],
+   "mapVisible": true
+  }
+ },
+ "SES-06": {
+  "count": 1,
+  "title": "Draw",
+  "scores": [
+   "Allied4",
+   "Axis4"
+  ],
+  "reason": "Result: TURN LIMIT · final revision 4"
+ },
+ "SES-07": {
+  "finalBytes": 685216,
+  "replayBytes": 171930,
+  "finalKeys": [
+   "acceptedActionMetadata",
+   "acceptedActions",
+   "activeSeatId",
+   "bindings",
+   "checkpoints",
+   "createdAtMs",
+   "currentSnapshot",
+   "finalStateHash",
+   "gameplayVersion",
+   "initialSnapshot",
+   "initialStateHash",
+   "label"
+  ],
+  "replayKeys": [
+   "schemaVersion",
+   "scenarioHash",
+   "initialStateHash",
+   "finalStateHash",
+   "initialSnapshot",
+   "actions"
+  ],
+  "gameEnd2": {
+   "title": "Draw",
+   "scores": [
+    "Allied4",
+    "Axis4"
+   ],
+   "reason": "Result: TURN LIMIT · final revision 4"
+  }
+ },
+ "SES-08": {
+  "page": "settings",
+  "gameEndShown": false,
+  "status": "Configure operation",
+  "preview": false,
+  "width": "16"
+ },
+ "SES-09": {
+  "afterReloadFinished": {
+   "dialogOpen": false,
+   "url": "http://127.0.0.1:34367/",
+   "summary": "Meeting engagement · 52 units · 12 formations · 8 turns · seeds map 206569473, OOB 206569474, deployment 206569475, rules 206569476",
+   "state": {
+    "turn": "Turn 1 / 8",
+    "player": "Allied player turn",
+    "phase": "Movement",
+    "seat": "Allied commander",
+    "end": "End Movement SegmentNext: Barrage Segment",
+    "endDisabled": false,
+    "notice": "Select a unit on the map to see where it can move and what it can attack.",
+    "handoff": false,
+    "complete": false,
+    "decision": []
+   }
+  },
+  "setupWidth": "20",
+  "afterSetupReload": {
+   "dialogOpen": true,
+   "url": "http://127.0.0.1:34367/#new-game",
+   "summary": "Meeting engagement · 52 units · 12 formations · 8 turns · seeds map 206569473, OOB 206569474, deployment 206569475, rules 206569476",
+   "state": {
+    "turn": "Turn 1 / 8",
+    "player": "Allied player turn",
+    "phase": "Movement",
+    "seat": "Allied commander",
+    "end": "End Movement SegmentNext: Barrage Segment",
+    "endDisabled": false,
+    "notice": "Select a unit on the map to see where it can move and what it can attack.",
+    "handoff": false,
+    "complete": false,
+    "decision": []
+   },
+   "dialogs": []
+  },
+  "activeBefore": {
+   "summary": "Meeting engagement · 28 units · 4 formations · 1 turns · seeds map 7101, OOB 7102, deployment 7103, rules 7104",
+   "state": {
+    "turn": "Turn 1 / 1",
+    "player": "Allied player turn",
+    "phase": "Movement",
+    "seat": "Allied commander",
+    "mode": "Combat mode",
+    "log": "Move units one at a time: select a unit to see its range. Red rings mark overrun targets. No unit selected Click one of your units on the map, or open All units. Unit Log All units (15) No actions yet. Select a unit on the map to see where it can move and what it can attack."
+   }
+  },
+  "activeChanged": {
+   "turn": "Turn 1 / 1",
+   "player": "Allied player turn",
+   "phase": "Movement",
+   "seat": "Allied commander",
+   "mode": "Move mode",
+   "log": "Move units one at a time: select a unit to see its range. Red rings mark overrun targets. III Brown 7.A 7 4 14 Brown TF / 7.A 0410 · Move mode Needs fuel before it can move (12.5) Done Unit Log All units (15) Brown TF / 7.A changed to move mode Mode changed to move."
+  },
+  "activeAfter": {
+   "dialogOpen": false,
+   "url": "http://127.0.0.1:34367/",
+   "summary": "Meeting engagement · 52 units · 12 formations · 8 turns · seeds map 206569473, OOB 206569474, deployment 206569475, rules 206569476",
+   "state": {
+    "turn": "Turn 1 / 8",
+    "player": "Allied player turn",
+    "phase": "Movement",
+    "seat": "Allied commander",
+    "end": "End Movement SegmentNext: Barrage Segment",
+    "endDisabled": false,
+    "notice": "Select a unit on the map to see where it can move and what it can attack.",
+    "handoff": false,
+    "complete": false,
+    "decision": []
+   },
+   "banner": null,
+   "dialogs": []
+  }
+ }
+}

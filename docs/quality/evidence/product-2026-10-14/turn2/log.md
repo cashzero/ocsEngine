@@ -1,0 +1,21 @@
+# doc 03: MAP-06, ACT-05, REPL-02 on Game Turn 2
+
+- screenshot 01-map06-eastern-started.jpg
+- screenshot 02-handoff-privacy.jpg
+- screenshot 03-turn2-first-reinforcement.jpg
+- screenshot 04-act05-illegal-click.jpg
+- screenshot 05-act05-placed.jpg
+- PASS ACT-05: An off-map reinforcement is placed only on a legal entry Hex — observed: Game Turn 2 Axis player turn Reinforcement lists 5 arrivals (3 units, 2 Pax/Eq); "III 303 13 3 2 14 Ge Arty Rgt 303 off map · Move mode · arriving" offered entry hexes 3223, 3213, 3207, 3202; clicking 0808 (not offered) left 5 of 5 arrivals; placing on 3223 left 4
+- screenshot 06-repl02-pax-eq-placement.jpg
+- screenshot 07-handoff-privacy.jpg
+- screenshot 08-turn2-second-reinforcement.jpg
+- screenshot 09-turn3-reached.jpg
+- PASS REPL-02: Pax and Eq are listed in Arrivals each Reinforcement Phase, print "Pax"/"Eq" with their quantity, can be placed at an entry hex or within 2 hexes of an HQ, remain separate 1/4 RE replacement units; the turn completes — observed: Game Turn 2 arrivals: Repl EQ 1 Axis Equipment replacements off map · Move mode · 1 Eq · arriving [Repl EQ 1] | Repl PAX 1 Axis Personnel replacements off map · Move mode · 1 Pax · arriving [Repl PAX 1]; offered hexes for the first: 2117, 2118, 2219, 2116, 2217, 2218, 2319, 2215, 2216, 2317, 2318, 2419, 2111, 2112, 2213, 2315, 2316, 2417, 2418, 2211, 2212, 2313, 2415, 2416, 2517, 2110, 2311, 2312, 2413, 2209, 2210, 2411, 2412, 2309, 2310, 2511, 2409, 2410, 3223, 3213, 3207, 3202 (entry hexes 3223, 3213, 3207, 3202; extra near HQs: 2117, 2118, 2219, 2116, 2217, 2218, 2319, 2215, 2216, 2317, 2318, 2419, 2111, 2112, 2213, 2315, 2316, 2417, 2418, 2211, 2212, 2313, 2415, 2416, 2517, 2110, 2311, 2312, 2413, 2209, 2210, 2411, 2412, 2309, 2310, 2511, 2409, 2410); arrivals left after placing all 0; Game Turn 2 played through to Turn 3 / 3, Allied player turn, First Player Phase
+- PASS ACT-05a: Nothing arrives on Game Turn 1: play opens in the Movement Phase with no Arrivals tab; the held-back unit, the SP and the Pax/Eq arrive in each side's Game Turn 2 Reinforcement Phase — observed: opening: Turn 1 / 3, Allied player turn, Movement, arrivals tab false, 0 arrival rows; Game Turn 2 Axis player turn: III 303 13 3 2 14 Ge Arty Rgt 303 off map · Move mode · arriving | 5 45 Truck off map · Move mode · 5 truck points · load 0/20T · arriving | Repl EQ 1 Axis Equipment replacements off map · Move mode · 1 Eq · arriving | Repl PAX 1 Axis Personnel replacements off map · Move mode · 1 Pax · arriving | 5 SP Supply dump off map · Supply · 20T (5 SP) · arriving; Game Turn 2 Allied player turn: III 748 9 3 2 14 US 748 FA Gp off map · Move mode · arriving | 5 45 Truck off map · Move mode · 5 truck points · load 0/20T · arriving | A Repl EQ 1 Allied Equipment replacements off map · Move mode · 1 Eq · arriving | A Repl PAX 1 Allied Personnel replacements off map · Move mode · 1 Pax · arriving | A Repl PAX 1 Allied Personnel replacements off map · Move mode · 1 Pax · arriving | 6 SP Supply dump off map · Supply · 24T (6 SP) · arriving
+- PASS MAP-06: Eastern Europe is offered; its preview is visibly flatter (mostly open, few hills, no mountains) with clearly fewer roads and railways than Temperate on the same seeds; the started map is the preview; arrivals, phase ends and hand-overs reach Game Turn 2 — observed: same seeds, Preview counts Temperate {"hexes":768,"clear":499,"woods":200,"rough":64,"mountain":3,"marsh":2,"water":0,"roads":428,"rails":96} vs Eastern {"hexes":768,"clear":610,"woods":142,"rough":7,"mountain":0,"marsh":9,"water":0,"roads":199,"rails":62}; started map mounted; Game Turn 1 played through (first hand-over screen: map hidden true) to Turn 2 / 3, Axis player turn, Reinforcement; Game Turn 2 reached Turn 3 / 3. Visual flatness is judged on map06-*-preview.png
+- PASS UI-04(turn2): No browser console or page error during the run — observed: 0 errors
+
+Ended at: Turn 3 / 3, Allied player turn, First Player Phase
+
+Console/page errors: 0
+

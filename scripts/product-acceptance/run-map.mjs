@@ -4,7 +4,7 @@ import { createHash } from 'node:crypto';
 import { writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { click, gotoHex, has, open, placeArrivals, record, textOf, where } from '../air-acceptance/harness.mjs';
-import { configure, deckText, generate, hoverLine, openNewGame, previewSignature, screenHexes, start, sweepMap } from './lib.mjs';
+import { configure, deckText, generate, hoverLine, menuSummary, openNewGame, previewSignature, screenHexes, start, sweepMap } from './lib.mjs';
 
 const evidenceDir = join(process.argv[2] ?? 'artifacts/product-2026-10-04', 'map');
 const NG07 = { style: 'TEMPERATE_INLAND', width: 18, height: 12, scale: 'LARGE', divisions: 4, armored: 2, turnLimit: 3, seeds: { map: 91001, oob: 91002, deployment: 91003, rules: 91004 } };
@@ -66,16 +66,15 @@ try {
   await h.shot('map01-mounted-100');
   while ((await zoom()) !== '' && Number((await zoom()).replace('%', '')) > 60 && !(await page.locator('#zoom-out').isDisabled())) await click(h, '#zoom-out', { settle: 150 });
   await h.shot('map01-mounted-whole-map');
-  await page.locator('.arrivals .deck-unit[data-piece]').first().click();
-  await page.waitForTimeout(400);
-  const entryHexes = await page.evaluate(() => [...document.querySelectorAll('.hex-chips [data-target-hex]')].map((node) => node.textContent.trim()));
-  await h.shot('map01-entry-hexes-for-arrival');
-  await click(h, '#deselect').catch(() => {});
+  // Nothing arrives in Game Turn 1 (the armies start deployed), so there is no arrival whose blue entry hexes could be shown:
+  // the entry areas are the bands the mounted map always draws in each side's colour. They are counted on the Preview's
+  // marks and judged on the mounted screenshot above (map01-mounted-whole-map).
+  const entryHexes = ['first', 'second'].map((side) => `${(preview.features.match(new RegExp(`preview-entry[^"]*side-${side}`, 'g')) ?? []).length} ${side}-side`);
   const legend = await textOf(h, '.map-legend');
   const settlements = swept.cells.filter(({ text }) => /· (village|city|town)/.test(text)).length;
   const objectives = swept.cells.filter(({ text }) => /objective/.test(text)).map(({ hex }) => hex);
   extra['MAP-01'] = { legend, entryHexes, settlements, objectives };
-  record(h, 'MAP-01', 'Terrain uses visual fill/pattern; roads, rivers, settlements, entry areas and objectives are distinguishable without terrain-name labels on Hexes (judged on the screenshots)', `legend "${legend}"; ${settlements} settlement hexes and objective ${objectives.join(',')} announced by the cursor; ${entryHexes.length} entry hexes offered for the first arrival (${entryHexes.slice(0, 6).join(', ')}…); screenshots map01-*`, true);
+  record(h, 'MAP-01', 'Terrain uses visual fill/pattern; roads, rivers, settlements, entry areas and objectives are distinguishable without terrain-name labels on Hexes (judged on the screenshots)', `legend "${legend}"; ${settlements} settlement hexes and objective ${objectives.join(',')} announced by the cursor; entry-area marks on the Preview: ${entryHexes.join(', ')} (judged on the mounted-map screenshots; no Game Turn 1 arrivals to select); screenshots map01-*`, true);
 
   // MAP-02: drag, wheel, +/-, Reset.
   await click(h, '#zoom-reset', { settle: 300 });
@@ -160,12 +159,19 @@ try {
   record(h, 'MAP-05', 'Owner-visible data and enemy redaction follow the active seat; no private data leaks', `Allied seat sees ${enemy.hex} as "${enemy.text}"; Axis owner sees "${axisOwnAtEnemyHex}". Axis seat sees Allied ${own.hex} as "${alliedStackSeenByAxis}"; Allied owner sees "${own.text}". Handoff screen hid the map: ${privacy ? !privacy.mapVisible : 'no handoff screen seen'}. Hidden names found in the other seat's page DOM: ${JSON.stringify(leaks)}`,
     privacy !== null && !privacy.mapVisible && leaks.alliedDomHasHiddenAxis.length === 0 && leaks.axisDomHasHiddenAllied.length === 0 && axisOwnAtEnemyHex !== enemy.text);
 
-  // MAP-04: every generated unit traceable from the preview to the two rosters.
+  // MAP-04: every generated unit traceable from the preview to the two rosters. Supply dumps are not units (user decision
+  // 2026-10-14): the Preview still draws them, but neither the unit count nor the rosters include them.
   const rosterText = [...alliedRoster, ...axisRoster].join(' ¦ ');
-  const missing = preview.counters.filter((name) => !rosterText.includes(name));
-  extra['MAP-04'] = { previewCounters: preview.counters.length, alliedRoster, axisRoster, missing };
-  record(h, 'MAP-04', 'Both sides/formations and every generated unit remain traceable; projection/stack hiding explains any count difference', `preview ${preview.counters.length} unit counters (${preview.metrics.Units} units); Allied roster ${alliedRoster.length} rows, Axis roster ${axisRoster.length} rows; preview names not found in either roster: ${missing.length ? missing.join(', ') : 'none'}`,
-    missing.length === 0 && alliedRoster.length + axisRoster.length >= Number(preview.metrics.Units));
+  const isDump = (name) => /^Supply Dump/.test(name);
+  const drawnUnits = preview.counters.filter((name) => !isDump(name));
+  const dumps = preview.counters.length - drawnUnits.length;
+  const missing = drawnUnits.filter((name) => !rosterText.includes(name));
+  const rosterRows = alliedRoster.length + axisRoster.length;
+  // Roster rows whose name is not among the Preview's counters (a name may be shared, e.g. several Garrison battalions):
+  const rosterOnly = [...alliedRoster, ...axisRoster].map((row) => row.replace(/ \d{4} · .*$/, '')).filter((row) => !drawnUnits.some((name) => row.includes(name)));
+  extra['MAP-04'] = { previewCounters: preview.counters.length, dumps, previewUnits: preview.metrics.Units, alliedRoster, axisRoster, missing, rosterOnly };
+  record(h, 'MAP-04', 'Both sides/formations and every generated unit remain traceable; projection/stack hiding explains any count difference', `Preview: ${preview.counters.length} counters, of which ${dumps} supply dumps, and "${preview.metrics.Units} units"; Allied roster ${alliedRoster.length} rows, Axis roster ${axisRoster.length} rows (${rosterRows}); menu line after Start "${await menuSummary(h)}"; Preview unit counters not found in either roster: ${missing.length ? missing.join(', ') : 'none'}; roster rows with no Preview counter: ${rosterOnly.length ? rosterOnly.join(', ') : 'none'}. Any difference must be explained on screen (the Preview and rosters carry no such note in this run)`,
+    missing.length === 0 && rosterOnly.length === 0 && rosterRows === Number(preview.metrics.Units) && drawnUnits.length === Number(preview.metrics.Units));
 } catch (error) {
   record(h, 'RUN', 'The MAP run completes', String(error.stack ?? error.message), false);
   await h.shot('failure').catch(() => {});
