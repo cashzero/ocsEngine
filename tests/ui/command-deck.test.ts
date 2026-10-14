@@ -35,9 +35,10 @@ describe('phase-specific command deck', () => {
     const controller = await startReinforcement();
     const deck = newDeck();
 
-    // Reinforcement: arrivals first, with the number still to place.
+    // Reinforcement: arrivals first, with the number still to place; the Rebuild tab shows the Rebuild and Variable
+    // Replacement Tables in the own Reinforcement Phase even with nothing to rebuild (13.5).
     let snapshot = controller.getSnapshot();
-    expect(deckTabs(snapshot).map(({ id }) => id)).toEqual(['arrivals', 'unit', 'log']);
+    expect(deckTabs(snapshot).map(({ id }) => id)).toEqual(['arrivals', 'rebuild', 'unit', 'log']);
     expect(deckTabs(snapshot)[0]!.badge).toBe(snapshot.arrivals.length);
     syncDeckTab(snapshot, deck);
     expect(activeDeckTab(snapshot, deck)).toBe('arrivals');

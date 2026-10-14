@@ -481,6 +481,11 @@ small, .supporting { font-size: 13px; color: var(--muted); }
 .air-base-runways { stroke: #24271e; stroke-width: 5; fill: none; }
 .air-panel { display: grid; gap: 8px; }
 .air-panel .chip-row button[aria-pressed="true"] { outline: 2px solid #5aa0d8; }
+/* 13.5a, 13.5: the Rebuild and Variable Replacement Tables span the panel, captions left-aligned above them. */
+.replacement-tables table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+.replacement-tables caption { caption-side: top; text-align: left; font-weight: 600; padding: 6px 0 4px; }
+.replacement-tables th, .replacement-tables td { text-align: left; padding: 2px 6px 2px 0; vertical-align: top; }
+.replacement-tables .replacement-table td, .replacement-tables .replacement-table th { text-align: center; }
 .air-log { margin: 0; padding-left: 18px; font-size: 13px; }
 .air-base-level { fill: #f4ecd2; stroke: #24271e; stroke-width: 2; }
 .counter .air-base-level-text, .unit-counter .air-base-level-text { font-size: 26px; }

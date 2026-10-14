@@ -337,6 +337,16 @@ Amendment 2026-10-13 (user request: make Pax/Eq movable replacement units): Repl
 | REPL-08 | P0 | Select Eq, pay fuel, move it, then move it beside a reduced unit/HQ and rebuild in a later Reinforcement Phase | Eq prints 10 Truck MP; movement initially shows the fuel requirement; 1T pays for this unit; the moved Pax/Eq at the chosen hex pay for the actual recovered step and Dead Pile unit; downloaded save confirms those moved counters were spent; the completed turn survives save/load | PASS on the loaded training position (2026-10-13, `evidence/replacement-movement-2026-10-13/run6`): Eq fuel 1T, 10 → 9.5 MP; moved Pax/Eq 2612 → 2712 in Turn 2, spent in Turn 3; 79.VG 1 → 2 steps and eliminated armor returns at 2712; downloaded save confirms both Turn-2 Repls eliminated with quantity 0; Turn 4 save/load. Earlier run5 claim remains reopened as FAIL in `run5/review-correction.md`. From fresh New Game losses through rebuilding: UNVERIFIED |
 
 
+Amendment 2026-10-14 (user request: Rebuild Table, Variable Replacement Table, Unit Consolidation): see
+`docs/reports/replacement-tables-2026-10-14.md`. Rows REPL-09 to REPL-12 were written before the browser run.
+
+| ID | Pri | Player operation | Required visible result | Status |
+|---|---:|---|---|---|
+| REPL-09 | P0 | From New Game, reach the Game Turn 2 Reinforcement Phase | The Log shows the Variable Replacement Table roll and what it brought; exactly that many Pax and Eq wait in Arrivals | PASS (2026-10-14, `evidence/replacement-tables-2026-10-14/run3`): roll 6, 2 Pax and 1 Eq, Arrivals 2 + 1 |
+| REPL-10 | P0 | Open the Rebuild tab in the own Reinforcement Phase; price a rebuild | Rebuild Table and Variable Replacement Table shown even with nothing to rebuild; two 13.5d units cost 1 Pax together; an unaffordable selection is refused with the reason; the paid rebuild spends the Repls | PASS (2026-10-14, run3): tables in a fresh game; pricing and refusal on the loaded training position (not natural losses) |
+| REPL-11 | P0 | Consolidate units in the Reinforcement Phase (13.9-1/2) | Combine for two reduced identical divisions in one hex and Exchange for a unit with an identical dead twin of another division; each reported in the Log | PASS on the loaded training position (2026-10-14, run3); from natural losses in a fresh New Game: UNVERIFIED |
+| REPL-12 | P0 | Complete the turn with these actions, then save and load | Every decision and handoff completes; the loaded game and downloaded snapshot hold the consolidations and the rebuild; no console error | PASS (2026-10-14, run3) |
+
 ## Execution order and stop conditions
 
 1. Run BOOT and NG rows first. A package-continuity failure blocks all downstream Game Flow claims.
