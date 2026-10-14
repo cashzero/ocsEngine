@@ -921,7 +921,9 @@ export const movePopupView = (snapshot: UiSnapshot, state?: DeckState): View => 
   const range = snapshot.moveRange.get(preview.destinationHexId);
   const already = (snapshot.view.projection?.stacks ?? []).flatMap(({ pieces }) => pieces)
     .filter((piece) => piece.ownerId === snapshot.view.playerId && piece.location.kind === 'ON_MAP' && piece.location.hexId === preview.destinationHexId && piece.id !== snapshot.selectedPiece?.id);
-  const total = already.reduce((sum, piece) => sum + stackingReTicks(snapshot.scenario, piece), 0) + (snapshot.selectedPiece ? stackingReTicks(snapshot.scenario, snapshot.selectedPiece) : 0);
+  // 6.1f: the units moving with the selected one arrive too.
+  const movers = [snapshot.selectedPiece, ...snapshot.stackMates.filter(({ together }) => together).map(({ piece }) => piece)].filter((piece): piece is ProjectedPiece => piece !== null);
+  const total = already.reduce((sum, piece) => sum + stackingReTicks(snapshot.scenario, piece), 0) + movers.reduce((sum, piece) => sum + stackingReTicks(snapshot.scenario, piece), 0);
   const overstacks = total > STACKING_LIMIT_RE_TICKS;
   const reasons = preview.explanation.allowed ? [] : preview.explanation.reasons.filter(({ allowed }) => !allowed);
   const from = preview.path.length > 1 ? preview.path[preview.path.length - 2]! : snapshot.selectedPiece?.location.kind === 'ON_MAP' ? snapshot.selectedPiece.location.hexId : '';
@@ -933,8 +935,11 @@ export const movePopupView = (snapshot: UiSnapshot, state?: DeckState): View => 
     ? html`<p class="warning">This ends the move of ${pieceLabel(snapshot.scenario, endsPiece)}: its ${mp(fact(preview.explanation, 'movement.endsOtherMover.remainingTicks'))} MP left${endsLoad > 0 ? ` and ${endsLoad}T aboard` : ''} cannot be used again this phase <cite>6.1g</cite></p>`
     : nothing;
   return html`<div class="move-popup" role="group" aria-label=${`Confirm move to ${printedHexLabel(preview.destinationHexId)}`} data-anchor-hex=${preview.destinationHexId} data-from-hex=${from}>
-    <strong>Move to ${printedHexLabel(preview.destinationHexId)}</strong>
-    <p>Cost ${mp(fact(preview.explanation, 'movement.totalTicks'))} MP · ${mp(fact(preview.explanation, 'movement.remainingTicks'))} MP left after the move.</p>
+    <strong>Move ${movers.length > 1 ? `${movers.length} units together ` : ''}to ${printedHexLabel(preview.destinationHexId)}</strong>
+    ${movers.length > 1
+      ? html`<p>Each unit pays from its own MA <cite>6.1e</cite> · ${mp(range?.remainingAfterTicks ?? fact(preview.explanation, 'movement.remainingTicks'))} MP left after the move for the unit with the fewest.</p>`
+      : html`<p>Cost ${mp(fact(preview.explanation, 'movement.totalTicks'))} MP · ${mp(fact(preview.explanation, 'movement.remainingTicks'))} MP left after the move.</p>`}
+    ${snapshot.droppedOffIds.length > 0 ? html`<p class="warning">Drops off ${snapshot.droppedOffIds.length} unit${snapshot.droppedOffIds.length === 1 ? '' : 's'} here, which cannot move again this phase <cite>6.1f</cite></p>` : nothing}
     ${range?.endsMovement ? html`<p class="blocker">The move ends there (enemy ZOC, all-MP terrain, or minimum move).</p>` : nothing}
     ${overstacks ? html`<p class="warning overstack-warning" role="alert">⚠ Overstack: ending here puts ${total / 4} RE in one hex (limit ${STACKING_LIMIT_RE_TICKS / 4}). Unless it is back to 10 RE or fewer when the segment ends, you must eliminate units <cite>4.8a</cite></p>` : nothing}
     ${reasons.length > 0 ? html`<p class="blocker">${withHexLabels(reasons[0]!.message)} <cite>${reasons[0]!.rule}</cite></p>${reasons.length > 1 ? html`<p class="hint">${reasons.length - 1} more reason${reasons.length === 2 ? '' : 's'} in the Unit tab.</p>` : nothing}` : nothing}
@@ -1100,6 +1105,25 @@ const absorptionNote = (snapshot: UiSnapshot): TemplateResult | typeof nothing =
   return html`<p class="end-note absorb-note" role="status">When this phase ends: ${lines.join('; ')} <cite>20.0d</cite></p>`;
 };
 
+/** 6.1f: tick the units in the selected unit's Hex that move with it as one stack; unticking one of a moving stack drops it off. */
+const stackPanel = (snapshot: UiSnapshot): View => {
+  const mates = snapshot.stackMates;
+  if (mates.length === 0) return nothing;
+  const together = mates.filter(({ together: ticked }) => ticked).length;
+  const more = mates.some(({ together: ticked, blocker }) => !ticked && blocker === null);
+  const name = (id: string) => {
+    const piece = (snapshot.view.projection?.stacks ?? []).flatMap(({ pieces }) => pieces).find((candidate) => String(candidate.id) === id);
+    return piece ? pieceLabel(snapshot.scenario, piece) : 'a unit';
+  };
+  return html`<section class="stack-together" aria-label="Move together">
+    <small class="step-title">${together > 0 ? `Moving ${together + 1} units together` : 'Move together'} <cite>6.1f</cite></small>
+    <div class="chip-row">${mates.map(({ piece, together: ticked, blocker }) => html`<button data-stack-mate=${piece.id} aria-pressed=${String(ticked)}
+      class=${ticked ? 'is-picked' : ''} ?disabled=${blocker !== null} title=${withHexLabels(blocker ?? (ticked ? 'Moves with the selected unit; untick to leave it here' : 'Tick to move it with the selected unit'))}>${ticked ? '✓ ' : ''}${pieceLabel(snapshot.scenario, piece)}</button>`)}${more
+      ? html`<button id="move-whole-stack" class="subtle">Whole stack</button>` : nothing}</div>
+    ${snapshot.droppedOffIds.length > 0 ? html`<p class="warning">Your next move drops off ${snapshot.droppedOffIds.map(name).join(', ')}: ${snapshot.droppedOffIds.length === 1 ? 'it' : 'they'} cannot move again this phase <cite>6.1f</cite></p>` : nothing}
+  </section>`;
+};
+
 /**
  * A unit that has begun moving can only be let go by finishing its move (6.1g): Done ends it for the phase.
  * Anything else selected is simply deselected, as Esc does.
@@ -1107,7 +1131,9 @@ const absorptionNote = (snapshot: UiSnapshot): TemplateResult | typeof nothing =
 const selectionButton = (snapshot: UiSnapshot, busy: boolean): TemplateResult | typeof nothing => {
   if (snapshot.selectedIsMoving) {
     const left = snapshot.remainingTicks ?? 0;
-    const title = left > 0 ? `Finish this unit's move: its ${mp(left)} MP left cannot be used again this phase (6.1g)` : 'Finish this unit\'s move (6.1g)';
+    const stack = (snapshot.view.projection?.movingStackIds ?? []).length;
+    const what = stack > 1 ? `the move of all ${stack} units moving together` : 'this unit\'s move';
+    const title = left > 0 ? `Finish ${what}: ${mp(left)} MP left cannot be used again this phase (6.1g)` : `Finish ${what} (6.1g)`;
     return html`<button id="finish-move" class="primary" title=${title} ?disabled=${busy}>Done</button>`;
   }
   return snapshot.selectedPiece || snapshot.selection.hexId
@@ -1131,6 +1157,7 @@ export const commandDeckView = (snapshot: UiSnapshot, state: DeckState): Templat
   return html`${objective ? html`<p class="deck-objective">${objective}</p>` : nothing}
     ${view.metadata.lifecycle === 'PAUSED' ? html`<p class="paused-banner" role="status">This game was saved paused. <button id="resume-game" class="bar-button">Resume</button></p>` : nothing}
     <section class="deck-selection" aria-label="Selected unit">${selectedCard(snapshot)}${selectionButton(snapshot, busy)}</section>
+    ${stackPanel(snapshot)}
     ${statusPanel(snapshot)}
     ${body}
     <footer class="deck-footer"><div class="deck-notice" role="status">${snapshot.busy ? 'Working…' : withHexLabels(state.error || state.hint || snapshot.notice)}</div></footer>`;

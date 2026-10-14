@@ -235,6 +235,10 @@ export const validateGameState = (state: GameState): readonly ValidationIssue[] 
   if (state.currentMoverId !== null && !pieceIds.has(state.currentMoverId)) {
     issues.push(issue('UNKNOWN_CURRENT_MOVER', ['currentMoverId'], 'Current mover references an unknown Piece.'));
   }
+  if (state.movingStackIds !== undefined && (state.movingStackIds.length < 2 || state.movingStackIds[0] !== state.currentMoverId
+    || new Set(state.movingStackIds).size !== state.movingStackIds.length || state.movingStackIds.some((id) => !pieceIds.has(id)))) {
+    issues.push(issue('INVALID_MOVING_STACK', ['movingStackIds'], 'A moving stack lists two or more distinct known Pieces, led by the current mover.'));
+  }
   const pending = state.pendingDecision;
   if (pending !== null) {
     if (pending.transactionId !== null && state.activeTransaction?.id !== pending.transactionId) {

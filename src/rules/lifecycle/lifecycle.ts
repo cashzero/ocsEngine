@@ -183,7 +183,7 @@ export const applySequenceLifecycle = (
 ): { readonly state: GameState; readonly events: readonly RuleEvent[] } => {
   const from = state.sequence;
   const events: RuleEvent[] = [{ kind: 'SEQUENCE_ADVANCED', sequence: 0, from, to }];
-  let next: GameState = { ...state, sequence: to, currentMoverId: null };
+  let next: GameState = { ...state, sequence: to, currentMoverId: null, movingStackIds: undefined };
   const ending = phaseEnds(from, to);
   if (ending) {
     // 20.0d: reduced multi-step units absorb the eligible Breakdowns stacked with them at the end of every phase.

@@ -30,6 +30,7 @@ import {
   faceMode,
   formationOf,
   friendlyCombatUnitsAt,
+  handOverMove,
   hexDistanceBetween,
   hexOf,
   internalStocksOf,
@@ -38,6 +39,7 @@ import {
   isAttackCapable,
   isCombatUnit,
   isEligibleMover,
+  isMoving,
   isMultiUnitFormation,
   isTransportPoint,
   mobilityOf,
@@ -52,6 +54,7 @@ import {
   usageOf,
   withInternalStocks,
   withInvoluntaryMode,
+  withMovers,
   withUsage,
 } from '../pieces.js';
 import { commitFuelForMove, isFueled } from '../supply/fuel.js';
@@ -78,6 +81,7 @@ import {
 } from '../tables/ocs-4.3.js';
 import { hexCombatTerrains, movementCostModel } from '../terrain.js';
 import { playerCostModel } from '../movement/bridging.js';
+import { stackMoveViolations } from '../movement/movement.js';
 import { violation } from '../validation/violation.js';
 import { inEnemyZoc } from '../zoc/zoc.js';
 import {
@@ -379,7 +383,7 @@ export const validateCombatDeclaration = (state: GameState, action: CombatDeclar
       if (piece.mode === 'DG') issues.push(violation('DG_CANNOT_OVERRUN', path, 'DG units cannot overrun.', '5.10b'));
       if (!['COMBAT', 'MOVE', 'EXPLOITATION'].includes(piece.mode ?? '')) issues.push(violation('OVERRUN_MODE', path, 'Overrunning units must be in Combat, Move, or Exploitation Mode.', '8.1'));
       if (!isEligibleMover(state, piece)) issues.push(violation('OVERRUN_REQUIRES_ELIGIBLE_MOVER', path, 'Only units that may move this phase can overrun.', state.sequence.phase === 'REACTION' ? '7.0a' : '11.0a'));
-      if (usage.moved && state.currentMoverId !== piece.id) issues.push(violation('MOVEMENT_ALREADY_FINISHED', path, 'This unit finished moving.', '6.1g'));
+      if (usage.moved && !isMoving(state, piece.id)) issues.push(violation('MOVEMENT_ALREADY_FINISHED', path, 'This unit finished moving.', '6.1g'));
       if (usage.negationLocked) issues.push(violation('NEGATING_UNIT_LOCKED', path, 'This unit is negating an enemy ZOC.', '4.5b'));
       if (movementAllowanceTicks(state, piece) - usage.movementSpentTicks < 12) issues.push(violation('OVERRUN_NEEDS_3_MP', path, 'Units with fewer than 3 MP remaining cannot overrun.', '8.1a'));
       // 12.5b: overruns require fuel even from a standing start.
@@ -393,6 +397,8 @@ export const validateCombatDeclaration = (state: GameState, action: CombatDeclar
     const hexes = attackingHexes(state, action.attackerIds);
     const starts = new Set(pieces.map((piece) => String(usageOf(state, piece).phaseStartHexId ?? hexOf(piece))));
     if (hexes.length !== 1 || starts.size !== 1) issues.push(violation('OVERRUN_STACK_MUST_START_TOGETHER', ['attackerIds'], 'Only units that started the phase stacked together can overrun together.', '8.1'));
+    // 6.1f, 8.1g: a stack under way can drop units off to overrun without them, but cannot pick units up.
+    issues.push(...stackMoveViolations(state, action.attackerIds).map((entry) => ({ ...entry, path: ['attackerIds'] })));
     const stackTicks = [...friendlyCombatUnitsAt(state, action.actorId, hexes[0]!)].reduce((total, piece) => total + reTicksOf(state, piece), 0);
     if (stackTicks > state.configuration.stackingLimitReTicks) issues.push(violation('OVERRUN_OVERSTACKED', ['attackerIds'], 'Overrunning units and friendly units in their Hex cannot exceed 10 RE.', '4.8a'));
   }
@@ -486,10 +492,11 @@ export const declareCombat = (state: GameState, action: CombatDeclaration): Tran
       .filter((piece) => piece.ownerId === action.actorId && isCombatUnit(state, piece) && hexOf(piece) !== null)
       .map((piece) => hexOf(piece)!))],
   };
+  // 8.0, 8.1g: the overrunning units are the stack now moving, leader first; anything else moving has finished.
+  const moving = overrun ? handOverMove(state, [action.leadAttackerId, ...action.attackerIds.filter((id) => id !== action.leadAttackerId)]) : state;
   let next: GameState = {
-    ...state,
+    ...moving,
     activeTransaction: transaction,
-    currentMoverId: overrun ? action.leadAttackerId : state.currentMoverId,
     ledger: overrun ? state.ledger : { ...state.ledger, attackedHexIds: [...state.ledger.attackedHexIds, action.targetHexId] },
   };
   for (const piece of attackers) {
@@ -1083,9 +1090,12 @@ export const processQueue = (input: GameState): Transition => {
     const [step, ...rest] = transaction.queue;
     if (!step) {
       events.push({ kind: 'TRANSACTION_RESOLVED', sequence: events.length, transactionId: transaction.id, result: transaction.result ?? 'NONE' });
-      const overrunMover = transaction.kind === 'OVERRUN' && !transaction.attackerRetreated
-        ? survivors(state, transaction.attackerIds)[0]?.id ?? null : null;
-      return { state: { ...state, activeTransaction: null, pendingDecision: null, currentMoverId: transaction.kind === 'OVERRUN' ? overrunMover : state.currentMoverId }, events };
+      // 8.0, 8.1f: the overrunning stack may move on together unless it retreated, which ends its move.
+      const settled = { ...state, activeTransaction: null, pendingDecision: null };
+      if (transaction.kind !== 'OVERRUN') return { state: settled, events };
+      const movers = transaction.attackerRetreated ? [] : survivors(state, transaction.attackerIds)
+        .map(({ id }) => id).sort((left, right) => Number(right === transaction.leadAttackerId) - Number(left === transaction.leadAttackerId));
+      return { state: withMovers(settled, movers), events };
     }
     switch (step.kind) {
       case 'LOSS': {

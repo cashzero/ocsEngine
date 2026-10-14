@@ -14,6 +14,7 @@ import {
   emptyUsage,
   hexOf,
   isEligibleMover,
+  isMoving,
   nextOrderAt,
   pieceById,
   printedSteps,
@@ -106,7 +107,7 @@ export const validateCreateBreakdown = (state: GameState, actorId: PlayerId, pie
   if (capability.length > 0 || issues.length > 0) return [...issues, ...capability];
   if (!isEligibleMover(state, piece)) issues.push(violation('BREAKDOWN_NOT_MOVING', ['pieceId'], 'Only a unit that may move in this phase can detach Breakdowns.', '20.0a'));
   const usage = usageOf(state, piece);
-  if (usage.moved && state.currentMoverId !== piece.id) issues.push(violation('MOVEMENT_ALREADY_FINISHED', ['pieceId'], 'This unit has finished moving this phase.', '6.1g'));
+  if (usage.moved && !isMoving(state, piece.id)) issues.push(violation('MOVEMENT_ALREADY_FINISHED', ['pieceId'], 'This unit has finished moving this phase.', '6.1g'));
   else if (usage.movementSpentTicks > 0) issues.push(violation('BREAKDOWN_AFTER_MOVE_BEGAN', ['pieceId'], 'Breakdowns are detached as the unit begins to move, before it spends any MP.', '20.0a'));
   if (usage.negationLocked) issues.push(violation('NEGATING_UNIT_LOCKED', ['pieceId'], 'This unit negated an enemy ZOC and cannot move this phase.', '4.5b'));
   return issues;

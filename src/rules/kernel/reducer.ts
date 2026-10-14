@@ -1,9 +1,9 @@
-import { revision, type PieceId } from '../../core/index.js';
+import { revision } from '../../core/index.js';
 import { applyRailMove } from '../supply/rail-cap.js';
 import { applySeaMove } from '../supply/sea-cap.js';
 import { applyReducePort, applyRepairPort } from '../port/port.js';
 import { setHexControl } from '../../domain/map/index.js';
-import { upsertPieceState } from '../../domain/piece/index.js';
+import { upsertPieceState, type PieceState } from '../../domain/piece/index.js';
 import { declareBarrage, declareCombat, nextStackOrder, resolveDecision } from '../combat/combat.js';
 import { applyCombineAircraft, applyReduceAirBase, applyRefit } from '../air/base.js';
 import { applyBuildAirBase } from '../air/construction.js';
@@ -25,8 +25,20 @@ import {
 import { applyBreakout } from '../lifecycle/supply-phase.js';
 import { absorbInto, absorptionDecision, applyCreateBreakdown, parseAbsorptionChoice } from '../breakdown/breakdown.js';
 import { applyModeChange, applyReserveRelease } from '../mode/mode.js';
-import { queryMovementPath } from '../movement/movement.js';
-import { hexOf, isCombatUnit, isEngineerCapable, pieceById, reTicksOf, usageOf, withInternalStocks, withUsage } from '../pieces.js';
+import { movingStackBeginning, queryStackMovementPath } from '../movement/movement.js';
+import {
+  handOverMove,
+  hexOf,
+  isCombatUnit,
+  isEngineerCapable,
+  movingPieceIds,
+  pieceById,
+  reTicksOf,
+  usageOf,
+  withInternalStocks,
+  withMovers,
+  withUsage,
+} from '../pieces.js';
 import { bridgingEnabled } from '../movement/bridging.js';
 import { hasOptionalActions } from '../query/candidates.js';
 import { nextSequence } from '../sequence/sequence.js';
@@ -99,10 +111,17 @@ export const advanceSequence = (state: GameState): Transition => {
 export const settleInitialSequence = (state: GameState): GameState =>
   state.sequence.phase === 'WEATHER' || !hasOptionalActions(state) ? advanceSequence(state).state : state;
 
-/** A unit beginning to act ends the previous unit's move (6.1g). */
-const beginMoving = (state: GameState, pieceId: PieceId): GameState => {
-  const previous = state.currentMoverId !== null && state.currentMoverId !== pieceId ? pieceById(state, state.currentMoverId) : undefined;
-  return previous ? { ...state, usage: withUsage(state, { ...usageOf(state, previous), moved: true }) } : state;
+/**
+ * 5.4: a mode change is how a unit or stack begins to move. While the units now moving have only changed mode, a unit
+ * in their Hex changing mode joins them, so the whole stack can move off together (6.1f); otherwise it ends their move
+ * (6.1g).
+ */
+const beginWithModeChange = (state: GameState, piece: PieceState): GameState => {
+  const moving = movingPieceIds(state);
+  if (moving.includes(piece.id)) return state;
+  const joins = moving.length > 0 && movingStackBeginning(state)
+    && moving.every((id) => { const other = pieceById(state, id); return other !== undefined && hexOf(other) === hexOf(piece); });
+  return joins ? withMovers(state, [...moving, piece.id]) : handOverMove(state, [piece.id]);
 };
 
 const dispatch = (state: GameState, action: GameAction): Transition => {
@@ -112,14 +131,13 @@ const dispatch = (state: GameState, action: GameAction): Transition => {
     case 'CHANGE_MODE': {
       const piece = pieceById(state, action.pieceId)!;
       const changed = applyModeChange(piece, action.mode);
-      // 5.4: changing mode is how a unit begins its move, which ends the previous unit's move (6.1g).
-      let next = beginMoving(state, piece.id);
+      let next = beginWithModeChange(state, piece);
       // 13.8b Exception: a unit that stops being Engineer-Capable may still use its own bridge to leave the hex.
       if (bridgingEnabled(state) && isEngineerCapable(state, piece) && !isEngineerCapable(state, changed)) {
         next = { ...next, usage: withUsage(next, { ...usageOf(next, piece), ownBridgeHexId: hexOf(piece)! }) };
       }
       return {
-        state: { ...next, currentMoverId: piece.id, pieceState: upsertPieceState(next.pieceState, changed) },
+        state: { ...next, pieceState: upsertPieceState(next.pieceState, changed) },
         events: [{ kind: 'MODE_CHANGED', sequence: 0, pieceId: piece.id, from: piece.mode, to: changed.mode ?? action.mode }],
       };
     }
@@ -135,46 +153,56 @@ const dispatch = (state: GameState, action: GameAction): Transition => {
         events: [{ kind: 'MODE_CHANGED', sequence: 0, pieceId: piece.id, from: piece.mode, to: released.mode! }],
       };
     }
-    case 'END_MOVE':
-      // 6.1g: ending the move counts exactly like another unit beginning to act; the unit may not move again this phase.
+    case 'END_MOVE': {
+      // 6.1g: ending the move counts exactly like another unit beginning to act; the unit (or its whole moving stack,
+      // 6.1f) may not move again this phase.
+      const ended = movingPieceIds(state);
       return {
-        state: { ...state, currentMoverId: null, usage: withUsage(state, { ...usageOf(state, pieceById(state, action.pieceId)!), moved: true }) },
-        events: [{ kind: 'MOVE_ENDED', sequence: 0, pieceId: action.pieceId }],
+        state: handOverMove(state, []),
+        events: renumber(ended.map((pieceId) => ({ kind: 'MOVE_ENDED', sequence: 0, pieceId }))),
       };
+    }
     case 'CREATE_BREAKDOWN':
       return applyCreateBreakdown(state, action.pieceId);
     case 'MOVE_PIECE': {
-      const query = queryMovementPath(state, action.actorId, action.pieceId, action.path).value!;
+      // 6.1f: a stack moves as one along the path; each unit pays from its own MA (6.1e). Units of the moving stack
+      // left out of the action are dropped off and have finished.
+      const ids = [action.pieceId, ...(action.companionIds ?? [])];
+      const query = queryStackMovementPath(state, action.actorId, ids, action.path).value!;
       const destination = action.path.at(-1)!;
-      // 12.5e: an independent unit fueled by an HQ fixes that HQ's throw location as it starts.
-      let next = commitFuelForMove(beginMoving(state, action.pieceId), pieceById(state, action.pieceId)!);
-      const piece = pieceById(next, action.pieceId)!;
-      const usage = usageOf(next, piece);
-      next = {
-        ...next,
-        currentMoverId: piece.id,
-        pieceState: upsertPieceState(next.pieceState, {
-          ...piece,
-          location: { kind: 'ON_MAP', hexId: destination },
-          stackOrder: nextStackOrder(next.pieceState.pieces, destination, piece.id),
-        }),
-      };
-      next = {
-        ...next,
-        usage: withUsage(next, {
-          ...usage, moved: true, phaseStartHexId: usage.phaseStartHexId ?? hexOf(piece),
-          movementSpentTicks: usage.movementSpentTicks + query.spentTicks,
-        }),
-      };
-      // 4.5b: units that negated an enemy ZOC for this move may not spend MP later this phase.
-      for (const negatorId of query.negatorIds) {
-        const negator = pieceById(next, negatorId)!;
-        next = { ...next, usage: withUsage(next, { ...usageOf(next, negator), negationLocked: true }) };
+      let next = handOverMove(state, ids);
+      const events: RuleEvent[] = [];
+      for (const [index, id] of ids.entries()) {
+        // 12.5e: an independent unit fueled by an HQ fixes that HQ's throw location as it starts.
+        next = commitFuelForMove(next, pieceById(state, id)!);
+        const piece = pieceById(next, id)!;
+        const usage = usageOf(next, piece);
+        const spentTicks = query[index]!.spentTicks;
+        next = {
+          ...next,
+          pieceState: upsertPieceState(next.pieceState, {
+            ...piece,
+            location: { kind: 'ON_MAP', hexId: destination },
+            stackOrder: nextStackOrder(next.pieceState.pieces, destination, piece.id),
+          }),
+        };
+        next = {
+          ...next,
+          usage: withUsage(next, {
+            ...usage, moved: true, phaseStartHexId: usage.phaseStartHexId ?? hexOf(piece),
+            movementSpentTicks: usage.movementSpentTicks + spentTicks,
+          }),
+        };
+        // 4.5b: units that negated an enemy ZOC for this move may not spend MP later this phase.
+        for (const negatorId of query[index]!.negatorIds) {
+          const negator = pieceById(next, negatorId)!;
+          next = { ...next, usage: withUsage(next, { ...usageOf(next, negator), negationLocked: true }) };
+        }
+        events.push({ kind: 'PIECE_MOVED', sequence: 0, pieceId: id, path: action.path, spentTicks });
       }
-      const events: RuleEvent[] = [{ kind: 'PIECE_MOVED', sequence: 0, pieceId: piece.id, path: action.path, spentTicks: query.spentTicks }];
       // 9.14: entering enemy non-combat units captures or displaces them.
       // 13.3h: only a combat unit entering a Hex changes its control; trucks never do.
-      const takesControl = isCombatUnit(next, piece);
+      const takesControl = ids.some((id) => isCombatUnit(next, pieceById(next, id)!));
       for (const hexId of action.path.slice(1)) {
         next = captureAt(next, action.actorId, hexId, events);
         if (takesControl) next = { ...next, mapState: setHexControl(next.mapState, hexId, action.actorId) };

@@ -12,9 +12,11 @@ import {
   dedupeStackOrders,
   definitionOf,
   friendlyCombatUnitsAt,
+  handOverMove,
   hexDistanceBetween,
   hexOf,
   isExtender,
+  isMoving,
   isTransportPoint,
   locatedHexOf,
   movementAllowanceTicks,
@@ -92,20 +94,18 @@ const truckViolations = (state: GameState, actorId: PlayerId, truck: PieceState 
   }
   const usage = usageOf(state, truck);
   const issues: RuleViolation[] = [];
-  if (usage.moved && state.currentMoverId !== truck.id) issues.push(violation('MOVEMENT_ALREADY_FINISHED', path, 'This Transport Point already finished moving.', '6.1g'));
+  if (usage.moved && !isMoving(state, truck.id)) issues.push(violation('MOVEMENT_ALREADY_FINISHED', path, 'This Transport Point already finished moving.', '6.1g'));
   return issues;
 };
 
 /** The truck acts as the unit now moving (6.1g); its load cost is spent from its MA. */
 const spendAsMover = (state: GameState, truck: PieceState, ticks: number): GameState => {
-  const previous = state.currentMoverId !== null && state.currentMoverId !== truck.id ? pieceById(state, state.currentMoverId) : undefined;
-  let usage = state.usage;
-  if (previous) usage = withUsage({ ...state, usage }, { ...usageOf(state, previous), moved: true });
-  const current = usageOf({ ...state, usage }, truck);
+  // A truck moving in a stack that loads or unloads drops off the rest of the stack (6.1f).
+  const next = handOverMove(state, [truck.id]);
+  const current = usageOf(next, truck);
   return {
-    ...state,
-    currentMoverId: truck.id,
-    usage: withUsage({ ...state, usage }, {
+    ...next,
+    usage: withUsage(next, {
       ...current, moved: true, phaseStartHexId: current.phaseStartHexId ?? hexOf(truck),
       movementSpentTicks: current.movementSpentTicks + ticks,
     }),
@@ -323,7 +323,7 @@ export const queryTransportOptions = (state: GameState, actorId: PlayerId, truck
   } : null;
   return {
     allowed: true,
-    value: { truckId, hexId, points: transportPointsOf(state, truck), capacityTokens: capacityTokens(state, truck), loadedTokens: carried, remainingTicks: remaining, isCurrentMover: state.currentMoverId === truckId, loads, unload },
+    value: { truckId, hexId, points: transportPointsOf(state, truck), capacityTokens: capacityTokens(state, truck), loadedTokens: carried, remainingTicks: remaining, isCurrentMover: isMoving(state, truckId), loads, unload },
     reasons: [{ code: 'TRANSPORT_OPTIONS', allowed: true, message: `${loads.length} dump(s) here.`, rule: '13.2f' }],
     facts: [],
     dependencies,

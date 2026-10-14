@@ -202,7 +202,14 @@ export const describeRecord = (record: HistoryRecord, context: NarrativeContext)
     case 'ADVANCE_SEQUENCE': title = String(action.actionId).startsWith('ui:auto-pass:') && advances[0]
       ? `${stepName(advances[0].from)} of ${context.playerName(actorId)} passed: only dump blowing was possible`
       : advances[0] ? `${who} finished ${stepName(advances[0].from)}` : `${who} ended the step`; break;
-    case 'MOVE_PIECE': title = own || isOwn(action.pieceId) ? `${name(action.pieceId)} moved ${hex(action.path[0])} → ${hex(action.path.at(-1))}` : `An enemy unit moved to ${hex(action.path.at(-1))}`; break;
+    case 'MOVE_PIECE': {
+      // 6.1f: a stack moving together is one entry.
+      const together = (action.companionIds ?? []).length;
+      title = own || isOwn(action.pieceId)
+        ? `${name(action.pieceId)}${together > 0 ? ` and ${together} more` : ''} moved ${hex(action.path[0])} → ${hex(action.path.at(-1))}`
+        : together > 0 ? `An enemy stack of ${together + 1} units moved to ${hex(action.path.at(-1))}` : `An enemy unit moved to ${hex(action.path.at(-1))}`;
+      break;
+    }
     case 'DECLARE_COMBAT': title = `${who} ${action.combatKind === 'OVERRUN' ? 'overran' : 'attacked'} ${hex(action.targetHexId)}`; break;
     case 'DECLARE_BARRAGE': title = `${who} barraged ${hex(action.targetHexId)}`; break;
     case 'DECLARE_AIR_MISSION': title = `${who} flew ${action.mission.replaceAll('_', ' ').toLowerCase()} at ${hex(action.targetHexId)}`; break;

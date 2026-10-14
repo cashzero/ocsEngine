@@ -18,7 +18,7 @@ import {
   allocateRebuild, priceRebuild,
 } from '../rules/index.js';
 import type {
-  AirDraft, AirOverview, AirRefit, Arrival, AttackDraft, AwayReport, AirRebuild, BuildOption, Consolidation, GroundRebuild, ConstructionOverview, CombatSheet, EndStep, HandoffInfo, MoveBlocker, MovePreview, MoveRangeEntry,
+  AirDraft, AirOverview, AirRefit, Arrival, AttackDraft, AwayReport, AirRebuild, BuildOption, Consolidation, GroundRebuild, ConstructionOverview, CombatSheet, EndStep, HandoffInfo, MoveBlocker, MovePreview, MoveRangeEntry, StackMate,
   DropPlanDraft, DropPlanView, LedgerLine, RailPanel, SeaPanel, SupplyNeed, TransportCarrier, UiListener, UiSelection, UiSnapshot, UnitAction, UnitFilterKind,
 } from './model.js';
 import {
@@ -52,6 +52,10 @@ export interface UiController {
   /** Finish the selected unit's move (6.1g) and let it go; a unit that has not begun moving is only deselected. */
   readonly finishMove: () => Promise<void>;
   readonly confirmMove: () => Promise<void>;
+  /** Tick or untick a unit in the selected unit's Hex to move with it as one stack (6.1f). */
+  readonly toggleStackMate: (pieceId: string) => void;
+  /** Tick every unit in the selected unit's Hex that can move with it (6.1f). */
+  readonly moveWholeStack: () => void;
   readonly toggleParticipant: (pieceId: string) => void;
   readonly setLead: (pieceId: string) => void;
   /** Declare where a ticked attacker gets its combat supply (9.5, 12.10a). */
@@ -250,6 +254,8 @@ class DefaultUiController implements UiController {
   #session: GameSession;
   #selection = initialSelection();
   #destination: string | null = null;
+  /** Units the player ticked to move with `pieceId` (6.1f); null follows the stack now moving. */
+  #companions: { readonly pieceId: string; readonly ids: readonly string[] } | null = null;
   #draft: DraftInput | null = null;
   #listeners = new Set<UiListener>();
   #unsubscribeSession: (() => void) | null = null;
@@ -676,8 +682,9 @@ class DefaultUiController implements UiController {
     // MOVE_PIECE is disabled whenever no unit can move (e.g. every Track unit awaits fuel), yet the player
     // still needs to hear why the selected one cannot: query it in any Movement Segment (6.0).
     const movementSegment = segment === 'MOVEMENT' && ['MOVEMENT', 'REACTION', 'EXPLOITATION'].includes(view.projection?.sequence.phase ?? '');
+    const { stackMates, companions, droppedOffIds } = this.#stackMates(seatId, ownSelected, movementSegment);
     if (ownSelected && (enabled('MOVE_PIECE') || movementSegment)) {
-      const range = this.#cached(`range|${ownSelected.id}`, () => this.#session.getMovementRange(seatId, ownSelected.id));
+      const range = this.#cached(`range|${ownSelected.id}|${companions.join('+')}`, () => this.#session.getMovementRange(seatId, ownSelected.id, companions as PieceId[]));
       if (!range.allowed) moveBlockers = range.reasons.filter(({ allowed }) => !allowed).map(({ code, message, rule }) => ({ code, message, rule }));
       const remaining = range.facts.find(({ key }) => key === 'movement.remainingTicks')?.value;
       remainingTicks = typeof remaining === 'number' ? remaining : null;
@@ -685,7 +692,7 @@ class DefaultUiController implements UiController {
         reachable.set(entry.hexId, entry.path);
         moveRange.set(entry.hexId, {
           path: entry.path, costTicks: entry.costTicks,
-          remainingAfterTicks: Math.max(0, (remainingTicks ?? 0) - entry.costTicks), endsMovement: entry.endsMovement === true,
+          remainingAfterTicks: entry.remainingAfterTicks ?? Math.max(0, (remainingTicks ?? 0) - entry.costTicks), endsMovement: entry.endsMovement === true,
         });
       }
     }
@@ -695,6 +702,7 @@ class DefaultUiController implements UiController {
       const action: GameAction = {
         actionId: this.#actionId('move'), actorId: view.playerId, expectedRevision: this.#session.getRevision(),
         kind: 'MOVE_PIECE', pieceId: ownSelected.id, path: reachable.get(this.#destination)! as never,
+        ...(companions.length > 0 ? { companionIds: companions as PieceId[] } : {}),
       };
       movePreview = { destinationHexId: this.#destination, path: reachable.get(this.#destination)!, action, explanation: this.#explain(action) };
     }
@@ -792,7 +800,9 @@ class DefaultUiController implements UiController {
     const movedThisPhase = new Set<string>();
     const attackedThisPhase = new Set<string>();
     for (const record of phaseRecords) {
-      if (record.action.kind === 'MOVE_PIECE' && own.has(String(record.action.pieceId))) movedThisPhase.add(String(record.action.pieceId));
+      if (record.action.kind === 'MOVE_PIECE') {
+        for (const id of [record.action.pieceId, ...(record.action.companionIds ?? [])]) if (own.has(String(id))) movedThisPhase.add(String(id));
+      }
       if (record.action.kind === 'DECLARE_COMBAT') for (const id of record.action.attackerIds) if (own.has(String(id))) attackedThisPhase.add(String(id));
       if (record.action.kind === 'DECLARE_BARRAGE') for (const id of record.action.firerIds) if (own.has(String(id))) attackedThisPhase.add(String(id));
     }
@@ -804,10 +814,12 @@ class DefaultUiController implements UiController {
       families,
       selection: { ...this.#selection },
       selectedPiece,
-      selectedIsMoving: ownSelected !== null && view.projection?.currentMoverId === ownSelected.id,
+      selectedIsMoving: ownSelected !== null && (view.projection?.currentMoverId === ownSelected.id || (view.projection?.movingStackIds ?? []).includes(ownSelected.id)),
       reachable,
       moveRange,
       moveBlockers,
+      stackMates,
+      droppedOffIds,
       traceCoverage,
       traceDirect,
       supplySources,
@@ -1885,6 +1897,61 @@ class DefaultUiController implements UiController {
     return () => this.#listeners.delete(listener);
   };
 
+  /**
+   * 6.1f: the own units sharing the selected unit's Hex, and which of them move with it. While a stack is under way only
+   * its own units can go on together (the rest of the Hex never joins); a unit of the stack left unticked is dropped off.
+   */
+  #stackMates(seatId: SeatId, selected: ProjectedPiece | null, movementSegment: boolean): {
+    readonly stackMates: readonly StackMate[]; readonly companions: readonly string[]; readonly droppedOffIds: readonly string[];
+  } {
+    const none = { stackMates: [], companions: [], droppedOffIds: [] };
+    if (!selected || !movementSegment || selected.location.kind !== 'ON_MAP') return none;
+    const projection = this.#view(seatId).projection;
+    const hexId = selected.location.hexId;
+    const stack = (projection?.movingStackIds ?? []).map(String);
+    const moving = stack.length > 0 ? stack : projection?.currentMoverId ? [String(projection.currentMoverId)] : [];
+    const underWay = moving.includes(String(selected.id)) && this.#phaseRecords().some((record) => record.action.kind === 'MOVE_PIECE'
+      && [record.action.pieceId, ...(record.action.companionIds ?? [])].some((id) => String(id) === String(selected.id)));
+    const mates = this.#pieces().filter((piece) => piece.id !== selected.id && piece.ownerId === selected.ownerId && piece.location.kind === 'ON_MAP'
+      && piece.location.hexId === hexId && piece.mode !== null && piece.role !== 'DUMP');
+    const blockerOf = (piece: ProjectedPiece): string | null => {
+      if (underWay) return moving.includes(String(piece.id)) ? null : 'Not moving with this stack: a stack under way never picks units up (6.1f)';
+      const range = this.#cached(`range|${piece.id}|`, () => this.#session.getMovementRange(seatId, piece.id));
+      const reason = range.reasons.find(({ allowed }) => !allowed);
+      return range.allowed ? null : reason ? `${reason.message} (${reason.rule})` : 'Cannot move now';
+    };
+    const able = mates.map((piece) => ({ piece, blocker: blockerOf(piece) }));
+    if (!able.some(({ blocker }) => blocker === null)) return none;
+    const chosen = this.#companions?.pieceId === String(selected.id) ? this.#companions.ids
+      : moving.includes(String(selected.id)) ? moving.filter((id) => id !== String(selected.id)) : [];
+    const companions = able.filter(({ piece, blocker }) => blocker === null && chosen.includes(String(piece.id))).map(({ piece }) => String(piece.id));
+    return {
+      stackMates: able.map(({ piece, blocker }) => ({ piece, together: companions.includes(String(piece.id)), blocker })),
+      companions,
+      droppedOffIds: moving.includes(String(selected.id)) ? moving.filter((id) => id !== String(selected.id) && !companions.includes(id)) : [],
+    };
+  }
+
+  toggleStackMate = (pieceId: string): void => {
+    const snapshot = this.getSnapshot();
+    const selected = snapshot.selection.pieceId;
+    const mate = snapshot.stackMates.find(({ piece }) => String(piece.id) === pieceId);
+    if (!selected || !mate || mate.blocker !== null) return;
+    const ticked = snapshot.stackMates.filter(({ together }) => together).map(({ piece }) => String(piece.id));
+    this.#companions = { pieceId: selected, ids: mate.together ? ticked.filter((id) => id !== pieceId) : [...ticked, pieceId] };
+    this.#destination = null;
+    this.#emit();
+  };
+
+  moveWholeStack = (): void => {
+    const snapshot = this.getSnapshot();
+    const selected = snapshot.selection.pieceId;
+    if (!selected) return;
+    this.#companions = { pieceId: selected, ids: snapshot.stackMates.filter(({ blocker }) => blocker === null).map(({ piece }) => String(piece.id)) };
+    this.#destination = null;
+    this.#emit();
+  };
+
   #resetIntent(): void { this.#destination = null; this.#draft = null; this.#airDraft = null; this.#buildDraft = null; this.#dropDraft = null; this.#railDraft = null; this.#railOpen = null; this.#seaDraft = null; }
 
   selectPiece = (pieceId: string | null): void => {
@@ -2013,9 +2080,12 @@ class DefaultUiController implements UiController {
     const preview = this.getSnapshot().movePreview;
     if (!preview) return;
     const destination = preview.destinationHexId;
-    await this.#dispatch(preview.action, `Moved to ${printedHexLabel(destination)}.`);
+    const together = preview.action.kind === 'MOVE_PIECE' ? (preview.action.companionIds ?? []).length : 0;
+    await this.#dispatch(preview.action, together > 0 ? `Moved ${together + 1} units together to ${printedHexLabel(destination)}.` : `Moved to ${printedHexLabel(destination)}.`);
     this.#selection = { ...this.#selection, hexId: destination };
     this.#destination = null;
+    // The stack now moving stays ticked by default (6.1f).
+    this.#companions = null;
     // A unit with nowhere left to go is finished: release it so the player is not left holding a dead selection.
     if (this.getSnapshot().reachable.size === 0) this.#selection = initialSelection();
     this.#emit();

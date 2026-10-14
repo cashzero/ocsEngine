@@ -12,7 +12,7 @@ import { validateAirMission } from '../air/mission.js';
 import { arrivingReinforcements, reinforcementHexes, validateReinforcementPlacement } from '../lifecycle/lifecycle.js';
 import { validateCreateBreakdown } from '../breakdown/breakdown.js';
 import { validateModeChange, validateReserveRelease } from '../mode/mode.js';
-import { queryMovementPath, validateEndMove } from '../movement/movement.js';
+import { queryStackMovementPath, validateEndMove } from '../movement/movement.js';
 import { unitsNeedingRecovery, validateFormationTraceChoice, validateRecovery, validateSupplyCheck } from '../supply/supply.js';
 import { validateFuelPayment } from '../supply/fuel.js';
 import { validateBreakout } from '../lifecycle/supply-phase.js';
@@ -74,7 +74,7 @@ export const validateGameAction = (state: GameState, action: GameAction): Action
       case 'CHANGE_MODE': issues.push(...validateModeChange(state, action.actorId, action.pieceId, action.mode)); break;
       case 'RELEASE_RESERVE': issues.push(...validateReserveRelease(state, action.actorId, action.pieceId)); break;
       case 'MOVE_PIECE': {
-        const result = queryMovementPath(state, action.actorId, action.pieceId, action.path);
+        const result = queryStackMovementPath(state, action.actorId, [action.pieceId, ...(action.companionIds ?? [])], action.path);
         issues.push(...result.reasons.filter(({ allowed }) => !allowed).map((reason) => violation(reason.code, ['path'], reason.message, reason.rule)));
         break;
       }

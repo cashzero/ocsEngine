@@ -20,6 +20,7 @@ import {
   hexOf,
   isArtillery,
   isAttackCapable,
+  movingPieceIds,
   stepOf,
 } from '../pieces.js';
 import { defaultAttackerSupply } from '../combat/combat.js';
@@ -80,22 +81,39 @@ export const combatCandidatesFor = (
   for (const target of targets) {
     const defenderIds = enemyCombatUnitsAt(state, actorId, target).map(({ id }) => id).sort();
     const adjacent = friendly.filter((piece) => adjacentHexIds(target).includes(hexOf(piece)!));
-    const groups: PieceState[][] = combatKind === 'OVERRUN'
-      ? adjacent.map((piece) => [piece])
-      : [adjacent, ...adjacent.map((piece) => [piece])];
-    for (const group of groups) {
-      if (pieceId !== null && !group.some(({ id }) => id === pieceId)) continue;
+    const candidate = (group: readonly PieceState[]): GameAction | null => {
       // 9.5: the supply each attacker declares, Exhausted units first; a group some unit cannot supply is no candidate.
       const attackerSupply = defaultAttackerSupply(state, actorId, group.map(({ id }) => id));
-      if (!attackerSupply) continue;
+      if (!attackerSupply) return null;
       const action: GameAction = {
         ...base(state, actorId, `combat:${combatKind}:${target}:${group.map(({ id }) => id).join('+')}`),
         kind: 'DECLARE_COMBAT', combatKind, attackerIds: group.map(({ id }) => id), defenderIds,
         targetHexId: target, leadAttackerId: leadOf(state, group), attackerSupply,
       };
-      if (validateGameAction(state, action).allowed) {
+      return validateGameAction(state, action).allowed ? action : null;
+    };
+    const wanted = (group: readonly PieceState[]) => pieceId === null || group.some(({ id }) => id === pieceId);
+    if (combatKind === 'OVERRUN') {
+      // 8.1: a stack overruns together: the stack now moving (6.1f), or the able units sharing a Hex; then each unit alone.
+      // Stacks are offered for one requested unit (the overrun draft), whose Hex alone can hold a stack including it.
+      // TODO(AI): unfiltered requests (the bots) still list single units only, so bots never overrun with a stack.
+      const requested = pieceId === null ? undefined : pieceById(state, pieceId);
+      const pool = requested === undefined ? adjacent : adjacent.filter((piece) => hexOf(piece) === hexOf(requested));
+      const singles = pool.flatMap((piece) => { const action = candidate([piece]); return action ? [{ piece, action }] : []; });
+      const moving = movingPieceIds(state);
+      const stacks = [...new Set(singles.map(({ piece }) => String(hexOf(piece))))]
+        .map((hexId) => singles.map(({ piece }) => piece).filter((piece) => String(hexOf(piece)) === hexId))
+        .map((stack) => stack.some(({ id }) => moving.includes(id)) ? stack.filter(({ id }) => moving.includes(id)) : stack)
+        .filter((stack) => requested !== undefined && stack.length > 1 && wanted(stack));
+      actions.push(...stacks.flatMap((stack) => candidate(stack) ?? []), ...singles.filter(({ piece }) => wanted([piece])).map(({ action }) => action));
+      continue;
+    }
+    for (const group of [adjacent, ...adjacent.map((piece) => [piece])]) {
+      if (!wanted(group)) continue;
+      const action = candidate(group);
+      if (action) {
         actions.push(action);
-        if (combatKind === 'REGULAR' && group === adjacent) break;
+        if (group === adjacent) break;
       }
     }
   }

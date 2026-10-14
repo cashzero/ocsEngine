@@ -6,14 +6,17 @@ import type { GameAction, GameState, RailArrival, RailState, RuleEvent, RuleViol
 import {
   adjacentHexIds,
   definitionOf,
+  handOverMove,
   hexDistanceBetween,
   hexOf,
   isCombatUnit,
   isExtender,
+  isMoving,
   isOnMapCombatUnit,
   isTransportPoint,
   mobilityOf,
   movementAllowanceTicks,
+  movingPieceIds,
   opponentOf,
   pieceById,
   piecesAt,
@@ -21,6 +24,7 @@ import {
   stepOf,
   transportPointsOf,
   usageOf,
+  withMovers,
   withUsage,
 } from '../pieces.js';
 import type { RuleQueryResult } from '../query/model.js';
@@ -97,7 +101,7 @@ export const railUnitProblem = (state: GameState, unit: PieceState, ownerId: Pla
   if (usage.railCarried) return 'it already moved by rail this phase';
   if (usage.airCarried) return 'it already moved by air this phase (4.7d)';
   if (usage.seaCarried) return 'it was shipped this phase (4.7d)';
-  if (usage.moved && state.currentMoverId !== unit.id) return 'it already finished moving this phase (6.1g)';
+  if (usage.moved && !isMoving(state, unit.id)) return 'it already finished moving this phase (6.1g)';
   if (usage.movementSpentTicks > movementAllowanceTicks(state, unit) / 2) return 'it has spent more than half its MA (4.7d)';
   return null;
 };
@@ -283,10 +287,8 @@ export const applyRailMove = (state: GameState, action: RailMove): Transition =>
   const quarters = routeQuarters(cargoQuarters(state, action.unitIds, tokens), route.halves);
   const offMap = railArrivalAt(state, action.actorId, action.fromHexId) !== null && !isCargoDetrainable(state, action.actorId, action.fromHexId);
   // Entraining is how these units act: the unit moving before them has finished (6.1g).
-  let next: GameState = state;
-  const previous = state.currentMoverId !== null && !action.unitIds.includes(state.currentMoverId) ? pieceById(state, state.currentMoverId) : undefined;
-  if (previous) next = { ...next, usage: withUsage(next, { ...usageOf(next, previous), moved: true }) };
-  next = { ...next, currentMoverId: null };
+  let next: GameState = withMovers(state, movingPieceIds(state).filter((id) => !action.unitIds.includes(id)));
+  next = handOverMove(next, []);
   for (const id of action.unitIds) {
     const unit = pieceById(next, id)!;
     const usage = usageOf(next, unit);

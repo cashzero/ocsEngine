@@ -272,6 +272,7 @@ export const declareAirMission = (state: GameState, action: AirMissionDeclaratio
     ...state,
     activeTransaction: transaction,
     currentMoverId: null,
+    movingStackIds: undefined,
     ledger: countsAsBarrage ? { ...state.ledger, barragedHexIds: [...state.ledger.barragedHexIds, action.targetHexId] } : state.ledger,
     air: { ...state.air, missionFlownIds: [...state.air.missionFlownIds, ...action.aircraftIds] },
   };
