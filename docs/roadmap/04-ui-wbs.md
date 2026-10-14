@@ -3,7 +3,7 @@
 Counter correction status (2026-09-04): **U4 REOPENED / IN PROGRESS**. The original U4
 plan accepted a projected selectable rectangle without requiring OCS printed-counter
 fidelity. That acceptance boundary was invalid. The corrected work and evidence are
-defined by `docs/quality/04-counter-fidelity-correction-plan.md`; U10 cannot complete
+defined by `docs/roadmap/17-counter-fidelity-wbs.md`; U10 cannot complete
 while that gate is open.
 
 The UI milestone consumes `GameSession`; it does not own rules or mutate authoritative state. Each study step produces one document before its implementation gate is accepted.
@@ -20,6 +20,6 @@ The UI milestone consumes `GameSession`; it does not own rules or mutate authori
 | U7 | `docs/ui/07-history-save-load-and-checkpoints.md` | Timeline, save/load, checkpoints, undo |
 | U8 | `docs/ui/08-hotseat-privacy-and-recovery.md` | Privacy lock and confirmed handoff |
 | U9 | `docs/ui/09-browser-playthrough.md` | Local browser smoke and responsive inspection |
-| U10 | `docs/reports/U10-operable-ui-gate.md` | Automated and manual integration gate |
+| U10 | `docs/ui/U10-operable-ui-gate.md` | Automated and manual integration gate |
 
 Random map/OOB, scenario editing, AI, multiplayer networking, and packaging are later milestones.

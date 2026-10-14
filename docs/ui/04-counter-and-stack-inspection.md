@@ -8,7 +8,7 @@ The 46×40 role/steps/mode rectangle is a knowingly reduced implementation and c
 reported as a completed counter gate.
 
 The corrected scope and acceptance plan are in
-`docs/quality/04-counter-fidelity-correction-plan.md`.
+`docs/roadmap/17-counter-fidelity-wbs.md`.
 
 TODO (U4 counter fidelity): the missing behavior is a rulebook-structured, role-specific
 unit counter driven by the current printed face and projected state. The player-visible

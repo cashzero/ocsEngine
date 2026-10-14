@@ -6,7 +6,7 @@ import { join } from 'node:path';
 import { advanceTo, click, gotoHex, newGame, open, record, selectUnit, settleLogged, tab, textOf, timed, where } from './harness.mjs';
 
 const rulesSeed = Number(process.argv[3] ?? 5104);
-const evidenceDir = join(process.argv[2] ?? 'docs/quality/evidence/air-2026-10-03', `air-07-rules-${rulesSeed}`);
+const evidenceDir = join(process.argv[2] ?? 'artifacts/air-2026-10-03', `air-07-rules-${rulesSeed}`);
 const h = await open({ evidenceDir });
 const seeds = { map: 5101, oob: 5102, deployment: 5103, rules: rulesSeed };
 const at = (turn, side, phase) => (state) => state.turn.startsWith(`Turn ${turn} `) && state.player.startsWith(side) && state.phase === phase;

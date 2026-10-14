@@ -5,7 +5,7 @@ import { join } from 'node:path';
 import { advanceTo, click, flyMission, has, hexDistance, newGame, open, placeArrivals, record, refitAll, selectUnit, tab, tabs, textOf, where } from './harness.mjs';
 
 const rulesSeed = Number(process.argv[3] ?? 5104);
-const evidenceDir = join(process.argv[2] ?? 'docs/quality/evidence/air-2026-10-03', 'air-11-12');
+const evidenceDir = join(process.argv[2] ?? 'artifacts/air-2026-10-03', 'air-11-12');
 const h = await open({ evidenceDir });
 const seeds = { map: 5101, oob: 5102, deployment: 5103, rules: rulesSeed };
 const maxTurn = 8;

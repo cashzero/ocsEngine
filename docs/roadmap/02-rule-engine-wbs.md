@@ -76,7 +76,7 @@ strength、supply path。Cache 必須以 state revision 與 query purpose 作 ke
 | R7 | `docs/rule-engine/07-supply-and-logistics.md` |
 | R8 | `docs/rule-engine/08-combat-overrun-barrage-retreat.md` |
 | R9 | `docs/rule-engine/09-lifecycle-facility-victory.md` |
-| R10 | `docs/reports/R10-rule-engine-integration.md` |
+| R10 | `docs/rule-engine/R10-rule-engine-integration.md` |
 
 ### R0：Rule manifest、scope 與 table provenance
 

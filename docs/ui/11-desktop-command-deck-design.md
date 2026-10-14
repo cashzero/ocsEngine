@@ -1,10 +1,10 @@
 # Desktop Command Deck — 版面稿與操作契約
 
-> 2026-10-02：第 1–3、5、6 節已改寫為現行結構（phase 專屬 tab＋任務模式、End phase 在頂部 phase chip 旁、移動確認為目的地 hex 上的 popup、單位清單為 roster popup）。實作與驗證證據見 `docs/reports/left-panel-reorganization-2026-10-02.md`。第 4 節（New Game）未變。
+> 2026-10-02：第 1–3、5、6 節已改寫為現行結構（phase 專屬 tab＋任務模式、End phase 在頂部 phase chip 旁、移動確認為目的地 hex 上的 popup、單位清單為 roster popup）。實作與驗證證據見 `docs/ui/left-panel-reorganization-2026-10-02.md`。第 4 節（New Game）未變。
 >
-> 2026-10-01 第二次更新：回合軌、結果卡／交接原因、堆疊清單、地圖目標框、可達成本分層、單位清單徽章與自動預覽的設計與 TODO 見 `docs/reports/ui-flow-review-2026-10-01.md`。
+> 2026-10-01 第二次更新：回合軌、結果卡／交接原因、堆疊清單、地圖目標框、可達成本分層、單位清單徽章與自動預覽的設計與 TODO 見 `docs/ui/ui-flow-review-2026-10-01.md`。
 >
-> 2026-10-01 更新：動作下拉選單與候選清單流程已由「以單位為中心」的地圖互動取代（選單位 → 可達範圍／可攻擊敵格 → 點擊預覽 → 確認；攻擊面板與就地決策）。本文件以下描述為先前設計，現行設計與證據見 `docs/reports/ocs-rebuild-2026-10-01.md`。
+> 2026-10-01 更新：動作下拉選單與候選清單流程已由「以單位為中心」的地圖互動取代（選單位 → 可達範圍／可攻擊敵格 → 點擊預覽 → 確認；攻擊面板與就地決策）。本文件以下描述為先前設計，現行設計與證據見 `docs/rule-engine/ocs-rebuild-2026-10-01.md`。
 
 日期：2026-09-06；第 1–3、5、6 節更新於 2026-10-02。狀態：左欄結構已實作並以真實操作驗證（見上列報告）；PRODUCT VERIFICATION 各列仍依 `docs/quality/03-product-operation-verification-plan.md`，本文件不改變其狀態。
 
@@ -186,7 +186,7 @@ Warnings 摘要持续可見；完整警告可作為主區清單的另一檢視�
 2026-10-02 的左欄重整（tab、任務模式、頂部 End phase、移動 popup、roster 焦點）已在內建瀏覽器以真實操作驗證：
 放置增援、移動預覽與確認（滑鼠與純鍵盤）、Air／Targets／Supply／Refit／Breakout tab、攻擊與空襲草稿、
 防守與任務回基地決策、交接與 away report、超堆疊與「Move ends there」的 popup、目的地被拖出視窗、1680×1050 與 1920×1080 的無溢出檢查。
-逐項紀錄、發現並修正的問題與觀察見 `docs/reports/left-panel-reorganization-2026-10-02.md`。
+逐項紀錄、發現並修正的問題與觀察見 `docs/ui/left-panel-reorganization-2026-10-02.md`。
 
 布局驗證同時檢查：容器無捲動、文字未裁切、hit target 可點、焦點可見、主要動作未被訊息覆蓋。`scrollHeight` 或 screenshot 單獨均不足以證明可用。清單切換後須保留位置，交接時則須清除私密上下文。
 

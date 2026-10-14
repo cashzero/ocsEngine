@@ -14,9 +14,9 @@ Start passes the previewed deterministic request to `NewGameOrchestrator.create`
 
 Implementation: `src/ui/browser.ts`, `web/styles.css`.
 
-## TODO: generation for large maps (recorded 2026-10-09)
+## TODO: generation for large maps
 
-The loading page and the staged build are sized for the current map limits (up to 64×48), where a whole build takes about a second. Generation still runs on the page's main thread:
+The loading page and the staged build were sized for 64×48, where a whole build takes about a second; New Game now accepts up to 256×256, so this TODO applies to every map above that size. Generation still runs on the page's main thread:
 
 - **Missing behaviour.** A step cannot be interrupted or report progress while it runs: Cancel takes effect only between steps, the page cannot repaint inside a step, and the step list shows no progress within a step.
 - **User-visible impact.** With larger maps a single step (Map or Deployment) could run for seconds; the spinner keeps turning (it is a compositor animation), but the page does not respond to input and Cancel waits for the step to end.

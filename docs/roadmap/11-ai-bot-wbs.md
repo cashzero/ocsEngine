@@ -138,15 +138,15 @@ Air 與 CARGO_LOSS 仍用第一個選項（TODO `bot-air`）。測試：`tests/a
 | B5-4 會打仗 | 有接敵的局中 ≥ 90% 宣告過地面攻擊；平均攻擊 odds 欄位不低於 3:1（OPEN 欄等值）；barrage 在射程內有目標的局中 ≥ 50% 使用 | 每座位 action 統計與 trace |
 | B5-5 用資源 | 機械化單位移動前付 fuel；增援全部放上地圖；有可重建選項時當回合重建；卡車在局中至少一次把 SP 運往前線 HQ；終局時 ≥ 80% 戰鬥單位在補給中 | 每座位 action 統計與終局 projection |
 | B5-6 守方決策 | 每種 ground pending decision 都由規則化 responder 回答（非隨機後備），且選擇理由寫入 trace | trace 中 responder 名稱 |
-| B5-7 可讀 | 人工檢視 3 局完整 trace（不同 map 風格）並記錄不合理行為；明顯錯誤（攻擊 1:2、把卡車開到敵軍旁）列為修正項 | `docs/reports/M9-bot-behavior-baseline.md` |
+| B5-7 可讀 | 人工檢視 3 局完整 trace（不同 map 風格）並記錄不合理行為；明顯錯誤（攻擊 1:2、把卡車開到敵軍旁）列為修正項 | `docs/ai/M9-bot-behavior-baseline.md` |
 
 空軍（`bot-air`）不在 B5 範圍：開啟空軍時電腦只以隨機合法方式處理空軍行動，見 §3 TODO。
 
-結果（2026-10-06，最終程式碼、全新 seed，詳見 [行為基準報告](../reports/M9-bot-behavior-baseline.md)）：預設地圖 B5-1～B5-6 全部 PASS
+結果（2026-10-06，最終程式碼、全新 seed，詳見 [行為基準報告](../ai/M9-bot-behavior-baseline.md)）：預設地圖 B5-1～B5-6 全部 PASS
 （對隨機電腦 38/40 = 95%，雙方座位各 95%；攻擊勝率比中位數 14:1；終局 97% 部隊在補給中）；地中海 10/10；
 **東歐 32/40 = 80%，未達 90%**（TODO `bot-eastern-front`）；B5-7 人工檢視已做並修正 11 項。因東歐未達標，B5 維持 IN PROGRESS。
 
-heuristic@2（2026-10-06，[對局紀錄研究](../reports/M9-replay-study.md)）：對 heuristic@1 在 150 局未用過的 seed 上 75:48（p = 0.009）；
+heuristic@2（2026-10-06，[對局紀錄研究](../ai/M9-replay-study.md)）：對 heuristic@1 在 150 局未用過的 seed 上 75:48（p = 0.009）；
 B5-1～B5-6 不退步檢查全部 PASS。東歐 `bot-eastern-front` 仍未關閉。
 
 heuristic@3（2026-10-07，戰線研究）：砲兵護衛使砲兵被攻擊減少 76%、防守損失每局少 1 step；對 v2 在 90 局新 seed 上 43:34（p = 0.18，勝率提升未證實）；
@@ -156,7 +156,7 @@ heuristic@4（2026-10-07，主攻方向）：對 v3 在 60 局新 seed 上 33:13
 在 OOB 0.4.0 上的 B5 重驗見 [OOB 改版 WBS](12-oob-revision-wbs.md) O6。
 
 heuristic@5（2026-10-07，拔除駐守單位、補給預算）：OOB 0.4.0 上對 v4 在 60 局新 seed 上 32:13（p = 0.003）；
-斷補單位回合每方每局 8.3 → 3.7。見 [對局紀錄研究](../reports/M9-replay-study.md) 第 7 節。
+斷補單位回合每方每局 8.3 → 3.7。見 [對局紀錄研究](../ai/M9-replay-study.md) 第 7 節。
 B5 重驗（v5，OOB 0.4.0，seed 33000–33039 對 random-legal、33500–33519 互打）：全部 PASS；對 random-legal 39/40（Allied 19/20、Axis 20/20），
 60 局皆完成、無錯誤、重播 hash 相符；回合結束時在補給內 91%。
 
@@ -176,7 +176,7 @@ B5 重驗（v5，OOB 0.4.0，seed 33000–33039 對 random-legal、33500–33519
 
 ### B8 行為基準報告（PLANNED）
 
-- `docs/reports/M9-bot-behavior-baseline.md`：seed 矩陣、Error／Warning 統計、勝負與 objective 分布、延遲、代表性 trace 摘錄、
+- `docs/ai/M9-bot-behavior-baseline.md`：seed 矩陣、Error／Warning 統計、勝負與 objective 分布、延遲、代表性 trace 摘錄、
   已知弱點與 TODO。
 
 ### B9 M9 exit gate（PLANNED）
@@ -246,5 +246,5 @@ B5 重驗（v5，OOB 0.4.0，seed 33000–33039 對 random-legal、33500–33519
   統計與突變在 `src/ai/training.ts`（測試 `tests/ai/training.test.ts`）。
 - 已知限制：每次升級各自以 p < 0.05 判定，連續多代會有偶然升級的機率，因此最終以 T4（對 heuristic@1、未用過的 seed）作為整體提升的證據。
 - 使用者決定（2026-10-06）：「我覺得用權重不太對 應該研究replay並改善策略」。權重訓練暫停（4 代皆無顯著改善，見
-  [M10 訓練紀錄](../reports/M10-self-play-training.md)），T2～T5 不再追求；訓練工具保留。改為以重播研究改進策略：
-  [M9 對局紀錄研究與 heuristic@2](../reports/M9-replay-study.md)。
+  [M10 訓練紀錄](../ai/M10-self-play-training.md)），T2～T5 不再追求；訓練工具保留。改為以重播研究改進策略：
+  [M9 對局紀錄研究與 heuristic@2](../ai/M9-replay-study.md)。

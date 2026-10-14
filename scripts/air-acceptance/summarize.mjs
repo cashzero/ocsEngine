@@ -2,7 +2,7 @@
 import { readdir, readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
-const dir = process.argv[2] ?? 'docs/quality/evidence/air-2026-10-03';
+const dir = process.argv[2] ?? 'artifacts/air-2026-10-03';
 const cell = (text) => String(text ?? '').replace(/\|/g, '\\|').replace(/\s+/g, ' ').slice(0, 420);
 const sections = [];
 for (const run of (await readdir(dir, { withFileTypes: true })).filter((entry) => entry.isDirectory()).map(({ name }) => name).sort()) {

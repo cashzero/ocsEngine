@@ -7,7 +7,7 @@
 import { join } from 'node:path';
 import { advanceTo, click, gotoHex, has, hexDistance, newGame, open, placeArrivals, record, selectUnit, textOf, where } from '../air-acceptance/harness.mjs';
 
-const root = process.argv[2] ?? 'docs/quality/evidence/replacements-2026-10-04';
+const root = process.argv[2] ?? 'artifacts/replacements-2026-10-04';
 const rulesSeed = Number(process.argv[3] ?? 6104);
 
 /** Fly the first offered target of a mission with every aircraft `aircraft` accepts. */

@@ -6,7 +6,7 @@ import { advanceTo, click, has, newGame, open, record, refitAll, settleLogged, t
 
 const rulesSeed = Number(process.argv[3] ?? 5104);
 const target = process.argv[4] ?? '0504';
-const evidenceDir = join(process.argv[2] ?? 'docs/quality/evidence/air-2026-10-03', `air-06-facility-rules-${rulesSeed}`);
+const evidenceDir = join(process.argv[2] ?? 'artifacts/air-2026-10-03', `air-06-facility-rules-${rulesSeed}`);
 const h = await open({ evidenceDir });
 const seeds = { map: 5101, oob: 5102, deployment: 5103, rules: rulesSeed };
 const turnLimit = 8;

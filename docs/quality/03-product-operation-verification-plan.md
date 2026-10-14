@@ -1,67 +1,44 @@
 # Product-operation verification plan
 
-Status: **FROZEN BASELINE / EXECUTION IN PROGRESS** (2026-09-04).
-
-Default-operation amendment (2026-10-01, explicitly requested by the user: "default map way too
-small, inc min size" and "2 turn 也太少"): the New Game default is `32×24 / TEMPERATE_INLAND /
-COMPACT / 2 per side / 8 turns`, and players may choose maps from 16×12 to 64×48. NG-06 now names
-that default; NG-07 keeps its explicit 18×12 Large package, which is within the new limits. The
-map generator itself still accepts 8×8 for rule-test fixtures only.
-
-Order-of-battle amendment (2026-10-03, explicitly requested by the user: "default oob 應該要有更多步兵師,
-reinforce entry point應該更多" and "用divisionPerSide取代 然後指定其中有多少Arm div"): New Game sets
-`Divisions per side` (1–20; raised from 12 on the follow-up "div total 12好像還是有點少", default unchanged) and how many of them are armored (0–6); the rest are foot divisions, about one in
-four airborne. The default is `32×24 / TEMPERATE_INLAND / COMPACT / 6 divisions per side, 2 armored / 8 turns`.
-Generated maps give each side one entry Hex per six map rows along its edge (at least two), each also a Supply
-Source. NG-04, NG-06 and NG-07 are restated in these terms (NG-07's former "4 per side" plan cannot be expressed
-as a division mix, so its headline counts are recomputed for 4 divisions, 2 armored); every row stays `UNVERIFIED`.
-
-Explicit-generation amendment (2026-10-04, explicitly requested by the user: "map/oob generation 應該是設定完按generate才產生
-而不是每改一個設定就generate依次"): New Game no longer generates on open, on every settings change, or on "Randomize all
-seeds". Changing settings only marks an existing preview "Preview invalidated" and disables Start; the Map/OOB/deployment
-package is generated only when the player presses **Generate operation**. NG-02 means pressing Generate operation on the
-default settings; NG-03 and NG-05 additionally require that no generation runs until Generate operation is pressed. Every
-row stays `UNVERIFIED`.
-
-Rail amendment (2026-10-04, requested by the user: "考慮到rail對OCS的supply規則極重要 安排加入rail 包含map generate
-以及對應的supply規則", with the follow-up "rail不應該跟road一樣dense 應該要少一點"): generated maps carry a railway net
-much sparser than the roads, and trace supply follows it (12.6a, 13.3c, 13.3h, 13.8c, 12.7a). Section H adds RAIL rows;
-plan `docs/roadmap/10-rail-wbs.md`. No existing row changes status or expectation.
-
-Replacement amendment (2026-10-04, explicitly requested by the user: "目前 PAX/EQ的 設計為何還需要option來打開 應該是內建的吧",
-then choosing "B": implement 13.5a-e and build Pax/Eq in): the New Game **Air support** option is removed. Every New Game gives both
-sides Pax and Eq each Reinforcement Phase, and aircraft reinforcements come with **Air forces**. Section I adds rows REPL-01 to
-REPL-06; section F's run note is restated accordingly (no AIR expectation changed), and AIR-11/AIR-12, whose code was refactored,
-were re-run on the new build. No other row changes.
-
-Map theme amendment (2026-10-04, requested by the user: "增加新的map theme, eastern europe (aka russia) 參考
-E:\work\CaseBlue GBII v6_24_0 應該相比BTR 鐵路道路密度都要更低 地形更平坦"): New Game's Style adds **Eastern Europe
-(Russia)**, calibrated on Case Blue / GBII (`docs/generator/11-eastern-europe-theme.md`). Section B adds MAP-06. No
-existing row changes status or expectation.
-
-Supply UX amendment (2026-10-02, explicitly approved by the user: "OK" to adding the SUP rows proposed in
-`docs/roadmap/09-supply-logistics-ux-wbs.md` §4): section G adds Supply and logistics rows. Every new row
-starts `UNVERIFIED`; no existing row changes status or expectation. The 2026-10-02 A0 baseline
-(`docs/reports/supply-ux-a0-baseline-2026-10-02.md`) operated parts of this flow, including a checkpoint
-restore, but did not store every evidence item required by "Rules of evidence" (screenshot artifacts,
-elapsed time), so it promotes no row here, including SES-04. SUP-A15 states the approved intent (undo one
-action, not the whole segment); its exact semantics for actions with dice or revealed information must be
-confirmed in the A4 design review before that row can be executed.
-
-Desktop scope amendment (2026-09-06, explicitly approved by the user): default
-1920×1080, supported 1680×1050. Narrow-screen acceptance is removed. A single
-left command deck remains fixed; only bounded collections may scroll. Historical
-reports retain their original viewport evidence. All other operation expectations
-and unverified statuses remain unchanged.
-
-The unit-counter portion of the baseline was expanded on 2026-09-04 after the prior U4
-scope was found to prove interaction but not OCS counter fidelity. Section B1 and
-`04-counter-fidelity-correction-plan.md` are now required P0 evidence; existing map or
-whole-turn screenshots cannot satisfy them by inference.
+Status: **EXECUTION IN PROGRESS**. M8 Generated game flow and U10 Operable UI stay `IN PROGRESS` until the gate
+rule in "Execution order and stop conditions" is met. Count the current row statuses with
+`node scripts/quality/acceptance-summary.mjs`.
 
 This plan is the acceptance authority for the current player-facing product. Unit, integration,
 source-contract, and headless tests are regression support only. They cannot change a row's status
 to `PASS` unless the row explicitly names that evidence type.
+
+## Approved scope
+
+The rows below follow these user decisions. Changing one is a specification decision: rewrite the bullet,
+name the approval, and invalidate the affected rows.
+
+- **New Game defaults and limits** (user, 2026-10-01, 2026-10-03 and 2026-10-14): default `32×24 / TEMPERATE_INLAND /
+  COMPACT / 6 divisions per side, 2 armored / 8 turns`; maps from 16×12 to 256×256 (the generator accepts 8×8
+  for rule-test fixtures only; large maps still exceed the New Game budget, TODO `PERF-7`); 1–20 divisions per side, 0–6 of them armored, the rest foot divisions, about one
+  in four airborne. Each side gets one entry Hex per six map rows along its edge (at least two), each also a
+  Supply Source.
+- **Explicit generation** (user, 2026-10-04): New Game generates only when the player presses **Generate
+  operation**. Changing a setting or "Randomize all seeds" only marks an existing preview "Preview invalidated"
+  and disables Start.
+- **Desktop only** (user, 2026-09-06): default 1920×1080, supported 1680×1050, no narrow-screen acceptance.
+  A single left command deck stays fixed; only bounded collections may scroll.
+- **Printed counter fidelity** (2026-09-04): section B1 and `docs/roadmap/17-counter-fidelity-wbs.md` are required
+  P0 evidence; map or whole-turn screenshots cannot satisfy them by inference.
+- **Replacements are built in** (user, 2026-10-04, 2026-10-13, 2026-10-14): there is no Air support option;
+  every New Game gives both sides Pax and Eq each Reinforcement Phase, and aircraft reinforcements come with
+  **Air forces**. Repls arrive as independent movable units. Pax/Eq come from a Variable Replacement Table and
+  are spent by a Rebuild Table; ground units can be consolidated (13.9-1/2/3).
+- **Map styles** (user, 2026-10-04): Eastern Europe (Russia) is offered next to the BtR-based styles, calibrated
+  on Case Blue / GBII (`docs/generator/11-eastern-europe-theme.md`).
+- **Railroads** (user, 2026-10-04): generated maps carry a railway net much sparser than the roads, and trace
+  supply follows it (12.6a, 13.3c, 13.3h, 13.8c, 12.7a).
+- **Supply dumps** (user, 2026-10-02 and 2026-10-14): generic counters without names; they are not units and are
+  not counted as units.
+- **Off-map air** (user, 2026-10-13): generated maps print one friendly AEP per side at its primary map-edge
+  entry; off-map sorties launch only from a friendly AEP (section J).
+- **Transactions** (user, 2026-10-14): there is no separate Commit or Cancel control; ACT-11 and ACT-12 state the
+  current behaviour.
 
 ## Rules of evidence
 
@@ -71,7 +48,9 @@ to `PASS` unless the row explicitly names that evidence type.
 - Clicking a hidden element through DevTools is not a valid player operation. Collapsed controls
   must first be opened through their visible summary, or the product must expose an obvious prompt.
 - Record input values, expected visible result, observed result, elapsed time, browser console errors,
-  final revision/phase, and screenshot or trace artifact for every execution.
+  and final revision/phase for every execution in a text record under `docs/quality/evidence/<run>/`.
+  Capture a screenshot or trace in the gitignored `artifacts/` folder and review it; write what it shows
+  into the text record. Screenshots are not committed (see `docs/quality/evidence/README.md`).
 - `PASS` means the expected result was observed with the frozen input. `FAIL` means it was not.
   `BLOCKED` means the required state cannot be reached through the product. `UNAVAILABLE` means the
   verification environment itself is unavailable. `UNVERIFIED` never means pass.
@@ -128,7 +107,7 @@ A completed transition does not pass when it exceeds its budget or temporarily a
 ## B1. Printed unit-counter fidelity
 
 Use the fixed NG-07 package and the reviewed VASSAL/rulebook corpus defined in
-`04-counter-fidelity-correction-plan.md`. A generic rectangle, role abbreviation, text
+`docs/roadmap/17-counter-fidelity-wbs.md`. A generic rectangle, role abbreviation, text
 summary, or isolated counter laboratory is not acceptable evidence.
 
 | ID | Pri | Player operation | Required visible result | Status |
@@ -196,25 +175,17 @@ is `BLOCKED`, not `PASS`; the missing scenario/setup path is a product gap to re
 | UI-04 | P0 | Run NG-07 and ACT-14 while collecting console/runtime errors | Zero uncaught exception or error log; failures appear in the UI | UNVERIFIED |
 | UI-05 | P1 | Keyboard traverse New Game, map selection, actions, modal, handoff | Focus remains visible and modal focus cannot escape into private content | UNVERIFIED |
 
-## F. Air power (added 2026-10-01 with M11-Air A9; AIR-10 to AIR-15 added 2026-10-03)
+## F. Air power
 
-Run on a New Game with **Air forces: Fighters, bombers and Air Bases** (and, from 2026-10-03, **Air transport** and
-**Air support** set to their non-None options; from 2026-10-04 there is no Air support option: Eq and aircraft reinforcements
-are built in, see section I). Hip Shoots are unreachable because no air force is listed as able to Hip
-Shoot (game-specific rules were left out), so that part of AIR-05 is `BLOCKED`.
+Run on a New Game with **Air forces: Fighters, bombers and Air Bases** and **Air transport** set to a non-None
+option. Hip Shoots are unreachable because no air force is listed as able to Hip Shoot (game-specific rules are
+left out), so that part of AIR-05 is `BLOCKED`.
 
-Amendment 2026-10-03 (user request: implement Air Transport/Air Drop, Air Base construction and air replacements/
-reinforcements, then "完成後把全部的驗收做完"): rows AIR-10 to AIR-15 cover the new features; the former note that Air
-Transport and Air Drop had no row is withdrawn. No existing expectation was changed.
-
-Execution 2026-10-03: every row was run in Chromium (Playwright, 1920×1080) against the built application, driving only
-visible controls (deck buttons, roster, hex chips, the map's arrow-key hex cursor and Enter, the menu's file chooser).
-Scripts: `scripts/air-acceptance/`. Evidence (inputs and seeds, every step, observed text, elapsed times, console
-errors, ending turn/phase or final revision, screenshots, saves): `docs/quality/evidence/air-2026-10-03/RUNS.md` and its run folders. All runs used the
-same final build. The state revision is printed only on the Game End dialog, so runs that stop mid-game record turn,
-player and phase instead. Dice-dependent checks use the rules seed named in the evidence folder; a run whose dice did not
-reach a case (for example seed 5105, where the interceptor drove off the whole raid before Flak, so AIR-04's barrage
-result was not shown) is kept as evidence and the case is taken from the run that reached it.
+Rows run in Chromium against the built application through visible controls only (deck buttons, roster, hex chips,
+the map's arrow-key hex cursor and Enter, the menu's file chooser), with `scripts/air-acceptance/`. The state revision
+is printed only on the Game End dialog, so runs that stop mid-game record turn, player and phase instead.
+Dice-dependent checks name the rules seed of the run that reached the case. Evidence per row:
+`docs/quality/evidence/air-2026-10-03/RUNS.md`.
 
 | ID | Pri | Player operation | Required visible result | Status |
 |---|---:|---|---|---|
@@ -234,11 +205,11 @@ result was not shown) is kept as evidence and the case is taken from the run tha
 | AIR-14 | P0 | Plan, delay and cancel Drop Plans, then fly a parachute drop and a glider drop (14.10) | Plans made in the Aircraft Refit Phase; an unplanned combat-unit drop is refused; the Success Table number (with the glider +1) is the same in the preview and the result; the landing is rolled and reported | PASS (2026-10-03, after making the glider preview match the result; `air-13-15`) |
 | AIR-15 | P1 | Fly a full Transport through an enemy Patrol Zone (14.9g) | Flak is rolled with its modifiers; a hit cuts capacity and the owner chooses the cargo lost | PASS (2026-10-03, `air-13-15`, rules seed 5106) |
 
-The Air power section passes as a set only together with the rest of this plan's gate rules; the remaining gaps of the
-implementation (Glider Points, game-specific Success Table modifiers, generator-defined para counters, fixed Eq
-allotment, and others) are TODO items in `docs/reports/M11-air-power.md` §6.3 and the rules manifest.
+The Air power section passes only together with the rest of this plan's gate rules. Open air gaps (Glider
+Points, game-specific Success Table modifiers, generator-defined para counters, and others) are listed in
+`docs/quality/05-todo-inventory.md` and the rules manifest.
 
-## G. Supply and logistics (added 2026-10-02, plan `docs/roadmap/09-supply-logistics-ux-wbs.md`)
+## G. Supply and logistics
 
 Run on the default New Game. Phase A rows (SUP-A) cover the manual flow; Phase B rows (SUP-B) cover the
 helpers and start only after the Phase A gate. Supply dumps are generic counters with no names (original
@@ -261,10 +232,9 @@ board-game design; user decision 2026-10-02).
 | SUP-A13 | P0 | Inspect dumps in the roster, selection card, fuel options, stack list and ledger, including SP carried by a truck | No dump has a name; each reads as type, quantity and Hex; carried SP is shown on its truck, not as a separate "off map" unit | PASS |
 | SUP-A14 | P1 | Divide, load and unload, then read the unit counts | Each counter counts once (a truck is a unit, so a split truck is two); SP carried aboard a truck is not counted as a unit (expectation changed with the user's approval 2026-10-02) | PASS (observed 15 to 16 after a split, unchanged by load and unload) |
 | SUP-A15 | P0 | After a move, a load, and a divide, press Undo | Undo reverts only the last action, not the whole segment (approved: only the last action is undone; dice, revealed information, ending the step and combat clear Undo) | PASS (move/load/divide in real UI; the dice cases by headless tests only) |
-Phase A results of 2026-10-02 are in `docs/quality/evidence/supply-a-2026-10-02/README.md` (input, observed, elapsed, revision, console and artifacts per row).
-After the fixes of the same day, SUP-A02 (dumps of one kind in a Hex are one counter and one map marker) and SUP-A09 (combat and barrage payments are in the ledger) were re-run in the real UI and pass.
-SUP-A15 passes: the user confirmed the Undo semantics ("OK"). SUP-A14: the user decided that a truck is close to a unit, so a split truck counts as two (15 to 16); the row's expectation was changed accordingly and the earlier observation now meets it.
-SUP-A10: the user moved file-based save/load out of scope on 2026-10-02; the checkpoint route passed and the file route stays UNAVAILABLE (needs a real file chooser). A whole game turn (both player turns, hot-seat handoffs, the First Player decision) was then played with real clicks; see the evidence README. 
+Plan: `docs/roadmap/09-supply-logistics-ux-wbs.md`. Evidence: `docs/quality/evidence/supply-a-2026-10-02/README.md`.
+User decisions behind the rows: SUP-A15 undoes one action, not the whole segment; a split truck counts as two
+units for SUP-A14; SUP-A10's file-based save/load route is out of scope (only the checkpoint route is required).
 
 | SUP-B01 | P0 | Enter "8T, from dump A to Hex B" | A plan preview lists trucks, route, MP per step, and resulting stock; game state is unchanged until confirmed | UNVERIFIED (2026-10-04): Phase B is not implemented; the built UI has no planner, estimate or prediction control |
 | SUP-B02 | P0 | Confirm that plan | Hex B gains 8T and the final state equals the manual run of the same actions | UNVERIFIED (2026-10-04): Phase B is not implemented; the built UI has no planner, estimate or prediction control |
@@ -275,9 +245,9 @@ SUP-A10: the user moved file-based save/load out of scope on 2026-10-02; the che
 | SUP-B07 | P1 | Run the Supply Phase prediction | The predicted Out of Supply list matches the real result at the end of the Supply Phase | UNVERIFIED (2026-10-04): Phase B is not implemented; the built UI has no planner, estimate or prediction control |
 | SUP-B08 | P0 | Play a whole turn using only the helpers, then save, load and replay | No dead end, no console error, and the loaded and replayed game match | UNVERIFIED (2026-10-04): Phase B is not implemented; the built UI has no planner, estimate or prediction control |
 
-## H. Railroads (added 2026-10-04, plan `docs/roadmap/10-rail-wbs.md`)
+## H. Railroads
 
-Run on the default New Game unless a row says otherwise. Evidence: `docs/quality/evidence/rail-2026-10-04/README.md`.
+Plan: `docs/roadmap/10-rail-wbs.md`. Run on the default New Game unless a row says otherwise. Evidence: `docs/quality/evidence/rail-2026-10-04/README.md`.
 
 | ID | Pri | Player operation | Required visible result | Status |
 |---|---:|---|---|---|
@@ -295,7 +265,7 @@ Run on the default New Game unless a row says otherwise. Evidence: `docs/quality
 RAIL-05 to RAIL-10 are covered by `tests/rules/ocs-rail-supply.test.ts` and `tests/rules/rail-supply-flow.test.ts`, which are
 regression support only and do not promote these rows.
 
-Rail Cap rows (added 2026-10-08, plan `docs/roadmap/15-rail-cap-wbs.md`). Evidence: `docs/quality/evidence/rail-cap-2026-10-08/README.md`.
+Rail Cap rows (plan `docs/roadmap/15-rail-cap-wbs.md`). Evidence: `docs/quality/evidence/rail-cap-2026-10-08/README.md`.
 
 | ID | Pri | Player operation | Required visible result | Status |
 |---|---|---|---|---|
@@ -307,19 +277,16 @@ Rail Cap rows (added 2026-10-08, plan `docs/roadmap/15-rail-cap-wbs.md`). Eviden
 | RAIL-15 | P1 | Advance an attack past an enemy station so the enemy can no longer reach it, end the phase | The station turns to your rail control on the Trace Supply overlay (13.3h front line) | UNVERIFIED (rule tests only: `tests/rules/rail-cap.test.ts`) |
 | RAIL-16 | P1 | Try to detrain next to an enemy unit, or send more than the Rail Cap left | The move is refused with the rule (13.3e enemy ZOC, 13.3a cost) | UNVERIFIED (rule tests only) |
 
-## I. Replacements (added 2026-10-04, see the replacement amendment above)
+## I. Replacements
 
-Rows REPL-01 and REPL-02 run from the New Game form (Air forces None). A ground unit could not be lost the natural way within
-a reasonable run: a first attempt flew Air Barrages every Barrage Segment for 8 turns with the generated air forces and never
-inflicted a ground step loss, and the harness has no generic ground-movement policy. REPL-03 to REPL-06 therefore start, like
-the breakdown gate, from a **test position**: the very New Game the UI makes with default settings, Air forces None and seeds
-6101/6102/6103/6104, with a few units placed for Turn 1 Allied Movement (`scripts/replacement-acceptance/make-position.mjs`:
-an Axis HQ in Combat Mode with a reduced division in its hex, a one-step Axis Armor unit beside three Allied divisions, a lone
-Axis truck beside an Allied Leg unit; rules seed chosen so the capture and the elimination happen). It is loaded through
-Menu → Load save…, which checks the hash and replays it; every later step is a click on the page. Losing a unit through
-ordinary play from a fresh New Game and then rebuilding it is **not** yet exercised in the browser (TODO in
-`docs/reports/replacements-2026-10-04.md`). Scripts: `scripts/replacement-acceptance/`; evidence:
-`docs/quality/evidence/replacements-2026-10-04/RUNS.md`.
+Rows REPL-01 and REPL-02 run from the New Game form (Air forces None). Rows that need a lost ground unit start
+from a **test position**, because ordinary play does not reliably produce one within a run: the New Game the UI
+makes with default settings, Air forces None and seeds 6101/6102/6103/6104, with a few units placed for Turn 1
+Allied Movement (`scripts/replacement-acceptance/make-position.mjs`). It is loaded through Menu → Load save…, which
+checks the hash and replays it; every later step is a click on the page. Losing a unit through ordinary play from
+a fresh New Game and then rebuilding it is not yet exercised (TODO `repl-natural-loss-ui`). Scripts:
+`scripts/replacement-acceptance/`; evidence: `docs/quality/evidence/replacements-2026-10-04/RUNS.md`,
+`docs/quality/evidence/replacement-movement-2026-10-13/`, `docs/quality/evidence/replacement-tables-2026-10-14/`.
 
 | ID | Pri | Player operation | Required visible result | Status |
 |---|---:|---|---|---|
@@ -330,17 +297,10 @@ ordinary play from a fresh New Game and then rebuilding it is **not** yet exerci
 | REPL-05 | P0 | Complete the game turn with the rebuilds, then save and load | No dead end through the hot-seat handoffs; the loaded game shows the same turn, phase and stacks; no console error | PASS (2026-10-04, `repl-03-06`, Turns 1-2) |
 | REPL-06 | P1 | Lose trucks to an enemy move into their hex, then rebuild them with Eq (9.14c, 13.5e) | The capture roll and the points taken are reported; the Rebuild tab offers at most the points lost (and the Eq held); 1 Eq rebuilds one point as a truck in the Eq hex | PASS on the test position (2026-10-04, `repl-03-06`) |
 
-
-Amendment 2026-10-13 (user request: make Pax/Eq movable replacement units): Repls now arrive as independent units instead of merged quantity counters. This changes the REPL-02 representation requirement to match the requested full unit behavior; it does not waive placement, turn completion, or rebuilding acceptance. The original evidence remains linked above.
-
 | ID | Pri | Player operation | Required visible result | Status |
 |---|---:|---|---|---|
 | REPL-07 | P0 | From New Game, receive Pax in Turn 2; select it, use Reserve/Strat/Move, then move it to another hex and finish that entire Game Turn | Pax prints 5 Leg MP, offers no Combat Mode, changes hex through a confirmed move, spends MP and shows MOVED; every decision and hot-seat handoff completes | PASS (2026-10-13, `evidence/replacement-movement-2026-10-13/run6`): fresh New Game Turn 2, Pax 1406 → 1306, 5 → 4.5 MP; Reserve/Strat/Move operated, no Combat button; entire Game Turn 2 completed |
 | REPL-08 | P0 | Select Eq, pay fuel, move it, then move it beside a reduced unit/HQ and rebuild in a later Reinforcement Phase | Eq prints 10 Truck MP; movement initially shows the fuel requirement; 1T pays for this unit; the moved Pax/Eq at the chosen hex pay for the actual recovered step and Dead Pile unit; downloaded save confirms those moved counters were spent; the completed turn survives save/load | PASS on the loaded training position (2026-10-13, `evidence/replacement-movement-2026-10-13/run6`): Eq fuel 1T, 10 → 9.5 MP; moved Pax/Eq 2612 → 2712 in Turn 2, spent in Turn 3; 79.VG 1 → 2 steps and eliminated armor returns at 2712; downloaded save confirms both Turn-2 Repls eliminated with quantity 0; Turn 4 save/load. Earlier run5 claim remains reopened as FAIL in `run5/review-correction.md`. From fresh New Game losses through rebuilding: UNVERIFIED |
-
-
-Amendment 2026-10-14 (user request: Rebuild Table, Variable Replacement Table, Unit Consolidation): see
-`docs/reports/replacement-tables-2026-10-14.md`. Rows REPL-09 to REPL-12 were written before the browser run.
 
 | ID | Pri | Player operation | Required visible result | Status |
 |---|---:|---|---|---|
@@ -348,6 +308,19 @@ Amendment 2026-10-14 (user request: Rebuild Table, Variable Replacement Table, U
 | REPL-10 | P0 | Open the Rebuild tab in the own Reinforcement Phase; price a rebuild | Rebuild Table and Variable Replacement Table shown even with nothing to rebuild; two 13.5d units cost 1 Pax together; an unaffordable selection is refused with the reason; the paid rebuild spends the Repls | PASS (2026-10-14, run3): tables in a fresh game; pricing and refusal on the loaded training position (not natural losses) |
 | REPL-11 | P0 | Consolidate units in the Reinforcement Phase (13.9-1/2) | Combine (Rebuild tab) for two reduced identical divisions in one hex; Exchange from the selected unit's Unit tab, choosing an identical Dead Pile counter of another division; each reported in the Log | PASS on the loaded training position (2026-10-14, run5); from natural losses in a fresh New Game: UNVERIFIED |
 | REPL-12 | P0 | Complete the turn with these actions, then save and load | Every decision and handoff completes; the loaded game and downloaded snapshot hold the consolidations and the rebuild; no console error | PASS (2026-10-14, run3) |
+
+## J. Air entry points
+
+Off-map sorties launch from a friendly AEP and count one additional off-map hex; a map with no friendly AEP
+cannot launch them. The AEP is an explicit `air-entry:first/second` printed feature, independent of ground
+reinforcement declarations. Saves without AEP features get no implicit ground-entry fallback.
+Evidence: `docs/quality/evidence/aep-2026-10-13/README.md`.
+
+| ID | Pri | Player operation | Required visible result | Status |
+|---|---|---|---|---|
+| AEP-01 | P0 | Generate a 16×12 Compact ground package and a visibly different 24×18 Standard Axis attack package | Both previews show airplane/AEP badges for each side; the second package carries its same AEPs into gameplay, with owner and range explained on hover | PASS (2026-10-13, `evidence/aep-2026-10-13/final`): preview and gameplay 0110/2410, visual badge review and owner/range hover; 597/714 ms Generate, 174/783 ms mount |
+| AEP-02 | P0 | Plan and execute a barrage using only off-map aircraft; resolve decisions and hot-seat handoffs, finish the entire Game Turn, refit next turn | Plan lists the friendly AEP; sortie uses it, surviving aircraft return to the box and refit there without SP; no dead end or browser error | PASS (2026-10-13, `evidence/aep-2026-10-13/final`): only two off-map Fighters flown, interception decision/handoffs, entire Turn 1, Turn 2 off-map refit 445 ms; final R18, zero browser errors |
+| AEP-03 | P0 | Rule boundary: retain ground entries/enemy AEP but remove friendly AEP; also target a nearer non-AEP entry | Missing friendly AEP rejects sortie/candidates; nearer ground entry cannot replace AEP; transaction launch hex and range originate at friendly AEP | PASS (2026-10-13, explicitly named rule boundary): `tests/rules/off-map-airfield.test.ts`; related regression 38/38 |
 
 ## Execution order and stop conditions
 
@@ -365,86 +338,4 @@ Amendment 2026-10-14 (user request: Rebuild Table, Variable Replacement Table, U
    download before it is executed.
 
 The gate may be marked `PASS` only when every P0 row is `PASS`, no P1 row has a player-blocking
-failure, evidence belongs to the same final build, and the observed-issue list contains no open P0.
-
-## Execution record 2026-10-04 (partial run)
-
-Requested by the user ("把UNVERIFIED 全部確認一次 後更新到文件"; then "先就目前完成的部分更新文件"). Build: worktree
-`worktree-todo-inventory-docs` at `780812a` (main `6745ecd` plus documentation only), `npm run build`, served from `web/` + `dist/`.
-Browser: Playwright Chromium, 1920×1080 unless stated. Every operation was a click, key press or typed value on a visible
-control; observations were read from the page. Scripts: `scripts/product-acceptance/` (`run-newgame.mjs`, `run-map.mjs`,
-`run-counters.mjs`, and `session.mjs` for the step-by-step ACT runs, whose step files are kept with the evidence). Evidence:
-`docs/quality/evidence/product-2026-10-04/` (`results.json`, `log.md`, screenshots per run). Console/page errors: 0 in every run.
-
-Covered: §A, §B, §B1 (1920×1080; the 1680×1050 repeat stopped after CTR-03), §C. Not yet executed: §D (SES-01 to SES-09) and
-§E (UI-01 to UI-05). SUP-B rows wait for Phase B (no planner exists in the product).
-
-This run: 29 PASS, 4 FAIL (NG-07, NG-10, MAP-03, MAP-04), 2 BLOCKED (ACT-11, ACT-12); CTR-05, CTR-06 and CTR-08 (partial
-evidence) and ACT-06 (state not reached) stay `UNVERIFIED`. Whole matrix after this record, including sections H and I added
-the same day by the rail and replacement work: 65 PASS, 5 FAIL (the four above and AIR-08), 2 BLOCKED, 3 partly passed (AIR-04,
-AIR-05, SUP-A10), 32 UNVERIFIED (CTR-05, CTR-06, CTR-08, ACT-06, SES-01–09, UI-01–05, SUP-B01–08, RAIL-05–10). This run's build
-predates sections H and I; it does not cover them.
-
-Observed issues (open; none is closed by this record):
-
-- O-1 (NG-10, P0): during Generate, stages 2–4 are `is-active` together — the exploratory finding below is reproduced.
-- O-2 (NG-07, spec): the frozen package now deploys on 40 Hexes, not 38; preview and mount agree. Needs a user decision to
-  amend the expectation or a generator fix.
-- O-3 (MAP-03, P0): keyboard Enter on an own stack selects the top unit without the stack list that a click opens.
-- O-4 (MAP-04, P0): "64 units" in the preview and menu vs "All units (28)" per side; the 8 supply dumps are counted in one place
-  and not the other, with no explanation on screen.
-- O-5 (usability): when the screen holder is not the seat that must act, the top bar reads "<holder> to act" while the deck
-  reads "<other seat> commander to act" (seen after a manual hand-over in the Allied Reinforcement Phase and at every Player
-  Turn change).
-- O-6 (correctness of text): after the Allied attack on 1509 eliminated the HQ, the advance prompt said "1509 is vacant" while
-  the map still announced "enemy Truck" there.
-- O-7 (ACT-11/ACT-12): COMMIT_TRANSACTION and CANCEL_TRANSACTION have no player control; whether those rows should be restated
-  (for example "the last decision commits the transaction once") is a specification decision for the user.
-- O-8 (SES-01, not yet executed): the menu has no Pause control (`src/ui/controller.ts`: "A turn-based game has no pause"); SES-01
-  will be `BLOCKED` unless the row is restated.
-
-M8 and U10 remain `IN PROGRESS`.
-
-## Exploratory findings that do not count as PASS
-
-These findings triggered this plan and must be reproduced after the current code changes:
-
-- A Large package did preserve 216 Hexes, 90 units, 8 formations, and the configured seeds through
-  preview and mount.
-- Advancing the sequence completed Turn 1 with 29 actions and five handoffs.
-- That run performed no unit action, so it did not satisfy ACT-14.
-- Selecting `MOVE_PIECE` without a selected unit then blocked the browser for more than 40 seconds.
-- Generation stages 2–4 appeared active simultaneously.
-- Required handoff was discoverable only in collapsed Session tools; the exploratory driver clicked
-  the hidden DOM control, which is invalid under this plan.
-
-Re-check 2026-10-04 (see "Execution record 2026-10-04"; the findings above are kept as the trail):
-
-- Large package continuity: the current NG-07 package (64 units, 8 formations) matched preview and mount Hex by Hex; only the
-  frozen deployed-Hex count differs (NG-07 FAIL, O-2).
-- No unit action in the whole turn: superseded; ACT-14 PASS with moves, an overrun, a barrage and two attacks.
-- `MOVE_PIECE` without a selected unit: not re-run as described. The current deck has no separate action-family list; moves
-  start from a selected unit, and every selection, preview and confirmation measured stayed under 1,000 ms.
-- Stages 2–4 active together: **reproduced** (NG-10 FAIL, O-1).
-- Hand-over only in collapsed tools: no longer true; the deck itself shows "Hand the screen to …" whenever a hand-over is
-  required (ACT-10, ACT-13), and the privacy screen hides the map.
-
-Therefore M8 and U10 remain `IN PROGRESS`.
-
-
-## AEP amendment (2026-10-13)
-
-User request: map must have AEP hexes so off-map air units cannot enter from arbitrary hexes.
-Generated maps print one friendly AEP per side at its primary map-edge entry. The AEP is an explicit
-`air-entry:first/second` printed feature, independent of ground reinforcement declarations. Off-map
-sorties launch from a friendly AEP and count one additional off-map hex; a map with no friendly AEP
-cannot launch them. Existing saves without AEP features retain no implicit ground-entry fallback.
-This amendment does not lower or replace any existing New Game/air acceptance criterion.
-
-| ID | Pri | Player operation | Required visible result | Status |
-|---|---|---|---|---|
-| AEP-01 | P0 | Generate a 16×12 Compact ground package and a visibly different 24×18 Standard Axis attack package | Both previews show airplane/AEP badges for each side; the second package carries its same AEPs into gameplay, with owner and range explained on hover | PASS (2026-10-13, `evidence/aep-2026-10-13/final`): preview and gameplay 0110/2410, visual badge review and owner/range hover; 597/714 ms Generate, 174/783 ms mount |
-| AEP-02 | P0 | Plan and execute a barrage using only off-map aircraft; resolve decisions and hot-seat handoffs, finish the entire Game Turn, refit next turn | Plan lists the friendly AEP; sortie uses it, surviving aircraft return to the box and refit there without SP; no dead end or browser error | PASS (2026-10-13, `evidence/aep-2026-10-13/final`): only two off-map Fighters flown, interception decision/handoffs, entire Turn 1, Turn 2 off-map refit 445 ms; final R18, zero browser errors |
-| AEP-03 | P0 | Rule boundary: retain ground entries/enemy AEP but remove friendly AEP; also target a nearer non-AEP entry | Missing friendly AEP rejects sortie/candidates; nearer ground entry cannot replace AEP; transaction launch hex and range originate at friendly AEP | PASS (2026-10-13, explicitly named rule boundary): `tests/rules/off-map-airfield.test.ts`; related regression 38/38 |
-
-Evidence and initial-run correction: `evidence/aep-2026-10-13/README.md`. Overall product/regression gate remains IN PROGRESS: the full suite includes a preexisting generated-air integration failure, reproduced without AEP generation/launch changes. NG-12 stays reopened until all of its original preview/help/roster criteria are re-exercised, beyond this AEP-specific run.
+failure, evidence belongs to the same final build, and `05-todo-inventory.md` lists no open P0 observed issue.

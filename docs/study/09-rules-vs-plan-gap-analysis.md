@@ -17,7 +17,7 @@
 | 規則（權威） | OCS Series Rules v4.3 §1.0–13.9、§16、§17、§20（地面／後勤 MVP 相關部分） |
 | 計畫（GPT 撰寫） | `docs/roadmap/02-rule-engine-wbs.md`、`docs/study/08-crosswalk-and-implementation-roadmap.md` |
 | 切片規格 | `docs/rule-engine/00-*.md`–`09-*.md`（每份 7–13 行） |
-| 完成宣告 | `docs/reports/R10-rule-engine-integration.md`、`src/rules/manifest.ts` |
+| 完成宣告 | `docs/rule-engine/R10-rule-engine-integration.md`、`src/rules/manifest.ts` |
 | 抽查實作 | `src/rules/**`、`src/game-flow/configuration.ts` |
 
 §14–15（航空）、§18–19（海軍、港口與航運）、§21（選用規則）在計畫中已明確列為
@@ -183,14 +183,14 @@ completion claim, reopen the gate immediately」。
 ## 4. TODO 與關閉證據
 
 > **2026-10-01 狀態更新**：本節以 2026-09-30 的程式為基準。規則層已於 2026-10-01 重建
-> （`docs/reports/ocs-rebuild-2026-10-01.md`）。多數項目的程式與條文測試已完成，但**皆未經實機 UI 驗證**，
+> （`docs/rule-engine/ocs-rebuild-2026-10-01.md`）。多數項目的程式與條文測試已完成，但**皆未經實機 UI 驗證**，
 > 故不得視為關閉。對照（依重建紀錄與 `src/rules/manifest.ts` 判讀）：
 > R2、R3、R4、R5、R6、R7、R8、R10、R12、R13＝程式已實作，待實機驗證；
 > R1＝manifest 仍為粗分類，**仍開啟**；R9＝整疊移動（6.1f）使用者暫緩，**仍開啟**；
 > R11（MA 不捨入）未確認，**仍開啟**；R14＝已登記為 DEFERRED，各系統待實作。
 >
 > **2026-10-04 補註（TODO 盤點，依 main `ca555b4`）**：manifest 現有 25 列（9 IMPLEMENTED、11 PARTIAL、4 DEFERRED、1 GAME_SPECIFIC）。
-> R14 中的 Breakdown（20.0）已是 `breakdowns` IMPLEMENTED（`docs/reports/breakdowns-2026-10-03.md`，待驗收列核准）；
+> R14 中的 Breakdown（20.0）已是 `breakdowns` IMPLEMENTED（`docs/rule-engine/breakdowns-2026-10-03.md`，待驗收列核准）；
 > Rebuild（13.5a-e）已是 `replacements-rebuilds` PARTIAL（#57）；刺蝟／工兵仍是 DEFERRED（`hedgehogs-engineering`）。R1、R9、R11 狀態不變。
 > 集中清單見 `docs/quality/05-todo-inventory.md`。
 >

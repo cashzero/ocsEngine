@@ -126,7 +126,7 @@ export const createGeneratedRuleConfiguration = (
         .find((entry) => entry.hexId === hexId)?.controllerId === players[deployment.attacker!] ? points : 0), 0),
     ),
   } }),
-  // 13.5: each side rolls its Variable Replacement Table and rebuilds by its Rebuild Table (docs/reports/replacements-2026-10-09.md).
+  // 13.5: each side rolls its Variable Replacement Table and rebuilds by its Rebuild Table (docs/rule-engine/replacement-tables-2026-10-14.md).
   replacementArrivals: { players: (['ALLIED', 'AXIS'] as const).map((side) => ({ playerId: players[side], rows: variableReplacementTable(oob.options.scale) })) },
   rebuildTables: { players: (['ALLIED', 'AXIS'] as const).map((side) => ({ playerId: players[side], rows: buildRebuildTable(oob.pieceDefinitionCatalog.definitions, side) })) },
   railroads: GENERATED_RAILROADS,

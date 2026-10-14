@@ -65,7 +65,7 @@ describe('G9-G10 headless and UI contract gate', () => {
         'history-timeline-diagnostics', 'save-load-checkpoint-replay',
         'recovery-and-observability', 'headless-driver',
       ][index]}.md`),
-      'docs/reports/G10-gameplay-ui-contract-gate.md',
+      'docs/gameplay/G10-gameplay-ui-contract-gate.md',
     ];
     expect(outputs.filter((path) => !existsSync(join(process.cwd(), path)))).toEqual([]);
   });

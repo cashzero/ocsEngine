@@ -1,5 +1,5 @@
 import { open, newGame, click, advanceTo, where, gotoHex, settleDecisions, placeArrivals, has } from './air-acceptance/harness.mjs';
-const h = await open({ evidenceDir: 'docs/quality/evidence/roster-arrivals-2026-10-13/run3' });
+const h = await open({ evidenceDir: 'artifacts/roster-arrivals-2026-10-13/run3' });
 const check = (ok, message) => { h.rows.push({ expectation: message, status: ok ? 'PASS' : 'FAIL' }); h.note(`${ok ? 'PASS' : 'FAIL'} ${message}`); if (!ok) throw new Error(message); };
 const roster = async () => {
   const began = Date.now();

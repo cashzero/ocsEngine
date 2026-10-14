@@ -13,5 +13,5 @@ M7 outputs deterministic, validated force packages and a Foundation `PieceDefini
 | M7.6 | `docs/oob/M7-validation-contract.md` | Foundation and OOB validators fail closed |
 | M7.7 | `docs/oob/M7-serialization-and-boundary.md` | Canonical JSON and one-way generation dependency |
 | M7.8 | `docs/oob/M7-ui-preview-and-download.md` | Scale/count/seed preview and download at 13px minimum |
-| M7.9 | `docs/reports/M7-oob-seed-sweep.md` | 1,000 seeds, zero invalid/exception |
-| M7.10 | `docs/reports/M7-random-oob-gate.md` | Focused, full, distribution, and browser gates |
+| M7.9 | `docs/oob/M7-oob-seed-sweep.md` | 1,000 seeds, zero invalid/exception |
+| M7.10 | `docs/oob/M7-random-oob-gate.md` | Focused, full, distribution, and browser gates |

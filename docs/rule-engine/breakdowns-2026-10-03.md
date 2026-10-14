@@ -71,7 +71,7 @@ Breakdown counter 在地圖上是否看得到，依一般的 stack 頂層規則�
 ### 一、預設 New Game
 
 輸入：預設 New Game（`DEFAULT_NEW_GAME_REQUEST`，32×24、COMPACT、每邊 2 formation、8 turns），地圖縮放 69%。
-腳本：`scripts/breakdown-ui-gate.mjs`；完整紀錄：`assets/breakdowns-2026-10-03/run.json`；console errors：無。
+腳本：`scripts/breakdown-ui-gate.mjs`；完整紀錄：`docs/quality/evidence/breakdowns-2026-10-03/run.json`；console errors：無。
 
 | # | 操作 | 預期 | 觀察 | 耗時 |
 |---|---|---|---|---|
@@ -83,7 +83,7 @@ Breakdown counter 在地圖上是否看得到，依一般的 stack 頂層規則�
 | A6 | 交接給 Axis | 敵方 log 不透露拆分 | 「An enemy unit reorganized ×2」 | 620 ms |
 | A7 | Axis 5.FJ Detach、移到 3113、打完 turn | LW 4-3-2、`1/5.FJ`；進入 Turn 2 | 「Detach a Breakdown (4-3-2, …)」；roster `1/5.FJ`；Turn 2 First Player decision | 152 / 216 / 278 ms |
 
-全部在互動預算內（選取 ≤1,000 ms、執行 ≤1,500 ms）。截圖：`assets/breakdowns-2026-10-03/01`–`06`、`03a-absorb-warning`。
+全部在互動預算內（選取 ≤1,000 ms、執行 ≤1,500 ms）。截圖：`docs/quality/evidence/breakdowns-2026-10-03/01`–`06`、`03a-absorb-warning`。
 
 ### 二、測試局面（吸收者選擇、撤退與推進拆出）
 
@@ -92,7 +92,7 @@ UI 先從 New Game 對話框開一局「每邊 5 formation」（其餘為預設�
 再由 Menu → Load save… 載入 `scripts/breakdown-make-saves.mjs` 產生的存檔。存檔只改了開局狀態（幾個單位的位置、mode、
 246.VG 剩 2 步、骰子種子），會經過 save 的 hash 與 replay 驗證；之後的每一步都是在 UI 上點擊。
 存檔 B 的骰子種子是事先 headless 搜尋的（seed 6，結果 AL1/Do1），讓這場戰鬥一定出現防守方撤退與攻擊方推進。
-腳本：`scripts/breakdown-positions-gate.mjs`；完整紀錄：`assets/breakdowns-2026-10-03/positions/run.json`；console errors：無。
+腳本：`scripts/breakdown-positions-gate.mjs`；完整紀錄：`docs/quality/evidence/breakdowns-2026-10-03/positions/run.json`；console errors：無。
 
 | # | 操作 | 預期 | 觀察 | 耗時 |
 |---|---|---|---|---|
@@ -103,7 +103,7 @@ UI 先從 New Game 對話框開一局「每邊 5 formation」（其餘為預設�
 | B5 | Axis 選拆出 → 「Retreat the units separately」→ 兩者各自撤退 | Breakdown 一起撤退 | 「All 2 units retreat to …」與「Retreat the units separately」；246.VG 與 `1/246.VG` 各自撤到 1813 | — |
 | B6 | Allied 推進：選「Detach a Breakdown from 90.Inf (it may advance on its own)」→「Advance 1/90.Inf」→「Stop advancing」 | 只有 Breakdown 推進 | log「90.Inf detached 1/90.Inf.」「1/90.Inf advanced into 1712.」；roster `1/90.Inf, 1712`、`90.Inf, 1612` | — |
 
-decision 按鈕的耗時沒有以可見結果為終點量測，表中以「—」表示（腳本紀錄中的數字只是點擊被接受的時間）。截圖：`assets/breakdowns-2026-10-03/positions/A1`–`B6`。
+decision 按鈕的耗時沒有以可見結果為終點量測，表中以「—」表示（腳本紀錄中的數字只是點擊被接受的時間）。截圖：`docs/quality/evidence/breakdowns-2026-10-03/positions/A1`–`B6`。
 
 ## 已關閉的 TODO
 

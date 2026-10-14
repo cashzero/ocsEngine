@@ -8,7 +8,7 @@ import { detectLayoutIssues } from '../ui-layout-detector.mjs';
 import { configure, generate, moveSelectedTo, openNewGame, payFuel, start } from './lib.mjs';
 
 const [width, height] = (process.argv[3] ?? '1920x1080').split('x').map(Number);
-const evidenceDir = join(process.argv[2] ?? 'docs/quality/evidence/product-2026-10-04', `ui-${width}x${height}`);
+const evidenceDir = join(process.argv[2] ?? 'artifacts/product-2026-10-04', `ui-${width}x${height}`);
 const h = await open({ evidenceDir, viewport: { width, height } });
 const { page } = h;
 const points = [];

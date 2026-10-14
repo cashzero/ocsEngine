@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 // Needs `npm run build`, `node scripts/breakdown-make-saves.mjs`, and the UI served at 127.0.0.1:4391
 // (`OCS_UI_PORT=4391 node scripts/serve-ui.mjs`). Starts a New Game with 5 formations per side, then loads each save
 // through Menu > Load save and plays it with clicks only.
-const out = process.argv[2] ?? 'docs/reports/assets/breakdowns-2026-10-03/positions';
+const out = process.argv[2] ?? 'artifacts/breakdowns-2026-10-03/positions';
 await mkdir(out, { recursive: true });
 const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width: 1680, height: 1050 } });

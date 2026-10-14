@@ -27,7 +27,7 @@ describe('M6 generator boundary and study contract', () => {
         'topology-and-quality-validation', 'serialization-and-package-boundary',
         'ui-preview-and-download', 'seed-sweep-protocol',
       ][index]}.md`),
-      'docs/reports/M6-random-map-gate.md',
+      'docs/generator/M6-random-map-gate.md',
     ];
     expect(outputs.filter((path) => !existsSync(join(process.cwd(), path)))).toEqual([]);
   });
@@ -46,8 +46,8 @@ describe('M6 generator boundary and study contract', () => {
       'docs/oob/M7-validation-contract.md',
       'docs/oob/M7-serialization-and-boundary.md',
       'docs/oob/M7-ui-preview-and-download.md',
-      'docs/reports/M7-oob-seed-sweep.md',
-      'docs/reports/M7-random-oob-gate.md',
+      'docs/oob/M7-oob-seed-sweep.md',
+      'docs/oob/M7-random-oob-gate.md',
     ];
     expect(outputs.filter((path) => !existsSync(join(process.cwd(), path)))).toEqual([]);
   });

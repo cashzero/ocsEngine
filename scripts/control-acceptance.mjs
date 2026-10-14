@@ -7,7 +7,7 @@
 import { click, gotoHex, has, open, placeArrivals, record, where } from './air-acceptance/harness.mjs';
 import { generate, openNewGame, playUntil, start } from './product-acceptance/lib.mjs';
 
-const evidenceDir = process.argv[2] ?? 'docs/quality/evidence/control-2026-10-05';
+const evidenceDir = process.argv[2] ?? 'artifacts/control-2026-10-05';
 const h = await open({ evidenceDir, viewport: { width: 1600, height: 1000 } });
 const { page } = h;
 

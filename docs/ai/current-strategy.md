@@ -2,7 +2,7 @@
 
 更新：2026-10-14。狀態：**PROMOTED，heuristic@66 為標準策略**。
 
-標準策略為 `heuristic@66`，取代 v35。新版 main `45e700a` 上的獨立 80 場取得 935–721 VP（+214），遭遇 +84、攻擊 +130，成對區間 [0.787, 4.563]；合法完整重播、補給／前進稽核與完整品質檢查均通過。v65 選兵試驗已撤回。原始設計見 [M9 評分與規劃](M9-scoring-and-planning.md)與 [M9 Bot 架構](M9-bot-architecture.md)；逐版實驗、凍結資料與對戰證據見 [VP 策略報告](../reports/ai-vp-next-promotion-2026-10-14.md)及 [evidence](../quality/evidence/ai-vp-next-promotion-2026-10-14/README.md)。
+標準策略為 `heuristic@66`，取代 v35。新版 main `45e700a` 上的獨立 80 場取得 935–721 VP（+214），遭遇 +84、攻擊 +130，成對區間 [0.787, 4.563]；合法完整重播、補給／前進稽核與完整品質檢查均通過。v65 選兵試驗已撤回。原始設計見 [M9 評分與規劃](M9-scoring-and-planning.md)與 [M9 Bot 架構](M9-bot-architecture.md)；逐版實驗、凍結資料與對戰證據見 [VP 策略報告](ai-vp-next-promotion-2026-10-14.md)及 [evidence](../quality/evidence/ai-vp-next-promotion-2026-10-14/README.md)。
 
 ## 1. 決策與評估優先順序
 

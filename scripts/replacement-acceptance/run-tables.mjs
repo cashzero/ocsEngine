@@ -1,11 +1,11 @@
-// Actual UI acceptance of docs/reports/replacement-tables-2026-10-14.md §2: the Variable Replacement Table roll and both
+// Actual UI acceptance of docs/rule-engine/replacement-tables-2026-10-14.md §2: the Variable Replacement Table roll and both
 // tables in a fresh New Game, then Unit Consolidation and Rebuild Table pricing on a loaded training position
 // (make-tables-position.mjs). Every step after loading is a visible control; every observation is read from the page.
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { open, newGame, where, advanceTo, placeArrivals, click, tab, has, record, textOf, selectUnit } from '../air-acceptance/harness.mjs';
 
-const evidenceDir = process.argv[2] ?? 'docs/quality/evidence/replacement-tables-2026-10-14';
+const evidenceDir = process.argv[2] ?? 'artifacts/replacement-tables-2026-10-14';
 const positionDir = process.argv[3] ?? 'tmp/replacement-tables-position';
 const h = await open({ evidenceDir });
 const turn = (s) => Number(s.turn.match(/Turn (\d+)/)?.[1]);

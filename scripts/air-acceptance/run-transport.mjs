@@ -5,7 +5,7 @@ import { join } from 'node:path';
 import { advanceTo, click, endPhase, has, newGame, open, placeArrivals, record, refitAll, selectUnit, settleDecisions, tab, textOf, timed, where } from './harness.mjs';
 
 const rulesSeed = Number(process.argv[3] ?? 5104);
-const evidenceDir = join(process.argv[2] ?? 'docs/quality/evidence/air-2026-10-03', 'air-13-15');
+const evidenceDir = join(process.argv[2] ?? 'artifacts/air-2026-10-03', 'air-13-15');
 const h = await open({ evidenceDir });
 const seeds = { map: 5101, oob: 5102, deployment: 5103, rules: rulesSeed };
 const panel = () => textOf(h, '.air-panel');

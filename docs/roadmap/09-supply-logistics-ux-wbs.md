@@ -5,7 +5,7 @@
 
 基準版本：已 rebase 到 `73c7cad`（含 #11 編制分組部署、#12 地圖重繪、#13 左欄重整）。#13 改寫了 command deck 的版面
 （phase 專屬 tab、任務模式、移動 popup），本文件的 UI 位置與約束已依此更新；詳見
-[left-panel-reorganization-2026-10-02.md](../reports/left-panel-reorganization-2026-10-02.md) 與 [docs/ui/11](../ui/11-desktop-command-deck-design.md)。
+[left-panel-reorganization-2026-10-02.md](../ui/left-panel-reorganization-2026-10-02.md) 與 [docs/ui/11](../ui/11-desktop-command-deck-design.md)。
 
 ## 0. 目標與邊界
 
@@ -41,7 +41,7 @@
 ## 1. 現況基線（讀程式碼得出，尚未以實機操作驗證）
 
 > 下表是依原始碼推論。A0 已於 2026-10-02 以真實 UI 驗證，逐項結果與新發現（N-01～N-05）見
-> [supply-ux-a0-baseline-2026-10-02.md](../reports/supply-ux-a0-baseline-2026-10-02.md)：
+> [supply-ux-a0-baseline-2026-10-02.md](../ui/supply-ux-a0-baseline-2026-10-02.md)：
 > 補測後 S-01～S-10 皆已確認。補測另發現 N-07～N-13，其中 **N-11（卡車裝貨後移動他人會凍結 MP 與貨物，且無警告）
 > 與 N-08（合併卡車在 UI 不可用）列為 Phase A blocking 項**，N-12（Undo 為整個 segment）需使用者決定是否處理。
 
@@ -76,7 +76,7 @@ checkpoint 存讀。使用者已於 2026-10-02 核准：(1) SUP 驗收列加入 
 
 **進度（2026-10-02）：** 使用者指示先修 bug，已修正 N-08（合併）、N-11（6.1g 警告）、N-07（counter 點數），
 三項皆先寫失敗測試、再修、再以真實 UI 驗證；`npm run check` 通過（255 個測試）。詳見
-[報告](../reports/supply-ux-a0-baseline-2026-10-02.md)「Bug 修正」。SUP-A07、A11、A12 仍 `UNVERIFIED`（待 A6 以完整證據執行）。
+[報告](../ui/supply-ux-a0-baseline-2026-10-02.md)「Bug 修正」。SUP-A07、A11、A12 仍 `UNVERIFIED`（待 A6 以完整證據執行）。
 **A1 程式部分已完成（2026-10-02）：** 轉運選項查詢（`queryTransportOptions`，已接到 `GameSession.getTransportOptions`）、
 投影層角色（`ProjectedPiece.role`）、對手看到的卡車點數；`npm run check` 通過（43 檔、262 測試）。
 沒有新畫面，所以沒有新的實機驗證，SUP 列狀態不變。詳見報告「A1 完成項」。UI 使用這些資料是 A2。
@@ -174,7 +174,7 @@ Undo 按鈕提示「Undo: Loaded 3T onto the truck at 0316.」，按下後訊息
   實機一場真實戰鬥後顯示「Combat or barrage supply 2T from the dump at 0107 (13T there now)」，與實際扣除一致（`A09-combat-supply-in-ledger.jpg`、`tests/ui/combat-ledger.test.ts`）。
 - **TODO-A5b 已併入 A5a**：帳目的來源改由狀態與紀錄推導（D2），不再依賴頁面記憶，自動付費路徑同樣由紀錄推導。
 
-- 燃料與戰鬥／砲擊付費的選項顯示來源與數量，延續 `ui-flow-review-2026-10-01.md` F-05／F-06 的標示方式。
+- 燃料與戰鬥／砲擊付費的選項顯示來源與數量，延續 `docs/ui/ui-flow-review-2026-10-01.md` F-05／F-06 的標示方式。
 - 本階段補給帳目（唯讀）：付了什麼、從哪個堆或卡車、剩多少；放在 Log tab 旁可隨時開啟的位置，
   需先決定是新 tab 還是 Log 內的分頁，並確認不違反 deckTabs 的「必辦者在最左」規則。
 - 驗收證據：實機操作 SUP-A09。

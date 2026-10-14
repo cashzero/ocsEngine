@@ -1,6 +1,8 @@
 # Unit counter fidelity correction plan
 
-Status: **FROZEN PLAN / IMPLEMENTATION NOT STARTED** (2026-09-04).
+Status: **IN PROGRESS**. Printed counter faces are rendered and CTR-01 to CTR-04 and CTR-07 pass at 1920×1080;
+CF5 is open while CTR-05, CTR-06 and CTR-08 are not `PASS` and the screen-space LOD levels are unverified
+(row status: `docs/quality/03-product-operation-verification-plan.md` section B1).
 
 This plan reopens the unit-counter portion of U4. The existing implementation proves
 viewer projection, selection, stacking, and redaction, but it does not reproduce the
@@ -196,7 +198,7 @@ from the same built application.
 ### CF5 — Product-operation acceptance
 
 Run the built UI, beginning with the fixed NG-07 request from
-`03-product-operation-verification-plan.md`.
+`docs/quality/03-product-operation-verification-plan.md`.
 
 1. In New Game, inspect both sides and locate at least one HQ, combat unit, artillery,
    reconnaissance unit, engineer, transport, and supply counter.
@@ -209,7 +211,7 @@ Run the built UI, beginning with the fixed NG-07 request from
    required pending decisions, and hot-seat handoffs. Exercise a step/resource state in
    a naturally reachable scenario; if it cannot be reached, the row is `BLOCKED`, not
    inferred from tests.
-6. Repeat counter inspection at 1920×1080 and 1680×1050 (user-approved desktop scope amendment, 2026-09-06), including map zoom and a stack of
+6. Repeat counter inspection at 1920×1080 and 1680×1050, including map zoom and a stack of
    at least three counters. Record latency, clipping, overlaps, console errors, and all
    usability defects.
 
@@ -229,8 +231,8 @@ requests simplified rendering when zoomed out. Ordinary interface text retains i
 38 shows the symbol. The map camera owns LOD; preview and selected-stack counters
 remain full detail. Resizing and zooming must both recompute the level.
 
-TODO: verify all three levels in the integrated browser at desktop and narrow
-viewport sizes, including a three-unit stack, keyboard selection, state indicators,
+TODO: verify all three levels in the integrated browser at 1920×1080 and
+1680×1050, including a three-unit stack, keyboard selection, state indicators,
 and return to full detail without changing game state. Until recorded screenshots
 and operated selection prove legibility and no clipping/overlap, these thresholds
 are provisional and counter visual acceptance remains IN PROGRESS.

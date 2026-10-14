@@ -83,7 +83,7 @@ Engine transaction 保存 member ID snapshot。
 | F7 | `docs/foundation/07-scenario-envelope.md` |
 | F8 | `docs/foundation/08-schema-and-serialization.md` |
 | F9 | `docs/foundation/09-fixture-test-kit.md` |
-| F10 | `docs/reports/F10-foundation-integration.md` |
+| F10 | `docs/foundation/F10-foundation-integration.md` |
 
 ### F0：Vocabulary、ADR 與 package boundary
 

@@ -33,4 +33,4 @@ The active shell is therefore one command deck plus one dominant theater. Disabl
 - Starting the preview mounts the matching generated operation and replaces the map/counters/session together.
 - Desktop and narrow browser captures show a map-first layout, readable actions, graphical terrain/features, no horizontal overflow, no console errors, and no rendered text below 13px.
 
-The visual and preview/mount conditions are recorded, but the play condition is not. A Large-OOB browser run stalled at Turn 1 `REINFORCEMENT`; full-turn acceptance is tracked in `docs/quality/02-game-flow-acceptance-correction.md`.
+The visual and preview/mount conditions are recorded. The play condition (a whole turn through the real UI) is tracked by the New Game and rule-action rows of `docs/quality/03-product-operation-verification-plan.md`.
