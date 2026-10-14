@@ -52,7 +52,7 @@
 - 自 2026-10-04 盤點後的變動：`movement.rail-sea-air` 拆為 `movement.rail-cap`（PARTIAL）與 `movement.sea`（DEFERRED）；
   新增 `supply.rail-front-control`（PARTIAL）、`hedgehogs`（IMPLEMENTED）；`hedgehogs-engineering` 改為只剩 `engineering.bridging`。
   2026-10-10：`engineering.bridging` 改為 IMPLEMENTED；`movement.sea` 改為 PARTIAL（港口與 Sea Cap）；`naval-shipping` 縮為 18.0。
-  港口與海運的 UI 驗收 MAP-07、MAP-08、MAP-09 仍 IN PROGRESS（doc 03）。
+  港口與海運的 UI 驗收 MAP-07、MAP-08、MAP-09 仍 IN PROGRESS（doc 03）；2026-10-13 起 New Game 海域改為側翼海＋各方 Sea Cap 與 inland entry，登陸方的平衡為 TODO（§5 第 8 項）。
 - 規則落差分析仍開啟：TODO-R1（逐條登記 §1–21，未登記的規則可能存在）、R9（整疊移動／連續 overrun）、
   R11（程式已保留分數 MA，`src/rules/pieces.ts` 6.1h，但沒有關閉證據要求的分數 MA 測試）、R14（未實作系統）；
   其餘 R 項程式已實作、待實機驗證（`docs/study/09-rules-vs-plan-gap-analysis.md` §4）。
@@ -92,6 +92,8 @@
 6. ACT-11／ACT-12 是否改寫為「最後一個決策只結算一次交易」等可操作的敘述（O-7）；SES-01 Pause 在產品中已移除，是否改寫該列（O-8）。
 
 7. 東歐主題的入口格數，或入口格不在鐵路上時的補給源規則（決定後才能讓預設東歐圖的鐵路降到 Temperate 的一半以下）。
+
+8. 海上登陸平衡（2026-10-14 使用者改列 TODO）：沒有 inland entry 的一方只有一個 2 SP 港口時（實測只能上岸 8T／相位，補給表收入約 36T），敵方兵力要調降，或部分師改為援軍從 Turn 2 經其 inland entry 進場；比例固定（一半）或依上岸容量縮放、是否對稱適用、是否在設定中顯示可覆寫，待決定。細節與結案證據見 `docs/generator/03-coast-and-hydrology.md` TODO (sea-landing balance)。
 
 ## 5a. 2026-10-04 驗收發現的未關閉問題
 
