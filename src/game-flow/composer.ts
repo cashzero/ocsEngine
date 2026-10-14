@@ -164,7 +164,8 @@ export const composeGeneratedScenario = (
       mapSize: `${generatedMap.options.width}×${generatedMap.options.height}`,
       mapStyle: generatedMap.options.style,
       engagement: request.engagement ?? 'MEETING',
-      unitCount: generatedOob.metrics.unitCount,
+      // Supply dumps are stockpiles, not units: they are not in the unit rosters, so they are not in the headline count.
+      unitCount: generatedOob.metrics.unitCount - generatedOob.metrics.rolesBySide.ALLIED.SUPPLY - generatedOob.metrics.rolesBySide.AXIS.SUPPLY,
       formationCount: generatedOob.metrics.formationCount,
       objectiveCount: deployment.objectiveHexIds.length,
       turnLimit: request.turnLimit,

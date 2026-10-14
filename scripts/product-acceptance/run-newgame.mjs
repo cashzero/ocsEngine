@@ -5,7 +5,7 @@ import { click, has, open, record, textOf, where } from '../air-acceptance/harne
 import { configure, dialogState, generate, menuSummary, openNewGame, previewSignature, sha, start, startStageWatch, stopStageWatch, sweepMap } from './lib.mjs';
 
 const evidenceDir = join(process.argv[2] ?? 'docs/quality/evidence/product-2026-10-04', 'newgame');
-const NG07 = { style: 'MEDITERRANEAN_COAST', width: 18, height: 12, scale: 'LARGE', divisions: 4, armored: 2, turnLimit: 3, seeds: { map: 91001, oob: 91002, deployment: 91003, rules: 91004 } };
+const NG07 = { style: 'TEMPERATE_INLAND', width: 18, height: 12, scale: 'LARGE', divisions: 4, armored: 2, turnLimit: 3, seeds: { map: 91001, oob: 91002, deployment: 91003, rules: 91004 } };
 const extra = {};
 
 /** The preview shows divisions per side ("6 per side", or each side's count in an attack); the menu counts them all. */
@@ -148,7 +148,7 @@ try {
   record(h, 'NG-10', 'Configure, Map, OOB, Deployment and Gameplay show truthful current/completed states; no simultaneous "active" ambiguity', `Generate: ${genStages.join(' ⇒ ')} || Start: ${startStages.join(' ⇒ ')}; states with more than one active stage: ${multiActive.length}`,
     multiActive.length === 0 && genStages.some((line) => /Map:is-complete/.test(line)));
 
-  // NG-07: the frozen Large Mediterranean package.
+  // NG-07: the fixed Large 18×12 package; preview and mounted package must agree (no frozen deployed-Hex or unit count).
   await openNewGame(h);
   await configure(h, NG07);
   const ng07Gen = await generate(h);
@@ -157,9 +157,9 @@ try {
   const ng07Mount = await start(h);
   await h.shot('ng07-mounted');
   const ng07 = await continuity(h, 'NG-07', ng07Preview, NG07);
-  const expected = { Map: '18×12', Units: '64', Divisions: '4 per side', 'Deployed hexes': '38' };
+  const expected = { Map: '18×12', Divisions: '4 per side' };
   const headline = Object.entries(expected).map(([key, value]) => `${key} ${ng07Preview.metrics[key]} (expected ${value})`).join(', ');
-  record(h, 'NG-07', 'Preview and mounted package agree; expected headline counts are 216 Hexes, 64 units, 8 formations, 38 deployed Hexes', `${headline}; ${ng07Preview.terrain.length} hexes; Generate ${ng07Gen.elapsed} ms, Start ${ng07Mount} ms; mounted checks ${JSON.stringify(ng07.checks)}; menu "${ng07.summary}"`,
+  record(h, 'NG-07', 'Preview and mounted package agree: map size, terrain hex by hex, units, formations, seeds and turn limit; no frozen deployed-Hex or unit count', `${headline}; ${ng07Preview.terrain.length} hexes; Generate ${ng07Gen.elapsed} ms, Start ${ng07Mount} ms; mounted checks ${JSON.stringify(ng07.checks)}; menu "${ng07.summary}"`,
     Object.entries(expected).every(([key, value]) => ng07Preview.metrics[key] === value) && ng07Preview.terrain.length === 216 && Object.values(ng07.checks).every(Boolean));
 
   // NG-08: NG-07 again from a fresh page.

@@ -4,21 +4,23 @@
 `docs/quality/03-product-operation-verification-plan.md` 列的狀態。每項 TODO 的缺少行為、使用者可見影響與關閉證據
 以其原始文件為準。基準：`main` @ `6745ecd`；2026-10-04 rebase 到 `ca555b4`（#56 鐵路、#57 Pax/Eq 補充）後更新數字與已關閉項；
 2026-10-05 再同步到 `f0d453b`（#59 鐵路沿道路偏移、#60 道路／鐵路畫出地圖邊、#61 Eastern Europe 主題、#62 第 1 回合不到達、
-#63 目標點改放城鎮）。
+#63 目標點改放城鎮）。2026-10-14 再同步到 `origin/main` `e56a681`（整疊移動／overrun、Variable Replacement／Rebuild Table 與單位合併、
+海域側翼＋各方 Sea Cap、VP 配置修正、AI VP 啟發式升級）；本次同步的變動集中在 §7。
 
 ## 1. 產品驗收矩陣（doc 03）
 
-2026-10-04 依使用者指示在瀏覽器實際操作 §A、§B、§B1、§C（紀錄見 doc 03「Execution record 2026-10-04」，證據在
-`docs/quality/evidence/product-2026-10-04/`）。更新後：
+2026-10-14 重算（腳本逐列讀 doc 03 的狀態欄，共 134 列；以列首狀態字為準，狀態欄內的但書另列）：
 
 | 狀態 | 列數 | 列 |
 |---|---|---|
-| PASS | 63 | AIR 與 SUP-A 大部分列；2026-10-04 新增 BOOT-01、NG-01~06、NG-08、NG-09、MAP-01、MAP-02、MAP-05、CTR-01~04、CTR-07、ACT-01~04、ACT-07~10、ACT-13~15；main 同日新增的 RAIL-01~04、REPL-01、REPL-03~06（REPL-03~06 在測試局面上通過） |
-| FAIL | 5 | NG-07（部署 40 格，凍結期望 38）、NG-10（產生中三個階段同時 active）、MAP-03（鍵盤啟動疊堆不開堆疊清單）、MAP-04（64 units 與名冊 28+28 差 8 個補給堆，畫面無說明）、AIR-08 |
-| BLOCKED | 2 | ACT-11、ACT-12（COMMIT／CANCEL_TRANSACTION 沒有玩家可操作的控制項） |
+| PASS | 84 | BOOT-01、NG-01~06、NG-08、NG-09、NG-13、NG-14、MAP-01、MAP-02、MAP-05、CTR-01~04、CTR-07、ACT-01~04、ACT-07~17、AIR-01~03、AIR-06~15（AIR-04、AIR-05 除外）、SUP-A01~09、SUP-A11~15、RAIL-01~04、RAIL-11~14、RAIL-17、REPL-01、REPL-03~12、AEP-01~03。其中 REPL-03、04、06、08、10、11 只在載入的測試／訓練局面通過，從新局自然損失到重建仍 UNVERIFIED；AIR-08、ACT-11、ACT-12 是 2026-10-14 依使用者決定改寫驗收敘述後，以 2026-10-03／04 既有證據判 PASS |
+| FAIL | 1 | NG-10（程式碼看起來已被兩頁式 New Game 修好，待瀏覽器重跑） |
+| BLOCKED | 0 | ACT-11、ACT-12 已改寫為現行行為並 PASS |
 | 部分 | 3 | AIR-04（Mission Loss 未觀察到）、AIR-05（Hip Shoot BLOCKED）、SUP-A10（檔案路徑依使用者決定移出 scope） |
-| IN PROGRESS | 1 | ACT-05a（#62 新增：第 1 回合開在 Movement 已在瀏覽器觀察；第 2 回合的到達尚未在瀏覽器操作） |
-| UNVERIFIED | 35 | CTR-05、CTR-06、CTR-08（證據不完整）、ACT-06（未到達需要 CHECK_SUPPLY 的狀態）、SES-01~09、UI-01~05（尚未執行）、SUP-B01~08（Phase B 未實作）、RAIL-05~10（只有自動測試）；#62 重開的 ACT-05、REPL-02、MAP-06（先前 PASS 證據放置的是第 1 回合的到達，現在第 1 回合不再有到達，需在第 2 回合重跑） |
+| IN PROGRESS | 7 | NG-11（2026-10-14 重開）、MAP-03（2026-10-14 鍵盤選疊堆已改為開堆疊清單，待瀏覽器重跑；run-map.mjs 仍預期第 1 回合到達，需先更新）、MAP-04（2026-10-14 依使用者決定補給堆不算單位，單位數已排除補給堆，單元測試通過，待瀏覽器重跑）、MAP-07、MAP-08、MAP-09（海域新形式重開）、ACT-05a（第 2 回合到達尚未在瀏覽器操作） |
+| UNVERIFIED | 39 | NG-07（2026-10-14 改寫：去掉凍結的部署格數，改用現有風格，待瀏覽器重跑）、NG-12（AEP 重開）、MAP-06、CTR-05、CTR-06、CTR-08、ACT-05、ACT-06、SES-01~09、UI-01~05、SUP-B01~08（Phase B 未實作）、RAIL-05~10、RAIL-15、RAIL-16、REPL-02 |
+
+合計 84 + 1 + 0 + 3 + 7 + 39 = 134。2026-10-04 的舊數字（63／5／2／3／1／35）已被取代。
 
 因此 M8 Generated game flow 與 U10 Operable UI 維持 `IN PROGRESS`（`01-delivery-status-and-todo-policy.md`）。
 
@@ -90,8 +92,8 @@
 2. 補給 B3（付費來源偏好）、B4（定期補給線）。
 3. Breakdowns 提議的 doc 03 驗收列。
 4. ~~整疊移動（6.1f）是否解除暫緩~~：使用者於 2026-10-14 要求實作，已解除。
-5. NG-07 的凍結期望（38 deployed Hexes）是否改為產品現在的 40，或修正產生器（doc 03 O-2）。
-6. ACT-11／ACT-12 是否改寫為「最後一個決策只結算一次交易」等可操作的敘述（O-7）；SES-01 Pause 在產品中已移除，是否改寫該列（O-8）。
+5. ~~NG-07 的凍結期望~~：使用者於 2026-10-14 指出部署格數不該是驗收項，已改寫（doc 03 NG-07）。
+6. ~~ACT-11／ACT-12 是否改寫為現行行為~~：使用者於 2026-10-14 同意，已改寫並 PASS（O-7）；SES-01 Pause 在產品中已移除，是否改寫該列（O-8）仍待決定。
 
 7. 東歐主題的入口格數，或入口格不在鐵路上時的補給源規則（決定後才能讓預設東歐圖的鐵路降到 Temperate 的一半以下）。
 
@@ -131,3 +133,50 @@
 - `docs/reports/ocs-rebuild-2026-10-01.md`：存讀檔 TODO 補註 AIR-09 已驗證的範圍與仍開啟的缺口。
 - `docs/reports/M11-air-power.md` §5：標出已於瀏覽器通過的項目。
 - `docs/study/09-rules-vs-plan-gap-analysis.md` §4：補 2026-10-04 manifest 分布與 R14 現況。
+
+## 7. 2026-10-14 同步（`e56a681`）
+
+盤點方式：讀 doc 03 的列、`src/`／`scripts/` 的 TODO 註解、各報告的 TODO 段落與 `git log f0d453b..e56a681`。
+
+### 7.1 doc 03 自 2026-10-05 起的狀態變動（逐列引用，未重新統計 §1 的總數）
+
+- PASS：ACT-16、ACT-17（整疊移動／overrun，2026-10-14）；NG-13（hedgehog）、NG-14（架橋）；RAIL-11～14、RAIL-17；
+  REPL-07（新局第 2 回合 Pax 移動）、REPL-09、REPL-12；REPL-08、REPL-10、REPL-11 只在載入的訓練局面通過。
+- IN PROGRESS：NG-11（2026-10-14 重開：VP 配置、攻方初始佔領、勝利門檻已改；只有 Allied attack 28×20 重跑，Meeting Engagement 與
+  Axis Attack 尚未重跑）；MAP-07、MAP-08、MAP-09（海域改為側翼海＋各方 Sea Cap／inland entry 後重開，缺：另兩種情境、佔港、港口修復、
+  空襲港口、Turn 2 走完）。
+- UNVERIFIED：NG-12（AEP 發射限制改變出擊流程）；MAP-06、REPL-02（第 2 回合到達）；RAIL-10、RAIL-15、RAIL-16。
+- 總數：§1 已於 2026-10-14 重算並依使用者決定（MAP-04、AIR-08、ACT-11、ACT-12）更新（134 列：PASS 84、FAIL 1、BLOCKED 0、部分 3、IN PROGRESS 7、UNVERIFIED 39，相加 134）。
+
+### 7.2 規則 manifest
+
+2026-10-14 逐列重算：共 28 列（`entry` 25、`deferred` 2、`GAME_SPECIFIC` 1）；`IMPLEMENTED` 11、`PARTIAL` 14、`DEFERRED` 2、`GAME_SPECIFIC` 1，
+與 §2 相同，列數沒有變動。內容變動已寫進 §2：`movement.ground` 整疊移動／overrun 已實作、
+`replacements-rebuilds` 的 Variable Replacement／Rebuild Table 與單位合併已實作但表非印刷版。
+
+### 7.3 新增或確認仍開啟的 TODO
+
+| TODO | 缺少的行為 | 使用者可見影響 | 關閉證據 | 來源 |
+|---|---|---|---|---|
+| `repl-tables-generated` | 兩張表是產生器自訂，不是印刷版 | 補充與重建成本與原版遊戲不同 | 轉錄印刷表並以測試與瀏覽器核對 | `docs/reports/replacement-tables-2026-10-14.md` §6 |
+| `consolidation-bot` | bot 不會合併單位 | bot 方留著兩個減員的相同師 | bot 對局中出現合併動作 | 同上 |
+| `repl-natural-loss-ui` | 重建與合併只在載入的訓練局面走過 | 新局自然損失後的流程未驗證 | 新局、自然戰損、移動補充、重建／合併並走完該回合 | 同上；`replacement-movement-2026-10-13.md` |
+| `repl-legacy-unit-migration` | 舊存檔的 REPLACEMENT 沒有 faces，維持舊的數量 counter | 舊存檔的補充單位不能移動，需開新局 | 保留歷史動作的存檔遷移，並實際讀舊檔、移動、重建、存檔、重播 | `replacement-movement-2026-10-13.md` |
+| `pax-counter-art` | Pax counter 圖樣未完成 | counter 外觀不是最終版 | 見 `replacement-tables-2026-10-14.md` §6 | 同上 |
+| `bot-stack-move` | AI 逐一移動與 overrun，不整疊行動（`candidates.ts` TODO(AI)） | bot 的 overrun 戰力偏弱 | bot 對局出現 companionIds 的 MOVE_PIECE 與多單位 overrun | `src/rules/query/candidates.ts`、manifest `movement.ground` |
+| `overrun-selection-release` | overrun 結果顯示後選取被放開 | 玩家須再點堆疊才能續動 | 結果後仍選取存活的移動堆疊並可直接點目的地 | doc 03 ACT-17 |
+| `bot-ration-search` | 配給有界搜尋可能漏掉可行的低優先消耗者 | bot 偶發不必要的餓死 | 見 `src/rules/supply/ration-budget.ts:89` 的關閉條件 | `src/rules/supply/ration-budget.ts` |
+| `bot-air` | 空中決策一律選第一個合法選項 | 開啟空軍時 bot 不會主動用空軍 | bot 對局中出現合理的任務與 refit | `src/ai/decisions.ts`、`11-ai-bot-wbs.md` §3 |
+| `GS-AI` | 完整對局的可救援餓死尚未逐一消除或解釋 | 阻擋 AI 驗收 | 逐一解釋或修正並重跑對局 | `docs/reports/garrison-supply-2026-10-13.md` |
+| AI VP 計畫 TODO | 後方重建啟用時機只用剩餘回合門檻；動作後 trace 修正只看前 12 個候選；advance 預估不含首次進入有敵方 transport；Overrun 評分不估計強制進駐後的供補風險 | 全體 AI／logistics 不宣告完成 | 各項見 `docs/reports/ai-vp-promotion-2026-10-13.md` 內的 TODO 段 | 同左 |
+| `bot-eastern-front`、`bot-offensive-axis` | 東歐 32/40 = 80%（目標 90%）；攻堅缺補給支撐的主攻方向 | B5 維持 IN PROGRESS | `docs/roadmap/11-ai-bot-wbs.md` §3 | 同左 |
+| 登陸港初始視角 | 海域局開局地圖置中，登陸港在畫面外 | 玩家要自己找港口 | 開 ports-only 遊戲並直接經可見的地圖／導覽找到港口 | `evidence/vp-allocation-2026-10-14/README.md` |
+| 小地圖視覺驗收 | 小地圖的視覺驗收仍未做 | NG-11 無法升級 | 見 `docs/game-flow/03-deployment-generator.md` | 同左 |
+| 砲兵打港口 | `DECLARE_BARRAGE` 沒有設施目標 | 只有飛機與持有者自己的單位能損壞港口 | 給設施目標並付表列成本，實際打一次港口 | `docs/generator/03-coast-and-hydrology.md` |
+| 海上登陸平衡 | 無 inland entry 的一方受登陸容量限制，敵方兵力不調整 | 登陸方缺補給，遊戲失衡 | 見 §5 第 8 項 | 同左 |
+| 艦艇（18.0） | 無艦艇、登陸艇、兩棲登陸 | 只能在已持有的港口登陸 | 18.0 實作並實際對局 | 同左；manifest `naval-shipping` |
+| `unit-status-reserve` | Unit Status 沒有「released」與「barraged」列（投影未提供引擎使用狀態） | 這兩種狀態看不到 | 投影暴露後加列並在瀏覽器驗證 | `src/ui/unit-status.ts:48` |
+
+### 7.4 本次盤點沒有發現可關閉的 TODO
+
+沒有任何 TODO 在本次同步中被關閉；§5 第 4 項（整疊移動）早已解除，ACT-16／ACT-17 的 PASS 只涵蓋玩家端，AI 端仍開。
