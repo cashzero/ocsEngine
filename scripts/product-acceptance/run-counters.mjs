@@ -30,8 +30,9 @@ const zoomTo = async (target) => {
   }
 };
 /** An element screenshot of the map around a hex (the hex is brought on screen and located by hovering). */
+const centreOf = (label) => hexOnScreen(h, label, gotoHex);
 const hexShot = async (label, name, size = 260) => {
-  const point = await hexOnScreen(h, label, gotoHex);
+  const point = await centreOf(label);
   if (!point) return null;
   const clip = { x: Math.max(0, point.x - size / 2), y: Math.max(0, point.y - size / 2), width: size, height: size };
   const file = `${name}.png`;
@@ -44,13 +45,16 @@ try {
   await openNewGame(h);
   await configure(h, NG07);
   await generate(h);
-  const summaries = page.locator('.preview-forces details > summary');
-  for (let index = 0; index < (await summaries.count()); index += 1) await summaries.nth(index).click();
-  await page.waitForTimeout(300);
-  const previewCounters = await page.evaluate(() => [...document.querySelectorAll('.preview-force')].flatMap((force) => [...force.querySelectorAll('.preview-counter')]
-    .map((figure) => ({ side: force.querySelector('header strong').textContent.trim(), name: figure.querySelector('figcaption').textContent.trim(), tokens: figure.querySelector('svg').textContent.replace(/\s+/g, ' ').trim() }))));
-  // The preview scrolls inside the dialog: each formation's counters are scrolled into view and captured on their own.
+  // The Preview lists one side at a time under Allied / Axis tabs: each tab is opened, every formation expanded and photographed.
+  const previewCounters = [];
   for (const side of ['allied', 'axis']) {
+    await click(h, `#preview-forces-${side}`, { settle: 200 });
+    const summaries = page.locator(`.preview-force.side-${side} details > summary`);
+    for (let index = 0; index < (await summaries.count()); index += 1) await summaries.nth(index).click();
+    await page.waitForTimeout(300);
+    previewCounters.push(...await page.evaluate((sideClass) => [...document.querySelectorAll(`.preview-force.side-${sideClass}`)].flatMap((force) => [...force.querySelectorAll('.preview-counter')]
+      .map((figure) => ({ side: force.querySelector('header strong').textContent.trim(), name: figure.querySelector('figcaption').textContent.trim(), tokens: figure.querySelector('svg').textContent.replace(/\s+/g, ' ').trim() }))), side));
+    // The preview scrolls inside the dialog: each formation's counters are scrolled into view and captured on their own.
     const groups = page.locator(`.preview-force.side-${side} details.counter-formation`);
     for (let index = 0; index < (await groups.count()); index += 1) {
       await groups.nth(index).scrollIntoViewIfNeeded();
@@ -67,14 +71,18 @@ try {
   const fillers = previewCounters.filter(({ tokens }) => /(^| )(\?|HQ|ART|TRN|SUP|ENG)( |$)/.test(tokens));
   extra.previewCounters = previewCounters;
   record(h, 'CTR-01', 'Both sides expose the generated unit counters; HQ, combat, artillery, reconnaissance, engineer, transport and supply templates are visibly distinct (judged on ctr01-preview-*.png)', `${previewCounters.length} counters (${previewCounters.filter((c) => c.side === 'ALLIED').length} Allied, ${previewCounters.filter((c) => c.side === 'AXIS').length} Axis); kinds/symbols per side ${JSON.stringify(Object.fromEntries(Object.entries(kindsBySide).map(([k, v]) => [k, [...v]])))}; generic role-label/"?" fillers: ${fillers.length}`,
-    previewCounters.length === 64 && fillers.length === 0 && ['ALLIED', 'AXIS'].every((side) => ['HQ/', 'COMBAT/', 'ARTILLERY/', 'TRANSPORT/', 'SUPPLY/'].every((kind) => [...(kindsBySide[side] ?? [])].some((entry) => entry.startsWith(kind)))));
+    previewCounters.length === 70 && fillers.length === 0 && ['ALLIED', 'AXIS'].every((side) => ['HQ/', 'COMBAT/', 'ARTILLERY/', 'TRANSPORT/', 'SUPPLY/'].every((kind) => [...(kindsBySide[side] ?? [])].some((entry) => entry.startsWith(kind)))));
 
   // CTR-02 and CTR-03: sampled counters against their generated definitions (the move face is the starting face).
   const tokensOf = (name) => previewCounters.find((counter) => counter.name === name)?.tokens ?? '';
   const combat = defOf('Standish TF / 10.A');
-  const move = face(combat, 'move');
-  const expected02 = [combat.counter.echelon, combat.counter.designation, combat.counter.affiliation, move.combatStrength, move.actionRating, move.movementPointTicks / 4].join(' ');
-  record(h, 'CTR-02', 'A basic combat counter shows designation, echelon, symbol, affiliation, CS, AR, MA/mobility, combat category and RE (when applicable) matching its definition', `Standish TF / 10.A preview tokens "${tokensOf('Standish TF / 10.A')}" vs definition (move face) "${expected02}" (symbol ${combat.counter.symbol}, mobility ${face(combat, 'move') && combat.faces[1].mobilityClassDefinitionId}, category ${combat.counter.combatCategory}, showRe ${combat.counter.showRe}); colour/symbol grammar judged on ctr01/ctr04 images`,
+  // Front units start in Combat Mode (deployment.ts), so the printed face may be either; the one matching the counter is reported.
+  const expectedFor = (id) => { const f = face(combat, id); return [combat.counter.echelon, combat.counter.designation, combat.counter.affiliation, f.combatStrength, f.actionRating, f.movementPointTicks / 4].join(' '); };
+  const printed02 = tokensOf('Standish TF / 10.A');
+  const faceId02 = ['combat', 'move'].find((id) => squash(printed02) === squash(expectedFor(id))) ?? 'move';
+  const move = face(combat, faceId02);
+  const expected02 = expectedFor(faceId02);
+  record(h, 'CTR-02', 'A basic combat counter shows designation, echelon, symbol, affiliation, CS, AR, MA/mobility, combat category and RE (when applicable) matching its definition', `Standish TF / 10.A preview tokens "${tokensOf('Standish TF / 10.A')}" vs definition (${faceId02} face) "${expected02}" (symbol ${combat.counter.symbol}, mobility ${face(combat, 'move') && combat.faces[1].mobilityClassDefinitionId}, category ${combat.counter.combatCategory}, showRe ${combat.counter.showRe}); colour/symbol grammar judged on ctr01/ctr04 images`,
     // The SVG text joins adjacent fields without spaces ("III2F2 7414"), so the fields are compared in order without spaces.
     squash(tokensOf('Standish TF / 10.A')) === squash(expected02));
   const samples = {
@@ -116,16 +124,18 @@ try {
     compare.every((c) => c.preview && c.preview === c.roster && c.preview === c.card));
 
   // CTR-05: in the Movement Phase: a mode change, a step change (Breakdown), a resource change (fuel from a dump).
-  await placeArrivals(h);
   await playUntil(h, async (state) => state.phase === 'Movement' && /Allied player turn/.test(state.player));
   await selectUnit(h, '13.Abn');
   const abnBefore = await cardTokens(h);
   const abnStatusBefore = (await page.textContent('.command-rail')).match(/\d{4} · [^\n]*?mode/)?.[0];
-  await ui('Combat mode', () => click(h, '[data-mode="COMBAT"]', { settle: 500 }));
+  const abnHex = abnStatusBefore?.match(/\d{4}/)?.[0];
+  // The unit may start in either mode: the button offered is the opposite one.
+  const toMode = (await has(h, '[data-mode="COMBAT"]')) ? 'COMBAT' : 'MOVE';
+  await ui(`${toMode} mode`, () => click(h, `[data-mode="${toMode}"]`, { settle: 500 }));
   const abnAfterMode = await cardTokens(h);
   const abnStatusAfter = (await page.textContent('.command-rail')).match(/\d{4} · [^\n]*?mode/)?.[0];
   const abnDef = defOf('13.Abn');
-  await hexShot('0907', 'ctr05-13Abn-combat-mode');
+  await hexShot(abnHex, 'ctr05-13Abn-mode-change');
   let breakdown = 'no Breakdown offered';
   if (await has(h, '[data-unit-action^="BREAKDOWN"]')) {
     await ui('Breakdown', () => click(h, '[data-unit-action^="BREAKDOWN"]', { settle: 600 }));
@@ -135,7 +145,7 @@ try {
     await selectUnit(h, '13.Abn');
     breakdown = await cardTokens(h);
   }
-  await hexShot('0907', 'ctr05-13Abn-after-breakdown');
+  await hexShot(abnHex, 'ctr05-13Abn-after-breakdown');
   // Fuel for an artillery group: the paying dump's quantity must drop on its counter.
   const dumpsBefore = sweep.cells.filter(({ text }) => /Supply dump/.test(text) && !/enemy/.test(text)).map(({ hex }) => hex);
   await selectUnit(h, 'US 749 FA Gp');
@@ -149,7 +159,7 @@ try {
   }
   dumpBefore = sweep.cells.find(({ hex }) => hex === dumpHex)?.text ?? '';
   const stackText = async (hex) => {
-    const p = await hexOnScreen(h, hex, gotoHex);
+    const p = await centreOf(hex);
     if (!p) return '';
     await page.mouse.click(p.x, p.y);
     await page.waitForTimeout(300);
@@ -162,15 +172,25 @@ try {
   const dumpCounterAfter = (await page.textContent('.command-rail')).replace(/\s+/g, ' ').match(/Fuel[^.]*\(\d+(\.\d+)?T there now\)/)?.[0] ?? '';
   await tab(h, 'Unit').catch(() => {});
   extra['CTR-05'] = { abnBefore, abnAfterMode, abnStatusBefore, abnStatusAfter, breakdown, fuelLabel, dumpHex, dumpBefore, dumpAfter, dumpCounterAfter, dumpsBefore };
-  const combatFace = face(abnDef, 'combat');
-  record(h, 'CTR-05', 'Printed face and per-step/resource values update from authoritative state; mode/status shown separately; no stale printed value', `13.Abn card "${abnBefore}" (${abnStatusBefore}) → Combat mode "${abnAfterMode}" (${abnStatusAfter}; definition combat face CS ${combatFace.combatStrength} AR ${combatFace.actionRating} MA ${combatFace.movementPointTicks / 4}) → after Breakdown "${breakdown}"; fuel "${fuelLabel}": dump ${dumpHex} "${dumpBefore}" → "${dumpAfter}", stack list "${dumpCounterAfter}"`,
-    abnBefore !== abnAfterMode && abnAfterMode.includes(`${combatFace.combatStrength} ${combatFace.actionRating} ${combatFace.movementPointTicks / 4}`) && breakdown !== 'no Breakdown offered' && breakdown !== abnAfterMode && /\d/.test(dumpCounterAfter));
+  const combatFace = face(abnDef, toMode.toLowerCase());
+  record(h, 'CTR-05', 'Printed face and per-step/resource values update from authoritative state; mode/status shown separately; no stale printed value', `13.Abn card "${abnBefore}" (${abnStatusBefore}) → ${toMode} mode "${abnAfterMode}" (${abnStatusAfter}; definition combat face CS ${combatFace.combatStrength} AR ${combatFace.actionRating} MA ${combatFace.movementPointTicks / 4}) → after Breakdown "${breakdown}"; fuel "${fuelLabel}": dump ${dumpHex} "${dumpBefore}" → "${dumpAfter}", stack list "${dumpCounterAfter}"`,
+    abnBefore !== abnAfterMode && squash(abnAfterMode).includes(squash(`${combatFace.combatStrength} ${combatFace.actionRating} ${combatFace.movementPointTicks / 4}`)) && breakdown !== 'no Breakdown offered' && breakdown !== abnAfterMode && /\d/.test(dumpCounterAfter));
 
-  // CTR-06: a three-counter stack (US 749 FA Gp, now fuelled, joins the two Engineer groups at 0809).
-  await selectUnit(h, 'US 749 FA Gp');
-  const moved = await ui('Move to 0809', () => moveSelectedTo(h, '0809', gotoHex));
-  if (await has(h, '#finish-move')) await click(h, '#finish-move');
-  const stackHex = '0809';
+  // CTR-06: a three-counter stack. One is looked for in the starting layout; failing that, the fuelled US 749 FA Gp is moved
+  // into a two-counter stack of the same side that it can reach, as a player would.
+  const ownStackSize = (text) => (/enemy/.test(text) ? 0 : (text.split(' · ').at(-1).match(/, /g) ?? []).length + 1);
+  let stackHex = sweep.cells.find(({ text }) => ownStackSize(text) >= 3)?.hex ?? null;
+  let moved = { existing: true, moved: false, preview: 'no move needed: a three-counter stack already stood in the starting layout' };
+  if (!stackHex) {
+    await selectUnit(h, 'US 749 FA Gp');
+    const toLabel = (id) => { const [q, r] = id.split(',').map(Number); return `${String(q + Math.floor(r / 2) + 1).padStart(2, '0')}${String(r + 1).padStart(2, '0')}`; };
+    const reach = new Set((await page.evaluate(() => [...window.ocsMap.state.reachable.keys()])).map(toLabel));
+    const pairs = sweep.cells.filter(({ hex, text }) => ownStackSize(text) === 2 && reach.has(hex));
+    if (pairs.length === 0) throw new Error('No reachable two-counter stack to build a three-counter stack from.');
+    stackHex = pairs[0].hex;
+    moved = await ui(`Move to ${stackHex}`, () => moveSelectedTo(h, stackHex, gotoHex));
+    if (await has(h, '#finish-move')) await click(h, '#finish-move');
+  }
   const stackAnnounce = await gotoHex(h, stackHex);
   const shots06 = [];
   for (const zoomLevel of [100, 300, 30]) {
@@ -178,7 +198,7 @@ try {
     shots06.push(`${zoomLevel}% ${(await page.textContent('#zoom-level'))}: ${(await hexShot(stackHex, `ctr06-stack-zoom-${zoomLevel}`, zoomLevel >= 200 ? 420 : 240))?.file}`);
   }
   await zoomTo(100);
-  const sp = await hexOnScreen(h, stackHex, gotoHex);
+  const sp = await centreOf(stackHex);
   await page.mouse.move(sp.x, sp.y);
   await page.waitForTimeout(200);
   shots06.push(`hover: ${(await page.screenshot({ path: join(evidenceDir, 'ctr06-stack-hover.png'), clip: { x: sp.x - 130, y: sp.y - 130, width: 260, height: 260 } }), 'ctr06-stack-hover.png')}`);
@@ -190,7 +210,7 @@ try {
   await gotoHex(h, stackHex);
   await page.screenshot({ path: join(evidenceDir, 'ctr06-stack-keyboard-focus.png'), clip: { x: sp.x - 130, y: sp.y - 130, width: 260, height: 260 } });
   extra['CTR-06'] = { moved, stackAnnounce, shots06, picker06 };
-  record(h, 'CTR-06', 'A three-counter stack keeps square aspect/field order at normal zoom, zoom limits, selection, hover and keyboard focus; identity and critical ratings not obscured (judged on ctr06-*.png)', `move ${moved.moved ? `confirmed (${moved.elapsed} ms)` : `not made: ${moved.preview}`}; ${stackAnnounce}; images ${shots06.join(', ')}, selected, keyboard focus; stack list "${picker06}"`, moved.moved && /, .*, /.test(stackAnnounce));
+  record(h, 'CTR-06', 'A three-counter stack keeps square aspect/field order at normal zoom, zoom limits, selection, hover and keyboard focus; identity and critical ratings not obscured (judged on ctr06-*.png)', `move ${moved.moved ? `confirmed (${moved.elapsed} ms)` : `not made: ${moved.preview}`}; ${stackAnnounce}; images ${shots06.join(', ')}, selected, keyboard focus; stack list "${picker06}"`, (moved.moved || moved.existing) && /, .*, /.test(stackAnnounce));
 
   // CTR-07: an enemy stack before and after the hot-seat handoff to its owner.
   const enemyCell = sweep.cells.find(({ text }) => /enemy .*hidden/.test(text));

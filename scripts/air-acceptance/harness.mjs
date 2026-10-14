@@ -35,6 +35,8 @@ export const open = async ({ evidenceDir, viewport = { width: 1920, height: 1080
   const log = [];
   const errors = [];
   page.on('pageerror', (error) => errors.push(`pageerror: ${error}`));
+  page.on('crash', () => errors.push('page crash: the renderer process died'));
+  browser.on('disconnected', () => errors.push('browser disconnected'));
   page.on('console', (message) => { if (message.type() === 'error') errors.push(`console: ${message.text()}`); });
   await page.goto(server.url);
   await page.waitForSelector('#open-menu', { timeout: 30000 });

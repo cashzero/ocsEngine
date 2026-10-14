@@ -1,8 +1,10 @@
 // doc 03 §A: BOOT-01 and NG-01 to NG-10 through the New Game dialog of the built application.
+// The dialog has two pages (Settings, then Preview) and a loading page while a package is built or started: Preview on the
+// Settings page always generates afresh, Back returns to Settings, and Start exists only on the Preview page.
 import { writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { click, has, open, record, textOf, where } from '../air-acceptance/harness.mjs';
-import { configure, dialogState, generate, menuSummary, openNewGame, previewSignature, sha, start, startStageWatch, stopStageWatch, sweepMap } from './lib.mjs';
+import { configure, dialogState, generate, menuSummary, openNewGame, photographBuild, previewSignature, sha, start, startStageWatch, stopStageWatch, sweepMap } from './lib.mjs';
 
 const evidenceDir = join(process.argv[2] ?? 'artifacts/product-2026-10-04', 'newgame');
 const NG07 = { style: 'TEMPERATE_INLAND', width: 18, height: 12, scale: 'LARGE', divisions: 4, armored: 2, turnLimit: 3, seeds: { map: 91001, oob: 91002, deployment: 91003, rules: 91004 } };
@@ -74,15 +76,19 @@ try {
   record(h, 'NG-02', 'Map, both OOB sides, deployment metrics, warnings, and Start are visible', `before Generate: "${empty.status}", Start ${empty.start ? 'present' : 'absent'}; Generate ${generated.elapsed} ms → "${generated.state.status}"; metrics ${JSON.stringify(defaults.metrics)}; sides ${defaults.sides.join('/')}; ${defaults.counters.length} preview counters; map hexes ${defaults.terrain.length}; Start "${generated.state.start?.text}" disabled ${generated.state.start?.disabled}`,
     generated.state.status === 'Preview ready' && defaults.sides.length === 2 && defaults.terrain.length > 0 && 'Deployed hexes' in defaults.metrics && 'Warnings' in defaults.metrics && generated.state.start && !generated.state.start.disabled && generated.elapsed <= 3000);
 
-  // NG-03: change one option after the preview.
+  // NG-03: change one option after the preview. Back to Settings is the only way to an option; the preview is then no longer on
+  // screen and nothing can be started until Preview is pressed again, which generates afresh.
   const genBefore = sha(defaults);
   await configure(h, { turnLimit: 7 });
   await page.waitForTimeout(600);
   const staleState = await dialogState(h);
-  const unchanged = sha(await previewSignature(h)) === genBefore;
-  await h.shot('ng03-stale');
-  record(h, 'NG-03', 'Existing preview is visibly stale and Start is disabled; nothing is generated until Generate operation', `after changing Turn limit 8→7: status "${staleState.status}" — "${staleState.hint}"; preview dimmed ${staleState.stale}; Start "${staleState.start?.text}" disabled ${staleState.start?.disabled}; preview content unchanged ${unchanged}`,
-    staleState.status === 'Preview invalidated' && staleState.stale && staleState.start?.disabled === true && unchanged);
+  await h.shot('ng03-after-change');
+  record(h, 'NG-03', 'After changing an option the earlier preview is no longer offered as current: it is stale or gone, Start is unavailable, and nothing is generated until Preview is pressed', `after Back and changing Turn limit 8→7: page "${staleState.page}", status "${staleState.status}" — "${staleState.hint}"; preview on screen ${staleState.previewShown}; Start ${staleState.start ? `"${staleState.start.text}" disabled ${staleState.start.disabled}` : 'absent'}; preview dimmed ${staleState.stale}; (the row's old wording "visibly stale/dimmed, Start disabled" described the one-page dialog)`,
+    staleState.page === 'settings' && !staleState.previewShown && (staleState.start === null || staleState.start.disabled) && !/Generating|Preview ready/.test(staleState.status));
+  const regenerated = await generate(h);
+  const regeneratedSig = await previewSignature(h);
+  record(h, 'NG-03b', 'Pressing Preview after the change generates a new preview that carries it', `Preview → "${regenerated.state.status}", page "${regenerated.state.page}"; Start ${regenerated.state.start ? 'present' : 'absent'}; preview differs from the earlier one ${sha(regeneratedSig) !== genBefore} (turn limit is not shown on the preview, so only the rebuild is observed)`,
+    regenerated.state.status === 'Preview ready' && regenerated.state.page === 'preview' && regenerated.state.start && !regenerated.state.start.disabled);
   await configure(h, { turnLimit: 8 });
 
   // NG-04: invalid values, one at a time.
@@ -111,19 +117,17 @@ try {
   record(h, 'NG-04', 'Each invalid request is rejected with a player-readable field/stage error', invalidResults.map((r) => `${r.field}=${r.value}: ${r.fieldError ? `beside ${r.fieldError.field}: "${r.fieldError.text}"` : r.error ? `"${r.error}"` : 'NO MESSAGE'}; status "${r.status}"; Start disabled ${r.startDisabled}`).join(' | '),
     invalidResults.every((r) => (r.fieldError || r.error) && r.status !== 'Preview ready'));
 
-  // NG-05: Randomize all seeds.
+  // NG-05: Randomize all seeds (on the Settings page; nothing is generated and no earlier preview stays on screen).
   await generate(h);
   await page.click('#back-to-settings');
   const seedValues = () => page.evaluate(() => ['map', 'oob', 'deployment', 'rules'].map((k) => document.querySelector(`#new-game-${k}-seed`)?.value));
   const seedsBefore = await seedValues();
-  const sigBefore = sha(await previewSignature(h));
   await click(h, '#randomize-new-game', { settle: 600 });
   const seedsAfter = await seedValues();
   const randState = await dialogState(h);
-  const sigAfter = sha(await previewSignature(h));
   await h.shot('ng05-randomized');
-  record(h, 'NG-05', 'All four displayed seeds change; preview becomes invalid; no generation until Generate', `seeds ${seedsBefore.join('/')} → ${seedsAfter.join('/')}; status "${randState.status}"; Start disabled ${randState.start?.disabled}; preview content unchanged ${sigBefore === sigAfter}`,
-    seedsBefore.every((seed, index) => seed !== seedsAfter[index]) && randState.status === 'Preview invalidated' && randState.start?.disabled === true && sigBefore === sigAfter);
+  record(h, 'NG-05', 'All four displayed seeds change; no earlier preview is offered as current; no generation until Preview', `seeds ${seedsBefore.join('/')} → ${seedsAfter.join('/')}; page "${randState.page}", status "${randState.status}"; preview on screen ${randState.previewShown}; Start ${randState.start ? 'present' : 'absent'}`,
+    seedsBefore.every((seed, index) => seed !== seedsAfter[index]) && randState.page === 'settings' && !randState.previewShown && (randState.start === null || randState.start.disabled) && !/Generating|Preview ready/.test(randState.status));
   await click(h, '#close-new-game');
 
   // NG-06: the default package, built and started.
@@ -143,10 +147,36 @@ try {
   record(h, 'NG-06', 'Default 32×24 / COMPACT / 6 per side, 2 armored / 8 turns: preview and mounted size, style, units, formations, objectives, seeds and turn limit agree', `style ${defaultStyle}; preview ${JSON.stringify(ng06Preview.metrics)} (Generate ${ng06Gen.elapsed} ms, Start ${ng06Mount} ms); mounted ${ng06.swept.width}×${ng06.swept.height}, ${ng06.occupied} occupied hexes, terrain mismatches ${ng06.terrainMismatch.length}; menu "${ng06.summary}"; checks ${JSON.stringify(ng06.checks)}; objectives compared on the screenshots`,
     ng06Preview.metrics.Map === '32×24' && defaultStyle === 'TEMPERATE_INLAND' && Object.values(ng06.checks).every(Boolean) && ng06Gen.elapsed <= 3000 && ng06Mount <= 3000);
 
-  // NG-10: the stage strip across Generate (NG-02 run) and Start (NG-06 run).
-  const multiActive = [...genStages, ...startStages].filter((line) => (line.match(/is-active/g) ?? []).length > 1);
-  record(h, 'NG-10', 'Configure, Map, OOB, Deployment and Gameplay show truthful current/completed states; no simultaneous "active" ambiguity', `Generate: ${genStages.join(' ⇒ ')} || Start: ${startStages.join(' ⇒ ')}; states with more than one active stage: ${multiActive.length}`,
-    multiActive.length === 0 && genStages.some((line) => /Map:is-complete/.test(line)));
+  // NG-10: what the player sees of progress across Preview (NG-02 run) and Start (NG-06 run): the stage strip on the Settings and
+  // Preview pages, and the loading page's own step list while the package is built or started. At most one step may be active
+  // at a time, the steps finish in order, and the pages before and after show truthful states.
+  const lines = [...genStages, ...startStages];
+  const parts = lines.flatMap((line) => line.split(' + '));
+  const multiActive = parts.filter((part) => (part.match(/is-active/g) ?? []).length > 1);
+  const activeOrder = genStages.flatMap((line) => line.split(' + ')).filter((part) => part.startsWith('loading[')).map((part) => part.match(/(\w+):is-active/)?.[1]).filter(Boolean);
+  const buildOrder = ['Map', 'Forces', 'Deployment', 'Scenario'];
+  const buildSeen = buildOrder.filter((name) => activeOrder.includes(name));
+  const inOrder = buildSeen.every((name, index) => index === 0 || activeOrder.indexOf(name) > activeOrder.indexOf(buildSeen[index - 1]));
+  const settingsStrip = empty.stages.join(' | ');
+  const previewStrip = generated.state.stages.join(' | ');
+  extra['NG-10'] = { ...extra['NG-10'], settingsStrip, settingsStripDrawn: empty.stripDrawn, previewStrip, previewStripDrawn: generated.state.stripDrawn, parts };
+  record(h, 'NG-10', 'Configure, Map, OOB, Deployment and Gameplay show truthful current/completed states; no simultaneous "active" ambiguity', `Settings page strip (drawn ${empty.stripDrawn}): ${settingsStrip}; during Preview the drawn loading steps went ${activeOrder.join(' → ') || 'unseen'}; Preview page strip (drawn ${generated.state.stripDrawn}, otherwise read only by screen readers): ${previewStrip}; during Start the drawn parts were ${startStages.join(' ⇒ ') || 'none'}; parts with more than one active step: ${multiActive.length}. Pictures: the next two rows`,
+    multiActive.length === 0 && buildSeen.length >= 3 && inOrder
+      && empty.stripDrawn && /Configure:is-active/.test(settingsStrip) && !/(Map|OOB|Deployment|Gameplay):is-(active|complete)/.test(settingsStrip)
+      && /Map:is-complete/.test(previewStrip) && /OOB:is-complete/.test(previewStrip) && /Deployment:is-complete/.test(previewStrip) && !/Gameplay:is-(active|complete)/.test(previewStrip)
+      && startStages.some((line) => /loading\[/.test(line)));
+
+  // NG-10 (picture): what is drawn while the default package is built, with the CPU throttled to lengthen every step.
+  await openNewGame(h);
+  const build = await photographBuild(h, { evidenceDir });
+  extra['NG-10'] = { ...extra['NG-10'], build };
+  record(h, 'NG-10 (loading page)', 'The loading page lights one build step at a time, earlier steps are ticked and later ones still open (judged on the frames)', `${build.files.length} compositor frames at ${build.rate}× slower CPU over ${build.elapsed} ms: ${build.files.join(', ')}; the step shown in each frame is read by eye, not by the script`,
+    build.files.length >= 4);
+  // The same for Start on this previewed package: the loading page of Start and the strip behind it, until the game is mounted.
+  const buildStart = await photographBuild(h, { evidenceDir, press: '#start-previewed-game', done: () => !document.querySelector('.new-game-dialog') && !!document.querySelector('.turn-strip'), prefix: 'ng10-start', everyMs: 300 });
+  extra['NG-10'] = { ...extra['NG-10'], buildStart };
+  record(h, 'NG-10 (start)', 'While Start opens the previewed package the screen shows one current step and the finished steps before it (judged on the frames)', `${buildStart.files.length} compositor frames at ${buildStart.rate}× slower CPU over ${buildStart.elapsed} ms: ${buildStart.files.join(', ')}; the step shown in each frame is read by eye, not by the script`,
+    buildStart.files.length >= 2);
 
   // NG-07: the fixed Large 18×12 package; preview and mounted package must agree (no frozen deployed-Hex or unit count).
   await openNewGame(h);
@@ -180,28 +210,44 @@ try {
   await h.shot('ng08-mounted');
   record(h, 'NG-08', 'Map terrain/feature signature, OOB identity/stats, and deployment are identical from a fresh page', `preview terrain+features ${sha([ng08Preview.terrain, ng08Preview.features])}, OOB ${sha(ng08Preview.forces)}, deployment ${sha(ng08Preview.deployment)}; equal ${JSON.stringify(same)}`, Object.values(same).every(Boolean));
 
-  // NG-09: change one seed at a time.
+  // NG-09: change one seed at a time. Units are compared by the counters' names (the forces listing also prints starting
+  // hexes, which follow the map). The Preview draws only which hexes are occupied, not which unit stands where, and a
+  // deployment seed often keeps the same hexes (it breaks ties between them); so for the deployment seed a +k whose Preview is
+  // unchanged is started and the mounted map is swept: the same terrain with different stacks is a deployment-only change.
   const dims = [];
-  for (const key of ['map', 'oob', 'deployment', 'rules']) {
+  const preview = async (seeds) => {
     await openNewGame(h);
-    await configure(h, { ...NG07, seeds: { ...NG07.seeds, [key]: NG07.seeds[key] + 1 } });
+    await configure(h, { ...NG07, seeds });
     await generate(h);
-    const sig = await previewSignature(h);
-    const changed = {
-      map: sha([sig.terrain, sig.features]) !== sha([ng07Preview.terrain, ng07Preview.features]),
-      oob: sig.forces !== ng07Preview.forces,
-      deployment: sig.deployment !== ng07Preview.deployment,
-    };
+    return previewSignature(h);
+  };
+  const baseSigs = { map: sha([ng07Preview.terrain, ng07Preview.features]), oob: sha(ng07Preview.counters), deployment: sha(ng07Preview.deployment) };
+  const baseMounted = { terrain: sha(ng07.swept.cells.map(({ terrain }) => terrain)), stacks: sha(ng07.swept.cells.map(({ text }) => text)) };
+  const diff = (sig) => ({ map: sha([sig.terrain, sig.features]) !== baseSigs.map, oob: sha(sig.counters) !== baseSigs.oob, deployment: sha(sig.deployment) !== baseSigs.deployment });
+  for (const key of ['map', 'oob', 'deployment', 'rules']) {
+    let offset = 0;
+    let changed;
+    let via = 'preview';
+    do {
+      offset += 1;
+      changed = diff(await preview({ ...NG07.seeds, [key]: NG07.seeds[key] + offset }));
+      if (key !== 'deployment' || changed.deployment) break;
+      // Same hexes in the Preview: start this package and compare the mounted stacks with the NG-07 package's.
+      await start(h);
+      const swept = await sweepMap(h);
+      const mountedTerrainSame = sha(swept.cells.map(({ terrain }) => terrain)) === baseMounted.terrain;
+      if (mountedTerrainSame && sha(swept.cells.map(({ text }) => text)) !== baseMounted.stacks) { changed = { ...changed, deployment: true }; via = 'mounted map'; break; }
+    } while (offset < 8);
     let rulesNote = '';
     if (key === 'rules') {
       await start(h);
       rulesNote = `; mounted weather ${(await page.evaluate(() => document.querySelector('.turn-cell strong')?.textContent.trim()))}`;
-    } else await click(h, '#close-new-game');
-    dims.push({ key, changed, rulesNote });
+    } else if (await has(h, '#close-new-game')) await click(h, '#close-new-game');
+    dims.push({ key, offset, changed, via, rulesNote });
   }
   extra['NG-09'] = dims;
-  record(h, 'NG-09', 'Only the documented Map/OOB/deployment/rules dimension changes', dims.map(({ key, changed, rulesNote }) => `${key} seed +1 → changed ${Object.entries(changed).filter(([, v]) => v).map(([k]) => k).join('+') || 'nothing in the preview'}${rulesNote}`).join(' | '),
-    dims[0].changed.map && dims[1].changed.oob && !dims[1].changed.map && dims[2].changed.deployment && !dims[2].changed.map && !dims[2].changed.oob && !Object.values(dims[3].changed).some(Boolean));
+  record(h, 'NG-09', 'Only the documented Map/OOB/deployment/rules dimension changes', dims.map(({ key, offset, changed, via, rulesNote }) => `${key} seed +${offset} → changed ${Object.entries(changed).filter(([, v]) => v).map(([k]) => k).join('+') || 'nothing in the preview'}${key === 'deployment' ? ` (seen on the ${via})` : ''}${rulesNote}`).join(' | '),
+    dims[0].changed.map && !dims[0].changed.oob && dims[1].changed.oob && !dims[1].changed.map && dims[2].changed.deployment && !dims[2].changed.map && !dims[2].changed.oob && !Object.values(dims[3].changed).some(Boolean));
 } catch (error) {
   record(h, 'RUN', 'The New Game run completes', String(error.stack ?? error.message), false);
   await h.shot('failure').catch(() => {});
