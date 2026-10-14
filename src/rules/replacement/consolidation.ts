@@ -16,11 +16,21 @@ import { isReplacement } from './replacement.js';
 type Transition = { readonly state: GameState; readonly events: readonly RuleEvent[] };
 type ConsolidateAction = Extract<GameAction, { readonly kind: 'CONSOLIDATE_UNITS' }>;
 
-const faceKey = (definition: PieceDefinition): string => JSON.stringify(definition.faces.map((face) => [
-  face.id, face.mobilityClassDefinitionId,
-  face.steps.map((step) => [step.remainingSteps, step.combatStrength, step.actionRating, step.movementPointTicks, step.regimentalEquivalentTicks, step.range,
-    step.ratings.map(({ ratingDefinitionId, value }) => [ratingDefinitionId, value])]),
-]));
+/** Printed values of both faces and the kind of unit, as one comparable key; found once per Definition. */
+const counterKeys = new WeakMap<PieceDefinition, string>();
+const counterKey = (definition: PieceDefinition): string => {
+  let key = counterKeys.get(definition);
+  if (key === undefined) {
+    const { kind, symbol, echelon, nationality, combatCategory, defensiveOnly, rebuildable, showRe, transportPoints } = definition.counter!;
+    key = JSON.stringify([[kind, symbol, echelon, nationality, combatCategory, defensiveOnly, rebuildable, showRe, transportPoints], definition.faces.map((face) => [
+      face.id, face.mobilityClassDefinitionId,
+      face.steps.map((step) => [step.remainingSteps, step.combatStrength, step.actionRating, step.movementPointTicks, step.regimentalEquivalentTicks, step.range,
+        step.ratings.map(({ ratingDefinitionId, value }) => [ratingDefinitionId, value])]),
+    ])]);
+    counterKeys.set(definition, key);
+  }
+  return key;
+};
 
 /**
  * 13.9: identical on both sides of the counter: the same printed values on each face and the same kind of unit (type,
@@ -30,12 +40,7 @@ export const identicalCounters = (state: GameState, left: PieceState, right: Pie
   const a = definitionOf(state, left);
   const b = definitionOf(state, right);
   if (!a?.counter || !b?.counter || a.family !== 'GROUND' || b.family !== 'GROUND') return false;
-  if (a.id === b.id) return true;
-  const counter = (definition: PieceDefinition) => {
-    const { kind, symbol, echelon, nationality, combatCategory, defensiveOnly, rebuildable, showRe, transportPoints } = definition.counter!;
-    return JSON.stringify([kind, symbol, echelon, nationality, combatCategory, defensiveOnly, rebuildable, showRe, transportPoints]);
-  };
-  return counter(a) === counter(b) && faceKey(a) === faceKey(b);
+  return a.id === b.id || counterKey(a) === counterKey(b);
 };
 
 /** 13.9: a unit involved in a consolidation cannot be DG or have Low or Exhausted internal stocks. */

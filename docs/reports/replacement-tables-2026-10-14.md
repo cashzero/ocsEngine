@@ -22,7 +22,9 @@ Table and Unit Consolidation (13.9). Repls as combat units had meanwhile landed 
    loading through visible controls): two reduced identical infantry divisions in one hex are offered **Combine**; doing it
    moves the steps to one division and the other to the Dead Pile, reported in the Log (13.9-1).
 4. A unit on the map is offered **Exchange** for an identical unit of another division in the Dead Pile; doing it puts the
-   Dead Pile unit in its place with the same mode and steps (13.9-2), reported in the Log.
+   Dead Pile unit in its place with the same mode and steps (13.9-2), reported in the Log. (Amended 2026-10-14 at the user's
+   request: Exchange starts from the selected unit, in its Unit tab, with a list of the Dead Pile counters; the Rebuild tab no
+   longer lists exchanges.)
 5. The Rebuild tab prices units by the Rebuild Table: two dead garrisons (13.5d row) cost 1 Pax together; a dead HQ costs
    1 Pax and 1 Eq, and a selection the hex cannot pay is refused with the reason; a paid rebuild spends the Repls.
 6. Finish that whole Game Turn through every decision and hot-seat handoff, then save and load: same turn, phase and units,
@@ -37,6 +39,7 @@ Table and Unit Consolidation (13.9). Repls as combat units had meanwhile landed 
 | Rebuild Table rows | HQ 1 Pax + 1 Eq a step; Armor/Mech (3.2a), anti-tank, assault guns 1 Eq; artillery 1 Eq; infantry and other 1 Pax; one-step infantry/airborne/engineer of ≤ 1/2 RE two for 1 Pax (13.5d) | Generated games print no table; costs stay close to the old rule except HQs (now Pax + Eq) and small battalions (13.5d now applies: garrisons, paratroop battalions) |
 | Not on the table | No-rebuild dot, Breakdowns, Repls, Transport Points | 13.5b-c; trucks are 13.5e |
 | Consolidated unit | Goes to the Dead Pile (can be rebuilt later) | 13.9 says "remove"; the Dead Pile keeps it rebuildable |
+| Where Exchange is offered | In the Unit tab of the selected unit on the map, one list of identical Dead Pile counters of other divisions; Combine stays in the Rebuild tab | User request 2026-10-14: the exchange starts from the unit on the map, not from the Dead Pile |
 | Consolidation never stops a step | `CONSOLIDATE_UNITS` is non-stopping, like `COMBINE_AIRCRAFT` | An exchange is open whenever an identical unit of another division is dead, which would otherwise stop every Reinforcement Phase |
 | Transport Points | Never consolidated | Generated games have no Organic Trucks (13.9-2/3 truck cases) |
 | Exchange (13.9-2/3) | Kept exactly as the series rule: the Dead Pile counter takes the place of the identical counter on the map, no distance limit | User decision 2026-10-14, after weighing removal and a direct "reassign formation" house rule (a unit changing division only into a same-type vacancy, the dead unit taking its old place): the result is the same as swapping counters, so the rule is kept as printed. Its use is reorganising divisions: which division is whole and which one carries the loss to rebuild. The reassign draft is not in the repository |
@@ -56,20 +59,24 @@ Tests: `tests/rules/ocs-replacement-tables.test.ts` (20), plus `ocs-replacements
 pins the fixed-allotment path it was written for; a projection assertion reads `price`) and `tests/ui/command-deck.test.ts`
 (the Reinforcement Phase now has a Rebuild tab, for the tables). Final `npm run check`: typecheck, 672 tests passed / 8
 skipped, build and dist smoke, exit 0. One earlier full run timed out `tests/ai/movement-trace-gain.test.ts` (67 s against
-its 60 s limit under full-suite load); alone it passes in 22 s, and it passed in both other full runs.
+its 60 s limit under full-suite load); alone it passes in 22 s, and it passed in both other full runs. After Exchange moved to the Unit tab (run5) it
+timed out again in two full runs (typecheck, build and dist smoke pass; the other 671 tests pass). Alone it passes (32-48 s
+here), and the same test also failed on an unchanged checkout of main (6be0f39) in this environment, so the timeout is the
+test's own running time on this machine, not this change. Its limit was not changed.
 
 ## 5. Browser acceptance
 
 Chromium (Playwright, 1920×1080) on the built app, visible controls only: `scripts/replacement-acceptance/run-tables.mjs`.
 The training position is made by `scripts/replacement-acceptance/make-tables-position.mjs` (default New Game, seeds
 7101-7104, Allied units arranged as its header says, set to the Allied Aircraft Refit Phase of Game Turn 2). Evidence:
-`docs/quality/evidence/replacement-tables-2026-10-14/` (run1-run3; run3 is the final run, every row PASS, 0 console errors).
+`docs/quality/evidence/replacement-tables-2026-10-14/` (run1-run5; run3 was the final run before Exchange moved to the Unit tab;
+run5 is the final run after it, every row PASS, 0 console errors).
 
-| Row | Boundary | Observation (run3) |
+| Row | Boundary | Observation (run3; REPL-11 Exchange from run5) |
 |---|---|---|
 | REPL-09 | Fresh New Game 18×12 / Standard / 3 div, 1 armored (43 units), Turn 2 Allied Reinforcement | Log: "Variable Replacement Table roll 6: 2 Pax and 1 Eq."; Arrivals list exactly 2 Personnel and 1 Equipment rows. The loaded position also rolls on entering its Reinforcement Phase ("roll 8: 1 Pax and 1 Eq") |
 | REPL-10 | Same fresh game, nothing to rebuild | Rebuild tab present; Rebuild Table (HQ 1 Pax and 1 Eq a step … small infantry 1 Pax for two units) and the 2d6 Variable Replacement Table shown (screenshot 04) |
-| REPL-11 | Training position (32×24 / Compact / 6 div, 2 armored New Game started first, then the position loaded through Menu) | Combine: "80.Inf joined 84.Inf at 1119: 1 step regained; 80.Inf went to the Dead Pile." Exchange: "Div Arty I / 4.A took the place of Div Arty I / 7.A at 1019" |
+| REPL-11 | Training position (32×24 / Compact / 6 div, 2 armored New Game started first, then the position loaded through Menu) | Combine: "80.Inf joined 84.Inf at 1119: 1 step regained; 80.Inf went to the Dead Pile." Exchange (run5): the Rebuild tab lists only Combine; selecting Div Arty I / 7.A shows an Exchange section in its Unit tab whose list holds "Div Arty I / 4.A" (screenshot 07); Exchange → "Div Arty I / 4.A took the place of Div Arty I / 7.A at 1019" |
 | REPL-10 | Same | Two dead garrisons selected alone: "this rebuild costs 1 Pax and 0 Eq"; adding the dead HQ: "costs 2 Pax and 1 Eq", "This rebuild takes 2 Pax; the hex holds 1." and the button disabled; without the HQ both garrisons return for 1 Pax |
 | REPL-12 | Both games | The fresh game finishes Game Turn 2; the position finishes Game Turn 2 and is saved and loaded at Turn 3 First Player Phase; the downloaded snapshot holds 84.Inf at 3 steps, 80.Inf and Div Arty 7.A in the Dead Pile, Div Arty 4.A at 1019, both garrisons on the map and the Pax spent |
 
@@ -80,7 +87,7 @@ Issues observed during the runs:
 | run1 stopped in the Reinforcement Phase: the harness read the Log tab and then looked for arrival rows, which exist only while the Arrivals tab is open, so nothing was placed and End stayed disabled | Harness bug, not a product defect: run2 opens Arrivals first. run1 kept as evidence |
 | run2 screenshot 06: the Unit Consolidation panel was below two long rebuild cards, out of view, while the default rebuild already spent a Pax on a step a free Combine would restore | **Fixed**: consolidation comes first in the Rebuild tab (run3 screenshot 06) |
 | run2 screenshot 04: the Variable Replacement Table caption wrapped word by word in a narrow column | **Fixed**: the tables span the panel with left captions (run3 screenshot 04) |
-| One Dead Pile unit appears in an Exchange offer for every identical unit on the map (three offers for Div Arty 4.A in run3) | Not blocking; recorded as TODO(consolidation-offer-list) |
+| One Dead Pile unit appeared in an Exchange offer for every identical unit on the map (three offers for Div Arty 4.A in run3) | **Fixed** at the user's direction: Exchange is the selected unit's action with one list of Dead Pile counters (run5) |
 
 ## 6. Remaining gaps (TODO; not complete)
 
@@ -89,9 +96,6 @@ Issues observed during the runs:
   a source record per row.
 - **TODO(consolidation-bot)**: the heuristic bot never consolidates. Impact: bot sides keep two reduced identical divisions
   apart. Close with a bot step that combines them and a bot-game test showing it.
-- **TODO(consolidation-offer-list)**: every identical pair is a separate Exchange offer, so the list grows with dead units
-  × identical units on the map. Impact: a long list late in a big game. Close with offers grouped per Dead Pile unit (choose
-  which unit it replaces) and a browser run with several dead units.
 - **TODO(repl-natural-loss-ui)**: Consolidation and table pricing were exercised on a loaded training position, not after
   losses from ordinary play in a fresh New Game (as for the rebuild rows of 2026-10-04 and 2026-10-13). Close with a fresh New
   Game in which natural losses lead to a Combine or a table-priced rebuild, and that turn completed.

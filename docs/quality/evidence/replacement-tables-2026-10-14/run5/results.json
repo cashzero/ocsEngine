@@ -1,0 +1,103 @@
+{
+  "title": "Variable Replacement Table, Rebuild Table and Unit Consolidation: actual UI acceptance",
+  "final": {
+    "turn": "Turn 3 / 8",
+    "player": "Allied player turn",
+    "phase": "First Player Phase",
+    "revision": null
+  },
+  "rows": [
+    {
+      "id": "REPL-09",
+      "expectation": "The Log shows the Variable Replacement Table roll of this Reinforcement Phase",
+      "observed": "Variable Replacement Table roll 6: 2 Pax and 1 Eq.",
+      "status": "PASS"
+    },
+    {
+      "id": "REPL-09",
+      "expectation": "Exactly the rolled Pax and Eq wait in Arrivals as separate units",
+      "observed": "rolled {\"pax\":2,\"eq\":1}, Arrivals {\"pax\":2,\"eq\":1,\"rows\":5}",
+      "status": "PASS"
+    },
+    {
+      "id": "REPL-10",
+      "expectation": "The Rebuild tab shows the Rebuild Table (with the 13.5d pair row) and the Variable Replacement Table with nothing to rebuild",
+      "observed": "Place every arriving unit: select it, then click a blue entry hex. No unit selected Click one of your units on the map, or open All units. Arrivals 5 Rebuild Unit Log All units (17) Rebuild and Replacement Tables Rebuild Table (13.5a) Units Cost HQ 1 Pax and 1 Eq a step Armor and Mech units (3.2a), anti-tank and assault guns 1 Eq a step Artillery 1 Eq a step Infantry and other units 1 Pax a step Infantry battalions of 1/2 RE or less (13.5d: two for one Pax) 1 Pax for two units Units not listed (no-rebuild dot, Breakdowns, Repls, trucks) never return as units; Eq rebuild trucks lost to the enemy (13.5e). Variable Replacement Table (2d6, each Reinforcement Phase) Roll Pax Eq 2 1 0 3 1 0 4 1 0 5 1 1 6 2 1 7 2 1 8 2 1 9 3 1 10 2 2 11 3 2 12 4 2 Decision recorded.",
+      "status": "PASS"
+    },
+    {
+      "id": "REPL-12",
+      "expectation": "The fresh game completes Game Turn 2 through every decision and handoff",
+      "observed": "{\"turn\":\"Turn 3 / 6\",\"player\":\"Axis player turn\",\"phase\":\"First Player Phase\",\"seat\":\"Axis commander\",\"end\":\"End First Player PhaseNext: Aircraft Refit Phase\",\"endDisabled\":true,\"notice\":\"Movement · Movement Segment finished.\",\"handoff\":false,\"complete\":false,\"decision\":[\"Go first\",\"Go second\"]}",
+      "status": "PASS"
+    },
+    {
+      "id": "REPL-09",
+      "expectation": "The loaded position also rolls the table on entering the Reinforcement Phase",
+      "observed": "Variable Replacement Table roll 8: 1 Pax and 1 Eq.",
+      "status": "PASS"
+    },
+    {
+      "id": "REPL-11",
+      "expectation": "The Rebuild tab offers Combine for the two reduced divisions, and no Exchange (that starts from the unit)",
+      "observed": "All reinforcements are placed. 7 SP Supply dump 0123 · Supply · 28T (7 SP) Cannot move in this step Deselect Arrivals Rebuild Unit Log All units (29) Unit Consolidation Units identical on both sides of the counter, neither DG nor with Low or Exhausted internal stocks, may combine in one hex: the steps join one unit, the other goes to the Dead Pile; nothing grows beyond full strength (13.9). To exchange a unit for an identical counter of another division, select it and use its Unit tab. 1119 · 80.Inf joins 84.Inf: +1 step Combine Rebuild units Move Mode Repls in a hex at or within 2 hexes of an HQ in Combat Mode, and not in an enemy ZOC, rebuild units at the cost the Rebuild Table below gives. A Dead Pile unit returns in the Repls' hex; a reduced unit must be stacked with them. Units with the no-rebuild dot never return (13.5c). 1 Pax and 1 Eq at 0919 · this rebuild costs 1 Pax and 1 Eq Div Arty I / 4.A Dead Pile · 1 step missing · 1 Eq a step Place in Combat Mode Move Mode Reserve Mode Strat Mode US Garrison Bn Dead Pile · 1 step missing · 1 Pax for two units Place in Combat Mode Move Mode Reserve Mode Strat Mode US Garrison Bn Dead Pile · 1 step missing · 1 Pax for two units Place in Combat Mode Move Mode Reserve Mode Strat Mode US HQ 20th Corps Dead Pile · 1 step missing · 1 Pax and 1 Eq a step Rebuild (1 Pax, 1 Eq) 1 Pax and 1 Eq at 1119 · this rebuild costs 1 Pax and 1 Eq 84.Inf reduced here · 2 steps missing · 1 Pax a step Steps 80.Inf reduced here · 3 steps missing · 1 ",
+      "status": "PASS"
+    },
+    {
+      "id": "REPL-11",
+      "expectation": "Combine moves the steps to one division and sends the other to the Dead Pile (13.9-1)",
+      "observed": "All reinforcements are placed. 7 SP Supply dump 0123 · Supply · 28T (7 SP) Cannot move in this step Deselect Arrivals Rebuild Unit Log All units (28) You combined two reduced units 80.Inf joined 84.Inf at 1119: 1 step regained; 80.Inf went to the Dead Pile. Supply dump entered at 0123 Allied Personnel replacements entered at 0919 Allied Equipment replacements entered at 0919 Truck entered at 0123 US 652 FA Gp entered at 0123 You finished Aircraft Refit Phase 28T of supply arrived (Supply Table roll 10). Variable Replacement Table roll 8: 1 Pax and 1 Eq. 1 Pax arrived. 1 Eq arrived. Now: Reinforcement Phase · Allied commander. 80.Inf joined 84.Inf: 1 step regained at 1119.",
+      "status": "PASS"
+    },
+    {
+      "id": "REPL-11",
+      "expectation": "The selected unit's Unit tab offers Exchange with a list of its identical Dead Pile counters of other divisions",
+      "observed": "[\"Div Arty I / 4.A\"] · All reinforcements are placed. III I 7.A 17 3 2 5 Div Arty I / 7.A 1019 · Combat mode Cannot move in this step Deselect Arrivals Rebuild Unit Log All units (28) Exchange Swap this unit for an identical counter of another division in the Dead Pile: that counter takes this unit's place, mode, markers and steps, and this unit goes to the Dead Pile (13.9). Dead Pile counter Div Arty I / 4.A Exchange 80.Inf joined 84.Inf: 1 step regained at 1119.",
+      "status": "PASS"
+    },
+    {
+      "id": "REPL-11",
+      "expectation": "Exchange puts the Dead Pile counter in the unit's place (13.9-2)",
+      "observed": "All reinforcements are placed. III I 7.A 17 3 2 5 Div Arty I / 7.A eliminated · Combat mode Cannot move in this step Deselect Arrivals Rebuild Unit Log All units (28) You exchanged a unit for one of another division Div Arty I / 4.A took the place of Div Arty I / 7.A at 1019; Div Arty I / 7.A went to the Dead Pile. You combined two reduced units 80.Inf joined 84.Inf at 1119: 1 step regained; 80.Inf went to the Dead Pile. Supply dump entered at 0123 Allied Personnel replacements entered at 0919 Allied Equipment replacements entered at 0919 Truck entered at 0123 US 652 FA Gp entered at 0123 You finished Aircraft Refit Phase 28T of supply arrived (Supply Table roll 10). Variable Replacement Table roll 8: 1 Pax and 1 Eq. 1 Pax arrived. 1 Eq arrived. Now: Reinforcement Phase · Allied commander. Div Arty I / 4.A took this unit's place.",
+      "status": "PASS"
+    },
+    {
+      "id": "REPL-10",
+      "expectation": "Two dead garrisons are priced together at 1 Pax (13.5d)",
+      "observed": "1 Pax and 1 Eq at 1119 · this rebuild costs 1 Pax and 0 Eq 84.Inf reduced here · 1 step missing · 1 Pax a step Div Arty I / 7.A Dead Pile · 1 step missing · 1 Eq a step 80.Inf Dead Pile · 4 steps missing · 1 Pax a step US Garrison Bn Dead Pile · 1 step missing · 1 Pax for two units Place in Combat Mode Move Mode Reserve Mode Strat Mode US Garrison Bn Dead Pile · 1 step missing · 1 Pax for two units Place in Combat Mode Move Mode Reserve Mode Strat Mode US HQ 20th Corps Dead Pile · 1 step missing · 1 Pax and 1 Eq a step Rebuild (1 Pax, 0 Eq)",
+      "status": "PASS"
+    },
+    {
+      "id": "REPL-10",
+      "expectation": "Adding the dead HQ (1 Pax and 1 Eq a step) is refused with the reason and the button disabled",
+      "observed": "1 Pax and 1 Eq at 1119 · this rebuild costs 2 Pax and 1 Eq 84.Inf reduced here · 1 step missing · 1 Pax a step Div Arty I / 7.A Dead Pile · 1 step missing · 1 Eq a step 80.Inf Dead Pile · 4 steps missing · 1 Pax a step US Garrison Bn Dead Pile · 1 step missing · 1 Pax for two units Place in Combat Mode Move Mode Reserve Mode Strat Mode US Garrison Bn Dead Pile · 1 step missing · 1 Pax for two units Place in Combat Mode Move Mode Reserve Mode Strat Mode US HQ 20th Corps Dead Pile · 1 step missing · 1 Pax and 1 Eq a step Place in Combat Mode Move Mode Reserve Mode Strat Mode This rebuild takes 2 Pax; the hex holds 1. 13.5a Rebuild (2 Pax, 1 Eq)",
+      "status": "PASS"
+    },
+    {
+      "id": "REPL-10",
+      "expectation": "The two garrisons return from the Dead Pile for 1 Pax",
+      "observed": "All reinforcements are placed. III I 7.A 17 3 2 5 Div Arty I / 7.A eliminated · Combat mode Cannot move in this step Deselect Arrivals Rebuild Unit Log All units (29) You rebuilt 2 units at 1119 US Garrison Bn returned from the Dead Pile with 1 step at 1119. US Garrison Bn returned from the Dead Pile with 1 step at 1119. You exchanged a unit for one of another division Div Arty I / 4.A took the place of Div Arty I / 7.A at 1019; Div Arty I / 7.A went to the Dead Pile. You combined two reduced units 80.Inf joined 84.Inf at 1119: 1 step regained; 80.Inf went to the Dead Pile. Supply dump entered at 0123 Allied Personnel replacements entered at 0919 Allied Equipment replacements entered at 0919 Truck entered at 0123 US 652 FA Gp entered at 0123 You finished Aircraft Refit Phase 28T of supply arrived (Supply Table roll 10). Variable Replacement Table roll 8: 1 Pax and 1 Eq. 1 Pax arrived. 1 ",
+      "status": "PASS"
+    },
+    {
+      "id": "REPL-12",
+      "expectation": "The downloaded save holds the consolidations and the rebuild",
+      "observed": "{\"keep\":3,\"give\":\"ELIMINATED\",\"twin\":{\"hexId\":\"0,18\",\"kind\":\"ON_MAP\"},\"onMap\":\"ELIMINATED\",\"garrisons\":[\"ON_MAP\",\"ON_MAP\"],\"pax\":\"ELIMINATED\"}",
+      "status": "PASS"
+    },
+    {
+      "id": "REPL-12",
+      "expectation": "Complete the turn and save/load through verified action replay",
+      "observed": "{\"turn\":\"Turn 3 / 8\",\"player\":\"Allied player turn\",\"phase\":\"First Player Phase\",\"seat\":\"Allied commander\",\"end\":\"End First Player PhaseNext: Aircraft Refit Phase\",\"endDisabled\":true,\"notice\":\"Your turn, Allied commander.\",\"handoff\":false,\"complete\":false,\"decision\":[\"Go first\",\"Go second\"]} → {\"turn\":\"Turn 3 / 8\",\"player\":\"Allied player turn\",\"phase\":\"First Player Phase\",\"seat\":\"Allied commander\",\"end\":\"End First Player PhaseNext: Aircraft Refit Phase\",\"endDisabled\":true,\"notice\":\"Save loaded at revision 18.\",\"handoff\":false,\"complete\":false,\"decision\":[\"Go first\",\"Go second\"]}",
+      "status": "PASS"
+    },
+    {
+      "id": "REPL-12",
+      "expectation": "No browser page/console errors",
+      "observed": "[]",
+      "status": "PASS"
+    }
+  ],
+  "timings": [],
+  "errors": []
+}

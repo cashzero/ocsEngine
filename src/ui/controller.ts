@@ -1109,11 +1109,14 @@ class DefaultUiController implements UiController {
     return { rebuildTable: projection.replacements.rebuildTable, replacementTable: projection.replacements.replacementTable };
   }
 
-  /** 13.9-1 to 3: consolidations the player could make now, each with its action and the engine's explanation. */
+  /**
+   * 13.9-1: combinations the player could make now, each with its action and the engine's explanation. Exchanges (13.9-2/3)
+   * start from the unit on the map, so they are the selected unit's actions (#unitActions), not listed here.
+   */
   #consolidations(enabled: (kind: GameAction['kind']) => boolean): readonly Consolidation[] {
     if (!enabled('CONSOLIDATE_UNITS')) return [];
     const view = this.#view(this.#activeSeat());
-    return (view.projection?.replacements.consolidations ?? []).map((option): Consolidation => {
+    return (view.projection?.replacements.consolidations ?? []).filter(({ consolidation }) => consolidation === 'MERGE').map((option): Consolidation => {
       const action: GameAction = {
         actionId: this.#actionId('consolidate'), actorId: view.playerId, expectedRevision: this.#session.getRevision(),
         kind: 'CONSOLIDATE_UNITS', consolidation: option.consolidation, pieceId: option.pieceId, withId: option.withId,
@@ -1610,6 +1613,14 @@ class DefaultUiController implements UiController {
           add('PORT', `Repair one hit of the port at ${printedHexLabel(action.hexId)} (1 SP from ${sources}; this unit cannot move)`, action);
         }
       }
+      // 13.9-2/3: exchange this unit for an identical counter of another division from the Dead Pile; one entry per counter.
+      if (enabled('CONSOLIDATE_UNITS')) {
+        for (const action of this.#candidates('CONSOLIDATE_UNITS', piece.id)) {
+          if (action.kind !== 'CONSOLIDATE_UNITS' || action.consolidation !== 'SWAP' || action.pieceId !== piece.id) continue;
+          const dead = this.#scenario.initialPieceState.pieces.find(({ id }) => id === action.withId);
+          add('EXCHANGE', this.#rebuildUnitLabel(action.withId, String(dead?.definitionId ?? '')), action);
+        }
+      }
       if (enabled('COMBINE_AIRCRAFT')) add('AIR', 'Combine with the other reduced aircraft of the same type here', this.#candidates('COMBINE_AIRCRAFT', piece.id)[0]);
       return distinctLabels(actions);
     });
@@ -1857,7 +1868,8 @@ class DefaultUiController implements UiController {
     const snapshot = this.getSnapshot();
     const entry = [...snapshot.unitActions, ...snapshot.stepActions].find((candidate) => candidate.key === key);
     if (!entry) return;
-    await this.#dispatch({ ...entry.action, actionId: this.#actionId('unit-action'), expectedRevision: this.#session.getRevision() } as GameAction, `${entry.label}: done.`);
+    await this.#dispatch({ ...entry.action, actionId: this.#actionId('unit-action'), expectedRevision: this.#session.getRevision() } as GameAction,
+      entry.group === 'EXCHANGE' ? `${entry.label} took this unit's place.` : `${entry.label}: done.`);
   };
 
   #emit(): void {
