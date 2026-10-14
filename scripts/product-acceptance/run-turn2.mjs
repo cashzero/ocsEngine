@@ -6,7 +6,7 @@ import { join } from 'node:path';
 import { click, gotoHex, has, open, placeArrivals, record, selectUnit, where } from '../air-acceptance/harness.mjs';
 import { configure, generate, openNewGame, previewSignature, playUntil, start } from './lib.mjs';
 
-const evidenceDir = join(process.argv[2] ?? 'docs/quality/evidence/product-2026-10-14', 'turn2');
+const evidenceDir = join(process.argv[2] ?? 'artifacts/product-2026-10-14', 'turn2');
 const BASE = { width: 32, height: 24, scale: 'COMPACT', divisions: 6, armored: 2, turnLimit: 3, seeds: { map: 91001, oob: 91002, deployment: 91003, rules: 91004 } };
 const extra = {};
 const h = await open({ evidenceDir });

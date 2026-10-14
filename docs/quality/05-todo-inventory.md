@@ -45,10 +45,12 @@
 | ID | 缺少的行為 | 使用者可見影響 | 關閉證據 | 詳細 |
 |---|---|---|---|---|
 | `overrun-selection-release` | overrun 結果顯示後選取被放開 | 玩家須再點堆疊才能續動 | 結果後仍選取存活的移動堆疊並可直接點目的地 | `03` ACT-17 |
+| `roster-name-truncation` | 名冊列在 1680 寬度截斷長名稱（`Chmbln TF (Det. 2) / 1…`） | 看不到完整單位名稱 | `03` UI-02 PASS | `03` UI-02 |
+| `preview-roster-count` | 預覽與名冊的單位數沒有說明：4 個第 2 回合才到的增援單位不在名冊，6 個 Garrison 營在名冊與地圖上但不在預覽與單位數 | 預覽 62、名冊 64，畫面上沒有解釋 | 預覽與名冊交代這兩類單位，或使用者改寫判準；`03` MAP-04 PASS | `03` MAP-04 |
 | `unit-status-reserve` | Unit Status 沒有「released」與「barraged」列（投影未提供引擎使用狀態） | 這兩種狀態看不到 | 投影暴露後加列並在瀏覽器驗證 | `src/ui/unit-status.ts` |
 | `pax-counter-art` | Pax counter 圖樣未完成 | counter 外觀不是最終版 | 見來源 | `docs/rule-engine/replacement-tables-2026-10-14.md` §6 |
 | `transport-art` | 運輸機輪廓為目測繪製 | 運輸機 counter 不是印刷樣式 | 依參考圖重繪並做視覺比對 | `src/ui/counter.ts` |
-| `counter-fidelity` | CF5 產品驗收與縮放 LOD 三級未驗證 | counter 視覺驗收 IN PROGRESS | `03` CTR-05、CTR-06、CTR-08 PASS 並驗證 LOD | `docs/roadmap/17-counter-fidelity-wbs.md` |
+| `counter-fidelity` | CF5 三計數器堆疊與縮放 LOD 三級未驗證（CTR-05 已 PASS） | counter 視覺驗收 IN PROGRESS | `03` CTR-06、CTR-08 PASS 並驗證 LOD | `docs/roadmap/17-counter-fidelity-wbs.md` |
 | `TODO-CM1` | `scripts/counter-lod-gate.mjs` 與 `scripts/desktop-deck-gate.mjs` 無法在現行 UI 執行 | 這兩個 gate 不能重跑 | 腳本更新後在現行 build 跑通 | `docs/ui/canvas-map-rewrite-2026-10-02.md` |
 | `TODO-CM2` | Canvas 地圖的格子與 counter 不再是可 Tab 的元素，改為單一焦點＋方向鍵游標＋朗讀，未以報讀器實測 | 報讀器使用者只能以游標朗讀辨識格子與單位 | 以 NVDA 實際操作一個移動與一個攻擊並記錄結果 | 同上 |
 | `deck-open-items` | D4 守方單一表單、D6 敵 ZOC 標示、參戰單位編輯器、鍵盤／報讀器稽核 | 見來源 | 見來源 | `docs/ui/11-desktop-command-deck-design.md` §6；`docs/ui/ui-flow-review-2026-10-01.md` |
@@ -72,7 +74,7 @@
 
 | ID | 缺少的行為 | 使用者可見影響 | 關閉證據 | 詳細 |
 |---|---|---|---|---|
-| `session-reload` | 重新整理頁面會失去遊戲 | 意外重新整理即失去進度 | `03` SES-09 PASS | `docs/rule-engine/ocs-rebuild-2026-10-01.md` §7 |
+| `session-reload` | 重新整理頁面會失去遊戲，且無聲換成預設新局（沒有 beforeunload 提示、沒有復原提示、網址 `#new-game` 會重新打開對話框；`03` SES-09 FAIL） | 意外重新整理即失去進度，且畫面上看不出被換掉 | `03` SES-09 PASS | `docs/rule-engine/ocs-rebuild-2026-10-01.md` §7 |
 | `load-same-scenario` | 只能讀回同一劇本的存檔 | 不能讀另一個 New Game 的存檔 | 讀入不同劇本的存檔並繼續遊戲 | 同上 |
 
 ## 2. 沒有對應驗收列的觀察問題
