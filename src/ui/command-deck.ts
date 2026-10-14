@@ -467,9 +467,12 @@ const consolidationPanel = (snapshot: UiSnapshot, state: DeckState): View => sna
     ${explanationBlock(option.explanation)}
     <button data-consolidate=${option.key} ?disabled=${!option.explanation.allowed || busyOf(snapshot, state)}>${option.consolidation === 'MERGE' ? 'Combine' : 'Exchange'}</button></div>`)}</div></div>`;
 
-/** The Rebuild tab: ground units and trucks first, then aircraft, Unit Consolidation and the tables. */
+/**
+ * The Rebuild tab: Unit Consolidation first (it costs nothing, and a combined division may need fewer Repls), then ground
+ * units and trucks, aircraft, and the tables.
+ */
 const rebuildTab = (snapshot: UiSnapshot, state: DeckState): TemplateResult =>
-  html`${groundRebuildPanel(snapshot, state)}${airRebuildPanel(snapshot, state)}${consolidationPanel(snapshot, state)}${replacementTablesPanel(snapshot)}`;
+  html`${consolidationPanel(snapshot, state)}${groundRebuildPanel(snapshot, state)}${airRebuildPanel(snapshot, state)}${replacementTablesPanel(snapshot)}`;
 
 /** Eq in the Reinforcement Phase: rebuild lost aircraft at any friendly Air Base (13.5f). */
 const airRebuildPanel = (snapshot: UiSnapshot, state: DeckState): View => snapshot.air.rebuilds.length === 0 ? nothing : html`<div class="air-panel"><strong>Rebuild aircraft</strong>

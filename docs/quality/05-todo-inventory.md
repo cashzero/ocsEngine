@@ -32,8 +32,10 @@
   - `optional-rules`（21.1–21.12）：含 Big Hogs 與刺蝟佔領降級（21.11a/c）。
 - PARTIAL（可用，但有已知缺口）：
   - `sequence.ground-turn`、`lifecycle.ground`、`replacements-rebuilds`、`air.replacements-and-reinforcements`：
-    沒有 Variable Reinforcement／Replacement Table，Pax／Eq 為依地圖大小的固定配給；Rebuild Table 為通用規則，13.5d 成對重建不會發生；
-    Repl 不是戰鬥單位（無 1/4 RE 疊放、ZOC、損失、補給、燃料，放下後不能移動）；Unit Consolidation（13.9）未實作。
+    沒有 Variable Reinforcement Table。2026-10-14 起 Pax／Eq 由產生器的 Variable Replacement Table 擲骰、依產生器的 Rebuild Table 計價
+    （含 13.5d 成對重建），地面 Unit Consolidation（13.9-1～3）已實作；兩張表都不是印刷版（TODO(repl-tables-generated)），
+    機器人不會合併單位（TODO(consolidation-bot)），合併與計價只在測試局面上走過瀏覽器（TODO(repl-natural-loss-ui)）：
+    `docs/reports/replacement-tables-2026-10-14.md` §6。Repl 自 2026-10-13 起為戰鬥單位（`replacement-movement-2026-10-13.md`）。
   - `movement.ground`：整疊移動（6.1f）使用者暫緩。
   - `movement.sea`（19.0、9.14h）：港口容量、損壞／自毀／修復、佔領、Supply Source 與 Sea Cap 海運已實作；命中後容量依圖表第 4 頁 Port Damage 表為 80／60／40／20%（2026-10-10 轉錄並修正，原本每次扣 1/4）；砲兵仍不能轟擊港口（Facility Table 砲兵成本已轉錄，但 DECLARE_BARRAGE 沒有設施目標）。
   - `supply.trace-and-draw`：12.6f 編制追蹤由引擎挑涵蓋最多成員的路線，玩家不能選。
@@ -63,7 +65,7 @@
 | 範圍 | 文件 | 開放項 |
 |---|---|---|
 | 補給 | `docs/roadmap/09-supply-logistics-ux-wbs.md` | Phase A PASS（縮減範圍）；Phase B 未開始；TODO-S1～S5；B3、B4 待確認；A3c、A3d、A4a、A6e |
-| 空軍 | `docs/reports/M11-air-power.md` §5、§6.3；`docs/roadmap/08-air-power-wbs.md` §1.4 | AIR-08 FAIL；Mission Loss 未觀察；「每段都停下」與空戰交接次數待使用者決定；revision 只在 Game End 顯示；稽核探針無空軍檢查；BTR 專屬規則不實作；Glider Points；Eq 固定配給 |
+| 空軍 | `docs/reports/M11-air-power.md` §5、§6.3；`docs/roadmap/08-air-power-wbs.md` §1.4 | AIR-08 FAIL；Mission Loss 未觀察；「每段都停下」與空戰交接次數待使用者決定；revision 只在 Game End 顯示；稽核探針無空軍檢查；BTR 專屬規則不實作；Glider Points |
 | 存檔／生命週期 | `docs/reports/ocs-rebuild-2026-10-01.md` §7 | 重新整理失去遊戲（SES-09）；只能讀回同一劇本 |
 | UI | `docs/reports/canvas-map-rewrite-2026-10-02.md`、`docs/ui/11-desktop-command-deck-design.md` §6、`docs/reports/ui-flow-review-2026-10-01.md`、`docs/reports/desktop-command-deck-verification.md`、`docs/reports/counter-lod-verification.md` | TODO-CM1（`scripts/counter-lod-gate.mjs` 與 `scripts/desktop-deck-gate.mjs` 無法在現行 UI 執行）；TODO-CM2 報讀器；D4 守方單一表單；D6 敵 ZOC 標示；參戰單位編輯器；鍵盤／報讀器稽核；LOD 三級整合驗證；S0–S5 截圖 |
 | Counter | `docs/quality/04-counter-fidelity-correction-plan.md`、`docs/ui/04-counter-and-stack-inspection.md` | counter 視覺驗收 IN PROGRESS |
