@@ -193,7 +193,7 @@ describe('F10 Foundation integration gate', () => {
           'schema-and-serialization',
           'fixture-test-kit',
         ][index]}.md`),
-      'docs/reports/F10-foundation-integration.md',
+      'docs/foundation/F10-foundation-integration.md',
     ];
     expect(outputs.filter((path) => !existsSync(join(process.cwd(), path)))).toEqual([]);
   });

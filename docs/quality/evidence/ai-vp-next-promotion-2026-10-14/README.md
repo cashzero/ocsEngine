@@ -2,7 +2,7 @@
 
 Status: PROMOTED, standard heuristic@66. Baseline: immutable heuristic@35. The candidate, separate failed
 independent batches, and development results are recorded in `results.json` and the
-report `docs/reports/ai-vp-next-promotion-2026-10-14.md`.
+report `docs/ai/ai-vp-next-promotion-2026-10-14.md`.
 
 Each independent batch contains exactly 80 full eight-turn games: two current map
 styles, MEETING and AXIS_ATTACKS, ten same-seed swapped-seat pairs per group. Both

@@ -28,8 +28,8 @@ Architecture: [end-to-end game flow](../architecture/game-flow.md).
 | M8.6 | `docs/game-flow/06-new-game-ui-flow.md` | One New Game wizard/progress/error flow; resulting session replaces fixture | Displayed map/OOB and Gameplay state share scenario/hash |
 | M8.7 | `docs/game-flow/07-game-end-result.md` | FINISHED result view with winner, score, reason, final save and replay/New Game actions | COMPLETE phase always produces one result |
 | M8.8 | `docs/game-flow/08-persistence-recovery.md` | Save/load/checkpoint/replay retain generated scenario and all seeds | Reload reproduces the same scenario and final result |
-| M8.9 | `docs/reports/M8-orthogonal-seed-sweep.md` | Fixed-map/vary-OOB, fixed-OOB/vary-map and deployment sweeps | Geography and force identities remain independently stable |
-| M8.10 | `docs/reports/M8-generated-game-flow-gate.md` | Browser and headless New Game-to-Game End playthrough | Human completes a generated game; only then start AI |
+| M8.9 | `docs/game-flow/M8-orthogonal-seed-sweep.md` | Fixed-map/vary-OOB, fixed-OOB/vary-map and deployment sweeps | Geography and force identities remain independently stable |
+| M8.10 | `docs/game-flow/M8-generated-game-flow-gate.md` | Browser and headless New Game-to-Game End playthrough | Human completes a generated game; only then start AI |
 
 Every step produces its document before or together with code. A later step cannot mark an earlier missing integration seam as “deferred.”
 

@@ -174,7 +174,7 @@ const prop = (d: string): string => `<path class="plane-prop" d="${d}"/>`;
 const fw190Wing = pl('M16 45C16 42 18 41 22 41L44 39.5H52L74 41C78 41 80 42 80 45C80 48 78 49 74 49L52 51H44L22 49C18 49 16 48 16 45Z')
   + pl('M37 77.5C37 74.5 44 74.5 48 74.5C52 74.5 59 74.5 59 77.5C59 80.5 52 81 48 81C44 81 37 80.5 37 77.5Z') + balkenkreuz(25, 45) + balkenkreuz(71, 45);
 // TODO(transport-art): the C-47, C-47+Gldr and Ju.52 silhouettes are drawn after the VASSAL counter faces (75 x 64 px) by eye, not
-// traced per row like the models above. Closing evidence: a side-by-side review against the counter images (docs/quality/04).
+// traced per row like the models above. Closing evidence: a side-by-side review against the counter images (docs/roadmap/17-counter-fidelity-wbs.md).
 const planeArt: Readonly<Record<string, PlaneArt>> = {
   // A glider keeps the tow's place in the stack of art: listed before 'C-47' so its longer name matches first.
   'C-47+Gldr': { paint: 'od', rangeY: 22, body: pl('M10 36C10 33.5 12 33 15 33L45 32H51L81 33C84 33 86 33.5 86 36C86 38.5 84 39 81 39L51 41.5H45L15 39C12 39 10 38.5 10 36Z')

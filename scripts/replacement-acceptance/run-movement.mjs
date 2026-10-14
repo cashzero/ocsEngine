@@ -4,7 +4,7 @@ import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { open, newGame, where, advanceTo, placeArrivals, click, tab, has, gotoHex, record, textOf, settleDecisions, selectUnit, hexDistance } from '../air-acceptance/harness.mjs';
 
-const evidenceDir = process.argv[2] ?? 'docs/quality/evidence/replacement-movement-2026-10-13';
+const evidenceDir = process.argv[2] ?? 'artifacts/replacement-movement-2026-10-13';
 const positionDir = process.argv[3] ?? 'tmp/replacement-movement-position';
 const h = await open({ evidenceDir });
 const turn = (s) => Number(s.turn.match(/Turn (\d+)/)?.[1]);

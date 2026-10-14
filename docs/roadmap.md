@@ -224,7 +224,7 @@ validation errors。Rule Engine 不知道 React、component、dialog 或 mouse e
 
 - `docs/rule-engine/M2-state-and-sequence-report.md`
 - `docs/rule-engine/M2-movement-zoc-coverage.md`
-- `docs/reports/M2-replay-determinism.md`
+- `docs/rule-engine/M2-replay-determinism.md`
 
 ### Exit gate
 
@@ -266,7 +266,7 @@ barrage、retreat、Exploitation 與 victory。
 - `docs/rule-engine/M3-logistics-model.md`
 - `docs/rule-engine/M3-combat-transaction.md`
 - `docs/rule-engine/M3-ground-rule-coverage.md`
-- `docs/reports/M3-headless-scenario-replay.md`
+- `docs/gameplay/M3-headless-scenario-replay.md`
 
 ### Exit gate
 
@@ -313,7 +313,7 @@ session.replay(events)
 - `docs/gameplay/M4-game-session-contract.md`
 - `docs/gameplay/M4-persistence-and-replay.md`
 - `docs/gameplay/M4-view-projection.md`
-- `docs/reports/M4-headless-gameplay-flow.md`
+- `docs/gameplay/M4-headless-gameplay-flow.md`
 
 ### Exit gate
 
@@ -351,7 +351,7 @@ UI 完全重新實作，不沿用 `bcsEngine` React components 或 VASSAL widget
 - `docs/ui/M5-map-and-counter-contract.md`
 - `docs/ui/M5-action-and-decision-flow.md`
 - `docs/ui/M5-accessibility-and-hotseat.md`
-- `docs/reports/M5-manual-playthrough.md`
+- `docs/ui/M5-manual-playthrough.md`
 
 ### Exit gate
 
@@ -399,7 +399,7 @@ validation summary 與 save。此時只生成地圖，仍使用固定 OOB fixtur
 
 - `docs/generator/M6-random-map-spec.md`
 - `docs/generator/M6-map-validation.md`
-- `docs/reports/M6-map-seed-sweep.md`
+- `docs/generator/M6-map-seed-sweep.md`
 
 ## 11. M7：OOB Catalog 與 Random OOB
 
@@ -442,7 +442,7 @@ moduledata + buildFile.xml
 - `docs/oob/M7-normalization-decisions.md`
 - `docs/oob/M7-generator-archetypes.md`
 - `docs/generator/M7-random-oob-spec.md`
-- `docs/reports/M7-oob-seed-sweep.md`
+- `docs/oob/M7-oob-seed-sweep.md`
 
 ### Exit gate
 
@@ -456,9 +456,7 @@ moduledata + buildFile.xml
 
 實作狀態：**IN PROGRESS**。Random Map 與 Random OOB 已合成可人工操作的 generated scenario，且真實瀏覽器已完成 default、Large 與 contact 主流程；但 lifecycle、real save/load、Game End/final replay 與其餘產品操作 gate 尚未全數驗證，M8.10 不得標為完成。
 
-2026-10-04 瀏覽器驗收（doc 03「Execution record 2026-10-04」）：New Game、Map、counter 與規則行動列多數通過，
-但 NG-07（部署格數與凍結期望不符）、NG-10（產生中多個階段同時 active）、MAP-03、MAP-04 為 FAIL，SES 與 UI 列尚未執行，
-M8 維持 **IN PROGRESS**。
+驗收狀態以 `docs/quality/03-product-operation-verification-plan.md` 的 NG、MAP、CTR、ACT、SES、UI 列為準；在所有 P0 列 PASS 前，M8 維持 **IN PROGRESS**。
 
 M8 同時是正式的 Game Flow Integration milestone；詳細 WBS 與架構圖：
 
@@ -506,8 +504,8 @@ UI 正常入口已移除 fixed synthetic fixture；M6/M7 preview 保留為診斷
 
 - `docs/game-flow/00-current-gap-and-flow-contract.md` 至 `08-persistence-recovery.md`
 - `docs/architecture/game-flow.md`
-- `docs/reports/M8-orthogonal-seed-sweep.md`
-- `docs/reports/M8-generated-game-flow-gate.md`
+- `docs/game-flow/M8-orthogonal-seed-sweep.md`
+- `docs/game-flow/M8-generated-game-flow-gate.md`
 
 ### Exit gate
 
@@ -561,7 +559,7 @@ rules RNG。
 
 - `docs/ai/M9-bot-architecture.md`
 - `docs/ai/M9-scoring-and-planning.md`
-- `docs/reports/M9-bot-behavior-baseline.md`
+- `docs/ai/M9-bot-behavior-baseline.md`
 
 ### Exit gate
 
@@ -594,8 +592,8 @@ rules RNG。
 
 - `docs/selfplay/M10-harness-contract.md`
 - `docs/selfplay/M10-telemetry-schema.md`
-- `docs/reports/M10-seed-matrix.md`
-- `docs/reports/M10-ai-promotion-decision.md`
+- `docs/ai/M10-seed-matrix.md`
+- `docs/ai/M10-ai-promotion-decision.md`
 
 ## 15. M11：完整 OCS 擴充
 

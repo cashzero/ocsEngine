@@ -6,7 +6,7 @@ import type { NormalizedRandomOobOptions, OobScale, OobSide } from './model.js';
  * Replacement counters (13.5). Every generated game gives each side Personnel (Pax) and Equipment (Eq) replacements,
  * rolled on the side's Variable Replacement Table each Reinforcement Phase; they rebuild ground units by the side's
  * Rebuild Table (13.5a-e) and, Eq only, aircraft (13.5f). Both tables are this generator's own: generated games have no
- * printed ones (docs/reports/replacement-tables-2026-10-14.md).
+ * printed ones (docs/rule-engine/replacement-tables-2026-10-14.md).
  */
 
 export type ReplacementKind = 'PAX' | 'EQ';
@@ -85,7 +85,7 @@ const replacementDefinition = (seed: number, side: OobSide, kind: ReplacementKin
     confidence: 'HIGH', reviewStatus: 'REVIEWED',
   }, {
     field: 'replacement-allotment', rawValue: 'generator-defined', normalizedValue: `${perTurn} ${kind === 'PAX' ? 'Pax' : 'Eq'} each Reinforcement Phase`,
-    source: { document: 'docs/reports/replacements-2026-10-04.md', locator: 'Replacement allotment' },
+    source: { document: 'docs/rule-engine/replacements-2026-10-04.md', locator: 'Replacement allotment' },
     confidence: 'MEDIUM', reviewStatus: 'REVIEWED',
   }] },
 });

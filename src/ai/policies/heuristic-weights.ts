@@ -1,7 +1,7 @@
 /**
  * Every number the heuristic policy weighs with, so self-play training (scripts/ai-train.mjs) can tune them.
- * Defaults: heuristic@3 (heuristic@1 as accepted in docs/reports/M9-bot-behavior-baseline.md, plus the replay-study
- * changes of heuristic@2 and @3 in docs/reports/M9-replay-study.md).
+ * Defaults: heuristic@3 (heuristic@1 as accepted in docs/ai/M9-bot-behavior-baseline.md, plus the replay-study
+ * changes of heuristic@2 and @3 in docs/ai/M9-replay-study.md).
  */
 export interface HeuristicWeights {
   // Operational plan.

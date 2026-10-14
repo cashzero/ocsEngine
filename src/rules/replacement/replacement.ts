@@ -17,7 +17,7 @@ import { inEnemyZoc } from '../zoc/zoc.js';
  * Replacement Table; the Repls arrive as counters placed at an entry hex or beside a friendly HQ, and are spent in Move
  * Mode to rebuild ground units by the side's Rebuild Table (13.5a-e) or, Eq only, aircraft (13.5f,
  * rules/air/replacement.ts). Games saved before the tables existed keep the fixed allotment and the generic per-counter
- * Rebuild Table they were played with: see docs/reports/replacement-tables-2026-10-14.md.
+ * Rebuild Table they were played with: see docs/rule-engine/replacement-tables-2026-10-14.md.
  */
 
 type Transition = { readonly state: GameState; readonly events: readonly RuleEvent[] };

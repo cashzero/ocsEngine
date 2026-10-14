@@ -8,7 +8,7 @@ Status: **IN PROGRESS** (see §6). Browser rows REPL-09 to REPL-12 PASS (run3), 
 
 Rebuilding ground units with Pax/Eq (13.5a-e) already existed (#57), and main's 671cafc had since made Pax/Eq movable
 combat units. Asked which open part to do, the user chose all four remaining items of
-`docs/reports/replacements-2026-10-04.md` §6: Repls as combat units, a real Rebuild Table, a rolled Variable Replacement
+`docs/rule-engine/replacements-2026-10-04.md` §6: Repls as combat units, a real Rebuild Table, a rolled Variable Replacement
 Table and Unit Consolidation (13.9). Repls as combat units had meanwhile landed on main (671cafc, report
 `replacement-movement-2026-10-13.md`), so this work keeps that design and adds the other three.
 

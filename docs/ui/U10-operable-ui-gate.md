@@ -7,9 +7,9 @@ prove OCS counter fidelity. The counter portion of U4 was reopened on 2026-09-04
 comparison with the OCS v4.3 counter explanation and representative Beyond the Rhine
 VASSAL faces. U10 remains open while counter fidelity, session persistence, Game End
 downloads, full keyboard traversal, and the remaining product-operation rows are still
-unverified; see `docs/quality/02-game-flow-acceptance-correction.md`,
-`03-product-operation-verification-plan.md`, and
-`04-counter-fidelity-correction-plan.md`.
+unverified; see
+`docs/quality/03-product-operation-verification-plan.md` and
+`docs/roadmap/17-counter-fidelity-wbs.md`.
 
 ## Delivered slice
 

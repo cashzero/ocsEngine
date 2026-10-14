@@ -4,7 +4,7 @@ import { join } from 'node:path';
 import { click, has, open, record, textOf, where } from '../air-acceptance/harness.mjs';
 import { configure, dialogState, generate, menuSummary, openNewGame, previewSignature, sha, start, startStageWatch, stopStageWatch, sweepMap } from './lib.mjs';
 
-const evidenceDir = join(process.argv[2] ?? 'docs/quality/evidence/product-2026-10-04', 'newgame');
+const evidenceDir = join(process.argv[2] ?? 'artifacts/product-2026-10-04', 'newgame');
 const NG07 = { style: 'TEMPERATE_INLAND', width: 18, height: 12, scale: 'LARGE', divisions: 4, armored: 2, turnLimit: 3, seeds: { map: 91001, oob: 91002, deployment: 91003, rules: 91004 } };
 const extra = {};
 

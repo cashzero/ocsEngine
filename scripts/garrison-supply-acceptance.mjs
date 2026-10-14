@@ -1,7 +1,7 @@
 import { join } from 'node:path';
 import { open, advanceTo, selectUnit, tab, click, textOf, has, record, where, gotoHex } from './air-acceptance/harness.mjs';
 import { openNewGame, configure, generate, previewSignature, start, deckText, sha, moveSelectedTo } from './product-acceptance/lib.mjs';
-const h = await open({ evidenceDir: process.argv[2] ?? join('docs/quality/evidence/garrison-supply-2026-10-13/isolated-vp') });
+const h = await open({ evidenceDir: process.argv[2] ?? join('artifacts/garrison-supply-2026-10-13/isolated-vp') });
 try {
   const options = { engagement: 'AXIS_ATTACKS', style: 'EASTERN_EUROPE', width: 24, height: 16, scale: 'COMPACT', divisions: 3, armored: 1, air: 'NONE', turnLimit: 3,
     seeds: { map: 14, oob: 8802, deployment: 8803, rules: 8804 } };

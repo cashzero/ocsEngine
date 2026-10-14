@@ -4,7 +4,7 @@ Status correction (2026-09-04): the counter-preview claims below describe the re
 standalone M7 surface and are not accepted as evidence for the current integrated New
 Game flow. The integrated preview currently shows formation summaries rather than unit
 counters. Unit-level preview fidelity is reopened under
-`docs/quality/04-counter-fidelity-correction-plan.md`.
+`docs/roadmap/17-counter-fidelity-wbs.md`.
 
 The original M7 delivery exposed Random OOB independently at `#random-oob`. That route was retired by the reopened M8/U10 integration gate because it did not prove deployment or active-game integration.
 

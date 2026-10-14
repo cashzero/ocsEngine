@@ -5,7 +5,7 @@ import { readFile, stat } from 'node:fs/promises';
 import { join } from 'node:path';
 import { advanceTo, click, gotoHex, has, newGame, open, record, refitAll, settleDecisions, tab, textOf, timed, where } from './harness.mjs';
 
-const evidenceDir = join(process.argv[2] ?? 'docs/quality/evidence/air-2026-10-03', 'air-09');
+const evidenceDir = join(process.argv[2] ?? 'artifacts/air-2026-10-03', 'air-09');
 const turnLimit = Number(process.argv[3] ?? 3);
 const h = await open({ evidenceDir });
 const seeds = { map: 5101, oob: 5102, deployment: 5103, rules: 5104 };

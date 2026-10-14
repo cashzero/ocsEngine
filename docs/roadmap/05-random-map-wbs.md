@@ -14,6 +14,6 @@ M6 outputs a deterministic, validated Foundation `MapDefinition`. It does not ge
 | M6.7 | `docs/generator/07-serialization-and-package-boundary.md` | Canonical JSON and dependency boundary |
 | M6.8 | `docs/generator/08-ui-preview-and-download.md` | Style/size/seed preview and download |
 | M6.9 | `docs/generator/09-seed-sweep-protocol.md` | 1,000 seeds, zero invalid/exception |
-| M6.10 | `docs/reports/M6-random-map-gate.md` | Full check and visual smoke |
+| M6.10 | `docs/generator/M6-random-map-gate.md` | Full check and visual smoke |
 | M6.11 | `docs/generator/10-btr-scale-density.md` | BtR-scale road mesh and settlement density; coverage validated |
 | M6.12 | `docs/generator/11-eastern-europe-theme.md` | Eastern Europe (Russia) theme: Case Blue / GBII-calibrated flatter terrain, fewer roads, railways and towns |

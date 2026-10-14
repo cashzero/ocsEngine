@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 
 // Timed Breakdown (20.0) run on the built UI: default New Game, Allied and Axis divisions, through Game Turn 1.
 // Needs `npm run build` and the UI served at 127.0.0.1:4391 (`OCS_UI_PORT=4391 node scripts/serve-ui.mjs`).
-const out = process.argv[2] ?? 'docs/reports/assets/breakdowns-2026-10-03';
+const out = process.argv[2] ?? 'artifacts/breakdowns-2026-10-03';
 await rm(out, { recursive: true, force: true });
 await mkdir(out, { recursive: true });
 const browser = await chromium.launch();

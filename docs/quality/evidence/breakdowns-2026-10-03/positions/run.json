@@ -1,0 +1,253 @@
+{
+  "decisions": [
+    {
+      "prompt": "YOUR DECISION  The phase ends: 1/101.Abn must be absorbed by a reduced unit in its hex (20.0d). Choose which one.",
+      "options": [
+        "90.Inf absorbs 1/101.Abn",
+        "13.Abn absorbs 1/101.Abn"
+      ],
+      "chose": "13.Abn absorbs 1/101.Abn"
+    },
+    {
+      "prompt": "DEFEND 1712  Combat supply",
+      "options": [
+        "Pay 2T from the dump at 1812 (40T available)",
+        "No combat supply: defend at half strength"
+      ],
+      "chose": "Pay 2T from the dump at 1812 (40T available)"
+    },
+    {
+      "prompt": "DEFEND 1712  Combat supply",
+      "options": [
+        "Lose 1 step",
+        "Retreat 1 hex"
+      ],
+      "chose": "Retreat 1 hex"
+    },
+    {
+      "prompt": "DEFEND 1712  Combat supply",
+      "options": [
+        "246.VG retreats to 1813",
+        "246.VG retreats to 1812",
+        "246.VG retreats to 1713 (through 1 enemy ZOC: DG)",
+        "246.VG retreats to 1811 (through 1 enemy ZOC: DG)",
+        "Detach a Breakdown from 246.VG first (it retreats too)"
+      ],
+      "chose": "Detach a Breakdown from 246.VG first (it retreats too)"
+    },
+    {
+      "prompt": "DEFEND 1712  Combat supply",
+      "options": [
+        "All 2 units retreat to 1813",
+        "All 2 units retreat to 1812",
+        "All 2 units retreat to 1713 (through 1 enemy ZOC: DG)",
+        "All 2 units retreat to 1811 (through 1 enemy ZOC: DG)",
+        "Retreat the units separately"
+      ],
+      "chose": "Retreat the units separately"
+    },
+    {
+      "prompt": "DEFEND 1712  Combat supply",
+      "options": [
+        "246.VG retreats to 1813",
+        "246.VG retreats to 1812",
+        "246.VG retreats to 1713 (through 1 enemy ZOC: DG)",
+        "246.VG retreats to 1811 (through 1 enemy ZOC: DG)"
+      ],
+      "chose": "246.VG retreats to 1813"
+    },
+    {
+      "prompt": "DEFEND 1712  Combat supply",
+      "options": [
+        "1/246.VG retreats to 1813",
+        "1/246.VG retreats to 1812",
+        "1/246.VG retreats to 1713 (through 1 enemy ZOC: DG)",
+        "1/246.VG retreats to 1811 (through 1 enemy ZOC: DG)"
+      ],
+      "chose": "1/246.VG retreats to 1813"
+    },
+    {
+      "prompt": "ATTACK 1712  Combat supply",
+      "options": [
+        "Do not advance",
+        "Advance all 3 remaining attackers",
+        "Advance 101.Abn",
+        "Advance 90.Inf",
+        "Advance 13.Abn",
+        "Detach a Breakdown from 101.Abn (it may advance on its own)",
+        "Detach a Breakdown from 90.Inf (it may advance on its own)",
+        "Detach a Breakdown from 13.Abn (it may advance on its own)"
+      ],
+      "chose": "Detach a Breakdown from 90.Inf (it may advance on its own)"
+    },
+    {
+      "prompt": "ATTACK 1712  Combat supply",
+      "options": [
+        "Do not advance",
+        "Advance all 4 remaining attackers",
+        "Advance 101.Abn",
+        "Advance 90.Inf",
+        "Advance 13.Abn",
+        "Advance 1/90.Inf",
+        "Detach a Breakdown from 101.Abn (it may advance on its own)",
+        "Detach a Breakdown from 90.Inf (it may advance on its own)",
+        "Detach a Breakdown from 13.Abn (it may advance on its own)"
+      ],
+      "chose": "Advance 1/90.Inf"
+    },
+    {
+      "prompt": "ATTACK 1712  Combat supply",
+      "options": [
+        "Stop advancing",
+        "Advance all 3 remaining attackers",
+        "Advance 101.Abn",
+        "Advance 90.Inf",
+        "Advance 13.Abn",
+        "Detach a Breakdown from 101.Abn (it may advance on its own)",
+        "Detach a Breakdown from 90.Inf (it may advance on its own)",
+        "Detach a Breakdown from 13.Abn (it may advance on its own)"
+      ],
+      "chose": "Stop advancing"
+    }
+  ],
+  "warning": [
+    "When this phase ends: 1/101.Abn is absorbed by 90.Inf or 13.Abn (you choose) 20.0d"
+  ],
+  "afterChoice": {
+    "units": 22,
+    "before": 23
+  },
+  "logA": [
+    "You chose which unit absorbs a Breakdown 13.Abn absorbed 1/101.Abn and regained a step. Now: Supply Phase · Allied commander.",
+    "You finished Movement · Movement Segment Now: Movement · Barrage Segment · Allied commander.",
+    "1/101.Abn moved 1711 → 1612",
+    "101.Abn detached 1/101.Abn"
+  ],
+  "afterDeclare": {
+    "buttons": [
+      "undo-step|bar-button|↶ Undo",
+      "end-phase|bar-button |End Combat Segment\nNext: Exploitation Phase",
+      "open-menu|bar-button|☰ Menu",
+      "deselect|subtle|Deselect",
+      "begin-required-handoff|primary wide|Hand the screen to Axis commander",
+      "zoom-out||−",
+      "zoom-in||+",
+      "zoom-reset||Reset",
+      "toggle-air-zones||Patrol Zones"
+    ]
+  },
+  "logB": [
+    "You chose the advance after combat Result AL1/Do1: Attacker loses 1 step; defender takes 1 option (each a step loss or a hex of retreat).",
+    "You chose the advance after combat 1/90.Inf advanced into 1712.",
+    "You chose the advance after combat 90.Inf detached 1/90.Inf.",
+    "Axis commander chose a retreat hex 1/246.VG retreated to 1813.",
+    "Axis commander chose a retreat hex 246.VG retreated to 1813.",
+    "Axis commander chose a retreat hex ×2"
+  ],
+  "rosterB": [
+    "90 Recon Bn / 10.A, 0512",
+    "Chmbln TF / 10.A, 0613",
+    "Div Arty I / 10.A, 0513",
+    "HQ / 10.A, 0613",
+    "Standish TF / 10.A, 0513",
+    "25 Recon Bn / 4.A, 0310",
+    "Alanis TF / 4.A, 0309",
+    "Div Arty I / 4.A, 0309",
+    "HQ / 4.A, 0409",
+    "Oden TF / 4.A, 0409",
+    "1/90.Inf, 1712",
+    "101.Abn, 1711",
+    "13.Abn, 1612",
+    "90.Inf, 1612",
+    "US 255 Engr Gp, 0615",
+    "US 255 FA Gp, off map",
+    "US 256 FA Gp, 0616",
+    "US 257 FA Gp, 0615",
+    "US 255 Truck Co, 0516",
+    "US 256 Truck Co, 0516",
+    "US 257 Truck Co, 0617"
+  ],
+  "steps": [
+    {
+      "operation": "load tmp/breakdown-ui/save-A.json",
+      "elapsedMs": 463
+    },
+    {
+      "operation": "detach from 90.Inf",
+      "elapsedMs": 250
+    },
+    {
+      "operation": "move 1/90.Inf to 1512",
+      "elapsedMs": 439
+    },
+    {
+      "operation": "detach from 13.Abn",
+      "elapsedMs": 261
+    },
+    {
+      "operation": "move 1/13.Abn to 1613",
+      "elapsedMs": 396
+    },
+    {
+      "operation": "detach from 101.Abn",
+      "elapsedMs": 244
+    },
+    {
+      "operation": "move 1/101.Abn to 1612",
+      "elapsedMs": 422
+    },
+    {
+      "operation": "decide: 13.Abn absorbs 1/101.Abn",
+      "elapsedMs": 21
+    },
+    {
+      "operation": "load tmp/breakdown-ui/save-B.json",
+      "elapsedMs": 415
+    },
+    {
+      "operation": "plan attack on 1712",
+      "elapsedMs": 151
+    },
+    {
+      "operation": "declare attack",
+      "elapsedMs": 37
+    },
+    {
+      "operation": "decide: Pay 2T from the dump at 1812 (40T available)",
+      "elapsedMs": 29
+    },
+    {
+      "operation": "decide: Retreat 1 hex",
+      "elapsedMs": 22
+    },
+    {
+      "operation": "decide: Detach a Breakdown from 246.VG first (it retreats too)",
+      "elapsedMs": 27
+    },
+    {
+      "operation": "decide: Retreat the units separately",
+      "elapsedMs": 18
+    },
+    {
+      "operation": "decide: 246.VG retreats to 1813",
+      "elapsedMs": 22
+    },
+    {
+      "operation": "decide: 1/246.VG retreats to 1813",
+      "elapsedMs": 16
+    },
+    {
+      "operation": "decide: Detach a Breakdown from 90.Inf (it may advance on its own)",
+      "elapsedMs": 17
+    },
+    {
+      "operation": "decide: Advance 1/90.Inf",
+      "elapsedMs": 20
+    },
+    {
+      "operation": "decide: Stop advancing",
+      "elapsedMs": 32
+    }
+  ],
+  "consoleErrors": []
+}

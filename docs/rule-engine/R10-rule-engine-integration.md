@@ -1,7 +1,7 @@
 # R10 Rule Engine Integration Report
 
 Status: **REOPENED (2026-09-30)**. The completion claim below is disproven by
-`docs/reports/rules-ui-audit-2026-09-30.md`: 28 of 30 OCS 4.3 conformance probes
+`docs/rule-engine/rules-ui-audit-2026-09-30.md`: 28 of 30 OCS 4.3 conformance probes
 (`scripts/audit/rules-conformance-probe.mjs`) fail on features the manifest marks
 `IMPLEMENTED`. The original text is preserved as the historical evidence trail. The Rule Engine was rebuilt on 2026-10-01 (`ocs-rebuild-2026-10-01.md`); the probe now reports 35/35 conforming, but R10 stays IN PROGRESS because several features are PARTIAL or DEFERRED in `src/rules/manifest.ts`.
 

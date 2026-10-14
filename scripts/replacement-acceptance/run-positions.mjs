@@ -7,7 +7,7 @@ import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { advanceTo, click, endPhase, has, hexDistance, newGame, open, placeArrivals, record, settleDecisions, tab, tabs, textOf, timed, where } from '../air-acceptance/harness.mjs';
 
-const root = process.argv[2] ?? 'docs/quality/evidence/replacements-2026-10-04';
+const root = process.argv[2] ?? 'artifacts/replacements-2026-10-04';
 const positionDir = process.argv[3] ?? 'tmp/replacement-ui';
 const evidenceDir = join(root, 'repl-03-06');
 const facts = JSON.parse(await readFile(join(positionDir, 'position-facts.json'), 'utf8'));

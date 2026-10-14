@@ -1,6 +1,6 @@
 # 規則與 UI 稽核：已標記完成但未正確實作的項目（2026-09-30）
 
-狀態：**R10 REOPENED**（2026-10-01 已依本報告重建規則層與 UI，見 `ocs-rebuild-2026-10-01.md`；探針 35/35 符合，gate 仍為 IN PROGRESS）。本稽核推翻 `docs/reports/R10-rule-engine-integration.md` 的
+狀態：**R10 REOPENED**（2026-10-01 已依本報告重建規則層與 UI，見 `ocs-rebuild-2026-10-01.md`；探針 35/35 符合，gate 仍為 IN PROGRESS）。本稽核推翻 `docs/rule-engine/R10-rule-engine-integration.md` 的
 「MVP is complete」及 `src/rules/manifest.ts` 中多數 `IMPLEMENTED` 列。依 `AGENTS.md`
 delivery-status rule，下列 gate 在對應證據補齊前不得再標為完成。
 
@@ -12,7 +12,7 @@ delivery-status rule，下列 gate 在對應證據補齊前不得再標為完成
   generated scenario 的單位與設定建立最小狀態（地形改為 Clear 以隔離變因），用公開 `ruleEngine`
   API 執行動作，對照 OCS 4.3 條文。結果：**30 項中 28 項 FAIL**。
 - 實機 UI：headless Edge 1920×1080，以真實滑鼠事件操作 default（18×12）與接敵案例
-  （8×8／COMPACT／每方 1，seeds `92001–92004`）。截圖在 `docs/reports/assets/audit-2026-09-30/`。
+  （8×8／COMPACT／每方 1，seeds `92001–92004`）。截圖在 `docs/rule-engine/assets/audit-2026-09-30/`。
 
 ## A. 規則：manifest 標 `IMPLEMENTED` 但實測違反條文
 
@@ -82,7 +82,7 @@ delivery-status rule，下列 gate 在對應證據補齊前不得再標為完成
 
 ## C. 需重新開啟的狀態
 
-- `docs/reports/R10-rule-engine-integration.md`：REOPENED（本報告 A 節）。
+- `docs/rule-engine/R10-rule-engine-integration.md`：REOPENED（本報告 A 節）。
 - `src/rules/manifest.ts`：`sequence.ground-turn`、`mode.transition`、`zoc.purpose`、`movement.ground`、
   `transaction.reservation`、`supply.trace-and-dump`、`combat.ground`、`overrun.ground`、
   `barrage.artillery` 的 `IMPLEMENTED` 不成立；`RULE_TABLE_PROVENANCE` 兩張 `REVIEWED` 表不成立。

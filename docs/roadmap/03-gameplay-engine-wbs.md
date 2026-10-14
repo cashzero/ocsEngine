@@ -70,7 +70,7 @@ Clients 不取得 mutable `GameState` reference。Headless、UI 與未來 AI 都
 | G7 | `docs/gameplay/07-save-load-checkpoint-replay.md` |
 | G8 | `docs/gameplay/08-recovery-and-observability.md` |
 | G9 | `docs/gameplay/09-headless-driver.md` |
-| G10 | `docs/reports/G10-gameplay-ui-contract-gate.md` |
+| G10 | `docs/gameplay/G10-gameplay-ui-contract-gate.md` |
 
 ### G0：Application contract、ports 與 dependency rule
 

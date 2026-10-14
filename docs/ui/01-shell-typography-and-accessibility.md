@@ -13,4 +13,4 @@ At 820px and below, the theater remains first and at least 60–64vh tall; the c
 - Compact labels, coordinates, counter stats, and history metadata: 13px minimum.
 - No rendered CSS text may be below 13px; `tests/ui/ui-contract.test.ts` enforces the floor.
 
-Native buttons retain keyboard behavior. The canvas map is one focusable `role="application"` element: arrow keys move a visible hex cursor, Enter/Space act on the hex, `+`/`-` zoom, and a polite live region announces the hex (terrain, what it is a target for, the units in it). Counters are reached through the map, the stack list, and the All units roster (2026-10-02, see `docs/reports/canvas-map-rewrite-2026-10-02.md`). Browser zoom is not disabled.
+Native buttons retain keyboard behavior. The canvas map is one focusable `role="application"` element: arrow keys move a visible hex cursor, Enter/Space act on the hex, `+`/`-` zoom, and a polite live region announces the hex (terrain, what it is a target for, the units in it). Counters are reached through the map, the stack list, and the All units roster (2026-10-02, see `docs/ui/canvas-map-rewrite-2026-10-02.md`). Browser zoom is not disabled.
