@@ -18,7 +18,7 @@ export type NewGameTemplateId = (typeof NEW_GAME_TEMPLATE_IDS)[number];
 
 /**
  * The situation the forces start in: a meeting engagement (both sides advance on a front between them, each holding
- * the same VP) or one side attacking objectives the other holds (docs/roadmap/13-engagement-scenarios-wbs.md).
+ * the same VP) or one side attacking the other’s objectives, with its own ports also carrying VP (docs/roadmap/13-engagement-scenarios-wbs.md).
  */
 export const ENGAGEMENTS = ['MEETING', 'ALLIED_ATTACKS', 'AXIS_ATTACKS'] as const;
 export type Engagement = (typeof ENGAGEMENTS)[number];

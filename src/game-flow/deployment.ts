@@ -339,21 +339,14 @@ const centralObjective = (map: GeneratedMap): HexId => {
   })[0]!;
 };
 
-/**
- * Objectives stand in Major Cities and towns, and in villages that are ports or railroad stations: one per Major City (on
- * its core Hex) and a set of the others. Each side's half of the map gets the same VP total, filled with its Major Cities
- * first, then the most valuable transport nodes (user, 2026-10-10: ports and railroads before towns off them), nearest
- * the front on a tie (the larger settlement after that), so the places at stake are the ones supply runs through.
- * Who holds an objective at the start follows the initial control (13.3h).
- */
+/** Ports, rail junctions and Major Cities always carry VP; the quota is a minimum, not a cap. */
 const selectObjectives = (
   map: GeneratedMap,
   sideOf: (hexId: HexId) => OobSide,
   frontDistance: (hexId: HexId) => number,
   sideLand: Readonly<Record<OobSide, number>>,
-  holder: OobSide | null,
-  /** In an attack: the VP a meeting engagement on the same map stakes. */
-  meetingStake: number | null = null,
+  portsFirst: boolean,
+  defender: OobSide | null = null,
 ): { readonly objectives: readonly GeneratedObjective[]; readonly warnings: readonly string[] } => {
   const hexById = new Map(map.mapDefinition.hexes.map((hex) => [hex.id, hex]));
   const edgeHexes = new Set([
@@ -402,8 +395,6 @@ const selectObjectives = (
   }
   const portCapacity = new Map(map.strategicRegions.ports.map(({ hexId, capacityTokens }) => [hexId, capacityTokens] as const));
   const cityCores: HexId[] = [];
-  /** Rail directions of each objective candidate (a multi-hex city counts its whole outline). */
-  const railDegreeOf = new Map<HexId, number>();
   // Settlement Hex IDs come ranked: each Major City core before its suburbs, then towns largest first.
   for (const hexId of map.strategicRegions.settlementHexIds) {
     const features = hexById.get(hexId)?.features.map(({ definitionId }) => String(definitionId)) ?? [];
@@ -413,7 +404,6 @@ const selectObjectives = (
       if (cityCores.some((core) => distance(core, hexId) <= 1)) continue;
       cityCores.push(hexId);
     } else if (!features.includes(TOWN_FEATURE) && !features.includes(VILLAGE_FEATURE)) continue;
-    if (edgeHexes.has(hexId)) continue;
     let hexRailDegree = railDegree.get(hexId) ?? 0;
     let hexMultiTrack = multiTrackHexes.has(hexId);
     if (city) {
@@ -433,58 +423,65 @@ const selectObjectives = (
       // Rail inside the city still makes it a station, even with no line leaving it.
       if (hexRailDegree === 0 && [...cluster].some((id) => (railDegree.get(id) ?? 0) > 0)) hexRailDegree = 1;
     }
-    railDegreeOf.set(hexId, hexRailDegree);
+    if (edgeHexes.has(hexId) && !city && !portCapacity.has(hexId) && hexRailDegree < GENERATED_RAIL_JUNCTION_DEGREE) continue;
     const points = objectivePoints(city ? 'CITY' : features.includes(TOWN_FEATURE) ? 'TOWN' : 'VILLAGE',
       { portCapacityTokens: portCapacity.get(hexId) ?? 0, railDegree: hexRailDegree, multiTrack: hexMultiTrack });
     if (points <= 0) continue;
-    // In an attack every objective lies in the defender's zone: the attacker has nothing to lose but its army.
-    if (holder !== null && sideOf(hexId) !== holder) continue;
+    // An attack targets the defender's zone, with attacker-owned ports also at stake.
+    if (defender !== null && sideOf(hexId) !== defender && !portCapacity.has(hexId)) continue;
     candidates[sideOf(hexId)].push({
       hexId, city, points, roads: roadDegree.get(hexId) ?? 0,
-      // VP goes first to rail junctions, then ports, then Major Cities, then towns (user, 2026-10-10).
-      rank: (railDegreeOf.get(hexId) ?? 0) >= GENERATED_RAIL_JUNCTION_DEGREE ? 0 : portCapacity.has(hexId) ? 1 : city ? 2 : 3,
+      rank: portsFirst && portCapacity.has(hexId) ? 0
+        : hexRailDegree >= GENERATED_RAIL_JUNCTION_DEGREE ? (portsFirst ? 1 : 0)
+        : portCapacity.has(hexId) ? 1 : city ? 2 : 3,
     });
   }
-  const sum = (entries: readonly { points: number }[]): number => entries.reduce((total, { points }) => total + points, 0);
   const sides = ['ALLIED', 'AXIS'] as const;
-  // An attack stakes as many VP as a meeting engagement on the same map, all of them the defender's.
-  const wanted = holder === null
-    ? Math.max(MINIMUM_OBJECTIVE_POINTS_PER_SIDE, Math.round(Math.min(sideLand.ALLIED, sideLand.AXIS) / GENERATED_LAND_HEXES_PER_OBJECTIVE_POINT))
-    : meetingStake ?? 2 * Math.max(MINIMUM_OBJECTIVE_POINTS_PER_SIDE, Math.round((sideLand.ALLIED + sideLand.AXIS) / 2 / GENERATED_LAND_HEXES_PER_OBJECTIVE_POINT));
-  const staked = holder === null ? sides : [holder];
-  // Every Major City counts, so the target rises to the side with the most city VP; it cannot exceed
-  // what the poorer side can field, or the sides would start unequal.
-  const target = Math.min(
-    Math.max(wanted, ...staked.map((side) => sum(candidates[side].filter(({ city }) => city)))),
-    ...staked.map((side) => sum(candidates[side])),
-  );
+  const target = defender === null
+    ? Math.max(MINIMUM_OBJECTIVE_POINTS_PER_SIDE,
+      Math.round(Math.min(sideLand.ALLIED, sideLand.AXIS) / GENERATED_LAND_HEXES_PER_OBJECTIVE_POINT))
+    : 2 * Math.max(MINIMUM_OBJECTIVE_POINTS_PER_SIDE,
+      Math.round((sideLand.ALLIED + sideLand.AXIS) / 2 / GENERATED_LAND_HEXES_PER_OBJECTIVE_POINT));
   const objectives: GeneratedObjective[] = [];
   const totals = { ALLIED: 0, AXIS: 0 };
-  for (const side of staked) {
+  const remaining: Record<OobSide, typeof candidates.ALLIED> = { ALLIED: [], AXIS: [] };
+  const add = (side: OobSide, candidate: typeof candidates.ALLIED[number]): void => {
+    objectives.push({ hexId: candidate.hexId, points: candidate.points, side });
+    totals[side] += candidate.points;
+  };
+  for (const side of sides) {
     const size = new Map(candidates[side].map(({ hexId }, order) => [hexId, order]));
-    const byValue = [...candidates[side]].sort((left, right) => left.rank - right.rank || right.roads - left.roads || right.points - left.points
-      || frontDistance(left.hexId) - frontDistance(right.hexId) || size.get(left.hexId)! - size.get(right.hexId)!);
-    // Every Major City is an objective, so its VP is set aside first; the rest of the target goes in priority order.
-    totals[side] = sum(byValue.filter(({ city }) => city));
-    for (const { hexId, points, city } of byValue) {
-      if (city) {
-        objectives.push({ hexId, points, side });
-        continue;
-      }
-      if (totals[side] + points > target) continue;
-      objectives.push({ hexId, points, side });
-      totals[side] += points;
+    const byValue = [...candidates[side]].sort((left, right) => left.rank - right.rank || right.points - left.points
+      || right.roads - left.roads || frontDistance(left.hexId) - frontDistance(right.hexId)
+      || size.get(left.hexId)! - size.get(right.hexId)!);
+    // Critical nodes cannot lose their VP to the quota, even when a previous node already exceeded it.
+    for (const candidate of byValue) {
+      if (candidate.city || candidate.rank <= 1 || ((defender === null || side === defender) && totals[side] < target)) add(side, candidate);
+      else remaining[side].push(candidate);
     }
+  }
+  // Meeting engagements add whole objectives in priority order, raising the other side’s target on overshoot.
+  while (defender === null && totals.ALLIED !== totals.AXIS) {
+    const side = totals.ALLIED < totals.AXIS ? 'ALLIED' : 'AXIS';
+    const next = remaining[side].shift();
+    if (next) { add(side, next); continue; }
+    // When there are no candidates left, add the shortfall to the side's highest-priority objective.
+    // This also balances small maps without removing a more valuable objective from the richer side.
+    const index = objectives.findIndex((objective) => objective.side === side);
+    if (index < 0) break;
+    const extra = Math.abs(totals.ALLIED - totals.AXIS);
+    objectives[index] = { ...objectives[index]!, points: objectives[index]!.points + extra };
+    totals[side] += extra;
   }
   if (objectives.length === 0) {
     const hexId = centralObjective(map);
     return { objectives: [{ hexId, points: GENERATED_TOWN_OBJECTIVE_POINTS, side: sideOf(hexId) }], warnings: [] };
   }
-  const warnings = holder !== null
-    ? totals[holder] >= wanted ? [] : [`The defender holds only ${totals[holder]} of ${wanted} objective VP; its zone has too few towns.`]
+  const warnings = defender !== null
+    ? totals[defender] >= target ? [] : [`The defender holds only ${totals[defender]} of ${target} objective VP; its zone has too few settlements.`]
     : totals.ALLIED === totals.AXIS ? [] : [
-      `Objectives are unbalanced (Allied ${totals.ALLIED} VP, Axis ${totals.AXIS} VP); the map has too few towns on one side.`,
-    ];
+    `Objectives are unbalanced (Allied ${totals.ALLIED} VP, Axis ${totals.AXIS} VP); one side has no eligible objective.`,
+  ];
   return { objectives: objectives.sort((left, right) => String(left.hexId).localeCompare(String(right.hexId))), warnings };
 };
 
@@ -1223,24 +1220,17 @@ export const deployGeneratedForces = (
   // A side controls every land Hex of its zone up to that front (railroads, objectives and open country
   // alike); the ground between the two fronts starts neutral, railroads included.
   const allied = new Set(zones.ALLIED.map(({ id }) => id));
-  // An attack stakes what a meeting engagement on the same map does: Major Cities raise that total, and they are worth
-  // more on a railroad or at a port, so it is measured on the meeting engagement's zones (split 0).
-  const meetingStake = attacker === null ? null : selectObjectives(
-    map, (hexId) => lean(hexId) >= 0 ? 'ALLIED' : 'AXIS', (hexId) => Math.abs(lean(hexId)),
-    { ALLIED: land.filter(({ id }) => lean(id) >= 0).length, AXIS: land.filter(({ id }) => lean(id) < 0).length }, null,
-  ).objectives.reduce((total, { points }) => total + points, 0);
   const { objectives, warnings: objectiveWarnings } = selectObjectives(
     map,
-    (hexId) => allied.has(hexId) ? 'ALLIED' : 'AXIS',
-    // The front is the split between the deployment zones.
+    (hexId) => portOwner.get(hexId) ?? (allied.has(hexId) ? 'ALLIED' : 'AXIS'),
     (hexId) => Math.abs(lean(hexId) - split),
     { ALLIED: zones.ALLIED.length, AXIS: zones.AXIS.length },
+    seaArrivalSides.length > 0,
     attacker === null ? null : attacker === 'ALLIED' ? 'AXIS' : 'ALLIED',
-    meetingStake,
   );
   const seeded = new Set(controlled.map(({ hexId }) => hexId));
   // OOB 0.4.0: one objective garrison (1-1-0, MA 0) on every objective a side holds, in Combat Mode so it exerts a ZOC
-  // (4.4b): no objective can be taken by simply walking into it. In an attack the attacker holds none, so it has none.
+  // (4.4b): no objective can be taken by simply walking into it.
   const garrisonPiece = (side: OobSide, hexId: HexId, pieceId: string): PieceState | null => {
     const garrisonDefinitionId = oob.sides.find((entry) => entry.side === side)?.garrisonDefinitionId;
     const definition = garrisonDefinitionId === undefined ? undefined : definitionById.get(garrisonDefinitionId);
@@ -1290,7 +1280,7 @@ export const deployGeneratedForces = (
     const stock = garrisonStock(side, hexId as HexId, `objective-stock-${index + 1}`);
     if (!garrison || !stock) return { ok: false, error: [deploymentFailure(`Objective ${hexId} cannot receive its ${side} garrison.`)] };
     pieces.push(garrison, stock);
-    if (attacker !== null) {
+    if (attacker !== null && side !== attacker) {
       const hog = hedgehogPiece(side, hexId as HexId, `objective-hog-${index + 1}`, GENERATED_HEDGEHOG_LEVELS.OBJECTIVE);
       if (!hog) return { ok: false, error: [deploymentFailure(`Objective ${hexId} cannot receive its ${side} hedgehog.`)] };
       pieces.push(hog);

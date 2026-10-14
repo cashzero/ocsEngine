@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { parseHexCoordinateId } from '../../src/core/index.js';
 import { DEFAULT_NEW_GAME_REQUEST, prepareNewGame, type NewGameRequest } from '../../src/index.js';
-import { objectivePoints } from '../../src/game-flow/deployment.js';
+import { GENERATED_ATTACK_SPLIT_SHIFT, GENERATED_LAND_HEXES_PER_OBJECTIVE_POINT, objectivePoints } from '../../src/game-flow/deployment.js';
 
 const hexDistance = (first: string, second: string): number => {
   const a = parseHexCoordinateId(first as never);
@@ -31,8 +31,7 @@ const transportOf = (prepared: { readonly scenario: { readonly mapDefinition: { 
   return (hexId: string) => ({ portCapacityTokens: ports.get(hexId) ?? 0, railDegree: railDegree.get(hexId) ?? 0, multiTrack: multiTrack.has(hexId) });
 };
 
-const objectivesOf =(request: NewGameRequest) => {
-  const prepared = prepareNewGame(request);
+const objectivesOf =(request: NewGameRequest, prepared = prepareNewGame(request)) => {
   if (!prepared.ok) throw new Error('Game must prepare.');
   const { scenario, configuration, warnings } = prepared.value;
   const hexes = new Map(scenario.mapDefinition.hexes.map((hex) => [hex.id, hex]));
@@ -59,7 +58,7 @@ describe('generated objectives', () => {
     const kind = { 'settlement:city': 'CITY', 'settlement:town': 'TOWN', 'settlement:village': 'VILLAGE' } as const;
     for (const { hexId, settlement, points } of objectives) {
       expect(Object.keys(kind)).toContain(settlement);
-      expect(points).toBe(objectivePoints(kind[settlement as keyof typeof kind], transport(String(hexId))));
+      expect(points).toBeGreaterThanOrEqual(objectivePoints(kind[settlement as keyof typeof kind], transport(String(hexId))));
       expect(points).toBeGreaterThan(0);
     }
     expect(objectives.some(({ settlement }) => settlement === 'settlement:city')).toBe(true);
@@ -134,6 +133,55 @@ describe('generated objectives', () => {
     const mean = (values: readonly number[]): number => values.reduce((total, value) => total + value, 0) / values.length;
     const railTowns = towns.filter((id) => transport(id).railDegree > 0);
     expect(mean(railTowns.filter((id) => chosen.has(id)).map(front))).toBeLessThan(mean(railTowns.filter((id) => !chosen.has(id)).map(front)));
+  });
+
+  it.each(['MEETING', 'ALLIED_ATTACKS', 'AXIS_ATTACKS'] as const)('%s retains ports and high-value defender nodes; only meeting engagements balance VP', (engagement) => {
+    for (const inlandEntry of [{ allied: false, axis: true }, { allied: true, axis: false }, { allied: false, axis: false }, { allied: true, axis: true }]) {
+      const request: NewGameRequest = { ...DEFAULT_NEW_GAME_REQUEST, engagement, map: { ...DEFAULT_NEW_GAME_REQUEST.map, sea: 'FLANK' }, inlandEntry, seaCap: { allied: 5, axis: 5 } };
+      const prepared = prepareNewGame(request);
+      if (!prepared.ok) throw new Error(JSON.stringify(prepared.error));
+      const { objectives, held, players } = objectivesOf(request, prepared);
+      const transport = transportOf(prepared.value);
+      const regions = prepared.value.generatedMap.strategicRegions;
+      const first = String(regions.firstEntryHexIds[0]!);
+      const second = String(regions.secondEntryHexIds[0]!);
+      const shift = Math.round(GENERATED_ATTACK_SPLIT_SHIFT * hexDistance(first, second));
+      const split = engagement === 'ALLIED_ATTACKS' ? shift : engagement === 'AXIS_ATTACKS' ? -shift : 0;
+      const inDefenderZone = (hexId: string) => engagement === 'MEETING'
+        || (engagement === 'ALLIED_ATTACKS' ? hexDistance(hexId, second) - hexDistance(hexId, first) < split
+          : hexDistance(hexId, second) - hexDistance(hexId, first) >= split);
+      for (const hex of prepared.value.generatedMap.mapDefinition.hexes) {
+        const settlement = hex.features.some(({ definitionId }) => ['settlement:town', 'settlement:village'].includes(String(definitionId)));
+        if (settlement && transport(hex.id).railDegree >= 3 && inDefenderZone(hex.id)) {
+          expect(objectives.find(({ hexId }) => hexId === hex.id)?.points).toBeGreaterThan(0);
+        }
+      }
+      const legacyQuota = 2 * Math.max(2, Math.round(prepared.value.generatedMap.mapDefinition.hexes.filter((hex) => !hex.terrainDefinitionIds.includes('terrain:water' as never)).length / 2 / GENERATED_LAND_HEXES_PER_OBJECTIVE_POINT));
+      expect(objectives.reduce((sum, { points }) => sum + points, 0)).toBeGreaterThan(legacyQuota);
+      for (const port of prepared.value.generatedMap.strategicRegions.ports) {
+        expect(objectives.find(({ hexId }) => hexId === port.hexId)?.points).toBeGreaterThan(0);
+      }
+      if (engagement === 'MEETING') expect(held(players[0]!)).toBe(held(players[1]!));
+      if (engagement === 'MEETING') expect(held(players[0]!)).toBeGreaterThan(0);
+      if (engagement !== 'MEETING') {
+        const attacker = engagement === 'ALLIED_ATTACKS' ? players[0]! : players[1]!;
+        const ports = new Set(prepared.value.generatedMap.strategicRegions.portHexIds);
+        const own = objectives.filter(({ controller }) => controller === attacker);
+        expect(own.every(({ hexId }) => ports.has(hexId))).toBe(true);
+        const base = own.reduce((sum, { hexId, settlement }) => sum + objectivePoints(settlement === 'settlement:city' ? 'CITY' : settlement === 'settlement:town' ? 'TOWN' : 'VILLAGE', transport(hexId)), 0);
+        expect(held(attacker)).toBe(base);
+        expect(prepared.value.configuration.attackVictory!.attackerPoints).toBeGreaterThan(held(attacker));
+      }
+    }
+  });
+
+  it.each([1, 0x0c500001, 777])('balances small Eastern Europe maps even when candidates run out (seed %s)', (seed) => {
+    const request: NewGameRequest = { ...DEFAULT_NEW_GAME_REQUEST,
+      map: { ...DEFAULT_NEW_GAME_REQUEST.map, width: 16, height: 12, style: 'EASTERN_EUROPE' },
+      seeds: { ...DEFAULT_NEW_GAME_REQUEST.seeds, map: seed } };
+    const { held, players, warnings } = objectivesOf(request);
+    expect(held(players[0]!)).toBe(held(players[1]!));
+    expect(warnings.some((warning) => warning.startsWith('Objectives are unbalanced'))).toBe(false);
   });
 
   it('scales the objective count with the map', () => {

@@ -598,7 +598,7 @@ const engagementHelp = (engagement: Engagement): string => {
   const supplyHelp = ' Only isolated objective garrisons start with 1T (0.25 SP) emergency supply, drawn from their side’s existing supply budget; key-point garrisons start connected to trace supply.';
   if (attacker === null) return 'Both armies start about ten hexes apart and each holds the same objective VP. The side holding more VP when the last turn ends wins; equal VP is a draw.' + supplyHelp;
   const [attacking, defending] = attacker === 'ALLIED' ? ['Allied', 'Axis'] : ['Axis', 'Allied'];
-  return `${defending} holds most of the map and every objective, its line in Combat Mode, with garrisons dug into hedgehogs on its objectives (Level ${GENERATED_HEDGEHOG_LEVELS.OBJECTIVE}) and on key rail towns and road junctions (Level ${GENERATED_HEDGEHOG_LEVELS.KEY_POINT}); ${attacking} fields ${ATTACKER_FORCE_RATIO} times the divisions plus off-map air (Fighters and Tactical Bombers at an airfield off the map, flying in over its own map edge and back), assembles a few hexes away and moves first. ${attacking} wins by holding at least half the objective VP when the last turn ends; otherwise ${defending} wins.` + supplyHelp;
+  return `${defending} holds most of the map and the attack objectives, with its line in Combat Mode, with garrisons dug into hedgehogs on its objectives (Level ${GENERATED_HEDGEHOG_LEVELS.OBJECTIVE}) and on key rail towns and road junctions (Level ${GENERATED_HEDGEHOG_LEVELS.KEY_POINT}); ${attacking} also holds VP at its own ports and fields ${ATTACKER_FORCE_RATIO} times the divisions plus off-map air (Fighters and Tactical Bombers at an airfield off the map, flying in over its own map edge and back), assembles a few hexes away and moves first. ${attacking} wins by holding its starting VP plus at least half the defender’s starting VP (rounded up) when the last turn ends; otherwise ${defending} wins.` + supplyHelp;
 };
 
 const SEA_OPTIONS: readonly (readonly [NewGameSea, string])[] = [['NONE', 'No sea'], ['FLANK', 'Along the flank']];
@@ -694,12 +694,12 @@ const divisionsText = (prepared: GeneratedScenarioPackage): string => {
     : counts.map(({ side, count }) => `${side === 'ALLIED' ? 'Allied' : 'Axis'} ${count}`).join(' · ');
 };
 
-/** Objective Hexes and the VP they carry: split evenly in a meeting engagement, all the defender's in an attack. */
+/** Objective Hexes and their actual initial ownership, including attacker objectives. */
 const objectivesText = (prepared: GeneratedScenarioPackage): string => {
   const objectives = prepared.deployment.objectives;
   const total = objectives.reduce((sum, { points }) => sum + points, 0);
-  const attacker = attackerOf(prepared.summary.engagement);
-  const holders = attacker === null ? `${total / 2} each side` : `all held by ${attacker === 'ALLIED' ? 'Axis' : 'Allied'}`;
+  const control = new Map(prepared.scenario.initialMapState.hexControl.map(({ hexId, controllerId }) => [hexId, controllerId]));
+  const holders = prepared.scenario.players.map(({ id, name }) => `${name} ${objectives.reduce((sum, { hexId, points }) => sum + (control.get(hexId) === id ? points : 0), 0)}`).join(' · ');
   return `${objectives.length} hexes · ${total} VP (${holders})`;
 };
 
