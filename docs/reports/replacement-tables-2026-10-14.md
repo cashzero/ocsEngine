@@ -39,6 +39,7 @@ Table and Unit Consolidation (13.9). Repls as combat units had meanwhile landed 
 | Consolidated unit | Goes to the Dead Pile (can be rebuilt later) | 13.9 says "remove"; the Dead Pile keeps it rebuildable |
 | Consolidation never stops a step | `CONSOLIDATE_UNITS` is non-stopping, like `COMBINE_AIRCRAFT` | An exchange is open whenever an identical unit of another division is dead, which would otherwise stop every Reinforcement Phase |
 | Transport Points | Never consolidated | Generated games have no Organic Trucks (13.9-2/3 truck cases) |
+| Exchange (13.9-2/3) | Kept exactly as the series rule: the Dead Pile counter takes the place of the identical counter on the map, no distance limit | User decision 2026-10-14, after weighing removal and a direct "reassign formation" house rule (a unit changing division only into a same-type vacancy, the dead unit taking its old place): the result is the same as swapping counters, so the rule is kept as printed. Its use is reorganising divisions: which division is whole and which one carries the loss to rebuild. The reassign draft is not in the repository |
 
 ## 4. Implementation
 
