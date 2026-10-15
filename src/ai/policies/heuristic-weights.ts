@@ -138,7 +138,7 @@ export const DEFAULT_HEURISTIC_WEIGHTS: HeuristicWeights = Object.freeze({
   huntValue: 3, huntInfiltrationRadius: 3, huntAnchorRadius: 2, huntStrengthPerUnit: 5,
   clearStrength: 2, clearRadius: 5, clearValue: 4, clearCombat: 8, reliefMinStrength: 6, reliefRadius: 2, holdTruckReach: 10, holdRatio: 0.5, holdStrengthPerUnit: 5, holdMaxExtra: 2,
   capture: 40, passThroughShare: 0.25, abandonObjective: 30, holdAtEnd: 15, crowding: 3, stratNearEnemy: 60, stratSafeDistance: 3, progressFront: 6, progressTarget: 10, progressObjective: 15,
-  huntAdjacent: 15, assaultRatio: 2.5, assaultReach: 8,  assaultMaxUnits: 6, assaultMaxEfforts: 5, assaultPosition: 20, assaultObjective: 2, barrageMainEffort: 5, garrisonStay: 30, contactGood: 6, contactBad: 8, contactRatio: 1.5, exposureSupport: 1.5,
+  huntAdjacent: 15, assaultRatio: 2.5, assaultReach: 12, assaultMaxUnits: 6, assaultMaxEfforts: 5, assaultPosition: 20, assaultObjective: 2, barrageMainEffort: 5, garrisonStay: 30, contactGood: 6, contactBad: 8, contactRatio: 1.5, exposureSupport: 1.5,
   outOfSupply: 60, outOfSupplyFed: 10, fedRadius: 2, hqDependentSupply: 8,
   hqWithArmy: 6, hqExposed: 60, hqOutOfSupply: 60, hqExposure: 2,
   artilleryInRange: 20, artilleryBeyondRange: 4, artilleryWithArmy: 6, artilleryExposed: 60, artilleryEscortDistance: 3, artilleryUnescorted: 40, artilleryExposure: 1.5,

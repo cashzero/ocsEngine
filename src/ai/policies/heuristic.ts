@@ -66,7 +66,7 @@ const chooseEfforts = (situation: Situation, w: HeuristicWeights, count: number)
 const chooseEffort = (situation: Situation, w: HeuristicWeights, used: ReadonlySet<PieceId>, taken: ReadonlySet<HexId>): MainEffort | null => {
   const me = situation.playerId;
   const combat = situation.own.filter((unit) => situation.isCombatUnit(unit));
-  const garrisons = new Set(heldDefenders(situation, w).map(unit => unit.piece.id));
+  const garrisons = new Set(heldDefenders(situation, w).map(({ unit }) => unit.piece.id));
   let best: { hexId: HexId; defenders: number; units: OwnUnit[]; value: number } | null = null;
   for (const objective of situation.objectives) {
     if (objective.controllerId === me || taken.has(objective.hexId)) continue;
@@ -141,7 +141,7 @@ const reOf = (unit: OwnUnit): number => unit.profile?.re ?? 1;
 const planTargets = (situation: Situation, coverage: ReadonlySet<string>, unitCoverage: (unit: OwnUnit) => ReadonlySet<string>, w: HeuristicWeights, efforts: readonly MainEffort[], fedAt: ReadonlySet<string>): Map<PieceId, Target> => {
   const me = situation.playerId;
   const targets = new Map<PieceId, Target>();
-  for (const unit of heldDefenders(situation, w)) targets.set(unit.piece.id, { hexId: unit.hexId, purpose: 'GARRISON' });
+  for (const { unit, hexId } of heldDefenders(situation, w)) targets.set(unit.piece.id, { hexId, purpose: 'GARRISON' });
   for (const effort of efforts) for (const unitId of effort.unitIds) targets.set(unitId, { hexId: effort.hexId, purpose: 'ASSAULT' });
   const combat = situation.own.filter((unit) => situation.isCombatUnit(unit));
   // Held objectives keep a garrison (an occupied hex cannot be entered without a fight); others are worth taking.
@@ -212,7 +212,11 @@ const planTargets = (situation: Situation, coverage: ReadonlySet<string>, unitCo
       if (back !== null) targets.set(unit.piece.id, { hexId: back, purpose: 'RESUPPLY' });
     }
   }
-  const pairs = combat.flatMap((unit) => wanted.map((entry) => ({
+  // heuristic@75: a unit that cannot move (MA 0: garrisons, some engineers) only fills a slot in its own hex. Replays: an
+  // MA 0 engineer took the one garrison slot of an empty 4 VP objective three hexes away, no mobile unit was sent, and
+  // the enemy walked in.
+  const reachable = (unit: OwnUnit, hexId: HexId) => (unit.profile?.movement ?? 1) > 0 || unit.hexId === hexId;
+  const pairs = combat.flatMap((unit) => wanted.filter((entry) => reachable(unit, entry.hexId)).map((entry) => ({
     unit, entry, score: entry.value / (1 + hexesBetween(unit.hexId, entry.hexId) / Math.max(2, unit.profile?.movement ?? 4)),
   }))).sort((left, right) => right.score - left.score || String(left.unit.piece.id).localeCompare(String(right.unit.piece.id)));
   for (const { unit, entry } of pairs) {
@@ -253,22 +257,39 @@ const holdLimit = (situation: Situation, hexId: HexId, threat: number, w: Heuris
 
 /** Reserve existing defenders before forming assaults, rather than sending them away and
  * asking distant units to replace them. Spare strength remains available for captures. */
-const heldDefenders = (situation: Situation, w: HeuristicWeights): OwnUnit[] => {
-  const reserved: OwnUnit[] = [];
+const heldDefenders = (situation: Situation, w: HeuristicWeights): { readonly unit: OwnUnit; readonly hexId: HexId }[] => {
+  const reserved: { unit: OwnUnit; hexId: HexId }[] = [];
   const enemyAnswer = situation.opponentTurnRemains;
+  const empty: ObjectiveView[] = [];
   for (const objective of situation.objectives) {
     if (objective.controllerId !== situation.playerId) continue;
     const present = situation.friendlyAt(objective.hexId).filter(unit => situation.isCombatUnit(unit))
       .sort((a, b) => (a.profile?.strength ?? 0) - (b.profile?.strength ?? 0) || String(a.piece.id).localeCompare(String(b.piece.id)));
     const anchor = present.shift();
-    if (!anchor) continue;
-    reserved.push(anchor);
+    if (!anchor) { empty.push(objective); continue; }
+    reserved.push({ unit: anchor, hexId: objective.hexId });
     let strength = anchor.profile?.strength ?? 0;
     const required = enemyAnswer ? situation.threatAt(objective.hexId) * w.holdRatio : 0;
     for (const unit of present.reverse()) {
       if (strength >= required) break;
-      reserved.push(unit);
+      reserved.push({ unit, hexId: objective.hexId });
       strength += unit.profile?.strength ?? 0;
+    }
+  }
+  // heuristic@75: a held objective with nobody on it is taken by the first enemy unit that passes. Before efforts take
+  // their units, the weakest mobile unit that can reach it this turn goes back. Replays: two divisions beside an empty
+  // held 2 VP objective left for an assault, and the enemy walked in.
+  if (enemyAnswer) {
+    const taken = new Set(reserved.map(({ unit }) => unit.piece.id));
+    for (const objective of empty.sort((a, b) => b.points - a.points || String(a.hexId).localeCompare(String(b.hexId)))) {
+      if (situation.threatAt(objective.hexId) <= 0) continue;
+      const unit = situation.own.filter(u => situation.isCombatUnit(u) && !taken.has(u.piece.id) && (u.profile?.movement ?? 0) > 0
+        && hexesBetween(u.hexId, objective.hexId) <= u.profile!.movement)
+        .sort((a, b) => (a.profile?.strength ?? 0) - (b.profile?.strength ?? 0) || hexesBetween(a.hexId, objective.hexId) - hexesBetween(b.hexId, objective.hexId)
+          || String(a.piece.id).localeCompare(String(b.piece.id)))[0];
+      if (!unit) continue;
+      taken.add(unit.piece.id);
+      reserved.push({ unit, hexId: objective.hexId });
     }
   }
   return reserved;
@@ -995,6 +1016,22 @@ const bestCombat = (context: BotDecisionContext, situation: Situation, facts: Bo
     // A weak stack's ZOC cuts our supply paths: removing it is worth more than its steps.
     if (enemy !== undefined && enemy.strength <= w.clearStrength) terms.push({ term: 'clear-zoc', value: vacate * w.clearCombat });
     if (forecast.defenderDisorganized > 0) terms.push({ term: 'disorganize', value: forecast.defenderDisorganized * w.disorganize });
+    // heuristic@75: attackers that stand on an objective we hold and carry its defence weaken it whenever they lose a step,
+    // and the enemy moves next. A recorded final turn: an attack out of a held 4 VP point cost its 1-step unit and the
+    // point fell on the enemy's last move.
+    if (situation.opponentTurnRemains) {
+      const attackerIds = new Set(action.attackerIds.map(String));
+      const risk = Math.min(1, forecast.attackerLosses + forecast.attackerOptions);
+      for (const held of situation.objectives) {
+        if (held.controllerId !== situation.playerId) continue;
+        const here = situation.friendlyAt(held.hexId).filter(u => situation.isCombatUnit(u));
+        const attacking = here.filter(u => attackerIds.has(String(u.piece.id))).reduce((total, u) => total + (u.profile?.strength ?? 0), 0);
+        if (attacking === 0) continue;
+        const staying = here.filter(u => !attackerIds.has(String(u.piece.id))).reduce((total, u) => total + (u.profile?.strength ?? 0), 0);
+        if (staying >= situation.threatAt(held.hexId) * w.holdRatio) continue;
+        terms.push({ term: 'objective-at-risk', value: -risk * contestedVp(held) * w.objectiveTaken * 0.25 * attacking / (attacking + staying) });
+      }
+    }
     if (!best || sum(terms) > sum(best.terms)) best = { action, terms, odds: forecast.odds };
   }
   if (best) debug?.(`combat best ${best.odds} on ${best.action.kind === 'DECLARE_COMBAT' ? best.action.targetHexId : ''} score ${sum(best.terms).toFixed(1)} ${JSON.stringify(best.terms)} of ${candidates.length}`);
@@ -1231,7 +1268,7 @@ export const createHeuristicPolicy = (facts: BotGameFacts, options: HeuristicPol
   const choose = decide(facts, options.weights ?? DEFAULT_HEURISTIC_WEIGHTS);
   return {
     id: 'heuristic',
-    version: options.label === undefined ? '66' : `66+${options.label}`,
+    version: options.label === undefined ? '75' : `75+${options.label}`,
     decide: (context) => {
       const sink = options.debug;
       debug = sink ? (line) => sink(`${context.memory.stepKey} ${String(context.playerId).split(':').at(-1)} ${line}`) : null;

@@ -22,7 +22,7 @@
 | `scripts/ai-narrate.mjs` | 一局 trace 的逐步摘要，供人工檢視 |
 | `scripts/ai-train.mjs` | 權重自我對戰（已停用，見「決策」） |
 
-原始存檔、trace 與凍結建置留在本機 `tmp/ai-match/`；commit 進 `docs/quality/evidence/` 的只有文字紀錄。
+原始存檔、trace 與凍結建置留在本機被 git 忽略的 `artifacts/`（較早的批次在 `tmp/ai-match/`）；commit 進 `docs/quality/evidence/` 的只有文字紀錄與重跑用的腳本。
 
 ### 正確性要求（每一局）
 
@@ -36,7 +36,8 @@
 用於「新策略取代標準策略」：
 
 1. **對手**：凍結的現行標準策略；雙方使用候選版本的同一份引擎與產生器。
-2. **設定**：32×24、每方 6 師（2 裝甲）、8 回合、不開空軍；地圖 `TEMPERATE_INLAND` 與 `EASTERN_EUROPE`；
+2. **設定**：32×24、每方 6 師（2 裝甲）、8 回合、不開空軍（`ai-match.mjs` 必須明確給 `--air NONE --air-transport NONE`；
+   不給時產生器預設會產生飛機，v66 的獨立批就是在有飛機的設定下跑的）；地圖 `TEMPERATE_INLAND` 與 `EASTERN_EUROPE`；
    交戰 `MEETING` 與 `AXIS_ATTACKS`。同種子交換陣營成對。地中海風格已移除，不再使用。
 3. **開發批**：已知種子，可多次使用，只用來決定方向。
 4. **獨立批**：凍結候選、登記 source／build hash 與全新種子後才開始；固定 **80 場／40 對**（每組地圖 × 交戰 10 對；
@@ -55,19 +56,21 @@
 
 ### 目前結果
 
-標準策略 `heuristic@66`（main `45e700a`），對凍結的 `heuristic@35`，獨立 80 場：
+標準策略 `heuristic@75`（基底 main `716bac9`），對凍結的 `heuristic@66`，獨立 80 場（不開空軍）：
 
 | 項目 | 結果 |
 |---|---|
-| 總 VP | 935–721（+214）；遭遇 +84（溫帶 +44、東歐 +40）、攻擊 +130（溫帶 +90、東歐 +40） |
-| 40 對平均 VP 差 | +2.675，區間 [0.787, 4.563] |
-| 正確性 | 80 場合法完成、重播 hash 相同、補給稽核違例 0 |
-| 戰後前進 | 229 次一般前進中 223 次有共同口糧支付，其餘 6 次在最後一次 Supply 之後；31 次成功 Overrun 都有支付 |
-| 損失 | 己方 step 損失 1,100 對 1,033，attrition 329 對 292：VP 較高不代表損失較少 |
+| 總 VP | 919–657（+262）；遭遇 +154（溫帶 +120、東歐 +34）、攻擊 +108（溫帶 +80、東歐 +28） |
+| 40 對平均 VP 差 | +3.275，區間 [1.587, 4.963] |
+| 正確性 | 80 場合法完成、重播 hash 相同、0 拒絕、補給稽核與前進稽核違例 0 |
+| 戰後前進 | 223 次一般前進中 220 次有共同口糧支付，其餘 3 次是第 8 回合該方最後一次 Supply 之後的奪點前進；20 次成功 Overrun 都有支付 |
+| 損失 | 己方 step 損失 938 對 1,308 |
+| 決策延遲（12 個 worker 並行） | heuristic@75 p95 257 ms、p99 551 ms、最長 5.3 s；heuristic@66 p95 236 ms、p99 547 ms、最長 4.3 s |
 
-證據：[v66-main-acceptance.json](../quality/evidence/ai-vp-next-promotion-2026-10-14/v66-main-acceptance.json)、
-[README](../quality/evidence/ai-vp-next-promotion-2026-10-14/README.md)。前一個標準 `heuristic@35` 的獨立 256 場驗證：
-[v35-replication-acceptance.json](../quality/evidence/ai-vp-promotion-2026-10-13/v35-replication-acceptance.json)。
+證據：[v75-result.json](../quality/evidence/ai-vp-v75-promotion-2026-10-16/v75-result.json)、
+[README](../quality/evidence/ai-vp-v75-promotion-2026-10-16/README.md)；開發批與不採用的變體在同目錄的
+`development-runs.json`。前一個標準 `heuristic@66` 對 `heuristic@35` 的獨立 80 場：
+[v66-main-acceptance.json](../quality/evidence/ai-vp-next-promotion-2026-10-14/v66-main-acceptance.json)。
 
 對 `random-legal` 的基準（WBS B5）最後量測於 heuristic@5（OOB 0.4.0，對 random-legal 39/40，終局 91% 在補給內）；
 東歐風格最後量測於 heuristic@1，勝率 80%（目標 90%）。
@@ -82,7 +85,7 @@
 
 ## 已知缺口
 
-- `heuristic@66` 尚未重跑 WBS B5（對 random-legal、東歐風格）；目前數字來自較舊的版本。
+- `heuristic@75` 尚未重跑 WBS B5（對 random-legal、東歐風格）；目前數字來自較舊的版本。
 - WBS B2 的 100 局、大地圖 20 局、開啟空軍 20 局批次未完成。
 - 升級流程只用兩種地圖與兩種交戰，沒有 `ALLIED_ATTACKS`、海域、空軍或其他尺寸。
 
