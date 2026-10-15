@@ -19,7 +19,7 @@ import type {
   GeneratedScenarioPackage,
   NewGameRequest,
 } from './model.js';
-import { GAME_FLOW_VERSION, newGameSeaOf, seaArrivalSidesOf, styleSeaOf } from './model.js';
+import { GAME_FLOW_VERSION, newGameSeaOf, seaArrivalSidesOf, seatControllerOf, styleSeaOf } from './model.js';
 import { allocateGarrisonSupply } from './garrison-supply.js';
 
 const must = <T, E>(result: Result<T, E>): T => {
@@ -37,6 +37,16 @@ export const GENERATED_BINDINGS: readonly SeatBinding[] = [
   { seatId: must(parseSeatId('seat:allied')), playerId: GENERATED_PLAYERS.ALLIED, label: 'Allied commander' },
   { seatId: must(parseSeatId('seat:axis')), playerId: GENERATED_PLAYERS.AXIS, label: 'Axis commander' },
 ];
+
+/** The two seats with who plays them: a person (hot seat) or a computer. */
+export const generatedBindingsOf = (request: NewGameRequest): readonly SeatBinding[] =>
+  GENERATED_BINDINGS.map((binding) => {
+    const side = binding.playerId === GENERATED_PLAYERS.ALLIED ? 'ALLIED' : 'AXIS';
+    const controller = seatControllerOf(request, side);
+    return controller.kind === 'BOT'
+      ? { ...binding, label: `${side === 'ALLIED' ? 'Allied' : 'Axis'} computer`, controller: { ...controller } }
+      : binding;
+  });
 
 const declarations = (
   prefix: 'entry' | 'source',
@@ -159,7 +169,7 @@ export const composeGeneratedScenario = (
     deployment,
     scenario,
     configuration,
-    bindings: GENERATED_BINDINGS,
+    bindings: generatedBindingsOf(request),
     summary: {
       mapSize: `${generatedMap.options.width}×${generatedMap.options.height}`,
       mapStyle: generatedMap.options.style,

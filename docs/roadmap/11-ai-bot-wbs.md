@@ -155,7 +155,14 @@ Air 與 CARGO_LOSS 仍用第一個選項（TODO `bot-air`）。測試：`tests/a
 - 完成證據：與 B5 相比 `HIGH_OOS` 與 `LOGISTICS_EXPOSURE` 明顯下降，且 objective 得分不下降（成對比較）；
   8 回合以上的局不因補給枯竭而崩潰。
 
-### B7 產品 UI 整合（PLANNED，需 M8 gate 通過）
+### B7 產品 UI 整合（IN PROGRESS）
+
+使用者要求（2026-10-15）：「AI 遊戲介面 | New Game 選電腦玩家、人機對戰、電腦對戰觀戰、行動播放／暫停／調速、讀檔後電腦接續、卡住時人工接」。
+已實作並在真實瀏覽器操作（BOT-01 至 BOT-08，BOT-05 另在預設大小）：New Game 的 Players、`SeatBinding.controller` 與存檔、人對電腦（無交接畫面、
+守方決策由電腦即時回應）、電腦對電腦觀戰與切換視角、播放／暫停／單步／四段速度／跟隨、讀檔後電腦接續、Undo 還原後相同決定、卡住的橫幅與
+「Play it myself」。呈現與契約見 [docs/ui/computer-players.md](../ui/computer-players.md)；驗收列與證據見
+`docs/quality/03-product-operation-verification-plan.md` §K。仍開啟：BOT-09 只在 headless 量測（`computer-main-thread`）、
+空軍提示（`bot-air`）、history 的電腦「思考中」狀態只有面板文字、步驟中途讀檔（`computer-mid-step-load`）、難度等級（§5.6）。
 
 - New Game 每方「玩家／電腦」、電腦 seed；人對電腦不出現交接畫面、守方決策即時回應；
   電腦行動播放（速度、暫停）、「電腦思考中」狀態、history 敘述；電腦卡住的錯誤與「改由我操作此方」；

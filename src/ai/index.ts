@@ -10,3 +10,5 @@ export * from './policies/heuristic-weights.js';
 export * from './policies/random-legal.js';
 export * from './rng.js';
 export * from './training.js';
+export * from './registry.js';
+export * from './seat-runner.js';

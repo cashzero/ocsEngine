@@ -38,6 +38,7 @@ import type {
   PendingDecisionDescriptor,
   RejectionDiagnostic,
   SeatBinding,
+  SeatController,
   SeatId,
   SessionDiagnostics,
   SessionId,
@@ -108,7 +109,7 @@ export class GameplaySession implements GameSession {
   readonly #id: SessionId;
   readonly #label: string;
   readonly #createdAtMs: number;
-  readonly #bindings: readonly SeatBinding[];
+  #bindings: readonly SeatBinding[];
   readonly #scenarioHash: SessionMetadata['scenarioHash'];
   readonly #initialStateHash: SessionMetadata['stateHash'];
   readonly #initialState: GameState;
@@ -164,6 +165,25 @@ export class GameplaySession implements GameSession {
   });
 
   getRevision = (): Revision => this.#state.revision;
+
+  getBindings = (): readonly SeatBinding[] => this.#bindings.map((binding) => ({ ...binding }));
+
+  setSeatController = (seatId: SeatId, controller: SeatController, label?: string): void => {
+    this.#binding(seatId);
+    this.#bindings = this.#bindings.map((binding) => {
+      if (binding.seatId !== seatId) return binding;
+      // A person is the default, so it is stored as no controller: saves of games without computers stay as they were.
+      const { controller: _previous, ...rest } = binding;
+      const named = label === undefined ? rest : { ...rest, label };
+      return controller.kind === 'HUMAN' ? named : { ...named, controller: { ...controller } };
+    });
+    this.#notify({ kind: 'SEAT_CONTROLLER_CHANGED', seatId, controller, revision: this.#state.revision });
+    if (this.#persistence === 'AUTOSAVE' && this.#lifecycle !== 'CLOSED' && this.#lifecycle !== 'FAULTED') {
+      void Promise.resolve().then(() => this.#ports.saves.save(this.#id, this.serializeSave())).catch(() => {
+        this.#metrics = { ...this.#metrics, persistenceFailures: this.#metrics.persistenceFailures + 1 };
+      });
+    }
+  };
 
   #binding = (seatId: SeatId): SeatBinding => {
     const binding = this.#bindings.find((candidate) => candidate.seatId === seatId);

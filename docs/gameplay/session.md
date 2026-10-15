@@ -56,6 +56,14 @@ resumes sessions that arrive paused, [docs/ui/overview.md](../ui/overview.md).)
 - A pending decision is shown only to its owner seat (ids, revision, kind, options) and is rebuilt identically after a
   reload. `respondToPendingDecision` sends a revision-bound response through the normal dispatch queue.
 
+### Seats and who plays them
+
+- A seat binding (`seatId`, `playerId`, `label`) may carry a `controller`: a person (the default, stored as no controller) or a
+  computer (`BOT` with a policy id and a uint32 seed). `setSeatController(seat, controller, label?)` changes it at any time,
+  notifies subscribers (`SEAT_CONTROLLER_CHANGED`) and, with autosave, saves. The controller is saved with the game, so a loaded
+  save has the same computer players; a save made before computer players existed has none and loads as persons. The session
+  does not play a computer seat: whoever does (the UI, a headless runner) dispatches through the same `dispatch`.
+
 ### Views and hot seat
 
 - `getView(seat)` returns the rule projection for that seat plus session metadata; enemy redaction is the Rule Engine's.

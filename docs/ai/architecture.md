@@ -6,7 +6,9 @@
 [heuristic-policy.md](heuristic-policy.md)，對戰評估見 [evaluation.md](evaluation.md)，後續計畫見
 [AI Bot WBS](../roadmap/11-ai-bot-wbs.md)。
 
-目前只有 headless 對局：`scripts/ai-match.mjs` 在 Node 中讓兩個電腦座位打完整局。產品 UI 沒有電腦座位。
+兩個入口使用同一個驅動：`scripts/ai-match.mjs` 在 Node 中讓兩個電腦座位打完整局（headless），瀏覽器 UI 則讓 New Game 或選單指定的
+電腦座位逐步行動（人對電腦、電腦對電腦觀戰）；UI 的呈現與操作見 [docs/ui/computer-players.md](../ui/computer-players.md)。
+座位由誰操作存在 `SeatBinding.controller`（`HUMAN` 或 `BOT {policyId, seed}`），隨存檔保存。
 
 ## 現行行為
 
@@ -18,6 +20,7 @@ src/core  src/domain  src/rules（型別、公開圖表）  src/gameplay（GameS
                                 src/ai
                                    ▲
                     scripts/ai-match.mjs（headless runner）
+                    src/index.ts 的 COMPUTER_PLAYERS（由套件根注入 UI controller）
 ```
 
 - `src/ai` 只能 import `core`、`domain`、`gameplay`，以及 `rules` 的**型別**與 `rules/tables/`（印刷的 CRT、Barrage 等表，
@@ -27,13 +30,19 @@ src/core  src/domain  src/rules（型別、公開圖表）  src/gameplay（GameS
 - 因此電腦拿不到 `GameState`：它看到的是座位的 `GameplayView`（含 projection 與 pending decision），以及透過 session
   查詢得到的合法行動與 explanation facts。
 
-### 驅動迴圈（`src/ai/driver.ts`）
+- UI 不 import `src/ai`：瀏覽器與測試把 `COMPUTER_PLAYERS`（`src/index.ts`，型別 `ComputerPlayers`，`src/ui/computer-players.ts`）傳給
+  `createUiController`。沒有傳入時，綁定電腦的座位會以「卡住」呈現。
+- 策略以 `policyId` 從存檔建立（`src/ai/registry.ts`：`heuristic`、`random-legal`，以及測試用的 `test-stall:<revision>`，
+  在該 revision 之後找不到行動）；不認得的 id 讓該座位卡住，不猜。
 
-`runBotMatch` 反覆執行：
+### 驅動迴圈（`src/ai/seat-runner.ts`、`src/ai/driver.ts`）
 
-1. 生命週期為 `FINISHED` 就結束；不是 `ACTIVE` 就以 `FATAL` 停止。
-2. 決定誰行動：有 pending decision 的座位優先（常是守方），否則是 `actingPlayerId` 的座位。兩者都沒有綁電腦時以
-   `NO_BOT_FOR_ACTOR` 停止。
+`createBotSeatRunner` 的 `step()` 一次決定並 dispatch 一個行動；`runBotMatch`（headless）反覆呼叫它，UI 以所選速度逐步呼叫。
+回傳 `ACTED`、`FINISHED`、`WAITING`（輪到真人，或 session 非 ACTIVE）或 `STUCK`。每一步：
+
+1. 生命週期為 `FINISHED` 就結束；`FAULTED`／`CLOSED` 以 `FATAL` 停止；其他非 `ACTIVE` 回 `WAITING`（headless 視為 `FATAL`）。
+2. 決定誰行動：有 pending decision 的座位優先（常是守方），否則是 `actingPlayerId` 的座位。兩者都不是電腦座位時回 `WAITING`
+   （headless 以 `NO_BOT_FOR_ACTOR` 停止）。
 3. 每個座位的 `BotPhaseMemory` 以 `gameTurn:playerTurnIndex:phase:segment` 為 key，換步驟就清空。
 4. 同一步驟的已接受行動數超過預算（預設：己方棋子數 × 6 + 50）時以 `BOT_BUDGET_EXCEEDED` 停止。
 5. 呼叫 `policy.decide`。回傳 `null` 時以 `BOT_STALLED` 停止；不會自動 `ADVANCE_SEQUENCE`，以免把錯誤偽裝成放棄行動。
@@ -41,7 +50,10 @@ src/core  src/domain  src/rules（型別、公開圖表）  src/gameplay（GameS
    `FAILED_ACTION` 錯誤。Session 回 `FATAL` 時立即停止。
 7. `onDecision` 收到每個決策的 trace。
 
-另有整局上限 `maxActions`，到達時停止原因為 `MAX_ACTIONS`。
+另有整局上限 `maxActions`（headless），到達時停止原因為 `MAX_ACTIONS`。
+
+Dispatch 的 request ID 含 runner 的 `nonce`：session 會拒絕已見過的 request ID，而讀入的存檔記得所有已接受行動的 ID，所以重新建立
+的 runner（讀檔後）必須用不同的 nonce。
 
 ### 查詢（`src/ai/access.ts`）
 
@@ -71,7 +83,9 @@ src/core  src/domain  src/rules（型別、公開圖表）  src/gameplay（GameS
 ### 確定性
 
 - 每個決策的亂數由 `hash(座位 seed, stateHash, 本 revision 第幾次決策)` 派生（`src/ai/rng.ts`，FNV-1a + mulberry32），
-  不保存狀態。相同局面經 undo、存讀檔、重播都得到相同選擇。
+  不保存狀態。策略在一個步驟內還有計畫記憶（`BotPhaseMemory.notes`：哪些單位已處理、已認領的補給），所以只有「相同局面加相同步驟記憶」
+  才保證相同選擇：步驟起點的局面（存檔、重播）與同一個 runner 的 `undoTo`（runner 為每個決策前的 revision 保存步驟記憶快照，還原時取回）
+  都成立；在步驟中途讀檔則沒有記憶，策略重新規劃該步驟的其餘部分（TODO `computer-mid-step-load`）。
 - 電腦的亂數與規則的骰子分開；每局結束後以存檔重播比對終局 state hash（`scripts/ai-match.mjs`）。
 - Policy 不讀 wall clock。
 
@@ -91,12 +105,16 @@ dispatch 結果、嘗試次數與被拒的行動、決策與 dispatch 耗時。
 
 - 電腦只看座位看得到的資訊，邊界以 import 掃描強制，而不是靠約定。
 - 卡住就停止並回報，不自動結束階段。
-- 亂數由局面派生而不保存，讓存讀檔與重播不需要電腦的內部狀態。
+- 亂數由局面派生而不保存，讓存讀檔與重播不需要電腦的亂數狀態；步驟記憶另以 revision 快照保存，只為同一個 runner 的還原。
+- UI 不 import 電腦；由套件根注入，維持引擎各層單向依賴。被拒絕的做法：電腦座位也走交接畫面（人要點過沒有隱藏資訊的畫面）、卡住時替電腦結束階段（把錯誤藏起來，可能默默輸掉）。
 - 補給預判放在規則層，用與真正執行相同的規則計算；電腦自己不重寫規則。
 
 ## 已知缺口
 
-- UI 沒有電腦座位：New Game 不能選電腦、沒有人對電腦或觀戰流程、`SeatBinding` 沒有 controller 欄位（WBS B0、B7）。
+- 電腦在頁面主執行緒決策（預設大小單一決策 p95 約 0.23 s、最大約 0.65 s）：決策期間頁面不回應輸入，Pause 在該行動結束後才生效
+  （TODO `computer-main-thread`）。
+- 步驟中途讀檔，電腦不記得該步驟已做的計畫（TODO `computer-mid-step-load`）。
+- 只有一個電腦策略可選，沒有難度等級（WBS §5 待決）。
 - 沒有同步驟重複局面偵測（`BOT_LOOP`），只靠步驟預算。
 - 沒有跨步驟的 belief 記憶，也沒有資訊洩漏測試（替換隱藏敵軍時決策必須不變）；目前以 import 邊界與 projection 保證。
 - 情勢分析用 hex 距離近似，沒有地形距離場。
@@ -105,5 +123,8 @@ dispatch 結果、嘗試次數與被拒的行動、決策與 dispatch 耗時。
 ## 驗證
 
 - `tests/ai/bot-driver.test.ts`：驅動迴圈、重試、停止原因。
+- `tests/ai/seat-runner.test.ts`：逐步 runner、等待真人、卡住、從還原的 checkpoint 重放相同動作、request ID 不與前一個 runner 衝突。
+- `tests/ui/computer-players.test.ts`：UI controller 中的人對電腦、電腦對電腦、暫停與單步、讀檔接續、卡住與接手。
+- `scripts/product-acceptance/run-computer.mjs`、`run-computer-scale.mjs`：在真實瀏覽器操作（驗收列 BOT-01 至 BOT-09）。
 - `tests/integration/foundation-gate.test.ts`：依賴邊界。
 - `tests/ai/bot-found-regressions.test.ts`：電腦對局找到並修正的規則缺陷。

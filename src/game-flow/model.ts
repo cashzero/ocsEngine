@@ -2,7 +2,7 @@ import type { HexId, ValidationIssue } from '../core/index.js';
 import type { PieceRuntimeState } from '../domain/piece/index.js';
 import type { MapState } from '../domain/map/index.js';
 import type { ScenarioDefinition } from '../domain/scenario/index.js';
-import type { GameSession, GameplayEngine, SeatBinding } from '../gameplay/index.js';
+import type { GameSession, GameplayEngine, SeatBinding, SeatController } from '../gameplay/index.js';
 import type {
   GeneratedMap,
   MapGenerationStyle,
@@ -114,7 +114,20 @@ export interface NewGameRequest {
    * Absent means none: every division starts deployed.
    */
   readonly reinforcements?: { readonly allied: number; readonly axis: number; readonly firstTurn: number };
+  /**
+   * Who plays each side: a person at the screen or a computer (with its policy and seed). Absent means a person on both
+   * sides, the hot-seat game the request had before computer players existed. Bot seeds are separate from the four above.
+   */
+  readonly seats?: { readonly allied: SeatController; readonly axis: SeatController };
 }
+
+/** Who plays a side; a person unless the request names a computer. */
+export const seatControllerOf = (request: NewGameRequest, side: OobSide): SeatController =>
+  request.seats?.[side === 'ALLIED' ? 'allied' : 'axis'] ?? { kind: 'HUMAN' };
+
+/** A computer player's seed when the request does not name one: fixed by the rules seed, so a request reproduces its game. */
+export const defaultBotSeed = (request: NewGameRequest, side: OobSide): number =>
+  Math.imul(request.seeds.rules ^ (side === 'ALLIED' ? 0x000a11ed : 0x000a8150), 2654435761) >>> 0;
 
 export interface GeneratedDeployment {
   readonly initialMapState: MapState;

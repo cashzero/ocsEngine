@@ -23,6 +23,18 @@ export const validateNewGameRequest = (request: NewGameRequest): readonly GameFl
   if (!Number.isSafeInteger(request.turnLimit) || request.turnLimit < 1 || request.turnLimit > 20) {
     failures.push({ stage: 'OPTIONS', code: 'INVALID_TURN_LIMIT', message: 'Turn limit must be an integer from 1 through 20.', path: ['turnLimit'] });
   }
+  if (request.seats !== undefined) {
+    for (const side of ['allied', 'axis'] as const) {
+      const seat = request.seats[side];
+      if (seat.kind === 'BOT') {
+        if (typeof seat.policyId !== 'string' || seat.policyId === '' || !uint32(seat.seed)) {
+          failures.push({ stage: 'OPTIONS', code: 'INVALID_COMPUTER_SEAT', message: 'A computer seat needs a policy and a uint32 seed.', path: ['seats', side] });
+        }
+      } else if (seat.kind !== 'HUMAN') {
+        failures.push({ stage: 'OPTIONS', code: 'INVALID_COMPUTER_SEAT', message: 'A seat is played by a person (HUMAN) or a computer (BOT).', path: ['seats', side] });
+      }
+    }
+  }
   if (request.railCap !== undefined) {
     for (const side of ['allied', 'axis'] as const) {
       const points = request.railCap[side];

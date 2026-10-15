@@ -13,6 +13,11 @@ import {
   GENERATED_RAIL_JUNCTION_OBJECTIVE_POINTS,
   GENERATED_RAIL_JUNCTION_STEP_POINTS,
   createNewGameOrchestrator,
+  COMPUTER_PLAYERS,
+  DEFAULT_BOT_POLICY_ID,
+  defaultBotSeed,
+  seatControllerOf,
+  type SeatController,
   buildGeneratedMapPreview,
   buildGeneratedOobPreview,
   attackerOf,
@@ -55,7 +60,7 @@ import { MapView, type MapCounter, type MapState } from './map-canvas.js';
 import {
   commandDeckView, endOverstack, movePopupView, phaseControlsView, selectDeckTab, syncDeckTab, unitRosterView, unmovedUnits, withHexLabels, type DeckState, type UnitFilter,
 } from './command-deck.js';
-import type { UiSnapshot, UnitFilterKind } from './model.js';
+import type { PlaybackSpeed, UiSnapshot, UnitFilterKind } from './model.js';
 import { hexFromPrintedLabel, phaseLabel, pieceLabel, printedHexLabel } from './presenter.js';
 
 const root = document.querySelector<HTMLElement>('#app') ?? (() => {
@@ -81,7 +86,7 @@ let currentGame: CreatedNewGame = initialGame.value;
 let scenario = currentGame.scenario;
 let bindings = currentGame.bindings;
 let skipDumpOnlySteps = true;
-let controller: UiController = createUiController({ engine, session: currentGame.session, scenario, bindings, skipDumpOnlySteps });
+let controller: UiController = createUiController({ engine, session: currentGame.session, scenario, bindings, skipDumpOnlySteps, turnLimit: currentGame.request.turnLimit, computers: COMPUTER_PLAYERS });
 /** Which sides' map edges the scenario declares entries on: a side landing by sea has none. */
 const inlandEdgesOf = (game: { readonly scenario: ScenarioDefinition }) => {
   const declares = (index: number) => game.scenario.entries.some(({ sideDefinitionId }) => sideDefinitionId === game.scenario.players[index]?.sideDefinitionId);
@@ -616,6 +621,15 @@ const engagementHelp = (engagement: Engagement): string => {
   return `${defending} holds most of the map and the attack objectives, with its line in Combat Mode, with garrisons dug into hedgehogs on its objectives (Level ${GENERATED_HEDGEHOG_LEVELS.OBJECTIVE}) and on key rail towns and road junctions (Level ${GENERATED_HEDGEHOG_LEVELS.KEY_POINT}); ${attacking} also holds VP at its own ports and fields ${ATTACKER_FORCE_RATIO} times the divisions plus off-map air (Fighters and Tactical Bombers at an airfield off the map, flying in over its own map edge and back), assembles a few hexes away and moves first. ${attacking} wins by holding its starting VP plus at least half the defender’s starting VP (rounded up) when the last turn ends; otherwise ${defending} wins.` + supplyHelp;
 };
 
+const SEAT_OPTIONS: readonly (readonly [string, string])[] = [['PLAYER', 'Player'], ['COMPUTER', 'Computer']];
+
+const seatsHelp = (request: NewGameRequest): string => {
+  const computers = (['ALLIED', 'AXIS'] as const).filter((side) => seatControllerOf(request, side).kind === 'BOT').length;
+  return computers === 0 ? 'Both sides are played at this screen, handing it over between turns.'
+    : computers === 1 ? 'You play one side against the computer: the screen stays yours and the computer plays its turns by itself, at a speed you set. If it gets stuck you can play its side yourself.'
+      : 'Two computers play each other. The screen only watches: play, pause and step through their actions, set the speed, or look from either side.';
+};
+
 const SEA_OPTIONS: readonly (readonly [NewGameSea, string])[] = [['NONE', 'No sea'], ['FLANK', 'Along the flank']];
 
 const seaHelp = (sea: NewGameSea): string => sea === 'NONE' ? 'An all-land map.'
@@ -736,8 +750,16 @@ const tracePreviewUnits = (event: Event): void => {
 };
 
 /** The preview's headline figures, shown in the dialog bar; the minor ones sit under the map. */
+/** Who plays each side, as the preview names it: "Allied: computer · Axis: you". */
+const playersLabel = (request: NewGameRequest): string => {
+  const person = request.seats === undefined || (request.seats.allied.kind === 'HUMAN' && request.seats.axis.kind === 'HUMAN');
+  const seat = (side: 'ALLIED' | 'AXIS') => seatControllerOf(request, side).kind === 'BOT' ? 'computer' : person ? 'player' : 'you';
+  return `Allied: ${seat('ALLIED')} · Axis: ${seat('AXIS')}`;
+};
+
 const operationSummary = (prepared: GeneratedScenarioPackage) => html`<dl class="operation-metrics preview-summary">
   <div><dt>Scenario</dt><dd>${engagementLabel(prepared.summary.engagement)}</dd></div>
+  <div><dt>Players</dt><dd id="preview-players">${playersLabel(prepared.request)}</dd></div>
   <div><dt>Map</dt><dd>${prepared.summary.mapSize}</dd></div>
   <div><dt>Units</dt><dd>${prepared.summary.unitCount}</dd></div>
   <div title=${`Major City ${GENERATED_MAJOR_CITY_OBJECTIVE_POINTS} VP, town ${GENERATED_TOWN_OBJECTIVE_POINTS} VP, plus 1 VP per ${GENERATED_PORT_CAPACITY_TOKENS_PER_VP} Tokens of port capacity, ${GENERATED_RAIL_OBJECTIVE_POINTS} for a railroad and ${GENERATED_RAIL_JUNCTION_OBJECTIVE_POINTS} more for a rail junction of three directions (+${GENERATED_RAIL_JUNCTION_STEP_POINTS} per further direction) (a village counts only as a port or station); ports and railroads are chosen first. The total grows with the map's land area.`}><dt>Objectives</dt><dd>${objectivesText(prepared)}</dd></div>
@@ -807,6 +829,19 @@ const onNewGameInput = (event: Event): void => {
   if (id === 'new-game-reinforcements-allied' || id === 'new-game-reinforcements-axis' || id === 'new-game-reinforcements-first-turn') {
     const current = newGameSettings.reinforcements ?? { allied: 0, axis: 0, firstTurn: DEFAULT_FIRST_REINFORCEMENT_TURN };
     newGameSettings = { ...newGameSettings, reinforcements: id.endsWith('first-turn') ? { ...current, firstTurn: value } : { ...current, [id.endsWith('allied') ? 'allied' : 'axis']: value } };
+  }
+  if (id === 'new-game-seat-allied' || id === 'new-game-seat-axis') {
+    const side = id.endsWith('allied') ? 'ALLIED' : 'AXIS';
+    const seats = { allied: seatControllerOf(newGameSettings, 'ALLIED'), axis: seatControllerOf(newGameSettings, 'AXIS'), [side === 'ALLIED' ? 'allied' : 'axis']: input.value === 'COMPUTER'
+      ? { kind: 'BOT', policyId: DEFAULT_BOT_POLICY_ID, seed: defaultBotSeed(newGameSettings, side) } satisfies SeatController : { kind: 'HUMAN' } satisfies SeatController };
+    // Two persons is the plain hot-seat request: the request carries seats only when a computer plays.
+    const { seats: _seats, ...rest } = newGameSettings;
+    newGameSettings = seats.allied.kind === 'HUMAN' && seats.axis.kind === 'HUMAN' ? rest : { ...rest, seats };
+  }
+  if (id === 'new-game-bot-seed-allied' || id === 'new-game-bot-seed-axis') {
+    const side = id.endsWith('allied') ? 'allied' : 'axis';
+    const current = newGameSettings.seats?.[side];
+    if (newGameSettings.seats !== undefined && current?.kind === 'BOT') newGameSettings = { ...newGameSettings, seats: { ...newGameSettings.seats, [side]: { ...current, seed: value } } };
   }
   for (const key of ['map', 'oob', 'deployment', 'rules'] as const) if (id === `new-game-${key}-seed`) newGameSettings = { ...newGameSettings, seeds: { ...newGameSettings.seeds, [key]: value } };
   render(controller.getSnapshot());
@@ -909,10 +944,17 @@ const startPreviewedGame = (): void => {
 const randomizeSeeds = (): void => {
   const values = new Uint32Array(4);
   crypto.getRandomValues(values);
+  const bots = new Uint32Array(2);
+  crypto.getRandomValues(bots);
   newGameSettings = {
     ...newGameSettings,
     seeds: { map: values[0]!, oob: values[1]!, deployment: values[2]!, rules: values[3]! },
   };
+  // The computers' own seeds are redrawn with the rest, so a new game is new for them too.
+  if (newGameSettings.seats !== undefined) {
+    const seatWith = (seat: SeatController, seed: number): SeatController => seat.kind === 'BOT' ? { ...seat, seed } : seat;
+    newGameSettings = { ...newGameSettings, seats: { allied: seatWith(newGameSettings.seats.allied, bots[0]!), axis: seatWith(newGameSettings.seats.axis, bots[1]!) } };
+  }
   previewStale = true;
   seedVersion += 1;
   render(controller.getSnapshot());
@@ -1014,6 +1056,11 @@ const newGameDialog = () => {
           ${select('new-game-engagement', 'Situation', ENGAGEMENT_OPTIONS, newGameSettings.engagement ?? 'MEETING')}
           <p class="field-help">${engagementHelp(newGameSettings.engagement ?? 'MEETING')}</p>
         </fieldset>
+        <fieldset><legend>Players</legend>
+          ${select('new-game-seat-allied', 'Allied', SEAT_OPTIONS, seatControllerOf(newGameSettings, 'ALLIED').kind === 'BOT' ? 'COMPUTER' : 'PLAYER')}
+          ${select('new-game-seat-axis', 'Axis', SEAT_OPTIONS, seatControllerOf(newGameSettings, 'AXIS').kind === 'BOT' ? 'COMPUTER' : 'PLAYER')}
+          <p class="field-help">${seatsHelp(newGameSettings)}</p>
+        </fieldset>
         <fieldset><legend>Operational map</legend>
           ${select('new-game-style', 'Theater', [['TEMPERATE_INLAND', 'Western Europe'], ['EASTERN_EUROPE', 'Eastern Europe']], newGameSettings.map.style)}
           ${select('new-game-sea', 'Sea', SEA_OPTIONS, newGameSeaOf(newGameSettings))}
@@ -1059,6 +1106,10 @@ const newGameDialog = () => {
             ${number('new-game-deployment-seed', 'Deployment', 0, 4294967295, newGameSettings.seeds.deployment)}
             ${number('new-game-rules-seed', 'Rules', 0, 4294967295, newGameSettings.seeds.rules)}
           </div>
+          ${(['allied', 'axis'] as const).map((side) => {
+            const seat = newGameSettings.seats?.[side];
+            return seat?.kind === 'BOT' ? number(`new-game-bot-seed-${side}`, `${side === 'allied' ? 'Allied' : 'Axis'} computer seed`, 0, 4294967295, seat.seed) : nothing;
+          })}
           <button type="button" id="randomize-new-game" @click=${randomizeSeeds}>Randomize all seeds</button>
         </fieldset>`)}
       </div>
@@ -1105,9 +1156,13 @@ const menuDialog = (snapshot: UiSnapshot) => {
       }}>
       <p class="supporting">${engagementLabel(currentGame.summary.engagement ?? 'MEETING')} · ${currentGame.summary.unitCount} units · ${currentGame.summary.formationCount} formations · ${currentGame.summary.turnLimit} turns · seeds map ${currentGame.request.seeds.map}, OOB ${currentGame.request.seeds.oob}, deployment ${currentGame.request.seeds.deployment}, rules ${currentGame.request.seeds.rules}</p>
     </section>
-    <section class="menu-section" aria-labelledby="menu-seats"><h3 id="menu-seats">Hot seat</h3>
+    <section class="menu-section" aria-labelledby="menu-seats"><h3 id="menu-seats">${snapshot.automation ? 'Players' : 'Hot seat'}</h3>
       <p class="supporting">${activeBinding?.label ?? ''} has the screen.</p>
-      <button class="wide" id="begin-handoff" ?disabled=${!(otherBinding && lifecycle !== 'READY')} @click=${() => { utilityOpen = null; controller.beginHandoff(); }}>Hand the screen to ${otherBinding?.label ?? 'the next seat'}</button>
+      ${snapshot.bindings.map((binding) => html`<div class="menu-row seat-row" data-seat=${binding.seatId}><span>${binding.label}</span>
+        ${binding.controller?.kind === 'BOT'
+          ? html`<button class="take-over" @click=${() => { utilityOpen = null; controller.takeOverSeat(binding.seatId); }}>Play it myself</button>`
+          : html`<button class="give-to-computer" @click=${() => { utilityOpen = null; controller.giveSeatToComputer(binding.seatId); }}>Let the computer play it</button>`}</div>`)}
+      <button class="wide" id="begin-handoff" ?disabled=${!(otherBinding && lifecycle !== 'READY') || snapshot.automation !== null} @click=${() => { utilityOpen = null; controller.beginHandoff(); }}>Hand the screen to ${otherBinding?.label ?? 'the next seat'}</button>
       <label class="setting-toggle"><input type="checkbox" id="skip-dump-only" .checked=${skipDumpOnlySteps} @change=${(event: Event) => {
         skipDumpOnlySteps = (event.target as HTMLInputElement).checked;
         controller.setSkipDumpOnlySteps(skipDumpOnlySteps);
@@ -1129,6 +1184,60 @@ const trapFocus = (event: KeyboardEvent): void => {
   const index = items.indexOf(document.activeElement as HTMLElement);
   if (event.shiftKey && index <= 0) { event.preventDefault(); items.at(-1)?.focus(); }
   else if (!event.shiftKey && index === items.length - 1) { event.preventDefault(); items[0]?.focus(); }
+};
+
+// ------------------------------------------------------------------ computer players
+
+const SPEED_OPTIONS: readonly (readonly [PlaybackSpeed, string])[] = [['SLOW', 'Slow'], ['NORMAL', 'Normal'], ['FAST', 'Fast'], ['INSTANT', 'Instant']];
+
+/**
+ * The computer's panel over the map: who is playing, what it just did, and the controls to pause, step, set the speed,
+ * follow the action or (watching two computers) look from the other side. A computer that cannot go on gets a banner
+ * with what went wrong and the way out: play the seat yourself, or try again.
+ */
+const computerPanel = (snapshot: UiSnapshot): TemplateResult | typeof nothing => {
+  const automation = snapshot.automation;
+  if (automation === null) return nothing;
+  const lifecycle = snapshot.view.metadata.lifecycle;
+  const { stuck, last, computerToAct } = automation;
+  if (stuck !== null && lifecycle !== 'FINISHED') {
+    return html`<section class="computer-panel is-stuck" id="computer-stuck" role="alert" aria-label="Computer stuck" data-revision=${snapshot.view.stateRevision}>
+      <p class="eyebrow">COMPUTER STUCK</p>
+      <h3>${stuck.seatLabel} cannot go on</h3>
+      <p>${stuck.message} Nothing was skipped: the game stays exactly where it stopped.</p>
+      <p class="supporting">${stuck.detail}</p>
+      <div class="computer-actions">
+        <button class="primary" id="take-over-seat" @click=${() => controller.takeOverSeat(stuck.seatId)}>Play ${stuck.seatLabel.replace(/ computer$/u, '')} myself</button>
+        ${stuck.code === 'UNKNOWN_POLICY' ? nothing : html`<button id="retry-computer" @click=${() => controller.retryComputer()}>Try again</button>`}
+      </div></section>`;
+  }
+  const status = lifecycle === 'FINISHED' ? 'Game over'
+    : computerToAct !== null ? (automation.playing ? `${computerToAct.label} is playing…` : `Paused: ${computerToAct.label} acts next`)
+      : 'Your turn';
+  const lastLine = last === null ? 'No computer action yet.' : last.text.startsWith(last.seatLabel) ? last.text : `${last.seatLabel}: ${last.text}`;
+  return html`<section class="computer-panel" id="computer-panel" aria-label="Computer players" data-playing=${String(automation.playing)} data-speed=${automation.speed} data-played=${automation.played} data-revision=${snapshot.view.stateRevision}>
+    <div class="computer-status"><strong id="computer-status" aria-live="polite">${status}</strong>
+      <span class="computer-last" id="computer-last" title=${last?.intent ?? ''}>${lastLine}${last?.intent ? html` <em>— ${last.intent}</em>` : nothing}</span></div>
+    <div class="computer-controls">
+      ${automation.playing
+        ? html`<button id="pause-computer" @click=${() => controller.pauseComputer()} ?disabled=${lifecycle === 'FINISHED'}>Pause</button>`
+        : html`<button id="play-computer" class="primary" @click=${() => controller.playComputer()} ?disabled=${lifecycle === 'FINISHED'}>Play</button>`}
+      <button id="step-computer" @click=${() => controller.stepComputer()} ?disabled=${automation.playing || computerToAct === null}>Step</button>
+      <label>Speed <select id="computer-speed" @change=${(event: Event) => controller.setPlaybackSpeed((event.target as HTMLSelectElement).value as PlaybackSpeed)}>
+        ${SPEED_OPTIONS.map(([value, name]) => html`<option value=${value} ?selected=${automation.speed === value}>${name}</option>`)}</select></label>
+      <label class="computer-follow"><input type="checkbox" id="follow-computer" .checked=${automation.followActions} @change=${(event: Event) => controller.setFollowComputer((event.target as HTMLInputElement).checked)}> Follow</label>
+      ${automation.spectating ? html`<label>View <select id="view-as" @change=${(event: Event) => controller.viewAs((event.target as HTMLSelectElement).value)}>
+        ${automation.seats.map(({ seatId, label }) => html`<option value=${seatId} ?selected=${automation.viewSeatId === seatId}>${label.replace(/ computer$/u, '')}</option>`)}</select></label>` : nothing}
+    </div></section>`;
+};
+
+/** Each computer action brings the hex it touched into view, once, when the player asked the map to follow. */
+let lastFollowedRevision = -1;
+const followComputer = (snapshot: UiSnapshot): void => {
+  const last = snapshot.automation?.last ?? null;
+  if (last === null || last.revision === lastFollowedRevision) return;
+  lastFollowedRevision = last.revision;
+  if (snapshot.automation!.followActions && last.hexId !== null) mapView.ensureVisible(last.hexId);
 };
 
 // ------------------------------------------------------------------ page
@@ -1166,6 +1275,7 @@ const appView = (snapshot: UiSnapshot): TemplateResult => {
             ${stackPicker(snapshot)}${rosterOpen ? unitRosterView(snapshot, deck) : movePopupView(snapshot, deck)}
             <div class="map-controls" aria-label="Map controls"><button id="zoom-out" aria-label="Zoom out" @click=${() => mapView.zoomStep(-1)}>−</button><output id="zoom-level"></output><button id="zoom-in" aria-label="Zoom in" @click=${() => mapView.zoomStep(1)}>+</button><button id="zoom-reset" @click=${() => mapView.resetCamera()}>Reset</button><span class="map-toggles" role="group" aria-label="Map overlays"><label class="map-toggle air-zones" title="Show the 10-hex Patrol Zones of Air Bases with Active Fighters (14.4c)"><input type="checkbox" id="toggle-air-zones" .checked=${snapshot.air.showZones} @change=${() => controller.toggleAirZones()}>Patrol Zones</label><label class="map-toggle trace-coverage" title="Show where trace supply reaches (12.6), for the selected unit or any unit: green traces straight to a Supply Source, hatched blue only through an HQ throw. Icons mark your rail Supply Sources: detrainable rail hexes (13.3c) and Extenders (12.7)"><input type="checkbox" id="toggle-trace-coverage" .checked=${snapshot.showTraceCoverage} @change=${() => controller.toggleTraceCoverage()}>Trace Supply</label><span class="map-toggle hide-units unit-visibility"><label title="Hide the unit counters so the overlays underneath can be read whole; clicking a hex still selects what is there"><input type="checkbox" id="toggle-hide-units" .checked=${snapshot.hideUnits} @change=${() => controller.toggleHideUnits()}>Hide units</label><details class="unit-kinds"><summary title="Choose which kinds of unit the map shows" aria-label="Unit filter">${snapshot.hiddenUnitKinds.length > 0 ? html`<small>${UNIT_FILTER_KINDS.length - snapshot.hiddenUnitKinds.length}/${UNIT_FILTER_KINDS.length}</small>` : ''}</summary><div class="unit-kinds-menu" role="group" aria-label="Show unit kinds">${UNIT_FILTER_KINDS.map(({ kind, label }) => html`<label><input type="checkbox" data-unit-kind=${kind} .checked=${!snapshot.hiddenUnitKinds.includes(kind)} @change=${() => controller.toggleUnitKind(kind)}>${label}</label>`)}</div></details></span></span></div>
             <div class="map-legend"><span title="Air Entry Point: friendly off-map aircraft enter here; range is measured from this hex +1">✈ AEP</span>${snapshot.showTraceCoverage ? html`<span class="legend-mark supply-source" title="Supply Source (12.6a): trace supply starts here; an HQ must draw within 5 MP of one to throw trace">Supply source</span><span class="legend-mark detrainable" title="Detrainable rail hex (13.3c): a station you control with a rail path back to a Supply Source; it is itself a Supply Source">Detrainable hex</span><span class="legend-mark extender" title="Extender (12.7): linked to a Supply Source, it creates a new place to draw trace supply">Extender</span>${snapshot.supplySources.some(({ kind }) => kind === 'PORT') ? html`<span class="legend-mark port-source" title="Port you can draw trace supply from now (19.0e): it is shut while an enemy combat unit or un-negated enemy ZOC is in it">Port source</span>` : nothing}<span class="legend-wash trace-direct" title="Traces straight to a Supply Source (12.3a); an HQ standing here can throw supply (12.3b)">Trace from source</span><span class="legend-wash trace-thrown" title="Trace arrives only through an HQ throw; an HQ standing here is supplied but has nothing to throw on">Trace via HQ throw</span>${snapshot.railControl.length > 0 ? html`<span class="legend-rail own" title="Rail your trace path reaches from a Supply Source (13.3c): your controlled stations on it are detrainable">Your rail</span><span class="legend-rail enemy" title="Rail only the enemy's trace path reaches (13.3c)">Enemy rail</span>` : nothing}` : html`<span class="terrain-key clear">Clear</span><span class="terrain-key woods">Woods</span><span class="terrain-key rough">Rough</span><span class="terrain-key mountain">Mountain</span><span class="terrain-key marsh">Marsh</span><span class="terrain-key water">Water</span><span class="line-key road">Road</span><span class="line-key rail" title="Railroad (13.3): counts as a road for movement; a rail line back to a supply source makes villages and towns on it Supply Sources (12.6a, 13.3c)">Railroad</span><span class="line-key river">River</span><span class="legend-mark objective" title=${`Objective, with its VP beside it. The mark shows who holds it now: white star ${scenario.players[0]?.name ?? 'first player'}, black cross ${scenario.players[1]?.name ?? 'second player'}, gold diamond neutral`}>Objective</span><span class="legend-mark supply-source" title="Supply Source (12.6a): trace supply starts here; an HQ must draw within 5 MP of one to throw trace">Supply source</span>${scenario.mapDefinition.hexes.some(({ features }) => features.some(({ definitionId }) => String(definitionId) === 'facility:port')) ? html`<span class="legend-mark port" title="Port (19.0). Hover it to see whose Supply Source it is (19.0e)">Port</span>` : nothing}${snapshot.moveRange.size > 0 ? html`<span class="legend-ring move">Move</span>` : nothing}${[...snapshot.moveRange.values()].some(({ endsMovement }) => endsMovement) ? html`<span class="legend-ring move-stop" title="You must stop here (for example on entering an enemy ZOC)">Move ends here</span>` : nothing}${snapshot.attackTargets.length > 0 ? html`<span class="legend-ring attack">Attack</span>` : nothing}${snapshot.barrageTargets.length > 0 ? html`<span class="legend-ring barrage">Barrage</span>` : nothing}${snapshot.air.showZones ? html`<span class="legend-ring air-zone">Your Patrol Zone</span><span class="legend-ring air-zone enemy">Enemy Patrol Zone</span>` : nothing}`}</div>
+            ${computerPanel(snapshot)}
             <div class="hover-info" aria-live="off"></div>
           </div>
         </section>
@@ -1190,6 +1300,7 @@ const render = (snapshot: UiSnapshot): void => {
   const chosenHex = snapshot.air.construction?.hexId ?? snapshot.air.draft?.targetHexId ?? snapshot.air.dropDraft?.hexId ?? null;
   if (chosenHex !== null && chosenHex !== lastChosenHex) mapView.ensureVisible(chosenHex);
   lastChosenHex = chosenHex;
+  followComputer(snapshot);
   renderTemplate(appView(snapshot), root);
   afterRender();
 };
@@ -1473,7 +1584,7 @@ const mountCreatedGame = async (created: CreatedNewGame): Promise<void> => {
   newGameBusy = false;
   newGameError = '';
   history.replaceState(null, '', location.pathname);
-  controller = createUiController({ engine, session: created.session, scenario, bindings, skipDumpOnlySteps });
+  controller = createUiController({ engine, session: created.session, scenario, bindings, skipDumpOnlySteps, turnLimit: created.request.turnLimit, computers: COMPUTER_PLAYERS });
   unsubscribeController = controller.subscribe(render);
 };
 

@@ -33,6 +33,7 @@ import type {
   GameplaySaveActionMetadata,
   GameplaySaveEnvelope,
   SeatBinding,
+  SeatController,
 } from './model.js';
 
 type Path = readonly (string | number)[];
@@ -77,19 +78,41 @@ const integerAt = (record: RecordValue, key: string, path: Path, issues: Gamepla
   return value as number;
 };
 
+const parseController = (input: unknown, path: Path, issues: GameplayError[]): SeatController | undefined => {
+  if (input === undefined) return undefined;
+  const record = recordAt(input, path, issues);
+  if (record === null) return undefined;
+  const kind = textAt(record, 'kind', path, issues);
+  if (kind === 'HUMAN') {
+    exactKeys(record, ['kind'], path, issues);
+    return { kind: 'HUMAN' };
+  }
+  if (kind !== 'BOT') {
+    issues.push(issue('SAVE_INVALID', [...path, 'kind'], 'Expected HUMAN or BOT.'));
+    return undefined;
+  }
+  exactKeys(record, ['kind', 'policyId', 'seed'], path, issues);
+  const seed = integerAt(record, 'seed', path, issues);
+  if (seed < 0 || seed > 0xffffffff) issues.push(issue('SAVE_INVALID', [...path, 'seed'], 'Expected an unsigned 32-bit seed.'));
+  return { kind: 'BOT', policyId: textAt(record, 'policyId', path, issues), seed };
+};
+
 const parseBinding = (input: unknown, path: Path, issues: GameplayError[]): SeatBinding => {
   const record = recordAt(input, path, issues) ?? {};
-  exactKeys(record, ['seatId', 'playerId', 'label'], path, issues);
+  // `controller` is optional: saves made before computer players existed have none, which means a person plays the seat.
+  exactKeys(record, 'controller' in record ? ['seatId', 'playerId', 'label', 'controller'] : ['seatId', 'playerId', 'label'], path, issues);
   const seatText = textAt(record, 'seatId', path, issues);
   const playerText = textAt(record, 'playerId', path, issues);
   const seat = parseSeatId(seatText);
   const player = parsePlayerId(playerText);
   if (!seat.ok) issues.push({ ...seat.error, path: [...path, 'seatId'] });
   if (!player.ok) issues.push(issue('SAVE_INVALID', [...path, 'playerId'], 'Invalid Player ID.'));
+  const controller = parseController(record.controller, [...path, 'controller'], issues);
   return {
     seatId: seat.ok ? seat.value : seatText as SeatBinding['seatId'],
     playerId: player.ok ? player.value : playerText as SeatBinding['playerId'],
     label: textAt(record, 'label', path, issues),
+    ...(controller === undefined || controller.kind === 'HUMAN' ? {} : { controller }),
   };
 };
 
