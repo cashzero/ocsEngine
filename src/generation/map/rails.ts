@@ -23,7 +23,7 @@ const MAJOR_RIVER = 'edge:major-river';
 type RailClass = 'MULTI' | 'SINGLE';
 
 /**
- * Railways at Beyond the Rhine scale (docs/generator/10-btr-scale-density.md): a multi-track trunk
+ * Railways at Beyond the Rhine scale (docs/generator/map-styles.md): a multi-track trunk
  * runs between the two sides' main entries through the Major Cities, single-track lines reach every
  * Minor City and each rail entry Hex (a few of a side's entries, so lines leave the map edge as far
  * apart as real ones do), and

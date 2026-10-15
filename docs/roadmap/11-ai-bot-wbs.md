@@ -8,7 +8,7 @@
 
 設計文件：
 
-- [BCS AI 與 Self-play 研究](../generator-study/05-bcs-ai-and-selfplay.md)（roadmap §13 要求的 M9 前置研究）
+- [BCS AI 與 Self-play 研究](../study/13-bcs-ai-and-selfplay.md)（roadmap §13 要求的 M9 前置研究）
 - [AI Bot 架構](../ai/architecture.md)
 - [Heuristic 策略](../ai/heuristic-policy.md)
 - [AI 對戰評估](../ai/evaluation.md)

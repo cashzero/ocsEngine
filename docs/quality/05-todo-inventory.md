@@ -20,7 +20,7 @@
 | `repl-tables-generated` | Variable Replacement Table 與 Rebuild Table 是產生器自訂，不是印刷版 | 補充與重建成本與原版遊戲不同 | 轉錄印刷表並以測試與瀏覽器核對 | `docs/rule-engine/replacements.md` |
 | `repl-legacy-unit-migration` | 舊存檔的 REPLACEMENT 沒有 faces，維持舊的數量 counter | 舊存檔的補充單位不能移動，需開新局 | 保留歷史動作的存檔遷移，並實際讀舊檔、移動、重建、存檔、重播 | `docs/rule-engine/replacements.md` |
 | `repl-natural-loss-ui` | 地面重建、合併與依表計價只在載入的訓練局面上走過瀏覽器 | 從新局經正常對戰損失再重建或合併的流程未驗證 | 從全新 New Game 經正常戰鬥損失單位，移動 Repl、重建或合併，並完成該回合 | `docs/rule-engine/replacements.md` |
-| `artillery-vs-facility` | `DECLARE_BARRAGE` 沒有設施目標 | 地面砲兵不能打港口或 Air Base，只有飛機與持有者自己的單位能損壞港口 | 給設施目標並付表列成本，實際打一次港口 | `docs/generator/03-coast-and-hydrology.md`；manifest `barrage.artillery` |
+| `artillery-vs-facility` | `DECLARE_BARRAGE` 沒有設施目標 | 地面砲兵不能打港口或 Air Base，只有飛機與持有者自己的單位能損壞港口 | 給設施目標並付表列成本，實際打一次港口 | `docs/generator/random-map.md`；manifest `barrage.artillery` |
 | `naval-shipping` | 無艦艇、登陸艇、兩棲登陸（18.0） | 只能在已持有的港口登陸 | 18.0 實作並實際對局 | manifest `naval-shipping` |
 | `air-audit-probe` | 規則稽核探針沒有空軍檢查 | 空軍規則缺少探針層的回歸保護 | 探針加入空軍案例並通過 | `docs/rule-engine/air-power.md` |
 | `glider-points` | 沒有獨立 Glider Points（14.10f） | 滑翔機運輸與一般空運共用能力 | 實作並在瀏覽器空運一次 | `docs/rule-engine/air-power.md` |
@@ -80,10 +80,10 @@
 
 | ID | 缺少的行為 | 使用者可見影響 | 關閉證據 | 詳細 |
 |---|---|---|---|---|
-| `map-appearance` | 地名是裝飾用的音節產生器；一格一地形（格內丘陵、部分森林無法表示）；沒有 Autobahn；並行道路與覆蓋填補耗時（`docs/generator/10-btr-scale-density.md`）；新外觀未重跑整合驗收 | 地圖與印刷地圖仍有差距；新外觀的整合流程無證據 | 地圖模型帶真實地名或使用者決定移除；重跑 New Game → 一整回合並記錄 MAP 列 | `docs/ui/map.md` |
+| `map-appearance` | 地名是裝飾用的音節產生器；一格一地形（格內丘陵、部分森林無法表示）；沒有 Autobahn；並行道路與覆蓋填補耗時（`docs/generator/map-styles.md`）；新外觀未重跑整合驗收 | 地圖與印刷地圖仍有差距；新外觀的整合流程無證據 | 地圖模型帶真實地名或使用者決定移除；重跑 New Game → 一整回合並記錄 MAP 列 | `docs/ui/map.md` |
 | `road-exit-edge` | 地圖資料不記錄產生器的道路出口，出口格另有道路經過時不畫出地圖邊（24 張 32×24 圖中 189 個出口有 13 個） | 少數道路出口看不出通往地圖外 | 地圖資料記錄出口並全部畫出 | `docs/ui/map.md` |
-| `case-blue-terrain` | Case Blue 地形與天氣（Hills、輕／重林、乾湖、草原、Volga 級河流、泥濘／冰凍）仍用 BtR 規則 | 東歐主題只有密度不同，地形規則相同 | 另立需求 | `docs/generator/11-eastern-europe-theme.md` |
-| `oob-naming-ui` | WWII 命名的 UI 驗收未做 | 命名只有單元測試證據 | 在瀏覽器檢視雙方編制名稱 | `docs/oob/random-oob-naming.md` |
+| `case-blue-terrain` | Case Blue 地形與天氣（Hills、輕／重林、乾湖、草原、Volga 級河流、泥濘／冰凍）仍用 BtR 規則 | 東歐主題只有密度不同，地形規則相同 | 另立需求 | `docs/generator/map-styles.md` |
+| `oob-naming-ui` | WWII 命名的 UI 驗收未做 | 命名只有單元測試證據 | 在瀏覽器檢視雙方編制名稱 | `docs/oob/random-oob.md` |
 | `PERF-7` | New Game 預覽 SVG 以整張地圖字串建立；地圖產生與 theater model 隨地圖約線性以上成長；大於 64×48 的地圖沒有在產品 build 上量過 | 地圖上限 256×256；128×96 已量到 Generate 約 4 s、Start 約 4.5 s，超過 3,000 ms 預算，更大的地圖未知 | `scripts/perf/browser-scale.mjs` 在 256×256 上 Generate 與 Start 各 < 3,000 ms，且 `compare-generation.mjs` 輸出不變 | `docs/quality/performance.md` |
 | `large-map-generation` | 產生在頁面主執行緒上執行，單一步驟無法中斷或回報進度 | 大地圖時頁面在一個步驟內不回應輸入，Cancel 要等步驟結束 | 在最大地圖上於瀏覽器量測：每個步驟中頁面都回應輸入、Cancel 在 250 ms 內停止、超過 1 秒的步驟顯示步驟內進度，且 Worker 產生的套件與 `prepare` 相同（scenario hash 與初始 state hash） | `docs/game-flow/new-game-ui.md` |
 
@@ -111,4 +111,5 @@
 6. 東歐主題的入口格數，或入口格不在鐵路上時的補給源規則；決定後才能把預設東歐圖的鐵路降到 Temperate 的一半以下。
 7. 海上登陸平衡：沒有 inland entry 的一方只有一個 2 SP 港口時（實測只能上岸 8T／相位，補給表收入約 36T），
    敵方兵力是否調降，或部分師改從 Turn 2 經 inland entry 進場；比例固定或依上岸容量縮放、是否對稱、是否在設定中可覆寫。
-   細節：`docs/generator/03-coast-and-hydrology.md` TODO (sea-landing balance)。
+   另一個手段是較大（城市）或第二個登陸港。關閉證據：記錄使用者的選擇並實作；先以 bot 對局確認電腦會運送 Box 中的補給並利用早期時機，
+   再依上岸容量做結果校準表，並在瀏覽器把這樣一局玩到 Game Turn 2。

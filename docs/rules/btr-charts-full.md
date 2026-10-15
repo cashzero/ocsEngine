@@ -212,7 +212,7 @@ In non-campaign scenarios use the scenario-specific shipping caps.
 scenario-specific shipping caps.
 
 Engine use: none; generated games set Rail Cap and Sea Cap from the force size (`docs/roadmap/15-rail-cap-wbs.md`,
-`docs/generator/03-coast-and-hydrology.md`).
+`docs/generator/random-map.md`).
 
 ## German Repl Table
 

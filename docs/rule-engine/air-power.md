@@ -12,7 +12,7 @@ the decisions behind it. The rule-by-rule behavior and gaps are the notes of the
 ### In generated games
 
 - New Game's **Air forces** option (default None) gives each side aircraft and Air Bases from 22 transcribed US and German
-  counters (`docs/oob/M11-air-counter-corpus.md`, `src/generation/oob/air-corpus.ts`); **Air transport** adds transports
+  counters (`docs/oob/counter-corpus.md`, `src/generation/oob/air-corpus.ts`); **Air transport** adds transports
   and one paratroop battalion per side. Aircraft reinforcements come with Air forces.
 - In attack scenarios the attacker also has off-map air flying from an off-map airfield through its friendly AEP
   (`docs/quality/03-product-operation-verification-plan.md` section J).

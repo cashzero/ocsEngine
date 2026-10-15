@@ -5,8 +5,8 @@ export type RoadServedTerrain = 'CLEAR' | 'WOODS' | 'ROUGH';
 
 /**
  * Everything that differs between map themes. The western profile holds the Beyond the Rhine
- * calibration (docs/generator/10-btr-scale-density.md); the eastern one the Case Blue / GBII
- * calibration (docs/generator/11-eastern-europe-theme.md).
+ * calibration (docs/generator/map-styles.md); the eastern one the Case Blue / GBII
+ * calibration (docs/generator/map-styles.md).
  */
 export interface MapStyleProfile {
   /** The sea a map of this style gets when the options name none. */

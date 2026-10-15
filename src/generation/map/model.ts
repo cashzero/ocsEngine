@@ -6,7 +6,7 @@ export const MAP_GENERATOR_VERSION = '0.5.0' as const;
 /**
  * Map themes. The two western themes are calibrated on Beyond the Rhine (north-west Europe);
  * EASTERN_EUROPE on Case Blue / Guderian's Blitzkrieg II (southern and central Russia): flatter,
- * emptier country with far fewer roads, railways and towns (docs/generator/11-eastern-europe-theme.md).
+ * emptier country with far fewer roads, railways and towns (docs/generator/map-styles.md).
  */
 export const MAP_GENERATION_STYLES = ['TEMPERATE_INLAND', 'MEDITERRANEAN_COAST', 'EASTERN_EUROPE'] as const;
 export type MapGenerationStyle = (typeof MAP_GENERATION_STYLES)[number];

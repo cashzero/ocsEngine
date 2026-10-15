@@ -17,37 +17,17 @@ describe('M6 generator boundary and study contract', () => {
     expect(violations).toEqual([]);
   });
 
-  it('ships every M6 study output and final gate report', () => {
+  it('documents the map and OOB generators and the studies behind them', () => {
     const outputs = [
       'docs/roadmap/05-random-map-wbs.md',
-      'docs/generator-study/01-bcs-random-map.md',
-      ...Array.from({ length: 10 }, (_, index) => `docs/generator/${String(index).padStart(2, '0')}-${[
-        'scope-options-and-output-contract', 'seed-rng-and-determinism', 'noise-and-terrain-classification',
-        'coast-and-hydrology', 'settlements-and-strategic-regions', 'connected-road-network',
-        'topology-and-quality-validation', 'serialization-and-package-boundary',
-        'ui-preview-and-download', 'seed-sweep-protocol',
-      ][index]}.md`),
-      'docs/generator/M6-random-map-gate.md',
-    ];
-    expect(outputs.filter((path) => !existsSync(join(process.cwd(), path)))).toEqual([]);
-  });
-
-  it('ships every M7 study output and final gate report', () => {
-    const outputs = [
       'docs/roadmap/06-random-oob-wbs.md',
-      'docs/generator-study/02-bcs-random-oob.md',
-      'docs/generator-study/03-btr-oob-catalog.md',
-      'docs/oob/M7-btr-extraction-report.md',
-      'docs/oob/M7-normalization-decisions.md',
-      'docs/oob/M7-generator-archetypes.md',
-      'docs/generator/M7-random-oob-spec.md',
-      'docs/oob/M7-formation-package-policy.md',
-      'docs/oob/M7-support-logistics-policy.md',
-      'docs/oob/M7-validation-contract.md',
-      'docs/oob/M7-serialization-and-boundary.md',
-      'docs/oob/M7-ui-preview-and-download.md',
-      'docs/oob/M7-oob-seed-sweep.md',
-      'docs/oob/M7-random-oob-gate.md',
+      'docs/generator/random-map.md',
+      'docs/generator/map-styles.md',
+      'docs/oob/random-oob.md',
+      'docs/oob/counter-corpus.md',
+      'docs/study/10-bcs-random-map.md',
+      'docs/study/11-bcs-random-oob.md',
+      'docs/study/12-btr-oob-catalog.md',
     ];
     expect(outputs.filter((path) => !existsSync(join(process.cwd(), path)))).toEqual([]);
   });
