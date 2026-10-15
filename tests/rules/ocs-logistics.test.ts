@@ -583,6 +583,40 @@ describe('OCS 4.3 transport, Extenders and dumps (9.14, 12.2, 12.7, 12.11, 13.2)
     expect(explanation.allowed).toBe(true);
   });
 
+  it('never makes a dump larger than its counter holds: unloading or merging beyond it leaves a second dump', () => {
+    const dumpsAt = (state: GameState, hex: string) => state.pieceState.pieces.filter((candidate) => candidate.location.kind === 'ON_MAP'
+      && candidate.location.hexId === hex && candidate.ownerId === ALLIED && (candidate.resourceQuantity ?? 0) > 0
+      && state.scenario.pieceCatalog.definitions.find(({ id }) => id === candidate.definitionId)?.family === 'RESOURCE');
+    const base = atStep(buildGeneratedRuleState({ [U.alTruck]: ['1,5', null], [U.alSup]: ['1,5', null], [U.alLeg]: ['4,5', 'COMBAT', 'combat'] }), 'MOVEMENT', 'MOVEMENT', ALLIED);
+    const firstDefinition = base.scenario.pieceCatalog.definitions.find(({ id }) => id === piece(base, U.alSup).definitionId)!;
+    const secondDefinition = { ...firstDefinition, id: 'definition:test-second-supply' as typeof firstDefinition.id };
+    const secondPiece = { ...piece(base, U.alSup), id: 'piece:test-second-supply' as PieceId, definitionId: secondDefinition.id, location: { kind: 'ON_MAP' as const, hexId: '4,5' as HexId }, stackOrder: 9 };
+    const waiting = secondPiece.resourceQuantity!;
+    const carried = piece(base, U.alSup).resourceQuantity!;
+    // A counter that holds one Token less than the two together.
+    const capacity = waiting + carried - 1;
+    const shrink = (definition: typeof firstDefinition) => ({ ...definition, resource: { ...definition.resource!, capacity } });
+    const state: GameState = {
+      ...base,
+      scenario: { ...base.scenario, pieceCatalog: { ...base.scenario.pieceCatalog, definitions: [...base.scenario.pieceCatalog.definitions.map((definition) => definition.id === firstDefinition.id ? shrink(definition) : definition), shrink(secondDefinition)] } },
+      pieceState: { ...base.pieceState, pieces: [...base.pieceState.pieces, secondPiece] },
+    };
+    const loaded = ok(applyRuleAction(state, ALLIED, { kind: 'LOAD_SUPPLY', truckId: U.alTruck, dumpId: U.alSup, tokens: carried }));
+    const moved = ok(applyRuleAction(loaded, ALLIED, { kind: 'MOVE_PIECE', pieceId: U.alTruck, path: path('1,5', '2,5', '3,5', '4,5') }));
+    const unloaded = ok(applyRuleAction(moved, ALLIED, { kind: 'UNLOAD_SUPPLY', truckId: U.alTruck, tokens: carried }));
+    const quantities = (current: GameState) => dumpsAt(current, '4,5').map(({ resourceQuantity }) => resourceQuantity!);
+    expect(quantities(unloaded).reduce((sum, quantity) => sum + quantity, 0)).toBe(waiting + carried);
+    expect(Math.max(...quantities(unloaded))).toBeLessThanOrEqual(capacity);
+    expect(quantities(unloaded).length).toBe(2);
+
+    const crowded = { ...state, pieceState: { ...state.pieceState, pieces: state.pieceState.pieces.map((candidate) => candidate.id === U.alSup
+      ? { ...candidate, location: { kind: 'ON_MAP' as const, hexId: '4,5' as HexId } } : candidate) } };
+    const merged = mergeSupplyAt(crowded, '4,5' as HexId, ALLIED);
+    expect(quantities(merged).reduce((sum, quantity) => sum + quantity, 0)).toBe(waiting + carried);
+    expect(Math.max(...quantities(merged))).toBeLessThanOrEqual(capacity);
+    expect(quantities(merged).length).toBe(2);
+  });
+
   it('warns, before the move, that moving another unit ends a loaded truck\'s move (6.1g)', () => {
     const state = atStep(buildGeneratedRuleState({ [U.alTruck]: ['1,5', null], [U.alSup]: ['1,5', null], [U.alLeg]: ['4,5', 'MOVE', 'move'] }), 'MOVEMENT', 'MOVEMENT', ALLIED);
     const moveLeg = (from: GameState) => ruleEngine.explain(from, { actionId: 'probe', actorId: ALLIED, expectedRevision: from.revision, kind: 'MOVE_PIECE', pieceId: U.alLeg, path: path('4,5', '3,5') } as never);

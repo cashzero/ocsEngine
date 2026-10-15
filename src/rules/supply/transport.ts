@@ -127,21 +127,37 @@ export const sameSupply = (state: GameState, left: PieceState, right: PieceState
   return !!a && !!b && left.ownerId === right.ownerId && a.resourceDefinitionId === b.resourceDefinitionId && a.unitDefinitionId === b.unitDefinitionId;
 };
 
-/** A newly placed dump joins the same kind of dump already in its Hex. */
+/**
+ * A newly placed dump joins the same kind of dump already in its Hex, up to the counter's capacity: what does not fit stays
+ * as a further dump, which a later keeper (or the next merge) takes in turn.
+ */
 export const mergeSupplyAt = (state: GameState, hexId: HexId, ownerId: PlayerId): GameState => {
   const dumps = stableSort(groundDumpsAt(state, ownerId, hexId), (left, right) => (right.resourceQuantity ?? 0) - (left.resourceQuantity ?? 0) || String(left.id).localeCompare(String(right.id)));
   let pieceState = state.pieceState;
   const folded = new Set<PieceId>();
+  // What each dump holds now: an earlier keeper may already have taken part of a later one.
+  const held = new Map(dumps.map((dump) => [dump.id, dump.resourceQuantity ?? 0]));
   for (const keeper of dumps) {
     if (folded.has(keeper.id)) continue;
-    let total = keeper.resourceQuantity ?? 0;
+    const start = held.get(keeper.id)!;
+    let total = start;
+    const capacity = definitionOf(state, keeper)?.resource?.capacity ?? Number.POSITIVE_INFINITY;
     for (const other of dumps) {
       if (other.id === keeper.id || folded.has(other.id) || !sameSupply(state, keeper, other)) continue;
-      total += other.resourceQuantity ?? 0;
-      folded.add(other.id);
-      pieceState = upsert(pieceState, { ...other, resourceQuantity: 0, location: { kind: 'ELIMINATED' } });
+      const quantity = held.get(other.id)!;
+      const taken = Math.min(quantity, Math.max(0, capacity - total));
+      if (taken === 0) continue;
+      total += taken;
+      held.set(other.id, quantity - taken);
+      if (taken === quantity) {
+        folded.add(other.id);
+        pieceState = upsert(pieceState, { ...other, resourceQuantity: 0, location: { kind: 'ELIMINATED' } });
+      } else {
+        pieceState = upsert(pieceState, { ...other, resourceQuantity: quantity - taken });
+      }
     }
-    if (total !== (keeper.resourceQuantity ?? 0)) pieceState = upsert(pieceState, { ...keeper, resourceQuantity: total });
+    held.set(keeper.id, total);
+    if (total !== start) pieceState = upsert(pieceState, { ...keeper, resourceQuantity: total });
   }
   return pieceState === state.pieceState ? state : { ...state, pieceState };
 };
@@ -235,19 +251,24 @@ export const applyUnload = (state: GameState, truckId: PieceId, tokens: number):
     left -= take;
     const target = groundDumpsAt({ ...next, pieceState }, truck.ownerId, hexId).find((ground) => sameSupply(next, ground, cargo));
     const remainingCargo = (cargo.resourceQuantity ?? 0) - take;
-    if (target) {
-      pieceState = upsert(pieceState, { ...target, resourceQuantity: (target.resourceQuantity ?? 0) + take });
-      next = { ...next, pieceState, usage: withUsage({ ...next, pieceState }, { ...usageOf(next, target), unloadedTokens: usageOf(next, target).unloadedTokens + take }) };
-    } else {
+    // The dump already there takes what its counter holds; the rest lies as a dump of its own.
+    const room = target ? Math.max(0, (definitionOf(next, target)?.resource?.capacity ?? Number.POSITIVE_INFINITY) - (target.resourceQuantity ?? 0)) : 0;
+    const toTarget = target ? Math.min(take, room) : 0;
+    const toNew = take - toTarget;
+    if (target && toTarget > 0) {
+      pieceState = upsert(pieceState, { ...target, resourceQuantity: (target.resourceQuantity ?? 0) + toTarget });
+      next = { ...next, pieceState, usage: withUsage({ ...next, pieceState }, { ...usageOf(next, target), unloadedTokens: usageOf(next, target).unloadedTokens + toTarget }) };
+    }
+    if (toNew > 0) {
       const groundId = remainingCargo > 0 ? derivedId({ ...next, pieceState }, cargo.id, 'unload') : cargo.id;
-      pieceState = upsert(pieceState, { ...cargo, id: groundId, resourceQuantity: take, location: { kind: 'ON_MAP', hexId }, stackOrder: nextOrder({ ...next, pieceState }, hexId, groundId) });
+      pieceState = upsert(pieceState, { ...cargo, id: groundId, resourceQuantity: toNew, location: { kind: 'ON_MAP', hexId }, stackOrder: nextOrder({ ...next, pieceState }, hexId, groundId) });
       if (groundId === cargo.id) pieceState = setCargo(pieceState, cargo.id, null, 0, unitOf(next, cargo));
-      next = { ...next, pieceState, usage: withUsage({ ...next, pieceState }, { ...usageOf({ ...next, pieceState }, pieceById({ ...next, pieceState }, groundId)!), unloadedTokens: take }) };
+      next = { ...next, pieceState, usage: withUsage({ ...next, pieceState }, { ...usageOf({ ...next, pieceState }, pieceById({ ...next, pieceState }, groundId)!), unloadedTokens: toNew }) };
     }
     if (remainingCargo > 0) {
       pieceState = setCargo(upsert(next.pieceState, { ...cargo, resourceQuantity: remainingCargo }), cargo.id, truck.id, remainingCargo, unitOf(next, cargo));
       next = { ...next, pieceState };
-    } else if (target) {
+    } else if (toNew === 0) {
       pieceState = setCargo(upsert(next.pieceState, { ...cargo, resourceQuantity: 0, location: { kind: 'ELIMINATED' } }), cargo.id, null, 0, unitOf(next, cargo));
       next = { ...next, pieceState };
     }
