@@ -2,6 +2,7 @@ import type { HexId, PieceId, PlayerId } from '../core/index.js';
 import type { OcsMode } from '../domain/piece/index.js';
 import type { ScenarioDefinition } from '../domain/scenario/index.js';
 import {
+  isBotSeat,
   parseDispatchRequestId,
   type CheckpointDescriptor,
   type GameSession,
@@ -9,16 +10,19 @@ import {
   type HandoffToken,
   type HistoryRecord,
   type SeatBinding,
+  type SeatController,
   type SeatId,
   type SessionNotification,
 } from '../gameplay/index.js';
+import type { ComputerPlayers } from './computer-players.js';
+import { INSTANT_REDRAW_MS, SeatAutomation } from './seat-automation.js';
 import {
   AIR_MISSION_KINDS, AIR_MISSION_LABELS, FUEL_COSTS, distanceBetween, missionSegment, parseRuleActionId, routesForRange,
   type AirMissionKind, type AirRoute, type AttackerSupplyChoice, type AttackerSupplyOption, type GameAction, type ProjectedCombat, type ProjectedPiece, type RuleEvent, type RuleExplanation, type UnitRebuild,
   allocateRebuild, priceRebuild,
 } from '../rules/index.js';
 import type {
-  AirDraft, AirOverview, AirRefit, Arrival, AttackDraft, AwayReport, AirRebuild, BuildOption, Consolidation, GroundRebuild, ConstructionOverview, CombatSheet, EndStep, HandoffInfo, MoveBlocker, MovePreview, MoveRangeEntry, StackMate,
+  AirDraft, AirOverview, AutomationInfo, PlaybackSpeed, AirRefit, Arrival, AttackDraft, AwayReport, AirRebuild, BuildOption, Consolidation, GroundRebuild, ConstructionOverview, CombatSheet, EndStep, HandoffInfo, MoveBlocker, MovePreview, MoveRangeEntry, StackMate,
   DropPlanDraft, DropPlanView, LedgerLine, RailPanel, SeaPanel, SupplyNeed, TransportCarrier, UiListener, UiSelection, UiSnapshot, UnitAction, UnitFilterKind,
 } from './model.js';
 import {
@@ -37,6 +41,10 @@ export interface UiControllerOptions {
    * (12.11a). Default true; the players can turn it off in the Session dialog.
    */
   readonly skipDumpOnlySteps?: boolean;
+  /** The game's turn limit, which a computer player plans against. */
+  readonly turnLimit?: number;
+  /** The computer player for seats bound to one; the package root's `COMPUTER_PLAYERS`. Without it a computer seat stops as stuck. */
+  readonly computers?: ComputerPlayers;
 }
 
 /** Action ID scope of steps passed by the dump-only setting, so the log can say why. */
@@ -102,6 +110,22 @@ export interface UiController {
   readonly loadSave: (serialized: string) => Promise<void>;
   readonly beginHandoff: () => void;
   readonly completeHandoff: () => void;
+  /** The computer players play on by themselves (they do so from the start; this resumes after Pause). */
+  readonly playComputer: () => void;
+  readonly pauseComputer: () => void;
+  /** While paused, let the computer play exactly one action. */
+  readonly stepComputer: () => void;
+  readonly setPlaybackSpeed: (speed: PlaybackSpeed) => void;
+  /** Bring each computer action into view on the map. */
+  readonly setFollowComputer: (follow: boolean) => void;
+  /** With only computers playing, show the game from this seat's side. */
+  readonly viewAs: (seatId: string) => void;
+  /** Play this seat yourself from now on (for example when its computer is stuck). */
+  readonly takeOverSeat: (seatId: string) => void;
+  /** Let the computer play this seat from now on. */
+  readonly giveSeatToComputer: (seatId: string) => void;
+  /** Ask a stuck computer to try again. */
+  readonly retryComputer: () => void;
   /** Start planning an air mission of this type; then click a highlighted target hex. */
   readonly planAirMission: (mission: AirMissionKind) => void;
   readonly toggleAirAircraft: (pieceId: string) => void;
@@ -250,7 +274,14 @@ export const quartersLabel = (quarters: number): string => {
 class DefaultUiController implements UiController {
   readonly #engine: GameplayEngine;
   readonly #scenario: ScenarioDefinition;
-  readonly #bindings: readonly SeatBinding[];
+  #bindings: readonly SeatBinding[];
+  readonly #turnLimit: number;
+  readonly #computers: ComputerPlayers | undefined;
+  readonly #automation: SeatAutomation;
+  #lastEmitMs = 0;
+  #emitTimer: ReturnType<typeof setTimeout> | null = null;
+  /** Switching the viewing seat without a hand-over (computers only watch) must not redraw the privacy screen. */
+  #switchingView = false;
   #session: GameSession;
   #selection = initialSelection();
   #destination: string | null = null;
@@ -302,22 +333,95 @@ class DefaultUiController implements UiController {
     this.#engine = options.engine;
     this.#session = options.session;
     this.#scenario = options.scenario;
-    this.#bindings = options.bindings.map((binding) => ({ ...binding }));
+    this.#bindings = this.#bindingsOf(options.session, options.bindings);
+    this.#turnLimit = options.turnLimit ?? 8;
+    this.#computers = options.computers;
+    this.#automation = new SeatAutomation({
+      computers: options.computers,
+      session: () => this.#session,
+      scenario: options.scenario,
+      turnLimit: this.#turnLimit,
+      personBusy: () => this.#busy,
+      changed: () => this.#emit(),
+      describe: (record) => this.#describeForViewer(record),
+      requiredSeat: () => this.#requiredSeat(),
+      viewSeat: () => this.#activeSeat(),
+    });
     this.#skipDumpOnlySteps = options.skipDumpOnlySteps ?? true;
     this.#notice = options.session.getMetadata().lifecycle === 'ACTIVE'
       ? 'Select a unit on the map to see where it can move and what it can attack.'
       : 'Scenario ready. Start the session when you are ready.';
     this.#bindSession();
     this.#continueNumbering();
+    this.#showHumanSeat();
     this.#afterChange();
+    this.#automation.kick();
+  }
+
+  /**
+   * The seats with the controller the session records (a person or a computer). The labels are the screen's own: the ones
+   * the caller named, or, for a game loaded from a save, the save's.
+   */
+  #bindingsOf(session: GameSession, named: readonly SeatBinding[]): readonly SeatBinding[] {
+    return session.getBindings().map((binding) => {
+      const label = named.find(({ seatId }) => seatId === binding.seatId)?.label ?? binding.label;
+      return { ...binding, label };
+    });
   }
 
   #bindSession(): void {
     this.#unsubscribeSession?.();
     this.#unsubscribeSession = this.#session.subscribe((notification) => {
       this.#observe(notification);
-      this.#emit();
+      // A computer's action is reported once, after its step, together with what it did.
+      if (!this.#automation.working && !this.#switchingView) this.#emit();
     });
+  }
+
+  /** The seat the game waits for: the owner of a pending decision, else the seat that acts in this step. */
+  #requiredSeat(): SeatId | null {
+    const pending = this.#decision();
+    if (pending) return pending.seatId;
+    const sequence = this.#view(this.#activeSeat()).projection?.sequence;
+    return this.#bindings.find(({ playerId }) => playerId === sequence?.actingPlayerId)?.seatId ?? null;
+  }
+
+  #describeForViewer(record: HistoryRecord): { readonly text: string; readonly hexId: string | null } {
+    const entry = describeRecord(record, this.#narrativeContext(this.#activeSeat()));
+    const action = record.action;
+    const hexId = action.kind === 'MOVE_PIECE' ? action.path.at(-1) ?? null
+      : action.kind === 'DECLARE_COMBAT' || action.kind === 'DECLARE_BARRAGE' ? action.targetHexId : null;
+    // With only computers playing the viewer's own side is a computer too: the log must not call its actions "You".
+    const actor = this.#bindings.find((binding) => binding.playerId === action.actorId);
+    const text = actor !== undefined && isBotSeat(actor) ? entry.title.replace(/^You\b/u, actor.label) : entry.title;
+    return { text, hexId: hexId === null ? null : String(hexId) };
+  }
+
+  /**
+   * With a computer on one side and a person on the other, the screen shows the person's seat, so no hand-over screen
+   * ever stands between them. With only computers it keeps whichever seat is shown (the viewer may switch sides).
+   */
+  #showHumanSeat(): void {
+    const humans = this.#bindings.filter((binding) => !isBotSeat(binding));
+    if (humans.length === 0 || humans.length === this.#bindings.length) return;
+    if (humans.some(({ seatId }) => seatId === this.#activeSeat())) return;
+    this.#switchView(humans[0]!.seatId);
+  }
+
+  /** Move the screen to another seat without a hand-over: only used when no person's hidden information is on it. */
+  #switchView(seatId: SeatId): void {
+    if (seatId === this.#activeSeat() || this.#handoffToken !== null) return;
+    this.#switchingView = true;
+    try {
+      const token = this.#session.beginHandoff(this.#activeSeat(), seatId);
+      this.#session.completeHandoff(token);
+    } finally {
+      this.#switchingView = false;
+    }
+    this.#cache.clear();
+    this.#cacheScope = '';
+    this.#selection = initialSelection();
+    this.#resetIntent();
   }
 
   #activeSeat(): SeatId { return this.#session.getMetadata().activeSeatId; }
@@ -478,7 +582,12 @@ class DefaultUiController implements UiController {
   #feed(seatId: SeatId): readonly FeedEntry[] {
     return this.#cached(`feed|${seatId}`, () => {
       const context = this.#narrativeContext(seatId);
-      return this.#history().map((record) => describeRecord(record, context));
+      const entries = this.#history().map((record) => describeRecord(record, context));
+      if (!this.#bindings.every(isBotSeat)) return entries;
+      // Only computers play: the seat on show is not "you", so its entries say who it is.
+      const viewer = this.#bindings.find((binding) => binding.seatId === seatId)!.label;
+      const named = (text: string): string => text.replace(/^You\b/u, viewer);
+      return entries.map((entry) => ({ ...entry, title: named(entry.title), lines: entry.lines.map(named) }));
     });
   }
 
@@ -789,8 +898,10 @@ class DefaultUiController implements UiController {
     const sequenceOwner = this.#bindings.find(({ playerId }) => playerId === sequence?.actingPlayerId);
     const requiredSeatId = pending?.seatId ?? sequenceOwner?.seatId ?? null;
     const otherBinding = this.#bindings.find((binding) => binding.seatId !== seatId);
+    // A seat played by a computer is never handed the screen: it acts by itself.
+    const requiredIsComputer = this.#bindings.some((binding) => binding.seatId === requiredSeatId && isBotSeat(binding));
     const handoff: HandoffInfo | null = this.#handoffInfo
-      ?? (requiredSeatId && requiredSeatId !== seatId && view.metadata.lifecycle === 'ACTIVE'
+      ?? (requiredSeatId && requiredSeatId !== seatId && !requiredIsComputer && view.metadata.lifecycle === 'ACTIVE'
         ? { toSeatId: requiredSeatId, toLabel: this.#bindings.find((binding) => binding.seatId === requiredSeatId)?.label ?? 'the other player', reason: this.#handoffReason(requiredSeatId) }
         : null);
     const reports = view.privacyLocked ? [] : this.#combatReports(seatId);
@@ -848,7 +959,10 @@ class DefaultUiController implements UiController {
       railOffer,
       railBlocked,
       sea,
-      endStep: this.#endStep(),
+      // While a computer has the move, the reason End is unavailable is that: the rule engine's own reason ("Actor does not own the sequence step") says nothing to the person.
+      endStep: requiredIsComputer
+        ? { ...this.#endStep(), enabled: false, blockers: [`${this.#bindings.find((binding) => binding.seatId === requiredSeatId)?.label ?? 'The computer'} is playing.`] }
+        : this.#endStep(),
       decision: ownDecision ? { ...ownDecision, options: distinctLabels(ownDecision.options) } : null,
       decisionSeatId: pending?.seatId ?? null,
       decisionHexes,
@@ -874,6 +988,7 @@ class DefaultUiController implements UiController {
       combatSheet: ownDecision ? this.#combatSheet(ownDecision, view.playerId) : null,
       autoPay: ownDecision?.kind === 'SUPPLY_SOURCE' && ownDecision.options.some(({ id }) => id.startsWith('pay:')),
       formationNames: this.#formationNames(view.playerId),
+      automation: this.#automation.info(),
     };
   };
 
@@ -1885,10 +2000,23 @@ class DefaultUiController implements UiController {
   };
 
   #emit(): void {
+    // Playing at full speed, the computers act faster than the page can draw: redraw a few times a second instead.
+    if (this.#automation.coalescing) {
+      const wait = this.#lastEmitMs + INSTANT_REDRAW_MS - Date.now();
+      if (wait > 0) {
+        this.#emitTimer ??= setTimeout(() => { this.#emitTimer = null; this.#emit(); }, wait);
+        this.#automation.kick();
+        return;
+      }
+    }
+    if (this.#emitTimer !== null) { clearTimeout(this.#emitTimer); this.#emitTimer = null; }
+    this.#lastEmitMs = Date.now();
     const view = this.#view(this.#activeSeat());
     if (!view.privacyLocked) this.#seen.set(this.#activeSeat(), this.#history().length);
     const snapshot = this.getSnapshot();
     for (const listener of this.#listeners) listener(snapshot);
+    // The game has changed hands or moved on: if a computer is to act, it goes on from here.
+    this.#automation.kick();
   }
 
   subscribe = (listener: UiListener): (() => void) => {
@@ -2198,7 +2326,7 @@ class DefaultUiController implements UiController {
       if (this.#session.getMetadata().lifecycle !== 'ACTIVE' || this.#handoffToken !== null || this.#decision() !== null) break;
       const sequence = this.#view(this.#activeSeat()).projection?.sequence;
       const seat = this.#bindings.find(({ playerId }) => playerId === sequence?.actingPlayerId);
-      if (!sequence || !seat || seat.seatId === this.#activeSeat()) break;
+      if (!sequence || !seat || seat.seatId === this.#activeSeat() || isBotSeat(seat)) break;
       const enabled = this.#session.getActionFamilies(seat.seatId).filter(({ enabled: on }) => on).map(({ kind }) => kind);
       if (!enabled.includes('ADVANCE_SEQUENCE') || !enabled.every((kind) => kind === 'ADVANCE_SEQUENCE' || kind === 'BLOW_DUMP')) break;
       const action: GameAction = { actionId: this.#actionId(AUTO_PASS_SCOPE), actorId: seat.playerId, expectedRevision: this.#session.getRevision(), kind: 'ADVANCE_SEQUENCE' };
@@ -2210,7 +2338,8 @@ class DefaultUiController implements UiController {
   }
 
   async #run(operation: () => Promise<string>): Promise<void> {
-    if (this.#busy) return;
+    // A computer is mid-action (a few milliseconds): the person's click would race it for the same revision.
+    if (this.#busy || this.#automation.working) return;
     this.#busy = true;
     this.#emit();
     try { this.#notice = await operation(); this.#notice += await this.#autoPassDumpOnly(); }
@@ -2390,6 +2519,8 @@ class DefaultUiController implements UiController {
     if (!result.ok) return result.code;
     // The session pauses on a restore; play goes straight on from the checkpoint (a finished game stays finished).
     if (result.lifecycle === 'PAUSED') this.#session.resume();
+    // The computer plays on from the restored position, deciding afresh as it did the first time.
+    this.#automation.restored();
     return `Restored ${checkpoint.label || checkpoint.id}.`;
   });
 
@@ -2405,6 +2536,7 @@ class DefaultUiController implements UiController {
     }
     await this.#session.close();
     this.#session = loaded;
+    this.#bindings = this.#bindingsOf(loaded, []);
     this.#cache.clear();
     this.#cacheScope = '';
     this.#selection = initialSelection();
@@ -2422,11 +2554,15 @@ class DefaultUiController implements UiController {
     if (loaded.getMetadata().lifecycle === 'PAUSED') loaded.resume();
     this.#bindSession();
     this.#continueNumbering();
+    // The save names who plays each seat: computers resume from where the save was made.
+    this.#automation.loaded();
+    this.#showHumanSeat();
     this.#afterChange();
     return `Save loaded at revision ${loaded.getRevision()}.`;
   });
 
   beginHandoff = (): void => {
+    if (this.#automation.present) { this.#notice = 'A computer plays one of the seats: there is no screen to hand over.'; this.#emit(); return; }
     const from = this.#activeSeat();
     const snapshot = this.getSnapshot();
     const to = snapshot.handoff?.toSeatId ?? this.#bindings.find(({ seatId }) => seatId !== from)?.seatId;
@@ -2465,7 +2601,49 @@ class DefaultUiController implements UiController {
     this.#emit();
   };
 
+  playComputer = (): void => { this.#automation.play(); };
+  pauseComputer = (): void => { this.#automation.pause(); };
+  stepComputer = (): void => { this.#automation.step(); };
+  setPlaybackSpeed = (speed: PlaybackSpeed): void => { this.#automation.setSpeed(speed); };
+  setFollowComputer = (follow: boolean): void => { this.#automation.setFollow(follow); };
+  retryComputer = (): void => { this.#automation.retry(); };
+
+  viewAs = (seatId: string): void => {
+    const info = this.#automation.info();
+    if (!info?.spectating || !this.#bindings.some((binding) => binding.seatId === seatId)) return;
+    this.#switchView(seatId as SeatId);
+    this.#notice = `Showing the game from ${this.#bindings.find((binding) => binding.seatId === seatId)!.label}'s side.`;
+    this.#emit();
+  };
+
+  takeOverSeat = (seatId: string): void => this.#setController(seatId as SeatId, { kind: 'HUMAN' }, 'You play');
+
+  giveSeatToComputer = (seatId: string): void => {
+    const previous = this.#bindings.find((binding) => binding.seatId === seatId)?.controller;
+    const seed = previous?.kind === 'BOT' ? previous.seed : (0x0b070000 + this.#bindings.findIndex((binding) => binding.seatId === seatId)) >>> 0;
+    this.#setController(seatId as SeatId, { kind: 'BOT', policyId: this.#computers?.defaultPolicyId ?? 'heuristic', seed }, 'The computer plays');
+  };
+
+  #setController(seatId: SeatId, controller: SeatController, verb: string): void {
+    const binding = this.#bindings.find((candidate) => candidate.seatId === seatId);
+    if (binding === undefined || this.#busy || this.#automation.working) return;
+    if (this.#handoffToken !== null) return;
+    const side = binding.label.split(' ')[0] ?? binding.label;
+    this.#session.setSeatController(seatId, controller, `${side} ${controller.kind === 'BOT' ? 'computer' : 'commander'}`);
+    this.#bindings = this.#bindingsOf(this.#session, this.#session.getBindings());
+    // The label names who plays: a seat taken over is "Allied commander" again, not "Allied computer".
+    this.#automation.rebuild();
+    // The person asked to play this seat: the screen goes to it, with no hand-over screen in between.
+    if (controller.kind === 'HUMAN') this.#switchView(seatId);
+    this.#showHumanSeat();
+    this.#notice = `${verb} ${side} from now on.`;
+    this.#afterChange();
+    this.#emit();
+  }
+
   dispose = (): void => {
+    this.#automation.dispose();
+    if (this.#emitTimer !== null) clearTimeout(this.#emitTimer);
     this.#unsubscribeSession?.();
     this.#unsubscribeSession = null;
     this.#listeners.clear();

@@ -4,7 +4,7 @@
 
 How the browser UI is built and what it may and may not do: its boundary with the Gameplay session, the rendering stack,
 the session and hot-seat flow, accessibility and typography. The command deck is in [command-deck.md](command-deck.md), the
-map and counters in [map.md](map.md), and the New Game dialog in
+map and counters in [map.md](map.md), computer players in [computer-players.md](computer-players.md), and the New Game dialog in
 [docs/game-flow/new-game-ui.md](../game-flow/new-game-ui.md). The plan is `docs/roadmap/04-ui-wbs.md`.
 
 ## Current behavior
@@ -40,6 +40,9 @@ map and counters in [map.md](map.md), and the New Game dialog in
   a step). An action that rolled dice, revealed information or asked the other player clears the actions before it, and
   the hint says why. Without a single action to undo, Undo goes back to the start of the step (one automatic checkpoint
   is kept in the save for this).
+- A seat can be played by a computer ([computer-players.md](computer-players.md)): the screen then stays on the person's
+  seat, the computer acts by itself with Pause, Step and a speed, and no hand-over is ever shown for it. The hand-over
+  below is for a game with persons on both seats.
 - Hand-over: when the other player must act, the deck says who and why (defend a hex, answer a result, Reaction); the
   privacy screen then removes the map, lists, tooltips, dialogs and private accessible names from the page, and only
   "I am <player>" continues. The next player's view is built fresh, without the previous player's search, selection, tab

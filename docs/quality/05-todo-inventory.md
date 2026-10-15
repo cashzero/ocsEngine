@@ -55,6 +55,8 @@
 
 | ID | 缺少的行為 | 使用者可見影響 | 關閉證據 | 詳細 |
 |---|---|---|---|---|
+| `computer-main-thread` | 電腦在頁面主執行緒決策與 dispatch，無法中斷 | 預設大小單一決策最大約 0.65 s（p95 約 0.23 s）頁面不回應輸入，Pause 於該行動結束後才生效；更大的地圖更久 | 決策移到 Web Worker 或可中斷，在 64×48 的瀏覽器操作中 Pause 於 100 ms 內生效（`03` BOT-09） | `docs/ui/computer-players.md` |
+| `computer-mid-step-load` | 步驟中途讀檔，電腦不記得該步驟已做的計畫（`BotPhaseMemory`） | 讀檔後電腦該步驟其餘部分的決定可能與未中斷時不同（仍合法、確定） | 步驟記憶可由局面重建或隨存檔保存，並以同一存檔「連續跑」與「中途讀檔再跑」比對決策序列 | `docs/ai/architecture.md` |
 | `overrun-selection-release` | overrun 結果顯示後選取被放開 | 玩家須再點堆疊才能續動 | 結果後仍選取存活的移動堆疊並可直接點目的地 | `03` ACT-17 |
 | `roster-name-truncation` | 名冊列在 1680 寬度截斷長名稱（`Chmbln TF (Det. 2) / 1…`） | 看不到完整單位名稱 | `03` UI-02 PASS | `03` UI-02 |
 | `preview-roster-count` | 預覽與名冊的單位數沒有說明：4 個第 2 回合才到的增援單位不在名冊，6 個 Garrison 營在名冊與地圖上但不在預覽與單位數 | 預覽 62、名冊 64，畫面上沒有解釋 | 預覽與名冊交代這兩類單位，或使用者改寫判準；`03` MAP-04 PASS | `03` MAP-04 |
@@ -112,4 +114,5 @@
 4. 是否把控制權與 VP 顯示的 CTL-1～5 加入 `03`：`docs/quality/evidence/control-2026-10-05/RUN.md`。
 5. SES-01（Pause）：產品沒有 Pause 控制項（`src/ui/controller.ts`：回合制遊戲不需要暫停），改寫該列或維持 `BLOCKED`。
 6. 東歐主題的入口格數，或入口格不在鐵路上時的補給源規則；決定後才能把預設東歐圖的鐵路降到 Temperate 的一半以下。
+8. 是否要做電腦難度等級（目前只有標準策略，New Game 的電腦座位沒有難度選項）：`docs/roadmap/11-ai-bot-wbs.md` §5.6。
 7. 援軍的具體預設比例、首批回合、整師取樣與分批排程，待平衡評估後決定；雙方皆可設比例、海運攻方對應的守方預設較高、排程必要時可自動提前至 T2 的行為由使用者確認保留。契約與評估見 `docs/game-flow/reinforcement-balance.md`。

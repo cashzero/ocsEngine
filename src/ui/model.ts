@@ -331,6 +331,51 @@ export interface CombatSheet {
 /** The kinds of counter the map's unit filter can show or hide. */
 export type UnitFilterKind = 'HQ' | 'COMBAT' | 'LOGISTICS' | 'AIR';
 
+/** How fast the computer's actions are played: the pause between one action and the next. */
+export type PlaybackSpeed = 'SLOW' | 'NORMAL' | 'FAST' | 'INSTANT';
+
+/** The last action a computer seat played, as the viewer may read it. */
+export interface ComputerAction {
+  readonly seatId: SeatId;
+  readonly seatLabel: string;
+  /** What happened, written for the viewer (an enemy's hidden units are not named). */
+  readonly text: string;
+  /** Why the computer did it; only given when no person plays, since it can mention what the computer knows. */
+  readonly intent: string | null;
+  /** A hex the action touched that the viewer may look at, to bring into view. */
+  readonly hexId: string | null;
+  readonly revision: number;
+}
+
+/** A computer seat that cannot go on: nothing is skipped on its behalf; the player takes the seat over or retries. */
+export interface ComputerStuck {
+  readonly seatId: SeatId;
+  readonly seatLabel: string;
+  readonly code: string;
+  readonly message: string;
+  readonly detail: string;
+}
+
+/** Computer players of the game: present when at least one seat is played by a computer. */
+export interface AutomationInfo {
+  readonly seats: readonly { readonly seatId: SeatId; readonly label: string; readonly computer: boolean }[];
+  /** No person plays: the computers play each other and the screen only watches. */
+  readonly spectating: boolean;
+  /** The computer plays on by itself; false while paused (Step plays one action). */
+  readonly playing: boolean;
+  readonly speed: PlaybackSpeed;
+  /** The map follows each computer action into view. */
+  readonly followActions: boolean;
+  /** The computer seat the game waits for now; null when a person is to act or the game is over. */
+  readonly computerToAct: { readonly seatId: SeatId; readonly label: string } | null;
+  /** Actions the computers have played since this game was opened. */
+  readonly played: number;
+  readonly last: ComputerAction | null;
+  readonly stuck: ComputerStuck | null;
+  /** The seat whose view the screen shows. */
+  readonly viewSeatId: SeatId;
+}
+
 export interface UiSnapshot {
   readonly scenario: ScenarioDefinition;
   readonly view: GameplayView;
@@ -442,6 +487,8 @@ export interface UiSnapshot {
   readonly autoPay: boolean;
   /** Display name of each formation of the viewer, by formation Definition ID. */
   readonly formationNames: ReadonlyMap<string, string>;
+  /** The computer players, or null in a game with people on both seats. */
+  readonly automation: AutomationInfo | null;
 }
 
 /** A rail move being put together in one entraining hex (13.3): the cargo ticked, the destination, its cost. */

@@ -42,11 +42,23 @@ export type HandoffToken = Brand<string, 'HandoffToken'>;
 
 export type SessionLifecycle = 'READY' | 'ACTIVE' | 'PAUSED' | 'FINISHED' | 'FAULTED' | 'CLOSED';
 
+/**
+ * Who plays a seat. Absent means a person at the screen (hot seat); a BOT seat is played by a computer policy that
+ * the UI (or a headless runner) drives through the same session API. The policy and seed are saved with the game, so
+ * a loaded save resumes with the same computer players.
+ */
+export type SeatController =
+  | { readonly kind: 'HUMAN' }
+  | { readonly kind: 'BOT'; readonly policyId: string; /** uint32 */ readonly seed: number };
+
 export interface SeatBinding {
   readonly seatId: SeatId;
   readonly playerId: PlayerId;
   readonly label: string;
+  readonly controller?: SeatController;
 }
+
+export const isBotSeat = (binding: Pick<SeatBinding, 'controller'>): boolean => binding.controller?.kind === 'BOT';
 
 export interface CreateSessionRequest {
   readonly scenario: ScenarioDefinition;
@@ -145,6 +157,7 @@ export type SessionNotification =
   | { readonly kind: 'PENDING_DECISION_CHANGED'; readonly decision: PendingDecisionDescriptor | null; readonly revision: Revision }
   | { readonly kind: 'CHECKPOINT_RESTORED'; readonly checkpointId: CheckpointId; readonly revision: Revision }
   | { readonly kind: 'PRIVACY_HANDOFF'; readonly locked: boolean; readonly activeSeatId: SeatId; readonly revision: Revision }
+  | { readonly kind: 'SEAT_CONTROLLER_CHANGED'; readonly seatId: SeatId; readonly controller: SeatController; readonly revision: Revision }
   | { readonly kind: 'FAULTED'; readonly code: string; readonly revision: Revision };
 
 export type SessionListener = (notification: SessionNotification) => void;
@@ -294,6 +307,10 @@ export interface GameplayError {
 export interface GameSession {
   readonly getMetadata: () => SessionMetadata;
   readonly getRevision: () => Revision;
+  /** The seats and who controls each (a person or a computer policy). */
+  readonly getBindings: () => readonly SeatBinding[];
+  /** Hands a seat to a person or a computer; saved with the game. Does not change the active (viewing) seat. */
+  readonly setSeatController: (seatId: SeatId, controller: SeatController, label?: string) => void;
   readonly getView: (seatId: SeatId) => GameplayView;
   readonly getActionFamilies: (seatId: SeatId) => readonly ActionFamily[];
   readonly getActionCandidates: (seatId: SeatId, request: Omit<CandidateRequest, 'actorId'>) => CandidateResult;
