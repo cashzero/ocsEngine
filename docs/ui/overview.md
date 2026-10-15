@@ -5,7 +5,7 @@
 How the browser UI is built and what it may and may not do: its boundary with the Gameplay session, the rendering stack,
 the session and hot-seat flow, accessibility and typography. The command deck is in [command-deck.md](command-deck.md), the
 map and counters in [map.md](map.md), and the New Game dialog in
-[docs/game-flow/06-new-game-ui-flow.md](../game-flow/06-new-game-ui-flow.md). The plan is `docs/roadmap/04-ui-wbs.md`.
+[docs/game-flow/new-game-ui.md](../game-flow/new-game-ui.md). The plan is `docs/roadmap/04-ui-wbs.md`.
 
 ## Current behavior
 

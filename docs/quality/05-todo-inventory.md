@@ -67,7 +67,8 @@
 | `compound-cost-review` | 複合行動（戰鬥、砲擊、空中任務）的成本與後果審閱未在每種可達交易上以真實選項驗證 | 確認前可能不清楚支付或後果 | 以合法交易、決策與取消的瀏覽器操作，記錄前後狀態 | `docs/ui/command-deck.md` |
 | `deck-state-records` | 左欄 S0–S5 狀態（未選取、多單位堆疊與長名稱、移動、複合行動、載入／失敗／空清單、決策與交接）在兩種畫面尺寸沒有文字紀錄 | 文字或按鈕被擠壓的情況無法事後複查 | 兩種尺寸逐一操作並在 `docs/quality/evidence/` 記錄文字與控件邊界（截圖只在 `artifacts/` 審閱） | `docs/ui/command-deck.md` |
 | `landing-port-view` | 海域局開局地圖置中，登陸港在畫面外 | 玩家要自己找港口 | 開 ports-only 遊戲並直接經可見的地圖／導覽找到港口 | `docs/quality/evidence/vp-allocation-2026-10-14/README.md` |
-| `small-map-visual` | 小地圖的視覺驗收未做 | NG-11 無法升級 | 見來源 | `docs/game-flow/03-deployment-generator.md` |
+| `small-map-visual` | 16×12 東歐圖的起始 VP 平衡只有自動化回歸（seeds 1、0x0c500001、777），未在瀏覽器檢視 | 預覽或開局後的分數可能與產生的配置不同；NG-11 無法升級 | 在瀏覽器預覽並開始這三個 seed，雙方起始 VP 相等且沒有 "Objectives are unbalanced" 警告 | `docs/game-flow/deployment.md` |
+| `deployment-browser-check` | 分區部署、部隊後放補給堆、戰鬥模式前線只有自動化種子掃描，未在瀏覽器檢視 | 前線可能不均、補給堆位置奇怪、首回合仍可能摸到補給堆 | 瀏覽器中預設 MEETING 與 ALLIED_ATTACKS 各一局：HQ 分布在前線、獨立部隊分散、每個補給堆在自己部隊下、前線單位為戰鬥面、Allied 首個 Movement Segment 的可達範圍內沒有 Axis 補給堆 | `docs/game-flow/deployment.md` |
 | `objective-marker-preview` | New Game 預覽的目標仍是舊的金星、不顯示持有者；60% 縮放時十字標記偏小；己方鐵路綠帶疊在淺綠補給範圍上對比弱；一般格子的控制權不在地圖上標示 | 預覽與地圖的控制權資訊不一致或不易看清 | 修正後在瀏覽器檢視預覽、60% 縮放與 Trace Supply | `docs/quality/evidence/control-2026-10-05/RUN.md` |
 
 ### 地圖與產生器
@@ -77,10 +78,9 @@
 | `map-appearance` | 地名是裝飾用的音節產生器；一格一地形（格內丘陵、部分森林無法表示）；沒有 Autobahn；並行道路與覆蓋填補耗時（`docs/generator/10-btr-scale-density.md`）；新外觀未重跑整合驗收 | 地圖與印刷地圖仍有差距；新外觀的整合流程無證據 | 地圖模型帶真實地名或使用者決定移除；重跑 New Game → 一整回合並記錄 MAP 列 | `docs/ui/map.md` |
 | `road-exit-edge` | 地圖資料不記錄產生器的道路出口，出口格另有道路經過時不畫出地圖邊（24 張 32×24 圖中 189 個出口有 13 個） | 少數道路出口看不出通往地圖外 | 地圖資料記錄出口並全部畫出 | `docs/ui/map.md` |
 | `case-blue-terrain` | Case Blue 地形與天氣（Hills、輕／重林、乾湖、草原、Volga 級河流、泥濘／冰凍）仍用 BtR 規則 | 東歐主題只有密度不同，地形規則相同 | 另立需求 | `docs/generator/11-eastern-europe-theme.md` |
-| `east-small-objectives` | 最小的 16×12 東歐圖雙方起始 VP 可能不相等（預覽顯示 "Objectives are unbalanced"） | 小圖開局不公平 | seeds 1、0x0c500001、777 的 16×12 東歐預覽皆等 VP 且無警告 | `docs/game-flow/03-deployment-generator.md` 步驟 7 |
 | `oob-naming-ui` | WWII 命名的 UI 驗收未做 | 命名只有單元測試證據 | 在瀏覽器檢視雙方編制名稱 | `docs/oob/random-oob-naming.md` |
 | `PERF-7` | New Game 預覽 SVG 以整張地圖字串建立；地圖產生與 theater model 隨地圖約線性以上成長；大於 64×48 的地圖沒有在產品 build 上量過 | 地圖上限 256×256；128×96 已量到 Generate 約 4 s、Start 約 4.5 s，超過 3,000 ms 預算，更大的地圖未知 | `scripts/perf/browser-scale.mjs` 在 256×256 上 Generate 與 Start 各 < 3,000 ms，且 `compare-generation.mjs` 輸出不變 | `docs/quality/performance.md` |
-| `large-map-generation` | 產生在頁面主執行緒上執行，單一步驟無法中斷或回報進度 | 大地圖時頁面在一個步驟內不回應輸入，Cancel 要等步驟結束 | 見來源 | `docs/game-flow/06-new-game-ui-flow.md` |
+| `large-map-generation` | 產生在頁面主執行緒上執行，單一步驟無法中斷或回報進度 | 大地圖時頁面在一個步驟內不回應輸入，Cancel 要等步驟結束 | 在最大地圖上於瀏覽器量測：每個步驟中頁面都回應輸入、Cancel 在 250 ms 內停止、超過 1 秒的步驟顯示步驟內進度，且 Worker 產生的套件與 `prepare` 相同（scenario hash 與初始 state hash） | `docs/game-flow/new-game-ui.md` |
 
 ### 存檔與工作階段
 

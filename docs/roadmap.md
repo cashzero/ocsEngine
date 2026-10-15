@@ -461,7 +461,7 @@ moduledata + buildFile.xml
 M8 同時是正式的 Game Flow Integration milestone；詳細 WBS 與架構圖：
 
 - [M8 Game Flow Integration WBS](roadmap/07-game-flow-integration-wbs.md)
-- [End-to-end Game Flow Architecture](architecture/game-flow.md)
+- [Game flow](game-flow/overview.md)
 
 產品主流程固定為：
 
@@ -502,10 +502,9 @@ UI 正常入口已移除 fixed synthetic fixture；M6/M7 preview 保留為診斷
 
 ### 文件產出
 
-- `docs/game-flow/00-current-gap-and-flow-contract.md` 至 `08-persistence-recovery.md`
-- `docs/architecture/game-flow.md`
-- `docs/game-flow/M8-orthogonal-seed-sweep.md`
-- `docs/game-flow/M8-generated-game-flow-gate.md`
+- `docs/game-flow/overview.md`
+- `docs/game-flow/deployment.md`
+- `docs/game-flow/new-game-ui.md`
 
 ### Exit gate
 
