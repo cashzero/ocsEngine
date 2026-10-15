@@ -2,7 +2,7 @@
 import { join } from 'node:path';
 import { open, newGame, gotoHex, advanceTo, tab, click, settleLogged, record, where, refitAll } from './harness.mjs';
 import { printedHexLabel } from '../../dist/index.js';
-const evidenceDir = join(process.cwd(), 'artifacts/aep-2026-10-13/final');
+const evidenceDir = process.argv[2] ?? join(process.cwd(), 'artifacts/aep-2026-10-13/final');
 const h = await open({ evidenceDir });
 const clickPage = h.page.click.bind(h.page);
 h.page.click = async (selector, ...args) => {

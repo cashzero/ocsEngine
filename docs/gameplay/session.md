@@ -32,8 +32,7 @@ delegated to the Rule Engine ([docs/rule-engine/engine-contract.md](../rule-engi
 `READY` → `start` → `ACTIVE`; `pause`/`resume` move between `ACTIVE` and `PAUSED`; the session becomes `FINISHED` when the
 rule sequence reaches `COMPLETE`; `close` (idempotent) ends it as `CLOSED`. An unexpected Rule Engine exception or an
 impossible post-transition hash puts it in `FAULTED`: further interaction stops, the state stays readable through
-diagnostics, and it cannot be saved as a resumable game. Only `ACTIVE` accepts dispatch. (The UI offers no pause; it only
-resumes sessions that arrive paused, [docs/ui/overview.md](../ui/overview.md).)
+diagnostics, and it cannot be saved as a resumable game. Only `ACTIVE` accepts dispatch. The UI exposes Pause in Menu and Resume in the command deck; neither changes the rule state.
 
 ### Dispatch
 
@@ -91,7 +90,8 @@ resumes sessions that arrive paused, [docs/ui/overview.md](../ui/overview.md).)
 - A checkpoint records action index, revision, hash and snapshot, including open transactions and pending decisions.
   `undoTo` runs in the dispatch queue, verifies the snapshot, truncates later history and checkpoints, clears idempotency
   caches and returns the session `PAUSED` for an explicit `resume`.
-- `exportReplay` gives the initial snapshot, the accepted actions and the boundary hashes.
+- `exportReplay` gives the initial snapshot, the accepted actions and the boundary hashes. `loadReplay(text, bindings)` strictly decodes the file, replays every action, checks source and initial/final hashes through the save loader, and returns an active or finished session. The browser exposes Load replay in Menu; its current-scenario restriction matches Load save.
+- Logistics queries and sequence preflight are described in [Logistics helpers](logistics.md).
 
 ### Headless driver
 
@@ -119,3 +119,5 @@ From `docs/quality/05-todo-inventory.md`: `session-reload`, `load-same-scenario`
 `tests/gameplay/session-dispatch.test.ts`, `discovery-pending-projection.test.ts`,
 `history-persistence-recovery.test.ts`, `headless-ui-contract.test.ts` (complete UI-facing API, one-way dependencies),
 `save-migration.test.ts`, `save-serialization.test.ts`; `tests/dist-smoke.mjs`.
+
+- Pause/action refusal/Resume and downloaded final save/replay reproduction: [operations evidence](../quality/evidence/operations-2026-10-15/README.md), SES-01/07.

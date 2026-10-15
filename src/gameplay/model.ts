@@ -305,6 +305,9 @@ export interface GameplayError {
 }
 
 export interface GameSession {
+  readonly getLogisticsOverview: (seatId: SeatId, selected: readonly PieceId[]) => import('./logistics.js').LogisticsOverview | null;
+  readonly planLogistics: (seatId: SeatId, request: import('./logistics.js').LogisticsRequest) => import('./logistics.js').LogisticsPlan | null;
+  readonly validateActionSequence: (seatId: SeatId, actions: readonly GameAction[]) => Promise<{ readonly allowed: boolean; readonly message: string; readonly finalStateHash: string }>;
   readonly getMetadata: () => SessionMetadata;
   readonly getRevision: () => Revision;
   /** The seats and who controls each (a person or a computer policy). */
@@ -365,5 +368,6 @@ export interface GameplayEngine {
   readonly createSession: (request: CreateSessionRequest) => Promise<GameSession>;
   readonly createStoredSession: (request: CreateStoredSessionRequest) => Promise<GameSession>;
   readonly loadSession: (serializedSave: string) => Promise<GameSession>;
+  readonly loadReplay: (serializedReplay: string, bindings: readonly SeatBinding[]) => Promise<GameSession>;
   readonly loadStoredSession: (sessionId: SessionId) => Promise<GameSession>;
 }

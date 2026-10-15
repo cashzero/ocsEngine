@@ -29,6 +29,7 @@ import {
 } from './ids.js';
 import type {
   GameplayError,
+  GameplayReplayEnvelope,
   GameplaySaveCheckpoint,
   GameplaySaveActionMetadata,
   GameplaySaveEnvelope,
@@ -42,6 +43,29 @@ type RecordValue = Readonly<Record<string, unknown>>;
 const issue = (code: GameplayError['code'], path: Path, message: string): GameplayError => ({
   code, path, message,
 });
+
+/** Replays use the same strict action decoder as saves; never trust a file's action objects. */
+export const parseGameplayReplay = (serialized: string): Result<GameplayReplayEnvelope, readonly GameplayError[]> => {
+  let input: unknown;
+  try { input = JSON.parse(serialized) as unknown; }
+  catch { return err([issue('SAVE_INVALID', [], 'Replay is not valid JSON.')]); }
+  const issues: GameplayError[] = [];
+  const record = recordAt(input, [], issues) ?? {};
+  exactKeys(record, ['schemaVersion', 'scenarioHash', 'initialStateHash', 'finalStateHash', 'initialSnapshot', 'actions'], [], issues);
+  if (record.schemaVersion !== 1) issues.push(issue('SAVE_INCOMPATIBLE', ['schemaVersion'], 'Unsupported replay version.'));
+  const hash = (key: string) => {
+    const parsed = parseContentHash(textAt(record, key, [], issues));
+    if (!parsed.ok) issues.push(issue('SAVE_INVALID', [key], 'Invalid content hash.'));
+    return parsed.ok ? parsed.value : '' as never;
+  };
+  const actions = Array.isArray(record.actions) ? record.actions.map((action, index) => parseAction(action, ['actions', index], issues))
+    : (issues.push(issue('SAVE_INVALID', ['actions'], 'Expected actions array.')), []);
+  const replay: GameplayReplayEnvelope = {
+    schemaVersion: 1, scenarioHash: hash('scenarioHash'), initialStateHash: hash('initialStateHash'),
+    finalStateHash: hash('finalStateHash'), initialSnapshot: textAt(record, 'initialSnapshot', [], issues), actions,
+  };
+  return issues.length ? err(issues) : ok(replay);
+};
 
 const recordAt = (input: unknown, path: Path, issues: GameplayError[]): RecordValue | null => {
   if (typeof input !== 'object' || input === null || Array.isArray(input)) {

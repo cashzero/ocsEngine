@@ -377,6 +377,8 @@ export interface AutomationInfo {
 }
 
 export interface UiSnapshot {
+  readonly logistics?: import('../gameplay/logistics.js').LogisticsOverview | null;
+  readonly logisticsPlan?: import('../gameplay/logistics.js').LogisticsPlan | null;
   readonly scenario: ScenarioDefinition;
   readonly view: GameplayView;
   readonly bindings: readonly SeatBinding[];

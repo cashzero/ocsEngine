@@ -68,6 +68,35 @@ const root = document.querySelector<HTMLElement>('#app') ?? (() => {
   throw new Error('UI root was not found.');
 })();
 
+// Outside the roster's scrolling box so a long name is never clipped at its edges.
+const rosterTooltip = document.createElement('div');
+rosterTooltip.id = 'roster-name-tooltip';
+rosterTooltip.className = 'roster-name-tooltip';
+rosterTooltip.setAttribute('role', 'tooltip');
+rosterTooltip.hidden = true;
+document.body.append(rosterTooltip);
+const hideRosterTooltip = (): void => { rosterTooltip.hidden = true; rosterTooltip.textContent = ''; };
+const showRosterTooltip = (event: Event): void => {
+  const row = (event.target as Element).closest<HTMLElement>('[data-roster-name]');
+  if (!row) return;
+  rosterTooltip.textContent = row.dataset.rosterName!;
+  rosterTooltip.hidden = false;
+  const anchor = row.getBoundingClientRect();
+  const tip = rosterTooltip.getBoundingClientRect();
+  rosterTooltip.style.left = `${Math.max(8, Math.min(anchor.left, innerWidth - tip.width - 8))}px`;
+  rosterTooltip.style.top = `${Math.max(8, anchor.bottom + tip.height + 8 <= innerHeight ? anchor.bottom + 6 : anchor.top - tip.height - 6)}px`;
+};
+const leaveRosterTooltip = (event: Event): void => {
+  const row = (event.target as Element).closest('[data-roster-name]');
+  if (row && !row.contains((event as MouseEvent | FocusEvent).relatedTarget as Node | null)) hideRosterTooltip();
+};
+root.addEventListener('pointerover', showRosterTooltip);
+root.addEventListener('focusin', showRosterTooltip);
+root.addEventListener('pointerout', leaveRosterTooltip);
+root.addEventListener('focusout', leaveRosterTooltip);
+window.addEventListener('resize', hideRosterTooltip);
+root.addEventListener('scroll', hideRosterTooltip, true);
+
 /** For the New Game preview, which is drawn as one SVG string from the shared map art. */
 const escapeHtml = (value: unknown): string => String(value)
   .replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')
@@ -150,6 +179,7 @@ let lastMoveHex: string | null = null;
 let rosterWasOpen = false;
 /** The modal dialog drawn last, to move focus into a dialog only when it opens. */
 let lastDialog: Element | null = null;
+let dialogReturnFocus: HTMLElement | null = null;
 let utilityOpen: 'menu' | null = null;
 let gameEndDismissed = false;
 /** Scroll position of each list by its scroll key, so a tab's list comes back where the player left it. */
@@ -266,6 +296,11 @@ const hoverText = (snapshot: UiSnapshot, hexId: string): string => {
   const placeName = cell.settlement ? ` · ${placeNameFor(cell.id)}` : '';
   // 12.6a: the painted "S" disc is named too, with whose trace starts here.
   const source = cell.supplySource ? ` · ${scenario.players[cell.supplySource === 'SECOND' ? 1 : 0]?.name ?? ''} Supply Source` : '';
+  const traced = snapshot.showTraceCoverage ? snapshot.traceCoverage.has(hexId) ? ' · trace supply reaches this hex' : ' · outside trace supply' : '';
+  const supplyKind = snapshot.supplySources.find(entry=>entry.hexId===hexId)?.kind;
+  const supplyTag = supplyKind === 'DETRAINABLE' ? ' · RAIL Supply Source (friendly station or HQ)' : supplyKind === 'EXTENDER' ? ' · EXT Supply Source (linked Extender)' : '';
+  const railPath = snapshot.railControl.find(entry=>entry.hexId===hexId);
+  const railTag = railPath ? ` · ${railPath.control === 'OWN' ? 'friendly' : 'enemy'} rail supply path` : '';
   // 19.0: a port names who holds it, its capacity after hits, and whether it is a Supply Source for its holder (19.0e).
   const aep = cell.airEntry ? ` · ${scenario.players[cell.airEntry === 'SECOND' ? 1 : 0]?.name ?? ''} Air Entry Point (AEP): off-map aircraft enter here; range starts here +1 hex` : '';
   const port = portHoverText(snapshot, cell.id);
@@ -281,7 +316,7 @@ const hoverText = (snapshot: UiSnapshot, hexId: string): string => {
   const bridges = bridged.length === 0 ? '' : ` · your engineer bridges ${bridged.length} river hexside${bridged.length === 1 ? '' : 's'} here (${[
     bridged.some(({ major }) => !major) ? 'Minor River: no extra MP' : '', bridged.some(({ major }) => major) ? 'Major River: Minor River cost' : '',
   ].filter(Boolean).join('; ')}) for your units moving in or out; not for overruns`;
-  return `Hex ${printedHexLabel(cell.id)}${placeName} · ${cell.terrain.toLowerCase()}${cell.settlement ? ` · ${cell.settlement.toLowerCase()}` : ''}${objective ? ` · objective, ${objective.points} VP, ${holder === 'neutral' ? 'neutral' : `held by ${holder}`}` : ''}${hedgehog}${bridges}${source}${aep}${port}${trainbusting}${cost}`;
+  return `Hex ${printedHexLabel(cell.id)}${placeName} · ${cell.terrain.toLowerCase()}${cell.settlement ? ` · ${cell.settlement.toLowerCase()}` : ''}${objective ? ` · objective, ${objective.points} VP, ${holder === 'neutral' ? 'neutral' : `held by ${holder}`}` : ''}${hedgehog}${bridges}${source}${supplyTag}${railTag}${traced}${aep}${port}${trainbusting}${cost}`;
 };
 
 /** "Port held by Allied, capacity 1½ of 2 SP (1 hit), Supply Source; shut" for the hover line, or ''. */
@@ -366,6 +401,9 @@ const describeHex = (hexId: string): string => {
 
 const mapHost = document.createElement('div');
 mapHost.className = 'map-host';
+const stackPeekHost = document.createElement('div');
+stackPeekHost.className = 'stack-peek-host';
+stackPeekHost.inert = true;
 const mapView = new MapView(mapHost, {
   hexClick: (hexId) => {
     // Keyboard activation arrives here, not as a counter click: a hex holding several units must open the same stack list
@@ -382,6 +420,7 @@ const mapView = new MapView(mapHost, {
     hoverHexId = hexId;
     const info = root.querySelector<HTMLElement>('.hover-info');
     if (info && hexId && shown) info.textContent = hoverText(shown, hexId);
+    if (shown) updateStackPeek(shown);
   },
   cameraChange: () => updateCameraUi(),
 });
@@ -506,9 +545,9 @@ const clickCounter = (snapshot: UiSnapshot, pieceId: string, hexId: string): Pro
   controller.selectPiece(pieceId);
 };
 
-const stackPicker = (snapshot: UiSnapshot) => {
-  if (!stackPickerHex) return nothing;
-  const stack = onMapStacks(snapshot).get(stackPickerHex);
+const stackPicker = (snapshot: UiSnapshot, hexId = stackPickerHex, peek = false) => {
+  if (!hexId) return nothing;
+  const stack = onMapStacks(snapshot).get(hexId);
   if (!stack || stack.pieces.length + stack.hiddenCount < 2) return nothing;
   const rows = [...stackOrder(stack.pieces)].reverse().map((piece) => {
     const definition = definitionOf(piece.definitionId)!;
@@ -516,10 +555,16 @@ const stackPicker = (snapshot: UiSnapshot) => {
     return html`<button class="stack-pick${snapshot.selection.pieceId === piece.id ? ' is-selected' : ''}" data-pick-piece=${piece.id} ?disabled=${!own} @click=${() => controller.selectPiece(piece.id)}>
       <span class="stack-pick-art" aria-hidden="true">${unsafeHTML(counterSvg(counterView(definition, piece, playerNation(scenario.players, piece.ownerId))))}</span><span>${`${own ? '' : 'Enemy · '}${pieceLabel(scenario, piece)}${piece.role === 'DUMP' ? ` · ${piece.resourceQuantity == null ? '?' : piece.resourceQuantity}T` : ''}${typeof piece.carriedTokens === 'number' ? ` · carries ${piece.carriedTokens}T` : ''}`}</span></button>`;
   });
-  return html`<div class="stack-picker" role="group" aria-label=${`Units in hex ${printedHexLabel(stackPickerHex)}`} data-anchor-hex=${stackPickerHex}>
-    <header><strong>Hex ${printedHexLabel(stackPickerHex)} · ${stack.pieces.length + stack.hiddenCount} units</strong><button id="close-stack-picker" aria-label="Close stack list" @click=${() => { stackPickerHex = null; render(controller.getSnapshot()); }}>×</button></header>
+  return html`<div class=${peek ? 'stack-picker stack-peek' : 'stack-picker'} role="group" aria-label=${`Units in hex ${printedHexLabel(hexId)}`} data-anchor-hex=${hexId}>
+    <header><strong>Hex ${printedHexLabel(hexId)} · ${stack.pieces.length + stack.hiddenCount} units</strong>${peek ? nothing : html`<button id="close-stack-picker" aria-label="Close stack list" @click=${() => { stackPickerHex = null; render(controller.getSnapshot()); }}>×</button>`}</header>
     ${rows}${stack.hiddenCount > 0 ? html`<p>${stack.hiddenCount} enemy unit${stack.hiddenCount === 1 ? '' : 's'} hidden under the top counter.</p>` : nothing}
   </div>`;
+};
+
+/** Full faces remain readable independently of map zoom and stack offsets; hidden enemy pieces stay redacted. */
+const updateStackPeek = (snapshot: UiSnapshot): void => {
+  const show = !snapshot.view.privacyLocked && !stackPickerHex && !snapshot.movePreview && !newGameOpen && !utilityOpen;
+  renderTemplate(show ? stackPicker(snapshot, hoverHexId, true) : nothing, stackPeekHost);
 };
 
 /** Place the stack picker beside its hex, inside the map viewport. */
@@ -1157,11 +1202,15 @@ const menuDialog = (snapshot: UiSnapshot) => {
   const close = () => { utilityOpen = null; render(controller.getSnapshot()); };
   return html`<div class="modal-backdrop utility-backdrop"><section class="utility-dialog menu-dialog" role="dialog" aria-modal="true" aria-labelledby="utility-title" @keydown=${trapFocus}><header><h2 id="utility-title">Menu</h2><button id="close-utility" @click=${close}>Close</button></header><div class="utility-content">
     <section class="menu-section" aria-labelledby="menu-game"><h3 id="menu-game">Game</h3>
-      <div class="menu-row"><button class="primary" id="open-new-game" @click=${openNewGame}>New Game…</button><button id="save-game" @click=${() => downloadJson(controller.serializeSave(), `ocs-${snapshot.view.metadata.id}.json`)}>Download save</button><button id="load-game" @click=${() => root.querySelector<HTMLInputElement>('#save-file')?.click()}>Load save…</button></div>
+      <div class="menu-row"><button class="primary" id="open-new-game" @click=${openNewGame}>New Game…</button><button id="save-game" @click=${() => downloadJson(controller.serializeSave(), `ocs-${snapshot.view.metadata.id}.json`)}>Download save</button><button id="pause-game" ?disabled=${lifecycle !== 'ACTIVE'} @click=${() => { utilityOpen = null; controller.pause(); }}>Pause</button><button id="export-replay" @click=${() => downloadJson(controller.serializeReplay(), `ocs-replay-${snapshot.view.metadata.id}.json`)}>Download replay</button><button id="load-replay" @click=${() => root.querySelector<HTMLInputElement>('#replay-file')?.click()}>Load replay…</button><button id="load-game" @click=${() => root.querySelector<HTMLInputElement>('#save-file')?.click()}>Load save…</button></div>
       <input id="save-file" type="file" accept="application/json,.json" hidden @change=${(event: Event) => {
         const file = (event.currentTarget as HTMLInputElement).files?.[0];
         // A loaded save is a fresh view of its game: if it is finished, its Game End is shown again even if the previous one was dismissed.
         if (file) { utilityOpen = null; gameEndDismissed = false; void file.text().then((text) => controller.loadSave(text)); }
+      }}>
+      <input id="replay-file" type="file" accept="application/json,.json" hidden @change=${(event: Event) => {
+        const file = (event.currentTarget as HTMLInputElement).files?.[0];
+        if (file) { utilityOpen = null; gameEndDismissed = false; void file.text().then((text) => controller.loadReplay(text)); }
       }}>
       <p class="supporting">${engagementLabel(currentGame.summary.engagement ?? 'MEETING')} · ${currentGame.summary.unitCount} units · ${currentGame.summary.formationCount} formations · ${currentGame.summary.turnLimit} turns · seeds map ${currentGame.request.seeds.map}, OOB ${currentGame.request.seeds.oob}, deployment ${currentGame.request.seeds.deployment}, rules ${currentGame.request.seeds.rules}</p>
     </section>
@@ -1281,7 +1330,7 @@ const appView = (snapshot: UiSnapshot): TemplateResult => {
         <section class="map-card" aria-label=${`${currentGame.summary.mapSize} · ${currentGame.summary.mapStyle.replaceAll('_', ' ').toLowerCase()}`}>
           <div class="map-viewport" id="map-viewport">
             ${mapHost}
-            ${stackPicker(snapshot)}${rosterOpen ? unitRosterView(snapshot, deck) : movePopupView(snapshot, deck)}
+            ${stackPicker(snapshot)}${stackPeekHost}${rosterOpen ? unitRosterView(snapshot, deck) : movePopupView(snapshot, deck)}
             <div class="map-controls" aria-label="Map controls"><button id="zoom-out" aria-label="Zoom out" @click=${() => mapView.zoomStep(-1)}>−</button><output id="zoom-level"></output><button id="zoom-in" aria-label="Zoom in" @click=${() => mapView.zoomStep(1)}>+</button><button id="zoom-reset" @click=${() => mapView.resetCamera()}>Reset</button><span class="map-toggles" role="group" aria-label="Map overlays"><label class="map-toggle air-zones" title="Show the 10-hex Patrol Zones of Air Bases with Active Fighters (14.4c)"><input type="checkbox" id="toggle-air-zones" .checked=${snapshot.air.showZones} @change=${() => controller.toggleAirZones()}>Patrol Zones</label><label class="map-toggle trace-coverage" title="Show where trace supply reaches (12.6), for the selected unit or any unit: green traces straight to a Supply Source, hatched blue only through an HQ throw. Icons mark your rail Supply Sources: detrainable rail hexes (13.3c) and Extenders (12.7)"><input type="checkbox" id="toggle-trace-coverage" .checked=${snapshot.showTraceCoverage} @change=${() => controller.toggleTraceCoverage()}>Trace Supply</label><span class="map-toggle hide-units unit-visibility"><label title="Hide the unit counters so the overlays underneath can be read whole; clicking a hex still selects what is there"><input type="checkbox" id="toggle-hide-units" .checked=${snapshot.hideUnits} @change=${() => controller.toggleHideUnits()}>Hide units</label><details class="unit-kinds"><summary title="Choose which kinds of unit the map shows" aria-label="Unit filter">${snapshot.hiddenUnitKinds.length > 0 ? html`<small>${UNIT_FILTER_KINDS.length - snapshot.hiddenUnitKinds.length}/${UNIT_FILTER_KINDS.length}</small>` : ''}</summary><div class="unit-kinds-menu" role="group" aria-label="Show unit kinds">${UNIT_FILTER_KINDS.map(({ kind, label }) => html`<label><input type="checkbox" data-unit-kind=${kind} .checked=${!snapshot.hiddenUnitKinds.includes(kind)} @change=${() => controller.toggleUnitKind(kind)}>${label}</label>`)}</div></details></span></span></div>
             <div class="map-legend"><span title="Air Entry Point: friendly off-map aircraft enter here; range is measured from this hex +1">✈ AEP</span>${snapshot.showTraceCoverage ? html`<span class="legend-mark supply-source" title="Supply Source (12.6a): trace supply starts here; an HQ must draw within 5 MP of one to throw trace">Supply source</span><span class="legend-mark detrainable" title="Detrainable rail hex (13.3c): a station you control with a rail path back to a Supply Source; it is itself a Supply Source">Detrainable hex</span><span class="legend-mark extender" title="Extender (12.7): linked to a Supply Source, it creates a new place to draw trace supply">Extender</span>${snapshot.supplySources.some(({ kind }) => kind === 'PORT') ? html`<span class="legend-mark port-source" title="Port you can draw trace supply from now (19.0e): it is shut while an enemy combat unit or un-negated enemy ZOC is in it">Port source</span>` : nothing}<span class="legend-wash trace-direct" title="Traces straight to a Supply Source (12.3a); an HQ standing here can throw supply (12.3b)">Trace from source</span><span class="legend-wash trace-thrown" title="Trace arrives only through an HQ throw; an HQ standing here is supplied but has nothing to throw on">Trace via HQ throw</span>${snapshot.railControl.length > 0 ? html`<span class="legend-rail own" title="Rail your trace path reaches from a Supply Source (13.3c): your controlled stations on it are detrainable">Your rail</span><span class="legend-rail enemy" title="Rail only the enemy's trace path reaches (13.3c)">Enemy rail</span>` : nothing}` : html`<span class="terrain-key clear">Clear</span><span class="terrain-key woods">Woods</span><span class="terrain-key rough">Rough</span><span class="terrain-key mountain">Mountain</span><span class="terrain-key marsh">Marsh</span><span class="terrain-key water">Water</span><span class="line-key road">Road</span><span class="line-key rail" title="Railroad (13.3): counts as a road for movement; a rail line back to a supply source makes villages and towns on it Supply Sources (12.6a, 13.3c)">Railroad</span><span class="line-key river">River</span><span class="legend-mark objective" title=${`Objective, with its VP beside it. The mark shows who holds it now: white star ${scenario.players[0]?.name ?? 'first player'}, black cross ${scenario.players[1]?.name ?? 'second player'}, gold diamond neutral`}>Objective</span><span class="legend-mark supply-source" title="Supply Source (12.6a): trace supply starts here; an HQ must draw within 5 MP of one to throw trace">Supply source</span>${scenario.mapDefinition.hexes.some(({ features }) => features.some(({ definitionId }) => String(definitionId) === 'facility:port')) ? html`<span class="legend-mark port" title="Port (19.0). Hover it to see whose Supply Source it is (19.0e)">Port</span>` : nothing}${snapshot.moveRange.size > 0 ? html`<span class="legend-ring move">Move</span>` : nothing}${[...snapshot.moveRange.values()].some(({ endsMovement }) => endsMovement) ? html`<span class="legend-ring move-stop" title="You must stop here (for example on entering an enemy ZOC)">Move ends here</span>` : nothing}${snapshot.attackTargets.length > 0 ? html`<span class="legend-ring attack">Attack</span>` : nothing}${snapshot.barrageTargets.length > 0 ? html`<span class="legend-ring barrage">Barrage</span>` : nothing}${snapshot.air.showZones ? html`<span class="legend-ring air-zone">Your Patrol Zone</span><span class="legend-ring air-zone enemy">Enemy Patrol Zone</span>` : nothing}`}</div>
             ${computerPanel(snapshot)}
@@ -1293,12 +1342,14 @@ const appView = (snapshot: UiSnapshot): TemplateResult => {
 };
 
 const render = (snapshot: UiSnapshot): void => {
+  hideRosterTooltip();
   shown = snapshot;
   root.querySelectorAll<HTMLElement>('[data-scroll-key]').forEach((element) => listPositions.set(element.dataset.scrollKey!, element.scrollTop));
   if (snapshot.view.privacyLocked) {
     // The next seat sees nothing of this one: the map leaves the page and the deck forgets its state.
-    utilityOpen = null; deck.search = ''; deck.tab = undefined; deck.lastPiece = null; rosterOpen = false; rosterWasOpen = false; lastMoveHex = null; listPositions.clear(); stackPickerHex = null;
+    utilityOpen = null; delete deck.logisticsInput; deck.search = ''; deck.tab = undefined; deck.lastPiece = null; rosterOpen = false; rosterWasOpen = false; lastMoveHex = null; listPositions.clear(); stackPickerHex = null;
     renderTemplate(privacyView(snapshot), root);
+    renderTemplate(nothing, stackPeekHost);
     root.querySelector<HTMLButtonElement>('#complete-handoff')?.focus();
     lastDialog = null;
     return;
@@ -1311,6 +1362,7 @@ const render = (snapshot: UiSnapshot): void => {
   lastChosenHex = chosenHex;
   followComputer(snapshot);
   renderTemplate(appView(snapshot), root);
+  updateStackPeek(snapshot);
   afterRender();
 };
 let lastChosenHex: string | null = null;
@@ -1326,7 +1378,17 @@ const afterRender = (): void => {
   if (info && shown) info.textContent = hoverHexId ? hoverText(shown, hoverHexId) : 'Hover a hex for terrain.';
   updateCameraUi();
   const dialog = root.querySelector<HTMLElement>('[role="dialog"][aria-modal="true"], .modal-backdrop [role="dialog"]');
-  if (dialog && dialog !== lastDialog && !dialog.contains(document.activeElement)) dialog.querySelector<HTMLElement>('button:not(:disabled), input, select')?.focus({ preventScroll: true });
+  if (dialog && dialog !== lastDialog && !lastDialog) dialogReturnFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+  // Changing a modal page can remove its focused button. Keep focus inside after every render,
+  // including Settings → Preview → loading, rather than letting Tab reach the private game.
+  if (dialog && !dialog.contains(document.activeElement)) {
+    [...dialog.querySelectorAll<HTMLElement>('button:not(:disabled), input:not(:disabled), select:not(:disabled)')]
+      .find(element=>element.getClientRects().length>0)?.focus({preventScroll:true});
+  }
+  if (!dialog && lastDialog && (document.activeElement === document.body || !document.activeElement)) {
+    (dialogReturnFocus?.isConnected ? dialogReturnFocus : root.querySelector<HTMLElement>('#open-menu'))?.focus({preventScroll:true});
+    dialogReturnFocus = null;
+  }
   lastDialog = dialog;
   if (dialog) return;
   const focusLost = document.activeElement === document.body || document.activeElement === null;
@@ -1348,6 +1410,34 @@ root.addEventListener('click', (event) => {
   const closest = <T extends HTMLElement = HTMLElement>(selector: string) => target.closest<T>(selector);
   const byId = (id: string) => closest(`#${id}`) !== null;
   if (closest('button:disabled')) return;
+  const rememberHelper = () => {
+    deck.logisticsInput = {
+      sourceId:root.querySelector<HTMLSelectElement>('#helper-source')?.value ?? deck.logisticsInput?.sourceId ?? '',
+      destination:root.querySelector<HTMLInputElement>('#helper-destination')?.value ?? deck.logisticsInput?.destination ?? '',
+      tokens:Number(root.querySelector<HTMLInputElement>('#helper-tokens')?.value ?? deck.logisticsInput?.tokens ?? 8),
+      excluded:[...root.querySelectorAll<HTMLInputElement>('[data-helper-truck]:not(:checked)')].map(el=>el.dataset.helperTruck!),
+    };
+    return deck.logisticsInput;
+  };
+  if (byId('helper-preview')) {
+    const input = rememberHelper();
+    const hex = scenario.mapDefinition.hexes.find(hex=>printedHexLabel(hex.id)===input.destination || hex.id===input.destination);
+    controller.previewLogistics({sourceId:input.sourceId as never,destination:(hex?.id??input.destination) as never,tokens:input.tokens,excludedTruckIds:input.excluded as never}); return;
+  }
+  const alternative = closest('[data-helper-alternative]');
+  const shortfall = closest('[data-helper-shortfall]');
+  if (alternative || shortfall) {
+    const input = rememberHelper();
+    input.destination = alternative?.dataset.helperAlternative ?? shortfall!.dataset.helperShortfall!;
+    if (shortfall) input.tokens=Number(shortfall.dataset.helperQuantity);
+    selectDeckTab(controller.getSnapshot(),deck,'logistics'); controller.cancelLogistics(); return;
+  }
+  if (byId('helper-confirm')) { void runUi(controller.confirmLogistics); return; }
+  if (byId('helper-cancel')) { controller.cancelLogistics(); return; }
+  if (byId('helper-pay-fuel')) { void runUi(controller.payEstimatedFuel); return; }
+  if (byId('helper-feed')) { void runUi(controller.feedPredictedSupply); return; }
+  const fuelUnit = closest<HTMLInputElement>('[data-helper-fuel-unit]');
+  if (fuelUnit) { rememberHelper(); controller.toggleLogisticsUnit(fuelUnit.dataset.helperFuelUnit!); return; }
   if (byId('end-phase')) {
     const snapshot = controller.getSnapshot();
     // Finishing Movement with units that have not moved, or any hex over 10 RE (4.8a would force eliminations), asks for a second press (no undo after dice).
@@ -1471,6 +1561,12 @@ root.addEventListener('focusout', (event) => markSource(event, false));
 
 root.addEventListener('change', (event) => {
   const input = event.target as HTMLInputElement;
+  if (input.id === 'rail-check-hex') {
+    const hex = scenario.mapDefinition.hexes.find(hex=>printedHexLabel(hex.id)===input.value);
+    deck.error = !hex && input.value ? `No map hex ${input.value}. Choose a map hex before confirming.` : '';
+    controller.chooseRailDestination(hex?.id ?? '');
+    return;
+  }
   if (input.dataset.participant) controller.toggleParticipant(input.dataset.participant);
   else if (input.dataset.lead) controller.setLead(input.dataset.lead);
   else if (input.dataset.attackSupply) controller.chooseAttackerSupply(input.dataset.attackSupply, (event.target as unknown as HTMLSelectElement).value);
@@ -1580,6 +1676,7 @@ const mountCreatedGame = async (created: CreatedNewGame): Promise<void> => {
   controller.dispose();
   await currentGame.session.close();
   currentGame = created;
+  delete deck.logisticsInput;
   deck.search = ''; deck.tab = undefined; deck.lastPiece = null; rosterOpen = false; rosterWasOpen = false; lastMoveHex = null; deck.filter = 'all'; deck.confirmEnd = false; listPositions.clear(); utilityOpen = null; gameEndDismissed = false;
   hoverHexId = null; stackPickerHex = null;
   scenario = created.scenario;
@@ -1599,6 +1696,7 @@ const mountCreatedGame = async (created: CreatedNewGame): Promise<void> => {
 
 window.addEventListener('keydown', (event) => {
   if (event.key !== 'Escape') return;
+  if (!rosterTooltip.hidden) { hideRosterTooltip(); return; }
   if (rosterOpen) { rosterOpen = false; render(controller.getSnapshot()); return; }
   if (controller.getSnapshot().movePreview) { controller.selectPiece(controller.getSnapshot().selection.pieceId); return; }
   if (stackPickerHex) { stackPickerHex = null; render(controller.getSnapshot()); return; }

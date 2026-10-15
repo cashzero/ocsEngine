@@ -1,17 +1,11 @@
 # Unit counter fidelity correction plan
 
-Status: **IN PROGRESS**. Printed counter faces are rendered and CTR-01 to CTR-04 and CTR-07 pass at 1920×1080;
-CF5 is open while CTR-05, CTR-06 and CTR-08 are not `PASS` and the screen-space LOD levels are unverified
-(row status: `docs/quality/03-product-operation-verification-plan.md` section B1).
-
-This plan reopens the unit-counter portion of U4. The existing implementation proves
-viewer projection, selection, stacking, and redaction, but it does not reproduce the
-printed information hierarchy of an OCS counter. A selectable rectangle containing a
-role abbreviation plus `steps · mode` is not an acceptable substitute for a unit
-counter.
-
-The first delivery goal is counter fidelity. General visual polish, animation, theme
-work, and optional inspection conveniences are deferred until this gate passes.
+Status: **IN PROGRESS** for the full CF5 work package. CTR-01–08 and all three screen-space LOD levels
+have been operated at both desktop sizes. The remaining continuous NG-07 whole-turn and counter-state
+save/replay evidence is tracked as `counter-fidelity` in `docs/quality/05-todo-inventory.md`.
+Acceptance rows have one home: `docs/quality/03-product-operation-verification-plan.md` section B1.
+Current rendering and interaction contracts are in `docs/ui/map.md`; implementation and visual evidence
+are linked from [operations](../quality/evidence/operations-2026-10-15/README.md).
 
 ## Acceptance authority and reviewed evidence
 
@@ -30,28 +24,6 @@ Representative VASSAL evidence is the reviewed 18-GPID set already named in
 `entryName`, front image, back image or state layers, printed fields, symbol, echelon,
 mobility color, combat-category fill, formation marking, and any ambiguity. Ambiguous
 marks stay `UNVERIFIED`; they must not be guessed into the model.
-
-## Evidence that reopens U4
-
-| Area | Rulebook / VASSAL reference | Current implementation | Judgment |
-|---|---|---|---|
-| Shape | Representative pieces are 70×70 square counters | 46×40 rounded rectangles | Not aligned |
-| Basic combat unit | Designation, echelon, unit symbol, Combat Strength, Action Rating, MA, optional RE dot, affiliation | Role abbreviation plus remaining steps and mode | Required printed fields absent |
-| Semantic color | Counter nationality/side, symbol background for combat category, MA color/box for mobility, formation stripe | Amber/blue owner fill | Meanings are collapsed into player color |
-| Faces | Combat and Move faces have different printed values; orientation is separate from marker mode | One face named `front`; mode text substitutes for orientation | Data and presentation are incomplete |
-| Artillery | Artillery layout uses Barrage Strength and Range | Generic `ART` role label | Wrong template |
-| HQ | HQ layout uses throw range and MA with HQ identity | Generic `HQ` role label | Wrong template |
-| Transport | Point value, loaded/full state, vehicle type, and MA | Generic `TRN` role label | Wrong template |
-| Supply | Supply quantity/state has its own counter grammar | Generic `SUP` role label | Wrong template |
-| Formation identity | Designation and formation color/affiliation are printed on the counter | Generic generated name only in accessible/detail text | Not visible on the counter |
-| Dynamic state | Face, step profile, resource quantity, and applicable mode/status markers alter what the player sees | Only steps and a shortened mode string change | Insufficient |
-| Preview continuity | A player can inspect the actual generated counters before starting and compare them after mount | New Game preview shows formation summaries, not unit counters | Cannot perform the requested comparison |
-
-One concrete mismatch demonstrates why a CSS-only patch is forbidden: VASSAL GPID 160
-(`US 2.A CCA`) has distinct 70×70 faces (`BTR S01 R01 C02.png` and
-`BTR S01 R01 C02B.png`) with different printed strengths and movement allowances.
-The current archetype instead creates one face with generator-designed values and never
-models that orientation change.
 
 ## Corrected product contract
 
@@ -222,7 +194,7 @@ field, generic fallback, or unreachable acceptance state.
 
 ## Explicitly deferred improvement backlog
 
-### User-directed screen-space LOD (in scope, IN PROGRESS)
+### User-directed screen-space LOD (in scope, verified)
 
 The user explicitly exempts counter artwork from the general 13px text floor and
 requests simplified rendering when zoomed out. Ordinary interface text retains its
@@ -231,11 +203,9 @@ requests simplified rendering when zoomed out. Ordinary interface text retains i
 38 shows the symbol. The map camera owns LOD; preview and selected-stack counters
 remain full detail. Resizing and zooming must both recompute the level.
 
-TODO: verify all three levels in the integrated browser at 1920×1080 and
-1680×1050, including a three-unit stack, keyboard selection, state indicators,
-and return to full detail without changing game state. Until recorded screenshots
-and operated selection prove legibility and no clipping/overlap, these thresholds
-are provisional and counter visual acceptance remains IN PROGRESS.
+All three levels were inspected at 1920×1080 and 1680×1050, with normal/150%/70%/30%
+zoom, a three-counter stack, selection and keyboard focus. The full-size inspection remains readable
+at every map LOD and its header clears the map controls. See the operations evidence above.
 
 The following are not part of the fidelity-first gate and must not delay or substitute
 for it:

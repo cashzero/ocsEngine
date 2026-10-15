@@ -1,0 +1,9 @@
+
+ RUN  v4.1.11 /home/cashlin/ocsEngine
+
+
+ Test Files  102 passed | 4 skipped (106)
+      Tests  717 passed | 8 skipped (725)
+   Start at  20:14:52
+   Duration  132.79s (transform 5.92s, setup 0ms, import 35.51s, tests 211.83s, environment 2.89s)
+

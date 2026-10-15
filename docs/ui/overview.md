@@ -35,7 +35,7 @@ map and counters in [map.md](map.md), computer players in [computer-players.md](
 - The page boots into the default New Game package. The ☰ Menu dialog holds New Game…, Download save, Load save…, the
   hot-seat hand-over, the "pass the other player's step when blowing a dump is their only option" setting (on by default),
   and checkpoints.
-- There is no pause: a turn-based game does not need one. A session that arrives paused (an older save) is resumed.
+- Menu offers Pause. While paused, game actions are disabled and the deck offers Resume; pausing and resuming preserve revision, phase and units. Loading a previously paused save resumes it as before.
 - Undo: the top bar's Undo takes back the last action that only rearranged the player's own units and stocks (up to 30 in
   a step). An action that rolled dice, revealed information or asked the other player clears the actions before it, and
   the hint says why. Without a single action to undo, Undo goes back to the start of the step (one automatic checkpoint
@@ -77,15 +77,25 @@ the map.
   earlier action drop-down and candidate lists were removed because they hid the map and the choices.
 - **Results are shown, not inferred**: every combat produces a result card and a readable Log line, because hand-overs
   used to swallow results so that neither player saw them.
-- **No pause** (implemented): pending user decision on whether to rewrite SES-01 (`05`).
+- **Pause preserves the game**: the existing SES-01 operation is supported without changing its acceptance criterion.
+
+## Modal keyboard focus
+
+Menu and New Game keep Tab and Shift+Tab inside the visible modal. Switching Settings, Preview
+and loading pages restores focus if the old control was removed. Closing returns focus to the
+opener when it still exists, otherwise Menu. The stack hover inspection is inert and adds no Tab
+stops; the selectable stack list and roster remain keyboard accessible.
 
 ## Known gaps
 
-From `docs/quality/05-todo-inventory.md`: `session-reload`, `load-same-scenario`, `TODO-CM2` (screen reader), `UI-05`
-keyboard traversal (unverified), `roster-name-truncation`, `deck-state-records`.
+From `docs/quality/05-todo-inventory.md`: `session-reload`, `load-same-scenario`, `TODO-CM2` (screen reader), `deck-state-records`.
 
 ## Verification
 
 - `tests/ui/` (controller flow, command deck, counter, map art, typography contract).
 - Browser rows UI-01 to UI-05, SES-01 to SES-09 and ACT rows in
   `docs/quality/03-product-operation-verification-plan.md`; scripts in `scripts/product-acceptance/`.
+
+- Keyboard-only New Game, map move, modal confinement and full-turn handoffs: [operations evidence](../quality/evidence/operations-2026-10-15/README.md).
+
+- Roster full-name tooltips at both desktop sizes: [UI-02 evidence](../quality/evidence/roster-tooltip-2026-10-15/README.md).

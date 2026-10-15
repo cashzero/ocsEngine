@@ -1,6 +1,6 @@
 # Rail Cap 鐵路運輸與鐵路控制（M13-Rail R4、R5）
 
-狀態：**IN PROGRESS**。RC1–RC4、RC7、RC8 完成；RC5 平衡依使用者決定暫緩（TODO `attack-balance`）；RC6 瀏覽器的「整個師」與 RAIL-15／16 未驗（TODO `rail-cap-browser`）。
+狀態：**IN PROGRESS**。RC1–RC4、RC7、RC8 完成；RC5 平衡依使用者決定暫緩（TODO `attack-balance`）；RC6 瀏覽器的「整個師」仍未驗；RAIL-15／16 已實際操作（TODO `rail-cap-browser`）。
 
 需求來源（使用者，2026-10-08）：「OCS的重心是supply 管理。換言之 攻擊方應該處於戰力有余 補給不足的情形。此處不足主因為運力限制」；
 「補給應該要可以用鐵路運 查一下這部份規則」；之後「先確認bot正確執行才調整平衡 否則會因為bot bug改爛平衡」。
@@ -15,7 +15,7 @@
 | RC3 | New Game 每方 Rail Cap 選項、預覽 | DONE |
 | RC4 | UI：車站上的部隊與補給、可下車車站、成本、剩餘 Rail Cap；頂部列顯示自己的 Rail Cap | DONE（RAIL-11～14、RAIL-17 PASS） |
 | RC5 | 電腦用鐵路、預設 Rail Cap、補給壓力與攻方勝率 | 電腦部分 DONE；平衡暫緩（`attack-balance`） |
-| RC6 | 真實瀏覽器：整個師用鐵路運送、RAIL-15、RAIL-16 | **IN PROGRESS**（`rail-cap-browser`） |
+| RC6 | 真實瀏覽器：整個師用鐵路運送、RAIL-15、RAIL-16 | **IN PROGRESS**；RAIL-15／16 有 [操作證據](../quality/evidence/operations-2026-10-15/README.md)，整師仍見 `rail-cap-browser` |
 | RC7 | 部分卡車改為之後回合到達的增援（現行數量見 OOB 生成） | DONE |
 | RC8 | 電腦正確使用鐵路與卡車（後勤檢查） | DONE（`scripts/ai-logistics-study.mjs`） |
 

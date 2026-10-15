@@ -1,0 +1,126 @@
+{
+  "title": "NG-12: attack off-map sortie, entire turn and free refit",
+  "final": {
+    "turn": "Turn 2 / 8",
+    "player": "Axis player turn",
+    "phase": "Aircraft Refit Phase",
+    "revision": null
+  },
+  "rows": [
+    {
+      "id": "AEP-01",
+      "expectation": "Small generated map shows one AEP per side",
+      "observed": "[{\"hex\":\"-3,6\",\"side\":\"FIRST\"},{\"hex\":\"12,6\",\"side\":\"SECOND\"}]",
+      "status": "PASS"
+    },
+    {
+      "id": "NG-12",
+      "expectation": "Visible attack help names off-map aircraft and airfield",
+      "observed": "Settings\nConfigure operation\n\nSet the map and force options, then press Preview.\n\nConfigure\nMap\nOOB\nDeployment\nGameplay\nPreview →\n✕\nScenario\nSITUATION\nMeeting engagement\nAllied attack\nAxis attack\n\nAllied holds most of the map and the attack objectives, with its line in Combat Mode, with garrisons dug into hedgehogs on its objectives (Level 2) and on key rail towns and road junctions (Level 1); Axis also holds VP at its own ports and fields 1.5 times the divisions plus off-map air (Fighters and Tactical Bombers at an airfield off the map, flying in over its own map edge and back), assembles a few hexes away and moves first. Axis wins by holding its starting VP plus at least half the defender’s starting VP (rounded up) when the last turn ends; otherwise Allied wins. Only isolated objective garrisons start with 1T (0.25 SP) emergency supply, drawn from their side’s existing supply budget; key-point garrisons start connected to trace supply.\n\nOperational map\nTHEATER\nWestern Europe\nEastern Europe\nSEA\nNo sea\nAlong the flank\n\nAn all-land map.\n\nWIDTH\nHEIGHT\n\nHexes across and down: 16–256 by 12–256.\n\nOrder of battle\nSCALE\nCompact\nStandard\nLarge\nDIVISIONS PER SIDE\nOF WHICH ARMORED\n\nThe other divisions are infantry, about one in four airborne. Each side receives Pax and Eq replacements every turn.\n\nALLIED REINFORCEMENTS\n0% · 0 divisions\n25% · 1 division\n50% · 1 division\n75% · 1 division\nAXIS REINFORCEMENTS\n0% · 0 divisions\n25% · 1 division\n50% · 2 divisions\n75% · 2 divisions\nFIRST ARRIVAL TURN\n\nWhole divisions arrive one per Game Turn through ports or entry hexes; at least one starts on the map. The last arrival must have at least two Game Turns to play. After you finish editing, the first turn may move earlier (as early as Turn 2), then the percentage may decrease to fit. Disabled choices need more turns or divisions. Allied: none · Axis: none.\n\nAIR FORCES\nNone (ground duel)\nFighters, bombers, Air Bases and aircraft reinforcements\nAIR TRANSPORT\nNone\nTransports and a paratroop battalion per side\nGame rules\nTURN LIMIT\nSTART MONTH\nSeptember\nOctober\nNovember\nDecember\nJanuary\nFebruary\nMarch\nApril\n\nThe month sets the weather: September is always dry, autumn brings mud, and midwinter snow.\n\nALLIED RAIL CAP\nAXIS RAIL CAP\n\nSP or RE each side can move by rail every Movement Phase (13.3b), from the map edge to its railhead; trucks carry supply on to the front. Default: 0.75 point per division.\n\nReproducible seeds\nMAP\nOOB\nDEPLOYMENT\nRULES\nRandomize all seeds",
+      "status": "PASS"
+    },
+    {
+      "id": "NG-12",
+      "expectation": "Preview distinguishes off-map airfield",
+      "observed": "AXIS\n300 points\nHQ\n1 units\n9.SS\n5 units · armored\n3.PG\n5 units · mobile infantry\n5.FJ\n1 units · airborne\n18 independent support / logistics units\nAir forces: 16 aircraft, off-map airfield, 2 Air Base(s)",
+      "status": "PASS"
+    },
+    {
+      "id": "AEP-02",
+      "expectation": "Different map/OOB preview and same mounted package expose friendly and enemy AEPs",
+      "observed": "[{\"hex\":\"-4,9\",\"side\":\"FIRST\"},{\"hex\":\"19,9\",\"side\":\"SECOND\"}]",
+      "status": "PASS"
+    },
+    {
+      "id": "NG-12",
+      "expectation": "Attacker roster exposes the off-map aircraft; every listed aircraft remains in its off-map box",
+      "observed": "{\"offmap\":[{\"id\":\"generated-oob:13202:axis:off-map-fighter-2:unit\",\"text\":\"F\\nFw-190a\\n71\\n4\\n2\\nJG 300 Fw-190a\\nAxis off-map airfield · Active\"},{\"id\":\"generated-oob:13202:axis:off-map-fighter-1:unit\",\"text\":\"F\\nBf.109\\n76\\n4\\n1\\nJG 301 Bf.109\\nAxis off-map airfield · Active\"},{\"id\":\"generated-oob:13202:axis:off-map-fighter-3:unit\",\"text\":\"F\\nFw-190d\\n74\\n6\\n2\\nJG 53 Fw-190d\\nAxis off-map airfield · Active\"},{\"id\":\"generated-oob:13202:axis:off-map-bomber-3:unit\",\"text\":\"T\\nJu.88\\n106\\n(2)\\n12\\nKG 51 Ju.88\\nAxis off-map airfield · Active\"},{\"id\":\"generated-oob:13202:axis:off-map-bomber-2:unit\",\"text\":\"T\\nJu.88\\n106\\n(2)\\n12\\nKG 66 Ju.88\\nAxis off-map airfield · Active\"},{\"id\":\"generated-oob:13202:axis:off-map-bomber-1:unit\",\"text\":\"T\\nJu.88\\n106\\n(2)\\n9\\nKG 76 Ju.88\\nAxis off-map airfield · Active\"}],\"locations\":[{\"boxId\":\"box:generated:axis-off-map-airfield\",\"kind\":\"OFF_MAP_BOX\"},{\"boxId\":\"box:generated:axis-off-map-airfield\",\"kind\":\"OFF_MAP_BOX\"},{\"boxId\":\"box:generated:axis-off-map-airfield\",\"kind\":\"OFF_MAP_BOX\"},{\"boxId\":\"box:generated:axis-off-map-airfield\",\"kind\":\"OFF_MAP_BOX\"},{\"boxId\":\"box:generated:axis-off-map-airfield\",\"kind\":\"OFF_MAP_BOX\"},{\"boxId\":\"box:generated:axis-off-map-airfield\",\"kind\":\"OFF_MAP_BOX\"}]}",
+      "status": "PASS"
+    },
+    {
+      "id": "AEP-02",
+      "expectation": "Mounted FIRST AEP 0110 announces owner and range origin",
+      "observed": "Hex 0110 · woods · Allied Supply Source · Allied Air Entry Point (AEP): off-map aircraft enter here; range starts here +1 hex · no units",
+      "status": "PASS"
+    },
+    {
+      "id": "AEP-02",
+      "expectation": "Mounted SECOND AEP 2410 announces owner and range origin",
+      "observed": "Hex 2410 · clear · Axis Supply Source · Axis Air Entry Point (AEP): off-map aircraft enter here; range starts here +1 hex · no units",
+      "status": "PASS"
+    },
+    {
+      "id": "AEP-03",
+      "expectation": "Off-map sortie panel identifies Axis AEP and counts range from it",
+      "observed": "Air Barrage 0614\nOff-map entry\nAEP 2410 · range from nearest AEP +1 hex\nMission hex\n0614\nTable column\n17-24 → 1 or less\nShifts\nDensity -1, Terrain -1, Hedgehog L2 -1, No spotter -3\nBarrage strength\n17\nFlak\n+2 (Three or more aircraft +1, Enemy Patrol Zone, mission has a Fighter +1); 11+ on 2d6 costs a step\nEnemy Patrol Zone\nyes: an enemy Fighter may intercept\n\nTick up to 4 aircraft; they may come from different bases. Every mission aircraft becomes Inactive at a base afterwards.\n\nF\nFw-190a\n71\n5\n2\nJG 27 Fw-190a\n2207\nT\nJu.88\n106\n(2)\n12\nKG 6 Ju.88\n2207\nF\nBf.109\n76\n5\n1\nJG 26 Bf.109\n2203\nF\nFw-190d\n74\n6\n2\nJG 53 Fw-190d\n2203\nT\nJu.88\n106\n(2)\n9\nKG 76 Ju.88\n2203\nF\nBf.109\n76\n4\n1\nJG 301 Bf.109\nAxis off-map airfield\nF\nFw-190a\n71\n4\n2\nJG 300 Fw-190a\nAxis off-map airfield\nF\nFw-190d\n74\n6\n2\nJG 53 Fw-190d\nAxis off-map airfield\nT\nJu.88\n106\n(2)\n9\nKG 76 Ju.88\nAxis off-map airfield\nT\nJu.88\n106\n(2)\n12\nKG 66 Ju.88\nAxis off-map airfield\nT\nJu.88\n106\n(2)\n12\nKG 51 Ju.88\nAxis off-map airfield\nCancel\nFly Air Barrage",
+      "status": "PASS"
+    },
+    {
+      "id": "AEP-03",
+      "expectation": "Legal off-map barrage resolves through actual decisions",
+      "observed": "{\"turn\":\"Turn 1 / 8\",\"player\":\"Axis player turn\",\"phase\":\"Movement · Barrage\",\"seat\":\"Axis commander\",\"end\":\"End Barrage SegmentNext: Supply Phase\",\"endDisabled\":false,\"notice\":\"Your turn, Axis commander.\",\"handoff\":false,\"complete\":false,\"decision\":[]}",
+      "status": "PASS"
+    },
+    {
+      "id": "NG-12",
+      "expectation": "After the entire first turn, off-map survivors refit at their own airfield without spending SP",
+      "observed": "{\"refitText\":\"Off-map airfield · refits every aircraft from its own stocks, no SP · no Active limit\\nF\\nBf.109\\n76\\n4\\n1\\nINACTIVE\\nJG 301 Bf.109\\nF\\nFw-190a\\n71\\n4\\n2\\nINACTIVE\\nJG 300 Fw-190a\\nRefit 2\",\"before\":28,\"after\":28,\"where\":{\"turn\":\"Turn 2 / 8\",\"player\":\"Axis player turn\",\"phase\":\"Aircraft Refit Phase\",\"seat\":\"Axis commander\",\"end\":\"End Aircraft Refit PhaseNext: Reinforcement Phase\",\"endDisabled\":false,\"notice\":\"Refit 2 aircraft at the off-map airfield, from its own stocks.\",\"handoff\":false,\"complete\":false,\"decision\":[]}}",
+      "status": "PASS"
+    },
+    {
+      "id": "AEP-04",
+      "expectation": "Entire first Game Turn and required handoffs complete; flown off-map aircraft refit next turn",
+      "observed": "{\"turn\":\"Turn 2 / 8\",\"player\":\"Axis player turn\",\"phase\":\"Aircraft Refit Phase\",\"seat\":\"Axis commander\",\"end\":\"End Aircraft Refit PhaseNext: Reinforcement Phase\",\"endDisabled\":false,\"notice\":\"Refit 2 aircraft at the off-map airfield, from its own stocks.\",\"handoff\":false,\"complete\":false,\"decision\":[]}, 1 refits",
+      "status": "PASS"
+    },
+    {
+      "id": "AEP-05",
+      "expectation": "No browser console/page errors",
+      "observed": "0",
+      "status": "PASS"
+    }
+  ],
+  "timings": [
+    {
+      "label": "#open-menu",
+      "elapsed": 335
+    },
+    {
+      "label": "#open-new-game",
+      "elapsed": 536
+    },
+    {
+      "label": "button[form=\"new-game-form\"]",
+      "elapsed": 1616
+    },
+    {
+      "label": "#start-previewed-game",
+      "elapsed": 799
+    },
+    {
+      "label": "#open-menu",
+      "elapsed": 204
+    },
+    {
+      "label": "#open-new-game",
+      "elapsed": 584
+    },
+    {
+      "label": "button[form=\"new-game-form\"]",
+      "elapsed": 1222
+    },
+    {
+      "label": "#start-previewed-game",
+      "elapsed": 1638
+    },
+    {
+      "label": "Sortie including required decisions and handoffs",
+      "elapsed": 5867
+    },
+    {
+      "label": "Refit including harness settle",
+      "elapsed": 3069
+    }
+  ],
+  "errors": []
+}

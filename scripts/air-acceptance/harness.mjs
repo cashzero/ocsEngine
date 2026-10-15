@@ -89,6 +89,7 @@ export const newGame = async (h, options = {}) => {
   if (options.seeds) {
     for (const [name, seed] of Object.entries(options.seeds)) await type(`${name}-seed`, seed);
   }
+  if (options.onSettings) await options.onSettings();
   await page.click('button[form="new-game-form"]');
   await page.waitForFunction(() => !!document.querySelector('#start-previewed-game:not([disabled])'), { timeout: 30000 });
   await page.waitForTimeout(800);
@@ -154,7 +155,7 @@ export const endPhase = async (h) => {
 
 /** Pick the deck tab with this label. */
 export const tab = async (h, label) => {
-  const target = h.page.locator('[data-deck-tab]', { hasText: new RegExp(`^\\s*${label}`, 'u') }).first();
+  const target = h.page.locator('[data-deck-tab]', { hasText: new RegExp(`^\\s*${label}(?:\\s|$)`, 'u') }).first();
   await target.waitFor({ state: 'visible', timeout: 8000 });
   await target.click();
   await h.page.waitForTimeout(200);

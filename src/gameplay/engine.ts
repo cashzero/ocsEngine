@@ -8,8 +8,8 @@ import {
   type GameState,
 } from '../rules/index.js';
 import { formatHistorySummary } from './history.js';
-import { parseSessionId } from './ids.js';
-import { GAMEPLAY_SAVE_VERSION, parseGameplaySave } from './persistence.js';
+import { parseSessionId, parseDispatchRequestId } from './ids.js';
+import { GAMEPLAY_SAVE_VERSION, parseGameplaySave, parseGameplayReplay } from './persistence.js';
 import { migrateLegacySave } from './migration.js';
 import { GameplayFailure, GameplaySession } from './session.js';
 import type { GameplayPorts } from './ports.js';
@@ -165,6 +165,37 @@ export class DefaultGameplayEngine implements GameplayEngine {
     const serialized = await this.#ports.saves.load(sessionId);
     if (serialized === null) throw failure('SAVE_NOT_FOUND', `Save ${sessionId} was not found.`, ['sessionId']);
     return this.loadSession(serialized);
+  };
+
+  loadReplay = async (serialized: string, bindings: readonly SeatBinding[]): Promise<GameSession> => {
+    const decoded = parseGameplayReplay(serialized);
+    if (!decoded.ok) throw new GameplayFailure(decoded.error[0]!);
+    const replay = decoded.value;
+    const initial = parseGameStateJson(replay.initialSnapshot);
+    if (!initial.ok) throw failure('SAVE_INVALID', 'Replay initial snapshot is invalid.');
+    validateBindings(initial.value.scenario, bindings);
+    let state = initial.value;
+    for (const [index, action] of replay.actions.entries()) {
+      const next = this.#ports.rules.applyAction(state, action);
+      if (!next.ok) throw failure('SAVE_REPLAY_MISMATCH', `Replay rejected action ${index}.`, ['actions', index]);
+      state = next.state;
+    }
+    const current = serializeGameState(state);
+    if (!current.ok) throw failure('SAVE_INVALID', 'Replay result cannot be serialized.');
+    const save: GameplaySaveEnvelope = {
+      schemaVersion: 1, gameplayVersion: GAMEPLAY_SAVE_VERSION,
+      sessionId: this.#nextSessionId(initial.value.scenario), label: 'Replayed game', createdAtMs: this.#ports.clock.nowMs(),
+      lifecycle: state.sequence.phase === 'COMPLETE' ? 'FINISHED' : 'ACTIVE',
+      activeSeatId: bindings.find(({ playerId }) => playerId === state.sequence.actingPlayerId)?.seatId ?? bindings[0]!.seatId,
+      bindings, scenarioHash: replay.scenarioHash, initialStateHash: replay.initialStateHash, finalStateHash: replay.finalStateHash,
+      initialSnapshot: replay.initialSnapshot, currentSnapshot: current.value, acceptedActions: replay.actions,
+      acceptedActionMetadata: replay.actions.map((action, index) => ({
+        requestId: (() => { const id = parseDispatchRequestId(`replay:request:${index}`); if (!id.ok) throw new GameplayFailure(id.error); return id.value; })(),
+        seatId: bindings.find(({ playerId }) => playerId === action.actorId)!.seatId, acceptedAtMs: 0, durationMs: 0,
+      })), checkpoints: [],
+    };
+    // The save loader checks the source and initial/final hashes and validates all action metadata.
+    return this.loadSession(JSON.stringify(save));
   };
 
   async #validateCheckpoints(

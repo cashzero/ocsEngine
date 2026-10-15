@@ -1,0 +1,170 @@
+{
+  "helpers": {
+    "artifactDirectory": "artifacts/operations/helpers-timed",
+    "resultWrittenAtUtc": "2026-10-15T12:17:40.699994+00:00",
+    "final": {
+      "turn": "Turn 2 / 2",
+      "player": "Allied player turn",
+      "phase": "Game over Phase",
+      "revision": "16"
+    },
+    "rows": [
+      "ACT-06",
+      "SES-01",
+      "SES-07",
+      "SUP-B01",
+      "SUP-B02",
+      "SUP-B03",
+      "SUP-B04",
+      "SUP-B05",
+      "SUP-B06",
+      "SUP-B07",
+      "SUP-B08"
+    ],
+    "checks": 18,
+    "errors": [],
+    "timedInteractions": 246,
+    "maximumElapsedMs": 1194,
+    "overBudget": []
+  },
+  "helpers-support": {
+    "artifactDirectory": "artifacts/operations/helpers-final",
+    "resultWrittenAtUtc": "2026-10-15T08:38:50.363985+00:00",
+    "final": {
+      "turn": "Turn 2 / 2",
+      "player": "Allied player turn",
+      "phase": "Game over Phase",
+      "revision": "16"
+    },
+    "rows": [
+      "ACT-06",
+      "SES-01",
+      "SES-07",
+      "SUP-B01",
+      "SUP-B02",
+      "SUP-B03",
+      "SUP-B04",
+      "SUP-B05",
+      "SUP-B06",
+      "SUP-B07",
+      "SUP-B08"
+    ],
+    "checks": 18,
+    "errors": [],
+    "timedInteractions": 20,
+    "maximumElapsedMs": 1626
+  },
+  "counters-1920x1080": {
+    "artifactDirectory": "artifacts/operations/counters-accepted/counters-1920x1080",
+    "resultWrittenAtUtc": "2026-10-15T08:29:17.619986+00:00",
+    "final": {
+      "turn": "Turn 1 / 3",
+      "player": "Axis player turn",
+      "phase": "Movement",
+      "revision": null
+    },
+    "rows": [
+      "CTR-01",
+      "CTR-02",
+      "CTR-03",
+      "CTR-04",
+      "CTR-05",
+      "CTR-06",
+      "CTR-07",
+      "CTR-08"
+    ],
+    "checks": 8,
+    "errors": [],
+    "timedInteractions": 89,
+    "maximumElapsedMs": 923,
+    "overBudget": []
+  },
+  "counters-1680x1050": {
+    "artifactDirectory": "artifacts/operations/counters-accepted/counters-1680x1050",
+    "resultWrittenAtUtc": "2026-10-15T08:30:13.571988+00:00",
+    "final": {
+      "turn": "Turn 1 / 3",
+      "player": "Axis player turn",
+      "phase": "Movement",
+      "revision": null
+    },
+    "rows": [
+      "CTR-01",
+      "CTR-02",
+      "CTR-03",
+      "CTR-04",
+      "CTR-05",
+      "CTR-06",
+      "CTR-07",
+      "CTR-08"
+    ],
+    "checks": 8,
+    "errors": [],
+    "timedInteractions": 89,
+    "maximumElapsedMs": 927,
+    "overBudget": []
+  },
+  "keyboard": {
+    "artifactDirectory": "artifacts/operations/keyboard",
+    "resultWrittenAtUtc": "2026-10-15T07:55:10.239993+00:00",
+    "final": {
+      "turn": "Turn 2 / 2",
+      "player": "Allied player turn",
+      "phase": "Reinforcement",
+      "revision": null
+    },
+    "rows": [
+      "UI-05"
+    ],
+    "checks": 1,
+    "errors": [],
+    "timedInteractions": 18,
+    "maximumElapsedMs": 382
+  },
+  "offmap-air": {
+    "artifactDirectory": "artifacts/operations/offmap-air",
+    "resultWrittenAtUtc": "2026-10-15T08:16:54.007977+00:00",
+    "final": {
+      "turn": "Turn 2 / 8",
+      "player": "Axis player turn",
+      "phase": "Aircraft Refit Phase",
+      "revision": null
+    },
+    "rows": [
+      "AEP-01",
+      "AEP-02",
+      "AEP-03",
+      "AEP-04",
+      "AEP-05",
+      "NG-12"
+    ],
+    "checks": 12,
+    "errors": [],
+    "timedInteractions": 10,
+    "maximumElapsedMs": 5867
+  },
+  "rail": {
+    "artifactDirectory": "artifacts/operations/rail-accepted",
+    "resultWrittenAtUtc": "2026-10-15T08:38:04.351985+00:00",
+    "final": {
+      "turn": "Turn 3 / 4",
+      "player": "Axis player turn",
+      "phase": "First Player Phase",
+      "revision": null
+    },
+    "rows": [
+      "RAIL-05",
+      "RAIL-06",
+      "RAIL-07",
+      "RAIL-08",
+      "RAIL-09",
+      "RAIL-10",
+      "RAIL-15",
+      "RAIL-16"
+    ],
+    "checks": 9,
+    "errors": [],
+    "timedInteractions": 172,
+    "maximumElapsedMs": 472
+  }
+}
