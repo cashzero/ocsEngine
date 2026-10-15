@@ -1,6 +1,6 @@
 # 補給 UX A0 基準（2026-10-02）
 
-狀態：**IN PROGRESS**。這是 [09-supply-logistics-ux-wbs.md](../roadmap/09-supply-logistics-ux-wbs.md) 的 A0 實機基準紀錄。
+狀態：**IN PROGRESS**。這是 [09-supply-logistics-ux-wbs.md](../../../roadmap/09-supply-logistics-ux-wbs.md) 的 A0 實機基準紀錄。
 已完成：以真實滑鼠點擊走完標準任務 T1 並記錄現況。補測也已完成（見「補測」）。**未完成**：SUP 驗收列尚未加入 `docs/quality/03-…plan.md`（凍結基準，需使用者核准）；
 檔案式存讀檔尚未測（見「未驗證」）。本文件不改變 doc 03 任何列的狀態。
 
@@ -97,8 +97,8 @@ Console 全程無錯誤。
 
 | Bug | 修正 | 實機觀察（重新建置後） |
 |---|---|---|
-| **N-11** 卡車裝貨後移動別的單位會凍結卡車，無警告 | 引擎：[movement.ts](../../src/rules/movement/movement.ts) 的 `queryMovementPath` 新增 `movement.endsOtherMover.*` 三個事實（卡車 ID、剩餘 MP、車上 T 數）。UI：[command-deck.ts](../../src/ui/command-deck.ts) 的 `movePopupHtml` 顯示警告並把按鈕改為「Confirm anyway」；[command-deck.css](../../web/command-deck.css) 加 `.warning`。範圍只含運輸點，且剩餘 MP 為 0 時不警告 | 卡車 38 MP、車上 4T 時，預覽 501 Abn Regt 移動，popup 出現「This ends the move of US 255 QM Truck Co: its 38 MP left and 4T aboard cannot be used again this phase (6.1g)」與「Confirm anyway」 |
-| **N-07** 分拆後 counter 仍印 5 | [counter.ts](../../src/ui/counter.ts) 的 `counterView` 讀 `status:transport-points`，沒有時用印刷值；地圖、roster、堆疊清單、預覽共用此函式 | 卡車分拆 2 點後，地圖上兩個 counter 分別印 `2` 與 `3`，選取卡顯示「3 truck points · load 4/12T」 |
+| **N-11** 卡車裝貨後移動別的單位會凍結卡車，無警告 | 引擎：[movement.ts](../../../../src/rules/movement/movement.ts) 的 `queryMovementPath` 新增 `movement.endsOtherMover.*` 三個事實（卡車 ID、剩餘 MP、車上 T 數）。UI：[command-deck.ts](../../../../src/ui/command-deck.ts) 的 `movePopupHtml` 顯示警告並把按鈕改為「Confirm anyway」；[command-deck.css](../../../../web/command-deck.css) 加 `.warning`。範圍只含運輸點，且剩餘 MP 為 0 時不警告 | 卡車 38 MP、車上 4T 時，預覽 501 Abn Regt 移動，popup 出現「This ends the move of US 255 QM Truck Co: its 38 MP left and 4T aboard cannot be used again this phase (6.1g)」與「Confirm anyway」 |
+| **N-07** 分拆後 counter 仍印 5 | [counter.ts](../../../../src/ui/counter.ts) 的 `counterView` 讀 `status:transport-points`，沒有時用印刷值；地圖、roster、堆疊清單、預覽共用此函式 | 卡車分拆 2 點後，地圖上兩個 counter 分別印 `2` 與 `3`，選取卡顯示「3 truck points · load 4/12T」 |
 | **N-08** 合併卡車在 UI 不出現 | 見下節 | 見下節 |
 
 新增測試：`tests/rules/ocs-logistics.test.ts` 兩個（Combine 候選、6.1g 事實，含「真的會被凍結」與「MP 用完不警告」）、
@@ -118,9 +118,9 @@ Console 全程無錯誤。
 
 | 項目 | 內容 | 測試 |
 |---|---|---|
-| 轉運選項查詢 | [transport.ts](../../src/rules/supply/transport.ts) 的 `queryTransportOptions`：對己方運輸點回傳同格每個補給堆的可裝 Token 範圍、卸載範圍、每次花費（MA 的 10%）、做完後剩餘 MA，以及不可用時規則自己給的 code／message／條文。範圍與原因都由 `validateLoad`／`validateUnload` 算出，因此與規則一致。接線：`RuleEngine.queryTransportOptions` → `GameSession.getTransportOptions` | `ocs-logistics.test.ts`「transport options for the UI (A1)」3 個：範圍內每個數量都被規則接受、多一個不行；卸載不可用原因（13.2f）；同階段卸下的不能再裝（12.2a）；非己方／非運輸點被拒。`transport-options-session.test.ts`：session 層與回傳為副本 |
-| 投影層角色 | [model.ts](../../src/rules/query/model.ts) 的 `PieceRole`（COMBAT／ARTILLERY／HQ／TRUCK／EXTENDER／DUMP／CARGO／AIRCRAFT／AIR_BASE／OTHER），由 [projection.ts](../../src/rules/query/projection.ts) 的 `roleOf` 依定義與位置決定，`ProjectedPiece.role` 對所有棋子提供。補給在車上為 CARGO、在地圖上為 DUMP | `piece-roles.test.ts` 3 個 |
-| 取代欄位猜測 | [controller.ts](../../src/ui/controller.ts) 的 `isDump` 改用 `role`（行為不變） | 既有測試 |
+| 轉運選項查詢 | [transport.ts](../../../../src/rules/supply/transport.ts) 的 `queryTransportOptions`：對己方運輸點回傳同格每個補給堆的可裝 Token 範圍、卸載範圍、每次花費（MA 的 10%）、做完後剩餘 MA，以及不可用時規則自己給的 code／message／條文。範圍與原因都由 `validateLoad`／`validateUnload` 算出，因此與規則一致。接線：`RuleEngine.queryTransportOptions` → `GameSession.getTransportOptions` | `ocs-logistics.test.ts`「transport options for the UI (A1)」3 個：範圍內每個數量都被規則接受、多一個不行；卸載不可用原因（13.2f）；同階段卸下的不能再裝（12.2a）；非己方／非運輸點被拒。`transport-options-session.test.ts`：session 層與回傳為副本 |
+| 投影層角色 | [model.ts](../../../../src/rules/query/model.ts) 的 `PieceRole`（COMBAT／ARTILLERY／HQ／TRUCK／EXTENDER／DUMP／CARGO／AIRCRAFT／AIR_BASE／OTHER），由 [projection.ts](../../../../src/rules/query/projection.ts) 的 `roleOf` 依定義與位置決定，`ProjectedPiece.role` 對所有棋子提供。補給在車上為 CARGO、在地圖上為 DUMP | `piece-roles.test.ts` 3 個 |
+| 取代欄位猜測 | [controller.ts](../../../../src/ui/controller.ts) 的 `isDump` 改用 `role`（行為不變） | 既有測試 |
 | 對手看到的卡車點數 | 見上方更正 | `piece-roles.test.ts` |
 
 **A1 未做、留給後續：**
@@ -132,7 +132,7 @@ Console 全程無錯誤。
 ## Phase A（A2～A5）實作與驗證（2026-10-02，使用者指示「把 A 全部完成後 commit and push」）
 
 `npm run check` 通過：47 個測試檔、274 個測試、建置、smoke。**A6 gate 仍 IN PROGRESS**，所有 SUP 驗收列仍 `UNVERIFIED`；未完成項與原因見
-[計畫 A6](../roadmap/09-supply-logistics-ux-wbs.md) 的 TODO-A6a～A6f 與 A3／A4／A5 各自的 TODO。
+[計畫 A6](../../../roadmap/09-supply-logistics-ux-wbs.md) 的 TODO-A6a～A6f 與 A3／A4／A5 各自的 TODO。
 
 | 項目 | 實作 | 測試 | 實機觀察 |
 |---|---|---|---|
@@ -148,7 +148,7 @@ Console 全程無錯誤。
 
 - **重現測試（先紅後綠）：** `tests/rules/ocs-logistics.test.ts`「offers Combine for the selected truck when another truck of its type shares the Hex (13.2c)」。
   修正前，選取其中一台時 `COMBINE_TRANSPORT` 回傳空陣列；未選取（`pieceId: null`）時正常，與 UI 實測相符。
-- **修正：** [candidates.ts](../../src/rules/query/candidates.ts) 的 `COMBINE_TRANSPORT` 改為從全部己方棋子分組，再要求該組包含選取者。
+- **修正：** [candidates.ts](../../../../src/rules/query/candidates.ts) 的 `COMBINE_TRANSPORT` 改為從全部己方棋子分組，再要求該組包含選取者。
 - **自動化結果：** 型別檢查無錯誤；全套 40 個測試檔、252 個測試通過。
 - **真實 UI 驗證（重新建置後）：** 新局 → Movement → 選卡車 → 「Split off 1 truck point」 → Unit tab 出現
   「Combine the trucks in this Hex into one counter」（修正前沒有）→ 點擊 → 卡車回到 5 truck points、`load 0/20T`、

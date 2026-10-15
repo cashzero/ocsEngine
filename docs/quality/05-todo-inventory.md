@@ -60,9 +60,12 @@
 | `pax-counter-art` | Pax counter 沿用 BTR「Repl EQ」的版面，只改字為 PAX；未取樣比對 BTR 的 Pax 補充 counter | Pax counter 的顏色與版面可能與原遊戲不同 | 取樣 BTR Pax counter 圖檔並逐項比對 | `docs/rule-engine/replacements.md` |
 | `transport-art` | 運輸機輪廓為目測繪製 | 運輸機 counter 不是印刷樣式 | 依參考圖重繪並做視覺比對 | `src/ui/counter.ts` |
 | `counter-fidelity` | CF5 三計數器堆疊與縮放 LOD 三級未驗證（CTR-05 已 PASS） | counter 視覺驗收 IN PROGRESS | `03` CTR-06、CTR-08 PASS 並驗證 LOD | `docs/roadmap/17-counter-fidelity-wbs.md` |
-| `TODO-CM1` | `scripts/counter-lod-gate.mjs` 與 `scripts/desktop-deck-gate.mjs` 無法在現行 UI 執行 | 這兩個 gate 不能重跑 | 腳本更新後在現行 build 跑通 | `docs/ui/canvas-map-rewrite-2026-10-02.md` |
-| `TODO-CM2` | Canvas 地圖的格子與 counter 不再是可 Tab 的元素，改為單一焦點＋方向鍵游標＋朗讀，未以報讀器實測 | 報讀器使用者只能以游標朗讀辨識格子與單位 | 以 NVDA 實際操作一個移動與一個攻擊並記錄結果 | 同上 |
-| `deck-open-items` | D4 守方單一表單、D6 敵 ZOC 標示、參戰單位編輯器、鍵盤／報讀器稽核 | 見來源 | 見來源 | `docs/ui/11-desktop-command-deck-design.md` §6；`docs/ui/ui-flow-review-2026-10-01.md` |
+| `TODO-CM1` | `scripts/counter-lod-gate.mjs` 與 `scripts/desktop-deck-gate.mjs` 無法在現行 UI 執行 | 這兩個 gate 不能重跑 | 腳本更新後在現行 build 跑通 | `docs/ui/map.md` |
+| `TODO-CM2` | Canvas 地圖的格子與 counter 不再是可 Tab 的元素，改為單一焦點＋方向鍵游標＋朗讀，未以報讀器實測 | 報讀器使用者只能以游標朗讀辨識格子與單位 | 以 NVDA 實際操作一個移動與一個攻擊並記錄結果 | `docs/ui/overview.md` |
+| `defender-single-form` | 守方的補給、領頭單位、地形是三個接連的決策，改補給時不會預覽之後的賠率 | 守方要點三次且不能回頭修改 | 決策協調器接受一次送出多個答案（或可撤回），並在瀏覽器由守方一次送出 | `docs/ui/command-deck.md` |
+| `enemy-zoc-display` | 地圖只標出「進入即停止」的可達格，沒有整張地圖的敵方 ZOC | 玩家看不出敵方 ZOC 範圍 | 地圖可顯示敵方 ZOC 並在瀏覽器檢視 | `docs/ui/map.md` |
+| `compound-cost-review` | 複合行動（戰鬥、砲擊、空中任務）的成本與後果審閱未在每種可達交易上以真實選項驗證 | 確認前可能不清楚支付或後果 | 以合法交易、決策與取消的瀏覽器操作，記錄前後狀態 | `docs/ui/command-deck.md` |
+| `deck-state-records` | 左欄 S0–S5 狀態（未選取、多單位堆疊與長名稱、移動、複合行動、載入／失敗／空清單、決策與交接）在兩種畫面尺寸沒有文字紀錄 | 文字或按鈕被擠壓的情況無法事後複查 | 兩種尺寸逐一操作並在 `docs/quality/evidence/` 記錄文字與控件邊界（截圖只在 `artifacts/` 審閱） | `docs/ui/command-deck.md` |
 | `landing-port-view` | 海域局開局地圖置中，登陸港在畫面外 | 玩家要自己找港口 | 開 ports-only 遊戲並直接經可見的地圖／導覽找到港口 | `docs/quality/evidence/vp-allocation-2026-10-14/README.md` |
 | `small-map-visual` | 小地圖的視覺驗收未做 | NG-11 無法升級 | 見來源 | `docs/game-flow/03-deployment-generator.md` |
 | `objective-marker-preview` | New Game 預覽的目標仍是舊的金星、不顯示持有者；60% 縮放時十字標記偏小；己方鐵路綠帶疊在淺綠補給範圍上對比弱；一般格子的控制權不在地圖上標示 | 預覽與地圖的控制權資訊不一致或不易看清 | 修正後在瀏覽器檢視預覽、60% 縮放與 Trace Supply | `docs/quality/evidence/control-2026-10-05/RUN.md` |
@@ -71,8 +74,8 @@
 
 | ID | 缺少的行為 | 使用者可見影響 | 關閉證據 | 詳細 |
 |---|---|---|---|---|
-| `map-appearance` | Autobahn、地名僅裝飾、一格一地形、並行道路、覆蓋填補耗時；新外觀未重跑整合驗收 | 見來源 | 見來源 | `docs/ui/12-map-appearance.md`；`docs/generator/10-btr-scale-density.md` |
-| `road-exit-edge` | 地圖資料不記錄產生器的道路出口，出口格另有道路經過時不畫出地圖邊（24 張 32×24 圖中 189 個出口有 13 個） | 少數道路出口看不出通往地圖外 | 地圖資料記錄出口並全部畫出 | `docs/ui/12-map-appearance.md` |
+| `map-appearance` | 地名是裝飾用的音節產生器；一格一地形（格內丘陵、部分森林無法表示）；沒有 Autobahn；並行道路與覆蓋填補耗時（`docs/generator/10-btr-scale-density.md`）；新外觀未重跑整合驗收 | 地圖與印刷地圖仍有差距；新外觀的整合流程無證據 | 地圖模型帶真實地名或使用者決定移除；重跑 New Game → 一整回合並記錄 MAP 列 | `docs/ui/map.md` |
+| `road-exit-edge` | 地圖資料不記錄產生器的道路出口，出口格另有道路經過時不畫出地圖邊（24 張 32×24 圖中 189 個出口有 13 個） | 少數道路出口看不出通往地圖外 | 地圖資料記錄出口並全部畫出 | `docs/ui/map.md` |
 | `case-blue-terrain` | Case Blue 地形與天氣（Hills、輕／重林、乾湖、草原、Volga 級河流、泥濘／冰凍）仍用 BtR 規則 | 東歐主題只有密度不同，地形規則相同 | 另立需求 | `docs/generator/11-eastern-europe-theme.md` |
 | `east-small-objectives` | 最小的 16×12 東歐圖雙方起始 VP 可能不相等（預覽顯示 "Objectives are unbalanced"） | 小圖開局不公平 | seeds 1、0x0c500001、777 的 16×12 東歐預覽皆等 VP 且無警告 | `docs/game-flow/03-deployment-generator.md` 步驟 7 |
 | `oob-naming-ui` | WWII 命名的 UI 驗收未做 | 命名只有單元測試證據 | 在瀏覽器檢視雙方編制名稱 | `docs/oob/random-oob-naming.md` |

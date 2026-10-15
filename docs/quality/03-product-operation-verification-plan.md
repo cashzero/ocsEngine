@@ -23,6 +23,8 @@ name the approval, and invalidate the affected rows.
   and disables Start.
 - **Desktop only** (user, 2026-09-06): default 1920×1080, supported 1680×1050, no narrow-screen acceptance.
   A single left command deck stays fixed; only bounded collections may scroll.
+- **Smallest interface text 12 px** (user, 2026-10-14), instead of 13 px; counter artwork keeps its own level-of-detail
+  exception.
 - **Printed counter fidelity** (2026-09-04): section B1 and `docs/roadmap/17-counter-fidelity-wbs.md` are required
   P0 evidence; map or whole-turn screenshots cannot satisfy them by inference.
 - **Replacements are built in** (user, 2026-10-04, 2026-10-13, 2026-10-14): there is no Air support option;
@@ -66,7 +68,7 @@ Measured from click/key input until the next usable render on the current verifi
 - action execution and revision refresh: at most 1,500 ms;
 - combined Map/OOB/deployment preview or Gameplay mount: at most 3,000 ms;
 - no interaction may leave the UI without a visible busy state for more than 1,000 ms;
-- ordinary interface text is at least 13 px at both desktop viewport sizes; retain the approved counter-artwork/LOD exception.
+- ordinary interface text is at least 12 px at both desktop viewport sizes; retain the approved counter-artwork/LOD exception.
 
 A completed transition does not pass when it exceeds its budget or temporarily appears dead.
 
@@ -171,7 +173,7 @@ is `BLOCKED`, not `PASS`; the missing scenario/setup path is a product gap to re
 |---|---:|---|---|---|
 | UI-01 | P0 | Operate at 1920×1080 | Map remains dominant; single left deck does not scroll; primary commands and current phase/seat remain visible | PASS (`evidence/product-2026-10-14/ui-1920x1080`, `ui-1680x1050`): 8 screens of the NG-07 dialog, package and a contact package (fuel, move preview, hand-over prompt, privacy screen, other seat): map share 75%, the deck never scrolls as a whole, End and the phase/seat stay visible. The contact package no longer reaches an overrun (the armies start about ten hexes apart and nothing arrives in Game Turn 1), so overrun screens are not covered |
 | UI-02 | P0 | Operate at 1680×1050 | No page overflow, clipped content, or whole-deck scrolling; only bounded lists scroll; map and commands remain reachable | FAIL (`evidence/product-2026-10-14/ui-1920x1080`, `ui-1680x1050`): no page overflow, no whole-deck scrolling, End and phase reachable; but the roster truncates long names ("Chmbln TF (Det. 2) / 1…") at 1680 wide, which the row forbids. The detector also lists the status box of the New Game bar (a screen-reader-only clipped box on the Preview and loading pages) and the ✕ button's tight padding; those were not counted |
-| UI-03 | P0 | Measure every visible text node in both viewports and inspect screenshots | Minimum computed size is 13 px; no visually illegible clipped labels | PASS (`evidence/product-2026-10-14/ui-1920x1080`, `ui-1680x1050`) against the limit of 12 px that the user accepted instead of 13 px (the Expected cell still says 13 px and needs rewriting): the smallest visible text is 12 px (the New Game stage strip and headline labels, the FUEL status mark), everything else 13 px or more; against 13 px it would FAIL |
+| UI-03 | P0 | Measure every visible text node in both viewports and inspect screenshots | Minimum computed size is 12 px; no visually illegible clipped labels | PASS (`evidence/product-2026-10-14/ui-1920x1080`, `ui-1680x1050`): the smallest visible text is 12 px (the New Game stage strip and headline labels, the FUEL status mark), everything else 13 px or more; against 13 px it would FAIL |
 | UI-04 | P0 | Run NG-07 and ACT-14 while collecting console/runtime errors | Zero uncaught exception or error log; failures appear in the UI | PASS (`evidence/product-2026-10-14/ui-1920x1080`, `ui-1680x1050`): 0 console or page errors across the NG-07 dialog and package and a contact package up to the other seat's turn; ACT-14 itself (overrun, attacks) was not repeated here |
 | UI-05 | P1 | Keyboard traverse New Game, map selection, actions, modal, handoff | Focus remains visible and modal focus cannot escape into private content | UNVERIFIED |
 
