@@ -392,6 +392,26 @@ try {
     `saved while paused at revision ${midBefore.revision} (${midBefore.played} computer actions played); the same operation reopened with two persons (computer panel ${reopened.present}); after load: computer panel ${afterLoad.present} at revision ${afterLoad.revision}; Game End "${endAfterLoad.title}" (${endAfterLoad.reason}); final save ${replayedLoaded.actions} actions, replay hash ${replayedLoaded.match ? 'equals' : 'DIFFERS from'} the saved one`,
     midBefore.revision > 0 && !reopened.present && afterLoad.present && afterLoad.revision >= midBefore.revision && !!endAfterLoad.title && replayedLoaded.match && replayedLoaded.lifecycle === 'FINISHED');
   extra['BOT-10'] = { endAfterLoad, replayedLoaded };
+
+  // ------------------------------------------------------------------ D: a person against the computer, all the way to Game End
+  const SEEDS_D = { map: 94201, oob: 94202, deployment: 94203, rules: 94204 };
+  await click(h, '#close-game-end');
+  const d = await startGame({ allied: 'PLAYER', axis: 'COMPUTER', seeds: SEEDS_D });
+  const dStart = Date.now();
+  await page.selectOption('#computer-speed', 'INSTANT');
+  const dTurns = new Set();
+  const ended = await playOn((state) => { dTurns.add(state.turn); return false; }, { limit: 4000 });
+  const dEnd = await page.evaluate(() => ({ title: document.querySelector('#game-end-title')?.textContent.trim(), reason: document.querySelector('.game-end-reason')?.textContent.trim() }));
+  await h.shot('person-vs-computer-game-end');
+  const [dDownload] = await Promise.all([page.waitForEvent('download'), page.click('#download-final-save')]);
+  const dFinal = join(evidenceDir, 'person-vs-computer-final-save.json');
+  await dDownload.saveAs(dFinal);
+  const dReplay = await replayCheck(dFinal, SEEDS_D);
+  const dPanel = await panel();
+  record(h, 'BOT-11', 'A person plays the whole operation against the computer to Game End (every phase, decision and the computer\'s turns), with no hand-over screen, and the final save replays to the same final state',
+    `${d.players}; ${[...dTurns].join(', ')} in ${Math.round((Date.now() - dStart) / 1000)} s; ${dPanel.played} computer actions; Game End "${dEnd.title}" (${dEnd.reason}); final save ${dReplay.actions} actions, replay hash ${dReplay.match ? 'equals' : 'DIFFERS from'} the saved one, seats ${dReplay.seats.join(', ')}; page errors ${h.errors.length}`,
+    !!dEnd.title && ended.state !== undefined && dReplay.match && dReplay.lifecycle === 'FINISHED' && h.errors.length === 0);
+  extra['BOT-11'] = { dEnd, dReplay, turns: [...dTurns] };
 } catch (error) {
   h.note(`RUN STOPPED: ${error.stack ?? error.message}`);
   await h.shot('failure').catch(() => {});
