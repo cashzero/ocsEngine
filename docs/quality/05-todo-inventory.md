@@ -87,7 +87,7 @@
 | `PERF-7` | New Game 預覽 SVG 以整張地圖字串建立；地圖產生與 theater model 隨地圖約線性以上成長；大於 64×48 的地圖沒有在產品 build 上量過 | 地圖上限 256×256；128×96 已量到 Generate 約 4 s、Start 約 4.5 s，超過 3,000 ms 預算，更大的地圖未知 | `scripts/perf/browser-scale.mjs` 在 256×256 上 Generate 與 Start 各 < 3,000 ms，且 `compare-generation.mjs` 輸出不變 | `docs/quality/performance.md` |
 | `large-map-generation` | 產生在頁面主執行緒上執行，單一步驟無法中斷或回報進度 | 大地圖時頁面在一個步驟內不回應輸入，Cancel 要等步驟結束 | 在最大地圖上於瀏覽器量測：每個步驟中頁面都回應輸入、Cancel 在 250 ms 內停止、超過 1 秒的步驟顯示步驟內進度，且 Worker 產生的套件與 `prepare` 相同（scenario hash 與初始 state hash） | `docs/game-flow/new-game-ui.md` |
 | `sea-landing-balance` | 無 inland entry 攻方的兵力時序與補給吞吐量尚未校準；少量 bot 敏感度測試不能選定可靠預設 | 海運進攻可能被守方反擊切斷補給線，設定難度不穩定 | 先確認 bot 運補、進攻與斷補原因，依比例、回合、容量及雙向進攻取得配對結果；候選設定經獨立種子與實際玩家流程驗證 | `docs/game-flow/reinforcement-balance.md` |
-| `reinforcement-options` | New Game 沒有 Allied／Axis 獨立師級援軍比例設定；比例、較晚到達時序與自動預設尚待評估後決定及實作 | 玩家無法調整雙方開局兵力與後續增援，也無法覆寫海運攻方所對應的守方預設 | 評估完成並決定契約，雙方設定與整師排程實作；預覽／實際 package 相同，完成整個回合與設定首批回合的合法進場，含海運、決策、交接及經檢視的截圖 | `docs/game-flow/reinforcement-balance.md` |
+| `reinforcement-options` | New Game 已有 Allied／Axis 援軍比例與共用首批回合選項（至少兩回合在場的限制、預覽、整師排程）；尚未完成：攻方無 inland entry 時自動提高守方預設、整個 Game Turn 與首批回合實際進場（含海運經港口上岸）的 UI 驗收 | 玩家可手動設定，但沒有自動預設；進場行為未在實際流程驗證 | UI 設定明顯不同的雙方援軍，預覽並開啟同一 package，完成整個回合與設定首批回合的合法進場，含海運、決策、交接及經檢視的截圖 | `docs/game-flow/reinforcement-balance.md` |
 
 ### 存檔與工作階段
 

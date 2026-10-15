@@ -3,6 +3,7 @@ import { generateRandomOob } from '../generation/oob/index.js';
 import type { ValidationIssue } from '../core/index.js';
 import { composeGeneratedScenario, GENERATED_PLAYERS } from './composer.js';
 import { deployGeneratedForces } from './deployment.js';
+import { withReinforcements } from './configuration.js';
 import { attackerOf, landingEdgesOf, mapSeaPlacementOf, seaArrivalSidesOf } from './model.js';
 import type {
   CreatedNewGame,
@@ -34,8 +35,9 @@ function* prepareNewGameSteps(request: NewGameRequest): Generator<NewGamePrepara
   // An attacker fields more divisions (ATTACKER_FORCE_RATIO); a meeting engagement keeps the sides equal.
   const attacker = attackerOf(request.engagement ?? 'MEETING');
   // The attacker also flies from an off-map airfield (docs/quality/evidence/engagements-plan-2026-10-07/README.md §6).
-  const oob = generateRandomOob({ ...request.oob, ...(attacker === null ? {} : { attacker, offMapAir: attacker }), seed: request.seeds.oob });
-  if (!oob.ok) return { ok: false, error: generatorFailures('OOB', oob.error) };
+  const generatedOob = generateRandomOob({ ...request.oob, ...(attacker === null ? {} : { attacker, offMapAir: attacker }), seed: request.seeds.oob });
+  if (!generatedOob.ok) return { ok: false, error: generatorFailures('OOB', generatedOob.error) };
+  const oob = { ok: true as const, value: withReinforcements(request, generatedOob.value) };
   yield 'DEPLOYMENT';
   const deployment = deployGeneratedForces(map.value, oob.value, request.seeds.deployment, GENERATED_PLAYERS, request.engagement ?? 'MEETING', seaArrivalSidesOf(request));
   if (!deployment.ok) return deployment;

@@ -107,6 +107,12 @@ export interface NewGameRequest {
    * by sea at ports (19.0f), and the map gets a port near its edge. Needs a sea; absent means both sides have them.
    */
   readonly inlandEntry?: { readonly allied: boolean; readonly axis: boolean };
+  /**
+   * Share of each side's divisions (whole percent, rounded to whole divisions) that start in the reinforcement Box
+   * instead of on the map, arriving one division per Game Turn from `firstTurn`. The last division must arrive at least
+   * two Game Turns before the campaign ends (`reinforcementsOf`). Absent means none: every division starts deployed.
+   */
+  readonly reinforcements?: { readonly allied: number; readonly axis: number; readonly firstTurn: number };
 }
 
 export interface GeneratedDeployment {

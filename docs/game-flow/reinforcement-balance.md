@@ -2,11 +2,11 @@
 
 ## Scope
 
-評估進攻方沒有 inland entry hex、只能經已持有港口接收地面援軍、SP 與 Repls 時，雙方的師級援軍比例、到達時間與港口吞吐量如何影響對局。這是設定的評估，尚未交付 New Game 援軍設定或更改產品預設。
+評估進攻方沒有 inland entry hex、只能經已持有港口接收地面援軍、SP 與 Repls 時，雙方的師級援軍比例、到達時間與港口吞吐量如何影響對局。這是設定的評估；New Game 已提供援軍設定（見 Current behavior），產品預設尚未更改。
 
 ## Current behavior
 
-New Game 尚無雙方援軍比例與師級援軍首批到達回合選項。師級主力原則上開局部署；既有卡車、飛機、獨立支援單位的援軍及容量不足時的待進場行為不屬於本次比例定義。進攻方的師數仍由 `ATTACKER_FORCE_RATIO = 1.5` 決定。沒有 inland entry 不會自動減少或延後敵方師級主力。
+New Game 的 Order of battle 區有 Allied／Axis 各自的援軍比例（整數 %）與共用的首批到達回合（`NewGameRequest.reinforcements`）。比例換算成整師（四捨五入），按編制順序均勻抽取，被抽中的整師開局在援軍 Box，從首批回合起每回合到 1 師；至少保留一師開局在場。最後一師的到達回合必須讓它至少有兩個 Game Turn 在場（首批回合 + 師數 − 1 ≤ 回合上限 − 1）：輸入會自動把首批回合壓低（不低於 T2），仍排不下則降低比例；直接給 API 不合法的值會在 `OPTIONS` 階段失敗（`REINFORCEMENTS_TOO_LATE`）。預設為無援軍，行為不變；攻方沒有 inland entry 時提高守方預設尚未實作。預覽顯示每方援軍師數與首批回合。海運方的援軍仍須經港口與 Sea Cap 上岸，排程只保證回合合法，不保證當回合一定上岸。師級主力其餘部分開局部署；既有卡車、飛機、獨立支援單位的援軍及容量不足時的待進場行為不屬於本次比例定義。進攻方的師數仍由 `ATTACKER_FORCE_RATIO = 1.5` 決定。沒有 inland entry 不會自動減少或延後敵方師級主力。
 
 港口生成與容量見 [Random map](../generator/random-map.md)，Sea Cap 預設見 [Deployment](deployment.md)，海運與供補規則的實作邊界見 [Rule coverage](../rule-engine/rule-coverage.md) 的 `movement.sea`。補給表收入大於卸貨量，只能證明 Box 可能累積 SP；它不是部隊每回合實際消耗量。維持 trace supply、燃料、戰鬥與失去補給線的情況必須分別觀察。
 
@@ -105,7 +105,7 @@ Axis 進攻原配置仍有一筆自身 `RESPOND_DECISION` 後的耗損、19 筆�
 
 ## Known gaps
 
-`sea-landing-balance`、`reinforcement-options` 的缺少行為、影響與關閉證據見 [TODO inventory](../quality/05-todo-inventory.md)。Headless 結果不驗收 New Game 或可操作的玩家流程。
+`sea-landing-balance`、`reinforcement-options` 的缺少行為、影響與關閉證據見 [TODO inventory](../quality/05-todo-inventory.md)。Headless 結果不驗收 New Game 或可操作的玩家流程。選項已實作，但尚未走完整個 Game Turn，也未驗證首批回合的實際進場（含海運上岸），因此 `reinforcement-options` 維持 open。
 
 ## Verification
 
