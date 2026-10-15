@@ -1,0 +1,89 @@
+{
+  "BOT-07": {
+    "firstRun": [
+      "Axis computer took a logistics action",
+      "Axis computer took a logistics action",
+      "Axis computer: An enemy unit moved to 0305",
+      "Axis computer took a logistics action",
+      "Axis computer: An enemy unit moved to 0305"
+    ],
+    "secondRun": [
+      "Axis computer took a logistics action",
+      "Axis computer took a logistics action",
+      "Axis computer: An enemy unit moved to 0305",
+      "Axis computer took a logistics action",
+      "Axis computer: An enemy unit moved to 0305"
+    ]
+  },
+  "BOT-05": {
+    "end": {
+      "title": "Draw",
+      "reason": "Result: TURN LIMIT · final revision 275"
+    },
+    "finalPanel": {
+      "present": true,
+      "stuck": false,
+      "stuckRevision": -1,
+      "stuckText": "",
+      "status": "Game over",
+      "last": "Axis computer finished Combat · Combat Segment — end step: nothing worth doing in combat combat",
+      "playing": true,
+      "speed": "INSTANT",
+      "played": 275,
+      "revision": 275
+    },
+    "replayed": {
+      "actions": 275,
+      "savedHash": "sha256:0193e11f1bc95c542015e3159db74811ae00655c440ffc502902d10f2a0f7061",
+      "replayedHash": "sha256:0193e11f1bc95c542015e3159db74811ae00655c440ffc502902d10f2a0f7061",
+      "match": true,
+      "lifecycle": "FINISHED",
+      "seats": [
+        "Allied computer:BOT",
+        "Axis computer:BOT"
+      ]
+    }
+  },
+  "BOT-10": {
+    "endAfterLoad": {
+      "title": "Draw",
+      "reason": "Result: TURN LIMIT · final revision 275"
+    },
+    "replayedLoaded": {
+      "actions": 275,
+      "savedHash": "sha256:0193e11f1bc95c542015e3159db74811ae00655c440ffc502902d10f2a0f7061",
+      "replayedHash": "sha256:0193e11f1bc95c542015e3159db74811ae00655c440ffc502902d10f2a0f7061",
+      "match": true,
+      "lifecycle": "FINISHED",
+      "seats": [
+        "Allied computer:BOT",
+        "Axis computer:BOT"
+      ]
+    }
+  },
+  "BOT-11": {
+    "dEnd": {
+      "title": "Axis",
+      "reason": "Result: TURN LIMIT · final revision 175"
+    },
+    "dReplay": {
+      "actions": 175,
+      "savedHash": "sha256:b5f6f6e85ec835c882134e1e3f9d67a2325cb9f3d7756e8b908b6a7478d780b9",
+      "replayedHash": "sha256:b5f6f6e85ec835c882134e1e3f9d67a2325cb9f3d7756e8b908b6a7478d780b9",
+      "match": true,
+      "lifecycle": "FINISHED",
+      "seats": [
+        "Allied commander:HUMAN",
+        "Axis computer:BOT"
+      ]
+    },
+    "turns": [
+      "Turn 1 / 6",
+      "Turn 2 / 6",
+      "Turn 3 / 6",
+      "Turn 4 / 6",
+      "Turn 5 / 6",
+      "Turn 6 / 6"
+    ]
+  }
+}

@@ -325,6 +325,28 @@ Evidence: `docs/quality/evidence/aep-2026-10-13/README.md`.
 | AEP-02 | P0 | Plan and execute a barrage using only off-map aircraft; resolve decisions and hot-seat handoffs, finish the entire Game Turn, refit next turn | Plan lists the friendly AEP; sortie uses it, surviving aircraft return to the box and refit there without SP; no dead end or browser error | PASS (2026-10-13, `evidence/aep-2026-10-13/final`): only two off-map Fighters flown, interception decision/handoffs, entire Turn 1, Turn 2 off-map refit 445 ms; final R18, zero browser errors |
 | AEP-03 | P0 | Rule boundary: retain ground entries/enemy AEP but remove friendly AEP; also target a nearer non-AEP entry | Missing friendly AEP rejects sortie/candidates; nearer ground entry cannot replace AEP; transaction launch hex and range originate at friendly AEP | PASS (2026-10-13, explicitly named rule boundary): `tests/rules/off-map-airfield.test.ts`; related regression 38/38 |
 
+## K. Computer players
+
+User request 2026-10-15: New Game chooses computer players; person against computer; computer against computer to watch;
+play, pause and speed; a loaded save is played on by the computers; when a computer is stuck, a person takes over.
+The rows below turn that into operations (the draft rows of `docs/roadmap/11-ai-bot-wbs.md` §4, now filled in). Behavior: `docs/ui/computer-players.md`.
+Evidence: `docs/quality/evidence/computer-2026-10-15/README.md`, run by `scripts/product-acceptance/run-computer.mjs` and `run-computer-scale.mjs`.
+A save loads only into a game of the same scenario (TODO `load-same-scenario`), so rows that load a save open the same operation again from its seeds first.
+
+| ID | Pri | Player operation | Required visible result | Status |
+|---|---:|---|---|---|
+| BOT-01 | P0 | New Game: set one side to Computer, Preview, Start | The Players box offers Player / Computer per side; the preview names who plays; the game opens on the person's seat with a computer panel and no hand-over screen | PASS (`evidence/computer-2026-10-15`): preview "Allied: you · Axis: computer", Start 184 ms, seat "Allied commander", panel "Your turn", no hand-over |
+| BOT-02 | P0 | The person moves next to the enemy and attacks the computer | The computer answers the defender's decisions by itself; the result shows on the person's screen; no hand-over | PASS (same evidence): attack on 1208 at 5:1, the computer chose its supply source and terrain, result card "defender loses 2 step" |
+| BOT-03 | P0 | Reach the computer's Player Turn; Pause, Step, set the speed, Play | The turn plays by itself with each action shown; Pause stops it; Step plays exactly one action; the top bar names the computer as the one acting | PASS (same evidence): 6 actions in 0.7 s at Fast; held 9 = 9 for 1.5 s paused; one Step = one action; Instant ended the turn |
+| BOT-04 | P0 | Person against computer: play one whole Game Turn (both Player Turns) | Legal actions, decisions and the computer's turn in one flow; no hand-over, stall or error | PASS (same evidence): Turn 1 to Turn 2, 59 computer actions, 0 errors |
+| BOT-05 | P0 | Two computers: Start, watch, view from the other side, Pause, Instant, to Game End | Nobody operates; the panel shows play, pause, speed and which side is shown; Game End shows; the final save replays to its hash | PASS (same evidence): 16×12 to revision 275 "Draw", save replays to the same hash; default 32×24 to revision 549 in 28–85 s including drawing, Pause in 3–12 ms |
+| BOT-06 | P0 | Save during the computer's turn, open the operation anew, load | The computer goes on from the saved position without Play being pressed | PASS (same evidence): saved at the computer's move, loaded; revision 172→178 with 2 to 14 computer actions |
+| BOT-07 | P0 | Restore a checkpoint taken before the computer acted | The game returns to the checkpoint; the computer plays the same actions again | PASS (same evidence): five identical actions before and after Restore. The top bar's Undo undoes only the person's own actions |
+| BOT-08 | P0 | A computer cannot go on (a save naming the test strategy `test-stall`) | A banner names the seat and what went wrong; nothing more is played; "Play it myself" gives the person the seat and the game continues | PASS (same evidence): banner, revision held 1.5 s, take-over, the person played to Turn 5 |
+| BOT-09 | P1 | Default size: time the computer's actions and a whole Player Turn | Proposed (not approved): per-action compute p95 ≤ 300 ms and a Player Turn ≤ 20 s, excluding playback pauses | IN PROGRESS (same evidence): headless, four matches, p95 226 / 222 / 152 / 359 ms (one over 300), max 1.07 s, longest Player Turn 7.1 s; browser: Pause shows in 3–12 ms at Instant but the page cannot respond while one decision runs (TODO `computer-main-thread`). The thresholds await the user |
+| BOT-10 | P0 | Computers against each other: save mid-game, open the operation anew, load, play to Game End | The computers continue to Game End; the final save replays to its hash | PASS (same evidence): saved at revision 24, loaded, ended at 275 "Draw", replay hash equal |
+| BOT-11 | P0 | A person plays all six Game Turns against the computer to Game End | No hand-over, stall or console error; Game End shows; the final save replays to its hash | PASS (same evidence): Game End "Axis" at revision 175 in 28 s, 125 computer actions, replay hash equal |
+
 ## Execution order and stop conditions
 
 1. Run BOOT and NG rows first. A package-continuity failure blocks all downstream Game Flow claims.
