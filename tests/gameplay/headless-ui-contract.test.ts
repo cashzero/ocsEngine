@@ -57,16 +57,7 @@ describe('G9-G10 headless and UI contract gate', () => {
         .map((match) => ({ path, text: match[0] })));
     expect(ruleLeaks).toEqual([]);
 
-    const outputs = [
-      ...Array.from({ length: 10 }, (_, index) => `docs/gameplay/${String(index).padStart(2, '0')}-${[
-        'boundaries-ports-and-session-api', 'scenario-bootstrap-and-lifecycle',
-        'dispatch-and-concurrency', 'action-discovery-and-drafts',
-        'pending-decision-coordinator', 'projection-access-and-hotseat',
-        'history-timeline-diagnostics', 'save-load-checkpoint-replay',
-        'recovery-and-observability', 'headless-driver',
-      ][index]}.md`),
-      'docs/gameplay/G10-gameplay-ui-contract-gate.md',
-    ];
+    const outputs = ['docs/gameplay/session.md'];
     expect(outputs.filter((path) => !existsSync(join(process.cwd(), path)))).toEqual([]);
   });
 });

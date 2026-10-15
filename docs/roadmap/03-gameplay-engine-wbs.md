@@ -1,5 +1,7 @@
 # Gameplay Engine WBS
 
+狀態：**DONE**（G0–G10 headless 應用層：只有 memory adapter，依計畫的非目標）。產品流程的驗收屬 `04-ui-wbs.md` 與 `07-game-flow-integration-wbs.md`。現況見 `docs/gameplay/session.md`；本文件只保留計畫。
+
 ## 1. 目的與邊界
 
 Gameplay Engine 是 Rule Engine 與各 client 之間的 application layer。它管理
@@ -56,21 +58,21 @@ Clients 不取得 mutable `GameState` reference。Headless、UI 與未來 AI 都
 
 ## 3. Gameplay Engine 工作分解
 
-每個 application-layer stage 都要提交獨立文件：
+各 stage 的現況寫在 `docs/gameplay/session.md`（G0–G10 已完成）：
 
 | Stage | Required document |
 |---|---|
-| G0 | `docs/gameplay/00-boundaries-ports-and-session-api.md` |
-| G1 | `docs/gameplay/01-scenario-bootstrap-and-lifecycle.md` |
-| G2 | `docs/gameplay/02-dispatch-and-concurrency.md` |
-| G3 | `docs/gameplay/03-action-discovery-and-drafts.md` |
-| G4 | `docs/gameplay/04-pending-decision-coordinator.md` |
-| G5 | `docs/gameplay/05-projection-access-and-hotseat.md` |
-| G6 | `docs/gameplay/06-history-timeline-diagnostics.md` |
-| G7 | `docs/gameplay/07-save-load-checkpoint-replay.md` |
-| G8 | `docs/gameplay/08-recovery-and-observability.md` |
-| G9 | `docs/gameplay/09-headless-driver.md` |
-| G10 | `docs/gameplay/G10-gameplay-ui-contract-gate.md` |
+| G0 | `docs/gameplay/session.md` |
+| G1 | `docs/gameplay/session.md` |
+| G2 | `docs/gameplay/session.md` |
+| G3 | `docs/gameplay/session.md` |
+| G4 | `docs/gameplay/session.md` |
+| G5 | `docs/gameplay/session.md` |
+| G6 | `docs/gameplay/session.md` |
+| G7 | `docs/gameplay/session.md` |
+| G8 | `docs/gameplay/session.md` |
+| G9 | `docs/gameplay/session.md` |
+| G10 | `docs/gameplay/session.md` |
 
 ### G0：Application contract、ports 與 dependency rule
 
@@ -89,8 +91,7 @@ Electron 或 network。
 
 產出：
 
-- `docs/gameplay/00-boundaries-and-ports.md`
-- `docs/gameplay/00-session-api.md`
+- `docs/gameplay/session.md`
 
 Gate：Rule Engine 與 UI 都不需要知道 adapter implementation。
 
