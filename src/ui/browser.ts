@@ -238,8 +238,7 @@ const weatherLabel = (snapshot: UiSnapshot): string => {
   const weather = snapshot.view.projection?.weather;
   if (!weather) return '–';
   const ground = { DRY: 'Dry', MUD: 'Mud', SNOW: 'Snow' }[weather.groundCondition];
-  const flight = weather.flightRoll === null ? '' : ` · Flight ${{ NORMAL: 'Normal', LIMITED: 'Limited', NONE: 'None' }[weather.flight]}`;
-  return weather.month ? `${weather.day} ${MONTHS[weather.month - 1]} · ${ground}${flight}` : `${ground}${flight}`;
+  return weather.month ? `${weather.day} ${MONTHS[weather.month - 1]} · ${ground}` : ground;
 };
 
 /** Draw order inside a stack, bottom first: dumps, trucks, HQs, artillery, then combat units on top. */
@@ -313,6 +312,16 @@ const railCapCell = (snapshot: UiSnapshot): TemplateResult | typeof nothing => {
   const label = moving ? `${left} of ${cap.points} left this Movement Phase` : `${cap.points} per Movement Phase`;
   return html`<span class="rail-cap-cell" title="Your Rail Cap (13.3b): SP or RE you can move by rail in your Movement Phase; unused Rail Cap is lost. In your Movement Phase it shows what is left." aria-label=${`Rail Cap: ${label}`}>
     <small>Rail Cap</small><strong><span class=${moving ? 'rail-side is-moving' : 'rail-side'}>${moving ? `${left} / ${cap.points}` : `${cap.points} per turn`}</span></strong></span>`;
+};
+
+/** The Game Turn's flying weather (14.1f), shown beside the date when the Weather Table rolled one. */
+const flightCell = (snapshot: UiSnapshot): TemplateResult | typeof nothing => {
+  const weather = snapshot.view.projection?.weather;
+  if (!weather || weather.flightRoll === null) return nothing;
+  const label = { NORMAL: 'Normal', LIMITED: 'Limited', NONE: 'None' }[weather.flight];
+  const effect = { NORMAL: 'Air missions may be flown in every phase.', LIMITED: 'Air missions only in the flying player\'s Regular Movement Phase; no Hip Shoots.', NONE: 'No air missions this turn; aircraft stay Active and bases can still refit.' }[weather.flight];
+  return html`<span class="rail-cap-cell" title=${`Flying weather (2d6 ${weather.flightRoll}): ${effect}`} aria-label=${`Flight conditions: ${label}. ${effect}`}>
+    <small>Flight</small><strong><span class=${weather.flight === 'NORMAL' ? 'rail-side' : 'rail-side is-moving'}>${label}</span></strong></span>`;
 };
 
 /**
@@ -1263,6 +1272,7 @@ const appView = (snapshot: UiSnapshot): TemplateResult => {
         <div class="turn-strip" aria-label="Current turn state">
           <span class="turn-cell"><small>Turn ${sequence?.gameTurn ?? '–'} / ${currentGame.summary.turnLimit}</small><strong>${weatherLabel(snapshot)}</strong></span>
           ${vpCell(snapshot)}
+          ${flightCell(snapshot)}
           ${railCapCell(snapshot)}
           ${seaCapCell(snapshot)}
           <div class="phase-picker" tabindex="0" aria-label=${`${playerName(sequence?.phasingPlayerId)} Player Turn`}>

@@ -238,6 +238,8 @@ export interface AirOverview {
   /** Missions of the current segment; `available` when some aircraft has a legal target. */
   readonly missions: readonly { readonly mission: AirMissionKind; readonly label: string; readonly available: boolean }[];
   readonly draft: AirDraft | null;
+  /** Why no mission can be flown now (None or Limited flying weather, 14.1f), when the player has Active aircraft. */
+  readonly flightNotice: string | null;
   /** Hexes the planned mission can target (highlighted on the map). */
   readonly targetHexes: readonly string[];
   readonly refits: readonly AirRefit[];

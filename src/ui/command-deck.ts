@@ -564,7 +564,7 @@ export const deckTabs = (snapshot: UiSnapshot): DeckTab[] => {
   if (phase !== 'AIRCRAFT_REFIT') tabs.push({ id: 'unit', label: 'Unit', badge: 0 });
   // Air missions are optional in every step that offers them, so Air never takes the lead from the step's own work and never carries a
   // "waiting for you" count: a Base Transfer being possible is not something the player has to deal with.
-  if (snapshot.air.missions.length > 0) tabs.push({ id: 'air', label: 'Air', badge: 0 });
+  if (snapshot.air.missions.length > 0 || snapshot.air.flightNotice !== null) tabs.push({ id: 'air', label: 'Air', badge: 0 });
   // What the seat has paid or moved this step, once there is something to read; optional, so it never takes the first place.
   if (snapshot.ledger.length > 0) tabs.push({ id: 'ledger', label: 'Ledger', badge: 0 });
   tabs.push({ id: 'log', label: 'Log', badge: 0 });
@@ -679,7 +679,7 @@ const targetsTab = (snapshot: UiSnapshot): TemplateResult => {
   return html`${chips(segment === 'COMBAT' ? 'Enemy hexes you can attack' : 'Enemy hexes the selected unit can overrun', segment === 'COMBAT' ? 'Attack' : 'Overrun', snapshot.attackTargets)}${chips('Enemy hexes in artillery range', 'Barrage', snapshot.barrageTargets)}`;
 };
 
-const airTab = (snapshot: UiSnapshot): TemplateResult => html`${airMissionButtons(snapshot)}<p class="hint">Pick a mission, then a highlighted target hex and the aircraft that fly it.</p>${dropPlansSection(snapshot, { search: '', working: false })}`;
+const airTab = (snapshot: UiSnapshot): TemplateResult => html`${snapshot.air.flightNotice === null ? nothing : html`<p class="hint flight-notice" role="status">${snapshot.air.flightNotice}</p>`}${airMissionButtons(snapshot)}${snapshot.air.missions.length === 0 ? nothing : html`<p class="hint">Pick a mission, then a highlighted target hex and the aircraft that fly it.</p>`}${dropPlansSection(snapshot, { search: '', working: false })}`;
 
 /** A supply dump is a generic counter: it reads as its size, never by a name (the board-game counter has none). */
 const supplyText = (tokens: number): string => `${tokens}T (${tokens / 4} SP)`;

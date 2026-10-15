@@ -1,0 +1,169 @@
+{
+  "title": "AIR-16 flying weather (5 turns, seeds {\"map\":5321,\"oob\":5322,\"deployment\":5323,\"rules\":5324})",
+  "final": {
+    "turn": "Turn 5 / 5",
+    "player": "Axis player turn",
+    "phase": "Game over Phase",
+    "revision": "78"
+  },
+  "rows": [
+    {
+      "id": "AIR-16",
+      "expectation": "Turn bar names the Flight result and the Air tab follows it (Turn 1 / 5 Allied Movement)",
+      "observed": "\"1 Jan · Snow\", Flight None: 0/0 mission buttons enabled; panel: No air missions this turn: the flying weather is None (14.1f). Your aircraft stay Active and your bases can still refit. No air missions this turn: the flying w",
+      "status": "PASS"
+    },
+    {
+      "id": "AIR-16",
+      "expectation": "Turn bar names the Flight result and the Air tab follows it (Turn 1 / 5 Axis Movement)",
+      "observed": "\"1 Jan · Snow\", Flight None: 0/0 mission buttons enabled; panel: No air missions this turn: the flying weather is None (14.1f). Your aircraft stay Active and your bases can still refit. No air missions this turn: the flying w",
+      "status": "PASS"
+    },
+    {
+      "id": "AIR-16",
+      "expectation": "Turn bar names the Flight result and the Air tab follows it (Turn 2 / 5 Axis Movement)",
+      "observed": "\"5 Jan · Snow\", Flight Limited: 4/4 mission buttons enabled; panel: Air missions Fighter Sweep Base Transfer Air Transport Air Drop Pick a mission, then a highlighted target hex and the aircraft that fly it. Air missions Fighter",
+      "status": "PASS"
+    },
+    {
+      "id": "AIR-16",
+      "expectation": "Turn bar names the Flight result and the Air tab follows it (Turn 2 / 5 Axis Movement · Barrage)",
+      "observed": "\"5 Jan · Snow\", Flight Limited: 2/2 mission buttons enabled; panel: Air missions Air Barrage Trainbusting Pick a mission, then a highlighted target hex and the aircraft that fly it. Air missions Air Barrage Trainbusting",
+      "status": "PASS"
+    },
+    {
+      "id": "AIR-16",
+      "expectation": "Turn bar names the Flight result and the Air tab follows it (Turn 2 / 5 Allied Movement)",
+      "observed": "\"5 Jan · Snow\", Flight Limited: 4/4 mission buttons enabled; panel: Air missions Fighter Sweep Base Transfer Air Transport Air Drop Pick a mission, then a highlighted target hex and the aircraft that fly it. Air missions Fighter",
+      "status": "PASS"
+    },
+    {
+      "id": "AIR-16",
+      "expectation": "Turn bar names the Flight result and the Air tab follows it (Turn 2 / 5 Allied Movement · Barrage)",
+      "observed": "\"5 Jan · Snow\", Flight Limited: 2/2 mission buttons enabled; panel: Air missions Air Barrage Trainbusting Pick a mission, then a highlighted target hex and the aircraft that fly it. Air missions Air Barrage Trainbusting",
+      "status": "PASS"
+    },
+    {
+      "id": "AIR-16",
+      "expectation": "Turn bar names the Flight result and the Air tab follows it (Turn 3 / 5 Axis Movement)",
+      "observed": "\"8 Jan · Snow\", Flight Limited: 4/4 mission buttons enabled; panel: Air missions Fighter Sweep Base Transfer Air Transport Air Drop Pick a mission, then a highlighted target hex and the aircraft that fly it. Air missions Fighter",
+      "status": "PASS"
+    },
+    {
+      "id": "AIR-16",
+      "expectation": "Turn bar names the Flight result and the Air tab follows it (Turn 3 / 5 Axis Movement · Barrage)",
+      "observed": "\"8 Jan · Snow\", Flight Limited: 2/2 mission buttons enabled; panel: Air missions Air Barrage Trainbusting Pick a mission, then a highlighted target hex and the aircraft that fly it. Air missions Air Barrage Trainbusting",
+      "status": "PASS"
+    },
+    {
+      "id": "AIR-16",
+      "expectation": "Turn bar names the Flight result and the Air tab follows it (Turn 3 / 5 Allied Movement)",
+      "observed": "\"8 Jan · Snow\", Flight Limited: 4/4 mission buttons enabled; panel: Air missions Fighter Sweep Base Transfer Air Transport Air Drop Pick a mission, then a highlighted target hex and the aircraft that fly it. Air missions Fighter",
+      "status": "PASS"
+    },
+    {
+      "id": "AIR-16",
+      "expectation": "Turn bar names the Flight result and the Air tab follows it (Turn 3 / 5 Allied Movement · Barrage)",
+      "observed": "\"8 Jan · Snow\", Flight Limited: 2/2 mission buttons enabled; panel: Air missions Air Barrage Trainbusting Pick a mission, then a highlighted target hex and the aircraft that fly it. Air missions Air Barrage Trainbusting",
+      "status": "PASS"
+    },
+    {
+      "id": "AIR-16",
+      "expectation": "Turn bar names the Flight result and the Air tab follows it (Turn 4 / 5 Allied Movement)",
+      "observed": "\"12 Jan · Snow\", Flight None: 0/0 mission buttons enabled; panel: No air missions this turn: the flying weather is None (14.1f). Your aircraft stay Active and your bases can still refit. No air missions this turn: the flying w",
+      "status": "PASS"
+    },
+    {
+      "id": "AIR-16",
+      "expectation": "Turn bar names the Flight result and the Air tab follows it (Turn 4 / 5 Axis Movement)",
+      "observed": "\"12 Jan · Snow\", Flight None: 0/0 mission buttons enabled; panel: No air missions this turn: the flying weather is None (14.1f). Your aircraft stay Active and your bases can still refit. No air missions this turn: the flying w",
+      "status": "PASS"
+    },
+    {
+      "id": "AIR-16",
+      "expectation": "Turn bar names the Flight result and the Air tab follows it (Turn 5 / 5 Allied Movement)",
+      "observed": "\"15 Jan · Snow\", Flight Normal: 4/4 mission buttons enabled; panel: Air missions Fighter Sweep Base Transfer Air Transport Air Drop Pick a mission, then a highlighted target hex and the aircraft that fly it. Air missions Fighter",
+      "status": "PASS"
+    },
+    {
+      "id": "AIR-16",
+      "expectation": "Turn bar names the Flight result and the Air tab follows it (Turn 5 / 5 Allied Movement · Barrage)",
+      "observed": "\"15 Jan · Snow\", Flight Normal: 2/2 mission buttons enabled; panel: Air missions Air Barrage Trainbusting Pick a mission, then a highlighted target hex and the aircraft that fly it. Air missions Air Barrage Trainbusting",
+      "status": "PASS"
+    },
+    {
+      "id": "AIR-16",
+      "expectation": "Turn bar names the Flight result and the Air tab follows it (Turn 5 / 5 Allied Reaction · Movement)",
+      "observed": "\"15 Jan · Snow\", Flight Normal: 4/4 mission buttons enabled; panel: Air missions Fighter Sweep Base Transfer Air Transport Air Drop Pick a mission, then a highlighted target hex and the aircraft that fly it. Air missions Fighter",
+      "status": "PASS"
+    },
+    {
+      "id": "AIR-16",
+      "expectation": "Turn bar names the Flight result and the Air tab follows it (Turn 5 / 5 Allied Reaction · Barrage)",
+      "observed": "\"15 Jan · Snow\", Flight Normal: 2/2 mission buttons enabled; panel: Air missions Air Barrage Trainbusting Pick a mission, then a highlighted target hex and the aircraft that fly it. Air missions Air Barrage Trainbusting",
+      "status": "PASS"
+    },
+    {
+      "id": "AIR-16",
+      "expectation": "Turn bar names the Flight result and the Air tab follows it (Turn 5 / 5 Allied Exploitation · Movement)",
+      "observed": "\"15 Jan · Snow\", Flight Normal: 4/4 mission buttons enabled; panel: Air missions Fighter Sweep Base Transfer Air Transport Air Drop Pick a mission, then a highlighted target hex and the aircraft that fly it. Air missions Fighter",
+      "status": "PASS"
+    },
+    {
+      "id": "AIR-16",
+      "expectation": "Turn bar names the Flight result and the Air tab follows it (Turn 5 / 5 Allied Exploitation · Barrage)",
+      "observed": "\"15 Jan · Snow\", Flight Normal: 2/2 mission buttons enabled; panel: Air missions Air Barrage Trainbusting Pick a mission, then a highlighted target hex and the aircraft that fly it. Air missions Air Barrage Trainbusting",
+      "status": "PASS"
+    },
+    {
+      "id": "AIR-16",
+      "expectation": "Turn bar names the Flight result and the Air tab follows it (Turn 5 / 5 Axis Movement)",
+      "observed": "\"15 Jan · Snow\", Flight Normal: 4/4 mission buttons enabled; panel: Air missions Fighter Sweep Base Transfer Air Transport Air Drop Pick a mission, then a highlighted target hex and the aircraft that fly it. Air missions Fighter",
+      "status": "PASS"
+    },
+    {
+      "id": "AIR-16",
+      "expectation": "Turn bar names the Flight result and the Air tab follows it (Turn 5 / 5 Axis Movement · Barrage)",
+      "observed": "\"15 Jan · Snow\", Flight Normal: 2/2 mission buttons enabled; panel: Air missions Air Barrage Trainbusting Pick a mission, then a highlighted target hex and the aircraft that fly it. Air missions Air Barrage Trainbusting",
+      "status": "PASS"
+    },
+    {
+      "id": "AIR-16",
+      "expectation": "Turn bar names the Flight result and the Air tab follows it (Turn 5 / 5 Axis Reaction · Movement)",
+      "observed": "\"15 Jan · Snow\", Flight Normal: 4/4 mission buttons enabled; panel: Air missions Fighter Sweep Base Transfer Air Transport Air Drop Pick a mission, then a highlighted target hex and the aircraft that fly it. Air missions Fighter",
+      "status": "PASS"
+    },
+    {
+      "id": "AIR-16",
+      "expectation": "Turn bar names the Flight result and the Air tab follows it (Turn 5 / 5 Axis Reaction · Barrage)",
+      "observed": "\"15 Jan · Snow\", Flight Normal: 2/2 mission buttons enabled; panel: Air missions Air Barrage Trainbusting Pick a mission, then a highlighted target hex and the aircraft that fly it. Air missions Air Barrage Trainbusting",
+      "status": "PASS"
+    },
+    {
+      "id": "AIR-16",
+      "expectation": "Turn bar names the Flight result and the Air tab follows it (Turn 5 / 5 Axis Exploitation · Movement)",
+      "observed": "\"15 Jan · Snow\", Flight Normal: 4/4 mission buttons enabled; panel: Air missions Fighter Sweep Base Transfer Air Transport Air Drop Pick a mission, then a highlighted target hex and the aircraft that fly it. Air missions Fighter",
+      "status": "PASS"
+    },
+    {
+      "id": "AIR-16",
+      "expectation": "Turn bar names the Flight result and the Air tab follows it (Turn 5 / 5 Axis Exploitation · Barrage)",
+      "observed": "\"15 Jan · Snow\", Flight Normal: 2/2 mission buttons enabled; panel: Air missions Air Barrage Trainbusting Pick a mission, then a highlighted target hex and the aircraft that fly it. Air missions Air Barrage Trainbusting",
+      "status": "PASS"
+    },
+    {
+      "id": "AIR-16",
+      "expectation": "The game reaches Game End with no dead end",
+      "observed": "{\"turn\":\"Turn 5 / 5\",\"player\":\"Axis player turn\",\"phase\":\"Game over Phase\",\"seat\":\"Axis commander\",\"end\":\"End Game over PhaseNext: Game end\",\"endDisabled\":true,\"notice\":\"Exploitation · Barrage Segment finished.\",\"handoff\":false,\"complete\":false,\"decision\":[]}",
+      "status": "PASS"
+    },
+    {
+      "id": "AIR-16",
+      "expectation": "No browser console or page error during the run",
+      "observed": "0 errors",
+      "status": "PASS"
+    }
+  ],
+  "timings": [],
+  "errors": []
+}
