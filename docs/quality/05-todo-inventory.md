@@ -29,16 +29,24 @@
 
 ### AI
 
+策略現況見 `docs/ai/heuristic-policy.md`；關閉 AI 行為類 TODO 時，除了局部案例，還須通過 `docs/ai/evaluation.md` 的正確性要求，
+並以 VP > Kill > Loss 對凍結的標準策略做交換陣營比較。
+
 | ID | 缺少的行為 | 使用者可見影響 | 關閉證據 | 詳細 |
 |---|---|---|---|---|
 | `bot-stack-move` | AI 逐一移動與 overrun，不整疊行動 | bot 的 overrun 戰力偏弱 | bot 對局出現帶 companionIds 的 MOVE_PIECE 與多單位 overrun | `src/rules/query/candidates.ts` TODO(AI) |
 | `consolidation-bot` | bot 不會合併單位 | bot 方留著兩個減員的相同師 | bot 對局中出現合併動作 | `docs/rule-engine/replacement-tables-2026-10-14.md` §6 |
-| `bot-air` | 空中決策一律選第一個合法選項 | 開啟空軍時 bot 不會主動用空軍 | bot 對局中出現合理的任務與 refit | `src/ai/decisions.ts`；`docs/roadmap/11-ai-bot-wbs.md` §3 |
-| `bot-ration-search` | 配給有界搜尋可能漏掉可行的低優先消耗者 | bot 偶發不必要的餓死 | 見原始碼註解的關閉條件 | `src/rules/supply/ration-budget.ts` |
-| `GS-AI` | 完整對局中可救援的駐軍餓死尚未逐一消除或解釋 | 阻擋 AI 驗收 | 逐一解釋或修正並重跑對局 | `docs/ai/garrison-supply-2026-10-13.md` |
-| `ai-vp-plan` | 後方重建啟用時機只用剩餘回合門檻；動作後 trace 修正只看前 12 個候選；advance 預估不含首次進入有敵方 transport；Overrun 評分不估計強制進駐後的供補風險 | AI／logistics 整體不能宣告完成 | 各項見來源文件 | `docs/ai/ai-vp-promotion-2026-10-13.md` |
-| `bot-eastern-front` | 東歐地圖勝率 80%（目標 90%） | B5 維持 IN PROGRESS | `docs/roadmap/11-ai-bot-wbs.md` §3 | 同左 |
-| `bot-offensive-axis` | 攻堅缺有補給支撐的主攻方向 | B5 維持 IN PROGRESS | `docs/roadmap/11-ai-bot-wbs.md` §3 | 同左 |
+| `bot-air` | 只派 Air Barrage 與 refit；不派其他任務、不空運、不空降、不建 Air Base；空中待決選第一個合法選項 | 開啟空軍時 bot 明顯偏弱 | 開啟空軍的對局中 bot 有合理的其他任務與待決選擇，並通過對戰比較 | `src/ai/decisions.ts`；`src/ai/policies/heuristic.ts` |
+| `bot-ration-search` | 共同口糧分配搜尋上限 50,000 節點，沒有分量拆解或精確後備 | 極端來源網路下可能少餵兵或擋下安全的支出 | 對抗性配置的精確分配證據，以及完整對局的延遲量測 | `src/rules/supply/ration-budget.ts` |
+| `GS-AI` | 完整對局中仍有可救援的駐軍餓死；運補沒有同時規劃駐軍與機動部隊的路線與容量 | 有 SP 與卡車時，駐軍仍可能因救援太晚或資源被低價值運補搶走而餓死；阻擋 AI 驗收 | 重跑自然劇本，每個餓死案例保存 Movement 起點、合法運補方案與實際行動；可救援者全部存活，不可救援者有規則邊界的證據 | `tests/ai/garrison-supply.test.ts` |
+| `bot-hq-logistics-plan` | 沒有 HQ／卡車接力：HQ 只在不破壞既有 trace 時移動 | 需要協同的 HQ 前推被延後 | 對局中完成 HQ 接力，逐筆支付都可履行，且 VP 比較不退步 | `docs/ai/heuristic-policy.md` |
+| `bot-relocation-coverage` | 補給預判只涵蓋一般移動、切模式、戰後前進、Overrun、撤退；鐵路、海運、breakdown、`DISPLACEMENT_HEX` 未預判 | 這些行動仍可能讓友軍斷補 | 各行動種類有預判並與實際 reducer 比對，跑到下一次 Supply | `src/ai/decisions.ts` |
+| `bot-advance-first-entry` | 首次進入有敵方運輸單位的格、與 Overrun 成功後強制進駐的補給風險未預判 | 有價值的攻擊後可能自己餓損 | 不偷看骰子的成功／退卻／俘獲預判，與實際 reducer 比對，完整續局並通過對戰比較 | `docs/ai/heuristic-policy.md` |
+| `bot-recovery-allocation` | 強制的內部存量恢復依現有順序扣款，未最佳化來源與單位順序 | 可能留下較少口糧 | 不同可達來源的真實局面中證明較優分配且不卡住 Supply | `src/ai/policies/heuristic.ts` |
+| `bot-rebuild-plan` | 重建準備只用「剩餘超過 3 回合」門檻；被移除的固定單位釋出的 Pax／Eq 不在同一階段重新分配；沒有規劃重建部隊到達目標點的時間 | 補充可能閒置一個階段；重建部隊可能來不及影響 VP | 含固定與機動單位共用補充的真實快照，以及不同距離的重建到達見證，完成終局 VP 對照 | `docs/ai/heuristic-policy.md` |
+| `bot-trace-gain-scan` | 動作後 trace 修正只查分數最高的 12 個候選 | 可能錯過排序較低、可供補的 VP 路線 | 保存遺漏快照，擴大到完整候選或等價評分，並量測延遲 | `src/ai/policies/heuristic.ts` |
+| `bot-eastern-front` | 東歐地圖長距離推進的補給接力與守住遠方目標點 | 對 random-legal 勝率 80%（目標 90%），最後量測於 heuristic@1 | 以標準策略重跑東歐風格 20 局（交換座位、新種子）勝率 ≥ 90% | `docs/roadmap/11-ai-bot-wbs.md` B5 |
+| `bot-reserve-reaction` | 沒有 Reserve、Reaction 反擊、Extender、Breakout 規劃；戰鬥預估不含 Surprise | 防守與突破能力受限 | 對局中出現這些行動且通過對戰比較 | `docs/ai/heuristic-policy.md` |
 
 ### 介面
 

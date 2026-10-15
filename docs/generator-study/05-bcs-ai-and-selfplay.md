@@ -1,7 +1,7 @@
 # BCS AI 與 Self-play 研究（M9 前置研究）
 
 狀態：研究完成（2026-10-06），供 [M9 AI Bot WBS](../roadmap/11-ai-bot-wbs.md) 與
-[M9 Bot 架構](../ai/M9-bot-architecture.md) 使用。本文件只決定「保留什麼結構、拒絕什麼語意」，不移植任何 BCS 程式碼。
+[AI Bot 架構](../ai/architecture.md) 使用。本文件只決定「保留什麼結構、拒絕什麼語意」，不移植任何 BCS 程式碼。
 
 研究範圍：`bcsEngine/ai/*`（19 檔，約 8.7k 行）、`docs/ai-selfplay.md`、`docs/headless-selfplay.md`、
 `scripts/run-ai-selfplay.mjs`、`e2e/random-ai-selfplay.spec.ts`、`utils/selfplayScenario.ts`。
