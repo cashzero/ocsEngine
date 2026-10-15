@@ -219,7 +219,8 @@ const phaseTrackCurrent = (snapshot: UiSnapshot, sequence: NonNullable<UiSnapsho
   const segment = current && sequence.segment !== 'NONE' ? (phaseLabel(sequence.phase, sequence.segment).split(' · ')[1] ?? '').replace(/ Segment$/u, '') : '';
   // Steps outside the turn track (First Player roll, Weather, Game over) still name where the game is.
   const label = current ? [current.label, segment.toLowerCase() === current.label.toLowerCase() ? '' : segment].filter(Boolean).join(' · ') : phaseLabel(sequence.phase, sequence.segment);
-  const actor = snapshot.bindings.find(({ seatId }) => seatId === snapshot.view.metadata.activeSeatId)?.playerId;
+  // The seat the game waits for, not the one holding the screen: with a computer on one side the screen never changes hands.
+  const actor = snapshot.bindings.find(({ seatId }) => seatId === snapshot.requiredSeatId)?.playerId;
   const turn = `${playerName(sequence.phasingPlayerId)} player turn${actor && actor !== sequence.phasingPlayerId ? ` · ${playerName(actor)} to act` : ''}`;
   return html`<small>${turn}</small><strong>${label}<span class="caret" aria-hidden="true">▾</span></strong>`;
 };
