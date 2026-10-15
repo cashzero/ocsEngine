@@ -1,4 +1,5 @@
 import type { HexId, PieceId, PlayerId } from '../core/index.js';
+import type { LogisticsPlan, LogisticsRequest } from '../gameplay/logistics.js';
 import type { OcsMode } from '../domain/piece/index.js';
 import type { ScenarioDefinition } from '../domain/scenario/index.js';
 import {
@@ -51,6 +52,12 @@ export interface UiControllerOptions {
 export const AUTO_PASS_SCOPE = 'auto-pass';
 
 export interface UiController {
+  readonly toggleLogisticsUnit: (pieceId: string) => void;
+  readonly previewLogistics: (request: LogisticsRequest) => void;
+  readonly cancelLogistics: () => void;
+  readonly confirmLogistics: () => Promise<void>;
+  readonly payEstimatedFuel: () => Promise<void>;
+  readonly feedPredictedSupply: () => Promise<void>;
   readonly getSnapshot: () => UiSnapshot;
   readonly subscribe: (listener: UiListener) => () => void;
   /** A click (or Enter) on a map Hex: confirms, previews, targets, or selects depending on context. */
@@ -101,13 +108,14 @@ export interface UiController {
   readonly dismissAwayReport: () => void;
   readonly setSkipDumpOnlySteps: (enabled: boolean) => void;
   readonly start: () => void;
-  /** A turn-based game has no pause: this only takes back a session that arrived paused (an older save). */
+  readonly pause: () => void;
   readonly resume: () => void;
   readonly createCheckpoint: () => void;
   readonly undoTo: (checkpointId: string) => Promise<void>;
   readonly serializeSave: () => string;
   readonly serializeReplay: () => string;
   readonly loadSave: (serialized: string) => Promise<void>;
+  readonly loadReplay: (serialized: string) => Promise<void>;
   readonly beginHandoff: () => void;
   readonly completeHandoff: () => void;
   /** The computer players play on by themselves (they do so from the start; this resumes after Pause). */
@@ -272,6 +280,8 @@ export const quartersLabel = (quarters: number): string => {
 };
 
 class DefaultUiController implements UiController {
+  #logisticsUnits = new Set<PieceId>();
+  #logisticsPlan: LogisticsPlan | null = null;
   readonly #engine: GameplayEngine;
   readonly #scenario: ScenarioDefinition;
   #bindings: readonly SeatBinding[];
@@ -920,6 +930,9 @@ class DefaultUiController implements UiController {
     const ledger = view.privacyLocked ? [] : this.#ledger(this.#turnRecords(), seatId, pieces);
     return {
       scenario: this.#scenario,
+      logistics: ['MOVEMENT', 'SUPPLY'].includes(view.projection?.sequence.phase ?? '') && !view.privacyLocked
+        ? this.#cached(`logistics:${[...this.#logisticsUnits].join(',')}`, () => this.#session.getLogisticsOverview(seatId, [...this.#logisticsUnits])) : null,
+      logisticsPlan: !view.privacyLocked && this.#logisticsPlan?.revision === this.#session.getRevision() ? this.#logisticsPlan : null,
       view,
       bindings: this.#bindings,
       families,
@@ -1789,7 +1802,7 @@ class DefaultUiController implements UiController {
       tokens: Math.min(loadableTokens, draft?.tokens.get(pieceId) ?? (draft ? options.remainingQuarters : 0)),
     }));
     const destinations = options.destinations.map(({ hexId: to, halves, path }) => ({ hexId: to, halves, hexes: path.length - 1 }));
-    const toHexId = draft?.toHexId && destinations.some(({ hexId: to }) => to === draft.toHexId) ? draft.toHexId : null;
+    const toHexId = draft?.toHexId && this.#scenario.mapDefinition.hexes.some(({ id }) => id === draft.toHexId) ? draft.toHexId : null;
     const supply = dumps.filter(({ tokens }) => tokens > 0).map(({ pieceId, tokens }) => ({ sourcePieceId: pieceId as PieceId, tokens }));
     const unitIds = units.filter(({ selected }) => selected).map(({ pieceId }) => pieceId as PieceId);
     let costQuarters: number | null = null;
@@ -1800,7 +1813,7 @@ class DefaultUiController implements UiController {
       const cost = explanation.facts.find(({ key }) => key === 'rail.cost')?.value;
       costQuarters = typeof cost === 'string' && cost !== '' ? quartersOf(cost) : null;
       allowed = explanation.allowed;
-      blockers = explanation.reasons.filter(({ allowed: ok }) => !ok).map(({ message }) => message);
+      blockers = explanation.reasons.filter(({ allowed: ok }) => !ok).map(({ message, rule }) => `${message} (${rule})`);
     }
     if (units.length === 0 && dumps.length === 0) return null;
     return {
@@ -1856,8 +1869,8 @@ class DefaultUiController implements UiController {
   /** The detraining hex: chosen from the list or by clicking a highlighted hex on the map. */
   chooseRailDestination = (hexId: string): void => {
     const panel = this.getSnapshot().rail;
-    if (!panel || !panel.destinations.some(({ hexId: to }) => to === hexId)) return;
-    this.#railDraft = { ...this.#railDraftFor(panel.hexId), toHexId: hexId };
+    if (!panel || (hexId !== '' && !this.#scenario.mapDefinition.hexes.some(({ id }) => id === hexId))) return;
+    this.#railDraft = { ...this.#railDraftFor(panel.hexId), toHexId: hexId || null };
     this.#emit();
   };
 
@@ -2080,7 +2093,7 @@ class DefaultUiController implements UiController {
     this.#emit();
   };
 
-  #resetIntent(): void { this.#destination = null; this.#draft = null; this.#airDraft = null; this.#buildDraft = null; this.#dropDraft = null; this.#railDraft = null; this.#railOpen = null; this.#seaDraft = null; }
+  #resetIntent(): void { this.#logisticsPlan = null; this.#destination = null; this.#draft = null; this.#airDraft = null; this.#buildDraft = null; this.#dropDraft = null; this.#railDraft = null; this.#railOpen = null; this.#seaDraft = null; }
 
   selectPiece = (pieceId: string | null): void => {
     const piece = this.#pieces().find(({ id }) => id === pieceId);
@@ -2492,6 +2505,69 @@ class DefaultUiController implements UiController {
     this.#emit();
   };
 
+  toggleLogisticsUnit = (pieceId: string): void => {
+    if (this.#logisticsUnits.has(pieceId as PieceId)) this.#logisticsUnits.delete(pieceId as PieceId);
+    else this.#logisticsUnits.add(pieceId as PieceId);
+    this.#emit();
+  };
+
+  previewLogistics = (request: LogisticsRequest): void => {
+    this.#logisticsPlan = this.#session.planLogistics(this.#activeSeat(), request);
+    this.#emit();
+  };
+
+  cancelLogistics = (): void => { this.#logisticsPlan = null; this.#emit(); };
+
+  #executeHelper = async (actions: readonly GameAction[], revision: number, label: string): Promise<string> => {
+    if (revision !== this.#session.getRevision()) return 'The game changed. Preview the plan again before confirming.';
+    const verified = await this.#session.validateActionSequence(this.#activeSeat(), actions);
+    if (!verified.allowed) return `Plan not executed: ${verified.message}`;
+    this.#session.createCheckpoint(`Before ${label}`);
+    let completed = 0;
+    for (const action of actions) {
+      const result = await this.#session.dispatch({requestId:this.#requestId(),seatId:this.#activeSeat(),action});
+      if (result.status !== 'ACCEPTED') return `Plan stopped after ${completed}/${actions.length} steps: ${result.violations.map(v=>v.message).join(' ')}. Completed steps remain in history; restore the Before ${label} checkpoint to undo them.`;
+      completed += 1;
+    }
+    this.#resetIntent(); this.#logisticsPlan = null;
+    if (this.#session.getDiagnostics().stateHash !== verified.finalStateHash) throw new Error('Plan result differs from its simulation. Restore the checkpoint and report this error.');
+    return `${label}: ${completed} steps completed; result matches the preview simulation.`;
+  };
+
+  confirmLogistics = async (): Promise<void> => this.#run(async () => {
+    const plan = this.#logisticsPlan;
+    if (!plan || plan.delivered === 0) return 'Preview a deliverable transport plan first.';
+    return this.#executeHelper(plan.steps.map(step=>step.action),plan.revision,`Transport ${plan.delivered}T`);
+  });
+
+  payEstimatedFuel = async (): Promise<void> => this.#run(async () => {
+    const fuel = this.getSnapshot().logistics?.fuel;
+    if (!fuel || fuel.steps.length === 0) return 'Select units with an available fuel payment.';
+    return this.#executeHelper(fuel.steps,fuel.revision,`Fuel ${fuel.tokens}T`);
+  });
+
+  feedPredictedSupply = async (): Promise<void> => this.#run(async () => {
+    // Mandatory internal recovery precedes eating off-map (2.3). Re-query after every recovery.
+    let count = 0;
+    for (let guard=0; guard<10000; guard+=1) {
+      const recover = this.#candidates('RECOVER_INTERNALS',null,1000)[0];
+      if (!recover) break;
+      const result = await this.#session.dispatch({requestId:this.#requestId(),seatId:this.#activeSeat(),action:recover});
+      if (result.status !== 'ACCEPTED') return `Recovery refused: ${result.violations.map(v=>v.message).join(' ')}`;
+      count+=1;
+    }
+    const supply = this.#session.getLogisticsOverview(this.#activeSeat(),[])?.supply;
+    if (!supply) return 'Supply prediction is unavailable.';
+    for (const group of supply.groups) {
+      const action: GameAction = {kind:'CHECK_SUPPLY',actionId:this.#actionId('helper-supply'),actorId:this.#view(this.#activeSeat()).playerId,
+        expectedRevision:this.#session.getRevision(),pieceIds:group.pieceIds,sourcePieceId:group.sourcePieceId};
+      const result = await this.#session.dispatch({requestId:this.#requestId(),seatId:this.#activeSeat(),action});
+      if (result.status !== 'ACCEPTED') return `Supply plan stopped after ${count} actions: ${result.violations.map(v=>v.message).join(' ')}`;
+      count+=1;
+    }
+    return `Supply helper completed ${count} recovery/payment actions. ${supply.unfed.length} units cannot be fed from the current stock.`;
+  });
+
   start = (): void => {
     const result = this.#session.start();
     this.#notice = result.ok ? 'Session started.' : result.code;
@@ -2502,6 +2578,12 @@ class DefaultUiController implements UiController {
   resume = (): void => {
     const result = this.#session.resume();
     this.#notice = result.ok ? 'Resumed.' : result.code;
+    this.#emit();
+  };
+
+  pause = (): void => {
+    const result = this.#session.pause();
+    this.#notice = result.ok ? 'Paused. Resume to continue.' : result.code;
     this.#emit();
   };
 
@@ -2528,8 +2610,11 @@ class DefaultUiController implements UiController {
 
   serializeReplay = (): string => JSON.stringify(this.#session.exportReplay(), null, 2);
 
-  loadSave = async (serialized: string): Promise<void> => this.#run(async () => {
-    const loaded = await this.#engine.loadSession(serialized);
+  loadSave = async (serialized: string): Promise<void> => this.#load(serialized, false);
+  loadReplay = async (serialized: string): Promise<void> => this.#load(serialized, true);
+
+  #load = async (serialized: string, replay: boolean): Promise<void> => this.#run(async () => {
+    const loaded = replay ? await this.#engine.loadReplay(serialized, this.#bindings) : await this.#engine.loadSession(serialized);
     if (loaded.getMetadata().scenarioId !== this.#scenario.id) {
       await loaded.close();
       throw new Error('This UI currently accepts saves for the loaded scenario only.');
@@ -2558,7 +2643,7 @@ class DefaultUiController implements UiController {
     this.#automation.loaded();
     this.#showHumanSeat();
     this.#afterChange();
-    return `Save loaded at revision ${loaded.getRevision()}.`;
+    return `${replay ? 'Replay verified and loaded' : 'Save loaded'} at revision ${loaded.getRevision()}.`;
   });
 
   beginHandoff = (): void => {

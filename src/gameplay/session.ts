@@ -17,6 +17,7 @@ import {
 } from './ids.js';
 import { serializeGameplaySave } from './persistence.js';
 import type { GameplayPorts } from './ports.js';
+import { logisticsOverview, planLogistics } from './logistics.js';
 import type {
   ActionDraft,
   CheckpointDescriptor,
@@ -207,6 +208,34 @@ export class GameplaySession implements GameSession {
     const families = this.#ports.rules.getActionFamilies(this.#state, binding.playerId);
     return this.#lifecycle === 'ACTIVE' && this.#handoff === null
       ? families : families.map(({ kind }) => ({ kind, enabled: false }));
+  };
+
+  getLogisticsOverview: GameSession['getLogisticsOverview'] = (seatId, selected) => {
+    const view = this.getView(seatId);
+    return this.#lifecycle === 'ACTIVE' && !view.privacyLocked && this.#state.sequence.actingPlayerId === view.playerId
+      ? cloneValue(logisticsOverview(this.#state, view.playerId, selected, this.#ports.rules)) : null;
+  };
+
+  planLogistics: GameSession['planLogistics'] = (seatId, request) => {
+    const view = this.getView(seatId);
+    return this.#lifecycle === 'ACTIVE' && !view.privacyLocked
+      ? cloneValue(planLogistics(this.#state, view.playerId, request, this.#ports.rules)) : null;
+  };
+
+  validateActionSequence: GameSession['validateActionSequence'] = async (seatId, actions) => {
+    const view = this.getView(seatId);
+    if (this.#lifecycle !== 'ACTIVE' || view.privacyLocked) return {allowed:false,message:'Session is not accepting actions.',finalStateHash:''};
+    let next = this.#state;
+    for (const action of actions) {
+      if (action.actorId !== view.playerId) return {allowed:false,message:'A plan can act only for its own seat.',finalStateHash:''};
+      const transition = this.#ports.rules.applyAction(next,action);
+      if (!transition.ok) return {allowed:false,message:transition.violations.map(v=>v.message).join(' '),finalStateHash:''};
+      if (JSON.stringify(next.rng) !== JSON.stringify(transition.state.rng) || transition.state.pendingDecision) return {allowed:false,message:'A plan cannot include dice or pending decisions.',finalStateHash:''};
+      next = transition.state;
+    }
+    const hash = await hashGameState(next);
+    if (!hash.ok) return {allowed:false,message:'Could not hash the simulated result.',finalStateHash:''};
+    return {allowed:true,message:'Every step is legal.',finalStateHash:hash.value};
   };
 
   getActionCandidates = (

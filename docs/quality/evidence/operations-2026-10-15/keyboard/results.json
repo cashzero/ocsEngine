@@ -1,0 +1,92 @@
+{
+  "title": "UI-05: keyboard product operation",
+  "final": {
+    "turn": "Turn 2 / 2",
+    "player": "Allied player turn",
+    "phase": "Reinforcement",
+    "revision": null
+  },
+  "rows": [
+    {
+      "id": "UI-05",
+      "expectation": "Keyboard traverses New Game, map selection/actions, modals and private handoffs through a whole turn",
+      "observed": "{\"row\":{\"id\":\"generated-oob:7102:allied:f2-combat-1:unit\",\"label\":\"XX\\n82\\n3\\n14\\n4\\n3\\n82.Abn\\n0503 · Combat mode\"},\"target\":\"0403\",\"final\":{\"turn\":\"Turn 2 / 2\",\"player\":\"Allied player turn\",\"phase\":\"Reinforcement\",\"seat\":\"Allied commander\",\"end\":\"End Reinforcement PhaseNext: Movement Phase\",\"endDisabled\":true,\"notice\":\"Decision recorded.\",\"handoff\":false,\"complete\":false,\"decision\":[]},\"focusLog\":[{\"selector\":\"#open-menu\",\"id\":\"open-menu\",\"tag\":\"BUTTON\",\"text\":\"☰ Menu\",\"inside\":false,\"outline\":\"solid\",\"width\":\"3px\",\"box\":{\"width\":86.453125,\"height\":44}},{\"selector\":\"#open-new-game\",\"id\":\"open-new-game\",\"tag\":\"BUTTON\",\"text\":\"New Game…\",\"inside\":true,\"outline\":\"solid\",\"width\":\"3px\",\"box\":{\"width\":119.046875,\"height\":42}},{\"selector\":\"#new-game-width\",\"id\":\"new-game-width\",\"tag\":\"INPUT\",\"text\":\"\",\"inside\":true,\"outline\":\"auto\",\"width\":\"1px\",\"box\":{\"width\":277.328125,\"height\":42}},{\"selector\":\"#new-game-height\",\"id\":\"new-game-height\",\"tag\":\"INPUT\",\"text\":\"\",\"inside\":true,\"outline\":\"auto\",\"width\":\"1px\",\"box\":{\"width\":277.328125,\"height\":42}},{\"selector\":\"#new-game-divisions\",\"id\":\"new-game-divisions\",\"tag\":\"INPUT\",\"text\":\"\",\"inside\":true,\"outline\":\"auto\",\"width\":\"1px\",\"box\":{\"width\":277.328125,\"height\":42}},{\"selector\":\"#new-game-armored\",\"id\":\"new-game-armored\",\"tag\":\"INPUT\",\"text\":\"\",\"inside\":true,\"outline\":\"auto\",\"width\":\"1px\",\"box\":{\"width\":277.34375,\"height\":42}},{\"selector\":\"#new-game-turn-limit\",\"id\":\"new-game-turn-limit\",\"tag\":\"INPUT\",\"text\":\"\",\"inside\":true,\"outline\":\"auto\",\"width\":\"1px\",\"box\":{\"width\":277.328125,\"height\":42}},{\"selector\":\"#new-game-map-seed\",\"id\":\"new-game-map-seed\",\"tag\":\"INPUT\",\"text\":\"\",\"inside\":true,\"outline\":\"auto\",\"width\":\"1px\",\"box\":{\"width\":277.328125,\"height\":42}},{\"selector\":\"#new-game-oob-seed\",\"id\":\"new-game-oob-seed\",\"tag\":\"INPUT\",\"text\":\"\",\"inside\":true,\"outline\":\"auto\",\"width\":\"1px\",\"box\":{\"width\":277.34375,\"height\":42}},{\"selector\":\"#new-game-deployment-seed\",\"id\":\"new-game-deployment-seed\",\"tag\":\"INPUT\",\"text\":\"\",\"inside\":true,\"outline\":\"auto\",\"width\":\"1px\",\"box\":{\"width\":277.328125,\"height\":42}},{\"selector\":\"#new-game-rules-seed\",\"id\":\"new-game-rules-seed\",\"tag\":\"INPUT\",\"text\":\"\",\"inside\":true,\"outline\":\"auto\",\"width\":\"1px\",\"box\":{\"width\":277.34375,\"height\":42}},{\"selector\":\"button[form=\\\"new-game-form\\\"]\",\"id\":\"\",\"tag\":\"BUTTON\",\"text\":\"Preview →\",\"inside\":true,\"outline\":\"solid\",\"width\":\"3px\",\"box\":{\"width\":111.9375,\"height\":42}},{\"selector\":\"#start-previewed-game\",\"id\":\"start-previewed-game\",\"tag\":\"BUTTON\",\"text\":\"Start this operation\",\"inside\":true,\"outline\":\"solid\",\"width\":\"3px\",\"box\":{\"width\":182.796875,\"height\":42}},{\"selector\":\"#open-roster\",\"id\":\"open-roster\",\"tag\":\"BUTTON\",\"text\":\"All units (17)\",\"inside\":false,\"outline\":\"solid\",\"width\":\"3px\",\"box\":{\"width\":114.9375,\"height\":32}},{\"selector\":\"[data-roster-pick=\\\"generated-oob:7102:allied:f2-combat-1:unit\\\"]\",\"id\":\"\",\"tag\":\"BUTTON\",\"text\":\"XX82\\n    3\\n    \\n    1443\\n    82.Abn0503 · Combat mode\",\"inside\":true,\"outline\":\"solid\",\"width\":\"3px\",\"box\":{\"width\":231.125,\"height\":44}},{\"selector\":\"[data-mode=\\\"MOVE\\\"]\",\"id\":\"\",\"tag\":\"BUTTON\",\"text\":\"Move mode\",\"inside\":false,\"outline\":\"solid\",\"width\":\"3px\",\"box\":{\"width\":106.296875,\"height\":34}},{\"selector\":\"#hex-map\",\"id\":\"hex-map\",\"tag\":\"CANVAS\",\"text\":\"\",\"inside\":false,\"outline\":\"solid\",\"width\":\"3px\",\"box\":{\"width\":1520,\"height\":1020}},{\"selector\":\"#confirm-move\",\"id\":\"confirm-move\",\"tag\":\"BUTTON\",\"text\":\"Confirm\",\"inside\":false,\"outline\":\"solid\",\"width\":\"3px\",\"box\":{\"width\":123,\"height\":39.5}},{\"selector\":\"#end-phase\",\"id\":\"end-phase\",\"tag\":\"BUTTON\",\"text\":\"End Movement SegmentNext: Barrage Segment\",\"inside\":false,\"outline\":\"solid\",\"width\":\"3px\",\"box\":{\"width\":208.8125,\"height\":44}},{\"selector\":\"#end-phase\",\"id\":\"end-phase\",\"tag\":\"BUTTON\",\"text\":\"Finish anyway: 16 units have not movedPress again to confirm\",\"inside\":false,\"outline\":\"solid\",\"width\":\"3px\",\"box\":{\"width\":325.5625,\"height\":44}},{\"selector\":\"#begin-required-handoff\",\"id\":\"begin-required-handoff\",\"tag\":\"BUTTON\",\"text\":\"Hand the screen to Axis commander\",\"inside\":false,\"outline\":\"solid\",\"width\":\"3px\",\"box\":{\"width\":348,\"height\":42}},{\"selector\":\"#complete-handoff\",\"id\":\"complete-handoff\",\"tag\":\"BUTTON\",\"text\":\"I am Axis commander\",\"inside\":true,\"outline\":\"solid\",\"width\":\"3px\",\"box\":{\"width\":185.6875,\"height\":42}},{\"selector\":\"#complete-handoff\",\"id\":\"complete-handoff\",\"tag\":\"BUTTON\",\"text\":\"I am Axis commander\",\"inside\":true,\"outline\":\"solid\",\"width\":\"3px\",\"box\":{\"width\":185.6875,\"height\":42}},{\"selector\":\"#dismiss-away\",\"id\":\"dismiss-away\",\"tag\":\"BUTTON\",\"text\":\"Got it\",\"inside\":false,\"outline\":\"solid\",\"width\":\"3px\",\"box\":{\"width\":348,\"height\":42}},{\"selector\":\"#end-phase\",\"id\":\"end-phase\",\"tag\":\"BUTTON\",\"text\":\"End Movement SegmentNext: Barrage Segment\",\"inside\":false,\"outline\":\"solid\",\"width\":\"3px\",\"box\":{\"width\":208.8125,\"height\":44}},{\"selector\":\"#end-phase\",\"id\":\"end-phase\",\"tag\":\"BUTTON\",\"text\":\"Finish anyway: 17 units have not movedPress again to confirm\",\"inside\":false,\"outline\":\"solid\",\"width\":\"3px\",\"box\":{\"width\":325.5625,\"height\":44}},{\"selector\":\"#begin-required-handoff\",\"id\":\"begin-required-handoff\",\"tag\":\"BUTTON\",\"text\":\"Hand the screen to Allied commander\",\"inside\":false,\"outline\":\"solid\",\"width\":\"3px\",\"box\":{\"width\":348,\"height\":42}},{\"selector\":\"#complete-handoff\",\"id\":\"complete-handoff\",\"tag\":\"BUTTON\",\"text\":\"I am Allied commander\",\"inside\":true,\"outline\":\"solid\",\"width\":\"3px\",\"box\":{\"width\":196.59375,\"height\":42}},{\"selector\":\"#complete-handoff\",\"id\":\"complete-handoff\",\"tag\":\"BUTTON\",\"text\":\"I am Allied commander\",\"inside\":true,\"outline\":\"solid\",\"width\":\"3px\",\"box\":{\"width\":196.59375,\"height\":42}},{\"selector\":\"[data-choice]\",\"id\":\"\",\"tag\":\"BUTTON\",\"text\":\"Go first\",\"inside\":false,\"outline\":\"solid\",\"width\":\"3px\",\"box\":{\"width\":348,\"height\":50}}],\"errors\":[]}",
+      "status": "PASS"
+    }
+  ],
+  "timings": [
+    {
+      "label": "Keyboard #open-menu",
+      "elapsed": 227
+    },
+    {
+      "label": "Keyboard #open-new-game",
+      "elapsed": 255
+    },
+    {
+      "label": "Keyboard button[form=\"new-game-form\"]",
+      "elapsed": 146
+    },
+    {
+      "label": "Keyboard #start-previewed-game",
+      "elapsed": 202
+    },
+    {
+      "label": "Keyboard #open-roster",
+      "elapsed": 170
+    },
+    {
+      "label": "Keyboard [data-roster-pick=\"generated-oob:7102:allied:f2-combat-1:unit\"]",
+      "elapsed": 239
+    },
+    {
+      "label": "Keyboard [data-mode=\"MOVE\"]",
+      "elapsed": 251
+    },
+    {
+      "label": "Keyboard #confirm-move",
+      "elapsed": 235
+    },
+    {
+      "label": "Keyboard #end-phase",
+      "elapsed": 220
+    },
+    {
+      "label": "Keyboard #end-phase",
+      "elapsed": 130
+    },
+    {
+      "label": "Keyboard #begin-required-handoff",
+      "elapsed": 382
+    },
+    {
+      "label": "Keyboard #complete-handoff",
+      "elapsed": 152
+    },
+    {
+      "label": "Keyboard #dismiss-away",
+      "elapsed": 192
+    },
+    {
+      "label": "Keyboard #end-phase",
+      "elapsed": 131
+    },
+    {
+      "label": "Keyboard #end-phase",
+      "elapsed": 136
+    },
+    {
+      "label": "Keyboard #begin-required-handoff",
+      "elapsed": 138
+    },
+    {
+      "label": "Keyboard #complete-handoff",
+      "elapsed": 147
+    },
+    {
+      "label": "Keyboard [data-choice]",
+      "elapsed": 184
+    }
+  ],
+  "errors": []
+}

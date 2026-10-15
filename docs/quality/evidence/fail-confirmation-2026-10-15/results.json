@@ -1,0 +1,34 @@
+{
+  "title": "SES-09 and UI-02 current failure confirmation",
+  "final": {
+    "turn": "Turn 1 / 3",
+    "player": "Allied player turn",
+    "phase": "Movement",
+    "revision": null
+  },
+  "rows": [
+    {
+      "id": "SES-09",
+      "expectation": "Recovery behavior is explicit; no silent state substitution",
+      "observed": "{\"setupBefore\":{\"width\":\"20\",\"url\":\"http://127.0.0.1:35301/#new-game\"},\"setupAfter\":{\"width\":\"32\",\"url\":\"http://127.0.0.1:35301/#new-game\"},\"activeBefore\":{\"summary\":\"Meeting engagement · 28 units · 4 formations · 2 turns · seeds map 7101, OOB 7102, deployment 7103, rules 7104\",\"where\":{\"turn\":\"Turn 1 / 2\",\"player\":\"Allied player turn\",\"phase\":\"Movement\",\"seat\":\"Allied commander\",\"end\":\"End Movement SegmentNext: Barrage Segment\",\"endDisabled\":false,\"notice\":\"Mode changed to move.\",\"handoff\":false,\"complete\":false,\"decision\":[]},\"hash\":\"sha256:676178a9d211b92007def979b5221a72736cff0b58b0f38b83b0a49d156e130e\",\"actions\":1,\"revision\":1},\"activeAfter\":{\"summary\":\"Meeting engagement · 52 units · 12 formations · 8 turns · seeds map 206569473, OOB 206569474, deployment 206569475, rules 206569476\",\"where\":{\"turn\":\"Turn 1 / 8\",\"player\":\"Allied player turn\",\"phase\":\"Movement\",\"seat\":\"Allied commander\",\"end\":\"End Movement SegmentNext: Barrage Segment\",\"endDisabled\":false,\"notice\":\"Select a unit on the map to see where it can move and what it can attack.\",\"handoff\":false,\"complete\":false,\"decision\":[]},\"hash\":\"sha256:fd8ef086fedab7ea5eaa50a0c03530d194627f34ad87f2a74a0bcc638757e2d4\",\"actions\":0,\"revision\":0,\"recoveryNotice\":null,\"storage\":{\"local\":0,\"session\":0}},\"dialogs\":[]}",
+      "status": "FAIL"
+    },
+    {
+      "id": "UI-02",
+      "expectation": "No clipped content at 1680x1050; bounded lists only, map and commands reachable",
+      "observed": "{\"layout\":{\"viewport\":[1680,1050],\"pageOverflow\":false,\"deckScrolls\":false,\"mapVisible\":true,\"phaseVisible\":true,\"endVisible\":true},\"clipped\":[{\"name\":\"Chmbln TF (Det. 2) / 10.A\",\"clientWidth\":177,\"scrollWidth\":185,\"textOverflow\":\"ellipsis\",\"whiteSpace\":\"nowrap\",\"clipped\":true}]}",
+      "status": "FAIL"
+    }
+  ],
+  "timings": [
+    {
+      "label": "Reload during setup",
+      "elapsed": 6413
+    },
+    {
+      "label": "Reload during active play",
+      "elapsed": 5596
+    }
+  ],
+  "errors": []
+}

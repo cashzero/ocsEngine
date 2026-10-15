@@ -102,7 +102,7 @@ with Cancel and Confirm.
   again this phase.
 - **All units (n)** opens the roster popup: grouped by formation, searchable, with Moved/Attacked/Out of supply/DG badges,
   a Moved / Not moved filter in Movement, and off-map and eliminated groups. Focus goes to the search box and returns to
-  the button on close.
+  the button on close. Long names may use an ellipsis; hovering or keyboard-focusing a roster row shows its full name in a tooltip outside the scrolling box. The tooltip stays within the viewport; leaving, scrolling, closing, selecting or handing over removes it. Escape dismisses the tooltip before closing the roster. The row’s accessible name also retains the full unit name.
 
 ### Keyboard
 
@@ -127,9 +127,22 @@ shown as "no legal actions". An empty list says so in one sentence.
   panel with the combat's progress. Merging them into one form needs the decision coordinator to accept several answers
   (TODO `defender-single-form`).
 
+## Rail destination review
+
+Rail transport offers legal stations and a "Check another hex" field. Entering a map hex outside
+the legal list shows the Rule Engine's reasons and citations, including enemy ZOC and Rail Cap;
+confirmation stays disabled. An unknown or empty hex clears the previous destination, so an old
+selection cannot be sent accidentally.
+
+## Logistics helpers
+
+The optional Logistics tab in friendly Movement and Supply phases shows transport planning,
+chosen-unit fuel comparison and current-position Supply predictions. Its rule simulation,
+confirmation and partial-failure contract is owned by [Logistics helpers](../gameplay/logistics.md).
+
 ## Known gaps
 
-From `docs/quality/05-todo-inventory.md`: `defender-single-form`, `compound-cost-review`, `deck-state-records`, `enemy-zoc-display`, `roster-name-truncation`, `overrun-selection-release`,
+From `docs/quality/05-todo-inventory.md`: `defender-single-form`, `compound-cost-review`, `deck-state-records`, `enemy-zoc-display`, `overrun-selection-release`,
 `unit-status-reserve`, `TODO-CM1`. Observed, not tracked as TODOs: during a hand-over or decision the selected-unit row
 still shows the previous selection; a Targets tab that is empty repeats the objective's sentence.
 
@@ -139,3 +152,7 @@ still shows the previous selection; a Targets tab that is empty repeats the obje
   `undo-action.test.ts`, `stack-movement.test.ts`, `transport-panel.test.ts`, `supply-ledger.test.ts`.
 - Browser rows UI-01 to UI-04 and the ACT rows in `docs/quality/03-product-operation-verification-plan.md`; run records in
   `docs/quality/evidence/product-2026-10-14/`.
+
+- Logistics, explicit Supply and rail refusals/front control: [operations evidence](../quality/evidence/operations-2026-10-15/README.md), SUP-B01–08, ACT-06 and RAIL-05–10/15–16.
+
+- Roster full-name tooltips at both desktop sizes: [UI-02 evidence](../quality/evidence/roster-tooltip-2026-10-15/README.md).

@@ -4,6 +4,7 @@ export * from './headless.js';
 export * from './history.js';
 export * from './ids.js';
 export * from './model.js';
+export * from './logistics.js';
 export * from './persistence.js';
 export * from './ports.js';
 export * from './session.js';

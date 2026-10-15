@@ -71,3 +71,5 @@ Also open, with closing evidence in the manifest notes and `03` section F:
   `off-map-airfield.test.ts`; `air-integration.test.ts` plays a generated game with air to `COMPLETE` and replays it.
 - Browser rows AIR-01 to AIR-15 and AEP-01 to AEP-03 in `docs/quality/03-product-operation-verification-plan.md`; run
   records in `docs/quality/evidence/air-2026-10-03/RUNS.md` and `docs/quality/evidence/aep-2026-10-13/`.
+
+- NG-12 after AEP integration: [operations evidence](../quality/evidence/operations-2026-10-15/README.md), actual off-map sortie, full turn and next-turn free refit.

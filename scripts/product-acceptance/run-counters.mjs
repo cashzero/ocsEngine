@@ -18,6 +18,19 @@ const extra = { viewport: `${width}×${height}` };
 const squash = (text) => String(text ?? '').replace(/\s+/g, '');
 const h = await open({ evidenceDir, viewport: { width, height } });
 const { page } = h;
+// Measure every actual pointer activation, including roster and stack selections. Harness settling
+// delays and screenshots are excluded; accepted action completion includes the busy render.
+const locatorPrototype=Object.getPrototypeOf(page.locator('body'));
+const rawLocatorClick=locatorPrototype.click;
+locatorPrototype.click=async function(...args){
+  const label=String(this),started=Date.now();
+  const result=await rawLocatorClick.apply(this,args);
+  await page.waitForFunction(()=>!document.querySelector('[aria-busy="true"]'));
+  const execution=/#confirm|data-mode|data-unit-action|data-fuel|data-choice|data-feed|data-refit/.test(label);
+  h.timings.push({label,elapsed:Date.now()-started,budget:execution?1500:1000});
+  return result;
+};
+
 const ui = async (label, fn) => { const t = Date.now(); const value = await fn(); (h.timings ??= []).push({ label, elapsed: Date.now() - t }); return value; };
 /** Zoom the map by its own buttons to a readout. */
 const zoomTo = async (target) => {
@@ -44,7 +57,7 @@ try {
   // CTR-01: the combined preview with every formation opened.
   await openNewGame(h);
   await configure(h, NG07);
-  await generate(h);
+  const generation=await generate(h);h.timings.push({label:'Generate preview',elapsed:generation.elapsed,budget:3000});
   // The Preview lists one side at a time under Allied / Axis tabs: each tab is opened, every formation expanded and photographed.
   const previewCounters = [];
   for (const side of ['allied', 'axis']) {
@@ -103,7 +116,7 @@ try {
     squash(seen03.hq) === squash(expected03.hq) && squash(seen03.artillery) === squash(expected03.artillery) && squash(seen03.transport) === squash(expected03.transport) && seen03.supply.every((tokens) => /^\d+(\.\d+)? ?SP$|^\d+ SP$|SP/.test(tokens)));
 
   // CTR-04: the same pieces after Start: roster rows, stack list, unit card, and the canvas (images).
-  await start(h);
+  const mounting=await start(h);h.timings.push({label:'Start previewed package',elapsed:mounting,budget:3000});
   const sweep = await sweepMap(h);
   await click(h, '#open-roster');
   const rosterRows = await page.evaluate(() => [...document.querySelectorAll('[data-roster-pick]')].map((node) => ({ text: node.innerText.replace(/\s+/g, ' ').trim(), tokens: node.querySelector('svg')?.textContent.replace(/\s+/g, ' ').trim() ?? '' })));
@@ -191,11 +204,26 @@ try {
     moved = await ui(`Move to ${stackHex}`, () => moveSelectedTo(h, stackHex, gotoHex));
     if (await has(h, '#finish-move')) await click(h, '#finish-move');
   }
+  if (await has(h,'#cancel-move')) await click(h,'#cancel-move');
+  if (await has(h,'#finish-move')) await click(h,'#finish-move');
+  else if (await has(h,'#deselect')) await click(h,'#deselect');
   const stackAnnounce = await gotoHex(h, stackHex);
   const shots06 = [];
-  for (const zoomLevel of [100, 300, 30]) {
+  const inspections06 = [];
+  for (const zoomLevel of [100, 150, 70, 30]) {
     await zoomTo(zoomLevel);
     shots06.push(`${zoomLevel}% ${(await page.textContent('#zoom-level'))}: ${(await hexShot(stackHex, `ctr06-stack-zoom-${zoomLevel}`, zoomLevel >= 200 ? 420 : 240))?.file}`);
+    const inspection = await page.locator('.stack-peek .stack-pick').evaluateAll(nodes=>nodes.map(n=>{
+      const art=n.querySelector('svg'),box=art?.getBoundingClientRect();
+      return {name:n.textContent.trim(),fields:art?.textContent.trim(),width:box?.width,height:box?.height};
+    }));
+    const chrome=await page.evaluate(()=>{
+      const header=document.querySelector('.stack-peek header')?.getBoundingClientRect(),bar=document.querySelector('.map-controls')?.getBoundingClientRect();
+      return {headerTop:header?.top,barBottom:bar?.bottom,clear:!!header&&!!bar&&(header.top>=bar.bottom||header.right<=bar.left||header.left>=bar.right)};
+    });
+    inspections06.push({zoomLevel,inspection,chrome});
+    await h.shot(`ctr06-complete-stack-${zoomLevel}`);
+
   }
   await zoomTo(100);
   const sp = await centreOf(stackHex);
@@ -206,11 +234,21 @@ try {
   await page.waitForTimeout(300);
   const picker06 = await page.evaluate(() => document.querySelector('.stack-picker')?.innerText.replace(/\s+/g, ' ').trim() ?? '');
   await page.screenshot({ path: join(evidenceDir, 'ctr06-stack-selected.png') });
+  const readableSelections=[];
+  const picks=page.locator('.stack-picker:not(.stack-peek) .stack-pick:not([disabled])');
+  for(let i=0;i<await picks.count();i++){
+    await picks.nth(i).click();
+    readableSelections.push({name:await picks.nth(i).innerText(),card:await cardTokens(h)});
+    await h.shot(`ctr06-selected-face-${i+1}`);
+  }
+
   if (await has(h, '#close-stack-picker')) await click(h, '#close-stack-picker');
+  if(await has(h,'#cancel-move'))await click(h,'#cancel-move');
   await gotoHex(h, stackHex);
+  await h.shot('ctr06-keyboard-complete-stack');
   await page.screenshot({ path: join(evidenceDir, 'ctr06-stack-keyboard-focus.png'), clip: { x: sp.x - 130, y: sp.y - 130, width: 260, height: 260 } });
-  extra['CTR-06'] = { moved, stackAnnounce, shots06, picker06 };
-  record(h, 'CTR-06', 'A three-counter stack keeps square aspect/field order at normal zoom, zoom limits, selection, hover and keyboard focus; identity and critical ratings not obscured (judged on ctr06-*.png)', `move ${moved.moved ? `confirmed (${moved.elapsed} ms)` : `not made: ${moved.preview}`}; ${stackAnnounce}; images ${shots06.join(', ')}, selected, keyboard focus; stack list "${picker06}"`, (moved.moved || moved.existing) && /, .*, /.test(stackAnnounce));
+  extra['CTR-06'] = { moved, stackAnnounce, shots06, picker06, inspections06, readableSelections };
+  record(h, 'CTR-06', 'A three-counter stack keeps square aspect/field order at normal zoom, zoom limits, selection, hover and keyboard focus; identity and critical ratings not obscured (judged on ctr06-*.png)', `move ${moved.moved ? `confirmed (${moved.elapsed} ms)` : `not made: ${moved.preview}`}; ${stackAnnounce}; images ${shots06.join(', ')}, selected, keyboard focus; stack list "${picker06}"`, (moved.moved || moved.existing) && /, .*, /.test(stackAnnounce) && readableSelections.length>=3 && readableSelections.every(s=>s.card.length>0) && inspections06.every(s=>s.chrome.clear && s.inspection.length>=3 && s.inspection.every(c=>c.fields&&c.width>=58&&c.width===c.height)));
 
   // CTR-07: an enemy stack before and after the hot-seat handoff to its owner.
   const enemyCell = sweep.cells.find(({ text }) => /enemy .*hidden/.test(text));
@@ -228,8 +266,8 @@ try {
   record(h, 'RUN', 'The counter run completes', String(error.stack ?? error.message), false);
   await h.shot('failure').catch(() => {});
 }
-const slow = (h.timings ?? []).filter(({ elapsed }) => elapsed > 1500);
-record(h, 'CTR-08', `At ${width}×${height}: no uncaught error and no over-budget interaction (clipping judged on the images)`, `console/page errors ${h.errors.length}; timed ${JSON.stringify(h.timings ?? [])}; over 1,500 ms: ${slow.length}`, h.errors.length === 0 && slow.length === 0);
+const slow = (h.timings ?? []).filter(({ elapsed, budget = 1500 }) => elapsed > budget);
+record(h, 'CTR-08', `At ${width}×${height}: no uncaught error and no over-budget interaction (clipping judged on the images)`, `console/page errors ${h.errors.length}; timed ${JSON.stringify(h.timings ?? [])}; over the operation budget: ${slow.length}`, h.errors.length === 0 && slow.length === 0 && h.rows.filter(row=>/^CTR-0[1-7]$/.test(row.id)).every(row=>row.status==='PASS'));
 await writeFile(join(evidenceDir, 'observations.json'), JSON.stringify(extra, null, 1));
 await h.finish(`doc 03 §B1: CTR-01 to CTR-07 at ${width}×${height}`);
 await h.close();

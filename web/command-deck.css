@@ -320,6 +320,7 @@ details.list-group summary { cursor: pointer; padding: 4px 0; }
 .roster-art { display: contents; }
 .roster-text { min-width: 0; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .roster-text small { display: block; overflow: hidden; text-overflow: ellipsis; font-size: 13px; color: var(--muted); }
+.roster-name-tooltip { position: fixed; z-index: 100; max-width: min(420px, calc(100vw - 16px)); padding: 8px 10px; border: 1px solid var(--accent); border-radius: 5px; background: #17251e; color: var(--ink); font-size: 13px; line-height: 1.4; overflow-wrap: anywhere; box-shadow: var(--shadow); pointer-events: none; }
 .roster-unit .badges { flex: 0 0 auto; }
 .roster-unit.is-selected { background: #303a2c; border-color: var(--accent); }
 .roster-empty { padding: 16px; color: var(--muted); }
@@ -433,3 +434,17 @@ details.list-group summary { cursor: pointer; padding: 4px 0; }
 .legend-mark.port-source::before { content: ""; display: inline-block; width: 15px; height: 15px; margin-right: 5px; border: 1.5px solid #b8f0c8; border-radius: 3px; vertical-align: -3px; box-sizing: border-box; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='none' stroke='%23eafff0' stroke-width='2.3' stroke-linecap='round' stroke-linejoin='round' d='M14.2 5a2.2 2.2 0 1 1-4.4 0a2.2 2.2 0 1 1 4.4 0M12 7.2V21M8 10.5h8M4.5 14.5a7.5 7.5 0 0 0 15 0M2.5 16l2-1.5 2 1.5M17.5 16l2-1.5 2 1.5'/%3E%3C/svg%3E") center / 80% no-repeat #1d3f5a; }
 .legend-mark.port::before { content: ""; display: inline-block; width: 15px; height: 15px; margin-right: 5px; border: 1.5px solid #1d3f5a; border-radius: 50%; vertical-align: -3px; box-sizing: border-box; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='none' stroke='%231d3f5a' stroke-width='2.3' stroke-linecap='round' stroke-linejoin='round' d='M14.2 5a2.2 2.2 0 1 1-4.4 0a2.2 2.2 0 1 1 4.4 0M12 7.2V21M8 10.5h8M4.5 14.5a7.5 7.5 0 0 0 15 0M2.5 16l2-1.5 2 1.5M17.5 16l2-1.5 2 1.5'/%3E%3C/svg%3E") center / 72% no-repeat #e8f1f6; }
 .legend-mark.extender::before { content: "E"; display: inline-grid; place-items: center; color: #eafff0; background: #5a4a12; font-size: 10px; font-weight: 900; line-height: 1; }
+
+/* Optional helpers stay within the deck's bounded content area. */
+.logistics-helper section { border-top: 1px solid var(--line); padding: 10px 0; }
+.logistics-helper h3 { margin: 0 0 8px; font-size: 15px; }
+.logistics-helper label { display: block; margin: 6px 0; font-size: 13px; }
+.logistics-helper select, .logistics-helper input:not([type="checkbox"]) { display: block; width: 100%; min-width: 0; }
+.logistics-helper p, .logistics-helper li { font-size: 13px; overflow-wrap: anywhere; }
+.logistics-helper ol, .logistics-helper ul { padding-left: 22px; }
+.logistics-helper button { margin: 4px 4px 4px 0; }
+.logistics-helper details { margin: 8px 0; }
+
+.stack-pick .unit-counter { width: 68px; height: 68px; flex-shrink: 0; }
+.stack-peek { top: 86px; right: 12px; width: 330px; max-height: calc(100% - 144px); pointer-events: none; z-index: 2; }
+.stack-peek .stack-pick { cursor: default; }

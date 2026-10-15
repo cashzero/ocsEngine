@@ -15,6 +15,18 @@ const points = [];
 
 /** Layout facts of the current screen. */
 const measure = async (label) => {
+  // User-approved exception: verify the actual full-name tooltip before exempting roster ellipses.
+  const acceptedRosterNames = [];
+  const clippedNames = await page.locator('[data-roster-name]').evaluateAll(nodes => nodes.filter(node => {
+    const text = node.querySelector('.roster-text');
+    return text && text.scrollWidth > text.clientWidth + 1;
+  }).map(node => ({ id: node.dataset.rosterPick, name: node.dataset.rosterName })));
+  for (const row of clippedNames) {
+    await page.locator(`[data-roster-pick="${row.id}"]`).hover();
+    const tooltip = page.locator('#roster-name-tooltip');
+    if (await tooltip.isVisible() && await tooltip.textContent() === row.name) acceptedRosterNames.push(row.name);
+  }
+  await page.mouse.move(0, 0);
   const facts = await page.evaluate(() => {
     const vw = innerWidth; const vh = innerHeight;
     const scroller = document.scrollingElement;
@@ -47,7 +59,11 @@ const measure = async (label) => {
     };
   });
   const issues = await page.evaluate(detectLayoutIssues);
-  facts.issues = issues.map((issue) => `${issue.kind}: ${issue.el ?? ''} "${issue.text ?? ''}"`.slice(0, 160));
+  facts.acceptedRosterNames = acceptedRosterNames;
+  facts.issues = issues.filter(issue => !(issue.el === 'span.roster-text'
+    && ['content-clipped', 'ellipsis-truncated'].includes(issue.kind)
+    && acceptedRosterNames.some(name => issue.text?.startsWith(name))))
+    .map((issue) => `${issue.kind}: ${issue.el ?? ''} "${issue.text ?? ''}"`.slice(0, 160));
   const shot = await h.shot(`ui-${label}`);
   points.push({ label, shot, ...facts });
   return facts;

@@ -1,0 +1,39 @@
+
+ RUN  v4.1.11 /home/cashlin/ocsEngine
+
+stderr | tests/ui/command-deck.test.ts
+Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+ ❯ tests/ui/command-deck.test.ts (8 tests | 1 failed) 19605ms
+     × opens each phase on its required tab and keeps a picked tab only within that phase 3394ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/ui/command-deck.test.ts > phase-specific command deck > opens each phase on its required tab and keeps a picked tab only within that phase
+AssertionError: expected [ 'unit', 'logistics', 'log' ] to deeply equal [ 'unit', 'log' ]
+
+- Expected
++ Received
+
+  [
+    "unit",
++   "logistics",
+    "log",
+  ]
+
+ ❯ tests/ui/command-deck.test.ts:60:52
+     58|     expect(snapshot.view.projection?.sequence.phase).toBe('MOVEMENT');
+     59|     syncDeckTab(snapshot, deck);
+     60|     expect(deckTabs(snapshot).map(({ id }) => id)).toEqual(['unit', 'l…
+       |                                                    ^
+     61|     expect(activeDeckTab(snapshot, deck)).toBe('unit');
+     62|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 101 passed | 4 skipped (106)
+      Tests  1 failed | 716 passed | 8 skipped (725)
+   Start at  16:37:08
+   Duration  323.38s (transform 11.76s, setup 0ms, import 106.44s, tests 486.22s, environment 7.97s)
+

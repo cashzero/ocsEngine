@@ -57,7 +57,7 @@ describe('phase-specific command deck', () => {
     snapshot = controller.getSnapshot();
     expect(snapshot.view.projection?.sequence.phase).toBe('MOVEMENT');
     syncDeckTab(snapshot, deck);
-    expect(deckTabs(snapshot).map(({ id }) => id)).toEqual(['unit', 'log']);
+    expect(deckTabs(snapshot).map(({ id }) => id)).toEqual(['unit', 'logistics', 'log']);
     expect(activeDeckTab(snapshot, deck)).toBe('unit');
 
     // A pick sticks within the phase ...
@@ -113,7 +113,7 @@ describe('phase-specific command deck', () => {
     controller.dispose();
   });
 
-  it('plays straight on after a checkpoint restore or a save made while paused: there is no Pause control to resume from', async () => {
+  it('plays straight on after a checkpoint restore or loading a save made while paused', async () => {
     const controller = await startGame();
     controller.createCheckpoint();
     const checkpoint = controller.getSnapshot().checkpoints.at(-1)!;

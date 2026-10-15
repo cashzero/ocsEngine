@@ -57,13 +57,17 @@
 |---|---|---|---|---|
 | `computer-main-thread` | 電腦在頁面主執行緒決策與 dispatch，無法中斷 | 預設大小單一決策最大約 0.65 s（p95 約 0.23 s）頁面不回應輸入，Pause 於該行動結束後才生效；更大的地圖更久 | 決策移到 Web Worker 或可中斷，在 64×48 的瀏覽器操作中 Pause 於 100 ms 內生效（`03` BOT-09） | `docs/ui/computer-players.md` |
 | `computer-mid-step-load` | 步驟中途讀檔，電腦不記得該步驟已做的計畫（`BotPhaseMemory`） | 讀檔後電腦該步驟其餘部分的決定可能與未中斷時不同（仍合法、確定） | 步驟記憶可由局面重建或隨存檔保存，並以同一存檔「連續跑」與「中途讀檔再跑」比對決策序列 | `docs/ai/architecture.md` |
+| `logistics-helper-scope` | 原 Phase B 延伸需求：自動重組 TP、具體敵方威脅判讀、任務模式預覽、獨立戰鬥／砲擊付費試算、尚未確認的堆／Extender 變更預測 | 玩家須手動調整 TP、檢視威脅及戰鬥草稿；Logistics 預測只針對當前已確認局面 | 實作各延伸能力並以真實動作驗證預覽、確認／取消、成本及風險結果；不得以 SUP-B01–08 通過推定完成 | `docs/gameplay/logistics.md`；`docs/roadmap/09-supply-logistics-ux-wbs.md` |
+| `logistics-benchmark` | 尚未對相同 T1 任務量測助手的完整互動數並與 A0 的 11 次比較 | 後勤操作是否實際減少尚無等條件數字 | 凍結 T1 輸入、完整計數運補與燃料的玩家互動，保存影片或操作文字並與 A0 比較；數字門檻由使用者決定 | `docs/roadmap/09-supply-logistics-ux-wbs.md` |
+| `logistics-multiphase` | 規劃器不保留跨階段排程 | 當前 Movement 不能送達的任務須分次下指令 | 跨階段排程經實際完整對局，待決、交接、存讀與重播一致 | `docs/gameplay/logistics.md` |
+| `logistics-multimodal` | 卡車規劃器未整合鐵路、空運與海運 | 這些運補方式仍須走各自手動操作 | 每種運輸納入同一計畫、預覽成本並經完整回合驗證 | `docs/gameplay/logistics.md` |
+| `counter-role-model` | 深層 counter 型別仍非用途專用模型，沒有完成獨立的用途與依賴調查 | 擴充補給／貨物模型仍依賴通用 piece 與關係編碼 | 完成依賴調查、決定模型邊界並以 roster／選取卡／燃料／存讀流程驗證 | `docs/roadmap/09-supply-logistics-ux-wbs.md` |
 | `overrun-selection-release` | overrun 結果顯示後選取被放開 | 玩家須再點堆疊才能續動 | 結果後仍選取存活的移動堆疊並可直接點目的地 | `03` ACT-17 |
-| `roster-name-truncation` | 名冊列在 1680 寬度截斷長名稱（`Chmbln TF (Det. 2) / 1…`） | 看不到完整單位名稱 | `03` UI-02 PASS | `03` UI-02 |
 | `preview-roster-count` | 預覽與名冊的單位數沒有說明：4 個第 2 回合才到的增援單位不在名冊，6 個 Garrison 營在名冊與地圖上但不在預覽與單位數 | 預覽 62、名冊 64，畫面上沒有解釋 | 預覽與名冊交代這兩類單位，或使用者改寫判準；`03` MAP-04 PASS | `03` MAP-04 |
 | `unit-status-reserve` | Unit Status 沒有「released」與「barraged」列（投影未提供引擎使用狀態） | 這兩種狀態看不到 | 投影暴露後加列並在瀏覽器驗證 | `src/ui/unit-status.ts` |
 | `pax-counter-art` | Pax counter 沿用 BTR「Repl EQ」的版面，只改字為 PAX；未取樣比對 BTR 的 Pax 補充 counter | Pax counter 的顏色與版面可能與原遊戲不同 | 取樣 BTR Pax counter 圖檔並逐項比對 | `docs/rule-engine/replacements.md` |
 | `transport-art` | 運輸機輪廓為目測繪製 | 運輸機 counter 不是印刷樣式 | 依參考圖重繪並做視覺比對 | `src/ui/counter.ts` |
-| `counter-fidelity` | CF5 三計數器堆疊與縮放 LOD 三級未驗證（CTR-05 已 PASS） | counter 視覺驗收 IN PROGRESS | `03` CTR-06、CTR-08 PASS 並驗證 LOD | `docs/roadmap/17-counter-fidelity-wbs.md` |
+| `counter-fidelity` | CF5 指定 NG-07 套件的完整回合及同 counter 狀態存讀／重播尚未有同次實機紀錄；三 counter 與 LOD 已驗證 | CTR 列已通過，但整個 CF5 工作包仍缺回合／持久化的連續證據 | 在 NG-07 依 CF5 第 5 項完成全回合、狀態變化、存讀與重播，複查兩種尺寸畫面 | `docs/roadmap/17-counter-fidelity-wbs.md` |
 | `TODO-CM1` | `scripts/counter-lod-gate.mjs` 與 `scripts/desktop-deck-gate.mjs` 無法在現行 UI 執行 | 這兩個 gate 不能重跑 | 腳本更新後在現行 build 跑通 | `docs/ui/map.md` |
 | `TODO-CM2` | Canvas 地圖的格子與 counter 不再是可 Tab 的元素，改為單一焦點＋方向鍵游標＋朗讀，未以報讀器實測 | 報讀器使用者只能以游標朗讀辨識格子與單位 | 以 NVDA 實際操作一個移動與一個攻擊並記錄結果 | `docs/ui/overview.md` |
 | `defender-single-form` | 守方的補給、領頭單位、地形是三個接連的決策，改補給時不會預覽之後的賠率 | 守方要點三次且不能回頭修改 | 決策協調器接受一次送出多個答案（或可撤回），並在瀏覽器由守方一次送出 | `docs/ui/command-deck.md` |
@@ -71,7 +75,7 @@
 | `compound-cost-review` | 複合行動（戰鬥、砲擊、空中任務）的成本與後果審閱未在每種可達交易上以真實選項驗證 | 確認前可能不清楚支付或後果 | 以合法交易、決策與取消的瀏覽器操作，記錄前後狀態 | `docs/ui/command-deck.md` |
 | `deck-state-records` | 左欄 S0–S5 狀態（未選取、多單位堆疊與長名稱、移動、複合行動、載入／失敗／空清單、決策與交接）在兩種畫面尺寸沒有文字紀錄 | 文字或按鈕被擠壓的情況無法事後複查 | 兩種尺寸逐一操作並在 `docs/quality/evidence/` 記錄文字與控件邊界（截圖只在 `artifacts/` 審閱） | `docs/ui/command-deck.md` |
 | `landing-port-view` | 海域局開局地圖置中，登陸港在畫面外 | 玩家要自己找港口 | 開 ports-only 遊戲並直接經可見的地圖／導覽找到港口 | `docs/quality/evidence/vp-allocation-2026-10-14/README.md` |
-| `rail-cap-browser` | 沒有在瀏覽器把一整個師集合到車站後一起用鐵路運送；RAIL-15（前線控制）、RAIL-16（被拒原因）只有規則測試 | 多單位上車、前線控制畫面與被拒原因未經實際操作 | 瀏覽器中把一個師的全部單位用鐵路運送，並完成 RAIL-15、RAIL-16 | `docs/roadmap/15-rail-cap-wbs.md` |
+| `rail-cap-browser` | 沒有在瀏覽器把一整個師集合到車站後一起用鐵路運送 | 整師多單位上車尚未經實際操作；前線控制與拒絕原因已有證據 | 瀏覽器中把一個師的全部單位用鐵路運送並核對成本、位置與後續行動限制 | `docs/roadmap/15-rail-cap-wbs.md` |
 | `oob-revision-ui` | OOB 0.4.0 的新計數器（反坦克、突擊砲、虎式）、駐守單位與 New Game 預覽數字沒有在瀏覽器檢視（OOB-R8） | 計數器數值或駐守單位顯示錯誤不會被發現 | 瀏覽器 New Game 預覽與遊戲中辨識新單位與駐守單位，計數器數值與 BTR 一致 | `docs/roadmap/12-oob-revision-wbs.md` |
 | `small-map-visual` | 16×12 東歐圖的起始 VP 平衡只有自動化回歸（seeds 1、0x0c500001、777），未在瀏覽器檢視 | 預覽或開局後的分數可能與產生的配置不同；NG-11 無法升級 | 在瀏覽器預覽並開始這三個 seed，雙方起始 VP 相等且沒有 "Objectives are unbalanced" 警告 | `docs/game-flow/deployment.md` |
 | `deployment-browser-check` | 分區部署、部隊後放補給堆、戰鬥模式前線只有自動化種子掃描，未在瀏覽器檢視 | 前線可能不均、補給堆位置奇怪、首回合仍可能摸到補給堆 | 瀏覽器中預設 MEETING 與 ALLIED_ATTACKS 各一局：HQ 分布在前線、獨立部隊分散、每個補給堆在自己部隊下、前線單位為戰鬥面、Allied 首個 Movement Segment 的可達範圍內沒有 Axis 補給堆 | `docs/game-flow/deployment.md` |
@@ -110,10 +114,9 @@
 ## 3. 待使用者決定
 
 1. 空中任務是否「每段都停下」，以及空戰的交接次數。
-2. 補給 B3（付費來源偏好）、B4（定期補給線）：`docs/roadmap/09-supply-logistics-ux-wbs.md`。
+2. 補給變體，以及 B3（付費來源偏好）、B4（定期補給線）：`docs/roadmap/09-supply-logistics-ux-wbs.md`。
 3. 是否把 Breakdowns 提議的驗收列加入 `03`：`docs/rule-engine/breakdowns.md`。
 4. 是否把控制權與 VP 顯示的 CTL-1～5 加入 `03`：`docs/quality/evidence/control-2026-10-05/RUN.md`。
-5. SES-01（Pause）：產品沒有 Pause 控制項（`src/ui/controller.ts`：回合制遊戲不需要暫停），改寫該列或維持 `BLOCKED`。
 6. 東歐主題的入口格數，或入口格不在鐵路上時的補給源規則；決定後才能把預設東歐圖的鐵路降到 Temperate 的一半以下。
 8. 是否要做電腦難度等級（目前只有標準策略，New Game 的電腦座位沒有難度選項）：`docs/roadmap/11-ai-bot-wbs.md` §5.6。
 7. 援軍的具體預設比例、首批回合、整師取樣與分批排程，待平衡評估後決定；雙方皆可設比例、海運攻方對應的守方預設較高、排程必要時可自動提前至 T2 的行為由使用者確認保留。契約與評估見 `docs/game-flow/reinforcement-balance.md`。

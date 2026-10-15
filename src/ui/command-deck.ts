@@ -18,6 +18,7 @@ import { ownOverstackedHexes, type OverstackedHex, phaseLabel, pieceDefinition, 
 
 export type UnitFilter = 'all' | 'unmoved' | 'moved';
 export interface DeckState {
+  logisticsInput?: { sourceId: string; destination: string; tokens: number; excluded: string[] };
   /** The tab the player picked, valid only for the phase it was picked in. */
   tab?: { readonly key: string; readonly id: string } | undefined;
   /** Unit selected when the deck was last drawn, to notice a new pick. */
@@ -562,6 +563,7 @@ export const deckTabs = (snapshot: UiSnapshot): DeckTab[] => {
     tabs.push({ id: 'targets', label: 'Targets', badge: new Set([...snapshot.attackTargets, ...snapshot.barrageTargets]).size });
   }
   if (phase !== 'AIRCRAFT_REFIT') tabs.push({ id: 'unit', label: 'Unit', badge: 0 });
+  if (snapshot.logistics) tabs.push({id:'logistics',label:'Logistics',badge:0});
   // Air missions are optional in every step that offers them, so Air never takes the lead from the step's own work and never carries a
   // "waiting for you" count: a Base Transfer being possible is not something the player has to deal with.
   if (snapshot.air.missions.length > 0) tabs.push({ id: 'air', label: 'Air', badge: 0 });
@@ -750,7 +752,9 @@ const railSection = (snapshot: UiSnapshot): TemplateResult => {
   const what = rail.units.length > 0 ? 'Rail transport' : 'Rail transport of supply';
   return html`<div class="unit-actions rail-panel"><strong>${what} from ${printedHexLabel(rail.hexId)}</strong>
     <p class="summary-line">Rail Cap ${railPoints(rail.remainingQuarters)} of ${rail.capacityPoints} left this Movement Phase <cite>13.3b</cite>${rail.arrivalTokens !== null ? html` · this turn's arrivals may entrain here (${rail.arrivalTokens}T) <cite>13.6b</cite>` : nothing}</p>
-    ${units}${dumps}<p class="hint">Click a teal station on the map to detrain there.</p>${destination}${cost}${blockers}
+    ${units}${dumps}<p class="hint">Click a teal station on the map to detrain there.</p>${destination}
+    <label>Check another hex <input id="rail-check-hex" inputmode="numeric" maxlength="4" placeholder="0507" .value=${rail.toHexId ? printedHexLabel(rail.toHexId) : ''}></label>
+    <p class="hint">Check a hex outside the legal list to see why it cannot accept this cargo.</p>${cost}${blockers}
     <div class="chip-row"><button id="confirm-rail" class="primary" ?disabled=${!rail.allowed}>OK</button><button id="close-rail">Cancel</button></div>
     <p class="hint">Units may not move again after detraining, and SP detrained cannot be loaded on trucks this phase (13.3e, 12.2a).</p></div>`;
 };
@@ -897,6 +901,53 @@ const logTab = (snapshot: UiSnapshot): TemplateResult => {
   return entries.length > 0 ? html`${entries.map(feedEntry)}` : html`<p class="hint">No actions yet.</p>`;
 };
 
+/** Phase B: a reviewable transport plan and current-position estimates, using gameplay queries only. */
+const logisticsTab = (snapshot: UiSnapshot, state: DeckState): View => {
+  const info = snapshot.logistics;
+  if (!info) return html`<p>Logistics is available in your Movement and Supply phases.</p>`;
+  const input = state.logisticsInput ?? {sourceId:info.dumps[0]?.id??'',destination:'',tokens:8,excluded:[]};
+  const own = rosterOwn(snapshot);
+  const name = (id: string) => { const p = (snapshot.view.projection?.stacks ?? []).flatMap(s=>s.pieces).find(p=>p.id===id); return p ? p.role==='DUMP'&&p.location.kind==='ON_MAP' ? `Supply at ${printedHexLabel(p.location.hexId)}` : pieceLabel(snapshot.scenario,p) : id; };
+  const plan = snapshot.logisticsPlan;
+  const movement = snapshot.view.projection?.sequence.phase === 'MOVEMENT';
+  return html`<div class="logistics-helper">
+    <p class="hint">Preview before spending. Estimates use current positions and stock; future enemy actions and new arrivals can change them.</p>
+    ${movement ? html`<section aria-label="Transport planner"><h3>Transport supply</h3>
+      <label>From dump <select id="helper-source" .value=${input.sourceId || info.dumps[0]?.id || ''}>${info.dumps.map(d=>html`<option value=${d.id}>${printedHexLabel(d.hexId)} · ${d.tokens}T</option>`)}</select></label>
+      <label>Destination hex <input id="helper-destination" list="helper-legal-hexes" placeholder="0507" .value=${input.destination} maxlength="6"></label>
+      <datalist id="helper-legal-hexes">${info.destinations.map(id=>html`<option value=${printedHexLabel(id)}></option>`)}</datalist>
+      <label>Quantity (T) <input id="helper-tokens" type="number" min="1" step="1" .value=${String(input.tokens)}></label>
+      <details><summary>Available trucks (${info.trucks.length})</summary>${info.trucks.map(t=>html`<label><input type="checkbox" data-helper-truck=${t.id} .checked=${!input.excluded.includes(t.id)}> ${name(t.id)} · ${printedHexLabel(t.hexId)} · capacity ${t.capacity}T, carries ${t.loaded}T</label>`)}</details>
+      <button id="helper-preview" ?disabled=${busyOf(snapshot,state)}>Preview transport</button>
+      ${plan ? html`<section id="helper-plan" aria-label="Transport preview"><strong>Deliver ${plan.delivered}T / ${plan.request.tokens}T</strong>
+        <p>Resulting stock at ${printedHexLabel(plan.request.destination)}: ${plan.destinationStock}T. No state changed by this preview.</p>
+        ${plan.reasons.map(reason=>html`<p class="warning">${reason}</p>`)}
+        ${plan.alternatives.length ? html`<p>Legal alternatives: ${plan.alternatives.map(id=>html`<button data-helper-alternative=${printedHexLabel(id)}>${printedHexLabel(id)}</button>`)}</p>` : nothing}
+        <ol>${plan.steps.map(step=>html`<li>${withHexLabels(own.reduce((label,p)=>label.replaceAll(p.id,name(p.id)),step.label))} · ${mp(step.costTicks)} MP, ${mp(step.remainingTicks)} left</li>`)}</ol>
+        ${plan.warnings.map(w=>html`<p class="warning">${w}</p>`)}
+        <button id="helper-confirm" ?disabled=${busyOf(snapshot,state)||plan.delivered===0}>${plan.delivered < plan.request.tokens ? `Send available ${plan.delivered}T` : `Confirm ${plan.delivered}T transport`}</button>
+        <button id="helper-cancel">Cancel plan</button>
+      </section>`:nothing}
+    </section>`:nothing}
+    <section aria-label="Fuel estimate"><h3>Fuel estimate</h3>
+      ${movement ? html`<details><summary>Choose units (${info.fuel.selected.length})</summary>${own.filter(p=>p.location.kind==='ON_MAP'&&p.role!=='DUMP'&&p.role!=='TRUCK'&&p.role!=='AIRCRAFT'&&p.role!=='AIR_BASE').map(p=>html`<label><input type="checkbox" data-helper-fuel-unit=${p.id} .checked=${info.fuel.selected.includes(p.id)}> ${name(p.id)}</label>`)}</details>
+      <p id="helper-fuel-total">Recommended payment ${info.fuel.tokens}T; ${info.fuel.missing.length} selected units cannot be fueled.</p>
+      <details><summary>Compare single-unit / formation / HQ payments</summary>${info.fuel.choices.map(c=>html`<p>${c.action.kind==='PAY_FUEL'?c.action.method:''}: ${c.tokens}T, fuels ${c.covers.map(name).join(', ')}; from ${name(c.action.kind==='PAY_FUEL'?c.action.sourcePieceId:'')}</p>`)}</details>
+      <ol>${info.fuel.steps.map(a=>html`<li>${a.kind==='PAY_FUEL'?`${a.method} · ${name(a.pieceId)} from ${name(a.sourcePieceId)}`:''}</li>`)}</ol>
+      <button id="helper-pay-fuel" ?disabled=${busyOf(snapshot,state)||info.fuel.steps.length===0}>Pay estimated ${info.fuel.tokens}T</button>
+      ${info.fuel.missing.map(m=>html`<p class="warning">${name(m.id)}: needs a reachable source. <button data-helper-shortfall=${printedHexLabel(m.hexId)} data-helper-quantity=${m.tokens}>Plan ${m.tokens}T to ${printedHexLabel(m.hexId)}</button></p>`)}`:html`<p>Fuel payments are made in a Movement Segment.</p>`}
+    </section>
+    <section aria-label="Supply prediction"><h3>Supply Phase prediction</h3>
+      <p>Mandatory internal-stock recovery is deducted first. Grouped payments shown below use the same ration rules as actual Supply.</p>
+      <p id="helper-prediction">Out of trace: ${info.supply.outOfTrace.length}. Predicted Out of Supply after these payments: ${info.supply.unfed.length}.</p>
+      <ul>${info.supply.outOfTrace.map(id=>html`<li>${name(id)} · ${info.supply.unfed.includes(id)?'unfed / attrition risk':'can be fed from dump'}</li>`)}</ul>
+      ${info.supply.groups.map(g=>html`<p>${g.tokens}T from ${name(g.sourcePieceId)} → ${g.pieceIds.map(name).join(', ')}</p>`)}
+      ${info.supply.searchExhausted?html`<p class="warning">Allocation search limit reached; this is a verified feasible plan, not proof that other units cannot be fed.</p>`:nothing}
+      ${!movement?html`<button id="helper-feed" ?disabled=${busyOf(snapshot,state)}>Apply recovery and predicted payments</button>`:nothing}
+    </section>
+  </div>`;
+};
+
 const tabBody = (snapshot: UiSnapshot, state: DeckState, tab: string): View => {
   switch (tab) {
     case 'arrivals': return arrivalsTab(snapshot);
@@ -907,6 +958,7 @@ const tabBody = (snapshot: UiSnapshot, state: DeckState, tab: string): View => {
     case 'air': return airTab(snapshot);
     case 'unit': return unitTab(snapshot, state);
     case 'ledger': return ledgerTab(snapshot);
+    case 'logistics': return logisticsTab(snapshot, state);
     default: return logTab(snapshot);
   }
 };
@@ -997,7 +1049,7 @@ export const unitRosterBodyView = (snapshot: UiSnapshot, state: DeckState): Temp
     else if (isMultiStepDefinition(pieceDefinition(snapshot.scenario, piece))) divisions.push(piece);
     else independents.push(piece);
   }
-  const row = (piece: ProjectedPiece): TemplateResult => html`<button class="roster-unit${piece.id === snapshot.selection.pieceId ? ' is-selected' : ''}" data-piece=${piece.id} data-roster-pick=${piece.id} aria-label=${`${pieceLabel(snapshot.scenario, piece)}, ${pieceHex(snapshot, piece)}`}>
+  const row = (piece: ProjectedPiece): TemplateResult => html`<button class="roster-unit${piece.id === snapshot.selection.pieceId ? ' is-selected' : ''}" data-piece=${piece.id} data-roster-pick=${piece.id} data-roster-name=${pieceLabel(snapshot.scenario, piece)} aria-label=${`${pieceLabel(snapshot.scenario, piece)}, ${pieceHex(snapshot, piece)}`}>
     <span class="roster-art" aria-hidden="true">${counterFor(snapshot, piece)}</span><span class="roster-text">${pieceLabel(snapshot.scenario, piece)}<small>${pieceHex(snapshot, piece)} · ${statusName(snapshot, piece)}</small></span>${badges(snapshot, piece)}</button>`;
   const rows = (pieces: ProjectedPiece[]) => repeat(pieces.sort(byName), (piece) => piece.id, row);
   // Air units fly missions from air bases rather than move with a formation, so they get a group of their own before the Trucks.
@@ -1155,7 +1207,7 @@ export const commandDeckView = (snapshot: UiSnapshot, state: DeckState): Templat
     : html`<nav class="deck-tabs" aria-label=${sequence ? phaseLabel(sequence.phase, sequence.segment) : 'Deck'}>${tabs.map(({ id, label, badge }) => html`<button data-deck-tab=${id} aria-pressed=${String(active === id)} aria-label=${badge > 0 ? `${label}, ${badge} waiting` : nothing}>${label}${badge > 0 ? html` <span class="tab-badge" aria-hidden="true">${badge}</span>` : nothing}</button>`)}<button id="open-roster" class="roster-open" aria-haspopup="dialog" title="List every unit you command">All units (${own.filter(({ location }) => location.kind !== 'ELIMINATED').length})</button></nav>
       <div class="deck-body" data-scroll-key=${`tab-${active}`} tabindex="0" aria-busy=${String(busy)}>${resultPanel(snapshot)}<section class="deck-context">${tabBody(snapshot, state, active)}</section></div>`;
   return html`${objective ? html`<p class="deck-objective">${objective}</p>` : nothing}
-    ${view.metadata.lifecycle === 'PAUSED' ? html`<p class="paused-banner" role="status">This game was saved paused. <button id="resume-game" class="bar-button">Resume</button></p>` : nothing}
+    ${view.metadata.lifecycle === 'PAUSED' ? html`<p class="paused-banner" role="status">Game paused. Actions are unavailable until you resume. <button id="resume-game" class="bar-button">Resume</button></p>` : nothing}
     <section class="deck-selection" aria-label="Selected unit">${selectedCard(snapshot)}${selectionButton(snapshot, busy)}</section>
     ${stackPanel(snapshot)}
     ${statusPanel(snapshot)}

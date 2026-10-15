@@ -82,14 +82,31 @@ Only the look of the Beyond the Rhine VASSAL map is borrowed; no asset is copied
 - **Counter LOD by on-screen size** (user request): the counter-artwork exception to the text floor applies only to
   counters.
 
+## Supply inspection
+
+With Trace Supply enabled, hover and keyboard announcements name RAIL/EXT supply sources,
+friendly/enemy rail supply paths, and whether the shown trace coverage reaches the hex. These
+use the same seat-specific data as the painted overlay; selecting an individual unit narrows
+coverage to that unit.
+
+## Stack inspection
+
+Hovering a multi-counter hex or moving the keyboard cursor onto it shows a fixed-size stack
+inspection beside the map, independent of zoom and counter offsets. It prints complete visible
+faces and unit names. Clicking opens the selectable stack list. Both use the seat's redacted
+projection, so hidden enemy identities remain hidden. Inspection is removed during handoff,
+modal dialogs and move confirmation; the passive preview is inert and does not add Tab stops.
+
 ## Known gaps
 
 From `docs/quality/05-todo-inventory.md`: `map-appearance` (place names cosmetic, one terrain per hex, Autobahn,
 integrated acceptance of the new look), `road-exit-edge`, `objective-marker-preview` (the New Game preview still draws the
-plain gold star), `counter-fidelity`, `transport-art`, `pax-counter-art`, `TODO-CM1`, `TODO-CM2`, `enemy-zoc-display`, `landing-port-view`.
+plain gold star), `counter-fidelity` (remaining CF5 whole-turn/persistence evidence), `transport-art`, `pax-counter-art`, `TODO-CM1`, `TODO-CM2`, `enemy-zoc-display`, `landing-port-view`.
 
 ## Verification
 
 - `tests/ui/map-art.test.ts`, `tests/ui/counter-*.test.ts` (LOD, states, hidden quantities, HQ, transport, aircraft).
 - Browser rows MAP-01 to MAP-09 and CTR-01 to CTR-08 in `docs/quality/03-product-operation-verification-plan.md`; run
   records in `docs/quality/evidence/product-2026-10-14/` and `control-2026-10-05/`.
+
+- Both desktop sizes, full stack inspection, LOD and rail overlay operations: [operations evidence](../quality/evidence/operations-2026-10-15/README.md).

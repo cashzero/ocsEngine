@@ -38,6 +38,24 @@ const start = async (request: NewGameRequest) => {
 };
 
 describe('rail transport in the command deck (13.3)', () => {
+  it('explains an unavailable destination and never sends old cargo after clearing the destination', async()=>{
+    const {controller,onRail}=await start({...DEFAULT_NEW_GAME_REQUEST,seeds:{map:2,oob:1,deployment:1,rules:1}});
+    expect(onRail('DUMP')).toBeDefined();
+    const initial=controller.getSnapshot().rail!;
+    controller.setRailTokens(initial.dumps[0]!.pieceId,1);
+    const invalid=controller.getSnapshot().scenario.mapDefinition.hexes.find(hex=>hex.id!==initial.hexId&&!initial.destinations.some(dest=>dest.hexId===hex.id))!;
+    const before=JSON.parse(controller.serializeSave()).finalStateHash;
+    controller.chooseRailDestination(invalid.id);
+    expect(controller.getSnapshot().rail).toMatchObject({toHexId:invalid.id,allowed:false});
+    expect(controller.getSnapshot().rail!.blockers.join(' ')).toContain('13.3');
+    await controller.confirmRailMove();
+    expect(JSON.parse(controller.serializeSave()).finalStateHash).toBe(before);
+    controller.chooseRailDestination(initial.destinations[0]!.hexId);
+    controller.chooseRailDestination('');
+    expect(controller.getSnapshot().rail).toMatchObject({toHexId:null,allowed:false});
+    controller.dispose();
+  });
+
   it('sends SP from a station by rail: Tokens, a highlighted destination, the cost and the Rail Cap left', async () => {
     // A seed whose start has a full dump standing on a station (dumps stand where the troops hold the ground, 2026-10-09).
     const { controller, own, onRail, configuration } = await start({ ...DEFAULT_NEW_GAME_REQUEST, seeds: { map: 2, oob: 1, deployment: 1, rules: 1 } });

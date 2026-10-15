@@ -1,0 +1,36 @@
+{
+  "1680x1050": {
+    "artifacts": "artifacts/roster-tooltip/1680x1050",
+    "final": {
+      "turn": "Turn 2 / 3",
+      "player": "Axis player turn",
+      "phase": "Reinforcement",
+      "revision": null
+    },
+    "timings": [
+      {
+        "label": "Hover Chmbln TF (Det. 2) / 10.A",
+        "elapsed": 57,
+        "budget": 1000
+      }
+    ],
+    "errors": []
+  },
+  "1920x1080": {
+    "artifacts": "artifacts/roster-tooltip/1920x1080",
+    "final": {
+      "turn": "Turn 2 / 3",
+      "player": "Axis player turn",
+      "phase": "Reinforcement",
+      "revision": null
+    },
+    "timings": [
+      {
+        "label": "Hover Chmbln TF (Det. 2) / 10.A",
+        "elapsed": 52,
+        "budget": 1000
+      }
+    ],
+    "errors": []
+  }
+}
