@@ -1,0 +1,73 @@
+{
+  "title": "doc 03 §BOT computer players",
+  "final": {
+    "turn": "Turn 6 / 6",
+    "player": "Axis computer player turn",
+    "phase": "Game over Phase",
+    "revision": "175"
+  },
+  "rows": [
+    {
+      "id": "BOT-01",
+      "expectation": "New Game offers a computer for one side; the preview names who plays; Start opens the game with no hand-over screen",
+      "observed": "preview \"Allied: you · Axis: computer\"; started in 255 ms; seat \"Allied commander\"; hand-over false; computer panel true (\"Your turn\")",
+      "status": "PASS"
+    },
+    {
+      "id": "BOT-02",
+      "expectation": "The person attacks; the computer answers the defender decisions by itself, the result shows on the person's screen, and no hand-over appears",
+      "observed": "result card: \"COMBAT RESULT Allied commander attack on 1208 · 5 : 1 · 5:1 · DRM +3 Ae2/DL2o3DG surprise roll 12 · combat roll 12 Attacker is unaffected; defender loses 2 step\"; computer actions seen: Axis computer chose a combat supply source | Axis computer chose the defending terrain",
+      "status": "PASS"
+    },
+    {
+      "id": "BOT-03",
+      "expectation": "The computer turn plays by itself with each action shown; Pause stops it, Step plays exactly one action, Play resumes",
+      "observed": "playing \"Axis computer is playing…\" (top bar \"Axis computer player turn\"); played 3→9 in 0.7 s; paused \"Paused: Axis computer acts next\" held 9=9 for 1.5 s; one Step → played 10; last \"Axis computer: An enemy unit moved to 1208\"",
+      "status": "PASS"
+    },
+    {
+      "id": "BOT-04",
+      "expectation": "A whole Game Turn is played with a person and a computer: legal actions, decisions, the computer's turn, no hand-over, no stall",
+      "observed": "reached Turn 2 / 6, Allied player turn, Reinforcement; computer actions so far 59; errors 0",
+      "status": "PASS"
+    },
+    {
+      "id": "BOT-06",
+      "expectation": "A save made during the computer's turn, loaded into the same operation opened anew, has the computer go on from the same position",
+      "observed": "saved at revision 172 (paused); same operation reopened with two persons: computer panel false; after load: panel true at revision 176; 2.5 s later, with nobody pressing Play: revision 178, played 6, last \"Axis computer chose the turn order\"",
+      "status": "PASS"
+    },
+    {
+      "id": "BOT-07",
+      "expectation": "Restoring a checkpoint taken before the computer acted puts the game back; the computer then plays the same five actions",
+      "observed": "checkpoint \"Restore Auto: start of Movement · Movement Segment (turn 6) · R188\" at revision 188; after restore revision 188; first run [\"Axis computer took a logistics action\",\"Axis computer took a logistics action\",\"Axis computer: An enemy unit moved to 0305\",\"Axis computer took a logistics action\",\"Axis computer: An enemy unit moved to 0305\"]; second run [\"Axis computer took a logistics action\",\"Axis computer took a logistics action\",\"Axis computer: An enemy unit moved to 0305\",\"Axis computer took a logistics action\",\"Axis computer: An enemy unit moved to 0305\"]",
+      "status": "PASS"
+    },
+    {
+      "id": "BOT-08",
+      "expectation": "A stuck computer shows what went wrong and does nothing more; \"Play it myself\" hands the seat to the person, who can then act",
+      "observed": "banner \"COMPUTER STUCK AXIS COMPUTER CANNOT GO ON The computer found no legal action to take. Nothing was skipped: the game stays exactly where it stopped. revision 172 Play Axis myself Try again\"; revision 172→172 while stuck; after take-over: computer panel false, seat \"Axis commander\", hand-over screen false; left pending for the person: [] in Axis player turn Supply; the person then played on to Turn 5 / 6, Axis player turn, Combat · Barrage",
+      "status": "PASS"
+    },
+    {
+      "id": "BOT-05",
+      "expectation": "Two computers play to Game End with nobody operating; the screen shows no hand-over, can be paused, sped up and viewed from either side; the final save replays to the same final state",
+      "observed": "preview \"Allied: computer · Axis: computer\"; started with hand-over false; played 3→15 in 1.5 s unattended; views [\"Allied\",\"Axis\"], seat \"Allied computer\"→\"Axis computer\"; paused 20=20; Game End \"Draw\" (Result: TURN LIMIT · final revision 275); final save 275 actions, replay hash equals the saved sha256:0193e11f1bc9…, seats Allied computer:BOT, Axis computer:BOT",
+      "status": "PASS"
+    },
+    {
+      "id": "BOT-10",
+      "expectation": "Two computers continue a loaded save from where it was made to Game End, and the final save replays to the same final state",
+      "observed": "saved while paused at revision 24 (24 computer actions played); the same operation reopened with two persons (computer panel false); after load: computer panel true at revision 29; Game End \"Draw\" (Result: TURN LIMIT · final revision 275); final save 275 actions, replay hash equals the saved one",
+      "status": "PASS"
+    },
+    {
+      "id": "BOT-11",
+      "expectation": "A person plays the whole operation against the computer to Game End (every phase, decision and the computer's turns), with no hand-over screen, and the final save replays to the same final state",
+      "observed": "Allied: you · Axis: computer; Turn 1 / 6, Turn 2 / 6, Turn 3 / 6, Turn 4 / 6, Turn 5 / 6, Turn 6 / 6 in 28 s; 125 computer actions; Game End \"Axis\" (Result: TURN LIMIT · final revision 175); final save 175 actions, replay hash equals the saved one, seats Allied commander:HUMAN, Axis computer:BOT; page errors 0",
+      "status": "PASS"
+    }
+  ],
+  "timings": [],
+  "errors": []
+}

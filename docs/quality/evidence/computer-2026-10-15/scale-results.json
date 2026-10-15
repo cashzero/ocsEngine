@@ -1,0 +1,19 @@
+{
+  "title": "doc 03 BOT-05 / BOT-09 at the default size",
+  "final": {
+    "turn": "Turn 8 / 8",
+    "player": "Axis computer player turn",
+    "phase": "Game over Phase",
+    "revision": "549"
+  },
+  "rows": [
+    {
+      "id": "BOT-05",
+      "expectation": "Two computers play the default operation to Game End at Instant speed with nobody operating; Pause takes effect at once; no console error",
+      "observed": "549 computer actions to \"Axis\" (Result: TURN LIMIT · final revision 549) in 85 s (155 ms per action including drawing); 41 played after 6 s; Pause showed in 12 ms with 49 played, held 49=49; page errors 0",
+      "status": "PASS"
+    }
+  ],
+  "timings": [],
+  "errors": []
+}

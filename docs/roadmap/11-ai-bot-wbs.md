@@ -1,6 +1,6 @@
 # M9-AI：AI Bot（電腦對手）WBS
 
-狀態：**IN PROGRESS**。B1–B5 進行中（headless 對局可跑，驗收未完成）；B6–B9 PLANNED。本文件是計畫，不是完成宣告；現況與量測結果寫在 `docs/ai/`。
+狀態：**IN PROGRESS**。B1–B7 進行中（headless 對局可跑、UI 的電腦座位已在瀏覽器驗收，BOT-09 與其他驗收未完成）；B8–B9 PLANNED。本文件是計畫，不是完成宣告；現況與量測結果寫在 `docs/ai/`。
 
 需求來源（使用者，2026-10-06）：「規劃並設計ai bot」。
 使用者決定（2026-10-06）：「先做headless mode 我們需要快速疊代」——同意在 M8 完成前先做不碰 UI 的 B0–B4；
@@ -35,7 +35,7 @@
 4. 中途存檔、讀檔後電腦接續；undo；最終 replay hash 相符。
 5. 電腦卡住時有可見錯誤與「改由我操作」。
 
-此流程轉成 §4 的驗收列草案；在使用者同意前不寫入 `docs/quality/03-product-operation-verification-plan.md`，也不得縮小。
+此流程已轉成 `docs/quality/03-product-operation-verification-plan.md` §K 的驗收列（BOT-01 至 BOT-11），不得縮小。
 
 ## 2. 步驟
 
@@ -168,7 +168,7 @@ Air 與 CARGO_LOSS 仍用第一個選項（TODO `bot-air`）。測試：`tests/a
   電腦行動播放（速度、暫停）、「電腦思考中」狀態、history 敘述；電腦卡住的錯誤與「改由我操作此方」；
   電腦對電腦觀戰（選視角）；存讀檔後電腦接續；undo 說明。
 - Air 開啟時提示電腦不會主動使用空軍（TODO `bot-air`）。
-- 完成證據：§4 的 BOT 驗收列在真實瀏覽器操作通過。
+- 完成證據：驗收計畫 §K 的 BOT 列在真實瀏覽器操作通過。
 
 ### B8 行為基準報告（PLANNED）
 
@@ -179,33 +179,23 @@ Air 與 CARGO_LOSS 仍用第一個選項（TODO `bot-air`）。測試：`tests/a
 
 - `docs/roadmap.md` §13 的 exit gate：多組 generated scenarios 完成；failed action、deadlock、infinite loop、replay mismatch 為零；
   人與電腦 dispatch 相同 action 結果一致；決策確定且 rules RNG 不受影響。
-- 加上 §4 BOT 驗收列全部 PASS（記錄於驗收計畫）。任何一項未達成，M9 維持 IN PROGRESS。
+- 加上驗收計畫 §K 的 BOT 列全部 PASS。任何一項未達成，M9 維持 IN PROGRESS。
 
 ## 3. TODO
 
 AI 的開放 TODO 集中在 `docs/quality/05-todo-inventory.md`「AI」。難度等級（`bot-difficulty`）是否要做列在 §5。
 
-## 4. 驗收列草案（BOT，待使用者同意後加入驗收計畫）
+## 4. 驗收列
 
-| 列 | 操作（真實 UI） | 通過條件 |
-|---|---|---|
-| BOT-01 | New Game：一方選電腦，預覽並開始 | 開局後畫面只顯示人類一方的 view；沒有交接畫面 |
-| BOT-02 | 人對電腦，人類完成自己的 player turn（移動、攻擊） | 電腦即時回應守方決策（領頭、地形、損失、退卻），結果在 history 可見 |
-| BOT-03 | 電腦的 player turn | 自動完成所有 phase；每個電腦行動在地圖與 history 可見；可暫停、調速；人類看不到電腦的隱藏資訊 |
-| BOT-04 | 人對電腦至少完成一整個 Game Turn，再繼續到 Game End | 結果畫面正確；無卡住、無錯誤 |
-| BOT-05 | 電腦對電腦觀戰 | 無人操作打到 Game End；可暫停、調速、切換視角 |
-| BOT-06 | 電腦回合中存檔、重開、讀檔 | 電腦從同一位置接續；最終 replay hash 相符 |
-| BOT-07 | Undo 到電腦行動前 | 局面正確回復；電腦在相同局面做出相同決定 |
-| BOT-08 | 製造電腦卡住（測試用 policy） | 出現可見錯誤與「改由我操作此方」，接手後可繼續遊戲 |
-| BOT-09 | 延遲 | 預設規模下電腦單一行動 p95 ≤ 300 ms 計算時間，完整 player turn ≤ 20 秒（不含播放動畫） |
+BOT-01 至 BOT-11 在驗收計畫 §K（`docs/quality/03-product-operation-verification-plan.md`）；各列狀態與證據以該處為準。
 
 ## 5. 開放決定（需使用者回答）
 
 1. ~~是否同意在 M8 完成前，先做不碰 UI 的 B0–B4？~~ 已同意（2026-10-06）。
-2. 產品優先順序：先做「人對電腦」，還是「電腦對電腦觀戰」也同時列為 M9 必要？
-3. 電腦回合在畫面上的呈現：逐步播放每個行動（可調速），或整個 phase 瞬間完成後只給摘要？
-4. New Game 預設：雙方都是玩家（目前行為），或預設人類 Allied 對電腦 Axis？
-5. §4 驗收列草案是否同意加入驗收計畫？
+2. ~~產品優先順序~~ 人對電腦與電腦對電腦觀戰都要（使用者，2026-10-15）。
+3. ~~電腦回合的呈現~~ 逐步播放每個行動，可暫停、單步、調速（使用者，2026-10-15）。
+4. New Game 預設：雙方都是玩家（現行行為，未改；使用者未要求改，待確認）。
+5. ~~驗收列~~ 依使用者 2026-10-15 的要求列入驗收計畫 §K（BOT-01 至 BOT-11）；BOT-09 的門檻仍是提案，待使用者確認。
 6. 是否要做難度等級（`bot-difficulty`）？
 
 ## 6. 自我對戰提升（M10 前置，停用）
