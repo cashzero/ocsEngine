@@ -3,6 +3,7 @@ import { keyed } from 'lit-html/directives/keyed.js';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import {
   DEFAULT_NEW_GAME_REQUEST,
+  defaultTurnLimit,
   NEW_GAME_MAP_LIMITS,
   createGameplayEngine,
   createMemoryGameplayPorts,
@@ -106,6 +107,8 @@ let newGameSettings: NewGameRequest = {
   oob: { ...DEFAULT_NEW_GAME_REQUEST.oob },
   seeds: { ...DEFAULT_NEW_GAME_REQUEST.seeds },
 };
+/** Whether the player typed a Turn limit; until then it follows the map size and the divisions. */
+let turnLimitCustom = false;
 let newGameOpen = location.hash === '#new-game';
 let newGameBusy = false;
 let preparingPreview = false;
@@ -815,7 +818,12 @@ const onNewGameInput = (event: Event): void => {
   }
   if (id === 'new-game-air-transport') newGameSettings = { ...newGameSettings, oob: { ...newGameSettings.oob, airTransport: input.value as AirForceLevel } };
   if (id === 'new-game-engagement') newGameSettings = { ...newGameSettings, engagement: input.value as Engagement };
-  if (id === 'new-game-turn-limit') newGameSettings = { ...newGameSettings, turnLimit: value };
+  if (id === 'new-game-turn-limit') { newGameSettings = { ...newGameSettings, turnLimit: value }; turnLimitCustom = true; }
+  else if (!turnLimitCustom) {
+    newGameSettings = { ...newGameSettings, turnLimit: defaultTurnLimit(newGameSettings) };
+    const element = document.getElementById('new-game-turn-limit') as HTMLInputElement | null;
+    if (element !== null) element.value = String(newGameSettings.turnLimit);
+  }
   if (id === 'new-game-start-month') newGameSettings = { ...newGameSettings, startMonth: value };
   // Rail Cap follows the forces until the player sets it; from then on it keeps the player's numbers.
   if (id === 'new-game-rail-cap-allied' || id === 'new-game-rail-cap-axis') {
@@ -1090,10 +1098,10 @@ const newGameDialog = () => {
       <div class="settings-column">
         <fieldset><legend>Game rules</legend>
           <div class="field-pair">
-            ${number('new-game-turn-limit', 'Turn limit', 1, 20, newGameSettings.turnLimit)}
+            ${number('new-game-turn-limit', 'Turn limit', 1, 60, newGameSettings.turnLimit)}
             ${select('new-game-start-month', 'Start month', START_MONTHS, newGameSettings.startMonth)}
           </div>
-          <p class="field-help">The month sets the weather: September is always dry, autumn brings mud, and midwinter snow.</p>
+          <p class="field-help">${turnLimitCustom ? html`<button type="button" id="reset-turn-limit" @click=${() => { turnLimitCustom = false; newGameSettings = { ...newGameSettings, turnLimit: defaultTurnLimit(newGameSettings) }; previewStale = true; render(controller.getSnapshot()); }}>Use the default (${defaultTurnLimit(newGameSettings)})</button> ` : `Default: grows with the map and the divisions. `}The month sets the weather: September is always dry, autumn brings mud, and midwinter snow.</p>
           <div class="field-pair">
             ${number('new-game-rail-cap-allied', 'Allied Rail Cap', 0, MAXIMUM_RAIL_CAP, railCap.allied)}
             ${number('new-game-rail-cap-axis', 'Axis Rail Cap', 0, MAXIMUM_RAIL_CAP, railCap.axis)}

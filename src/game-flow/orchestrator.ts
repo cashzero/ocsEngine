@@ -120,6 +120,6 @@ export const DEFAULT_NEW_GAME_REQUEST: NewGameRequest = {
   // User request 2026-10-03: more infantry divisions; the player sets the division count and how many are armored.
   oob: { scale: 'COMPACT', divisionsPerSide: 6, armoredDivisionsPerSide: 2 },
   seeds: { map: 0x0c500001, oob: 0x0c500002, deployment: 0x0c500003, rules: 0x0c500004 },
-  turnLimit: 8,
+  turnLimit: 17, // defaultTurnLimit for this map and these divisions
   startMonth: 10,
 };

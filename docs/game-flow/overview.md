@@ -40,7 +40,7 @@ a rule configuration, the rules seed and the seat bindings.
 
 `NewGameRequest` (`src/game-flow/model.ts`) is the only input: the `GROUND_DUEL` template; the engagement (Meeting
 Engagement, Allied attack or Axis attack); map width, height, style and sea; OOB scale, divisions per side and how many
-are armored, air forces and air transport; four seeds; the turn limit; the start month; and optionally Rail Cap, Sea Cap
+are armored, air forces and air transport; four seeds; the turn limit (defaulting to a value that grows with map size and divisions per side, until the player sets one); the start month; and optionally Rail Cap, Sea Cap
 and inland entry per side. Absent optional fields keep the meaning they had before the field existed, so older requests
 and saves stay valid. Limits and the default request are in `docs/quality/03-product-operation-verification-plan.md`
 ("Approved scope").
@@ -69,7 +69,7 @@ checks, by canonical JSON, that only that dimension changes.
 Every failure names its stage (`OPTIONS`, `MAP`, `OOB`, `DEPLOYMENT`, `SCENARIO`, `GAMEPLAY_BOOTSTRAP`), a code, a message
 and a structured path, and is returned before a session exists:
 
-- `OPTIONS`: template, engagement, sea, seeds (uint32), turn limit 1–20, map size limits, start month (September–April,
+- `OPTIONS`: template, engagement, sea, seeds (uint32), turn limit 1–60, map size limits, start month (September–April,
   and the last turn must fall inside the Weather Table), Rail Cap, Sea Cap and inland entry (a side without inland entry
   needs a sea and at least 1 Sea Cap).
 - `SCENARIO`: the composed scenario passes Foundation validation and the rule configuration is valid; no unit begins on

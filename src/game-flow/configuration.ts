@@ -44,6 +44,14 @@ const supplyDefinitionFor = (oob: GeneratedOob, side: OobSide): DefinitionId => 
  */
 export const RAIL_CAP_PER_DIVISION = 0.75;
 
+/**
+ * The Turn limit offered until the player sets one: armies need time to cross the map and to fight, so it grows with the
+ * map's width plus height (one turn per seven hexes) and with the divisions per side (one and a half turns each).
+ * A 32x24 map with 6 divisions gets 17 turns.
+ */
+export const defaultTurnLimit = (request: Pick<NewGameRequest, 'map' | 'oob'>): number =>
+  Math.max(4, Math.min(60, Math.round((request.map.width + request.map.height) / 7 + request.oob.divisionsPerSide * 1.5)));
+
 export const defaultRailCap = (request: NewGameRequest): { readonly allied: number; readonly axis: number } => {
   const attacker = attackerOf(request.engagement ?? 'MEETING');
   const points = (side: OobSide): number =>

@@ -20,8 +20,8 @@ export const validateNewGameRequest = (request: NewGameRequest): readonly GameFl
   for (const [name, value] of Object.entries(request.seeds)) {
     if (!uint32(value)) failures.push({ stage: 'OPTIONS', code: 'INVALID_SEED', message: `${name} seed must be uint32.`, path: ['seeds', name] });
   }
-  if (!Number.isSafeInteger(request.turnLimit) || request.turnLimit < 1 || request.turnLimit > 20) {
-    failures.push({ stage: 'OPTIONS', code: 'INVALID_TURN_LIMIT', message: 'Turn limit must be an integer from 1 through 20.', path: ['turnLimit'] });
+  if (!Number.isSafeInteger(request.turnLimit) || request.turnLimit < 1 || request.turnLimit > 60) {
+    failures.push({ stage: 'OPTIONS', code: 'INVALID_TURN_LIMIT', message: 'Turn limit must be an integer from 1 through 60.', path: ['turnLimit'] });
   }
   if (request.seats !== undefined) {
     for (const side of ['allied', 'axis'] as const) {
