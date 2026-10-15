@@ -67,6 +67,12 @@ Deployment turns M7 force identities into Foundation runtime state.
    Attack victory requires the attacker's starting VP plus half the defender's starting VP, rounded up, so the attacker’s
    own ports do not count as progress toward capturing half the defender’s VP.
 
+   Garrison supply (`src/game-flow/garrison-supply.ts`): after composition every garrison's trace supply is checked with
+   the actual rules (rail control, HQs, enemy ZOC). A key-point garrison out of trace moves to a spaced, supply-connected
+   friendly node within stacking limits, or is omitted with a warning. An objective garrison out of trace keeps an
+   emergency stock of 1T (one feeding payment, 12.6c); garrisons in trace get none. The stock is taken from the side's
+   existing on-map dumps, so total SP does not grow; off-map aircraft cargo and future arrivals are untouched.
+
    Historical limitation (superseded by the allocation above): small Eastern Europe maps could lack enough base
    town VP for equality. Automated regression covers 16×12 seeds 1, 0x0c500001 and 777. TODO (small-map visual acceptance):
    preview and start those three maps in the browser to confirm equal visible VP and no imbalance warning. User-visible

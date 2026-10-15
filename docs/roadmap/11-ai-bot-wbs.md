@@ -1,6 +1,6 @@
 # M9-AI：AI Bot（電腦對手）WBS
 
-狀態：**IN PROGRESS**（2026-10-06 建立）。B1、B2 進行中（headless 對局可跑，驗收未完成）；其餘 PLANNED。本文件是計畫，不是完成宣告。
+狀態：**IN PROGRESS**。B1–B5 進行中（headless 對局可跑，驗收未完成）；B6–B9 PLANNED。本文件是計畫，不是完成宣告；現況與量測結果寫在 `docs/ai/`。
 
 需求來源（使用者，2026-10-06）：「規劃並設計ai bot」。
 使用者決定（2026-10-06）：「先做headless mode 我們需要快速疊代」——同意在 M8 完成前先做不碰 UI 的 B0–B4；
@@ -9,13 +9,14 @@
 設計文件：
 
 - [BCS AI 與 Self-play 研究](../generator-study/05-bcs-ai-and-selfplay.md)（roadmap §13 要求的 M9 前置研究）
-- [M9 Bot 架構](../ai/M9-bot-architecture.md)
-- [M9 評分與規劃](../ai/M9-scoring-and-planning.md)
+- [AI Bot 架構](../ai/architecture.md)
+- [Heuristic 策略](../ai/heuristic-policy.md)
+- [AI 對戰評估](../ai/evaluation.md)
 
 ## 0. 前置 gate 與開始條件
 
-`docs/roadmap.md` §12–§13：M8 產品操作 gate 的所有 P0 通過前，M9 不得開始實作。2026-10-04 的執行紀錄仍有 NG-07、NG-10、
-MAP-03、MAP-04 FAIL，SES 與 UI 列尚未執行，因此 M8 仍為 **IN PROGRESS**。
+`docs/roadmap.md` §12–§13：M8 產品操作 gate 的所有 P0 通過前，M9 不得開始實作。M8 仍為 **IN PROGRESS**
+（`docs/quality/03-product-operation-verification-plan.md`）。
 
 本 WBS 把工作分成兩類，方便使用者決定是否提前開始其中一部分：
 
@@ -119,7 +120,7 @@ objective 控制、最近敵軍、威脅值）；projection 新增 `objectives`�
 OVERSTACK_ELIMINATION、OPTION_SPLIT、RETREAT_HEX／DISPLACEMENT_HEX、ADVANCE_HEX、BREAKDOWN_ABSORPTION；每個回答在 trace 寫出 responder 名稱。
 Air 與 CARGO_LOSS 仍用第一個選項（TODO `bot-air`）。測試：`tests/ai/heuristic.test.ts`（以假 context 驗證選擇）；尚缺每種 decision 的規則 fixture 測試。
 
-- 依 [評分與規劃](../ai/M9-scoring-and-planning.md) §6 為每種 decision 寫 responder，皆有 random-legal 後備與 `RESPONDER_FALLBACK` Warning。
+- 為每種 decision 寫 responder（現況見 [Heuristic 策略](../ai/heuristic-policy.md)「待決回應」），皆有 random-legal 後備與 `RESPONDER_FALLBACK` Warning。
 - 完成證據：每種 decision 至少一個規則 fixture 測試；B2 runner 中 ground decision 的 fallback 次數為零。
 
 ### B5 Heuristic baseline（M9.2，IN PROGRESS）
@@ -138,29 +139,17 @@ Air 與 CARGO_LOSS 仍用第一個選項（TODO `bot-air`）。測試：`tests/a
 | B5-4 會打仗 | 有接敵的局中 ≥ 90% 宣告過地面攻擊；平均攻擊 odds 欄位不低於 3:1（OPEN 欄等值）；barrage 在射程內有目標的局中 ≥ 50% 使用 | 每座位 action 統計與 trace |
 | B5-5 用資源 | 機械化單位移動前付 fuel；增援全部放上地圖；有可重建選項時當回合重建；卡車在局中至少一次把 SP 運往前線 HQ；終局時 ≥ 80% 戰鬥單位在補給中 | 每座位 action 統計與終局 projection |
 | B5-6 守方決策 | 每種 ground pending decision 都由規則化 responder 回答（非隨機後備），且選擇理由寫入 trace | trace 中 responder 名稱 |
-| B5-7 可讀 | 人工檢視 3 局完整 trace（不同 map 風格）並記錄不合理行為；明顯錯誤（攻擊 1:2、把卡車開到敵軍旁）列為修正項 | `docs/ai/M9-bot-behavior-baseline.md` |
+| B5-7 可讀 | 人工檢視 3 局完整 trace（不同 map 風格）並記錄不合理行為；明顯錯誤（攻擊 1:2、把卡車開到敵軍旁）列為修正項 | `scripts/ai-narrate.mjs`；修正寫入 `docs/ai/heuristic-policy.md` |
 
 空軍（`bot-air`）不在 B5 範圍：開啟空軍時電腦只以隨機合法方式處理空軍行動，見 §3 TODO。
 
-結果（2026-10-06，最終程式碼、全新 seed，詳見 [行為基準報告](../ai/M9-bot-behavior-baseline.md)）：預設地圖 B5-1～B5-6 全部 PASS
-（對隨機電腦 38/40 = 95%，雙方座位各 95%；攻擊勝率比中位數 14:1；終局 97% 部隊在補給中）；地中海 10/10；
-**東歐 32/40 = 80%，未達 90%**（TODO `bot-eastern-front`）；B5-7 人工檢視已做並修正 11 項。因東歐未達標，B5 維持 IN PROGRESS。
+狀態：**IN PROGRESS**。最後一次 B5 量測在 heuristic@5（預設地圖全部 PASS）；東歐風格未達 90%（TODO `bot-eastern-front`）；
+標準策略 heuristic@66 尚未重跑 B5。量測數字與重跑缺口見 [AI 對戰評估](../ai/evaluation.md)。
 
-heuristic@2（2026-10-06，[對局紀錄研究](../ai/M9-replay-study.md)）：對 heuristic@1 在 150 局未用過的 seed 上 75:48（p = 0.009）；
-B5-1～B5-6 不退步檢查全部 PASS。東歐 `bot-eastern-front` 仍未關閉。
+### B6 Logistics-aware（M9.3，IN PROGRESS）
 
-heuristic@3（2026-10-07，戰線研究）：砲兵護衛使砲兵被攻擊減少 76%、防守損失每局少 1 step；對 v2 在 90 局新 seed 上 43:34（p = 0.18，勝率提升未證實）；
-B5 不退步全部 PASS（對 random-legal 98%）。攻堅需要補給支撐的主攻方向（TODO `bot-offensive-axis`）。
-
-heuristic@4（2026-10-07，主攻方向）：對 v3 在 60 局新 seed 上 33:13（p = 0.002）；攻擊推進拿下目標每局 0.87 次（v3 為 0.33）。
-在 OOB 0.4.0 上的 B5 重驗見 [OOB 改版 WBS](12-oob-revision-wbs.md) O6。
-
-heuristic@5（2026-10-07，拔除駐守單位、補給預算）：OOB 0.4.0 上對 v4 在 60 局新 seed 上 32:13（p = 0.003）；
-斷補單位回合每方每局 8.3 → 3.7。見 [對局紀錄研究](../ai/M9-replay-study.md) 第 7 節。
-B5 重驗（v5，OOB 0.4.0，seed 33000–33039 對 random-legal、33500–33519 互打）：全部 PASS；對 random-legal 39/40（Allied 19/20、Axis 20/20），
-60 局皆完成、無錯誤、重播 hash 相符；回合結束時在補給內 91%。
-
-### B6 Logistics-aware（M9.3，PLANNED）
+已在 heuristic 中實作的部分（卡車、鐵路、海運、共同口糧、補給保護）見 [Heuristic 策略](../ai/heuristic-policy.md)；
+未完成的部分是 `docs/quality/05-todo-inventory.md` 的 AI TODO。
 
 - SP 需求估計、卡車運補、dump 位置安全、extender、炸 dump、fuel 方法選擇、Supply Phase 的 SP 預算。
 - 完成證據：與 B5 相比 `HIGH_OOS` 與 `LOGISTICS_EXPOSURE` 明顯下降，且 objective 得分不下降（成對比較）；
@@ -176,8 +165,8 @@ B5 重驗（v5，OOB 0.4.0，seed 33000–33039 對 random-legal、33500–33519
 
 ### B8 行為基準報告（PLANNED）
 
-- `docs/ai/M9-bot-behavior-baseline.md`：seed 矩陣、Error／Warning 統計、勝負與 objective 分布、延遲、代表性 trace 摘錄、
-  已知弱點與 TODO。
+- 寫入 [AI 對戰評估](../ai/evaluation.md)：seed 矩陣、Error／Warning 統計、勝負與 objective 分布、延遲、代表性 trace 摘錄；
+  已知弱點寫入 `docs/quality/05-todo-inventory.md`。
 
 ### B9 M9 exit gate（PLANNED）
 
@@ -185,15 +174,9 @@ B5 重驗（v5，OOB 0.4.0，seed 33000–33039 對 random-legal、33500–33519
   人與電腦 dispatch 相同 action 結果一致；決策確定且 rules RNG 不受影響。
 - 加上 §4 BOT 驗收列全部 PASS（記錄於驗收計畫）。任何一項未達成，M9 維持 IN PROGRESS。
 
-## 3. TODO（已知會留下的縮減）
+## 3. TODO
 
-| TODO | 缺少的行為 | 使用者可見影響 | 關閉證據 |
-|---|---|---|---|
-| `bot-air` | 電腦不主動 refit、派空軍任務、air drop、建 air base；air pending decisions 只用隨機合法後備 | 開啟 Air 時電腦明顯偏弱 | 電腦在開啟 Air 的 generated game 中主動派 barrage／interdiction 並通過驗收列 |
-| `bot-rail-cap` | Rail Cap 規則（rail WBS R4）實作後電腦才會用鐵路運兵運補 | 同 rail R4 | rail R4 完成後，電腦在 runner 與 UI 中使用 Rail Cap |
-| `bot-difficulty` | 無難度等級 | 只有一種強度 | 需使用者決定是否要做 |
-| `bot-offensive-axis`（**已關閉** 2026-10-07：heuristic@4 對 @3 33:13，p = 0.002；攻擊推進拿下目標每方每局 0.87 → OOB 0.4.0 上 v5 1.63） | 選定主攻方向，HQ、補給堆與攻擊群一起推進並攻下有守軍的目標 | 雙方電腦幾乎從不攻下有守軍的目標，勝負取決於第一回合誰先搶到空目標 | 重播研究中「有守軍時被拿走」明顯 > 0，且對 heuristic@3 在新 seed 上顯著勝出 |
-| `bot-eastern-front` | 長距離推進的補給接力（extender、分段卸貨、前線 HQ 轉移）與守住遠方奪下的目標 | 東歐地圖上電腦常打成和局（對隨機電腦 80%） | 東歐風格 20 局（交換座位、未用於調參的 seed）勝率 ≥ 90% |
+AI 的開放 TODO 集中在 `docs/quality/05-todo-inventory.md`「AI」。難度等級（`bot-difficulty`）是否要做列在 §5。
 
 ## 4. 驗收列草案（BOT，待使用者同意後加入驗收計畫）
 
@@ -216,12 +199,13 @@ B5 重驗（v5，OOB 0.4.0，seed 33000–33039 對 random-legal、33500–33519
 3. 電腦回合在畫面上的呈現：逐步播放每個行動（可調速），或整個 phase 瞬間完成後只給摘要？
 4. New Game 預設：雙方都是玩家（目前行為），或預設人類 Allied 對電腦 Axis？
 5. §4 驗收列草案是否同意加入驗收計畫？
+6. 是否要做難度等級（`bot-difficulty`）？
 
-## 6. 自我對戰提升（M10 前置，IN PROGRESS）
+## 6. 自我對戰提升（M10 前置，停用）
 
 需求來源（使用者，2026-10-06）：「應該要讓bot自我對戰 不斷提升勝率」。
 
-做法：heuristic 的所有數值改為一組命名權重（`src/ai/policies/heuristic-weights.ts`，預設值等於 heuristic@1）；`scripts/ai-train.mjs`
+做法：heuristic 的所有數值改為一組命名權重（`src/ai/policies/heuristic-weights.ts`，當時的預設值等於 heuristic@1）；`scripts/ai-train.mjs`
 反覆產生挑戰者（隨機微調少數權重），與目前冠軍以「從未使用過的 seed、交換座位成對」對戰；挑戰者顯著勝出且通過不退步關卡才升為冠軍。
 
 驗收（門檻為提案，使用者確認前只能提高）：
@@ -236,7 +220,7 @@ B5 重驗（v5，OOB 0.4.0，seed 33000–33039 對 random-legal、33500–33519
 
 冠軍權重寫回 `DEFAULT_HEURISTIC_WEIGHTS` 前，須附 T4、T5 的證據並重跑 B5 驗收；只調權重無法改變的行為（補給接力、Reserve、空軍）仍是各自的 TODO。
 
-實作與狀態（2026-10-06）：
+實作與狀態：**停用**（使用者決定以重播研究改進策略；T1 PASS，T2～T5 不再追求，原因見 [AI 對戰評估](../ai/evaluation.md)「決策」）。訓練工具保留：
 
 - 權重：`src/ai/policies/heuristic-weights.ts`（59 個命名權重）；`createHeuristicPolicy(facts, { weights, label })`；
   `scripts/ai-match.mjs --allied heuristic:<weights.json>`。**T1 PASS**：預設權重重跑 seed 10000–10003，4 局最終 state hash 與重構前完全相同。
@@ -245,6 +229,3 @@ B5 重驗（v5，OOB 0.4.0，seed 33000–33039 對 random-legal、33500–33519
   12 組後勝場不多於負場（或得分 < 45%）即淘汰，30 組仍不顯著則放棄；突變幅度預設為 log-normal σ = 0.5。seed 範圍：訓練 200000 起、關卡 600000 起、評估 900000 起，各自遞增不重複。
   統計與突變在 `src/ai/training.ts`（測試 `tests/ai/training.test.ts`）。
 - 已知限制：每次升級各自以 p < 0.05 判定，連續多代會有偶然升級的機率，因此最終以 T4（對 heuristic@1、未用過的 seed）作為整體提升的證據。
-- 使用者決定（2026-10-06）：「我覺得用權重不太對 應該研究replay並改善策略」。權重訓練暫停（4 代皆無顯著改善，見
-  [M10 訓練紀錄](../ai/M10-self-play-training.md)），T2～T5 不再追求；訓練工具保留。改為以重播研究改進策略：
-  [M9 對局紀錄研究與 heuristic@2](../ai/M9-replay-study.md)。
