@@ -1,5 +1,7 @@
 # Foundation WBS：Hex、Map 與 Piece Data Model
 
+狀態：**DONE**（F0–F10）。現況見 `docs/foundation/`；本文件只保留計畫。
+
 ## 1. 目的與完成定義
 
 Foundation 的責任是建立「OCS 狀態可以被正確表示」的基礎。它不判斷移動、
@@ -69,21 +71,21 @@ Engine transaction 保存 member ID snapshot。
 
 ## 4. Foundation 工作分解
 
-每個子階段都要提交獨立文件；不能只在 code review 說明：
+各子階段的現況寫在下列文件：
 
 | Stage | Required document |
 |---|---|
-| F0 | `docs/foundation/00-vocabulary-and-adrs.md` |
-| F1 | `docs/foundation/01-core-primitives-and-identity.md` |
-| F2 | `docs/foundation/02-hex-geometry-contract.md` |
-| F3 | `docs/foundation/03-hexside-and-location-model.md` |
-| F4 | `docs/foundation/04-map-definition-and-state.md` |
-| F5 | `docs/foundation/05-piece-definition-catalog.md` |
-| F6 | `docs/foundation/06-piece-state-and-relations.md` |
-| F7 | `docs/foundation/07-scenario-envelope.md` |
-| F8 | `docs/foundation/08-schema-and-serialization.md` |
-| F9 | `docs/foundation/09-fixture-test-kit.md` |
-| F10 | `docs/foundation/F10-foundation-integration.md` |
+| F0 | `docs/foundation/principles.md` |
+| F1 | `docs/foundation/data-model.md` |
+| F2 | `docs/foundation/data-model.md` |
+| F3 | `docs/foundation/data-model.md` |
+| F4 | `docs/foundation/data-model.md` |
+| F5 | `docs/foundation/data-model.md` |
+| F6 | `docs/foundation/data-model.md` |
+| F7 | `docs/foundation/scenario-and-serialization.md` |
+| F8 | `docs/foundation/scenario-and-serialization.md` |
+| F9 | `docs/foundation/scenario-and-serialization.md` |
+| F10 | `docs/foundation/scenario-and-serialization.md` |
 
 ### F0：Vocabulary、ADR 與 package boundary
 
@@ -98,10 +100,7 @@ Engine transaction 保存 member ID snapshot。
 
 產出：
 
-- `docs/foundation/00-glossary.md`
-- `docs/foundation/adr/001-package-boundaries.md`
-- `docs/foundation/adr/002-definition-state-derived-view.md`
-- `docs/foundation/adr/003-hex-orientation.md`
+- `docs/foundation/principles.md`（glossary 與三項架構決策）
 
 Exit gate：同一名詞在後續 schema 與 Rule Engine 不再有兩種含義。
 

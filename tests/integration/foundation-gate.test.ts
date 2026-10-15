@@ -149,7 +149,7 @@ describe('F10 Foundation integration gate', () => {
     expect(matches).toEqual([]);
   });
 
-  it('keeps package dependencies one-way and records every F0-F10 study output', () => {
+  it('keeps package dependencies one-way and documents the Foundation contracts', () => {
     const sourceRoot = join(process.cwd(), 'src');
     const boundaryLeaks = sourceFiles(sourceRoot).flatMap((path) => {
       const content = readFileSync(path, 'utf8');
@@ -179,22 +179,7 @@ describe('F10 Foundation integration gate', () => {
     });
     expect(boundaryLeaks).toEqual([]);
 
-    const outputs = [
-      'docs/foundation/00-vocabulary-and-adrs.md',
-      ...Array.from({ length: 9 }, (_, index) =>
-        `docs/foundation/${String(index + 1).padStart(2, '0')}-${[
-          'core-primitives-and-identity',
-          'hex-geometry-contract',
-          'hexside-and-location-model',
-          'map-definition-and-state',
-          'piece-definition-catalog',
-          'piece-state-and-relations',
-          'scenario-envelope',
-          'schema-and-serialization',
-          'fixture-test-kit',
-        ][index]}.md`),
-      'docs/foundation/F10-foundation-integration.md',
-    ];
+    const outputs = ['principles', 'data-model', 'scenario-and-serialization'].map((name) => `docs/foundation/${name}.md`);
     expect(outputs.filter((path) => !existsSync(join(process.cwd(), path)))).toEqual([]);
   });
 });

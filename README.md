@@ -167,7 +167,7 @@ Start at the top and go down as far as you need.
 | [`docs/game-flow/`](docs/game-flow) | New Game request, seeds, deployment, validation, bootstrap |
 | [`docs/ui/`](docs/ui) | UI behavior, accessibility, hot-seat privacy |
 | [`docs/ai/`](docs/ai) | Bot architecture, scoring and planning |
-| [`docs/foundation/`](docs/foundation) | Hex geometry, data model, serialization contracts, ADRs |
+| [`docs/foundation/`](docs/foundation) | Principles, data model, scenario and serialization contracts |
 | [`docs/roadmap.md`](docs/roadmap.md) and [`docs/roadmap/`](docs/roadmap) | Milestone plans and work breakdowns (project history, not required reading) |
 | [`docs/quality/`](docs/quality) | Acceptance plans, TODO inventory, verification evidence |
 
