@@ -182,6 +182,7 @@ try {
   // BOT-03: the computer's Player Turn runs by itself, can be paused, stepped and sped up.
   await playOn((state, computer) => /is playing/.test(computer.status), { limit: 200 });
   const begun = await panel();
+  const topBar = await where(h);
   await h.shot('computer-turn-playing');
   await page.waitForTimeout(700);
   const whileFast = await panel();
@@ -194,8 +195,8 @@ try {
   const stepped = await panel();
   await h.shot('computer-paused-stepped');
   record(h, 'BOT-03', 'The computer turn plays by itself with each action shown; Pause stops it, Step plays exactly one action, Play resumes',
-    `playing "${begun.status}"; played ${begun.played}→${whileFast.played} in 0.7 s; paused "${paused.status}" held ${paused.played}=${stillPaused.played} for 1.5 s; one Step → played ${stepped.played}; last "${stepped.last}"`,
-    /is playing/.test(begun.status) && whileFast.played > begun.played && /Paused/.test(paused.status) && stillPaused.played === paused.played && stepped.played === paused.played + 1 && stepped.last.length > 0);
+    `playing "${begun.status}" (top bar "${topBar.player}"); played ${begun.played}→${whileFast.played} in 0.7 s; paused "${paused.status}" held ${paused.played}=${stillPaused.played} for 1.5 s; one Step → played ${stepped.played}; last "${stepped.last}"`,
+    /is playing/.test(begun.status) && !/to act/.test(topBar.player) && whileFast.played > begun.played && /Paused/.test(paused.status) && stillPaused.played === paused.played && stepped.played === paused.played + 1 && stepped.last.length > 0);
   await page.selectOption('#computer-speed', 'INSTANT');
   await click(h, '#play-computer');
   await waitFor(() => /Your turn/.test(document.querySelector('#computer-status')?.textContent ?? ''), 'the computer turn to end at Instant speed', 180000);
