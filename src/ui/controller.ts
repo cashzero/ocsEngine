@@ -1495,11 +1495,19 @@ class DefaultUiController implements UiController {
       }
     }
     const zones = projection?.air.patrolZones ?? [];
+    const flight = projection?.weather.flight ?? 'NORMAL';
+    const airPhase = projection != null && ['MOVEMENT', 'REACTION', 'EXPLOITATION'].includes(projection.sequence.phase)
+      && projection.sequence.actingPlayerId === view.playerId;
+    const hasActive = (projection?.air.bases ?? []).some(({ id, active }) => active > 0 && this.#pieces().find((piece) => piece.id === id)?.ownerId === view.playerId);
+    const flightNotice = airPhase && hasActive && (flight === 'NONE' || (flight === 'LIMITED' && projection?.sequence.phase !== 'MOVEMENT'))
+      ? flight === 'NONE' ? 'No air missions this turn: the flying weather is None (14.1f). Your aircraft stay Active and your bases can still refit.'
+        : 'Limited flying weather: air missions are flown only in your Regular Movement Phase (14.1f).'
+      : null;
     const construction = this.#constructionOverview(enabled, selected);
     return {
       ...this.#dropPlanning(enabled),
       rebuilds: this.#rebuilds(enabled),
-      missions, draft,
+      missions, draft, flightNotice,
       targetHexes: draft ? [...(options.get(draft.mission)?.keys() ?? [])] : [],
       refits,
       construction,

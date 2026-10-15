@@ -7,7 +7,7 @@ html, body { min-width: 1280px; height: 100%; overflow: hidden; }
 .turn-strip { flex: 1 1 auto; display: flex; align-items: stretch; justify-content: flex-start; min-width: 0; overflow: visible; }
 /* Information cells (Turn, Phase) share one type system, small label over value; only Undo and End phase are buttons. */
 .turn-strip .turn-cell, .phase-picker { flex: none; display: flex; flex-direction: column; justify-content: center; gap: 2px; min-width: 0; padding: 0 18px; border-right: 1px solid var(--line); }
-.turn-strip .turn-cell { width: 132px; }
+.turn-strip .turn-cell { width: 152px; }
 .turn-strip .vp-cell { flex: none; display: flex; flex-direction: column; justify-content: center; gap: 2px; padding: 0 16px; border-right: 1px solid var(--line); }
 .turn-strip .vp-cell small { color: var(--muted); font-size: 13px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; }
 .turn-strip .vp-cell strong { display: flex; gap: 10px; color: var(--ink); font-size: 15px; font-weight: 700; line-height: 1.2; white-space: nowrap; }

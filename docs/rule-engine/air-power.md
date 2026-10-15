@@ -39,7 +39,8 @@ the decisions behind it. The rule-by-rule behavior and gaps are the notes of the
 Refit panel (every base with Level, refit capacity, Active count and why it cannot refit), mission flow (target hex,
 aircraft, preview with column, shifts, Flak modifiers and whether the hex is in an enemy Patrol Zone), Patrol Zone overlay,
 Trainbusting markers named in hover and keyboard text, air decisions in the decision panel, and every mission result in the
-notice line and Log.
+notice line and Log. The turn bar's Flight cell names the turn's flying weather; when it stops the player's missions the
+Air tab stays and says why.
 
 ## Decisions
 
