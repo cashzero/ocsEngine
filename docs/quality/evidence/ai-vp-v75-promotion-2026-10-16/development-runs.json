@@ -1,0 +1,358 @@
+{
+ "baseline": "heuristic@66 frozen build of main 716bac9",
+ "note": "Development seeds were reused for selection; only the registered independent batch is promotion evidence. Interrupted runs (opt1 with air, ratio3 seeds 6000) produced no report.",
+ "runs": [
+  {
+   "run": "Rhold075",
+   "what": "reocc + holdRatio 0.75",
+   "seedStart": 5000,
+   "air": "NONE",
+   "pairs": 40,
+   "meanVpGain": 2.075,
+   "se": 0.919,
+   "lower2.1se": 0.146,
+   "groupDeltas": {
+    "m-t": 62,
+    "m-e": 20,
+    "a-t": 66,
+    "a-e": 18
+   }
+  },
+  {
+   "run": "Rhold075",
+   "what": "reocc + holdRatio 0.75",
+   "seedStart": 6000,
+   "air": "NONE",
+   "pairs": 40,
+   "meanVpGain": 1.675,
+   "se": 0.772,
+   "lower2.1se": 0.053,
+   "groupDeltas": {
+    "m-t": 16,
+    "m-e": 14,
+    "a-t": 88,
+    "a-e": 16
+   }
+  },
+  {
+   "run": "Rreach12",
+   "what": "reocc + assaultReach 12",
+   "seedStart": 5000,
+   "air": "NONE",
+   "pairs": 40,
+   "meanVpGain": 4.3,
+   "se": 1.003,
+   "lower2.1se": 2.193,
+   "groupDeltas": {
+    "m-t": 192,
+    "m-e": 40,
+    "a-t": 100,
+    "a-e": 12
+   }
+  },
+  {
+   "run": "Rreach12",
+   "what": "reocc + assaultReach 12",
+   "seedStart": 6000,
+   "air": "NONE",
+   "pairs": 40,
+   "meanVpGain": 2.375,
+   "se": 0.704,
+   "lower2.1se": 0.896,
+   "groupDeltas": {
+    "m-t": 36,
+    "m-e": 46,
+    "a-t": 86,
+    "a-e": 22
+   }
+  },
+  {
+   "run": "final",
+   "what": "promoted source: rr with risk scale 0.25",
+   "seedStart": 8000,
+   "air": "NONE",
+   "pairs": 40,
+   "meanVpGain": 3.65,
+   "se": 1.215,
+   "lower2.1se": 1.098,
+   "groupDeltas": {
+    "m-t": 88,
+    "m-e": 22,
+    "a-t": 140,
+    "a-e": 42
+   }
+  },
+  {
+   "run": "hid1",
+   "what": "hidden-strength estimate only (air default)",
+   "seedStart": 3000,
+   "air": "default (STANDARD)",
+   "pairs": 40,
+   "meanVpGain": 1.975,
+   "se": 0.769,
+   "lower2.1se": 0.36,
+   "groupDeltas": {
+    "m-t": 36,
+    "m-e": 6,
+    "a-t": 108,
+    "a-e": 8
+   }
+  },
+  {
+   "run": "hid1",
+   "what": "hidden-strength estimate only (air default)",
+   "seedStart": 4000,
+   "air": "default (STANDARD)",
+   "pairs": 40,
+   "meanVpGain": 3.35,
+   "se": 0.96,
+   "lower2.1se": 1.334,
+   "groupDeltas": {
+    "m-t": 92,
+    "m-e": 20,
+    "a-t": 130,
+    "a-e": 26
+   }
+  },
+  {
+   "run": "ratio2",
+   "what": "v75noair + assaultRatio 2",
+   "seedStart": 5000,
+   "air": "NONE",
+   "pairs": 40,
+   "meanVpGain": 2.075,
+   "se": 0.822,
+   "lower2.1se": 0.348,
+   "groupDeltas": {
+    "m-t": -8,
+    "m-e": 36,
+    "a-t": 94,
+    "a-e": 44
+   }
+  },
+  {
+   "run": "ratio2",
+   "what": "v75noair + assaultRatio 2",
+   "seedStart": 6000,
+   "air": "NONE",
+   "pairs": 40,
+   "meanVpGain": 2.025,
+   "se": 0.786,
+   "lower2.1se": 0.373,
+   "groupDeltas": {
+    "m-t": 46,
+    "m-e": 38,
+    "a-t": 62,
+    "a-e": 16
+   }
+  },
+  {
+   "run": "ratio3",
+   "what": "v75noair + assaultRatio 3.5",
+   "seedStart": 5000,
+   "air": "NONE",
+   "pairs": 40,
+   "meanVpGain": 2.2,
+   "se": 1.04,
+   "lower2.1se": 0.015,
+   "groupDeltas": {
+    "m-t": 90,
+    "m-e": 8,
+    "a-t": 36,
+    "a-e": 42
+   }
+  },
+  {
+   "run": "reach12",
+   "what": "v75noair + assaultReach 12 (weights)",
+   "seedStart": 5000,
+   "air": "NONE",
+   "pairs": 40,
+   "meanVpGain": 4.075,
+   "se": 1.064,
+   "lower2.1se": 1.84,
+   "groupDeltas": {
+    "m-t": 192,
+    "m-e": 40,
+    "a-t": 72,
+    "a-e": 22
+   }
+  },
+  {
+   "run": "reach12",
+   "what": "v75noair + assaultReach 12 (weights)",
+   "seedStart": 6000,
+   "air": "NONE",
+   "pairs": 40,
+   "meanVpGain": 1.525,
+   "se": 0.656,
+   "lower2.1se": 0.147,
+   "groupDeltas": {
+    "m-t": 12,
+    "m-e": 30,
+    "a-t": 86,
+    "a-e": -6
+   }
+  },
+  {
+   "run": "reocc",
+   "what": "v75noair + MA-0 slot fix + reoccupy empty held objectives",
+   "seedStart": 5000,
+   "air": "NONE",
+   "pairs": 40,
+   "meanVpGain": 2.75,
+   "se": 1.051,
+   "lower2.1se": 0.543,
+   "groupDeltas": {
+    "m-t": 110,
+    "m-e": 56,
+    "a-t": 50,
+    "a-e": 4
+   }
+  },
+  {
+   "run": "reocc",
+   "what": "v75noair + MA-0 slot fix + reoccupy empty held objectives",
+   "seedStart": 6000,
+   "air": "NONE",
+   "pairs": 40,
+   "meanVpGain": 2.45,
+   "se": 0.894,
+   "lower2.1se": 0.572,
+   "groupDeltas": {
+    "m-t": 20,
+    "m-e": 44,
+    "a-t": 102,
+    "a-e": 30
+   }
+  },
+  {
+   "run": "risk",
+   "what": "reocc + objective-at-risk (scale 0.5)",
+   "seedStart": 5000,
+   "air": "NONE",
+   "pairs": 40,
+   "meanVpGain": 2.625,
+   "se": 1.126,
+   "lower2.1se": 0.26,
+   "groupDeltas": {
+    "m-t": 104,
+    "m-e": 46,
+    "a-t": 58,
+    "a-e": 2
+   }
+  },
+  {
+   "run": "risk",
+   "what": "reocc + objective-at-risk (scale 0.5)",
+   "seedStart": 6000,
+   "air": "NONE",
+   "pairs": 40,
+   "meanVpGain": 2.7,
+   "se": 0.839,
+   "lower2.1se": 0.938,
+   "groupDeltas": {
+    "m-t": 32,
+    "m-e": 34,
+    "a-t": 110,
+    "a-e": 40
+   }
+  },
+  {
+   "run": "rr",
+   "what": "reocc + risk 0.5 + assaultReach 12",
+   "seedStart": 5000,
+   "air": "NONE",
+   "pairs": 40,
+   "meanVpGain": 4.25,
+   "se": 0.961,
+   "lower2.1se": 2.233,
+   "groupDeltas": {
+    "m-t": 166,
+    "m-e": 66,
+    "a-t": 98,
+    "a-e": 10
+   }
+  },
+  {
+   "run": "rr",
+   "what": "reocc + risk 0.5 + assaultReach 12",
+   "seedStart": 6000,
+   "air": "NONE",
+   "pairs": 40,
+   "meanVpGain": 3.2,
+   "se": 0.592,
+   "lower2.1se": 1.957,
+   "groupDeltas": {
+    "m-t": 74,
+    "m-e": 68,
+    "a-t": 90,
+    "a-e": 24
+   }
+  },
+  {
+   "run": "rr",
+   "what": "reocc + risk 0.5 + assaultReach 12",
+   "seedStart": 7000,
+   "air": "NONE",
+   "pairs": 40,
+   "meanVpGain": 4.475,
+   "se": 1.011,
+   "lower2.1se": 2.352,
+   "groupDeltas": {
+    "m-t": 226,
+    "m-e": 20,
+    "a-t": 86,
+    "a-e": 26
+   }
+  },
+  {
+   "run": "self",
+   "what": "v66 vs v66 harness check (air default)",
+   "seedStart": 2000,
+   "air": "default (STANDARD)",
+   "pairs": 20,
+   "meanVpGain": 0.0,
+   "se": 0.0,
+   "lower2.1se": 0.0,
+   "groupDeltas": {
+    "m-t": 0,
+    "m-e": 0,
+    "a-t": 0,
+    "a-e": 0
+   }
+  },
+  {
+   "run": "v75noair",
+   "what": "hidden estimate + attacker option rule",
+   "seedStart": 5000,
+   "air": "NONE",
+   "pairs": 40,
+   "meanVpGain": 1.625,
+   "se": 0.925,
+   "lower2.1se": -0.318,
+   "groupDeltas": {
+    "m-t": 36,
+    "m-e": 44,
+    "a-t": 22,
+    "a-e": 28
+   }
+  },
+  {
+   "run": "v75noair",
+   "what": "hidden estimate + attacker option rule",
+   "seedStart": 6000,
+   "air": "NONE",
+   "pairs": 40,
+   "meanVpGain": 2.375,
+   "se": 0.991,
+   "lower2.1se": 0.294,
+   "groupDeltas": {
+    "m-t": 42,
+    "m-e": 40,
+    "a-t": 102,
+    "a-e": 6
+   }
+  }
+ ]
+}

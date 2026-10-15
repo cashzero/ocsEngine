@@ -1,0 +1,138 @@
+{
+ "candidate": "v75-independent",
+ "groups": {
+  "meetingTemperate": {
+   "games": 20,
+   "vp": [
+    456,
+    336
+   ],
+   "delta": 120,
+   "stepLosses": [
+    218,
+    332
+   ],
+   "allLegalComplete": true,
+   "auditExit": 0,
+   "supplyGuardViolations": 0,
+   "advanceConservativeBoundViolations": 0,
+   "candidateAdvances": 50,
+   "candidateFundedAdvances": 50,
+   "candidateSuccessfulOverruns": 6,
+   "candidateActuallyFundedOverruns": 6
+  },
+  "meetingEastern": {
+   "games": 20,
+   "vp": [
+    155,
+    121
+   ],
+   "delta": 34,
+   "stepLosses": [
+    291,
+    320
+   ],
+   "allLegalComplete": true,
+   "auditExit": 0,
+   "supplyGuardViolations": 0,
+   "advanceConservativeBoundViolations": 0,
+   "candidateAdvances": 55,
+   "candidateFundedAdvances": 55,
+   "candidateSuccessfulOverruns": 4,
+   "candidateActuallyFundedOverruns": 4
+  },
+  "attackTemperate": {
+   "games": 20,
+   "vp": [
+    172,
+    92
+   ],
+   "delta": 80,
+   "stepLosses": [
+    270,
+    382
+   ],
+   "allLegalComplete": true,
+   "auditExit": 0,
+   "supplyGuardViolations": 0,
+   "advanceConservativeBoundViolations": 0,
+   "candidateAdvances": 82,
+   "candidateFundedAdvances": 81,
+   "candidateSuccessfulOverruns": 2,
+   "candidateActuallyFundedOverruns": 2
+  },
+  "attackEastern": {
+   "games": 20,
+   "vp": [
+    136,
+    108
+   ],
+   "delta": 28,
+   "stepLosses": [
+    159,
+    274
+   ],
+   "allLegalComplete": true,
+   "auditExit": 0,
+   "supplyGuardViolations": 0,
+   "advanceConservativeBoundViolations": 0,
+   "candidateAdvances": 36,
+   "candidateFundedAdvances": 34,
+   "candidateSuccessfulOverruns": 8,
+   "candidateActuallyFundedOverruns": 8
+  }
+ },
+ "pairs": [
+  10.0,
+  16.0,
+  8.0,
+  -4.0,
+  9.0,
+  6.0,
+  2.0,
+  3.0,
+  10.0,
+  0.0,
+  1.0,
+  -1.0,
+  0.0,
+  -10.0,
+  3.0,
+  0.0,
+  4.0,
+  4.0,
+  6.0,
+  10.0,
+  7.0,
+  2.0,
+  4.0,
+  15.0,
+  10.0,
+  4.0,
+  0.0,
+  0.0,
+  -2.0,
+  0.0,
+  2.0,
+  0.0,
+  0.0,
+  3.0,
+  2.0,
+  -4.0,
+  4.0,
+  0.0,
+  2.0,
+  5.0
+ ],
+ "meanVpGain": 3.275,
+ "standardError": 0.8038269841905162,
+ "interval": [
+  1.5869633331999158,
+  4.963036666800084
+ ],
+ "meetingDelta": 154,
+ "attackDelta": 108,
+ "vpGate": true,
+ "allLegalComplete": true,
+ "auditsClean": true
+}

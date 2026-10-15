@@ -71,5 +71,6 @@ describe('supply gained by a real VP approach', () => {
     expect(corrected).toBeGreaterThan(0);
     expect(state.sequence.phase).toBe('COMPLETE');
     expect(state.pendingDecision).toBeNull();
-  }, 60_000);
+    // heuristic@75 plays this continuation in more actions (about 550 against 470); the time limit is the runner's, not a requirement.
+  }, 120_000);
 });

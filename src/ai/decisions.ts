@@ -2,6 +2,7 @@ import type { HexId, PieceId } from '../core/index.js';
 import type { GameAction } from '../rules/index.js';
 import type { OwnUnit, Situation } from './analysis.js';
 import type { BotDecision, BotDecisionContext } from './model.js';
+import { hexesBetween } from './knowledge.js';
 
 /**
  * Answers to pending decisions that favour the deciding side. Each answer names the responder that chose it,
@@ -106,8 +107,15 @@ export const respondToDecision = (context: BotDecisionContext, situation: Situat
         const [, losses = '0', retreat = '0'] = option.id.split(':');
         return { option, losses: Number(losses), retreat: Number(retreat), trapped: /eliminated/u.test(option.label) };
       }).filter(({ trapped }) => !trapped);
-      const holdObjective = defending && targetHex !== undefined
-        && situation.objectives.some(({ hexId }) => hexId === targetHex);
+      // heuristic@75: an attacker option retreats every attacker (9.11). Attackers may stand on an objective we hold
+      // next to the target; retreating them hands it to the next enemy unit that passes (a recorded final turn lost a
+      // 4 VP point this way). The projection does not name the attackers, so any held objective beside the target that
+      // has our combat units on it counts.
+      const holdsBeside = !defending && targetHex !== undefined && situation.opponentTurnRemains
+        && situation.objectives.some(({ hexId, controllerId }) => controllerId === context.playerId && hexesBetween(hexId, targetHex) === 1
+          && situation.friendlyAt(hexId).some((unit) => situation.isCombatUnit(unit)));
+      const holdObjective = holdsBeside || (defending && targetHex !== undefined
+        && situation.objectives.some(({ hexId }) => hexId === targetHex));
       // Hold an objective with steps; elsewhere keep steps and give ground.
       const ordered = [...parsed].sort((left, right) => holdObjective
         ? left.retreat - right.retreat || left.losses - right.losses
