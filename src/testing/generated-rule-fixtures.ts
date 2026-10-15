@@ -169,7 +169,12 @@ export const buildGeneratedRuleScenario = (
       },
       sources: options.sources ?? source.scenario.sources,
     },
-    configuration: source.configuration,
+    // Rule tests do not depend on the dated Flight Conditions roll (it would also move the seeded dice): tests that
+    // need flying weather set it on the state.
+    configuration: source.configuration.weather === null ? source.configuration : {
+      ...source.configuration,
+      weather: { ...source.configuration.weather, table: source.configuration.weather.table.map(({ flight: _flight, ...row }) => row) },
+    },
   };
 };
 

@@ -102,12 +102,26 @@ const trainbustingAt = (state: GameState, hexId: HexId) => state.air.trainbustin
 export const missionBarrageStrength = (state: GameState, aircraftIds: readonly PieceId[]): number =>
   roundOcs(aircraftIds.flatMap((id) => pieceById(state, id) ?? []).reduce((total, piece) => total + aircraftBarrageStrength(state, piece), 0));
 
+/**
+ * 14.1f and the game-specific Weather Table: None allows no mission; Limited allows missions only in the flying
+ * player's Regular Movement Phase and no Hip Shoots. Interception is never limited by weather (14.4).
+ */
+export const flightWeatherViolation = (state: GameState, mission: AirMissionKind): RuleViolation | null => {
+  const { flight } = state.weather;
+  if (flight === 'NONE') return violation('NO_FLIGHT_WEATHER', ['sequence'], 'Weather allows no air missions this Game Turn; aircraft stay Active and may refit.', '14.1f');
+  if (flight === 'LIMITED' && state.sequence.phase !== 'MOVEMENT') return violation('LIMITED_FLIGHT_WEATHER', ['sequence'], 'Limited flying weather allows air missions only in your Regular Movement Phase.', '14.1f');
+  if (flight === 'LIMITED' && mission === 'HIP_SHOOT') return violation('LIMITED_FLIGHT_WEATHER', ['mission'], 'Limited flying weather does not allow Hip Shoots.', '14.1f');
+  return null;
+};
+
 export const validateAirMission = (state: GameState, action: AirMissionDeclaration): readonly RuleViolation[] => {
   const issues: RuleViolation[] = [];
   const { phase, segment } = state.sequence;
   if (action.actorId !== state.sequence.actingPlayerId) issues.push(violation('WRONG_ACTOR', ['actorId'], 'Only the player acting in this phase flies missions.', '14.1g'));
   if (!AIR_PHASES.includes(phase)) issues.push(violation('INVALID_AIR_PHASE', ['sequence'], 'Air missions are flown in friendly Movement, Reaction, and Exploitation Phases.', '14.1g'));
-  else if (segment !== missionSegment(action.mission)) {
+  else if (flightWeatherViolation(state, action.mission)) {
+    issues.push(flightWeatherViolation(state, action.mission)!);
+  } else if (segment !== missionSegment(action.mission)) {
     issues.push(violation('INVALID_AIR_SEGMENT', ['sequence'], missionSegment(action.mission) === 'BARRAGE'
       ? `${AIR_MISSION_LABELS[action.mission]} missions are flown in Barrage Segments.`
       : `${AIR_MISSION_LABELS[action.mission]} missions are flown in Movement Segments.`, action.mission === 'HIP_SHOOT' ? '14.7d' : '14.2e'));
@@ -961,6 +975,7 @@ export const readyAircraft = (state: GameState, playerId: PlayerId): readonly Pi
  * aircraft and holding the right kind of target. Trainbusting may target any hex in range.
  */
 export const airMissionTargets = (state: GameState, playerId: PlayerId, mission: AirMissionKind): readonly { readonly hexId: HexId; readonly target: AirMissionState['target'] }[] => {
+  if (flightWeatherViolation(state, mission)) return [];
   if (mission === 'AIR_TRANSPORT' || mission === 'AIR_DROP') return transportTargets(state, playerId, mission).map((hexId) => ({ hexId, target: null }));
   const ready = readyAircraft(state, playerId).filter((piece) => mission !== 'HIP_SHOOT' || (mayHipShoot(state, piece) && !isStrategicBomber(state, piece)));
   if (ready.length === 0) return [];

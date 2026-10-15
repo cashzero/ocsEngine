@@ -238,7 +238,8 @@ const weatherLabel = (snapshot: UiSnapshot): string => {
   const weather = snapshot.view.projection?.weather;
   if (!weather) return '–';
   const ground = { DRY: 'Dry', MUD: 'Mud', SNOW: 'Snow' }[weather.groundCondition];
-  return weather.month ? `${weather.day} ${MONTHS[weather.month - 1]} · ${ground}` : ground;
+  const flight = weather.flightRoll === null ? '' : ` · Flight ${{ NORMAL: 'Normal', LIMITED: 'Limited', NONE: 'None' }[weather.flight]}`;
+  return weather.month ? `${weather.day} ${MONTHS[weather.month - 1]} · ${ground}${flight}` : `${ground}${flight}`;
 };
 
 /** Draw order inside a stack, bottom first: dumps, trucks, HQs, artillery, then combat units on top. */

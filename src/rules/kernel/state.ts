@@ -116,6 +116,10 @@ export const validateRuleConfiguration = (
       if (!days(row.month, row.firstDay) || !days(row.month, row.lastDay) || row.firstDay > row.lastDay || covered.some((count) => count !== 1)) {
         issues.push(issue('INVALID_WEATHER_ROW', ['weather', 'table', index], 'Each Weather Table row must give exactly one ground condition for every die face.'));
       }
+      const flightCovered = Array.from({ length: 11 }, (_, total) => row.flight?.filter(({ minimum, maximum }) => total + 2 >= minimum && total + 2 <= maximum).length ?? 1);
+      if (flightCovered.some((count) => count !== 1)) {
+        issues.push(issue('INVALID_WEATHER_ROW', ['weather', 'table', index, 'flight'], 'Each Weather Table row must give exactly one Flight Condition for every 2d6 total.'));
+      }
     }
   }
   const arrivals = configuration.supplyArrivals;
@@ -181,7 +185,7 @@ export const createInitialGameState = (
     rng: createRulesRng(rulesSeed),
     activeTransaction: null,
     pendingDecision: null,
-    weather: { groundCondition: 'DRY', month: null, day: null, roll: null },
+    weather: { groundCondition: 'DRY', flight: 'NORMAL', flightRoll: null, month: null, day: null, roll: null },
     fuel: { formations: [], hqIds: [] },
     interrupts: [],
     formationTraces: [],
