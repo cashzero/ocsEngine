@@ -85,13 +85,14 @@ export const shippingSides = (request: NewGameRequest): readonly OobSide[] => {
 export const REINFORCEMENT_MIN_TURNS_ON_MAP = 2;
 export const FIRST_REINFORCEMENT_TURN = 2;
 export const DEFAULT_FIRST_REINFORCEMENT_TURN = 4;
+export const REINFORCEMENT_PERCENT_OPTIONS = [0, 25, 50, 75] as const;
 
 /** Divisions of `side` that arrive late: its percentage of its divisions, rounded to whole divisions. */
 export const reinforcementDivisionsOf = (request: NewGameRequest, side: OobSide): number => {
   const attacker = attackerOf(request.engagement ?? 'MEETING');
   const total = sideDivisions({ ...request.oob, ...(attacker === null ? {} : { attacker }) }, side).divisionsPerSide;
   const percent = request.reinforcements?.[side === 'ALLIED' ? 'allied' : 'axis'] ?? 0;
-  return Math.round(total * percent / 100);
+  return Math.max(0, Math.min(total - 1, Math.round(total * percent / 100)));
 };
 
 /** Latest first arrival Game Turn that lets `divisions` reinforcement divisions each have the minimum turns on the map. */
@@ -105,18 +106,24 @@ export const maximumReinforcementDivisions = (turnLimit: number, firstTurn: numb
 /**
  * The request with its reinforcement settings brought inside the limits: the first arrival turn is lowered (not below
  * `FIRST_REINFORCEMENT_TURN`) until the larger side's last division has `REINFORCEMENT_MIN_TURNS_ON_MAP` Game Turns on the
- * map, and a share still too large at that turn is cut to the largest one that fits.
+ * map, and a share still too large at that turn is cut to the largest offered percentage that fits.
+ * Incomplete or invalid number edits are left for validation; they must not change other settings.
  */
 export const fitReinforcements = (request: NewGameRequest): NewGameRequest => {
   const settings = request.reinforcements;
   if (settings === undefined) return request;
+  if (!Number.isSafeInteger(request.turnLimit) || request.turnLimit < 1 || request.turnLimit > 20
+    || !Number.isSafeInteger(request.oob.divisionsPerSide) || request.oob.divisionsPerSide < 1 || request.oob.divisionsPerSide > 20
+    || !Number.isSafeInteger(settings.firstTurn) || settings.firstTurn < FIRST_REINFORCEMENT_TURN || settings.firstTurn > 20
+    || [settings.allied, settings.axis].some((percent) => !Number.isSafeInteger(percent) || percent < 0 || percent > 100)) return request;
   const most = Math.max(reinforcementDivisionsOf(request, 'ALLIED'), reinforcementDivisionsOf(request, 'AXIS'));
   const firstTurn = Math.max(FIRST_REINFORCEMENT_TURN, Math.min(settings.firstTurn, latestFirstReinforcementTurn(request.turnLimit, most)));
   const limit = maximumReinforcementDivisions(request.turnLimit, firstTurn);
   const cut = (side: 'allied' | 'axis'): number => {
-    let percent = settings[side];
-    while (percent > 0 && reinforcementDivisionsOf({ ...request, reinforcements: { ...settings, [side]: percent } }, side === 'allied' ? 'ALLIED' : 'AXIS') > limit) percent -= 1;
-    return percent;
+    return [...REINFORCEMENT_PERCENT_OPTIONS].reverse().find((percent) => {
+      const divisions = reinforcementDivisionsOf({ ...request, reinforcements: { ...settings, [side]: percent } }, side === 'allied' ? 'ALLIED' : 'AXIS');
+      return percent <= settings[side] && divisions <= limit && (percent === 0 || divisions > 0);
+    }) ?? 0;
   };
   return { ...request, reinforcements: { allied: cut('allied'), axis: cut('axis'), firstTurn } };
 };
@@ -134,7 +141,7 @@ export const reinforcementSchedule = (
   if (settings === undefined) return schedule;
   for (const side of ['ALLIED', 'AXIS'] as const) {
     const formations = oob.sides.find((candidate) => candidate.side === side)?.formations ?? [];
-    const count = Math.min(formations.length - 1, reinforcementDivisionsOf(request, side));
+    const count = reinforcementDivisionsOf(request, side);
     let ordinal = 0;
     for (const [index, formation] of formations.entries()) {
       if (Math.floor((index + 1) * count / formations.length) === Math.floor(index * count / formations.length)) continue;

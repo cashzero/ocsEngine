@@ -6,13 +6,17 @@
 
 ## Current behavior
 
-New Game 的 Order of battle 區有 Allied／Axis 各自的援軍比例（整數 %）與共用的首批到達回合（`NewGameRequest.reinforcements`）。比例換算成整師（四捨五入），按編制順序均勻抽取，被抽中的整師開局在援軍 Box，從首批回合起每回合到 1 師；至少保留一師開局在場。最後一師的到達回合必須讓它至少有兩個 Game Turn 在場（首批回合 + 師數 − 1 ≤ 回合上限 − 1）：輸入會自動把首批回合壓低（不低於 T2），仍排不下則降低比例；直接給 API 不合法的值會在 `OPTIONS` 階段失敗（`REINFORCEMENTS_TOO_LATE`）。預設為無援軍，行為不變；攻方沒有 inland entry 時提高守方預設尚未實作。預覽顯示每方援軍師數與首批回合。海運方的援軍仍須經港口與 Sea Cap 上岸，排程只保證回合合法，不保證當回合一定上岸。師級主力其餘部分開局部署；既有卡車、飛機、獨立支援單位的援軍及容量不足時的待進場行為不屬於本次比例定義。進攻方的師數仍由 `ATTACKER_FORCE_RATIO = 1.5` 決定。沒有 inland entry 不會自動減少或延後敵方師級主力。
+New Game 的 Order of battle 區有 Allied／Axis 各自的援軍比例下拉選單（0%、25%、50%、75%），選項顯示換算後的實際師數。比例四捨五入到整師，且最多延後總師數減一：至少保留一師開局在場。API 保留整數 0–100% 的輸入，預覽、排程驗證與部署使用同一個實際師數；例如六師的 API 100% 請求實際顯示與排程均為五師，一師的請求則為零師。無法在最早 T2 起排完、或沒有可延後師的正比例選項會停用並說明原因。
+
+雙方共用首批到達回合（`NewGameRequest.reinforcements.firstTurn`）。被抽中的整師開局在援軍 Box，按編制順序均勻抽取，從首批回合起每回合到 1 師。最後一師至少有兩個 Game Turn 在場（首批回合 + 師數 − 1 ≤ 回合上限 − 1）。完成編輯（選擇選項或數字欄位失焦）後，才把首批回合壓低至可排程的值（不低於 T2）；仍排不下時，降低到可排程的最大已提供比例。清空或逐字編輯數字時不連帶改動其他援軍設定。不合法 API 請求由 `OPTIONS` 階段拒絕；不以迴圈逐一減少任意數值。
+
+預設仍為無師級援軍、首批欄位 T4；攻方沒有 inland entry 時自動提高守方預設尚未實作。預覽顯示每方實際援軍師數與首批回合。海運方的援軍仍須經港口與 Sea Cap 上岸，排程只保證回合合法，不保證當回合一定上岸。既有卡車、飛機、獨立支援單位及容量不足時的待進場行為不屬於此比例。進攻方師數仍依 `ATTACKER_FORCE_RATIO = 1.5`；無 inland entry 不會自動減少或延後敵方主力。
 
 港口生成與容量見 [Random map](../generator/random-map.md)，Sea Cap 預設見 [Deployment](deployment.md)，海運與供補規則的實作邊界見 [Rule coverage](../rule-engine/rule-coverage.md) 的 `movement.sea`。補給表收入大於卸貨量，只能證明 Box 可能累積 SP；它不是部隊每回合實際消耗量。維持 trace supply、燃料、戰鬥與失去補給線的情況必須分別觀察。
 
 ## Decisions
 
-使用者要求未來 Allied 與 Axis 都有獨立援軍比例選項；攻方沒有 inland entry 時，提高守方預設比例，兩方仍可手動設定。使用者否定第 2 回合太早，並要求先評估各種設定。因此比例、首批回合與排程目前都是候選值，尚未選定或實作；第 4 回合並非已核准的產品預設。
+Allied 與 Axis 的比例分別設定；海運攻方所對應的守方自動預設仍待校準。下拉選單提供有限比例，避免任意數值與輸入中間態改寫設定。使用者確認保留排程必要時自動提前至 T2 的行為；此下限不代表海運進攻的建議平衡預設。T3／75% 或其他組合都是評估候選，沒有把樣本結果提升為已校準預設。
 
 評估以完整師為單位，保留總 OOB、HQ、獨立部隊、守備隊、陣地與開局補給。整師比例不等於 counter 比例或全軍戰力比例；裝甲與步兵的編制、獨立支援與固定守備仍會影響實際戰力。不得單憑「守方 50% 援軍」推定場上只剩一半守軍。
 
@@ -101,14 +105,16 @@ Axis 進攻原配置仍有一筆自身 `RESPOND_DECISION` 後的耗損、19 筆�
 
 初始 snapshot 的 cached victory scores 為零，分析工具另依實際初始 hex control 與目標 VP 計算起始持有 VP；沒有把零分快取當作攻方初始 VP。原始 runner 的 `spentT` 只計 `SUPPLY_SPENT`，不含交易的 `RESOURCE_CONSUMED`，不是全部支出，本評估不使用它作總耗費結論。正式勝負使用遊戲結束的 victory 與既有 attack threshold。
 
-本輪建議保留雙方獨立設定的方向，優先以攻方 0%、守方 75%、首批 T4／每回合一師作下一輪確認候選；同時保留 50% 的較輕方案作對照。不要直接鎖定為通用預設，也不要把 75%／T5 用於八回合戰役卻不提示最後一師無法參戰。一般 inland-entry 進攻與 Meeting Engagement 的援軍預設未在本輪實戰校準。
+研究中的 75%／T4 讓最後一師在八回合戰役的 T8 到達，不符合現行 UI 至少兩回合在場的限制，會被調整為 75%／T3。依目前選項，海運進攻較合理的下一輪候選是攻方 0%、守方 75%、首批 T3（本輪兩方向各 2／4 勝）；仍須獨立種子確認，不能直接宣告平衡。若保留 T4，六師中最多四師可延後；目前提供的比例中，50%（三師）可排入，75%（五師）不行。一般 inland-entry 進攻與 Meeting Engagement 的援軍預設未在本輪實戰校準。
 
 ## Known gaps
 
-`sea-landing-balance`、`reinforcement-options` 的缺少行為、影響與關閉證據見 [TODO inventory](../quality/05-todo-inventory.md)。Headless 結果不驗收 New Game 或可操作的玩家流程。選項已實作，但尚未走完整個 Game Turn，也未驗證首批回合的實際進場（含海運上岸），因此 `reinforcement-options` 維持 open。
+`sea-landing-balance`、`reinforcement-options`、`arrival-merged-selection` 的缺少行為、影響與關閉證據見 [TODO inventory](../quality/05-todo-inventory.md)。自動提高海運攻方所對應的守方預設仍未實作；選單與一局實際進場的驗證不等於完成平衡校準。
 
 ## Verification
 
 完整方法、輸入、配對結果、耗時與限制的不可變文字記錄：[sea-landing-balance evidence](../quality/evidence/sea-landing-balance-2026-10-15/README.md)。逐局 save、trace、詳細 timeline 與補給稽核保存在 `artifacts/sea-balance/`。Build 與四個分析腳本語法檢查成功；沒有修改產品 `src/`，沒有進行瀏覽器驗收。
+
+比例選單與輸入修正的實際瀏覽器證據見 [reinforcement selector run](../quality/evidence/reinforcement-select-2026-10-15/README.md)，對應 `03` 的 NG-15。28×20、4 師／1 裝甲、Allied 攻且 ports only、Allied 25%／Axis 75%、首批 T3 的預覽與開局一致；經合法移動、兩整回合與交接決策，T3 的 5.FJ 經陸路進場、101.Abn 經 0105 港口上岸。截圖已檢視，瀏覽器無錯誤。
 
 產品邊界依 [operation verification plan](../quality/03-product-operation-verification-plan.md)；本評估不提升 NG-11、MAP-08 或其他 UI 驗收列。後續實作須由 UI 設定明顯不同的 Map/OOB 與雙方援軍，預覽並開啟同一 package，完成整個 Game Turn 的合法行動、決策與交接，再走到所設定的首批回合實際進場；海運方須實際經港口上岸。截圖置於 `artifacts/` 並人工檢視。

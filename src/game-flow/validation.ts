@@ -59,8 +59,8 @@ export const validateNewGameRequest = (request: NewGameRequest): readonly GameFl
         failures.push({ stage: 'OPTIONS', code: 'INVALID_REINFORCEMENT_PERCENT', message: 'Reinforcements must be a whole percent from 0 through 100.', path: ['reinforcements', side] });
       }
     }
-    if (!Number.isSafeInteger(firstTurn) || firstTurn < FIRST_REINFORCEMENT_TURN) {
-      failures.push({ stage: 'OPTIONS', code: 'INVALID_REINFORCEMENT_TURN', message: `The first reinforcement arrives on Game Turn ${FIRST_REINFORCEMENT_TURN} or later.`, path: ['reinforcements', 'firstTurn'] });
+    if (!Number.isSafeInteger(firstTurn) || firstTurn < FIRST_REINFORCEMENT_TURN || firstTurn > 20) {
+      failures.push({ stage: 'OPTIONS', code: 'INVALID_REINFORCEMENT_TURN', message: `The first reinforcement turn must be a whole number from ${FIRST_REINFORCEMENT_TURN} through 20.`, path: ['reinforcements', 'firstTurn'] });
     } else if (Number.isSafeInteger(request.turnLimit)) {
       for (const [side, name] of [['ALLIED', 'allied'], ['AXIS', 'axis']] as const) {
         const divisions = reinforcementDivisionsOf(request, side);

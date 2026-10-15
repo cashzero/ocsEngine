@@ -109,8 +109,9 @@ export interface NewGameRequest {
   readonly inlandEntry?: { readonly allied: boolean; readonly axis: boolean };
   /**
    * Share of each side's divisions (whole percent, rounded to whole divisions) that start in the reinforcement Box
-   * instead of on the map, arriving one division per Game Turn from `firstTurn`. The last division must arrive at least
-   * two Game Turns before the campaign ends (`reinforcementsOf`). Absent means none: every division starts deployed.
+   * instead of on the map, arriving one division per Game Turn from `firstTurn`. The last division must have at least
+   * two Game Turns to play, including its arrival turn. `reinforcementDivisionsOf` leaves at least one division deployed.
+   * Absent means none: every division starts deployed.
    */
   readonly reinforcements?: { readonly allied: number; readonly axis: number; readonly firstTurn: number };
 }
