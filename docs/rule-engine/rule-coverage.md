@@ -76,6 +76,12 @@ are `DEFERRED`, and the manifest does not yet list every clause of §1–21 (TOD
   transcribed v4.3 charts.
 - **Choices that can only hurt the chooser are applied for them.** The defender's terrain choice for each attacking stack
   (9.4b) and the barrage terrain shift (10.0a) always take the option worst for the attacker, without asking.
+- **One supply counter holds at most its printed capacity; the rest lies as a second dump.** Supply of one kind in a Hex
+  is one dump (12.1), but the piece definition's `resource.capacity` is a hard state invariant. Unloading, Rail Cap and
+  Sea Cap deliveries, air drops and arriving reinforcement dumps (`applyUnload`, `mergeSupplyAt` in
+  `src/rules/supply/transport.ts`) fill the dump up to the capacity and leave the excess as a further dump in the Hex.
+  Rejected alternative: refusing the move when it would overfill the dump, which blocks legal supply deliveries and was
+  the way a long game could fail with `STATE_INVARIANT_VIOLATION` (19 of 36 bot games before the fix; 0 of 144 after).
 - **Game-specific rules left out** (user decision): BtR Flight Conditions, nationality rules for Hip Shoots and the Air
   Transport Success Table modifiers are not implemented; the manifest notes say where this shows.
 

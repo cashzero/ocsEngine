@@ -91,6 +91,7 @@
 | `sea-landing-balance` | 無 inland entry 攻方的兵力時序與補給吞吐量尚未校準；少量 bot 敏感度測試不能選定可靠預設 | 海運進攻可能被守方反擊切斷補給線，設定難度不穩定 | 先確認 bot 運補、進攻與斷補原因，依比例、回合、容量及雙向進攻取得配對結果；候選設定經獨立種子與實際玩家流程驗證 | `docs/game-flow/reinforcement-balance.md` |
 | `reinforcement-options` | 雙方比例選單、輸入與首批陸路／海運進場已驗證；攻方無 inland entry 時自動提高守方預設尚未實作 | 玩家可手動設定，但設定海運進攻時仍須自行提高守方援軍比例 | 決定並實作自動預設及覆寫契約；在 UI 切換兩種進攻方向與 inland entry、檢查預設／覆寫，並完成設定首批回合的進場 | `docs/game-flow/reinforcement-balance.md`；`03` NG-15 |
 | `arrival-merged-selection` | 放置補給援軍與既有補給堆合併後，左欄仍選取被合併而 eliminated 的 0 SP 援軍棋子 | 實際已進場但畫面顯示 eliminated／0T，容易誤以為進場失敗 | 合併後改選保留的補給堆或清除選取，並在瀏覽器重走一次進場合併、確認畫面與實際補給一致 | `docs/quality/evidence/reinforcement-select-2026-10-15/README.md` |
+| `turn-limit-default-evidence` | 預設 Turn limit `round((寬+高)/5)` 只由標準 bot 的 144 局（每組 6–10 局、40 回合上限）估計；時間指標的 R² 只有 0.04–0.17，且沒有人類對局或其他 AI 的資料；New Game 欄位在地圖尺寸變動時自動更新的行為只有單元測試，沒有在瀏覽器操作過 | 預設回合數可能對某些地圖或玩法偏長或偏短；玩家可手動覆寫 | 在瀏覽器從 New Game 改變地圖尺寸並確認回合數欄位跟著變、手動改後不再被覆寫、「Use the default」可恢復；加入更多局數或人類對局後重新擬合並更新 `docs/game-flow/turn-limit.md` | `docs/game-flow/turn-limit.md`、`docs/quality/evidence/turn-limit-2026-10-15/` |
 
 ### 存檔與工作階段
 

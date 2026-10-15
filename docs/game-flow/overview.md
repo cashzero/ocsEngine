@@ -40,7 +40,7 @@ a rule configuration, the rules seed and the seat bindings.
 
 `NewGameRequest` (`src/game-flow/model.ts`) is the only input: the `GROUND_DUEL` template; the engagement (Meeting
 Engagement, Allied attack or Axis attack); map width, height, style and sea; OOB scale, divisions per side and how many
-are armored, air forces and air transport; four seeds; the turn limit (defaulting to a value that grows with map size and divisions per side, until the player sets one); the start month; and optionally Rail Cap, Sea Cap
+are armored, air forces and air transport; four seeds; the turn limit (until the player sets one it follows the map size, see [turn-limit.md](turn-limit.md)); the start month; and optionally Rail Cap, Sea Cap
 and inland entry per side. Absent optional fields keep the meaning they had before the field existed, so older requests
 and saves stay valid. Limits and the default request are in `docs/quality/03-product-operation-verification-plan.md`
 ("Approved scope").

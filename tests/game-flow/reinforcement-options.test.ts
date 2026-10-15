@@ -66,7 +66,7 @@ describe('fitReinforcements', () => {
       turnLimit: 4, reinforcements: { allied: 75, axis: 0, firstTurn: 4 } });
     expect(fitted.reinforcements).toEqual({ allied: 0, axis: 0, firstTurn: 2 });
     const eight = fitReinforcements({ ...DEFAULT_NEW_GAME_REQUEST,
-      oob: { ...DEFAULT_NEW_GAME_REQUEST.oob, divisionsPerSide: 8 },
+      oob: { ...DEFAULT_NEW_GAME_REQUEST.oob, divisionsPerSide: 8 }, turnLimit: 8,
       reinforcements: { allied: 75, axis: 0, firstTurn: 4 } });
     expect(eight.reinforcements).toEqual({ allied: 75, axis: 0, firstTurn: 2 });
   });

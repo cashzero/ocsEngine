@@ -2,11 +2,17 @@ import { describe, expect, it } from 'vitest';
 import { DEFAULT_NEW_GAME_REQUEST, defaultTurnLimit } from '../../src/index.js';
 
 describe('defaultTurnLimit', () => {
-  it('matches the default request and grows with map size and divisions', () => {
+  const sized = (width: number, height: number) => ({ map: { ...DEFAULT_NEW_GAME_REQUEST.map, width, height } });
+
+  it('is the default request\'s Turn limit and grows with the map, one turn per five hexes of width plus height', () => {
     expect(DEFAULT_NEW_GAME_REQUEST.turnLimit).toBe(defaultTurnLimit(DEFAULT_NEW_GAME_REQUEST));
-    const bigger = { map: { ...DEFAULT_NEW_GAME_REQUEST.map, width: 48, height: 36 }, oob: DEFAULT_NEW_GAME_REQUEST.oob };
-    const moreUnits = { map: DEFAULT_NEW_GAME_REQUEST.map, oob: { ...DEFAULT_NEW_GAME_REQUEST.oob, divisionsPerSide: 12 } };
-    expect(defaultTurnLimit(bigger)).toBeGreaterThan(defaultTurnLimit(DEFAULT_NEW_GAME_REQUEST));
-    expect(defaultTurnLimit(moreUnits)).toBeGreaterThan(defaultTurnLimit(DEFAULT_NEW_GAME_REQUEST));
+    expect([defaultTurnLimit(sized(24, 16)), defaultTurnLimit(sized(32, 24)), defaultTurnLimit(sized(48, 36))]).toEqual([8, 11, 17]);
+  });
+
+  it('does not depend on the divisions, and stays within 4 to 60', () => {
+    const request = { ...DEFAULT_NEW_GAME_REQUEST, oob: { ...DEFAULT_NEW_GAME_REQUEST.oob, divisionsPerSide: 12 } };
+    expect(defaultTurnLimit(request)).toBe(defaultTurnLimit(DEFAULT_NEW_GAME_REQUEST));
+    expect(defaultTurnLimit(sized(6, 6))).toBe(4);
+    expect(defaultTurnLimit(sized(400, 400))).toBe(60);
   });
 });

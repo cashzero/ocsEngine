@@ -1101,7 +1101,7 @@ const newGameDialog = () => {
             ${number('new-game-turn-limit', 'Turn limit', 1, 60, newGameSettings.turnLimit)}
             ${select('new-game-start-month', 'Start month', START_MONTHS, newGameSettings.startMonth)}
           </div>
-          <p class="field-help">${turnLimitCustom ? html`<button type="button" id="reset-turn-limit" @click=${() => { turnLimitCustom = false; newGameSettings = { ...newGameSettings, turnLimit: defaultTurnLimit(newGameSettings) }; previewStale = true; render(controller.getSnapshot()); }}>Use the default (${defaultTurnLimit(newGameSettings)})</button> ` : `Default: grows with the map and the divisions. `}The month sets the weather: September is always dry, autumn brings mud, and midwinter snow.</p>
+          <p class="field-help">${turnLimitCustom ? html`<button type="button" id="reset-turn-limit" @click=${() => { turnLimitCustom = false; newGameSettings = { ...newGameSettings, turnLimit: defaultTurnLimit(newGameSettings) }; previewStale = true; render(controller.getSnapshot()); }}>Use the default (${defaultTurnLimit(newGameSettings)})</button> ` : `Default: grows with the map size. `}The month sets the weather: September is always dry, autumn brings mud, and midwinter snow.</p>
           <div class="field-pair">
             ${number('new-game-rail-cap-allied', 'Allied Rail Cap', 0, MAXIMUM_RAIL_CAP, railCap.allied)}
             ${number('new-game-rail-cap-axis', 'Axis Rail Cap', 0, MAXIMUM_RAIL_CAP, railCap.axis)}
