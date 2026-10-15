@@ -17,12 +17,13 @@
 
 | ID | 缺少的行為 | 使用者可見影響 | 關閉證據 | 詳細 |
 |---|---|---|---|---|
-| `repl-tables-generated` | Variable Replacement Table 與 Rebuild Table 是產生器自訂，不是印刷版 | 補充與重建成本與原版遊戲不同 | 轉錄印刷表並以測試與瀏覽器核對 | `docs/rule-engine/replacement-tables-2026-10-14.md` §6 |
-| `repl-legacy-unit-migration` | 舊存檔的 REPLACEMENT 沒有 faces，維持舊的數量 counter | 舊存檔的補充單位不能移動，需開新局 | 保留歷史動作的存檔遷移，並實際讀舊檔、移動、重建、存檔、重播 | `docs/rule-engine/replacement-movement-2026-10-13.md` |
+| `repl-tables-generated` | Variable Replacement Table 與 Rebuild Table 是產生器自訂，不是印刷版 | 補充與重建成本與原版遊戲不同 | 轉錄印刷表並以測試與瀏覽器核對 | `docs/rule-engine/replacements.md` |
+| `repl-legacy-unit-migration` | 舊存檔的 REPLACEMENT 沒有 faces，維持舊的數量 counter | 舊存檔的補充單位不能移動，需開新局 | 保留歷史動作的存檔遷移，並實際讀舊檔、移動、重建、存檔、重播 | `docs/rule-engine/replacements.md` |
+| `repl-natural-loss-ui` | 地面重建、合併與依表計價只在載入的訓練局面上走過瀏覽器 | 從新局經正常對戰損失再重建或合併的流程未驗證 | 從全新 New Game 經正常戰鬥損失單位，移動 Repl、重建或合併，並完成該回合 | `docs/rule-engine/replacements.md` |
 | `artillery-vs-facility` | `DECLARE_BARRAGE` 沒有設施目標 | 地面砲兵不能打港口或 Air Base，只有飛機與持有者自己的單位能損壞港口 | 給設施目標並付表列成本，實際打一次港口 | `docs/generator/03-coast-and-hydrology.md`；manifest `barrage.artillery` |
 | `naval-shipping` | 無艦艇、登陸艇、兩棲登陸（18.0） | 只能在已持有的港口登陸 | 18.0 實作並實際對局 | manifest `naval-shipping` |
-| `air-audit-probe` | 規則稽核探針沒有空軍檢查 | 空軍規則缺少探針層的回歸保護 | 探針加入空軍案例並通過 | `docs/rule-engine/M11-air-power.md` §6.3 |
-| `glider-points` | 沒有獨立 Glider Points（14.10f） | 滑翔機運輸與一般空運共用能力 | 實作並在瀏覽器空運一次 | `docs/rule-engine/M11-air-power.md` §6.3 |
+| `air-audit-probe` | 規則稽核探針沒有空軍檢查 | 空軍規則缺少探針層的回歸保護 | 探針加入空軍案例並通過 | `docs/rule-engine/air-power.md` |
+| `glider-points` | 沒有獨立 Glider Points（14.10f） | 滑翔機運輸與一般空運共用能力 | 實作並在瀏覽器空運一次 | `docs/rule-engine/air-power.md` |
 | `airborne-gpid` | 空降師使用佔位 GPID 900001–900005 | counter 不對應真實 BTR 棋子 | 以審核過的 GPID 取代 | `src/generation/oob/catalog.ts` |
 | `para-gpid` | 傘兵營 counter 為產生器自訂 | 同上 | 同上 | `src/generation/oob/counter-corpus.ts` |
 | `oob-name-import` | 重新匯入 OOB 名稱會遺失手寫的 Fallschirmjäger 與美軍第 13 空降師 profile | 重新匯入後這兩個 profile 消失 | 匯入腳本保留或重建這兩個 profile | `scripts/import-oob-names.mjs` |
@@ -35,7 +36,7 @@
 | ID | 缺少的行為 | 使用者可見影響 | 關閉證據 | 詳細 |
 |---|---|---|---|---|
 | `bot-stack-move` | AI 逐一移動與 overrun，不整疊行動 | bot 的 overrun 戰力偏弱 | bot 對局出現帶 companionIds 的 MOVE_PIECE 與多單位 overrun | `src/rules/query/candidates.ts` TODO(AI) |
-| `consolidation-bot` | bot 不會合併單位 | bot 方留著兩個減員的相同師 | bot 對局中出現合併動作 | `docs/rule-engine/replacement-tables-2026-10-14.md` §6 |
+| `consolidation-bot` | bot 不會合併單位 | bot 方留著兩個減員的相同師 | bot 對局中出現合併動作 | `docs/rule-engine/replacements.md` |
 | `bot-air` | 只派 Air Barrage 與 refit；不派其他任務、不空運、不空降、不建 Air Base；空中待決選第一個合法選項 | 開啟空軍時 bot 明顯偏弱 | 開啟空軍的對局中 bot 有合理的其他任務與待決選擇，並通過對戰比較 | `src/ai/decisions.ts`；`src/ai/policies/heuristic.ts` |
 | `bot-ration-search` | 共同口糧分配搜尋上限 50,000 節點，沒有分量拆解或精確後備 | 極端來源網路下可能少餵兵或擋下安全的支出 | 對抗性配置的精確分配證據，以及完整對局的延遲量測 | `src/rules/supply/ration-budget.ts` |
 | `GS-AI` | 完整對局中仍有可救援的駐軍餓死；運補沒有同時規劃駐軍與機動部隊的路線與容量 | 有 SP 與卡車時，駐軍仍可能因救援太晚或資源被低價值運補搶走而餓死；阻擋 AI 驗收 | 重跑自然劇本，每個餓死案例保存 Movement 起點、合法運補方案與實際行動；可救援者全部存活，不可救援者有規則邊界的證據 | `tests/ai/garrison-supply.test.ts` |
@@ -56,7 +57,7 @@
 | `roster-name-truncation` | 名冊列在 1680 寬度截斷長名稱（`Chmbln TF (Det. 2) / 1…`） | 看不到完整單位名稱 | `03` UI-02 PASS | `03` UI-02 |
 | `preview-roster-count` | 預覽與名冊的單位數沒有說明：4 個第 2 回合才到的增援單位不在名冊，6 個 Garrison 營在名冊與地圖上但不在預覽與單位數 | 預覽 62、名冊 64，畫面上沒有解釋 | 預覽與名冊交代這兩類單位，或使用者改寫判準；`03` MAP-04 PASS | `03` MAP-04 |
 | `unit-status-reserve` | Unit Status 沒有「released」與「barraged」列（投影未提供引擎使用狀態） | 這兩種狀態看不到 | 投影暴露後加列並在瀏覽器驗證 | `src/ui/unit-status.ts` |
-| `pax-counter-art` | Pax counter 圖樣未完成 | counter 外觀不是最終版 | 見來源 | `docs/rule-engine/replacement-tables-2026-10-14.md` §6 |
+| `pax-counter-art` | Pax counter 沿用 BTR「Repl EQ」的版面，只改字為 PAX；未取樣比對 BTR 的 Pax 補充 counter | Pax counter 的顏色與版面可能與原遊戲不同 | 取樣 BTR Pax counter 圖檔並逐項比對 | `docs/rule-engine/replacements.md` |
 | `transport-art` | 運輸機輪廓為目測繪製 | 運輸機 counter 不是印刷樣式 | 依參考圖重繪並做視覺比對 | `src/ui/counter.ts` |
 | `counter-fidelity` | CF5 三計數器堆疊與縮放 LOD 三級未驗證（CTR-05 已 PASS） | counter 視覺驗收 IN PROGRESS | `03` CTR-06、CTR-08 PASS 並驗證 LOD | `docs/roadmap/17-counter-fidelity-wbs.md` |
 | `TODO-CM1` | `scripts/counter-lod-gate.mjs` 與 `scripts/desktop-deck-gate.mjs` 無法在現行 UI 執行 | 這兩個 gate 不能重跑 | 腳本更新後在現行 build 跑通 | `docs/ui/canvas-map-rewrite-2026-10-02.md` |
@@ -82,7 +83,7 @@
 
 | ID | 缺少的行為 | 使用者可見影響 | 關閉證據 | 詳細 |
 |---|---|---|---|---|
-| `session-reload` | 重新整理頁面會失去遊戲，且無聲換成預設新局（沒有 beforeunload 提示、沒有復原提示、網址 `#new-game` 會重新打開對話框；`03` SES-09 FAIL） | 意外重新整理即失去進度，且畫面上看不出被換掉 | `03` SES-09 PASS | `docs/rule-engine/ocs-rebuild-2026-10-01.md` §7 |
+| `session-reload` | 重新整理頁面會失去遊戲，且無聲換成預設新局（沒有 beforeunload 提示、沒有復原提示、網址 `#new-game` 會重新打開對話框；`03` SES-09 FAIL） | 意外重新整理即失去進度，且畫面上看不出被換掉 | `03` SES-09 PASS | `03` SES-09 |
 | `load-same-scenario` | 只能讀回同一劇本的存檔 | 不能讀另一個 New Game 的存檔 | 讀入不同劇本的存檔並繼續遊戲 | 同上 |
 
 ## 2. 沒有對應驗收列的觀察問題
@@ -96,7 +97,7 @@
 
 1. 空中任務是否「每段都停下」，以及空戰的交接次數。
 2. 補給 B3（付費來源偏好）、B4（定期補給線）：`docs/roadmap/09-supply-logistics-ux-wbs.md`。
-3. 是否把 Breakdowns 提議的驗收列加入 `03`：`docs/rule-engine/breakdowns-2026-10-03.md`。
+3. 是否把 Breakdowns 提議的驗收列加入 `03`：`docs/rule-engine/breakdowns.md`。
 4. 是否把控制權與 VP 顯示的 CTL-1～5 加入 `03`：`docs/quality/evidence/control-2026-10-05/RUN.md`。
 5. SES-01（Pause）：產品沒有 Pause 控制項（`src/ui/controller.ts`：回合制遊戲不需要暫停），改寫該列或維持 `BLOCKED`。
 6. 東歐主題的入口格數，或入口格不在鐵路上時的補給源規則；決定後才能把預設東歐圖的鐵路降到 Temperate 的一半以下。

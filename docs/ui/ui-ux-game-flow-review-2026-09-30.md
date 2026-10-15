@@ -123,7 +123,7 @@
 
 此修正只關閉第 4 項與第 8 項中的禁止地形、道路、mobility、6.1d；以下仍為 TODO，gate 維持 `IN PROGRESS`。
 
-> **2026-10-01 更新**（依 `docs/rule-engine/ocs-rebuild-2026-10-01.md` 與程式核對；皆為「程式已處理，待實機驗證」，非關閉）：
+> **2026-10-01 更新**（依 `docs/rule-engine/rule-coverage.md` 與程式核對；皆為「程式已處理，待實機驗證」，非關閉）：
 > Reaction／Exploitation 資格、燃料、泥濘／雪、增援禁止地形（`lifecycle.ts` `reinforcementHexes`）、
 > overrun 8.1b／8.1c 已處理。仍開啟：航空阻止道路註記（空權 DEFERRED）、鍵盤移動實操、
 > 以及次要問題中重建紀錄未提及的四項：New Game RE 超限錯誤未指出欄位、預覽失效時步驟列仍全顯示完成、

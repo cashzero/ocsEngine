@@ -1,4 +1,4 @@
-// Actual UI acceptance of docs/rule-engine/replacement-tables-2026-10-14.md §2: the Variable Replacement Table roll and both
+// Actual UI acceptance of docs/rule-engine/replacements.md: the Variable Replacement Table roll and both
 // tables in a fresh New Game, then Unit Consolidation and Rebuild Table pricing on a loaded training position
 // (make-tables-position.mjs). Every step after loading is a visible control; every observation is read from the page.
 import { readFile } from 'node:fs/promises';
