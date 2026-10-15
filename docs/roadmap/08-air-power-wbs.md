@@ -1,7 +1,6 @@
 # M11-Air：Air Power work breakdown（OCS 14.0–15.0）
 
-狀態：**IN PROGRESS**（2026-10-01 建立；同日依使用者指示實作 A0–A4、A7、A8、A9）。本文件是計畫，不是完成宣告；
-下列每一項在對應證據產生前都是 TODO。實作紀錄與未完成項目見 [air-power.md](../rule-engine/air-power.md)。
+狀態：**IN PROGRESS**（見 §6）。本文件是計畫，不是完成宣告；實作紀錄與未完成項目見 [air-power.md](../rule-engine/air-power.md)。
 
 ## 0. 目標與邊界
 
@@ -81,7 +80,7 @@ counter 格式：左上機型徽章、右上機名、黃底數字為航程；左
 
 ### 1.4 不加入 BTR 專屬規則的影響（TODO／技術債）
 
-依使用者決定，下列行為不實作。每項都是 TODO，重新啟用時需先取得 BTR 規則書空軍條文並轉錄到 `docs/rules/btr-air.md`。
+依使用者決定，下列行為不實作。每項都是 TODO，重新啟用時需先取得 BTR 規則書空軍條文並轉錄到 `docs/rules/`（新檔）。
 
 | 項目 | 系列規則下的行為 | 玩家可見影響 | 重新啟用的關閉證據 |
 |---|---|---|---|
@@ -118,7 +117,7 @@ counter 格式：左上機型徽章、右上機名、黃底數字為航程；左
 | 步驟 | 產出 | 關閉證據 |
 |---|---|---|
 | A0.1 | 在 `docs/rules/ocs-4.3-charts.md` 新增空軍表轉錄節（雜湊、逐格、規則書範例交叉檢查） | 14.3 範例（LaGG-3 對 Bf 109f）、14.9 Stuka 兩個目標、14.11 Blenheim 範例都以轉錄表重算吻合 |
-| A0.2 | `docs/oob/M9-air-counter-corpus.md`：美、德機型正反面數值與圖檔雜湊 | 每張 counter 兩人覆核（作者轉錄＋使用者抽查）；模組版本與雜湊測試 |
+| A0.2 | `docs/oob/M11-air-counter-corpus.md`：美、德機型正反面數值與圖檔雜湊 | 每張 counter 兩人覆核（作者轉錄＋使用者抽查）；模組版本與雜湊測試 |
 
 ### A1 資料模型與序列化
 
@@ -287,24 +286,19 @@ M11-Air 不得標為完成。
 | D6 | 是否把 AIR-01～09 加入驗收計畫 03 | 已加入（AIR-01～09）；2026-10-03 依使用者「完成後把全部的驗收做完」加入 AIR-10～15 |
 | D7 | `docs/roadmap.md` 把 Air 排在 M11（AI Bot M9、Self-play M10 之後），而 M8／U10 仍為 IN PROGRESS | 提前開工需要使用者確認改變順序；建議至少讓 A0 與 A1（來源與資料模型）先行，因為它們會影響存檔格式與 legal action API |
 
-## 6. TODO 狀態
+## 6. 狀態
 
-本文件所列 A0–A5、A7–A9 全部是 TODO；A6 依使用者決定暫緩，其缺口列於 1.4。manifest 的 `air-power` 在 A3 完成前維持 `DEFERRED`；之後依各子功能拆列，
-只有在條文測試、整合測試與瀏覽器操作證據都具備時才可改為 `IMPLEMENTED`。
+| 步驟 | 狀態 |
+|---|---|
+| A0 來源與資料 | DONE（使用者抽查 counter 尚未進行） |
+| A1 資料模型與序列化 | DONE |
+| A2 機場、Refit | DONE |
+| A3 任務、空戰、攔截、Flak | DONE（Mission Loss 的 W／S 選擇未在瀏覽器看到，AIR-04） |
+| A4 空中砲擊、Facility、Trainbusting | DONE；Hip Shoot 在生成遊戲不可達（AIR-05 BLOCKED） |
+| A5 空運、空降、滑翔機 | DONE，Glider Points 除外（TODO `glider-points`） |
+| A6 BTR 專屬空軍規則 | 暫緩（使用者決定） |
+| A7 產生劇本整合 | DONE |
+| A8 UI | DONE |
+| A9 驗證 | 驗收列 AIR-01～15 的狀態以 `docs/quality/03-product-operation-verification-plan.md` 第 F 節為準 |
 
-## 7. 實作狀態（2026-10-01）
-
-| 步驟 | 狀態 | 說明 |
-|---|---|---|
-| A0 | 程式與文件完成 | 表與 counter 轉錄、雜湊、範例交叉檢查；使用者抽查 counter 尚未進行 |
-| A1 | 程式完成 | 存檔 0.3.0，0.2.0 可遷移並以重播驗證 |
-| A2 | 程式完成，部分瀏覽器驗證 | Refit 已在瀏覽器操作；佔領、拆除、合併未操作 |
-| A3 | 程式完成，部分瀏覽器驗證 | Sweep、攔截、空戰、Flak 已操作；轉場、W／S 選擇未操作 |
-| A4 | 程式完成，部分瀏覽器驗證 | 對部隊的空中砲擊已操作；Trainbusting、打機場未操作；Hip Shoot 不可達（1.4） |
-| A5 | 程式完成（2026-10-03，使用者要求） | 空運、空降、Drop Plan、滑翔機；瀏覽器驗收 AIR-13～15 的結果見報告第 6 節；另外 13.8d 機場建造（AIR-10）、13.5f／13.6 空中補充與增援（AIR-11、AIR-12）同日完成 |
-| A6 | 暫緩 | 使用者決定 |
-| A7 | 程式完成，瀏覽器已操作 New Game 與預覽 | 預設 Air forces = None |
-| A8 | 程式完成，部分瀏覽器驗證 | 見報告第 3、4 節 |
-| A9 | 測試完成；AIR-01～15 在驗收計畫中，2026-10-03 逐列在瀏覽器執行，狀態以計畫 03 第 F 節為準 | 證據：`docs/quality/evidence/air-2026-10-03/` |
-
-M11-Air 為 **IN PROGRESS**，不得標為完成。
+現況見 `docs/rule-engine/air-power.md`；manifest 的 `air.*` 為 `PARTIAL`，缺口在其 `GAP:`。

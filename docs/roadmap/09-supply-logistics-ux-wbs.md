@@ -1,11 +1,8 @@
 # M12-Supply：補給與運補 UI/UX 改善計畫（Phase A／Phase B）
 
-狀態：**IN PROGRESS**（2026-10-02 建立；A0 基準與補測完成；A1～A5 已實作；**A6 整合驗收 gate：依使用者縮減範圍（檔案存讀檔移出）通過，詳見 A6**；Phase B 尚未開始）。
-本文件是計畫，不是完成宣告；下列每一項在對應證據產生前都是 TODO，所有驗收列皆為 `UNVERIFIED`。
-
-基準版本：已 rebase 到 `73c7cad`（含 #11 編制分組部署、#12 地圖重繪、#13 左欄重整）。#13 改寫了 command deck 的版面
-（phase 專屬 tab、任務模式、移動 popup），本文件的 UI 位置與約束已依此更新；詳見
-[左欄重整紀錄](../quality/evidence/ui-left-panel-2026-10-02/README.md) 與 [command-deck.md](../ui/command-deck.md)。
+狀態：**IN PROGRESS**。Phase A（A0–A6）完成，A6 依使用者縮減的範圍（檔案式存讀檔移出）通過；Phase B 尚未開始。
+驗收列狀態以 `docs/quality/03-product-operation-verification-plan.md` §G 為準。現行補給 UI 見 `docs/ui/command-deck.md`。
+A0 基準紀錄：[A0 基準紀錄](../quality/evidence/supply-ux-a0-2026-10-02/README.md)。
 
 ## 0. 目標與邊界
 

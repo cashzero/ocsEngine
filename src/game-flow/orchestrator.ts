@@ -33,7 +33,7 @@ function* prepareNewGameSteps(request: NewGameRequest): Generator<NewGamePrepara
   yield 'OOB';
   // An attacker fields more divisions (ATTACKER_FORCE_RATIO); a meeting engagement keeps the sides equal.
   const attacker = attackerOf(request.engagement ?? 'MEETING');
-  // The attacker also flies from an off-map airfield (docs/roadmap/13-engagement-scenarios-wbs.md §6).
+  // The attacker also flies from an off-map airfield (docs/quality/evidence/engagements-plan-2026-10-07/README.md §6).
   const oob = generateRandomOob({ ...request.oob, ...(attacker === null ? {} : { attacker, offMapAir: attacker }), seed: request.seeds.oob });
   if (!oob.ok) return { ok: false, error: generatorFailures('OOB', oob.error) };
   yield 'DEPLOYMENT';

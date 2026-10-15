@@ -33,7 +33,7 @@ import {
 } from '../../src/index.js';
 
 /**
- * The attacker's off-map airfield (docs/roadmap/13-engagement-scenarios-wbs.md §6, AIR-OM2 and AIR-OM3): Axis attacks
+ * The attacker's off-map airfield (docs/quality/evidence/engagements-plan-2026-10-07/README.md §6, AIR-OM2 and AIR-OM3): Axis attacks
  * with an airfield and aircraft in an off-map box; Allied defends with its on-map Air Force.
  */
 const REQUEST: NewGameRequest = { ...AIR_NEW_GAME_REQUEST, engagement: 'AXIS_ATTACKS' };

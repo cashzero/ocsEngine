@@ -1,5 +1,7 @@
 # Rule Engine WBS
 
+狀態：**IN PROGRESS**。R0–R9 已實作；R10 gate 未過：manifest 仍有 `PARTIAL`／`DEFERRED` 列，且未逐條登記 §1–21（TODO-R1）。現況見 `docs/rule-engine/`；本文件只保留計畫。
+
 ## 1. 目的與邊界
 
 Rule Engine 是 OCS 規則唯一權威。給定 immutable state 與 action，它必須產生

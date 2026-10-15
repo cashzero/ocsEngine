@@ -39,7 +39,7 @@ export const OOB_DIVISION_LIMITS = { minDivisions: 1, maxDivisions: 20, maxArmor
 /**
  * An attacking side fields this many times the divisions of the other, armored ones included, and the balancing aims
  * at this ratio of combat value (user, 2026-10-07: "進攻方兵力要比較多吧 至於是1.5倍還是2或3 看你";
- * docs/roadmap/13-engagement-scenarios-wbs.md §4). With equal forces the bot attacker won 10 of 40 games; at 1.5 it won 18.
+ * docs/quality/evidence/engagements-plan-2026-10-07/README.md §4). With equal forces the bot attacker won 10 of 40 games; at 1.5 it won 18.
  */
 export const ATTACKER_FORCE_RATIO = 1.5;
 
@@ -69,7 +69,7 @@ export interface RandomOobOptions {
   readonly armoredDivisionsPerSide: number;
   /** The side that attacks (sideDivisions); absent in a meeting engagement, where both sides are equal. */
   readonly attacker?: OobSide;
-  /** The side with an off-map airfield and its aircraft (docs/roadmap/13-engagement-scenarios-wbs.md §6), whatever `air` says. */
+  /** The side with an off-map airfield and its aircraft (docs/quality/evidence/engagements-plan-2026-10-07/README.md §6), whatever `air` says. */
   readonly offMapAir?: OobSide;
   /** Absent means NONE, so ground-only requests generate exactly what they did before air power. */
   readonly air?: AirForceLevel;

@@ -1,5 +1,7 @@
 # M6 Random Map work breakdown
 
+Status: **DONE** (M6.0–M6.12). The standalone map laboratory of M6.8 was later replaced by the New Game preview (`docs/game-flow/new-game-ui.md`).
+
 M6 outputs a deterministic, validated Foundation `MapDefinition`. It does not generate units, deployment, objectives, or a playable Scenario; those belong to M7/M8.
 
 | Step | Study output | Exit proof |

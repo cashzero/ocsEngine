@@ -140,7 +140,7 @@ export const OFF_MAP_AIR_MIX: Readonly<Record<OobScale, { readonly fighters: num
 };
 
 /**
- * The off-map airfield and its aircraft (docs/roadmap/13-engagement-scenarios-wbs.md §6), on their own random stream so
+ * The off-map airfield and its aircraft (docs/quality/evidence/engagements-plan-2026-10-07/README.md §6), on their own random stream so
  * they never change the rest of the OOB. Every aircraft is staged at the airfield.
  */
 export const buildOffMapAir = (

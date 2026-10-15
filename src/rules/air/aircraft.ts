@@ -21,7 +21,7 @@ export const AIR_BASE_LEVEL_STATUS = statusId('status:air-base-level');
 export const AIR_BASE_FACILITY = 'facility:air-base';
 export const AIR_STRIP_FACILITY = 'facility:air-strip';
 /**
- * A game-specific off-map airfield (docs/roadmap/13-engagement-scenarios-wbs.md §6): a facility in an off-map box, with
+ * A game-specific off-map airfield (docs/quality/evidence/engagements-plan-2026-10-07/README.md §6): a facility in an off-map box, with
  * its aircraft in the same box. They fly in over their side's map edge (range counted from the nearest friendly Air Entry Point
  * (AEP), plus OFF_MAP_AIRFIELD_DISTANCE) and come back to the box. Nothing on the map can reach it; it holds any number
  * of Active aircraft and refits every one each Aircraft Refit Phase from its own stocks (cf. 12.3e).
