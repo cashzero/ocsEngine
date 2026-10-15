@@ -216,7 +216,7 @@ describe('UI flow narrative (2026-10-01 review)', () => {
   }, 30_000);
 
   it('offers a larger default operation and refuses player maps below the minimum', async () => {
-    expect(DEFAULT_NEW_GAME_REQUEST).toMatchObject({ map: { width: 32, height: 24 }, turnLimit: 8 });
+    expect(DEFAULT_NEW_GAME_REQUEST).toMatchObject({ map: { width: 32, height: 24 }, turnLimit: 17 });
     const orchestrator = createNewGameOrchestrator(createGameplayEngine(createMemoryGameplayPorts()));
     const small = orchestrator.prepare({ ...DEFAULT_NEW_GAME_REQUEST, map: { ...DEFAULT_NEW_GAME_REQUEST.map, width: NEW_GAME_MAP_LIMITS.minWidth - 1, height: NEW_GAME_MAP_LIMITS.minHeight - 1 } });
     expect(small.ok).toBe(false);

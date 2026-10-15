@@ -22,9 +22,9 @@ describe('reinforcement options', () => {
   });
 
   it('rejects a schedule whose last division would have under two Game Turns on the map', () => {
-    const late = prepareNewGame({ ...DEFAULT_NEW_GAME_REQUEST, reinforcements: { allied: 75, axis: 0, firstTurn: 5 } });
+    const late = prepareNewGame({ ...DEFAULT_NEW_GAME_REQUEST, turnLimit: 8, reinforcements: { allied: 75, axis: 0, firstTurn: 5 } });
     expect(!late.ok && late.error.map(({ code }) => code)).toContain('REINFORCEMENTS_TOO_LATE');
-    const fits = prepareNewGame({ ...DEFAULT_NEW_GAME_REQUEST, reinforcements: { allied: 75, axis: 0, firstTurn: 3 } });
+    const fits = prepareNewGame({ ...DEFAULT_NEW_GAME_REQUEST, turnLimit: 8, reinforcements: { allied: 75, axis: 0, firstTurn: 3 } });
     expect(fits.ok).toBe(true);
     expect(latestFirstReinforcementTurn(8, 5)).toBe(3);
   });
@@ -44,7 +44,7 @@ describe('reinforcement options', () => {
 describe('fitReinforcements', () => {
   it('lowers the first arrival turn, then the share, to keep two Game Turns on the map', async () => {
     const { fitReinforcements } = await import('../../src/index.js');
-    const fitted = fitReinforcements({ ...DEFAULT_NEW_GAME_REQUEST, reinforcements: { allied: 75, axis: 0, firstTurn: 6 } });
+    const fitted = fitReinforcements({ ...DEFAULT_NEW_GAME_REQUEST, turnLimit: 8, reinforcements: { allied: 75, axis: 0, firstTurn: 6 } });
     expect(fitted.reinforcements).toEqual({ allied: 75, axis: 0, firstTurn: 3 });
     const cut = fitReinforcements({ ...DEFAULT_NEW_GAME_REQUEST, oob: { ...DEFAULT_NEW_GAME_REQUEST.oob, divisionsPerSide: 12 }, turnLimit: 4, reinforcements: { allied: 100, axis: 0, firstTurn: 2 } });
     expect(cut.reinforcements?.firstTurn).toBe(2);
