@@ -62,21 +62,21 @@ strength、supply path。Cache 必須以 state revision 與 query purpose 作 ke
 
 ## 4. Rule Engine 工作分解
 
-每個 rule slice 必須同步提交獨立 contract/coverage 文件：
+各 slice 的現況寫在下列文件（逐條規則的行為與缺口以 `src/rules/manifest.ts` 為準）：
 
 | Stage | Required document |
 |---|---|
-| R0 | `docs/rule-engine/00-manifest-scope-and-tables.md` |
-| R1 | `docs/rule-engine/01-reducer-action-event-contract.md` |
-| R2 | `docs/rule-engine/02-sequence-and-pending-decisions.md` |
-| R3 | `docs/rule-engine/03-query-explanation-visibility.md` |
-| R4 | `docs/rule-engine/04-mode-stacking-zoc.md` |
-| R5 | `docs/rule-engine/05-movement-and-path-execution.md` |
-| R6 | `docs/rule-engine/06-transaction-and-reservation.md` |
-| R7 | `docs/rule-engine/07-supply-and-logistics.md` |
-| R8 | `docs/rule-engine/08-combat-overrun-barrage-retreat.md` |
-| R9 | `docs/rule-engine/09-lifecycle-facility-victory.md` |
-| R10 | `docs/rule-engine/R10-rule-engine-integration.md` |
+| R0 | `docs/rule-engine/rule-coverage.md` |
+| R1 | `docs/rule-engine/engine-contract.md` |
+| R2 | `docs/rule-engine/engine-contract.md` |
+| R3 | `docs/rule-engine/engine-contract.md` |
+| R4 | `docs/rule-engine/rule-coverage.md` |
+| R5 | `docs/rule-engine/rule-coverage.md` |
+| R6 | `docs/rule-engine/engine-contract.md` |
+| R7 | `docs/rule-engine/rule-coverage.md` |
+| R8 | `docs/rule-engine/rule-coverage.md` |
+| R9 | `docs/rule-engine/rule-coverage.md` |
+| R10 | `docs/rule-engine/rule-coverage.md` |
 
 ### R0：Rule manifest、scope 與 table provenance
 
@@ -91,9 +91,7 @@ strength、supply path。Cache 必須以 state revision 與 query purpose 作 ke
 
 產出：
 
-- `docs/rule-engine/00-rule-manifest.md`
-- `docs/rule-engine/00-table-provenance.md`
-- `docs/rule-engine/00-mvp-scope.md`
+- `docs/rule-engine/rule-coverage.md`（現況；各規則細節在 `src/rules/manifest.ts`）
 
 Gate：缺 table 或 unresolved conflict 的 feature 不可標記 implemented。
 

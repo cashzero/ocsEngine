@@ -9,12 +9,14 @@ const P = E.prepareNewGame(E.RULE_FIXTURE_NEW_GAME_REQUEST).value;
 const AL = 'player:allied', AX = 'player:axis';
 const find = (s) => P.scenario.initialPieceState.pieces.find((p) => p.id.includes(s))?.id;
 const U = {
-  alTrk: find('allied:f1-combat-1'), alTrk2: find('allied:f1-combat-2'), alLeg: find('allied:f2-combat-1'), alLeg2: find('allied:f2-combat-2'),
+  alTrk: find('allied:f1-combat-1'), alTrk2: find('allied:f1-combat-2'), alLeg: find('allied:f2-combat-1'), alLeg2: find('allied:independent-tank-1'),
   alArt: find('allied:f1-artillery-1'), alEng: find('allied:independent-engineer-1'), alHq: find('allied:independent-hq-1'),
   alSup: find('allied:independent-supply-1'),
-  axTrk: find('axis:f1-combat-1'), axTrk2: find('axis:f1-combat-2'), axTruck: find('axis:f2-combat-1'), axTruck2: find('axis:f2-combat-2'),
+  axTrk: find('axis:f1-combat-1'), axTrk2: find('axis:f1-combat-2'), axTruck: find('axis:f2-combat-1'),
   axSup: find('axis:independent-supply-1'),
 };
+// A unit missing from the fixture OOB would silently leave its role empty and make rows meaningless.
+for (const [role, id] of Object.entries(U)) if (id === undefined) throw new Error(`Probe unit ${role} is not in the fixture OOB.`);
 const flatMap = (terrainAt = {}) => ({
   ...P.scenario.mapDefinition,
   hexes: P.scenario.mapDefinition.hexes.map((h) => ({ ...h, terrainDefinitionIds: [terrainAt[h.id] ?? 'terrain:clear'], features: h.features.filter((f) => f.kind !== 'PRINTED_FEATURE') })),
