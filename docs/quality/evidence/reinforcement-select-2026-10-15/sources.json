@@ -1,0 +1,17 @@
+{
+  "baseCommit": "05c9b84f7dfc460691b77edff1c943312c341b8f",
+  "workingTree": true,
+  "sourceSha256": {
+    "src/ui/browser.ts": "07b7cc006933740f384e18d01bc7e81386583bfdc12213d571f6007eab7fa154",
+    "src/game-flow/configuration.ts": "5a842606a146a9747a1de0df5be92abe40d6c051086d67b1b1dd1ce149825e30",
+    "src/game-flow/model.ts": "0650e6f5030bedf46584f87044d5e60fa087b94b0da04cc8e5b15f1592f29ea4",
+    "src/game-flow/validation.ts": "5e958a0d5cb6662e6c68af1540b3e489430eb3b08ac23fb72819088b01935a11",
+    "tests/game-flow/reinforcement-options.test.ts": "fc2de0c6767f15c88b5568d0e718c5f16dd00e9f2c41e0ad0147dd8d6e7a9255",
+    "scripts/reinforcement-ui-check.mjs": "c7f8ce58e3d93a9a3515308c6d315856e8a57ba1ec097e14dc88deb256cf8fbb"
+  },
+  "artifacts": "artifacts/reinforcement-select/third-run",
+  "viewport": {
+    "width": 1920,
+    "height": 1080
+  }
+}

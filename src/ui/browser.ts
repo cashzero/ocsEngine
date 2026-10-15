@@ -27,9 +27,9 @@ import {
   DEFAULT_FIRST_REINFORCEMENT_TURN,
   FIRST_REINFORCEMENT_TURN,
   fitReinforcements,
-  latestFirstReinforcementTurn,
   maximumReinforcementDivisions,
   reinforcementDivisionsOf,
+  REINFORCEMENT_PERCENT_OPTIONS,
   inlandEntryOf,
   GENERATED_HEDGEHOG_LEVELS,
   newGameSeaOf,
@@ -808,15 +808,21 @@ const onNewGameInput = (event: Event): void => {
     const current = newGameSettings.reinforcements ?? { allied: 0, axis: 0, firstTurn: DEFAULT_FIRST_REINFORCEMENT_TURN };
     newGameSettings = { ...newGameSettings, reinforcements: id.endsWith('first-turn') ? { ...current, firstTurn: value } : { ...current, [id.endsWith('allied') ? 'allied' : 'axis']: value } };
   }
-  // Reinforcements follow the divisions and the Turn limit: whatever no longer fits is pulled back inside the limits.
-  newGameSettings = fitReinforcements(newGameSettings);
-  // A typed value keeps its text in the input whatever the attribute says, so write back what was fitted.
-  for (const [field, fitted] of [['allied', newGameSettings.reinforcements?.allied], ['axis', newGameSettings.reinforcements?.axis], ['first-turn', newGameSettings.reinforcements?.firstTurn]] as const) {
-    const element = document.getElementById(`new-game-reinforcements-${field}`) as HTMLInputElement | null;
-    if (element !== null && fitted !== undefined && element.value !== String(fitted)) element.value = String(fitted);
-  }
   for (const key of ['map', 'oob', 'deployment', 'rules'] as const) if (id === `new-game-${key}-seed`) newGameSettings = { ...newGameSettings, seeds: { ...newGameSettings.seeds, [key]: value } };
   render(controller.getSnapshot());
+};
+
+/** Fit only committed edits: clearing a number while typing must not rewrite the other fields. */
+const onNewGameChange = (event: Event): void => {
+  const input = event.target as HTMLInputElement | HTMLSelectElement;
+  if (!['new-game-engagement', 'new-game-divisions', 'new-game-turn-limit',
+    'new-game-reinforcements-allied', 'new-game-reinforcements-axis', 'new-game-reinforcements-first-turn'].includes(input.id)) return;
+  newGameSettings = fitReinforcements(newGameSettings);
+  render(controller.getSnapshot());
+  for (const [field, fitted] of [['allied', newGameSettings.reinforcements?.allied], ['axis', newGameSettings.reinforcements?.axis], ['first-turn', newGameSettings.reinforcements?.firstTurn]] as const) {
+    const element = document.getElementById(`new-game-reinforcements-${field}`) as HTMLInputElement | HTMLSelectElement | null;
+    if (element !== null && fitted !== undefined && element.value !== String(fitted)) element.value = String(fitted);
+  }
 };
 
 /**
@@ -851,14 +857,20 @@ const reinforcementFields = (
     const divisions = reinforcementDivisionsOf(request, side);
     return divisions === 0 ? `${name}: none` : `${name}: ${divisions} division${divisions === 1 ? '' : 's'}, Turn ${settings.firstTurn}${divisions > 1 ? `–${settings.firstTurn + divisions - 1}` : ''}`;
   };
-  const most = Math.max(reinforcementDivisionsOf(request, 'ALLIED'), reinforcementDivisionsOf(request, 'AXIS'));
-  const latest = Math.max(FIRST_REINFORCEMENT_TURN, latestFirstReinforcementTurn(newGameSettings.turnLimit, most));
+  const choices = (side: 'ALLIED' | 'AXIS', key: 'allied' | 'axis', name: string): TemplateResult => html`<label>${name} reinforcements
+    <select id=${`new-game-reinforcements-${key}`} aria-describedby="reinforcement-summary">
+      ${REINFORCEMENT_PERCENT_OPTIONS.map((percent) => {
+        const divisions = reinforcementDivisionsOf({ ...request, reinforcements: { ...settings, [key]: percent } }, side);
+        const fits = divisions <= maximumReinforcementDivisions(newGameSettings.turnLimit, FIRST_REINFORCEMENT_TURN);
+        return html`<option value=${percent} ?selected=${settings[key] === percent} ?disabled=${percent > 0 && (!fits || divisions === 0)}>${percent}% · ${divisions} division${divisions === 1 ? '' : 's'}${!fits ? ' (needs more turns)' : percent > 0 && divisions === 0 ? ' (one division must start on map)' : ''}</option>`;
+      })}
+    </select></label>`;
   return html`<div class="field-pair">
-      ${number('new-game-reinforcements-allied', 'Allied reinforcements %', 0, 100, settings.allied)}
-      ${number('new-game-reinforcements-axis', 'Axis reinforcements %', 0, 100, settings.axis)}
+      ${choices('ALLIED', 'allied', 'Allied')}
+      ${choices('AXIS', 'axis', 'Axis')}
     </div>
-    ${number('new-game-reinforcements-first-turn', 'First arrival turn', FIRST_REINFORCEMENT_TURN, latest, settings.firstTurn)}
-    <p id="reinforcement-summary" class="field-help">Share of each side's divisions (rounded to whole divisions) that start off the map and arrive one per Game Turn from the first arrival turn, by their ports or entry hexes. The last one must have at least two Game Turns on the map, so at most ${maximumReinforcementDivisions(newGameSettings.turnLimit, settings.firstTurn)} divisions can arrive from Turn ${settings.firstTurn}. ${arrivals('ALLIED', 'Allied')} · ${arrivals('AXIS', 'Axis')}.</p>`;
+    ${number('new-game-reinforcements-first-turn', 'First arrival turn', FIRST_REINFORCEMENT_TURN, 20, settings.firstTurn)}
+    <p id="reinforcement-summary" class="field-help">Whole divisions arrive one per Game Turn through ports or entry hexes; at least one starts on the map. The last arrival must have at least two Game Turns to play. After you finish editing, the first turn may move earlier (as early as Turn ${FIRST_REINFORCEMENT_TURN}), then the percentage may decrease to fit. Disabled choices need more turns or divisions. ${arrivals('ALLIED', 'Allied')} · ${arrivals('AXIS', 'Axis')}.</p>`;
 };
 
 /** checkValidity fires "invalid" per bad field: go back to the settings page and say what is wrong beside it. */
@@ -979,7 +991,7 @@ const newGameDialog = () => {
   const backToSettings = (): void => { newGamePage = 'settings'; render(controller.getSnapshot()); };
   const railCap = newGameSettings.railCap ?? defaultRailCap(newGameSettings);
   return html`<div class="modal-backdrop new-game-backdrop"><section class="new-game-dialog" role="dialog" aria-modal="true" aria-label=${`New operation: ${title.toLowerCase()}`} @keydown=${trapFocus}>
-    <form id="new-game-form" class="new-game-form" data-new-game-page=${page} @submit=${(event: Event) => { event.preventDefault(); void buildPreview(); }} @input=${onNewGameInput} @invalid=${{ handleEvent: onNewGameInvalid, capture: true }}>
+    <form id="new-game-form" class="new-game-form" data-new-game-page=${page} @submit=${(event: Event) => { event.preventDefault(); void buildPreview(); }} @input=${onNewGameInput} @change=${onNewGameChange} @invalid=${{ handleEvent: onNewGameInvalid, capture: true }}>
     <header class="new-game-bar">
       <h2 id="new-game-title">${title}</h2>
       ${page === 'preview' && newGamePreview ? operationSummary(newGamePreview) : nothing}
