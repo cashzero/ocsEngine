@@ -6,6 +6,7 @@ import { readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { click, gotoHex, has, hexDistance, open, placeArrivals, record, textOf, where } from '../air-acceptance/harness.mjs';
 import { configure, generate, openNewGame, start } from './lib.mjs';
+import { DEFAULT_NEW_GAME_REQUEST, createGameplayEngine, createMemoryGameplayPorts, createNewGameOrchestrator } from '../../dist/index.js';
 
 const evidenceDir = process.argv[2] ?? 'artifacts/product-computer';
 const h = await open({ evidenceDir });
@@ -74,10 +75,15 @@ const enemyHexes = () => page.evaluate(() => [...new Set(window.ocsMap.state.cou
  * Play the person's side the dull way (place arrivals, first option of any decision, end the step) until `until(state)`
  * holds. When a computer is to act the person waits: nothing is clicked for it.
  */
-const playOn = async (until, { limit = 600, before = async () => false } = {}) => {
+const playOn = async (until, { limit = 600, before = async () => false, handoffs = false } = {}) => {
   for (let guard = 0; guard < limit; guard += 1) {
     const state = await where(h);
     const computer = await panel();
+    if ((state.handoff || state.complete) && handoffs) {
+      // Two persons now play (a seat was taken over from the computer): hot-seat hand-overs are what they should be.
+      await click(h, state.complete ? '#complete-handoff' : '#begin-required-handoff', { settle: 300 });
+      continue;
+    }
     if (state.handoff || state.complete) throw new Error(`A hand-over screen appeared (${JSON.stringify(state)}).`);
     if (computer.stuck) throw new Error(`The computer is stuck: ${computer.stuckText}`);
     if (await has(h, '#game-end-title')) return { state, computer };
@@ -112,6 +118,23 @@ const loadGame = async (path) => {
   await page.setInputFiles('#save-file', path);
   await page.waitForTimeout(800);
 };
+
+/**
+ * Loads a downloaded save into a fresh engine (which replays every accepted action and refuses a save whose final state hash
+ * differs) once the same operation has been created there, and returns what the replay found.
+ */
+const replayCheck = async (path, seeds) => {
+  const text = await readFile(path, 'utf8');
+  const save = JSON.parse(text);
+  const engine = createGameplayEngine(createMemoryGameplayPorts());
+  const request = { ...DEFAULT_NEW_GAME_REQUEST, map: { ...DEFAULT_NEW_GAME_REQUEST.map, width: SMALL.width, height: SMALL.height }, oob: { ...DEFAULT_NEW_GAME_REQUEST.oob, scale: SMALL.scale, divisionsPerSide: SMALL.divisions, armoredDivisionsPerSide: SMALL.armored }, turnLimit: SMALL.turnLimit, seeds };
+  const created = await createNewGameOrchestrator(engine).create(request);
+  if (!created.ok) throw new Error(`replay check: ${JSON.stringify(created.error)}`);
+  const loaded = await engine.loadSession(text);
+  return { actions: save.acceptedActions.length, savedHash: save.finalStateHash, replayedHash: loaded.getMetadata().stateHash, match: save.finalStateHash === loaded.getMetadata().stateHash,
+    lifecycle: loaded.getMetadata().lifecycle, seats: loaded.getBindings().map((binding) => `${binding.label}:${binding.controller?.kind ?? 'HUMAN'}`) };
+};
+const SEEDS_B = { map: 94101, oob: 94102, deployment: 94103, rules: 94104 };
 
 try {
   // ------------------------------------------------------------------ A: a person against the computer
@@ -303,7 +326,7 @@ try {
     await page.waitForTimeout(300);
     return true;
   };
-  await playOn((state) => state.phase !== manual.phase && state.decision.length === 0, { limit: 60, before: recoverStocks });
+  await playOn((state) => state.phase !== manual.phase && state.decision.length === 0, { limit: 80, before: recoverStocks, handoffs: true });
   const manualLater = await where(h);
   const afterPlay = await panel();
   record(h, 'BOT-08', 'A stuck computer shows what went wrong and does nothing more; "Play it myself" hands the seat to the person, who can then act',
@@ -311,7 +334,7 @@ try {
     /cannot go on/i.test(stuck.stuckText) && stuckLater.stuckRevision === stuck.stuckRevision && stuck.stuckRevision > 0 && !taken.present && !takenState.privacy && !afterPlay.present && manualLater.phase !== manual.phase);
 
   // ------------------------------------------------------------------ B: computer against computer
-  const b = await startGame({ allied: 'COMPUTER', axis: 'COMPUTER', seeds: { map: 94101, oob: 94102, deployment: 94103, rules: 94104 } });
+  const b = await startGame({ allied: 'COMPUTER', axis: 'COMPUTER', seeds: SEEDS_B });
   const spectate = await screenState();
   const spectateStart = await panel();
   await h.shot('computers-start');
@@ -333,17 +356,42 @@ try {
   const end = await page.evaluate(() => ({ title: document.querySelector('#game-end-title')?.textContent.trim(), reason: document.querySelector('.game-end-reason')?.textContent.trim() }));
   await h.shot('computers-game-end');
   const finalPanel = await panel();
-  record(h, 'BOT-05', 'Two computers play to Game End with nobody operating; the screen shows no hand-over, can be paused, sped up and viewed from either side',
-    `preview "${b.players}"; started with hand-over ${spectate.handoff}; played ${spectateStart.played}→${watching.played} in 1.5 s unattended; views ${JSON.stringify(viewOptions)}, seat "${seatBefore}"→"${seatAfter}"; paused ${pausedB.played}=${pausedB2.played}; Game End "${end.title}" (${end.reason})`,
-    b.players === 'Allied: computer · Axis: computer' && !spectate.handoff && watching.played > spectateStart.played && seatBefore !== seatAfter && pausedB.played === pausedB2.played && !!end.title);
-  extra['BOT-05'] = { end, finalPanel };
   const finalSave = await (async () => {
     const [download] = await Promise.all([page.waitForEvent('download'), page.click('#download-final-save')]);
     const path = join(evidenceDir, 'computers-final-save.json');
     await download.saveAs(path);
     return path;
   })();
-  extra.finalSave = finalSave;
+  const replayed = await replayCheck(finalSave, SEEDS_B);
+  record(h, 'BOT-05', 'Two computers play to Game End with nobody operating; the screen shows no hand-over, can be paused, sped up and viewed from either side; the final save replays to the same final state',
+    `preview "${b.players}"; started with hand-over ${spectate.handoff}; played ${spectateStart.played}→${watching.played} in 1.5 s unattended; views ${JSON.stringify(viewOptions)}, seat "${seatBefore}"→"${seatAfter}"; paused ${pausedB.played}=${pausedB2.played}; Game End "${end.title}" (${end.reason}); final save ${replayed.actions} actions, replay hash ${replayed.match ? 'equals' : 'DIFFERS from'} the saved ${replayed.savedHash.slice(0, 19)}…, seats ${replayed.seats.join(', ')}`,
+    b.players === 'Allied: computer · Axis: computer' && !spectate.handoff && watching.played > spectateStart.played && seatBefore !== seatAfter && pausedB.played === pausedB2.played && !!end.title && replayed.match && replayed.lifecycle === 'FINISHED');
+  extra['BOT-05'] = { end, finalPanel, replayed };
+  await click(h, '#close-game-end');
+
+  // ------------------------------------------------------------------ C: computers go on from a loaded save to Game End
+  await startGame({ allied: 'COMPUTER', axis: 'COMPUTER', seeds: SEEDS_B });
+  // At the default speed, so the game is still under way when it is saved.
+  await page.waitForTimeout(2500);
+  await click(h, '#pause-computer');
+  const midBefore = await panel();
+  const midSave = await saveGame('computers-mid-save.json');
+  await startGame({ allied: 'PLAYER', axis: 'PLAYER', seeds: SEEDS_B });
+  const reopened = await panel();
+  await loadGame(midSave);
+  const afterLoad = await panel();
+  await page.selectOption('#computer-speed', 'INSTANT');
+  await waitFor(() => !!document.querySelector('#game-end-title'), 'Game End after the load', 600000);
+  const endAfterLoad = await page.evaluate(() => ({ title: document.querySelector('#game-end-title')?.textContent.trim(), reason: document.querySelector('.game-end-reason')?.textContent.trim() }));
+  await h.shot('loaded-computers-game-end');
+  const [download] = await Promise.all([page.waitForEvent('download'), page.click('#download-final-save')]);
+  const loadedFinal = join(evidenceDir, 'computers-loaded-final-save.json');
+  await download.saveAs(loadedFinal);
+  const replayedLoaded = await replayCheck(loadedFinal, SEEDS_B);
+  record(h, 'BOT-10', 'Two computers continue a loaded save from where it was made to Game End, and the final save replays to the same final state',
+    `saved while paused at revision ${midBefore.revision} (${midBefore.played} computer actions played); the same operation reopened with two persons (computer panel ${reopened.present}); after load: computer panel ${afterLoad.present} at revision ${afterLoad.revision}; Game End "${endAfterLoad.title}" (${endAfterLoad.reason}); final save ${replayedLoaded.actions} actions, replay hash ${replayedLoaded.match ? 'equals' : 'DIFFERS from'} the saved one`,
+    midBefore.revision > 0 && !reopened.present && afterLoad.present && afterLoad.revision >= midBefore.revision && !!endAfterLoad.title && replayedLoaded.match && replayedLoaded.lifecycle === 'FINISHED');
+  extra['BOT-10'] = { endAfterLoad, replayedLoaded };
 } catch (error) {
   h.note(`RUN STOPPED: ${error.stack ?? error.message}`);
   await h.shot('failure').catch(() => {});
