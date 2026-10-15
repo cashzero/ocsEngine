@@ -136,12 +136,29 @@ export interface WeatherGroundRange {
   readonly maximum: number;
 }
 
-/** A dated row of the game-specific Weather Table; days are inclusive. */
+/**
+ * Flight Conditions of a Game Turn (14.1f, game-specific Weather Table). Normal allows air missions in
+ * every phase; Limited only in the flying player's Regular Movement Phase; None allows no mission.
+ */
+export type FlightCondition = 'NORMAL' | 'LIMITED' | 'NONE';
+
+/** One 2d6 range of a Weather Table row's Flight Conditions. */
+export interface WeatherFlightRange {
+  readonly condition: FlightCondition;
+  readonly minimum: number;
+  readonly maximum: number;
+}
+
+/**
+ * A dated row of the game-specific Weather Table; days are inclusive. A row without `flight` rolls no
+ * Flight Conditions and the turn is Normal (tables, and saves, made before Flight Conditions).
+ */
 export interface WeatherTableRow {
   readonly month: number;
   readonly firstDay: number;
   readonly lastDay: number;
   readonly ground: readonly WeatherGroundRange[];
+  readonly flight?: readonly WeatherFlightRange[] | undefined;
 }
 
 /**
@@ -649,6 +666,10 @@ export interface SegmentLedger {
 /** Current weather (17.0) and the calendar date of the Game Turn. */
 export interface WeatherState {
   readonly groundCondition: GroundCondition;
+  /** Flight Conditions of the Game Turn (14.1f); Normal when the table rolls none. */
+  readonly flight: FlightCondition;
+  /** The 2d6 total of the Flight Conditions roll, or null when none was rolled. */
+  readonly flightRoll: number | null;
   readonly month: number | null;
   readonly day: number | null;
   readonly roll: number | null;
@@ -979,7 +1000,7 @@ export type RuleEvent =
   | { readonly kind: 'REINFORCEMENT_PLACED'; readonly sequence: number; readonly pieceId: PieceId; readonly hexId: HexId }
   | { readonly kind: 'CLEANUP_COMPLETED'; readonly sequence: number; readonly playerId: PlayerId }
   | { readonly kind: 'VICTORY_RECORDED'; readonly sequence: number; readonly winnerId: PlayerId | null; readonly reason: string }
-  | { readonly kind: 'WEATHER_DETERMINED'; readonly sequence: number; readonly groundCondition: GroundCondition; readonly roll: number | null }
+  | { readonly kind: 'WEATHER_DETERMINED'; readonly sequence: number; readonly groundCondition: GroundCondition; readonly roll: number | null; readonly flight: FlightCondition; readonly flightRoll: number | null }
   | { readonly kind: 'FUEL_PAID'; readonly sequence: number; readonly method: FuelMethod; readonly pieceId: PieceId; readonly resourcePieceId: PieceId; readonly tokens: number }
   | { readonly kind: 'INTERNAL_STOCKS_CHANGED'; readonly sequence: number; readonly pieceId: PieceId; readonly level: InternalStocksLevel }
   | { readonly kind: 'ATTRITION_ROLLED'; readonly sequence: number; readonly hexId: HexId; readonly total: number; readonly steps: number }

@@ -43,7 +43,14 @@ notice line and Log.
 
 ## Decisions
 
-- **Rules left out** (user decision): BtR Flight Conditions, so weather never limits air missions; nationality rules, so no
+- **Flight Conditions are rolled** (BTR Weather Table, 2d6 after the ground die, one result per Game Turn for both
+  sides). None allows no mission, Limited allows missions only in the flying player's Regular Movement Phase and no Hip
+  Shoots, Normal allows every phase; Interception is never limited (14.4), Active aircraft stay Active and Refit is
+  unaffected (14.1f, 17.0d). The check is `flightWeatherViolation` in `rules/air/mission.ts`; it also empties
+  `airMissionTargets`, so the UI and bots are offered nothing. A Weather Table row without `flight` rolls nothing and the
+  turn is Normal, which keeps older saves replaying unchanged. Interdiction (3.7b) and the Mud/Snow Refit halving (which
+  contradicts 17.0d) are not implemented.
+- **Rules left out** (user decision): nationality rules, so no
   air force can Hip Shoot (the rule is implemented and tested, but unreachable in generated games); the Air Transport
   Success Table's game-specific −1 modifiers.
 - **Eq is a fixed expected allotment per turn** (user decision 2026-10-03), now rolled on the Variable Replacement Table

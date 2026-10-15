@@ -102,6 +102,7 @@ const weatherColumnsDecoder = arrayDecoder(objectDecoder({
   condition: literalDecoder('MUD', 'SNOW'), costs: mobilityCostsDecoder,
 }));
 const groundConditionDecoder = literalDecoder('DRY', 'MUD', 'SNOW');
+const flightConditionDecoder = literalDecoder('NORMAL', 'LIMITED', 'NONE');
 const multiplierDecoder: Decoder<CombatMultiplier> = objectDecoder({
   numerator: safeIntegerDecoder, denominator: safeIntegerDecoder, attackOnly: booleanDecoder,
 });
@@ -130,6 +131,7 @@ const configurationDecoder: Decoder<RuleConfiguration> = objectDecoder({
     table: arrayDecoder(objectDecoder({
       month: safeIntegerDecoder, firstDay: safeIntegerDecoder, lastDay: safeIntegerDecoder,
       ground: arrayDecoder(objectDecoder({ condition: groundConditionDecoder, minimum: safeIntegerDecoder, maximum: safeIntegerDecoder })),
+      flight: optionalDecoder(arrayDecoder(objectDecoder({ condition: flightConditionDecoder, minimum: safeIntegerDecoder, maximum: safeIntegerDecoder }))),
     })),
   })),
   supplyArrivals: nullableDecoder(objectDecoder({
@@ -389,6 +391,8 @@ const decisionDecoder: Decoder<PendingDecision> = objectDecoder({
 
 const weatherStateDecoder: Decoder<WeatherState> = objectDecoder({
   groundCondition: groundConditionDecoder,
+  flight: flightConditionDecoder,
+  flightRoll: nullableDecoder(safeIntegerDecoder),
   month: nullableDecoder(safeIntegerDecoder),
   day: nullableDecoder(safeIntegerDecoder),
   roll: nullableDecoder(safeIntegerDecoder),
@@ -554,8 +558,17 @@ export const serializeGameState = (state: GameState): Result<string, readonly Va
   return result;
 };
 
+/** Flight Conditions (14.1f) were added after the first snapshots: a state without them was a Normal-flying game. */
+const withFlightDefaults = (input: unknown): unknown => {
+  if (typeof input !== 'object' || input === null || Array.isArray(input)) return input;
+  const record = input as Readonly<Record<string, unknown>>;
+  const weather = record.weather;
+  if (typeof weather !== 'object' || weather === null || Array.isArray(weather)) return input;
+  return { ...record, weather: { flight: 'NORMAL', flightRoll: null, ...weather } };
+};
+
 export const parseGameState = (input: unknown): Result<GameState, readonly ValidationIssue[]> => {
-  const raw = rawGameStateDecoder.decode(input);
+  const raw = rawGameStateDecoder.decode(withFlightDefaults(input));
   if (!raw.ok) return raw;
   if (raw.value.schemaVersion !== FOUNDATION_SCHEMA_VERSION) {
     return err([issue('UNSUPPORTED_GAME_STATE_VERSION', ['schemaVersion'], 'Unsupported GameState schema version.')]);

@@ -339,6 +339,44 @@ describe('Air missions (14.2-14.8)', () => {
   });
 });
 
+describe('Flight Conditions (14.1f, game-specific Weather Table)', () => {
+  const flying = (state: GameState, flight: GameState['weather']['flight']): GameState => ({ ...state, weather: { ...state.weather, flight, flightRoll: 5 } });
+  const sweep = { mission: 'BARRAGE' as const, aircraftIds: [U.aF1, U.aB1], targetHexId: TARGET, target: 'COMBAT_UNITS' as const };
+
+  it('allows no mission at all in None weather, in any phase, and offers no targets', () => {
+    for (const phase of ['MOVEMENT', 'EXPLOITATION'] as const) {
+      const state = flying(atStep(airState(), phase, 'BARRAGE', ALLIED), 'NONE');
+      expect(codes(mission(state, ALLIED, sweep))).toContain('NO_FLIGHT_WEATHER');
+      expect(airMissionTargets(state, ALLIED, 'BARRAGE')).toEqual([]);
+      expect(airMissionTargets(state, ALLIED, 'BASE_TRANSFER')).toEqual([]);
+    }
+  });
+
+  it('allows missions only in the flying player\'s Regular Movement Phase in Limited weather, never Hip Shoots', () => {
+    const regular = flying(atStep(airState(), 'MOVEMENT', 'BARRAGE', ALLIED), 'LIMITED');
+    expect(codes(mission(regular, ALLIED, sweep))).toEqual([]);
+    expect(airMissionTargets(regular, ALLIED, 'BARRAGE').length).toBeGreaterThan(0);
+    const exploitation = flying(atStep(airState(), 'EXPLOITATION', 'BARRAGE', ALLIED), 'LIMITED');
+    expect(codes(mission(exploitation, ALLIED, sweep))).toContain('LIMITED_FLIGHT_WEATHER');
+    expect(airMissionTargets(exploitation, ALLIED, 'BARRAGE')).toEqual([]);
+    expect(codes(mission(regular, ALLIED, { mission: 'HIP_SHOOT', aircraftIds: [U.aF1], targetHexId: TARGET, target: 'COMBAT_UNITS' }))).toContain('LIMITED_FLIGHT_WEATHER');
+  });
+
+  it('never stops the defender\'s Interception, and Normal weather allows every phase', () => {
+    const limited = flying(atStep(airState(), 'MOVEMENT', 'BARRAGE', ALLIED), 'LIMITED');
+    expect(ok(mission(limited, ALLIED, sweep)).pendingDecision?.kind).toBe('INTERCEPTION');
+    for (const phase of ['MOVEMENT', 'EXPLOITATION'] as const) {
+      expect(codes(mission(flying(atStep(airState(), phase, 'BARRAGE', ALLIED), 'NORMAL'), ALLIED, sweep))).toEqual([]);
+    }
+  });
+
+  it('keeps Active aircraft Active and lets bases refit in None weather (14.1f, 17.0d)', () => {
+    const state = flying(atStep(inactive(airState(), U.aF2), 'AIRCRAFT_REFIT', 'NONE', ALLIED), 'NONE');
+    expect(isActiveAircraft(piece(state, U.aF1))).toBe(true);
+    expect(airBaseLevel(state, piece(state, U.aBase))).toBeGreaterThan(0);
+  });
+});
+
 describe('Air Bases (9.14f, 13.9, 14.11, 15.4)', () => {
   const S = ids(STANDARD_AIR);
   const second = hex(1, 8);

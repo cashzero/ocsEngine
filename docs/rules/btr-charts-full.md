@@ -83,7 +83,7 @@ Engine use: `src/game-flow/combat-tec.ts`, mapping in [ocs-4.3-charts.md](ocs-4.
 
 Engine use: `src/game-flow/movement-tec.ts`, from the Japanese edition in [btr-movement-tec.md](btr-movement-tec.md)
 (same values; that edition lists Lake, Ocean and Secondary Road / Track separately). The Axis Normal Flight `**`
-increase is not applied (Flight Conditions are not rolled).
+increase is not applied (Interdiction, 3.7b, is not implemented).
 
 ## Weather Table
 
@@ -119,7 +119,9 @@ Flight Effects:
 - None: Air missions not allowed. Refit + air reinforcement arrival are allowed.
 
 Engine use: the Ground Conditions columns (`BTR_WEATHER_TABLE` in `src/game-flow/weather-supply-tables.ts`, checked
-against this table 2026-10-10). Flight Conditions and the refit halving are game-specific and not applied.
+against this table). Flight Conditions are rolled and restrict air missions as above (`flight` ranges of the same
+table rows). The Mud/Snow refit halving, the Snow Seaborne Assault and Pontoon restrictions, and Interdiction are not
+applied (series rule 17.0d forbids weather limiting Refit).
 
 ## German Supply Table
 

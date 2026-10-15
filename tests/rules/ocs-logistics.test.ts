@@ -16,6 +16,7 @@ import {
   createInitialGameState,
   createRulesRng,
   declareTestCombat,
+  determineWeather,
   dumpsReaching,
   formationRouteOptions,
   friendlySourceHexes,
@@ -35,6 +36,7 @@ import {
   type GameState,
   type HexId,
   type PieceId,
+  type RuleEvent,
   type TransitionResult,
 } from '../../src/index.js';
 
@@ -79,6 +81,32 @@ describe('OCS 4.3 weather (17.0) with the BTR Weather Table', () => {
     expect(created.ok).toBe(true);
     if (!created.ok) return;
     expect(created.value.weather).toMatchObject({ groundCondition: 'SNOW', month: 1, day: 1, roll: null });
+  });
+
+  it('rolls Flight Conditions on 2d6 after the ground roll, and a table without them stays Normal (14.1f)', () => {
+    const built = buildGeneratedRuleScenario({ [U.alLeg]: ['1,5', 'COMBAT', 'combat'] });
+    const rolled = createInitialGameState(built.scenario, { ...built.configuration, weather: createGeneratedWeather(1) }, 7);
+    expect(rolled.ok).toBe(true);
+    if (!rolled.ok) return;
+    const events: RuleEvent[] = [];
+    const state = determineWeather(rolled.value, events);
+    expect(state.weather.flightRoll).toBeGreaterThanOrEqual(2);
+    expect(state.weather.flightRoll).toBeLessThanOrEqual(12);
+    const row = rolled.value.configuration.weather!.table.find(({ month }) => month === 1)!;
+    expect(row.flight!.find(({ minimum, maximum }) => state.weather.flightRoll! >= minimum && state.weather.flightRoll! <= maximum)!.condition).toBe(state.weather.flight);
+    expect(events[0]).toMatchObject({ kind: 'WEATHER_DETERMINED', flight: state.weather.flight, flightRoll: state.weather.flightRoll });
+    // Every BTR row is a complete 2d6 table with the printed ranges widening None and Limited, never Normal first.
+    for (const tableRow of createGeneratedWeather(1).table) {
+      const order = Array.from({ length: 11 }, (_, index) => tableRow.flight!.find(({ minimum, maximum }) => index + 2 >= minimum && index + 2 <= maximum)!.condition);
+      expect(order).toEqual([...order].sort((a, b) => ['NONE', 'LIMITED', 'NORMAL'].indexOf(a) - ['NONE', 'LIMITED', 'NORMAL'].indexOf(b)));
+    }
+    const legacy = { ...built.configuration, weather: { ...createGeneratedWeather(1), table: createGeneratedWeather(1).table.map(({ flight: _flight, ...rest }) => rest) } };
+    const old = createInitialGameState(built.scenario, legacy, 7);
+    expect(old.ok).toBe(true);
+    if (!old.ok) return;
+    const unrolled = determineWeather(old.value, []);
+    expect(unrolled.weather).toMatchObject({ flight: 'NORMAL', flightRoll: null });
+    expect(unrolled.rng.draws).toBe(old.value.rng.draws);
   });
 
   it('moves with the Mud column but keeps normal costs for supply paths (17.0c)', () => {

@@ -84,7 +84,6 @@ counter 格式：左上機型徽章、右上機名、黃底數字為航程；左
 
 | 項目 | 系列規則下的行為 | 玩家可見影響 | 重新啟用的關閉證據 |
 |---|---|---|---|
-| Flight Conditions（BTR 天候表 2d6、None／Limited 的任務限制） | 不擲；每回合都可在 14.1g 的所有相位出任務 | 天候永遠不限制空中任務 | Flight 擲骰與各狀態限制的條文測試；瀏覽器操作 None／Limited 回合 |
 | Mud／Snow 時機場 Refit 減半 | 依 17.0d 與 15.1，Refit 不受天候影響 | 壞天氣下 Refit 量偏多 | 減半與捨入的條文測試 |
 | 3.7b Interdiction（Normal Flight 時 Axis 道路／Autobahn 成本升為 1 MP、Interdict 標記、Interdiction 版飛機） | 不存在；道路成本照 TEC | 德軍道路機動不受盟軍空優影響 | 條文測試，並在 UI 中觀察移動成本變化 |
 | Hip Shoot 國籍（14.7d-B 由遊戲規則指定） | 沒有任何國籍具備此能力；引擎依能力旗標實作並以合成 fixture 測試 | 產品中無法進行 Hip Shoot | 國籍清單確認後，以產生劇本在瀏覽器中實際完成 Hip Shoot |
@@ -105,7 +104,7 @@ counter 格式：左上機型徽章、右上機名、黃底數字為航程；左
 | `src/rules/zoc/zoc.ts` | 抵銷規則 | Refit 的 ZOC 檢查與抵銷 |
 | `src/rules/query/projection.ts` | 4.9 地面可見性 | 空中單位可見性（4.9a）、空戰與砲擊時揭露（4.9c／d） |
 | `src/generation/oob/*`、`src/game-flow/deployment.ts`、`composer.ts` | 只有地面與後勤 | 每方的空中單位與機場；New Game 的空軍選項；部署時的機場位置 |
-| `src/rules/manifest.ts` | `air-power` 為 DEFERRED；`weather` 不擲 Flight | 拆成 `air.*` 多列，每列標明 `IMPLEMENTED`／`PARTIAL` 並附 `GAP:`；`weather` 的 `GAP:` 註明 Flight Conditions 依使用者決定不擲（1.4） |
+| `src/rules/manifest.ts` | `air-power` 為 DEFERRED；`weather` 已擲 Flight | 拆成 `air.*` 多列，每列標明 `IMPLEMENTED`／`PARTIAL` 並附 `GAP:`；`weather` 的 `GAP:` 只剩 Interdiction 與 Refit 減半（1.4） |
 | 存檔 0.2.0 | 規則狀態有版本 | 升為 0.3.0；沒有空軍的 0.2.0 存檔可遷移（補空的空中狀態），並以重播雜湊證明與舊版一致 |
 
 ## 3. 工作分解

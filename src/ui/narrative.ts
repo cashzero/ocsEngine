@@ -237,7 +237,7 @@ export const describeRecord = (record: HistoryRecord, context: NarrativeContext)
   }
   for (const event of record.events) {
     switch (event.kind) {
-      case 'WEATHER_DETERMINED': lines.push(`Weather: ${event.groundCondition.toLowerCase()} ground${event.roll === null ? '' : ` (roll ${event.roll})`}.`); break;
+      case 'WEATHER_DETERMINED': lines.push(`Weather: ${event.groundCondition.toLowerCase()} ground${event.roll === null ? '' : ` (roll ${event.roll})`}${event.flightRoll === null ? '' : `; ${{ NORMAL: 'normal', LIMITED: 'limited', NONE: 'no' }[event.flight]} flying weather (2d6 ${event.flightRoll})`}.`); break;
       case 'FIRST_PLAYER_ROLLED': lines.push(`First player roll: ${event.rolls.map(({ playerId, total }) => `${context.playerName(playerId)} ${total}`).join(', ')}; ${context.playerName(event.winnerId)} chooses.`); break;
       case 'AIR_BASE_BUILT': lines.push(event.strip ? `An Air Strip stands at ${hex(event.hexId)}.` : `The Air Base at ${hex(event.hexId)} is Level ${event.level}.`); break;
       // 9.14f: both players see the capture and each aircraft's roll; displaced aircraft follow as PIECE_DISPLACED.

@@ -82,7 +82,7 @@ are `DEFERRED`, and the manifest does not yet list every clause of §1–21 (TOD
   `src/rules/supply/transport.ts`) fill the dump up to the capacity and leave the excess as a further dump in the Hex.
   Rejected alternative: refusing the move when it would overfill the dump, which blocks legal supply deliveries and was
   the way a long game could fail with `STATE_INVARIANT_VIOLATION` (19 of 36 bot games before the fix; 0 of 144 after).
-- **Game-specific rules left out** (user decision): BtR Flight Conditions, nationality rules for Hip Shoots and the Air
+- **Game-specific rules left out** (user decision): nationality rules for Hip Shoots and the Air
   Transport Success Table modifiers are not implemented; the manifest notes say where this shows.
 
 ## Known gaps
