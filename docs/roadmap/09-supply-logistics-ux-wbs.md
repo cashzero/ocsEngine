@@ -5,7 +5,7 @@
 
 基準版本：已 rebase 到 `73c7cad`（含 #11 編制分組部署、#12 地圖重繪、#13 左欄重整）。#13 改寫了 command deck 的版面
 （phase 專屬 tab、任務模式、移動 popup），本文件的 UI 位置與約束已依此更新；詳見
-[left-panel-reorganization-2026-10-02.md](../ui/left-panel-reorganization-2026-10-02.md) 與 [docs/ui/11](../ui/11-desktop-command-deck-design.md)。
+[左欄重整紀錄](../quality/evidence/ui-left-panel-2026-10-02/README.md) 與 [command-deck.md](../ui/command-deck.md)。
 
 ## 0. 目標與邊界
 
@@ -24,12 +24,12 @@
 2. **不偷偷執行。** Helper 先給出計畫預覽（花費、結果、風險），玩家確認後才執行。
 3. **只用該玩家看得到的資訊。** 試算與規劃使用當前行動玩家的投影（view），不讀對方隱藏資訊。
 4. **規則變體不在本計畫內。** 抽象化卡車、取消載運等會改變規則，屬縮減範圍，需使用者明確同意並做成新局可選設定（見 §6 TODO-S1）。
-5. **沿用現行 command deck 結構（docs/ui/11）。**
+5. **沿用現行 command deck 結構（`docs/ui/command-deck.md`）。**
    - 桌面範圍同 `docs/quality/03-…plan.md`：單一左欄，只有 tab 區／任務區一個捲動區，整頁與左欄不垂直捲動。
    - 轉運屬於單位操作，放在 **Unit tab**（現有「Trucks」群組）；不新增 popup。popup 只用於小而即時的確認（移動、roster）。
    - 內容量大或需審閱後果的複合行動（B1 計畫預覽）走**任務模式**，取代 tab 區，完成後回到原 tab；
-     依 docs/ui/11 S3 不得裁切或默默擴大捲動區。
-   - 新增控件須遵守 docs/ui/11 的焦點與 Escape 順序（roster → 移動 popup → stack picker → …），
+     依 `docs/ui/command-deck.md`「Task mode」 不得裁切或默默擴大捲動區。
+   - 新增控件須遵守 `docs/ui/command-deck.md` 的焦點與 Escape 順序（roster → 移動 popup → stack picker → …），
      並補上 tab 徽章的無障礙名稱與測試（`tests/ui/command-deck.test.ts` 的做法）。
 
 ### 不在本計畫內
@@ -41,7 +41,7 @@
 ## 1. 現況基線（讀程式碼得出，尚未以實機操作驗證）
 
 > 下表是依原始碼推論。A0 已於 2026-10-02 以真實 UI 驗證，逐項結果與新發現（N-01～N-05）見
-> [supply-ux-a0-baseline-2026-10-02.md](../ui/supply-ux-a0-baseline-2026-10-02.md)：
+> [A0 基準紀錄](../quality/evidence/supply-ux-a0-2026-10-02/README.md)：
 > 補測後 S-01～S-10 皆已確認。補測另發現 N-07～N-13，其中 **N-11（卡車裝貨後移動他人會凍結 MP 與貨物，且無警告）
 > 與 N-08（合併卡車在 UI 不可用）列為 Phase A blocking 項**，N-12（Undo 為整個 segment）需使用者決定是否處理。
 
@@ -76,7 +76,7 @@ checkpoint 存讀。使用者已於 2026-10-02 核准：(1) SUP 驗收列加入 
 
 **進度（2026-10-02）：** 使用者指示先修 bug，已修正 N-08（合併）、N-11（6.1g 警告）、N-07（counter 點數），
 三項皆先寫失敗測試、再修、再以真實 UI 驗證；`npm run check` 通過（255 個測試）。詳見
-[報告](../ui/supply-ux-a0-baseline-2026-10-02.md)「Bug 修正」。SUP-A07、A11、A12 仍 `UNVERIFIED`（待 A6 以完整證據執行）。
+[報告](../quality/evidence/supply-ux-a0-2026-10-02/README.md)「Bug 修正」。SUP-A07、A11、A12 仍 `UNVERIFIED`（待 A6 以完整證據執行）。
 **A1 程式部分已完成（2026-10-02）：** 轉運選項查詢（`queryTransportOptions`，已接到 `GameSession.getTransportOptions`）、
 投影層角色（`ProjectedPiece.role`）、對手看到的卡車點數；`npm run check` 通過（43 檔、262 測試）。
 沒有新畫面，所以沒有新的實機驗證，SUP 列狀態不變。詳見報告「A1 完成項」。UI 使用這些資料是 A2。
@@ -161,7 +161,7 @@ Undo 按鈕提示「Undo: Loaded 3T onto the truck at 0316.」，按下後訊息
   - 設計約束：含擲骰或揭露隱藏資訊的動作（如戰鬥、突圍、炸毀補給堆的擲骰）不能被逐步撤銷來重擲或套取資訊；
     交接後不得撤銷到上一位玩家的動作。這些情況 UI 要說明為何不能撤銷。
     具體語意由使用者在 A4 設計審閱時確認，未確認前 SUP-A15 不執行。
-  - 影響：改變 Undo 行為屬於補給以外的 UI 變更，需與 docs/ui/11 的頂部列與焦點規則一併更新。
+  - 影響：改變 Undo 行為屬於補給以外的 UI 變更，需與 `docs/ui/command-deck.md` 的頂部列與焦點規則一併更新。
 - 驗收證據：實機操作 SUP-A07、A08、A15。
 
 ### A5　付費來源可讀性與補給帳目
@@ -174,7 +174,7 @@ Undo 按鈕提示「Undo: Loaded 3T onto the truck at 0316.」，按下後訊息
   實機一場真實戰鬥後顯示「Combat or barrage supply 2T from the dump at 0107 (13T there now)」，與實際扣除一致（`A09-combat-supply-in-ledger.jpg`、`tests/ui/combat-ledger.test.ts`）。
 - **TODO-A5b 已併入 A5a**：帳目的來源改由狀態與紀錄推導（D2），不再依賴頁面記憶，自動付費路徑同樣由紀錄推導。
 
-- 燃料與戰鬥／砲擊付費的選項顯示來源與數量，延續 `docs/ui/ui-flow-review-2026-10-01.md` F-05／F-06 的標示方式。
+- 燃料與戰鬥／砲擊付費的選項顯示來源與數量，延續 `docs/quality/evidence/ui-flow-review-2026-10-01/README.md` F-05／F-06 的標示方式。
 - 本階段補給帳目（唯讀）：付了什麼、從哪個堆或卡車、剩多少；放在 Log tab 旁可隨時開啟的位置，
   需先決定是新 tab 還是 Log 內的分頁，並確認不違反 deckTabs 的「必辦者在最左」規則。
 - 驗收證據：實機操作 SUP-A09。
@@ -244,7 +244,7 @@ A14 依使用者決定改期望並通過。仍開啟：A10 檔案讀取步驟、
 - 缺口報告：例如「能送 6T／8T，缺 2T，原因 MP 不足」，並提供選項（只送 6T、改送中繼格、加入其他卡車）。
 - 計畫預覽以**任務模式**呈現（同攻擊草稿、決策的做法），確認或取消後回到原 tab。
 - 玩家確認後展開成現有動作逐步執行；之後仍可在 A2 轉運區塊手動調整。
-- 與 docs/ui/11 第 6 節既有 TODO「複合行動的完整成本審閱」相關：B1 的預覽是同類需求，
+- 與 `docs/quality/05-todo-inventory.md` 的 `compound-cost-review`相關：B1 的預覽是同類需求，
   兩者共用審閱介面的設計，不各做一套。
 - 驗收證據：實機操作 SUP-B01～B04；同一任務的最終局面與手動操作一致。
 
@@ -315,7 +315,7 @@ A0 → A1 → A2 → A3 → A4 → A5 → A6(gate) → B0 → B1 → B2 → B5(g
 
 - A1 是 A2 與 B1 的共同基礎。
 - B1 的預覽走任務模式；其執行後的手動調整沿用 A2，B2 的帳目沿用 A5。
-- 任何新 tab、任務模式或焦點行為都要同步更新 docs/ui/11 與 `tests/ui/command-deck.test.ts`。
+- 任何新 tab、任務模式或焦點行為都要同步更新 `docs/ui/command-deck.md` 與 `tests/ui/command-deck.test.ts`。
 - `scripts/desktop-deck-gate.mjs` 在 #13 之前就已無法執行（見重整報告）；A6、B5 的整合驗收不能依賴它，
   需先修復或改用實機操作並記錄。
 - 任何一步造成既有驗收列失效，必須重跑該列與其下游。
