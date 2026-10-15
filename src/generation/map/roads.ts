@@ -25,7 +25,7 @@ const MAJOR_RIVER = 'edge:major-river';
 type RoadClass = 'MAIN' | 'TRACK';
 
 /**
- * Scale (docs/generator/10-btr-scale-density.md): at 3.5 miles a Hex, the BtR map runs a
+ * Scale (docs/generator/map-styles.md): at 3.5 miles a Hex, the BtR map runs a
  * Secondary Road every three to five Hexes in settled country, so no open Hex lies more than two
  * Hexes from a road, and forest or hills more than three. A generated map is a window on such a
  * landscape: roads leave every land border, towns are junctions, and the network has loops. Link

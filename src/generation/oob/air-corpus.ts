@@ -1,7 +1,7 @@
 /**
  * Aircraft counters transcribed from the Beyond the Rhine VASSAL module 1.27.0 (`buildFile.xml`
  * PieceSlots with the AAir/XAir prototypes; ratings read from both faces). See
- * docs/oob/M11-air-counter-corpus.md for the review notes and the counters left out.
+ * docs/oob/counter-corpus.md for the review notes and the counters left out.
  *
  * Values: [Air Combat Rating, Barrage Strength]; `parenthesized` marks a rating printed in
  * parentheses (14.3a). Range is in hexes (14.2d).

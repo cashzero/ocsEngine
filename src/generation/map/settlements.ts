@@ -20,7 +20,7 @@ const MAJOR_RIVER = 'edge:major-river';
 
 /**
  * Settlement hierarchy at Beyond the Rhine scale (3.5-mile Hexes). Measured on the BtR map
- * (docs/generator/10-btr-scale-density.md): populated lowland carries a named place in roughly one
+ * (docs/generator/map-styles.md): populated lowland carries a named place in roughly one
  * land Hex in nine, about half Minor Cities and half villages; forest and hills carry far fewer.
  * Major Cities are clusters of two or three Hexes and stand roughly a dozen Hexes apart. The
  * eastern theme thins this (settlement density, Major Cities and Minor City share come from the style).

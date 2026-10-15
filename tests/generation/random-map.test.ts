@@ -146,7 +146,7 @@ describe('M6 deterministic random map pipeline', () => {
     }
   });
 
-  it('makes Eastern Europe flatter and emptier than BtR: fewer roads, railways and towns on the same seeds (docs/generator/11)', () => {
+  it('makes Eastern Europe flatter and emptier than BtR: fewer roads, railways and towns on the same seeds (docs/generator/map-styles.md)', () => {
     for (const seed of [3, 1943, 31337, 2024]) {
       const western = generateRandomMap({ width: 32, height: 24, seed, style: 'TEMPERATE_INLAND' });
       const generated = generateRandomMap({ width: 32, height: 24, seed, style: 'EASTERN_EUROPE' });

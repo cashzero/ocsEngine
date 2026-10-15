@@ -43,6 +43,10 @@ other module assets must not be copied into this repository without permission.
 | 7 | `07-beyond-the-rhine-vassal-reference.md` | What reliable data and validation evidence can the reference VASSAL module provide? |
 | 8 | `08-crosswalk-and-implementation-roadmap.md` | Which OCS rule subsystems and dependencies must the generator roadmap eventually cover? |
 | 9 | `09-rules-vs-plan-gap-analysis.md` | Where do the Rule Engine plan, slice specs, manifest, and implementation diverge from OCS 4.3? |
+| 10 | `10-bcs-random-map.md` | Which parts of the BCS random map generator can be reused? |
+| 11 | `11-bcs-random-oob.md` | Which parts of the BCS random OOB and scenario generator can be reused? |
+| 12 | `12-btr-oob-catalog.md` | What OOB catalog can be extracted from the Beyond the Rhine module? |
+| 13 | `13-bcs-ai-and-selfplay.md` | Which BCS AI and self-play structures can be kept? |
 
 ## Required structure for every study document
 
