@@ -24,6 +24,12 @@ import {
   SEA_CAP_PER_DIVISION,
   FLANK_SEA_CAP_PER_DIVISION,
   defaultSeaCap,
+  DEFAULT_FIRST_REINFORCEMENT_TURN,
+  FIRST_REINFORCEMENT_TURN,
+  fitReinforcements,
+  latestFirstReinforcementTurn,
+  maximumReinforcementDivisions,
+  reinforcementDivisionsOf,
   inlandEntryOf,
   GENERATED_HEDGEHOG_LEVELS,
   newGameSeaOf,
@@ -691,7 +697,7 @@ const operationPreviewHtml = (prepared: GeneratedScenarioPackage): string => {
   // The starting stacks sit in their own SVG over the art: hovering a list entry restyles only them, so the browser
   // does not repaint the whole terrain SVG on every pointer move.
   const viewBox = `0 0 ${map.layout.width} ${map.layout.height}`;
-  return `<div class="operation-map-wrap"><div class="operation-map" role="img" aria-label="Generated operation map preview with starting positions"><svg class="operation-map-art" viewBox="${viewBox}" aria-hidden="true">${mapArtDefsHtml()}${cells}${rivers}${roads}${features}</svg><svg class="operation-map-marks" viewBox="${viewBox}" aria-hidden="true">${deploymentMarks}</svg></div><div class="preview-key"><span><span class="key owner-1">${escapeHtml(prepared.scenario.players[0]?.name ?? '')}</span><span class="key owner-2">${escapeHtml(prepared.scenario.players[1]?.name ?? '')}</span> starting stacks (unit count)</span><dl class="operation-metrics preview-minor"><div><dt>Divisions</dt><dd>${escapeHtml(divisionsText(prepared))}</dd></div><div><dt>Deployed hexes</dt><dd>${prepared.deployment.metrics.occupiedHexes}</dd></div><div><dt>Rail Cap</dt><dd>${escapeHtml(railCapText(prepared))}</dd></div>${prepared.generatedMap.strategicRegions.ports.length > 0 ? `<div><dt>Ports</dt><dd>${prepared.generatedMap.strategicRegions.ports.length}</dd></div>` : ''}${prepared.configuration.seaCapacity ? `<div><dt>Sea Cap</dt><dd>${escapeHtml(seaCapText(prepared))}</dd></div>` : ''}<div><dt>Warnings</dt><dd>${prepared.warnings.length}</dd></div></dl></div></div>
+  return `<div class="operation-map-wrap"><div class="operation-map" role="img" aria-label="Generated operation map preview with starting positions"><svg class="operation-map-art" viewBox="${viewBox}" aria-hidden="true">${mapArtDefsHtml()}${cells}${rivers}${roads}${features}</svg><svg class="operation-map-marks" viewBox="${viewBox}" aria-hidden="true">${deploymentMarks}</svg></div><div class="preview-key"><span><span class="key owner-1">${escapeHtml(prepared.scenario.players[0]?.name ?? '')}</span><span class="key owner-2">${escapeHtml(prepared.scenario.players[1]?.name ?? '')}</span> starting stacks (unit count)</span><dl class="operation-metrics preview-minor"><div><dt>Divisions</dt><dd>${escapeHtml(divisionsText(prepared))}</dd></div><div><dt>Deployed hexes</dt><dd>${prepared.deployment.metrics.occupiedHexes}</dd></div><div><dt>Rail Cap</dt><dd>${escapeHtml(railCapText(prepared))}</dd></div>${prepared.generatedMap.strategicRegions.ports.length > 0 ? `<div><dt>Ports</dt><dd>${prepared.generatedMap.strategicRegions.ports.length}</dd></div>` : ''}${prepared.configuration.seaCapacity ? `<div><dt>Sea Cap</dt><dd>${escapeHtml(seaCapText(prepared))}</dd></div>` : ''}${prepared.request.reinforcements === undefined || (reinforcementDivisionsOf(prepared.request, 'ALLIED') + reinforcementDivisionsOf(prepared.request, 'AXIS')) === 0 ? '' : `<div><dt>Reinforcement divisions</dt><dd>${escapeHtml(`Allied ${reinforcementDivisionsOf(prepared.request, 'ALLIED')} · Axis ${reinforcementDivisionsOf(prepared.request, 'AXIS')}, from Turn ${prepared.request.reinforcements.firstTurn}`)}</dd></div>`}<div><dt>Warnings</dt><dd>${prepared.warnings.length}</dd></div></dl></div></div>
     <div class="preview-forces">${forces}</div>
     ${prepared.warnings.length > 0 ? `<details class="preview-warnings"><summary>${prepared.warnings.length} generation warning(s)</summary><ul>${prepared.warnings.map((warning) => `<li>${escapeHtml(warning)}</li>`).join('')}</ul></details>` : ''}`;
 };
@@ -798,6 +804,17 @@ const onNewGameInput = (event: Event): void => {
     const current = newGameSettings.seaCap ?? defaultSeaCap(newGameSettings) ?? { allied: 0, axis: 0 };
     newGameSettings = { ...newGameSettings, seaCap: { ...current, [id.endsWith('allied') ? 'allied' : 'axis']: value } };
   }
+  if (id === 'new-game-reinforcements-allied' || id === 'new-game-reinforcements-axis' || id === 'new-game-reinforcements-first-turn') {
+    const current = newGameSettings.reinforcements ?? { allied: 0, axis: 0, firstTurn: DEFAULT_FIRST_REINFORCEMENT_TURN };
+    newGameSettings = { ...newGameSettings, reinforcements: id.endsWith('first-turn') ? { ...current, firstTurn: value } : { ...current, [id.endsWith('allied') ? 'allied' : 'axis']: value } };
+  }
+  // Reinforcements follow the divisions and the Turn limit: whatever no longer fits is pulled back inside the limits.
+  newGameSettings = fitReinforcements(newGameSettings);
+  // A typed value keeps its text in the input whatever the attribute says, so write back what was fitted.
+  for (const [field, fitted] of [['allied', newGameSettings.reinforcements?.allied], ['axis', newGameSettings.reinforcements?.axis], ['first-turn', newGameSettings.reinforcements?.firstTurn]] as const) {
+    const element = document.getElementById(`new-game-reinforcements-${field}`) as HTMLInputElement | null;
+    if (element !== null && fitted !== undefined && element.value !== String(fitted)) element.value = String(fitted);
+  }
   for (const key of ['map', 'oob', 'deployment', 'rules'] as const) if (id === `new-game-${key}-seed`) newGameSettings = { ...newGameSettings, seeds: { ...newGameSettings.seeds, [key]: value } };
   render(controller.getSnapshot());
 };
@@ -822,6 +839,26 @@ const seaSideFields = (
     <p class="field-help">Sea Cap: SP or RE the side can ship between the ports it holds every Movement Phase (19.0f); with 0 it cannot use ports, not even to draw supply.
       A side without inland entry hexes has no map-edge entry or Supply Source: everything it receives (units, SP, Repls) lands by ship at a port it holds, within each port's capacity, and the map gives it a port near its own edge.
       ${newGameSettings.seaCap === undefined ? `Default: ${FLANK_SEA_CAP_PER_DIVISION} point per division, ${SEA_CAP_PER_DIVISION} for a side without inland entry.` : reset}</p>`;
+};
+
+/** Share of each side's divisions that arrive later, one per Game Turn from the first arrival turn (13.6). */
+const reinforcementFields = (
+  number: (id: string, label: string, min: number, max: number, value: number) => TemplateResult,
+): TemplateResult => {
+  const settings = newGameSettings.reinforcements ?? { allied: 0, axis: 0, firstTurn: DEFAULT_FIRST_REINFORCEMENT_TURN };
+  const request = { ...newGameSettings, reinforcements: settings };
+  const arrivals = (side: 'ALLIED' | 'AXIS', name: string): string => {
+    const divisions = reinforcementDivisionsOf(request, side);
+    return divisions === 0 ? `${name}: none` : `${name}: ${divisions} division${divisions === 1 ? '' : 's'}, Turn ${settings.firstTurn}${divisions > 1 ? `–${settings.firstTurn + divisions - 1}` : ''}`;
+  };
+  const most = Math.max(reinforcementDivisionsOf(request, 'ALLIED'), reinforcementDivisionsOf(request, 'AXIS'));
+  const latest = Math.max(FIRST_REINFORCEMENT_TURN, latestFirstReinforcementTurn(newGameSettings.turnLimit, most));
+  return html`<div class="field-pair">
+      ${number('new-game-reinforcements-allied', 'Allied reinforcements %', 0, 100, settings.allied)}
+      ${number('new-game-reinforcements-axis', 'Axis reinforcements %', 0, 100, settings.axis)}
+    </div>
+    ${number('new-game-reinforcements-first-turn', 'First arrival turn', FIRST_REINFORCEMENT_TURN, latest, settings.firstTurn)}
+    <p id="reinforcement-summary" class="field-help">Share of each side's divisions (rounded to whole divisions) that start off the map and arrive one per Game Turn from the first arrival turn, by their ports or entry hexes. The last one must have at least two Game Turns on the map, so at most ${maximumReinforcementDivisions(newGameSettings.turnLimit, settings.firstTurn)} divisions can arrive from Turn ${settings.firstTurn}. ${arrivals('ALLIED', 'Allied')} · ${arrivals('AXIS', 'Axis')}.</p>`;
 };
 
 /** checkValidity fires "invalid" per bad field: go back to the settings page and say what is wrong beside it. */
@@ -985,6 +1022,7 @@ const newGameDialog = () => {
             ${number('new-game-armored', 'of which armored', 0, OOB_DIVISION_LIMITS.maxArmored, newGameSettings.oob.armoredDivisionsPerSide)}
           </div>
           <p class="field-help">The other divisions are infantry, about one in four airborne. Each side receives Pax and Eq replacements every turn.</p>
+          ${reinforcementFields(number)}
           ${select('new-game-air', 'Air forces', [['NONE', 'None (ground duel)'], ['STANDARD', 'Fighters, bombers, Air Bases and aircraft reinforcements']], newGameSettings.oob.air ?? 'NONE')}
           ${newGameSettings.oob.air === 'STANDARD' ? select('new-game-air-transport', 'Air transport', [['NONE', 'None'], ['STANDARD', 'Transports and a paratroop battalion per side']], newGameSettings.oob.airTransport ?? 'NONE') : nothing}
         </fieldset>

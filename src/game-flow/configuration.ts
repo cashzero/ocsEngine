@@ -81,6 +81,83 @@ export const shippingSides = (request: NewGameRequest): readonly OobSide[] => {
   return cap === null ? [] : (['ALLIED', 'AXIS'] as const).filter((side) => (side === 'ALLIED' ? cap.allied : cap.axis) > 0);
 };
 
+/** Reinforcement divisions arrive one per Game Turn; the last must still have this many Game Turns on the map. */
+export const REINFORCEMENT_MIN_TURNS_ON_MAP = 2;
+export const FIRST_REINFORCEMENT_TURN = 2;
+export const DEFAULT_FIRST_REINFORCEMENT_TURN = 4;
+
+/** Divisions of `side` that arrive late: its percentage of its divisions, rounded to whole divisions. */
+export const reinforcementDivisionsOf = (request: NewGameRequest, side: OobSide): number => {
+  const attacker = attackerOf(request.engagement ?? 'MEETING');
+  const total = sideDivisions({ ...request.oob, ...(attacker === null ? {} : { attacker }) }, side).divisionsPerSide;
+  const percent = request.reinforcements?.[side === 'ALLIED' ? 'allied' : 'axis'] ?? 0;
+  return Math.round(total * percent / 100);
+};
+
+/** Latest first arrival Game Turn that lets `divisions` reinforcement divisions each have the minimum turns on the map. */
+export const latestFirstReinforcementTurn = (turnLimit: number, divisions: number): number =>
+  turnLimit - REINFORCEMENT_MIN_TURNS_ON_MAP + 1 - Math.max(0, divisions - 1);
+
+/** The most reinforcement divisions that can arrive from `firstTurn` and still have the minimum turns on the map. */
+export const maximumReinforcementDivisions = (turnLimit: number, firstTurn: number): number =>
+  Math.max(0, turnLimit - REINFORCEMENT_MIN_TURNS_ON_MAP + 1 - firstTurn + 1);
+
+/**
+ * The request with its reinforcement settings brought inside the limits: the first arrival turn is lowered (not below
+ * `FIRST_REINFORCEMENT_TURN`) until the larger side's last division has `REINFORCEMENT_MIN_TURNS_ON_MAP` Game Turns on the
+ * map, and a share still too large at that turn is cut to the largest one that fits.
+ */
+export const fitReinforcements = (request: NewGameRequest): NewGameRequest => {
+  const settings = request.reinforcements;
+  if (settings === undefined) return request;
+  const most = Math.max(reinforcementDivisionsOf(request, 'ALLIED'), reinforcementDivisionsOf(request, 'AXIS'));
+  const firstTurn = Math.max(FIRST_REINFORCEMENT_TURN, Math.min(settings.firstTurn, latestFirstReinforcementTurn(request.turnLimit, most)));
+  const limit = maximumReinforcementDivisions(request.turnLimit, firstTurn);
+  const cut = (side: 'allied' | 'axis'): number => {
+    let percent = settings[side];
+    while (percent > 0 && reinforcementDivisionsOf({ ...request, reinforcements: { ...settings, [side]: percent } }, side === 'allied' ? 'ALLIED' : 'AXIS') > limit) percent -= 1;
+    return percent;
+  };
+  return { ...request, reinforcements: { allied: cut('allied'), axis: cut('axis'), firstTurn } };
+};
+
+/**
+ * The divisions that start in the reinforcement Box and their arrival turns: picked evenly through the side's
+ * formation order (so armored and foot divisions both stay in the mix), the k-th arriving on `firstTurn + k`.
+ */
+export const reinforcementSchedule = (
+  request: NewGameRequest,
+  oob: GeneratedOob,
+): ReadonlyMap<string, number> => {
+  const schedule = new Map<string, number>();
+  const settings = request.reinforcements;
+  if (settings === undefined) return schedule;
+  for (const side of ['ALLIED', 'AXIS'] as const) {
+    const formations = oob.sides.find((candidate) => candidate.side === side)?.formations ?? [];
+    const count = Math.min(formations.length - 1, reinforcementDivisionsOf(request, side));
+    let ordinal = 0;
+    for (const [index, formation] of formations.entries()) {
+      if (Math.floor((index + 1) * count / formations.length) === Math.floor(index * count / formations.length)) continue;
+      schedule.set(String(formation.id), settings.firstTurn + ordinal);
+      ordinal += 1;
+    }
+  }
+  return schedule;
+};
+
+/** The OOB with each scheduled division's units given their arrival turn; deployment and the composer read it as is. */
+export const withReinforcements = (request: NewGameRequest, oob: GeneratedOob): GeneratedOob => {
+  const schedule = reinforcementSchedule(request, oob);
+  if (schedule.size === 0) return oob;
+  return { ...oob, sides: oob.sides.map((side) => ({
+    ...side,
+    formations: side.formations.map((formation) => {
+      const turn = schedule.get(String(formation.id));
+      return turn === undefined ? formation : { ...formation, units: formation.units.map((unit) => ({ ...unit, arrivalTurn: turn })) };
+    }),
+  })) };
+};
+
 /** The VP an attacker must hold at the end to win: its starting VP plus half the defender’s starting VP, rounded up. */
 export const attackVictoryPoints = (totalPoints: number, startingPoints = 0): number => startingPoints + Math.max(1, Math.ceil((totalPoints - startingPoints) / 2));
 

@@ -1,7 +1,7 @@
 import { validateScenarioDefinition } from '../domain/scenario/index.js';
 import { createPieceDefinitionCatalogIndex } from '../domain/piece/index.js';
 import { validateRuleConfiguration } from '../rules/index.js';
-import { seaCapOf } from './configuration.js';
+import { FIRST_REINFORCEMENT_TURN, latestFirstReinforcementTurn, REINFORCEMENT_MIN_TURNS_ON_MAP, reinforcementDivisionsOf, seaCapOf } from './configuration.js';
 import { ENGAGEMENTS, NEW_GAME_SEAS, newGameSeaOf, type GameFlowFailure, type GeneratedScenarioPackage, type NewGameRequest } from './model.js';
 import { BTR_CAMPAIGN_MONTHS, btrTurnDate } from './weather-supply-tables.js';
 
@@ -49,6 +49,24 @@ export const validateNewGameRequest = (request: NewGameRequest): readonly GameFl
       } else if (!entry && (seaCapOf(request)?.[side] ?? 0) < 1) {
         // A side that lands everything by ship cannot do without Sea Cap (19.0f).
         failures.push({ stage: 'OPTIONS', code: 'SEA_CAP_REQUIRED', message: 'A side without inland entry hexes needs at least 1 Sea Cap.', path: ['seaCap', side] });
+      }
+    }
+  }
+  if (request.reinforcements !== undefined) {
+    const { allied, axis, firstTurn } = request.reinforcements;
+    for (const [side, percent] of [['allied', allied], ['axis', axis]] as const) {
+      if (!Number.isSafeInteger(percent) || percent < 0 || percent > 100) {
+        failures.push({ stage: 'OPTIONS', code: 'INVALID_REINFORCEMENT_PERCENT', message: 'Reinforcements must be a whole percent from 0 through 100.', path: ['reinforcements', side] });
+      }
+    }
+    if (!Number.isSafeInteger(firstTurn) || firstTurn < FIRST_REINFORCEMENT_TURN) {
+      failures.push({ stage: 'OPTIONS', code: 'INVALID_REINFORCEMENT_TURN', message: `The first reinforcement arrives on Game Turn ${FIRST_REINFORCEMENT_TURN} or later.`, path: ['reinforcements', 'firstTurn'] });
+    } else if (Number.isSafeInteger(request.turnLimit)) {
+      for (const [side, name] of [['ALLIED', 'allied'], ['AXIS', 'axis']] as const) {
+        const divisions = reinforcementDivisionsOf(request, side);
+        if (divisions > 0 && firstTurn > latestFirstReinforcementTurn(request.turnLimit, divisions)) {
+          failures.push({ stage: 'OPTIONS', code: 'REINFORCEMENTS_TOO_LATE', message: `${divisions} reinforcement divisions from Game Turn ${firstTurn} would not all be on the map for ${REINFORCEMENT_MIN_TURNS_ON_MAP} Game Turns before turn ${request.turnLimit}; lower the share or the first arrival turn.`, path: ['reinforcements', name] });
+        }
       }
     }
   }
