@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Air missions per game and side in an ai-match output directory (docs/roadmap/13-engagement-scenarios-wbs.md §6, AIR-OM4).
+// Air missions per game and side in an ai-match output directory (docs/quality/evidence/engagements-plan-2026-10-07/README.md §6, AIR-OM4).
 //   node scripts/ai-air-count.mjs <ai-match output dir>
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';

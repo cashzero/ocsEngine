@@ -52,7 +52,7 @@ export const GENERATED_REINFORCEMENT_BOXES: Readonly<Record<OobSide, MapBoxId>> 
   AXIS: reinforcementBoxId('box:generated:axis-reinforcements'),
 };
 
-/** The off-map box holding a side's off-map airfield and its aircraft (docs/roadmap/13-engagement-scenarios-wbs.md §6). */
+/** The off-map box holding a side's off-map airfield and its aircraft (docs/quality/evidence/engagements-plan-2026-10-07/README.md §6). */
 export const GENERATED_OFF_MAP_AIRFIELD_BOXES: Readonly<Record<OobSide, MapBoxId>> = {
   ALLIED: reinforcementBoxId('box:generated:allied-off-map-airfield'),
   AXIS: reinforcementBoxId('box:generated:axis-off-map-airfield'),

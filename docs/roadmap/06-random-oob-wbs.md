@@ -1,5 +1,7 @@
 # M7 Random OOB work breakdown
 
+Status: **DONE** (M7.0–M7.10). The standalone OOB laboratory of M7.8 was later replaced by the New Game preview (`docs/game-flow/new-game-ui.md`); later revisions are `12-oob-revision-wbs.md`.
+
 M7 outputs deterministic, validated force packages and a Foundation `PieceDefinitionCatalog`. It deliberately does not choose map Hexes, create `PieceState`, set objectives, or compose a playable `ScenarioDefinition`; those are M8 responsibilities.
 
 | Step | Study output | Exit proof |

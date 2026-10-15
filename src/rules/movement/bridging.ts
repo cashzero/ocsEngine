@@ -10,7 +10,7 @@ import { hexsideFeatureIds, movementCostModel, supplyPathCostModel, type Movemen
  * there is no SP cost, and the bridge disappears the instant the unit is no longer Engineer-Capable (except that the
  * unit may still use it to leave the hex after changing mode, recorded as `ownBridgeHexId`).
  *
- * Project interpretations (docs/roadmap/16-bridging-wbs.md §1):
+ * Project interpretations (docs/quality/evidence/bridging-plan-2026-10-09/README.md §1):
  * - bridges stand where the Engineer-Capable units stand when a move is checked: a moving Engineer-Capable unit bridges
  *   its first step out of its hex, not every river along its path;
  * - trace, draw and throw paths (12.3d) are "counted like movement", so they use friendly bridges too (the 12.3

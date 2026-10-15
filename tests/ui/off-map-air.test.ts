@@ -8,7 +8,7 @@ import {
   createUiController,
 } from '../../src/index.js';
 
-/** The attacker's off-map airfield in the UI (docs/roadmap/13-engagement-scenarios-wbs.md §6, AIR-OM5). */
+/** The attacker's off-map airfield in the UI (docs/quality/evidence/engagements-plan-2026-10-07/README.md §6, AIR-OM5). */
 describe('off-map air in the UI', () => {
   it('offers an Air Barrage from the off-map airfield in the attacker\'s Barrage Segment', async () => {
     const engine = createGameplayEngine(createMemoryGameplayPorts());

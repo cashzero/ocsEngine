@@ -38,7 +38,7 @@ const supplyDefinitionFor = (oob: GeneratedOob, side: OobSide): DefinitionId => 
 /**
  * Default Rail Cap points per Movement Phase (13.3b) for each side of a New Game: this many points per division, at least 1.
  * Rail Cap carries SP from the map edge to the railhead; trucks take it on to the front. Bot-against-bot games
- * (docs/roadmap/15-rail-cap-wbs.md §5) used every point offered, and a Rail Cap near the Supply Table income (1 per
+ * (docs/quality/evidence/rail-cap-plan-2026-10-08/README.md §5) used every point offered, and a Rail Cap near the Supply Table income (1 per
  * division) let the attacker carry all of it forward. 0.4 left Rail Cap far below the trucks' lift (user, 2026-10-12:
  * "many trucks, little Rail Cap looks unreasonable"), so it is raised to 0.75 while the truck count is cut.
  */
@@ -117,7 +117,7 @@ export const createGeneratedRuleConfiguration = (
   reinforcementBoxes: (['ALLIED', 'AXIS'] as const).map((side) => ({ playerId: players[side], boxId: GENERATED_REINFORCEMENT_BOXES[side] })),
   turnLimit: request.turnLimit,
   objectives: deployment.objectives.map(({ hexId, points }) => ({ hexId, points })),
-  // An attack is won by taking half the defender's VP (docs/roadmap/13-engagement-scenarios-wbs.md §4).
+  // An attack is won by taking half the defender's VP (docs/quality/evidence/engagements-plan-2026-10-07/README.md §4).
   ...(deployment.attacker === null ? {} : { attackVictory: {
     attackerId: players[deployment.attacker],
     attackerPoints: attackVictoryPoints(

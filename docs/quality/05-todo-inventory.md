@@ -27,6 +27,7 @@
 | `airborne-gpid` | 空降師使用佔位 GPID 900001–900005 | counter 不對應真實 BTR 棋子 | 以審核過的 GPID 取代 | `src/generation/oob/catalog.ts` |
 | `para-gpid` | 傘兵營 counter 為產生器自訂 | 同上 | 同上 | `src/generation/oob/counter-corpus.ts` |
 | `oob-name-import` | 重新匯入 OOB 名稱會遺失手寫的 Fallschirmjäger 與美軍第 13 空降師 profile | 重新匯入後這兩個 profile 消失 | 匯入腳本保留或重建這兩個 profile | `scripts/import-oob-names.mjs` |
+| `attack-balance` | 攻守戰的平衡在鐵路、卡車增援、hedgehog、架橋與預設值（Rail Cap 0.75／師、卡車減量）改動後沒有重新量測 | 攻方或守方可能偏強 | 使用者確認電腦後勤行為可接受後，決定平衡手段與目標，再以兩種攻方各 40 局、新 seed 驗證並在 New Game 預覽確認數字 | `docs/roadmap/13-engagement-scenarios-wbs.md`、`15-rail-cap-wbs.md` |
 
 ### AI
 
@@ -46,6 +47,7 @@
 | `bot-recovery-allocation` | 強制的內部存量恢復依現有順序扣款，未最佳化來源與單位順序 | 可能留下較少口糧 | 不同可達來源的真實局面中證明較優分配且不卡住 Supply | `src/ai/policies/heuristic.ts` |
 | `bot-rebuild-plan` | 重建準備只用「剩餘超過 3 回合」門檻；被移除的固定單位釋出的 Pax／Eq 不在同一階段重新分配；沒有規劃重建部隊到達目標點的時間 | 補充可能閒置一個階段；重建部隊可能來不及影響 VP | 含固定與機動單位共用補充的真實快照，以及不同距離的重建到達見證，完成終局 VP 對照 | `docs/ai/heuristic-policy.md` |
 | `bot-trace-gain-scan` | 動作後 trace 修正只查分數最高的 12 個候選 | 可能錯過排序較低、可供補的 VP 路線 | 保存遺漏快照，擴大到完整候選或等價評分，並量測延遲 | `src/ai/policies/heuristic.ts` |
+| `bot-bridging` | 電腦不會為了過河把工兵或 HQ 以戰鬥模式放到河邊（橋存在時會使用） | 電腦在河流防線前的進攻比人類弱 | 進攻路線被河擋住時 bot 架橋；bot 互打存檔中出現經工兵橋過河的移動，0 錯誤、重播相符 | `docs/roadmap/16-bridging-wbs.md` |
 | `bot-eastern-front` | 東歐地圖長距離推進的補給接力與守住遠方目標點 | 對 random-legal 勝率 80%（目標 90%），最後量測於 heuristic@1 | 以標準策略重跑東歐風格 20 局（交換座位、新種子）勝率 ≥ 90% | `docs/roadmap/11-ai-bot-wbs.md` B5 |
 | `bot-reserve-reaction` | 沒有 Reserve、Reaction 反擊、Extender、Breakout 規劃；戰鬥預估不含 Surprise | 防守與突破能力受限 | 對局中出現這些行動且通過對戰比較 | `docs/ai/heuristic-policy.md` |
 
@@ -67,8 +69,11 @@
 | `compound-cost-review` | 複合行動（戰鬥、砲擊、空中任務）的成本與後果審閱未在每種可達交易上以真實選項驗證 | 確認前可能不清楚支付或後果 | 以合法交易、決策與取消的瀏覽器操作，記錄前後狀態 | `docs/ui/command-deck.md` |
 | `deck-state-records` | 左欄 S0–S5 狀態（未選取、多單位堆疊與長名稱、移動、複合行動、載入／失敗／空清單、決策與交接）在兩種畫面尺寸沒有文字紀錄 | 文字或按鈕被擠壓的情況無法事後複查 | 兩種尺寸逐一操作並在 `docs/quality/evidence/` 記錄文字與控件邊界（截圖只在 `artifacts/` 審閱） | `docs/ui/command-deck.md` |
 | `landing-port-view` | 海域局開局地圖置中，登陸港在畫面外 | 玩家要自己找港口 | 開 ports-only 遊戲並直接經可見的地圖／導覽找到港口 | `docs/quality/evidence/vp-allocation-2026-10-14/README.md` |
+| `rail-cap-browser` | 沒有在瀏覽器把一整個師集合到車站後一起用鐵路運送；RAIL-15（前線控制）、RAIL-16（被拒原因）只有規則測試 | 多單位上車、前線控制畫面與被拒原因未經實際操作 | 瀏覽器中把一個師的全部單位用鐵路運送，並完成 RAIL-15、RAIL-16 | `docs/roadmap/15-rail-cap-wbs.md` |
+| `oob-revision-ui` | OOB 0.4.0 的新計數器（反坦克、突擊砲、虎式）、駐守單位與 New Game 預覽數字沒有在瀏覽器檢視（OOB-R8） | 計數器數值或駐守單位顯示錯誤不會被發現 | 瀏覽器 New Game 預覽與遊戲中辨識新單位與駐守單位，計數器數值與 BTR 一致 | `docs/roadmap/12-oob-revision-wbs.md` |
 | `small-map-visual` | 16×12 東歐圖的起始 VP 平衡只有自動化回歸（seeds 1、0x0c500001、777），未在瀏覽器檢視 | 預覽或開局後的分數可能與產生的配置不同；NG-11 無法升級 | 在瀏覽器預覽並開始這三個 seed，雙方起始 VP 相等且沒有 "Objectives are unbalanced" 警告 | `docs/game-flow/deployment.md` |
 | `deployment-browser-check` | 分區部署、部隊後放補給堆、戰鬥模式前線只有自動化種子掃描，未在瀏覽器檢視 | 前線可能不均、補給堆位置奇怪、首回合仍可能摸到補給堆 | 瀏覽器中預設 MEETING 與 ALLIED_ATTACKS 各一局：HQ 分布在前線、獨立部隊分散、每個補給堆在自己部隊下、前線單位為戰鬥面、Allied 首個 Movement Segment 的可達範圍內沒有 Axis 補給堆 | `docs/game-flow/deployment.md` |
+| `scn-start-trace` | 開局有少數單位不在 trace 內（部署估計與規則引擎不一致，原因未查明；seed 57 Axis 進攻時 Allied 91%） | 該局有單位第 1 回合未移動就會擲消耗 | 找出不一致原因並修正，100 seed × 三種劇本逐單位查詢每方 ≥ 95% | `docs/roadmap/13-engagement-scenarios-wbs.md` |
 | `objective-marker-preview` | New Game 預覽的目標仍是舊的金星、不顯示持有者；60% 縮放時十字標記偏小；己方鐵路綠帶疊在淺綠補給範圍上對比弱；一般格子的控制權不在地圖上標示 | 預覽與地圖的控制權資訊不一致或不易看清 | 修正後在瀏覽器檢視預覽、60% 縮放與 Trace Supply | `docs/quality/evidence/control-2026-10-05/RUN.md` |
 
 ### 地圖與產生器

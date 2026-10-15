@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Does the bot use rail and trucks correctly? Replays saved ai-match games (docs/roadmap/15-rail-cap-wbs.md §7). Build first.
+// Does the bot use rail and trucks correctly? Replays saved ai-match games (docs/quality/evidence/rail-cap-plan-2026-10-08/README.md §7). Build first.
 //
 //   node scripts/ai-logistics-study.mjs tmp/ai-match/a tmp/ai-match/b [--out tmp/logistics]
 //
