@@ -86,6 +86,8 @@
 | `oob-naming-ui` | WWII 命名的 UI 驗收未做 | 命名只有單元測試證據 | 在瀏覽器檢視雙方編制名稱 | `docs/oob/random-oob.md` |
 | `PERF-7` | New Game 預覽 SVG 以整張地圖字串建立；地圖產生與 theater model 隨地圖約線性以上成長；大於 64×48 的地圖沒有在產品 build 上量過 | 地圖上限 256×256；128×96 已量到 Generate 約 4 s、Start 約 4.5 s，超過 3,000 ms 預算，更大的地圖未知 | `scripts/perf/browser-scale.mjs` 在 256×256 上 Generate 與 Start 各 < 3,000 ms，且 `compare-generation.mjs` 輸出不變 | `docs/quality/performance.md` |
 | `large-map-generation` | 產生在頁面主執行緒上執行，單一步驟無法中斷或回報進度 | 大地圖時頁面在一個步驟內不回應輸入，Cancel 要等步驟結束 | 在最大地圖上於瀏覽器量測：每個步驟中頁面都回應輸入、Cancel 在 250 ms 內停止、超過 1 秒的步驟顯示步驟內進度，且 Worker 產生的套件與 `prepare` 相同（scenario hash 與初始 state hash） | `docs/game-flow/new-game-ui.md` |
+| `sea-landing-balance` | 無 inland entry 攻方的兵力時序與補給吞吐量尚未校準；少量 bot 敏感度測試不能選定可靠預設 | 海運進攻可能被守方反擊切斷補給線，設定難度不穩定 | 先確認 bot 運補、進攻與斷補原因，依比例、回合、容量及雙向進攻取得配對結果；候選設定經獨立種子與實際玩家流程驗證 | `docs/game-flow/reinforcement-balance.md` |
+| `reinforcement-options` | New Game 沒有 Allied／Axis 獨立師級援軍比例設定；比例、較晚到達時序與自動預設尚待評估後決定及實作 | 玩家無法調整雙方開局兵力與後續增援，也無法覆寫海運攻方所對應的守方預設 | 評估完成並決定契約，雙方設定與整師排程實作；預覽／實際 package 相同，完成整個回合與設定首批回合的合法進場，含海運、決策、交接及經檢視的截圖 | `docs/game-flow/reinforcement-balance.md` |
 
 ### 存檔與工作階段
 
@@ -109,7 +111,4 @@
 4. 是否把控制權與 VP 顯示的 CTL-1～5 加入 `03`：`docs/quality/evidence/control-2026-10-05/RUN.md`。
 5. SES-01（Pause）：產品沒有 Pause 控制項（`src/ui/controller.ts`：回合制遊戲不需要暫停），改寫該列或維持 `BLOCKED`。
 6. 東歐主題的入口格數，或入口格不在鐵路上時的補給源規則；決定後才能把預設東歐圖的鐵路降到 Temperate 的一半以下。
-7. 海上登陸平衡：沒有 inland entry 的一方只有一個 2 SP 港口時（實測只能上岸 8T／相位，補給表收入約 36T），
-   敵方兵力是否調降，或部分師改從 Turn 2 經 inland entry 進場；比例固定或依上岸容量縮放、是否對稱、是否在設定中可覆寫。
-   另一個手段是較大（城市）或第二個登陸港。關閉證據：記錄使用者的選擇並實作；先以 bot 對局確認電腦會運送 Box 中的補給並利用早期時機，
-   再依上岸容量做結果校準表，並在瀏覽器把這樣一局玩到 Game Turn 2。
+7. 援軍的具體預設比例、首批回合、整師取樣與分批排程，待平衡評估後決定；雙方皆可設比例、海運攻方對應的守方預設較高、首批不能早到第 2 回合的方向已由使用者指定。契約與評估見 `docs/game-flow/reinforcement-balance.md`。
