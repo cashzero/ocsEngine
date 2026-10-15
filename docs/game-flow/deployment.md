@@ -123,8 +123,8 @@ All by the user:
 ## Known gaps
 
 From `docs/quality/05-todo-inventory.md`: `deployment-browser-check` (the sector plan, supply placement and Combat Mode
-front seen only in automated seed scans), `small-map-visual`, `GS-AI`, sea-landing balance
-(pending decision 7).
+front seen only in automated seed scans), `small-map-visual`, `GS-AI`, `sea-landing-balance`, `reinforcement-options`.
+The force-timing assessment and candidate settings are in [reinforcement-balance.md](reinforcement-balance.md).
 
 ## Verification
 
