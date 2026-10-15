@@ -159,7 +159,7 @@ Start at the top and go down as far as you need.
 
 | Document | Read it for |
 | --- | --- |
-| [`docs/architecture/game-flow.md`](docs/architecture/game-flow.md) | End-to-end architecture and component ownership (Mermaid diagrams) |
+| [`docs/game-flow/`](docs/game-flow) | New Game pipeline, deployment, Game End and component ownership |
 | [`docs/rules/README.md`](docs/rules/README.md) | The OCS v4.3 transcription and how it was produced |
 | [`docs/rule-engine/`](docs/rule-engine) | Rule Engine scope, manifest and per-area design |
 | [`docs/gameplay/`](docs/gameplay) | Session API, dispatch, drafts, pending decisions, save/load/replay |

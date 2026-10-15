@@ -1,6 +1,8 @@
 # M8 Game Flow Integration work breakdown
 
-Status: **IN PROGRESS** (reopened 2026-09-01; real-browser turn gate passed 2026-09-03, remaining product-operation rows open).
+Status: **IN PROGRESS**. Steps M8.0–M8.9 are implemented and described in `docs/game-flow/`; the M8.10 gate stays open while
+any P0 row of `docs/quality/03-product-operation-verification-plan.md` sections A–D (New Game, map and OOB, counters,
+rule actions, session lifecycle) is not `PASS`.
 
 ## Objective
 
@@ -13,25 +15,25 @@ New Game → Generate Map → Generate OOB → Compose/Deploy Scenario
 
 M8 is complete only when the active UI map, counters, legal actions, save/replay and final result all come from the same generated `ScenarioDefinition`. Independent Map/OOB laboratories remain diagnostic tools, not the normal New Game path.
 
-Architecture: [end-to-end game flow](../architecture/game-flow.md).
+Current behavior: [game flow](../game-flow/overview.md).
 
 ## Work breakdown and study outputs
 
-| Step | Study/output document | Implementation result | Exit proof |
+| Step | Scope | Described in | Exit proof |
 |---|---|---|---|
-| M8.0 | `docs/game-flow/00-current-gap-and-flow-contract.md` | Freeze New Game → Game End observable contract and non-goals | No stage or owner is implicit |
-| M8.1 | `docs/game-flow/01-new-game-request-and-seeds.md` | `NewGameRequest`, template/scale and independent map/OOB/deployment/rules seeds | Same request is byte-deterministic; each seed is orthogonal |
-| M8.2 | `docs/game-flow/02-scenario-composer-contract.md` | Pure composer for map, OOB, deployment and complete Scenario envelope | Output passes Foundation Scenario validation |
-| M8.3 | `docs/game-flow/03-deployment-generator.md` | Seeded player ownership, PieceState, legal locations, modes, steps, resources and objectives | No duplicate/illegal/overstacked placement |
-| M8.4 | `docs/game-flow/04-cross-domain-validation.md` | Route, supply, force, template and Rule compatibility validation | Invalid generated inputs fail before session creation |
-| M8.5 | `docs/game-flow/05-gameplay-bootstrap.md` | `NewGameOrchestrator` creates bindings and calls existing `GameplayEngine.createSession` | Generated session reaches READY and starts ACTIVE |
-| M8.6 | `docs/game-flow/06-new-game-ui-flow.md` | One New Game wizard/progress/error flow; resulting session replaces fixture | Displayed map/OOB and Gameplay state share scenario/hash |
-| M8.7 | `docs/game-flow/07-game-end-result.md` | FINISHED result view with winner, score, reason, final save and replay/New Game actions | COMPLETE phase always produces one result |
-| M8.8 | `docs/game-flow/08-persistence-recovery.md` | Save/load/checkpoint/replay retain generated scenario and all seeds | Reload reproduces the same scenario and final result |
-| M8.9 | `docs/game-flow/M8-orthogonal-seed-sweep.md` | Fixed-map/vary-OOB, fixed-OOB/vary-map and deployment sweeps | Geography and force identities remain independently stable |
-| M8.10 | `docs/game-flow/M8-generated-game-flow-gate.md` | Browser and headless New Game-to-Game End playthrough | Human completes a generated game; only then start AI |
+| M8.0 | New Game → Game End contract and non-goals | `docs/game-flow/overview.md` | No stage or owner is implicit |
+| M8.1 | `NewGameRequest` and independent seeds | `docs/game-flow/overview.md` | Same request is byte-deterministic; each seed is orthogonal |
+| M8.2 | Pure composer for the complete Scenario | `docs/game-flow/overview.md` | Output passes Foundation Scenario validation |
+| M8.3 | Deployment | `docs/game-flow/deployment.md` | No duplicate, illegal or overstacked placement |
+| M8.4 | Cross-domain validation | `docs/game-flow/overview.md` | Invalid generated inputs fail before session creation |
+| M8.5 | Gameplay bootstrap | `docs/game-flow/overview.md` | Generated session starts ACTIVE |
+| M8.6 | New Game dialog | `docs/game-flow/new-game-ui.md` | Displayed package and Gameplay state share scenario and hash |
+| M8.7 | Game End result | `docs/game-flow/overview.md` | COMPLETE always produces one result |
+| M8.8 | Saves and replay keep the scenario and seeds | `docs/game-flow/overview.md` | Reload reproduces the same scenario and result |
+| M8.9 | Orthogonal seed sweep | `docs/game-flow/overview.md` | Geography and force identities stay independently stable |
+| M8.10 | Browser New Game → Game End gate | `docs/quality/03-product-operation-verification-plan.md` | Every P0 row of sections A–D `PASS` |
 
-Every step produces its document before or together with code. A later step cannot mark an earlier missing integration seam as “deferred.”
+A later step cannot mark an earlier missing integration seam as “deferred.”
 
 ## Delivery slices
 
