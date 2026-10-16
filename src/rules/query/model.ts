@@ -286,6 +286,8 @@ export interface RuleEngine {
   readonly queryTraceCoverage: (state: GameState, actorId: PlayerId, pieceId: PieceId | null) => RuleQueryResult<import('../supply/supply.js').TraceCoverage>;
   /** Where each of the actor's dumps can feed the given unit (any unit when null) out of trace (12.6c). */
   readonly queryFeedCoverage: (state: GameState, actorId: PlayerId, pieceId: PieceId | null) => RuleQueryResult<readonly import('../supply/supply.js').FeedSource[]>;
+  /** Hexes within draw range (12.3a) of SP standing in the given Hex, for the actor. */
+  readonly queryDrawReach: (state: GameState, actorId: PlayerId, hexId: HexId) => RuleQueryResult<readonly HexId[]>;
   /** The actor's Supply Sources (12.6a) with why each counts: map edge, detrainable rail Hex (13.3c) or Extender (12.7a). */
   readonly querySupplySources: (state: GameState, actorId: PlayerId) => RuleQueryResult<readonly import('../supply/supply.js').SupplySourceHex[]>;
   /** Control of every rail Hex from the actor's side: own, enemy or neutral (13.3h). */

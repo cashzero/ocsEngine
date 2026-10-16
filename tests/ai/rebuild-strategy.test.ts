@@ -24,6 +24,7 @@ const context = (state: GameState): BotDecisionContext => {
       explain: action => ({ current: true, explanation: ruleEngine.explain(state, action) }),
       traceCoverage: (id = null) => ruleEngine.queryTraceCoverage(state, actorId, id).value!,
       feedCoverage: (id = null) => ruleEngine.queryFeedCoverage(state, actorId, id).value!,
+      drawReach: hexId => new Set((ruleEngine.queryDrawReach(state, actorId, hexId).value ?? []).map(String)),
     } };
 };
 

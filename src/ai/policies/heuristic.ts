@@ -115,6 +115,8 @@ interface StepNotes {
    * no HQ backed by a dump throws to them. Trucks, which move last, unload beside them.
    */
   readonly stranded: Map<PieceId, HexId>;
+  /** heuristic@79: hexes within draw range (12.3a) of a station SP can be railed to this step. */
+  railDraw?: ReadonlySet<string>;
   /** heuristic@79: HQs no dump reaches when the trucks move, by hex, with the front strength each would throw to. */
   dryHqs?: Map<HexId, number>;
   /** heuristic@79: units an HQ that has already moved this step will throw to (12.3b); the next HQ covers others. */
@@ -442,14 +444,14 @@ const scoreDestination = (
     if (front) add('with-army', -hexesBetween(destination, front) * w.hqWithArmy);
     if (situation.nearestEnemy(destination).distance <= 2) add('hq-exposed', -w.hqExposed);
     if (coverage && !coverage.has(destination)) add('out-of-supply', -w.hqOutOfSupply);
-    // heuristic@79: an HQ no dump reaches throws no fuel, so the units around it stop (12.5c B).
-    const dry = !feeds.some(({ tokens, hexIds }) => tokens > 0 && hexIds.includes(destination));
-    if (dry) add('hq-dry', -w.hqDry);
+    // heuristic@79: an HQ exists to throw supply (12.3b). It stays where SP can reach it this turn: a dump already in its draw
+    // range, or a station within draw range that Rail Cap fills after the HQs move (13.3c); beyond that it throws nothing.
+    const supplied = feeds.some(({ tokens, hexIds }) => tokens > 0 && hexIds.includes(destination))
+      || (notes.railDraw?.has(String(destination)) ?? false);
+    if (!supplied) add('off-rail-draw', -w.hqOffRail);
     // heuristic@79: each HQ throws to a part of the front the HQs before it do not reach, instead of all following one point;
-    // half as much where no dump reaches it yet, since a truck must bring the SP first.
-    add('cover', uncoveredFrontStrength(situation, notes, unit, destination) * w.hqCover * (dry ? 0.5 : 1));
-    // heuristic@79: ending on the railroad lets it become a station next turn (13.8c), where Rail Cap brings its SP.
-    if (railheadHex(situation, destination) && (!coverage || coverage.has(destination))) add('railhead', w.hqRailhead);
+    // half as much where no SP can reach the HQ.
+    add('cover', uncoveredFrontStrength(situation, notes, unit, destination) * w.hqCover * (supplied ? 1 : 0.5));
     add('exposure', -threat * w.hqExposure);
   } else if (unit.piece.role === 'ARTILLERY') {
     const distance = situation.nearestEnemy(destination).distance;
@@ -620,6 +622,18 @@ const markCovered = (situation: Situation, notes: StepNotes, hq: OwnUnit, hexId:
   for (const unit of frontUnitsInThrow(situation, notes, hq, hexId)) notes.hqCovered.add(unit.piece.id);
 };
 
+/**
+ * Hexes SP can detrain at this turn, as far as the bot can see: railroad villages, towns and cities, and railroad hexes
+ * holding an own HQ in Combat Mode (13.3c, 13.8c), clear of the enemy and inside trace (a rough stand-in for a rail path to a
+ * source free of enemy ZOC).
+ */
+const railStations = (situation: Situation, coverage: ReadonlySet<string> | null): HexId[] => {
+  const hqStations = situation.own.filter((unit) => unit.piece.role === 'HQ' && unit.piece.mode === 'COMBAT' && situation.railHexes.has(String(unit.hexId)))
+    .map(({ hexId }) => String(hexId));
+  return [...new Set([...situation.stationHexes, ...hqStations])]
+    .filter((hexId) => situation.nearestEnemy(hexId as HexId).distance >= RAIL_SAFE_DISTANCE && (!coverage || coverage.has(hexId))) as HexId[];
+};
+
 /** A railroad hex clear of the enemy's ZOC and first move, where an HQ in Combat Mode would make a station (13.8c, 13.3e). */
 const railheadHex = (situation: Situation, hexId: HexId): boolean =>
   situation.railHexes.has(String(hexId)) && situation.nearestEnemy(hexId).distance >= RAIL_SAFE_DISTANCE;
@@ -724,7 +738,8 @@ const truckStep = (context: BotDecisionContext, situation: Situation, unit: OwnU
     if (!unload) return { next: { kind: 'DONE' } };
     notes.claims.unloaded.add(unit.hexId);
     for (const [strandedId, hexId] of notes.stranded) if (hexesBetween(hexId, unit.hexId) <= STRANDED_DROP_RADIUS) notes.stranded.delete(strandedId);
-    for (const hexId of notes.dryHqs?.keys() ?? []) if (hexesBetween(hexId, unit.hexId) <= RAIL_HQ_DRAW_HEXES) notes.dryHqs!.delete(hexId);
+    const reach = actions.drawReach(unit.hexId);
+    for (const hexId of notes.dryHqs?.keys() ?? []) if (reach.has(String(hexId))) notes.dryHqs!.delete(hexId);
     return { next: null, decision: decision(unload, `unload ${carried}T ${why}`, [{ term: 'deliver', value: carried }]) };
   };
 
@@ -817,8 +832,6 @@ const truckStep = (context: BotDecisionContext, situation: Situation, unit: OwnU
   return null;
 };
 
-/** SP railed this close to an HQ is in its draw range (12.3b: 5 Truck MP) on most ground. */
-const RAIL_HQ_DRAW_HEXES = 2;
 /** Worth of each Token railed to an HQ, in hexes of progress toward the front. */
 const RAIL_HQ_VALUE = 10;
 /** Rail moves shorter than this many hexes toward the front are not worth the Rail Cap. */
@@ -840,8 +853,8 @@ const railStep = (context: BotDecisionContext, situation: Situation, notes: Step
     const gain = hexesBetween(action.fromHexId, front) - hexesBetween(action.toHexId, front);
     const tokens = action.supply.reduce((total, { tokens: quantity }) => total + quantity, 0);
     // heuristic@79: SP detrained where an HQ can draw it (12.3b) is thrown on to the units as fuel and trace.
-    const feedsHq = tokens > 0 && hexesBetween(action.fromHexId, action.toHexId) > RAIL_HQ_DRAW_HEXES
-      && situation.own.some((unit) => unit.piece.role === 'HQ' && hexesBetween(unit.hexId, action.toHexId) <= RAIL_HQ_DRAW_HEXES);
+    const feedsHq = tokens > 0 && situation.own.some((unit) => unit.piece.role === 'HQ'
+      && context.actions.drawReach(action.toHexId).has(String(unit.hexId)) && !context.actions.drawReach(action.fromHexId).has(String(unit.hexId)));
     if (gain < (feedsHq ? 1 : RAIL_MIN_GAIN_HEXES)) continue;
     // A garrison's own stock (and SP on an objective) stays where it is.
     if (action.supply.some(({ sourcePieceId }) => String(sourcePieceId).includes('-stock-'))
@@ -927,6 +940,8 @@ const movementStep = (context: BotDecisionContext, situation: Situation, facts: 
   const effort = notes.effort;
   if (effort) debug?.(`MAIN EFFORT ${effort.hexId} vs ${effort.defenders.toFixed(1)} with ${effort.unitIds.size} unit(s), lead ${effort.lead}`);
   notes.targets ??= planTargets(situation, coverage, unitCoverage, w, [...(effort ? [effort] : []), ...(notes.secondary ?? [])], fedHexes(sideFeeds));
+  // heuristic@79: where an HQ can stand and draw SP that Rail Cap brings to a station this step (12.3a, 13.3c).
+  notes.railDraw ??= new Set(railStations(situation, coverage).flatMap((station) => [...context.actions.drawReach(station)]));
   // HQs follow the main effort's lead (their own scores keep them in supply and away from the enemy), else the army.
   const front = effort?.lead ?? armyCenter(situation);
   // HQs move first: their throw range decides where the rest is in trace supply (12.3b).

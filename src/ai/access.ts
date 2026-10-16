@@ -13,6 +13,7 @@ export const createBotActionAccess = (session: GameSession, seatId: SeatId): Bot
   const rangeCache = new Map<PieceId, readonly ReachableHex[]>();
   const coverageCache = new Map<string, TraceCoverage>();
   const feedCache = new Map<string, readonly FeedSource[]>();
+  const drawCache = new Map<string, ReadonlySet<string>>();
   return {
     families: () => families ??= session.getActionFamilies(seatId).filter(({ enabled }) => enabled).map(({ kind }) => kind),
     candidates: (kind, pieceId = null, budget = DEFAULT_CANDIDATE_BUDGET) => {
@@ -40,6 +41,14 @@ export const createBotActionAccess = (session: GameSession, seatId: SeatId): Bot
         coverageCache.set(String(pieceId), coverage);
       }
       return coverage;
+    },
+    drawReach: (hexId) => {
+      let reach = drawCache.get(String(hexId));
+      if (reach === undefined) {
+        reach = new Set((session.getDrawReach(seatId, hexId).value ?? []).map(String));
+        drawCache.set(String(hexId), reach);
+      }
+      return reach;
     },
     feedCoverage: (pieceId = null) => {
       let feeds = feedCache.get(String(pieceId));

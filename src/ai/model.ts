@@ -1,4 +1,4 @@
-import type { PieceId, PlayerId } from '../core/index.js';
+import type { HexId, PieceId, PlayerId } from '../core/index.js';
 import type {
   DispatchStatus,
   DraftValidation,
@@ -31,6 +31,8 @@ export interface BotActionAccess {
   readonly traceCoverage: (pieceId?: PieceId | null) => TraceCoverage;
   /** Where each friendly dump can feed a unit out of trace (12.6c): for one unit (13.1d applies) or any unit. */
   readonly feedCoverage: (pieceId?: PieceId | null) => readonly FeedSource[];
+  /** Hexes within draw range (12.3a) of SP standing in `hexId`. */
+  readonly drawReach: (hexId: HexId) => ReadonlySet<string>;
 }
 
 /** What one seat remembers within the current phase/segment; reset when the step changes. */

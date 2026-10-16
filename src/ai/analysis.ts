@@ -41,6 +41,8 @@ export interface Situation {
   readonly isCombatUnit: (unit: OwnUnit) => boolean;
   /** Hexes a railroad runs through (13.3), from the printed map. */
   readonly railHexes: ReadonlySet<string>;
+  /** Railroad hexes with a village, town or city (13.3c). */
+  readonly stationHexes: ReadonlySet<string>;
 }
 
 /** Hexes an enemy stack is assumed to be able to reach to attack next turn. */
@@ -124,6 +126,7 @@ export const analyze = (projection: RuleProjection, playerId: PlayerId, facts: B
     ? projection.objectives.filter(o => o.controllerId === playerId).map(o => o.hexId) : []);
   return {
     railHexes: knowledge.railHexes,
+    stationHexes: knowledge.stationHexes,
     playerId,
     turnsLeft,
     opponentTurnRemains: turnsLeft > 0 || projection.sequence.playerTurnIndex === 0,

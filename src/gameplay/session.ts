@@ -286,6 +286,14 @@ export class GameplaySession implements GameSession {
     return cloneValue(this.#ports.rules.queryFeedCoverage(this.#state, binding.playerId, pieceId));
   };
 
+  getDrawReach = (seatId: SeatId, hexId: Parameters<GameSession['getDrawReach']>[1]): ReturnType<GameSession['getDrawReach']> => {
+    const binding = this.#binding(seatId);
+    if (this.#lifecycle !== 'ACTIVE' || this.#handoff !== null) {
+      return { allowed: false, value: [], reasons: [{ code: 'SESSION_NOT_INTERACTIVE', allowed: false, message: 'Session is not accepting interaction.', rule: 'gameplay' }], facts: [], dependencies: [] };
+    }
+    return cloneValue(this.#ports.rules.queryDrawReach(this.#state, binding.playerId, hexId));
+  };
+
   getSupplySources = (seatId: SeatId): ReturnType<GameSession['getSupplySources']> => {
     const binding = this.#binding(seatId);
     if (this.#lifecycle !== 'ACTIVE' || this.#handoff !== null) {

@@ -10,7 +10,7 @@ import type { GameAction, GameState } from './kernel/model.js';
 import { applyGameAction } from './kernel/reducer.js';
 import { validateGameAction } from './kernel/validate.js';
 import { queryStackMovementPath, queryStackReachableHexes } from './movement/movement.js';
-import { queryFeedCoverage, querySupplySources, queryTraceCoverage } from './supply/supply.js';
+import { queryDrawReach, queryFeedCoverage, querySupplySources, queryTraceCoverage } from './supply/supply.js';
 import { relocationSupplyFacts } from './supply/relocation-impact.js';
 import { rationBudgetFacts } from './supply/ration-budget.js';
 import { rebuildFacts } from './replacement/forecast.js';
@@ -180,6 +180,7 @@ const engine: RuleEngine = {
   queryTransportOptions,
   queryTraceCoverage,
   queryFeedCoverage,
+  queryDrawReach,
   querySupplySources,
   queryRailControl,
   queryFuelCoverage,
