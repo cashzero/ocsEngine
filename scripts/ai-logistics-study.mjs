@@ -26,7 +26,7 @@ const out = outIndex >= 0 ? argv[outIndex + 1] : join('tmp', 'logistics');
 const list = argv.includes('--list');
 const gateIndex = argv.indexOf('--gate');
 const gatePolicy = gateIndex >= 0 ? argv[gateIndex + 1] : null;
-const flagged = new Set([outIndex, outIndex + 1, gateIndex, gateIndex + 1].filter((index) => index >= 0));
+const flagged = new Set([outIndex, gateIndex].filter((index) => index >= 0).flatMap((index) => [index, index + 1]));
 const dirs = argv.filter((arg, index) => arg !== '--list' && !flagged.has(index));
 const m = await import(pathToFileURL(join(root, 'dist', 'index.js')).href);
 const FROM_TURN = 3;
