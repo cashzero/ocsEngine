@@ -1,0 +1,103 @@
+{
+  "title": "NG-13 Hedgehogs",
+  "final": {
+    "turn": "Turn 2 / 3",
+    "player": "Axis player turn",
+    "phase": "Exploitation · Movement",
+    "revision": null
+  },
+  "rows": [
+    {
+      "id": "NG-13",
+      "expectation": "The New Game help names the defender's hedgehogs and their Levels",
+      "observed": "ConfigureMapOOBDeploymentGameplay ← Back Start this operation ✕ Scenario SituationMeeting engagementAllied attackAxis attack Allied holds most of the map and the attack objectives, with its line in Combat Mode, with garrisons on its objectives (half of them dug into hedgehogs, the most valuable at Level 2, the rest at Level 1) and on key rail towns and road junctions (hedgehogs at Level 1);",
+      "status": "PASS"
+    },
+    {
+      "id": "NG-13",
+      "expectation": "The attacker sees the defender's hedgehogs with their Level on the map",
+      "observed": "4 enemy hedgehogs: L2@0402 L1@1305 L1@1308 L1@0209",
+      "status": "PASS"
+    },
+    {
+      "id": "NG-13",
+      "expectation": "The defender sees the same hedgehogs as its own",
+      "observed": "4 own hedgehogs",
+      "status": "PASS"
+    },
+    {
+      "id": "NG-13",
+      "expectation": "A unit's Unit tab offers digging in with its cost, dumps and crew",
+      "observed": "Chmbln TF / 10.A, 1613: \"Build a Level 1 hedgehog at 1613 (2 SP from the 12T dump at 1508; crew Chmbln TF / 10.A cannot move this phase)\"",
+      "status": "PASS"
+    },
+    {
+      "id": "NG-13",
+      "expectation": "Digging in puts a Level 1 hedgehog on the map at once",
+      "observed": "notice \"Build a Level 1 hedgehog at 1613 (2 SP from the 12T dump at 1508; crew Chmbln TF / 10.A cannot move this phase): done.\" (543 ms); map L1 at 1613",
+      "status": "PASS"
+    },
+    {
+      "id": "NG-13",
+      "expectation": "The supply ledger shows the 8T (2 SP) paid",
+      "observed": "8T paid",
+      "status": "PASS"
+    },
+    {
+      "id": "NG-13",
+      "expectation": "An Engineer-Capable HQ offers to build a hedgehog within 2 hexes",
+      "observed": "US HQ 20th Corps, 1308: Build a hedgehog… (30 hexes)",
+      "status": "PASS"
+    },
+    {
+      "id": "NG-13",
+      "expectation": "The Construction plan prices the hedgehog at 8T (2 SP)",
+      "observed": "1611: HEDGEHOG: Build a Level 1 hedgehog · 8T (2 SP)",
+      "status": "PASS"
+    },
+    {
+      "id": "NG-13",
+      "expectation": "The engineer's hedgehog appears on the map",
+      "observed": "L1@1611",
+      "status": "PASS"
+    },
+    {
+      "id": "NG-13",
+      "expectation": "Game Turn 1 ends and Turn 2 begins",
+      "observed": "Turn 2 / 3, Allied player turn, First Player Phase",
+      "status": "PASS"
+    },
+    {
+      "id": "NG-13",
+      "expectation": "A unit in a hedgehog hex offers reducing it, free, with the crew named",
+      "observed": "US HQ 20th Corps, 1308: \"Reduce the hedgehog at 1308 (it is removed) (no SP; crew US Garrison Bn, US HQ 20th Corps cannot move this phase)\"",
+      "status": "PASS"
+    },
+    {
+      "id": "NG-13",
+      "expectation": "The reduced hedgehog at 1308 is removed on the map",
+      "observed": "no hedgehog",
+      "status": "PASS"
+    },
+    {
+      "id": "NG-13",
+      "expectation": "An attacking unit can reach a hex next to a hedgehog",
+      "observed": "Stephan KG / 116.Pz, 2014 to 1405, next to 1305",
+      "status": "PASS"
+    },
+    {
+      "id": "NG-13",
+      "expectation": "The attack sheet names the hedgehog's −Level combat DRM, −1 Surprise and Heavy AT",
+      "observed": "Hedgehog Level 1: −1 combat roll, −1 Surprise, Heavy AT",
+      "status": "PASS"
+    },
+    {
+      "id": "NG-13",
+      "expectation": "No browser console or page error during the run",
+      "observed": "0 errors",
+      "status": "PASS"
+    }
+  ],
+  "timings": [],
+  "errors": []
+}

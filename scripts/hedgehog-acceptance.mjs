@@ -58,10 +58,11 @@ try {
   // The help under the Situation choice, as the preview showed it before Start.
   const help = preview.match(/[^.]*dug into hedgehogs[^;]*;/u)?.[0]?.trim() ?? '';
   record(h, ROW, 'The New Game help names the defender\'s hedgehogs and their Levels', help || preview.slice(0, 300),
-    /hedgehogs on its objectives \(Level 2\) and on key rail towns and road junctions \(Level 1\)/u.test(help));
+    /half of them dug into hedgehogs, the most valuable at Level 2, the rest at Level 1\) and on key rail towns and road junctions \(hedgehogs at Level 1\)/u.test(help));
   await h.shot('started');
 
-  // Turn 1 opens with the attacker (Axis). It sees every Allied garrison dug in, with the Level on the counter (4.9a).
+  // Turn 1 opens with the attacker (Axis). It sees the Allied hedgehogs (key points and half the objectives), with the Level on
+  // the counter (4.9a).
   await handoff(h);
   const axisView = await mapHedgehogs();
   record(h, ROW, 'The attacker sees the defender\'s hedgehogs with their Level on the map', `${axisView.length} enemy hedgehogs: ${axisView.map(({ level, hex }) => `L${level}@${hex}`).join(' ')}`,
@@ -146,7 +147,9 @@ try {
 
   // Attack a hedgehog: in the Axis Movement Phase move a unit next to an Allied hedgehog, then plan the attack in Combat.
   await advanceTo(h, (state) => state.player.startsWith('Axis') && state.phase === 'Movement');
-  const targets = (await mapHedgehogs()).map(({ hex }) => hex);
+  // Only the opening hedgehogs are sure to hold a garrison: one built in play may stand empty.
+  const garrisoned = new Set(axisView.map(({ hex }) => hex));
+  const targets = (await mapHedgehogs()).map(({ hex }) => hex).filter((hex) => garrisoned.has(hex));
   const axisRows = await rosterRows();
   let attacker = null;
   for (const [index, name] of axisRows.entries()) {

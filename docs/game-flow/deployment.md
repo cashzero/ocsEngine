@@ -20,7 +20,7 @@ a unit is never silently dropped.
 | Forces | equal divisions per side | the attacker has 2× the divisions and armored divisions (`ATTACKER_FORCE_RATIO`) |
 | Front standoff | 4 hexes behind the split | attacker 3, defender 1; the defender's line starts in Combat Mode |
 | Objectives | balanced VP, each side holds its own | in the defender's zone and held by it (attacker ports excepted) |
-| Garrisons | one per held objective | the defender has one per objective (hedgehog Level 2) and one per key point (hedgehog Level 1); key points number half the objectives, rounded up: rail supply nodes first, then road junctions, spaced from each other and the objectives; the attacker has none |
+| Garrisons | one per held objective | the defender has one per objective and one per key point (hedgehog Level 1); half its objectives (rounded up, highest VP and then deepest behind the front first) start in a hedgehog, a third of those (rounded down, at least one) at Level 2 and the rest at Level 1; key points number half the objectives, rounded up: rail supply nodes first, then road junctions, spaced from each other and the objectives; the attacker has none |
 | Victory | more VP held at the end wins; equal is a draw | the attacker needs its starting VP plus half the defender's, rounded up; no draw |
 | First player, Game Turn 1 | Allied | the attacker (rolled as usual afterwards) |
 | Off-map air | none | the attacker gets an off-map airfield with 2+2 / 3+3 / 4+4 fighters and bombers (Compact / Standard / Large), refitting without SP and with no Active limit |
