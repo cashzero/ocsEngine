@@ -24,7 +24,7 @@ a unit is never silently dropped.
 | Victory | more VP held at the end wins; equal is a draw | the attacker needs its starting VP plus half the defender's, rounded up; no draw |
 | First player, Game Turn 1 | Allied | the attacker (rolled as usual afterwards) |
 | Off-map air | none | the attacker gets an off-map airfield with 2+2 / 3+3 / 4+4 fighters and bombers (Compact / Standard / Large), refitting without SP and with no Active limit |
-| Rail Cap default | 0.6 points per division, at least 1 | the same, from each side's own division count |
+| Rail Cap default | 0.8 points per division, at least 1 | the same, from each side's own division count |
 | Sea Cap default (with a sea) | 0.25 points per division for a side with inland entry, 0.6 for a side landing by sea; at least 1 | the same |
 
 ### 1. Zones
