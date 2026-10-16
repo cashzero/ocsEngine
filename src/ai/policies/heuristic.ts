@@ -110,6 +110,15 @@ interface StepNotes {
   relief?: { readonly hexIds: readonly HexId[]; readonly sent: Map<HexId, PieceId>; readonly delivered: Set<HexId> };
   /** Nothing more is worth sending by rail this step (heuristic@12). */
   railDone?: boolean;
+  /**
+   * heuristic@79: combat units that want to move and need fuel (12.5a) but have no way to pay it: no dump draws to them and
+   * no HQ backed by a dump throws to them. Trucks, which move last, unload beside them.
+   */
+  readonly stranded: Map<PieceId, HexId>;
+  /** heuristic@79: HQs no dump reaches when the trucks move, by hex, with the front strength each would throw to. */
+  dryHqs?: Map<HexId, number>;
+  /** heuristic@79: units an HQ that has already moved this step will throw to (12.3b); the next HQ covers others. */
+  readonly hqCovered: Set<PieceId>;
   /** Nothing more is worth shipping this step (19.0f). */
   seaDone?: boolean;
 }
@@ -127,7 +136,7 @@ type TruckLeg =
 const notesOf = (context: BotDecisionContext): StepNotes => {
   let notes = context.memory.notes.get('heuristic') as StepNotes | undefined;
   if (!notes) {
-    notes = { done: new Set(), modeSet: new Set(), fueled: new Set(), trucks: new Map(), claims: { tokens: new Map(), unloaded: new Set() }, incomingRe: new Map(), feedBudget: null, targets: null };
+    notes = { done: new Set(), modeSet: new Set(), fueled: new Set(), trucks: new Map(), claims: { tokens: new Map(), unloaded: new Set() }, incomingRe: new Map(), feedBudget: null, targets: null, stranded: new Map(), hqCovered: new Set() };
     context.memory.notes.set('heuristic', notes);
   }
   return notes;
@@ -433,6 +442,14 @@ const scoreDestination = (
     if (front) add('with-army', -hexesBetween(destination, front) * w.hqWithArmy);
     if (situation.nearestEnemy(destination).distance <= 2) add('hq-exposed', -w.hqExposed);
     if (coverage && !coverage.has(destination)) add('out-of-supply', -w.hqOutOfSupply);
+    // heuristic@79: an HQ no dump reaches throws no fuel, so the units around it stop (12.5c B).
+    const dry = !feeds.some(({ tokens, hexIds }) => tokens > 0 && hexIds.includes(destination));
+    if (dry) add('hq-dry', -w.hqDry);
+    // heuristic@79: each HQ throws to a part of the front the HQs before it do not reach, instead of all following one point;
+    // half as much where no dump reaches it yet, since a truck must bring the SP first.
+    add('cover', uncoveredFrontStrength(situation, notes, unit, destination) * w.hqCover * (dry ? 0.5 : 1));
+    // heuristic@79: ending on the railroad lets it become a station next turn (13.8c), where Rail Cap brings its SP.
+    if (railheadHex(situation, destination) && (!coverage || coverage.has(destination))) add('railhead', w.hqRailhead);
     add('exposure', -threat * w.hqExposure);
   } else if (unit.piece.role === 'ARTILLERY') {
     const distance = situation.nearestEnemy(destination).distance;
@@ -581,6 +598,61 @@ const dropHexes = (context: BotDecisionContext, situation: Situation, center: He
     .sort((left, right) => hexesBetween(left, center) - hexesBetween(right, center) || situation.threatAt(left) - situation.threatAt(right) || String(left).localeCompare(String(right)));
 };
 
+/** A drop this close to stranded units puts them in a dump's draw range (12.3a: 5 Truck MP) on most ground. */
+const STRANDED_DROP_RADIUS = 3;
+
+/** Units this close to the enemy fight and fuel at the front, so an HQ's throw (12.3b) should reach them. */
+const HQ_COVER_FRONT_HEXES = 6;
+
+/** Hexes an HQ's throw reaches on ordinary ground: three quarters of its printed range in Truck MP (12.3b), at least 3. */
+const hqThrowHexes = (hq: OwnUnit): number => Math.max(3, Math.floor((hq.profile?.range ?? 0) * 0.75));
+
+/** Strength of front units within `hq`'s throw from `hexId` that no HQ which already moved this step reaches. */
+const uncoveredFrontStrength = (situation: Situation, notes: StepNotes, hq: OwnUnit, hexId: HexId): number =>
+  frontUnitsInThrow(situation, notes, hq, hexId).reduce((total, unit) => total + Math.max(1, unit.profile?.strength ?? 0), 0);
+
+const frontUnitsInThrow = (situation: Situation, notes: StepNotes, hq: OwnUnit, hexId: HexId): OwnUnit[] =>
+  situation.own.filter((unit) => situation.isCombatUnit(unit) && unit.piece.role !== 'HQ' && !notes.hqCovered.has(unit.piece.id)
+    && situation.nearestEnemy(unit.hexId).distance <= HQ_COVER_FRONT_HEXES && hexesBetween(unit.hexId, hexId) <= hqThrowHexes(hq));
+
+/** Marks the front units `hq` throws to from `hexId` as covered for the HQs that move after it. */
+const markCovered = (situation: Situation, notes: StepNotes, hq: OwnUnit, hexId: HexId): void => {
+  for (const unit of frontUnitsInThrow(situation, notes, hq, hexId)) notes.hqCovered.add(unit.piece.id);
+};
+
+/** A railroad hex clear of the enemy's ZOC and first move, where an HQ in Combat Mode would make a station (13.8c, 13.3e). */
+const railheadHex = (situation: Situation, hexId: HexId): boolean =>
+  situation.railHexes.has(String(hexId)) && situation.nearestEnemy(hexId).distance >= RAIL_SAFE_DISTANCE;
+
+/** 12.5a: combat units moving with Truck or Tracked MP need fuel; Leg units walk. */
+const needsFuel = (facts: BotGameFacts, unit: OwnUnit): boolean => {
+  const definition = knowledgeOf(facts).definition(unit.piece);
+  const face = definition?.faces.find(({ id }) => id === unit.piece.currentFaceId) ?? definition?.faces[0];
+  return ['mobility:truck', 'mobility:tracked'].includes(String(face?.mobilityClassDefinitionId));
+};
+
+/**
+ * heuristic@79: the stranded units (StepNotes.stranded) a load should go to: the hex with the most stranded strength within
+ * STRANDED_DROP_RADIUS that has a legal, safe drop that close. Replays of heuristic@78 attacks had a third of the units needing
+ * fuel unable to pay it from Turn 3 on, 7 or more hexes from any dump while 30-40 SP stood in the rear.
+ */
+const strandedCenter = (context: BotDecisionContext, situation: Situation, notes: StepNotes): { hexId: HexId; drops: HexId[] } | null => {
+  const stranded = (hexId: HexId) => situation.own.filter((unit) => notes.stranded.has(unit.piece.id) && hexesBetween(unit.hexId, hexId) <= STRANDED_DROP_RADIUS)
+    .reduce((total, unit) => total + Math.max(1, unit.profile?.strength ?? 0), 0);
+  // A dry HQ (no dump reaches it, 12.3b) is worth the front strength it would throw to once a load arrives beside it.
+  notes.dryHqs ??= new Map(situation.own.filter((unit) => unit.piece.role === 'HQ'
+    && !context.actions.feedCoverage(unit.piece.id).some(({ tokens, hexIds }) => tokens > 0 && hexIds.includes(unit.hexId)))
+    .map((hq) => [hq.hexId, frontUnitsInThrow(situation, { ...notes, hqCovered: new Set() }, hq, hq.hexId)
+      .reduce((total, unit) => total + Math.max(1, unit.profile?.strength ?? 0), 0)]));
+  const worth = (hexId: HexId) => stranded(hexId) + (notes.dryHqs!.get(hexId) ?? 0);
+  const hexes = [...new Set([...notes.stranded.values(), ...[...notes.dryHqs.entries()].filter(([, value]) => value > 0).map(([hexId]) => hexId)])];
+  for (const hexId of hexes.sort((left, right) => worth(right) - worth(left) || String(left).localeCompare(String(right)))) {
+    const drops = dropHexes(context, situation, hexId);
+    if (drops[0] !== undefined && hexesBetween(drops[0], hexId) <= STRANDED_DROP_RADIUS) return { hexId, drops };
+  }
+  return null;
+};
+
 /** 13.2f: loading or unloading costs 10% of the printed MA, rounded normally (45 MA pays 5 MP). */
 const loadTicksOf = (truck: OwnUnit): number => Math.round((truck.profile?.movement ?? 45) / 10) * 4;
 
@@ -590,10 +662,12 @@ const truckStep = (context: BotDecisionContext, situation: Situation, unit: OwnU
   const carried = unit.piece.carriedTokens ?? 0;
   const relief = notes.relief ??= { hexIds: reliefTargets(context, situation, w), sent: new Map(), delivered: new Set() };
   const unsentRelief = () => relief.hexIds.filter((hexId) => !relief.sent.has(hexId));
-  // SP is worth most where the army can draw it (12.3a): with a main effort at its lead units, otherwise the army's centre.
-  const center = effort?.lead ?? armyCenter(situation);
+  // SP is worth most where units cannot move for want of fuel (heuristic@79), then where the army can draw it (12.3a):
+  // with a main effort at its lead units, otherwise the army's centre.
+  const stranded = strandedCenter(context, situation, notes);
+  const center = stranded?.hexId ?? effort?.lead ?? armyCenter(situation);
   const loadTicks = loadTicksOf(unit);
-  const drops = center === null ? [] : dropHexes(context, situation, center);
+  const drops = stranded?.drops ?? (center === null ? [] : dropHexes(context, situation, center));
   /** SP here can go somewhere nearer the army: otherwise a load would only be unloaded where it was taken. */
   const deliverable = (hexId: HexId) => center !== null && drops.some((drop) => hexesBetween(drop, center) < hexesBetween(hexId, center));
   const moves = () => new Map(actions.candidates('MOVE_PIECE', id, TRUCK_MOVE_BUDGET).map((move) => [destinationOf(move)!, move]));
@@ -649,6 +723,8 @@ const truckStep = (context: BotDecisionContext, situation: Situation, unit: OwnU
     const unload = actions.candidates('UNLOAD_SUPPLY', id)[0];
     if (!unload) return { next: { kind: 'DONE' } };
     notes.claims.unloaded.add(unit.hexId);
+    for (const [strandedId, hexId] of notes.stranded) if (hexesBetween(hexId, unit.hexId) <= STRANDED_DROP_RADIUS) notes.stranded.delete(strandedId);
+    for (const hexId of notes.dryHqs?.keys() ?? []) if (hexesBetween(hexId, unit.hexId) <= RAIL_HQ_DRAW_HEXES) notes.dryHqs!.delete(hexId);
     return { next: null, decision: decision(unload, `unload ${carried}T ${why}`, [{ term: 'deliver', value: carried }]) };
   };
 
@@ -741,6 +817,10 @@ const truckStep = (context: BotDecisionContext, situation: Situation, unit: OwnU
   return null;
 };
 
+/** SP railed this close to an HQ is in its draw range (12.3b: 5 Truck MP) on most ground. */
+const RAIL_HQ_DRAW_HEXES = 2;
+/** Worth of each Token railed to an HQ, in hexes of progress toward the front. */
+const RAIL_HQ_VALUE = 10;
 /** Rail moves shorter than this many hexes toward the front are not worth the Rail Cap. */
 const RAIL_MIN_GAIN_HEXES = 3;
 /** SP detrain at a station at least this far from the enemy (13.3e keeps them out of enemy ZOC; this keeps them off the line). */
@@ -758,8 +838,11 @@ const railStep = (context: BotDecisionContext, situation: Situation, notes: Step
     if (action.kind !== 'RAIL_MOVE') continue;
     if (situation.nearestEnemy(action.toHexId).distance < RAIL_SAFE_DISTANCE) continue;
     const gain = hexesBetween(action.fromHexId, front) - hexesBetween(action.toHexId, front);
-    if (gain < RAIL_MIN_GAIN_HEXES) continue;
     const tokens = action.supply.reduce((total, { tokens: quantity }) => total + quantity, 0);
+    // heuristic@79: SP detrained where an HQ can draw it (12.3b) is thrown on to the units as fuel and trace.
+    const feedsHq = tokens > 0 && hexesBetween(action.fromHexId, action.toHexId) > RAIL_HQ_DRAW_HEXES
+      && situation.own.some((unit) => unit.piece.role === 'HQ' && hexesBetween(unit.hexId, action.toHexId) <= RAIL_HQ_DRAW_HEXES);
+    if (gain < (feedsHq ? 1 : RAIL_MIN_GAIN_HEXES)) continue;
     // A garrison's own stock (and SP on an objective) stays where it is.
     if (action.supply.some(({ sourcePieceId }) => String(sourcePieceId).includes('-stock-'))
       || (tokens > 0 && situation.objectives.some(({ hexId }) => hexId === action.fromHexId))) continue;
@@ -769,7 +852,7 @@ const railStep = (context: BotDecisionContext, situation: Situation, notes: Step
       return unit !== undefined && unit.piece.role === 'COMBAT' && hexesBetween(unit.hexId, front) >= 10;
     }).length;
     if (action.unitIds.length > 0 && units === 0) continue;
-    const value = gain * (tokens + units * 8);
+    const value = gain * (tokens + units * 8) + (feedsHq ? tokens * RAIL_HQ_VALUE : 0);
     if (value > 0 && (!best || value > best.value)) best = { action, value, gain };
   }
   if (!best) { notes.railDone = true; return null; }
@@ -846,12 +929,6 @@ const movementStep = (context: BotDecisionContext, situation: Situation, facts: 
   notes.targets ??= planTargets(situation, coverage, unitCoverage, w, [...(effort ? [effort] : []), ...(notes.secondary ?? [])], fedHexes(sideFeeds));
   // HQs follow the main effort's lead (their own scores keep them in supply and away from the enemy), else the army.
   const front = effort?.lead ?? armyCenter(situation);
-  if (context.view.projection?.sequence.phase === 'MOVEMENT') {
-    const shipped = seaStep(context, situation, notes, front);
-    if (shipped) return shipped;
-    const railed = railStep(context, situation, notes, front);
-    if (railed) return railed;
-  }
   // HQs move first: their throw range decides where the rest is in trace supply (12.3b).
   notes.relief ??= { hexIds: reliefTargets(context, situation, w), sent: new Map(), delivered: new Set() };
   // Deliver an urgent ration before field units move away from the route's ZOC-negating
@@ -860,6 +937,14 @@ const movementStep = (context: BotDecisionContext, situation: Situation, facts: 
     : unit.piece.role === 'HQ' ? 0 : unit.piece.role === 'COMBAT' ? 1 : unit.piece.role === 'ARTILLERY' ? 2 : unit.piece.role === 'TRUCK' ? 3 : 9;
   const units = situation.own.filter((unit) => order(unit) < 9 && !notes.done.has(unit.piece.id))
     .sort((left, right) => order(left) - order(right) || String(left.piece.id).localeCompare(String(right.piece.id)));
+  // heuristic@79: rail and sea wait for the HQs. An HQ in Combat Mode on a railroad hex makes it a station (13.8c), and SP
+  // railed to it or beside it is what the HQ throws to the units as fuel and trace (12.3b, 12.5c), before they move.
+  if (context.view.projection?.sequence.phase === 'MOVEMENT' && !units.some((unit) => unit.piece.role === 'HQ')) {
+    const shipped = seaStep(context, situation, notes, front);
+    if (shipped) return shipped;
+    const railed = railStep(context, situation, notes, front);
+    if (railed) return railed;
+  }
   for (const unit of units) {
     const id = unit.piece.id;
     if (unit.piece.role === 'TRUCK') {
@@ -878,7 +963,9 @@ const movementStep = (context: BotDecisionContext, situation: Situation, facts: 
       const wanted = unit.piece.role === 'COMBAT' && (enemyDistance <= w.combatModeDistance || assaultClose || blockedCapture) ? 'COMBAT'
         : unit.piece.role === 'COMBAT' && (unit.profile?.movement ?? 0) > 0 && enemyDistance >= w.stratModeEnemyDistance && target && hexesBetween(unit.hexId, target.hexId) >= w.stratModeTargetDistance ? 'STRAT'
           // An HQ with the army stays in Combat Mode to rebuild units (13.5a); one far behind moves up in Move Mode.
-          : unit.piece.role === 'HQ' ? (front !== null && hexesBetween(unit.hexId, front) <= w.hqCombatModeRadius ? 'COMBAT' : 'MOVE') : null;
+          : unit.piece.role === 'HQ' ? (front !== null && (hexesBetween(unit.hexId, front) <= w.hqCombatModeRadius
+            // heuristic@79: on a railroad hex an HQ in Combat Mode is a station (13.8c); it stays there while the army is near.
+            || (railheadHex(situation, unit.hexId) && hexesBetween(unit.hexId, front) <= w.hqRailheadReach)) ? 'COMBAT' : 'MOVE') : null;
       if (wanted !== null && unit.piece.mode !== wanted) {
         const change = actions.candidates('CHANGE_MODE', id).find((action) => action.kind === 'CHANGE_MODE' && action.mode === wanted);
         if (change && preservesFriendlySupply(context, change)) {
@@ -903,6 +990,9 @@ const movementStep = (context: BotDecisionContext, situation: Situation, facts: 
     notes.done.add(id);
     moves = actions.candidates('MOVE_PIECE', id);
     if (moves.length === 0) {
+      if (unit.piece.role === 'COMBAT' && target !== undefined && hexesBetween(unit.hexId, target.hexId) > 0 && needsFuel(facts, unit)
+        && actions.candidates('PAY_FUEL', id).length === 0) notes.stranded.set(id, unit.hexId);
+      if (unit.piece.role === 'HQ') markCovered(situation, notes, unit, unit.hexId);
       debug?.(`${unit.piece.role} ${id} at ${unit.hexId} mode ${unit.piece.mode} ${unitCoverage(unit).has(unit.hexId) ? 'in-trace' : 'OUT-OF-TRACE'} target ${target?.purpose ?? '-'} ${target?.hexId ?? ''} enemy ${enemyDistance}: no moves `
         + `(fuel offers ${actions.candidates('PAY_FUEL', id).length})`);
       continue;
@@ -911,7 +1001,8 @@ const movementStep = (context: BotDecisionContext, situation: Situation, facts: 
     // heuristic@11: HQs and artillery too: an HQ's own throw does not supply itself (12.3b), and an HQ only supplies its
     // own division (13.1d).
     const reach = unit.piece.role === 'COMBAT' || unit.piece.role === 'HQ' || unit.piece.role === 'ARTILLERY' ? unitCoverage(unit) : coverage;
-    const feeds = unit.piece.role === 'COMBAT' || unit.piece.role === 'ARTILLERY' ? unitFeeds(unit) : sideFeeds;
+    // An HQ's own throw does not feed itself (12.3b): it needs a dump that reaches it directly.
+    const feeds = unit.piece.role === 'COMBAT' || unit.piece.role === 'ARTILLERY' ? unitFeeds(unit) : unit.piece.role === 'HQ' ? context.actions.feedCoverage(id) : sideFeeds;
     const opponentTurnRemains = situation.turnsLeft > 0 || context.view.projection!.sequence.playerTurnIndex === 0;
     const stay = sum(scoreDestination(situation, unit, target, [unit.hexId], notes, reach, direct, front, w, feeds, opponentTurnRemains));
     let best: { action: GameAction; terms: BotScoreTerm[] } | null = null;
@@ -960,6 +1051,7 @@ const movementStep = (context: BotDecisionContext, situation: Situation, facts: 
       + `enemy ${enemyDistance} moves ${moves.length} stay ${stay.toFixed(1)} best ${best ? `${sum(best.terms).toFixed(1)} to ${destinationOf(best.action)} ${JSON.stringify(best.terms)}` : '-'}`);
     if (best && sum(best.terms) > stay) {
       const destination = destinationOf(best.action)!;
+      if (unit.piece.role === 'HQ') markCovered(situation, notes, unit, destination);
       notes.incomingRe.set(destination, (notes.incomingRe.get(destination) ?? 0) + reOf(unit));
       // A unit ending out of trace counts on eating: promise it the SP it will need.
       if ((unit.piece.role === 'COMBAT' || unit.piece.role === 'ARTILLERY') && !reach.has(destination) && !actuallyTraced.has(best.action)) {
@@ -970,6 +1062,7 @@ const movementStep = (context: BotDecisionContext, situation: Situation, facts: 
       return decision(best.action, gain > 0 ? `take VP along this route (+${gain} score margin), preserving friendly supply`
         : `${unit.piece.role.toLowerCase()} to ${destination}${target ? ` (${target.purpose.toLowerCase()} ${target.hexId})` : ''}`, best.terms);
     }
+    if (unit.piece.role === 'HQ') markCovered(situation, notes, unit, unit.hexId);
   }
   // An HQ that could not advance must not spend the following Reinforcement phase in Move Mode
   // beside unused replacements. Restore its rebuild role after movement, without breaking trace.
@@ -1240,10 +1333,14 @@ const reinforcementStep = (context: BotDecisionContext, situation: Situation, fa
       if (!traces.has(action.pieceId)) traces.set(action.pieceId, new Set(context.actions.traceCoverage(action.pieceId).hexIds));
       traced = Number(traces.get(action.pieceId)!.has(hexId));
     }
-    return { action, traced, score: -distance - situation.threatAt(hexId) };
-  }).sort((left, right) => right.traced - left.traced || right.score - left.score);
-  return decision(scored[0]!.action, scored[0]!.traced ? 'place a supplied arrival toward its mission' : 'place the arrival nearest its mission',
-    [{ term: 'placement-trace', value: scored[0]!.traced }, { term: 'placement', value: scored[0]!.score }]);
+    // heuristic@79: arriving SP on a railroad entry hex can entrain this turn (13.6b) and ride Rail Cap to the station nearest
+    // the front; anywhere else trucks must haul it from the map edge. Replays of heuristic@78 attacks left 25 of 32 SP on the
+    // map where rail could not take it.
+    const rail = action.kind === 'PLACE_REINFORCEMENT' && roleOf.get(String(action.pieceId)) === 'DUMP' && knowledgeOf(facts).railHexes.has(String(hexId)) ? 1 : 0;
+    return { action, traced, rail, score: -distance - situation.threatAt(hexId) };
+  }).sort((left, right) => right.traced - left.traced || right.rail - left.rail || right.score - left.score);
+  return decision(scored[0]!.action, scored[0]!.traced ? 'place a supplied arrival toward its mission' : scored[0]!.rail ? 'place arriving SP on the railroad' : 'place the arrival nearest its mission',
+    [{ term: 'placement-trace', value: scored[0]!.traced }, { term: 'placement-rail', value: scored[0]!.rail }, { term: 'placement', value: scored[0]!.score }]);
 };
 
 const rebuildSize = (action: GameAction): number => action.kind !== 'REBUILD_UNITS' ? 0
@@ -1322,7 +1419,7 @@ export const createHeuristicPolicy = (facts: BotGameFacts, options: HeuristicPol
   const choose = decide(facts, options.weights ?? DEFAULT_HEURISTIC_WEIGHTS);
   return {
     id: 'heuristic',
-    version: options.label === undefined ? '78' : `78+${options.label}`,
+    version: options.label === undefined ? '79' : `79+${options.label}`,
     decide: (context) => {
       const sink = options.debug;
       debug = sink ? (line) => sink(`${context.memory.stepKey} ${String(context.playerId).split(':').at(-1)} ${line}`) : null;

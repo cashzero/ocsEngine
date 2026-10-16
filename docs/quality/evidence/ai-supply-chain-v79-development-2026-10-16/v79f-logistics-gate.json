@@ -1,0 +1,20 @@
+{
+  "policy": "heuristic",
+  "checks": [
+    {
+      "name": "Rail Cap >= 70% of SP railable forward",
+      "pass": true,
+      "value": "1.00"
+    },
+    {
+      "name": "rear SP left after moving <= half the baseline",
+      "pass": false,
+      "value": "7.4 vs 11.8"
+    },
+    {
+      "name": "no garrison stock loaded or railed",
+      "pass": true,
+      "value": "0/0"
+    }
+  ]
+}

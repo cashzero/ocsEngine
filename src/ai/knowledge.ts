@@ -1,4 +1,5 @@
 import { hexDistance, parseHexCoordinateId, type HexId } from '../core/index.js';
+import { parseHexsideId } from '../domain/map/index.js';
 import type { PieceDefinition } from '../domain/piece/index.js';
 import type { ScenarioDefinition } from '../domain/scenario/index.js';
 import type { ProjectedPiece } from '../rules/index.js';
@@ -25,6 +26,8 @@ export interface BotKnowledge {
   readonly definition: (piece: ProjectedPiece) => PieceDefinition | undefined;
   readonly profile: (piece: ProjectedPiece) => UnitProfile | null;
   readonly name: (piece: ProjectedPiece) => string;
+  /** Hexes a railroad runs through (13.3), from the printed map. */
+  readonly railHexes: ReadonlySet<string>;
 }
 
 const knowledgeCache = new WeakMap<BotGameFacts, BotKnowledge>();
@@ -52,6 +55,9 @@ export const knowledgeOf = (facts: BotGameFacts): BotKnowledge => {
       };
     },
     name: (piece) => definition(piece)?.name ?? String(piece.id),
+    railHexes: new Set(facts.scenario.mapDefinition.hexsides
+      .filter(({ featureDefinitionIds }) => featureDefinitionIds.some((id) => String(id) === 'edge:rail' || String(id) === 'edge:multi-track-rail'))
+      .flatMap(({ hexsideId }) => { const parsed = parseHexsideId(hexsideId); return parsed.ok ? [String(parsed.value.firstHexId), String(parsed.value.secondHexId)] : []; })),
   };
   knowledgeCache.set(facts, knowledge);
   return knowledge;
