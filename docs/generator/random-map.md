@@ -110,7 +110,7 @@ invalid map is retried silently or downgraded. Low road density is a warning.
 ## Known gaps
 
 From `docs/quality/05-todo-inventory.md`: `map-appearance`, `road-exit-edge`, `case-blue-terrain`, `PERF-7`,
-`sea-landing-balance`, `reinforcement-options`, `artillery-vs-facility`, `naval-shipping`.
+`sea-landing-balance`, `reinforcement-options`, `naval-shipping`.
 The requested per-side reinforcement settings and the force-timing/capacity assessment are owned by
 [Reinforcement balance](../game-flow/reinforcement-balance.md); no automatic enemy force adjustment is implemented.
 

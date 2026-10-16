@@ -1,0 +1,4 @@
+
+> ocs-engine@0.1.0 smoke
+> node tests/dist-smoke.mjs
+

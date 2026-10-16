@@ -3,7 +3,9 @@ import type { OcsMode } from '../domain/piece/index.js';
 import type { ScenarioDefinition } from '../domain/scenario/index.js';
 import type {
   ActionFamily,
+  BarrageBlocker,
   AirMissionKind,
+  AirBarrageTarget,
   AirRoute,
   GameAction,
   ProjectedPiece,
@@ -42,6 +44,8 @@ export interface MovePreview {
 /** A combat or barrage being prepared in the command deck before it is declared. */
 export interface AttackDraft {
   readonly kind: 'REGULAR' | 'OVERRUN' | 'BARRAGE';
+  readonly barrageTarget: AirBarrageTarget | null;
+  readonly barrageTargets: readonly AirBarrageTarget[];
   readonly targetHexId: string;
   readonly eligibleIds: readonly PieceId[];
   readonly selectedIds: readonly PieceId[];
@@ -431,6 +435,7 @@ export interface UiSnapshot {
   /** Enemy Hexes the current segment allows attacking (overruns only for the selected unit). */
   readonly attackTargets: readonly string[];
   readonly barrageTargets: readonly string[];
+  readonly barrageBlockers: readonly BarrageBlocker[];
   readonly draft: AttackDraft | null;
   readonly modeOptions: readonly { readonly mode: OcsMode; readonly action: GameAction }[];
   readonly releaseAction: GameAction | null;

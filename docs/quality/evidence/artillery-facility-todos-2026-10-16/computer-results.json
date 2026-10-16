@@ -1,0 +1,55 @@
+{
+  "title": "Computer artillery against ports and Air Bases",
+  "final": {
+    "turn": "Turn 1 / 3",
+    "player": "Allied player turn",
+    "phase": "Combat · Barrage",
+    "revision": null
+  },
+  "rows": [
+    {
+      "id": "BOT-12",
+      "expectation": "The changed Map/OOB is previewed and that same generated package starts",
+      "observed": "{\"preview\":{\"Scenario\":\"Meeting engagement\",\"Players\":\"Allied: player · Axis: player\",\"Map\":\"18×12\",\"Units\":\"55\",\"Objectives\":\"3 hexes · 8 VP (Allied 4 · Axis 4)\",\"Divisions\":\"3 per side\",\"Deployed hexes\":\"33\",\"Rail Cap\":\"Allied 2 · Axis 2\",\"Ports\":\"2\",\"Sea Cap\":\"Allied 1 · Axis 1\",\"Warnings\":\"0\"},\"summary\":\"Meeting engagement · 55 units · 6 formations · 3 turns · seeds map 5101, OOB 5102, deployment 5103, rules 5104\"}",
+      "status": "PASS"
+    },
+    {
+      "id": "BOT-12",
+      "expectation": "The changed New Game completes a legal move and a whole turn with decisions and handoffs",
+      "observed": "{\"turn\":\"Turn 2 / 3\",\"player\":\"Axis player turn\",\"phase\":\"Reinforcement\",\"seat\":\"Axis commander\",\"end\":\"End Reinforcement PhaseNext: Movement Phase\",\"endDisabled\":true,\"notice\":\"Decision recorded.\",\"handoff\":false,\"complete\":false,\"decision\":[]}",
+      "status": "PASS"
+    },
+    {
+      "id": "BOT-12",
+      "expectation": "The computer chooses PORT, pays the displayed Facility Table cost, and resolves actual facility damage",
+      "observed": "{\"declaration\":{\"actionId\":\"candidate:barrage:3,2:PORT:generated-oob:5102:allied:f1-artillery-1:unit+generated-oob:5102:allied:independent-artillery-1:unit:0\",\"actorId\":\"player:allied\",\"expectedRevision\":0,\"firerIds\":[\"generated-oob:5102:allied:f1-artillery-1:unit\",\"generated-oob:5102:allied:independent-artillery-1:unit\"],\"kind\":\"DECLARE_BARRAGE\",\"target\":\"PORT\",\"targetHexId\":\"3,2\",\"targetPieceIds\":[]},\"paid\":4,\"expected\":{\"cost\":4,\"draft\":\"Barrage 0503 Target Port Table Barrage vs Facility Table · 1d6 Column 21-40 Barrage strength 34 Shifts none Spotter not required Supply 4T Tick the artillery that fires. Supply is paid from dumps in reach; if several can pay you will choose, or pay automatically. III I 6.A 17 3 2 5 Div Arty I / 6.A 0504 III 355 17 3 2 5 US 355 FA Gp 0504 Cancel Barrage\"},\"log\":\"No legal artillery barrage. Blocked attempts: artillery already fired this phase; targets outside artillery range. Hex 0503 No unit of yours here. Deselect Targets Unit Ledger Log All units (24) Allied computer chose a combat supply source Facility die: 6. Barrage vs Facility 34 (21-40): die 6, 2*(4); the port takes 2 hits (now 4 of 4). Allied computer barraged the port at 0503 Showing the game from Allied computer's side.\",\"hits\":4,\"level\":3}",
+      "status": "PASS"
+    },
+    {
+      "id": "BOT-12",
+      "expectation": "The computer PORT attack survives changed state, save loading and replay loading",
+      "observed": "{\"original\":\"sha256:270c17fd26545796b439091a3a600b4cadf38d9f7334619b172fcf612526e9ec\",\"loaded\":\"sha256:270c17fd26545796b439091a3a600b4cadf38d9f7334619b172fcf612526e9ec\",\"replayed\":\"sha256:270c17fd26545796b439091a3a600b4cadf38d9f7334619b172fcf612526e9ec\"}",
+      "status": "PASS"
+    },
+    {
+      "id": "BOT-12",
+      "expectation": "The computer chooses AIR_BASE, pays the displayed Facility Table cost, and resolves actual facility damage",
+      "observed": "{\"declaration\":{\"actionId\":\"candidate:barrage:3,2:AIR_BASE:generated-oob:5102:allied:f1-artillery-1:unit+generated-oob:5102:allied:independent-artillery-1:unit:0\",\"actorId\":\"player:allied\",\"expectedRevision\":0,\"firerIds\":[\"generated-oob:5102:allied:f1-artillery-1:unit\",\"generated-oob:5102:allied:independent-artillery-1:unit\"],\"kind\":\"DECLARE_BARRAGE\",\"target\":\"AIR_BASE\",\"targetHexId\":\"3,2\",\"targetPieceIds\":[]},\"paid\":4,\"expected\":{\"cost\":4,\"draft\":\"Barrage 0503 Target Air Base Table Barrage vs Facility Table · 1d6 Column 21-40 Barrage strength 34 Shifts none Spotter not required Supply 4T Tick the artillery that fires. Supply is paid from dumps in reach; if several can pay you will choose, or pay automatically. III I 6.A 17 3 2 5 Div Arty I / 6.A 0504 III 355 17 3 2 5 US 355 FA Gp 0504 Cancel Barrage\"},\"log\":\"No legal artillery barrage. Blocked attempts: artillery already fired this phase; targets outside artillery range; target hex already barraged this phase. Hex 0503 No unit of yours here. Deselect Targets Unit Ledger Log All units (24) Allied computer chose a combat supply source Facility die: 6. KG 51 Ju.88 aircraft check: 6. KG 51 Ju.88 lost a step (1 left). JG 300 Fw-190d aircraft check: 1. JG 3 Fw-190d aircraft check: 3. Barrage vs Facility 34 (21-40): die 6, 2*(4); KG 51 Ju.88 loses a step (6); the Air Base drops to Level 1. Allied computer barraged the Air Base at 0503 Showing the game from Allied computer's side.\",\"hits\":0,\"level\":1}",
+      "status": "PASS"
+    },
+    {
+      "id": "BOT-12",
+      "expectation": "The computer AIR_BASE attack survives changed state, save loading and replay loading",
+      "observed": "{\"original\":\"sha256:ba929f83d26e8e88489be8783f6d810b5a3cc54aaa1663b1a1a17fadcf29bdac\",\"loaded\":\"sha256:ba929f83d26e8e88489be8783f6d810b5a3cc54aaa1663b1a1a17fadcf29bdac\",\"replayed\":\"sha256:ba929f83d26e8e88489be8783f6d810b5a3cc54aaa1663b1a1a17fadcf29bdac\"}",
+      "status": "PASS"
+    },
+    {
+      "id": "BOT-12",
+      "expectation": "No browser errors or computer stall",
+      "observed": "[]",
+      "status": "PASS"
+    }
+  ],
+  "timings": [],
+  "errors": []
+}

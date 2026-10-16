@@ -19,7 +19,7 @@ import type { ComputerPlayers } from './computer-players.js';
 import { INSTANT_REDRAW_MS, SeatAutomation } from './seat-automation.js';
 import {
   AIR_MISSION_KINDS, AIR_MISSION_LABELS, FUEL_COSTS, distanceBetween, missionSegment, parseRuleActionId, routesForRange,
-  type AirMissionKind, type AirRoute, type AttackerSupplyChoice, type AttackerSupplyOption, type GameAction, type ProjectedCombat, type ProjectedPiece, type RuleEvent, type RuleExplanation, type UnitRebuild,
+  type AirMissionKind, type AirBarrageTarget, type AirRoute, type AttackerSupplyChoice, type AttackerSupplyOption, type GameAction, type ProjectedCombat, type ProjectedPiece, type RuleEvent, type RuleExplanation, type UnitRebuild,
   allocateRebuild, priceRebuild,
 } from '../rules/index.js';
 import type {
@@ -72,6 +72,7 @@ export interface UiController {
   /** Tick every unit in the selected unit's Hex that can move with it (6.1f). */
   readonly moveWholeStack: () => void;
   readonly toggleParticipant: (pieceId: string) => void;
+  readonly setBarrageTarget: (target: string) => void;
   readonly setLead: (pieceId: string) => void;
   /** Declare where a ticked attacker gets its combat supply (9.5, 12.10a). */
   readonly chooseAttackerSupply: (pieceId: string, optionId: string) => void;
@@ -201,6 +202,8 @@ const sameLocation = (left: { readonly kind: string; readonly hexId?: unknown; r
 
 interface DraftInput {
   readonly kind: AttackDraft['kind'];
+  readonly barrageTarget: AirBarrageTarget | null;
+  readonly barrageTargets: readonly AirBarrageTarget[];
   readonly targetHexId: string;
   readonly eligibleIds: readonly PieceId[];
   readonly selectedIds: readonly PieceId[];
@@ -244,7 +247,7 @@ const UNDOABLE_ACTIONS: ReadonlySet<GameAction['kind']> = new Set([
 
 /** Events after which "undo this step" would let a player re-roll or retract what the opponent saw. */
 const IRREVERSIBLE_EVENTS: ReadonlySet<RuleEvent['kind']> = new Set([
-  'DICE_ROLLED', 'TRANSACTION_DECLARED', 'SUPPLY_ARRIVED', 'BREAKOUT_ROLLED', 'ATTRITION_ROLLED',
+  'DICE_ROLLED', 'FACILITY_DIE_ROLLED', 'TRANSACTION_DECLARED', 'SUPPLY_ARRIVED', 'BREAKOUT_ROLLED', 'ATTRITION_ROLLED',
   'FIRST_PLAYER_ROLLED', 'WEATHER_DETERMINED', 'DUMP_BLOWN', 'DECISION_REQUESTED',
 ]);
 
@@ -535,11 +538,11 @@ class DefaultUiController implements UiController {
     const view = this.#view(this.#activeSeat());
     const actor = view.playerId;
     if (input.kind === 'BARRAGE') {
-      const targets = this.#candidates('DECLARE_BARRAGE').find((action) => action.kind === 'DECLARE_BARRAGE' && action.targetHexId === input.targetHexId);
+      const targets = this.#candidates('DECLARE_BARRAGE').find((action) => action.kind === 'DECLARE_BARRAGE' && action.targetHexId === input.targetHexId && (action.target ?? 'COMBAT_UNITS') === input.barrageTarget);
       if (!targets || targets.kind !== 'DECLARE_BARRAGE') return null;
       return {
         actionId: this.#actionId('barrage'), actorId: actor, expectedRevision: this.#session.getRevision(),
-        kind: 'DECLARE_BARRAGE', firerIds: input.selectedIds, targetPieceIds: targets.targetPieceIds, targetHexId: targets.targetHexId,
+        kind: 'DECLARE_BARRAGE', target: targets.target ?? 'COMBAT_UNITS', firerIds: input.selectedIds, targetPieceIds: targets.targetPieceIds, targetHexId: targets.targetHexId,
       };
     }
     const template = this.#candidates('DECLARE_COMBAT').find((action) => action.kind === 'DECLARE_COMBAT' && action.targetHexId === input.targetHexId)
@@ -957,6 +960,7 @@ class DefaultUiController implements UiController {
       selectedFuel,
       attackTargets,
       barrageTargets,
+      barrageBlockers: view.privacyLocked || segment !== 'BARRAGE' || barrageTargets.length > 0 ? [] : this.#cached('barrage-availability', () => this.#session.getBarrageAvailability(seatId)).blockers,
       draft,
       modeOptions,
       releaseAction,
@@ -2124,7 +2128,10 @@ class DefaultUiController implements UiController {
       const candidates = this.#candidates('DECLARE_BARRAGE').filter((action) => action.kind === 'DECLARE_BARRAGE' && action.targetHexId === targetHexId);
       const eligible = [...new Set(candidates.flatMap((action) => action.kind === 'DECLARE_BARRAGE' ? action.firerIds : []))];
       const first = candidates[0];
-      this.#draft = { kind, targetHexId, eligibleIds: eligible, selectedIds: first?.kind === 'DECLARE_BARRAGE' ? first.firerIds : [], leadId: null, supply: [] };
+      this.#draft = { kind, targetHexId, eligibleIds: eligible, selectedIds: first?.kind === 'DECLARE_BARRAGE' ? first.firerIds : [], leadId: null, supply: [],
+        barrageTarget: first?.kind === 'DECLARE_BARRAGE' ? first.target ?? 'COMBAT_UNITS' : null,
+        barrageTargets: [...new Set(candidates.flatMap((action) => action.kind === 'DECLARE_BARRAGE' ? [action.target ?? 'COMBAT_UNITS'] : []))],
+      };
       return;
     }
     const pieceFilter = snapshotSegment === 'COMBAT' ? null : this.#selection.pieceId;
@@ -2132,7 +2139,7 @@ class DefaultUiController implements UiController {
     const eligible = [...new Set(candidates.flatMap((action) => action.kind === 'DECLARE_COMBAT' ? action.attackerIds : []))];
     const first = candidates[0];
     this.#draft = this.#settleSupply({
-      kind, targetHexId, eligibleIds: eligible,
+      kind, targetHexId, eligibleIds: eligible, barrageTarget: null, barrageTargets: [],
       selectedIds: first?.kind === 'DECLARE_COMBAT' ? first.attackerIds : [],
       leadId: first?.kind === 'DECLARE_COMBAT' ? first.leadAttackerId : null,
       supply: [],
@@ -2229,6 +2236,15 @@ class DefaultUiController implements UiController {
     this.#companions = null;
     // A unit with nowhere left to go is finished: release it so the player is not left holding a dead selection.
     if (this.getSnapshot().reachable.size === 0) this.#selection = initialSelection();
+    this.#emit();
+  };
+
+  setBarrageTarget = (target: string): void => {
+    const draft = this.#draft;
+    if (!draft || draft.kind !== 'BARRAGE') return;
+    const choice = draft.barrageTargets.find((candidate) => candidate === target);
+    if (!choice) return;
+    this.#draft = { ...draft, barrageTarget: choice };
     this.#emit();
   };
 
@@ -2385,7 +2401,7 @@ class DefaultUiController implements UiController {
       kind: declared.transactionKind, targetHexId: action.kind === 'DECLARE_COMBAT' || action.kind === 'DECLARE_BARRAGE' ? action.targetHexId : '',
       attackerOwnerId: action.actorId, attackerCount: action.kind === 'DECLARE_COMBAT' ? action.attackerIds.length : action.kind === 'DECLARE_BARRAGE' ? action.firerIds.length : 0,
       defenderCount: 0, attackerStrength: number(barrage ? 'barrage.strength' : 'combat.attackerStrength') ?? 0,
-      defenderStrength: barrage ? null : number('combat.defenderStrength'), odds: String(fact(barrage ? 'barrage.finalColumn' : 'combat.odds') ?? ''),
+      defenderStrength: barrage ? null : number('combat.defenderStrength'), odds: String(fact(barrage ? 'barrage.columnLabel' : 'combat.odds') ?? ''),
       line: barrage ? null : String(fact('combat.line') ?? ''), // The combat roll's net DRM: the AR difference less the defender's hedgehog Level (16.0d).
       drm: barrage ? null : (number('combat.drm') ?? 0) - (number('combat.hedgehogLevel') ?? 0),
       defenderSupplied: null, result: null, rollTotal: null, surpriseTotal: null, shiftDie: null, air: null,

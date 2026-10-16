@@ -40,6 +40,7 @@ import {
   type RuleEvent,
   type TransitionResult,
 } from '../../src/index.js';
+import { continueAirMission } from '../../src/rules/air/mission.js';
 import { FACILITY_TABLE_COLUMNS, facilityColumnIndex } from '../../src/rules/tables/ocs-4.3.js';
 
 const STANDARD_AIR: NewGameRequest = { ...AIR_NEW_GAME_REQUEST, oob: { ...AIR_NEW_GAME_REQUEST.oob, scale: 'STANDARD' } };
@@ -294,6 +295,42 @@ describe('Air missions (14.2-14.8)', () => {
     expect(state.activeTransaction).toBeNull();
     expect(state.ledger.barragedHexIds).toContain(hex(6));
     expect(state.air.trainbusting.every(({ ownerId, hexId }) => ownerId === ALLIED && hexId === hex(6))).toBe(true);
+  });
+
+  it('preserves the legacy facility cell and zero-strength mission log in air transactions', () => {
+    let start = atStep(airState(), 'MOVEMENT', 'BARRAGE', ALLIED);
+    const secondBase = { ...piece(start, U.aBase), id: 'piece:legacy-return-base' as PieceId, location: { kind: 'ON_MAP' as const, hexId: hex(2) }, stackOrder: 0 };
+    start = { ...start, pieceState: { ...start.pieceState, pieces: [...start.pieceState.pieces, secondBase] } };
+    const declared = mission(start, ALLIED, { mission: 'BARRAGE', aircraftIds: [U.aF1], targetHexId: AXIS_BASE, target: 'AIR_BASE' });
+    expect(declared.ok).toBe(true);
+    const transaction = declared.state.activeTransaction!;
+    expect(transaction.air).not.toBeNull();
+    start = { ...declared.state, pendingDecision: null, rng: { state: 48, draws: 0 }, activeTransaction: { ...transaction, air: { ...transaction.air!, stage: 'RESOLVE' } } };
+    const resolved = continueAirMission(start);
+    expect(resolved.state.pendingDecision?.kind).toBe('AIR_RETURN');
+    expect(resolved.state.activeTransaction?.facilityDie).toBeNull();
+    expect(resolved.state.activeTransaction?.result).not.toContain('Barrage vs Facility');
+    const snapshot = serializeGameState(resolved.state);
+    expect(snapshot.ok).toBe(true);
+    if (!snapshot.ok) return;
+    const stored = JSON.parse(snapshot.value);
+    expect(stored.activeTransaction).not.toHaveProperty('facilityDie');
+    expect(stored.activeTransaction).not.toHaveProperty('barrageTarget');
+    const loaded = parseGameStateJson(snapshot.value);
+    expect(loaded.ok && serializeGameState(loaded.value)).toEqual(snapshot);
+    let axisStart = atStep(airState(), 'MOVEMENT', 'BARRAGE', AXIS);
+    const axisBase = { ...piece(axisStart, U.xBase), id: 'piece:axis-return-base' as PieceId, location: { kind: 'ON_MAP' as const, hexId: hex(15) }, stackOrder: 0 };
+    axisStart = { ...axisStart, pieceState: { ...axisStart.pieceState, pieces: [...axisStart.pieceState.pieces, axisBase] } };
+    const axisDeclared = mission(axisStart, AXIS, { mission: 'BARRAGE', aircraftIds: [U.xF1], targetHexId: ALLIED_BASE, target: 'AIR_BASE' });
+    expect(axisDeclared.ok).toBe(true);
+    const axisTransaction = axisDeclared.state.activeTransaction!;
+    const zero = withPiece({ ...axisDeclared.state, pendingDecision: null, activeTransaction: { ...axisTransaction, air: { ...axisTransaction.air!, stage: 'RESOLVE' } } }, U.xF1, (plane) => ({ ...plane, remainingSteps: 1 }));
+    const zeroDefinition = piece(zero, U.xF1).definitionId;
+    const zeroStrength: GameState = { ...zero, scenario: { ...zero.scenario, pieceCatalog: { ...zero.scenario.pieceCatalog, definitions: zero.scenario.pieceCatalog.definitions.map((definition) => definition.id !== zeroDefinition ? definition : { ...definition, faces: definition.faces.map((face) => ({ ...face, steps: face.steps.map((step) => ({ ...step, ratings: step.ratings.map((rating) => rating.ratingDefinitionId === 'rating:barrage-strength' ? { ...rating, value: 0 } : rating) })) })) }) } } };
+    const empty = continueAirMission(zeroStrength);
+    expect(empty.state.activeTransaction?.air?.log).toContain('The mission has no Barrage Strength left and has no effect.');
+    expect(empty.events.some((event) => event.kind === 'FACILITY_DIE_ROLLED')).toBe(false);
+    expect(empty.state.rng).toEqual(zero.rng);
   });
 
   it('barrages an Air Base on the Facility Table: Levels never drop below 1 (10.0c, 15.0c)', () => {

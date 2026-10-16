@@ -20,7 +20,6 @@
 | `repl-tables-generated` | Variable Replacement Table 與 Rebuild Table 是產生器自訂，不是印刷版 | 補充與重建成本與原版遊戲不同 | 轉錄印刷表並以測試與瀏覽器核對 | `docs/rule-engine/replacements.md` |
 | `repl-legacy-unit-migration` | 舊存檔的 REPLACEMENT 沒有 faces，維持舊的數量 counter | 舊存檔的補充單位不能移動，需開新局 | 保留歷史動作的存檔遷移，並實際讀舊檔、移動、重建、存檔、重播 | `docs/rule-engine/replacements.md` |
 | `repl-natural-loss-ui` | 地面重建、合併與依表計價只在載入的訓練局面上走過瀏覽器 | 從新局經正常對戰損失再重建或合併的流程未驗證 | 從全新 New Game 經正常戰鬥損失單位，移動 Repl、重建或合併，並完成該回合 | `docs/rule-engine/replacements.md` |
-| `artillery-vs-facility` | `DECLARE_BARRAGE` 沒有設施目標 | 地面砲兵不能打港口或 Air Base，只有飛機與持有者自己的單位能損壞港口 | 給設施目標並付表列成本，實際打一次港口 | `docs/generator/random-map.md`；manifest `barrage.artillery` |
 | `naval-shipping` | 無艦艇、登陸艇、兩棲登陸（18.0） | 只能在已持有的港口登陸 | 18.0 實作並實際對局 | manifest `naval-shipping` |
 | `air-audit-probe` | 規則稽核探針沒有空軍檢查 | 空軍規則缺少探針層的回歸保護 | 探針加入空軍案例並通過 | `docs/rule-engine/air-power.md` |
 | `glider-points` | 沒有獨立 Glider Points（14.10f） | 滑翔機運輸與一般空運共用能力 | 實作並在瀏覽器空運一次 | `docs/rule-engine/air-power.md` |

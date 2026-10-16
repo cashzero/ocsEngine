@@ -78,6 +78,12 @@ These replace the whole tab area, in this order, and give the tabs back afterwar
 Drafts and decisions are not popups: they are long and would cover the map the player needs to decide. End is disabled
 in task mode and says why.
 
+Artillery drafts include a target selector for combat units, an Air Base or a port when those targets are legal in the
+chosen hex. The table, dice and cost preview follows that choice. See [artillery barrage](../rule-engine/artillery.md).
+When the artillery target list is empty, both the phase objective and Targets use the rule query's typed blocking causes.
+They distinguish range, supply, artillery already fired and a hex already barraged, and can show several causes.
+A remaining legal gun or target stays usable. Diagnostics are hidden while the viewer cannot act or during handoff.
+
 ### Moving a unit
 
 Selecting a unit shows its whole reach on the map ([map.md](map.md)). Clicking a reachable hex (or a counter on it) opens

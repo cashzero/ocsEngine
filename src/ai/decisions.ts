@@ -71,6 +71,14 @@ export const respondToDecision = (context: BotDecisionContext, situation: Situat
       return respond(actions, has('first') ? 'first' : options[0]!.id, 'first-player', 'moving first keeps the initiative');
     }
     case 'SUPPLY_SOURCE': {
+      if (projection.combat?.kind === 'BARRAGE') {
+        const explained = actions[0] ? context.actions.explain(actions[0]).explanation : null;
+        const choice = explained?.facts.find(({ key }) => key === 'supply.barrageRationSafeChoice')?.value;
+        if (typeof choice === 'string') {
+          const safe = respond(actions, choice, 'facility-supply', 'pay the facility barrage while preserving shared rations');
+          return safe ? { ...safe, alternatives: [] } : null;
+        }
+      }
       // Pay from the dump that has the most left, the full amount where possible; internal stocks before going unsupplied.
       const pays = options.filter(({ id }) => id.startsWith('pay:')).map((option) => ({
         option,

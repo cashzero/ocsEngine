@@ -1,0 +1,43 @@
+{
+  "request": {
+    "templateId": "GROUND_DUEL",
+    "map": {
+      "width": 18,
+      "height": 12,
+      "style": "TEMPERATE_INLAND",
+      "sea": "FLANK"
+    },
+    "oob": {
+      "scale": "STANDARD",
+      "divisionsPerSide": 3,
+      "armoredDivisionsPerSide": 1,
+      "air": "STANDARD"
+    },
+    "seeds": {
+      "map": 5101,
+      "oob": 5102,
+      "deployment": 5103,
+      "rules": 5104
+    },
+    "turnLimit": 3,
+    "startMonth": 10
+  },
+  "target": "3,2",
+  "targetLabel": "0503",
+  "origin": "3,3",
+  "originLabel": "0504",
+  "alternateTarget": "3,4",
+  "alternateTargetLabel": "0605",
+  "guns": [
+    "generated-oob:5102:allied:f1-artillery-1:unit",
+    "generated-oob:5102:allied:independent-artillery-1:unit"
+  ],
+  "dump": "generated-oob:5102:allied:independent-supply-1:unit",
+  "base": "generated-oob:5102:axis:air-base-1:unit",
+  "defender": "generated-oob:5102:axis:f1-combat-1:unit",
+  "planes": [
+    "generated-oob:5102:axis:air-bomber-2:unit",
+    "generated-oob:5102:axis:air-fighter-1:unit",
+    "generated-oob:5102:axis:air-fighter-3:unit"
+  ]
+}

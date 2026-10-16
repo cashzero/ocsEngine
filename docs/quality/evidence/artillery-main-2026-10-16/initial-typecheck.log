@@ -1,0 +1,5 @@
+
+> ocs-engine@0.1.0 typecheck
+> tsc -p tsconfig.json
+
+tests/ai/facility-barrage.test.ts(43,5): error TS2741: Property 'drawReach' is missing in type '{ families: () => ("ADVANCE_SEQUENCE" | "CHANGE_MODE" | "RELEASE_RESERVE" | "MOVE_PIECE" | "END_MOVE" | "CREATE_BREAKDOWN" | "CHECK_SUPPLY" | "DECLARE_COMBAT" | "DECLARE_BARRAGE" | ... 31 more ... | "CONSOLIDATE_UNITS")[]; ... 4 more ...; feedCoverage: (pieceId?: null) => readonly FeedSource[]; }' but required in type 'BotActionAccess'.

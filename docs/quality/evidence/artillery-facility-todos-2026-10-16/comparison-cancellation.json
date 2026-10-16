@@ -1,0 +1,35 @@
+{
+  "status": "CANCELLED",
+  "gatePassed": false,
+  "reason": "User excludes an 80-game strategy comparison from this facility feature task. No partial result is used as acceptance or strategy-strength evidence.",
+  "stoppedAt": "2026-10-16T05:43:54.184988+00:00",
+  "completedSaveFiles": [
+    "meeting-eastern/match-1701100.save.json",
+    "meeting-eastern/match-1701101.save.json",
+    "meeting-eastern/match-1701102.save.json",
+    "meeting-eastern/match-1701103.save.json",
+    "meeting-western/match-1701000.save.json",
+    "meeting-western/match-1701001.save.json",
+    "meeting-western/match-1701002.save.json",
+    "meeting-western/match-1701003.save.json"
+  ],
+  "traceFiles": [
+    "meeting-eastern/match-1701100.trace.jsonl",
+    "meeting-eastern/match-1701101.trace.jsonl",
+    "meeting-eastern/match-1701102.trace.jsonl",
+    "meeting-eastern/match-1701103.trace.jsonl",
+    "meeting-eastern/match-1701104.trace.jsonl",
+    "meeting-eastern/match-1701105.trace.jsonl",
+    "meeting-western/match-1701000.trace.jsonl",
+    "meeting-western/match-1701001.trace.jsonl",
+    "meeting-western/match-1701002.trace.jsonl",
+    "meeting-western/match-1701003.trace.jsonl",
+    "meeting-western/match-1701004.trace.jsonl",
+    "meeting-western/match-1701005.trace.jsonl"
+  ],
+  "stoppedProcesses": [
+    329535,
+    329537,
+    329539
+  ]
+}

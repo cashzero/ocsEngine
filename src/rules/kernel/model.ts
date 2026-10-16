@@ -422,6 +422,10 @@ export interface RuleTransaction {
   readonly blockedHexIds: readonly HexId[];
   /** The air mission sequence (14.2f); null for ground combats and artillery barrages. */
   readonly air: AirMissionState | null;
+  /** Artillery's announced target; null for non-artillery transactions. */
+  readonly barrageTarget: AirBarrageTarget | null;
+  /** Facility Table uses a single die, independently of two-dice combat rolls. */
+  readonly facilityDie: number | null;
 }
 
 /** 14.2e mission types implemented here; Air Transport and Air Drop (14.9, 14.10) are not. */
@@ -806,6 +810,8 @@ export type GameAction =
   })
   | (ActionEnvelope & {
     readonly kind: 'DECLARE_BARRAGE';
+    /** Omitted only in legacy actions, where it means COMBAT_UNITS. */
+    readonly target?: AirBarrageTarget;
     readonly firerIds: readonly PieceId[];
     readonly targetPieceIds: readonly PieceId[];
     readonly targetHexId: HexId;
@@ -970,6 +976,7 @@ export type RuleEvent =
   | { readonly kind: 'DECISION_REQUESTED'; readonly sequence: number; readonly decision: PendingDecision }
   | { readonly kind: 'RESOURCE_RESERVED'; readonly sequence: number; readonly transactionId: RuleTransactionId; readonly reservation: ResourceReservation }
   | { readonly kind: 'RESOURCE_CONSUMED'; readonly sequence: number; readonly transactionId: RuleTransactionId; readonly reservation: ResourceReservation }
+  | ({ readonly kind: 'FACILITY_DIE_ROLLED'; readonly sequence: number; readonly transactionId: RuleTransactionId; readonly value: number } & ({ readonly purpose: 'FACILITY'; readonly pieceId: null } | { readonly purpose: 'AIRCRAFT_CHECK'; readonly pieceId: PieceId }))
   | { readonly kind: 'DICE_ROLLED'; readonly sequence: number; readonly transactionId: RuleTransactionId; readonly purpose: string; readonly roll: RulesDiceRoll }
   | { readonly kind: 'TRANSACTION_RESOLVED'; readonly sequence: number; readonly transactionId: RuleTransactionId; readonly result: string }
   | { readonly kind: 'TRANSACTION_CANCELLED'; readonly sequence: number; readonly transactionId: RuleTransactionId }

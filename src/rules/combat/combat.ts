@@ -1,3 +1,4 @@
+import { enemyAirBaseAt, enemyPortTarget, resolveFacilityBarrage } from './facility.js';
 import { portAt } from '../port/state.js';
 import { capturePort } from '../port/port.js';
 import { defendingHedgehogLevel, hedgehogAt, hedgehogLevel, HEDGEHOG_BARRAGE_SHIFT, HEDGEHOG_BRACKETED_LEVEL, HEDGEHOG_SURPRISE_DRM } from '../hedgehog/hedgehog.js';
@@ -6,6 +7,7 @@ import { setHexControl } from '../../domain/map/index.js';
 import { upsertPieceState, type PieceState } from '../../domain/piece/index.js';
 import { parseRuleDecisionId, parseRuleTransactionId } from '../kernel/ids.js';
 import type {
+  AirBarrageTarget,
   AttackerSupplyChoice,
   CombatSide,
   GameAction,
@@ -68,6 +70,8 @@ import {
 import { captureAt } from '../supply/transport.js';
 import {
   BARRAGE_TABLE_COLUMNS,
+  FACILITY_TABLE_COLUMNS,
+  facilityColumnIndex,
   BARRAGE_TABLE_ROWS,
   COMBAT_SUPPLY,
   COMBAT_TABLE_ROWS,
@@ -471,6 +475,8 @@ const emptyTransaction = (
   attackerRetreated: false,
   blockedHexIds: [],
   air: null,
+  barrageTarget: null,
+  facilityDie: null,
 });
 
 export const declareCombat = (state: GameState, action: CombatDeclaration): Transition => {
@@ -590,6 +596,46 @@ const paymentOptions = (state: GameState): PendingDecision['options'] => {
   }
   if (payment.side === 'DEFENDER') options.push({ id: 'withhold', label: 'No combat supply: defend at half strength', hexId: null });
   return options;
+};
+
+/** Find a complete legal barrage payment route without rolling or resolving the target.
+ * The monotone stock-commitment predicate sees actual combined reservations; live routes and part payments are reused. */
+export const findBarragePaymentPlan = (state: GameState, declaration: BarrageDeclaration | null,
+  accepts: (payments: readonly ResourceReservation[]) => boolean, firstChoiceId?: string): readonly string[] | null => {
+  const input = declaration === null ? state : {
+    ...state,
+    activeTransaction: {
+      ...emptyTransaction(state, declaration.actionId, 'BARRAGE', declaration.actorId),
+      step: 'BARRAGE_SUPPLY', attackerIds: declaration.firerIds, defenderIds: [], leadAttackerId: null, targetHexId: declaration.targetHexId,
+      barrageTarget: declaration.target ?? 'COMBAT_UNITS',
+      payment: { side: 'ATTACKER', queue: [{ pieceIds: declaration.firerIds,
+        tokens: previewBarrage(state, declaration.actorId, declaration.firerIds, declaration.targetHexId, declaration.target).supplyTokens }], paid: 0 },
+    } satisfies RuleTransaction,
+  };
+  const failed = new Set<string>();
+  const search = (current: GameState): readonly string[] | null => {
+    const transaction = current.activeTransaction!;
+    const key = transaction.attackerPayments.map(({ resourcePieceId, quantity }) => `${resourcePieceId}:${quantity}`).sort().join('|');
+    if (failed.has(key)) return null;
+    if (!accepts(transaction.attackerPayments)) { failed.add(key); return null; }
+    if (!transaction.payment?.queue.length) return [];
+    const options = [...paymentOptions(current)].sort((left, right) =>
+      Number(right.id.slice(right.id.lastIndexOf(':') + 1)) - Number(left.id.slice(left.id.lastIndexOf(':') + 1))
+      || Number(/\((\d+)T available\)/u.exec(right.label)?.[1] ?? 0) - Number(/\((\d+)T available\)/u.exec(left.label)?.[1] ?? 0)
+      || left.id.localeCompare(right.id));
+    for (const option of options) {
+      const remaining = search(applyPaymentChoice(current, option.id));
+      if (remaining !== null) return [option.id, ...remaining];
+    }
+    failed.add(key);
+    return null;
+  };
+  if (firstChoiceId !== undefined) {
+    if (!paymentOptions(input).some(({ id }) => id === firstChoiceId)) return null;
+    const remaining = search(applyPaymentChoice(input, firstChoiceId));
+    return remaining === null ? null : [firstChoiceId, ...remaining];
+  }
+  return search(input);
 };
 
 const popConsumer = (state: GameState, patch: Partial<RuleTransaction> = {}): GameState => {
@@ -1308,6 +1354,7 @@ export const resolveDecision = (state: GameState, choiceId: string): Transition 
 type BarrageDeclaration = Extract<GameAction, { readonly kind: 'DECLARE_BARRAGE' }>;
 
 export interface BarragePreview {
+  readonly target: AirBarrageTarget;
   readonly strength: number;
   readonly initialColumn: number;
   readonly finalColumn: number;
@@ -1356,13 +1403,17 @@ export const barrageTargetShifts = (
   return { shifts, spotter };
 };
 
-export const previewBarrage = (state: GameState, actorId: PlayerId, firerIds: readonly PieceId[], targetHexId: HexId): BarragePreview => {
+export const previewBarrage = (state: GameState, actorId: PlayerId, firerIds: readonly PieceId[], targetHexId: HexId, target: AirBarrageTarget = 'COMBAT_UNITS'): BarragePreview => {
   const firers = firerIds.flatMap((id) => pieceById(state, id) ?? []);
   const strength = roundOcs(firers.reduce((total, piece) => total + barrageStrengthOf(state, piece), 0));
+  if (target !== 'COMBAT_UNITS') {
+    const column = facilityColumnIndex(strength);
+    return { target, strength, initialColumn: column, finalColumn: column, supplyTokens: FACILITY_TABLE_COLUMNS[column]!.supplyTokens, spotter: false, shifts: [] };
+  }
   const initialColumn = barrageColumnIndex(strength);
   const { shifts, spotter } = barrageTargetShifts(state, actorId, targetHexId);
   const finalColumn = Math.max(0, Math.min(BARRAGE_TABLE_COLUMNS.length - 1, initialColumn + shifts.reduce((total, { shift }) => total + shift, 0)));
-  return { strength, initialColumn, finalColumn, supplyTokens: BARRAGE_TABLE_COLUMNS[initialColumn]!.supplyTokens, spotter, shifts };
+  return { target, strength, initialColumn, finalColumn, supplyTokens: BARRAGE_TABLE_COLUMNS[initialColumn]!.supplyTokens, spotter, shifts };
 };
 
 /** Can the barrage be paid through one HQ, or from one dump (10.1bA)? */
@@ -1394,11 +1445,15 @@ export const validateBarrageDeclaration = (state: GameState, action: BarrageDecl
   }
   const firers = action.firerIds.map((id) => pieceById(state, id));
   if (firers.some((piece) => !piece)) return [...issues, violation('UNKNOWN_FIRER', ['firerIds'], 'Unknown firer.', '10.0')];
-  const targets = enemyCombatUnitsAt(state, action.actorId, action.targetHexId);
+  const target = action.target ?? 'COMBAT_UNITS';
+  if (!['COMBAT_UNITS', 'AIR_BASE', 'PORT'].includes(target)) issues.push(violation('INVALID_BARRAGE_TARGET', ['target'], 'Choose combat units, an enemy Air Base, or an enemy port.', '10.0d'));
+  if (target === 'AIR_BASE' && !enemyAirBaseAt(state, action.actorId, action.targetHexId)) issues.push(violation('NO_BARRAGE_TARGET', ['targetHexId'], 'No enemy Air Base in this hex.', '10.0c'));
+  if (target === 'PORT' && !enemyPortTarget(state, action.actorId, action.targetHexId)) issues.push(violation('NO_BARRAGE_TARGET', ['targetHexId'], 'No enemy port able to take damage in this hex.', '10.0c'));
+  const targets = target === 'COMBAT_UNITS' ? enemyCombatUnitsAt(state, action.actorId, action.targetHexId) : [];
   const expected = new Set(targets.map(({ id }) => String(id)));
-  if (targets.length === 0) issues.push(violation('NO_BARRAGE_TARGET', ['targetHexId'], 'The Barrage Table is used against enemy combat units.', '10.0a'));
+  if (target === 'COMBAT_UNITS' && targets.length === 0) issues.push(violation('NO_BARRAGE_TARGET', ['targetHexId'], 'The Barrage Table is used against enemy combat units.', '10.0a'));
   if (action.targetPieceIds.length !== expected.size || action.targetPieceIds.some((id) => !expected.has(String(id)))) {
-    issues.push(violation('WHOLE_HEX_IS_TARGET', ['targetPieceIds'], 'A barrage attacks every combat unit in the Hex.', '10.0a'));
+    issues.push(violation('WHOLE_HEX_IS_TARGET', ['targetPieceIds'], target === 'COMBAT_UNITS' ? 'A barrage attacks every combat unit in the Hex.' : 'Facility barrages do not target ground units.', '10.0a'));
   }
   if (state.ledger.barragedHexIds.includes(action.targetHexId)) issues.push(violation('HEX_ALREADY_BARRAGED', ['targetHexId'], 'Only one barrage per Hex per phase.', '10.0e'));
   for (const [index, candidate] of firers.entries()) {
@@ -1418,7 +1473,7 @@ export const validateBarrageDeclaration = (state: GameState, action: BarrageDecl
     }
   }
   if (issues.length === 0) {
-    const preview = previewBarrage(state, action.actorId, action.firerIds, action.targetHexId);
+    const preview = previewBarrage(state, action.actorId, action.firerIds, action.targetHexId, action.target);
     if (preview.strength < 1) issues.push(violation('BARRAGE_STRENGTH_TOO_LOW', ['firerIds'], 'It takes at least one point to get on the table.', '10.0'));
     else if (!barragePayable(state, firers as PieceState[], preview.supplyTokens)) {
       issues.push(violation('BARRAGE_SUPPLY_UNAVAILABLE', ['firerIds'], `This barrage needs ${preview.supplyTokens}T through one HQ, or from one dump, reaching every firer (never internal stocks).`, '10.1b'));
@@ -1429,10 +1484,11 @@ export const validateBarrageDeclaration = (state: GameState, action: BarrageDecl
 
 export const declareBarrage = (state: GameState, action: BarrageDeclaration): Transition => {
   const firers = action.firerIds.map((id) => pieceById(state, id)!);
-  const preview = previewBarrage(state, action.actorId, action.firerIds, action.targetHexId);
+  const preview = previewBarrage(state, action.actorId, action.firerIds, action.targetHexId, action.target);
   const transaction: RuleTransaction = {
     ...emptyTransaction(state, action.actionId, 'BARRAGE', action.actorId),
     step: 'BARRAGE_SUPPLY',
+    barrageTarget: action.target ?? 'COMBAT_UNITS',
     attackerIds: [...action.firerIds],
     defenderIds: [...action.targetPieceIds],
     targetHexId: action.targetHexId,
@@ -1449,8 +1505,13 @@ export const declareBarrage = (state: GameState, action: BarrageDeclaration): Tr
 const rollBarrage = (state: GameState): Transition => {
   const transaction = state.activeTransaction!;
   const events: RuleEvent[] = [];
-  const preview = previewBarrage(state, transaction.ownerId, transaction.attackerIds, transaction.targetHexId);
+  const preview = previewBarrage(state, transaction.ownerId, transaction.attackerIds, transaction.targetHexId, transaction.barrageTarget ?? 'COMBAT_UNITS');
   let next = consume(state, transaction.attackerPayments, transaction.id, events);
+  if (preview.target !== 'COMBAT_UNITS') {
+    next = resolveFacilityBarrage(next, preview.target, preview.strength, events).state;
+    const processed = processQueue(next);
+    return { state: processed.state, events: renumber([...events, ...processed.events]) };
+  }
   const roll = rollTwoDice(next.rng);
   next = { ...next, rng: roll.rng };
   events.push({ kind: 'DICE_ROLLED', sequence: events.length, transactionId: transaction.id, purpose: 'BARRAGE', roll: roll.roll });

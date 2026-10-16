@@ -1,5 +1,4 @@
-import { damagePort } from '../port/port.js';
-import { PORT_MAXIMUM_HITS, portAt } from '../port/state.js';
+import { enemyAirBaseAt, enemyPortTarget, resolveFacilityBarrage } from '../combat/facility.js';
 import { stableSort, type HexId, type PieceId, type PlayerId } from '../../core/index.js';
 import { upsertPieceState, type PieceState } from '../../domain/piece/index.js';
 import { barrageTargetShifts, hasCorrectSpotter, nextStackOrder, setModeForHex } from '../combat/combat.js';
@@ -22,8 +21,6 @@ import {
   AIR_COMBAT_LOSS_MINIMUM,
   BARRAGE_TABLE_COLUMNS,
   BARRAGE_TABLE_ROWS,
-  FACILITY_TABLE_COLUMNS,
-  FACILITY_TABLE_ROWS,
   FLAK_HIT_MINIMUM,
   FLAK_MODIFIERS,
   MISSION_LOSS_TABLE,
@@ -31,15 +28,14 @@ import {
   SHORT_RANGE_HEXES,
   airCombatResult,
   barrageColumnIndex,
-  facilityColumnIndex,
   parseBarrageResult,
-  parseFacilityResult,
   roundOcs,
 } from '../tables/ocs-4.3.js';
 import { violation } from '../validation/violation.js';
 import { settleInterrupts } from '../lifecycle/interrupts.js';
 import { applyCargoLoss, cargoLoss, isTransportMission, resolveCargo, routeFlight, routeReach, routeStays, startingCargo, transportTargets, validateTransportMission } from './transport.js';
 import {
+  aircraftStepLoss,
   activeAircraftAt,
   activeAircraftLimit,
   airBaseAt,
@@ -66,7 +62,6 @@ import {
   isStrategicBomber,
   mayHipShoot,
   withAircraftActive,
-  withAirBaseLevel,
 } from './aircraft.js';
 
 type Transition = { readonly state: GameState; readonly events: readonly RuleEvent[] };
@@ -90,11 +85,6 @@ export const missionSegment = (mission: AirMissionKind): 'MOVEMENT' | 'BARRAGE' 
 
 /** 14.1g: Active planes fly missions in friendly Movement, Exploitation, and Reaction Phases. */
 const AIR_PHASES = ['MOVEMENT', 'REACTION', 'EXPLOITATION'];
-
-const enemyAirBaseAt = (state: GameState, playerId: PlayerId, hexId: HexId): PieceState | undefined => {
-  const base = airBaseAt(state, hexId);
-  return base && base.ownerId !== playerId ? base : undefined;
-};
 
 const trainbustingAt = (state: GameState, hexId: HexId) => state.air.trainbusting.find((marker) => marker.hexId === hexId);
 
@@ -245,6 +235,8 @@ export const declareAirMission = (state: GameState, action: AirMissionDeclaratio
     surpriseRoll: null,
     shiftDie: null,
     roll: null,
+    barrageTarget: null,
+    facilityDie: null,
     result: null,
     queue: [],
     lossLedger: [],
@@ -288,18 +280,6 @@ const setActive = (state: GameState, pieceId: PieceId, active: boolean, events: 
   if (!piece || !based(state, piece) || isActiveAircraft(piece) === active) return state;
   events.push({ kind: 'AIRCRAFT_STATUS_CHANGED', sequence: events.length, pieceId, active, hexId: hexOf(piece) });
   return { ...state, pieceState: upsertPieceState(state.pieceState, withAircraftActive(piece, active)) };
-};
-
-/** 14.1b: two steps; the second loss sends the aircraft to the Dead Pile. */
-const aircraftStepLoss = (state: GameState, pieceId: PieceId, events: RuleEvent[]): GameState => {
-  const piece = pieceById(state, pieceId);
-  if (!piece || !based(state, piece)) return state;
-  const remaining = (piece.remainingSteps ?? 1) - 1;
-  events.push({ kind: 'STEP_LOST', sequence: events.length, pieceId, remainingSteps: remaining > 0 ? remaining : null });
-  return {
-    ...state,
-    pieceState: upsertPieceState(state.pieceState, remaining > 0 ? { ...piece, remainingSteps: remaining } : { ...piece, location: { kind: 'ELIMINATED' } }),
-  };
 };
 
 /** An aircraft still in play: on the map, or at its off-map airfield. */
@@ -644,63 +624,14 @@ const resolveBarrageOnUnits = (input: GameState, events: RuleEvent[]): GameState
     `Barrage ${preview.strength} on the ${BARRAGE_TABLE_COLUMNS[preview.initialColumn]!.label} column, shifted to ${BARRAGE_TABLE_COLUMNS[preview.finalColumn]!.label}: roll ${roll.roll.total}, ${cell}${losses > 0 ? `, ${losses} step${losses === 1 ? '' : 's'} lost` : result.kind === 'NONE' ? ', no effect' : ', DG'}.`);
 };
 
-/** 10.0c: a port the other side holds that can still take a hit (19.0b: never more than four). */
-const enemyPortTarget = (state: GameState, playerId: PlayerId, hexId: HexId): boolean => {
-  const port = portAt(state, hexId);
-  return port !== undefined && port.controllerId !== null && port.controllerId !== playerId && port.damage < PORT_MAXIMUM_HITS;
-};
-
-/** 10.0c Barrage vs Facility Table against an Air Base or a port, or for Trainbusting (one die, no shifts). */
 const resolveFacility = (input: GameState, events: RuleEvent[]): GameState => {
-  let state = input;
-  const transaction = state.activeTransaction!;
-  const air = airOf(state);
-  const strength = missionBarrageStrength(state, air.aircraft.map(({ pieceId }) => pieceId));
-  if (strength < 1) return logLine(state, 'The mission has no Barrage Strength left and has no effect.');
-  const column = facilityColumnIndex(strength);
-  const die = rollDie(state.rng);
-  state = { ...state, rng: die.rng };
-  const cell = FACILITY_TABLE_ROWS[die.value]![column]!;
-  const result = parseFacilityResult(cell);
-  state = { ...state, activeTransaction: { ...state.activeTransaction!, result: cell } };
-  const label = `Barrage vs Facility ${strength} (${FACILITY_TABLE_COLUMNS[column]!.label}): die ${die.value}, ${cell === '-' ? 'no effect' : cell}`;
-  if (air.mission === 'TRAINBUSTING') {
-    if (!result.trainbusting) return logLine(state, `${label}; no Trainbusting.`);
-    events.push({ kind: 'TRAINBUSTING_CHANGED', sequence: events.length, hexId: transaction.targetHexId, ownerId: transaction.ownerId, placed: true });
-    state = { ...state, air: { ...state.air, trainbusting: [...state.air.trainbusting, { hexId: transaction.targetHexId, ownerId: transaction.ownerId }] } };
-    return logLine(state, `${label}; a Trainbusting marker is placed.`);
-  }
-  // 10.0cB: against a port only the numbered results count, as hits (19.0b).
-  if (air.target === 'PORT') {
-    if (result.levels === 0) return logLine(state, `${label}; the port takes no damage.`);
-    const before = portAt(state, transaction.targetHexId)?.damage ?? 0;
-    state = damagePort(state, transaction.targetHexId, result.levels, 'BARRAGE', events);
-    const after = portAt(state, transaction.targetHexId)?.damage ?? before;
-    return logLine(state, `${label}; the port takes ${after - before} hit${after - before === 1 ? '' : 's'} (now ${after} of ${PORT_MAXIMUM_HITS}).`);
-  }
-  let lines = label;
-  const base = enemyAirBaseAt(state, transaction.ownerId, transaction.targetHexId);
-  // 10.0cA: "(#)" checks every enemy plane in the hex, Active or Inactive, one die each.
-  if (result.aircraftCheck !== null) {
-    for (const plane of aircraftAt(state, transaction.targetHexId).filter((piece) => piece.ownerId === transaction.defenderOwnerId)) {
-      const check = rollDie(state.rng);
-      state = { ...state, rng: check.rng };
-      if (check.value >= result.aircraftCheck) {
-        state = aircraftStepLoss(state, plane.id, events);
-        lines += `; ${aircraftName(state, plane)} loses a step (${check.value})`;
-      }
-    }
-  }
-  // 15.0c: numbered results reduce the Level, never below 1; Air Strips are never reduced.
-  if (result.levels > 0 && base && !isAirStrip(state, base)) {
-    const level = Math.max(1, airBaseLevel(state, base) - result.levels);
-    if (level !== airBaseLevel(state, base)) {
-      state = { ...state, pieceState: upsertPieceState(state.pieceState, withAirBaseLevel(base, level)) };
-      events.push({ kind: 'AIR_BASE_LEVEL_CHANGED', sequence: events.length, pieceId: base.id, level });
-      lines += `; the Air Base drops to Level ${level}`;
-    }
-  }
-  return logLine(state, `${lines}.`);
+  const air = airOf(input);
+  const target = air.mission === 'TRAINBUSTING' ? 'TRAINBUSTING' : air.target;
+  if (target !== 'TRAINBUSTING' && target !== 'AIR_BASE' && target !== 'PORT') return input;
+  const strength = missionBarrageStrength(input, air.aircraft.map(({ pieceId }) => pieceId));
+  if (strength < 1) return logLine(input, 'The mission has no Barrage Strength left and has no effect.');
+  const resolved = resolveFacilityBarrage(input, target, strength, events);
+  return logLine(resolved.state, resolved.text);
 };
 
 const resolveMission = (input: GameState, events: RuleEvent[]): Transition | GameState => {

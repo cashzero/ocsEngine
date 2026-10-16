@@ -6,7 +6,8 @@ import type { GameAction, GameState, PortWork, RuleEvent, RuleViolation } from '
 import { definitionOf, pieceById } from '../pieces.js';
 import { dumpsReaching, spendReservations } from '../supply/supply.js';
 import { violation } from '../validation/violation.js';
-import { PORT_FACILITY, PORT_MAXIMUM_HITS, allPorts, portAt, portHexOf, seaOf } from './state.js';
+import { PORT_FACILITY, allPorts, portAt, portHexOf, seaOf } from './state.js';
+import { PORT_MAXIMUM_HITS } from '../tables/ocs-4.3.js';
 
 /**
  * Port capture (9.14h), damage (19.0b), voluntary reduction (19.0c) and repair (19.0d). Ports are printed on the map; what

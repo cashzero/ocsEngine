@@ -1,0 +1,325 @@
+[
+  {
+    "newGame": {
+      "summary": "Meeting engagement · 57 units · 6 formations · 3 turns · seeds map 5101, OOB 5102, deployment 5103, rules 5104",
+      "preview": {
+        "Scenario": "Meeting engagement",
+        "Players": "Allied: player · Axis: player",
+        "Map": "18×12",
+        "Units": "57",
+        "Objectives": "3 hexes · 8 VP (Allied 4 · Axis 4)",
+        "Divisions": "3 per side",
+        "Deployed hexes": "33",
+        "Rail Cap": "Allied 2 · Axis 2",
+        "Ports": "2",
+        "Sea Cap": "Allied 1 · Axis 1",
+        "Warnings": "0"
+      },
+      "phases": [
+        {
+          "turn": "Turn 1 / 3",
+          "player": "Allied player turn",
+          "phase": "Movement",
+          "seat": "Allied commander",
+          "end": "End Movement SegmentNext: Barrage Segment",
+          "endDisabled": false,
+          "notice": "Moved to 0404.",
+          "handoff": false,
+          "complete": false,
+          "decision": []
+        },
+        {
+          "turn": "Turn 1 / 3",
+          "player": "Allied player turn",
+          "phase": "Movement · Barrage",
+          "seat": "Allied commander",
+          "end": "End Barrage SegmentNext: Supply Phase",
+          "endDisabled": false,
+          "notice": "Movement · Movement Segment finished.",
+          "handoff": false,
+          "complete": false,
+          "decision": []
+        },
+        {
+          "turn": "Turn 1 / 3",
+          "player": "Allied player turn · Axis to act",
+          "phase": "Reaction · Movement",
+          "seat": "Axis commander",
+          "end": "End Movement SegmentNext: Barrage Segment",
+          "endDisabled": false,
+          "notice": "Your turn, Axis commander.",
+          "handoff": false,
+          "complete": false,
+          "decision": []
+        },
+        {
+          "turn": "Turn 1 / 3",
+          "player": "Allied player turn · Axis to act",
+          "phase": "Reaction · Barrage",
+          "seat": "Axis commander",
+          "end": "End Barrage SegmentNext: Combat Phase",
+          "endDisabled": false,
+          "notice": "Reaction · Movement Segment finished.",
+          "handoff": false,
+          "complete": false,
+          "decision": []
+        },
+        {
+          "turn": "Turn 1 / 3",
+          "player": "Allied player turn",
+          "phase": "Exploitation · Movement",
+          "seat": "Allied commander",
+          "end": "End Movement SegmentNext: Barrage Segment",
+          "endDisabled": false,
+          "notice": "Your turn, Allied commander.",
+          "handoff": false,
+          "complete": false,
+          "decision": []
+        },
+        {
+          "turn": "Turn 1 / 3",
+          "player": "Allied player turn",
+          "phase": "Exploitation · Barrage",
+          "seat": "Allied commander",
+          "end": "End Barrage SegmentNext: Combat Segment",
+          "endDisabled": false,
+          "notice": "Exploitation · Movement Segment finished.",
+          "handoff": false,
+          "complete": false,
+          "decision": []
+        },
+        {
+          "turn": "Turn 1 / 3",
+          "player": "Axis player turn",
+          "phase": "Movement",
+          "seat": "Axis commander",
+          "end": "End Movement SegmentNext: Barrage Segment",
+          "endDisabled": false,
+          "notice": "Your turn, Axis commander.",
+          "handoff": false,
+          "complete": false,
+          "decision": []
+        },
+        {
+          "turn": "Turn 1 / 3",
+          "player": "Axis player turn",
+          "phase": "Movement · Barrage",
+          "seat": "Axis commander",
+          "end": "End Barrage SegmentNext: Supply Phase",
+          "endDisabled": false,
+          "notice": "Movement · Movement Segment finished.",
+          "handoff": false,
+          "complete": false,
+          "decision": []
+        },
+        {
+          "turn": "Turn 1 / 3",
+          "player": "Axis player turn · Allied to act",
+          "phase": "Reaction · Movement",
+          "seat": "Allied commander",
+          "end": "End Movement SegmentNext: Barrage Segment",
+          "endDisabled": false,
+          "notice": "Your turn, Allied commander.",
+          "handoff": false,
+          "complete": false,
+          "decision": []
+        },
+        {
+          "turn": "Turn 1 / 3",
+          "player": "Axis player turn · Allied to act",
+          "phase": "Reaction · Barrage",
+          "seat": "Allied commander",
+          "end": "End Barrage SegmentNext: Combat Phase",
+          "endDisabled": false,
+          "notice": "Reaction · Movement Segment finished.",
+          "handoff": false,
+          "complete": false,
+          "decision": []
+        },
+        {
+          "turn": "Turn 1 / 3",
+          "player": "Axis player turn",
+          "phase": "Exploitation · Movement",
+          "seat": "Axis commander",
+          "end": "End Movement SegmentNext: Barrage Segment",
+          "endDisabled": false,
+          "notice": "Your turn, Axis commander.",
+          "handoff": false,
+          "complete": false,
+          "decision": []
+        },
+        {
+          "turn": "Turn 1 / 3",
+          "player": "Axis player turn",
+          "phase": "Exploitation · Barrage",
+          "seat": "Axis commander",
+          "end": "End Barrage SegmentNext: Combat Segment",
+          "endDisabled": false,
+          "notice": "Exploitation · Movement Segment finished.",
+          "handoff": false,
+          "complete": false,
+          "decision": []
+        },
+        {
+          "turn": "Turn 2 / 3",
+          "player": "Axis player turn",
+          "phase": "First Player Phase",
+          "seat": "Axis commander",
+          "end": "End First Player PhaseNext: Aircraft Refit Phase",
+          "endDisabled": true,
+          "notice": "Exploitation · Barrage Segment finished.",
+          "handoff": false,
+          "complete": false,
+          "decision": [
+            "Go first",
+            "Go second"
+          ]
+        }
+      ],
+      "final": {
+        "turn": "Turn 2 / 3",
+        "player": "Axis player turn",
+        "phase": "Reinforcement",
+        "seat": "Axis commander",
+        "end": "End Reinforcement PhaseNext: Movement Phase",
+        "endDisabled": true,
+        "notice": "Decision recorded.",
+        "handoff": false,
+        "complete": false,
+        "decision": []
+      }
+    }
+  },
+  {
+    "position": "port-only",
+    "target": "PORT",
+    "options": [
+      "PORT"
+    ],
+    "previews": {
+      "PORT": "Barrage 0503 Target Port Table Barrage vs Facility Table · 1d6 Column 21-40 Barrage strength 34 Shifts none Spotter not required Supply 4T Tick the artillery that fires. Supply is paid from dumps in reach; if several can pay you will choose, or pay automatically. III I 6.A 17 3 2 5 Div Arty I / 6.A 0504 III 355 17 3 2 5 US 355 FA Gp 0504 Cancel Barrage"
+    },
+    "draft": "Barrage 0503 Target Port Table Barrage vs Facility Table · 1d6 Column 21-40 Barrage strength 34 Shifts none Spotter not required Supply 4T Tick the artillery that fires. Supply is paid from dumps in reach; if several can pay you will choose, or pay automatically. III I 6.A 17 3 2 5 Div Arty I / 6.A 0504 III 355 17 3 2 5 US 355 FA Gp 0504 Cancel Barrage",
+    "paid": 4,
+    "cost": 4,
+    "delta": 2,
+    "elapsed": 812,
+    "decisions": [
+      {
+        "seat": "Allied commander",
+        "handedOver": false,
+        "prompt": "Barrage on 0503: 4T of combat supply still to pay. Choose where it comes from.",
+        "options": [
+          "Pay 4T from the dump at 0504 (40T available)",
+          "Pay 1T from the dump at 0504 (40T available)",
+          "Pay 4T from the dump at 0405 (12T available)",
+          "Pay 1T from the dump at 0405 (12T available)"
+        ],
+        "chosen": "Pay 4T from the dump at 0504 (40T available)"
+      }
+    ],
+    "rngDraws": 1,
+    "log": "No legal artillery barrage. Blocked attempts: artillery already fired this phase; targets outside artillery range; target hex already barraged this phase. Hex 0503 No unit of yours here. Deselect Targets Unit Ledger Log All units (24) COMBAT RESULT Allied commander barrage on 0503 · 34 · 21-40 Barrage vs Facility 34 (21-40): die 6, 2*(4); the port takes 2 hits (now 2 of 4). barrage roll 6 Barrage vs Facility 34 (21-40): die 6, 2*(4); the port takes 2 hits (now 2 of 4). Port damaged OK You chose a combat supply source Facility die: 6. Barrage vs Facility 34 (21-40): die 6, 2*(4); the port takes 2 hits (now 2 of 4). You barraged the port at 0503 Combat resolved. Result Barrage vs Facility 34 (21-40): die 6, 2*(4); the port takes 2 hits (now 2 of 4).."
+  },
+  {
+    "position": "base-only",
+    "target": "AIR_BASE",
+    "options": [
+      "AIR_BASE"
+    ],
+    "previews": {
+      "AIR_BASE": "Barrage 0503 Target Air Base Table Barrage vs Facility Table · 1d6 Column 21-40 Barrage strength 34 Shifts none Spotter not required Supply 4T Tick the artillery that fires. Supply is paid from dumps in reach; if several can pay you will choose, or pay automatically. III I 6.A 17 3 2 5 Div Arty I / 6.A 0504 III 355 17 3 2 5 US 355 FA Gp 0504 Cancel Barrage"
+    },
+    "draft": "Barrage 0503 Target Air Base Table Barrage vs Facility Table · 1d6 Column 21-40 Barrage strength 34 Shifts none Spotter not required Supply 4T Tick the artillery that fires. Supply is paid from dumps in reach; if several can pay you will choose, or pay automatically. III I 6.A 17 3 2 5 Div Arty I / 6.A 0504 III 355 17 3 2 5 US 355 FA Gp 0504 Cancel Barrage",
+    "paid": 4,
+    "cost": 4,
+    "delta": 2,
+    "elapsed": 972,
+    "decisions": [
+      {
+        "seat": "Allied commander",
+        "handedOver": false,
+        "prompt": "Barrage on 0503: 4T of combat supply still to pay. Choose where it comes from.",
+        "options": [
+          "Pay 4T from the dump at 0504 (40T available)",
+          "Pay 1T from the dump at 0504 (40T available)",
+          "Pay 4T from the dump at 0405 (12T available)",
+          "Pay 1T from the dump at 0405 (12T available)"
+        ],
+        "chosen": "Pay 4T from the dump at 0504 (40T available)"
+      }
+    ],
+    "rngDraws": 4,
+    "log": "No legal artillery barrage. Blocked attempts: artillery already fired this phase; targets outside artillery range; target hex already barraged this phase. Hex 0503 No unit of yours here. Deselect Targets Unit Ledger Log All units (24) COMBAT RESULT Allied commander barrage on 0503 · 34 · 21-40 Barrage vs Facility 34 (21-40): die 6, 2*(4); KG 51 Ju.88 loses a step (6); the Air Base drops to Level 1. barrage roll 6 Barrage vs Facility 34 (21-40): die 6, 2*(4); KG 51 Ju.88 loses a step (6); the Air Base drops to Level 1. KG 51 Ju.88 lost a step Axis Air Base 1 reduced to Level 1 OK You chose a combat supply source Facility die: 6. KG 51 Ju.88 aircraft check: 6. KG 51 Ju.88 lost a step (1 left). JG 300 Fw-190d aircraft check: 1. JG 3 Fw-190d aircraft check: 3. Barrage vs Facility 34 (21-40): die 6, 2*(4); KG 51 Ju.88 loses a step (6); the Air Base drops to Level 1. You barraged the Air Base at 0503 Combat resolved. Result Barrage vs Facility 34 (21-40): die 6, 2*(4); KG 51 Ju.88 loses a step (6); the Air Base drops to Level 1.."
+  },
+  {
+    "position": "mixed",
+    "target": "PORT",
+    "options": [
+      "COMBAT_UNITS",
+      "AIR_BASE",
+      "PORT"
+    ],
+    "previews": {
+      "COMBAT_UNITS": "Barrage 0503 Target Combat units Air Base Port Table Barrage Table · 2d6 Column 12-16 Barrage strength 34 Shifts Density -1, Terrain -1 Spotter yes Supply 4T Tick the artillery that fires. Supply is paid from dumps in reach; if several can pay you will choose, or pay automatically. III I 6.A 17 3 2 5 Div Arty I / 6.A 0504 III 355 17 3 2 5 US 355 FA Gp 0504 Cancel Barrage",
+      "AIR_BASE": "Barrage 0503 Target Combat units Air Base Port Table Barrage vs Facility Table · 1d6 Column 21-40 Barrage strength 34 Shifts none Spotter not required Supply 4T Tick the artillery that fires. Supply is paid from dumps in reach; if several can pay you will choose, or pay automatically. III I 6.A 17 3 2 5 Div Arty I / 6.A 0504 III 355 17 3 2 5 US 355 FA Gp 0504 Cancel Barrage",
+      "PORT": "Barrage 0503 Target Combat units Air Base Port Table Barrage vs Facility Table · 1d6 Column 21-40 Barrage strength 34 Shifts none Spotter not required Supply 4T Tick the artillery that fires. Supply is paid from dumps in reach; if several can pay you will choose, or pay automatically. III I 6.A 17 3 2 5 Div Arty I / 6.A 0504 III 355 17 3 2 5 US 355 FA Gp 0504 Cancel Barrage"
+    },
+    "draft": "Barrage 0503 Target Combat units Air Base Port Table Barrage vs Facility Table · 1d6 Column 21-40 Barrage strength 34 Shifts none Spotter not required Supply 4T Tick the artillery that fires. Supply is paid from dumps in reach; if several can pay you will choose, or pay automatically. III I 6.A 17 3 2 5 Div Arty I / 6.A 0504 III 355 17 3 2 5 US 355 FA Gp 0504 Cancel Barrage",
+    "paid": 4,
+    "cost": 4,
+    "delta": 2,
+    "elapsed": 859,
+    "decisions": [
+      {
+        "seat": "Allied commander",
+        "handedOver": false,
+        "prompt": "Barrage on 0503: 4T of combat supply still to pay. Choose where it comes from.",
+        "options": [
+          "Pay 4T from the dump at 0504 (40T available)",
+          "Pay 1T from the dump at 0504 (40T available)",
+          "Pay 4T from the dump at 0405 (12T available)",
+          "Pay 1T from the dump at 0405 (12T available)"
+        ],
+        "chosen": "Pay 4T from the dump at 0504 (40T available)"
+      }
+    ],
+    "rngDraws": 1,
+    "log": "No legal artillery barrage. Blocked attempts: artillery already fired this phase; targets outside artillery range; target hex already barraged this phase. Hex 0503 No unit of yours here. Deselect Targets Unit Ledger Log All units (24) COMBAT RESULT Allied commander barrage on 0503 · 34 · 21-40 Barrage vs Facility 34 (21-40): die 6, 2*(4); the port takes 2 hits (now 2 of 4). barrage roll 6 Barrage vs Facility 34 (21-40): die 6, 2*(4); the port takes 2 hits (now 2 of 4). Port damaged OK You chose a combat supply source Facility die: 6. Barrage vs Facility 34 (21-40): die 6, 2*(4); the port takes 2 hits (now 2 of 4). You barraged the port at 0503 Combat resolved. Result Barrage vs Facility 34 (21-40): die 6, 2*(4); the port takes 2 hits (now 2 of 4).."
+  },
+  {
+    "position": "mixed",
+    "target": "AIR_BASE",
+    "options": [
+      "COMBAT_UNITS",
+      "AIR_BASE",
+      "PORT"
+    ],
+    "previews": {
+      "COMBAT_UNITS": "Barrage 0503 Target Combat units Air Base Port Table Barrage Table · 2d6 Column 12-16 Barrage strength 34 Shifts Density -1, Terrain -1 Spotter yes Supply 4T Tick the artillery that fires. Supply is paid from dumps in reach; if several can pay you will choose, or pay automatically. III I 6.A 17 3 2 5 Div Arty I / 6.A 0504 III 355 17 3 2 5 US 355 FA Gp 0504 Cancel Barrage",
+      "AIR_BASE": "Barrage 0503 Target Combat units Air Base Port Table Barrage vs Facility Table · 1d6 Column 21-40 Barrage strength 34 Shifts none Spotter not required Supply 4T Tick the artillery that fires. Supply is paid from dumps in reach; if several can pay you will choose, or pay automatically. III I 6.A 17 3 2 5 Div Arty I / 6.A 0504 III 355 17 3 2 5 US 355 FA Gp 0504 Cancel Barrage",
+      "PORT": "Barrage 0503 Target Combat units Air Base Port Table Barrage vs Facility Table · 1d6 Column 21-40 Barrage strength 34 Shifts none Spotter not required Supply 4T Tick the artillery that fires. Supply is paid from dumps in reach; if several can pay you will choose, or pay automatically. III I 6.A 17 3 2 5 Div Arty I / 6.A 0504 III 355 17 3 2 5 US 355 FA Gp 0504 Cancel Barrage"
+    },
+    "draft": "Barrage 0503 Target Combat units Air Base Port Table Barrage vs Facility Table · 1d6 Column 21-40 Barrage strength 34 Shifts none Spotter not required Supply 4T Tick the artillery that fires. Supply is paid from dumps in reach; if several can pay you will choose, or pay automatically. III I 6.A 17 3 2 5 Div Arty I / 6.A 0504 III 355 17 3 2 5 US 355 FA Gp 0504 Cancel Barrage",
+    "paid": 4,
+    "cost": 4,
+    "delta": 2,
+    "elapsed": 695,
+    "decisions": [
+      {
+        "seat": "Allied commander",
+        "handedOver": false,
+        "prompt": "Barrage on 0503: 4T of combat supply still to pay. Choose where it comes from.",
+        "options": [
+          "Pay 4T from the dump at 0504 (40T available)",
+          "Pay 1T from the dump at 0504 (40T available)",
+          "Pay 4T from the dump at 0405 (12T available)",
+          "Pay 1T from the dump at 0405 (12T available)"
+        ],
+        "chosen": "Pay 4T from the dump at 0504 (40T available)"
+      }
+    ],
+    "rngDraws": 4,
+    "log": "No legal artillery barrage. Blocked attempts: artillery already fired this phase; targets outside artillery range; target hex already barraged this phase. Hex 0503 No unit of yours here. Deselect Targets Unit Ledger Log All units (24) COMBAT RESULT Allied commander barrage on 0503 · 34 · 21-40 Barrage vs Facility 34 (21-40): die 6, 2*(4); KG 51 Ju.88 loses a step (6); the Air Base drops to Level 1. barrage roll 6 Barrage vs Facility 34 (21-40): die 6, 2*(4); KG 51 Ju.88 loses a step (6); the Air Base drops to Level 1. KG 51 Ju.88 lost a step Axis Air Base 1 reduced to Level 1 OK You chose a combat supply source Facility die: 6. KG 51 Ju.88 aircraft check: 6. KG 51 Ju.88 lost a step (1 left). JG 300 Fw-190d aircraft check: 1. JG 3 Fw-190d aircraft check: 3. Barrage vs Facility 34 (21-40): die 6, 2*(4); KG 51 Ju.88 loses a step (6); the Air Base drops to Level 1. You barraged the Air Base at 0503 Combat resolved. Result Barrage vs Facility 34 (21-40): die 6, 2*(4); KG 51 Ju.88 loses a step (6); the Air Base drops to Level 1.."
+  }
+]

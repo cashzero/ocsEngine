@@ -3,6 +3,12 @@ import {
   BARRAGE_TABLE_ROWS,
   COMBAT_TABLE_COLUMNS,
   COMBAT_TABLE_ROWS,
+  FACILITY_TABLE_ROWS,
+  FACILITY_TABLE_COLUMNS,
+  PORT_DAMAGE_CAPACITY_PERCENT,
+  PORT_MAXIMUM_HITS,
+  PORT_SOURCE_MINIMUM_TOKENS,
+  parseFacilityResult,
   combatTableRowIndex,
   parseBarrageResult,
   parseCombatResult,
@@ -93,6 +99,7 @@ export interface BarrageForecast {
 }
 
 export const forecastBarrage = (facts: readonly RuleFact[]): BarrageForecast | null => {
+  if (facts.some(({ key, value }) => key === 'barrage.target' && value !== 'COMBAT_UNITS')) return null;
   const finalColumn = fact(facts, 'barrage.finalColumn');
   if (typeof finalColumn !== 'number') return null;
   let disrupt = 0; let expectedSteps = 0;
@@ -104,4 +111,40 @@ export const forecastBarrage = (facts: readonly RuleFact[]): BarrageForecast | n
     expectedSteps += p * (result.kind === 'STEPS' ? result.steps : result.kind === 'HALF' ? 0.5 : result.kind === 'BRACKETED_HALF' ? 0.25 : 0);
   }
   return { finalColumn, supplyTokens: Number(fact(facts, 'barrage.supplyTokens') ?? 0), disrupt, expectedSteps };
+};
+
+
+/** Only printed facilities and aircraft actually visible to the acting player. */
+export type PublicFacilityTarget =
+  | { readonly kind: 'PORT'; readonly printedTokens: number; readonly hits: number }
+  | { readonly kind: 'AIR_BASE'; readonly level: number; readonly strip: boolean; readonly visibleAircraft: number };
+
+export interface FacilityForecast {
+  readonly finalColumn: number;
+  readonly supplyTokens: number;
+  readonly expectedPortCapacityTokensLost: number;
+  readonly expectedPortSourceLoss: number;
+  readonly expectedBaseLevelsLost: number;
+  readonly expectedAircraftSteps: number;
+}
+
+/** One equally likely roll for each printed Facility Table row; aircraft checks use their own die. */
+export const forecastFacilityBarrage = (facts: readonly RuleFact[], target: PublicFacilityTarget): FacilityForecast | null => {
+  if (fact(facts, 'barrage.target') !== target.kind) return null;
+  const finalColumn = fact(facts, 'barrage.finalColumn');
+  if (typeof finalColumn !== 'number' || !Number.isInteger(finalColumn) || finalColumn < 0 || finalColumn >= FACILITY_TABLE_COLUMNS.length) return null;
+  let expectedPortCapacityTokensLost = 0; let expectedPortSourceLoss = 0; let expectedBaseLevelsLost = 0; let expectedAircraftSteps = 0;
+  for (let die = 1; die <= 6; die += 1) {
+    const result = parseFacilityResult(FACILITY_TABLE_ROWS[die]![finalColumn]!);
+    if (target.kind === 'PORT') {
+      const capacity = (hits: number) => Math.round(target.printedTokens * PORT_DAMAGE_CAPACITY_PERCENT[Math.min(PORT_MAXIMUM_HITS, hits)]! / 100);
+      expectedPortCapacityTokensLost += (capacity(target.hits) - capacity(target.hits + result.levels)) / 6;
+      if (capacity(target.hits) >= PORT_SOURCE_MINIMUM_TOKENS && capacity(target.hits + result.levels) < PORT_SOURCE_MINIMUM_TOKENS) expectedPortSourceLoss += 1 / 6;
+    } else {
+      expectedBaseLevelsLost += (target.strip ? 0 : Math.min(Math.max(0, target.level - 1), result.levels)) / 6;
+      expectedAircraftSteps += result.aircraftCheck === null ? 0 : target.visibleAircraft * (7 - result.aircraftCheck) / 36;
+    }
+  }
+  return { finalColumn, supplyTokens: Number(fact(facts, 'barrage.supplyTokens') ?? 0),
+    expectedPortCapacityTokensLost, expectedPortSourceLoss, expectedBaseLevelsLost, expectedAircraftSteps };
 };

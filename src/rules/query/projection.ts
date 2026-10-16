@@ -9,7 +9,7 @@ import { exertsZoc } from '../zoc/zoc.js';
 import { pendingAbsorptions } from '../breakdown/breakdown.js';
 import { calculateCombatOdds } from '../combat/strength.js';
 import { previewBarrage } from '../combat/combat.js';
-import { BARRAGE_TABLE_COLUMNS } from '../tables/ocs-4.3.js';
+import { BARRAGE_TABLE_COLUMNS, FACILITY_TABLE_COLUMNS } from '../tables/ocs-4.3.js';
 import type { PieceRole, ProjectedBridge, ProjectedCombat, ProjectedPiece, ProjectedStack, RuleProjection } from './model.js';
 import { AIR_MISSION_LABELS, previewAirBarrage } from '../air/mission.js';
 import { activeAircraftLimit, airBaseLevel, aircraftName, isActiveAircraft, isAirBase,
@@ -288,7 +288,7 @@ const projectCombat = (state: GameState): ProjectedCombat | null => {
   const base = {
     kind: transaction.kind, targetHexId: transaction.targetHexId, attackerOwnerId: transaction.ownerId,
     attackerCount: transaction.attackerIds.length, defenderCount: transaction.defenderIds.length,
-    result: transaction.result, rollTotal: transaction.roll?.total ?? null,
+    result: transaction.result, rollTotal: transaction.facilityDie ?? transaction.roll?.total ?? null,
     surpriseTotal: transaction.surpriseRoll?.total ?? null, shiftDie: transaction.shiftDie,
     defenderSupplied: defenderDecided ? transaction.defenderSupplied || transaction.defenderInternalIds.length > 0 : null,
     air: null,
@@ -308,8 +308,8 @@ const projectCombat = (state: GameState): ProjectedCombat | null => {
     };
   }
   if (transaction.kind === 'BARRAGE') {
-    const preview = previewBarrage(state, transaction.ownerId, transaction.attackerIds, transaction.targetHexId);
-    return { ...base, attackerStrength: preview.strength, defenderStrength: null, odds: BARRAGE_TABLE_COLUMNS[preview.finalColumn]!.label, line: null, drm: null };
+    const preview = previewBarrage(state, transaction.ownerId, transaction.attackerIds, transaction.targetHexId, transaction.barrageTarget ?? 'COMBAT_UNITS');
+    return { ...base, attackerStrength: preview.strength, defenderStrength: null, odds: (preview.target === 'COMBAT_UNITS' ? BARRAGE_TABLE_COLUMNS : FACILITY_TABLE_COLUMNS)[preview.finalColumn]!.label, line: null, drm: null };
   }
   const supplied = !defenderDecided ? transaction.defenderIds
     : transaction.defenderSupplied ? transaction.defenderIds : transaction.defenderInternalIds;

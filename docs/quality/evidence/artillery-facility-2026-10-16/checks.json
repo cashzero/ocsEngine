@@ -1,0 +1,49 @@
+{
+  "typecheck": {
+    "command": "npm run typecheck",
+    "exitCode": 0
+  },
+  "buildAndSmoke": {
+    "command": "npm run build && npm run smoke",
+    "exitCode": 0
+  },
+  "focused": {
+    "command": "npx vitest run tests/rules/artillery-facility.test.ts tests/rules/ocs-air.test.ts --maxWorkers=2",
+    "exitCode": 0,
+    "testsPassed": 51
+  },
+  "full": {
+    "command": "npx vitest run --maxWorkers=2",
+    "exitCode": 0,
+    "filesPassed": 109,
+    "filesSkipped": 4,
+    "testsPassed": 766,
+    "testsSkipped": 8
+  },
+  "initialDefaultParallel": {
+    "command": "npm run check",
+    "exitCode": 1,
+    "failures": [
+      {
+        "test": "deployment-terrain.test.ts",
+        "reason": "15000ms timeout"
+      },
+      {
+        "test": "overstack-warning.test.ts",
+        "reason": "15000ms timeout"
+      },
+      {
+        "test": "rule-engine-integration.test.ts",
+        "reason": "PARTIAL manifest row without GAP after facility gap was removed; artillery row corrected to IMPLEMENTED with facility test evidence"
+      }
+    ]
+  },
+  "independentReview": {
+    "remainingFindings": 0,
+    "fixedFindings": [
+      "Preserve original zero-strength air mission log for old save/replay hashes",
+      "Use compareText aircraft ordering consistent with canonical saved piece state"
+    ],
+    "commentFindings": 0
+  }
+}

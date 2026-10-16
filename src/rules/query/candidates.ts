@@ -1,7 +1,8 @@
+import { enemyAirBaseAt, enemyPortTarget } from '../combat/facility.js';
 import { stableSort, type HexId, type PieceId, type PlayerId } from '../../core/index.js';
 import type { PieceState } from '../../domain/piece/index.js';
 import { parseRuleActionId, type RuleActionId } from '../kernel/ids.js';
-import type { GameAction, GameState } from '../kernel/model.js';
+import type { AirBarrageTarget, GameAction, GameState } from '../kernel/model.js';
 import { validateGameAction } from '../kernel/validate.js';
 import { arrivingReinforcements, reinforcementHexes } from '../lifecycle/lifecycle.js';
 import { breakoutCandidates } from '../lifecycle/supply-phase.js';
@@ -41,7 +42,7 @@ import {
   unitsNeedingSupply,
 } from '../supply/supply.js';
 import { definitionOf, locatedHexOf, pieceById, piecesAt, reTicksOf, usageOf } from '../pieces.js';
-import type { ActionFamily, CandidateRequest } from './model.js';
+import type { ActionFamily, BarrageAvailability, BarrageBlocker, CandidateRequest } from './model.js';
 
 const actionId = (value: string): RuleActionId => {
   const parsed = parseRuleActionId(value);
@@ -120,26 +121,77 @@ export const combatCandidatesFor = (
   return actions;
 };
 
-export const barrageCandidatesFor = (state: GameState, actorId: PlayerId, pieceId: PieceId | null): readonly GameAction[] => {
+const scanBarrages = (
+  state: GameState, actorId: PlayerId, pieceId: PieceId | null, blockers?: Set<BarrageBlocker>,
+): readonly GameAction[] => {
   const actions: GameAction[] = [];
   const artillery = friendlyOnMap(state, actorId).filter((piece) => isArtillery(state, piece));
-  const enemyHexes = [...new Set(state.pieceState.pieces
-    .filter((piece) => piece.ownerId !== actorId && hexOf(piece) !== null && enemyCombatUnitsAt(state, actorId, hexOf(piece)!).length > 0)
-    .map((piece) => hexOf(piece)!))].sort();
-  for (const target of enemyHexes) {
-    const inRange = artillery.filter((piece) => hexDistanceBetween(hexOf(piece)!, target) <= (stepOf(state, piece)?.range ?? 0));
-    if (inRange.length === 0) continue;
-    const targetPieceIds = enemyCombatUnitsAt(state, actorId, target).map(({ id }) => id).sort();
-    for (const group of [inRange, ...inRange.map((piece) => [piece])]) {
-      if (pieceId !== null && !group.some(({ id }) => id === pieceId)) continue;
-      const action: GameAction = {
-        ...base(state, actorId, `barrage:${target}:${group.map(({ id }) => id).join('+')}`),
-        kind: 'DECLARE_BARRAGE', firerIds: group.map(({ id }) => id), targetPieceIds, targetHexId: target,
-      };
-      if (validateGameAction(state, action).allowed) { actions.push(action); if (group === inRange) break; }
+  if (artillery.length === 0) blockers?.add('NO_ARTILLERY');
+  let hasTargets = false;
+  const targetHexes = [...new Set([
+    ...state.pieceState.pieces.filter((piece) => piece.ownerId !== actorId).flatMap((piece) => hexOf(piece) ?? []),
+    ...allPorts(state).map(portHexOf),
+  ])].sort();
+  for (const targetHexId of targetHexes) {
+    const targets: AirBarrageTarget[] = [];
+    if (enemyCombatUnitsAt(state, actorId, targetHexId).length > 0) targets.push('COMBAT_UNITS');
+    if (enemyAirBaseAt(state, actorId, targetHexId)) targets.push('AIR_BASE');
+    if (enemyPortTarget(state, actorId, targetHexId)) targets.push('PORT');
+    if (targets.length === 0) continue;
+    hasTargets = true;
+    const inRange = artillery.filter((piece) => hexDistanceBetween(hexOf(piece)!, targetHexId) <= (stepOf(state, piece)?.range ?? 0));
+    if (inRange.length === 0 && !blockers) continue;
+    const groups = inRange.length > 0 ? [inRange, ...inRange.map((piece) => [piece])] : artillery.map((piece) => [piece]);
+    for (const target of targets) {
+      const targetPieceIds = target === 'COMBAT_UNITS' ? enemyCombatUnitsAt(state, actorId, targetHexId).map(({ id }) => id).sort() : [];
+      for (const group of groups) {
+        if (pieceId !== null && !group.some(({ id }) => id === pieceId)) continue;
+        const action: GameAction = {
+          ...base(state, actorId, `barrage:${targetHexId}:${target}:${group.map(({ id }) => id).join('+')}`),
+          kind: 'DECLARE_BARRAGE', target, firerIds: group.map(({ id }) => id), targetPieceIds, targetHexId,
+        };
+        const validation = validateGameAction(state, action);
+        if (validation.allowed) { actions.push(action); if (group === inRange) break; }
+        else if (blockers) for (const { code } of validation.violations) {
+          const blocker = barrageBlocker(code);
+          if (blocker) blockers.add(blocker);
+        }
+      }
     }
   }
+  if (!hasTargets) blockers?.add('NO_ENEMY_TARGETS');
   return actions;
+};
+
+const barrageBlocker = (code: string): BarrageBlocker | null => {
+  switch (code) {
+    case 'BARRAGE_OUT_OF_RANGE': return 'OUT_OF_RANGE';
+    case 'BARRAGE_SUPPLY_UNAVAILABLE': return 'SUPPLY_UNAVAILABLE';
+    case 'ARTILLERY_ALREADY_BARRAGED': return 'UNIT_ALREADY_BARRAGED';
+    case 'HEX_ALREADY_BARRAGED': return 'HEX_ALREADY_BARRAGED';
+    case 'ARTILLERY_MODE_CANNOT_BARRAGE': return 'ARTILLERY_MODE';
+    case 'REACTION_REQUIRES_RELEASED_RESERVE':
+    case 'EXPLOITATION_REQUIRES_EXPLOIT_OR_RESERVE': return 'RESERVE_NOT_RELEASED';
+    case 'INVALID_BARRAGE_PHASE':
+    case 'GAME_ALREADY_COMPLETE': return 'INVALID_PHASE';
+    case 'BARRAGE_STRENGTH_TOO_LOW': return 'STRENGTH_TOO_LOW';
+    case 'PENDING_DECISION_LOCK':
+    case 'ACTIVE_TRANSACTION_LOCK': return 'RESOLVE_COMBAT';
+    default: return null;
+  }
+};
+
+export const barrageCandidatesFor = (state: GameState, actorId: PlayerId, pieceId: PieceId | null): readonly GameAction[] =>
+  scanBarrages(state, actorId, pieceId);
+
+export const barrageAvailability = (state: GameState, actorId: PlayerId): BarrageAvailability => {
+  if (actorId !== state.sequence.actingPlayerId) return { kind: 'UNAVAILABLE', blockers: [] };
+  const blockers = new Set<BarrageBlocker>();
+  const actions = scanBarrages(state, actorId, null, blockers);
+  if (actions.length > 0) return { kind: 'AVAILABLE', blockers: [] };
+  const [first, ...rest] = blockers;
+  if (!first) return { kind: 'UNAVAILABLE', blockers: [] };
+  return { kind: 'BLOCKED', blockers: [first, ...rest] };
 };
 
 export const candidateActions = (

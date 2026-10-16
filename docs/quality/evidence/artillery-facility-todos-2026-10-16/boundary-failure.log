@@ -1,0 +1,42 @@
+
+> ocs-engine@0.1.0 test
+> vitest run --maxWorkers=2
+
+
+ RUN  v4.1.11 /home/cashlin/ocsEngine
+
+ ❯ tests/integration/foundation-gate.test.ts (6 tests | 1 failed) 225ms
+     × keeps package dependencies one-way and documents the Foundation contracts 78ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/integration/foundation-gate.test.ts > F10 Foundation integration gate > keeps package dependencies one-way and documents the Foundation contracts
+AssertionError: expected [ { …(2) } ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   {
++     "importText": "import { PORT_MAXIMUM_HITS, PORT_SOURCE_MINIMUM_TOKENS } from '../rules/",
++     "path": "/home/cashlin/ocsEngine/src/ai/odds.ts",
++   },
++ ]
+
+ ❯ tests/integration/foundation-gate.test.ts:180:27
+    178|         .map((match) => ({ path, importText: match[0] }));
+    179|     });
+    180|     expect(boundaryLeaks).toEqual([]);
+       |                           ^
+    181|
+    182|     const outputs = ['principles', 'data-model', 'scenario-and-seriali…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 110 passed | 4 skipped (115)
+      Tests  1 failed | 791 passed | 8 skipped (800)
+   Start at  13:43:01
+   Duration  326.71s (transform 14.28s, setup 0ms, import 85.04s, tests 530.29s, environment 6.61s)
+

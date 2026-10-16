@@ -132,6 +132,26 @@ const stepsText = (snapshot: UiSnapshot, piece: ProjectedPiece): string | null =
   return full > 1 ? `${piece.remainingSteps} of ${full} steps` : null;
 };
 
+const barrageEmptyHint = (snapshot: UiSnapshot): string => {
+  const labels: Record<import('../rules/index.js').BarrageBlocker, string> = {
+    NO_ARTILLERY: 'no friendly artillery on the map',
+    NO_ENEMY_TARGETS: 'no enemy combat units, Air Bases, or damageable ports to target',
+    OUT_OF_RANGE: 'targets outside artillery range',
+    SUPPLY_UNAVAILABLE: 'insufficient barrage supply through one HQ or one dump reaching every firer',
+    UNIT_ALREADY_BARRAGED: 'artillery already fired this phase',
+    HEX_ALREADY_BARRAGED: 'target hex already barraged this phase',
+    ARTILLERY_MODE: 'artillery in Reserve or Strat Mode',
+    RESERVE_NOT_RELEASED: 'artillery requires released Reserve or Exploit eligibility in this phase',
+    INVALID_PHASE: 'artillery cannot barrage in this phase or segment',
+    STRENGTH_TOO_LOW: 'barrage strength below one point',
+    RESOLVE_COMBAT: 'resolve the current combat or pending decision first',
+  };
+  const reasons = snapshot.barrageBlockers.map((blocker) => labels[blocker]);
+  const artillery = reasons.length > 0 ? `No legal artillery barrage. Blocked attempts: ${reasons.join('; ')}.` : 'No legal artillery barrage.';
+  const air = snapshot.air.missions.some(({ mission, available }) => mission === 'BARRAGE' && available);
+  return air ? `${artillery} Aircraft can still fly an Air Barrage from the Air tab.` : artillery;
+};
+
 /** What the current step asks of the player, in one sentence. */
 export const stepObjective = (snapshot: UiSnapshot): string => {
   const sequence = snapshot.view.projection?.sequence;
@@ -141,10 +161,8 @@ export const stepObjective = (snapshot: UiSnapshot): string => {
   if (snapshot.view.metadata.lifecycle === 'FINISHED') return 'The operation has ended.';
   if (sequence.segment === 'BREAKOUT') return 'Units out of trace supply may attempt a breakout (12.8e); otherwise finish this segment.';
   if (sequence.segment === 'BARRAGE') {
-    // Artillery and aircraft barrage in the same segment: say so when only the aircraft can (14.7).
-    const air = snapshot.air.missions.some(({ mission, available }) => mission === 'BARRAGE' && available);
     if (snapshot.barrageTargets.length > 0) return 'Orange-ringed enemy hexes are in artillery range: click one to plan a barrage.';
-    return air ? 'No enemy hex is in artillery range; aircraft can still fly an Air Barrage from the Air tab.' : 'No barrage targets in range.';
+    return barrageEmptyHint(snapshot);
   }
   switch (sequence.phase) {
     case 'REINFORCEMENT': return snapshot.arrivals.length > 0 ? 'Place every arriving unit: select it, then click a blue entry hex.'
@@ -269,9 +287,10 @@ const draftPanel = (snapshot: UiSnapshot, state: DeckState): TemplateResult => {
     // 16.0d: the defender's hedgehog comes off the combat roll on top of the AR DRM.
     : combatOutlook(String(fact(facts, 'combat.line') ?? ''), String(fact(facts, 'combat.column') ?? ''), Number(fact(facts, 'combat.drm') ?? 0) - hedgehog);
   const rows = draft.kind === 'BARRAGE'
-    ? html`<dl class="combat-facts"><div><dt>Barrage strength</dt><dd>${text(fact(facts, 'barrage.strength') ?? '–')}</dd></div>
+    ? html`<dl class="combat-facts"><div><dt>Table</dt><dd>${text(fact(facts, 'barrage.table') ?? '–')} · ${text(fact(facts, 'barrage.dice') ?? '–')}</dd></div>
+        <div><dt>Column</dt><dd>${text(fact(facts, 'barrage.columnLabel') ?? '–')}</dd></div><div><dt>Barrage strength</dt><dd>${text(fact(facts, 'barrage.strength') ?? '–')}</dd></div>
         <div><dt>Shifts</dt><dd>${text(fact(facts, 'barrage.shifts') || 'none')}</dd></div>
-        <div><dt>Spotter</dt><dd>${fact(facts, 'barrage.spotter') ? 'yes' : 'none (3 left)'}</dd></div>
+        <div><dt>Spotter</dt><dd>${draft.barrageTarget !== 'COMBAT_UNITS' ? 'not required' : fact(facts, 'barrage.spotter') ? 'yes' : 'none (3 left)'}</dd></div>
         <div><dt>Supply</dt><dd>${text(fact(facts, 'barrage.supplyTokens') ?? '–')}T</dd></div></dl>`
     : html`<dl class="combat-facts"><div><dt>Strength</dt><dd>${text(fact(facts, 'combat.attackerStrength') ?? '–')} : ${text(fact(facts, 'combat.defenderStrength') ?? '?')}</dd></div>
         <div><dt>Odds</dt><dd>${text(fact(facts, 'combat.odds') ?? '–')} (${String(fact(facts, 'combat.line') ?? '').replace('_', ' ').toLowerCase()})</dd></div>
@@ -308,6 +327,7 @@ const draftPanel = (snapshot: UiSnapshot, state: DeckState): TemplateResult => {
     : 'Each unit declares its combat supply as it is ticked, in that order: a dump in reach, or its internal stocks only when the dumps in reach cannot cover it after the units above (12.10a).';
   return html`<section class="deck-context combat-draft" aria-label="${title} plan">
     <h2>${title} ${printedHexLabel(draft.targetHexId)}</h2>
+    ${draft.kind === 'BARRAGE' ? html`<label for="barrage-target">Target</label><select id="barrage-target" aria-label="Barrage target">${draft.barrageTargets.map((target) => html`<option value=${target} .selected=${live(target === draft.barrageTarget)}>${target === 'COMBAT_UNITS' ? 'Combat units' : target === 'AIR_BASE' ? 'Air Base' : 'Port'}</option>`)}</select>` : nothing}
     ${rows}${outlookView}
     <p class="hint">${note} ${supplyNote}</p>
     <div class="participants">${participants.length > 0 ? participants : html`<p>No eligible units.</p>`}</div>
@@ -675,8 +695,7 @@ const targetsTab = (snapshot: UiSnapshot): TemplateResult => {
   const chips = (title: string, verb: string, hexes: readonly string[]): View => hexes.length === 0 ? nothing
     : html`<div class="target-list"><strong>${title}</strong><div class="chip-row">${hexes.map((hexId) => html`<button data-target-hex=${hexId}>${verb} ${printedHexLabel(hexId)}</button>`)}</div></div>`;
   if (snapshot.attackTargets.length === 0 && snapshot.barrageTargets.length === 0) {
-    const air = snapshot.air.missions.some(({ mission, available }) => mission === 'BARRAGE' && available);
-    return html`<p class="hint">${segment === 'BARRAGE' ? (air ? 'No enemy hex is in artillery range; aircraft can fly an Air Barrage from the Air tab.' : 'No barrage targets in range.') : 'No enemy hex can be attacked.'}</p>`;
+    return html`<p class="hint">${segment === 'BARRAGE' ? barrageEmptyHint(snapshot) : 'No enemy hex can be attacked.'}</p>`;
   }
   return html`${chips(segment === 'COMBAT' ? 'Enemy hexes you can attack' : 'Enemy hexes the selected unit can overrun', segment === 'COMBAT' ? 'Attack' : 'Overrun', snapshot.attackTargets)}${chips('Enemy hexes in artillery range', 'Barrage', snapshot.barrageTargets)}`;
 };

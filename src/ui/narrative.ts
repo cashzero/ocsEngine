@@ -211,7 +211,7 @@ export const describeRecord = (record: HistoryRecord, context: NarrativeContext)
       break;
     }
     case 'DECLARE_COMBAT': title = `${who} ${action.combatKind === 'OVERRUN' ? 'overran' : 'attacked'} ${hex(action.targetHexId)}`; break;
-    case 'DECLARE_BARRAGE': title = `${who} barraged ${hex(action.targetHexId)}`; break;
+    case 'DECLARE_BARRAGE': title = `${who} barraged ${action.target === 'AIR_BASE' ? 'the Air Base at ' : action.target === 'PORT' ? 'the port at ' : ''}${hex(action.targetHexId)}`; break;
     case 'DECLARE_AIR_MISSION': title = `${who} flew ${action.mission.replaceAll('_', ' ').toLowerCase()} at ${hex(action.targetHexId)}`; break;
     case 'BUILD_AIR_BASE': title = `${who} ${action.facility === 'AIR_STRIP' ? 'built an Air Strip' : 'built or improved an Air Base'} at ${hex(action.hexId)}`; break;
     // 4.9a: the enemy always sees a hedgehog, so the work is public.
@@ -263,9 +263,11 @@ export const describeRecord = (record: HistoryRecord, context: NarrativeContext)
       case 'STEP_LOST': lines.push(event.remainingSteps === null ? `${name(event.pieceId)} was eliminated.` : `${name(event.pieceId)} lost a step (${event.remainingSteps} left).`); break;
       case 'PIECE_RETREATED': lines.push(`${name(event.pieceId)} retreated to ${hex(event.toHexId)}.`); break;
       case 'PIECE_ADVANCED': lines.push(`${name(event.pieceId)} advanced into ${hex(event.toHexId)}.`); break;
+      case 'FACILITY_DIE_ROLLED': lines.push(event.purpose === 'FACILITY' ? `Facility die: ${event.value}.` : `${name(event.pieceId)} aircraft check: ${event.value}.`); break;
       case 'TRANSACTION_RESOLVED': {
         const barrage = record.events.some((entry) => entry.kind === 'DICE_ROLLED' && entry.purpose === 'BARRAGE');
         if (record.action.kind === 'DECLARE_AIR_MISSION' || record.events.some((entry) => entry.kind === 'AIRCRAFT_STATUS_CHANGED')) lines.push(`Air mission: ${withPrintedHexIds(event.result)}`);
+        else if (record.events.some((entry) => entry.kind === 'FACILITY_DIE_ROLLED' && entry.purpose === 'FACILITY')) lines.push(withPrintedHexIds(event.result));
         else lines.push(`Result ${event.result}: ${barrage ? explainBarrageResult(event.result) : event.result === 'NONE' ? 'no effect.' : explainCombatResult(event.result)}`);
         break;
       }
@@ -340,6 +342,9 @@ export const buildCombatReports = (
       const current = () => reports.get(report.transactionId)!;
       const name = (pieceId: string) => context.piece(pieceId)?.name ?? 'A unit';
       if (event.kind === 'DICE_ROLLED') update(event.purpose === 'SURPRISE' ? { surpriseRoll: event.roll.total } : { roll: event.roll.total });
+      else if (event.kind === 'FACILITY_DIE_ROLLED' && event.purpose === 'FACILITY') update({ roll: event.value });
+      else if (event.kind === 'AIR_BASE_LEVEL_CHANGED') update({ outcomes: [...current().outcomes, `${name(event.pieceId)} reduced to Level ${event.level}`] });
+      else if (event.kind === 'PORT_DAMAGED') update({ outcomes: [...current().outcomes, `Port damaged`] });
       else if (event.kind === 'STEP_LOST') update({ outcomes: [...current().outcomes, event.remainingSteps === null ? `${name(event.pieceId)} eliminated` : `${name(event.pieceId)} lost a step`] });
       else if (event.kind === 'PIECE_RETREATED') update({ outcomes: [...current().outcomes, `${name(event.pieceId)} retreated to ${hex(event.toHexId)}`] });
       else if (event.kind === 'PIECE_ADVANCED') update({ outcomes: [...current().outcomes, `${name(event.pieceId)} advanced into ${hex(event.toHexId)}`] });
@@ -349,7 +354,7 @@ export const buildCombatReports = (
           status: 'RESOLVED', result: event.result,
           // Air missions report their own outcome text (14.x); combats and barrages use the table readings.
           explanation: current().kind === 'AIR_MISSION' ? withPrintedHexIds(event.result)
-            : current().kind === 'BARRAGE' ? explainBarrageResult(event.result) : event.result === 'NONE' ? 'No effect.' : explainCombatResult(event.result),
+            : current().kind === 'BARRAGE' ? (event.result.startsWith('Barrage vs Facility') ? withPrintedHexIds(event.result) : explainBarrageResult(event.result)) : event.result === 'NONE' ? 'No effect.' : explainCombatResult(event.result),
         });
         if (open === report.transactionId) open = null;
       } else if (event.kind === 'TRANSACTION_CANCELLED') {

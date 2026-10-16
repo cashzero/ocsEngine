@@ -1,0 +1,29 @@
+{
+  "baseCommit": "cb17ae2e9cf99b379c35475c4410db8e46222e42",
+  "workingTree": true,
+  "sha256": {
+    "scripts/artillery-facility-acceptance.mjs": "babdae2963ac0f6eeeaae3db4128041f9a7a902f93901aa76394651bfac5af29",
+    "scripts/artillery-facility-position.mjs": "7ecb32aed9a69379b7dfb94b99a279aa6dea0861a4e8de5a3d89deafeabb6109",
+    "scripts/artillery-facility-restrictions.mjs": "e8bad77ad35443163914d07078ce29e3b93aab160494df0b0577e946c3a46085",
+    "src/ai/odds.ts": "dc878c40894a7a3e6e5cc62085840796a7cc5f29355265fb0b8b5fc78fd540c1",
+    "src/ai/policies/heuristic.ts": "699c8b7efc85e98011e65066683cbfec238dbf3936f0d2069d20b13a1061a37e",
+    "src/gameplay/persistence.ts": "aa2712794f800e04340b9b3723b27164425f0aaf4273e1a195b0883201f2f5ea",
+    "src/rules/air/aircraft.ts": "c64c7aca81e1a50911e2b5e47a5b1409edd77ec61cf8b1bab8b19c648c76631c",
+    "src/rules/air/mission.ts": "79661968b5712245b2e00a44f983784e8b88c90f85fb593e1780ae92d262a353",
+    "src/rules/combat/combat.ts": "bd018474432b6c64979537295d72aa26e2d6960e2bdb73b93bd332da720f52d2",
+    "src/rules/combat/facility.ts": "05b0dc9eb48537280d570fed68da80f48b2b277532dcb14e4c5fb43ba527717b",
+    "src/rules/engine.ts": "d83ab30d29fa765a06e0f0280dc96e0eb23635123c7b4e1ddbe51eb6b334a349",
+    "src/rules/kernel/model.ts": "3c2d7d26f50866a6ae16589cdb6f16cd4d6361cc7553c7e60d4650a27c940fdb",
+    "src/rules/kernel/snapshot.ts": "14a8eb16f331ddf7bcc23a24e7bb6b272c25198256c3967581748dec81c6a16c",
+    "src/rules/manifest.ts": "65828e68b52b0defcad162c118ac1aa261af96d198817900aee446b726d2672d",
+    "src/rules/query/candidates.ts": "e131a5e9e5f7fb4d3b3c0c6a6e12d7e1c1f5595ab73d1783a67b9fc30da7ee6e",
+    "src/rules/query/projection.ts": "a828f53ad255947a0801bdbf9b59b7ef8576aa7624aa6cddc1a6ed0da9fabd69",
+    "src/ui/browser.ts": "3e4d4f648d20d3c96ee8438030f0eced64a5075b138665074bed401dbafbd78a",
+    "src/ui/command-deck.ts": "903e239965ac2726f877a397f7fffeb67af15bc1afb4ccc12419c51ea3e77861",
+    "src/ui/controller.ts": "a0a18203ee67b71461477831f9d9df1eebe31ca593ae52d186cac2a6254ea1c9",
+    "src/ui/model.ts": "9d92abfd1975ef920920f844afc1e780971b37ee689735a3e79971021bb908c9",
+    "src/ui/narrative.ts": "006c1586678268194b9671ce303f6296fe94aa035905a4479e4260e263e729e8",
+    "tests/rules/artillery-facility.test.ts": "a12dab68dfb39f94f3dcb13b81263098c756bb66154d6d7f884f9eee00a59914",
+    "tests/rules/ocs-air.test.ts": "c02a36239be7cc2dad3adc1ee122136097e58d32c2ff63991636df10eaeb6809"
+  }
+}

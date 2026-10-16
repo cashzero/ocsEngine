@@ -1,0 +1,27 @@
+{
+  "verdict": "PASS",
+  "scope": "Conflict resolution and preservation across rebase",
+  "remainingBlockers": 0,
+  "preservedUpstream": [
+    "assault planning",
+    "effortHexes",
+    "ground supplyPrice",
+    "default candidate82",
+    "accepted standard79"
+  ],
+  "preservedFacility": [
+    "full-cost valuation",
+    "public-only forecast",
+    "ration safeguards"
+  ],
+  "testAdapter": "attackStrength delegates to real queryAttackStrength",
+  "addedComments": 0,
+  "addedSuppressions": 0,
+  "unchangedComparedWithPreviousFeature": [
+    "src/ui",
+    "src/rules/combat/combat.ts",
+    "src/rules/combat/facility.ts",
+    "src/rules/supply/facility-barrage-budget.ts",
+    "scripts/artillery-facility-computer-acceptance.mjs"
+  ]
+}

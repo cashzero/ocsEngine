@@ -270,7 +270,18 @@ export interface CandidateResult {
   readonly reasons: readonly RuleReason[];
 }
 
+export type BarrageBlocker =
+  | 'NO_ARTILLERY' | 'NO_ENEMY_TARGETS' | 'OUT_OF_RANGE' | 'SUPPLY_UNAVAILABLE'
+  | 'UNIT_ALREADY_BARRAGED' | 'HEX_ALREADY_BARRAGED' | 'ARTILLERY_MODE'
+  | 'RESERVE_NOT_RELEASED' | 'INVALID_PHASE' | 'STRENGTH_TOO_LOW' | 'RESOLVE_COMBAT';
+
+export type BarrageAvailability =
+  | { readonly kind: 'AVAILABLE'; readonly blockers: readonly [] }
+  | { readonly kind: 'BLOCKED'; readonly blockers: readonly [BarrageBlocker, ...BarrageBlocker[]] }
+  | { readonly kind: 'UNAVAILABLE'; readonly blockers: readonly [] };
+
 export interface RuleEngine {
+  readonly getBarrageAvailability: (state: GameState, actorId: PlayerId) => BarrageAvailability;
   readonly getActionFamilies: (state: GameState, actorId: PlayerId) => readonly ActionFamily[];
   readonly getActionCandidates: (state: GameState, request: CandidateRequest) => CandidateResult;
   readonly validateAction: (state: GameState, action: GameAction) => { readonly allowed: boolean; readonly violations: readonly RuleViolation[] };
