@@ -1,0 +1,10 @@
+{
+  "policy": "heuristic",
+  "checks": [
+    {
+      "name": "SP no front unit can draw <= half the baseline",
+      "pass": true,
+      "value": "1.8 vs 6.7"
+    }
+  ]
+}

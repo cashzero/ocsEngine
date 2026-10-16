@@ -20,6 +20,7 @@ const context = (state: GameState, memory: BotPhaseMemory): BotDecisionContext =
       explain: action => ({ current: true, explanation: ruleEngine.explain(state, action) }),
       traceCoverage: (pieceId = null) => ruleEngine.queryTraceCoverage(state, actorId, pieceId).value!,
       feedCoverage: (pieceId = null) => ruleEngine.queryFeedCoverage(state, actorId, pieceId).value!,
+      drawReach: hexId => new Set((ruleEngine.queryDrawReach(state, actorId, hexId).value ?? []).map(String)),
     },
   };
 };

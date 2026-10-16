@@ -28,6 +28,8 @@ export interface BotKnowledge {
   readonly name: (piece: ProjectedPiece) => string;
   /** Hexes a railroad runs through (13.3), from the printed map. */
   readonly railHexes: ReadonlySet<string>;
+  /** Railroad hexes with a village, town or city: stations SP can detrain at once controlled and connected (13.3c). */
+  readonly stationHexes: ReadonlySet<string>;
 }
 
 const knowledgeCache = new WeakMap<BotGameFacts, BotKnowledge>();
@@ -37,6 +39,9 @@ export const knowledgeOf = (facts: BotGameFacts): BotKnowledge => {
   if (cached) return cached;
   const definitions = new Map(facts.scenario.pieceCatalog.definitions.map((definition) => [String(definition.id), definition]));
   const definition = (piece: ProjectedPiece) => definitions.get(String(piece.definitionId));
+  const railHexes: ReadonlySet<string> = new Set(facts.scenario.mapDefinition.hexsides
+    .filter(({ featureDefinitionIds }) => featureDefinitionIds.some((id) => String(id) === 'edge:rail' || String(id) === 'edge:multi-track-rail'))
+    .flatMap(({ hexsideId }) => { const parsed = parseHexsideId(hexsideId); return parsed.ok ? [String(parsed.value.firstHexId), String(parsed.value.secondHexId)] : []; }));
   const knowledge: BotKnowledge = {
     definition,
     profile: (piece) => {
@@ -55,9 +60,9 @@ export const knowledgeOf = (facts: BotGameFacts): BotKnowledge => {
       };
     },
     name: (piece) => definition(piece)?.name ?? String(piece.id),
-    railHexes: new Set(facts.scenario.mapDefinition.hexsides
-      .filter(({ featureDefinitionIds }) => featureDefinitionIds.some((id) => String(id) === 'edge:rail' || String(id) === 'edge:multi-track-rail'))
-      .flatMap(({ hexsideId }) => { const parsed = parseHexsideId(hexsideId); return parsed.ok ? [String(parsed.value.firstHexId), String(parsed.value.secondHexId)] : []; })),
+    railHexes,
+    stationHexes: new Set(facts.scenario.mapDefinition.hexes.filter(({ id, features }) => railHexes.has(String(id))
+      && features.some(({ definitionId }) => /^settlement:(village|town|city)$/u.test(String(definitionId)))).map(({ id }) => String(id))),
   };
   knowledgeCache.set(facts, knowledge);
   return knowledge;

@@ -67,6 +67,7 @@ Dispatch 的 request ID 含 runner 的 `nonce`：session 會拒絕已見過的 r
 | `explain(action)` | 驗證行動並取得玩家看得到的 facts（勝率、DRM、費用，以及補給預判） |
 | `traceCoverage(pieceId?)` | 任何單位或指定單位（含 12.6f、13.1d）的 trace 範圍 |
 | `feedCoverage(pieceId?)` | 每個友方補給堆能餵到的範圍（12.6c） |
+| `drawReach(hexId)` | 放在該格的 SP 能被取用的範圍：5 Truck MP 的補給路徑加相鄰格（12.3a、12.3c），規則層 `queryDrawReach` |
 
 補給預判（移動後的 trace、口糧、戰後前進、撤退、重建）由規則層以 owner-only facts 提供，計算在
 `src/rules/supply/relocation-impact.ts`、`src/rules/supply/ration-budget.ts` 等處，電腦只讀結果。

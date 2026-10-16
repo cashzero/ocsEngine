@@ -646,6 +646,22 @@ export const queryFeedCoverage = (state: GameState, actorId: PlayerId, pieceId: 
   };
 };
 
+/**
+ * Hexes within draw range of SP standing in `hexId` (12.3a: 5 Truck MP along a supply path, the Hex itself or one adjacent to
+ * it, 12.3c): where an HQ or unit may stand and draw SP that are there or that arrive there this phase.
+ */
+export const queryDrawReach = (state: GameState, actorId: PlayerId, hexId: HexId): RuleQueryResult<readonly HexId[]> => {
+  const costs = supplyPathCosts(state, actorId, hexId, 'truck', state.configuration.supplyDrawRangeTicks);
+  const reached = new Set<HexId>([...costs.keys()].flatMap((reachedHex) => [reachedHex, ...adjacentHexIds(reachedHex)]));
+  return {
+    allowed: true,
+    value: [...reached].sort((left, right) => String(left).localeCompare(String(right))),
+    reasons: [{ code: 'DRAW_REACH', allowed: true, message: 'Hexes within draw range of this Hex.', rule: '12.3a' }],
+    facts: [],
+    dependencies: [{ aggregate: 'PIECE', revision: state.pieceState.revision, key: `supply:draw:${hexId}` }],
+  };
+};
+
 /** The actor's Supply Sources (12.6a) and why each counts: map edge, detrainable rail Hex, or Extender. */
 export const querySupplySources = (state: GameState, actorId: PlayerId): RuleQueryResult<readonly SupplySourceHex[]> => ({
   allowed: true,

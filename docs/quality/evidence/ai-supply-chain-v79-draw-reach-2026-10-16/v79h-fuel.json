@@ -1,0 +1,24 @@
+{
+  "dirs": [
+    "/home/cashlin/.claude/jobs/72492d02/tmp/runs/v79h/attack-temperate",
+    "/home/cashlin/.claude/jobs/72492d02/tmp/runs/v79h/attack-eastern"
+  ],
+  "sides": {
+    "attacker heuristic@/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-logistics/candidate-78/dist": {
+      "games": 8,
+      "strandedSpPerSegment": 6.713541666666667,
+      "frontSpPerSegment": 18.958333333333332,
+      "cannotFuelPerGame": 26.625,
+      "cannotFuelShare": 0.24177071509648126,
+      "dryHqShare": 0.14285714285714285
+    },
+    "attacker heuristic": {
+      "games": 8,
+      "strandedSpPerSegment": 1.765625,
+      "frontSpPerSegment": 20.786458333333332,
+      "cannotFuelPerGame": 5.875,
+      "cannotFuelShare": 0.08260105448154657,
+      "dryHqShare": 0.007142857142857143
+    }
+  }
+}

@@ -326,6 +326,8 @@ export interface GameSession {
   readonly getTraceCoverage: (seatId: SeatId, pieceId: PieceId | null) => RuleQueryResult<TraceCoverage>;
   /** Where each of the seat's dumps can feed one of its units (or, null, any unit) out of trace (12.6c); empty when not interactive. */
   readonly getFeedCoverage: (seatId: SeatId, pieceId: PieceId | null) => RuleQueryResult<readonly FeedSource[]>;
+  /** Hexes within draw range (12.3a) of SP standing in `hexId`, for the seat; empty when not interactive. */
+  readonly getDrawReach: (seatId: SeatId, hexId: HexId) => RuleQueryResult<readonly HexId[]>;
   /** The seat's Supply Sources (12.6a) and why each counts; empty when not interactive. */
   readonly getSupplySources: (seatId: SeatId) => RuleQueryResult<readonly SupplySourceHex[]>;
   /** Control of every rail Hex from the seat's side (13.3h); empty when not interactive. */
