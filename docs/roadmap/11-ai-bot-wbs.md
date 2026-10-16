@@ -144,7 +144,7 @@ Air 與 CARGO_LOSS 仍用第一個選項（TODO `bot-air`）。測試：`tests/a
 空軍（`bot-air`）不在 B5 範圍：開啟空軍時電腦只以隨機合法方式處理空軍行動，見 §3 TODO。
 
 狀態：**IN PROGRESS**。最後一次 B5 量測在 heuristic@5（預設地圖全部 PASS）；東歐風格未達 90%（TODO `bot-eastern-front`）；
-標準策略 heuristic@78 尚未重跑 B5。量測數字與重跑缺口見 [AI 對戰評估](../ai/evaluation.md)。
+標準策略 heuristic@79 尚未重跑 B5。量測數字與重跑缺口見 [AI 對戰評估](../ai/evaluation.md)。
 
 ### B6 Logistics-aware（M9.3，IN PROGRESS）
 
