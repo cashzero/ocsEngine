@@ -288,6 +288,11 @@ export interface RuleEngine {
   readonly queryFeedCoverage: (state: GameState, actorId: PlayerId, pieceId: PieceId | null) => RuleQueryResult<readonly import('../supply/supply.js').FeedSource[]>;
   /** Hexes within draw range (12.3a) of SP standing in the given Hex, for the actor. */
   readonly queryDrawReach: (state: GameState, actorId: PlayerId, hexId: HexId) => RuleQueryResult<readonly HexId[]>;
+  /**
+   * What own units would count attacking a Hex from beside it in Combat Mode, under each terrain the defender may choose
+   * (9.4b), with the Hex's hedgehog Level; from own units and public terrain only.
+   */
+  readonly queryAttackStrength: (state: GameState, actorId: PlayerId, attackerIds: readonly PieceId[], targetHexId: HexId) => RuleQueryResult<import('../combat/strength.js').PlannedAttack>;
   /** The actor's Supply Sources (12.6a) with why each counts: map edge, detrainable rail Hex (13.3c) or Extender (12.7a). */
   readonly querySupplySources: (state: GameState, actorId: PlayerId) => RuleQueryResult<readonly import('../supply/supply.js').SupplySourceHex[]>;
   /** Control of every rail Hex from the actor's side: own, enemy or neutral (13.3h). */

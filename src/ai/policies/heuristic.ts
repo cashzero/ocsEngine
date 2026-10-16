@@ -1,11 +1,12 @@
 import type { HexId, PieceId } from '../../core/index.js';
 import type { OcsMode } from '../../domain/piece/index.js';
-import type { FeedSource, GameAction, RuleExplanation } from '../../rules/index.js';
+import type { FeedSource, GameAction, PlannedAttack, RuleExplanation } from '../../rules/index.js';
+import { COMBAT_TABLE_COLUMNS } from '../../rules/tables/ocs-4.3.js';
 import { analyze, type ObjectiveView, type OwnUnit, type Situation } from '../analysis.js';
 import { respondToDecision } from '../decisions.js';
 import { hexesBetween, knowledgeOf, type BotGameFacts } from '../knowledge.js';
 import type { BotDecision, BotDecisionContext, BotPolicy, BotScoreTerm } from '../model.js';
-import { forecastBarrage, forecastCombat } from '../odds.js';
+import { forecastBarrage, forecastColumn, forecastCombat, plannedOddsColumn, type CombatForecast } from '../odds.js';
 import { DEFAULT_HEURISTIC_WEIGHTS, type HeuristicWeights } from './heuristic-weights.js';
 
 /**
@@ -33,62 +34,128 @@ interface MainEffort {
   readonly unitIds: ReadonlySet<PieceId>;
   /** The group member nearest the objective: HQs and trucks follow it so supply keeps up (12.3b). */
   readonly lead: HexId;
+  /** heuristic@81: guns that move up to barrage the objective before the group attacks (10.0). */
+  readonly gunIds: ReadonlySet<PieceId>;
+  /** heuristic@81: printed strength of the group's combat units. */
+  readonly strength: number;
 }
 
 /** Taking enemy VP changes both scores; taking neutral VP changes only ours.
  * A held point has the same two-score exposure if the opponent takes it. */
 const contestedVp = (objective: ObjectiveView): number => objective.points * (objective.controllerId === null ? 1 : 2);
 
+/** The effort this step sends against `hexId`, if any. */
+const effortAt = (notes: StepNotes, hexId: HexId): MainEffort | undefined =>
+  [...(notes.effort ? [notes.effort] : []), ...(notes.secondary ?? [])].find((effort) => effort.hexId === hexId);
+
 /**
  * Replays showed that defended objectives were never taken: both sides only picked up empty ones. Each step the
  * policy picks the defended enemy objective that is worth most for its distance and where enough friendly strength is
  * near, and sends the nearest units against it with HQs and SP following.
- */
-const chooseMainEffort = (situation: Situation, w: HeuristicWeights): MainEffort | null => chooseEfforts(situation, w, 1)[0] ?? null;
-
-/**
+ *
  * heuristic@11: up to `count` efforts, each against a different defended enemy objective with units not already given
  * to an earlier one. Replays of turn 1: the side moving first attacked one garrisoned objective with everything at
  * 24:1 while the units sent to the others, uncoordinated, stopped short of them.
  */
-const chooseEfforts = (situation: Situation, w: HeuristicWeights, count: number): MainEffort[] => {
+const chooseEfforts = (context: BotDecisionContext, situation: Situation, facts: BotGameFacts, w: HeuristicWeights, count: number): MainEffort[] => {
   const efforts: MainEffort[] = [];
   const used = new Set<PieceId>();
   while (efforts.length < count) {
-    const next = chooseEffort(situation, w, used, new Set(efforts.map(({ hexId }) => hexId)));
+    const next = chooseEffort(context, situation, facts, w, used, new Set(efforts.map(({ hexId }) => hexId)));
     if (!next) break;
     efforts.push(next);
-    for (const unitId of next.unitIds) used.add(unitId);
+    for (const unitId of [...next.unitIds, ...next.gunIds]) used.add(unitId);
   }
   return efforts;
 };
 
-const chooseEffort = (situation: Situation, w: HeuristicWeights, used: ReadonlySet<PieceId>, taken: ReadonlySet<HexId>): MainEffort | null => {
+/** heuristic@81: the Combat Table column `members` would get against `defenders` strength, the defender picking the terrain worst for them (9.4b). */
+const plannedColumn = (plan: PlannedAttack, members: ReadonlySet<PieceId>, defenders: number): number => {
+  const columns = plan.options.map(({ line, strengths }) => {
+    const attack = strengths.reduce((total, { pieceId, strength }) => total + (members.has(pieceId) ? strength : 0), 0);
+    return plannedOddsColumn(attack, defenders, COMBAT_TABLE_COLUMNS[line]);
+  });
+  return columns.length > 0 ? Math.min(...columns) : -1;
+};
+
+/**
+ * The group sent against one defended enemy objective, with up to `assaultMaxGuns` guns to barrage it first.
+ *
+ * The attacker of an attack engagement keeps the heuristic@11-79 group: the nearest units within `assaultReach` until they
+ * hold 2.5 times the defenders' printed strength. heuristic@81 development tried sizing it to a Combat Table column under the
+ * objective's terrain (Open 3:1, the column the Combat Segment would accept, or one emptying the hex half the time), with
+ * and without gathering out of reach until the group could close in together; against the v79 self-play baseline every
+ * variant lost attacker margin (-3 to -11 VP over 10 games), mostly by attacking defended objectives more often at lower
+ * odds and leaving empty ones untaken.
+ *
+ * heuristic@81: the defender of an attack engagement and both sides of a meeting engagement size the group, from units that
+ * can be beside the objective within about two turns, to the column at which the Combat Segment would attack it
+ * (`requiredColumn`), counting what the rules give the group under the objective's terrain (9.4b), against half the
+ * defenders when a gun of its own can barrage them this step.
+ */
+const chooseEffort = (context: BotDecisionContext, situation: Situation, facts: BotGameFacts, w: HeuristicWeights, used: ReadonlySet<PieceId>, taken: ReadonlySet<HexId>): MainEffort | null => {
   const me = situation.playerId;
   const combat = situation.own.filter((unit) => situation.isCombatUnit(unit));
+  const artillery = situation.own.filter((unit) => unit.piece.role === 'ARTILLERY' && !used.has(unit.piece.id));
   const garrisons = new Set(heldDefenders(situation, w).map(({ unit }) => unit.piece.id));
-  let best: { hexId: HexId; defenders: number; units: OwnUnit[]; value: number } | null = null;
+  let best: { hexId: HexId; defenders: number; units: OwnUnit[]; guns: OwnUnit[]; value: number } | null = null;
   for (const objective of situation.objectives) {
     if (objective.controllerId === me || taken.has(objective.hexId)) continue;
     const enemy = situation.enemy.get(objective.hexId);
     if (!enemy?.hasCombatUnit || enemy.strength <= 0) continue;
-    const available = combat.filter((unit) => !garrisons.has(unit.piece.id) && !used.has(unit.piece.id) && hexesBetween(unit.hexId, objective.hexId) <= w.assaultReach)
-      .sort((left, right) => hexesBetween(left.hexId, objective.hexId) - hexesBetween(right.hexId, objective.hexId) || String(left.piece.id).localeCompare(String(right.piece.id)));
-    const units: OwnUnit[] = [];
-    let strength = 0;
-    for (const unit of available) {
-      if (strength >= enemy.strength * w.assaultRatio || units.length >= w.assaultMaxUnits) break;
-      units.push(unit);
-      strength += unit.profile?.strength ?? 0;
+    if (situation.posture === 'ATTACKER') {
+      const near = combat.filter((unit) => !garrisons.has(unit.piece.id) && !used.has(unit.piece.id) && hexesBetween(unit.hexId, objective.hexId) <= w.assaultReach)
+        .sort((left, right) => hexesBetween(left.hexId, objective.hexId) - hexesBetween(right.hexId, objective.hexId) || String(left.piece.id).localeCompare(String(right.piece.id)));
+      const group: OwnUnit[] = [];
+      let raw = 0;
+      for (const unit of near) {
+        if (raw >= enemy.strength * w.assaultRatio || group.length >= w.assaultRatioUnits) break;
+        group.push(unit);
+        raw += unit.profile?.strength ?? 0;
+      }
+      if (group.length === 0 || raw < enemy.strength * w.assaultRatio) continue;
+      const guns = artillery.filter((gun) => hexesBetween(gun.hexId, objective.hexId) <= w.assaultReach)
+        .sort((left, right) => hexesBetween(left.hexId, objective.hexId) - hexesBetween(right.hexId, objective.hexId) || String(left.piece.id).localeCompare(String(right.piece.id)))
+        .slice(0, w.assaultMaxGuns);
+      const distance = group.reduce((total, unit) => total + hexesBetween(unit.hexId, objective.hexId), 0) / group.length;
+      const value = contestedVp(objective) / (1 + distance / 4);
+      if (!best || value > best.value) best = { hexId: objective.hexId, defenders: enemy.strength, units: group, guns, value };
+      continue;
     }
-    if (units.length === 0 || strength < enemy.strength * w.assaultRatio) continue;
+    // heuristic@81: only units that can be beside the objective within about two turns (a hex costs up to 2 MP off road):
+    // groups drawn from 12 hexes gathered for turns while empty objectives went untaken.
+    const available = combat.filter((unit) => !garrisons.has(unit.piece.id) && !used.has(unit.piece.id) && hexesBetween(unit.hexId, objective.hexId) <= w.assaultReach
+      && hexesBetween(unit.hexId, objective.hexId) - 1 <= (unit.profile?.movement ?? 0))
+      .sort((left, right) => hexesBetween(left.hexId, objective.hexId) - hexesBetween(right.hexId, objective.hexId) || String(left.piece.id).localeCompare(String(right.piece.id)));
+    const plan = context.actions.attackStrength(available.map(({ piece }) => piece.id), objective.hexId);
+    const needed = plan ? requiredColumn(situation, facts, w, objective.hexId, plan.hedgehogLevel) : null;
+    if (!plan || needed === null) continue;
+    const guns = artillery.filter((gun) => hexesBetween(gun.hexId, objective.hexId) <= w.assaultReach)
+      .sort((left, right) => hexesBetween(left.hexId, objective.hexId) - hexesBetween(right.hexId, objective.hexId) || String(left.piece.id).localeCompare(String(right.piece.id)))
+      .slice(0, w.assaultMaxGuns);
+    // A gun within its range + 1 now fires this step from its Combat side; a DG result halves the defenders' strength.
+    const firing = guns.some((gun) => hexesBetween(gun.hexId, objective.hexId) <= Math.max(1, gun.profile?.range ?? 1) + 1);
+    const sized = enemy.strength * (firing ? w.barrageDefenseShare : 1);
+    const members = new Set<PieceId>();
+    const units: OwnUnit[] = [];
+    for (const unit of available) {
+      if (plannedColumn(plan, members, sized) >= needed || units.length >= w.assaultMaxUnits) break;
+      units.push(unit);
+      members.add(unit.piece.id);
+    }
+    if (units.length === 0 || plannedColumn(plan, members, sized) < needed) continue;
     const distance = units.reduce((total, unit) => total + hexesBetween(unit.hexId, objective.hexId), 0) / units.length;
     const value = contestedVp(objective) / (1 + distance / 4);
-    if (!best || value > best.value) best = { hexId: objective.hexId, defenders: enemy.strength, units, value };
+    if (!best || value > best.value) best = { hexId: objective.hexId, defenders: enemy.strength, units, guns, value };
   }
   if (!best) return null;
-  const lead = [...best.units].sort((left, right) => hexesBetween(left.hexId, best!.hexId) - hexesBetween(right.hexId, best!.hexId))[0]!.hexId;
-  return { hexId: best.hexId, defenders: best.defenders, unitIds: new Set(best.units.map(({ piece }) => piece.id)), lead };
+  const target = best.hexId;
+  const lead = [...best.units].sort((left, right) => hexesBetween(left.hexId, target) - hexesBetween(right.hexId, target))[0]!.hexId;
+  return {
+    hexId: target, defenders: best.defenders, unitIds: new Set(best.units.map(({ piece }) => piece.id)), lead,
+    gunIds: new Set(best.guns.map(({ piece }) => piece.id)),
+    strength: best.units.reduce((total, unit) => total + (unit.profile?.strength ?? 0), 0),
+  };
 };
 
 interface StepNotes {
@@ -162,7 +229,7 @@ const planTargets = (situation: Situation, coverage: ReadonlySet<string>, unitCo
   const me = situation.playerId;
   const targets = new Map<PieceId, Target>();
   for (const { unit, hexId } of heldDefenders(situation, w)) targets.set(unit.piece.id, { hexId, purpose: 'GARRISON' });
-  for (const effort of efforts) for (const unitId of effort.unitIds) targets.set(unitId, { hexId: effort.hexId, purpose: 'ASSAULT' });
+  for (const effort of efforts) for (const unitId of [...effort.unitIds, ...effort.gunIds]) targets.set(unitId, { hexId: effort.hexId, purpose: 'ASSAULT' });
   const combat = situation.own.filter((unit) => situation.isCombatUnit(unit));
   // Held objectives keep a garrison (an occupied hex cannot be entered without a fight); others are worth taking.
   const wanted: { readonly hexId: HexId; readonly value: number; readonly purpose: Target['purpose']; readonly limit: number }[] = situation.objectives.map((objective) => {
@@ -337,6 +404,19 @@ const frontHex = (situation: Situation): HexId | null => {
   return sorted[0]?.hexId ?? null;
 };
 
+/**
+ * heuristic@81: a gun given to an effort barrages from its Combat side, about twice its Move side's Barrage Strength. A mode
+ * is set as a unit begins to move (5.4), so a gun within its range + `artilleryCombatModeReach` of the objective turns to
+ * Combat Mode and moves the rest of the way on that side; one farther than range + `artilleryMoveModeDistance` travels in
+ * Move Mode. Replays of v79 attack games: 363 of 375 guns at the Combat Phase were in Move Mode.
+ */
+const artilleryMode = (unit: OwnUnit, distance: number, w: HeuristicWeights): OcsMode | null => {
+  const range = Math.max(1, unit.profile?.range ?? 1);
+  if (distance <= range + w.artilleryCombatModeReach) return 'COMBAT';
+  if (distance > range + w.artilleryMoveModeDistance) return 'MOVE';
+  return null;
+};
+
 // ─── Movement Segment ──────────────────────────────────────────────────────────────────────────
 
 const destinationOf = (action: GameAction): HexId | null => action.kind === 'MOVE_PIECE' ? action.path.at(-1)! : null;
@@ -402,9 +482,12 @@ const scoreDestination = (
   if (unit.piece.role === 'COMBAT') {
     // Strat Mode units defend badly and lose their ZOC: keep them well away from the enemy (5.8).
     if (unit.piece.mode === 'STRAT' && situation.nearestEnemy(destination).distance <= w.stratSafeDistance) add('strat-near-enemy', -w.stratNearEnemy);
-    // One stack per hex does the job; more units in the same hex only make a better barrage target.
-    if (path.length > 1) add('crowding', -incoming * w.crowding);
     // The assault group gathers around the defended objective instead of shying away from it.
+    const effort = target?.purpose === 'ASSAULT' ? effortAt(notes, target.hexId) : undefined;
+    // One stack per hex does the job; more units in the same hex only make a better barrage target. heuristic@81: an assault
+    // group's members stack together: the defender attacks one stack at a time, and a group spread over several hexes was
+    // attacked 2.8 times a game (v79: 0.8) when its exposure was judged by the whole group's strength.
+    if (path.length > 1 && effort === undefined) add('crowding', -incoming * w.crowding);
     const assaulting = target?.purpose === 'ASSAULT' && hexesBetween(destination, target.hexId) === 1;
     if (assaulting) add('assault-position', w.assaultPosition);
     if (target) {
@@ -456,7 +539,9 @@ const scoreDestination = (
   } else if (unit.piece.role === 'ARTILLERY') {
     const distance = situation.nearestEnemy(destination).distance;
     const range = Math.max(1, unit.profile?.range ?? 1);
-    add('in-range', distance >= 2 && distance <= range ? w.artilleryInRange : -Math.max(0, distance - range) * w.artilleryBeyondRange);
+    // heuristic@81: a gun given to an effort ranges on its objective; others on the nearest enemy.
+    const aim = target?.purpose === 'ASSAULT' ? hexesBetween(destination, target.hexId) : distance;
+    add('in-range', aim >= 2 && aim <= range ? w.artilleryInRange : -Math.max(0, aim - range) * w.artilleryBeyondRange);
     // Fire where the army fights, not at whatever enemy is nearest somewhere else on the map.
     if (front) add('with-army', -Math.max(0, hexesBetween(destination, front) - range - 1) * w.artilleryWithArmy);
     if (distance <= 1) add('artillery-exposed', -w.artilleryExposed);
@@ -933,12 +1018,17 @@ const movementStep = (context: BotDecisionContext, situation: Situation, facts: 
   const unitFeeds = (unit: OwnUnit): readonly FeedSource[] => context.actions.feedCoverage(unit.piece.id);
   const sideFeeds = context.actions.feedCoverage();
   if (notes.effort === undefined) {
-    const efforts = chooseEfforts(situation, w, w.assaultMaxEfforts);
+    // heuristic@81: HQs and trucks follow the effort with the most strength, not the one worth most: a one-unit effort
+    // against a garrison eight hexes off drew the trucks to where they could not unload.
+    const efforts = chooseEfforts(context, situation, facts, w, w.assaultMaxEfforts)
+      .sort((left, right) => right.strength - left.strength || String(left.hexId).localeCompare(String(right.hexId)));
     notes.effort = efforts[0] ?? null;
     notes.secondary = efforts.slice(1);
   }
   const effort = notes.effort;
-  if (effort) debug?.(`MAIN EFFORT ${effort.hexId} vs ${effort.defenders.toFixed(1)} with ${effort.unitIds.size} unit(s), lead ${effort.lead}`);
+  for (const each of [...(effort ? [effort] : []), ...(notes.secondary ?? [])]) {
+    debug?.(`EFFORT ${each.hexId} vs ${each.defenders.toFixed(1)} with ${each.unitIds.size} unit(s) and ${each.gunIds.size} gun(s), lead ${each.lead}`);
+  }
   notes.targets ??= planTargets(situation, coverage, unitCoverage, w, [...(effort ? [effort] : []), ...(notes.secondary ?? [])], fedHexes(sideFeeds));
   // heuristic@79: where an HQ can stand and draw SP that Rail Cap brings to a station this step (12.3a, 13.3c).
   notes.railDraw ??= new Set(railStations(situation, coverage).flatMap((station) => [...context.actions.drawReach(station)]));
@@ -980,7 +1070,8 @@ const movementStep = (context: BotDecisionContext, situation: Situation, facts: 
           // An HQ with the army stays in Combat Mode to rebuild units (13.5a); one far behind moves up in Move Mode.
           : unit.piece.role === 'HQ' ? (front !== null && (hexesBetween(unit.hexId, front) <= w.hqCombatModeRadius
             // heuristic@79: on a railroad hex an HQ in Combat Mode is a station (13.8c); it stays there while the army is near.
-            || (railheadHex(situation, unit.hexId) && hexesBetween(unit.hexId, front) <= w.hqRailheadReach)) ? 'COMBAT' : 'MOVE') : null;
+            || (railheadHex(situation, unit.hexId) && hexesBetween(unit.hexId, front) <= w.hqRailheadReach)) ? 'COMBAT' : 'MOVE')
+            : unit.piece.role === 'ARTILLERY' && target?.purpose === 'ASSAULT' ? artilleryMode(unit, hexesBetween(unit.hexId, target.hexId), w) : null;
       if (wanted !== null && unit.piece.mode !== wanted) {
         const change = actions.candidates('CHANGE_MODE', id).find((action) => action.kind === 'CHANGE_MODE' && action.mode === wanted);
         if (change && preservesFriendlySupply(context, change)) {
@@ -1141,8 +1232,55 @@ const fuelRank = (action: GameAction): number => action.kind !== 'PAY_FUEL' ? 9 
 
 // ─── Combat and barrage ────────────────────────────────────────────────────────────────────────
 
+/**
+ * heuristic@81: the price of a Token spent on combat or barrage, relative to the full weight. SP the side holds near the units
+ * paying is what attacks are for; the price falls as the Tokens in dumps that reach them (12.3, 12.6c) exceed
+ * `supplyReserveTokens`, and stays whole below it. Replays of v79 attack games: 50 of 61 Combat Segments ended with the best
+ * attack under the threshold, its supply term (-9.8) outweighing the steps it would take, 19 of them only because of it.
+ */
+const supplyPrice = (context: BotDecisionContext, situation: Situation, pieceIds: readonly PieceId[], w: HeuristicWeights): number => {
+  const ids = new Set(pieceIds.map(String));
+  const hexes = new Set(situation.own.filter(({ piece }) => ids.has(String(piece.id))).map(({ hexId }) => String(hexId)));
+  const local = context.actions.feedCoverage().filter(({ hexIds }) => hexIds.some((hexId) => hexes.has(String(hexId))))
+    .reduce((total, { tokens }) => total + tokens, 0);
+  return Math.min(1, w.supplyReserveTokens / Math.max(1, local));
+};
+
+/**
+ * What an attack on `targetHexId` with these expected results is worth in steps and VP, with the chance it empties the hex.
+ * The Combat Segment adds supply and situational terms; heuristic@81 sizes assault groups with the same terms.
+ */
+const assaultTerms = (situation: Situation, facts: BotGameFacts, w: HeuristicWeights, forecast: Omit<CombatForecast, 'odds' | 'supplyTokens'>,
+  targetHexId: HexId, effortTarget: boolean): { terms: BotScoreTerm[]; vacate: number } => {
+  const enemy = situation.enemy.get(targetHexId);
+  // Steps the defender can lose before the hex empties: printed steps of the visible counters, two per hidden one.
+  const defenderSteps = Math.max(1, (enemy?.pieces ?? []).filter(({ role }) => role !== 'DUMP' && role !== 'TRUCK' && role !== 'HEDGEHOG')
+    .reduce((total, piece) => total + (knowledgeOf(facts).profile(piece)?.steps ?? 1), 0) + (enemy?.hidden ?? 0) * 2);
+  const vacate = Math.min(1, (forecast.defenderLosses + forecast.defenderOptions * w.vacateOptionShare) / defenderSteps);
+  const terms: BotScoreTerm[] = [
+    { term: 'defender-steps', value: forecast.defenderLosses * w.defenderLoss + forecast.defenderOptions * w.defenderOption },
+    { term: 'attacker-steps', value: -(forecast.attackerLosses * w.attackerLoss + forecast.attackerOptions * w.attackerOption) },
+  ];
+  const objective = situation.objectives.find(({ hexId }) => hexId === targetHexId);
+  if (objective && objective.controllerId !== situation.playerId) {
+    terms.push({ term: 'objective', value: vacate * contestedVp(objective) * w.objectiveTaken * (effortTarget ? w.assaultObjective : 1) });
+  }
+  return { terms, vacate };
+};
+
+/**
+ * heuristic@81: the lowest Combat Table column at which the Combat Segment would attack the objective as an effort's target
+ * (steps, VP and the hedgehog's roll modifier, 16.0d; supply aside), or null when no column would do.
+ */
+const requiredColumn = (situation: Situation, facts: BotGameFacts, w: HeuristicWeights, targetHexId: HexId, hedgehogLevel: number): number | null => {
+  for (let column = 0; column < COMBAT_TABLE_COLUMNS.OPEN.length; column++) {
+    if (sum(assaultTerms(situation, facts, w, forecastColumn(column, -hedgehogLevel), targetHexId, true).terms) >= w.attackThreshold) return column;
+  }
+  return null;
+};
+
 /** The declared combat with the best expected value on the printed table, if any clears the threshold. */
-const bestCombat = (context: BotDecisionContext, situation: Situation, facts: BotGameFacts, w: HeuristicWeights, candidates: readonly GameAction[], threshold: number, effort: MainEffort | null = null): BotDecision | null => {
+const bestCombat = (context: BotDecisionContext, situation: Situation, facts: BotGameFacts, w: HeuristicWeights, candidates: readonly GameAction[], threshold: number, effortHexes: ReadonlySet<HexId> = new Set()): BotDecision | null => {
   let best: { action: GameAction; terms: BotScoreTerm[]; odds: string } | null = null;
   for (const action of candidates) {
     if (action.kind !== 'DECLARE_COMBAT') continue;
@@ -1159,19 +1297,8 @@ const bestCombat = (context: BotDecisionContext, situation: Situation, facts: Bo
     const lastGrab = situation.turnsLeft <= 0 && objective !== undefined && objective.controllerId !== situation.playerId;
     if (oddsFor / Math.max(1e-9, oddsAgainst) < w.minimumOdds && !lastGrab) continue;
     const enemy = situation.enemy.get(action.targetHexId);
-    // Steps the defender can lose before the hex empties: printed steps of the visible counters, two per hidden one.
-    const defenderSteps = Math.max(1, (enemy?.pieces ?? []).filter(({ role }) => role !== 'DUMP' && role !== 'TRUCK' && role !== 'HEDGEHOG')
-      .reduce((total, piece) => total + (knowledgeOf(facts).profile(piece)?.steps ?? 1), 0) + (enemy?.hidden ?? 0) * 2);
-    const vacate = Math.min(1, (forecast.defenderLosses + forecast.defenderOptions * w.vacateOptionShare) / defenderSteps);
-    const terms: BotScoreTerm[] = [
-      { term: 'defender-steps', value: forecast.defenderLosses * w.defenderLoss + forecast.defenderOptions * w.defenderOption },
-      { term: 'attacker-steps', value: -(forecast.attackerLosses * w.attackerLoss + forecast.attackerOptions * w.attackerOption) },
-      { term: 'supply', value: -forecast.supplyTokens * w.combatSupply },
-    ];
-    const effortTarget = effort?.hexId === action.targetHexId;
-    if (objective && objective.controllerId !== situation.playerId) {
-      terms.push({ term: 'objective', value: vacate * contestedVp(objective) * w.objectiveTaken * (effortTarget ? w.assaultObjective : 1) });
-    }
+    const { terms, vacate } = assaultTerms(situation, facts, w, forecast, action.targetHexId, effortHexes.has(action.targetHexId));
+    terms.push({ term: 'supply', value: -forecast.supplyTokens * w.combatSupply * supplyPrice(context, situation, action.attackerIds, w) });
     // Enemy units behind the front cut trace supply and pick up empty objectives: clear them.
     const nearHeld = situation.objectives.some(({ hexId, controllerId }) => controllerId === situation.playerId && hexesBetween(hexId, action.targetHexId) <= 1);
     if (nearHeld) terms.push({ term: 'protect-objective', value: vacate * w.protectObjective });
@@ -1203,7 +1330,7 @@ const bestCombat = (context: BotDecisionContext, situation: Situation, facts: Bo
   return decision(best.action, `${kind} at ${best.odds} on ${best.action.kind === 'DECLARE_COMBAT' ? best.action.targetHexId : ''}`, best.terms, candidates);
 };
 
-const bestBarrage = (context: BotDecisionContext, situation: Situation, w: HeuristicWeights, effort: MainEffort | null = null): BotDecision | null => {
+const bestBarrage = (context: BotDecisionContext, situation: Situation, w: HeuristicWeights, effortHexes: ReadonlySet<HexId> = new Set()): BotDecision | null => {
   const candidates = context.actions.candidates('DECLARE_BARRAGE', null, 60);
   let best: { action: GameAction; terms: BotScoreTerm[] } | null = null;
   for (const action of candidates) {
@@ -1216,10 +1343,10 @@ const bestBarrage = (context: BotDecisionContext, situation: Situation, w: Heuri
     const terms: BotScoreTerm[] = [
       { term: 'disrupt', value: forecast.disrupt * (adjacentOwn ? w.barrageDisruptBeforeAttack : w.barrageDisrupt) },
       { term: 'steps', value: forecast.expectedSteps * w.barrageSteps },
-      { term: 'supply', value: -forecast.supplyTokens * w.barrageSupply },
+      { term: 'supply', value: -forecast.supplyTokens * w.barrageSupply * supplyPrice(context, situation, action.firerIds, w) },
     ];
     if (nearObjective) terms.push({ term: 'objective', value: w.barrageNearObjective });
-    if (effort?.hexId === action.targetHexId) terms.push({ term: 'main-effort', value: w.barrageMainEffort });
+    if (effortHexes.has(action.targetHexId)) terms.push({ term: 'main-effort', value: w.barrageMainEffort });
     if (!best || sum(terms) > sum(best.terms)) best = { action, terms };
   }
   return best && sum(best.terms) >= w.barrageThreshold
@@ -1232,14 +1359,14 @@ const bestBarrage = (context: BotDecisionContext, situation: Situation, w: Heuri
  * main effort will attack, else a stack our units stand next to; an objective under it counts extra. A target that no
  * friendly unit is about to attack is not worth risking aircraft on. The mission flies as many aircraft as it can (4).
  */
-const bestAirBarrage = (context: BotDecisionContext, situation: Situation, w: HeuristicWeights, effort: MainEffort | null): BotDecision | null => {
+const bestAirBarrage = (context: BotDecisionContext, situation: Situation, w: HeuristicWeights, effortHexes: ReadonlySet<HexId>): BotDecision | null => {
   const missions = context.actions.candidates('DECLARE_AIR_MISSION', null, 400)
     .filter((action) => action.kind === 'DECLARE_AIR_MISSION' && action.mission === 'BARRAGE' && action.target === 'COMBAT_UNITS');
   let best: { action: GameAction; terms: BotScoreTerm[] } | null = null;
   for (const action of missions) {
     if (action.kind !== 'DECLARE_AIR_MISSION') continue;
     const adjacentOwn = situation.own.some((unit) => situation.isCombatUnit(unit) && hexesBetween(unit.hexId, action.targetHexId) <= 1);
-    const isEffort = effort?.hexId === action.targetHexId;
+    const isEffort = effortHexes.has(action.targetHexId);
     if (!adjacentOwn && !isEffort) continue;
     const terms: BotScoreTerm[] = [
       { term: 'before-attack', value: w.barrageDisruptBeforeAttack },
@@ -1413,11 +1540,13 @@ const decide = (facts: BotGameFacts, w: HeuristicWeights) => (context: BotDecisi
     chosen = movementStep(context, situation, facts, w) ?? (phase === 'MOVEMENT' ? hedgehogStep(context, situation, w) : null);
   }
   else if (segment === 'BARRAGE') {
-    const effort = chooseMainEffort(situation, w);
+    // Only the main effort's objective counts double (heuristic@11-79): doubling every effort's objective made the attacker
+    // attack objectives twice as often as v79 at lower odds (column 5.4 against 6.9).
+    const effortHexes = new Set(chooseEfforts(context, situation, facts, w, 1).map(({ hexId }) => hexId));
     // Aircraft first: they take the main effort's hex (one barrage per hex, 10.0e) and the guns the next one.
-    chosen = (phase === 'MOVEMENT' ? bestAirBarrage(context, situation, w, effort) : null) ?? bestBarrage(context, situation, w, effort);
+    chosen = (phase === 'MOVEMENT' ? bestAirBarrage(context, situation, w, effortHexes) : null) ?? bestBarrage(context, situation, w, effortHexes);
   }
-  else if (segment === 'COMBAT') chosen = bestCombat(context, situation, facts, w, context.actions.candidates('DECLARE_COMBAT', null, 200), w.attackThreshold, chooseMainEffort(situation, w));
+  else if (segment === 'COMBAT') chosen = bestCombat(context, situation, facts, w, context.actions.candidates('DECLARE_COMBAT', null, 200), w.attackThreshold, new Set(chooseEfforts(context, situation, facts, w, 1).map(({ hexId }) => hexId)));
   return chosen ?? advance(context, `nothing worth doing in ${phase.toLowerCase()} ${segment.toLowerCase()}`);
 };
 
@@ -1434,7 +1563,7 @@ export const createHeuristicPolicy = (facts: BotGameFacts, options: HeuristicPol
   const choose = decide(facts, options.weights ?? DEFAULT_HEURISTIC_WEIGHTS);
   return {
     id: 'heuristic',
-    version: options.label === undefined ? '79' : `79+${options.label}`,
+    version: options.label === undefined ? '81' : `81+${options.label}`,
     decide: (context) => {
       const sink = options.debug;
       debug = sink ? (line) => sink(`${context.memory.stepKey} ${String(context.playerId).split(':').at(-1)} ${line}`) : null;

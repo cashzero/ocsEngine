@@ -6,8 +6,23 @@ import {
   combatTableRowIndex,
   parseBarrageResult,
   parseCombatResult,
+  roundOcs,
   type CombatLine,
+  type OddsColumn,
 } from '../rules/tables/ocs-4.3.js';
+
+/**
+ * The printed column `attack` against `defense` falls in (9.7: divide by the smaller, round, take the highest column not
+ * above it), for planning attacks whose units are not yet in place.
+ */
+export const plannedOddsColumn = (attack: number, defense: number, columns: readonly OddsColumn[]): number => {
+  if (attack <= 0) return 0;
+  if (defense <= 0) return columns.length - 1;
+  const ratio = attack >= defense ? roundOcs(attack / defense) : 1 / roundOcs(defense / attack);
+  let index = 0;
+  for (const [position, column] of columns.entries()) if (column.attacker / column.defender <= ratio + 1e-9) index = position;
+  return index;
+};
 
 /** Probability of each 2d6 total. */
 const TWO_DICE: readonly { readonly total: number; readonly p: number }[] = Array.from({ length: 11 }, (_, index) => ({
@@ -48,6 +63,11 @@ export const forecastCombat = (facts: readonly RuleFact[]): CombatForecast | nul
     const [attacker, defender] = column.split(':').map(Number);
     columnIndex = (attacker ?? 0) >= (defender ?? 1) ? columns.length - 1 : 0;
   }
+  return { odds, supplyTokens: Number(fact(facts, 'combat.attackerSupplyTokens') ?? 0), ...forecastColumn(columnIndex, drm) };
+};
+
+/** Expected results of the printed Combat Table at a column index and roll modifier, whatever brings the attack there. */
+export const forecastColumn = (columnIndex: number, drm: number): Omit<CombatForecast, 'odds' | 'supplyTokens'> => {
   let attackerLosses = 0; let attackerOptions = 0; let defenderLosses = 0; let defenderOptions = 0;
   let defenderHit = 0; let defenderDisorganized = 0; let attackerHurt = 0;
   for (const { total, p } of TWO_DICE) {
@@ -60,10 +80,7 @@ export const forecastCombat = (facts: readonly RuleFact[]): CombatForecast | nul
     if (result.defenderDisorganized) defenderDisorganized += p;
     if (result.attacker.loss > 0) attackerHurt += p;
   }
-  return {
-    odds, columnIndex, drm, supplyTokens: Number(fact(facts, 'combat.attackerSupplyTokens') ?? 0),
-    attackerLosses, attackerOptions, defenderLosses, defenderOptions, defenderHit, defenderDisorganized, attackerHurt,
-  };
+  return { columnIndex, drm, attackerLosses, attackerOptions, defenderLosses, defenderOptions, defenderHit, defenderDisorganized, attackerHurt };
 };
 
 /** Expected effect of a barrage on the printed Barrage Table (10.0a) at its final column. */

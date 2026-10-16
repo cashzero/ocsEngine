@@ -1,0 +1,254 @@
+{
+  "baseline": "artifacts/ai-assault/v79-baseline-wide",
+  "wide": {
+    "v80g": {
+      "attack": {
+        "games": 20,
+        "vpMargin": "-1.50 ± 2.23",
+        "pairedMargin": "-1.50 ± 1.65 (10)"
+      },
+      "roles": [
+        "candidate attacking: attacker margin change -4.60 ± 3.75 (n 10)",
+        "candidate defending: change in the opponent's attacker margin, negated 1.60 ± 1.36 (n 10)"
+      ],
+      "meeting": {
+        "games": 20,
+        "vpMargin": "0.50 ± 2.19",
+        "pairedMargin": "0.50 ± 1.59 (10)"
+      },
+      "all": {
+        "games": 40,
+        "vpMargin": "-0.50 ± 1.55",
+        "pairedMargin": "-"
+      }
+    },
+    "v80h": {
+      "attack": {
+        "games": 20,
+        "vpMargin": "-2.80 ± 2.37",
+        "pairedMargin": "-2.80 ± 1.52 (10)"
+      },
+      "roles": [
+        "candidate attacking: attacker margin change -8.00 ± 4.03 (n 10)",
+        "candidate defending: change in the opponent's attacker margin, negated 2.40 ± 1.22 (n 10)"
+      ],
+      "meeting": {
+        "games": 20,
+        "vpMargin": "3.80 ± 2.53",
+        "pairedMargin": "3.80 ± 2.92 (10)"
+      },
+      "all": {
+        "games": 40,
+        "vpMargin": "0.50 ± 1.79",
+        "pairedMargin": "-"
+      }
+    },
+    "v80i": {
+      "attack": {
+        "games": 20,
+        "vpMargin": "-1.90 ± 2.57",
+        "pairedMargin": "-1.90 ± 2.36 (10)"
+      },
+      "roles": [
+        "candidate attacking: attacker margin change -6.20 ± 4.83 (n 10)",
+        "candidate defending: change in the opponent's attacker margin, negated 2.40 ± 1.22 (n 10)"
+      ],
+      "meeting": {
+        "games": 20,
+        "vpMargin": "3.80 ± 2.53",
+        "pairedMargin": "3.80 ± 2.92 (10)"
+      },
+      "all": {
+        "games": 40,
+        "vpMargin": "0.95 ± 1.84",
+        "pairedMargin": "-"
+      }
+    },
+    "v80j": {
+      "attack": {
+        "games": 20,
+        "vpMargin": "-2.50 ± 1.88",
+        "pairedMargin": "-2.50 ± 1.51 (10)"
+      },
+      "roles": [
+        "candidate attacking: attacker margin change -7.40 ± 3.39 (n 10)",
+        "candidate defending: change in the opponent's attacker margin, negated 2.40 ± 1.22 (n 10)"
+      ]
+    },
+    "v80k": {
+      "attack": {
+        "games": 20,
+        "vpMargin": "-4.50 ± 2.25",
+        "pairedMargin": "-4.50 ± 1.59 (10)"
+      },
+      "roles": [
+        "candidate attacking: attacker margin change -11.00 ± 3.44 (n 10)",
+        "candidate defending: change in the opponent's attacker margin, negated 2.00 ± 1.12 (n 10)"
+      ],
+      "weights": {
+        "label": "no-sp-price",
+        "weights": {
+          "supplyReserveTokens": 1000000
+        }
+      }
+    },
+    "v80l": {
+      "attack": {
+        "games": 20,
+        "vpMargin": "-2.60 ± 1.89",
+        "pairedMargin": "-2.60 ± 1.38 (10)"
+      },
+      "roles": [
+        "candidate attacking: attacker margin change -8.60 ± 3.59 (n 10)",
+        "candidate defending: change in the opponent's attacker margin, negated 3.40 ± 1.69 (n 10)"
+      ],
+      "weights": {
+        "label": "no-guns",
+        "weights": {
+          "assaultMaxGuns": 0
+        }
+      }
+    },
+    "v80m": {
+      "attack": {
+        "games": 20,
+        "vpMargin": "-3.60 ± 1.97",
+        "pairedMargin": "-3.60 ± 1.73 (10)"
+      },
+      "roles": [
+        "candidate attacking: attacker margin change -9.60 ± 4.18 (n 10)",
+        "candidate defending: change in the opponent's attacker margin, negated 2.40 ± 1.22 (n 10)"
+      ]
+    },
+    "v80n": {
+      "attack": {
+        "games": 20,
+        "vpMargin": "-0.30 ± 1.91",
+        "pairedMargin": "-0.30 ± 0.67 (10)"
+      },
+      "roles": [
+        "candidate attacking: attacker margin change -3.00 ± 1.74 (n 10)",
+        "candidate defending: change in the opponent's attacker margin, negated 2.40 ± 1.22 (n 10)"
+      ]
+    },
+    "v80o": {
+      "attack": {
+        "games": 20,
+        "vpMargin": "-1.30 ± 2.21",
+        "pairedMargin": "-1.30 ± 1.76 (10)"
+      },
+      "roles": [
+        "candidate attacking: attacker margin change -4.60 ± 3.25 (n 10)",
+        "candidate defending: change in the opponent's attacker margin, negated 2.00 ± 1.12 (n 10)"
+      ],
+      "weights": {
+        "label": "no-sp-price",
+        "weights": {
+          "supplyReserveTokens": 1000000
+        }
+      }
+    },
+    "v80p": {
+      "attack": {
+        "games": 20,
+        "vpMargin": "0.20 ± 2.29",
+        "pairedMargin": "0.20 ± 0.80 (10)"
+      },
+      "roles": [
+        "candidate attacking: attacker margin change -3.00 ± 1.69 (n 10)",
+        "candidate defending: change in the opponent's attacker margin, negated 3.40 ± 1.69 (n 10)"
+      ],
+      "weights": {
+        "label": "no-guns",
+        "weights": {
+          "assaultMaxGuns": 0
+        }
+      }
+    },
+    "v80q": {
+      "attack": {
+        "games": 20,
+        "vpMargin": "0.30 ± 2.17",
+        "pairedMargin": "0.30 ± 1.40 (10)"
+      },
+      "roles": [
+        "candidate attacking: attacker margin change -1.80 ± 2.41 (n 10)",
+        "candidate defending: change in the opponent's attacker margin, negated 2.40 ± 1.22 (n 10)"
+      ],
+      "meeting": {
+        "games": 20,
+        "vpMargin": "3.30 ± 2.33",
+        "pairedMargin": "3.30 ± 2.57 (10)"
+      },
+      "all": {
+        "games": 40,
+        "vpMargin": "1.80 ± 1.59",
+        "pairedMargin": "-"
+      }
+    }
+  },
+  "development": {
+    "v80": {
+      "attack": {
+        "games": 16,
+        "vpMargin": "-2.50 ± 2.38",
+        "pairedMargin": "-2.50 ± 1.38 (8)"
+      },
+      "meeting": {
+        "games": 16,
+        "vpMargin": "1.63 ± 1.88",
+        "pairedMargin": "1.63 ± 1.59 (8)"
+      }
+    },
+    "v80c": {
+      "attack": {
+        "games": 16,
+        "vpMargin": "-0.13 ± 2.33",
+        "pairedMargin": "-0.13 ± 1.67 (8)"
+      }
+    },
+    "v80d": {
+      "attack": {
+        "games": 16,
+        "vpMargin": "-4.25 ± 2.33",
+        "pairedMargin": "-4.25 ± 1.57 (8)"
+      }
+    },
+    "v80e": {
+      "attack": {
+        "games": 16,
+        "vpMargin": "0.75 ± 2.69",
+        "pairedMargin": "0.75 ± 1.32 (8)"
+      },
+      "meeting": {
+        "games": 16,
+        "vpMargin": "-3.50 ± 2.46",
+        "pairedMargin": "-3.50 ± 3.27 (8)"
+      }
+    },
+    "v80f": {
+      "attack": {
+        "games": 16,
+        "vpMargin": "-0.25 ± 1.95",
+        "pairedMargin": "-0.25 ± 2.04 (8)"
+      },
+      "meeting": {
+        "games": 16,
+        "vpMargin": "-0.50 ± 2.67",
+        "pairedMargin": "-0.50 ± 3.11 (8)"
+      }
+    },
+    "v80g": {
+      "attack": {
+        "games": 16,
+        "vpMargin": "-0.13 ± 2.05",
+        "pairedMargin": "-0.13 ± 2.01 (8)"
+      },
+      "meeting": {
+        "games": 16,
+        "vpMargin": "-1.88 ± 2.35",
+        "pairedMargin": "-1.88 ± 2.95 (8)"
+      }
+    }
+  }
+}
