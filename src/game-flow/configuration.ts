@@ -39,10 +39,10 @@ const supplyDefinitionFor = (oob: GeneratedOob, side: OobSide): DefinitionId => 
  * Default Rail Cap points per Movement Phase (13.3b) for each side of a New Game: this many points per division, at least 1.
  * Rail Cap carries SP from the map edge to the railhead; trucks take it on to the front. Bot-against-bot games
  * (docs/quality/evidence/rail-cap-plan-2026-10-08/README.md §5) used every point offered, and a Rail Cap near the Supply Table income (1 per
- * division) let the attacker carry all of it forward. 0.4 left Rail Cap far below the trucks' lift (user, 2026-10-12:
- * "many trucks, little Rail Cap looks unreasonable"), so it is raised to 0.75 while the truck count is cut.
+ * division) let the attacker carry all of it forward. When trucks were sized from the income it was cut slightly from 0.75
+ * to 0.6 (user, 2026-10-16: "稍微減少rail cap"); published BTR scenarios give 0-0.3 a division.
  */
-export const RAIL_CAP_PER_DIVISION = 0.75;
+export const RAIL_CAP_PER_DIVISION = 0.6;
 
 /**
  * The Turn limit offered until the player sets one: one turn per five hexes of the map's width plus height, within 4-60.

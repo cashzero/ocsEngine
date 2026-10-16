@@ -1,6 +1,7 @@
 import { findNeighborDirection, parseHexCoordinateId, type HexId, type PieceId, type PlayerId } from '../core/index.js';
 import { canonicalizeHexside, directedHexside, type HexsideFeatureCollection } from '../domain/map/index.js';
-import type { OcsMode } from '../domain/piece/index.js';
+import type { OcsMode, PieceDefinition } from '../domain/piece/index.js';
+import { TRUCK_COUNTER_POINTS } from '../generation/oob/counter-corpus.js';
 import { prepareNewGame } from '../game-flow/index.js';
 import type { NewGameRequest } from '../game-flow/index.js';
 import {
@@ -115,6 +116,18 @@ export const featuresAlong = (hexIds: readonly string[], featureDefinitionId = '
     return { hexsideId: canonical.value.id, featureDefinitionIds: [featureDefinitionId as never] };
   });
 
+/**
+ * Rule tests divide, combine and form Extenders with BTR's printed five-point truck; the generator sizes its trucks from
+ * income (one or two points in this fixture's small OOB).
+ */
+const asFivePointTruck = (definition: PieceDefinition): PieceDefinition => definition.counter?.kind !== 'TRANSPORT' ? definition : {
+  ...definition,
+  counter: { ...definition.counter, transportPoints: TRUCK_COUNTER_POINTS },
+  capabilities: definition.capabilities.map((capability) => String(capability.id) !== 'TRANSPORT_CAPACITY' ? capability : {
+    ...capability, parameters: capability.parameters.map((parameter) => parameter.kind === 'EXACT_QUANTITY' && parameter.key === 'capacity' ? { ...parameter, value: TRUCK_COUNTER_POINTS * 4 } : parameter),
+  }),
+};
+
 export const buildGeneratedRuleScenario = (
   placement: Placement,
   terrain: Readonly<Record<string, string>> = {},
@@ -163,9 +176,11 @@ export const buildGeneratedRuleScenario = (
       mapDefinition,
       initialMapState,
       initialPieceState: { ...source.scenario.initialPieceState, pieces },
-      pieceCatalog: options.replacements ? source.scenario.pieceCatalog : {
+      pieceCatalog: {
         ...source.scenario.pieceCatalog,
-        definitions: source.scenario.pieceCatalog.definitions.filter(({ family }) => family !== 'REPLACEMENT'),
+        definitions: source.scenario.pieceCatalog.definitions
+          .filter(({ family }) => options.replacements || family !== 'REPLACEMENT')
+          .map(asFivePointTruck),
       },
       sources: options.sources ?? source.scenario.sources,
     },

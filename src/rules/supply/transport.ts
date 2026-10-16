@@ -373,7 +373,9 @@ export const validateCombine = (state: GameState, actorId: PlayerId, truckIds: r
   for (const [index, truck] of trucks.entries()) issues.push(...truckViolations(state, actorId, truck, ['truckIds', index]));
   if (issues.length > 0) return issues;
   const pieces = trucks as PieceState[];
-  if (new Set(pieces.map((piece) => hexOf(piece))).size !== 1 || new Set(pieces.map(({ definitionId }) => definitionId)).size !== 1) {
+  // A type is truck, wagon or the like (13.2c), not a counter definition: generated trucks each have their own.
+  const typeOf = (piece: PieceState) => { const counter = definitionOf(state, piece)?.counter; return `${counter?.symbol}:${counter?.nationality}`; };
+  if (new Set(pieces.map((piece) => hexOf(piece))).size !== 1 || new Set(pieces.map(typeOf)).size !== 1) {
     issues.push(violation('COMBINE_REQUIRES_SAME_HEX_AND_TYPE', ['truckIds'], 'Only Transport Points of one type in one Hex combine.', '13.2c'));
   }
   if (pieces.some((piece) => isExtender(state, piece))) issues.push(violation('EXTENDER_CANNOT_COMBINE', ['truckIds'], 'Flip an Extender back before combining it.', '12.7d'));

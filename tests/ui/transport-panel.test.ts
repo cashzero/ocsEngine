@@ -89,7 +89,7 @@ describe('the truck\'s supply area (A2)', () => {
     const { controller, truck } = await startMovement();
     controller.selectPiece(truck().id);
     const snapshot = controller.getSnapshot();
-    expect(snapshot.transportOptions).toMatchObject({ points: 5, capacityTokens: 20, loadedTokens: 0, loads: [], unload: null });
+    expect(snapshot.transportOptions).toMatchObject({ points: 2, capacityTokens: 8, loadedTokens: 0, loads: [], unload: null });
     const html = commandDeckHtml(snapshot, newDeck());
     expect(html).toContain('transport-panel');
     expect(html).toContain('No friendly supply dump in this hex to load from.');
@@ -106,7 +106,8 @@ describe('the truck\'s supply area (A2)', () => {
 
     const here = controller.getSnapshot();
     const [load] = here.transportOptions!.loads;
-    expect(load!.maxTokens).toBe(dump.resourceQuantity);
+    // A two-point truck holds 8T, less than the dump.
+    expect(load!.maxTokens).toBe(Math.min(dump.resourceQuantity ?? 0, 8));
     const html = commandDeckHtml(here, newDeck());
     expect(html).toContain('data-transfer="LOAD"');
     expect(html).toContain(`max="${load!.maxTokens}"`);
@@ -166,11 +167,11 @@ describe('the truck\'s supply area (A2)', () => {
     await controller.clickHex(hexOf(dump)!);
     await controller.confirmMove();
     const { loads } = controller.getSnapshot().transportOptions!;
-    // Loading the whole dump puts that counter on the truck as cargo. Neither the dump nor its cargo was ever a unit, so the count holds.
+    // Filling the truck puts Tokens on it as cargo. Neither the dump nor its cargo was ever a unit, so the count holds.
     await controller.transferSupply('LOAD', loads[0]!.pieceId, loads[0]!.maxTokens);
-    const cargo = own().find(({ id }) => id === dump.id)!;
-    expect(cargo.role).toBe('CARGO');
-    expect(unitRosterHtml(controller.getSnapshot(), newDeck())).not.toContain(`data-roster-pick="${dump.id}"`);
+    const cargo = own().filter(({ role }) => role === 'CARGO');
+    expect(cargo.length).toBeGreaterThan(0);
+    for (const piece of [dump, ...cargo]) expect(unitRosterHtml(controller.getSnapshot(), newDeck())).not.toContain(`data-roster-pick="${piece.id}"`);
     expect(countOf()).toBe(before);
     controller.dispose();
   });
@@ -305,7 +306,7 @@ describe('the truck\'s supply area (A2)', () => {
     expect(gaugeOf()).toContain('load-part');
     expect(gaugeOf()).toContain('>1T<');
     // Split the counter down to one point (4T capacity) and fill it.
-    await controller.divideTruck(4);
+    await controller.divideTruck(1);
     const room = controller.getSnapshot().transportOptions!;
     expect(room.capacityTokens).toBe(4);
     const rest = room.loads[0]!;
@@ -338,13 +339,13 @@ describe('the truck\'s supply area (A2)', () => {
     const loads = controller.getSnapshot().transportOptions!.loads[0]!;
     await controller.transferSupply('LOAD', loads.pieceId, 3);
     const remaining = controller.getSnapshot().transportOptions!.remainingTicks;
-    await controller.divideTruck(4);
+    await controller.divideTruck(1);
     // The truck moved before it was divided; both parts are in one Hex, so Combine is offered and works.
     const combine = controller.getSnapshot().unitActions.find(({ action }) => action.kind === 'COMBINE_TRANSPORT');
     expect(combine, 'Combine is offered after dividing a truck that moved').toBeDefined();
     await controller.runAction(combine!.key);
     const options = controller.getSnapshot().transportOptions!;
-    expect(options).toMatchObject({ points: 5, loadedTokens: 3, capacityTokens: 20, remainingTicks: remaining });
+    expect(options).toMatchObject({ points: 2, loadedTokens: 3, capacityTokens: 8, remainingTicks: remaining });
     expect(truckParts()).toHaveLength(1);
     controller.dispose();
   });
@@ -354,12 +355,12 @@ describe('the truck\'s supply area (A2)', () => {
     controller.selectPiece(truck().id);
     const html = commandDeckHtml(controller.getSnapshot(), newDeck());
     expect(html).toContain('class="divide-points"');
-    expect(html).toContain('max="4"');
+    expect(html).toContain('max="1"');
     expect(html).not.toContain('Split off 1 truck point');
-    await controller.divideTruck(2);
+    await controller.divideTruck(1);
     const sizes = truckParts()
       .map((piece) => piece.statusValues.find(({ statusDefinitionId }) => statusDefinitionId === 'status:transport-points')?.value).sort();
-    expect(sizes).toEqual([2, 3]);
+    expect(sizes).toEqual([1, 1]);
     controller.dispose();
   });
 });
