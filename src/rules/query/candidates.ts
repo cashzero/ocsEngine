@@ -274,7 +274,8 @@ export const candidateActions = (
     case 'LOAD_SUPPLY':
       for (const truck of owned) {
         for (const dump of friendlyOnMap(state, request.actorId).filter((piece) => definitionOf(state, piece)?.family === 'RESOURCE' && hexOf(piece) === hexOf(truck))) {
-          const tokens = Math.min(dump.resourceQuantity ?? 0, Math.max(0, capacityTokens(state, truck) - loadedTokens(state, truck)));
+          // SP unloaded, railed or shipped in this phase cannot be loaded again in it (12.2a): offer what is loadable.
+          const tokens = Math.min((dump.resourceQuantity ?? 0) - usageOf(state, dump).unloadedTokens, Math.max(0, capacityTokens(state, truck) - loadedTokens(state, truck)));
           if (tokens > 0 && add({ ...base(state, request.actorId, `load:${truck.id}:${dump.id}`), kind: 'LOAD_SUPPLY', truckId: truck.id, dumpId: dump.id, tokens })) return actions;
         }
       }

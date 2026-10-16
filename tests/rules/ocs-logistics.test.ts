@@ -512,6 +512,17 @@ describe('OCS 4.3 transport, Extenders and dumps (9.14, 12.2, 12.7, 12.11, 13.2)
     expect(codes(applyRuleAction(unloaded, ALLIED, { kind: 'LOAD_SUPPLY', truckId: U.alTruck, dumpId: U.alSup, tokens: 4 }))).toContain('INVALID_LOAD_QUANTITY');
   });
 
+  it('offers a load of only the Tokens not unloaded into the dump this phase (12.2a)', () => {
+    const state = atStep(buildGeneratedRuleState({ [U.alTruck]: ['1,5', null], [U.alSup]: ['1,5', null] }), 'MOVEMENT', 'MOVEMENT', ALLIED);
+    const held = piece(state, U.alSup).resourceQuantity!;
+    const loaded = ok(applyRuleAction(state, ALLIED, { kind: 'LOAD_SUPPLY', truckId: U.alTruck, dumpId: U.alSup, tokens: 2 }));
+    const returned = ok(applyRuleAction(loaded, ALLIED, { kind: 'UNLOAD_SUPPLY', truckId: U.alTruck, tokens: 2 }));
+    expect(piece(returned, U.alSup).resourceQuantity).toBe(held);
+    const offers = ruleEngine.getActionCandidates(returned, { actorId: ALLIED, kind: 'LOAD_SUPPLY', pieceId: U.alTruck, budget: 10 }).actions;
+    expect(offers).toEqual([expect.objectContaining({ kind: 'LOAD_SUPPLY', dumpId: U.alSup, tokens: held - 2 })]);
+    expect(ok(applyRuleAction(returned, ALLIED, offers[0]!)).pieceState.pieces.filter(({ location }) => location.kind === 'CONTAINER')).toHaveLength(1);
+  });
+
   it('offers Combine for the selected truck when another truck of its type shares the Hex (13.2c)', () => {
     const state = atStep(buildGeneratedRuleState({ [U.alTruck]: ['1,5', null] }), 'MOVEMENT', 'MOVEMENT', ALLIED);
     const known = new Set(state.pieceState.pieces.map(({ id }) => id));
