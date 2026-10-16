@@ -10,7 +10,7 @@ New Game 的 Order of battle 區有 Allied／Axis 各自的援軍比例下拉選
 
 雙方共用首批到達回合（`NewGameRequest.reinforcements.firstTurn`）。被抽中的整師開局在援軍 Box，按編制順序均勻抽取，從首批回合起每回合到 1 師。最後一師至少有兩個 Game Turn 在場（首批回合 + 師數 − 1 ≤ 回合上限 − 1）。完成編輯（選擇選項或數字欄位失焦）後，才把首批回合壓低至可排程的值（不低於 T2）；仍排不下時，降低到可排程的最大已提供比例。清空或逐字編輯數字時不連帶改動其他援軍設定。不合法 API 請求由 `OPTIONS` 階段拒絕；不以迴圈逐一減少任意數值。
 
-預設仍為無師級援軍、首批欄位 T4；攻方沒有 inland entry 時自動提高守方預設尚未實作。預覽顯示每方實際援軍師數與首批回合。海運方的援軍仍須經港口與 Sea Cap 上岸，排程只保證回合合法，不保證當回合一定上岸。既有卡車、飛機、獨立支援單位及容量不足時的待進場行為不屬於此比例。進攻方師數仍依 `ATTACKER_FORCE_RATIO = 1.5`；無 inland entry 不會自動減少或延後敵方主力。
+預設仍為無師級援軍、首批欄位 T4；攻方沒有 inland entry 時自動提高守方預設尚未實作。預覽顯示每方實際援軍師數與首批回合。海運方的援軍仍須經港口與 Sea Cap 上岸，排程只保證回合合法，不保證當回合一定上岸。既有卡車、飛機、獨立支援單位及容量不足時的待進場行為不屬於此比例。進攻方師數仍依 `ATTACKER_FORCE_RATIO = 2`；無 inland entry 不會自動減少或延後敵方主力。
 
 港口生成與容量見 [Random map](../generator/random-map.md)，Sea Cap 預設見 [Deployment](deployment.md)，海運與供補規則的實作邊界見 [Rule coverage](../rule-engine/rule-coverage.md) 的 `movement.sea`。補給表收入大於卸貨量，只能證明 Box 可能累積 SP；它不是部隊每回合實際消耗量。維持 trace supply、燃料、戰鬥與失去補給線的情況必須分別觀察。
 
