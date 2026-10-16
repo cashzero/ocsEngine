@@ -18,7 +18,7 @@
 | `scripts/ai-replay-study.mjs` | 重播：目標點換手方式、step 損失原因、斷補單位、攻擊結果 |
 | `scripts/ai-supply-study.mjs` | 重播：每次 attrition 的最後 trace／口糧觸發、移動預判與實際執行的比對 |
 | `scripts/ai-vp-study.mjs` | 重播：找出保留補給且當下 VP 較高的替代移動（待查的候選，不是已證明的失誤） |
-| `scripts/ai-oos-census.mjs`、`ai-logistics-study.mjs`、`ai-garrison-supply-study.mjs`、`ai-air-count.mjs` | 斷補、鐵路與卡車使用、駐軍送補、空軍任務數的統計 |
+| `scripts/ai-oos-census.mjs`、`ai-logistics-study.mjs`、`ai-fuel-study.mjs`、`ai-truck-trips.mjs`、`ai-garrison-supply-study.mjs`、`ai-air-count.mjs` | 斷補、鐵路與卡車使用、攻方加油、每輛卡車每回合趟數、駐軍送補、空軍任務數的統計 |
 | `scripts/ai-narrate.mjs` | 一局 trace 的逐步摘要，供人工檢視 |
 | `scripts/ai-train.mjs` | 權重自我對戰（已停用，見「決策」） |
 
@@ -71,6 +71,21 @@
 後方存量 3.0 對 8.8 SP）：鐵路 100%；
 後方存量 2.6 SP，同批 v75 為 12.0 SP；駐軍存量 0。可裝的後方 SP 裝走 70%（5.9／8.4 SP），前線 4 格內的 SP 由 2.8 升到 10.5。
 [證據](../quality/evidence/ai-logistics-truck-shuttle-development-2026-10-16/README.md)。
+
+### 攻方加油 gate
+
+改變 HQ、卡車送補或單位與補給距離的候選，除了升級流程與攻方運補 gate，還要通過這個 gate（使用者決定，2026-10-16 登記於
+heuristic@79 實作之前）。它檢查攻方單位能不能加油（12.5）：進攻方的 SP 在地圖上，但若沒有補給堆在 HQ 的取用範圍內，
+HQ 投送不出燃料，戰車與卡車移動的單位就動不了，攻方缺兵力只是電腦的錯。
+
+- **範圍**：開發批的 `AXIS_ATTACKS` 局，從第 3 回合起每個進攻方 Movement Segment 開始時；對照組是同一批中凍結標準策略擔任
+  進攻方的局。指令：`node scripts/ai-fuel-study.mjs <attack 資料夾…> --gate <候選 policy>`，任一項失敗時 exit code 1。
+- **無法加油**：需要燃料（12.5a）卻沒有任何合法加油方式的戰鬥單位，每局次數 ≤ 對照組的一半。
+- **乾 HQ**：沒有任何補給堆能供應的進攻方 HQ（它的投送沒有 SP 可送）占 HQ 的比例 ≤ 對照組的一半。
+
+登記時的基準（`heuristic@78` 雙方，`362e972` 的產生器，溫帶 AXIS_ATTACKS 8 局，種子 1300200–1300207）：無法加油每局
+77.6 次（需要燃料者的 34%），乾 HQ 29%。60% 的無法加油是 HQ 投送到得了、但 HQ 本身沒有補給堆可取用；38% 是沒有 HQ
+投送到得了。
 
 ### 歸因規則
 
