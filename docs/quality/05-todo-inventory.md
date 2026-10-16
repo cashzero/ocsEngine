@@ -27,7 +27,7 @@
 | `airborne-gpid` | 空降師使用佔位 GPID 900001–900005 | counter 不對應真實 BTR 棋子 | 以審核過的 GPID 取代 | `src/generation/oob/catalog.ts` |
 | `para-gpid` | 傘兵營 counter 為產生器自訂 | 同上 | 同上 | `src/generation/oob/counter-corpus.ts` |
 | `oob-name-import` | 重新匯入 OOB 名稱會遺失手寫的 Fallschirmjäger 與美軍第 13 空降師 profile | 重新匯入後這兩個 profile 消失 | 匯入腳本保留或重建這兩個 profile | `scripts/import-oob-names.mjs` |
-| `attack-balance` | 攻守戰的平衡在鐵路、卡車增援、hedgehog、架橋與預設值（Rail Cap 0.6／師、卡車點數依補給收入）改動後沒有以 40 局新 seed 重新量測 | 攻方或守方可能偏強 | 使用者確認電腦後勤行為可接受後，決定平衡手段與目標，再以兩種攻方各 40 局、新 seed 驗證並在 New Game 預覽確認數字 | `docs/roadmap/13-engagement-scenarios-wbs.md`、`15-rail-cap-wbs.md` |
+| `attack-balance` | 攻守戰的平衡在鐵路、卡車增援、hedgehog、架橋與預設值（Rail Cap 0.6／師、卡車點數依補給收入、攻方 2 倍師數）改動後沒有以 40 局新 seed 重新量測；16 局開發批中攻方 2 倍兵力沒有多得 VP，電腦每局只宣告約 8 次戰鬥（[證據](evidence/attacker-ratio-2026-10-16/README.md)） | 攻方或守方可能偏強；電腦攻勢不足時，對局結果不能用來判斷兵力比 | 先確認電腦會把兵力優勢轉成攻擊與 VP，再決定平衡目標，以兩種攻方各 40 局、新 seed 驗證並在 New Game 預覽確認數字 | `docs/roadmap/13-engagement-scenarios-wbs.md`、`15-rail-cap-wbs.md` |
 
 ### AI
 

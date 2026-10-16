@@ -40,8 +40,10 @@ export const OOB_DIVISION_LIMITS = { minDivisions: 1, maxDivisions: 20, maxArmor
  * An attacking side fields this many times the divisions of the other, armored ones included, and the balancing aims
  * at this ratio of combat value (user, 2026-10-07: "進攻方兵力要比較多吧 至於是1.5倍還是2或3 看你";
  * docs/quality/evidence/engagements-plan-2026-10-07/README.md §4). With equal forces the bot attacker won 10 of 40 games; at 1.5 it won 18.
+ * Raised to 2 once trucks were sized from income (user, 2026-10-16: "1.5 strength本來就有點少"); the bot's attack gained no
+ * VP from it (docs/quality/evidence/attacker-ratio-2026-10-16/README.md), so bot games do not set this value.
  */
-export const ATTACKER_FORCE_RATIO = 1.5;
+export const ATTACKER_FORCE_RATIO = 2;
 
 /** Divisions `side` fields: the requested count, or ATTACKER_FORCE_RATIO times it (within the limits) for the attacker. */
 export const sideDivisions = (

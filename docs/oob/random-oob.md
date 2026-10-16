@@ -21,7 +21,7 @@ come from the [counter corpus](counter-corpus.md); placement on the map is deplo
 
 ### Divisions
 
-- In an attack the attacker fields 1.5× the divisions and armored divisions (`ATTACKER_FORCE_RATIO`, capped at the
+- In an attack the attacker fields 2× the divisions and armored divisions (`ATTACKER_FORCE_RATIO`, capped at the
   limits).
 - The plan lists the armored slots first (Allied armored divisions; Axis Panzer divisions, every second one a
   Panzergrenadier package), then the foot slots from a seeded cycle of three infantry to one airborne. The Allies have no
@@ -58,7 +58,7 @@ come from the [counter corpus](counter-corpus.md); placement on the map is deplo
 
 Balance is the ratio of the two sides' combat values (printed full-strength Combat Mode strength weighed by Action
 Rating, ×0.7 at AR 0 up to ×1.2 at AR 5; defensive-only units at half; artillery at a quarter of its barrage strength;
-HQs, trucks, dumps and garrisons not counted), with the attacker's value divided by 1.5. While the weaker side is
+HQs, trucks, dumps and garrisons not counted), with the attacker's value divided by 2. While the weaker side is
 more than 10% behind it receives independent armor and anti-tank battalions in turn (a weaker Axis gets Tiger and
 Jagdpanther battalions), up to max(8, 2 × divisions); a remaining gap is a warning.
 
@@ -96,7 +96,10 @@ All by the user unless noted:
   scenarios give 0.07-0.4 truck points per division (Operation Queen: 1 point for about 14 US divisions). Half a point
   per SP makes lift the limit: in the same 16 attack games the attacker's trucks carried 0.94 SP per point and 6.2 SP
   stayed in the rear. Sizing trucks from the smaller side's divisions was rejected: the attacker should have more.
-- **The attacker gets 1.5× the divisions** (2026-10-07: "進攻方兵力要比較多吧").
+- **The attacker gets 2× the divisions** (2026-10-07: "進攻方兵力要比較多吧"; raised from 1.5 on 2026-10-16: "1.5 strength
+  本來就有點少", once trucks followed income). In 16 bot attack games each, 2× gave the attacker 34 combat units against
+  26 and more kills, but no more VP (3.6 against 4.4 a game); the bot declares about eight attacks a game either way, so
+  bot win rates do not set this ratio.
 - **No standalone OOB laboratory**: forces are previewed only inside New Game.
 
 ## Known gaps

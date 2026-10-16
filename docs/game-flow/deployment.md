@@ -17,7 +17,7 @@ a unit is never silently dropped.
 | | Meeting Engagement (default) | Allied attack / Axis attack |
 |---|---|---|
 | Zones | split at the middle | the split moves toward the attacker by 0.4 of the anchor distance, so the defender holds most of the map |
-| Forces | equal divisions per side | the attacker has 1.5× the divisions and armored divisions (`ATTACKER_FORCE_RATIO`) |
+| Forces | equal divisions per side | the attacker has 2× the divisions and armored divisions (`ATTACKER_FORCE_RATIO`) |
 | Front standoff | 4 hexes behind the split | attacker 3, defender 1; the defender's line starts in Combat Mode |
 | Objectives | balanced VP, each side holds its own | in the defender's zone and held by it (attacker ports excepted) |
 | Garrisons | one per held objective | the defender has one per objective (hedgehog Level 2) and one per key point (hedgehog Level 1); key points number half the objectives, rounded up: rail supply nodes first, then road junctions, spaced from each other and the objectives; the attacker has none |
