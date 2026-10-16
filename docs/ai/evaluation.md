@@ -22,7 +22,7 @@
 | `scripts/ai-narrate.mjs` | 一局 trace 的逐步摘要，供人工檢視 |
 | `scripts/ai-train.mjs` | 權重自我對戰（已停用，見「決策」） |
 
-原始存檔、trace 與凍結建置留在本機被 git 忽略的 `artifacts/`（較早的批次在 `tmp/ai-match/`）；commit 進 `docs/quality/evidence/` 的只有文字紀錄與個別 run 的小型腳本；可重用工具放在 `scripts/`。`scripts/ai-promotion/freeze.py` 凍結現行標準與候選，`quality.py` 在凍結目錄跑完整檢查；`batch.py` 執行同引擎交換陣營對戰及補給／前進稽核，`verify.py` 核對來源、設定、重播、候選陣營與成對 VP 結果。
+原始存檔、trace 與凍結建置留在本機被 git 忽略的 `artifacts/`；舊批次的原始資料已刪除，只留文字紀錄。commit 進 `docs/quality/evidence/` 的只有文字紀錄與個別 run 的小型腳本；可重用工具放在 `scripts/`。`scripts/ai-promotion/freeze.py` 凍結現行標準與候選，`quality.py` 在凍結目錄跑完整檢查；`batch.py` 執行同引擎交換陣營對戰及補給／前進稽核，`verify.py` 核對來源、設定、重播、候選陣營與成對 VP 結果。`register.py` 登記獨立 gate 前，確認新種子沒有出現在任何現存的 `match-*.save.json`，也不在已下過種子的清冊 `artifacts/ai-promotion/played-seeds.tsv`（每行「種子<TAB>資料夾」）裡；刪除存檔騰空間前，先把種子補進這份清冊。
 
 ### 正確性要求（每一局）
 

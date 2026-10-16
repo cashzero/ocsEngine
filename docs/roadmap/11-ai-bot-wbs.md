@@ -83,7 +83,7 @@ worker 平行、`--fix-map`／`--fix-oob`、`--trace`、每局存檔並以 `load
 | 4 worker 平行 20 場（i5-7600，4 核） | 121.4 s，含 replay 驗證（每場約 6 s 吞吐） | 第一版為 157.6 s；8 worker 不會更快 |
 
 每次只改效能時，以同一場的最終 state hash 對照改動前的建置；以上每一步都相同（random-legal@2 改變了選擇方式，因此從 v2 起重新取基準）。
-批次：第 0–59 場（v1）與 v2 的 20 場全部 FINISHED、replay 相符；action 覆蓋見各批 `tmp/ai-match/*/summary.json`
+批次：第 0–59 場（v1）與 v2 的 20 場全部 FINISHED、replay 相符；action 覆蓋記在當時各批的 `summary.json`（本機原始資料已刪除）
 （v1 的 40 場：MOVE 14,351、COMBAT 389、BARRAGE 62、REBUILD 202、CHECK_SUPPLY 3；沒有開啟 Air 的局）。
 
 Bot 對局已找到並修正的規則缺陷（各有「修正前失敗、修正後通過」的回歸測試 `tests/ai/bot-found-regressions.test.ts`）：
