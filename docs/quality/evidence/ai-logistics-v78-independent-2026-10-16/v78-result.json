@@ -1,0 +1,208 @@
+{
+  "independent": {
+    "strategyVersion": "78",
+    "baselineVersion": "75",
+    "sourceCommit": "affa01a6d04a9f5a1c71ebbc04a05970e016d52f",
+    "mode": "independent",
+    "groups": [
+      {
+        "group": "meeting-temperate",
+        "games": 20,
+        "candidateVP": 409,
+        "baselineVP": 371,
+        "delta": 38,
+        "legalReplayAndSupply": true
+      },
+      {
+        "group": "meeting-eastern",
+        "games": 20,
+        "candidateVP": 152,
+        "baselineVP": 140,
+        "delta": 12,
+        "legalReplayAndSupply": true
+      },
+      {
+        "group": "attack-temperate",
+        "games": 20,
+        "candidateVP": 156,
+        "baselineVP": 164,
+        "delta": -8,
+        "legalReplayAndSupply": true
+      },
+      {
+        "group": "attack-eastern",
+        "games": 20,
+        "candidateVP": 124,
+        "baselineVP": 90,
+        "delta": 34,
+        "legalReplayAndSupply": true
+      }
+    ],
+    "totals": {
+      "candidateVP": 841,
+      "candidateStepsKilled": 1426,
+      "candidateStepsLost": 1383,
+      "baselineVP": 765,
+      "baselineStepsKilled": 1383,
+      "baselineStepsLost": 1426,
+      "candidateAdvances": 258,
+      "candidateFundedAdvances": 253,
+      "candidateSuccessfulOverruns": 30,
+      "candidateActuallyFundedOverruns": 30
+    },
+    "engagementDeltas": {
+      "MEETING": 50,
+      "AXIS_ATTACKS": 26
+    },
+    "pairs": 40,
+    "mean": 0.95,
+    "standardError": 0.5261739012522136,
+    "interval": [
+      -0.1549651926296487,
+      2.0549651926296484
+    ],
+    "vpGate": false,
+    "verificationScope": "frozen-and-delivered",
+    "quality": {
+      "typecheck": {
+        "command": [
+          "npm",
+          "run",
+          "typecheck"
+        ],
+        "exitCode": 0,
+        "seconds": 15.755534932002774,
+        "log": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-logistics/candidate-78-quality/typecheck.log",
+        "sha256": "d276a607924b69f3bf75479c9ff0bd362e2bc5a9c0047d63a951c8e899b4eb98"
+      },
+      "tests": {
+        "command": [
+          "npx",
+          "vitest",
+          "run",
+          "--maxWorkers=2"
+        ],
+        "exitCode": 0,
+        "seconds": 228.41557271599595,
+        "log": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-logistics/candidate-78-quality/tests.log",
+        "sha256": "b3f5f2c5a5a81ab90d76ce1ca4189e3a36328970ffcb292b6f3cd67c0d72c33c",
+        "passed": 748,
+        "skipped": 8
+      },
+      "smoke": {
+        "command": [
+          "npm",
+          "run",
+          "smoke"
+        ],
+        "exitCode": 0,
+        "seconds": 2.069174329008092,
+        "log": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-logistics/candidate-78-quality/smoke.log",
+        "sha256": "57f4b11f8e16b9086ab757da51a782c8fdee53c661431fe12983397ac1a2493b"
+      }
+    }
+  },
+  "development": {
+    "strategyVersion": "78",
+    "baselineVersion": "75",
+    "sourceCommit": "affa01a6d04a9f5a1c71ebbc04a05970e016d52f",
+    "mode": "development",
+    "groups": [
+      {
+        "group": "meeting-temperate",
+        "games": 8,
+        "candidateVP": 184,
+        "baselineVP": 152,
+        "delta": 32,
+        "legalReplayAndSupply": true
+      },
+      {
+        "group": "meeting-eastern",
+        "games": 8,
+        "candidateVP": 49,
+        "baselineVP": 51,
+        "delta": -2,
+        "legalReplayAndSupply": true
+      },
+      {
+        "group": "attack-temperate",
+        "games": 8,
+        "candidateVP": 70,
+        "baselineVP": 62,
+        "delta": 8,
+        "legalReplayAndSupply": true
+      },
+      {
+        "group": "attack-eastern",
+        "games": 8,
+        "candidateVP": 51,
+        "baselineVP": 45,
+        "delta": 6,
+        "legalReplayAndSupply": true
+      }
+    ],
+    "totals": {
+      "candidateVP": 354,
+      "candidateStepsKilled": 459,
+      "candidateStepsLost": 447,
+      "baselineVP": 310,
+      "baselineStepsKilled": 447,
+      "baselineStepsLost": 459,
+      "candidateAdvances": 66,
+      "candidateFundedAdvances": 63,
+      "candidateSuccessfulOverruns": 9,
+      "candidateActuallyFundedOverruns": 9
+    },
+    "engagementDeltas": {
+      "MEETING": 30,
+      "AXIS_ATTACKS": 14
+    },
+    "pairs": 16,
+    "mean": 1.375,
+    "standardError": 0.6574889099191459,
+    "interval": [
+      -0.005726710830206372,
+      2.7557267108302064
+    ],
+    "vpGate": false,
+    "verificationScope": "frozen-only",
+    "quality": {
+      "typecheck": {
+        "command": [
+          "npm",
+          "run",
+          "typecheck"
+        ],
+        "exitCode": 0,
+        "seconds": 15.755534932002774,
+        "log": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-logistics/candidate-78-quality/typecheck.log",
+        "sha256": "d276a607924b69f3bf75479c9ff0bd362e2bc5a9c0047d63a951c8e899b4eb98"
+      },
+      "tests": {
+        "command": [
+          "npx",
+          "vitest",
+          "run",
+          "--maxWorkers=2"
+        ],
+        "exitCode": 0,
+        "seconds": 228.41557271599595,
+        "log": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-logistics/candidate-78-quality/tests.log",
+        "sha256": "b3f5f2c5a5a81ab90d76ce1ca4189e3a36328970ffcb292b6f3cd67c0d72c33c",
+        "passed": 748,
+        "skipped": 8
+      },
+      "smoke": {
+        "command": [
+          "npm",
+          "run",
+          "smoke"
+        ],
+        "exitCode": 0,
+        "seconds": 2.069174329008092,
+        "log": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-logistics/candidate-78-quality/smoke.log",
+        "sha256": "57f4b11f8e16b9086ab757da51a782c8fdee53c661431fe12983397ac1a2493b"
+      }
+    }
+  }
+}

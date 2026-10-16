@@ -67,7 +67,8 @@
 84/130 沒有卸貨（其中 38 次停在原地），入場格的 SP 則逐回合累積（一局中第 6 回合累積到 124T）；每回合開始時可裝的後方 SP
 只裝走 23%。
 
-候選 `heuristic@78`（卡車循環運補，[行為](heuristic-policy.md#後勤)）在同一組種子、對凍結 v75 的開發批通過：鐵路 100%；
+候選 `heuristic@78`（卡車循環運補，[行為](heuristic-policy.md#後勤)）在同一組種子、對凍結 v75 的開發批通過（獨立批也通過：
+後方存量 3.0 對 8.8 SP；VP 未達升級門檻，見[候選策略量測](#候選策略量測)）：鐵路 100%；
 後方存量 2.6 SP，同批 v75 為 12.0 SP；駐軍存量 0。可裝的後方 SP 裝走 70%（5.9／8.4 SP），前線 4 格內的 SP 由 2.8 升到 10.5。
 [證據](../quality/evidence/ai-logistics-truck-shuttle-development-2026-10-16/README.md)。
 
@@ -113,7 +114,7 @@
 | v74 保留 VP 攻擊的前進資格 | v66 | 品質／局部接續 | — | — | [748 passed、8 skipped](../quality/evidence/ai-vp-option-quality-2026-10-16/README.md)；換基底前未開對戰，不作升級證據 |
 | v76 全回合支付可存活的攻方 option | v75 | 開發 32 場 | −2 | +2／−4 | [淘汰](../quality/evidence/ai-vp-option-development-2026-10-16/README.md) |
 | v77 限最後一位玩家的最後回合 | v75 | 開發 32 場 | +8 | 0／+8 | [增益集中一對種子](../quality/evidence/ai-vp-terminal-option-development-2026-10-16/README.md)，尚未獨立驗收 |
-| v78 卡車循環運補 | v75 | 開發 32 場（試跑） | +44 | +30／+14 | 攻擊戰：[攻方運補 gate 通過](../quality/evidence/ai-logistics-truck-shuttle-development-2026-10-16/README.md)；遭遇戰溫帶 +32、東歐 −2，32 場補給稽核違例 0；正式開發批與獨立批待跑 |
+| v78 卡車循環運補 | v75 | 獨立 80 場 | +76 | +50／+26 | [未達登記門檻](../quality/evidence/ai-logistics-v78-independent-2026-10-16/README.md)，區間下界 −0.155；攻方運補 gate 與全部正確性檢查通過；開發 32 場 +44 |
 
 已完成驗證的對戰批均合法打完 8 回合，重播 hash 一致，既定一般補給與嚴格前進稽核違例為零。v77 的完整品質檢查為 752 passed／8 skipped，typecheck、build、smoke 通過；該批成對平均 +0.25、區間 [−0.275, 0.775]，尚未登記或執行獨立批，標準仍為 v75。各次 frozen quality 的命令、時間、來源與建置雜湊在個別 evidence 的 JSON 中；觀測 commit 與歷史重寫後相同 tree 的對照見 [來源對照](../quality/evidence/ai-vp-terminal-option-development-2026-10-16/source-equivalence.json)。
 
