@@ -30,6 +30,12 @@ for folder in [root / 'artifacts', root / 'tmp/ai-match']:
         for save in folder.rglob('match-*.save.json'):
             match = re.fullmatch(r'match-(\d+)\.save\.json', save.name)
             if match:assert int(match[1]) not in fresh, 'Independent seed was already played: ' + str(save)
+# Ledger of played seeds, kept so saves can be deleted to reclaim disk space: one "seed<TAB>folder" line per save.
+ledger = root / 'artifacts/ai-promotion/played-seeds.tsv'
+if ledger.exists():
+    for line in ledger.read_text().splitlines():
+        seed, folder = line.split('\t', 1)
+        assert int(seed) not in fresh, 'Independent seed was already played: ' + seed + ' in ' + folder
 record = {'strategyVersion': candidate['policyVersion'], 'baselineVersion': baseline['policyVersion'], 'sourceCommit': candidate['sourceCommit'],
           'registeredAtUtc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
           'candidateFreezeSha256': hashlib.sha256(candidate_file.read_bytes()).hexdigest(),
