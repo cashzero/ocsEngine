@@ -39,6 +39,8 @@ export interface Situation {
   /** Enemy strength that could reach `hexId` in its next turn, weighted down by distance. */
   readonly threatAt: (hexId: HexId) => number;
   readonly isCombatUnit: (unit: OwnUnit) => boolean;
+  /** Hexes a railroad runs through (13.3), from the printed map. */
+  readonly railHexes: ReadonlySet<string>;
 }
 
 /** Hexes an enemy stack is assumed to be able to reach to attack next turn. */
@@ -121,6 +123,7 @@ export const analyze = (projection: RuleProjection, playerId: PlayerId, facts: B
   const heldObjectives = new Set((turnsLeft > 0 || projection.sequence.playerTurnIndex === 0)
     ? projection.objectives.filter(o => o.controllerId === playerId).map(o => o.hexId) : []);
   return {
+    railHexes: knowledge.railHexes,
     playerId,
     turnsLeft,
     opponentTurnRemains: turnsLeft > 0 || projection.sequence.playerTurnIndex === 0,
