@@ -96,7 +96,7 @@ Dispatch 的 request ID 含 runner 的 `nonce`：session 會拒絕已見過的 r
 | Policy | 版本 | 用途 |
 |---|---|---|
 | `random-legal` | 2 | 從合法行動加權隨機；找規則死路與覆蓋缺口，不是強度基準 |
-| `heuristic` | 75 | 標準策略（[heuristic-policy.md](heuristic-policy.md)）；可傳入權重與標籤（版本變成 `75+<標籤>`） |
+| `heuristic` | 78 | 標準策略（[heuristic-policy.md](heuristic-policy.md)）；可傳入權重與標籤（版本變成 `78+<標籤>`） |
 
 `BotDecisionTrace` 每個決策一筆：policy@version、步驟、revision、ACTION／DECISION、行動、意圖、分數與分項、
 dispatch 結果、嘗試次數與被拒的行動、決策與 dispatch 耗時。
