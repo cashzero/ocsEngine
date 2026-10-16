@@ -1,0 +1,50 @@
+{
+  "combatSegments": 61,
+  "endedWithBestBelowThreshold": 50,
+  "wouldPassWithoutSupplyTerm": 19,
+  "rawOddsOfRejectedBest": {
+    "1:1": 21,
+    "3:1": 9,
+    "2:1": 9,
+    "4:1": 5,
+    "7:1": 2,
+    "6:1": 1,
+    "1:2": 1,
+    "5:1": 1,
+    "8:1": 1
+  },
+  "termsOfRejectedBest": {
+    "defender-steps": {
+      "mean": 7.9,
+      "n": 50
+    },
+    "attacker-steps": {
+      "mean": -8.0,
+      "n": 50
+    },
+    "supply": {
+      "mean": -9.8,
+      "n": 50
+    },
+    "objective": {
+      "mean": 11.8,
+      "n": 10
+    },
+    "protect-objective": {
+      "mean": 2.2,
+      "n": 13
+    },
+    "objective-at-risk": {
+      "mean": -32.3,
+      "n": 11
+    },
+    "disorganize": {
+      "mean": 0.3,
+      "n": 5
+    },
+    "clear-zoc": {
+      "mean": 1.0,
+      "n": 1
+    }
+  }
+}

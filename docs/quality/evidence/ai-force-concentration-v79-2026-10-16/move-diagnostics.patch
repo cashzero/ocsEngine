@@ -1,0 +1,28 @@
+--- dist/ai/policies/heuristic.js	2026-10-16 22:37:58.618611079 +0800
++++ diag/ai/policies/heuristic.js	2026-10-16 21:42:57.726611566 +0800
+@@ -1045,12 +1045,24 @@
+         }
+         const improving = scored.filter(candidate => sum(candidate.terms) > stay)
+             .sort((left, right) => captureSwing(right.action) - captureSwing(left.action) || sum(right.terms) - sum(left.terms));
++        let vetoed = 0;
+         for (const candidate of improving) {
+-            if (!preservesFriendlySupply(context, candidate.action))
++            if (!preservesFriendlySupply(context, candidate.action)) {
++                vetoed++;
+                 continue;
++            }
+             best = candidate;
+             break;
+         }
++        if (unit.piece.role === 'COMBAT') {
++            const stayTerms = scoreDestination(situation, unit, target, [unit.hexId], notes, reach, direct, front, w, feeds, opponentTurnRemains);
++            const top = [...scored].sort((a, b) => sum(b.terms) - sum(a.terms)).slice(0, 3)
++                .map((c) => ({ to: destinationOf(c.action), s: Math.round(sum(c.terms) * 10) / 10, d: target ? hexesBetween(destinationOf(c.action), target.hexId) : null, t: Object.fromEntries(c.terms.map((x) => [x.term, Math.round(x.value * 10) / 10])) }));
++            const closest = target ? [...scored].sort((a, b) => hexesBetween(destinationOf(a.action), target.hexId) - hexesBetween(destinationOf(b.action), target.hexId) || sum(b.terms) - sum(a.terms))[0] : null;
++            debug?.('DIAG ' + JSON.stringify({ id, at: unit.hexId, purpose: target?.purpose, target: target?.hexId, dist: target ? hexesBetween(unit.hexId, target.hexId) : null, enemy: situation.nearestEnemy(unit.hexId).distance, str: unit.profile?.strength, mode: unit.piece.mode, improving: improving.length, vetoed, chosen: best ? destinationOf(best.action) : null,
++                stay: Object.fromEntries(stayTerms.map((x) => [x.term, Math.round(x.value * 10) / 10])), top,
++                closest: closest ? { to: destinationOf(closest.action), d: hexesBetween(destinationOf(closest.action), target.hexId), s: Math.round(sum(closest.terms) * 10) / 10, t: Object.fromEntries(closest.terms.map((x) => [x.term, Math.round(x.value * 10) / 10])) } : null }));
++        }
+         debug?.(`${unit.piece.role} ${id} at ${unit.hexId} mode ${unit.piece.mode} ${reach.has(unit.hexId) ? 'in-trace' : 'OUT-OF-TRACE'} target ${target?.purpose ?? '-'} ${target?.hexId ?? ''} `
+             + `enemy ${enemyDistance} moves ${moves.length} stay ${stay.toFixed(1)} best ${best ? `${sum(best.terms).toFixed(1)} to ${destinationOf(best.action)} ${JSON.stringify(best.terms)}` : '-'}`);
+         if (best && sum(best.terms) > stay) {
