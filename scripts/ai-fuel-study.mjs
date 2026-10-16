@@ -69,7 +69,8 @@ for (const dir of dirs) {
         for (const unit of own.filter((piece) => isFieldUnit(state, piece))) {
           if (enemy.some((other) => m.hexDistanceBetween(other.location.hexId, unit.location.hexId) <= 1)) continue;
           const coverage = m.ruleEngine.queryFuelCoverage(state, attackerId, unit.id).value;
-          if (coverage === 'NOT_NEEDED' || coverage === 'FUELED') continue;
+          // null: needs fuel and has none; anything else is fueled (SINGLE_UNIT, FORMATION, HQ) or walks (NOT_NEEDED).
+          if (coverage !== null) continue;
           bump(role, 'needFuel', 1);
           if ((m.ruleEngine.queryFuelPreview(state, attackerId, unit.id).value ?? []).length === 0) bump(role, 'cannotFuel', 1);
         }
