@@ -1,0 +1,29 @@
+{
+  "policyVersion": "70",
+  "freezeSha256": "7c0456c0dbdb516d901996b1c4d6bab11b764c80792c938e310d0e2d655f485d",
+  "checks": {
+    "typecheck": {
+      "command": [
+        "npm",
+        "run",
+        "typecheck"
+      ],
+      "exitCode": 0,
+      "seconds": 40.010596611995425,
+      "log": "/home/cashlin/ocsEngine/artifacts/ai-vp/candidate-70-quality/typecheck.log",
+      "sha256": "d276a607924b69f3bf75479c9ff0bd362e2bc5a9c0047d63a951c8e899b4eb98"
+    },
+    "tests": {
+      "command": [
+        "npx",
+        "vitest",
+        "run",
+        "--maxWorkers=2"
+      ],
+      "exitCode": 1,
+      "seconds": 282.7158030790015,
+      "log": "/home/cashlin/ocsEngine/artifacts/ai-vp/candidate-70-quality/tests.log",
+      "sha256": "cdd8857ef6379d7f8eea0aaebe6e1bcc2c7d1d19dba2e1c9ba449aad7d0c2a0a"
+    }
+  }
+}

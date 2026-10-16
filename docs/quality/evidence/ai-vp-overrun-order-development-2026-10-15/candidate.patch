@@ -1,0 +1,39 @@
+--- a/src/ai/policies/heuristic.ts
++++ b/src/ai/policies/heuristic.ts
+@@ -783,8 +783,17 @@
+   // hexes. Otherwise a legal rescue available at the start of the phase can disappear.
+   const order = (unit: OwnUnit) => unit.piece.role === 'TRUCK' && notes.relief!.hexIds.length > 0 ? -1
+     : unit.piece.role === 'HQ' ? 0 : unit.piece.role === 'COMBAT' ? 1 : unit.piece.role === 'ARTILLERY' ? 2 : unit.piece.role === 'TRUCK' ? 3 : 9;
++  // An attack already available now takes precedence over marching another group
++  // toward a future attack. Reuse the normal score and supply checks, not proximity.
++  const immediateOverruns = new Map<PieceId, BotDecision>();
++  for (const unit of situation.own.filter(u => u.piece.role === 'COMBAT' && !notes.done.has(u.piece.id))) {
++    const overrun = bestCombat(context, situation, facts, w, actions.candidates('DECLARE_COMBAT', unit.piece.id, 20), w.attackThreshold * w.overrunThresholdFactor);
++    if (overrun) immediateOverruns.set(unit.piece.id, overrun);
++  }
+   const units = situation.own.filter((unit) => order(unit) < 9 && !notes.done.has(unit.piece.id))
+-    .sort((left, right) => order(left) - order(right) || String(left.piece.id).localeCompare(String(right.piece.id)));
++    .sort((left, right) => order(left) - order(right)
++      || Number(immediateOverruns.has(right.piece.id)) - Number(immediateOverruns.has(left.piece.id))
++      || String(left.piece.id).localeCompare(String(right.piece.id)));
+   for (const unit of units) {
+     const id = unit.piece.id;
+     if (unit.piece.role === 'TRUCK') {
+@@ -813,7 +822,7 @@
+     }
+     // Overrun what is in the way when the table promises a clear result (8.0).
+     if (unit.piece.role === 'COMBAT') {
+-      const overrun = bestCombat(context, situation, facts, w, actions.candidates('DECLARE_COMBAT', id, 20), w.attackThreshold * w.overrunThresholdFactor);
++      const overrun = immediateOverruns.get(id);
+       if (overrun) return overrun;
+     }
+     let moves = actions.candidates('MOVE_PIECE', id);
+@@ -1231,7 +1240,7 @@
+   const choose = decide(facts, options.weights ?? DEFAULT_HEURISTIC_WEIGHTS);
+   return {
+     id: 'heuristic',
+-    version: options.label === undefined ? '66' : `66+${options.label}`,
++    version: options.label === undefined ? '69' : `69+${options.label}`,
+     decide: (context) => {
+       const sink = options.debug;
+       debug = sink ? (line) => sink(`${context.memory.stepKey} ${String(context.playerId).split(':').at(-1)} ${line}`) : null;

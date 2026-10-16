@@ -1,0 +1,110 @@
+diff --git a/src/ai/decisions.ts b/src/ai/decisions.ts
+index c4efeb1..3ab683a 100644
+--- a/src/ai/decisions.ts
++++ b/src/ai/decisions.ts
+@@ -116,6 +116,14 @@ export const respondToDecision = (context: BotDecisionContext, situation: Situat
+           && situation.friendlyAt(hexId).some((unit) => situation.isCombatUnit(unit)));
+       const holdObjective = holdsBeside || (defending && targetHex !== undefined
+         && situation.objectives.some(({ hexId }) => hexId === targetHex));
++      const allLoss = parsed.find(({ retreat }) => retreat === 0);
++      const takeObjective = !defending && !situation.opponentTurnRemains && targetHex !== undefined && allLoss !== undefined
++        && situation.objectives.some(o => o.hexId === targetHex && o.controllerId !== context.playerId)
++        && (projection.combat?.attackerStepsRemaining ?? 0) > allLoss.losses;
++      // Retiring from a VP attack forfeits advance and lets the defender ignore its
++      // option. Pay with steps while attackers can survive, as defenders already do.
++      if (takeObjective) return respond(actions, allLoss.option.id, 'combat-option',
++        `keep the VP advance available: ${allLoss.option.label}`);
+       // Hold an objective with steps; elsewhere keep steps and give ground.
+       const ordered = [...parsed].sort((left, right) => holdObjective
+         ? left.retreat - right.retreat || left.losses - right.losses
+diff --git a/src/ai/policies/heuristic.ts b/src/ai/policies/heuristic.ts
+index b39a5ee..abf52c8 100644
+--- a/src/ai/policies/heuristic.ts
++++ b/src/ai/policies/heuristic.ts
+@@ -1268,7 +1268,7 @@ export const createHeuristicPolicy = (facts: BotGameFacts, options: HeuristicPol
+   const choose = decide(facts, options.weights ?? DEFAULT_HEURISTIC_WEIGHTS);
+   return {
+     id: 'heuristic',
+-    version: options.label === undefined ? '75' : `75+${options.label}`,
++    version: options.label === undefined ? '77' : `77+${options.label}`,
+     decide: (context) => {
+       const sink = options.debug;
+       debug = sink ? (line) => sink(`${context.memory.stepKey} ${String(context.playerId).split(':').at(-1)} ${line}`) : null;
+diff --git a/src/rules/query/model.ts b/src/rules/query/model.ts
+index c90ab57..d64a7ff 100644
+--- a/src/rules/query/model.ts
++++ b/src/rules/query/model.ts
+@@ -237,6 +237,8 @@ export interface ProjectedCombat {
+   readonly targetHexId: string;
+   readonly attackerOwnerId: PlayerId;
+   readonly attackerCount: number;
++  /** Surviving attacking steps after losses already resolved; visible only to the attacker. */
++  readonly attackerStepsRemaining?: number | null;
+   readonly defenderCount: number;
+   readonly attackerStrength: number;
+   readonly defenderStrength: number | null;
+diff --git a/src/rules/query/projection.ts b/src/rules/query/projection.ts
+index d9e9052..2d78d94 100644
+--- a/src/rules/query/projection.ts
++++ b/src/rules/query/projection.ts
+@@ -220,7 +220,7 @@ export const projectRuleState = (state: GameState, viewerId: PlayerId): RuleProj
+       playerId: viewerId, points: seaCapacityPoints(state, viewerId) ?? 0, remainingQuarters: seaCapRemainingQuarters(state, viewerId),
+     }] } : {}),
+     ...(allPorts(state).length > 0 ? { ports: seaPortSummaries(state, viewerId) } : {}),
+-    combat: projectCombat(state),
++    combat: projectCombat(state, viewerId),
+     weather: state.weather,
+     // Fuel markers and fueled Formation markers are on the map for both players to see.
+     fuel: state.fuel,
+@@ -281,13 +281,16 @@ export const projectRuleState = (state: GameState, viewerId: PlayerId): RuleProj
+  * 4.9b/c: during a combat both players know each side's Action Rating difference, total strength
+  * and the table used; during a barrage the barrage strength and column. Units are not identified.
+  */
+-const projectCombat = (state: GameState): ProjectedCombat | null => {
++const projectCombat = (state: GameState, viewerId: PlayerId): ProjectedCombat | null => {
+   const transaction = state.activeTransaction;
+   if (!transaction) return null;
+   const defenderDecided = transaction.step !== 'ATTACKER_SUPPLY' && transaction.step !== 'DEFENDER_SUPPLY' && transaction.step !== 'BARRAGE_SUPPLY';
+   const base = {
+     kind: transaction.kind, targetHexId: transaction.targetHexId, attackerOwnerId: transaction.ownerId,
+     attackerCount: transaction.attackerIds.length, defenderCount: transaction.defenderIds.length,
++    attackerStepsRemaining: transaction.ownerId === viewerId ? state.pieceState.pieces
++      .filter(piece => transaction.attackerIds.includes(piece.id) && piece.location.kind === 'ON_MAP')
++      .reduce((total, piece) => total + (piece.remainingSteps ?? 0), 0) : null,
+     result: transaction.result, rollTotal: transaction.roll?.total ?? null,
+     surpriseTotal: transaction.surpriseRoll?.total ?? null, shiftDie: transaction.shiftDie,
+     defenderSupplied: defenderDecided ? transaction.defenderSupplied || transaction.defenderInternalIds.length > 0 : null,
+diff --git a/tests/ai/heuristic.test.ts b/tests/ai/heuristic.test.ts
+index 9b50022..8329636 100644
+--- a/tests/ai/heuristic.test.ts
++++ b/tests/ai/heuristic.test.ts
+@@ -85,6 +85,29 @@ describe('pending decisions answered in the deciding side\'s favour', () => {
+     ]);
+     expect(respondToDecision(supply.context, supply.situation)?.action).toMatchObject({ choiceId: 'pay:dump-b:2' });
+   });
++
++  it.each([
++    { steps: 2, target: 'enemy', choice: 'option:1:0' },
++    { steps: 1, target: 'enemy', choice: 'option:0:1' },
++    { steps: undefined, target: 'enemy', choice: 'option:0:1' },
++    { steps: 2, target: 'none', choice: 'option:0:1' },
++    { steps: 2, target: 'own', choice: 'option:0:1' },
++    { steps: 2, target: 'enemy', enemyTurn: true, choice: 'option:0:1' },
++  ])('pays a surviving attacker step only for unheld VP ($steps, $target)', ({ steps, target, choice, enemyTurn = false }) => {
++    const setup = contextFor('OPTION_SPLIT', [
++      { id: 'option:1:0', label: 'Lose 1 step', hexId: null },
++      { id: 'option:0:1', label: 'Retreat 1 hex', hexId: null },
++    ]);
++    const context = { ...setup.context, view: { ...setup.context.view, projection: {
++      combat: { attackerOwnerId: 'player:axis', targetHexId: '1,1', attackerStepsRemaining: steps },
++    } } } as unknown as BotDecisionContext;
++    const situation = { ...setup.situation, opponentTurnRemains: enemyTurn, objectives: target === 'none' ? [] : [
++      { hexId: '1,1' as Situation['objectives'][number]['hexId'], points: 3,
++        controllerId: (target === 'own' ? 'player:axis' : 'player:allied') as Situation['playerId'] },
++    ] } as Situation;
++    expect(respondToDecision(context, situation)?.action).toMatchObject({ choiceId: choice });
++  });
++
+ });
+ 
+ describe('heuristic policy', () => {

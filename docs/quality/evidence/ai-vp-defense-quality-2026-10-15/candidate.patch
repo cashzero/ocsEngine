@@ -1,0 +1,86 @@
+--- a/src/ai/analysis.ts
++++ b/src/ai/analysis.ts
+@@ -40,6 +40,14 @@
+   readonly threatAt: (hexId: HexId) => number;
+   readonly isCombatUnit: (unit: OwnUnit) => boolean;
+ }
++
++/** Allocate scarce defenders by the VP exposed, normalized to preserve uniform maps.
++ * At least one existing garrison is still reserved independently of this value. */
++export const objectiveDefenseValue = (situation: Pick<Situation, 'objectives'>, hexId: HexId): number => {
++  const objective = situation.objectives.find(o => o.hexId === hexId);
++  const mean = situation.objectives.reduce((total, o) => total + o.points, 0) / Math.max(1, situation.objectives.length);
++  return objective && mean > 0 ? objective.points / mean : 1;
++};
+ 
+ /** Hexes an enemy stack is assumed to be able to reach to attack next turn. */
+ const THREAT_RADIUS = 4;
+--- a/src/ai/decisions.ts
++++ b/src/ai/decisions.ts
+@@ -1,6 +1,6 @@
+ import type { HexId, PieceId } from '../core/index.js';
+ import type { GameAction } from '../rules/index.js';
+-import type { OwnUnit, Situation } from './analysis.js';
++import { objectiveDefenseValue, type OwnUnit, type Situation } from './analysis.js';
+ import type { BotDecision, BotDecisionContext } from './model.js';
+ 
+ /**
+@@ -157,7 +157,7 @@
+       const heldPoint = targetHex === undefined ? undefined : situation.objectives.find(o => o.hexId === targetHex && o.controllerId === context.playerId);
+       const heldStrength = targetHex === undefined ? 0 : situation.friendlyAt(targetHex).filter(u => situation.isCombatUnit(u))
+         .reduce((total, u) => total + (u.profile?.strength ?? 0), 0);
+-      if (heldPoint && heldStrength > 0 && heldStrength < threat * holdRatio
++      if (heldPoint && heldStrength > 0 && heldStrength < threat * holdRatio * objectiveDefenseValue(situation, heldPoint.hexId)
+         && (situation.turnsLeft > 0 || projection.sequence.playerTurnIndex === 0)) {
+         const reinforcements = free.filter(({ unit }) => unit && situation.isCombatUnit(unit)
+           && !situation.objectives.some(o => o.hexId === unit.hexId && o.controllerId === context.playerId))
+--- a/src/ai/policies/heuristic.ts
++++ b/src/ai/policies/heuristic.ts
+@@ -1,7 +1,7 @@
+ import type { HexId, PieceId } from '../../core/index.js';
+ import type { OcsMode } from '../../domain/piece/index.js';
+ import type { FeedSource, GameAction } from '../../rules/index.js';
+-import { analyze, type ObjectiveView, type OwnUnit, type Situation } from '../analysis.js';
++import { analyze, objectiveDefenseValue, type ObjectiveView, type OwnUnit, type Situation } from '../analysis.js';
+ import { respondToDecision } from '../decisions.js';
+ import { hexesBetween, knowledgeOf, type BotGameFacts } from '../knowledge.js';
+ import type { BotDecision, BotDecisionContext, BotPolicy, BotScoreTerm } from '../model.js';
+@@ -247,8 +247,9 @@
+  */
+ const holdLimit = (situation: Situation, hexId: HexId, threat: number, w: HeuristicWeights): number => {
+   const held = situation.friendlyAt(hexId).filter((unit) => situation.isCombatUnit(unit)).reduce((total, unit) => total + (unit.profile?.strength ?? 0), 0);
+-  const extra = Math.ceil(Math.max(0, threat * w.holdRatio - held) / w.holdStrengthPerUnit);
+-  return Math.max(threat > w.garrisonSecondUnitThreat ? 2 : 1, 1 + Math.min(w.holdMaxExtra, extra));
++  const valuedThreat = threat * objectiveDefenseValue(situation, hexId);
++  const extra = Math.ceil(Math.max(0, valuedThreat * w.holdRatio - held) / w.holdStrengthPerUnit);
++  return Math.max(valuedThreat > w.garrisonSecondUnitThreat ? 2 : 1, 1 + Math.min(w.holdMaxExtra, extra));
+ };
+ 
+ /** Reserve existing defenders before forming assaults, rather than sending them away and
+@@ -264,7 +265,7 @@
+     if (!anchor) continue;
+     reserved.push(anchor);
+     let strength = anchor.profile?.strength ?? 0;
+-    const required = enemyAnswer ? situation.threatAt(objective.hexId) * w.holdRatio : 0;
++    const required = enemyAnswer ? situation.threatAt(objective.hexId) * w.holdRatio * objectiveDefenseValue(situation, objective.hexId) : 0;
+     for (const unit of present.reverse()) {
+       if (strength >= required) break;
+       reserved.push(unit);
+@@ -345,7 +346,7 @@
+     const others = situation.friendlyAt(origin.hexId).filter(u => u.piece.id !== unit.piece.id && situation.isCombatUnit(u));
+     if (others.length > 0) {
+       const remaining = others.reduce((total, u) => total + (u.profile?.strength ?? 0), 0);
+-      const required = Math.max(1, situation.threatAt(origin.hexId) * w.holdRatio);
++      const required = Math.max(1, situation.threatAt(origin.hexId) * w.holdRatio * objectiveDefenseValue(situation, origin.hexId));
+       const addedRisk = Math.max(0, required - remaining) - Math.max(0, required - remaining - strength);
+       add('weaken-objective', -contestedVp(origin) * w.abandonObjective * Math.min(1, addedRisk / required));
+     }
+@@ -1231,7 +1232,7 @@
+   const choose = decide(facts, options.weights ?? DEFAULT_HEURISTIC_WEIGHTS);
+   return {
+     id: 'heuristic',
+-    version: options.label === undefined ? '66' : `66+${options.label}`,
++    version: options.label === undefined ? '70' : `70+${options.label}`,
+     decide: (context) => {
+       const sink = options.debug;
+       debug = sink ? (line) => sink(`${context.memory.stepKey} ${String(context.playerId).split(':').at(-1)} ${line}`) : null;

@@ -1,0 +1,130 @@
+[
+  {
+    "group": "attack-eastern",
+    "matches": [
+      1300300,
+      1300301
+    ],
+    "delta": 0
+  },
+  {
+    "group": "attack-eastern",
+    "matches": [
+      1300302,
+      1300303
+    ],
+    "delta": 0
+  },
+  {
+    "group": "attack-eastern",
+    "matches": [
+      1300304,
+      1300305
+    ],
+    "delta": 0
+  },
+  {
+    "group": "attack-eastern",
+    "matches": [
+      1300306,
+      1300307
+    ],
+    "delta": 0
+  },
+  {
+    "group": "meeting-eastern",
+    "matches": [
+      1300100,
+      1300101
+    ],
+    "delta": 0
+  },
+  {
+    "group": "meeting-eastern",
+    "matches": [
+      1300102,
+      1300103
+    ],
+    "delta": 0
+  },
+  {
+    "group": "meeting-eastern",
+    "matches": [
+      1300104,
+      1300105
+    ],
+    "delta": 0
+  },
+  {
+    "group": "meeting-eastern",
+    "matches": [
+      1300106,
+      1300107
+    ],
+    "delta": 0
+  },
+  {
+    "group": "attack-temperate",
+    "matches": [
+      1300200,
+      1300201
+    ],
+    "delta": 0
+  },
+  {
+    "group": "attack-temperate",
+    "matches": [
+      1300202,
+      1300203
+    ],
+    "delta": 0
+  },
+  {
+    "group": "attack-temperate",
+    "matches": [
+      1300204,
+      1300205
+    ],
+    "delta": 8
+  },
+  {
+    "group": "attack-temperate",
+    "matches": [
+      1300206,
+      1300207
+    ],
+    "delta": 0
+  },
+  {
+    "group": "meeting-temperate",
+    "matches": [
+      1300000,
+      1300001
+    ],
+    "delta": 0
+  },
+  {
+    "group": "meeting-temperate",
+    "matches": [
+      1300002,
+      1300003
+    ],
+    "delta": 0
+  },
+  {
+    "group": "meeting-temperate",
+    "matches": [
+      1300004,
+      1300005
+    ],
+    "delta": 0
+  },
+  {
+    "group": "meeting-temperate",
+    "matches": [
+      1300006,
+      1300007
+    ],
+    "delta": 0
+  }
+]

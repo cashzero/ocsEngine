@@ -1,0 +1,28 @@
+[
+  {
+    "candidate": false,
+    "attackerStepsRemaining": 2,
+    "opponentSteps": null,
+    "option": "option:0:1",
+    "responses": 2,
+    "finalRevision": 664,
+    "finalControl": {
+      "hexId": "1,14",
+      "controllerId": "player:allied"
+    },
+    "finalHash": "sha256:79e055785ceb449496d0f6c0b1d77863170057572f583fdbe62b4a4c31d583bd"
+  },
+  {
+    "candidate": true,
+    "attackerStepsRemaining": 2,
+    "opponentSteps": null,
+    "option": "option:1:0",
+    "responses": 3,
+    "finalRevision": 665,
+    "finalControl": {
+      "hexId": "1,14",
+      "controllerId": "player:axis"
+    },
+    "finalHash": "sha256:e6b3326a9a989e41dc43deb7c5e6ee48aa971be3a5c34f75557dca776cdc49a5"
+  }
+]

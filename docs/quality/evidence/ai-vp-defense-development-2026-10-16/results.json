@@ -1,0 +1,103 @@
+{
+  "strategyVersion": "71",
+  "baselineVersion": "66",
+  "sourceCommit": "716bac9d14a140df44f544e9e90c9b8d229ea2e4",
+  "mode": "development",
+  "groups": [
+    {
+      "group": "meeting-temperate",
+      "games": 8,
+      "candidateVP": 164,
+      "baselineVP": 172,
+      "delta": -8,
+      "legalReplayAndSupply": true
+    },
+    {
+      "group": "meeting-eastern",
+      "games": 8,
+      "candidateVP": 46,
+      "baselineVP": 54,
+      "delta": -8,
+      "legalReplayAndSupply": true
+    },
+    {
+      "group": "attack-temperate",
+      "games": 8,
+      "candidateVP": 70,
+      "baselineVP": 62,
+      "delta": 8,
+      "legalReplayAndSupply": true
+    },
+    {
+      "group": "attack-eastern",
+      "games": 8,
+      "candidateVP": 50,
+      "baselineVP": 46,
+      "delta": 4,
+      "legalReplayAndSupply": true
+    }
+  ],
+  "totals": {
+    "candidateVP": 330,
+    "candidateStepsKilled": 415,
+    "candidateStepsLost": 378,
+    "baselineVP": 334,
+    "baselineStepsKilled": 378,
+    "baselineStepsLost": 415,
+    "candidateAdvances": 35,
+    "candidateFundedAdvances": 35,
+    "candidateSuccessfulOverruns": 6,
+    "candidateActuallyFundedOverruns": 6
+  },
+  "engagementDeltas": {
+    "MEETING": -16,
+    "AXIS_ATTACKS": 12
+  },
+  "pairs": 16,
+  "mean": -0.125,
+  "standardError": 0.5618051263561058,
+  "interval": [
+    -1.3047907653478221,
+    1.0547907653478221
+  ],
+  "vpGate": false,
+  "verificationScope": "frozen-only",
+  "quality": {
+    "typecheck": {
+      "command": [
+        "npm",
+        "run",
+        "typecheck"
+      ],
+      "exitCode": 0,
+      "seconds": 16.117186504998244,
+      "log": "/home/cashlin/ocsEngine/artifacts/ai-vp/candidate-71-quality/typecheck.log",
+      "sha256": "d276a607924b69f3bf75479c9ff0bd362e2bc5a9c0047d63a951c8e899b4eb98"
+    },
+    "tests": {
+      "command": [
+        "npx",
+        "vitest",
+        "run",
+        "--maxWorkers=2"
+      ],
+      "exitCode": 0,
+      "seconds": 283.8225857350044,
+      "log": "/home/cashlin/ocsEngine/artifacts/ai-vp/candidate-71-quality/tests.log",
+      "sha256": "03047c689c45316f3a69846b5f78e4d29ba7b205863a2616381e8befce4bad4e",
+      "passed": 743,
+      "skipped": 8
+    },
+    "smoke": {
+      "command": [
+        "npm",
+        "run",
+        "smoke"
+      ],
+      "exitCode": 0,
+      "seconds": 2.613990231999196,
+      "log": "/home/cashlin/ocsEngine/artifacts/ai-vp/candidate-71-quality/smoke.log",
+      "sha256": "57f4b11f8e16b9086ab757da51a782c8fdee53c661431fe12983397ac1a2493b"
+    }
+  }
+}

@@ -22,7 +22,7 @@
 | `scripts/ai-narrate.mjs` | 一局 trace 的逐步摘要，供人工檢視 |
 | `scripts/ai-train.mjs` | 權重自我對戰（已停用，見「決策」） |
 
-原始存檔、trace 與凍結建置留在本機被 git 忽略的 `artifacts/`（較早的批次在 `tmp/ai-match/`）；commit 進 `docs/quality/evidence/` 的只有文字紀錄與重跑用的腳本。
+原始存檔、trace 與凍結建置留在本機被 git 忽略的 `artifacts/`（較早的批次在 `tmp/ai-match/`）；commit 進 `docs/quality/evidence/` 的只有文字紀錄與個別 run 的小型腳本；可重用工具放在 `scripts/`。`scripts/ai-promotion/freeze.py` 凍結現行標準與候選，`quality.py` 在凍結目錄跑完整檢查；`batch.py` 執行同引擎交換陣營對戰及補給／前進稽核，`verify.py` 核對來源、設定、重播、候選陣營與成對 VP 結果。
 
 ### 正確性要求（每一局）
 
@@ -71,6 +71,25 @@
 [README](../quality/evidence/ai-vp-v75-promotion-2026-10-16/README.md)；開發批與不採用的變體在同目錄的
 `development-runs.json`。前一個標準 `heuristic@66` 對 `heuristic@35` 的獨立 80 場：
 [v66-main-acceptance.json](../quality/evidence/ai-vp-next-promotion-2026-10-14/v66-main-acceptance.json)。
+
+### 候選策略量測
+
+下表是升級研究；開發批使用已知種子，只決定方向，不代表通過獨立驗收。v66 基底的候選以 `716bac9` 的凍結 v66 為對手；v76、v77 以 `2528b6d` 的凍結 v75 為對手，不能把跨對手／基底的增益相加。候選以 source／build hash 區別，同號的其他分支變體不能視為同一策略。
+
+| 候選／方向 | 對手 | 批次 | VP 差 | 遭遇／攻擊 | 判定與證據 |
+|---|---|---|---:|---|---|
+| v67 任務價值排移動順序 | v66 | 品質檢查 | — | — | [有補給 Overrun 回歸與逾時](../quality/evidence/ai-vp-order-quality-2026-10-15/README.md)，未開對戰 |
+| v68 Overrun 後按任務價值排序 | v66 | 開發 32 場 | −10 | −12／+2 | [淘汰](../quality/evidence/ai-vp-order-development-2026-10-15/README.md) |
+| v69 只提前 Overrun | v66 | 開發 32 場 | −2 | 0／−2 | [淘汰](../quality/evidence/ai-vp-overrun-order-development-2026-10-15/README.md) |
+| v70 VP 折減包含戰後補強 | v66 | 品質檢查 | — | — | [提前停止必要補強](../quality/evidence/ai-vp-defense-quality-2026-10-15/README.md)，未開對戰 |
+| v71 守備需求乘 VP 比例 | v66 | 開發 32 場 | −4 | −16／+12 | [淘汰](../quality/evidence/ai-vp-defense-development-2026-10-16/README.md) |
+| v72 只折減低 VP 守備 | v66 | 獨立 80 場 | +70 | +88／−18 | [未達登記門檻](../quality/evidence/ai-vp-defense-cap-independent-2026-10-16/README.md)，區間下界 −0.589 |
+| v73 按實際指派戰力停止補防 | v66 | 開發 32 場 | −6 | +4／−10 | [淘汰](../quality/evidence/ai-vp-garrison-strength-development-2026-10-16/README.md) |
+| v74 保留 VP 攻擊的前進資格 | v66 | 品質／局部接續 | — | — | [748 passed、8 skipped](../quality/evidence/ai-vp-option-quality-2026-10-16/README.md)；換基底前未開對戰，不作升級證據 |
+| v76 全回合支付可存活的攻方 option | v75 | 開發 32 場 | −2 | +2／−4 | [淘汰](../quality/evidence/ai-vp-option-development-2026-10-16/README.md) |
+| v77 限最後一位玩家的最後回合 | v75 | 開發 32 場 | +8 | 0／+8 | [增益集中一對種子](../quality/evidence/ai-vp-terminal-option-development-2026-10-16/README.md)，尚未獨立驗收 |
+
+已完成驗證的對戰批均合法打完 8 回合，重播 hash 一致，既定一般補給與嚴格前進稽核違例為零。v77 的完整品質檢查為 752 passed／8 skipped，typecheck、build、smoke 通過；該批成對平均 +0.25、區間 [−0.275, 0.775]，尚未登記或執行獨立批，標準仍為 v75。各次 frozen quality 的命令、時間、來源與建置雜湊在個別 evidence 的 JSON 中；觀測 commit 與歷史重寫後相同 tree 的對照見 [來源對照](../quality/evidence/ai-vp-terminal-option-development-2026-10-16/source-equivalence.json)。
 
 對 `random-legal` 的基準（WBS B5）最後量測於 heuristic@5（OOB 0.4.0，對 random-legal 39/40，終局 91% 在補給內）；
 東歐風格最後量測於 heuristic@1，勝率 80%（目標 90%）。

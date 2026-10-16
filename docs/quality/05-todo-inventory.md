@@ -36,7 +36,7 @@
 
 | ID | 缺少的行為 | 使用者可見影響 | 關閉證據 | 詳細 |
 |---|---|---|---|---|
-| `bot-stack-move` | AI 逐一移動與 overrun，不整疊行動 | bot 的 overrun 戰力偏弱 | bot 對局出現帶 companionIds 的 MOVE_PIECE 與多單位 overrun | `src/rules/query/candidates.ts` TODO(AI) |
+| `bot-stack-move` | AI 一般移動沒有整疊路線與 `companionIds` 規劃；逐單位查詢已會提供同格多單位 overrun | 部隊分開接近目標，途中較難保留同一進攻堆疊 | bot 對局出現有策略用途的 companionIds MOVE_PIECE，後續整疊 overrun 合法且重播相符，並通過凍結標準策略的對戰比較 | `docs/ai/heuristic-policy.md` |
 | `consolidation-bot` | bot 不會合併單位 | bot 方留著兩個減員的相同師 | bot 對局中出現合併動作 | `docs/rule-engine/replacements.md` |
 | `bot-air` | 只派 Air Barrage 與 refit；不派其他任務、不空運、不空降、不建 Air Base；空中待決選第一個合法選項 | 開啟空軍時 bot 明顯偏弱 | 開啟空軍的對局中 bot 有合理的其他任務與待決選擇，並通過對戰比較 | `src/ai/decisions.ts`；`src/ai/policies/heuristic.ts` |
 | `bot-ration-search` | 共同口糧分配搜尋上限 50,000 節點，沒有分量拆解或精確後備 | 極端來源網路下可能少餵兵或擋下安全的支出 | 對抗性配置的精確分配證據，以及完整對局的延遲量測 | `src/rules/supply/ration-budget.ts` |

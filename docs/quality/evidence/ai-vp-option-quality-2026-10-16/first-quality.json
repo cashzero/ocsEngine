@@ -1,0 +1,17 @@
+{
+  "policyVersion": "74",
+  "freezeSha256": "8bfaeb05ed189b9401eadec333487aed4812edf24d8d0d3fa70cd42aed19631c",
+  "checks": {
+    "typecheck": {
+      "command": [
+        "npm",
+        "run",
+        "typecheck"
+      ],
+      "exitCode": 2,
+      "seconds": 9.441623850987526,
+      "log": "/home/cashlin/ocsEngine/artifacts/ai-vp/candidate-74-quality/typecheck.log",
+      "sha256": "4902b569883b01655a19e2e0e5a132a604cc70d03407a94e382cfa09040ed820"
+    }
+  }
+}
