@@ -38,7 +38,7 @@ AR, MA, range), mobility per face, steps and RE. Examples:
   13-4-3 / 7-4-5.
 - OOB 0.4.0 independents: US 745 Tank Bn, US 803 TD Bn, German 243 Assault Gun Bn, German 1 PJ Bn, and the balancing
   German 506 Tiger Bn (9-5-4) and 654 PJ Bn (6-5-6).
-- Trucks (five-point counters) and the Breakdown pools ([docs/rule-engine/breakdowns.md](../rule-engine/breakdowns.md),
+- Trucks (the five-point counter's faces; each generated truck prints its own size) and the Breakdown pools ([docs/rule-engine/breakdowns.md](../rule-engine/breakdowns.md),
   `breakdowns.ts`); the Pax and Eq replacement units (`replacements.ts`; Pax 5 Leg MP, Eq 10 Truck MP) and the hedgehog
   (`hedgehog.ts`, GPID 12) are defined beside the corpus.
 

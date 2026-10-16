@@ -24,8 +24,8 @@ const startMovement = async () => {
     const location = piece.location as { kind: string; hexId?: string };
     return location.kind === 'ON_MAP' ? location.hexId ?? null : null;
   };
-  // A side has several trucks; follow one of them.
-  const truckId = own().find(({ role }) => role === 'TRUCK')!.id;
+  // A side has several trucks; follow the one on the map (the others are reinforcements).
+  const truckId = own().find(({ role, location }) => role === 'TRUCK' && location.kind === 'ON_MAP')!.id;
   const truck = () => own().find(({ id }) => id === truckId)!;
   const dumpAway = () => own().find((piece) => piece.role === 'DUMP' && hexOf(piece) !== hexOf(truck()) && (piece.resourceQuantity ?? 0) > 0)!;
   const history = () => session.getHistory({ offset: 0, limit: 1000, actionKind: null }).total;
@@ -42,15 +42,15 @@ describe('Undo takes back the last action, not the whole step (A4b)', () => {
     await controller.clickHex(hexOf(dump)!);
     await controller.confirmMove();
     await controller.transferSupply('LOAD', controller.getSnapshot().transportOptions!.loads[0]!.pieceId, 2);
-    await controller.divideTruck(2);
+    await controller.divideTruck(1);
     expect(history()).toBe(start + 3);
-    expect(controller.getSnapshot().undoStep).toMatchObject({ scope: 'ACTION', label: 'Split off 2 truck points.' });
-    expect(phaseControlsHtml(controller.getSnapshot(), { search: '', working: false })).toContain('Undo: Split off 2 truck points.');
+    expect(controller.getSnapshot().undoStep).toMatchObject({ scope: 'ACTION', label: 'Split off 1 truck point.' });
+    expect(phaseControlsHtml(controller.getSnapshot(), { search: '', working: false })).toContain('Undo: Split off 1 truck point.');
 
     // Undo the split: the truck is whole again, still loaded and still at the dump, and still selected.
     await controller.undoStep();
     expect(controller.getSnapshot().selectedPiece?.id).toBe(truck().id);
-    expect(controller.getSnapshot().transportOptions).toMatchObject({ points: 5, loadedTokens: 2 });
+    expect(controller.getSnapshot().transportOptions).toMatchObject({ points: 2, loadedTokens: 2 });
     expect(history()).toBe(start + 2);
     expect(truck()).toMatchObject({ carriedTokens: 2 });
     expect(hexOf(truck())).toBe(hexOf(dump));

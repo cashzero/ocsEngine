@@ -1,0 +1,44 @@
+{
+  "dirs": [
+    "/home/cashlin/.claude/jobs/72492d02/tmp/runs/base/attack-temperate",
+    "/home/cashlin/.claude/jobs/72492d02/tmp/runs/base/attack-eastern"
+  ],
+  "result": {
+    "games": 16,
+    "attackerWins": 4,
+    "defenderWins": 12,
+    "draws": 0
+  },
+  "sides": {
+    "defender": {
+      "railCapUsed": 0.39166666666666666,
+      "railablePhases": 46,
+      "railUsedOfRailable": 1,
+      "truckSpPerPointTurn": 0.2991967871485944,
+      "idleTruckShare": 0.22549019607843138,
+      "idleEmptyTruckShare": 0.22549019607843138,
+      "stockLoads": 0,
+      "stockRails": 0,
+      "trucksArrived": 16,
+      "trucksLate": 0,
+      "nearSp": 5.5625,
+      "farSp": 8.973958333333334,
+      "rearLeftSp": 4.869791666666667
+    },
+    "attacker": {
+      "railCapUsed": 0.23958333333333334,
+      "railablePhases": 40,
+      "railUsedOfRailable": 0.8928571428571429,
+      "truckSpPerPointTurn": 0.4109396914446003,
+      "idleTruckShare": 0.07096774193548387,
+      "idleEmptyTruckShare": 0.07096774193548387,
+      "stockLoads": 0,
+      "stockRails": 0,
+      "trucksArrived": 16,
+      "trucksLate": 0,
+      "nearSp": 9.786458333333334,
+      "farSp": 7.765625,
+      "rearLeftSp": 1.59375
+    }
+  }
+}

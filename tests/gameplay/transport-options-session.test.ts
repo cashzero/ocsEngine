@@ -21,7 +21,7 @@ describe('session transport options (A1)', () => {
 
     const result = session.getTransportOptions(seat, truck.id);
     expect(result.allowed).toBe(true);
-    expect(result.value).toMatchObject({ truckId: truck.id, points: 5, capacityTokens: 20, loadedTokens: 0, unload: null });
+    expect(result.value).toMatchObject({ truckId: truck.id, points: 2, capacityTokens: 8, loadedTokens: 0, unload: null });
     // Nothing is in its Hex at the start, and the answer is a copy: changing it cannot change the session.
     expect(result.value!.loads).toEqual([]);
     (result.value as { loadedTokens: number }).loadedTokens = 99;

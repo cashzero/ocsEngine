@@ -41,11 +41,14 @@ come from the [counter corpus](counter-corpus.md); placement on the map is deplo
 | Armor and anti-tank battalions (each) | 2 | 3 | half the divisions |
 | Artillery | one per three divisions (at least 1) | one per three divisions | half the divisions |
 | Engineer (pontoon) | 1 | 1 | half the divisions |
-| Trucks | one per three divisions | one per three divisions | one per two divisions |
+| Truck points | half the expected SP income | same | same |
 | Supply dumps | one per two divisions | one per two divisions | one per division |
 | HQs | one per three divisions | same | same |
 
-- Half the trucks (rounded up) start on the map; the rest arrive one a Game Turn from Turn 2.
+- A side expects about one SP a turn per division from the Supply Table (its Supply Status column is its division count,
+  2 to 12 SP; `expectedSupplyIncome`) and gets half a point of trucks per SP (`TRUCK_POINTS_PER_SUPPLY_SP`), rounded, at
+  least 1. With more divisions the attacker gets more. Half the points (rounded up) start on the map as one counter; the
+  rest arrive as one-point trucks, one a Game Turn from Turn 2. Each truck counter prints its own size (13.2c).
 - Starting supply is 8T (2 SP) per division, shared among the side's dumps.
 - Each side also gets a garrison definition (one per objective at deployment), a hedgehog definition, Pax and Eq
   replacement definitions, Breakdown definitions, and with air forces aircraft and Air Bases
@@ -87,8 +90,12 @@ All by the user unless noted:
   is 20.
 - **More independent units, including armor and anti-tank, and objective garrisons** (OOB 0.4.0, 2026-10-07).
 - **Balance by combat value, not points** (0.4.0): equal points had left the US side about 40–57% stronger.
-- **Fewer trucks, half of them as reinforcements** (2026-10-08 and 2026-10-12): trucks follow Rail Cap, not the dump
-  count.
+- **Truck points follow supply income; the late ones are one-point trucks** (2026-10-08, 2026-10-12, 2026-10-16). One
+  five-point truck per three divisions gave the attacker about 15 points against about 9 SP of income: the trucks loaded
+  0.41 SP per point a turn and left 1.6 SP in the rear, so income, not transport, limited the front. Published BTR
+  scenarios give 0.07-0.4 truck points per division (Operation Queen: 1 point for about 14 US divisions). Half a point
+  per SP makes lift the limit: in the same 16 attack games the attacker's trucks carried 0.94 SP per point and 6.2 SP
+  stayed in the rear. Sizing trucks from the smaller side's divisions was rejected: the attacker should have more.
 - **The attacker gets 1.5× the divisions** (2026-10-07: "進攻方兵力要比較多吧").
 - **No standalone OOB laboratory**: forces are previewed only inside New Game.
 
@@ -100,4 +107,4 @@ From `docs/quality/05-todo-inventory.md`: `oob-revision-ui`, `oob-naming-ui`, `a
 ## Verification
 
 `tests/generation/random-oob.test.ts`, `oob-revision.test.ts`, `oob-names.test.ts`, `oob-seed-sweep.test.ts`,
-`generation-contract.test.ts`; New Game rows in `docs/quality/03-product-operation-verification-plan.md`.
+`generation-contract.test.ts`, `tests/game-flow/truck-reinforcements.test.ts`; New Game rows in `docs/quality/03-product-operation-verification-plan.md`.

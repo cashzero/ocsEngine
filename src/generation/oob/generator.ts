@@ -17,7 +17,7 @@ import {
   type PieceStepProfile,
 } from '../../domain/piece/index.js';
 import { canonicalJson } from '../../serialization/index.js';
-import { ALLIED_AIRBORNE_DIVISION_GPIDS, ALLIED_PARA_GPID, AXIS_PARA_GPID, COUNTER_CORPUS, TRUCK_COUNTER_POINTS, corpusCounter, corpusFaces } from './counter-corpus.js';
+import { ALLIED_AIRBORNE_DIVISION_GPIDS, ALLIED_PARA_GPID, AXIS_PARA_GPID, COUNTER_CORPUS, corpusCounter, corpusFaces } from './counter-corpus.js';
 import { createSeededRandom, mixUint32 } from '../map/rng.js';
 import {
   BTR_BUILD_FILE_SHA256,
@@ -75,7 +75,7 @@ const SCALE_COMBAT_UNITS: Readonly<Record<OobScale, number>> = {
   COMPACT: 2, STANDARD: 3, LARGE: 4,
 };
 
-const capabilitiesFor = (role: OobUnitRole): readonly CapabilityDeclaration[] => {
+const capabilitiesFor = (role: OobUnitRole, transportPoints: number): readonly CapabilityDeclaration[] => {
   switch (role) {
     case 'HQ': return [{ id: capabilityId('HQ'), parameters: [] }];
     case 'ARTILLERY': return [{ id: capabilityId('ARTILLERY'), parameters: [] }];
@@ -85,7 +85,7 @@ const capabilitiesFor = (role: OobUnitRole): readonly CapabilityDeclaration[] =>
       id: capabilityId('TRANSPORT_CAPACITY'),
       parameters: [{
         // 13.2c: a Transport Point carries its size in SP (four Tokens each).
-        key: 'capacity', kind: 'EXACT_QUANTITY', value: TRUCK_COUNTER_POINTS * 4,
+        key: 'capacity', kind: 'EXACT_QUANTITY', value: transportPoints * 4,
         unitDefinitionId: definitionId('quantity:supply-token'),
       }],
     }];
@@ -124,11 +124,23 @@ const stepsFor = (archetype: ReviewedOobArchetype): readonly PieceStepProfile[] 
 const echelonFor = (side: OobSide, role: OobUnitRole, archetype: OobFormationArchetype | undefined): string =>
   COUNTER_CORPUS[findReviewedOobArchetype(side, role, archetype).gpid]?.echelon ?? '';
 
-/** Share of each side's trucks on the map at the start (OOB 0.5.0); the others arrive one a turn from Game Turn 2. */
+/**
+ * Share of each side's truck points on the map at the start, as one counter (OOB 0.5.0); the others arrive as one-point
+ * trucks, one a Game Turn from Game Turn 2 (user, 2026-10-16: "應該要有1pt truck").
+ */
 export const TRUCKS_AT_START_SHARE = 0.5;
 const FIRST_TRUCK_ARRIVAL_TURN = 2;
-/** Divisions served by one truck in Compact and Standard OOBs (a Large OOB has one per two divisions). */
-export const TRUCK_DIVISIONS_PER_TRUCK = 3;
+/**
+ * Truck points per SP of a side's expected Supply Table income (user, 2026-10-16: "照SP來設定truck"). At one five-point
+ * truck per three divisions the attacker's trucks loaded under 40% of their capacity because the income ran out first;
+ * published BTR scenarios give 0.07-0.4 truck points a division. Half a point per SP leaves lift, not income, short.
+ */
+export const TRUCK_POINTS_PER_SUPPLY_SP = 0.5;
+/**
+ * SP a side expects each turn from the BTR Supply Table: its Supply Status column is its division count, at most 12
+ * (game-flow `configuration.ts`), and that column averages about one SP per division, never under 2.
+ */
+export const expectedSupplyIncome = (divisions: number): number => Math.max(2, Math.min(12, divisions));
 
 /**
  * Starting supply per division, in Tokens (OOB 0.4.0: 2 SP; replays showed attrition from too little supply). It is
@@ -170,6 +182,8 @@ interface UnitBuildContext {
   readonly archetype?: ReviewedOobArchetype;
   /** Tokens a supply dump starts with (generic dumps hold any number of SP, 12.1c). */
   readonly resourceQuantity?: number;
+  /** Points a truck counter prints, in place of the corpus counter's (13.2c). */
+  readonly transportPoints?: number;
 }
 
 const buildUnit = (context: UnitBuildContext): {
@@ -188,14 +202,16 @@ const buildUnit = (context: UnitBuildContext): {
   } as const;
   // The counter prints the unit's own number and division, read from its name; internal ids are never printed.
   const printed = counterIdentification(context.name, context.formationId !== null);
+  const corpus = corpusCounter(source.gpid,
+    context.designation ?? printed.designation,
+    printed.affiliation,
+    context.side === 'ALLIED' ? 'US' : 'GERMAN',
+    context.formationId ? ['#75c3af', '#e2638b', '#6c9cd2', '#e4c063', '#ae87c7', '#c59064'][Number(context.formationId.split(':').at(-1)) - 1]! : null,
+    // The counter's own echelon (Gruppe Hohne's HQ prints "Grp", not XXX).
+    context.echelon ?? COUNTER_CORPUS[source.gpid]?.echelon ?? '');
+  const counter = context.transportPoints === undefined ? corpus : { ...corpus, transportPoints: context.transportPoints };
   const definition: PieceDefinition = {
-    counter: corpusCounter(source.gpid,
-      context.designation ?? printed.designation,
-      printed.affiliation,
-      context.side === 'ALLIED' ? 'US' : 'GERMAN',
-      context.formationId ? ['#75c3af', '#e2638b', '#6c9cd2', '#e4c063', '#ae87c7', '#c59064'][Number(context.formationId.split(':').at(-1)) - 1]! : null,
-      // The counter's own echelon (Gruppe Hohne's HQ prints "Grp", not XXX).
-      context.echelon ?? COUNTER_CORPUS[source.gpid]?.echelon ?? ''),
+    counter,
     id,
     family: source.family,
     name: context.name,
@@ -208,7 +224,7 @@ const buildUnit = (context: UnitBuildContext): {
       groupDefinitionId: null,
     },
     faces: corpusFaces(source.gpid),
-    capabilities: capabilitiesFor(context.role),
+    capabilities: capabilitiesFor(context.role, counter.transportPoints ?? 0),
     resource: source.family === 'RESOURCE' ? {
       resourceDefinitionId: definitionId('resource:supply'),
       unitDefinitionId: definitionId('quantity:supply-token'),
@@ -365,16 +381,16 @@ const buildSide = (
 
   const supportCount = options.scale === 'LARGE'
     ? options.divisionsPerSide : Math.max(1, Math.ceil(options.divisionsPerSide / 2));
-  // Trucks carry SP on from the railhead, so their number follows Rail Cap rather than the dump count: one per
-  // TRUCK_DIVISIONS_PER_TRUCK divisions (user, 2026-10-12: far more trucks than Rail Cap looked unreasonable).
-  const truckCount = Math.max(1, Math.ceil(options.divisionsPerSide / (options.scale === 'LARGE' ? 2 : TRUCK_DIVISIONS_PER_TRUCK)));
+  const truckPoints = Math.max(1, Math.round(expectedSupplyIncome(options.divisionsPerSide) * TRUCK_POINTS_PER_SUPPLY_SP));
+  const startingTruckPoints = Math.ceil(truckPoints * TRUCKS_AT_START_SHARE);
+  const truckSizes = [startingTruckPoints, ...Array.from({ length: truckPoints - startingTruckPoints }, () => 1)];
   const { artillery, armor, antiTank } = independentPackage(options);
   const independentRequests: OobUnitRole[] = [
     ...Array.from({ length: artillery }, () => 'ARTILLERY' as const),
     ...Array.from({ length: armor }, () => 'TANK' as const),
     ...Array.from({ length: antiTank }, () => 'ANTI_TANK' as const),
     ...Array.from({ length: options.scale === 'LARGE' ? Math.ceil(options.divisionsPerSide / 2) : 1 }, () => 'ENGINEER' as const),
-    ...Array.from({ length: truckCount }, () => 'TRANSPORT' as const),
+    ...truckSizes.map(() => 'TRANSPORT' as const),
     ...Array.from({ length: supportCount }, () => 'SUPPLY' as const),
     // 3.2f: HQs are independent units, never part of a formation. They come last so the first
     // independent field unit (held back as the side's reinforcement) is not an HQ.
@@ -392,15 +408,12 @@ const buildSide = (
       localId: `independent-${role.toLowerCase()}-${ordinal}`,
       ...(hq ? { designation: hq.designation, counterGpid: hq.gpid, rawName: name } : {}),
       ...(role === 'SUPPLY' ? { resourceQuantity: Math.ceil(SUPPLY_TOKENS_PER_DIVISION * options.divisionsPerSide / supportCount) } : {}),
+      ...(role === 'TRANSPORT' ? { transportPoints: truckSizes[ordinal - 1]! } : {}),
     });
     definitions.push(built.definition);
-    return built.unit;
-  }).map((unit) => {
-    // OOB 0.5.0 (user, 2026-10-08: "把卡車一部分改成援軍"): only the first share of the trucks starts on the map; the
-    // rest arrive as reinforcements, one a Game Turn from Turn 2 (13.6), so early lift is short.
-    const ordinal = Number(/independent-transport-(\d+)$/u.exec(unit.id.replace(/:unit$/u, ''))?.[1] ?? 0);
-    const atStart = Math.max(1, Math.ceil(truckCount * TRUCKS_AT_START_SHARE));
-    return unit.role === 'TRANSPORT' && ordinal > atStart ? { ...unit, arrivalTurn: FIRST_TRUCK_ARRIVAL_TURN + ordinal - atStart - 1 } : unit;
+    // OOB 0.5.0 (user, 2026-10-08: "把卡車一部分改成援軍"): only the first truck starts on the map; the rest arrive as
+    // reinforcements, one a Game Turn from Turn 2 (13.6), so early lift is short.
+    return role === 'TRANSPORT' && ordinal > 1 ? { ...built.unit, arrivalTurn: FIRST_TRUCK_ARRIVAL_TURN + ordinal - 2 } : built.unit;
   });
   // 13.5: every game gives both sides Pax and Eq; their counters are created in play as they arrive.
   definitions.push(...buildReplacementDefinitions(side, options));
