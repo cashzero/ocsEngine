@@ -1,12 +1,15 @@
 #!/usr/bin/env node
-// Can the attacker's units fuel? Replays saved ai-match attack games (docs/ai/evaluation.md, 攻方加油 gate). Build first.
+// Does the attacker's SP reach the front? Replays saved ai-match attack games (docs/ai/evaluation.md, 攻方送補 gate). Build first.
 //
 //   node scripts/ai-fuel-study.mjs <attack match directory> [...] [--out <dir>] [--gate <policy>]
 //
-// At the start of each attacker Movement Segment from Game Turn 3: combat units that need fuel (12.5a) and have no legal fuel
-// payment (no dump in draw range, no HQ throw backed by a dump, 12.3a-b, 12.5c), counted per game; and the attacker's HQs that
-// no dump reaches ("dry" HQs, which can throw neither trace nor fuel), as a share of its HQs. Each is split by policy when the
-// two sides played different policies (summary.json). Writes fuel.json.
+// Each attacker Movement Segment from Game Turn 3:
+// - At its end: SP in the attacker's dumps (not garrison stocks) that can reach a front unit, a combat unit other than an HQ
+//   within FRONT_HEXES of an enemy combat unit, by draw or through an HQ throw (12.3a-b), and SP that can reach none.
+// - When its first combat unit (not an HQ) acts, after the HQs, rail and sea have moved (or at its end if none acts): units
+//   that must move to fight (no enemy combat unit adjacent), need fuel (12.5a), are not fueled and have no legal fuel payment;
+//   and the attacker's HQs that no dump reaches ("dry" HQs, which throw no fuel), as a share of its HQs.
+// Each is split by policy when the two sides played different policies (summary.json). Writes fuel.json.
 //
 //   --gate <policy>  checks the gate registered in docs/ai/evaluation.md for <policy> against the other policy of the same batch,
 //                    and exits 1 when it fails.
@@ -24,6 +27,7 @@ const flagged = new Set([outIndex, gateIndex].filter((index) => index >= 0).flat
 const dirs = argv.filter((_, index) => !flagged.has(index));
 const m = await import(pathToFileURL(join(root, 'dist', 'index.js')).href);
 const FROM_TURN = 3;
+const FRONT_HEXES = 4;
 
 const sides = {};
 const bump = (role, key, value) => { sides[role] ??= {}; sides[role][key] = (sides[role][key] ?? 0) + value; };
@@ -41,40 +45,64 @@ for (const dir of dirs) {
       ? `attacker ${record.sides[sideOf(attackerId)].policy}` : 'attacker';
     const definitions = new Map(state.scenario.pieceCatalog.definitions.map((definition) => [definition.id, definition]));
     const isHq = (piece) => String(definitions.get(piece.definitionId)?.categoryDefinitionId).endsWith(':hq');
+    const isFieldUnit = (current, piece) => piece !== undefined && m.isOnMapCombatUnit(current, piece) && !isHq(piece);
+    const enemyOf = (current) => current.pieceState.pieces.filter((piece) => piece.ownerId !== attackerId && piece.location.kind === 'ON_MAP' && m.isOnMapCombatUnit(current, piece));
+    const ownOf = (current) => current.pieceState.pieces.filter((piece) => piece.ownerId === attackerId && piece.location.kind === 'ON_MAP');
     bump(role, 'games', 1);
     let measured = null;
     for (const action of save.acceptedActions) {
       const { gameTurn, playerTurnIndex, phase, segment, phasingPlayerId } = state.sequence;
       const key = `${gameTurn}:${playerTurnIndex}`;
-      if (phase === 'MOVEMENT' && segment === 'MOVEMENT' && phasingPlayerId === attackerId && gameTurn >= FROM_TURN && key !== measured) {
+      const inSegment = phase === 'MOVEMENT' && segment === 'MOVEMENT' && phasingPlayerId === attackerId && gameTurn >= FROM_TURN;
+      const next = m.ruleEngine.applyAction(state, action).state;
+      const leaving = !(next.sequence.phase === 'MOVEMENT' && next.sequence.segment === 'MOVEMENT');
+      const unitActs = ['MOVE_PIECE', 'PAY_FUEL', 'CHANGE_MODE'].includes(action.kind)
+        && isFieldUnit(state, state.pieceState.pieces.find(({ id }) => id === action.pieceId));
+      if (inSegment && key !== measured && (unitActs || leaving)) {
         measured = key;
-        const own = state.pieceState.pieces.filter((piece) => piece.ownerId === attackerId && piece.location.kind === 'ON_MAP');
+        const own = ownOf(state);
+        const enemy = enemyOf(state);
         for (const hq of own.filter(isHq)) {
           bump(role, 'hqs', 1);
           if (m.dumpsReaching(state, attackerId, hq.location.hexId, hq).length === 0) bump(role, 'dryHqs', 1);
         }
-        for (const unit of own.filter((piece) => m.isOnMapCombatUnit(state, piece))) {
+        for (const unit of own.filter((piece) => isFieldUnit(state, piece))) {
+          if (enemy.some((other) => m.hexDistanceBetween(other.location.hexId, unit.location.hexId) <= 1)) continue;
           const coverage = m.ruleEngine.queryFuelCoverage(state, attackerId, unit.id).value;
           if (coverage === 'NOT_NEEDED' || coverage === 'FUELED') continue;
           bump(role, 'needFuel', 1);
           if ((m.ruleEngine.queryFuelPreview(state, attackerId, unit.id).value ?? []).length === 0) bump(role, 'cannotFuel', 1);
         }
       }
-      state = m.ruleEngine.applyAction(state, action).state;
+      if (inSegment && leaving) {
+        bump(role, 'segments', 1);
+        const enemy = enemyOf(next);
+        const front = new Set(ownOf(next).filter((piece) => isFieldUnit(next, piece)
+          && enemy.some((other) => m.hexDistanceBetween(other.location.hexId, piece.location.hexId) <= FRONT_HEXES)).map((piece) => String(piece.location.hexId)));
+        for (const feed of m.ruleEngine.queryFeedCoverage(next, attackerId, null).value ?? []) {
+          if (String(feed.dumpId).includes('-stock-')) continue;
+          bump(role, feed.hexIds.some((hexId) => front.has(String(hexId))) ? 'frontSpTokens' : 'strandedSpTokens', feed.tokens);
+        }
+      }
+      state = next;
     }
   }
 }
 
 const summary = Object.fromEntries(Object.entries(sides).map(([role, s]) => [role, {
   games: s.games,
+  strandedSpPerSegment: (s.strandedSpTokens ?? 0) / 4 / Math.max(1, s.segments ?? 0),
+  frontSpPerSegment: (s.frontSpTokens ?? 0) / 4 / Math.max(1, s.segments ?? 0),
   cannotFuelPerGame: (s.cannotFuel ?? 0) / s.games,
   cannotFuelShare: s.needFuel ? (s.cannotFuel ?? 0) / s.needFuel : null,
   dryHqShare: s.hqs ? (s.dryHqs ?? 0) / s.hqs : null,
 }]));
 mkdirSync(out, { recursive: true });
 writeFileSync(join(out, 'fuel.json'), JSON.stringify({ dirs, sides: summary }, null, 2));
+const pct = (value) => `${Math.round((value ?? 0) * 100)}%`;
 for (const [role, s] of Object.entries(summary)) {
-  console.log(`${role.padEnd(10)} ${s.games} games · units unable to fuel ${s.cannotFuelPerGame.toFixed(1)} a game (${Math.round((s.cannotFuelShare ?? 0) * 100)}% of those needing fuel) · dry HQs ${Math.round((s.dryHqShare ?? 0) * 100)}%`);
+  console.log(`${role.padEnd(10)} ${s.games} games · SP no front unit can draw ${s.strandedSpPerSegment.toFixed(1)} a segment (front units can draw ${s.frontSpPerSegment.toFixed(1)})`
+    + ` · units unable to fuel ${s.cannotFuelPerGame.toFixed(1)} a game (${pct(s.cannotFuelShare)} of those needing fuel) · dry HQs ${pct(s.dryHqShare)}`);
 }
 
 if (gatePolicy !== null) {
@@ -82,8 +110,8 @@ if (gatePolicy !== null) {
   const baseline = Object.entries(summary).find(([role]) => role.startsWith('attacker ') && role !== `attacker ${gatePolicy}`)?.[1];
   if (!candidate || !baseline) { console.log(`GATE ERROR: need attacker games of ${gatePolicy} and of another policy`); process.exit(1); }
   const checks = [
-    ['units unable to fuel per game <= half the baseline', candidate.cannotFuelPerGame <= baseline.cannotFuelPerGame / 2, `${candidate.cannotFuelPerGame.toFixed(1)} vs ${baseline.cannotFuelPerGame.toFixed(1)}`],
-    ['dry HQ share <= half the baseline', (candidate.dryHqShare ?? 0) <= (baseline.dryHqShare ?? 0) / 2, `${Math.round((candidate.dryHqShare ?? 0) * 100)}% vs ${Math.round((baseline.dryHqShare ?? 0) * 100)}%`],
+    ['SP no front unit can draw <= half the baseline', candidate.strandedSpPerSegment <= baseline.strandedSpPerSegment / 2,
+      `${candidate.strandedSpPerSegment.toFixed(1)} vs ${baseline.strandedSpPerSegment.toFixed(1)}`],
   ];
   for (const [name, pass, value] of checks) console.log(`GATE ${pass ? 'PASS' : 'FAIL'} ${name}: ${value}`);
   writeFileSync(join(out, 'fuel-gate.json'), JSON.stringify({ policy: gatePolicy, checks: checks.map(([name, pass, value]) => ({ name, pass, value })) }, null, 2));
