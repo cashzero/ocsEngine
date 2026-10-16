@@ -129,7 +129,8 @@ export const sameSupply = (state: GameState, left: PieceState, right: PieceState
 
 /**
  * A newly placed dump joins the same kind of dump already in its Hex, up to the counter's capacity: what does not fit stays
- * as a further dump, which a later keeper (or the next merge) takes in turn.
+ * as a further dump, which a later keeper (or the next merge) takes in turn. SP unloaded this phase stay unloadable
+ * wherever they are folded (12.2a): the taken Tokens carry the folded dump's unloaded count with them, those first.
  */
 export const mergeSupplyAt = (state: GameState, hexId: HexId, ownerId: PlayerId): GameState => {
   const dumps = stableSort(groundDumpsAt(state, ownerId, hexId), (left, right) => (right.resourceQuantity ?? 0) - (left.resourceQuantity ?? 0) || String(left.id).localeCompare(String(right.id)));
@@ -137,6 +138,7 @@ export const mergeSupplyAt = (state: GameState, hexId: HexId, ownerId: PlayerId)
   const folded = new Set<PieceId>();
   // What each dump holds now: an earlier keeper may already have taken part of a later one.
   const held = new Map(dumps.map((dump) => [dump.id, dump.resourceQuantity ?? 0]));
+  const unloaded = new Map(dumps.map((dump) => [dump.id, usageOf(state, dump).unloadedTokens]));
   for (const keeper of dumps) {
     if (folded.has(keeper.id)) continue;
     const start = held.get(keeper.id)!;
@@ -149,6 +151,9 @@ export const mergeSupplyAt = (state: GameState, hexId: HexId, ownerId: PlayerId)
       if (taken === 0) continue;
       total += taken;
       held.set(other.id, quantity - taken);
+      const carried = Math.min(taken, unloaded.get(other.id)!);
+      unloaded.set(other.id, unloaded.get(other.id)! - carried);
+      unloaded.set(keeper.id, unloaded.get(keeper.id)! + carried);
       if (taken === quantity) {
         folded.add(other.id);
         pieceState = upsert(pieceState, { ...other, resourceQuantity: 0, location: { kind: 'ELIMINATED' } });
@@ -159,7 +164,13 @@ export const mergeSupplyAt = (state: GameState, hexId: HexId, ownerId: PlayerId)
     held.set(keeper.id, total);
     if (total !== start) pieceState = upsert(pieceState, { ...keeper, resourceQuantity: total });
   }
-  return pieceState === state.pieceState ? state : { ...state, pieceState };
+  if (pieceState === state.pieceState) return state;
+  let next: GameState = { ...state, pieceState };
+  for (const dump of dumps) {
+    const count = unloaded.get(dump.id)!;
+    if (count !== usageOf(state, dump).unloadedTokens) next = { ...next, usage: withUsage(next, { ...usageOf(next, dump), unloadedTokens: count }) };
+  }
+  return next;
 };
 
 export const validateLoad = (state: GameState, actorId: PlayerId, truckId: PieceId, dumpId: PieceId, tokens: number): readonly RuleViolation[] => {

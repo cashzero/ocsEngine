@@ -76,6 +76,23 @@ describe('OCS 4.3 Rail Cap: SP by rail (13.3a, 13.3b, 12.2a)', () => {
     expect(load.ok).toBe(false);
   });
 
+  it('keeps SP a truck unloaded at the station unloadable when rail SP merge into its dump (12.2a)', () => {
+    let state = railState({ [U.alDump]: ['1,6', null], [U.alTruck]: ['1,6', null], [U.alLeg]: ['10,6', null] });
+    const ok = (result: ReturnType<typeof rail>): GameState => { expect(codes(result)).toEqual([]); return result.ok ? result.state : state; };
+    state = ok(applyRuleAction(state, ALLIED, { kind: 'LOAD_SUPPLY', truckId: U.alTruck, dumpId: U.alDump, tokens: 1 }));
+    const path = ruleEngine.queryMovementRange(state, ALLIED, U.alTruck).value!.find(({ hexId }) => hexId === '10,6')!.path;
+    state = ok(applyRuleAction(state, ALLIED, { kind: 'MOVE_PIECE', pieceId: U.alTruck, path } as GameActionBody));
+    state = ok(applyRuleAction(state, ALLIED, { kind: 'UNLOAD_SUPPLY', truckId: U.alTruck, tokens: 1 }));
+    const left = piece(state, U.alDump).resourceQuantity!;
+    // The rail load is the larger dump, so it keeps the Hex's SP and folds the truck's Token into itself.
+    expect(left).toBeGreaterThan(1);
+    state = ok(rail(state, { supply: [{ sourcePieceId: U.alDump, tokens: left }] }));
+    const dump = dumpAt(state, '10,6')!;
+    expect(dump.resourceQuantity).toBe(left + 1);
+    // Every Token there arrived this phase, by truck or by rail; the truck itself has finished moving (6.1g), so read the count.
+    expect(state.usage.find(({ pieceId }) => pieceId === dump.id)?.unloadedTokens).toBe(left + 1);
+  });
+
   it('refuses a move the Rail Cap left cannot pay, and Rail Cap is only for the Movement Phase', () => {
     const poor = railState({ [U.alDump]: ['1,6', null] }, STATIONS, 0);
     expect(codes(rail(poor, { supply: SUPPLY }))).toContain('RAIL_CAP_EXCEEDED');
