@@ -1,14 +1,16 @@
-import type { HexId, PieceId } from '../../core/index.js';
+import type { HexId, PieceId, PlayerId } from '../../core/index.js';
 import type { PieceState } from '../../domain/piece/index.js';
 import type { CombatLine, GameState } from '../kernel/model.js';
 import {
   actionRating,
   antiTankLevel,
   combatClass,
+  definitionOf,
   hexOf,
   isArtillery,
   isHq,
   isOutOfSupply,
+  opponentOf,
   pieceById,
   printedSteps,
   printedStrength,
@@ -248,6 +250,51 @@ export const defenseTerrainChoices = (
       odds: calculateCombatOdds(state, attackerIds, defenderIds, targetHexId, suppliedDefenderIds, leadAttackerId, leadDefenderId, terrain.terrainDefinitionId),
     }];
   });
+};
+
+/** One terrain the defender may choose (9.4b) and what each planned attacker would count under it. */
+export interface PlannedAttackOption {
+  readonly terrainId: string;
+  readonly line: CombatLine;
+  readonly strengths: readonly { readonly pieceId: PieceId; readonly strength: number }[];
+}
+
+/** What a planned attack on a Hex would count on the attacking side, from the attacker's own units and public terrain. */
+export interface PlannedAttack {
+  /** 16.0d: Level of the hedgehog defending the Hex (a visible counter); 0 when none. */
+  readonly hedgehogLevel: number;
+  readonly options: readonly PlannedAttackOption[];
+}
+
+/** The unit's printed strength on its Combat side at its current step (the current side when it has no Combat side). */
+const combatSideStrength = (state: GameState, piece: PieceState): number => {
+  const combatFace = definitionOf(state, piece)?.faces.find(({ id }) => id === 'combat');
+  const step = combatFace?.steps.find(({ remainingSteps }) => remainingSteps === piece.remainingSteps) ?? combatFace?.steps[0];
+  return step?.combatStrength ?? baseStrength(state, piece);
+};
+
+/**
+ * What `attackerIds` would count against `targetHexId` once beside it in Combat Mode with combat supply, under each terrain
+ * the defender may pick there: Combat-side strength x terrain (9.4, with 9.4e against the Heavy AT a hedgehog gives, 16.0e)
+ * x missing steps (9.11d). Hexsides depend on where each stack ends up and are left out. Nothing about the defenders is read
+ * beyond the hedgehog counter, so a player may ask this before he can see them.
+ */
+export const plannedAttack = (state: GameState, actorId: PlayerId, attackerIds: readonly PieceId[], targetHexId: HexId): PlannedAttack => {
+  const attackers = attackerIds.flatMap((id) => pieceById(state, id) ?? []).filter((piece) => piece.ownerId === actorId && hexOf(piece) !== null);
+  const hedgehogLevel = defendingHedgehogLevel(state, opponentOf(state, actorId), targetHexId);
+  const defenderAntiTank = hedgehogLevel > 0 ? 2 : 0;
+  return {
+    hedgehogLevel,
+    options: hexCombatTerrains(state, targetHexId).map((terrain) => ({
+      terrainId: terrain.terrainDefinitionId,
+      line: terrain.line,
+      strengths: attackers.map((piece) => ({
+        pieceId: piece.id,
+        strength: combatSideStrength(state, piece) * antiTankAdjusted(state, piece, multiplierFor(terrain.multipliers, combatClass(state, piece)), defenderAntiTank)
+          * stepLossFactor(state, piece, true),
+      })),
+    })),
+  };
 };
 
 /** Distinct Hexes the attackers occupy (attacking stacks, 9.13b). */

@@ -23,6 +23,7 @@ const context = (state: GameState, memory: BotPhaseMemory): BotDecisionContext =
       traceCoverage: (id = null) => ruleEngine.queryTraceCoverage(state, actorId, id).value!,
       feedCoverage: (id = null) => ruleEngine.queryFeedCoverage(state, actorId, id).value!,
       drawReach: hexId => new Set((ruleEngine.queryDrawReach(state, actorId, hexId).value ?? []).map(String)),
+      attackStrength: (ids, hexId) => ruleEngine.queryAttackStrength(state, actorId, ids, hexId).value,
     },
   };
 };
@@ -85,9 +86,15 @@ describe('AI trucks shuttle SP from the rear to the front', () => {
     // Shuttled: a truck that delivered went back, reloaded and delivered again in the same segment.
     const trucks = [...new Set([...unloads.map(({ truckId }) => truckId), ...loadedAtRear])];
     expect(trucks.some(id => unloads.filter(({ truckId }) => truckId === id).length >= 2)).toBe(true);
-    // No truck ends the segment carrying SP away from the rear dump, and one with MP left after its last drop heads back.
+    // A truck that ends the segment loaded away from the rear dump has carried its SP forward, nearer the enemy than the
+    // dump but no closer than a drop may be (3 hexes), toward a drop it could not reach this segment; one with MP left
+    // after its last drop heads back.
     const carrying = (id: string) => state.pieceState.pieces.some(p => p.location.kind === 'CONTAINER' && p.location.containerId === id);
-    expect(trucks.filter(id => carrying(id) && hexOf(state, id) !== REAR_DUMP)).toEqual([]);
+    for (const id of trucks.filter(truckId => carrying(truckId) && hexOf(state, truckId) !== REAR_DUMP)) {
+      const end = hexOf(state, id)!;
+      expect(enemyDistance(state, end)).toBeLessThan(enemyDistance(state, REAR_DUMP));
+      expect(enemyDistance(state, end)).toBeGreaterThanOrEqual(3);
+    }
     const returned = trucks.map(id => ({ end: hexOf(state, id)!, drop: unloads.filter(({ truckId }) => truckId === id).at(-1)?.hexId }))
       .filter(({ end, drop }) => drop !== undefined && end !== drop);
     expect(returned.length).toBeGreaterThan(0);

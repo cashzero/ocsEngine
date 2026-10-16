@@ -19,6 +19,8 @@
 | `scripts/ai-supply-study.mjs` | 重播：每次 attrition 的最後 trace／口糧觸發、移動預判與實際執行的比對 |
 | `scripts/ai-vp-study.mjs` | 重播：找出保留補給且當下 VP 較高的替代移動（待查的候選，不是已證明的失誤） |
 | `scripts/ai-oos-census.mjs`、`ai-logistics-study.mjs`、`ai-fuel-study.mjs`、`ai-truck-trips.mjs`、`ai-garrison-supply-study.mjs`、`ai-air-count.mjs` | 斷補、鐵路與卡車使用、攻方送補與加油、每輛卡車每回合趟數、駐軍送補、空軍任務數的統計 |
+| `scripts/ai-objective-flow-study.mjs` | VP 從哪裡來：目標點以走進空格或戰鬥決定取得與失去、攻擊目標點的欄位與結果（攻擊戰攻方、遭遇戰雙方） |
+| `scripts/ai-role-margin.mjs` | 把候選策略在攻擊戰的攻方與守方效果分開：與對手策略自我對戰的同種子基準比較每局攻方 margin |
 | `scripts/ai-concentration-study.mjs` | 攻方兵力集中：戰力離敵距離與任務分佈、可攻擊格與宣告攻擊的 Combat Table 欄位、主攻群貼近目標的戰力、砲兵模式與砲擊（需 `--trace`） |
 | `scripts/ai-narrate.mjs` | 一局 trace 的逐步摘要，供人工檢視 |
 | `scripts/ai-train.mjs` | 權重自我對戰（已停用，見「決策」） |
@@ -99,6 +101,9 @@ SP 每 segment 7.4–9.8 SP（地圖上 SP 的 29–36%）。
 - `own-action` 或「由己方發起的戰鬥」不足以證明電腦犯錯：敵方的撤退或 reaction 可能在己方發起的戰鬥中切斷補給。
 - 被迫的支出（強制的內部存量恢復）不算可避免的浪費。
 - 只比較同一份引擎與產生器上的結果；不能把不同批次、不同基底的增益相加推論。
+- 攻擊戰的成對結果混合了兩個角色：候選的攻方面對對手的守方，對手的攻方面對候選的守方，所以單看「攻方 VP」不能判斷攻方強弱。
+  要分開角色時，以對手策略自我對戰、相同種子與 `--swap` 的批次為基準，用 `scripts/ai-role-margin.mjs` 比較（v81 開發時，
+  原始的「攻方 VP」看起來是攻方打平、實際是守方 +2.4、攻方 −1.8 至 −11）。
 
 ### 目前結果
 
@@ -167,6 +172,7 @@ SP 每 segment 7.4–9.8 SP（地圖上 SP 的 29–36%）。
 | v74 保留 VP 攻擊的前進資格 | v66 | 品質／局部接續 | — | — | [748 passed、8 skipped](../quality/evidence/ai-vp-option-quality-2026-10-16/README.md)；換基底前未開對戰，不作升級證據 |
 | v76 全回合支付可存活的攻方 option | v75 | 開發 32 場 | −2 | +2／−4 | [淘汰](../quality/evidence/ai-vp-option-development-2026-10-16/README.md) |
 | v77 限最後一位玩家的最後回合 | v75 | 開發 32 場 | +8 | 0／+8 | [增益集中一對種子](../quality/evidence/ai-vp-terminal-option-development-2026-10-16/README.md)，尚未獨立驗收 |
+| v81 依交戰角色規劃主攻 | v79 | 開發 40 對（重複使用） | +72 | +66／+6 | [開發中](../quality/evidence/ai-assault-v81-development-2026-10-17/README.md)，成對 +1.80 ± 1.59；攻方 −1.8、守方 +2.4（角色分離）；尚未登記獨立批 |
 | v78 卡車循環運補 | v75 | 獨立 80 場 | +76 | +50／+26 | [未達登記門檻](../quality/evidence/ai-logistics-v78-independent-2026-10-16/README.md)，區間下界 −0.155；攻方運補 gate 與全部正確性檢查通過；開發 32 場 +44；使用者破例升級為標準 |
 | v80 砲兵轉 Combat Mode | v79 | 開發 32 場 | −2 | −8／+6 | [淘汰](../quality/evidence/ai-artillery-mode-v80-development-2026-10-16/README.md)，砲擊次數反而減少 |
 

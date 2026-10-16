@@ -1,5 +1,6 @@
 import type { PlayerId } from '../core/index.js';
 import { attackerSupplyOptions, previewBarrage, previewCombat } from './combat/combat.js';
+import { plannedAttack } from './combat/strength.js';
 import { inPatrolZoneOf } from './air/aircraft.js';
 import { AIR_MISSION_LABELS, flakModifiers, missionBarrageStrength, previewAirBarrage } from './air/mission.js';
 import { cargoCapacity, cargoWeight, countedUnloadTokens, dropMethod, halfTokenText, landingFailureMaximum, unloadLimitTokens, unloadedAt } from './air/transport.js';
@@ -181,6 +182,13 @@ const engine: RuleEngine = {
   queryTraceCoverage,
   queryFeedCoverage,
   queryDrawReach,
+  queryAttackStrength: (state, actorId, attackerIds, targetHexId) => ({
+    allowed: true,
+    value: plannedAttack(state, actorId, attackerIds, targetHexId),
+    reasons: [{ code: 'PLANNED_ATTACK', allowed: true, message: 'Own attacking strength under each terrain the defender may choose.', rule: '9.4b' }],
+    facts: [],
+    dependencies: [{ aggregate: 'PIECE', revision: state.pieceState.revision, key: `combat:planned:${targetHexId}` }],
+  }),
   querySupplySources,
   queryRailControl,
   queryFuelCoverage,
