@@ -1,0 +1,45 @@
+{
+  "decisions": 1790,
+  "stayedTwoToThreeHexesOut": 303,
+  "supplyVetoed": 68,
+  "noBetterMove": 235,
+  "closerHexScoredLower": 235,
+  "termDifferenceCloserMinusStay": {
+    "progress": {
+      "mean": 18.5,
+      "nonzero": 235
+    },
+    "out-of-supply": {
+      "mean": -30.5,
+      "nonzero": 38
+    },
+    "exposure": {
+      "mean": -32.0,
+      "nonzero": 205
+    },
+    "contact": {
+      "mean": -7.2,
+      "nonzero": 206
+    },
+    "hunt": {
+      "mean": 15.0,
+      "nonzero": 95
+    },
+    "hq-dependent-supply": {
+      "mean": -2.5,
+      "nonzero": 30
+    },
+    "crowding": {
+      "mean": -15.5,
+      "nonzero": 61
+    },
+    "overstack": {
+      "mean": -1000.0,
+      "nonzero": 3
+    },
+    "assault-position": {
+      "mean": 20.0,
+      "nonzero": 16
+    }
+  }
+}

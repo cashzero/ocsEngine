@@ -1,0 +1,194 @@
+{
+  "dirs": [
+    "artifacts/ai-artillery/v80-development/AXIS_ATTACKS-TEMPERATE_INLAND",
+    "artifacts/ai-artillery/v80-development/AXIS_ATTACKS-EASTERN_EUROPE"
+  ],
+  "sides": {
+    "attacker heuristic@artifacts/ai-promotion/frozen-v79/dist": {
+      "games": 8,
+      "combatPhases": 56,
+      "strength": {
+        "adjacent": 112.57142857142857,
+        "2-3": 127.05357142857143,
+        "4-6": 40.482142857142854,
+        "7+": 6.285714285714286
+      },
+      "strengthByTask": {
+        "assault": 44.107142857142854,
+        "capture": 52.839285714285715,
+        "hunt": 62.67857142857143,
+        "garrison": 2.232142857142857,
+        "resupply": 3.267857142857143,
+        "front": 2.892857142857143,
+        "stayed": 118.375
+      },
+      "targetsByTask": {
+        "assault": 1.8392857142857142,
+        "capture": 2.0535714285714284,
+        "hunt": 3.0357142857142856,
+        "garrison": 0.23214285714285715,
+        "resupply": 0.23214285714285715,
+        "front": 0.10714285714285714
+      },
+      "bestColumn": {
+        "0": 16,
+        "1": 10,
+        "2": 19,
+        "3": 29,
+        "4": 45,
+        "5": 32,
+        "6": 21,
+        "7": 19,
+        "8": 15,
+        "9": 8,
+        "11": 3,
+        "12": 22
+      },
+      "bestColumnOnObjectives": {
+        "0": 13,
+        "1": 5,
+        "2": 14,
+        "3": 11,
+        "4": 6,
+        "5": 6,
+        "6": 8,
+        "7": 8,
+        "8": 2,
+        "9": 3,
+        "12": 2
+      },
+      "declaredColumn": {
+        "2": 4,
+        "3": 3,
+        "4": 8,
+        "5": 8,
+        "6": 10,
+        "7": 8,
+        "8": 12,
+        "9": 6,
+        "11": 3,
+        "12": 21
+      },
+      "attacksPerPhase": 1.4821428571428572,
+      "group": {
+        "perPhase": 1.8392857142857142,
+        "units": 2.5145631067961167,
+        "adjacent": 1.233009708737864,
+        "strength": 23.980582524271846,
+        "strengthAdjacent": 11.116504854368932
+      },
+      "assaultTargets": {
+        "total": 40,
+        "attacked": 22,
+        "heldAtEnd": 20,
+        "attacks": 33
+      },
+      "barrage": {
+        "gunsByMode": {
+          "MOVE": 392,
+          "DG": 14,
+          "COMBAT": 10
+        },
+        "perPhase": 0.5178571428571429,
+        "attacksOnBarragedHex": 17,
+        "attacks": 83
+      }
+    },
+    "attacker heuristic": {
+      "games": 8,
+      "combatPhases": 54,
+      "strength": {
+        "adjacent": 119.07407407407408,
+        "2-3": 134.96296296296296,
+        "4-6": 36.22222222222222,
+        "7+": 4.425925925925926
+      },
+      "strengthByTask": {
+        "assault": 41.77777777777778,
+        "capture": 57.55555555555556,
+        "hunt": 60.48148148148148,
+        "garrison": 2.5555555555555554,
+        "resupply": 2.8703703703703702,
+        "front": 5.888888888888889,
+        "stayed": 123.55555555555556
+      },
+      "targetsByTask": {
+        "assault": 1.7037037037037037,
+        "capture": 1.962962962962963,
+        "hunt": 2.925925925925926,
+        "garrison": 0.3148148148148148,
+        "resupply": 0.25925925925925924,
+        "front": 0.2962962962962963
+      },
+      "bestColumn": {
+        "0": 10,
+        "1": 12,
+        "2": 17,
+        "3": 29,
+        "4": 42,
+        "5": 33,
+        "6": 32,
+        "7": 14,
+        "8": 9,
+        "9": 3,
+        "10": 3,
+        "11": 7,
+        "12": 23
+      },
+      "bestColumnOnObjectives": {
+        "0": 6,
+        "1": 10,
+        "2": 9,
+        "3": 9,
+        "4": 11,
+        "5": 8,
+        "6": 12,
+        "7": 4,
+        "8": 2,
+        "9": 1,
+        "10": 3,
+        "11": 2,
+        "12": 1
+      },
+      "declaredColumn": {
+        "0": 1,
+        "1": 1,
+        "2": 4,
+        "3": 5,
+        "4": 12,
+        "5": 8,
+        "6": 12,
+        "7": 6,
+        "8": 6,
+        "9": 3,
+        "10": 3,
+        "11": 7,
+        "12": 22
+      },
+      "attacksPerPhase": 1.6666666666666667,
+      "group": {
+        "perPhase": 1.7037037037037037,
+        "units": 2.6956521739130435,
+        "adjacent": 1.2826086956521738,
+        "strength": 24.52173913043478,
+        "strengthAdjacent": 11.065217391304348
+      },
+      "assaultTargets": {
+        "total": 36,
+        "attacked": 23,
+        "heldAtEnd": 19,
+        "attacks": 37
+      },
+      "barrage": {
+        "gunsByMode": {
+          "MOVE": 112,
+          "COMBAT": 298,
+          "DG": 6
+        },
+        "perPhase": 0.3148148148148148,
+        "attacksOnBarragedHex": 9,
+        "attacks": 90
+      }
+    }
+  }
+}

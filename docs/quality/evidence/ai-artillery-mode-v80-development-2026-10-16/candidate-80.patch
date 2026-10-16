@@ -1,0 +1,149 @@
+diff --git a/src/ai/policies/heuristic-weights.ts b/src/ai/policies/heuristic-weights.ts
+index 673e824..fe75f08 100644
+--- a/src/ai/policies/heuristic-weights.ts
++++ b/src/ai/policies/heuristic-weights.ts
+@@ -98,6 +98,10 @@ export interface HeuristicWeights {
+   readonly artilleryEscortDistance: number;
+   readonly artilleryUnescorted: number;
+   readonly artilleryExposure: number;
++  /** heuristic@80: artillery whose nearest enemy is within its range plus this many hexes switches to Combat Mode. */
++  readonly artilleryCombatModeReach: number;
++  /** heuristic@80: artillery whose nearest enemy is farther than its range plus this many hexes switches to Move Mode. */
++  readonly artilleryMoveModeDistance: number;
+   readonly rearExposure: number;
+   readonly rearExposed: number;
+   readonly truckTowardGoal: number;
+@@ -147,7 +151,7 @@ export const DEFAULT_HEURISTIC_WEIGHTS: HeuristicWeights = Object.freeze({
+   huntAdjacent: 15, assaultRatio: 2.5, assaultReach: 12, assaultMaxUnits: 6, assaultMaxEfforts: 5, assaultPosition: 20, assaultObjective: 2, barrageMainEffort: 5, garrisonStay: 30, contactGood: 6, contactBad: 8, contactRatio: 1.5, exposureSupport: 1.5,
+   outOfSupply: 60, outOfSupplyFed: 10, fedRadius: 2, hqDependentSupply: 8,
+   hqWithArmy: 6, hqExposed: 60, hqOutOfSupply: 60, hqOffRail: 80, hqCover: 1, hqRailheadReach: 6, hqExposure: 2,
+-  artilleryInRange: 20, artilleryBeyondRange: 4, artilleryWithArmy: 6, artilleryExposed: 60, artilleryEscortDistance: 3, artilleryUnescorted: 40, artilleryExposure: 1.5,
++  artilleryInRange: 20, artilleryBeyondRange: 4, artilleryWithArmy: 6, artilleryExposed: 60, artilleryEscortDistance: 3, artilleryUnescorted: 40, artilleryExposure: 1.5, artilleryCombatModeReach: 1, artilleryMoveModeDistance: 3,
+   rearExposure: 4, rearExposed: 80, truckTowardGoal: 5, truckExposed: 80, truckExposure: 4,
+   combatModeDistance: 3, stratModeEnemyDistance: 10, stratModeTargetDistance: 8, hqCombatModeRadius: 3,
+   attackThreshold: 4, overrunThresholdFactor: 2, defenderLoss: 10, defenderOption: 5, attackerLoss: 10, attackerOption: 3,
+@@ -159,7 +163,7 @@ export const DEFAULT_HEURISTIC_WEIGHTS: HeuristicWeights = Object.freeze({
+ /** Weights that count hexes or units: mutations keep them whole numbers of at least 1. */
+ export const WHOLE_NUMBER_WEIGHTS: readonly (keyof HeuristicWeights)[] = [
+   'garrisonSecondUnitThreat', 'artilleryEscortDistance', 'clearRadius', 'reliefRadius', 'holdTruckReach', 'holdMaxExtra', 'assaultReach', 'assaultMaxUnits', 'assaultMaxEfforts', 'captureBaseUnits', 'huntInfiltrationRadius', 'huntAnchorRadius', 'stratSafeDistance', 'fedRadius',
+-  'combatModeDistance', 'stratModeEnemyDistance', 'stratModeTargetDistance', 'hqCombatModeRadius', 'hqRailheadReach',
++  'artilleryCombatModeReach', 'artilleryMoveModeDistance', 'combatModeDistance', 'stratModeEnemyDistance', 'stratModeTargetDistance', 'hqCombatModeRadius', 'hqRailheadReach',
+   'hedgehogThreatRadius', 'hedgehogObjectiveLevel', 'hedgehogFrontLevel',
+ ];
+ 
+diff --git a/src/ai/policies/heuristic.ts b/src/ai/policies/heuristic.ts
+index b84ab0f..4fcb151 100644
+--- a/src/ai/policies/heuristic.ts
++++ b/src/ai/policies/heuristic.ts
+@@ -337,6 +337,19 @@ const frontHex = (situation: Situation): HexId | null => {
+   return sorted[0]?.hexId ?? null;
+ };
+ 
++/**
++ * heuristic@80: artillery barrages from its Combat side, at about twice its Move side's Barrage Strength. A mode is set as
++ * a unit begins to move (5.4), so guns within reach of a target at that point fire from Combat Mode, and guns that must
++ * travel to catch up with the army switch back to Move Mode. Replays of v79 attack games: 251 of 257 guns in a Barrage
++ * Segment were in Move Mode, 6.1 of them two hexes from the enemy, already within range.
++ */
++const artilleryMode = (unit: OwnUnit, enemyDistance: number, w: HeuristicWeights): OcsMode | null => {
++  const range = Math.max(1, unit.profile?.range ?? 1);
++  if (enemyDistance <= range + w.artilleryCombatModeReach) return 'COMBAT';
++  if (enemyDistance > range + w.artilleryMoveModeDistance) return 'MOVE';
++  return null;
++};
++
+ // ─── Movement Segment ──────────────────────────────────────────────────────────────────────────
+ 
+ const destinationOf = (action: GameAction): HexId | null => action.kind === 'MOVE_PIECE' ? action.path.at(-1)! : null;
+@@ -980,7 +993,8 @@ const movementStep = (context: BotDecisionContext, situation: Situation, facts:
+           // An HQ with the army stays in Combat Mode to rebuild units (13.5a); one far behind moves up in Move Mode.
+           : unit.piece.role === 'HQ' ? (front !== null && (hexesBetween(unit.hexId, front) <= w.hqCombatModeRadius
+             // heuristic@79: on a railroad hex an HQ in Combat Mode is a station (13.8c); it stays there while the army is near.
+-            || (railheadHex(situation, unit.hexId) && hexesBetween(unit.hexId, front) <= w.hqRailheadReach)) ? 'COMBAT' : 'MOVE') : null;
++            || (railheadHex(situation, unit.hexId) && hexesBetween(unit.hexId, front) <= w.hqRailheadReach)) ? 'COMBAT' : 'MOVE')
++            : unit.piece.role === 'ARTILLERY' ? artilleryMode(unit, enemyDistance, w) : null;
+       if (wanted !== null && unit.piece.mode !== wanted) {
+         const change = actions.candidates('CHANGE_MODE', id).find((action) => action.kind === 'CHANGE_MODE' && action.mode === wanted);
+         if (change && preservesFriendlySupply(context, change)) {
+@@ -1434,7 +1448,7 @@ export const createHeuristicPolicy = (facts: BotGameFacts, options: HeuristicPol
+   const choose = decide(facts, options.weights ?? DEFAULT_HEURISTIC_WEIGHTS);
+   return {
+     id: 'heuristic',
+-    version: options.label === undefined ? '79' : `79+${options.label}`,
++    version: options.label === undefined ? '80' : `80+${options.label}`,
+     decide: (context) => {
+       const sink = options.debug;
+       debug = sink ? (line) => sink(`${context.memory.stepKey} ${String(context.playerId).split(':').at(-1)} ${line}`) : null;
+diff --git a/tests/ai/artillery-mode.test.ts b/tests/ai/artillery-mode.test.ts
+new file mode 100644
+index 0000000..a6c113c
+--- /dev/null
++++ b/tests/ai/artillery-mode.test.ts
+@@ -0,0 +1,67 @@
++import { readFileSync } from 'node:fs';
++import { join } from 'node:path';
++import { gunzipSync } from 'node:zlib';
++import { describe, expect, it } from 'vitest';
++import {
++  createBotRng, createHeuristicPolicy, parseGameStateJson, ruleEngine,
++  type BotDecisionContext, type BotPhaseMemory, type GameState,
++} from '../../src/index.js';
++
++const context = (state: GameState, memory: BotPhaseMemory): BotDecisionContext => {
++  const actorId = state.pendingDecision?.ownerId ?? state.sequence.actingPlayerId;
++  return {
++    seatId: 'seat:regression' as BotDecisionContext['seatId'], playerId: actorId, memory,
++    rng: createBotRng(7, 'artillery-mode', 0),
++    view: { projection: ruleEngine.projectForViewer(state, actorId), pendingDecision: state.pendingDecision } as unknown as BotDecisionContext['view'],
++    actions: {
++      families: () => ruleEngine.getActionFamilies(state, actorId).filter(f => f.enabled).map(f => f.kind),
++      movementRange: id => ruleEngine.queryMovementRange(state, actorId, id).value!,
++      candidates: (kind, pieceId = null, budget = 400) => ruleEngine.getActionCandidates(state, { actorId, kind, pieceId, budget }).actions,
++      explain: action => ({ current: true, explanation: ruleEngine.explain(state, action) }),
++      traceCoverage: (id = null) => ruleEngine.queryTraceCoverage(state, actorId, id).value!,
++      feedCoverage: (id = null) => ruleEngine.queryFeedCoverage(state, actorId, id).value!,
++      drawReach: hexId => new Set((ruleEngine.queryDrawReach(state, actorId, hexId).value ?? []).map(String)),
++    },
++  };
++};
++
++const isArtillery = (state: GameState, pieceId: string) => {
++  const piece = state.pieceState.pieces.find(p => p.id === pieceId)!;
++  return /artillery/.test(String(state.scenario.pieceCatalog.definitions.find(d => d.id === piece.definitionId)?.categoryDefinitionId));
++};
++
++describe('AI artillery fires from its Combat side', () => {
++  it('turns guns already in range to Combat Mode as they begin to move, and barrages from it', () => {
++    // Recorded attack game (seed 1300205, Axis attacks, turn 4): eight Axis guns stand in 12,10 two hexes from the enemy,
++    // within their range of 2, all in Move Mode. heuristic@79 left them there and barraged at Move Mode strength.
++    const fixture = JSON.parse(gunzipSync(readFileSync(join(__dirname, 'fixtures', 'artillery-mode-1300205.state.json.gz'))).toString()) as { snapshot: string };
++    const parsed = parseGameStateJson(fixture.snapshot);
++    if (!parsed.ok) throw new Error('Invalid recorded game');
++    let state = parsed.value;
++    const playerId = state.sequence.actingPlayerId;
++    const guns = state.pieceState.pieces.filter(p => p.ownerId === playerId && p.location.kind === 'ON_MAP' && isArtillery(state, p.id)).map(p => p.id);
++    expect(guns).toHaveLength(8);
++    expect(state.pieceState.pieces.filter(p => guns.includes(p.id)).every(p => p.mode === 'MOVE')).toBe(true);
++
++    const policy = createHeuristicPolicy({ scenario: state.scenario, turnLimit: state.configuration.turnLimit });
++    let memory: BotPhaseMemory = { stepKey: 'MOVEMENT', actions: 0, notes: new Map() };
++    const barrages: (typeof guns)[] = [];
++    for (let guard = 0; guard < 400 && !(state.sequence.phase === 'COMBAT' && state.sequence.segment === 'COMBAT'); guard++) {
++      const key = `${state.sequence.phase}:${state.sequence.segment}`;
++      if (memory.stepKey !== key) memory = { stepKey: key, actions: 0, notes: new Map() };
++      const choice = policy.decide(context(state, memory));
++      expect(choice).not.toBeNull();
++      if (!choice) break;
++      if (choice.action.kind === 'DECLARE_BARRAGE') barrages.push([...choice.action.firerIds]);
++      const next = ruleEngine.applyAction(state, choice.action);
++      expect(next.ok, JSON.stringify(choice.action)).toBe(true);
++      if (!next.ok) break;
++      state = next.state;
++    }
++
++    expect(state.sequence).toMatchObject({ phase: 'COMBAT', segment: 'COMBAT' });
++    const fired = barrages.flat();
++    expect(fired.length).toBeGreaterThan(0);
++    expect(fired.every(id => guns.includes(id) && state.pieceState.pieces.find(p => p.id === id)!.mode === 'COMBAT')).toBe(true);
++  }, 120_000);
++});

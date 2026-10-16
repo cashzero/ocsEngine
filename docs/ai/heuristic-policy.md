@@ -125,6 +125,7 @@
 - **從持有點出擊的風險**（v75）：攻擊者站在己方持有的目標點上、且留下的戰力低於該點威脅 × holdRatio，而敵方之後還有
   回合時，扣分「攻擊者損失或 option 的期望值（上限 1）× 該點分差 VP × 25 × 0.25 × 出擊戰力占比」。
 - 砲擊只打主攻目標或己方單位相鄰的敵軍；空中砲擊先選主攻目標，砲兵打下一個（每格每階段一次砲擊，10.0e）。
+- 模式只為戰鬥單位與 HQ 改變：砲兵維持部署時的模式（多為 Move Mode），以 Move 面約一半的砲擊戰力射擊；砲擊分數為 DG 機率 × 10（目標旁沒有己方單位時 × 4）＋ 預期損失步數 × 10 − Token × 1.2，門檻 2。
 
 ### 重建與增援
 
@@ -203,6 +204,7 @@
 | v75 開發中：從持有點出擊的風險係數 0.5 | 開發批 VP 與 0.25 在同一範圍（0.5：+3.2～+4.5；0.25：新種子 +3.65），但擋下了消滅敵方 HQ 的有補給 Overrun（`combat-advance-supply` 回歸） | 改用 0.25 |
 | 所有回合都為保留 VP 前進而承受可存活的攻方 option 損失（v76） | [量測結果](evaluation.md#候選策略量測) | 所有回合支付攻方 option 損失未帶來 VP 增益；另測沒有後續敵方回合的情境 |
 | 守方目標點挖壕上限由 Level 3 降為 Level 2（`hedgehogObjectiveLevel`，2026-10-16） | 開局 hedgehog 減為一半目標點後，8 局同種子中被攻擊格只有 3 次 Level 3；加上限後攻方 VP、攻擊次數、3:1 機會全部相同 | 沒有可量到的效果，不值得走升級流程（使用者決定不做） |
+| 砲兵在射程 + 1 格內轉 Combat Mode（候選 v80） | 開發 32 場 VP 差 −0.06；砲兵多在 Combat Mode，但砲擊由每階段 0.5 次降為 0.3 次（[證據](../quality/evidence/ai-artillery-mode-v80-development-2026-10-16/README.md)） | Barrage Table 依戰力欄位收 SP，同樣的砲在 Combat 面成本較高，被砲擊分數的補給項擋下；Combat 面移動力低，跟不上推進。限制砲擊的是 SP 計價與 2 格射程，不是模式 |
 
 各次嘗試的種子與數據在 git 歷史的舊報告與 `docs/quality/evidence/ai-*` 的文字紀錄中。
 
@@ -222,6 +224,7 @@
 - `bot-eastern-front`：東歐地圖的長距離推進與守點尚缺現行策略重測。
 - `bot-hq-logistics-plan`：HQ 與卡車缺少協同前推的接力計畫。
 - 沒有 Reserve、Reaction 反擊、Extender、Breakout 規劃；戰鬥預估不含 Surprise。
+- `bot-force-concentration`：攻方不集中兵力。主攻群以守軍原始戰力的 2.5 倍組成、不看地形欄位；每個單位只以自己和目的地同格友軍判斷 `exposure`、`contact`，所以停在敵前 2–3 格；戰鬥補給項讓多數攻擊低於門檻（[研究](../quality/evidence/ai-force-concentration-v79-2026-10-16/README.md)）。
 
 ## 驗證
 

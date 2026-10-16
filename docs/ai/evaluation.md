@@ -19,6 +19,7 @@
 | `scripts/ai-supply-study.mjs` | 重播：每次 attrition 的最後 trace／口糧觸發、移動預判與實際執行的比對 |
 | `scripts/ai-vp-study.mjs` | 重播：找出保留補給且當下 VP 較高的替代移動（待查的候選，不是已證明的失誤） |
 | `scripts/ai-oos-census.mjs`、`ai-logistics-study.mjs`、`ai-fuel-study.mjs`、`ai-truck-trips.mjs`、`ai-garrison-supply-study.mjs`、`ai-air-count.mjs` | 斷補、鐵路與卡車使用、攻方送補與加油、每輛卡車每回合趟數、駐軍送補、空軍任務數的統計 |
+| `scripts/ai-concentration-study.mjs` | 攻方兵力集中：戰力離敵距離與任務分佈、可攻擊格與宣告攻擊的 Combat Table 欄位、主攻群貼近目標的戰力、砲兵模式與砲擊（需 `--trace`） |
 | `scripts/ai-narrate.mjs` | 一局 trace 的逐步摘要，供人工檢視 |
 | `scripts/ai-train.mjs` | 權重自我對戰（已停用，見「決策」） |
 
@@ -167,6 +168,7 @@ SP 每 segment 7.4–9.8 SP（地圖上 SP 的 29–36%）。
 | v76 全回合支付可存活的攻方 option | v75 | 開發 32 場 | −2 | +2／−4 | [淘汰](../quality/evidence/ai-vp-option-development-2026-10-16/README.md) |
 | v77 限最後一位玩家的最後回合 | v75 | 開發 32 場 | +8 | 0／+8 | [增益集中一對種子](../quality/evidence/ai-vp-terminal-option-development-2026-10-16/README.md)，尚未獨立驗收 |
 | v78 卡車循環運補 | v75 | 獨立 80 場 | +76 | +50／+26 | [未達登記門檻](../quality/evidence/ai-logistics-v78-independent-2026-10-16/README.md)，區間下界 −0.155；攻方運補 gate 與全部正確性檢查通過；開發 32 場 +44；使用者破例升級為標準 |
+| v80 砲兵轉 Combat Mode | v79 | 開發 32 場 | −2 | −8／+6 | [淘汰](../quality/evidence/ai-artillery-mode-v80-development-2026-10-16/README.md)，砲擊次數反而減少 |
 
 已完成驗證的對戰批均合法打完 8 回合，重播 hash 一致，既定一般補給與嚴格前進稽核違例為零。v77 的完整品質檢查為 752 passed／8 skipped，typecheck、build、smoke 通過；該批成對平均 +0.25、區間 [−0.275, 0.775]，尚未登記或執行獨立批；v77 以 v75 為基底，要成為標準須改以 v78 為基底重新驗收。各次 frozen quality 的命令、時間、來源與建置雜湊在個別 evidence 的 JSON 中；觀測 commit 與歷史重寫後相同 tree 的對照見 [來源對照](../quality/evidence/ai-vp-terminal-option-development-2026-10-16/source-equivalence.json)。
 
