@@ -64,6 +64,13 @@ segment 中只有 14 個有可用的前送鐵路）；後方存量 11.2 SP（seg
 卡車沒有循環往返，開始時已載貨的卡車回合有 84/130 沒有卸貨（其中 38 次停在原地），入場格的 SP 則逐回合累積（一局中第 6 回合
 累積到 124T）。
 
+候選 `heuristic@78`（卡車循環運補，[行為](heuristic-policy.md#後勤)）在同一組種子、對凍結 v75 的開發批**未通過**：
+卡車載量 38%（未達 60%）；鐵路 100%；後方存量 2.6 SP，同批 v75 為 12.0 SP；駐軍存量 0。限制是補給收入：攻方每個
+Movement Segment 平均收到 9.0 SP，地圖上卡車 15.2 點（v75 為 13.0 點，卡車損失較少），即使每個到達的 SP 都由卡車裝一次，
+載量也只有 59%。卡車開始行動時可裝的後方 SP 平均 8.4 SP（鐵路先運走的 SP 本 phase 不能再裝，12.2a），上限 55%；
+實際裝 5.9 SP。同一 phase 卸下的 SP 不能再裝，接力不會在同一 segment 重複計入。v75 的 26% 是在後方堆著 13.8 SP 可裝時量到的。
+[證據](../quality/evidence/ai-logistics-truck-shuttle-development-2026-10-16/README.md)。
+
 ### 歸因規則
 
 - Attrition 歸因記錄的是「最後一次失去 trace／口糧的觸發行動」，不是唯一原因，也不是意圖的證明。
@@ -106,6 +113,7 @@ segment 中只有 14 個有可用的前送鐵路）；後方存量 11.2 SP（seg
 | v74 保留 VP 攻擊的前進資格 | v66 | 品質／局部接續 | — | — | [748 passed、8 skipped](../quality/evidence/ai-vp-option-quality-2026-10-16/README.md)；換基底前未開對戰，不作升級證據 |
 | v76 全回合支付可存活的攻方 option | v75 | 開發 32 場 | −2 | +2／−4 | [淘汰](../quality/evidence/ai-vp-option-development-2026-10-16/README.md) |
 | v77 限最後一位玩家的最後回合 | v75 | 開發 32 場 | +8 | 0／+8 | [增益集中一對種子](../quality/evidence/ai-vp-terminal-option-development-2026-10-16/README.md)，尚未獨立驗收 |
+| v78 卡車循環運補 | v75 | 開發 16 場（只有攻擊戰） | +14 | —／+14 | [攻方運補 gate 載量未達](../quality/evidence/ai-logistics-truck-shuttle-development-2026-10-16/README.md)；兩個單一軌跡接續測試失敗 |
 
 已完成驗證的對戰批均合法打完 8 回合，重播 hash 一致，既定一般補給與嚴格前進稽核違例為零。v77 的完整品質檢查為 752 passed／8 skipped，typecheck、build、smoke 通過；該批成對平均 +0.25、區間 [−0.275, 0.775]，尚未登記或執行獨立批，標準仍為 v75。各次 frozen quality 的命令、時間、來源與建置雜湊在個別 evidence 的 JSON 中；觀測 commit 與歷史重寫後相同 tree 的對照見 [來源對照](../quality/evidence/ai-vp-terminal-option-development-2026-10-16/source-equivalence.json)。
 

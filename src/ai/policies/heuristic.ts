@@ -1,6 +1,6 @@
 import type { HexId, PieceId } from '../../core/index.js';
 import type { OcsMode } from '../../domain/piece/index.js';
-import type { FeedSource, GameAction } from '../../rules/index.js';
+import type { FeedSource, GameAction, RuleExplanation } from '../../rules/index.js';
 import { analyze, type ObjectiveView, type OwnUnit, type Situation } from '../analysis.js';
 import { respondToDecision } from '../decisions.js';
 import { hexesBetween, knowledgeOf, type BotGameFacts } from '../knowledge.js';
@@ -95,9 +95,10 @@ interface StepNotes {
   readonly done: Set<PieceId>;
   readonly modeSet: Set<PieceId>;
   readonly fueled: Set<PieceId>;
-  readonly loaded: Set<PieceId>;
-  /** Trucks that already moved this step: they may still unload, nothing else. */
-  readonly truckMoved: Set<PieceId>;
+  /** Each truck's leg this step; a truck with none plans one at its next decision. */
+  readonly trucks: Map<PieceId, TruckLeg>;
+  /** Tokens of each rear dump promised to a truck heading for it, and hexes where SP were unloaded this step (12.2a: not loadable again). */
+  readonly claims: { readonly tokens: Map<HexId, number>; readonly unloaded: Set<HexId> };
   readonly incomingRe: Map<HexId, number>;
   /** Tokens still unpromised in each friendly dump or truck cargo, by its id: units ending out of trace eat from them (12.6c). */
   feedBudget: Map<string, number> | null;
@@ -111,14 +112,22 @@ interface StepNotes {
   railDone?: boolean;
   /** Nothing more is worth shipping this step (19.0f). */
   seaDone?: boolean;
-  /** Tokens of each rear dump already promised to an empty truck this step, and the dump each truck is heading for (heuristic@12). */
-  claims?: { readonly tokens: Map<HexId, number>; readonly pickup: Map<PieceId, HexId> };
 }
+
+/** What a truck is doing this Movement Segment (heuristic@78). Its actions run back to back (6.1g), leg after leg. */
+type TruckLeg =
+  /** Drive to a rear dump and fill up there; `claimed` Tokens of it are promised to this truck. */
+  | { readonly kind: 'FETCH'; readonly pickup: HexId; readonly claimed: number }
+  /** Loaded: drive to a drop it can reach with the MP to unload (`drop`, once chosen), and unload everything there. */
+  | { readonly kind: 'DELIVER'; readonly drop: HexId | null }
+  /** Loaded for a cut-off group (heuristic@7): drive beside it once, then unload or stop. */
+  | { readonly kind: 'RELIEF'; readonly hexId: HexId; readonly driven: boolean }
+  | { readonly kind: 'DONE' };
 
 const notesOf = (context: BotDecisionContext): StepNotes => {
   let notes = context.memory.notes.get('heuristic') as StepNotes | undefined;
   if (!notes) {
-    notes = { done: new Set(), modeSet: new Set(), fueled: new Set(), loaded: new Set(), truckMoved: new Set(), incomingRe: new Map(), feedBudget: null, targets: null };
+    notes = { done: new Set(), modeSet: new Set(), fueled: new Set(), trucks: new Map(), claims: { tokens: new Map(), unloaded: new Set() }, incomingRe: new Map(), feedBudget: null, targets: null };
     context.memory.notes.set('heuristic', notes);
   }
   return notes;
@@ -505,13 +514,20 @@ const reliefTargets = (context: BotDecisionContext, situation: Situation, w: Heu
 };
 
 /**
- * Logistics: an empty truck heads for the fullest dump and loads, a loaded one heads for the forward HQ and unloads.
- * First, though, one loaded truck runs to each cut-off group and unloads beside it (heuristic@7).
+ * Logistics (heuristic@78): each truck shuttles. It fills up at a rear dump, drives the SP to a drop it can reach with
+ * the MP to unload, unloads, and spends what MP it has left driving back to the next pickup, so the next step starts at
+ * the dump. Replays of heuristic@75 showed 84 of 130 loaded truck-turns ending without unloading and the entry dump
+ * growing every turn: a truck loaded one dump, left, and stopped after any move. First, though, one loaded truck runs
+ * to each cut-off group and unloads beside it (heuristic@7).
  */
 /** A truck load worth a trip: a full 5-point truck carries 20T; a pickup must offer at least this much. */
 const PICKUP_MIN_TOKENS = 8;
+/** What a full truck carries: a pickup claims this much of a dump for a truck heading there. */
+const TRUCK_LOAD_TOKENS = 20;
 /** A truck unloads where no enemy stands within two hexes. */
 const DROP_SAFE_DISTANCE = 3;
+/** A truck that cannot reach the best drop unloads short of it only this many hexes nearer the front than it stands. */
+const RELAY_MIN_GAIN = 4;
 /** A 45 MP truck reaches more hexes than the default candidate budget; its long runs must not be cut off. */
 const TRUCK_MOVE_BUDGET = 3000;
 /** Trucks fetch only from dumps at least this far from the enemy. */
@@ -524,17 +540,14 @@ const DELIVERED_RADIUS = 3;
  * counting only the Tokens other trucks have not already claimed this step. Rail lands SP at the railhead (the station
  * nearest the front, railStep), so trucks shuttle railhead → front instead of driving to the map edge where new SP
  * arrive; replays of heuristic@11 with Rail Cap showed every empty truck heading for the fullest dump at the map edge.
- * Emergency garrison stocks (1T at isolated objectives) are left alone.
+ * Emergency garrison stocks (1T at isolated objectives) are left alone, and so are SP unloaded this step (12.2a).
  */
-const pickupFor = (situation: Situation, notes: StepNotes, truck: OwnUnit, front: HexId | null, reliefRun = false): HexId | undefined => {
-  notes.claims ??= { tokens: new Map(), pickup: new Map() };
-  const claims = notes.claims;
-  const already = claims.pickup.get(truck.piece.id);
-  if (already !== undefined) return already;
+const pickupFor = (situation: Situation, notes: StepNotes, truck: OwnUnit, front: HexId | null, reliefRun: boolean, deliverable: (hexId: HexId) => boolean): TruckLeg => {
+  const { claims } = notes;
   const objectives = new Set(situation.objectives.map(({ hexId }) => hexId));
   const left = (hexId: HexId, tokens: number): number => tokens - (claims.tokens.get(hexId) ?? 0);
   const dumps = situation.own.filter(({ piece, hexId }) => piece.role === 'DUMP' && (piece.resourceQuantity ?? 0) > 0
-    && !String(piece.id).includes('-stock-') && !objectives.has(hexId)
+    && !String(piece.id).includes('-stock-') && !objectives.has(hexId) && !claims.unloaded.has(hexId) && (reliefRun || deliverable(hexId))
     && (reliefRun || front === null || hexesBetween(hexId, front) > DELIVERED_RADIUS)
     // Only the rear: SP near the enemy feed the units beside them (a relief run's load, a cut-off group's stock).
     && situation.nearestEnemy(hexId).distance >= (reliefRun ? 2 : PICKUP_SAFE_DISTANCE));
@@ -549,143 +562,183 @@ const pickupFor = (situation: Situation, notes: StepNotes, truck: OwnUnit, front
   })).filter(({ tokens }) => tokens > 0);
   const worthwhile = scored.filter(({ tokens }) => tokens >= (reliefRun ? 1 : PICKUP_MIN_TOKENS));
   const best = (worthwhile.length > 0 ? worthwhile : scored)
-    .sort((a, b) => a.cost - Math.min(a.tokens, 20) / 4 - (b.cost - Math.min(b.tokens, 20) / 4) || String(a.hexId).localeCompare(String(b.hexId)))[0];
-  if (!best) { debug?.(`PICKUP none for ${truck.piece.id}: dumps ${JSON.stringify(situation.own.filter(({ piece }) => piece.role === 'DUMP').map(({ piece, hexId }) => [hexId, piece.resourceQuantity, String(piece.id).slice(0, 30), situation.nearestEnemy(hexId).distance]))} front ${front}`); return undefined; }
-  claims.pickup.set(truck.piece.id, best.hexId);
-  claims.tokens.set(best.hexId, (claims.tokens.get(best.hexId) ?? 0) + Math.min(best.tokens, 20));
-  return best.hexId;
+    .sort((a, b) => a.cost - Math.min(a.tokens, TRUCK_LOAD_TOKENS) / 4 - (b.cost - Math.min(b.tokens, TRUCK_LOAD_TOKENS) / 4) || String(a.hexId).localeCompare(String(b.hexId)))[0];
+  if (!best) { debug?.(`PICKUP none for ${truck.piece.id}: dumps ${JSON.stringify(situation.own.filter(({ piece }) => piece.role === 'DUMP').map(({ piece, hexId }) => [hexId, piece.resourceQuantity, String(piece.id).slice(0, 30), situation.nearestEnemy(hexId).distance]))} front ${front}`); return { kind: 'DONE' }; }
+  const claimed = Math.min(best.tokens, TRUCK_LOAD_TOKENS - (truck.piece.carriedTokens ?? 0));
+  claims.tokens.set(best.hexId, (claims.tokens.get(best.hexId) ?? 0) + claimed);
+  return { kind: 'FETCH', pickup: best.hexId, claimed };
 };
 
 /**
- * heuristic@12: where a loaded truck delivers: the hex nearest `center` that holds a friendly combat unit or dump (13.2f:
- * the only hexes SP may be unloaded in) with no enemy within two hexes (a truck there is not left in reach of an overrun);
- * `center` itself when none does. Replays showed loaded trucks parked for turns short of a lead unit next to the enemy.
+ * Hexes a loaded truck may deliver to, best first: a friendly combat unit or dump (13.2f: the only hexes SP may be
+ * unloaded in) with no enemy within two hexes (a truck there is not left in reach of an overrun) and inside the side's
+ * trace (a truck that runs ahead of supply is cut off with its load), nearest `center` first.
  */
-const dropHexFor = (situation: Situation, center: HexId): HexId => {
-  const candidates = [...new Set(situation.own.filter((unit) => situation.isCombatUnit(unit) || unit.piece.role === 'DUMP').map(({ hexId }) => hexId))]
-    .filter((hexId) => situation.nearestEnemy(hexId).distance >= DROP_SAFE_DISTANCE)
+const dropHexes = (context: BotDecisionContext, situation: Situation, center: HexId): HexId[] => {
+  const traced = new Set(context.actions.traceCoverage().hexIds);
+  return [...new Set(situation.own.filter((unit) => situation.isCombatUnit(unit) || unit.piece.role === 'DUMP').map(({ hexId }) => hexId))]
+    .filter((hexId) => traced.has(hexId) && situation.nearestEnemy(hexId).distance >= DROP_SAFE_DISTANCE)
     .sort((left, right) => hexesBetween(left, center) - hexesBetween(right, center) || situation.threatAt(left) - situation.threatAt(right) || String(left).localeCompare(String(right)));
-  return candidates[0] ?? center;
 };
+
+/** 13.2f: loading or unloading costs 10% of the printed MA, rounded normally (45 MA pays 5 MP). */
+const loadTicksOf = (truck: OwnUnit): number => Math.round((truck.profile?.movement ?? 45) / 10) * 4;
 
 const truckStep = (context: BotDecisionContext, situation: Situation, unit: OwnUnit, notes: StepNotes, w: HeuristicWeights, effort: MainEffort | null): BotDecision | null => {
   const { actions } = context;
   const id = unit.piece.id;
   const carried = unit.piece.carriedTokens ?? 0;
-  notes.relief ??= { hexIds: reliefTargets(context, situation, w), sent: new Map(), delivered: new Set() };
-  let relief = [...notes.relief.sent].find(([hexId, truckId]) => truckId === id && !notes.relief!.delivered.has(hexId))?.[0];
-  if (relief === undefined && carried > 0) {
-    relief = notes.relief.hexIds.filter((hexId) => !notes.relief!.sent.has(hexId))
-      .sort((left, right) => hexesBetween(unit.hexId, left) - hexesBetween(unit.hexId, right))[0];
-    if (relief !== undefined) notes.relief.sent.set(relief, id);
-  }
-  if (relief !== undefined && carried > 0) {
-    // Unload beside the cut-off units even with the enemy close: that SP is what lets them eat and fuel (12.6c, 12.5).
-    if (hexesBetween(unit.hexId, relief) <= w.reliefRadius) {
-      const unload = [...actions.candidates('UNLOAD_SUPPLY', id)].sort((left, right) =>
-        (right.kind === 'UNLOAD_SUPPLY' ? right.tokens : 0) - (left.kind === 'UNLOAD_SUPPLY' ? left.tokens : 0))[0];
-      if (unload) {
-        const otherTargets = notes.relief.hexIds.some((hexId) => !notes.relief!.sent.has(hexId));
-        const stationary = situation.friendlyAt(relief).some((unit) => situation.isCombatUnit(unit) && unit.profile?.movement === 0);
-        const tokens = stationary && otherTargets ? Math.min(carried, 1) : carried;
-        notes.relief.delivered.add(relief);
-        if (tokens < carried) notes.truckMoved.delete(id);
-        else notes.done.add(id);
-        const delivery = unload.kind === 'UNLOAD_SUPPLY' ? { ...unload, tokens } : unload;
-        return decision(delivery, `unload ${tokens}T for the cut-off units at ${relief}`, [{ term: 'relief', value: tokens }]);
-      }
-      // Being close does not make an empty hex a legal unloading site (13.2f). Keep
-      // looking for a move onto the stranded stack instead of declaring this run finished.
-    }
-    if (notes.truckMoved.has(id)) { notes.done.add(id); return null; }
-    const scored: { action: GameAction; terms: BotScoreTerm[] }[] = [];
-    for (const move of actions.candidates('MOVE_PIECE', id, TRUCK_MOVE_BUDGET)) {
-      const destination = destinationOf(move)!;
-      const terms: BotScoreTerm[] = [{ term: 'toward-relief', value: (hexesBetween(unit.hexId, relief) - hexesBetween(destination, relief)) * w.truckTowardGoal }];
-      // A truck in an enemy-adjacent hex is easy prey (8.0); the rest of the danger is the price of the run.
-      if (situation.nearestEnemy(destination).distance <= 1) terms.push({ term: 'truck-exposed', value: -w.truckExposed });
-      scored.push({ action: move, terms });
-    }
-    const best = scored.sort((a, b) => sum(b.terms) - sum(a.terms))
-      .find(candidate => sum(candidate.terms) > 0 && preservesFriendlySupply(context, candidate.action));
-    if (best && sum(best.terms) > 0) {
-      notes.truckMoved.add(id);
-      return decision(best.action, `truck to the cut-off units at ${relief}`, best.terms);
-    }
-    // Cannot get closer this step: deliver to the army as usual.
-  }
-  // SP is worth most where the army can draw it (12.3a): unload beside the army's centre, behind the front.
-  // With a main effort SP goes to its lead units; otherwise to the army's centre.
+  const relief = notes.relief ??= { hexIds: reliefTargets(context, situation, w), sent: new Map(), delivered: new Set() };
+  const unsentRelief = () => relief.hexIds.filter((hexId) => !relief.sent.has(hexId));
+  // SP is worth most where the army can draw it (12.3a): with a main effort at its lead units, otherwise the army's centre.
   const center = effort?.lead ?? armyCenter(situation);
-  const forwardHq = center === null ? undefined : { hexId: center };
-  // heuristic@12: the drop point is a hex near that centre a truck may unload in (13.2f: a friendly combat unit or dump)
-  // and out of enemy reach; replays showed loaded trucks parked short of a lead unit next to the enemy for turns.
-  const drop = carried > 0 && center !== null ? dropHexFor(situation, center) : null;
-  const atDrop = drop !== null && hexesBetween(unit.hexId, drop) <= 1;
-  if (carried > 0 && forwardHq && (atDrop || hexesBetween(unit.hexId, forwardHq.hexId) <= DELIVERED_RADIUS) && situation.nearestEnemy(unit.hexId).distance >= 2) {
-    const unload = [...actions.candidates('UNLOAD_SUPPLY', id)].sort((left, right) =>
-      (right.kind === 'UNLOAD_SUPPLY' ? right.tokens : 0) - (left.kind === 'UNLOAD_SUPPLY' ? left.tokens : 0))[0];
-    notes.done.add(id);
-    if (unload) return decision(unload, `unload ${carried}T beside the army`, [{ term: 'deliver', value: carried }]);
-    return null;
-  }
-  // heuristic@11: a truck that drove to a dump loads there with the MP it has left (13.2f) and sets off again, instead
-  // of waiting a turn: replays showed a 3-turn round trip per 20T while SP piled up in the rear.
-  if (carried === 0 && !notes.loaded.has(id)) {
-    const rescuePickup = notes.relief.hexIds.some((hexId) => !notes.relief!.sent.has(hexId));
-    // heuristic@12: never a garrison's own stock, nor SP on an objective or already at the front.
-    const onObjective = situation.objectives.some(({ hexId }) => hexId === unit.hexId)
-      || situation.nearestEnemy(unit.hexId).distance < (rescuePickup ? 2 : PICKUP_SAFE_DISTANCE);
-    const fullLoad = [...actions.candidates('LOAD_SUPPLY', id)]
-      .filter((action) => action.kind === 'LOAD_SUPPLY' && !String(action.dumpId).includes('-stock-') && !onObjective)
+  const loadTicks = loadTicksOf(unit);
+  const drops = center === null ? [] : dropHexes(context, situation, center);
+  /** SP here can go somewhere nearer the army: otherwise a load would only be unloaded where it was taken. */
+  const deliverable = (hexId: HexId) => center !== null && drops.some((drop) => hexesBetween(drop, center) < hexesBetween(hexId, center));
+  const moves = () => new Map(actions.candidates('MOVE_PIECE', id, TRUCK_MOVE_BUDGET).map((move) => [destinationOf(move)!, move]));
+
+  /** The fullest legal load from the dumps in this hex, if this hex is a place to load (heuristic@12). */
+  const loadHere = (rescue: boolean): GameAction | undefined => {
+    if (situation.objectives.some(({ hexId }) => hexId === unit.hexId) || notes.claims.unloaded.has(unit.hexId)
+      || situation.nearestEnemy(unit.hexId).distance < (rescue ? 2 : PICKUP_SAFE_DISTANCE)
+      || (!rescue && (center === null || !deliverable(unit.hexId) || hexesBetween(unit.hexId, center) <= DELIVERED_RADIUS))) return undefined;
+    const fullest = [...actions.candidates('LOAD_SUPPLY', id)]
+      .filter((action) => action.kind === 'LOAD_SUPPLY' && !String(action.dumpId).includes('-stock-'))
       .sort((left, right) => (right.kind === 'LOAD_SUPPLY' ? right.tokens : 0) - (left.kind === 'LOAD_SUPPLY' ? left.tokens : 0))[0];
-    // Relief is worth a small run. Leave most of a shared forward dump feeding the army,
-    // rather than removing its whole stock or refusing a pickup merely because it is near the front.
-    const load = rescuePickup && fullLoad?.kind === 'LOAD_SUPPLY' ? { ...fullLoad, tokens: Math.min(fullLoad.tokens, 2) } : fullLoad;
-    if (load && load.kind === 'LOAD_SUPPLY' && (rescuePickup || !forwardHq || hexesBetween(unit.hexId, forwardHq.hexId) > DELIVERED_RADIUS)) {
-      notes.loaded.add(id);
-      // The load leaves the dump now: release this truck's claim so the Tokens are not counted off twice.
-      const claimed = notes.claims?.pickup.get(id);
-      if (claimed !== undefined && notes.claims) {
-        notes.claims.tokens.set(claimed, Math.max(0, (notes.claims.tokens.get(claimed) ?? 0) - 20));
-        notes.claims.pickup.delete(id);
+    // Relief is worth a small run. Leave most of a shared forward dump feeding the army.
+    return rescue && fullest?.kind === 'LOAD_SUPPLY' ? { ...fullest, tokens: Math.min(fullest.tokens, 2) } : fullest;
+  };
+
+  const plan = (): TruckLeg => {
+    const unsent = unsentRelief();
+    if (carried > 0 && unsent.length > 0) {
+      const target = [...unsent].sort((left, right) => hexesBetween(unit.hexId, left) - hexesBetween(unit.hexId, right))[0]!;
+      relief.sent.set(target, id);
+      return { kind: 'RELIEF', hexId: target, driven: false };
+    }
+    if (loadHere(unsent.length > 0)) return { kind: 'FETCH', pickup: unit.hexId, claimed: 0 };
+    if (carried > 0) return { kind: 'DELIVER', drop: null };
+    return pickupFor(situation, notes, unit, unsent[0] ?? center, unsent.length > 0, deliverable);
+  };
+
+  /** The legal move that best closes on `goal` while staying out of enemy reach, if any gets nearer. */
+  const driveToward = (goal: HexId): { action: GameAction; terms: BotScoreTerm[] } | undefined => {
+    const scored = [...moves()].map(([destination, action]) => {
+      const terms: BotScoreTerm[] = [{ term: 'toward-goal', value: (hexesBetween(unit.hexId, goal) - hexesBetween(destination, goal)) * w.truckTowardGoal }];
+      if (situation.nearestEnemy(destination).distance <= 2) terms.push({ term: 'truck-exposed', value: -w.truckExposed });
+      terms.push({ term: 'exposure', value: -situation.threatAt(destination) * w.truckExposure });
+      return { action, terms };
+    });
+    return scored.sort((a, b) => sum(b.terms) - sum(a.terms)).find((candidate) => sum(candidate.terms) > 0 && preservesFriendlySupply(context, candidate.action));
+  };
+
+  const range = new Map(actions.movementRange(id).map(({ hexId, costTicks }) => [hexId, costTicks]));
+  let remainingTicks: number | undefined;
+  /** A move onto `hexId` that keeps friendly supply and leaves the MP to load or unload there (13.2f). */
+  const driveTo = (hexId: HexId, all = moves()): GameAction | undefined => {
+    const move = all.get(hexId);
+    if (!move || (remainingTicks !== undefined && (range.get(hexId) ?? Infinity) + loadTicks > remainingTicks)) return undefined;
+    const { explanation } = actions.explain(move);
+    const fact = (key: string) => Number(explanation.facts.find((entry) => entry.key === key)?.value ?? 0);
+    remainingTicks ??= fact('movement.remainingTicks') + fact('movement.totalTicks');
+    return keepsFriendlySupply(explanation) && fact('movement.remainingTicks') >= loadTicks ? move : undefined;
+  };
+
+  const unloadAll = (why: string): { next: TruckLeg | null; decision?: BotDecision } => {
+    const unload = actions.candidates('UNLOAD_SUPPLY', id)[0];
+    if (!unload) return { next: { kind: 'DONE' } };
+    notes.claims.unloaded.add(unit.hexId);
+    return { next: null, decision: decision(unload, `unload ${carried}T ${why}`, [{ term: 'deliver', value: carried }]) };
+  };
+
+  const release = (leg: Extract<TruckLeg, { kind: 'FETCH' }>) =>
+    notes.claims.tokens.set(leg.pickup, Math.max(0, (notes.claims.tokens.get(leg.pickup) ?? 0) - leg.claimed));
+
+  /** One leg's next action and the leg after it; `null` plans afresh at the truck's next decision. */
+  const step = (leg: TruckLeg): { next: TruckLeg | null; decision?: BotDecision } => {
+    switch (leg.kind) {
+      case 'DONE': return { next: leg };
+      case 'FETCH': {
+        if (unit.hexId !== leg.pickup) {
+          const exact = driveTo(leg.pickup);
+          if (exact) return { next: leg, decision: decision(exact, `truck to the dump at ${leg.pickup}`, [{ term: 'fetch', value: leg.claimed }]) };
+          // It will not load this step: leave the Tokens to a truck that can.
+          release(leg);
+          const toward = driveToward(leg.pickup);
+          if (!toward) debug?.(`TRUCK ${id} at ${unit.hexId} cannot drive toward ${leg.pickup}: ${moves().size} moves`);
+          return toward ? { next: { kind: 'DONE' }, decision: decision(toward.action, `truck toward ${leg.pickup}`, toward.terms) } : { next: { kind: 'DONE' } };
+        }
+        const rescue = unsentRelief().length > 0;
+        const load = loadHere(rescue);
+        if (load?.kind !== 'LOAD_SUPPLY') return { next: carried > 0 ? { kind: 'DELIVER', drop: null } : { kind: 'DONE' } };
+        // The load leaves the dump now: release this truck's claim so the Tokens are not counted off twice.
+        release(leg);
+        return { next: rescue ? null : { ...leg, claimed: 0 }, decision: decision(load, `load ${load.tokens}T for the front`, [{ term: 'haul', value: load.tokens }]) };
       }
-      notes.truckMoved.delete(id);
-      return decision(load, `load ${load.tokens}T for the front`, [{ term: 'haul', value: load.tokens }]);
+      case 'DELIVER': {
+        if (leg.drop === unit.hexId) return unloadAll(`at ${leg.drop}`);
+        if (center === null) return { next: { kind: 'DONE' } };
+        const best = drops[0];
+        if (best !== undefined) {
+          const all = moves();
+          const here = hexesBetween(unit.hexId, center);
+          for (const hexId of drops) {
+            // Short of the best drop, unload only where it moves the SP well forward: a relay the next truck carries on.
+            if (hexesBetween(hexId, center) > hexesBetween(best, center) && here - hexesBetween(hexId, center) < RELAY_MIN_GAIN) break;
+            if (hexId === unit.hexId) return unloadAll(hexId === best ? 'beside the army' : 'as a relay toward the army');
+            const move = driveTo(hexId, all);
+            if (move) return { next: { kind: 'DELIVER', drop: hexId }, decision: decision(move, `truck ${carried}T to ${hexId}`, [{ term: 'deliver', value: carried }]) };
+          }
+        }
+        const toward = driveToward(best ?? center);
+        return toward ? { next: { kind: 'DONE' }, decision: decision(toward.action, `truck toward ${best ?? center}`, toward.terms) } : { next: { kind: 'DONE' } };
+      }
+      case 'RELIEF': {
+        // Unload beside the cut-off units even with the enemy close: that SP is what lets them eat and fuel (12.6c, 12.5).
+        if (hexesBetween(unit.hexId, leg.hexId) <= w.reliefRadius) {
+          const unload = [...actions.candidates('UNLOAD_SUPPLY', id)].sort((left, right) =>
+            (right.kind === 'UNLOAD_SUPPLY' ? right.tokens : 0) - (left.kind === 'UNLOAD_SUPPLY' ? left.tokens : 0))[0];
+          if (unload) {
+            const stationary = situation.friendlyAt(leg.hexId).some((other) => situation.isCombatUnit(other) && other.profile?.movement === 0);
+            const tokens = stationary && unsentRelief().length > 0 ? Math.min(carried, 1) : carried;
+            relief.delivered.add(leg.hexId);
+            notes.claims.unloaded.add(unit.hexId);
+            const delivery = unload.kind === 'UNLOAD_SUPPLY' ? { ...unload, tokens } : unload;
+            return { next: tokens < carried ? null : { kind: 'DONE' }, decision: decision(delivery, `unload ${tokens}T for the cut-off units at ${leg.hexId}`, [{ term: 'relief', value: tokens }]) };
+          }
+          // Being close does not make an empty hex a legal unloading site (13.2f). Keep
+          // looking for a move onto the stranded stack instead of declaring this run finished.
+        }
+        if (leg.driven) return { next: { kind: 'DONE' } };
+        const scored = [...moves()].map(([destination, action]) => {
+          const terms: BotScoreTerm[] = [{ term: 'toward-relief', value: (hexesBetween(unit.hexId, leg.hexId) - hexesBetween(destination, leg.hexId)) * w.truckTowardGoal }];
+          // A truck in an enemy-adjacent hex is easy prey (8.0); the rest of the danger is the price of the run.
+          if (situation.nearestEnemy(destination).distance <= 1) terms.push({ term: 'truck-exposed', value: -w.truckExposed });
+          return { action, terms };
+        });
+        const best = scored.sort((a, b) => sum(b.terms) - sum(a.terms))
+          .find((candidate) => sum(candidate.terms) > 0 && preservesFriendlySupply(context, candidate.action));
+        if (best) return { next: { ...leg, driven: true }, decision: decision(best.action, `truck to the cut-off units at ${leg.hexId}`, best.terms) };
+        // Cannot get closer this step: deliver to the army as usual.
+        return { next: { kind: 'DELIVER', drop: null } };
+      }
     }
+  };
+
+  let leg = notes.trucks.get(id) ?? plan();
+  // A leg that cannot act hands over to the next one at once (load → deliver, relief → deliver); each hand-over is final.
+  for (let handovers = 0; handovers < 3; handovers++) {
+    const { next, decision: chosen } = step(leg);
+    if (next === null) notes.trucks.delete(id);
+    else notes.trucks.set(id, next);
+    if (chosen) return chosen;
+    if (next === null || next.kind === 'DONE' || next === leg) return null;
+    leg = next;
   }
-  // A truck that already moved this step may only unload (above) once it stands beside the army.
-  if (notes.truckMoved.has(id)) { notes.done.add(id); return null; }
-  const urgentPickup = carried === 0 ? notes.relief.hexIds.find((hexId) => !notes.relief!.sent.has(hexId)) ?? null : null;
-  const goal = carried > 0 || notes.loaded.has(id) ? (drop ?? (center !== null ? dropHexFor(situation, center) : null) ?? forwardHq?.hexId)
-    : pickupFor(situation, notes, unit, urgentPickup ?? forwardHq?.hexId ?? null, urgentPickup !== null);
-  if (!goal) { debug?.(`TRUCK ${id} at ${unit.hexId} carried ${carried} no goal (claims ${JSON.stringify([...(notes.claims?.tokens ?? [])])})`); notes.done.add(id); return null; }
-  const moves = actions.candidates('MOVE_PIECE', id, TRUCK_MOVE_BUDGET);
-  const scored: { action: GameAction; terms: BotScoreTerm[] }[] = [];
-  for (const move of moves) {
-    const destination = destinationOf(move)!;
-    const terms: BotScoreTerm[] = [{ term: 'toward-goal', value: (hexesBetween(unit.hexId, goal) - hexesBetween(destination, goal)) * w.truckTowardGoal }];
-    if (situation.nearestEnemy(destination).distance <= 2) terms.push({ term: 'truck-exposed', value: -w.truckExposed });
-    terms.push({ term: 'exposure', value: -situation.threatAt(destination) * w.truckExposure });
-    scored.push({ action: move, terms });
-  }
-  const best = scored.sort((a, b) => (urgentPickup !== null
-    ? Number(destinationOf(b.action) === goal) - Number(destinationOf(a.action) === goal) : 0)
-    || sum(b.terms) - sum(a.terms))
-    .find(candidate => (sum(candidate.terms) > 0 || (urgentPickup !== null && destinationOf(candidate.action) === goal))
-      && preservesFriendlySupply(context, candidate.action));
-  debug?.(`TRUCK ${id} at ${unit.hexId} carried ${carried} goal ${goal} center ${center} moves ${moves.length} best ${best ? `${sum(best.terms).toFixed(1)} to ${destinationOf(best.action)}` : '-'} enemy ${situation.nearestEnemy(unit.hexId).distance}`);
-  if (!best || (sum(best.terms) <= 0 && !(urgentPickup !== null && destinationOf(best.action) === goal))) {
-    // Cannot get closer: rather than sit loaded, unload here when the army can draw from it.
-    if (carried > 0 && center !== null && hexesBetween(unit.hexId, center) <= DELIVERED_RADIUS * 2 && situation.nearestEnemy(unit.hexId).distance >= 2) {
-      const unload = actions.candidates('UNLOAD_SUPPLY', id)[0];
-      if (unload) { notes.done.add(id); return decision(unload, `unload ${carried}T as near the army as it can get`, [{ term: 'deliver', value: carried }]); }
-    }
-    notes.done.add(id);
-    return null;
-  }
-  notes.truckMoved.add(id);
-  return decision(best.action, `truck toward ${goal}`, best.terms);
+  debug?.(`TRUCK ${id} at ${unit.hexId} carried ${carried} gave up in leg ${leg.kind}`);
+  notes.trucks.set(id, { kind: 'DONE' });
+  return null;
 };
 
 /** Rail moves shorter than this many hexes toward the front are not worth the Rail Cap. */
@@ -758,13 +811,14 @@ const seaStep = (context: BotDecisionContext, situation: Situation, notes: StepN
 };
 
 /** Keep ordinary movement inside supply; funded combat advances have their own guard. */
-const preservesFriendlySupply = (context: BotDecisionContext, action: GameAction): boolean => {
-  const { explanation } = context.actions.explain(action);
+const preservesFriendlySupply = (context: BotDecisionContext, action: GameAction): boolean => keepsFriendlySupply(context.actions.explain(action).explanation);
+
+const keepsFriendlySupply = (explanation: RuleExplanation): boolean => {
   const lost = explanation.facts.find(({ key }) => key === 'supply.relocationTraceLost')?.value;
   const feedLost = explanation.facts.find(({ key }) => key === 'supply.relocationFeedLost')?.value;
   const otherLost = explanation.facts.find(f => f.key === 'supply.relocationOtherTraceLost')?.value;
   const safe = explanation.allowed && otherLost === 0 && feedLost === 0 && lost === 0;
-  if (!safe) debug?.(`keep friendly supply: ${action.kind} lacks preserved trace or allocated rations`);
+  if (!safe) debug?.(`keep friendly supply: ${explanation.actionKind} lacks preserved trace or allocated rations`);
   return safe;
 };
 
@@ -1268,7 +1322,7 @@ export const createHeuristicPolicy = (facts: BotGameFacts, options: HeuristicPol
   const choose = decide(facts, options.weights ?? DEFAULT_HEURISTIC_WEIGHTS);
   return {
     id: 'heuristic',
-    version: options.label === undefined ? '75' : `75+${options.label}`,
+    version: options.label === undefined ? '78' : `78+${options.label}`,
     decide: (context) => {
       const sink = options.debug;
       debug = sink ? (line) => sink(`${context.memory.stepKey} ${String(context.playerId).split(':').at(-1)} ${line}`) : null;
