@@ -61,8 +61,8 @@ deployment-seed jitter.
   outside every hex an enemy combat unit could enter in its first Movement Segment. On generated maps that is almost always
   a hex the side's own units hold. Only when no such hex exists does a dump stand within reach, with a warning; a dump
   leaves the road net only where no safe road hex is left.
-- Trucks stand on a road or railroad hex within 3 hexes of their dump, out of enemy reach where the map allows. A Truck or
-  Track independent unit no dump can fuel moves to the nearest hex one can.
+- Trucks stand out of enemy reach where the map allows, in a hex with room, on a road or railroad hex within 3 hexes of a
+  dump of their side. A Truck or Track independent unit no dump can fuel moves to the nearest hex one can.
 - Engineers start in Move Mode within 4 hexes of their sector's HQ, out of enemy reach, more than two hexes behind the
   start line, on the road and in a dump's draw range where the map allows.
 - Air Bases go last: in the rear, on the road net, clear of dumps, HQs and troops, out of enemy reach.

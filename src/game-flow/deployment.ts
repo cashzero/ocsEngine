@@ -1048,15 +1048,16 @@ export const deployGeneratedForces = (
     // Trucks stand next to the dumps they will carry from, out of the enemy's first-move reach where the map allows (they
     // can be captured too, 9.14c), and on the road net near the dump (within TRUCK_ROAD_SEARCH_HEXES): off the road a truck
     // pays full terrain cost. It stands on the dump itself only when no other safe road Hex is near (the dump is on the net).
+    // Where every such Hex by its own dump is full, a road Hex by another dump will do.
     const trucks = fieldUnits.filter((unit) => unit.role === 'TRANSPORT' && unit.id !== reinforcement?.id && groups.get(unit.id) === undefined);
-    const truckRoadHex = (hexId: HexId, dump: HexId): boolean => onNetwork(hexId) && distance(hexId, dump) <= TRUCK_ROAD_SEARCH_HEXES;
+    const truckRoadHex = (hexId: HexId): boolean => onNetwork(hexId) && dumpHexes.some((dump) => distance(hexId, dump) <= TRUCK_ROAD_SEARCH_HEXES);
     for (const [index, unit] of trucks.entries()) {
       const dump = dumpHexes[index % Math.max(1, dumpHexes.length)];
       const fits = fitsFor(unit);
       const hexId = dump === undefined ? undefined : zones[side].map(({ id }) => id)
         .filter((candidate) => (candidate === dump || !dumpHexes.includes(candidate)) && fits(candidate) && depthOf(side, candidate) >= line)
         .sort((left, right) => Number(full(left)) - Number(full(right)) || Number(threatened.has(left)) - Number(threatened.has(right))
-          || Number(!truckRoadHex(left, dump)) - Number(!truckRoadHex(right, dump)) || Number(left === dump) - Number(right === dump)
+          || Number(!truckRoadHex(left)) - Number(!truckRoadHex(right)) || Number(left === dump) - Number(right === dump)
           || traceTier(left) - traceTier(right) || distance(left, dump) - distance(right, dump) || String(left).localeCompare(String(right)))[0];
       if (hexId !== undefined) place(unit, hexId);
       else if (!placeFallback(unit)) return { ok: false, error: [deploymentFailure(`Map cannot deploy every ${side} unit on terrain it can enter within stacking limits.`)] };
