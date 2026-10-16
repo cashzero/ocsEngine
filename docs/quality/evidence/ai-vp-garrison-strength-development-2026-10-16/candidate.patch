@@ -1,0 +1,45 @@
+diff --git a/src/ai/policies/heuristic.ts b/src/ai/policies/heuristic.ts
+index cf9c342..b4116b9 100644
+--- a/src/ai/policies/heuristic.ts
++++ b/src/ai/policies/heuristic.ts
+@@ -212,6 +212,13 @@ const planTargets = (situation: Situation, coverage: ReadonlySet<string>, unitCo
+       if (back !== null) targets.set(unit.piece.id, { hexId: back, purpose: 'RESUPPLY' });
+     }
+   }
++  // Count only actual garrison promises after RESUPPLY may have replaced a mission.
++  const assignedStrength = new Map<HexId, number>();
++  for (const unit of combat) {
++    const target = targets.get(unit.piece.id);
++    if (target?.purpose === 'GARRISON') assignedStrength.set(target.hexId,
++      (assignedStrength.get(target.hexId) ?? 0) + (unit.profile?.strength ?? 0));
++  }
+   const pairs = combat.flatMap((unit) => wanted.map((entry) => ({
+     unit, entry, score: entry.value / (1 + hexesBetween(unit.hexId, entry.hexId) / Math.max(2, unit.profile?.movement ?? 4)),
+   }))).sort((left, right) => right.score - left.score || String(left.unit.piece.id).localeCompare(String(right.unit.piece.id)));
+@@ -219,8 +226,17 @@ const planTargets = (situation: Situation, coverage: ReadonlySet<string>, unitCo
+     if (targets.has(unit.piece.id)) continue;
+     const count = assigned.get(entry.hexId) ?? 0;
+     if (count >= entry.limit) continue;
++    if (entry.purpose === 'GARRISON') {
++      const threat = situation.threatAt(entry.hexId);
++      const minimum = threat > w.garrisonSecondUnitThreat ? 2 : 1;
++      // The original count cap estimates five strength per reinforcement. A strong
++      // unit already promised to this objective can satisfy demand before that cap.
++      if (count >= minimum && (assignedStrength.get(entry.hexId) ?? 0) >= threat * w.holdRatio) continue;
++    }
+     targets.set(unit.piece.id, { hexId: entry.hexId, purpose: entry.purpose });
+     assigned.set(entry.hexId, count + 1);
++    if (entry.purpose === 'GARRISON') assignedStrength.set(entry.hexId,
++      (assignedStrength.get(entry.hexId) ?? 0) + (unit.profile?.strength ?? 0));
+   }
+   // In the last turn every spare unit goes for the nearest objective still to take, then the nearest held one.
+   if (situation.turnsLeft <= 1) {
+@@ -1231,7 +1247,7 @@ export const createHeuristicPolicy = (facts: BotGameFacts, options: HeuristicPol
+   const choose = decide(facts, options.weights ?? DEFAULT_HEURISTIC_WEIGHTS);
+   return {
+     id: 'heuristic',
+-    version: options.label === undefined ? '66' : `66+${options.label}`,
++    version: options.label === undefined ? '73' : `73+${options.label}`,
+     decide: (context) => {
+       const sink = options.debug;
+       debug = sink ? (line) => sink(`${context.memory.stepKey} ${String(context.playerId).split(':').at(-1)} ${line}`) : null;

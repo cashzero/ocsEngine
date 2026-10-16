@@ -1,0 +1,42 @@
+{
+  "policyVersion": "74",
+  "freezeSha256": "164e6a7671e29d3f63cc5b939dd7087266900a163a34385ddc1592aa962b0983",
+  "checks": {
+    "typecheck": {
+      "command": [
+        "npm",
+        "run",
+        "typecheck"
+      ],
+      "exitCode": 0,
+      "seconds": 9.293368890997954,
+      "log": "/home/cashlin/ocsEngine/artifacts/ai-vp/candidate-74-checked-quality/typecheck.log",
+      "sha256": "d276a607924b69f3bf75479c9ff0bd362e2bc5a9c0047d63a951c8e899b4eb98"
+    },
+    "tests": {
+      "command": [
+        "npx",
+        "vitest",
+        "run",
+        "--maxWorkers=2"
+      ],
+      "exitCode": 0,
+      "seconds": 151.8089733900124,
+      "log": "/home/cashlin/ocsEngine/artifacts/ai-vp/candidate-74-checked-quality/tests.log",
+      "sha256": "b3c9a48a73a0a785eb87ee873c971048beb3d7a59489585ae3e53b5f04fa3f57",
+      "passed": 748,
+      "skipped": 8
+    },
+    "smoke": {
+      "command": [
+        "npm",
+        "run",
+        "smoke"
+      ],
+      "exitCode": 0,
+      "seconds": 1.8010901380039286,
+      "log": "/home/cashlin/ocsEngine/artifacts/ai-vp/candidate-74-checked-quality/smoke.log",
+      "sha256": "57f4b11f8e16b9086ab757da51a782c8fdee53c661431fe12983397ac1a2493b"
+    }
+  }
+}

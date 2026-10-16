@@ -1,0 +1,822 @@
+{
+  "attack-eastern": {
+    "elapsedMs": 670827.6522649999,
+    "matchTimings": [
+      {
+        "match": 1301300,
+        "timings": {
+          "createMs": 1915,
+          "playMs": 53190,
+          "decideMs": 31739,
+          "dispatchMs": 11490,
+          "perActionMs": 98.87
+        }
+      },
+      {
+        "match": 1301301,
+        "timings": {
+          "createMs": 1860,
+          "playMs": 50665,
+          "decideMs": 29965,
+          "dispatchMs": 11331,
+          "perActionMs": 99.54
+        }
+      },
+      {
+        "match": 1301302,
+        "timings": {
+          "createMs": 578,
+          "playMs": 62381,
+          "decideMs": 42017,
+          "dispatchMs": 11747,
+          "perActionMs": 97.32
+        }
+      },
+      {
+        "match": 1301303,
+        "timings": {
+          "createMs": 591,
+          "playMs": 59157,
+          "decideMs": 37245,
+          "dispatchMs": 11806,
+          "perActionMs": 82.39
+        }
+      },
+      {
+        "match": 1301304,
+        "timings": {
+          "createMs": 548,
+          "playMs": 52295,
+          "decideMs": 32238,
+          "dispatchMs": 9705,
+          "perActionMs": 89.24
+        }
+      },
+      {
+        "match": 1301305,
+        "timings": {
+          "createMs": 562,
+          "playMs": 55952,
+          "decideMs": 33370,
+          "dispatchMs": 11102,
+          "perActionMs": 89.1
+        }
+      },
+      {
+        "match": 1301306,
+        "timings": {
+          "createMs": 561,
+          "playMs": 36693,
+          "decideMs": 23667,
+          "dispatchMs": 7741,
+          "perActionMs": 84.35
+        }
+      },
+      {
+        "match": 1301307,
+        "timings": {
+          "createMs": 589,
+          "playMs": 37411,
+          "decideMs": 22185,
+          "dispatchMs": 8270,
+          "perActionMs": 64.95
+        }
+      },
+      {
+        "match": 1301308,
+        "timings": {
+          "createMs": 520,
+          "playMs": 58879,
+          "decideMs": 37527,
+          "dispatchMs": 11331,
+          "perActionMs": 81.21
+        }
+      },
+      {
+        "match": 1301309,
+        "timings": {
+          "createMs": 540,
+          "playMs": 67189,
+          "decideMs": 43836,
+          "dispatchMs": 13291,
+          "perActionMs": 89.95
+        }
+      },
+      {
+        "match": 1301310,
+        "timings": {
+          "createMs": 615,
+          "playMs": 39231,
+          "decideMs": 26928,
+          "dispatchMs": 7035,
+          "perActionMs": 86.41
+        }
+      },
+      {
+        "match": 1301311,
+        "timings": {
+          "createMs": 554,
+          "playMs": 54784,
+          "decideMs": 36461,
+          "dispatchMs": 11459,
+          "perActionMs": 93.65
+        }
+      },
+      {
+        "match": 1301312,
+        "timings": {
+          "createMs": 595,
+          "playMs": 75349,
+          "decideMs": 57982,
+          "dispatchMs": 11110,
+          "perActionMs": 144.35
+        }
+      },
+      {
+        "match": 1301313,
+        "timings": {
+          "createMs": 502,
+          "playMs": 66621,
+          "decideMs": 51484,
+          "dispatchMs": 9494,
+          "perActionMs": 127.63
+        }
+      },
+      {
+        "match": 1301314,
+        "timings": {
+          "createMs": 456,
+          "playMs": 39751,
+          "decideMs": 24183,
+          "dispatchMs": 8296,
+          "perActionMs": 58.98
+        }
+      },
+      {
+        "match": 1301315,
+        "timings": {
+          "createMs": 434,
+          "playMs": 43467,
+          "decideMs": 27920,
+          "dispatchMs": 8249,
+          "perActionMs": 64.4
+        }
+      },
+      {
+        "match": 1301316,
+        "timings": {
+          "createMs": 432,
+          "playMs": 42123,
+          "decideMs": 26449,
+          "dispatchMs": 8119,
+          "perActionMs": 67.29
+        }
+      },
+      {
+        "match": 1301317,
+        "timings": {
+          "createMs": 465,
+          "playMs": 48349,
+          "decideMs": 31262,
+          "dispatchMs": 9262,
+          "perActionMs": 80.85
+        }
+      },
+      {
+        "match": 1301318,
+        "timings": {
+          "createMs": 479,
+          "playMs": 45097,
+          "decideMs": 29704,
+          "dispatchMs": 8404,
+          "perActionMs": 70.03
+        }
+      },
+      {
+        "match": 1301319,
+        "timings": {
+          "createMs": 440,
+          "playMs": 66141,
+          "decideMs": 43892,
+          "dispatchMs": 11963,
+          "perActionMs": 98.72
+        }
+      }
+    ]
+  },
+  "meeting-eastern": {
+    "elapsedMs": 459579.450604,
+    "matchTimings": [
+      {
+        "match": 1301100,
+        "timings": {
+          "createMs": 1385,
+          "playMs": 44474,
+          "decideMs": 26180,
+          "dispatchMs": 10093,
+          "perActionMs": 88.95
+        }
+      },
+      {
+        "match": 1301101,
+        "timings": {
+          "createMs": 1539,
+          "playMs": 47196,
+          "decideMs": 29396,
+          "dispatchMs": 9680,
+          "perActionMs": 91.82
+        }
+      },
+      {
+        "match": 1301102,
+        "timings": {
+          "createMs": 671,
+          "playMs": 45613,
+          "decideMs": 31698,
+          "dispatchMs": 7675,
+          "perActionMs": 80.73
+        }
+      },
+      {
+        "match": 1301103,
+        "timings": {
+          "createMs": 535,
+          "playMs": 45065,
+          "decideMs": 30852,
+          "dispatchMs": 8437,
+          "perActionMs": 90.49
+        }
+      },
+      {
+        "match": 1301104,
+        "timings": {
+          "createMs": 484,
+          "playMs": 47503,
+          "decideMs": 33143,
+          "dispatchMs": 7995,
+          "perActionMs": 82.47
+        }
+      },
+      {
+        "match": 1301105,
+        "timings": {
+          "createMs": 482,
+          "playMs": 46834,
+          "decideMs": 32701,
+          "dispatchMs": 7858,
+          "perActionMs": 81.31
+        }
+      },
+      {
+        "match": 1301106,
+        "timings": {
+          "createMs": 478,
+          "playMs": 39892,
+          "decideMs": 24266,
+          "dispatchMs": 7481,
+          "perActionMs": 62.23
+        }
+      },
+      {
+        "match": 1301107,
+        "timings": {
+          "createMs": 491,
+          "playMs": 29564,
+          "decideMs": 16795,
+          "dispatchMs": 7007,
+          "perActionMs": 50.88
+        }
+      },
+      {
+        "match": 1301108,
+        "timings": {
+          "createMs": 487,
+          "playMs": 26874,
+          "decideMs": 15233,
+          "dispatchMs": 7340,
+          "perActionMs": 56.1
+        }
+      },
+      {
+        "match": 1301109,
+        "timings": {
+          "createMs": 472,
+          "playMs": 21953,
+          "decideMs": 12074,
+          "dispatchMs": 5408,
+          "perActionMs": 46.02
+        }
+      },
+      {
+        "match": 1301110,
+        "timings": {
+          "createMs": 477,
+          "playMs": 25380,
+          "decideMs": 14287,
+          "dispatchMs": 5903,
+          "perActionMs": 49.96
+        }
+      },
+      {
+        "match": 1301111,
+        "timings": {
+          "createMs": 520,
+          "playMs": 23702,
+          "decideMs": 13712,
+          "dispatchMs": 5319,
+          "perActionMs": 53.62
+        }
+      },
+      {
+        "match": 1301112,
+        "timings": {
+          "createMs": 476,
+          "playMs": 28439,
+          "decideMs": 17318,
+          "dispatchMs": 6151,
+          "perActionMs": 59.87
+        }
+      },
+      {
+        "match": 1301113,
+        "timings": {
+          "createMs": 497,
+          "playMs": 28737,
+          "decideMs": 17656,
+          "dispatchMs": 6184,
+          "perActionMs": 60.5
+        }
+      },
+      {
+        "match": 1301114,
+        "timings": {
+          "createMs": 519,
+          "playMs": 55174,
+          "decideMs": 36511,
+          "dispatchMs": 9855,
+          "perActionMs": 78.71
+        }
+      },
+      {
+        "match": 1301115,
+        "timings": {
+          "createMs": 543,
+          "playMs": 37855,
+          "decideMs": 22796,
+          "dispatchMs": 8332,
+          "perActionMs": 64.05
+        }
+      },
+      {
+        "match": 1301116,
+        "timings": {
+          "createMs": 574,
+          "playMs": 42768,
+          "decideMs": 28346,
+          "dispatchMs": 9040,
+          "perActionMs": 78.76
+        }
+      },
+      {
+        "match": 1301117,
+        "timings": {
+          "createMs": 478,
+          "playMs": 44572,
+          "decideMs": 29617,
+          "dispatchMs": 7048,
+          "perActionMs": 76.85
+        }
+      },
+      {
+        "match": 1301118,
+        "timings": {
+          "createMs": 417,
+          "playMs": 34912,
+          "decideMs": 20471,
+          "dispatchMs": 7548,
+          "perActionMs": 61.14
+        }
+      },
+      {
+        "match": 1301119,
+        "timings": {
+          "createMs": 463,
+          "playMs": 34282,
+          "decideMs": 20673,
+          "dispatchMs": 6217,
+          "perActionMs": 62.33
+        }
+      }
+    ]
+  },
+  "attack-temperate": {
+    "elapsedMs": 754218.336573,
+    "matchTimings": [
+      {
+        "match": 1301200,
+        "timings": {
+          "createMs": 2033,
+          "playMs": 88178,
+          "decideMs": 61852,
+          "dispatchMs": 14178,
+          "perActionMs": 121.96
+        }
+      },
+      {
+        "match": 1301201,
+        "timings": {
+          "createMs": 2178,
+          "playMs": 89315,
+          "decideMs": 62560,
+          "dispatchMs": 14475,
+          "perActionMs": 123.53
+        }
+      },
+      {
+        "match": 1301202,
+        "timings": {
+          "createMs": 655,
+          "playMs": 64187,
+          "decideMs": 42924,
+          "dispatchMs": 11864,
+          "perActionMs": 95.8
+        }
+      },
+      {
+        "match": 1301203,
+        "timings": {
+          "createMs": 645,
+          "playMs": 70697,
+          "decideMs": 48239,
+          "dispatchMs": 11388,
+          "perActionMs": 96.84
+        }
+      },
+      {
+        "match": 1301204,
+        "timings": {
+          "createMs": 710,
+          "playMs": 70139,
+          "decideMs": 48746,
+          "dispatchMs": 11028,
+          "perActionMs": 106.11
+        }
+      },
+      {
+        "match": 1301205,
+        "timings": {
+          "createMs": 709,
+          "playMs": 70155,
+          "decideMs": 46917,
+          "dispatchMs": 10220,
+          "perActionMs": 103.47
+        }
+      },
+      {
+        "match": 1301206,
+        "timings": {
+          "createMs": 581,
+          "playMs": 73677,
+          "decideMs": 48846,
+          "dispatchMs": 11471,
+          "perActionMs": 104.8
+        }
+      },
+      {
+        "match": 1301207,
+        "timings": {
+          "createMs": 560,
+          "playMs": 79920,
+          "decideMs": 50847,
+          "dispatchMs": 13568,
+          "perActionMs": 106.14
+        }
+      },
+      {
+        "match": 1301208,
+        "timings": {
+          "createMs": 631,
+          "playMs": 48314,
+          "decideMs": 33026,
+          "dispatchMs": 9063,
+          "perActionMs": 95.48
+        }
+      },
+      {
+        "match": 1301209,
+        "timings": {
+          "createMs": 666,
+          "playMs": 47492,
+          "decideMs": 32422,
+          "dispatchMs": 8797,
+          "perActionMs": 101.7
+        }
+      },
+      {
+        "match": 1301210,
+        "timings": {
+          "createMs": 542,
+          "playMs": 61155,
+          "decideMs": 41581,
+          "dispatchMs": 10348,
+          "perActionMs": 92.66
+        }
+      },
+      {
+        "match": 1301211,
+        "timings": {
+          "createMs": 593,
+          "playMs": 65610,
+          "decideMs": 45368,
+          "dispatchMs": 10019,
+          "perActionMs": 90.75
+        }
+      },
+      {
+        "match": 1301212,
+        "timings": {
+          "createMs": 600,
+          "playMs": 58385,
+          "decideMs": 40751,
+          "dispatchMs": 9427,
+          "perActionMs": 84.62
+        }
+      },
+      {
+        "match": 1301213,
+        "timings": {
+          "createMs": 668,
+          "playMs": 57855,
+          "decideMs": 39344,
+          "dispatchMs": 9838,
+          "perActionMs": 87.66
+        }
+      },
+      {
+        "match": 1301214,
+        "timings": {
+          "createMs": 511,
+          "playMs": 40024,
+          "decideMs": 27269,
+          "dispatchMs": 6510,
+          "perActionMs": 79.73
+        }
+      },
+      {
+        "match": 1301215,
+        "timings": {
+          "createMs": 519,
+          "playMs": 32867,
+          "decideMs": 21369,
+          "dispatchMs": 5856,
+          "perActionMs": 70.83
+        }
+      },
+      {
+        "match": 1301216,
+        "timings": {
+          "createMs": 564,
+          "playMs": 80743,
+          "decideMs": 53491,
+          "dispatchMs": 14717,
+          "perActionMs": 118.05
+        }
+      },
+      {
+        "match": 1301217,
+        "timings": {
+          "createMs": 491,
+          "playMs": 81437,
+          "decideMs": 54010,
+          "dispatchMs": 14687,
+          "perActionMs": 119.06
+        }
+      },
+      {
+        "match": 1301218,
+        "timings": {
+          "createMs": 500,
+          "playMs": 45716,
+          "decideMs": 28781,
+          "dispatchMs": 8316,
+          "perActionMs": 70.44
+        }
+      },
+      {
+        "match": 1301219,
+        "timings": {
+          "createMs": 498,
+          "playMs": 44262,
+          "decideMs": 29504,
+          "dispatchMs": 7291,
+          "perActionMs": 68.1
+        }
+      }
+    ]
+  },
+  "meeting-temperate": {
+    "elapsedMs": 536783.915726,
+    "matchTimings": [
+      {
+        "match": 1301000,
+        "timings": {
+          "createMs": 1808,
+          "playMs": 71351,
+          "decideMs": 44719,
+          "dispatchMs": 11453,
+          "perActionMs": 116.59
+        }
+      },
+      {
+        "match": 1301001,
+        "timings": {
+          "createMs": 1881,
+          "playMs": 58380,
+          "decideMs": 35111,
+          "dispatchMs": 10534,
+          "perActionMs": 97.3
+        }
+      },
+      {
+        "match": 1301002,
+        "timings": {
+          "createMs": 798,
+          "playMs": 41306,
+          "decideMs": 24174,
+          "dispatchMs": 8373,
+          "perActionMs": 69.54
+        }
+      },
+      {
+        "match": 1301003,
+        "timings": {
+          "createMs": 665,
+          "playMs": 47652,
+          "decideMs": 30307,
+          "dispatchMs": 7848,
+          "perActionMs": 75.64
+        }
+      },
+      {
+        "match": 1301004,
+        "timings": {
+          "createMs": 584,
+          "playMs": 35878,
+          "decideMs": 23209,
+          "dispatchMs": 6586,
+          "perActionMs": 74.43
+        }
+      },
+      {
+        "match": 1301005,
+        "timings": {
+          "createMs": 641,
+          "playMs": 40988,
+          "decideMs": 27121,
+          "dispatchMs": 6739,
+          "perActionMs": 77.19
+        }
+      },
+      {
+        "match": 1301006,
+        "timings": {
+          "createMs": 545,
+          "playMs": 42053,
+          "decideMs": 26668,
+          "dispatchMs": 7400,
+          "perActionMs": 83.77
+        }
+      },
+      {
+        "match": 1301007,
+        "timings": {
+          "createMs": 546,
+          "playMs": 45429,
+          "decideMs": 29664,
+          "dispatchMs": 7853,
+          "perActionMs": 74.47
+        }
+      },
+      {
+        "match": 1301008,
+        "timings": {
+          "createMs": 585,
+          "playMs": 45468,
+          "decideMs": 30970,
+          "dispatchMs": 7308,
+          "perActionMs": 81.48
+        }
+      },
+      {
+        "match": 1301009,
+        "timings": {
+          "createMs": 600,
+          "playMs": 50872,
+          "decideMs": 34469,
+          "dispatchMs": 8003,
+          "perActionMs": 85.07
+        }
+      },
+      {
+        "match": 1301010,
+        "timings": {
+          "createMs": 573,
+          "playMs": 33970,
+          "decideMs": 20716,
+          "dispatchMs": 7083,
+          "perActionMs": 70.48
+        }
+      },
+      {
+        "match": 1301011,
+        "timings": {
+          "createMs": 649,
+          "playMs": 34784,
+          "decideMs": 20728,
+          "dispatchMs": 7128,
+          "perActionMs": 68.88
+        }
+      },
+      {
+        "match": 1301012,
+        "timings": {
+          "createMs": 617,
+          "playMs": 40256,
+          "decideMs": 25690,
+          "dispatchMs": 7291,
+          "perActionMs": 78.93
+        }
+      },
+      {
+        "match": 1301013,
+        "timings": {
+          "createMs": 570,
+          "playMs": 57237,
+          "decideMs": 37763,
+          "dispatchMs": 9407,
+          "perActionMs": 90.85
+        }
+      },
+      {
+        "match": 1301014,
+        "timings": {
+          "createMs": 553,
+          "playMs": 45200,
+          "decideMs": 29236,
+          "dispatchMs": 7616,
+          "perActionMs": 83.7
+        }
+      },
+      {
+        "match": 1301015,
+        "timings": {
+          "createMs": 564,
+          "playMs": 38534,
+          "decideMs": 23699,
+          "dispatchMs": 6731,
+          "perActionMs": 70.83
+        }
+      },
+      {
+        "match": 1301016,
+        "timings": {
+          "createMs": 640,
+          "playMs": 38346,
+          "decideMs": 23741,
+          "dispatchMs": 7051,
+          "perActionMs": 71.41
+        }
+      },
+      {
+        "match": 1301017,
+        "timings": {
+          "createMs": 504,
+          "playMs": 34498,
+          "decideMs": 23153,
+          "dispatchMs": 5954,
+          "perActionMs": 69
+        }
+      },
+      {
+        "match": 1301018,
+        "timings": {
+          "createMs": 530,
+          "playMs": 35270,
+          "decideMs": 22429,
+          "dispatchMs": 5882,
+          "perActionMs": 64.48
+        }
+      },
+      {
+        "match": 1301019,
+        "timings": {
+          "createMs": 509,
+          "playMs": 34007,
+          "decideMs": 21996,
+          "dispatchMs": 5603,
+          "perActionMs": 62.17
+        }
+      }
+    ]
+  }
+}
