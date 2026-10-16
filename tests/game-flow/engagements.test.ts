@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import {
   GENERATED_HEDGEHOG_LEVELS,
+  GENERATED_OBJECTIVE_HEDGEHOG_SHARE,
+  GENERATED_STRONG_HEDGEHOG_SHARE,
   hedgehogAt,
   hedgehogLevel,
   isHedgehog,
@@ -234,19 +236,33 @@ describe('garrisons in an attack (user, 2026-10-07)', () => {
 });
 
 describe('hedgehogs in an attack (16.0)', () => {
-  it('digs in every defender garrison: Level 2 on objectives, Level 1 on key points; the attacker and a meeting engagement have none', () => {
+  it('digs in half the defender\'s objectives, the most valuable at Level 2, and every key point at Level 1; the attacker and a meeting engagement have none', () => {
     for (const engagement of ['AXIS_ATTACKS', 'ALLIED_ATTACKS'] as const) {
-      const { prepared, state } = started(requestFor(engagement, 0));
-      const defender = engagement === 'AXIS_ATTACKS' ? 'player:allied' : 'player:axis';
-      const garrisons = new Set(prepared.generatedOob.sides.map(({ garrisonDefinitionId }) => garrisonDefinitionId));
-      const hogs = state.pieceState.pieces.filter((piece) => piece.location.kind === 'ON_MAP' && isHedgehog(state, piece));
-      expect(hogs.every(({ ownerId }) => String(ownerId) === defender)).toBe(true);
-      const garrisoned = state.pieceState.pieces.filter((piece) => String(piece.ownerId) === defender && garrisons.has(piece.definitionId) && piece.location.kind === 'ON_MAP');
-      expect(hogs.length).toBe(garrisoned.length);
-      const objectiveHexes = new Set(prepared.deployment.objectives.map(({ hexId }) => String(hexId)));
-      for (const garrison of garrisoned) {
-        const hog = hedgehogAt(state, hexOf(garrison) as never)!;
-        expect(hedgehogLevel(hog)).toBe(objectiveHexes.has(String(hexOf(garrison))) ? GENERATED_HEDGEHOG_LEVELS.OBJECTIVE : GENERATED_HEDGEHOG_LEVELS.KEY_POINT);
+      for (const index of [0, 1, 2]) {
+        const { prepared, state } = started(requestFor(engagement, index));
+        const defender = engagement === 'AXIS_ATTACKS' ? 'player:allied' : 'player:axis';
+        const garrisons = new Set(prepared.generatedOob.sides.map(({ garrisonDefinitionId }) => garrisonDefinitionId));
+        const hogs = state.pieceState.pieces.filter((piece) => piece.location.kind === 'ON_MAP' && isHedgehog(state, piece));
+        expect(hogs.every(({ ownerId }) => String(ownerId) === defender)).toBe(true);
+        const levelAt = (hexId: string) => { const hog = hedgehogAt(state, hexId as never); return hog ? hedgehogLevel(hog) : 0; };
+        const heldBy = new Map(state.mapState.hexControl.map(({ hexId, controllerId }) => [String(hexId), String(controllerId)]));
+        const objectives = prepared.deployment.objectives.filter(({ hexId }) => heldBy.get(String(hexId)) === defender);
+        expect(objectives.length).toBeGreaterThan(0);
+        const dug = objectives.filter(({ hexId }) => levelAt(String(hexId)) > 0);
+        const strong = dug.filter(({ hexId }) => levelAt(String(hexId)) === GENERATED_HEDGEHOG_LEVELS.STRONG_OBJECTIVE);
+        expect(dug.length, `${engagement} ${index}`).toBe(Math.ceil(objectives.length * GENERATED_OBJECTIVE_HEDGEHOG_SHARE));
+        expect(strong.length, `${engagement} ${index}`).toBe(dug.length === 0 ? 0 : Math.max(1, Math.floor(dug.length * GENERATED_STRONG_HEDGEHOG_SHARE)));
+        expect(dug.every(({ hexId }) => [GENERATED_HEDGEHOG_LEVELS.STRONG_OBJECTIVE, GENERATED_HEDGEHOG_LEVELS.OBJECTIVE].includes(levelAt(String(hexId))))).toBe(true);
+        // The most valuable objectives are the ones dug in, and the most valuable of those are the strongest.
+        const open = objectives.filter((objective) => !dug.includes(objective));
+        expect(Math.min(...dug.map(({ points }) => points))).toBeGreaterThanOrEqual(Math.max(0, ...open.map(({ points }) => points)));
+        const weak = dug.filter((objective) => !strong.includes(objective));
+        expect(Math.min(...strong.map(({ points }) => points))).toBeGreaterThanOrEqual(Math.max(0, ...weak.map(({ points }) => points)));
+        const objectiveHexes = new Set(prepared.deployment.objectives.map(({ hexId }) => String(hexId)));
+        const keyPoints = state.pieceState.pieces.filter((piece) => String(piece.ownerId) === defender && garrisons.has(piece.definitionId)
+          && piece.location.kind === 'ON_MAP' && !objectiveHexes.has(String(hexOf(piece))));
+        expect(keyPoints.every((piece) => levelAt(String(hexOf(piece))) === GENERATED_HEDGEHOG_LEVELS.KEY_POINT)).toBe(true);
+        expect(hogs.length).toBe(dug.length + keyPoints.length);
       }
     }
     const meeting = started(requestFor('MEETING', 0)).state;

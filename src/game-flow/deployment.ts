@@ -173,10 +173,19 @@ const DETRAINABLE_FEATURES = new Set(['settlement:village', 'settlement:town', '
 export const GENERATED_GARRISON_STOCK_TOKENS = 1;
 
 /**
- * In an attack the defender's garrisons start dug in (16.0): a hedgehog of this Level under every objective garrison
- * and every key-point garrison. The attacker starts with none; both sides may build more in play (2 SP a Level).
+ * In an attack some of the defender's garrisons start dug in (16.0): every key point at KEY_POINT, and part of the
+ * objectives (GENERATED_OBJECTIVE_HEDGEHOG_SHARE) at OBJECTIVE, the strongest of them at STRONG_OBJECTIVE. The attacker
+ * starts with none; both sides may build more in play (2 SP a Level).
  */
-export const GENERATED_HEDGEHOG_LEVELS: Readonly<{ readonly OBJECTIVE: number; readonly KEY_POINT: number }> = { OBJECTIVE: 2, KEY_POINT: 1 };
+export const GENERATED_HEDGEHOG_LEVELS: Readonly<{ readonly STRONG_OBJECTIVE: number; readonly OBJECTIVE: number; readonly KEY_POINT: number }> =
+  { STRONG_OBJECTIVE: 2, OBJECTIVE: 1, KEY_POINT: 1 };
+/**
+ * Share of the defender's objectives (rounded up) that start in a hedgehog, highest VP and then deepest behind the front
+ * first, and the share of those (rounded down, at least one) at STRONG_OBJECTIVE. User, 2026-10-16: "hedgehog太多了 應該只有
+ * 一部分VP有 而之中有lv2的要更少"; a Level 2 hedgehog on every objective left the attacker few attacks at 3:1.
+ */
+export const GENERATED_OBJECTIVE_HEDGEHOG_SHARE = 0.5;
+export const GENERATED_STRONG_HEDGEHOG_SHARE = 1 / 3;
 
 /** In an attack the defender garrisons this many key points per objective (rounded up): supply nodes and road junctions. */
 export const GENERATED_KEY_POINT_GARRISON_SHARE = 0.5;
@@ -1276,13 +1285,21 @@ export const deployGeneratedForces = (
       statuses: [{ statusDefinitionId: 'status:hedgehog-level' as never, value: { kind: 'INTEGER', value: level } }],
     };
   };
+  const dugIn = objectives.filter(({ side }) => attacker !== null && side !== attacker)
+    .sort((left, right) => right.points - left.points || depthOf(right.side, right.hexId as HexId) - depthOf(left.side, left.hexId as HexId)
+      || String(left.hexId).localeCompare(String(right.hexId)));
+  const hedgehogs = dugIn.slice(0, Math.ceil(dugIn.length * GENERATED_OBJECTIVE_HEDGEHOG_SHARE));
+  const strong = Math.max(1, Math.floor(hedgehogs.length * GENERATED_STRONG_HEDGEHOG_SHARE));
+  const objectiveHedgehogLevel = new Map(hedgehogs.map(({ hexId }, rank) =>
+    [hexId, rank < strong ? GENERATED_HEDGEHOG_LEVELS.STRONG_OBJECTIVE : GENERATED_HEDGEHOG_LEVELS.OBJECTIVE]));
   for (const [index, { hexId, side }] of objectives.entries()) {
     const garrison = garrisonPiece(side, hexId as HexId, `objective-${index + 1}`);
     const stock = garrisonStock(side, hexId as HexId, `objective-stock-${index + 1}`);
     if (!garrison || !stock) return { ok: false, error: [deploymentFailure(`Objective ${hexId} cannot receive its ${side} garrison.`)] };
     pieces.push(garrison, stock);
-    if (attacker !== null && side !== attacker) {
-      const hog = hedgehogPiece(side, hexId as HexId, `objective-hog-${index + 1}`, GENERATED_HEDGEHOG_LEVELS.OBJECTIVE);
+    const level = objectiveHedgehogLevel.get(hexId);
+    if (level !== undefined) {
+      const hog = hedgehogPiece(side, hexId as HexId, `objective-hog-${index + 1}`, level);
       if (!hog) return { ok: false, error: [deploymentFailure(`Objective ${hexId} cannot receive its ${side} hedgehog.`)] };
       pieces.push(hog);
     }
