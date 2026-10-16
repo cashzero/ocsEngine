@@ -23,9 +23,9 @@ import {
   usageOf,
   opponentOf,
 } from '../pieces.js';
-import { INTERNAL_RECOVERY_TOKENS_PER_LEVEL } from '../tables/ocs-4.3.js';
+import { INTERNAL_RECOVERY_TOKENS_PER_LEVEL, PORT_SOURCE_MINIMUM_TOKENS } from '../tables/ocs-4.3.js';
 import { playerSupplyPathCostModel } from '../movement/bridging.js';
-import { PORT_SOURCE_MINIMUM_TOKENS, portAt, portCapacityTokens } from '../port/state.js';
+import { portAt, portCapacityTokens } from '../port/state.js';
 import { violation } from '../validation/violation.js';
 import { hasEnemyCombatUnit, queryZoc } from '../zoc/zoc.js';
 import { detrainableHexesFrom, isRailHex, railControlWith, railNetworkOf, railTraceReach, railTracePassable } from './rail.js';

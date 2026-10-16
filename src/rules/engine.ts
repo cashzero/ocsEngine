@@ -14,13 +14,14 @@ import { queryStackMovementPath, queryStackReachableHexes } from './movement/mov
 import { queryDrawReach, queryFeedCoverage, querySupplySources, queryTraceCoverage } from './supply/supply.js';
 import { relocationSupplyFacts } from './supply/relocation-impact.js';
 import { rationBudgetFacts } from './supply/ration-budget.js';
+import { facilityBarrageBudgetFacts } from './supply/facility-barrage-budget.js';
 import { rebuildFacts } from './replacement/forecast.js';
 import { queryFuelCoverage, queryFuelPreview } from './supply/fuel.js';
 import { queryTransportOptions } from './supply/transport.js';
 import { queryRailControl } from './supply/supply.js';
 import { queryRailMoveOptions, quartersText, railCapRemainingQuarters, railMoveQuarters } from './supply/rail-cap.js';
 import { querySeaMoveOptions, seaCapRemainingQuarters, seaMoveQuarters } from './supply/sea-cap.js';
-import { actionFamilies, candidateActions, kindMayBeLegal } from './query/candidates.js';
+import { actionFamilies, barrageAvailability, candidateActions, kindMayBeLegal } from './query/candidates.js';
 import { projectRuleState } from './query/projection.js';
 import type {
   ActionFamily,
@@ -75,8 +76,12 @@ const actionFacts = (state: GameState, action: GameAction): readonly RuleFact[] 
     ];
   }
   if (action.kind === 'DECLARE_BARRAGE') {
-    const preview = previewBarrage(state, action.actorId, action.firerIds, action.targetHexId);
+    const preview = previewBarrage(state, action.actorId, action.firerIds, action.targetHexId, action.target);
     return [
+      publicFact('barrage.target', preview.target),
+      publicFact('barrage.table', preview.target === 'COMBAT_UNITS' ? 'Barrage Table' : 'Barrage vs Facility Table'),
+      publicFact('barrage.columnLabel', (preview.target === 'COMBAT_UNITS' ? BARRAGE_TABLE_COLUMNS : FACILITY_TABLE_COLUMNS)[preview.finalColumn]!.label),
+      publicFact('barrage.dice', preview.target === 'COMBAT_UNITS' ? '2d6' : '1d6'),
       publicFact('barrage.strength', preview.strength),
       publicFact('barrage.initialColumn', preview.initialColumn),
       publicFact('barrage.finalColumn', preview.finalColumn),
@@ -139,6 +144,7 @@ const actionFacts = (state: GameState, action: GameAction): readonly RuleFact[] 
 };
 
 const engine: RuleEngine = {
+  getBarrageAvailability: barrageAvailability,
   getActionFamilies: (state: GameState, actorId: PlayerId): readonly ActionFamily[] => actionFamilies(state, actorId),
   getActionCandidates: (state: GameState, request: CandidateRequest): CandidateResult => {
     const budget = Math.max(0, Math.floor(request.budget));
@@ -169,6 +175,7 @@ const engine: RuleEngine = {
         ...actionFacts(state, action),
         ...(validation.allowed ? relocationSupplyFacts(state, action) : []),
         ...(validation.allowed ? rationBudgetFacts(state, action) : []),
+        ...(validation.allowed ? facilityBarrageBudgetFacts(state, action) : []),
         ...(validation.allowed ? rebuildFacts(state, action) : []),
       ],
       citations: [...new Set(validation.violations.map(({ rule }) => rule))],

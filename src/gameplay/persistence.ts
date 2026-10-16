@@ -189,7 +189,7 @@ const parseAction = (input: unknown, path: Path, issues: GameplayError[]): GameA
   if (kind === 'DECLARE_COMBAT' && !('attackerSupply' in record)) {
     issues.push(issue('SAVE_INCOMPATIBLE', [...path, 'attackerSupply'], 'This save has an attack made before each attacker declared its combat supply with the attack (9.5, 12.10a). Its moves replay rules that have since been corrected, so it cannot be loaded; start a new game.'));
   }
-  exactKeys(record, ['actionId', 'actorId', 'expectedRevision', 'kind', ...(fields[kind] ?? []), ...(kind === 'REDUCE_AIR_BASE' && 'engineerId' in record ? ['engineerId'] : []), ...(kind === 'DECLARE_AIR_MISSION' && 'cargo' in record ? ['cargo'] : []), ...(kind === 'MOVE_PIECE' && 'companionIds' in record ? ['companionIds'] : [])], path, issues);
+  exactKeys(record, ['actionId', 'actorId', 'expectedRevision', 'kind', ...(fields[kind] ?? []), ...(kind === 'REDUCE_AIR_BASE' && 'engineerId' in record ? ['engineerId'] : []), ...(kind === 'DECLARE_AIR_MISSION' && 'cargo' in record ? ['cargo'] : []), ...(kind === 'MOVE_PIECE' && 'companionIds' in record ? ['companionIds'] : []), ...(kind === 'DECLARE_BARRAGE' && 'target' in record ? ['target'] : [])], path, issues);
   const actionText = textAt(record, 'actionId', path, issues);
   const actorText = textAt(record, 'actorId', path, issues);
   const parsedActionId = parseRuleActionId(actionText);
@@ -259,7 +259,11 @@ const parseAction = (input: unknown, path: Path, issues: GameplayError[]): GameA
         attackerSupply: 'attackerSupply' in record ? parseAttackerSupply(record.attackerSupply, [...path, 'attackerSupply'], issues) : [],
       } as GameAction;
     }
-    case 'DECLARE_BARRAGE': return { ...base, firerIds: pieces('firerIds'), targetPieceIds: pieces('targetPieceIds'), targetHexId: hex('targetHexId') } as GameAction;
+    case 'DECLARE_BARRAGE': {
+      const target = 'target' in record ? textAt(record, 'target', path, issues) : 'COMBAT_UNITS';
+      if (!['COMBAT_UNITS', 'AIR_BASE', 'PORT'].includes(target)) issues.push(issue('SAVE_INVALID', [...path, 'target'], 'Unknown barrage target.'));
+      return { ...base, ...('target' in record ? { target } : {}), firerIds: pieces('firerIds'), targetPieceIds: pieces('targetPieceIds'), targetHexId: hex('targetHexId') } as GameAction;
+    }
     case 'RESPOND_DECISION': {
       const value = textAt(record, 'decisionId', path, issues);
       const parsed = parseRuleDecisionId(value);

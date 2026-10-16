@@ -348,7 +348,7 @@ const replacementStateDecoder: Decoder<ReplacementState> = objectDecoder({
 /** Replacement bookkeeping of a state where no truck was lost yet (also the value older snapshots migrate to). */
 export const EMPTY_REPLACEMENT_STATE: ReplacementState = { lostTrucks: [] };
 
-const transactionDecoder: Decoder<RuleTransaction> = objectDecoder({
+const transactionFieldsDecoder: Decoder<RuleTransaction> = objectDecoder({
   id: transactionIdDecoder,
   kind: literalDecoder('COMBAT', 'OVERRUN', 'BARRAGE', 'AIR_MISSION'),
   step: literalDecoder('ATTACKER_SUPPLY', 'DEFENDER_SUPPLY', 'DEFENDER_LEAD', 'DEFENDER_TERRAIN', 'BARRAGE_SUPPLY', 'RESOLVING', 'AIR_MISSION'),
@@ -376,6 +376,27 @@ const transactionDecoder: Decoder<RuleTransaction> = objectDecoder({
   attackerRetreated: booleanDecoder,
   blockedHexIds: arrayDecoder(hexIdDecoder),
   air: nullableDecoder(airMissionDecoder),
+  barrageTarget: nullableDecoder(literalDecoder('COMBAT_UNITS', 'AIR_BASE', 'PORT')),
+  facilityDie: nullableDecoder(refinedDecoder(safeIntegerDecoder, (value) => value >= 1 && value <= 6 ? ok(value) : err(undefined), 'INVALID_FACILITY_DIE', () => 'Facility die must be from 1 through 6.')),
+});
+
+const transactionDecoder: Decoder<RuleTransaction> = decoder((input, path = []) => {
+  if (typeof input !== 'object' || input === null || Array.isArray(input)) return transactionFieldsDecoder.decode(input, path);
+  const record = input as Readonly<Record<string, unknown>>;
+  const parsed = transactionFieldsDecoder.decode({
+    barrageTarget: record.kind === 'BARRAGE' ? 'COMBAT_UNITS' : null,
+    facilityDie: null,
+    ...record,
+  }, path);
+  if (!parsed.ok) return parsed;
+  const transaction = parsed.value;
+  if ((transaction.kind === 'BARRAGE') !== (transaction.barrageTarget !== null)) {
+    return err([issue('INVALID_BARRAGE_TARGET', [...path, 'barrageTarget'], 'Only artillery barrage transactions require an announced target.')]);
+  }
+  if (transaction.facilityDie !== null && (transaction.kind !== 'BARRAGE' || transaction.barrageTarget === 'COMBAT_UNITS')) {
+    return err([issue('INVALID_FACILITY_DIE', [...path, 'facilityDie'], 'Only an artillery facility barrage stores a facility die.')]);
+  }
+  return parsed;
 });
 
 const decisionDecoder: Decoder<PendingDecision> = objectDecoder({
@@ -489,11 +510,18 @@ const canonicalScenarioOf = (scenario: GameState['scenario']): GameState['scenar
   return canonical;
 };
 
-const canonicalStateValue = (state: GameState): GameState => {
+const canonicalStateValue = (state: GameState): unknown => {
   const staticScenario = canonicalScenarioOf(state.scenario);
   return {
     ...state,
     scenario: staticScenario,
+    activeTransaction: state.activeTransaction ? (() => {
+      const { barrageTarget, facilityDie, ...transaction } = state.activeTransaction;
+      return { ...transaction,
+        ...(barrageTarget !== null && barrageTarget !== 'COMBAT_UNITS' ? { barrageTarget } : {}),
+        ...(facilityDie !== null ? { facilityDie } : {}),
+      };
+    })() : null,
     configuration: {
       ...state.configuration,
       terrainMovementCosts: stableSort(state.configuration.terrainMovementCosts, byText(({ terrainDefinitionId }) => String(terrainDefinitionId))),
@@ -617,7 +645,7 @@ export const upgradeLegacyGameStateInput = (input: unknown): unknown => {
     // Ground replacements (13.5a-e) add the lost-truck ledger: no truck was recorded as lost in an older game.
     replacements: typeof record.replacements === 'object' && record.replacements !== null ? record.replacements : EMPTY_REPLACEMENT_STATE,
     activeTransaction: typeof transaction === 'object' && transaction !== null && !Array.isArray(transaction)
-      ? { air: null, ...(transaction as Readonly<Record<string, unknown>>) } : transaction ?? null,
+      ? { air: null, barrageTarget: (transaction as Readonly<Record<string, unknown>>).kind === 'BARRAGE' ? 'COMBAT_UNITS' : null, facilityDie: null, ...(transaction as Readonly<Record<string, unknown>>) } : transaction ?? null,
   };
 };
 

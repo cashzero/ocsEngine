@@ -1,0 +1,25 @@
+[
+  {
+    "name": "typecheck",
+    "command": [
+      "npm",
+      "run",
+      "typecheck"
+    ],
+    "startedAt": "2026-10-16T05:42:36.310942+00:00",
+    "seconds": 23.793,
+    "exitCode": 0
+  },
+  {
+    "name": "test",
+    "command": [
+      "npm",
+      "test",
+      "--",
+      "--maxWorkers=2"
+    ],
+    "startedAt": "2026-10-16T05:43:00.104988+00:00",
+    "seconds": 328.1,
+    "exitCode": 1
+  }
+]

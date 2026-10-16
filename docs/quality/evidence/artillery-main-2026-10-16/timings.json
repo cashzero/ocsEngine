@@ -1,0 +1,45 @@
+{
+  "runs": {
+    "computer": {
+      "directory": "artifacts/artillery-main-rebase/computer",
+      "firstScreenshot": "01-changed-new-game-preview.jpg",
+      "lastScreenshot": "10-base-only-save-replay-restored.jpg",
+      "firstScreenshotMtime": 1792157604.9746146,
+      "lastScreenshotMtime": 1792157638.4106147,
+      "secondsBetweenScreenshots": 33.436
+    },
+    "human-1920": {
+      "directory": "artifacts/artillery-main-rebase/human-1920",
+      "firstScreenshot": "01-new-game-preview.jpg",
+      "lastScreenshot": "14-save-and-replay-restored.jpg",
+      "firstScreenshotMtime": 1792157644.674615,
+      "lastScreenshotMtime": 1792157686.1906145,
+      "secondsBetweenScreenshots": 41.516
+    },
+    "human-1680": {
+      "directory": "artifacts/artillery-main-rebase/human-1680",
+      "firstScreenshot": "01-new-game-preview.jpg",
+      "lastScreenshot": "14-save-and-replay-restored.jpg",
+      "firstScreenshotMtime": 1792157694.2066143,
+      "lastScreenshotMtime": 1792157743.0306098,
+      "secondsBetweenScreenshots": 48.824
+    },
+    "reasons-1920": {
+      "directory": "artifacts/artillery-main-rebase/reasons-1920",
+      "firstScreenshot": "01-movement.jpg",
+      "lastScreenshot": "07-other-target-ready.jpg",
+      "firstScreenshotMtime": 1792157755.814601,
+      "lastScreenshotMtime": 1792157768.6466007,
+      "secondsBetweenScreenshots": 12.832
+    },
+    "reasons-1680": {
+      "directory": "artifacts/artillery-main-rebase/reasons-1680",
+      "firstScreenshot": "01-movement.jpg",
+      "lastScreenshot": "07-other-target-ready.jpg",
+      "firstScreenshotMtime": 1792157782.6746004,
+      "lastScreenshotMtime": 1792157795.850602,
+      "secondsBetweenScreenshots": 13.176
+    }
+  },
+  "interpretation": "Wall-clock screenshot intervals and observed attack click-and-settle times include scripted waits and concurrent tests. They do not measure isolated UI latency or a performance change."
+}

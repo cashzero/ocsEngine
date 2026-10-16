@@ -1,0 +1,8 @@
+{
+  "firstScreenshot": "01-changed-new-game-preview.jpg",
+  "lastScreenshot": "10-base-only-save-replay-restored.jpg",
+  "firstScreenshotMtime": 1792219871.394517,
+  "lastScreenshotMtime": 1792219905.2265146,
+  "secondsBetweenScreenshots": 33.832,
+  "interpretation": "Wall-clock screenshot interval includes scripted waits and concurrent quality checks. Not isolated UI latency or a performance comparison."
+}

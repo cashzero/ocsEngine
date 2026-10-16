@@ -1,0 +1,29 @@
+{
+  "runs": {
+    "computer": {
+      "artifactDirectory": "artifacts/facility-todos/computer-browser-final",
+      "firstScreenshot": "01-changed-new-game-preview.jpg",
+      "lastScreenshot": "10-base-only-save-replay-restored.jpg",
+      "firstScreenshotMtime": 1792145613.68261,
+      "lastScreenshotMtime": 1792145649.2266092,
+      "screenshotIntervalSeconds": 35.544
+    },
+    "reasons-1920": {
+      "artifactDirectory": "artifacts/facility-todos/reasons-1920-verified",
+      "firstScreenshot": "01-movement.jpg",
+      "lastScreenshot": "07-other-target-ready.jpg",
+      "firstScreenshotMtime": 1792145757.5026057,
+      "lastScreenshotMtime": 1792145768.9826043,
+      "screenshotIntervalSeconds": 11.48
+    },
+    "reasons-1680": {
+      "artifactDirectory": "artifacts/facility-todos/reasons-1680-verified",
+      "firstScreenshot": "01-movement.jpg",
+      "lastScreenshot": "07-other-target-ready.jpg",
+      "firstScreenshotMtime": 1792145778.8106036,
+      "lastScreenshotMtime": 1792145789.470603,
+      "screenshotIntervalSeconds": 10.66
+    }
+  },
+  "interpretation": "Screenshot wall-clock intervals include scripted waits and other operations. Not isolated UI input latency or evidence of a performance change."
+}

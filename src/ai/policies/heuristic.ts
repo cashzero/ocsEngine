@@ -6,7 +6,7 @@ import { analyze, type ObjectiveView, type OwnUnit, type Situation } from '../an
 import { respondToDecision } from '../decisions.js';
 import { hexesBetween, knowledgeOf, type BotGameFacts } from '../knowledge.js';
 import type { BotDecision, BotDecisionContext, BotPolicy, BotScoreTerm } from '../model.js';
-import { forecastBarrage, forecastColumn, forecastCombat, plannedOddsColumn, type CombatForecast } from '../odds.js';
+import { forecastBarrage, forecastColumn, forecastCombat, forecastFacilityBarrage, plannedOddsColumn, type CombatForecast, type PublicFacilityTarget } from '../odds.js';
 import { DEFAULT_HEURISTIC_WEIGHTS, type HeuristicWeights } from './heuristic-weights.js';
 
 /**
@@ -1331,12 +1331,55 @@ const bestCombat = (context: BotDecisionContext, situation: Situation, facts: Bo
   return decision(best.action, `${kind} at ${best.odds} on ${best.action.kind === 'DECLARE_COMBAT' ? best.action.targetHexId : ''}`, best.terms, candidates);
 };
 
-const bestBarrage = (context: BotDecisionContext, situation: Situation, w: HeuristicWeights, effortHexes: ReadonlySet<HexId> = new Set()): BotDecision | null => {
+const publicFacilityTarget = (context: BotDecisionContext, facts: BotGameFacts, action: Extract<GameAction, { readonly kind: 'DECLARE_BARRAGE' }>): PublicFacilityTarget | null => {
+  if (action.target === 'PORT') {
+    const port = context.view.projection?.ports?.find(({ hexId }) => hexId === action.targetHexId);
+    return port && port.controllerId !== null && port.controllerId !== context.playerId
+      ? { kind: 'PORT', printedTokens: port.printedTokens, hits: port.hits } : null;
+  }
+  if (action.target !== 'AIR_BASE') return null;
+  const pieces = context.view.projection?.stacks.find(({ location }) => location.kind === 'ON_MAP' && location.hexId === action.targetHexId)?.pieces ?? [];
+  const base = pieces.find(({ role, ownerId }) => role === 'AIR_BASE' && ownerId !== context.playerId);
+  if (!base) return null;
+  const strip = knowledgeOf(facts).definition(base)?.facility?.facilityTypeDefinitionId === 'facility:air-strip';
+  const level = base.statusValues.find(({ statusDefinitionId }) => statusDefinitionId === 'status:air-base-level')?.value;
+  return { kind: 'AIR_BASE', strip, level: strip ? 0 : typeof level === 'number' ? level : 1,
+    visibleAircraft: pieces.filter(({ role, ownerId }) => role === 'AIRCRAFT' && ownerId !== context.playerId).length };
+};
+
+const projectionEnemyTurnRemains = (context: BotDecisionContext): boolean => {
+  const sequence = context.view.projection!.sequence;
+  return sequence.phase !== 'REACTION' && sequence.playerTurnIndex === 0;
+};
+
+const bestBarrage = (context: BotDecisionContext, situation: Situation, facts: BotGameFacts, w: HeuristicWeights, effortHexes: ReadonlySet<HexId> = new Set()): BotDecision | null => {
   const candidates = context.actions.candidates('DECLARE_BARRAGE', null, 60);
-  let best: { action: GameAction; terms: BotScoreTerm[] } | null = null;
+  let best: { action: Extract<GameAction, { readonly kind: 'DECLARE_BARRAGE' }>; terms: BotScoreTerm[] } | null = null;
   for (const action of candidates) {
     if (action.kind !== 'DECLARE_BARRAGE') continue;
-    const forecast = forecastBarrage(context.actions.explain(action).explanation.facts);
+    const { explanation } = context.actions.explain(action);
+    if (!explanation.allowed) continue;
+    if ((action.target ?? 'COMBAT_UNITS') !== 'COMBAT_UNITS') {
+      if (!explanation.facts.some(({ key, value }) => key === 'supply.rationCommitmentsPreserved' && value === true)) continue;
+      const target = publicFacilityTarget(context, facts, action);
+      const forecast = target ? forecastFacilityBarrage(explanation.facts, target) : null;
+      if (!forecast) continue;
+      const enemyTurns = situation.turnsLeft + Number(projectionEnemyTurnRemains(context));
+      const portOwner = context.view.projection?.ports?.find(({ hexId }) => hexId === action.targetHexId)?.controllerId;
+      const portSide = facts.scenario.players.find(({ id }) => id === portOwner)?.sideDefinitionId;
+      const portIsSource = facts.scenario.sources.some(({ hexId, sideDefinitionId }) => hexId === action.targetHexId
+        && (sideDefinitionId === null || sideDefinitionId === portSide));
+      const terms: BotScoreTerm[] = [
+        { term: 'port-capacity', value: forecast.expectedPortCapacityTokensLost * enemyTurns * w.barrageSupply },
+        { term: 'port-supply-source', value: portIsSource && enemyTurns > 0 ? forecast.expectedPortSourceLoss * w.barrageDisruptBeforeAttack : 0 },
+        { term: 'base-refit-capacity', value: enemyTurns > 0 ? forecast.expectedBaseLevelsLost * 2 * w.barrageDisrupt : 0 },
+        { term: 'visible-aircraft-steps', value: forecast.expectedAircraftSteps * w.barrageSteps },
+        { term: 'supply', value: -forecast.supplyTokens * w.barrageSupply },
+      ];
+      if (!best || sum(terms) > sum(best.terms)) best = { action, terms };
+      continue;
+    }
+    const forecast = forecastBarrage(explanation.facts);
     if (!forecast) continue;
     // Worth most against hexes our units are about to attack or that threaten an objective.
     const adjacentOwn = situation.own.some((unit) => situation.isCombatUnit(unit) && hexesBetween(unit.hexId, action.targetHexId) <= 1);
@@ -1350,9 +1393,12 @@ const bestBarrage = (context: BotDecisionContext, situation: Situation, w: Heuri
     if (effortHexes.has(action.targetHexId)) terms.push({ term: 'main-effort', value: w.barrageMainEffort });
     if (!best || sum(terms) > sum(best.terms)) best = { action, terms };
   }
-  return best && sum(best.terms) >= w.barrageThreshold
-    ? decision(best.action, `barrage ${best.action.kind === 'DECLARE_BARRAGE' ? best.action.targetHexId : ''}`, best.terms, candidates)
-    : null;
+  if (!best || sum(best.terms) < w.barrageThreshold) return null;
+  const target = best.action.target ?? 'COMBAT_UNITS';
+  const subject = target === 'COMBAT_UNITS' ? best.action.targetHexId : `${target} at ${best.action.targetHexId}`;
+  const alternatives = target === 'COMBAT_UNITS'
+    ? candidates.filter(action => action.kind === 'DECLARE_BARRAGE' && (action.target ?? 'COMBAT_UNITS') === 'COMBAT_UNITS') : [];
+  return decision(best.action, `barrage ${subject}`, best.terms, alternatives);
 };
 
 /**
@@ -1545,7 +1591,7 @@ const decide = (facts: BotGameFacts, w: HeuristicWeights) => (context: BotDecisi
     // attack objectives twice as often as v79 at lower odds (column 5.4 against 6.9).
     const effortHexes = new Set(chooseEfforts(context, situation, facts, w, 1).map(({ hexId }) => hexId));
     // Aircraft first: they take the main effort's hex (one barrage per hex, 10.0e) and the guns the next one.
-    chosen = (phase === 'MOVEMENT' ? bestAirBarrage(context, situation, w, effortHexes) : null) ?? bestBarrage(context, situation, w, effortHexes);
+    chosen = (phase === 'MOVEMENT' ? bestAirBarrage(context, situation, w, effortHexes) : null) ?? bestBarrage(context, situation, facts, w, effortHexes);
   }
   else if (segment === 'COMBAT') chosen = bestCombat(context, situation, facts, w, context.actions.candidates('DECLARE_COMBAT', null, 200), w.attackThreshold, new Set(chooseEfforts(context, situation, facts, w, 1).map(({ hexId }) => hexId)));
   return chosen ?? advance(context, `nothing worth doing in ${phase.toLowerCase()} ${segment.toLowerCase()}`);

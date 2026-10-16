@@ -311,6 +311,11 @@ export const FACILITY_TABLE_COLUMNS: readonly FacilityColumn[] = [
  */
 export const PORT_DAMAGE_CAPACITY_PERCENT: readonly number[] = [100, 80, 60, 40, 20];
 
+/** 19.0b: a port never holds more than four hits. */
+export const PORT_MAXIMUM_HITS = 4;
+/** 19.0e: a port below 1 SP of capacity is no Supply Source. */
+export const PORT_SOURCE_MINIMUM_TOKENS = 4;
+
 /** Barrage vs Facility Table rows for one die (1-6); `*` is a successful Trainbusting. */
 export const FACILITY_TABLE_ROWS: Readonly<Record<number, readonly string[]>> = Object.fromEntries([
   '- - - - - - (5) 1(5)',

@@ -1,0 +1,9 @@
+{
+  "verdict": "PASS",
+  "scope": "Preservation across rebase, including the drawReach test adapter and standard-policy documentation. Upstream rail/HQ/truck changes remain present.",
+  "remainingSemanticFindings": 0,
+  "commentsRemoved": 3,
+  "commentsRestored": 0,
+  "correctnessSuppressionsAdded": 0,
+  "rawEvidenceTrailingBlankLinesPreserved": true
+}

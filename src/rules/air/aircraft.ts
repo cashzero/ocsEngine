@@ -1,7 +1,7 @@
 import { parseDefinitionId, type DefinitionId, type HexId, type PieceId, type PlayerId } from '../../core/index.js';
-import type { PieceState } from '../../domain/piece/index.js';
-import type { GameState } from '../kernel/model.js';
-import { definitionOf, friendlyCombatUnitsAt, hasCapability, hexDistanceBetween, hexOf, stepOf, withStatus } from '../pieces.js';
+import { upsertPieceState, type PieceState } from '../../domain/piece/index.js';
+import type { GameState, RuleEvent } from '../kernel/model.js';
+import { definitionOf, friendlyCombatUnitsAt, hasCapability, hexDistanceBetween, hexOf, pieceById, stepOf, withStatus } from '../pieces.js';
 import { PATROL_ZONE_HEXES } from '../tables/ocs-4.3.js';
 import { inEnemyZoc } from '../zoc/zoc.js';
 
@@ -240,3 +240,15 @@ export const trainbustingTicks = (state: GameState, ownerId: PlayerId, hexId: He
   state.air.trainbusting.some((marker) => marker.ownerId !== ownerId
     && (marker.hexId === hexId || (!leg && hexDistanceBetween(marker.hexId, hexId) === 1)))
     ? TRAINBUSTING_EXTRA_TICKS : 0;
+
+/** 14.1b: two steps; the second loss sends the aircraft to the Dead Pile. */
+export const aircraftStepLoss = (state: GameState, pieceId: PieceId, events: RuleEvent[]): GameState => {
+  const piece = pieceById(state, pieceId);
+  if (!piece || !(piece.location.kind === 'ON_MAP' || atOffMapAirfield(state, piece))) return state;
+  const remaining = (piece.remainingSteps ?? 1) - 1;
+  events.push({ kind: 'STEP_LOST', sequence: events.length, pieceId, remainingSteps: remaining > 0 ? remaining : null });
+  return {
+    ...state,
+    pieceState: upsertPieceState(state.pieceState, remaining > 0 ? { ...piece, remainingSteps: remaining } : { ...piece, location: { kind: 'ELIMINATED' } }),
+  };
+};

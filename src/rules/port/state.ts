@@ -1,7 +1,7 @@
 import type { HexId, PlayerId } from '../../core/index.js';
 import type { MapFeatureState } from '../../domain/map/index.js';
 import type { GameState, PortUse, SeaState } from '../kernel/model.js';
-import { PORT_DAMAGE_CAPACITY_PERCENT } from '../tables/ocs-4.3.js';
+import { PORT_DAMAGE_CAPACITY_PERCENT, PORT_MAXIMUM_HITS } from '../tables/ocs-4.3.js';
 import { hasEnemyCombatUnit, inEnemyZoc } from '../zoc/zoc.js';
 
 /**
@@ -11,10 +11,6 @@ import { hasEnemyCombatUnit, inEnemyZoc } from '../zoc/zoc.js';
  */
 
 export const PORT_FACILITY = 'facility:port';
-/** 19.0b: a port never holds more than four hits. */
-export const PORT_MAXIMUM_HITS = 4;
-/** 19.0e: a port below 1 SP of capacity is no Supply Source. */
-export const PORT_SOURCE_MINIMUM_TOKENS = 4;
 
 const EMPTY_SEA: SeaState = { spent: [], portUse: [], work: [] };
 export const seaOf = (state: GameState): SeaState => state.sea ?? EMPTY_SEA;

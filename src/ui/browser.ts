@@ -1567,7 +1567,8 @@ root.addEventListener('change', (event) => {
     controller.chooseRailDestination(hex?.id ?? '');
     return;
   }
-  if (input.dataset.participant) controller.toggleParticipant(input.dataset.participant);
+  if (input.id === 'barrage-target') controller.setBarrageTarget(input.value);
+  else if (input.dataset.participant) controller.toggleParticipant(input.dataset.participant);
   else if (input.dataset.lead) controller.setLead(input.dataset.lead);
   else if (input.dataset.attackSupply) controller.chooseAttackerSupply(input.dataset.attackSupply, (event.target as unknown as HTMLSelectElement).value);
   else if (input.dataset.airAircraft) controller.toggleAirAircraft(input.dataset.airAircraft);

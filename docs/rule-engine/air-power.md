@@ -30,6 +30,7 @@ the decisions behind it. The rule-by-rule behavior and gaps are the notes of the
 - **Missions**: the 14.2f sequence with Air Combat at enemy bases, interception by one Active Fighter whose Patrol Zone
   covers the mission hex, Flak and the Mission Loss Table; air barrages on units, barrages against facilities (Air Bases,
   ports), Trainbusting, Fighter Sweep and Base Transfer; one barrage per hex and phase.
+  [Facility effects](artillery.md) are shared with artillery attacks against ports and Air Bases.
 - **Air transport and drops**: transports carry SP and eligible Leg units; drops need a Drop Plan made in an earlier Refit
   Phase (supply drops do not); each unit and each 1T rolls the Air Transport Success Table.
 - **Aircraft replacements**: 1 Eq beside a Combat Mode HQ rebuilds two aircraft steps.

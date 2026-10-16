@@ -238,6 +238,14 @@ export class GameplaySession implements GameSession {
     return {allowed:true,message:'Every step is legal.',finalStateHash:hash.value};
   };
 
+  getBarrageAvailability: GameSession['getBarrageAvailability'] = (seatId) => {
+    const binding = this.#binding(seatId);
+    if (this.#lifecycle !== 'ACTIVE' || this.#handoff !== null) {
+      return { kind: 'UNAVAILABLE', blockers: [] };
+    }
+    return this.#ports.rules.getBarrageAvailability(this.#state, binding.playerId);
+  };
+
   getActionCandidates = (
     seatId: SeatId,
     request: Parameters<GameSession['getActionCandidates']>[1],

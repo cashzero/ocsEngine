@@ -1,0 +1,13 @@
+
+> ocs-engine@0.1.0 test
+> vitest run --maxWorkers=2
+
+
+ RUN  v4.1.11 /home/cashlin/ocsEngine
+
+
+ Test Files  113 passed | 4 skipped (117)
+      Tests  798 passed | 8 skipped (806)
+   Start at  21:33:30
+   Duration  264.01s (transform 10.32s, setup 0ms, import 75.55s, tests 417.82s, environment 5.94s)
+

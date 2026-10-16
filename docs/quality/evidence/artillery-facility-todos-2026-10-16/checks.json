@@ -1,0 +1,47 @@
+[
+  {
+    "name": "typecheck",
+    "command": [
+      "npm",
+      "run",
+      "typecheck"
+    ],
+    "startedAt": "2026-10-16T10:12:36.064205+00:00",
+    "seconds": 12.877,
+    "exitCode": 0
+  },
+  {
+    "name": "test",
+    "command": [
+      "npm",
+      "test",
+      "--",
+      "--maxWorkers=2"
+    ],
+    "startedAt": "2026-10-16T10:12:48.942165+00:00",
+    "seconds": 202.436,
+    "exitCode": 0
+  },
+  {
+    "name": "build",
+    "command": [
+      "npm",
+      "run",
+      "build"
+    ],
+    "startedAt": "2026-10-16T10:16:11.379159+00:00",
+    "seconds": 9.849,
+    "exitCode": 0
+  },
+  {
+    "name": "smoke",
+    "command": [
+      "npm",
+      "run",
+      "smoke"
+    ],
+    "startedAt": "2026-10-16T10:16:21.228308+00:00",
+    "seconds": 1.829,
+    "exitCode": 0
+  }
+]
