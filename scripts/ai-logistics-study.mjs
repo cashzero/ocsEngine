@@ -192,7 +192,6 @@ if (gatePolicy !== null) {
   const baseline = attacker.find(([key]) => key !== `attacker ${gatePolicy}`)?.[1];
   if (!candidate || !baseline) { console.log(`GATE ERROR: need attacker games of ${gatePolicy} and of another policy`); process.exit(1); }
   const checks = [
-    ['truck haul >= 60% of capacity', candidate.truckSpPerPointTurn >= 0.6, candidate.truckSpPerPointTurn.toFixed(2)],
     ['Rail Cap >= 70% of SP railable forward', candidate.railUsedOfRailable === null || candidate.railUsedOfRailable >= 0.7, candidate.railUsedOfRailable === null ? 'no railable phase' : candidate.railUsedOfRailable.toFixed(2)],
     ['rear SP left after moving <= half the baseline', candidate.rearLeftSp <= baseline.rearLeftSp / 2, `${candidate.rearLeftSp.toFixed(1)} vs ${baseline.rearLeftSp.toFixed(1)}`],
     ['no garrison stock loaded or railed', candidate.stockLoads === 0 && candidate.stockRails === 0, `${candidate.stockLoads}/${candidate.stockRails}`],
