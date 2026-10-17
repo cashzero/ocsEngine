@@ -13,7 +13,7 @@ New Game → Generate Map → Generate OOB → Compose/Deploy Scenario
          → Gameplay Session → Game End
 ```
 
-M8 is complete only when the active UI map, counters, legal actions, save/replay and final result all come from the same generated `ScenarioDefinition`. Independent Map/OOB laboratories remain diagnostic tools, not the normal New Game path.
+M8 is complete only when the active UI map, counters, legal actions, save/replay and final result all come from the same generated `ScenarioDefinition`. The standalone Map/OOB laboratories were removed; generation, preview and Start share the New Game flow.
 
 Current behavior: [game flow](../game-flow/overview.md).
 
