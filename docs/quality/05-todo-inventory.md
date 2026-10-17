@@ -50,7 +50,7 @@
 | `bot-bridging` | 電腦不會為了過河把工兵或 HQ 以戰鬥模式放到河邊（橋存在時會使用） | 電腦在河流防線前的進攻比人類弱 | 進攻路線被河擋住時 bot 架橋；bot 互打存檔中出現經工兵橋過河的移動，0 錯誤、重播相符 | `docs/roadmap/16-bridging-wbs.md` |
 | `bot-eastern-front` | 東歐地圖長距離推進的補給接力與守住遠方目標點 | 對 random-legal 勝率 80%（目標 90%），最後量測於 heuristic@1 | 以標準策略重跑東歐風格 20 局（交換座位、新種子）勝率 ≥ 90% | `docs/roadmap/11-ai-bot-wbs.md` B5 |
 | `bot-reserve-reaction` | 沒有 Reserve、Reaction 反擊、Extender、Breakout 規劃；戰鬥預估不含 Surprise | 防守與突破能力受限 | 對局中出現這些行動且通過對戰比較 | `docs/ai/heuristic-policy.md` |
-| `bot-force-concentration` | 攻方不集中兵力：主攻群以守軍原始戰力 2.5 倍組成、不看地形欄位與 hedgehog；單位逐一以自己和目的地同格友軍判斷暴露，停在敵前 2–3 格；戰鬥與砲擊的補給項讓多數攻擊與砲擊低於門檻（[研究](evidence/ai-force-concentration-v79-2026-10-16/README.md)）。候選 v81 的地形換算、集結與砲兵配屬讓守方與遭遇戰較好，但用在攻擊戰攻方時每一種都比 v79 差，攻方仍用 v79 的主攻規則（[開發量測](evidence/ai-assault-v81-development-2026-10-17/README.md)） | 攻方每回合只打約 1.4 次、多為弱小 stack，有守軍的目標點常不被攻擊；兵力比與平衡無法用電腦對局判斷 | `scripts/ai-concentration-study.mjs` 量到主攻目標戰鬥時貼近的戰力與欄位提高、每回合攻擊次數與 index 6 以上的攻擊增加，且通過凍結標準策略的對戰比較 | `docs/ai/heuristic-policy.md` |
+| `bot-force-concentration` | 攻方不集中兵力：主攻群以守軍原始戰力 2.5 倍組成、不看地形欄位與 hedgehog；單位逐一以自己和目的地同格友軍判斷暴露，停在敵前 2–3 格；戰鬥與砲擊的補給項讓多數攻擊與砲擊低於門檻（[研究](evidence/ai-force-concentration-v79-2026-10-16/README.md)）。候選 v81 的地形換算、集結與砲兵配屬讓守方與遭遇戰較好，但用在攻擊戰攻方時每一種都比 v79 差（連配砲與 SP 計價也是），候選 v82 的攻方完全照 v79 下（[v81 開發量測](evidence/ai-assault-v81-development-2026-10-17/README.md)、[v82](evidence/ai-assault-v82-development-2026-10-17/README.md)） | 攻方每回合只打約 1.4 次、多為弱小 stack，有守軍的目標點常不被攻擊；兵力比與平衡無法用電腦對局判斷 | `scripts/ai-concentration-study.mjs` 量到主攻目標戰鬥時貼近的戰力與欄位提高、每回合攻擊次數與 index 6 以上的攻擊增加，且通過凍結標準策略的對戰比較 | `docs/ai/heuristic-policy.md` |
 
 ### 介面
 
