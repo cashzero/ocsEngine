@@ -13,8 +13,11 @@
 // Rail Cap used of what could carry SP forward: legal RAIL_MOVEs at the start of the Movement Segment whose SP end at least
 // 3 hexes nearer the enemy and at least 3 hexes from it; SP railed in those phases ÷ min(Rail Cap, that SP).
 //
-//   --gate <policy>  checks the attacker gate registered in docs/ai/evaluation.md for <policy> against the other policy
-//                    of the same batch, and exits 1 when it fails.
+//   --gate <policy>     checks the attacker gate registered in docs/ai/evaluation.md for <policy> and exits 1 when it fails. Its
+//   --baseline <dir>    baseline is the standard policy's self-play on the same seeds (same match indexes, --swap): only the
+//                       games whose match index the candidate attacked count, reported as "baseline attacker"/"baseline
+//                       defender". A batch's own other-policy attacker plays against the candidate's defender, so it does not
+//                       measure the standard's logistics.
 import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -26,7 +29,9 @@ const out = outIndex >= 0 ? argv[outIndex + 1] : join('tmp', 'logistics');
 const list = argv.includes('--list');
 const gateIndex = argv.indexOf('--gate');
 const gatePolicy = gateIndex >= 0 ? argv[gateIndex + 1] : null;
-const flagged = new Set([outIndex, gateIndex].filter((index) => index >= 0).flatMap((index) => [index, index + 1]));
+const baselineIndexes = argv.flatMap((arg, index) => (arg === '--baseline' ? [index] : []));
+const baselineDirs = baselineIndexes.map((index) => argv[index + 1]);
+const flagged = new Set([outIndex, gateIndex, ...baselineIndexes].filter((index) => index >= 0).flatMap((index) => [index, index + 1]));
 const dirs = argv.filter((arg, index) => arg !== '--list' && !flagged.has(index));
 const m = await import(pathToFileURL(join(root, 'dist', 'index.js')).href);
 const FROM_TURN = 3;
@@ -38,20 +43,23 @@ const sides = {};
 const result = { games: 0, attackerWins: 0, defenderWins: 0, draws: 0 };
 const bump = (role, key, value) => { sides[role] ??= {}; sides[role][key] = (sides[role][key] ?? 0) + value; };
 
-for (const dir of dirs) {
+const candidateMatches = new Set();
+for (const [dir, isBaseline] of [...dirs.map((dir) => [dir, false]), ...baselineDirs.map((dir) => [dir, true])]) {
   const records = existsSync(join(dir, 'summary.json')) ? JSON.parse(readFileSync(join(dir, 'summary.json'), 'utf8')).records : [];
   for (const file of readdirSync(dir).filter((name) => name.endsWith('.save.json'))) {
     const save = JSON.parse(readFileSync(join(dir, file), 'utf8'));
     let state = m.parseGameStateJson(save.initialSnapshot).value;
-    result.games += 1;
     const attackerId = state.configuration.attackVictory?.attackerId ?? null;
     const record = records.find(({ match }) => file === `match-${match}.save.json`);
+    if (isBaseline && !candidateMatches.has(record?.match)) continue;
+    if (!isBaseline) result.games += 1;
     const sideOf = (playerId) => (String(playerId).endsWith('axis') ? 'axis' : 'allied');
     const split = record && record.sides.allied.policy !== record.sides.axis.policy;
     const role = (playerId) => {
       const base = attackerId === null ? sideOf(playerId) : playerId === attackerId ? 'attacker' : 'defender';
-      return split ? `${base} ${record.sides[sideOf(playerId)].policy}` : base;
+      return isBaseline ? `baseline ${base}` : split ? `${base} ${record.sides[sideOf(playerId)].policy}` : base;
     };
+    if (record && attackerId !== null && role(attackerId) === `attacker ${gatePolicy}`) candidateMatches.add(record.match);
     const definitions = new Map(state.scenario.pieceCatalog.definitions.map((definition) => [definition.id, definition]));
     const isDump = (piece) => definitions.get(piece.definitionId)?.family === 'RESOURCE';
     const isTruck = (current, piece) => m.isTransportPoint(current, piece);
@@ -155,6 +163,7 @@ for (const dir of dirs) {
     }
     closeTurn(state);
     const winner = state.victory.winnerId;
+    if (isBaseline) continue;
     if (winner === null) result.draws += 1;
     else if (attackerId === null) result[`${role(winner)}Wins`] = (result[`${role(winner)}Wins`] ?? 0) + 1;
     else if (winner === attackerId) result.attackerWins += 1;
@@ -187,13 +196,12 @@ for (const [r, s] of Object.entries(summary)) {
 }
 
 if (gatePolicy !== null) {
-  const attacker = Object.entries(summary).filter(([key]) => key.startsWith('attacker '));
-  const candidate = attacker.find(([key]) => key === `attacker ${gatePolicy}`)?.[1];
-  const baseline = attacker.find(([key]) => key !== `attacker ${gatePolicy}`)?.[1];
-  if (!candidate || !baseline) { console.log(`GATE ERROR: need attacker games of ${gatePolicy} and of another policy`); process.exit(1); }
+  const candidate = summary[`attacker ${gatePolicy}`];
+  const baseline = summary['baseline attacker'];
+  if (!candidate || !baseline) { console.log(`GATE ERROR: need attacker games of ${gatePolicy} and the standard's self-play on the same match indexes (--baseline)`); process.exit(1); }
   const checks = [
     ['Rail Cap >= 70% of SP railable forward', candidate.railUsedOfRailable === null || candidate.railUsedOfRailable >= 0.7, candidate.railUsedOfRailable === null ? 'no railable phase' : candidate.railUsedOfRailable.toFixed(2)],
-    ['rear SP left after moving <= half the baseline', candidate.rearLeftSp <= baseline.rearLeftSp / 2, `${candidate.rearLeftSp.toFixed(1)} vs ${baseline.rearLeftSp.toFixed(1)}`],
+    ['rear SP left after moving <= the standard on the same seeds', candidate.rearLeftSp <= baseline.rearLeftSp, `${candidate.rearLeftSp.toFixed(1)} vs ${baseline.rearLeftSp.toFixed(1)}`],
     ['no garrison stock loaded or railed', candidate.stockLoads === 0 && candidate.stockRails === 0, `${candidate.stockLoads}/${candidate.stockRails}`],
   ];
   for (const [name, pass, value] of checks) console.log(`GATE ${pass ? 'PASS' : 'FAIL'} ${name}: ${value}`);

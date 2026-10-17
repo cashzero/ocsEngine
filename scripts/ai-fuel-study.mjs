@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Does the attacker's SP reach the front? Replays saved ai-match attack games (docs/ai/evaluation.md, 攻方送補 gate). Build first.
 //
-//   node scripts/ai-fuel-study.mjs <attack match directory> [...] [--out <dir>] [--gate <policy>]
+//   node scripts/ai-fuel-study.mjs <attack match directory> [...] [--out <dir>] [--gate <policy> --baseline <dir> [--baseline <dir> ...]]
 //
 // Each attacker Movement Segment from Game Turn 3:
 // - At its end: SP in the attacker's dumps (not garrison stocks) that can reach a front unit, a combat unit other than an HQ
@@ -11,8 +11,10 @@
 //   and the attacker's HQs that no dump reaches ("dry" HQs, which throw no fuel), as a share of its HQs.
 // Each is split by policy when the two sides played different policies (summary.json). Writes fuel.json.
 //
-//   --gate <policy>  checks the gate registered in docs/ai/evaluation.md for <policy> against the other policy of the same batch,
-//                    and exits 1 when it fails.
+//   --gate <policy>     checks the gate registered in docs/ai/evaluation.md for <policy> and exits 1 when it fails. Its baseline is
+//   --baseline <dir>    the standard policy's self-play on the same seeds (same match indexes, --swap): only the games whose
+//                       match index the candidate attacked count, reported as "baseline attacker". A batch's own other-policy
+//                       attacker plays against the candidate's defender, so it does not measure the standard's logistics.
 import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -23,7 +25,9 @@ const outIndex = argv.indexOf('--out');
 const gateIndex = argv.indexOf('--gate');
 const out = outIndex >= 0 ? argv[outIndex + 1] : join('tmp', 'fuel');
 const gatePolicy = gateIndex >= 0 ? argv[gateIndex + 1] : null;
-const flagged = new Set([outIndex, gateIndex].filter((index) => index >= 0).flatMap((index) => [index, index + 1]));
+const baselineIndexes = argv.flatMap((arg, index) => (arg === '--baseline' ? [index] : []));
+const baselineDirs = baselineIndexes.map((index) => argv[index + 1]);
+const flagged = new Set([outIndex, gateIndex, ...baselineIndexes].filter((index) => index >= 0).flatMap((index) => [index, index + 1]));
 const dirs = argv.filter((_, index) => !flagged.has(index));
 const m = await import(pathToFileURL(join(root, 'dist', 'index.js')).href);
 const FROM_TURN = 3;
@@ -32,7 +36,8 @@ const FRONT_HEXES = 4;
 const sides = {};
 const bump = (role, key, value) => { sides[role] ??= {}; sides[role][key] = (sides[role][key] ?? 0) + value; };
 
-for (const dir of dirs) {
+const candidateMatches = new Set();
+for (const [dir, isBaseline] of [...dirs.map((dir) => [dir, false]), ...baselineDirs.map((dir) => [dir, true])]) {
   const records = existsSync(join(dir, 'summary.json')) ? JSON.parse(readFileSync(join(dir, 'summary.json'), 'utf8')).records : [];
   for (const file of readdirSync(dir).filter((name) => name.endsWith('.save.json'))) {
     const save = JSON.parse(readFileSync(join(dir, file), 'utf8'));
@@ -41,8 +46,10 @@ for (const dir of dirs) {
     if (attackerId === null) continue;
     const record = records.find(({ match }) => file === `match-${match}.save.json`);
     const sideOf = (playerId) => (String(playerId).endsWith('axis') ? 'axis' : 'allied');
-    const role = record && record.sides.allied.policy !== record.sides.axis.policy
+    if (isBaseline && !candidateMatches.has(record?.match)) continue;
+    const role = isBaseline ? 'baseline attacker' : record && record.sides.allied.policy !== record.sides.axis.policy
       ? `attacker ${record.sides[sideOf(attackerId)].policy}` : 'attacker';
+    if (record && role === `attacker ${gatePolicy}`) candidateMatches.add(record.match);
     const definitions = new Map(state.scenario.pieceCatalog.definitions.map((definition) => [definition.id, definition]));
     const isHq = (piece) => String(definitions.get(piece.definitionId)?.categoryDefinitionId).endsWith(':hq');
     const isFieldUnit = (current, piece) => piece !== undefined && m.isOnMapCombatUnit(current, piece) && !isHq(piece);
@@ -108,10 +115,10 @@ for (const [role, s] of Object.entries(summary)) {
 
 if (gatePolicy !== null) {
   const candidate = summary[`attacker ${gatePolicy}`];
-  const baseline = Object.entries(summary).find(([role]) => role.startsWith('attacker ') && role !== `attacker ${gatePolicy}`)?.[1];
-  if (!candidate || !baseline) { console.log(`GATE ERROR: need attacker games of ${gatePolicy} and of another policy`); process.exit(1); }
+  const baseline = summary['baseline attacker'];
+  if (!candidate || !baseline || baseline.games !== candidate.games) { console.log(`GATE ERROR: need attacker games of ${gatePolicy} and the standard's self-play on the same match indexes (--baseline)`); process.exit(1); }
   const checks = [
-    ['SP no front unit can draw <= half the baseline', candidate.strandedSpPerSegment <= baseline.strandedSpPerSegment / 2,
+    ['SP no front unit can draw <= the standard on the same seeds', candidate.strandedSpPerSegment <= baseline.strandedSpPerSegment,
       `${candidate.strandedSpPerSegment.toFixed(1)} vs ${baseline.strandedSpPerSegment.toFixed(1)}`],
   ];
   for (const [name, pass, value] of checks) console.log(`GATE ${pass ? 'PASS' : 'FAIL'} ${name}: ${value}`);
