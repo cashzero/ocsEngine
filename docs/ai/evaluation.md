@@ -172,7 +172,7 @@ SP 每 segment 7.4–9.8 SP（地圖上 SP 的 29–36%）。
 | v74 保留 VP 攻擊的前進資格 | v66 | 品質／局部接續 | — | — | [748 passed、8 skipped](../quality/evidence/ai-vp-option-quality-2026-10-16/README.md)；換基底前未開對戰，不作升級證據 |
 | v76 全回合支付可存活的攻方 option | v75 | 開發 32 場 | −2 | +2／−4 | [淘汰](../quality/evidence/ai-vp-option-development-2026-10-16/README.md) |
 | v77 限最後一位玩家的最後回合 | v75 | 開發 32 場 | +8 | 0／+8 | [增益集中一對種子](../quality/evidence/ai-vp-terminal-option-development-2026-10-16/README.md)，尚未獨立驗收 |
-| v81 依交戰角色規劃主攻 | v79 | 開發 40 對（重複使用） | +72 | +66／+6 | [開發中](../quality/evidence/ai-assault-v81-development-2026-10-17/README.md)，成對 +1.80 ± 1.59；攻方 −1.8、守方 +2.4（角色分離）；尚未登記獨立批 |
+| v81 依交戰角色規劃主攻 | v79 | 開發 32 場 | −22 | −32／+10 | [未登記獨立批](../quality/evidence/ai-assault-v81-promotion-development-2026-10-17/README.md)，成對 −0.69 ± 1.40；攻方運補 gate（後方 SP 6.3 對 1.3）與攻方送補 gate（4.0 對 0.2）未通過；重複使用的 40 對 [+72](../quality/evidence/ai-assault-v81-development-2026-10-17/README.md)（成對 +1.80 ± 1.59，攻方 −1.8、守方 +2.4） |
 | v78 卡車循環運補 | v75 | 獨立 80 場 | +76 | +50／+26 | [未達登記門檻](../quality/evidence/ai-logistics-v78-independent-2026-10-16/README.md)，區間下界 −0.155；攻方運補 gate 與全部正確性檢查通過；開發 32 場 +44；使用者破例升級為標準 |
 | v80 砲兵轉 Combat Mode | v79 | 開發 32 場 | −2 | −8／+6 | [淘汰](../quality/evidence/ai-artillery-mode-v80-development-2026-10-16/README.md)，砲擊次數反而減少 |
 
