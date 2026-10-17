@@ -1,0 +1,244 @@
+{
+  "development": {
+    "logistics": {
+      "policy": "heuristic",
+      "checks": [
+        {
+          "name": "Rail Cap >= 70% of SP railable forward",
+          "pass": true,
+          "value": "1.00"
+        },
+        {
+          "name": "rear SP left after moving <= half the baseline",
+          "pass": false,
+          "value": "6.3 vs 1.3"
+        },
+        {
+          "name": "no garrison stock loaded or railed",
+          "pass": true,
+          "value": "0/0"
+        }
+      ]
+    },
+    "fuel": {
+      "policy": "heuristic",
+      "checks": [
+        {
+          "name": "SP no front unit can draw <= half the baseline",
+          "pass": false,
+          "value": "4.0 vs 0.2"
+        }
+      ]
+    },
+    "logisticsReport": {
+      "dirs": [
+        "../frozen-v81-development/attack-temperate",
+        "../frozen-v81-development/attack-eastern"
+      ],
+      "result": {
+        "games": 16,
+        "attackerWins": 5,
+        "defenderWins": 11,
+        "draws": 0
+      },
+      "sides": {
+        "attacker heuristic@artifacts/ai-promotion/frozen-v79/dist": {
+          "railCapUsed": 0.7682291666666666,
+          "railablePhases": 48,
+          "railUsedOfRailable": 1,
+          "truckSpPerPointTurn": 0.3721864951768489,
+          "idleTruckShare": 0.03827751196172249,
+          "idleEmptyTruckShare": 0.03827751196172249,
+          "stockLoads": 0,
+          "stockRails": 0,
+          "trucksArrived": 24,
+          "trucksLate": 0,
+          "nearSp": 9.973958333333334,
+          "farSp": 8.927083333333334,
+          "rearLeftSp": 1.2916666666666667
+        },
+        "defender heuristic": {
+          "railCapUsed": 0.6822916666666666,
+          "railablePhases": 40,
+          "railUsedOfRailable": 1,
+          "truckSpPerPointTurn": 0.3103448275862069,
+          "idleTruckShare": 0.03333333333333333,
+          "idleEmptyTruckShare": 0.022222222222222223,
+          "stockLoads": 0,
+          "stockRails": 0,
+          "trucksArrived": 8,
+          "trucksLate": 0,
+          "nearSp": 5.984375,
+          "farSp": 5.541666666666667,
+          "rearLeftSp": 1.8802083333333333
+        },
+        "attacker heuristic": {
+          "railCapUsed": 0.7010416666666667,
+          "railablePhases": 41,
+          "railUsedOfRailable": 1,
+          "truckSpPerPointTurn": 0.7314814814814815,
+          "idleTruckShare": 0.018779342723004695,
+          "idleEmptyTruckShare": 0.018779342723004695,
+          "stockLoads": 0,
+          "stockRails": 0,
+          "trucksArrived": 24,
+          "trucksLate": 0,
+          "nearSp": 7.697916666666667,
+          "farSp": 10.145833333333334,
+          "rearLeftSp": 6.28125
+        },
+        "defender heuristic@artifacts/ai-promotion/frozen-v79/dist": {
+          "railCapUsed": 0.7854166666666667,
+          "railablePhases": 45,
+          "railUsedOfRailable": 1,
+          "truckSpPerPointTurn": 0.24045801526717558,
+          "idleTruckShare": 0.12631578947368421,
+          "idleEmptyTruckShare": 0.12631578947368421,
+          "stockLoads": 0,
+          "stockRails": 0,
+          "trucksArrived": 8,
+          "trucksLate": 0,
+          "nearSp": 5.010416666666667,
+          "farSp": 6.25,
+          "rearLeftSp": 2.5520833333333335
+        }
+      }
+    },
+    "fuelReport": {
+      "dirs": [
+        "../frozen-v81-development/attack-temperate",
+        "../frozen-v81-development/attack-eastern"
+      ],
+      "sides": {
+        "attacker heuristic@artifacts/ai-promotion/frozen-v79/dist": {
+          "games": 8,
+          "strandedSpPerSegment": 0.15104166666666666,
+          "frontSpPerSegment": 18.46875,
+          "cannotFuelPerGame": 28.5,
+          "cannotFuelShare": 0.2766990291262136,
+          "dryHqShare": 0.2553191489361702
+        },
+        "attacker heuristic": {
+          "games": 8,
+          "strandedSpPerSegment": 3.9947916666666665,
+          "frontSpPerSegment": 17.078125,
+          "cannotFuelPerGame": 17.75,
+          "cannotFuelShare": 0.1926729986431479,
+          "dryHqShare": 0.2116788321167883
+        }
+      }
+    }
+  },
+  "v80q-wide": {
+    "logistics": {
+      "policy": "heuristic",
+      "checks": [
+        {
+          "name": "Rail Cap >= 70% of SP railable forward",
+          "pass": true,
+          "value": "1.00"
+        },
+        {
+          "name": "rear SP left after moving <= half the baseline",
+          "pass": false,
+          "value": "6.8 vs 5.0"
+        },
+        {
+          "name": "no garrison stock loaded or railed",
+          "pass": true,
+          "value": "0/0"
+        }
+      ]
+    },
+    "fuel": {
+      "policy": "heuristic",
+      "checks": [
+        {
+          "name": "SP no front unit can draw <= half the baseline",
+          "pass": false,
+          "value": "1.9 vs 1.8"
+        }
+      ]
+    },
+    "fuelReport": {
+      "dirs": [
+        "../../ai-assault/v80q-wide/AXIS_ATTACKS-TEMPERATE_INLAND",
+        "../../ai-assault/v80q-wide/AXIS_ATTACKS-EASTERN_EUROPE"
+      ],
+      "sides": {
+        "attacker heuristic@artifacts/ai-promotion/frozen-v79/dist": {
+          "games": 10,
+          "strandedSpPerSegment": 1.8416666666666666,
+          "frontSpPerSegment": 21.2125,
+          "cannotFuelPerGame": 4.5,
+          "cannotFuelShare": 0.05357142857142857,
+          "dryHqShare": 0.008849557522123894
+        },
+        "attacker heuristic": {
+          "games": 10,
+          "strandedSpPerSegment": 1.9375,
+          "frontSpPerSegment": 18.766666666666666,
+          "cannotFuelPerGame": 11.4,
+          "cannotFuelShare": 0.1371841155234657,
+          "dryHqShare": 0.04716981132075472
+        }
+      }
+    }
+  },
+  "v80n-wide": {
+    "logistics": {
+      "policy": "heuristic",
+      "checks": [
+        {
+          "name": "Rail Cap >= 70% of SP railable forward",
+          "pass": true,
+          "value": "1.00"
+        },
+        {
+          "name": "rear SP left after moving <= half the baseline",
+          "pass": false,
+          "value": "5.5 vs 5.0"
+        },
+        {
+          "name": "no garrison stock loaded or railed",
+          "pass": true,
+          "value": "0/0"
+        }
+      ]
+    },
+    "fuel": {
+      "policy": "heuristic",
+      "checks": [
+        {
+          "name": "SP no front unit can draw <= half the baseline",
+          "pass": false,
+          "value": "1.7 vs 1.8"
+        }
+      ]
+    },
+    "fuelReport": {
+      "dirs": [
+        "../../ai-assault/v80n-wide/AXIS_ATTACKS-TEMPERATE_INLAND",
+        "../../ai-assault/v80n-wide/AXIS_ATTACKS-EASTERN_EUROPE"
+      ],
+      "sides": {
+        "attacker heuristic@artifacts/ai-promotion/frozen-v79/dist": {
+          "games": 10,
+          "strandedSpPerSegment": 1.8416666666666666,
+          "frontSpPerSegment": 21.2125,
+          "cannotFuelPerGame": 4.5,
+          "cannotFuelShare": 0.05357142857142857,
+          "dryHqShare": 0.008849557522123894
+        },
+        "attacker heuristic": {
+          "games": 10,
+          "strandedSpPerSegment": 1.6625,
+          "frontSpPerSegment": 18.070833333333333,
+          "cannotFuelPerGame": 5.8,
+          "cannotFuelShare": 0.08033240997229917,
+          "dryHqShare": 0.013452914798206279
+        }
+      }
+    }
+  }
+}

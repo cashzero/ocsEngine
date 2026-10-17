@@ -1,0 +1,103 @@
+{
+  "strategyVersion": "81",
+  "baselineVersion": "79",
+  "sourceCommit": "293ce72d6537043227535b3774c5374b0fb08228",
+  "mode": "development",
+  "groups": [
+    {
+      "group": "meeting-temperate",
+      "games": 8,
+      "candidateVP": 157,
+      "baselineVP": 179,
+      "delta": -22,
+      "legalReplayAndSupply": true
+    },
+    {
+      "group": "meeting-eastern",
+      "games": 8,
+      "candidateVP": 45,
+      "baselineVP": 55,
+      "delta": -10,
+      "legalReplayAndSupply": true
+    },
+    {
+      "group": "attack-temperate",
+      "games": 8,
+      "candidateVP": 75,
+      "baselineVP": 57,
+      "delta": 18,
+      "legalReplayAndSupply": true
+    },
+    {
+      "group": "attack-eastern",
+      "games": 8,
+      "candidateVP": 44,
+      "baselineVP": 52,
+      "delta": -8,
+      "legalReplayAndSupply": true
+    }
+  ],
+  "totals": {
+    "candidateVP": 321,
+    "candidateStepsKilled": 518,
+    "candidateStepsLost": 537,
+    "baselineVP": 343,
+    "baselineStepsKilled": 537,
+    "baselineStepsLost": 518,
+    "candidateAdvances": 103,
+    "candidateFundedAdvances": 101,
+    "candidateSuccessfulOverruns": 13,
+    "candidateActuallyFundedOverruns": 13
+  },
+  "engagementDeltas": {
+    "MEETING": -32,
+    "AXIS_ATTACKS": 10
+  },
+  "pairs": 16,
+  "mean": -0.6875,
+  "standardError": 1.3955845549446297,
+  "interval": [
+    -3.6182275653837226,
+    2.2432275653837226
+  ],
+  "vpGate": false,
+  "verificationScope": "frozen-only",
+  "quality": {
+    "typecheck": {
+      "command": [
+        "npm",
+        "run",
+        "typecheck"
+      ],
+      "exitCode": 0,
+      "seconds": 9.105712717981078,
+      "log": "artifacts/ai-promotion/frozen-v81-quality/typecheck.log",
+      "sha256": "d276a607924b69f3bf75479c9ff0bd362e2bc5a9c0047d63a951c8e899b4eb98"
+    },
+    "tests": {
+      "command": [
+        "npx",
+        "vitest",
+        "run",
+        "--maxWorkers=2"
+      ],
+      "exitCode": 0,
+      "seconds": 165.48311300002388,
+      "log": "artifacts/ai-promotion/frozen-v81-quality/tests.log",
+      "sha256": "ec4fc1d1b74645c3a9d11f61926fb219013761f751ce9355e0b5e74fed9eebc0",
+      "passed": 753,
+      "skipped": 8
+    },
+    "smoke": {
+      "command": [
+        "npm",
+        "run",
+        "smoke"
+      ],
+      "exitCode": 0,
+      "seconds": 1.6033324150193948,
+      "log": "artifacts/ai-promotion/frozen-v81-quality/smoke.log",
+      "sha256": "57f4b11f8e16b9086ab757da51a782c8fdee53c661431fe12983397ac1a2493b"
+    }
+  }
+}
