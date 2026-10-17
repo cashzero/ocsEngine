@@ -40,7 +40,8 @@ record = {'strategyVersion': candidate['policyVersion'], 'baselineVersion': base
           'registeredAtUtc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
           'candidateFreezeSha256': hashlib.sha256(candidate_file.read_bytes()).hexdigest(),
           'baselineFreezeSha256': hashlib.sha256(baseline_file.read_bytes()).hexdigest(), 'ranges': ranges,
-          'gate': {'games': 80, 'pairs': 40, 'turns': 8, 'positiveVpInBothEngagements': True, 'pairedMeanMinus2Point1SePositive': True,
+          'gate': {'games': 80, 'pairs': 40, 'turns': 8, 'positiveVpInEachChangedEngagement': True, 'pairedMeanMinus2Point1SePositiveOverChangedEngagements': True,
+                   'unchangedEngagement': 'both games of every pair end in the same state hash',
                    'allLegalCompleteReplayHashes': True, 'zeroGuardedSupplyAdvanceViolations': True, 'fullFrozenQuality': True}}
 output = build.with_name(build.name + '-registration.json')
 with output.open('x') as stream:

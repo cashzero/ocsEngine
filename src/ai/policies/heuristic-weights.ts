@@ -62,7 +62,7 @@ export interface HeuristicWeights {
   /** The attacker's assault group strength over the defenders' printed strength (heuristic@11-79 rule, kept for the attacker). */
   readonly assaultRatio: number;
   readonly assaultRatioUnits: number;
-  /** heuristic@81: guns given to one effort to barrage its objective first (heuristic@82: not the attacker's). */
+  /** heuristic@81: guns given to one effort to barrage its objective first (heuristic@83: the defender's only). */
   readonly assaultMaxGuns: number;
   /** heuristic@81: share of the defenders' strength an effort is sized against when a gun of its own can barrage them (DG halves). */
   readonly barrageDefenseShare: number;

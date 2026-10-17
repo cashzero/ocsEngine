@@ -81,16 +81,17 @@ const plannedColumn = (plan: PlannedAttack, members: ReadonlySet<PieceId>, defen
 /**
  * The group sent against one defended enemy objective, with up to `assaultMaxGuns` guns to barrage it first.
  *
- * The attacker of an attack engagement keeps the heuristic@11-79 group: the nearest units within `assaultReach` until they
- * hold 2.5 times the defenders' printed strength, with no guns. heuristic@82: the attacker plays heuristic@79 exactly (no
- * guns, `crowding` and SP at full price); with guns, stacked groups and SP pricing the v81 attacker lost 7.0 ± 3.4 VP of
- * attacker margin against v79 self-play on the development seeds. heuristic@81 development tried sizing it to a Combat Table column under the
+ * The attacker of an attack engagement and both sides of a meeting engagement keep the heuristic@11-79 group: the nearest
+ * units within `assaultReach` until they hold 2.5 times the defenders' printed strength, with no guns. heuristic@82: the
+ * attacker plays heuristic@79 exactly (no guns, `crowding` and SP at full price); with guns, stacked groups and SP pricing
+ * the v81 attacker lost 7.0 ± 3.4 VP of attacker margin against v79 self-play on the development seeds. heuristic@83: so do
+ * both sides of a meeting engagement, where the plan below lost 34 VP in the heuristic@82 independent run. heuristic@81 development tried sizing it to a Combat Table column under the
  * objective's terrain (Open 3:1, the column the Combat Segment would accept, or one emptying the hex half the time), with
  * and without gathering out of reach until the group could close in together; against the v79 self-play baseline every
  * variant lost attacker margin (-3 to -11 VP over 10 games), mostly by attacking defended objectives more often at lower
  * odds and leaving empty ones untaken.
  *
- * heuristic@81: the defender of an attack engagement and both sides of a meeting engagement size the group, from units that
+ * heuristic@81: the defender of an attack engagement (heuristic@83: only the defender) sizes the group, from units that
  * can be beside the objective within about two turns, to the column at which the Combat Segment would attack it
  * (`requiredColumn`), counting what the rules give the group under the objective's terrain (9.4b), against half the
  * defenders when a gun of its own can barrage them this step.
@@ -105,7 +106,7 @@ const chooseEffort = (context: BotDecisionContext, situation: Situation, facts: 
     if (objective.controllerId === me || taken.has(objective.hexId)) continue;
     const enemy = situation.enemy.get(objective.hexId);
     if (!enemy?.hasCombatUnit || enemy.strength <= 0) continue;
-    if (situation.posture === 'ATTACKER') {
+    if (situation.posture !== 'DEFENDER') {
       const near = combat.filter((unit) => !garrisons.has(unit.piece.id) && !used.has(unit.piece.id) && hexesBetween(unit.hexId, objective.hexId) <= w.assaultReach)
         .sort((left, right) => hexesBetween(left.hexId, objective.hexId) - hexesBetween(right.hexId, objective.hexId) || String(left.piece.id).localeCompare(String(right.piece.id)));
       const group: OwnUnit[] = [];
@@ -485,9 +486,9 @@ const scoreDestination = (
     const effort = target?.purpose === 'ASSAULT' ? effortAt(notes, target.hexId) : undefined;
     // One stack per hex does the job; more units in the same hex only make a better barrage target. heuristic@81: an assault
     // group's members stack together: the defender attacks one stack at a time, and a group spread over several hexes was
-    // attacked 2.8 times a game (v79: 0.8) when its exposure was judged by the whole group's strength. Not the attacker's
-    // (heuristic@82).
-    if (path.length > 1 && (effort === undefined || situation.posture === 'ATTACKER')) add('crowding', -incoming * w.crowding);
+    // attacked 2.8 times a game (v79: 0.8) when its exposure was judged by the whole group's strength. Only the defender's
+    // (heuristic@83).
+    if (path.length > 1 && (effort === undefined || situation.posture !== 'DEFENDER')) add('crowding', -incoming * w.crowding);
     const assaulting = target?.purpose === 'ASSAULT' && hexesBetween(destination, target.hexId) === 1;
     if (assaulting) add('assault-position', w.assaultPosition);
     if (target) {
@@ -1236,10 +1237,10 @@ const fuelRank = (action: GameAction): number => action.kind !== 'PAY_FUEL' ? 9 
  * paying is what attacks are for; the price falls as the Tokens in dumps that reach them (12.3, 12.6c) exceed
  * `supplyReserveTokens`, and stays whole below it. Replays of v79 attack games: 50 of 61 Combat Segments ended with the best
  * attack under the threshold, its supply term (-9.8) outweighing the steps it would take, 19 of them only because of it.
- * heuristic@82: the attacker of an attack engagement pays full price.
+ * heuristic@83: only the defender of an attack engagement prices it; the attacker and meeting sides pay full price.
  */
 const supplyPrice = (context: BotDecisionContext, situation: Situation, pieceIds: readonly PieceId[], w: HeuristicWeights): number => {
-  if (situation.posture === 'ATTACKER') return 1;
+  if (situation.posture !== 'DEFENDER') return 1;
   const ids = new Set(pieceIds.map(String));
   const hexes = new Set(situation.own.filter(({ piece }) => ids.has(String(piece.id))).map(({ hexId }) => String(hexId)));
   const local = context.actions.feedCoverage().filter(({ hexIds }) => hexIds.some((hexId) => hexes.has(String(hexId))))
@@ -1610,7 +1611,7 @@ export const createHeuristicPolicy = (facts: BotGameFacts, options: HeuristicPol
   const choose = decide(facts, options.weights ?? DEFAULT_HEURISTIC_WEIGHTS);
   return {
     id: 'heuristic',
-    version: options.label === undefined ? '82' : `82+${options.label}`,
+    version: options.label === undefined ? '83' : `83+${options.label}`,
     decide: (context) => {
       const sink = options.debug;
       debug = sink ? (line) => sink(`${context.memory.stepKey} ${String(context.playerId).split(':').at(-1)} ${line}`) : null;
