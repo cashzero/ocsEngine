@@ -48,7 +48,7 @@ src/ai/           bot 驅動、策略、評估
 | M6 | Random Map | **DONE** | [05-random-map-wbs](roadmap/05-random-map-wbs.md) | `docs/generator/` |
 | M7 | OOB Catalog 與 Random OOB | **DONE**；0.4.0 改版 IN PROGRESS | [06-random-oob-wbs](roadmap/06-random-oob-wbs.md)、[12-oob-revision-wbs](roadmap/12-oob-revision-wbs.md) | `docs/oob/`、`docs/generator/` |
 | M8 | Random Scenario 與 Game Flow 整合 | **IN PROGRESS**（M8.10 gate） | [07-game-flow-integration-wbs](roadmap/07-game-flow-integration-wbs.md)、[13-engagement-scenarios-wbs](roadmap/13-engagement-scenarios-wbs.md) | `docs/game-flow/` |
-| M9 | AI Bot | **IN PROGRESS**（headless B0–B5；UI 整合 B7 等 M8） | [11-ai-bot-wbs](roadmap/11-ai-bot-wbs.md) | `docs/ai/` |
+| M9 | AI Bot | **IN PROGRESS**（headless 與 B7 人機／觀戰已整合；後勤、行為基準與 exit gate 未完成） | [11-ai-bot-wbs](roadmap/11-ai-bot-wbs.md) | `docs/ai/` |
 | M10 | Paired self-play 與品質 gate | **IN PROGRESS**：升級流程已在使用（`docs/ai/evaluation.md`）；權重自我對戰停用 | 本文件 §4 | `docs/ai/evaluation.md` |
 | M11 | 完整 OCS 擴充 | **IN PROGRESS**，見下表 | 本文件 §4 | 各主題資料夾 |
 
@@ -57,7 +57,7 @@ M11 已進行的擴充：
 | 擴充 | 狀態 | 計畫 | 現況 |
 |---|---|---|---|
 | 空軍（14.0–15.0） | IN PROGRESS | [08-air-power-wbs](roadmap/08-air-power-wbs.md) | `docs/rule-engine/air-power.md` |
-| 補給與運補 UI | IN PROGRESS（Phase B 未開始） | [09-supply-logistics-ux-wbs](roadmap/09-supply-logistics-ux-wbs.md) | `docs/ui/command-deck.md` |
+| 補給與運補 UI | IN PROGRESS（Phase B 延伸能力與 T1 操作數比較未完成） | [09-supply-logistics-ux-wbs](roadmap/09-supply-logistics-ux-wbs.md) | `docs/gameplay/logistics.md` |
 | 鐵路 | IN PROGRESS | [10-rail-wbs](roadmap/10-rail-wbs.md) | manifest `supply.rail-trace` |
 | Rail Cap 與 13.3h 控制 | IN PROGRESS | [15-rail-cap-wbs](roadmap/15-rail-cap-wbs.md) | manifest `movement.rail-cap` |
 | Hedgehog（16.0） | DONE | [14-hedgehogs-wbs](roadmap/14-hedgehogs-wbs.md) | manifest `hedgehogs` |
@@ -67,9 +67,9 @@ M11 已進行的擴充：
 | 港口與海運（19.0） | IN PROGRESS（MAP-07～09） | — | manifest `movement.sea` |
 | 印刷 counter 忠實度 | IN PROGRESS | [17-counter-fidelity-wbs](roadmap/17-counter-fidelity-wbs.md) | `docs/ui/map.md` |
 
-## 4. 尚未開始的工作
+## 4. 未完成與後續工作
 
-- **M9**：B6 完整的後勤規劃、B7 產品 UI 整合（人對電腦、觀戰）、B8 行為基準、B9 exit gate（`11-ai-bot-wbs.md`）。
+- **M9**：B6 完整的後勤規劃、B7 的效能與階段中途讀檔缺口、B8 行為基準、B9 exit gate；已整合的人機與觀戰流程不代表 M8 或 M9 gate 完成（`11-ai-bot-wbs.md`）。
 - **M10**：跨 map／OOB／deployment seed 的評估矩陣與 held-out 組合；blocking error（失敗行動、deadlock、重播或勝負不符、
   資源守恆錯誤、超出預算）一律為零。現行的對戰評估與升級流程見 `docs/ai/evaluation.md`。
 - **M11**：艦艇、登陸艇與兩棲作戰（18.0）；選用規則（21.1–21.12）；新的地圖風格與 OOB 模組；editor；選用的 Electron 封裝。

@@ -1,8 +1,9 @@
 # Operable UI work breakdown
 
 Status: **IN PROGRESS**. U10 (the operable UI gate) stays open while printed-counter fidelity
-(`docs/roadmap/17-counter-fidelity-wbs.md`), session persistence (SES-09), keyboard traversal (UI-05) and the other
-non-`PASS` rows of `docs/quality/03-product-operation-verification-plan.md` remain.
+(`docs/roadmap/17-counter-fidelity-wbs.md`), session persistence (SES-09) and the remaining
+non-`PASS` rows of `docs/quality/03-product-operation-verification-plan.md` remain. Keyboard traversal (UI-05)
+has recorded browser evidence in that plan and is not an outstanding blocker.
 
 The UI milestone consumes `GameSession`; it does not own rules or mutate authoritative state. Current behavior is
 described in `docs/ui/`; this plan only tracks the steps.
@@ -21,4 +22,5 @@ described in `docs/ui/`; this plan only tracks the steps.
 | U9 | Browser operation | `docs/quality/03-product-operation-verification-plan.md` |
 | U10 | Integration gate: every P0 row of `03` sections A–E `PASS` | `docs/quality/03-product-operation-verification-plan.md` |
 
-Random map/OOB, scenario editing, AI, multiplayer networking, and packaging are later milestones.
+Generated Map/OOB and computer seats are integrated clients of this UI; their contracts and remaining work belong to
+the Game Flow and AI milestones. Scenario editing, multiplayer networking and packaging remain later work.
