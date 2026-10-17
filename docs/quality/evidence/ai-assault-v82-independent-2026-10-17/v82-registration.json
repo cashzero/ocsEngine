@@ -1,0 +1,36 @@
+{
+  "strategyVersion": "82",
+  "baselineVersion": "79",
+  "sourceCommit": "9fbcf57fb99c0a10c3a704a0ddbd9de46f943380",
+  "registeredAtUtc": "2026-10-17T05:54:10.746228+00:00",
+  "candidateFreezeSha256": "d515de22b9f7f65ed7ae898c1d2d56e56392ecc0ec5719717c8f6438cdc72581",
+  "baselineFreezeSha256": "07f1dc21a22a29cd0c505480bc2c84758b654d55c3f33c8f177d64a5b9713977",
+  "ranges": {
+    "meeting-temperate": [
+      8100000,
+      8100019
+    ],
+    "meeting-eastern": [
+      8100100,
+      8100119
+    ],
+    "attack-temperate": [
+      8100200,
+      8100219
+    ],
+    "attack-eastern": [
+      8100300,
+      8100319
+    ]
+  },
+  "gate": {
+    "games": 80,
+    "pairs": 40,
+    "turns": 8,
+    "positiveVpInBothEngagements": true,
+    "pairedMeanMinus2Point1SePositive": true,
+    "allLegalCompleteReplayHashes": true,
+    "zeroGuardedSupplyAdvanceViolations": true,
+    "fullFrozenQuality": true
+  }
+}
