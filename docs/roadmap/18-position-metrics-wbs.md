@@ -1,6 +1,6 @@
 # 局勢指標研究 WBS
 
-狀態：**IN PROGRESS**。已有一批局勢指標與分組樣本外驗證工具；新指標的候選、殘差檢視與前瞻確認尚未開始。本文件只維護工作分解；指標定義、量測結果與結論寫在 [電腦策略的錯誤清單：局勢指標](../ai/policy-errors.md#局勢指標)。
+狀態：**IN PROGRESS**。P0–P7 已完成：局勢指標經分組樣本外驗證、殘差檢視與一次前瞻確認，確認成立的指標見 [局勢指標](../ai/policy-errors.md#指標是否可用)；指標當 reward 與反向搜尋仍暫緩。本文件只維護工作分解；指標定義、量測結果與結論寫在 [電腦策略的錯誤清單：局勢指標](../ai/policy-errors.md#局勢指標)。
 
 需求來源（使用者）：
 
@@ -59,7 +59,7 @@
   原清單的預備隊與「可發動的攻擊」刪除：P3 顯示遠處來的攻擊者已由以移動範圍為準的欄位涵蓋。原清單的複合風險與「斷補後能撐幾回合」由 `hqDependentUnitsInReach` 與 `outOfTraceUnfed` 取代。
 - [x] P5 實作、一次重記與驗證。候選定案後一次實作並重記（12 個行程約 25 分鐘），用 P1 的工具驗證；量測工具須證明不改變行動序列與終局 hash。全部 368 局重播到記錄的終局 hash，既有指標與 P2 的 20 項檢驗結果不變。`objectiveReachColumn` 勝過 2 格內的有效欄位；`expectedLossAllocated` 與分配後暴露相當；`rearHexesInReach` 只在攻方行動時通過；`hqDependentUnitsInReach` 弱；`outOfTraceUnfed` 不採用。[紀錄](../quality/evidence/ai-position-metrics-p5-2026-10-19/README.md)
 - [x] P6 終局預測重驗。以正確的對局識別與種子分組，重驗通過 P2、P5 的指標在 VP、step、斷補之外對終局 VP 的預測力。執行前寫下的設計：每條不重複軌跡在 Game Turn 2～7 開始時的第一列，預測終局 VP 差（軸心減盟軍），攻擊戰與遭遇戰分開；模型 M0 為 VP 差，M1 加 step 差與 `outOfTrace` 差，M2 為 M1 加雙方的 `objectiveReachColumn` 與 `objectiveVpAtRisk`，M3 為 M1 加雙方的 `stacksExposedAllocated`，M4 為 M1 加雙方的 `hqsInReach`；訓練資料標準化的最小平方法，十折地圖種子分組，報告樣本外 R² 與 MAE；增益以種子群組重抽固定樣本外誤差 1,000 次得 95% 區間，區間不含 0 為通過。六個 Game Turn 同時比較，單一回合的通過須保守解讀。結果：攻擊戰中 M1 勝過 M0 到 Game Turn 5；M2 勝過 M1，Game Turn 3～7 的 MAE 與 Game Turn 5、6 的 R² 通過；M3、M4 沒有增益；遭遇戰沒有任何增益通過。[紀錄](../quality/evidence/ai-position-metrics-p6-2026-10-19/README.md)
-- [ ] P7 前瞻確認。凍結通過的指標版本與門檻，登記場數、種子與策略後跑新對局，揭露結果前保存預測。使用者已同意為此新增對局（2026-10-19），場數在登記時決定並寫入證據。已登記（[登記](../quality/evidence/ai-position-confirmation-2026-10-19/README.md)）：標準策略自戰 160 局、11 項假設，模型只以既有 255 條軌跡擬合。
+- [x] P7 前瞻確認。凍結通過的指標版本與門檻，登記場數、種子與策略後跑新對局，揭露結果前保存預測。使用者已同意為此新增對局（2026-10-19），場數在登記時決定並寫入證據。已登記（[登記與結果](../quality/evidence/ai-position-confirmation-2026-10-19/README.md)）：標準策略自戰 160 局、11 項假設，模型只以既有 255 條軌跡擬合。27 格中 20 格通過；`supplyCuttable`、`rearHexesInReach` 對 HQ 損失與守方行動時的目標點指標未確認。
 
 ## 3. 規則
 

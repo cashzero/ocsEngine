@@ -1,0 +1,73 @@
+{
+ "engine": "dist built from src as of eee03e2; scripts of e73b9ad",
+ "files": [
+  {
+   "file": "artifacts/ai-position-confirmation/rows/attack-eastern.jsonl",
+   "source": "artifacts/ai-position-confirmation/attack-eastern",
+   "games": 48,
+   "rows": 768,
+   "sha256": "74e52f2a8c230fdeaa9f2913467d3e4e8c4ac04759c984a6eb9e498cff3e0384"
+  },
+  {
+   "file": "artifacts/ai-position-confirmation/rows/attack-temperate.jsonl",
+   "source": "artifacts/ai-position-confirmation/attack-temperate",
+   "games": 48,
+   "rows": 768,
+   "sha256": "c8b989c830a6f5882dbd7f1c34e6cba730ef2616839c3479e1d7b547111a7524"
+  },
+  {
+   "file": "artifacts/ai-position-confirmation/rows/meeting-eastern.jsonl",
+   "source": "artifacts/ai-position-confirmation/meeting-eastern",
+   "games": 32,
+   "rows": 512,
+   "sha256": "415f44f2b78bbf52cbd83afcb49746c8a7f37798c78b5dcc928b9f3e514091bf"
+  },
+  {
+   "file": "artifacts/ai-position-confirmation/rows/meeting-temperate.jsonl",
+   "source": "artifacts/ai-position-confirmation/meeting-temperate",
+   "games": 32,
+   "rows": 512,
+   "sha256": "79313c59b704873ee475a380e5ee74ebe07f718ab5be7c213edcaff4d9b471d0"
+  }
+ ],
+ "outputs": [
+  {
+   "file": "artifacts/ai-position-confirmation/validation.json",
+   "sha256": "a44c444326af91cb710c4ee50d36907401712b9d9005394084b63148680ac9ea"
+  },
+  {
+   "file": "artifacts/ai-position-confirmation/final.json",
+   "sha256": "33c04b3682e4692b62de083668056c82dff2eca0083ad7ccf804653ddea8f3c2"
+  }
+ ],
+ "games": [
+  {
+   "group": "attack-temperate",
+   "matches": 48,
+   "finished": 48,
+   "replayOk": 48,
+   "summarySha256": "930ef3a45ea1fbe6818a5dadc885c84426c6987dc4ce25d32abc91c7b7dc6e67"
+  },
+  {
+   "group": "attack-eastern",
+   "matches": 48,
+   "finished": 48,
+   "replayOk": 48,
+   "summarySha256": "a5151332e46232ea43c105956558f570c77385210e898c6f2829f417a3f1714b"
+  },
+  {
+   "group": "meeting-temperate",
+   "matches": 32,
+   "finished": 32,
+   "replayOk": 32,
+   "summarySha256": "eb939a74a3f383242239996c9fff1ee7a81306991ed2c74676622039abe371f2"
+  },
+  {
+   "group": "meeting-eastern",
+   "matches": 32,
+   "finished": 32,
+   "replayOk": 32,
+   "summarySha256": "ac597d30a391e18b9bf4fdd07cf25effa76b482c6fda598c8993bbb92dcfdc16"
+  }
+ ]
+}

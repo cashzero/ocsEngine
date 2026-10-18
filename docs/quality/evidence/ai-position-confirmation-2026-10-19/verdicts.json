@@ -1,0 +1,326 @@
+[
+ {
+  "id": "H1",
+  "where": "attacker-moving",
+  "passed": true,
+  "nRows": 623,
+  "r2Gain": 0.17332744523894494,
+  "r2Gain95": [
+   0.10694444405691006,
+   0.23844869538026914
+  ],
+  "maeFixedBuckets": false,
+  "maeQuintileBins": false
+ },
+ {
+  "id": "H1",
+  "where": "defender-moving",
+  "passed": false,
+  "nRows": 625,
+  "r2Gain": 0.1359771277193328,
+  "r2Gain95": [
+   -0.02606905859185704,
+   0.24939619083764863
+  ],
+  "maeFixedBuckets": false,
+  "maeQuintileBins": false
+ },
+ {
+  "id": "H1",
+  "where": "meeting",
+  "passed": true,
+  "nRows": 832,
+  "r2Gain": 0.16644148337136522,
+  "r2Gain95": [
+   0.08240310095971992,
+   0.23505795965738707
+  ],
+  "maeFixedBuckets": false,
+  "maeQuintileBins": false
+ },
+ {
+  "id": "H2",
+  "where": "attacker-moving",
+  "passed": true,
+  "nRows": 623,
+  "r2Gain": 0.07259533682022068,
+  "r2Gain95": [
+   0.029053173497900375,
+   0.11452113392740515
+  ],
+  "maeFixedBuckets": true,
+  "maeQuintileBins": false
+ },
+ {
+  "id": "H3a",
+  "where": "attacker-moving",
+  "passed": true,
+  "nRows": 623,
+  "r2Gain": 0.2525861128976108,
+  "r2Gain95": [
+   0.21476435249967774,
+   0.2966492760773187
+  ],
+  "maeFixedBuckets": false,
+  "maeQuintileBins": true
+ },
+ {
+  "id": "H3a",
+  "where": "defender-moving",
+  "passed": false,
+  "nRows": 625,
+  "r2Gain": 0.12380595829447305,
+  "r2Gain95": [
+   -0.03266987513112385,
+   0.17524489669248278
+  ],
+  "maeFixedBuckets": false,
+  "maeQuintileBins": false
+ },
+ {
+  "id": "H3a",
+  "where": "meeting",
+  "passed": true,
+  "nRows": 832,
+  "r2Gain": 0.22599548136067982,
+  "r2Gain95": [
+   0.20034321804027344,
+   0.25307875461211593
+  ],
+  "maeFixedBuckets": false,
+  "maeQuintileBins": false
+ },
+ {
+  "id": "H3b",
+  "where": "attacker-moving",
+  "passed": true,
+  "nRows": 623,
+  "r2Gain": 0.03879542154571147,
+  "r2Gain95": [
+   0.01624047083492297,
+   0.06314135397792031
+  ],
+  "maeFixedBuckets": false,
+  "maeQuintileBins": false
+ },
+ {
+  "id": "H3b",
+  "where": "meeting",
+  "passed": true,
+  "nRows": 832,
+  "r2Gain": 0.034652034496523654,
+  "r2Gain95": [
+   0.019802565853323406,
+   0.05102776122345243
+  ],
+  "maeFixedBuckets": false,
+  "maeQuintileBins": false
+ },
+ {
+  "id": "H4",
+  "where": "attacker-moving",
+  "passed": true,
+  "nRows": 623,
+  "r2Gain": 0.09178536999162656,
+  "r2Gain95": [
+   0.030953021596927033,
+   0.14352972483637572
+  ],
+  "maeFixedBuckets": true,
+  "maeQuintileBins": true
+ },
+ {
+  "id": "H4",
+  "where": "meeting",
+  "passed": true,
+  "nRows": 832,
+  "r2Gain": 0.06531558879293053,
+  "r2Gain95": [
+   0.012884748155210457,
+   0.11239154615701374
+  ],
+  "maeFixedBuckets": false,
+  "maeQuintileBins": true
+ },
+ {
+  "id": "H5",
+  "where": "attacker-moving",
+  "passed": false,
+  "nRows": 623,
+  "r2Gain": 0.05581244747487968,
+  "r2Gain95": [
+   -0.028085710835134448,
+   0.12149785994527151
+  ],
+  "maeFixedBuckets": true,
+  "maeQuintileBins": false
+ },
+ {
+  "id": "H5",
+  "where": "meeting",
+  "passed": false,
+  "nRows": 832,
+  "r2Gain": -0.009584417395036349,
+  "r2Gain95": [
+   -0.07708834329719538,
+   0.04891997292101102
+  ],
+  "maeFixedBuckets": false,
+  "maeQuintileBins": false
+ },
+ {
+  "id": "H6",
+  "where": "attacker-moving",
+  "passed": true,
+  "nRows": 623,
+  "r2Gain": 0.11904291658336863,
+  "r2Gain95": [
+   0.0032086342753707697,
+   0.20220652995140576
+  ],
+  "maeFixedBuckets": false,
+  "maeQuintileBins": false
+ },
+ {
+  "id": "H6",
+  "where": "defender-moving",
+  "passed": true,
+  "nRows": 625,
+  "r2Gain": 0.03492463706954618,
+  "r2Gain95": [
+   0.024582723102939852,
+   0.04343131596679328
+  ],
+  "maeFixedBuckets": false,
+  "maeQuintileBins": false
+ },
+ {
+  "id": "H6",
+  "where": "meeting",
+  "passed": true,
+  "nRows": 832,
+  "r2Gain": 0.04644811285322192,
+  "r2Gain95": [
+   0.025187619937342087,
+   0.06614414522045486
+  ],
+  "maeFixedBuckets": false,
+  "maeQuintileBins": false
+ },
+ {
+  "id": "H7a",
+  "where": "attacker-moving",
+  "passed": true,
+  "nRows": 623,
+  "r2Gain": 0.0707322810539277,
+  "r2Gain95": [
+   0.02494653567053373,
+   0.1090264387201566
+  ],
+  "maeFixedBuckets": false,
+  "maeQuintileBins": true
+ },
+ {
+  "id": "H7b",
+  "where": "attacker-moving",
+  "passed": false,
+  "nRows": 623,
+  "r2Gain": 0.01757023723796991,
+  "r2Gain95": [
+   -0.04779748208112777,
+   0.07512780612349523
+  ],
+  "maeFixedBuckets": false,
+  "maeQuintileBins": false
+ },
+ {
+  "id": "H8a",
+  "where": "Game Turn 2",
+  "passed": false,
+  "gain": -0.0659792470629712,
+  "gain95": [
+   -0.21569151428805067,
+   0.054357290963944926
+  ]
+ },
+ {
+  "id": "H8a",
+  "where": "Game Turn 3",
+  "passed": false,
+  "gain": 0.1302424526868633,
+  "gain95": [
+   -0.01862310284456803,
+   0.26836055087055566
+  ]
+ },
+ {
+  "id": "H8a",
+  "where": "Game Turn 4",
+  "passed": true,
+  "gain": 0.2051359070915426,
+  "gain95": [
+   0.09163472321127075,
+   0.3152108015273588
+  ]
+ },
+ {
+  "id": "H8a",
+  "where": "Game Turn 5",
+  "passed": true,
+  "gain": 0.10572791754118005,
+  "gain95": [
+   0.002948146479566538,
+   0.21683528217037673
+  ]
+ },
+ {
+  "id": "H8b",
+  "where": "Game Turn 3",
+  "passed": true,
+  "gain": 1.0159667196803053,
+  "gain95": [
+   0.21499151489437196,
+   1.767814641863751
+  ]
+ },
+ {
+  "id": "H8b",
+  "where": "Game Turn 4",
+  "passed": true,
+  "gain": 1.344364563083368,
+  "gain95": [
+   0.5352737420404505,
+   2.211100774665706
+  ]
+ },
+ {
+  "id": "H8b",
+  "where": "Game Turn 5",
+  "passed": true,
+  "gain": 0.939825249501463,
+  "gain95": [
+   0.25289006825484694,
+   1.6146136816418784
+  ]
+ },
+ {
+  "id": "H8b",
+  "where": "Game Turn 6",
+  "passed": true,
+  "gain": 0.5580918247856905,
+  "gain95": [
+   0.011371942802564483,
+   1.1346159355380978
+  ]
+ },
+ {
+  "id": "H8b",
+  "where": "Game Turn 7",
+  "passed": true,
+  "gain": 0.5509552618878946,
+  "gain95": [
+   0.23205783366625976,
+   0.821475563025519
+  ]
+ }
+]
