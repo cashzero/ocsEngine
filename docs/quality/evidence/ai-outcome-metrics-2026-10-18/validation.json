@@ -1,0 +1,304 @@
+{
+  "baseCommit": "60b5456",
+  "historicalGames": 80,
+  "newGames": 0,
+  "sideObservations": 160,
+  "supplySettlements": 1280,
+  "allReplaysVerified": true,
+  "completeEightTurnSupplyCoverage": true,
+  "rationSearchExhaustions": 0,
+  "lossCauseEventTotals": {
+    "attrition": 916,
+    "combat": 1613,
+    "overrun": 141,
+    "barrage": 98,
+    "other": 151,
+    "overstack": 30
+  },
+  "extractorRuns": [
+    {
+      "name": "v79-baseline-wide-TEMPERATE_INLAND",
+      "exitCode": 0,
+      "seconds": 122.53306409996003
+    },
+    {
+      "name": "v79-baseline-wide-EASTERN_EUROPE",
+      "exitCode": 0,
+      "seconds": 126.51475927600404
+    },
+    {
+      "name": "v80g-wide-TEMPERATE_INLAND",
+      "exitCode": 0,
+      "seconds": 105.32663990801666
+    },
+    {
+      "name": "v80g-wide-EASTERN_EUROPE",
+      "exitCode": 0,
+      "seconds": 103.97026733699022
+    },
+    {
+      "name": "v80j-wide-TEMPERATE_INLAND",
+      "exitCode": 0,
+      "seconds": 89.56241350999335
+    },
+    {
+      "name": "v80j-wide-EASTERN_EUROPE",
+      "exitCode": 0,
+      "seconds": 98.6048233610345
+    },
+    {
+      "name": "v80q-wide-TEMPERATE_INLAND",
+      "exitCode": 0,
+      "seconds": 71.88714911800344
+    },
+    {
+      "name": "v80q-wide-EASTERN_EUROPE",
+      "exitCode": 0,
+      "seconds": 72.68599868303863
+    }
+  ],
+  "scriptHashes": {
+    "scripts/ai-vp-metrics-extract.mjs": "9fb93214e1cae1fa6ba0ef4db9849efbcc68f35f54d78b7d95d8f114553fd04a",
+    "scripts/ai-outcome-metrics-observer.mjs": "2a6238735aa49cf89cf9fbbc2a033e560f320f440516a5447df961d454ac524b",
+    "scripts/ai-vp-metrics-compare.py": "70954051fc948a1360b306fedb3a817cb77d698a7de1dab83e84f18130de0b43",
+    "scripts/ai-outcome-metrics-compare.py": "34a252a4a91c308920144c9a7f1c0e539f2ee0d8e2c57c993f74d2cffc36c4e7"
+  },
+  "inputManifest": {
+    "purpose": "Exploratory analysis of historical data, not independent validation",
+    "cutoffTurn": 4,
+    "newGames": 0,
+    "existingGames": 80,
+    "seedGroups": 10,
+    "candidateVariants": 3,
+    "primaryRole": "ATTACKER",
+    "engine": ".claude/worktrees/ai-truck-shuttle/artifacts/ai-promotion/frozen-v81/dist",
+    "jobs": [
+      {
+        "variant": "v79-baseline-wide",
+        "style": "TEMPERATE_INLAND",
+        "directory": ".claude/worktrees/ai-truck-shuttle/artifacts/ai-assault/v79-baseline-wide/AXIS_ATTACKS-TEMPERATE_INLAND",
+        "matches": [
+          1310000,
+          1310001,
+          1310002,
+          1310003,
+          1310004,
+          1310005,
+          1310006,
+          1310007,
+          1310008,
+          1310009
+        ],
+        "summarySha256": "1e9cd2859946b906836c18f539434cfc7c99879b68b629659375c6d3d95c979f"
+      },
+      {
+        "variant": "v79-baseline-wide",
+        "style": "EASTERN_EUROPE",
+        "directory": ".claude/worktrees/ai-truck-shuttle/artifacts/ai-assault/v79-baseline-wide/AXIS_ATTACKS-EASTERN_EUROPE",
+        "matches": [
+          1310100,
+          1310101,
+          1310102,
+          1310103,
+          1310104,
+          1310105,
+          1310106,
+          1310107,
+          1310108,
+          1310109
+        ],
+        "summarySha256": "6293fb047554ad2510fc1cad89d993eb909ddbeabb3a55dcf6a23a72138c3778"
+      },
+      {
+        "variant": "v80g-wide",
+        "style": "TEMPERATE_INLAND",
+        "directory": ".claude/worktrees/ai-truck-shuttle/artifacts/ai-assault/v80g-wide/AXIS_ATTACKS-TEMPERATE_INLAND",
+        "matches": [
+          1310000,
+          1310001,
+          1310002,
+          1310003,
+          1310004,
+          1310005,
+          1310006,
+          1310007,
+          1310008,
+          1310009
+        ],
+        "summarySha256": "99d8fba11f8b1785f536a3d3349974ab1096473f9d23ca581e35312c3a3fb13e"
+      },
+      {
+        "variant": "v80g-wide",
+        "style": "EASTERN_EUROPE",
+        "directory": ".claude/worktrees/ai-truck-shuttle/artifacts/ai-assault/v80g-wide/AXIS_ATTACKS-EASTERN_EUROPE",
+        "matches": [
+          1310100,
+          1310101,
+          1310102,
+          1310103,
+          1310104,
+          1310105,
+          1310106,
+          1310107,
+          1310108,
+          1310109
+        ],
+        "summarySha256": "05d1a3411a07ff0e84c7861c09f719de281cf91918d1219e57bdd95dfaca95ba"
+      },
+      {
+        "variant": "v80j-wide",
+        "style": "TEMPERATE_INLAND",
+        "directory": ".claude/worktrees/ai-truck-shuttle/artifacts/ai-assault/v80j-wide/AXIS_ATTACKS-TEMPERATE_INLAND",
+        "matches": [
+          1310000,
+          1310001,
+          1310002,
+          1310003,
+          1310004,
+          1310005,
+          1310006,
+          1310007,
+          1310008,
+          1310009
+        ],
+        "summarySha256": "8708691846aeefed4f5d269f40c86b45f18c4c9301566544919485449715b245"
+      },
+      {
+        "variant": "v80j-wide",
+        "style": "EASTERN_EUROPE",
+        "directory": ".claude/worktrees/ai-truck-shuttle/artifacts/ai-assault/v80j-wide/AXIS_ATTACKS-EASTERN_EUROPE",
+        "matches": [
+          1310100,
+          1310101,
+          1310102,
+          1310103,
+          1310104,
+          1310105,
+          1310106,
+          1310107,
+          1310108,
+          1310109
+        ],
+        "summarySha256": "5bb7ec4066747b629f726aafcbbf784ed1a1263bcd8d2ff7eda3df17e6d3b79c"
+      },
+      {
+        "variant": "v80q-wide",
+        "style": "TEMPERATE_INLAND",
+        "directory": ".claude/worktrees/ai-truck-shuttle/artifacts/ai-assault/v80q-wide/AXIS_ATTACKS-TEMPERATE_INLAND",
+        "matches": [
+          1310000,
+          1310001,
+          1310002,
+          1310003,
+          1310004,
+          1310005,
+          1310006,
+          1310007,
+          1310008,
+          1310009
+        ],
+        "summarySha256": "76f20cfcf81e33401a8fb1decb2297297035e9790b3214610be391f838f56472"
+      },
+      {
+        "variant": "v80q-wide",
+        "style": "EASTERN_EUROPE",
+        "directory": ".claude/worktrees/ai-truck-shuttle/artifacts/ai-assault/v80q-wide/AXIS_ATTACKS-EASTERN_EUROPE",
+        "matches": [
+          1310100,
+          1310101,
+          1310102,
+          1310103,
+          1310104,
+          1310105,
+          1310106,
+          1310107,
+          1310108,
+          1310109
+        ],
+        "summarySha256": "ab1663c9ff74f0eabb54a9cddd48fd84070c7b296ebaac665c3facf5f76160f2"
+      }
+    ],
+    "hypotheses": [
+      "raw attack count may not predict gains after current VP is accounted for",
+      "objective attack quality and control retention may be more informative than action volume",
+      "raw adjacent strength may fail without effective supply and timely concentration"
+    ],
+    "limitations": [
+      "All historical outcomes have previously been inspected",
+      "Only three related assault variants and ten map seeds",
+      "Defender policies share behavior and are not independent variants",
+      "No planned commitment record can be reconstructed from chosen moves alone",
+      "Off-map air support exists in all selected batches; not a no-air evaluation"
+    ],
+    "observedScope": {
+      "engagement": "AXIS_ATTACKS",
+      "air": "Historical off-map aircraft present despite NONE options",
+      "airMissionCountsByBatch": {
+        "v79-baseline-wide-TEMPERATE_INLAND": 80,
+        "v79-baseline-wide-EASTERN_EUROPE": 80,
+        "v80g-wide-TEMPERATE_INLAND": 80,
+        "v80g-wide-EASTERN_EUROPE": 80,
+        "v80j-wide-TEMPERATE_INLAND": 77,
+        "v80j-wide-EASTERN_EUROPE": 80,
+        "v80q-wide-TEMPERATE_INLAND": 79,
+        "v80q-wide-EASTERN_EUROPE": 78
+      }
+    }
+  },
+  "extractionHashes": {
+    "artifacts/ai-vp-metrics/advanced/v79-baseline-wide-EASTERN_EUROPE.metrics.json": "10eaff95648eaaa5e5af6b9bfa916b0b792368057bb92e6169f298310f4e09c5",
+    "artifacts/ai-vp-metrics/advanced/v79-baseline-wide-TEMPERATE_INLAND.metrics.json": "2ea076692091922a2857f3b315187fab4da8dae9dbc34d4ce9ae0d7018419730",
+    "artifacts/ai-vp-metrics/advanced/v80g-wide-EASTERN_EUROPE.metrics.json": "5f2523168d01eebf78e42ee84d5a94a002bcb00727fabe37d1255d3d3c814cd3",
+    "artifacts/ai-vp-metrics/advanced/v80g-wide-TEMPERATE_INLAND.metrics.json": "7eddc6a149fca3bdadec0beb37b97c0bd55136444bf027e5fd61a91d83aa2f4a",
+    "artifacts/ai-vp-metrics/advanced/v80j-wide-EASTERN_EUROPE.metrics.json": "cda988e90642fbd6d42108436396cadf012ecc7fdaa75fa29b09e93eba3cecf8",
+    "artifacts/ai-vp-metrics/advanced/v80j-wide-TEMPERATE_INLAND.metrics.json": "3006ad415b1ef8dc80a05942d750ad14c9778506449627684b93de63c9cf25e0",
+    "artifacts/ai-vp-metrics/advanced/v80q-wide-EASTERN_EUROPE.metrics.json": "42722a80d7f7f7c0ac5e77580b77112b870bffc128f0c44564c6dce4be373493",
+    "artifacts/ai-vp-metrics/advanced/v80q-wide-TEMPERATE_INLAND.metrics.json": "3229468bc92cfb2f70cbb3da9c832db0c56b7cb4a58e6926ddb6cea11e075907"
+  },
+  "rawResultSha256": "aa01f775facac382d297f9ef814f247aac42f948248d40464d979627aebc86dd",
+  "checks": [
+    "Every accepted action equals trace; initial/final hashes and VP match the saves.",
+    "Supply lifecycle reconstruction emits exactly the observed event blocks.",
+    "STEP_LOST and enemy events reconcile with original stepsLost/stepsKilled for all sides.",
+    "Original pilot ridge self-tests and outcome-specific duplicate-input/future-target checks pass.",
+    "Known-signal sensitivity test reduces joint-holdout MAE from24.98511828 to1.35577752."
+  ],
+  "review": {
+    "statistics": "Independent review completed; original860ridge calls unchanged; duration/coverage gap fixed.",
+    "observer": "Independent gpt-6.1-sol audit found no blocker; fresh v80q1310000 replay payload identical; revision248 proves preattrition capture across skipped Supply."
+  },
+  "finalScriptHashes": {
+    "scripts/ai-vp-metrics-extract.mjs": "9fb93214e1cae1fa6ba0ef4db9849efbcc68f35f54d78b7d95d8f114553fd04a",
+    "scripts/ai-outcome-metrics-observer.mjs": "f3797483cacd972a7f3ff6bff2e7674374c5ccbe9390df8bca972654bbed191e",
+    "scripts/ai-vp-metrics-compare.py": "fc6c0d4bce55cf3e0c147008da8e020e591b4c5271613039bd4e672b3b9ae4fc",
+    "scripts/ai-outcome-metrics-compare.py": "34a252a4a91c308920144c9a7f1c0e539f2ee0d8e2c57c993f74d2cffc36c4e7"
+  },
+  "cleanup": "Two explanatory comments removed after the full extraction. Executable statements unchanged.",
+  "runtimeAudit": {
+    "model": "gpt-6.1-sol",
+    "variant": "v80q-wide",
+    "style": "TEMPERATE_INLAND",
+    "match": 1310000,
+    "freshReplayPayloadIdentical": true,
+    "supplyWindows": 16,
+    "skippedWindows": 11,
+    "visibleWindows": 5,
+    "preAttritionExample": {
+      "revision": 248,
+      "side": "allied",
+      "turn": 2,
+      "outOfSupplyReTicks": 2,
+      "eliminatedPieceId": "generated-oob:296611634:allied:f1-recon:unit"
+    },
+    "lossEvents": {
+      "allied": {
+        "early": 5,
+        "final": 22
+      },
+      "axis": {
+        "early": 5,
+        "final": 23
+      }
+    }
+  }
+}

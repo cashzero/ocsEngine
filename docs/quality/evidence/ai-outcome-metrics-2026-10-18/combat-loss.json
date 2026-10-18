@@ -1,0 +1,1674 @@
+{
+  "key": "combatLossEvents",
+  "direction": "lower",
+  "primary": false,
+  "rateFactor": 2,
+  "rowCount": 30,
+  "variantMeans": {
+    "v80g-wide": 4.8,
+    "v80j-wide": 2.7,
+    "v80q-wide": 1.3
+  },
+  "associations": {
+    "earlyMargin": {
+      "n": 30,
+      "missing": 0,
+      "zero": 13,
+      "pearson": 0.09756401831690137,
+      "spearman": 0.061660861708634614
+    },
+    "objectiveAttacks": {
+      "n": 30,
+      "missing": 0,
+      "zero": 13,
+      "pearson": 0.18510111104045096,
+      "spearman": 0.281012192933647
+    },
+    "objectiveAttackMeanColumn": {
+      "n": 21,
+      "missing": 9,
+      "zero": 0,
+      "pearson": -0.18258324895513806,
+      "spearman": -0.2909460124299481
+    },
+    "objectiveAttackCaptureRate": {
+      "n": 21,
+      "missing": 9,
+      "zero": 5,
+      "pearson": -0.003348292079396294,
+      "spearman": -0.018799803589658482
+    },
+    "adjacentStrengthShare": {
+      "n": 30,
+      "missing": 0,
+      "zero": 12,
+      "pearson": 0.3669518596683552,
+      "spearman": 0.23129391936120988
+    },
+    "outOfSupplyStrengthShare": {
+      "n": 30,
+      "missing": 0,
+      "zero": 25,
+      "pearson": 0.33372041251709933,
+      "spearman": 0.3469386423988149
+    },
+    "supplyTraceGap": {
+      "n": 30,
+      "missing": 0,
+      "zero": 14,
+      "pearson": 0.34741543832642724,
+      "spearman": 0.30354194425632025
+    },
+    "supplyIndividualGap": {
+      "n": 30,
+      "missing": 0,
+      "zero": 23,
+      "pearson": 0.4217829537525388,
+      "spearman": 0.30561827907801253
+    },
+    "supplyJointGap": {
+      "n": 30,
+      "missing": 0,
+      "zero": 23,
+      "pearson": 0.4217829537525388,
+      "spearman": 0.30561827907801253
+    },
+    "supplySingleSourceDependence": {
+      "n": 30,
+      "missing": 0,
+      "zero": 24,
+      "pearson": 0.32250800762514925,
+      "spearman": 0.1269715310327623
+    },
+    "remainingReShare": {
+      "n": 30,
+      "missing": 0,
+      "zero": 2,
+      "pearson": -0.7483676406849114,
+      "spearman": -0.7164745017419052
+    }
+  },
+  "validation": {
+    "leaveMapSeedOut": {
+      "foldCount": 10,
+      "models": {
+        "zero": {
+          "mae": 4.466666666666667,
+          "byVariantMae": {
+            "v80g-wide": 6.2,
+            "v80j-wide": 3.9,
+            "v80q-wide": 3.3
+          },
+          "vsFitted": {
+            "meanSeedMaeImprovement": -2.0172354250161395,
+            "conditional95": [
+              -3.366706028026451,
+              -0.527830324080194
+            ]
+          },
+          "vsCarry": {
+            "meanSeedMaeImprovement": -2.2,
+            "conditional95": [
+              -3.5666666666666664,
+              -0.7658333333333341
+            ]
+          },
+          "vsEarlyRate": {
+            "meanSeedMaeImprovement": 0.6666666666666667,
+            "conditional95": [
+              -1.0666666666666667,
+              2.533333333333333
+            ]
+          }
+        },
+        "trainMean": {
+          "mae": 3.995061728395062,
+          "byVariantMae": {
+            "v80g-wide": 6.111111111111112,
+            "v80j-wide": 2.914814814814815,
+            "v80q-wide": 2.9592592592592593
+          },
+          "vsFitted": {
+            "meanSeedMaeImprovement": -1.5456304867445345,
+            "conditional95": [
+              -3.3396878540782224,
+              0.004559325492937452
+            ]
+          },
+          "vsCarry": {
+            "meanSeedMaeImprovement": -1.7283950617283952,
+            "conditional95": [
+              -3.1729320987654326,
+              -0.253765432098766
+            ]
+          },
+          "vsEarlyRate": {
+            "meanSeedMaeImprovement": 1.1382716049382717,
+            "conditional95": [
+              -0.14333333333333334,
+              2.6273456790123455
+            ]
+          }
+        },
+        "carryForward": {
+          "mae": 2.2666666666666666,
+          "byVariantMae": {
+            "v80g-wide": 2.9,
+            "v80j-wide": 1.8,
+            "v80q-wide": 2.1
+          },
+          "vsFitted": {
+            "meanSeedMaeImprovement": 0.18276457498386048,
+            "conditional95": [
+              -0.3381920420734918,
+              0.6749808294604188
+            ]
+          },
+          "vsCarry": {
+            "meanSeedMaeImprovement": 0.0,
+            "conditional95": [
+              0.0,
+              0.0
+            ]
+          },
+          "vsEarlyRate": {
+            "meanSeedMaeImprovement": 2.8666666666666667,
+            "conditional95": [
+              1.5991666666666668,
+              4.3
+            ]
+          }
+        },
+        "earlyRateProjection": {
+          "mae": 5.133333333333334,
+          "byVariantMae": {
+            "v80g-wide": 5.2,
+            "v80j-wide": 4.7,
+            "v80q-wide": 5.5
+          },
+          "vsFitted": {
+            "meanSeedMaeImprovement": -2.683902091682806,
+            "conditional95": [
+              -4.409466234239864,
+              -1.3368914908282954
+            ]
+          },
+          "vsCarry": {
+            "meanSeedMaeImprovement": -2.8666666666666667,
+            "conditional95": [
+              -4.3,
+              -1.5991666666666675
+            ]
+          },
+          "vsEarlyRate": {
+            "meanSeedMaeImprovement": 0.0,
+            "conditional95": [
+              0.0,
+              0.0
+            ]
+          }
+        },
+        "fittedEarlyOutcome": {
+          "mae": 2.4494312416505273,
+          "byVariantMae": {
+            "v80g-wide": 3.3504722668252214,
+            "v80j-wide": 1.9165687516141907,
+            "v80q-wide": 2.0812527065121693
+          },
+          "vsFitted": {
+            "meanSeedMaeImprovement": 0.0,
+            "conditional95": [
+              0.0,
+              0.0
+            ]
+          },
+          "vsCarry": {
+            "meanSeedMaeImprovement": -0.18276457498386048,
+            "conditional95": [
+              -0.6749808294604189,
+              0.33819204207349174
+            ]
+          },
+          "vsEarlyRate": {
+            "meanSeedMaeImprovement": 2.683902091682806,
+            "conditional95": [
+              1.3368914908282952,
+              4.409466234239864
+            ]
+          }
+        },
+        "plus:earlyMargin": {
+          "mae": 2.7087240288354386,
+          "byVariantMae": {
+            "v80g-wide": 3.340600948804795,
+            "v80j-wide": 2.33180271837975,
+            "v80q-wide": 2.453768419321771
+          },
+          "vsFitted": {
+            "meanSeedMaeImprovement": -0.25929278718491156,
+            "conditional95": [
+              -0.7025840378455923,
+              0.010606728230915876
+            ]
+          },
+          "vsCarry": {
+            "meanSeedMaeImprovement": -0.442057362168772,
+            "conditional95": [
+              -1.141724058070247,
+              0.2361100545808883
+            ]
+          },
+          "vsEarlyRate": {
+            "meanSeedMaeImprovement": 2.4246093044978947,
+            "conditional95": [
+              1.0823010753502602,
+              4.234801237883256
+            ]
+          }
+        },
+        "plus:objectiveAttacks": {
+          "mae": 2.521286900768636,
+          "byVariantMae": {
+            "v80g-wide": 3.4140211997911045,
+            "v80j-wide": 1.8887321052094257,
+            "v80q-wide": 2.261107397305378
+          },
+          "vsFitted": {
+            "meanSeedMaeImprovement": -0.07185565911810884,
+            "conditional95": [
+              -0.3472759281422591,
+              0.1173071284173762
+            ]
+          },
+          "vsCarry": {
+            "meanSeedMaeImprovement": -0.2546202341019693,
+            "conditional95": [
+              -0.8968050225377234,
+              0.38795642677713904
+            ]
+          },
+          "vsEarlyRate": {
+            "meanSeedMaeImprovement": 2.6120464325646973,
+            "conditional95": [
+              1.1838612026700783,
+              4.382044853151843
+            ]
+          }
+        },
+        "plus:objectiveAttackMeanColumn": {
+          "mae": 2.5382773913920844,
+          "byVariantMae": {
+            "v80g-wide": 3.0458046741056584,
+            "v80j-wide": 2.174381333737118,
+            "v80q-wide": 2.394646166333477
+          },
+          "vsFitted": {
+            "meanSeedMaeImprovement": -0.08884614974155718,
+            "conditional95": [
+              -0.6475701528193007,
+              0.4362788368969452
+            ]
+          },
+          "vsCarry": {
+            "meanSeedMaeImprovement": -0.2716107247254177,
+            "conditional95": [
+              -0.7958451282100494,
+              0.225907503621126
+            ]
+          },
+          "vsEarlyRate": {
+            "meanSeedMaeImprovement": 2.595055941941249,
+            "conditional95": [
+              1.5637608791065098,
+              3.845450043923162
+            ]
+          }
+        },
+        "missingOnly:objectiveAttackMeanColumn": {
+          "mae": 2.4283191344871886,
+          "byVariantMae": {
+            "v80g-wide": 2.980916449275738,
+            "v80j-wide": 2.069525635635837,
+            "v80q-wide": 2.234515318549991
+          },
+          "vsFitted": {
+            "meanSeedMaeImprovement": 0.021112107163338455,
+            "conditional95": [
+              -0.5257319088136788,
+              0.54816198791149
+            ]
+          },
+          "vsCarry": {
+            "meanSeedMaeImprovement": -0.161652467820522,
+            "conditional95": [
+              -0.6344664128143319,
+              0.30160517686007676
+            ]
+          },
+          "vsEarlyRate": {
+            "meanSeedMaeImprovement": 2.7050141988461447,
+            "conditional95": [
+              1.653001787743523,
+              3.951737189850419
+            ]
+          }
+        },
+        "plus:objectiveAttackCaptureRate": {
+          "mae": 2.264463798026688,
+          "byVariantMae": {
+            "v80g-wide": 2.62990533976727,
+            "v80j-wide": 2.0256529883120424,
+            "v80q-wide": 2.1378330660007507
+          },
+          "vsFitted": {
+            "meanSeedMaeImprovement": 0.18496744362383943,
+            "conditional95": [
+              -0.40636400103406445,
+              0.8259683785130261
+            ]
+          },
+          "vsCarry": {
+            "meanSeedMaeImprovement": 0.0022028686399789554,
+            "conditional95": [
+              -0.6608135448700525,
+              0.54160720029886
+            ]
+          },
+          "vsEarlyRate": {
+            "meanSeedMaeImprovement": 2.868869535306646,
+            "conditional95": [
+              1.680481616444129,
+              4.318293778354501
+            ]
+          }
+        },
+        "missingOnly:objectiveAttackCaptureRate": {
+          "mae": 2.4283191344871886,
+          "byVariantMae": {
+            "v80g-wide": 2.980916449275738,
+            "v80j-wide": 2.069525635635837,
+            "v80q-wide": 2.234515318549991
+          },
+          "vsFitted": {
+            "meanSeedMaeImprovement": 0.021112107163338455,
+            "conditional95": [
+              -0.5257319088136788,
+              0.54816198791149
+            ]
+          },
+          "vsCarry": {
+            "meanSeedMaeImprovement": -0.161652467820522,
+            "conditional95": [
+              -0.6344664128143319,
+              0.30160517686007676
+            ]
+          },
+          "vsEarlyRate": {
+            "meanSeedMaeImprovement": 2.7050141988461447,
+            "conditional95": [
+              1.653001787743523,
+              3.951737189850419
+            ]
+          }
+        },
+        "plus:adjacentStrengthShare": {
+          "mae": 2.508419890860377,
+          "byVariantMae": {
+            "v80g-wide": 3.332278876448298,
+            "v80j-wide": 2.0015810913520538,
+            "v80q-wide": 2.1913997047807796
+          },
+          "vsFitted": {
+            "meanSeedMaeImprovement": -0.0589886492098499,
+            "conditional95": [
+              -0.15783274666295552,
+              0.02935980546270774
+            ]
+          },
+          "vsCarry": {
+            "meanSeedMaeImprovement": -0.24175322419371037,
+            "conditional95": [
+              -0.7673065343840816,
+              0.35337110813524564
+            ]
+          },
+          "vsEarlyRate": {
+            "meanSeedMaeImprovement": 2.6249134424729563,
+            "conditional95": [
+              1.280325775387016,
+              4.368274578030556
+            ]
+          }
+        },
+        "plus:outOfSupplyStrengthShare": {
+          "mae": 2.3657782142634978,
+          "byVariantMae": {
+            "v80g-wide": 3.079198388899193,
+            "v80j-wide": 2.0011186717863856,
+            "v80q-wide": 2.0170175821049146
+          },
+          "vsFitted": {
+            "meanSeedMaeImprovement": 0.08365302738702939,
+            "conditional95": [
+              -0.06123088479384258,
+              0.30557191818019486
+            ]
+          },
+          "vsCarry": {
+            "meanSeedMaeImprovement": -0.0991115475968311,
+            "conditional95": [
+              -0.5786621294086847,
+              0.4394989630361591
+            ]
+          },
+          "vsEarlyRate": {
+            "meanSeedMaeImprovement": 2.7675551190698355,
+            "conditional95": [
+              1.4873691972378973,
+              4.45884482114293
+            ]
+          }
+        },
+        "plus:supplyTraceGap": {
+          "mae": 2.378579385652139,
+          "byVariantMae": {
+            "v80g-wide": 3.2487562597223887,
+            "v80j-wide": 1.8293657228249007,
+            "v80q-wide": 2.0576161744091275
+          },
+          "vsFitted": {
+            "meanSeedMaeImprovement": 0.0708518559983882,
+            "conditional95": [
+              -0.030767929503170702,
+              0.18397037053017232
+            ]
+          },
+          "vsCarry": {
+            "meanSeedMaeImprovement": -0.11191271898547232,
+            "conditional95": [
+              -0.6048737382347654,
+              0.4613285575053442
+            ]
+          },
+          "vsEarlyRate": {
+            "meanSeedMaeImprovement": 2.7547539476811944,
+            "conditional95": [
+              1.4064652632848809,
+              4.531004655971342
+            ]
+          }
+        },
+        "plus:supplyIndividualGap": {
+          "mae": 3.0632867337721006,
+          "byVariantMae": {
+            "v80g-wide": 5.221409247356639,
+            "v80j-wide": 1.9491453404858305,
+            "v80q-wide": 2.019305613473831
+          },
+          "vsFitted": {
+            "meanSeedMaeImprovement": -0.6138554921215731,
+            "conditional95": [
+              -2.1577366309392874,
+              0.24456165927853563
+            ]
+          },
+          "vsCarry": {
+            "meanSeedMaeImprovement": -0.7966200671054338,
+            "conditional95": [
+              -2.5797017463353433,
+              0.4386230528059911
+            ]
+          },
+          "vsEarlyRate": {
+            "meanSeedMaeImprovement": 2.070046599561233,
+            "conditional95": [
+              -0.21284395259161992,
+              4.061847222426357
+            ]
+          }
+        },
+        "plus:supplyJointGap": {
+          "mae": 3.0632867337721006,
+          "byVariantMae": {
+            "v80g-wide": 5.221409247356639,
+            "v80j-wide": 1.9491453404858305,
+            "v80q-wide": 2.019305613473831
+          },
+          "vsFitted": {
+            "meanSeedMaeImprovement": -0.6138554921215731,
+            "conditional95": [
+              -2.1577366309392874,
+              0.24456165927853563
+            ]
+          },
+          "vsCarry": {
+            "meanSeedMaeImprovement": -0.7966200671054338,
+            "conditional95": [
+              -2.5797017463353433,
+              0.4386230528059911
+            ]
+          },
+          "vsEarlyRate": {
+            "meanSeedMaeImprovement": 2.070046599561233,
+            "conditional95": [
+              -0.21284395259161992,
+              4.061847222426357
+            ]
+          }
+        },
+        "plus:supplySingleSourceDependence": {
+          "mae": 2.6002857584773422,
+          "byVariantMae": {
+            "v80g-wide": 3.70169998700705,
+            "v80j-wide": 1.9324189161483072,
+            "v80q-wide": 2.1667383722766695
+          },
+          "vsFitted": {
+            "meanSeedMaeImprovement": -0.15085451682681522,
+            "conditional95": [
+              -0.4213263220399324,
+              0.00862941673496696
+            ]
+          },
+          "vsCarry": {
+            "meanSeedMaeImprovement": -0.3336190918106757,
+            "conditional95": [
+              -0.9225587137830468,
+              0.3089679312829994
+            ]
+          },
+          "vsEarlyRate": {
+            "meanSeedMaeImprovement": 2.533047574855991,
+            "conditional95": [
+              1.1366069073025467,
+              4.25964957288646
+            ]
+          }
+        },
+        "plus:remainingReShare": {
+          "mae": 2.469533651021136,
+          "byVariantMae": {
+            "v80g-wide": 3.3590086352819397,
+            "v80j-wide": 2.006867526510425,
+            "v80q-wide": 2.042724791271042
+          },
+          "vsFitted": {
+            "meanSeedMaeImprovement": -0.020102409370608542,
+            "conditional95": [
+              -0.07202257196143474,
+              0.0237353578906754
+            ]
+          },
+          "vsCarry": {
+            "meanSeedMaeImprovement": -0.20286698435446898,
+            "conditional95": [
+              -0.6936859721782273,
+              0.3231640772071724
+            ]
+          },
+          "vsEarlyRate": {
+            "meanSeedMaeImprovement": 2.663799682312198,
+            "conditional95": [
+              1.3384659743895548,
+              4.361391583924003
+            ]
+          }
+        }
+      }
+    },
+    "leaveVariantOut": {
+      "foldCount": 3,
+      "models": {
+        "zero": {
+          "mae": 4.466666666666667,
+          "byVariantMae": {
+            "v80g-wide": 6.2,
+            "v80j-wide": 3.9,
+            "v80q-wide": 3.3
+          },
+          "vsFitted": {
+            "meanSeedMaeImprovement": -1.9458167583810966,
+            "conditional95": [
+              -3.1364204405239104,
+              -0.7073076308551359
+            ]
+          },
+          "vsCarry": {
+            "meanSeedMaeImprovement": -2.2,
+            "conditional95": [
+              -3.5666666666666664,
+              -0.7658333333333341
+            ]
+          },
+          "vsEarlyRate": {
+            "meanSeedMaeImprovement": 0.6666666666666667,
+            "conditional95": [
+              -1.0666666666666667,
+              2.533333333333333
+            ]
+          }
+        },
+        "trainMean": {
+          "mae": 3.9033333333333333,
+          "byVariantMae": {
+            "v80g-wide": 5.8,
+            "v80j-wide": 2.71,
+            "v80q-wide": 3.2
+          },
+          "vsFitted": {
+            "meanSeedMaeImprovement": -1.3824834250477631,
+            "conditional95": [
+              -3.0294355115407745,
+              0.02833371946779289
+            ]
+          },
+          "vsCarry": {
+            "meanSeedMaeImprovement": -1.6366666666666667,
+            "conditional95": [
+              -3.0936666666666666,
+              -0.139333333333334
+            ]
+          },
+          "vsEarlyRate": {
+            "meanSeedMaeImprovement": 1.23,
+            "conditional95": [
+              -0.14333333333333337,
+              2.8269166666666665
+            ]
+          }
+        },
+        "carryForward": {
+          "mae": 2.2666666666666666,
+          "byVariantMae": {
+            "v80g-wide": 2.9,
+            "v80j-wide": 1.8,
+            "v80q-wide": 2.1
+          },
+          "vsFitted": {
+            "meanSeedMaeImprovement": 0.2541832416189035,
+            "conditional95": [
+              -0.4146980660488873,
+              0.8463231312649722
+            ]
+          },
+          "vsCarry": {
+            "meanSeedMaeImprovement": 0.0,
+            "conditional95": [
+              0.0,
+              0.0
+            ]
+          },
+          "vsEarlyRate": {
+            "meanSeedMaeImprovement": 2.8666666666666667,
+            "conditional95": [
+              1.5991666666666668,
+              4.3
+            ]
+          }
+        },
+        "earlyRateProjection": {
+          "mae": 5.133333333333334,
+          "byVariantMae": {
+            "v80g-wide": 5.2,
+            "v80j-wide": 4.7,
+            "v80q-wide": 5.5
+          },
+          "vsFitted": {
+            "meanSeedMaeImprovement": -2.6124834250477633,
+            "conditional95": [
+              -4.397000777777207,
+              -1.228952026180968
+            ]
+          },
+          "vsCarry": {
+            "meanSeedMaeImprovement": -2.8666666666666667,
+            "conditional95": [
+              -4.3,
+              -1.5991666666666675
+            ]
+          },
+          "vsEarlyRate": {
+            "meanSeedMaeImprovement": 0.0,
+            "conditional95": [
+              0.0,
+              0.0
+            ]
+          }
+        },
+        "fittedEarlyOutcome": {
+          "mae": 2.52084990828557,
+          "byVariantMae": {
+            "v80g-wide": 3.504335592786801,
+            "v80j-wide": 1.7977621546687792,
+            "v80q-wide": 2.26045197740113
+          },
+          "vsFitted": {
+            "meanSeedMaeImprovement": 0.0,
+            "conditional95": [
+              0.0,
+              0.0
+            ]
+          },
+          "vsCarry": {
+            "meanSeedMaeImprovement": -0.2541832416189035,
+            "conditional95": [
+              -0.8463231312649722,
+              0.4146980660488872
+            ]
+          },
+          "vsEarlyRate": {
+            "meanSeedMaeImprovement": 2.6124834250477633,
+            "conditional95": [
+              1.2289520261809679,
+              4.397000777777207
+            ]
+          }
+        },
+        "plus:earlyMargin": {
+          "mae": 2.6226037898729877,
+          "byVariantMae": {
+            "v80g-wide": 3.452430325423723,
+            "v80j-wide": 2.1232043068299107,
+            "v80q-wide": 2.2921767373653283
+          },
+          "vsFitted": {
+            "meanSeedMaeImprovement": -0.10175388158741719,
+            "conditional95": [
+              -0.3154416765462795,
+              0.06459280541928344
+            ]
+          },
+          "vsCarry": {
+            "meanSeedMaeImprovement": -0.35593712320632065,
+            "conditional95": [
+              -1.065663259703594,
+              0.3748057669165965
+            ]
+          },
+          "vsEarlyRate": {
+            "meanSeedMaeImprovement": 2.510729543460346,
+            "conditional95": [
+              1.1378891609939679,
+              4.330095243675044
+            ]
+          }
+        },
+        "plus:objectiveAttacks": {
+          "mae": 2.460311735851513,
+          "byVariantMae": {
+            "v80g-wide": 3.449549337817551,
+            "v80j-wide": 1.6379136637906258,
+            "v80q-wide": 2.2934722059463626
+          },
+          "vsFitted": {
+            "meanSeedMaeImprovement": 0.06053817243405708,
+            "conditional95": [
+              -0.11599435840955777,
+              0.22547967576557076
+            ]
+          },
+          "vsCarry": {
+            "meanSeedMaeImprovement": -0.19364506918484642,
+            "conditional95": [
+              -0.8117153854238863,
+              0.4446670132499805
+            ]
+          },
+          "vsEarlyRate": {
+            "meanSeedMaeImprovement": 2.67302159748182,
+            "conditional95": [
+              1.25145200272011,
+              4.461577697298207
+            ]
+          }
+        },
+        "plus:objectiveAttackMeanColumn": {
+          "mae": 2.5790459992570947,
+          "byVariantMae": {
+            "v80g-wide": 3.253416187443121,
+            "v80j-wide": 1.5913721950572808,
+            "v80q-wide": 2.8923496152708816
+          },
+          "vsFitted": {
+            "meanSeedMaeImprovement": -0.05819609097152447,
+            "conditional95": [
+              -0.5377478639904839,
+              0.3784592769690155
+            ]
+          },
+          "vsCarry": {
+            "meanSeedMaeImprovement": -0.31237933259042794,
+            "conditional95": [
+              -1.0001781301332824,
+              0.3470297481441169
+            ]
+          },
+          "vsEarlyRate": {
+            "meanSeedMaeImprovement": 2.5542873340762386,
+            "conditional95": [
+              1.2410604359137527,
+              4.109237168640711
+            ]
+          }
+        },
+        "missingOnly:objectiveAttackMeanColumn": {
+          "mae": 2.382805675571953,
+          "byVariantMae": {
+            "v80g-wide": 3.257684559335756,
+            "v80j-wide": 1.5916206004110927,
+            "v80q-wide": 2.29911186696901
+          },
+          "vsFitted": {
+            "meanSeedMaeImprovement": 0.13804423271361738,
+            "conditional95": [
+              -0.3514029892621649,
+              0.6057688559033224
+            ]
+          },
+          "vsCarry": {
+            "meanSeedMaeImprovement": -0.11613900890528614,
+            "conditional95": [
+              -0.7323931115940352,
+              0.423378630775092
+            ]
+          },
+          "vsEarlyRate": {
+            "meanSeedMaeImprovement": 2.7505276577613804,
+            "conditional95": [
+              1.594201413721787,
+              4.1748556708556706
+            ]
+          }
+        },
+        "plus:objectiveAttackCaptureRate": {
+          "mae": 2.156498370124162,
+          "byVariantMae": {
+            "v80g-wide": 2.929802439666333,
+            "v80j-wide": 1.6655293093201884,
+            "v80q-wide": 1.8741633613859645
+          },
+          "vsFitted": {
+            "meanSeedMaeImprovement": 0.3643515381614081,
+            "conditional95": [
+              -0.19630349678240497,
+              0.9593764524200747
+            ]
+          },
+          "vsCarry": {
+            "meanSeedMaeImprovement": 0.1101682965425046,
+            "conditional95": [
+              -0.6768825238317692,
+              0.7777863924867291
+            ]
+          },
+          "vsEarlyRate": {
+            "meanSeedMaeImprovement": 2.9768349632091713,
+            "conditional95": [
+              1.6726520444793829,
+              4.601703733938813
+            ]
+          }
+        },
+        "missingOnly:objectiveAttackCaptureRate": {
+          "mae": 2.382805675571953,
+          "byVariantMae": {
+            "v80g-wide": 3.257684559335756,
+            "v80j-wide": 1.5916206004110927,
+            "v80q-wide": 2.29911186696901
+          },
+          "vsFitted": {
+            "meanSeedMaeImprovement": 0.13804423271361738,
+            "conditional95": [
+              -0.3514029892621649,
+              0.6057688559033224
+            ]
+          },
+          "vsCarry": {
+            "meanSeedMaeImprovement": -0.11613900890528614,
+            "conditional95": [
+              -0.7323931115940352,
+              0.423378630775092
+            ]
+          },
+          "vsEarlyRate": {
+            "meanSeedMaeImprovement": 2.7505276577613804,
+            "conditional95": [
+              1.594201413721787,
+              4.1748556708556706
+            ]
+          }
+        },
+        "plus:adjacentStrengthShare": {
+          "mae": 2.619355390818313,
+          "byVariantMae": {
+            "v80g-wide": 3.7909517124256586,
+            "v80j-wide": 1.7687165245359526,
+            "v80q-wide": 2.2983979354933273
+          },
+          "vsFitted": {
+            "meanSeedMaeImprovement": -0.0985054825327428,
+            "conditional95": [
+              -0.2780431355061135,
+              0.11450569339416478
+            ]
+          },
+          "vsCarry": {
+            "meanSeedMaeImprovement": -0.35268872415164626,
+            "conditional95": [
+              -0.9176346077433133,
+              0.2878573514621514
+            ]
+          },
+          "vsEarlyRate": {
+            "meanSeedMaeImprovement": 2.5139779425150204,
+            "conditional95": [
+              1.2350935073140386,
+              4.216701342894652
+            ]
+          }
+        },
+        "plus:outOfSupplyStrengthShare": {
+          "mae": 2.5984168415965447,
+          "byVariantMae": {
+            "v80g-wide": 3.411912034854853,
+            "v80j-wide": 2.2714531822481616,
+            "v80q-wide": 2.1118853076866193
+          },
+          "vsFitted": {
+            "meanSeedMaeImprovement": -0.07756693331097435,
+            "conditional95": [
+              -0.49785298105220654,
+              0.2439109384366613
+            ]
+          },
+          "vsCarry": {
+            "meanSeedMaeImprovement": -0.3317501749298778,
+            "conditional95": [
+              -1.1352916668579351,
+              0.46193140561924295
+            ]
+          },
+          "vsEarlyRate": {
+            "meanSeedMaeImprovement": 2.5349164917367886,
+            "conditional95": [
+              1.0665000944785408,
+              4.338126078301429
+            ]
+          }
+        },
+        "plus:supplyTraceGap": {
+          "mae": 2.328880586834941,
+          "byVariantMae": {
+            "v80g-wide": 3.110316220436885,
+            "v80j-wide": 1.72629246602687,
+            "v80q-wide": 2.1500330740410676
+          },
+          "vsFitted": {
+            "meanSeedMaeImprovement": 0.19196932145062948,
+            "conditional95": [
+              -0.002394110003057742,
+              0.5062367971386716
+            ]
+          },
+          "vsCarry": {
+            "meanSeedMaeImprovement": -0.06221392016827404,
+            "conditional95": [
+              -0.6574635939800891,
+              0.5447295659899586
+            ]
+          },
+          "vsEarlyRate": {
+            "meanSeedMaeImprovement": 2.8044527464983924,
+            "conditional95": [
+              1.4258580603145827,
+              4.572507159734864
+            ]
+          }
+        },
+        "plus:supplyIndividualGap": {
+          "mae": 2.438952145971632,
+          "byVariantMae": {
+            "v80g-wide": 3.7134030852057456,
+            "v80j-wide": 1.511912982976601,
+            "v80q-wide": 2.0915403697325488
+          },
+          "vsFitted": {
+            "meanSeedMaeImprovement": 0.08189776231393828,
+            "conditional95": [
+              -0.19939090616439129,
+              0.3547448284957837
+            ]
+          },
+          "vsCarry": {
+            "meanSeedMaeImprovement": -0.17228547930496516,
+            "conditional95": [
+              -0.8404796499804544,
+              0.49714051328324643
+            ]
+          },
+          "vsEarlyRate": {
+            "meanSeedMaeImprovement": 2.694381187361701,
+            "conditional95": [
+              1.3639030560802765,
+              4.353182628204798
+            ]
+          }
+        },
+        "plus:supplyJointGap": {
+          "mae": 2.438952145971632,
+          "byVariantMae": {
+            "v80g-wide": 3.7134030852057456,
+            "v80j-wide": 1.511912982976601,
+            "v80q-wide": 2.0915403697325488
+          },
+          "vsFitted": {
+            "meanSeedMaeImprovement": 0.08189776231393828,
+            "conditional95": [
+              -0.19939090616439129,
+              0.3547448284957837
+            ]
+          },
+          "vsCarry": {
+            "meanSeedMaeImprovement": -0.17228547930496516,
+            "conditional95": [
+              -0.8404796499804544,
+              0.49714051328324643
+            ]
+          },
+          "vsEarlyRate": {
+            "meanSeedMaeImprovement": 2.694381187361701,
+            "conditional95": [
+              1.3639030560802765,
+              4.353182628204798
+            ]
+          }
+        },
+        "plus:supplySingleSourceDependence": {
+          "mae": 2.958935998827717,
+          "byVariantMae": {
+            "v80g-wide": 4.783331501065111,
+            "v80j-wide": 1.7764790122349705,
+            "v80q-wide": 2.3169974831830684
+          },
+          "vsFitted": {
+            "meanSeedMaeImprovement": -0.43808609054214626,
+            "conditional95": [
+              -1.190091868459043,
+              0.04571628288046511
+            ]
+          },
+          "vsCarry": {
+            "meanSeedMaeImprovement": -0.6922693321610498,
+            "conditional95": [
+              -1.700820143736005,
+              0.204001512757032
+            ]
+          },
+          "vsEarlyRate": {
+            "meanSeedMaeImprovement": 2.174397334505617,
+            "conditional95": [
+              0.4253462309808245,
+              3.99352779419921
+            ]
+          }
+        },
+        "plus:remainingReShare": {
+          "mae": 2.8236072979481786,
+          "byVariantMae": {
+            "v80g-wide": 3.5001128036907305,
+            "v80j-wide": 2.718202227584831,
+            "v80q-wide": 2.2525068625689744
+          },
+          "vsFitted": {
+            "meanSeedMaeImprovement": -0.30275738966260857,
+            "conditional95": [
+              -0.6517589010988366,
+              0.0002960292843773929
+            ]
+          },
+          "vsCarry": {
+            "meanSeedMaeImprovement": -0.556940631281512,
+            "conditional95": [
+              -1.2000801534839725,
+              0.18597862523236666
+            ]
+          },
+          "vsEarlyRate": {
+            "meanSeedMaeImprovement": 2.3097260353851548,
+            "conditional95": [
+              0.9289648942104056,
+              4.068933012948818
+            ]
+          }
+        }
+      }
+    },
+    "leaveMapSeedAndVariantOut": {
+      "foldCount": 30,
+      "models": {
+        "zero": {
+          "mae": 4.466666666666667,
+          "byVariantMae": {
+            "v80g-wide": 6.2,
+            "v80j-wide": 3.9,
+            "v80q-wide": 3.3
+          },
+          "vsFitted": {
+            "meanSeedMaeImprovement": -1.8095518147278224,
+            "conditional95": [
+              -3.0023078655158577,
+              -0.5265319321188882
+            ]
+          },
+          "vsCarry": {
+            "meanSeedMaeImprovement": -2.2,
+            "conditional95": [
+              -3.5666666666666664,
+              -0.7658333333333341
+            ]
+          },
+          "vsEarlyRate": {
+            "meanSeedMaeImprovement": 0.6666666666666667,
+            "conditional95": [
+              -1.0666666666666667,
+              2.533333333333333
+            ]
+          }
+        },
+        "trainMean": {
+          "mae": 3.9703703703703703,
+          "byVariantMae": {
+            "v80g-wide": 5.944444444444445,
+            "v80j-wide": 2.8722222222222222,
+            "v80q-wide": 3.0944444444444446
+          },
+          "vsFitted": {
+            "meanSeedMaeImprovement": -1.313255518431526,
+            "conditional95": [
+              -3.000572257738241,
+              0.16678838421639552
+            ]
+          },
+          "vsCarry": {
+            "meanSeedMaeImprovement": -1.7037037037037037,
+            "conditional95": [
+              -3.244907407407408,
+              -0.16222222222222285
+            ]
+          },
+          "vsEarlyRate": {
+            "meanSeedMaeImprovement": 1.1629629629629628,
+            "conditional95": [
+              -0.2078703703703706,
+              2.7000925925925925
+            ]
+          }
+        },
+        "carryForward": {
+          "mae": 2.2666666666666666,
+          "byVariantMae": {
+            "v80g-wide": 2.9,
+            "v80j-wide": 1.8,
+            "v80q-wide": 2.1
+          },
+          "vsFitted": {
+            "meanSeedMaeImprovement": 0.39044818527217784,
+            "conditional95": [
+              -0.19091010331967312,
+              0.9366547862978755
+            ]
+          },
+          "vsCarry": {
+            "meanSeedMaeImprovement": 0.0,
+            "conditional95": [
+              0.0,
+              0.0
+            ]
+          },
+          "vsEarlyRate": {
+            "meanSeedMaeImprovement": 2.8666666666666667,
+            "conditional95": [
+              1.5991666666666668,
+              4.3
+            ]
+          }
+        },
+        "earlyRateProjection": {
+          "mae": 5.133333333333334,
+          "byVariantMae": {
+            "v80g-wide": 5.2,
+            "v80j-wide": 4.7,
+            "v80q-wide": 5.5
+          },
+          "vsFitted": {
+            "meanSeedMaeImprovement": -2.476218481394489,
+            "conditional95": [
+              -4.1267682347178285,
+              -1.1766392106701382
+            ]
+          },
+          "vsCarry": {
+            "meanSeedMaeImprovement": -2.8666666666666667,
+            "conditional95": [
+              -4.3,
+              -1.5991666666666675
+            ]
+          },
+          "vsEarlyRate": {
+            "meanSeedMaeImprovement": 0.0,
+            "conditional95": [
+              0.0,
+              0.0
+            ]
+          }
+        },
+        "fittedEarlyOutcome": {
+          "mae": 2.6571148519388443,
+          "byVariantMae": {
+            "v80g-wide": 3.632526028766897,
+            "v80j-wide": 1.9083051415606274,
+            "v80q-wide": 2.4305133854890095
+          },
+          "vsFitted": {
+            "meanSeedMaeImprovement": 0.0,
+            "conditional95": [
+              0.0,
+              0.0
+            ]
+          },
+          "vsCarry": {
+            "meanSeedMaeImprovement": -0.39044818527217784,
+            "conditional95": [
+              -0.9366547862978755,
+              0.19091010331967298
+            ]
+          },
+          "vsEarlyRate": {
+            "meanSeedMaeImprovement": 2.476218481394489,
+            "conditional95": [
+              1.176639210670138,
+              4.126768234717828
+            ]
+          }
+        },
+        "plus:earlyMargin": {
+          "mae": 3.020335822004074,
+          "byVariantMae": {
+            "v80g-wide": 3.6653343484688508,
+            "v80j-wide": 2.5365557567948818,
+            "v80q-wide": 2.859117360748491
+          },
+          "vsFitted": {
+            "meanSeedMaeImprovement": -0.36322097006522985,
+            "conditional95": [
+              -0.8682639611453247,
+              -0.05086763357175269
+            ]
+          },
+          "vsCarry": {
+            "meanSeedMaeImprovement": -0.7536691553374076,
+            "conditional95": [
+              -1.5653357433578825,
+              -0.000877403267683469
+            ]
+          },
+          "vsEarlyRate": {
+            "meanSeedMaeImprovement": 2.112997511329259,
+            "conditional95": [
+              0.835837850912539,
+              3.811394734783212
+            ]
+          }
+        },
+        "plus:objectiveAttacks": {
+          "mae": 2.6493013285717097,
+          "byVariantMae": {
+            "v80g-wide": 3.6112489990674925,
+            "v80j-wide": 1.9190968661101,
+            "v80q-wide": 2.4175581205375374
+          },
+          "vsFitted": {
+            "meanSeedMaeImprovement": 0.007813523367134543,
+            "conditional95": [
+              -0.2315944641757941,
+              0.17826877666448523
+            ]
+          },
+          "vsCarry": {
+            "meanSeedMaeImprovement": -0.3826346619050433,
+            "conditional95": [
+              -0.9759345661482169,
+              0.18431527033664932
+            ]
+          },
+          "vsEarlyRate": {
+            "meanSeedMaeImprovement": 2.4840320047616236,
+            "conditional95": [
+              1.1344270448460565,
+              4.130715622502285
+            ]
+          }
+        },
+        "plus:objectiveAttackMeanColumn": {
+          "mae": 2.741422446511703,
+          "byVariantMae": {
+            "v80g-wide": 3.2968502067036853,
+            "v80j-wide": 1.9925862745226912,
+            "v80q-wide": 2.9348308583087324
+          },
+          "vsFitted": {
+            "meanSeedMaeImprovement": -0.08430759457285851,
+            "conditional95": [
+              -0.6415073715326841,
+              0.4100975146938497
+            ]
+          },
+          "vsCarry": {
+            "meanSeedMaeImprovement": -0.4747557798450363,
+            "conditional95": [
+              -1.1204961036197072,
+              0.25328173740696036
+            ]
+          },
+          "vsEarlyRate": {
+            "meanSeedMaeImprovement": 2.39191088682163,
+            "conditional95": [
+              1.3430398223188293,
+              3.6307305509409837
+            ]
+          }
+        },
+        "missingOnly:objectiveAttackMeanColumn": {
+          "mae": 2.5125744929977114,
+          "byVariantMae": {
+            "v80g-wide": 3.276375296899567,
+            "v80j-wide": 1.951753130521401,
+            "v80q-wide": 2.3095950515721664
+          },
+          "vsFitted": {
+            "meanSeedMaeImprovement": 0.14454035894113318,
+            "conditional95": [
+              -0.5034582833858108,
+              0.7112665573555108
+            ]
+          },
+          "vsCarry": {
+            "meanSeedMaeImprovement": -0.24590782633104472,
+            "conditional95": [
+              -0.8763413844741904,
+              0.43582466976381407
+            ]
+          },
+          "vsEarlyRate": {
+            "meanSeedMaeImprovement": 2.620758840335622,
+            "conditional95": [
+              1.7096854907106873,
+              3.738959175276906
+            ]
+          }
+        },
+        "plus:objectiveAttackCaptureRate": {
+          "mae": 2.3353019775339092,
+          "byVariantMae": {
+            "v80g-wide": 2.974253345060384,
+            "v80j-wide": 1.8973333921880868,
+            "v80q-wide": 2.1343191953532576
+          },
+          "vsFitted": {
+            "meanSeedMaeImprovement": 0.3218128744049351,
+            "conditional95": [
+              -0.3217186574127713,
+              0.9923711291020011
+            ]
+          },
+          "vsCarry": {
+            "meanSeedMaeImprovement": -0.06863531086724275,
+            "conditional95": [
+              -0.8160314060258169,
+              0.5895751943900721
+            ]
+          },
+          "vsEarlyRate": {
+            "meanSeedMaeImprovement": 2.7980313557994236,
+            "conditional95": [
+              1.692798882059624,
+              4.113006351998377
+            ]
+          }
+        },
+        "missingOnly:objectiveAttackCaptureRate": {
+          "mae": 2.5125744929977114,
+          "byVariantMae": {
+            "v80g-wide": 3.276375296899567,
+            "v80j-wide": 1.951753130521401,
+            "v80q-wide": 2.3095950515721664
+          },
+          "vsFitted": {
+            "meanSeedMaeImprovement": 0.14454035894113318,
+            "conditional95": [
+              -0.5034582833858108,
+              0.7112665573555108
+            ]
+          },
+          "vsCarry": {
+            "meanSeedMaeImprovement": -0.24590782633104472,
+            "conditional95": [
+              -0.8763413844741904,
+              0.43582466976381407
+            ]
+          },
+          "vsEarlyRate": {
+            "meanSeedMaeImprovement": 2.620758840335622,
+            "conditional95": [
+              1.7096854907106873,
+              3.738959175276906
+            ]
+          }
+        },
+        "plus:adjacentStrengthShare": {
+          "mae": 2.713298318328546,
+          "byVariantMae": {
+            "v80g-wide": 3.9036918216893532,
+            "v80j-wide": 1.9465887816321668,
+            "v80q-wide": 2.289614351664118
+          },
+          "vsFitted": {
+            "meanSeedMaeImprovement": -0.05618346638970153,
+            "conditional95": [
+              -0.33342748808596584,
+              0.2516124843991993
+            ]
+          },
+          "vsCarry": {
+            "meanSeedMaeImprovement": -0.4466316516618793,
+            "conditional95": [
+              -1.1464135836745384,
+              0.3444741820979396
+            ]
+          },
+          "vsEarlyRate": {
+            "meanSeedMaeImprovement": 2.4200350150047876,
+            "conditional95": [
+              1.0715572013888635,
+              4.182771353607733
+            ]
+          }
+        },
+        "plus:outOfSupplyStrengthShare": {
+          "mae": 2.6821777803056337,
+          "byVariantMae": {
+            "v80g-wide": 3.5228672978687507,
+            "v80j-wide": 2.2949429401364996,
+            "v80q-wide": 2.2287231029116503
+          },
+          "vsFitted": {
+            "meanSeedMaeImprovement": -0.025062928366789215,
+            "conditional95": [
+              -0.4607881556935207,
+              0.3231106926071782
+            ]
+          },
+          "vsCarry": {
+            "meanSeedMaeImprovement": -0.415511113638967,
+            "conditional95": [
+              -1.174173748660974,
+              0.358875325392777
+            ]
+          },
+          "vsEarlyRate": {
+            "meanSeedMaeImprovement": 2.4511555530276996,
+            "conditional95": [
+              1.0357936558834764,
+              4.183564079309099
+            ]
+          }
+        },
+        "plus:supplyTraceGap": {
+          "mae": 2.5717963189387003,
+          "byVariantMae": {
+            "v80g-wide": 3.678324666754379,
+            "v80j-wide": 1.8005697201839908,
+            "v80q-wide": 2.2364945698777303
+          },
+          "vsFitted": {
+            "meanSeedMaeImprovement": 0.08531853300014414,
+            "conditional95": [
+              0.03055401155857445,
+              0.1388691711516602
+            ]
+          },
+          "vsCarry": {
+            "meanSeedMaeImprovement": -0.30512965227203365,
+            "conditional95": [
+              -0.8417168208875274,
+              0.267793211075003
+            ]
+          },
+          "vsEarlyRate": {
+            "meanSeedMaeImprovement": 2.5615370143946334,
+            "conditional95": [
+              1.2692955511314856,
+              4.176037296788827
+            ]
+          }
+        },
+        "plus:supplyIndividualGap": {
+          "mae": 2.78704970046261,
+          "byVariantMae": {
+            "v80g-wide": 4.154031213546661,
+            "v80j-wide": 2.1199796293612985,
+            "v80q-wide": 2.0871382584798694
+          },
+          "vsFitted": {
+            "meanSeedMaeImprovement": -0.12993484852376516,
+            "conditional95": [
+              -0.8434143182746765,
+              0.3472825011279895
+            ]
+          },
+          "vsCarry": {
+            "meanSeedMaeImprovement": -0.520383033795943,
+            "conditional95": [
+              -1.4982431880930767,
+              0.29648905874324427
+            ]
+          },
+          "vsEarlyRate": {
+            "meanSeedMaeImprovement": 2.3462836328707235,
+            "conditional95": [
+              0.7875518189459098,
+              3.9896660654611744
+            ]
+          }
+        },
+        "plus:supplyJointGap": {
+          "mae": 2.78704970046261,
+          "byVariantMae": {
+            "v80g-wide": 4.154031213546661,
+            "v80j-wide": 2.1199796293612985,
+            "v80q-wide": 2.0871382584798694
+          },
+          "vsFitted": {
+            "meanSeedMaeImprovement": -0.12993484852376516,
+            "conditional95": [
+              -0.8434143182746765,
+              0.3472825011279895
+            ]
+          },
+          "vsCarry": {
+            "meanSeedMaeImprovement": -0.520383033795943,
+            "conditional95": [
+              -1.4982431880930767,
+              0.29648905874324427
+            ]
+          },
+          "vsEarlyRate": {
+            "meanSeedMaeImprovement": 2.3462836328707235,
+            "conditional95": [
+              0.7875518189459098,
+              3.9896660654611744
+            ]
+          }
+        },
+        "plus:supplySingleSourceDependence": {
+          "mae": 2.8860672270950354,
+          "byVariantMae": {
+            "v80g-wide": 4.427258854207873,
+            "v80j-wide": 1.8811896903374006,
+            "v80q-wide": 2.3497531367398343
+          },
+          "vsFitted": {
+            "meanSeedMaeImprovement": -0.2289523751561911,
+            "conditional95": [
+              -0.9964728769888586,
+              0.21195231084626237
+            ]
+          },
+          "vsCarry": {
+            "meanSeedMaeImprovement": -0.6194005604283689,
+            "conditional95": [
+              -1.696315115665121,
+              0.36097651130992636
+            ]
+          },
+          "vsEarlyRate": {
+            "meanSeedMaeImprovement": 2.247266106238298,
+            "conditional95": [
+              0.5434359627248332,
+              4.098889001894871
+            ]
+          }
+        },
+        "plus:remainingReShare": {
+          "mae": 2.920022260569166,
+          "byVariantMae": {
+            "v80g-wide": 3.6513325738898765,
+            "v80j-wide": 2.6849272037099796,
+            "v80q-wide": 2.4238070041076414
+          },
+          "vsFitted": {
+            "meanSeedMaeImprovement": -0.26290740863032125,
+            "conditional95": [
+              -0.561525035666246,
+              -0.012211902707010336
+            ]
+          },
+          "vsCarry": {
+            "meanSeedMaeImprovement": -0.6533555939024991,
+            "conditional95": [
+              -1.2032019855808165,
+              -0.07419780895426026
+            ]
+          },
+          "vsEarlyRate": {
+            "meanSeedMaeImprovement": 2.2133110727641676,
+            "conditional95": [
+              0.9910330983999337,
+              3.770382914927579
+            ]
+          }
+        }
+      }
+    }
+  }
+}

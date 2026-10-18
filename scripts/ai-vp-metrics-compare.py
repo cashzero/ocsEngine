@@ -94,10 +94,11 @@ def solve(matrix, vector):
     return [row[-1] for row in augmented]
 
 
-def ridge_predict(train, test, features, penalty=1.0):
+def ridge_predict(train, test, features, penalty=1.0, *, outcome='finalMarginDelta',
+                  baseline='earlyMargin', allowed_features=METRICS):
     if not train:
         raise ValueError('empty training fold')
-    if not features or any(feature not in METRICS for feature in features):
+    if not features or outcome in features or any(feature not in allowed_features for feature in features):
         raise ValueError('features must be explicitly selected cutoff metrics; outcome is forbidden')
     medians = []
     for feature in features:
@@ -123,13 +124,12 @@ def ridge_predict(train, test, features, penalty=1.0):
 
     design = [transform(raw) for raw in raw_train]
     width = len(design[0])
-    # Leave current VP unpenalized so a duplicate feature cannot improve fit by weakening its shrinkage.
     unpenalized = {0}
-    if features[0] == 'earlyMargin' and scales[0] > 0:
+    if features[0] == baseline and scales[0] > 0:
         unpenalized.add(1)
     matrix = [[sum(row[i] * row[j] for row in design) + (penalty if i == j and i not in unpenalized else 0)
                for j in range(width)] for i in range(width)]
-    vector = [sum(row[i] * sample['finalMarginDelta'] for row, sample in zip(design, train))
+    vector = [sum(row[i] * sample[outcome] for row, sample in zip(design, train))
               for i in range(width)]
     weights = solve(matrix, vector)
     return [sum(a * b for a, b in zip(transform(impute(row)), weights)) for row in test]

@@ -35,7 +35,7 @@
 | `scripts/ai-continue-compare.py` | 比較接續結果：每個指標的成對差（同一分岔點的骰子先平均）、t 值，以及早期差與終局 VP 差的相關 |
 | `scripts/ai-role-margin.mjs` | 把候選策略在攻擊戰的攻方與守方效果分開：與對手策略自我對戰的同種子基準比較每局攻方 margin |
 | `scripts/ai-concentration-study.mjs` | 攻方兵力集中：戰力離敵距離與任務分佈、可攻擊格與宣告攻擊的 Combat Table 欄位、主攻群貼近目標的戰力、砲兵模式與砲擊（需 `--trace`） |
-| `scripts/ai-vp-metrics-extract.mjs`、`scripts/ai-vp-metrics-compare.py` | 固定回合的目標控制與戰術指標重播、同角色自戰差分、留出種子與策略變體的探索比較；首輪 manifest、重現方式與限制見 [VP 指標研究](vp-metrics.md) |
+| `scripts/ai-vp-metrics-extract.mjs`、`scripts/ai-vp-metrics-compare.py`、`scripts/ai-outcome-metrics-observer.mjs`、`scripts/ai-outcome-metrics-compare.py` | 固定回合的目標控制與戰術指標重播；`--advanced` 加入補給階段的共同配給條件、耗損前 RE 暴露與損失原因，四結果比較使用各自的早期基準、同角色自戰差分、留出種子與策略變體；manifest、重現方式與限制見 [VP 指標研究](vp-metrics.md) |
 | `scripts/ai-narrate.mjs` | 一局 trace 的逐步摘要，供人工檢視 |
 | `scripts/ai-train.mjs` | 權重自我對戰（已停用，見「決策」） |
 

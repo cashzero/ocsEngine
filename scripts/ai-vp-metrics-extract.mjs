@@ -5,6 +5,7 @@ import { createHash } from 'node:crypto';
 import { readFileSync, readdirSync, mkdirSync, writeFileSync } from 'node:fs';
 import { resolve, join, dirname, relative } from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { loadOutcomeObserver } from './ai-outcome-metrics-observer.mjs';
 
 const args = process.argv.slice(2);
 const option = (name) => args[args.indexOf(name) + 1];
@@ -17,6 +18,8 @@ const cutoffTurn = args.includes('--cutoff') ? Number(option('--cutoff')) : 4;
 assert(Number.isInteger(cutoffTurn) && cutoffTurn > 0);
 const variant = option('--variant');
 const m = await import(pathToFileURL(join(engine, 'index.js')).href);
+const advanced = args.includes('--advanced');
+const createObserver = advanced ? await loadOutcomeObserver(engine, m) : null;
 const hash = (value) => createHash('sha256').update(value).digest('hex');
 const engineFiles = (dir) => readdirSync(dir, { withFileTypes: true }).flatMap((entry) => entry.isDirectory()
   ? engineFiles(join(dir, entry.name)) : entry.name.endsWith('.js') ? [join(dir, entry.name)] : []).sort();
@@ -43,6 +46,7 @@ for (const record of summary.records) {
   assert(parsed.ok, 'initial snapshot parses');
   let state = parsed.value;
   const initial = state;
+  const observer = createObserver?.(initial, cutoffTurn, record);
   const initialHash = await m.hashGameState(state);
   assert(initialHash.ok);
   assert.equal(initialHash.value, save.initialStateHash);
@@ -69,6 +73,7 @@ for (const record of summary.records) {
   let pending = null;
 
   for (const action of save.acceptedActions) {
+    observer?.before(state);
     const trace = accepted.get(state.revision);
     assert(trace, `trace exists at ${state.revision}`);
     assert.deepEqual(trace.action, action, 'trace and save action agree');
@@ -112,6 +117,7 @@ for (const record of summary.records) {
     const applied = m.ruleEngine.applyAction(state, action);
     assert(applied.ok, `replay action accepted at ${state.revision}`);
     state = applied.state;
+    observer?.after(before, action, applied);
     if (observed) {
       for (const objective of objectives) {
         const from = control(before, objective.hexId);
@@ -149,6 +155,7 @@ for (const record of summary.records) {
   assert(finalHash.ok);
   assert.equal(finalHash.value, record.finalStateHash);
   assert.equal(finalHash.value, save.finalStateHash);
+  const advancedSides = observer?.finish(cutoff, state);
   const sides = {};
   for (const id of players) {
     const other = players.find((p) => p !== id);
@@ -181,6 +188,7 @@ for (const record of summary.records) {
       bestSearchTruncated: r.bestSearchTruncated,
     };
     sides[sideOf(id)] = { role: initial.configuration.attackVictory?.attackerId === id ? 'ATTACKER' : 'DEFENDER',
+      ...(advancedSides ? { advanced: advancedSides[sideOf(id)] } : {}),
       metrics, finalMargin: vp(state, id) - vp(state, other), readiness: r, counts: count,
       objectives: histories[id].map((o) => ({ ...o, heldAtCutoff: control(cutoff, o.hexId) === id,
         heldAtEnd: control(state, o.hexId) === id })) };
@@ -194,6 +202,6 @@ for (const record of summary.records) {
 }
 const output = resolve(option('--out'));
 mkdirSync(dirname(output), { recursive: true });
-writeFileSync(output, JSON.stringify({ schemaVersion: 1, variant, directory, style: summary.options.style,
+writeFileSync(output, JSON.stringify({ schemaVersion: 1, ...(advanced ? { advanced: true } : {}), variant, directory, style: summary.options.style,
   cutoffTurn, engine, engineHash, summaryHash: hash(readFileSync(join(directory, 'summary.json'))),
   elapsedMs: Date.now() - started, games }, null, 2) + '\n');
