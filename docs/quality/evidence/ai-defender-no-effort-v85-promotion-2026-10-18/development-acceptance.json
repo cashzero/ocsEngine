@@ -1,0 +1,148 @@
+{
+  "strategyVersion": "85",
+  "baselineVersion": "79",
+  "sourceCommit": "89c15a85c47cf12e741210d84eb28e253e328e43",
+  "mode": "development",
+  "groups": [
+    {
+      "group": "meeting-temperate",
+      "games": 8,
+      "candidateVP": 168,
+      "baselineVP": 168,
+      "delta": 0,
+      "legalReplayAndSupply": true
+    },
+    {
+      "group": "meeting-eastern",
+      "games": 8,
+      "candidateVP": 50,
+      "baselineVP": 50,
+      "delta": 0,
+      "legalReplayAndSupply": true
+    },
+    {
+      "group": "attack-temperate",
+      "games": 8,
+      "candidateVP": 97,
+      "baselineVP": 35,
+      "delta": 62,
+      "legalReplayAndSupply": true
+    },
+    {
+      "group": "attack-eastern",
+      "games": 8,
+      "candidateVP": 56,
+      "baselineVP": 40,
+      "delta": 16,
+      "legalReplayAndSupply": true
+    }
+  ],
+  "totals": {
+    "candidateVP": 371,
+    "candidateStepsKilled": 629,
+    "candidateStepsLost": 574,
+    "baselineVP": 293,
+    "baselineStepsKilled": 574,
+    "baselineStepsLost": 629,
+    "candidateAdvances": 114,
+    "candidateFundedAdvances": 114,
+    "candidateSuccessfulOverruns": 9,
+    "candidateActuallyFundedOverruns": 9
+  },
+  "engagementDeltas": {
+    "MEETING": 0,
+    "AXIS_ATTACKS": 78
+  },
+  "unchangedEngagements": [
+    "MEETING"
+  ],
+  "metrics": {
+    "vp": {
+      "pairs": 8,
+      "mean": 4.875,
+      "standardError": 1.8071040368501199,
+      "interval": [
+        1.0800815226147482,
+        8.669918477385252
+      ],
+      "engagementPairMeans": {
+        "AXIS_ATTACKS": 4.875
+      }
+    },
+    "killLoss": {
+      "pairs": 8,
+      "mean": 3.4375,
+      "standardError": 2.7829799996714724,
+      "interval": [
+        -2.4067579993100923,
+        9.281757999310091
+      ],
+      "engagementPairMeans": {
+        "AXIS_ATTACKS": 3.4375
+      }
+    },
+    "supply": {
+      "pairs": 8,
+      "mean": -0.6875,
+      "standardError": 0.4994416525338213,
+      "interval": [
+        -1.7363274703210247,
+        0.36132747032102475
+      ],
+      "engagementPairMeans": {
+        "AXIS_ATTACKS": -0.6875
+      }
+    }
+  },
+  "pairs": 8,
+  "mean": 4.875,
+  "standardError": 1.8071040368501199,
+  "interval": [
+    1.0800815226147482,
+    8.669918477385252
+  ],
+  "gateChecks": {
+    "primary vp": true
+  },
+  "gate": true,
+  "vpGate": true,
+  "verificationScope": "frozen-only",
+  "quality": {
+    "typecheck": {
+      "command": [
+        "npm",
+        "run",
+        "typecheck"
+      ],
+      "exitCode": 0,
+      "seconds": 8.446149817027617,
+      "log": "artifacts/ai-promotion/frozen-v85-quality/typecheck.log",
+      "sha256": "d276a607924b69f3bf75479c9ff0bd362e2bc5a9c0047d63a951c8e899b4eb98"
+    },
+    "tests": {
+      "command": [
+        "npx",
+        "vitest",
+        "run",
+        "--maxWorkers=2"
+      ],
+      "exitCode": 0,
+      "seconds": 157.66069070401136,
+      "log": "artifacts/ai-promotion/frozen-v85-quality/tests.log",
+      "sha256": "6c302bf29d201287182eb2fcc6175a278be6d6be096dc27e4a98a47385ab6351",
+      "passed": 799,
+      "skipped": 8
+    },
+    "smoke": {
+      "command": [
+        "npm",
+        "run",
+        "smoke"
+      ],
+      "exitCode": 0,
+      "seconds": 1.543771372991614,
+      "log": "artifacts/ai-promotion/frozen-v85-quality/smoke.log",
+      "sha256": "57f4b11f8e16b9086ab757da51a782c8fdee53c661431fe12983397ac1a2493b"
+    }
+  }
+}
