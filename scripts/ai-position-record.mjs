@@ -5,10 +5,11 @@
 //
 // One JSON line per game and player turn, taken before that player turn's first action: both players' current-position
 // metrics (positionMetrics) and next-turn metrics (nextTurnMetrics) of scripts/ai-position-metrics.mjs, the supply-cut
-// estimate only for the player not moving (the one the phasing player can cut in this turn), then what happened
-// in that player turn (steps each player lost, objectives and objective VP each player gained and lost), the game's final
-// VP, the engagement and each player's policy (summary.json). Games are replayed on this build; a game whose replay does
-// not reach its recorded final state hash is skipped and reported, so rows never mix rule versions silently.
+// estimate only for the player not moving (the one the phasing player can cut in this turn), then what happened in that
+// player turn (steps each player lost, objectives and objective VP each player gained and lost, SP of each player's dumps
+// captured, destroyed or blown), the game's final VP, the engagement and each player's policy (summary.json). Games are
+// replayed on this build; a game whose replay does not reach its recorded final state hash is skipped and reported, so
+// rows never mix rule versions silently.
 import { appendFileSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -51,13 +52,17 @@ for (const dir of dirs) {
           policies: Object.fromEntries(players.map((playerId) => [playerId, record.sides[sideOf(playerId)].policy])),
           gameTurn: state.sequence.gameTurn, playerTurnIndex: state.sequence.playerTurnIndex, phasingPlayerId: state.sequence.phasingPlayerId,
           metrics: Object.fromEntries(players.map((playerId) => [playerId, { ...position[playerId], ...nextTurn[playerId] }])),
-          turn: Object.fromEntries(players.map((playerId) => [playerId, { stepsLost: 0, objectivesGained: 0, objectivesLost: 0, objectiveVpGained: 0, objectiveVpLost: 0 }])),
+          turn: Object.fromEntries(players.map((playerId) => [playerId, { stepsLost: 0, objectivesGained: 0, objectivesLost: 0, objectiveVpGained: 0, objectiveVpLost: 0, spCapturedOrDestroyed: 0 }])),
         };
       }
       const next = m.ruleEngine.applyAction(state, action);
+      const ownerOf = (pieceId) => (state.pieceState.pieces.find(({ id }) => id === pieceId) ?? next.state.pieceState.pieces.find(({ id }) => id === pieceId))?.ownerId;
       for (const event of next.events) {
+        // Tokens of a dump the opponent captured or destroyed, or its owner blew to deny it (4 Tokens = 1 SP).
+        const tokens = event.kind === 'SUPPLY_CAPTURED' ? event.captured + event.destroyed : event.kind === 'DUMP_BLOWN' ? event.destroyed : 0;
+        if (tokens > 0 && row.turn[ownerOf(event.resourcePieceId)]) row.turn[ownerOf(event.resourcePieceId)].spCapturedOrDestroyed += tokens / 4;
         if (event.kind !== 'STEP_LOST') continue;
-        const owner = (state.pieceState.pieces.find(({ id }) => id === event.pieceId) ?? next.state.pieceState.pieces.find(({ id }) => id === event.pieceId))?.ownerId;
+        const owner = ownerOf(event.pieceId);
         if (row.turn[owner]) row.turn[owner].stepsLost += 1;
       }
       for (const { hexId, points } of objectives) {

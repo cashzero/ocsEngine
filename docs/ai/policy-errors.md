@@ -28,7 +28,7 @@
 | E3 | 戰鬥勝利後不前進 | trace 的 `advance: no supplied advance` | 攻方不前進 5.5、前進 7.25；守方不前進 3.6、前進 0.13；遭遇戰 2.6 對 2.8 | 接續測試（30 個局面 × 4）：不管威脅都前進，終局己方損失 +1.39 ± 0.66、擊殺 +1.06 ± 0.55，Kill − Loss −0.33 ± 0.82、VP −0.22 ± 0.47：用損失換擊殺，**威脅上限不是錯誤**（[紀錄](../quality/evidence/ai-error-continuations-v85-2026-10-18/README.md)）。補給不足而不前進的情況未測 |
 | E4 | 賠率分配不當 | 每次攻擊的 Combat Table 欄位 | 35–55% 的攻擊在第 10 欄以上（多在最高欄）；對目標點的攻擊平均只有第 5.4–6.1 欄，約一半守軍留在原地 | **戰鬥段內分配大致正確**（[紀錄](../quality/evidence/ai-error-continuations-v85-2026-10-18/README.md)，`ai-attack-allocation-study.mjs`）：高賠率攻擊中多出的單位，攻方每局 5.38 個裡 4.75 個旁邊沒有別的敵軍；能改打另一個未被攻擊的相鄰敵格的每局約 0.6 個；低賠率攻擊目標點時旁邊有閒置己方單位的每局 0.4 次。兵力分配在移動段就決定了，併入 E6 |
 | E5 | 有好賠率卻不攻擊 | Combat Segment 開始時有第 6 欄以上的合法攻擊、卻沒有宣告 | 攻方 0.88、守方 1.5、遭遇戰 0.5（每局約 6.8 個 segment） | 接續測試（27 個局面 × 4）：補給項降為 0.5 或門檻降為 2，攻擊增加（+0.98、+0.37），當回合擊殺增加，終局 Kill − Loss（+0.66 ± 0.82、+0.48 ± 0.35）與 VP（−0.04、0.00）沒有差別：**未證明是錯誤**（[紀錄](../quality/evidence/ai-error-continuations-v85-2026-10-18/README.md)） |
-| E6 | 攻方停在敵前 2–3 格 | `ai-concentration-study.mjs` | 離敵 2–3 格的戰力（118）約等於相鄰的（116）；主攻群 2.5 個單位只有 1.2 個貼近目標 | 以各單位自己的目標量（[紀錄](../quality/evidence/ai-error-continuations-v85-2026-10-18/README.md)，`ai-approach-study.mjs`）：攻方移動中停在目標 2–3 格、但目標旁的格子其實到得了的，assault 9%、hunt 20%、capture（目標有敵軍）18%，扣分主要是 `crowding` 與 `exposure`；其餘多是一回合到不了。是否算錯要看局勢；目標點的局勢指標已可用，但暴露量還不能判斷（`bot-position-exposure`，見[指標是否可用](#指標是否可用)） |
+| E6 | 攻方停在敵前 2–3 格 | `ai-concentration-study.mjs` | 離敵 2–3 格的戰力（118）約等於相鄰的（116）；主攻群 2.5 個單位只有 1.2 個貼近目標 | 以各單位自己的目標量（[紀錄](../quality/evidence/ai-error-continuations-v85-2026-10-18/README.md)，`ai-approach-study.mjs`）：攻方移動中停在目標 2–3 格、但目標旁的格子其實到得了的，assault 9%、hunt 20%、capture（目標有敵軍）18%，扣分主要是 `crowding` 與 `exposure`；其餘多是一回合到不了。是否算錯要看局勢；目標點、斷補與分配後的暴露量（`stacksExposedAllocated`）都已可量（見[指標是否可用](#指標是否可用)），判斷還需要比較停在 2–3 格與貼近兩種走法的接續測試 |
 | E7 | 目標點空著被敵軍走進 | 重播：失去目標點時格內無守軍 | 0.7–1.7 | **大多不是錯誤**（[紀錄](../quality/evidence/ai-error-continuations-v85-2026-10-18/README.md)）：失去時格內無己方戰鬥單位的目標點，幾乎都是同一個玩家回合內守軍被擊毀或撤退後敵軍進入（遭遇戰每局 2.00／2.38、守方 3.38／3.50）；己方移開後被走進的只有遭遇戰 0.38、守方 0.13 |
 | E8 | 整局沒移動過的戰鬥單位 | 重播 | 守方 11.5、遭遇戰 6.6、攻方 1.4 | **大多不是錯誤**（[紀錄](../quality/evidence/ai-error-continuations-v85-2026-10-18/README.md)）：多數是不能移動的駐軍（守方 9.63、遭遇戰 5.56）；能移動卻整局沒動的每局 0.7–1.4 個 |
 | E9 | 砲兵多在 Move Mode、砲擊少 | `ai-concentration-study.mjs` | 戰鬥時 Move Mode 406 次、Combat Mode 10 次；每階段砲擊 0.5 次 | 改 Combat Mode 已試過無效（v80），問題在砲擊評分而非模式 |
@@ -46,7 +46,8 @@ VP、Kill、Loss、Supply 反映不出局勢（使用者，2026-10-18），所�
 |---|---|
 | `objectivesAtRisk`、`objectiveVpAtRisk` | 己方持有的目標點中，對方下回合能以第 6 欄以上攻擊、或格內沒有己方戰鬥單位而對方能走進的 |
 | `objectivesInReach`、`objectiveVpInReach` | 反過來：己方未持有的目標點中，己方下回合能以第 6 欄以上攻擊或走進的 |
-| `stacksExposed`、`stepsExposed` | 對方下回合能以第 9 欄以上攻擊的己方 stack 數與其中的 step |
+| `stacksExposed`、`stepsExposed` | 對方下回合能以第 9 欄以上攻擊的己方 stack 數與其中的 step（上限：對方每個單位都算進每個到得了旁邊的格子） |
+| `stacksExposedAllocated`、`stepsExposedAllocated` | 同上，但對方每個單位只攻擊一格：貪婪分配，先挑未分配單位能以第 9 欄以上攻擊、step 最多的格子，只留維持第 9 欄所需的單位（先拿掉印刷戰力最弱的），再挑下一格 |
 | `hqsInReach`、`dumpSpInReach` | 對方下回合能到旁邊的己方 HQ，與己方補給堆（不含駐軍存量）的 SP |
 | `unitsWithReach` | 下回合能移動的己方戰鬥單位 |
 | `supplyBestCut`、`supplyCuttable` | 現在有 trace 的己方戰鬥單位中，對方一個單位移到一格就會斷補的最多單位數，與某一個這樣的移動會切斷的單位數 |
@@ -64,7 +65,8 @@ formation 共同路線、補給源）重算，數斷補的己方單位。只試�
 ### 指標是否可用
 
 `scripts/ai-position-analysis.py` 在 252 局不重複的對局上檢驗（[紀錄](../quality/evidence/ai-position-analysis-2026-10-18/README.md)，
-補給線切斷：[紀錄](../quality/evidence/ai-position-supply-cut-2026-10-18/README.md)）。
+補給線切斷：[紀錄](../quality/evidence/ai-position-supply-cut-2026-10-18/README.md)；分配後的暴露量與補給堆損失：
+[紀錄](../quality/evidence/ai-position-exposure-2026-10-18/README.md)）。
 在玩家 P 的回合開始時，對方 O 的指標描述的正是 P 這回合能做的事，所以應該預測 O 這回合的損失；比較的基準是只看距離的現況指標。
 另外檢驗各 Game Turn 開始時的指標，扣掉現在的 VP、step 與斷補之後，能否再預測終局 VP 差（以對局交叉驗證）。
 
@@ -72,8 +74,9 @@ formation 共同路線、補給源）重算，數斷補的己方單位。只試�
 |---|---|---|---|
 | `objectivesAtRisk`、`objectiveVpAtRisk`（與對方的 `InReach`） | 為 0 的 1,572 個回合沒有失去任何目標點；失去的目標點全部（遭遇戰 98%）發生在大於 0 的回合；失點機率隨數值上升（1：15%、2–3：28%、4–7：53%）；比相鄰基準多解釋 0.19–0.21 的變異（基準 0.02） | 攻擊戰第 3–6 回合點估計多 0.02–0.07 的交叉驗證 R²，但 95% 區間都含 0 | 可用：近期丟點與奪點的領先指標 |
 | `hqsInReach` | 攻方行動時 r 0.45（基準 0.01）；為 0 時沒有失去 HQ | 未單獨檢驗 | 可用於攻方的回合 |
-| `stacksExposed`、`stepsExposed` | 飽和：73% 的回合 `stepsExposed` 已達 8 以上；全部回合 r 0.08–0.09，攻方行動時 `stacksExposed` r 0.37 | 加入後沒有增益 | 尚不可用（`bot-position-exposure`） |
-| `dumpSpInReach` | r 0.05–0.13；結果用的是地圖上 SP 的減少，含 O 自己的支出，沒有被奪或被毀的 SP 紀錄 | 未單獨檢驗 | 未證實（`bot-position-exposure`） |
+| `stacksExposed`、`stepsExposed` | 飽和：73% 的回合 `stepsExposed` 已達 8 以上；全部回合 r 0.08–0.09，攻方行動時 `stacksExposed` r 0.37 | 加入後沒有增益 | 只在攻方的回合可用；跨角色比較用分配後的 |
+| `stacksExposedAllocated` | 不飽和（8 以上 5%）；損失的 step 隨數值上升（0：0.41、1：0.42、2–3：0.91、4–7：1.44、8+：1.68）；全部回合 r 0.23，比 `stacksExposed` 多解釋 0.052 [0.037, 0.071]；但分角色看增益小：攻方行動時 r 0.36（`stacksExposed` 0.37，多 0.013 [0.002, 0.030]），守方行動時沒有增益，遭遇戰多 0.019 [0.004, 0.043]，所以主要是讓各角色的數值可以相比 | 沒有增益（`stepsExposedAllocated` 也沒有） | 可用：近期損失的領先指標，弱；`stepsExposedAllocated` 仍有 63% 的回合在 8 以上，用 stack 數 |
+| `dumpSpInReach` | 對被奪、被毀或自己炸掉的補給堆 SP：為 0 時從未損失；平均損失隨數值上升（0：0、1：0.08、2–3：0.11、4–7：0.38、8+：0.47 SP），但損失少見，r 0.08（守方行動時 0.14） | 未單獨檢驗 | 必要條件可用，量的預測力弱 |
 | `unitsWithReach` | 沒有對應的結果 | 與 rear 指標一起加入沒有增益 | 未證實 |
 | `supplyCuttable`、`supplyBestCut` | 對到 O 下一回合開始時斷補單位的增加：r 0.24（攻方行動時 0.31，基準 0.01），多解釋 0.058 [0.041, 0.083]；斷補增加的 98% 發生在大於 0 的回合；平均增加隨數值上升（0：0.43、1–7：1.23、8–15：2.0、16–23：3.32、24–31：4.51），32 以上持平 | 沒有增益 | 可用：近期斷補的領先指標，比目標點的弱 |
 

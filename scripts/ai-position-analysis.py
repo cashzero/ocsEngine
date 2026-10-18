@@ -7,16 +7,19 @@ Reads rows of scripts/ai-position-record.mjs. Games recorded twice (same seed an
 
 A. Same player turn (the last player turn of a game has no following row and is left out). At the start of player P's
    turn, the other player O's next-turn metrics describe what P can do in this turn, so they should predict what O loses
-   in it: objectivesAtRisk against objectives O lost, stepsExposed against steps O lost, dumpSpInReach against on-map SP
-   O lost (fall of spOnMap to the next row, which also holds what O spent in P's turn), hqsInReach against HQs O lost,
-   supplyCuttable and supplyBestCut against the rise in O's units out of trace to the next row (recorded only for O, the
-   player not moving). Each is compared with a plain distance baseline (objectivesThreatened, contact) by correlation
-   and by the R2 the new metric adds to the baseline. Confidence intervals resample games.
+   in it: objectivesAtRisk against objectives O lost; stepsExposed and the allocated exposure against steps O lost (the
+   allocated one also over stacksExposed as baseline); dumpSpInReach against on-map SP O lost (fall of spOnMap to the
+   next row, which also holds what O spent in P's turn) and against SP of O's dumps captured, destroyed or blown;
+   hqsInReach against HQs O lost; supplyCuttable and supplyBestCut against the rise in O's units out of trace to the next
+   row (recorded only for O, the player not moving). Tests whose metric or outcome a record lacks are skipped. Each is
+   compared with a plain distance baseline (objectivesThreatened, contact) by correlation and by the R2 the new metric
+   adds to the baseline. Confidence intervals resample games.
 B. Final result. At the start of each Game Turn, the final VP margin (Axis minus Allied) is predicted from the current
    VP margin, then with material and supply (steps, outOfTrace), then with the position metrics (the supply-cut term uses
    the player not moving at the start of the Game Turn, the only one it is recorded for). R2 is cross-validated by
    game (10 folds), so a model with more terms gains only what holds on unseen games. The gains of material and supply
-   over VP, and of objective reach and of the supply cut over those, get 95% intervals from 100 resamples of games.
+   over VP, and of objective reach, the supply cut and the allocated exposure over those, get 95% intervals from 100
+   resamples of games.
 """
 import glob
 import hashlib
@@ -116,14 +119,29 @@ TESTS = [
     ('objective VP O lost', lambda e: e['lost']['objectiveVpLost'], 'objectiveVpAtRisk', 'objectivesThreatened'),
     ('steps O lost', lambda e: e['lost']['stepsLost'], 'stepsExposed', 'contact'),
     ('steps O lost', lambda e: e['lost']['stepsLost'], 'stacksExposed', 'contact'),
+    ('steps O lost', lambda e: e['lost']['stepsLost'], 'stepsExposedAllocated', 'contact'),
+    ('steps O lost', lambda e: e['lost']['stepsLost'], 'stepsExposedAllocated', 'stacksExposed'),
+    ('steps O lost', lambda e: e['lost']['stepsLost'], 'stacksExposedAllocated', 'stacksExposed'),
     ('on-map SP O lost', lambda e: e['lost']['spLost'], 'dumpSpInReach', 'contact'),
+    ('SP O lost to capture or destruction', lambda e: e['lost']['spCapturedOrDestroyed'], 'dumpSpInReach', 'contact'),
     ('HQs O lost', lambda e: e['lost']['hqsLost'], 'hqsInReach', 'contact'),
     ('O units newly out of trace', lambda e: e['lost']['outOfTraceRise'], 'supplyCuttable', 'contact'),
     ('O units newly out of trace', lambda e: e['lost']['outOfTraceRise'], 'supplyBestCut', 'contact'),
 ]
-if not all('supplyCuttable' in e['o'] for e in pairs):
-    TESTS = [test for test in TESTS if not test[2].startswith('supply')]
-    print('rows without the supply-cut estimate: its tests are skipped')
+
+
+def recorded(test):
+    try:
+        test[1](pairs[0])
+    except KeyError:
+        return False
+    return all(test[2] in e['o'] and test[3] in e['o'] for e in pairs)
+
+
+skipped = sorted({f'{test[0]} ~ {test[2]}' for test in TESTS if not recorded(test)})
+TESTS = [test for test in TESTS if recorded(test)]
+if skipped:
+    print('not in these rows, skipped: ' + '; '.join(skipped))
 
 
 def bucket(value):
@@ -190,7 +208,7 @@ def net(row, player):
 
 def cut(row):
     other = next(player for player in row['metrics'] if player != row['phasingPlayerId'])
-    value = row['metrics'][other].get('supplyCuttable') or 0
+    value = row['metrics'][other]['supplyCuttable']
     return value if other == ALLIED else -value
 
 
@@ -202,6 +220,7 @@ MODELS = [
     ('+ objective VP reach + stepsExposed + rear', lambda r: [diff(r, 'vp'), diff(r, 'steps'), diff(r, 'outOfTrace'), net(r, AXIS), net(r, ALLIED),
                                                             diff(r, 'stepsExposed'), diff(r, 'hqsInReach'), diff(r, 'dumpSpInReach'), diff(r, 'unitsWithReach')]),
     ('+ supply cut (units cuttable of the player not moving, signed for Axis)', lambda r: [diff(r, 'vp'), diff(r, 'steps'), diff(r, 'outOfTrace'), cut(r)]),
+    ('+ stepsExposedAllocated', lambda r: [diff(r, 'vp'), diff(r, 'steps'), diff(r, 'outOfTrace'), diff(r, 'stepsExposedAllocated')]),
     ('distance baseline instead (contact, within2, objectivesThreatened)', lambda r: [diff(r, 'vp'), diff(r, 'steps'), diff(r, 'outOfTrace'), diff(r, 'contact'),
                                                                                    diff(r, 'within2'), diff(r, 'objectivesThreatened')]),
 ]
@@ -218,13 +237,21 @@ def cv_r2(samples, features, folds=10):
     return r2([s['y'] for s in samples], preds)
 
 
+def available(features):
+    try:
+        features(games[0][0])
+    except KeyError:
+        return False
+    return True
+
+
 report['finalResult'] = {}
 print('\nB. Final VP margin (Axis - Allied) from the start of each Game Turn: cross-validated R2 by game (10 folds)')
 for engagement in ['AXIS_ATTACKS', 'MEETING']:
     chosen = [(index, rows) for index, rows in enumerate(games) if rows[0]['engagement'] == engagement]
     print(f'\n  {engagement}: {len(chosen)} games')
     print('    Game Turn: ' + '  '.join(f'{turn:>6}' for turn in range(2, 9)))
-    for name, features in MODELS:
+    for name, features in [model for model in MODELS if available(model[1])]:
         values = []
         for turn in range(2, 9):
             samples = []
@@ -235,7 +262,9 @@ for engagement in ['AXIS_ATTACKS', 'MEETING']:
             values.append(cv_r2(samples, features))
         print(f'    {name}:\n      ' + '  '.join(f'{value:6.3f}' for value in values))
         report['finalResult'].setdefault(engagement, []).append({'model': name, 'cvR2ByGameTurn': dict(zip(range(2, 9), values))})
-    for (base_name, base), (extended_name, extended) in [(MODELS[0], MODELS[1]), (MODELS[1], MODELS[2]), (MODELS[1], MODELS[5])]:
+    for (base_name, base), (extended_name, extended) in [(MODELS[0], MODELS[1]), (MODELS[1], MODELS[2]), (MODELS[1], MODELS[5]), (MODELS[1], MODELS[6])]:
+        if not available(extended):
+            continue
         rng = random.Random(11)
         gains = {}
         for turn in range(2, 9):

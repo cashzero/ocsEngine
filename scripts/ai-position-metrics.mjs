@@ -79,7 +79,7 @@ export const eventTotals = (history, ownerOf, players) => {
 
 export const NEXT_TURN_METRIC_NAMES = [
   'objectivesAtRisk', 'objectiveVpAtRisk', 'objectivesInReach', 'objectiveVpInReach', 'stacksExposed', 'stepsExposed',
-  'hqsInReach', 'dumpSpInReach', 'unitsWithReach', 'supplyBestCut', 'supplyCuttable',
+  'stacksExposedAllocated', 'stepsExposedAllocated', 'hqsInReach', 'dumpSpInReach', 'unitsWithReach', 'supplyBestCut', 'supplyCuttable',
 ];
 
 /** Loads the rule modules nextTurnMetrics needs from a built engine directory (dist). */
@@ -102,6 +102,10 @@ export const loadEngine = async (distDirectory) => {
  * - objectivesInReach / objectiveVpInReach: the same the other way: objectives the player does not hold that it can attack at
  *   column 6+ or enter;
  * - stacksExposed / stepsExposed: hexes of the player's combat units the opponent can attack at column 9+, and their steps;
+ *   an upper bound, since every opponent unit counts toward every hex it can reach beside;
+ * - stacksExposedAllocated / stepsExposedAllocated: the same with each opponent unit attacking one hex only, allocated
+ *   greedily: the hex with the most steps the unallocated units can attack at column 9+, kept to the attackers needed
+ *   there (the weakest printed strength dropped first while it stays at 9+), then the next;
  * - hqsInReach / dumpSpInReach: the player's HQs, and SP in its dumps (not garrison stocks), beside a hex the opponent reaches;
  * - unitsWithReach: the player's combat units with a non-empty reach (the others cannot move: immobile, or no MP);
  * - supplyBestCut / supplyCuttable: of the player's combat units in trace now, the most that one opponent unit ending its
@@ -142,6 +146,39 @@ export const nextTurnMetrics = ({ m, strength, pieces, supply }, state, { supply
       defenders.map((piece) => piece.id), null, null).columnIndex;
   };
   const enters = (playerId, hexId) => [...reaches.get(playerId).values()].some((reach) => reach.has(hexId));
+  const printed = (pieceId) => {
+    const piece = state.pieceState.pieces.find(({ id }) => id === pieceId);
+    return Math.max(0, ...(definitions.get(piece.definitionId)?.faces ?? []).flatMap((face) => face.steps.map((step) => step.combatStrength ?? 0)));
+  };
+  const allocatedExposure = (playerId, opponent) => {
+    const besideOf = new Map([...reaches.get(opponent)].map(([pieceId, reach]) => [pieceId, new Set([...reach].flatMap((hexId) => m.adjacentHexIds(hexId).map(String)))]));
+    const defendersAt = new Map();
+    for (const piece of combatOf(playerId)) defendersAt.set(String(piece.location.hexId), [...(defendersAt.get(String(piece.location.hexId)) ?? []), piece]);
+    const column = (attackers, hexId) => {
+      const ids = defendersAt.get(hexId).map((piece) => piece.id);
+      return strength.calculateCombatOdds(state, attackers, ids, hexId, ids, null, null).columnIndex;
+    };
+    const steps = (hexId) => defendersAt.get(hexId).reduce((total, piece) => total + (piece.remainingSteps ?? 1), 0);
+    const free = new Set(besideOf.keys());
+    const open = new Set(defendersAt.keys());
+    let stacks = 0; let exposedSteps = 0;
+    for (;;) {
+      const attackable = [...open].map((hexId) => ({ hexId, attackers: [...free].filter((pieceId) => besideOf.get(pieceId).has(hexId)) }))
+        .filter(({ hexId, attackers }) => attackers.length > 0 && column(attackers, hexId) >= 9)
+        .sort((left, right) => steps(right.hexId) - steps(left.hexId) || left.attackers.length - right.attackers.length || left.hexId.localeCompare(right.hexId));
+      if (attackable.length === 0) break;
+      const { hexId, attackers } = attackable[0];
+      let kept = [...attackers].sort((left, right) => printed(left) - printed(right) || String(left).localeCompare(String(right)));
+      for (const candidate of [...kept]) {
+        const trial = kept.filter((pieceId) => pieceId !== candidate);
+        if (trial.length > 0 && column(trial, hexId) >= 9) kept = trial;
+      }
+      kept.forEach((pieceId) => free.delete(pieceId));
+      open.delete(hexId);
+      stacks += 1; exposedSteps += steps(hexId);
+    }
+    return { stacksExposedAllocated: stacks, stepsExposedAllocated: exposedSteps };
+  };
   const supplyCut = (playerId, opponent) => {
     // Only an opponent unit moves, so the player's pieces are the same objects in every hypothetical state.
     const traced = (current) => new Set(combatOf(playerId).filter((piece) => m.pieceHasTrace(current, piece)).map((piece) => piece.id));
@@ -188,6 +225,7 @@ export const nextTurnMetrics = ({ m, strength, pieces, supply }, state, { supply
       objectivesInReach: open.length, objectiveVpInReach: open.reduce((total, { points }) => total + points, 0),
       stacksExposed: exposed.length,
       stepsExposed: own.filter((piece) => exposed.includes(String(piece.location.hexId))).reduce((total, piece) => total + (piece.remainingSteps ?? 1), 0),
+      ...allocatedExposure(playerId, opponent),
       hqsInReach: own.filter((piece) => isHq(piece) && reachable(String(piece.location.hexId))).length,
       dumpSpInReach: dumps.filter((piece) => reachable(String(piece.location.hexId))).reduce((total, piece) => total + (piece.resourceQuantity ?? 0), 0) / 4,
       unitsWithReach: [...reaches.get(playerId).values()].filter((reach) => reach.size > 1).length,
