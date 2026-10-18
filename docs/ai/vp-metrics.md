@@ -8,7 +8,7 @@
 
 ## 現行行為
 
-目前已有目標換手、戰鬥欄位、兵力集中、補給與角色對照工具，入口見 [評估工具](evaluation.md#工具皆需先-npm-run-build)。`ai-vp-metrics-extract.mjs` 已能在固定回合截點連結每個目標的控制事件、攻擊結果與局面指標（含未控目標 2 格內的最佳有效欄位 `bestObjectiveEffectiveColumn` 與局部兵力比 `localForceRatioAt2Hex`）；尚未記錄完整的選定、承諾兵力與集結計劃。`ai-vp-metrics-compare.py` 已能對首輪資料做同角色自戰差分與分組預測比較（含有效欄位與 2 格兵力比模型）。擷取時加入 `--advanced` 會啟用 `ai-outcome-metrics-observer.mjs`，記錄補給條件與損失原因；`ai-outcome-metrics-compare.py` 比較四結果及原因拆分，尚無前瞻驗證。
+目前已有目標換手、戰鬥欄位、兵力集中、補給與角色對照工具，入口見 [評估工具](evaluation.md#工具皆需先-npm-run-build)。`ai-vp-metrics-extract.mjs` 已能在固定回合截點連結每個目標的控制事件、攻擊結果與局面指標（含假設集中後的靜態欄位 `bestObjectiveEffectiveColumn` 與印刷兵力比 `localForceRatioAt2Hex`，[量測契約](policy-errors.md#局勢指標)）；尚未記錄完整的選定、承諾兵力與集結計劃。`ai-vp-metrics-compare.py` 已能對首輪資料做同角色自戰差分與分組預測比較（含欄位與 2 格兵力比模型）。擷取時加入 `--advanced` 會啟用 `ai-outcome-metrics-observer.mjs`，記錄補給條件與損失原因；`ai-outcome-metrics-compare.py` 比較四結果及原因拆分，尚無前瞻驗證。
 
 引擎的 `calculateVictory` 計算當下控制目標的點數總和，終局重新計分，不逐回合累加。因此持有回合數、攻擊次數與兵力到位率都是候選解釋量，不能先假定越高越好。終局控制點數本身是答案，不是預測指標。
 
@@ -57,19 +57,20 @@
 
 #### 尋找上游指標（指標的指標）的四種非統計方法
 
-由於規則引擎（`src/rules/`）與決策器（`src/ai/policies/heuristic.ts`）是完全透明的確定性形式化系統，從上層指標 $M^{(k)}$ 往上游尋找決定它的前置指標 $M^{(k-1)}$ 時，優先使用以下四種非統計學方法建立結構性分解，再交由統計方法驗證：
+規則引擎（`src/rules/`）與決策器（`src/ai/policies/heuristic.ts`）可在給定局面、階段記憶與 RNG 狀態下重播，因此能沿規則建立候選前置條件。以下是待實作、待驗證的研究方法，不是現有代理指標已滿足的保證。[量測契約與反例](policy-errors.md#局勢指標) 已證實可支付、CRT 期望與損失分類仍有缺陷。
 
-| 方法與學術來源 | 原理 | 在 `ocsEngine` 的具體拆解方式 |
+| 方法 | 要建立的結構 | 實作與判讀條件 |
 |---|---|---|
-| **1. 目標回歸與最弱前置條件反推**<br/>（Goal Regression / Weakest Precondition；STRIPS / ADL 規劃） | 將上層目標的規則公式沿階段序列（`COMBAT` $\leftarrow$ `MOVEMENT` $\leftarrow$ `SUPPLY`）做代數反推，拆成 100% 守恆的折損漏斗（Funnel Identity），不靠統計猜測 | 對 `calculateCombatOdds` 反推為何目標點無法打出高欄（`bestObjectiveEffectiveColumn` 低），拆為五項守恆落差：<br/>$\text{2 格總戰力} \xrightarrow{-\Delta_{\text{未貼敵}}} \text{1 格貼敵戰力} \xrightarrow{-\Delta_{\text{Move模式折半}}} \text{模式修正戰力} \xrightarrow{-\Delta_{\text{地形/跨河折半}}} \text{實質攻擊戰力} \xrightarrow{-\Delta_{\text{缺戰鬥SP剔除}}} \text{可付費有效戰力} \xrightarrow{-\text{Hedgehog}+\text{DG}} \text{最終欄位}$ |
-| **2. 約束鬆弛階層**<br/>（Constraint-Relaxation Hierarchy / Delete-Relaxation $h^+$；AI 啟發式搜尋） | 行動受多重規則約束（$C_1 \land C_2 \land \dots$）同時限制時，由寬到嚴計算各層鬆弛下的指標值 $M(L_0) \ge M(L_1) \ge M(L_2) \ge M(L_3)$；相鄰兩層的差值 $M(L_{i-1}) - M(L_i)$ 直接量化第 $i$ 個約束造成的損失 | 對未控目標點依序計算：<br/>$L_0$（2 格幾何兵力可達）$\ge L_1$（滿油合法移動與 ZOC 可達第 6 欄 `objectivesInReach`）$\ge L_2$（當下實際燃料可達）$\ge L_3$（扣口糧後 `surplusCombatSp` 付得起戰鬥補給 `payableObjectivesInReach`）$\ge L_4$（扣掉防反擊暴露過濾後實際宣告攻擊）。哪兩層落差最大，瓶頸就在該層約束 |
-| **3. 網路流最小割與約束理論影子價格**<br/>（Max-Flow Min-Cut & TOC Shadow Prices；作業研究） | 串聯容量網路的總產出完全取決於容量最小的一環 $\min_i C_i$；非最小割環節的影子價格（拉格朗日乘數 $\lambda_i = \partial M^{(k)} / \partial C_i$）恆為 0 | 將後勤視為串聯流：$\text{入場補給源} \xrightarrow{C_{\text{rail}}} \text{鐵路終點} \xrightarrow{C_{\text{truck}}} \text{前線補給堆} \xrightarrow{C_{\text{HQ}}} \text{HQ 投送半徑} \xrightarrow{C_{\text{ration/fuel}}} \text{surplusCombatSp}$。在重播中以單步反事實微擾（例如免費增加前線 SP 或免費翻 Combat 面）量測邊際敏感度 $\partial M^{(k)} / \partial z_i$，找出唯一有效瓶頸 |
-| **4. 故障樹分析與決策閘門阻擋歸因**<br/>（Fault Tree Analysis & Gate-Blocking Attribution；系統安全工程） | 對決策程式中每個拒絕或降評候選行動的守衛條件（Guard）建立布林／數值故障樹，直接統計各閘門單獨或首要阻擋候選的頻率 | 統計目標 2 格內單位未發動第 6 欄以上攻擊的閘門阻擋率：`blocked_by_zoc_or_mp`（到不了旁邊）、`assigned_to_garrison`（被派守點）、`halved_by_move_mode`（趕路切 Move 折半）、`stopped_by_exposure_penalty`（單獨前進暴露於 9+ 欄）、`insufficient_combat_sp`（缺戰鬥 SP） |
+| 目標回歸與最弱前置條件反推（Goal Regression / Weakest Precondition） | 沿 COMBAT、MOVEMENT、SUPPLY 反推同一目標的參戰條件，記錄未到位、模式、地形、缺補給等限制 | 先固定目標、單位與計算順序，再比較同單位的戰力。戰力、CRT 欄位與骰點修正分開報告，不能當同一量綱相減。AR、hedgehog 的骰點修正與 Surprise 另列。目前兩個摘要欄位甚至可能選中不同目標，尚不存在已驗證的守恆折損漏斗 |
+| 約束鬆弛階層（Constraint-Relaxation Hierarchy） | 對相同目標集合依次加入合法移動、燃料、戰鬥補給與共同指派限制 | 只有可行方案集合逐層包含、目標函數相同且各層求最優值或有有效界限時，才保證上層值不小於下層。現有幾何、貪婪支付及實際宣告不是這套完整求解器；其差值不能直接當成某條規則的因果損失 |
+| 網路流最小割與容量敏感度（Max-Flow Min-Cut / Shadow Prices） | 若補給可表示為容量網路，用來源、鐵路、卡車與可達關係定位受限環節 | HQ 半徑是可達關係，不是直接可相減的流量容量。整數支付、共用路線與多個同時受限環節需另處理；不能先假定總產出等於各種容量的最小值或存在唯一瓶頸。增加 SP 等局面微擾量有限差分敏感度，仍須以合法運補行動驗證可干預性 |
+| 故障樹與決策閘門阻擋（Fault Tree / Gate Blocking） | 記錄候選因路徑、守備指派、模式、暴露與補給被拒絕或降評的條件 | 同時保留全部阻擋條件、第一個阻擋條件與實際選擇。阻擋頻率可定位候選原因，解除單一條件不保證會執行或提高 VP，仍須替代行動續跑 |
 
-結合上述四種方法，現行指標體系形成三條「結果 $\leftarrow$ 指標 $\leftarrow$ 指標的指標」拆解鏈：
-1. **奪點與失點鏈**：終局 VP 與回合得失點 $\leftarrow$ 可付費可攻／受威脅目標（`payableObjectivesInReach` / `payableObjectivesAtRisk`）$\leftarrow$ 幾何可達上限（`objectivesInReach`）、補給鬆弛落差（`objectivesInReach - payableObjectivesInReach`，由 `surplusCombatSp` 決定）、以及 2 格局部兵力比（`localForceRatioAt2Hex`）轉化為實質欄位（`bestObjectiveEffectiveColumn`）時的五階段戰力折損漏斗。
-2. **戰鬥傷亡鏈**：純戰鬥損失（`combatStepsLost`，已排除跨階段自動結算的 `attritionStepsLost`）$\leftarrow$ 一對一分配後暴露量（`stacksExposedAllocated`、`stepsExposedAllocated`）與單格最高期望損失（`maxSingleStackExpectedLoss`）$\leftarrow$ 前線單單位／無工事格比例與死守持有目標點承受 CRT option 的暴露格數。
-3. **斷補與耗損鏈**：斷補耗損（`attritionStepsLost`）與斷 trace 增加（`outOfTraceRise`）$\leftarrow$ 現有斷補（`outOfTrace`）與單一敵單位可切斷量（`supplyCuttable`、`supplyBestCut`）$\leftarrow$ 單一 HQ／單一走廊依賴集中度（`supplyBestCut / unitsInTrace`）與共同口糧配置缺口。
+待驗證的三條拆解鏈如下。它們是候選機制，尚未取得跨策略替代性資格。
+
+1. **奪點與失點鏈**。終局 VP 連到同一目標的取得及保有，再連到合法到位、共同支付與控制後風險。現有 `payableObjectives*` 僅是近似，`localForceRatioAt2Hex` 與 `bestObjectiveEffectiveColumn` 須先補上共同目標識別，不能直接視為同一目標的轉換漏斗。
+2. **傷亡鏈**。實際損失依直接戰鬥、砲擊、attrition 與其他原因拆分，再比較分配後暴露量與完整 CRT 分布。現有 `combatStepsLost` 仍含非戰鬥事件，`maxSingleStackExpectedLoss` 未正確計入攻方領隊及 Surprise；[修正順序](policy-errors.md#量測修正順序) 尚開放。
+3. **斷補與耗損鏈**。補給路徑與共同口糧配置連到後續斷補，再連到耗損與有效參戰能力。`supplyBestCut / unitsInTrace` 只表示單一移動的估計切斷比例，不等同單一 HQ 依賴，也不能單獨歸因為敵方策略或己方失誤。
 
 ### 四種結果與補給前置條件
 
@@ -132,7 +133,7 @@ Trace 缺口對 Loss 的聯合留出誤差由擬合基準的 6.53 降至 5.29，
 
 30 筆攻方差分中，Trace 缺口有 16 筆非零，個別配給缺口只有七筆，單一來源依賴只有六筆。個別配給與共同配置缺口在全部 30 筆攻方差分中完全相同。這個截點與資料集沒有提供足夠變化來檢驗「共同配置」是否比「個別可付」多一層資訊，不能由相同誤差判斷兩者在一般情況等價。守方保留描述，沒有混入訓練。
 
-[局勢指標的分組樣本外驗證](policy-errors.md#指標是否可用) 已檢查較短的行動窗口。暴露量對攻方行動時的近期損失有範圍受限的預測用途；目標風險與可切斷量增加線性期望量的資訊，尚未勝過零事件的 MAE。下一步仍須重驗終局預測與改版增益，不能將近期訊號當成策略改善證據。近期事件的相關性、樣本內新增 R² 與跨政策的預測力是不同證據。固定第 4 回合的共同配置缺口目前不列為優先調整的策略目標。
+[局勢指標的分組樣本外驗證](policy-errors.md#指標是否可用) 已檢查較短的行動窗口。暴露量對攻方行動時的近期損失有範圍受限的預測用途；目標風險與可切斷量增加線性期望量的資訊，尚未勝過零事件的 MAE。[擴充指標的直接比較](policy-errors.md#擴充指標的直接比較) 另找到局部兵力比的近期 VP 候選訊號，並重現可支付、CRT 期望及損失分類的契約缺陷；其數字、限制與修正順序只在該主題維護。下一步仍須重驗終局預測與改版增益，不能將近期訊號當成策略改善證據。近期事件的相關性、樣本內新增 R² 與跨政策的預測力是不同證據。固定第 4 回合的共同配置缺口目前不列為優先調整的策略目標。
 
 ### 預測對象與比較單位
 
@@ -185,7 +186,7 @@ Trace 缺口對 Loss 的聯合留出誤差由擬合基準的 6.53 降至 5.29，
 
 #### 篩選決定性指標、替代終點驗證與實驗設計的八類統計方法
 
-針對戰棋對局資料的結構特性與策略迭代需求，指標篩選、因果驗證與接續實驗採用以下八類統計與實驗設計方法：
+以下八類是依資料問題選擇的候選方法，不代表現有工具已全部實作，也不是每輪都要套用。現有比較仍以各次證據記錄的實際模型、分組與評分為準；增加模型前先驗證量測契約。
 
 | 問題類別 | 採用方法 | 在本研究的具體用途與判準 |
 |---|---|---|

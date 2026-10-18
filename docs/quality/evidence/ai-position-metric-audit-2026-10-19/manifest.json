@@ -1,0 +1,18 @@
+{
+  "files": [
+    {
+      "file": "artifacts/ai-latest-metrics-study/attack-temperate.jsonl",
+      "source": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games/attack-temperate",
+      "sha256": "162a94c52e0db291822d3dd1fe23bbe7eec5d65a31c012ef7753d057c33e080d",
+      "games": 8,
+      "rows": 128
+    },
+    {
+      "file": "artifacts/ai-latest-metrics-study/meeting-temperate.jsonl",
+      "source": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games/meeting-temperate",
+      "sha256": "43c878321f14ce5c9d08b74528c4ba28d028a81efc03cb48472173476acc239c",
+      "games": 8,
+      "rows": 128
+    }
+  ]
+}

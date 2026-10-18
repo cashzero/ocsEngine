@@ -38,7 +38,7 @@
 ## 局勢指標
 
 VP、Kill、Loss、Supply 反映不出局勢（使用者，2026-10-18），所以先加上量測並記錄資料，有了資料再分析。
-`scripts/ai-position-metrics.mjs` 的 `nextTurnMetrics` 量「下一回合各方能做什麼」：把局面投影成該方的 Movement Segment
+`scripts/ai-position-metrics.mjs` 的 `nextTurnMetrics` 量假設下回合的可達範圍與戰力潛力：把局面投影成該方的 Movement Segment
 （尚未移動、全部已加油），用規則層的移動範圍得到每個戰鬥單位能到的格子（地形、ZOC），忽略對方在中間的行動；一格的攻擊潛力
 是所有能到該格旁的單位一起攻擊、守方挑地形時規則給的欄位，所以是上限（同一個單位會算進多個目標）。
 
@@ -46,10 +46,10 @@ VP、Kill、Loss、Supply 反映不出局勢（使用者，2026-10-18），所�
 |---|---|
 | `objectivesAtRisk`、`objectiveVpAtRisk` | 己方持有的目標點中，對方下回合能以第 6 欄以上攻擊、或格內沒有己方戰鬥單位而對方能走進的 |
 | `objectivesInReach`、`objectiveVpInReach` | 反過來：己方未持有的目標點中，己方下回合能以第 6 欄以上攻擊或走進的 |
-| `payableObjectivesAtRisk`、`payableObjectiveVpAtRisk`、`payableObjectivesInReach`、`payableObjectiveVpInReach` | 上述目標點中，攻方維持第 6 欄最小單位組在扣掉內部存量自付後，所需補給堆戰鬥補給能由前線可支配戰鬥 SP（`surplusCombatSp`）實際支付者（按 VP 高低不重複分配單位與 SP） |
+| `payableObjectivesAtRisk`、`payableObjectiveVpAtRisk`、`payableObjectivesInReach`、`payableObjectiveVpInReach` | 幾何可達目標的共同 SP 預算近似。按 VP 高低貪婪縮減到維持第 6 欄的攻擊組，只有原局面內部存量 EXHAUSTED 的單位扣戰鬥 SP；有守軍的目標不重用單位，空目標仍可能重用。SP 彙總自能供應目前任一前線單位的來源，未驗證進攻位置的來源可達性，也未扣燃料。因此不是合法支付方案，且強制恢復後的內部存量未同步，可能高估或低估（`bot-position-payability`） |
 | `stacksExposed`、`stepsExposed` | 對方下回合能以第 9 欄以上攻擊的己方 stack 數與其中的 step（上限：對方每個單位都算進每個到得了旁邊的格子） |
 | `stacksExposedAllocated`、`stepsExposedAllocated` | 同上，但對方每個單位只攻擊一格：貪婪分配，先挑未分配單位能以第 9 欄以上攻擊、step 最多的格子，只留維持第 9 欄所需的單位（先拿掉印刷戰力最弱的），再挑下一格 |
-| `maxSingleStackExpectedLoss` | 對方下回合對任一己方 stack 發動單次最佳攻擊時，依 2d6 機率分布與 Combat Table 結果（含死守持有目標點時將 option 轉為 step 損失）計算的最大期望防守方 step 損失 |
+| `maxSingleStackExpectedLoss` | 對各己方 stack 聚合幾何可達的敵軍，以目前位置與模式計算 odds，枚舉戰鬥 2d6 後取各 stack 期望值的最大值。攻方領隊傳 null，規則層因此用 AR 0；未枚舉 Surprise。持有目標點假設 option 全轉損失，其餘假設 option 不造成損失。這是固定假設下的單格 CRT 代理量，不是完整最佳合法攻擊的期望損失，也不是整回合損失總量（`bot-position-crt-expectation`） |
 | `hqsInReach`、`dumpSpInReach` | 對方下回合能到旁邊的己方 HQ，與己方補給堆（不含駐軍存量）的 SP |
 | `unitsWithReach` | 下回合能移動的己方戰鬥單位 |
 | `supplyBestCut`、`supplyCuttable` | 現在有 trace 的己方戰鬥單位中，對方一個單位移到一格就會斷補的最多單位數，與某一個這樣的移動會切斷的單位數 |
@@ -60,8 +60,13 @@ formation 共同路線、補給源）重算，數斷補的己方單位。只試�
 在 24 個局面上與逐格全試比較，最大單一切斷 23 個相同，可切斷數相同或略少，每方每個局面約 0.4 秒。`ai-position-record.mjs`
 只為不行動的一方（這個玩家回合可能被切斷的一方）計算。
 
-現況指標（`positionMetrics`：VP、目標點、step、DG、接敵、斷補、SP、扣口糧與強制恢復後的前線可支配戰鬥 SP `surplusCombatSp`、2 格內未持有目標點的最高實質欄位 `bestObjectiveEffectiveColumn` 與局部兵力比 `localForceRatioAt2Hex`、乾 HQ）與這些指標一起由 `ai-continue.mjs` 在每個時間點記錄，`ai-position-record.mjs` 則在既有對局的每個玩家回合
-開始時記錄，並附上該玩家回合發生的事（各方損失的總 step、戰鬥 step `combatStepsLost`、斷補 step `attritionStepsLost`、被奪或被炸的補給堆 SP `spCapturedOrDestroyed`、取得與失去的目標點）與終局 VP。
+現況指標（`positionMetrics`）包含 VP、目標點、step、DG、接敵、斷補、SP、乾 HQ 與以下三項。
+
+- `surplusCombatSp` 扣除強制恢復與口糧承諾，再彙總能供應目前任一前線單位的補給堆 SP。它是來源彙總量，未分配給具體進攻位置。
+- `bestObjectiveEffectiveColumn` 將未持有目標 2 格內的己方單位直接投影到鄰格、切到 combat 面後，取最高靜態 odds 欄位。空目標用 12 作哨兵值，沒有機會用 −1。地形與部分戰力修正會進入 odds，但未驗證移動、燃料、堆疊與攻擊資格；AR、hedgehog 的骰點修正及 Surprise 不反映在欄位中。
+- `localForceRatioAt2Hex` 選擇 2 格內己方未標記斷補的印刷戰力最多的未持有目標，平手取 VP 高者，再除以該目標 2 格內敵軍印刷戰力（分母至少 1）。己方排除 HQ、STRAT 與斷補標記，敵方沒有對稱排除。它未計 DG、地形與實際戰鬥補給；其焦點目標不一定是最高欄位的目標。因此兩項指標的平均值不能當成同一場戰鬥由兵力比換算為欄位的證據。
+
+這些指標由 `ai-continue.mjs` 在各時間點記錄；`ai-position-record.mjs` 在既有對局每個玩家回合開始時記錄，並附上該窗口的損失事件、目標控制權改變與終局 VP。`stepsLost` 是 `STEP_LOST` 事件數；`combatStepsLost` 是未被標成 attrition 的事件數，仍包含過度堆疊消滅等非戰鬥來源，不能稱為純戰鬥或實際 step 數。Recorder 以整筆行動是否含 `ATTRITION_ROLLED`，或行動前是否待決 `ATTRITION_LOSS` 分類；同筆行動若混合其他來源也可能錯分（`bot-position-loss-attribution`）。`spCapturedOrDestroyed` 含被奪、被炸及己方主動炸掉補給堆的 SP，不單指敵軍取得的資源。
 
 ### 指標是否可用
 
@@ -89,14 +94,45 @@ formation 共同路線、補給源）重算，數斷補的己方單位。只試�
 
 這次也用獨立隨機特徵做方法負對照。舊的樣本內新增 R² 為正、bootstrap 區間排除零，但樣本外 R² 下降。[可重現對照](../quality/evidence/ai-position-validation-2026-10-18/negative-control.json) 說明不能單靠新增樣本內 R² 認定預測改善；它不是一般假陽性率的估計。
 
-`dumpSpInReach` 與補給堆損失的先前描述性結果見 [量測證據](../quality/evidence/ai-position-exposure-2026-10-18/README.md)，尚未納入這批樣本外比較。另在溫帶 16 局（208 個玩家回合，[溫帶擴充指標與損失拆分證據](../quality/evidence/ai-position-metrics-temperate-2026-10-18/README.md)）進行描述性探索：
-- **跨階段斷補混入的拆分（`combatStepsLost` vs `attritionStepsLost`）**：當行動方 `P` 結束 `CLEAN_UP` 時，若對方 `O` 在隨後的 `SUPPLY` 階段無需手動決策，引擎會在同一筆 `applyAction` 內直接跑完 `O` 的 `determineSupply` 並結算單單位格的斷補耗損，導致原本 `O` 在自己回合初的耗損被算進 `P` 回合的 `stepsLost`（守方行動時 `stepsExposed = 0` 的 5.00 step 假異常完全來自攻方下回合初的斷補耗損）。拆出純戰鬥損失 `combatStepsLost` 後，守方行動時 `stepsExposed <= 1` 的戰鬥損失降為 `0.00`，全回合 `stepsExposedAllocated` 與 `stacksExposedAllocated` 對 `combatStepsLost` 的樣本內 r 為 `0.23` 與 `0.25`（遭遇戰 `maxSingleStackExpectedLoss` 對 `combatStepsLost` 的 r 為 `0.37`），`outOfTrace` 對 `attritionStepsLost` 的 r 為 `0.31`（攻方行動時 `0.47`）。
-- **可付費目標風險（`payableObjectivesAtRisk` / `payableObjectiveVpAtRisk`）與前線進攻成形度（`bestObjectiveEffectiveColumn` / `localForceRatioAt2Hex`）**：在溫帶 208 回合中，遭遇戰軸心有 20% 回合 `surplusCombatSp = 0`，盟軍幾何可達目標平均 `2.92` 個但可付費僅 `1.71` 個；過濾掉攻方付不出戰鬥補給的威脅後，同回合丟點的樣本內 r 由 `0.34` 升至 `0.44`（多解釋 R² 由 `0.123` 升至 `0.201`）。同時，攻擊戰攻方在未控目標 2 格內的局部兵力比平均 `4.33 : 1`，但計入地形與 hedgehog 後最高實質欄位平均僅 `4.66` 欄（僅 19% 回合 `>= 9` 欄）。上述新指標仍待納入 `ai-position-validate.py` 的分組樣本外驗證。近期預測不代表新策略能提高終局 VP；正確對局識別下的終局重驗與前瞻策略驗證仍為開放工作。
+`dumpSpInReach` 與補給堆損失的先前描述性結果見 [量測證據](../quality/evidence/ai-position-exposure-2026-10-18/README.md)。[溫帶 16 局的擴充指標探索](../quality/evidence/ai-position-metrics-temperate-2026-10-18/README.md) 則使用 208 個玩家回合，全部屬樣本內比較。按目前 recorder 拆出 attrition 後，`stacksExposedAllocated` 對其餘損失事件的 r 為 0.25，遭遇戰的 `maxSingleStackExpectedLoss` 為 0.37；可支付目標數對當回合丟點的 r 由幾何指標的 0.34 升為 0.44。這些數字是代理量的描述性關係，不證明支付可行、損失分類正確或預測改善。原批 raw 紀錄目前未能取得，不能用另一批存檔宣稱重現原結果。
+
+### 擴充指標的直接比較
+
+[量測契約與分組比較證據](../quality/evidence/ai-position-metric-audit-2026-10-19/README.md) 使用另一批既有溫帶存檔，沒有新增對戰。16 份存檔以完整軌跡去重後為 12 局、8 組地圖種子、156 個窗口；全部最終 hash 相符。每次留出一組地圖種子，模型只使用其他種子的結果。窗口、對手損失定義與前述近期檢驗相同；新增行動方的局部兵力比與最高欄位來預測非行動方的目標 VP 損失。攻擊戰紀錄含空軍任務，這批不能稱為純地面資料。
+
+分桶在比較前固定為 `0`、`(0,1]`、`(1,3]`、`(3,7]`、`>7`，將舊整數分桶延伸到小數；負哨兵值另列。結果如下，MAE 越小越好，各列結果單位不同，不可跨列比較大小。
+
+| 結果與指標 | 零事件 MAE | 舊指標分桶 MAE | 候選分桶 MAE | 判斷 |
+|---|---:|---:|---:|---|
+| 丟點數，`payableObjectivesAtRisk` 對 `objectivesAtRisk` | 0.2244 | 0.2179 | 0.2308 | 沒有勝過幾何指標 |
+| 丟點 VP，`payableObjectiveVpAtRisk` 對 `objectiveVpAtRisk` | 0.6795 | 0.6795 | 0.6923 | 沒有勝過幾何指標或零事件 |
+| 非 attrition 損失事件，`maxSingleStackExpectedLoss` 對 `stacksExposedAllocated` | 1.1474 | 1.1891 | 1.1955 | 沒有勝過分配後暴露量 |
+| attrition 事件，`outOfTrace` 對 `contact` | 0.1090 | 0.1090 | 0.1090 | 全部仍猜零，只有 6 個非零窗口 |
+| trace 斷線正淨增加，`supplyCuttable` 對 `contact` | 2.2949 | 2.3205 | 2.2949 | 只與零事件持平 |
+| 補給堆 SP 損失，`dumpSpInReach` 對 `contact` | 0.4551 | 0.4551 | 0.4583 | 沒有較準 |
+| 丟點 VP，行動方 `bestObjectiveEffectiveColumn` 對 `objectiveVpAtRisk` | 0.6795 | 0.6795 | 0.6923 | 沒有較準 |
+| 丟點 VP，行動方 `localForceRatioAt2Hex` 對 `objectiveVpAtRisk` | 0.6795 | 0.6795 | 0.4968 | 這批最值得保留的候選 |
+
+局部兵力比分桶相對零事件與幾何 VP 分桶的 MAE 增益均為 0.1827，固定樣本外誤差的種子群組 bootstrap 區間為 [0.0801, 0.2832]。攻方行動時 MAE 為 0.8091（零事件 1.0545），遭遇戰 0.7019（零事件 0.8462），守方行動時與零事件同為 0.0816。兩個有增益的角色各只有四組種子，各自對零事件的區間下界都為零；不能把合併結果當作每個角色都已確認。線性加入兵力比的 MAE 增益區間仍含零，這個正向訊號限於固定分桶的中位數模型。
+
+重播核對焦點目標後，兵力比 `>7` 的 13 個窗口來自 6 組種子，全部焦點都由對方控制。其中 8 個焦點沒有守軍，7 個連 2 格內敵軍都沒有；另外 5 個焦點有守軍。無守軍組的 6 個窗口、有守軍組的全部 5 個窗口，隨後發生對手目標 VP 損失。但結果仍是整個窗口的 VP 損失，未對應到焦點目標本身。下一層應把「有守軍的突破機會」與「空目標的奪取機會」分開，在同一目標連結兵力、合法到位、共同支付、控制取得及後續保有。不能把提高原始兵力比直接當成策略目標；完整目標連結與策略干預仍由 `bot-vp-predictive-metrics` 追蹤。
+
+可支付目標數的線性樣本外 R² 雖由 0.102 升至 0.173，MAE 卻由 0.3145 變差為 0.3306，再次說明新增解釋力與典型事件預測是不同判準。這批只有 8 組種子、同一來源與少量非零事件，且比較多個指標、角色和模型而未校正多重比較。局部兵力比是待驗證的候選，不是已選定的策略評分或終局 VP 指標。
+
+### 量測修正順序
+
+規則引擎反例已重現三類契約缺陷，見同份證據的 [探針輸出](../quality/evidence/ai-position-metric-audit-2026-10-19/semantics-probe.json)。先修正這些量測，再比較策略，避免最佳化錯誤的數字。
+
+1. `bot-position-loss-attribution`。保留損失發生時的 phase、segment、transaction 與原因，分開直接戰鬥、砲擊、attrition、過度堆疊及其他消滅，核對實際 step 變化。現有 2-step 單位因過度堆疊消滅，只記一個 `combatStepsLost` 事件。
+2. `bot-position-crt-expectation`。指定合法領隊並枚舉 Surprise；明示 option 的撤退／承損假設。AR 4 對 AR 3 的反例中，現有值是 0，正確領隊的戰鬥骰期望為 0.2778，加上 Surprise 為 0.3987。整回合 Kill／Loss 的候選應另量共同可行攻擊分配的期望總和；單格最大值不能替代總量，後者仍是待驗證設計。
+3. `bot-position-payability`。讓恢復後內部存量、口糧、燃料、來源可達性與單位指派使用同一份支付見證。已重現強制恢復後可合法用內部存量攻擊、指標卻報不可支付的低估，以及一個 1 MP 單位同時計入兩個不能同回合兼顧的空目標的高估。
+
+近期事件預測不代表新策略能提高終局 VP。正確對局識別下的終局重驗與跨策略、前瞻驗證仍開放。
 
 ## 已知缺口
 
 - 清單只量了 32 局、兩種地圖、32×24、不開地圖上空軍。E1、E3、E5 已做接續測試；E2 的口糧恢復修正已有同種子重跑。E4 的兵力配置與 E6 的貼近走法仍待接續測試。
-- 終局預測的重新驗證見 `bot-position-final-validation`；跨策略改善的驗證見 `bot-vp-predictive-metrics`。
+- 終局預測的重新驗證見 `bot-position-final-validation`；跨策略改善的驗證見 `bot-vp-predictive-metrics`。量測契約缺陷見 `bot-position-payability`、`bot-position-crt-expectation`、`bot-position-loss-attribution`。
 - 已記錄的功能缺口（不會用某項規則）見 [TODO 清單](../quality/05-todo-inventory.md) 的 `bot-*` 項目，不在這份清單重複。
 
 ## 驗證
@@ -104,5 +140,6 @@ formation 共同路線、補給源）重算，數斷補的己方單位。只試�
 - [錯誤普查紀錄](../quality/evidence/ai-error-census-v79-2026-10-18/README.md)
 - [E1 接續測試](../quality/evidence/ai-defender-assault-continuation-2026-10-18/README.md)
 - [E2 原因、E3 與 E5 接續測試](../quality/evidence/ai-error-continuations-v85-2026-10-18/README.md)
+- [擴充指標的量測契約與分組比較](../quality/evidence/ai-position-metric-audit-2026-10-19/README.md)
 - [局勢指標的分組樣本外驗證](../quality/evidence/ai-position-validation-2026-10-18/README.md)
 - [局勢指標的記錄](../quality/evidence/ai-position-record-2026-10-18/README.md)、[檢驗](../quality/evidence/ai-position-analysis-2026-10-18/README.md)、[分配後暴露量與補給堆損失](../quality/evidence/ai-position-exposure-2026-10-18/README.md)與[溫帶 16 局擴充指標與損失拆分檢驗](../quality/evidence/ai-position-metrics-temperate-2026-10-18/README.md)

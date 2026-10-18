@@ -1,0 +1,100 @@
+{
+  "commit": "df5a0cbdda8a1b3dac64aca127ae32b878a3bdc0",
+  "buildCommand": "node_modules/.bin/tsc -p tsconfig.build.json --outDir /tmp/ocsEngine-latest-metrics-probe --declaration false --declarationMap false --sourceMap false",
+  "runCommand": "node artifacts/ai-latest-metrics-study/semantics-probe.mjs",
+  "sourceSha256": {
+    "scripts/ai-position-metrics.mjs": "ea566b8db72c53dea3c97fe4fe9dd13c9e1c684764b210617437539abdfb6e89",
+    "scripts/ai-position-record.mjs": "11a32e39976298f3c36c7d8f02bb99ea6a8c657c2e8fa560a5fbd7e1bd4af903",
+    "src/rules/combat/strength.ts": "1557622a5ecd51135f59da762a87de2a04d496cc777122c98f97e734c004a5a8",
+    "src/rules/combat/combat.ts": "dbb5203e4bf7e78a326d097e2944b80798cbabe00102dfa7ff5f27ef57cbf7ca",
+    "src/rules/kernel/reducer.ts": "9319e2a17bb2bb21f778ea000e0f1a0f7f2b1c99a37b1ee6eb1dcd2f3a19893f",
+    "src/rules/supply/ration-budget.ts": "8600b3cbefffff4931b50d72328357f6625e20723b168ea446630efd19bf63b4"
+  },
+  "ar": {
+    "metric": 0,
+    "nullLeader": {
+      "attackerAR": 0,
+      "drm": -3,
+      "column": 5,
+      "expectedWithoutSurprise": 0
+    },
+    "chosenLeader": {
+      "attackerAR": 4,
+      "drm": 1,
+      "column": 5,
+      "expectedWithoutSurprise": 0.27777777777777773,
+      "expectedWithSurprise": 0.3986625514403288
+    }
+  },
+  "recoveryWitness": {
+    "metrics": {
+      "raw": 1,
+      "payable": 0,
+      "surplus": 0
+    },
+    "recoveredStocks": {
+      "piece:multi-step": "FULL"
+    },
+    "recoveryActionViolations": [],
+    "actualStocksAfterRecovery": "FULL",
+    "dumpRemaining": 0,
+    "supplySettlementAfterRecovery": {
+      "payments": [],
+      "internalIds": [
+        "piece:multi-step"
+      ],
+      "violations": []
+    },
+    "afterRecoveryMetrics": 1
+  },
+  "undefended": {
+    "objectives": [
+      "1,2",
+      "3,2"
+    ],
+    "start": "2,2",
+    "movementPointTicks": 4,
+    "minimumTicksToVisitBoth": 12,
+    "metrics": {
+      "unitsWithReach": 1,
+      "objectivesInReach": 2,
+      "payableObjectivesInReach": 2
+    }
+  },
+  "overstack": {
+    "decisionKind": "OVERSTACK_ELIMINATION",
+    "stepsBefore": 2,
+    "locationAfter": {
+      "kind": "ELIMINATED"
+    },
+    "stepEvents": [
+      {
+        "kind": "STEP_LOST",
+        "sequence": 0,
+        "pieceId": "piece:multi-step",
+        "remainingSteps": null
+      }
+    ],
+    "rowClassification": "combatStepsLost",
+    "totals": {
+      "player:one": {
+        "stepsLost": 1,
+        "combatStepsLost": 1,
+        "attritionStepsLost": 0,
+        "spSpent": 0,
+        "spCapturedOrDestroyed": 0,
+        "attacks": 0,
+        "barrages": 0
+      },
+      "player:two": {
+        "stepsLost": 0,
+        "combatStepsLost": 0,
+        "attritionStepsLost": 0,
+        "spSpent": 0,
+        "spCapturedOrDestroyed": 0,
+        "attacks": 0,
+        "barrages": 0
+      }
+    }
+  }
+}

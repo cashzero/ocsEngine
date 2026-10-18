@@ -1,0 +1,234 @@
+{
+  "summary": {
+    "rows": 156,
+    "highRatioRows": 13,
+    "highRatioSeeds": 6,
+    "highRatioEmptyFocalObjective": 8,
+    "highRatioNoEnemyWithin2": 7,
+    "highRatioOpponentControlled": 13,
+    "highRatioWithOpponentVpLoss": 11
+  },
+  "rows": [
+    {
+      "game": "6bf977013dbf6ed4177cfe70edfb1adfb1ee7a2f6e5b63d48e6df173278cb0ba",
+      "mapSeed": 295661033,
+      "gameTurn": 8,
+      "playerTurnIndex": 0,
+      "phasingPlayerId": "player:axis",
+      "ratio": 72,
+      "focalObjective": {
+        "hexId": "16,2",
+        "points": 4,
+        "ownStrength": 72,
+        "enemyStrength": 0,
+        "enemyOnObjective": 0,
+        "controller": "player:allied"
+      },
+      "opponentObjectiveVpLost": 0
+    },
+    {
+      "game": "91edfc71afa4c26100ed945b271c19ed032ab75015db98a158e6408621f32282",
+      "mapSeed": 295661033,
+      "gameTurn": 5,
+      "playerTurnIndex": 1,
+      "phasingPlayerId": "player:axis",
+      "ratio": 55,
+      "focalObjective": {
+        "hexId": "16,2",
+        "points": 4,
+        "ownStrength": 55,
+        "enemyStrength": 0,
+        "enemyOnObjective": 0,
+        "controller": "player:allied"
+      },
+      "opponentObjectiveVpLost": 15
+    },
+    {
+      "game": "e81a3dae473588d5338a139007533ee377e99d3232bba695abb19e424a57d1e5",
+      "mapSeed": 295661227,
+      "gameTurn": 3,
+      "playerTurnIndex": 1,
+      "phasingPlayerId": "player:allied",
+      "ratio": 70,
+      "focalObjective": {
+        "hexId": "15,11",
+        "points": 4,
+        "ownStrength": 70,
+        "enemyStrength": 0,
+        "enemyOnObjective": 0,
+        "controller": "player:axis"
+      },
+      "opponentObjectiveVpLost": 4
+    },
+    {
+      "game": "72ef30c9b0a367ca3e0ae122066a1f435e49f8715832295f06470612a295833a",
+      "mapSeed": 295661227,
+      "gameTurn": 6,
+      "playerTurnIndex": 0,
+      "phasingPlayerId": "player:axis",
+      "ratio": 15.2,
+      "focalObjective": {
+        "hexId": "15,8",
+        "points": 2,
+        "ownStrength": 76,
+        "enemyStrength": 5,
+        "enemyOnObjective": 0,
+        "controller": "player:allied"
+      },
+      "opponentObjectiveVpLost": 5
+    },
+    {
+      "game": "72ef30c9b0a367ca3e0ae122066a1f435e49f8715832295f06470612a295833a",
+      "mapSeed": 295661227,
+      "gameTurn": 8,
+      "playerTurnIndex": 0,
+      "phasingPlayerId": "player:axis",
+      "ratio": 40,
+      "focalObjective": {
+        "hexId": "2,3",
+        "points": 4,
+        "ownStrength": 40,
+        "enemyStrength": 0,
+        "enemyOnObjective": 0,
+        "controller": "player:allied"
+      },
+      "opponentObjectiveVpLost": 0
+    },
+    {
+      "game": "764d7e80dfd5949b287d5215515f8f95d4c2ff65683c265e1494b83f3253d378",
+      "mapSeed": 295661421,
+      "gameTurn": 4,
+      "playerTurnIndex": 0,
+      "phasingPlayerId": "player:axis",
+      "ratio": 8.25,
+      "focalObjective": {
+        "hexId": "12,12",
+        "points": 3,
+        "ownStrength": 99,
+        "enemyStrength": 12,
+        "enemyOnObjective": 3,
+        "controller": "player:allied"
+      },
+      "opponentObjectiveVpLost": 4
+    },
+    {
+      "game": "e208396f06563810a53a4c32e8dc9a33a692d1f608bfcc9c8f1dd6a9e80802ab",
+      "mapSeed": 295661421,
+      "gameTurn": 4,
+      "playerTurnIndex": 0,
+      "phasingPlayerId": "player:axis",
+      "ratio": 8.25,
+      "focalObjective": {
+        "hexId": "12,12",
+        "points": 3,
+        "ownStrength": 99,
+        "enemyStrength": 12,
+        "enemyOnObjective": 3,
+        "controller": "player:allied"
+      },
+      "opponentObjectiveVpLost": 4
+    },
+    {
+      "game": "e208396f06563810a53a4c32e8dc9a33a692d1f608bfcc9c8f1dd6a9e80802ab",
+      "mapSeed": 295661421,
+      "gameTurn": 6,
+      "playerTurnIndex": 1,
+      "phasingPlayerId": "player:axis",
+      "ratio": 130,
+      "focalObjective": {
+        "hexId": "12,12",
+        "points": 3,
+        "ownStrength": 130,
+        "enemyStrength": 0,
+        "enemyOnObjective": 0,
+        "controller": "player:allied"
+      },
+      "opponentObjectiveVpLost": 3
+    },
+    {
+      "game": "ea923e4fd44308fb05f3ffb2f54be9374777c4d93ac3bd9f6be23f9ca4f83f18",
+      "mapSeed": 295661615,
+      "gameTurn": 4,
+      "playerTurnIndex": 0,
+      "phasingPlayerId": "player:axis",
+      "ratio": 17.5,
+      "focalObjective": {
+        "hexId": "14,6",
+        "points": 4,
+        "ownStrength": 105,
+        "enemyStrength": 6,
+        "enemyOnObjective": 1,
+        "controller": "player:allied"
+      },
+      "opponentObjectiveVpLost": 6
+    },
+    {
+      "game": "c6ba96fd6a5ab1cff6a6add04f31e3365989f955ac956fb4d2734aceda47ed4b",
+      "mapSeed": 295661615,
+      "gameTurn": 4,
+      "playerTurnIndex": 0,
+      "phasingPlayerId": "player:axis",
+      "ratio": 17.5,
+      "focalObjective": {
+        "hexId": "14,6",
+        "points": 4,
+        "ownStrength": 105,
+        "enemyStrength": 6,
+        "enemyOnObjective": 1,
+        "controller": "player:allied"
+      },
+      "opponentObjectiveVpLost": 6
+    },
+    {
+      "game": "30014559e67622cc0b80e819e84efa24d1a38ed7b11f58ec5a1626effcb95f40",
+      "mapSeed": 295641633,
+      "gameTurn": 7,
+      "playerTurnIndex": 0,
+      "phasingPlayerId": "player:axis",
+      "ratio": 16,
+      "focalObjective": {
+        "hexId": "6,7",
+        "points": 4,
+        "ownStrength": 16,
+        "enemyStrength": 1,
+        "enemyOnObjective": 1,
+        "controller": "player:allied"
+      },
+      "opponentObjectiveVpLost": 4
+    },
+    {
+      "game": "5a4a977dbbaada827bbeb671497d0c213ffeafe60d195528150bfdd07242fb61",
+      "mapSeed": 295642021,
+      "gameTurn": 6,
+      "playerTurnIndex": 0,
+      "phasingPlayerId": "player:allied",
+      "ratio": 15,
+      "focalObjective": {
+        "hexId": "7,15",
+        "points": 2,
+        "ownStrength": 15,
+        "enemyStrength": 0,
+        "enemyOnObjective": 0,
+        "controller": "player:axis"
+      },
+      "opponentObjectiveVpLost": 2
+    },
+    {
+      "game": "5a4a977dbbaada827bbeb671497d0c213ffeafe60d195528150bfdd07242fb61",
+      "mapSeed": 295642021,
+      "gameTurn": 6,
+      "playerTurnIndex": 1,
+      "phasingPlayerId": "player:axis",
+      "ratio": 48,
+      "focalObjective": {
+        "hexId": "13,19",
+        "points": 3,
+        "ownStrength": 48,
+        "enemyStrength": 0,
+        "enemyOnObjective": 0,
+        "controller": "player:allied"
+      },
+      "opponentObjectiveVpLost": 7
+    }
+  ]
+}

@@ -1,0 +1,2660 @@
+{
+  "subset": "attacker-moving",
+  "leaveOneSeedOut": [
+    {
+      "target": "objectivesLost",
+      "metric": "payableObjectivesAtRisk",
+      "baseline": "objectivesAtRisk",
+      "candidate": {
+        "nRows": 55,
+        "nGames": 8,
+        "nSeeds": 4,
+        "batchRowsIncludingAliases": {
+          "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 55
+        }
+      },
+      "missingAnyRequired": 0,
+      "metricMissing": 0,
+      "baselineMissing": 0,
+      "metricZero": 9,
+      "outcomeMissing": 0,
+      "outcomeZero": 45,
+      "folds": [
+        {
+          "fold": "295661033",
+          "training": {
+            "nRows": 42,
+            "nGames": 6,
+            "nSeeds": 3,
+            "batchRowsIncludingAliases": {
+              "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 42
+            }
+          },
+          "test": {
+            "nRows": 13,
+            "nGames": 2,
+            "nSeeds": 1,
+            "batchRowsIncludingAliases": {
+              "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 13
+            }
+          },
+          "trainSeeds": [
+            295661227,
+            295661421,
+            295661615
+          ],
+          "testSeeds": [
+            295661033
+          ],
+          "empty": false
+        },
+        {
+          "fold": "295661227",
+          "training": {
+            "nRows": 41,
+            "nGames": 6,
+            "nSeeds": 3,
+            "batchRowsIncludingAliases": {
+              "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 41
+            }
+          },
+          "test": {
+            "nRows": 14,
+            "nGames": 2,
+            "nSeeds": 1,
+            "batchRowsIncludingAliases": {
+              "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 14
+            }
+          },
+          "trainSeeds": [
+            295661033,
+            295661421,
+            295661615
+          ],
+          "testSeeds": [
+            295661227
+          ],
+          "empty": false
+        },
+        {
+          "fold": "295661421",
+          "training": {
+            "nRows": 41,
+            "nGames": 6,
+            "nSeeds": 3,
+            "batchRowsIncludingAliases": {
+              "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 41
+            }
+          },
+          "test": {
+            "nRows": 14,
+            "nGames": 2,
+            "nSeeds": 1,
+            "batchRowsIncludingAliases": {
+              "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 14
+            }
+          },
+          "trainSeeds": [
+            295661033,
+            295661227,
+            295661615
+          ],
+          "testSeeds": [
+            295661421
+          ],
+          "empty": false
+        },
+        {
+          "fold": "295661615",
+          "training": {
+            "nRows": 41,
+            "nGames": 6,
+            "nSeeds": 3,
+            "batchRowsIncludingAliases": {
+              "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 41
+            }
+          },
+          "test": {
+            "nRows": 14,
+            "nGames": 2,
+            "nSeeds": 1,
+            "batchRowsIncludingAliases": {
+              "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 14
+            }
+          },
+          "trainSeeds": [
+            295661033,
+            295661227,
+            295661421
+          ],
+          "testSeeds": [
+            295661615
+          ],
+          "empty": false
+        }
+      ],
+      "emptyFoldCount": 0,
+      "evaluated": {
+        "nRows": 55,
+        "nGames": 8,
+        "nSeeds": 4,
+        "batchRowsIncludingAliases": {
+          "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 55
+        }
+      },
+      "status": "EVALUATED",
+      "scores": {
+        "zero": {
+          "mae": 0.3090909090909091,
+          "r2": -0.16552119129438725
+        },
+        "trainMedian": {
+          "mae": 0.3090909090909091,
+          "r2": -0.16552119129438725
+        },
+        "trainMean": {
+          "mae": 0.5157111181501425,
+          "r2": -0.0405687728358195
+        },
+        "baseline": {
+          "mae": 0.48657119676884153,
+          "r2": -0.007099731416144062
+        },
+        "baselinePlusMetric": {
+          "mae": 0.5049485323045483,
+          "r2": 0.12419762966077652
+        },
+        "baselineBucketMedian": {
+          "mae": 0.4,
+          "r2": -0.5592783505154639
+        },
+        "metricBucketMedian": {
+          "mae": 0.3090909090909091,
+          "r2": -0.16552119129438725
+        }
+      },
+      "perSeedErrors": {
+        "295661033": {
+          "nRows": 13,
+          "sumY": 8.0,
+          "sumY2": 22.0,
+          "sumAbsoluteError": {
+            "zero": 8.0,
+            "trainMedian": 8.0,
+            "trainMean": 9.07142857142857,
+            "baseline": 7.7,
+            "baselinePlusMetric": 8.887107495081754,
+            "baselineBucketMedian": 8.0,
+            "metricBucketMedian": 8.0
+          },
+          "sumSquaredError": {
+            "zero": 22.0,
+            "trainMedian": 22.0,
+            "trainMean": 19.168367346938776,
+            "baseline": 16.02681737273051,
+            "baselinePlusMetric": 13.929787058018068,
+            "baselineBucketMedian": 22.0,
+            "metricBucketMedian": 22.0
+          }
+        },
+        "295661227": {
+          "nRows": 14,
+          "sumY": 2.0,
+          "sumY2": 4.0,
+          "sumAbsoluteError": {
+            "zero": 2.0,
+            "trainMedian": 2.0,
+            "trainMean": 6.390243902439024,
+            "baseline": 3.3610421836228284,
+            "baselinePlusMetric": 4.163493456966919,
+            "baselineBucketMedian": 2.0,
+            "metricBucketMedian": 2.0
+          },
+          "sumSquaredError": {
+            "zero": 4.0,
+            "trainMedian": 4.0,
+            "trainMean": 4.41046995835812,
+            "baseline": 2.988308153420616,
+            "baselinePlusMetric": 2.81087164563708,
+            "baselineBucketMedian": 4.0,
+            "metricBucketMedian": 4.0
+          }
+        },
+        "295661421": {
+          "nRows": 14,
+          "sumY": 3.0,
+          "sumY2": 3.0,
+          "sumAbsoluteError": {
+            "zero": 3.0,
+            "trainMedian": 3.0,
+            "trainMean": 5.7317073170731705,
+            "baseline": 8.695299837925447,
+            "baselinePlusMetric": 9.314184920071549,
+            "baselineBucketMedian": 3.0,
+            "metricBucketMedian": 3.0
+          },
+          "sumSquaredError": {
+            "zero": 3.0,
+            "trainMedian": 3.0,
+            "trainMean": 2.5835812016656754,
+            "baseline": 6.42246820895797,
+            "baselinePlusMetric": 7.511118826155256,
+            "baselineBucketMedian": 3.0,
+            "metricBucketMedian": 3.0
+          }
+        },
+        "295661615": {
+          "nRows": 14,
+          "sumY": 4.0,
+          "sumY2": 8.0,
+          "sumAbsoluteError": {
+            "zero": 4.0,
+            "trainMedian": 4.0,
+            "trainMean": 7.170731707317073,
+            "baseline": 7.005073800738009,
+            "baselinePlusMetric": 5.4073834046299325,
+            "baselineBucketMedian": 9.0,
+            "metricBucketMedian": 4.0
+          },
+          "sumSquaredError": {
+            "zero": 8.0,
+            "trainMedian": 8.0,
+            "trainMean": 6.870910172516357,
+            "baseline": 6.53324501130159,
+            "baselinePlusMetric": 3.550966808594766,
+            "baselineBucketMedian": 20.5,
+            "metricBucketMedian": 8.0
+          }
+        }
+      },
+      "maeGain": -0.01837733553570675,
+      "r2Gain": 0.13129736107692058,
+      "intervals": {
+        "draws": 1000,
+        "maeGain95": [
+          -0.07887184089417665,
+          0.07126106991035958
+        ],
+        "r2Gain95": [
+          -0.1492046494946493,
+          0.3419256437386934
+        ],
+        "metricBucketMedianMaeGain95": {
+          "zero": [
+            0.0,
+            0.0
+          ],
+          "trainMedian": [
+            0.0,
+            0.0
+          ],
+          "baselineBucketMedian": [
+            0.0,
+            0.2678571428571429
+          ]
+        },
+        "scope": "Paired map-seed cluster resampling of fixed held-out errors. Conditional on fitted folds; no refitting or model-selection uncertainty."
+      }
+    },
+    {
+      "target": "objectiveVpLost",
+      "metric": "payableObjectiveVpAtRisk",
+      "baseline": "objectiveVpAtRisk",
+      "candidate": {
+        "nRows": 55,
+        "nGames": 8,
+        "nSeeds": 4,
+        "batchRowsIncludingAliases": {
+          "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 55
+        }
+      },
+      "missingAnyRequired": 0,
+      "metricMissing": 0,
+      "baselineMissing": 0,
+      "metricZero": 9,
+      "outcomeMissing": 0,
+      "outcomeZero": 45,
+      "folds": [
+        {
+          "fold": "295661033",
+          "training": {
+            "nRows": 42,
+            "nGames": 6,
+            "nSeeds": 3,
+            "batchRowsIncludingAliases": {
+              "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 42
+            }
+          },
+          "test": {
+            "nRows": 13,
+            "nGames": 2,
+            "nSeeds": 1,
+            "batchRowsIncludingAliases": {
+              "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 13
+            }
+          },
+          "trainSeeds": [
+            295661227,
+            295661421,
+            295661615
+          ],
+          "testSeeds": [
+            295661033
+          ],
+          "empty": false
+        },
+        {
+          "fold": "295661227",
+          "training": {
+            "nRows": 41,
+            "nGames": 6,
+            "nSeeds": 3,
+            "batchRowsIncludingAliases": {
+              "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 41
+            }
+          },
+          "test": {
+            "nRows": 14,
+            "nGames": 2,
+            "nSeeds": 1,
+            "batchRowsIncludingAliases": {
+              "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 14
+            }
+          },
+          "trainSeeds": [
+            295661033,
+            295661421,
+            295661615
+          ],
+          "testSeeds": [
+            295661227
+          ],
+          "empty": false
+        },
+        {
+          "fold": "295661421",
+          "training": {
+            "nRows": 41,
+            "nGames": 6,
+            "nSeeds": 3,
+            "batchRowsIncludingAliases": {
+              "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 41
+            }
+          },
+          "test": {
+            "nRows": 14,
+            "nGames": 2,
+            "nSeeds": 1,
+            "batchRowsIncludingAliases": {
+              "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 14
+            }
+          },
+          "trainSeeds": [
+            295661033,
+            295661227,
+            295661615
+          ],
+          "testSeeds": [
+            295661421
+          ],
+          "empty": false
+        },
+        {
+          "fold": "295661615",
+          "training": {
+            "nRows": 41,
+            "nGames": 6,
+            "nSeeds": 3,
+            "batchRowsIncludingAliases": {
+              "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 41
+            }
+          },
+          "test": {
+            "nRows": 14,
+            "nGames": 2,
+            "nSeeds": 1,
+            "batchRowsIncludingAliases": {
+              "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 14
+            }
+          },
+          "trainSeeds": [
+            295661033,
+            295661227,
+            295661421
+          ],
+          "testSeeds": [
+            295661615
+          ],
+          "empty": false
+        }
+      ],
+      "emptyFoldCount": 0,
+      "evaluated": {
+        "nRows": 55,
+        "nGames": 8,
+        "nSeeds": 4,
+        "batchRowsIncludingAliases": {
+          "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 55
+        }
+      },
+      "status": "EVALUATED",
+      "scores": {
+        "zero": {
+          "mae": 1.0545454545454545,
+          "r2": -0.15976443768996962
+        },
+        "trainMedian": {
+          "mae": 1.0545454545454545,
+          "r2": -0.15976443768996962
+        },
+        "trainMean": {
+          "mae": 1.767923133776792,
+          "r2": -0.055592622795529234
+        },
+        "baseline": {
+          "mae": 1.6479884822935755,
+          "r2": -0.020746424560501575
+        },
+        "baselinePlusMetric": {
+          "mae": 1.6306439024842294,
+          "r2": 0.14770112025600912
+        },
+        "baselineBucketMedian": {
+          "mae": 1.0545454545454545,
+          "r2": -0.15976443768996962
+        },
+        "metricBucketMedian": {
+          "mae": 1.018181818181818,
+          "r2": 0.20592705167173253
+        }
+      },
+      "perSeedErrors": {
+        "295661033": {
+          "nRows": 13,
+          "sumY": 30.0,
+          "sumY2": 306.0,
+          "sumAbsoluteError": {
+            "zero": 30.0,
+            "trainMedian": 30.0,
+            "trainMean": 33.33333333333333,
+            "baseline": 28.50644956650455,
+            "baselinePlusMetric": 31.947337702082947,
+            "baselineBucketMedian": 30.0,
+            "metricBucketMedian": 30.0
+          },
+          "sumSquaredError": {
+            "zero": 306.0,
+            "trainMedian": 306.0,
+            "trainMean": 271.7777777777778,
+            "baseline": 228.23567316854326,
+            "baselinePlusMetric": 193.81922874425635,
+            "baselineBucketMedian": 306.0,
+            "metricBucketMedian": 218.0
+          }
+        },
+        "295661227": {
+          "nRows": 14,
+          "sumY": 5.0,
+          "sumY2": 25.0,
+          "sumAbsoluteError": {
+            "zero": 5.0,
+            "trainMedian": 5.0,
+            "trainMean": 20.51219512195122,
+            "baseline": 10.216302907747018,
+            "baselinePlusMetric": 13.13869339820451,
+            "baselineBucketMedian": 5.0,
+            "metricBucketMedian": 5.0
+          },
+          "sumSquaredError": {
+            "zero": 25.0,
+            "trainMedian": 25.0,
+            "trainMean": 35.46757882212969,
+            "baseline": 22.43125167904095,
+            "baselinePlusMetric": 25.201531735600888,
+            "baselineBucketMedian": 25.0,
+            "metricBucketMedian": 25.0
+          }
+        },
+        "295661421": {
+          "nRows": 14,
+          "sumY": 11.0,
+          "sumY2": 41.0,
+          "sumAbsoluteError": {
+            "zero": 11.0,
+            "trainMedian": 11.0,
+            "trainMean": 20.17073170731707,
+            "baseline": 30.36636279561369,
+            "baselinePlusMetric": 27.71462133626599,
+            "baselineBucketMedian": 11.0,
+            "metricBucketMedian": 9.0
+          },
+          "sumSquaredError": {
+            "zero": 41.0,
+            "trainMedian": 41.0,
+            "trainMean": 34.177870315288516,
+            "baseline": 75.45125023300412,
+            "baselinePlusMetric": 71.6163273208479,
+            "baselineBucketMedian": 41.0,
+            "metricBucketMedian": 21.0
+          }
+        },
+        "295661615": {
+          "nRows": 14,
+          "sumY": 12.0,
+          "sumY2": 72.0,
+          "sumAbsoluteError": {
+            "zero": 12.0,
+            "trainMedian": 12.0,
+            "trainMean": 23.219512195121947,
+            "baseline": 21.55025125628141,
+            "baselinePlusMetric": 16.884762200079166,
+            "baselineBucketMedian": 12.0,
+            "metricBucketMedian": 12.0
+          },
+          "sumSquaredError": {
+            "zero": 72.0,
+            "trainMedian": 72.0,
+            "trainMean": 62.696014277215944,
+            "baseline": 64.66067429297384,
+            "baselinePlusMetric": 35.65391605183066,
+            "baselineBucketMedian": 72.0,
+            "metricBucketMedian": 40.0
+          }
+        }
+      },
+      "maeGain": 0.017344579809346117,
+      "r2Gain": 0.1684475448165107,
+      "intervals": {
+        "draws": 1000,
+        "maeGain95": [
+          -0.2356769861494774,
+          0.2613296612696405
+        ],
+        "r2Gain95": [
+          0.018724874344658415,
+          0.39932286934783723
+        ],
+        "metricBucketMedianMaeGain95": {
+          "zero": [
+            0.0,
+            0.10909090909090913
+          ],
+          "trainMedian": [
+            0.0,
+            0.10909090909090913
+          ],
+          "baselineBucketMedian": [
+            0.0,
+            0.10909090909090913
+          ]
+        },
+        "scope": "Paired map-seed cluster resampling of fixed held-out errors. Conditional on fitted folds; no refitting or model-selection uncertainty."
+      }
+    },
+    {
+      "target": "combatStepsLost",
+      "metric": "maxSingleStackExpectedLoss",
+      "baseline": "stacksExposedAllocated",
+      "candidate": {
+        "nRows": 55,
+        "nGames": 8,
+        "nSeeds": 4,
+        "batchRowsIncludingAliases": {
+          "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 55
+        }
+      },
+      "missingAnyRequired": 0,
+      "metricMissing": 0,
+      "baselineMissing": 0,
+      "metricZero": 0,
+      "outcomeMissing": 0,
+      "outcomeZero": 20,
+      "folds": [
+        {
+          "fold": "295661033",
+          "training": {
+            "nRows": 42,
+            "nGames": 6,
+            "nSeeds": 3,
+            "batchRowsIncludingAliases": {
+              "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 42
+            }
+          },
+          "test": {
+            "nRows": 13,
+            "nGames": 2,
+            "nSeeds": 1,
+            "batchRowsIncludingAliases": {
+              "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 13
+            }
+          },
+          "trainSeeds": [
+            295661227,
+            295661421,
+            295661615
+          ],
+          "testSeeds": [
+            295661033
+          ],
+          "empty": false
+        },
+        {
+          "fold": "295661227",
+          "training": {
+            "nRows": 41,
+            "nGames": 6,
+            "nSeeds": 3,
+            "batchRowsIncludingAliases": {
+              "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 41
+            }
+          },
+          "test": {
+            "nRows": 14,
+            "nGames": 2,
+            "nSeeds": 1,
+            "batchRowsIncludingAliases": {
+              "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 14
+            }
+          },
+          "trainSeeds": [
+            295661033,
+            295661421,
+            295661615
+          ],
+          "testSeeds": [
+            295661227
+          ],
+          "empty": false
+        },
+        {
+          "fold": "295661421",
+          "training": {
+            "nRows": 41,
+            "nGames": 6,
+            "nSeeds": 3,
+            "batchRowsIncludingAliases": {
+              "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 41
+            }
+          },
+          "test": {
+            "nRows": 14,
+            "nGames": 2,
+            "nSeeds": 1,
+            "batchRowsIncludingAliases": {
+              "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 14
+            }
+          },
+          "trainSeeds": [
+            295661033,
+            295661227,
+            295661615
+          ],
+          "testSeeds": [
+            295661421
+          ],
+          "empty": false
+        },
+        {
+          "fold": "295661615",
+          "training": {
+            "nRows": 41,
+            "nGames": 6,
+            "nSeeds": 3,
+            "batchRowsIncludingAliases": {
+              "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 41
+            }
+          },
+          "test": {
+            "nRows": 14,
+            "nGames": 2,
+            "nSeeds": 1,
+            "batchRowsIncludingAliases": {
+              "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 14
+            }
+          },
+          "trainSeeds": [
+            295661033,
+            295661227,
+            295661421
+          ],
+          "testSeeds": [
+            295661615
+          ],
+          "empty": false
+        }
+      ],
+      "emptyFoldCount": 0,
+      "evaluated": {
+        "nRows": 55,
+        "nGames": 8,
+        "nSeeds": 4,
+        "batchRowsIncludingAliases": {
+          "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 55
+        }
+      },
+      "status": "EVALUATED",
+      "scores": {
+        "zero": {
+          "mae": 1.8545454545454545,
+          "r2": -0.941879413362303
+        },
+        "trainMedian": {
+          "mae": 1.6545454545454545,
+          "r2": -0.20994024986420423
+        },
+        "trainMean": {
+          "mae": 1.6322774786189422,
+          "r2": -0.025742597026434666
+        },
+        "baseline": {
+          "mae": 1.5931678141636934,
+          "r2": 0.011698121467123568
+        },
+        "baselinePlusMetric": {
+          "mae": 1.6244851914815386,
+          "r2": -0.08639196005359229
+        },
+        "baselineBucketMedian": {
+          "mae": 1.481818181818182,
+          "r2": 0.06515933369545535
+        },
+        "metricBucketMedian": {
+          "mae": 1.6727272727272726,
+          "r2": -0.005793952562013427
+        }
+      },
+      "perSeedErrors": {
+        "295661033": {
+          "nRows": 13,
+          "sumY": 21.0,
+          "sumY2": 59.0,
+          "sumAbsoluteError": {
+            "zero": 21.0,
+            "trainMedian": 18.0,
+            "trainMean": 15.214285714285714,
+            "baseline": 14.17408906882591,
+            "baselinePlusMetric": 13.68488561186227,
+            "baselineBucketMedian": 11.5,
+            "metricBucketMedian": 18.0
+          },
+          "sumSquaredError": {
+            "zero": 59.0,
+            "trainMedian": 30.0,
+            "trainMean": 26.35204081632653,
+            "baseline": 20.87340392401121,
+            "baselinePlusMetric": 21.45094730889003,
+            "baselineBucketMedian": 15.75,
+            "metricBucketMedian": 30.0
+          }
+        },
+        "295661227": {
+          "nRows": 14,
+          "sumY": 20.0,
+          "sumY2": 66.0,
+          "sumAbsoluteError": {
+            "zero": 20.0,
+            "trainMedian": 22.0,
+            "trainMean": 22.0,
+            "baseline": 22.01482004234298,
+            "baselinePlusMetric": 21.419488051186676,
+            "baselineBucketMedian": 21.0,
+            "metricBucketMedian": 22.0
+          },
+          "sumSquaredError": {
+            "zero": 66.0,
+            "trainMedian": 42.0,
+            "trainMean": 42.0,
+            "baseline": 46.558156601286235,
+            "baselinePlusMetric": 45.64510621915437,
+            "baselineBucketMedian": 49.0,
+            "metricBucketMedian": 42.0
+          }
+        },
+        "295661421": {
+          "nRows": 14,
+          "sumY": 29.0,
+          "sumY2": 131.0,
+          "sumAbsoluteError": {
+            "zero": 29.0,
+            "trainMedian": 25.0,
+            "trainMean": 26.560975609756103,
+            "baseline": 25.17840822543793,
+            "baselinePlusMetric": 25.920034566585556,
+            "baselineBucketMedian": 26.0,
+            "metricBucketMedian": 26.0
+          },
+          "sumSquaredError": {
+            "zero": 131.0,
+            "trainMedian": 87.0,
+            "trainMean": 72.11362284354551,
+            "baseline": 67.38016159948351,
+            "baselinePlusMetric": 77.52040957319379,
+            "baselineBucketMedian": 68.0,
+            "metricBucketMedian": 68.0
+          }
+        },
+        "295661615": {
+          "nRows": 14,
+          "sumY": 32.0,
+          "sumY2": 134.0,
+          "sumAbsoluteError": {
+            "zero": 32.0,
+            "trainMedian": 26.0,
+            "trainMean": 26.0,
+            "baseline": 26.256912442396313,
+            "baselinePlusMetric": 28.322277301850118,
+            "baselineBucketMedian": 23.0,
+            "metricBucketMedian": 26.0
+          },
+          "sumSquaredError": {
+            "zero": 134.0,
+            "trainMedian": 84.0,
+            "trainMean": 65.54074955383702,
+            "baseline": 63.675233334749095,
+            "baselinePlusMetric": 73.5705476397069,
+            "baselineBucketMedian": 55.0,
+            "metricBucketMedian": 62.0
+          }
+        }
+      },
+      "maeGain": -0.03131737731784523,
+      "r2Gain": -0.09809008152071585,
+      "intervals": {
+        "draws": 1000,
+        "maeGain95": [
+          -0.10376165675268689,
+          0.040167979559997846
+        ],
+        "r2Gain95": [
+          -0.151661460882051,
+          0.005347514123867914
+        ],
+        "metricBucketMedianMaeGain95": {
+          "zero": [
+            -0.0535714285714286,
+            0.375
+          ],
+          "trainMedian": [
+            -0.05454545454545445,
+            0.0
+          ],
+          "baselineBucketMedian": [
+            -0.3867924528301885,
+            -0.03571428571428559
+          ]
+        },
+        "scope": "Paired map-seed cluster resampling of fixed held-out errors. Conditional on fitted folds; no refitting or model-selection uncertainty."
+      }
+    },
+    {
+      "target": "combatStepsLost",
+      "metric": "stacksExposedAllocated",
+      "baseline": "contact",
+      "candidate": {
+        "nRows": 55,
+        "nGames": 8,
+        "nSeeds": 4,
+        "batchRowsIncludingAliases": {
+          "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 55
+        }
+      },
+      "missingAnyRequired": 0,
+      "metricMissing": 0,
+      "baselineMissing": 0,
+      "metricZero": 1,
+      "outcomeMissing": 0,
+      "outcomeZero": 20,
+      "folds": [
+        {
+          "fold": "295661033",
+          "training": {
+            "nRows": 42,
+            "nGames": 6,
+            "nSeeds": 3,
+            "batchRowsIncludingAliases": {
+              "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 42
+            }
+          },
+          "test": {
+            "nRows": 13,
+            "nGames": 2,
+            "nSeeds": 1,
+            "batchRowsIncludingAliases": {
+              "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 13
+            }
+          },
+          "trainSeeds": [
+            295661227,
+            295661421,
+            295661615
+          ],
+          "testSeeds": [
+            295661033
+          ],
+          "empty": false
+        },
+        {
+          "fold": "295661227",
+          "training": {
+            "nRows": 41,
+            "nGames": 6,
+            "nSeeds": 3,
+            "batchRowsIncludingAliases": {
+              "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 41
+            }
+          },
+          "test": {
+            "nRows": 14,
+            "nGames": 2,
+            "nSeeds": 1,
+            "batchRowsIncludingAliases": {
+              "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 14
+            }
+          },
+          "trainSeeds": [
+            295661033,
+            295661421,
+            295661615
+          ],
+          "testSeeds": [
+            295661227
+          ],
+          "empty": false
+        },
+        {
+          "fold": "295661421",
+          "training": {
+            "nRows": 41,
+            "nGames": 6,
+            "nSeeds": 3,
+            "batchRowsIncludingAliases": {
+              "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 41
+            }
+          },
+          "test": {
+            "nRows": 14,
+            "nGames": 2,
+            "nSeeds": 1,
+            "batchRowsIncludingAliases": {
+              "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 14
+            }
+          },
+          "trainSeeds": [
+            295661033,
+            295661227,
+            295661615
+          ],
+          "testSeeds": [
+            295661421
+          ],
+          "empty": false
+        },
+        {
+          "fold": "295661615",
+          "training": {
+            "nRows": 41,
+            "nGames": 6,
+            "nSeeds": 3,
+            "batchRowsIncludingAliases": {
+              "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 41
+            }
+          },
+          "test": {
+            "nRows": 14,
+            "nGames": 2,
+            "nSeeds": 1,
+            "batchRowsIncludingAliases": {
+              "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 14
+            }
+          },
+          "trainSeeds": [
+            295661033,
+            295661227,
+            295661421
+          ],
+          "testSeeds": [
+            295661615
+          ],
+          "empty": false
+        }
+      ],
+      "emptyFoldCount": 0,
+      "evaluated": {
+        "nRows": 55,
+        "nGames": 8,
+        "nSeeds": 4,
+        "batchRowsIncludingAliases": {
+          "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 55
+        }
+      },
+      "status": "EVALUATED",
+      "scores": {
+        "zero": {
+          "mae": 1.8545454545454545,
+          "r2": -0.941879413362303
+        },
+        "trainMedian": {
+          "mae": 1.6545454545454545,
+          "r2": -0.20994024986420423
+        },
+        "trainMean": {
+          "mae": 1.6322774786189422,
+          "r2": -0.025742597026434666
+        },
+        "baseline": {
+          "mae": 1.6544941477099213,
+          "r2": -0.028279326537519633
+        },
+        "baselinePlusMetric": {
+          "mae": 1.6037080138210549,
+          "r2": -0.0009939917055648007
+        },
+        "baselineBucketMedian": {
+          "mae": 1.6727272727272726,
+          "r2": -0.34437805540467137
+        },
+        "metricBucketMedian": {
+          "mae": 1.481818181818182,
+          "r2": 0.06515933369545535
+        }
+      },
+      "perSeedErrors": {
+        "295661033": {
+          "nRows": 13,
+          "sumY": 21.0,
+          "sumY2": 59.0,
+          "sumAbsoluteError": {
+            "zero": 21.0,
+            "trainMedian": 18.0,
+            "trainMean": 15.214285714285714,
+            "baseline": 16.3963133640553,
+            "baselinePlusMetric": 14.181207438253843,
+            "baselineBucketMedian": 17.0,
+            "metricBucketMedian": 11.5
+          },
+          "sumSquaredError": {
+            "zero": 59.0,
+            "trainMedian": 30.0,
+            "trainMean": 26.35204081632653,
+            "baseline": 27.804549776900007,
+            "baselinePlusMetric": 21.456994703040905,
+            "baselineBucketMedian": 33.0,
+            "metricBucketMedian": 15.75
+          }
+        },
+        "295661227": {
+          "nRows": 14,
+          "sumY": 20.0,
+          "sumY2": 66.0,
+          "sumAbsoluteError": {
+            "zero": 20.0,
+            "trainMedian": 22.0,
+            "trainMean": 22.0,
+            "baseline": 21.88759493670886,
+            "baselinePlusMetric": 22.33332011465947,
+            "baselineBucketMedian": 22.0,
+            "metricBucketMedian": 21.0
+          },
+          "sumSquaredError": {
+            "zero": 66.0,
+            "trainMedian": 42.0,
+            "trainMean": 42.0,
+            "baseline": 41.68021637558084,
+            "baselinePlusMetric": 47.96290150364148,
+            "baselineBucketMedian": 42.0,
+            "metricBucketMedian": 49.0
+          }
+        },
+        "295661421": {
+          "nRows": 14,
+          "sumY": 29.0,
+          "sumY2": 131.0,
+          "sumAbsoluteError": {
+            "zero": 29.0,
+            "trainMedian": 25.0,
+            "trainMean": 26.560975609756103,
+            "baseline": 26.501505117399155,
+            "baselinePlusMetric": 25.19932684898226,
+            "baselineBucketMedian": 26.0,
+            "metricBucketMedian": 26.0
+          },
+          "sumSquaredError": {
+            "zero": 131.0,
+            "trainMedian": 87.0,
+            "trainMean": 72.11362284354551,
+            "baseline": 71.99000732532755,
+            "baselinePlusMetric": 67.45409533164846,
+            "baselineBucketMedian": 126.0,
+            "metricBucketMedian": 68.0
+          }
+        },
+        "295661615": {
+          "nRows": 14,
+          "sumY": 32.0,
+          "sumY2": 134.0,
+          "sumAbsoluteError": {
+            "zero": 32.0,
+            "trainMedian": 26.0,
+            "trainMean": 26.0,
+            "baseline": 26.211764705882356,
+            "baselinePlusMetric": 26.490086358262452,
+            "baselineBucketMedian": 27.0,
+            "metricBucketMedian": 23.0
+          },
+          "sumSquaredError": {
+            "zero": 134.0,
+            "trainMedian": 84.0,
+            "trainMean": 65.54074955383702,
+            "baseline": 65.04110726643599,
+            "baselinePlusMetric": 64.16200177766314,
+            "baselineBucketMedian": 69.0,
+            "metricBucketMedian": 55.0
+          }
+        }
+      },
+      "maeGain": 0.050786133888866436,
+      "r2Gain": 0.027285334831954833,
+      "intervals": {
+        "draws": 1000,
+        "maeGain95": [
+          -0.025858815368953847,
+          0.14995275558153343
+        ],
+        "r2Gain95": [
+          -0.09077469198148336,
+          0.15899040615885374
+        ],
+        "metricBucketMedianMaeGain95": {
+          "zero": [
+            0.0714285714285714,
+            0.6851851851851853
+          ],
+          "trainMedian": [
+            0.0,
+            0.3867924528301885
+          ],
+          "baselineBucketMedian": [
+            0.03571428571428559,
+            0.35185185185185186
+          ]
+        },
+        "scope": "Paired map-seed cluster resampling of fixed held-out errors. Conditional on fitted folds; no refitting or model-selection uncertainty."
+      }
+    },
+    {
+      "target": "attritionStepsLost",
+      "metric": "outOfTrace",
+      "baseline": "contact",
+      "candidate": {
+        "nRows": 55,
+        "nGames": 8,
+        "nSeeds": 4,
+        "batchRowsIncludingAliases": {
+          "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 55
+        }
+      },
+      "missingAnyRequired": 0,
+      "metricMissing": 0,
+      "baselineMissing": 0,
+      "metricZero": 29,
+      "outcomeMissing": 0,
+      "outcomeZero": 51,
+      "folds": [
+        {
+          "fold": "295661033",
+          "training": {
+            "nRows": 42,
+            "nGames": 6,
+            "nSeeds": 3,
+            "batchRowsIncludingAliases": {
+              "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 42
+            }
+          },
+          "test": {
+            "nRows": 13,
+            "nGames": 2,
+            "nSeeds": 1,
+            "batchRowsIncludingAliases": {
+              "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 13
+            }
+          },
+          "trainSeeds": [
+            295661227,
+            295661421,
+            295661615
+          ],
+          "testSeeds": [
+            295661033
+          ],
+          "empty": false
+        },
+        {
+          "fold": "295661227",
+          "training": {
+            "nRows": 41,
+            "nGames": 6,
+            "nSeeds": 3,
+            "batchRowsIncludingAliases": {
+              "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 41
+            }
+          },
+          "test": {
+            "nRows": 14,
+            "nGames": 2,
+            "nSeeds": 1,
+            "batchRowsIncludingAliases": {
+              "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 14
+            }
+          },
+          "trainSeeds": [
+            295661033,
+            295661421,
+            295661615
+          ],
+          "testSeeds": [
+            295661227
+          ],
+          "empty": false
+        },
+        {
+          "fold": "295661421",
+          "training": {
+            "nRows": 41,
+            "nGames": 6,
+            "nSeeds": 3,
+            "batchRowsIncludingAliases": {
+              "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 41
+            }
+          },
+          "test": {
+            "nRows": 14,
+            "nGames": 2,
+            "nSeeds": 1,
+            "batchRowsIncludingAliases": {
+              "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 14
+            }
+          },
+          "trainSeeds": [
+            295661033,
+            295661227,
+            295661615
+          ],
+          "testSeeds": [
+            295661421
+          ],
+          "empty": false
+        },
+        {
+          "fold": "295661615",
+          "training": {
+            "nRows": 41,
+            "nGames": 6,
+            "nSeeds": 3,
+            "batchRowsIncludingAliases": {
+              "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 41
+            }
+          },
+          "test": {
+            "nRows": 14,
+            "nGames": 2,
+            "nSeeds": 1,
+            "batchRowsIncludingAliases": {
+              "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 14
+            }
+          },
+          "trainSeeds": [
+            295661033,
+            295661227,
+            295661421
+          ],
+          "testSeeds": [
+            295661615
+          ],
+          "empty": false
+        }
+      ],
+      "emptyFoldCount": 0,
+      "evaluated": {
+        "nRows": 55,
+        "nGames": 8,
+        "nSeeds": 4,
+        "batchRowsIncludingAliases": {
+          "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 55
+        }
+      },
+      "status": "EVALUATED",
+      "scores": {
+        "zero": {
+          "mae": 0.14545454545454545,
+          "r2": -0.04336043360433606
+        },
+        "trainMedian": {
+          "mae": 0.14545454545454545,
+          "r2": -0.04336043360433606
+        },
+        "trainMean": {
+          "mae": 0.27741526765917013,
+          "r2": -0.04799295258644487
+        },
+        "baseline": {
+          "mae": 0.290854116178211,
+          "r2": -0.059024853614356276
+        },
+        "baselinePlusMetric": {
+          "mae": 0.2476496773493432,
+          "r2": 0.02886001970137919
+        },
+        "baselineBucketMedian": {
+          "mae": 0.16363636363636364,
+          "r2": -0.08062330623306235
+        },
+        "metricBucketMedian": {
+          "mae": 0.14545454545454545,
+          "r2": -0.04336043360433606
+        }
+      },
+      "perSeedErrors": {
+        "295661033": {
+          "nRows": 13,
+          "sumY": 6.0,
+          "sumY2": 26.0,
+          "sumAbsoluteError": {
+            "zero": 6.0,
+            "trainMedian": 6.0,
+            "trainMean": 6.428571428571428,
+            "baseline": 6.42427035330261,
+            "baselinePlusMetric": 6.960029275585971,
+            "baselineBucketMedian": 6.0,
+            "metricBucketMedian": 6.0
+          },
+          "sumSquaredError": {
+            "zero": 26.0,
+            "trainMedian": 26.0,
+            "trainMean": 25.458049886621314,
+            "baseline": 25.496390900446205,
+            "baselinePlusMetric": 23.49312716065827,
+            "baselineBucketMedian": 26.0,
+            "metricBucketMedian": 26.0
+          }
+        },
+        "295661227": {
+          "nRows": 14,
+          "sumY": 0.0,
+          "sumY2": 0.0,
+          "sumAbsoluteError": {
+            "zero": 0.0,
+            "trainMedian": 0.0,
+            "trainMean": 2.731707317073171,
+            "baseline": 2.9174683544303797,
+            "baselinePlusMetric": 1.049670428130261,
+            "baselineBucketMedian": 0.0,
+            "metricBucketMedian": 0.0
+          },
+          "sumSquaredError": {
+            "zero": 0.0,
+            "trainMedian": 0.0,
+            "trainMean": 0.5330160618679357,
+            "baseline": 0.6115249051968169,
+            "baselinePlusMetric": 0.3076793138157283,
+            "baselineBucketMedian": 0.0,
+            "metricBucketMedian": 0.0
+          }
+        },
+        "295661421": {
+          "nRows": 14,
+          "sumY": 1.0,
+          "sumY2": 1.0,
+          "sumAbsoluteError": {
+            "zero": 1.0,
+            "trainMedian": 1.0,
+            "trainMean": 3.048780487804879,
+            "baseline": 3.050195665261891,
+            "baselinePlusMetric": 1.8232964024735066,
+            "baselineBucketMedian": 2.0,
+            "metricBucketMedian": 1.0
+          },
+          "sumSquaredError": {
+            "zero": 1.0,
+            "trainMedian": 1.0,
+            "trainMean": 1.0666270077334918,
+            "baseline": 1.0672798407873947,
+            "baselinePlusMetric": 0.7850821840755372,
+            "baselineBucketMedian": 2.0,
+            "metricBucketMedian": 1.0
+          }
+        },
+        "295661615": {
+          "nRows": 14,
+          "sumY": 1.0,
+          "sumY2": 1.0,
+          "sumAbsoluteError": {
+            "zero": 1.0,
+            "trainMedian": 1.0,
+            "trainMean": 3.048780487804879,
+            "baseline": 3.605042016806723,
+            "baselinePlusMetric": 3.7877361480241385,
+            "baselineBucketMedian": 1.0,
+            "metricBucketMedian": 1.0
+          },
+          "sumSquaredError": {
+            "zero": 1.0,
+            "trainMedian": 1.0,
+            "trainMean": 1.0666270077334918,
+            "baseline": 1.2451804251112208,
+            "baselinePlusMetric": 1.475976994555272,
+            "baselineBucketMedian": 1.0,
+            "metricBucketMedian": 1.0
+          }
+        }
+      },
+      "maeGain": 0.04320443882886779,
+      "r2Gain": 0.08788487331573547,
+      "intervals": {
+        "draws": 1000,
+        "maeGain95": [
+          -0.0266093723518806,
+          0.11052489961030368
+        ],
+        "r2Gain95": [
+          -0.11043632159007966,
+          0.6931172993301091
+        ],
+        "metricBucketMedianMaeGain95": {
+          "zero": [
+            0.0,
+            0.0
+          ],
+          "trainMedian": [
+            0.0,
+            0.0
+          ],
+          "baselineBucketMedian": [
+            0.0,
+            0.054545454545454536
+          ]
+        },
+        "scope": "Paired map-seed cluster resampling of fixed held-out errors. Conditional on fitted folds; no refitting or model-selection uncertainty."
+      }
+    },
+    {
+      "target": "outOfTraceRise",
+      "metric": "supplyCuttable",
+      "baseline": "contact",
+      "candidate": {
+        "nRows": 55,
+        "nGames": 8,
+        "nSeeds": 4,
+        "batchRowsIncludingAliases": {
+          "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 55
+        }
+      },
+      "missingAnyRequired": 0,
+      "metricMissing": 0,
+      "baselineMissing": 0,
+      "metricZero": 5,
+      "outcomeMissing": 0,
+      "outcomeZero": 34,
+      "folds": [
+        {
+          "fold": "295661033",
+          "training": {
+            "nRows": 42,
+            "nGames": 6,
+            "nSeeds": 3,
+            "batchRowsIncludingAliases": {
+              "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 42
+            }
+          },
+          "test": {
+            "nRows": 13,
+            "nGames": 2,
+            "nSeeds": 1,
+            "batchRowsIncludingAliases": {
+              "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 13
+            }
+          },
+          "trainSeeds": [
+            295661227,
+            295661421,
+            295661615
+          ],
+          "testSeeds": [
+            295661033
+          ],
+          "empty": false
+        },
+        {
+          "fold": "295661227",
+          "training": {
+            "nRows": 41,
+            "nGames": 6,
+            "nSeeds": 3,
+            "batchRowsIncludingAliases": {
+              "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 41
+            }
+          },
+          "test": {
+            "nRows": 14,
+            "nGames": 2,
+            "nSeeds": 1,
+            "batchRowsIncludingAliases": {
+              "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 14
+            }
+          },
+          "trainSeeds": [
+            295661033,
+            295661421,
+            295661615
+          ],
+          "testSeeds": [
+            295661227
+          ],
+          "empty": false
+        },
+        {
+          "fold": "295661421",
+          "training": {
+            "nRows": 41,
+            "nGames": 6,
+            "nSeeds": 3,
+            "batchRowsIncludingAliases": {
+              "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 41
+            }
+          },
+          "test": {
+            "nRows": 14,
+            "nGames": 2,
+            "nSeeds": 1,
+            "batchRowsIncludingAliases": {
+              "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 14
+            }
+          },
+          "trainSeeds": [
+            295661033,
+            295661227,
+            295661615
+          ],
+          "testSeeds": [
+            295661421
+          ],
+          "empty": false
+        },
+        {
+          "fold": "295661615",
+          "training": {
+            "nRows": 41,
+            "nGames": 6,
+            "nSeeds": 3,
+            "batchRowsIncludingAliases": {
+              "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 41
+            }
+          },
+          "test": {
+            "nRows": 14,
+            "nGames": 2,
+            "nSeeds": 1,
+            "batchRowsIncludingAliases": {
+              "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 14
+            }
+          },
+          "trainSeeds": [
+            295661033,
+            295661227,
+            295661421
+          ],
+          "testSeeds": [
+            295661615
+          ],
+          "empty": false
+        }
+      ],
+      "emptyFoldCount": 0,
+      "evaluated": {
+        "nRows": 55,
+        "nGames": 8,
+        "nSeeds": 4,
+        "batchRowsIncludingAliases": {
+          "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 55
+        }
+      },
+      "status": "EVALUATED",
+      "scores": {
+        "zero": {
+          "mae": 2.1272727272727274,
+          "r2": -0.243031637254554
+        },
+        "trainMedian": {
+          "mae": 2.1272727272727274,
+          "r2": -0.243031637254554
+        },
+        "trainMean": {
+          "mae": 2.978428888184986,
+          "r2": -0.051715810224600256
+        },
+        "baseline": {
+          "mae": 3.000966819062466,
+          "r2": -0.03791529294591833
+        },
+        "baselinePlusMetric": {
+          "mae": 2.926089467490716,
+          "r2": -0.11887097472904773
+        },
+        "baselineBucketMedian": {
+          "mae": 2.5090909090909093,
+          "r2": -0.3592301956467707
+        },
+        "metricBucketMedian": {
+          "mae": 2.2363636363636363,
+          "r2": -0.18981465042786638
+        }
+      },
+      "perSeedErrors": {
+        "295661033": {
+          "nRows": 13,
+          "sumY": 38.0,
+          "sumY2": 408.0,
+          "sumAbsoluteError": {
+            "zero": 38.0,
+            "trainMedian": 38.0,
+            "trainMean": 39.64285714285714,
+            "baseline": 40.80952380952381,
+            "baselinePlusMetric": 41.21350685203759,
+            "baselineBucketMedian": 50.0,
+            "metricBucketMedian": 34.5
+          },
+          "sumSquaredError": {
+            "zero": 408.0,
+            "trainMedian": 408.0,
+            "trainMean": 311.0413832199546,
+            "baseline": 312.0612244897959,
+            "baselinePlusMetric": 317.1575007983841,
+            "baselineBucketMedian": 530.0,
+            "metricBucketMedian": 348.25
+          }
+        },
+        "295661227": {
+          "nRows": 14,
+          "sumY": 12.0,
+          "sumY2": 122.0,
+          "sumAbsoluteError": {
+            "zero": 12.0,
+            "trainMedian": 12.0,
+            "trainMean": 40.73170731707318,
+            "baseline": 44.45189873417722,
+            "baselinePlusMetric": 41.93020403525979,
+            "baselineBucketMedian": 18.0,
+            "metricBucketMedian": 26.5
+          },
+          "sumSquaredError": {
+            "zero": 122.0,
+            "trainMedian": 122.0,
+            "trainMean": 152.35693039857227,
+            "baseline": 160.73569246381456,
+            "baselinePlusMetric": 149.00239685726655,
+            "baselineBucketMedian": 128.0,
+            "metricBucketMedian": 178.25
+          }
+        },
+        "295661421": {
+          "nRows": 14,
+          "sumY": 49.0,
+          "sumY2": 677.0,
+          "sumAbsoluteError": {
+            "zero": 49.0,
+            "trainMedian": 49.0,
+            "trainMean": 54.951219512195124,
+            "baseline": 55.88026791089706,
+            "baselinePlusMetric": 57.523735320726374,
+            "baselineBucketMedian": 49.0,
+            "metricBucketMedian": 48.0
+          },
+          "sumSquaredError": {
+            "zero": 677.0,
+            "trainMedian": 677.0,
+            "trainMean": 552.9738251041047,
+            "baseline": 547.3652225872453,
+            "baselinePlusMetric": 647.3681512430667,
+            "baselineBucketMedian": 677.0,
+            "metricBucketMedian": 654.0
+          }
+        },
+        "295661615": {
+          "nRows": 14,
+          "sumY": 18.0,
+          "sumY2": 66.0,
+          "sumAbsoluteError": {
+            "zero": 18.0,
+            "trainMedian": 18.0,
+            "trainMean": 28.487804878048777,
+            "baseline": 23.911484593837535,
+            "baselinePlusMetric": 20.267474503965616,
+            "baselineBucketMedian": 21.0,
+            "metricBucketMedian": 14.0
+          },
+          "sumSquaredError": {
+            "zero": 66.0,
+            "trainMedian": 66.0,
+            "trainMean": 60.699583581201665,
+            "baseline": 42.77634755863129,
+            "baselinePlusMetric": 32.31788787561608,
+            "baselineBucketMedian": 57.0,
+            "metricBucketMedian": 38.0
+          }
+        }
+      },
+      "maeGain": 0.0748773515717498,
+      "r2Gain": -0.0809556817831294,
+      "intervals": {
+        "draws": 1000,
+        "maeGain95": [
+          -0.09698882312730372,
+          0.220203742456762
+        ],
+        "r2Gain95": [
+          -0.16941899167999086,
+          0.14238523100544698
+        ],
+        "metricBucketMedianMaeGain95": {
+          "zero": [
+            -0.7272727272727273,
+            0.2777777777777777
+          ],
+          "trainMedian": [
+            -0.7272727272727273,
+            0.2777777777777777
+          ],
+          "baselineBucketMedian": [
+            -0.330357142857143,
+            0.8962264150943393
+          ]
+        },
+        "scope": "Paired map-seed cluster resampling of fixed held-out errors. Conditional on fitted folds; no refitting or model-selection uncertainty."
+      }
+    },
+    {
+      "target": "spCapturedOrDestroyed",
+      "metric": "dumpSpInReach",
+      "baseline": "contact",
+      "candidate": {
+        "nRows": 55,
+        "nGames": 8,
+        "nSeeds": 4,
+        "batchRowsIncludingAliases": {
+          "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 55
+        }
+      },
+      "missingAnyRequired": 0,
+      "metricMissing": 0,
+      "baselineMissing": 0,
+      "metricZero": 2,
+      "outcomeMissing": 0,
+      "outcomeZero": 36,
+      "folds": [
+        {
+          "fold": "295661033",
+          "training": {
+            "nRows": 42,
+            "nGames": 6,
+            "nSeeds": 3,
+            "batchRowsIncludingAliases": {
+              "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 42
+            }
+          },
+          "test": {
+            "nRows": 13,
+            "nGames": 2,
+            "nSeeds": 1,
+            "batchRowsIncludingAliases": {
+              "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 13
+            }
+          },
+          "trainSeeds": [
+            295661227,
+            295661421,
+            295661615
+          ],
+          "testSeeds": [
+            295661033
+          ],
+          "empty": false
+        },
+        {
+          "fold": "295661227",
+          "training": {
+            "nRows": 41,
+            "nGames": 6,
+            "nSeeds": 3,
+            "batchRowsIncludingAliases": {
+              "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 41
+            }
+          },
+          "test": {
+            "nRows": 14,
+            "nGames": 2,
+            "nSeeds": 1,
+            "batchRowsIncludingAliases": {
+              "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 14
+            }
+          },
+          "trainSeeds": [
+            295661033,
+            295661421,
+            295661615
+          ],
+          "testSeeds": [
+            295661227
+          ],
+          "empty": false
+        },
+        {
+          "fold": "295661421",
+          "training": {
+            "nRows": 41,
+            "nGames": 6,
+            "nSeeds": 3,
+            "batchRowsIncludingAliases": {
+              "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 41
+            }
+          },
+          "test": {
+            "nRows": 14,
+            "nGames": 2,
+            "nSeeds": 1,
+            "batchRowsIncludingAliases": {
+              "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 14
+            }
+          },
+          "trainSeeds": [
+            295661033,
+            295661227,
+            295661615
+          ],
+          "testSeeds": [
+            295661421
+          ],
+          "empty": false
+        },
+        {
+          "fold": "295661615",
+          "training": {
+            "nRows": 41,
+            "nGames": 6,
+            "nSeeds": 3,
+            "batchRowsIncludingAliases": {
+              "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 41
+            }
+          },
+          "test": {
+            "nRows": 14,
+            "nGames": 2,
+            "nSeeds": 1,
+            "batchRowsIncludingAliases": {
+              "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 14
+            }
+          },
+          "trainSeeds": [
+            295661033,
+            295661227,
+            295661421
+          ],
+          "testSeeds": [
+            295661615
+          ],
+          "empty": false
+        }
+      ],
+      "emptyFoldCount": 0,
+      "evaluated": {
+        "nRows": 55,
+        "nGames": 8,
+        "nSeeds": 4,
+        "batchRowsIncludingAliases": {
+          "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 55
+        }
+      },
+      "status": "EVALUATED",
+      "scores": {
+        "zero": {
+          "mae": 0.95,
+          "r2": -0.29211416801530077
+        },
+        "trainMedian": {
+          "mae": 0.95,
+          "r2": -0.29211416801530077
+        },
+        "trainMean": {
+          "mae": 1.3459296800760212,
+          "r2": -0.08576818061356217
+        },
+        "baseline": {
+          "mae": 1.359659374675194,
+          "r2": -0.11348842932901171
+        },
+        "baselinePlusMetric": {
+          "mae": 1.457039954956686,
+          "r2": -0.20219461710133357
+        },
+        "baselineBucketMedian": {
+          "mae": 0.9863636363636363,
+          "r2": -0.2963439752832131
+        },
+        "metricBucketMedian": {
+          "mae": 1.0977272727272727,
+          "r2": -0.3392857142857142
+        }
+      },
+      "perSeedErrors": {
+        "295661033": {
+          "nRows": 13,
+          "sumY": 21.75,
+          "sumY2": 122.8125,
+          "sumAbsoluteError": {
+            "zero": 21.75,
+            "trainMedian": 21.75,
+            "trainMean": 23.928571428571423,
+            "baseline": 23.42588325652842,
+            "baselinePlusMetric": 24.338909006101765,
+            "baselineBucketMedian": 22.25,
+            "metricBucketMedian": 23.375
+          },
+          "sumSquaredError": {
+            "zero": 122.8125,
+            "trainMedian": 122.8125,
+            "trainMean": 98.07879818594103,
+            "baseline": 101.08241441737987,
+            "baselinePlusMetric": 104.27678359977233,
+            "baselineBucketMedian": 123.0625,
+            "metricBucketMedian": 124.328125
+          }
+        },
+        "295661227": {
+          "nRows": 14,
+          "sumY": 0.5,
+          "sumY2": 0.25,
+          "sumAbsoluteError": {
+            "zero": 0.5,
+            "trainMedian": 0.5,
+            "trainMean": 17.17073170731707,
+            "baseline": 17.865316455696203,
+            "baselinePlusMetric": 19.322772281248003,
+            "baselineBucketMedian": 2.0,
+            "metricBucketMedian": 5.5
+          },
+          "sumSquaredError": {
+            "zero": 0.25,
+            "trainMedian": 0.25,
+            "trainMean": 21.29171624033314,
+            "baseline": 23.07755296693906,
+            "baselinePlusMetric": 27.444696123610584,
+            "baselineBucketMedian": 0.71875,
+            "metricBucketMedian": 5.25
+          }
+        },
+        "295661421": {
+          "nRows": 14,
+          "sumY": 15.5,
+          "sumY2": 44.875,
+          "sumAbsoluteError": {
+            "zero": 15.5,
+            "trainMedian": 15.5,
+            "trainMean": 16.585365853658534,
+            "baseline": 16.33801173991571,
+            "baselinePlusMetric": 16.904659047713775,
+            "baselineBucketMedian": 15.5,
+            "metricBucketMedian": 17.0
+          },
+          "sumSquaredError": {
+            "zero": 44.875,
+            "trainMedian": 44.875,
+            "trainMean": 28.33640690065437,
+            "baseline": 28.314113098075747,
+            "baselinePlusMetric": 29.768484009572877,
+            "baselineBucketMedian": 44.875,
+            "metricBucketMedian": 46.375
+          }
+        },
+        "295661615": {
+          "nRows": 14,
+          "sumY": 14.5,
+          "sumY2": 51.625,
+          "sumAbsoluteError": {
+            "zero": 14.5,
+            "trainMedian": 14.5,
+            "trainMean": 16.341463414634145,
+            "baseline": 17.152054154995334,
+            "baselinePlusMetric": 19.570857187554175,
+            "baselineBucketMedian": 14.5,
+            "metricBucketMedian": 14.5
+          },
+          "sumSquaredError": {
+            "zero": 51.625,
+            "trainMedian": 51.625,
+            "trainMean": 36.79223676383105,
+            "baseline": 36.73544087133765,
+            "baselinePlusMetric": 42.79295657798832,
+            "baselineBucketMedian": 51.625,
+            "metricBucketMedian": 51.625
+          }
+        }
+      },
+      "maeGain": -0.09738058028149199,
+      "r2Gain": -0.08870618777232187,
+      "intervals": {
+        "draws": 1000,
+        "maeGain95": [
+          -0.14853517904090685,
+          -0.04750850314486432
+        ],
+        "r2Gain95": [
+          -0.359719691687844,
+          -0.03802316271106587
+        ],
+        "metricBucketMedianMaeGain95": {
+          "zero": [
+            -0.29464285714285715,
+            -0.02954545454545454
+          ],
+          "trainMedian": [
+            -0.29464285714285715,
+            -0.02954545454545454
+          ],
+          "baselineBucketMedian": [
+            -0.2113636363636363,
+            -0.02678571428571419
+          ]
+        },
+        "scope": "Paired map-seed cluster resampling of fixed held-out errors. Conditional on fitted folds; no refitting or model-selection uncertainty."
+      }
+    },
+    {
+      "target": "objectiveVpLost",
+      "metric": "movingBestObjectiveEffectiveColumn",
+      "baseline": "objectiveVpAtRisk",
+      "candidate": {
+        "nRows": 55,
+        "nGames": 8,
+        "nSeeds": 4,
+        "batchRowsIncludingAliases": {
+          "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 55
+        }
+      },
+      "missingAnyRequired": 0,
+      "metricMissing": 0,
+      "baselineMissing": 0,
+      "metricZero": 0,
+      "outcomeMissing": 0,
+      "outcomeZero": 45,
+      "folds": [
+        {
+          "fold": "295661033",
+          "training": {
+            "nRows": 42,
+            "nGames": 6,
+            "nSeeds": 3,
+            "batchRowsIncludingAliases": {
+              "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 42
+            }
+          },
+          "test": {
+            "nRows": 13,
+            "nGames": 2,
+            "nSeeds": 1,
+            "batchRowsIncludingAliases": {
+              "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 13
+            }
+          },
+          "trainSeeds": [
+            295661227,
+            295661421,
+            295661615
+          ],
+          "testSeeds": [
+            295661033
+          ],
+          "empty": false
+        },
+        {
+          "fold": "295661227",
+          "training": {
+            "nRows": 41,
+            "nGames": 6,
+            "nSeeds": 3,
+            "batchRowsIncludingAliases": {
+              "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 41
+            }
+          },
+          "test": {
+            "nRows": 14,
+            "nGames": 2,
+            "nSeeds": 1,
+            "batchRowsIncludingAliases": {
+              "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 14
+            }
+          },
+          "trainSeeds": [
+            295661033,
+            295661421,
+            295661615
+          ],
+          "testSeeds": [
+            295661227
+          ],
+          "empty": false
+        },
+        {
+          "fold": "295661421",
+          "training": {
+            "nRows": 41,
+            "nGames": 6,
+            "nSeeds": 3,
+            "batchRowsIncludingAliases": {
+              "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 41
+            }
+          },
+          "test": {
+            "nRows": 14,
+            "nGames": 2,
+            "nSeeds": 1,
+            "batchRowsIncludingAliases": {
+              "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 14
+            }
+          },
+          "trainSeeds": [
+            295661033,
+            295661227,
+            295661615
+          ],
+          "testSeeds": [
+            295661421
+          ],
+          "empty": false
+        },
+        {
+          "fold": "295661615",
+          "training": {
+            "nRows": 41,
+            "nGames": 6,
+            "nSeeds": 3,
+            "batchRowsIncludingAliases": {
+              "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 41
+            }
+          },
+          "test": {
+            "nRows": 14,
+            "nGames": 2,
+            "nSeeds": 1,
+            "batchRowsIncludingAliases": {
+              "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 14
+            }
+          },
+          "trainSeeds": [
+            295661033,
+            295661227,
+            295661421
+          ],
+          "testSeeds": [
+            295661615
+          ],
+          "empty": false
+        }
+      ],
+      "emptyFoldCount": 0,
+      "evaluated": {
+        "nRows": 55,
+        "nGames": 8,
+        "nSeeds": 4,
+        "batchRowsIncludingAliases": {
+          "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 55
+        }
+      },
+      "status": "EVALUATED",
+      "scores": {
+        "zero": {
+          "mae": 1.0545454545454545,
+          "r2": -0.15976443768996962
+        },
+        "trainMedian": {
+          "mae": 1.0545454545454545,
+          "r2": -0.15976443768996962
+        },
+        "trainMean": {
+          "mae": 1.767923133776792,
+          "r2": -0.055592622795529234
+        },
+        "baseline": {
+          "mae": 1.6479884822935755,
+          "r2": -0.020746424560501575
+        },
+        "baselinePlusMetric": {
+          "mae": 1.694441047617692,
+          "r2": 0.0065543682682625
+        },
+        "baselineBucketMedian": {
+          "mae": 1.0545454545454545,
+          "r2": -0.15976443768996962
+        },
+        "metricBucketMedian": {
+          "mae": 1.1818181818181819,
+          "r2": -0.12580737082066884
+        }
+      },
+      "perSeedErrors": {
+        "295661033": {
+          "nRows": 13,
+          "sumY": 30.0,
+          "sumY2": 306.0,
+          "sumAbsoluteError": {
+            "zero": 30.0,
+            "trainMedian": 30.0,
+            "trainMean": 33.33333333333333,
+            "baseline": 28.50644956650455,
+            "baselinePlusMetric": 31.037938042744603,
+            "baselineBucketMedian": 30.0,
+            "metricBucketMedian": 30.0
+          },
+          "sumSquaredError": {
+            "zero": 306.0,
+            "trainMedian": 306.0,
+            "trainMean": 271.7777777777778,
+            "baseline": 228.23567316854326,
+            "baselinePlusMetric": 232.274880883118,
+            "baselineBucketMedian": 306.0,
+            "metricBucketMedian": 306.0
+          }
+        },
+        "295661227": {
+          "nRows": 14,
+          "sumY": 5.0,
+          "sumY2": 25.0,
+          "sumAbsoluteError": {
+            "zero": 5.0,
+            "trainMedian": 5.0,
+            "trainMean": 20.51219512195122,
+            "baseline": 10.216302907747018,
+            "baselinePlusMetric": 14.036081382331922,
+            "baselineBucketMedian": 5.0,
+            "metricBucketMedian": 12.0
+          },
+          "sumSquaredError": {
+            "zero": 25.0,
+            "trainMedian": 25.0,
+            "trainMean": 35.46757882212969,
+            "baseline": 22.43125167904095,
+            "baselinePlusMetric": 23.155567832886465,
+            "baselineBucketMedian": 25.0,
+            "metricBucketMedian": 39.0
+          }
+        },
+        "295661421": {
+          "nRows": 14,
+          "sumY": 11.0,
+          "sumY2": 41.0,
+          "sumAbsoluteError": {
+            "zero": 11.0,
+            "trainMedian": 11.0,
+            "trainMean": 20.17073170731707,
+            "baseline": 30.36636279561369,
+            "baselinePlusMetric": 26.560438136821688,
+            "baselineBucketMedian": 11.0,
+            "metricBucketMedian": 11.0
+          },
+          "sumSquaredError": {
+            "zero": 41.0,
+            "trainMedian": 41.0,
+            "trainMean": 34.177870315288516,
+            "baseline": 75.45125023300412,
+            "baselinePlusMetric": 71.13871398285566,
+            "baselineBucketMedian": 41.0,
+            "metricBucketMedian": 41.0
+          }
+        },
+        "295661615": {
+          "nRows": 14,
+          "sumY": 12.0,
+          "sumY2": 72.0,
+          "sumAbsoluteError": {
+            "zero": 12.0,
+            "trainMedian": 12.0,
+            "trainMean": 23.219512195121947,
+            "baseline": 21.55025125628141,
+            "baselinePlusMetric": 21.55980005707485,
+            "baselineBucketMedian": 12.0,
+            "metricBucketMedian": 12.0
+          },
+          "sumSquaredError": {
+            "zero": 72.0,
+            "trainMedian": 72.0,
+            "trainMean": 62.696014277215944,
+            "baseline": 64.66067429297384,
+            "baselinePlusMetric": 53.757950423748284,
+            "baselineBucketMedian": 72.0,
+            "metricBucketMedian": 45.0
+          }
+        }
+      },
+      "maeGain": -0.04645256532411657,
+      "r2Gain": 0.027300792828764076,
+      "intervals": {
+        "draws": 1000,
+        "maeGain95": [
+          -0.23523210928981353,
+          0.16156882727519895
+        ],
+        "r2Gain95": [
+          -0.017059681705481333,
+          0.16168018343167812
+        ],
+        "metricBucketMedianMaeGain95": {
+          "zero": [
+            -0.375,
+            0.0
+          ],
+          "trainMedian": [
+            -0.375,
+            0.0
+          ],
+          "baselineBucketMedian": [
+            -0.375,
+            0.0
+          ]
+        },
+        "scope": "Paired map-seed cluster resampling of fixed held-out errors. Conditional on fitted folds; no refitting or model-selection uncertainty."
+      }
+    },
+    {
+      "target": "objectiveVpLost",
+      "metric": "movingLocalForceRatioAt2Hex",
+      "baseline": "objectiveVpAtRisk",
+      "candidate": {
+        "nRows": 55,
+        "nGames": 8,
+        "nSeeds": 4,
+        "batchRowsIncludingAliases": {
+          "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 55
+        }
+      },
+      "missingAnyRequired": 0,
+      "metricMissing": 0,
+      "baselineMissing": 0,
+      "metricZero": 9,
+      "outcomeMissing": 0,
+      "outcomeZero": 45,
+      "folds": [
+        {
+          "fold": "295661033",
+          "training": {
+            "nRows": 42,
+            "nGames": 6,
+            "nSeeds": 3,
+            "batchRowsIncludingAliases": {
+              "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 42
+            }
+          },
+          "test": {
+            "nRows": 13,
+            "nGames": 2,
+            "nSeeds": 1,
+            "batchRowsIncludingAliases": {
+              "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 13
+            }
+          },
+          "trainSeeds": [
+            295661227,
+            295661421,
+            295661615
+          ],
+          "testSeeds": [
+            295661033
+          ],
+          "empty": false
+        },
+        {
+          "fold": "295661227",
+          "training": {
+            "nRows": 41,
+            "nGames": 6,
+            "nSeeds": 3,
+            "batchRowsIncludingAliases": {
+              "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 41
+            }
+          },
+          "test": {
+            "nRows": 14,
+            "nGames": 2,
+            "nSeeds": 1,
+            "batchRowsIncludingAliases": {
+              "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 14
+            }
+          },
+          "trainSeeds": [
+            295661033,
+            295661421,
+            295661615
+          ],
+          "testSeeds": [
+            295661227
+          ],
+          "empty": false
+        },
+        {
+          "fold": "295661421",
+          "training": {
+            "nRows": 41,
+            "nGames": 6,
+            "nSeeds": 3,
+            "batchRowsIncludingAliases": {
+              "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 41
+            }
+          },
+          "test": {
+            "nRows": 14,
+            "nGames": 2,
+            "nSeeds": 1,
+            "batchRowsIncludingAliases": {
+              "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 14
+            }
+          },
+          "trainSeeds": [
+            295661033,
+            295661227,
+            295661615
+          ],
+          "testSeeds": [
+            295661421
+          ],
+          "empty": false
+        },
+        {
+          "fold": "295661615",
+          "training": {
+            "nRows": 41,
+            "nGames": 6,
+            "nSeeds": 3,
+            "batchRowsIncludingAliases": {
+              "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 41
+            }
+          },
+          "test": {
+            "nRows": 14,
+            "nGames": 2,
+            "nSeeds": 1,
+            "batchRowsIncludingAliases": {
+              "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 14
+            }
+          },
+          "trainSeeds": [
+            295661033,
+            295661227,
+            295661421
+          ],
+          "testSeeds": [
+            295661615
+          ],
+          "empty": false
+        }
+      ],
+      "emptyFoldCount": 0,
+      "evaluated": {
+        "nRows": 55,
+        "nGames": 8,
+        "nSeeds": 4,
+        "batchRowsIncludingAliases": {
+          "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-continue/ration-fix-games": 55
+        }
+      },
+      "status": "EVALUATED",
+      "scores": {
+        "zero": {
+          "mae": 1.0545454545454545,
+          "r2": -0.15976443768996962
+        },
+        "trainMedian": {
+          "mae": 1.0545454545454545,
+          "r2": -0.15976443768996962
+        },
+        "trainMean": {
+          "mae": 1.767923133776792,
+          "r2": -0.055592622795529234
+        },
+        "baseline": {
+          "mae": 1.6479884822935755,
+          "r2": -0.020746424560501575
+        },
+        "baselinePlusMetric": {
+          "mae": 1.6205604060800392,
+          "r2": 0.04629886137349648
+        },
+        "baselineBucketMedian": {
+          "mae": 1.0545454545454545,
+          "r2": -0.15976443768996962
+        },
+        "metricBucketMedian": {
+          "mae": 0.8090909090909091,
+          "r2": 0.3371841755319148
+        }
+      },
+      "perSeedErrors": {
+        "295661033": {
+          "nRows": 13,
+          "sumY": 30.0,
+          "sumY2": 306.0,
+          "sumAbsoluteError": {
+            "zero": 30.0,
+            "trainMedian": 30.0,
+            "trainMean": 33.33333333333333,
+            "baseline": 28.50644956650455,
+            "baselinePlusMetric": 29.813855260847006,
+            "baselineBucketMedian": 30.0,
+            "metricBucketMedian": 30.0
+          },
+          "sumSquaredError": {
+            "zero": 306.0,
+            "trainMedian": 306.0,
+            "trainMean": 271.7777777777778,
+            "baseline": 228.23567316854326,
+            "baselinePlusMetric": 205.56940645082904,
+            "baselineBucketMedian": 306.0,
+            "metricBucketMedian": 218.0
+          }
+        },
+        "295661227": {
+          "nRows": 14,
+          "sumY": 5.0,
+          "sumY2": 25.0,
+          "sumAbsoluteError": {
+            "zero": 5.0,
+            "trainMedian": 5.0,
+            "trainMean": 20.51219512195122,
+            "baseline": 10.216302907747018,
+            "baselinePlusMetric": 11.016611884070992,
+            "baselineBucketMedian": 5.0,
+            "metricBucketMedian": 5.0
+          },
+          "sumSquaredError": {
+            "zero": 25.0,
+            "trainMedian": 25.0,
+            "trainMean": 35.46757882212969,
+            "baseline": 22.43125167904095,
+            "baselinePlusMetric": 22.452497740809626,
+            "baselineBucketMedian": 25.0,
+            "metricBucketMedian": 17.0
+          }
+        },
+        "295661421": {
+          "nRows": 14,
+          "sumY": 11.0,
+          "sumY2": 41.0,
+          "sumAbsoluteError": {
+            "zero": 11.0,
+            "trainMedian": 11.0,
+            "trainMean": 20.17073170731707,
+            "baseline": 30.36636279561369,
+            "baselinePlusMetric": 29.480567582090288,
+            "baselineBucketMedian": 11.0,
+            "metricBucketMedian": 5.5
+          },
+          "sumSquaredError": {
+            "zero": 41.0,
+            "trainMedian": 41.0,
+            "trainMean": 34.177870315288516,
+            "baseline": 75.45125023300412,
+            "baselinePlusMetric": 83.6939154215735,
+            "baselineBucketMedian": 41.0,
+            "metricBucketMedian": 10.75
+          }
+        },
+        "295661615": {
+          "nRows": 14,
+          "sumY": 12.0,
+          "sumY2": 72.0,
+          "sumAbsoluteError": {
+            "zero": 12.0,
+            "trainMedian": 12.0,
+            "trainMean": 23.219512195121947,
+            "baseline": 21.55025125628141,
+            "baselinePlusMetric": 18.819787607393863,
+            "baselineBucketMedian": 12.0,
+            "metricBucketMedian": 4.0
+          },
+          "sumSquaredError": {
+            "zero": 72.0,
+            "trainMedian": 72.0,
+            "trainMean": 62.696014277215944,
+            "baseline": 64.66067429297384,
+            "baselinePlusMetric": 53.39565629441795,
+            "baselineBucketMedian": 72.0,
+            "metricBucketMedian": 8.0
+          }
+        }
+      },
+      "maeGain": 0.02742807621353638,
+      "r2Gain": 0.06704528593399806,
+      "intervals": {
+        "draws": 1000,
+        "maeGain95": [
+          -0.07806350632097891,
+          0.1319836066131903
+        ],
+        "r2Gain95": [
+          -0.14534517274463887,
+          0.1297180116316614
+        ],
+        "metricBucketMedianMaeGain95": {
+          "zero": [
+            0.0,
+            0.4821428571428571
+          ],
+          "trainMedian": [
+            0.0,
+            0.4821428571428571
+          ],
+          "baselineBucketMedian": [
+            0.0,
+            0.4821428571428571
+          ]
+        },
+        "scope": "Paired map-seed cluster resampling of fixed held-out errors. Conditional on fitted folds; no refitting or model-selection uncertainty."
+      }
+    }
+  ]
+}
