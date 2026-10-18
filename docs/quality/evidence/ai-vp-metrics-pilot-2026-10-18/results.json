@@ -1,0 +1,5417 @@
+{
+  "schemaVersion": 1,
+  "analysis": "exploratory-historical-paired-vp-metrics",
+  "cutoffTurn": 4,
+  "engineHash": "2a5b6fbbc6a164e4df5778bf4125268089e9b51419d5ef68db613fe8c16bc14f",
+  "sources": [
+    "artifacts/ai-vp-metrics/pilot/v79-baseline-wide-EASTERN_EUROPE.metrics.json",
+    "artifacts/ai-vp-metrics/pilot/v79-baseline-wide-TEMPERATE_INLAND.metrics.json",
+    "artifacts/ai-vp-metrics/pilot/v80g-wide-EASTERN_EUROPE.metrics.json",
+    "artifacts/ai-vp-metrics/pilot/v80g-wide-TEMPERATE_INLAND.metrics.json",
+    "artifacts/ai-vp-metrics/pilot/v80j-wide-EASTERN_EUROPE.metrics.json",
+    "artifacts/ai-vp-metrics/pilot/v80j-wide-TEMPERATE_INLAND.metrics.json",
+    "artifacts/ai-vp-metrics/pilot/v80q-wide-EASTERN_EUROPE.metrics.json",
+    "artifacts/ai-vp-metrics/pilot/v80q-wide-TEMPERATE_INLAND.metrics.json"
+  ],
+  "primaryRole": "ATTACKER",
+  "rowCount": 60,
+  "method": {
+    "outcome": "candidate final VP margin minus same-side baseline final VP margin",
+    "features": "candidate cutoff metric minus same-side baseline cutoff metric",
+    "subsequentOutcome": "finalMarginDelta minus earlyMarginDelta; contains arithmetic coupling with earlyMargin",
+    "ridge": "lambda=1 for added features; train-only median imputation plus missing indicators and standardization; unpenalized intercept and nonconstant earlyMargin slope",
+    "bootstrap": "1000 map-seed cluster resamples of fixed cross-validation prediction errors, RNG seed 74319; equal seed weights",
+    "diagnosticMetricsExcludedFromPrediction": [
+      "bestSearchTruncated"
+    ],
+    "refinement": "occupiedHeldVp and unoccupiedHeldVp plus occupiedShareMissingOnly were added after inspecting pilot missingness; they reuse exploratory data",
+    "positiveImprovement": "fitted early-margin baseline MAE minus model MAE"
+  },
+  "limitations": [
+    "Historical development variants and seeds were already used during strategy research; cross-validation is not unused independent evidence.",
+    "Three related variants and ten expected map seeds give little independent variation; rows are not independent trials.",
+    "Associations and conditional prediction do not establish that changing a metric causes VP improvement.",
+    "Many exploratory metric comparisons are made without multiplicity correction or nested metric selection; choosing the best requires new validation.",
+    "Bootstrap intervals condition on fitted cross-validation predictions and omit model-refitting and metric-selection uncertainty.",
+    "Role analyses are separate; defender results are descriptive, not pooled into attacker prediction.",
+    "A null correlation means insufficient pairs or zero variance, not evidence of no relationship.",
+    "Missing metric deltas require either side missing; zero remains a real observed value.",
+    "Search-limited opportunity metrics may underestimate available actions; inspect bestSearchTruncated.",
+    "The action generator itself is heuristic: even an untruncated candidate list does not enumerate every legal unit combination.",
+    "Historical games include off-map air support despite NONE options; findings do not establish no-air behavior.",
+    "objectiveSupplyRequirementTokens sums forecast requirements for objective attacks, not total actual SP expenditure."
+  ],
+  "byRole": {
+    "ATTACKER": {
+      "rowCount": 30,
+      "mapSeedCount": 10,
+      "variantCount": 3,
+      "byVariant": {
+        "v80g-wide": {
+          "n": 10,
+          "meanFinalMarginDelta": -4.6,
+          "meanSubsequentMarginGainDelta": -2.0,
+          "meanMetricDeltas": {
+            "earlyMargin": -2.6,
+            "gainedVp": -1.1,
+            "lostVp": 0.2,
+            "moveGainedVp": 0.2,
+            "combatGainedVp": -1.3,
+            "objectiveAttacks": -0.3,
+            "otherAttacks": 0.7,
+            "barrages": 0.1,
+            "objectiveAttackMeanColumn": -1.3722222222222225,
+            "objectiveAttackCaptureRate": -0.09166666666666667,
+            "objectiveAttackClearRate": -0.2583333333333333,
+            "adjacentStrengthShare": 0.024204895075902587,
+            "occupiedHeldVpShare": 0.022222222222222233,
+            "outOfSupplyStrengthShare": -0.00017511177347242918,
+            "foundColumn6ObjectiveVp": -0.4,
+            "meanFoundObjectiveColumn": -6.666666666666667,
+            "bestSearchTruncated": 0.0,
+            "regularAttacks": 0.5,
+            "objectiveSupplyRequirementTokens": 3.0,
+            "occupiedHeldVp": -1.2,
+            "unoccupiedHeldVp": -0.1
+          }
+        },
+        "v80j-wide": {
+          "n": 10,
+          "meanFinalMarginDelta": -7.4,
+          "meanSubsequentMarginGainDelta": -1.6,
+          "meanMetricDeltas": {
+            "earlyMargin": -5.8,
+            "gainedVp": -2.6,
+            "lostVp": 0.3,
+            "moveGainedVp": -1.9,
+            "combatGainedVp": -0.7,
+            "objectiveAttacks": 1.3,
+            "otherAttacks": 0.8,
+            "barrages": 0.3,
+            "objectiveAttackMeanColumn": -1.6755952380952381,
+            "objectiveAttackCaptureRate": -0.13839285714285715,
+            "objectiveAttackClearRate": -0.28720238095238093,
+            "adjacentStrengthShare": -0.0006583745436876745,
+            "occupiedHeldVpShare": 0.0,
+            "outOfSupplyStrengthShare": 0.003705246998190691,
+            "foundColumn6ObjectiveVp": -0.4,
+            "meanFoundObjectiveColumn": -3.625,
+            "bestSearchTruncated": 0.0,
+            "regularAttacks": 1.3,
+            "objectiveSupplyRequirementTokens": 8.4,
+            "occupiedHeldVp": -2.9,
+            "unoccupiedHeldVp": 0.0
+          }
+        },
+        "v80q-wide": {
+          "n": 10,
+          "meanFinalMarginDelta": -1.8,
+          "meanSubsequentMarginGainDelta": 0.0,
+          "meanMetricDeltas": {
+            "earlyMargin": -1.8,
+            "gainedVp": -0.3,
+            "lostVp": 0.6,
+            "moveGainedVp": -0.1,
+            "combatGainedVp": -0.2,
+            "objectiveAttacks": 0.9,
+            "otherAttacks": 1.1,
+            "barrages": 0.3,
+            "objectiveAttackMeanColumn": 0.42857142857142855,
+            "objectiveAttackCaptureRate": 0.029761904761904767,
+            "objectiveAttackClearRate": 0.02380952380952382,
+            "adjacentStrengthShare": -0.03458035391719766,
+            "occupiedHeldVpShare": 0.022222222222222233,
+            "outOfSupplyStrengthShare": -0.0013114754098360656,
+            "foundColumn6ObjectiveVp": -0.8,
+            "meanFoundObjectiveColumn": 0.25,
+            "bestSearchTruncated": 0.0,
+            "regularAttacks": 1.4,
+            "objectiveSupplyRequirementTokens": 4.7,
+            "occupiedHeldVp": -0.8,
+            "unoccupiedHeldVp": -0.1
+          }
+        }
+      },
+      "metrics": {
+        "earlyMargin": {
+          "diagnosticOnly": false,
+          "vsFinalMarginDelta": {
+            "n": 30,
+            "missing": 0,
+            "zero": 13,
+            "pearson": 0.6287046459674904,
+            "spearman": 0.6398130260545721
+          },
+          "vsSubsequentMarginGainDelta": {
+            "n": 30,
+            "missing": 0,
+            "zero": 13,
+            "pearson": -0.3601879089917917,
+            "spearman": -0.2119839877525259
+          }
+        },
+        "gainedVp": {
+          "diagnosticOnly": false,
+          "vsFinalMarginDelta": {
+            "n": 30,
+            "missing": 0,
+            "zero": 13,
+            "pearson": 0.6720994565711294,
+            "spearman": 0.6486386990649038
+          },
+          "vsSubsequentMarginGainDelta": {
+            "n": 30,
+            "missing": 0,
+            "zero": 13,
+            "pearson": -0.27259466355762313,
+            "spearman": -0.19146250996991745
+          }
+        },
+        "lostVp": {
+          "diagnosticOnly": false,
+          "vsFinalMarginDelta": {
+            "n": 30,
+            "missing": 0,
+            "zero": 26,
+            "pearson": -0.08220107439252408,
+            "spearman": 0.027787989820980668
+          },
+          "vsSubsequentMarginGainDelta": {
+            "n": 30,
+            "missing": 0,
+            "zero": 26,
+            "pearson": 0.4400568137979503,
+            "spearman": 0.36062234382617564
+          }
+        },
+        "moveGainedVp": {
+          "diagnosticOnly": false,
+          "vsFinalMarginDelta": {
+            "n": 30,
+            "missing": 0,
+            "zero": 23,
+            "pearson": 0.2588935007800039,
+            "spearman": 0.09407003012397909
+          },
+          "vsSubsequentMarginGainDelta": {
+            "n": 30,
+            "missing": 0,
+            "zero": 23,
+            "pearson": -0.30472693649804283,
+            "spearman": -0.3868785516260188
+          }
+        },
+        "combatGainedVp": {
+          "diagnosticOnly": false,
+          "vsFinalMarginDelta": {
+            "n": 30,
+            "missing": 0,
+            "zero": 18,
+            "pearson": 0.6733213055476198,
+            "spearman": 0.6455435920296826
+          },
+          "vsSubsequentMarginGainDelta": {
+            "n": 30,
+            "missing": 0,
+            "zero": 18,
+            "pearson": -0.1200143841564514,
+            "spearman": -0.017305750678784166
+          }
+        },
+        "objectiveAttacks": {
+          "diagnosticOnly": false,
+          "vsFinalMarginDelta": {
+            "n": 30,
+            "missing": 0,
+            "zero": 13,
+            "pearson": -0.05288753686914503,
+            "spearman": -0.1319919308695789
+          },
+          "vsSubsequentMarginGainDelta": {
+            "n": 30,
+            "missing": 0,
+            "zero": 13,
+            "pearson": 0.06392213174678203,
+            "spearman": 0.08776162227276568
+          }
+        },
+        "otherAttacks": {
+          "diagnosticOnly": false,
+          "vsFinalMarginDelta": {
+            "n": 30,
+            "missing": 0,
+            "zero": 5,
+            "pearson": 0.2278690497932375,
+            "spearman": 0.245127204922198
+          },
+          "vsSubsequentMarginGainDelta": {
+            "n": 30,
+            "missing": 0,
+            "zero": 5,
+            "pearson": 0.23537339539416277,
+            "spearman": 0.26611276853140603
+          }
+        },
+        "barrages": {
+          "diagnosticOnly": false,
+          "vsFinalMarginDelta": {
+            "n": 30,
+            "missing": 0,
+            "zero": 7,
+            "pearson": 0.2160750918294628,
+            "spearman": 0.21760074245499988
+          },
+          "vsSubsequentMarginGainDelta": {
+            "n": 30,
+            "missing": 0,
+            "zero": 7,
+            "pearson": 0.3443570191914773,
+            "spearman": 0.33350044180590577
+          }
+        },
+        "objectiveAttackMeanColumn": {
+          "diagnosticOnly": false,
+          "vsFinalMarginDelta": {
+            "n": 21,
+            "missing": 9,
+            "zero": 0,
+            "pearson": 0.15881382319031537,
+            "spearman": 0.16203092691547552
+          },
+          "vsSubsequentMarginGainDelta": {
+            "n": 21,
+            "missing": 9,
+            "zero": 0,
+            "pearson": -0.22614523823227034,
+            "spearman": -0.34379202458067254
+          }
+        },
+        "objectiveAttackCaptureRate": {
+          "diagnosticOnly": false,
+          "vsFinalMarginDelta": {
+            "n": 21,
+            "missing": 9,
+            "zero": 5,
+            "pearson": 0.6296477066736109,
+            "spearman": 0.6089893361294031
+          },
+          "vsSubsequentMarginGainDelta": {
+            "n": 21,
+            "missing": 9,
+            "zero": 5,
+            "pearson": -0.2675255516562901,
+            "spearman": -0.2472847730182239
+          }
+        },
+        "objectiveAttackClearRate": {
+          "diagnosticOnly": false,
+          "vsFinalMarginDelta": {
+            "n": 21,
+            "missing": 9,
+            "zero": 2,
+            "pearson": 0.46037654116876425,
+            "spearman": 0.5550443940848501
+          },
+          "vsSubsequentMarginGainDelta": {
+            "n": 21,
+            "missing": 9,
+            "zero": 2,
+            "pearson": -0.425654175717764,
+            "spearman": -0.40551216021549763
+          }
+        },
+        "adjacentStrengthShare": {
+          "diagnosticOnly": false,
+          "vsFinalMarginDelta": {
+            "n": 30,
+            "missing": 0,
+            "zero": 12,
+            "pearson": -0.058805994031727545,
+            "spearman": -0.04390461969132106
+          },
+          "vsSubsequentMarginGainDelta": {
+            "n": 30,
+            "missing": 0,
+            "zero": 12,
+            "pearson": 0.06125822738554129,
+            "spearman": 0.1613209495369659
+          }
+        },
+        "occupiedHeldVpShare": {
+          "diagnosticOnly": false,
+          "vsFinalMarginDelta": {
+            "n": 13,
+            "missing": 17,
+            "zero": 11,
+            "pearson": 0.16591369837761635,
+            "spearman": 0.057536206645215644
+          },
+          "vsSubsequentMarginGainDelta": {
+            "n": 13,
+            "missing": 17,
+            "zero": 11,
+            "pearson": 0.0,
+            "spearman": 0.02872789631019551
+          }
+        },
+        "outOfSupplyStrengthShare": {
+          "diagnosticOnly": false,
+          "vsFinalMarginDelta": {
+            "n": 30,
+            "missing": 0,
+            "zero": 25,
+            "pearson": 0.06235090358797006,
+            "spearman": -0.0547561145949078
+          },
+          "vsSubsequentMarginGainDelta": {
+            "n": 30,
+            "missing": 0,
+            "zero": 25,
+            "pearson": 0.06579095444917323,
+            "spearman": 0.0048256239368150225
+          }
+        },
+        "foundColumn6ObjectiveVp": {
+          "diagnosticOnly": false,
+          "vsFinalMarginDelta": {
+            "n": 30,
+            "missing": 0,
+            "zero": 12,
+            "pearson": 0.4964495341583854,
+            "spearman": 0.3730584530339351
+          },
+          "vsSubsequentMarginGainDelta": {
+            "n": 30,
+            "missing": 0,
+            "zero": 12,
+            "pearson": -0.13359230156492585,
+            "spearman": -0.193723315435847
+          }
+        },
+        "meanFoundObjectiveColumn": {
+          "diagnosticOnly": false,
+          "vsFinalMarginDelta": {
+            "n": 9,
+            "missing": 21,
+            "zero": 0,
+            "pearson": 0.1952005911333519,
+            "spearman": 0.22363068268687394
+          },
+          "vsSubsequentMarginGainDelta": {
+            "n": 9,
+            "missing": 21,
+            "zero": 0,
+            "pearson": -0.41779839698688587,
+            "spearman": -0.4067796610169492
+          }
+        },
+        "bestSearchTruncated": {
+          "diagnosticOnly": true,
+          "vsFinalMarginDelta": {
+            "n": 30,
+            "missing": 0,
+            "zero": 30,
+            "pearson": null,
+            "spearman": null
+          },
+          "vsSubsequentMarginGainDelta": {
+            "n": 30,
+            "missing": 0,
+            "zero": 30,
+            "pearson": null,
+            "spearman": null
+          }
+        },
+        "regularAttacks": {
+          "diagnosticOnly": false,
+          "vsFinalMarginDelta": {
+            "n": 30,
+            "missing": 0,
+            "zero": 6,
+            "pearson": 0.2877487177159667,
+            "spearman": 0.20399925159059001
+          },
+          "vsSubsequentMarginGainDelta": {
+            "n": 30,
+            "missing": 0,
+            "zero": 6,
+            "pearson": 0.09688416931964706,
+            "spearman": 0.019353248567879042
+          }
+        },
+        "objectiveSupplyRequirementTokens": {
+          "diagnosticOnly": false,
+          "vsFinalMarginDelta": {
+            "n": 30,
+            "missing": 0,
+            "zero": 6,
+            "pearson": -0.17051646017019628,
+            "spearman": -0.14968585079980137
+          },
+          "vsSubsequentMarginGainDelta": {
+            "n": 30,
+            "missing": 0,
+            "zero": 6,
+            "pearson": 0.14743789479495104,
+            "spearman": 0.28897125616668795
+          }
+        },
+        "occupiedHeldVp": {
+          "diagnosticOnly": false,
+          "vsFinalMarginDelta": {
+            "n": 30,
+            "missing": 0,
+            "zero": 13,
+            "pearson": 0.6449797848662103,
+            "spearman": 0.6940119150217906
+          },
+          "vsSubsequentMarginGainDelta": {
+            "n": 30,
+            "missing": 0,
+            "zero": 13,
+            "pearson": -0.3373354592223937,
+            "spearman": -0.15060160845194726
+          }
+        },
+        "unoccupiedHeldVp": {
+          "diagnosticOnly": false,
+          "vsFinalMarginDelta": {
+            "n": 30,
+            "missing": 0,
+            "zero": 26,
+            "pearson": -0.12302731865648593,
+            "spearman": -0.1256387100153948
+          },
+          "vsSubsequentMarginGainDelta": {
+            "n": 30,
+            "missing": 0,
+            "zero": 26,
+            "pearson": -0.3398959286890432,
+            "spearman": -0.39183733948618904
+          }
+        }
+      },
+      "validation": {
+        "leaveMapSeedOut": {
+          "foldCount": 10,
+          "models": {
+            "zero": {
+              "mae": 8.066666666666666,
+              "meanSeedMaeImprovement": -0.594851738832625,
+              "seedMaeImprovement": {
+                "296611633": -5.101687352965036,
+                "296611827": 0.014250309789343163,
+                "296612021": 2.763962065331929,
+                "296612215": -7.004592422502867,
+                "296612409": 1.5515171182865501,
+                "296621333": -0.15876361081840487,
+                "296621527": -0.43150630285623076,
+                "296621721": -0.16789122540325932,
+                "296621915": -0.34847403884264744,
+                "296622109": 2.9346680716543734
+              },
+              "conditionalFixedPredictionBootstrap95": [
+                -2.5148505528310685,
+                1.1083282497287392
+              ],
+              "bootstrapReplicates": 1000,
+              "byVariantMae": {
+                "v80g-wide": 8.2,
+                "v80j-wide": 10.6,
+                "v80q-wide": 5.4
+              }
+            },
+            "trainMean": {
+              "mae": 8.819753086419754,
+              "meanSeedMaeImprovement": -1.3479381585857113,
+              "seedMaeImprovement": {
+                "296611633": -3.6448972295082456,
+                "296611827": 3.9401762357152688,
+                "296612021": -2.495297193927331,
+                "296612215": -4.70829612620657,
+                "296612409": -0.17687794344184496,
+                "296621333": -2.5291339811887754,
+                "296621527": -3.3203951917451193,
+                "296621721": -1.7728294970081977,
+                "296621915": 3.700908677206735,
+                "296622109": -2.4727393357530345
+              },
+              "conditionalFixedPredictionBootstrap95": [
+                -2.9118222515303174,
+                0.6103853873022312
+              ],
+              "bootstrapReplicates": 1000,
+              "byVariantMae": {
+                "v80g-wide": 9.851851851851851,
+                "v80j-wide": 9.851851851851851,
+                "v80q-wide": 6.7555555555555555
+              }
+            },
+            "earlyMarginCarryForward": {
+              "mae": 6.266666666666667,
+              "meanSeedMaeImprovement": 1.205148261167375,
+              "seedMaeImprovement": {
+                "296611633": 1.5649793137016308,
+                "296611827": 1.3475836431226764,
+                "296612021": 2.763962065331929,
+                "296612215": 4.995407577497132,
+                "296612409": -2.4484828817134496,
+                "296621333": -0.15876361081840487,
+                "296621527": 2.235160363810436,
+                "296621721": 0.49877544126340734,
+                "296621915": -1.6818073721759808,
+                "296622109": 2.9346680716543734
+              },
+              "conditionalFixedPredictionBootstrap95": [
+                -0.11683024093818642,
+                2.375766588281676
+              ],
+              "bootstrapReplicates": 1000,
+              "byVariantMae": {
+                "v80g-wide": 5.6,
+                "v80j-wide": 7.6,
+                "v80q-wide": 5.6
+              }
+            },
+            "fittedEarlyMargin": {
+              "mae": 7.471814927834042,
+              "meanSeedMaeImprovement": 0.0,
+              "seedMaeImprovement": {
+                "296611633": 0.0,
+                "296611827": 0.0,
+                "296612021": 0.0,
+                "296612215": 0.0,
+                "296612409": 0.0,
+                "296621333": 0.0,
+                "296621527": 0.0,
+                "296621721": 0.0,
+                "296621915": 0.0,
+                "296622109": 0.0
+              },
+              "conditionalFixedPredictionBootstrap95": [
+                0.0,
+                0.0
+              ],
+              "bootstrapReplicates": 1000,
+              "byVariantMae": {
+                "v80g-wide": 7.709898433364851,
+                "v80j-wide": 8.482899735451998,
+                "v80q-wide": 6.222646614685275
+              }
+            },
+            "earlyMarginPlus:gainedVp": {
+              "mae": 7.61195254627191,
+              "meanSeedMaeImprovement": -0.1401376184378684,
+              "seedMaeImprovement": {
+                "296611633": -1.0262572534615584,
+                "296611827": 1.2673101205513972,
+                "296612021": -0.2711433078732964,
+                "296612215": 0.7043813316419717,
+                "296612409": -1.5162229080678726,
+                "296621333": -0.2676592610078587,
+                "296621527": 0.43343677492201377,
+                "296621721": -0.5723668767813859,
+                "296621915": 0.12061120148149455,
+                "296622109": -0.2734660057835894
+              },
+              "conditionalFixedPredictionBootstrap95": [
+                -0.6157159789584791,
+                0.35869514654301843
+              ],
+              "bootstrapReplicates": 1000,
+              "byVariantMae": {
+                "v80g-wide": 7.39978768753696,
+                "v80j-wide": 9.283370394315133,
+                "v80q-wide": 6.152699556963638
+              }
+            },
+            "earlyMarginPlus:lostVp": {
+              "mae": 7.575440662918047,
+              "meanSeedMaeImprovement": -0.10362573508400612,
+              "seedMaeImprovement": {
+                "296611633": -1.63419022655955,
+                "296611827": 2.8485380431849454,
+                "296612021": -0.4100774847784277,
+                "296612215": 1.043708521104466,
+                "296612409": -2.0532119713993295,
+                "296621333": -0.4048082078538551,
+                "296621527": 0.6542624283157613,
+                "296621721": -0.8481596024739675,
+                "296621915": 0.1812714856813722,
+                "296622109": -0.4135903360614764
+              },
+              "conditionalFixedPredictionBootstrap95": [
+                -0.8979285419690712,
+                0.7959070821992025
+              ],
+              "bootstrapReplicates": 1000,
+              "byVariantMae": {
+                "v80g-wide": 7.262438753016037,
+                "v80j-wide": 9.749693282813958,
+                "v80q-wide": 5.7141899529241496
+              }
+            },
+            "earlyMarginPlus:moveGainedVp": {
+              "mae": 7.478489440556975,
+              "meanSeedMaeImprovement": -0.0066745127229329865,
+              "seedMaeImprovement": {
+                "296611633": 0.4639106373267102,
+                "296611827": 0.8854412781267348,
+                "296612021": -0.05513366953124077,
+                "296612215": -0.7110684468801267,
+                "296612409": -1.5353017938380364,
+                "296621333": -0.0545787853111559,
+                "296621527": -0.17064501716994038,
+                "296621721": 1.0539597694754173,
+                "296621915": 0.11217449291693822,
+                "296622109": -0.05550359234463009
+              },
+              "conditionalFixedPredictionBootstrap95": [
+                -0.42559080652848025,
+                0.42697498802609946
+              ],
+              "bootstrapReplicates": 1000,
+              "byVariantMae": {
+                "v80g-wide": 7.952195397972178,
+                "v80j-wide": 7.542413550914493,
+                "v80q-wide": 6.940859372784253
+              }
+            },
+            "earlyMarginPlus:combatGainedVp": {
+              "mae": 7.919036828007796,
+              "meanSeedMaeImprovement": -0.44722190017375424,
+              "seedMaeImprovement": {
+                "296611633": 0.6761328243107932,
+                "296611827": 2.8527279683016005,
+                "296612021": -0.39338733817048005,
+                "296612215": -0.3598740316102891,
+                "296612409": -6.534516789754605,
+                "296621333": -0.3888253701907818,
+                "296621527": -0.04815773678958157,
+                "296621721": -0.3182476243789969,
+                "296621915": 0.438357746701743,
+                "296622109": -0.3964286501569454
+              },
+              "conditionalFixedPredictionBootstrap95": [
+                -1.9959847344742705,
+                0.7439341541762984
+              ],
+              "bootstrapReplicates": 1000,
+              "byVariantMae": {
+                "v80g-wide": 7.754182311505137,
+                "v80j-wide": 8.415365961925728,
+                "v80q-wide": 7.587562210592521
+              }
+            },
+            "earlyMarginPlus:objectiveAttacks": {
+              "mae": 8.600618860012576,
+              "meanSeedMaeImprovement": -1.1288039321785324,
+              "seedMaeImprovement": {
+                "296611633": -0.2900308906726338,
+                "296611827": -2.979139641720172,
+                "296612021": -0.12162007018850633,
+                "296612215": -2.0360413666667756,
+                "296612409": -4.254245106690515,
+                "296621333": -0.09347602508939001,
+                "296621527": -1.0909382985240115,
+                "296621721": -0.20285488649041175,
+                "296621915": -0.19488295195322447,
+                "296622109": -0.02481008378968319
+              },
+              "conditionalFixedPredictionBootstrap95": [
+                -2.0612589925119202,
+                -0.33499632452299316
+              ],
+              "bootstrapReplicates": 1000,
+              "byVariantMae": {
+                "v80g-wide": 8.30484616807073,
+                "v80j-wide": 9.597664173711854,
+                "v80q-wide": 7.899346238255137
+              }
+            },
+            "earlyMarginPlus:otherAttacks": {
+              "mae": 7.646854024051456,
+              "meanSeedMaeImprovement": -0.17503909621741515,
+              "seedMaeImprovement": {
+                "296611633": -0.05423983478857538,
+                "296611827": 1.4532342727941838,
+                "296612021": 1.6810110923696628,
+                "296612215": 0.6830476172409442,
+                "296612409": 1.601541288663606,
+                "296621333": 0.010493884871274561,
+                "296621527": -0.2164836588193738,
+                "296621721": -8.708933631611666,
+                "296621915": 0.6790698527486562,
+                "296622109": 1.1208681543571364
+              },
+              "conditionalFixedPredictionBootstrap95": [
+                -2.3615614859767478,
+                1.0853628231591044
+              ],
+              "bootstrapReplicates": 1000,
+              "byVariantMae": {
+                "v80g-wide": 8.058127791465319,
+                "v80j-wide": 9.21157173870795,
+                "v80q-wide": 5.670862541981102
+              }
+            },
+            "earlyMarginPlus:barrages": {
+              "mae": 7.741530981506386,
+              "meanSeedMaeImprovement": -0.26971605367234464,
+              "seedMaeImprovement": {
+                "296611633": 1.130328528057426,
+                "296611827": 3.0145925930370865,
+                "296612021": 2.809531158358336,
+                "296612215": 1.1718180898370332,
+                "296612409": -1.8628506887440992,
+                "296621333": -8.027216063624477,
+                "296621527": -0.32667066725958804,
+                "296621721": -1.134864403511153,
+                "296621915": -0.28272354841522834,
+                "296622109": 0.8108944655412179
+              },
+              "conditionalFixedPredictionBootstrap95": [
+                -2.412478926398144,
+                1.2505721801383847
+              ],
+              "bootstrapReplicates": 1000,
+              "byVariantMae": {
+                "v80g-wide": 8.015828125411053,
+                "v80j-wide": 8.18140994016469,
+                "v80q-wide": 7.027354878943416
+              }
+            },
+            "earlyMarginPlus:objectiveAttackMeanColumn": {
+              "mae": 8.902966315714009,
+              "meanSeedMaeImprovement": -1.4311513878799684,
+              "seedMaeImprovement": {
+                "296611633": -0.27245525810064475,
+                "296611827": 0.4570779651552404,
+                "296612021": -2.7247099268050015,
+                "296612215": -0.21405713106244662,
+                "296612409": -8.01380157393436,
+                "296621333": -1.9971866016995534,
+                "296621527": -0.6268196448395091,
+                "296621721": 0.21259152998528505,
+                "296621915": 0.20267926198086675,
+                "296622109": -1.3348324994795613
+              },
+              "conditionalFixedPredictionBootstrap95": [
+                -3.073870835641723,
+                -0.16187983481117346
+              ],
+              "bootstrapReplicates": 1000,
+              "byVariantMae": {
+                "v80g-wide": 7.877399229811177,
+                "v80j-wide": 10.140652388205158,
+                "v80q-wide": 8.690847329125697
+              }
+            },
+            "earlyMarginPlus:objectiveAttackCaptureRate": {
+              "mae": 8.030831674437287,
+              "meanSeedMaeImprovement": -0.5590167466032462,
+              "seedMaeImprovement": {
+                "296611633": 0.03257049909808737,
+                "296611827": 0.1968918629199082,
+                "296612021": -2.909554564620663,
+                "296612215": 0.11532265260582797,
+                "296612409": -0.890122679694891,
+                "296621333": -2.170421023967294,
+                "296621527": -0.04623129276715954,
+                "296621721": 0.0846173395268884,
+                "296621915": -0.2967575239990892,
+                "296622109": 0.2935172648659237
+              },
+              "conditionalFixedPredictionBootstrap95": [
+                -1.2690334600854196,
+                0.03462496311418384
+              ],
+              "bootstrapReplicates": 1000,
+              "byVariantMae": {
+                "v80g-wide": 8.118087978098929,
+                "v80j-wide": 9.105861322544785,
+                "v80q-wide": 6.86854572266815
+              }
+            },
+            "earlyMarginPlus:objectiveAttackClearRate": {
+              "mae": 8.195611638383657,
+              "meanSeedMaeImprovement": -0.7237967105496154,
+              "seedMaeImprovement": {
+                "296611633": -0.423949657744432,
+                "296611827": -3.4211208975026874,
+                "296612021": -2.4736445764259427,
+                "296612215": 0.12552190265548133,
+                "296612409": -0.7949561720372161,
+                "296621333": -1.735542268825757,
+                "296621527": -0.388854794563779,
+                "296621721": 1.5053652262430068,
+                "296621915": 0.881583278831671,
+                "296622109": -0.5123691461264986
+              },
+              "conditionalFixedPredictionBootstrap95": [
+                -1.6483477677928953,
+                0.1388077971797191
+              ],
+              "bootstrapReplicates": 1000,
+              "byVariantMae": {
+                "v80g-wide": 7.907855334556662,
+                "v80j-wide": 9.067874420695533,
+                "v80q-wide": 7.611105159898775
+              }
+            },
+            "earlyMarginPlus:adjacentStrengthShare": {
+              "mae": 8.068885798502164,
+              "meanSeedMaeImprovement": -0.5970708706681226,
+              "seedMaeImprovement": {
+                "296611633": -0.4857975852495313,
+                "296611827": 0.02214654091045413,
+                "296612021": 0.00962604762235486,
+                "296612215": 0.005295152790454338,
+                "296612409": -1.0189660754999028,
+                "296621333": -0.8386752974917501,
+                "296621527": -0.8414882778041225,
+                "296621721": -0.009583106636167868,
+                "296621915": -0.8871076043834542,
+                "296622109": -1.9261585009395599
+              },
+              "conditionalFixedPredictionBootstrap95": [
+                -0.9869639471030217,
+                -0.25069661406399185
+              ],
+              "bootstrapReplicates": 1000,
+              "byVariantMae": {
+                "v80g-wide": 8.438260405003826,
+                "v80j-wide": 9.0440926964054,
+                "v80q-wide": 6.7243042940972675
+              }
+            },
+            "earlyMarginPlus:occupiedHeldVpShare": {
+              "mae": 6.472563171791406,
+              "meanSeedMaeImprovement": 0.9992517560426352,
+              "seedMaeImprovement": {
+                "296611633": 0.34994876685958126,
+                "296611827": 3.4297298359441926,
+                "296612021": -4.3576353525834755,
+                "296612215": 3.0890102220009634,
+                "296612409": 1.15769690959085,
+                "296621333": -4.175742095067853,
+                "296621527": 2.171838136026641,
+                "296621721": 1.314967253843868,
+                "296621915": 3.3207315729056064,
+                "296622109": 3.691972310905978
+              },
+              "conditionalFixedPredictionBootstrap95": [
+                -0.8298881047943648,
+                2.6277492919775245
+              ],
+              "bootstrapReplicates": 1000,
+              "byVariantMae": {
+                "v80g-wide": 7.275741101057649,
+                "v80j-wide": 7.202660420019768,
+                "v80q-wide": 4.939287994296801
+              }
+            },
+            "earlyMarginPlus:outOfSupplyStrengthShare": {
+              "mae": 8.904690664256936,
+              "meanSeedMaeImprovement": -1.4328757364228935,
+              "seedMaeImprovement": {
+                "296611633": 0.012923644126869563,
+                "296611827": -0.062246237448013865,
+                "296612021": -0.04921810668730705,
+                "296612215": 0.03467942146977817,
+                "296612409": 0.029620245329249634,
+                "296621333": -0.047829590445051494,
+                "296621527": -2.6900689341056303,
+                "296621721": -0.04556662291227109,
+                "296621915": 0.042757634115330255,
+                "296622109": -11.553808817671888
+              },
+              "conditionalFixedPredictionBootstrap95": [
+                -3.9984874879946295,
+                -0.0034296700205638598
+              ],
+              "bootstrapReplicates": 1000,
+              "byVariantMae": {
+                "v80g-wide": 8.676581561246625,
+                "v80j-wide": 11.449943464921036,
+                "v80q-wide": 6.587546966603145
+              }
+            },
+            "earlyMarginPlus:foundColumn6ObjectiveVp": {
+              "mae": 8.692264078374258,
+              "meanSeedMaeImprovement": -1.2204491505402173,
+              "seedMaeImprovement": {
+                "296611633": -3.012052779847256,
+                "296611827": 0.11718023923192138,
+                "296612021": -0.08697422979999914,
+                "296612215": -6.405531460406036,
+                "296612409": -1.8110260848197288,
+                "296621333": -0.7107688187481429,
+                "296621527": -0.28783409025294543,
+                "296621721": 0.22784373923161017,
+                "296621915": -0.14754255734628904,
+                "296622109": -0.08778546264530629
+              },
+              "conditionalFixedPredictionBootstrap95": [
+                -2.489725065665795,
+                -0.20736361559430988
+              ],
+              "bootstrapReplicates": 1000,
+              "byVariantMae": {
+                "v80g-wide": 9.002654910998396,
+                "v80j-wide": 10.129881618151217,
+                "v80q-wide": 6.944255705973164
+              }
+            },
+            "earlyMarginPlus:meanFoundObjectiveColumn": {
+              "mae": 7.355821243928941,
+              "meanSeedMaeImprovement": 0.11599368390510068,
+              "seedMaeImprovement": {
+                "296611633": -2.360557036294517,
+                "296611827": 0.9405768217572484,
+                "296612021": 2.295591803559419,
+                "296612215": 2.984134370838517,
+                "296612409": 0.5116970534171782,
+                "296621333": -3.8630490651504616,
+                "296621527": 0.5898849868925895,
+                "296621721": 0.4924856145850575,
+                "296621915": -2.6747142870018803,
+                "296622109": 2.2438865764478564
+              },
+              "conditionalFixedPredictionBootstrap95": [
+                -1.176159298602855,
+                1.3119715146953144
+              ],
+              "bootstrapReplicates": 1000,
+              "byVariantMae": {
+                "v80g-wide": 8.400895675747654,
+                "v80j-wide": 8.177396869302788,
+                "v80q-wide": 5.489171186736381
+              }
+            },
+            "earlyMarginPlus:regularAttacks": {
+              "mae": 8.242243921562002,
+              "meanSeedMaeImprovement": -0.77042899372796,
+              "seedMaeImprovement": {
+                "296611633": -1.7994772982890408,
+                "296611827": 0.560011878943684,
+                "296612021": 0.4516083641382968,
+                "296612215": -0.562759085327628,
+                "296612409": 0.2516910834015538,
+                "296621333": 0.5048749830130055,
+                "296621527": -0.7652820098924383,
+                "296621721": -6.881642372703084,
+                "296621915": -0.5718697307510361,
+                "296622109": 1.108554250187087
+              },
+              "conditionalFixedPredictionBootstrap95": [
+                -2.4310155941544793,
+                0.3255655802564899
+              ],
+              "bootstrapReplicates": 1000,
+              "byVariantMae": {
+                "v80g-wide": 8.671823913233691,
+                "v80j-wide": 9.595901735130694,
+                "v80q-wide": 6.4590061163216195
+              }
+            },
+            "earlyMarginPlus:objectiveSupplyRequirementTokens": {
+              "mae": 7.979728994323157,
+              "meanSeedMaeImprovement": -0.5079140664891153,
+              "seedMaeImprovement": {
+                "296611633": -1.8617817360410653,
+                "296611827": -0.25273207268421416,
+                "296612021": -0.19752419123959206,
+                "296612215": -1.1751452785706942,
+                "296612409": -0.5327727266036814,
+                "296621333": -0.15909564845355462,
+                "296621527": -0.8919239219793189,
+                "296621721": 0.003584613804962148,
+                "296621915": -0.0033602619090367845,
+                "296622109": -0.008389441214958548
+              },
+              "conditionalFixedPredictionBootstrap95": [
+                -0.8879641660103512,
+                -0.1781898320544507
+              ],
+              "bootstrapReplicates": 1000,
+              "byVariantMae": {
+                "v80g-wide": 8.787601193813838,
+                "v80j-wide": 8.82727994643528,
+                "v80q-wide": 6.324305842720354
+              }
+            },
+            "earlyMarginPlus:occupiedHeldVp": {
+              "mae": 7.478673262571173,
+              "meanSeedMaeImprovement": -0.006858334737131329,
+              "seedMaeImprovement": {
+                "296611633": 0.06258678269781104,
+                "296611827": -0.6679349414383721,
+                "296612021": -0.04705923103090992,
+                "296612215": 0.11162566593865246,
+                "296612409": -0.07783966959252615,
+                "296621333": -0.04650825938137437,
+                "296621527": -0.03839195947535382,
+                "296621721": 0.48555504730419524,
+                "296621915": 0.19680976307049777,
+                "296622109": -0.04742654546393347
+              },
+              "conditionalFixedPredictionBootstrap95": [
+                -0.18312901673405585,
+                0.15751391195705053
+              ],
+              "bootstrapReplicates": 1000,
+              "byVariantMae": {
+                "v80g-wide": 7.689955441555706,
+                "v80j-wide": 8.463799850025643,
+                "v80q-wide": 6.28226449613217
+              }
+            },
+            "earlyMarginPlus:unoccupiedHeldVp": {
+              "mae": 7.702027097171358,
+              "meanSeedMaeImprovement": -0.23021216933731714,
+              "seedMaeImprovement": {
+                "296611633": 0.4171525142640113,
+                "296611827": -2.9322231789062427,
+                "296612021": -0.3233272405104361,
+                "296612215": 0.7166477468215641,
+                "296612409": -0.40624776725165707,
+                "296621333": -0.31954171025120015,
+                "296621527": -0.2587866875250491,
+                "296621721": -0.7067116853429877,
+                "296621915": 1.8367672426787516,
+                "296622109": -0.3258509273499257
+              },
+              "conditionalFixedPredictionBootstrap95": [
+                -1.0420954772582411,
+                0.4212650073667039
+              ],
+              "bootstrapReplicates": 1000,
+              "byVariantMae": {
+                "v80g-wide": 7.4209248756855555,
+                "v80j-wide": 8.787620474228046,
+                "v80q-wide": 6.897535941600474
+              }
+            },
+            "occupiedShareMissingOnly": {
+              "mae": 6.431716986732715,
+              "meanSeedMaeImprovement": 1.0400979411013263,
+              "seedMaeImprovement": {
+                "296611633": 0.34762807583288424,
+                "296611827": 3.610589729477583,
+                "296612021": -4.34702107761841,
+                "296612215": 3.1385444372380538,
+                "296612409": 1.1250433777946982,
+                "296621333": -4.165405858918218,
+                "296621527": 2.2910699418297553,
+                "296621721": 1.314967253843868,
+                "296621915": 3.3078952045388164,
+                "296622109": 3.777668326994231
+              },
+              "conditionalFixedPredictionBootstrap95": [
+                -0.7947966320211698,
+                2.6771873367663392
+              ],
+              "bootstrapReplicates": 1000,
+              "byVariantMae": {
+                "v80g-wide": 7.257224877542218,
+                "v80j-wide": 7.0969045705858935,
+                "v80q-wide": 4.941021512070035
+              }
+            }
+          }
+        },
+        "leaveVariantOut": {
+          "foldCount": 3,
+          "models": {
+            "zero": {
+              "mae": 8.066666666666666,
+              "meanSeedMaeImprovement": -1.6389105111510756,
+              "seedMaeImprovement": {
+                "296611633": -4.973483807458485,
+                "296611827": -3.5135394090538026,
+                "296612021": 2.2032870219054055,
+                "296612215": -10.614559372952733,
+                "296612409": 1.6124282662327056,
+                "296621333": -0.22195459264831832,
+                "296621527": -1.116110783226144,
+                "296621721": -0.7977645540625922,
+                "296621915": -1.1706949021521957,
+                "296622109": 2.2032870219054055
+              },
+              "conditionalFixedPredictionBootstrap95": [
+                -4.130686253577309,
+                0.3621493733783091
+              ],
+              "bootstrapReplicates": 1000,
+              "byVariantMae": {
+                "v80g-wide": 8.2,
+                "v80j-wide": 10.6,
+                "v80q-wide": 5.4
+              }
+            },
+            "trainMean": {
+              "mae": 8.56,
+              "meanSeedMaeImprovement": -2.132243844484409,
+              "seedMaeImprovement": {
+                "296611633": -4.373483807458485,
+                "296611827": 1.0864605909461968,
+                "296612021": -2.3967129780945946,
+                "296612215": -6.014559372952732,
+                "296612409": -0.8542384004339608,
+                "296621333": -2.1552879259816518,
+                "296621527": -3.0494441165594766,
+                "296621721": -3.264431220729259,
+                "296621915": 2.0959717645144704,
+                "296622109": -2.3967129780945946
+              },
+              "conditionalFixedPredictionBootstrap95": [
+                -3.5327918523432222,
+                -0.6584038099240176
+              ],
+              "bootstrapReplicates": 1000,
+              "byVariantMae": {
+                "v80g-wide": 9.120000000000001,
+                "v80j-wide": 9.56,
+                "v80q-wide": 7.0
+              }
+            },
+            "earlyMarginCarryForward": {
+              "mae": 6.266666666666667,
+              "meanSeedMaeImprovement": 0.1610894888489246,
+              "seedMaeImprovement": {
+                "296611633": 1.6931828592081821,
+                "296611827": -2.1802060757204695,
+                "296612021": 2.2032870219054055,
+                "296612215": 1.3854406270472672,
+                "296612409": -2.3875717337672944,
+                "296621333": -0.22195459264831832,
+                "296621527": 1.5505558834405226,
+                "296621721": -0.1310978873959255,
+                "296621915": -2.504028235485529,
+                "296622109": 2.2032870219054055
+              },
+              "conditionalFixedPredictionBootstrap95": [
+                -0.9983220092453451,
+                1.228311699715658
+              ],
+              "bootstrapReplicates": 1000,
+              "byVariantMae": {
+                "v80g-wide": 5.6,
+                "v80j-wide": 7.6,
+                "v80q-wide": 5.6
+              }
+            },
+            "fittedEarlyMargin": {
+              "mae": 6.427756155515592,
+              "meanSeedMaeImprovement": 0.0,
+              "seedMaeImprovement": {
+                "296611633": 0.0,
+                "296611827": 0.0,
+                "296612021": 0.0,
+                "296612215": 0.0,
+                "296612409": 0.0,
+                "296621333": 0.0,
+                "296621527": 0.0,
+                "296621721": 0.0,
+                "296621915": 0.0,
+                "296622109": 0.0
+              },
+              "conditionalFixedPredictionBootstrap95": [
+                0.0,
+                0.0
+              ],
+              "bootstrapReplicates": 1000,
+              "byVariantMae": {
+                "v80g-wide": 7.258795508676421,
+                "v80j-wide": 6.846162592382035,
+                "v80q-wide": 5.178310365488317
+              }
+            },
+            "earlyMarginPlus:gainedVp": {
+              "mae": 6.721719759751187,
+              "meanSeedMaeImprovement": -0.2939636042355961,
+              "seedMaeImprovement": {
+                "296611633": -1.1033227369067404,
+                "296611827": -1.0357575582177512,
+                "296612021": -0.24321300052110764,
+                "296612215": 1.509591399205411,
+                "296612409": -0.5897926127507948,
+                "296621333": -0.0017879484081648005,
+                "296621527": 0.25816949010987883,
+                "296621721": -1.5595317620552362,
+                "296621915": 0.0692216877096515,
+                "296622109": -0.24321300052110764
+              },
+              "conditionalFixedPredictionBootstrap95": [
+                -0.7969763211576266,
+                0.20977656994310512
+              ],
+              "bootstrapReplicates": 1000,
+              "byVariantMae": {
+                "v80g-wide": 6.984152205641024,
+                "v80j-wide": 8.287933387919528,
+                "v80q-wide": 4.893073685693009
+              }
+            },
+            "earlyMarginPlus:lostVp": {
+              "mae": 6.745064172101879,
+              "meanSeedMaeImprovement": -0.31730801658628766,
+              "seedMaeImprovement": {
+                "296611633": -1.625459790788974,
+                "296611827": -0.25062496576440996,
+                "296612021": -0.4082642220927659,
+                "296612215": 2.352561966428367,
+                "296612409": -0.9040347640626086,
+                "296621333": -0.16683916997982307,
+                "296621527": 0.38932978954118,
+                "296621721": -2.2976529922870443,
+                "296621915": 0.14616820523596852,
+                "296622109": -0.4082642220927659
+              },
+              "conditionalFixedPredictionBootstrap95": [
+                -1.0163720126338265,
+                0.40837931213735207
+              ],
+              "bootstrapReplicates": 1000,
+              "byVariantMae": {
+                "v80g-wide": 6.799816861935568,
+                "v80j-wide": 8.992590252676251,
+                "v80q-wide": 4.442785401693817
+              }
+            },
+            "earlyMarginPlus:moveGainedVp": {
+              "mae": 7.841866672261832,
+              "meanSeedMaeImprovement": -1.414110516746241,
+              "seedMaeImprovement": {
+                "296611633": 0.22960470618605613,
+                "296611827": -7.804379244680125,
+                "296612021": 0.08674376048707606,
+                "296612215": 1.7626706102820477,
+                "296612409": -3.056520235456786,
+                "296621333": 0.15201315714446037,
+                "296621527": -1.0489520257973157,
+                "296621721": -3.738971972885927,
+                "296621915": -0.8100576832289749,
+                "296622109": 0.08674376048707622
+              },
+              "conditionalFixedPredictionBootstrap95": [
+                -3.228328065374503,
+                -0.07563325918959206
+              ],
+              "bootstrapReplicates": 1000,
+              "byVariantMae": {
+                "v80g-wide": 7.232375665250887,
+                "v80j-wide": 9.580453536886948,
+                "v80q-wide": 6.712770814647664
+              }
+            },
+            "earlyMarginPlus:combatGainedVp": {
+              "mae": 7.2212921580995015,
+              "meanSeedMaeImprovement": -0.7935360025839104,
+              "seedMaeImprovement": {
+                "296611633": -0.2251531943685586,
+                "296611827": -2.8049467495154996,
+                "296612021": -0.1527189634466525,
+                "296612215": 2.985706507795103,
+                "296612409": -5.110346376135699,
+                "296621333": -0.020218066194145123,
+                "296621527": -0.062317114136799745,
+                "296621721": -2.6155383701032737,
+                "296621915": 0.2228912637130739,
+                "296622109": -0.1527189634466525
+              },
+              "conditionalFixedPredictionBootstrap95": [
+                -2.1297569190224337,
+                0.3456808470602952
+              ],
+              "bootstrapReplicates": 1000,
+              "byVariantMae": {
+                "v80g-wide": 7.070662123716855,
+                "v80j-wide": 7.997295563788339,
+                "v80q-wide": 6.595918786793311
+              }
+            },
+            "earlyMarginPlus:objectiveAttacks": {
+              "mae": 6.454596869506685,
+              "meanSeedMaeImprovement": -0.026840713991093057,
+              "seedMaeImprovement": {
+                "296611633": -0.5830411591551936,
+                "296611827": 0.5286516362591712,
+                "296612021": 0.049899452535970536,
+                "296612215": -0.3381553769747268,
+                "296612409": -0.18520940794001017,
+                "296621333": 0.20323984125521788,
+                "296621527": 0.3934189533915046,
+                "296621721": 0.34704174938977533,
+                "296621915": -0.872263970369108,
+                "296622109": 0.1880111416964684
+              },
+              "conditionalFixedPredictionBootstrap95": [
+                -0.30500985186887286,
+                0.2358763016791929
+              ],
+              "bootstrapReplicates": 1000,
+              "byVariantMae": {
+                "v80g-wide": 7.1632783049928435,
+                "v80j-wide": 7.04849777495437,
+                "v80q-wide": 5.152014528572838
+              }
+            },
+            "earlyMarginPlus:otherAttacks": {
+              "mae": 6.092574292479858,
+              "meanSeedMaeImprovement": 0.3351818630357325,
+              "seedMaeImprovement": {
+                "296611633": 0.060428947399858636,
+                "296611827": 1.0221707110847005,
+                "296612021": 1.6904352902813198,
+                "296612215": 0.804341415052536,
+                "296612409": 1.6679449152484096,
+                "296621333": -0.18378740773479288,
+                "296621527": -0.22359626903967778,
+                "296621721": -3.248159869720398,
+                "296621915": 0.7573788262104718,
+                "296622109": 1.004662071574897
+              },
+              "conditionalFixedPredictionBootstrap95": [
+                -0.7184446554312683,
+                1.0112697415813698
+              ],
+              "bootstrapReplicates": 1000,
+              "byVariantMae": {
+                "v80g-wide": 6.837973485835735,
+                "v80j-wide": 6.7165590555273935,
+                "v80q-wide": 4.723190336076448
+              }
+            },
+            "earlyMarginPlus:barrages": {
+              "mae": 6.309208306555624,
+              "meanSeedMaeImprovement": 0.11854784895996642,
+              "seedMaeImprovement": {
+                "296611633": 1.1679431153071274,
+                "296611827": 0.8559938814497361,
+                "296612021": 2.6421609134575426,
+                "296612215": 2.45118403769601,
+                "296612409": -1.1685188418888812,
+                "296621333": -3.931525567699811,
+                "296621527": -0.5152929355089246,
+                "296621721": -0.7764406358619329,
+                "296621915": -0.2452752702480021,
+                "296622109": 0.7052497928967999
+              },
+              "conditionalFixedPredictionBootstrap95": [
+                -1.1059516808425591,
+                1.091106260898261
+              ],
+              "bootstrapReplicates": 1000,
+              "byVariantMae": {
+                "v80g-wide": 7.39800892999895,
+                "v80j-wide": 6.0849736918633734,
+                "v80q-wide": 5.444642297804551
+              }
+            },
+            "earlyMarginPlus:objectiveAttackMeanColumn": {
+              "mae": 7.237699933503409,
+              "meanSeedMaeImprovement": -0.8099437779878176,
+              "seedMaeImprovement": {
+                "296611633": -1.096283638672064,
+                "296611827": 1.4320654772199386,
+                "296612021": -0.7492111602808728,
+                "296612215": -0.7604349018967161,
+                "296612409": -3.6683479733143365,
+                "296621333": -0.3361227288191313,
+                "296621527": -0.3273143505830494,
+                "296621721": -0.8364388796335804,
+                "296621915": -0.1420028138789656,
+                "296622109": -1.6153468100193986
+              },
+              "conditionalFixedPredictionBootstrap95": [
+                -1.62829721475472,
+                -0.0342687243296715
+              ],
+              "bootstrapReplicates": 1000,
+              "byVariantMae": {
+                "v80g-wide": 7.692109578892413,
+                "v80j-wide": 7.709826772118163,
+                "v80q-wide": 6.3111634494996505
+              }
+            },
+            "earlyMarginPlus:objectiveAttackCaptureRate": {
+              "mae": 7.213866007587179,
+              "meanSeedMaeImprovement": -0.786109852071587,
+              "seedMaeImprovement": {
+                "296611633": 0.5204932053227017,
+                "296611827": 0.565180541540735,
+                "296612021": -0.8489270939406065,
+                "296612215": -2.271960410440455,
+                "296612409": -1.5821634893483303,
+                "296621333": -0.44835879379623184,
+                "296621527": -0.17473312286871975,
+                "296621721": -1.1302832978698143,
+                "296621915": -2.7412085991402777,
+                "296622109": 0.250862539825128
+              },
+              "conditionalFixedPredictionBootstrap95": [
+                -1.4245992919980197,
+                -0.15376248492625574
+              ],
+              "bootstrapReplicates": 1000,
+              "byVariantMae": {
+                "v80g-wide": 7.675320522098977,
+                "v80j-wide": 7.656356343478739,
+                "v80q-wide": 6.309921157183818
+              }
+            },
+            "earlyMarginPlus:objectiveAttackClearRate": {
+              "mae": 7.155105427003666,
+              "meanSeedMaeImprovement": -0.7273492714880752,
+              "seedMaeImprovement": {
+                "296611633": 0.34680074615117046,
+                "296611827": -1.021648338783626,
+                "296612021": -0.51095875550552,
+                "296612215": -1.9121361043880747,
+                "296612409": -1.4639284660707788,
+                "296621333": -0.09957183038956578,
+                "296621527": -0.07728365637329926,
+                "296621721": -0.21285969043499975,
+                "296621915": -0.6597346369691929,
+                "296622109": -1.6621719821168643
+              },
+              "conditionalFixedPredictionBootstrap95": [
+                -1.1876881460701008,
+                -0.2920616854058729
+              ],
+              "bootstrapReplicates": 1000,
+              "byVariantMae": {
+                "v80g-wide": 7.628580673613676,
+                "v80j-wide": 7.152309944278089,
+                "v80q-wide": 6.684425663119233
+              }
+            },
+            "earlyMarginPlus:adjacentStrengthShare": {
+              "mae": 6.54304819271911,
+              "meanSeedMaeImprovement": -0.1152920372035183,
+              "seedMaeImprovement": {
+                "296611633": -0.3491178086215623,
+                "296611827": -0.2809982455505245,
+                "296612021": 0.03968866688914726,
+                "296612215": 0.05056557238884688,
+                "296612409": -0.37500558386583877,
+                "296621333": -0.6529330989551934,
+                "296621527": -0.2837152723416742,
+                "296621721": 0.036965469466298195,
+                "296621915": 0.2829762176752804,
+                "296622109": 0.37865371088003724
+              },
+              "conditionalFixedPredictionBootstrap95": [
+                -0.2996319322568534,
+                0.07894633305488932
+              ],
+              "bootstrapReplicates": 1000,
+              "byVariantMae": {
+                "v80g-wide": 7.257797392420689,
+                "v80j-wide": 6.945023052344736,
+                "v80q-wide": 5.426324133391904
+              }
+            },
+            "earlyMarginPlus:occupiedHeldVpShare": {
+              "mae": 5.773057657615466,
+              "meanSeedMaeImprovement": 0.6546984979001259,
+              "seedMaeImprovement": {
+                "296611633": -0.2661484961909772,
+                "296611827": -0.10873530548740067,
+                "296612021": -3.235328659725212,
+                "296612215": 4.064154309105432,
+                "296612409": 0.6684273843100957,
+                "296621333": -2.9939036076122694,
+                "296621527": 1.9221930347089613,
+                "296621721": 0.0668473673828786,
+                "296621915": 3.153593181013395,
+                "296622109": 3.2758857714963554
+              },
+              "conditionalFixedPredictionBootstrap95": [
+                -0.7717498701235113,
+                2.167203721068027
+              ],
+              "bootstrapReplicates": 1000,
+              "byVariantMae": {
+                "v80g-wide": 6.904964983354377,
+                "v80j-wide": 6.104679475395789,
+                "v80q-wide": 4.309528514096231
+              }
+            },
+            "earlyMarginPlus:outOfSupplyStrengthShare": {
+              "mae": 6.511353748590276,
+              "meanSeedMaeImprovement": -0.0835975930746839,
+              "seedMaeImprovement": {
+                "296611633": -0.012732335488916391,
+                "296611827": 0.013408472526091822,
+                "296612021": -0.07957016946153628,
+                "296612215": 0.05143839619791161,
+                "296612409": 0.041260305467502555,
+                "296621333": -0.06488441654252974,
+                "296621527": -0.5426915409293743,
+                "296621721": -0.06933302981676655,
+                "296621915": 0.08245315185489321,
+                "296622109": -0.25532476455411485
+              },
+              "conditionalFixedPredictionBootstrap95": [
+                -0.20837487528940757,
+                0.011003021529322381
+              ],
+              "bootstrapReplicates": 1000,
+              "byVariantMae": {
+                "v80g-wide": 7.296913480277512,
+                "v80j-wide": 6.940991279396795,
+                "v80q-wide": 5.296156486096519
+              }
+            },
+            "earlyMarginPlus:foundColumn6ObjectiveVp": {
+              "mae": 6.4492802883177385,
+              "meanSeedMaeImprovement": -0.021524132802147232,
+              "seedMaeImprovement": {
+                "296611633": -1.5156177024471262,
+                "296611827": 0.8871601369671396,
+                "296612021": -0.019961440381601747,
+                "296612215": 1.7976781494797365,
+                "296612409": -1.1602544678442455,
+                "296621333": -0.28783152792914146,
+                "296621527": -0.1835899485076625,
+                "296621721": 0.5032664934183272,
+                "296621915": -0.21612958039529628,
+                "296622109": -0.019961440381601896
+              },
+              "conditionalFixedPredictionBootstrap95": [
+                -0.5460741719555638,
+                0.5548916903265552
+              ],
+              "bootstrapReplicates": 1000,
+              "byVariantMae": {
+                "v80g-wide": 7.176070058072665,
+                "v80j-wide": 7.061823219815965,
+                "v80q-wide": 5.109947587064586
+              }
+            },
+            "earlyMarginPlus:meanFoundObjectiveColumn": {
+              "mae": 6.214556280131499,
+              "meanSeedMaeImprovement": 0.21319987538409207,
+              "seedMaeImprovement": {
+                "296611633": -1.7077130889342425,
+                "296611827": -1.035427272847245,
+                "296612021": 1.9814660803684276,
+                "296612215": 4.4327071048390065,
+                "296612409": 0.6183987609473659,
+                "296621333": -3.0138875684086592,
+                "296621527": 0.5852665333989079,
+                "296621721": -0.09340002848146216,
+                "296621915": -1.6168778474096064,
+                "296622109": 1.9814660803684276
+              },
+              "conditionalFixedPredictionBootstrap95": [
+                -0.9605220565942992,
+                1.4798405739367244
+              ],
+              "bootstrapReplicates": 1000,
+              "byVariantMae": {
+                "v80g-wide": 7.114078786110001,
+                "v80j-wide": 6.968886272915853,
+                "v80q-wide": 4.560703781368643
+              }
+            },
+            "earlyMarginPlus:regularAttacks": {
+              "mae": 6.44452007177279,
+              "meanSeedMaeImprovement": -0.01676391625719964,
+              "seedMaeImprovement": {
+                "296611633": -1.2653289134304793,
+                "296611827": 1.2341601862589677,
+                "296612021": 0.6407284148222588,
+                "296612215": 1.2383758326353551,
+                "296612409": 0.40938609542927473,
+                "296621333": -0.16034459960327285,
+                "296621527": -0.6785765216217827,
+                "296621721": -2.562736109731636,
+                "296621915": -0.5135903111115253,
+                "296622109": 1.4902867637808432
+              },
+              "conditionalFixedPredictionBootstrap95": [
+                -0.8302660316641591,
+                0.6802661317458094
+              ],
+              "bootstrapReplicates": 1000,
+              "byVariantMae": {
+                "v80g-wide": 7.2253634147244465,
+                "v80j-wide": 7.12155835731172,
+                "v80q-wide": 4.986638443282206
+              }
+            },
+            "earlyMarginPlus:objectiveSupplyRequirementTokens": {
+              "mae": 6.594358158515191,
+              "meanSeedMaeImprovement": -0.16660200299959935,
+              "seedMaeImprovement": {
+                "296611633": -0.05624971547679477,
+                "296611827": -0.11648000371816843,
+                "296612021": -0.10100152947321206,
+                "296612215": -0.21070809445690072,
+                "296612409": -0.26570073854888054,
+                "296621333": -0.14567893979930893,
+                "296621527": -0.08212421137827845,
+                "296621721": -0.25823656530440253,
+                "296621915": -0.18423523960877417,
+                "296622109": -0.24560499223127286
+              },
+              "conditionalFixedPredictionBootstrap95": [
+                -0.21057532758379455,
+                -0.11979753607080917
+              ],
+              "bootstrapReplicates": 1000,
+              "byVariantMae": {
+                "v80g-wide": 7.267048877338911,
+                "v80j-wide": 6.9088426656422515,
+                "v80q-wide": 5.6071829325644105
+              }
+            },
+            "earlyMarginPlus:occupiedHeldVp": {
+              "mae": 6.352907302108438,
+              "meanSeedMaeImprovement": 0.07484885340715354,
+              "seedMaeImprovement": {
+                "296611633": 0.032873119917431026,
+                "296611827": -0.1686173582855277,
+                "296612021": -0.015872409656977855,
+                "296612215": 0.10776705813038194,
+                "296612409": -0.1230466608316858,
+                "296621333": 0.01892859932320327,
+                "296621527": -0.02458606164574917,
+                "296621721": 0.7611681180409017,
+                "296621915": 0.175746538736536,
+                "296622109": -0.015872409656978004
+              },
+              "conditionalFixedPredictionBootstrap95": [
+                -0.05029506186711943,
+                0.2590060394999181
+              ],
+              "bootstrapReplicates": 1000,
+              "byVariantMae": {
+                "v80g-wide": 7.2029703103968545,
+                "v80j-wide": 6.742024996865917,
+                "v80q-wide": 5.1137265990625425
+              }
+            },
+            "earlyMarginPlus:unoccupiedHeldVp": {
+              "mae": 6.197897462228133,
+              "meanSeedMaeImprovement": 0.2298586932874574,
+              "seedMaeImprovement": {
+                "296611633": 0.3216558357886301,
+                "296611827": -1.121155391163834,
+                "296612021": -0.18501379863838072,
+                "296612215": 0.8432819491763984,
+                "296612409": -0.761422891114106,
+                "296621333": 0.056411253474561995,
+                "296621527": -0.22487950800143017,
+                "296621721": 1.6712328195044128,
+                "296621915": 1.8834904624867022,
+                "296622109": -0.18501379863838072
+              },
+              "conditionalFixedPredictionBootstrap95": [
+                -0.31961753763386896,
+                0.8300401550186993
+              ],
+              "bootstrapReplicates": 1000,
+              "byVariantMae": {
+                "v80g-wide": 6.668627352108897,
+                "v80j-wide": 6.29145897945739,
+                "v80q-wide": 5.633606055118115
+              }
+            },
+            "occupiedShareMissingOnly": {
+              "mae": 5.621070932458807,
+              "meanSeedMaeImprovement": 0.8066852230567843,
+              "seedMaeImprovement": {
+                "296611633": -0.0994518876280172,
+                "296611827": 0.13051969277478173,
+                "296612021": -3.2305941861323384,
+                "296612215": 4.073734405310453,
+                "296612409": 0.6309218195512537,
+                "296621333": -2.989169134019395,
+                "296621527": 1.8420336087524796,
+                "296621721": 1.369044382264196,
+                "296621915": 3.1441679751212797,
+                "296622109": 3.1956455545731504
+              },
+              "conditionalFixedPredictionBootstrap95": [
+                -0.664816486699386,
+                2.269424850120879
+              ],
+              "bootstrapReplicates": 1000,
+              "byVariantMae": {
+                "v80g-wide": 6.809488550433751,
+                "v80j-wide": 6.028793039297061,
+                "v80q-wide": 4.024931207645609
+              }
+            }
+          }
+        },
+        "leaveMapSeedAndVariantOut": {
+          "foldCount": 30,
+          "models": {
+            "zero": {
+              "mae": 8.066666666666666,
+              "meanSeedMaeImprovement": -0.2531794305904592,
+              "seedMaeImprovement": {
+                "296611633": -5.052862931934044,
+                "296611827": 2.052828974687435,
+                "296612021": 2.6741060745258647,
+                "296612215": -6.986516308402117,
+                "296612409": 2.805821525307343,
+                "296621333": -0.14692929925725107,
+                "296621527": -0.32600372881447487,
+                "296621721": -0.34483254216047676,
+                "296621915": -0.05777067338505374,
+                "296622109": 2.850364603528183
+              },
+              "conditionalFixedPredictionBootstrap95": [
+                -2.280703784126396,
+                1.5019117443825085
+              ],
+              "bootstrapReplicates": 1000,
+              "byVariantMae": {
+                "v80g-wide": 8.2,
+                "v80j-wide": 10.6,
+                "v80q-wide": 5.4
+              }
+            },
+            "trainMean": {
+              "mae": 9.096296296296295,
+              "meanSeedMaeImprovement": -1.2828090602200888,
+              "seedMaeImprovement": {
+                "296611633": -4.089899968971081,
+                "296611827": 5.97875490061336,
+                "296612021": -2.585153184733395,
+                "296612215": -4.69022001210582,
+                "296612409": 0.3613770808628988,
+                "296621333": -2.5172996696276217,
+                "296621527": -3.2148926177033634,
+                "296621721": -2.6411288384567726,
+                "296621915": 3.1274145118001315,
+                "296622109": -2.5570428038792237
+              },
+              "conditionalFixedPredictionBootstrap95": [
+                -3.052100656050449,
+                0.9379980714546802
+              ],
+              "bootstrapReplicates": 1000,
+              "byVariantMae": {
+                "v80g-wide": 9.71111111111111,
+                "v80j-wide": 9.933333333333334,
+                "v80q-wide": 7.644444444444444
+              }
+            },
+            "earlyMarginCarryForward": {
+              "mae": 6.266666666666667,
+              "meanSeedMaeImprovement": 1.5468205694095407,
+              "seedMaeImprovement": {
+                "296611633": 1.613803734732623,
+                "296611827": 3.3861623080207686,
+                "296612021": 2.6741060745258647,
+                "296612215": 5.013483691597883,
+                "296612409": -1.1941784746926571,
+                "296621333": -0.14692929925725107,
+                "296621527": 2.340662937852192,
+                "296621721": 0.3218341245061899,
+                "296621915": -1.391104006718387,
+                "296622109": 2.850364603528183
+              },
+              "conditionalFixedPredictionBootstrap95": [
+                0.31686321360313563,
+                2.6776788056784264
+              ],
+              "bootstrapReplicates": 1000,
+              "byVariantMae": {
+                "v80g-wide": 5.6,
+                "v80j-wide": 7.6,
+                "v80q-wide": 5.6
+              }
+            },
+            "fittedEarlyMargin": {
+              "mae": 7.813487236076208,
+              "meanSeedMaeImprovement": 0.0,
+              "seedMaeImprovement": {
+                "296611633": 0.0,
+                "296611827": 0.0,
+                "296612021": 0.0,
+                "296612215": 0.0,
+                "296612409": 0.0,
+                "296621333": 0.0,
+                "296621527": 0.0,
+                "296621721": 0.0,
+                "296621915": 0.0,
+                "296622109": 0.0
+              },
+              "conditionalFixedPredictionBootstrap95": [
+                0.0,
+                0.0
+              ],
+              "bootstrapReplicates": 1000,
+              "byVariantMae": {
+                "v80g-wide": 7.631373321505731,
+                "v80j-wide": 8.78182848004326,
+                "v80q-wide": 7.02725990667963
+              }
+            },
+            "earlyMarginPlus:gainedVp": {
+              "mae": 7.963961277027016,
+              "meanSeedMaeImprovement": -0.15047404095080857,
+              "seedMaeImprovement": {
+                "296611633": -0.9592375000581873,
+                "296611827": 2.1709715860658068,
+                "296612021": -0.27163968802782995,
+                "296612215": 0.8251604512080141,
+                "296612409": -1.7910062472764945,
+                "296621333": -0.15656906416971786,
+                "296621527": 0.3237266697862555,
+                "296621721": -1.4446191542096098,
+                "296621915": 0.07393251166438326,
+                "296622109": -0.27545997449070575
+              },
+              "conditionalFixedPredictionBootstrap95": [
+                -0.8196493388120314,
+                0.5333614817335756
+              ],
+              "bootstrapReplicates": 1000,
+              "byVariantMae": {
+                "v80g-wide": 7.4612016965987875,
+                "v80j-wide": 9.9985204407437,
+                "v80q-wide": 6.43216169373856
+              }
+            },
+            "earlyMarginPlus:lostVp": {
+              "mae": 7.9413706657911876,
+              "meanSeedMaeImprovement": -0.12788342971497998,
+              "seedMaeImprovement": {
+                "296611633": -1.692821254476123,
+                "296611827": 4.345293673659841,
+                "296612021": -0.4785102169542708,
+                "296612215": 1.2314032554673062,
+                "296612409": -2.3207567907623012,
+                "296621333": -0.35810438882141665,
+                "296621527": 0.5269984521781496,
+                "296621721": -2.199287737896418,
+                "296621915": 0.15389432352297275,
+                "296622109": -0.48694361306753925
+              },
+              "conditionalFixedPredictionBootstrap95": [
+                -1.2652797089647931,
+                1.0689063571796085
+              ],
+              "bootstrapReplicates": 1000,
+              "byVariantMae": {
+                "v80g-wide": 7.329993633373229,
+                "v80j-wide": 10.575138690297539,
+                "v80q-wide": 5.918979673702795
+              }
+            },
+            "earlyMarginPlus:moveGainedVp": {
+              "mae": 9.234662641835408,
+              "meanSeedMaeImprovement": -1.4211754057592019,
+              "seedMaeImprovement": {
+                "296611633": 0.1611817450959062,
+                "296611827": -5.241162828387808,
+                "296612021": 0.08881457219835791,
+                "296612215": -0.007716555857077386,
+                "296612409": -4.729595436492612,
+                "296621333": 0.17801694260973044,
+                "296621527": 2.3875987081502816,
+                "296621721": -6.347227874892121,
+                "296621915": -0.7876542673007432,
+                "296622109": 0.0859909372840663
+              },
+              "conditionalFixedPredictionBootstrap95": [
+                -3.273471068997645,
+                0.14997273379491163
+              ],
+              "bootstrapReplicates": 1000,
+              "byVariantMae": {
+                "v80g-wide": 7.876493168575186,
+                "v80j-wide": 10.920460112842353,
+                "v80q-wide": 8.907034644088691
+              }
+            },
+            "earlyMarginPlus:combatGainedVp": {
+              "mae": 8.711873820276832,
+              "meanSeedMaeImprovement": -0.8983865842006251,
+              "seedMaeImprovement": {
+                "296611633": -0.13072720835807447,
+                "296611827": 0.5104822032067572,
+                "296612021": -0.18478539773484112,
+                "296612215": 0.4718999993398647,
+                "296612409": -8.926010472563739,
+                "296621333": -0.05896510544009755,
+                "296621527": 0.8552959997298858,
+                "296621721": -1.5516160858571355,
+                "296621915": 0.2161629191055967,
+                "296622109": -0.1856026934344682
+              },
+              "conditionalFixedPredictionBootstrap95": [
+                -2.8163693075831544,
+                0.28239085193742425
+              ],
+              "bootstrapReplicates": 1000,
+              "byVariantMae": {
+                "v80g-wide": 7.916139963393095,
+                "v80j-wide": 9.413004365807694,
+                "v80q-wide": 8.806477131629709
+              }
+            },
+            "earlyMarginPlus:objectiveAttacks": {
+              "mae": 8.877175431917465,
+              "meanSeedMaeImprovement": -1.063688195841257,
+              "seedMaeImprovement": {
+                "296611633": -0.7404599301958239,
+                "296611827": -2.607759114103965,
+                "296612021": -0.02266299070847196,
+                "296612215": -2.4750729984634603,
+                "296612409": -4.57716717850463,
+                "296621333": 0.15961057218387756,
+                "296621527": -0.2007074175550887,
+                "296621721": 0.256950048678853,
+                "296621915": -0.7122924757404823,
+                "296622109": 0.28267952599662277
+              },
+              "conditionalFixedPredictionBootstrap95": [
+                -2.1393252367278284,
+                -0.19184375751734142
+              ],
+              "bootstrapReplicates": 1000,
+              "byVariantMae": {
+                "v80g-wide": 7.749387584000071,
+                "v80j-wide": 10.79524029565556,
+                "v80q-wide": 8.086898416096762
+              }
+            },
+            "earlyMarginPlus:otherAttacks": {
+              "mae": 7.7198303548953024,
+              "meanSeedMaeImprovement": 0.0936568811809058,
+              "seedMaeImprovement": {
+                "296611633": 0.1327999715249346,
+                "296611827": 1.2891725559262586,
+                "296612021": 1.8792311325855013,
+                "296612215": 0.7116094801414512,
+                "296612409": 1.5334505400651093,
+                "296621333": 0.11435027223606187,
+                "296621527": 0.7446444877447848,
+                "296621721": -7.233561893885457,
+                "296621915": 0.742202566425855,
+                "296622109": 1.0226696990445585
+              },
+              "conditionalFixedPredictionBootstrap95": [
+                -1.7305068298906243,
+                1.153407915124829
+              ],
+              "bootstrapReplicates": 1000,
+              "byVariantMae": {
+                "v80g-wide": 7.533197047090444,
+                "v80j-wide": 9.408612595561097,
+                "v80q-wide": 6.217681422034365
+              }
+            },
+            "earlyMarginPlus:barrages": {
+              "mae": 7.963061365521739,
+              "meanSeedMaeImprovement": -0.14957412944553122,
+              "seedMaeImprovement": {
+                "296611633": 1.047570579602925,
+                "296611827": 1.8948092512015016,
+                "296612021": 2.889974920837002,
+                "296612215": 1.3975054736904504,
+                "296612409": -1.3659357515073218,
+                "296621333": -7.620212476357582,
+                "296621527": 0.37744089415091536,
+                "296621721": -0.9210386100341177,
+                "296621915": -0.141203769549902,
+                "296622109": 0.9453481935108173
+              },
+              "conditionalFixedPredictionBootstrap95": [
+                -2.1970629443736343,
+                1.1502174591393413
+              ],
+              "bootstrapReplicates": 1000,
+              "byVariantMae": {
+                "v80g-wide": 7.906062561741242,
+                "v80j-wide": 8.551603755564217,
+                "v80q-wide": 7.431517779259755
+              }
+            },
+            "earlyMarginPlus:objectiveAttackMeanColumn": {
+              "mae": 9.739766628075133,
+              "meanSeedMaeImprovement": -1.9262793919989263,
+              "seedMaeImprovement": {
+                "296611633": -0.6601902508706541,
+                "296611827": 0.580863319355179,
+                "296612021": -2.0853136293633874,
+                "296612215": -1.0355156984482872,
+                "296612409": -10.015143534143517,
+                "296621333": -1.0570060348908188,
+                "296621527": -1.5140194323402332,
+                "296621721": -0.3405480729737456,
+                "296621915": -0.42513342357442047,
+                "296622109": -2.7107871627393787
+              },
+              "conditionalFixedPredictionBootstrap95": [
+                -3.8148295565555244,
+                -0.5886155981889635
+              ],
+              "bootstrapReplicates": 1000,
+              "byVariantMae": {
+                "v80g-wide": 7.740523901034875,
+                "v80j-wide": 10.554450183146644,
+                "v80q-wide": 10.924325800043881
+              }
+            },
+            "earlyMarginPlus:objectiveAttackCaptureRate": {
+              "mae": 8.59520028677252,
+              "meanSeedMaeImprovement": -0.7817130506963126,
+              "seedMaeImprovement": {
+                "296611633": 1.0699633494756975,
+                "296611827": -0.021872373036701493,
+                "296612021": -2.2887466366008025,
+                "296612215": 0.23418432121062102,
+                "296612409": -2.9245973637953586,
+                "296621333": -1.254489790673956,
+                "296621527": -0.09528501538632383,
+                "296621721": -0.6441788431820061,
+                "296621915": -2.070506081525386,
+                "296622109": 0.17839792655108969
+              },
+              "conditionalFixedPredictionBootstrap95": [
+                -1.5473911455507696,
+                -0.06354258385833221
+              ],
+              "bootstrapReplicates": 1000,
+              "byVariantMae": {
+                "v80g-wide": 7.58342726603681,
+                "v80j-wide": 9.888673778126147,
+                "v80q-wide": 8.313499816154604
+              }
+            },
+            "earlyMarginPlus:objectiveAttackClearRate": {
+              "mae": 8.731399150432493,
+              "meanSeedMaeImprovement": -0.9179119143562853,
+              "seedMaeImprovement": {
+                "296611633": 0.6413204557509419,
+                "296611827": -3.9259615308781495,
+                "296612021": -1.770070554128414,
+                "296612215": -0.2806503595048812,
+                "296612409": -2.0487617666733176,
+                "296621333": -0.733979522966659,
+                "296621527": -0.04407023692680904,
+                "296621721": 0.06177986740020872,
+                "296621915": 0.6014282776951779,
+                "296622109": -1.6801537733309508
+              },
+              "conditionalFixedPredictionBootstrap95": [
+                -1.8158809475886497,
+                -0.11930536510858389
+              ],
+              "bootstrapReplicates": 1000,
+              "byVariantMae": {
+                "v80g-wide": 7.731899713835752,
+                "v80j-wide": 9.501806297519002,
+                "v80q-wide": 8.960491439942725
+              }
+            },
+            "earlyMarginPlus:adjacentStrengthShare": {
+              "mae": 8.346534304897089,
+              "meanSeedMaeImprovement": -0.5330470688208822,
+              "seedMaeImprovement": {
+                "296611633": -0.2754184690941104,
+                "296611827": -0.31715223341619075,
+                "296612021": 0.03789270113337547,
+                "296612215": -0.02302650110680086,
+                "296612409": -0.6962600580775195,
+                "296621333": -1.1271571586074127,
+                "296621527": -0.9777227547203005,
+                "296621721": -0.010972394051390685,
+                "296621915": -0.7059521131704294,
+                "296622109": -1.234701707098042
+              },
+              "conditionalFixedPredictionBootstrap95": [
+                -0.8197621382710495,
+                -0.2559721613853444
+              ],
+              "bootstrapReplicates": 1000,
+              "byVariantMae": {
+                "v80g-wide": 7.970449664017876,
+                "v80j-wide": 9.249945749953353,
+                "v80q-wide": 7.81920750072004
+              }
+            },
+            "earlyMarginPlus:occupiedHeldVpShare": {
+              "mae": 6.703774529395845,
+              "meanSeedMaeImprovement": 1.1097127066803625,
+              "seedMaeImprovement": {
+                "296611633": 0.6673890170517174,
+                "296611827": 1.362179961503087,
+                "296612021": -4.262154881294463,
+                "296612215": 2.8638749094218947,
+                "296612409": 1.4217529798860173,
+                "296621333": -3.996350354581576,
+                "296621527": 3.5004062925095147,
+                "296621721": 1.8755668677849806,
+                "296621915": 3.2419723527472435,
+                "296622109": 4.422489921775209
+              },
+              "conditionalFixedPredictionBootstrap95": [
+                -0.7615046868406352,
+                2.7434087941468523
+              ],
+              "bootstrapReplicates": 1000,
+              "byVariantMae": {
+                "v80g-wide": 6.982733529337066,
+                "v80j-wide": 8.059972669581565,
+                "v80q-wide": 5.068617389268902
+              }
+            },
+            "earlyMarginPlus:outOfSupplyStrengthShare": {
+              "mae": 8.99155343284975,
+              "meanSeedMaeImprovement": -1.1780661967735442,
+              "seedMaeImprovement": {
+                "296611633": -0.006340531544755557,
+                "296611827": -0.05685889190325474,
+                "296612021": -0.09935456188146337,
+                "296612215": 0.04547793446802236,
+                "296612409": 0.04079784598533909,
+                "296621333": -0.0747078764554785,
+                "296621527": -4.389096661455845,
+                "296621721": -0.08166022377241185,
+                "296621915": 0.07105242615700173,
+                "296622109": -7.229971427332596
+              },
+              "conditionalFixedPredictionBootstrap95": [
+                -2.915768639066602,
+                -0.008084260234153155
+              ],
+              "bootstrapReplicates": 1000,
+              "byVariantMae": {
+                "v80g-wide": 8.440174592638337,
+                "v80j-wide": 10.968438669469226,
+                "v80q-wide": 7.5660470364416925
+              }
+            },
+            "earlyMarginPlus:foundColumn6ObjectiveVp": {
+              "mae": 8.971324413199284,
+              "meanSeedMaeImprovement": -1.1578371771230762,
+              "seedMaeImprovement": {
+                "296611633": -3.512266851654271,
+                "296611827": 0.583032359317493,
+                "296612021": -0.03405613028441105,
+                "296612215": -6.3545940400047884,
+                "296612409": -1.9869506009899158,
+                "296621333": -0.5587422066594311,
+                "296621527": -0.2521204910894846,
+                "296621721": 0.8257624518927251,
+                "296621915": -0.24987299153840414,
+                "296622109": -0.038563270220274504
+              },
+              "conditionalFixedPredictionBootstrap95": [
+                -2.5123937893219606,
+                -0.011111746509141311
+              ],
+              "bootstrapReplicates": 1000,
+              "byVariantMae": {
+                "v80g-wide": 8.955630188516663,
+                "v80j-wide": 10.150173432723232,
+                "v80q-wide": 7.808169618357955
+              }
+            },
+            "earlyMarginPlus:meanFoundObjectiveColumn": {
+              "mae": 7.646796682562186,
+              "meanSeedMaeImprovement": 0.1666905535140219,
+              "seedMaeImprovement": {
+                "296611633": -1.8695453847328236,
+                "296611827": -0.2172949369908892,
+                "296612021": 2.1722244823111883,
+                "296612215": 3.9438826619106266,
+                "296612409": 0.1744624248225084,
+                "296621333": -2.8771930104232424,
+                "296621527": 1.5143623510712743,
+                "296621721": 0.1472995932622195,
+                "296621915": -3.4461647125063792,
+                "296622109": 2.1248720664157363
+              },
+              "conditionalFixedPredictionBootstrap95": [
+                -1.104883345394959,
+                1.4993952427330983
+              ],
+              "bootstrapReplicates": 1000,
+              "byVariantMae": {
+                "v80g-wide": 7.626786159946801,
+                "v80j-wide": 8.589840017409843,
+                "v80q-wide": 6.723763870329914
+              }
+            },
+            "earlyMarginPlus:regularAttacks": {
+              "mae": 8.418898390214089,
+              "meanSeedMaeImprovement": -0.6054111541378812,
+              "seedMaeImprovement": {
+                "296611633": -1.8523859925356403,
+                "296611827": 0.5364175644039827,
+                "296612021": 0.7188776030255702,
+                "296612215": -0.45129674056981806,
+                "296612409": 0.6553447682299433,
+                "296621333": -0.147742259262407,
+                "296621527": -0.7039319356554964,
+                "296621721": -5.716719205721078,
+                "296621915": -0.31003449763451013,
+                "296622109": 1.2173591543406417
+              },
+              "conditionalFixedPredictionBootstrap95": [
+                -2.007774167966872,
+                0.3815461417685573
+              ],
+              "bootstrapReplicates": 1000,
+              "byVariantMae": {
+                "v80g-wide": 8.152478326734194,
+                "v80j-wide": 9.925585518739782,
+                "v80q-wide": 7.178631325168292
+              }
+            },
+            "earlyMarginPlus:objectiveSupplyRequirementTokens": {
+              "mae": 8.180352874579317,
+              "meanSeedMaeImprovement": -0.3668656385031092,
+              "seedMaeImprovement": {
+                "296611633": -0.6030067958610017,
+                "296611827": -0.4278683348279125,
+                "296612021": -0.273867517631341,
+                "296612215": -1.470130602338984,
+                "296612409": -0.5020181543948481,
+                "296621333": -0.1871713587820274,
+                "296621527": 0.2843492160187286,
+                "296621721": -0.1794830532205832,
+                "296621915": -0.011083400244541686,
+                "296622109": -0.2983763837485813
+              },
+              "conditionalFixedPredictionBootstrap95": [
+                -0.6519287824636394,
+                -0.10312780755248234
+              ],
+              "bootstrapReplicates": 1000,
+              "byVariantMae": {
+                "v80g-wide": 7.9691066175370695,
+                "v80j-wide": 9.080123624455503,
+                "v80q-wide": 7.491828381745378
+              }
+            },
+            "earlyMarginPlus:occupiedHeldVp": {
+              "mae": 7.8320384345121905,
+              "meanSeedMaeImprovement": -0.01855119843598304,
+              "seedMaeImprovement": {
+                "296611633": 0.03082541518664783,
+                "296611827": -0.6569853385751472,
+                "296612021": -0.01677755235304949,
+                "296612215": 0.09733785328948841,
+                "296612409": -0.14246141168171933,
+                "296621333": 0.02023028580460921,
+                "296621527": -0.023357131970011952,
+                "296621721": 0.35616936316618375,
+                "296621915": 0.16709128208966964,
+                "296622109": -0.017584749316501263
+              },
+              "conditionalFixedPredictionBootstrap95": [
+                -0.18779605557458498,
+                0.127267010783303
+              ],
+              "bootstrapReplicates": 1000,
+              "byVariantMae": {
+                "v80g-wide": 7.605854557100804,
+                "v80j-wide": 8.748711139264154,
+                "v80q-wide": 7.141549607171614
+              }
+            },
+            "earlyMarginPlus:unoccupiedHeldVp": {
+              "mae": 7.9965616171858,
+              "meanSeedMaeImprovement": -0.18307438110959187,
+              "seedMaeImprovement": {
+                "296611633": 0.3382245842456018,
+                "296611827": -3.4599490533604658,
+                "296612021": -0.21634281795291047,
+                "296612215": 0.7612432473295202,
+                "296612409": -0.8622845696573559,
+                "296621333": -0.1048521239207522,
+                "296621527": -0.2438471067076001,
+                "296621721": 0.28126346431100124,
+                "296621915": 1.9012589188754667,
+                "296622109": -0.22545835425842423
+              },
+              "conditionalFixedPredictionBootstrap95": [
+                -1.1021165765570502,
+                0.5499518167738653
+              ],
+              "bootstrapReplicates": 1000,
+              "byVariantMae": {
+                "v80g-wide": 7.380682617004824,
+                "v80j-wide": 8.445080542136454,
+                "v80q-wide": 8.163921692416121
+              }
+            },
+            "occupiedShareMissingOnly": {
+              "mae": 6.671426806084777,
+              "meanSeedMaeImprovement": 1.142060429991431,
+              "seedMaeImprovement": {
+                "296611633": 0.7499989453385402,
+                "296611827": 2.0917013473989905,
+                "296612021": -4.255355624624339,
+                "296612215": 2.9017917125496755,
+                "296612409": 1.3574413675695904,
+                "296621333": -3.9898880464074833,
+                "296621527": 3.2380806320480815,
+                "296621721": 1.8755668677849806,
+                "296621915": 3.2319026112515705,
+                "296622109": 4.219364487004703
+              },
+              "conditionalFixedPredictionBootstrap95": [
+                -0.7121614508291162,
+                2.726917496982662
+              ],
+              "bootstrapReplicates": 1000,
+              "byVariantMae": {
+                "v80g-wide": 7.043373786760715,
+                "v80j-wide": 7.874417952614675,
+                "v80q-wide": 5.096488678878939
+              }
+            }
+          }
+        }
+      }
+    },
+    "DEFENDER": {
+      "rowCount": 30,
+      "mapSeedCount": 10,
+      "variantCount": 3,
+      "byVariant": {
+        "v80g-wide": {
+          "n": 10,
+          "meanFinalMarginDelta": 1.6,
+          "meanSubsequentMarginGainDelta": -2.8,
+          "meanMetricDeltas": {
+            "earlyMargin": 4.4,
+            "gainedVp": 0.5,
+            "lostVp": -1.7,
+            "moveGainedVp": 0.5,
+            "combatGainedVp": 0.0,
+            "objectiveAttacks": 0.1,
+            "otherAttacks": 0.4,
+            "barrages": -0.2,
+            "objectiveAttackMeanColumn": -0.10000000000000009,
+            "objectiveAttackCaptureRate": 0.0,
+            "objectiveAttackClearRate": 0.5,
+            "adjacentStrengthShare": 0.0019939143927980964,
+            "occupiedHeldVpShare": 0.0,
+            "outOfSupplyStrengthShare": 0.011495635362173455,
+            "foundColumn6ObjectiveVp": -0.4444444444444444,
+            "meanFoundObjectiveColumn": 1.1666666666666667,
+            "bestSearchTruncated": 0.0,
+            "regularAttacks": 0.7,
+            "objectiveSupplyRequirementTokens": -0.6,
+            "occupiedHeldVp": 1.5,
+            "unoccupiedHeldVp": 0.7
+          }
+        },
+        "v80j-wide": {
+          "n": 10,
+          "meanFinalMarginDelta": 2.4,
+          "meanSubsequentMarginGainDelta": -1.4,
+          "meanMetricDeltas": {
+            "earlyMargin": 3.8,
+            "gainedVp": 0.5,
+            "lostVp": -1.4,
+            "moveGainedVp": 0.5,
+            "combatGainedVp": 0.0,
+            "objectiveAttacks": 0.0,
+            "otherAttacks": 0.3,
+            "barrages": -0.2,
+            "objectiveAttackMeanColumn": 0.125,
+            "objectiveAttackCaptureRate": 0.0,
+            "objectiveAttackClearRate": 0.5,
+            "adjacentStrengthShare": -0.011550839450841715,
+            "occupiedHeldVpShare": 0.0,
+            "outOfSupplyStrengthShare": 0.010390595896478252,
+            "foundColumn6ObjectiveVp": -0.4444444444444444,
+            "meanFoundObjectiveColumn": 0.6666666666666666,
+            "bestSearchTruncated": 0.0,
+            "regularAttacks": 0.5,
+            "objectiveSupplyRequirementTokens": -1.2,
+            "occupiedHeldVp": 1.5,
+            "unoccupiedHeldVp": 0.4
+          }
+        },
+        "v80q-wide": {
+          "n": 10,
+          "meanFinalMarginDelta": 2.4,
+          "meanSubsequentMarginGainDelta": -1.4,
+          "meanMetricDeltas": {
+            "earlyMargin": 3.8,
+            "gainedVp": 0.5,
+            "lostVp": -1.4,
+            "moveGainedVp": 0.5,
+            "combatGainedVp": 0.0,
+            "objectiveAttacks": 0.0,
+            "otherAttacks": 0.3,
+            "barrages": -0.2,
+            "objectiveAttackMeanColumn": 0.125,
+            "objectiveAttackCaptureRate": 0.0,
+            "objectiveAttackClearRate": 0.5,
+            "adjacentStrengthShare": -0.011550839450841715,
+            "occupiedHeldVpShare": 0.0,
+            "outOfSupplyStrengthShare": 0.010390595896478252,
+            "foundColumn6ObjectiveVp": -0.4444444444444444,
+            "meanFoundObjectiveColumn": 0.6666666666666666,
+            "bestSearchTruncated": 0.0,
+            "regularAttacks": 0.5,
+            "objectiveSupplyRequirementTokens": -1.2,
+            "occupiedHeldVp": 1.5,
+            "unoccupiedHeldVp": 0.4
+          }
+        }
+      },
+      "metrics": {
+        "earlyMargin": {
+          "diagnosticOnly": false,
+          "vsFinalMarginDelta": {
+            "n": 30,
+            "missing": 0,
+            "zero": 21,
+            "pearson": 0.5509305528921339,
+            "spearman": 0.545588625362262
+          },
+          "vsSubsequentMarginGainDelta": {
+            "n": 30,
+            "missing": 0,
+            "zero": 21,
+            "pearson": -0.7879978838203361,
+            "spearman": -0.7989789434937944
+          }
+        },
+        "gainedVp": {
+          "diagnosticOnly": false,
+          "vsFinalMarginDelta": {
+            "n": 30,
+            "missing": 0,
+            "zero": 24,
+            "pearson": 0.47595925963098873,
+            "spearman": 0.4448346556729224
+          },
+          "vsSubsequentMarginGainDelta": {
+            "n": 30,
+            "missing": 0,
+            "zero": 24,
+            "pearson": -0.5894001949412785,
+            "spearman": -0.6447368421052632
+          }
+        },
+        "lostVp": {
+          "diagnosticOnly": false,
+          "vsFinalMarginDelta": {
+            "n": 30,
+            "missing": 0,
+            "zero": 21,
+            "pearson": -0.512956118711283,
+            "spearman": -0.5151528962614748
+          },
+          "vsSubsequentMarginGainDelta": {
+            "n": 30,
+            "missing": 0,
+            "zero": 21,
+            "pearson": 0.7730701069484601,
+            "spearman": 0.7989789434937944
+          }
+        },
+        "moveGainedVp": {
+          "diagnosticOnly": false,
+          "vsFinalMarginDelta": {
+            "n": 30,
+            "missing": 0,
+            "zero": 24,
+            "pearson": 0.47595925963098873,
+            "spearman": 0.4448346556729224
+          },
+          "vsSubsequentMarginGainDelta": {
+            "n": 30,
+            "missing": 0,
+            "zero": 24,
+            "pearson": -0.5894001949412785,
+            "spearman": -0.6447368421052632
+          }
+        },
+        "combatGainedVp": {
+          "diagnosticOnly": false,
+          "vsFinalMarginDelta": {
+            "n": 30,
+            "missing": 0,
+            "zero": 30,
+            "pearson": null,
+            "spearman": null
+          },
+          "vsSubsequentMarginGainDelta": {
+            "n": 30,
+            "missing": 0,
+            "zero": 30,
+            "pearson": null,
+            "spearman": null
+          }
+        },
+        "objectiveAttacks": {
+          "diagnosticOnly": false,
+          "vsFinalMarginDelta": {
+            "n": 30,
+            "missing": 0,
+            "zero": 21,
+            "pearson": -0.16058765396487867,
+            "spearman": -0.292415856820167
+          },
+          "vsSubsequentMarginGainDelta": {
+            "n": 30,
+            "missing": 0,
+            "zero": 21,
+            "pearson": -0.5296935889592495,
+            "spearman": -0.30835242238092997
+          }
+        },
+        "otherAttacks": {
+          "diagnosticOnly": false,
+          "vsFinalMarginDelta": {
+            "n": 30,
+            "missing": 0,
+            "zero": 15,
+            "pearson": -0.20524534945459996,
+            "spearman": -0.1099930859694353
+          },
+          "vsSubsequentMarginGainDelta": {
+            "n": 30,
+            "missing": 0,
+            "zero": 15,
+            "pearson": 0.37455728702576213,
+            "spearman": 0.3293437313641789
+          }
+        },
+        "barrages": {
+          "diagnosticOnly": false,
+          "vsFinalMarginDelta": {
+            "n": 30,
+            "missing": 0,
+            "zero": 18,
+            "pearson": 0.24385655500206618,
+            "spearman": 0.22600312875247067
+          },
+          "vsSubsequentMarginGainDelta": {
+            "n": 30,
+            "missing": 0,
+            "zero": 18,
+            "pearson": 0.30840279722605635,
+            "spearman": 0.3692425052737442
+          }
+        },
+        "objectiveAttackMeanColumn": {
+          "diagnosticOnly": false,
+          "vsFinalMarginDelta": {
+            "n": 6,
+            "missing": 24,
+            "zero": 0,
+            "pearson": 0.9899494936611665,
+            "spearman": 1.0
+          },
+          "vsSubsequentMarginGainDelta": {
+            "n": 6,
+            "missing": 24,
+            "zero": 0,
+            "pearson": 0.8395701571521511,
+            "spearman": 1.0
+          }
+        },
+        "objectiveAttackCaptureRate": {
+          "diagnosticOnly": false,
+          "vsFinalMarginDelta": {
+            "n": 6,
+            "missing": 24,
+            "zero": 6,
+            "pearson": null,
+            "spearman": null
+          },
+          "vsSubsequentMarginGainDelta": {
+            "n": 6,
+            "missing": 24,
+            "zero": 6,
+            "pearson": null,
+            "spearman": null
+          }
+        },
+        "objectiveAttackClearRate": {
+          "diagnosticOnly": false,
+          "vsFinalMarginDelta": {
+            "n": 6,
+            "missing": 24,
+            "zero": 3,
+            "pearson": 0.8944271909999159,
+            "spearman": 0.9486832980505138
+          },
+          "vsSubsequentMarginGainDelta": {
+            "n": 6,
+            "missing": 24,
+            "zero": 3,
+            "pearson": 0.6246950475544243,
+            "spearman": 0.9486832980505138
+          }
+        },
+        "adjacentStrengthShare": {
+          "diagnosticOnly": false,
+          "vsFinalMarginDelta": {
+            "n": 30,
+            "missing": 0,
+            "zero": 18,
+            "pearson": -0.37625929540147585,
+            "spearman": -0.2975699469524195
+          },
+          "vsSubsequentMarginGainDelta": {
+            "n": 30,
+            "missing": 0,
+            "zero": 18,
+            "pearson": 0.3456178299296982,
+            "spearman": 0.5254012678441841
+          }
+        },
+        "occupiedHeldVpShare": {
+          "diagnosticOnly": false,
+          "vsFinalMarginDelta": {
+            "n": 27,
+            "missing": 3,
+            "zero": 27,
+            "pearson": null,
+            "spearman": null
+          },
+          "vsSubsequentMarginGainDelta": {
+            "n": 27,
+            "missing": 3,
+            "zero": 27,
+            "pearson": null,
+            "spearman": null
+          }
+        },
+        "outOfSupplyStrengthShare": {
+          "diagnosticOnly": false,
+          "vsFinalMarginDelta": {
+            "n": 30,
+            "missing": 0,
+            "zero": 21,
+            "pearson": 0.4282327643286358,
+            "spearman": 0.38144448491184785
+          },
+          "vsSubsequentMarginGainDelta": {
+            "n": 30,
+            "missing": 0,
+            "zero": 21,
+            "pearson": -0.12225642993791884,
+            "spearman": 0.14024168806253245
+          }
+        },
+        "foundColumn6ObjectiveVp": {
+          "diagnosticOnly": false,
+          "vsFinalMarginDelta": {
+            "n": 27,
+            "missing": 3,
+            "zero": 24,
+            "pearson": -0.006957879249892213,
+            "spearman": -0.031068488300060003
+          },
+          "vsSubsequentMarginGainDelta": {
+            "n": 27,
+            "missing": 3,
+            "zero": 24,
+            "pearson": 0.6130088225415369,
+            "spearman": 0.5560218568936939
+          }
+        },
+        "meanFoundObjectiveColumn": {
+          "diagnosticOnly": false,
+          "vsFinalMarginDelta": {
+            "n": 9,
+            "missing": 21,
+            "zero": 0,
+            "pearson": -0.6058143439072292,
+            "spearman": -0.7154547587901781
+          },
+          "vsSubsequentMarginGainDelta": {
+            "n": 9,
+            "missing": 21,
+            "zero": 0,
+            "pearson": 0.779260300959799,
+            "spearman": 0.5930216194611503
+          }
+        },
+        "bestSearchTruncated": {
+          "diagnosticOnly": true,
+          "vsFinalMarginDelta": {
+            "n": 27,
+            "missing": 3,
+            "zero": 27,
+            "pearson": null,
+            "spearman": null
+          },
+          "vsSubsequentMarginGainDelta": {
+            "n": 27,
+            "missing": 3,
+            "zero": 27,
+            "pearson": null,
+            "spearman": null
+          }
+        },
+        "regularAttacks": {
+          "diagnosticOnly": false,
+          "vsFinalMarginDelta": {
+            "n": 30,
+            "missing": 0,
+            "zero": 12,
+            "pearson": -0.42206484774255604,
+            "spearman": -0.3333186564131965
+          },
+          "vsSubsequentMarginGainDelta": {
+            "n": 30,
+            "missing": 0,
+            "zero": 12,
+            "pearson": -0.2044938779759462,
+            "spearman": -0.2927123261772338
+          }
+        },
+        "objectiveSupplyRequirementTokens": {
+          "diagnosticOnly": false,
+          "vsFinalMarginDelta": {
+            "n": 30,
+            "missing": 0,
+            "zero": 21,
+            "pearson": -0.37167510094032996,
+            "spearman": -0.3151063136228308
+          },
+          "vsSubsequentMarginGainDelta": {
+            "n": 30,
+            "missing": 0,
+            "zero": 21,
+            "pearson": -0.20161610850217176,
+            "spearman": -0.2578095702706435
+          }
+        },
+        "occupiedHeldVp": {
+          "diagnosticOnly": false,
+          "vsFinalMarginDelta": {
+            "n": 30,
+            "missing": 0,
+            "zero": 21,
+            "pearson": 0.661944612027265,
+            "spearman": 0.5981914791655546
+          },
+          "vsSubsequentMarginGainDelta": {
+            "n": 30,
+            "missing": 0,
+            "zero": 21,
+            "pearson": -0.5431536996456912,
+            "spearman": -0.7713022191517693
+          }
+        },
+        "unoccupiedHeldVp": {
+          "diagnosticOnly": false,
+          "vsFinalMarginDelta": {
+            "n": 30,
+            "missing": 0,
+            "zero": 27,
+            "pearson": -2.223853076152107e-17,
+            "spearman": 0.07781516126303756
+          },
+          "vsSubsequentMarginGainDelta": {
+            "n": 30,
+            "missing": 0,
+            "zero": 27,
+            "pearson": -0.664980704082526,
+            "spearman": -0.5302484652528917
+          }
+        }
+      }
+    }
+  },
+  "rows": [
+    {
+      "variant": "v80g-wide",
+      "style": "EASTERN_EUROPE",
+      "match": 1310100,
+      "mapSeed": "296621333",
+      "seeds": {
+        "map": 296621333,
+        "oob": 296621334,
+        "deployment": 296621335,
+        "rules": 296621336,
+        "allied": 296621337,
+        "axis": 296621338
+      },
+      "initialHash": "sha256:d29ebf41ee33cd636a6c5b6a469988e54ac1f2555c386aa8e4b377905d946ab3",
+      "candidateSide": "allied",
+      "role": "DEFENDER",
+      "sameFinalHashAsBaseline": false,
+      "metrics": {
+        "earlyMargin": 0,
+        "gainedVp": 0,
+        "lostVp": 0,
+        "moveGainedVp": 0,
+        "combatGainedVp": 0,
+        "objectiveAttacks": 0,
+        "otherAttacks": 0,
+        "barrages": -1,
+        "objectiveAttackMeanColumn": null,
+        "objectiveAttackCaptureRate": null,
+        "objectiveAttackClearRate": null,
+        "adjacentStrengthShare": 0,
+        "occupiedHeldVpShare": 0,
+        "outOfSupplyStrengthShare": -0.2087912087912088,
+        "foundColumn6ObjectiveVp": 0,
+        "meanFoundObjectiveColumn": null,
+        "bestSearchTruncated": 0,
+        "regularAttacks": 1,
+        "objectiveSupplyRequirementTokens": 0,
+        "occupiedHeldVp": 0,
+        "unoccupiedHeldVp": 0
+      },
+      "finalMarginDelta": -2,
+      "subsequentMarginGainDelta": -2
+    },
+    {
+      "variant": "v80g-wide",
+      "style": "EASTERN_EUROPE",
+      "match": 1310101,
+      "mapSeed": "296621333",
+      "seeds": {
+        "map": 296621333,
+        "oob": 296621334,
+        "deployment": 296621335,
+        "rules": 296621336,
+        "allied": 296621337,
+        "axis": 296621338
+      },
+      "initialHash": "sha256:d29ebf41ee33cd636a6c5b6a469988e54ac1f2555c386aa8e4b377905d946ab3",
+      "candidateSide": "axis",
+      "role": "ATTACKER",
+      "sameFinalHashAsBaseline": false,
+      "metrics": {
+        "earlyMargin": 0,
+        "gainedVp": 0,
+        "lostVp": 0,
+        "moveGainedVp": 0,
+        "combatGainedVp": 0,
+        "objectiveAttacks": 0,
+        "otherAttacks": 4,
+        "barrages": -3,
+        "objectiveAttackMeanColumn": null,
+        "objectiveAttackCaptureRate": null,
+        "objectiveAttackClearRate": null,
+        "adjacentStrengthShare": -0.20380999728825816,
+        "occupiedHeldVpShare": null,
+        "outOfSupplyStrengthShare": 0,
+        "foundColumn6ObjectiveVp": -1,
+        "meanFoundObjectiveColumn": -6,
+        "bestSearchTruncated": 0,
+        "regularAttacks": 3,
+        "objectiveSupplyRequirementTokens": 0,
+        "occupiedHeldVp": 0,
+        "unoccupiedHeldVp": 0
+      },
+      "finalMarginDelta": 2,
+      "subsequentMarginGainDelta": 2
+    },
+    {
+      "variant": "v80g-wide",
+      "style": "EASTERN_EUROPE",
+      "match": 1310102,
+      "mapSeed": "296621527",
+      "seeds": {
+        "map": 296621527,
+        "oob": 296621528,
+        "deployment": 296621529,
+        "rules": 296621530,
+        "allied": 296621531,
+        "axis": 296621532
+      },
+      "initialHash": "sha256:99df9ec00cef943cde0a8da402374593f5ae78f59de8658ff5267a2454ec70d5",
+      "candidateSide": "allied",
+      "role": "DEFENDER",
+      "sameFinalHashAsBaseline": false,
+      "metrics": {
+        "earlyMargin": 0,
+        "gainedVp": 0,
+        "lostVp": 0,
+        "moveGainedVp": 0,
+        "combatGainedVp": 0,
+        "objectiveAttacks": -1,
+        "otherAttacks": 1,
+        "barrages": 0,
+        "objectiveAttackMeanColumn": null,
+        "objectiveAttackCaptureRate": null,
+        "objectiveAttackClearRate": null,
+        "adjacentStrengthShare": 0.20594919786096255,
+        "occupiedHeldVpShare": 0,
+        "outOfSupplyStrengthShare": 0,
+        "foundColumn6ObjectiveVp": 0,
+        "meanFoundObjectiveColumn": 2,
+        "bestSearchTruncated": 0,
+        "regularAttacks": 0,
+        "objectiveSupplyRequirementTokens": -4,
+        "occupiedHeldVp": 0,
+        "unoccupiedHeldVp": 0
+      },
+      "finalMarginDelta": 2,
+      "subsequentMarginGainDelta": 2
+    },
+    {
+      "variant": "v80g-wide",
+      "style": "EASTERN_EUROPE",
+      "match": 1310103,
+      "mapSeed": "296621527",
+      "seeds": {
+        "map": 296621527,
+        "oob": 296621528,
+        "deployment": 296621529,
+        "rules": 296621530,
+        "allied": 296621531,
+        "axis": 296621532
+      },
+      "initialHash": "sha256:99df9ec00cef943cde0a8da402374593f5ae78f59de8658ff5267a2454ec70d5",
+      "candidateSide": "axis",
+      "role": "ATTACKER",
+      "sameFinalHashAsBaseline": false,
+      "metrics": {
+        "earlyMargin": 4,
+        "gainedVp": 3,
+        "lostVp": 1,
+        "moveGainedVp": 3,
+        "combatGainedVp": 0,
+        "objectiveAttacks": -3,
+        "otherAttacks": 2,
+        "barrages": 1,
+        "objectiveAttackMeanColumn": 1,
+        "objectiveAttackCaptureRate": 0.3333333333333333,
+        "objectiveAttackClearRate": 0.33333333333333337,
+        "adjacentStrengthShare": -0.14754098360655737,
+        "occupiedHeldVpShare": 0,
+        "outOfSupplyStrengthShare": -0.013114754098360656,
+        "foundColumn6ObjectiveVp": 0,
+        "meanFoundObjectiveColumn": null,
+        "bestSearchTruncated": 0,
+        "regularAttacks": 0,
+        "objectiveSupplyRequirementTokens": -24,
+        "occupiedHeldVp": 2,
+        "unoccupiedHeldVp": 0
+      },
+      "finalMarginDelta": 8,
+      "subsequentMarginGainDelta": 4
+    },
+    {
+      "variant": "v80g-wide",
+      "style": "EASTERN_EUROPE",
+      "match": 1310104,
+      "mapSeed": "296621721",
+      "seeds": {
+        "map": 296621721,
+        "oob": 296621722,
+        "deployment": 296621723,
+        "rules": 296621724,
+        "allied": 296621725,
+        "axis": 296621726
+      },
+      "initialHash": "sha256:300e3270c27bae422f57837428cb8412eeba0061bafaa2ecb0fe71c0f4745b43",
+      "candidateSide": "allied",
+      "role": "DEFENDER",
+      "sameFinalHashAsBaseline": false,
+      "metrics": {
+        "earlyMargin": 0,
+        "gainedVp": 0,
+        "lostVp": 0,
+        "moveGainedVp": 0,
+        "combatGainedVp": 0,
+        "objectiveAttacks": 0,
+        "otherAttacks": 0,
+        "barrages": 0,
+        "objectiveAttackMeanColumn": null,
+        "objectiveAttackCaptureRate": null,
+        "objectiveAttackClearRate": null,
+        "adjacentStrengthShare": 0,
+        "occupiedHeldVpShare": 0.0,
+        "outOfSupplyStrengthShare": 0.0,
+        "foundColumn6ObjectiveVp": null,
+        "meanFoundObjectiveColumn": null,
+        "bestSearchTruncated": null,
+        "regularAttacks": 0,
+        "objectiveSupplyRequirementTokens": 0,
+        "occupiedHeldVp": 0.0,
+        "unoccupiedHeldVp": 0.0
+      },
+      "finalMarginDelta": -2,
+      "subsequentMarginGainDelta": -2
+    },
+    {
+      "variant": "v80g-wide",
+      "style": "EASTERN_EUROPE",
+      "match": 1310105,
+      "mapSeed": "296621721",
+      "seeds": {
+        "map": 296621721,
+        "oob": 296621722,
+        "deployment": 296621723,
+        "rules": 296621724,
+        "allied": 296621725,
+        "axis": 296621726
+      },
+      "initialHash": "sha256:300e3270c27bae422f57837428cb8412eeba0061bafaa2ecb0fe71c0f4745b43",
+      "candidateSide": "axis",
+      "role": "ATTACKER",
+      "sameFinalHashAsBaseline": false,
+      "metrics": {
+        "earlyMargin": -4,
+        "gainedVp": -1,
+        "lostVp": 1,
+        "moveGainedVp": -1,
+        "combatGainedVp": 0,
+        "objectiveAttacks": 0,
+        "otherAttacks": -5,
+        "barrages": 0,
+        "objectiveAttackMeanColumn": -4,
+        "objectiveAttackCaptureRate": 0,
+        "objectiveAttackClearRate": -1,
+        "adjacentStrengthShare": 0.056818181818181816,
+        "occupiedHeldVpShare": 0.11111111111111116,
+        "outOfSupplyStrengthShare": 0,
+        "foundColumn6ObjectiveVp": -1,
+        "meanFoundObjectiveColumn": null,
+        "bestSearchTruncated": 0,
+        "regularAttacks": -5,
+        "objectiveSupplyRequirementTokens": 14,
+        "occupiedHeldVp": -1.0,
+        "unoccupiedHeldVp": -1.0
+      },
+      "finalMarginDelta": 2,
+      "subsequentMarginGainDelta": 6
+    },
+    {
+      "variant": "v80g-wide",
+      "style": "EASTERN_EUROPE",
+      "match": 1310106,
+      "mapSeed": "296621915",
+      "seeds": {
+        "map": 296621915,
+        "oob": 296621916,
+        "deployment": 296621917,
+        "rules": 296621918,
+        "allied": 296621919,
+        "axis": 296621920
+      },
+      "initialHash": "sha256:f4841a0e376543f7c0a19460ce7bfb7add2d1257c4ca63f558e1170909d09729",
+      "candidateSide": "allied",
+      "role": "DEFENDER",
+      "sameFinalHashAsBaseline": false,
+      "metrics": {
+        "earlyMargin": 0,
+        "gainedVp": 0,
+        "lostVp": 0,
+        "moveGainedVp": 0,
+        "combatGainedVp": 0,
+        "objectiveAttacks": 0,
+        "otherAttacks": 0,
+        "barrages": 0,
+        "objectiveAttackMeanColumn": null,
+        "objectiveAttackCaptureRate": null,
+        "objectiveAttackClearRate": null,
+        "adjacentStrengthShare": 0,
+        "occupiedHeldVpShare": 0,
+        "outOfSupplyStrengthShare": 0,
+        "foundColumn6ObjectiveVp": 0,
+        "meanFoundObjectiveColumn": null,
+        "bestSearchTruncated": 0,
+        "regularAttacks": 0,
+        "objectiveSupplyRequirementTokens": 0,
+        "occupiedHeldVp": 0,
+        "unoccupiedHeldVp": 0
+      },
+      "finalMarginDelta": 0,
+      "subsequentMarginGainDelta": 0
+    },
+    {
+      "variant": "v80g-wide",
+      "style": "EASTERN_EUROPE",
+      "match": 1310107,
+      "mapSeed": "296621915",
+      "seeds": {
+        "map": 296621915,
+        "oob": 296621916,
+        "deployment": 296621917,
+        "rules": 296621918,
+        "allied": 296621919,
+        "axis": 296621920
+      },
+      "initialHash": "sha256:f4841a0e376543f7c0a19460ce7bfb7add2d1257c4ca63f558e1170909d09729",
+      "candidateSide": "axis",
+      "role": "ATTACKER",
+      "sameFinalHashAsBaseline": false,
+      "metrics": {
+        "earlyMargin": 0,
+        "gainedVp": 0,
+        "lostVp": 0,
+        "moveGainedVp": 0,
+        "combatGainedVp": 0,
+        "objectiveAttacks": -1,
+        "otherAttacks": -1,
+        "barrages": 1,
+        "objectiveAttackMeanColumn": null,
+        "objectiveAttackCaptureRate": null,
+        "objectiveAttackClearRate": null,
+        "adjacentStrengthShare": -0.1592356687898089,
+        "occupiedHeldVpShare": null,
+        "outOfSupplyStrengthShare": 0,
+        "foundColumn6ObjectiveVp": 0,
+        "meanFoundObjectiveColumn": null,
+        "bestSearchTruncated": 0,
+        "regularAttacks": -1,
+        "objectiveSupplyRequirementTokens": -11,
+        "occupiedHeldVp": 0,
+        "unoccupiedHeldVp": 0
+      },
+      "finalMarginDelta": -10,
+      "subsequentMarginGainDelta": -10
+    },
+    {
+      "variant": "v80g-wide",
+      "style": "EASTERN_EUROPE",
+      "match": 1310108,
+      "mapSeed": "296622109",
+      "seeds": {
+        "map": 296622109,
+        "oob": 296622110,
+        "deployment": 296622111,
+        "rules": 296622112,
+        "allied": 296622113,
+        "axis": 296622114
+      },
+      "initialHash": "sha256:9cbb1c331e2c2c1f93db88fe1af219064ce6e6d9473730c5d120d49fe9c3f555",
+      "candidateSide": "allied",
+      "role": "DEFENDER",
+      "sameFinalHashAsBaseline": false,
+      "metrics": {
+        "earlyMargin": 0,
+        "gainedVp": 0,
+        "lostVp": 0,
+        "moveGainedVp": 0,
+        "combatGainedVp": 0,
+        "objectiveAttacks": 0,
+        "otherAttacks": 3,
+        "barrages": 0,
+        "objectiveAttackMeanColumn": null,
+        "objectiveAttackCaptureRate": null,
+        "objectiveAttackClearRate": null,
+        "adjacentStrengthShare": 0.09896214896214894,
+        "occupiedHeldVpShare": 0,
+        "outOfSupplyStrengthShare": 0,
+        "foundColumn6ObjectiveVp": 0,
+        "meanFoundObjectiveColumn": 3,
+        "bestSearchTruncated": 0,
+        "regularAttacks": 3,
+        "objectiveSupplyRequirementTokens": 0,
+        "occupiedHeldVp": 0,
+        "unoccupiedHeldVp": 0
+      },
+      "finalMarginDelta": -4,
+      "subsequentMarginGainDelta": -4
+    },
+    {
+      "variant": "v80g-wide",
+      "style": "EASTERN_EUROPE",
+      "match": 1310109,
+      "mapSeed": "296622109",
+      "seeds": {
+        "map": 296622109,
+        "oob": 296622110,
+        "deployment": 296622111,
+        "rules": 296622112,
+        "allied": 296622113,
+        "axis": 296622114
+      },
+      "initialHash": "sha256:9cbb1c331e2c2c1f93db88fe1af219064ce6e6d9473730c5d120d49fe9c3f555",
+      "candidateSide": "axis",
+      "role": "ATTACKER",
+      "sameFinalHashAsBaseline": false,
+      "metrics": {
+        "earlyMargin": 0,
+        "gainedVp": 0,
+        "lostVp": 0,
+        "moveGainedVp": 0,
+        "combatGainedVp": 0,
+        "objectiveAttacks": 1,
+        "otherAttacks": 2,
+        "barrages": 0,
+        "objectiveAttackMeanColumn": -1.333333333333333,
+        "objectiveAttackCaptureRate": -0.16666666666666669,
+        "objectiveAttackClearRate": -0.16666666666666669,
+        "adjacentStrengthShare": 0.3787878787878788,
+        "occupiedHeldVpShare": 0,
+        "outOfSupplyStrengthShare": 0.011363636363636364,
+        "foundColumn6ObjectiveVp": 0,
+        "meanFoundObjectiveColumn": null,
+        "bestSearchTruncated": 0,
+        "regularAttacks": 4,
+        "objectiveSupplyRequirementTokens": 11,
+        "occupiedHeldVp": 0,
+        "unoccupiedHeldVp": 0
+      },
+      "finalMarginDelta": 4,
+      "subsequentMarginGainDelta": 4
+    },
+    {
+      "variant": "v80g-wide",
+      "style": "TEMPERATE_INLAND",
+      "match": 1310000,
+      "mapSeed": "296611633",
+      "seeds": {
+        "map": 296611633,
+        "oob": 296611634,
+        "deployment": 296611635,
+        "rules": 296611636,
+        "allied": 296611637,
+        "axis": 296611638
+      },
+      "initialHash": "sha256:9beb5a76f5493a9a5aae7fd227e6276da75b80fc5052ee60e859385b29dcedcb",
+      "candidateSide": "allied",
+      "role": "DEFENDER",
+      "sameFinalHashAsBaseline": false,
+      "metrics": {
+        "earlyMargin": 14,
+        "gainedVp": 3,
+        "lostVp": -4,
+        "moveGainedVp": 3,
+        "combatGainedVp": 0,
+        "objectiveAttacks": -1,
+        "otherAttacks": 0,
+        "barrages": 1,
+        "objectiveAttackMeanColumn": 0.5,
+        "objectiveAttackCaptureRate": 0,
+        "objectiveAttackClearRate": 1,
+        "adjacentStrengthShare": -0.24050632911392406,
+        "occupiedHeldVpShare": 0,
+        "outOfSupplyStrengthShare": 0,
+        "foundColumn6ObjectiveVp": 0,
+        "meanFoundObjectiveColumn": null,
+        "bestSearchTruncated": 0,
+        "regularAttacks": -2,
+        "objectiveSupplyRequirementTokens": -24,
+        "occupiedHeldVp": 7,
+        "unoccupiedHeldVp": 0
+      },
+      "finalMarginDelta": 8,
+      "subsequentMarginGainDelta": -6
+    },
+    {
+      "variant": "v80g-wide",
+      "style": "TEMPERATE_INLAND",
+      "match": 1310001,
+      "mapSeed": "296611633",
+      "seeds": {
+        "map": 296611633,
+        "oob": 296611634,
+        "deployment": 296611635,
+        "rules": 296611636,
+        "allied": 296611637,
+        "axis": 296611638
+      },
+      "initialHash": "sha256:9beb5a76f5493a9a5aae7fd227e6276da75b80fc5052ee60e859385b29dcedcb",
+      "candidateSide": "axis",
+      "role": "ATTACKER",
+      "sameFinalHashAsBaseline": false,
+      "metrics": {
+        "earlyMargin": -6,
+        "gainedVp": -3,
+        "lostVp": 0,
+        "moveGainedVp": 0,
+        "combatGainedVp": -3,
+        "objectiveAttacks": 2,
+        "otherAttacks": 1,
+        "barrages": -1,
+        "objectiveAttackMeanColumn": 0.5999999999999996,
+        "objectiveAttackCaptureRate": -0.4666666666666666,
+        "objectiveAttackClearRate": -0.4666666666666666,
+        "adjacentStrengthShare": 0.296551724137931,
+        "occupiedHeldVpShare": 0,
+        "outOfSupplyStrengthShare": 0,
+        "foundColumn6ObjectiveVp": 4,
+        "meanFoundObjectiveColumn": null,
+        "bestSearchTruncated": 0,
+        "regularAttacks": 3,
+        "objectiveSupplyRequirementTokens": 38,
+        "occupiedHeldVp": -3,
+        "unoccupiedHeldVp": 0
+      },
+      "finalMarginDelta": -14,
+      "subsequentMarginGainDelta": -8
+    },
+    {
+      "variant": "v80g-wide",
+      "style": "TEMPERATE_INLAND",
+      "match": 1310002,
+      "mapSeed": "296611827",
+      "seeds": {
+        "map": 296611827,
+        "oob": 296611828,
+        "deployment": 296611829,
+        "rules": 296611830,
+        "allied": 296611831,
+        "axis": 296611832
+      },
+      "initialHash": "sha256:760b7996969e0dfa3fbedb6364a406c1d0759c606f0156fe794f4242024a46e3",
+      "candidateSide": "allied",
+      "role": "DEFENDER",
+      "sameFinalHashAsBaseline": false,
+      "metrics": {
+        "earlyMargin": 18,
+        "gainedVp": 2,
+        "lostVp": -7,
+        "moveGainedVp": 2,
+        "combatGainedVp": 0,
+        "objectiveAttacks": 3,
+        "otherAttacks": -2,
+        "barrages": -1,
+        "objectiveAttackMeanColumn": -0.7000000000000002,
+        "objectiveAttackCaptureRate": 0,
+        "objectiveAttackClearRate": 0,
+        "adjacentStrengthShare": -0.04446587378120648,
+        "occupiedHeldVpShare": null,
+        "outOfSupplyStrengthShare": -0.06825243758705667,
+        "foundColumn6ObjectiveVp": -4,
+        "meanFoundObjectiveColumn": -1.5,
+        "bestSearchTruncated": 0,
+        "regularAttacks": 2,
+        "objectiveSupplyRequirementTokens": 22,
+        "occupiedHeldVp": 2.0,
+        "unoccupiedHeldVp": 7.0
+      },
+      "finalMarginDelta": 0,
+      "subsequentMarginGainDelta": -18
+    },
+    {
+      "variant": "v80g-wide",
+      "style": "TEMPERATE_INLAND",
+      "match": 1310003,
+      "mapSeed": "296611827",
+      "seeds": {
+        "map": 296611827,
+        "oob": 296611828,
+        "deployment": 296611829,
+        "rules": 296611830,
+        "allied": 296611831,
+        "axis": 296611832
+      },
+      "initialHash": "sha256:760b7996969e0dfa3fbedb6364a406c1d0759c606f0156fe794f4242024a46e3",
+      "candidateSide": "axis",
+      "role": "ATTACKER",
+      "sameFinalHashAsBaseline": false,
+      "metrics": {
+        "earlyMargin": -8,
+        "gainedVp": -4,
+        "lostVp": 0,
+        "moveGainedVp": 0,
+        "combatGainedVp": -4,
+        "objectiveAttacks": 0,
+        "otherAttacks": 1,
+        "barrages": 3,
+        "objectiveAttackMeanColumn": -2.5,
+        "objectiveAttackCaptureRate": -0.25,
+        "objectiveAttackClearRate": -0.25,
+        "adjacentStrengthShare": 0,
+        "occupiedHeldVpShare": 0,
+        "outOfSupplyStrengthShare": 0,
+        "foundColumn6ObjectiveVp": -4,
+        "meanFoundObjectiveColumn": -7,
+        "bestSearchTruncated": 0,
+        "regularAttacks": 1,
+        "objectiveSupplyRequirementTokens": 1,
+        "occupiedHeldVp": -4,
+        "unoccupiedHeldVp": 0
+      },
+      "finalMarginDelta": -8,
+      "subsequentMarginGainDelta": 0
+    },
+    {
+      "variant": "v80g-wide",
+      "style": "TEMPERATE_INLAND",
+      "match": 1310004,
+      "mapSeed": "296612021",
+      "seeds": {
+        "map": 296612021,
+        "oob": 296612022,
+        "deployment": 296612023,
+        "rules": 296612024,
+        "allied": 296612025,
+        "axis": 296612026
+      },
+      "initialHash": "sha256:ff29240f3b28187d3f3b250d2f783386c1218dd2fb741d5b0c5078cc89203ac2",
+      "candidateSide": "allied",
+      "role": "DEFENDER",
+      "sameFinalHashAsBaseline": false,
+      "metrics": {
+        "earlyMargin": 0,
+        "gainedVp": 0,
+        "lostVp": 0,
+        "moveGainedVp": 0,
+        "combatGainedVp": 0,
+        "objectiveAttacks": 0,
+        "otherAttacks": 1,
+        "barrages": 0,
+        "objectiveAttackMeanColumn": null,
+        "objectiveAttackCaptureRate": null,
+        "objectiveAttackClearRate": null,
+        "adjacentStrengthShare": 0,
+        "occupiedHeldVpShare": 0,
+        "outOfSupplyStrengthShare": 0,
+        "foundColumn6ObjectiveVp": 0,
+        "meanFoundObjectiveColumn": null,
+        "bestSearchTruncated": 0,
+        "regularAttacks": 1,
+        "objectiveSupplyRequirementTokens": 0,
+        "occupiedHeldVp": 0,
+        "unoccupiedHeldVp": 0
+      },
+      "finalMarginDelta": 0,
+      "subsequentMarginGainDelta": 0
+    },
+    {
+      "variant": "v80g-wide",
+      "style": "TEMPERATE_INLAND",
+      "match": 1310005,
+      "mapSeed": "296612021",
+      "seeds": {
+        "map": 296612021,
+        "oob": 296612022,
+        "deployment": 296612023,
+        "rules": 296612024,
+        "allied": 296612025,
+        "axis": 296612026
+      },
+      "initialHash": "sha256:ff29240f3b28187d3f3b250d2f783386c1218dd2fb741d5b0c5078cc89203ac2",
+      "candidateSide": "axis",
+      "role": "ATTACKER",
+      "sameFinalHashAsBaseline": false,
+      "metrics": {
+        "earlyMargin": 0,
+        "gainedVp": 0,
+        "lostVp": 0,
+        "moveGainedVp": 0,
+        "combatGainedVp": 0,
+        "objectiveAttacks": 0,
+        "otherAttacks": 4,
+        "barrages": 2,
+        "objectiveAttackMeanColumn": null,
+        "objectiveAttackCaptureRate": null,
+        "objectiveAttackClearRate": null,
+        "adjacentStrengthShare": 0,
+        "occupiedHeldVpShare": null,
+        "outOfSupplyStrengthShare": 0,
+        "foundColumn6ObjectiveVp": 0,
+        "meanFoundObjectiveColumn": null,
+        "bestSearchTruncated": 0,
+        "regularAttacks": 3,
+        "objectiveSupplyRequirementTokens": 0,
+        "occupiedHeldVp": 0,
+        "unoccupiedHeldVp": 0
+      },
+      "finalMarginDelta": 0,
+      "subsequentMarginGainDelta": 0
+    },
+    {
+      "variant": "v80g-wide",
+      "style": "TEMPERATE_INLAND",
+      "match": 1310006,
+      "mapSeed": "296612215",
+      "seeds": {
+        "map": 296612215,
+        "oob": 296612216,
+        "deployment": 296612217,
+        "rules": 296612218,
+        "allied": 296612219,
+        "axis": 296612220
+      },
+      "initialHash": "sha256:4d827dbae7aa995e788a23b4ef3e2eb33354be317c457dc4260333b1a16dcc97",
+      "candidateSide": "allied",
+      "role": "DEFENDER",
+      "sameFinalHashAsBaseline": false,
+      "metrics": {
+        "earlyMargin": 12,
+        "gainedVp": 0,
+        "lostVp": -6,
+        "moveGainedVp": 0,
+        "combatGainedVp": 0,
+        "objectiveAttacks": 0,
+        "otherAttacks": 1,
+        "barrages": -1,
+        "objectiveAttackMeanColumn": null,
+        "objectiveAttackCaptureRate": null,
+        "objectiveAttackClearRate": null,
+        "adjacentStrengthShare": 0,
+        "occupiedHeldVpShare": 0,
+        "outOfSupplyStrengthShare": 0.392,
+        "foundColumn6ObjectiveVp": 0,
+        "meanFoundObjectiveColumn": null,
+        "bestSearchTruncated": 0,
+        "regularAttacks": 2,
+        "objectiveSupplyRequirementTokens": 0,
+        "occupiedHeldVp": 6,
+        "unoccupiedHeldVp": 0
+      },
+      "finalMarginDelta": 6,
+      "subsequentMarginGainDelta": -6
+    },
+    {
+      "variant": "v80g-wide",
+      "style": "TEMPERATE_INLAND",
+      "match": 1310007,
+      "mapSeed": "296612215",
+      "seeds": {
+        "map": 296612215,
+        "oob": 296612216,
+        "deployment": 296612217,
+        "rules": 296612218,
+        "allied": 296612219,
+        "axis": 296612220
+      },
+      "initialHash": "sha256:4d827dbae7aa995e788a23b4ef3e2eb33354be317c457dc4260333b1a16dcc97",
+      "candidateSide": "axis",
+      "role": "ATTACKER",
+      "sameFinalHashAsBaseline": false,
+      "metrics": {
+        "earlyMargin": -12,
+        "gainedVp": -6,
+        "lostVp": 0,
+        "moveGainedVp": 0,
+        "combatGainedVp": -6,
+        "objectiveAttacks": -2,
+        "otherAttacks": -1,
+        "barrages": -2,
+        "objectiveAttackMeanColumn": null,
+        "objectiveAttackCaptureRate": null,
+        "objectiveAttackClearRate": null,
+        "adjacentStrengthShare": 0.020477815699658702,
+        "occupiedHeldVpShare": null,
+        "outOfSupplyStrengthShare": 0,
+        "foundColumn6ObjectiveVp": -6,
+        "meanFoundObjectiveColumn": -7,
+        "bestSearchTruncated": 0,
+        "regularAttacks": -3,
+        "objectiveSupplyRequirementTokens": -7,
+        "occupiedHeldVp": -6,
+        "unoccupiedHeldVp": 0
+      },
+      "finalMarginDelta": -32,
+      "subsequentMarginGainDelta": -20
+    },
+    {
+      "variant": "v80g-wide",
+      "style": "TEMPERATE_INLAND",
+      "match": 1310008,
+      "mapSeed": "296612409",
+      "seeds": {
+        "map": 296612409,
+        "oob": 296612410,
+        "deployment": 296612411,
+        "rules": 296612412,
+        "allied": 296612413,
+        "axis": 296612414
+      },
+      "initialHash": "sha256:5d6298f2a54953d4a49090116cf28dca3ce8636f9d9907dffe823865f6d82033",
+      "candidateSide": "allied",
+      "role": "DEFENDER",
+      "sameFinalHashAsBaseline": false,
+      "metrics": {
+        "earlyMargin": 0,
+        "gainedVp": 0,
+        "lostVp": 0,
+        "moveGainedVp": 0,
+        "combatGainedVp": 0,
+        "objectiveAttacks": 0,
+        "otherAttacks": 0,
+        "barrages": 0,
+        "objectiveAttackMeanColumn": null,
+        "objectiveAttackCaptureRate": null,
+        "objectiveAttackClearRate": null,
+        "adjacentStrengthShare": 0,
+        "occupiedHeldVpShare": 0,
+        "outOfSupplyStrengthShare": 0.0,
+        "foundColumn6ObjectiveVp": 0,
+        "meanFoundObjectiveColumn": null,
+        "bestSearchTruncated": 0,
+        "regularAttacks": 0,
+        "objectiveSupplyRequirementTokens": 0,
+        "occupiedHeldVp": 0,
+        "unoccupiedHeldVp": 0
+      },
+      "finalMarginDelta": 8,
+      "subsequentMarginGainDelta": 8
+    },
+    {
+      "variant": "v80g-wide",
+      "style": "TEMPERATE_INLAND",
+      "match": 1310009,
+      "mapSeed": "296612409",
+      "seeds": {
+        "map": 296612409,
+        "oob": 296612410,
+        "deployment": 296612411,
+        "rules": 296612412,
+        "allied": 296612413,
+        "axis": 296612414
+      },
+      "initialHash": "sha256:5d6298f2a54953d4a49090116cf28dca3ce8636f9d9907dffe823865f6d82033",
+      "candidateSide": "axis",
+      "role": "ATTACKER",
+      "sameFinalHashAsBaseline": false,
+      "metrics": {
+        "earlyMargin": 0,
+        "gainedVp": 0,
+        "lostVp": 0,
+        "moveGainedVp": 0,
+        "combatGainedVp": 0,
+        "objectiveAttacks": 0,
+        "otherAttacks": 0,
+        "barrages": 0,
+        "objectiveAttackMeanColumn": -2,
+        "objectiveAttackCaptureRate": 0,
+        "objectiveAttackClearRate": 0,
+        "adjacentStrengthShare": 0,
+        "occupiedHeldVpShare": null,
+        "outOfSupplyStrengthShare": 0,
+        "foundColumn6ObjectiveVp": 4,
+        "meanFoundObjectiveColumn": null,
+        "bestSearchTruncated": 0,
+        "regularAttacks": 0,
+        "objectiveSupplyRequirementTokens": 8,
+        "occupiedHeldVp": 0,
+        "unoccupiedHeldVp": 0
+      },
+      "finalMarginDelta": 2,
+      "subsequentMarginGainDelta": 2
+    },
+    {
+      "variant": "v80j-wide",
+      "style": "EASTERN_EUROPE",
+      "match": 1310100,
+      "mapSeed": "296621333",
+      "seeds": {
+        "map": 296621333,
+        "oob": 296621334,
+        "deployment": 296621335,
+        "rules": 296621336,
+        "allied": 296621337,
+        "axis": 296621338
+      },
+      "initialHash": "sha256:d29ebf41ee33cd636a6c5b6a469988e54ac1f2555c386aa8e4b377905d946ab3",
+      "candidateSide": "allied",
+      "role": "DEFENDER",
+      "sameFinalHashAsBaseline": false,
+      "metrics": {
+        "earlyMargin": 0,
+        "gainedVp": 0,
+        "lostVp": 0,
+        "moveGainedVp": 0,
+        "combatGainedVp": 0,
+        "objectiveAttacks": 0,
+        "otherAttacks": 0,
+        "barrages": -1,
+        "objectiveAttackMeanColumn": null,
+        "objectiveAttackCaptureRate": null,
+        "objectiveAttackClearRate": null,
+        "adjacentStrengthShare": 0,
+        "occupiedHeldVpShare": 0,
+        "outOfSupplyStrengthShare": -0.2087912087912088,
+        "foundColumn6ObjectiveVp": 0,
+        "meanFoundObjectiveColumn": null,
+        "bestSearchTruncated": 0,
+        "regularAttacks": 1,
+        "objectiveSupplyRequirementTokens": 0,
+        "occupiedHeldVp": 0,
+        "unoccupiedHeldVp": 0
+      },
+      "finalMarginDelta": -2,
+      "subsequentMarginGainDelta": -2
+    },
+    {
+      "variant": "v80j-wide",
+      "style": "EASTERN_EUROPE",
+      "match": 1310101,
+      "mapSeed": "296621333",
+      "seeds": {
+        "map": 296621333,
+        "oob": 296621334,
+        "deployment": 296621335,
+        "rules": 296621336,
+        "allied": 296621337,
+        "axis": 296621338
+      },
+      "initialHash": "sha256:d29ebf41ee33cd636a6c5b6a469988e54ac1f2555c386aa8e4b377905d946ab3",
+      "candidateSide": "axis",
+      "role": "ATTACKER",
+      "sameFinalHashAsBaseline": false,
+      "metrics": {
+        "earlyMargin": 0,
+        "gainedVp": 0,
+        "lostVp": 0,
+        "moveGainedVp": 0,
+        "combatGainedVp": 0,
+        "objectiveAttacks": 0,
+        "otherAttacks": 5,
+        "barrages": -3,
+        "objectiveAttackMeanColumn": null,
+        "objectiveAttackCaptureRate": null,
+        "objectiveAttackClearRate": null,
+        "adjacentStrengthShare": -0.22408026755852842,
+        "occupiedHeldVpShare": null,
+        "outOfSupplyStrengthShare": 0,
+        "foundColumn6ObjectiveVp": -1,
+        "meanFoundObjectiveColumn": null,
+        "bestSearchTruncated": 0,
+        "regularAttacks": 3,
+        "objectiveSupplyRequirementTokens": 0,
+        "occupiedHeldVp": 0,
+        "unoccupiedHeldVp": 0
+      },
+      "finalMarginDelta": -2,
+      "subsequentMarginGainDelta": -2
+    },
+    {
+      "variant": "v80j-wide",
+      "style": "EASTERN_EUROPE",
+      "match": 1310102,
+      "mapSeed": "296621527",
+      "seeds": {
+        "map": 296621527,
+        "oob": 296621528,
+        "deployment": 296621529,
+        "rules": 296621530,
+        "allied": 296621531,
+        "axis": 296621532
+      },
+      "initialHash": "sha256:99df9ec00cef943cde0a8da402374593f5ae78f59de8658ff5267a2454ec70d5",
+      "candidateSide": "allied",
+      "role": "DEFENDER",
+      "sameFinalHashAsBaseline": false,
+      "metrics": {
+        "earlyMargin": 0,
+        "gainedVp": 0,
+        "lostVp": 0,
+        "moveGainedVp": 0,
+        "combatGainedVp": 0,
+        "objectiveAttacks": -1,
+        "otherAttacks": 1,
+        "barrages": 0,
+        "objectiveAttackMeanColumn": null,
+        "objectiveAttackCaptureRate": null,
+        "objectiveAttackClearRate": null,
+        "adjacentStrengthShare": 0.20594919786096255,
+        "occupiedHeldVpShare": 0,
+        "outOfSupplyStrengthShare": 0,
+        "foundColumn6ObjectiveVp": 0,
+        "meanFoundObjectiveColumn": 2,
+        "bestSearchTruncated": 0,
+        "regularAttacks": 0,
+        "objectiveSupplyRequirementTokens": -4,
+        "occupiedHeldVp": 0,
+        "unoccupiedHeldVp": 0
+      },
+      "finalMarginDelta": 2,
+      "subsequentMarginGainDelta": 2
+    },
+    {
+      "variant": "v80j-wide",
+      "style": "EASTERN_EUROPE",
+      "match": 1310103,
+      "mapSeed": "296621527",
+      "seeds": {
+        "map": 296621527,
+        "oob": 296621528,
+        "deployment": 296621529,
+        "rules": 296621530,
+        "allied": 296621531,
+        "axis": 296621532
+      },
+      "initialHash": "sha256:99df9ec00cef943cde0a8da402374593f5ae78f59de8658ff5267a2454ec70d5",
+      "candidateSide": "axis",
+      "role": "ATTACKER",
+      "sameFinalHashAsBaseline": false,
+      "metrics": {
+        "earlyMargin": 2,
+        "gainedVp": 1,
+        "lostVp": 0,
+        "moveGainedVp": -1,
+        "combatGainedVp": 2,
+        "objectiveAttacks": 0,
+        "otherAttacks": 1,
+        "barrages": -1,
+        "objectiveAttackMeanColumn": -0.16666666666666696,
+        "objectiveAttackCaptureRate": 0.3333333333333333,
+        "objectiveAttackClearRate": 0.0,
+        "adjacentStrengthShare": -0.14754098360655737,
+        "occupiedHeldVpShare": 0,
+        "outOfSupplyStrengthShare": -0.013114754098360656,
+        "foundColumn6ObjectiveVp": 0,
+        "meanFoundObjectiveColumn": null,
+        "bestSearchTruncated": 0,
+        "regularAttacks": 0,
+        "objectiveSupplyRequirementTokens": 8,
+        "occupiedHeldVp": 1,
+        "unoccupiedHeldVp": 0
+      },
+      "finalMarginDelta": 8,
+      "subsequentMarginGainDelta": 6
+    },
+    {
+      "variant": "v80j-wide",
+      "style": "EASTERN_EUROPE",
+      "match": 1310104,
+      "mapSeed": "296621721",
+      "seeds": {
+        "map": 296621721,
+        "oob": 296621722,
+        "deployment": 296621723,
+        "rules": 296621724,
+        "allied": 296621725,
+        "axis": 296621726
+      },
+      "initialHash": "sha256:300e3270c27bae422f57837428cb8412eeba0061bafaa2ecb0fe71c0f4745b43",
+      "candidateSide": "allied",
+      "role": "DEFENDER",
+      "sameFinalHashAsBaseline": false,
+      "metrics": {
+        "earlyMargin": 0,
+        "gainedVp": 0,
+        "lostVp": 0,
+        "moveGainedVp": 0,
+        "combatGainedVp": 0,
+        "objectiveAttacks": 0,
+        "otherAttacks": 0,
+        "barrages": 0,
+        "objectiveAttackMeanColumn": null,
+        "objectiveAttackCaptureRate": null,
+        "objectiveAttackClearRate": null,
+        "adjacentStrengthShare": 0,
+        "occupiedHeldVpShare": 0.0,
+        "outOfSupplyStrengthShare": 0.0,
+        "foundColumn6ObjectiveVp": null,
+        "meanFoundObjectiveColumn": null,
+        "bestSearchTruncated": null,
+        "regularAttacks": 0,
+        "objectiveSupplyRequirementTokens": 0,
+        "occupiedHeldVp": 0.0,
+        "unoccupiedHeldVp": 0.0
+      },
+      "finalMarginDelta": -2,
+      "subsequentMarginGainDelta": -2
+    },
+    {
+      "variant": "v80j-wide",
+      "style": "EASTERN_EUROPE",
+      "match": 1310105,
+      "mapSeed": "296621721",
+      "seeds": {
+        "map": 296621721,
+        "oob": 296621722,
+        "deployment": 296621723,
+        "rules": 296621724,
+        "allied": 296621725,
+        "axis": 296621726
+      },
+      "initialHash": "sha256:300e3270c27bae422f57837428cb8412eeba0061bafaa2ecb0fe71c0f4745b43",
+      "candidateSide": "axis",
+      "role": "ATTACKER",
+      "sameFinalHashAsBaseline": false,
+      "metrics": {
+        "earlyMargin": -18,
+        "gainedVp": -9,
+        "lostVp": 0,
+        "moveGainedVp": -9,
+        "combatGainedVp": 0,
+        "objectiveAttacks": 1,
+        "otherAttacks": -6,
+        "barrages": 0,
+        "objectiveAttackMeanColumn": -4,
+        "objectiveAttackCaptureRate": 0,
+        "objectiveAttackClearRate": -1,
+        "adjacentStrengthShare": 0.11036789297658862,
+        "occupiedHeldVpShare": null,
+        "outOfSupplyStrengthShare": 0,
+        "foundColumn6ObjectiveVp": -1,
+        "meanFoundObjectiveColumn": -6,
+        "bestSearchTruncated": 0,
+        "regularAttacks": -5,
+        "objectiveSupplyRequirementTokens": 27,
+        "occupiedHeldVp": -8.0,
+        "unoccupiedHeldVp": -1.0
+      },
+      "finalMarginDelta": -12,
+      "subsequentMarginGainDelta": 6
+    },
+    {
+      "variant": "v80j-wide",
+      "style": "EASTERN_EUROPE",
+      "match": 1310106,
+      "mapSeed": "296621915",
+      "seeds": {
+        "map": 296621915,
+        "oob": 296621916,
+        "deployment": 296621917,
+        "rules": 296621918,
+        "allied": 296621919,
+        "axis": 296621920
+      },
+      "initialHash": "sha256:f4841a0e376543f7c0a19460ce7bfb7add2d1257c4ca63f558e1170909d09729",
+      "candidateSide": "allied",
+      "role": "DEFENDER",
+      "sameFinalHashAsBaseline": false,
+      "metrics": {
+        "earlyMargin": 0,
+        "gainedVp": 0,
+        "lostVp": 0,
+        "moveGainedVp": 0,
+        "combatGainedVp": 0,
+        "objectiveAttacks": 0,
+        "otherAttacks": 0,
+        "barrages": 0,
+        "objectiveAttackMeanColumn": null,
+        "objectiveAttackCaptureRate": null,
+        "objectiveAttackClearRate": null,
+        "adjacentStrengthShare": 0,
+        "occupiedHeldVpShare": 0,
+        "outOfSupplyStrengthShare": 0,
+        "foundColumn6ObjectiveVp": 0,
+        "meanFoundObjectiveColumn": null,
+        "bestSearchTruncated": 0,
+        "regularAttacks": 0,
+        "objectiveSupplyRequirementTokens": 0,
+        "occupiedHeldVp": 0,
+        "unoccupiedHeldVp": 0
+      },
+      "finalMarginDelta": 0,
+      "subsequentMarginGainDelta": 0
+    },
+    {
+      "variant": "v80j-wide",
+      "style": "EASTERN_EUROPE",
+      "match": 1310107,
+      "mapSeed": "296621915",
+      "seeds": {
+        "map": 296621915,
+        "oob": 296621916,
+        "deployment": 296621917,
+        "rules": 296621918,
+        "allied": 296621919,
+        "axis": 296621920
+      },
+      "initialHash": "sha256:f4841a0e376543f7c0a19460ce7bfb7add2d1257c4ca63f558e1170909d09729",
+      "candidateSide": "axis",
+      "role": "ATTACKER",
+      "sameFinalHashAsBaseline": false,
+      "metrics": {
+        "earlyMargin": 2,
+        "gainedVp": 1,
+        "lostVp": 0,
+        "moveGainedVp": 1,
+        "combatGainedVp": 0,
+        "objectiveAttacks": 3,
+        "otherAttacks": 0,
+        "barrages": -1,
+        "objectiveAttackMeanColumn": 0.75,
+        "objectiveAttackCaptureRate": 0,
+        "objectiveAttackClearRate": 0.25,
+        "adjacentStrengthShare": -0.1592356687898089,
+        "occupiedHeldVpShare": null,
+        "outOfSupplyStrengthShare": 0,
+        "foundColumn6ObjectiveVp": 1,
+        "meanFoundObjectiveColumn": 2.0,
+        "bestSearchTruncated": 0,
+        "regularAttacks": 4,
+        "objectiveSupplyRequirementTokens": 4,
+        "occupiedHeldVp": 0,
+        "unoccupiedHeldVp": 1
+      },
+      "finalMarginDelta": -12,
+      "subsequentMarginGainDelta": -14
+    },
+    {
+      "variant": "v80j-wide",
+      "style": "EASTERN_EUROPE",
+      "match": 1310108,
+      "mapSeed": "296622109",
+      "seeds": {
+        "map": 296622109,
+        "oob": 296622110,
+        "deployment": 296622111,
+        "rules": 296622112,
+        "allied": 296622113,
+        "axis": 296622114
+      },
+      "initialHash": "sha256:9cbb1c331e2c2c1f93db88fe1af219064ce6e6d9473730c5d120d49fe9c3f555",
+      "candidateSide": "allied",
+      "role": "DEFENDER",
+      "sameFinalHashAsBaseline": false,
+      "metrics": {
+        "earlyMargin": 0,
+        "gainedVp": 0,
+        "lostVp": 0,
+        "moveGainedVp": 0,
+        "combatGainedVp": 0,
+        "objectiveAttacks": 0,
+        "otherAttacks": 2,
+        "barrages": 0,
+        "objectiveAttackMeanColumn": null,
+        "objectiveAttackCaptureRate": null,
+        "objectiveAttackClearRate": null,
+        "adjacentStrengthShare": -0.08007980356046657,
+        "occupiedHeldVpShare": 0,
+        "outOfSupplyStrengthShare": 0,
+        "foundColumn6ObjectiveVp": 0,
+        "meanFoundObjectiveColumn": 2,
+        "bestSearchTruncated": 0,
+        "regularAttacks": 2,
+        "objectiveSupplyRequirementTokens": 0,
+        "occupiedHeldVp": 0,
+        "unoccupiedHeldVp": 0
+      },
+      "finalMarginDelta": 0,
+      "subsequentMarginGainDelta": 0
+    },
+    {
+      "variant": "v80j-wide",
+      "style": "EASTERN_EUROPE",
+      "match": 1310109,
+      "mapSeed": "296622109",
+      "seeds": {
+        "map": 296622109,
+        "oob": 296622110,
+        "deployment": 296622111,
+        "rules": 296622112,
+        "allied": 296622113,
+        "axis": 296622114
+      },
+      "initialHash": "sha256:9cbb1c331e2c2c1f93db88fe1af219064ce6e6d9473730c5d120d49fe9c3f555",
+      "candidateSide": "axis",
+      "role": "ATTACKER",
+      "sameFinalHashAsBaseline": false,
+      "metrics": {
+        "earlyMargin": 0,
+        "gainedVp": 0,
+        "lostVp": 0,
+        "moveGainedVp": 0,
+        "combatGainedVp": 0,
+        "objectiveAttacks": 1,
+        "otherAttacks": 2,
+        "barrages": 3,
+        "objectiveAttackMeanColumn": 0.666666666666667,
+        "objectiveAttackCaptureRate": -0.16666666666666669,
+        "objectiveAttackClearRate": -0.16666666666666669,
+        "adjacentStrengthShare": 0.2040133779264214,
+        "occupiedHeldVpShare": 0,
+        "outOfSupplyStrengthShare": 0.05016722408026756,
+        "foundColumn6ObjectiveVp": 0,
+        "meanFoundObjectiveColumn": null,
+        "bestSearchTruncated": 0,
+        "regularAttacks": 4,
+        "objectiveSupplyRequirementTokens": 14,
+        "occupiedHeldVp": 0,
+        "unoccupiedHeldVp": 0
+      },
+      "finalMarginDelta": 4,
+      "subsequentMarginGainDelta": 4
+    },
+    {
+      "variant": "v80j-wide",
+      "style": "TEMPERATE_INLAND",
+      "match": 1310000,
+      "mapSeed": "296611633",
+      "seeds": {
+        "map": 296611633,
+        "oob": 296611634,
+        "deployment": 296611635,
+        "rules": 296611636,
+        "allied": 296611637,
+        "axis": 296611638
+      },
+      "initialHash": "sha256:9beb5a76f5493a9a5aae7fd227e6276da75b80fc5052ee60e859385b29dcedcb",
+      "candidateSide": "allied",
+      "role": "DEFENDER",
+      "sameFinalHashAsBaseline": false,
+      "metrics": {
+        "earlyMargin": 14,
+        "gainedVp": 3,
+        "lostVp": -4,
+        "moveGainedVp": 3,
+        "combatGainedVp": 0,
+        "objectiveAttacks": -1,
+        "otherAttacks": 0,
+        "barrages": 1,
+        "objectiveAttackMeanColumn": 0.5,
+        "objectiveAttackCaptureRate": 0,
+        "objectiveAttackClearRate": 1,
+        "adjacentStrengthShare": -0.24050632911392406,
+        "occupiedHeldVpShare": 0,
+        "outOfSupplyStrengthShare": 0,
+        "foundColumn6ObjectiveVp": 0,
+        "meanFoundObjectiveColumn": null,
+        "bestSearchTruncated": 0,
+        "regularAttacks": -2,
+        "objectiveSupplyRequirementTokens": -24,
+        "occupiedHeldVp": 7,
+        "unoccupiedHeldVp": 0
+      },
+      "finalMarginDelta": 8,
+      "subsequentMarginGainDelta": -6
+    },
+    {
+      "variant": "v80j-wide",
+      "style": "TEMPERATE_INLAND",
+      "match": 1310001,
+      "mapSeed": "296611633",
+      "seeds": {
+        "map": 296611633,
+        "oob": 296611634,
+        "deployment": 296611635,
+        "rules": 296611636,
+        "allied": 296611637,
+        "axis": 296611638
+      },
+      "initialHash": "sha256:9beb5a76f5493a9a5aae7fd227e6276da75b80fc5052ee60e859385b29dcedcb",
+      "candidateSide": "axis",
+      "role": "ATTACKER",
+      "sameFinalHashAsBaseline": false,
+      "metrics": {
+        "earlyMargin": -14,
+        "gainedVp": -4,
+        "lostVp": 3,
+        "moveGainedVp": 0,
+        "combatGainedVp": -4,
+        "objectiveAttacks": 3,
+        "otherAttacks": 0,
+        "barrages": 0,
+        "objectiveAttackMeanColumn": -3.3333333333333335,
+        "objectiveAttackCaptureRate": -0.5,
+        "objectiveAttackClearRate": -0.5,
+        "adjacentStrengthShare": 0,
+        "occupiedHeldVpShare": null,
+        "outOfSupplyStrengthShare": 0,
+        "foundColumn6ObjectiveVp": 0,
+        "meanFoundObjectiveColumn": null,
+        "bestSearchTruncated": 0,
+        "regularAttacks": 3,
+        "objectiveSupplyRequirementTokens": 11,
+        "occupiedHeldVp": -7,
+        "unoccupiedHeldVp": 0
+      },
+      "finalMarginDelta": -14,
+      "subsequentMarginGainDelta": 0
+    },
+    {
+      "variant": "v80j-wide",
+      "style": "TEMPERATE_INLAND",
+      "match": 1310002,
+      "mapSeed": "296611827",
+      "seeds": {
+        "map": 296611827,
+        "oob": 296611828,
+        "deployment": 296611829,
+        "rules": 296611830,
+        "allied": 296611831,
+        "axis": 296611832
+      },
+      "initialHash": "sha256:760b7996969e0dfa3fbedb6364a406c1d0759c606f0156fe794f4242024a46e3",
+      "candidateSide": "allied",
+      "role": "DEFENDER",
+      "sameFinalHashAsBaseline": false,
+      "metrics": {
+        "earlyMargin": 12,
+        "gainedVp": 2,
+        "lostVp": -4,
+        "moveGainedVp": 2,
+        "combatGainedVp": 0,
+        "objectiveAttacks": 2,
+        "otherAttacks": -2,
+        "barrages": -1,
+        "objectiveAttackMeanColumn": -0.25,
+        "objectiveAttackCaptureRate": 0,
+        "objectiveAttackClearRate": 0,
+        "adjacentStrengthShare": -0.0008714596949890852,
+        "occupiedHeldVpShare": null,
+        "outOfSupplyStrengthShare": -0.0793028322440087,
+        "foundColumn6ObjectiveVp": -4,
+        "meanFoundObjectiveColumn": -2,
+        "bestSearchTruncated": 0,
+        "regularAttacks": 1,
+        "objectiveSupplyRequirementTokens": 16,
+        "occupiedHeldVp": 2.0,
+        "unoccupiedHeldVp": 4.0
+      },
+      "finalMarginDelta": 4,
+      "subsequentMarginGainDelta": -8
+    },
+    {
+      "variant": "v80j-wide",
+      "style": "TEMPERATE_INLAND",
+      "match": 1310003,
+      "mapSeed": "296611827",
+      "seeds": {
+        "map": 296611827,
+        "oob": 296611828,
+        "deployment": 296611829,
+        "rules": 296611830,
+        "allied": 296611831,
+        "axis": 296611832
+      },
+      "initialHash": "sha256:760b7996969e0dfa3fbedb6364a406c1d0759c606f0156fe794f4242024a46e3",
+      "candidateSide": "axis",
+      "role": "ATTACKER",
+      "sameFinalHashAsBaseline": false,
+      "metrics": {
+        "earlyMargin": -26,
+        "gainedVp": -13,
+        "lostVp": 0,
+        "moveGainedVp": -10,
+        "combatGainedVp": -3,
+        "objectiveAttacks": 3,
+        "otherAttacks": 3,
+        "barrages": 2,
+        "objectiveAttackMeanColumn": -3.321428571428571,
+        "objectiveAttackCaptureRate": -0.6071428571428572,
+        "objectiveAttackClearRate": -0.7142857142857143,
+        "adjacentStrengthShare": 0.12627986348122866,
+        "occupiedHeldVpShare": 0,
+        "outOfSupplyStrengthShare": 0,
+        "foundColumn6ObjectiveVp": -4,
+        "meanFoundObjectiveColumn": -7.5,
+        "bestSearchTruncated": 0,
+        "regularAttacks": 2,
+        "objectiveSupplyRequirementTokens": 12,
+        "occupiedHeldVp": -13,
+        "unoccupiedHeldVp": 0
+      },
+      "finalMarginDelta": -16,
+      "subsequentMarginGainDelta": 10
+    },
+    {
+      "variant": "v80j-wide",
+      "style": "TEMPERATE_INLAND",
+      "match": 1310004,
+      "mapSeed": "296612021",
+      "seeds": {
+        "map": 296612021,
+        "oob": 296612022,
+        "deployment": 296612023,
+        "rules": 296612024,
+        "allied": 296612025,
+        "axis": 296612026
+      },
+      "initialHash": "sha256:ff29240f3b28187d3f3b250d2f783386c1218dd2fb741d5b0c5078cc89203ac2",
+      "candidateSide": "allied",
+      "role": "DEFENDER",
+      "sameFinalHashAsBaseline": false,
+      "metrics": {
+        "earlyMargin": 0,
+        "gainedVp": 0,
+        "lostVp": 0,
+        "moveGainedVp": 0,
+        "combatGainedVp": 0,
+        "objectiveAttacks": 0,
+        "otherAttacks": 1,
+        "barrages": 0,
+        "objectiveAttackMeanColumn": null,
+        "objectiveAttackCaptureRate": null,
+        "objectiveAttackClearRate": null,
+        "adjacentStrengthShare": 0,
+        "occupiedHeldVpShare": 0,
+        "outOfSupplyStrengthShare": 0,
+        "foundColumn6ObjectiveVp": 0,
+        "meanFoundObjectiveColumn": null,
+        "bestSearchTruncated": 0,
+        "regularAttacks": 1,
+        "objectiveSupplyRequirementTokens": 0,
+        "occupiedHeldVp": 0,
+        "unoccupiedHeldVp": 0
+      },
+      "finalMarginDelta": 0,
+      "subsequentMarginGainDelta": 0
+    },
+    {
+      "variant": "v80j-wide",
+      "style": "TEMPERATE_INLAND",
+      "match": 1310005,
+      "mapSeed": "296612021",
+      "seeds": {
+        "map": 296612021,
+        "oob": 296612022,
+        "deployment": 296612023,
+        "rules": 296612024,
+        "allied": 296612025,
+        "axis": 296612026
+      },
+      "initialHash": "sha256:ff29240f3b28187d3f3b250d2f783386c1218dd2fb741d5b0c5078cc89203ac2",
+      "candidateSide": "axis",
+      "role": "ATTACKER",
+      "sameFinalHashAsBaseline": false,
+      "metrics": {
+        "earlyMargin": 0,
+        "gainedVp": 0,
+        "lostVp": 0,
+        "moveGainedVp": 0,
+        "combatGainedVp": 0,
+        "objectiveAttacks": 0,
+        "otherAttacks": 5,
+        "barrages": 3,
+        "objectiveAttackMeanColumn": null,
+        "objectiveAttackCaptureRate": null,
+        "objectiveAttackClearRate": null,
+        "adjacentStrengthShare": 0,
+        "occupiedHeldVpShare": null,
+        "outOfSupplyStrengthShare": 0,
+        "foundColumn6ObjectiveVp": 0,
+        "meanFoundObjectiveColumn": null,
+        "bestSearchTruncated": 0,
+        "regularAttacks": 3,
+        "objectiveSupplyRequirementTokens": 0,
+        "occupiedHeldVp": 0,
+        "unoccupiedHeldVp": 0
+      },
+      "finalMarginDelta": 4,
+      "subsequentMarginGainDelta": 4
+    },
+    {
+      "variant": "v80j-wide",
+      "style": "TEMPERATE_INLAND",
+      "match": 1310006,
+      "mapSeed": "296612215",
+      "seeds": {
+        "map": 296612215,
+        "oob": 296612216,
+        "deployment": 296612217,
+        "rules": 296612218,
+        "allied": 296612219,
+        "axis": 296612220
+      },
+      "initialHash": "sha256:4d827dbae7aa995e788a23b4ef3e2eb33354be317c457dc4260333b1a16dcc97",
+      "candidateSide": "allied",
+      "role": "DEFENDER",
+      "sameFinalHashAsBaseline": false,
+      "metrics": {
+        "earlyMargin": 12,
+        "gainedVp": 0,
+        "lostVp": -6,
+        "moveGainedVp": 0,
+        "combatGainedVp": 0,
+        "objectiveAttacks": 0,
+        "otherAttacks": 1,
+        "barrages": -1,
+        "objectiveAttackMeanColumn": null,
+        "objectiveAttackCaptureRate": null,
+        "objectiveAttackClearRate": null,
+        "adjacentStrengthShare": 0,
+        "occupiedHeldVpShare": 0,
+        "outOfSupplyStrengthShare": 0.392,
+        "foundColumn6ObjectiveVp": 0,
+        "meanFoundObjectiveColumn": null,
+        "bestSearchTruncated": 0,
+        "regularAttacks": 2,
+        "objectiveSupplyRequirementTokens": 0,
+        "occupiedHeldVp": 6,
+        "unoccupiedHeldVp": 0
+      },
+      "finalMarginDelta": 6,
+      "subsequentMarginGainDelta": -6
+    },
+    {
+      "variant": "v80j-wide",
+      "style": "TEMPERATE_INLAND",
+      "match": 1310007,
+      "mapSeed": "296612215",
+      "seeds": {
+        "map": 296612215,
+        "oob": 296612216,
+        "deployment": 296612217,
+        "rules": 296612218,
+        "allied": 296612219,
+        "axis": 296612220
+      },
+      "initialHash": "sha256:4d827dbae7aa995e788a23b4ef3e2eb33354be317c457dc4260333b1a16dcc97",
+      "candidateSide": "axis",
+      "role": "ATTACKER",
+      "sameFinalHashAsBaseline": false,
+      "metrics": {
+        "earlyMargin": -12,
+        "gainedVp": -6,
+        "lostVp": 0,
+        "moveGainedVp": 0,
+        "combatGainedVp": -6,
+        "objectiveAttacks": 0,
+        "otherAttacks": 1,
+        "barrages": 0,
+        "objectiveAttackMeanColumn": -1,
+        "objectiveAttackCaptureRate": -0.5,
+        "objectiveAttackClearRate": -0.5,
+        "adjacentStrengthShare": 0,
+        "occupiedHeldVpShare": null,
+        "outOfSupplyStrengthShare": 0,
+        "foundColumn6ObjectiveVp": -6,
+        "meanFoundObjectiveColumn": -3,
+        "bestSearchTruncated": 0,
+        "regularAttacks": 0,
+        "objectiveSupplyRequirementTokens": -2,
+        "occupiedHeldVp": -6,
+        "unoccupiedHeldVp": 0
+      },
+      "finalMarginDelta": -26,
+      "subsequentMarginGainDelta": -14
+    },
+    {
+      "variant": "v80j-wide",
+      "style": "TEMPERATE_INLAND",
+      "match": 1310008,
+      "mapSeed": "296612409",
+      "seeds": {
+        "map": 296612409,
+        "oob": 296612410,
+        "deployment": 296612411,
+        "rules": 296612412,
+        "allied": 296612413,
+        "axis": 296612414
+      },
+      "initialHash": "sha256:5d6298f2a54953d4a49090116cf28dca3ce8636f9d9907dffe823865f6d82033",
+      "candidateSide": "allied",
+      "role": "DEFENDER",
+      "sameFinalHashAsBaseline": false,
+      "metrics": {
+        "earlyMargin": 0,
+        "gainedVp": 0,
+        "lostVp": 0,
+        "moveGainedVp": 0,
+        "combatGainedVp": 0,
+        "objectiveAttacks": 0,
+        "otherAttacks": 0,
+        "barrages": 0,
+        "objectiveAttackMeanColumn": null,
+        "objectiveAttackCaptureRate": null,
+        "objectiveAttackClearRate": null,
+        "adjacentStrengthShare": 0,
+        "occupiedHeldVpShare": 0,
+        "outOfSupplyStrengthShare": 0.0,
+        "foundColumn6ObjectiveVp": 0,
+        "meanFoundObjectiveColumn": null,
+        "bestSearchTruncated": 0,
+        "regularAttacks": 0,
+        "objectiveSupplyRequirementTokens": 0,
+        "occupiedHeldVp": 0,
+        "unoccupiedHeldVp": 0
+      },
+      "finalMarginDelta": 8,
+      "subsequentMarginGainDelta": 8
+    },
+    {
+      "variant": "v80j-wide",
+      "style": "TEMPERATE_INLAND",
+      "match": 1310009,
+      "mapSeed": "296612409",
+      "seeds": {
+        "map": 296612409,
+        "oob": 296612410,
+        "deployment": 296612411,
+        "rules": 296612412,
+        "allied": 296612413,
+        "axis": 296612414
+      },
+      "initialHash": "sha256:5d6298f2a54953d4a49090116cf28dca3ce8636f9d9907dffe823865f6d82033",
+      "candidateSide": "axis",
+      "role": "ATTACKER",
+      "sameFinalHashAsBaseline": false,
+      "metrics": {
+        "earlyMargin": 8,
+        "gainedVp": 4,
+        "lostVp": 0,
+        "moveGainedVp": 0,
+        "combatGainedVp": 4,
+        "objectiveAttacks": 2,
+        "otherAttacks": -3,
+        "barrages": 0,
+        "objectiveAttackMeanColumn": -3,
+        "objectiveAttackCaptureRate": 0.3333333333333333,
+        "objectiveAttackClearRate": 0.3333333333333333,
+        "adjacentStrengthShare": 0.08361204013377926,
+        "occupiedHeldVpShare": null,
+        "outOfSupplyStrengthShare": 0,
+        "foundColumn6ObjectiveVp": 7,
+        "meanFoundObjectiveColumn": null,
+        "bestSearchTruncated": 0,
+        "regularAttacks": -1,
+        "objectiveSupplyRequirementTokens": 10,
+        "occupiedHeldVp": 4,
+        "unoccupiedHeldVp": 0
+      },
+      "finalMarginDelta": -8,
+      "subsequentMarginGainDelta": -16
+    },
+    {
+      "variant": "v80q-wide",
+      "style": "EASTERN_EUROPE",
+      "match": 1310100,
+      "mapSeed": "296621333",
+      "seeds": {
+        "map": 296621333,
+        "oob": 296621334,
+        "deployment": 296621335,
+        "rules": 296621336,
+        "allied": 296621337,
+        "axis": 296621338
+      },
+      "initialHash": "sha256:d29ebf41ee33cd636a6c5b6a469988e54ac1f2555c386aa8e4b377905d946ab3",
+      "candidateSide": "allied",
+      "role": "DEFENDER",
+      "sameFinalHashAsBaseline": false,
+      "metrics": {
+        "earlyMargin": 0,
+        "gainedVp": 0,
+        "lostVp": 0,
+        "moveGainedVp": 0,
+        "combatGainedVp": 0,
+        "objectiveAttacks": 0,
+        "otherAttacks": 0,
+        "barrages": -1,
+        "objectiveAttackMeanColumn": null,
+        "objectiveAttackCaptureRate": null,
+        "objectiveAttackClearRate": null,
+        "adjacentStrengthShare": 0,
+        "occupiedHeldVpShare": 0,
+        "outOfSupplyStrengthShare": -0.2087912087912088,
+        "foundColumn6ObjectiveVp": 0,
+        "meanFoundObjectiveColumn": null,
+        "bestSearchTruncated": 0,
+        "regularAttacks": 1,
+        "objectiveSupplyRequirementTokens": 0,
+        "occupiedHeldVp": 0,
+        "unoccupiedHeldVp": 0
+      },
+      "finalMarginDelta": -2,
+      "subsequentMarginGainDelta": -2
+    },
+    {
+      "variant": "v80q-wide",
+      "style": "EASTERN_EUROPE",
+      "match": 1310101,
+      "mapSeed": "296621333",
+      "seeds": {
+        "map": 296621333,
+        "oob": 296621334,
+        "deployment": 296621335,
+        "rules": 296621336,
+        "allied": 296621337,
+        "axis": 296621338
+      },
+      "initialHash": "sha256:d29ebf41ee33cd636a6c5b6a469988e54ac1f2555c386aa8e4b377905d946ab3",
+      "candidateSide": "axis",
+      "role": "ATTACKER",
+      "sameFinalHashAsBaseline": false,
+      "metrics": {
+        "earlyMargin": 0,
+        "gainedVp": 0,
+        "lostVp": 0,
+        "moveGainedVp": 0,
+        "combatGainedVp": 0,
+        "objectiveAttacks": 0,
+        "otherAttacks": 2,
+        "barrages": -2,
+        "objectiveAttackMeanColumn": null,
+        "objectiveAttackCaptureRate": null,
+        "objectiveAttackClearRate": null,
+        "adjacentStrengthShare": -0.22408026755852842,
+        "occupiedHeldVpShare": null,
+        "outOfSupplyStrengthShare": 0,
+        "foundColumn6ObjectiveVp": -1,
+        "meanFoundObjectiveColumn": null,
+        "bestSearchTruncated": 0,
+        "regularAttacks": 2,
+        "objectiveSupplyRequirementTokens": 0,
+        "occupiedHeldVp": 0,
+        "unoccupiedHeldVp": 0
+      },
+      "finalMarginDelta": -2,
+      "subsequentMarginGainDelta": -2
+    },
+    {
+      "variant": "v80q-wide",
+      "style": "EASTERN_EUROPE",
+      "match": 1310102,
+      "mapSeed": "296621527",
+      "seeds": {
+        "map": 296621527,
+        "oob": 296621528,
+        "deployment": 296621529,
+        "rules": 296621530,
+        "allied": 296621531,
+        "axis": 296621532
+      },
+      "initialHash": "sha256:99df9ec00cef943cde0a8da402374593f5ae78f59de8658ff5267a2454ec70d5",
+      "candidateSide": "allied",
+      "role": "DEFENDER",
+      "sameFinalHashAsBaseline": false,
+      "metrics": {
+        "earlyMargin": 0,
+        "gainedVp": 0,
+        "lostVp": 0,
+        "moveGainedVp": 0,
+        "combatGainedVp": 0,
+        "objectiveAttacks": -1,
+        "otherAttacks": 1,
+        "barrages": 0,
+        "objectiveAttackMeanColumn": null,
+        "objectiveAttackCaptureRate": null,
+        "objectiveAttackClearRate": null,
+        "adjacentStrengthShare": 0.20594919786096255,
+        "occupiedHeldVpShare": 0,
+        "outOfSupplyStrengthShare": 0,
+        "foundColumn6ObjectiveVp": 0,
+        "meanFoundObjectiveColumn": 2,
+        "bestSearchTruncated": 0,
+        "regularAttacks": 0,
+        "objectiveSupplyRequirementTokens": -4,
+        "occupiedHeldVp": 0,
+        "unoccupiedHeldVp": 0
+      },
+      "finalMarginDelta": 2,
+      "subsequentMarginGainDelta": 2
+    },
+    {
+      "variant": "v80q-wide",
+      "style": "EASTERN_EUROPE",
+      "match": 1310103,
+      "mapSeed": "296621527",
+      "seeds": {
+        "map": 296621527,
+        "oob": 296621528,
+        "deployment": 296621529,
+        "rules": 296621530,
+        "allied": 296621531,
+        "axis": 296621532
+      },
+      "initialHash": "sha256:99df9ec00cef943cde0a8da402374593f5ae78f59de8658ff5267a2454ec70d5",
+      "candidateSide": "axis",
+      "role": "ATTACKER",
+      "sameFinalHashAsBaseline": false,
+      "metrics": {
+        "earlyMargin": -2,
+        "gainedVp": -1,
+        "lostVp": 0,
+        "moveGainedVp": -1,
+        "combatGainedVp": 0,
+        "objectiveAttacks": 0,
+        "otherAttacks": 4,
+        "barrages": 1,
+        "objectiveAttackMeanColumn": 1,
+        "objectiveAttackCaptureRate": 0.0,
+        "objectiveAttackClearRate": -0.16666666666666663,
+        "adjacentStrengthShare": -0.14754098360655737,
+        "occupiedHeldVpShare": 0,
+        "outOfSupplyStrengthShare": -0.013114754098360656,
+        "foundColumn6ObjectiveVp": 0,
+        "meanFoundObjectiveColumn": null,
+        "bestSearchTruncated": 0,
+        "regularAttacks": 2,
+        "objectiveSupplyRequirementTokens": 5,
+        "occupiedHeldVp": -1,
+        "unoccupiedHeldVp": 0
+      },
+      "finalMarginDelta": -4,
+      "subsequentMarginGainDelta": -2
+    },
+    {
+      "variant": "v80q-wide",
+      "style": "EASTERN_EUROPE",
+      "match": 1310104,
+      "mapSeed": "296621721",
+      "seeds": {
+        "map": 296621721,
+        "oob": 296621722,
+        "deployment": 296621723,
+        "rules": 296621724,
+        "allied": 296621725,
+        "axis": 296621726
+      },
+      "initialHash": "sha256:300e3270c27bae422f57837428cb8412eeba0061bafaa2ecb0fe71c0f4745b43",
+      "candidateSide": "allied",
+      "role": "DEFENDER",
+      "sameFinalHashAsBaseline": false,
+      "metrics": {
+        "earlyMargin": 0,
+        "gainedVp": 0,
+        "lostVp": 0,
+        "moveGainedVp": 0,
+        "combatGainedVp": 0,
+        "objectiveAttacks": 0,
+        "otherAttacks": 0,
+        "barrages": 0,
+        "objectiveAttackMeanColumn": null,
+        "objectiveAttackCaptureRate": null,
+        "objectiveAttackClearRate": null,
+        "adjacentStrengthShare": 0,
+        "occupiedHeldVpShare": 0.0,
+        "outOfSupplyStrengthShare": 0.0,
+        "foundColumn6ObjectiveVp": null,
+        "meanFoundObjectiveColumn": null,
+        "bestSearchTruncated": null,
+        "regularAttacks": 0,
+        "objectiveSupplyRequirementTokens": 0,
+        "occupiedHeldVp": 0.0,
+        "unoccupiedHeldVp": 0.0
+      },
+      "finalMarginDelta": -2,
+      "subsequentMarginGainDelta": -2
+    },
+    {
+      "variant": "v80q-wide",
+      "style": "EASTERN_EUROPE",
+      "match": 1310105,
+      "mapSeed": "296621721",
+      "seeds": {
+        "map": 296621721,
+        "oob": 296621722,
+        "deployment": 296621723,
+        "rules": 296621724,
+        "allied": 296621725,
+        "axis": 296621726
+      },
+      "initialHash": "sha256:300e3270c27bae422f57837428cb8412eeba0061bafaa2ecb0fe71c0f4745b43",
+      "candidateSide": "axis",
+      "role": "ATTACKER",
+      "sameFinalHashAsBaseline": false,
+      "metrics": {
+        "earlyMargin": 0,
+        "gainedVp": 0,
+        "lostVp": 0,
+        "moveGainedVp": 0,
+        "combatGainedVp": 0,
+        "objectiveAttacks": -1,
+        "otherAttacks": 2,
+        "barrages": -1,
+        "objectiveAttackMeanColumn": null,
+        "objectiveAttackCaptureRate": null,
+        "objectiveAttackClearRate": null,
+        "adjacentStrengthShare": 0,
+        "occupiedHeldVpShare": 0.11111111111111116,
+        "outOfSupplyStrengthShare": 0,
+        "foundColumn6ObjectiveVp": -1,
+        "meanFoundObjectiveColumn": null,
+        "bestSearchTruncated": 0,
+        "regularAttacks": 1,
+        "objectiveSupplyRequirementTokens": -1,
+        "occupiedHeldVp": 1.0,
+        "unoccupiedHeldVp": -1.0
+      },
+      "finalMarginDelta": 2,
+      "subsequentMarginGainDelta": 2
+    },
+    {
+      "variant": "v80q-wide",
+      "style": "EASTERN_EUROPE",
+      "match": 1310106,
+      "mapSeed": "296621915",
+      "seeds": {
+        "map": 296621915,
+        "oob": 296621916,
+        "deployment": 296621917,
+        "rules": 296621918,
+        "allied": 296621919,
+        "axis": 296621920
+      },
+      "initialHash": "sha256:f4841a0e376543f7c0a19460ce7bfb7add2d1257c4ca63f558e1170909d09729",
+      "candidateSide": "allied",
+      "role": "DEFENDER",
+      "sameFinalHashAsBaseline": false,
+      "metrics": {
+        "earlyMargin": 0,
+        "gainedVp": 0,
+        "lostVp": 0,
+        "moveGainedVp": 0,
+        "combatGainedVp": 0,
+        "objectiveAttacks": 0,
+        "otherAttacks": 0,
+        "barrages": 0,
+        "objectiveAttackMeanColumn": null,
+        "objectiveAttackCaptureRate": null,
+        "objectiveAttackClearRate": null,
+        "adjacentStrengthShare": 0,
+        "occupiedHeldVpShare": 0,
+        "outOfSupplyStrengthShare": 0,
+        "foundColumn6ObjectiveVp": 0,
+        "meanFoundObjectiveColumn": null,
+        "bestSearchTruncated": 0,
+        "regularAttacks": 0,
+        "objectiveSupplyRequirementTokens": 0,
+        "occupiedHeldVp": 0,
+        "unoccupiedHeldVp": 0
+      },
+      "finalMarginDelta": 0,
+      "subsequentMarginGainDelta": 0
+    },
+    {
+      "variant": "v80q-wide",
+      "style": "EASTERN_EUROPE",
+      "match": 1310107,
+      "mapSeed": "296621915",
+      "seeds": {
+        "map": 296621915,
+        "oob": 296621916,
+        "deployment": 296621917,
+        "rules": 296621918,
+        "allied": 296621919,
+        "axis": 296621920
+      },
+      "initialHash": "sha256:f4841a0e376543f7c0a19460ce7bfb7add2d1257c4ca63f558e1170909d09729",
+      "candidateSide": "axis",
+      "role": "ATTACKER",
+      "sameFinalHashAsBaseline": false,
+      "metrics": {
+        "earlyMargin": 2,
+        "gainedVp": 1,
+        "lostVp": 0,
+        "moveGainedVp": 0,
+        "combatGainedVp": 1,
+        "objectiveAttacks": 1,
+        "otherAttacks": 1,
+        "barrages": 1,
+        "objectiveAttackMeanColumn": 3,
+        "objectiveAttackCaptureRate": 0.5,
+        "objectiveAttackClearRate": 0.5,
+        "adjacentStrengthShare": -0.1592356687898089,
+        "occupiedHeldVpShare": null,
+        "outOfSupplyStrengthShare": 0,
+        "foundColumn6ObjectiveVp": 1,
+        "meanFoundObjectiveColumn": 2.5,
+        "bestSearchTruncated": 0,
+        "regularAttacks": 3,
+        "objectiveSupplyRequirementTokens": 10,
+        "occupiedHeldVp": 1,
+        "unoccupiedHeldVp": 0
+      },
+      "finalMarginDelta": -4,
+      "subsequentMarginGainDelta": -6
+    },
+    {
+      "variant": "v80q-wide",
+      "style": "EASTERN_EUROPE",
+      "match": 1310108,
+      "mapSeed": "296622109",
+      "seeds": {
+        "map": 296622109,
+        "oob": 296622110,
+        "deployment": 296622111,
+        "rules": 296622112,
+        "allied": 296622113,
+        "axis": 296622114
+      },
+      "initialHash": "sha256:9cbb1c331e2c2c1f93db88fe1af219064ce6e6d9473730c5d120d49fe9c3f555",
+      "candidateSide": "allied",
+      "role": "DEFENDER",
+      "sameFinalHashAsBaseline": false,
+      "metrics": {
+        "earlyMargin": 0,
+        "gainedVp": 0,
+        "lostVp": 0,
+        "moveGainedVp": 0,
+        "combatGainedVp": 0,
+        "objectiveAttacks": 0,
+        "otherAttacks": 2,
+        "barrages": 0,
+        "objectiveAttackMeanColumn": null,
+        "objectiveAttackCaptureRate": null,
+        "objectiveAttackClearRate": null,
+        "adjacentStrengthShare": -0.08007980356046657,
+        "occupiedHeldVpShare": 0,
+        "outOfSupplyStrengthShare": 0,
+        "foundColumn6ObjectiveVp": 0,
+        "meanFoundObjectiveColumn": 2,
+        "bestSearchTruncated": 0,
+        "regularAttacks": 2,
+        "objectiveSupplyRequirementTokens": 0,
+        "occupiedHeldVp": 0,
+        "unoccupiedHeldVp": 0
+      },
+      "finalMarginDelta": 0,
+      "subsequentMarginGainDelta": 0
+    },
+    {
+      "variant": "v80q-wide",
+      "style": "EASTERN_EUROPE",
+      "match": 1310109,
+      "mapSeed": "296622109",
+      "seeds": {
+        "map": 296622109,
+        "oob": 296622110,
+        "deployment": 296622111,
+        "rules": 296622112,
+        "allied": 296622113,
+        "axis": 296622114
+      },
+      "initialHash": "sha256:9cbb1c331e2c2c1f93db88fe1af219064ce6e6d9473730c5d120d49fe9c3f555",
+      "candidateSide": "axis",
+      "role": "ATTACKER",
+      "sameFinalHashAsBaseline": false,
+      "metrics": {
+        "earlyMargin": 0,
+        "gainedVp": 0,
+        "lostVp": 0,
+        "moveGainedVp": 0,
+        "combatGainedVp": 0,
+        "objectiveAttacks": -1,
+        "otherAttacks": 3,
+        "barrages": -1,
+        "objectiveAttackMeanColumn": 4,
+        "objectiveAttackCaptureRate": 0.5,
+        "objectiveAttackClearRate": 0.5,
+        "adjacentStrengthShare": 0,
+        "occupiedHeldVpShare": 0,
+        "outOfSupplyStrengthShare": 0,
+        "foundColumn6ObjectiveVp": 0,
+        "meanFoundObjectiveColumn": null,
+        "bestSearchTruncated": 0,
+        "regularAttacks": 3,
+        "objectiveSupplyRequirementTokens": -2,
+        "occupiedHeldVp": 0,
+        "unoccupiedHeldVp": 0
+      },
+      "finalMarginDelta": 0,
+      "subsequentMarginGainDelta": 0
+    },
+    {
+      "variant": "v80q-wide",
+      "style": "TEMPERATE_INLAND",
+      "match": 1310000,
+      "mapSeed": "296611633",
+      "seeds": {
+        "map": 296611633,
+        "oob": 296611634,
+        "deployment": 296611635,
+        "rules": 296611636,
+        "allied": 296611637,
+        "axis": 296611638
+      },
+      "initialHash": "sha256:9beb5a76f5493a9a5aae7fd227e6276da75b80fc5052ee60e859385b29dcedcb",
+      "candidateSide": "allied",
+      "role": "DEFENDER",
+      "sameFinalHashAsBaseline": false,
+      "metrics": {
+        "earlyMargin": 14,
+        "gainedVp": 3,
+        "lostVp": -4,
+        "moveGainedVp": 3,
+        "combatGainedVp": 0,
+        "objectiveAttacks": -1,
+        "otherAttacks": 0,
+        "barrages": 1,
+        "objectiveAttackMeanColumn": 0.5,
+        "objectiveAttackCaptureRate": 0,
+        "objectiveAttackClearRate": 1,
+        "adjacentStrengthShare": -0.24050632911392406,
+        "occupiedHeldVpShare": 0,
+        "outOfSupplyStrengthShare": 0,
+        "foundColumn6ObjectiveVp": 0,
+        "meanFoundObjectiveColumn": null,
+        "bestSearchTruncated": 0,
+        "regularAttacks": -2,
+        "objectiveSupplyRequirementTokens": -24,
+        "occupiedHeldVp": 7,
+        "unoccupiedHeldVp": 0
+      },
+      "finalMarginDelta": 8,
+      "subsequentMarginGainDelta": -6
+    },
+    {
+      "variant": "v80q-wide",
+      "style": "TEMPERATE_INLAND",
+      "match": 1310001,
+      "mapSeed": "296611633",
+      "seeds": {
+        "map": 296611633,
+        "oob": 296611634,
+        "deployment": 296611635,
+        "rules": 296611636,
+        "allied": 296611637,
+        "axis": 296611638
+      },
+      "initialHash": "sha256:9beb5a76f5493a9a5aae7fd227e6276da75b80fc5052ee60e859385b29dcedcb",
+      "candidateSide": "axis",
+      "role": "ATTACKER",
+      "sameFinalHashAsBaseline": false,
+      "metrics": {
+        "earlyMargin": 0,
+        "gainedVp": 0,
+        "lostVp": 0,
+        "moveGainedVp": 0,
+        "combatGainedVp": 0,
+        "objectiveAttacks": 1,
+        "otherAttacks": 0,
+        "barrages": 1,
+        "objectiveAttackMeanColumn": 0.25,
+        "objectiveAttackCaptureRate": -0.16666666666666663,
+        "objectiveAttackClearRate": -0.16666666666666663,
+        "adjacentStrengthShare": 0,
+        "occupiedHeldVpShare": 0,
+        "outOfSupplyStrengthShare": 0,
+        "foundColumn6ObjectiveVp": 0,
+        "meanFoundObjectiveColumn": null,
+        "bestSearchTruncated": 0,
+        "regularAttacks": 0,
+        "objectiveSupplyRequirementTokens": 3,
+        "occupiedHeldVp": 0,
+        "unoccupiedHeldVp": 0
+      },
+      "finalMarginDelta": 8,
+      "subsequentMarginGainDelta": 8
+    },
+    {
+      "variant": "v80q-wide",
+      "style": "TEMPERATE_INLAND",
+      "match": 1310002,
+      "mapSeed": "296611827",
+      "seeds": {
+        "map": 296611827,
+        "oob": 296611828,
+        "deployment": 296611829,
+        "rules": 296611830,
+        "allied": 296611831,
+        "axis": 296611832
+      },
+      "initialHash": "sha256:760b7996969e0dfa3fbedb6364a406c1d0759c606f0156fe794f4242024a46e3",
+      "candidateSide": "allied",
+      "role": "DEFENDER",
+      "sameFinalHashAsBaseline": false,
+      "metrics": {
+        "earlyMargin": 12,
+        "gainedVp": 2,
+        "lostVp": -4,
+        "moveGainedVp": 2,
+        "combatGainedVp": 0,
+        "objectiveAttacks": 2,
+        "otherAttacks": -2,
+        "barrages": -1,
+        "objectiveAttackMeanColumn": -0.25,
+        "objectiveAttackCaptureRate": 0,
+        "objectiveAttackClearRate": 0,
+        "adjacentStrengthShare": -0.0008714596949890852,
+        "occupiedHeldVpShare": null,
+        "outOfSupplyStrengthShare": -0.0793028322440087,
+        "foundColumn6ObjectiveVp": -4,
+        "meanFoundObjectiveColumn": -2,
+        "bestSearchTruncated": 0,
+        "regularAttacks": 1,
+        "objectiveSupplyRequirementTokens": 16,
+        "occupiedHeldVp": 2.0,
+        "unoccupiedHeldVp": 4.0
+      },
+      "finalMarginDelta": 4,
+      "subsequentMarginGainDelta": -8
+    },
+    {
+      "variant": "v80q-wide",
+      "style": "TEMPERATE_INLAND",
+      "match": 1310003,
+      "mapSeed": "296611827",
+      "seeds": {
+        "map": 296611827,
+        "oob": 296611828,
+        "deployment": 296611829,
+        "rules": 296611830,
+        "allied": 296611831,
+        "axis": 296611832
+      },
+      "initialHash": "sha256:760b7996969e0dfa3fbedb6364a406c1d0759c606f0156fe794f4242024a46e3",
+      "candidateSide": "axis",
+      "role": "ATTACKER",
+      "sameFinalHashAsBaseline": false,
+      "metrics": {
+        "earlyMargin": -26,
+        "gainedVp": -7,
+        "lostVp": 6,
+        "moveGainedVp": 0,
+        "combatGainedVp": -7,
+        "objectiveAttacks": 4,
+        "otherAttacks": 2,
+        "barrages": 3,
+        "objectiveAttackMeanColumn": -3.25,
+        "objectiveAttackCaptureRate": -0.625,
+        "objectiveAttackClearRate": -0.5,
+        "adjacentStrengthShare": 0,
+        "occupiedHeldVpShare": 0,
+        "outOfSupplyStrengthShare": 0,
+        "foundColumn6ObjectiveVp": -4,
+        "meanFoundObjectiveColumn": null,
+        "bestSearchTruncated": 0,
+        "regularAttacks": 3,
+        "objectiveSupplyRequirementTokens": 12,
+        "occupiedHeldVp": -13,
+        "unoccupiedHeldVp": 0
+      },
+      "finalMarginDelta": -8,
+      "subsequentMarginGainDelta": 18
+    },
+    {
+      "variant": "v80q-wide",
+      "style": "TEMPERATE_INLAND",
+      "match": 1310004,
+      "mapSeed": "296612021",
+      "seeds": {
+        "map": 296612021,
+        "oob": 296612022,
+        "deployment": 296612023,
+        "rules": 296612024,
+        "allied": 296612025,
+        "axis": 296612026
+      },
+      "initialHash": "sha256:ff29240f3b28187d3f3b250d2f783386c1218dd2fb741d5b0c5078cc89203ac2",
+      "candidateSide": "allied",
+      "role": "DEFENDER",
+      "sameFinalHashAsBaseline": false,
+      "metrics": {
+        "earlyMargin": 0,
+        "gainedVp": 0,
+        "lostVp": 0,
+        "moveGainedVp": 0,
+        "combatGainedVp": 0,
+        "objectiveAttacks": 0,
+        "otherAttacks": 1,
+        "barrages": 0,
+        "objectiveAttackMeanColumn": null,
+        "objectiveAttackCaptureRate": null,
+        "objectiveAttackClearRate": null,
+        "adjacentStrengthShare": 0,
+        "occupiedHeldVpShare": 0,
+        "outOfSupplyStrengthShare": 0,
+        "foundColumn6ObjectiveVp": 0,
+        "meanFoundObjectiveColumn": null,
+        "bestSearchTruncated": 0,
+        "regularAttacks": 1,
+        "objectiveSupplyRequirementTokens": 0,
+        "occupiedHeldVp": 0,
+        "unoccupiedHeldVp": 0
+      },
+      "finalMarginDelta": 0,
+      "subsequentMarginGainDelta": 0
+    },
+    {
+      "variant": "v80q-wide",
+      "style": "TEMPERATE_INLAND",
+      "match": 1310005,
+      "mapSeed": "296612021",
+      "seeds": {
+        "map": 296612021,
+        "oob": 296612022,
+        "deployment": 296612023,
+        "rules": 296612024,
+        "allied": 296612025,
+        "axis": 296612026
+      },
+      "initialHash": "sha256:ff29240f3b28187d3f3b250d2f783386c1218dd2fb741d5b0c5078cc89203ac2",
+      "candidateSide": "axis",
+      "role": "ATTACKER",
+      "sameFinalHashAsBaseline": false,
+      "metrics": {
+        "earlyMargin": 0,
+        "gainedVp": 0,
+        "lostVp": 0,
+        "moveGainedVp": 0,
+        "combatGainedVp": 0,
+        "objectiveAttacks": 0,
+        "otherAttacks": 0,
+        "barrages": 1,
+        "objectiveAttackMeanColumn": null,
+        "objectiveAttackCaptureRate": null,
+        "objectiveAttackClearRate": null,
+        "adjacentStrengthShare": 0,
+        "occupiedHeldVpShare": null,
+        "outOfSupplyStrengthShare": 0,
+        "foundColumn6ObjectiveVp": 0,
+        "meanFoundObjectiveColumn": null,
+        "bestSearchTruncated": 0,
+        "regularAttacks": 0,
+        "objectiveSupplyRequirementTokens": 0,
+        "occupiedHeldVp": 0,
+        "unoccupiedHeldVp": 0
+      },
+      "finalMarginDelta": 0,
+      "subsequentMarginGainDelta": 0
+    },
+    {
+      "variant": "v80q-wide",
+      "style": "TEMPERATE_INLAND",
+      "match": 1310006,
+      "mapSeed": "296612215",
+      "seeds": {
+        "map": 296612215,
+        "oob": 296612216,
+        "deployment": 296612217,
+        "rules": 296612218,
+        "allied": 296612219,
+        "axis": 296612220
+      },
+      "initialHash": "sha256:4d827dbae7aa995e788a23b4ef3e2eb33354be317c457dc4260333b1a16dcc97",
+      "candidateSide": "allied",
+      "role": "DEFENDER",
+      "sameFinalHashAsBaseline": false,
+      "metrics": {
+        "earlyMargin": 12,
+        "gainedVp": 0,
+        "lostVp": -6,
+        "moveGainedVp": 0,
+        "combatGainedVp": 0,
+        "objectiveAttacks": 0,
+        "otherAttacks": 1,
+        "barrages": -1,
+        "objectiveAttackMeanColumn": null,
+        "objectiveAttackCaptureRate": null,
+        "objectiveAttackClearRate": null,
+        "adjacentStrengthShare": 0,
+        "occupiedHeldVpShare": 0,
+        "outOfSupplyStrengthShare": 0.392,
+        "foundColumn6ObjectiveVp": 0,
+        "meanFoundObjectiveColumn": null,
+        "bestSearchTruncated": 0,
+        "regularAttacks": 2,
+        "objectiveSupplyRequirementTokens": 0,
+        "occupiedHeldVp": 6,
+        "unoccupiedHeldVp": 0
+      },
+      "finalMarginDelta": 6,
+      "subsequentMarginGainDelta": -6
+    },
+    {
+      "variant": "v80q-wide",
+      "style": "TEMPERATE_INLAND",
+      "match": 1310007,
+      "mapSeed": "296612215",
+      "seeds": {
+        "map": 296612215,
+        "oob": 296612216,
+        "deployment": 296612217,
+        "rules": 296612218,
+        "allied": 296612219,
+        "axis": 296612220
+      },
+      "initialHash": "sha256:4d827dbae7aa995e788a23b4ef3e2eb33354be317c457dc4260333b1a16dcc97",
+      "candidateSide": "axis",
+      "role": "ATTACKER",
+      "sameFinalHashAsBaseline": false,
+      "metrics": {
+        "earlyMargin": -12,
+        "gainedVp": -6,
+        "lostVp": 0,
+        "moveGainedVp": 0,
+        "combatGainedVp": -6,
+        "objectiveAttacks": 0,
+        "otherAttacks": -1,
+        "barrages": -2,
+        "objectiveAttackMeanColumn": 1,
+        "objectiveAttackCaptureRate": -0.5,
+        "objectiveAttackClearRate": -0.5,
+        "adjacentStrengthShare": 0,
+        "occupiedHeldVpShare": null,
+        "outOfSupplyStrengthShare": 0,
+        "foundColumn6ObjectiveVp": -6,
+        "meanFoundObjectiveColumn": -2,
+        "bestSearchTruncated": 0,
+        "regularAttacks": -3,
+        "objectiveSupplyRequirementTokens": 15,
+        "occupiedHeldVp": -6,
+        "unoccupiedHeldVp": 0
+      },
+      "finalMarginDelta": -18,
+      "subsequentMarginGainDelta": -6
+    },
+    {
+      "variant": "v80q-wide",
+      "style": "TEMPERATE_INLAND",
+      "match": 1310008,
+      "mapSeed": "296612409",
+      "seeds": {
+        "map": 296612409,
+        "oob": 296612410,
+        "deployment": 296612411,
+        "rules": 296612412,
+        "allied": 296612413,
+        "axis": 296612414
+      },
+      "initialHash": "sha256:5d6298f2a54953d4a49090116cf28dca3ce8636f9d9907dffe823865f6d82033",
+      "candidateSide": "allied",
+      "role": "DEFENDER",
+      "sameFinalHashAsBaseline": false,
+      "metrics": {
+        "earlyMargin": 0,
+        "gainedVp": 0,
+        "lostVp": 0,
+        "moveGainedVp": 0,
+        "combatGainedVp": 0,
+        "objectiveAttacks": 0,
+        "otherAttacks": 0,
+        "barrages": 0,
+        "objectiveAttackMeanColumn": null,
+        "objectiveAttackCaptureRate": null,
+        "objectiveAttackClearRate": null,
+        "adjacentStrengthShare": 0,
+        "occupiedHeldVpShare": 0,
+        "outOfSupplyStrengthShare": 0.0,
+        "foundColumn6ObjectiveVp": 0,
+        "meanFoundObjectiveColumn": null,
+        "bestSearchTruncated": 0,
+        "regularAttacks": 0,
+        "objectiveSupplyRequirementTokens": 0,
+        "occupiedHeldVp": 0,
+        "unoccupiedHeldVp": 0
+      },
+      "finalMarginDelta": 8,
+      "subsequentMarginGainDelta": 8
+    },
+    {
+      "variant": "v80q-wide",
+      "style": "TEMPERATE_INLAND",
+      "match": 1310009,
+      "mapSeed": "296612409",
+      "seeds": {
+        "map": 296612409,
+        "oob": 296612410,
+        "deployment": 296612411,
+        "rules": 296612412,
+        "allied": 296612413,
+        "axis": 296612414
+      },
+      "initialHash": "sha256:5d6298f2a54953d4a49090116cf28dca3ce8636f9d9907dffe823865f6d82033",
+      "candidateSide": "axis",
+      "role": "ATTACKER",
+      "sameFinalHashAsBaseline": false,
+      "metrics": {
+        "earlyMargin": 20,
+        "gainedVp": 10,
+        "lostVp": 0,
+        "moveGainedVp": 0,
+        "combatGainedVp": 10,
+        "objectiveAttacks": 5,
+        "otherAttacks": -2,
+        "barrages": 2,
+        "objectiveAttackMeanColumn": -3,
+        "objectiveAttackCaptureRate": 0.5,
+        "objectiveAttackClearRate": 0.5,
+        "adjacentStrengthShare": 0.18505338078291814,
+        "occupiedHeldVpShare": null,
+        "outOfSupplyStrengthShare": 0,
+        "foundColumn6ObjectiveVp": 3,
+        "meanFoundObjectiveColumn": null,
+        "bestSearchTruncated": 0,
+        "regularAttacks": 3,
+        "objectiveSupplyRequirementTokens": 5,
+        "occupiedHeldVp": 10,
+        "unoccupiedHeldVp": 0
+      },
+      "finalMarginDelta": 8,
+      "subsequentMarginGainDelta": -12
+    }
+  ]
+}

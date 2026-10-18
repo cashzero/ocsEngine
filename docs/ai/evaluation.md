@@ -8,7 +8,7 @@
 
 ## 現行行為
 
-下一階段優先進行 [VP 改善的預測指標研究](vp-metrics.md)，先實驗哪些指標能預測新種子與新策略變體的 VP 增益，再據此選擇策略改善方向。現有指標尚無這方面的驗證結論；研究不改變下列策略升級條件。
+目前優先進行 [VP 改善的預測指標研究](vp-metrics.md)，先實驗哪些指標能預測新種子與新策略變體的 VP 增益，再據此選擇策略改善方向。已有首輪歷史資料探索，尚無前瞻驗證結論；研究不改變下列策略升級條件。
 
 歷史場景的空軍範圍不能只依 CLI 參數認定。[指標研究盤點](../quality/evidence/ai-vp-metrics-inventory-2026-10-18/README.md)的 `v79-baseline-wide`、`v80g-wide`、`v80j-wide`、`v80q-wide` 共 80 份攻擊戰存檔，即使 options 為 `air=NONE`、`airTransport=NONE`，仍有場外飛機與實際 `DECLARE_AIR_MISSION`。這些批次的「無空軍」描述不成立，只能作含場外空軍的歷史探索資料。其他批次的實際組成尚待稽核，不能由參數推定。缺口見 `historical-ai-air-scope`。
 
@@ -26,6 +26,7 @@
 | `scripts/ai-objective-flow-study.mjs` | VP 從哪裡來：目標點以走進空格或戰鬥決定取得與失去、攻擊目標點的欄位與結果（攻擊戰攻方、遭遇戰雙方） |
 | `scripts/ai-role-margin.mjs` | 把候選策略在攻擊戰的攻方與守方效果分開：與對手策略自我對戰的同種子基準比較每局攻方 margin |
 | `scripts/ai-concentration-study.mjs` | 攻方兵力集中：戰力離敵距離與任務分佈、可攻擊格與宣告攻擊的 Combat Table 欄位、主攻群貼近目標的戰力、砲兵模式與砲擊（需 `--trace`） |
+| `scripts/ai-vp-metrics-extract.mjs`、`scripts/ai-vp-metrics-compare.py` | 固定回合的目標控制與戰術指標重播、同角色自戰差分、留出種子與策略變體的探索比較；首輪 manifest、重現方式與限制見 [VP 指標研究](vp-metrics.md) |
 | `scripts/ai-narrate.mjs` | 一局 trace 的逐步摘要，供人工檢視 |
 | `scripts/ai-train.mjs` | 權重自我對戰（已停用，見「決策」） |
 

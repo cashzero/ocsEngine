@@ -1,0 +1,63 @@
+{
+  "analysisSourceBase": "77af28a",
+  "scripts": {
+    "scripts/ai-vp-metrics-extract.mjs": "43bd6276b2afb5e3e629061171535d8d1cfd12c268eed8e0e089c7c3bd0bc126",
+    "scripts/ai-vp-metrics-compare.py": "709eff46042887408266108b8f03e2fb91de2b82fc0d1d22a8b30ea7c40ce152"
+  },
+  "historicalGames": 80,
+  "newMatches": 0,
+  "verifiedFinalHashes": 80,
+  "roleObservations": 160,
+  "absentCutoffCombatObservations": 6,
+  "truncatedCandidateQueries": 0,
+  "queryLimit": 400,
+  "candidateEnumeration": "heuristic, not exhaustive even when not truncated",
+  "extractionElapsedMsByBatch": {
+    "v79-baseline-wide-EASTERN_EUROPE": 62473,
+    "v79-baseline-wide-TEMPERATE_INLAND": 212653,
+    "v80g-wide-EASTERN_EUROPE": 63746,
+    "v80g-wide-TEMPERATE_INLAND": 178593,
+    "v80j-wide-EASTERN_EUROPE": 62684,
+    "v80j-wide-TEMPERATE_INLAND": 203155,
+    "v80q-wide-EASTERN_EUROPE": 171604,
+    "v80q-wide-TEMPERATE_INLAND": 181068
+  },
+  "extractionHashes": {
+    "v79-baseline-wide-EASTERN_EUROPE.metrics.json": "7615c29712167e2d5fff344b963e8717205a724e8d78d254f0ff14c4ad9d8807",
+    "v79-baseline-wide-TEMPERATE_INLAND.metrics.json": "454d963457b8547f494c935fd938eefab9c13971b8856f8bddbb7460ff733de0",
+    "v80g-wide-EASTERN_EUROPE.metrics.json": "2b1acee87da60332600f83f6fe0233cadd9b4f6c2beae086fc378098a2788535",
+    "v80g-wide-TEMPERATE_INLAND.metrics.json": "35047b6e4e719ce614f15db69da6476c7ef1db4f1d76d0483ed7c20e50a213bf",
+    "v80j-wide-EASTERN_EUROPE.metrics.json": "9b4903ee2bcf6d6501511b3e0def56e9ac1bd062978b2420fcf560870a8df06b",
+    "v80j-wide-TEMPERATE_INLAND.metrics.json": "c435edaabf204a55491c3a5984c8b693a791627fe05192e2e979e6cda2fdd8f3",
+    "v80q-wide-EASTERN_EUROPE.metrics.json": "c26e52d8d78a5f089ca651e91364d259147fb4ccb837adb46b7b4eee4f4eb6df",
+    "v80q-wide-TEMPERATE_INLAND.metrics.json": "2d9f9c17e9f5ed7c68bcd79f2d7f82fe706c3d2e3c863d276e769dd2a05afa8b"
+  },
+  "plainReplay": {
+    "save": ".claude/worktrees/ai-truck-shuttle/artifacts/ai-assault/v79-baseline-wide/AXIS_ATTACKS-TEMPERATE_INLAND/match-1310000.save.json",
+    "actionCount": 843,
+    "plainFinalHash": "sha256:4a89087c81dc831e21dcbf2fae2c858523687258cdc26d7a17ab850d93290011",
+    "instrumentedFinalHash": "sha256:4a89087c81dc831e21dcbf2fae2c858523687258cdc26d7a17ab850d93290011",
+    "match": true
+  },
+  "selfTests": [
+    "unpenalized baseline slope",
+    "duplicate VP information does not improve prediction",
+    "train-only imputation",
+    "tied ranks",
+    "outcome exclusion",
+    "seed/variant grouped holdouts",
+    "incomplete manifest coverage rejected",
+    "fresh replay matches refined count metrics and skipped-combat missing value"
+  ],
+  "repeatability": "Refined occupied/unoccupied VP counts derived algebraically from existing held objective histories and occupancy ratio; fresh replay match1310104 agrees exactly",
+  "status": "Exploratory analysis complete; predictive metric qualification and causal intervention unverified",
+  "frozenBuildVerification": {
+    "source": "docs/quality/evidence/ai-assault-v81-promotion-development-2026-10-17/v81-freeze.json",
+    "sourceCommit": "293ce72d6537043227535b3774c5374b0fb08228",
+    "matchingBuildFiles": 206
+  },
+  "independentReview": {
+    "model": "gpt-6.1-sol",
+    "result": "No blocking findings; report recomputed exactly, hashes and numerical claims checked; wording clarified"
+  }
+}
