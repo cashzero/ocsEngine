@@ -31,11 +31,6 @@ export interface Situation {
   readonly turnsLeft: number;
   readonly opponentTurnRemains: boolean;
   readonly attack: boolean;
-  /**
-   * heuristic@81: the side's part in the engagement, from the public attack victory condition: the attacker of an attack
-   * engagement masses against defended objectives, its defender holds, and in a meeting engagement both race for VP.
-   */
-  readonly posture: 'ATTACKER' | 'DEFENDER' | 'MEETING';
   readonly own: readonly OwnUnit[];
   readonly enemy: ReadonlyMap<HexId, EnemyStack>;
   readonly objectives: readonly ObjectiveView[];
@@ -136,7 +131,6 @@ export const analyze = (projection: RuleProjection, playerId: PlayerId, facts: B
     turnsLeft,
     opponentTurnRemains: turnsLeft > 0 || projection.sequence.playerTurnIndex === 0,
     attack: projection.attackVictory !== undefined,
-    posture: projection.attackVictory === undefined ? 'MEETING' : projection.attackVictory.attackerId === playerId ? 'ATTACKER' : 'DEFENDER',
     own,
     enemy,
     objectives: projection.objectives.map(({ hexId, points, controllerId }) => ({ hexId, points, controllerId })),

@@ -302,14 +302,6 @@ export class GameplaySession implements GameSession {
     return cloneValue(this.#ports.rules.queryDrawReach(this.#state, binding.playerId, hexId));
   };
 
-  getAttackStrength = (seatId: SeatId, attackerIds: Parameters<GameSession['getAttackStrength']>[1], targetHexId: Parameters<GameSession['getAttackStrength']>[2]): ReturnType<GameSession['getAttackStrength']> => {
-    const binding = this.#binding(seatId);
-    if (this.#lifecycle !== 'ACTIVE' || this.#handoff !== null) {
-      return { allowed: false, value: null, reasons: [{ code: 'SESSION_NOT_INTERACTIVE', allowed: false, message: 'Session is not accepting interaction.', rule: 'gameplay' }], facts: [], dependencies: [] };
-    }
-    return cloneValue(this.#ports.rules.queryAttackStrength(this.#state, binding.playerId, attackerIds, targetHexId));
-  };
-
   getSupplySources = (seatId: SeatId): ReturnType<GameSession['getSupplySources']> => {
     const binding = this.#binding(seatId);
     if (this.#lifecycle !== 'ACTIVE' || this.#handoff !== null) {

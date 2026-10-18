@@ -50,7 +50,6 @@ export const createBotActionAccess = (session: GameSession, seatId: SeatId): Bot
       }
       return reach;
     },
-    attackStrength: (attackerIds, targetHexId) => session.getAttackStrength(seatId, attackerIds, targetHexId).value,
     feedCoverage: (pieceId = null) => {
       let feeds = feedCache.get(String(pieceId));
       if (feeds === undefined) {

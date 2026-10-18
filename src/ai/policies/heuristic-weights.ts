@@ -59,20 +59,13 @@ export interface HeuristicWeights {
   readonly progressObjective: number;
   readonly huntAdjacent: number;
   // Main effort (bot-offensive-axis): one defended enemy objective attacked by a group with HQ and SP behind it.
-  /** The attacker's assault group strength over the defenders' printed strength (heuristic@11-79 rule, kept for the attacker). */
+  /** Assault group strength over the defenders' before the effort is launched and while it gathers. */
   readonly assaultRatio: number;
-  readonly assaultRatioUnits: number;
-  /** heuristic@81: guns given to one effort to barrage its objective first (heuristic@83: the defender's only). */
-  readonly assaultMaxGuns: number;
-  /** heuristic@81: share of the defenders' strength an effort is sized against when a gun of its own can barrage them (DG halves). */
-  readonly barrageDefenseShare: number;
   /** Friendly combat units counted within this many hexes when judging whether an effort is feasible. */
   readonly assaultReach: number;
   readonly assaultMaxUnits: number;
   /** Efforts launched at once against different objectives (heuristic@11; heuristic@4-10 launched one). */
   readonly assaultMaxEfforts: number;
-  /** At most this many efforts for the defender of an attack engagement (development ablation). */
-  readonly defenderMaxEfforts: number;
   readonly assaultPosition: number;
   /** Multiplies the objective term of a combat against the main effort's target. */
   readonly assaultObjective: number;
@@ -105,10 +98,6 @@ export interface HeuristicWeights {
   readonly artilleryEscortDistance: number;
   readonly artilleryUnescorted: number;
   readonly artilleryExposure: number;
-  /** heuristic@81: a gun of an effort within its range plus this many hexes of the objective switches to Combat Mode. */
-  readonly artilleryCombatModeReach: number;
-  /** heuristic@81: a gun of an effort farther than its range plus this many hexes from the objective switches to Move Mode. */
-  readonly artilleryMoveModeDistance: number;
   readonly rearExposure: number;
   readonly rearExposed: number;
   readonly truckTowardGoal: number;
@@ -127,8 +116,6 @@ export interface HeuristicWeights {
   readonly attackerLoss: number;
   readonly attackerOption: number;
   readonly combatSupply: number;
-  /** heuristic@81: Tokens within reach of the paying units below which combat and barrage SP keep their full price. */
-  readonly supplyReserveTokens: number;
   readonly objectiveTaken: number;
   readonly vacateOptionShare: number;
   readonly protectObjective: number;
@@ -157,21 +144,21 @@ export const DEFAULT_HEURISTIC_WEIGHTS: HeuristicWeights = Object.freeze({
   huntValue: 3, huntInfiltrationRadius: 3, huntAnchorRadius: 2, huntStrengthPerUnit: 5,
   clearStrength: 2, clearRadius: 5, clearValue: 4, clearCombat: 8, reliefMinStrength: 6, reliefRadius: 2, holdTruckReach: 10, holdRatio: 0.5, holdStrengthPerUnit: 5, holdMaxExtra: 2,
   capture: 40, passThroughShare: 0.25, abandonObjective: 30, holdAtEnd: 15, crowding: 3, stratNearEnemy: 60, stratSafeDistance: 3, progressFront: 6, progressTarget: 10, progressObjective: 15,
-  huntAdjacent: 15, assaultMaxGuns: 3, assaultRatio: 2.5, assaultRatioUnits: 6, barrageDefenseShare: 0.5, assaultReach: 12, assaultMaxUnits: 10, assaultMaxEfforts: 5, defenderMaxEfforts: 5, assaultPosition: 20, assaultObjective: 2, barrageMainEffort: 5, garrisonStay: 30, contactGood: 6, contactBad: 8, contactRatio: 1.5, exposureSupport: 1.5,
+  huntAdjacent: 15, assaultRatio: 2.5, assaultReach: 12, assaultMaxUnits: 6, assaultMaxEfforts: 5, assaultPosition: 20, assaultObjective: 2, barrageMainEffort: 5, garrisonStay: 30, contactGood: 6, contactBad: 8, contactRatio: 1.5, exposureSupport: 1.5,
   outOfSupply: 60, outOfSupplyFed: 10, fedRadius: 2, hqDependentSupply: 8,
   hqWithArmy: 6, hqExposed: 60, hqOutOfSupply: 60, hqOffRail: 80, hqCover: 1, hqRailheadReach: 6, hqExposure: 2,
-  artilleryInRange: 20, artilleryBeyondRange: 4, artilleryWithArmy: 6, artilleryExposed: 60, artilleryEscortDistance: 3, artilleryUnescorted: 40, artilleryExposure: 1.5, artilleryCombatModeReach: 1, artilleryMoveModeDistance: 3,
+  artilleryInRange: 20, artilleryBeyondRange: 4, artilleryWithArmy: 6, artilleryExposed: 60, artilleryEscortDistance: 3, artilleryUnescorted: 40, artilleryExposure: 1.5,
   rearExposure: 4, rearExposed: 80, truckTowardGoal: 5, truckExposed: 80, truckExposure: 4,
   combatModeDistance: 3, stratModeEnemyDistance: 10, stratModeTargetDistance: 8, hqCombatModeRadius: 3,
   attackThreshold: 4, overrunThresholdFactor: 2, defenderLoss: 10, defenderOption: 5, attackerLoss: 10, attackerOption: 3,
-  combatSupply: 1.5, supplyReserveTokens: 24, objectiveTaken: 25, vacateOptionShare: 0.7, protectObjective: 8, disorganize: 4, minimumOdds: 1,
+  combatSupply: 1.5, objectiveTaken: 25, vacateOptionShare: 0.7, protectObjective: 8, disorganize: 4, minimumOdds: 1,
   barrageThreshold: 2, barrageDisruptBeforeAttack: 10, barrageDisrupt: 4, barrageSteps: 10, barrageSupply: 1.2, barrageNearObjective: 2,
   hedgehogThreatRadius: 3, hedgehogObjectiveLevel: 3, hedgehogFrontLevel: 1, hedgehogSupplyReserve: 40,
 });
 
 /** Weights that count hexes or units: mutations keep them whole numbers of at least 1. */
 export const WHOLE_NUMBER_WEIGHTS: readonly (keyof HeuristicWeights)[] = [
-  'garrisonSecondUnitThreat', 'artilleryEscortDistance', 'clearRadius', 'reliefRadius', 'holdTruckReach', 'holdMaxExtra', 'assaultMaxGuns', 'assaultRatioUnits', 'artilleryCombatModeReach', 'artilleryMoveModeDistance', 'assaultReach', 'assaultMaxUnits', 'assaultMaxEfforts', 'defenderMaxEfforts', 'captureBaseUnits', 'huntInfiltrationRadius', 'huntAnchorRadius', 'stratSafeDistance', 'fedRadius',
+  'garrisonSecondUnitThreat', 'artilleryEscortDistance', 'clearRadius', 'reliefRadius', 'holdTruckReach', 'holdMaxExtra', 'assaultReach', 'assaultMaxUnits', 'assaultMaxEfforts', 'captureBaseUnits', 'huntInfiltrationRadius', 'huntAnchorRadius', 'stratSafeDistance', 'fedRadius',
   'combatModeDistance', 'stratModeEnemyDistance', 'stratModeTargetDistance', 'hqCombatModeRadius', 'hqRailheadReach',
   'hedgehogThreatRadius', 'hedgehogObjectiveLevel', 'hedgehogFrontLevel',
 ];

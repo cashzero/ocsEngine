@@ -44,8 +44,10 @@
 用於「新策略取代標準策略」：
 
 1. **對手**：凍結的現行標準策略；雙方使用候選版本的同一份引擎與產生器。
-2. **設定**：32×24、每方 6 師（2 裝甲）、8 回合、不開空軍（`ai-match.mjs` 必須明確給 `--air NONE --air-transport NONE`；
-   不給時產生器預設會產生飛機，v66 的獨立批就是在有飛機的設定下跑的）；地圖 `TEMPERATE_INLAND` 與 `EASTERN_EUROPE`；
+2. **設定**：32×24、每方 6 師（2 裝甲）、8 回合、地圖上不開空軍（`ai-match.mjs` 必須明確給 `--air NONE --air-transport NONE`；
+   不給時產生器預設會產生飛機，v66 的獨立批就是在有飛機的設定下跑的）。攻擊戰的攻方另有場外機場與飛機，與 `--air` 無關
+   （產生器的交戰設計，[engagements plan](../quality/evidence/engagements-plan-2026-10-07/README.md) §6）：v82 獨立批的攻擊戰
+   每局攻方約 4 次空中任務，不論哪個策略擔任攻方；遭遇戰沒有飛機。成對比較因此仍公平，但攻擊戰不是無空軍的對局；地圖 `TEMPERATE_INLAND` 與 `EASTERN_EUROPE`；
    交戰 `MEETING` 與 `AXIS_ATTACKS`。同種子交換陣營成對。地中海風格已移除，不再使用。
 3. **開發批**：已知種子，可多次使用，只用來決定方向。
 4. **獨立批**：凍結候選、登記 source／build hash 與全新種子後才開始；固定 **80 場／40 對**（每組地圖 × 交戰 10 對；
@@ -190,6 +192,7 @@ SP 每 segment 7.4–9.8 SP（地圖上 SP 的 29–36%）。
 | v74 保留 VP 攻擊的前進資格 | v66 | 品質／局部接續 | — | — | [748 passed、8 skipped](../quality/evidence/ai-vp-option-quality-2026-10-16/README.md)；換基底前未開對戰，不作升級證據 |
 | v76 全回合支付可存活的攻方 option | v75 | 開發 32 場 | −2 | +2／−4 | [淘汰](../quality/evidence/ai-vp-option-development-2026-10-16/README.md) |
 | v77 限最後一位玩家的最後回合 | v75 | 開發 32 場 | +8 | 0／+8 | [增益集中一對種子](../quality/evidence/ai-vp-terminal-option-development-2026-10-16/README.md)，尚未獨立驗收 |
+| v84 刪除 v81–v83 的分角色規劃 | v79 | 開發 32 場 | 0 | 0／0 | 遭遇戰與攻擊戰每一對兩局終局 hash 相同（16/16）：照 v79 下，另含對港口與機場的砲擊（`7990052`，這些局沒有改變任何一局） |
 | v83 只改攻擊戰守方 | v79 | 開發 32 場 | +33 | 0／+33 | [開發中](../quality/evidence/ai-assault-v83-development-2026-10-17/README.md)，遭遇戰每對兩局 hash 相同（未改變）、攻方與 v79 逐局相同；攻擊戰成對 +4.13 ± 1.69；同一守方規劃在 v82 獨立批攻擊戰 20 對 +0.35 ± 0.73、[全新開發種子](../quality/evidence/ai-defender-efforts-development-2026-10-18/README.md) 40 對每局 −2.4 ± 1.25；守方不組主攻每局 +1.4 ± 1.2；未登記獨立批 |
 | v82 攻方照 v79、守方與遭遇戰規劃主攻 | v79 | 獨立 80 場 | −20 | −34／+14 | [未達登記門檻](../quality/evidence/ai-assault-v82-independent-2026-10-17/README.md)，區間 [−1.47, 0.97]，遭遇戰為負；全部正確性檢查與兩個補給 gate（自我對戰對照，5.4 對 5.4、1.7 對 1.7）通過；[開發](../quality/evidence/ai-assault-v82-development-2026-10-17/README.md) 32 場 +22（成對 +1.38 ± 1.47）、重複使用的寬種子 40 場 +63 |
 | v81 依交戰角色規劃主攻 | v79 | 開發 32 場 | −22 | −32／+10 | [未登記獨立批](../quality/evidence/ai-assault-v81-promotion-development-2026-10-17/README.md)，成對 −0.69 ± 1.40；攻方運補 gate（後方 SP 6.3 對 1.3）與攻方送補 gate（4.0 對 0.2）未通過；重複使用的 40 對 [+72](../quality/evidence/ai-assault-v81-development-2026-10-17/README.md)（成對 +1.80 ± 1.59，攻方 −1.8、守方 +2.4） |
