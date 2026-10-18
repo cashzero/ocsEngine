@@ -52,10 +52,14 @@ for (const dir of dirs) {
           policies: Object.fromEntries(players.map((playerId) => [playerId, record.sides[sideOf(playerId)].policy])),
           gameTurn: state.sequence.gameTurn, playerTurnIndex: state.sequence.playerTurnIndex, phasingPlayerId: state.sequence.phasingPlayerId,
           metrics: Object.fromEntries(players.map((playerId) => [playerId, { ...position[playerId], ...nextTurn[playerId] }])),
-          turn: Object.fromEntries(players.map((playerId) => [playerId, { stepsLost: 0, objectivesGained: 0, objectivesLost: 0, objectiveVpGained: 0, objectiveVpLost: 0, spCapturedOrDestroyed: 0 }])),
+          turn: Object.fromEntries(players.map((playerId) => [playerId, {
+            stepsLost: 0, combatStepsLost: 0, attritionStepsLost: 0,
+            objectivesGained: 0, objectivesLost: 0, objectiveVpGained: 0, objectiveVpLost: 0, spCapturedOrDestroyed: 0,
+          }])),
         };
       }
       const next = m.ruleEngine.applyAction(state, action);
+      const isAttritionStep = state.pendingDecision?.kind === 'ATTRITION_LOSS' || next.events.some((e) => e.kind === 'ATTRITION_ROLLED');
       const ownerOf = (pieceId) => (state.pieceState.pieces.find(({ id }) => id === pieceId) ?? next.state.pieceState.pieces.find(({ id }) => id === pieceId))?.ownerId;
       for (const event of next.events) {
         // Tokens of a dump the opponent captured or destroyed, or its owner blew to deny it (4 Tokens = 1 SP).
@@ -63,7 +67,10 @@ for (const dir of dirs) {
         if (tokens > 0 && row.turn[ownerOf(event.resourcePieceId)]) row.turn[ownerOf(event.resourcePieceId)].spCapturedOrDestroyed += tokens / 4;
         if (event.kind !== 'STEP_LOST') continue;
         const owner = ownerOf(event.pieceId);
-        if (row.turn[owner]) row.turn[owner].stepsLost += 1;
+        if (row.turn[owner]) {
+          row.turn[owner].stepsLost += 1;
+          if (isAttritionStep) row.turn[owner].attritionStepsLost += 1; else row.turn[owner].combatStepsLost += 1;
+        }
       }
       for (const { hexId, points } of objectives) {
         const before = control(state, hexId); const after = control(next.state, hexId);

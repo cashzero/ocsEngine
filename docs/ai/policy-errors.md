@@ -46,8 +46,10 @@ VP、Kill、Loss、Supply 反映不出局勢（使用者，2026-10-18），所�
 |---|---|
 | `objectivesAtRisk`、`objectiveVpAtRisk` | 己方持有的目標點中，對方下回合能以第 6 欄以上攻擊、或格內沒有己方戰鬥單位而對方能走進的 |
 | `objectivesInReach`、`objectiveVpInReach` | 反過來：己方未持有的目標點中，己方下回合能以第 6 欄以上攻擊或走進的 |
+| `payableObjectivesAtRisk`、`payableObjectiveVpAtRisk`、`payableObjectivesInReach`、`payableObjectiveVpInReach` | 上述目標點中，攻方維持第 6 欄最小單位組在扣掉內部存量自付後，所需補給堆戰鬥補給能由前線可支配戰鬥 SP（`surplusCombatSp`）實際支付者（按 VP 高低不重複分配單位與 SP） |
 | `stacksExposed`、`stepsExposed` | 對方下回合能以第 9 欄以上攻擊的己方 stack 數與其中的 step（上限：對方每個單位都算進每個到得了旁邊的格子） |
 | `stacksExposedAllocated`、`stepsExposedAllocated` | 同上，但對方每個單位只攻擊一格：貪婪分配，先挑未分配單位能以第 9 欄以上攻擊、step 最多的格子，只留維持第 9 欄所需的單位（先拿掉印刷戰力最弱的），再挑下一格 |
+| `maxSingleStackExpectedLoss` | 對方下回合對任一己方 stack 發動單次最佳攻擊時，依 2d6 機率分布與 Combat Table 結果（含死守持有目標點時將 option 轉為 step 損失）計算的最大期望防守方 step 損失 |
 | `hqsInReach`、`dumpSpInReach` | 對方下回合能到旁邊的己方 HQ，與己方補給堆（不含駐軍存量）的 SP |
 | `unitsWithReach` | 下回合能移動的己方戰鬥單位 |
 | `supplyBestCut`、`supplyCuttable` | 現在有 trace 的己方戰鬥單位中，對方一個單位移到一格就會斷補的最多單位數，與某一個這樣的移動會切斷的單位數 |
@@ -58,9 +60,8 @@ formation 共同路線、補給源）重算，數斷補的己方單位。只試�
 在 24 個局面上與逐格全試比較，最大單一切斷 23 個相同，可切斷數相同或略少，每方每個局面約 0.4 秒。`ai-position-record.mjs`
 只為不行動的一方（這個玩家回合可能被切斷的一方）計算。
 
-現況指標（`positionMetrics`：VP、目標點、step、DG、接敵、
-斷補、SP、乾 HQ）與這些指標一起由 `ai-continue.mjs` 在每個時間點記錄，`ai-position-record.mjs` 則在既有對局的每個玩家回合
-開始時記錄，並附上該玩家回合發生的事（各方損失的 step、取得與失去的目標點）與終局 VP。
+現況指標（`positionMetrics`：VP、目標點、step、DG、接敵、斷補、SP、扣口糧與強制恢復後的前線可支配戰鬥 SP `surplusCombatSp`、2 格內未持有目標點的最高實質欄位 `bestObjectiveEffectiveColumn` 與局部兵力比 `localForceRatioAt2Hex`、乾 HQ）與這些指標一起由 `ai-continue.mjs` 在每個時間點記錄，`ai-position-record.mjs` 則在既有對局的每個玩家回合
+開始時記錄，並附上該玩家回合發生的事（各方損失的總 step、戰鬥 step `combatStepsLost`、斷補 step `attritionStepsLost`、被奪或被炸的補給堆 SP `spCapturedOrDestroyed`、取得與失去的目標點）與終局 VP。
 
 ### 指標是否可用
 
@@ -88,7 +89,9 @@ formation 共同路線、補給源）重算，數斷補的己方單位。只試�
 
 這次也用獨立隨機特徵做方法負對照。舊的樣本內新增 R² 為正、bootstrap 區間排除零，但樣本外 R² 下降。[可重現對照](../quality/evidence/ai-position-validation-2026-10-18/negative-control.json) 說明不能單靠新增樣本內 R² 認定預測改善；它不是一般假陽性率的估計。
 
-`dumpSpInReach` 與補給堆損失的先前描述性結果見 [量測證據](../quality/evidence/ai-position-exposure-2026-10-18/README.md)，尚未納入這批樣本外比較。近期預測不代表新策略能提高終局 VP；正確對局識別下的終局重驗與前瞻策略驗證仍為開放工作。
+`dumpSpInReach` 與補給堆損失的先前描述性結果見 [量測證據](../quality/evidence/ai-position-exposure-2026-10-18/README.md)，尚未納入這批樣本外比較。另在溫帶 16 局（208 個玩家回合，[溫帶擴充指標與損失拆分證據](../quality/evidence/ai-position-metrics-temperate-2026-10-18/README.md)）進行描述性探索：
+- **跨階段斷補混入的拆分（`combatStepsLost` vs `attritionStepsLost`）**：當行動方 `P` 結束 `CLEAN_UP` 時，若對方 `O` 在隨後的 `SUPPLY` 階段無需手動決策，引擎會在同一筆 `applyAction` 內直接跑完 `O` 的 `determineSupply` 並結算單單位格的斷補耗損，導致原本 `O` 在自己回合初的耗損被算進 `P` 回合的 `stepsLost`（守方行動時 `stepsExposed = 0` 的 5.00 step 假異常完全來自攻方下回合初的斷補耗損）。拆出純戰鬥損失 `combatStepsLost` 後，守方行動時 `stepsExposed <= 1` 的戰鬥損失降為 `0.00`，全回合 `stepsExposedAllocated` 與 `stacksExposedAllocated` 對 `combatStepsLost` 的樣本內 r 為 `0.23` 與 `0.25`（遭遇戰 `maxSingleStackExpectedLoss` 對 `combatStepsLost` 的 r 為 `0.37`），`outOfTrace` 對 `attritionStepsLost` 的 r 為 `0.31`（攻方行動時 `0.47`）。
+- **可付費目標風險（`payableObjectivesAtRisk` / `payableObjectiveVpAtRisk`）與前線進攻成形度（`bestObjectiveEffectiveColumn` / `localForceRatioAt2Hex`）**：在溫帶 208 回合中，遭遇戰軸心有 20% 回合 `surplusCombatSp = 0`，盟軍幾何可達目標平均 `2.92` 個但可付費僅 `1.71` 個；過濾掉攻方付不出戰鬥補給的威脅後，同回合丟點的樣本內 r 由 `0.34` 升至 `0.44`（多解釋 R² 由 `0.123` 升至 `0.201`）。同時，攻擊戰攻方在未控目標 2 格內的局部兵力比平均 `4.33 : 1`，但計入地形與 hedgehog 後最高實質欄位平均僅 `4.66` 欄（僅 19% 回合 `>= 9` 欄）。上述新指標仍待納入 `ai-position-validate.py` 的分組樣本外驗證。近期預測不代表新策略能提高終局 VP；正確對局識別下的終局重驗與前瞻策略驗證仍為開放工作。
 
 ## 已知缺口
 
@@ -102,4 +105,4 @@ formation 共同路線、補給源）重算，數斷補的己方單位。只試�
 - [E1 接續測試](../quality/evidence/ai-defender-assault-continuation-2026-10-18/README.md)
 - [E2 原因、E3 與 E5 接續測試](../quality/evidence/ai-error-continuations-v85-2026-10-18/README.md)
 - [局勢指標的分組樣本外驗證](../quality/evidence/ai-position-validation-2026-10-18/README.md)
-- [局勢指標的記錄](../quality/evidence/ai-position-record-2026-10-18/README.md)與[檢驗](../quality/evidence/ai-position-analysis-2026-10-18/README.md)
+- [局勢指標的記錄](../quality/evidence/ai-position-record-2026-10-18/README.md)、[檢驗](../quality/evidence/ai-position-analysis-2026-10-18/README.md)、[分配後暴露量與補給堆損失](../quality/evidence/ai-position-exposure-2026-10-18/README.md)與[溫帶 16 局擴充指標與損失拆分檢驗](../quality/evidence/ai-position-metrics-temperate-2026-10-18/README.md)

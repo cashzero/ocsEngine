@@ -160,8 +160,48 @@ for (const record of summary.records) {
   for (const id of players) {
     const other = players.find((p) => p !== id);
     const own = onMapCombat(cutoff, id);
+    const enemy = onMapCombat(cutoff, other);
+    const enemyHexSet = new Set(enemy.map((p) => String(p.location.hexId)));
     const totalStrength = own.reduce((sum, p) => sum + strength(p), 0);
     const unowned = objectives.filter((o) => control(cutoff, o.hexId) !== id);
+    let bestObjectiveEffectiveColumn = -1;
+    let bestFocalOwn2 = -1;
+    let bestFocalPoints = -1;
+    let localForceRatioAt2Hex = 0;
+    for (const o of unowned) {
+      const objHex = String(o.hexId);
+      const nearOwn = own.filter((p) => p.mode !== 'STRAT' && m.hexDistanceBetween(p.location.hexId, objHex) <= 2);
+      const nearOwnSupplied = nearOwn.filter((p) => !p.statuses?.some((s) => s.statusDefinitionId === 'status:out-of-supply'));
+      const own2Strength = nearOwnSupplied.reduce((sum, p) => sum + strength(p), 0);
+      const enemy2Strength = enemy.filter((p) => m.hexDistanceBetween(p.location.hexId, objHex) <= 2)
+        .reduce((sum, p) => sum + strength(p), 0);
+      if (own2Strength > bestFocalOwn2 || (own2Strength === bestFocalOwn2 && o.points > bestFocalPoints)) {
+        bestFocalOwn2 = own2Strength;
+        bestFocalPoints = o.points;
+        localForceRatioAt2Hex = own2Strength > 0 ? Number((own2Strength / Math.max(1, enemy2Strength)).toFixed(6)) : 0;
+      }
+      if (nearOwn.length > 0 && typeof m.calculateCombatOdds === 'function') {
+        const defenders = enemy.filter((p) => String(p.location.hexId) === objHex);
+        if (defenders.length === 0) {
+          bestObjectiveEffectiveColumn = Math.max(bestObjectiveEffectiveColumn, 12);
+        } else {
+          const adjHexes = m.adjacentHexIds(objHex).map(String).filter((hexId) => !enemyHexSet.has(hexId));
+          if (adjHexes.length > 0) {
+            const nearIds = new Set(nearOwn.map((p) => p.id));
+            const projectedPieces = cutoff.pieceState.pieces.map((piece) => {
+              if (!nearIds.has(piece.id)) return piece;
+              const curHex = String(piece.location.hexId);
+              const targetAdj = m.hexDistanceBetween(curHex, objHex) === 1 ? curHex
+                : [...adjHexes].sort((a, b) => m.hexDistanceBetween(curHex, a) - m.hexDistanceBetween(curHex, b))[0];
+              return { ...piece, currentFaceId: 'combat', location: { ...piece.location, hexId: targetAdj } };
+            });
+            const projectedState = { ...cutoff, pieceState: { ...cutoff.pieceState, pieces: projectedPieces } };
+            const odds = m.calculateCombatOdds(projectedState, nearOwn.map((p) => p.id), defenders.map((p) => p.id), objHex, defenders.map((p) => p.id), null, null);
+            bestObjectiveEffectiveColumn = Math.max(bestObjectiveEffectiveColumn, odds.columnIndex);
+          }
+        }
+      }
+    }
     const count = counts[id];
     const r = readiness[id] ?? { observed: false, reason: 'no sampled COMBAT:COMBAT window at cutoff turn',
       foundColumn6ObjectiveVp: null, meanFoundObjectiveColumn: null, bestSearchTruncated: null, targetColumns: {}, revision: null };
@@ -180,6 +220,8 @@ for (const record of summary.records) {
       objectiveAttackClearRate: ratio(count.objectiveCleared, count.objectiveResolved),
       adjacentStrengthShare: ratio(own.filter((p) => unowned.some((o) => m.hexDistanceBetween(p.location.hexId, o.hexId) === 1))
         .reduce((sum, p) => sum + strength(p), 0), totalStrength),
+      bestObjectiveEffectiveColumn: bestObjectiveEffectiveColumn >= 0 ? bestObjectiveEffectiveColumn : null,
+      localForceRatioAt2Hex,
       occupiedHeldVpShare: ratio(occupiedHeldVp, held),
       occupiedHeldVp, unoccupiedHeldVp: held - occupiedHeldVp,
       outOfSupplyStrengthShare: ratio(own.filter((p) => p.statuses.some((s) => s.statusDefinitionId === 'status:out-of-supply'))

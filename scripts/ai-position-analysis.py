@@ -116,12 +116,22 @@ for index, rows in enumerate(games):
 
 TESTS = [
     ('objectives O lost', lambda e: e['lost']['objectivesLost'], 'objectivesAtRisk', 'objectivesThreatened'),
+    ('objectives O lost', lambda e: e['lost']['objectivesLost'], 'payableObjectivesAtRisk', 'objectivesThreatened'),
     ('objective VP O lost', lambda e: e['lost']['objectiveVpLost'], 'objectiveVpAtRisk', 'objectivesThreatened'),
+    ('objective VP O lost', lambda e: e['lost']['objectiveVpLost'], 'payableObjectiveVpAtRisk', 'objectivesThreatened'),
     ('steps O lost', lambda e: e['lost']['stepsLost'], 'stepsExposed', 'contact'),
     ('steps O lost', lambda e: e['lost']['stepsLost'], 'stacksExposed', 'contact'),
     ('steps O lost', lambda e: e['lost']['stepsLost'], 'stepsExposedAllocated', 'contact'),
     ('steps O lost', lambda e: e['lost']['stepsLost'], 'stepsExposedAllocated', 'stacksExposed'),
     ('steps O lost', lambda e: e['lost']['stepsLost'], 'stacksExposedAllocated', 'stacksExposed'),
+    ('steps O lost', lambda e: e['lost']['stepsLost'], 'maxSingleStackExpectedLoss', 'contact'),
+    ('combat steps O lost', lambda e: e['lost']['combatStepsLost'], 'stepsExposed', 'contact'),
+    ('combat steps O lost', lambda e: e['lost']['combatStepsLost'], 'stacksExposed', 'contact'),
+    ('combat steps O lost', lambda e: e['lost']['combatStepsLost'], 'stepsExposedAllocated', 'contact'),
+    ('combat steps O lost', lambda e: e['lost']['combatStepsLost'], 'stacksExposedAllocated', 'contact'),
+    ('combat steps O lost', lambda e: e['lost']['combatStepsLost'], 'stacksExposedAllocated', 'stacksExposed'),
+    ('combat steps O lost', lambda e: e['lost']['combatStepsLost'], 'maxSingleStackExpectedLoss', 'contact'),
+    ('attrition steps O lost', lambda e: e['lost']['attritionStepsLost'], 'outOfTrace', 'contact'),
     ('on-map SP O lost', lambda e: e['lost']['spLost'], 'dumpSpInReach', 'contact'),
     ('SP O lost to capture or destruction', lambda e: e['lost']['spCapturedOrDestroyed'], 'dumpSpInReach', 'contact'),
     ('HQs O lost', lambda e: e['lost']['hqsLost'], 'hqsInReach', 'contact'),
@@ -145,7 +155,7 @@ if skipped:
 
 
 def bucket(value):
-    return '0' if value == 0 else '1' if value == 1 else '2-3' if value <= 3 else '4-7' if value <= 7 else '8+'
+    return '0' if value == 0 else '1' if value <= 1 else '2-3' if value <= 3 else '4-7' if value <= 7 else '8+'
 
 
 report['sameTurn'] = {}
@@ -206,6 +216,11 @@ def net(row, player):
     return metrics['objectiveVpInReach'] - metrics['objectiveVpAtRisk']
 
 
+def net_payable(row, player):
+    metrics = row['metrics'][player]
+    return metrics['payableObjectiveVpInReach'] - metrics['payableObjectiveVpAtRisk']
+
+
 def cut(row):
     other = next(player for player in row['metrics'] if player != row['phasingPlayerId'])
     value = row['metrics'][other]['supplyCuttable']
@@ -216,11 +231,13 @@ MODELS = [
     ('VP', lambda r: [diff(r, 'vp')]),
     ('VP + steps + outOfTrace', lambda r: [diff(r, 'vp'), diff(r, 'steps'), diff(r, 'outOfTrace')]),
     ('+ objective VP reach (in reach - at risk, each side)', lambda r: [diff(r, 'vp'), diff(r, 'steps'), diff(r, 'outOfTrace'), net(r, AXIS), net(r, ALLIED)]),
+    ('+ payable objective VP reach + surplusCombatSp', lambda r: [diff(r, 'vp'), diff(r, 'steps'), diff(r, 'outOfTrace'), net_payable(r, AXIS), net_payable(r, ALLIED), diff(r, 'surplusCombatSp')]),
     ('+ stepsExposed', lambda r: [diff(r, 'vp'), diff(r, 'steps'), diff(r, 'outOfTrace'), diff(r, 'stepsExposed')]),
     ('+ objective VP reach + stepsExposed + rear', lambda r: [diff(r, 'vp'), diff(r, 'steps'), diff(r, 'outOfTrace'), net(r, AXIS), net(r, ALLIED),
                                                             diff(r, 'stepsExposed'), diff(r, 'hqsInReach'), diff(r, 'dumpSpInReach'), diff(r, 'unitsWithReach')]),
     ('+ supply cut (units cuttable of the player not moving, signed for Axis)', lambda r: [diff(r, 'vp'), diff(r, 'steps'), diff(r, 'outOfTrace'), cut(r)]),
     ('+ stepsExposedAllocated', lambda r: [diff(r, 'vp'), diff(r, 'steps'), diff(r, 'outOfTrace'), diff(r, 'stepsExposedAllocated')]),
+    ('+ bestObjectiveEffectiveColumn + localForceRatioAt2Hex', lambda r: [diff(r, 'vp'), diff(r, 'steps'), diff(r, 'outOfTrace'), diff(r, 'bestObjectiveEffectiveColumn'), diff(r, 'localForceRatioAt2Hex')]),
     ('distance baseline instead (contact, within2, objectivesThreatened)', lambda r: [diff(r, 'vp'), diff(r, 'steps'), diff(r, 'outOfTrace'), diff(r, 'contact'),
                                                                                    diff(r, 'within2'), diff(r, 'objectivesThreatened')]),
 ]

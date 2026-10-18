@@ -8,7 +8,7 @@
 
 ## 現行行為
 
-目前已有目標換手、戰鬥欄位、兵力集中、補給與角色對照工具，入口見 [評估工具](evaluation.md#工具皆需先-npm-run-build)。`ai-vp-metrics-extract.mjs` 已能在固定回合截點連結每個目標的控制事件、攻擊結果與局面指標；尚未記錄完整的選定、承諾兵力與集結計劃。`ai-vp-metrics-compare.py` 已能對首輪資料做同角色自戰差分與分組預測比較。擷取時加入 `--advanced` 會啟用 `ai-outcome-metrics-observer.mjs`，記錄補給條件與損失原因；`ai-outcome-metrics-compare.py` 比較四結果及原因拆分，尚無前瞻驗證。
+目前已有目標換手、戰鬥欄位、兵力集中、補給與角色對照工具，入口見 [評估工具](evaluation.md#工具皆需先-npm-run-build)。`ai-vp-metrics-extract.mjs` 已能在固定回合截點連結每個目標的控制事件、攻擊結果與局面指標（含未控目標 2 格內的最佳有效欄位 `bestObjectiveEffectiveColumn` 與局部兵力比 `localForceRatioAt2Hex`）；尚未記錄完整的選定、承諾兵力與集結計劃。`ai-vp-metrics-compare.py` 已能對首輪資料做同角色自戰差分與分組預測比較（含有效欄位與 2 格兵力比模型）。擷取時加入 `--advanced` 會啟用 `ai-outcome-metrics-observer.mjs`，記錄補給條件與損失原因；`ai-outcome-metrics-compare.py` 比較四結果及原因拆分，尚無前瞻驗證。
 
 引擎的 `calculateVictory` 計算當下控制目標的點數總和，終局重新計分，不逐回合累加。因此持有回合數、攻擊次數與兵力到位率都是候選解釋量，不能先假定越高越好。終局控制點數本身是答案，不是預測指標。
 
