@@ -1,0 +1,1083 @@
+{
+ "baseline": "v79",
+ "files": [
+  "artifacts/ai-continue/defender-assault/branch-0.jsonl",
+  "artifacts/ai-continue/defender-assault/branch-1.jsonl",
+  "artifacts/ai-continue/defender-assault/branch-10.jsonl",
+  "artifacts/ai-continue/defender-assault/branch-11.jsonl",
+  "artifacts/ai-continue/defender-assault/branch-12.jsonl",
+  "artifacts/ai-continue/defender-assault/branch-13.jsonl",
+  "artifacts/ai-continue/defender-assault/branch-14.jsonl",
+  "artifacts/ai-continue/defender-assault/branch-15.jsonl",
+  "artifacts/ai-continue/defender-assault/branch-16.jsonl",
+  "artifacts/ai-continue/defender-assault/branch-17.jsonl",
+  "artifacts/ai-continue/defender-assault/branch-18.jsonl",
+  "artifacts/ai-continue/defender-assault/branch-19.jsonl",
+  "artifacts/ai-continue/defender-assault/branch-2.jsonl",
+  "artifacts/ai-continue/defender-assault/branch-20.jsonl",
+  "artifacts/ai-continue/defender-assault/branch-21.jsonl",
+  "artifacts/ai-continue/defender-assault/branch-22.jsonl",
+  "artifacts/ai-continue/defender-assault/branch-23.jsonl",
+  "artifacts/ai-continue/defender-assault/branch-24.jsonl",
+  "artifacts/ai-continue/defender-assault/branch-25.jsonl",
+  "artifacts/ai-continue/defender-assault/branch-26.jsonl",
+  "artifacts/ai-continue/defender-assault/branch-27.jsonl",
+  "artifacts/ai-continue/defender-assault/branch-28.jsonl",
+  "artifacts/ai-continue/defender-assault/branch-29.jsonl",
+  "artifacts/ai-continue/defender-assault/branch-3.jsonl",
+  "artifacts/ai-continue/defender-assault/branch-30.jsonl",
+  "artifacts/ai-continue/defender-assault/branch-31.jsonl",
+  "artifacts/ai-continue/defender-assault/branch-32.jsonl",
+  "artifacts/ai-continue/defender-assault/branch-33.jsonl",
+  "artifacts/ai-continue/defender-assault/branch-34.jsonl",
+  "artifacts/ai-continue/defender-assault/branch-35.jsonl",
+  "artifacts/ai-continue/defender-assault/branch-36.jsonl",
+  "artifacts/ai-continue/defender-assault/branch-37.jsonl",
+  "artifacts/ai-continue/defender-assault/branch-38.jsonl",
+  "artifacts/ai-continue/defender-assault/branch-39.jsonl",
+  "artifacts/ai-continue/defender-assault/branch-4.jsonl",
+  "artifacts/ai-continue/defender-assault/branch-40.jsonl",
+  "artifacts/ai-continue/defender-assault/branch-41.jsonl",
+  "artifacts/ai-continue/defender-assault/branch-42.jsonl",
+  "artifacts/ai-continue/defender-assault/branch-43.jsonl",
+  "artifacts/ai-continue/defender-assault/branch-44.jsonl",
+  "artifacts/ai-continue/defender-assault/branch-45.jsonl",
+  "artifacts/ai-continue/defender-assault/branch-46.jsonl",
+  "artifacts/ai-continue/defender-assault/branch-47.jsonl",
+  "artifacts/ai-continue/defender-assault/branch-48.jsonl",
+  "artifacts/ai-continue/defender-assault/branch-5.jsonl",
+  "artifacts/ai-continue/defender-assault/branch-6.jsonl",
+  "artifacts/ai-continue/defender-assault/branch-7.jsonl",
+  "artifacts/ai-continue/defender-assault/branch-8.jsonl",
+  "artifacts/ai-continue/defender-assault/branch-9.jsonl"
+ ],
+ "report": {
+  "noeffort": {
+   "1": {
+    "enemy.attacks": {
+     "n": 44,
+     "mean": -0.22727272727272727,
+     "se": 0.07947201213800816,
+     "t": -2.859783226301781,
+     "corrWithEndVpMargin": -0.30163815314801484
+    },
+    "enemy.barrages": {
+     "n": 44,
+     "mean": -0.01515151515151515,
+     "se": 0.06029695664237011,
+     "t": -0.25128159023648505,
+     "corrWithEndVpMargin": -0.2633601912236353
+    },
+    "enemy.contact": {
+     "n": 44,
+     "mean": -0.3636363636363636,
+     "se": 0.5531232122907935,
+     "t": -0.6574237991754882,
+     "corrWithEndVpMargin": 0.19098995645866262
+    },
+    "enemy.dg": {
+     "n": 44,
+     "mean": -0.02272727272727272,
+     "se": 0.15418282290549817,
+     "t": -0.1474046998166763,
+     "corrWithEndVpMargin": -0.30676121620529734
+    },
+    "enemy.dryHqs": {
+     "n": 44,
+     "mean": 0,
+     "se": 0.0,
+     "t": 0.0
+    },
+    "enemy.hqs": {
+     "n": 44,
+     "mean": -0.16666666666666666,
+     "se": 0.0547272048304618,
+     "t": -3.04540798644805,
+     "corrWithEndVpMargin": -0.11352484310629744
+    },
+    "enemy.meanEnemyDistance": {
+     "n": 44,
+     "mean": -0.009394511915108088,
+     "se": 0.05277713014625921,
+     "t": -0.17800346265652267,
+     "corrWithEndVpMargin": -0.18251489158023185
+    },
+    "enemy.objectives": {
+     "n": 44,
+     "mean": -0.030303030303030304,
+     "se": 0.04171868749524923,
+     "t": -0.726365859579861,
+     "corrWithEndVpMargin": -0.5636706382018213
+    },
+    "enemy.objectivesOccupied": {
+     "n": 44,
+     "mean": -0.030303030303030304,
+     "se": 0.04171868749524923,
+     "t": -0.726365859579861,
+     "corrWithEndVpMargin": -0.5636706382018213
+    },
+    "enemy.objectivesThreatened": {
+     "n": 44,
+     "mean": -0.30303030303030304,
+     "se": 0.07255382182281805,
+     "t": -4.176627714668513,
+     "corrWithEndVpMargin": 0.05404369777488034
+    },
+    "enemy.outOfTrace": {
+     "n": 44,
+     "mean": 1.946969696969697,
+     "se": 1.2047271615132737,
+     "t": 1.6161084095788814,
+     "corrWithEndVpMargin": 0.07778474187719937
+    },
+    "enemy.outOfTraceMarked": {
+     "n": 44,
+     "mean": 0.16666666666666669,
+     "se": 0.13027680546364917,
+     "t": 1.2793272453489144,
+     "corrWithEndVpMargin": 0.006419804064860008
+    },
+    "enemy.spFront": {
+     "n": 44,
+     "mean": 0.024621212121212127,
+     "se": 0.14772021404866897,
+     "t": 0.16667463068460112,
+     "corrWithEndVpMargin": 0.2221033111256984
+    },
+    "enemy.spOnMap": {
+     "n": 44,
+     "mean": -0.013257575757575753,
+     "se": 0.1526655914483235,
+     "t": -0.08684062749046743,
+     "corrWithEndVpMargin": 0.2763263040714837
+    },
+    "enemy.spSpent": {
+     "n": 44,
+     "mean": 0.06439393939393939,
+     "se": 0.15045989996624948,
+     "t": 0.42798074043904033,
+     "corrWithEndVpMargin": -0.15912493145932047
+    },
+    "enemy.spStranded": {
+     "n": 44,
+     "mean": -0.03787878787878788,
+     "se": 0.03070774489882143,
+     "t": -1.2335255488019141,
+     "corrWithEndVpMargin": 0.3053421869398142
+    },
+    "enemy.steps": {
+     "n": 44,
+     "mean": -0.14393939393939395,
+     "se": 0.11891655562368472,
+     "t": -1.210423503981185,
+     "corrWithEndVpMargin": -0.22117717195540781
+    },
+    "enemy.units": {
+     "n": 44,
+     "mean": -0.10606060606060606,
+     "se": 0.11040145381537626,
+     "t": -0.9606812446326171,
+     "corrWithEndVpMargin": -0.24281108623903366
+    },
+    "enemy.vp": {
+     "n": 44,
+     "mean": -0.11363636363636363,
+     "se": 0.14698567947795999,
+     "t": -0.7731118027277142,
+     "corrWithEndVpMargin": -0.5814536132813546
+    },
+    "enemy.within2": {
+     "n": 44,
+     "mean": 0.7803030303030303,
+     "se": 0.8738187557912324,
+     "t": 0.8929804094173686,
+     "corrWithEndVpMargin": 0.21854089213218345
+    },
+    "kill": {
+     "n": 44,
+     "mean": 0.11363636363636363,
+     "se": 0.12542770698817962,
+     "t": 0.9059909199095284,
+     "corrWithEndVpMargin": 0.17557615295859813
+    },
+    "loss": {
+     "n": 44,
+     "mean": -0.3106060606060606,
+     "se": 0.19216437425180163,
+     "t": -1.6163561108317586,
+     "corrWithEndVpMargin": -0.28173893796075333
+    },
+    "margin.dg": {
+     "n": 44,
+     "mean": 0.06818181818181816,
+     "se": 0.20749961309742734,
+     "t": 0.32858768825657875,
+     "corrWithEndVpMargin": 0.16156494567206273
+    },
+    "margin.killLoss": {
+     "n": 44,
+     "mean": 0.42424242424242425,
+     "se": 0.26063555891200335,
+     "t": 1.6277227328971577,
+     "corrWithEndVpMargin": 0.29221761336377106
+    },
+    "margin.objectives": {
+     "n": 44,
+     "mean": 0.06060606060606061,
+     "se": 0.08343737499049846,
+     "t": 0.726365859579861,
+     "corrWithEndVpMargin": 0.5636706382018213
+    },
+    "margin.outOfTrace": {
+     "n": 44,
+     "mean": -1.7954545454545454,
+     "se": 1.3677386224301642,
+     "t": -1.3127175880026156,
+     "corrWithEndVpMargin": -0.11593992645064546
+    },
+    "margin.spFront": {
+     "n": 44,
+     "mean": -0.3465909090909091,
+     "se": 0.2710611632096492,
+     "t": -1.2786446608097903,
+     "corrWithEndVpMargin": -0.22740828496095625
+    },
+    "margin.spOnMap": {
+     "n": 44,
+     "mean": -0.06439393939393939,
+     "se": 0.21818435687779936,
+     "t": -0.29513545478425446,
+     "corrWithEndVpMargin": -0.33232142332862463
+    },
+    "margin.steps": {
+     "n": 44,
+     "mean": 0.45454545454545453,
+     "se": 0.25671414154414374,
+     "t": 1.7706288084144846,
+     "corrWithEndVpMargin": 0.31335170592184675
+    },
+    "margin.units": {
+     "n": 44,
+     "mean": 0.32575757575757575,
+     "se": 0.24196960099162185,
+     "t": 1.3462747982497811,
+     "corrWithEndVpMargin": 0.4024499292967797
+    },
+    "margin.vp": {
+     "n": 44,
+     "mean": 0.22727272727272727,
+     "se": 0.29397135895591997,
+     "t": 0.7731118027277142,
+     "corrWithEndVpMargin": 0.5814536132813546
+    },
+    "own.attacks": {
+     "n": 44,
+     "mean": 0.06818181818181818,
+     "se": 0.10539785885392526,
+     "t": 0.6468994619360707,
+     "corrWithEndVpMargin": 0.11176245085111468
+    },
+    "own.barrages": {
+     "n": 44,
+     "mean": -0.045454545454545456,
+     "se": 0.03845578855453161,
+     "t": -1.1819948871959645,
+     "corrWithEndVpMargin": -0.15760523054861492
+    },
+    "own.contact": {
+     "n": 44,
+     "mean": -0.44696969696969696,
+     "se": 0.2490157231494389,
+     "t": -1.7949456818092657,
+     "corrWithEndVpMargin": 0.19704686981277192
+    },
+    "own.dg": {
+     "n": 44,
+     "mean": 0.04545454545454545,
+     "se": 0.1390388282418155,
+     "t": 0.326919796644799,
+     "corrWithEndVpMargin": -0.09905611784532159
+    },
+    "own.dryHqs": {
+     "n": 44,
+     "mean": 0.007575757575757575,
+     "se": 0.03338374687296107,
+     "t": 0.22692951766578084,
+     "corrWithEndVpMargin": 0.4293114432268781
+    },
+    "own.hqs": {
+     "n": 44,
+     "mean": -0.03787878787878788,
+     "se": 0.027020009922500293,
+     "t": -1.4018791254123555,
+     "corrWithEndVpMargin": 0.1690357811184872
+    },
+    "own.meanEnemyDistance": {
+     "n": 44,
+     "mean": 0.050255754280333825,
+     "se": 0.06283358487369899,
+     "t": 0.7998231261410963,
+     "corrWithEndVpMargin": 0.09567699384320455
+    },
+    "own.objectives": {
+     "n": 44,
+     "mean": 0.030303030303030304,
+     "se": 0.04171868749524923,
+     "t": 0.726365859579861,
+     "corrWithEndVpMargin": 0.5636706382018213
+    },
+    "own.objectivesOccupied": {
+     "n": 44,
+     "mean": 0.03787878787878788,
+     "se": 0.05108168585142033,
+     "t": 0.741533628881488,
+     "corrWithEndVpMargin": 0.5935681088615735
+    },
+    "own.objectivesThreatened": {
+     "n": 44,
+     "mean": -0.053030303030303025,
+     "se": 0.026420600572719527,
+     "t": -2.0071573651152814,
+     "corrWithEndVpMargin": -0.202059365827758
+    },
+    "own.outOfTrace": {
+     "n": 44,
+     "mean": 0.15151515151515152,
+     "se": 0.37330063556325066,
+     "t": 0.40587970413321023,
+     "corrWithEndVpMargin": -0.17376376522806275
+    },
+    "own.outOfTraceMarked": {
+     "n": 44,
+     "mean": -0.07575757575757576,
+     "se": 0.31705562632762696,
+     "t": -0.23894096009289,
+     "corrWithEndVpMargin": -0.052586112271107016
+    },
+    "own.spFront": {
+     "n": 44,
+     "mean": -0.32196969696969696,
+     "se": 0.20196559706590894,
+     "t": -1.5941808983666965,
+     "corrWithEndVpMargin": -0.1427589946183398
+    },
+    "own.spOnMap": {
+     "n": 44,
+     "mean": -0.07765151515151515,
+     "se": 0.11698831024973705,
+     "t": -0.6637544809883232,
+     "corrWithEndVpMargin": -0.2591867282905447
+    },
+    "own.spSpent": {
+     "n": 44,
+     "mean": -0.08143939393939395,
+     "se": 0.10481173193460148,
+     "t": -0.7770064708997368,
+     "corrWithEndVpMargin": -0.005712639966184705
+    },
+    "own.spStranded": {
+     "n": 44,
+     "mean": 0.24431818181818182,
+     "se": 0.18013738719584038,
+     "t": 1.3562880289396329,
+     "corrWithEndVpMargin": -0.008268199180814253
+    },
+    "own.steps": {
+     "n": 44,
+     "mean": 0.3106060606060606,
+     "se": 0.19216437425180163,
+     "t": 1.6163561108317586,
+     "corrWithEndVpMargin": 0.28173893796075333
+    },
+    "own.units": {
+     "n": 44,
+     "mean": 0.2196969696969697,
+     "se": 0.17573737460149957,
+     "t": 1.2501436885304136,
+     "corrWithEndVpMargin": 0.4015876079166485
+    },
+    "own.vp": {
+     "n": 44,
+     "mean": 0.11363636363636363,
+     "se": 0.14698567947795999,
+     "t": 0.7731118027277142,
+     "corrWithEndVpMargin": 0.5814536132813546
+    },
+    "own.within2": {
+     "n": 44,
+     "mean": -0.17424242424242423,
+     "se": 0.35984894848084076,
+     "t": -0.48420990245495,
+     "corrWithEndVpMargin": 0.19889798034646744
+    }
+   },
+   "2": {
+    "enemy.attacks": {
+     "n": 44,
+     "mean": -0.5909090909090909,
+     "se": 0.22677888559312942,
+     "t": -2.6056618514708556,
+     "corrWithEndVpMargin": -0.4633419425604707
+    },
+    "enemy.barrages": {
+     "n": 44,
+     "mean": -0.1212121212121212,
+     "se": 0.12072665291026778,
+     "t": -1.0040212189284685,
+     "corrWithEndVpMargin": -0.1408021643247437
+    },
+    "enemy.contact": {
+     "n": 44,
+     "mean": -0.2651515151515152,
+     "se": 0.6599894242372885,
+     "t": -0.40175115754004004,
+     "corrWithEndVpMargin": 0.2680334127599219
+    },
+    "enemy.dg": {
+     "n": 44,
+     "mean": -0.08333333333333333,
+     "se": 0.06237508070516842,
+     "t": -1.3360036154057962,
+     "corrWithEndVpMargin": -0.03926752912553942
+    },
+    "enemy.dryHqs": {
+     "n": 44,
+     "mean": 0.08333333333333333,
+     "se": 0.11678741360484561,
+     "t": 0.7135472116481203,
+     "corrWithEndVpMargin": -0.029156786279478264
+    },
+    "enemy.hqs": {
+     "n": 44,
+     "mean": -0.09090909090909091,
+     "se": 0.07767138661842646,
+     "t": -1.1704321870252796,
+     "corrWithEndVpMargin": -0.34834599200497596
+    },
+    "enemy.meanEnemyDistance": {
+     "n": 44,
+     "mean": 0.05283192525050101,
+     "se": 0.06666103188981612,
+     "t": 0.7925458660439999,
+     "corrWithEndVpMargin": -0.3706018101081847
+    },
+    "enemy.objectives": {
+     "n": 44,
+     "mean": -0.08333333333333333,
+     "se": 0.09455768474048698,
+     "t": -0.8812962538374451,
+     "corrWithEndVpMargin": -0.6361997278931222
+    },
+    "enemy.objectivesOccupied": {
+     "n": 44,
+     "mean": -0.07575757575757576,
+     "se": 0.09439522044022514,
+     "t": -0.8025573265708777,
+     "corrWithEndVpMargin": -0.627226394726228
+    },
+    "enemy.objectivesThreatened": {
+     "n": 44,
+     "mean": -0.45454545454545453,
+     "se": 0.08470742326323732,
+     "t": -5.3660640004702564,
+     "corrWithEndVpMargin": 0.05180337355893987
+    },
+    "enemy.outOfTrace": {
+     "n": 44,
+     "mean": 1.4545454545454544,
+     "se": 0.9210744120208488,
+     "t": 1.5791834357380132,
+     "corrWithEndVpMargin": 0.036226355337103874
+    },
+    "enemy.outOfTraceMarked": {
+     "n": 44,
+     "mean": 2.2803030303030303,
+     "se": 1.021609547658414,
+     "t": 2.2320690282599767,
+     "corrWithEndVpMargin": 0.05687565323008097
+    },
+    "enemy.spFront": {
+     "n": 44,
+     "mean": 0.3522727272727273,
+     "se": 0.493102408821169,
+     "t": 0.7144007430725902,
+     "corrWithEndVpMargin": -0.010022415917558586
+    },
+    "enemy.spOnMap": {
+     "n": 44,
+     "mean": 0.6420454545454546,
+     "se": 0.48322047011478136,
+     "t": 1.3286801662043557,
+     "corrWithEndVpMargin": 0.17058083059904847
+    },
+    "enemy.spSpent": {
+     "n": 44,
+     "mean": -0.6875,
+     "se": 0.4075025075907403,
+     "t": -1.6871061826457876,
+     "corrWithEndVpMargin": -0.051859341915350236
+    },
+    "enemy.spStranded": {
+     "n": 44,
+     "mean": 0.28977272727272724,
+     "se": 0.1749082916092269,
+     "t": 1.656712352551735,
+     "corrWithEndVpMargin": 0.4995202101738943
+    },
+    "enemy.steps": {
+     "n": 44,
+     "mean": -0.1893939393939394,
+     "se": 0.32447672539358385,
+     "t": -0.5836903684361592,
+     "corrWithEndVpMargin": -0.06954335375527117
+    },
+    "enemy.units": {
+     "n": 44,
+     "mean": -0.17424242424242425,
+     "se": 0.28062663452720393,
+     "t": -0.6209047994891348,
+     "corrWithEndVpMargin": -0.10599417678399396
+    },
+    "enemy.vp": {
+     "n": 44,
+     "mean": -0.26515151515151514,
+     "se": 0.31214917737018083,
+     "t": -0.8494384556300442,
+     "corrWithEndVpMargin": -0.6554448629954109
+    },
+    "enemy.within2": {
+     "n": 44,
+     "mean": -0.7045454545454545,
+     "se": 1.0094814725615429,
+     "t": -0.6979280687120307,
+     "corrWithEndVpMargin": 0.34633831135934534
+    },
+    "kill": {
+     "n": 44,
+     "mean": 0.1590909090909091,
+     "se": 0.2937147234629371,
+     "t": 0.541651120567622,
+     "corrWithEndVpMargin": 0.10578263560683386
+    },
+    "loss": {
+     "n": 44,
+     "mean": -0.5909090909090908,
+     "se": 0.3681378067002383,
+     "t": -1.6051301446206727,
+     "corrWithEndVpMargin": -0.5674593548099024
+    },
+    "margin.dg": {
+     "n": 44,
+     "mean": 0.2196969696969697,
+     "se": 0.19141277783180263,
+     "t": 1.1477654323057827,
+     "corrWithEndVpMargin": 0.12776125648325412
+    },
+    "margin.killLoss": {
+     "n": 44,
+     "mean": 0.75,
+     "se": 0.5431925437033205,
+     "t": 1.3807258746350413,
+     "corrWithEndVpMargin": 0.4417828680040932
+    },
+    "margin.objectives": {
+     "n": 44,
+     "mean": 0.16666666666666666,
+     "se": 0.18911536948097396,
+     "t": 0.8812962538374451,
+     "corrWithEndVpMargin": 0.6361997278931222
+    },
+    "margin.outOfTrace": {
+     "n": 44,
+     "mean": -0.9318181818181818,
+     "se": 0.9391004963488856,
+     "t": -0.9922454363947025,
+     "corrWithEndVpMargin": -0.2148109648529561
+    },
+    "margin.spFront": {
+     "n": 44,
+     "mean": -0.25946969696969696,
+     "se": 0.7541591274171168,
+     "t": -0.34405165639026636,
+     "corrWithEndVpMargin": -0.10142356854811324
+    },
+    "margin.spOnMap": {
+     "n": 44,
+     "mean": -0.7746212121212122,
+     "se": 0.6586773502447919,
+     "t": -1.1760252752479354,
+     "corrWithEndVpMargin": -0.28407840710424426
+    },
+    "margin.steps": {
+     "n": 44,
+     "mean": 0.7272727272727273,
+     "se": 0.5539141189916666,
+     "t": 1.3129701921962902,
+     "corrWithEndVpMargin": 0.3950823749990984
+    },
+    "margin.units": {
+     "n": 44,
+     "mean": 0.6287878787878788,
+     "se": 0.481171919778898,
+     "t": 1.3067842343684797,
+     "corrWithEndVpMargin": 0.5244827451896714
+    },
+    "margin.vp": {
+     "n": 44,
+     "mean": 0.5303030303030303,
+     "se": 0.6242983547403617,
+     "t": 0.8494384556300442,
+     "corrWithEndVpMargin": 0.6554448629954109
+    },
+    "own.attacks": {
+     "n": 44,
+     "mean": -0.06060606060606061,
+     "se": 0.12369721726429289,
+     "t": -0.48995492337203517,
+     "corrWithEndVpMargin": 0.20705323482069946
+    },
+    "own.barrages": {
+     "n": 44,
+     "mean": -0.022727272727272724,
+     "se": 0.05242277593096452,
+     "t": -0.43353813917069633,
+     "corrWithEndVpMargin": -0.24127794620840964
+    },
+    "own.contact": {
+     "n": 44,
+     "mean": -0.4090909090909091,
+     "se": 0.3961085722151684,
+     "t": -1.0327746930674568,
+     "corrWithEndVpMargin": 0.26376297494130274
+    },
+    "own.dg": {
+     "n": 44,
+     "mean": 0.13636363636363635,
+     "se": 0.17982522960897565,
+     "t": 0.758312038083615,
+     "corrWithEndVpMargin": 0.12237338304693936
+    },
+    "own.dryHqs": {
+     "n": 44,
+     "mean": -0.053030303030303025,
+     "se": 0.05412639508882395,
+     "t": -0.97974939848253,
+     "corrWithEndVpMargin": -0.01695687249382871
+    },
+    "own.hqs": {
+     "n": 44,
+     "mean": -0.045454545454545456,
+     "se": 0.06465508957028764,
+     "t": -0.7030312038332428,
+     "corrWithEndVpMargin": 0.26660749719921845
+    },
+    "own.meanEnemyDistance": {
+     "n": 44,
+     "mean": 0.09248925010528705,
+     "se": 0.0723140960361078,
+     "t": 1.2789933799228494,
+     "corrWithEndVpMargin": -0.07355678506757038
+    },
+    "own.objectives": {
+     "n": 44,
+     "mean": 0.08333333333333333,
+     "se": 0.09455768474048698,
+     "t": 0.8812962538374451,
+     "corrWithEndVpMargin": 0.6361997278931222
+    },
+    "own.objectivesOccupied": {
+     "n": 44,
+     "mean": 0.09848484848484848,
+     "se": 0.10199993635310639,
+     "t": 0.965538332729059,
+     "corrWithEndVpMargin": 0.6458993614197858
+    },
+    "own.objectivesThreatened": {
+     "n": 44,
+     "mean": -0.03787878787878788,
+     "se": 0.0736764899356638,
+     "t": -0.5141231336056402,
+     "corrWithEndVpMargin": 0.3636221593036562
+    },
+    "own.outOfTrace": {
+     "n": 44,
+     "mean": 0.5227272727272727,
+     "se": 0.534723097576744,
+     "t": 0.9775662863567445,
+     "corrWithEndVpMargin": -0.31485813037775
+    },
+    "own.outOfTraceMarked": {
+     "n": 44,
+     "mean": -0.12121212121212123,
+     "se": 0.44751432997541674,
+     "t": -0.27085640189171095,
+     "corrWithEndVpMargin": -0.27800229496177353
+    },
+    "own.spFront": {
+     "n": 44,
+     "mean": 0.09280303030303028,
+     "se": 0.45793047120429287,
+     "t": 0.20265746906723925,
+     "corrWithEndVpMargin": -0.17782522131095
+    },
+    "own.spOnMap": {
+     "n": 44,
+     "mean": -0.13257575757575757,
+     "se": 0.29506748557476664,
+     "t": -0.4493065622513817,
+     "corrWithEndVpMargin": -0.3547929487880362
+    },
+    "own.spSpent": {
+     "n": 44,
+     "mean": -0.240530303030303,
+     "se": 0.2200329364154577,
+     "t": -1.0931559017880077,
+     "corrWithEndVpMargin": -0.058132295307435196
+    },
+    "own.spStranded": {
+     "n": 44,
+     "mean": -0.2253787878787879,
+     "se": 0.39194245633223623,
+     "t": -0.575030299059365,
+     "corrWithEndVpMargin": -0.05933594469260114
+    },
+    "own.steps": {
+     "n": 44,
+     "mean": 0.5378787878787878,
+     "se": 0.3558656296713145,
+     "t": 1.5114659664536436,
+     "corrWithEndVpMargin": 0.5515466783309426
+    },
+    "own.units": {
+     "n": 44,
+     "mean": 0.45454545454545453,
+     "se": 0.34783313758323753,
+     "t": 1.3067916924294782,
+     "corrWithEndVpMargin": 0.6400240696738476
+    },
+    "own.vp": {
+     "n": 44,
+     "mean": 0.26515151515151514,
+     "se": 0.31214917737018083,
+     "t": 0.8494384556300442,
+     "corrWithEndVpMargin": 0.6554448629954109
+    },
+    "own.within2": {
+     "n": 44,
+     "mean": 0.015151515151515133,
+     "se": 0.4024464978520424,
+     "t": 0.03764852031855802,
+     "corrWithEndVpMargin": 0.2736974676264907
+    }
+   },
+   "end": {
+    "enemy.attacks": {
+     "n": 49,
+     "mean": -1.0748299319727892,
+     "se": 0.3202160118252308,
+     "t": -3.3565777234132055
+    },
+    "enemy.barrages": {
+     "n": 49,
+     "mean": -0.06802721088435375,
+     "se": 0.1597131048871925,
+     "t": -0.4259338075757921
+    },
+    "enemy.contact": {
+     "n": 49,
+     "mean": -0.2993197278911564,
+     "se": 0.6062664775140486,
+     "t": -0.4937098437612699
+    },
+    "enemy.dg": {
+     "n": 49,
+     "mean": 0.2925170068027211,
+     "se": 0.15931419925304205,
+     "t": 1.836101290244131
+    },
+    "enemy.dryHqs": {
+     "n": 49,
+     "mean": 0.034013605442176874,
+     "se": 0.08204497155950215,
+     "t": 0.41457270074752733
+    },
+    "enemy.hqs": {
+     "n": 49,
+     "mean": -0.13605442176870747,
+     "se": 0.08010667452451561,
+     "t": -1.6984155512168935
+    },
+    "enemy.meanEnemyDistance": {
+     "n": 49,
+     "mean": -0.16902221042933854,
+     "se": 0.18743291069675155,
+     "t": -0.9017744525282448
+    },
+    "enemy.objectives": {
+     "n": 49,
+     "mean": -0.29931972789115646,
+     "se": 0.1429381046901408,
+     "t": -2.094051327600975
+    },
+    "enemy.objectivesOccupied": {
+     "n": 49,
+     "mean": -0.2925170068027211,
+     "se": 0.14470780534818126,
+     "t": -2.0214321273057547
+    },
+    "enemy.objectivesThreatened": {
+     "n": 49,
+     "mean": -0.29931972789115646,
+     "se": 0.08974479751467958,
+     "t": -3.335232082307575
+    },
+    "enemy.outOfTrace": {
+     "n": 49,
+     "mean": -1.1496598639455782,
+     "se": 0.6094386430214935,
+     "t": -1.8864242973595493
+    },
+    "enemy.outOfTraceMarked": {
+     "n": 49,
+     "mean": -0.9523809523809524,
+     "se": 0.5258797473685081,
+     "t": -1.8110242068584084
+    },
+    "enemy.spFront": {
+     "n": 49,
+     "mean": 1.5952380952380953,
+     "se": 0.9122464805881287,
+     "t": 1.7486919699702643
+    },
+    "enemy.spOnMap": {
+     "n": 49,
+     "mean": 1.6700680272108843,
+     "se": 0.8507878639887522,
+     "t": 1.96296644310498
+    },
+    "enemy.spSpent": {
+     "n": 49,
+     "mean": -1.2295918367346939,
+     "se": 0.7345727301802984,
+     "t": -1.6738871267830684
+    },
+    "enemy.spStranded": {
+     "n": 49,
+     "mean": 0.07482993197278914,
+     "se": 0.5127648557113562,
+     "t": 0.1459342057851799
+    },
+    "enemy.steps": {
+     "n": 49,
+     "mean": -0.5306122448979592,
+     "se": 0.7271928008120059,
+     "t": -0.7296720268757628
+    },
+    "enemy.units": {
+     "n": 49,
+     "mean": -0.46258503401360546,
+     "se": 0.5545469580291239,
+     "t": -0.834167471872258
+    },
+    "enemy.vp": {
+     "n": 49,
+     "mean": -0.9523809523809523,
+     "se": 0.44320263021395917,
+     "t": -2.148861237401014
+    },
+    "enemy.within2": {
+     "n": 49,
+     "mean": 1.5374149659863945,
+     "se": 1.0463022174166843,
+     "t": 1.4693794397017197
+    },
+    "kill": {
+     "n": 49,
+     "mean": 0.41496598639455784,
+     "se": 0.6628669075011783,
+     "t": 0.6260170506306656
+    },
+    "loss": {
+     "n": 49,
+     "mean": -2.496598639455782,
+     "se": 0.6910316901320658,
+     "t": -3.612856942897434
+    },
+    "margin.dg": {
+     "n": 49,
+     "mean": 0.17687074829931973,
+     "se": 0.2197500041525591,
+     "t": 0.8048725595314624
+    },
+    "margin.killLoss": {
+     "n": 49,
+     "mean": 2.9115646258503403,
+     "se": 0.9749690146734541,
+     "t": 2.9863150336377706
+    },
+    "margin.objectives": {
+     "n": 49,
+     "mean": 0.5986394557823129,
+     "se": 0.2858762093802816,
+     "t": 2.094051327600975
+    },
+    "margin.outOfTrace": {
+     "n": 49,
+     "mean": 1.7619047619047619,
+     "se": 0.6811077633798904,
+     "t": 2.586822315989449
+    },
+    "margin.spFront": {
+     "n": 49,
+     "mean": -2.175170068027211,
+     "se": 1.3524730925925768,
+     "t": -1.6082908265905635
+    },
+    "margin.spOnMap": {
+     "n": 49,
+     "mean": -2.6037414965986394,
+     "se": 1.1854844020501834,
+     "t": -2.19635238734117
+    },
+    "margin.steps": {
+     "n": 49,
+     "mean": 3.2108843537414966,
+     "se": 1.012940360718137,
+     "t": 3.1698651552052866
+    },
+    "margin.units": {
+     "n": 49,
+     "mean": 2.63265306122449,
+     "se": 0.8040339584763462,
+     "t": 3.274305809437948
+    },
+    "margin.vp": {
+     "n": 49,
+     "mean": 1.9047619047619047,
+     "se": 0.8864052604279183,
+     "t": 2.148861237401014
+    },
+    "own.attacks": {
+     "n": 49,
+     "mean": -0.18367346938775508,
+     "se": 0.14517342578260548,
+     "t": -1.2652003519073987
+    },
+    "own.barrages": {
+     "n": 49,
+     "mean": 0.047619047619047616,
+     "se": 0.061475926130276456,
+     "t": 0.7745966692414834
+    },
+    "own.contact": {
+     "n": 49,
+     "mean": 0.2380952380952381,
+     "se": 0.32252898057485874,
+     "t": 0.7382134705255622
+    },
+    "own.dg": {
+     "n": 49,
+     "mean": 0.46938775510204084,
+     "se": 0.1186176231757595,
+     "t": 3.9571502322764815
+    },
+    "own.dryHqs": {
+     "n": 49,
+     "mean": 0.013605442176870746,
+     "se": 0.04554945448208768,
+     "t": 0.2986960509531697
+    },
+    "own.hqs": {
+     "n": 49,
+     "mean": 0.027210884353741492,
+     "se": 0.057371182970860544,
+     "t": 0.4742953333830017
+    },
+    "own.meanEnemyDistance": {
+     "n": 49,
+     "mean": -0.02925191196563357,
+     "se": 0.16546483813123403,
+     "t": -0.17678627251569423
+    },
+    "own.objectives": {
+     "n": 49,
+     "mean": 0.29931972789115646,
+     "se": 0.1429381046901408,
+     "t": 2.094051327600975
+    },
+    "own.objectivesOccupied": {
+     "n": 49,
+     "mean": 0.38095238095238093,
+     "se": 0.1398492871960801,
+     "t": 2.7240208984279954
+    },
+    "own.objectivesThreatened": {
+     "n": 49,
+     "mean": 0.07482993197278912,
+     "se": 0.06959641384681545,
+     "t": 1.075198100544273
+    },
+    "own.outOfTrace": {
+     "n": 49,
+     "mean": 0.6122448979591837,
+     "se": 0.4053854835646093,
+     "t": 1.5102782975246958
+    },
+    "own.outOfTraceMarked": {
+     "n": 49,
+     "mean": 0.5102040816326531,
+     "se": 0.4944994148418605,
+     "t": 1.0317587166322832
+    },
+    "own.spFront": {
+     "n": 49,
+     "mean": -0.5799319727891156,
+     "se": 0.9327685441378628,
+     "t": -0.6217319145610058
+    },
+    "own.spOnMap": {
+     "n": 49,
+     "mean": -0.9336734693877551,
+     "se": 0.6807477787088996,
+     "t": -1.3715409709577786
+    },
+    "own.spSpent": {
+     "n": 49,
+     "mean": -0.044217687074829974,
+     "se": 0.36261598315923393,
+     "t": -0.12194081101883714
+    },
+    "own.spStranded": {
+     "n": 49,
+     "mean": -0.35374149659863946,
+     "se": 0.8757202339355212,
+     "t": -0.40394350032191356
+    },
+    "own.steps": {
+     "n": 49,
+     "mean": 2.6802721088435373,
+     "se": 0.6920452330993022,
+     "t": 3.872972431064983
+    },
+    "own.units": {
+     "n": 49,
+     "mean": 2.1700680272108843,
+     "se": 0.5367382144969016,
+     "t": 4.043066002380591
+    },
+    "own.vp": {
+     "n": 49,
+     "mean": 0.9523809523809523,
+     "se": 0.44320263021395917,
+     "t": 2.148861237401014
+    },
+    "own.within2": {
+     "n": 49,
+     "mean": 1.598639455782313,
+     "se": 0.440527623749251,
+     "t": 3.628919889691778
+    }
+   }
+  }
+ }
+}

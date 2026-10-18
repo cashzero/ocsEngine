@@ -54,7 +54,8 @@ const chooseMainEffort = (situation: Situation, w: HeuristicWeights): MainEffort
 const chooseEfforts = (situation: Situation, w: HeuristicWeights, count: number): MainEffort[] => {
   const efforts: MainEffort[] = [];
   const used = new Set<PieceId>();
-  while (efforts.length < count) {
+  const limit = situation.defending ? Math.min(count, w.defenderMaxEfforts) : count;
+  while (efforts.length < limit) {
     const next = chooseEffort(situation, w, used, new Set(efforts.map(({ hexId }) => hexId)));
     if (!next) break;
     efforts.push(next);

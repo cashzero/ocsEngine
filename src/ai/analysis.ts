@@ -29,6 +29,8 @@ export interface ObjectiveView {
 export interface Situation {
   readonly playerId: PlayerId;
   readonly turnsLeft: number;
+  /** The defender of an attack engagement (public attack victory conditions). */
+  readonly defending: boolean;
   readonly opponentTurnRemains: boolean;
   readonly attack: boolean;
   readonly own: readonly OwnUnit[];
@@ -131,6 +133,7 @@ export const analyze = (projection: RuleProjection, playerId: PlayerId, facts: B
     turnsLeft,
     opponentTurnRemains: turnsLeft > 0 || projection.sequence.playerTurnIndex === 0,
     attack: projection.attackVictory !== undefined,
+    defending: projection.attackVictory !== undefined && projection.attackVictory.attackerId !== playerId,
     own,
     enemy,
     objectives: projection.objectives.map(({ hexId, points, controllerId }) => ({ hexId, points, controllerId })),
