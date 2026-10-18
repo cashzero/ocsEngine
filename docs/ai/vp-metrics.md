@@ -55,6 +55,22 @@
 
 研究迭代採「找到目前較有用的上層指標，提出其下層解釋，驗證額外預測力，再用干預確認是否可改善」的順序。若增加一層沒有改善未見資料的預測、沒有提早提供資訊，也無法指向可驗證的決策，就停止往該方向細拆。預測誤差等評量指標用來比較研究工具，不與這些遊戲行為指標混成策略目標。
 
+#### 尋找上游指標（指標的指標）的四種非統計方法
+
+由於規則引擎（`src/rules/`）與決策器（`src/ai/policies/heuristic.ts`）是完全透明的確定性形式化系統，從上層指標 $M^{(k)}$ 往上游尋找決定它的前置指標 $M^{(k-1)}$ 時，優先使用以下四種非統計學方法建立結構性分解，再交由統計方法驗證：
+
+| 方法與學術來源 | 原理 | 在 `ocsEngine` 的具體拆解方式 |
+|---|---|---|
+| **1. 目標回歸與最弱前置條件反推**<br/>（Goal Regression / Weakest Precondition；STRIPS / ADL 規劃） | 將上層目標的規則公式沿階段序列（`COMBAT` $\leftarrow$ `MOVEMENT` $\leftarrow$ `SUPPLY`）做代數反推，拆成 100% 守恆的折損漏斗（Funnel Identity），不靠統計猜測 | 對 `calculateCombatOdds` 反推為何目標點無法打出高欄（`bestObjectiveEffectiveColumn` 低），拆為五項守恆落差：<br/>$\text{2 格總戰力} \xrightarrow{-\Delta_{\text{未貼敵}}} \text{1 格貼敵戰力} \xrightarrow{-\Delta_{\text{Move模式折半}}} \text{模式修正戰力} \xrightarrow{-\Delta_{\text{地形/跨河折半}}} \text{實質攻擊戰力} \xrightarrow{-\Delta_{\text{缺戰鬥SP剔除}}} \text{可付費有效戰力} \xrightarrow{-\text{Hedgehog}+\text{DG}} \text{最終欄位}$ |
+| **2. 約束鬆弛階層**<br/>（Constraint-Relaxation Hierarchy / Delete-Relaxation $h^+$；AI 啟發式搜尋） | 行動受多重規則約束（$C_1 \land C_2 \land \dots$）同時限制時，由寬到嚴計算各層鬆弛下的指標值 $M(L_0) \ge M(L_1) \ge M(L_2) \ge M(L_3)$；相鄰兩層的差值 $M(L_{i-1}) - M(L_i)$ 直接量化第 $i$ 個約束造成的損失 | 對未控目標點依序計算：<br/>$L_0$（2 格幾何兵力可達）$\ge L_1$（滿油合法移動與 ZOC 可達第 6 欄 `objectivesInReach`）$\ge L_2$（當下實際燃料可達）$\ge L_3$（扣口糧後 `surplusCombatSp` 付得起戰鬥補給 `payableObjectivesInReach`）$\ge L_4$（扣掉防反擊暴露過濾後實際宣告攻擊）。哪兩層落差最大，瓶頸就在該層約束 |
+| **3. 網路流最小割與約束理論影子價格**<br/>（Max-Flow Min-Cut & TOC Shadow Prices；作業研究） | 串聯容量網路的總產出完全取決於容量最小的一環 $\min_i C_i$；非最小割環節的影子價格（拉格朗日乘數 $\lambda_i = \partial M^{(k)} / \partial C_i$）恆為 0 | 將後勤視為串聯流：$\text{入場補給源} \xrightarrow{C_{\text{rail}}} \text{鐵路終點} \xrightarrow{C_{\text{truck}}} \text{前線補給堆} \xrightarrow{C_{\text{HQ}}} \text{HQ 投送半徑} \xrightarrow{C_{\text{ration/fuel}}} \text{surplusCombatSp}$。在重播中以單步反事實微擾（例如免費增加前線 SP 或免費翻 Combat 面）量測邊際敏感度 $\partial M^{(k)} / \partial z_i$，找出唯一有效瓶頸 |
+| **4. 故障樹分析與決策閘門阻擋歸因**<br/>（Fault Tree Analysis & Gate-Blocking Attribution；系統安全工程） | 對決策程式中每個拒絕或降評候選行動的守衛條件（Guard）建立布林／數值故障樹，直接統計各閘門單獨或首要阻擋候選的頻率 | 統計目標 2 格內單位未發動第 6 欄以上攻擊的閘門阻擋率：`blocked_by_zoc_or_mp`（到不了旁邊）、`assigned_to_garrison`（被派守點）、`halved_by_move_mode`（趕路切 Move 折半）、`stopped_by_exposure_penalty`（單獨前進暴露於 9+ 欄）、`insufficient_combat_sp`（缺戰鬥 SP） |
+
+結合上述四種方法，現行指標體系形成三條「結果 $\leftarrow$ 指標 $\leftarrow$ 指標的指標」拆解鏈：
+1. **奪點與失點鏈**：終局 VP 與回合得失點 $\leftarrow$ 可付費可攻／受威脅目標（`payableObjectivesInReach` / `payableObjectivesAtRisk`）$\leftarrow$ 幾何可達上限（`objectivesInReach`）、補給鬆弛落差（`objectivesInReach - payableObjectivesInReach`，由 `surplusCombatSp` 決定）、以及 2 格局部兵力比（`localForceRatioAt2Hex`）轉化為實質欄位（`bestObjectiveEffectiveColumn`）時的五階段戰力折損漏斗。
+2. **戰鬥傷亡鏈**：純戰鬥損失（`combatStepsLost`，已排除跨階段自動結算的 `attritionStepsLost`）$\leftarrow$ 一對一分配後暴露量（`stacksExposedAllocated`、`stepsExposedAllocated`）與單格最高期望損失（`maxSingleStackExpectedLoss`）$\leftarrow$ 前線單單位／無工事格比例與死守持有目標點承受 CRT option 的暴露格數。
+3. **斷補與耗損鏈**：斷補耗損（`attritionStepsLost`）與斷 trace 增加（`outOfTraceRise`）$\leftarrow$ 現有斷補（`outOfTrace`）與單一敵單位可切斷量（`supplyCuttable`、`supplyBestCut`）$\leftarrow$ 單一 HQ／單一走廊依賴集中度（`supplyBestCut / unitsInTrace`）與共同口糧配置缺口。
+
 ### 四種結果與補給前置條件
 
 四結果研究保留各自的單位，不把它們加權成單一分數。擷取與比較已在同一批 80 場歷史存檔執行，以下是現行量測契約。[四結果證據](../quality/evidence/ai-outcome-metrics-2026-10-18/README.md)
@@ -166,6 +182,18 @@ Trace 缺口對 Loss 的聯合留出誤差由擬合基準的 6.53 降至 5.29，
 主要結論必須來自事前凍結的指標，對後續未參與挑選的策略變體與種子作預測。先寫下預測再揭露終局結果。所有看過、挑過或用來改指標的批次都轉為探索資料。若驗證失敗，保留失敗結果，修改後用下一批真正未看的資料驗證，不能重抽相同方案直到通過。
 
 「目前最有用」表示在指定範圍內，驗證誤差低於基準，且跨變體與種子的結果支持其預測用途。若指標間差異的不確定區間包含零，報告無法分出勝負，不強排名。若沒有指標比基準好，記錄尚未找到有效指標，不能宣稱預測能力已建立。
+
+#### 篩選決定性指標與驗證因果鏈的五種統計方法
+
+針對戰棋對局資料的五個結構特性（70%～90% 回合事件為零的「零膨脹」、多重必要條件的「木桶效應」、前線指標高度共線與隨回合漂移、目標點早晚易手的時間動態、以及單局相關與跨政策改善的落差），比較工具採用以下五種統計與因果推論方法：
+
+| 統計方法 | 解決的結構問題 | 具體模型與判定判準 |
+|---|---|---|
+| **1. 兩階段跨欄模型與機率校準評分**<br/>（Two-Part Hurdle Model & Proper Scoring Rules） | 當非負隨機變數 $Y \ge 0$ 有超過半數窗口為 0（$P(Y = 0 \mid X) > 0.5$）時，條件中位數必為 0，導致單一點預測在 MAE 下無法擊敗「全猜 0」；而預測期望值 $E[Y \mid X]$ 的線性模型在零窗口會被罰絕對誤差 | **第一階段（觸發機率 $P(Y > 0 \mid X)$）**：用樣本外 **Brier Skill Score (BSS)**、**Log-Loss（交叉熵）增益**與 **Top-20% 高風險窗口捕獲率（Recall / Lift）**評量是否能預警事件發生；<br/>**第二階段（嚴重度 $E[Y \mid Y > 0, X]$）**：在已發生或已跨過必要門檻的子集上比較條件 MAE 與條件 $R^2$ |
+| **2. 淺層交集門檻規則與穩定度選擇**<br/>（Depth-2 Decision Rules & Stability Selection） | 戰術突破需同時滿足多重必要條件（例如 $\text{可達} \land \text{有戰鬥補給} \land \text{實質欄位} \ge 6$），可加性線性模型（$w_1 X_1 + w_2 X_2$）無法表達「缺一不可」的 AND 門檻 | 在訓練折內搜尋最多兩個指標的門檻交集規則 $\mathbb{I}(X_j \ge \tau_j \land X_k \ge \tau_k)$，並以 **Stability Selection** 統計跨 10 個留出種子折被選為最佳分裂規則的頻率 $\hat{\Pi}$；要求 **$\hat{\Pi} \ge 80\%$** 且留出折誤差改善才認定為穩定結構門檻 |
+| **3. 控制基礎狀態後的偏決定係數與 Romano-Wolf 群組置換檢定**<br/>（Partial $R^2$ & Stepdown Cluster Permutation） | 多個前線指標（如 `contact`、`stacksExposed`、`stacksExposedAllocated`）高度共線且隨 `gameTurn` 漂移，逐一單變數檢定容易產生多重比較假陽性 | 先在訓練折以 Frisch-Waugh-Lovell 對基礎狀態 $(\text{gameTurn}, \text{role}, \text{VP}, \text{steps}, \text{outOfTrace}, \text{distanceBaseline})$ 取殘差計算樣本外 **Partial $R^2$**；再以 `mapSeed` 為群組在同角色、同回合內做 **Romano-Wolf Stepdown 置換檢定**，在保留指標共線結構下控制整體偽陽性率（FWER $\le 0.05$） |
+| **4. 離散時間存活與事件風險率模型**<br/>（Discrete-Time Hazard Model） | 固定單一回合截點（如第 4 回合）會把「第 2 回合已失守」與「第 5 回合才集結完成」混為一談，漏掉狀態轉換的時間資訊 | 將每個目標點（或補給線）視為追蹤對象，對尚未失守的目標建立當回合易手風險率 $h(t \mid X_{t-1}) = P(T = t \mid T \ge t, X_{t-1})$，整合第 2～8 回合窗口並以樣本外 **Harrell's Concordance Index (C-index)** 排名預判能力 |
+| **5. 因果有向無環圖條件獨立檢定與序列中介拆解**<br/>（Causal DAG $d$-separation & Within-Seed Sequential Mediation） | 驗證「指標的指標」鏈條 $M^{(k-1)} \to M^{(k)} \to Y$ 是否完整，並消去地圖地形與起始部署的隨機變異 | 以同種子成對差分（Within-Seed Fixed Effects $\Delta Y_s, \Delta M_s$）消去地圖噪音；同時檢驗：(a) $M^{(k-1)}$ 對 $M^{(k)}$ 的樣本外預測力，與 (b) 控制 $M^{(k)}$ 後的中介解釋比例（Proportion Mediated）。若控制 $M^{(k)}$ 後 $M^{(k-1)}$ 對 $Y$ 仍有顯著殘餘直接效應，即代表第 $k$ 層**遺漏了平行指標** |
 
 ### 預測與因果分開驗證
 
