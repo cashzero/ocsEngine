@@ -1,0 +1,58 @@
+# Error list: E2 causes, E3 and E5 continuation tests against heuristic@85
+
+Boundary: offline replays and headless continuations through the Gameplay Engine. No policy change is adopted by this record;
+it changes no row of `docs/quality/03-product-operation-verification-plan.md`. Findings are kept in
+[policy-errors](../../../ai/policy-errors.md).
+
+## Inputs
+
+- Positions: `artifacts/ai-assault/v84-development` (v79 self-play, `7d88f3d`), even matches only: the two games of each
+  pair are the same game. 32×24, six divisions (two armored), eight turns, no on-map air; seeds 1300000–1300307.
+- Baseline variant `v85` = `heuristic` at `e89b7de` plus two knobs whose defaults change nothing: `advanceThreatLimit`
+  (8) and the existing weights. Opponent: frozen heuristic@85 (`artifacts/ai-promotion/frozen-v85`). Four common dice
+  seeds per branch point; horizons T0 + 1, T0 + 2 and the end.
+- E3 branch points ([declined-advance-branches.jsonl](declined-advance-branches.jsonl)): `ai-find-branches.mjs --kind
+  declined-advance`, the first Combat Segment from Game Turn 2 in which a side declined every advance, 30 points. Variant
+  `fix`: `advanceThreatLimit` 1e9 (advance into a non-objective hex whatever the enemy threat, when a supplied advance exists).
+- E5 branch points ([idle-combat-branches.jsonl](idle-combat-branches.jsonl)): `ai-error-census.mjs --branches`, Combat
+  Segments with no attack although a legal one reached column 6+ at the start, 27 points. Variants `supplyLow`
+  (`combatSupply` 1.5 → 0.5) and `thresholdLow` (`attackThreshold` 4 → 2).
+- E2: `node scripts/ai-supply-study.mjs <dir>` on the four groups (16 distinct games, both sides).
+
+## Observed
+
+E3, advance whatever the threat ([declined-advance-compare.json](declined-advance-compare.json)), fix − v85 at the end
+(n 30): own steps lost +1.39 ± 0.66 (t +2.1), kills +1.06 ± 0.55, Kill − Loss −0.33 ± 0.82, VP margin −0.22 ± 0.47, enemy
+units out of trace +0.64 ± 0.49. At T0 + 1 Kill − Loss +0.27 ± 0.11 (t +2.5), gone by the end.
+
+E5 ([idle-combat-compare.json](idle-combat-compare.json)), variant − v85 at the end (n 27):
+
+| | supplyLow | thresholdLow |
+|---|---|---|
+| Own attacks | +0.98 ± 0.20 | +0.37 ± 0.15 |
+| Kill − Loss | +0.66 ± 0.82 | +0.48 ± 0.35 |
+| VP margin | −0.04 ± 0.31 | 0.00 ± 0.11 |
+| Own SP on the map | −0.98 ± 0.64 | −0.23 ± 0.27 |
+
+supplyLow at T0 + 1: kills +0.45 ± 0.14 (t +3.3), own steps lost +0.17 ± 0.08. Across its branch points the T0 + 1
+differences of the out-of-trace margin and of own steps tracked the end VP difference (r −0.76 and +0.70) about as well as
+the T0 + 1 VP margin (+0.72).
+
+E2 ([attrition-causes.json](attrition-causes.json)): 233 attrition losses in 16 games. Trace lost by an enemy move 175,
+enemy combat 32, units placed out of trace (reinforcements, rebuilds) 14, other 6 (`ai-supply-study` categories). The ration
+was lost by an own action in 136: paying fuel 83 (single unit 68, formation 15), the Supply Phase check 33, recovering
+internal stocks 17. Feed SP was within reach at the loss in 15 (6%). 41 of the units stood on an objective when cut off.
+
+## What this shows
+
+- E3: the threat limit on advancing is not shown to be an error; advancing anyway trades own steps for kills and moves
+  no outcome measure.
+- E5: attacking at column 6+ when the policy declined gives kills at once but no lasting difference in Kill − Loss or VP;
+  not shown to be an error.
+- E2: the bot rarely fails to feed a unit that could be fed. Most attrition starts with an enemy move cutting trace; the most
+  frequent own part is paying fuel with the SP a cut-off unit needs as its ration.
+
+## Raw data
+
+The ignored `artifacts/ai-continue/declined-advance`, `artifacts/ai-continue/idle-combat` and the `supply-attribution.json`
+files in `artifacts/ai-assault/v84-development/*` of the `ai-truck-shuttle` worktree.

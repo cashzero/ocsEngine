@@ -50,7 +50,7 @@ const ratio = (label: string): number => {
   return match ? Number(match[1]) / Number(match[2]) : Number.POSITIVE_INFINITY;
 };
 
-export const respondToDecision = (context: BotDecisionContext, situation: Situation, holdRatio = 0.5): BotDecision | null => {
+export const respondToDecision = (context: BotDecisionContext, situation: Situation, holdRatio = 0.5, advanceThreatLimit = 8): BotDecision | null => {
   const decision = context.view.pendingDecision!;
   const options = decision.options as readonly Option[];
   const actions = context.actions.candidates('RESPOND_DECISION');
@@ -203,7 +203,7 @@ export const respondToDecision = (context: BotDecisionContext, situation: Situat
       if (objective) supplied.sort((a, b) => (b.unit?.profile?.strength ?? 0) - (a.unit?.profile?.strength ?? 0)
         || a.option.id.localeCompare(b.option.id));
       const advance = supplied[0]?.option;
-      if (advance && (objective || threat < 8)) {
+      if (advance && (objective || threat < advanceThreatLimit)) {
         return respond(actions, advance.id, 'advance', objective ? 'take the objective' : 'take the ground the defender left');
       }
       return respond(actions, has('advance:done') ? 'advance:done' : options[0]!.id, 'advance', 'no supplied advance worth the exposure');

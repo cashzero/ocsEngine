@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Census of decisions that look wrong, per side role, from saved ai-match games with traces (docs/ai/evaluation.md). Build first.
 //
-//   node scripts/ai-error-census.mjs <match directory> [...] [--out <file.json>]
+//   node scripts/ai-error-census.mjs <match directory> [...] [--out <file.json>] [--branches <file.jsonl>]
 //
 // Counts are candidates for the error list, not proven mistakes; each needs a continuation test (scripts/ai-continue.mjs).
 // - idle combat: own Combat Segments (Game Turn 2+) with no regular attack declared although a legal one reached Combat
@@ -9,15 +9,19 @@
 // - attack odds: declared regular attacks by column, and those at column 10 or more ("overkill");
 // - advances: after-combat advance decisions the trace names as declined ("no supplied advance…") or taken;
 // - never moved: own combat units on the map at the start that never moved all game.
+// --branches writes each idle Combat Segment as a branch point for scripts/ai-continue.mjs (save, side, first action index).
 import { existsSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const root = resolve(fileURLToPath(new URL('..', import.meta.url)));
 const args = process.argv.slice(2);
-const outIndex = args.indexOf('--out');
-const out = outIndex >= 0 ? args[outIndex + 1] : null;
-const dirs = args.filter((_, index) => outIndex < 0 || (index !== outIndex && index !== outIndex + 1));
+const flagValue = (name) => (args.includes(name) ? args[args.indexOf(name) + 1] : null);
+const out = flagValue('--out');
+const branchesOut = flagValue('--branches');
+const flagged = new Set(['--out', '--branches'].flatMap((name) => (args.includes(name) ? [args.indexOf(name), args.indexOf(name) + 1] : [])));
+const dirs = args.filter((_, index) => !flagged.has(index));
+const branches = [];
 const m = await import(pathToFileURL(join(root, 'dist', 'index.js')).href);
 const roles = {};
 const bump = (role, key, value = 1) => { const c = (roles[role] ??= { games: 0 }); c[key] = (c[key] ?? 0) + value; };
@@ -49,10 +53,13 @@ for (const dir of dirs) {
       if (!segmentInfo) return;
       const role = roleOf(segmentInfo.playerId);
       bump(role, 'combat segments');
-      if (segmentInfo.best >= 6 && segmentInfo.declared === 0) bump(role, 'idle combat segments with a column 6+ attack');
+      if (segmentInfo.best >= 6 && segmentInfo.declared === 0) {
+        bump(role, 'idle combat segments with a column 6+ attack');
+        branches.push({ save: resolve(savePath), match: record.match, stepKey: segmentInfo.stepKey, side: String(segmentInfo.playerId).endsWith('axis') ? 'axis' : 'allied', at: segmentInfo.at, bestColumn: segmentInfo.best });
+      }
       segmentInfo = null;
     };
-    for (const action of save.acceptedActions) {
+    for (const [actionIndex, action] of save.acceptedActions.entries()) {
       const { gameTurn, playerTurnIndex, phase, segment: step, phasingPlayerId } = state.sequence;
       const key = `${gameTurn}:${playerTurnIndex}:${phase}:${step}`;
       if (key !== segment) {
@@ -66,7 +73,7 @@ for (const dir of dirs) {
             const forecast = explanation.allowed ? m.forecastCombat(explanation.facts) : null;
             if (forecast) best = Math.max(best, forecast.columnIndex);
           }
-          segmentInfo = { playerId: phasingPlayerId, best, declared: 0 };
+          segmentInfo = { playerId: phasingPlayerId, best, declared: 0, at: actionIndex, stepKey: key };
         }
       }
       if (action.kind === 'DECLARE_COMBAT' && action.combatKind === 'REGULAR') {
@@ -89,4 +96,5 @@ for (const [role, counts] of Object.entries(roles)) {
   console.log(`${role}: ${counts.games} side-games, per game:`);
   for (const [key, value] of Object.entries(summary[role])) console.log(`  ${key}: ${value.toFixed(2)}`);
 }
+if (branchesOut) writeFileSync(branchesOut, branches.map((branch) => `${JSON.stringify(branch)}\n`).join(''));
 if (out) writeFileSync(out, JSON.stringify({ dirs, roles: summary, sideGames: Object.fromEntries(Object.entries(roles).map(([role, c]) => [role, c.games])) }, null, 2));

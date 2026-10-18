@@ -1453,7 +1453,7 @@ const decide = (facts: BotGameFacts, w: HeuristicWeights) => (context: BotDecisi
   const projection = context.view.projection;
   if (!projection) return null;
   const situation = analyze(projection, context.playerId, facts);
-  if (context.view.pendingDecision !== null) return respondToDecision(context, situation, w.holdRatio);
+  if (context.view.pendingDecision !== null) return respondToDecision(context, situation, w.holdRatio, w.advanceThreatLimit);
   const { phase, segment } = projection.sequence;
   let chosen: BotDecision | null = null;
   if (phase === 'REINFORCEMENT') chosen = reinforcementStep(context, situation, facts);

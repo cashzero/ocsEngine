@@ -1,0 +1,33 @@
+{
+ "games": 16,
+ "attrition": 233,
+ "traceCategory": {
+  "opponent-action": 181,
+  "entered-map-out-of-trace": 14,
+  "opponent-combat": 32,
+  "phase-transition-investigate": 6
+ },
+ "rationCategory": {
+  "own-action": 136,
+  "phase-transition-investigate": 42,
+  "opponent-combat": 5,
+  "opponent-action": 44,
+  "entered-map-unfed": 2,
+  "ration-present-at-loss-investigate": 4
+ },
+ "rationTrigger": {
+  "[\"PAY_FUEL\", \"SINGLE_UNIT\"]": 68,
+  "[\"ADVANCE_SEQUENCE\", null]": 42,
+  "[\"CHECK_SUPPLY\", null]": 33,
+  "[\"RESPOND_DECISION\", null]": 9,
+  "[\"MOVE_PIECE\", null]": 40,
+  "[\"RECOVER_INTERNALS\", null]": 17,
+  "[\"PLACE_REINFORCEMENT\", null]": 2,
+  "[\"CHANGE_MODE\", null]": 4,
+  "[\"DECLARE_COMBAT\", null]": 2,
+  "[\"UNLOAD_SUPPLY\", null]": 1,
+  "[\"PAY_FUEL\", \"FORMATION\"]": 15
+ },
+ "reachableFeedAtLoss": 15,
+ "objectiveAtBreak": 41
+}
