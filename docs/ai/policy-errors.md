@@ -101,7 +101,9 @@ formation 共同路線、補給源）重算，數斷補的己方單位。只試�
 | `hqDependentUnitsInReach` | O 斷 trace 的單位增加；O 下一個己方回合的耗損 | 守方行動時斷補增加 R² +0.054 [0.002, 0.098]；對耗損沒有增益 | 弱 |
 | `outOfTraceUnfed` | O 下一個己方回合的耗損 | 合併角色時勝過 `outOfTrace`，但各角色內都不勝過 `outOfTrace` 的分桶；合併的增益來自各角色斷補程度不同 | 不採用 |
 
-這些是在已看過的資料上的探索結果，指標的正式成立要等前瞻確認（WBS P7）。近期預測也不代表推高指標的策略能提高終局 VP；以正確對局識別重驗終局預測仍為開放工作（WBS P6）。
+這些是在已看過的資料上的探索結果，指標的正式成立要等前瞻確認（WBS P7）。近期預測也不代表推高指標的策略能提高終局 VP。
+
+終局預測（[重驗](../quality/evidence/ai-position-metrics-p6-2026-10-19/README.md)，正確對局識別與種子分組）：攻擊戰中，step 差與斷補差在 VP 之外預測終局 VP 差，到 Game Turn 5 的 R² 增益區間都不含 0（Game Turn 3 為 +0.289）；雙方的 `objectiveReachColumn` 與 `objectiveVpAtRisk` 再往上加，Game Turn 3～7 的 MAE 每局少 0.35～0.95 VP，區間都不含 0，R² 增益在 Game Turn 5、6 通過。分配後暴露與 `hqsInReach` 對終局沒有增益。遭遇戰（69 條軌跡）沒有任何增益通過。
 
 負對照：獨立隨機特徵在舊的樣本內方法下也得到區間排除 0 的新增 R²，但樣本外 R² 下降（[對照](../quality/evidence/ai-position-validation-2026-10-18/negative-control.json)），所以只採用樣本外的比較。
 

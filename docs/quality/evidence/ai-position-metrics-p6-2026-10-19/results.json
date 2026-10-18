@@ -1,0 +1,921 @@
+{
+ "resultsSha256": "c556bda287dd8db4bf7d2f6c7b40b726732a02699c09334e1d564196c2cd81a3",
+ "scriptSha256": "e5f1fe7b08e74464d20c60d22075a09bcdd8425b77d9e120a3857e9463b04b8f",
+ "scope": "Trajectories are identified and map seeds grouped as in ai-position-validate.py. For each trajectory and Game Turn 2-7,\nthe row of the Game Turn's first player turn predicts the final Axis minus Allied VP margin, Axis attacks and meetings\napart. Models (least squares on training-standardized features): M0 the VP margin; M1 adds the step and out-of-trace\ndifferences; M2 adds each side's objectiveReachColumn and objectiveVpAtRisk; M3 adds each side's stacksExposedAllocated;\nM4 adds each side's hqsInReach. Ten map-seed folds give out-of-sample R2 and MAE; the gain of M1 over M0 and of M2-M4\nover M1 gets a 95% interval from 1,000 map-seed cluster resamples of the fixed out-of-fold errors.",
+ "uniqueTrajectories": 255,
+ "manifest": "docs/quality/evidence/ai-position-metrics-p5-2026-10-19/manifest.json",
+ "results": {
+  "AXIS_ATTACKS Game Turn 2": {
+   "n": 186,
+   "seeds": 68,
+   "scores": {
+    "M0 VP": {
+     "r2": -0.0737,
+     "mae": 8.5196
+    },
+    "M1 + steps, out of trace": {
+     "r2": 0.077,
+     "mae": 7.5419
+    },
+    "M2 + objective reach and risk": {
+     "r2": 0.186,
+     "mae": 6.9767
+    },
+    "M3 + allocated exposure": {
+     "r2": 0.137,
+     "mae": 7.1699
+    },
+    "M4 + HQs in reach": {
+     "r2": 0.0455,
+     "mae": 7.8902
+    }
+   },
+   "gains": {
+    "M1 + steps, out of trace over M0 VP": {
+     "r2Gain": 0.1507,
+     "r2Gain95": [
+      0.0145,
+      0.2992
+     ],
+     "maeGain": 0.9777,
+     "maeGain95": [
+      0.1757,
+      1.8684
+     ]
+    },
+    "M2 + objective reach and risk over M1 + steps, out of trace": {
+     "r2Gain": 0.109,
+     "r2Gain95": [
+      -0.0436,
+      0.2765
+     ],
+     "maeGain": 0.5652,
+     "maeGain95": [
+      -0.1022,
+      1.2425
+     ]
+    },
+    "M3 + allocated exposure over M1 + steps, out of trace": {
+     "r2Gain": 0.06,
+     "r2Gain95": [
+      -0.0529,
+      0.1603
+     ],
+     "maeGain": 0.3721,
+     "maeGain95": [
+      -0.1571,
+      0.9056
+     ]
+    },
+    "M4 + HQs in reach over M1 + steps, out of trace": {
+     "r2Gain": -0.0315,
+     "r2Gain95": [
+      -0.1554,
+      0.0627
+     ],
+     "maeGain": -0.3483,
+     "maeGain95": [
+      -0.8724,
+      0.073
+     ]
+    }
+   }
+  },
+  "AXIS_ATTACKS Game Turn 3": {
+   "n": 186,
+   "seeds": 68,
+   "scores": {
+    "M0 VP": {
+     "r2": -0.0528,
+     "mae": 8.4171
+    },
+    "M1 + steps, out of trace": {
+     "r2": 0.2366,
+     "mae": 6.8093
+    },
+    "M2 + objective reach and risk": {
+     "r2": 0.3504,
+     "mae": 5.9932
+    },
+    "M3 + allocated exposure": {
+     "r2": 0.2299,
+     "mae": 6.8119
+    },
+    "M4 + HQs in reach": {
+     "r2": 0.2891,
+     "mae": 6.5695
+    }
+   },
+   "gains": {
+    "M1 + steps, out of trace over M0 VP": {
+     "r2Gain": 0.2894,
+     "r2Gain95": [
+      0.1665,
+      0.4051
+     ],
+     "maeGain": 1.6079,
+     "maeGain95": [
+      0.752,
+      2.435
+     ]
+    },
+    "M2 + objective reach and risk over M1 + steps, out of trace": {
+     "r2Gain": 0.1138,
+     "r2Gain95": [
+      -0.06,
+      0.2671
+     ],
+     "maeGain": 0.8161,
+     "maeGain95": [
+      0.0328,
+      1.5795
+     ]
+    },
+    "M3 + allocated exposure over M1 + steps, out of trace": {
+     "r2Gain": -0.0067,
+     "r2Gain95": [
+      -0.036,
+      0.0211
+     ],
+     "maeGain": -0.0026,
+     "maeGain95": [
+      -0.2045,
+      0.2225
+     ]
+    },
+    "M4 + HQs in reach over M1 + steps, out of trace": {
+     "r2Gain": 0.0525,
+     "r2Gain95": [
+      -0.0136,
+      0.1175
+     ],
+     "maeGain": 0.2398,
+     "maeGain95": [
+      -0.136,
+      0.6277
+     ]
+    }
+   }
+  },
+  "AXIS_ATTACKS Game Turn 4": {
+   "n": 186,
+   "seeds": 68,
+   "scores": {
+    "M0 VP": {
+     "r2": 0.0563,
+     "mae": 7.8761
+    },
+    "M1 + steps, out of trace": {
+     "r2": 0.3129,
+     "mae": 6.5969
+    },
+    "M2 + objective reach and risk": {
+     "r2": 0.4141,
+     "mae": 5.6448
+    },
+    "M3 + allocated exposure": {
+     "r2": 0.2825,
+     "mae": 6.8659
+    },
+    "M4 + HQs in reach": {
+     "r2": 0.3115,
+     "mae": 6.7082
+    }
+   },
+   "gains": {
+    "M1 + steps, out of trace over M0 VP": {
+     "r2Gain": 0.2566,
+     "r2Gain95": [
+      0.1181,
+      0.4008
+     ],
+     "maeGain": 1.2792,
+     "maeGain95": [
+      0.5374,
+      2.0634
+     ]
+    },
+    "M2 + objective reach and risk over M1 + steps, out of trace": {
+     "r2Gain": 0.1012,
+     "r2Gain95": [
+      -0.0934,
+      0.2529
+     ],
+     "maeGain": 0.9521,
+     "maeGain95": [
+      0.2702,
+      1.7095
+     ]
+    },
+    "M3 + allocated exposure over M1 + steps, out of trace": {
+     "r2Gain": -0.0304,
+     "r2Gain95": [
+      -0.0625,
+      -0.0035
+     ],
+     "maeGain": -0.269,
+     "maeGain95": [
+      -0.4349,
+      -0.0903
+     ]
+    },
+    "M4 + HQs in reach over M1 + steps, out of trace": {
+     "r2Gain": -0.0014,
+     "r2Gain95": [
+      -0.0654,
+      0.0526
+     ],
+     "maeGain": -0.1113,
+     "maeGain95": [
+      -0.4897,
+      0.2438
+     ]
+    }
+   }
+  },
+  "AXIS_ATTACKS Game Turn 5": {
+   "n": 186,
+   "seeds": 68,
+   "scores": {
+    "M0 VP": {
+     "r2": 0.2926,
+     "mae": 6.6096
+    },
+    "M1 + steps, out of trace": {
+     "r2": 0.4538,
+     "mae": 5.9213
+    },
+    "M2 + objective reach and risk": {
+     "r2": 0.5727,
+     "mae": 4.9885
+    },
+    "M3 + allocated exposure": {
+     "r2": 0.4365,
+     "mae": 6.0035
+    },
+    "M4 + HQs in reach": {
+     "r2": 0.4539,
+     "mae": 5.9204
+    }
+   },
+   "gains": {
+    "M1 + steps, out of trace over M0 VP": {
+     "r2Gain": 0.1612,
+     "r2Gain95": [
+      0.0402,
+      0.3025
+     ],
+     "maeGain": 0.6883,
+     "maeGain95": [
+      0.0873,
+      1.2965
+     ]
+    },
+    "M2 + objective reach and risk over M1 + steps, out of trace": {
+     "r2Gain": 0.1189,
+     "r2Gain95": [
+      0.0109,
+      0.2358
+     ],
+     "maeGain": 0.9327,
+     "maeGain95": [
+      0.3859,
+      1.4808
+     ]
+    },
+    "M3 + allocated exposure over M1 + steps, out of trace": {
+     "r2Gain": -0.0173,
+     "r2Gain95": [
+      -0.0283,
+      -0.0068
+     ],
+     "maeGain": -0.0822,
+     "maeGain95": [
+      -0.1665,
+      -0.002
+     ]
+    },
+    "M4 + HQs in reach over M1 + steps, out of trace": {
+     "r2Gain": 0.0001,
+     "r2Gain95": [
+      -0.0276,
+      0.0282
+     ],
+     "maeGain": 0.0009,
+     "maeGain95": [
+      -0.1789,
+      0.179
+     ]
+    }
+   }
+  },
+  "AXIS_ATTACKS Game Turn 6": {
+   "n": 186,
+   "seeds": 68,
+   "scores": {
+    "M0 VP": {
+     "r2": 0.6157,
+     "mae": 4.7659
+    },
+    "M1 + steps, out of trace": {
+     "r2": 0.6634,
+     "mae": 4.4594
+    },
+    "M2 + objective reach and risk": {
+     "r2": 0.7417,
+     "mae": 3.5263
+    },
+    "M3 + allocated exposure": {
+     "r2": 0.6655,
+     "mae": 4.4091
+    },
+    "M4 + HQs in reach": {
+     "r2": 0.657,
+     "mae": 4.5456
+    }
+   },
+   "gains": {
+    "M1 + steps, out of trace over M0 VP": {
+     "r2Gain": 0.0477,
+     "r2Gain95": [
+      0.0016,
+      0.1006
+     ],
+     "maeGain": 0.3065,
+     "maeGain95": [
+      -0.0025,
+      0.6569
+     ]
+    },
+    "M2 + objective reach and risk over M1 + steps, out of trace": {
+     "r2Gain": 0.0783,
+     "r2Gain95": [
+      0.0296,
+      0.139
+     ],
+     "maeGain": 0.9331,
+     "maeGain95": [
+      0.5351,
+      1.3893
+     ]
+    },
+    "M3 + allocated exposure over M1 + steps, out of trace": {
+     "r2Gain": 0.0021,
+     "r2Gain95": [
+      -0.0218,
+      0.0233
+     ],
+     "maeGain": 0.0503,
+     "maeGain95": [
+      -0.1408,
+      0.2306
+     ]
+    },
+    "M4 + HQs in reach over M1 + steps, out of trace": {
+     "r2Gain": -0.0064,
+     "r2Gain95": [
+      -0.0214,
+      0.0061
+     ],
+     "maeGain": -0.0862,
+     "maeGain95": [
+      -0.2303,
+      0.0553
+     ]
+    }
+   }
+  },
+  "AXIS_ATTACKS Game Turn 7": {
+   "n": 186,
+   "seeds": 68,
+   "scores": {
+    "M0 VP": {
+     "r2": 0.7865,
+     "mae": 3.4372
+    },
+    "M1 + steps, out of trace": {
+     "r2": 0.7981,
+     "mae": 3.2907
+    },
+    "M2 + objective reach and risk": {
+     "r2": 0.8114,
+     "mae": 2.9389
+    },
+    "M3 + allocated exposure": {
+     "r2": 0.7998,
+     "mae": 3.194
+    },
+    "M4 + HQs in reach": {
+     "r2": 0.7911,
+     "mae": 3.3204
+    }
+   },
+   "gains": {
+    "M1 + steps, out of trace over M0 VP": {
+     "r2Gain": 0.0116,
+     "r2Gain95": [
+      -0.0094,
+      0.0342
+     ],
+     "maeGain": 0.1465,
+     "maeGain95": [
+      -0.0719,
+      0.3588
+     ]
+    },
+    "M2 + objective reach and risk over M1 + steps, out of trace": {
+     "r2Gain": 0.0134,
+     "r2Gain95": [
+      -0.0118,
+      0.0382
+     ],
+     "maeGain": 0.3518,
+     "maeGain95": [
+      0.1247,
+      0.5776
+     ]
+    },
+    "M3 + allocated exposure over M1 + steps, out of trace": {
+     "r2Gain": 0.0018,
+     "r2Gain95": [
+      -0.0095,
+      0.0139
+     ],
+     "maeGain": 0.0966,
+     "maeGain95": [
+      -0.0233,
+      0.2043
+     ]
+    },
+    "M4 + HQs in reach over M1 + steps, out of trace": {
+     "r2Gain": -0.007,
+     "r2Gain95": [
+      -0.0137,
+      -0.0016
+     ],
+     "maeGain": -0.0298,
+     "maeGain95": [
+      -0.0691,
+      0.0125
+     ]
+    }
+   }
+  },
+  "MEETING Game Turn 2": {
+   "n": 69,
+   "seeds": 28,
+   "scores": {
+    "M0 VP": {
+     "r2": 0.1109,
+     "mae": 4.4623
+    },
+    "M1 + steps, out of trace": {
+     "r2": 0.1411,
+     "mae": 4.4411
+    },
+    "M2 + objective reach and risk": {
+     "r2": 0.0318,
+     "mae": 4.737
+    },
+    "M3 + allocated exposure": {
+     "r2": 0.1175,
+     "mae": 4.446
+    },
+    "M4 + HQs in reach": {
+     "r2": 0.0871,
+     "mae": 4.7094
+    }
+   },
+   "gains": {
+    "M1 + steps, out of trace over M0 VP": {
+     "r2Gain": 0.0302,
+     "r2Gain95": [
+      -0.0187,
+      0.0826
+     ],
+     "maeGain": 0.0212,
+     "maeGain95": [
+      -0.1969,
+      0.2148
+     ]
+    },
+    "M2 + objective reach and risk over M1 + steps, out of trace": {
+     "r2Gain": -0.1093,
+     "r2Gain95": [
+      -0.3549,
+      0.0813
+     ],
+     "maeGain": -0.2959,
+     "maeGain95": [
+      -1.0257,
+      0.3514
+     ]
+    },
+    "M3 + allocated exposure over M1 + steps, out of trace": {
+     "r2Gain": -0.0236,
+     "r2Gain95": [
+      -0.1455,
+      0.0587
+     ],
+     "maeGain": -0.0049,
+     "maeGain95": [
+      -0.609,
+      0.4301
+     ]
+    },
+    "M4 + HQs in reach over M1 + steps, out of trace": {
+     "r2Gain": -0.054,
+     "r2Gain95": [
+      -0.2124,
+      0.0266
+     ],
+     "maeGain": -0.2684,
+     "maeGain95": [
+      -0.7284,
+      0.1544
+     ]
+    }
+   }
+  },
+  "MEETING Game Turn 3": {
+   "n": 69,
+   "seeds": 28,
+   "scores": {
+    "M0 VP": {
+     "r2": 0.2555,
+     "mae": 4.2195
+    },
+    "M1 + steps, out of trace": {
+     "r2": 0.2983,
+     "mae": 4.3626
+    },
+    "M2 + objective reach and risk": {
+     "r2": 0.3719,
+     "mae": 4.1367
+    },
+    "M3 + allocated exposure": {
+     "r2": 0.249,
+     "mae": 4.4798
+    },
+    "M4 + HQs in reach": {
+     "r2": 0.2454,
+     "mae": 4.5561
+    }
+   },
+   "gains": {
+    "M1 + steps, out of trace over M0 VP": {
+     "r2Gain": 0.0429,
+     "r2Gain95": [
+      -0.0515,
+      0.1618
+     ],
+     "maeGain": -0.1431,
+     "maeGain95": [
+      -0.5376,
+      0.2352
+     ]
+    },
+    "M2 + objective reach and risk over M1 + steps, out of trace": {
+     "r2Gain": 0.0735,
+     "r2Gain95": [
+      -0.0448,
+      0.1784
+     ],
+     "maeGain": 0.2259,
+     "maeGain95": [
+      -0.3048,
+      0.7513
+     ]
+    },
+    "M3 + allocated exposure over M1 + steps, out of trace": {
+     "r2Gain": -0.0494,
+     "r2Gain95": [
+      -0.1144,
+      -0.0115
+     ],
+     "maeGain": -0.1171,
+     "maeGain95": [
+      -0.2851,
+      0.0471
+     ]
+    },
+    "M4 + HQs in reach over M1 + steps, out of trace": {
+     "r2Gain": -0.0529,
+     "r2Gain95": [
+      -0.1067,
+      -0.0227
+     ],
+     "maeGain": -0.1935,
+     "maeGain95": [
+      -0.3035,
+      -0.0952
+     ]
+    }
+   }
+  },
+  "MEETING Game Turn 4": {
+   "n": 69,
+   "seeds": 28,
+   "scores": {
+    "M0 VP": {
+     "r2": 0.5937,
+     "mae": 2.9358
+    },
+    "M1 + steps, out of trace": {
+     "r2": 0.5887,
+     "mae": 3.0566
+    },
+    "M2 + objective reach and risk": {
+     "r2": 0.5042,
+     "mae": 3.3727
+    },
+    "M3 + allocated exposure": {
+     "r2": 0.5798,
+     "mae": 3.1035
+    },
+    "M4 + HQs in reach": {
+     "r2": 0.5872,
+     "mae": 3.2301
+    }
+   },
+   "gains": {
+    "M1 + steps, out of trace over M0 VP": {
+     "r2Gain": -0.005,
+     "r2Gain95": [
+      -0.0311,
+      0.0141
+     ],
+     "maeGain": -0.1208,
+     "maeGain95": [
+      -0.2912,
+      0.0232
+     ]
+    },
+    "M2 + objective reach and risk over M1 + steps, out of trace": {
+     "r2Gain": -0.0846,
+     "r2Gain95": [
+      -0.2241,
+      -0.0099
+     ],
+     "maeGain": -0.3161,
+     "maeGain95": [
+      -0.753,
+      0.0504
+     ]
+    },
+    "M3 + allocated exposure over M1 + steps, out of trace": {
+     "r2Gain": -0.0089,
+     "r2Gain95": [
+      -0.0349,
+      0.0037
+     ],
+     "maeGain": -0.0469,
+     "maeGain95": [
+      -0.1454,
+      0.0405
+     ]
+    },
+    "M4 + HQs in reach over M1 + steps, out of trace": {
+     "r2Gain": -0.0016,
+     "r2Gain95": [
+      -0.1087,
+      0.0518
+     ],
+     "maeGain": -0.1735,
+     "maeGain95": [
+      -0.557,
+      0.149
+     ]
+    }
+   }
+  },
+  "MEETING Game Turn 5": {
+   "n": 69,
+   "seeds": 28,
+   "scores": {
+    "M0 VP": {
+     "r2": 0.6227,
+     "mae": 2.8759
+    },
+    "M1 + steps, out of trace": {
+     "r2": 0.6144,
+     "mae": 3.0011
+    },
+    "M2 + objective reach and risk": {
+     "r2": 0.6339,
+     "mae": 2.9714
+    },
+    "M3 + allocated exposure": {
+     "r2": 0.6404,
+     "mae": 3.0804
+    },
+    "M4 + HQs in reach": {
+     "r2": 0.601,
+     "mae": 3.2008
+    }
+   },
+   "gains": {
+    "M1 + steps, out of trace over M0 VP": {
+     "r2Gain": -0.0084,
+     "r2Gain95": [
+      -0.0305,
+      0.0164
+     ],
+     "maeGain": -0.1252,
+     "maeGain95": [
+      -0.293,
+      0.0506
+     ]
+    },
+    "M2 + objective reach and risk over M1 + steps, out of trace": {
+     "r2Gain": 0.0196,
+     "r2Gain95": [
+      -0.035,
+      0.0671
+     ],
+     "maeGain": 0.0297,
+     "maeGain95": [
+      -0.3231,
+      0.3714
+     ]
+    },
+    "M3 + allocated exposure over M1 + steps, out of trace": {
+     "r2Gain": 0.0261,
+     "r2Gain95": [
+      -0.0546,
+      0.075
+     ],
+     "maeGain": -0.0793,
+     "maeGain95": [
+      -0.4197,
+      0.2219
+     ]
+    },
+    "M4 + HQs in reach over M1 + steps, out of trace": {
+     "r2Gain": -0.0134,
+     "r2Gain95": [
+      -0.0982,
+      0.0307
+     ],
+     "maeGain": -0.1996,
+     "maeGain95": [
+      -0.4732,
+      0.0561
+     ]
+    }
+   }
+  },
+  "MEETING Game Turn 6": {
+   "n": 69,
+   "seeds": 28,
+   "scores": {
+    "M0 VP": {
+     "r2": 0.7172,
+     "mae": 2.416
+    },
+    "M1 + steps, out of trace": {
+     "r2": 0.7074,
+     "mae": 2.4942
+    },
+    "M2 + objective reach and risk": {
+     "r2": 0.6805,
+     "mae": 2.8528
+    },
+    "M3 + allocated exposure": {
+     "r2": 0.6794,
+     "mae": 2.5885
+    },
+    "M4 + HQs in reach": {
+     "r2": 0.6822,
+     "mae": 2.6385
+    }
+   },
+   "gains": {
+    "M1 + steps, out of trace over M0 VP": {
+     "r2Gain": -0.0097,
+     "r2Gain95": [
+      -0.0198,
+      0.0063
+     ],
+     "maeGain": -0.0782,
+     "maeGain95": [
+      -0.189,
+      0.0484
+     ]
+    },
+    "M2 + objective reach and risk over M1 + steps, out of trace": {
+     "r2Gain": -0.027,
+     "r2Gain95": [
+      -0.1098,
+      0.0232
+     ],
+     "maeGain": -0.3587,
+     "maeGain95": [
+      -0.6867,
+      -0.0648
+     ]
+    },
+    "M3 + allocated exposure over M1 + steps, out of trace": {
+     "r2Gain": -0.028,
+     "r2Gain95": [
+      -0.0404,
+      -0.0113
+     ],
+     "maeGain": -0.0943,
+     "maeGain95": [
+      -0.2027,
+      0.0297
+     ]
+    },
+    "M4 + HQs in reach over M1 + steps, out of trace": {
+     "r2Gain": -0.0253,
+     "r2Gain95": [
+      -0.0613,
+      -0.0062
+     ],
+     "maeGain": -0.1444,
+     "maeGain95": [
+      -0.263,
+      -0.0226
+     ]
+    }
+   }
+  },
+  "MEETING Game Turn 7": {
+   "n": 69,
+   "seeds": 28,
+   "scores": {
+    "M0 VP": {
+     "r2": 0.8284,
+     "mae": 1.8858
+    },
+    "M1 + steps, out of trace": {
+     "r2": 0.8264,
+     "mae": 1.9635
+    },
+    "M2 + objective reach and risk": {
+     "r2": 0.8089,
+     "mae": 2.1375
+    },
+    "M3 + allocated exposure": {
+     "r2": 0.817,
+     "mae": 2.0464
+    },
+    "M4 + HQs in reach": {
+     "r2": 0.8229,
+     "mae": 2.0443
+    }
+   },
+   "gains": {
+    "M1 + steps, out of trace over M0 VP": {
+     "r2Gain": -0.0019,
+     "r2Gain95": [
+      -0.0186,
+      0.0168
+     ],
+     "maeGain": -0.0777,
+     "maeGain95": [
+      -0.2506,
+      0.0809
+     ]
+    },
+    "M2 + objective reach and risk over M1 + steps, out of trace": {
+     "r2Gain": -0.0175,
+     "r2Gain95": [
+      -0.1063,
+      0.023
+     ],
+     "maeGain": -0.174,
+     "maeGain95": [
+      -0.5859,
+      0.1078
+     ]
+    },
+    "M3 + allocated exposure over M1 + steps, out of trace": {
+     "r2Gain": -0.0095,
+     "r2Gain95": [
+      -0.0232,
+      0.0025
+     ],
+     "maeGain": -0.0829,
+     "maeGain95": [
+      -0.1693,
+      -0.0002
+     ]
+    },
+    "M4 + HQs in reach over M1 + steps, out of trace": {
+     "r2Gain": -0.0035,
+     "r2Gain95": [
+      -0.0227,
+      0.0072
+     ],
+     "maeGain": -0.0808,
+     "maeGain95": [
+      -0.1942,
+      0.0265
+     ]
+    }
+   }
+  }
+ }
+}
