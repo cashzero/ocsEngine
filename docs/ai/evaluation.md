@@ -29,7 +29,8 @@
 | `scripts/ai-approach-study.mjs` | 錯誤清單 E6：移動中的戰鬥單位停在離目標多遠、目標旁的格子是否到得了、所選移動的評分項目 |
 | `scripts/ai-position-record.mjs` | 既有對局每個玩家回合開始時雙方的現況與下一回合局勢指標（[局勢指標](policy-errors.md#局勢指標)），附該玩家回合的損失（含戰鬥與耗損拆分）、目標點變化、補給堆被奪或被毀的 SP 與終局 VP；補給線切斷只算不行動的一方；重播 hash 不符的局略過 |
 | `scripts/ai-position-analysis.py` | 既有局勢指標的描述性分析（含戰鬥與耗損拆分及可付費目標風險）；其 metrics 去重會合併不同對局，終局預測結論待重驗，見 [目前限制](policy-errors.md#指標是否可用) |
-| `scripts/ai-position-validate.py` | 依初始／終局 hash 與完整行動序列識別對局；留出整組種子及來源批次的近期預測比較，包含零事件、中位數、線性與固定分桶基準，見 [指標是否可用](policy-errors.md#指標是否可用) |
+| `scripts/ai-position-validate.py` | 依初始／終局 hash 與完整行動序列識別對局；留出整組種子及來源批次的近期預測比較，包含零事件、中位數、線性、固定分桶與訓練五分位分桶基準；特徵含不行動方與行動方（`mover.`）的指標，結果含行動方的奪點與不行動方下一個己方回合的耗損，見 [指標是否可用](policy-errors.md#指標是否可用) |
+| `scripts/ai-position-residuals.py`、`scripts/ai-position-residual-review.mjs` | 局勢指標的殘差檢視（[局勢指標研究 WBS](../roadmap/18-position-metrics-wbs.md) P3）：依事先固定的規則挑出各角色中指標低估最多的玩家回合，重播並整理該回合的戰鬥、奪點與耗損 |
 | `scripts/ai-find-branches.mjs` | 從 trace 找分岔點：某一方在某個 segment 做了要研究的決策（例如攻擊戰守方的主攻任務），輸出該 segment 第一個行動的 index |
 | `scripts/ai-continue.mjs` | 局面接續：從存檔的分岔點重設 Rules RNG，各策略變體在同一組骰子種子下對固定對手接著下，記錄 +h 回合與終局的局面指標與事件 |
 | `scripts/ai-position-metrics.mjs` | 局面指標（模組）：VP、目標點持有／有人守／受威脅、單位與 step、DG、接敵、離敵距離、斷補、SP（地圖上、前線取用得到、取用不到、扣除口糧與燃料後的剩餘戰鬥 SP）、未控目標最佳有效欄位、2 格局部兵力比、乾 HQ；下一回合局勢（[局勢指標](policy-errors.md#局勢指標)），含可實際支付的目標風險與可攻達性、對方一步能切斷補給的單位數、對方每單位只攻擊一格時的暴露量與單格最高期望損失；事件：step 損失（總計、戰鬥、耗損）、補給堆被奪或被毀的 SP、SP 支出、攻擊、砲擊 |

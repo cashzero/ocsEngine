@@ -53,6 +53,10 @@ VP、Kill、Loss、Supply 反映不出局勢（使用者，2026-10-18），所�
 | `hqsInReach`、`dumpSpInReach` | 對方下回合能到旁邊的己方 HQ，與己方補給堆（不含駐軍存量）的 SP |
 | `unitsWithReach` | 下回合能移動的己方戰鬥單位 |
 | `supplyBestCut`、`supplyCuttable` | 現在有 trace 的己方戰鬥單位中，對方一個單位移到一格就會斷補的最多單位數，與某一個這樣的移動會切斷的單位數 |
+| `expectedLossAllocated` | 對方每個單位只攻擊一格：每輪挑期望損失最高的己方 stack，留下不降低該期望損失的單位（先拿掉印刷戰力最弱的），期望損失依 2d6 與 Combat Table（持有目標點時 option 算損失），加總 |
+| `objectiveReachColumn` | 己方未持有的目標點中，己方下回合能到旁邊的全部單位一起攻擊時的最高欄位（能走進的空目標點記 12，無法攻擊記 −1） |
+| `hqDependentUnitsInReach` | 有 trace 的己方非 HQ 戰鬥單位中，每條 trace 路線都是 HQ throw、且這些 HQ 都在對方下回合能到旁邊的單位數 |
+| `rearHexesInReach` | 對方下回合能到達、離己方戰鬥單位 2 格以上、且在己方 trace 範圍內的格數 |
 
 補給線的切斷是估計值：在投影出的狀態中把對方一個戰鬥單位移到一格，用規則層的 trace（敵軍與未被抵銷的 ZOC 阻擋、HQ throw、
 formation 共同路線、補給源）重算，數斷補的己方單位。只試對方到得了、且偏離某個己方補給源或 HQ 到某個有 trace 的己方單位的
@@ -60,17 +64,18 @@ formation 共同路線、補給源）重算，數斷補的己方單位。只試�
 在 24 個局面上與逐格全試比較，最大單一切斷 23 個相同，可切斷數相同或略少，每方每個局面約 0.4 秒。`ai-position-record.mjs`
 只為不行動的一方（這個玩家回合可能被切斷的一方）計算。
 
-現況指標（`positionMetrics`）包含 VP、目標點、step、DG、接敵、斷補、SP、乾 HQ 與以下三項。
+現況指標（`positionMetrics`）包含 VP、目標點、step、DG、接敵、斷補、SP、乾 HQ 與以下四項。
 
 - `surplusCombatSp` 扣除強制恢復與口糧承諾，再彙總能供應目前任一前線單位的補給堆 SP。它是來源彙總量，未分配給具體進攻位置。
 - `bestObjectiveEffectiveColumn` 將未持有目標 2 格內的己方單位直接投影到鄰格、切到 combat 面後，取最高靜態 odds 欄位。空目標用 12 作哨兵值，沒有機會用 −1。地形與部分戰力修正會進入 odds，但未驗證移動、燃料、堆疊與攻擊資格；AR、hedgehog 的骰點修正及 Surprise 不反映在欄位中。
 - `localForceRatioAt2Hex` 選擇 2 格內己方未標記斷補的印刷戰力最多的未持有目標，平手取 VP 高者，再除以該目標 2 格內敵軍印刷戰力（分母至少 1）。己方排除 HQ、STRAT 與斷補標記，敵方沒有對稱排除。它未計 DG、地形與實際戰鬥補給；其焦點目標不一定是最高欄位的目標。因此兩項指標的平均值不能當成同一場戰鬥由兵力比換算為欄位的證據。
+- `outOfTraceUnfed` 數斷 trace 且所在格沒有任何己方補給堆（含存量大於 0 的駐軍存量）取用範圍涵蓋的戰鬥單位。取用範圍來自規則層的 `queryFeedCoverage`，不分單位，因此不檢查師屬 HQ 限制。
 
-這些指標由 `ai-continue.mjs` 在各時間點記錄；`ai-position-record.mjs` 在既有對局每個玩家回合開始時記錄，並附上該窗口的損失事件、目標控制權改變與終局 VP。`stepsLost` 是 `STEP_LOST` 事件數；`combatStepsLost` 是未被標成 attrition 的事件數，仍包含過度堆疊消滅等非戰鬥來源，不能稱為純戰鬥或實際 step 數。Recorder 以整筆行動是否含 `ATTRITION_ROLLED`，或行動前是否待決 `ATTRITION_LOSS` 分類；同筆行動若混合其他來源也可能錯分（`bot-position-loss-attribution`）。`spCapturedOrDestroyed` 含被奪、被炸及己方主動炸掉補給堆的 SP，不單指敵軍取得的資源。
+這些指標由 `ai-continue.mjs` 在各時間點記錄；`ai-position-record.mjs` 在既有對局每個玩家回合開始時記錄，並附上該窗口的損失事件、目標控制權改變與終局 VP。`stepsLost` 是 `STEP_LOST` 事件數；`combatStepsLost` 是未被標成 attrition 的事件數，仍包含過度堆疊消滅等非戰鬥來源，不能稱為純戰鬥或實際 step 數。Recorder 逐事件分類：跟在 `ATTRITION_ROLLED` 之後或回應 `ATTRITION_LOSS` 決策的損失算 attrition，損失歸屬事件發生時所在的玩家回合；過度堆疊與其他消滅仍併入 `combatStepsLost`（`bot-position-loss-attribution`）。`spCapturedOrDestroyed` 含被奪、被炸及己方主動炸掉補給堆的 SP，不單指敵軍取得的資源。
 
 ### 指標是否可用
 
-`scripts/ai-position-validate.py` 對既有紀錄做回顧性的樣本外檢驗：255 條不重複的對局軌跡（以初始 hash、終局 hash 與完整 accepted actions 識別）、96 組地圖種子、3,315 個玩家回合窗口，沒有新增對戰。同一種子的全部回合、策略與交換座位局留在同一折（十折）。另做排除整個來源批次及其種子的敏感度比較；測試批次會共享別名與種子，不能當作獨立重複。[第二次驗證](../quality/evidence/ai-position-metrics-p2-2026-10-19/README.md)、[第一次驗證、對局識別與負對照](../quality/evidence/ai-position-validation-2026-10-18/README.md)
+`scripts/ai-position-validate.py` 對既有紀錄做回顧性的樣本外檢驗（[第三次驗證：P4 新候選](../quality/evidence/ai-position-metrics-p5-2026-10-19/README.md)）：255 條不重複的對局軌跡（以初始 hash、終局 hash 與完整 accepted actions 識別）、96 組地圖種子、3,315 個玩家回合窗口，沒有新增對戰。同一種子的全部回合、策略與交換座位局留在同一折（十折）。另做排除整個來源批次及其種子的敏感度比較；測試批次會共享別名與種子，不能當作獨立重複。[第二次驗證](../quality/evidence/ai-position-metrics-p2-2026-10-19/README.md)、[第一次驗證、對局識別與負對照](../quality/evidence/ai-position-validation-2026-10-18/README.md)
 
 每個窗口在玩家 P 行動前，取非行動方 O 的指標預測 O 在這回合的損失，取 P 的指標（`mover.` 前綴）預測 P 的奪點與 O 的戰鬥損失；補給縱深類另以 O 下一個己方回合的耗損為結果。比較的模型有全猜 0、訓練中位數、距離基準（目標點用 `objectivesThreatened`，其他用 `contact`）的線性與分桶模型、基準加指標的線性模型，以及指標的固定分桶（0、1、2–3、4–7、8+）與訓練五分位分桶中位數。通過門檻在看結果前寫於 [局勢指標研究 WBS](../roadmap/18-position-metrics-wbs.md#1-指標的標準)：至少一個角色子組中，指標的分桶模型在 MAE 上勝過全猜 0、訓練中位數與基準分桶，或基準加指標的樣本外 R² 勝過基準，且種子群組重抽的 95% 區間不含 0。區間不含模型重擬合、指標挑選與多重比較的不確定性。
 
@@ -90,6 +95,11 @@ formation 共同路線、補給源）重算，數斷補的己方單位。只試�
 | `dumpSpInReach` | O 的補給堆被奪、被毀或自炸的 SP | 任何角色都不通過 | 不採用 |
 | `mover.surplusCombatSp` | O 的戰鬥 step 損失 | 任何角色都不通過 | 不採用 |
 | `mover.unitsWithReach` | O 的戰鬥 step 損失 | 合併角色時 R² +0.133，分角色只剩攻方行動時的五分位 MAE；合併的增益來自角色混雜 | 不採用 |
+| `mover.objectiveReachColumn` | P 奪得的目標點 | 在 `bestObjectiveEffectiveColumn` 之上再加 R²：攻方行動時 +0.030 [0.010, 0.053]、遭遇戰 +0.036 [0.012, 0.063]；守方行動時沒有增益。對距離基準 R² +0.108～+0.211 | 可用，取代 2 格內的有效欄位 |
+| `expectedLossAllocated` | O 的戰鬥 step 損失 | 對距離基準攻方行動時 R² +0.134、MAE 勝出；在 `stacksExposedAllocated` 之上沒有 R² 增益，只有遭遇戰的固定分桶 MAE 勝出 | 與分配後暴露相當，不取代 |
+| `rearHexesInReach` | O 斷 trace 的單位增加；O 失去的 HQ | 攻方行動時 R² +0.061 與 +0.073；守方行動與遭遇戰不通過；只比過距離基準 | 攻方行動時可用，未和 `supplyCuttable`、`hqsInReach` 比較 |
+| `hqDependentUnitsInReach` | O 斷 trace 的單位增加；O 下一個己方回合的耗損 | 守方行動時斷補增加 R² +0.054 [0.002, 0.098]；對耗損沒有增益 | 弱 |
+| `outOfTraceUnfed` | O 下一個己方回合的耗損 | 合併角色時勝過 `outOfTrace`，但各角色內都不勝過 `outOfTrace` 的分桶；合併的增益來自各角色斷補程度不同 | 不採用 |
 
 這些是在已看過的資料上的探索結果，指標的正式成立要等前瞻確認（WBS P7）。近期預測也不代表推高指標的策略能提高終局 VP；以正確對局識別重驗終局預測仍為開放工作（WBS P6）。
 

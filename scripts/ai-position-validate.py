@@ -23,9 +23,10 @@ SPEC.loader.exec_module(VPCOMPARE)
 # Metrics of the non-phasing player O (what P can do to O in this turn) and, prefixed "mover.", of the phasing player P.
 DEFENDER_FEATURES = ('objectivesThreatened', 'contact', 'outOfTrace', 'objectivesAtRisk', 'objectiveVpAtRisk',
                      'payableObjectiveVpAtRisk', 'stacksExposed', 'stacksExposedAllocated', 'maxSingleStackExpectedLoss',
-                     'supplyCuttable', 'supplyBestCut', 'hqsInReach', 'dumpSpInReach')
+                     'supplyCuttable', 'supplyBestCut', 'hqsInReach', 'dumpSpInReach', 'expectedLossAllocated',
+                     'hqDependentUnitsInReach', 'outOfTraceUnfed', 'rearHexesInReach')
 MOVER_FEATURES = ('contact', 'objectiveVpInReach', 'payableObjectiveVpInReach', 'bestObjectiveEffectiveColumn',
-                  'localForceRatioAt2Hex', 'surplusCombatSp', 'unitsWithReach')
+                  'localForceRatioAt2Hex', 'surplusCombatSp', 'unitsWithReach', 'objectiveReachColumn')
 FEATURES = frozenset(DEFENDER_FEATURES) | frozenset(f'mover.{feature}' for feature in MOVER_FEATURES)
 TESTS = (
     ('objectiveVpLost', 'objectiveVpAtRisk', 'objectivesThreatened'),
@@ -48,6 +49,16 @@ TESTS = (
     ('moverObjectivesGained', 'mover.localForceRatioAt2Hex', 'mover.contact'),
     ('combatStepsLost', 'mover.surplusCombatSp', 'mover.contact'),
     ('combatStepsLost', 'mover.unitsWithReach', 'mover.contact'),
+    # Plan P4 candidates, with the outcomes and baselines written in the plan before the record.
+    ('combatStepsLost', 'expectedLossAllocated', 'contact'),
+    ('combatStepsLost', 'expectedLossAllocated', 'stacksExposedAllocated'),
+    ('moverObjectivesGained', 'mover.objectiveReachColumn', 'mover.contact'),
+    ('moverObjectivesGained', 'mover.objectiveReachColumn', 'mover.bestObjectiveEffectiveColumn'),
+    ('outOfTraceRise', 'hqDependentUnitsInReach', 'contact'),
+    ('attritionNextTurn', 'hqDependentUnitsInReach', 'outOfTrace'),
+    ('attritionNextTurn', 'outOfTraceUnfed', 'outOfTrace'),
+    ('outOfTraceRise', 'rearHexesInReach', 'contact'),
+    ('hqsLost', 'rearHexesInReach', 'contact'),
 )
 SUBSETS = ('all', 'attacker-moving', 'defender-moving', 'meeting')
 MODEL_NAMES = ('zero', 'trainMedian', 'trainMean', 'baseline', 'baselinePlusMetric',

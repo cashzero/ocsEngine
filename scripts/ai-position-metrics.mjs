@@ -11,7 +11,7 @@ const FRONT_HEXES = 4;
 export const METRIC_NAMES = [
   'vp', 'objectives', 'objectivesOccupied', 'objectivesThreatened', 'units', 'steps', 'dg', 'contact', 'within2',
   'meanEnemyDistance', 'outOfTrace', 'outOfTraceMarked', 'spOnMap', 'spFront', 'spStranded', 'surplusCombatSp',
-  'bestObjectiveEffectiveColumn', 'localForceRatioAt2Hex', 'hqs', 'dryHqs',
+  'bestObjectiveEffectiveColumn', 'localForceRatioAt2Hex', 'hqs', 'dryHqs', 'outOfTraceUnfed',
 ];
 
 const TWO_DICE = Array.from({ length: 11 }, (_, index) => ({
@@ -43,7 +43,9 @@ export const positionMetrics = (mOrEngine, state) => {
     const notHeld = state.configuration.objectives.filter(({ hexId }) => control.get(String(hexId)) !== playerId);
     const front = new Set(own.filter((piece) => !isHq(piece) && nearest(piece.location.hexId) <= FRONT_HEXES).map((piece) => String(piece.location.hexId)));
     let spFront = 0; let spStranded = 0;
+    const fedHexes = new Set();
     for (const feed of m.ruleEngine.queryFeedCoverage(state, playerId, null).value ?? []) {
+      if (feed.tokens > 0) feed.hexIds.forEach((hexId) => fedHexes.add(String(hexId)));
       if (String(feed.dumpId).includes('-stock-')) continue;
       if (feed.hexIds.some((hexId) => front.has(String(hexId)))) spFront += feed.tokens; else spStranded += feed.tokens;
     }
@@ -117,6 +119,7 @@ export const positionMetrics = (mOrEngine, state) => {
       meanEnemyDistance: distances.length ? distances.reduce((total, distance) => total + Math.min(distance, 20), 0) / distances.length : null,
       outOfTrace: own.filter((piece) => !m.pieceHasTrace(state, piece)).length,
       outOfTraceMarked: own.filter((piece) => m.outOfTraceSince(piece) !== null).length,
+      outOfTraceUnfed: own.filter((piece) => !m.pieceHasTrace(state, piece) && !fedHexes.has(String(piece.location.hexId))).length,
       spOnMap: (dumps.reduce((total, piece) => total + (piece.resourceQuantity ?? 0), 0)
         + trucks.reduce((total, piece) => total + m.loadedTokens(state, piece), 0)) / 4,
       spFront: spFront / 4,
@@ -173,6 +176,7 @@ export const NEXT_TURN_METRIC_NAMES = [
   'payableObjectivesAtRisk', 'payableObjectiveVpAtRisk', 'payableObjectivesInReach', 'payableObjectiveVpInReach',
   'stacksExposed', 'stepsExposed', 'stacksExposedAllocated', 'stepsExposedAllocated', 'maxSingleStackExpectedLoss',
   'hqsInReach', 'dumpSpInReach', 'unitsWithReach', 'supplyBestCut', 'supplyCuttable',
+  'expectedLossAllocated', 'objectiveReachColumn', 'hqDependentUnitsInReach', 'rearHexesInReach',
 ];
 
 /** Loads the rule modules nextTurnMetrics needs from a built engine directory (dist). */
@@ -208,6 +212,16 @@ export const loadEngine = async (distDirectory) => {
  * - maxSingleStackExpectedLoss: highest expected defender step loss from a single opponent attack on any of the player's stacks;
  * - hqsInReach / dumpSpInReach: the player's HQs, and SP in its dumps (not garrison stocks), beside a hex the opponent reaches;
  * - unitsWithReach: the player's combat units with a non-empty reach (the others cannot move: immobile, or no MP);
+ * - expectedLossAllocated: the opponent's attack potential allocated to the player's stacks, each opponent unit attacking one
+ *   hex only: repeatedly the stack with the highest expected step loss from the unallocated units able to reach beside it,
+ *   kept to the attackers that leave that expected loss unchanged (weakest printed strength dropped first), summed; the
+ *   expected loss is over 2d6 on the Combat Table, counting the option as loss on a held objective;
+ * - objectiveReachColumn: the highest column the player can reach next turn on an objective it does not hold, with every
+ *   unit able to reach a hex beside it (12 for one it can walk into, -1 for none);
+ * - hqDependentUnitsInReach: the player's non-HQ combat units in trace whose every trace route is an HQ throw from an HQ
+ *   the opponent can reach beside next turn;
+ * - rearHexesInReach: hexes the opponent can reach next turn that are 2+ hexes from the player's combat units and inside
+ *   the player's trace supply coverage;
  * - supplyBestCut / supplyCuttable: of the player's combat units in trace now, the most that one opponent unit ending its
  *   move in one hex cuts off (the rules' trace on the state with that unit moved there), and how many some such move cuts.
  *   A ballpark: the hexes tried are the opponent's reachable hexes at most one hex off a straight line from one of the
@@ -324,6 +338,53 @@ export const nextTurnMetrics = ({ m, strength, pieces, supply, rationBudget }, s
     }
     return { count, vp };
   };
+  const expectedLoss = (attackerIds, defenders, hexId, heldObjective) => {
+    const defIds = defenders.map((piece) => piece.id);
+    const odds = oddsFor(attackerIds, defIds, hexId);
+    const stackSteps = defenders.reduce((sum, piece) => sum + (piece.remainingSteps ?? 1), 0);
+    const netDrm = odds.drm - odds.hedgehogLevel;
+    let expected = 0;
+    for (const { total, p } of TWO_DICE) {
+      const parsed = m.parseCombatResult(m.COMBAT_TABLE_ROWS[m.combatTableRowIndex(total + netDrm)][odds.columnIndex]);
+      expected += p * Math.min(stackSteps, parsed.defender.loss + (heldObjective ? parsed.defender.option : 0));
+    }
+    return expected;
+  };
+  const allocatedExpectedLoss = (playerId, opponent) => {
+    const besideOf = new Map([...reaches.get(opponent)].map(([pieceId, reach]) => [pieceId, new Set([...reach].flatMap((hexId) => m.adjacentHexIds(hexId).map(String)))]));
+    const defendersAt = new Map();
+    for (const piece of combatOf(playerId)) defendersAt.set(String(piece.location.hexId), [...(defendersAt.get(String(piece.location.hexId)) ?? []), piece]);
+    const held = new Set(state.configuration.objectives.filter(({ hexId }) => control.get(String(hexId)) === playerId).map(({ hexId }) => String(hexId)));
+    const free = new Set(besideOf.keys());
+    const open = new Set(defendersAt.keys());
+    let total = 0;
+    for (;;) {
+      const options = [...open].map((hexId) => {
+        const attackers = [...free].filter((pieceId) => besideOf.get(pieceId).has(hexId));
+        return { hexId, attackers, loss: attackers.length ? expectedLoss(attackers, defendersAt.get(hexId), hexId, held.has(hexId)) : 0 };
+      }).filter(({ loss }) => loss > 1e-9).sort((left, right) => right.loss - left.loss || left.hexId.localeCompare(right.hexId));
+      if (options.length === 0) break;
+      const { hexId, attackers, loss } = options[0];
+      let kept = [...attackers].sort((left, right) => printed(left) - printed(right) || String(left).localeCompare(String(right)));
+      for (const candidate of [...kept]) {
+        const trial = kept.filter((pieceId) => pieceId !== candidate);
+        if (trial.length > 0 && expectedLoss(trial, defendersAt.get(hexId), hexId, held.has(hexId)) >= loss - 1e-9) kept = trial;
+      }
+      kept.forEach((pieceId) => free.delete(pieceId));
+      open.delete(hexId);
+      total += loss;
+    }
+    return Number(total.toFixed(3));
+  };
+  const objectiveReachColumn = (playerId) => {
+    let best = -1;
+    for (const { hexId } of state.configuration.objectives) {
+      if (control.get(String(hexId)) === playerId) continue;
+      const column = potential(playerId, String(hexId));
+      best = Math.max(best, column === null ? (enters(playerId, String(hexId)) ? 12 : -1) : column);
+    }
+    return best;
+  };
   const allocatedExposure = (playerId, opponent) => {
     const besideOf = new Map([...reaches.get(opponent)].map(([pieceId, reach]) => [pieceId, new Set([...reach].flatMap((hexId) => m.adjacentHexIds(hexId).map(String)))]));
     const defendersAt = new Map();
@@ -396,25 +457,12 @@ export const nextTurnMetrics = ({ m, strength, pieces, supply, rationBudget }, s
     const stacks = [...new Set(own.map((piece) => String(piece.location.hexId)))];
     const exposed = stacks.filter((hexId) => (potential(opponent, hexId) ?? -1) >= 9);
     const heldHexSet = new Set(held.map(({ hexId }) => String(hexId)));
-    const stackStepsOf = (hexId) => own.filter((piece) => String(piece.location.hexId) === hexId).reduce((sum, piece) => sum + (piece.remainingSteps ?? 1), 0);
     let maxSingleStackExpectedLoss = 0;
     for (const hexId of stacks) {
       const defenders = defendersAtHex(opponent, hexId);
       const attackers = [...reaches.get(opponent)].filter(([, reach]) => beside(hexId, reach)).map(([id]) => id);
       if (defenders.length === 0 || attackers.length === 0) continue;
-      const defIds = defenders.map((piece) => piece.id);
-      const odds = oddsFor(attackers, defIds, hexId);
-      const stackSteps = stackStepsOf(hexId);
-      const isHeldObj = heldHexSet.has(hexId);
-      const netDrm = odds.drm - odds.hedgehogLevel;
-      let expected = 0;
-      for (const { total, p } of TWO_DICE) {
-        const row = m.COMBAT_TABLE_ROWS[m.combatTableRowIndex(total + netDrm)];
-        const parsed = m.parseCombatResult(row[odds.columnIndex]);
-        const loss = parsed.defender.loss + (isHeldObj ? parsed.defender.option : 0);
-        expected += p * Math.min(stackSteps, loss);
-      }
-      maxSingleStackExpectedLoss = Math.max(maxSingleStackExpectedLoss, expected);
+      maxSingleStackExpectedLoss = Math.max(maxSingleStackExpectedLoss, expectedLoss(attackers, defenders, hexId, heldHexSet.has(hexId)));
     }
     maxSingleStackExpectedLoss = Number(maxSingleStackExpectedLoss.toFixed(3));
     const dumps = state.pieceState.pieces.filter((piece) => piece.ownerId === playerId && piece.location.kind === 'ON_MAP' && isDump(piece) && !String(piece.id).includes('-stock-'));
@@ -431,6 +479,18 @@ export const nextTurnMetrics = ({ m, strength, pieces, supply, rationBudget }, s
       dumpSpInReach: dumps.filter((piece) => reachable(String(piece.location.hexId))).reduce((total, piece) => total + (piece.resourceQuantity ?? 0), 0) / 4,
       unitsWithReach: [...reaches.get(playerId).values()].filter((reach) => reach.size > 1).length,
       ...((supplyCutFor ?? players).includes(playerId) ? supplyCut(playerId, opponent) : { supplyBestCut: null, supplyCuttable: null }),
+      expectedLossAllocated: allocatedExpectedLoss(playerId, opponent),
+      objectiveReachColumn: objectiveReachColumn(playerId),
+      hqDependentUnitsInReach: own.filter((piece) => !isHq(piece) && m.pieceHasTrace(state, piece)).filter((piece) => {
+        const routes = supply.traceRoutesFor(state, piece);
+        return routes.length > 0 && routes.every((route) => {
+          if (!route.startsWith('HQ:')) return false;
+          const hq = pieceById.get(route.slice(3));
+          return hq?.location.kind === 'ON_MAP' && reachable(String(hq.location.hexId));
+        });
+      }).length,
+      rearHexesInReach: [...new Set(opponentReach.flatMap((reach) => [...reach]))].filter((hexId) =>
+        own.every((piece) => m.hexDistanceBetween(piece.location.hexId, hexId) >= 2) && supply.traceSupplyAvailableAt(state, playerId, hexId)).length,
     };
   }
   return result;

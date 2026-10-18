@@ -1,0 +1,7551 @@
+{
+ "resultsSha256": "907937c2fb1f3336e3fc4d5353c634564361d9fa25ad46939c79e4a5ef74842b",
+ "scriptSha256": "b4462ff6910043e8de50debb8a6620a0ef8a26e2099d6fe9aeb2b8a2bd20f2b2",
+ "modelHelperSha256": "00eeb924694c722d1ce47d92e44a6d1d6bae485b6728f1c9d2f0fcd80ed6a864",
+ "design": {
+  "window": "Non-phasing O at start of P player turn, Game Turns 2-8, with a following recorded row. The final player turn is excluded.",
+  "outcomes": "Recorded O objective/step losses during P turn (stepsLost all step-loss events, split into attritionStepsLost and combatStepsLost); positive rise in O outOfTrace or decline in HQ count to the following row; P objectives and objective VP gained in its turn; attritionNextTurn is O attrition in the following row when that row is O turn, else missing.",
+  "models": "Zero event; training median; training mean; intercept plus distance baseline; intercept plus baseline plus metric; training conditional medians in baseline or metric buckets, fixed at 0, 1, 2-3, 4-7, 8+ from the historical descriptive analysis, and in training quintile bins (for ratios, columns and expected losses). Baseline and intercept unpenalized; standardized added metric fixed ridge penalty 1. Unseen bucket falls back to training median. No hyperparameter search. Complete cases shared across models; train-only preprocessing.",
+  "mover": "Features prefixed mover. are the phasing player P metrics at the same row; the others are O metrics.",
+  "features": [
+   "contact",
+   "dumpSpInReach",
+   "expectedLossAllocated",
+   "hqDependentUnitsInReach",
+   "hqsInReach",
+   "maxSingleStackExpectedLoss",
+   "mover.bestObjectiveEffectiveColumn",
+   "mover.contact",
+   "mover.localForceRatioAt2Hex",
+   "mover.objectiveReachColumn",
+   "mover.objectiveVpInReach",
+   "mover.payableObjectiveVpInReach",
+   "mover.surplusCombatSp",
+   "mover.unitsWithReach",
+   "objectiveVpAtRisk",
+   "objectivesAtRisk",
+   "objectivesThreatened",
+   "outOfTrace",
+   "outOfTraceUnfed",
+   "payableObjectiveVpAtRisk",
+   "rearHexesInReach",
+   "stacksExposed",
+   "stacksExposedAllocated",
+   "supplyBestCut",
+   "supplyCuttable"
+  ],
+  "primarySplit": "Ten folds of map seed, sorted by SHA256 and assigned round-robin. All styles, roles, policy variants and aliases of a seed stay together.",
+  "sensitivitySplit": "Each source parent directory is one held-out batch. Training excludes every trajectory with any alias in that batch and every map seed appearing in its test data. Batches are reported separately because test trajectories can have multiple aliases.",
+  "batchMeaning": "Provenance source parent directory, not independently verified policy version. Policy strings and variants are aliases retained verbatim.",
+  "intervals": "1000 paired seed-cluster draws on fixed out-of-fold errors. Conditional, exploratory intervals without multiplicity correction."
+ },
+ "data": {
+  "nRows": 3315,
+  "nGames": 255,
+  "nSeeds": 96,
+  "batchRowsIncludingAliases": {
+   "artifacts/ai-assault/defender-1330": 1391,
+   "artifacts/ai-assault/v84-development": 208,
+   "artifacts/ai-continue/ration-fix-games": 299,
+   "artifacts/ai-promotion/frozen-v81-development": 416,
+   "artifacts/ai-promotion/frozen-v82r-independent": 1027,
+   "artifacts/ai-promotion/frozen-v85-development": 312
+  }
+ },
+ "uniqueTrajectories": 255,
+ "passRule": "Written before the results (docs/roadmap/18-position-metrics-wbs.md section 1 and P4): in a role subset, the metric bucket model beats zero, training median and the baseline bucket model on MAE with every 95% interval above 0, or baseline-plus-metric beats the baseline on out-of-sample R2 with the interval above 0.",
+ "mapSeed10Fold": {
+  "all": [
+   {
+    "target": "objectiveVpLost",
+    "metric": "objectiveVpAtRisk",
+    "baseline": "objectivesThreatened",
+    "status": "EVALUATED",
+    "nRows": 3315,
+    "mae": {
+     "zero": 0.4543,
+     "trainMedian": 0.4543,
+     "trainMean": 0.7819,
+     "baseline": 0.7644,
+     "baselinePlusMetric": 0.6388,
+     "baselineBucketMedian": 0.4597,
+     "metricBucketMedian": 0.4543,
+     "baselineQuantileMedian": 0.4543,
+     "metricQuantileMedian": 0.4543
+    },
+    "r2": {
+     "zero": -0.1109,
+     "trainMedian": -0.1109,
+     "trainMean": -0.0018,
+     "baseline": 0.0176,
+     "baselinePlusMetric": 0.2423,
+     "baselineBucketMedian": -0.1284,
+     "metricBucketMedian": -0.1109,
+     "baselineQuantileMedian": -0.1109,
+     "metricQuantileMedian": -0.1109
+    },
+    "r2Gain": 0.2247,
+    "r2Gain95": [
+     0.16935027004365666,
+     0.27213451836860025
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineBucketMedian": [
+      0.0,
+      0.012331180270111597
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineQuantileMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "passes": [
+     "out-of-sample R2"
+    ]
+   },
+   {
+    "target": "objectivesLost",
+    "metric": "objectivesAtRisk",
+    "baseline": "objectivesThreatened",
+    "status": "EVALUATED",
+    "nRows": 3315,
+    "mae": {
+     "zero": 0.1716,
+     "trainMedian": 0.1716,
+     "trainMean": 0.2956,
+     "baseline": 0.2897,
+     "baselinePlusMetric": 0.2369,
+     "baselineBucketMedian": 0.1735,
+     "metricBucketMedian": 0.1655,
+     "baselineQuantileMedian": 0.1716,
+     "metricQuantileMedian": 0.1716
+    },
+    "r2": {
+     "zero": -0.1346,
+     "trainMedian": -0.1346,
+     "trainMean": -0.0013,
+     "baseline": 0.0178,
+     "baselinePlusMetric": 0.2267,
+     "baselineBucketMedian": -0.1512,
+     "metricBucketMedian": 0.0346,
+     "baselineQuantileMedian": -0.1346,
+     "metricQuantileMedian": -0.1346
+    },
+    "r2Gain": 0.2089,
+    "r2Gain95": [
+     0.1599194962796734,
+     0.2497984184495965
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      -0.0016923076923076874,
+      0.013901760889712705
+     ],
+     "trainMedian": [
+      -0.0016923076923076874,
+      0.013901760889712705
+     ],
+     "baselineBucketMedian": [
+      -0.0001456876456876477,
+      0.016225961538461536
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineQuantileMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "passes": [
+     "out-of-sample R2"
+    ]
+   },
+   {
+    "target": "stepsLost",
+    "metric": "stacksExposedAllocated",
+    "baseline": "contact",
+    "status": "EVALUATED",
+    "nRows": 3315,
+    "mae": {
+     "zero": 1.1424,
+     "trainMedian": 1.1424,
+     "trainMean": 1.2205,
+     "baseline": 1.2146,
+     "baselinePlusMetric": 1.1681,
+     "baselineBucketMedian": 1.1294,
+     "metricBucketMedian": 1.0564,
+     "baselineQuantileMedian": 1.1276,
+     "metricQuantileMedian": 1.0685
+    },
+    "r2": {
+     "zero": -0.5026,
+     "trainMedian": -0.5026,
+     "trainMean": -0.0007,
+     "baseline": 0.0091,
+     "baselinePlusMetric": 0.0779,
+     "baselineBucketMedian": -0.2674,
+     "metricBucketMedian": -0.055,
+     "baselineQuantileMedian": -0.1326,
+     "metricQuantileMedian": -0.1482
+    },
+    "r2Gain": 0.0688,
+    "r2Gain95": [
+     0.045143792418589124,
+     0.09491144425113818
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.05090909090909079,
+      0.12079326923076916
+     ],
+     "trainMedian": [
+      0.05090909090909079,
+      0.12079326923076916
+     ],
+     "baselineBucketMedian": [
+      0.04039204039204036,
+      0.10395427865307383
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.04489673750374146,
+      0.10287679799874927
+     ],
+     "trainMedian": [
+      0.04489673750374146,
+      0.10287679799874927
+     ],
+     "baselineQuantileMedian": [
+      0.025346301208370114,
+      0.08898944193061853
+     ]
+    },
+    "passes": [
+     "MAE fixed buckets",
+     "MAE quintile bins",
+     "out-of-sample R2"
+    ]
+   },
+   {
+    "target": "stepsLost",
+    "metric": "stacksExposedAllocated",
+    "baseline": "stacksExposed",
+    "status": "EVALUATED",
+    "nRows": 3315,
+    "mae": {
+     "zero": 1.1424,
+     "trainMedian": 1.1424,
+     "trainMean": 1.2205,
+     "baseline": 1.2135,
+     "baselinePlusMetric": 1.1787,
+     "baselineBucketMedian": 1.0805,
+     "metricBucketMedian": 1.0564,
+     "baselineQuantileMedian": 1.0739,
+     "metricQuantileMedian": 1.0685
+    },
+    "r2": {
+     "zero": -0.5026,
+     "trainMedian": -0.5026,
+     "trainMean": -0.0007,
+     "baseline": 0.0112,
+     "baselinePlusMetric": 0.0703,
+     "baselineBucketMedian": -0.0152,
+     "metricBucketMedian": -0.055,
+     "baselineQuantileMedian": -0.1128,
+     "metricQuantileMedian": -0.1482
+    },
+    "r2Gain": 0.0591,
+    "r2Gain95": [
+     0.03266110360098895,
+     0.0835211927036893
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.05090909090909079,
+      0.12079326923076916
+     ],
+     "trainMedian": [
+      0.05090909090909079,
+      0.12079326923076916
+     ],
+     "baselineBucketMedian": [
+      0.0038910505836575737,
+      0.04280155642023353
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.04489673750374146,
+      0.10287679799874927
+     ],
+     "trainMedian": [
+      0.04489673750374146,
+      0.10287679799874927
+     ],
+     "baselineQuantileMedian": [
+      -0.02335720959202736,
+      0.035778175313059046
+     ]
+    },
+    "passes": [
+     "MAE fixed buckets",
+     "out-of-sample R2"
+    ]
+   },
+   {
+    "target": "outOfTraceRise",
+    "metric": "supplyCuttable",
+    "baseline": "contact",
+    "status": "EVALUATED",
+    "nRows": 3315,
+    "mae": {
+     "zero": 2.4353,
+     "trainMedian": 2.4353,
+     "trainMean": 3.3856,
+     "baseline": 3.3869,
+     "baselinePlusMetric": 3.2615,
+     "baselineBucketMedian": 2.4353,
+     "metricBucketMedian": 2.4353,
+     "baselineQuantileMedian": 2.4353,
+     "metricQuantileMedian": 2.4353
+    },
+    "r2": {
+     "zero": -0.2148,
+     "trainMedian": -0.2148,
+     "trainMean": -0.0008,
+     "baseline": -0.0009,
+     "baselinePlusMetric": 0.054,
+     "baselineBucketMedian": -0.2148,
+     "metricBucketMedian": -0.2148,
+     "baselineQuantileMedian": -0.2148,
+     "metricQuantileMedian": -0.2148
+    },
+    "r2Gain": 0.0549,
+    "r2Gain95": [
+     0.02662130608233282,
+     0.07980387229116093
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineBucketMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineQuantileMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "passes": [
+     "out-of-sample R2"
+    ]
+   },
+   {
+    "target": "outOfTraceRise",
+    "metric": "supplyBestCut",
+    "baseline": "contact",
+    "status": "EVALUATED",
+    "nRows": 3315,
+    "mae": {
+     "zero": 2.4353,
+     "trainMedian": 2.4353,
+     "trainMean": 3.3856,
+     "baseline": 3.3869,
+     "baselinePlusMetric": 3.265,
+     "baselineBucketMedian": 2.4353,
+     "metricBucketMedian": 2.4353,
+     "baselineQuantileMedian": 2.4353,
+     "metricQuantileMedian": 2.4353
+    },
+    "r2": {
+     "zero": -0.2148,
+     "trainMedian": -0.2148,
+     "trainMean": -0.0008,
+     "baseline": -0.0009,
+     "baselinePlusMetric": 0.0585,
+     "baselineBucketMedian": -0.2148,
+     "metricBucketMedian": -0.2148,
+     "baselineQuantileMedian": -0.2148,
+     "metricQuantileMedian": -0.2148
+    },
+    "r2Gain": 0.0594,
+    "r2Gain95": [
+     0.02745128880351755,
+     0.08598989435770754
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineBucketMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineQuantileMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "passes": [
+     "out-of-sample R2"
+    ]
+   },
+   {
+    "target": "hqsLost",
+    "metric": "hqsInReach",
+    "baseline": "contact",
+    "status": "EVALUATED",
+    "nRows": 3315,
+    "mae": {
+     "zero": 0.1795,
+     "trainMedian": 0.1795,
+     "trainMean": 0.3034,
+     "baseline": 0.3026,
+     "baselinePlusMetric": 0.2937,
+     "baselineBucketMedian": 0.1795,
+     "metricBucketMedian": 0.1795,
+     "baselineQuantileMedian": 0.1795,
+     "metricQuantileMedian": 0.1795
+    },
+    "r2": {
+     "zero": -0.1623,
+     "trainMedian": -0.1623,
+     "trainMean": -0.0011,
+     "baseline": 0.0006,
+     "baselinePlusMetric": 0.0297,
+     "baselineBucketMedian": -0.1623,
+     "metricBucketMedian": -0.1623,
+     "baselineQuantileMedian": -0.1623,
+     "metricQuantileMedian": -0.1623
+    },
+    "r2Gain": 0.0291,
+    "r2Gain95": [
+     0.01796374568139647,
+     0.03931862977294043
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineBucketMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineQuantileMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "passes": [
+     "out-of-sample R2"
+    ]
+   },
+   {
+    "target": "objectiveVpLost",
+    "metric": "payableObjectiveVpAtRisk",
+    "baseline": "objectivesThreatened",
+    "status": "EVALUATED",
+    "nRows": 3315,
+    "mae": {
+     "zero": 0.4543,
+     "trainMedian": 0.4543,
+     "trainMean": 0.7819,
+     "baseline": 0.7644,
+     "baselinePlusMetric": 0.6597,
+     "baselineBucketMedian": 0.4597,
+     "metricBucketMedian": 0.4386,
+     "baselineQuantileMedian": 0.4543,
+     "metricQuantileMedian": 0.4543
+    },
+    "r2": {
+     "zero": -0.1109,
+     "trainMedian": -0.1109,
+     "trainMean": -0.0018,
+     "baseline": 0.0176,
+     "baselinePlusMetric": 0.3018,
+     "baselineBucketMedian": -0.1284,
+     "metricBucketMedian": 0.1098,
+     "baselineQuantileMedian": -0.1109,
+     "metricQuantileMedian": -0.1109
+    },
+    "r2Gain": 0.2842,
+    "r2Gain95": [
+     0.22083269939430605,
+     0.33681664542621703
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      -0.012331180270111541,
+      0.045387562628941946
+     ],
+     "trainMedian": [
+      -0.012331180270111541,
+      0.045387562628941946
+     ],
+     "baselineBucketMedian": [
+      -0.0075414781297134525,
+      0.05157677571470676
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineQuantileMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "passes": [
+     "out-of-sample R2"
+    ]
+   },
+   {
+    "target": "objectiveVpLost",
+    "metric": "payableObjectiveVpAtRisk",
+    "baseline": "objectiveVpAtRisk",
+    "status": "EVALUATED",
+    "nRows": 3315,
+    "mae": {
+     "zero": 0.4543,
+     "trainMedian": 0.4543,
+     "trainMean": 0.7819,
+     "baseline": 0.6201,
+     "baselinePlusMetric": 0.6511,
+     "baselineBucketMedian": 0.4543,
+     "metricBucketMedian": 0.4386,
+     "baselineQuantileMedian": 0.4543,
+     "metricQuantileMedian": 0.4543
+    },
+    "r2": {
+     "zero": -0.1109,
+     "trainMedian": -0.1109,
+     "trainMean": -0.0018,
+     "baseline": 0.2393,
+     "baselinePlusMetric": 0.3012,
+     "baselineBucketMedian": -0.1109,
+     "metricBucketMedian": 0.1098,
+     "baselineQuantileMedian": -0.1109,
+     "metricQuantileMedian": -0.1109
+    },
+    "r2Gain": 0.0619,
+    "r2Gain95": [
+     0.021450624654583916,
+     0.0924357405295011
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      -0.012331180270111541,
+      0.045387562628941946
+     ],
+     "trainMedian": [
+      -0.012331180270111541,
+      0.045387562628941946
+     ],
+     "baselineBucketMedian": [
+      -0.012331180270111541,
+      0.045387562628941946
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineQuantileMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "passes": [
+     "out-of-sample R2"
+    ]
+   },
+   {
+    "target": "combatStepsLost",
+    "metric": "stacksExposedAllocated",
+    "baseline": "contact",
+    "status": "EVALUATED",
+    "nRows": 3315,
+    "mae": {
+     "zero": 1.1424,
+     "trainMedian": 1.1424,
+     "trainMean": 1.2205,
+     "baseline": 1.2146,
+     "baselinePlusMetric": 1.1681,
+     "baselineBucketMedian": 1.1294,
+     "metricBucketMedian": 1.0564,
+     "baselineQuantileMedian": 1.1276,
+     "metricQuantileMedian": 1.0685
+    },
+    "r2": {
+     "zero": -0.5026,
+     "trainMedian": -0.5026,
+     "trainMean": -0.0007,
+     "baseline": 0.0091,
+     "baselinePlusMetric": 0.0779,
+     "baselineBucketMedian": -0.2674,
+     "metricBucketMedian": -0.055,
+     "baselineQuantileMedian": -0.1326,
+     "metricQuantileMedian": -0.1482
+    },
+    "r2Gain": 0.0688,
+    "r2Gain95": [
+     0.045143792418589124,
+     0.09491144425113818
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.05090909090909079,
+      0.12079326923076916
+     ],
+     "trainMedian": [
+      0.05090909090909079,
+      0.12079326923076916
+     ],
+     "baselineBucketMedian": [
+      0.04039204039204036,
+      0.10395427865307383
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.04489673750374146,
+      0.10287679799874927
+     ],
+     "trainMedian": [
+      0.04489673750374146,
+      0.10287679799874927
+     ],
+     "baselineQuantileMedian": [
+      0.025346301208370114,
+      0.08898944193061853
+     ]
+    },
+    "passes": [
+     "MAE fixed buckets",
+     "MAE quintile bins",
+     "out-of-sample R2"
+    ]
+   },
+   {
+    "target": "combatStepsLost",
+    "metric": "maxSingleStackExpectedLoss",
+    "baseline": "contact",
+    "status": "EVALUATED",
+    "nRows": 3315,
+    "mae": {
+     "zero": 1.1424,
+     "trainMedian": 1.1424,
+     "trainMean": 1.2205,
+     "baseline": 1.2146,
+     "baselinePlusMetric": 1.1956,
+     "baselineBucketMedian": 1.1294,
+     "metricBucketMedian": 1.1626,
+     "baselineQuantileMedian": 1.1276,
+     "metricQuantileMedian": 1.1035
+    },
+    "r2": {
+     "zero": -0.5026,
+     "trainMedian": -0.5026,
+     "trainMean": -0.0007,
+     "baseline": 0.0091,
+     "baselinePlusMetric": 0.0406,
+     "baselineBucketMedian": -0.2674,
+     "metricBucketMedian": -0.3136,
+     "baselineQuantileMedian": -0.1326,
+     "metricQuantileMedian": -0.3145
+    },
+    "r2Gain": 0.0315,
+    "r2Gain95": [
+     0.01487091174639199,
+     0.04762027894059695
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      -0.05001582779360558,
+      0.006601607347876071
+     ],
+     "trainMedian": [
+      -0.05001582779360558,
+      0.006601607347876071
+     ],
+     "baselineBucketMedian": [
+      -0.060394151303242216,
+      -0.006979506979507111
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.015863513917988792,
+      0.058084772370486704
+     ],
+     "trainMedian": [
+      0.015863513917988792,
+      0.058084772370486704
+     ],
+     "baselineQuantileMedian": [
+      -0.012231063955201904,
+      0.058814102564102466
+     ]
+    },
+    "passes": [
+     "out-of-sample R2"
+    ]
+   },
+   {
+    "target": "combatStepsLost",
+    "metric": "maxSingleStackExpectedLoss",
+    "baseline": "stacksExposedAllocated",
+    "status": "EVALUATED",
+    "nRows": 3315,
+    "mae": {
+     "zero": 1.1424,
+     "trainMedian": 1.1424,
+     "trainMean": 1.2205,
+     "baseline": 1.1832,
+     "baselinePlusMetric": 1.1807,
+     "baselineBucketMedian": 1.0564,
+     "metricBucketMedian": 1.1626,
+     "baselineQuantileMedian": 1.0685,
+     "metricQuantileMedian": 1.1035
+    },
+    "r2": {
+     "zero": -0.5026,
+     "trainMedian": -0.5026,
+     "trainMean": -0.0007,
+     "baseline": 0.0646,
+     "baselinePlusMetric": 0.0652,
+     "baselineBucketMedian": -0.055,
+     "metricBucketMedian": -0.3136,
+     "baselineQuantileMedian": -0.1482,
+     "metricQuantileMedian": -0.3145
+    },
+    "r2Gain": 0.0006,
+    "r2Gain95": [
+     -0.006109183624297576,
+     0.006395348185866956
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      -0.05001582779360558,
+      0.006601607347876071
+     ],
+     "trainMedian": [
+      -0.05001582779360558,
+      0.006601607347876071
+     ],
+     "baselineBucketMedian": [
+      -0.13815384615384607,
+      -0.07122507122507127
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.015863513917988792,
+      0.058084772370486704
+     ],
+     "trainMedian": [
+      0.015863513917988792,
+      0.058084772370486704
+     ],
+     "baselineQuantileMedian": [
+      -0.062141779788838614,
+      -0.00707013574660631
+     ]
+    },
+    "passes": []
+   },
+   {
+    "target": "spCapturedOrDestroyed",
+    "metric": "dumpSpInReach",
+    "baseline": "contact",
+    "status": "EVALUATED",
+    "nRows": 3315,
+    "mae": {
+     "zero": 0.4363,
+     "trainMedian": 0.4363,
+     "trainMean": 0.7327,
+     "baseline": 0.7322,
+     "baselinePlusMetric": 0.7346,
+     "baselineBucketMedian": 0.4363,
+     "metricBucketMedian": 0.4363,
+     "baselineQuantileMedian": 0.4363,
+     "metricQuantileMedian": 0.4363
+    },
+    "r2": {
+     "zero": -0.0769,
+     "trainMedian": -0.0769,
+     "trainMean": -0.0006,
+     "baseline": -0.0011,
+     "baselinePlusMetric": 0.0051,
+     "baselineBucketMedian": -0.0769,
+     "metricBucketMedian": -0.0769,
+     "baselineQuantileMedian": -0.0769,
+     "metricQuantileMedian": -0.0769
+    },
+    "r2Gain": 0.0062,
+    "r2Gain95": [
+     -0.004596803494747004,
+     0.01483302989684021
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineBucketMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineQuantileMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "passes": []
+   },
+   {
+    "target": "attritionNextTurn",
+    "metric": "supplyCuttable",
+    "baseline": "outOfTrace",
+    "status": "EVALUATED",
+    "nRows": 2583,
+    "mae": {
+     "zero": 0.993,
+     "trainMedian": 0.993,
+     "trainMean": 1.4083,
+     "baseline": 1.1556,
+     "baselinePlusMetric": 1.1524,
+     "baselineBucketMedian": 0.9055,
+     "metricBucketMedian": 0.993,
+     "baselineQuantileMedian": 0.9055,
+     "metricQuantileMedian": 0.993
+    },
+    "r2": {
+     "zero": -0.1947,
+     "trainMedian": -0.1947,
+     "trainMean": -0.0011,
+     "baseline": 0.2158,
+     "baselinePlusMetric": 0.2165,
+     "baselineBucketMedian": 0.1387,
+     "metricBucketMedian": -0.1947,
+     "baselineQuantileMedian": 0.1095,
+     "metricQuantileMedian": -0.1947
+    },
+    "r2Gain": 0.0007,
+    "r2Gain95": [
+     -0.002085236476987107,
+     0.0032579337852819412
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineBucketMedian": [
+      -0.12954383464005692,
+      -0.04594180704441042
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineQuantileMedian": [
+      -0.1250473664266767,
+      -0.04974271012006859
+     ]
+    },
+    "passes": []
+   },
+   {
+    "target": "moverObjectiveVpGained",
+    "metric": "mover.objectiveVpInReach",
+    "baseline": "mover.contact",
+    "status": "EVALUATED",
+    "nRows": 3315,
+    "mae": {
+     "zero": 0.4543,
+     "trainMedian": 0.4543,
+     "trainMean": 0.7819,
+     "baseline": 0.7805,
+     "baselinePlusMetric": 0.6207,
+     "baselineBucketMedian": 0.4543,
+     "metricBucketMedian": 0.4543,
+     "baselineQuantileMedian": 0.4543,
+     "metricQuantileMedian": 0.4543
+    },
+    "r2": {
+     "zero": -0.1109,
+     "trainMedian": -0.1109,
+     "trainMean": -0.0018,
+     "baseline": -0.0024,
+     "baselinePlusMetric": 0.239,
+     "baselineBucketMedian": -0.1109,
+     "metricBucketMedian": -0.1109,
+     "baselineQuantileMedian": -0.1109,
+     "metricQuantileMedian": -0.1109
+    },
+    "r2Gain": 0.2415,
+    "r2Gain95": [
+     0.184395488103697,
+     0.28962877095609374
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineBucketMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineQuantileMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "passes": [
+     "out-of-sample R2"
+    ]
+   },
+   {
+    "target": "moverObjectiveVpGained",
+    "metric": "mover.payableObjectiveVpInReach",
+    "baseline": "mover.objectiveVpInReach",
+    "status": "EVALUATED",
+    "nRows": 3315,
+    "mae": {
+     "zero": 0.4543,
+     "trainMedian": 0.4543,
+     "trainMean": 0.7819,
+     "baseline": 0.6201,
+     "baselinePlusMetric": 0.6511,
+     "baselineBucketMedian": 0.4543,
+     "metricBucketMedian": 0.4386,
+     "baselineQuantileMedian": 0.4543,
+     "metricQuantileMedian": 0.4543
+    },
+    "r2": {
+     "zero": -0.1109,
+     "trainMedian": -0.1109,
+     "trainMean": -0.0018,
+     "baseline": 0.2393,
+     "baselinePlusMetric": 0.3012,
+     "baselineBucketMedian": -0.1109,
+     "metricBucketMedian": 0.1098,
+     "baselineQuantileMedian": -0.1109,
+     "metricQuantileMedian": -0.1109
+    },
+    "r2Gain": 0.0619,
+    "r2Gain95": [
+     0.021450624654583916,
+     0.0924357405295011
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      -0.012331180270111541,
+      0.045387562628941946
+     ],
+     "trainMedian": [
+      -0.012331180270111541,
+      0.045387562628941946
+     ],
+     "baselineBucketMedian": [
+      -0.012331180270111541,
+      0.045387562628941946
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineQuantileMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "passes": [
+     "out-of-sample R2"
+    ]
+   },
+   {
+    "target": "moverObjectivesGained",
+    "metric": "mover.bestObjectiveEffectiveColumn",
+    "baseline": "mover.contact",
+    "status": "EVALUATED",
+    "nRows": 3315,
+    "mae": {
+     "zero": 0.1716,
+     "trainMedian": 0.1716,
+     "trainMean": 0.2956,
+     "baseline": 0.2949,
+     "baselinePlusMetric": 0.2431,
+     "baselineBucketMedian": 0.1716,
+     "metricBucketMedian": 0.1261,
+     "baselineQuantileMedian": 0.1716,
+     "metricQuantileMedian": 0.1584
+    },
+    "r2": {
+     "zero": -0.1346,
+     "trainMedian": -0.1346,
+     "trainMean": -0.0013,
+     "baseline": -0.0017,
+     "baselinePlusMetric": 0.2967,
+     "baselineBucketMedian": -0.1346,
+     "metricBucketMedian": 0.3024,
+     "baselineQuantileMedian": -0.1346,
+     "metricQuantileMedian": 0.1769
+    },
+    "r2Gain": 0.2984,
+    "r2Gain95": [
+     0.24996830005682902,
+     0.3398256216693121
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.034121520502843464,
+      0.058212058212058215
+     ],
+     "trainMedian": [
+      0.034121520502843464,
+      0.058212058212058215
+     ],
+     "baselineBucketMedian": [
+      0.034121520502843464,
+      0.058212058212058215
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      -0.010176593834181374,
+      0.03648525387655824
+     ],
+     "trainMedian": [
+      -0.010176593834181374,
+      0.03648525387655824
+     ],
+     "baselineQuantileMedian": [
+      -0.010176593834181374,
+      0.03648525387655824
+     ]
+    },
+    "passes": [
+     "MAE fixed buckets",
+     "out-of-sample R2"
+    ]
+   },
+   {
+    "target": "moverObjectivesGained",
+    "metric": "mover.localForceRatioAt2Hex",
+    "baseline": "mover.contact",
+    "status": "EVALUATED",
+    "nRows": 3315,
+    "mae": {
+     "zero": 0.1716,
+     "trainMedian": 0.1716,
+     "trainMean": 0.2956,
+     "baseline": 0.2949,
+     "baselinePlusMetric": 0.2657,
+     "baselineBucketMedian": 0.1716,
+     "metricBucketMedian": 0.1578,
+     "baselineQuantileMedian": 0.1716,
+     "metricQuantileMedian": 0.1716
+    },
+    "r2": {
+     "zero": -0.1346,
+     "trainMedian": -0.1346,
+     "trainMean": -0.0013,
+     "baseline": -0.0017,
+     "baselinePlusMetric": 0.1162,
+     "baselineBucketMedian": -0.1346,
+     "metricBucketMedian": 0.0363,
+     "baselineQuantileMedian": -0.1346,
+     "metricQuantileMedian": -0.1346
+    },
+    "r2Gain": 0.118,
+    "r2Gain95": [
+     0.06669694622162059,
+     0.1659492785081459
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.0038301947015639826,
+      0.023166023166023147
+     ],
+     "trainMedian": [
+      0.0038301947015639826,
+      0.023166023166023147
+     ],
+     "baselineBucketMedian": [
+      0.0038301947015639826,
+      0.023166023166023147
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineQuantileMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "passes": [
+     "MAE fixed buckets",
+     "out-of-sample R2"
+    ]
+   },
+   {
+    "target": "combatStepsLost",
+    "metric": "mover.surplusCombatSp",
+    "baseline": "mover.contact",
+    "status": "EVALUATED",
+    "nRows": 3315,
+    "mae": {
+     "zero": 1.1424,
+     "trainMedian": 1.1424,
+     "trainMean": 1.2205,
+     "baseline": 1.2137,
+     "baselinePlusMetric": 1.205,
+     "baselineBucketMedian": 1.1192,
+     "metricBucketMedian": 1.1228,
+     "baselineQuantileMedian": 1.1131,
+     "metricQuantileMedian": 1.1125
+    },
+    "r2": {
+     "zero": -0.5026,
+     "trainMedian": -0.5026,
+     "trainMean": -0.0007,
+     "baseline": 0.0017,
+     "baselinePlusMetric": 0.0191,
+     "baselineBucketMedian": -0.319,
+     "metricBucketMedian": -0.0664,
+     "baselineQuantileMedian": -0.3757,
+     "metricQuantileMedian": -0.2643
+    },
+    "r2Gain": 0.0174,
+    "r2Gain95": [
+     -0.0031269557784486812,
+     0.035488938868689535
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      -0.02553846153846151,
+      0.06076025142173003
+     ],
+     "trainMedian": [
+      -0.02553846153846151,
+      0.06076025142173003
+     ],
+     "baselineBucketMedian": [
+      -0.04051673517322363,
+      0.033009136457412325
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.002828054298642524,
+      0.054244560220655824
+     ],
+     "trainMedian": [
+      0.002828054298642524,
+      0.054244560220655824
+     ],
+     "baselineQuantileMedian": [
+      -0.026331360946745708,
+      0.026602564102564008
+     ]
+    },
+    "passes": []
+   },
+   {
+    "target": "combatStepsLost",
+    "metric": "mover.unitsWithReach",
+    "baseline": "mover.contact",
+    "status": "EVALUATED",
+    "nRows": 3315,
+    "mae": {
+     "zero": 1.1424,
+     "trainMedian": 1.1424,
+     "trainMean": 1.2205,
+     "baseline": 1.2137,
+     "baselinePlusMetric": 1.0993,
+     "baselineBucketMedian": 1.1192,
+     "metricBucketMedian": 1.1424,
+     "baselineQuantileMedian": 1.1131,
+     "metricQuantileMedian": 0.9701
+    },
+    "r2": {
+     "zero": -0.5026,
+     "trainMedian": -0.5026,
+     "trainMean": -0.0007,
+     "baseline": 0.0017,
+     "baselinePlusMetric": 0.1348,
+     "baselineBucketMedian": -0.319,
+     "metricBucketMedian": -0.5026,
+     "baselineQuantileMedian": -0.3757,
+     "metricQuantileMedian": -0.0118
+    },
+    "r2Gain": 0.1331,
+    "r2Gain95": [
+     0.10275011030304448,
+     0.16185148648655334
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineBucketMedian": [
+      -0.049937965260545836,
+      0.004142011834319392
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.11742543171114606,
+      0.22466422466422475
+     ],
+     "trainMedian": [
+      0.11742543171114606,
+      0.22466422466422475
+     ],
+     "baselineQuantileMedian": [
+      0.09467455621301768,
+      0.18864468864468875
+     ]
+    },
+    "passes": [
+     "MAE quintile bins",
+     "out-of-sample R2"
+    ]
+   },
+   {
+    "target": "combatStepsLost",
+    "metric": "expectedLossAllocated",
+    "baseline": "contact",
+    "status": "EVALUATED",
+    "nRows": 3315,
+    "mae": {
+     "zero": 1.1424,
+     "trainMedian": 1.1424,
+     "trainMean": 1.2205,
+     "baseline": 1.2146,
+     "baselinePlusMetric": 1.1797,
+     "baselineBucketMedian": 1.1294,
+     "metricBucketMedian": 1.0742,
+     "baselineQuantileMedian": 1.1276,
+     "metricQuantileMedian": 1.0836
+    },
+    "r2": {
+     "zero": -0.5026,
+     "trainMedian": -0.5026,
+     "trainMean": -0.0007,
+     "baseline": 0.0091,
+     "baselinePlusMetric": 0.0641,
+     "baselineBucketMedian": -0.2674,
+     "metricBucketMedian": -0.0093,
+     "baselineQuantileMedian": -0.1326,
+     "metricQuantileMedian": -0.0694
+    },
+    "r2Gain": 0.0549,
+    "r2Gain95": [
+     0.03152816474308795,
+     0.07857236876200835
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.026179702650290793,
+      0.10521662245800179
+     ],
+     "trainMedian": [
+      0.026179702650290793,
+      0.10521662245800179
+     ],
+     "baselineBucketMedian": [
+      0.021804966686856275,
+      0.08888552392489402
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.02272727272727293,
+      0.09308590242442394
+     ],
+     "trainMedian": [
+      0.02272727272727293,
+      0.09308590242442394
+     ],
+     "baselineQuantileMedian": [
+      0.012288541334184444,
+      0.07583196944899062
+     ]
+    },
+    "passes": [
+     "MAE fixed buckets",
+     "MAE quintile bins",
+     "out-of-sample R2"
+    ]
+   },
+   {
+    "target": "combatStepsLost",
+    "metric": "expectedLossAllocated",
+    "baseline": "stacksExposedAllocated",
+    "status": "EVALUATED",
+    "nRows": 3315,
+    "mae": {
+     "zero": 1.1424,
+     "trainMedian": 1.1424,
+     "trainMean": 1.2205,
+     "baseline": 1.1832,
+     "baselinePlusMetric": 1.1844,
+     "baselineBucketMedian": 1.0564,
+     "metricBucketMedian": 1.0742,
+     "baselineQuantileMedian": 1.0685,
+     "metricQuantileMedian": 1.0836
+    },
+    "r2": {
+     "zero": -0.5026,
+     "trainMedian": -0.5026,
+     "trainMean": -0.0007,
+     "baseline": 0.0646,
+     "baselinePlusMetric": 0.0628,
+     "baselineBucketMedian": -0.055,
+     "metricBucketMedian": -0.0093,
+     "baselineQuantileMedian": -0.1482,
+     "metricQuantileMedian": -0.0694
+    },
+    "r2Gain": -0.0018,
+    "r2Gain95": [
+     -0.0038223511885406847,
+     -0.00017323253797207894
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.026179702650290793,
+      0.10521662245800179
+     ],
+     "trainMedian": [
+      0.026179702650290793,
+      0.10521662245800179
+     ],
+     "baselineBucketMedian": [
+      -0.036130536130536184,
+      0.0
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.02272727272727293,
+      0.09308590242442394
+     ],
+     "trainMedian": [
+      0.02272727272727293,
+      0.09308590242442394
+     ],
+     "baselineQuantileMedian": [
+      -0.03642072213500791,
+      0.0031455533314268536
+     ]
+    },
+    "passes": []
+   },
+   {
+    "target": "moverObjectivesGained",
+    "metric": "mover.objectiveReachColumn",
+    "baseline": "mover.contact",
+    "status": "EVALUATED",
+    "nRows": 3315,
+    "mae": {
+     "zero": 0.1716,
+     "trainMedian": 0.1716,
+     "trainMean": 0.2956,
+     "baseline": 0.2949,
+     "baselinePlusMetric": 0.2785,
+     "baselineBucketMedian": 0.1716,
+     "metricBucketMedian": 0.1716,
+     "baselineQuantileMedian": 0.1716,
+     "metricQuantileMedian": 0.1502
+    },
+    "r2": {
+     "zero": -0.1346,
+     "trainMedian": -0.1346,
+     "trainMean": -0.0013,
+     "baseline": -0.0017,
+     "baselinePlusMetric": 0.2181,
+     "baselineBucketMedian": -0.1346,
+     "metricBucketMedian": -0.1346,
+     "baselineQuantileMedian": -0.1346,
+     "metricQuantileMedian": 0.2472
+    },
+    "r2Gain": 0.2198,
+    "r2Gain95": [
+     0.19439592383111037,
+     0.2436344948425182
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineBucketMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.0034061879080329316,
+      0.04045584045584044
+     ],
+     "trainMedian": [
+      0.0034061879080329316,
+      0.04045584045584044
+     ],
+     "baselineQuantileMedian": [
+      0.0034061879080329316,
+      0.04045584045584044
+     ]
+    },
+    "passes": [
+     "MAE quintile bins",
+     "out-of-sample R2"
+    ]
+   },
+   {
+    "target": "moverObjectivesGained",
+    "metric": "mover.objectiveReachColumn",
+    "baseline": "mover.bestObjectiveEffectiveColumn",
+    "status": "EVALUATED",
+    "nRows": 3315,
+    "mae": {
+     "zero": 0.1716,
+     "trainMedian": 0.1716,
+     "trainMean": 0.2956,
+     "baseline": 0.2451,
+     "baselinePlusMetric": 0.2522,
+     "baselineBucketMedian": 0.1261,
+     "metricBucketMedian": 0.1716,
+     "baselineQuantileMedian": 0.1584,
+     "metricQuantileMedian": 0.1502
+    },
+    "r2": {
+     "zero": -0.1346,
+     "trainMedian": -0.1346,
+     "trainMean": -0.0013,
+     "baseline": 0.2951,
+     "baselinePlusMetric": 0.317,
+     "baselineBucketMedian": 0.3024,
+     "metricBucketMedian": -0.1346,
+     "baselineQuantileMedian": 0.1769,
+     "metricQuantileMedian": 0.2472
+    },
+    "r2Gain": 0.0219,
+    "r2Gain95": [
+     0.00927160164044638,
+     0.03613868816692878
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineBucketMedian": [
+      -0.05822021116138762,
+      -0.03415614236509759
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.0034061879080329316,
+      0.04045584045584044
+     ],
+     "trainMedian": [
+      0.0034061879080329316,
+      0.04045584045584044
+     ],
+     "baselineQuantileMedian": [
+      -0.010900031142946132,
+      0.029066353493834407
+     ]
+    },
+    "passes": [
+     "out-of-sample R2"
+    ]
+   },
+   {
+    "target": "outOfTraceRise",
+    "metric": "hqDependentUnitsInReach",
+    "baseline": "contact",
+    "status": "EVALUATED",
+    "nRows": 3315,
+    "mae": {
+     "zero": 2.4353,
+     "trainMedian": 2.4353,
+     "trainMean": 3.3856,
+     "baseline": 3.3869,
+     "baselinePlusMetric": 3.3253,
+     "baselineBucketMedian": 2.4353,
+     "metricBucketMedian": 2.4353,
+     "baselineQuantileMedian": 2.4353,
+     "metricQuantileMedian": 2.4353
+    },
+    "r2": {
+     "zero": -0.2148,
+     "trainMedian": -0.2148,
+     "trainMean": -0.0008,
+     "baseline": -0.0009,
+     "baselinePlusMetric": 0.0315,
+     "baselineBucketMedian": -0.2148,
+     "metricBucketMedian": -0.2148,
+     "baselineQuantileMedian": -0.2148,
+     "metricQuantileMedian": -0.2148
+    },
+    "r2Gain": 0.0325,
+    "r2Gain95": [
+     0.0074769053463131785,
+     0.055164251138347664
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineBucketMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineQuantileMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "passes": [
+     "out-of-sample R2"
+    ]
+   },
+   {
+    "target": "attritionNextTurn",
+    "metric": "hqDependentUnitsInReach",
+    "baseline": "outOfTrace",
+    "status": "EVALUATED",
+    "nRows": 2583,
+    "mae": {
+     "zero": 0.993,
+     "trainMedian": 0.993,
+     "trainMean": 1.4083,
+     "baseline": 1.1556,
+     "baselinePlusMetric": 1.1517,
+     "baselineBucketMedian": 0.9055,
+     "metricBucketMedian": 0.993,
+     "baselineQuantileMedian": 0.9055,
+     "metricQuantileMedian": 0.993
+    },
+    "r2": {
+     "zero": -0.1947,
+     "trainMedian": -0.1947,
+     "trainMean": -0.0011,
+     "baseline": 0.2158,
+     "baselinePlusMetric": 0.2162,
+     "baselineBucketMedian": 0.1387,
+     "metricBucketMedian": -0.1947,
+     "baselineQuantileMedian": 0.1095,
+     "metricQuantileMedian": -0.1947
+    },
+    "r2Gain": 0.0005,
+    "r2Gain95": [
+     -0.002440724758527635,
+     0.002794250196343273
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineBucketMedian": [
+      -0.12954383464005692,
+      -0.04594180704441042
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineQuantileMedian": [
+      -0.1250473664266767,
+      -0.04974271012006859
+     ]
+    },
+    "passes": []
+   },
+   {
+    "target": "attritionNextTurn",
+    "metric": "outOfTraceUnfed",
+    "baseline": "outOfTrace",
+    "status": "EVALUATED",
+    "nRows": 2583,
+    "mae": {
+     "zero": 0.993,
+     "trainMedian": 0.993,
+     "trainMean": 1.4083,
+     "baseline": 1.1556,
+     "baselinePlusMetric": 1.0941,
+     "baselineBucketMedian": 0.9055,
+     "metricBucketMedian": 0.8664,
+     "baselineQuantileMedian": 0.9055,
+     "metricQuantileMedian": 0.8939
+    },
+    "r2": {
+     "zero": -0.1947,
+     "trainMedian": -0.1947,
+     "trainMean": -0.0011,
+     "baseline": 0.2158,
+     "baselinePlusMetric": 0.2657,
+     "baselineBucketMedian": 0.1387,
+     "metricBucketMedian": 0.1383,
+     "baselineQuantileMedian": 0.1095,
+     "metricQuantileMedian": 0.0851
+    },
+    "r2Gain": 0.05,
+    "r2Gain95": [
+     0.01586374685746128,
+     0.08675305419505608
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.08522500995619275,
+      0.1669242658423492
+     ],
+     "trainMedian": [
+      0.08522500995619275,
+      0.1669242658423492
+     ],
+     "baselineBucketMedian": [
+      0.014464425332290864,
+      0.06623235613463618
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.06485277674245249,
+      0.13367991088005948
+     ],
+     "trainMedian": [
+      0.06485277674245249,
+      0.13367991088005948
+     ],
+     "baselineQuantileMedian": [
+      -0.009917355371900749,
+      0.03516819571865448
+     ]
+    },
+    "passes": [
+     "MAE fixed buckets",
+     "out-of-sample R2"
+    ]
+   },
+   {
+    "target": "outOfTraceRise",
+    "metric": "rearHexesInReach",
+    "baseline": "contact",
+    "status": "EVALUATED",
+    "nRows": 3315,
+    "mae": {
+     "zero": 2.4353,
+     "trainMedian": 2.4353,
+     "trainMean": 3.3856,
+     "baseline": 3.3869,
+     "baselinePlusMetric": 3.2778,
+     "baselineBucketMedian": 2.4353,
+     "metricBucketMedian": 2.4353,
+     "baselineQuantileMedian": 2.4353,
+     "metricQuantileMedian": 2.4456
+    },
+    "r2": {
+     "zero": -0.2148,
+     "trainMedian": -0.2148,
+     "trainMean": -0.0008,
+     "baseline": -0.0009,
+     "baselinePlusMetric": 0.0281,
+     "baselineBucketMedian": -0.2148,
+     "metricBucketMedian": -0.2148,
+     "baselineQuantileMedian": -0.2148,
+     "metricQuantileMedian": -0.2091
+    },
+    "r2Gain": 0.029,
+    "r2Gain95": [
+     0.012688186806372292,
+     0.042615132395220856
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineBucketMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      -0.026049647563591627,
+      0.0013436345314072895
+     ],
+     "trainMedian": [
+      -0.026049647563591627,
+      0.0013436345314072895
+     ],
+     "baselineQuantileMedian": [
+      -0.026049647563591627,
+      0.0013436345314072895
+     ]
+    },
+    "passes": [
+     "out-of-sample R2"
+    ]
+   },
+   {
+    "target": "hqsLost",
+    "metric": "rearHexesInReach",
+    "baseline": "contact",
+    "status": "EVALUATED",
+    "nRows": 3315,
+    "mae": {
+     "zero": 0.1795,
+     "trainMedian": 0.1795,
+     "trainMean": 0.3034,
+     "baseline": 0.3026,
+     "baselinePlusMetric": 0.2924,
+     "baselineBucketMedian": 0.1795,
+     "metricBucketMedian": 0.1795,
+     "baselineQuantileMedian": 0.1795,
+     "metricQuantileMedian": 0.1795
+    },
+    "r2": {
+     "zero": -0.1623,
+     "trainMedian": -0.1623,
+     "trainMean": -0.0011,
+     "baseline": 0.0006,
+     "baselinePlusMetric": 0.0306,
+     "baselineBucketMedian": -0.1623,
+     "metricBucketMedian": -0.1623,
+     "baselineQuantileMedian": -0.1623,
+     "metricQuantileMedian": -0.1623
+    },
+    "r2Gain": 0.03,
+    "r2Gain95": [
+     0.016681769609124375,
+     0.042475042386592166
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineBucketMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineQuantileMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "passes": [
+     "out-of-sample R2"
+    ]
+   }
+  ],
+  "attacker-moving": [
+   {
+    "target": "objectiveVpLost",
+    "metric": "objectiveVpAtRisk",
+    "baseline": "objectivesThreatened",
+    "status": "EVALUATED",
+    "nRows": 1198,
+    "mae": {
+     "zero": 0.9599,
+     "trainMedian": 0.9599,
+     "trainMean": 1.3798,
+     "baseline": 1.3276,
+     "baselinePlusMetric": 1.128,
+     "baselineBucketMedian": 0.9816,
+     "metricBucketMedian": 0.9558,
+     "baselineQuantileMedian": 0.9725,
+     "metricQuantileMedian": 0.9558
+    },
+    "r2": {
+     "zero": -0.2452,
+     "trainMedian": -0.2452,
+     "trainMean": -0.0041,
+     "baseline": 0.0432,
+     "baselinePlusMetric": 0.2563,
+     "baselineBucketMedian": -0.2514,
+     "metricBucketMedian": 0.0273,
+     "baselineQuantileMedian": -0.2312,
+     "metricQuantileMedian": 0.0273
+    },
+    "r2Gain": 0.2131,
+    "r2Gain95": [
+     0.13218749842350397,
+     0.282867948139887
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      -0.07299270072992703,
+      0.07529610829103206
+     ],
+     "trainMedian": [
+      -0.07299270072992703,
+      0.07529610829103206
+     ],
+     "baselineBucketMedian": [
+      -0.03697334479793635,
+      0.08931297709923669
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      -0.07299270072992703,
+      0.07529610829103206
+     ],
+     "trainMedian": [
+      -0.07299270072992703,
+      0.07529610829103206
+     ],
+     "baselineQuantileMedian": [
+      -0.04485488126649084,
+      0.08177172061328797
+     ]
+    },
+    "passes": [
+     "out-of-sample R2"
+    ]
+   },
+   {
+    "target": "objectivesLost",
+    "metric": "objectivesAtRisk",
+    "baseline": "objectivesThreatened",
+    "status": "EVALUATED",
+    "nRows": 1198,
+    "mae": {
+     "zero": 0.3648,
+     "trainMedian": 0.3648,
+     "trainMean": 0.5245,
+     "baseline": 0.499,
+     "baselinePlusMetric": 0.4341,
+     "baselineBucketMedian": 0.3831,
+     "metricBucketMedian": 0.3406,
+     "baselineQuantileMedian": 0.3773,
+     "metricQuantileMedian": 0.3406
+    },
+    "r2": {
+     "zero": -0.3116,
+     "trainMedian": -0.3116,
+     "trainMean": -0.0029,
+     "baseline": 0.0454,
+     "baselinePlusMetric": 0.2096,
+     "baselineBucketMedian": -0.3468,
+     "metricBucketMedian": -0.0673,
+     "baselineQuantileMedian": -0.3096,
+     "metricQuantileMedian": -0.0673
+    },
+    "r2Gain": 0.1642,
+    "r2Gain95": [
+     0.10818032186703619,
+     0.21070104720349658
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.004255319148936176,
+      0.04486626402070748
+     ],
+     "trainMedian": [
+      0.004255319148936176,
+      0.04486626402070748
+     ],
+     "baselineBucketMedian": [
+      0.01783060921248142,
+      0.07154742096505823
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.004255319148936176,
+      0.04486626402070748
+     ],
+     "trainMedian": [
+      0.004255319148936176,
+      0.04486626402070748
+     ],
+     "baselineQuantileMedian": [
+      0.01721311475409837,
+      0.05877976190476192
+     ]
+    },
+    "passes": [
+     "MAE fixed buckets",
+     "MAE quintile bins",
+     "out-of-sample R2"
+    ]
+   },
+   {
+    "target": "stepsLost",
+    "metric": "stacksExposedAllocated",
+    "baseline": "contact",
+    "status": "EVALUATED",
+    "nRows": 1198,
+    "mae": {
+     "zero": 1.9674,
+     "trainMedian": 1.4699,
+     "trainMean": 1.4744,
+     "baseline": 1.4817,
+     "baselinePlusMetric": 1.3824,
+     "baselineBucketMedian": 1.5355,
+     "metricBucketMedian": 1.3531,
+     "baselineQuantileMedian": 1.5413,
+     "metricQuantileMedian": 1.3422
+    },
+    "r2": {
+     "zero": -1.1278,
+     "trainMedian": -0.0003,
+     "trainMean": -0.0037,
+     "baseline": -0.0098,
+     "baselinePlusMetric": 0.1367,
+     "baselineBucketMedian": -0.1052,
+     "metricBucketMedian": 0.0532,
+     "baselineQuantileMedian": -0.1284,
+     "metricQuantileMedian": 0.1133
+    },
+    "r2Gain": 0.1465,
+    "r2Gain95": [
+     0.0976928602666467,
+     0.19242680727322092
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.5013262599469495,
+      0.7221789883268483
+     ],
+     "trainMedian": [
+      0.06039215686274502,
+      0.1694290976058932
+     ],
+     "baselineBucketMedian": [
+      0.12311358220810176,
+      0.24035087719298254
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.502210433244916,
+      0.7457627118644066
+     ],
+     "trainMedian": [
+      0.07754010695187175,
+      0.17602283539486208
+     ],
+     "baselineQuantileMedian": [
+      0.1502890173410405,
+      0.2442748091603053
+     ]
+    },
+    "passes": [
+     "MAE fixed buckets",
+     "MAE quintile bins",
+     "out-of-sample R2"
+    ]
+   },
+   {
+    "target": "stepsLost",
+    "metric": "stacksExposedAllocated",
+    "baseline": "stacksExposed",
+    "status": "EVALUATED",
+    "nRows": 1198,
+    "mae": {
+     "zero": 1.9674,
+     "trainMedian": 1.4699,
+     "trainMean": 1.4744,
+     "baseline": 1.3595,
+     "baselinePlusMetric": 1.3545,
+     "baselineBucketMedian": 1.3898,
+     "metricBucketMedian": 1.3531,
+     "baselineQuantileMedian": 1.3397,
+     "metricQuantileMedian": 1.3422
+    },
+    "r2": {
+     "zero": -1.1278,
+     "trainMedian": -0.0003,
+     "trainMean": -0.0037,
+     "baseline": 0.1458,
+     "baselinePlusMetric": 0.159,
+     "baselineBucketMedian": 0.0008,
+     "metricBucketMedian": 0.0532,
+     "baselineQuantileMedian": 0.0922,
+     "metricQuantileMedian": 0.1133
+    },
+    "r2Gain": 0.0132,
+    "r2Gain95": [
+     -0.007673291451360309,
+     0.03268478154710275
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.5013262599469495,
+      0.7221789883268483
+     ],
+     "trainMedian": [
+      0.06039215686274502,
+      0.1694290976058932
+     ],
+     "baselineBucketMedian": [
+      -0.016888888888888953,
+      0.09049586776859497
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.502210433244916,
+      0.7457627118644066
+     ],
+     "trainMedian": [
+      0.07754010695187175,
+      0.17602283539486208
+     ],
+     "baselineQuantileMedian": [
+      -0.05260906757912753,
+      0.043277310924369594
+     ]
+    },
+    "passes": []
+   },
+   {
+    "target": "outOfTraceRise",
+    "metric": "supplyCuttable",
+    "baseline": "contact",
+    "status": "EVALUATED",
+    "nRows": 1198,
+    "mae": {
+     "zero": 2.7379,
+     "trainMedian": 2.7379,
+     "trainMean": 3.4627,
+     "baseline": 3.4647,
+     "baselinePlusMetric": 3.2048,
+     "baselineBucketMedian": 2.7446,
+     "metricBucketMedian": 2.6686,
+     "baselineQuantileMedian": 2.7379,
+     "metricQuantileMedian": 2.6849
+    },
+    "r2": {
+     "zero": -0.321,
+     "trainMedian": -0.321,
+     "trainMean": -0.0009,
+     "baseline": 0.0003,
+     "baselinePlusMetric": 0.0927,
+     "baselineBucketMedian": -0.3211,
+     "metricBucketMedian": -0.1735,
+     "baselineQuantileMedian": -0.321,
+     "metricQuantileMedian": -0.1414
+    },
+    "r2Gain": 0.0924,
+    "r2Gain95": [
+     0.024563951406201157,
+     0.14751153406698014
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.009490940465918918,
+      0.12660393498716838
+     ],
+     "trainMedian": [
+      0.009490940465918918,
+      0.12660393498716838
+     ],
+     "baselineBucketMedian": [
+      0.0168946098149636,
+      0.13327882256745704
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      -0.015230312035661164,
+      0.12446717817561792
+     ],
+     "trainMedian": [
+      -0.015230312035661164,
+      0.12446717817561792
+     ],
+     "baselineQuantileMedian": [
+      -0.015230312035661164,
+      0.12446717817561792
+     ]
+    },
+    "passes": [
+     "MAE fixed buckets",
+     "out-of-sample R2"
+    ]
+   },
+   {
+    "target": "outOfTraceRise",
+    "metric": "supplyBestCut",
+    "baseline": "contact",
+    "status": "EVALUATED",
+    "nRows": 1198,
+    "mae": {
+     "zero": 2.7379,
+     "trainMedian": 2.7379,
+     "trainMean": 3.4627,
+     "baseline": 3.4647,
+     "baselinePlusMetric": 3.2331,
+     "baselineBucketMedian": 2.7446,
+     "metricBucketMedian": 2.6828,
+     "baselineQuantileMedian": 2.7379,
+     "metricQuantileMedian": 2.7283
+    },
+    "r2": {
+     "zero": -0.321,
+     "trainMedian": -0.321,
+     "trainMean": -0.0009,
+     "baseline": 0.0003,
+     "baselinePlusMetric": 0.0889,
+     "baselineBucketMedian": -0.3211,
+     "metricBucketMedian": -0.1682,
+     "baselineQuantileMedian": -0.321,
+     "metricQuantileMedian": -0.1504
+    },
+    "r2Gain": 0.0887,
+    "r2Gain95": [
+     0.021483751601747536,
+     0.14348126009603435
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      -0.003361344537815114,
+      0.11499999999999977
+     ],
+     "trainMedian": [
+      -0.003361344537815114,
+      0.11499999999999977
+     ],
+     "baselineBucketMedian": [
+      0.003957783641161061,
+      0.12148337595907943
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      -0.07251602564102555,
+      0.0865463494667762
+     ],
+     "trainMedian": [
+      -0.07251602564102555,
+      0.0865463494667762
+     ],
+     "baselineQuantileMedian": [
+      -0.07251602564102555,
+      0.0865463494667762
+     ]
+    },
+    "passes": [
+     "out-of-sample R2"
+    ]
+   },
+   {
+    "target": "hqsLost",
+    "metric": "hqsInReach",
+    "baseline": "contact",
+    "status": "EVALUATED",
+    "nRows": 1198,
+    "mae": {
+     "zero": 0.2179,
+     "trainMedian": 0.2179,
+     "trainMean": 0.3542,
+     "baseline": 0.3542,
+     "baselinePlusMetric": 0.2885,
+     "baselineBucketMedian": 0.2179,
+     "metricBucketMedian": 0.2179,
+     "baselineQuantileMedian": 0.2179,
+     "metricQuantileMedian": 0.2179
+    },
+    "r2": {
+     "zero": -0.2059,
+     "trainMedian": -0.2059,
+     "trainMean": -0.0011,
+     "baseline": -0.0031,
+     "baselinePlusMetric": 0.1951,
+     "baselineBucketMedian": -0.2059,
+     "metricBucketMedian": -0.2059,
+     "baselineQuantileMedian": -0.2059,
+     "metricQuantileMedian": -0.2059
+    },
+    "r2Gain": 0.1982,
+    "r2Gain95": [
+     0.12612390913319138,
+     0.2604369301966484
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineBucketMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineQuantileMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "passes": [
+     "out-of-sample R2"
+    ]
+   },
+   {
+    "target": "objectiveVpLost",
+    "metric": "payableObjectiveVpAtRisk",
+    "baseline": "objectivesThreatened",
+    "status": "EVALUATED",
+    "nRows": 1198,
+    "mae": {
+     "zero": 0.9599,
+     "trainMedian": 0.9599,
+     "trainMean": 1.3798,
+     "baseline": 1.3276,
+     "baselinePlusMetric": 1.1072,
+     "baselineBucketMedian": 0.9816,
+     "metricBucketMedian": 0.884,
+     "baselineQuantileMedian": 0.9725,
+     "metricQuantileMedian": 0.8698
+    },
+    "r2": {
+     "zero": -0.2452,
+     "trainMedian": -0.2452,
+     "trainMean": -0.0041,
+     "baseline": 0.0432,
+     "baselinePlusMetric": 0.337,
+     "baselineBucketMedian": -0.2514,
+     "metricBucketMedian": 0.0658,
+     "baselineQuantileMedian": -0.2312,
+     "metricQuantileMedian": 0.1493
+    },
+    "r2Gain": 0.2938,
+    "r2Gain95": [
+     0.21663135889830853,
+     0.3651655324317441
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.0051669316375199115,
+      0.15131578947368418
+     ],
+     "trainMedian": [
+      0.0051669316375199115,
+      0.15131578947368418
+     ],
+     "baselineBucketMedian": [
+      0.029029793735676157,
+      0.1682085786375105
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      -0.006309148264984188,
+      0.18298261665141813
+     ],
+     "trainMedian": [
+      -0.006309148264984188,
+      0.18298261665141813
+     ],
+     "baselineQuantileMedian": [
+      0.01212611156022636,
+      0.1908271908271908
+     ]
+    },
+    "passes": [
+     "MAE fixed buckets",
+     "out-of-sample R2"
+    ]
+   },
+   {
+    "target": "objectiveVpLost",
+    "metric": "payableObjectiveVpAtRisk",
+    "baseline": "objectiveVpAtRisk",
+    "status": "EVALUATED",
+    "nRows": 1198,
+    "mae": {
+     "zero": 0.9599,
+     "trainMedian": 0.9599,
+     "trainMean": 1.3798,
+     "baseline": 1.1278,
+     "baselinePlusMetric": 1.0983,
+     "baselineBucketMedian": 0.9558,
+     "metricBucketMedian": 0.884,
+     "baselineQuantileMedian": 0.9558,
+     "metricQuantileMedian": 0.8698
+    },
+    "r2": {
+     "zero": -0.2452,
+     "trainMedian": -0.2452,
+     "trainMean": -0.0041,
+     "baseline": 0.2355,
+     "baselinePlusMetric": 0.3247,
+     "baselineBucketMedian": 0.0273,
+     "metricBucketMedian": 0.0658,
+     "baselineQuantileMedian": 0.0273,
+     "metricQuantileMedian": 0.1493
+    },
+    "r2Gain": 0.0892,
+    "r2Gain95": [
+     0.02832131926429493,
+     0.14488673875129454
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.0051669316375199115,
+      0.15131578947368418
+     ],
+     "trainMedian": [
+      0.0051669316375199115,
+      0.15131578947368418
+     ],
+     "baselineBucketMedian": [
+      0.018729641693811083,
+      0.12330508474576274
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      -0.006309148264984188,
+      0.18298261665141813
+     ],
+     "trainMedian": [
+      -0.006309148264984188,
+      0.18298261665141813
+     ],
+     "baselineQuantileMedian": [
+      0.033824804856894986,
+      0.1484751203852328
+     ]
+    },
+    "passes": [
+     "MAE fixed buckets",
+     "out-of-sample R2"
+    ]
+   },
+   {
+    "target": "combatStepsLost",
+    "metric": "stacksExposedAllocated",
+    "baseline": "contact",
+    "status": "EVALUATED",
+    "nRows": 1198,
+    "mae": {
+     "zero": 1.9674,
+     "trainMedian": 1.4699,
+     "trainMean": 1.4744,
+     "baseline": 1.4817,
+     "baselinePlusMetric": 1.3824,
+     "baselineBucketMedian": 1.5355,
+     "metricBucketMedian": 1.3531,
+     "baselineQuantileMedian": 1.5413,
+     "metricQuantileMedian": 1.3422
+    },
+    "r2": {
+     "zero": -1.1278,
+     "trainMedian": -0.0003,
+     "trainMean": -0.0037,
+     "baseline": -0.0098,
+     "baselinePlusMetric": 0.1367,
+     "baselineBucketMedian": -0.1052,
+     "metricBucketMedian": 0.0532,
+     "baselineQuantileMedian": -0.1284,
+     "metricQuantileMedian": 0.1133
+    },
+    "r2Gain": 0.1465,
+    "r2Gain95": [
+     0.0976928602666467,
+     0.19242680727322092
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.5013262599469495,
+      0.7221789883268483
+     ],
+     "trainMedian": [
+      0.06039215686274502,
+      0.1694290976058932
+     ],
+     "baselineBucketMedian": [
+      0.12311358220810176,
+      0.24035087719298254
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.502210433244916,
+      0.7457627118644066
+     ],
+     "trainMedian": [
+      0.07754010695187175,
+      0.17602283539486208
+     ],
+     "baselineQuantileMedian": [
+      0.1502890173410405,
+      0.2442748091603053
+     ]
+    },
+    "passes": [
+     "MAE fixed buckets",
+     "MAE quintile bins",
+     "out-of-sample R2"
+    ]
+   },
+   {
+    "target": "combatStepsLost",
+    "metric": "maxSingleStackExpectedLoss",
+    "baseline": "contact",
+    "status": "EVALUATED",
+    "nRows": 1198,
+    "mae": {
+     "zero": 1.9674,
+     "trainMedian": 1.4699,
+     "trainMean": 1.4744,
+     "baseline": 1.4817,
+     "baselinePlusMetric": 1.4865,
+     "baselineBucketMedian": 1.5355,
+     "metricBucketMedian": 1.4591,
+     "baselineQuantileMedian": 1.5413,
+     "metricQuantileMedian": 1.4407
+    },
+    "r2": {
+     "zero": -1.1278,
+     "trainMedian": -0.0003,
+     "trainMean": -0.0037,
+     "baseline": -0.0098,
+     "baselinePlusMetric": 0.019,
+     "baselineBucketMedian": -0.1052,
+     "metricBucketMedian": -0.0151,
+     "baselineQuantileMedian": -0.1284,
+     "metricQuantileMedian": -0.1231
+    },
+    "r2Gain": 0.0288,
+    "r2Gain95": [
+     0.003008454299627372,
+     0.05305572779503709
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.3729468599033816,
+      0.6373056994818653
+     ],
+     "trainMedian": [
+      -0.022298456260720467,
+      0.03992740471869327
+     ],
+     "baselineBucketMedian": [
+      0.039805036555645934,
+      0.11906779661016964
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.43333333333333335,
+      0.6290196078431372
+     ],
+     "trainMedian": [
+      -0.02622673434856182,
+      0.08641975308641969
+     ],
+     "baselineQuantileMedian": [
+      0.05452240067624681,
+      0.14949402023919034
+     ]
+    },
+    "passes": [
+     "out-of-sample R2"
+    ]
+   },
+   {
+    "target": "combatStepsLost",
+    "metric": "maxSingleStackExpectedLoss",
+    "baseline": "stacksExposedAllocated",
+    "status": "EVALUATED",
+    "nRows": 1198,
+    "mae": {
+     "zero": 1.9674,
+     "trainMedian": 1.4699,
+     "trainMean": 1.4744,
+     "baseline": 1.3799,
+     "baselinePlusMetric": 1.3814,
+     "baselineBucketMedian": 1.3531,
+     "metricBucketMedian": 1.4591,
+     "baselineQuantileMedian": 1.3422,
+     "metricQuantileMedian": 1.4407
+    },
+    "r2": {
+     "zero": -1.1278,
+     "trainMedian": -0.0003,
+     "trainMean": -0.0037,
+     "baseline": 0.1412,
+     "baselinePlusMetric": 0.1402,
+     "baselineBucketMedian": 0.0532,
+     "metricBucketMedian": -0.0151,
+     "baselineQuantileMedian": 0.1133,
+     "metricQuantileMedian": -0.1231
+    },
+    "r2Gain": -0.001,
+    "r2Gain95": [
+     -0.005997853531450104,
+     0.004000649212018592
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.3729468599033816,
+      0.6373056994818653
+     ],
+     "trainMedian": [
+      -0.022298456260720467,
+      0.03992740471869327
+     ],
+     "baselineBucketMedian": [
+      -0.1615384615384614,
+      -0.05080831408775999
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.43333333333333335,
+      0.6290196078431372
+     ],
+     "trainMedian": [
+      -0.02622673434856182,
+      0.08641975308641969
+     ],
+     "baselineQuantileMedian": [
+      -0.15794392523364476,
+      -0.038227628149435366
+     ]
+    },
+    "passes": []
+   },
+   {
+    "target": "spCapturedOrDestroyed",
+    "metric": "dumpSpInReach",
+    "baseline": "contact",
+    "status": "EVALUATED",
+    "nRows": 1198,
+    "mae": {
+     "zero": 0.8101,
+     "trainMedian": 0.8101,
+     "trainMean": 1.1901,
+     "baseline": 1.1939,
+     "baselinePlusMetric": 1.2065,
+     "baselineBucketMedian": 0.8101,
+     "metricBucketMedian": 0.8101,
+     "baselineQuantileMedian": 0.8101,
+     "metricQuantileMedian": 0.8101
+    },
+    "r2": {
+     "zero": -0.1342,
+     "trainMedian": -0.1342,
+     "trainMean": -0.0016,
+     "baseline": -0.005,
+     "baselinePlusMetric": 0.007,
+     "baselineBucketMedian": -0.1342,
+     "metricBucketMedian": -0.1342,
+     "baselineQuantileMedian": -0.1342,
+     "metricQuantileMedian": -0.1342
+    },
+    "r2Gain": 0.0121,
+    "r2Gain95": [
+     -0.03728746314886533,
+     0.035072326242208796
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineBucketMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineQuantileMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "passes": []
+   },
+   {
+    "target": "attritionNextTurn",
+    "metric": "supplyCuttable",
+    "baseline": "outOfTrace",
+    "status": "EVALUATED",
+    "nRows": 907,
+    "mae": {
+     "zero": 1.6329,
+     "trainMedian": 1.6329,
+     "trainMean": 1.9718,
+     "baseline": 1.5532,
+     "baselinePlusMetric": 1.5579,
+     "baselineBucketMedian": 1.3297,
+     "metricBucketMedian": 1.6169,
+     "baselineQuantileMedian": 1.3396,
+     "metricQuantileMedian": 1.6207
+    },
+    "r2": {
+     "zero": -0.3424,
+     "trainMedian": -0.3424,
+     "trainMean": -0.0015,
+     "baseline": 0.2807,
+     "baselinePlusMetric": 0.2811,
+     "baselineBucketMedian": 0.176,
+     "metricBucketMedian": -0.1513,
+     "baselineQuantileMedian": 0.1418,
+     "metricQuantileMedian": -0.1375
+    },
+    "r2Gain": 0.0003,
+    "r2Gain95": [
+     -0.004159730731195022,
+     0.0039987971486270535
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      -0.05608974358974361,
+      0.09334061135371163
+     ],
+     "trainMedian": [
+      -0.05608974358974361,
+      0.09334061135371163
+     ],
+     "baselineBucketMedian": [
+      -0.3777660695468914,
+      -0.18581081081081074
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      -0.06928645294725944,
+      0.09582863585118373
+     ],
+     "trainMedian": [
+      -0.06928645294725944,
+      0.09582863585118373
+     ],
+     "baselineQuantileMedian": [
+      -0.3458475540386803,
+      -0.21171171171171177
+     ]
+    },
+    "passes": []
+   },
+   {
+    "target": "moverObjectiveVpGained",
+    "metric": "mover.objectiveVpInReach",
+    "baseline": "mover.contact",
+    "status": "EVALUATED",
+    "nRows": 1198,
+    "mae": {
+     "zero": 0.9599,
+     "trainMedian": 0.9599,
+     "trainMean": 1.3798,
+     "baseline": 1.3801,
+     "baselinePlusMetric": 1.1327,
+     "baselineBucketMedian": 0.9599,
+     "metricBucketMedian": 0.9558,
+     "baselineQuantileMedian": 0.9599,
+     "metricQuantileMedian": 0.9558
+    },
+    "r2": {
+     "zero": -0.2452,
+     "trainMedian": -0.2452,
+     "trainMean": -0.0041,
+     "baseline": -0.0017,
+     "baselinePlusMetric": 0.2358,
+     "baselineBucketMedian": -0.2452,
+     "metricBucketMedian": 0.0273,
+     "baselineQuantileMedian": -0.2452,
+     "metricQuantileMedian": 0.0273
+    },
+    "r2Gain": 0.2375,
+    "r2Gain95": [
+     0.15276540504368785,
+     0.3014514643654962
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      -0.07299270072992703,
+      0.07529610829103206
+     ],
+     "trainMedian": [
+      -0.07299270072992703,
+      0.07529610829103206
+     ],
+     "baselineBucketMedian": [
+      -0.07299270072992703,
+      0.07529610829103206
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      -0.07299270072992703,
+      0.07529610829103206
+     ],
+     "trainMedian": [
+      -0.07299270072992703,
+      0.07529610829103206
+     ],
+     "baselineQuantileMedian": [
+      -0.07299270072992703,
+      0.07529610829103206
+     ]
+    },
+    "passes": [
+     "out-of-sample R2"
+    ]
+   },
+   {
+    "target": "moverObjectiveVpGained",
+    "metric": "mover.payableObjectiveVpInReach",
+    "baseline": "mover.objectiveVpInReach",
+    "status": "EVALUATED",
+    "nRows": 1198,
+    "mae": {
+     "zero": 0.9599,
+     "trainMedian": 0.9599,
+     "trainMean": 1.3798,
+     "baseline": 1.1278,
+     "baselinePlusMetric": 1.0983,
+     "baselineBucketMedian": 0.9558,
+     "metricBucketMedian": 0.884,
+     "baselineQuantileMedian": 0.9558,
+     "metricQuantileMedian": 0.8698
+    },
+    "r2": {
+     "zero": -0.2452,
+     "trainMedian": -0.2452,
+     "trainMean": -0.0041,
+     "baseline": 0.2355,
+     "baselinePlusMetric": 0.3247,
+     "baselineBucketMedian": 0.0273,
+     "metricBucketMedian": 0.0658,
+     "baselineQuantileMedian": 0.0273,
+     "metricQuantileMedian": 0.1493
+    },
+    "r2Gain": 0.0892,
+    "r2Gain95": [
+     0.02832131926429493,
+     0.14488673875129454
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.0051669316375199115,
+      0.15131578947368418
+     ],
+     "trainMedian": [
+      0.0051669316375199115,
+      0.15131578947368418
+     ],
+     "baselineBucketMedian": [
+      0.018729641693811083,
+      0.12330508474576274
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      -0.006309148264984188,
+      0.18298261665141813
+     ],
+     "trainMedian": [
+      -0.006309148264984188,
+      0.18298261665141813
+     ],
+     "baselineQuantileMedian": [
+      0.033824804856894986,
+      0.1484751203852328
+     ]
+    },
+    "passes": [
+     "MAE fixed buckets",
+     "out-of-sample R2"
+    ]
+   },
+   {
+    "target": "moverObjectivesGained",
+    "metric": "mover.bestObjectiveEffectiveColumn",
+    "baseline": "mover.contact",
+    "status": "EVALUATED",
+    "nRows": 1198,
+    "mae": {
+     "zero": 0.3648,
+     "trainMedian": 0.3648,
+     "trainMean": 0.5245,
+     "baseline": 0.5233,
+     "baselinePlusMetric": 0.3677,
+     "baselineBucketMedian": 0.3648,
+     "metricBucketMedian": 0.2529,
+     "baselineQuantileMedian": 0.3648,
+     "metricQuantileMedian": 0.2529
+    },
+    "r2": {
+     "zero": -0.3116,
+     "trainMedian": -0.3116,
+     "trainMean": -0.0029,
+     "baseline": -0.0024,
+     "baselinePlusMetric": 0.3223,
+     "baselineBucketMedian": -0.3116,
+     "metricBucketMedian": 0.2514,
+     "baselineQuantileMedian": -0.3116,
+     "metricQuantileMedian": 0.2514
+    },
+    "r2Gain": 0.3247,
+    "r2Gain95": [
+     0.2557300920439115,
+     0.3837857736703858
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.08655462184873947,
+      0.13842058562555454
+     ],
+     "trainMedian": [
+      0.08655462184873947,
+      0.13842058562555454
+     ],
+     "baselineBucketMedian": [
+      0.08655462184873947,
+      0.13842058562555454
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.08655462184873947,
+      0.13842058562555454
+     ],
+     "trainMedian": [
+      0.08655462184873947,
+      0.13842058562555454
+     ],
+     "baselineQuantileMedian": [
+      0.08655462184873947,
+      0.13842058562555454
+     ]
+    },
+    "passes": [
+     "MAE fixed buckets",
+     "MAE quintile bins",
+     "out-of-sample R2"
+    ]
+   },
+   {
+    "target": "moverObjectivesGained",
+    "metric": "mover.localForceRatioAt2Hex",
+    "baseline": "mover.contact",
+    "status": "EVALUATED",
+    "nRows": 1198,
+    "mae": {
+     "zero": 0.3648,
+     "trainMedian": 0.3648,
+     "trainMean": 0.5245,
+     "baseline": 0.5233,
+     "baselinePlusMetric": 0.4842,
+     "baselineBucketMedian": 0.3648,
+     "metricBucketMedian": 0.3255,
+     "baselineQuantileMedian": 0.3648,
+     "metricQuantileMedian": 0.3531
+    },
+    "r2": {
+     "zero": -0.3116,
+     "trainMedian": -0.3116,
+     "trainMean": -0.0029,
+     "baseline": -0.0024,
+     "baselinePlusMetric": 0.0951,
+     "baselineBucketMedian": -0.3116,
+     "metricBucketMedian": -0.0751,
+     "baselineQuantileMedian": -0.3116,
+     "metricQuantileMedian": -0.0653
+    },
+    "r2Gain": 0.0975,
+    "r2Gain95": [
+     0.04309073202913127,
+     0.14980676903610002
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.019038984587488705,
+      0.0587248322147651
+     ],
+     "trainMedian": [
+      0.019038984587488705,
+      0.0587248322147651
+     ],
+     "baselineBucketMedian": [
+      0.019038984587488705,
+      0.0587248322147651
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      -0.021496130696474658,
+      0.04135338345864664
+     ],
+     "trainMedian": [
+      -0.021496130696474658,
+      0.04135338345864664
+     ],
+     "baselineQuantileMedian": [
+      -0.021496130696474658,
+      0.04135338345864664
+     ]
+    },
+    "passes": [
+     "MAE fixed buckets",
+     "out-of-sample R2"
+    ]
+   },
+   {
+    "target": "combatStepsLost",
+    "metric": "mover.surplusCombatSp",
+    "baseline": "mover.contact",
+    "status": "EVALUATED",
+    "nRows": 1198,
+    "mae": {
+     "zero": 1.9674,
+     "trainMedian": 1.4699,
+     "trainMean": 1.4744,
+     "baseline": 1.4809,
+     "baselinePlusMetric": 1.4847,
+     "baselineBucketMedian": 1.5033,
+     "metricBucketMedian": 1.4441,
+     "baselineQuantileMedian": 1.4875,
+     "metricQuantileMedian": 1.5025
+    },
+    "r2": {
+     "zero": -1.1278,
+     "trainMedian": -0.0003,
+     "trainMean": -0.0037,
+     "baseline": -0.0048,
+     "baselinePlusMetric": -0.0092,
+     "baselineBucketMedian": -0.1357,
+     "metricBucketMedian": -0.0127,
+     "baselineQuantileMedian": -0.0725,
+     "metricQuantileMedian": -0.1402
+    },
+    "r2Gain": -0.0044,
+    "r2Gain95": [
+     -0.007903786644361643,
+     -0.0006053349177650436
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.3949433304272012,
+      0.6635828427249792
+     ],
+     "trainMedian": [
+      -0.0016556291390728006,
+      0.0537720706260032
+     ],
+     "baselineBucketMedian": [
+      0.008278145695364225,
+      0.11139028475711887
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.3663594470046083,
+      0.5714285714285714
+     ],
+     "trainMedian": [
+      -0.08957654723127018,
+      0.02941176470588247
+     ],
+     "baselineQuantileMedian": [
+      -0.06360153256704981,
+      0.03355155482815042
+     ]
+    },
+    "passes": []
+   },
+   {
+    "target": "combatStepsLost",
+    "metric": "mover.unitsWithReach",
+    "baseline": "mover.contact",
+    "status": "EVALUATED",
+    "nRows": 1198,
+    "mae": {
+     "zero": 1.9674,
+     "trainMedian": 1.4699,
+     "trainMean": 1.4744,
+     "baseline": 1.4809,
+     "baselinePlusMetric": 1.5028,
+     "baselineBucketMedian": 1.5033,
+     "metricBucketMedian": 1.4699,
+     "baselineQuantileMedian": 1.4875,
+     "metricQuantileMedian": 1.4073
+    },
+    "r2": {
+     "zero": -1.1278,
+     "trainMedian": -0.0003,
+     "trainMean": -0.0037,
+     "baseline": -0.0048,
+     "baselinePlusMetric": -0.0294,
+     "baselineBucketMedian": -0.1357,
+     "metricBucketMedian": -0.0003,
+     "baselineQuantileMedian": -0.0725,
+     "metricQuantileMedian": -0.0078
+    },
+    "r2Gain": -0.0246,
+    "r2Gain95": [
+     -0.11441947897259142,
+     0.020518646601237256
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.35761589403973515,
+      0.6354679802955665
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineBucketMedian": [
+      -0.007497656982193179,
+      0.07800000000000007
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.4245585874799358,
+      0.6871961102106969
+     ],
+     "trainMedian": [
+      0.02329192546583858,
+      0.09889173060528567
+     ],
+     "baselineQuantileMedian": [
+      0.032549728752260476,
+      0.1242845461978741
+     ]
+    },
+    "passes": [
+     "MAE quintile bins"
+    ]
+   },
+   {
+    "target": "combatStepsLost",
+    "metric": "expectedLossAllocated",
+    "baseline": "contact",
+    "status": "EVALUATED",
+    "nRows": 1198,
+    "mae": {
+     "zero": 1.9674,
+     "trainMedian": 1.4699,
+     "trainMean": 1.4744,
+     "baseline": 1.4817,
+     "baselinePlusMetric": 1.389,
+     "baselineBucketMedian": 1.5355,
+     "metricBucketMedian": 1.3973,
+     "baselineQuantileMedian": 1.5413,
+     "metricQuantileMedian": 1.394
+    },
+    "r2": {
+     "zero": -1.1278,
+     "trainMedian": -0.0003,
+     "trainMean": -0.0037,
+     "baseline": -0.0098,
+     "baselinePlusMetric": 0.1245,
+     "baselineBucketMedian": -0.1052,
+     "metricBucketMedian": 0.0633,
+     "baselineQuantileMedian": -0.1284,
+     "metricQuantileMedian": 0.0408
+    },
+    "r2Gain": 0.1342,
+    "r2Gain95": [
+     0.09744844921197249,
+     0.17019881649303847
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.4341442953020136,
+      0.6986089644513136
+     ],
+     "trainMedian": [
+      0.0305039787798409,
+      0.11153519932145883
+     ],
+     "baselineBucketMedian": [
+      0.08761583824768326,
+      0.19374999999999987
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.44490472245236123,
+      0.6944444444444442
+     ],
+     "trainMedian": [
+      0.015491866769945739,
+      0.13508920985556494
+     ],
+     "baselineQuantileMedian": [
+      0.09375,
+      0.2030603804797355
+     ]
+    },
+    "passes": [
+     "MAE fixed buckets",
+     "MAE quintile bins",
+     "out-of-sample R2"
+    ]
+   },
+   {
+    "target": "combatStepsLost",
+    "metric": "expectedLossAllocated",
+    "baseline": "stacksExposedAllocated",
+    "status": "EVALUATED",
+    "nRows": 1198,
+    "mae": {
+     "zero": 1.9674,
+     "trainMedian": 1.4699,
+     "trainMean": 1.4744,
+     "baseline": 1.3799,
+     "baselinePlusMetric": 1.3748,
+     "baselineBucketMedian": 1.3531,
+     "metricBucketMedian": 1.3973,
+     "baselineQuantileMedian": 1.3422,
+     "metricQuantileMedian": 1.394
+    },
+    "r2": {
+     "zero": -1.1278,
+     "trainMedian": -0.0003,
+     "trainMean": -0.0037,
+     "baseline": 0.1412,
+     "baselinePlusMetric": 0.1458,
+     "baselineBucketMedian": 0.0532,
+     "metricBucketMedian": 0.0633,
+     "baselineQuantileMedian": 0.1133,
+     "metricQuantileMedian": 0.0408
+    },
+    "r2Gain": 0.0046,
+    "r2Gain95": [
+     -0.00914302620365448,
+     0.019265324983203103
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.4341442953020136,
+      0.6986089644513136
+     ],
+     "trainMedian": [
+      0.0305039787798409,
+      0.11153519932145883
+     ],
+     "baselineBucketMedian": [
+      -0.08855932203389827,
+      0.0008051529790660261
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.44490472245236123,
+      0.6944444444444442
+     ],
+     "trainMedian": [
+      0.015491866769945739,
+      0.13508920985556494
+     ],
+     "baselineQuantileMedian": [
+      -0.10129870129870144,
+      -0.0008741258741258306
+     ]
+    },
+    "passes": []
+   },
+   {
+    "target": "moverObjectivesGained",
+    "metric": "mover.objectiveReachColumn",
+    "baseline": "mover.contact",
+    "status": "EVALUATED",
+    "nRows": 1198,
+    "mae": {
+     "zero": 0.3648,
+     "trainMedian": 0.3648,
+     "trainMean": 0.5245,
+     "baseline": 0.5233,
+     "baselinePlusMetric": 0.4399,
+     "baselineBucketMedian": 0.3648,
+     "metricBucketMedian": 0.3648,
+     "baselineQuantileMedian": 0.3648,
+     "metricQuantileMedian": 0.2913
+    },
+    "r2": {
+     "zero": -0.3116,
+     "trainMedian": -0.3116,
+     "trainMean": -0.0029,
+     "baseline": -0.0024,
+     "baselinePlusMetric": 0.2084,
+     "baselineBucketMedian": -0.3116,
+     "metricBucketMedian": -0.3116,
+     "baselineQuantileMedian": -0.3116,
+     "metricQuantileMedian": 0.2357
+    },
+    "r2Gain": 0.2109,
+    "r2Gain95": [
+     0.17246412677352707,
+     0.2474282091742247
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineBucketMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.028061224489795922,
+      0.1165644171779141
+     ],
+     "trainMedian": [
+      0.028061224489795922,
+      0.1165644171779141
+     ],
+     "baselineQuantileMedian": [
+      0.028061224489795922,
+      0.1165644171779141
+     ]
+    },
+    "passes": [
+     "MAE quintile bins",
+     "out-of-sample R2"
+    ]
+   },
+   {
+    "target": "moverObjectivesGained",
+    "metric": "mover.objectiveReachColumn",
+    "baseline": "mover.bestObjectiveEffectiveColumn",
+    "status": "EVALUATED",
+    "nRows": 1198,
+    "mae": {
+     "zero": 0.3648,
+     "trainMedian": 0.3648,
+     "trainMean": 0.5245,
+     "baseline": 0.3702,
+     "baselinePlusMetric": 0.3726,
+     "baselineBucketMedian": 0.2529,
+     "metricBucketMedian": 0.3648,
+     "baselineQuantileMedian": 0.2529,
+     "metricQuantileMedian": 0.2913
+    },
+    "r2": {
+     "zero": -0.3116,
+     "trainMedian": -0.3116,
+     "trainMean": -0.0029,
+     "baseline": 0.3159,
+     "baselinePlusMetric": 0.3462,
+     "baselineBucketMedian": 0.2514,
+     "metricBucketMedian": -0.3116,
+     "baselineQuantileMedian": 0.2514,
+     "metricQuantileMedian": 0.2357
+    },
+    "r2Gain": 0.0303,
+    "r2Gain95": [
+     0.009757564941958119,
+     0.052540044165444555
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineBucketMedian": [
+      -0.13844797178130513,
+      -0.0865546218487395
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.028061224489795922,
+      0.1165644171779141
+     ],
+     "trainMedian": [
+      0.028061224489795922,
+      0.1165644171779141
+     ],
+     "baselineQuantileMedian": [
+      -0.071912013536379,
+      -0.008403361344537785
+     ]
+    },
+    "passes": [
+     "out-of-sample R2"
+    ]
+   },
+   {
+    "target": "outOfTraceRise",
+    "metric": "hqDependentUnitsInReach",
+    "baseline": "contact",
+    "status": "EVALUATED",
+    "nRows": 1198,
+    "mae": {
+     "zero": 2.7379,
+     "trainMedian": 2.7379,
+     "trainMean": 3.4627,
+     "baseline": 3.4647,
+     "baselinePlusMetric": 3.3905,
+     "baselineBucketMedian": 2.7446,
+     "metricBucketMedian": 2.6874,
+     "baselineQuantileMedian": 2.7379,
+     "metricQuantileMedian": 2.6603
+    },
+    "r2": {
+     "zero": -0.321,
+     "trainMedian": -0.321,
+     "trainMean": -0.0009,
+     "baseline": 0.0003,
+     "baselinePlusMetric": 0.0207,
+     "baselineBucketMedian": -0.3211,
+     "metricBucketMedian": -0.1744,
+     "baselineQuantileMedian": -0.321,
+     "metricQuantileMedian": -0.1613
+    },
+    "r2Gain": 0.0205,
+    "r2Gain95": [
+     -0.02856168740401177,
+     0.05401164311768891
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      -0.016694490818029983,
+      0.11990212071778128
+     ],
+     "trainMedian": [
+      -0.016694490818029983,
+      0.11990212071778128
+     ],
+     "baselineBucketMedian": [
+      -0.011828935395814533,
+      0.1255044390637612
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.010489510489510412,
+      0.14021164021164045
+     ],
+     "trainMedian": [
+      0.010489510489510412,
+      0.14021164021164045
+     ],
+     "baselineQuantileMedian": [
+      0.010489510489510412,
+      0.14021164021164045
+     ]
+    },
+    "passes": [
+     "MAE quintile bins"
+    ]
+   },
+   {
+    "target": "attritionNextTurn",
+    "metric": "hqDependentUnitsInReach",
+    "baseline": "outOfTrace",
+    "status": "EVALUATED",
+    "nRows": 907,
+    "mae": {
+     "zero": 1.6329,
+     "trainMedian": 1.6329,
+     "trainMean": 1.9718,
+     "baseline": 1.5532,
+     "baselinePlusMetric": 1.5544,
+     "baselineBucketMedian": 1.3297,
+     "metricBucketMedian": 1.6626,
+     "baselineQuantileMedian": 1.3396,
+     "metricQuantileMedian": 1.6626
+    },
+    "r2": {
+     "zero": -0.3424,
+     "trainMedian": -0.3424,
+     "trainMean": -0.0015,
+     "baseline": 0.2807,
+     "baselinePlusMetric": 0.2831,
+     "baselineBucketMedian": 0.176,
+     "metricBucketMedian": -0.1593,
+     "baselineQuantileMedian": 0.1418,
+     "metricQuantileMedian": -0.1593
+    },
+    "r2Gain": 0.0024,
+    "r2Gain95": [
+     -0.008193417893637478,
+     0.010965370335624502
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      -0.09931170108161247,
+      0.03799019607843146
+     ],
+     "trainMedian": [
+      -0.09931170108161247,
+      0.03799019607843146
+     ],
+     "baselineBucketMedian": [
+      -0.4289678135405106,
+      -0.23665893271461713
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      -0.09931170108161247,
+      0.03799019607843146
+     ],
+     "trainMedian": [
+      -0.09931170108161247,
+      0.03799019607843146
+     ],
+     "baselineQuantileMedian": [
+      -0.4029850746268657,
+      -0.24750277469478354
+     ]
+    },
+    "passes": []
+   },
+   {
+    "target": "attritionNextTurn",
+    "metric": "outOfTraceUnfed",
+    "baseline": "outOfTrace",
+    "status": "EVALUATED",
+    "nRows": 907,
+    "mae": {
+     "zero": 1.6329,
+     "trainMedian": 1.6329,
+     "trainMean": 1.9718,
+     "baseline": 1.5532,
+     "baselinePlusMetric": 1.5263,
+     "baselineBucketMedian": 1.3297,
+     "metricBucketMedian": 1.3335,
+     "baselineQuantileMedian": 1.3396,
+     "metricQuantileMedian": 1.3517
+    },
+    "r2": {
+     "zero": -0.3424,
+     "trainMedian": -0.3424,
+     "trainMean": -0.0015,
+     "baseline": 0.2807,
+     "baselinePlusMetric": 0.3119,
+     "baselineBucketMedian": 0.176,
+     "metricBucketMedian": 0.1291,
+     "baselineQuantileMedian": 0.1418,
+     "metricQuantileMedian": 0.0672
+    },
+    "r2Gain": 0.0312,
+    "r2Gain95": [
+     -0.02018670455993221,
+     0.08241697748524679
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.20413870246085009,
+      0.39522058823529416
+     ],
+     "trainMedian": [
+      0.20413870246085009,
+      0.39522058823529416
+     ],
+     "baselineBucketMedian": [
+      -0.06685082872928172,
+      0.0625
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.19484536082474224,
+      0.3664529914529915
+     ],
+     "trainMedian": [
+      0.19484536082474224,
+      0.3664529914529915
+     ],
+     "baselineQuantileMedian": [
+      -0.07301587301587298,
+      0.04463208685162856
+     ]
+    },
+    "passes": []
+   },
+   {
+    "target": "outOfTraceRise",
+    "metric": "rearHexesInReach",
+    "baseline": "contact",
+    "status": "EVALUATED",
+    "nRows": 1198,
+    "mae": {
+     "zero": 2.7379,
+     "trainMedian": 2.7379,
+     "trainMean": 3.4627,
+     "baseline": 3.4647,
+     "baselinePlusMetric": 3.2727,
+     "baselineBucketMedian": 2.7446,
+     "metricBucketMedian": 2.7379,
+     "baselineQuantileMedian": 2.7379,
+     "metricQuantileMedian": 2.717
+    },
+    "r2": {
+     "zero": -0.321,
+     "trainMedian": -0.321,
+     "trainMean": -0.0009,
+     "baseline": 0.0003,
+     "baselinePlusMetric": 0.0616,
+     "baselineBucketMedian": -0.3211,
+     "metricBucketMedian": -0.321,
+     "baselineQuantileMedian": -0.321,
+     "metricQuantileMedian": -0.1853
+    },
+    "r2Gain": 0.0614,
+    "r2Gain95": [
+     0.017157236355127115,
+     0.09772876272401798
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineBucketMedian": [
+      0.0,
+      0.01407284768211925
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      -0.08029801324503305,
+      0.10850694444444464
+     ],
+     "trainMedian": [
+      -0.08029801324503305,
+      0.10850694444444464
+     ],
+     "baselineQuantileMedian": [
+      -0.08029801324503305,
+      0.10850694444444464
+     ]
+    },
+    "passes": [
+     "out-of-sample R2"
+    ]
+   },
+   {
+    "target": "hqsLost",
+    "metric": "rearHexesInReach",
+    "baseline": "contact",
+    "status": "EVALUATED",
+    "nRows": 1198,
+    "mae": {
+     "zero": 0.2179,
+     "trainMedian": 0.2179,
+     "trainMean": 0.3542,
+     "baseline": 0.3542,
+     "baselinePlusMetric": 0.3236,
+     "baselineBucketMedian": 0.2179,
+     "metricBucketMedian": 0.2187,
+     "baselineQuantileMedian": 0.2179,
+     "metricQuantileMedian": 0.2179
+    },
+    "r2": {
+     "zero": -0.2059,
+     "trainMedian": -0.2059,
+     "trainMean": -0.0011,
+     "baseline": -0.0031,
+     "baselinePlusMetric": 0.0703,
+     "baselineBucketMedian": -0.2059,
+     "metricBucketMedian": -0.2077,
+     "baselineQuantileMedian": -0.2059,
+     "metricQuantileMedian": -0.2059
+    },
+    "r2Gain": 0.0734,
+    "r2Gain95": [
+     0.04165741321506844,
+     0.10833650987896792
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      -0.002692998204667868,
+      0.0
+     ],
+     "trainMedian": [
+      -0.002692998204667868,
+      0.0
+     ],
+     "baselineBucketMedian": [
+      -0.002692998204667868,
+      0.0
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineQuantileMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "passes": [
+     "out-of-sample R2"
+    ]
+   }
+  ],
+  "defender-moving": [
+   {
+    "target": "objectiveVpLost",
+    "metric": "objectiveVpAtRisk",
+    "baseline": "objectivesThreatened",
+    "status": "EVALUATED",
+    "nRows": 1220,
+    "mae": {
+     "zero": 0.0623,
+     "trainMedian": 0.0623,
+     "trainMean": 0.1212,
+     "baseline": 0.1215,
+     "baselinePlusMetric": 0.1149,
+     "baselineBucketMedian": 0.0623,
+     "metricBucketMedian": 0.0623,
+     "baselineQuantileMedian": 0.0623,
+     "metricQuantileMedian": 0.0623
+    },
+    "r2": {
+     "zero": -0.0203,
+     "trainMedian": -0.0203,
+     "trainMean": -0.0026,
+     "baseline": -0.0025,
+     "baselinePlusMetric": 0.0649,
+     "baselineBucketMedian": -0.0203,
+     "metricBucketMedian": -0.0203,
+     "baselineQuantileMedian": -0.0203,
+     "metricQuantileMedian": -0.0203
+    },
+    "r2Gain": 0.0673,
+    "r2Gain95": [
+     0.027592165653905654,
+     0.10610375423008533
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineBucketMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineQuantileMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "passes": [
+     "out-of-sample R2"
+    ]
+   },
+   {
+    "target": "objectivesLost",
+    "metric": "objectivesAtRisk",
+    "baseline": "objectivesThreatened",
+    "status": "EVALUATED",
+    "nRows": 1220,
+    "mae": {
+     "zero": 0.0238,
+     "trainMedian": 0.0238,
+     "trainMean": 0.0463,
+     "baseline": 0.0465,
+     "baselinePlusMetric": 0.0438,
+     "baselineBucketMedian": 0.0238,
+     "metricBucketMedian": 0.0238,
+     "baselineQuantileMedian": 0.0238,
+     "metricQuantileMedian": 0.0238
+    },
+    "r2": {
+     "zero": -0.0243,
+     "trainMedian": -0.0243,
+     "trainMean": -0.0024,
+     "baseline": -0.0019,
+     "baselinePlusMetric": 0.0657,
+     "baselineBucketMedian": -0.0243,
+     "metricBucketMedian": -0.0243,
+     "baselineQuantileMedian": -0.0243,
+     "metricQuantileMedian": -0.0243
+    },
+    "r2Gain": 0.0676,
+    "r2Gain95": [
+     0.016053259957127475,
+     0.10360905706457824
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineBucketMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineQuantileMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "passes": [
+     "out-of-sample R2"
+    ]
+   },
+   {
+    "target": "stepsLost",
+    "metric": "stacksExposedAllocated",
+    "baseline": "contact",
+    "status": "EVALUATED",
+    "nRows": 1220,
+    "mae": {
+     "zero": 0.5434,
+     "trainMedian": 0.5434,
+     "trainMean": 0.7518,
+     "baseline": 0.7525,
+     "baselinePlusMetric": 0.7172,
+     "baselineBucketMedian": 0.5434,
+     "metricBucketMedian": 0.5598,
+     "baselineQuantileMedian": 0.5434,
+     "metricQuantileMedian": 0.5434
+    },
+    "r2": {
+     "zero": -0.261,
+     "trainMedian": -0.261,
+     "trainMean": -0.0048,
+     "baseline": -0.0088,
+     "baselinePlusMetric": 0.0245,
+     "baselineBucketMedian": -0.261,
+     "metricBucketMedian": -0.2754,
+     "baselineQuantileMedian": -0.261,
+     "metricQuantileMedian": -0.261
+    },
+    "r2Gain": 0.0332,
+    "r2Gain95": [
+     0.010874935107838768,
+     0.05442662976881385
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      -0.03130590339892658,
+      -0.002759889604415866
+     ],
+     "trainMedian": [
+      -0.03130590339892658,
+      -0.002759889604415866
+     ],
+     "baselineBucketMedian": [
+      -0.03130590339892658,
+      -0.002759889604415866
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineQuantileMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "passes": [
+     "out-of-sample R2"
+    ]
+   },
+   {
+    "target": "stepsLost",
+    "metric": "stacksExposedAllocated",
+    "baseline": "stacksExposed",
+    "status": "EVALUATED",
+    "nRows": 1220,
+    "mae": {
+     "zero": 0.5434,
+     "trainMedian": 0.5434,
+     "trainMean": 0.7518,
+     "baseline": 0.7094,
+     "baselinePlusMetric": 0.7071,
+     "baselineBucketMedian": 0.5434,
+     "metricBucketMedian": 0.5598,
+     "baselineQuantileMedian": 0.5434,
+     "metricQuantileMedian": 0.5434
+    },
+    "r2": {
+     "zero": -0.261,
+     "trainMedian": -0.261,
+     "trainMean": -0.0048,
+     "baseline": 0.0399,
+     "baselinePlusMetric": 0.038,
+     "baselineBucketMedian": -0.261,
+     "metricBucketMedian": -0.2754,
+     "baselineQuantileMedian": -0.261,
+     "metricQuantileMedian": -0.261
+    },
+    "r2Gain": -0.0019,
+    "r2Gain95": [
+     -0.007637323990007383,
+     0.003670224811571643
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      -0.03130590339892658,
+      -0.002759889604415866
+     ],
+     "trainMedian": [
+      -0.03130590339892658,
+      -0.002759889604415866
+     ],
+     "baselineBucketMedian": [
+      -0.03130590339892658,
+      -0.002759889604415866
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineQuantileMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "passes": []
+   },
+   {
+    "target": "outOfTraceRise",
+    "metric": "supplyCuttable",
+    "baseline": "contact",
+    "status": "EVALUATED",
+    "nRows": 1220,
+    "mae": {
+     "zero": 2.1648,
+     "trainMedian": 2.1648,
+     "trainMean": 3.3251,
+     "baseline": 3.3278,
+     "baselinePlusMetric": 3.2003,
+     "baselineBucketMedian": 2.1648,
+     "metricBucketMedian": 2.1648,
+     "baselineQuantileMedian": 2.1648,
+     "metricQuantileMedian": 2.1648
+    },
+    "r2": {
+     "zero": -0.1401,
+     "trainMedian": -0.1401,
+     "trainMean": -0.0049,
+     "baseline": -0.0071,
+     "baselinePlusMetric": 0.0341,
+     "baselineBucketMedian": -0.1401,
+     "metricBucketMedian": -0.1401,
+     "baselineQuantileMedian": -0.1401,
+     "metricQuantileMedian": -0.1401
+    },
+    "r2Gain": 0.0412,
+    "r2Gain95": [
+     -0.004023966262663992,
+     0.0736788880845426
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineBucketMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineQuantileMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "passes": []
+   },
+   {
+    "target": "outOfTraceRise",
+    "metric": "supplyBestCut",
+    "baseline": "contact",
+    "status": "EVALUATED",
+    "nRows": 1220,
+    "mae": {
+     "zero": 2.1648,
+     "trainMedian": 2.1648,
+     "trainMean": 3.3251,
+     "baseline": 3.3278,
+     "baselinePlusMetric": 3.2321,
+     "baselineBucketMedian": 2.1648,
+     "metricBucketMedian": 2.1648,
+     "baselineQuantileMedian": 2.1648,
+     "metricQuantileMedian": 2.1648
+    },
+    "r2": {
+     "zero": -0.1401,
+     "trainMedian": -0.1401,
+     "trainMean": -0.0049,
+     "baseline": -0.0071,
+     "baselinePlusMetric": 0.0312,
+     "baselineBucketMedian": -0.1401,
+     "metricBucketMedian": -0.1401,
+     "baselineQuantileMedian": -0.1401,
+     "metricQuantileMedian": -0.1401
+    },
+    "r2Gain": 0.0383,
+    "r2Gain95": [
+     -0.009737013393077198,
+     0.07422330117701781
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineBucketMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineQuantileMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "passes": []
+   },
+   {
+    "target": "hqsLost",
+    "metric": "hqsInReach",
+    "baseline": "contact",
+    "status": "EVALUATED",
+    "nRows": 1220,
+    "mae": {
+     "zero": 0.1779,
+     "trainMedian": 0.1779,
+     "trainMean": 0.3026,
+     "baseline": 0.3005,
+     "baselinePlusMetric": 0.2959,
+     "baselineBucketMedian": 0.1779,
+     "metricBucketMedian": 0.1779,
+     "baselineQuantileMedian": 0.1779,
+     "metricQuantileMedian": 0.1779
+    },
+    "r2": {
+     "zero": -0.1517,
+     "trainMedian": -0.1517,
+     "trainMean": -0.0041,
+     "baseline": 0.0001,
+     "baselinePlusMetric": 0.0153,
+     "baselineBucketMedian": -0.1517,
+     "metricBucketMedian": -0.1517,
+     "baselineQuantileMedian": -0.1517,
+     "metricQuantileMedian": -0.1517
+    },
+    "r2Gain": 0.0152,
+    "r2Gain95": [
+     0.0021133512551980704,
+     0.02596668957791637
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineBucketMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineQuantileMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "passes": [
+     "out-of-sample R2"
+    ]
+   },
+   {
+    "target": "objectiveVpLost",
+    "metric": "payableObjectiveVpAtRisk",
+    "baseline": "objectivesThreatened",
+    "status": "EVALUATED",
+    "nRows": 1220,
+    "mae": {
+     "zero": 0.0623,
+     "trainMedian": 0.0623,
+     "trainMean": 0.1212,
+     "baseline": 0.1215,
+     "baselinePlusMetric": 0.116,
+     "baselineBucketMedian": 0.0623,
+     "metricBucketMedian": 0.0672,
+     "baselineQuantileMedian": 0.0623,
+     "metricQuantileMedian": 0.0623
+    },
+    "r2": {
+     "zero": -0.0203,
+     "trainMedian": -0.0203,
+     "trainMean": -0.0026,
+     "baseline": -0.0025,
+     "baselinePlusMetric": 0.0786,
+     "baselineBucketMedian": -0.0203,
+     "metricBucketMedian": -0.0975,
+     "baselineQuantileMedian": -0.0203,
+     "metricQuantileMedian": -0.0203
+    },
+    "r2Gain": 0.0811,
+    "r2Gain95": [
+     0.032260400481812224,
+     0.12630434371082577
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      -0.015138772077375948,
+      0.0
+     ],
+     "trainMedian": [
+      -0.015138772077375948,
+      0.0
+     ],
+     "baselineBucketMedian": [
+      -0.015138772077375948,
+      0.0
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineQuantileMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "passes": [
+     "out-of-sample R2"
+    ]
+   },
+   {
+    "target": "objectiveVpLost",
+    "metric": "payableObjectiveVpAtRisk",
+    "baseline": "objectiveVpAtRisk",
+    "status": "EVALUATED",
+    "nRows": 1220,
+    "mae": {
+     "zero": 0.0623,
+     "trainMedian": 0.0623,
+     "trainMean": 0.1212,
+     "baseline": 0.1142,
+     "baselinePlusMetric": 0.1129,
+     "baselineBucketMedian": 0.0623,
+     "metricBucketMedian": 0.0672,
+     "baselineQuantileMedian": 0.0623,
+     "metricQuantileMedian": 0.0623
+    },
+    "r2": {
+     "zero": -0.0203,
+     "trainMedian": -0.0203,
+     "trainMean": -0.0026,
+     "baseline": 0.0664,
+     "baselinePlusMetric": 0.0793,
+     "baselineBucketMedian": -0.0203,
+     "metricBucketMedian": -0.0975,
+     "baselineQuantileMedian": -0.0203,
+     "metricQuantileMedian": -0.0203
+    },
+    "r2Gain": 0.0129,
+    "r2Gain95": [
+     -0.009454731626558632,
+     0.03282947718838225
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      -0.015138772077375948,
+      0.0
+     ],
+     "trainMedian": [
+      -0.015138772077375948,
+      0.0
+     ],
+     "baselineBucketMedian": [
+      -0.015138772077375948,
+      0.0
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineQuantileMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "passes": []
+   },
+   {
+    "target": "combatStepsLost",
+    "metric": "stacksExposedAllocated",
+    "baseline": "contact",
+    "status": "EVALUATED",
+    "nRows": 1220,
+    "mae": {
+     "zero": 0.5434,
+     "trainMedian": 0.5434,
+     "trainMean": 0.7518,
+     "baseline": 0.7525,
+     "baselinePlusMetric": 0.7172,
+     "baselineBucketMedian": 0.5434,
+     "metricBucketMedian": 0.5598,
+     "baselineQuantileMedian": 0.5434,
+     "metricQuantileMedian": 0.5434
+    },
+    "r2": {
+     "zero": -0.261,
+     "trainMedian": -0.261,
+     "trainMean": -0.0048,
+     "baseline": -0.0088,
+     "baselinePlusMetric": 0.0245,
+     "baselineBucketMedian": -0.261,
+     "metricBucketMedian": -0.2754,
+     "baselineQuantileMedian": -0.261,
+     "metricQuantileMedian": -0.261
+    },
+    "r2Gain": 0.0332,
+    "r2Gain95": [
+     0.010874935107838768,
+     0.05442662976881385
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      -0.03130590339892658,
+      -0.002759889604415866
+     ],
+     "trainMedian": [
+      -0.03130590339892658,
+      -0.002759889604415866
+     ],
+     "baselineBucketMedian": [
+      -0.03130590339892658,
+      -0.002759889604415866
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineQuantileMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "passes": [
+     "out-of-sample R2"
+    ]
+   },
+   {
+    "target": "combatStepsLost",
+    "metric": "maxSingleStackExpectedLoss",
+    "baseline": "contact",
+    "status": "EVALUATED",
+    "nRows": 1220,
+    "mae": {
+     "zero": 0.5434,
+     "trainMedian": 0.5434,
+     "trainMean": 0.7518,
+     "baseline": 0.7525,
+     "baselinePlusMetric": 0.7319,
+     "baselineBucketMedian": 0.5434,
+     "metricBucketMedian": 0.5434,
+     "baselineQuantileMedian": 0.5434,
+     "metricQuantileMedian": 0.5414
+    },
+    "r2": {
+     "zero": -0.261,
+     "trainMedian": -0.261,
+     "trainMean": -0.0048,
+     "baseline": -0.0088,
+     "baselinePlusMetric": 0.0117,
+     "baselineBucketMedian": -0.261,
+     "metricBucketMedian": -0.261,
+     "baselineQuantileMedian": -0.261,
+     "metricQuantileMedian": -0.2532
+    },
+    "r2Gain": 0.0205,
+    "r2Gain95": [
+     0.007086806419624558,
+     0.033053803784766744
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineBucketMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.004687499999999956
+     ],
+     "trainMedian": [
+      0.0,
+      0.004687499999999956
+     ],
+     "baselineQuantileMedian": [
+      0.0,
+      0.004687499999999956
+     ]
+    },
+    "passes": [
+     "out-of-sample R2"
+    ]
+   },
+   {
+    "target": "combatStepsLost",
+    "metric": "maxSingleStackExpectedLoss",
+    "baseline": "stacksExposedAllocated",
+    "status": "EVALUATED",
+    "nRows": 1220,
+    "mae": {
+     "zero": 0.5434,
+     "trainMedian": 0.5434,
+     "trainMean": 0.7518,
+     "baseline": 0.717,
+     "baselinePlusMetric": 0.715,
+     "baselineBucketMedian": 0.5598,
+     "metricBucketMedian": 0.5434,
+     "baselineQuantileMedian": 0.5434,
+     "metricQuantileMedian": 0.5414
+    },
+    "r2": {
+     "zero": -0.261,
+     "trainMedian": -0.261,
+     "trainMean": -0.0048,
+     "baseline": 0.0277,
+     "baselinePlusMetric": 0.0288,
+     "baselineBucketMedian": -0.2754,
+     "metricBucketMedian": -0.261,
+     "baselineQuantileMedian": -0.261,
+     "metricQuantileMedian": -0.2532
+    },
+    "r2Gain": 0.0011,
+    "r2Gain95": [
+     -0.0033369533373217575,
+     0.005326366088766021
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineBucketMedian": [
+      0.002636203866432374,
+      0.031171019376579623
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.004687499999999956
+     ],
+     "trainMedian": [
+      0.0,
+      0.004687499999999956
+     ],
+     "baselineQuantileMedian": [
+      0.0,
+      0.004687499999999956
+     ]
+    },
+    "passes": []
+   },
+   {
+    "target": "spCapturedOrDestroyed",
+    "metric": "dumpSpInReach",
+    "baseline": "contact",
+    "status": "EVALUATED",
+    "nRows": 1220,
+    "mae": {
+     "zero": 0.2301,
+     "trainMedian": 0.2301,
+     "trainMean": 0.4233,
+     "baseline": 0.42,
+     "baselinePlusMetric": 0.42,
+     "baselineBucketMedian": 0.2301,
+     "metricBucketMedian": 0.2301,
+     "baselineQuantileMedian": 0.2301,
+     "metricQuantileMedian": 0.2301
+    },
+    "r2": {
+     "zero": -0.0465,
+     "trainMedian": -0.0465,
+     "trainMean": -0.0055,
+     "baseline": -0.0068,
+     "baselinePlusMetric": 0.0046,
+     "baselineBucketMedian": -0.0465,
+     "metricBucketMedian": -0.0465,
+     "baselineQuantileMedian": -0.0465,
+     "metricQuantileMedian": -0.0465
+    },
+    "r2Gain": 0.0113,
+    "r2Gain95": [
+     -0.0029664697771436543,
+     0.026328242185617468
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineBucketMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineQuantileMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "passes": []
+   },
+   {
+    "target": "attritionNextTurn",
+    "metric": "supplyCuttable",
+    "baseline": "outOfTrace",
+    "status": "EVALUATED",
+    "nRows": 916,
+    "mae": {
+     "zero": 0.3777,
+     "trainMedian": 0.3777,
+     "trainMean": 0.6702,
+     "baseline": 0.5526,
+     "baselinePlusMetric": 0.5519,
+     "baselineBucketMedian": 0.3886,
+     "metricBucketMedian": 0.3777,
+     "baselineQuantileMedian": 0.3777,
+     "metricQuantileMedian": 0.3777
+    },
+    "r2": {
+     "zero": -0.0692,
+     "trainMedian": -0.0692,
+     "trainMean": -0.0064,
+     "baseline": 0.1382,
+     "baselinePlusMetric": 0.1404,
+     "baselineBucketMedian": 0.0023,
+     "metricBucketMedian": -0.0692,
+     "baselineQuantileMedian": -0.0692,
+     "metricQuantileMedian": -0.0692
+    },
+    "r2Gain": 0.0022,
+    "r2Gain95": [
+     -0.007617667094627856,
+     0.010102019162041787
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineBucketMedian": [
+      -0.012195121951219523,
+      0.030383795309168404
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineQuantileMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "passes": []
+   },
+   {
+    "target": "moverObjectiveVpGained",
+    "metric": "mover.objectiveVpInReach",
+    "baseline": "mover.contact",
+    "status": "EVALUATED",
+    "nRows": 1220,
+    "mae": {
+     "zero": 0.0623,
+     "trainMedian": 0.0623,
+     "trainMean": 0.1212,
+     "baseline": 0.1214,
+     "baselinePlusMetric": 0.1164,
+     "baselineBucketMedian": 0.0623,
+     "metricBucketMedian": 0.0623,
+     "baselineQuantileMedian": 0.0623,
+     "metricQuantileMedian": 0.0623
+    },
+    "r2": {
+     "zero": -0.0203,
+     "trainMedian": -0.0203,
+     "trainMean": -0.0026,
+     "baseline": -0.0034,
+     "baselinePlusMetric": 0.0654,
+     "baselineBucketMedian": -0.0203,
+     "metricBucketMedian": -0.0203,
+     "baselineQuantileMedian": -0.0203,
+     "metricQuantileMedian": -0.0203
+    },
+    "r2Gain": 0.0688,
+    "r2Gain95": [
+     0.026586563724019685,
+     0.10659770840477745
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineBucketMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineQuantileMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "passes": [
+     "out-of-sample R2"
+    ]
+   },
+   {
+    "target": "moverObjectiveVpGained",
+    "metric": "mover.payableObjectiveVpInReach",
+    "baseline": "mover.objectiveVpInReach",
+    "status": "EVALUATED",
+    "nRows": 1220,
+    "mae": {
+     "zero": 0.0623,
+     "trainMedian": 0.0623,
+     "trainMean": 0.1212,
+     "baseline": 0.1142,
+     "baselinePlusMetric": 0.1129,
+     "baselineBucketMedian": 0.0623,
+     "metricBucketMedian": 0.0672,
+     "baselineQuantileMedian": 0.0623,
+     "metricQuantileMedian": 0.0623
+    },
+    "r2": {
+     "zero": -0.0203,
+     "trainMedian": -0.0203,
+     "trainMean": -0.0026,
+     "baseline": 0.0664,
+     "baselinePlusMetric": 0.0793,
+     "baselineBucketMedian": -0.0203,
+     "metricBucketMedian": -0.0975,
+     "baselineQuantileMedian": -0.0203,
+     "metricQuantileMedian": -0.0203
+    },
+    "r2Gain": 0.0129,
+    "r2Gain95": [
+     -0.009454731626558632,
+     0.03282947718838225
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      -0.015138772077375948,
+      0.0
+     ],
+     "trainMedian": [
+      -0.015138772077375948,
+      0.0
+     ],
+     "baselineBucketMedian": [
+      -0.015138772077375948,
+      0.0
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineQuantileMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "passes": []
+   },
+   {
+    "target": "moverObjectivesGained",
+    "metric": "mover.bestObjectiveEffectiveColumn",
+    "baseline": "mover.contact",
+    "status": "EVALUATED",
+    "nRows": 1220,
+    "mae": {
+     "zero": 0.0238,
+     "trainMedian": 0.0238,
+     "trainMean": 0.0463,
+     "baseline": 0.0464,
+     "baselinePlusMetric": 0.0622,
+     "baselineBucketMedian": 0.0238,
+     "metricBucketMedian": 0.0295,
+     "baselineQuantileMedian": 0.0238,
+     "metricQuantileMedian": 0.0238
+    },
+    "r2": {
+     "zero": -0.0243,
+     "trainMedian": -0.0243,
+     "trainMean": -0.0024,
+     "baseline": -0.0029,
+     "baselinePlusMetric": 0.1349,
+     "baselineBucketMedian": -0.0243,
+     "metricBucketMedian": -0.2539,
+     "baselineQuantileMedian": -0.0243,
+     "metricQuantileMedian": -0.0243
+    },
+    "r2Gain": 0.1378,
+    "r2Gain95": [
+     0.050629081039750834,
+     0.19401278233647956
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      -0.0144927536231884,
+      0.0
+     ],
+     "trainMedian": [
+      -0.0144927536231884,
+      0.0
+     ],
+     "baselineBucketMedian": [
+      -0.0144927536231884,
+      0.0
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineQuantileMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "passes": [
+     "out-of-sample R2"
+    ]
+   },
+   {
+    "target": "moverObjectivesGained",
+    "metric": "mover.localForceRatioAt2Hex",
+    "baseline": "mover.contact",
+    "status": "EVALUATED",
+    "nRows": 1220,
+    "mae": {
+     "zero": 0.0238,
+     "trainMedian": 0.0238,
+     "trainMean": 0.0463,
+     "baseline": 0.0464,
+     "baselinePlusMetric": 0.0424,
+     "baselineBucketMedian": 0.0238,
+     "metricBucketMedian": 0.0213,
+     "baselineQuantileMedian": 0.0238,
+     "metricQuantileMedian": 0.0238
+    },
+    "r2": {
+     "zero": -0.0243,
+     "trainMedian": -0.0243,
+     "trainMean": -0.0024,
+     "baseline": -0.0029,
+     "baselinePlusMetric": 0.0866,
+     "baselineBucketMedian": -0.0243,
+     "metricBucketMedian": 0.0816,
+     "baselineQuantileMedian": -0.0243,
+     "metricQuantileMedian": -0.0243
+    },
+    "r2Gain": 0.0895,
+    "r2Gain95": [
+     0.0037239776127628854,
+     0.22335401157743007
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.006467259498787386
+     ],
+     "trainMedian": [
+      0.0,
+      0.006467259498787386
+     ],
+     "baselineBucketMedian": [
+      0.0,
+      0.006467259498787386
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineQuantileMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "passes": [
+     "out-of-sample R2"
+    ]
+   },
+   {
+    "target": "combatStepsLost",
+    "metric": "mover.surplusCombatSp",
+    "baseline": "mover.contact",
+    "status": "EVALUATED",
+    "nRows": 1220,
+    "mae": {
+     "zero": 0.5434,
+     "trainMedian": 0.5434,
+     "trainMean": 0.7518,
+     "baseline": 0.7526,
+     "baselinePlusMetric": 0.7398,
+     "baselineBucketMedian": 0.5434,
+     "metricBucketMedian": 0.5434,
+     "baselineQuantileMedian": 0.5434,
+     "metricQuantileMedian": 0.5434
+    },
+    "r2": {
+     "zero": -0.261,
+     "trainMedian": -0.261,
+     "trainMean": -0.0048,
+     "baseline": -0.0089,
+     "baselinePlusMetric": 0.0027,
+     "baselineBucketMedian": -0.261,
+     "metricBucketMedian": -0.261,
+     "baselineQuantileMedian": -0.261,
+     "metricQuantileMedian": -0.261
+    },
+    "r2Gain": 0.0116,
+    "r2Gain95": [
+     -0.007448220140206185,
+     0.02691501857514844
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineBucketMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineQuantileMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "passes": []
+   },
+   {
+    "target": "combatStepsLost",
+    "metric": "mover.unitsWithReach",
+    "baseline": "mover.contact",
+    "status": "EVALUATED",
+    "nRows": 1220,
+    "mae": {
+     "zero": 0.5434,
+     "trainMedian": 0.5434,
+     "trainMean": 0.7518,
+     "baseline": 0.7526,
+     "baselinePlusMetric": 0.75,
+     "baselineBucketMedian": 0.5434,
+     "metricBucketMedian": 0.5434,
+     "baselineQuantileMedian": 0.5434,
+     "metricQuantileMedian": 0.5434
+    },
+    "r2": {
+     "zero": -0.261,
+     "trainMedian": -0.261,
+     "trainMean": -0.0048,
+     "baseline": -0.0089,
+     "baselinePlusMetric": -0.0033,
+     "baselineBucketMedian": -0.261,
+     "metricBucketMedian": -0.261,
+     "baselineQuantileMedian": -0.261,
+     "metricQuantileMedian": -0.261
+    },
+    "r2Gain": 0.0056,
+    "r2Gain95": [
+     -0.008779509920314954,
+     0.016905103160439472
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineBucketMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineQuantileMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "passes": []
+   },
+   {
+    "target": "combatStepsLost",
+    "metric": "expectedLossAllocated",
+    "baseline": "contact",
+    "status": "EVALUATED",
+    "nRows": 1220,
+    "mae": {
+     "zero": 0.5434,
+     "trainMedian": 0.5434,
+     "trainMean": 0.7518,
+     "baseline": 0.7525,
+     "baselinePlusMetric": 0.7147,
+     "baselineBucketMedian": 0.5434,
+     "metricBucketMedian": 0.5434,
+     "baselineQuantileMedian": 0.5434,
+     "metricQuantileMedian": 0.5434
+    },
+    "r2": {
+     "zero": -0.261,
+     "trainMedian": -0.261,
+     "trainMean": -0.0048,
+     "baseline": -0.0088,
+     "baselinePlusMetric": 0.0262,
+     "baselineBucketMedian": -0.261,
+     "metricBucketMedian": -0.261,
+     "baselineQuantileMedian": -0.261,
+     "metricQuantileMedian": -0.261
+    },
+    "r2Gain": 0.035,
+    "r2Gain95": [
+     0.011505894629589064,
+     0.05930595369001401
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineBucketMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineQuantileMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "passes": [
+     "out-of-sample R2"
+    ]
+   },
+   {
+    "target": "combatStepsLost",
+    "metric": "expectedLossAllocated",
+    "baseline": "stacksExposedAllocated",
+    "status": "EVALUATED",
+    "nRows": 1220,
+    "mae": {
+     "zero": 0.5434,
+     "trainMedian": 0.5434,
+     "trainMean": 0.7518,
+     "baseline": 0.717,
+     "baselinePlusMetric": 0.7143,
+     "baselineBucketMedian": 0.5598,
+     "metricBucketMedian": 0.5434,
+     "baselineQuantileMedian": 0.5434,
+     "metricQuantileMedian": 0.5434
+    },
+    "r2": {
+     "zero": -0.261,
+     "trainMedian": -0.261,
+     "trainMean": -0.0048,
+     "baseline": 0.0277,
+     "baselinePlusMetric": 0.0286,
+     "baselineBucketMedian": -0.2754,
+     "metricBucketMedian": -0.261,
+     "baselineQuantileMedian": -0.261,
+     "metricQuantileMedian": -0.261
+    },
+    "r2Gain": 0.0009,
+    "r2Gain95": [
+     -0.009076875153546049,
+     0.01319864373465729
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineBucketMedian": [
+      0.002636203866432374,
+      0.031171019376579623
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineQuantileMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "passes": []
+   },
+   {
+    "target": "moverObjectivesGained",
+    "metric": "mover.objectiveReachColumn",
+    "baseline": "mover.contact",
+    "status": "EVALUATED",
+    "nRows": 1220,
+    "mae": {
+     "zero": 0.0238,
+     "trainMedian": 0.0238,
+     "trainMean": 0.0463,
+     "baseline": 0.0464,
+     "baselinePlusMetric": 0.0645,
+     "baselineBucketMedian": 0.0238,
+     "metricBucketMedian": 0.0238,
+     "baselineQuantileMedian": 0.0238,
+     "metricQuantileMedian": 0.0238
+    },
+    "r2": {
+     "zero": -0.0243,
+     "trainMedian": -0.0243,
+     "trainMean": -0.0024,
+     "baseline": -0.0029,
+     "baselinePlusMetric": 0.1052,
+     "baselineBucketMedian": -0.0243,
+     "metricBucketMedian": -0.0243,
+     "baselineQuantileMedian": -0.0243,
+     "metricQuantileMedian": -0.0243
+    },
+    "r2Gain": 0.1082,
+    "r2Gain95": [
+     0.03334106863306008,
+     0.14750106980254452
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineBucketMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineQuantileMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "passes": [
+     "out-of-sample R2"
+    ]
+   },
+   {
+    "target": "moverObjectivesGained",
+    "metric": "mover.objectiveReachColumn",
+    "baseline": "mover.bestObjectiveEffectiveColumn",
+    "status": "EVALUATED",
+    "nRows": 1220,
+    "mae": {
+     "zero": 0.0238,
+     "trainMedian": 0.0238,
+     "trainMean": 0.0463,
+     "baseline": 0.0628,
+     "baselinePlusMetric": 0.0651,
+     "baselineBucketMedian": 0.0295,
+     "metricBucketMedian": 0.0238,
+     "baselineQuantileMedian": 0.0238,
+     "metricQuantileMedian": 0.0238
+    },
+    "r2": {
+     "zero": -0.0243,
+     "trainMedian": -0.0243,
+     "trainMean": -0.0024,
+     "baseline": 0.1328,
+     "baselinePlusMetric": 0.1343,
+     "baselineBucketMedian": -0.2539,
+     "metricBucketMedian": -0.0243,
+     "baselineQuantileMedian": -0.0243,
+     "metricQuantileMedian": -0.0243
+    },
+    "r2Gain": 0.0015,
+    "r2Gain95": [
+     -0.016223483597203825,
+     0.015307974050242201
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineBucketMedian": [
+      0.0,
+      0.014469453376205787
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineQuantileMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "passes": []
+   },
+   {
+    "target": "outOfTraceRise",
+    "metric": "hqDependentUnitsInReach",
+    "baseline": "contact",
+    "status": "EVALUATED",
+    "nRows": 1220,
+    "mae": {
+     "zero": 2.1648,
+     "trainMedian": 2.1648,
+     "trainMean": 3.3251,
+     "baseline": 3.3278,
+     "baselinePlusMetric": 3.1883,
+     "baselineBucketMedian": 2.1648,
+     "metricBucketMedian": 2.1648,
+     "baselineQuantileMedian": 2.1648,
+     "metricQuantileMedian": 2.1648
+    },
+    "r2": {
+     "zero": -0.1401,
+     "trainMedian": -0.1401,
+     "trainMean": -0.0049,
+     "baseline": -0.0071,
+     "baselinePlusMetric": 0.0469,
+     "baselineBucketMedian": -0.1401,
+     "metricBucketMedian": -0.1401,
+     "baselineQuantileMedian": -0.1401,
+     "metricQuantileMedian": -0.1401
+    },
+    "r2Gain": 0.054,
+    "r2Gain95": [
+     0.002119677142043974,
+     0.09790329212597704
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineBucketMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineQuantileMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "passes": [
+     "out-of-sample R2"
+    ]
+   },
+   {
+    "target": "attritionNextTurn",
+    "metric": "hqDependentUnitsInReach",
+    "baseline": "outOfTrace",
+    "status": "EVALUATED",
+    "nRows": 916,
+    "mae": {
+     "zero": 0.3777,
+     "trainMedian": 0.3777,
+     "trainMean": 0.6702,
+     "baseline": 0.5526,
+     "baselinePlusMetric": 0.5483,
+     "baselineBucketMedian": 0.3886,
+     "metricBucketMedian": 0.3777,
+     "baselineQuantileMedian": 0.3777,
+     "metricQuantileMedian": 0.3777
+    },
+    "r2": {
+     "zero": -0.0692,
+     "trainMedian": -0.0692,
+     "trainMean": -0.0064,
+     "baseline": 0.1382,
+     "baselinePlusMetric": 0.14,
+     "baselineBucketMedian": 0.0023,
+     "metricBucketMedian": -0.0692,
+     "baselineQuantileMedian": -0.0692,
+     "metricQuantileMedian": -0.0692
+    },
+    "r2Gain": 0.0019,
+    "r2Gain95": [
+     -0.00748915542949935,
+     0.010747253135929613
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineBucketMedian": [
+      -0.012195121951219523,
+      0.030383795309168404
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineQuantileMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "passes": []
+   },
+   {
+    "target": "attritionNextTurn",
+    "metric": "outOfTraceUnfed",
+    "baseline": "outOfTrace",
+    "status": "EVALUATED",
+    "nRows": 916,
+    "mae": {
+     "zero": 0.3777,
+     "trainMedian": 0.3777,
+     "trainMean": 0.6702,
+     "baseline": 0.5526,
+     "baselinePlusMetric": 0.5376,
+     "baselineBucketMedian": 0.3886,
+     "metricBucketMedian": 0.3701,
+     "baselineQuantileMedian": 0.3777,
+     "metricQuantileMedian": 0.3777
+    },
+    "r2": {
+     "zero": -0.0692,
+     "trainMedian": -0.0692,
+     "trainMean": -0.0064,
+     "baseline": 0.1382,
+     "baselinePlusMetric": 0.148,
+     "baselineBucketMedian": 0.0023,
+     "metricBucketMedian": 0.0341,
+     "baselineQuantileMedian": -0.0692,
+     "metricQuantileMedian": -0.0692
+    },
+    "r2Gain": 0.0098,
+    "r2Gain95": [
+     -0.04159155316804952,
+     0.051641099471819385
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      -0.008639308855291572,
+      0.027514231499051245
+     ],
+     "trainMedian": [
+      -0.008639308855291572,
+      0.027514231499051245
+     ],
+     "baselineBucketMedian": [
+      0.002951593860684776,
+      0.03357817418677855
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineQuantileMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "passes": []
+   },
+   {
+    "target": "outOfTraceRise",
+    "metric": "rearHexesInReach",
+    "baseline": "contact",
+    "status": "EVALUATED",
+    "nRows": 1220,
+    "mae": {
+     "zero": 2.1648,
+     "trainMedian": 2.1648,
+     "trainMean": 3.3251,
+     "baseline": 3.3278,
+     "baselinePlusMetric": 3.306,
+     "baselineBucketMedian": 2.1648,
+     "metricBucketMedian": 2.1648,
+     "baselineQuantileMedian": 2.1648,
+     "metricQuantileMedian": 2.1648
+    },
+    "r2": {
+     "zero": -0.1401,
+     "trainMedian": -0.1401,
+     "trainMean": -0.0049,
+     "baseline": -0.0071,
+     "baselinePlusMetric": 0.0015,
+     "baselineBucketMedian": -0.1401,
+     "metricBucketMedian": -0.1401,
+     "baselineQuantileMedian": -0.1401,
+     "metricQuantileMedian": -0.1401
+    },
+    "r2Gain": 0.0087,
+    "r2Gain95": [
+     -0.012444468625408822,
+     0.02314910063728215
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineBucketMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineQuantileMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "passes": []
+   },
+   {
+    "target": "hqsLost",
+    "metric": "rearHexesInReach",
+    "baseline": "contact",
+    "status": "EVALUATED",
+    "nRows": 1220,
+    "mae": {
+     "zero": 0.1779,
+     "trainMedian": 0.1779,
+     "trainMean": 0.3026,
+     "baseline": 0.3005,
+     "baselinePlusMetric": 0.299,
+     "baselineBucketMedian": 0.1779,
+     "metricBucketMedian": 0.1779,
+     "baselineQuantileMedian": 0.1779,
+     "metricQuantileMedian": 0.1779
+    },
+    "r2": {
+     "zero": -0.1517,
+     "trainMedian": -0.1517,
+     "trainMean": -0.0041,
+     "baseline": 0.0001,
+     "baselinePlusMetric": 0.0071,
+     "baselineBucketMedian": -0.1517,
+     "metricBucketMedian": -0.1517,
+     "baselineQuantileMedian": -0.1517,
+     "metricQuantileMedian": -0.1517
+    },
+    "r2Gain": 0.0071,
+    "r2Gain95": [
+     -0.012102297088253278,
+     0.02110187184637413
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineBucketMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineQuantileMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "passes": []
+   }
+  ],
+  "meeting": [
+   {
+    "target": "objectiveVpLost",
+    "metric": "objectiveVpAtRisk",
+    "baseline": "objectivesThreatened",
+    "status": "EVALUATED",
+    "nRows": 897,
+    "mae": {
+     "zero": 0.3122,
+     "trainMedian": 0.3122,
+     "trainMean": 0.557,
+     "baseline": 0.5524,
+     "baselinePlusMetric": 0.491,
+     "baselineBucketMedian": 0.3122,
+     "metricBucketMedian": 0.3122,
+     "baselineQuantileMedian": 0.3122,
+     "metricQuantileMedian": 0.3122
+    },
+    "r2": {
+     "zero": -0.0945,
+     "trainMedian": -0.0945,
+     "trainMean": -0.0064,
+     "baseline": 0.0029,
+     "baselinePlusMetric": 0.1059,
+     "baselineBucketMedian": -0.0945,
+     "metricBucketMedian": -0.0945,
+     "baselineQuantileMedian": -0.0945,
+     "metricQuantileMedian": -0.0945
+    },
+    "r2Gain": 0.1031,
+    "r2Gain95": [
+     0.05603982079341763,
+     0.141801757827675
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineBucketMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineQuantileMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "passes": [
+     "out-of-sample R2"
+    ]
+   },
+   {
+    "target": "objectivesLost",
+    "metric": "objectivesAtRisk",
+    "baseline": "objectivesThreatened",
+    "status": "EVALUATED",
+    "nRows": 897,
+    "mae": {
+     "zero": 0.1148,
+     "trainMedian": 0.1148,
+     "trainMean": 0.2047,
+     "baseline": 0.2032,
+     "baselinePlusMetric": 0.1798,
+     "baselineBucketMedian": 0.1148,
+     "metricBucketMedian": 0.112,
+     "baselineQuantileMedian": 0.1148,
+     "metricQuantileMedian": 0.1148
+    },
+    "r2": {
+     "zero": -0.1064,
+     "trainMedian": -0.1064,
+     "trainMean": -0.0063,
+     "baseline": 0.0018,
+     "baselinePlusMetric": 0.1176,
+     "baselineBucketMedian": -0.1064,
+     "metricBucketMedian": -0.0637,
+     "baselineQuantileMedian": -0.1064,
+     "metricQuantileMedian": -0.1064
+    },
+    "r2Gain": 0.1158,
+    "r2Gain95": [
+     0.07408359381954222,
+     0.15113631895727675
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.008547008547008544
+     ],
+     "trainMedian": [
+      0.0,
+      0.008547008547008544
+     ],
+     "baselineBucketMedian": [
+      0.0,
+      0.008547008547008544
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineQuantileMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "passes": [
+     "out-of-sample R2"
+    ]
+   },
+   {
+    "target": "stepsLost",
+    "metric": "stacksExposedAllocated",
+    "baseline": "contact",
+    "status": "EVALUATED",
+    "nRows": 897,
+    "mae": {
+     "zero": 0.8551,
+     "trainMedian": 0.8551,
+     "trainMean": 0.9948,
+     "baseline": 0.9903,
+     "baselinePlusMetric": 0.9493,
+     "baselineBucketMedian": 0.8562,
+     "metricBucketMedian": 0.8657,
+     "baselineQuantileMedian": 0.8601,
+     "metricQuantileMedian": 0.8105
+    },
+    "r2": {
+     "zero": -0.367,
+     "trainMedian": -0.367,
+     "trainMean": -0.0032,
+     "baseline": 0.0023,
+     "baselinePlusMetric": 0.0825,
+     "baselineBucketMedian": -0.3205,
+     "metricBucketMedian": -0.3084,
+     "baselineQuantileMedian": -0.3635,
+     "metricQuantileMedian": -0.1711
+    },
+    "r2Gain": 0.0802,
+    "r2Gain95": [
+     0.02995965948772672,
+     0.1270807922117444
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      -0.034823284823284895,
+      0.01175213675213671
+     ],
+     "trainMedian": [
+      -0.034823284823284895,
+      0.01175213675213671
+     ],
+     "baselineBucketMedian": [
+      -0.03161222339304526,
+      0.014041514041513992
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.007692307692307776,
+      0.07583965330444209
+     ],
+     "trainMedian": [
+      0.007692307692307776,
+      0.07583965330444209
+     ],
+     "baselineQuantileMedian": [
+      0.017628205128205066,
+      0.07859531772575257
+     ]
+    },
+    "passes": [
+     "MAE quintile bins",
+     "out-of-sample R2"
+    ]
+   },
+   {
+    "target": "stepsLost",
+    "metric": "stacksExposedAllocated",
+    "baseline": "stacksExposed",
+    "status": "EVALUATED",
+    "nRows": 897,
+    "mae": {
+     "zero": 0.8551,
+     "trainMedian": 0.8551,
+     "trainMean": 0.9948,
+     "baseline": 0.9672,
+     "baselinePlusMetric": 0.9488,
+     "baselineBucketMedian": 0.8339,
+     "metricBucketMedian": 0.8657,
+     "baselineQuantileMedian": 0.8595,
+     "metricQuantileMedian": 0.8105
+    },
+    "r2": {
+     "zero": -0.367,
+     "trainMedian": -0.367,
+     "trainMean": -0.0032,
+     "baseline": 0.0476,
+     "baselinePlusMetric": 0.0755,
+     "baselineBucketMedian": -0.1907,
+     "metricBucketMedian": -0.3084,
+     "baselineQuantileMedian": -0.1767,
+     "metricQuantileMedian": -0.1711
+    },
+    "r2Gain": 0.0279,
+    "r2Gain95": [
+     -0.0015482066559386887,
+     0.05484503201239943
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      -0.034823284823284895,
+      0.01175213675213671
+     ],
+     "trainMedian": [
+      -0.034823284823284895,
+      0.01175213675213671
+     ],
+     "baselineBucketMedian": [
+      -0.06868131868131877,
+      0.008064516129032251
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.007692307692307776,
+      0.07583965330444209
+     ],
+     "trainMedian": [
+      0.007692307692307776,
+      0.07583965330444209
+     ],
+     "baselineQuantileMedian": [
+      0.013377926421404673,
+      0.08351648351648355
+     ]
+    },
+    "passes": [
+     "MAE quintile bins"
+    ]
+   },
+   {
+    "target": "outOfTraceRise",
+    "metric": "supplyCuttable",
+    "baseline": "contact",
+    "status": "EVALUATED",
+    "nRows": 897,
+    "mae": {
+     "zero": 2.3991,
+     "trainMedian": 2.3991,
+     "trainMean": 3.2823,
+     "baseline": 3.2811,
+     "baselinePlusMetric": 3.1187,
+     "baselineBucketMedian": 2.3991,
+     "metricBucketMedian": 2.3991,
+     "baselineQuantileMedian": 2.3991,
+     "metricQuantileMedian": 2.3991
+    },
+    "r2": {
+     "zero": -0.229,
+     "trainMedian": -0.229,
+     "trainMean": -0.0024,
+     "baseline": -0.0068,
+     "baselinePlusMetric": 0.0859,
+     "baselineBucketMedian": -0.229,
+     "metricBucketMedian": -0.229,
+     "baselineQuantileMedian": -0.229,
+     "metricQuantileMedian": -0.229
+    },
+    "r2Gain": 0.0927,
+    "r2Gain95": [
+     0.042835469231055856,
+     0.13496994973719278
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineBucketMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineQuantileMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "passes": [
+     "out-of-sample R2"
+    ]
+   },
+   {
+    "target": "outOfTraceRise",
+    "metric": "supplyBestCut",
+    "baseline": "contact",
+    "status": "EVALUATED",
+    "nRows": 897,
+    "mae": {
+     "zero": 2.3991,
+     "trainMedian": 2.3991,
+     "trainMean": 3.2823,
+     "baseline": 3.2811,
+     "baselinePlusMetric": 3.1316,
+     "baselineBucketMedian": 2.3991,
+     "metricBucketMedian": 2.3991,
+     "baselineQuantileMedian": 2.3991,
+     "metricQuantileMedian": 2.3946
+    },
+    "r2": {
+     "zero": -0.229,
+     "trainMedian": -0.229,
+     "trainMean": -0.0024,
+     "baseline": -0.0068,
+     "baselinePlusMetric": 0.088,
+     "baselineBucketMedian": -0.229,
+     "metricBucketMedian": -0.229,
+     "baselineQuantileMedian": -0.229,
+     "metricQuantileMedian": -0.1831
+    },
+    "r2Gain": 0.0949,
+    "r2Gain95": [
+     0.04185738838602704,
+     0.1426267780098429
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineBucketMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      -0.02601809954751122,
+      0.03283302063789861
+     ],
+     "trainMedian": [
+      -0.02601809954751122,
+      0.03283302063789861
+     ],
+     "baselineQuantileMedian": [
+      -0.02601809954751122,
+      0.03283302063789861
+     ]
+    },
+    "passes": [
+     "out-of-sample R2"
+    ]
+   },
+   {
+    "target": "hqsLost",
+    "metric": "hqsInReach",
+    "baseline": "contact",
+    "status": "EVALUATED",
+    "nRows": 897,
+    "mae": {
+     "zero": 0.1304,
+     "trainMedian": 0.1304,
+     "trainMean": 0.2305,
+     "baseline": 0.2301,
+     "baselinePlusMetric": 0.2223,
+     "baselineBucketMedian": 0.1304,
+     "metricBucketMedian": 0.1304,
+     "baselineQuantileMedian": 0.1304,
+     "metricQuantileMedian": 0.1304
+    },
+    "r2": {
+     "zero": -0.1233,
+     "trainMedian": -0.1233,
+     "trainMean": -0.0014,
+     "baseline": -0.0019,
+     "baselinePlusMetric": 0.0323,
+     "baselineBucketMedian": -0.1233,
+     "metricBucketMedian": -0.1233,
+     "baselineQuantileMedian": -0.1233,
+     "metricQuantileMedian": -0.1233
+    },
+    "r2Gain": 0.0342,
+    "r2Gain95": [
+     0.010740007157856168,
+     0.05376271157445367
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineBucketMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineQuantileMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "passes": [
+     "out-of-sample R2"
+    ]
+   },
+   {
+    "target": "objectiveVpLost",
+    "metric": "payableObjectiveVpAtRisk",
+    "baseline": "objectivesThreatened",
+    "status": "EVALUATED",
+    "nRows": 897,
+    "mae": {
+     "zero": 0.3122,
+     "trainMedian": 0.3122,
+     "trainMean": 0.557,
+     "baseline": 0.5524,
+     "baselinePlusMetric": 0.4862,
+     "baselineBucketMedian": 0.3122,
+     "metricBucketMedian": 0.3122,
+     "baselineQuantileMedian": 0.3122,
+     "metricQuantileMedian": 0.3122
+    },
+    "r2": {
+     "zero": -0.0945,
+     "trainMedian": -0.0945,
+     "trainMean": -0.0064,
+     "baseline": 0.0029,
+     "baselinePlusMetric": 0.1245,
+     "baselineBucketMedian": -0.0945,
+     "metricBucketMedian": -0.0945,
+     "baselineQuantileMedian": -0.0945,
+     "metricQuantileMedian": -0.0945
+    },
+    "r2Gain": 0.1216,
+    "r2Gain95": [
+     0.0639450085502753,
+     0.1617565501322774
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineBucketMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineQuantileMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "passes": [
+     "out-of-sample R2"
+    ]
+   },
+   {
+    "target": "objectiveVpLost",
+    "metric": "payableObjectiveVpAtRisk",
+    "baseline": "objectiveVpAtRisk",
+    "status": "EVALUATED",
+    "nRows": 897,
+    "mae": {
+     "zero": 0.3122,
+     "trainMedian": 0.3122,
+     "trainMean": 0.557,
+     "baseline": 0.4893,
+     "baselinePlusMetric": 0.4839,
+     "baselineBucketMedian": 0.3122,
+     "metricBucketMedian": 0.3122,
+     "baselineQuantileMedian": 0.3122,
+     "metricQuantileMedian": 0.3122
+    },
+    "r2": {
+     "zero": -0.0945,
+     "trainMedian": -0.0945,
+     "trainMean": -0.0064,
+     "baseline": 0.1078,
+     "baselinePlusMetric": 0.1201,
+     "baselineBucketMedian": -0.0945,
+     "metricBucketMedian": -0.0945,
+     "baselineQuantileMedian": -0.0945,
+     "metricQuantileMedian": -0.0945
+    },
+    "r2Gain": 0.0123,
+    "r2Gain95": [
+     -0.019367116339320756,
+     0.03351865396527853
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineBucketMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineQuantileMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "passes": []
+   },
+   {
+    "target": "combatStepsLost",
+    "metric": "stacksExposedAllocated",
+    "baseline": "contact",
+    "status": "EVALUATED",
+    "nRows": 897,
+    "mae": {
+     "zero": 0.8551,
+     "trainMedian": 0.8551,
+     "trainMean": 0.9948,
+     "baseline": 0.9903,
+     "baselinePlusMetric": 0.9493,
+     "baselineBucketMedian": 0.8562,
+     "metricBucketMedian": 0.8657,
+     "baselineQuantileMedian": 0.8601,
+     "metricQuantileMedian": 0.8105
+    },
+    "r2": {
+     "zero": -0.367,
+     "trainMedian": -0.367,
+     "trainMean": -0.0032,
+     "baseline": 0.0023,
+     "baselinePlusMetric": 0.0825,
+     "baselineBucketMedian": -0.3205,
+     "metricBucketMedian": -0.3084,
+     "baselineQuantileMedian": -0.3635,
+     "metricQuantileMedian": -0.1711
+    },
+    "r2Gain": 0.0802,
+    "r2Gain95": [
+     0.02995965948772672,
+     0.1270807922117444
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      -0.034823284823284895,
+      0.01175213675213671
+     ],
+     "trainMedian": [
+      -0.034823284823284895,
+      0.01175213675213671
+     ],
+     "baselineBucketMedian": [
+      -0.03161222339304526,
+      0.014041514041513992
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.007692307692307776,
+      0.07583965330444209
+     ],
+     "trainMedian": [
+      0.007692307692307776,
+      0.07583965330444209
+     ],
+     "baselineQuantileMedian": [
+      0.017628205128205066,
+      0.07859531772575257
+     ]
+    },
+    "passes": [
+     "MAE quintile bins",
+     "out-of-sample R2"
+    ]
+   },
+   {
+    "target": "combatStepsLost",
+    "metric": "maxSingleStackExpectedLoss",
+    "baseline": "contact",
+    "status": "EVALUATED",
+    "nRows": 897,
+    "mae": {
+     "zero": 0.8551,
+     "trainMedian": 0.8551,
+     "trainMean": 0.9948,
+     "baseline": 0.9903,
+     "baselinePlusMetric": 0.9773,
+     "baselineBucketMedian": 0.8562,
+     "metricBucketMedian": 0.8562,
+     "baselineQuantileMedian": 0.8601,
+     "metricQuantileMedian": 0.8489
+    },
+    "r2": {
+     "zero": -0.367,
+     "trainMedian": -0.367,
+     "trainMean": -0.0032,
+     "baseline": 0.0023,
+     "baselinePlusMetric": 0.0407,
+     "baselineBucketMedian": -0.3205,
+     "metricBucketMedian": -0.3675,
+     "baselineQuantileMedian": -0.3635,
+     "metricQuantileMedian": -0.3316
+    },
+    "r2Gain": 0.0385,
+    "r2Gain95": [
+     -0.0029335837570996226,
+     0.07542155947841389
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      -0.00366300366300365,
+      0.0
+     ],
+     "trainMedian": [
+      -0.00366300366300365,
+      0.0
+     ],
+     "baselineBucketMedian": [
+      -0.015837104072398134,
+      0.016129032258064613
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      -0.005268703898840932,
+      0.017094017094017144
+     ],
+     "trainMedian": [
+      -0.005268703898840932,
+      0.017094017094017144
+     ],
+     "baselineQuantileMedian": [
+      -0.0015592515592515177,
+      0.023199023199023228
+     ]
+    },
+    "passes": []
+   },
+   {
+    "target": "combatStepsLost",
+    "metric": "maxSingleStackExpectedLoss",
+    "baseline": "stacksExposedAllocated",
+    "status": "EVALUATED",
+    "nRows": 897,
+    "mae": {
+     "zero": 0.8551,
+     "trainMedian": 0.8551,
+     "trainMean": 0.9948,
+     "baseline": 0.9506,
+     "baselinePlusMetric": 0.9635,
+     "baselineBucketMedian": 0.8657,
+     "metricBucketMedian": 0.8562,
+     "baselineQuantileMedian": 0.8105,
+     "metricQuantileMedian": 0.8489
+    },
+    "r2": {
+     "zero": -0.367,
+     "trainMedian": -0.367,
+     "trainMean": -0.0032,
+     "baseline": 0.0767,
+     "baselinePlusMetric": 0.0578,
+     "baselineBucketMedian": -0.3084,
+     "metricBucketMedian": -0.3675,
+     "baselineQuantileMedian": -0.1711,
+     "metricQuantileMedian": -0.3316
+    },
+    "r2Gain": -0.0189,
+    "r2Gain95": [
+     -0.03170336769026505,
+     -0.003667816626179876
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      -0.00366300366300365,
+      0.0
+     ],
+     "trainMedian": [
+      -0.00366300366300365,
+      0.0
+     ],
+     "baselineBucketMedian": [
+      -0.012087912087912045,
+      0.03289473684210531
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      -0.005268703898840932,
+      0.017094017094017144
+     ],
+     "trainMedian": [
+      -0.005268703898840932,
+      0.017094017094017144
+     ],
+     "baselineQuantileMedian": [
+      -0.06885856079404473,
+      -0.007246376811594235
+     ]
+    },
+    "passes": []
+   },
+   {
+    "target": "spCapturedOrDestroyed",
+    "metric": "dumpSpInReach",
+    "baseline": "contact",
+    "status": "EVALUATED",
+    "nRows": 897,
+    "mae": {
+     "zero": 0.2174,
+     "trainMedian": 0.2174,
+     "trainMean": 0.3869,
+     "baseline": 0.3844,
+     "baselinePlusMetric": 0.3828,
+     "baselineBucketMedian": 0.2174,
+     "metricBucketMedian": 0.2174,
+     "baselineQuantileMedian": 0.2174,
+     "metricQuantileMedian": 0.2174
+    },
+    "r2": {
+     "zero": -0.0609,
+     "trainMedian": -0.0609,
+     "trainMean": -0.0044,
+     "baseline": -0.0023,
+     "baselinePlusMetric": 0.0022,
+     "baselineBucketMedian": -0.0609,
+     "metricBucketMedian": -0.0609,
+     "baselineQuantileMedian": -0.0609,
+     "metricQuantileMedian": -0.0609
+    },
+    "r2Gain": 0.0045,
+    "r2Gain95": [
+     -0.008137951037687774,
+     0.012077550581902963
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineBucketMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineQuantileMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "passes": []
+   },
+   {
+    "target": "attritionNextTurn",
+    "metric": "supplyCuttable",
+    "baseline": "outOfTrace",
+    "status": "EVALUATED",
+    "nRows": 760,
+    "mae": {
+     "zero": 0.9711,
+     "trainMedian": 0.9711,
+     "trainMean": 1.3491,
+     "baseline": 1.0562,
+     "baselinePlusMetric": 1.0589,
+     "baselineBucketMedian": 0.8697,
+     "metricBucketMedian": 0.9961,
+     "baselineQuantileMedian": 0.8763,
+     "metricQuantileMedian": 0.9711
+    },
+    "r2": {
+     "zero": -0.2098,
+     "trainMedian": -0.2098,
+     "trainMean": -0.0066,
+     "baseline": 0.2571,
+     "baselinePlusMetric": 0.2545,
+     "baselineBucketMedian": 0.1266,
+     "metricBucketMedian": -0.2136,
+     "baselineQuantileMedian": 0.0964,
+     "metricQuantileMedian": -0.2098
+    },
+    "r2Gain": -0.0026,
+    "r2Gain95": [
+     -0.006857688034758724,
+     -3.754512127762677e-05
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      -0.045848822800495626,
+      -0.007772020725388629
+     ],
+     "trainMedian": [
+      -0.045848822800495626,
+      -0.007772020725388629
+     ],
+     "baselineBucketMedian": [
+      -0.187002652519894,
+      -0.06359945872801076
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineQuantileMedian": [
+      -0.15736766809728198,
+      -0.032531824611032545
+     ]
+    },
+    "passes": []
+   },
+   {
+    "target": "moverObjectiveVpGained",
+    "metric": "mover.objectiveVpInReach",
+    "baseline": "mover.contact",
+    "status": "EVALUATED",
+    "nRows": 897,
+    "mae": {
+     "zero": 0.3122,
+     "trainMedian": 0.3122,
+     "trainMean": 0.557,
+     "baseline": 0.5565,
+     "baselinePlusMetric": 0.4914,
+     "baselineBucketMedian": 0.3122,
+     "metricBucketMedian": 0.3122,
+     "baselineQuantileMedian": 0.3122,
+     "metricQuantileMedian": 0.3122
+    },
+    "r2": {
+     "zero": -0.0945,
+     "trainMedian": -0.0945,
+     "trainMean": -0.0064,
+     "baseline": -0.0042,
+     "baselinePlusMetric": 0.1086,
+     "baselineBucketMedian": -0.0945,
+     "metricBucketMedian": -0.0945,
+     "baselineQuantileMedian": -0.0945,
+     "metricQuantileMedian": -0.0945
+    },
+    "r2Gain": 0.1129,
+    "r2Gain95": [
+     0.05974158838724497,
+     0.1535357387877182
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineBucketMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineQuantileMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "passes": [
+     "out-of-sample R2"
+    ]
+   },
+   {
+    "target": "moverObjectiveVpGained",
+    "metric": "mover.payableObjectiveVpInReach",
+    "baseline": "mover.objectiveVpInReach",
+    "status": "EVALUATED",
+    "nRows": 897,
+    "mae": {
+     "zero": 0.3122,
+     "trainMedian": 0.3122,
+     "trainMean": 0.557,
+     "baseline": 0.4893,
+     "baselinePlusMetric": 0.4839,
+     "baselineBucketMedian": 0.3122,
+     "metricBucketMedian": 0.3122,
+     "baselineQuantileMedian": 0.3122,
+     "metricQuantileMedian": 0.3122
+    },
+    "r2": {
+     "zero": -0.0945,
+     "trainMedian": -0.0945,
+     "trainMean": -0.0064,
+     "baseline": 0.1078,
+     "baselinePlusMetric": 0.1201,
+     "baselineBucketMedian": -0.0945,
+     "metricBucketMedian": -0.0945,
+     "baselineQuantileMedian": -0.0945,
+     "metricQuantileMedian": -0.0945
+    },
+    "r2Gain": 0.0123,
+    "r2Gain95": [
+     -0.019367116339320756,
+     0.03351865396527853
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineBucketMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineQuantileMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "passes": []
+   },
+   {
+    "target": "moverObjectivesGained",
+    "metric": "mover.bestObjectiveEffectiveColumn",
+    "baseline": "mover.contact",
+    "status": "EVALUATED",
+    "nRows": 897,
+    "mae": {
+     "zero": 0.1148,
+     "trainMedian": 0.1148,
+     "trainMean": 0.2047,
+     "baseline": 0.2041,
+     "baselinePlusMetric": 0.1839,
+     "baselineBucketMedian": 0.1148,
+     "metricBucketMedian": 0.0936,
+     "baselineQuantileMedian": 0.1148,
+     "metricQuantileMedian": 0.1148
+    },
+    "r2": {
+     "zero": -0.1064,
+     "trainMedian": -0.1064,
+     "trainMean": -0.0063,
+     "baseline": -0.0031,
+     "baselinePlusMetric": 0.2015,
+     "baselineBucketMedian": -0.1064,
+     "metricBucketMedian": 0.1725,
+     "baselineQuantileMedian": -0.1064,
+     "metricQuantileMedian": -0.1064
+    },
+    "r2Gain": 0.2045,
+    "r2Gain95": [
+     0.10066736650051233,
+     0.26699076839702796
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.0010834236186348795,
+      0.04326923076923077
+     ],
+     "trainMedian": [
+      0.0010834236186348795,
+      0.04326923076923077
+     ],
+     "baselineBucketMedian": [
+      0.0010834236186348795,
+      0.04326923076923077
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineQuantileMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "passes": [
+     "MAE fixed buckets",
+     "out-of-sample R2"
+    ]
+   },
+   {
+    "target": "moverObjectivesGained",
+    "metric": "mover.localForceRatioAt2Hex",
+    "baseline": "mover.contact",
+    "status": "EVALUATED",
+    "nRows": 897,
+    "mae": {
+     "zero": 0.1148,
+     "trainMedian": 0.1148,
+     "trainMean": 0.2047,
+     "baseline": 0.2041,
+     "baselinePlusMetric": 0.1945,
+     "baselineBucketMedian": 0.1148,
+     "metricBucketMedian": 0.1215,
+     "baselineQuantileMedian": 0.1148,
+     "metricQuantileMedian": 0.1148
+    },
+    "r2": {
+     "zero": -0.1064,
+     "trainMedian": -0.1064,
+     "trainMean": -0.0063,
+     "baseline": -0.0031,
+     "baselinePlusMetric": 0.0252,
+     "baselineBucketMedian": -0.1064,
+     "metricBucketMedian": -0.1469,
+     "baselineQuantileMedian": -0.1064,
+     "metricQuantileMedian": -0.1064
+    },
+    "r2Gain": 0.0283,
+    "r2Gain95": [
+     -0.21613682637597542,
+     0.1648562942656483
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      -0.0136986301369863,
+      -0.0011148272017837135
+     ],
+     "trainMedian": [
+      -0.0136986301369863,
+      -0.0011148272017837135
+     ],
+     "baselineBucketMedian": [
+      -0.0136986301369863,
+      -0.0011148272017837135
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineQuantileMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "passes": []
+   },
+   {
+    "target": "combatStepsLost",
+    "metric": "mover.surplusCombatSp",
+    "baseline": "mover.contact",
+    "status": "EVALUATED",
+    "nRows": 897,
+    "mae": {
+     "zero": 0.8551,
+     "trainMedian": 0.8551,
+     "trainMean": 0.9948,
+     "baseline": 0.9944,
+     "baselinePlusMetric": 0.9894,
+     "baselineBucketMedian": 0.8673,
+     "metricBucketMedian": 0.8473,
+     "baselineQuantileMedian": 0.8551,
+     "metricQuantileMedian": 0.8735
+    },
+    "r2": {
+     "zero": -0.367,
+     "trainMedian": -0.367,
+     "trainMean": -0.0032,
+     "baseline": -0.0032,
+     "baselinePlusMetric": -0.0032,
+     "baselineBucketMedian": -0.353,
+     "metricBucketMedian": -0.1482,
+     "baselineQuantileMedian": -0.367,
+     "metricQuantileMedian": -0.2096
+    },
+    "r2Gain": 0.0,
+    "r2Gain95": [
+     -0.01081402501048645,
+     0.011729011301521708
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      -0.02637362637362639,
+      0.04013377926421402
+     ],
+     "trainMedian": [
+      -0.02637362637362639,
+      0.04013377926421402
+     ],
+     "baselineBucketMedian": [
+      -0.013377926421404673,
+      0.053254437869822535
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      -0.05625717566016075,
+      0.018974358974359062
+     ],
+     "trainMedian": [
+      -0.05625717566016075,
+      0.018974358974359062
+     ],
+     "baselineQuantileMedian": [
+      -0.05625717566016075,
+      0.018974358974359062
+     ]
+    },
+    "passes": []
+   },
+   {
+    "target": "combatStepsLost",
+    "metric": "mover.unitsWithReach",
+    "baseline": "mover.contact",
+    "status": "EVALUATED",
+    "nRows": 897,
+    "mae": {
+     "zero": 0.8551,
+     "trainMedian": 0.8551,
+     "trainMean": 0.9948,
+     "baseline": 0.9944,
+     "baselinePlusMetric": 1.0,
+     "baselineBucketMedian": 0.8673,
+     "metricBucketMedian": 0.8551,
+     "baselineQuantileMedian": 0.8551,
+     "metricQuantileMedian": 0.8551
+    },
+    "r2": {
+     "zero": -0.367,
+     "trainMedian": -0.367,
+     "trainMean": -0.0032,
+     "baseline": -0.0032,
+     "baselinePlusMetric": -0.0102,
+     "baselineBucketMedian": -0.353,
+     "metricBucketMedian": -0.367,
+     "baselineQuantileMedian": -0.367,
+     "metricQuantileMedian": -0.367
+    },
+    "r2Gain": -0.007,
+    "r2Gain95": [
+     -0.01539428485957206,
+     0.00041588996437225134
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineBucketMedian": [
+      0.0010256410256410664,
+      0.02601809954751133
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineQuantileMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "passes": []
+   },
+   {
+    "target": "combatStepsLost",
+    "metric": "expectedLossAllocated",
+    "baseline": "contact",
+    "status": "EVALUATED",
+    "nRows": 897,
+    "mae": {
+     "zero": 0.8551,
+     "trainMedian": 0.8551,
+     "trainMean": 0.9948,
+     "baseline": 0.9903,
+     "baselinePlusMetric": 0.9523,
+     "baselineBucketMedian": 0.8562,
+     "metricBucketMedian": 0.8194,
+     "baselineQuantileMedian": 0.8601,
+     "metricQuantileMedian": 0.8384
+    },
+    "r2": {
+     "zero": -0.367,
+     "trainMedian": -0.367,
+     "trainMean": -0.0032,
+     "baseline": 0.0023,
+     "baselinePlusMetric": 0.082,
+     "baselineBucketMedian": -0.3205,
+     "metricBucketMedian": -0.198,
+     "baselineQuantileMedian": -0.3635,
+     "metricQuantileMedian": -0.1594
+    },
+    "r2Gain": 0.0797,
+    "r2Gain95": [
+     0.026757918783109846,
+     0.1252750563967463
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.004995004995004937,
+      0.06608884073672805
+     ],
+     "trainMedian": [
+      0.004995004995004937,
+      0.06608884073672805
+     ],
+     "baselineBucketMedian": [
+      0.006888633754305484,
+      0.06643356643356635
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      -0.0241758241758242,
+      0.05604395604395607
+     ],
+     "trainMedian": [
+      -0.0241758241758242,
+      0.05604395604395607
+     ],
+     "baselineQuantileMedian": [
+      -0.014705882352941235,
+      0.057421451787649014
+     ]
+    },
+    "passes": [
+     "MAE fixed buckets",
+     "out-of-sample R2"
+    ]
+   },
+   {
+    "target": "combatStepsLost",
+    "metric": "expectedLossAllocated",
+    "baseline": "stacksExposedAllocated",
+    "status": "EVALUATED",
+    "nRows": 897,
+    "mae": {
+     "zero": 0.8551,
+     "trainMedian": 0.8551,
+     "trainMean": 0.9948,
+     "baseline": 0.9506,
+     "baselinePlusMetric": 0.9521,
+     "baselineBucketMedian": 0.8657,
+     "metricBucketMedian": 0.8194,
+     "baselineQuantileMedian": 0.8105,
+     "metricQuantileMedian": 0.8384
+    },
+    "r2": {
+     "zero": -0.367,
+     "trainMedian": -0.367,
+     "trainMean": -0.0032,
+     "baseline": 0.0767,
+     "baselinePlusMetric": 0.0769,
+     "baselineBucketMedian": -0.3084,
+     "metricBucketMedian": -0.198,
+     "baselineQuantileMedian": -0.1711,
+     "metricQuantileMedian": -0.1594
+    },
+    "r2Gain": 0.0002,
+    "r2Gain95": [
+     -0.01295885476788916,
+     0.012785417020441336
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.004995004995004937,
+      0.06608884073672805
+     ],
+     "trainMedian": [
+      0.004995004995004937,
+      0.06608884073672805
+     ],
+     "baselineBucketMedian": [
+      0.013009049773755721,
+      0.07852564102564097
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      -0.0241758241758242,
+      0.05604395604395607
+     ],
+     "trainMedian": [
+      -0.0241758241758242,
+      0.05604395604395607
+     ],
+     "baselineQuantileMedian": [
+      -0.04615384615384621,
+      -0.009230769230769154
+     ]
+    },
+    "passes": [
+     "MAE fixed buckets"
+    ]
+   },
+   {
+    "target": "moverObjectivesGained",
+    "metric": "mover.objectiveReachColumn",
+    "baseline": "mover.contact",
+    "status": "EVALUATED",
+    "nRows": 897,
+    "mae": {
+     "zero": 0.1148,
+     "trainMedian": 0.1148,
+     "trainMean": 0.2047,
+     "baseline": 0.2041,
+     "baselinePlusMetric": 0.1992,
+     "baselineBucketMedian": 0.1148,
+     "metricBucketMedian": 0.1148,
+     "baselineQuantileMedian": 0.1148,
+     "metricQuantileMedian": 0.1148
+    },
+    "r2": {
+     "zero": -0.1064,
+     "trainMedian": -0.1064,
+     "trainMean": -0.0063,
+     "baseline": -0.0031,
+     "baselinePlusMetric": 0.1699,
+     "baselineBucketMedian": -0.1064,
+     "metricBucketMedian": -0.1064,
+     "baselineQuantileMedian": -0.1064,
+     "metricQuantileMedian": -0.1064
+    },
+    "r2Gain": 0.173,
+    "r2Gain95": [
+     0.1167853740387762,
+     0.21487731215799732
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineBucketMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineQuantileMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "passes": [
+     "out-of-sample R2"
+    ]
+   },
+   {
+    "target": "moverObjectivesGained",
+    "metric": "mover.objectiveReachColumn",
+    "baseline": "mover.bestObjectiveEffectiveColumn",
+    "status": "EVALUATED",
+    "nRows": 897,
+    "mae": {
+     "zero": 0.1148,
+     "trainMedian": 0.1148,
+     "trainMean": 0.2047,
+     "baseline": 0.1894,
+     "baselinePlusMetric": 0.1923,
+     "baselineBucketMedian": 0.0936,
+     "metricBucketMedian": 0.1148,
+     "baselineQuantileMedian": 0.1148,
+     "metricQuantileMedian": 0.1148
+    },
+    "r2": {
+     "zero": -0.1064,
+     "trainMedian": -0.1064,
+     "trainMean": -0.0063,
+     "baseline": 0.1847,
+     "baselinePlusMetric": 0.2208,
+     "baselineBucketMedian": 0.1725,
+     "metricBucketMedian": -0.1064,
+     "baselineQuantileMedian": -0.1064,
+     "metricQuantileMedian": -0.1064
+    },
+    "r2Gain": 0.0361,
+    "r2Gain95": [
+     0.011666216335050938,
+     0.06250689737814852
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineBucketMedian": [
+      -0.043478260869565216,
+      -0.0011312217194570165
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineQuantileMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "passes": [
+     "out-of-sample R2"
+    ]
+   },
+   {
+    "target": "outOfTraceRise",
+    "metric": "hqDependentUnitsInReach",
+    "baseline": "contact",
+    "status": "EVALUATED",
+    "nRows": 897,
+    "mae": {
+     "zero": 2.3991,
+     "trainMedian": 2.3991,
+     "trainMean": 3.2823,
+     "baseline": 3.2811,
+     "baselinePlusMetric": 3.174,
+     "baselineBucketMedian": 2.3991,
+     "metricBucketMedian": 2.427,
+     "baselineQuantileMedian": 2.3991,
+     "metricQuantileMedian": 2.4091
+    },
+    "r2": {
+     "zero": -0.229,
+     "trainMedian": -0.229,
+     "trainMean": -0.0024,
+     "baseline": -0.0068,
+     "baselinePlusMetric": 0.0335,
+     "baselineBucketMedian": -0.229,
+     "metricBucketMedian": -0.218,
+     "baselineQuantileMedian": -0.229,
+     "metricQuantileMedian": -0.2062
+    },
+    "r2Gain": 0.0403,
+    "r2Gain95": [
+     -0.01314342761367504,
+     0.08199894886435921
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      -0.05769230769230749,
+      -0.002262443438914019
+     ],
+     "trainMedian": [
+      -0.05769230769230749,
+      -0.002262443438914019
+     ],
+     "baselineBucketMedian": [
+      -0.05769230769230749,
+      -0.002262443438914019
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      -0.031360946745562224,
+      0.008956796628029284
+     ],
+     "trainMedian": [
+      -0.031360946745562224,
+      0.008956796628029284
+     ],
+     "baselineQuantileMedian": [
+      -0.031360946745562224,
+      0.008956796628029284
+     ]
+    },
+    "passes": []
+   },
+   {
+    "target": "attritionNextTurn",
+    "metric": "hqDependentUnitsInReach",
+    "baseline": "outOfTrace",
+    "status": "EVALUATED",
+    "nRows": 760,
+    "mae": {
+     "zero": 0.9711,
+     "trainMedian": 0.9711,
+     "trainMean": 1.3491,
+     "baseline": 1.0562,
+     "baselinePlusMetric": 1.062,
+     "baselineBucketMedian": 0.8697,
+     "metricBucketMedian": 0.9711,
+     "baselineQuantileMedian": 0.8763,
+     "metricQuantileMedian": 0.9711
+    },
+    "r2": {
+     "zero": -0.2098,
+     "trainMedian": -0.2098,
+     "trainMean": -0.0066,
+     "baseline": 0.2571,
+     "baselinePlusMetric": 0.2535,
+     "baselineBucketMedian": 0.1266,
+     "metricBucketMedian": -0.2098,
+     "baselineQuantileMedian": 0.0964,
+     "metricQuantileMedian": -0.2098
+    },
+    "r2Gain": -0.0036,
+    "r2Gain95": [
+     -0.007582490503707295,
+     -0.00026827224932157723
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineBucketMedian": [
+      -0.16666666666666674,
+      -0.03600000000000003
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineQuantileMedian": [
+      -0.15736766809728198,
+      -0.032531824611032545
+     ]
+    },
+    "passes": []
+   },
+   {
+    "target": "attritionNextTurn",
+    "metric": "outOfTraceUnfed",
+    "baseline": "outOfTrace",
+    "status": "EVALUATED",
+    "nRows": 760,
+    "mae": {
+     "zero": 0.9711,
+     "trainMedian": 0.9711,
+     "trainMean": 1.3491,
+     "baseline": 1.0562,
+     "baselinePlusMetric": 1.0382,
+     "baselineBucketMedian": 0.8697,
+     "metricBucketMedian": 0.8645,
+     "baselineQuantileMedian": 0.8763,
+     "metricQuantileMedian": 0.8632
+    },
+    "r2": {
+     "zero": -0.2098,
+     "trainMedian": -0.2098,
+     "trainMean": -0.0066,
+     "baseline": 0.2571,
+     "baselinePlusMetric": 0.2766,
+     "baselineBucketMedian": 0.1266,
+     "metricBucketMedian": 0.1557,
+     "baselineQuantileMedian": 0.0964,
+     "metricQuantileMedian": 0.1228
+    },
+    "r2Gain": 0.0196,
+    "r2Gain95": [
+     -0.016527269955095902,
+     0.05689405933289249
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.031636863823933936,
+      0.1808219178082192
+     ],
+     "trainMedian": [
+      0.031636863823933936,
+      0.1808219178082192
+     ],
+     "baselineBucketMedian": [
+      -0.031776913099870296,
+      0.03851174934725843
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.04475524475524473,
+      0.1798657718120804
+     ],
+     "trainMedian": [
+      0.04475524475524473,
+      0.1798657718120804
+     ],
+     "baselineQuantileMedian": [
+      -0.026751592356687892,
+      0.05291005291005291
+     ]
+    },
+    "passes": []
+   },
+   {
+    "target": "outOfTraceRise",
+    "metric": "rearHexesInReach",
+    "baseline": "contact",
+    "status": "EVALUATED",
+    "nRows": 897,
+    "mae": {
+     "zero": 2.3991,
+     "trainMedian": 2.3991,
+     "trainMean": 3.2823,
+     "baseline": 3.2811,
+     "baselinePlusMetric": 3.2413,
+     "baselineBucketMedian": 2.3991,
+     "metricBucketMedian": 2.3991,
+     "baselineQuantileMedian": 2.3991,
+     "metricQuantileMedian": 2.3991
+    },
+    "r2": {
+     "zero": -0.229,
+     "trainMedian": -0.229,
+     "trainMean": -0.0024,
+     "baseline": -0.0068,
+     "baselinePlusMetric": 0.003,
+     "baselineBucketMedian": -0.229,
+     "metricBucketMedian": -0.229,
+     "baselineQuantileMedian": -0.229,
+     "metricQuantileMedian": -0.229
+    },
+    "r2Gain": 0.0098,
+    "r2Gain95": [
+     -0.011368296997092076,
+     0.02706600939254944
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineBucketMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineQuantileMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "passes": []
+   },
+   {
+    "target": "hqsLost",
+    "metric": "rearHexesInReach",
+    "baseline": "contact",
+    "status": "EVALUATED",
+    "nRows": 897,
+    "mae": {
+     "zero": 0.1304,
+     "trainMedian": 0.1304,
+     "trainMean": 0.2305,
+     "baseline": 0.2301,
+     "baselinePlusMetric": 0.2294,
+     "baselineBucketMedian": 0.1304,
+     "metricBucketMedian": 0.1304,
+     "baselineQuantileMedian": 0.1304,
+     "metricQuantileMedian": 0.1304
+    },
+    "r2": {
+     "zero": -0.1233,
+     "trainMedian": -0.1233,
+     "trainMean": -0.0014,
+     "baseline": -0.0019,
+     "baselinePlusMetric": -0.0009,
+     "baselineBucketMedian": -0.1233,
+     "metricBucketMedian": -0.1233,
+     "baselineQuantileMedian": -0.1233,
+     "metricQuantileMedian": -0.1233
+    },
+    "r2Gain": 0.001,
+    "r2Gain95": [
+     -0.008501725176660369,
+     0.009797239116807965
+    ],
+    "metricBucketMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineBucketMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "metricQuantileMedianMaeGain95": {
+     "zero": [
+      0.0,
+      0.0
+     ],
+     "trainMedian": [
+      0.0,
+      0.0
+     ],
+     "baselineQuantileMedian": [
+      0.0,
+      0.0
+     ]
+    },
+    "passes": []
+   }
+  ]
+ }
+}
