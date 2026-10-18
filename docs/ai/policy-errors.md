@@ -49,14 +49,22 @@ VP、Kill、Loss、Supply 反映不出局勢（使用者，2026-10-18），所�
 | `stacksExposed`、`stepsExposed` | 對方下回合能以第 9 欄以上攻擊的己方 stack 數與其中的 step |
 | `hqsInReach`、`dumpSpInReach` | 對方下回合能到旁邊的己方 HQ，與己方補給堆（不含駐軍存量）的 SP |
 | `unitsWithReach` | 下回合能移動的己方戰鬥單位 |
+| `supplyBestCut`、`supplyCuttable` | 現在有 trace 的己方戰鬥單位中，對方一個單位移到一格就會斷補的最多單位數，與某一個這樣的移動會切斷的單位數 |
 
-尚未量測：對方下回合能切斷的補給線（`bot-position-supply-cut`）。現況指標（`positionMetrics`：VP、目標點、step、DG、接敵、
+補給線的切斷是估計值：在投影出的狀態中把對方一個戰鬥單位移到一格，用規則層的 trace（敵軍與未被抵銷的 ZOC 阻擋、HQ throw、
+formation 共同路線、補給源）重算，數斷補的己方單位。只試對方到得了、且偏離某個己方補給源或 HQ 到某個有 trace 的己方單位的
+直線不超過 1 格的格子；補給源與 HQ 旁的全試，其餘挑到彼此不相鄰（一個單位的 ZOC 蓋住鄰格）。對方兩個單位合力封口的情形不算；
+在 24 個局面上與逐格全試比較，最大單一切斷 23 個相同，可切斷數相同或略少，每方每個局面約 0.4 秒。`ai-position-record.mjs`
+只為不行動的一方（這個玩家回合可能被切斷的一方）計算。
+
+現況指標（`positionMetrics`：VP、目標點、step、DG、接敵、
 斷補、SP、乾 HQ）與這些指標一起由 `ai-continue.mjs` 在每個時間點記錄，`ai-position-record.mjs` 則在既有對局的每個玩家回合
 開始時記錄，並附上該玩家回合發生的事（各方損失的 step、取得與失去的目標點）與終局 VP。
 
 ### 指標是否可用
 
-`scripts/ai-position-analysis.py` 在 252 局不重複的對局上檢驗（[紀錄](../quality/evidence/ai-position-analysis-2026-10-18/README.md)）。
+`scripts/ai-position-analysis.py` 在 252 局不重複的對局上檢驗（[紀錄](../quality/evidence/ai-position-analysis-2026-10-18/README.md)，
+補給線切斷：[紀錄](../quality/evidence/ai-position-supply-cut-2026-10-18/README.md)）。
 在玩家 P 的回合開始時，對方 O 的指標描述的正是 P 這回合能做的事，所以應該預測 O 這回合的損失；比較的基準是只看距離的現況指標。
 另外檢驗各 Game Turn 開始時的指標，扣掉現在的 VP、step 與斷補之後，能否再預測終局 VP 差（以對局交叉驗證）。
 
@@ -67,6 +75,7 @@ VP、Kill、Loss、Supply 反映不出局勢（使用者，2026-10-18），所�
 | `stacksExposed`、`stepsExposed` | 飽和：73% 的回合 `stepsExposed` 已達 8 以上；全部回合 r 0.08–0.09，攻方行動時 `stacksExposed` r 0.37 | 加入後沒有增益 | 尚不可用（`bot-position-exposure`） |
 | `dumpSpInReach` | r 0.05–0.13；結果用的是地圖上 SP 的減少，含 O 自己的支出，沒有被奪或被毀的 SP 紀錄 | 未單獨檢驗 | 未證實（`bot-position-exposure`） |
 | `unitsWithReach` | 沒有對應的結果 | 與 rear 指標一起加入沒有增益 | 未證實 |
+| `supplyCuttable`、`supplyBestCut` | 對到 O 下一回合開始時斷補單位的增加：r 0.24（攻方行動時 0.31，基準 0.01），多解釋 0.058 [0.041, 0.083]；斷補增加的 98% 發生在大於 0 的回合；平均增加隨數值上升（0：0.43、1–7：1.23、8–15：2.0、16–23：3.32、24–31：4.51），32 以上持平 | 沒有增益 | 可用：近期斷補的領先指標，比目標點的弱 |
 
 同一份檢驗也回答了 Kill/Loss 與 Supply 是否有用：攻擊戰中，在現在的 VP 之外加上雙方 step 差與斷補差，第 2–6 回合的終局預測
 都有增益（第 3 回合交叉驗證 R² 由 −0.02 到 0.23，增益 95% 區間 +0.16～+0.37），大部分來自 step 差；遭遇戰（69 局）沒有。

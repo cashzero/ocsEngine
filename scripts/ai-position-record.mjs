@@ -4,7 +4,8 @@
 //   node scripts/ai-position-record.mjs <match directory> [...] --out <file.jsonl>
 //
 // One JSON line per game and player turn, taken before that player turn's first action: both players' current-position
-// metrics (positionMetrics) and next-turn metrics (nextTurnMetrics) of scripts/ai-position-metrics.mjs, then what happened
+// metrics (positionMetrics) and next-turn metrics (nextTurnMetrics) of scripts/ai-position-metrics.mjs, the supply-cut
+// estimate only for the player not moving (the one the phasing player can cut in this turn), then what happened
 // in that player turn (steps each player lost, objectives and objective VP each player gained and lost), the game's final
 // VP, the engagement and each player's policy (summary.json). Games are replayed on this build; a game whose replay does
 // not reach its recorded final state hash is skipped and reported, so rows never mix rule versions silently.
@@ -42,7 +43,8 @@ for (const dir of dirs) {
         close();
         turnKey = key;
         const position = positionMetrics(m, state);
-        const nextTurn = nextTurnMetrics(engine, state);
+        const other = players.find((playerId) => playerId !== state.sequence.phasingPlayerId);
+        const nextTurn = nextTurnMetrics(engine, state, { supplyCutFor: [other] });
         row = {
           dir: resolve(dir).replace(`${root}/`, ''), match: record.match, engagement: record.summary.engagement,
           attackerId: state.configuration.attackVictory?.attackerId ?? null,

@@ -79,7 +79,7 @@ export const eventTotals = (history, ownerOf, players) => {
 
 export const NEXT_TURN_METRIC_NAMES = [
   'objectivesAtRisk', 'objectiveVpAtRisk', 'objectivesInReach', 'objectiveVpInReach', 'stacksExposed', 'stepsExposed',
-  'hqsInReach', 'dumpSpInReach', 'unitsWithReach',
+  'hqsInReach', 'dumpSpInReach', 'unitsWithReach', 'supplyBestCut', 'supplyCuttable',
 ];
 
 /** Loads the rule modules nextTurnMetrics needs from a built engine directory (dist). */
@@ -87,8 +87,8 @@ export const loadEngine = async (distDirectory) => {
   const { pathToFileURL } = await import('node:url');
   const { join } = await import('node:path');
   const load = (file) => import(pathToFileURL(join(distDirectory, file)).href);
-  const [m, strength, pieces] = await Promise.all([load('index.js'), load('rules/combat/strength.js'), load('rules/pieces.js')]);
-  return { m, strength, pieces };
+  const [m, strength, pieces, supply] = await Promise.all([load('index.js'), load('rules/combat/strength.js'), load('rules/pieces.js'), load('rules/supply/supply.js')]);
+  return { m, strength, pieces, supply };
 };
 
 /**
@@ -103,10 +103,15 @@ export const loadEngine = async (distDirectory) => {
  *   column 6+ or enter;
  * - stacksExposed / stepsExposed: hexes of the player's combat units the opponent can attack at column 9+, and their steps;
  * - hqsInReach / dumpSpInReach: the player's HQs, and SP in its dumps (not garrison stocks), beside a hex the opponent reaches;
- * - unitsWithReach: the player's combat units with a non-empty reach (the others cannot move: immobile, or no MP).
- * Not measured yet: supply lines the opponent could cut next turn (the trace query takes no hypothetical blockers).
+ * - unitsWithReach: the player's combat units with a non-empty reach (the others cannot move: immobile, or no MP);
+ * - supplyBestCut / supplyCuttable: of the player's combat units in trace now, the most that one opponent unit ending its
+ *   move in one hex cuts off (the rules' trace on the state with that unit moved there), and how many some such move cuts.
+ *   A ballpark: the hexes tried are the opponent's reachable hexes at most one hex off a straight line from one of the
+ *   player's sources or HQs to one of its traced units, those beside a source or HQ all, the others thinned so no two
+ *   tried hexes are adjacent (one unit's ZOC covers its neighbours). Two opponent units closing a gap together are not
+ *   counted. Computed only for the players in `supplyCutFor` (null for the others): about 0.4 s per player.
  */
-export const nextTurnMetrics = ({ m, strength, pieces }, state) => {
+export const nextTurnMetrics = ({ m, strength, pieces, supply }, state, { supplyCutFor = null } = {}) => {
   const definitions = new Map(state.scenario.pieceCatalog.definitions.map((definition) => [definition.id, definition]));
   const isHq = (piece) => String(definitions.get(piece.definitionId)?.categoryDefinitionId).endsWith(':hq');
   const isDump = (piece) => definitions.get(piece.definitionId)?.family === 'RESOURCE';
@@ -137,6 +142,33 @@ export const nextTurnMetrics = ({ m, strength, pieces }, state) => {
       defenders.map((piece) => piece.id), null, null).columnIndex;
   };
   const enters = (playerId, hexId) => [...reaches.get(playerId).values()].some((reach) => reach.has(hexId));
+  const supplyCut = (playerId, opponent) => {
+    // Only an opponent unit moves, so the player's pieces are the same objects in every hypothetical state.
+    const traced = (current) => new Set(combatOf(playerId).filter((piece) => m.pieceHasTrace(current, piece)).map((piece) => piece.id));
+    const before = traced(state);
+    const units = combatOf(playerId).filter((piece) => before.has(piece.id)).map((piece) => String(piece.location.hexId));
+    const anchors = [...supply.friendlySourceHexes(state, playerId).map(String),
+      ...combatOf(playerId).filter(isHq).map((piece) => String(piece.location.hexId))];
+    const distance = (left, right) => m.hexDistanceBetween(left, right);
+    const between = (hexId) => units.some((unit) => anchors.some((anchor) => distance(anchor, hexId) + distance(hexId, unit) <= distance(anchor, unit) + 1));
+    const mover = new Map();
+    for (const [pieceId, reach] of reaches.get(opponent)) {
+      const start = String(state.pieceState.pieces.find((piece) => piece.id === pieceId).location.hexId);
+      for (const hexId of reach) if (hexId !== start && !mover.has(hexId) && between(hexId)) mover.set(hexId, pieceId);
+    }
+    const tried = [...mover.keys()].filter((hexId) => anchors.some((anchor) => distance(anchor, hexId) <= 1));
+    for (const hexId of [...mover.keys()].sort()) if (!tried.some((other) => distance(other, hexId) <= 1)) tried.push(hexId);
+    const cut = new Set(); let best = 0;
+    for (const hexId of tried) {
+      const pieceId = mover.get(hexId);
+      const moved = state.pieceState.pieces.map((piece) => (piece.id === pieceId ? { ...piece, location: { ...piece.location, hexId } } : piece));
+      const after = traced({ ...state, pieceState: { ...state.pieceState, pieces: moved } });
+      const lost = [...before].filter((id) => !after.has(id));
+      lost.forEach((id) => cut.add(id));
+      best = Math.max(best, lost.length);
+    }
+    return { supplyBestCut: best, supplyCuttable: cut.size };
+  };
   const result = {};
   for (const playerId of players) {
     const opponent = players.find((id) => id !== playerId);
@@ -159,6 +191,7 @@ export const nextTurnMetrics = ({ m, strength, pieces }, state) => {
       hqsInReach: own.filter((piece) => isHq(piece) && reachable(String(piece.location.hexId))).length,
       dumpSpInReach: dumps.filter((piece) => reachable(String(piece.location.hexId))).reduce((total, piece) => total + (piece.resourceQuantity ?? 0), 0) / 4,
       unitsWithReach: [...reaches.get(playerId).values()].filter((reach) => reach.size > 1).length,
+      ...((supplyCutFor ?? players).includes(playerId) ? supplyCut(playerId, opponent) : { supplyBestCut: null, supplyCuttable: null }),
     };
   }
   return result;

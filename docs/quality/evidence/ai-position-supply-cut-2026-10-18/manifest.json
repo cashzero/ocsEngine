@@ -1,0 +1,181 @@
+{
+ "engine": "dist built from src as of eee03e2 (src unchanged through the commit that adds this record); scripts of that commit",
+ "files": [
+  {
+   "file": "artifacts/ai-positions-supply-cut/ai-assault__defender-1330__noeffort-eastern.jsonl",
+   "source": "artifacts/ai-assault/defender-1330/noeffort-eastern",
+   "games": 40,
+   "rows": 640,
+   "sha256": "8a01e4cbd47048e30b5998af64dcb4cfd9dcd203269a79c076a05b4ccaa306cd"
+  },
+  {
+   "file": "artifacts/ai-positions-supply-cut/ai-assault__defender-1330__noeffort-temperate.jsonl",
+   "source": "artifacts/ai-assault/defender-1330/noeffort-temperate",
+   "games": 40,
+   "rows": 640,
+   "sha256": "04bf1de2daf47a524947ea31efd0733713b61f2775f942ae0410c3edfcb724e5"
+  },
+  {
+   "file": "artifacts/ai-positions-supply-cut/ai-assault__defender-1330__v83-eastern.jsonl",
+   "source": "artifacts/ai-assault/defender-1330/v83-eastern",
+   "games": 40,
+   "rows": 640,
+   "sha256": "898e943bb426e5d0868a298d416ff2ab26810904616f11f9b7f246e10159ebfc"
+  },
+  {
+   "file": "artifacts/ai-positions-supply-cut/ai-assault__defender-1330__v83-temperate.jsonl",
+   "source": "artifacts/ai-assault/defender-1330/v83-temperate",
+   "games": 40,
+   "rows": 640,
+   "sha256": "f099cb2784c2250cd7c5b68704696da8535fbac81852e28a68b55477837a5564"
+  },
+  {
+   "file": "artifacts/ai-positions-supply-cut/ai-assault__v84-development__attack-eastern.jsonl",
+   "source": "artifacts/ai-assault/v84-development/attack-eastern",
+   "games": 8,
+   "rows": 128,
+   "sha256": "d92249847568449721eef44577bffc2c50b0dc3190ed31bc4e2a0969e008a6f1"
+  },
+  {
+   "file": "artifacts/ai-positions-supply-cut/ai-assault__v84-development__attack-temperate.jsonl",
+   "source": "artifacts/ai-assault/v84-development/attack-temperate",
+   "games": 8,
+   "rows": 128,
+   "sha256": "26f10b85214da31805ed966545e66e3429a17629142a555239ea119f381d4b4c"
+  },
+  {
+   "file": "artifacts/ai-positions-supply-cut/ai-assault__v84-development__meeting-eastern.jsonl",
+   "source": "artifacts/ai-assault/v84-development/meeting-eastern",
+   "games": 8,
+   "rows": 128,
+   "sha256": "3ff9dce37795142c20d74381a2fb1789e50bb094cdcfc62447b6c2a6daf35301"
+  },
+  {
+   "file": "artifacts/ai-positions-supply-cut/ai-assault__v84-development__meeting-temperate.jsonl",
+   "source": "artifacts/ai-assault/v84-development/meeting-temperate",
+   "games": 8,
+   "rows": 128,
+   "sha256": "58288c85b4825d63727c5702daa1adcc08fc3cf7a92edf70d5ebc0babf605ba5"
+  },
+  {
+   "file": "artifacts/ai-positions-supply-cut/ai-continue__ration-fix-games__attack-eastern.jsonl",
+   "source": "artifacts/ai-continue/ration-fix-games/attack-eastern",
+   "games": 8,
+   "rows": 128,
+   "sha256": "0afae393fe68519bf8df6381f104e4b73c025e154aee1a026fa52f3207f4b28f"
+  },
+  {
+   "file": "artifacts/ai-positions-supply-cut/ai-continue__ration-fix-games__attack-temperate.jsonl",
+   "source": "artifacts/ai-continue/ration-fix-games/attack-temperate",
+   "games": 8,
+   "rows": 128,
+   "sha256": "b160a5da4132783631fedd68e82bf1294b375c7d7afe17fece9415ea1a64e420"
+  },
+  {
+   "file": "artifacts/ai-positions-supply-cut/ai-continue__ration-fix-games__meeting-eastern.jsonl",
+   "source": "artifacts/ai-continue/ration-fix-games/meeting-eastern",
+   "games": 8,
+   "rows": 128,
+   "sha256": "917eec64c57dc8e8bfffab2fc7b4b0ac27e788ab7577a6669a804f05403ac1d6"
+  },
+  {
+   "file": "artifacts/ai-positions-supply-cut/ai-continue__ration-fix-games__meeting-temperate.jsonl",
+   "source": "artifacts/ai-continue/ration-fix-games/meeting-temperate",
+   "games": 8,
+   "rows": 128,
+   "sha256": "0032e032fd32fc957c9dc383655d0b5e48f1552bae7d71c3bf1aa60baddaef3e"
+  },
+  {
+   "file": "artifacts/ai-positions-supply-cut/ai-promotion__frozen-v81-development__attack-eastern.jsonl",
+   "source": "artifacts/ai-promotion/frozen-v81-development/attack-eastern",
+   "games": 8,
+   "rows": 128,
+   "sha256": "66a526c13d82f4ead8af576058d510006d08236f2d3303ba83fa7b6ce086b521"
+  },
+  {
+   "file": "artifacts/ai-positions-supply-cut/ai-promotion__frozen-v81-development__attack-temperate.jsonl",
+   "source": "artifacts/ai-promotion/frozen-v81-development/attack-temperate",
+   "games": 8,
+   "rows": 128,
+   "sha256": "d6374a2d0db2d75fb209d37850c0dc727da0823d34aa673db859fbf1cedb1bf4"
+  },
+  {
+   "file": "artifacts/ai-positions-supply-cut/ai-promotion__frozen-v81-development__meeting-eastern.jsonl",
+   "source": "artifacts/ai-promotion/frozen-v81-development/meeting-eastern",
+   "games": 8,
+   "rows": 128,
+   "sha256": "e96eea2ddd88aec38a9f327f2ab6016af59e2db01ee6008c80eb311f43a4c007"
+  },
+  {
+   "file": "artifacts/ai-positions-supply-cut/ai-promotion__frozen-v81-development__meeting-temperate.jsonl",
+   "source": "artifacts/ai-promotion/frozen-v81-development/meeting-temperate",
+   "games": 8,
+   "rows": 128,
+   "sha256": "b6eef24cff37671097ba326efb332d400c81f8d4a062e1d5dfa9d43dafd05111"
+  },
+  {
+   "file": "artifacts/ai-positions-supply-cut/ai-promotion__frozen-v82r-independent__attack-eastern.jsonl",
+   "source": "artifacts/ai-promotion/frozen-v82r-independent/attack-eastern",
+   "games": 20,
+   "rows": 320,
+   "sha256": "536604a892fbbd3e79b7788668c08c84c13a3065f112450c1d5608c92bd73f63"
+  },
+  {
+   "file": "artifacts/ai-positions-supply-cut/ai-promotion__frozen-v82r-independent__attack-temperate.jsonl",
+   "source": "artifacts/ai-promotion/frozen-v82r-independent/attack-temperate",
+   "games": 20,
+   "rows": 320,
+   "sha256": "bd69351e563fc1c21cd54f30b0ddc51ebfb2ab53246c825554eb8cd0eab286de"
+  },
+  {
+   "file": "artifacts/ai-positions-supply-cut/ai-promotion__frozen-v82r-independent__meeting-eastern.jsonl",
+   "source": "artifacts/ai-promotion/frozen-v82r-independent/meeting-eastern",
+   "games": 20,
+   "rows": 320,
+   "sha256": "60e099673646929e882f3eb9d8990446d4e5d6a44364dd27a8f6fbf267a41326"
+  },
+  {
+   "file": "artifacts/ai-positions-supply-cut/ai-promotion__frozen-v82r-independent__meeting-temperate.jsonl",
+   "source": "artifacts/ai-promotion/frozen-v82r-independent/meeting-temperate",
+   "games": 20,
+   "rows": 320,
+   "sha256": "42a3aa91394731368305087c4eb3ab8dd70f82c8b527f24c14e558867ea614ba"
+  },
+  {
+   "file": "artifacts/ai-positions-supply-cut/ai-promotion__frozen-v85-development__attack-eastern.jsonl",
+   "source": "artifacts/ai-promotion/frozen-v85-development/attack-eastern",
+   "games": 8,
+   "rows": 128,
+   "sha256": "8ec3f6346136a383a82c1b40eba53271f34c56f9880d8213d60df924a780bb23"
+  },
+  {
+   "file": "artifacts/ai-positions-supply-cut/ai-promotion__frozen-v85-development__attack-temperate.jsonl",
+   "source": "artifacts/ai-promotion/frozen-v85-development/attack-temperate",
+   "games": 8,
+   "rows": 128,
+   "sha256": "0c1c57a88d87c77f40c99c46b5b9889b07f6877a51f4e3a6ad63357da32c8d2c"
+  },
+  {
+   "file": "artifacts/ai-positions-supply-cut/ai-promotion__frozen-v85-development__meeting-eastern.jsonl",
+   "source": "artifacts/ai-promotion/frozen-v85-development/meeting-eastern",
+   "games": 8,
+   "rows": 128,
+   "sha256": "2619a6a72f5c1d42edcb6fa9e2b70acf3c7392323feb5930ef937eee6dacc5c1"
+  },
+  {
+   "file": "artifacts/ai-positions-supply-cut/ai-promotion__frozen-v85-development__meeting-temperate.jsonl",
+   "source": "artifacts/ai-promotion/frozen-v85-development/meeting-temperate",
+   "games": 8,
+   "rows": 128,
+   "sha256": "df421eb1a97901051726635e45d828e21fa9de3c23b42b4e91918e8e51e43741"
+  },
+  {
+   "file": "artifacts/ai-positions-supply-cut/analysis/supply-cut.txt",
+   "sha256": "b89e15337fb7b0a8ed79a00769b3ee8df212a868751a17df133e9a9370d9833d"
+  },
+  {
+   "file": "artifacts/ai-positions-supply-cut/analysis/supply-cut.json",
+   "sha256": "412a3c4ce2ae453ccc7cb9f5f7b1dfd11a96f429d562d1c8d885d3ff8d64db6b"
+  }
+ ]
+}
