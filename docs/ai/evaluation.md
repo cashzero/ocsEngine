@@ -8,6 +8,10 @@
 
 ## 現行行為
 
+下一階段優先進行 [VP 改善的預測指標研究](vp-metrics.md)，先實驗哪些指標能預測新種子與新策略變體的 VP 增益，再據此選擇策略改善方向。現有指標尚無這方面的驗證結論；研究不改變下列策略升級條件。
+
+歷史場景的空軍範圍不能只依 CLI 參數認定。[指標研究盤點](../quality/evidence/ai-vp-metrics-inventory-2026-10-18/README.md)的 `v79-baseline-wide`、`v80g-wide`、`v80j-wide`、`v80q-wide` 共 80 份攻擊戰存檔，即使 options 為 `air=NONE`、`airTransport=NONE`，仍有場外飛機與實際 `DECLARE_AIR_MISSION`。這些批次的「無空軍」描述不成立，只能作含場外空軍的歷史探索資料。其他批次的實際組成尚待稽核，不能由參數推定。缺口見 `historical-ai-air-scope`。
+
 ### 工具（皆需先 `npm run build`）
 
 | 腳本 | 用途 |
