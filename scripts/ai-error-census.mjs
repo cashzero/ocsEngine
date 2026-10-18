@@ -8,7 +8,11 @@
 //   Table column 6 (Open 3:1 or its equivalent) or better when the segment began;
 // - attack odds: declared regular attacks by column, and those at column 10 or more ("overkill");
 // - advances: after-combat advance decisions the trace names as declined ("no supplied advance…") or taken;
-// - never moved: own combat units on the map at the start that never moved all game.
+// - never moved: own combat units on the map at the start that never moved all game, split into immobile ones (no face with
+//   movement points, e.g. garrisons), mobile ones on an objective their side held at the start, and other mobile ones;
+// - objectives lost while empty: the side's control of an objective passes to the other side with no combat unit of the
+//   side in the hex, by how it was emptied: the last unit moved off, the units there were lost, or no combat unit of the
+//   side stood there since the start or since the side took it; and how many player turns before the loss it was emptied.
 // --branches writes each idle Combat Segment as a branch point for scripts/ai-continue.mjs (save, side, first action index).
 import { existsSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
@@ -46,8 +50,18 @@ for (const dir of dirs) {
       if (row.intent.startsWith('advance: no supplied advance')) bump(roleOf(playerId), 'advances declined');
       else if (row.intent.startsWith('advance: take')) bump(roleOf(playerId), 'advances taken');
     }
+    const definitions = new Map(state.scenario.pieceCatalog.definitions.map((definition) => [definition.id, definition]));
+    const immobile = (piece) => (definitions.get(piece.definitionId)?.faces ?? []).every((face) => face.steps.every((step) => !(step.movementPointTicks > 0)));
+    const control = (current, hexId) => current.mapState.hexControl.find((entry) => String(entry.hexId) === hexId)?.controllerId ?? null;
+    const objectiveHexes = state.configuration.objectives.map(({ hexId }) => String(hexId));
     const startHexes = new Map(state.pieceState.pieces.filter((piece) => piece.location.kind === 'ON_MAP' && m.isOnMapCombatUnit(state, piece))
-      .map((piece) => [piece.id, { ownerId: piece.ownerId, moved: false }]));
+      .map((piece) => [piece.id, { ownerId: piece.ownerId, moved: false, immobile: immobile(piece),
+        onOwnObjective: objectiveHexes.includes(String(piece.location.hexId)) && control(state, String(piece.location.hexId)) === piece.ownerId }]));
+    const occupants = (current, hexId, ownerId) => current.pieceState.pieces.filter((piece) => piece.ownerId === ownerId && piece.location.kind === 'ON_MAP'
+      && String(piece.location.hexId) === hexId && m.isOnMapCombatUnit(current, piece)).length;
+    // Per objective and side: how it was last emptied ('moved off', 'lost') and the player turn, or never garrisoned.
+    const emptied = new Map();
+    let playerTurn = 0; let turnKey = null;
     let segment = null; let segmentInfo = null;
     const closeSegment = () => {
       if (!segmentInfo) return;
@@ -84,10 +98,32 @@ for (const dir of dirs) {
         if (segmentInfo && action.actorId === segmentInfo.playerId) segmentInfo.declared += 1;
       }
       if (action.kind === 'MOVE_PIECE' && startHexes.has(action.pieceId)) startHexes.get(action.pieceId).moved = true;
+      const turnNow = `${gameTurn}:${playerTurnIndex}`;
+      if (turnNow !== turnKey) { turnKey = turnNow; playerTurn += 1; }
+      const before = state;
       state = m.ruleEngine.applyAction(state, action).state;
+      for (const hexId of objectiveHexes) {
+        for (const { id: playerId } of state.scenario.players) {
+          const was = occupants(before, hexId, playerId); const now = occupants(state, hexId, playerId);
+          const key = `${hexId}|${playerId}`;
+          if (was > 0 && now === 0) emptied.set(key, { how: action.kind === 'MOVE_PIECE' && before.pieceState.pieces.some((piece) => piece.id === action.pieceId && piece.ownerId === playerId) ? 'moved off' : 'lost', turn: playerTurn });
+          if (control(before, hexId) !== playerId && control(state, hexId) === playerId) emptied.delete(key);
+          if (control(before, hexId) === playerId && control(state, hexId) !== playerId && now === 0) {
+            const last = emptied.get(key);
+            const role = roleOf(playerId);
+            bump(role, 'objectives lost while empty');
+            bump(role, `objectives lost while empty: ${last ? last.how : 'never garrisoned'}`);
+            if (last) bump(role, `objectives lost while empty: emptied ${Math.min(4, playerTurn - last.turn)}${playerTurn - last.turn >= 4 ? '+' : ''} player turns before`);
+          }
+        }
+      }
     }
     closeSegment();
-    for (const { ownerId, moved } of startHexes.values()) if (!moved) bump(roleOf(ownerId), 'combat units never moved');
+    for (const { ownerId, moved, immobile: fixed, onOwnObjective } of startHexes.values()) {
+      if (moved) continue;
+      bump(roleOf(ownerId), 'combat units never moved');
+      bump(roleOf(ownerId), `combat units never moved: ${fixed ? 'immobile' : onOwnObjective ? 'mobile, on an own objective' : 'mobile, elsewhere'}`);
+    }
   }
 }
 const summary = Object.fromEntries(Object.entries(roles).map(([role, counts]) => [role, Object.fromEntries(

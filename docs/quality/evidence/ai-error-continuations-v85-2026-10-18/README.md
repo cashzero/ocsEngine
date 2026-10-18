@@ -52,6 +52,19 @@ internal stocks 17. Feed SP was within reach at the loss in 15 (6%). 41 of the u
 - E2: the bot rarely fails to feed a unit that could be fed. Most attrition starts with an enemy move cutting trace; the most
   frequent own part is paying fuel with the SP a cut-off unit needs as its ration.
 
+## E7 and E8 breakdown
+
+`node scripts/ai-error-census.mjs <the four groups> --out census-e7-e8.json` ([census-e7-e8.json](census-e7-e8.json)), per
+side-game:
+
+- Combat units that never moved: meeting 6.63 (immobile 5.56, mobile on an own objective 0.38, mobile elsewhere 0.69);
+  defender 11.50 (9.63, 0.63, 1.25); attacker 1.38 (all mobile, elsewhere).
+- Objectives lost with no combat unit of the side in the hex: meeting 2.38 (the units there were lost 2.00, the last one
+  moved off 0.38, never garrisoned 0); defender 3.50 (3.38, 0.13, 0). 1.50 and 2.50 of them were emptied in the same player
+  turn: a garrison destroyed or retreated in combat and the enemy entering.
+- E7 and E8 are mostly not errors: the cases the items were meant to find are 0.13–0.38 objectives and 0.7–1.4 mobile units
+  a side-game.
+
 ## Raw data
 
 The ignored `artifacts/ai-continue/declined-advance`, `artifacts/ai-continue/idle-combat` and the `supply-attribution.json`
