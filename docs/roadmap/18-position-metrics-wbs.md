@@ -41,10 +41,10 @@
 ## 2. 步驟
 
 - [x] P0 第一批局勢指標與記錄。目標風險與可奪、暴露（上限與分配後）、HQ 與補給堆、可移動單位、一步可切斷的補給線；`ai-position-record.mjs` 在既有對局逐玩家回合記錄，附各方損失、目標點變化與補給堆損失。[記錄](../quality/evidence/ai-position-record-2026-10-18/README.md)、[補給線切斷](../quality/evidence/ai-position-supply-cut-2026-10-18/README.md)、[分配後暴露](../quality/evidence/ai-position-exposure-2026-10-18/README.md)
-- [x] P0b 分組樣本外驗證工具與首次驗證。以初始 hash、終局 hash 與完整行動序列識別對局（255 條軌跡、96 組地圖種子），推翻以指標陣列去重的舊計數與舊的終局預測結論。[驗證](../quality/evidence/ai-position-validation-2026-10-18/README.md)
+- [x] P0b 分組樣本外驗證工具與首次驗證。以初始 hash、終局 hash 與完整行動序列識別對局（255 條軌跡、96 組地圖種子），推翻以指標陣列去重的舊計數與舊的終局預測結論。[驗證](../quality/evidence/ai-position-validation-2026-10-18/README.md)；其近期數值後來因紀錄列的行動方錯置作廢（見 P2）。
 - [x] P0c 第二批指標與損失原因拆分（溫帶 16 局描述）。`payableObjectives*`、`maxSingleStackExpectedLoss`、`surplusCombatSp`、`bestObjectiveEffectiveColumn`、`localForceRatioAt2Hex`；`combatStepsLost` 與 `attritionStepsLost`。[溫帶描述](../quality/evidence/ai-position-metrics-temperate-2026-10-18/README.md)
-- [ ] P1 驗證工具擴充。加入行動方的指標作特徵（進攻類指標要預測行動方的擊殺與奪點），以及跨到下一列的結果（不行動方在自己下一回合的斷補 step 損失）。自我測試涵蓋新特徵不洩漏未來資料。
-- [ ] P2 驗證未驗證的既有指標。全部 24 個對局資料夾以目前的記錄器重記，對 P0c 的指標、`dumpSpInReach`、`unitsWithReach` 與損失原因拆分做分組樣本外驗證，分角色報告。
+- [x] P1 驗證工具擴充。加入行動方的指標作特徵（進攻類指標要預測行動方的擊殺與奪點），以及跨到下一列的結果（不行動方在自己下一回合的斷補 step 損失）。自我測試涵蓋新特徵不洩漏未來資料。另加訓練五分位分桶模型，供比例、欄位、期望損失等非計數指標使用。[紀錄](../quality/evidence/ai-position-metrics-p2-2026-10-19/README.md)
+- [x] P2 驗證未驗證的既有指標。全部 24 個對局資料夾以目前的記錄器重記，對 P0c 的指標、`dumpSpInReach`、`unitsWithReach` 與損失原因拆分做分組樣本外驗證，分角色報告。過程中發現並修正記錄器的行動方錯置（每個 Game Turn 第一列在先攻擲骰前建立，682／2,944 個 Game Turn 錯置），全部重記後重驗。[紀錄](../quality/evidence/ai-position-metrics-p2-2026-10-19/README.md)
 - [ ] P3 殘差檢視。用通過驗證的指標預測近期結果，依事先固定的規則挑出預測誤差最大的玩家回合（例如各角色、各結果的前 20 個），逐一檢視局面缺少的資訊，寫成新候選的機制假說。
 - [ ] P4 新候選。初版清單如下，依 P3 增刪；每項先寫下第 1 節要求的定義、結果、基準與門檻：
 
