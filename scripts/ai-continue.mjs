@@ -10,12 +10,12 @@
 // (summary.json next to the save). Every variant therefore meets the same dice stream until their play diverges.
 // Policies are named as in ai-match.mjs: heuristic, heuristic@<dist dir>, heuristic:<weights.json>.
 //
-// One JSON line per variant × dice seed × horizon: position metrics for both players (ai-position-metrics.mjs) and the
+// One JSON line per variant × dice seed × horizon: current-position and next-turn metrics for both players (ai-position-metrics.mjs) and the
 // events since the branch, when game turn T0 + h begins (T0 is the branch turn) and at the end of the game ("end").
 import { appendFileSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { basename, dirname, join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { eventTotals, positionMetrics } from './ai-position-metrics.mjs';
+import { eventTotals, loadEngine, nextTurnMetrics, positionMetrics } from './ai-position-metrics.mjs';
 
 const root = resolve(fileURLToPath(new URL('..', import.meta.url)));
 const args = process.argv.slice(2);
@@ -28,7 +28,8 @@ const opponent = option('--opponent');
 const diceCount = Number(option('--dice', '4'));
 const horizons = option('--horizons', '1,3').split(',').map(Number);
 const out = resolve(option('--out'));
-const m = await import(pathToFileURL(join(resolve(root, option('--engine', 'dist')), 'index.js')).href);
+const engineModules = await loadEngine(resolve(root, option('--engine', 'dist')));
+const { m } = engineModules;
 if (!['allied', 'axis'].includes(subject) || variants.length === 0 || !opponent || !Number.isInteger(at)) throw new Error('see usage');
 
 const save = JSON.parse(readFileSync(savePath, 'utf8'));
@@ -80,7 +81,7 @@ for (let dice = 1; dice <= diceCount; dice += 1) {
       const owners = new Map(current.pieceState.pieces.map((piece) => [piece.id, piece.ownerId]));
       appendFileSync(out, `${JSON.stringify({
         save: savePath, match, at, branchTurn, subject, variant: name, policy: policyId, dice, horizon, reason,
-        turn: current.sequence.gameTurn, metrics: positionMetrics(m, current),
+        turn: current.sequence.gameTurn, metrics: ((position, nextTurn) => Object.fromEntries(Object.keys(position).map((playerId) => [playerId, { ...position[playerId], ...nextTurn[playerId] }])))(positionMetrics(m, current), nextTurnMetrics(engineModules, current)),
         events: eventTotals(session.getHistory({ actionKind: null, offset: 0, limit: 1e9 }).records, (pieceId) => owners.get(pieceId), players),
       })}\n`);
     };

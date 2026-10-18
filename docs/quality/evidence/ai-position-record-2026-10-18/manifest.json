@@ -1,0 +1,271 @@
+{
+ "engine": "ai-truck-shuttle build of this commit",
+ "files": [
+  {
+   "file": "artifacts/ai-positions/ai-assault__defender-1330__noeffort-eastern.jsonl",
+   "source": "artifacts/ai-assault/defender-1330/noeffort-eastern",
+   "games": 40,
+   "rows": 640,
+   "sha256": "7e1d0c7daf293371857f450c02f19a5a797d414e644645a92729b5c50b68c03e",
+   "policies": [
+    "heuristic:artifacts/ai-assault/weights/defender-noeffort.json",
+    "heuristic@artifacts/ai-promotion/frozen-v79/dist"
+   ]
+  },
+  {
+   "file": "artifacts/ai-positions/ai-assault__defender-1330__noeffort-temperate.jsonl",
+   "source": "artifacts/ai-assault/defender-1330/noeffort-temperate",
+   "games": 40,
+   "rows": 640,
+   "sha256": "9c43746069393cb7297b0bb9cd9304c4d8029a91cdfa97191bea58af90b5247f",
+   "policies": [
+    "heuristic:artifacts/ai-assault/weights/defender-noeffort.json",
+    "heuristic@artifacts/ai-promotion/frozen-v79/dist"
+   ]
+  },
+  {
+   "file": "artifacts/ai-positions/ai-assault__defender-1330__v83-eastern.jsonl",
+   "source": "artifacts/ai-assault/defender-1330/v83-eastern",
+   "games": 40,
+   "rows": 640,
+   "sha256": "e119ae7e4ba51c35ca8f2012fa6ee644e409460c6d32dfaece6fc83f88a3c7d5",
+   "policies": [
+    "heuristic",
+    "heuristic@artifacts/ai-promotion/frozen-v79/dist"
+   ]
+  },
+  {
+   "file": "artifacts/ai-positions/ai-assault__defender-1330__v83-temperate.jsonl",
+   "source": "artifacts/ai-assault/defender-1330/v83-temperate",
+   "games": 40,
+   "rows": 640,
+   "sha256": "cb669c92a4fcb74ebd1329cae15ee5c600a2c6e126b0460a56d472f411302848",
+   "policies": [
+    "heuristic",
+    "heuristic@artifacts/ai-promotion/frozen-v79/dist"
+   ]
+  },
+  {
+   "file": "artifacts/ai-positions/ai-assault__v84-development__attack-eastern.jsonl",
+   "source": "artifacts/ai-assault/v84-development/attack-eastern",
+   "games": 8,
+   "rows": 128,
+   "sha256": "70450fca2a1aa17aa692b17d6105e830c9d2563f51faef6d5873016862e6e6e6",
+   "policies": [
+    "heuristic",
+    "heuristic@artifacts/ai-promotion/frozen-v79/dist"
+   ]
+  },
+  {
+   "file": "artifacts/ai-positions/ai-assault__v84-development__attack-temperate.jsonl",
+   "source": "artifacts/ai-assault/v84-development/attack-temperate",
+   "games": 8,
+   "rows": 128,
+   "sha256": "695de73f66e331a9b5417906108487cf1fd6a45ae75d04ecd04a331524136e12",
+   "policies": [
+    "heuristic",
+    "heuristic@artifacts/ai-promotion/frozen-v79/dist"
+   ]
+  },
+  {
+   "file": "artifacts/ai-positions/ai-assault__v84-development__meeting-eastern.jsonl",
+   "source": "artifacts/ai-assault/v84-development/meeting-eastern",
+   "games": 8,
+   "rows": 128,
+   "sha256": "b00684bb16a9576ac3dc2fc8d54fcb883297841c7ac2ff2e41fe1768f59d2269",
+   "policies": [
+    "heuristic",
+    "heuristic@artifacts/ai-promotion/frozen-v79/dist"
+   ]
+  },
+  {
+   "file": "artifacts/ai-positions/ai-assault__v84-development__meeting-temperate.jsonl",
+   "source": "artifacts/ai-assault/v84-development/meeting-temperate",
+   "games": 8,
+   "rows": 128,
+   "sha256": "66d61f6afceb1462aa6e750b03ef31b7db18a5b13792e6a92db071e30f2674af",
+   "policies": [
+    "heuristic",
+    "heuristic@artifacts/ai-promotion/frozen-v79/dist"
+   ]
+  },
+  {
+   "file": "artifacts/ai-positions/ai-continue__ration-fix-games__attack-eastern.jsonl",
+   "source": "artifacts/ai-continue/ration-fix-games/attack-eastern",
+   "games": 8,
+   "rows": 128,
+   "sha256": "60041065dfc4b7ea9affac6e3ba001e8294a646c3b525ea2d59bed9eb059f340",
+   "policies": [
+    "heuristic",
+    "heuristic@artifacts/ai-promotion/frozen-v79/dist"
+   ]
+  },
+  {
+   "file": "artifacts/ai-positions/ai-continue__ration-fix-games__attack-temperate.jsonl",
+   "source": "artifacts/ai-continue/ration-fix-games/attack-temperate",
+   "games": 8,
+   "rows": 128,
+   "sha256": "219f417d8565ee6a8b25fa32eb4defeabb92a6673a4644256457f625531614c2",
+   "policies": [
+    "heuristic",
+    "heuristic@artifacts/ai-promotion/frozen-v79/dist"
+   ]
+  },
+  {
+   "file": "artifacts/ai-positions/ai-continue__ration-fix-games__meeting-eastern.jsonl",
+   "source": "artifacts/ai-continue/ration-fix-games/meeting-eastern",
+   "games": 8,
+   "rows": 128,
+   "sha256": "5cd1d535d51be665bc3e7b0a08615d0aac13e3980c46c3b5317af5d799263fcc",
+   "policies": [
+    "heuristic",
+    "heuristic@artifacts/ai-promotion/frozen-v79/dist"
+   ]
+  },
+  {
+   "file": "artifacts/ai-positions/ai-continue__ration-fix-games__meeting-temperate.jsonl",
+   "source": "artifacts/ai-continue/ration-fix-games/meeting-temperate",
+   "games": 8,
+   "rows": 128,
+   "sha256": "96b02b928b058302bf4af434cee7c63a3c36e983256ab1715e3461f7b0d4ccc6",
+   "policies": [
+    "heuristic",
+    "heuristic@artifacts/ai-promotion/frozen-v79/dist"
+   ]
+  },
+  {
+   "file": "artifacts/ai-positions/ai-promotion__frozen-v81-development__attack-eastern.jsonl",
+   "source": "artifacts/ai-promotion/frozen-v81-development/attack-eastern",
+   "games": 8,
+   "rows": 128,
+   "sha256": "82f5b54f3502e14428695e2a6faaf9e724c59a313b6fc07a8904747bdef6e8dd",
+   "policies": [
+    "heuristic",
+    "heuristic@/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-promotion/frozen-v79/dist"
+   ]
+  },
+  {
+   "file": "artifacts/ai-positions/ai-promotion__frozen-v81-development__attack-temperate.jsonl",
+   "source": "artifacts/ai-promotion/frozen-v81-development/attack-temperate",
+   "games": 8,
+   "rows": 128,
+   "sha256": "1fd8ffb763cd82fbf25f862d491ad864783cafce49978fdfd21057bd4a04264f",
+   "policies": [
+    "heuristic",
+    "heuristic@/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-promotion/frozen-v79/dist"
+   ]
+  },
+  {
+   "file": "artifacts/ai-positions/ai-promotion__frozen-v81-development__meeting-eastern.jsonl",
+   "source": "artifacts/ai-promotion/frozen-v81-development/meeting-eastern",
+   "games": 8,
+   "rows": 128,
+   "sha256": "c782a495648e935758da5e8812760581a64c9409eee2225c4a8ad478089122b6",
+   "policies": [
+    "heuristic",
+    "heuristic@/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-promotion/frozen-v79/dist"
+   ]
+  },
+  {
+   "file": "artifacts/ai-positions/ai-promotion__frozen-v81-development__meeting-temperate.jsonl",
+   "source": "artifacts/ai-promotion/frozen-v81-development/meeting-temperate",
+   "games": 8,
+   "rows": 128,
+   "sha256": "ce1cfafd5c3ee31c62f8cf8dfef79b060442158cf9b3fbc2321bd197bbf50878",
+   "policies": [
+    "heuristic",
+    "heuristic@/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-promotion/frozen-v79/dist"
+   ]
+  },
+  {
+   "file": "artifacts/ai-positions/ai-promotion__frozen-v82r-independent__attack-eastern.jsonl",
+   "source": "artifacts/ai-promotion/frozen-v82r-independent/attack-eastern",
+   "games": 20,
+   "rows": 320,
+   "sha256": "35d95ca9a22c0245ef6f5181c41d32347ebe3f6623322ddf7a498ed57fb5fa56",
+   "policies": [
+    "heuristic",
+    "heuristic@/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-promotion/frozen-v79/dist"
+   ]
+  },
+  {
+   "file": "artifacts/ai-positions/ai-promotion__frozen-v82r-independent__attack-temperate.jsonl",
+   "source": "artifacts/ai-promotion/frozen-v82r-independent/attack-temperate",
+   "games": 20,
+   "rows": 320,
+   "sha256": "8b1e865c2352b321a1742dfdd0e8a251b681db8c3728257f7f53503c8d53a4a3",
+   "policies": [
+    "heuristic",
+    "heuristic@/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-promotion/frozen-v79/dist"
+   ]
+  },
+  {
+   "file": "artifacts/ai-positions/ai-promotion__frozen-v82r-independent__meeting-eastern.jsonl",
+   "source": "artifacts/ai-promotion/frozen-v82r-independent/meeting-eastern",
+   "games": 20,
+   "rows": 320,
+   "sha256": "6f7fc35e7a1855bba09fcdf70fd41fa9a2b8ceb1817da8074088a121178fe3b0",
+   "policies": [
+    "heuristic",
+    "heuristic@/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-promotion/frozen-v79/dist"
+   ]
+  },
+  {
+   "file": "artifacts/ai-positions/ai-promotion__frozen-v82r-independent__meeting-temperate.jsonl",
+   "source": "artifacts/ai-promotion/frozen-v82r-independent/meeting-temperate",
+   "games": 20,
+   "rows": 320,
+   "sha256": "036619af75f97cca4eb68b590b44de77f6d8037a920ddc239a8553aec089c6c9",
+   "policies": [
+    "heuristic",
+    "heuristic@/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-promotion/frozen-v79/dist"
+   ]
+  },
+  {
+   "file": "artifacts/ai-positions/ai-promotion__frozen-v85-development__attack-eastern.jsonl",
+   "source": "artifacts/ai-promotion/frozen-v85-development/attack-eastern",
+   "games": 8,
+   "rows": 128,
+   "sha256": "d80314fe68298ecdefe2f33a4e464ac2f18285adc1dd725c1dcd1f7edbd57669",
+   "policies": [
+    "heuristic",
+    "heuristic@/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-promotion/frozen-v79/dist"
+   ]
+  },
+  {
+   "file": "artifacts/ai-positions/ai-promotion__frozen-v85-development__attack-temperate.jsonl",
+   "source": "artifacts/ai-promotion/frozen-v85-development/attack-temperate",
+   "games": 8,
+   "rows": 128,
+   "sha256": "946a2fdff2d881af3b8222df64eaae55c8ac9303059adf84ad278376e35133cd",
+   "policies": [
+    "heuristic",
+    "heuristic@/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-promotion/frozen-v79/dist"
+   ]
+  },
+  {
+   "file": "artifacts/ai-positions/ai-promotion__frozen-v85-development__meeting-eastern.jsonl",
+   "source": "artifacts/ai-promotion/frozen-v85-development/meeting-eastern",
+   "games": 8,
+   "rows": 128,
+   "sha256": "ecd4119b2af87bed6776d977263f69e8dd207bc6d50a9f57fa97df5e362a9ef9",
+   "policies": [
+    "heuristic",
+    "heuristic@/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-promotion/frozen-v79/dist"
+   ]
+  },
+  {
+   "file": "artifacts/ai-positions/ai-promotion__frozen-v85-development__meeting-temperate.jsonl",
+   "source": "artifacts/ai-promotion/frozen-v85-development/meeting-temperate",
+   "games": 8,
+   "rows": 128,
+   "sha256": "7aa336e77016e1c4236db0d3f6f1ba046bc1eb077b02baf5e104b1f92a9ddc56",
+   "policies": [
+    "heuristic",
+    "heuristic@/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-promotion/frozen-v79/dist"
+   ]
+  }
+ ],
+ "games": 368,
+ "rows": 5888
+}

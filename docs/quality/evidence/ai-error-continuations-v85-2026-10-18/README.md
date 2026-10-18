@@ -79,6 +79,24 @@ per side-game, attacker / defender / meeting side:
 - Within the Combat Segment little strength is misplaced; most excess strength had no other target adjacent, so the
   allocation that matters is made in the Movement Segment (with E6).
 
+## E6 breakdown
+
+`node scripts/ai-approach-study.mjs artifacts/ai-assault/v84-development/attack-* --role attacker`: 3,048 attacker
+combat-unit moves in Movement Segments from Game Turn 2 (16 games; each pair of games is the same game, so every move
+appears twice). Against each unit's own target (the hex in its trace intent): moves / ended beside or on the target /
+stopped 2–3 hexes from it although a hex beside it was in range, with the commonest score terms of those stops:
+
+| Task (target) | Moves | Beside | Stopped 2–3 short | Terms of the short stops (moves × mean) |
+|---|---|---|---|---|
+| assault (enemy on it) | 498 | 230 | 44 | progress 38 × 25.1, exposure 26 × −9.1, contact 18 × −0.2, crowding 18 × −6.8 |
+| hunt (enemy on it) | 754 | 322 | 148 | progress 132 × 18.2, crowding 76 × −5.5, exposure 72 × −5.3 |
+| capture (enemy on it) | 640 | 134 | 114 | progress 108 × 51.0, crowding 62 × −7.3, exposure 54 × −6.2 |
+| front (enemy on it) | 110 | 12 | 24 | progress 24 × 10.0, exposure 10 × −4.6, crowding 10 × −3.0 |
+
+Stopping short of a reachable target is 9–20% of the moves, held back mostly by `crowding` and `exposure`; most other moves
+could not reach the target that turn. Whether a short stop is wrong depends on the position, which no measure covered:
+next-turn position metrics were added for that ([policy-errors](../../../ai/policy-errors.md#局勢指標)).
+
 ## Raw data
 
 The ignored `artifacts/ai-continue/declined-advance`, `artifacts/ai-continue/idle-combat` and the `supply-attribution.json`

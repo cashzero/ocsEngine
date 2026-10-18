@@ -76,3 +76,90 @@ export const eventTotals = (history, ownerOf, players) => {
   }
   return totals;
 };
+
+export const NEXT_TURN_METRIC_NAMES = [
+  'objectivesAtRisk', 'objectiveVpAtRisk', 'objectivesInReach', 'objectiveVpInReach', 'stacksExposed', 'stepsExposed',
+  'hqsInReach', 'dumpSpInReach', 'unitsWithReach',
+];
+
+/** Loads the rule modules nextTurnMetrics needs from a built engine directory (dist). */
+export const loadEngine = async (distDirectory) => {
+  const { pathToFileURL } = await import('node:url');
+  const { join } = await import('node:path');
+  const load = (file) => import(pathToFileURL(join(distDirectory, file)).href);
+  const [m, strength, pieces] = await Promise.all([load('index.js'), load('rules/combat/strength.js'), load('rules/pieces.js')]);
+  return { m, strength, pieces };
+};
+
+/**
+ * What each side could do next turn from this position: the state projected to that side's Movement Segment with nothing
+ * moved and every unit fueled, so the rules' movement range gives each combat unit's reach (terrain, ZOC); the opponent's
+ * moves in between are ignored. A hex is attackable by the units that can reach a hex beside it, at the odds the rules give
+ * all of them against the defenders (the defender picking terrain, every defender supplied). For each player, from the
+ * opponent's reach:
+ * - objectivesAtRisk / objectiveVpAtRisk: objectives the player holds that the opponent can attack at column 6+ or,
+ *   with no combat unit of the player in them, enter;
+ * - objectivesInReach / objectiveVpInReach: the same the other way: objectives the player does not hold that it can attack at
+ *   column 6+ or enter;
+ * - stacksExposed / stepsExposed: hexes of the player's combat units the opponent can attack at column 9+, and their steps;
+ * - hqsInReach / dumpSpInReach: the player's HQs, and SP in its dumps (not garrison stocks), beside a hex the opponent reaches;
+ * - unitsWithReach: the player's combat units with a non-empty reach (the others cannot move: immobile, or no MP).
+ * Not measured yet: supply lines the opponent could cut next turn (the trace query takes no hypothetical blockers).
+ */
+export const nextTurnMetrics = ({ m, strength, pieces }, state) => {
+  const definitions = new Map(state.scenario.pieceCatalog.definitions.map((definition) => [definition.id, definition]));
+  const isHq = (piece) => String(definitions.get(piece.definitionId)?.categoryDefinitionId).endsWith(':hq');
+  const isDump = (piece) => definitions.get(piece.definitionId)?.family === 'RESOURCE';
+  const players = state.scenario.players.map(({ id }) => id);
+  const control = new Map(state.mapState.hexControl.map(({ hexId, controllerId }) => [String(hexId), controllerId]));
+  const combatOf = (playerId) => state.pieceState.pieces.filter((piece) => piece.ownerId === playerId && piece.location.kind === 'ON_MAP' && m.isOnMapCombatUnit(state, piece));
+  // Reach: hexes each combat unit of `playerId` can end its move in, on the projected state.
+  const reachOf = (playerId) => {
+    const own = combatOf(playerId);
+    const projected = {
+      ...state, activeTransaction: null, pendingDecision: null, currentMoverId: null,
+      sequence: { ...state.sequence, phase: 'MOVEMENT', segment: 'MOVEMENT', phasingPlayerId: playerId, actingPlayerId: playerId },
+      usage: own.map((piece) => ({ ...pieces.usageOf(state, piece), movementSpentTicks: 0, moved: false, fueled: true, negationLocked: false, phaseStartHexId: piece.location.hexId })),
+      air: { ...state.air, builderIds: [] },
+    };
+    return new Map(own.map((piece) => [piece.id, new Set([String(piece.location.hexId),
+      ...(m.ruleEngine.queryMovementRange(projected, playerId, piece.id).value ?? []).map((entry) => String(entry.hexId))])]));
+  };
+  const reaches = new Map(players.map((playerId) => [playerId, reachOf(playerId)]));
+  const beside = (hexId, reach) => [...reach].some((hex) => m.hexDistanceBetween(hex, hexId) === 1);
+  const potential = (attackerId, targetHexId) => {
+    const defenders = state.pieceState.pieces.filter((piece) => piece.ownerId !== attackerId && piece.location.kind === 'ON_MAP'
+      && String(piece.location.hexId) === targetHexId && m.isOnMapCombatUnit(state, piece));
+    if (defenders.length === 0) return null;
+    const attackers = [...reaches.get(attackerId)].filter(([, reach]) => beside(targetHexId, reach)).map(([id]) => id);
+    if (attackers.length === 0) return -1;
+    return strength.calculateCombatOdds(state, attackers, defenders.map((piece) => piece.id), targetHexId,
+      defenders.map((piece) => piece.id), null, null).columnIndex;
+  };
+  const enters = (playerId, hexId) => [...reaches.get(playerId).values()].some((reach) => reach.has(hexId));
+  const result = {};
+  for (const playerId of players) {
+    const opponent = players.find((id) => id !== playerId);
+    const opponentReach = [...reaches.get(opponent).values()];
+    const reachable = (hexId) => opponentReach.some((reach) => reach.has(hexId) || beside(hexId, reach));
+    const takeable = (by, hexId) => { const column = potential(by, hexId); return column === null ? enters(by, hexId) : column >= 6; };
+    const held = state.configuration.objectives.filter(({ hexId }) => control.get(String(hexId)) === playerId);
+    const notHeld = state.configuration.objectives.filter(({ hexId }) => control.get(String(hexId)) !== playerId);
+    const threatened = held.filter(({ hexId }) => takeable(opponent, String(hexId)));
+    const open = notHeld.filter(({ hexId }) => takeable(playerId, String(hexId)));
+    const own = combatOf(playerId);
+    const stacks = [...new Set(own.map((piece) => String(piece.location.hexId)))];
+    const exposed = stacks.filter((hexId) => (potential(opponent, hexId) ?? -1) >= 9);
+    const dumps = state.pieceState.pieces.filter((piece) => piece.ownerId === playerId && piece.location.kind === 'ON_MAP' && isDump(piece) && !String(piece.id).includes('-stock-'));
+    result[playerId] = {
+      objectivesAtRisk: threatened.length, objectiveVpAtRisk: threatened.reduce((total, { points }) => total + points, 0),
+      objectivesInReach: open.length, objectiveVpInReach: open.reduce((total, { points }) => total + points, 0),
+      stacksExposed: exposed.length,
+      stepsExposed: own.filter((piece) => exposed.includes(String(piece.location.hexId))).reduce((total, piece) => total + (piece.remainingSteps ?? 1), 0),
+      hqsInReach: own.filter((piece) => isHq(piece) && reachable(String(piece.location.hexId))).length,
+      dumpSpInReach: dumps.filter((piece) => reachable(String(piece.location.hexId))).reduce((total, piece) => total + (piece.resourceQuantity ?? 0), 0) / 4,
+      unitsWithReach: [...reaches.get(playerId).values()].filter((reach) => reach.size > 1).length,
+    };
+  }
+  return result;
+};
