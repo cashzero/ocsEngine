@@ -20,8 +20,13 @@ from pathlib import Path
 SPEC = importlib.util.spec_from_file_location('vpcompare', Path(__file__).with_name('ai-vp-metrics-compare.py'))
 VPCOMPARE = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(VPCOMPARE)
-FEATURES = frozenset({'objectivesThreatened', 'contact', 'objectivesAtRisk', 'objectiveVpAtRisk',
-                      'stacksExposed', 'stacksExposedAllocated', 'supplyCuttable', 'supplyBestCut', 'hqsInReach'})
+# Metrics of the non-phasing player O (what P can do to O in this turn) and, prefixed "mover.", of the phasing player P.
+DEFENDER_FEATURES = ('objectivesThreatened', 'contact', 'outOfTrace', 'objectivesAtRisk', 'objectiveVpAtRisk',
+                     'payableObjectiveVpAtRisk', 'stacksExposed', 'stacksExposedAllocated', 'maxSingleStackExpectedLoss',
+                     'supplyCuttable', 'supplyBestCut', 'hqsInReach', 'dumpSpInReach')
+MOVER_FEATURES = ('contact', 'objectiveVpInReach', 'payableObjectiveVpInReach', 'bestObjectiveEffectiveColumn',
+                  'localForceRatioAt2Hex', 'surplusCombatSp', 'unitsWithReach')
+FEATURES = frozenset(DEFENDER_FEATURES) | frozenset(f'mover.{feature}' for feature in MOVER_FEATURES)
 TESTS = (
     ('objectiveVpLost', 'objectiveVpAtRisk', 'objectivesThreatened'),
     ('objectivesLost', 'objectivesAtRisk', 'objectivesThreatened'),
@@ -30,10 +35,23 @@ TESTS = (
     ('outOfTraceRise', 'supplyCuttable', 'contact'),
     ('outOfTraceRise', 'supplyBestCut', 'contact'),
     ('hqsLost', 'hqsInReach', 'contact'),
+    ('objectiveVpLost', 'payableObjectiveVpAtRisk', 'objectivesThreatened'),
+    ('objectiveVpLost', 'payableObjectiveVpAtRisk', 'objectiveVpAtRisk'),
+    ('combatStepsLost', 'stacksExposedAllocated', 'contact'),
+    ('combatStepsLost', 'maxSingleStackExpectedLoss', 'contact'),
+    ('combatStepsLost', 'maxSingleStackExpectedLoss', 'stacksExposedAllocated'),
+    ('spCapturedOrDestroyed', 'dumpSpInReach', 'contact'),
+    ('attritionNextTurn', 'supplyCuttable', 'outOfTrace'),
+    ('moverObjectiveVpGained', 'mover.objectiveVpInReach', 'mover.contact'),
+    ('moverObjectiveVpGained', 'mover.payableObjectiveVpInReach', 'mover.objectiveVpInReach'),
+    ('moverObjectivesGained', 'mover.bestObjectiveEffectiveColumn', 'mover.contact'),
+    ('moverObjectivesGained', 'mover.localForceRatioAt2Hex', 'mover.contact'),
+    ('combatStepsLost', 'mover.surplusCombatSp', 'mover.contact'),
+    ('combatStepsLost', 'mover.unitsWithReach', 'mover.contact'),
 )
 SUBSETS = ('all', 'attacker-moving', 'defender-moving', 'meeting')
 MODEL_NAMES = ('zero', 'trainMedian', 'trainMean', 'baseline', 'baselinePlusMetric',
-               'baselineBucketMedian', 'metricBucketMedian')
+               'baselineBucketMedian', 'metricBucketMedian', 'baselineQuantileMedian', 'metricQuantileMedian')
 
 
 def canonical(value):
@@ -146,13 +164,20 @@ def samples_from_games(games):
             current, following = before['metrics'][other], after['metrics'][other]
             role = ('meeting' if before['attackerId'] is None else
                     'attacker-moving' if before['attackerId'] == phasing else 'defender-moving')
+            mover = before['metrics'][phasing]
             outcomes = dict(before['turn'][other])
             outcomes['outOfTraceRise'] = max(0, following['outOfTrace'] - current['outOfTrace'])
             outcomes['hqsLost'] = max(0, current['hqs'] - following['hqs'])
+            outcomes['moverObjectivesGained'] = before['turn'][phasing]['objectivesGained']
+            outcomes['moverObjectiveVpGained'] = before['turn'][phasing]['objectiveVpGained']
+            # O's own following player turn, where its attrition falls; missing when P moves twice in a row.
+            outcomes['attritionNextTurn'] = after['turn'][other].get('attritionStepsLost') if after['phasingPlayerId'] == other else None
+            metrics = {feature: current.get(feature) for feature in DEFENDER_FEATURES}
+            metrics.update({f'mover.{feature}': mover.get(feature) for feature in MOVER_FEATURES})
             samples.append({'game': game['id'], 'mapSeed': game['mapSeed'],
                             'batches': sorted({alias['batch'] for alias in game['aliases']}),
                             'role': role, 'gameTurn': before['gameTurn'], 'playerTurnIndex': before['playerTurnIndex'],
-                            'metrics': {feature: current.get(feature) for feature in FEATURES}, 'outcomes': outcomes})
+                            'metrics': metrics, 'outcomes': outcomes})
     return samples
 
 
@@ -191,6 +216,17 @@ def model_predictions(train, test, baseline, metric):
             groups[bucket(row['metrics'][feature])].append(row['y'])
         medians = {key: statistics.median(values) for key, values in groups.items()}
         predictions[name] = [medians.get(bucket(row['metrics'][feature]), median) for row in test]
+    # Training quintile bins, for metrics that are not small counts (ratios, columns, expected losses).
+    for name, feature in [('baselineQuantileMedian', baseline), ('metricQuantileMedian', metric)]:
+        values = sorted(row['metrics'][feature] for row in train)
+        cuts = sorted({values[min(len(values) - 1, (len(values) * q) // 5)] for q in range(1, 5)})
+        def quantile_bin(value, cuts=cuts):
+            return sum(value > cut for cut in cuts)
+        groups = defaultdict(list)
+        for row in train:
+            groups[quantile_bin(row['metrics'][feature])].append(row['y'])
+        medians = {key: statistics.median(values) for key, values in groups.items()}
+        predictions[name] = [medians.get(quantile_bin(row['metrics'][feature]), median) for row in test]
     return predictions
 
 
@@ -223,11 +259,14 @@ def conditional_intervals(cells, draws=1000):
     rng = random.Random(20261018)
     mae, r2 = [], []
     bucket_gains = {name: [] for name in ('zero', 'trainMedian', 'baselineBucketMedian')}
+    quantile_gains = {name: [] for name in ('zero', 'trainMedian', 'baselineQuantileMedian')}
     for _ in range(draws):
         result = scores([rng.choice(cells) for _ in cells])
         mae.append(result['baseline']['mae'] - result['baselinePlusMetric']['mae'])
         for name, values in bucket_gains.items():
             values.append(result[name]['mae'] - result['metricBucketMedian']['mae'])
+        for name, values in quantile_gains.items():
+            values.append(result[name]['mae'] - result['metricQuantileMedian']['mae'])
         if result['baseline']['r2'] is not None:
             r2.append(result['baselinePlusMetric']['r2'] - result['baseline']['r2'])
     def interval(values):
@@ -235,6 +274,7 @@ def conditional_intervals(cells, draws=1000):
         return [values[int((len(values) - 1) * 0.025)], values[int((len(values) - 1) * 0.975)]] if values else None
     return {'draws': draws, 'maeGain95': interval(mae), 'r2Gain95': interval(r2),
             'metricBucketMedianMaeGain95': {name: interval(values) for name, values in bucket_gains.items()},
+            'metricQuantileMedianMaeGain95': {name: interval(values) for name, values in quantile_gains.items()},
             'scope': 'Paired map-seed cluster resampling of fixed held-out errors. Conditional on fitted folds; no refitting or model-selection uncertainty.'}
 
 
@@ -295,8 +335,9 @@ def run(games, input_audit):
               'modelHelperSha256': digest(Path(VPCOMPARE.__file__).read_bytes()),
               'scope': 'Retrospective near-term predictive validation of previously selected indicators. Reuses historical data; no prospective, final-VP, or policy-strength claim.',
               'design': {'window': 'Non-phasing O at start of P player turn, Game Turns 2-8, with a following recorded row. The final player turn is excluded.',
-                         'outcomes': 'Recorded O objective/step losses during P turn; positive rise in O outOfTrace or decline in HQ count to the following row. stepsLost counts all recorded step-loss events.',
-                         'models': 'Zero event; training median; training mean; intercept plus distance baseline; intercept plus baseline plus metric; training conditional medians in baseline or metric buckets. Baseline and intercept unpenalized; standardized added metric fixed ridge penalty 1. Buckets fixed at 0, 1, 2-3, 4-7, 8+ from the historical descriptive analysis. Unseen bucket falls back to training median. No hyperparameter search. Complete cases shared across models; train-only preprocessing.',
+                         'outcomes': 'Recorded O objective/step losses during P turn (stepsLost all step-loss events, split into attritionStepsLost and combatStepsLost); positive rise in O outOfTrace or decline in HQ count to the following row; P objectives and objective VP gained in its turn; attritionNextTurn is O attrition in the following row when that row is O turn, else missing.',
+                         'models': 'Zero event; training median; training mean; intercept plus distance baseline; intercept plus baseline plus metric; training conditional medians in baseline or metric buckets, fixed at 0, 1, 2-3, 4-7, 8+ from the historical descriptive analysis, and in training quintile bins (for ratios, columns and expected losses). Baseline and intercept unpenalized; standardized added metric fixed ridge penalty 1. Unseen bucket falls back to training median. No hyperparameter search. Complete cases shared across models; train-only preprocessing.',
+                         'mover': 'Features prefixed mover. are the phasing player P metrics at the same row; the others are O metrics.',
                          'features': sorted(FEATURES), 'primarySplit': 'Ten folds of map seed, sorted by SHA256 and assigned round-robin. All styles, roles, policy variants and aliases of a seed stay together.',
                          'sensitivitySplit': 'Each source parent directory is one held-out batch. Training excludes every trajectory with any alias in that batch and every map seed appearing in its test data. Batches are reported separately because test trajectories can have multiple aliases.',
                          'batchMeaning': 'Provenance source parent directory, not independently verified policy version. Policy strings and variants are aliases retained verbatim.',
@@ -375,7 +416,23 @@ def self_test():
     except ValueError:
         pass
     assert digest(canonical({'b': 1, 'a': 2})) == digest(canonical({'a': 2, 'b': 1}))
-    print('self-test passed: held-out signal, null sensitivity, exact duplicate conflict, alias exclusion, fold coverage, no future leakage')
+    def turn_row(turn, index, phasing, value, attrition):
+        return {'gameTurn': turn, 'playerTurnIndex': index, 'phasingPlayerId': phasing, 'attackerId': 'a',
+                'metrics': {player: {**dict.fromkeys(DEFENDER_FEATURES + MOVER_FEATURES, value), 'outOfTrace': value, 'hqs': value}
+                            for player in ('a', 'd')},
+                'turn': {player: {'stepsLost': 0, 'objectivesGained': 0, 'objectiveVpGained': 0, 'attritionStepsLost': attrition}
+                         for player in ('a', 'd')}}
+    game = {'id': 'g', 'mapSeed': 1, 'aliases': [{'batch': 'b'}],
+            'rows': [turn_row(2, 0, 'a', 1, 0), turn_row(2, 1, 'd', 5, 3), turn_row(3, 0, 'd', 9, 7)]}
+    first, second = samples_from_games([game])
+    assert first['metrics']['contact'] == 1 and first['metrics']['mover.contact'] == 1, 'features come from the row itself'
+    assert first['outcomes']['attritionNextTurn'] == 3, "O's attrition in its following turn"
+    assert second['outcomes']['attritionNextTurn'] is None, 'missing when P moves twice in a row'
+    quantile_train = [{'metrics': {'contact': 0, 'objectivesAtRisk': value / 10}, 'y': value} for value in range(10)]
+    quantile = model_predictions(quantile_train, [{'metrics': {'contact': 0, 'objectivesAtRisk': value}} for value in (0.05, 0.85)],
+                                 'contact', 'objectivesAtRisk')['metricQuantileMedian']
+    assert quantile[0] < 2 and quantile[1] > 7, quantile
+    print('self-test passed: held-out signal, null sensitivity, exact duplicate conflict, alias exclusion, fold coverage, no future leakage, row-only features, next-turn outcome, quantile bins')
 
 
 def main():
