@@ -1,0 +1,200 @@
+{
+ "registeredAt": "2026-10-19, before any confirmation game was played",
+ "policy": "heuristic (standard heuristic@85, dist built from src as of eee03e2) on both sides; no --swap, which with one policy on both sides would repeat each game",
+ "games": [
+  {
+   "name": "attack-temperate",
+   "engagement": "AXIS_ATTACKS",
+   "style": "TEMPERATE_INLAND",
+   "start": 1500000,
+   "matches": 48,
+   "command": "node scripts/ai-match.mjs --matches 48 --start 1500000 --style TEMPERATE_INLAND --engagement AXIS_ATTACKS --turns 8 --size 32x24 --divisions 6 --armored 2 --air NONE --air-transport NONE --allied heuristic --axis heuristic --parallel 12 --out artifacts/ai-position-confirmation/attack-temperate"
+  },
+  {
+   "name": "attack-eastern",
+   "engagement": "AXIS_ATTACKS",
+   "style": "EASTERN_EUROPE",
+   "start": 1500100,
+   "matches": 48,
+   "command": "node scripts/ai-match.mjs --matches 48 --start 1500100 --style EASTERN_EUROPE --engagement AXIS_ATTACKS --turns 8 --size 32x24 --divisions 6 --armored 2 --air NONE --air-transport NONE --allied heuristic --axis heuristic --parallel 12 --out artifacts/ai-position-confirmation/attack-eastern"
+  },
+  {
+   "name": "meeting-temperate",
+   "engagement": "MEETING",
+   "style": "TEMPERATE_INLAND",
+   "start": 1500200,
+   "matches": 32,
+   "command": "node scripts/ai-match.mjs --matches 32 --start 1500200 --style TEMPERATE_INLAND --engagement MEETING --turns 8 --size 32x24 --divisions 6 --armored 2 --air NONE --air-transport NONE --allied heuristic --axis heuristic --parallel 12 --out artifacts/ai-position-confirmation/meeting-temperate"
+  },
+  {
+   "name": "meeting-eastern",
+   "engagement": "MEETING",
+   "style": "EASTERN_EUROPE",
+   "start": 1500300,
+   "matches": 32,
+   "command": "node scripts/ai-match.mjs --matches 32 --start 1500300 --style EASTERN_EUROPE --engagement MEETING --turns 8 --size 32x24 --divisions 6 --armored 2 --air NONE --air-transport NONE --allied heuristic --axis heuristic --parallel 12 --out artifacts/ai-position-confirmation/meeting-eastern"
+  }
+ ],
+ "totalGames": 160,
+ "record": "node scripts/ai-position-record.mjs artifacts/ai-position-confirmation/<group> --out artifacts/ai-position-confirmation/rows/<group>.jsonl; every game must replay to its final hash; a manifest in the validator format lists the four files",
+ "training": {
+  "manifest": "docs/quality/evidence/ai-position-metrics-p5-2026-10-19/manifest.json",
+  "note": "the 255 trajectories already used to choose the metrics; models are fitted on them only"
+ },
+ "scripts": {
+  "scripts/ai-position-metrics.mjs": "e69bd80c1523ef63b1b8100f3da492ee38f4c3d31eed3992b3dd182c51489dd8",
+  "scripts/ai-position-record.mjs": "682f054c23d0efc3d3390b127087bf34ed8c19fa32b3aaacb482dec47ed03c6d",
+  "scripts/ai-position-validate.py": "91eb5b1d453a3fe102462a3bc787eff126791eb8fb447373c8592c730f06dbff",
+  "scripts/ai-vp-metrics-compare.py": "00eeb924694c722d1ce47d92e44a6d1d6bae485b6728f1c9d2f0fcd80ed6a864",
+  "scripts/ai-position-final.py": "20b8aa054c84ae655d6f938f050808566cba195702676c602e49ed94e2f4777a"
+ },
+ "evaluation": [
+  "python3 scripts/ai-position-validate.py --train-manifest docs/quality/evidence/ai-position-metrics-p5-2026-10-19/manifest.json --manifest artifacts/ai-position-confirmation/rows/manifest.json --artifact-root . --out artifacts/ai-position-confirmation/validation.json",
+  "python3 scripts/ai-position-final.py --train-manifest docs/quality/evidence/ai-position-metrics-p5-2026-10-19/manifest.json --manifest artifacts/ai-position-confirmation/rows/manifest.json --artifact-root . --out artifacts/ai-position-confirmation/final.json"
+ ],
+ "passRule": "A near-term hypothesis passes in a role subset when, on the new games, the 95% map-seed cluster interval of the out-of-sample R2 gain of baseline plus metric over the baseline is above 0 (R2), or the metric bucket model (fixed or quintile, as listed) beats zero, training median and the baseline bucket model on MAE with every interval above 0 (MAE). A final-result hypothesis passes at a Game Turn when the listed gain interval is above 0. Every hypothesis and subset is reported, passed or not; no other test is added after the games are seen.",
+ "hypotheses": [
+  {
+   "id": "H1",
+   "test": [
+    "objectiveVpLost",
+    "objectiveVpAtRisk",
+    "objectivesThreatened"
+   ],
+   "subsets": [
+    "attacker-moving",
+    "defender-moving",
+    "meeting"
+   ],
+   "measure": "R2"
+  },
+  {
+   "id": "H2",
+   "test": [
+    "objectiveVpLost",
+    "payableObjectiveVpAtRisk",
+    "objectiveVpAtRisk"
+   ],
+   "subsets": [
+    "attacker-moving"
+   ],
+   "measure": "R2 or MAE (fixed buckets)"
+  },
+  {
+   "id": "H3a",
+   "test": [
+    "moverObjectivesGained",
+    "mover.objectiveReachColumn",
+    "mover.contact"
+   ],
+   "subsets": [
+    "attacker-moving",
+    "defender-moving",
+    "meeting"
+   ],
+   "measure": "R2"
+  },
+  {
+   "id": "H3b",
+   "test": [
+    "moverObjectivesGained",
+    "mover.objectiveReachColumn",
+    "mover.bestObjectiveEffectiveColumn"
+   ],
+   "subsets": [
+    "attacker-moving",
+    "meeting"
+   ],
+   "measure": "R2"
+  },
+  {
+   "id": "H4",
+   "test": [
+    "combatStepsLost",
+    "stacksExposedAllocated",
+    "contact"
+   ],
+   "subsets": [
+    "attacker-moving",
+    "meeting"
+   ],
+   "measure": "R2 or MAE (fixed buckets or quintile bins)"
+  },
+  {
+   "id": "H5",
+   "test": [
+    "outOfTraceRise",
+    "supplyCuttable",
+    "contact"
+   ],
+   "subsets": [
+    "attacker-moving",
+    "meeting"
+   ],
+   "measure": "R2"
+  },
+  {
+   "id": "H6",
+   "test": [
+    "hqsLost",
+    "hqsInReach",
+    "contact"
+   ],
+   "subsets": [
+    "attacker-moving",
+    "defender-moving",
+    "meeting"
+   ],
+   "measure": "R2"
+  },
+  {
+   "id": "H7a",
+   "test": [
+    "outOfTraceRise",
+    "rearHexesInReach",
+    "contact"
+   ],
+   "subsets": [
+    "attacker-moving"
+   ],
+   "measure": "R2"
+  },
+  {
+   "id": "H7b",
+   "test": [
+    "hqsLost",
+    "rearHexesInReach",
+    "contact"
+   ],
+   "subsets": [
+    "attacker-moving"
+   ],
+   "measure": "R2"
+  },
+  {
+   "id": "H8a",
+   "final": "M1 + steps, out of trace over M0 VP",
+   "engagement": "AXIS_ATTACKS",
+   "gameTurns": [
+    2,
+    3,
+    4,
+    5
+   ],
+   "measure": "R2"
+  },
+  {
+   "id": "H8b",
+   "final": "M2 + objective reach and risk over M1 + steps, out of trace",
+   "engagement": "AXIS_ATTACKS",
+   "gameTurns": [
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "measure": "MAE"
+  }
+ ]
+}

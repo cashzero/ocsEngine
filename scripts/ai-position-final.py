@@ -2,6 +2,7 @@
 """Do position metrics predict the final VP margin beyond VP, steps and supply? (docs/roadmap/18-position-metrics-wbs.md, P6)
 
     python3 scripts/ai-position-final.py --manifest <manifest.json> --artifact-root . --out <results.json>
+    python3 scripts/ai-position-final.py --train-manifest <old manifest.json> --manifest <new manifest.json> --artifact-root . --out <results.json>
     python3 scripts/ai-position-final.py --self-test
 
 Trajectories are identified and map seeds grouped as in ai-position-validate.py. For each trajectory and Game Turn 2-7,
@@ -9,7 +10,9 @@ the row of the Game Turn's first player turn predicts the final Axis minus Allie
 apart. Models (least squares on training-standardized features): M0 the VP margin; M1 adds the step and out-of-trace
 differences; M2 adds each side's objectiveReachColumn and objectiveVpAtRisk; M3 adds each side's stacksExposedAllocated;
 M4 adds each side's hqsInReach. Ten map-seed folds give out-of-sample R2 and MAE; the gain of M1 over M0 and of M2-M4
-over M1 gets a 95% interval from 1,000 map-seed cluster resamples of the fixed out-of-fold errors.
+over M1 gets a 95% interval from 1,000 map-seed cluster resamples of the fixed out-of-fold errors. With
+--train-manifest the models are fitted on those games only and scored on the --manifest games, whose map seeds must be
+new (prospective confirmation, plan P7).
 """
 import argparse
 import importlib.util
@@ -85,12 +88,18 @@ def samples_of(games):
     return samples
 
 
-def evaluate(samples):
-    folds = VALIDATE.seed_folds(samples)
+def evaluate(samples, training=None):
+    """Out-of-fold over map-seed folds of `samples`, or, given `training`, fitted on it and scored on `samples`."""
     predictions = {name: [None] * len(samples) for name in MODELS}
-    for fold in range(10):
-        train = [s for s in samples if folds[s['mapSeed']] != fold]
-        test_index = [i for i, s in enumerate(samples) if folds[s['mapSeed']] == fold]
+    if training is None:
+        folds = VALIDATE.seed_folds(samples)
+        splits = [([s for s in samples if folds[s['mapSeed']] != fold], [i for i, s in enumerate(samples) if folds[s['mapSeed']] == fold])
+                  for fold in range(10)]
+    else:
+        if {s['mapSeed'] for s in training} & {s['mapSeed'] for s in samples}:
+            raise ValueError('test map seeds were in the training games')
+        splits = [(training, list(range(len(samples))))]
+    for train, test_index in splits:
         if not train or not test_index:
             continue
         for name, features in MODELS.items():
@@ -144,12 +153,21 @@ def self_test():
     gain = result['gains']['M1 + steps, out of trace over M0 VP']
     assert gain['r2Gain95'][0] > 0, gain
     assert all(s['mapSeed'] is not None for s in samples_of(games))
-    print('self-test passed: a step signal gains over VP out of sample')
+    early, late = [g for g in games if g['mapSeed'] < 20], [g for g in games if g['mapSeed'] >= 20]
+    prospective = evaluate(samples_of(late), samples_of(early))
+    assert prospective['n'] == len(samples_of(late)) and prospective['gains']['M1 + steps, out of trace over M0 VP']['r2Gain'] > 0
+    try:
+        evaluate(samples_of(games), samples_of(early))
+        raise AssertionError('overlapping seeds accepted')
+    except ValueError:
+        pass
+    print('self-test passed: a step signal gains over VP out of sample and prospectively; overlapping seeds rejected')
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--manifest', type=Path)
+    parser.add_argument('--train-manifest', type=Path)
     parser.add_argument('--artifact-root', type=Path)
     parser.add_argument('--out', type=Path)
     parser.add_argument('--self-test', action='store_true')
@@ -159,11 +177,17 @@ def main():
         return
     games, audit = VALIDATE.load_games(args.manifest, args.artifact_root)
     samples = samples_of(games)
+    training = None
     report = {'scope': __doc__.split('\n\n', 2)[2].strip(), 'inputs': audit['files'], 'uniqueTrajectories': len(games), 'results': {}}
+    if args.train_manifest:
+        train_games, train_audit = VALIDATE.load_games(args.train_manifest, args.artifact_root)
+        training = samples_of(train_games)
+        report.update({'mode': 'prospective', 'trainingInputs': train_audit['files'], 'trainingTrajectories': len(train_games)})
     for engagement in ('AXIS_ATTACKS', 'MEETING'):
         for turn in range(2, 8):
             chosen = [s for s in samples if s['engagement'] == engagement and s['gameTurn'] == turn]
-            report['results'][f'{engagement} Game Turn {turn}'] = evaluate(chosen)
+            fitted_on = None if training is None else [s for s in training if s['engagement'] == engagement and s['gameTurn'] == turn]
+            report['results'][f'{engagement} Game Turn {turn}'] = evaluate(chosen, fitted_on)
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(json.dumps(report, indent=1) + '\n')
     for key, result in report['results'].items():

@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """Validate recorded near-term indicators on held-out map seeds and batches.
 
-Historical data were already used to select these indicators. This is grouped,
-retrospective prediction validation, not prospective confirmation or a policy eval.
-Run with --manifest, --artifact-root, --out, or run --self-test without artifacts.
+Historical data were already used to select these indicators. Without --train-manifest this is grouped,
+retrospective prediction validation. With --train-manifest the models are fitted on those games only and tested on
+the --manifest games, whose map seeds must all be new: prospective confirmation (docs/roadmap/18-position-metrics-wbs.md
+P7). Neither is a policy eval. Run with --manifest, --artifact-root, --out, or run --self-test without artifacts.
 """
 import argparse
 import copy
@@ -443,12 +444,43 @@ def self_test():
     quantile = model_predictions(quantile_train, [{'metrics': {'contact': 0, 'objectivesAtRisk': value}} for value in (0.05, 0.85)],
                                  'contact', 'objectivesAtRisk')['metricQuantileMedian']
     assert quantile[0] < 2 and quantile[1] > 7, quantile
-    print('self-test passed: held-out signal, null sensitivity, exact duplicate conflict, alias exclusion, fold coverage, no future leakage, row-only features, next-turn outcome, quantile bins')
+    def seed_game(seed):
+        return {'id': f'g{seed}', 'mapSeed': seed, 'aliases': [{'batch': 'b'}],
+                'rows': [turn_row(2, 0, 'a', seed % 3, 0), turn_row(2, 1, 'd', 1, seed % 2), turn_row(3, 0, 'a', 2, 0)]}
+    try:
+        run_prospective([seed_game(1)], [seed_game(1)], {})
+        raise AssertionError('overlapping seeds accepted')
+    except ValueError:
+        pass
+    prospective = run_prospective([seed_game(seed) for seed in range(20)], [seed_game(seed) for seed in range(20, 30)], {})
+    assert prospective['test']['nGames'] == 10 and prospective['training']['nGames'] == 20
+    print('self-test passed: held-out signal, null sensitivity, exact duplicate conflict, alias exclusion, fold coverage, no future leakage, row-only features, next-turn outcome, quantile bins, prospective seed separation')
+
+
+def run_prospective(train_games, test_games, input_audit):
+    train, test = samples_from_games(train_games), samples_from_games(test_games)
+    overlap = {row['mapSeed'] for row in train} & {row['mapSeed'] for row in test}
+    if overlap:
+        raise ValueError(f'test map seeds were in the training games: {sorted(overlap)[:5]}')
+    report = {'schemaVersion': 1, 'mode': 'prospective',
+              'scriptSha256': digest(Path(__file__).read_bytes()),
+              'modelHelperSha256': digest(Path(VPCOMPARE.__file__).read_bytes()),
+              'scope': 'Models fitted on the training games only and scored on new games with new map seeds.',
+              'inputs': input_audit, 'training': describe(train), 'test': describe(test),
+              'uniqueTrajectories': {'training': len(train_games), 'test': len(test_games)}, 'prospective': {}}
+    for subset in SUBSETS:
+        chosen_train = [row for row in train if subset == 'all' or row['role'] == subset]
+        chosen_test = [row for row in test if subset == 'all' or row['role'] == subset]
+        rows = chosen_train + chosen_test
+        split = [('prospective', list(range(len(chosen_train))), list(range(len(chosen_train), len(rows))))]
+        report['prospective'][subset] = [evaluate(rows, split, *test_spec) for test_spec in TESTS]
+    return report
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--manifest', type=Path)
+    parser.add_argument('--train-manifest', type=Path)
     parser.add_argument('--artifact-root', type=Path)
     parser.add_argument('--out', type=Path)
     parser.add_argument('--self-test', action='store_true')
@@ -459,6 +491,13 @@ def main():
     if not all((args.manifest, args.artifact_root, args.out)):
         parser.error('--manifest, --artifact-root and --out are required unless --self-test is selected')
     games, audit = load_games(args.manifest, args.artifact_root)
+    if args.train_manifest:
+        train_games, train_audit = load_games(args.train_manifest, args.artifact_root)
+        report = run_prospective(train_games, games, {'training': train_audit, 'test': audit})
+        args.out.parent.mkdir(parents=True, exist_ok=True)
+        args.out.write_text(json.dumps(report, indent=2, allow_nan=False) + '\n')
+        print(json.dumps({'out': str(args.out), 'training': report['training'], 'test': report['test']}))
+        return
     report = run(games, audit)
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(json.dumps(report, indent=2, allow_nan=False) + '\n')
