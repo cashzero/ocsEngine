@@ -1,4 +1,11 @@
-"""Register a fresh fixed 80 only after complete development and frozen quality."""
+"""Register a fresh fixed 80 only after complete development and frozen quality.
+
+    python3 register.py <candidate freeze.json> <baseline freeze.json> <start> [--primary vp|killLoss|supply] [--margin metric=value ...]
+
+The primary measure and the non-inferiority margins of the other measures are registered here, before any independent game
+(docs/ai/evaluation.md). An engagement the development batch left unchanged (both games of every pair in the same final
+state) is not played; its 40 games go to the changed engagement.
+"""
 from pathlib import Path
 import datetime
 import hashlib
@@ -23,7 +30,17 @@ for key in ['sourceHashes', 'buildHashes']:
         assert hashlib.sha256((root / relative).read_bytes()).hexdigest() == digest, relative
 start = int(sys.argv[3])
 assert start % 2 == 0
-ranges = {name: [start + 100 * index, start + 100 * index + 19] for index, name in enumerate(['meeting-temperate', 'meeting-eastern', 'attack-temperate', 'attack-eastern'])}
+primary = sys.argv[sys.argv.index('--primary') + 1] if '--primary' in sys.argv else 'vp'
+margins = dict(arg.split('=') for index, arg in enumerate(sys.argv) if index > 0 and sys.argv[index - 1] == '--margin')
+margins = {metric: float(value) for metric, value in margins.items()}
+assert primary in {'vp', 'killLoss', 'supply'} and primary not in margins and set(margins) <= {'vp', 'killLoss', 'supply'}
+unchanged = development.get('unchangedEngagements', [])
+names = {'MEETING': ['meeting-temperate', 'meeting-eastern'], 'AXIS_ATTACKS': ['attack-temperate', 'attack-eastern']}
+played = [name for engagement, group in names.items() if engagement not in unchanged for name in group]
+assert played, 'The candidate changes no engagement'
+per_group = 80 // len(played)
+offsets = {'meeting-temperate': 0, 'meeting-eastern': 100, 'attack-temperate': 200, 'attack-eastern': 300}
+ranges = {name: [start + offsets[name], start + offsets[name] + per_group - 1] for name in played}
 fresh = {i for first, last in ranges.values() for i in range(first, last + 1)}
 for folder in [root / 'artifacts', root / 'tmp/ai-match']:
     if folder.exists():
@@ -40,7 +57,10 @@ record = {'strategyVersion': candidate['policyVersion'], 'baselineVersion': base
           'registeredAtUtc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
           'candidateFreezeSha256': hashlib.sha256(candidate_file.read_bytes()).hexdigest(),
           'baselineFreezeSha256': hashlib.sha256(baseline_file.read_bytes()).hexdigest(), 'ranges': ranges,
-          'gate': {'games': 80, 'pairs': 40, 'turns': 8, 'positiveVpInEachChangedEngagement': True, 'pairedMeanMinus2Point1SePositiveOverChangedEngagements': True,
+          'unchangedEngagements': unchanged,
+          'gate': {'games': 80, 'pairs': 40, 'turns': 8, 'primary': primary, 'nonInferiorityMargins': margins,
+                   'primaryPositiveInEachChangedEngagement': True, 'primaryPairedMeanMinus2Point1SePositive': True,
+                   'otherMeasuresPairedMeanMinus2Point1SeAboveMinusMargin': True,
                    'unchangedEngagement': 'both games of every pair end in the same state hash',
                    'allLegalCompleteReplayHashes': True, 'zeroGuardedSupplyAdvanceViolations': True, 'fullFrozenQuality': True}}
 output = build.with_name(build.name + '-registration.json')

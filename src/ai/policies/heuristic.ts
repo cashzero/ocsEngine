@@ -52,10 +52,13 @@ const chooseMainEffort = (situation: Situation, w: HeuristicWeights): MainEffort
  * 24:1 while the units sent to the others, uncoordinated, stopped short of them.
  */
 const chooseEfforts = (situation: Situation, w: HeuristicWeights, count: number): MainEffort[] => {
+  // heuristic@85: the defender of an attack engagement forms none. From 49 positions where heuristic@79's defender sent
+  // groups against objectives the attacker held, continued on common dice, the defender without them lost 2.5 ± 0.7 fewer
+  // steps and ended 1.9 ± 0.9 VP better (docs/quality/evidence/ai-defender-assault-continuation-2026-10-18).
+  if (situation.defending) return [];
   const efforts: MainEffort[] = [];
   const used = new Set<PieceId>();
-  const limit = situation.defending ? Math.min(count, w.defenderMaxEfforts) : count;
-  while (efforts.length < limit) {
+  while (efforts.length < count) {
     const next = chooseEffort(situation, w, used, new Set(efforts.map(({ hexId }) => hexId)));
     if (!next) break;
     efforts.push(next);
@@ -1481,7 +1484,7 @@ export const createHeuristicPolicy = (facts: BotGameFacts, options: HeuristicPol
   const choose = decide(facts, options.weights ?? DEFAULT_HEURISTIC_WEIGHTS);
   return {
     id: 'heuristic',
-    version: options.label === undefined ? '84' : `84+${options.label}`,
+    version: options.label === undefined ? '85' : `85+${options.label}`,
     decide: (context) => {
       const sink = options.debug;
       debug = sink ? (line) => sink(`${context.memory.stepKey} ${String(context.playerId).split(':').at(-1)} ${line}`) : null;

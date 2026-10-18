@@ -36,13 +36,24 @@ if registration:
     assert registration['baselineFreezeSha256'] == hashlib.sha256(baseline_file.read_bytes()).hexdigest()
 groups = [('meeting-temperate', 'MEETING', 'TEMPERATE_INLAND', 1300000), ('meeting-eastern', 'MEETING', 'EASTERN_EUROPE', 1300100),
           ('attack-temperate', 'AXIS_ATTACKS', 'TEMPERATE_INLAND', 1300200), ('attack-eastern', 'AXIS_ATTACKS', 'EASTERN_EUROPE', 1300300)]
-tables, pair_means, totals, engagements = [], defaultdict(list), Counter(), Counter()
+# A registration names the groups it plays; one whose development batch left an engagement unchanged plays only the others.
+if registration:
+    groups = [group for group in groups if group[0] in registration['ranges']]
+# Paired measures, each as the candidate's game value minus the standard's: VP margin, steps killed minus steps lost
+# (Kill − Loss: in a head-to-head game one side's kills are the other's losses, so Kill and Loss are not separable here),
+# and units the opponent ends out of supply minus the candidate's.
+METRICS = {'vp': lambda ours, other: ours['vp'] - other['vp'],
+           'killLoss': lambda ours, other: ours['stepsKilled'] - other['stepsKilled'],
+           'supply': lambda ours, other: other['outOfSupply'] - ours['outOfSupply']}
+tables, pair_means, totals, engagements = [], defaultdict(lambda: defaultdict(list)), Counter(), Counter()
 unchanged = defaultdict(lambda: True)
+for engagement in (registration or {}).get('unchangedEngagements', []):
+    unchanged[engagement] = True
 for name, engagement, style, development_start in groups:
     folder = directory / name
     summary = json.loads((folder / 'summary.json').read_text())
     rows = summary['records']
-    count = 20 if registration else 8
+    count = registration['ranges'][name][1] - registration['ranges'][name][0] + 1 if registration else 8
     start = registration['ranges'][name][0] if registration else development_start
     assert len(rows) == count and sorted(r['match'] for r in rows) == list(range(start, start + count))
     pairs, owners, inputs, scores, hashes = defaultdict(list), {}, defaultdict(list), Counter(), defaultdict(set)
@@ -57,7 +68,7 @@ for name, engagement, style, development_start in groups:
         inputs[row['match'] // 2].append((seat, {key: row['seeds'][key] for key in ['map', 'oob', 'deployment', 'rules']}))
         hashes[row['match'] // 2].add(row['finalStateHash'])
         delta = ours['vp'] - other['vp']
-        pairs[row['match'] // 2].append(delta)
+        pairs[row['match'] // 2].append({metric: measure(ours, other) for metric, measure in METRICS.items()})
         scores['candidateVP'] += ours['vp']
         scores['baselineVP'] += other['vp']
         scores['delta'] += delta
@@ -69,7 +80,8 @@ for name, engagement, style, development_start in groups:
         assert len(deltas) == 2
         seats = inputs[pair]
         assert seats[0][0] != seats[1][0] and seats[0][1] == seats[1][1]
-        pair_means[engagement].append(sum(deltas) / 2)
+        for metric in METRICS:
+            pair_means[engagement][metric].append(sum(delta[metric] for delta in deltas) / 2)
         # Both seats ending in the same state means the candidate played the standard's game in this pair.
         unchanged[engagement] &= len(hashes[pair]) == 1
     supply = json.loads((folder / 'supply-attribution.json').read_text())
@@ -99,15 +111,28 @@ for name, engagement, style, development_start in groups:
 # User decision 2026-10-17: only engagements the candidate changes are judged. An engagement is unchanged when both games of
 # every pair end in the same state; its pairs are 0 by construction and are left out of the interval.
 changed = [engagement for engagement in engagements if not unchanged[engagement]]
-judged = [value for engagement in changed for value in pair_means[engagement]]
-mean = statistics.mean(judged) if len(judged) > 1 else 0.0
-se = statistics.stdev(judged) / math.sqrt(len(judged)) if len(judged) > 1 else math.inf
-interval = [mean - 2.1 * se, mean + 2.1 * se]
+def paired(metric):
+    judged = [value for engagement in changed for value in pair_means[engagement][metric]]
+    mean = statistics.mean(judged) if len(judged) > 1 else 0.0
+    se = statistics.stdev(judged) / math.sqrt(len(judged)) if len(judged) > 1 else math.inf
+    return {'pairs': len(judged), 'mean': mean, 'standardError': se, 'interval': [mean - 2.1 * se, mean + 2.1 * se],
+            'engagementPairMeans': {engagement: statistics.mean(pair_means[engagement][metric]) for engagement in changed}}
+metrics = {metric: paired(metric) for metric in METRICS}
+# User decision 2026-10-17/18 (docs/ai/evaluation.md): the registered primary measure improves in every changed engagement
+# and over their pairs (lower bound > 0); every other measure stays within its registered non-inferiority margin.
+gate = (registration or {}).get('gate', {})
+primary = gate.get('primary', 'vp')
+margins = gate.get('nonInferiorityMargins', {})
+checks = {f'primary {primary}': len(changed) > 0 and all(metrics[primary]['engagementPairMeans'][engagement] > 0 for engagement in changed)
+          and metrics[primary]['interval'][0] > 0}
+for metric, margin in margins.items():
+    checks[f'{metric} not worse than -{margin}'] = metrics[metric]['interval'][0] > -margin
 result = {'strategyVersion': candidate['policyVersion'], 'baselineVersion': baseline['policyVersion'], 'sourceCommit': candidate['sourceCommit'],
           'mode': mode, 'groups': tables, 'totals': dict(totals), 'engagementDeltas': dict(engagements),
-          'unchangedEngagements': [engagement for engagement in engagements if unchanged[engagement]], 'pairs': len(judged),
-          'mean': mean, 'standardError': se, 'interval': interval,
-          'vpGate': len(changed) > 0 and all(engagements[engagement] > 0 for engagement in changed) and interval[0] > 0,
+          'unchangedEngagements': sorted({engagement for engagement in [*engagements, *(registration or {}).get('unchangedEngagements', [])] if unchanged[engagement]}),
+          'metrics': metrics, 'pairs': metrics['vp']['pairs'], 'mean': metrics['vp']['mean'], 'standardError': metrics['vp']['standardError'],
+          'interval': metrics['vp']['interval'], 'gateChecks': checks, 'gate': all(checks.values()),
+          'vpGate': len(changed) > 0 and all(engagements[engagement] > 0 for engagement in changed) and metrics['vp']['interval'][0] > 0,
           'verificationScope': 'frozen-and-delivered' if '--delivered' in sys.argv else 'frozen-only', 'quality': quality['checks']}
 output = directory / 'acceptance.json'
 assert not output.exists(), 'Preserve prior verification; use a new batch for a new result'

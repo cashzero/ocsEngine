@@ -27,9 +27,9 @@ if registration:
     assert registration['baselineFreezeSha256'] == hashlib.sha256(Path(baseline_path).read_bytes()).hexdigest()
 def run(name, engagement, style, development_start):
     folder = out / name
-    count = 20 if registration else 8
+    count = registration['ranges'][name][1] - registration['ranges'][name][0] + 1 if registration else 8
     start = registration['ranges'][name][0] if registration else development_start
-    command = ['node', 'scripts/ai-match.mjs', '--matches', str(count), '--start', str(start), '--parallel', '2', '--turns', '8',
+    command = ['node', 'scripts/ai-match.mjs', '--matches', str(count), '--start', str(start), '--parallel', str(max(2, 10 // len(groups))), '--turns', '8',
                '--size', '32x24', '--divisions', '6', '--armored', '2', '--air', 'NONE', '--air-transport', 'NONE',
                '--style', style, '--engagement', engagement, '--allied', 'heuristic', '--axis', 'heuristic@' + str(opponent), '--swap', '--trace', '--out', str(folder)]
     with (out / (name + '-matches.log')).open('w') as log:
@@ -42,6 +42,9 @@ def run(name, engagement, style, development_start):
     with (out / (name + '-advances.log')).open('w') as log:
         subprocess.run(['node', str(audit), str(Path(candidate_path).resolve()), str(folder)], stdout=log, stderr=subprocess.STDOUT, check=True)
     print(name, 'strict advance audit complete', flush=True)
+# A registration names the groups it plays (an engagement the candidate left unchanged is not played).
+if registration:
+    groups = [group for group in groups if group[0] in registration['ranges']]
 with ThreadPoolExecutor(max_workers=4) as pool:
     for future in [pool.submit(run, *group) for group in groups]:
         future.result()

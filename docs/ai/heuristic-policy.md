@@ -185,8 +185,11 @@
 
 ### 尚未升級的候選
 
-程式碼的預設策略是 `heuristic@84`：v79 的棋，加上對港口與機場的砲擊（`7990052`）。v81–v83 的分角色主攻規劃已刪除
-（理由見下表），開發種子上 v84 對凍結 v79 的每一對兩局終局 hash 都相同。通過升級流程的標準仍是 v79；對港口與機場的砲擊沒有 VP 對戰量測。
+程式碼的預設策略是候選 `heuristic@85`：v79 的棋，加上對港口與機場的砲擊（`7990052`，沒有 VP 對戰量測），以及
+**攻擊戰的守方不組主攻**（不反攻）。這是權宜做法：v79 的守方不分有無優勢都反攻，[局面接續測試](../quality/evidence/ai-defender-assault-continuation-2026-10-18/README.md)
+中拿掉反攻，守方每局少損失 2.5 ± 0.7 step、VP 差 +1.9 ± 0.9，但攻方斷補的單位變少；只在有優勢時反攻是 `bot-defender-counterattack`。
+攻方與遭遇戰照 v79 下。v81–v83 的分角色主攻規劃已刪除（理由見下表；v84 刪除後對凍結 v79 的每一對兩局終局 hash 都相同）。
+通過升級流程的標準仍是 v79。
 
 最後一位玩家的最後回合，攻擊未持有的 VP 點、且承受全部 option 損失後仍有攻擊者存活時，候選 v77 改選損失以保留前進資格；其餘情況沿用 v75。候選 patch 以只供攻擊方查看的剩餘步數支援這項判斷，前進仍受既有補給限制。v77 以 v75 為基底，不含 v78 的卡車後勤與 v79 的補給鏈，尚未完成獨立 80 場驗收；[量測結果與證據](evaluation.md#候選策略量測)。
 
@@ -250,6 +253,7 @@
 - `bot-eastern-front`：東歐地圖的長距離推進與守點尚缺現行策略重測。
 - `bot-hq-logistics-plan`：HQ 與卡車缺少協同前推的接力計畫。
 - 沒有 Reserve、Reaction 反擊、Extender、Breakout 規劃；戰鬥預估不含 Surprise。
+- `bot-defender-counterattack`：守方不反攻是權宜做法，應只在有優勢時反攻（見 [TODO 清單](../quality/05-todo-inventory.md)）。
 - `bot-force-concentration`：攻方不集中兵力。主攻群以守軍原始戰力的 2.5 倍組成、不看地形欄位；每個單位只以自己和目的地同格友軍判斷 `exposure`、`contact`，所以停在敵前 2–3 格；戰鬥補給項讓多數攻擊低於門檻（[研究](../quality/evidence/ai-force-concentration-v79-2026-10-16/README.md)）。候選 v81 試過的攻方集中方式都比 v79 差，v81–v83 的分角色規劃已刪除，v84 照 v79 下（[v81 開發量測](../quality/evidence/ai-assault-v81-development-2026-10-17/README.md)、[v82](../quality/evidence/ai-assault-v82-development-2026-10-17/README.md)）。
 
 ## 驗證
