@@ -1,7 +1,7 @@
 import type { PieceId, PlayerId } from '../../core/index.js';
-import type { GameAction, GameState } from '../kernel/model.js';
+import type { GameAction, GameState, InternalStocksLevel } from '../kernel/model.js';
 import type { RuleFact } from '../query/model.js';
-import { definitionOf, hexOf, isArtillery, isCombatUnit, isHq, pieceById, reTicksOf, stepOf, usageOf, withUsage } from '../pieces.js';
+import { definitionOf, hexOf, internalStocksOf, isArtillery, isCombatUnit, isHq, pieceById, reTicksOf, stepOf, usageOf, withUsage } from '../pieces.js';
 import { fuelOptions } from './fuel.js';
 import { dumpsReaching, eatOffMapCost, internalRecoveryPayments, pieceHasTrace, spendReservations, unitsNeedingRecovery } from './supply.js';
 
@@ -49,17 +49,24 @@ export const assignRations = (demands: readonly RationDemand[], sources: readonl
   return { groups, exhausted: false };
 };
 
-/** Mirrors the bot's mandatory recovery order. No sequence advance, dice or enemy response. */
-export const afterRequiredRecovery = (state: GameState, actorId: PlayerId): GameState => {
+/** Mirrors the bot's mandatory recovery order. No sequence advance, dice or enemy response. The state after it, and the
+ * internal stocks level each recovering unit reaches (12.10e). */
+export const requiredRecoveryOutcome = (state: GameState, actorId: PlayerId): { readonly state: GameState; readonly levels: ReadonlyMap<PieceId, InternalStocksLevel> } => {
   let next = state;
+  const levels = new Map<PieceId, InternalStocksLevel>();
   for (;;) {
     const piece = [...unitsNeedingRecovery(next, actorId)].sort((a, b) => a.id.localeCompare(b.id))[0];
-    if (!piece) return next;
+    if (!piece) return { state: next, levels };
     const ids = dumpsReaching(next, actorId, hexOf(piece)!, piece).map(d => d.pieceId);
-    const { payments } = internalRecoveryPayments(next, piece, ids);
+    const { payments, level } = internalRecoveryPayments(next, piece, ids);
+    levels.set(piece.id, level);
     next = { ...next, pieceState: spendReservations(next, payments), usage: withUsage(next, { ...usageOf(next, piece), recovered: true }) };
   }
 };
+
+export const afterRequiredRecovery = (state: GameState, actorId: PlayerId): GameState => requiredRecoveryOutcome(state, actorId).state;
+
+const STOCKS_RANK: Readonly<Record<InternalStocksLevel, number>> = { EXHAUSTED: 0, LOW: 1, FULL: 2 };
 
 const problem = (state: GameState, actorId: PlayerId) => {
   const sources = new Map<PieceId, number>();
@@ -145,14 +152,25 @@ export const rationBudgetFacts = (state: GameState, action: GameAction): readonl
     const option = fuelOptions(state, pieceById(state, action.pieceId)!).find(o => o.method === action.method)!;
     payments = [{ sourcePieceId: action.sourcePieceId, tokens: option.tokens }];
   } else if (action.kind === 'BUILD_HEDGEHOG') payments = action.payments;
-  const after = afterRequiredRecovery({ ...state, pieceState: spendReservations(state, payments.map(p => ({
+  const paid = { ...state, pieceState: spendReservations(state, payments.map(p => ({
     resourcePieceId: p.sourcePieceId, quantity: p.tokens,
     unitDefinitionId: definitionOf(state, pieceById(state, p.sourcePieceId)!)!.resource!.unitDefinitionId,
-  }))) }, action.actorId);
-  const future = problem(after, action.actorId);
+  }))) };
+  const recovery = requiredRecoveryOutcome(paid, action.actorId);
+  const future = problem(recovery.state, action.actorId);
   const wanted = new Set(plan.demands.map(d => d.id));
   const trial = assignRations(future.demands.filter(d => wanted.has(d.id)), future.sources);
+  // A unit out of trace that the required recovery refills is not a ration consumer, so the ration check alone let a payment
+  // take the SP of its recovery: it then neither recovered nor ate, and suffered attrition (12.10e, 12.6c). Its recovered
+  // internal stocks level must not fall.
+  const before = requiredRecoveryOutcome(state, action.actorId).levels;
+  const lowered = [...before].filter(([id, level]) => {
+    const piece = pieceById(state, id);
+    if (!piece || pieceHasTrace(state, piece)) return false;
+    return STOCKS_RANK[recovery.levels.get(id) ?? internalStocksOf(piece)] < STOCKS_RANK[level];
+  }).length;
   return [fact('supply.rationBudgetApplicable', true), fact('supply.rationCommittedUnits', wanted.size),
-    fact('supply.rationCommitmentsPreserved', trial.groups !== null),
+    fact('supply.recoveryLoweredUnits', lowered),
+    fact('supply.rationCommitmentsPreserved', trial.groups !== null && lowered === 0),
     fact('supply.rationSearchExhausted', plan.exhausted || trial.exhausted)];
 };
