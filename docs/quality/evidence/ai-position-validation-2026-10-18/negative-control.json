@@ -1,0 +1,14 @@
+{
+  "scope": "Independent Gaussian feature and target; original fitting helpers",
+  "source": "scripts/ai-position-analysis.py",
+  "sourceSha256": "7b059dc01dd366b5a7570bc084497ec046c7db558450b96fd5f39b354437085d",
+  "rngSeed": 936,
+  "rows": 200,
+  "bootstrapReplicates": 400,
+  "inSampleR2Gain": 0.002076782183890513,
+  "inSampleBootstrap95": [
+    1.1819001718094135e-05,
+    0.03369368524342797
+  ],
+  "heldOutR2Gain": -0.010921364630906538
+}

@@ -1,0 +1,344 @@
+{
+  "scope": "Audit of distinct saved trajectories merged by the old ai-position-analysis.py metrics-only identity. Exact identity uses initialStateHash, finalStateHash and canonical acceptedActions SHA256.",
+  "oldMetricOnlyGames": 252,
+  "exactTrajectoryGames": 255,
+  "extraDistinctTrajectories": 3,
+  "collisionGroupCount": 2,
+  "groups": [
+    {
+      "oldMetricsMd5": "d29eadbbea02ef4e424a680d0fe22910",
+      "oldMetricsKeysEqual": true,
+      "exactIdentityCount": 3,
+      "trajectories": [
+        {
+          "id": "bdebc704ed6ad291fa94a13485e09ae81a41c5fd2618c349ba4abead7737b4b7",
+          "mapSeed": 295670733,
+          "initialStateHash": "sha256:d352401a7b9c39457b34c16e9d83fd803e0ecd729921e758770ed51ad1a7bb59",
+          "finalStateHash": "sha256:fd025d947cea616437f431f7c6555889f1de5d312fb8ba7289997f7f0363228f",
+          "acceptedActionsSha256": "4af23eb879b62d9998538b0f02c60c959357bb4fa048e106ef9aeb0803ff8db6",
+          "turnEventRowsSha256": "322a459ae610305024d45ce195df93dff08a00ddb78cc0f3f3e6350d25de604b",
+          "finalVp": {
+            "player:allied": 10,
+            "player:axis": 2
+          },
+          "aliases": [
+            {
+              "source": "artifacts/ai-assault/v84-development/attack-eastern",
+              "match": 1300300,
+              "policies": {
+                "player:allied": "heuristic",
+                "player:axis": "heuristic@artifacts/ai-promotion/frozen-v79/dist"
+              }
+            },
+            {
+              "source": "artifacts/ai-assault/v84-development/attack-eastern",
+              "match": 1300301,
+              "policies": {
+                "player:allied": "heuristic@artifacts/ai-promotion/frozen-v79/dist",
+                "player:axis": "heuristic"
+              }
+            },
+            {
+              "source": "artifacts/ai-continue/ration-fix-games/attack-eastern",
+              "match": 1300301,
+              "policies": {
+                "player:allied": "heuristic@artifacts/ai-promotion/frozen-v79/dist",
+                "player:axis": "heuristic"
+              }
+            },
+            {
+              "source": "artifacts/ai-promotion/frozen-v85-development/attack-eastern",
+              "match": 1300301,
+              "policies": {
+                "player:allied": "heuristic@/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-promotion/frozen-v79/dist",
+                "player:axis": "heuristic"
+              }
+            }
+          ]
+        },
+        {
+          "id": "f9a4b852b43b68333a16a4fee15097de149e4f650b52635cbf7d9038cea79b06",
+          "mapSeed": 295670733,
+          "initialStateHash": "sha256:d352401a7b9c39457b34c16e9d83fd803e0ecd729921e758770ed51ad1a7bb59",
+          "finalStateHash": "sha256:40efef702cba685aa51193ac3beddc0dd0f3eec08a9a15b9b74373c0b11c06b8",
+          "acceptedActionsSha256": "0edab9c2b3b696bcdc5d883b78abbfded00ca6ae98daa1e5d89db1e4d1036ac5",
+          "turnEventRowsSha256": "b3a4b4cd2ad7f68dceadc3c9c4dad4f614345a1f79ca220ae71da9c04740303c",
+          "finalVp": {
+            "player:allied": 10,
+            "player:axis": 2
+          },
+          "aliases": [
+            {
+              "source": "artifacts/ai-continue/ration-fix-games/attack-eastern",
+              "match": 1300300,
+              "policies": {
+                "player:allied": "heuristic",
+                "player:axis": "heuristic@artifacts/ai-promotion/frozen-v79/dist"
+              }
+            },
+            {
+              "source": "artifacts/ai-promotion/frozen-v85-development/attack-eastern",
+              "match": 1300300,
+              "policies": {
+                "player:allied": "heuristic",
+                "player:axis": "heuristic@/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-promotion/frozen-v79/dist"
+              }
+            }
+          ]
+        },
+        {
+          "id": "a3ce9c7b1bce4314a10f6dd6f019a8ff7089c4336f80a04946d10e556474e4de",
+          "mapSeed": 295670733,
+          "initialStateHash": "sha256:d352401a7b9c39457b34c16e9d83fd803e0ecd729921e758770ed51ad1a7bb59",
+          "finalStateHash": "sha256:40efef702cba685aa51193ac3beddc0dd0f3eec08a9a15b9b74373c0b11c06b8",
+          "acceptedActionsSha256": "295c112bd45ee09077d0dfd343369e9f65e6ce5b712904b75c561151b62f79fa",
+          "turnEventRowsSha256": "b3a4b4cd2ad7f68dceadc3c9c4dad4f614345a1f79ca220ae71da9c04740303c",
+          "finalVp": {
+            "player:allied": 10,
+            "player:axis": 2
+          },
+          "aliases": [
+            {
+              "source": "artifacts/ai-promotion/frozen-v81-development/attack-eastern",
+              "match": 1300300,
+              "policies": {
+                "player:allied": "heuristic",
+                "player:axis": "heuristic@/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-promotion/frozen-v79/dist"
+              }
+            }
+          ]
+        }
+      ],
+      "comparisons": [
+        {
+          "firstId": "bdebc704ed6ad291fa94a13485e09ae81a41c5fd2618c349ba4abead7737b4b7",
+          "secondId": "f9a4b852b43b68333a16a4fee15097de149e4f650b52635cbf7d9038cea79b06",
+          "metricsIdentical": true,
+          "acceptedActionHashesDiffer": true,
+          "turnEventRowsDiffer": true,
+          "turnEventDifferences": [
+            {
+              "gameTurn": 8,
+              "playerTurnIndex": 1,
+              "first": {
+                "player:allied": {
+                  "stepsLost": 0,
+                  "objectivesGained": 0,
+                  "objectivesLost": 0,
+                  "objectiveVpGained": 0,
+                  "objectiveVpLost": 0,
+                  "spCapturedOrDestroyed": 0
+                },
+                "player:axis": {
+                  "stepsLost": 1,
+                  "objectivesGained": 0,
+                  "objectivesLost": 0,
+                  "objectiveVpGained": 0,
+                  "objectiveVpLost": 0,
+                  "spCapturedOrDestroyed": 0
+                }
+              },
+              "second": {
+                "player:allied": {
+                  "stepsLost": 0,
+                  "objectivesGained": 0,
+                  "objectivesLost": 0,
+                  "objectiveVpGained": 0,
+                  "objectiveVpLost": 0,
+                  "spCapturedOrDestroyed": 0
+                },
+                "player:axis": {
+                  "stepsLost": 2,
+                  "objectivesGained": 0,
+                  "objectivesLost": 0,
+                  "objectiveVpGained": 0,
+                  "objectiveVpLost": 0,
+                  "spCapturedOrDestroyed": 0
+                }
+              }
+            }
+          ],
+          "finalVpDiffer": false
+        },
+        {
+          "firstId": "bdebc704ed6ad291fa94a13485e09ae81a41c5fd2618c349ba4abead7737b4b7",
+          "secondId": "a3ce9c7b1bce4314a10f6dd6f019a8ff7089c4336f80a04946d10e556474e4de",
+          "metricsIdentical": true,
+          "acceptedActionHashesDiffer": true,
+          "turnEventRowsDiffer": true,
+          "turnEventDifferences": [
+            {
+              "gameTurn": 8,
+              "playerTurnIndex": 1,
+              "first": {
+                "player:allied": {
+                  "stepsLost": 0,
+                  "objectivesGained": 0,
+                  "objectivesLost": 0,
+                  "objectiveVpGained": 0,
+                  "objectiveVpLost": 0,
+                  "spCapturedOrDestroyed": 0
+                },
+                "player:axis": {
+                  "stepsLost": 1,
+                  "objectivesGained": 0,
+                  "objectivesLost": 0,
+                  "objectiveVpGained": 0,
+                  "objectiveVpLost": 0,
+                  "spCapturedOrDestroyed": 0
+                }
+              },
+              "second": {
+                "player:allied": {
+                  "stepsLost": 0,
+                  "objectivesGained": 0,
+                  "objectivesLost": 0,
+                  "objectiveVpGained": 0,
+                  "objectiveVpLost": 0,
+                  "spCapturedOrDestroyed": 0
+                },
+                "player:axis": {
+                  "stepsLost": 2,
+                  "objectivesGained": 0,
+                  "objectivesLost": 0,
+                  "objectiveVpGained": 0,
+                  "objectiveVpLost": 0,
+                  "spCapturedOrDestroyed": 0
+                }
+              }
+            }
+          ],
+          "finalVpDiffer": false
+        },
+        {
+          "firstId": "f9a4b852b43b68333a16a4fee15097de149e4f650b52635cbf7d9038cea79b06",
+          "secondId": "a3ce9c7b1bce4314a10f6dd6f019a8ff7089c4336f80a04946d10e556474e4de",
+          "metricsIdentical": true,
+          "acceptedActionHashesDiffer": true,
+          "turnEventRowsDiffer": false,
+          "turnEventDifferences": [],
+          "finalVpDiffer": false
+        }
+      ]
+    },
+    {
+      "oldMetricsMd5": "509b646a91bc0768c8b6d61b07cee1e6",
+      "oldMetricsKeysEqual": true,
+      "exactIdentityCount": 2,
+      "trajectories": [
+        {
+          "id": "7324782053465b080b791e28cf3945c59cfb30ae9775867283be202329def085",
+          "mapSeed": 295671121,
+          "initialStateHash": "sha256:21445c3ae8f75bf3a6361177e1e352af5f8e49481804cf5d8c5ffe44f9fd6159",
+          "finalStateHash": "sha256:de722cba9e94655be16511c2cb637784f2b39d02130d1c3ad30154991ca8f812",
+          "acceptedActionsSha256": "b06197bd89808bafded7a246c620a396e8196f1fabb9ce69fe107c4b8885e06b",
+          "turnEventRowsSha256": "09c5ab6d8b146c2001d0b52e3270984d7ffdcb364029268fb16aefa4ff8f22c3",
+          "finalVp": {
+            "player:allied": 2,
+            "player:axis": 10
+          },
+          "aliases": [
+            {
+              "source": "artifacts/ai-assault/v84-development/attack-eastern",
+              "match": 1300304,
+              "policies": {
+                "player:allied": "heuristic",
+                "player:axis": "heuristic@artifacts/ai-promotion/frozen-v79/dist"
+              }
+            },
+            {
+              "source": "artifacts/ai-assault/v84-development/attack-eastern",
+              "match": 1300305,
+              "policies": {
+                "player:allied": "heuristic@artifacts/ai-promotion/frozen-v79/dist",
+                "player:axis": "heuristic"
+              }
+            },
+            {
+              "source": "artifacts/ai-promotion/frozen-v85-development/attack-eastern",
+              "match": 1300305,
+              "policies": {
+                "player:allied": "heuristic@/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-promotion/frozen-v79/dist",
+                "player:axis": "heuristic"
+              }
+            }
+          ]
+        },
+        {
+          "id": "34bc432a8e1d1bb41638c32c992412963b58ed35685e7eb0bfa418ab06803098",
+          "mapSeed": 295671121,
+          "initialStateHash": "sha256:21445c3ae8f75bf3a6361177e1e352af5f8e49481804cf5d8c5ffe44f9fd6159",
+          "finalStateHash": "sha256:599dfed5577f16634ece1bad07e79a897e3bb28f143e53beed9713a43a15666a",
+          "acceptedActionsSha256": "a17d10e2112659814205e56552ef4a21439ef486223ea11bcb601c76a9981c88",
+          "turnEventRowsSha256": "98334298b555953b7e8801dbcdecf22b53dce920ca226ec2735fb1baf05f6b93",
+          "finalVp": {
+            "player:allied": 4,
+            "player:axis": 8
+          },
+          "aliases": [
+            {
+              "source": "artifacts/ai-continue/ration-fix-games/attack-eastern",
+              "match": 1300305,
+              "policies": {
+                "player:allied": "heuristic@artifacts/ai-promotion/frozen-v79/dist",
+                "player:axis": "heuristic"
+              }
+            }
+          ]
+        }
+      ],
+      "comparisons": [
+        {
+          "firstId": "7324782053465b080b791e28cf3945c59cfb30ae9775867283be202329def085",
+          "secondId": "34bc432a8e1d1bb41638c32c992412963b58ed35685e7eb0bfa418ab06803098",
+          "metricsIdentical": true,
+          "acceptedActionHashesDiffer": true,
+          "turnEventRowsDiffer": true,
+          "turnEventDifferences": [
+            {
+              "gameTurn": 8,
+              "playerTurnIndex": 1,
+              "first": {
+                "player:allied": {
+                  "stepsLost": 2,
+                  "objectivesGained": 0,
+                  "objectivesLost": 1,
+                  "objectiveVpGained": 0,
+                  "objectiveVpLost": 2,
+                  "spCapturedOrDestroyed": 0
+                },
+                "player:axis": {
+                  "stepsLost": 0,
+                  "objectivesGained": 1,
+                  "objectivesLost": 0,
+                  "objectiveVpGained": 2,
+                  "objectiveVpLost": 0,
+                  "spCapturedOrDestroyed": 0
+                }
+              },
+              "second": {
+                "player:allied": {
+                  "stepsLost": 0,
+                  "objectivesGained": 0,
+                  "objectivesLost": 0,
+                  "objectiveVpGained": 0,
+                  "objectiveVpLost": 0,
+                  "spCapturedOrDestroyed": 0
+                },
+                "player:axis": {
+                  "stepsLost": 0,
+                  "objectivesGained": 0,
+                  "objectivesLost": 0,
+                  "objectiveVpGained": 0,
+                  "objectiveVpLost": 0,
+                  "spCapturedOrDestroyed": 0
+                }
+              }
+            }
+          ],
+          "finalVpDiffer": true
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,56 @@
+{
+  "registeredAt": "2026-10-18T15:42:45.743774+00:00",
+  "baseCommit": "ef972c6",
+  "purpose": "Exploratory grouped validation of existing near-term signals; not prospective policy evidence",
+  "inputManifestSha256": "e383f38d43228a3dcaf26b82052776d9b87c27393bb9ecb3b006b91ee1d8b203",
+  "newGames": 0,
+  "primaryTests": [
+    {
+      "outcome": "objectiveVpLost",
+      "feature": "objectiveVpAtRisk",
+      "baseline": "objectivesThreatened"
+    },
+    {
+      "outcome": "objectivesLost",
+      "feature": "objectivesAtRisk",
+      "baseline": "objectivesThreatened"
+    },
+    {
+      "outcome": "stepsLost",
+      "feature": "stacksExposedAllocated",
+      "baseline": "contact"
+    },
+    {
+      "outcome": "outOfTraceRise",
+      "feature": "supplyCuttable",
+      "baseline": "contact"
+    }
+  ],
+  "secondaryTests": [
+    {
+      "outcome": "stepsLost",
+      "feature": "stacksExposedAllocated",
+      "baseline": "stacksExposed"
+    },
+    {
+      "outcome": "outOfTraceRise",
+      "feature": "supplyBestCut",
+      "baseline": "contact"
+    },
+    {
+      "outcome": "hqsLost",
+      "feature": "hqsInReach",
+      "baseline": "contact"
+    }
+  ],
+  "primarySplit": "10 folds grouped by map seed",
+  "sensitivitySplit": "leave source batch out, also exclude all held-out map seeds and duplicate aliases from training",
+  "roleSubsets": [
+    "all",
+    "attacker-moving",
+    "defender-moving",
+    "meeting"
+  ],
+  "uncertainty": "conditional 1000 seed-cluster bootstrap of fixed held-out errors",
+  "interpretation": "Any retrospective feature comparison remains exploratory; final VP and new-policy gains not established by near-term success."
+}

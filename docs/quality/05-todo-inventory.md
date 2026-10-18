@@ -37,6 +37,7 @@
 |---|---|---|---|---|
 | `bot-stack-move` | AI 一般移動沒有整疊路線與 `companionIds` 規劃；逐單位查詢已會提供同格多單位 overrun | 部隊分開接近目標，途中較難保留同一進攻堆疊 | bot 對局出現有策略用途的 companionIds MOVE_PIECE，後續整疊 overrun 合法且重播相符，並通過凍結標準策略的對戰比較 | `docs/ai/heuristic-policy.md` |
 | `bot-vp-predictive-metrics` | 已有首輪目標事件與預測比較工具，已完成歷史四結果的原因拆分與補給條件比較，仍缺跨政策預測驗證、完整目標承諾、共同支付下的有效到位量測、不同改善方向與前瞻驗證；尚無能可靠預測新策略 VP、Kill、Loss 與補給改善的指標 | 策略研究難以定位退步原因，可能反覆最佳化與 VP 無關的數字 | 真實重播對帳與量測不改變行為的證據、可重現指標比較工具，以及預先保存預測的驗證結果；記錄勝出指標與適用範圍，或未找到有效指標的證據，不以相關性代替策略提升 | [VP 預測指標](../ai/vp-metrics.md)；[工作項](../roadmap/11-ai-bot-wbs.md#7-vp-預測指標研究) |
+| `bot-position-final-validation` | 舊終局預測用整局 metrics 去重，已證實合併含不同終局 VP 的對局；尚未以正確軌跡識別、同種子與策略分組重驗 | 可能誤判 Kill／Loss／Supply 或局勢指標對終局 VP 的額外預測力 | 用初始／終局 hash 與完整行動序列重建樣本，分組留出種子與來源，重跑各回合終局基準及額外指標，保留失敗子組與預測誤差、區間；更新主題文件的結論 | [局勢指標驗證](../ai/policy-errors.md#指標是否可用) |
 | `historical-ai-air-scope` | 歷史對戰以 `air=NONE` 參數認定無空軍，但指標研究抽查的攻擊戰含攻方場外飛機，80 份盤點對局均有空軍任務；其他批次尚未核對 | 無法把既有增益直接解讀為純地面策略增益，可能誤認符合無空軍驗收設定 | 依初始存檔與實際行動稽核受影響批次，修正主題文件的適用範圍，並讓後續要求無空軍的批次檢查實際場景；需重新驗證的 gate 保持開放 | [評估範圍](../ai/evaluation.md) |
 | `consolidation-bot` | bot 不會合併單位 | bot 方留著兩個減員的相同師 | bot 對局中出現合併動作 | `docs/rule-engine/replacements.md` |
 | `bot-air` | 只派 Air Barrage 與 refit；不派其他任務、不空運、不空降、不建 Air Base；空中待決選第一個合法選項 | 開啟空軍時 bot 明顯偏弱 | 開啟空軍的對局中 bot 有合理的其他任務與待決選擇，並通過對戰比較 | `src/ai/decisions.ts`；`src/ai/policies/heuristic.ts` |

@@ -1,0 +1,3087 @@
+{
+  "schemaVersion": 1,
+  "scriptSha256": "10418220f6b8ab35f93ba897041303b079460f8901dcfc2c2a265d0f74688b2e",
+  "modelHelperSha256": "fc6c0d4bce55cf3e0c147008da8e020e591b4c5271613039bd4e672b3b9ae4fc",
+  "scope": "Retrospective near-term predictive validation of previously selected indicators. Reuses historical data; no prospective, final-VP, or policy-strength claim.",
+  "design": {
+    "window": "Non-phasing O at start of P player turn, Game Turns 2-8, with a following recorded row. The final player turn is excluded.",
+    "outcomes": "Recorded O objective/step losses during P turn; positive rise in O outOfTrace or decline in HQ count to the following row. stepsLost counts all recorded step-loss events.",
+    "models": "Zero event; training median; training mean; intercept plus distance baseline; intercept plus baseline plus metric; training conditional medians in baseline or metric buckets. Baseline and intercept unpenalized; standardized added metric fixed ridge penalty 1. Buckets fixed at 0, 1, 2-3, 4-7, 8+ from the historical descriptive analysis. Unseen bucket falls back to training median. No hyperparameter search. Complete cases shared across models; train-only preprocessing.",
+    "features": [
+      "contact",
+      "hqsInReach",
+      "objectiveVpAtRisk",
+      "objectivesAtRisk",
+      "objectivesThreatened",
+      "stacksExposed",
+      "stacksExposedAllocated",
+      "supplyBestCut",
+      "supplyCuttable"
+    ],
+    "primarySplit": "Ten folds of map seed, sorted by SHA256 and assigned round-robin. All styles, roles, policy variants and aliases of a seed stay together.",
+    "sensitivitySplit": "Each source parent directory is one held-out batch. Training excludes every trajectory with any alias in that batch and every map seed appearing in its test data. Batches are reported separately because test trajectories can have multiple aliases.",
+    "batchMeaning": "Provenance source parent directory, not independently verified policy version. Policy strings and variants are aliases retained verbatim.",
+    "intervals": "1000 paired seed-cluster draws on fixed out-of-fold errors. Conditional, exploratory intervals without multiplicity correction."
+  },
+  "inputs": {
+    "manifest": "docs/quality/evidence/ai-position-exposure-2026-10-18/manifest.json",
+    "manifestSha256": "e383f38d43228a3dcaf26b82052776d9b87c27393bb9ecb3b006b91ee1d8b203",
+    "files": [
+      {
+        "file": "artifacts/ai-positions-exposure/ai-assault__defender-1330__noeffort-eastern.jsonl",
+        "sha256": "835bcb58b40ced438a136701f43e7a999e34028efe8673c9a77ec281f98c0f56",
+        "kind": "rows",
+        "summarySha256": "f0f650a0ff645698881d19a5cbaceb2958e3eb692f4c883e59216bed3e5558a8"
+      },
+      {
+        "file": "artifacts/ai-positions-exposure/ai-assault__defender-1330__noeffort-temperate.jsonl",
+        "sha256": "7325aa67c8bd581f2e9fa5d20b0fbef007351f9a40df4f76c87281c1a5e526b8",
+        "kind": "rows",
+        "summarySha256": "9855257bd813df207e69fdf8d49992062aad3b5f6e40a876292141dbbfe43580"
+      },
+      {
+        "file": "artifacts/ai-positions-exposure/ai-assault__defender-1330__v83-eastern.jsonl",
+        "sha256": "035c3e2666a6c194bf61b0924f5ded1df83abe8ce6c40bda5b4ef4927ecaf330",
+        "kind": "rows",
+        "summarySha256": "ab105eb53eae6f92620a981fabc11dbc7a536c08e92324908454a0e06f499869"
+      },
+      {
+        "file": "artifacts/ai-positions-exposure/ai-assault__defender-1330__v83-temperate.jsonl",
+        "sha256": "598d63b66df9570dbbc6c8031d32ff1ecf0064f033c7bca616eb3d591e201498",
+        "kind": "rows",
+        "summarySha256": "0d0b9a1ab78efb89856832603b0ddbec2ad816eafc2d02b378a338e1c2464c76"
+      },
+      {
+        "file": "artifacts/ai-positions-exposure/ai-assault__v84-development__attack-eastern.jsonl",
+        "sha256": "f2fd7f690eabae0e1d47a86db6639862722ed5a1873b479ea07334019f726e4f",
+        "kind": "rows",
+        "summarySha256": "73ec18a88be85c6edca40d29e8445a55300ef4635856dcfa37e74fc1eedd46fe"
+      },
+      {
+        "file": "artifacts/ai-positions-exposure/ai-assault__v84-development__attack-temperate.jsonl",
+        "sha256": "b633d49031255f8acf50f0f7dc5372868216b3246ac23c89857a6fc980e4ea42",
+        "kind": "rows",
+        "summarySha256": "268d7a6b8a364a9addc585a6497eecb0404ea3820ebaefb72204d922759bfca0"
+      },
+      {
+        "file": "artifacts/ai-positions-exposure/ai-assault__v84-development__meeting-eastern.jsonl",
+        "sha256": "6fc3cc6eb849d176f69c88826e7ce1d9ff9880394ab799baebf008bcdd5373c7",
+        "kind": "rows",
+        "summarySha256": "8bcfddbb3fae1b748520a87c2bbf75f99c1e6aa5c454107177acbfab37f1c972"
+      },
+      {
+        "file": "artifacts/ai-positions-exposure/ai-assault__v84-development__meeting-temperate.jsonl",
+        "sha256": "bb07951929c31b63c976908f1fab928c122f6b99fb5c9c75372ff4f48763c76d",
+        "kind": "rows",
+        "summarySha256": "51218415b77df1e07d1e30326429100b47f5136097d9f0522dcef84c8105cafa"
+      },
+      {
+        "file": "artifacts/ai-positions-exposure/ai-continue__ration-fix-games__attack-eastern.jsonl",
+        "sha256": "de5135d028396ba7f75ae434eb86986136802a7c575b65d1e434666f808e2561",
+        "kind": "rows",
+        "summarySha256": "0d61b02a4ef9b51c51c7176f499e8d8adbf4c6d92c8cba285c526d4bbb2a9a02"
+      },
+      {
+        "file": "artifacts/ai-positions-exposure/ai-continue__ration-fix-games__attack-temperate.jsonl",
+        "sha256": "ab4c39e0438845264530d39b8fff3332fd25c9657f98ac0e5acee8dfeebfb187",
+        "kind": "rows",
+        "summarySha256": "92a30a6a449833aa91debd5b46f56578ec4129528a6a2aadf0b21f9694494c49"
+      },
+      {
+        "file": "artifacts/ai-positions-exposure/ai-continue__ration-fix-games__meeting-eastern.jsonl",
+        "sha256": "fb726db02e6b698da75c0c36c9e389227392c358c822a1130545870a8dd929c5",
+        "kind": "rows",
+        "summarySha256": "f4e8981a68f03750e8d6a3e9441c14422fcd9da30f51ff80c8d038201603340a"
+      },
+      {
+        "file": "artifacts/ai-positions-exposure/ai-continue__ration-fix-games__meeting-temperate.jsonl",
+        "sha256": "307a776421e86efe276d3abc01b5833b3d5f7ff05690e30af52112b25a18e432",
+        "kind": "rows",
+        "summarySha256": "765d79b4073d633df0f76d276c1ea7a269c295a4c23394d920dfd7000781a67e"
+      },
+      {
+        "file": "artifacts/ai-positions-exposure/ai-promotion__frozen-v81-development__attack-eastern.jsonl",
+        "sha256": "dc88261a138bd7558866665fa41ea55b50dc85316b5529e1817f4721c1dc3a2d",
+        "kind": "rows",
+        "summarySha256": "3ed9924ff7ec1b5bc6c62cd6751df068cf11eeb62454977897ed82283cd06bf8"
+      },
+      {
+        "file": "artifacts/ai-positions-exposure/ai-promotion__frozen-v81-development__attack-temperate.jsonl",
+        "sha256": "7e6e2bb60a1129d70633386fa9d5d4c8465c1c915e454d8dc4ac5496d8e5cf28",
+        "kind": "rows",
+        "summarySha256": "4f09c3768054aa37a936414f19170cc63dbc437877224fbbcabe760da8c6bc1a"
+      },
+      {
+        "file": "artifacts/ai-positions-exposure/ai-promotion__frozen-v81-development__meeting-eastern.jsonl",
+        "sha256": "175a9529da1567e6c2cc8a9c0dcdfa8930834535a68128c89168425042e200f8",
+        "kind": "rows",
+        "summarySha256": "597eaa8a3ef71e370370bb52e157f1ce9780b6010194dc2703c35fb0ce39a9b9"
+      },
+      {
+        "file": "artifacts/ai-positions-exposure/ai-promotion__frozen-v81-development__meeting-temperate.jsonl",
+        "sha256": "b7fd3fd509486f82bf57696d28a135a7776397f5fa232f73e06cc5bfabcc9243",
+        "kind": "rows",
+        "summarySha256": "6fc1ebdc83594854eb84d8c508c7f1d9599abad93ac41f1d91c19078c0ade21f"
+      },
+      {
+        "file": "artifacts/ai-positions-exposure/ai-promotion__frozen-v82r-independent__attack-eastern.jsonl",
+        "sha256": "ec86b2e9b9d6b0804f92531686226c3238d61ce1c89376311ca3cd7e8b65138c",
+        "kind": "rows",
+        "summarySha256": "0a03ae6a4ed80a58a8b6365a9b4808029f6ac837219ee7212477ff5f35306f3e"
+      },
+      {
+        "file": "artifacts/ai-positions-exposure/ai-promotion__frozen-v82r-independent__attack-temperate.jsonl",
+        "sha256": "0e56bf59db7f9f16f0f0de717e8f33e8a8e2ba8ae8e0594bfc24aa61b139cc65",
+        "kind": "rows",
+        "summarySha256": "aa41a9528df2311f78fea938121cca196a7f9b990d50b3e3ff3a813e442aa790"
+      },
+      {
+        "file": "artifacts/ai-positions-exposure/ai-promotion__frozen-v82r-independent__meeting-eastern.jsonl",
+        "sha256": "11a2ec59a87e7a121663d53cf4e15aa4a0c014059f6f96a2f3b1bbd9fa1f597a",
+        "kind": "rows",
+        "summarySha256": "c81b6de3d4113365aa5c4b9de6fad9b6fa44b0a1fb719025bf474df2590f1905"
+      },
+      {
+        "file": "artifacts/ai-positions-exposure/ai-promotion__frozen-v82r-independent__meeting-temperate.jsonl",
+        "sha256": "abdac7d29a68fa55438ed5d137114dd6774cd6131cc43a75a1acb8063b7a2492",
+        "kind": "rows",
+        "summarySha256": "649cbc9cbd697d19057b44c111d48d792436767a5cee8f9f7b2e87cda7f79344"
+      },
+      {
+        "file": "artifacts/ai-positions-exposure/ai-promotion__frozen-v85-development__attack-eastern.jsonl",
+        "sha256": "5a62d91755c3c6365dd002a8e52bfb0ec65cce709c189f4653faa4557db25cc9",
+        "kind": "rows",
+        "summarySha256": "9d8f11892b64887d6923a8aeef4bc4d93d319af228af6da69e4dceedbd48c1da"
+      },
+      {
+        "file": "artifacts/ai-positions-exposure/ai-promotion__frozen-v85-development__attack-temperate.jsonl",
+        "sha256": "f1fa7743c46edecd5aed391a677f8d2e285067a39ee9c9ff8c7da9b1313c6797",
+        "kind": "rows",
+        "summarySha256": "ef7610ed405e8e75479ef347677df2a0ab19083e02f5c028e57edb38f402163c"
+      },
+      {
+        "file": "artifacts/ai-positions-exposure/ai-promotion__frozen-v85-development__meeting-eastern.jsonl",
+        "sha256": "7bd4e07d9b79067d88fe4a86479976dfbb3960ffc9e631ae784a736276764318",
+        "kind": "rows",
+        "summarySha256": "d39f2c04e9cff1c019bdb1c982b7980fccc9e7251ca35306069b24e23f232bb6"
+      },
+      {
+        "file": "artifacts/ai-positions-exposure/ai-promotion__frozen-v85-development__meeting-temperate.jsonl",
+        "sha256": "c1e020bafe63625ca515162fb7d88dbf8229f713dc2e791b99f8afc63a6d51fa",
+        "kind": "rows",
+        "summarySha256": "2400c5b5a78a09ac534d3c802ea69f0c3b55c3cf3eaa6bafc413088c11534c43"
+      },
+      {
+        "file": "artifacts/ai-positions-exposure/analysis/exposure.txt",
+        "sha256": "9784c9b7726276fe07ac317db2506dbed2757748b94ce9442925a21aeece6a28",
+        "kind": "analysis"
+      },
+      {
+        "file": "artifacts/ai-positions-exposure/analysis/exposure.json",
+        "sha256": "9b3059eb26c6ce8356fc882da62550efdbce8c787cfcb7fce2a309afabbde471",
+        "kind": "analysis"
+      }
+    ],
+    "metricOnlyDistinct": 252,
+    "metricOnlyIdentityCollisions": [
+      [
+        "bdebc704ed6ad291fa94a13485e09ae81a41c5fd2618c349ba4abead7737b4b7",
+        "f9a4b852b43b68333a16a4fee15097de149e4f650b52635cbf7d9038cea79b06",
+        "a3ce9c7b1bce4314a10f6dd6f019a8ff7089c4336f80a04946d10e556474e4de"
+      ],
+      [
+        "7324782053465b080b791e28cf3945c59cfb30ae9775867283be202329def085",
+        "34bc432a8e1d1bb41638c32c992412963b58ed35685e7eb0bfa418ab06803098"
+      ]
+    ]
+  },
+  "data": {
+    "nRows": 3315,
+    "nGames": 255,
+    "nSeeds": 96,
+    "batchRowsIncludingAliases": {
+      "artifacts/ai-assault/defender-1330": 1391,
+      "artifacts/ai-assault/v84-development": 208,
+      "artifacts/ai-continue/ration-fix-games": 299,
+      "artifacts/ai-promotion/frozen-v81-development": 416,
+      "artifacts/ai-promotion/frozen-v82r-independent": 1027,
+      "artifacts/ai-promotion/frozen-v85-development": 312
+    }
+  },
+  "recordedAliases": 368,
+  "uniqueTrajectories": 255,
+  "seedFold": {
+    "295641633": 7,
+    "295641827": 1,
+    "295642021": 4,
+    "295642215": 8,
+    "295651333": 0,
+    "295651527": 5,
+    "295651721": 5,
+    "295651915": 1,
+    "295661033": 4,
+    "295661227": 1,
+    "295661421": 9,
+    "295661615": 8,
+    "295670733": 5,
+    "295670927": 3,
+    "295671121": 3,
+    "295671315": 4,
+    "298551633": 1,
+    "298551827": 2,
+    "298552021": 1,
+    "298552215": 7,
+    "298552409": 0,
+    "298552603": 6,
+    "298552797": 9,
+    "298552991": 0,
+    "298553185": 1,
+    "298553379": 1,
+    "298553573": 5,
+    "298553767": 8,
+    "298553961": 9,
+    "298554155": 8,
+    "298554349": 7,
+    "298554543": 8,
+    "298554737": 5,
+    "298554931": 7,
+    "298555125": 8,
+    "298555319": 5,
+    "298561333": 9,
+    "298561527": 9,
+    "298561721": 1,
+    "298561915": 6,
+    "298562109": 9,
+    "298562303": 3,
+    "298562497": 3,
+    "298562691": 2,
+    "298562885": 5,
+    "298563079": 9,
+    "298563273": 0,
+    "298563467": 4,
+    "298563661": 0,
+    "298563855": 5,
+    "298564049": 4,
+    "298564243": 5,
+    "298564437": 7,
+    "298564631": 0,
+    "298564825": 0,
+    "298565019": 6,
+    "955241633": 0,
+    "955241827": 7,
+    "955242021": 2,
+    "955242215": 7,
+    "955242409": 4,
+    "955242603": 8,
+    "955242797": 3,
+    "955242991": 6,
+    "955243185": 4,
+    "955243379": 6,
+    "955251333": 8,
+    "955251527": 4,
+    "955251721": 3,
+    "955251915": 2,
+    "955252109": 2,
+    "955252303": 6,
+    "955252497": 4,
+    "955252691": 9,
+    "955252885": 4,
+    "955253079": 3,
+    "955261033": 1,
+    "955261227": 0,
+    "955261421": 9,
+    "955261615": 7,
+    "955261809": 3,
+    "955262003": 1,
+    "955262197": 8,
+    "955262391": 6,
+    "955262585": 6,
+    "955262779": 2,
+    "955270733": 5,
+    "955270927": 2,
+    "955271121": 3,
+    "955271315": 3,
+    "955271509": 6,
+    "955271703": 2,
+    "955271897": 2,
+    "955272091": 7,
+    "955272285": 2,
+    "955272479": 0
+  },
+  "mapSeed10Fold": {
+    "all": [
+      {
+        "target": "objectiveVpLost",
+        "metric": "objectiveVpAtRisk",
+        "baseline": "objectivesThreatened",
+        "candidate": {
+          "nRows": 3315,
+          "nGames": 255,
+          "nSeeds": 96,
+          "batchRowsIncludingAliases": {
+            "artifacts/ai-assault/defender-1330": 1391,
+            "artifacts/ai-assault/v84-development": 208,
+            "artifacts/ai-continue/ration-fix-games": 299,
+            "artifacts/ai-promotion/frozen-v81-development": 416,
+            "artifacts/ai-promotion/frozen-v82r-independent": 1027,
+            "artifacts/ai-promotion/frozen-v85-development": 312
+          }
+        },
+        "missingAnyRequired": 0,
+        "metricMissing": 0,
+        "baselineMissing": 0,
+        "metricZero": 1596,
+        "outcomeMissing": 0,
+        "outcomeZero": 2907,
+        "emptyFoldCount": 0,
+        "evaluated": {
+          "nRows": 3315,
+          "nGames": 255,
+          "nSeeds": 96,
+          "batchRowsIncludingAliases": {
+            "artifacts/ai-assault/defender-1330": 1391,
+            "artifacts/ai-assault/v84-development": 208,
+            "artifacts/ai-continue/ration-fix-games": 299,
+            "artifacts/ai-promotion/frozen-v81-development": 416,
+            "artifacts/ai-promotion/frozen-v82r-independent": 1027,
+            "artifacts/ai-promotion/frozen-v85-development": 312
+          }
+        },
+        "status": "EVALUATED",
+        "scores": {
+          "zero": {
+            "mae": 0.40784313725490196,
+            "r2": -0.095653522652132
+          },
+          "trainMedian": {
+            "mae": 0.40784313725490196,
+            "r2": -0.095653522652132
+          },
+          "trainMean": {
+            "mae": 0.7153401639833116,
+            "r2": -0.002004419501819621
+          },
+          "baseline": {
+            "mae": 0.7030847151133707,
+            "r2": 0.012782634953178551
+          },
+          "baselinePlusMetric": {
+            "mae": 0.6060102362604542,
+            "r2": 0.21945142506668558
+          },
+          "baselineBucketMedian": {
+            "mae": 0.4114630467571644,
+            "r2": -0.10814355647590568
+          },
+          "metricBucketMedian": {
+            "mae": 0.40784313725490196,
+            "r2": -0.095653522652132
+          }
+        },
+        "maeGain": 0.09707447885291642,
+        "r2Gain": 0.20666879011350703,
+        "intervals": {
+          "draws": 1000,
+          "maeGain95": [
+            0.05851567652161438,
+            0.13613816349780405
+          ],
+          "r2Gain95": [
+            0.14755001026851022,
+            0.2559842487658859
+          ],
+          "metricBucketMedianMaeGain95": {
+            "zero": [
+              0.0,
+              0.0
+            ],
+            "trainMedian": [
+              0.0,
+              0.0
+            ],
+            "baselineBucketMedian": [
+              0.0,
+              0.009230769230769265
+            ]
+          },
+          "scope": "Paired map-seed cluster resampling of fixed held-out errors. Conditional on fitted folds; no refitting or model-selection uncertainty."
+        },
+        "foldCount": 10,
+        "verifiedNoSeedOverlap": true
+      },
+      {
+        "target": "objectivesLost",
+        "metric": "objectivesAtRisk",
+        "baseline": "objectivesThreatened",
+        "candidate": {
+          "nRows": 3315,
+          "nGames": 255,
+          "nSeeds": 96,
+          "batchRowsIncludingAliases": {
+            "artifacts/ai-assault/defender-1330": 1391,
+            "artifacts/ai-assault/v84-development": 208,
+            "artifacts/ai-continue/ration-fix-games": 299,
+            "artifacts/ai-promotion/frozen-v81-development": 416,
+            "artifacts/ai-promotion/frozen-v82r-independent": 1027,
+            "artifacts/ai-promotion/frozen-v85-development": 312
+          }
+        },
+        "missingAnyRequired": 0,
+        "metricMissing": 0,
+        "baselineMissing": 0,
+        "metricZero": 1596,
+        "outcomeMissing": 0,
+        "outcomeZero": 2907,
+        "emptyFoldCount": 0,
+        "evaluated": {
+          "nRows": 3315,
+          "nGames": 255,
+          "nSeeds": 96,
+          "batchRowsIncludingAliases": {
+            "artifacts/ai-assault/defender-1330": 1391,
+            "artifacts/ai-assault/v84-development": 208,
+            "artifacts/ai-continue/ration-fix-games": 299,
+            "artifacts/ai-promotion/frozen-v81-development": 416,
+            "artifacts/ai-promotion/frozen-v82r-independent": 1027,
+            "artifacts/ai-promotion/frozen-v85-development": 312
+          }
+        },
+        "status": "EVALUATED",
+        "scores": {
+          "zero": {
+            "mae": 0.1541478129713424,
+            "r2": -0.116139772827347
+          },
+          "trainMedian": {
+            "mae": 0.1541478129713424,
+            "r2": -0.116139772827347
+          },
+          "trainMean": {
+            "mae": 0.27050373798858873,
+            "r2": -0.0014959264755416424
+          },
+          "baseline": {
+            "mae": 0.2664731725803085,
+            "r2": 0.012693720343819326
+          },
+          "baselinePlusMetric": {
+            "mae": 0.22469234281154515,
+            "r2": 0.2089565624833647
+          },
+          "baselineBucketMedian": {
+            "mae": 0.15535444947209653,
+            "r2": -0.1279351733327878
+          },
+          "metricBucketMedian": {
+            "mae": 0.15037707390648566,
+            "r2": 0.05305050317257132
+          }
+        },
+        "maeGain": 0.04178082976876335,
+        "r2Gain": 0.19626284213954537,
+        "intervals": {
+          "draws": 1000,
+          "maeGain95": [
+            0.030573430656173045,
+            0.052241084698071566
+          ],
+          "r2Gain95": [
+            0.14453112103373378,
+            0.23847514488113986
+          ],
+          "metricBucketMedianMaeGain95": {
+            "zero": [
+              -0.004552590266875961,
+              0.012111292962356773
+            ],
+            "trainMedian": [
+              -0.004552590266875961,
+              0.012111292962356773
+            ],
+            "baselineBucketMedian": [
+              -0.003670603255665511,
+              0.013609467455621305
+            ]
+          },
+          "scope": "Paired map-seed cluster resampling of fixed held-out errors. Conditional on fitted folds; no refitting or model-selection uncertainty."
+        },
+        "foldCount": 10,
+        "verifiedNoSeedOverlap": true
+      },
+      {
+        "target": "stepsLost",
+        "metric": "stacksExposedAllocated",
+        "baseline": "contact",
+        "candidate": {
+          "nRows": 3315,
+          "nGames": 255,
+          "nSeeds": 96,
+          "batchRowsIncludingAliases": {
+            "artifacts/ai-assault/defender-1330": 1391,
+            "artifacts/ai-assault/v84-development": 208,
+            "artifacts/ai-continue/ration-fix-games": 299,
+            "artifacts/ai-promotion/frozen-v81-development": 416,
+            "artifacts/ai-promotion/frozen-v82r-independent": 1027,
+            "artifacts/ai-promotion/frozen-v85-development": 312
+          }
+        },
+        "missingAnyRequired": 0,
+        "metricMissing": 0,
+        "baselineMissing": 0,
+        "metricZero": 103,
+        "outcomeMissing": 0,
+        "outcomeZero": 1654,
+        "emptyFoldCount": 0,
+        "evaluated": {
+          "nRows": 3315,
+          "nGames": 255,
+          "nSeeds": 96,
+          "batchRowsIncludingAliases": {
+            "artifacts/ai-assault/defender-1330": 1391,
+            "artifacts/ai-assault/v84-development": 208,
+            "artifacts/ai-continue/ration-fix-games": 299,
+            "artifacts/ai-promotion/frozen-v81-development": 416,
+            "artifacts/ai-promotion/frozen-v82r-independent": 1027,
+            "artifacts/ai-promotion/frozen-v85-development": 312
+          }
+        },
+        "status": "EVALUATED",
+        "scores": {
+          "zero": {
+            "mae": 1.2009049773755656,
+            "r2": -0.5021747524529419
+          },
+          "trainMedian": {
+            "mae": 1.2259426847662143,
+            "r2": -0.22098310065820548
+          },
+          "trainMean": {
+            "mae": 1.2807612174416831,
+            "r2": -0.0005223533875493569
+          },
+          "baseline": {
+            "mae": 1.2721039465255912,
+            "r2": 0.007892210649390274
+          },
+          "baselinePlusMetric": {
+            "mae": 1.2328230074155453,
+            "r2": 0.05833433671479138
+          },
+          "baselineBucketMedian": {
+            "mae": 1.1613876319758674,
+            "r2": -0.16174063087403234
+          },
+          "metricBucketMedian": {
+            "mae": 1.1143288084464555,
+            "r2": -0.08611194604317318
+          }
+        },
+        "maeGain": 0.03928093911004593,
+        "r2Gain": 0.050442126065401105,
+        "intervals": {
+          "draws": 1000,
+          "maeGain95": [
+            0.0188918427208562,
+            0.06047064862280882
+          ],
+          "r2Gain95": [
+            0.02787908437212394,
+            0.07254583037874207
+          ],
+          "metricBucketMedianMaeGain95": {
+            "zero": [
+              0.05128205128205132,
+              0.12228011032791897
+            ],
+            "trainMedian": [
+              0.0748600058944886,
+              0.14441497200117892
+            ],
+            "baselineBucketMedian": [
+              0.015818858560794125,
+              0.08037676609105171
+            ]
+          },
+          "scope": "Paired map-seed cluster resampling of fixed held-out errors. Conditional on fitted folds; no refitting or model-selection uncertainty."
+        },
+        "foldCount": 10,
+        "verifiedNoSeedOverlap": true
+      },
+      {
+        "target": "stepsLost",
+        "metric": "stacksExposedAllocated",
+        "baseline": "stacksExposed",
+        "candidate": {
+          "nRows": 3315,
+          "nGames": 255,
+          "nSeeds": 96,
+          "batchRowsIncludingAliases": {
+            "artifacts/ai-assault/defender-1330": 1391,
+            "artifacts/ai-assault/v84-development": 208,
+            "artifacts/ai-continue/ration-fix-games": 299,
+            "artifacts/ai-promotion/frozen-v81-development": 416,
+            "artifacts/ai-promotion/frozen-v82r-independent": 1027,
+            "artifacts/ai-promotion/frozen-v85-development": 312
+          }
+        },
+        "missingAnyRequired": 0,
+        "metricMissing": 0,
+        "baselineMissing": 0,
+        "metricZero": 103,
+        "outcomeMissing": 0,
+        "outcomeZero": 1654,
+        "emptyFoldCount": 0,
+        "evaluated": {
+          "nRows": 3315,
+          "nGames": 255,
+          "nSeeds": 96,
+          "batchRowsIncludingAliases": {
+            "artifacts/ai-assault/defender-1330": 1391,
+            "artifacts/ai-assault/v84-development": 208,
+            "artifacts/ai-continue/ration-fix-games": 299,
+            "artifacts/ai-promotion/frozen-v81-development": 416,
+            "artifacts/ai-promotion/frozen-v82r-independent": 1027,
+            "artifacts/ai-promotion/frozen-v85-development": 312
+          }
+        },
+        "status": "EVALUATED",
+        "scores": {
+          "zero": {
+            "mae": 1.2009049773755656,
+            "r2": -0.5021747524529419
+          },
+          "trainMedian": {
+            "mae": 1.2259426847662143,
+            "r2": -0.22098310065820548
+          },
+          "trainMean": {
+            "mae": 1.2807612174416831,
+            "r2": -0.0005223533875493569
+          },
+          "baseline": {
+            "mae": 1.2742359273041675,
+            "r2": 0.0055990010386951505
+          },
+          "baselinePlusMetric": {
+            "mae": 1.2421356991556676,
+            "r2": 0.05489418809002167
+          },
+          "baselineBucketMedian": {
+            "mae": 1.1306184012066365,
+            "r2": -0.03926417738405763
+          },
+          "metricBucketMedian": {
+            "mae": 1.1143288084464555,
+            "r2": -0.08611194604317318
+          }
+        },
+        "maeGain": 0.03210022814849989,
+        "r2Gain": 0.04929518705132652,
+        "intervals": {
+          "draws": 1000,
+          "maeGain95": [
+            0.01225311273625218,
+            0.0519432874518011
+          ],
+          "r2Gain95": [
+            0.02549400802520374,
+            0.0721813585096307
+          ],
+          "metricBucketMedianMaeGain95": {
+            "zero": [
+              0.05128205128205132,
+              0.12228011032791897
+            ],
+            "trainMedian": [
+              0.0748600058944886,
+              0.14441497200117892
+            ],
+            "baselineBucketMedian": [
+              -0.003783102143757988,
+              0.03482737734706243
+            ]
+          },
+          "scope": "Paired map-seed cluster resampling of fixed held-out errors. Conditional on fitted folds; no refitting or model-selection uncertainty."
+        },
+        "foldCount": 10,
+        "verifiedNoSeedOverlap": true
+      },
+      {
+        "target": "outOfTraceRise",
+        "metric": "supplyCuttable",
+        "baseline": "contact",
+        "candidate": {
+          "nRows": 3315,
+          "nGames": 255,
+          "nSeeds": 96,
+          "batchRowsIncludingAliases": {
+            "artifacts/ai-assault/defender-1330": 1391,
+            "artifacts/ai-assault/v84-development": 208,
+            "artifacts/ai-continue/ration-fix-games": 299,
+            "artifacts/ai-promotion/frozen-v81-development": 416,
+            "artifacts/ai-promotion/frozen-v82r-independent": 1027,
+            "artifacts/ai-promotion/frozen-v85-development": 312
+          }
+        },
+        "missingAnyRequired": 0,
+        "metricMissing": 0,
+        "baselineMissing": 0,
+        "metricZero": 332,
+        "outcomeMissing": 0,
+        "outcomeZero": 2244,
+        "emptyFoldCount": 0,
+        "evaluated": {
+          "nRows": 3315,
+          "nGames": 255,
+          "nSeeds": 96,
+          "batchRowsIncludingAliases": {
+            "artifacts/ai-assault/defender-1330": 1391,
+            "artifacts/ai-assault/v84-development": 208,
+            "artifacts/ai-continue/ration-fix-games": 299,
+            "artifacts/ai-promotion/frozen-v81-development": 416,
+            "artifacts/ai-promotion/frozen-v82r-independent": 1027,
+            "artifacts/ai-promotion/frozen-v85-development": 312
+          }
+        },
+        "status": "EVALUATED",
+        "scores": {
+          "zero": {
+            "mae": 2.1794871794871793,
+            "r2": -0.19345858749793665
+          },
+          "trainMedian": {
+            "mae": 2.1794871794871793,
+            "r2": -0.19345858749793665
+          },
+          "trainMean": {
+            "mae": 3.1244316664690888,
+            "r2": -0.0009268449905748266
+          },
+          "baseline": {
+            "mae": 3.1252866176305987,
+            "r2": -0.0018046276630414582
+          },
+          "baselinePlusMetric": {
+            "mae": 3.00989552423592,
+            "r2": 0.05336258762037982
+          },
+          "baselineBucketMedian": {
+            "mae": 2.1794871794871793,
+            "r2": -0.19345858749793665
+          },
+          "metricBucketMedian": {
+            "mae": 2.1794871794871793,
+            "r2": -0.19345858749793665
+          }
+        },
+        "maeGain": 0.11539109339467846,
+        "r2Gain": 0.05516721528342128,
+        "intervals": {
+          "draws": 1000,
+          "maeGain95": [
+            0.04061093602194621,
+            0.18830683912658808
+          ],
+          "r2Gain95": [
+            0.029179894403793427,
+            0.07954160946277455
+          ],
+          "metricBucketMedianMaeGain95": {
+            "zero": [
+              0.0,
+              0.0
+            ],
+            "trainMedian": [
+              0.0,
+              0.0
+            ],
+            "baselineBucketMedian": [
+              0.0,
+              0.0
+            ]
+          },
+          "scope": "Paired map-seed cluster resampling of fixed held-out errors. Conditional on fitted folds; no refitting or model-selection uncertainty."
+        },
+        "foldCount": 10,
+        "verifiedNoSeedOverlap": true
+      },
+      {
+        "target": "outOfTraceRise",
+        "metric": "supplyBestCut",
+        "baseline": "contact",
+        "candidate": {
+          "nRows": 3315,
+          "nGames": 255,
+          "nSeeds": 96,
+          "batchRowsIncludingAliases": {
+            "artifacts/ai-assault/defender-1330": 1391,
+            "artifacts/ai-assault/v84-development": 208,
+            "artifacts/ai-continue/ration-fix-games": 299,
+            "artifacts/ai-promotion/frozen-v81-development": 416,
+            "artifacts/ai-promotion/frozen-v82r-independent": 1027,
+            "artifacts/ai-promotion/frozen-v85-development": 312
+          }
+        },
+        "missingAnyRequired": 0,
+        "metricMissing": 0,
+        "baselineMissing": 0,
+        "metricZero": 332,
+        "outcomeMissing": 0,
+        "outcomeZero": 2244,
+        "emptyFoldCount": 0,
+        "evaluated": {
+          "nRows": 3315,
+          "nGames": 255,
+          "nSeeds": 96,
+          "batchRowsIncludingAliases": {
+            "artifacts/ai-assault/defender-1330": 1391,
+            "artifacts/ai-assault/v84-development": 208,
+            "artifacts/ai-continue/ration-fix-games": 299,
+            "artifacts/ai-promotion/frozen-v81-development": 416,
+            "artifacts/ai-promotion/frozen-v82r-independent": 1027,
+            "artifacts/ai-promotion/frozen-v85-development": 312
+          }
+        },
+        "status": "EVALUATED",
+        "scores": {
+          "zero": {
+            "mae": 2.1794871794871793,
+            "r2": -0.19345858749793665
+          },
+          "trainMedian": {
+            "mae": 2.1794871794871793,
+            "r2": -0.19345858749793665
+          },
+          "trainMean": {
+            "mae": 3.1244316664690888,
+            "r2": -0.0009268449905748266
+          },
+          "baseline": {
+            "mae": 3.1252866176305987,
+            "r2": -0.0018046276630414582
+          },
+          "baselinePlusMetric": {
+            "mae": 3.0174312428441956,
+            "r2": 0.05508688784454052
+          },
+          "baselineBucketMedian": {
+            "mae": 2.1794871794871793,
+            "r2": -0.19345858749793665
+          },
+          "metricBucketMedian": {
+            "mae": 2.1794871794871793,
+            "r2": -0.19345858749793665
+          }
+        },
+        "maeGain": 0.10785537478640306,
+        "r2Gain": 0.05689151550758198,
+        "intervals": {
+          "draws": 1000,
+          "maeGain95": [
+            0.03138528230772719,
+            0.1835504580317595
+          ],
+          "r2Gain95": [
+            0.02742598209471281,
+            0.08225439019801917
+          ],
+          "metricBucketMedianMaeGain95": {
+            "zero": [
+              0.0,
+              0.0
+            ],
+            "trainMedian": [
+              0.0,
+              0.0
+            ],
+            "baselineBucketMedian": [
+              0.0,
+              0.0
+            ]
+          },
+          "scope": "Paired map-seed cluster resampling of fixed held-out errors. Conditional on fitted folds; no refitting or model-selection uncertainty."
+        },
+        "foldCount": 10,
+        "verifiedNoSeedOverlap": true
+      },
+      {
+        "target": "hqsLost",
+        "metric": "hqsInReach",
+        "baseline": "contact",
+        "candidate": {
+          "nRows": 3315,
+          "nGames": 255,
+          "nSeeds": 96,
+          "batchRowsIncludingAliases": {
+            "artifacts/ai-assault/defender-1330": 1391,
+            "artifacts/ai-assault/v84-development": 208,
+            "artifacts/ai-continue/ration-fix-games": 299,
+            "artifacts/ai-promotion/frozen-v81-development": 416,
+            "artifacts/ai-promotion/frozen-v82r-independent": 1027,
+            "artifacts/ai-promotion/frozen-v85-development": 312
+          }
+        },
+        "missingAnyRequired": 0,
+        "metricMissing": 0,
+        "baselineMissing": 0,
+        "metricZero": 889,
+        "outcomeMissing": 0,
+        "outcomeZero": 2827,
+        "emptyFoldCount": 0,
+        "evaluated": {
+          "nRows": 3315,
+          "nGames": 255,
+          "nSeeds": 96,
+          "batchRowsIncludingAliases": {
+            "artifacts/ai-assault/defender-1330": 1391,
+            "artifacts/ai-assault/v84-development": 208,
+            "artifacts/ai-continue/ration-fix-games": 299,
+            "artifacts/ai-promotion/frozen-v81-development": 416,
+            "artifacts/ai-promotion/frozen-v82r-independent": 1027,
+            "artifacts/ai-promotion/frozen-v85-development": 312
+          }
+        },
+        "status": "EVALUATED",
+        "scores": {
+          "zero": {
+            "mae": 0.171342383107089,
+            "r2": -0.15238124027024158
+          },
+          "trainMedian": {
+            "mae": 0.171342383107089,
+            "r2": -0.15238124027024158
+          },
+          "trainMean": {
+            "mae": 0.29229587415397856,
+            "r2": -0.0008666962232179998
+          },
+          "baseline": {
+            "mae": 0.2917686590546045,
+            "r2": -0.00039678335197201875
+          },
+          "baselinePlusMetric": {
+            "mae": 0.2832844754605023,
+            "r2": 0.02832078984638442
+          },
+          "baselineBucketMedian": {
+            "mae": 0.171342383107089,
+            "r2": -0.15238124027024158
+          },
+          "metricBucketMedian": {
+            "mae": 0.171342383107089,
+            "r2": -0.15238124027024158
+          }
+        },
+        "maeGain": 0.00848418359410219,
+        "r2Gain": 0.02871757319835644,
+        "intervals": {
+          "draws": 1000,
+          "maeGain95": [
+            0.004272273644752855,
+            0.012757089904313457
+          ],
+          "r2Gain95": [
+            0.01705796435511997,
+            0.039969268652850554
+          ],
+          "metricBucketMedianMaeGain95": {
+            "zero": [
+              0.0,
+              0.0
+            ],
+            "trainMedian": [
+              0.0,
+              0.0
+            ],
+            "baselineBucketMedian": [
+              0.0,
+              0.0
+            ]
+          },
+          "scope": "Paired map-seed cluster resampling of fixed held-out errors. Conditional on fitted folds; no refitting or model-selection uncertainty."
+        },
+        "foldCount": 10,
+        "verifiedNoSeedOverlap": true
+      }
+    ],
+    "attacker-moving": [
+      {
+        "target": "objectiveVpLost",
+        "metric": "objectiveVpAtRisk",
+        "baseline": "objectivesThreatened",
+        "candidate": {
+          "nRows": 1244,
+          "nGames": 186,
+          "nSeeds": 68,
+          "batchRowsIncludingAliases": {
+            "artifacts/ai-assault/defender-1330": 708,
+            "artifacts/ai-assault/v84-development": 54,
+            "artifacts/ai-continue/ration-fix-games": 102,
+            "artifacts/ai-promotion/frozen-v81-development": 111,
+            "artifacts/ai-promotion/frozen-v82r-independent": 260,
+            "artifacts/ai-promotion/frozen-v85-development": 111
+          }
+        },
+        "missingAnyRequired": 0,
+        "metricMissing": 0,
+        "baselineMissing": 0,
+        "metricZero": 237,
+        "outcomeMissing": 0,
+        "outcomeZero": 943,
+        "emptyFoldCount": 0,
+        "evaluated": {
+          "nRows": 1244,
+          "nGames": 186,
+          "nSeeds": 68,
+          "batchRowsIncludingAliases": {
+            "artifacts/ai-assault/defender-1330": 708,
+            "artifacts/ai-assault/v84-development": 54,
+            "artifacts/ai-continue/ration-fix-games": 102,
+            "artifacts/ai-promotion/frozen-v81-development": 111,
+            "artifacts/ai-promotion/frozen-v82r-independent": 260,
+            "artifacts/ai-promotion/frozen-v85-development": 111
+          }
+        },
+        "status": "EVALUATED",
+        "scores": {
+          "zero": {
+            "mae": 0.8319935691318328,
+            "r2": -0.19952176984643022
+          },
+          "trainMedian": {
+            "mae": 0.8319935691318328,
+            "r2": -0.19952176984643022
+          },
+          "trainMean": {
+            "mae": 1.263788031146754,
+            "r2": -0.004700534553631508
+          },
+          "baseline": {
+            "mae": 1.2182399905147763,
+            "r2": 0.035789286013416355
+          },
+          "baselinePlusMetric": {
+            "mae": 1.0650071105520444,
+            "r2": 0.2356338879108587
+          },
+          "baselineBucketMedian": {
+            "mae": 0.8368167202572347,
+            "r2": -0.20786304543354084
+          },
+          "metricBucketMedian": {
+            "mae": 0.8721864951768489,
+            "r2": -0.1568885835123095
+          }
+        },
+        "maeGain": 0.15323287996273183,
+        "r2Gain": 0.19984460189744235,
+        "intervals": {
+          "draws": 1000,
+          "maeGain95": [
+            0.07182165374693605,
+            0.23384308692929956
+          ],
+          "r2Gain95": [
+            0.1127578721611433,
+            0.27017178311956325
+          ],
+          "metricBucketMedianMaeGain95": {
+            "zero": [
+              -0.08918249380677123,
+              -0.0015686274509804088
+            ],
+            "trainMedian": [
+              -0.08918249380677123,
+              -0.0015686274509804088
+            ],
+            "baselineBucketMedian": [
+              -0.08504176157934695,
+              0.003454231433506094
+            ]
+          },
+          "scope": "Paired map-seed cluster resampling of fixed held-out errors. Conditional on fitted folds; no refitting or model-selection uncertainty."
+        },
+        "foldCount": 10,
+        "verifiedNoSeedOverlap": true
+      },
+      {
+        "target": "objectivesLost",
+        "metric": "objectivesAtRisk",
+        "baseline": "objectivesThreatened",
+        "candidate": {
+          "nRows": 1244,
+          "nGames": 186,
+          "nSeeds": 68,
+          "batchRowsIncludingAliases": {
+            "artifacts/ai-assault/defender-1330": 708,
+            "artifacts/ai-assault/v84-development": 54,
+            "artifacts/ai-continue/ration-fix-games": 102,
+            "artifacts/ai-promotion/frozen-v81-development": 111,
+            "artifacts/ai-promotion/frozen-v82r-independent": 260,
+            "artifacts/ai-promotion/frozen-v85-development": 111
+          }
+        },
+        "missingAnyRequired": 0,
+        "metricMissing": 0,
+        "baselineMissing": 0,
+        "metricZero": 237,
+        "outcomeMissing": 0,
+        "outcomeZero": 943,
+        "emptyFoldCount": 0,
+        "evaluated": {
+          "nRows": 1244,
+          "nGames": 186,
+          "nSeeds": 68,
+          "batchRowsIncludingAliases": {
+            "artifacts/ai-assault/defender-1330": 708,
+            "artifacts/ai-assault/v84-development": 54,
+            "artifacts/ai-continue/ration-fix-games": 102,
+            "artifacts/ai-promotion/frozen-v81-development": 111,
+            "artifacts/ai-promotion/frozen-v82r-independent": 260,
+            "artifacts/ai-promotion/frozen-v85-development": 111
+          }
+        },
+        "status": "EVALUATED",
+        "scores": {
+          "zero": {
+            "mae": 0.31913183279742763,
+            "r2": -0.2542527637923442
+          },
+          "trainMedian": {
+            "mae": 0.31913183279742763,
+            "r2": -0.2542527637923442
+          },
+          "trainMean": {
+            "mae": 0.48498712011458545,
+            "r2": -0.003842798394725566
+          },
+          "baseline": {
+            "mae": 0.46560185027224615,
+            "r2": 0.036219676493949415
+          },
+          "baselinePlusMetric": {
+            "mae": 0.4125514032412915,
+            "r2": 0.19372544550028026
+          },
+          "baselineBucketMedian": {
+            "mae": 0.3207395498392283,
+            "r2": -0.26227998148061515
+          },
+          "metricBucketMedian": {
+            "mae": 0.30144694533762056,
+            "r2": -0.017449841988349535
+          }
+        },
+        "maeGain": 0.05305044703095463,
+        "r2Gain": 0.15750576900633084,
+        "intervals": {
+          "draws": 1000,
+          "maeGain95": [
+            0.03361920230546134,
+            0.07221629820726255
+          ],
+          "r2Gain95": [
+            0.10017286699347827,
+            0.20460278704267154
+          ],
+          "metricBucketMedianMaeGain95": {
+            "zero": [
+              -0.0038699690402477227,
+              0.03918495297805641
+            ],
+            "trainMedian": [
+              -0.0038699690402477227,
+              0.03918495297805641
+            ],
+            "baselineBucketMedian": [
+              -0.002307692307692344,
+              0.040752351097178674
+            ]
+          },
+          "scope": "Paired map-seed cluster resampling of fixed held-out errors. Conditional on fitted folds; no refitting or model-selection uncertainty."
+        },
+        "foldCount": 10,
+        "verifiedNoSeedOverlap": true
+      },
+      {
+        "target": "stepsLost",
+        "metric": "stacksExposedAllocated",
+        "baseline": "contact",
+        "candidate": {
+          "nRows": 1244,
+          "nGames": 186,
+          "nSeeds": 68,
+          "batchRowsIncludingAliases": {
+            "artifacts/ai-assault/defender-1330": 708,
+            "artifacts/ai-assault/v84-development": 54,
+            "artifacts/ai-continue/ration-fix-games": 102,
+            "artifacts/ai-promotion/frozen-v81-development": 111,
+            "artifacts/ai-promotion/frozen-v82r-independent": 260,
+            "artifacts/ai-promotion/frozen-v85-development": 111
+          }
+        },
+        "missingAnyRequired": 0,
+        "metricMissing": 0,
+        "baselineMissing": 0,
+        "metricZero": 21,
+        "outcomeMissing": 0,
+        "outcomeZero": 362,
+        "emptyFoldCount": 0,
+        "evaluated": {
+          "nRows": 1244,
+          "nGames": 186,
+          "nSeeds": 68,
+          "batchRowsIncludingAliases": {
+            "artifacts/ai-assault/defender-1330": 708,
+            "artifacts/ai-assault/v84-development": 54,
+            "artifacts/ai-continue/ration-fix-games": 102,
+            "artifacts/ai-promotion/frozen-v81-development": 111,
+            "artifacts/ai-promotion/frozen-v82r-independent": 260,
+            "artifacts/ai-promotion/frozen-v85-development": 111
+          }
+        },
+        "status": "EVALUATED",
+        "scores": {
+          "zero": {
+            "mae": 1.927652733118971,
+            "r2": -1.0421650281962855
+          },
+          "trainMedian": {
+            "mae": 1.5643086816720257,
+            "r2": -0.11599877341263132
+          },
+          "trainMean": {
+            "mae": 1.5082504366449394,
+            "r2": -0.003489419357006973
+          },
+          "baseline": {
+            "mae": 1.5143066383125658,
+            "r2": -0.00772781006286305
+          },
+          "baselinePlusMetric": {
+            "mae": 1.4087501534632798,
+            "r2": 0.12576045699581673
+          },
+          "baselineBucketMedian": {
+            "mae": 1.522508038585209,
+            "r2": -0.12963875842100792
+          },
+          "metricBucketMedian": {
+            "mae": 1.3681672025723473,
+            "r2": 0.051288315450433886
+          }
+        },
+        "maeGain": 0.10555648484928604,
+        "r2Gain": 0.13348826705867978,
+        "intervals": {
+          "draws": 1000,
+          "maeGain95": [
+            0.06296446827213686,
+            0.14470209313637517
+          ],
+          "r2Gain95": [
+            0.08963134395154759,
+            0.17764644171257404
+          ],
+          "metricBucketMedianMaeGain95": {
+            "zero": [
+              0.43178294573643394,
+              0.679509632224168
+            ],
+            "trainMedian": [
+              0.13236481033091185,
+              0.2549180327868852
+            ],
+            "baselineBucketMedian": [
+              0.09789644012944976,
+              0.2109649122807018
+            ]
+          },
+          "scope": "Paired map-seed cluster resampling of fixed held-out errors. Conditional on fitted folds; no refitting or model-selection uncertainty."
+        },
+        "foldCount": 10,
+        "verifiedNoSeedOverlap": true
+      },
+      {
+        "target": "stepsLost",
+        "metric": "stacksExposedAllocated",
+        "baseline": "stacksExposed",
+        "candidate": {
+          "nRows": 1244,
+          "nGames": 186,
+          "nSeeds": 68,
+          "batchRowsIncludingAliases": {
+            "artifacts/ai-assault/defender-1330": 708,
+            "artifacts/ai-assault/v84-development": 54,
+            "artifacts/ai-continue/ration-fix-games": 102,
+            "artifacts/ai-promotion/frozen-v81-development": 111,
+            "artifacts/ai-promotion/frozen-v82r-independent": 260,
+            "artifacts/ai-promotion/frozen-v85-development": 111
+          }
+        },
+        "missingAnyRequired": 0,
+        "metricMissing": 0,
+        "baselineMissing": 0,
+        "metricZero": 21,
+        "outcomeMissing": 0,
+        "outcomeZero": 362,
+        "emptyFoldCount": 0,
+        "evaluated": {
+          "nRows": 1244,
+          "nGames": 186,
+          "nSeeds": 68,
+          "batchRowsIncludingAliases": {
+            "artifacts/ai-assault/defender-1330": 708,
+            "artifacts/ai-assault/v84-development": 54,
+            "artifacts/ai-continue/ration-fix-games": 102,
+            "artifacts/ai-promotion/frozen-v81-development": 111,
+            "artifacts/ai-promotion/frozen-v82r-independent": 260,
+            "artifacts/ai-promotion/frozen-v85-development": 111
+          }
+        },
+        "status": "EVALUATED",
+        "scores": {
+          "zero": {
+            "mae": 1.927652733118971,
+            "r2": -1.0421650281962855
+          },
+          "trainMedian": {
+            "mae": 1.5643086816720257,
+            "r2": -0.11599877341263132
+          },
+          "trainMean": {
+            "mae": 1.5082504366449394,
+            "r2": -0.003489419357006973
+          },
+          "baseline": {
+            "mae": 1.3904653569556933,
+            "r2": 0.1324291155863977
+          },
+          "baselinePlusMetric": {
+            "mae": 1.3844751038732797,
+            "r2": 0.14185526520355063
+          },
+          "baselineBucketMedian": {
+            "mae": 1.4115755627009647,
+            "r2": -0.033031591874076005
+          },
+          "metricBucketMedian": {
+            "mae": 1.3681672025723473,
+            "r2": 0.051288315450433886
+          }
+        },
+        "maeGain": 0.005990253082413632,
+        "r2Gain": 0.009426149617152935,
+        "intervals": {
+          "draws": 1000,
+          "maeGain95": [
+            -0.009162500285470498,
+            0.02052237144726421
+          ],
+          "r2Gain95": [
+            -0.010059695397226065,
+            0.028094328548436187
+          ],
+          "metricBucketMedianMaeGain95": {
+            "zero": [
+              0.43178294573643394,
+              0.679509632224168
+            ],
+            "trainMedian": [
+              0.13236481033091185,
+              0.2549180327868852
+            ],
+            "baselineBucketMedian": [
+              -0.005604483586869602,
+              0.0938023450586265
+            ]
+          },
+          "scope": "Paired map-seed cluster resampling of fixed held-out errors. Conditional on fitted folds; no refitting or model-selection uncertainty."
+        },
+        "foldCount": 10,
+        "verifiedNoSeedOverlap": true
+      },
+      {
+        "target": "outOfTraceRise",
+        "metric": "supplyCuttable",
+        "baseline": "contact",
+        "candidate": {
+          "nRows": 1244,
+          "nGames": 186,
+          "nSeeds": 68,
+          "batchRowsIncludingAliases": {
+            "artifacts/ai-assault/defender-1330": 708,
+            "artifacts/ai-assault/v84-development": 54,
+            "artifacts/ai-continue/ration-fix-games": 102,
+            "artifacts/ai-promotion/frozen-v81-development": 111,
+            "artifacts/ai-promotion/frozen-v82r-independent": 260,
+            "artifacts/ai-promotion/frozen-v85-development": 111
+          }
+        },
+        "missingAnyRequired": 0,
+        "metricMissing": 0,
+        "baselineMissing": 0,
+        "metricZero": 141,
+        "outcomeMissing": 0,
+        "outcomeZero": 742,
+        "emptyFoldCount": 0,
+        "evaluated": {
+          "nRows": 1244,
+          "nGames": 186,
+          "nSeeds": 68,
+          "batchRowsIncludingAliases": {
+            "artifacts/ai-assault/defender-1330": 708,
+            "artifacts/ai-assault/v84-development": 54,
+            "artifacts/ai-continue/ration-fix-games": 102,
+            "artifacts/ai-promotion/frozen-v81-development": 111,
+            "artifacts/ai-promotion/frozen-v82r-independent": 260,
+            "artifacts/ai-promotion/frozen-v85-development": 111
+          }
+        },
+        "status": "EVALUATED",
+        "scores": {
+          "zero": {
+            "mae": 2.5691318327974275,
+            "r2": -0.29155023970424865
+          },
+          "trainMedian": {
+            "mae": 2.5691318327974275,
+            "r2": -0.29155023970424865
+          },
+          "trainMean": {
+            "mae": 3.370611527118725,
+            "r2": -0.0007880185656690131
+          },
+          "baseline": {
+            "mae": 3.3708942432049183,
+            "r2": -0.00023676937053451752
+          },
+          "baselinePlusMetric": {
+            "mae": 3.1411420199003413,
+            "r2": 0.0831830644467989
+          },
+          "baselineBucketMedian": {
+            "mae": 2.5691318327974275,
+            "r2": -0.29155023970424865
+          },
+          "metricBucketMedian": {
+            "mae": 2.537781350482315,
+            "r2": -0.14927163931674858
+          }
+        },
+        "maeGain": 0.229752223304577,
+        "r2Gain": 0.08341983381733342,
+        "intervals": {
+          "draws": 1000,
+          "maeGain95": [
+            0.07207551092225506,
+            0.3701574134241161
+          ],
+          "r2Gain95": [
+            0.025470657029275312,
+            0.13295171273711492
+          ],
+          "metricBucketMedianMaeGain95": {
+            "zero": [
+              -0.029010238907849928,
+              0.09012539184952972
+            ],
+            "trainMedian": [
+              -0.029010238907849928,
+              0.09012539184952972
+            ],
+            "baselineBucketMedian": [
+              -0.029010238907849928,
+              0.09012539184952972
+            ]
+          },
+          "scope": "Paired map-seed cluster resampling of fixed held-out errors. Conditional on fitted folds; no refitting or model-selection uncertainty."
+        },
+        "foldCount": 10,
+        "verifiedNoSeedOverlap": true
+      },
+      {
+        "target": "outOfTraceRise",
+        "metric": "supplyBestCut",
+        "baseline": "contact",
+        "candidate": {
+          "nRows": 1244,
+          "nGames": 186,
+          "nSeeds": 68,
+          "batchRowsIncludingAliases": {
+            "artifacts/ai-assault/defender-1330": 708,
+            "artifacts/ai-assault/v84-development": 54,
+            "artifacts/ai-continue/ration-fix-games": 102,
+            "artifacts/ai-promotion/frozen-v81-development": 111,
+            "artifacts/ai-promotion/frozen-v82r-independent": 260,
+            "artifacts/ai-promotion/frozen-v85-development": 111
+          }
+        },
+        "missingAnyRequired": 0,
+        "metricMissing": 0,
+        "baselineMissing": 0,
+        "metricZero": 141,
+        "outcomeMissing": 0,
+        "outcomeZero": 742,
+        "emptyFoldCount": 0,
+        "evaluated": {
+          "nRows": 1244,
+          "nGames": 186,
+          "nSeeds": 68,
+          "batchRowsIncludingAliases": {
+            "artifacts/ai-assault/defender-1330": 708,
+            "artifacts/ai-assault/v84-development": 54,
+            "artifacts/ai-continue/ration-fix-games": 102,
+            "artifacts/ai-promotion/frozen-v81-development": 111,
+            "artifacts/ai-promotion/frozen-v82r-independent": 260,
+            "artifacts/ai-promotion/frozen-v85-development": 111
+          }
+        },
+        "status": "EVALUATED",
+        "scores": {
+          "zero": {
+            "mae": 2.5691318327974275,
+            "r2": -0.29155023970424865
+          },
+          "trainMedian": {
+            "mae": 2.5691318327974275,
+            "r2": -0.29155023970424865
+          },
+          "trainMean": {
+            "mae": 3.370611527118725,
+            "r2": -0.0007880185656690131
+          },
+          "baseline": {
+            "mae": 3.3708942432049183,
+            "r2": -0.00023676937053451752
+          },
+          "baselinePlusMetric": {
+            "mae": 3.166875205185607,
+            "r2": 0.07985633775311218
+          },
+          "baselineBucketMedian": {
+            "mae": 2.5691318327974275,
+            "r2": -0.29155023970424865
+          },
+          "metricBucketMedian": {
+            "mae": 2.5361736334405145,
+            "r2": -0.15658618677864666
+          }
+        },
+        "maeGain": 0.20401903801931143,
+        "r2Gain": 0.0800931071236467,
+        "intervals": {
+          "draws": 1000,
+          "maeGain95": [
+            0.043015825751184344,
+            0.3409926484724197
+          ],
+          "r2Gain95": [
+            0.022403676872871037,
+            0.13052223317455314
+          ],
+          "metricBucketMedianMaeGain95": {
+            "zero": [
+              -0.025223759153783387,
+              0.08936484490398788
+            ],
+            "trainMedian": [
+              -0.025223759153783387,
+              0.08936484490398788
+            ],
+            "baselineBucketMedian": [
+              -0.025223759153783387,
+              0.08936484490398788
+            ]
+          },
+          "scope": "Paired map-seed cluster resampling of fixed held-out errors. Conditional on fitted folds; no refitting or model-selection uncertainty."
+        },
+        "foldCount": 10,
+        "verifiedNoSeedOverlap": true
+      },
+      {
+        "target": "hqsLost",
+        "metric": "hqsInReach",
+        "baseline": "contact",
+        "candidate": {
+          "nRows": 1244,
+          "nGames": 186,
+          "nSeeds": 68,
+          "batchRowsIncludingAliases": {
+            "artifacts/ai-assault/defender-1330": 708,
+            "artifacts/ai-assault/v84-development": 54,
+            "artifacts/ai-continue/ration-fix-games": 102,
+            "artifacts/ai-promotion/frozen-v81-development": 111,
+            "artifacts/ai-promotion/frozen-v82r-independent": 260,
+            "artifacts/ai-promotion/frozen-v85-development": 111
+          }
+        },
+        "missingAnyRequired": 0,
+        "metricMissing": 0,
+        "baselineMissing": 0,
+        "metricZero": 575,
+        "outcomeMissing": 0,
+        "outcomeZero": 1021,
+        "emptyFoldCount": 0,
+        "evaluated": {
+          "nRows": 1244,
+          "nGames": 186,
+          "nSeeds": 68,
+          "batchRowsIncludingAliases": {
+            "artifacts/ai-assault/defender-1330": 708,
+            "artifacts/ai-assault/v84-development": 54,
+            "artifacts/ai-continue/ration-fix-games": 102,
+            "artifacts/ai-promotion/frozen-v81-development": 111,
+            "artifacts/ai-promotion/frozen-v82r-independent": 260,
+            "artifacts/ai-promotion/frozen-v85-development": 111
+          }
+        },
+        "status": "EVALUATED",
+        "scores": {
+          "zero": {
+            "mae": 0.20819935691318328,
+            "r2": -0.19461650269958208
+          },
+          "trainMedian": {
+            "mae": 0.20819935691318328,
+            "r2": -0.19461650269958208
+          },
+          "trainMean": {
+            "mae": 0.3418774126026444,
+            "r2": -0.0007484811185536344
+          },
+          "baseline": {
+            "mae": 0.3417880226616579,
+            "r2": -0.002451557816270711
+          },
+          "baselinePlusMetric": {
+            "mae": 0.2817367570115406,
+            "r2": 0.19011791616559193
+          },
+          "baselineBucketMedian": {
+            "mae": 0.20819935691318328,
+            "r2": -0.19461650269958208
+          },
+          "metricBucketMedian": {
+            "mae": 0.20819935691318328,
+            "r2": -0.19461650269958208
+          }
+        },
+        "maeGain": 0.060051265650117314,
+        "r2Gain": 0.19256947398186264,
+        "intervals": {
+          "draws": 1000,
+          "maeGain95": [
+            0.034165976308162704,
+            0.08727204361822066
+          ],
+          "r2Gain95": [
+            0.1214388574336358,
+            0.25328085303734926
+          ],
+          "metricBucketMedianMaeGain95": {
+            "zero": [
+              0.0,
+              0.0
+            ],
+            "trainMedian": [
+              0.0,
+              0.0
+            ],
+            "baselineBucketMedian": [
+              0.0,
+              0.0
+            ]
+          },
+          "scope": "Paired map-seed cluster resampling of fixed held-out errors. Conditional on fitted folds; no refitting or model-selection uncertainty."
+        },
+        "foldCount": 10,
+        "verifiedNoSeedOverlap": true
+      }
+    ],
+    "defender-moving": [
+      {
+        "target": "objectiveVpLost",
+        "metric": "objectiveVpAtRisk",
+        "baseline": "objectivesThreatened",
+        "candidate": {
+          "nRows": 1174,
+          "nGames": 186,
+          "nSeeds": 68,
+          "batchRowsIncludingAliases": {
+            "artifacts/ai-assault/defender-1330": 683,
+            "artifacts/ai-assault/v84-development": 50,
+            "artifacts/ai-continue/ration-fix-games": 93,
+            "artifacts/ai-promotion/frozen-v81-development": 97,
+            "artifacts/ai-promotion/frozen-v82r-independent": 247,
+            "artifacts/ai-promotion/frozen-v85-development": 97
+          }
+        },
+        "missingAnyRequired": 0,
+        "metricMissing": 0,
+        "baselineMissing": 0,
+        "metricZero": 894,
+        "outcomeMissing": 0,
+        "outcomeZero": 1148,
+        "emptyFoldCount": 0,
+        "evaluated": {
+          "nRows": 1174,
+          "nGames": 186,
+          "nSeeds": 68,
+          "batchRowsIncludingAliases": {
+            "artifacts/ai-assault/defender-1330": 683,
+            "artifacts/ai-assault/v84-development": 50,
+            "artifacts/ai-continue/ration-fix-games": 93,
+            "artifacts/ai-promotion/frozen-v81-development": 97,
+            "artifacts/ai-promotion/frozen-v82r-independent": 247,
+            "artifacts/ai-promotion/frozen-v85-development": 97
+          }
+        },
+        "status": "EVALUATED",
+        "scores": {
+          "zero": {
+            "mae": 0.06047700170357751,
+            "r2": -0.01928041704754513
+          },
+          "trainMedian": {
+            "mae": 0.06047700170357751,
+            "r2": -0.01928041704754513
+          },
+          "trainMean": {
+            "mae": 0.11771353933813425,
+            "r2": -0.003144820957477812
+          },
+          "baseline": {
+            "mae": 0.11808142798693078,
+            "r2": -0.003200123880506389
+          },
+          "baselinePlusMetric": {
+            "mae": 0.11210791237347063,
+            "r2": 0.06112256896242163
+          },
+          "baselineBucketMedian": {
+            "mae": 0.06047700170357751,
+            "r2": -0.01928041704754513
+          },
+          "metricBucketMedian": {
+            "mae": 0.06047700170357751,
+            "r2": -0.01928041704754513
+          }
+        },
+        "maeGain": 0.0059735156134601425,
+        "r2Gain": 0.06432269284292802,
+        "intervals": {
+          "draws": 1000,
+          "maeGain95": [
+            -0.009346034296051048,
+            0.021559916251434247
+          ],
+          "r2Gain95": [
+            0.02462091634829533,
+            0.10172199686947969
+          ],
+          "metricBucketMedianMaeGain95": {
+            "zero": [
+              0.0,
+              0.0
+            ],
+            "trainMedian": [
+              0.0,
+              0.0
+            ],
+            "baselineBucketMedian": [
+              0.0,
+              0.0
+            ]
+          },
+          "scope": "Paired map-seed cluster resampling of fixed held-out errors. Conditional on fitted folds; no refitting or model-selection uncertainty."
+        },
+        "foldCount": 10,
+        "verifiedNoSeedOverlap": true
+      },
+      {
+        "target": "objectivesLost",
+        "metric": "objectivesAtRisk",
+        "baseline": "objectivesThreatened",
+        "candidate": {
+          "nRows": 1174,
+          "nGames": 186,
+          "nSeeds": 68,
+          "batchRowsIncludingAliases": {
+            "artifacts/ai-assault/defender-1330": 683,
+            "artifacts/ai-assault/v84-development": 50,
+            "artifacts/ai-continue/ration-fix-games": 93,
+            "artifacts/ai-promotion/frozen-v81-development": 97,
+            "artifacts/ai-promotion/frozen-v82r-independent": 247,
+            "artifacts/ai-promotion/frozen-v85-development": 97
+          }
+        },
+        "missingAnyRequired": 0,
+        "metricMissing": 0,
+        "baselineMissing": 0,
+        "metricZero": 894,
+        "outcomeMissing": 0,
+        "outcomeZero": 1148,
+        "emptyFoldCount": 0,
+        "evaluated": {
+          "nRows": 1174,
+          "nGames": 186,
+          "nSeeds": 68,
+          "batchRowsIncludingAliases": {
+            "artifacts/ai-assault/defender-1330": 683,
+            "artifacts/ai-assault/v84-development": 50,
+            "artifacts/ai-continue/ration-fix-games": 93,
+            "artifacts/ai-promotion/frozen-v81-development": 97,
+            "artifacts/ai-promotion/frozen-v82r-independent": 247,
+            "artifacts/ai-promotion/frozen-v85-development": 97
+          }
+        },
+        "status": "EVALUATED",
+        "scores": {
+          "zero": {
+            "mae": 0.022146507666098807,
+            "r2": -0.022648083623693527
+          },
+          "trainMedian": {
+            "mae": 0.022146507666098807,
+            "r2": -0.022648083623693527
+          },
+          "trainMean": {
+            "mae": 0.04320081899055993,
+            "r2": -0.0032346663895275185
+          },
+          "baseline": {
+            "mae": 0.043335127242177446,
+            "r2": -0.0026064093977253844
+          },
+          "baselinePlusMetric": {
+            "mae": 0.04122421968546615,
+            "r2": 0.05923625817619138
+          },
+          "baselineBucketMedian": {
+            "mae": 0.022146507666098807,
+            "r2": -0.022648083623693527
+          },
+          "metricBucketMedian": {
+            "mae": 0.022146507666098807,
+            "r2": -0.022648083623693527
+          }
+        },
+        "maeGain": 0.0021109075567112973,
+        "r2Gain": 0.061842667573916765,
+        "intervals": {
+          "draws": 1000,
+          "maeGain95": [
+            -0.002951806998699416,
+            0.007149043524232013
+          ],
+          "r2Gain95": [
+            0.006076274376073942,
+            0.09836604193539344
+          ],
+          "metricBucketMedianMaeGain95": {
+            "zero": [
+              0.0,
+              0.0
+            ],
+            "trainMedian": [
+              0.0,
+              0.0
+            ],
+            "baselineBucketMedian": [
+              0.0,
+              0.0
+            ]
+          },
+          "scope": "Paired map-seed cluster resampling of fixed held-out errors. Conditional on fitted folds; no refitting or model-selection uncertainty."
+        },
+        "foldCount": 10,
+        "verifiedNoSeedOverlap": true
+      },
+      {
+        "target": "stepsLost",
+        "metric": "stacksExposedAllocated",
+        "baseline": "contact",
+        "candidate": {
+          "nRows": 1174,
+          "nGames": 186,
+          "nSeeds": 68,
+          "batchRowsIncludingAliases": {
+            "artifacts/ai-assault/defender-1330": 683,
+            "artifacts/ai-assault/v84-development": 50,
+            "artifacts/ai-continue/ration-fix-games": 93,
+            "artifacts/ai-promotion/frozen-v81-development": 97,
+            "artifacts/ai-promotion/frozen-v82r-independent": 247,
+            "artifacts/ai-promotion/frozen-v85-development": 97
+          }
+        },
+        "missingAnyRequired": 0,
+        "metricMissing": 0,
+        "baselineMissing": 0,
+        "metricZero": 47,
+        "outcomeMissing": 0,
+        "outcomeZero": 792,
+        "emptyFoldCount": 0,
+        "evaluated": {
+          "nRows": 1174,
+          "nGames": 186,
+          "nSeeds": 68,
+          "batchRowsIncludingAliases": {
+            "artifacts/ai-assault/defender-1330": 683,
+            "artifacts/ai-assault/v84-development": 50,
+            "artifacts/ai-continue/ration-fix-games": 93,
+            "artifacts/ai-promotion/frozen-v81-development": 97,
+            "artifacts/ai-promotion/frozen-v82r-independent": 247,
+            "artifacts/ai-promotion/frozen-v85-development": 97
+          }
+        },
+        "status": "EVALUATED",
+        "scores": {
+          "zero": {
+            "mae": 0.5911413969335605,
+            "r2": -0.27464616858456026
+          },
+          "trainMedian": {
+            "mae": 0.5911413969335605,
+            "r2": -0.27464616858456026
+          },
+          "trainMean": {
+            "mae": 0.7993233766176797,
+            "r2": -0.005531174109379089
+          },
+          "baseline": {
+            "mae": 0.7990703691150456,
+            "r2": -0.008584568933882597
+          },
+          "baselinePlusMetric": {
+            "mae": 0.7788776633122826,
+            "r2": 0.005579919190588423
+          },
+          "baselineBucketMedian": {
+            "mae": 0.5911413969335605,
+            "r2": -0.27464616858456026
+          },
+          "metricBucketMedian": {
+            "mae": 0.6034923339011925,
+            "r2": -0.2815081030530433
+          }
+        },
+        "maeGain": 0.020192705802763,
+        "r2Gain": 0.01416448812447102,
+        "intervals": {
+          "draws": 1000,
+          "maeGain95": [
+            0.008215026484915677,
+            0.03154809521897872
+          ],
+          "r2Gain95": [
+            -0.0038188920224837553,
+            0.031025560075483738
+          ],
+          "metricBucketMedianMaeGain95": {
+            "zero": [
+              -0.02614107883817418,
+              -0.0008635578583764403
+            ],
+            "trainMedian": [
+              -0.02614107883817418,
+              -0.0008635578583764403
+            ],
+            "baselineBucketMedian": [
+              -0.02614107883817418,
+              -0.0008635578583764403
+            ]
+          },
+          "scope": "Paired map-seed cluster resampling of fixed held-out errors. Conditional on fitted folds; no refitting or model-selection uncertainty."
+        },
+        "foldCount": 10,
+        "verifiedNoSeedOverlap": true
+      },
+      {
+        "target": "stepsLost",
+        "metric": "stacksExposedAllocated",
+        "baseline": "stacksExposed",
+        "candidate": {
+          "nRows": 1174,
+          "nGames": 186,
+          "nSeeds": 68,
+          "batchRowsIncludingAliases": {
+            "artifacts/ai-assault/defender-1330": 683,
+            "artifacts/ai-assault/v84-development": 50,
+            "artifacts/ai-continue/ration-fix-games": 93,
+            "artifacts/ai-promotion/frozen-v81-development": 97,
+            "artifacts/ai-promotion/frozen-v82r-independent": 247,
+            "artifacts/ai-promotion/frozen-v85-development": 97
+          }
+        },
+        "missingAnyRequired": 0,
+        "metricMissing": 0,
+        "baselineMissing": 0,
+        "metricZero": 47,
+        "outcomeMissing": 0,
+        "outcomeZero": 792,
+        "emptyFoldCount": 0,
+        "evaluated": {
+          "nRows": 1174,
+          "nGames": 186,
+          "nSeeds": 68,
+          "batchRowsIncludingAliases": {
+            "artifacts/ai-assault/defender-1330": 683,
+            "artifacts/ai-assault/v84-development": 50,
+            "artifacts/ai-continue/ration-fix-games": 93,
+            "artifacts/ai-promotion/frozen-v81-development": 97,
+            "artifacts/ai-promotion/frozen-v82r-independent": 247,
+            "artifacts/ai-promotion/frozen-v85-development": 97
+          }
+        },
+        "status": "EVALUATED",
+        "scores": {
+          "zero": {
+            "mae": 0.5911413969335605,
+            "r2": -0.27464616858456026
+          },
+          "trainMedian": {
+            "mae": 0.5911413969335605,
+            "r2": -0.27464616858456026
+          },
+          "trainMean": {
+            "mae": 0.7993233766176797,
+            "r2": -0.005531174109379089
+          },
+          "baseline": {
+            "mae": 0.7709017919794479,
+            "r2": 0.017642826462245242
+          },
+          "baselinePlusMetric": {
+            "mae": 0.7714387460226715,
+            "r2": 0.013645077224793134
+          },
+          "baselineBucketMedian": {
+            "mae": 0.5911413969335605,
+            "r2": -0.27464616858456026
+          },
+          "metricBucketMedian": {
+            "mae": 0.6034923339011925,
+            "r2": -0.2815081030530433
+          }
+        },
+        "maeGain": -0.0005369540432236253,
+        "r2Gain": -0.003997749237452108,
+        "intervals": {
+          "draws": 1000,
+          "maeGain95": [
+            -0.0026019806303728688,
+            0.001591395885342184
+          ],
+          "r2Gain95": [
+            -0.007434305616932924,
+            -0.000951148468675278
+          ],
+          "metricBucketMedianMaeGain95": {
+            "zero": [
+              -0.02614107883817418,
+              -0.0008635578583764403
+            ],
+            "trainMedian": [
+              -0.02614107883817418,
+              -0.0008635578583764403
+            ],
+            "baselineBucketMedian": [
+              -0.02614107883817418,
+              -0.0008635578583764403
+            ]
+          },
+          "scope": "Paired map-seed cluster resampling of fixed held-out errors. Conditional on fitted folds; no refitting or model-selection uncertainty."
+        },
+        "foldCount": 10,
+        "verifiedNoSeedOverlap": true
+      },
+      {
+        "target": "outOfTraceRise",
+        "metric": "supplyCuttable",
+        "baseline": "contact",
+        "candidate": {
+          "nRows": 1174,
+          "nGames": 186,
+          "nSeeds": 68,
+          "batchRowsIncludingAliases": {
+            "artifacts/ai-assault/defender-1330": 683,
+            "artifacts/ai-assault/v84-development": 50,
+            "artifacts/ai-continue/ration-fix-games": 93,
+            "artifacts/ai-promotion/frozen-v81-development": 97,
+            "artifacts/ai-promotion/frozen-v82r-independent": 247,
+            "artifacts/ai-promotion/frozen-v85-development": 97
+          }
+        },
+        "missingAnyRequired": 0,
+        "metricMissing": 0,
+        "baselineMissing": 0,
+        "metricZero": 107,
+        "outcomeMissing": 0,
+        "outcomeZero": 879,
+        "emptyFoldCount": 0,
+        "evaluated": {
+          "nRows": 1174,
+          "nGames": 186,
+          "nSeeds": 68,
+          "batchRowsIncludingAliases": {
+            "artifacts/ai-assault/defender-1330": 683,
+            "artifacts/ai-assault/v84-development": 50,
+            "artifacts/ai-continue/ration-fix-games": 93,
+            "artifacts/ai-promotion/frozen-v81-development": 97,
+            "artifacts/ai-promotion/frozen-v82r-independent": 247,
+            "artifacts/ai-promotion/frozen-v85-development": 97
+          }
+        },
+        "status": "EVALUATED",
+        "scores": {
+          "zero": {
+            "mae": 1.9369676320272573,
+            "r2": -0.1274596064235347
+          },
+          "trainMedian": {
+            "mae": 1.9369676320272573,
+            "r2": -0.1274596064235347
+          },
+          "trainMean": {
+            "mae": 3.0200218358790343,
+            "r2": -0.004757162018781402
+          },
+          "baseline": {
+            "mae": 3.0275700768766916,
+            "r2": -0.008776608488052506
+          },
+          "baselinePlusMetric": {
+            "mae": 2.890581469503393,
+            "r2": 0.04036316330056011
+          },
+          "baselineBucketMedian": {
+            "mae": 1.9412265758091993,
+            "r2": -0.12662042135638507
+          },
+          "metricBucketMedian": {
+            "mae": 1.9369676320272573,
+            "r2": -0.1274596064235347
+          }
+        },
+        "maeGain": 0.13698860737329843,
+        "r2Gain": 0.04913977178861262,
+        "intervals": {
+          "draws": 1000,
+          "maeGain95": [
+            -0.011924419942703324,
+            0.28377267960216823
+          ],
+          "r2Gain95": [
+            0.001308169041541296,
+            0.0794751146027044
+          ],
+          "metricBucketMedianMaeGain95": {
+            "zero": [
+              0.0,
+              0.0
+            ],
+            "trainMedian": [
+              0.0,
+              0.0
+            ],
+            "baselineBucketMedian": [
+              0.0,
+              0.012727272727272698
+            ]
+          },
+          "scope": "Paired map-seed cluster resampling of fixed held-out errors. Conditional on fitted folds; no refitting or model-selection uncertainty."
+        },
+        "foldCount": 10,
+        "verifiedNoSeedOverlap": true
+      },
+      {
+        "target": "outOfTraceRise",
+        "metric": "supplyBestCut",
+        "baseline": "contact",
+        "candidate": {
+          "nRows": 1174,
+          "nGames": 186,
+          "nSeeds": 68,
+          "batchRowsIncludingAliases": {
+            "artifacts/ai-assault/defender-1330": 683,
+            "artifacts/ai-assault/v84-development": 50,
+            "artifacts/ai-continue/ration-fix-games": 93,
+            "artifacts/ai-promotion/frozen-v81-development": 97,
+            "artifacts/ai-promotion/frozen-v82r-independent": 247,
+            "artifacts/ai-promotion/frozen-v85-development": 97
+          }
+        },
+        "missingAnyRequired": 0,
+        "metricMissing": 0,
+        "baselineMissing": 0,
+        "metricZero": 107,
+        "outcomeMissing": 0,
+        "outcomeZero": 879,
+        "emptyFoldCount": 0,
+        "evaluated": {
+          "nRows": 1174,
+          "nGames": 186,
+          "nSeeds": 68,
+          "batchRowsIncludingAliases": {
+            "artifacts/ai-assault/defender-1330": 683,
+            "artifacts/ai-assault/v84-development": 50,
+            "artifacts/ai-continue/ration-fix-games": 93,
+            "artifacts/ai-promotion/frozen-v81-development": 97,
+            "artifacts/ai-promotion/frozen-v82r-independent": 247,
+            "artifacts/ai-promotion/frozen-v85-development": 97
+          }
+        },
+        "status": "EVALUATED",
+        "scores": {
+          "zero": {
+            "mae": 1.9369676320272573,
+            "r2": -0.1274596064235347
+          },
+          "trainMedian": {
+            "mae": 1.9369676320272573,
+            "r2": -0.1274596064235347
+          },
+          "trainMean": {
+            "mae": 3.0200218358790343,
+            "r2": -0.004757162018781402
+          },
+          "baseline": {
+            "mae": 3.0275700768766916,
+            "r2": -0.008776608488052506
+          },
+          "baselinePlusMetric": {
+            "mae": 2.927051197104342,
+            "r2": 0.03388447508768966
+          },
+          "baselineBucketMedian": {
+            "mae": 1.9412265758091993,
+            "r2": -0.12662042135638507
+          },
+          "metricBucketMedian": {
+            "mae": 1.9369676320272573,
+            "r2": -0.1274596064235347
+          }
+        },
+        "maeGain": 0.10051887977234975,
+        "r2Gain": 0.042661083575742165,
+        "intervals": {
+          "draws": 1000,
+          "maeGain95": [
+            -0.04575915333331437,
+            0.23367268869736968
+          ],
+          "r2Gain95": [
+            -0.004528404895204563,
+            0.07716535663643787
+          ],
+          "metricBucketMedianMaeGain95": {
+            "zero": [
+              0.0,
+              0.0
+            ],
+            "trainMedian": [
+              0.0,
+              0.0
+            ],
+            "baselineBucketMedian": [
+              0.0,
+              0.012727272727272698
+            ]
+          },
+          "scope": "Paired map-seed cluster resampling of fixed held-out errors. Conditional on fitted folds; no refitting or model-selection uncertainty."
+        },
+        "foldCount": 10,
+        "verifiedNoSeedOverlap": true
+      },
+      {
+        "target": "hqsLost",
+        "metric": "hqsInReach",
+        "baseline": "contact",
+        "candidate": {
+          "nRows": 1174,
+          "nGames": 186,
+          "nSeeds": 68,
+          "batchRowsIncludingAliases": {
+            "artifacts/ai-assault/defender-1330": 683,
+            "artifacts/ai-assault/v84-development": 50,
+            "artifacts/ai-continue/ration-fix-games": 93,
+            "artifacts/ai-promotion/frozen-v81-development": 97,
+            "artifacts/ai-promotion/frozen-v82r-independent": 247,
+            "artifacts/ai-promotion/frozen-v85-development": 97
+          }
+        },
+        "missingAnyRequired": 0,
+        "metricMissing": 0,
+        "baselineMissing": 0,
+        "metricZero": 131,
+        "outcomeMissing": 0,
+        "outcomeZero": 1008,
+        "emptyFoldCount": 0,
+        "evaluated": {
+          "nRows": 1174,
+          "nGames": 186,
+          "nSeeds": 68,
+          "batchRowsIncludingAliases": {
+            "artifacts/ai-assault/defender-1330": 683,
+            "artifacts/ai-assault/v84-development": 50,
+            "artifacts/ai-continue/ration-fix-games": 93,
+            "artifacts/ai-promotion/frozen-v81-development": 97,
+            "artifacts/ai-promotion/frozen-v82r-independent": 247,
+            "artifacts/ai-promotion/frozen-v85-development": 97
+          }
+        },
+        "status": "EVALUATED",
+        "scores": {
+          "zero": {
+            "mae": 0.1695059625212947,
+            "r2": -0.1409784942025838
+          },
+          "trainMedian": {
+            "mae": 0.1695059625212947,
+            "r2": -0.1409784942025838
+          },
+          "trainMean": {
+            "mae": 0.29161541401612745,
+            "r2": -0.003971392425379694
+          },
+          "baseline": {
+            "mae": 0.29034049319176564,
+            "r2": -0.003187992639253512
+          },
+          "baselinePlusMetric": {
+            "mae": 0.28556834926157176,
+            "r2": 0.013012997869222276
+          },
+          "baselineBucketMedian": {
+            "mae": 0.1695059625212947,
+            "r2": -0.1409784942025838
+          },
+          "metricBucketMedian": {
+            "mae": 0.1695059625212947,
+            "r2": -0.1409784942025838
+          }
+        },
+        "maeGain": 0.004772143930193873,
+        "r2Gain": 0.016200990508475788,
+        "intervals": {
+          "draws": 1000,
+          "maeGain95": [
+            -0.0010279794331916614,
+            0.011223162022252431
+          ],
+          "r2Gain95": [
+            0.0028318492716576937,
+            0.0268733474907209
+          ],
+          "metricBucketMedianMaeGain95": {
+            "zero": [
+              0.0,
+              0.0
+            ],
+            "trainMedian": [
+              0.0,
+              0.0
+            ],
+            "baselineBucketMedian": [
+              0.0,
+              0.0
+            ]
+          },
+          "scope": "Paired map-seed cluster resampling of fixed held-out errors. Conditional on fitted folds; no refitting or model-selection uncertainty."
+        },
+        "foldCount": 10,
+        "verifiedNoSeedOverlap": true
+      }
+    ],
+    "meeting": [
+      {
+        "target": "objectiveVpLost",
+        "metric": "objectiveVpAtRisk",
+        "baseline": "objectivesThreatened",
+        "candidate": {
+          "nRows": 897,
+          "nGames": 69,
+          "nSeeds": 28,
+          "batchRowsIncludingAliases": {
+            "artifacts/ai-assault/v84-development": 104,
+            "artifacts/ai-continue/ration-fix-games": 104,
+            "artifacts/ai-promotion/frozen-v81-development": 208,
+            "artifacts/ai-promotion/frozen-v82r-independent": 520,
+            "artifacts/ai-promotion/frozen-v85-development": 104
+          }
+        },
+        "missingAnyRequired": 0,
+        "metricMissing": 0,
+        "baselineMissing": 0,
+        "metricZero": 465,
+        "outcomeMissing": 0,
+        "outcomeZero": 816,
+        "emptyFoldCount": 0,
+        "evaluated": {
+          "nRows": 897,
+          "nGames": 69,
+          "nSeeds": 28,
+          "batchRowsIncludingAliases": {
+            "artifacts/ai-assault/v84-development": 104,
+            "artifacts/ai-continue/ration-fix-games": 104,
+            "artifacts/ai-promotion/frozen-v81-development": 208,
+            "artifacts/ai-promotion/frozen-v82r-independent": 520,
+            "artifacts/ai-promotion/frozen-v85-development": 104
+          }
+        },
+        "status": "EVALUATED",
+        "scores": {
+          "zero": {
+            "mae": 0.27424749163879597,
+            "r2": -0.07988404695148033
+          },
+          "trainMedian": {
+            "mae": 0.27424749163879597,
+            "r2": -0.07988404695148033
+          },
+          "trainMean": {
+            "mae": 0.49768681382318647,
+            "r2": -0.006097967701213847
+          },
+          "baseline": {
+            "mae": 0.49645516107969273,
+            "r2": -0.0017765963201390456
+          },
+          "baselinePlusMetric": {
+            "mae": 0.4450414004808714,
+            "r2": 0.09422365415348433
+          },
+          "baselineBucketMedian": {
+            "mae": 0.27424749163879597,
+            "r2": -0.07988404695148033
+          },
+          "metricBucketMedian": {
+            "mae": 0.27424749163879597,
+            "r2": -0.07988404695148033
+          }
+        },
+        "maeGain": 0.051413760598821356,
+        "r2Gain": 0.09600025047362337,
+        "intervals": {
+          "draws": 1000,
+          "maeGain95": [
+            0.0031991913100783975,
+            0.0914859039187978
+          ],
+          "r2Gain95": [
+            0.056637697491140226,
+            0.13257931605924922
+          ],
+          "metricBucketMedianMaeGain95": {
+            "zero": [
+              0.0,
+              0.0
+            ],
+            "trainMedian": [
+              0.0,
+              0.0
+            ],
+            "baselineBucketMedian": [
+              0.0,
+              0.0
+            ]
+          },
+          "scope": "Paired map-seed cluster resampling of fixed held-out errors. Conditional on fitted folds; no refitting or model-selection uncertainty."
+        },
+        "foldCount": 10,
+        "verifiedNoSeedOverlap": true
+      },
+      {
+        "target": "objectivesLost",
+        "metric": "objectivesAtRisk",
+        "baseline": "objectivesThreatened",
+        "candidate": {
+          "nRows": 897,
+          "nGames": 69,
+          "nSeeds": 28,
+          "batchRowsIncludingAliases": {
+            "artifacts/ai-assault/v84-development": 104,
+            "artifacts/ai-continue/ration-fix-games": 104,
+            "artifacts/ai-promotion/frozen-v81-development": 208,
+            "artifacts/ai-promotion/frozen-v82r-independent": 520,
+            "artifacts/ai-promotion/frozen-v85-development": 104
+          }
+        },
+        "missingAnyRequired": 0,
+        "metricMissing": 0,
+        "baselineMissing": 0,
+        "metricZero": 465,
+        "outcomeMissing": 0,
+        "outcomeZero": 816,
+        "emptyFoldCount": 0,
+        "evaluated": {
+          "nRows": 897,
+          "nGames": 69,
+          "nSeeds": 28,
+          "batchRowsIncludingAliases": {
+            "artifacts/ai-assault/v84-development": 104,
+            "artifacts/ai-continue/ration-fix-games": 104,
+            "artifacts/ai-promotion/frozen-v81-development": 208,
+            "artifacts/ai-promotion/frozen-v82r-independent": 520,
+            "artifacts/ai-promotion/frozen-v85-development": 104
+          }
+        },
+        "status": "EVALUATED",
+        "scores": {
+          "zero": {
+            "mae": 0.09810479375696766,
+            "r2": -0.08866701779294228
+          },
+          "trainMedian": {
+            "mae": 0.09810479375696766,
+            "r2": -0.08866701779294228
+          },
+          "trainMean": {
+            "mae": 0.1777194359384953,
+            "r2": -0.006678745417728615
+          },
+          "baseline": {
+            "mae": 0.1772521176716667,
+            "r2": -0.0025180185022353196
+          },
+          "baselinePlusMetric": {
+            "mae": 0.1578115447003174,
+            "r2": 0.10698338297351184
+          },
+          "baselineBucketMedian": {
+            "mae": 0.09810479375696766,
+            "r2": -0.08866701779294228
+          },
+          "metricBucketMedian": {
+            "mae": 0.09531772575250837,
+            "r2": -0.039882410863541606
+          }
+        },
+        "maeGain": 0.019440572971349296,
+        "r2Gain": 0.10950140147574716,
+        "intervals": {
+          "draws": 1000,
+          "maeGain95": [
+            0.0048287765882681355,
+            0.032183991816618296
+          ],
+          "r2Gain95": [
+            0.06448601720943448,
+            0.15170071307537314
+          ],
+          "metricBucketMedianMaeGain95": {
+            "zero": [
+              0.0,
+              0.008547008547008544
+            ],
+            "trainMedian": [
+              0.0,
+              0.008547008547008544
+            ],
+            "baselineBucketMedian": [
+              0.0,
+              0.008547008547008544
+            ]
+          },
+          "scope": "Paired map-seed cluster resampling of fixed held-out errors. Conditional on fitted folds; no refitting or model-selection uncertainty."
+        },
+        "foldCount": 10,
+        "verifiedNoSeedOverlap": true
+      },
+      {
+        "target": "stepsLost",
+        "metric": "stacksExposedAllocated",
+        "baseline": "contact",
+        "candidate": {
+          "nRows": 897,
+          "nGames": 69,
+          "nSeeds": 28,
+          "batchRowsIncludingAliases": {
+            "artifacts/ai-assault/v84-development": 104,
+            "artifacts/ai-continue/ration-fix-games": 104,
+            "artifacts/ai-promotion/frozen-v81-development": 208,
+            "artifacts/ai-promotion/frozen-v82r-independent": 520,
+            "artifacts/ai-promotion/frozen-v85-development": 104
+          }
+        },
+        "missingAnyRequired": 0,
+        "metricMissing": 0,
+        "baselineMissing": 0,
+        "metricZero": 35,
+        "outcomeMissing": 0,
+        "outcomeZero": 500,
+        "emptyFoldCount": 0,
+        "evaluated": {
+          "nRows": 897,
+          "nGames": 69,
+          "nSeeds": 28,
+          "batchRowsIncludingAliases": {
+            "artifacts/ai-assault/v84-development": 104,
+            "artifacts/ai-continue/ration-fix-games": 104,
+            "artifacts/ai-promotion/frozen-v81-development": 208,
+            "artifacts/ai-promotion/frozen-v82r-independent": 520,
+            "artifacts/ai-promotion/frozen-v85-development": 104
+          }
+        },
+        "status": "EVALUATED",
+        "scores": {
+          "zero": {
+            "mae": 0.9910813823857302,
+            "r2": -0.35846091324142915
+          },
+          "trainMedian": {
+            "mae": 0.9910813823857302,
+            "r2": -0.35846091324142915
+          },
+          "trainMean": {
+            "mae": 1.109429211102662,
+            "r2": -0.005021024402690699
+          },
+          "baseline": {
+            "mae": 1.115066721120662,
+            "r2": -0.005993333651932886
+          },
+          "baselinePlusMetric": {
+            "mae": 1.107184931363382,
+            "r2": 0.03733450047470199
+          },
+          "baselineBucketMedian": {
+            "mae": 0.9754738015607581,
+            "r2": -0.29092437188231646
+          },
+          "metricBucketMedian": {
+            "mae": 1.0089186176142697,
+            "r2": -0.18595794013140643
+          }
+        },
+        "maeGain": 0.007881789757280044,
+        "r2Gain": 0.04332783412663488,
+        "intervals": {
+          "draws": 1000,
+          "maeGain95": [
+            -0.03079135803372468,
+            0.05100274691654061
+          ],
+          "r2Gain95": [
+            0.005633826978171941,
+            0.08105021661855294
+          ],
+          "metricBucketMedianMaeGain95": {
+            "zero": [
+              -0.06508875739644959,
+              0.029252437703141787
+            ],
+            "trainMedian": [
+              -0.06508875739644959,
+              0.029252437703141787
+            ],
+            "baselineBucketMedian": [
+              -0.07582417582417589,
+              0.007211538461538436
+            ]
+          },
+          "scope": "Paired map-seed cluster resampling of fixed held-out errors. Conditional on fitted folds; no refitting or model-selection uncertainty."
+        },
+        "foldCount": 10,
+        "verifiedNoSeedOverlap": true
+      },
+      {
+        "target": "stepsLost",
+        "metric": "stacksExposedAllocated",
+        "baseline": "stacksExposed",
+        "candidate": {
+          "nRows": 897,
+          "nGames": 69,
+          "nSeeds": 28,
+          "batchRowsIncludingAliases": {
+            "artifacts/ai-assault/v84-development": 104,
+            "artifacts/ai-continue/ration-fix-games": 104,
+            "artifacts/ai-promotion/frozen-v81-development": 208,
+            "artifacts/ai-promotion/frozen-v82r-independent": 520,
+            "artifacts/ai-promotion/frozen-v85-development": 104
+          }
+        },
+        "missingAnyRequired": 0,
+        "metricMissing": 0,
+        "baselineMissing": 0,
+        "metricZero": 35,
+        "outcomeMissing": 0,
+        "outcomeZero": 500,
+        "emptyFoldCount": 0,
+        "evaluated": {
+          "nRows": 897,
+          "nGames": 69,
+          "nSeeds": 28,
+          "batchRowsIncludingAliases": {
+            "artifacts/ai-assault/v84-development": 104,
+            "artifacts/ai-continue/ration-fix-games": 104,
+            "artifacts/ai-promotion/frozen-v81-development": 208,
+            "artifacts/ai-promotion/frozen-v82r-independent": 520,
+            "artifacts/ai-promotion/frozen-v85-development": 104
+          }
+        },
+        "status": "EVALUATED",
+        "scores": {
+          "zero": {
+            "mae": 0.9910813823857302,
+            "r2": -0.35846091324142915
+          },
+          "trainMedian": {
+            "mae": 0.9910813823857302,
+            "r2": -0.35846091324142915
+          },
+          "trainMean": {
+            "mae": 1.109429211102662,
+            "r2": -0.005021024402690699
+          },
+          "baseline": {
+            "mae": 1.1189620063998529,
+            "r2": 0.019757264207316383
+          },
+          "baselinePlusMetric": {
+            "mae": 1.1088234176737988,
+            "r2": 0.036982272348897616
+          },
+          "baselineBucketMedian": {
+            "mae": 0.9754738015607581,
+            "r2": -0.2225741372538168
+          },
+          "metricBucketMedian": {
+            "mae": 1.0089186176142697,
+            "r2": -0.18595794013140643
+          }
+        },
+        "maeGain": 0.01013858872605411,
+        "r2Gain": 0.017225008141581233,
+        "intervals": {
+          "draws": 1000,
+          "maeGain95": [
+            -0.009314194345451776,
+            0.028982128883348723
+          ],
+          "r2Gain95": [
+            -0.004871762081221975,
+            0.038482777830568415
+          ],
+          "metricBucketMedianMaeGain95": {
+            "zero": [
+              -0.06508875739644959,
+              0.029252437703141787
+            ],
+            "trainMedian": [
+              -0.06508875739644959,
+              0.029252437703141787
+            ],
+            "baselineBucketMedian": [
+              -0.07692307692307687,
+              0.009768009768009733
+            ]
+          },
+          "scope": "Paired map-seed cluster resampling of fixed held-out errors. Conditional on fitted folds; no refitting or model-selection uncertainty."
+        },
+        "foldCount": 10,
+        "verifiedNoSeedOverlap": true
+      },
+      {
+        "target": "outOfTraceRise",
+        "metric": "supplyCuttable",
+        "baseline": "contact",
+        "candidate": {
+          "nRows": 897,
+          "nGames": 69,
+          "nSeeds": 28,
+          "batchRowsIncludingAliases": {
+            "artifacts/ai-assault/v84-development": 104,
+            "artifacts/ai-continue/ration-fix-games": 104,
+            "artifacts/ai-promotion/frozen-v81-development": 208,
+            "artifacts/ai-promotion/frozen-v82r-independent": 520,
+            "artifacts/ai-promotion/frozen-v85-development": 104
+          }
+        },
+        "missingAnyRequired": 0,
+        "metricMissing": 0,
+        "baselineMissing": 0,
+        "metricZero": 84,
+        "outcomeMissing": 0,
+        "outcomeZero": 623,
+        "emptyFoldCount": 0,
+        "evaluated": {
+          "nRows": 897,
+          "nGames": 69,
+          "nSeeds": 28,
+          "batchRowsIncludingAliases": {
+            "artifacts/ai-assault/v84-development": 104,
+            "artifacts/ai-continue/ration-fix-games": 104,
+            "artifacts/ai-promotion/frozen-v81-development": 208,
+            "artifacts/ai-promotion/frozen-v82r-independent": 520,
+            "artifacts/ai-promotion/frozen-v85-development": 104
+          }
+        },
+        "status": "EVALUATED",
+        "scores": {
+          "zero": {
+            "mae": 1.9565217391304348,
+            "r2": -0.18688503641862253
+          },
+          "trainMedian": {
+            "mae": 1.9565217391304348,
+            "r2": -0.18688503641862253
+          },
+          "trainMean": {
+            "mae": 2.8390584877177933,
+            "r2": -0.0018033050903694114
+          },
+          "baseline": {
+            "mae": 2.841477346728765,
+            "r2": -0.00800487347715606
+          },
+          "baselinePlusMetric": {
+            "mae": 2.725632952409554,
+            "r2": 0.06467257542934257
+          },
+          "baselineBucketMedian": {
+            "mae": 1.9565217391304348,
+            "r2": -0.18688503641862253
+          },
+          "metricBucketMedian": {
+            "mae": 1.9565217391304348,
+            "r2": -0.18688503641862253
+          }
+        },
+        "maeGain": 0.11584439431921112,
+        "r2Gain": 0.07267744890649863,
+        "intervals": {
+          "draws": 1000,
+          "maeGain95": [
+            0.006223712714053864,
+            0.23363471146574888
+          ],
+          "r2Gain95": [
+            0.026655809337954195,
+            0.11016094859157255
+          ],
+          "metricBucketMedianMaeGain95": {
+            "zero": [
+              0.0,
+              0.0
+            ],
+            "trainMedian": [
+              0.0,
+              0.0
+            ],
+            "baselineBucketMedian": [
+              0.0,
+              0.0
+            ]
+          },
+          "scope": "Paired map-seed cluster resampling of fixed held-out errors. Conditional on fitted folds; no refitting or model-selection uncertainty."
+        },
+        "foldCount": 10,
+        "verifiedNoSeedOverlap": true
+      },
+      {
+        "target": "outOfTraceRise",
+        "metric": "supplyBestCut",
+        "baseline": "contact",
+        "candidate": {
+          "nRows": 897,
+          "nGames": 69,
+          "nSeeds": 28,
+          "batchRowsIncludingAliases": {
+            "artifacts/ai-assault/v84-development": 104,
+            "artifacts/ai-continue/ration-fix-games": 104,
+            "artifacts/ai-promotion/frozen-v81-development": 208,
+            "artifacts/ai-promotion/frozen-v82r-independent": 520,
+            "artifacts/ai-promotion/frozen-v85-development": 104
+          }
+        },
+        "missingAnyRequired": 0,
+        "metricMissing": 0,
+        "baselineMissing": 0,
+        "metricZero": 84,
+        "outcomeMissing": 0,
+        "outcomeZero": 623,
+        "emptyFoldCount": 0,
+        "evaluated": {
+          "nRows": 897,
+          "nGames": 69,
+          "nSeeds": 28,
+          "batchRowsIncludingAliases": {
+            "artifacts/ai-assault/v84-development": 104,
+            "artifacts/ai-continue/ration-fix-games": 104,
+            "artifacts/ai-promotion/frozen-v81-development": 208,
+            "artifacts/ai-promotion/frozen-v82r-independent": 520,
+            "artifacts/ai-promotion/frozen-v85-development": 104
+          }
+        },
+        "status": "EVALUATED",
+        "scores": {
+          "zero": {
+            "mae": 1.9565217391304348,
+            "r2": -0.18688503641862253
+          },
+          "trainMedian": {
+            "mae": 1.9565217391304348,
+            "r2": -0.18688503641862253
+          },
+          "trainMean": {
+            "mae": 2.8390584877177933,
+            "r2": -0.0018033050903694114
+          },
+          "baseline": {
+            "mae": 2.841477346728765,
+            "r2": -0.00800487347715606
+          },
+          "baselinePlusMetric": {
+            "mae": 2.748514973026754,
+            "r2": 0.059878936979824826
+          },
+          "baselineBucketMedian": {
+            "mae": 1.9565217391304348,
+            "r2": -0.18688503641862253
+          },
+          "metricBucketMedian": {
+            "mae": 1.9565217391304348,
+            "r2": -0.18688503641862253
+          }
+        },
+        "maeGain": 0.0929623737020111,
+        "r2Gain": 0.06788381045698089,
+        "intervals": {
+          "draws": 1000,
+          "maeGain95": [
+            -0.035967495990901543,
+            0.22444931929356038
+          ],
+          "r2Gain95": [
+            0.014215371974769964,
+            0.11094339708312262
+          ],
+          "metricBucketMedianMaeGain95": {
+            "zero": [
+              0.0,
+              0.0
+            ],
+            "trainMedian": [
+              0.0,
+              0.0
+            ],
+            "baselineBucketMedian": [
+              0.0,
+              0.0
+            ]
+          },
+          "scope": "Paired map-seed cluster resampling of fixed held-out errors. Conditional on fitted folds; no refitting or model-selection uncertainty."
+        },
+        "foldCount": 10,
+        "verifiedNoSeedOverlap": true
+      },
+      {
+        "target": "hqsLost",
+        "metric": "hqsInReach",
+        "baseline": "contact",
+        "candidate": {
+          "nRows": 897,
+          "nGames": 69,
+          "nSeeds": 28,
+          "batchRowsIncludingAliases": {
+            "artifacts/ai-assault/v84-development": 104,
+            "artifacts/ai-continue/ration-fix-games": 104,
+            "artifacts/ai-promotion/frozen-v81-development": 208,
+            "artifacts/ai-promotion/frozen-v82r-independent": 520,
+            "artifacts/ai-promotion/frozen-v85-development": 104
+          }
+        },
+        "missingAnyRequired": 0,
+        "metricMissing": 0,
+        "baselineMissing": 0,
+        "metricZero": 183,
+        "outcomeMissing": 0,
+        "outcomeZero": 798,
+        "emptyFoldCount": 0,
+        "evaluated": {
+          "nRows": 897,
+          "nGames": 69,
+          "nSeeds": 28,
+          "batchRowsIncludingAliases": {
+            "artifacts/ai-assault/v84-development": 104,
+            "artifacts/ai-continue/ration-fix-games": 104,
+            "artifacts/ai-promotion/frozen-v81-development": 208,
+            "artifacts/ai-promotion/frozen-v82r-independent": 520,
+            "artifacts/ai-promotion/frozen-v85-development": 104
+          }
+        },
+        "status": "EVALUATED",
+        "scores": {
+          "zero": {
+            "mae": 0.12263099219620958,
+            "r2": -0.11382450331125837
+          },
+          "trainMedian": {
+            "mae": 0.12263099219620958,
+            "r2": -0.11382450331125837
+          },
+          "trainMean": {
+            "mae": 0.21838161640361112,
+            "r2": -0.0015379999899602925
+          },
+          "baseline": {
+            "mae": 0.2181114700706083,
+            "r2": -0.002802627467965557
+          },
+          "baselinePlusMetric": {
+            "mae": 0.21247720959002883,
+            "r2": 0.02445937669523912
+          },
+          "baselineBucketMedian": {
+            "mae": 0.12263099219620958,
+            "r2": -0.11382450331125837
+          },
+          "metricBucketMedian": {
+            "mae": 0.12263099219620958,
+            "r2": -0.11382450331125837
+          }
+        },
+        "maeGain": 0.005634260480579467,
+        "r2Gain": 0.02726200416320468,
+        "intervals": {
+          "draws": 1000,
+          "maeGain95": [
+            -0.003998859628720847,
+            0.016796604334392867
+          ],
+          "r2Gain95": [
+            0.002644959262483537,
+            0.04612705997516131
+          ],
+          "metricBucketMedianMaeGain95": {
+            "zero": [
+              0.0,
+              0.0
+            ],
+            "trainMedian": [
+              0.0,
+              0.0
+            ],
+            "baselineBucketMedian": [
+              0.0,
+              0.0
+            ]
+          },
+          "scope": "Paired map-seed cluster resampling of fixed held-out errors. Conditional on fitted folds; no refitting or model-selection uncertainty."
+        },
+        "foldCount": 10,
+        "verifiedNoSeedOverlap": true
+      }
+    ]
+  },
+  "batchReports": {
+    "artifacts/ai-assault/defender-1330": "defender-1330.json",
+    "artifacts/ai-assault/v84-development": "v84-development.json",
+    "artifacts/ai-continue/ration-fix-games": "ration-fix-games.json",
+    "artifacts/ai-promotion/frozen-v81-development": "frozen-v81-development.json",
+    "artifacts/ai-promotion/frozen-v82r-independent": "frozen-v82r-independent.json",
+    "artifacts/ai-promotion/frozen-v85-development": "frozen-v85-development.json"
+  }
+}

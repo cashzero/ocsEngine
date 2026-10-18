@@ -28,7 +28,8 @@
 | `scripts/ai-attack-allocation-study.mjs` | 錯誤清單 E4：高賠率攻擊中可抽出而仍維持第 9 欄的單位，與它們旁邊是否有其他未被攻擊的敵格；低賠率攻擊目標點時旁邊閒置的己方單位 |
 | `scripts/ai-approach-study.mjs` | 錯誤清單 E6：移動中的戰鬥單位停在離目標多遠、目標旁的格子是否到得了、所選移動的評分項目 |
 | `scripts/ai-position-record.mjs` | 既有對局每個玩家回合開始時雙方的現況與下一回合局勢指標（[局勢指標](policy-errors.md#局勢指標)），附該玩家回合的損失、目標點變化、補給堆被奪或被毀的 SP 與終局 VP；補給線切斷只算不行動的一方；重播 hash 不符的局略過 |
-| `scripts/ai-position-analysis.py` | 檢驗局勢指標（[指標是否可用](policy-errors.md#指標是否可用)）：同一玩家回合中對方指標對其損失的預測力與比距離基準多出的 R²，以及各 Game Turn 指標對終局 VP 差的交叉驗證 R² 與增益區間 |
+| `scripts/ai-position-analysis.py` | 既有局勢指標的描述性分析；其 metrics 去重會合併不同對局，終局預測結論待重驗，見 [目前限制](policy-errors.md#指標是否可用) |
+| `scripts/ai-position-validate.py` | 依初始／終局 hash 與完整行動序列識別對局；留出整組種子及來源批次的近期預測比較，包含零事件、中位數、線性與固定分桶基準，見 [指標是否可用](policy-errors.md#指標是否可用) |
 | `scripts/ai-find-branches.mjs` | 從 trace 找分岔點：某一方在某個 segment 做了要研究的決策（例如攻擊戰守方的主攻任務），輸出該 segment 第一個行動的 index |
 | `scripts/ai-continue.mjs` | 局面接續：從存檔的分岔點重設 Rules RNG，各策略變體在同一組骰子種子下對固定對手接著下，記錄 +h 回合與終局的局面指標與事件 |
 | `scripts/ai-position-metrics.mjs` | 局面指標（模組）：VP、目標點持有／有人守／受威脅、單位與 step、DG、接敵、離敵距離、斷補、SP（地圖上、前線取用得到、取用不到）、乾 HQ；下一回合局勢（[局勢指標](policy-errors.md#局勢指標)），含對方一步能切斷補給的單位數與對方每單位只攻擊一格時的暴露量；事件：step 損失、SP 支出、攻擊、砲擊 |

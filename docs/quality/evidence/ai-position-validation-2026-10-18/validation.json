@@ -1,0 +1,39 @@
+{
+  "baseCommit": "ef972c6",
+  "newGames": 0,
+  "scriptSha256": "10418220f6b8ab35f93ba897041303b079460f8901dcfc2c2a265d0f74688b2e",
+  "helperSha256": "fc6c0d4bce55cf3e0c147008da8e020e591b4c5271613039bd4e672b3b9ae4fc",
+  "rawResults": "artifacts/ai-position-validation/results-with-buckets.json",
+  "rawResultSha256": "678ad31f331b9fdbf27fe7d2c24226d26f284756f73ad70753e8b24cd5157796",
+  "inputManifestSha256": "e383f38d43228a3dcaf26b82052776d9b87c27393bb9ecb3b006b91ee1d8b203",
+  "verifiedManifestHashes": 26,
+  "uniqueTrajectories": 255,
+  "mapSeedGroups": 96,
+  "nearTermWindows": 3315,
+  "primaryMissingCases": 0,
+  "primaryEmptyFolds": 0,
+  "modelEvolution": [
+    "Initial linear comparisons omitted zero-event and median controls. That comparison alone cannot qualify the best MAE predictor.",
+    "Adding the controls shows all pooled linear models lose to zero-event MAE.",
+    "Fixed historical bucket medians were then tested on the same exploratory data; no independent confirmation is claimed."
+  ],
+  "independentReview": {
+    "model": "gpt-6.1-sol",
+    "verdict": "No scoped correctness blocker",
+    "verified": [
+      "Exact input and trajectory reconstruction, full original linear result rerun.",
+      "Latest five control/bucket model MAEs across all28primaryevaluations reconstructed fromrawrows.",
+      "All84primarybucketgain confidence bounds reproduced frompairedseedtotals.",
+      "No feature leakage, training-only medians, alias and seed exclusions.",
+      "Source-controlled negative-control generator reproduces adjacent JSON exactly."
+    ],
+    "limits": [
+      "Defender-moving allocated median worsens MAE versus zero; meeting inconclusive.",
+      "Allocated median does not establish superiority over unallocated-stack buckets.",
+      "Objective VP, supply and HQ pooled bucket predictions are all zero.",
+      "Fixed-prediction intervals omit refitting, selection and multiplicity uncertainty.",
+      "Old final VP qualification reopened because metrics-only dedup merged different final outcomes."
+    ]
+  },
+  "generatorSha256": "04fdbffdd8724d18a5cae6445db91651457e9d6e4b90782155a3cf84772d20c2"
+}
