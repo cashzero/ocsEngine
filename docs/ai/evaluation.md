@@ -8,7 +8,7 @@
 
 ## 現行行為
 
-目前優先進行 [VP 改善的預測指標研究](vp-metrics.md)，先實驗哪些指標能預測新種子與新策略變體的 VP 增益，再據此選擇策略改善方向。已有首輪歷史資料探索，尚無前瞻驗證結論；研究不改變下列策略升級條件。
+電腦策略先修錯再談強：[錯誤清單](policy-errors.md)列出標準策略看起來不正確的決策，逐項用局面接續測試量修正的影響。目前也優先進行 [VP 改善的預測指標研究](vp-metrics.md)，先實驗哪些指標能預測新種子與新策略變體的 VP 增益，再據此選擇策略改善方向。已有首輪歷史資料探索，尚無前瞻驗證結論；研究不改變下列策略升級條件。
 
 歷史場景的空軍範圍不能只依 CLI 參數認定。[指標研究盤點](../quality/evidence/ai-vp-metrics-inventory-2026-10-18/README.md)的 `v79-baseline-wide`、`v80g-wide`、`v80j-wide`、`v80q-wide` 共 80 份攻擊戰存檔，即使 options 為 `air=NONE`、`airTransport=NONE`，仍有場外飛機與實際 `DECLARE_AIR_MISSION`。這些批次的「無空軍」描述不成立，只能作含場外空軍的歷史探索資料。其他批次的實際組成尚待稽核，不能由參數推定。缺口見 `historical-ai-air-scope`。
 
@@ -24,6 +24,7 @@
 | `scripts/ai-vp-study.mjs` | 重播：找出保留補給且當下 VP 較高的替代移動（待查的候選，不是已證明的失誤） |
 | `scripts/ai-oos-census.mjs`、`ai-logistics-study.mjs`、`ai-fuel-study.mjs`、`ai-truck-trips.mjs`、`ai-garrison-supply-study.mjs`、`ai-air-count.mjs` | 斷補、鐵路與卡車使用、攻方送補與加油、每輛卡車每回合趟數、駐軍送補、空軍任務數的統計 |
 | `scripts/ai-objective-flow-study.mjs` | VP 從哪裡來：目標點以走進空格或戰鬥決定取得與失去、攻擊目標點的欄位與結果（攻擊戰攻方、遭遇戰雙方） |
+| `scripts/ai-error-census.mjs` | 錯誤清單的普查（[錯誤清單](policy-errors.md)）：各方每局有好賠率卻不攻的 Combat Segment、攻擊欄位分布與第 10 欄以上的攻擊、戰後不前進與前進、整局沒移動的戰鬥單位 |
 | `scripts/ai-find-branches.mjs` | 從 trace 找分岔點：某一方在某個 segment 做了要研究的決策（例如攻擊戰守方的主攻任務），輸出該 segment 第一個行動的 index |
 | `scripts/ai-continue.mjs` | 局面接續：從存檔的分岔點重設 Rules RNG，各策略變體在同一組骰子種子下對固定對手接著下，記錄 +h 回合與終局的局面指標與事件 |
 | `scripts/ai-position-metrics.mjs` | 局面指標（模組）：VP、目標點持有／有人守／受威脅、單位與 step、DG、接敵、離敵距離、斷補、SP（地圖上、前線取用得到、取用不到）、乾 HQ；事件：step 損失、SP 支出、攻擊、砲擊 |
