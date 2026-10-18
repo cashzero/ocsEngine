@@ -1,0 +1,16 @@
+{
+ "files": [
+  {
+   "file": "artifacts/ai-positions-p2/residuals/cases.json",
+   "sha256": "7fdc7e17e4c4800e7269c3ada415f75c5ffe5909277b741803cc8c26f13e3d97"
+  },
+  {
+   "file": "artifacts/ai-positions-p2/residuals/review.json",
+   "sha256": "2f8bdbdb70139ad36a6d7533b6064efc73e21657f38dedd8b6d1afe30368779f"
+  },
+  {
+   "file": "artifacts/ai-positions-p2/validation/results.json",
+   "sha256": "2f97f1602fee953f536beb303bda4d983f3b517baed3361266fd3183703cbc5a"
+  }
+ ]
+}

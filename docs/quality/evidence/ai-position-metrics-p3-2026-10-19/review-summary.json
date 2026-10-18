@@ -1,0 +1,177 @@
+{
+ "combatStepsLost | attacker-moving": {
+  "cases": 20,
+  "findings": 152,
+  "combatLosses": 152,
+  "byKind": {
+   "REGULAR": 137,
+   "BARRAGE": 5,
+   "OVERRUN": 8,
+   "unknown": 2
+  },
+  "declaredColumnMedian": 8,
+  "attackerFrom3PlusHexes": 0.737,
+  "allAttackersAdjacentAtStart": 0.099,
+  "defenderDg": 0.02,
+  "defenderOutOfTrace": 0.171,
+  "defenderNotInContactAtStart": 0.789
+ },
+ "combatStepsLost | defender-moving": {
+  "cases": 20,
+  "findings": 107,
+  "combatLosses": 107,
+  "byKind": {
+   "BARRAGE": 5,
+   "REGULAR": 86,
+   "OVERRUN": 16
+  },
+  "declaredColumnMedian": 10,
+  "attackerFrom3PlusHexes": 0.495,
+  "allAttackersAdjacentAtStart": 0.121,
+  "defenderDg": 0.196,
+  "defenderOutOfTrace": 0.234,
+  "defenderNotInContactAtStart": 0.748
+ },
+ "combatStepsLost | meeting": {
+  "cases": 20,
+  "findings": 130,
+  "combatLosses": 130,
+  "byKind": {
+   "REGULAR": 113,
+   "BARRAGE": 5,
+   "OVERRUN": 12
+  },
+  "declaredColumnMedian": 11,
+  "attackerFrom3PlusHexes": 0.685,
+  "allAttackersAdjacentAtStart": 0.062,
+  "defenderDg": 0.046,
+  "defenderOutOfTrace": 0.238,
+  "defenderNotInContactAtStart": 0.877
+ },
+ "objectiveVpLost | attacker-moving": {
+  "cases": 20,
+  "findings": 49,
+  "objectivesTaken": 49,
+  "garrisoned": 0.592,
+  "inCombat": 0.531,
+  "takerFrom3PlusHexes": 0.306,
+  "combatColumnBelow6": 0.385,
+  "combatAttackerFrom3PlusHexes": 0.846,
+  "combatKinds": {
+   "REGULAR": 26
+  }
+ },
+ "objectiveVpLost | defender-moving": {
+  "cases": 20,
+  "findings": 20,
+  "objectivesTaken": 20,
+  "garrisoned": 0.6,
+  "inCombat": 0.6,
+  "takerFrom3PlusHexes": 0.1,
+  "combatColumnBelow6": 0.333,
+  "combatAttackerFrom3PlusHexes": 0.417,
+  "combatKinds": {
+   "OVERRUN": 4,
+   "REGULAR": 8
+  }
+ },
+ "objectiveVpLost | meeting": {
+  "cases": 20,
+  "findings": 27,
+  "objectivesTaken": 27,
+  "garrisoned": 0.778,
+  "inCombat": 0.704,
+  "takerFrom3PlusHexes": 0.037,
+  "combatColumnBelow6": 0.421,
+  "combatAttackerFrom3PlusHexes": 0.474,
+  "combatKinds": {
+   "REGULAR": 16,
+   "OVERRUN": 3
+  }
+ },
+ "attritionNextTurn | attacker-moving": {
+  "cases": 20,
+  "findings": 296,
+  "attritionLosses": 296,
+  "outOfTraceAtPStart": 0.73,
+  "outOfTraceAtOStart": 0.976,
+  "enemyWithin1AtPStart": 0.409,
+  "enemyBeyond3AtPStart": 0.257,
+  "inTraceAtPStartRoutes": {
+   "draw": 55,
+   "only HQs now unfed": 11,
+   "only HQs now gone": 7
+  }
+ },
+ "attritionNextTurn | defender-moving": {
+  "cases": 20,
+  "findings": 156,
+  "attritionLosses": 156,
+  "outOfTraceAtPStart": 0.494,
+  "outOfTraceAtOStart": 0.987,
+  "enemyWithin1AtPStart": 0.128,
+  "enemyBeyond3AtPStart": 0.487,
+  "inTraceAtPStartRoutes": {
+   "only HQs now gone": 22,
+   "draw": 37,
+   "only HQs now unfed": 14,
+   "an HQ still fed": 4
+  }
+ },
+ "attritionNextTurn | meeting": {
+  "cases": 20,
+  "findings": 196,
+  "attritionLosses": 196,
+  "outOfTraceAtPStart": 0.531,
+  "outOfTraceAtOStart": 0.974,
+  "enemyWithin1AtPStart": 0.128,
+  "enemyBeyond3AtPStart": 0.337,
+  "inTraceAtPStartRoutes": {
+   "only HQs now unfed": 25,
+   "draw": 33,
+   "only HQs now gone": 24,
+   "an HQ still fed": 5
+  }
+ },
+ "moverObjectivesGained | attacker-moving": {
+  "cases": 20,
+  "findings": 55,
+  "objectivesTaken": 55,
+  "garrisoned": 0.709,
+  "inCombat": 0.618,
+  "takerFrom3PlusHexes": 0.218,
+  "combatColumnBelow6": 0.206,
+  "combatAttackerFrom3PlusHexes": 0.941,
+  "combatKinds": {
+   "REGULAR": 34
+  }
+ },
+ "moverObjectivesGained | defender-moving": {
+  "cases": 20,
+  "findings": 20,
+  "objectivesTaken": 20,
+  "garrisoned": 0.75,
+  "inCombat": 0.7,
+  "takerFrom3PlusHexes": 0.05,
+  "combatColumnBelow6": 0.286,
+  "combatAttackerFrom3PlusHexes": 0.429,
+  "combatKinds": {
+   "REGULAR": 10,
+   "OVERRUN": 4
+  }
+ },
+ "moverObjectivesGained | meeting": {
+  "cases": 20,
+  "findings": 28,
+  "objectivesTaken": 28,
+  "garrisoned": 0.893,
+  "inCombat": 0.857,
+  "takerFrom3PlusHexes": 0.071,
+  "combatColumnBelow6": 0.208,
+  "combatAttackerFrom3PlusHexes": 0.708,
+  "combatKinds": {
+   "REGULAR": 23,
+   "OVERRUN": 1
+  }
+ }
+}
