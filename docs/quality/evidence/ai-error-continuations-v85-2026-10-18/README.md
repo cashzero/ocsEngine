@@ -65,6 +65,20 @@ side-game:
 - E7 and E8 are mostly not errors: the cases the items were meant to find are 0.13–0.38 objectives and 0.7–1.4 mobile units
   a side-game.
 
+## E4 breakdown
+
+`node scripts/ai-attack-allocation-study.mjs <the four groups> --out allocation-e4.json` ([allocation-e4.json](allocation-e4.json)),
+per side-game, attacker / defender / meeting side:
+
+- Regular attacks 10.38 / 4.50 / 5.75; at column 10+ 3.75 / 2.25 / 1.81.
+- Excess units (dropping them, weakest first, keeps the attack at column 9+): 5.38 / 0.75 / 1.44. Of them with no other
+  enemy combat unit adjacent 4.75 / 0.13 / 0.88; adjacent to another enemy hex that was not attacked that segment
+  0.63 / 0.63 / 0.56; adjacent to one attacked at column 5 or less 0.
+- Objective attacks at column 5 or less 2.38 / 0.63 / 1.81; with an own combat unit adjacent to the target that attacked
+  nothing 0.38 / 0 / 0.38.
+- Within the Combat Segment little strength is misplaced; most excess strength had no other target adjacent, so the
+  allocation that matters is made in the Movement Segment (with E6).
+
 ## Raw data
 
 The ignored `artifacts/ai-continue/declined-advance`, `artifacts/ai-continue/idle-combat` and the `supply-attribution.json`

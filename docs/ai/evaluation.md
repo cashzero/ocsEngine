@@ -25,6 +25,7 @@
 | `scripts/ai-oos-census.mjs`、`ai-logistics-study.mjs`、`ai-fuel-study.mjs`、`ai-truck-trips.mjs`、`ai-garrison-supply-study.mjs`、`ai-air-count.mjs` | 斷補、鐵路與卡車使用、攻方送補與加油、每輛卡車每回合趟數、駐軍送補、空軍任務數的統計 |
 | `scripts/ai-objective-flow-study.mjs` | VP 從哪裡來：目標點以走進空格或戰鬥決定取得與失去、攻擊目標點的欄位與結果（攻擊戰攻方、遭遇戰雙方） |
 | `scripts/ai-error-census.mjs` | 錯誤清單的普查（[錯誤清單](policy-errors.md)）：各方每局有好賠率卻不攻的 Combat Segment、攻擊欄位分布與第 10 欄以上的攻擊、戰後不前進與前進、整局沒移動的戰鬥單位 |
+| `scripts/ai-attack-allocation-study.mjs` | 錯誤清單 E4：高賠率攻擊中可抽出而仍維持第 9 欄的單位，與它們旁邊是否有其他未被攻擊的敵格；低賠率攻擊目標點時旁邊閒置的己方單位 |
 | `scripts/ai-find-branches.mjs` | 從 trace 找分岔點：某一方在某個 segment 做了要研究的決策（例如攻擊戰守方的主攻任務），輸出該 segment 第一個行動的 index |
 | `scripts/ai-continue.mjs` | 局面接續：從存檔的分岔點重設 Rules RNG，各策略變體在同一組骰子種子下對固定對手接著下，記錄 +h 回合與終局的局面指標與事件 |
 | `scripts/ai-position-metrics.mjs` | 局面指標（模組）：VP、目標點持有／有人守／受威脅、單位與 step、DG、接敵、離敵距離、斷補、SP（地圖上、前線取用得到、取用不到）、乾 HQ；事件：step 損失、SP 支出、攻擊、砲擊 |

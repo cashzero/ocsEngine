@@ -1,0 +1,51 @@
+{
+  "dirs": [
+    "artifacts/ai-assault/v84-development/meeting-temperate",
+    "artifacts/ai-assault/v84-development/meeting-eastern",
+    "artifacts/ai-assault/v84-development/attack-temperate",
+    "artifacts/ai-assault/v84-development/attack-eastern"
+  ],
+  "roles": {
+    "meeting side": {
+      "sideGames": 32,
+      "perSideGame": {
+        "attackers in attacks at column 10+": 3.8125,
+        "attacks at column 10+": 1.8125,
+        "excess units": 1.4375,
+        "excess units: another adjacent enemy hex was not attacked": 0.5625,
+        "excess units: no other enemy adjacent": 0.875,
+        "idle own combat units adjacent to those targets": 0.6875,
+        "objective attacks at column 5 or less with an idle adjacent own unit": 0.375,
+        "objective attacks at column 5 or less": 1.8125,
+        "regular attacks": 5.75
+      }
+    },
+    "defender": {
+      "sideGames": 16,
+      "perSideGame": {
+        "attackers in attacks at column 10+": 3.375,
+        "attacks at column 10+": 2.25,
+        "excess units": 0.75,
+        "excess units: another adjacent enemy hex was not attacked": 0.625,
+        "excess units: no other enemy adjacent": 0.125,
+        "idle own combat units adjacent to those targets": 0,
+        "objective attacks at column 5 or less": 0.625,
+        "regular attacks": 4.5
+      }
+    },
+    "attacker": {
+      "sideGames": 16,
+      "perSideGame": {
+        "attackers in attacks at column 10+": 11,
+        "attacks at column 10+": 3.75,
+        "excess units": 5.375,
+        "excess units: another adjacent enemy hex was not attacked": 0.625,
+        "excess units: no other enemy adjacent": 4.75,
+        "idle own combat units adjacent to those targets": 1,
+        "objective attacks at column 5 or less with an idle adjacent own unit": 0.375,
+        "objective attacks at column 5 or less": 2.375,
+        "regular attacks": 10.375
+      }
+    }
+  }
+}
