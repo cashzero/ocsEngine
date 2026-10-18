@@ -1,0 +1,418 @@
+{
+ "seeds": {
+  "TEMPERATE_INLAND": "1330000-1330039",
+  "EASTERN_EUROPE": "1330100-1330139"
+ },
+ "opponent": "frozen heuristic@79",
+ "engagement": "AXIS_ATTACKS",
+ "pairs": 40,
+ "v83": {
+  "defenderEffectPerGame": -2.4,
+  "se": 1.249,
+  "perPair": [
+   {
+    "match": 1330000,
+    "effect": -8
+   },
+   {
+    "match": 1330002,
+    "effect": -8
+   },
+   {
+    "match": 1330004,
+    "effect": 0
+   },
+   {
+    "match": 1330006,
+    "effect": 0
+   },
+   {
+    "match": 1330008,
+    "effect": 22
+   },
+   {
+    "match": 1330010,
+    "effect": -22
+   },
+   {
+    "match": 1330012,
+    "effect": 0
+   },
+   {
+    "match": 1330014,
+    "effect": -8
+   },
+   {
+    "match": 1330016,
+    "effect": -4
+   },
+   {
+    "match": 1330018,
+    "effect": -4
+   },
+   {
+    "match": 1330020,
+    "effect": 0
+   },
+   {
+    "match": 1330022,
+    "effect": 0
+   },
+   {
+    "match": 1330024,
+    "effect": -26
+   },
+   {
+    "match": 1330026,
+    "effect": 0
+   },
+   {
+    "match": 1330028,
+    "effect": 0
+   },
+   {
+    "match": 1330030,
+    "effect": 0
+   },
+   {
+    "match": 1330032,
+    "effect": -10
+   },
+   {
+    "match": 1330034,
+    "effect": -14
+   },
+   {
+    "match": 1330036,
+    "effect": -12
+   },
+   {
+    "match": 1330038,
+    "effect": 8
+   },
+   {
+    "match": 1330100,
+    "effect": 0
+   },
+   {
+    "match": 1330102,
+    "effect": -6
+   },
+   {
+    "match": 1330104,
+    "effect": 0
+   },
+   {
+    "match": 1330106,
+    "effect": -2
+   },
+   {
+    "match": 1330108,
+    "effect": 0
+   },
+   {
+    "match": 1330110,
+    "effect": 4
+   },
+   {
+    "match": 1330112,
+    "effect": -12
+   },
+   {
+    "match": 1330114,
+    "effect": -4
+   },
+   {
+    "match": 1330116,
+    "effect": 0
+   },
+   {
+    "match": 1330118,
+    "effect": 0
+   },
+   {
+    "match": 1330120,
+    "effect": 0
+   },
+   {
+    "match": 1330122,
+    "effect": 8
+   },
+   {
+    "match": 1330124,
+    "effect": 2
+   },
+   {
+    "match": 1330126,
+    "effect": 0
+   },
+   {
+    "match": 1330128,
+    "effect": 0
+   },
+   {
+    "match": 1330130,
+    "effect": 0
+   },
+   {
+    "match": 1330132,
+    "effect": -2
+   },
+   {
+    "match": 1330134,
+    "effect": 0
+   },
+   {
+    "match": 1330136,
+    "effect": 2
+   },
+   {
+    "match": 1330138,
+    "effect": 0
+   }
+  ]
+ },
+ "noeffort": {
+  "defenderEffectPerGame": 1.4,
+  "se": 1.207,
+  "perPair": [
+   {
+    "match": 1330000,
+    "effect": 12
+   },
+   {
+    "match": 1330002,
+    "effect": 0
+   },
+   {
+    "match": 1330004,
+    "effect": 0
+   },
+   {
+    "match": 1330006,
+    "effect": 8
+   },
+   {
+    "match": 1330008,
+    "effect": 30
+   },
+   {
+    "match": 1330010,
+    "effect": -2
+   },
+   {
+    "match": 1330012,
+    "effect": -2
+   },
+   {
+    "match": 1330014,
+    "effect": 6
+   },
+   {
+    "match": 1330016,
+    "effect": 8
+   },
+   {
+    "match": 1330018,
+    "effect": -4
+   },
+   {
+    "match": 1330020,
+    "effect": 0
+   },
+   {
+    "match": 1330022,
+    "effect": 0
+   },
+   {
+    "match": 1330024,
+    "effect": -18
+   },
+   {
+    "match": 1330026,
+    "effect": 0
+   },
+   {
+    "match": 1330028,
+    "effect": 10
+   },
+   {
+    "match": 1330030,
+    "effect": 8
+   },
+   {
+    "match": 1330032,
+    "effect": 6
+   },
+   {
+    "match": 1330034,
+    "effect": -18
+   },
+   {
+    "match": 1330036,
+    "effect": -8
+   },
+   {
+    "match": 1330038,
+    "effect": 8
+   },
+   {
+    "match": 1330100,
+    "effect": 0
+   },
+   {
+    "match": 1330102,
+    "effect": 8
+   },
+   {
+    "match": 1330104,
+    "effect": 0
+   },
+   {
+    "match": 1330106,
+    "effect": 0
+   },
+   {
+    "match": 1330108,
+    "effect": 0
+   },
+   {
+    "match": 1330110,
+    "effect": 4
+   },
+   {
+    "match": 1330112,
+    "effect": -6
+   },
+   {
+    "match": 1330114,
+    "effect": -2
+   },
+   {
+    "match": 1330116,
+    "effect": 0
+   },
+   {
+    "match": 1330118,
+    "effect": 0
+   },
+   {
+    "match": 1330120,
+    "effect": 0
+   },
+   {
+    "match": 1330122,
+    "effect": 2
+   },
+   {
+    "match": 1330124,
+    "effect": 2
+   },
+   {
+    "match": 1330126,
+    "effect": 0
+   },
+   {
+    "match": 1330128,
+    "effect": 0
+   },
+   {
+    "match": 1330130,
+    "effect": 0
+   },
+   {
+    "match": 1330132,
+    "effect": 4
+   },
+   {
+    "match": 1330134,
+    "effect": 0
+   },
+   {
+    "match": 1330136,
+    "effect": 0
+   },
+   {
+    "match": 1330138,
+    "effect": 0
+   }
+  ]
+ },
+ "noeffortMinusV83": {
+  "mean": 3.8,
+  "se": 1.01
+ },
+ "attackerGamesIdenticalBetweenRuns": "40/40 final state hashes",
+ "movePurposesPerDefenderGame": {
+  "v82 independent attack": {
+   "assault": [
+    8.4,
+    2.8
+   ],
+   "hunt": [
+    14.0,
+    17.6
+   ],
+   "capture": [
+    5.2,
+    7.5
+   ],
+   "garrison": [
+    7.0,
+    7.5
+   ]
+  },
+  "v82c wide attack": {
+   "assault": [
+    6.8,
+    2.6
+   ],
+   "hunt": [
+    15.0,
+    19.0
+   ],
+   "capture": [
+    4.2,
+    5.9
+   ],
+   "garrison": [
+    7.1,
+    7.8
+   ]
+  },
+  "v83 development attack": {
+   "assault": [
+    10.1,
+    1.8
+   ],
+   "hunt": [
+    17.6,
+    24.9
+   ],
+   "capture": [
+    4.5,
+    4.0
+   ],
+   "garrison": [
+    10.1,
+    10.8
+   ]
+  },
+  "order": "[v79 defender, candidate defender]"
+ },
+ "objectiveVpLostPerDefenderGame": {
+  "v82 independent": [
+   8.05,
+   7.65
+  ],
+  "v82c wide": [
+   8.6,
+   7.9
+  ],
+  "v83 development": [
+   9.25,
+   6.25
+  ],
+  "order": "[v79 defender, candidate defender]"
+ }
+}

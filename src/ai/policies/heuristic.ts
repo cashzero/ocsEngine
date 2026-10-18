@@ -60,7 +60,8 @@ const effortAt = (notes: StepNotes, hexId: HexId): MainEffort | undefined =>
 const chooseEfforts = (context: BotDecisionContext, situation: Situation, facts: BotGameFacts, w: HeuristicWeights, count: number): MainEffort[] => {
   const efforts: MainEffort[] = [];
   const used = new Set<PieceId>();
-  while (efforts.length < count) {
+  const limit = situation.posture === 'DEFENDER' ? Math.min(count, w.defenderMaxEfforts) : count;
+  while (efforts.length < limit) {
     const next = chooseEffort(context, situation, facts, w, used, new Set(efforts.map(({ hexId }) => hexId)));
     if (!next) break;
     efforts.push(next);

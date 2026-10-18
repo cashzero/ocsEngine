@@ -71,6 +71,8 @@ export interface HeuristicWeights {
   readonly assaultMaxUnits: number;
   /** Efforts launched at once against different objectives (heuristic@11; heuristic@4-10 launched one). */
   readonly assaultMaxEfforts: number;
+  /** At most this many efforts for the defender of an attack engagement (development ablation). */
+  readonly defenderMaxEfforts: number;
   readonly assaultPosition: number;
   /** Multiplies the objective term of a combat against the main effort's target. */
   readonly assaultObjective: number;
@@ -155,7 +157,7 @@ export const DEFAULT_HEURISTIC_WEIGHTS: HeuristicWeights = Object.freeze({
   huntValue: 3, huntInfiltrationRadius: 3, huntAnchorRadius: 2, huntStrengthPerUnit: 5,
   clearStrength: 2, clearRadius: 5, clearValue: 4, clearCombat: 8, reliefMinStrength: 6, reliefRadius: 2, holdTruckReach: 10, holdRatio: 0.5, holdStrengthPerUnit: 5, holdMaxExtra: 2,
   capture: 40, passThroughShare: 0.25, abandonObjective: 30, holdAtEnd: 15, crowding: 3, stratNearEnemy: 60, stratSafeDistance: 3, progressFront: 6, progressTarget: 10, progressObjective: 15,
-  huntAdjacent: 15, assaultMaxGuns: 3, assaultRatio: 2.5, assaultRatioUnits: 6, barrageDefenseShare: 0.5, assaultReach: 12, assaultMaxUnits: 10, assaultMaxEfforts: 5, assaultPosition: 20, assaultObjective: 2, barrageMainEffort: 5, garrisonStay: 30, contactGood: 6, contactBad: 8, contactRatio: 1.5, exposureSupport: 1.5,
+  huntAdjacent: 15, assaultMaxGuns: 3, assaultRatio: 2.5, assaultRatioUnits: 6, barrageDefenseShare: 0.5, assaultReach: 12, assaultMaxUnits: 10, assaultMaxEfforts: 5, defenderMaxEfforts: 5, assaultPosition: 20, assaultObjective: 2, barrageMainEffort: 5, garrisonStay: 30, contactGood: 6, contactBad: 8, contactRatio: 1.5, exposureSupport: 1.5,
   outOfSupply: 60, outOfSupplyFed: 10, fedRadius: 2, hqDependentSupply: 8,
   hqWithArmy: 6, hqExposed: 60, hqOutOfSupply: 60, hqOffRail: 80, hqCover: 1, hqRailheadReach: 6, hqExposure: 2,
   artilleryInRange: 20, artilleryBeyondRange: 4, artilleryWithArmy: 6, artilleryExposed: 60, artilleryEscortDistance: 3, artilleryUnescorted: 40, artilleryExposure: 1.5, artilleryCombatModeReach: 1, artilleryMoveModeDistance: 3,
@@ -169,7 +171,7 @@ export const DEFAULT_HEURISTIC_WEIGHTS: HeuristicWeights = Object.freeze({
 
 /** Weights that count hexes or units: mutations keep them whole numbers of at least 1. */
 export const WHOLE_NUMBER_WEIGHTS: readonly (keyof HeuristicWeights)[] = [
-  'garrisonSecondUnitThreat', 'artilleryEscortDistance', 'clearRadius', 'reliefRadius', 'holdTruckReach', 'holdMaxExtra', 'assaultMaxGuns', 'assaultRatioUnits', 'artilleryCombatModeReach', 'artilleryMoveModeDistance', 'assaultReach', 'assaultMaxUnits', 'assaultMaxEfforts', 'captureBaseUnits', 'huntInfiltrationRadius', 'huntAnchorRadius', 'stratSafeDistance', 'fedRadius',
+  'garrisonSecondUnitThreat', 'artilleryEscortDistance', 'clearRadius', 'reliefRadius', 'holdTruckReach', 'holdMaxExtra', 'assaultMaxGuns', 'assaultRatioUnits', 'artilleryCombatModeReach', 'artilleryMoveModeDistance', 'assaultReach', 'assaultMaxUnits', 'assaultMaxEfforts', 'defenderMaxEfforts', 'captureBaseUnits', 'huntInfiltrationRadius', 'huntAnchorRadius', 'stratSafeDistance', 'fedRadius',
   'combatModeDistance', 'stratModeEnemyDistance', 'stratModeTargetDistance', 'hqCombatModeRadius', 'hqRailheadReach',
   'hedgehogThreatRadius', 'hedgehogObjectiveLevel', 'hedgehogFrontLevel',
 ];
