@@ -1,0 +1,46 @@
+{
+  "scope": "Mechanism contract checks only. No new matches and no predictive result.",
+  "baseCommit": "787d631",
+  "tests": [
+    {
+      "name": "individually affordable consumers exceed shared stock",
+      "result": {
+        "groups": null,
+        "exhausted": false
+      }
+    },
+    {
+      "name": "group rounding saves one token versus separate payments",
+      "result": {
+        "groups": [
+          {
+            "sourcePieceId": "dump",
+            "pieceIds": [
+              "a",
+              "b"
+            ],
+            "tokens": 1
+          }
+        ],
+        "exhausted": false
+      }
+    },
+    {
+      "name": "exhaustion is distinct from proven infeasibility",
+      "result": {
+        "groups": null,
+        "exhausted": true
+      }
+    }
+  ],
+  "sourceHashes": {
+    "scripts/ai-match.mjs": "f12267cf106747487504baff605d8b849d630a5eb59b5728c7c66baca27a65a4",
+    "src/rules/lifecycle/supply-phase.ts": "0460174d2632a646a02e84a61f4702bf533ac7b8894b5f73d941ca136c939da8",
+    "src/rules/lifecycle/lifecycle.ts": "60a3f80e64723b24677a8ce5cadf3d4f680eed91c3f22077d75a3a6ba5cf2361",
+    "src/rules/supply/ration-budget.ts": "d94388ce55584c6d2cfd7c24383b7a5969e12d6823081b2a9bcb8356eeb07b5f",
+    "src/rules/supply/supply.ts": "5feec6bfe3e216d54fb4926b3333a36bed9746deeb389c2c8c051cbbac12b25e",
+    "src/rules/supply/fuel.ts": "35b6891126e6e4568f4ac8ee126594054ae487ee64d5793f85967375c2d7e6c4",
+    "src/rules/combat/strength.ts": "1557622a5ecd51135f59da762a87de2a04d496cc777122c98f97e734c004a5a8"
+  },
+  "frozenRationModuleSha256": "87b25b98b7faed4620ea85eb17145d04d802efab1061782897099909d5ec408a"
+}
