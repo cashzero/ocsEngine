@@ -105,6 +105,8 @@ formation 共同路線、補給源）重算，數斷補的己方單位。只試�
 
 終局預測（[重驗](../quality/evidence/ai-position-metrics-p6-2026-10-19/README.md)，正確對局識別與種子分組）：攻擊戰中，step 差與斷補差在 VP 之外預測終局 VP 差，到 Game Turn 5 的 R² 增益區間都不含 0（Game Turn 3 為 +0.289）；雙方的 `objectiveReachColumn` 與 `objectiveVpAtRisk` 再往上加，Game Turn 3～7 的 MAE 每局少 0.35～0.95 VP，區間都不含 0，R² 增益在 Game Turn 5、6 通過。分配後暴露與 `hqsInReach` 對終局沒有增益。遭遇戰（69 條軌跡）沒有任何增益通過。前瞻確認中，攻擊戰 96 局新對局的目標點類增益在 Game Turn 3～7 都通過（MAE 每局少 0.55～1.34 VP），step 與斷補勝過只看 VP 只在 Game Turn 4、5 通過。遭遇戰沒有登記；新對局的 64 局遭遇戰中，step 與斷補在 Game Turn 3～7、目標點類在 6～7 的 R² 增益區間不含 0，屬未登記的觀察（`bot-position-final-validation`）。
 
+改版層級的代理性（[試驗層級替代性](../quality/evidence/ai-position-surrogacy-2026-10-19/README.md)，事先登記）：12 個權重各減半與加倍的 24 個變體，各與標準策略在攻擊戰交換座位打 8 對。變體之間的終局效果確實不同（置換檢定 p 0.022），但真實差異小（標準差約 1 VP）。Game Turn 4 時終局模型的預測差能代理變體對終局 VP 的效果：M2 的試驗層級 R² 0.517 [0.188, 0.763]，其中 step 與斷補（M1）已達 0.485，目標點類只多約 0.03，M2 也沒有確定勝過只看 VP（R² 差 +0.326 [−0.012, +0.594]）。單項局勢指標的試驗層級 R² 接近 0：它們能預測單局內的事件，但策略改版對它們的影響不跟著對 VP 的影響走，不能直接當 reward。
+
 負對照：獨立隨機特徵在舊的樣本內方法下也得到區間排除 0 的新增 R²，但樣本外 R² 下降（[對照](../quality/evidence/ai-position-validation-2026-10-18/negative-control.json)），所以只採用樣本外的比較。
 
 `dumpSpInReach` 與補給堆損失的先前描述性結果見 [量測證據](../quality/evidence/ai-position-exposure-2026-10-18/README.md)。[溫帶 16 局的擴充指標探索](../quality/evidence/ai-position-metrics-temperate-2026-10-18/README.md) 則使用 208 個玩家回合，全部屬樣本內比較。按目前 recorder 拆出 attrition 後，`stacksExposedAllocated` 對其餘損失事件的 r 為 0.25，遭遇戰的 `maxSingleStackExpectedLoss` 為 0.37；可支付目標數對當回合丟點的 r 由幾何指標的 0.34 升為 0.44。這些數字是代理量的描述性關係，不證明支付可行、損失分類正確或預測改善。原批 raw 紀錄目前未能取得，不能用另一批存檔宣稱重現原結果。

@@ -1,0 +1,440 @@
+{
+ "files": [
+  {
+   "variant": "capture-half",
+   "group": "attack-temperate",
+   "rows": "artifacts/ai-surrogacy/rows/capture-half__attack-temperate.jsonl",
+   "rowsSha256": "f9b40288333bac942664cce5da965e2b629bd2771f6731458bcaad6d67088f3b",
+   "summarySha256": "fd402bdfcc3b406204437d447c4d230bad550a9ab7a75940e45fd5cdaa571e52",
+   "finished": 8,
+   "replayOk": 8
+  },
+  {
+   "variant": "capture-half",
+   "group": "attack-eastern",
+   "rows": "artifacts/ai-surrogacy/rows/capture-half__attack-eastern.jsonl",
+   "rowsSha256": "5bc84cb03612c01c849ff86b3069a4608cdb62a39aa0f26327d3993d6173c182",
+   "summarySha256": "9e41fe4365ad645933502d0b450c6cdb0ea634bf789ca52e4dc73a9525f61056",
+   "finished": 8,
+   "replayOk": 8
+  },
+  {
+   "variant": "capture-double",
+   "group": "attack-temperate",
+   "rows": "artifacts/ai-surrogacy/rows/capture-double__attack-temperate.jsonl",
+   "rowsSha256": "32a446abf6c1f05406055a0404c94883de20f2fd3db590d5a3473141e59ca8ea",
+   "summarySha256": "e38984c0e51c8c465ae97b26329f7557d7532d86f38dd1a1685e4870bad75b8b",
+   "finished": 8,
+   "replayOk": 8
+  },
+  {
+   "variant": "capture-double",
+   "group": "attack-eastern",
+   "rows": "artifacts/ai-surrogacy/rows/capture-double__attack-eastern.jsonl",
+   "rowsSha256": "127825fe9fb3a0e36b2d5abda4b9cc178741e9382d284f1dedafe14ae8914056",
+   "summarySha256": "1f395d426c544a9ad896df2d2ac03b59348ce3d687f1f373d747abd8132d13b8",
+   "finished": 8,
+   "replayOk": 8
+  },
+  {
+   "variant": "crowding-half",
+   "group": "attack-temperate",
+   "rows": "artifacts/ai-surrogacy/rows/crowding-half__attack-temperate.jsonl",
+   "rowsSha256": "3cff5c8f9fdcae15a631c575f38804714179ce4aa059eb7da811e1614680e923",
+   "summarySha256": "43a1ca730f1c36cb8b6a4840647d44837c079be03e181d5f4300084b29abac4e",
+   "finished": 8,
+   "replayOk": 8
+  },
+  {
+   "variant": "crowding-half",
+   "group": "attack-eastern",
+   "rows": "artifacts/ai-surrogacy/rows/crowding-half__attack-eastern.jsonl",
+   "rowsSha256": "854d6d68d14e1de2426411faccc0056d4f94d4981938034427a25035ae7a99c7",
+   "summarySha256": "ca115c553d4162bf4fd32e129d5d22ce0b579ef9a356621ed2f22dddafc333d3",
+   "finished": 8,
+   "replayOk": 8
+  },
+  {
+   "variant": "crowding-double",
+   "group": "attack-temperate",
+   "rows": "artifacts/ai-surrogacy/rows/crowding-double__attack-temperate.jsonl",
+   "rowsSha256": "c04a69e8c4d32923c5b171e578c051a183ad88a5fca00ca448c5b0da6c8746d3",
+   "summarySha256": "949bd121a94372c16afebbd3036f3ba2dfde9a6d4cb78a74a853d832d94d47b2",
+   "finished": 8,
+   "replayOk": 8
+  },
+  {
+   "variant": "crowding-double",
+   "group": "attack-eastern",
+   "rows": "artifacts/ai-surrogacy/rows/crowding-double__attack-eastern.jsonl",
+   "rowsSha256": "ad9ab952d4d25b018296677303dcc710e63eacd4e1789378efaec4c704396030",
+   "summarySha256": "d5c270ceccd16de0b216379f316d1b6affd739777816614c7ff0e658378b8915",
+   "finished": 8,
+   "replayOk": 8
+  },
+  {
+   "variant": "contactBad-half",
+   "group": "attack-temperate",
+   "rows": "artifacts/ai-surrogacy/rows/contactBad-half__attack-temperate.jsonl",
+   "rowsSha256": "d3d8c3504ed23cdd1397912db55f388bcdfd6793db85b02b212830d9149a12c9",
+   "summarySha256": "ad9be55df0b3bf39d213cb1257d807382eb92b8a4497140bb0088fd3ff11a9dd",
+   "finished": 8,
+   "replayOk": 8
+  },
+  {
+   "variant": "contactBad-half",
+   "group": "attack-eastern",
+   "rows": "artifacts/ai-surrogacy/rows/contactBad-half__attack-eastern.jsonl",
+   "rowsSha256": "d589901e06a6e9f689c8a87cfea7b4fee54160ac31e560d2d828a312366e1379",
+   "summarySha256": "6d205641d8e474d22a617a33add2642723dc9d493bb75cfbbed5b02e705b9226",
+   "finished": 8,
+   "replayOk": 8
+  },
+  {
+   "variant": "contactBad-double",
+   "group": "attack-temperate",
+   "rows": "artifacts/ai-surrogacy/rows/contactBad-double__attack-temperate.jsonl",
+   "rowsSha256": "4f9adeeadfd54f091ff3374d95c7b114af9273bfd86a9fc37b3fbd712847d05d",
+   "summarySha256": "c2b472e80f332097648046cf6f2f1d6a5db5127e5fa2c297856024a56a102f9d",
+   "finished": 8,
+   "replayOk": 8
+  },
+  {
+   "variant": "contactBad-double",
+   "group": "attack-eastern",
+   "rows": "artifacts/ai-surrogacy/rows/contactBad-double__attack-eastern.jsonl",
+   "rowsSha256": "698b6110ff0c1e0d6ae5ca785d873a707eba510096487f89d1e3e2620e226b7a",
+   "summarySha256": "cf8a62f5abf1bdf362fc477ddbb58626dc64ee2efd54898fc69e5c929fdf3aff",
+   "finished": 8,
+   "replayOk": 8
+  },
+  {
+   "variant": "outOfSupply-half",
+   "group": "attack-temperate",
+   "rows": "artifacts/ai-surrogacy/rows/outOfSupply-half__attack-temperate.jsonl",
+   "rowsSha256": "15b398d23d890f7fe2a04bef7045cbb5083bf99275998c2f76a3c114229f902f",
+   "summarySha256": "d31bcfd62b86880925cae9ca0949401ba9859473aa65ba8a4f963a5cdf44ecdd",
+   "finished": 8,
+   "replayOk": 8
+  },
+  {
+   "variant": "outOfSupply-half",
+   "group": "attack-eastern",
+   "rows": "artifacts/ai-surrogacy/rows/outOfSupply-half__attack-eastern.jsonl",
+   "rowsSha256": "6913ea1798f9c8a9c05f81b89b6c9d6830fc9b8eaed1cc839e9f463bd934e12d",
+   "summarySha256": "22b0f7d2fa9ffedb79e707cf9724048cee6054a1ff8c9942f69694da0a006de4",
+   "finished": 8,
+   "replayOk": 8
+  },
+  {
+   "variant": "outOfSupply-double",
+   "group": "attack-temperate",
+   "rows": "artifacts/ai-surrogacy/rows/outOfSupply-double__attack-temperate.jsonl",
+   "rowsSha256": "884c879c06baad19846bd94d3f23cb0afbe6e177e3845fe642821f0969d1a922",
+   "summarySha256": "28de1caab33fc5039fd2f34430bd5fbb889810f8e3a335a9cd0ed68384586f6c",
+   "finished": 8,
+   "replayOk": 8
+  },
+  {
+   "variant": "outOfSupply-double",
+   "group": "attack-eastern",
+   "rows": "artifacts/ai-surrogacy/rows/outOfSupply-double__attack-eastern.jsonl",
+   "rowsSha256": "96bb9ca2cfa1c56a65d2bf696c7d99f1f4ede055c4ee4d8a035b4243f065136b",
+   "summarySha256": "681e3a27c0554405decff920466d0c4fac8cff4aea4a386487794329fbe7c55e",
+   "finished": 8,
+   "replayOk": 8
+  },
+  {
+   "variant": "attackThreshold-half",
+   "group": "attack-temperate",
+   "rows": "artifacts/ai-surrogacy/rows/attackThreshold-half__attack-temperate.jsonl",
+   "rowsSha256": "5a5983384e86a7353f7fdbdaf4b41f23dc78ce244f9b096ea05d15c0e75e2e72",
+   "summarySha256": "df91b66592234713a4e2fddc8926076f89c1f95e077b82ecbb50af0d99f729f0",
+   "finished": 8,
+   "replayOk": 8
+  },
+  {
+   "variant": "attackThreshold-half",
+   "group": "attack-eastern",
+   "rows": "artifacts/ai-surrogacy/rows/attackThreshold-half__attack-eastern.jsonl",
+   "rowsSha256": "ce19a23a1c0a0a7b964488156cf2f84b51e336bdc5028040be93f97a3aa7cf11",
+   "summarySha256": "d914be28a04cf778ab3bbaa79d555e92b41160e49a444a6e3225e707ac0e662d",
+   "finished": 8,
+   "replayOk": 8
+  },
+  {
+   "variant": "attackThreshold-double",
+   "group": "attack-temperate",
+   "rows": "artifacts/ai-surrogacy/rows/attackThreshold-double__attack-temperate.jsonl",
+   "rowsSha256": "c27a2ae289b8d814ff82def6c16e95a8cee92802ac89c39fdf39a493b1e7f83e",
+   "summarySha256": "757d7368413b83348d8886688dedbfa12c444537d7d9c6d9004347bbc210df24",
+   "finished": 8,
+   "replayOk": 8
+  },
+  {
+   "variant": "attackThreshold-double",
+   "group": "attack-eastern",
+   "rows": "artifacts/ai-surrogacy/rows/attackThreshold-double__attack-eastern.jsonl",
+   "rowsSha256": "4189a0a8f146a0ede793a3cf41405c4eece35d7a8b799a1d41f83b79e9e5f586",
+   "summarySha256": "1f8565c0c52a720f2c7065b78d91767e368dfa8870c27c9f9b1a2ad8fb366bce",
+   "finished": 8,
+   "replayOk": 8
+  },
+  {
+   "variant": "combatSupply-half",
+   "group": "attack-temperate",
+   "rows": "artifacts/ai-surrogacy/rows/combatSupply-half__attack-temperate.jsonl",
+   "rowsSha256": "6275dc341dd2daf8150248822f6d58dfd47e4b9a177b89855ba858ca3a3056b4",
+   "summarySha256": "fd077a3fb3c698e8bb9f77260dd5c7bf6915f8c0c4a34e22249f4920d548ad46",
+   "finished": 8,
+   "replayOk": 8
+  },
+  {
+   "variant": "combatSupply-half",
+   "group": "attack-eastern",
+   "rows": "artifacts/ai-surrogacy/rows/combatSupply-half__attack-eastern.jsonl",
+   "rowsSha256": "e87fc2306424b09b6347e1989a8898d513bc19954d2340e9fbece8a6e43a47c7",
+   "summarySha256": "ccbd52c343e3cf1bf78a8c54b31a0b5163c6a232f49c0a8991213b94ad272202",
+   "finished": 8,
+   "replayOk": 8
+  },
+  {
+   "variant": "combatSupply-double",
+   "group": "attack-temperate",
+   "rows": "artifacts/ai-surrogacy/rows/combatSupply-double__attack-temperate.jsonl",
+   "rowsSha256": "d6dfcfae02db165b7f54b8d819d7eaf2cf127973b5a7a144d56c60bf032de94f",
+   "summarySha256": "7f850592994ba743725698c293425a445b8eeb8800455254d41b329f3b61821d",
+   "finished": 8,
+   "replayOk": 8
+  },
+  {
+   "variant": "combatSupply-double",
+   "group": "attack-eastern",
+   "rows": "artifacts/ai-surrogacy/rows/combatSupply-double__attack-eastern.jsonl",
+   "rowsSha256": "5e754e4d5ff89e4e50476a1ad9b5074eb8e484395df1a2add6dd43d8414f8948",
+   "summarySha256": "477dd5e4a2b1f2e5268cf76399e05862eb9e821c81ea85e67bb055d89b5ef844",
+   "finished": 8,
+   "replayOk": 8
+  },
+  {
+   "variant": "assaultRatio-half",
+   "group": "attack-temperate",
+   "rows": "artifacts/ai-surrogacy/rows/assaultRatio-half__attack-temperate.jsonl",
+   "rowsSha256": "8785ca1b9c94709ba73123d043783a9c255316906f77f84cdc20087886cc8abc",
+   "summarySha256": "8f01b80bd81faa944a779a80a98e2665a29ffc0c70e480fb4fb67befdd61478c",
+   "finished": 8,
+   "replayOk": 8
+  },
+  {
+   "variant": "assaultRatio-half",
+   "group": "attack-eastern",
+   "rows": "artifacts/ai-surrogacy/rows/assaultRatio-half__attack-eastern.jsonl",
+   "rowsSha256": "81c73b3d43bd5e69c5f09c81df24c09f914a6ce6891e7a9182e5813a6df31cbb",
+   "summarySha256": "e9eef1fd3e99993ca4621df08aa6ffde4d6aae909124f06d3a9c7aa00a99a8b3",
+   "finished": 8,
+   "replayOk": 8
+  },
+  {
+   "variant": "assaultRatio-double",
+   "group": "attack-temperate",
+   "rows": "artifacts/ai-surrogacy/rows/assaultRatio-double__attack-temperate.jsonl",
+   "rowsSha256": "f68ad52f7cf16f0c48ac9bc525af35e8ee665affae69ba75c89eddc47fc73906",
+   "summarySha256": "cbd77ff03805804f33c8986234242e1f21bdf648469bafa1f540cffe330c4b88",
+   "finished": 8,
+   "replayOk": 8
+  },
+  {
+   "variant": "assaultRatio-double",
+   "group": "attack-eastern",
+   "rows": "artifacts/ai-surrogacy/rows/assaultRatio-double__attack-eastern.jsonl",
+   "rowsSha256": "76f83f3ea38c36e2fc2f2ab71737bd07e41c3a375523d8955b19c77cefd8076d",
+   "summarySha256": "171d317f4b1e264e26ebffa22d986c15baa96949ad5d60d9bf06b5a727cb597a",
+   "finished": 8,
+   "replayOk": 8
+  },
+  {
+   "variant": "garrisonThreatened-half",
+   "group": "attack-temperate",
+   "rows": "artifacts/ai-surrogacy/rows/garrisonThreatened-half__attack-temperate.jsonl",
+   "rowsSha256": "56ff51200cf405d6239eb9a3caf27f3bd572b1c1b42dda1e47209131f50812ad",
+   "summarySha256": "8130d6a0948a30e0b11bc09cc632361151984242a2ee02fdbdc25c871e7935c4",
+   "finished": 8,
+   "replayOk": 8
+  },
+  {
+   "variant": "garrisonThreatened-half",
+   "group": "attack-eastern",
+   "rows": "artifacts/ai-surrogacy/rows/garrisonThreatened-half__attack-eastern.jsonl",
+   "rowsSha256": "77d640a9a85368da7c9530440a8907461df3789f466f2ec4d91631bfd65a018f",
+   "summarySha256": "d3d8139414f2c7a90e99a9cc4e522cb870d49d5baccce71bb7d1271ae475b4fc",
+   "finished": 8,
+   "replayOk": 8
+  },
+  {
+   "variant": "garrisonThreatened-double",
+   "group": "attack-temperate",
+   "rows": "artifacts/ai-surrogacy/rows/garrisonThreatened-double__attack-temperate.jsonl",
+   "rowsSha256": "cd00f63ea194e5778c2027ee374d17ffc6789139694381c156a527c56e115262",
+   "summarySha256": "cb858c7436974cb88a7d0764c44801b948b6fae2439cdb07b047a6138dc9ff4e",
+   "finished": 8,
+   "replayOk": 8
+  },
+  {
+   "variant": "garrisonThreatened-double",
+   "group": "attack-eastern",
+   "rows": "artifacts/ai-surrogacy/rows/garrisonThreatened-double__attack-eastern.jsonl",
+   "rowsSha256": "89b70ae95292e5a1009ba382eaafce20d6750387bd05355a658044fa5a6814ea",
+   "summarySha256": "091ba8e6adb169a3e0f2d47a630c225a10bf4d9a76fc342a90db5d17807be240",
+   "finished": 8,
+   "replayOk": 8
+  },
+  {
+   "variant": "holdRatio-half",
+   "group": "attack-temperate",
+   "rows": "artifacts/ai-surrogacy/rows/holdRatio-half__attack-temperate.jsonl",
+   "rowsSha256": "a5b497ddfdec8c885720cc9295a661b0476c04f57a861ceb3d87ab9de011926a",
+   "summarySha256": "ee076489aad2d79ed62ff371ebb08bc17562c767f2a741feead84404b256f7ee",
+   "finished": 8,
+   "replayOk": 8
+  },
+  {
+   "variant": "holdRatio-half",
+   "group": "attack-eastern",
+   "rows": "artifacts/ai-surrogacy/rows/holdRatio-half__attack-eastern.jsonl",
+   "rowsSha256": "13dbff7edc36b15ab83a18560c2b684da284e1d13dac293dc49d6ca977e44536",
+   "summarySha256": "fe53e53319ed25b8306ec568e67d9d16f49e0c621d3ec423c420b274bf241a59",
+   "finished": 8,
+   "replayOk": 8
+  },
+  {
+   "variant": "holdRatio-double",
+   "group": "attack-temperate",
+   "rows": "artifacts/ai-surrogacy/rows/holdRatio-double__attack-temperate.jsonl",
+   "rowsSha256": "2108c88eda47fd97ca0ac624a57b7b1ad49fcd9310773140b94c4560f3905f02",
+   "summarySha256": "a0e1cd61f3355be7ed629132bd5e8f31d1d7ce92127cc6f57ca715e2589bb5be",
+   "finished": 8,
+   "replayOk": 8
+  },
+  {
+   "variant": "holdRatio-double",
+   "group": "attack-eastern",
+   "rows": "artifacts/ai-surrogacy/rows/holdRatio-double__attack-eastern.jsonl",
+   "rowsSha256": "4028de13da623d0d0149dadb5c837c88901f842526beedbef0711a39f64cfb76",
+   "summarySha256": "123b4c12325e02351033316a854a5852759f53f429ccfd1067fb2ba5c3ecf1eb",
+   "finished": 8,
+   "replayOk": 8
+  },
+  {
+   "variant": "progressObjective-half",
+   "group": "attack-temperate",
+   "rows": "artifacts/ai-surrogacy/rows/progressObjective-half__attack-temperate.jsonl",
+   "rowsSha256": "753eaa0016188fa2c407334772470a05aba89dc8fcd794a6042955e0e0470fa8",
+   "summarySha256": "d113732a7fe72c2658cb85b6201806b4ace4e23bf4e30e2a5c2cae8dd1c86a71",
+   "finished": 8,
+   "replayOk": 8
+  },
+  {
+   "variant": "progressObjective-half",
+   "group": "attack-eastern",
+   "rows": "artifacts/ai-surrogacy/rows/progressObjective-half__attack-eastern.jsonl",
+   "rowsSha256": "f91b44f69979defb33ab78e25bf9c4772ef54a2521444b228ea5dff89e97c017",
+   "summarySha256": "031c5bde93875a376b410bb4f504046e13c567ec05400c403076737845292e4f",
+   "finished": 8,
+   "replayOk": 8
+  },
+  {
+   "variant": "progressObjective-double",
+   "group": "attack-temperate",
+   "rows": "artifacts/ai-surrogacy/rows/progressObjective-double__attack-temperate.jsonl",
+   "rowsSha256": "734c3b47f49d356e9da02b5c36583cc6ef1a1715cd4984fd82f7aa60129432d2",
+   "summarySha256": "55823911ba18f78bb428238bac0a048cfd114b24dbbd0fbaf90f5aa39821c875",
+   "finished": 8,
+   "replayOk": 8
+  },
+  {
+   "variant": "progressObjective-double",
+   "group": "attack-eastern",
+   "rows": "artifacts/ai-surrogacy/rows/progressObjective-double__attack-eastern.jsonl",
+   "rowsSha256": "971d59c153f0c753a7f62d9992359c7c23a45979f7ac1a8753592ec0a5e11f16",
+   "summarySha256": "aab630c8751476517033b353a8589fdcdd599aaa2e55bfe01815372dbf9d9bf7",
+   "finished": 8,
+   "replayOk": 8
+  },
+  {
+   "variant": "defenderLoss-half",
+   "group": "attack-temperate",
+   "rows": "artifacts/ai-surrogacy/rows/defenderLoss-half__attack-temperate.jsonl",
+   "rowsSha256": "74e04f2083236bcee696b7061e164e92c446bba8b0132b02aaebec442f97f138",
+   "summarySha256": "4c19ecbbc075ecad310e04e66b7186bee975b143a72ed57d1bf0304441e646a6",
+   "finished": 8,
+   "replayOk": 8
+  },
+  {
+   "variant": "defenderLoss-half",
+   "group": "attack-eastern",
+   "rows": "artifacts/ai-surrogacy/rows/defenderLoss-half__attack-eastern.jsonl",
+   "rowsSha256": "fa2d4545a59f6447becece1db7639b31f294e8f0e4223b8694d32d0a4a8ae969",
+   "summarySha256": "e2f6f14c34aee029efa7a804cca8d5ba7a46c413e01888f5bc0826db30af8e40",
+   "finished": 8,
+   "replayOk": 8
+  },
+  {
+   "variant": "defenderLoss-double",
+   "group": "attack-temperate",
+   "rows": "artifacts/ai-surrogacy/rows/defenderLoss-double__attack-temperate.jsonl",
+   "rowsSha256": "28d9ee7c78711cb87cfecc09c78b77d1bcb4dd4c7788ddfa08d83901c5ad9351",
+   "summarySha256": "b21c271ebabc7b2d47afa8e3012a66f770ba00abd3420685ec3d5c19a202eba7",
+   "finished": 8,
+   "replayOk": 8
+  },
+  {
+   "variant": "defenderLoss-double",
+   "group": "attack-eastern",
+   "rows": "artifacts/ai-surrogacy/rows/defenderLoss-double__attack-eastern.jsonl",
+   "rowsSha256": "e3c792ff06b1fc6fcb987f8aeca6b9ac24d5fea6ad2ff69c52ab9514fb758c83",
+   "summarySha256": "9db49d87fbf0bdd45561e0c663716549855355b570e8f9e6f384ca82e12a5808",
+   "finished": 8,
+   "replayOk": 8
+  },
+  {
+   "variant": "hqWithArmy-half",
+   "group": "attack-temperate",
+   "rows": "artifacts/ai-surrogacy/rows/hqWithArmy-half__attack-temperate.jsonl",
+   "rowsSha256": "cc72a778e774a1a8de7f9479eda452148f61a92ffb6bd0e80fe3f00f7362ccdb",
+   "summarySha256": "b7a828cefb41a3b4b0c4c49dc3bdae53607f16ce04f4767a57facc4c4d745dbe",
+   "finished": 8,
+   "replayOk": 8
+  },
+  {
+   "variant": "hqWithArmy-half",
+   "group": "attack-eastern",
+   "rows": "artifacts/ai-surrogacy/rows/hqWithArmy-half__attack-eastern.jsonl",
+   "rowsSha256": "bcf7d97e7d2f0e07d24c477529466103aeafffd3d00aea3c7441e63aaee9e38c",
+   "summarySha256": "5ec5494db7279e78a8fcfbcad1d0788a38d8500a432d726ef926dc98d3e47116",
+   "finished": 8,
+   "replayOk": 8
+  },
+  {
+   "variant": "hqWithArmy-double",
+   "group": "attack-temperate",
+   "rows": "artifacts/ai-surrogacy/rows/hqWithArmy-double__attack-temperate.jsonl",
+   "rowsSha256": "570b8e71449cb8b1598859f28dd22af89316d9d130b3c7cb0d33d9f41b8799f3",
+   "summarySha256": "146e14cac02b9055affc7bedf2727317d840e91c00bf482302ee7f85b857ee2a",
+   "finished": 8,
+   "replayOk": 8
+  },
+  {
+   "variant": "hqWithArmy-double",
+   "group": "attack-eastern",
+   "rows": "artifacts/ai-surrogacy/rows/hqWithArmy-double__attack-eastern.jsonl",
+   "rowsSha256": "3fb67765ce84e2936cc19d22482f60603b78a9d1b92061c09cc59be5eeca4b1b",
+   "summarySha256": "1bbfaa65abd35449b51d05c82859dfd59bdf030f3d55fe83788747153b9f64a3",
+   "finished": 8,
+   "replayOk": 8
+  }
+ ],
+ "results": {
+  "file": "artifacts/ai-surrogacy/results.json",
+  "sha256": "9b4dad299a2b664e198999cae3e7bda231c818c7d325e33549269fa2cd8f5735"
+ }
+}
