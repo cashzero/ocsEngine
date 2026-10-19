@@ -1,15 +1,16 @@
 import type { PieceId } from '../core/index.js';
 import type { GameSession, SeatId } from '../gameplay/index.js';
-import type { FeedSource, GameAction, ReachableHex, TraceCoverage } from '../rules/index.js';
+import type { CandidateResult, FeedSource, GameAction, ReachableHex, TraceCoverage } from '../rules/index.js';
 import type { BotActionAccess } from './model.js';
+import type { BotQueryObserver } from './observation.js';
 
 /** Default candidate budget: enough for every option a policy weighs, bounded for large stacks of combinations. */
 export const DEFAULT_CANDIDATE_BUDGET = 400;
 
 /** Session queries for one seat at one revision; repeated questions in the same decision are answered once. */
-export const createBotActionAccess = (session: GameSession, seatId: SeatId): BotActionAccess => {
+export const createBotActionAccess = (session: GameSession, seatId: SeatId, observeQuery?: BotQueryObserver): BotActionAccess => {
   let families: readonly GameAction['kind'][] | null = null;
-  const candidateCache = new Map<string, readonly GameAction[]>();
+  const candidateCache = new Map<string, CandidateResult>();
   const rangeCache = new Map<PieceId, readonly ReachableHex[]>();
   const coverageCache = new Map<string, TraceCoverage>();
   const feedCache = new Map<string, readonly FeedSource[]>();
@@ -18,12 +19,14 @@ export const createBotActionAccess = (session: GameSession, seatId: SeatId): Bot
     families: () => families ??= session.getActionFamilies(seatId).filter(({ enabled }) => enabled).map(({ kind }) => kind),
     candidates: (kind, pieceId = null, budget = DEFAULT_CANDIDATE_BUDGET) => {
       const key = `${kind}|${pieceId ?? ''}|${budget}`;
-      let actions = candidateCache.get(key);
-      if (actions === undefined) {
-        actions = session.getActionCandidates(seatId, { kind, pieceId, budget }).actions;
-        candidateCache.set(key, actions);
+      let result = candidateCache.get(key);
+      const cacheHit = result !== undefined;
+      if (result === undefined) {
+        result = session.getActionCandidates(seatId, { kind, pieceId, budget });
+        candidateCache.set(key, result);
       }
-      return actions;
+      observeQuery?.({ kind, pieceId, budget }, result, cacheHit);
+      return result.actions;
     },
     movementRange: (pieceId) => {
       let range = rangeCache.get(pieceId);

@@ -1,0 +1,26 @@
+{
+  "build": {
+    "command": "npm run build",
+    "exitCode": 0
+  },
+  "typecheck": {
+    "command": "npm run typecheck",
+    "exitCode": 0
+  },
+  "focusedTests": {
+    "command": "npx vitest run tests/ai/seat-runner.test.ts tests/ai/bot-driver.test.ts tests/ai/heuristic.test.ts tests/ai/decision-observation.test.ts",
+    "exitCode": 0,
+    "files": 4,
+    "tests": 19,
+    "reportedDurationSeconds": 17.99
+  },
+  "beforeImplementation": {
+    "command": "node scripts/ai-observation-study.mjs --baseline artifacts/ai-decision-observability-study/baseline-dist --out artifacts/ai-decision-observability-study/before-implementation",
+    "exitCode": 1,
+    "observedFailure": "0 observations !== 129 decisions"
+  },
+  "queryUnitStatus": "VERIFIED within stated fixture boundaries",
+  "P10Status": "IN PROGRESS",
+  "predictiveMetricQualified": false,
+  "UIGatesChanged": false
+}

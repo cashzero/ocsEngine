@@ -17,6 +17,7 @@ export const runBotMatch = async (options: BotMatchOptions): Promise<BotMatchRes
     ...(options.stepBudget === undefined ? {} : { stepBudget: options.stepBudget }),
     ...(options.retries === undefined ? {} : { retries: options.retries }),
     ...(options.onDecision === undefined ? {} : { onDecision: options.onDecision }),
+    ...(options.observation === undefined ? {} : { observation: options.observation }),
   });
   const stop = (stopReason: BotMatchResult['stopReason']): BotMatchResult => {
     const { accepted, rejected, errors, actionCounts, actionCountsBySeat, decideMs, dispatchMs } = runner.totals();

@@ -1,0 +1,14 @@
+{
+  "baseCommit": "1ab0554",
+  "scope": "Working source bytes measured before this observation implementation commit",
+  "sha256": {
+    "src/ai/access.ts": "2b41d364bef02130370bf421a2fab490b58fc2e5ad8cdf595dea6a9957add2e6",
+    "src/ai/model.ts": "d39cad6d1d01557aa4a76eb01a9c4d4c763cb3ad0d6b667487760d0458ad7e26",
+    "src/ai/observation.ts": "4d19e8e6571c5935d42cc53f13b3557298bb19cd4a869518c627adcf77dc6913",
+    "src/ai/seat-runner.ts": "a4a8f4cbcd66290baddfc1d181f1034226d00de0275c7c85aa3245387fb2c06b",
+    "src/ai/driver.ts": "8fd6cb2f223f806bacca6b3883eed3c3826e245eef86027ee97a2a529fbe5a0c",
+    "scripts/ai-match.mjs": "bfb1c5c2dc52f064bf44e071bfad67bf21b17700d67099097b68dcc1fdfa2eb6",
+    "scripts/ai-observation-study.mjs": "139b4b714290b07ccc9ac845bd7cf5cfd5e03ffe991ccebcb5de97958e4cd1ab",
+    "tests/ai/decision-observation.test.ts": "0cc406344d4f00a74a174c4e2419ec2fe93d7fc2f48bea47dea480061cf8bb1b"
+  }
+}

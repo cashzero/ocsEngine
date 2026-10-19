@@ -10,11 +10,12 @@
 //
 // Every match varies the map, OOB, deployment and rules seeds from the match index; --fix-map / --fix-oob hold one
 // dimension fixed. Exit code 1 when any match stops for a reason other than FINISHED or fails the replay check.
-import { appendFileSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { appendFileSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { availableParallelism } from 'node:os';
 import { join, resolve } from 'node:path';
 import { pathToFileURL, fileURLToPath } from 'node:url';
 import { Worker, isMainThread, parentPort, workerData } from 'node:worker_threads';
+import { createHash, randomUUID } from 'node:crypto';
 
 const root = resolve(fileURLToPath(new URL('..', import.meta.url)));
 
@@ -23,7 +24,7 @@ const parseArgs = (argv) => {
     matches: 10, start: 0, parallel: Math.max(1, Math.min(4, availableParallelism() - 1)), turns: 8,
     width: null, height: null, scale: null, style: null, engagement: null, divisions: null, armored: null, air: null, airTransport: null,
     fixMap: null, fixOob: null, policies: { allied: 'random-legal', axis: 'random-legal' },
-    maxActions: 60_000, replay: true, trace: false, out: null, swap: false, railCap: null, sea: null, seaCap: null, inlandEntry: null,
+    maxActions: 60_000, replay: true, trace: false, observeDecisions: false, out: null, swap: false, railCap: null, sea: null, seaCap: null, inlandEntry: null,
   };
   for (let index = 0; index < argv.length; index += 1) {
     const flag = argv[index];
@@ -53,6 +54,7 @@ const parseArgs = (argv) => {
       case '--swap': options.swap = true; break;
       case '--no-replay': options.replay = false; break;
       case '--trace': options.trace = true; break;
+      case '--observe-decisions': options.observeDecisions = true; break;
       case '--debug': options.debug = true; break;
       case '--out': options.out = value(); break;
       case '--help': console.log('see the header of scripts/ai-match.mjs'); process.exit(0);
@@ -136,9 +138,49 @@ const runMatch = async (baseOptions, matchIndex) => {
   });
   const startObjectives = session.getView(seats[0].seatId).projection.objectives;
   const tracePath = options.trace ? join(options.out, `match-${matchIndex}.trace.jsonl`) : null;
+  const observationPath = options.observeDecisions ? join(options.out, `match-${matchIndex}.observations.jsonl`) : null;
+  const manifestPath = options.observeDecisions ? join(options.out, `match-${matchIndex}.observation-manifest.json`) : null;
+  const digestFile = file => createHash('sha256').update(readFileSync(file)).digest('hex');
+  const digestBuild = directory => {
+    const hash = createHash('sha256');
+    for (const file of readdirSync(directory, { recursive: true }).filter(file => file.endsWith('.js')).sort()) {
+      hash.update(file).update('\0').update(digestFile(join(directory, file))).update('\0');
+    }
+    return hash.digest('hex');
+  };
+  const observationManifest = observationPath ? {
+    schemaVersion: 1, runId: randomUUID(), coverage: 'QUERY_ONLY', complete: false,
+    initialStateHash: String(session.getMetadata().stateHash), match: matchIndex, options, seeds,
+    policyInputs: Object.fromEntries(Object.values(options.policies).map(id => [id,
+      id.startsWith('heuristic:') ? { weightsSha256: digestFile(resolve(root, id.slice('heuristic:'.length))) }
+        : id.startsWith('heuristic@') ? { buildSha256: digestBuild(resolve(root, id.slice('heuristic@'.length))) }
+          : { policySha256: digestFile(join(root, 'dist/ai/policies', `${id}.js`)) }])),
+    engineBuildSha256: digestBuild(join(root, 'dist')),
+    observerBuildHashes: Object.fromEntries(['access', 'observation', 'seat-runner', 'driver'].map(name => [name,
+      digestFile(join(root, 'dist/ai', `${name}.js`))])),
+    decisions: 0, writtenDecisions: 0, error: null,
+  } : null;
+  const recordObservationError = error => {
+    observationManifest.complete = false;
+    observationManifest.error ??= error instanceof Error ? error.message : String(error);
+  };
+  if (observationManifest) {
+    try {
+      writeFileSync(observationPath, '');
+      writeFileSync(manifestPath, `${JSON.stringify(observationManifest, null, 2)}\n`);
+    } catch (error) { recordObservationError(error); }
+  }
   const result = await m.runBotMatch({
     session, seats, maxActions: options.maxActions,
     ...(tracePath ? { onDecision: (trace) => appendFileSync(tracePath, `${JSON.stringify(trace)}\n`) } : {}),
+    ...(observationManifest ? { observation: { runId: observationManifest.runId, onDecision: observation => {
+      observationManifest.decisions += 1;
+      if (observationManifest.error !== null) return;
+      try {
+        appendFileSync(observationPath, `${JSON.stringify(observation)}\n`);
+        observationManifest.writtenDecisions += 1;
+      } catch (error) { recordObservationError(error); }
+    } } } : {}),
   });
   const t2 = performance.now();
   const view = session.getView(seats[0].seatId);
@@ -159,6 +201,13 @@ const runMatch = async (baseOptions, matchIndex) => {
     } catch (error) {
       replay = { ok: false, ms: Math.round(performance.now() - t3), error: error instanceof Error ? error.message : String(error) };
     }
+  }
+  if (observationManifest) {
+    observationManifest.complete = observationManifest.error === null && result.stopReason === 'FINISHED' && replay?.ok !== false;
+    observationManifest.stopReason = result.stopReason;
+    observationManifest.finalStateHash = String(session.getMetadata().stateHash);
+    try { writeFileSync(manifestPath, `${JSON.stringify(observationManifest, null, 2)}\n`); }
+    catch (error) { recordObservationError(error); }
   }
   // Logistics: replay the game and count SP each side spent straight out of a truck's cargo (12.3: cargo is
   // drawn like a dump), which with unloads shows SP hauled to where the army used it.
@@ -219,6 +268,7 @@ const runMatch = async (baseOptions, matchIndex) => {
     reached: projection ? { gameTurn: projection.sequence.gameTurn, phase: projection.sequence.phase } : null,
     victory: projection?.victory ?? null,
     replay,
+    ...(observationManifest ? { observation: observationManifest } : {}),
     summary: prepared.value.summary,
     timings: {
       createMs: Math.round(t1 - t0), playMs: Math.round(t2 - t1),
@@ -229,7 +279,7 @@ const runMatch = async (baseOptions, matchIndex) => {
 };
 
 const markdown = (options, records, elapsedMs) => {
-  const failed = records.filter((r) => r.stopReason !== 'FINISHED' || r.replay?.ok === false);
+  const failed = records.filter((r) => r.stopReason !== 'FINISHED' || r.replay?.ok === false || r.observation?.complete === false);
   // Results by policy across both seats.
   const byPolicy = {};
   for (const r of records) {
@@ -300,7 +350,7 @@ if (isMainThread) {
   const elapsedMs = performance.now() - started;
   writeFileSync(join(options.out, 'summary.json'), `${JSON.stringify({ options, elapsedMs, records }, null, 2)}\n`);
   writeFileSync(join(options.out, 'summary.md'), markdown(options, records, elapsedMs));
-  const failed = records.filter((r) => r.stopReason !== 'FINISHED' || r.replay?.ok === false);
+  const failed = records.filter((r) => r.stopReason !== 'FINISHED' || r.replay?.ok === false || r.observation?.complete === false);
   console.log(`\n${records.length} matches in ${(elapsedMs / 1000).toFixed(1)} s; ${failed.length} failed. Report: ${join(options.out, 'summary.md')}`);
   process.exit(failed.length > 0 ? 1 : 0);
 } else {

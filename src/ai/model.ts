@@ -1,12 +1,13 @@
 import type { HexId, PieceId, PlayerId } from '../core/index.js';
 import type {
   DispatchStatus,
+  DispatchRequestId,
   DraftValidation,
   GameplayView,
   GameSession,
   SeatId,
 } from '../gameplay/index.js';
-import type { ActionFamily, FeedSource, GameAction, ReachableHex, TraceCoverage } from '../rules/index.js';
+import type { ActionFamily, CandidateResult, FeedSource, GameAction, ReachableHex, TraceCoverage } from '../rules/index.js';
 
 export type BotPolicyId = string;
 
@@ -120,6 +121,57 @@ export interface BotDecisionTrace {
   readonly dispatchMs: number;
 }
 
+export type BotObservedCandidateId = `candidate:${number}`;
+export type BotObservedQueryId = `query:${number}`;
+
+export interface BotDecisionObservation {
+  readonly schemaVersion: 1;
+  readonly runId: string;
+  readonly decisionOrdinal: number;
+  readonly seatId: SeatId;
+  readonly playerId: PlayerId;
+  readonly revision: number;
+  readonly stateHash: string;
+  readonly stepKey: string;
+  readonly policy: string;
+  readonly coverage: 'QUERY_ONLY';
+  readonly candidates: readonly {
+    readonly id: BotObservedCandidateId;
+    readonly action: GameAction;
+    readonly policyEvaluation: 'NOT_INSTRUMENTED';
+  }[];
+  readonly queries: readonly {
+    readonly id: BotObservedQueryId;
+    readonly kind: GameAction['kind'];
+    readonly pieceId: PieceId | null;
+    readonly budget: number;
+    readonly truncated: boolean;
+    readonly reasons: CandidateResult['reasons'];
+    readonly candidates: readonly BotObservedCandidateId[];
+  }[];
+  readonly queryCalls: readonly { readonly queryId: BotObservedQueryId; readonly cacheHit: boolean }[];
+  readonly choice: null | {
+    readonly candidateId: BotObservedCandidateId;
+    readonly intent: string;
+    readonly score: number;
+    readonly breakdown: readonly BotScoreTerm[];
+    readonly alternatives: readonly BotObservedCandidateId[];
+  };
+  readonly attempts: readonly {
+    readonly candidateId: BotObservedCandidateId;
+    readonly requestId: DispatchRequestId;
+    readonly status: DispatchStatus;
+    readonly violations: readonly string[];
+    readonly revision: number;
+  }[];
+}
+
+export interface BotObservationOptions {
+  readonly runId: string;
+  /** Receives detached data after runner bookkeeping, including decisions with no choice. */
+  readonly onDecision: (observation: BotDecisionObservation) => void;
+}
+
 export interface BotMatchOptions {
   readonly session: GameSession;
   readonly seats: readonly BotSeat[];
@@ -130,6 +182,7 @@ export interface BotMatchOptions {
   /** Rejected choices retried from the decision's alternatives before the match stops. */
   readonly retries?: number;
   readonly onDecision?: (trace: BotDecisionTrace) => void;
+  readonly observation?: BotObservationOptions;
 }
 
 export type BotMatchStopReason =

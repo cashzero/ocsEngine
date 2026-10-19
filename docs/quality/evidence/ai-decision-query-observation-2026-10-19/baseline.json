@@ -1,0 +1,10 @@
+{
+  "baseCommit": "1ab0554",
+  "buildCommand": "npm run build",
+  "sourceHashes": {
+    "src/ai/model.ts": "0aeaf590e5e4e0bfa922b9f3daa0f8ef23b5f417f78e981b318545db4034d521",
+    "src/ai/access.ts": "c693d40157ff2e5784c893e8f673d03b36a1aadc9cb53517fe90ff855c45593b",
+    "src/ai/seat-runner.ts": "8641e64f675b1d7e03099d8946bda42d66e9d817c0c47f8588d6e3b9091d05b8",
+    "src/ai/policies/heuristic.ts": "84710117e3106750bec4ae6a0214a33b47442afc5d106226953d9128425ebbdc"
+  }
+}

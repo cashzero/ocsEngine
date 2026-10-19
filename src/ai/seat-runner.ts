@@ -1,7 +1,8 @@
 import { parseDispatchRequestId, type DispatchRequestId, type GameplayView, type GameSession } from '../gameplay/index.js';
 import type { GameAction } from '../rules/index.js';
 import { createBotActionAccess } from './access.js';
-import type { BotDecisionTrace, BotError, BotErrorCode, BotPhaseMemory, BotSeat } from './model.js';
+import type { BotDecisionTrace, BotError, BotErrorCode, BotObservationOptions, BotPhaseMemory, BotSeat } from './model.js';
+import { createDecisionObservation } from './observation.js';
 import { createBotRng } from './rng.js';
 
 const now = (): number => globalThis.performance?.now() ?? Date.now();
@@ -48,6 +49,7 @@ export interface BotSeatRunnerOptions {
    */
   readonly nonce?: string;
   readonly onDecision?: (trace: BotDecisionTrace) => void;
+  readonly observation?: BotObservationOptions;
 }
 
 /** What one `step()` did. */
@@ -105,6 +107,7 @@ export const createBotSeatRunner = (options: BotSeatRunnerOptions): BotSeatRunne
   let ordinal = 0;
   let lastRevision = -1;
   let decisionsAtRevision = 0;
+  let observationOrdinal = 0;
 
   const requestId = (seat: BotSeat): DispatchRequestId => {
     const parsed = parseDispatchRequestId(`bot:${seat.seatId}:${nonce}${ordinal}`);
@@ -155,14 +158,23 @@ export const createBotSeatRunner = (options: BotSeatRunnerOptions): BotSeatRunne
     lastRevision = revision;
 
     const decideStart = now();
+    const observation = options.observation === undefined ? undefined : createDecisionObservation({
+      runId: options.observation.runId, decisionOrdinal: observationOrdinal++,
+      seatId: seat.seatId, playerId: seat.playerId, revision, stateHash: String(view.metadata.stateHash),
+      stepKey, policy: `${seat.policy.id}@${seat.policy.version}`,
+    });
     const decision = seat.policy.decide({
       seatId: seat.seatId, playerId: seat.playerId, view, memory,
-      actions: createBotActionAccess(session, seat.seatId),
+      actions: createBotActionAccess(session, seat.seatId, observation?.query),
       rng: createBotRng(seat.seed, String(view.metadata.stateHash), decisionsAtRevision),
     });
     const decideTime = now() - decideStart;
     decideMs += decideTime;
-    if (decision === null) return fail('BOT_STALLED', 'The policy found no legal action.', seat, stepKey, null);
+    if (decision === null) {
+      const result = fail('BOT_STALLED', 'The policy found no legal action.', seat, stepKey, null);
+      if (observation) options.observation?.onDecision(observation.finish(null));
+      return result;
+    }
 
     const attempts = [decision.action, ...decision.alternatives.slice(0, retries)];
     let status: 'ACCEPTED' | 'REJECTED' | 'DUPLICATE' | 'FATAL' = 'REJECTED';
@@ -176,6 +188,8 @@ export const createBotSeatRunner = (options: BotSeatRunnerOptions): BotSeatRunne
       chosen = action;
       const dispatchStart = now();
       const result = await session.dispatch({ requestId: requestId(seat), seatId: seat.seatId, action });
+      observation?.attempt(action, { requestId: result.requestId, status: result.status,
+        violations: result.violations.map(({ code }) => code), revision: Number(result.revision) });
       ordinal += 1;
       dispatchTime += now() - dispatchStart;
       status = result.status;
@@ -191,10 +205,19 @@ export const createBotSeatRunner = (options: BotSeatRunnerOptions): BotSeatRunne
       kind: view.pendingDecision !== null ? 'DECISION' : 'ACTION', action: chosen, intent: decision.intent,
       score: decision.score, breakdown: decision.breakdown, status, attempts: used, rejections, decideMs: decideTime, dispatchMs: dispatchTime,
     };
+    const publish = (): void => {
+      if (observation) options.observation?.onDecision(observation.finish(decision));
+    };
     options.onDecision?.(trace);
-    if (status === 'FATAL') return fail('FATAL', 'The session faulted on a bot action.', seat, stepKey, chosen, violations);
+    if (status === 'FATAL') {
+      const result = fail('FATAL', 'The session faulted on a bot action.', seat, stepKey, chosen, violations);
+      publish();
+      return result;
+    }
     if (status !== 'ACCEPTED') {
-      return fail('FAILED_ACTION', `The session rejected ${used} legal-looking action(s).`, seat, stepKey, chosen, violations);
+      const result = fail('FAILED_ACTION', `The session rejected ${used} legal-looking action(s).`, seat, stepKey, chosen, violations);
+      publish();
+      return result;
     }
     if (used > 1) errors.push({
       code: 'FAILED_ACTION', message: `Accepted only after ${used - 1} rejection(s).`, seatId: seat.seatId,
@@ -205,6 +228,7 @@ export const createBotSeatRunner = (options: BotSeatRunnerOptions): BotSeatRunne
     actionCounts[chosen.kind] = (actionCounts[chosen.kind] ?? 0) + 1;
     const seatCounts = actionCountsBySeat[seat.seatId] ??= {};
     seatCounts[chosen.kind] = (seatCounts[chosen.kind] ?? 0) + 1;
+    publish();
     return { kind: 'ACTED', trace };
   };
 

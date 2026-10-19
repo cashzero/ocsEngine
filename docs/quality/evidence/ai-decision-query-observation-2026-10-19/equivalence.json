@@ -1,0 +1,38 @@
+{
+  "scope": "Two deterministic fixtures, frozen baseline and observation off/on; no VP improvement claim",
+  "actions": 129,
+  "decisions": 129,
+  "accessCalls": 1594,
+  "rngCalls": 0,
+  "observations": 129,
+  "initialStateHash": "sha256:6777aade0cd491167edcc46149e8c4e93a43de51fb6ea44931d5f932af6eb26f",
+  "finalStateHash": "sha256:cf70e6cd75c5ec927997566ad86c61d771ae43936113c89d55a0e1457dcd7b3e",
+  "queryGenerations": 448,
+  "queryCacheHits": 158,
+  "candidateIdentities": 15900,
+  "positiveRngControl": {
+    "policy": "random-legal",
+    "actions": 33,
+    "rngCalls": 443,
+    "observations": 33,
+    "finalStateHash": "sha256:11960f29b6ea95772cf7cd87f8c24bd49cbd013c94e5f022e96033889ec22a2a"
+  },
+  "equality": [
+    "policy choices",
+    "phase memory before and after every decision",
+    "access calls and result hashes",
+    "RNG calls and result hashes",
+    "dispatch actions, statuses, events and violations",
+    "per-action state hashes",
+    "accepted action log",
+    "save/load final state"
+  ],
+  "hashes": {
+    "baseline": "d0eba7e693f7e1e23ca0a53885423f016187b6309d5d8ba9f558f05960f6dff5",
+    "disabled": "d0eba7e693f7e1e23ca0a53885423f016187b6309d5d8ba9f558f05960f6dff5",
+    "enabled": "5ee8af02e4a5de356a586e507451c743bff62a3de8aec8e3f1b6af8254b434bc",
+    "random-baseline": "88a28a8a3e4a509fc8de10803c3a743992f346264c1acbd8a929d926b15300fd",
+    "random-disabled": "88a28a8a3e4a509fc8de10803c3a743992f346264c1acbd8a929d926b15300fd",
+    "random-enabled": "c65078a18975e8b50753011ee87aa2b94488f373812420f90ce852f034003da6"
+  }
+}

@@ -1,0 +1,310 @@
+[
+  {
+    "name": "cli-final",
+    "commandExitCode": 0,
+    "stopReason": "FINISHED",
+    "acceptedActions": 100,
+    "replay": {
+      "ok": true,
+      "ms": 463
+    },
+    "finalStateHash": "sha256:eee80a984fdb7089a17fb2b87b31e0d13041f58b142ff0d377e712671157199e",
+    "manifestInSummary": {
+      "schemaVersion": 1,
+      "runId": "93117bde-7279-418a-95e1-b0b26a6144fe",
+      "coverage": "QUERY_ONLY",
+      "complete": true,
+      "initialStateHash": "sha256:8a7df87817f35f9f469c4fde2b3f0edd7e0515598a3d86440cee6d25120cc19d",
+      "match": 0,
+      "options": {
+        "matches": 1,
+        "start": 0,
+        "parallel": 1,
+        "turns": 2,
+        "width": null,
+        "height": null,
+        "scale": null,
+        "style": null,
+        "engagement": "ALLIED_ATTACKS",
+        "divisions": 2,
+        "armored": 1,
+        "air": null,
+        "airTransport": null,
+        "fixMap": null,
+        "fixOob": null,
+        "policies": {
+          "allied": "heuristic",
+          "axis": "heuristic"
+        },
+        "maxActions": 60000,
+        "replay": true,
+        "trace": false,
+        "observeDecisions": true,
+        "out": "artifacts/ai-decision-observability-study/cli-final",
+        "swap": false,
+        "railCap": null,
+        "sea": null,
+        "seaCap": null,
+        "inlandEntry": null
+      },
+      "seeds": {
+        "map": 169541633,
+        "oob": 169541634,
+        "deployment": 169541635,
+        "rules": 169541636,
+        "allied": 169541637,
+        "axis": 169541638
+      },
+      "policyInputs": {
+        "heuristic": {
+          "policySha256": "c1b12c0542461451cdc400092fad2e903e0501bfa61259f7d18748d8a552d255"
+        }
+      },
+      "engineBuildSha256": "57f4669cfbbac073e6c16dc03000328bd96e954cfa8bfc7c49d2ceed109dcfac",
+      "observerBuildHashes": {
+        "access": "806cf1245f60e0241571754f2de29f1426bb39762a8441d4720b46dd99c5db48",
+        "observation": "88770e3628dcefa7ba62c8e0e0fd0f6105ffe04cf23a736268600bd7fdf7cacd",
+        "seat-runner": "2669620ff3dcf178c4128b01d7645521f83e5efe9f2c3fe55c8eb54ebd954a1e",
+        "driver": "0e31ae51a980380c61ac16dac339eb36fd90b31477b8b2ad6e214391623709ad"
+      },
+      "decisions": 100,
+      "writtenDecisions": 100,
+      "error": null,
+      "stopReason": "FINISHED",
+      "finalStateHash": "sha256:eee80a984fdb7089a17fb2b87b31e0d13041f58b142ff0d377e712671157199e"
+    },
+    "manifestFileComplete": true,
+    "saveSha256": "d66e146787e83bd96082ce6bb67d5e8a23462d8afae9075505c8598401fc4772"
+  },
+  {
+    "name": "cli-write-failure",
+    "commandExitCode": 1,
+    "stopReason": "FINISHED",
+    "acceptedActions": 37,
+    "replay": {
+      "ok": true,
+      "ms": 164
+    },
+    "finalStateHash": "sha256:9aeb7fc76b47b2335dce36d3e6767460f10ee7c469af209f8b63c145b0612caa",
+    "manifestInSummary": {
+      "schemaVersion": 1,
+      "runId": "c9efa42b-9afa-4abf-83bc-faeabb12b03b",
+      "coverage": "QUERY_ONLY",
+      "complete": false,
+      "initialStateHash": "sha256:739e6a2f3675c1d8b77c5d1934d0dc86641bac910adfceae2291adee131b182b",
+      "match": 0,
+      "options": {
+        "matches": 1,
+        "start": 0,
+        "parallel": 1,
+        "turns": 1,
+        "width": null,
+        "height": null,
+        "scale": null,
+        "style": null,
+        "engagement": null,
+        "divisions": 1,
+        "armored": 0,
+        "air": null,
+        "airTransport": null,
+        "fixMap": null,
+        "fixOob": null,
+        "policies": {
+          "allied": "heuristic",
+          "axis": "heuristic"
+        },
+        "maxActions": 60000,
+        "replay": true,
+        "trace": false,
+        "observeDecisions": true,
+        "out": "artifacts/ai-decision-observability-study/cli-write-failure",
+        "swap": false,
+        "railCap": null,
+        "sea": null,
+        "seaCap": null,
+        "inlandEntry": null
+      },
+      "seeds": {
+        "map": 169541633,
+        "oob": 169541634,
+        "deployment": 169541635,
+        "rules": 169541636,
+        "allied": 169541637,
+        "axis": 169541638
+      },
+      "policyInputs": {
+        "heuristic": {
+          "policySha256": "c1b12c0542461451cdc400092fad2e903e0501bfa61259f7d18748d8a552d255"
+        }
+      },
+      "engineBuildSha256": "57f4669cfbbac073e6c16dc03000328bd96e954cfa8bfc7c49d2ceed109dcfac",
+      "observerBuildHashes": {
+        "access": "806cf1245f60e0241571754f2de29f1426bb39762a8441d4720b46dd99c5db48",
+        "observation": "88770e3628dcefa7ba62c8e0e0fd0f6105ffe04cf23a736268600bd7fdf7cacd",
+        "seat-runner": "2669620ff3dcf178c4128b01d7645521f83e5efe9f2c3fe55c8eb54ebd954a1e",
+        "driver": "0e31ae51a980380c61ac16dac339eb36fd90b31477b8b2ad6e214391623709ad"
+      },
+      "decisions": 37,
+      "writtenDecisions": 0,
+      "error": "ENOSPC: no space left on device, write",
+      "stopReason": "FINISHED",
+      "finalStateHash": "sha256:9aeb7fc76b47b2335dce36d3e6767460f10ee7c469af209f8b63c145b0612caa"
+    },
+    "manifestFileComplete": false,
+    "saveSha256": "a45a17d817a3f14f19a1b7347ca0484400c9c65b3644eea35e63d326496c3f96"
+  },
+  {
+    "name": "cli-init-failure",
+    "commandExitCode": 1,
+    "stopReason": "FINISHED",
+    "acceptedActions": 37,
+    "replay": {
+      "ok": true,
+      "ms": 166
+    },
+    "finalStateHash": "sha256:9aeb7fc76b47b2335dce36d3e6767460f10ee7c469af209f8b63c145b0612caa",
+    "manifestInSummary": {
+      "schemaVersion": 1,
+      "runId": "e916ddea-708a-417b-b974-1a9cd7590829",
+      "coverage": "QUERY_ONLY",
+      "complete": false,
+      "initialStateHash": "sha256:739e6a2f3675c1d8b77c5d1934d0dc86641bac910adfceae2291adee131b182b",
+      "match": 0,
+      "options": {
+        "matches": 1,
+        "start": 0,
+        "parallel": 1,
+        "turns": 1,
+        "width": null,
+        "height": null,
+        "scale": null,
+        "style": null,
+        "engagement": null,
+        "divisions": 1,
+        "armored": 0,
+        "air": null,
+        "airTransport": null,
+        "fixMap": null,
+        "fixOob": null,
+        "policies": {
+          "allied": "heuristic",
+          "axis": "heuristic"
+        },
+        "maxActions": 60000,
+        "replay": true,
+        "trace": false,
+        "observeDecisions": true,
+        "out": "artifacts/ai-decision-observability-study/cli-init-failure",
+        "swap": false,
+        "railCap": null,
+        "sea": null,
+        "seaCap": null,
+        "inlandEntry": null
+      },
+      "seeds": {
+        "map": 169541633,
+        "oob": 169541634,
+        "deployment": 169541635,
+        "rules": 169541636,
+        "allied": 169541637,
+        "axis": 169541638
+      },
+      "policyInputs": {
+        "heuristic": {
+          "policySha256": "c1b12c0542461451cdc400092fad2e903e0501bfa61259f7d18748d8a552d255"
+        }
+      },
+      "engineBuildSha256": "57f4669cfbbac073e6c16dc03000328bd96e954cfa8bfc7c49d2ceed109dcfac",
+      "observerBuildHashes": {
+        "access": "806cf1245f60e0241571754f2de29f1426bb39762a8441d4720b46dd99c5db48",
+        "observation": "88770e3628dcefa7ba62c8e0e0fd0f6105ffe04cf23a736268600bd7fdf7cacd",
+        "seat-runner": "2669620ff3dcf178c4128b01d7645521f83e5efe9f2c3fe55c8eb54ebd954a1e",
+        "driver": "0e31ae51a980380c61ac16dac339eb36fd90b31477b8b2ad6e214391623709ad"
+      },
+      "decisions": 37,
+      "writtenDecisions": 0,
+      "error": "EISDIR: illegal operation on a directory, open 'artifacts/ai-decision-observability-study/cli-init-failure/match-0.observations.jsonl'",
+      "stopReason": "FINISHED",
+      "finalStateHash": "sha256:9aeb7fc76b47b2335dce36d3e6767460f10ee7c469af209f8b63c145b0612caa"
+    },
+    "manifestFileComplete": false,
+    "saveSha256": "a45a17d817a3f14f19a1b7347ca0484400c9c65b3644eea35e63d326496c3f96"
+  },
+  {
+    "name": "cli-final-manifest-failure",
+    "commandExitCode": 1,
+    "stopReason": "FINISHED",
+    "acceptedActions": 132,
+    "replay": {
+      "ok": true,
+      "ms": 342
+    },
+    "finalStateHash": "sha256:4ba86d567c228509536bdd8ccb738a7d504bc1826c85ebbe41d3e2baced464af",
+    "manifestInSummary": {
+      "schemaVersion": 1,
+      "runId": "dbed7058-18dd-42db-b6c0-f01275209ed4",
+      "coverage": "QUERY_ONLY",
+      "complete": false,
+      "initialStateHash": "sha256:9ad69b8f94f224c9a462182f54dc6a3becbc38ceba087486958a158a879a2a6d",
+      "match": 0,
+      "options": {
+        "matches": 1,
+        "start": 0,
+        "parallel": 1,
+        "turns": 2,
+        "width": null,
+        "height": null,
+        "scale": null,
+        "style": null,
+        "engagement": null,
+        "divisions": 2,
+        "armored": 1,
+        "air": null,
+        "airTransport": null,
+        "fixMap": null,
+        "fixOob": null,
+        "policies": {
+          "allied": "heuristic",
+          "axis": "heuristic"
+        },
+        "maxActions": 60000,
+        "replay": true,
+        "trace": false,
+        "observeDecisions": true,
+        "out": "artifacts/ai-decision-observability-study/cli-final-manifest-failure",
+        "swap": false,
+        "railCap": null,
+        "sea": null,
+        "seaCap": null,
+        "inlandEntry": null
+      },
+      "seeds": {
+        "map": 169541633,
+        "oob": 169541634,
+        "deployment": 169541635,
+        "rules": 169541636,
+        "allied": 169541637,
+        "axis": 169541638
+      },
+      "policyInputs": {
+        "heuristic": {
+          "policySha256": "c1b12c0542461451cdc400092fad2e903e0501bfa61259f7d18748d8a552d255"
+        }
+      },
+      "engineBuildSha256": "57f4669cfbbac073e6c16dc03000328bd96e954cfa8bfc7c49d2ceed109dcfac",
+      "observerBuildHashes": {
+        "access": "806cf1245f60e0241571754f2de29f1426bb39762a8441d4720b46dd99c5db48",
+        "observation": "88770e3628dcefa7ba62c8e0e0fd0f6105ffe04cf23a736268600bd7fdf7cacd",
+        "seat-runner": "2669620ff3dcf178c4128b01d7645521f83e5efe9f2c3fe55c8eb54ebd954a1e",
+        "driver": "0e31ae51a980380c61ac16dac339eb36fd90b31477b8b2ad6e214391623709ad"
+      },
+      "decisions": 132,
+      "writtenDecisions": 132,
+      "error": "EACCES: permission denied, open 'artifacts/ai-decision-observability-study/cli-final-manifest-failure/match-0.observation-manifest.json'",
+      "stopReason": "FINISHED",
+      "finalStateHash": "sha256:4ba86d567c228509536bdd8ccb738a7d504bc1826c85ebbe41d3e2baced464af"
+    },
+    "manifestFileComplete": false,
+    "saveSha256": "2fe28f9a9a5fa14358086e665025d04c38e6718999ba3aae713492ab40dc2b87"
+  }
+]
