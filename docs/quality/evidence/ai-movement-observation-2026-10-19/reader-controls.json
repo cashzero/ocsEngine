@@ -1,0 +1,14 @@
+[
+  {
+    "control": "hash-mismatch",
+    "exitCode": 1,
+    "expectedFailure": "Input is not bound to the supplied equivalence summary",
+    "failureObserved": true
+  },
+  {
+    "control": "score-mismatch",
+    "exitCode": 1,
+    "expectedFailure": "Retained score does not reconcile",
+    "failureObserved": true
+  }
+]

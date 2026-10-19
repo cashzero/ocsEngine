@@ -1,0 +1,56 @@
+{
+  "cwd": "/home/cashlin/ocsEngine/artifacts/ai-movement-observation-study/worktree",
+  "commands": [
+    {
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "output": "typecheck.log",
+      "outputSha256": "d276a607924b69f3bf75479c9ff0bd362e2bc5a9c0047d63a951c8e899b4eb98"
+    },
+    {
+      "command": "npm run build",
+      "exitCode": 0,
+      "output": "build.log",
+      "outputSha256": "16e75c52f3437e8d781ab86a62fdbacea190d911e9bd3c0183117762ad23ee6a"
+    },
+    {
+      "command": "npx vitest run tests/ai/movement-observation.test.ts tests/ai/decision-observation.test.ts",
+      "exitCode": 0,
+      "output": "focused-tests.log",
+      "outputSha256": "b7dc9d0cb8b68cdb75f76380bccbb3ebcd95c3f52814a118c21a83598b7dcbbb"
+    },
+    {
+      "command": "node scripts/ai-observation-study.mjs --engine dist --baseline /home/cashlin/ocsEngine/artifacts/ai-movement-observation-study/baseline-dist --out /home/cashlin/ocsEngine/artifacts/ai-movement-observation-study/reproduced/equivalence",
+      "exitCode": 0,
+      "output": "study.log",
+      "outputSha256": "90ff35728f9b9490b8215719d72e59f1b98b9099a4a12f44dc1126d50ccd0e29"
+    },
+    {
+      "command": "node scripts/ai-match.mjs --matches 1 --parallel 1 --turns 1 --divisions 1 --armored 0 --engagement ALLIED_ATTACKS --allied heuristic --axis heuristic --observe-decisions --out /home/cashlin/ocsEngine/artifacts/ai-movement-observation-study/reproduced/cli",
+      "exitCode": 0,
+      "output": "cli.log",
+      "outputSha256": "b8a47797e71f8d209f94cff95c4106f6c0ed5b6b12c68fbabe9e5911d6488061"
+    }
+  ],
+  "artifactIntegrity": {
+    "boundPayloads": 11,
+    "matchingSourceFiles": 7,
+    "sourceSetSha256": "b2a4ecd365746560ad58b9888b232e9c4bf8aca6568c22ccaa0a20e7ff7cec89",
+    "gitDiffCheckExitCode": 0
+  },
+  "cli": {
+    "decisions": 30,
+    "reportSchemaVersions": [
+      1,
+      2
+    ],
+    "coverages": [
+      "QUERY_ONLY",
+      "QUERY_AND_MOVEMENT"
+    ],
+    "complete": true,
+    "stopReason": "FINISHED",
+    "manifestSha256": "98fd5a7db5d207d7e4694a4d6e3e751bb84167cd0dff76d50abcda864b15d209",
+    "observationsSha256": "1b87675a1f7fd18c2e88dad828f8e65aefad0ee46511a16eba2c7811ce88fda5"
+  }
+}

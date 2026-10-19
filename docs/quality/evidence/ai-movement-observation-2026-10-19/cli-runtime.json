@@ -1,0 +1,19 @@
+{
+  "sourceSha256": "a9313f25dfa00b9bc81503b56cd8b612af3f973d67a20baa0bb0c4e2a307805a",
+  "wallMs": 1758.362938,
+  "timings": {
+    "createMs": 354,
+    "playMs": 980,
+    "decideMs": 549,
+    "dispatchMs": 209,
+    "perActionMs": 32.67
+  },
+  "errors": [],
+  "stopReason": "FINISHED",
+  "accepted": 30,
+  "replay": {
+    "ok": true,
+    "ms": 157
+  },
+  "finalStateHash": "sha256:5d0ef5ddb7d1c65f555b3c96cee974fd5140cdef42593c220f5bfce71f36ff61"
+}

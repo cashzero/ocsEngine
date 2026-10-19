@@ -166,6 +166,7 @@ export const createBotSeatRunner = (options: BotSeatRunnerOptions): BotSeatRunne
     const decision = seat.policy.decide({
       seatId: seat.seatId, playerId: seat.playerId, view, memory,
       actions: createBotActionAccess(session, seat.seatId, observation?.query),
+      ...(observation ? { observation: observation.policy } : {}),
       rng: createBotRng(seat.seed, String(view.metadata.stateHash), decisionsAtRevision),
     });
     const decideTime = now() - decideStart;

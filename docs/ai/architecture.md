@@ -104,7 +104,7 @@ dispatch 結果、嘗試次數與被拒的行動、決策與 dispatch 耗時。
 
 `createBotSeatRunner` 與 `runBotMatch` 可傳入 `observation: { runId, onDecision }`，另收集候選查詢與派送報告。觀測器只在啟用時建立，每個決策獨立持有資料；回呼收到與策略物件分離的報告。回呼在 runner 完成該行動的計數與記憶更新後執行，無選擇或派送失敗也會回報。回呼拋錯會向呼叫端傳遞，已接受行動不會撤回，呼叫端不能因此重送。同一 runner 的觀測序號在 reset 或還原後仍遞增；重建 runner 須另給 run ID。舊 `onDecision` trace 回呼的時序保持原樣。
 
-`ai-match.mjs --observe-decisions` 寫入每局的 `.observations.jsonl` 與 `.observation-manifest.json`，可與 `--trace` 分別啟用。manifest 綁定完整 JS 建置、使用的凍結策略建置或權重檔、種子、初始及終局 hash，並分列收到與寫入的筆數。只有 `complete: true` 才能視為完整對局觀測；中斷、未完成對局及觀測檔寫入失敗都保持不完整。若遊戲存檔目的地仍可寫，新增觀測輸出的初始化、逐筆寫入或結束寫入失敗會保留遊戲結果，並使 CLI 回報失敗；這項處理不涵蓋舊 trace 回呼的失敗。報告涵蓋範圍及研究限制由[決策閘門觀測契約](vp-metrics.md#決策閘門的觀測契約)維護。
+`ai-match.mjs --observe-decisions` 寫入每局的 `.observations.jsonl` 與 `.observation-manifest.json`，可與 `--trace` 分別啟用。manifest 版本 2 記錄實際出現的 report schema 版本與 coverage，允許同局混合版本 1 與 2。manifest 綁定完整 JS 建置、使用的凍結策略建置或權重檔、種子、初始及終局 hash，並分列收到與寫入的筆數。只有 `complete: true` 才能視為完整對局觀測；中斷、未完成對局及觀測檔寫入失敗都保持不完整。若遊戲存檔目的地仍可寫，新增觀測輸出的初始化、逐筆寫入或結束寫入失敗會保留遊戲結果，並使 CLI 回報失敗；這項處理不涵蓋舊 trace 回呼的失敗。報告涵蓋範圍及研究限制由[決策閘門觀測契約](vp-metrics.md#決策閘門的觀測契約)維護。
 
 ## 決策
 

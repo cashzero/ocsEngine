@@ -1,0 +1,74 @@
+{
+  "scope": "Three deterministic fixtures, frozen baseline and observation off/on, frozen-policy writer control; no VP improvement claim",
+  "actions": 129,
+  "decisions": 129,
+  "accessCalls": 1594,
+  "rngCalls": 0,
+  "observations": 129,
+  "initialStateHash": "sha256:6777aade0cd491167edcc46149e8c4e93a43de51fb6ea44931d5f932af6eb26f",
+  "finalStateHash": "sha256:cf70e6cd75c5ec927997566ad86c61d771ae43936113c89d55a0e1457dcd7b3e",
+  "queryGenerations": 448,
+  "queryCacheHits": 158,
+  "candidateIdentities": 15900,
+  "positiveRngControl": {
+    "policy": "random-legal",
+    "actions": 33,
+    "rngCalls": 443,
+    "observations": 33,
+    "finalStateHash": "sha256:11960f29b6ea95772cf7cd87f8c24bd49cbd013c94e5f022e96033889ec22a2a"
+  },
+  "movementCounts": {
+    "groups": 69,
+    "scoredCandidates": 13737,
+    "correctionApplied": 27,
+    "correctionRefused": 329,
+    "correctionBudget": 540,
+    "notEligible": 12841,
+    "supplyRefused": 39,
+    "notImproving": 10210,
+    "earlierSelected": 3430,
+    "selected": 58
+  },
+  "reportCoverageCounts": {
+    "QUERY_ONLY": 98,
+    "QUERY_AND_MOVEMENT": 61
+  },
+  "recordedMovement": {
+    "actions": 30,
+    "movementChoices": 20,
+    "moveQueries": 49,
+    "explanations": 121,
+    "finalStateHash": "sha256:0667514dad46b1d611921a2e96a618b842fbda047068e52b7637bae8f263c906"
+  },
+  "frozenPolicyControl": {
+    "observations": 129,
+    "coverage": "QUERY_ONLY"
+  },
+  "gaps": [
+    "Atomic predicate evaluation, other policy branches, target/control joins and causal VP prediction remain uninstrumented",
+    "Verification fixtures establish passivity and local payload integrity, not policy strength or full P10 closure"
+  ],
+  "equality": [
+    "policy choices",
+    "phase memory before and after every decision",
+    "access calls and result hashes",
+    "RNG calls and result hashes",
+    "dispatch actions, statuses, events and violations",
+    "per-action state hashes",
+    "accepted action log",
+    "save/load final state"
+  ],
+  "hashes": {
+    "baseline": "8e6fe3bde2b0d9c4a3ecfc33e4a5a3449c1ad74f98368cd76ed268a3f16b4996",
+    "disabled": "8e6fe3bde2b0d9c4a3ecfc33e4a5a3449c1ad74f98368cd76ed268a3f16b4996",
+    "enabled": "03d33dd54ec23518831d4c9b2582449a7995e3bf0ce306fb52c3e6a7bb12ed88",
+    "random-baseline": "779282dc71760ab58478b5e8cab9f894938f492dea1de417a915e043984a6cf6",
+    "random-disabled": "779282dc71760ab58478b5e8cab9f894938f492dea1de417a915e043984a6cf6",
+    "random-enabled": "00d8133ac57db8d7e3ae924b7609ccef49e1e8ff74d5ab0587d1e65fd030809a",
+    "frozen-policy-control": "f6c55c8e4e377eb7ee4b964e27a0ecbd74901eec78b2e72467c7632055d7b53c",
+    "recorded-baseline": "3f40fab28bb9ced657652140fd0bff33a85159d1b22b06a130cfef6121665e6c",
+    "recorded-disabled": "3f40fab28bb9ced657652140fd0bff33a85159d1b22b06a130cfef6121665e6c",
+    "recorded-enabled": "349287eaeaca5cb9d5a8c6cdd5d457b1eaa58e5cba6ae61d9d51e82d1c0f3c6c",
+    "provenance": "62e0710fea35c6e79d9c60f17a53aaf1f016dcb2bfe13a7b430f9928bb19c8c6"
+  }
+}

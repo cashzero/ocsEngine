@@ -1,0 +1,27 @@
+{
+  "command": [
+    "/home/cashlin/.local/opt/node-v26.9.0/bin/node",
+    "/home/cashlin/ocsEngine/artifacts/ai-movement-observation-study/worktree/scripts/ai-observation-study.mjs",
+    "--engine",
+    "dist",
+    "--baseline",
+    "/home/cashlin/ocsEngine/artifacts/ai-movement-observation-study/baseline-dist",
+    "--out",
+    "/home/cashlin/ocsEngine/artifacts/ai-movement-observation-study/reproduced/equivalence"
+  ],
+  "node": "v26.9.0",
+  "commit": "967a49a599c948000dd3eb4034ed5a9e696b2d97",
+  "sources": {
+    "src/ai/model.ts": "186ca1889259c62dde4d005d11b1f612da73f5e95ca493b85ce76431603d833b",
+    "src/ai/observation.ts": "cb51187fb5c193626848293d53f4816da8affd30cd3c501eb394985fb5c655b1",
+    "src/ai/seat-runner.ts": "57f62ef0c4e5f3241334e362d3204739afc28fe635e15358d97573abcfb3d51c",
+    "src/ai/policies/heuristic.ts": "756c7ee53d46ef439edec8fa96d176549f4427c938881a65253d102ff087b349",
+    "scripts/ai-match.mjs": "16c7326b6776d1f906ada94563f5425b8a4eefa6b236057fcf02515aed1df698",
+    "scripts/ai-observation-study.mjs": "841f576767541cb3029c19e2768baf251baf5b51e546347b4ca0e21e1f80fa31",
+    "tests/ai/movement-observation.test.ts": "74f106d4cdf042af8fb47f0328ac49a02fb1f5c21b3e856fa0fb1552b1941f4f"
+  },
+  "sourceSetSha256": "b2a4ecd365746560ad58b9888b232e9c4bf8aca6568c22ccaa0a20e7ff7cec89",
+  "fixtureSha256": "72d8c04da126b58e91cda5284801dcffe0fa32cdc9a923822242fbd4c1d6e389",
+  "engineTreeSha256": "4a87376b26c41f60086cb3060f606afcc1e9b99bb3ba00339c904837d200bb2a",
+  "baselineTreeSha256": "57f4669cfbbac073e6c16dc03000328bd96e954cfa8bfc7c49d2ceed109dcfac"
+}

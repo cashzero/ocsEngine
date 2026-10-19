@@ -16,7 +16,7 @@
 
 | 腳本 | 用途 |
 |---|---|
-| `scripts/ai-match.mjs` | 完整對局：地圖風格、交戰型態、尺寸、Rail Cap、海域等選項；`--swap` 同種子交換陣營；`--trace` 決策紀錄；`--observe-decisions` 查詢來源與派送身份報告；`--allied heuristic@<dist 目錄>` 讓凍結的另一份建置對戰；每局存檔並以重播比對終局 hash，失敗時 exit code 1 |
+| `scripts/ai-match.mjs` | 完整對局：地圖風格、交戰型態、尺寸、Rail Cap、海域等選項；`--swap` 同種子交換陣營；`--trace` 決策紀錄；`--observe-decisions` 查詢來源、移動評分與派送身份報告；`--allied heuristic@<dist 目錄>` 讓凍結的另一份建置對戰；每局存檔並以重播比對終局 hash，失敗時 exit code 1 |
 | `scripts/ai-compare.mjs` | 對戰彙總：勝負和與符號檢定、平均 VP 與 VP 差的標準誤、Kill、Loss |
 | `scripts/ai-acceptance.mjs` | WBS B5 驗收指標（對 random-legal 與電腦互打） |
 | `scripts/ai-replay-study.mjs` | 重播：目標點換手方式、step 損失原因、斷補單位、攻擊結果 |
@@ -43,6 +43,7 @@
 | `scripts/ai-objective-replay.mjs`、`scripts/ai-objective-study.py`、`scripts/ai-objective-replay-verify.mjs` | 先後手決定後擷取同目標條件、控制事件及保有結果；逐行動比對觀測開關的 state／event hash，核對雙方 gross／signed VP；固定機率模型留出整組種子，報告 Brier、log loss、校準及 VP 誤差，見[同目標研究](objective-metrics.md) |
 | `scripts/ai-surrogate-transfer.py`、`scripts/ai-surrogate-transfer-inputs.py` | 核對 P8 來源、交換座位及歷史模型，固定早期代理值預測不同種子的改版 VP 效果；一元校準留出完整權重家族，保留猜零與開發終局基準、36 切分及共同噪音負對照，見[效果轉移驗證](policy-errors.md#改版效果能否轉移到另一批種子) |
 | `scripts/ai-observation-study.mjs` | 對凍結建置及目前觀測開關逐項比對實際 session 的行動、查詢、記憶、亂數、事件與 hash；驗證查詢回傳、快取重用及派送身份對帳，見[觀測契約](vp-metrics.md#決策閘門的觀測契約) |
+| `scripts/ai-movement-gates-study.mjs` | 核對已綁定 hash 的移動觀測，按角色及指派目標彙總實際檢查、組別結局與同時刪除候選／原地分數項的門檻敏感度；見[指標契約](vp-metrics.md#移動候選的描述性指標)，未認定 VP 預測或因果效果 |
 | `scripts/ai-narrate.mjs` | 一局 trace 的逐步摘要，供人工檢視 |
 | `scripts/ai-train.mjs` | 權重自我對戰（已停用，見「決策」） |
 

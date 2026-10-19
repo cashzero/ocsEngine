@@ -7,7 +7,7 @@ import type {
   GameSession,
   SeatId,
 } from '../gameplay/index.js';
-import type { ActionFamily, CandidateResult, FeedSource, GameAction, ReachableHex, TraceCoverage } from '../rules/index.js';
+import type { ActionFamily, CandidateResult, FeedSource, GameAction, ProjectedPiece, ReachableHex, RuleExplanation, TraceCoverage } from '../rules/index.js';
 
 export type BotPolicyId = string;
 
@@ -52,6 +52,8 @@ export interface BotDecisionContext {
   readonly actions: BotActionAccess;
   readonly rng: BotRng;
   readonly memory: BotPhaseMemory;
+  /** Internal passive writer, supplied only when decision observation is enabled. */
+  readonly observation?: BotPolicyObservationWriter;
 }
 
 export interface BotScoreTerm {
@@ -124,8 +126,55 @@ export interface BotDecisionTrace {
 export type BotObservedCandidateId = `candidate:${number}`;
 export type BotObservedQueryId = `query:${number}`;
 
-export interface BotDecisionObservation {
-  readonly schemaVersion: 1;
+export type BotMovementCorrection =
+  | { readonly status: 'NOT_EVALUATED'; readonly reason: 'NOT_ELIGIBLE' | 'CORRECTION_BUDGET' }
+  | { readonly status: 'EVALUATED'; readonly allowed: boolean; readonly applied: boolean;
+    readonly explanation: RuleExplanation; readonly retainedTerms: readonly BotScoreTerm[] };
+
+export type BotMovementSupply =
+  | { readonly status: 'NOT_EVALUATED'; readonly reason: 'NOT_IMPROVING' | 'EARLIER_CANDIDATE_SELECTED' }
+  | { readonly status: 'EVALUATED'; readonly preserved: boolean; readonly explanation: RuleExplanation };
+
+export interface BotMovementGroup {
+  readonly pieceId: PieceId;
+  readonly role: ProjectedPiece['role'];
+  readonly assignedTarget: null | { readonly hexId: HexId;
+    readonly purpose: 'CAPTURE' | 'GARRISON' | 'HUNT' | 'FRONT' | 'RESUPPLY' | 'ASSAULT' };
+  readonly stay: { readonly origin: HexId; readonly terms: readonly BotScoreTerm[]; readonly score: number };
+  readonly conditionCoverage: 'COMPOSITE_ONLY';
+  readonly candidates: readonly { readonly candidateId: BotObservedCandidateId;
+    readonly baseTerms: readonly BotScoreTerm[]; readonly baseScore: number;
+    readonly retainedTerms: readonly BotScoreTerm[]; readonly retainedScore: number;
+    readonly correction: BotMovementCorrection; readonly finalSupply: BotMovementSupply }[];
+  readonly correctionLimit: number;
+  readonly correctionEligibleOrder: readonly BotObservedCandidateId[];
+  readonly correctionCheckedOrder: readonly BotObservedCandidateId[];
+  readonly improvingOrder: readonly BotObservedCandidateId[];
+  readonly supplyCheckedOrder: readonly BotObservedCandidateId[];
+  readonly selectedCandidateId: BotObservedCandidateId | null;
+}
+
+export interface BotMovementGroupWriter {
+  readonly corrections: (eligible: readonly GameAction[], checked: readonly GameAction[], limit: number) => void;
+  readonly correction: (action: GameAction, explanation: RuleExplanation, applied: boolean, retainedTerms: readonly BotScoreTerm[]) => void;
+  readonly improving: (actions: readonly GameAction[]) => void;
+  readonly supply: (action: GameAction, explanation: RuleExplanation, preserved: boolean) => void;
+  readonly finish: (selected: GameAction | null) => void;
+}
+
+export interface BotPolicyObservationWriter {
+  readonly movement: (input: Pick<BotMovementGroup, 'pieceId' | 'role' | 'assignedTarget' | 'stay'> & {
+    readonly scored: readonly { readonly action: GameAction; readonly terms: readonly BotScoreTerm[] }[];
+  }) => BotMovementGroupWriter;
+}
+
+interface BotObservedCandidate {
+  readonly id: BotObservedCandidateId;
+  readonly action: GameAction;
+  readonly policyEvaluation: 'NOT_INSTRUMENTED' | 'MOVEMENT_DESTINATION';
+}
+
+interface BotDecisionObservationCommon {
   readonly runId: string;
   readonly decisionOrdinal: number;
   readonly seatId: SeatId;
@@ -134,12 +183,6 @@ export interface BotDecisionObservation {
   readonly stateHash: string;
   readonly stepKey: string;
   readonly policy: string;
-  readonly coverage: 'QUERY_ONLY';
-  readonly candidates: readonly {
-    readonly id: BotObservedCandidateId;
-    readonly action: GameAction;
-    readonly policyEvaluation: 'NOT_INSTRUMENTED';
-  }[];
   readonly queries: readonly {
     readonly id: BotObservedQueryId;
     readonly kind: GameAction['kind'];
@@ -165,6 +208,14 @@ export interface BotDecisionObservation {
     readonly revision: number;
   }[];
 }
+
+export type BotDecisionObservation = BotDecisionObservationCommon & (
+  | { readonly schemaVersion: 1; readonly coverage: 'QUERY_ONLY';
+    readonly candidates: readonly (Omit<BotObservedCandidate, 'policyEvaluation'> & { readonly policyEvaluation: 'NOT_INSTRUMENTED' })[] }
+  | { readonly schemaVersion: 2; readonly coverage: 'QUERY_AND_MOVEMENT';
+    readonly candidates: readonly BotObservedCandidate[];
+    readonly movementGroups: readonly [BotMovementGroup, ...BotMovementGroup[]] }
+);
 
 export interface BotObservationOptions {
   readonly runId: string;

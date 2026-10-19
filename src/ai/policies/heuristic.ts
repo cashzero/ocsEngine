@@ -911,7 +911,13 @@ const seaStep = (context: BotDecisionContext, situation: Situation, notes: StepN
 };
 
 /** Keep ordinary movement inside supply; funded combat advances have their own guard. */
-const preservesFriendlySupply = (context: BotDecisionContext, action: GameAction): boolean => keepsFriendlySupply(context.actions.explain(action).explanation);
+const preservesFriendlySupply = (context: BotDecisionContext, action: GameAction,
+  observe?: (explanation: RuleExplanation, preserved: boolean) => void): boolean => {
+  const { explanation } = context.actions.explain(action);
+  const preserved = keepsFriendlySupply(explanation);
+  observe?.(explanation, preserved);
+  return preserved;
+};
 
 const keepsFriendlySupply = (explanation: RuleExplanation): boolean => {
   const lost = explanation.facts.find(({ key }) => key === 'supply.relocationTraceLost')?.value;
@@ -1023,7 +1029,8 @@ const movementStep = (context: BotDecisionContext, situation: Situation, facts: 
     // An HQ's own throw does not feed itself (12.3b): it needs a dump that reaches it directly.
     const feeds = unit.piece.role === 'COMBAT' || unit.piece.role === 'ARTILLERY' ? unitFeeds(unit) : unit.piece.role === 'HQ' ? context.actions.feedCoverage(id) : sideFeeds;
     const opponentTurnRemains = situation.turnsLeft > 0 || context.view.projection!.sequence.playerTurnIndex === 0;
-    const stay = sum(scoreDestination(situation, unit, target, [unit.hexId], notes, reach, direct, front, w, feeds, opponentTurnRemains));
+    const stayTerms = scoreDestination(situation, unit, target, [unit.hexId], notes, reach, direct, front, w, feeds, opponentTurnRemains);
+    const stay = sum(stayTerms);
     let best: { action: GameAction; terms: BotScoreTerm[] } | null = null;
     const scored: { action: GameAction; terms: BotScoreTerm[] }[] = [];
     for (const move of moves) {
@@ -1031,6 +1038,8 @@ const movementStep = (context: BotDecisionContext, situation: Situation, facts: 
       const terms = scoreDestination(situation, unit, target, move.path, notes, reach, direct, front, w, feeds, opponentTurnRemains);
       scored.push({ action: move, terms });
     }
+    const movementObservation = context.observation?.movement({ pieceId: id, role: unit.piece.role, assignedTarget: target ?? null,
+      stay: { origin: unit.hexId, terms: stayTerms, score: stay }, scored });
     // A profitable, supplied capture beats merely approaching a hunt/assault target (VP > Kill > Loss).
     // While an opposing turn remains, prefer captures ending on a VP. In the final second
     // turn, control from passing through counts too; retaining an army there has no later-turn benefit.
@@ -1043,29 +1052,38 @@ const movementStep = (context: BotDecisionContext, situation: Situation, facts: 
     // A move can negate enemy ZOC or open a captured rail/port route. Pre-move coverage then
     // understates supply at the destination. Check promising moves against the real relocation preview.
     const actuallyTraced = new Set<GameAction>();
-    const corrections = scored.filter(c => c.terms.some(t => t.term === 'out-of-supply')
+    const correctionEligible = scored.filter(c => c.terms.some(t => t.term === 'out-of-supply')
       && (unit.piece.role === 'COMBAT' || unit.piece.role === 'ARTILLERY' || unit.piece.role === 'HQ')
       && sum(c.terms.filter(t => t.term !== 'out-of-supply')) > stay)
       .sort((a, b) => captureSwing(b.action) - captureSwing(a.action)
-        || sum(b.terms.filter(t => t.term !== 'out-of-supply')) - sum(a.terms.filter(t => t.term !== 'out-of-supply'))).slice(0, 12);
+        || sum(b.terms.filter(t => t.term !== 'out-of-supply')) - sum(a.terms.filter(t => t.term !== 'out-of-supply')));
+    const corrections = correctionEligible.slice(0, 12);
+    movementObservation?.corrections(correctionEligible.map(candidate => candidate.action), corrections.map(candidate => candidate.action), 12);
     for (const candidate of corrections) {
       const { explanation } = actions.explain(candidate.action);
       const value = (key: string) => explanation.facts.find(f => f.key === key)?.value;
       if (!explanation.allowed || value('supply.relocationMoverHasTrace') !== true
-        || value('supply.relocationTraceLost') !== 0 || value('supply.relocationFeedLost') !== 0) continue;
+        || value('supply.relocationTraceLost') !== 0 || value('supply.relocationFeedLost') !== 0) {
+        movementObservation?.correction(candidate.action, explanation, false, candidate.terms);
+        continue;
+      }
       actuallyTraced.add(candidate.action);
       candidate.terms = candidate.terms.filter(t => t.term !== 'out-of-supply');
       if (unit.piece.role === 'COMBAT' && situation.turnsLeft > 1 && !direct.has(destinationOf(candidate.action)!)) {
         candidate.terms.push({ term: 'hq-dependent-supply', value: -w.hqDependentSupply });
       }
+      movementObservation?.correction(candidate.action, explanation, true, candidate.terms);
     }
     const improving = scored.filter(candidate => sum(candidate.terms) > stay)
       .sort((left, right) => captureSwing(right.action) - captureSwing(left.action) || sum(right.terms) - sum(left.terms));
+    movementObservation?.improving(improving.map(candidate => candidate.action));
     for (const candidate of improving) {
-      if (!preservesFriendlySupply(context, candidate.action)) continue;
+      if (!preservesFriendlySupply(context, candidate.action, movementObservation
+        ? (explanation, preserved) => movementObservation.supply(candidate.action, explanation, preserved) : undefined)) continue;
       best = candidate;
       break;
     }
+    movementObservation?.finish(best?.action ?? null);
     debug?.(`${unit.piece.role} ${id} at ${unit.hexId} mode ${unit.piece.mode} ${reach.has(unit.hexId) ? 'in-trace' : 'OUT-OF-TRACE'} target ${target?.purpose ?? '-'} ${target?.hexId ?? ''} `
       + `enemy ${enemyDistance} moves ${moves.length} stay ${stay.toFixed(1)} best ${best ? `${sum(best.terms).toFixed(1)} to ${destinationOf(best.action)} ${JSON.stringify(best.terms)}` : '-'}`);
     if (best && sum(best.terms) > stay) {

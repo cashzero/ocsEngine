@@ -1,0 +1,904 @@
+{
+  "scope": "Descriptive executed movement gates and algebraic stay-term sensitivity; no VP prediction or causal effect established",
+  "input": "artifacts/ai-movement-observation-study/reproduced/equivalence/enabled.json",
+  "inputSha256": "03d33dd54ec23518831d4c9b2582449a7995e3bf0ce306fb52c3e6a7bb12ed88",
+  "equivalenceSummary": "artifacts/ai-movement-observation-study/reproduced/equivalence/summary.json",
+  "summarySha256": "90ff35728f9b9490b8215719d72e59f1b98b9099a4a12f44dc1126d50ccd0e29",
+  "decisions": 129,
+  "queryOnlyDecisions": 86,
+  "counts": {
+    "groups": 50,
+    "scored": 8973,
+    "improving": 1981,
+    "notImproving": 6992,
+    "correctionEligible": 731,
+    "correctionChecked": 273,
+    "correctionApplied": 23,
+    "correctionRefused": 250,
+    "correctionBudget": 458,
+    "notEligible": 8242,
+    "supplyChecked": 72,
+    "supplyPreserved": 40,
+    "supplyRefused": 32,
+    "supplySkippedAfterSelection": 1909,
+    "selected": 40,
+    "noImprovingGroups": 9,
+    "allImprovingSupplyRefusedGroups": 1,
+    "groupsWithSupplyRefusal": 5,
+    "supplyRefusedButSelectedGroups": 4
+  },
+  "rates": {
+    "improvingFraction": {
+      "pooled": 0.2207734314053271,
+      "equalGroupMean": 0.23220460186234462,
+      "groupsWithDenominator": 50
+    },
+    "correctionCheckedFraction": {
+      "pooled": 0.3734610123119015,
+      "equalGroupMean": 0.7763571029619674,
+      "groupsWithDenominator": 33
+    },
+    "correctionAppliedFraction": {
+      "pooled": 0.08424908424908426,
+      "equalGroupMean": 0.06014692378328742,
+      "groupsWithDenominator": 33
+    },
+    "supplyRefusedFraction": {
+      "pooled": 0.4444444444444444,
+      "equalGroupMean": 0.10159758940246745,
+      "groupsWithDenominator": 41
+    },
+    "supplySkippedFraction": {
+      "pooled": 0.9636547198384654,
+      "equalGroupMean": 0.864169171236916,
+      "groupsWithDenominator": 41
+    },
+    "supplyExhaustionGroupFraction": {
+      "pooled": 0.02,
+      "equalGroupMean": 0.02,
+      "groupsWithDenominator": 50
+    },
+    "noImprovingGroupFraction": {
+      "pooled": 0.18,
+      "equalGroupMean": 0.18,
+      "groupsWithDenominator": 50
+    },
+    "refusalRecoveredGroupFraction": {
+      "pooled": 0.8,
+      "equalGroupMean": 0.8,
+      "groupsWithDenominator": 5
+    }
+  },
+  "assignedTargetPurposes": {
+    "UNASSIGNED": {
+      "groups": 13,
+      "scored": 4531,
+      "improving": 951,
+      "notImproving": 3580,
+      "correctionEligible": 479,
+      "correctionChecked": 87,
+      "correctionApplied": 3,
+      "correctionRefused": 84,
+      "correctionBudget": 392,
+      "notEligible": 4052,
+      "supplyChecked": 11,
+      "supplyPreserved": 10,
+      "supplyRefused": 1,
+      "supplySkippedAfterSelection": 940,
+      "selected": 10,
+      "noImprovingGroups": 3,
+      "allImprovingSupplyRefusedGroups": 0,
+      "groupsWithSupplyRefusal": 1,
+      "supplyRefusedButSelectedGroups": 1
+    },
+    "CAPTURE": {
+      "groups": 17,
+      "scored": 1787,
+      "improving": 703,
+      "notImproving": 1084,
+      "correctionEligible": 157,
+      "correctionChecked": 115,
+      "correctionApplied": 20,
+      "correctionRefused": 95,
+      "correctionBudget": 42,
+      "notEligible": 1630,
+      "supplyChecked": 17,
+      "supplyPreserved": 17,
+      "supplyRefused": 0,
+      "supplySkippedAfterSelection": 686,
+      "selected": 17,
+      "noImprovingGroups": 0,
+      "allImprovingSupplyRefusedGroups": 0,
+      "groupsWithSupplyRefusal": 0,
+      "supplyRefusedButSelectedGroups": 0
+    },
+    "ASSAULT": {
+      "groups": 3,
+      "scored": 164,
+      "improving": 43,
+      "notImproving": 121,
+      "correctionEligible": 36,
+      "correctionChecked": 24,
+      "correctionApplied": 0,
+      "correctionRefused": 24,
+      "correctionBudget": 12,
+      "notEligible": 128,
+      "supplyChecked": 25,
+      "supplyPreserved": 3,
+      "supplyRefused": 22,
+      "supplySkippedAfterSelection": 18,
+      "selected": 3,
+      "noImprovingGroups": 0,
+      "allImprovingSupplyRefusedGroups": 0,
+      "groupsWithSupplyRefusal": 2,
+      "supplyRefusedButSelectedGroups": 2
+    },
+    "HUNT": {
+      "groups": 15,
+      "scored": 1824,
+      "improving": 145,
+      "notImproving": 1679,
+      "correctionEligible": 54,
+      "correctionChecked": 42,
+      "correctionApplied": 0,
+      "correctionRefused": 42,
+      "correctionBudget": 12,
+      "notEligible": 1770,
+      "supplyChecked": 18,
+      "supplyPreserved": 9,
+      "supplyRefused": 9,
+      "supplySkippedAfterSelection": 127,
+      "selected": 9,
+      "noImprovingGroups": 5,
+      "allImprovingSupplyRefusedGroups": 1,
+      "groupsWithSupplyRefusal": 2,
+      "supplyRefusedButSelectedGroups": 1
+    },
+    "GARRISON": {
+      "groups": 2,
+      "scored": 667,
+      "improving": 139,
+      "notImproving": 528,
+      "correctionEligible": 5,
+      "correctionChecked": 5,
+      "correctionApplied": 0,
+      "correctionRefused": 5,
+      "correctionBudget": 0,
+      "notEligible": 662,
+      "supplyChecked": 1,
+      "supplyPreserved": 1,
+      "supplyRefused": 0,
+      "supplySkippedAfterSelection": 138,
+      "selected": 1,
+      "noImprovingGroups": 1,
+      "allImprovingSupplyRefusedGroups": 0,
+      "groupsWithSupplyRefusal": 0,
+      "supplyRefusedButSelectedGroups": 0
+    }
+  },
+  "assignedTargets": [
+    {
+      "assignedTarget": null,
+      "counts": {
+        "groups": 13,
+        "scored": 4531,
+        "improving": 951,
+        "notImproving": 3580,
+        "correctionEligible": 479,
+        "correctionChecked": 87,
+        "correctionApplied": 3,
+        "correctionRefused": 84,
+        "correctionBudget": 392,
+        "notEligible": 4052,
+        "supplyChecked": 11,
+        "supplyPreserved": 10,
+        "supplyRefused": 1,
+        "supplySkippedAfterSelection": 940,
+        "selected": 10,
+        "noImprovingGroups": 3,
+        "allImprovingSupplyRefusedGroups": 0,
+        "groupsWithSupplyRefusal": 1,
+        "supplyRefusedButSelectedGroups": 1
+      }
+    },
+    {
+      "assignedTarget": {
+        "hexId": "24,12",
+        "purpose": "CAPTURE"
+      },
+      "counts": {
+        "groups": 3,
+        "scored": 438,
+        "improving": 254,
+        "notImproving": 184,
+        "correctionEligible": 24,
+        "correctionChecked": 24,
+        "correctionApplied": 9,
+        "correctionRefused": 15,
+        "correctionBudget": 0,
+        "notEligible": 414,
+        "supplyChecked": 3,
+        "supplyPreserved": 3,
+        "supplyRefused": 0,
+        "supplySkippedAfterSelection": 251,
+        "selected": 3,
+        "noImprovingGroups": 0,
+        "allImprovingSupplyRefusedGroups": 0,
+        "groupsWithSupplyRefusal": 0,
+        "supplyRefusedButSelectedGroups": 0
+      }
+    },
+    {
+      "assignedTarget": {
+        "hexId": "21,4",
+        "purpose": "CAPTURE"
+      },
+      "counts": {
+        "groups": 6,
+        "scored": 465,
+        "improving": 130,
+        "notImproving": 335,
+        "correctionEligible": 73,
+        "correctionChecked": 41,
+        "correctionApplied": 11,
+        "correctionRefused": 30,
+        "correctionBudget": 32,
+        "notEligible": 392,
+        "supplyChecked": 6,
+        "supplyPreserved": 6,
+        "supplyRefused": 0,
+        "supplySkippedAfterSelection": 124,
+        "selected": 6,
+        "noImprovingGroups": 0,
+        "allImprovingSupplyRefusedGroups": 0,
+        "groupsWithSupplyRefusal": 0,
+        "supplyRefusedButSelectedGroups": 0
+      }
+    },
+    {
+      "assignedTarget": {
+        "hexId": "14,10",
+        "purpose": "CAPTURE"
+      },
+      "counts": {
+        "groups": 5,
+        "scored": 664,
+        "improving": 203,
+        "notImproving": 461,
+        "correctionEligible": 58,
+        "correctionChecked": 48,
+        "correctionApplied": 0,
+        "correctionRefused": 48,
+        "correctionBudget": 10,
+        "notEligible": 606,
+        "supplyChecked": 5,
+        "supplyPreserved": 5,
+        "supplyRefused": 0,
+        "supplySkippedAfterSelection": 198,
+        "selected": 5,
+        "noImprovingGroups": 0,
+        "allImprovingSupplyRefusedGroups": 0,
+        "groupsWithSupplyRefusal": 0,
+        "supplyRefusedButSelectedGroups": 0
+      }
+    },
+    {
+      "assignedTarget": {
+        "hexId": "17,5",
+        "purpose": "CAPTURE"
+      },
+      "counts": {
+        "groups": 3,
+        "scored": 220,
+        "improving": 116,
+        "notImproving": 104,
+        "correctionEligible": 2,
+        "correctionChecked": 2,
+        "correctionApplied": 0,
+        "correctionRefused": 2,
+        "correctionBudget": 0,
+        "notEligible": 218,
+        "supplyChecked": 3,
+        "supplyPreserved": 3,
+        "supplyRefused": 0,
+        "supplySkippedAfterSelection": 113,
+        "selected": 3,
+        "noImprovingGroups": 0,
+        "allImprovingSupplyRefusedGroups": 0,
+        "groupsWithSupplyRefusal": 0,
+        "supplyRefusedButSelectedGroups": 0
+      }
+    },
+    {
+      "assignedTarget": {
+        "hexId": "14,10",
+        "purpose": "ASSAULT"
+      },
+      "counts": {
+        "groups": 2,
+        "scored": 93,
+        "improving": 23,
+        "notImproving": 70,
+        "correctionEligible": 19,
+        "correctionChecked": 12,
+        "correctionApplied": 0,
+        "correctionRefused": 12,
+        "correctionBudget": 7,
+        "notEligible": 74,
+        "supplyChecked": 14,
+        "supplyPreserved": 2,
+        "supplyRefused": 12,
+        "supplySkippedAfterSelection": 9,
+        "selected": 2,
+        "noImprovingGroups": 0,
+        "allImprovingSupplyRefusedGroups": 0,
+        "groupsWithSupplyRefusal": 1,
+        "supplyRefusedButSelectedGroups": 1
+      }
+    },
+    {
+      "assignedTarget": {
+        "hexId": "4,11",
+        "purpose": "HUNT"
+      },
+      "counts": {
+        "groups": 9,
+        "scored": 1251,
+        "improving": 46,
+        "notImproving": 1205,
+        "correctionEligible": 1,
+        "correctionChecked": 1,
+        "correctionApplied": 0,
+        "correctionRefused": 1,
+        "correctionBudget": 0,
+        "notEligible": 1250,
+        "supplyChecked": 4,
+        "supplyPreserved": 4,
+        "supplyRefused": 0,
+        "supplySkippedAfterSelection": 42,
+        "selected": 4,
+        "noImprovingGroups": 5,
+        "allImprovingSupplyRefusedGroups": 0,
+        "groupsWithSupplyRefusal": 0,
+        "supplyRefusedButSelectedGroups": 0
+      }
+    },
+    {
+      "assignedTarget": {
+        "hexId": "14,10",
+        "purpose": "GARRISON"
+      },
+      "counts": {
+        "groups": 2,
+        "scored": 667,
+        "improving": 139,
+        "notImproving": 528,
+        "correctionEligible": 5,
+        "correctionChecked": 5,
+        "correctionApplied": 0,
+        "correctionRefused": 5,
+        "correctionBudget": 0,
+        "notEligible": 662,
+        "supplyChecked": 1,
+        "supplyPreserved": 1,
+        "supplyRefused": 0,
+        "supplySkippedAfterSelection": 138,
+        "selected": 1,
+        "noImprovingGroups": 1,
+        "allImprovingSupplyRefusedGroups": 0,
+        "groupsWithSupplyRefusal": 0,
+        "supplyRefusedButSelectedGroups": 0
+      }
+    },
+    {
+      "assignedTarget": {
+        "hexId": "0,11",
+        "purpose": "HUNT"
+      },
+      "counts": {
+        "groups": 1,
+        "scored": 38,
+        "improving": 6,
+        "notImproving": 32,
+        "correctionEligible": 9,
+        "correctionChecked": 9,
+        "correctionApplied": 0,
+        "correctionRefused": 9,
+        "correctionBudget": 0,
+        "notEligible": 29,
+        "supplyChecked": 1,
+        "supplyPreserved": 1,
+        "supplyRefused": 0,
+        "supplySkippedAfterSelection": 5,
+        "selected": 1,
+        "noImprovingGroups": 0,
+        "allImprovingSupplyRefusedGroups": 0,
+        "groupsWithSupplyRefusal": 0,
+        "supplyRefusedButSelectedGroups": 0
+      }
+    },
+    {
+      "assignedTarget": {
+        "hexId": "2,9",
+        "purpose": "HUNT"
+      },
+      "counts": {
+        "groups": 3,
+        "scored": 337,
+        "improving": 72,
+        "notImproving": 265,
+        "correctionEligible": 43,
+        "correctionChecked": 31,
+        "correctionApplied": 0,
+        "correctionRefused": 31,
+        "correctionBudget": 12,
+        "notEligible": 294,
+        "supplyChecked": 11,
+        "supplyPreserved": 2,
+        "supplyRefused": 9,
+        "supplySkippedAfterSelection": 61,
+        "selected": 2,
+        "noImprovingGroups": 0,
+        "allImprovingSupplyRefusedGroups": 1,
+        "groupsWithSupplyRefusal": 2,
+        "supplyRefusedButSelectedGroups": 1
+      }
+    },
+    {
+      "assignedTarget": {
+        "hexId": "17,5",
+        "purpose": "ASSAULT"
+      },
+      "counts": {
+        "groups": 1,
+        "scored": 71,
+        "improving": 20,
+        "notImproving": 51,
+        "correctionEligible": 17,
+        "correctionChecked": 12,
+        "correctionApplied": 0,
+        "correctionRefused": 12,
+        "correctionBudget": 5,
+        "notEligible": 54,
+        "supplyChecked": 11,
+        "supplyPreserved": 1,
+        "supplyRefused": 10,
+        "supplySkippedAfterSelection": 9,
+        "selected": 1,
+        "noImprovingGroups": 0,
+        "allImprovingSupplyRefusedGroups": 0,
+        "groupsWithSupplyRefusal": 1,
+        "supplyRefusedButSelectedGroups": 1
+      }
+    },
+    {
+      "assignedTarget": {
+        "hexId": "5,11",
+        "purpose": "HUNT"
+      },
+      "counts": {
+        "groups": 1,
+        "scored": 55,
+        "improving": 4,
+        "notImproving": 51,
+        "correctionEligible": 1,
+        "correctionChecked": 1,
+        "correctionApplied": 0,
+        "correctionRefused": 1,
+        "correctionBudget": 0,
+        "notEligible": 54,
+        "supplyChecked": 1,
+        "supplyPreserved": 1,
+        "supplyRefused": 0,
+        "supplySkippedAfterSelection": 3,
+        "selected": 1,
+        "noImprovingGroups": 0,
+        "allImprovingSupplyRefusedGroups": 0,
+        "groupsWithSupplyRefusal": 0,
+        "supplyRefusedButSelectedGroups": 0
+      }
+    },
+    {
+      "assignedTarget": {
+        "hexId": "1,11",
+        "purpose": "HUNT"
+      },
+      "counts": {
+        "groups": 1,
+        "scored": 143,
+        "improving": 17,
+        "notImproving": 126,
+        "correctionEligible": 0,
+        "correctionChecked": 0,
+        "correctionApplied": 0,
+        "correctionRefused": 0,
+        "correctionBudget": 0,
+        "notEligible": 143,
+        "supplyChecked": 1,
+        "supplyPreserved": 1,
+        "supplyRefused": 0,
+        "supplySkippedAfterSelection": 16,
+        "selected": 1,
+        "noImprovingGroups": 0,
+        "allImprovingSupplyRefusedGroups": 0,
+        "groupsWithSupplyRefusal": 0,
+        "supplyRefusedButSelectedGroups": 0
+      }
+    }
+  ],
+  "byRole": {
+    "HQ": {
+      "counts": {
+        "groups": 2,
+        "scored": 575,
+        "improving": 59,
+        "notImproving": 516,
+        "correctionEligible": 3,
+        "correctionChecked": 3,
+        "correctionApplied": 0,
+        "correctionRefused": 3,
+        "correctionBudget": 0,
+        "notEligible": 572,
+        "supplyChecked": 3,
+        "supplyPreserved": 2,
+        "supplyRefused": 1,
+        "supplySkippedAfterSelection": 56,
+        "selected": 2,
+        "noImprovingGroups": 0,
+        "allImprovingSupplyRefusedGroups": 0,
+        "groupsWithSupplyRefusal": 1,
+        "supplyRefusedButSelectedGroups": 1
+      },
+      "rates": {
+        "improvingFraction": {
+          "pooled": 0.10260869565217391,
+          "equalGroupMean": 0.10213237430979366,
+          "groupsWithDenominator": 2
+        },
+        "correctionCheckedFraction": {
+          "pooled": 1,
+          "equalGroupMean": 1,
+          "groupsWithDenominator": 1
+        },
+        "correctionAppliedFraction": {
+          "pooled": 0,
+          "equalGroupMean": 0,
+          "groupsWithDenominator": 1
+        },
+        "supplyRefusedFraction": {
+          "pooled": 0.3333333333333333,
+          "equalGroupMean": 0.25,
+          "groupsWithDenominator": 2
+        },
+        "supplySkippedFraction": {
+          "pooled": 0.9491525423728814,
+          "equalGroupMean": 0.944047619047619,
+          "groupsWithDenominator": 2
+        },
+        "supplyExhaustionGroupFraction": {
+          "pooled": 0,
+          "equalGroupMean": 0,
+          "groupsWithDenominator": 2
+        },
+        "noImprovingGroupFraction": {
+          "pooled": 0,
+          "equalGroupMean": 0,
+          "groupsWithDenominator": 2
+        },
+        "refusalRecoveredGroupFraction": {
+          "pooled": 1,
+          "equalGroupMean": 1,
+          "groupsWithDenominator": 1
+        }
+      },
+      "comparativeTermDeletion": {
+        "cover": {
+          "candidateCrossings": 195,
+          "groupsWithCrossings": 2,
+          "candidateCrossingsWithoutSelection": 0,
+          "groupsWithoutSelection": 0
+        },
+        "exposure": {
+          "candidateCrossings": 16,
+          "groupsWithCrossings": 2,
+          "candidateCrossingsWithoutSelection": 0,
+          "groupsWithoutSelection": 0
+        },
+        "off-rail-draw": {
+          "candidateCrossings": 3,
+          "groupsWithCrossings": 1,
+          "candidateCrossingsWithoutSelection": 0,
+          "groupsWithoutSelection": 0
+        },
+        "out-of-supply": {
+          "candidateCrossings": 3,
+          "groupsWithCrossings": 1,
+          "candidateCrossingsWithoutSelection": 0,
+          "groupsWithoutSelection": 0
+        }
+      }
+    },
+    "COMBAT": {
+      "counts": {
+        "groups": 39,
+        "scored": 4969,
+        "improving": 1030,
+        "notImproving": 3939,
+        "correctionEligible": 252,
+        "correctionChecked": 186,
+        "correctionApplied": 20,
+        "correctionRefused": 166,
+        "correctionBudget": 66,
+        "notEligible": 4717,
+        "supplyChecked": 61,
+        "supplyPreserved": 30,
+        "supplyRefused": 31,
+        "supplySkippedAfterSelection": 969,
+        "selected": 30,
+        "noImprovingGroups": 8,
+        "allImprovingSupplyRefusedGroups": 1,
+        "groupsWithSupplyRefusal": 4,
+        "supplyRefusedButSelectedGroups": 3
+      },
+      "rates": {
+        "improvingFraction": {
+          "pooled": 0.20728516804185954,
+          "equalGroupMean": 0.22807009797819597,
+          "groupsWithDenominator": 39
+        },
+        "correctionCheckedFraction": {
+          "pooled": 0.7380952380952381,
+          "equalGroupMean": 0.8815643860783179,
+          "groupsWithDenominator": 25
+        },
+        "correctionAppliedFraction": {
+          "pooled": 0.10752688172043011,
+          "equalGroupMean": 0.0693939393939394,
+          "groupsWithDenominator": 25
+        },
+        "supplyRefusedFraction": {
+          "pooled": 0.5081967213114754,
+          "equalGroupMean": 0.11824197308068277,
+          "groupsWithDenominator": 31
+        },
+        "supplySkippedFraction": {
+          "pooled": 0.9407766990291262,
+          "equalGroupMean": 0.829573872086735,
+          "groupsWithDenominator": 31
+        },
+        "supplyExhaustionGroupFraction": {
+          "pooled": 0.02564102564102564,
+          "equalGroupMean": 0.02564102564102564,
+          "groupsWithDenominator": 39
+        },
+        "noImprovingGroupFraction": {
+          "pooled": 0.20512820512820512,
+          "equalGroupMean": 0.20512820512820512,
+          "groupsWithDenominator": 39
+        },
+        "refusalRecoveredGroupFraction": {
+          "pooled": 0.75,
+          "equalGroupMean": 0.75,
+          "groupsWithDenominator": 4
+        }
+      },
+      "comparativeTermDeletion": {
+        "progress": {
+          "candidateCrossings": 556,
+          "groupsWithCrossings": 16,
+          "candidateCrossingsWithoutSelection": 24,
+          "groupsWithoutSelection": 3
+        },
+        "out-of-supply": {
+          "candidateCrossings": 43,
+          "groupsWithCrossings": 14,
+          "candidateCrossingsWithoutSelection": 3,
+          "groupsWithoutSelection": 1
+        },
+        "exposure": {
+          "candidateCrossings": 37,
+          "groupsWithCrossings": 10,
+          "candidateCrossingsWithoutSelection": 0,
+          "groupsWithoutSelection": 0
+        },
+        "contact": {
+          "candidateCrossings": 13,
+          "groupsWithCrossings": 9,
+          "candidateCrossingsWithoutSelection": 0,
+          "groupsWithoutSelection": 0
+        },
+        "hunt": {
+          "candidateCrossings": 12,
+          "groupsWithCrossings": 1,
+          "candidateCrossingsWithoutSelection": 0,
+          "groupsWithoutSelection": 0
+        },
+        "crowding": {
+          "candidateCrossings": 4,
+          "groupsWithCrossings": 3,
+          "candidateCrossingsWithoutSelection": 0,
+          "groupsWithoutSelection": 0
+        }
+      }
+    },
+    "ARTILLERY": {
+      "counts": {
+        "groups": 9,
+        "scored": 3429,
+        "improving": 892,
+        "notImproving": 2537,
+        "correctionEligible": 476,
+        "correctionChecked": 84,
+        "correctionApplied": 3,
+        "correctionRefused": 81,
+        "correctionBudget": 392,
+        "notEligible": 2953,
+        "supplyChecked": 8,
+        "supplyPreserved": 8,
+        "supplyRefused": 0,
+        "supplySkippedAfterSelection": 884,
+        "selected": 8,
+        "noImprovingGroups": 1,
+        "allImprovingSupplyRefusedGroups": 0,
+        "groupsWithSupplyRefusal": 0,
+        "supplyRefusedButSelectedGroups": 0
+      },
+      "rates": {
+        "improvingFraction": {
+          "pooled": 0.26013414989792943,
+          "equalGroupMean": 0.2790257248164444,
+          "groupsWithDenominator": 9
+        },
+        "correctionCheckedFraction": {
+          "pooled": 0.17647058823529413,
+          "equalGroupMean": 0.36866782082671046,
+          "groupsWithDenominator": 7
+        },
+        "correctionAppliedFraction": {
+          "pooled": 0.03571428571428571,
+          "equalGroupMean": 0.03571428571428571,
+          "groupsWithDenominator": 7
+        },
+        "supplyRefusedFraction": {
+          "pooled": 0,
+          "equalGroupMean": 0,
+          "groupsWithDenominator": 8
+        },
+        "supplySkippedFraction": {
+          "pooled": 0.9910313901345291,
+          "equalGroupMean": 0.9782563434911911,
+          "groupsWithDenominator": 8
+        },
+        "supplyExhaustionGroupFraction": {
+          "pooled": 0,
+          "equalGroupMean": 0,
+          "groupsWithDenominator": 9
+        },
+        "noImprovingGroupFraction": {
+          "pooled": 0.1111111111111111,
+          "equalGroupMean": 0.1111111111111111,
+          "groupsWithDenominator": 9
+        },
+        "refusalRecoveredGroupFraction": {
+          "pooled": null,
+          "equalGroupMean": null,
+          "groupsWithDenominator": 0
+        }
+      },
+      "comparativeTermDeletion": {
+        "in-range": {
+          "candidateCrossings": 608,
+          "groupsWithCrossings": 6,
+          "candidateCrossingsWithoutSelection": 1,
+          "groupsWithoutSelection": 1
+        },
+        "with-army": {
+          "candidateCrossings": 541,
+          "groupsWithCrossings": 7,
+          "candidateCrossingsWithoutSelection": 0,
+          "groupsWithoutSelection": 0
+        },
+        "out-of-supply": {
+          "candidateCrossings": 394,
+          "groupsWithCrossings": 7,
+          "candidateCrossingsWithoutSelection": 0,
+          "groupsWithoutSelection": 0
+        },
+        "artillery-unescorted": {
+          "candidateCrossings": 88,
+          "groupsWithCrossings": 5,
+          "candidateCrossingsWithoutSelection": 3,
+          "groupsWithoutSelection": 1
+        },
+        "exposure": {
+          "candidateCrossings": 34,
+          "groupsWithCrossings": 5,
+          "candidateCrossingsWithoutSelection": 0,
+          "groupsWithoutSelection": 0
+        },
+        "artillery-exposed": {
+          "candidateCrossings": 34,
+          "groupsWithCrossings": 7,
+          "candidateCrossingsWithoutSelection": 0,
+          "groupsWithoutSelection": 0
+        }
+      }
+    }
+  },
+  "comparativeTermDeletion": {
+    "in-range": {
+      "candidateCrossings": 608,
+      "groupsWithCrossings": 6,
+      "candidateCrossingsWithoutSelection": 1,
+      "groupsWithoutSelection": 1
+    },
+    "progress": {
+      "candidateCrossings": 556,
+      "groupsWithCrossings": 16,
+      "candidateCrossingsWithoutSelection": 24,
+      "groupsWithoutSelection": 3
+    },
+    "with-army": {
+      "candidateCrossings": 541,
+      "groupsWithCrossings": 7,
+      "candidateCrossingsWithoutSelection": 0,
+      "groupsWithoutSelection": 0
+    },
+    "out-of-supply": {
+      "candidateCrossings": 440,
+      "groupsWithCrossings": 22,
+      "candidateCrossingsWithoutSelection": 3,
+      "groupsWithoutSelection": 1
+    },
+    "cover": {
+      "candidateCrossings": 195,
+      "groupsWithCrossings": 2,
+      "candidateCrossingsWithoutSelection": 0,
+      "groupsWithoutSelection": 0
+    },
+    "artillery-unescorted": {
+      "candidateCrossings": 88,
+      "groupsWithCrossings": 5,
+      "candidateCrossingsWithoutSelection": 3,
+      "groupsWithoutSelection": 1
+    },
+    "exposure": {
+      "candidateCrossings": 87,
+      "groupsWithCrossings": 17,
+      "candidateCrossingsWithoutSelection": 0,
+      "groupsWithoutSelection": 0
+    },
+    "artillery-exposed": {
+      "candidateCrossings": 34,
+      "groupsWithCrossings": 7,
+      "candidateCrossingsWithoutSelection": 0,
+      "groupsWithoutSelection": 0
+    },
+    "contact": {
+      "candidateCrossings": 13,
+      "groupsWithCrossings": 9,
+      "candidateCrossingsWithoutSelection": 0,
+      "groupsWithoutSelection": 0
+    },
+    "hunt": {
+      "candidateCrossings": 12,
+      "groupsWithCrossings": 1,
+      "candidateCrossingsWithoutSelection": 0,
+      "groupsWithoutSelection": 0
+    },
+    "crowding": {
+      "candidateCrossings": 4,
+      "groupsWithCrossings": 3,
+      "candidateCrossingsWithoutSelection": 0,
+      "groupsWithoutSelection": 0
+    },
+    "off-rail-draw": {
+      "candidateCrossings": 3,
+      "groupsWithCrossings": 1,
+      "candidateCrossingsWithoutSelection": 0,
+      "groupsWithoutSelection": 0
+    }
+  },
+  "interpretation": "Term deletion removes the term from both candidate and stay. Crossings overlap and do not imply legality, supply preservation, priority, selection or VP benefit. Candidate/group counts are dependent, not independent trials. Equal-group rates exclude groups with zero denominator and retain that support count; assigned targets are planning identities, not verified objective-control outcomes.",
+  "predictiveQualification": "NOT_TESTED"
+}

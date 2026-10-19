@@ -149,7 +149,8 @@ const runMatch = async (baseOptions, matchIndex) => {
     return hash.digest('hex');
   };
   const observationManifest = observationPath ? {
-    schemaVersion: 1, runId: randomUUID(), coverage: 'QUERY_ONLY', complete: false,
+    schemaVersion: 2, runId: randomUUID(), reportSchemaVersions: [], coverages: [], complete: false,
+    coverageScope: 'Query provenance and instrumented non-truck movement destination groups; other policy branches and atomic predicates remain uninstrumented',
     initialStateHash: String(session.getMetadata().stateHash), match: matchIndex, options, seeds,
     policyInputs: Object.fromEntries(Object.values(options.policies).map(id => [id,
       id.startsWith('heuristic:') ? { weightsSha256: digestFile(resolve(root, id.slice('heuristic:'.length))) }
@@ -175,6 +176,8 @@ const runMatch = async (baseOptions, matchIndex) => {
     ...(tracePath ? { onDecision: (trace) => appendFileSync(tracePath, `${JSON.stringify(trace)}\n`) } : {}),
     ...(observationManifest ? { observation: { runId: observationManifest.runId, onDecision: observation => {
       observationManifest.decisions += 1;
+      if (!observationManifest.reportSchemaVersions.includes(observation.schemaVersion)) observationManifest.reportSchemaVersions.push(observation.schemaVersion);
+      if (!observationManifest.coverages.includes(observation.coverage)) observationManifest.coverages.push(observation.coverage);
       if (observationManifest.error !== null) return;
       try {
         appendFileSync(observationPath, `${JSON.stringify(observation)}\n`);

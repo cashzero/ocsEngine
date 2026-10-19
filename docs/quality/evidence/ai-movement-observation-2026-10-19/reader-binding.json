@@ -1,0 +1,18 @@
+{
+  "script": "scripts/ai-movement-gates-study.mjs",
+  "sha256": "d63e2a3714a2cf042ac0dcd542e1e55fb955d55154964de03dbc18d73382e9c8",
+  "selfTest": {
+    "command": "node scripts/ai-movement-gates-study.mjs --self-test",
+    "exitCode": 0,
+    "controls": [
+      "both-side term deletion",
+      "identical penalties do not cross",
+      "strict zero-margin boundary",
+      "repeated terms aggregate",
+      "nonfinite term rejection",
+      "pooled .8 versus equal-group .6875 with zero-denominator group excluded"
+    ]
+  },
+  "predictiveQualification": "NOT_TESTED",
+  "P10Status": "IN PROGRESS"
+}

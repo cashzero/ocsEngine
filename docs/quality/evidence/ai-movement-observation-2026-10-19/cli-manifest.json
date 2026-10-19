@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 2,
+  "runId": "2d559c16-b679-42a4-9363-2840b0d74771",
+  "reportSchemaVersions": [
+    1,
+    2
+  ],
+  "coverages": [
+    "QUERY_ONLY",
+    "QUERY_AND_MOVEMENT"
+  ],
+  "complete": true,
+  "coverageScope": "Query provenance and instrumented non-truck movement destination groups; other policy branches and atomic predicates remain uninstrumented",
+  "initialStateHash": "sha256:58ce37c400bee86866ede10c9d0ca302ddaa7717e743845e8778234010d488a7",
+  "match": 0,
+  "options": {
+    "matches": 1,
+    "start": 0,
+    "parallel": 1,
+    "turns": 1,
+    "width": null,
+    "height": null,
+    "scale": null,
+    "style": null,
+    "engagement": "ALLIED_ATTACKS",
+    "divisions": 1,
+    "armored": 0,
+    "air": null,
+    "airTransport": null,
+    "fixMap": null,
+    "fixOob": null,
+    "policies": {
+      "allied": "heuristic",
+      "axis": "heuristic"
+    },
+    "maxActions": 60000,
+    "replay": true,
+    "trace": false,
+    "observeDecisions": true,
+    "out": "/home/cashlin/ocsEngine/artifacts/ai-movement-observation-study/reproduced/cli",
+    "swap": false,
+    "railCap": null,
+    "sea": null,
+    "seaCap": null,
+    "inlandEntry": null
+  },
+  "seeds": {
+    "map": 169541633,
+    "oob": 169541634,
+    "deployment": 169541635,
+    "rules": 169541636,
+    "allied": 169541637,
+    "axis": 169541638
+  },
+  "policyInputs": {
+    "heuristic": {
+      "policySha256": "43d83a84c0a45061cd22856cbc6665b1048680d9e6ee156ccf1e2ebc87d4c131"
+    }
+  },
+  "engineBuildSha256": "4a87376b26c41f60086cb3060f606afcc1e9b99bb3ba00339c904837d200bb2a",
+  "observerBuildHashes": {
+    "access": "806cf1245f60e0241571754f2de29f1426bb39762a8441d4720b46dd99c5db48",
+    "observation": "fc4595c6bedafcc808b501d741bf2b2bf1cfed260b4cec7fa4ae15f1d3e0dbba",
+    "seat-runner": "e926652dac9aeca6ae2730940542eb6420ccf1db334fad9c42e9d9e960293092",
+    "driver": "0e31ae51a980380c61ac16dac339eb36fd90b31477b8b2ad6e214391623709ad"
+  },
+  "decisions": 30,
+  "writtenDecisions": 30,
+  "error": null,
+  "stopReason": "FINISHED",
+  "finalStateHash": "sha256:5d0ef5ddb7d1c65f555b3c96cee974fd5140cdef42593c220f5bfce71f36ff61"
+}

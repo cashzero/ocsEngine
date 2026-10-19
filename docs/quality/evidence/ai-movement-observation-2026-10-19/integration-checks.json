@@ -1,0 +1,56 @@
+{
+  "sourceBindingsMatch": 7,
+  "rootRuntimeTreeSha256": "4a87376b26c41f60086cb3060f606afcc1e9b99bb3ba00339c904837d200bb2a",
+  "matchesReviewedWorkerBuild": true,
+  "archivedObsoleteGeneratedFiles": [
+    {
+      "original": "dist/rules/replacement/rebuild-preview.js",
+      "archive": "artifacts/ai-movement-observation-study/reproduced/obsolete-build-output/rules/replacement/rebuild-preview.js",
+      "sha256": "e0571f9d88807632d3197162ab836b505cde08eb07bdb4ce4ae37f4282bfc239"
+    },
+    {
+      "original": "dist/rules/replacement/rebuild-preview.js.map",
+      "archive": "artifacts/ai-movement-observation-study/reproduced/obsolete-build-output/rules/replacement/rebuild-preview.js.map",
+      "sha256": "b594c431a759243da2810a0180173bd38c55c6a9d7822a39f1dc331abf49584b"
+    },
+    {
+      "original": "dist/rules/replacement/rebuild-preview.d.ts.map",
+      "archive": "artifacts/ai-movement-observation-study/reproduced/obsolete-build-output/rules/replacement/rebuild-preview.d.ts.map",
+      "sha256": "605a0e27e0f54598ab8b2ab2bd9ce566480803898449dc1cd6f307f3a50ce386"
+    },
+    {
+      "original": "dist/rules/replacement/rebuild-preview.d.ts",
+      "archive": "artifacts/ai-movement-observation-study/reproduced/obsolete-build-output/rules/replacement/rebuild-preview.d.ts",
+      "sha256": "77158434eb1cd0b5a3183b7de8fd44d2cc554fe63305f859ddd2376b8e90fe44"
+    },
+    {
+      "original": "dist/rules/supply/hq-impact.d.ts.map",
+      "archive": "artifacts/ai-movement-observation-study/reproduced/obsolete-build-output/rules/supply/hq-impact.d.ts.map",
+      "sha256": "2de8d4a03931152b659e29e75c349c0f06da14894fa79aa34ed04d458af753c6"
+    },
+    {
+      "original": "dist/rules/supply/hq-impact.js.map",
+      "archive": "artifacts/ai-movement-observation-study/reproduced/obsolete-build-output/rules/supply/hq-impact.js.map",
+      "sha256": "23556a8293a2ec18ef6224009bcf3542f437af5420522e87a3a62683f953ece1"
+    },
+    {
+      "original": "dist/rules/supply/hq-impact.js",
+      "archive": "artifacts/ai-movement-observation-study/reproduced/obsolete-build-output/rules/supply/hq-impact.js",
+      "sha256": "e4e6291a0f1b51f62b5bf04c565293628fc15904395be1417f2625494454e85f"
+    },
+    {
+      "original": "dist/rules/supply/hq-impact.d.ts",
+      "archive": "artifacts/ai-movement-observation-study/reproduced/obsolete-build-output/rules/supply/hq-impact.d.ts",
+      "sha256": "7e085575c02c1b61f51172566bcafa94e7244603ce0b9f66b86876098fc6fcb0"
+    }
+  ],
+  "rootChecks": {
+    "typecheckExitCode": 0,
+    "buildExitCode": 0,
+    "testCommand": "npx vitest run tests/ai/seat-runner.test.ts tests/ai/bot-driver.test.ts tests/ai/heuristic.test.ts tests/ai/decision-observation.test.ts tests/ai/movement-observation.test.ts",
+    "testFiles": 5,
+    "tests": 21,
+    "exitCode": 0,
+    "reportedDurationSeconds": 18.74
+  }
+}
