@@ -1,0 +1,56 @@
+{
+  "baseCommit": "767e2a3",
+  "engineDirectory": "/tmp/ocsEngine-objective-study-engine",
+  "engineSha256": "875515764bbccf9a022201253b71926a66b6ecf96b65eac321cc8229081a0482",
+  "engineSourceUnchangedByRebase": true,
+  "files": {
+    "artifacts/ai-objective-methods-study/analysis-before-rebase.json": {
+      "bytes": 696374,
+      "sha256": "05330a4b2806a71b9e327294f16a1aff3e64b1e02d3e6bbf8d674ff0d6b000f8"
+    },
+    "artifacts/ai-objective-methods-study/corrected-run/analysis.json": {
+      "bytes": 696374,
+      "sha256": "ffdca2d21b2c3e632241d5df65a76de0e89028d718b767b502a5caa905bdf657"
+    },
+    "artifacts/ai-objective-methods-study/corrected-run/observations.json": {
+      "bytes": 8077478,
+      "sha256": "b0d7d1ff99a446b3cbe122b3941bf817f8f9b9b369a545480f6f19f50172e440"
+    },
+    "artifacts/ai-objective-methods-study/corrected-run/predictions.jsonl": {
+      "bytes": 364796,
+      "sha256": "e45e4de4dd104d94b6637dfca4e09256e8958043ba4d0e13bc1dec1b37c9731f"
+    },
+    "artifacts/ai-objective-methods-study/corrected-run/worklist.json": {
+      "bytes": 217760,
+      "sha256": "520774252af01c526b146798a8b390d2bfe1a3ba5c219a74bc90405d6279b810"
+    },
+    "docs/quality/evidence/ai-position-metric-audit-2026-10-19/manifest.json": {
+      "bytes": 704,
+      "sha256": "adc9f98a781d9072a44ef6b65f81f8c6c2b9a42ddf406826a7feb9426b5fd06e"
+    },
+    "scripts/ai-objective-replay-verify.mjs": {
+      "bytes": 10512,
+      "sha256": "f0dec2f8d0eb94ce7e1a05c80b71210a392804ac1e7d1031db61335939e1b48e"
+    },
+    "scripts/ai-objective-replay.mjs": {
+      "bytes": 23460,
+      "sha256": "f271de7d78a04a0ef3c796ba339912934def5176fd2df2ad6837890923625762"
+    },
+    "scripts/ai-objective-study.py": {
+      "bytes": 53575,
+      "sha256": "07f5dde455b0cbce10923d734b2576fadd9640393654bea5867c7ac48191fa35"
+    },
+    "scripts/ai-position-validate.py": {
+      "bytes": 31865,
+      "sha256": "91eb5b1d453a3fe102462a3bc787eff126791eb8fb447373c8592c730f06dbff"
+    },
+    "scripts/ai-vp-metrics-compare.py": {
+      "bytes": 24322,
+      "sha256": "00eeb924694c722d1ce47d92e44a6d1d6bae485b6728f1c9d2f0fcd80ed6a864"
+    }
+  },
+  "finalIntegrationBaseCommit": "883beecb45e10099d1a1a5702be0c81cfb0cbc22",
+  "integrationBaseCommit": "ee3f7898f2ccd62970037a6afa0f46453db8e25a",
+  "nodeVersion": "v26.9.0",
+  "recordedAtUtc": "2026-10-18T23:59:48.035399+00:00"
+}

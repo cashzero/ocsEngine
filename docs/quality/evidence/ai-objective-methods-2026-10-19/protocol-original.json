@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "frozenAtUtc": "2026-10-18T23:34:00.057033+00:00",
+  "baseCommit": "767e2a3",
+  "contractSha256": "7154092d61b8b62c2817812f102adcac5eae81dbedc5f8d12138a9473ba4f271",
+  "population": "All opponent-held objectives at original156 start-of-player-turn windows in12unique historic temperate trajectories;8map seeds. Neutral/own-held objectives retained for accounting only.",
+  "label": "Mover controls the same initially opponent-held target at end of its player-turn window.",
+  "primaryContrast": "M3 rules+ratio+baseline versus M1 proximity/occupancy/time/role baseline",
+  "primaryScore": "Brier score; lower is better",
+  "models": {
+    "M0": "Training positive prevalence with .5/.5 pseudocounts",
+    "M1": [
+      "occupied",
+      "nearestP",
+      "ownAbsent",
+      "nearestO",
+      "opponentAbsent",
+      "points",
+      "turnFraction",
+      "attackerMoving",
+      "defenderMoving"
+    ],
+    "M2adds": [
+      "logRatio",
+      "zeroEnemyStrength"
+    ],
+    "M3adds": [
+      "column",
+      "supplyColumnGain",
+      "drm",
+      "hedgehog",
+      "noAdjacent",
+      "undefended",
+      "lineClose",
+      "lineVeryClose",
+      "lineExtremelyClose"
+    ]
+  },
+  "objective": "SUM Bernoulli cross entropy plus0.5*squared standardized slopes, lambda1, intercept unpenalized; single-class folds useM0",
+  "split": "Leave one complete map seed out, pooled-role fits. Same held-out predictions scored by role.",
+  "selection": "No hyperparameter or feature selection. All models reported. Only retainedCapture fitted.",
+  "scoringClip": 1e-06,
+  "calibrationBins": [
+    0,
+    0.05,
+    0.1,
+    0.2,
+    0.4,
+    0.6,
+    0.8,
+    1
+  ],
+  "uncertainty": "1000 paired complete seed-cluster resamples of fixed out-of-fold errors; no refitting or selection uncertainty.",
+  "scopeLimitations": [
+    "Historical, exploratory, already-inspected source cohort; not independent prospective validation",
+    "Conditional odds from real adjacent formation do not establish legal multi-action combat, joint fuel or supply payment",
+    "Retained enemy-objective acquisition omits neutral acquisition and defense of currently-held targets; not full netVP or terminal-margin model",
+    "No policy/source rule changes, new matches, promotion or UI acceptance"
+  ]
+}

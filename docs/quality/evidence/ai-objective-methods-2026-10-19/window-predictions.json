@@ -1,0 +1,2498 @@
+[
+  {
+    "expectedVp": {
+      "M0": 1.435042735042735,
+      "M1": 0.467212342539502,
+      "M2": 0.482375397702945,
+      "M3": 0.4655868186500266
+    },
+    "game": "30014559e67622cc0b80e819e84efa24d1a38ed7b11f58ec5a1626effcb95f40",
+    "gameTurn": 2,
+    "mapSeed": 295641633,
+    "observedVp": 2,
+    "playerTurnIndex": 0,
+    "role": "meeting",
+    "targetCount": 9,
+    "window": "30014559e67622cc0b80e819e84efa24d1a38ed7b11f58ec5a1626effcb95f40:2:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 1.5598290598290598,
+      "M1": 0.5630367085418629,
+      "M2": 0.5975578958624698,
+      "M3": 0.5448407123787444
+    },
+    "game": "30014559e67622cc0b80e819e84efa24d1a38ed7b11f58ec5a1626effcb95f40",
+    "gameTurn": 2,
+    "mapSeed": 295641633,
+    "observedVp": 0,
+    "playerTurnIndex": 1,
+    "role": "meeting",
+    "targetCount": 10,
+    "window": "30014559e67622cc0b80e819e84efa24d1a38ed7b11f58ec5a1626effcb95f40:2:1"
+  },
+  {
+    "expectedVp": {
+      "M0": 1.3102564102564103,
+      "M1": 0.3441079801008252,
+      "M2": 0.3747889488073991,
+      "M3": 0.37651153385095115
+    },
+    "game": "30014559e67622cc0b80e819e84efa24d1a38ed7b11f58ec5a1626effcb95f40",
+    "gameTurn": 3,
+    "mapSeed": 295641633,
+    "observedVp": 0,
+    "playerTurnIndex": 0,
+    "role": "meeting",
+    "targetCount": 8,
+    "window": "30014559e67622cc0b80e819e84efa24d1a38ed7b11f58ec5a1626effcb95f40:3:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 1.5598290598290598,
+      "M1": 2.702402523062915,
+      "M2": 3.2339738512274936,
+      "M3": 2.818684607405174
+    },
+    "game": "30014559e67622cc0b80e819e84efa24d1a38ed7b11f58ec5a1626effcb95f40",
+    "gameTurn": 3,
+    "mapSeed": 295641633,
+    "observedVp": 2,
+    "playerTurnIndex": 1,
+    "role": "meeting",
+    "targetCount": 10,
+    "window": "30014559e67622cc0b80e819e84efa24d1a38ed7b11f58ec5a1626effcb95f40:3:1"
+  },
+  {
+    "expectedVp": {
+      "M0": 1.435042735042735,
+      "M1": 0.44012278527999316,
+      "M2": 0.4373614705954853,
+      "M3": 0.47809543391454656
+    },
+    "game": "30014559e67622cc0b80e819e84efa24d1a38ed7b11f58ec5a1626effcb95f40",
+    "gameTurn": 4,
+    "mapSeed": 295641633,
+    "observedVp": 0,
+    "playerTurnIndex": 0,
+    "role": "meeting",
+    "targetCount": 9,
+    "window": "30014559e67622cc0b80e819e84efa24d1a38ed7b11f58ec5a1626effcb95f40:4:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 1.435042735042735,
+      "M1": 4.489514926657781,
+      "M2": 4.533753901781858,
+      "M3": 4.369278903560942
+    },
+    "game": "30014559e67622cc0b80e819e84efa24d1a38ed7b11f58ec5a1626effcb95f40",
+    "gameTurn": 4,
+    "mapSeed": 295641633,
+    "observedVp": 0,
+    "playerTurnIndex": 1,
+    "role": "meeting",
+    "targetCount": 9,
+    "window": "30014559e67622cc0b80e819e84efa24d1a38ed7b11f58ec5a1626effcb95f40:4:1"
+  },
+  {
+    "expectedVp": {
+      "M0": 1.435042735042735,
+      "M1": 0.45746100697488246,
+      "M2": 0.4351636284504447,
+      "M3": 0.5263996713520577
+    },
+    "game": "30014559e67622cc0b80e819e84efa24d1a38ed7b11f58ec5a1626effcb95f40",
+    "gameTurn": 5,
+    "mapSeed": 295641633,
+    "observedVp": 0,
+    "playerTurnIndex": 0,
+    "role": "meeting",
+    "targetCount": 9,
+    "window": "30014559e67622cc0b80e819e84efa24d1a38ed7b11f58ec5a1626effcb95f40:5:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 1.435042735042735,
+      "M1": 4.42431130277725,
+      "M2": 4.45452450290969,
+      "M3": 4.453339990098771
+    },
+    "game": "30014559e67622cc0b80e819e84efa24d1a38ed7b11f58ec5a1626effcb95f40",
+    "gameTurn": 5,
+    "mapSeed": 295641633,
+    "observedVp": 0,
+    "playerTurnIndex": 1,
+    "role": "meeting",
+    "targetCount": 9,
+    "window": "30014559e67622cc0b80e819e84efa24d1a38ed7b11f58ec5a1626effcb95f40:5:1"
+  },
+  {
+    "expectedVp": {
+      "M0": 1.435042735042735,
+      "M1": 4.642912319804152,
+      "M2": 4.431405802928515,
+      "M3": 4.435564337228945
+    },
+    "game": "30014559e67622cc0b80e819e84efa24d1a38ed7b11f58ec5a1626effcb95f40",
+    "gameTurn": 6,
+    "mapSeed": 295641633,
+    "observedVp": 0,
+    "playerTurnIndex": 0,
+    "role": "meeting",
+    "targetCount": 9,
+    "window": "30014559e67622cc0b80e819e84efa24d1a38ed7b11f58ec5a1626effcb95f40:6:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 1.435042735042735,
+      "M1": 0.5395036849845053,
+      "M2": 0.5489964505015995,
+      "M3": 0.6949994259508732
+    },
+    "game": "30014559e67622cc0b80e819e84efa24d1a38ed7b11f58ec5a1626effcb95f40",
+    "gameTurn": 6,
+    "mapSeed": 295641633,
+    "observedVp": 0,
+    "playerTurnIndex": 1,
+    "role": "meeting",
+    "targetCount": 9,
+    "window": "30014559e67622cc0b80e819e84efa24d1a38ed7b11f58ec5a1626effcb95f40:6:1"
+  },
+  {
+    "expectedVp": {
+      "M0": 1.435042735042735,
+      "M1": 0.6135041956023994,
+      "M2": 1.0592549714714152,
+      "M3": 4.141082956252452
+    },
+    "game": "30014559e67622cc0b80e819e84efa24d1a38ed7b11f58ec5a1626effcb95f40",
+    "gameTurn": 7,
+    "mapSeed": 295641633,
+    "observedVp": 4,
+    "playerTurnIndex": 0,
+    "role": "meeting",
+    "targetCount": 9,
+    "window": "30014559e67622cc0b80e819e84efa24d1a38ed7b11f58ec5a1626effcb95f40:7:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 1.6846153846153846,
+      "M1": 0.9543667458066714,
+      "M2": 0.8279955368489543,
+      "M3": 0.8874006469203881
+    },
+    "game": "30014559e67622cc0b80e819e84efa24d1a38ed7b11f58ec5a1626effcb95f40",
+    "gameTurn": 7,
+    "mapSeed": 295641633,
+    "observedVp": 0,
+    "playerTurnIndex": 1,
+    "role": "meeting",
+    "targetCount": 10,
+    "window": "30014559e67622cc0b80e819e84efa24d1a38ed7b11f58ec5a1626effcb95f40:7:1"
+  },
+  {
+    "expectedVp": {
+      "M0": 1.6846153846153846,
+      "M1": 0.9530791564740898,
+      "M2": 0.9807230211939639,
+      "M3": 1.1009921022591618
+    },
+    "game": "30014559e67622cc0b80e819e84efa24d1a38ed7b11f58ec5a1626effcb95f40",
+    "gameTurn": 8,
+    "mapSeed": 295641633,
+    "observedVp": 0,
+    "playerTurnIndex": 0,
+    "role": "meeting",
+    "targetCount": 10,
+    "window": "30014559e67622cc0b80e819e84efa24d1a38ed7b11f58ec5a1626effcb95f40:8:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 1.2336363636363636,
+      "M1": 0.18391414135440934,
+      "M2": 0.2480180647952951,
+      "M3": 0.22660871045269035
+    },
+    "game": "5a4a977dbbaada827bbeb671497d0c213ffeafe60d195528150bfdd07242fb61",
+    "gameTurn": 2,
+    "mapSeed": 295642021,
+    "observedVp": 3,
+    "playerTurnIndex": 0,
+    "role": "meeting",
+    "targetCount": 9,
+    "window": "5a4a977dbbaada827bbeb671497d0c213ffeafe60d195528150bfdd07242fb61:2:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 2.038181818181818,
+      "M1": 0.5952501913532976,
+      "M2": 0.6651964936361381,
+      "M3": 1.5645866700103899
+    },
+    "game": "5a4a977dbbaada827bbeb671497d0c213ffeafe60d195528150bfdd07242fb61",
+    "gameTurn": 2,
+    "mapSeed": 295642021,
+    "observedVp": 0,
+    "playerTurnIndex": 1,
+    "role": "meeting",
+    "targetCount": 15,
+    "window": "5a4a977dbbaada827bbeb671497d0c213ffeafe60d195528150bfdd07242fb61:2:1"
+  },
+  {
+    "expectedVp": {
+      "M0": 1.0727272727272728,
+      "M1": 0.3242630855897525,
+      "M2": 0.3037066704932795,
+      "M3": 0.2399193241626957
+    },
+    "game": "5a4a977dbbaada827bbeb671497d0c213ffeafe60d195528150bfdd07242fb61",
+    "gameTurn": 3,
+    "mapSeed": 295642021,
+    "observedVp": 0,
+    "playerTurnIndex": 0,
+    "role": "meeting",
+    "targetCount": 8,
+    "window": "5a4a977dbbaada827bbeb671497d0c213ffeafe60d195528150bfdd07242fb61:3:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 2.038181818181818,
+      "M1": 0.6005588325688376,
+      "M2": 0.6556980092272111,
+      "M3": 0.49044628063155854
+    },
+    "game": "5a4a977dbbaada827bbeb671497d0c213ffeafe60d195528150bfdd07242fb61",
+    "gameTurn": 3,
+    "mapSeed": 295642021,
+    "observedVp": 2,
+    "playerTurnIndex": 1,
+    "role": "meeting",
+    "targetCount": 15,
+    "window": "5a4a977dbbaada827bbeb671497d0c213ffeafe60d195528150bfdd07242fb61:3:1"
+  },
+  {
+    "expectedVp": {
+      "M0": 1.18,
+      "M1": 0.373893855340031,
+      "M2": 0.37125132924633714,
+      "M3": 0.28853340194822297
+    },
+    "game": "5a4a977dbbaada827bbeb671497d0c213ffeafe60d195528150bfdd07242fb61",
+    "gameTurn": 4,
+    "mapSeed": 295642021,
+    "observedVp": 0,
+    "playerTurnIndex": 0,
+    "role": "meeting",
+    "targetCount": 9,
+    "window": "5a4a977dbbaada827bbeb671497d0c213ffeafe60d195528150bfdd07242fb61:4:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 1.9309090909090907,
+      "M1": 1.879081030387077,
+      "M2": 1.6254616334507317,
+      "M3": 1.477606061449523
+    },
+    "game": "5a4a977dbbaada827bbeb671497d0c213ffeafe60d195528150bfdd07242fb61",
+    "gameTurn": 4,
+    "mapSeed": 295642021,
+    "observedVp": 2,
+    "playerTurnIndex": 1,
+    "role": "meeting",
+    "targetCount": 14,
+    "window": "5a4a977dbbaada827bbeb671497d0c213ffeafe60d195528150bfdd07242fb61:4:1"
+  },
+  {
+    "expectedVp": {
+      "M0": 1.2872727272727271,
+      "M1": 0.46742759104135345,
+      "M2": 0.4699219140838369,
+      "M3": 0.3767349784759287
+    },
+    "game": "5a4a977dbbaada827bbeb671497d0c213ffeafe60d195528150bfdd07242fb61",
+    "gameTurn": 5,
+    "mapSeed": 295642021,
+    "observedVp": 4,
+    "playerTurnIndex": 0,
+    "role": "meeting",
+    "targetCount": 10,
+    "window": "5a4a977dbbaada827bbeb671497d0c213ffeafe60d195528150bfdd07242fb61:5:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 2.038181818181818,
+      "M1": 0.6016439635009505,
+      "M2": 0.6396667921016211,
+      "M3": 0.49376631336315424
+    },
+    "game": "5a4a977dbbaada827bbeb671497d0c213ffeafe60d195528150bfdd07242fb61",
+    "gameTurn": 5,
+    "mapSeed": 295642021,
+    "observedVp": 0,
+    "playerTurnIndex": 1,
+    "role": "meeting",
+    "targetCount": 15,
+    "window": "5a4a977dbbaada827bbeb671497d0c213ffeafe60d195528150bfdd07242fb61:5:1"
+  },
+  {
+    "expectedVp": {
+      "M0": 1.0727272727272728,
+      "M1": 1.6704997449048007,
+      "M2": 2.1322441324672434,
+      "M3": 2.057955007472122
+    },
+    "game": "5a4a977dbbaada827bbeb671497d0c213ffeafe60d195528150bfdd07242fb61",
+    "gameTurn": 6,
+    "mapSeed": 295642021,
+    "observedVp": 2,
+    "playerTurnIndex": 0,
+    "role": "meeting",
+    "targetCount": 8,
+    "window": "5a4a977dbbaada827bbeb671497d0c213ffeafe60d195528150bfdd07242fb61:6:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 2.1454545454545455,
+      "M1": 2.4602548481193356,
+      "M2": 3.2984935406006377,
+      "M3": 3.145750927266221
+    },
+    "game": "5a4a977dbbaada827bbeb671497d0c213ffeafe60d195528150bfdd07242fb61",
+    "gameTurn": 6,
+    "mapSeed": 295642021,
+    "observedVp": 7,
+    "playerTurnIndex": 1,
+    "role": "meeting",
+    "targetCount": 16,
+    "window": "5a4a977dbbaada827bbeb671497d0c213ffeafe60d195528150bfdd07242fb61:6:1"
+  },
+  {
+    "expectedVp": {
+      "M0": 1.3409090909090908,
+      "M1": 0.423444841339698,
+      "M2": 0.35986855728234,
+      "M3": 0.40357326190763787
+    },
+    "game": "5a4a977dbbaada827bbeb671497d0c213ffeafe60d195528150bfdd07242fb61",
+    "gameTurn": 7,
+    "mapSeed": 295642021,
+    "observedVp": 0,
+    "playerTurnIndex": 0,
+    "role": "meeting",
+    "targetCount": 10,
+    "window": "5a4a977dbbaada827bbeb671497d0c213ffeafe60d195528150bfdd07242fb61:7:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 1.7699999999999998,
+      "M1": 0.44602482146103434,
+      "M2": 0.3980254704475495,
+      "M3": 0.34372249973222174
+    },
+    "game": "5a4a977dbbaada827bbeb671497d0c213ffeafe60d195528150bfdd07242fb61",
+    "gameTurn": 7,
+    "mapSeed": 295642021,
+    "observedVp": 0,
+    "playerTurnIndex": 1,
+    "role": "meeting",
+    "targetCount": 13,
+    "window": "5a4a977dbbaada827bbeb671497d0c213ffeafe60d195528150bfdd07242fb61:7:1"
+  },
+  {
+    "expectedVp": {
+      "M0": 1.7699999999999998,
+      "M1": 1.9500541615803064,
+      "M2": 2.278308891601193,
+      "M3": 2.223947917295336
+    },
+    "game": "5a4a977dbbaada827bbeb671497d0c213ffeafe60d195528150bfdd07242fb61",
+    "gameTurn": 8,
+    "mapSeed": 295642021,
+    "observedVp": 2,
+    "playerTurnIndex": 0,
+    "role": "meeting",
+    "targetCount": 13,
+    "window": "5a4a977dbbaada827bbeb671497d0c213ffeafe60d195528150bfdd07242fb61:8:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.9622186495176849,
+      "M1": 0.4165256105189634,
+      "M2": 0.3072405637990282,
+      "M3": 0.30159856947149305
+    },
+    "game": "6bf977013dbf6ed4177cfe70edfb1adfb1ee7a2f6e5b63d48e6df173278cb0ba",
+    "gameTurn": 2,
+    "mapSeed": 295661033,
+    "observedVp": 0,
+    "playerTurnIndex": 0,
+    "role": "attacker-moving",
+    "targetCount": 5,
+    "window": "6bf977013dbf6ed4177cfe70edfb1adfb1ee7a2f6e5b63d48e6df173278cb0ba:2:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.15192926045016078,
+      "M1": 0.08588892637070947,
+      "M2": 0.05604319880602472,
+      "M3": 0.00010260607972661703
+    },
+    "game": "6bf977013dbf6ed4177cfe70edfb1adfb1ee7a2f6e5b63d48e6df173278cb0ba",
+    "gameTurn": 2,
+    "mapSeed": 295661033,
+    "observedVp": 0,
+    "playerTurnIndex": 1,
+    "role": "defender-moving",
+    "targetCount": 1,
+    "window": "6bf977013dbf6ed4177cfe70edfb1adfb1ee7a2f6e5b63d48e6df173278cb0ba:2:1"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.15192926045016078,
+      "M1": 0.07901936257205772,
+      "M2": 0.051026751466542654,
+      "M3": 0.0004377640575144925
+    },
+    "game": "6bf977013dbf6ed4177cfe70edfb1adfb1ee7a2f6e5b63d48e6df173278cb0ba",
+    "gameTurn": 3,
+    "mapSeed": 295661033,
+    "observedVp": 0,
+    "playerTurnIndex": 0,
+    "role": "defender-moving",
+    "targetCount": 1,
+    "window": "6bf977013dbf6ed4177cfe70edfb1adfb1ee7a2f6e5b63d48e6df173278cb0ba:3:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.9622186495176849,
+      "M1": 0.8297759643671315,
+      "M2": 0.7784382100684049,
+      "M3": 0.31201829434038625
+    },
+    "game": "6bf977013dbf6ed4177cfe70edfb1adfb1ee7a2f6e5b63d48e6df173278cb0ba",
+    "gameTurn": 3,
+    "mapSeed": 295661033,
+    "observedVp": 0,
+    "playerTurnIndex": 1,
+    "role": "attacker-moving",
+    "targetCount": 5,
+    "window": "6bf977013dbf6ed4177cfe70edfb1adfb1ee7a2f6e5b63d48e6df173278cb0ba:3:1"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.15192926045016078,
+      "M1": 0.0726855353852684,
+      "M2": 0.033135423256520594,
+      "M3": 0.0013666884181108858
+    },
+    "game": "6bf977013dbf6ed4177cfe70edfb1adfb1ee7a2f6e5b63d48e6df173278cb0ba",
+    "gameTurn": 4,
+    "mapSeed": 295661033,
+    "observedVp": 0,
+    "playerTurnIndex": 0,
+    "role": "defender-moving",
+    "targetCount": 1,
+    "window": "6bf977013dbf6ed4177cfe70edfb1adfb1ee7a2f6e5b63d48e6df173278cb0ba:4:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.9622186495176849,
+      "M1": 1.0024510276411114,
+      "M2": 1.0746585938197493,
+      "M3": 0.9309094069971604
+    },
+    "game": "6bf977013dbf6ed4177cfe70edfb1adfb1ee7a2f6e5b63d48e6df173278cb0ba",
+    "gameTurn": 4,
+    "mapSeed": 295661033,
+    "observedVp": 4,
+    "playerTurnIndex": 1,
+    "role": "attacker-moving",
+    "targetCount": 5,
+    "window": "6bf977013dbf6ed4177cfe70edfb1adfb1ee7a2f6e5b63d48e6df173278cb0ba:4:1"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.3545016077170418,
+      "M1": 0.121252723653168,
+      "M2": 0.04534873263140396,
+      "M3": 0.02496004556024312
+    },
+    "game": "6bf977013dbf6ed4177cfe70edfb1adfb1ee7a2f6e5b63d48e6df173278cb0ba",
+    "gameTurn": 5,
+    "mapSeed": 295661033,
+    "observedVp": 0,
+    "playerTurnIndex": 0,
+    "role": "defender-moving",
+    "targetCount": 2,
+    "window": "6bf977013dbf6ed4177cfe70edfb1adfb1ee7a2f6e5b63d48e6df173278cb0ba:5:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.7596463022508039,
+      "M1": 0.6543672055291646,
+      "M2": 0.6349689030291383,
+      "M3": 0.17978708819082193
+    },
+    "game": "6bf977013dbf6ed4177cfe70edfb1adfb1ee7a2f6e5b63d48e6df173278cb0ba",
+    "gameTurn": 5,
+    "mapSeed": 295661033,
+    "observedVp": 0,
+    "playerTurnIndex": 1,
+    "role": "attacker-moving",
+    "targetCount": 4,
+    "window": "6bf977013dbf6ed4177cfe70edfb1adfb1ee7a2f6e5b63d48e6df173278cb0ba:5:1"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.3545016077170418,
+      "M1": 0.1274805527177042,
+      "M2": 0.04263918270642047,
+      "M3": 0.001106756212177248
+    },
+    "game": "6bf977013dbf6ed4177cfe70edfb1adfb1ee7a2f6e5b63d48e6df173278cb0ba",
+    "gameTurn": 6,
+    "mapSeed": 295661033,
+    "observedVp": 0,
+    "playerTurnIndex": 0,
+    "role": "defender-moving",
+    "targetCount": 2,
+    "window": "6bf977013dbf6ed4177cfe70edfb1adfb1ee7a2f6e5b63d48e6df173278cb0ba:6:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.7596463022508039,
+      "M1": 0.8097927452711153,
+      "M2": 0.9555534631691784,
+      "M3": 0.34046896988158665
+    },
+    "game": "6bf977013dbf6ed4177cfe70edfb1adfb1ee7a2f6e5b63d48e6df173278cb0ba",
+    "gameTurn": 6,
+    "mapSeed": 295661033,
+    "observedVp": 7,
+    "playerTurnIndex": 1,
+    "role": "attacker-moving",
+    "targetCount": 4,
+    "window": "6bf977013dbf6ed4177cfe70edfb1adfb1ee7a2f6e5b63d48e6df173278cb0ba:6:1"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.40514469453376206,
+      "M1": 0.5215219424081347,
+      "M2": 0.39993003660466253,
+      "M3": 0.10692084861021507
+    },
+    "game": "6bf977013dbf6ed4177cfe70edfb1adfb1ee7a2f6e5b63d48e6df173278cb0ba",
+    "gameTurn": 7,
+    "mapSeed": 295661033,
+    "observedVp": 0,
+    "playerTurnIndex": 0,
+    "role": "attacker-moving",
+    "targetCount": 2,
+    "window": "6bf977013dbf6ed4177cfe70edfb1adfb1ee7a2f6e5b63d48e6df173278cb0ba:7:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.7090032154340836,
+      "M1": 0.16112097908003278,
+      "M2": 0.0529727813481645,
+      "M3": 0.04505445240420798
+    },
+    "game": "6bf977013dbf6ed4177cfe70edfb1adfb1ee7a2f6e5b63d48e6df173278cb0ba",
+    "gameTurn": 7,
+    "mapSeed": 295661033,
+    "observedVp": 0,
+    "playerTurnIndex": 1,
+    "role": "defender-moving",
+    "targetCount": 4,
+    "window": "6bf977013dbf6ed4177cfe70edfb1adfb1ee7a2f6e5b63d48e6df173278cb0ba:7:1"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.7090032154340836,
+      "M1": 0.16160312606264607,
+      "M2": 0.041348348118151745,
+      "M3": 0.02397271602775874
+    },
+    "game": "6bf977013dbf6ed4177cfe70edfb1adfb1ee7a2f6e5b63d48e6df173278cb0ba",
+    "gameTurn": 8,
+    "mapSeed": 295661033,
+    "observedVp": 0,
+    "playerTurnIndex": 0,
+    "role": "defender-moving",
+    "targetCount": 4,
+    "window": "6bf977013dbf6ed4177cfe70edfb1adfb1ee7a2f6e5b63d48e6df173278cb0ba:8:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.5038343558282209,
+      "M1": 0.4439653565991549,
+      "M2": 0.32017505151631087,
+      "M3": 0.3880202320068328
+    },
+    "game": "72ef30c9b0a367ca3e0ae122066a1f435e49f8715832295f06470612a295833a",
+    "gameTurn": 2,
+    "mapSeed": 295661227,
+    "observedVp": 0,
+    "playerTurnIndex": 0,
+    "role": "attacker-moving",
+    "targetCount": 3,
+    "window": "72ef30c9b0a367ca3e0ae122066a1f435e49f8715832295f06470612a295833a:2:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.22392638036809817,
+      "M1": 0.019528202351592427,
+      "M2": 0.03324496904297349,
+      "M3": 0.014452628072830345
+    },
+    "game": "72ef30c9b0a367ca3e0ae122066a1f435e49f8715832295f06470612a295833a",
+    "gameTurn": 2,
+    "mapSeed": 295661227,
+    "observedVp": 0,
+    "playerTurnIndex": 1,
+    "role": "defender-moving",
+    "targetCount": 1,
+    "window": "72ef30c9b0a367ca3e0ae122066a1f435e49f8715832295f06470612a295833a:2:1"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.5038343558282209,
+      "M1": 0.4254458418147259,
+      "M2": 0.30291467408587397,
+      "M3": 0.3698435705241827
+    },
+    "game": "72ef30c9b0a367ca3e0ae122066a1f435e49f8715832295f06470612a295833a",
+    "gameTurn": 3,
+    "mapSeed": 295661227,
+    "observedVp": 0,
+    "playerTurnIndex": 0,
+    "role": "attacker-moving",
+    "targetCount": 3,
+    "window": "72ef30c9b0a367ca3e0ae122066a1f435e49f8715832295f06470612a295833a:3:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.22392638036809817,
+      "M1": 0.018626151562030912,
+      "M2": 0.0281651239781397,
+      "M3": 0.05054917647644287
+    },
+    "game": "72ef30c9b0a367ca3e0ae122066a1f435e49f8715832295f06470612a295833a",
+    "gameTurn": 3,
+    "mapSeed": 295661227,
+    "observedVp": 0,
+    "playerTurnIndex": 1,
+    "role": "defender-moving",
+    "targetCount": 1,
+    "window": "72ef30c9b0a367ca3e0ae122066a1f435e49f8715832295f06470612a295833a:3:1"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.22392638036809817,
+      "M1": 0.013957757721334358,
+      "M2": 0.023626280332359927,
+      "M3": 0.021783333866519733
+    },
+    "game": "72ef30c9b0a367ca3e0ae122066a1f435e49f8715832295f06470612a295833a",
+    "gameTurn": 4,
+    "mapSeed": 295661227,
+    "observedVp": 0,
+    "playerTurnIndex": 0,
+    "role": "defender-moving",
+    "targetCount": 1,
+    "window": "72ef30c9b0a367ca3e0ae122066a1f435e49f8715832295f06470612a295833a:4:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.5038343558282209,
+      "M1": 0.5372936557522373,
+      "M2": 0.5202758703696765,
+      "M3": 0.5255811948429884
+    },
+    "game": "72ef30c9b0a367ca3e0ae122066a1f435e49f8715832295f06470612a295833a",
+    "gameTurn": 4,
+    "mapSeed": 295661227,
+    "observedVp": 0,
+    "playerTurnIndex": 1,
+    "role": "attacker-moving",
+    "targetCount": 3,
+    "window": "72ef30c9b0a367ca3e0ae122066a1f435e49f8715832295f06470612a295833a:4:1"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.5038343558282209,
+      "M1": 0.7022055029329524,
+      "M2": 0.7791404964008423,
+      "M3": 0.7036928181384345
+    },
+    "game": "72ef30c9b0a367ca3e0ae122066a1f435e49f8715832295f06470612a295833a",
+    "gameTurn": 5,
+    "mapSeed": 295661227,
+    "observedVp": 0,
+    "playerTurnIndex": 0,
+    "role": "attacker-moving",
+    "targetCount": 3,
+    "window": "72ef30c9b0a367ca3e0ae122066a1f435e49f8715832295f06470612a295833a:5:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.22392638036809817,
+      "M1": 0.01694460443583685,
+      "M2": 0.01703139708467988,
+      "M3": 0.006076765945196019
+    },
+    "game": "72ef30c9b0a367ca3e0ae122066a1f435e49f8715832295f06470612a295833a",
+    "gameTurn": 5,
+    "mapSeed": 295661227,
+    "observedVp": 0,
+    "playerTurnIndex": 1,
+    "role": "defender-moving",
+    "targetCount": 1,
+    "window": "72ef30c9b0a367ca3e0ae122066a1f435e49f8715832295f06470612a295833a:5:1"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.5038343558282209,
+      "M1": 2.246503965171032,
+      "M2": 2.139535022634452,
+      "M3": 2.1542273701908323
+    },
+    "game": "72ef30c9b0a367ca3e0ae122066a1f435e49f8715832295f06470612a295833a",
+    "gameTurn": 6,
+    "mapSeed": 295661227,
+    "observedVp": 5,
+    "playerTurnIndex": 0,
+    "role": "attacker-moving",
+    "targetCount": 3,
+    "window": "72ef30c9b0a367ca3e0ae122066a1f435e49f8715832295f06470612a295833a:6:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.5038343558282209,
+      "M1": 0.024500973286527096,
+      "M2": 0.020429092135284023,
+      "M3": 0.02867001328406549
+    },
+    "game": "72ef30c9b0a367ca3e0ae122066a1f435e49f8715832295f06470612a295833a",
+    "gameTurn": 6,
+    "mapSeed": 295661227,
+    "observedVp": 0,
+    "playerTurnIndex": 1,
+    "role": "defender-moving",
+    "targetCount": 3,
+    "window": "72ef30c9b0a367ca3e0ae122066a1f435e49f8715832295f06470612a295833a:6:1"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.22392638036809817,
+      "M1": 0.24539467196328515,
+      "M2": 0.12888775258946866,
+      "M3": 0.20924212319995153
+    },
+    "game": "72ef30c9b0a367ca3e0ae122066a1f435e49f8715832295f06470612a295833a",
+    "gameTurn": 7,
+    "mapSeed": 295661227,
+    "observedVp": 0,
+    "playerTurnIndex": 0,
+    "role": "attacker-moving",
+    "targetCount": 1,
+    "window": "72ef30c9b0a367ca3e0ae122066a1f435e49f8715832295f06470612a295833a:7:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.5038343558282209,
+      "M1": 0.0216976078765503,
+      "M2": 0.015939129838047954,
+      "M3": 0.02422021189360966
+    },
+    "game": "72ef30c9b0a367ca3e0ae122066a1f435e49f8715832295f06470612a295833a",
+    "gameTurn": 7,
+    "mapSeed": 295661227,
+    "observedVp": 0,
+    "playerTurnIndex": 1,
+    "role": "defender-moving",
+    "targetCount": 3,
+    "window": "72ef30c9b0a367ca3e0ae122066a1f435e49f8715832295f06470612a295833a:7:1"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.5038343558282209,
+      "M1": 0.02275254122908925,
+      "M2": 0.01602071690797495,
+      "M3": 0.02509610740889847
+    },
+    "game": "72ef30c9b0a367ca3e0ae122066a1f435e49f8715832295f06470612a295833a",
+    "gameTurn": 8,
+    "mapSeed": 295661227,
+    "observedVp": 0,
+    "playerTurnIndex": 0,
+    "role": "defender-moving",
+    "targetCount": 3,
+    "window": "72ef30c9b0a367ca3e0ae122066a1f435e49f8715832295f06470612a295833a:8:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 1.0047169811320755,
+      "M1": 0.4893739257861175,
+      "M2": 0.4138822605583159,
+      "M3": 0.43817477168486796
+    },
+    "game": "764d7e80dfd5949b287d5215515f8f95d4c2ff65683c265e1494b83f3253d378",
+    "gameTurn": 2,
+    "mapSeed": 295661421,
+    "observedVp": 0,
+    "playerTurnIndex": 0,
+    "role": "attacker-moving",
+    "targetCount": 5,
+    "window": "764d7e80dfd5949b287d5215515f8f95d4c2ff65683c265e1494b83f3253d378:2:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 0,
+      "M1": 0,
+      "M2": 0,
+      "M3": 0
+    },
+    "game": "764d7e80dfd5949b287d5215515f8f95d4c2ff65683c265e1494b83f3253d378",
+    "gameTurn": 2,
+    "mapSeed": 295661421,
+    "observedVp": 0,
+    "playerTurnIndex": 1,
+    "role": "defender-moving",
+    "targetCount": 0,
+    "window": "764d7e80dfd5949b287d5215515f8f95d4c2ff65683c265e1494b83f3253d378:2:1"
+  },
+  {
+    "expectedVp": {
+      "M0": 0,
+      "M1": 0,
+      "M2": 0,
+      "M3": 0
+    },
+    "game": "764d7e80dfd5949b287d5215515f8f95d4c2ff65683c265e1494b83f3253d378",
+    "gameTurn": 3,
+    "mapSeed": 295661421,
+    "observedVp": 0,
+    "playerTurnIndex": 0,
+    "role": "defender-moving",
+    "targetCount": 0,
+    "window": "764d7e80dfd5949b287d5215515f8f95d4c2ff65683c265e1494b83f3253d378:3:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 1.0047169811320755,
+      "M1": 0.7413416833372888,
+      "M2": 1.0508673788808152,
+      "M3": 0.9825637769687806
+    },
+    "game": "764d7e80dfd5949b287d5215515f8f95d4c2ff65683c265e1494b83f3253d378",
+    "gameTurn": 3,
+    "mapSeed": 295661421,
+    "observedVp": 0,
+    "playerTurnIndex": 1,
+    "role": "attacker-moving",
+    "targetCount": 5,
+    "window": "764d7e80dfd5949b287d5215515f8f95d4c2ff65683c265e1494b83f3253d378:3:1"
+  },
+  {
+    "expectedVp": {
+      "M0": 1.0047169811320755,
+      "M1": 0.8027013616231167,
+      "M2": 1.316053293422704,
+      "M3": 1.1924220742411316
+    },
+    "game": "764d7e80dfd5949b287d5215515f8f95d4c2ff65683c265e1494b83f3253d378",
+    "gameTurn": 4,
+    "mapSeed": 295661421,
+    "observedVp": 4,
+    "playerTurnIndex": 0,
+    "role": "attacker-moving",
+    "targetCount": 5,
+    "window": "764d7e80dfd5949b287d5215515f8f95d4c2ff65683c265e1494b83f3253d378:4:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.22327044025157233,
+      "M1": 0.0428702115417403,
+      "M2": 0.012405994319518915,
+      "M3": 0.026604137031131188
+    },
+    "game": "764d7e80dfd5949b287d5215515f8f95d4c2ff65683c265e1494b83f3253d378",
+    "gameTurn": 4,
+    "mapSeed": 295661421,
+    "observedVp": 0,
+    "playerTurnIndex": 1,
+    "role": "defender-moving",
+    "targetCount": 1,
+    "window": "764d7e80dfd5949b287d5215515f8f95d4c2ff65683c265e1494b83f3253d378:4:1"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.22327044025157233,
+      "M1": 0.055428272890471746,
+      "M2": 0.0291558818700209,
+      "M3": 0.00960598634533398
+    },
+    "game": "764d7e80dfd5949b287d5215515f8f95d4c2ff65683c265e1494b83f3253d378",
+    "gameTurn": 5,
+    "mapSeed": 295661421,
+    "observedVp": 0,
+    "playerTurnIndex": 0,
+    "role": "defender-moving",
+    "targetCount": 1,
+    "window": "764d7e80dfd5949b287d5215515f8f95d4c2ff65683c265e1494b83f3253d378:5:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.7814465408805031,
+      "M1": 1.656597039639955,
+      "M2": 1.2745836844269698,
+      "M3": 1.4244459608705888
+    },
+    "game": "764d7e80dfd5949b287d5215515f8f95d4c2ff65683c265e1494b83f3253d378",
+    "gameTurn": 5,
+    "mapSeed": 295661421,
+    "observedVp": 0,
+    "playerTurnIndex": 1,
+    "role": "attacker-moving",
+    "targetCount": 4,
+    "window": "764d7e80dfd5949b287d5215515f8f95d4c2ff65683c265e1494b83f3253d378:5:1"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.22327044025157233,
+      "M1": 0.053566782362671574,
+      "M2": 0.07544406134538698,
+      "M3": 0.12523283571364932
+    },
+    "game": "764d7e80dfd5949b287d5215515f8f95d4c2ff65683c265e1494b83f3253d378",
+    "gameTurn": 6,
+    "mapSeed": 295661421,
+    "observedVp": 0,
+    "playerTurnIndex": 0,
+    "role": "defender-moving",
+    "targetCount": 1,
+    "window": "764d7e80dfd5949b287d5215515f8f95d4c2ff65683c265e1494b83f3253d378:6:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.7814465408805031,
+      "M1": 1.7060720710869637,
+      "M2": 1.5718231469329598,
+      "M3": 4.002797071638086
+    },
+    "game": "764d7e80dfd5949b287d5215515f8f95d4c2ff65683c265e1494b83f3253d378",
+    "gameTurn": 6,
+    "mapSeed": 295661421,
+    "observedVp": 0,
+    "playerTurnIndex": 1,
+    "role": "attacker-moving",
+    "targetCount": 4,
+    "window": "764d7e80dfd5949b287d5215515f8f95d4c2ff65683c265e1494b83f3253d378:6:1"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.22327044025157233,
+      "M1": 0.051766987276542706,
+      "M2": 0.0211157034100815,
+      "M3": 0.00046687775545567424
+    },
+    "game": "764d7e80dfd5949b287d5215515f8f95d4c2ff65683c265e1494b83f3253d378",
+    "gameTurn": 7,
+    "mapSeed": 295661421,
+    "observedVp": 0,
+    "playerTurnIndex": 0,
+    "role": "defender-moving",
+    "targetCount": 1,
+    "window": "764d7e80dfd5949b287d5215515f8f95d4c2ff65683c265e1494b83f3253d378:7:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.7814465408805031,
+      "M1": 1.6550955234715212,
+      "M2": 1.3965686923045972,
+      "M3": 1.6162033003255007
+    },
+    "game": "764d7e80dfd5949b287d5215515f8f95d4c2ff65683c265e1494b83f3253d378",
+    "gameTurn": 7,
+    "mapSeed": 295661421,
+    "observedVp": 0,
+    "playerTurnIndex": 1,
+    "role": "attacker-moving",
+    "targetCount": 4,
+    "window": "764d7e80dfd5949b287d5215515f8f95d4c2ff65683c265e1494b83f3253d378:7:1"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.7814465408805031,
+      "M1": 1.6054376103641894,
+      "M2": 1.525553472577065,
+      "M3": 4.65396628692381
+    },
+    "game": "764d7e80dfd5949b287d5215515f8f95d4c2ff65683c265e1494b83f3253d378",
+    "gameTurn": 8,
+    "mapSeed": 295661421,
+    "observedVp": 3,
+    "playerTurnIndex": 0,
+    "role": "attacker-moving",
+    "targetCount": 4,
+    "window": "764d7e80dfd5949b287d5215515f8f95d4c2ff65683c265e1494b83f3253d378:8:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.9622186495176849,
+      "M1": 0.4165256105189634,
+      "M2": 0.3072405637990282,
+      "M3": 0.30159856947149305
+    },
+    "game": "91edfc71afa4c26100ed945b271c19ed032ab75015db98a158e6408621f32282",
+    "gameTurn": 2,
+    "mapSeed": 295661033,
+    "observedVp": 0,
+    "playerTurnIndex": 0,
+    "role": "attacker-moving",
+    "targetCount": 5,
+    "window": "91edfc71afa4c26100ed945b271c19ed032ab75015db98a158e6408621f32282:2:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.15192926045016078,
+      "M1": 0.08588892637070947,
+      "M2": 0.0990375015348671,
+      "M3": 0.020668094820105665
+    },
+    "game": "91edfc71afa4c26100ed945b271c19ed032ab75015db98a158e6408621f32282",
+    "gameTurn": 2,
+    "mapSeed": 295661033,
+    "observedVp": 0,
+    "playerTurnIndex": 1,
+    "role": "defender-moving",
+    "targetCount": 1,
+    "window": "91edfc71afa4c26100ed945b271c19ed032ab75015db98a158e6408621f32282:2:1"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.9622186495176849,
+      "M1": 1.2428365695675057,
+      "M2": 1.0509573872075877,
+      "M3": 0.5894244097807647
+    },
+    "game": "91edfc71afa4c26100ed945b271c19ed032ab75015db98a158e6408621f32282",
+    "gameTurn": 3,
+    "mapSeed": 295661033,
+    "observedVp": 0,
+    "playerTurnIndex": 0,
+    "role": "attacker-moving",
+    "targetCount": 5,
+    "window": "91edfc71afa4c26100ed945b271c19ed032ab75015db98a158e6408621f32282:3:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.15192926045016078,
+      "M1": 0.059988350282294725,
+      "M2": 0.057358316835379536,
+      "M3": 0.044221486226989286
+    },
+    "game": "91edfc71afa4c26100ed945b271c19ed032ab75015db98a158e6408621f32282",
+    "gameTurn": 3,
+    "mapSeed": 295661033,
+    "observedVp": 0,
+    "playerTurnIndex": 1,
+    "role": "defender-moving",
+    "targetCount": 1,
+    "window": "91edfc71afa4c26100ed945b271c19ed032ab75015db98a158e6408621f32282:3:1"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.9622186495176849,
+      "M1": 1.1313227953491867,
+      "M2": 2.4074011861815077,
+      "M3": 0.7283169367992979
+    },
+    "game": "91edfc71afa4c26100ed945b271c19ed032ab75015db98a158e6408621f32282",
+    "gameTurn": 4,
+    "mapSeed": 295661033,
+    "observedVp": 4,
+    "playerTurnIndex": 0,
+    "role": "attacker-moving",
+    "targetCount": 5,
+    "window": "91edfc71afa4c26100ed945b271c19ed032ab75015db98a158e6408621f32282:4:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.3545016077170418,
+      "M1": 0.0999670275141521,
+      "M2": 0.023908966278495314,
+      "M3": 0.04384213430851771
+    },
+    "game": "91edfc71afa4c26100ed945b271c19ed032ab75015db98a158e6408621f32282",
+    "gameTurn": 4,
+    "mapSeed": 295661033,
+    "observedVp": 0,
+    "playerTurnIndex": 1,
+    "role": "defender-moving",
+    "targetCount": 2,
+    "window": "91edfc71afa4c26100ed945b271c19ed032ab75015db98a158e6408621f32282:4:1"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.3545016077170418,
+      "M1": 0.09186962457530587,
+      "M2": 0.021738843586264784,
+      "M3": 0.03907479039380993
+    },
+    "game": "91edfc71afa4c26100ed945b271c19ed032ab75015db98a158e6408621f32282",
+    "gameTurn": 5,
+    "mapSeed": 295661033,
+    "observedVp": 0,
+    "playerTurnIndex": 0,
+    "role": "defender-moving",
+    "targetCount": 2,
+    "window": "91edfc71afa4c26100ed945b271c19ed032ab75015db98a158e6408621f32282:5:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.7596463022508039,
+      "M1": 5.702142330912281,
+      "M2": 5.532532659340683,
+      "M3": 4.1679411885223185
+    },
+    "game": "91edfc71afa4c26100ed945b271c19ed032ab75015db98a158e6408621f32282",
+    "gameTurn": 5,
+    "mapSeed": 295661033,
+    "observedVp": 15,
+    "playerTurnIndex": 1,
+    "role": "attacker-moving",
+    "targetCount": 4,
+    "window": "91edfc71afa4c26100ed945b271c19ed032ab75015db98a158e6408621f32282:5:1"
+  },
+  {
+    "expectedVp": {
+      "M0": 0,
+      "M1": 0,
+      "M2": 0,
+      "M3": 0
+    },
+    "game": "91edfc71afa4c26100ed945b271c19ed032ab75015db98a158e6408621f32282",
+    "gameTurn": 6,
+    "mapSeed": 295661033,
+    "observedVp": 0,
+    "playerTurnIndex": 0,
+    "role": "attacker-moving",
+    "targetCount": 0,
+    "window": "91edfc71afa4c26100ed945b271c19ed032ab75015db98a158e6408621f32282:6:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 1.1141479099678457,
+      "M1": 0.10077534298347927,
+      "M2": 0.03721469723419592,
+      "M3": 0.052569882896051336
+    },
+    "game": "91edfc71afa4c26100ed945b271c19ed032ab75015db98a158e6408621f32282",
+    "gameTurn": 6,
+    "mapSeed": 295661033,
+    "observedVp": 0,
+    "playerTurnIndex": 1,
+    "role": "defender-moving",
+    "targetCount": 6,
+    "window": "91edfc71afa4c26100ed945b271c19ed032ab75015db98a158e6408621f32282:6:1"
+  },
+  {
+    "expectedVp": {
+      "M0": 0,
+      "M1": 0,
+      "M2": 0,
+      "M3": 0
+    },
+    "game": "91edfc71afa4c26100ed945b271c19ed032ab75015db98a158e6408621f32282",
+    "gameTurn": 7,
+    "mapSeed": 295661033,
+    "observedVp": 0,
+    "playerTurnIndex": 0,
+    "role": "attacker-moving",
+    "targetCount": 0,
+    "window": "91edfc71afa4c26100ed945b271c19ed032ab75015db98a158e6408621f32282:7:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 1.1141479099678457,
+      "M1": 0.10752009227778637,
+      "M2": 0.036724668362122695,
+      "M3": 0.052532509839042674
+    },
+    "game": "91edfc71afa4c26100ed945b271c19ed032ab75015db98a158e6408621f32282",
+    "gameTurn": 7,
+    "mapSeed": 295661033,
+    "observedVp": 0,
+    "playerTurnIndex": 1,
+    "role": "defender-moving",
+    "targetCount": 6,
+    "window": "91edfc71afa4c26100ed945b271c19ed032ab75015db98a158e6408621f32282:7:1"
+  },
+  {
+    "expectedVp": {
+      "M0": 1.1141479099678457,
+      "M1": 0.10572685027738082,
+      "M2": 0.03433612409343184,
+      "M3": 0.048961065457555
+    },
+    "game": "91edfc71afa4c26100ed945b271c19ed032ab75015db98a158e6408621f32282",
+    "gameTurn": 8,
+    "mapSeed": 295661033,
+    "observedVp": 0,
+    "playerTurnIndex": 0,
+    "role": "defender-moving",
+    "targetCount": 6,
+    "window": "91edfc71afa4c26100ed945b271c19ed032ab75015db98a158e6408621f32282:8:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.39807976366322007,
+      "M1": 0.10601534680586283,
+      "M2": 0.10091216678075006,
+      "M3": 0.10808011715924734
+    },
+    "game": "c582f75b404974b366978c6ced92e292abcbba27ac0d5474f7302cbebe02f27d",
+    "gameTurn": 2,
+    "mapSeed": 295641827,
+    "observedVp": 0,
+    "playerTurnIndex": 0,
+    "role": "meeting",
+    "targetCount": 2,
+    "window": "c582f75b404974b366978c6ced92e292abcbba27ac0d5474f7302cbebe02f27d:2:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.39807976366322007,
+      "M1": 0.1839139426750085,
+      "M2": 0.15461094650161528,
+      "M3": 0.18006789103040113
+    },
+    "game": "c582f75b404974b366978c6ced92e292abcbba27ac0d5474f7302cbebe02f27d",
+    "gameTurn": 2,
+    "mapSeed": 295641827,
+    "observedVp": 0,
+    "playerTurnIndex": 1,
+    "role": "meeting",
+    "targetCount": 2,
+    "window": "c582f75b404974b366978c6ced92e292abcbba27ac0d5474f7302cbebe02f27d:2:1"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.39807976366322007,
+      "M1": 0.27867221358105665,
+      "M2": 0.2595761110098544,
+      "M3": 0.2833313452457959
+    },
+    "game": "c582f75b404974b366978c6ced92e292abcbba27ac0d5474f7302cbebe02f27d",
+    "gameTurn": 3,
+    "mapSeed": 295641827,
+    "observedVp": 3,
+    "playerTurnIndex": 0,
+    "role": "meeting",
+    "targetCount": 2,
+    "window": "c582f75b404974b366978c6ced92e292abcbba27ac0d5474f7302cbebe02f27d:3:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.568685376661743,
+      "M1": 0.17549529984306583,
+      "M2": 0.15614898595149063,
+      "M3": 0.17403526075384396
+    },
+    "game": "c582f75b404974b366978c6ced92e292abcbba27ac0d5474f7302cbebe02f27d",
+    "gameTurn": 3,
+    "mapSeed": 295641827,
+    "observedVp": 0,
+    "playerTurnIndex": 1,
+    "role": "meeting",
+    "targetCount": 3,
+    "window": "c582f75b404974b366978c6ced92e292abcbba27ac0d5474f7302cbebe02f27d:3:1"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.2274741506646972,
+      "M1": 0.14374478151224138,
+      "M2": 0.16341767294717252,
+      "M3": 0.1643053197186583
+    },
+    "game": "c582f75b404974b366978c6ced92e292abcbba27ac0d5474f7302cbebe02f27d",
+    "gameTurn": 4,
+    "mapSeed": 295641827,
+    "observedVp": 0,
+    "playerTurnIndex": 0,
+    "role": "meeting",
+    "targetCount": 1,
+    "window": "c582f75b404974b366978c6ced92e292abcbba27ac0d5474f7302cbebe02f27d:4:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.568685376661743,
+      "M1": 0.19743385293599988,
+      "M2": 0.3013543844726698,
+      "M3": 0.24936656657960782
+    },
+    "game": "c582f75b404974b366978c6ced92e292abcbba27ac0d5474f7302cbebe02f27d",
+    "gameTurn": 4,
+    "mapSeed": 295641827,
+    "observedVp": 0,
+    "playerTurnIndex": 1,
+    "role": "meeting",
+    "targetCount": 3,
+    "window": "c582f75b404974b366978c6ced92e292abcbba27ac0d5474f7302cbebe02f27d:4:1"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.2274741506646972,
+      "M1": 0.1398452439079056,
+      "M2": 0.34537457128160226,
+      "M3": 0.22709504033429487
+    },
+    "game": "c582f75b404974b366978c6ced92e292abcbba27ac0d5474f7302cbebe02f27d",
+    "gameTurn": 5,
+    "mapSeed": 295641827,
+    "observedVp": 0,
+    "playerTurnIndex": 0,
+    "role": "meeting",
+    "targetCount": 1,
+    "window": "c582f75b404974b366978c6ced92e292abcbba27ac0d5474f7302cbebe02f27d:5:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.568685376661743,
+      "M1": 0.2682512139774113,
+      "M2": 0.2617831171430354,
+      "M3": 0.2755905070616026
+    },
+    "game": "c582f75b404974b366978c6ced92e292abcbba27ac0d5474f7302cbebe02f27d",
+    "gameTurn": 5,
+    "mapSeed": 295641827,
+    "observedVp": 0,
+    "playerTurnIndex": 1,
+    "role": "meeting",
+    "targetCount": 3,
+    "window": "c582f75b404974b366978c6ced92e292abcbba27ac0d5474f7302cbebe02f27d:5:1"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.2274741506646972,
+      "M1": 0.17218035088783873,
+      "M2": 0.22763265820063094,
+      "M3": 0.001662153427161364
+    },
+    "game": "c582f75b404974b366978c6ced92e292abcbba27ac0d5474f7302cbebe02f27d",
+    "gameTurn": 6,
+    "mapSeed": 295641827,
+    "observedVp": 0,
+    "playerTurnIndex": 0,
+    "role": "meeting",
+    "targetCount": 1,
+    "window": "c582f75b404974b366978c6ced92e292abcbba27ac0d5474f7302cbebe02f27d:6:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.568685376661743,
+      "M1": 0.15391262038945464,
+      "M2": 0.14449160043689238,
+      "M3": 0.16131575365642142
+    },
+    "game": "c582f75b404974b366978c6ced92e292abcbba27ac0d5474f7302cbebe02f27d",
+    "gameTurn": 6,
+    "mapSeed": 295641827,
+    "observedVp": 0,
+    "playerTurnIndex": 1,
+    "role": "meeting",
+    "targetCount": 3,
+    "window": "c582f75b404974b366978c6ced92e292abcbba27ac0d5474f7302cbebe02f27d:6:1"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.2274741506646972,
+      "M1": 0.16754292269923296,
+      "M2": 0.2367981824366949,
+      "M3": 0.0016804330477272643
+    },
+    "game": "c582f75b404974b366978c6ced92e292abcbba27ac0d5474f7302cbebe02f27d",
+    "gameTurn": 7,
+    "mapSeed": 295641827,
+    "observedVp": 0,
+    "playerTurnIndex": 0,
+    "role": "meeting",
+    "targetCount": 1,
+    "window": "c582f75b404974b366978c6ced92e292abcbba27ac0d5474f7302cbebe02f27d:7:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.568685376661743,
+      "M1": 0.09377184397357541,
+      "M2": 0.11400566991241184,
+      "M3": 0.11227170907998478
+    },
+    "game": "c582f75b404974b366978c6ced92e292abcbba27ac0d5474f7302cbebe02f27d",
+    "gameTurn": 7,
+    "mapSeed": 295641827,
+    "observedVp": 0,
+    "playerTurnIndex": 1,
+    "role": "meeting",
+    "targetCount": 3,
+    "window": "c582f75b404974b366978c6ced92e292abcbba27ac0d5474f7302cbebe02f27d:7:1"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.568685376661743,
+      "M1": 0.14948813665909355,
+      "M2": 0.23387418051030232,
+      "M3": 0.1988382140763131
+    },
+    "game": "c582f75b404974b366978c6ced92e292abcbba27ac0d5474f7302cbebe02f27d",
+    "gameTurn": 8,
+    "mapSeed": 295641827,
+    "observedVp": 0,
+    "playerTurnIndex": 0,
+    "role": "meeting",
+    "targetCount": 3,
+    "window": "c582f75b404974b366978c6ced92e292abcbba27ac0d5474f7302cbebe02f27d:8:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 1.4823008849557522,
+      "M1": 2.2617111014738,
+      "M2": 2.2436268610682677,
+      "M3": 2.2362270205736823
+    },
+    "game": "c5879239da55d825cf33f35eadb89e384affdd8c3b630f0570050f5664a1f77d",
+    "gameTurn": 2,
+    "mapSeed": 295642215,
+    "observedVp": 2,
+    "playerTurnIndex": 0,
+    "role": "meeting",
+    "targetCount": 10,
+    "window": "c5879239da55d825cf33f35eadb89e384affdd8c3b630f0570050f5664a1f77d:2:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 1.6008849557522125,
+      "M1": 1.1829801129193416,
+      "M2": 1.259207719382982,
+      "M3": 1.4700806356287648
+    },
+    "game": "c5879239da55d825cf33f35eadb89e384affdd8c3b630f0570050f5664a1f77d",
+    "gameTurn": 2,
+    "mapSeed": 295642215,
+    "observedVp": 0,
+    "playerTurnIndex": 1,
+    "role": "meeting",
+    "targetCount": 12,
+    "window": "c5879239da55d825cf33f35eadb89e384affdd8c3b630f0570050f5664a1f77d:2:1"
+  },
+  {
+    "expectedVp": {
+      "M0": 1.3637168141592921,
+      "M1": 1.0789172582841766,
+      "M2": 1.216875550287607,
+      "M3": 1.5992687989820666
+    },
+    "game": "c5879239da55d825cf33f35eadb89e384affdd8c3b630f0570050f5664a1f77d",
+    "gameTurn": 3,
+    "mapSeed": 295642215,
+    "observedVp": 0,
+    "playerTurnIndex": 0,
+    "role": "meeting",
+    "targetCount": 9,
+    "window": "c5879239da55d825cf33f35eadb89e384affdd8c3b630f0570050f5664a1f77d:3:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 1.6008849557522125,
+      "M1": 1.384102459956837,
+      "M2": 1.3069122489984044,
+      "M3": 0.7966310822031811
+    },
+    "game": "c5879239da55d825cf33f35eadb89e384affdd8c3b630f0570050f5664a1f77d",
+    "gameTurn": 3,
+    "mapSeed": 295642215,
+    "observedVp": 0,
+    "playerTurnIndex": 1,
+    "role": "meeting",
+    "targetCount": 12,
+    "window": "c5879239da55d825cf33f35eadb89e384affdd8c3b630f0570050f5664a1f77d:3:1"
+  },
+  {
+    "expectedVp": {
+      "M0": 1.3637168141592921,
+      "M1": 1.0193758816460958,
+      "M2": 0.9236131246336934,
+      "M3": 0.7541527132850342
+    },
+    "game": "c5879239da55d825cf33f35eadb89e384affdd8c3b630f0570050f5664a1f77d",
+    "gameTurn": 4,
+    "mapSeed": 295642215,
+    "observedVp": 0,
+    "playerTurnIndex": 0,
+    "role": "meeting",
+    "targetCount": 9,
+    "window": "c5879239da55d825cf33f35eadb89e384affdd8c3b630f0570050f5664a1f77d:4:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 1.6008849557522125,
+      "M1": 1.2808447404585663,
+      "M2": 1.2102826740631523,
+      "M3": 0.9739692096572751
+    },
+    "game": "c5879239da55d825cf33f35eadb89e384affdd8c3b630f0570050f5664a1f77d",
+    "gameTurn": 4,
+    "mapSeed": 295642215,
+    "observedVp": 3,
+    "playerTurnIndex": 1,
+    "role": "meeting",
+    "targetCount": 12,
+    "window": "c5879239da55d825cf33f35eadb89e384affdd8c3b630f0570050f5664a1f77d:4:1"
+  },
+  {
+    "expectedVp": {
+      "M0": 1.4230088495575222,
+      "M1": 1.0701365453602518,
+      "M2": 1.0933903775218,
+      "M3": 0.7749302094365021
+    },
+    "game": "c5879239da55d825cf33f35eadb89e384affdd8c3b630f0570050f5664a1f77d",
+    "gameTurn": 5,
+    "mapSeed": 295642215,
+    "observedVp": 2,
+    "playerTurnIndex": 0,
+    "role": "meeting",
+    "targetCount": 11,
+    "window": "c5879239da55d825cf33f35eadb89e384affdd8c3b630f0570050f5664a1f77d:5:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 1.6601769911504425,
+      "M1": 4.1925678185844335,
+      "M2": 4.303481351922378,
+      "M3": 4.336449800757609
+    },
+    "game": "c5879239da55d825cf33f35eadb89e384affdd8c3b630f0570050f5664a1f77d",
+    "gameTurn": 5,
+    "mapSeed": 295642215,
+    "observedVp": 6,
+    "playerTurnIndex": 1,
+    "role": "meeting",
+    "targetCount": 11,
+    "window": "c5879239da55d825cf33f35eadb89e384affdd8c3b630f0570050f5664a1f77d:5:1"
+  },
+  {
+    "expectedVp": {
+      "M0": 1.3044247787610619,
+      "M1": 0.8552497890538455,
+      "M2": 0.8256757122634989,
+      "M3": 1.4852892979596177
+    },
+    "game": "c5879239da55d825cf33f35eadb89e384affdd8c3b630f0570050f5664a1f77d",
+    "gameTurn": 6,
+    "mapSeed": 295642215,
+    "observedVp": 3,
+    "playerTurnIndex": 0,
+    "role": "meeting",
+    "targetCount": 10,
+    "window": "c5879239da55d825cf33f35eadb89e384affdd8c3b630f0570050f5664a1f77d:6:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 1.8380530973451328,
+      "M1": 1.2532822999438196,
+      "M2": 1.401862331540048,
+      "M3": 0.8354391600777802
+    },
+    "game": "c5879239da55d825cf33f35eadb89e384affdd8c3b630f0570050f5664a1f77d",
+    "gameTurn": 6,
+    "mapSeed": 295642215,
+    "observedVp": 0,
+    "playerTurnIndex": 1,
+    "role": "meeting",
+    "targetCount": 12,
+    "window": "c5879239da55d825cf33f35eadb89e384affdd8c3b630f0570050f5664a1f77d:6:1"
+  },
+  {
+    "expectedVp": {
+      "M0": 1.1265486725663716,
+      "M1": 0.6870923554979848,
+      "M2": 0.5221468345665085,
+      "M3": 0.5348772205905309
+    },
+    "game": "c5879239da55d825cf33f35eadb89e384affdd8c3b630f0570050f5664a1f77d",
+    "gameTurn": 7,
+    "mapSeed": 295642215,
+    "observedVp": 0,
+    "playerTurnIndex": 0,
+    "role": "meeting",
+    "targetCount": 9,
+    "window": "c5879239da55d825cf33f35eadb89e384affdd8c3b630f0570050f5664a1f77d:7:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 1.8380530973451328,
+      "M1": 1.1346083045213171,
+      "M2": 1.4742565527595937,
+      "M3": 0.9361661169483441
+    },
+    "game": "c5879239da55d825cf33f35eadb89e384affdd8c3b630f0570050f5664a1f77d",
+    "gameTurn": 7,
+    "mapSeed": 295642215,
+    "observedVp": 2,
+    "playerTurnIndex": 1,
+    "role": "meeting",
+    "targetCount": 12,
+    "window": "c5879239da55d825cf33f35eadb89e384affdd8c3b630f0570050f5664a1f77d:7:1"
+  },
+  {
+    "expectedVp": {
+      "M0": 1.7194690265486725,
+      "M1": 0.959427859893086,
+      "M2": 1.1083139932970936,
+      "M3": 0.5492041499140441
+    },
+    "game": "c5879239da55d825cf33f35eadb89e384affdd8c3b630f0570050f5664a1f77d",
+    "gameTurn": 8,
+    "mapSeed": 295642215,
+    "observedVp": 0,
+    "playerTurnIndex": 0,
+    "role": "meeting",
+    "targetCount": 11,
+    "window": "c5879239da55d825cf33f35eadb89e384affdd8c3b630f0570050f5664a1f77d:8:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.7110939907550077,
+      "M1": 1.564795551346239,
+      "M2": 1.2934009998268918,
+      "M3": 0.682521335663631
+    },
+    "game": "c6ba96fd6a5ab1cff6a6add04f31e3365989f955ac956fb4d2734aceda47ed4b",
+    "gameTurn": 2,
+    "mapSeed": 295661615,
+    "observedVp": 0,
+    "playerTurnIndex": 0,
+    "role": "attacker-moving",
+    "targetCount": 4,
+    "window": "c6ba96fd6a5ab1cff6a6add04f31e3365989f955ac956fb4d2734aceda47ed4b:2:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 0,
+      "M1": 0,
+      "M2": 0,
+      "M3": 0
+    },
+    "game": "c6ba96fd6a5ab1cff6a6add04f31e3365989f955ac956fb4d2734aceda47ed4b",
+    "gameTurn": 2,
+    "mapSeed": 295661615,
+    "observedVp": 0,
+    "playerTurnIndex": 1,
+    "role": "defender-moving",
+    "targetCount": 0,
+    "window": "c6ba96fd6a5ab1cff6a6add04f31e3365989f955ac956fb4d2734aceda47ed4b:2:1"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.7110939907550077,
+      "M1": 1.4793779380918917,
+      "M2": 1.4242404048748487,
+      "M3": 1.6292576138481165
+    },
+    "game": "c6ba96fd6a5ab1cff6a6add04f31e3365989f955ac956fb4d2734aceda47ed4b",
+    "gameTurn": 3,
+    "mapSeed": 295661615,
+    "observedVp": 0,
+    "playerTurnIndex": 0,
+    "role": "attacker-moving",
+    "targetCount": 4,
+    "window": "c6ba96fd6a5ab1cff6a6add04f31e3365989f955ac956fb4d2734aceda47ed4b:3:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 0,
+      "M1": 0,
+      "M2": 0,
+      "M3": 0
+    },
+    "game": "c6ba96fd6a5ab1cff6a6add04f31e3365989f955ac956fb4d2734aceda47ed4b",
+    "gameTurn": 3,
+    "mapSeed": 295661615,
+    "observedVp": 0,
+    "playerTurnIndex": 1,
+    "role": "defender-moving",
+    "targetCount": 0,
+    "window": "c6ba96fd6a5ab1cff6a6add04f31e3365989f955ac956fb4d2734aceda47ed4b:3:1"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.7110939907550077,
+      "M1": 1.9078935070788385,
+      "M2": 2.354142805416953,
+      "M3": 4.501125309665042
+    },
+    "game": "c6ba96fd6a5ab1cff6a6add04f31e3365989f955ac956fb4d2734aceda47ed4b",
+    "gameTurn": 4,
+    "mapSeed": 295661615,
+    "observedVp": 6,
+    "playerTurnIndex": 0,
+    "role": "attacker-moving",
+    "targetCount": 4,
+    "window": "c6ba96fd6a5ab1cff6a6add04f31e3365989f955ac956fb4d2734aceda47ed4b:4:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.3281972265023112,
+      "M1": 0.058442396972156946,
+      "M2": 0.029252873366432126,
+      "M3": 0.04295522894992653
+    },
+    "game": "c6ba96fd6a5ab1cff6a6add04f31e3365989f955ac956fb4d2734aceda47ed4b",
+    "gameTurn": 4,
+    "mapSeed": 295661615,
+    "observedVp": 0,
+    "playerTurnIndex": 1,
+    "role": "defender-moving",
+    "targetCount": 2,
+    "window": "c6ba96fd6a5ab1cff6a6add04f31e3365989f955ac956fb4d2734aceda47ed4b:4:1"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.3281972265023112,
+      "M1": 0.07050047873461665,
+      "M2": 0.03464936556760005,
+      "M3": 0.02599520379968758
+    },
+    "game": "c6ba96fd6a5ab1cff6a6add04f31e3365989f955ac956fb4d2734aceda47ed4b",
+    "gameTurn": 5,
+    "mapSeed": 295661615,
+    "observedVp": 0,
+    "playerTurnIndex": 0,
+    "role": "defender-moving",
+    "targetCount": 2,
+    "window": "c6ba96fd6a5ab1cff6a6add04f31e3365989f955ac956fb4d2734aceda47ed4b:5:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.3828967642526964,
+      "M1": 0.9889036929544207,
+      "M2": 0.9064492649260647,
+      "M3": 0.18815166575177866
+    },
+    "game": "c6ba96fd6a5ab1cff6a6add04f31e3365989f955ac956fb4d2734aceda47ed4b",
+    "gameTurn": 5,
+    "mapSeed": 295661615,
+    "observedVp": 0,
+    "playerTurnIndex": 1,
+    "role": "attacker-moving",
+    "targetCount": 2,
+    "window": "c6ba96fd6a5ab1cff6a6add04f31e3365989f955ac956fb4d2734aceda47ed4b:5:1"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.3828967642526964,
+      "M1": 0.9629056786438348,
+      "M2": 0.8863156398242182,
+      "M3": 0.37311909281610206
+    },
+    "game": "c6ba96fd6a5ab1cff6a6add04f31e3365989f955ac956fb4d2734aceda47ed4b",
+    "gameTurn": 6,
+    "mapSeed": 295661615,
+    "observedVp": 0,
+    "playerTurnIndex": 0,
+    "role": "attacker-moving",
+    "targetCount": 2,
+    "window": "c6ba96fd6a5ab1cff6a6add04f31e3365989f955ac956fb4d2734aceda47ed4b:6:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.3281972265023112,
+      "M1": 0.06837838305725114,
+      "M2": 0.03454325266808364,
+      "M3": 0.023547213504422276
+    },
+    "game": "c6ba96fd6a5ab1cff6a6add04f31e3365989f955ac956fb4d2734aceda47ed4b",
+    "gameTurn": 6,
+    "mapSeed": 295661615,
+    "observedVp": 0,
+    "playerTurnIndex": 1,
+    "role": "defender-moving",
+    "targetCount": 2,
+    "window": "c6ba96fd6a5ab1cff6a6add04f31e3365989f955ac956fb4d2734aceda47ed4b:6:1"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.3281972265023112,
+      "M1": 0.06823171244857251,
+      "M2": 0.03291910567530658,
+      "M3": 0.04429883522894676
+    },
+    "game": "c6ba96fd6a5ab1cff6a6add04f31e3365989f955ac956fb4d2734aceda47ed4b",
+    "gameTurn": 7,
+    "mapSeed": 295661615,
+    "observedVp": 0,
+    "playerTurnIndex": 0,
+    "role": "defender-moving",
+    "targetCount": 2,
+    "window": "c6ba96fd6a5ab1cff6a6add04f31e3365989f955ac956fb4d2734aceda47ed4b:7:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.3828967642526964,
+      "M1": 0.9374843468722156,
+      "M2": 0.9383749520741109,
+      "M3": 0.3470467982367327
+    },
+    "game": "c6ba96fd6a5ab1cff6a6add04f31e3365989f955ac956fb4d2734aceda47ed4b",
+    "gameTurn": 7,
+    "mapSeed": 295661615,
+    "observedVp": 0,
+    "playerTurnIndex": 1,
+    "role": "attacker-moving",
+    "targetCount": 2,
+    "window": "c6ba96fd6a5ab1cff6a6add04f31e3365989f955ac956fb4d2734aceda47ed4b:7:1"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.3828967642526964,
+      "M1": 0.9126325016142094,
+      "M2": 0.879133636041652,
+      "M3": 0.325105551302062
+    },
+    "game": "c6ba96fd6a5ab1cff6a6add04f31e3365989f955ac956fb4d2734aceda47ed4b",
+    "gameTurn": 8,
+    "mapSeed": 295661615,
+    "observedVp": 0,
+    "playerTurnIndex": 0,
+    "role": "attacker-moving",
+    "targetCount": 2,
+    "window": "c6ba96fd6a5ab1cff6a6add04f31e3365989f955ac956fb4d2734aceda47ed4b:8:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 1.0047169811320755,
+      "M1": 0.4893739257861175,
+      "M2": 0.4138822605583159,
+      "M3": 0.43817477168486796
+    },
+    "game": "e208396f06563810a53a4c32e8dc9a33a692d1f608bfcc9c8f1dd6a9e80802ab",
+    "gameTurn": 2,
+    "mapSeed": 295661421,
+    "observedVp": 0,
+    "playerTurnIndex": 0,
+    "role": "attacker-moving",
+    "targetCount": 5,
+    "window": "e208396f06563810a53a4c32e8dc9a33a692d1f608bfcc9c8f1dd6a9e80802ab:2:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 0,
+      "M1": 0,
+      "M2": 0,
+      "M3": 0
+    },
+    "game": "e208396f06563810a53a4c32e8dc9a33a692d1f608bfcc9c8f1dd6a9e80802ab",
+    "gameTurn": 2,
+    "mapSeed": 295661421,
+    "observedVp": 0,
+    "playerTurnIndex": 1,
+    "role": "defender-moving",
+    "targetCount": 0,
+    "window": "e208396f06563810a53a4c32e8dc9a33a692d1f608bfcc9c8f1dd6a9e80802ab:2:1"
+  },
+  {
+    "expectedVp": {
+      "M0": 0,
+      "M1": 0,
+      "M2": 0,
+      "M3": 0
+    },
+    "game": "e208396f06563810a53a4c32e8dc9a33a692d1f608bfcc9c8f1dd6a9e80802ab",
+    "gameTurn": 3,
+    "mapSeed": 295661421,
+    "observedVp": 0,
+    "playerTurnIndex": 0,
+    "role": "defender-moving",
+    "targetCount": 0,
+    "window": "e208396f06563810a53a4c32e8dc9a33a692d1f608bfcc9c8f1dd6a9e80802ab:3:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 1.0047169811320755,
+      "M1": 0.7413416833372888,
+      "M2": 1.0508673788808152,
+      "M3": 0.9825637769687806
+    },
+    "game": "e208396f06563810a53a4c32e8dc9a33a692d1f608bfcc9c8f1dd6a9e80802ab",
+    "gameTurn": 3,
+    "mapSeed": 295661421,
+    "observedVp": 0,
+    "playerTurnIndex": 1,
+    "role": "attacker-moving",
+    "targetCount": 5,
+    "window": "e208396f06563810a53a4c32e8dc9a33a692d1f608bfcc9c8f1dd6a9e80802ab:3:1"
+  },
+  {
+    "expectedVp": {
+      "M0": 1.0047169811320755,
+      "M1": 0.8027013616231167,
+      "M2": 1.316053293422704,
+      "M3": 1.1924220742411316
+    },
+    "game": "e208396f06563810a53a4c32e8dc9a33a692d1f608bfcc9c8f1dd6a9e80802ab",
+    "gameTurn": 4,
+    "mapSeed": 295661421,
+    "observedVp": 4,
+    "playerTurnIndex": 0,
+    "role": "attacker-moving",
+    "targetCount": 5,
+    "window": "e208396f06563810a53a4c32e8dc9a33a692d1f608bfcc9c8f1dd6a9e80802ab:4:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.22327044025157233,
+      "M1": 0.0428702115417403,
+      "M2": 0.012405994319518915,
+      "M3": 0.026604137031131188
+    },
+    "game": "e208396f06563810a53a4c32e8dc9a33a692d1f608bfcc9c8f1dd6a9e80802ab",
+    "gameTurn": 4,
+    "mapSeed": 295661421,
+    "observedVp": 0,
+    "playerTurnIndex": 1,
+    "role": "defender-moving",
+    "targetCount": 1,
+    "window": "e208396f06563810a53a4c32e8dc9a33a692d1f608bfcc9c8f1dd6a9e80802ab:4:1"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.22327044025157233,
+      "M1": 0.055428272890471746,
+      "M2": 0.035373135597162784,
+      "M3": 0.010614267443325921
+    },
+    "game": "e208396f06563810a53a4c32e8dc9a33a692d1f608bfcc9c8f1dd6a9e80802ab",
+    "gameTurn": 5,
+    "mapSeed": 295661421,
+    "observedVp": 0,
+    "playerTurnIndex": 0,
+    "role": "defender-moving",
+    "targetCount": 1,
+    "window": "e208396f06563810a53a4c32e8dc9a33a692d1f608bfcc9c8f1dd6a9e80802ab:5:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.7814465408805031,
+      "M1": 1.656597039639955,
+      "M2": 3.0095392270609045,
+      "M3": 2.4901593682481535
+    },
+    "game": "e208396f06563810a53a4c32e8dc9a33a692d1f608bfcc9c8f1dd6a9e80802ab",
+    "gameTurn": 5,
+    "mapSeed": 295661421,
+    "observedVp": 0,
+    "playerTurnIndex": 1,
+    "role": "attacker-moving",
+    "targetCount": 4,
+    "window": "e208396f06563810a53a4c32e8dc9a33a692d1f608bfcc9c8f1dd6a9e80802ab:5:1"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.22327044025157233,
+      "M1": 0.053566782362671574,
+      "M2": 0.023550323055086662,
+      "M3": 0.6015169128326197
+    },
+    "game": "e208396f06563810a53a4c32e8dc9a33a692d1f608bfcc9c8f1dd6a9e80802ab",
+    "gameTurn": 6,
+    "mapSeed": 295661421,
+    "observedVp": 0,
+    "playerTurnIndex": 0,
+    "role": "defender-moving",
+    "targetCount": 1,
+    "window": "e208396f06563810a53a4c32e8dc9a33a692d1f608bfcc9c8f1dd6a9e80802ab:6:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.7814465408805031,
+      "M1": 3.993916457210743,
+      "M2": 3.983650888869122,
+      "M3": 4.510253838524547
+    },
+    "game": "e208396f06563810a53a4c32e8dc9a33a692d1f608bfcc9c8f1dd6a9e80802ab",
+    "gameTurn": 6,
+    "mapSeed": 295661421,
+    "observedVp": 3,
+    "playerTurnIndex": 1,
+    "role": "attacker-moving",
+    "targetCount": 4,
+    "window": "e208396f06563810a53a4c32e8dc9a33a692d1f608bfcc9c8f1dd6a9e80802ab:6:1"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.39072327044025157,
+      "M1": 0.07814347060870924,
+      "M2": 0.0351328520513888,
+      "M3": 0.05578281429720672
+    },
+    "game": "e208396f06563810a53a4c32e8dc9a33a692d1f608bfcc9c8f1dd6a9e80802ab",
+    "gameTurn": 7,
+    "mapSeed": 295661421,
+    "observedVp": 0,
+    "playerTurnIndex": 0,
+    "role": "defender-moving",
+    "targetCount": 2,
+    "window": "e208396f06563810a53a4c32e8dc9a33a692d1f608bfcc9c8f1dd6a9e80802ab:7:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.6139937106918238,
+      "M1": 1.3051427045520765,
+      "M2": 0.7824714670230319,
+      "M3": 0.8508111688663874
+    },
+    "game": "e208396f06563810a53a4c32e8dc9a33a692d1f608bfcc9c8f1dd6a9e80802ab",
+    "gameTurn": 7,
+    "mapSeed": 295661421,
+    "observedVp": 0,
+    "playerTurnIndex": 1,
+    "role": "attacker-moving",
+    "targetCount": 3,
+    "window": "e208396f06563810a53a4c32e8dc9a33a692d1f608bfcc9c8f1dd6a9e80802ab:7:1"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.6139937106918238,
+      "M1": 1.2658915009083342,
+      "M2": 1.1772250377237274,
+      "M3": 1.0486006009188205
+    },
+    "game": "e208396f06563810a53a4c32e8dc9a33a692d1f608bfcc9c8f1dd6a9e80802ab",
+    "gameTurn": 8,
+    "mapSeed": 295661421,
+    "observedVp": 0,
+    "playerTurnIndex": 0,
+    "role": "attacker-moving",
+    "targetCount": 3,
+    "window": "e208396f06563810a53a4c32e8dc9a33a692d1f608bfcc9c8f1dd6a9e80802ab:8:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.22392638036809817,
+      "M1": 0.019528202351592427,
+      "M2": 0.040681694466972916,
+      "M3": 0.004025306288865949
+    },
+    "game": "e81a3dae473588d5338a139007533ee377e99d3232bba695abb19e424a57d1e5",
+    "gameTurn": 2,
+    "mapSeed": 295661227,
+    "observedVp": 0,
+    "playerTurnIndex": 0,
+    "role": "defender-moving",
+    "targetCount": 1,
+    "window": "e81a3dae473588d5338a139007533ee377e99d3232bba695abb19e424a57d1e5:2:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.5038343558282209,
+      "M1": 0.4439653565991549,
+      "M2": 0.32017505151631087,
+      "M3": 0.3880202320068328
+    },
+    "game": "e81a3dae473588d5338a139007533ee377e99d3232bba695abb19e424a57d1e5",
+    "gameTurn": 2,
+    "mapSeed": 295661227,
+    "observedVp": 0,
+    "playerTurnIndex": 1,
+    "role": "attacker-moving",
+    "targetCount": 3,
+    "window": "e81a3dae473588d5338a139007533ee377e99d3232bba695abb19e424a57d1e5:2:1"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.5038343558282209,
+      "M1": 0.560249515446107,
+      "M2": 0.38783062925615525,
+      "M3": 0.4890012659613907
+    },
+    "game": "e81a3dae473588d5338a139007533ee377e99d3232bba695abb19e424a57d1e5",
+    "gameTurn": 3,
+    "mapSeed": 295661227,
+    "observedVp": 0,
+    "playerTurnIndex": 0,
+    "role": "attacker-moving",
+    "targetCount": 3,
+    "window": "e81a3dae473588d5338a139007533ee377e99d3232bba695abb19e424a57d1e5:3:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.22392638036809817,
+      "M1": 0.8038657646363585,
+      "M2": 3.0005355195897945,
+      "M3": 2.138233589315487
+    },
+    "game": "e81a3dae473588d5338a139007533ee377e99d3232bba695abb19e424a57d1e5",
+    "gameTurn": 3,
+    "mapSeed": 295661227,
+    "observedVp": 4,
+    "playerTurnIndex": 1,
+    "role": "defender-moving",
+    "targetCount": 1,
+    "window": "e81a3dae473588d5338a139007533ee377e99d3232bba695abb19e424a57d1e5:3:1"
+  },
+  {
+    "expectedVp": {
+      "M0": 0,
+      "M1": 0,
+      "M2": 0,
+      "M3": 0
+    },
+    "game": "e81a3dae473588d5338a139007533ee377e99d3232bba695abb19e424a57d1e5",
+    "gameTurn": 4,
+    "mapSeed": 295661227,
+    "observedVp": 0,
+    "playerTurnIndex": 0,
+    "role": "defender-moving",
+    "targetCount": 0,
+    "window": "e81a3dae473588d5338a139007533ee377e99d3232bba695abb19e424a57d1e5:4:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.7277607361963191,
+      "M1": 0.8877477710920231,
+      "M2": 0.6000908369609034,
+      "M3": 0.786389196536992
+    },
+    "game": "e81a3dae473588d5338a139007533ee377e99d3232bba695abb19e424a57d1e5",
+    "gameTurn": 4,
+    "mapSeed": 295661227,
+    "observedVp": 0,
+    "playerTurnIndex": 1,
+    "role": "attacker-moving",
+    "targetCount": 4,
+    "window": "e81a3dae473588d5338a139007533ee377e99d3232bba695abb19e424a57d1e5:4:1"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.7277607361963191,
+      "M1": 0.9662190485302073,
+      "M2": 0.6060216233400462,
+      "M3": 0.8410590240555164
+    },
+    "game": "e81a3dae473588d5338a139007533ee377e99d3232bba695abb19e424a57d1e5",
+    "gameTurn": 5,
+    "mapSeed": 295661227,
+    "observedVp": 0,
+    "playerTurnIndex": 0,
+    "role": "attacker-moving",
+    "targetCount": 4,
+    "window": "e81a3dae473588d5338a139007533ee377e99d3232bba695abb19e424a57d1e5:5:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 0,
+      "M1": 0,
+      "M2": 0,
+      "M3": 0
+    },
+    "game": "e81a3dae473588d5338a139007533ee377e99d3232bba695abb19e424a57d1e5",
+    "gameTurn": 5,
+    "mapSeed": 295661227,
+    "observedVp": 0,
+    "playerTurnIndex": 1,
+    "role": "defender-moving",
+    "targetCount": 0,
+    "window": "e81a3dae473588d5338a139007533ee377e99d3232bba695abb19e424a57d1e5:5:1"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.7277607361963191,
+      "M1": 0.8862939763143556,
+      "M2": 0.5477341044834139,
+      "M3": 0.7624567429561298
+    },
+    "game": "e81a3dae473588d5338a139007533ee377e99d3232bba695abb19e424a57d1e5",
+    "gameTurn": 6,
+    "mapSeed": 295661227,
+    "observedVp": 0,
+    "playerTurnIndex": 0,
+    "role": "attacker-moving",
+    "targetCount": 4,
+    "window": "e81a3dae473588d5338a139007533ee377e99d3232bba695abb19e424a57d1e5:6:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 0,
+      "M1": 0,
+      "M2": 0,
+      "M3": 0
+    },
+    "game": "e81a3dae473588d5338a139007533ee377e99d3232bba695abb19e424a57d1e5",
+    "gameTurn": 6,
+    "mapSeed": 295661227,
+    "observedVp": 0,
+    "playerTurnIndex": 1,
+    "role": "defender-moving",
+    "targetCount": 0,
+    "window": "e81a3dae473588d5338a139007533ee377e99d3232bba695abb19e424a57d1e5:6:1"
+  },
+  {
+    "expectedVp": {
+      "M0": 0,
+      "M1": 0,
+      "M2": 0,
+      "M3": 0
+    },
+    "game": "e81a3dae473588d5338a139007533ee377e99d3232bba695abb19e424a57d1e5",
+    "gameTurn": 7,
+    "mapSeed": 295661227,
+    "observedVp": 0,
+    "playerTurnIndex": 0,
+    "role": "defender-moving",
+    "targetCount": 0,
+    "window": "e81a3dae473588d5338a139007533ee377e99d3232bba695abb19e424a57d1e5:7:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.7277607361963191,
+      "M1": 1.0390961978895847,
+      "M2": 0.8015742344802816,
+      "M3": 0.9596009506786944
+    },
+    "game": "e81a3dae473588d5338a139007533ee377e99d3232bba695abb19e424a57d1e5",
+    "gameTurn": 7,
+    "mapSeed": 295661227,
+    "observedVp": 0,
+    "playerTurnIndex": 1,
+    "role": "attacker-moving",
+    "targetCount": 4,
+    "window": "e81a3dae473588d5338a139007533ee377e99d3232bba695abb19e424a57d1e5:7:1"
+  },
+  {
+    "expectedVp": {
+      "M0": 0,
+      "M1": 0,
+      "M2": 0,
+      "M3": 0
+    },
+    "game": "e81a3dae473588d5338a139007533ee377e99d3232bba695abb19e424a57d1e5",
+    "gameTurn": 8,
+    "mapSeed": 295661227,
+    "observedVp": 0,
+    "playerTurnIndex": 0,
+    "role": "defender-moving",
+    "targetCount": 0,
+    "window": "e81a3dae473588d5338a139007533ee377e99d3232bba695abb19e424a57d1e5:8:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.7110939907550077,
+      "M1": 1.564795551346239,
+      "M2": 1.2934009998268918,
+      "M3": 0.682521335663631
+    },
+    "game": "ea923e4fd44308fb05f3ffb2f54be9374777c4d93ac3bd9f6be23f9ca4f83f18",
+    "gameTurn": 2,
+    "mapSeed": 295661615,
+    "observedVp": 0,
+    "playerTurnIndex": 0,
+    "role": "attacker-moving",
+    "targetCount": 4,
+    "window": "ea923e4fd44308fb05f3ffb2f54be9374777c4d93ac3bd9f6be23f9ca4f83f18:2:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 0,
+      "M1": 0,
+      "M2": 0,
+      "M3": 0
+    },
+    "game": "ea923e4fd44308fb05f3ffb2f54be9374777c4d93ac3bd9f6be23f9ca4f83f18",
+    "gameTurn": 2,
+    "mapSeed": 295661615,
+    "observedVp": 0,
+    "playerTurnIndex": 1,
+    "role": "defender-moving",
+    "targetCount": 0,
+    "window": "ea923e4fd44308fb05f3ffb2f54be9374777c4d93ac3bd9f6be23f9ca4f83f18:2:1"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.7110939907550077,
+      "M1": 1.4793779380918917,
+      "M2": 1.4242404048748487,
+      "M3": 1.6292576138481165
+    },
+    "game": "ea923e4fd44308fb05f3ffb2f54be9374777c4d93ac3bd9f6be23f9ca4f83f18",
+    "gameTurn": 3,
+    "mapSeed": 295661615,
+    "observedVp": 0,
+    "playerTurnIndex": 0,
+    "role": "attacker-moving",
+    "targetCount": 4,
+    "window": "ea923e4fd44308fb05f3ffb2f54be9374777c4d93ac3bd9f6be23f9ca4f83f18:3:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 0,
+      "M1": 0,
+      "M2": 0,
+      "M3": 0
+    },
+    "game": "ea923e4fd44308fb05f3ffb2f54be9374777c4d93ac3bd9f6be23f9ca4f83f18",
+    "gameTurn": 3,
+    "mapSeed": 295661615,
+    "observedVp": 0,
+    "playerTurnIndex": 1,
+    "role": "defender-moving",
+    "targetCount": 0,
+    "window": "ea923e4fd44308fb05f3ffb2f54be9374777c4d93ac3bd9f6be23f9ca4f83f18:3:1"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.7110939907550077,
+      "M1": 1.9078935070788385,
+      "M2": 2.354142805416953,
+      "M3": 4.501125309665042
+    },
+    "game": "ea923e4fd44308fb05f3ffb2f54be9374777c4d93ac3bd9f6be23f9ca4f83f18",
+    "gameTurn": 4,
+    "mapSeed": 295661615,
+    "observedVp": 6,
+    "playerTurnIndex": 0,
+    "role": "attacker-moving",
+    "targetCount": 4,
+    "window": "ea923e4fd44308fb05f3ffb2f54be9374777c4d93ac3bd9f6be23f9ca4f83f18:4:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.3281972265023112,
+      "M1": 0.058442396972156946,
+      "M2": 0.029252873366432126,
+      "M3": 0.04295522894992653
+    },
+    "game": "ea923e4fd44308fb05f3ffb2f54be9374777c4d93ac3bd9f6be23f9ca4f83f18",
+    "gameTurn": 4,
+    "mapSeed": 295661615,
+    "observedVp": 0,
+    "playerTurnIndex": 1,
+    "role": "defender-moving",
+    "targetCount": 2,
+    "window": "ea923e4fd44308fb05f3ffb2f54be9374777c4d93ac3bd9f6be23f9ca4f83f18:4:1"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.3281972265023112,
+      "M1": 0.0566772887600286,
+      "M2": 0.028402747540373936,
+      "M3": 0.040041449316476796
+    },
+    "game": "ea923e4fd44308fb05f3ffb2f54be9374777c4d93ac3bd9f6be23f9ca4f83f18",
+    "gameTurn": 5,
+    "mapSeed": 295661615,
+    "observedVp": 0,
+    "playerTurnIndex": 0,
+    "role": "defender-moving",
+    "targetCount": 2,
+    "window": "ea923e4fd44308fb05f3ffb2f54be9374777c4d93ac3bd9f6be23f9ca4f83f18:5:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.3828967642526964,
+      "M1": 0.9889036929544207,
+      "M2": 0.9064492649260647,
+      "M3": 0.18815166575177866
+    },
+    "game": "ea923e4fd44308fb05f3ffb2f54be9374777c4d93ac3bd9f6be23f9ca4f83f18",
+    "gameTurn": 5,
+    "mapSeed": 295661615,
+    "observedVp": 0,
+    "playerTurnIndex": 1,
+    "role": "attacker-moving",
+    "targetCount": 2,
+    "window": "ea923e4fd44308fb05f3ffb2f54be9374777c4d93ac3bd9f6be23f9ca4f83f18:5:1"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.3281972265023112,
+      "M1": 0.04390464795117721,
+      "M2": 0.023110757672749685,
+      "M3": 0.03040162576831684
+    },
+    "game": "ea923e4fd44308fb05f3ffb2f54be9374777c4d93ac3bd9f6be23f9ca4f83f18",
+    "gameTurn": 6,
+    "mapSeed": 295661615,
+    "observedVp": 0,
+    "playerTurnIndex": 0,
+    "role": "defender-moving",
+    "targetCount": 2,
+    "window": "ea923e4fd44308fb05f3ffb2f54be9374777c4d93ac3bd9f6be23f9ca4f83f18:6:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.3828967642526964,
+      "M1": 0.9629056786438348,
+      "M2": 0.8981333633666455,
+      "M3": 0.36678705347913004
+    },
+    "game": "ea923e4fd44308fb05f3ffb2f54be9374777c4d93ac3bd9f6be23f9ca4f83f18",
+    "gameTurn": 6,
+    "mapSeed": 295661615,
+    "observedVp": 0,
+    "playerTurnIndex": 1,
+    "role": "attacker-moving",
+    "targetCount": 2,
+    "window": "ea923e4fd44308fb05f3ffb2f54be9374777c4d93ac3bd9f6be23f9ca4f83f18:6:1"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.3281972265023112,
+      "M1": 0.05178216858718757,
+      "M2": 0.02839075999045622,
+      "M3": 0.03611671296907278
+    },
+    "game": "ea923e4fd44308fb05f3ffb2f54be9374777c4d93ac3bd9f6be23f9ca4f83f18",
+    "gameTurn": 7,
+    "mapSeed": 295661615,
+    "observedVp": 0,
+    "playerTurnIndex": 0,
+    "role": "defender-moving",
+    "targetCount": 2,
+    "window": "ea923e4fd44308fb05f3ffb2f54be9374777c4d93ac3bd9f6be23f9ca4f83f18:7:0"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.3828967642526964,
+      "M1": 0.9374843468722156,
+      "M2": 0.8772390504332789,
+      "M3": 0.34881757448193984
+    },
+    "game": "ea923e4fd44308fb05f3ffb2f54be9374777c4d93ac3bd9f6be23f9ca4f83f18",
+    "gameTurn": 7,
+    "mapSeed": 295661615,
+    "observedVp": 0,
+    "playerTurnIndex": 1,
+    "role": "attacker-moving",
+    "targetCount": 2,
+    "window": "ea923e4fd44308fb05f3ffb2f54be9374777c4d93ac3bd9f6be23f9ca4f83f18:7:1"
+  },
+  {
+    "expectedVp": {
+      "M0": 0.3828967642526964,
+      "M1": 0.8315741864742064,
+      "M2": 0.8760813407540999,
+      "M3": 0.6832369913471954
+    },
+    "game": "ea923e4fd44308fb05f3ffb2f54be9374777c4d93ac3bd9f6be23f9ca4f83f18",
+    "gameTurn": 8,
+    "mapSeed": 295661615,
+    "observedVp": 0,
+    "playerTurnIndex": 0,
+    "role": "attacker-moving",
+    "targetCount": 2,
+    "window": "ea923e4fd44308fb05f3ffb2f54be9374777c4d93ac3bd9f6be23f9ca4f83f18:8:0"
+  }
+]

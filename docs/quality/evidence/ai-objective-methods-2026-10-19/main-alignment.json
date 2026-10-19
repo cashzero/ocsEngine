@@ -1,0 +1,23 @@
+{
+  "baseAfterRebase": "ee3f789",
+  "recorderFixCommit": "6cef00e",
+  "comparison": "P5 re-recorded rows against schema2 actual-mover windows; original input snapshots remain invalid",
+  "aliasWindowsCompared": 208,
+  "checks": [
+    {
+      "file": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-positions-p5/ai-continue__ration-fix-games__attack-temperate.jsonl",
+      "sha256": "59da2feb1cf2aec567068ee519540027db72e8cde4ac35649c349960f0f5aa19",
+      "aliasWindowsCompared": 104,
+      "ownerMismatches": 0,
+      "grossObjectiveMismatches": 0
+    },
+    {
+      "file": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-positions-p5/ai-continue__ration-fix-games__meeting-temperate.jsonl",
+      "sha256": "03edb2e2f1471bc232782679fc6a1b7904f99c4b01ac0ce78e808bde0e07f10d",
+      "aliasWindowsCompared": 104,
+      "ownerMismatches": 0,
+      "grossObjectiveMismatches": 0
+    }
+  ],
+  "conclusion": "Current main recorder and P5 rows already repair this ownership defect; do not reopen P2-P7 based on old schema1 rows. P8-P10 remain as recorded in roadmap."
+}

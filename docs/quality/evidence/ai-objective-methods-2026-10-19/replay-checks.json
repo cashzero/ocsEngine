@@ -1,0 +1,194 @@
+[
+  {
+    "game": "6bf977013dbf6ed4177cfe70edfb1adfb1ee7a2f6e5b63d48e6df173278cb0ba",
+    "mapSeed": 295661033,
+    "replay": {
+      "acceptedActions": 846,
+      "correctedTurnOwnerWindows": 1,
+      "deferredFirstPlayerWindows": 7,
+      "finalStateHash": "sha256:b9da342dd22f0520cf03ae18b17c0e10786c5a991f4c56c3650de0392147e769",
+      "initialStateHash": "sha256:f80bb192375e65efdd6f9b0a998927a8bad2731ff7f1b1e872f3d31ea73bbaf4",
+      "observerQueries": 21,
+      "observerStateAndEventEquivalence": true,
+      "traceAliasesVerified": 1,
+      "turnOwnerStable": true,
+      "windowCoverage": true
+    }
+  },
+  {
+    "game": "91edfc71afa4c26100ed945b271c19ed032ab75015db98a158e6408621f32282",
+    "mapSeed": 295661033,
+    "replay": {
+      "acceptedActions": 833,
+      "correctedTurnOwnerWindows": 2,
+      "deferredFirstPlayerWindows": 7,
+      "finalStateHash": "sha256:5dbcd02dfa0ddf46cff89b1eb3892f33519e64a7f31f567738ec277a9914504b",
+      "initialStateHash": "sha256:f80bb192375e65efdd6f9b0a998927a8bad2731ff7f1b1e872f3d31ea73bbaf4",
+      "observerQueries": 21,
+      "observerStateAndEventEquivalence": true,
+      "traceAliasesVerified": 1,
+      "turnOwnerStable": true,
+      "windowCoverage": true
+    }
+  },
+  {
+    "game": "e81a3dae473588d5338a139007533ee377e99d3232bba695abb19e424a57d1e5",
+    "mapSeed": 295661227,
+    "replay": {
+      "acceptedActions": 788,
+      "correctedTurnOwnerWindows": 2,
+      "deferredFirstPlayerWindows": 7,
+      "finalStateHash": "sha256:dd23970a7c7758050cacb914609360c5f86bb083c84c59f12d418f882226fb18",
+      "initialStateHash": "sha256:16be839708b8e31bac6201c6c7a967ee3c74a82910de1668d0801f597d6e7414",
+      "observerQueries": 14,
+      "observerStateAndEventEquivalence": true,
+      "traceAliasesVerified": 1,
+      "turnOwnerStable": true,
+      "windowCoverage": true
+    }
+  },
+  {
+    "game": "72ef30c9b0a367ca3e0ae122066a1f435e49f8715832295f06470612a295833a",
+    "mapSeed": 295661227,
+    "replay": {
+      "acceptedActions": 1026,
+      "correctedTurnOwnerWindows": 2,
+      "deferredFirstPlayerWindows": 7,
+      "finalStateHash": "sha256:1feaef0c9b0b18c5b4d0cb3717f756a5ac94fb79260f27337ba007d2bf899234",
+      "initialStateHash": "sha256:16be839708b8e31bac6201c6c7a967ee3c74a82910de1668d0801f597d6e7414",
+      "observerQueries": 19,
+      "observerStateAndEventEquivalence": true,
+      "traceAliasesVerified": 1,
+      "turnOwnerStable": true,
+      "windowCoverage": true
+    }
+  },
+  {
+    "game": "764d7e80dfd5949b287d5215515f8f95d4c2ff65683c265e1494b83f3253d378",
+    "mapSeed": 295661421,
+    "replay": {
+      "acceptedActions": 899,
+      "correctedTurnOwnerWindows": 2,
+      "deferredFirstPlayerWindows": 7,
+      "finalStateHash": "sha256:69eebaeada5cbcb0bc710e3169fd0f92321ec05a9d604e496519cabb1f0d693e",
+      "initialStateHash": "sha256:5566f90936c82261e4c5ae2ab1c571eb1a5c7e3de25271936f6792bbb0252f45",
+      "observerQueries": 20,
+      "observerStateAndEventEquivalence": true,
+      "traceAliasesVerified": 1,
+      "turnOwnerStable": true,
+      "windowCoverage": true
+    }
+  },
+  {
+    "game": "e208396f06563810a53a4c32e8dc9a33a692d1f608bfcc9c8f1dd6a9e80802ab",
+    "mapSeed": 295661421,
+    "replay": {
+      "acceptedActions": 997,
+      "correctedTurnOwnerWindows": 2,
+      "deferredFirstPlayerWindows": 7,
+      "finalStateHash": "sha256:4f5a74d9854e3ac9f2f23a63e1746dcdfecbbd9bf9821d7fc32dfb55283a2bfe",
+      "initialStateHash": "sha256:5566f90936c82261e4c5ae2ab1c571eb1a5c7e3de25271936f6792bbb0252f45",
+      "observerQueries": 26,
+      "observerStateAndEventEquivalence": true,
+      "traceAliasesVerified": 1,
+      "turnOwnerStable": true,
+      "windowCoverage": true
+    }
+  },
+  {
+    "game": "ea923e4fd44308fb05f3ffb2f54be9374777c4d93ac3bd9f6be23f9ca4f83f18",
+    "mapSeed": 295661615,
+    "replay": {
+      "acceptedActions": 850,
+      "correctedTurnOwnerWindows": 2,
+      "deferredFirstPlayerWindows": 7,
+      "finalStateHash": "sha256:490bcb98eb3992fa5f64eb1379645a2a2c9a1ce496cedea48e7ee9586d8c8c5d",
+      "initialStateHash": "sha256:57311e6bb4fe335b66c18e3161a2114e8b0535783726048354ecaf3615c9e21c",
+      "observerQueries": 21,
+      "observerStateAndEventEquivalence": true,
+      "traceAliasesVerified": 1,
+      "turnOwnerStable": true,
+      "windowCoverage": true
+    }
+  },
+  {
+    "game": "c6ba96fd6a5ab1cff6a6add04f31e3365989f955ac956fb4d2734aceda47ed4b",
+    "mapSeed": 295661615,
+    "replay": {
+      "acceptedActions": 849,
+      "correctedTurnOwnerWindows": 2,
+      "deferredFirstPlayerWindows": 7,
+      "finalStateHash": "sha256:3a3b5202d7b4737c1030707189fd9e1fe375599fd3a5898ef4eae8a4b1390e4e",
+      "initialStateHash": "sha256:57311e6bb4fe335b66c18e3161a2114e8b0535783726048354ecaf3615c9e21c",
+      "observerQueries": 19,
+      "observerStateAndEventEquivalence": true,
+      "traceAliasesVerified": 1,
+      "turnOwnerStable": true,
+      "windowCoverage": true
+    }
+  },
+  {
+    "game": "30014559e67622cc0b80e819e84efa24d1a38ed7b11f58ec5a1626effcb95f40",
+    "mapSeed": 295641633,
+    "replay": {
+      "acceptedActions": 575,
+      "correctedTurnOwnerWindows": 1,
+      "deferredFirstPlayerWindows": 7,
+      "finalStateHash": "sha256:4ee6ca3e27a52163e226c12e265c7e8188f95f1405ad0cfa72fd67c2131c5759",
+      "initialStateHash": "sha256:41ff8fc06957c8032be1b05e76388c142b7d1d436d5e284b7fc00fe1e3043942",
+      "observerQueries": 20,
+      "observerStateAndEventEquivalence": true,
+      "traceAliasesVerified": 2,
+      "turnOwnerStable": true,
+      "windowCoverage": true
+    }
+  },
+  {
+    "game": "c582f75b404974b366978c6ced92e292abcbba27ac0d5474f7302cbebe02f27d",
+    "mapSeed": 295641827,
+    "replay": {
+      "acceptedActions": 574,
+      "correctedTurnOwnerWindows": 2,
+      "deferredFirstPlayerWindows": 7,
+      "finalStateHash": "sha256:4b78b563692c959bf98cf8bfde01c16d4f69e435b456e35ff7907ce2caf605ec",
+      "initialStateHash": "sha256:470c3a7a29b24755fea27337fcbbe8679e8e0acfd724a0aa6a618e7d11c2abf8",
+      "observerQueries": 19,
+      "observerStateAndEventEquivalence": true,
+      "traceAliasesVerified": 2,
+      "turnOwnerStable": true,
+      "windowCoverage": true
+    }
+  },
+  {
+    "game": "5a4a977dbbaada827bbeb671497d0c213ffeafe60d195528150bfdd07242fb61",
+    "mapSeed": 295642021,
+    "replay": {
+      "acceptedActions": 679,
+      "correctedTurnOwnerWindows": 3,
+      "deferredFirstPlayerWindows": 7,
+      "finalStateHash": "sha256:c0722f2334e5dac6007a954224bc127bf20d995bf12adaceb03d69d414c988d0",
+      "initialStateHash": "sha256:36d1d3a7898f933e2d5f3b012b735e92165882a93ce146b6bca10e788dbfc2a8",
+      "observerQueries": 31,
+      "observerStateAndEventEquivalence": true,
+      "traceAliasesVerified": 2,
+      "turnOwnerStable": true,
+      "windowCoverage": true
+    }
+  },
+  {
+    "game": "c5879239da55d825cf33f35eadb89e384affdd8c3b630f0570050f5664a1f77d",
+    "mapSeed": 295642215,
+    "replay": {
+      "acceptedActions": 568,
+      "correctedTurnOwnerWindows": 4,
+      "deferredFirstPlayerWindows": 7,
+      "finalStateHash": "sha256:c0919f055017ce58b959e1160ce7bb9ef3476f7fec69ee306e18ae969b6bb75e",
+      "initialStateHash": "sha256:b789cd5086b4693b8658ddc0b115f421c16e992e31da9348c4c13a679b0d782f",
+      "observerQueries": 25,
+      "observerStateAndEventEquivalence": true,
+      "traceAliasesVerified": 2,
+      "turnOwnerStable": true,
+      "windowCoverage": true
+    }
+  }
+]

@@ -1,0 +1,378 @@
+{
+  "all": {
+    "target": {
+      "clusters": 8,
+      "contrast": "M3-M1",
+      "draws": 1000,
+      "equalSeed": {
+        "brier": {
+          "estimate": -0.007381231757146941,
+          "lower": -0.02150406898195866,
+          "upper": 0.0018499280714052465
+        },
+        "logLoss": {
+          "estimate": -0.020883625283600594,
+          "lower": -0.06378823704425926,
+          "upper": 0.010152843829298614
+        },
+        "targetVpBias": {
+          "estimate": 0.0067520352344820275,
+          "lower": -0.02178473327308188,
+          "upper": 0.042474701443023774
+        },
+        "targetVpMae": {
+          "estimate": -0.046870450974110925,
+          "lower": -0.11413659669472746,
+          "upper": -0.002776177497464866
+        }
+      },
+      "negativeFavorsM3": [
+        "brier",
+        "logLoss",
+        "targetVpMae",
+        "mae"
+      ],
+      "pooled": {
+        "brier": {
+          "estimate": -0.005239039396744422,
+          "lower": -0.016910790210814347,
+          "upper": 0.0017688898187349523
+        },
+        "logLoss": {
+          "estimate": -0.015574543256239736,
+          "lower": -0.05148936791097007,
+          "upper": 0.008903986661775868
+        },
+        "targetVpBias": {
+          "estimate": 0.006770055577297446,
+          "lower": -0.021996966009531743,
+          "upper": 0.03697884567536947
+        },
+        "targetVpMae": {
+          "estimate": -0.03619601689622011,
+          "lower": -0.09328201004856998,
+          "upper": -0.005633556127464903
+        }
+      },
+      "scope": "paired seed resampling of fixed outer-fold errors; no refit or selection uncertainty"
+    },
+    "windowVp": {
+      "clusters": 8,
+      "contrast": "M3-M1",
+      "draws": 1000,
+      "equalSeed": {
+        "bias": {
+          "estimate": 0.04160558780290678,
+          "lower": -0.06386289286766046,
+          "upper": 0.1570068701092235
+        },
+        "mae": {
+          "estimate": -0.0916737695751417,
+          "lower": -0.21632797053551675,
+          "upper": 0.010455008583035046
+        }
+      },
+      "negativeFavorsM3": [
+        "brier",
+        "logLoss",
+        "targetVpMae",
+        "mae"
+      ],
+      "pooled": {
+        "bias": {
+          "estimate": 0.03055204568216282,
+          "lower": -0.08278148155066387,
+          "upper": 0.16362344222513733
+        },
+        "mae": {
+          "estimate": -0.09756038649788132,
+          "lower": -0.24062242158526773,
+          "upper": 0.025461229469466343
+        }
+      },
+      "scope": "paired seed resampling of fixed outer-fold errors; no refit or selection uncertainty"
+    }
+  },
+  "attacker-moving": {
+    "target": {
+      "clusters": 4,
+      "contrast": "M3-M1",
+      "draws": 1000,
+      "equalSeed": {
+        "brier": {
+          "estimate": -0.014140408706558869,
+          "lower": -0.055659447948928555,
+          "upper": 0.009750058972887603
+        },
+        "logLoss": {
+          "estimate": -0.033780385744404604,
+          "lower": -0.16643439372088015,
+          "upper": 0.05872089352832205
+        },
+        "targetVpBias": {
+          "estimate": -0.009732815171391098,
+          "lower": -0.08658828758946172,
+          "upper": 0.08027029188083962
+        },
+        "targetVpMae": {
+          "estimate": -0.10458584238791112,
+          "lower": -0.2863481620888542,
+          "upper": 0.005860090692280111
+        }
+      },
+      "negativeFavorsM3": [
+        "brier",
+        "logLoss",
+        "targetVpMae",
+        "mae"
+      ],
+      "pooled": {
+        "brier": {
+          "estimate": -0.011596900558888243,
+          "lower": -0.05635537577025679,
+          "upper": 0.010118219291836488
+        },
+        "logLoss": {
+          "estimate": -0.026938745681431116,
+          "lower": -0.16851723065318996,
+          "upper": 0.06086011127879473
+        },
+        "targetVpBias": {
+          "estimate": 0.001954659825118734,
+          "lower": -0.08889458058270647,
+          "upper": 0.08979646206669549
+        },
+        "targetVpMae": {
+          "estimate": -0.09016934507391541,
+          "lower": -0.2897679071037927,
+          "upper": 0.009875140429271666
+        }
+      },
+      "scope": "paired seed resampling of fixed outer-fold errors; no refit or selection uncertainty"
+    },
+    "windowVp": {
+      "clusters": 4,
+      "contrast": "M3-M1",
+      "draws": 1000,
+      "equalSeed": {
+        "bias": {
+          "estimate": -0.010241175982126212,
+          "lower": -0.31483497289708545,
+          "upper": 0.35277181526201806
+        },
+        "mae": {
+          "estimate": -0.16601713774754742,
+          "lower": -0.6212029706764883,
+          "upper": 0.12438262258509021
+        }
+      },
+      "negativeFavorsM3": [
+        "brier",
+        "logLoss",
+        "targetVpMae",
+        "mae"
+      ],
+      "pooled": {
+        "bias": {
+          "estimate": 0.006841309387915559,
+          "lower": -0.31483497289708545,
+          "upper": 0.35277181526201806
+        },
+        "mae": {
+          "estimate": -0.17739401476941966,
+          "lower": -0.6422885962909087,
+          "upper": 0.1309112782025801
+        }
+      },
+      "scope": "paired seed resampling of fixed outer-fold errors; no refit or selection uncertainty"
+    }
+  },
+  "defender-moving": {
+    "target": {
+      "clusters": 4,
+      "contrast": "M3-M1",
+      "draws": 1000,
+      "equalSeed": {
+        "brier": {
+          "estimate": -0.006468090799759766,
+          "lower": -0.02046163556722327,
+          "upper": 0.001826371036560814
+        },
+        "logLoss": {
+          "estimate": -0.016223675916953832,
+          "lower": -0.045405858871535996,
+          "upper": 0.007681393234239201
+        },
+        "targetVpBias": {
+          "estimate": 0.024495848616745843,
+          "lower": -0.019553312390699233,
+          "upper": 0.06854500962419091
+        },
+        "targetVpMae": {
+          "estimate": -0.019983078872558437,
+          "lower": -0.05751532391397107,
+          "upper": 0.0284250914952049
+        }
+      },
+      "negativeFavorsM3": [
+        "brier",
+        "logLoss",
+        "targetVpMae",
+        "mae"
+      ],
+      "pooled": {
+        "brier": {
+          "estimate": -0.005155420922664194,
+          "lower": -0.016635881127254917,
+          "upper": 0.0009174800783434814
+        },
+        "logLoss": {
+          "estimate": -0.015934932347527075,
+          "lower": -0.03868117755056505,
+          "upper": 0.0017432848648414113
+        },
+        "targetVpBias": {
+          "estimate": 0.006614277236184579,
+          "lower": -0.0227629891348592,
+          "upper": 0.07393717933649324
+        },
+        "targetVpMae": {
+          "estimate": -0.027167186679742723,
+          "lower": -0.05967865945467434,
+          "upper": 0.00930956007913852
+        }
+      },
+      "scope": "paired seed resampling of fixed outer-fold errors; no refit or selection uncertainty"
+    },
+    "windowVp": {
+      "clusters": 4,
+      "contrast": "M3-M1",
+      "draws": 1000,
+      "equalSeed": {
+        "bias": {
+          "estimate": 0.010023530987886768,
+          "lower": -0.04808031802009548,
+          "upper": 0.06845345256798649
+        },
+        "mae": {
+          "estimate": -0.03763246275065353,
+          "lower": -0.08496238391707636,
+          "upper": 0.009697458415769295
+        }
+      },
+      "negativeFavorsM3": [
+        "brier",
+        "logLoss",
+        "targetVpMae",
+        "mae"
+      ],
+      "pooled": {
+        "bias": {
+          "estimate": 0.010048613493434267,
+          "lower": -0.05116596861644109,
+          "upper": 0.07157533345012294
+        },
+        "mae": {
+          "estimate": -0.04127322591730144,
+          "lower": -0.08496238391707636,
+          "upper": 0.009697458415769295
+        }
+      },
+      "scope": "paired seed resampling of fixed outer-fold errors; no refit or selection uncertainty"
+    }
+  },
+  "meeting": {
+    "target": {
+      "clusters": 4,
+      "contrast": "M3-M1",
+      "draws": 1000,
+      "equalSeed": {
+        "brier": {
+          "estimate": -0.0023082497164246658,
+          "lower": -0.005497551398899454,
+          "upper": 0.0005608151076051281
+        },
+        "logLoss": {
+          "estimate": -0.008870792895797173,
+          "lower": -0.02115807399161324,
+          "upper": 0.0034164882000188917
+        },
+        "targetVpBias": {
+          "estimate": 0.00714803528250946,
+          "lower": -0.006599947550215727,
+          "upper": 0.022305728251559426
+        },
+        "targetVpMae": {
+          "estimate": -0.013571337850415116,
+          "lower": -0.02262176443333453,
+          "upper": -0.004520911267495702
+        }
+      },
+      "negativeFavorsM3": [
+        "brier",
+        "logLoss",
+        "targetVpMae",
+        "mae"
+      ],
+      "pooled": {
+        "brier": {
+          "estimate": -0.0026419177893903857,
+          "lower": -0.006882229787608555,
+          "upper": 0.0007125460401288785
+        },
+        "logLoss": {
+          "estimate": -0.01084146068378707,
+          "lower": -0.022175410207787072,
+          "upper": 0.0034881775981136253
+        },
+        "targetVpBias": {
+          "estimate": 0.008776169608549008,
+          "lower": -0.007422903556727805,
+          "upper": 0.028379115786010115
+        },
+        "targetVpMae": {
+          "estimate": -0.015631980460015075,
+          "lower": -0.023803324326791803,
+          "upper": -0.006012447470639213
+        }
+      },
+      "scope": "paired seed resampling of fixed outer-fold errors; no refit or selection uncertainty"
+    },
+    "windowVp": {
+      "clusters": 4,
+      "contrast": "M3-M1",
+      "draws": 1000,
+      "equalSeed": {
+        "bias": {
+          "estimate": 0.07476621416513865,
+          "lower": -0.06395116910411651,
+          "upper": 0.21175186394176773
+        },
+        "mae": {
+          "estimate": -0.07401391880692286,
+          "lower": -0.1789892888731982,
+          "upper": 0.009391588730040337
+        }
+      },
+      "negativeFavorsM3": [
+        "brier",
+        "logLoss",
+        "targetVpMae",
+        "mae"
+      ],
+      "pooled": {
+        "bias": {
+          "estimate": 0.07476621416513865,
+          "lower": -0.06395116910411652,
+          "upper": 0.21175186394176773
+        },
+        "mae": {
+          "estimate": -0.07401391880692286,
+          "lower": -0.1789892888731982,
+          "upper": 0.009391588730040338
+        }
+      },
+      "scope": "paired seed resampling of fixed outer-fold errors; no refit or selection uncertainty"
+    }
+  }
+}

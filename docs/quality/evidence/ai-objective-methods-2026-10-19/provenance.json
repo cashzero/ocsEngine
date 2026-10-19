@@ -1,0 +1,147 @@
+{
+  "configuration": {
+    "bootstrapDraws": 1000,
+    "bootstrapSeed": 73019,
+    "calibrationBins": [
+      0,
+      0.05,
+      0.1,
+      0.2,
+      0.4,
+      0.6,
+      0.8,
+      1
+    ],
+    "calibrationWeighting": "fix complete-subset row weights before probability binning",
+    "features": [
+      "occupied",
+      "nearestP",
+      "ownAbsent",
+      "nearestO",
+      "opponentAbsent",
+      "points",
+      "turnFraction",
+      "attackerMoving",
+      "defenderMoving",
+      "logRatio",
+      "zeroEnemyStrength",
+      "column",
+      "supplyColumnGain",
+      "drm",
+      "hedgehog",
+      "noAdjacent",
+      "undefended",
+      "lineClose",
+      "lineVeryClose",
+      "lineExtremelyClose"
+    ],
+    "folds": "leave one map seed out; pooled roles; no tuning",
+    "gradientInfinityTolerance": 1e-07,
+    "interceptPenalized": false,
+    "label": "retainedCapture",
+    "lambda": 1,
+    "maxIterations": 100,
+    "models": {
+      "M0": [],
+      "M1": [
+        "occupied",
+        "nearestP",
+        "ownAbsent",
+        "nearestO",
+        "opponentAbsent",
+        "points",
+        "turnFraction",
+        "attackerMoving",
+        "defenderMoving"
+      ],
+      "M2": [
+        "occupied",
+        "nearestP",
+        "ownAbsent",
+        "nearestO",
+        "opponentAbsent",
+        "points",
+        "turnFraction",
+        "attackerMoving",
+        "defenderMoving",
+        "logRatio",
+        "zeroEnemyStrength"
+      ],
+      "M3": [
+        "occupied",
+        "nearestP",
+        "ownAbsent",
+        "nearestO",
+        "opponentAbsent",
+        "points",
+        "turnFraction",
+        "attackerMoving",
+        "defenderMoving",
+        "logRatio",
+        "zeroEnemyStrength",
+        "column",
+        "supplyColumnGain",
+        "drm",
+        "hedgehog",
+        "noAdjacent",
+        "undefended",
+        "lineClose",
+        "lineVeryClose",
+        "lineExtremelyClose"
+      ]
+    },
+    "nullable": [
+      "column",
+      "drm",
+      "hedgehog",
+      "supplyColumnGain"
+    ],
+    "objective": "SUM Bernoulli cross entropy + 0.5 * SUM standardized slope squared",
+    "preprocessing": "train median (empty=0), train population standard deviation (constant=0)",
+    "primaryContrast": "M3-M1",
+    "primaryScore": "brier",
+    "scoreClip": 1e-06,
+    "windowStart": "after FIRST_PLAYER decision; actual phasing player remains stable"
+  },
+  "configurationSha256": "36697c33b79c6e294ad69d9ae723a5491ae320efd252c5e97a688517b7ee8ed0",
+  "everCaptured": "accounting only; no fitted outcome suite",
+  "failures": [],
+  "inputs": {
+    "files": [
+      {
+        "file": "artifacts/ai-latest-metrics-study/attack-temperate.jsonl",
+        "kind": "rows",
+        "sha256": "162a94c52e0db291822d3dd1fe23bbe7eec5d65a31c012ef7753d057c33e080d",
+        "summarySha256": "92a30a6a449833aa91debd5b46f56578ec4129528a6a2aadf0b21f9694494c49"
+      },
+      {
+        "file": "artifacts/ai-latest-metrics-study/meeting-temperate.jsonl",
+        "kind": "rows",
+        "sha256": "43c878321f14ce5c9d08b74528c4ba28d028a81efc03cb48472173476acc239c",
+        "summarySha256": "765d79b4073d633df0f76d276c1ea7a269c295a4c23394d920dfd7000781a67e"
+      }
+    ],
+    "manifest": "/home/cashlin/ocsEngine/docs/quality/evidence/ai-position-metric-audit-2026-10-19/manifest.json",
+    "manifestSha256": "adc9f98a781d9072a44ef6b65f81f8c6c2b9a42ddf406826a7feb9426b5fd06e",
+    "metricOnlyDistinct": 12,
+    "metricOnlyIdentityCollisions": []
+  },
+  "interpretation": "Exploratory historical cohort; fixed-error intervals exclude refitting and selection uncertainty. No legal-plan, full net-VP or cross-policy qualification.",
+  "observationsSha256": "b0d7d1ff99a446b3cbe122b3941bf817f8f9b9b369a545480f6f19f50172e440",
+  "predictionsSha256": "e45e4de4dd104d94b6637dfca4e09256e8958043ba4d0e13bc1dec1b37c9731f",
+  "primaryLabel": "retainedCapture",
+  "provenance": {
+    "engineSha256": "875515764bbccf9a022201253b71926a66b6ecf96b65eac321cc8229081a0482",
+    "extractorSha256": "f271de7d78a04a0ef3c796ba339912934def5176fd2df2ad6837890923625762",
+    "inputSha256": "520774252af01c526b146798a8b390d2bfe1a3ba5c219a74bc90405d6279b810"
+  },
+  "runnerSha256": "07f5dde455b0cbce10923d734b2576fadd9640393654bea5867c7ac48191fa35",
+  "schemaVersion": 2,
+  "sourceHashes": {
+    "ai-position-validate.py": "91eb5b1d453a3fe102462a3bc787eff126791eb8fb447373c8592c730f06dbff",
+    "ai-vp-metrics-compare.py": "00eeb924694c722d1ce47d92e44a6d1d6bae485b6728f1c9d2f0fcd80ed6a864"
+  },
+  "status": "SCORED",
+  "trainingRateBaseline": "M0; smoothed training target prevalence applied to each target before window aggregation",
+  "worklistSha256": "520774252af01c526b146798a8b390d2bfe1a3ba5c219a74bc90405d6279b810"
+}

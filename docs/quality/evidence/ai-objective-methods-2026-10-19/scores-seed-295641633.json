@@ -1,0 +1,1096 @@
+{
+  "equalSeed": {
+    "M0": {
+      "target": {
+        "brier": 0.025773248593761414,
+        "calibration": [
+          {
+            "brier": null,
+            "count": 0,
+            "eventRate": null,
+            "high": 0.05,
+            "low": 0,
+            "meanProbability": null,
+            "occupancy": 0,
+            "probabilityBias": null,
+            "rightInclusive": false,
+            "seeds": 0
+          },
+          {
+            "brier": 0.025773248593761414,
+            "count": 120,
+            "eventRate": 0.025,
+            "high": 0.1,
+            "low": 0.05,
+            "meanProbability": 0.062393162393162394,
+            "occupancy": 1.0,
+            "probabilityBias": 0.03739316239316239,
+            "rightInclusive": false,
+            "seeds": 1
+          },
+          {
+            "brier": null,
+            "count": 0,
+            "eventRate": null,
+            "high": 0.2,
+            "low": 0.1,
+            "meanProbability": null,
+            "occupancy": 0,
+            "probabilityBias": null,
+            "rightInclusive": false,
+            "seeds": 0
+          },
+          {
+            "brier": null,
+            "count": 0,
+            "eventRate": null,
+            "high": 0.4,
+            "low": 0.2,
+            "meanProbability": null,
+            "occupancy": 0,
+            "probabilityBias": null,
+            "rightInclusive": false,
+            "seeds": 0
+          },
+          {
+            "brier": null,
+            "count": 0,
+            "eventRate": null,
+            "high": 0.6,
+            "low": 0.4,
+            "meanProbability": null,
+            "occupancy": 0,
+            "probabilityBias": null,
+            "rightInclusive": false,
+            "seeds": 0
+          },
+          {
+            "brier": null,
+            "count": 0,
+            "eventRate": null,
+            "high": 0.8,
+            "low": 0.6,
+            "meanProbability": null,
+            "occupancy": 0,
+            "probabilityBias": null,
+            "rightInclusive": false,
+            "seeds": 0
+          },
+          {
+            "brier": null,
+            "count": 0,
+            "eventRate": null,
+            "high": 1,
+            "low": 0.8,
+            "meanProbability": null,
+            "occupancy": 0,
+            "probabilityBias": null,
+            "rightInclusive": true,
+            "seeds": 0
+          }
+        ],
+        "count": 120,
+        "eventRate": 0.025,
+        "logLoss": 0.13217144299474254,
+        "meanProbability": 0.062393162393162394,
+        "positives": 3,
+        "probabilityBias": 0.03739316239316239,
+        "seeds": 1,
+        "targetVpBias": 0.0939957264957265,
+        "targetVpMae": 0.2190099715099715
+      },
+      "windowVp": {
+        "bias": 0.8676528599605523,
+        "count": 13,
+        "mae": 1.41689677843524,
+        "meanExpectedVp": 1.4830374753451676,
+        "meanObservedVp": 0.6153846153846154,
+        "seeds": 1,
+        "zeroTargetWindows": 0
+      }
+    },
+    "M1": {
+      "target": {
+        "brier": 0.040735643933574324,
+        "calibration": [
+          {
+            "brier": 0.010596319883100195,
+            "count": 90,
+            "eventRate": 0.011111111111111112,
+            "high": 0.05,
+            "low": 0,
+            "meanProbability": 0.02015033053163161,
+            "occupancy": 0.75,
+            "probabilityBias": 0.0090392194205205,
+            "rightInclusive": false,
+            "seeds": 1
+          },
+          {
+            "brier": 0.03801549053263639,
+            "count": 26,
+            "eventRate": 0.03846153846153846,
+            "high": 0.1,
+            "low": 0.05,
+            "meanProbability": 0.059224023295454044,
+            "occupancy": 0.21666666666666667,
+            "probabilityBias": 0.020762484833915587,
+            "rightInclusive": false,
+            "seeds": 1
+          },
+          {
+            "brier": null,
+            "count": 0,
+            "eventRate": null,
+            "high": 0.2,
+            "low": 0.1,
+            "meanProbability": null,
+            "occupancy": 0,
+            "probabilityBias": null,
+            "rightInclusive": false,
+            "seeds": 0
+          },
+          {
+            "brier": null,
+            "count": 0,
+            "eventRate": null,
+            "high": 0.4,
+            "low": 0.2,
+            "meanProbability": null,
+            "occupancy": 0,
+            "probabilityBias": null,
+            "rightInclusive": false,
+            "seeds": 0
+          },
+          {
+            "brier": null,
+            "count": 0,
+            "eventRate": null,
+            "high": 0.6,
+            "low": 0.4,
+            "meanProbability": null,
+            "occupancy": 0,
+            "probabilityBias": null,
+            "rightInclusive": false,
+            "seeds": 0
+          },
+          {
+            "brier": null,
+            "count": 0,
+            "eventRate": null,
+            "high": 0.8,
+            "low": 0.6,
+            "meanProbability": null,
+            "occupancy": 0,
+            "probabilityBias": null,
+            "rightInclusive": false,
+            "seeds": 0
+          },
+          {
+            "brier": 0.7365514321753388,
+            "count": 4,
+            "eventRate": 0.25,
+            "high": 1,
+            "low": 0.8,
+            "meanProbability": 0.9909681435703578,
+            "occupancy": 0.03333333333333333,
+            "probabilityBias": 0.7409681435703579,
+            "rightInclusive": true,
+            "seeds": 1
+          }
+        ],
+        "count": 120,
+        "eventRate": 0.025,
+        "logLoss": 0.21103389033778708,
+        "meanProbability": 0.06097689106508401,
+        "positives": 3,
+        "probabilityBias": 0.03597689106508402,
+        "seeds": 1,
+        "targetVpBias": 0.11326279732172358,
+        "targetVpMae": 0.20853545907441917
+      },
+      "windowVp": {
+        "bias": 1.0455027445082177,
+        "count": 13,
+        "mae": 1.802315584794079,
+        "meanExpectedVp": 1.660887359892833,
+        "meanObservedVp": 0.6153846153846154,
+        "seeds": 1,
+        "zeroTargetWindows": 0
+      }
+    },
+    "M2": {
+      "target": {
+        "brier": 0.03876704058593865,
+        "calibration": [
+          {
+            "brier": 0.010145754478880567,
+            "count": 97,
+            "eventRate": 0.010309278350515464,
+            "high": 0.05,
+            "low": 0,
+            "meanProbability": 0.021914265043316217,
+            "occupancy": 0.8083333333333333,
+            "probabilityBias": 0.011604986692800752,
+            "rightInclusive": false,
+            "seeds": 1
+          },
+          {
+            "brier": 0.0040719933566912125,
+            "count": 17,
+            "eventRate": 0.0,
+            "high": 0.1,
+            "low": 0.05,
+            "meanProbability": 0.06343859248686533,
+            "occupancy": 0.14166666666666666,
+            "probabilityBias": 0.06343859248686533,
+            "rightInclusive": false,
+            "seeds": 1
+          },
+          {
+            "brier": 0.3646781257012577,
+            "count": 2,
+            "eventRate": 0.5,
+            "high": 0.2,
+            "low": 0.1,
+            "meanProbability": 0.17838563355040038,
+            "occupancy": 0.016666666666666666,
+            "probabilityBias": -0.3216143664495996,
+            "rightInclusive": false,
+            "seeds": 1
+          },
+          {
+            "brier": null,
+            "count": 0,
+            "eventRate": null,
+            "high": 0.4,
+            "low": 0.2,
+            "meanProbability": null,
+            "occupancy": 0,
+            "probabilityBias": null,
+            "rightInclusive": false,
+            "seeds": 0
+          },
+          {
+            "brier": null,
+            "count": 0,
+            "eventRate": null,
+            "high": 0.6,
+            "low": 0.4,
+            "meanProbability": null,
+            "occupancy": 0,
+            "probabilityBias": null,
+            "rightInclusive": false,
+            "seeds": 0
+          },
+          {
+            "brier": null,
+            "count": 0,
+            "eventRate": null,
+            "high": 0.8,
+            "low": 0.6,
+            "meanProbability": null,
+            "occupancy": 0,
+            "probabilityBias": null,
+            "rightInclusive": false,
+            "seeds": 0
+          },
+          {
+            "brier": 0.7173316368487394,
+            "count": 4,
+            "eventRate": 0.25,
+            "high": 1,
+            "low": 0.8,
+            "meanProbability": 0.9754281590751613,
+            "occupancy": 0.03333333333333333,
+            "probabilityBias": 0.7254281590751612,
+            "rightInclusive": true,
+            "seeds": 1
+          }
+        ],
+        "count": 120,
+        "eventRate": 0.025,
+        "logLoss": 0.18189492823881678,
+        "meanProbability": 0.06218853070733191,
+        "positives": 3,
+        "probabilityBias": 0.03718853070733192,
+        "seeds": 1,
+        "targetVpBias": 0.11998229483568527,
+        "targetVpMae": 0.20869702825899086
+      },
+      "windowVp": {
+        "bias": 1.1075288754063257,
+        "count": 13,
+        "mae": 1.7934318955333473,
+        "meanExpectedVp": 1.722913490790941,
+        "meanObservedVp": 0.6153846153846154,
+        "seeds": 1,
+        "zeroTargetWindows": 0
+      }
+    },
+    "M3": {
+      "target": {
+        "brier": 0.033291515669388164,
+        "calibration": [
+          {
+            "brier": 0.010079145492055403,
+            "count": 97,
+            "eventRate": 0.010309278350515464,
+            "high": 0.05,
+            "low": 0,
+            "meanProbability": 0.020964626309416718,
+            "occupancy": 0.8083333333333333,
+            "probabilityBias": 0.010655347958901253,
+            "rightInclusive": false,
+            "seeds": 1
+          },
+          {
+            "brier": 0.0030866259415959114,
+            "count": 17,
+            "eventRate": 0.0,
+            "high": 0.1,
+            "low": 0.05,
+            "meanProbability": 0.05534715760280762,
+            "occupancy": 0.14166666666666666,
+            "probabilityBias": 0.05534715760280762,
+            "rightInclusive": false,
+            "seeds": 1
+          },
+          {
+            "brier": 0.014908000475130101,
+            "count": 1,
+            "eventRate": 0.0,
+            "high": 0.2,
+            "low": 0.1,
+            "meanProbability": 0.12209832298246401,
+            "occupancy": 0.008333333333333333,
+            "probabilityBias": 0.12209832298246401,
+            "rightInclusive": false,
+            "seeds": 1
+          },
+          {
+            "brier": null,
+            "count": 0,
+            "eventRate": null,
+            "high": 0.4,
+            "low": 0.2,
+            "meanProbability": null,
+            "occupancy": 0,
+            "probabilityBias": null,
+            "rightInclusive": false,
+            "seeds": 0
+          },
+          {
+            "brier": null,
+            "count": 0,
+            "eventRate": null,
+            "high": 0.6,
+            "low": 0.4,
+            "meanProbability": null,
+            "occupancy": 0,
+            "probabilityBias": null,
+            "rightInclusive": false,
+            "seeds": 0
+          },
+          {
+            "brier": null,
+            "count": 0,
+            "eventRate": null,
+            "high": 0.8,
+            "low": 0.6,
+            "meanProbability": null,
+            "occupancy": 0,
+            "probabilityBias": null,
+            "rightInclusive": false,
+            "seeds": 0
+          },
+          {
+            "brier": 0.589984825222989,
+            "count": 5,
+            "eventRate": 0.4,
+            "high": 1,
+            "low": 0.8,
+            "meanProbability": 0.9714820874961952,
+            "occupancy": 0.041666666666666664,
+            "probabilityBias": 0.5714820874961953,
+            "rightInclusive": true,
+            "seeds": 1
+          }
+        ],
+        "count": 120,
+        "eventRate": 0.025,
+        "logLoss": 0.186876033623825,
+        "meanProbability": 0.06628315993103825,
+        "positives": 3,
+        "probabilityBias": 0.04128315993103826,
+        "seeds": 1,
+        "targetVpBias": 0.14410647616519195,
+        "targetVpMae": 0.18306522984072088
+      },
+      "windowVp": {
+        "bias": 1.3302136261402333,
+        "count": 13,
+        "mae": 1.5662771925017676,
+        "meanExpectedVp": 1.9455982415248487,
+        "meanObservedVp": 0.6153846153846154,
+        "seeds": 1,
+        "zeroTargetWindows": 0
+      }
+    },
+    "zero": {
+      "target": {
+        "brier": 0.025,
+        "calibration": [
+          {
+            "brier": 0.025,
+            "count": 120,
+            "eventRate": 0.025,
+            "high": 0.05,
+            "low": 0,
+            "meanProbability": 0.0,
+            "occupancy": 1.0,
+            "probabilityBias": -0.025,
+            "rightInclusive": false,
+            "seeds": 1
+          },
+          {
+            "brier": null,
+            "count": 0,
+            "eventRate": null,
+            "high": 0.1,
+            "low": 0.05,
+            "meanProbability": null,
+            "occupancy": 0,
+            "probabilityBias": null,
+            "rightInclusive": false,
+            "seeds": 0
+          },
+          {
+            "brier": null,
+            "count": 0,
+            "eventRate": null,
+            "high": 0.2,
+            "low": 0.1,
+            "meanProbability": null,
+            "occupancy": 0,
+            "probabilityBias": null,
+            "rightInclusive": false,
+            "seeds": 0
+          },
+          {
+            "brier": null,
+            "count": 0,
+            "eventRate": null,
+            "high": 0.4,
+            "low": 0.2,
+            "meanProbability": null,
+            "occupancy": 0,
+            "probabilityBias": null,
+            "rightInclusive": false,
+            "seeds": 0
+          },
+          {
+            "brier": null,
+            "count": 0,
+            "eventRate": null,
+            "high": 0.6,
+            "low": 0.4,
+            "meanProbability": null,
+            "occupancy": 0,
+            "probabilityBias": null,
+            "rightInclusive": false,
+            "seeds": 0
+          },
+          {
+            "brier": null,
+            "count": 0,
+            "eventRate": null,
+            "high": 0.8,
+            "low": 0.6,
+            "meanProbability": null,
+            "occupancy": 0,
+            "probabilityBias": null,
+            "rightInclusive": false,
+            "seeds": 0
+          },
+          {
+            "brier": null,
+            "count": 0,
+            "eventRate": null,
+            "high": 1,
+            "low": 0.8,
+            "meanProbability": null,
+            "occupancy": 0,
+            "probabilityBias": null,
+            "rightInclusive": true,
+            "seeds": 0
+          }
+        ],
+        "count": 120,
+        "eventRate": 0.025,
+        "logLoss": 0.3453887389495944,
+        "meanProbability": 0.0,
+        "positives": 3,
+        "probabilityBias": -0.025,
+        "seeds": 1,
+        "targetVpBias": -0.06666666666666667,
+        "targetVpMae": 0.06666666666666667
+      },
+      "windowVp": {
+        "bias": -0.6153846153846154,
+        "count": 13,
+        "mae": 0.6153846153846154,
+        "meanExpectedVp": 0.0,
+        "meanObservedVp": 0.6153846153846154,
+        "seeds": 1,
+        "zeroTargetWindows": 0
+      }
+    }
+  },
+  "pooled": {
+    "M0": {
+      "target": {
+        "brier": 0.025773248593761414,
+        "calibration": [
+          {
+            "brier": null,
+            "count": 0,
+            "eventRate": null,
+            "high": 0.05,
+            "low": 0,
+            "meanProbability": null,
+            "occupancy": 0,
+            "probabilityBias": null,
+            "rightInclusive": false,
+            "seeds": 0
+          },
+          {
+            "brier": 0.025773248593761414,
+            "count": 120,
+            "eventRate": 0.025,
+            "high": 0.1,
+            "low": 0.05,
+            "meanProbability": 0.062393162393162394,
+            "occupancy": 1.0,
+            "probabilityBias": 0.03739316239316239,
+            "rightInclusive": false,
+            "seeds": 1
+          },
+          {
+            "brier": null,
+            "count": 0,
+            "eventRate": null,
+            "high": 0.2,
+            "low": 0.1,
+            "meanProbability": null,
+            "occupancy": 0,
+            "probabilityBias": null,
+            "rightInclusive": false,
+            "seeds": 0
+          },
+          {
+            "brier": null,
+            "count": 0,
+            "eventRate": null,
+            "high": 0.4,
+            "low": 0.2,
+            "meanProbability": null,
+            "occupancy": 0,
+            "probabilityBias": null,
+            "rightInclusive": false,
+            "seeds": 0
+          },
+          {
+            "brier": null,
+            "count": 0,
+            "eventRate": null,
+            "high": 0.6,
+            "low": 0.4,
+            "meanProbability": null,
+            "occupancy": 0,
+            "probabilityBias": null,
+            "rightInclusive": false,
+            "seeds": 0
+          },
+          {
+            "brier": null,
+            "count": 0,
+            "eventRate": null,
+            "high": 0.8,
+            "low": 0.6,
+            "meanProbability": null,
+            "occupancy": 0,
+            "probabilityBias": null,
+            "rightInclusive": false,
+            "seeds": 0
+          },
+          {
+            "brier": null,
+            "count": 0,
+            "eventRate": null,
+            "high": 1,
+            "low": 0.8,
+            "meanProbability": null,
+            "occupancy": 0,
+            "probabilityBias": null,
+            "rightInclusive": true,
+            "seeds": 0
+          }
+        ],
+        "count": 120,
+        "eventRate": 0.025,
+        "logLoss": 0.13217144299474254,
+        "meanProbability": 0.062393162393162394,
+        "positives": 3,
+        "probabilityBias": 0.03739316239316239,
+        "seeds": 1,
+        "targetVpBias": 0.0939957264957265,
+        "targetVpMae": 0.2190099715099715
+      },
+      "windowVp": {
+        "bias": 0.8676528599605523,
+        "count": 13,
+        "mae": 1.41689677843524,
+        "meanExpectedVp": 1.4830374753451676,
+        "meanObservedVp": 0.6153846153846154,
+        "seeds": 1,
+        "zeroTargetWindows": 0
+      }
+    },
+    "M1": {
+      "target": {
+        "brier": 0.040735643933574324,
+        "calibration": [
+          {
+            "brier": 0.010596319883100195,
+            "count": 90,
+            "eventRate": 0.011111111111111112,
+            "high": 0.05,
+            "low": 0,
+            "meanProbability": 0.02015033053163161,
+            "occupancy": 0.75,
+            "probabilityBias": 0.0090392194205205,
+            "rightInclusive": false,
+            "seeds": 1
+          },
+          {
+            "brier": 0.03801549053263639,
+            "count": 26,
+            "eventRate": 0.03846153846153846,
+            "high": 0.1,
+            "low": 0.05,
+            "meanProbability": 0.059224023295454044,
+            "occupancy": 0.21666666666666667,
+            "probabilityBias": 0.020762484833915587,
+            "rightInclusive": false,
+            "seeds": 1
+          },
+          {
+            "brier": null,
+            "count": 0,
+            "eventRate": null,
+            "high": 0.2,
+            "low": 0.1,
+            "meanProbability": null,
+            "occupancy": 0,
+            "probabilityBias": null,
+            "rightInclusive": false,
+            "seeds": 0
+          },
+          {
+            "brier": null,
+            "count": 0,
+            "eventRate": null,
+            "high": 0.4,
+            "low": 0.2,
+            "meanProbability": null,
+            "occupancy": 0,
+            "probabilityBias": null,
+            "rightInclusive": false,
+            "seeds": 0
+          },
+          {
+            "brier": null,
+            "count": 0,
+            "eventRate": null,
+            "high": 0.6,
+            "low": 0.4,
+            "meanProbability": null,
+            "occupancy": 0,
+            "probabilityBias": null,
+            "rightInclusive": false,
+            "seeds": 0
+          },
+          {
+            "brier": null,
+            "count": 0,
+            "eventRate": null,
+            "high": 0.8,
+            "low": 0.6,
+            "meanProbability": null,
+            "occupancy": 0,
+            "probabilityBias": null,
+            "rightInclusive": false,
+            "seeds": 0
+          },
+          {
+            "brier": 0.7365514321753388,
+            "count": 4,
+            "eventRate": 0.25,
+            "high": 1,
+            "low": 0.8,
+            "meanProbability": 0.9909681435703578,
+            "occupancy": 0.03333333333333333,
+            "probabilityBias": 0.7409681435703579,
+            "rightInclusive": true,
+            "seeds": 1
+          }
+        ],
+        "count": 120,
+        "eventRate": 0.025,
+        "logLoss": 0.21103389033778708,
+        "meanProbability": 0.06097689106508401,
+        "positives": 3,
+        "probabilityBias": 0.03597689106508402,
+        "seeds": 1,
+        "targetVpBias": 0.11326279732172358,
+        "targetVpMae": 0.20853545907441917
+      },
+      "windowVp": {
+        "bias": 1.0455027445082177,
+        "count": 13,
+        "mae": 1.802315584794079,
+        "meanExpectedVp": 1.660887359892833,
+        "meanObservedVp": 0.6153846153846154,
+        "seeds": 1,
+        "zeroTargetWindows": 0
+      }
+    },
+    "M2": {
+      "target": {
+        "brier": 0.03876704058593865,
+        "calibration": [
+          {
+            "brier": 0.010145754478880567,
+            "count": 97,
+            "eventRate": 0.010309278350515464,
+            "high": 0.05,
+            "low": 0,
+            "meanProbability": 0.021914265043316217,
+            "occupancy": 0.8083333333333333,
+            "probabilityBias": 0.011604986692800752,
+            "rightInclusive": false,
+            "seeds": 1
+          },
+          {
+            "brier": 0.0040719933566912125,
+            "count": 17,
+            "eventRate": 0.0,
+            "high": 0.1,
+            "low": 0.05,
+            "meanProbability": 0.06343859248686533,
+            "occupancy": 0.14166666666666666,
+            "probabilityBias": 0.06343859248686533,
+            "rightInclusive": false,
+            "seeds": 1
+          },
+          {
+            "brier": 0.3646781257012577,
+            "count": 2,
+            "eventRate": 0.5,
+            "high": 0.2,
+            "low": 0.1,
+            "meanProbability": 0.17838563355040038,
+            "occupancy": 0.016666666666666666,
+            "probabilityBias": -0.3216143664495996,
+            "rightInclusive": false,
+            "seeds": 1
+          },
+          {
+            "brier": null,
+            "count": 0,
+            "eventRate": null,
+            "high": 0.4,
+            "low": 0.2,
+            "meanProbability": null,
+            "occupancy": 0,
+            "probabilityBias": null,
+            "rightInclusive": false,
+            "seeds": 0
+          },
+          {
+            "brier": null,
+            "count": 0,
+            "eventRate": null,
+            "high": 0.6,
+            "low": 0.4,
+            "meanProbability": null,
+            "occupancy": 0,
+            "probabilityBias": null,
+            "rightInclusive": false,
+            "seeds": 0
+          },
+          {
+            "brier": null,
+            "count": 0,
+            "eventRate": null,
+            "high": 0.8,
+            "low": 0.6,
+            "meanProbability": null,
+            "occupancy": 0,
+            "probabilityBias": null,
+            "rightInclusive": false,
+            "seeds": 0
+          },
+          {
+            "brier": 0.7173316368487394,
+            "count": 4,
+            "eventRate": 0.25,
+            "high": 1,
+            "low": 0.8,
+            "meanProbability": 0.9754281590751613,
+            "occupancy": 0.03333333333333333,
+            "probabilityBias": 0.7254281590751612,
+            "rightInclusive": true,
+            "seeds": 1
+          }
+        ],
+        "count": 120,
+        "eventRate": 0.025,
+        "logLoss": 0.18189492823881678,
+        "meanProbability": 0.06218853070733191,
+        "positives": 3,
+        "probabilityBias": 0.03718853070733192,
+        "seeds": 1,
+        "targetVpBias": 0.11998229483568527,
+        "targetVpMae": 0.20869702825899086
+      },
+      "windowVp": {
+        "bias": 1.1075288754063257,
+        "count": 13,
+        "mae": 1.7934318955333473,
+        "meanExpectedVp": 1.722913490790941,
+        "meanObservedVp": 0.6153846153846154,
+        "seeds": 1,
+        "zeroTargetWindows": 0
+      }
+    },
+    "M3": {
+      "target": {
+        "brier": 0.033291515669388164,
+        "calibration": [
+          {
+            "brier": 0.010079145492055403,
+            "count": 97,
+            "eventRate": 0.010309278350515464,
+            "high": 0.05,
+            "low": 0,
+            "meanProbability": 0.020964626309416718,
+            "occupancy": 0.8083333333333333,
+            "probabilityBias": 0.010655347958901253,
+            "rightInclusive": false,
+            "seeds": 1
+          },
+          {
+            "brier": 0.0030866259415959114,
+            "count": 17,
+            "eventRate": 0.0,
+            "high": 0.1,
+            "low": 0.05,
+            "meanProbability": 0.05534715760280762,
+            "occupancy": 0.14166666666666666,
+            "probabilityBias": 0.05534715760280762,
+            "rightInclusive": false,
+            "seeds": 1
+          },
+          {
+            "brier": 0.014908000475130101,
+            "count": 1,
+            "eventRate": 0.0,
+            "high": 0.2,
+            "low": 0.1,
+            "meanProbability": 0.12209832298246401,
+            "occupancy": 0.008333333333333333,
+            "probabilityBias": 0.12209832298246401,
+            "rightInclusive": false,
+            "seeds": 1
+          },
+          {
+            "brier": null,
+            "count": 0,
+            "eventRate": null,
+            "high": 0.4,
+            "low": 0.2,
+            "meanProbability": null,
+            "occupancy": 0,
+            "probabilityBias": null,
+            "rightInclusive": false,
+            "seeds": 0
+          },
+          {
+            "brier": null,
+            "count": 0,
+            "eventRate": null,
+            "high": 0.6,
+            "low": 0.4,
+            "meanProbability": null,
+            "occupancy": 0,
+            "probabilityBias": null,
+            "rightInclusive": false,
+            "seeds": 0
+          },
+          {
+            "brier": null,
+            "count": 0,
+            "eventRate": null,
+            "high": 0.8,
+            "low": 0.6,
+            "meanProbability": null,
+            "occupancy": 0,
+            "probabilityBias": null,
+            "rightInclusive": false,
+            "seeds": 0
+          },
+          {
+            "brier": 0.589984825222989,
+            "count": 5,
+            "eventRate": 0.4,
+            "high": 1,
+            "low": 0.8,
+            "meanProbability": 0.9714820874961952,
+            "occupancy": 0.041666666666666664,
+            "probabilityBias": 0.5714820874961953,
+            "rightInclusive": true,
+            "seeds": 1
+          }
+        ],
+        "count": 120,
+        "eventRate": 0.025,
+        "logLoss": 0.186876033623825,
+        "meanProbability": 0.06628315993103825,
+        "positives": 3,
+        "probabilityBias": 0.04128315993103826,
+        "seeds": 1,
+        "targetVpBias": 0.14410647616519195,
+        "targetVpMae": 0.18306522984072088
+      },
+      "windowVp": {
+        "bias": 1.3302136261402333,
+        "count": 13,
+        "mae": 1.5662771925017676,
+        "meanExpectedVp": 1.9455982415248487,
+        "meanObservedVp": 0.6153846153846154,
+        "seeds": 1,
+        "zeroTargetWindows": 0
+      }
+    },
+    "zero": {
+      "target": {
+        "brier": 0.025,
+        "calibration": [
+          {
+            "brier": 0.025,
+            "count": 120,
+            "eventRate": 0.025,
+            "high": 0.05,
+            "low": 0,
+            "meanProbability": 0.0,
+            "occupancy": 1.0,
+            "probabilityBias": -0.025,
+            "rightInclusive": false,
+            "seeds": 1
+          },
+          {
+            "brier": null,
+            "count": 0,
+            "eventRate": null,
+            "high": 0.1,
+            "low": 0.05,
+            "meanProbability": null,
+            "occupancy": 0,
+            "probabilityBias": null,
+            "rightInclusive": false,
+            "seeds": 0
+          },
+          {
+            "brier": null,
+            "count": 0,
+            "eventRate": null,
+            "high": 0.2,
+            "low": 0.1,
+            "meanProbability": null,
+            "occupancy": 0,
+            "probabilityBias": null,
+            "rightInclusive": false,
+            "seeds": 0
+          },
+          {
+            "brier": null,
+            "count": 0,
+            "eventRate": null,
+            "high": 0.4,
+            "low": 0.2,
+            "meanProbability": null,
+            "occupancy": 0,
+            "probabilityBias": null,
+            "rightInclusive": false,
+            "seeds": 0
+          },
+          {
+            "brier": null,
+            "count": 0,
+            "eventRate": null,
+            "high": 0.6,
+            "low": 0.4,
+            "meanProbability": null,
+            "occupancy": 0,
+            "probabilityBias": null,
+            "rightInclusive": false,
+            "seeds": 0
+          },
+          {
+            "brier": null,
+            "count": 0,
+            "eventRate": null,
+            "high": 0.8,
+            "low": 0.6,
+            "meanProbability": null,
+            "occupancy": 0,
+            "probabilityBias": null,
+            "rightInclusive": false,
+            "seeds": 0
+          },
+          {
+            "brier": null,
+            "count": 0,
+            "eventRate": null,
+            "high": 1,
+            "low": 0.8,
+            "meanProbability": null,
+            "occupancy": 0,
+            "probabilityBias": null,
+            "rightInclusive": true,
+            "seeds": 0
+          }
+        ],
+        "count": 120,
+        "eventRate": 0.025,
+        "logLoss": 0.3453887389495944,
+        "meanProbability": 0.0,
+        "positives": 3,
+        "probabilityBias": -0.025,
+        "seeds": 1,
+        "targetVpBias": -0.06666666666666667,
+        "targetVpMae": 0.06666666666666667
+      },
+      "windowVp": {
+        "bias": -0.6153846153846154,
+        "count": 13,
+        "mae": 0.6153846153846154,
+        "meanExpectedVp": 0.0,
+        "meanObservedVp": 0.6153846153846154,
+        "seeds": 1,
+        "zeroTargetWindows": 0
+      }
+    }
+  }
+}

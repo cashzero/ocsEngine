@@ -1,0 +1,1522 @@
+{
+  "deferredWindows": [
+    {
+      "expectedStartRevision": 148,
+      "firstPlayerDecision": {
+        "actionIndex": 147,
+        "choiceId": "first",
+        "chooserId": "player:axis",
+        "revision": 147
+      },
+      "game": "6bf977013dbf6ed4177cfe70edfb1adfb1ee7a2f6e5b63d48e6df173278cb0ba",
+      "gameTurn": 2,
+      "id": "6bf977013dbf6ed4177cfe70edfb1adfb1ee7a2f6e5b63d48e6df173278cb0ba:2:0",
+      "phasingPlayerId": "player:axis",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:axis",
+      "recordedRole": "attacker-moving",
+      "recordedStartRevision": 147,
+      "role": "attacker-moving"
+    },
+    {
+      "expectedStartRevision": 288,
+      "firstPlayerDecision": {
+        "actionIndex": 287,
+        "choiceId": "first",
+        "chooserId": "player:allied",
+        "revision": 287
+      },
+      "game": "6bf977013dbf6ed4177cfe70edfb1adfb1ee7a2f6e5b63d48e6df173278cb0ba",
+      "gameTurn": 3,
+      "id": "6bf977013dbf6ed4177cfe70edfb1adfb1ee7a2f6e5b63d48e6df173278cb0ba:3:0",
+      "phasingPlayerId": "player:allied",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:allied",
+      "recordedRole": "defender-moving",
+      "recordedStartRevision": 287,
+      "role": "defender-moving"
+    },
+    {
+      "expectedStartRevision": 428,
+      "firstPlayerDecision": {
+        "actionIndex": 427,
+        "choiceId": "first",
+        "chooserId": "player:allied",
+        "revision": 427
+      },
+      "game": "6bf977013dbf6ed4177cfe70edfb1adfb1ee7a2f6e5b63d48e6df173278cb0ba",
+      "gameTurn": 4,
+      "id": "6bf977013dbf6ed4177cfe70edfb1adfb1ee7a2f6e5b63d48e6df173278cb0ba:4:0",
+      "phasingPlayerId": "player:allied",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:allied",
+      "recordedRole": "defender-moving",
+      "recordedStartRevision": 427,
+      "role": "defender-moving"
+    },
+    {
+      "expectedStartRevision": 528,
+      "firstPlayerDecision": {
+        "actionIndex": 527,
+        "choiceId": "first",
+        "chooserId": "player:allied",
+        "revision": 527
+      },
+      "game": "6bf977013dbf6ed4177cfe70edfb1adfb1ee7a2f6e5b63d48e6df173278cb0ba",
+      "gameTurn": 5,
+      "id": "6bf977013dbf6ed4177cfe70edfb1adfb1ee7a2f6e5b63d48e6df173278cb0ba:5:0",
+      "phasingPlayerId": "player:allied",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:allied",
+      "recordedRole": "defender-moving",
+      "recordedStartRevision": 527,
+      "role": "defender-moving"
+    },
+    {
+      "expectedStartRevision": 604,
+      "firstPlayerDecision": {
+        "actionIndex": 603,
+        "choiceId": "first",
+        "chooserId": "player:allied",
+        "revision": 603
+      },
+      "game": "6bf977013dbf6ed4177cfe70edfb1adfb1ee7a2f6e5b63d48e6df173278cb0ba",
+      "gameTurn": 6,
+      "id": "6bf977013dbf6ed4177cfe70edfb1adfb1ee7a2f6e5b63d48e6df173278cb0ba:6:0",
+      "phasingPlayerId": "player:allied",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:allied",
+      "recordedRole": "defender-moving",
+      "recordedStartRevision": 603,
+      "role": "defender-moving"
+    },
+    {
+      "expectedStartRevision": 716,
+      "firstPlayerDecision": {
+        "actionIndex": 715,
+        "choiceId": "first",
+        "chooserId": "player:axis",
+        "revision": 715
+      },
+      "game": "6bf977013dbf6ed4177cfe70edfb1adfb1ee7a2f6e5b63d48e6df173278cb0ba",
+      "gameTurn": 7,
+      "id": "6bf977013dbf6ed4177cfe70edfb1adfb1ee7a2f6e5b63d48e6df173278cb0ba:7:0",
+      "phasingPlayerId": "player:axis",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:axis",
+      "recordedRole": "attacker-moving",
+      "recordedStartRevision": 715,
+      "role": "attacker-moving"
+    },
+    {
+      "expectedStartRevision": 766,
+      "firstPlayerDecision": {
+        "actionIndex": 765,
+        "choiceId": "second",
+        "chooserId": "player:axis",
+        "revision": 765
+      },
+      "game": "6bf977013dbf6ed4177cfe70edfb1adfb1ee7a2f6e5b63d48e6df173278cb0ba",
+      "gameTurn": 8,
+      "id": "6bf977013dbf6ed4177cfe70edfb1adfb1ee7a2f6e5b63d48e6df173278cb0ba:8:0",
+      "phasingPlayerId": "player:allied",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:axis",
+      "recordedRole": "attacker-moving",
+      "recordedStartRevision": 765,
+      "role": "defender-moving"
+    },
+    {
+      "expectedStartRevision": 138,
+      "firstPlayerDecision": {
+        "actionIndex": 137,
+        "choiceId": "first",
+        "chooserId": "player:axis",
+        "revision": 137
+      },
+      "game": "91edfc71afa4c26100ed945b271c19ed032ab75015db98a158e6408621f32282",
+      "gameTurn": 2,
+      "id": "91edfc71afa4c26100ed945b271c19ed032ab75015db98a158e6408621f32282:2:0",
+      "phasingPlayerId": "player:axis",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:axis",
+      "recordedRole": "attacker-moving",
+      "recordedStartRevision": 137,
+      "role": "attacker-moving"
+    },
+    {
+      "expectedStartRevision": 304,
+      "firstPlayerDecision": {
+        "actionIndex": 303,
+        "choiceId": "first",
+        "chooserId": "player:axis",
+        "revision": 303
+      },
+      "game": "91edfc71afa4c26100ed945b271c19ed032ab75015db98a158e6408621f32282",
+      "gameTurn": 3,
+      "id": "91edfc71afa4c26100ed945b271c19ed032ab75015db98a158e6408621f32282:3:0",
+      "phasingPlayerId": "player:axis",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:axis",
+      "recordedRole": "attacker-moving",
+      "recordedStartRevision": 303,
+      "role": "attacker-moving"
+    },
+    {
+      "expectedStartRevision": 416,
+      "firstPlayerDecision": {
+        "actionIndex": 415,
+        "choiceId": "first",
+        "chooserId": "player:axis",
+        "revision": 415
+      },
+      "game": "91edfc71afa4c26100ed945b271c19ed032ab75015db98a158e6408621f32282",
+      "gameTurn": 4,
+      "id": "91edfc71afa4c26100ed945b271c19ed032ab75015db98a158e6408621f32282:4:0",
+      "phasingPlayerId": "player:axis",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:axis",
+      "recordedRole": "attacker-moving",
+      "recordedStartRevision": 415,
+      "role": "attacker-moving"
+    },
+    {
+      "expectedStartRevision": 536,
+      "firstPlayerDecision": {
+        "actionIndex": 535,
+        "choiceId": "first",
+        "chooserId": "player:allied",
+        "revision": 535
+      },
+      "game": "91edfc71afa4c26100ed945b271c19ed032ab75015db98a158e6408621f32282",
+      "gameTurn": 5,
+      "id": "91edfc71afa4c26100ed945b271c19ed032ab75015db98a158e6408621f32282:5:0",
+      "phasingPlayerId": "player:allied",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:allied",
+      "recordedRole": "defender-moving",
+      "recordedStartRevision": 535,
+      "role": "defender-moving"
+    },
+    {
+      "expectedStartRevision": 618,
+      "firstPlayerDecision": {
+        "actionIndex": 617,
+        "choiceId": "first",
+        "chooserId": "player:axis",
+        "revision": 617
+      },
+      "game": "91edfc71afa4c26100ed945b271c19ed032ab75015db98a158e6408621f32282",
+      "gameTurn": 6,
+      "id": "91edfc71afa4c26100ed945b271c19ed032ab75015db98a158e6408621f32282:6:0",
+      "phasingPlayerId": "player:axis",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:axis",
+      "recordedRole": "attacker-moving",
+      "recordedStartRevision": 617,
+      "role": "attacker-moving"
+    },
+    {
+      "expectedStartRevision": 682,
+      "firstPlayerDecision": {
+        "actionIndex": 681,
+        "choiceId": "second",
+        "chooserId": "player:allied",
+        "revision": 681
+      },
+      "game": "91edfc71afa4c26100ed945b271c19ed032ab75015db98a158e6408621f32282",
+      "gameTurn": 7,
+      "id": "91edfc71afa4c26100ed945b271c19ed032ab75015db98a158e6408621f32282:7:0",
+      "phasingPlayerId": "player:axis",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:allied",
+      "recordedRole": "defender-moving",
+      "recordedStartRevision": 681,
+      "role": "attacker-moving"
+    },
+    {
+      "expectedStartRevision": 759,
+      "firstPlayerDecision": {
+        "actionIndex": 758,
+        "choiceId": "second",
+        "chooserId": "player:axis",
+        "revision": 758
+      },
+      "game": "91edfc71afa4c26100ed945b271c19ed032ab75015db98a158e6408621f32282",
+      "gameTurn": 8,
+      "id": "91edfc71afa4c26100ed945b271c19ed032ab75015db98a158e6408621f32282:8:0",
+      "phasingPlayerId": "player:allied",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:axis",
+      "recordedRole": "attacker-moving",
+      "recordedStartRevision": 758,
+      "role": "defender-moving"
+    },
+    {
+      "expectedStartRevision": 123,
+      "firstPlayerDecision": {
+        "actionIndex": 122,
+        "choiceId": "first",
+        "chooserId": "player:allied",
+        "revision": 122
+      },
+      "game": "e81a3dae473588d5338a139007533ee377e99d3232bba695abb19e424a57d1e5",
+      "gameTurn": 2,
+      "id": "e81a3dae473588d5338a139007533ee377e99d3232bba695abb19e424a57d1e5:2:0",
+      "phasingPlayerId": "player:allied",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:allied",
+      "recordedRole": "defender-moving",
+      "recordedStartRevision": 122,
+      "role": "defender-moving"
+    },
+    {
+      "expectedStartRevision": 247,
+      "firstPlayerDecision": {
+        "actionIndex": 246,
+        "choiceId": "first",
+        "chooserId": "player:axis",
+        "revision": 246
+      },
+      "game": "e81a3dae473588d5338a139007533ee377e99d3232bba695abb19e424a57d1e5",
+      "gameTurn": 3,
+      "id": "e81a3dae473588d5338a139007533ee377e99d3232bba695abb19e424a57d1e5:3:0",
+      "phasingPlayerId": "player:axis",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:axis",
+      "recordedRole": "attacker-moving",
+      "recordedStartRevision": 246,
+      "role": "attacker-moving"
+    },
+    {
+      "expectedStartRevision": 363,
+      "firstPlayerDecision": {
+        "actionIndex": 362,
+        "choiceId": "first",
+        "chooserId": "player:allied",
+        "revision": 362
+      },
+      "game": "e81a3dae473588d5338a139007533ee377e99d3232bba695abb19e424a57d1e5",
+      "gameTurn": 4,
+      "id": "e81a3dae473588d5338a139007533ee377e99d3232bba695abb19e424a57d1e5:4:0",
+      "phasingPlayerId": "player:allied",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:allied",
+      "recordedRole": "defender-moving",
+      "recordedStartRevision": 362,
+      "role": "defender-moving"
+    },
+    {
+      "expectedStartRevision": 443,
+      "firstPlayerDecision": {
+        "actionIndex": 442,
+        "choiceId": "first",
+        "chooserId": "player:axis",
+        "revision": 442
+      },
+      "game": "e81a3dae473588d5338a139007533ee377e99d3232bba695abb19e424a57d1e5",
+      "gameTurn": 5,
+      "id": "e81a3dae473588d5338a139007533ee377e99d3232bba695abb19e424a57d1e5:5:0",
+      "phasingPlayerId": "player:axis",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:axis",
+      "recordedRole": "attacker-moving",
+      "recordedStartRevision": 442,
+      "role": "attacker-moving"
+    },
+    {
+      "expectedStartRevision": 522,
+      "firstPlayerDecision": {
+        "actionIndex": 521,
+        "choiceId": "first",
+        "chooserId": "player:axis",
+        "revision": 521
+      },
+      "game": "e81a3dae473588d5338a139007533ee377e99d3232bba695abb19e424a57d1e5",
+      "gameTurn": 6,
+      "id": "e81a3dae473588d5338a139007533ee377e99d3232bba695abb19e424a57d1e5:6:0",
+      "phasingPlayerId": "player:axis",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:axis",
+      "recordedRole": "attacker-moving",
+      "recordedStartRevision": 521,
+      "role": "attacker-moving"
+    },
+    {
+      "expectedStartRevision": 604,
+      "firstPlayerDecision": {
+        "actionIndex": 603,
+        "choiceId": "second",
+        "chooserId": "player:axis",
+        "revision": 603
+      },
+      "game": "e81a3dae473588d5338a139007533ee377e99d3232bba695abb19e424a57d1e5",
+      "gameTurn": 7,
+      "id": "e81a3dae473588d5338a139007533ee377e99d3232bba695abb19e424a57d1e5:7:0",
+      "phasingPlayerId": "player:allied",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:axis",
+      "recordedRole": "attacker-moving",
+      "recordedStartRevision": 603,
+      "role": "defender-moving"
+    },
+    {
+      "expectedStartRevision": 675,
+      "firstPlayerDecision": {
+        "actionIndex": 674,
+        "choiceId": "second",
+        "chooserId": "player:axis",
+        "revision": 674
+      },
+      "game": "e81a3dae473588d5338a139007533ee377e99d3232bba695abb19e424a57d1e5",
+      "gameTurn": 8,
+      "id": "e81a3dae473588d5338a139007533ee377e99d3232bba695abb19e424a57d1e5:8:0",
+      "phasingPlayerId": "player:allied",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:axis",
+      "recordedRole": "attacker-moving",
+      "recordedStartRevision": 674,
+      "role": "defender-moving"
+    },
+    {
+      "expectedStartRevision": 113,
+      "firstPlayerDecision": {
+        "actionIndex": 112,
+        "choiceId": "first",
+        "chooserId": "player:axis",
+        "revision": 112
+      },
+      "game": "72ef30c9b0a367ca3e0ae122066a1f435e49f8715832295f06470612a295833a",
+      "gameTurn": 2,
+      "id": "72ef30c9b0a367ca3e0ae122066a1f435e49f8715832295f06470612a295833a:2:0",
+      "phasingPlayerId": "player:axis",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:axis",
+      "recordedRole": "attacker-moving",
+      "recordedStartRevision": 112,
+      "role": "attacker-moving"
+    },
+    {
+      "expectedStartRevision": 222,
+      "firstPlayerDecision": {
+        "actionIndex": 221,
+        "choiceId": "first",
+        "chooserId": "player:axis",
+        "revision": 221
+      },
+      "game": "72ef30c9b0a367ca3e0ae122066a1f435e49f8715832295f06470612a295833a",
+      "gameTurn": 3,
+      "id": "72ef30c9b0a367ca3e0ae122066a1f435e49f8715832295f06470612a295833a:3:0",
+      "phasingPlayerId": "player:axis",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:axis",
+      "recordedRole": "attacker-moving",
+      "recordedStartRevision": 221,
+      "role": "attacker-moving"
+    },
+    {
+      "expectedStartRevision": 375,
+      "firstPlayerDecision": {
+        "actionIndex": 374,
+        "choiceId": "first",
+        "chooserId": "player:allied",
+        "revision": 374
+      },
+      "game": "72ef30c9b0a367ca3e0ae122066a1f435e49f8715832295f06470612a295833a",
+      "gameTurn": 4,
+      "id": "72ef30c9b0a367ca3e0ae122066a1f435e49f8715832295f06470612a295833a:4:0",
+      "phasingPlayerId": "player:allied",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:allied",
+      "recordedRole": "defender-moving",
+      "recordedStartRevision": 374,
+      "role": "defender-moving"
+    },
+    {
+      "expectedStartRevision": 497,
+      "firstPlayerDecision": {
+        "actionIndex": 496,
+        "choiceId": "first",
+        "chooserId": "player:axis",
+        "revision": 496
+      },
+      "game": "72ef30c9b0a367ca3e0ae122066a1f435e49f8715832295f06470612a295833a",
+      "gameTurn": 5,
+      "id": "72ef30c9b0a367ca3e0ae122066a1f435e49f8715832295f06470612a295833a:5:0",
+      "phasingPlayerId": "player:axis",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:axis",
+      "recordedRole": "attacker-moving",
+      "recordedStartRevision": 496,
+      "role": "attacker-moving"
+    },
+    {
+      "expectedStartRevision": 585,
+      "firstPlayerDecision": {
+        "actionIndex": 584,
+        "choiceId": "first",
+        "chooserId": "player:axis",
+        "revision": 584
+      },
+      "game": "72ef30c9b0a367ca3e0ae122066a1f435e49f8715832295f06470612a295833a",
+      "gameTurn": 6,
+      "id": "72ef30c9b0a367ca3e0ae122066a1f435e49f8715832295f06470612a295833a:6:0",
+      "phasingPlayerId": "player:axis",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:axis",
+      "recordedRole": "attacker-moving",
+      "recordedStartRevision": 584,
+      "role": "attacker-moving"
+    },
+    {
+      "expectedStartRevision": 754,
+      "firstPlayerDecision": {
+        "actionIndex": 753,
+        "choiceId": "second",
+        "chooserId": "player:allied",
+        "revision": 753
+      },
+      "game": "72ef30c9b0a367ca3e0ae122066a1f435e49f8715832295f06470612a295833a",
+      "gameTurn": 7,
+      "id": "72ef30c9b0a367ca3e0ae122066a1f435e49f8715832295f06470612a295833a:7:0",
+      "phasingPlayerId": "player:axis",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:allied",
+      "recordedRole": "defender-moving",
+      "recordedStartRevision": 753,
+      "role": "attacker-moving"
+    },
+    {
+      "expectedStartRevision": 898,
+      "firstPlayerDecision": {
+        "actionIndex": 897,
+        "choiceId": "second",
+        "chooserId": "player:axis",
+        "revision": 897
+      },
+      "game": "72ef30c9b0a367ca3e0ae122066a1f435e49f8715832295f06470612a295833a",
+      "gameTurn": 8,
+      "id": "72ef30c9b0a367ca3e0ae122066a1f435e49f8715832295f06470612a295833a:8:0",
+      "phasingPlayerId": "player:allied",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:axis",
+      "recordedRole": "attacker-moving",
+      "recordedStartRevision": 897,
+      "role": "defender-moving"
+    },
+    {
+      "expectedStartRevision": 98,
+      "firstPlayerDecision": {
+        "actionIndex": 97,
+        "choiceId": "first",
+        "chooserId": "player:axis",
+        "revision": 97
+      },
+      "game": "764d7e80dfd5949b287d5215515f8f95d4c2ff65683c265e1494b83f3253d378",
+      "gameTurn": 2,
+      "id": "764d7e80dfd5949b287d5215515f8f95d4c2ff65683c265e1494b83f3253d378:2:0",
+      "phasingPlayerId": "player:axis",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:axis",
+      "recordedRole": "attacker-moving",
+      "recordedStartRevision": 97,
+      "role": "attacker-moving"
+    },
+    {
+      "expectedStartRevision": 220,
+      "firstPlayerDecision": {
+        "actionIndex": 219,
+        "choiceId": "first",
+        "chooserId": "player:allied",
+        "revision": 219
+      },
+      "game": "764d7e80dfd5949b287d5215515f8f95d4c2ff65683c265e1494b83f3253d378",
+      "gameTurn": 3,
+      "id": "764d7e80dfd5949b287d5215515f8f95d4c2ff65683c265e1494b83f3253d378:3:0",
+      "phasingPlayerId": "player:allied",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:allied",
+      "recordedRole": "defender-moving",
+      "recordedStartRevision": 219,
+      "role": "defender-moving"
+    },
+    {
+      "expectedStartRevision": 317,
+      "firstPlayerDecision": {
+        "actionIndex": 316,
+        "choiceId": "first",
+        "chooserId": "player:axis",
+        "revision": 316
+      },
+      "game": "764d7e80dfd5949b287d5215515f8f95d4c2ff65683c265e1494b83f3253d378",
+      "gameTurn": 4,
+      "id": "764d7e80dfd5949b287d5215515f8f95d4c2ff65683c265e1494b83f3253d378:4:0",
+      "phasingPlayerId": "player:axis",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:axis",
+      "recordedRole": "attacker-moving",
+      "recordedStartRevision": 316,
+      "role": "attacker-moving"
+    },
+    {
+      "expectedStartRevision": 465,
+      "firstPlayerDecision": {
+        "actionIndex": 464,
+        "choiceId": "first",
+        "chooserId": "player:allied",
+        "revision": 464
+      },
+      "game": "764d7e80dfd5949b287d5215515f8f95d4c2ff65683c265e1494b83f3253d378",
+      "gameTurn": 5,
+      "id": "764d7e80dfd5949b287d5215515f8f95d4c2ff65683c265e1494b83f3253d378:5:0",
+      "phasingPlayerId": "player:allied",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:allied",
+      "recordedRole": "defender-moving",
+      "recordedStartRevision": 464,
+      "role": "defender-moving"
+    },
+    {
+      "expectedStartRevision": 600,
+      "firstPlayerDecision": {
+        "actionIndex": 599,
+        "choiceId": "first",
+        "chooserId": "player:allied",
+        "revision": 599
+      },
+      "game": "764d7e80dfd5949b287d5215515f8f95d4c2ff65683c265e1494b83f3253d378",
+      "gameTurn": 6,
+      "id": "764d7e80dfd5949b287d5215515f8f95d4c2ff65683c265e1494b83f3253d378:6:0",
+      "phasingPlayerId": "player:allied",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:allied",
+      "recordedRole": "defender-moving",
+      "recordedStartRevision": 599,
+      "role": "defender-moving"
+    },
+    {
+      "expectedStartRevision": 705,
+      "firstPlayerDecision": {
+        "actionIndex": 704,
+        "choiceId": "second",
+        "chooserId": "player:axis",
+        "revision": 704
+      },
+      "game": "764d7e80dfd5949b287d5215515f8f95d4c2ff65683c265e1494b83f3253d378",
+      "gameTurn": 7,
+      "id": "764d7e80dfd5949b287d5215515f8f95d4c2ff65683c265e1494b83f3253d378:7:0",
+      "phasingPlayerId": "player:allied",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:axis",
+      "recordedRole": "attacker-moving",
+      "recordedStartRevision": 704,
+      "role": "defender-moving"
+    },
+    {
+      "expectedStartRevision": 806,
+      "firstPlayerDecision": {
+        "actionIndex": 805,
+        "choiceId": "second",
+        "chooserId": "player:allied",
+        "revision": 805
+      },
+      "game": "764d7e80dfd5949b287d5215515f8f95d4c2ff65683c265e1494b83f3253d378",
+      "gameTurn": 8,
+      "id": "764d7e80dfd5949b287d5215515f8f95d4c2ff65683c265e1494b83f3253d378:8:0",
+      "phasingPlayerId": "player:axis",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:allied",
+      "recordedRole": "defender-moving",
+      "recordedStartRevision": 805,
+      "role": "attacker-moving"
+    },
+    {
+      "expectedStartRevision": 98,
+      "firstPlayerDecision": {
+        "actionIndex": 97,
+        "choiceId": "first",
+        "chooserId": "player:axis",
+        "revision": 97
+      },
+      "game": "e208396f06563810a53a4c32e8dc9a33a692d1f608bfcc9c8f1dd6a9e80802ab",
+      "gameTurn": 2,
+      "id": "e208396f06563810a53a4c32e8dc9a33a692d1f608bfcc9c8f1dd6a9e80802ab:2:0",
+      "phasingPlayerId": "player:axis",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:axis",
+      "recordedRole": "attacker-moving",
+      "recordedStartRevision": 97,
+      "role": "attacker-moving"
+    },
+    {
+      "expectedStartRevision": 220,
+      "firstPlayerDecision": {
+        "actionIndex": 219,
+        "choiceId": "first",
+        "chooserId": "player:allied",
+        "revision": 219
+      },
+      "game": "e208396f06563810a53a4c32e8dc9a33a692d1f608bfcc9c8f1dd6a9e80802ab",
+      "gameTurn": 3,
+      "id": "e208396f06563810a53a4c32e8dc9a33a692d1f608bfcc9c8f1dd6a9e80802ab:3:0",
+      "phasingPlayerId": "player:allied",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:allied",
+      "recordedRole": "defender-moving",
+      "recordedStartRevision": 219,
+      "role": "defender-moving"
+    },
+    {
+      "expectedStartRevision": 317,
+      "firstPlayerDecision": {
+        "actionIndex": 316,
+        "choiceId": "first",
+        "chooserId": "player:axis",
+        "revision": 316
+      },
+      "game": "e208396f06563810a53a4c32e8dc9a33a692d1f608bfcc9c8f1dd6a9e80802ab",
+      "gameTurn": 4,
+      "id": "e208396f06563810a53a4c32e8dc9a33a692d1f608bfcc9c8f1dd6a9e80802ab:4:0",
+      "phasingPlayerId": "player:axis",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:axis",
+      "recordedRole": "attacker-moving",
+      "recordedStartRevision": 316,
+      "role": "attacker-moving"
+    },
+    {
+      "expectedStartRevision": 457,
+      "firstPlayerDecision": {
+        "actionIndex": 456,
+        "choiceId": "first",
+        "chooserId": "player:allied",
+        "revision": 456
+      },
+      "game": "e208396f06563810a53a4c32e8dc9a33a692d1f608bfcc9c8f1dd6a9e80802ab",
+      "gameTurn": 5,
+      "id": "e208396f06563810a53a4c32e8dc9a33a692d1f608bfcc9c8f1dd6a9e80802ab:5:0",
+      "phasingPlayerId": "player:allied",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:allied",
+      "recordedRole": "defender-moving",
+      "recordedStartRevision": 456,
+      "role": "defender-moving"
+    },
+    {
+      "expectedStartRevision": 624,
+      "firstPlayerDecision": {
+        "actionIndex": 623,
+        "choiceId": "first",
+        "chooserId": "player:allied",
+        "revision": 623
+      },
+      "game": "e208396f06563810a53a4c32e8dc9a33a692d1f608bfcc9c8f1dd6a9e80802ab",
+      "gameTurn": 6,
+      "id": "e208396f06563810a53a4c32e8dc9a33a692d1f608bfcc9c8f1dd6a9e80802ab:6:0",
+      "phasingPlayerId": "player:allied",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:allied",
+      "recordedRole": "defender-moving",
+      "recordedStartRevision": 623,
+      "role": "defender-moving"
+    },
+    {
+      "expectedStartRevision": 724,
+      "firstPlayerDecision": {
+        "actionIndex": 723,
+        "choiceId": "second",
+        "chooserId": "player:axis",
+        "revision": 723
+      },
+      "game": "e208396f06563810a53a4c32e8dc9a33a692d1f608bfcc9c8f1dd6a9e80802ab",
+      "gameTurn": 7,
+      "id": "e208396f06563810a53a4c32e8dc9a33a692d1f608bfcc9c8f1dd6a9e80802ab:7:0",
+      "phasingPlayerId": "player:allied",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:axis",
+      "recordedRole": "attacker-moving",
+      "recordedStartRevision": 723,
+      "role": "defender-moving"
+    },
+    {
+      "expectedStartRevision": 874,
+      "firstPlayerDecision": {
+        "actionIndex": 873,
+        "choiceId": "second",
+        "chooserId": "player:allied",
+        "revision": 873
+      },
+      "game": "e208396f06563810a53a4c32e8dc9a33a692d1f608bfcc9c8f1dd6a9e80802ab",
+      "gameTurn": 8,
+      "id": "e208396f06563810a53a4c32e8dc9a33a692d1f608bfcc9c8f1dd6a9e80802ab:8:0",
+      "phasingPlayerId": "player:axis",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:allied",
+      "recordedRole": "defender-moving",
+      "recordedStartRevision": 873,
+      "role": "attacker-moving"
+    },
+    {
+      "expectedStartRevision": 100,
+      "firstPlayerDecision": {
+        "actionIndex": 99,
+        "choiceId": "first",
+        "chooserId": "player:axis",
+        "revision": 99
+      },
+      "game": "ea923e4fd44308fb05f3ffb2f54be9374777c4d93ac3bd9f6be23f9ca4f83f18",
+      "gameTurn": 2,
+      "id": "ea923e4fd44308fb05f3ffb2f54be9374777c4d93ac3bd9f6be23f9ca4f83f18:2:0",
+      "phasingPlayerId": "player:axis",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:axis",
+      "recordedRole": "attacker-moving",
+      "recordedStartRevision": 99,
+      "role": "attacker-moving"
+    },
+    {
+      "expectedStartRevision": 237,
+      "firstPlayerDecision": {
+        "actionIndex": 236,
+        "choiceId": "first",
+        "chooserId": "player:axis",
+        "revision": 236
+      },
+      "game": "ea923e4fd44308fb05f3ffb2f54be9374777c4d93ac3bd9f6be23f9ca4f83f18",
+      "gameTurn": 3,
+      "id": "ea923e4fd44308fb05f3ffb2f54be9374777c4d93ac3bd9f6be23f9ca4f83f18:3:0",
+      "phasingPlayerId": "player:axis",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:axis",
+      "recordedRole": "attacker-moving",
+      "recordedStartRevision": 236,
+      "role": "attacker-moving"
+    },
+    {
+      "expectedStartRevision": 397,
+      "firstPlayerDecision": {
+        "actionIndex": 396,
+        "choiceId": "first",
+        "chooserId": "player:axis",
+        "revision": 396
+      },
+      "game": "ea923e4fd44308fb05f3ffb2f54be9374777c4d93ac3bd9f6be23f9ca4f83f18",
+      "gameTurn": 4,
+      "id": "ea923e4fd44308fb05f3ffb2f54be9374777c4d93ac3bd9f6be23f9ca4f83f18:4:0",
+      "phasingPlayerId": "player:axis",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:axis",
+      "recordedRole": "attacker-moving",
+      "recordedStartRevision": 396,
+      "role": "attacker-moving"
+    },
+    {
+      "expectedStartRevision": 504,
+      "firstPlayerDecision": {
+        "actionIndex": 503,
+        "choiceId": "first",
+        "chooserId": "player:allied",
+        "revision": 503
+      },
+      "game": "ea923e4fd44308fb05f3ffb2f54be9374777c4d93ac3bd9f6be23f9ca4f83f18",
+      "gameTurn": 5,
+      "id": "ea923e4fd44308fb05f3ffb2f54be9374777c4d93ac3bd9f6be23f9ca4f83f18:5:0",
+      "phasingPlayerId": "player:allied",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:allied",
+      "recordedRole": "defender-moving",
+      "recordedStartRevision": 503,
+      "role": "defender-moving"
+    },
+    {
+      "expectedStartRevision": 601,
+      "firstPlayerDecision": {
+        "actionIndex": 600,
+        "choiceId": "first",
+        "chooserId": "player:allied",
+        "revision": 600
+      },
+      "game": "ea923e4fd44308fb05f3ffb2f54be9374777c4d93ac3bd9f6be23f9ca4f83f18",
+      "gameTurn": 6,
+      "id": "ea923e4fd44308fb05f3ffb2f54be9374777c4d93ac3bd9f6be23f9ca4f83f18:6:0",
+      "phasingPlayerId": "player:allied",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:allied",
+      "recordedRole": "defender-moving",
+      "recordedStartRevision": 600,
+      "role": "defender-moving"
+    },
+    {
+      "expectedStartRevision": 704,
+      "firstPlayerDecision": {
+        "actionIndex": 703,
+        "choiceId": "second",
+        "chooserId": "player:axis",
+        "revision": 703
+      },
+      "game": "ea923e4fd44308fb05f3ffb2f54be9374777c4d93ac3bd9f6be23f9ca4f83f18",
+      "gameTurn": 7,
+      "id": "ea923e4fd44308fb05f3ffb2f54be9374777c4d93ac3bd9f6be23f9ca4f83f18:7:0",
+      "phasingPlayerId": "player:allied",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:axis",
+      "recordedRole": "attacker-moving",
+      "recordedStartRevision": 703,
+      "role": "defender-moving"
+    },
+    {
+      "expectedStartRevision": 786,
+      "firstPlayerDecision": {
+        "actionIndex": 785,
+        "choiceId": "second",
+        "chooserId": "player:allied",
+        "revision": 785
+      },
+      "game": "ea923e4fd44308fb05f3ffb2f54be9374777c4d93ac3bd9f6be23f9ca4f83f18",
+      "gameTurn": 8,
+      "id": "ea923e4fd44308fb05f3ffb2f54be9374777c4d93ac3bd9f6be23f9ca4f83f18:8:0",
+      "phasingPlayerId": "player:axis",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:allied",
+      "recordedRole": "defender-moving",
+      "recordedStartRevision": 785,
+      "role": "attacker-moving"
+    },
+    {
+      "expectedStartRevision": 100,
+      "firstPlayerDecision": {
+        "actionIndex": 99,
+        "choiceId": "first",
+        "chooserId": "player:axis",
+        "revision": 99
+      },
+      "game": "c6ba96fd6a5ab1cff6a6add04f31e3365989f955ac956fb4d2734aceda47ed4b",
+      "gameTurn": 2,
+      "id": "c6ba96fd6a5ab1cff6a6add04f31e3365989f955ac956fb4d2734aceda47ed4b:2:0",
+      "phasingPlayerId": "player:axis",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:axis",
+      "recordedRole": "attacker-moving",
+      "recordedStartRevision": 99,
+      "role": "attacker-moving"
+    },
+    {
+      "expectedStartRevision": 237,
+      "firstPlayerDecision": {
+        "actionIndex": 236,
+        "choiceId": "first",
+        "chooserId": "player:axis",
+        "revision": 236
+      },
+      "game": "c6ba96fd6a5ab1cff6a6add04f31e3365989f955ac956fb4d2734aceda47ed4b",
+      "gameTurn": 3,
+      "id": "c6ba96fd6a5ab1cff6a6add04f31e3365989f955ac956fb4d2734aceda47ed4b:3:0",
+      "phasingPlayerId": "player:axis",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:axis",
+      "recordedRole": "attacker-moving",
+      "recordedStartRevision": 236,
+      "role": "attacker-moving"
+    },
+    {
+      "expectedStartRevision": 397,
+      "firstPlayerDecision": {
+        "actionIndex": 396,
+        "choiceId": "first",
+        "chooserId": "player:axis",
+        "revision": 396
+      },
+      "game": "c6ba96fd6a5ab1cff6a6add04f31e3365989f955ac956fb4d2734aceda47ed4b",
+      "gameTurn": 4,
+      "id": "c6ba96fd6a5ab1cff6a6add04f31e3365989f955ac956fb4d2734aceda47ed4b:4:0",
+      "phasingPlayerId": "player:axis",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:axis",
+      "recordedRole": "attacker-moving",
+      "recordedStartRevision": 396,
+      "role": "attacker-moving"
+    },
+    {
+      "expectedStartRevision": 500,
+      "firstPlayerDecision": {
+        "actionIndex": 499,
+        "choiceId": "first",
+        "chooserId": "player:allied",
+        "revision": 499
+      },
+      "game": "c6ba96fd6a5ab1cff6a6add04f31e3365989f955ac956fb4d2734aceda47ed4b",
+      "gameTurn": 5,
+      "id": "c6ba96fd6a5ab1cff6a6add04f31e3365989f955ac956fb4d2734aceda47ed4b:5:0",
+      "phasingPlayerId": "player:allied",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:allied",
+      "recordedRole": "defender-moving",
+      "recordedStartRevision": 499,
+      "role": "defender-moving"
+    },
+    {
+      "expectedStartRevision": 590,
+      "firstPlayerDecision": {
+        "actionIndex": 589,
+        "choiceId": "first",
+        "chooserId": "player:axis",
+        "revision": 589
+      },
+      "game": "c6ba96fd6a5ab1cff6a6add04f31e3365989f955ac956fb4d2734aceda47ed4b",
+      "gameTurn": 6,
+      "id": "c6ba96fd6a5ab1cff6a6add04f31e3365989f955ac956fb4d2734aceda47ed4b:6:0",
+      "phasingPlayerId": "player:axis",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:axis",
+      "recordedRole": "attacker-moving",
+      "recordedStartRevision": 589,
+      "role": "attacker-moving"
+    },
+    {
+      "expectedStartRevision": 676,
+      "firstPlayerDecision": {
+        "actionIndex": 675,
+        "choiceId": "second",
+        "chooserId": "player:axis",
+        "revision": 675
+      },
+      "game": "c6ba96fd6a5ab1cff6a6add04f31e3365989f955ac956fb4d2734aceda47ed4b",
+      "gameTurn": 7,
+      "id": "c6ba96fd6a5ab1cff6a6add04f31e3365989f955ac956fb4d2734aceda47ed4b:7:0",
+      "phasingPlayerId": "player:allied",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:axis",
+      "recordedRole": "attacker-moving",
+      "recordedStartRevision": 675,
+      "role": "defender-moving"
+    },
+    {
+      "expectedStartRevision": 778,
+      "firstPlayerDecision": {
+        "actionIndex": 777,
+        "choiceId": "second",
+        "chooserId": "player:allied",
+        "revision": 777
+      },
+      "game": "c6ba96fd6a5ab1cff6a6add04f31e3365989f955ac956fb4d2734aceda47ed4b",
+      "gameTurn": 8,
+      "id": "c6ba96fd6a5ab1cff6a6add04f31e3365989f955ac956fb4d2734aceda47ed4b:8:0",
+      "phasingPlayerId": "player:axis",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:allied",
+      "recordedRole": "defender-moving",
+      "recordedStartRevision": 777,
+      "role": "attacker-moving"
+    },
+    {
+      "expectedStartRevision": 84,
+      "firstPlayerDecision": {
+        "actionIndex": 83,
+        "choiceId": "first",
+        "chooserId": "player:axis",
+        "revision": 83
+      },
+      "game": "30014559e67622cc0b80e819e84efa24d1a38ed7b11f58ec5a1626effcb95f40",
+      "gameTurn": 2,
+      "id": "30014559e67622cc0b80e819e84efa24d1a38ed7b11f58ec5a1626effcb95f40:2:0",
+      "phasingPlayerId": "player:axis",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:axis",
+      "recordedRole": "meeting",
+      "recordedStartRevision": 83,
+      "role": "meeting"
+    },
+    {
+      "expectedStartRevision": 173,
+      "firstPlayerDecision": {
+        "actionIndex": 172,
+        "choiceId": "first",
+        "chooserId": "player:axis",
+        "revision": 172
+      },
+      "game": "30014559e67622cc0b80e819e84efa24d1a38ed7b11f58ec5a1626effcb95f40",
+      "gameTurn": 3,
+      "id": "30014559e67622cc0b80e819e84efa24d1a38ed7b11f58ec5a1626effcb95f40:3:0",
+      "phasingPlayerId": "player:axis",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:axis",
+      "recordedRole": "meeting",
+      "recordedStartRevision": 172,
+      "role": "meeting"
+    },
+    {
+      "expectedStartRevision": 245,
+      "firstPlayerDecision": {
+        "actionIndex": 244,
+        "choiceId": "first",
+        "chooserId": "player:axis",
+        "revision": 244
+      },
+      "game": "30014559e67622cc0b80e819e84efa24d1a38ed7b11f58ec5a1626effcb95f40",
+      "gameTurn": 4,
+      "id": "30014559e67622cc0b80e819e84efa24d1a38ed7b11f58ec5a1626effcb95f40:4:0",
+      "phasingPlayerId": "player:axis",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:axis",
+      "recordedRole": "meeting",
+      "recordedStartRevision": 244,
+      "role": "meeting"
+    },
+    {
+      "expectedStartRevision": 308,
+      "firstPlayerDecision": {
+        "actionIndex": 307,
+        "choiceId": "first",
+        "chooserId": "player:axis",
+        "revision": 307
+      },
+      "game": "30014559e67622cc0b80e819e84efa24d1a38ed7b11f58ec5a1626effcb95f40",
+      "gameTurn": 5,
+      "id": "30014559e67622cc0b80e819e84efa24d1a38ed7b11f58ec5a1626effcb95f40:5:0",
+      "phasingPlayerId": "player:axis",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:axis",
+      "recordedRole": "meeting",
+      "recordedStartRevision": 307,
+      "role": "meeting"
+    },
+    {
+      "expectedStartRevision": 392,
+      "firstPlayerDecision": {
+        "actionIndex": 391,
+        "choiceId": "first",
+        "chooserId": "player:allied",
+        "revision": 391
+      },
+      "game": "30014559e67622cc0b80e819e84efa24d1a38ed7b11f58ec5a1626effcb95f40",
+      "gameTurn": 6,
+      "id": "30014559e67622cc0b80e819e84efa24d1a38ed7b11f58ec5a1626effcb95f40:6:0",
+      "phasingPlayerId": "player:allied",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:allied",
+      "recordedRole": "meeting",
+      "recordedStartRevision": 391,
+      "role": "meeting"
+    },
+    {
+      "expectedStartRevision": 448,
+      "firstPlayerDecision": {
+        "actionIndex": 447,
+        "choiceId": "first",
+        "chooserId": "player:axis",
+        "revision": 447
+      },
+      "game": "30014559e67622cc0b80e819e84efa24d1a38ed7b11f58ec5a1626effcb95f40",
+      "gameTurn": 7,
+      "id": "30014559e67622cc0b80e819e84efa24d1a38ed7b11f58ec5a1626effcb95f40:7:0",
+      "phasingPlayerId": "player:axis",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:axis",
+      "recordedRole": "meeting",
+      "recordedStartRevision": 447,
+      "role": "meeting"
+    },
+    {
+      "expectedStartRevision": 507,
+      "firstPlayerDecision": {
+        "actionIndex": 506,
+        "choiceId": "second",
+        "chooserId": "player:axis",
+        "revision": 506
+      },
+      "game": "30014559e67622cc0b80e819e84efa24d1a38ed7b11f58ec5a1626effcb95f40",
+      "gameTurn": 8,
+      "id": "30014559e67622cc0b80e819e84efa24d1a38ed7b11f58ec5a1626effcb95f40:8:0",
+      "phasingPlayerId": "player:allied",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:axis",
+      "recordedRole": "meeting",
+      "recordedStartRevision": 506,
+      "role": "meeting"
+    },
+    {
+      "expectedStartRevision": 80,
+      "firstPlayerDecision": {
+        "actionIndex": 79,
+        "choiceId": "first",
+        "chooserId": "player:allied",
+        "revision": 79
+      },
+      "game": "c582f75b404974b366978c6ced92e292abcbba27ac0d5474f7302cbebe02f27d",
+      "gameTurn": 2,
+      "id": "c582f75b404974b366978c6ced92e292abcbba27ac0d5474f7302cbebe02f27d:2:0",
+      "phasingPlayerId": "player:allied",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:allied",
+      "recordedRole": "meeting",
+      "recordedStartRevision": 79,
+      "role": "meeting"
+    },
+    {
+      "expectedStartRevision": 176,
+      "firstPlayerDecision": {
+        "actionIndex": 175,
+        "choiceId": "first",
+        "chooserId": "player:axis",
+        "revision": 175
+      },
+      "game": "c582f75b404974b366978c6ced92e292abcbba27ac0d5474f7302cbebe02f27d",
+      "gameTurn": 3,
+      "id": "c582f75b404974b366978c6ced92e292abcbba27ac0d5474f7302cbebe02f27d:3:0",
+      "phasingPlayerId": "player:axis",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:axis",
+      "recordedRole": "meeting",
+      "recordedStartRevision": 175,
+      "role": "meeting"
+    },
+    {
+      "expectedStartRevision": 285,
+      "firstPlayerDecision": {
+        "actionIndex": 284,
+        "choiceId": "first",
+        "chooserId": "player:axis",
+        "revision": 284
+      },
+      "game": "c582f75b404974b366978c6ced92e292abcbba27ac0d5474f7302cbebe02f27d",
+      "gameTurn": 4,
+      "id": "c582f75b404974b366978c6ced92e292abcbba27ac0d5474f7302cbebe02f27d:4:0",
+      "phasingPlayerId": "player:axis",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:axis",
+      "recordedRole": "meeting",
+      "recordedStartRevision": 284,
+      "role": "meeting"
+    },
+    {
+      "expectedStartRevision": 352,
+      "firstPlayerDecision": {
+        "actionIndex": 351,
+        "choiceId": "second",
+        "chooserId": "player:allied",
+        "revision": 351
+      },
+      "game": "c582f75b404974b366978c6ced92e292abcbba27ac0d5474f7302cbebe02f27d",
+      "gameTurn": 5,
+      "id": "c582f75b404974b366978c6ced92e292abcbba27ac0d5474f7302cbebe02f27d:5:0",
+      "phasingPlayerId": "player:axis",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:allied",
+      "recordedRole": "meeting",
+      "recordedStartRevision": 351,
+      "role": "meeting"
+    },
+    {
+      "expectedStartRevision": 421,
+      "firstPlayerDecision": {
+        "actionIndex": 420,
+        "choiceId": "first",
+        "chooserId": "player:axis",
+        "revision": 420
+      },
+      "game": "c582f75b404974b366978c6ced92e292abcbba27ac0d5474f7302cbebe02f27d",
+      "gameTurn": 6,
+      "id": "c582f75b404974b366978c6ced92e292abcbba27ac0d5474f7302cbebe02f27d:6:0",
+      "phasingPlayerId": "player:axis",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:axis",
+      "recordedRole": "meeting",
+      "recordedStartRevision": 420,
+      "role": "meeting"
+    },
+    {
+      "expectedStartRevision": 487,
+      "firstPlayerDecision": {
+        "actionIndex": 486,
+        "choiceId": "first",
+        "chooserId": "player:axis",
+        "revision": 486
+      },
+      "game": "c582f75b404974b366978c6ced92e292abcbba27ac0d5474f7302cbebe02f27d",
+      "gameTurn": 7,
+      "id": "c582f75b404974b366978c6ced92e292abcbba27ac0d5474f7302cbebe02f27d:7:0",
+      "phasingPlayerId": "player:axis",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:axis",
+      "recordedRole": "meeting",
+      "recordedStartRevision": 486,
+      "role": "meeting"
+    },
+    {
+      "expectedStartRevision": 537,
+      "firstPlayerDecision": {
+        "actionIndex": 536,
+        "choiceId": "second",
+        "chooserId": "player:axis",
+        "revision": 536
+      },
+      "game": "c582f75b404974b366978c6ced92e292abcbba27ac0d5474f7302cbebe02f27d",
+      "gameTurn": 8,
+      "id": "c582f75b404974b366978c6ced92e292abcbba27ac0d5474f7302cbebe02f27d:8:0",
+      "phasingPlayerId": "player:allied",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:axis",
+      "recordedRole": "meeting",
+      "recordedStartRevision": 536,
+      "role": "meeting"
+    },
+    {
+      "expectedStartRevision": 96,
+      "firstPlayerDecision": {
+        "actionIndex": 95,
+        "choiceId": "first",
+        "chooserId": "player:allied",
+        "revision": 95
+      },
+      "game": "5a4a977dbbaada827bbeb671497d0c213ffeafe60d195528150bfdd07242fb61",
+      "gameTurn": 2,
+      "id": "5a4a977dbbaada827bbeb671497d0c213ffeafe60d195528150bfdd07242fb61:2:0",
+      "phasingPlayerId": "player:allied",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:allied",
+      "recordedRole": "meeting",
+      "recordedStartRevision": 95,
+      "role": "meeting"
+    },
+    {
+      "expectedStartRevision": 198,
+      "firstPlayerDecision": {
+        "actionIndex": 197,
+        "choiceId": "first",
+        "chooserId": "player:allied",
+        "revision": 197
+      },
+      "game": "5a4a977dbbaada827bbeb671497d0c213ffeafe60d195528150bfdd07242fb61",
+      "gameTurn": 3,
+      "id": "5a4a977dbbaada827bbeb671497d0c213ffeafe60d195528150bfdd07242fb61:3:0",
+      "phasingPlayerId": "player:allied",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:allied",
+      "recordedRole": "meeting",
+      "recordedStartRevision": 197,
+      "role": "meeting"
+    },
+    {
+      "expectedStartRevision": 288,
+      "firstPlayerDecision": {
+        "actionIndex": 287,
+        "choiceId": "second",
+        "chooserId": "player:axis",
+        "revision": 287
+      },
+      "game": "5a4a977dbbaada827bbeb671497d0c213ffeafe60d195528150bfdd07242fb61",
+      "gameTurn": 4,
+      "id": "5a4a977dbbaada827bbeb671497d0c213ffeafe60d195528150bfdd07242fb61:4:0",
+      "phasingPlayerId": "player:allied",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:axis",
+      "recordedRole": "meeting",
+      "recordedStartRevision": 287,
+      "role": "meeting"
+    },
+    {
+      "expectedStartRevision": 370,
+      "firstPlayerDecision": {
+        "actionIndex": 369,
+        "choiceId": "first",
+        "chooserId": "player:allied",
+        "revision": 369
+      },
+      "game": "5a4a977dbbaada827bbeb671497d0c213ffeafe60d195528150bfdd07242fb61",
+      "gameTurn": 5,
+      "id": "5a4a977dbbaada827bbeb671497d0c213ffeafe60d195528150bfdd07242fb61:5:0",
+      "phasingPlayerId": "player:allied",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:allied",
+      "recordedRole": "meeting",
+      "recordedStartRevision": 369,
+      "role": "meeting"
+    },
+    {
+      "expectedStartRevision": 472,
+      "firstPlayerDecision": {
+        "actionIndex": 471,
+        "choiceId": "first",
+        "chooserId": "player:allied",
+        "revision": 471
+      },
+      "game": "5a4a977dbbaada827bbeb671497d0c213ffeafe60d195528150bfdd07242fb61",
+      "gameTurn": 6,
+      "id": "5a4a977dbbaada827bbeb671497d0c213ffeafe60d195528150bfdd07242fb61:6:0",
+      "phasingPlayerId": "player:allied",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:allied",
+      "recordedRole": "meeting",
+      "recordedStartRevision": 471,
+      "role": "meeting"
+    },
+    {
+      "expectedStartRevision": 577,
+      "firstPlayerDecision": {
+        "actionIndex": 576,
+        "choiceId": "second",
+        "chooserId": "player:axis",
+        "revision": 576
+      },
+      "game": "5a4a977dbbaada827bbeb671497d0c213ffeafe60d195528150bfdd07242fb61",
+      "gameTurn": 7,
+      "id": "5a4a977dbbaada827bbeb671497d0c213ffeafe60d195528150bfdd07242fb61:7:0",
+      "phasingPlayerId": "player:allied",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:axis",
+      "recordedRole": "meeting",
+      "recordedStartRevision": 576,
+      "role": "meeting"
+    },
+    {
+      "expectedStartRevision": 624,
+      "firstPlayerDecision": {
+        "actionIndex": 623,
+        "choiceId": "second",
+        "chooserId": "player:allied",
+        "revision": 623
+      },
+      "game": "5a4a977dbbaada827bbeb671497d0c213ffeafe60d195528150bfdd07242fb61",
+      "gameTurn": 8,
+      "id": "5a4a977dbbaada827bbeb671497d0c213ffeafe60d195528150bfdd07242fb61:8:0",
+      "phasingPlayerId": "player:axis",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:allied",
+      "recordedRole": "meeting",
+      "recordedStartRevision": 623,
+      "role": "meeting"
+    },
+    {
+      "expectedStartRevision": 89,
+      "firstPlayerDecision": {
+        "actionIndex": 88,
+        "choiceId": "first",
+        "chooserId": "player:axis",
+        "revision": 88
+      },
+      "game": "c5879239da55d825cf33f35eadb89e384affdd8c3b630f0570050f5664a1f77d",
+      "gameTurn": 2,
+      "id": "c5879239da55d825cf33f35eadb89e384affdd8c3b630f0570050f5664a1f77d:2:0",
+      "phasingPlayerId": "player:axis",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:axis",
+      "recordedRole": "meeting",
+      "recordedStartRevision": 88,
+      "role": "meeting"
+    },
+    {
+      "expectedStartRevision": 194,
+      "firstPlayerDecision": {
+        "actionIndex": 193,
+        "choiceId": "second",
+        "chooserId": "player:allied",
+        "revision": 193
+      },
+      "game": "c5879239da55d825cf33f35eadb89e384affdd8c3b630f0570050f5664a1f77d",
+      "gameTurn": 3,
+      "id": "c5879239da55d825cf33f35eadb89e384affdd8c3b630f0570050f5664a1f77d:3:0",
+      "phasingPlayerId": "player:axis",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:allied",
+      "recordedRole": "meeting",
+      "recordedStartRevision": 193,
+      "role": "meeting"
+    },
+    {
+      "expectedStartRevision": 253,
+      "firstPlayerDecision": {
+        "actionIndex": 252,
+        "choiceId": "first",
+        "chooserId": "player:axis",
+        "revision": 252
+      },
+      "game": "c5879239da55d825cf33f35eadb89e384affdd8c3b630f0570050f5664a1f77d",
+      "gameTurn": 4,
+      "id": "c5879239da55d825cf33f35eadb89e384affdd8c3b630f0570050f5664a1f77d:4:0",
+      "phasingPlayerId": "player:axis",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:axis",
+      "recordedRole": "meeting",
+      "recordedStartRevision": 252,
+      "role": "meeting"
+    },
+    {
+      "expectedStartRevision": 334,
+      "firstPlayerDecision": {
+        "actionIndex": 333,
+        "choiceId": "second",
+        "chooserId": "player:axis",
+        "revision": 333
+      },
+      "game": "c5879239da55d825cf33f35eadb89e384affdd8c3b630f0570050f5664a1f77d",
+      "gameTurn": 5,
+      "id": "c5879239da55d825cf33f35eadb89e384affdd8c3b630f0570050f5664a1f77d:5:0",
+      "phasingPlayerId": "player:allied",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:axis",
+      "recordedRole": "meeting",
+      "recordedStartRevision": 333,
+      "role": "meeting"
+    },
+    {
+      "expectedStartRevision": 422,
+      "firstPlayerDecision": {
+        "actionIndex": 421,
+        "choiceId": "second",
+        "chooserId": "player:allied",
+        "revision": 421
+      },
+      "game": "c5879239da55d825cf33f35eadb89e384affdd8c3b630f0570050f5664a1f77d",
+      "gameTurn": 6,
+      "id": "c5879239da55d825cf33f35eadb89e384affdd8c3b630f0570050f5664a1f77d:6:0",
+      "phasingPlayerId": "player:axis",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:allied",
+      "recordedRole": "meeting",
+      "recordedStartRevision": 421,
+      "role": "meeting"
+    },
+    {
+      "expectedStartRevision": 471,
+      "firstPlayerDecision": {
+        "actionIndex": 470,
+        "choiceId": "first",
+        "chooserId": "player:axis",
+        "revision": 470
+      },
+      "game": "c5879239da55d825cf33f35eadb89e384affdd8c3b630f0570050f5664a1f77d",
+      "gameTurn": 7,
+      "id": "c5879239da55d825cf33f35eadb89e384affdd8c3b630f0570050f5664a1f77d:7:0",
+      "phasingPlayerId": "player:axis",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:axis",
+      "recordedRole": "meeting",
+      "recordedStartRevision": 470,
+      "role": "meeting"
+    },
+    {
+      "expectedStartRevision": 518,
+      "firstPlayerDecision": {
+        "actionIndex": 517,
+        "choiceId": "second",
+        "chooserId": "player:axis",
+        "revision": 517
+      },
+      "game": "c5879239da55d825cf33f35eadb89e384affdd8c3b630f0570050f5664a1f77d",
+      "gameTurn": 8,
+      "id": "c5879239da55d825cf33f35eadb89e384affdd8c3b630f0570050f5664a1f77d:8:0",
+      "phasingPlayerId": "player:allied",
+      "playerTurnIndex": 0,
+      "recordedPhasingPlayerId": "player:axis",
+      "recordedRole": "meeting",
+      "recordedStartRevision": 517,
+      "role": "meeting"
+    }
+  ],
+  "roleWindowCounts": {
+    "attacker-moving": 52,
+    "defender-moving": 52,
+    "meeting": 52
+  },
+  "schemaVersion": 2
+}

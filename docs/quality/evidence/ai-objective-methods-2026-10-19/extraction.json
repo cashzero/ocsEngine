@@ -1,0 +1,25 @@
+{
+  "command": [
+    "python3",
+    "scripts/ai-objective-study.py",
+    "--manifest",
+    "docs/quality/evidence/ai-position-metric-audit-2026-10-19/manifest.json",
+    "--artifact-root",
+    "/home/cashlin/ocsEngine",
+    "--engine",
+    "/tmp/ocsEngine-objective-study-engine",
+    "--out",
+    "artifacts/ai-objective-methods-study/corrected-run"
+  ],
+  "exitCode": 0,
+  "extractorStdout": {
+    "out": "/home/cashlin/ocsEngine/artifacts/ai-objective-methods-study/corrected-run/observations.json",
+    "games": 12,
+    "windows": 156,
+    "targets": 1352
+  },
+  "extractorStderr": {
+    "extractionElapsedMs": 169194.081518
+  },
+  "source": "Captured original analysis extraction fields from the successful full-run tool output before scoring-only rewrites. Final observations and predictions retain their hashes."
+}

@@ -35,11 +35,12 @@
 | `scripts/ai-position-confirm.py` | 依登記檔的門檻判定前瞻確認的每項假設（[局勢指標研究 WBS](../roadmap/18-position-metrics-wbs.md) P7） |
 | `scripts/ai-find-branches.mjs` | 從 trace 找分岔點：某一方在某個 segment 做了要研究的決策（例如攻擊戰守方的主攻任務），輸出該 segment 第一個行動的 index |
 | `scripts/ai-continue.mjs` | 局面接續：從存檔的分岔點重設 Rules RNG，各策略變體在同一組骰子種子下對固定對手接著下，記錄 +h 回合與終局的局面指標與事件 |
-| `scripts/ai-position-metrics.mjs` | 局面指標（模組）：VP、目標點持有／有人守／受威脅、單位與 step、DG、接敵、離敵距離、斷補、SP（地圖上、前線取用得到、取用不到、扣除口糧與燃料後的剩餘戰鬥 SP）、未控目標最佳有效欄位、2 格局部兵力比、乾 HQ；下一回合局勢（[局勢指標](policy-errors.md#局勢指標)），含可實際支付的目標風險與可攻達性、對方一步能切斷補給的單位數、對方每單位只攻擊一格時的暴露量與單格最高期望損失；事件：step 損失（總計、戰鬥、耗損）、補給堆被奪或被毀的 SP、SP 支出、攻擊、砲擊 |
+| `scripts/ai-position-metrics.mjs` | 局面指標（模組）：VP、目標點持有／有人守／受威脅、單位與 step、DG、接敵、離敵距離、斷補、SP（地圖上、前線取用得到、取用不到、扣除口糧與燃料後的剩餘戰鬥 SP）、未控目標最佳有效欄位、2 格局部兵力比、乾 HQ；下一回合局勢（[局勢指標](policy-errors.md#局勢指標)），含近似共同 SP 預算的目標風險與可攻達性（尚非合法支付計劃）、對方一步能切斷補給的單位數、對方每單位只攻擊一格時的暴露量與單格最高期望損失；事件：step 損失（總計、戰鬥、耗損）、補給堆被奪或被毀的 SP、SP 支出、攻擊、砲擊 |
 | `scripts/ai-continue-compare.py` | 比較接續結果：每個指標的成對差（同一分岔點的骰子先平均）、t 值，以及早期差與終局 VP 差的相關 |
 | `scripts/ai-role-margin.mjs` | 把候選策略在攻擊戰的攻方與守方效果分開：與對手策略自我對戰的同種子基準比較每局攻方 margin |
 | `scripts/ai-concentration-study.mjs` | 攻方兵力集中：戰力離敵距離與任務分佈、可攻擊格與宣告攻擊的 Combat Table 欄位、主攻群貼近目標的戰力、砲兵模式與砲擊（需 `--trace`） |
 | `scripts/ai-vp-metrics-extract.mjs`、`scripts/ai-vp-metrics-compare.py`、`scripts/ai-outcome-metrics-observer.mjs`、`scripts/ai-outcome-metrics-compare.py` | 固定回合的目標控制與戰術指標重播（含未控目標最佳有效欄位與 2 格局部兵力比）；`--advanced` 加入補給階段的共同配給條件、耗損前 RE 暴露與損失原因，四結果比較使用各自的早期基準、同角色自戰差分、留出種子與策略變體；manifest、重現方式與限制見 [VP 指標研究](vp-metrics.md) |
+| `scripts/ai-objective-replay.mjs`、`scripts/ai-objective-study.py`、`scripts/ai-objective-replay-verify.mjs` | 先後手決定後擷取同目標條件、控制事件及保有結果；逐行動比對觀測開關的 state／event hash，核對雙方 gross／signed VP；固定機率模型留出整組種子，報告 Brier、log loss、校準及 VP 誤差，見[同目標研究](objective-metrics.md) |
 | `scripts/ai-narrate.mjs` | 一局 trace 的逐步摘要，供人工檢視 |
 | `scripts/ai-train.mjs` | 權重自我對戰（已停用，見「決策」） |
 
