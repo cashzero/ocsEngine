@@ -1,0 +1,71 @@
+{
+  "auditTimeUtc": "2026-10-19T05:42:07.343945+00:00",
+  "commit": "967a49a599c948000dd3eb4034ed5a9e696b2d97",
+  "boundary": "Read-only integrity inspection of existing query observation artifacts; no new game or timing comparison",
+  "sourceBindingsFile": "docs/quality/evidence/ai-decision-query-observation-2026-10-19/source-bindings.json",
+  "allEightSourceHashesMatch": true,
+  "cliRuntimeRecords": [
+    {
+      "source": "artifacts/ai-decision-observability-study/cli-final/summary.json",
+      "sourceSha256": "725a6dac2f46e69b297d319bf96356fd85aba3bb238af78e2942eb98c6c21347",
+      "wallMs": 5809.2139480000005,
+      "timings": {
+        "createMs": 410,
+        "playMs": 4456,
+        "decideMs": 3164,
+        "dispatchMs": 706,
+        "perActionMs": 44.56
+      },
+      "ruleErrors": [],
+      "observationError": null,
+      "finalStateHash": "sha256:eee80a984fdb7089a17fb2b87b31e0d13041f58b142ff0d377e712671157199e"
+    },
+    {
+      "source": "artifacts/ai-decision-observability-study/cli-write-failure/summary.json",
+      "sourceSha256": "866bb3946b11b78f11b470256fb259292b6442ade462b4f08530906191efcf51",
+      "wallMs": 1924.027191,
+      "timings": {
+        "createMs": 350,
+        "playMs": 1125,
+        "decideMs": 633,
+        "dispatchMs": 262,
+        "perActionMs": 30.41
+      },
+      "ruleErrors": [],
+      "observationError": "ENOSPC: no space left on device, write",
+      "finalStateHash": "sha256:9aeb7fc76b47b2335dce36d3e6767460f10ee7c469af209f8b63c145b0612caa"
+    },
+    {
+      "source": "artifacts/ai-decision-observability-study/cli-init-failure/summary.json",
+      "sourceSha256": "42282202c460555130fd38b65128a34bb2cfeb06e71a595abf4206e8d17327b6",
+      "wallMs": 1887.27152,
+      "timings": {
+        "createMs": 392,
+        "playMs": 1045,
+        "decideMs": 581,
+        "dispatchMs": 233,
+        "perActionMs": 28.25
+      },
+      "ruleErrors": [],
+      "observationError": "EISDIR: illegal operation on a directory, open 'artifacts/ai-decision-observability-study/cli-init-failure/match-0.observations.jsonl'",
+      "finalStateHash": "sha256:9aeb7fc76b47b2335dce36d3e6767460f10ee7c469af209f8b63c145b0612caa"
+    },
+    {
+      "source": "artifacts/ai-decision-observability-study/cli-final-manifest-failure/summary.json",
+      "sourceSha256": "123a8d0c51eb70291f6ed7778c4b9ad2c79a2cd4aa1bb52a403857498ce2259a",
+      "wallMs": 5350.813846,
+      "timings": {
+        "createMs": 369,
+        "playMs": 4178,
+        "decideMs": 2712,
+        "dispatchMs": 706,
+        "perActionMs": 31.66
+      },
+      "ruleErrors": [],
+      "observationError": "EACCES: permission denied, open 'artifacts/ai-decision-observability-study/cli-final-manifest-failure/match-0.observation-manifest.json'",
+      "finalStateHash": "sha256:4ba86d567c228509536bdd8ccb738a7d504bc1826c85ebbe41d3e2baced464af"
+    }
+  ],
+  "P10Status": "IN PROGRESS",
+  "predictiveMetricQualified": false
+}
