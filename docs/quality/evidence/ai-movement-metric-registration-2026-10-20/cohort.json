@@ -1,0 +1,2974 @@
+{
+  "schemaVersion": 1,
+  "artifactRoot": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle",
+  "families": [
+    "crowding",
+    "contactBad",
+    "outOfSupply",
+    "progressObjective",
+    "hqWithArmy"
+  ],
+  "pairs": [
+    {
+      "climate": "TEMPERATE_INLAND",
+      "direction": "half",
+      "early": {
+        "M0": 0.0,
+        "M1": 1.4169308493182453,
+        "M2": 0.891050420806395,
+        "VP": 0.0,
+        "hqsInReach": -0.5,
+        "objectiveReachColumn": -0.5,
+        "objectiveVpAtRisk": 0.5,
+        "outOfTrace": 1.5,
+        "stacksExposedAllocated": -4.0,
+        "steps": 2.5
+      },
+      "family": "crowding",
+      "finalVp": 5.0,
+      "games": [
+        {
+          "acceptedActions": 740,
+          "acceptedActionsSha256": "75dedb1c74b925ffccc8a0a7e2efa544a3eb3e2337bcfd5de8675e0ced29248f",
+          "finalStateHash": "sha256:84220ccd13512048df60504d8e7de4f6abca5a099fc4a7320b77c1d4ec7ce83b",
+          "historicalReplayOk": true,
+          "id": "77c31b7903b2a502d315193d435219defdf40b1fc23a62ef90921ce56794ea1d",
+          "initialStateHash": "sha256:f1ee3812f962eb7096439176bc1e77f395b78f63a24bee11d1680474ecdbdad1",
+          "match": 1600000,
+          "policies": {
+            "player:allied": "heuristic:artifacts/ai-surrogacy/weights/crowding-half.json",
+            "player:axis": "heuristic"
+          },
+          "rows": "artifacts/ai-surrogacy/rows/crowding-half__attack-temperate.jsonl",
+          "saveSha256": "748935706b9b4880c6501b15152a5674871dd405939be3456bd70a5122e8682c",
+          "seeds": {
+            "allied": 324741637,
+            "axis": 324741638,
+            "deployment": 324741635,
+            "map": 324741633,
+            "oob": 324741634,
+            "rules": 324741636
+          },
+          "source": "artifacts/ai-surrogacy/crowding-half/attack-temperate",
+          "variant": "crowding-half",
+          "variantPlayer": "player:allied"
+        },
+        {
+          "acceptedActions": 833,
+          "acceptedActionsSha256": "5dcc33c4a3c2b622ee8150aea57505df8c0c79cf80baf47ded16609e2e1bc2c8",
+          "finalStateHash": "sha256:13d951905f1106563540dc33ae6486167ad8b65db4842a640f4d91a25fdd6d63",
+          "historicalReplayOk": true,
+          "id": "6c793004921681591a445b9c001b8d858bd0c71692a1c76e6240fa41cd117250",
+          "initialStateHash": "sha256:f1ee3812f962eb7096439176bc1e77f395b78f63a24bee11d1680474ecdbdad1",
+          "match": 1600001,
+          "policies": {
+            "player:allied": "heuristic",
+            "player:axis": "heuristic:artifacts/ai-surrogacy/weights/crowding-half.json"
+          },
+          "rows": "artifacts/ai-surrogacy/rows/crowding-half__attack-temperate.jsonl",
+          "saveSha256": "bbbc0c8adee47da02aaa2980c217ab7ac530b96dc63c6d9155401e58ab9f159a",
+          "seeds": {
+            "allied": 324741637,
+            "axis": 324741638,
+            "deployment": 324741635,
+            "map": 324741633,
+            "oob": 324741634,
+            "rules": 324741636
+          },
+          "source": "artifacts/ai-surrogacy/crowding-half/attack-temperate",
+          "variant": "crowding-half",
+          "variantPlayer": "player:axis"
+        }
+      ],
+      "pair": 324741633,
+      "variant": "crowding-half"
+    },
+    {
+      "climate": "TEMPERATE_INLAND",
+      "direction": "half",
+      "early": {
+        "M0": 0.0,
+        "M1": -4.165848177792925,
+        "M2": -2.4653246283120454,
+        "VP": 0.0,
+        "hqsInReach": 0.5,
+        "objectiveReachColumn": 0.0,
+        "objectiveVpAtRisk": 0.0,
+        "outOfTrace": -7.0,
+        "stacksExposedAllocated": -2.5,
+        "steps": -6.0
+      },
+      "family": "crowding",
+      "finalVp": 0.0,
+      "games": [
+        {
+          "acceptedActions": 975,
+          "acceptedActionsSha256": "f66bf402fe47edf214e7e180086ee2d5926893eba294375171ba1a4c3e018779",
+          "finalStateHash": "sha256:661a1c0a103865e8b578db01c9b7516976d30bb747049414e1a18686d5feaf94",
+          "historicalReplayOk": true,
+          "id": "58b5fdf07c808b8d725afad150027e0ef032b6cc46f0a3c6199c9a5811c31e3e",
+          "initialStateHash": "sha256:6700ea090ff2462869292621b9b206542ef02341f3e3fe487253fc46379a8a39",
+          "match": 1600002,
+          "policies": {
+            "player:allied": "heuristic:artifacts/ai-surrogacy/weights/crowding-half.json",
+            "player:axis": "heuristic"
+          },
+          "rows": "artifacts/ai-surrogacy/rows/crowding-half__attack-temperate.jsonl",
+          "saveSha256": "f35cd725719575084614e70f32fd7cd44a917b9cb96ee7ba6236ac424620f6be",
+          "seeds": {
+            "allied": 324741831,
+            "axis": 324741832,
+            "deployment": 324741829,
+            "map": 324741827,
+            "oob": 324741828,
+            "rules": 324741830
+          },
+          "source": "artifacts/ai-surrogacy/crowding-half/attack-temperate",
+          "variant": "crowding-half",
+          "variantPlayer": "player:allied"
+        },
+        {
+          "acceptedActions": 925,
+          "acceptedActionsSha256": "123945ec9695db85c91eae4a065f8ee0994ddb3f277a16c8ca85fe81cba989e8",
+          "finalStateHash": "sha256:44b8b4b93c68669fab0c851c656cd91467ab84222faaf4efd1edde4569b20ddc",
+          "historicalReplayOk": true,
+          "id": "29701ece3aa7058c7465c0b1529a6c600ccd5063c879efba77d24f512361ed14",
+          "initialStateHash": "sha256:6700ea090ff2462869292621b9b206542ef02341f3e3fe487253fc46379a8a39",
+          "match": 1600003,
+          "policies": {
+            "player:allied": "heuristic",
+            "player:axis": "heuristic:artifacts/ai-surrogacy/weights/crowding-half.json"
+          },
+          "rows": "artifacts/ai-surrogacy/rows/crowding-half__attack-temperate.jsonl",
+          "saveSha256": "cd8af0a0d481d6544d3c6016fc8d8870d9b9997b8a8119e5a86a264febba820c",
+          "seeds": {
+            "allied": 324741831,
+            "axis": 324741832,
+            "deployment": 324741829,
+            "map": 324741827,
+            "oob": 324741828,
+            "rules": 324741830
+          },
+          "source": "artifacts/ai-surrogacy/crowding-half/attack-temperate",
+          "variant": "crowding-half",
+          "variantPlayer": "player:axis"
+        }
+      ],
+      "pair": 324741827,
+      "variant": "crowding-half"
+    },
+    {
+      "climate": "TEMPERATE_INLAND",
+      "direction": "double",
+      "early": {
+        "M0": 0.0,
+        "M1": 1.6695809524339937,
+        "M2": 4.112276413152628,
+        "VP": 0.0,
+        "hqsInReach": -0.5,
+        "objectiveReachColumn": 1.0,
+        "objectiveVpAtRisk": 3.5,
+        "outOfTrace": 5.5,
+        "stacksExposedAllocated": -0.5,
+        "steps": 1.0
+      },
+      "family": "crowding",
+      "finalVp": 1.0,
+      "games": [
+        {
+          "acceptedActions": 705,
+          "acceptedActionsSha256": "6a2c71d4221923a73da9201e4455baf4b195cc4d71f9d5594d391e0936107841",
+          "finalStateHash": "sha256:d782d00dae2ead011f61d0ba2cf03daebc98b34339b5e441b5c4dae360d1db7c",
+          "historicalReplayOk": true,
+          "id": "65c88e9967ef417568e46ca7b4e15e0a85821dd0de193ef20a626202ae978bba",
+          "initialStateHash": "sha256:f1ee3812f962eb7096439176bc1e77f395b78f63a24bee11d1680474ecdbdad1",
+          "match": 1600000,
+          "policies": {
+            "player:allied": "heuristic:artifacts/ai-surrogacy/weights/crowding-double.json",
+            "player:axis": "heuristic"
+          },
+          "rows": "artifacts/ai-surrogacy/rows/crowding-double__attack-temperate.jsonl",
+          "saveSha256": "110d46ba30ce8e2336204f4278acfa86b6bfaad6a97b39cf287dbecc75542fae",
+          "seeds": {
+            "allied": 324741637,
+            "axis": 324741638,
+            "deployment": 324741635,
+            "map": 324741633,
+            "oob": 324741634,
+            "rules": 324741636
+          },
+          "source": "artifacts/ai-surrogacy/crowding-double/attack-temperate",
+          "variant": "crowding-double",
+          "variantPlayer": "player:allied"
+        },
+        {
+          "acceptedActions": 854,
+          "acceptedActionsSha256": "c9c446113ecbdad9925acbad404717ddf8b68a9348e6eeabab44b330fd427248",
+          "finalStateHash": "sha256:e2b140b026ddc1cf0b69cc2a57f54bc1a4cb174789f974f560cd1a6cb9167b1b",
+          "historicalReplayOk": true,
+          "id": "9797d6664134a062d822495e4baa63b28feeb997608ea3ba86887b9d45d72fa0",
+          "initialStateHash": "sha256:f1ee3812f962eb7096439176bc1e77f395b78f63a24bee11d1680474ecdbdad1",
+          "match": 1600001,
+          "policies": {
+            "player:allied": "heuristic",
+            "player:axis": "heuristic:artifacts/ai-surrogacy/weights/crowding-double.json"
+          },
+          "rows": "artifacts/ai-surrogacy/rows/crowding-double__attack-temperate.jsonl",
+          "saveSha256": "82fc78b2748cb3cab9cdb9e6f74fe8e759e5de3dcef2260a22920bada96d1e25",
+          "seeds": {
+            "allied": 324741637,
+            "axis": 324741638,
+            "deployment": 324741635,
+            "map": 324741633,
+            "oob": 324741634,
+            "rules": 324741636
+          },
+          "source": "artifacts/ai-surrogacy/crowding-double/attack-temperate",
+          "variant": "crowding-double",
+          "variantPlayer": "player:axis"
+        }
+      ],
+      "pair": 324741633,
+      "variant": "crowding-double"
+    },
+    {
+      "climate": "TEMPERATE_INLAND",
+      "direction": "double",
+      "early": {
+        "M0": 0.0,
+        "M1": 2.317182778058405,
+        "M2": 1.7094382427672883,
+        "VP": 0.0,
+        "hqsInReach": -1.5,
+        "objectiveReachColumn": 0.5,
+        "objectiveVpAtRisk": 0.0,
+        "outOfTrace": 5.5,
+        "stacksExposedAllocated": 0.5,
+        "steps": 2.5
+      },
+      "family": "crowding",
+      "finalVp": 12.0,
+      "games": [
+        {
+          "acceptedActions": 963,
+          "acceptedActionsSha256": "67cb2fc950f7af10fceb37f1f57056cc292c6c13c4996ae1a946ce268affa065",
+          "finalStateHash": "sha256:008ad6e62bd4583a6ac859c3e3240ab17e3003a3cdca2d039ce005b768db8dbb",
+          "historicalReplayOk": true,
+          "id": "678b19f94a3fe74aca5e66ba70998f53f27f2ffe017d01995c8c2cbc2d733740",
+          "initialStateHash": "sha256:6700ea090ff2462869292621b9b206542ef02341f3e3fe487253fc46379a8a39",
+          "match": 1600002,
+          "policies": {
+            "player:allied": "heuristic:artifacts/ai-surrogacy/weights/crowding-double.json",
+            "player:axis": "heuristic"
+          },
+          "rows": "artifacts/ai-surrogacy/rows/crowding-double__attack-temperate.jsonl",
+          "saveSha256": "1ef049f04f4095a4d43f440d175556868f867c78111c20d2c933f124359bab3c",
+          "seeds": {
+            "allied": 324741831,
+            "axis": 324741832,
+            "deployment": 324741829,
+            "map": 324741827,
+            "oob": 324741828,
+            "rules": 324741830
+          },
+          "source": "artifacts/ai-surrogacy/crowding-double/attack-temperate",
+          "variant": "crowding-double",
+          "variantPlayer": "player:allied"
+        },
+        {
+          "acceptedActions": 886,
+          "acceptedActionsSha256": "6a9486059d900dc57ad39ba32c8c5d531dcc2f3cdc973afb3178f8188118fbd2",
+          "finalStateHash": "sha256:ad97bd0b828233e7519058a1e2262c042a226ed02c9a2169e4ac47b632f910c4",
+          "historicalReplayOk": true,
+          "id": "fc2c7b98a2596d58480df8a947cdfd7bcb5932f1b9249960cc44edf9b7cee15c",
+          "initialStateHash": "sha256:6700ea090ff2462869292621b9b206542ef02341f3e3fe487253fc46379a8a39",
+          "match": 1600003,
+          "policies": {
+            "player:allied": "heuristic",
+            "player:axis": "heuristic:artifacts/ai-surrogacy/weights/crowding-double.json"
+          },
+          "rows": "artifacts/ai-surrogacy/rows/crowding-double__attack-temperate.jsonl",
+          "saveSha256": "c38ade5d0b4798391b026b12ab35b49b39a3596c53e0f05d89392217cc16a77f",
+          "seeds": {
+            "allied": 324741831,
+            "axis": 324741832,
+            "deployment": 324741829,
+            "map": 324741827,
+            "oob": 324741828,
+            "rules": 324741830
+          },
+          "source": "artifacts/ai-surrogacy/crowding-double/attack-temperate",
+          "variant": "crowding-double",
+          "variantPlayer": "player:axis"
+        }
+      ],
+      "pair": 324741827,
+      "variant": "crowding-double"
+    },
+    {
+      "climate": "TEMPERATE_INLAND",
+      "direction": "half",
+      "early": {
+        "M0": 0.0,
+        "M1": 0.6751889465551197,
+        "M2": 2.067335168279164,
+        "VP": 0.0,
+        "hqsInReach": 1.0,
+        "objectiveReachColumn": 1.0,
+        "objectiveVpAtRisk": 1.5,
+        "outOfTrace": 3.0,
+        "stacksExposedAllocated": -0.5,
+        "steps": 0.0
+      },
+      "family": "contactBad",
+      "finalVp": 4.0,
+      "games": [
+        {
+          "acceptedActions": 899,
+          "acceptedActionsSha256": "fef335d5b54f1ff3e766380049cf8ddfefbe0bf3f98fe518b8be0040af3c6c83",
+          "finalStateHash": "sha256:dced79006ab4073f87db6a222479532fd58afa49feed8fa0a2042b3021f941ae",
+          "historicalReplayOk": true,
+          "id": "5a06d302971600d8510fe6750c737be6c3ac6f5ce8e09f1b90dcf9899c0eb08c",
+          "initialStateHash": "sha256:f1ee3812f962eb7096439176bc1e77f395b78f63a24bee11d1680474ecdbdad1",
+          "match": 1600000,
+          "policies": {
+            "player:allied": "heuristic:artifacts/ai-surrogacy/weights/contactBad-half.json",
+            "player:axis": "heuristic"
+          },
+          "rows": "artifacts/ai-surrogacy/rows/contactBad-half__attack-temperate.jsonl",
+          "saveSha256": "f3c0134be152172c4c8aa50db1ec5926ab49925bc4f4b28202266e846e00d8b6",
+          "seeds": {
+            "allied": 324741637,
+            "axis": 324741638,
+            "deployment": 324741635,
+            "map": 324741633,
+            "oob": 324741634,
+            "rules": 324741636
+          },
+          "source": "artifacts/ai-surrogacy/contactBad-half/attack-temperate",
+          "variant": "contactBad-half",
+          "variantPlayer": "player:allied"
+        },
+        {
+          "acceptedActions": 928,
+          "acceptedActionsSha256": "8f9038b3b19ad38579ce34e173cd31853249d9bb29045bc2ecd9323baa114faf",
+          "finalStateHash": "sha256:0e6a1bd58b1f404ffefbd3bf501c0fed305570a7da17b2baec410361d172d7a9",
+          "historicalReplayOk": true,
+          "id": "2776918254b85db7d1f8382f4288eca18325fc2b175a2314c000671a70685322",
+          "initialStateHash": "sha256:f1ee3812f962eb7096439176bc1e77f395b78f63a24bee11d1680474ecdbdad1",
+          "match": 1600001,
+          "policies": {
+            "player:allied": "heuristic",
+            "player:axis": "heuristic:artifacts/ai-surrogacy/weights/contactBad-half.json"
+          },
+          "rows": "artifacts/ai-surrogacy/rows/contactBad-half__attack-temperate.jsonl",
+          "saveSha256": "bf17f8fdf20813eb02fcc52ff8c11337778e7d9223468a9e4120dc4714dd16b7",
+          "seeds": {
+            "allied": 324741637,
+            "axis": 324741638,
+            "deployment": 324741635,
+            "map": 324741633,
+            "oob": 324741634,
+            "rules": 324741636
+          },
+          "source": "artifacts/ai-surrogacy/contactBad-half/attack-temperate",
+          "variant": "contactBad-half",
+          "variantPlayer": "player:axis"
+        }
+      ],
+      "pair": 324741633,
+      "variant": "contactBad-half"
+    },
+    {
+      "climate": "TEMPERATE_INLAND",
+      "direction": "half",
+      "early": {
+        "M0": 0.0,
+        "M1": 0.9760005919250685,
+        "M2": 1.030894789868995,
+        "VP": 0.0,
+        "hqsInReach": 0.0,
+        "objectiveReachColumn": 1.0,
+        "objectiveVpAtRisk": 0.0,
+        "outOfTrace": 0.5,
+        "stacksExposedAllocated": 0.5,
+        "steps": 2.0
+      },
+      "family": "contactBad",
+      "finalVp": 2.0,
+      "games": [
+        {
+          "acceptedActions": 928,
+          "acceptedActionsSha256": "578971bce9d694266cc7f6aa29ba1f23e36b150ec685abaff21a07ac41315945",
+          "finalStateHash": "sha256:9b6ff4a5f4681447b48083d040b6942b41df8a1181838de8519efd47f2c56c82",
+          "historicalReplayOk": true,
+          "id": "c6b505d40b07eb204568c5691fb43974dfcb2d5efbad1f972e22214da265f8ef",
+          "initialStateHash": "sha256:6700ea090ff2462869292621b9b206542ef02341f3e3fe487253fc46379a8a39",
+          "match": 1600002,
+          "policies": {
+            "player:allied": "heuristic:artifacts/ai-surrogacy/weights/contactBad-half.json",
+            "player:axis": "heuristic"
+          },
+          "rows": "artifacts/ai-surrogacy/rows/contactBad-half__attack-temperate.jsonl",
+          "saveSha256": "803d747f61c5f3c4694c926d0e78a4753b84328cd177735866c226f90bf44deb",
+          "seeds": {
+            "allied": 324741831,
+            "axis": 324741832,
+            "deployment": 324741829,
+            "map": 324741827,
+            "oob": 324741828,
+            "rules": 324741830
+          },
+          "source": "artifacts/ai-surrogacy/contactBad-half/attack-temperate",
+          "variant": "contactBad-half",
+          "variantPlayer": "player:allied"
+        },
+        {
+          "acceptedActions": 842,
+          "acceptedActionsSha256": "cc66edb62009b874368a5940e360cc3379a5c4813cecd4bf032b378148069329",
+          "finalStateHash": "sha256:5a7b305a4486ba63c2eba7caf345af55b78059ae5ea4fc891ecc8253083bbc97",
+          "historicalReplayOk": true,
+          "id": "835cd02bfeb7e4956ee6bee39df4193f38108614fc99bd73406931676c130005",
+          "initialStateHash": "sha256:6700ea090ff2462869292621b9b206542ef02341f3e3fe487253fc46379a8a39",
+          "match": 1600003,
+          "policies": {
+            "player:allied": "heuristic",
+            "player:axis": "heuristic:artifacts/ai-surrogacy/weights/contactBad-half.json"
+          },
+          "rows": "artifacts/ai-surrogacy/rows/contactBad-half__attack-temperate.jsonl",
+          "saveSha256": "ed0b28927baf4fac5d275ba1ddd46588c7eee3a7c49c7ad976cf25eed68c02d1",
+          "seeds": {
+            "allied": 324741831,
+            "axis": 324741832,
+            "deployment": 324741829,
+            "map": 324741827,
+            "oob": 324741828,
+            "rules": 324741830
+          },
+          "source": "artifacts/ai-surrogacy/contactBad-half/attack-temperate",
+          "variant": "contactBad-half",
+          "variantPlayer": "player:axis"
+        }
+      ],
+      "pair": 324741827,
+      "variant": "contactBad-half"
+    },
+    {
+      "climate": "TEMPERATE_INLAND",
+      "direction": "double",
+      "early": {
+        "M0": 0.0,
+        "M1": 0.4317345504162744,
+        "M2": 0.21833420780041468,
+        "VP": 0.0,
+        "hqsInReach": 0.5,
+        "objectiveReachColumn": 0.0,
+        "objectiveVpAtRisk": 0.0,
+        "outOfTrace": 0.0,
+        "stacksExposedAllocated": 0.0,
+        "steps": 1.0
+      },
+      "family": "contactBad",
+      "finalVp": 0.0,
+      "games": [
+        {
+          "acceptedActions": 746,
+          "acceptedActionsSha256": "a9a458f4b3e0ca808aa99b69cd55eaacbe5a0a2b25edaf27a7c1ae461a2eccb6",
+          "finalStateHash": "sha256:a98fb770addaf8c9db4b9b53a14e07f175340d0f104f91f35d5445cacaf266f4",
+          "historicalReplayOk": true,
+          "id": "067ecf9d2484db5b73c0174aa2316d82beb910afbb1803789f0b988130dd3aa6",
+          "initialStateHash": "sha256:f1ee3812f962eb7096439176bc1e77f395b78f63a24bee11d1680474ecdbdad1",
+          "match": 1600000,
+          "policies": {
+            "player:allied": "heuristic:artifacts/ai-surrogacy/weights/contactBad-double.json",
+            "player:axis": "heuristic"
+          },
+          "rows": "artifacts/ai-surrogacy/rows/contactBad-double__attack-temperate.jsonl",
+          "saveSha256": "78b7b7fbe412dc2be858f6d501401cc824c2d787d70c4c5ddfa73beab94f5291",
+          "seeds": {
+            "allied": 324741637,
+            "axis": 324741638,
+            "deployment": 324741635,
+            "map": 324741633,
+            "oob": 324741634,
+            "rules": 324741636
+          },
+          "source": "artifacts/ai-surrogacy/contactBad-double/attack-temperate",
+          "variant": "contactBad-double",
+          "variantPlayer": "player:allied"
+        },
+        {
+          "acceptedActions": 726,
+          "acceptedActionsSha256": "22fa54caffaec21d4e4f473f7f8b57cbe60efbd4667d35b875741d82738687af",
+          "finalStateHash": "sha256:19d28b15d5f9c5fca838587b7c8e29ac2c4a3f711b8eb0447f3639890a260396",
+          "historicalReplayOk": true,
+          "id": "70fb2ea51919ef555e3a0b81fc115a99140079d0f483193e14a9dd8bf366d018",
+          "initialStateHash": "sha256:f1ee3812f962eb7096439176bc1e77f395b78f63a24bee11d1680474ecdbdad1",
+          "match": 1600001,
+          "policies": {
+            "player:allied": "heuristic",
+            "player:axis": "heuristic:artifacts/ai-surrogacy/weights/contactBad-double.json"
+          },
+          "rows": "artifacts/ai-surrogacy/rows/contactBad-double__attack-temperate.jsonl",
+          "saveSha256": "173eea7d72d4161c53036c283f8b3c4fe6ccb48e3ba8ceab2234601a8941b94f",
+          "seeds": {
+            "allied": 324741637,
+            "axis": 324741638,
+            "deployment": 324741635,
+            "map": 324741633,
+            "oob": 324741634,
+            "rules": 324741636
+          },
+          "source": "artifacts/ai-surrogacy/contactBad-double/attack-temperate",
+          "variant": "contactBad-double",
+          "variantPlayer": "player:axis"
+        }
+      ],
+      "pair": 324741633,
+      "variant": "contactBad-double"
+    },
+    {
+      "climate": "TEMPERATE_INLAND",
+      "direction": "double",
+      "early": {
+        "M0": 0.0,
+        "M1": 0.6384061186475085,
+        "M2": 0.527474570322491,
+        "VP": 0.0,
+        "hqsInReach": -0.5,
+        "objectiveReachColumn": 0.5,
+        "objectiveVpAtRisk": 0.0,
+        "outOfTrace": -1.0,
+        "stacksExposedAllocated": -1.0,
+        "steps": 2.0
+      },
+      "family": "contactBad",
+      "finalVp": 0.0,
+      "games": [
+        {
+          "acceptedActions": 907,
+          "acceptedActionsSha256": "0ffd30106d8d8cbb7bacf5b212e63ef7fbda3832638da37aaf02078aaa818c6f",
+          "finalStateHash": "sha256:c85adb1d0d9905ed7bc13c169c5757c6d77d54152619011a1053592c60276981",
+          "historicalReplayOk": true,
+          "id": "62a14b82f351ef02fca9263eb41293338713ac2dd582b548bdf1009f28fce4b1",
+          "initialStateHash": "sha256:6700ea090ff2462869292621b9b206542ef02341f3e3fe487253fc46379a8a39",
+          "match": 1600002,
+          "policies": {
+            "player:allied": "heuristic:artifacts/ai-surrogacy/weights/contactBad-double.json",
+            "player:axis": "heuristic"
+          },
+          "rows": "artifacts/ai-surrogacy/rows/contactBad-double__attack-temperate.jsonl",
+          "saveSha256": "5589eb7dcdd0527f36467f0f8f19782909e4e798dc0fe72b45955afa843a3889",
+          "seeds": {
+            "allied": 324741831,
+            "axis": 324741832,
+            "deployment": 324741829,
+            "map": 324741827,
+            "oob": 324741828,
+            "rules": 324741830
+          },
+          "source": "artifacts/ai-surrogacy/contactBad-double/attack-temperate",
+          "variant": "contactBad-double",
+          "variantPlayer": "player:allied"
+        },
+        {
+          "acceptedActions": 905,
+          "acceptedActionsSha256": "2f83ef4f62446987dafcf53799567ed2234b5e6d98ae668fe79ef25885d1878e",
+          "finalStateHash": "sha256:5558c05f061bf8761baa4f6c12204dfb664642c76a23a64fb0bd9495b2ccfb19",
+          "historicalReplayOk": true,
+          "id": "7ca4b2130016cee0e13c4542b9ae14dbd0c2d9ead17ac4f7abda4149d1304057",
+          "initialStateHash": "sha256:6700ea090ff2462869292621b9b206542ef02341f3e3fe487253fc46379a8a39",
+          "match": 1600003,
+          "policies": {
+            "player:allied": "heuristic",
+            "player:axis": "heuristic:artifacts/ai-surrogacy/weights/contactBad-double.json"
+          },
+          "rows": "artifacts/ai-surrogacy/rows/contactBad-double__attack-temperate.jsonl",
+          "saveSha256": "b6c33712b51d27d0d5f0b4b7fad645d8c3f217e076b0d879c1f960866b24e4c6",
+          "seeds": {
+            "allied": 324741831,
+            "axis": 324741832,
+            "deployment": 324741829,
+            "map": 324741827,
+            "oob": 324741828,
+            "rules": 324741830
+          },
+          "source": "artifacts/ai-surrogacy/contactBad-double/attack-temperate",
+          "variant": "contactBad-double",
+          "variantPlayer": "player:axis"
+        }
+      ],
+      "pair": 324741827,
+      "variant": "contactBad-double"
+    },
+    {
+      "climate": "TEMPERATE_INLAND",
+      "direction": "half",
+      "early": {
+        "M0": 0.0,
+        "M1": 0.0,
+        "M2": 0.0,
+        "VP": 0.0,
+        "hqsInReach": 0.0,
+        "objectiveReachColumn": 0.0,
+        "objectiveVpAtRisk": 0.0,
+        "outOfTrace": 0.0,
+        "stacksExposedAllocated": 0.0,
+        "steps": 0.0
+      },
+      "family": "outOfSupply",
+      "finalVp": 3.0,
+      "games": [
+        {
+          "acceptedActions": 709,
+          "acceptedActionsSha256": "2bc2c35baf59862f72bcc752c523a23500105d863814c9c7c440bacb9fc1be2d",
+          "finalStateHash": "sha256:fe6e1d1ac66ace546358d3f9a73b8440dd0e6a44786cf2e21008835a8bbaf02d",
+          "historicalReplayOk": true,
+          "id": "22c9997b79e16bc964633d304f9510f6207fd904f5146f7896cc9cda5931bfed",
+          "initialStateHash": "sha256:f1ee3812f962eb7096439176bc1e77f395b78f63a24bee11d1680474ecdbdad1",
+          "match": 1600000,
+          "policies": {
+            "player:allied": "heuristic:artifacts/ai-surrogacy/weights/outOfSupply-half.json",
+            "player:axis": "heuristic"
+          },
+          "rows": "artifacts/ai-surrogacy/rows/outOfSupply-half__attack-temperate.jsonl",
+          "saveSha256": "46c1fed449683ea618718c137e517030f91dde2f2c80a9d93b16c1a954480577",
+          "seeds": {
+            "allied": 324741637,
+            "axis": 324741638,
+            "deployment": 324741635,
+            "map": 324741633,
+            "oob": 324741634,
+            "rules": 324741636
+          },
+          "source": "artifacts/ai-surrogacy/outOfSupply-half/attack-temperate",
+          "variant": "outOfSupply-half",
+          "variantPlayer": "player:allied"
+        },
+        {
+          "acceptedActions": 765,
+          "acceptedActionsSha256": "65028e5553c4e8324fd720f1f90d30c79b38f52e7d899294a85ec6f4d5c826bb",
+          "finalStateHash": "sha256:a6437cccc726e38b20d0897826a07429310287db70236b3a79ee6dbc0c55d5a7",
+          "historicalReplayOk": true,
+          "id": "05e51799df1e6963c2ae6d368993a1962430ed77019e655ef174cb3ac4d8c267",
+          "initialStateHash": "sha256:f1ee3812f962eb7096439176bc1e77f395b78f63a24bee11d1680474ecdbdad1",
+          "match": 1600001,
+          "policies": {
+            "player:allied": "heuristic",
+            "player:axis": "heuristic:artifacts/ai-surrogacy/weights/outOfSupply-half.json"
+          },
+          "rows": "artifacts/ai-surrogacy/rows/outOfSupply-half__attack-temperate.jsonl",
+          "saveSha256": "876f7283c6c0d99f9f775a39e4423ff292885b90af0334cd64c784a3d167c0f6",
+          "seeds": {
+            "allied": 324741637,
+            "axis": 324741638,
+            "deployment": 324741635,
+            "map": 324741633,
+            "oob": 324741634,
+            "rules": 324741636
+          },
+          "source": "artifacts/ai-surrogacy/outOfSupply-half/attack-temperate",
+          "variant": "outOfSupply-half",
+          "variantPlayer": "player:axis"
+        }
+      ],
+      "pair": 324741633,
+      "variant": "outOfSupply-half"
+    },
+    {
+      "climate": "TEMPERATE_INLAND",
+      "direction": "half",
+      "early": {
+        "M0": 0.0,
+        "M1": 0.0,
+        "M2": 0.0,
+        "VP": 0.0,
+        "hqsInReach": 0.0,
+        "objectiveReachColumn": 0.0,
+        "objectiveVpAtRisk": 0.0,
+        "outOfTrace": 0.0,
+        "stacksExposedAllocated": 0.0,
+        "steps": 0.0
+      },
+      "family": "outOfSupply",
+      "finalVp": 0.0,
+      "games": [
+        {
+          "acceptedActions": 922,
+          "acceptedActionsSha256": "35c730fe3cab2ead786a23ca894823532dc1dda824571af16b97e7e649dd4106",
+          "finalStateHash": "sha256:97ac2ea30270002de5ce43c4bf1044e8b0add517b3f843f32e20e6678af3f1b6",
+          "historicalReplayOk": true,
+          "id": "6c39caf048c1b9f9d7c3caadec29e4216e951093a333897df628e9efc14e99a2",
+          "initialStateHash": "sha256:6700ea090ff2462869292621b9b206542ef02341f3e3fe487253fc46379a8a39",
+          "match": 1600002,
+          "policies": {
+            "player:allied": "heuristic:artifacts/ai-surrogacy/weights/outOfSupply-half.json",
+            "player:axis": "heuristic"
+          },
+          "rows": "artifacts/ai-surrogacy/rows/outOfSupply-half__attack-temperate.jsonl",
+          "saveSha256": "88fa854319185ca25becf591d1487096dcabe2ddcdfa6353a46e9a6098030560",
+          "seeds": {
+            "allied": 324741831,
+            "axis": 324741832,
+            "deployment": 324741829,
+            "map": 324741827,
+            "oob": 324741828,
+            "rules": 324741830
+          },
+          "source": "artifacts/ai-surrogacy/outOfSupply-half/attack-temperate",
+          "variant": "outOfSupply-half",
+          "variantPlayer": "player:allied"
+        },
+        {
+          "acceptedActions": 922,
+          "acceptedActionsSha256": "35c730fe3cab2ead786a23ca894823532dc1dda824571af16b97e7e649dd4106",
+          "finalStateHash": "sha256:97ac2ea30270002de5ce43c4bf1044e8b0add517b3f843f32e20e6678af3f1b6",
+          "historicalReplayOk": true,
+          "id": "6c39caf048c1b9f9d7c3caadec29e4216e951093a333897df628e9efc14e99a2",
+          "initialStateHash": "sha256:6700ea090ff2462869292621b9b206542ef02341f3e3fe487253fc46379a8a39",
+          "match": 1600003,
+          "policies": {
+            "player:allied": "heuristic",
+            "player:axis": "heuristic:artifacts/ai-surrogacy/weights/outOfSupply-half.json"
+          },
+          "rows": "artifacts/ai-surrogacy/rows/outOfSupply-half__attack-temperate.jsonl",
+          "saveSha256": "fbcbd719b3bd98b036212c1a1b425fed57743ea041931dbd3f9318b03f982c8d",
+          "seeds": {
+            "allied": 324741831,
+            "axis": 324741832,
+            "deployment": 324741829,
+            "map": 324741827,
+            "oob": 324741828,
+            "rules": 324741830
+          },
+          "source": "artifacts/ai-surrogacy/outOfSupply-half/attack-temperate",
+          "variant": "outOfSupply-half",
+          "variantPlayer": "player:axis"
+        }
+      ],
+      "pair": 324741827,
+      "variant": "outOfSupply-half"
+    },
+    {
+      "climate": "TEMPERATE_INLAND",
+      "direction": "double",
+      "early": {
+        "M0": 0.0,
+        "M1": 0.0,
+        "M2": 0.0,
+        "VP": 0.0,
+        "hqsInReach": 0.0,
+        "objectiveReachColumn": 0.0,
+        "objectiveVpAtRisk": 0.0,
+        "outOfTrace": 0.0,
+        "stacksExposedAllocated": 0.0,
+        "steps": 0.0
+      },
+      "family": "outOfSupply",
+      "finalVp": -3.0,
+      "games": [
+        {
+          "acceptedActions": 765,
+          "acceptedActionsSha256": "65028e5553c4e8324fd720f1f90d30c79b38f52e7d899294a85ec6f4d5c826bb",
+          "finalStateHash": "sha256:a6437cccc726e38b20d0897826a07429310287db70236b3a79ee6dbc0c55d5a7",
+          "historicalReplayOk": true,
+          "id": "05e51799df1e6963c2ae6d368993a1962430ed77019e655ef174cb3ac4d8c267",
+          "initialStateHash": "sha256:f1ee3812f962eb7096439176bc1e77f395b78f63a24bee11d1680474ecdbdad1",
+          "match": 1600000,
+          "policies": {
+            "player:allied": "heuristic:artifacts/ai-surrogacy/weights/outOfSupply-double.json",
+            "player:axis": "heuristic"
+          },
+          "rows": "artifacts/ai-surrogacy/rows/outOfSupply-double__attack-temperate.jsonl",
+          "saveSha256": "0dae715e573f2574e86d95eef4c31566ced32aa7bd6e8bcd583102c88ec16d97",
+          "seeds": {
+            "allied": 324741637,
+            "axis": 324741638,
+            "deployment": 324741635,
+            "map": 324741633,
+            "oob": 324741634,
+            "rules": 324741636
+          },
+          "source": "artifacts/ai-surrogacy/outOfSupply-double/attack-temperate",
+          "variant": "outOfSupply-double",
+          "variantPlayer": "player:allied"
+        },
+        {
+          "acceptedActions": 767,
+          "acceptedActionsSha256": "c557fc6f82d0ec2546a0d1976c21353a8b5f38b61ea355c629fcbf1432d9b834",
+          "finalStateHash": "sha256:37b963438027d8cbb4d4be51f9bca78f41bba31e02f9bb20158f947885b8335d",
+          "historicalReplayOk": true,
+          "id": "942342e00a0661aecb7438a2ffe0f196710d0a738dc62bcd7d11bd2ac58d6c4f",
+          "initialStateHash": "sha256:f1ee3812f962eb7096439176bc1e77f395b78f63a24bee11d1680474ecdbdad1",
+          "match": 1600001,
+          "policies": {
+            "player:allied": "heuristic",
+            "player:axis": "heuristic:artifacts/ai-surrogacy/weights/outOfSupply-double.json"
+          },
+          "rows": "artifacts/ai-surrogacy/rows/outOfSupply-double__attack-temperate.jsonl",
+          "saveSha256": "9f0b5601ad4df974453a5ef7600e850cc8309aaac9333e7a0dac3354d50b3c9e",
+          "seeds": {
+            "allied": 324741637,
+            "axis": 324741638,
+            "deployment": 324741635,
+            "map": 324741633,
+            "oob": 324741634,
+            "rules": 324741636
+          },
+          "source": "artifacts/ai-surrogacy/outOfSupply-double/attack-temperate",
+          "variant": "outOfSupply-double",
+          "variantPlayer": "player:axis"
+        }
+      ],
+      "pair": 324741633,
+      "variant": "outOfSupply-double"
+    },
+    {
+      "climate": "TEMPERATE_INLAND",
+      "direction": "double",
+      "early": {
+        "M0": 0.0,
+        "M1": 0.0,
+        "M2": 0.0,
+        "VP": 0.0,
+        "hqsInReach": 0.0,
+        "objectiveReachColumn": 0.0,
+        "objectiveVpAtRisk": 0.0,
+        "outOfTrace": 0.0,
+        "stacksExposedAllocated": 0.0,
+        "steps": 0.0
+      },
+      "family": "outOfSupply",
+      "finalVp": 0.0,
+      "games": [
+        {
+          "acceptedActions": 922,
+          "acceptedActionsSha256": "35c730fe3cab2ead786a23ca894823532dc1dda824571af16b97e7e649dd4106",
+          "finalStateHash": "sha256:97ac2ea30270002de5ce43c4bf1044e8b0add517b3f843f32e20e6678af3f1b6",
+          "historicalReplayOk": true,
+          "id": "6c39caf048c1b9f9d7c3caadec29e4216e951093a333897df628e9efc14e99a2",
+          "initialStateHash": "sha256:6700ea090ff2462869292621b9b206542ef02341f3e3fe487253fc46379a8a39",
+          "match": 1600002,
+          "policies": {
+            "player:allied": "heuristic:artifacts/ai-surrogacy/weights/outOfSupply-double.json",
+            "player:axis": "heuristic"
+          },
+          "rows": "artifacts/ai-surrogacy/rows/outOfSupply-double__attack-temperate.jsonl",
+          "saveSha256": "88fa854319185ca25becf591d1487096dcabe2ddcdfa6353a46e9a6098030560",
+          "seeds": {
+            "allied": 324741831,
+            "axis": 324741832,
+            "deployment": 324741829,
+            "map": 324741827,
+            "oob": 324741828,
+            "rules": 324741830
+          },
+          "source": "artifacts/ai-surrogacy/outOfSupply-double/attack-temperate",
+          "variant": "outOfSupply-double",
+          "variantPlayer": "player:allied"
+        },
+        {
+          "acceptedActions": 922,
+          "acceptedActionsSha256": "35c730fe3cab2ead786a23ca894823532dc1dda824571af16b97e7e649dd4106",
+          "finalStateHash": "sha256:97ac2ea30270002de5ce43c4bf1044e8b0add517b3f843f32e20e6678af3f1b6",
+          "historicalReplayOk": true,
+          "id": "6c39caf048c1b9f9d7c3caadec29e4216e951093a333897df628e9efc14e99a2",
+          "initialStateHash": "sha256:6700ea090ff2462869292621b9b206542ef02341f3e3fe487253fc46379a8a39",
+          "match": 1600003,
+          "policies": {
+            "player:allied": "heuristic",
+            "player:axis": "heuristic:artifacts/ai-surrogacy/weights/outOfSupply-double.json"
+          },
+          "rows": "artifacts/ai-surrogacy/rows/outOfSupply-double__attack-temperate.jsonl",
+          "saveSha256": "fbcbd719b3bd98b036212c1a1b425fed57743ea041931dbd3f9318b03f982c8d",
+          "seeds": {
+            "allied": 324741831,
+            "axis": 324741832,
+            "deployment": 324741829,
+            "map": 324741827,
+            "oob": 324741828,
+            "rules": 324741830
+          },
+          "source": "artifacts/ai-surrogacy/outOfSupply-double/attack-temperate",
+          "variant": "outOfSupply-double",
+          "variantPlayer": "player:axis"
+        }
+      ],
+      "pair": 324741827,
+      "variant": "outOfSupply-double"
+    },
+    {
+      "climate": "TEMPERATE_INLAND",
+      "direction": "half",
+      "early": {
+        "M0": 0.0,
+        "M1": 0.6567975326013142,
+        "M2": -0.007206015911460639,
+        "VP": 0.0,
+        "hqsInReach": 0.5,
+        "objectiveReachColumn": 2.0,
+        "objectiveVpAtRisk": -2.0,
+        "outOfTrace": 1.0,
+        "stacksExposedAllocated": 1.0,
+        "steps": 1.0
+      },
+      "family": "progressObjective",
+      "finalVp": 3.0,
+      "games": [
+        {
+          "acceptedActions": 766,
+          "acceptedActionsSha256": "b0f3035e7ff241e35b28120c1a8a17ddb86fe0c3e8e91eb1f9545e060a02fe34",
+          "finalStateHash": "sha256:ececa843083ab953d6a901129b1ea85ae782138dca9c81ae151854ddb8109780",
+          "historicalReplayOk": true,
+          "id": "ff93eb793c0aca84eeef36ecfa875ab2f02daab71a1b1178856c925843472c15",
+          "initialStateHash": "sha256:f1ee3812f962eb7096439176bc1e77f395b78f63a24bee11d1680474ecdbdad1",
+          "match": 1600000,
+          "policies": {
+            "player:allied": "heuristic:artifacts/ai-surrogacy/weights/progressObjective-half.json",
+            "player:axis": "heuristic"
+          },
+          "rows": "artifacts/ai-surrogacy/rows/progressObjective-half__attack-temperate.jsonl",
+          "saveSha256": "166577c5b4d6d6bfbbcf25a2cb3c3e3a11afb151b234d33031225ead66f0d81a",
+          "seeds": {
+            "allied": 324741637,
+            "axis": 324741638,
+            "deployment": 324741635,
+            "map": 324741633,
+            "oob": 324741634,
+            "rules": 324741636
+          },
+          "source": "artifacts/ai-surrogacy/progressObjective-half/attack-temperate",
+          "variant": "progressObjective-half",
+          "variantPlayer": "player:allied"
+        },
+        {
+          "acceptedActions": 837,
+          "acceptedActionsSha256": "5194e80ed6cfe8533b21df1fdacced08c2be3805df53d4a6eb03192e3f14bd6c",
+          "finalStateHash": "sha256:6d6a7109c97a3796f13d56b4eaa2642e7a8ba6c34d5ba6ac017c757bc838c4d5",
+          "historicalReplayOk": true,
+          "id": "7a7e2ad885621b0188d5a50ae1f272d0633783f0c4c41b905c8b84f020c74466",
+          "initialStateHash": "sha256:f1ee3812f962eb7096439176bc1e77f395b78f63a24bee11d1680474ecdbdad1",
+          "match": 1600001,
+          "policies": {
+            "player:allied": "heuristic",
+            "player:axis": "heuristic:artifacts/ai-surrogacy/weights/progressObjective-half.json"
+          },
+          "rows": "artifacts/ai-surrogacy/rows/progressObjective-half__attack-temperate.jsonl",
+          "saveSha256": "b9c9025024830f0293d38c5c7eab330cde8c2089d3cc4005b1ddace7fce6a8ad",
+          "seeds": {
+            "allied": 324741637,
+            "axis": 324741638,
+            "deployment": 324741635,
+            "map": 324741633,
+            "oob": 324741634,
+            "rules": 324741636
+          },
+          "source": "artifacts/ai-surrogacy/progressObjective-half/attack-temperate",
+          "variant": "progressObjective-half",
+          "variantPlayer": "player:axis"
+        }
+      ],
+      "pair": 324741633,
+      "variant": "progressObjective-half"
+    },
+    {
+      "climate": "TEMPERATE_INLAND",
+      "direction": "half",
+      "early": {
+        "M0": 1.1926631212357206,
+        "M1": 2.8842149049378816,
+        "M2": 1.0736223881044764,
+        "VP": 2.0,
+        "hqsInReach": -0.5,
+        "objectiveReachColumn": -4.5,
+        "objectiveVpAtRisk": -1.0,
+        "outOfTrace": 2.5,
+        "stacksExposedAllocated": 1.5,
+        "steps": 3.5
+      },
+      "family": "progressObjective",
+      "finalVp": 6.0,
+      "games": [
+        {
+          "acceptedActions": 922,
+          "acceptedActionsSha256": "35c730fe3cab2ead786a23ca894823532dc1dda824571af16b97e7e649dd4106",
+          "finalStateHash": "sha256:97ac2ea30270002de5ce43c4bf1044e8b0add517b3f843f32e20e6678af3f1b6",
+          "historicalReplayOk": true,
+          "id": "6c39caf048c1b9f9d7c3caadec29e4216e951093a333897df628e9efc14e99a2",
+          "initialStateHash": "sha256:6700ea090ff2462869292621b9b206542ef02341f3e3fe487253fc46379a8a39",
+          "match": 1600002,
+          "policies": {
+            "player:allied": "heuristic:artifacts/ai-surrogacy/weights/progressObjective-half.json",
+            "player:axis": "heuristic"
+          },
+          "rows": "artifacts/ai-surrogacy/rows/progressObjective-half__attack-temperate.jsonl",
+          "saveSha256": "88fa854319185ca25becf591d1487096dcabe2ddcdfa6353a46e9a6098030560",
+          "seeds": {
+            "allied": 324741831,
+            "axis": 324741832,
+            "deployment": 324741829,
+            "map": 324741827,
+            "oob": 324741828,
+            "rules": 324741830
+          },
+          "source": "artifacts/ai-surrogacy/progressObjective-half/attack-temperate",
+          "variant": "progressObjective-half",
+          "variantPlayer": "player:allied"
+        },
+        {
+          "acceptedActions": 890,
+          "acceptedActionsSha256": "7201e879829d46c482f652b4e4eefbd0492d2ab48c05e93c2e763bd90b4dc3a5",
+          "finalStateHash": "sha256:4b84256925618d53cd5ae0bb892ae0a3407974673b612cf11c2843167e713e35",
+          "historicalReplayOk": true,
+          "id": "f34d872dbe281fb8cf82bb084563db14a9f36728e4b849a307063ff9f638cf15",
+          "initialStateHash": "sha256:6700ea090ff2462869292621b9b206542ef02341f3e3fe487253fc46379a8a39",
+          "match": 1600003,
+          "policies": {
+            "player:allied": "heuristic",
+            "player:axis": "heuristic:artifacts/ai-surrogacy/weights/progressObjective-half.json"
+          },
+          "rows": "artifacts/ai-surrogacy/rows/progressObjective-half__attack-temperate.jsonl",
+          "saveSha256": "38bb2f7a57fcc4ea2b1b16e3abafd382d40e14a6639a8db1329a83c76333a140",
+          "seeds": {
+            "allied": 324741831,
+            "axis": 324741832,
+            "deployment": 324741829,
+            "map": 324741827,
+            "oob": 324741828,
+            "rules": 324741830
+          },
+          "source": "artifacts/ai-surrogacy/progressObjective-half/attack-temperate",
+          "variant": "progressObjective-half",
+          "variantPlayer": "player:axis"
+        }
+      ],
+      "pair": 324741827,
+      "variant": "progressObjective-half"
+    },
+    {
+      "climate": "TEMPERATE_INLAND",
+      "direction": "double",
+      "early": {
+        "M0": 0.0,
+        "M1": 0.14931431900013115,
+        "M2": 1.6223834109216406,
+        "VP": 0.0,
+        "hqsInReach": 0.5,
+        "objectiveReachColumn": 0.5,
+        "objectiveVpAtRisk": 1.5,
+        "outOfTrace": 4.5,
+        "stacksExposedAllocated": -2.0,
+        "steps": -2.0
+      },
+      "family": "progressObjective",
+      "finalVp": 9.0,
+      "games": [
+        {
+          "acceptedActions": 765,
+          "acceptedActionsSha256": "65028e5553c4e8324fd720f1f90d30c79b38f52e7d899294a85ec6f4d5c826bb",
+          "finalStateHash": "sha256:a6437cccc726e38b20d0897826a07429310287db70236b3a79ee6dbc0c55d5a7",
+          "historicalReplayOk": true,
+          "id": "05e51799df1e6963c2ae6d368993a1962430ed77019e655ef174cb3ac4d8c267",
+          "initialStateHash": "sha256:f1ee3812f962eb7096439176bc1e77f395b78f63a24bee11d1680474ecdbdad1",
+          "match": 1600000,
+          "policies": {
+            "player:allied": "heuristic:artifacts/ai-surrogacy/weights/progressObjective-double.json",
+            "player:axis": "heuristic"
+          },
+          "rows": "artifacts/ai-surrogacy/rows/progressObjective-double__attack-temperate.jsonl",
+          "saveSha256": "0dae715e573f2574e86d95eef4c31566ced32aa7bd6e8bcd583102c88ec16d97",
+          "seeds": {
+            "allied": 324741637,
+            "axis": 324741638,
+            "deployment": 324741635,
+            "map": 324741633,
+            "oob": 324741634,
+            "rules": 324741636
+          },
+          "source": "artifacts/ai-surrogacy/progressObjective-double/attack-temperate",
+          "variant": "progressObjective-double",
+          "variantPlayer": "player:allied"
+        },
+        {
+          "acceptedActions": 875,
+          "acceptedActionsSha256": "9e3974cc3a596c5b978fb735f08e4863d6a32c5082a78cd023d2b1f72f374cf1",
+          "finalStateHash": "sha256:461050e2240f1b22641fd7535ae7da62e444c10701c4bd905ad26dd2be01f32a",
+          "historicalReplayOk": true,
+          "id": "66d368e1b9516780a735e320f59e6210d1fe750e3a946ebb0f19291358cd3a28",
+          "initialStateHash": "sha256:f1ee3812f962eb7096439176bc1e77f395b78f63a24bee11d1680474ecdbdad1",
+          "match": 1600001,
+          "policies": {
+            "player:allied": "heuristic",
+            "player:axis": "heuristic:artifacts/ai-surrogacy/weights/progressObjective-double.json"
+          },
+          "rows": "artifacts/ai-surrogacy/rows/progressObjective-double__attack-temperate.jsonl",
+          "saveSha256": "ecca973711a00b06c9a9f842d7a81481e09e3aa8b6874c5a13ae118a4cc2aebc",
+          "seeds": {
+            "allied": 324741637,
+            "axis": 324741638,
+            "deployment": 324741635,
+            "map": 324741633,
+            "oob": 324741634,
+            "rules": 324741636
+          },
+          "source": "artifacts/ai-surrogacy/progressObjective-double/attack-temperate",
+          "variant": "progressObjective-double",
+          "variantPlayer": "player:axis"
+        }
+      ],
+      "pair": 324741633,
+      "variant": "progressObjective-double"
+    },
+    {
+      "climate": "TEMPERATE_INLAND",
+      "direction": "double",
+      "early": {
+        "M0": 1.1926631212357206,
+        "M1": 1.1021024614113686,
+        "M2": 1.0968884005793846,
+        "VP": 2.0,
+        "hqsInReach": -1.5,
+        "objectiveReachColumn": -6.0,
+        "objectiveVpAtRisk": -1.0,
+        "outOfTrace": -3.5,
+        "stacksExposedAllocated": 2.0,
+        "steps": 2.5
+      },
+      "family": "progressObjective",
+      "finalVp": 6.0,
+      "games": [
+        {
+          "acceptedActions": 922,
+          "acceptedActionsSha256": "35c730fe3cab2ead786a23ca894823532dc1dda824571af16b97e7e649dd4106",
+          "finalStateHash": "sha256:97ac2ea30270002de5ce43c4bf1044e8b0add517b3f843f32e20e6678af3f1b6",
+          "historicalReplayOk": true,
+          "id": "6c39caf048c1b9f9d7c3caadec29e4216e951093a333897df628e9efc14e99a2",
+          "initialStateHash": "sha256:6700ea090ff2462869292621b9b206542ef02341f3e3fe487253fc46379a8a39",
+          "match": 1600002,
+          "policies": {
+            "player:allied": "heuristic:artifacts/ai-surrogacy/weights/progressObjective-double.json",
+            "player:axis": "heuristic"
+          },
+          "rows": "artifacts/ai-surrogacy/rows/progressObjective-double__attack-temperate.jsonl",
+          "saveSha256": "88fa854319185ca25becf591d1487096dcabe2ddcdfa6353a46e9a6098030560",
+          "seeds": {
+            "allied": 324741831,
+            "axis": 324741832,
+            "deployment": 324741829,
+            "map": 324741827,
+            "oob": 324741828,
+            "rules": 324741830
+          },
+          "source": "artifacts/ai-surrogacy/progressObjective-double/attack-temperate",
+          "variant": "progressObjective-double",
+          "variantPlayer": "player:allied"
+        },
+        {
+          "acceptedActions": 955,
+          "acceptedActionsSha256": "028db827574ee75b180f6b0541a1a88f534f42006a8c57ca3375a56337a7316a",
+          "finalStateHash": "sha256:055d2774351038dcaff8cf6484392d106f661e90e5f9943a4f10ef9493331701",
+          "historicalReplayOk": true,
+          "id": "b807834d795d00d887016be8dc1dc29cdeea594d677f074e5dc87f729eff0db5",
+          "initialStateHash": "sha256:6700ea090ff2462869292621b9b206542ef02341f3e3fe487253fc46379a8a39",
+          "match": 1600003,
+          "policies": {
+            "player:allied": "heuristic",
+            "player:axis": "heuristic:artifacts/ai-surrogacy/weights/progressObjective-double.json"
+          },
+          "rows": "artifacts/ai-surrogacy/rows/progressObjective-double__attack-temperate.jsonl",
+          "saveSha256": "289df1cf1b5bf2212ae86069ca97902d6a5a637ff086f3f15706eb90f3dcab6d",
+          "seeds": {
+            "allied": 324741831,
+            "axis": 324741832,
+            "deployment": 324741829,
+            "map": 324741827,
+            "oob": 324741828,
+            "rules": 324741830
+          },
+          "source": "artifacts/ai-surrogacy/progressObjective-double/attack-temperate",
+          "variant": "progressObjective-double",
+          "variantPlayer": "player:axis"
+        }
+      ],
+      "pair": 324741827,
+      "variant": "progressObjective-double"
+    },
+    {
+      "climate": "TEMPERATE_INLAND",
+      "direction": "half",
+      "early": {
+        "M0": 0.0,
+        "M1": 0.11253149109251992,
+        "M2": -1.3314701592832385,
+        "VP": 0.0,
+        "hqsInReach": 0.5,
+        "objectiveReachColumn": 0.0,
+        "objectiveVpAtRisk": -2.0,
+        "outOfTrace": 0.5,
+        "stacksExposedAllocated": -1.5,
+        "steps": 0.0
+      },
+      "family": "hqWithArmy",
+      "finalVp": -3.0,
+      "games": [
+        {
+          "acceptedActions": 765,
+          "acceptedActionsSha256": "65028e5553c4e8324fd720f1f90d30c79b38f52e7d899294a85ec6f4d5c826bb",
+          "finalStateHash": "sha256:a6437cccc726e38b20d0897826a07429310287db70236b3a79ee6dbc0c55d5a7",
+          "historicalReplayOk": true,
+          "id": "05e51799df1e6963c2ae6d368993a1962430ed77019e655ef174cb3ac4d8c267",
+          "initialStateHash": "sha256:f1ee3812f962eb7096439176bc1e77f395b78f63a24bee11d1680474ecdbdad1",
+          "match": 1600000,
+          "policies": {
+            "player:allied": "heuristic:artifacts/ai-surrogacy/weights/hqWithArmy-half.json",
+            "player:axis": "heuristic"
+          },
+          "rows": "artifacts/ai-surrogacy/rows/hqWithArmy-half__attack-temperate.jsonl",
+          "saveSha256": "0dae715e573f2574e86d95eef4c31566ced32aa7bd6e8bcd583102c88ec16d97",
+          "seeds": {
+            "allied": 324741637,
+            "axis": 324741638,
+            "deployment": 324741635,
+            "map": 324741633,
+            "oob": 324741634,
+            "rules": 324741636
+          },
+          "source": "artifacts/ai-surrogacy/hqWithArmy-half/attack-temperate",
+          "variant": "hqWithArmy-half",
+          "variantPlayer": "player:allied"
+        },
+        {
+          "acceptedActions": 784,
+          "acceptedActionsSha256": "11e4d930d1f781d69ab0c2c49aac47c60e583a646f2d3dffd3fddc4375589bf5",
+          "finalStateHash": "sha256:0ad044b9252134dbed1977e6a9dc28f52ba76282d788a8d4d23a1a8d4ce76685",
+          "historicalReplayOk": true,
+          "id": "1270610d760280bcfdd274441ee9c6603644d9b5238753b073b96ba443c0ff72",
+          "initialStateHash": "sha256:f1ee3812f962eb7096439176bc1e77f395b78f63a24bee11d1680474ecdbdad1",
+          "match": 1600001,
+          "policies": {
+            "player:allied": "heuristic",
+            "player:axis": "heuristic:artifacts/ai-surrogacy/weights/hqWithArmy-half.json"
+          },
+          "rows": "artifacts/ai-surrogacy/rows/hqWithArmy-half__attack-temperate.jsonl",
+          "saveSha256": "201dabce72eac257e6a958d37140aae48aecaebefd260e70347763ac5f8f37e8",
+          "seeds": {
+            "allied": 324741637,
+            "axis": 324741638,
+            "deployment": 324741635,
+            "map": 324741633,
+            "oob": 324741634,
+            "rules": 324741636
+          },
+          "source": "artifacts/ai-surrogacy/hqWithArmy-half/attack-temperate",
+          "variant": "hqWithArmy-half",
+          "variantPlayer": "player:axis"
+        }
+      ],
+      "pair": 324741633,
+      "variant": "hqWithArmy-half"
+    },
+    {
+      "climate": "TEMPERATE_INLAND",
+      "direction": "half",
+      "early": {
+        "M0": 0.0,
+        "M1": 2.7857001563822905,
+        "M2": 1.8954347580350226,
+        "VP": 0.0,
+        "hqsInReach": -0.5,
+        "objectiveReachColumn": 0.0,
+        "objectiveVpAtRisk": 0.0,
+        "outOfTrace": 9.5,
+        "stacksExposedAllocated": -0.5,
+        "steps": 1.5
+      },
+      "family": "hqWithArmy",
+      "finalVp": 0.0,
+      "games": [
+        {
+          "acceptedActions": 954,
+          "acceptedActionsSha256": "ede80544c08866555850b78b0123026026d08ddd5046fa61700d390978652f93",
+          "finalStateHash": "sha256:9d1c3a27d183534f1fb3409934c9a69e75246d0cabe35d68dc1908879505b43e",
+          "historicalReplayOk": true,
+          "id": "07e961278557a619ef837294f99e6b080ff87459318ef4085a70ea52db3d1776",
+          "initialStateHash": "sha256:6700ea090ff2462869292621b9b206542ef02341f3e3fe487253fc46379a8a39",
+          "match": 1600002,
+          "policies": {
+            "player:allied": "heuristic:artifacts/ai-surrogacy/weights/hqWithArmy-half.json",
+            "player:axis": "heuristic"
+          },
+          "rows": "artifacts/ai-surrogacy/rows/hqWithArmy-half__attack-temperate.jsonl",
+          "saveSha256": "0562b8e6ff96f413fa3d4d093267ab5c17a4debf941e086f7ddcefe5f227dd69",
+          "seeds": {
+            "allied": 324741831,
+            "axis": 324741832,
+            "deployment": 324741829,
+            "map": 324741827,
+            "oob": 324741828,
+            "rules": 324741830
+          },
+          "source": "artifacts/ai-surrogacy/hqWithArmy-half/attack-temperate",
+          "variant": "hqWithArmy-half",
+          "variantPlayer": "player:allied"
+        },
+        {
+          "acceptedActions": 922,
+          "acceptedActionsSha256": "35c730fe3cab2ead786a23ca894823532dc1dda824571af16b97e7e649dd4106",
+          "finalStateHash": "sha256:97ac2ea30270002de5ce43c4bf1044e8b0add517b3f843f32e20e6678af3f1b6",
+          "historicalReplayOk": true,
+          "id": "6c39caf048c1b9f9d7c3caadec29e4216e951093a333897df628e9efc14e99a2",
+          "initialStateHash": "sha256:6700ea090ff2462869292621b9b206542ef02341f3e3fe487253fc46379a8a39",
+          "match": 1600003,
+          "policies": {
+            "player:allied": "heuristic",
+            "player:axis": "heuristic:artifacts/ai-surrogacy/weights/hqWithArmy-half.json"
+          },
+          "rows": "artifacts/ai-surrogacy/rows/hqWithArmy-half__attack-temperate.jsonl",
+          "saveSha256": "fbcbd719b3bd98b036212c1a1b425fed57743ea041931dbd3f9318b03f982c8d",
+          "seeds": {
+            "allied": 324741831,
+            "axis": 324741832,
+            "deployment": 324741829,
+            "map": 324741827,
+            "oob": 324741828,
+            "rules": 324741830
+          },
+          "source": "artifacts/ai-surrogacy/hqWithArmy-half/attack-temperate",
+          "variant": "hqWithArmy-half",
+          "variantPlayer": "player:axis"
+        }
+      ],
+      "pair": 324741827,
+      "variant": "hqWithArmy-half"
+    },
+    {
+      "climate": "TEMPERATE_INLAND",
+      "direction": "double",
+      "early": {
+        "M0": 0.0,
+        "M1": -0.31920305932375426,
+        "M2": -0.13581139483544646,
+        "VP": 0.0,
+        "hqsInReach": -0.5,
+        "objectiveReachColumn": 0.0,
+        "objectiveVpAtRisk": 0.0,
+        "outOfTrace": 0.5,
+        "stacksExposedAllocated": -0.5,
+        "steps": -1.0
+      },
+      "family": "hqWithArmy",
+      "finalVp": 2.0,
+      "games": [
+        {
+          "acceptedActions": 805,
+          "acceptedActionsSha256": "43cbd7909cdea028e92ead2b1b2548346a4b8acb72be6df72d59ca08f707321e",
+          "finalStateHash": "sha256:9987f2fa16ff61833ea1b77416d8b4fe1058eb6b68f8f44d613afec7d59a2c38",
+          "historicalReplayOk": true,
+          "id": "e5ba159571c54a526f33af5bdd7ec44c636e467fd3229133503ecc3cb9d872c6",
+          "initialStateHash": "sha256:f1ee3812f962eb7096439176bc1e77f395b78f63a24bee11d1680474ecdbdad1",
+          "match": 1600000,
+          "policies": {
+            "player:allied": "heuristic:artifacts/ai-surrogacy/weights/hqWithArmy-double.json",
+            "player:axis": "heuristic"
+          },
+          "rows": "artifacts/ai-surrogacy/rows/hqWithArmy-double__attack-temperate.jsonl",
+          "saveSha256": "98b927ff365e1095619fbbab5802b0564789cda9f014a6c6850f6f1131e65447",
+          "seeds": {
+            "allied": 324741637,
+            "axis": 324741638,
+            "deployment": 324741635,
+            "map": 324741633,
+            "oob": 324741634,
+            "rules": 324741636
+          },
+          "source": "artifacts/ai-surrogacy/hqWithArmy-double/attack-temperate",
+          "variant": "hqWithArmy-double",
+          "variantPlayer": "player:allied"
+        },
+        {
+          "acceptedActions": 871,
+          "acceptedActionsSha256": "7b160a14e86ca0af620b537ce4a8037e8bda3d860d126f04fb3b8e955ded0a52",
+          "finalStateHash": "sha256:0df8e2399f2e70de402504281c1b60b69e4132075d5e3cbc304fb51466309085",
+          "historicalReplayOk": true,
+          "id": "b4f43f92447f437bd1e4736320fde07f4c754ea2bf7eace3cec5bcb6ace11d4f",
+          "initialStateHash": "sha256:f1ee3812f962eb7096439176bc1e77f395b78f63a24bee11d1680474ecdbdad1",
+          "match": 1600001,
+          "policies": {
+            "player:allied": "heuristic",
+            "player:axis": "heuristic:artifacts/ai-surrogacy/weights/hqWithArmy-double.json"
+          },
+          "rows": "artifacts/ai-surrogacy/rows/hqWithArmy-double__attack-temperate.jsonl",
+          "saveSha256": "2127d51650e610e85a8ac274721fdae0a8f4f7e9cc5068189ca504cca8d72c7e",
+          "seeds": {
+            "allied": 324741637,
+            "axis": 324741638,
+            "deployment": 324741635,
+            "map": 324741633,
+            "oob": 324741634,
+            "rules": 324741636
+          },
+          "source": "artifacts/ai-surrogacy/hqWithArmy-double/attack-temperate",
+          "variant": "hqWithArmy-double",
+          "variantPlayer": "player:axis"
+        }
+      ],
+      "pair": 324741633,
+      "variant": "hqWithArmy-double"
+    },
+    {
+      "climate": "TEMPERATE_INLAND",
+      "direction": "double",
+      "early": {
+        "M0": 0.0,
+        "M1": 1.9130353485728393,
+        "M2": 0.30530548463854723,
+        "VP": 0.0,
+        "hqsInReach": 0.5,
+        "objectiveReachColumn": 2.0,
+        "objectiveVpAtRisk": -3.0,
+        "outOfTrace": 8.5,
+        "stacksExposedAllocated": 0.0,
+        "steps": 0.0
+      },
+      "family": "hqWithArmy",
+      "finalVp": 0.0,
+      "games": [
+        {
+          "acceptedActions": 872,
+          "acceptedActionsSha256": "e8799561fb11ec99b27edd4ca114ce05378e9d6e482f484b2256ee0d265f29d7",
+          "finalStateHash": "sha256:c7b889bbc359238eb0b0c1dfd7c5023762a5ab1db0b65668a25f8b138f2a4a2d",
+          "historicalReplayOk": true,
+          "id": "700d9286c0af794510ceac85e1ab9ea72d94aaaa4fad7f0d089fff3a2e7df157",
+          "initialStateHash": "sha256:6700ea090ff2462869292621b9b206542ef02341f3e3fe487253fc46379a8a39",
+          "match": 1600002,
+          "policies": {
+            "player:allied": "heuristic:artifacts/ai-surrogacy/weights/hqWithArmy-double.json",
+            "player:axis": "heuristic"
+          },
+          "rows": "artifacts/ai-surrogacy/rows/hqWithArmy-double__attack-temperate.jsonl",
+          "saveSha256": "5aca748169a4e26076b3091e290508ace4f8ea0e1e5ae0de4a2845cde5e3605c",
+          "seeds": {
+            "allied": 324741831,
+            "axis": 324741832,
+            "deployment": 324741829,
+            "map": 324741827,
+            "oob": 324741828,
+            "rules": 324741830
+          },
+          "source": "artifacts/ai-surrogacy/hqWithArmy-double/attack-temperate",
+          "variant": "hqWithArmy-double",
+          "variantPlayer": "player:allied"
+        },
+        {
+          "acceptedActions": 912,
+          "acceptedActionsSha256": "0e607aba61b06f2f55a1bb753ed410f554c9bd04b66bedc6b7ab00a8fca18404",
+          "finalStateHash": "sha256:dba74da1a07c605568e1c67999da9a6da1744d2459e0f8e0bef7d789db6d2d1d",
+          "historicalReplayOk": true,
+          "id": "59b7344342dcb75386266db913f23a58c0fd667601413f79fe540425c4365c05",
+          "initialStateHash": "sha256:6700ea090ff2462869292621b9b206542ef02341f3e3fe487253fc46379a8a39",
+          "match": 1600003,
+          "policies": {
+            "player:allied": "heuristic",
+            "player:axis": "heuristic:artifacts/ai-surrogacy/weights/hqWithArmy-double.json"
+          },
+          "rows": "artifacts/ai-surrogacy/rows/hqWithArmy-double__attack-temperate.jsonl",
+          "saveSha256": "542fcae1068affe4ad8ab941874e7376b9fb99ffd51280bcc017e39643780384",
+          "seeds": {
+            "allied": 324741831,
+            "axis": 324741832,
+            "deployment": 324741829,
+            "map": 324741827,
+            "oob": 324741828,
+            "rules": 324741830
+          },
+          "source": "artifacts/ai-surrogacy/hqWithArmy-double/attack-temperate",
+          "variant": "hqWithArmy-double",
+          "variantPlayer": "player:axis"
+        }
+      ],
+      "pair": 324741827,
+      "variant": "hqWithArmy-double"
+    },
+    {
+      "climate": "EASTERN_EUROPE",
+      "direction": "half",
+      "early": {
+        "M0": 0.0,
+        "M1": 4.531029772001194,
+        "M2": 5.062076947499143,
+        "VP": 0.0,
+        "hqsInReach": -0.5,
+        "objectiveReachColumn": 1.5,
+        "objectiveVpAtRisk": 2.0,
+        "outOfTrace": 11.5,
+        "stacksExposedAllocated": 1.5,
+        "steps": 4.5
+      },
+      "family": "crowding",
+      "finalVp": 4.0,
+      "games": [
+        {
+          "acceptedActions": 812,
+          "acceptedActionsSha256": "1ca379c3108d4337d085ee482d0298de760fc89f2b3d7d08ec19fc9cd8a53678",
+          "finalStateHash": "sha256:d1068b58b5dc1d52b2478804cdc7f78127b773e06e45d50f74922dc7810ddc53",
+          "historicalReplayOk": true,
+          "id": "f69f7c57b6be6617004100f56e307137cb040bfeea418db777756fc1ca01d571",
+          "initialStateHash": "sha256:3a07f7a323cc62fa9e2cba6244d4c422c64c4103c124c6edff63a4ccb67f1ff6",
+          "match": 1600100,
+          "policies": {
+            "player:allied": "heuristic:artifacts/ai-surrogacy/weights/crowding-half.json",
+            "player:axis": "heuristic"
+          },
+          "rows": "artifacts/ai-surrogacy/rows/crowding-half__attack-eastern.jsonl",
+          "saveSha256": "5cd16a737050876f4f8c403fdf6c1907978a398946d48e9aa0b52b9d611b09e4",
+          "seeds": {
+            "allied": 324751337,
+            "axis": 324751338,
+            "deployment": 324751335,
+            "map": 324751333,
+            "oob": 324751334,
+            "rules": 324751336
+          },
+          "source": "artifacts/ai-surrogacy/crowding-half/attack-eastern",
+          "variant": "crowding-half",
+          "variantPlayer": "player:allied"
+        },
+        {
+          "acceptedActions": 923,
+          "acceptedActionsSha256": "285012cc5e5ad8806d0eaee2ddeb1746a13106ba2d6fa532d8b5152796f2824d",
+          "finalStateHash": "sha256:7135411d55a0949fe66bfc20a4bf2b330e050152259d0eb4b68ccee28c838fdf",
+          "historicalReplayOk": true,
+          "id": "9051ae5bcce02af0f6f932a50cfcfb819e6ab866b5379b0e7d8a7bfbb72d2f19",
+          "initialStateHash": "sha256:3a07f7a323cc62fa9e2cba6244d4c422c64c4103c124c6edff63a4ccb67f1ff6",
+          "match": 1600101,
+          "policies": {
+            "player:allied": "heuristic",
+            "player:axis": "heuristic:artifacts/ai-surrogacy/weights/crowding-half.json"
+          },
+          "rows": "artifacts/ai-surrogacy/rows/crowding-half__attack-eastern.jsonl",
+          "saveSha256": "ac3e7a1607b3af470d4257ab7a56fccc04886d6e7c86fda8335d9f3307d3c55e",
+          "seeds": {
+            "allied": 324751337,
+            "axis": 324751338,
+            "deployment": 324751335,
+            "map": 324751333,
+            "oob": 324751334,
+            "rules": 324751336
+          },
+          "source": "artifacts/ai-surrogacy/crowding-half/attack-eastern",
+          "variant": "crowding-half",
+          "variantPlayer": "player:axis"
+        }
+      ],
+      "pair": 324751333,
+      "variant": "crowding-half"
+    },
+    {
+      "climate": "EASTERN_EUROPE",
+      "direction": "half",
+      "early": {
+        "M0": 0.0,
+        "M1": -1.0885320830175884,
+        "M2": 0.5159071032116525,
+        "VP": 0.0,
+        "hqsInReach": 0.0,
+        "objectiveReachColumn": -0.5,
+        "objectiveVpAtRisk": 1.0,
+        "outOfTrace": -1.0,
+        "stacksExposedAllocated": 0.5,
+        "steps": -2.0
+      },
+      "family": "crowding",
+      "finalVp": 0.0,
+      "games": [
+        {
+          "acceptedActions": 919,
+          "acceptedActionsSha256": "099fab1262796ddec2f003d2e48189ea70f9e9423384e70ebc74ccba5780079f",
+          "finalStateHash": "sha256:196b256dbfa326d64a2ed6f62e47485ad8f6d2a219b82ecbb581bc4923036737",
+          "historicalReplayOk": true,
+          "id": "db5d8b5c4487697f76e05e764e42705464bee4eeba72259b7fa67307f61b0622",
+          "initialStateHash": "sha256:37e747d2c1b8ae0a9acb03798a44a7236e80623e84e123e77fb501316b4db67c",
+          "match": 1600102,
+          "policies": {
+            "player:allied": "heuristic:artifacts/ai-surrogacy/weights/crowding-half.json",
+            "player:axis": "heuristic"
+          },
+          "rows": "artifacts/ai-surrogacy/rows/crowding-half__attack-eastern.jsonl",
+          "saveSha256": "ffa51522101742e5305a4fcbe9e1d36da23093b5e7f70bc06c21e6b7e0e31bb7",
+          "seeds": {
+            "allied": 324751531,
+            "axis": 324751532,
+            "deployment": 324751529,
+            "map": 324751527,
+            "oob": 324751528,
+            "rules": 324751530
+          },
+          "source": "artifacts/ai-surrogacy/crowding-half/attack-eastern",
+          "variant": "crowding-half",
+          "variantPlayer": "player:allied"
+        },
+        {
+          "acceptedActions": 753,
+          "acceptedActionsSha256": "bad5bc331c9f33d362c486a2e976bdc6f2d2be9624a842d576e0d6cdcab51b1e",
+          "finalStateHash": "sha256:f0e0ac9ba13a507e61f3720f83d88fcf4db26a5da41a87976d1efaaad41ff8db",
+          "historicalReplayOk": true,
+          "id": "2fd8692b58c46a33071c7aa2682541681b3a25ddfe6a1c60f7104fe87b7cda60",
+          "initialStateHash": "sha256:37e747d2c1b8ae0a9acb03798a44a7236e80623e84e123e77fb501316b4db67c",
+          "match": 1600103,
+          "policies": {
+            "player:allied": "heuristic",
+            "player:axis": "heuristic:artifacts/ai-surrogacy/weights/crowding-half.json"
+          },
+          "rows": "artifacts/ai-surrogacy/rows/crowding-half__attack-eastern.jsonl",
+          "saveSha256": "22406f6aff7b9d5e68c98c5298b24fe637b3813a27a2dae2b0ae5e3e75d07c23",
+          "seeds": {
+            "allied": 324751531,
+            "axis": 324751532,
+            "deployment": 324751529,
+            "map": 324751527,
+            "oob": 324751528,
+            "rules": 324751530
+          },
+          "source": "artifacts/ai-surrogacy/crowding-half/attack-eastern",
+          "variant": "crowding-half",
+          "variantPlayer": "player:axis"
+        }
+      ],
+      "pair": 324751527,
+      "variant": "crowding-half"
+    },
+    {
+      "climate": "EASTERN_EUROPE",
+      "direction": "double",
+      "early": {
+        "M0": 0.0,
+        "M1": 3.5826163010068335,
+        "M2": 3.235969456943634,
+        "VP": 0.0,
+        "hqsInReach": -0.5,
+        "objectiveReachColumn": 0.0,
+        "objectiveVpAtRisk": 1.0,
+        "outOfTrace": 14.0,
+        "stacksExposedAllocated": 2.0,
+        "steps": 1.0
+      },
+      "family": "crowding",
+      "finalVp": 2.0,
+      "games": [
+        {
+          "acceptedActions": 867,
+          "acceptedActionsSha256": "8e8d2a542d9dadebe129c8c816482c61640b7c7d7f55e4accb65c15b24a39089",
+          "finalStateHash": "sha256:2909fa79cec34513b56e25439aacb456908af56e8766fd10ffee0dbf4a71e949",
+          "historicalReplayOk": true,
+          "id": "c85af7746aa44d250308a74969080f5d1f0672d10b13987d0d8d80bf95a4dfbf",
+          "initialStateHash": "sha256:3a07f7a323cc62fa9e2cba6244d4c422c64c4103c124c6edff63a4ccb67f1ff6",
+          "match": 1600100,
+          "policies": {
+            "player:allied": "heuristic:artifacts/ai-surrogacy/weights/crowding-double.json",
+            "player:axis": "heuristic"
+          },
+          "rows": "artifacts/ai-surrogacy/rows/crowding-double__attack-eastern.jsonl",
+          "saveSha256": "5de07e629d84d543b385f34e27f161e88ec13b5c614f21b9ea548a643c145834",
+          "seeds": {
+            "allied": 324751337,
+            "axis": 324751338,
+            "deployment": 324751335,
+            "map": 324751333,
+            "oob": 324751334,
+            "rules": 324751336
+          },
+          "source": "artifacts/ai-surrogacy/crowding-double/attack-eastern",
+          "variant": "crowding-double",
+          "variantPlayer": "player:allied"
+        },
+        {
+          "acceptedActions": 935,
+          "acceptedActionsSha256": "8c01a848799550856fde9d5135608dda6dadd993ceb9b959d5f1f12fe769f64d",
+          "finalStateHash": "sha256:2f073e579c9b004162f10408605729dc401eda286d20a67a7dd2a0a594821e51",
+          "historicalReplayOk": true,
+          "id": "8801b3b70b6a9fd49cd453ae6b9529155801ccac67ad6a12d8f8502f01bdbaa9",
+          "initialStateHash": "sha256:3a07f7a323cc62fa9e2cba6244d4c422c64c4103c124c6edff63a4ccb67f1ff6",
+          "match": 1600101,
+          "policies": {
+            "player:allied": "heuristic",
+            "player:axis": "heuristic:artifacts/ai-surrogacy/weights/crowding-double.json"
+          },
+          "rows": "artifacts/ai-surrogacy/rows/crowding-double__attack-eastern.jsonl",
+          "saveSha256": "9ee248f6109e54eacd7e604d88401928a9778ff6dd077d70769ddd2b8c0f9649",
+          "seeds": {
+            "allied": 324751337,
+            "axis": 324751338,
+            "deployment": 324751335,
+            "map": 324751333,
+            "oob": 324751334,
+            "rules": 324751336
+          },
+          "source": "artifacts/ai-surrogacy/crowding-double/attack-eastern",
+          "variant": "crowding-double",
+          "variantPlayer": "player:axis"
+        }
+      ],
+      "pair": 324751333,
+      "variant": "crowding-double"
+    },
+    {
+      "climate": "EASTERN_EUROPE",
+      "direction": "double",
+      "early": {
+        "M0": 0.0,
+        "M1": 1.7545253225958053,
+        "M2": 1.6503224210044978,
+        "VP": 0.0,
+        "hqsInReach": -0.5,
+        "objectiveReachColumn": 0.5,
+        "objectiveVpAtRisk": 0.5,
+        "outOfTrace": 3.0,
+        "stacksExposedAllocated": 1.0,
+        "steps": 2.5
+      },
+      "family": "crowding",
+      "finalVp": 0.0,
+      "games": [
+        {
+          "acceptedActions": 878,
+          "acceptedActionsSha256": "ed36b26a1dffcce8ed9f11b1f0696a1b69d4630dadcdc921de22ef6897e228ef",
+          "finalStateHash": "sha256:5f85b5fba372381ad719ad3357b7e4e7a53a60c9f4b4b9adecf98d282707177d",
+          "historicalReplayOk": true,
+          "id": "52b0da933e4de726b147c59b6d57b4a510caab1b087c4a545a48cf81d4c98f57",
+          "initialStateHash": "sha256:37e747d2c1b8ae0a9acb03798a44a7236e80623e84e123e77fb501316b4db67c",
+          "match": 1600102,
+          "policies": {
+            "player:allied": "heuristic:artifacts/ai-surrogacy/weights/crowding-double.json",
+            "player:axis": "heuristic"
+          },
+          "rows": "artifacts/ai-surrogacy/rows/crowding-double__attack-eastern.jsonl",
+          "saveSha256": "ec2ec5307598774fdb974fc6771b78513db10da7bd5a17790230c64e464e8ffc",
+          "seeds": {
+            "allied": 324751531,
+            "axis": 324751532,
+            "deployment": 324751529,
+            "map": 324751527,
+            "oob": 324751528,
+            "rules": 324751530
+          },
+          "source": "artifacts/ai-surrogacy/crowding-double/attack-eastern",
+          "variant": "crowding-double",
+          "variantPlayer": "player:allied"
+        },
+        {
+          "acceptedActions": 844,
+          "acceptedActionsSha256": "b4e1772a3dd8a327e668b1c2fa2022c896ed81086cd4c59a40e6df79b3054650",
+          "finalStateHash": "sha256:8d90b9c0b35ddb0443e96f7a9c384990c0df4bd6948873ad010cbf072be82afb",
+          "historicalReplayOk": true,
+          "id": "6c77a6603453dd408c142a9dc4185a88bfbcc994f71bb05ad1c76a2cf6a244df",
+          "initialStateHash": "sha256:37e747d2c1b8ae0a9acb03798a44a7236e80623e84e123e77fb501316b4db67c",
+          "match": 1600103,
+          "policies": {
+            "player:allied": "heuristic",
+            "player:axis": "heuristic:artifacts/ai-surrogacy/weights/crowding-double.json"
+          },
+          "rows": "artifacts/ai-surrogacy/rows/crowding-double__attack-eastern.jsonl",
+          "saveSha256": "f172fcb7d262badb930ebf476b05a31a01071c4a93b5b7f33ad1c02fecfea552",
+          "seeds": {
+            "allied": 324751531,
+            "axis": 324751532,
+            "deployment": 324751529,
+            "map": 324751527,
+            "oob": 324751528,
+            "rules": 324751530
+          },
+          "source": "artifacts/ai-surrogacy/crowding-double/attack-eastern",
+          "variant": "crowding-double",
+          "variantPlayer": "player:axis"
+        }
+      ],
+      "pair": 324751527,
+      "variant": "crowding-double"
+    },
+    {
+      "climate": "EASTERN_EUROPE",
+      "direction": "half",
+      "early": {
+        "M0": -1.1926631212357208,
+        "M1": -1.1480809962958824,
+        "M2": -1.736644134338944,
+        "VP": -2.0,
+        "hqsInReach": 0.0,
+        "objectiveReachColumn": 2.0,
+        "objectiveVpAtRisk": 1.5,
+        "outOfTrace": -1.5,
+        "stacksExposedAllocated": -1.5,
+        "steps": 0.0
+      },
+      "family": "contactBad",
+      "finalVp": 4.0,
+      "games": [
+        {
+          "acceptedActions": 810,
+          "acceptedActionsSha256": "73e9b49b7d29b7abb1f6af595317f80a48845be3052bc83819020bdbcb676fc2",
+          "finalStateHash": "sha256:3a545dc4935c3f528aa6acefbe2641c15c94e208224ec6fb0e802f4c74764074",
+          "historicalReplayOk": true,
+          "id": "b50f0a7b6110723956773bf35d90ed258bec5fa9d77bd7d325eb8dc335ae1e81",
+          "initialStateHash": "sha256:3a07f7a323cc62fa9e2cba6244d4c422c64c4103c124c6edff63a4ccb67f1ff6",
+          "match": 1600100,
+          "policies": {
+            "player:allied": "heuristic:artifacts/ai-surrogacy/weights/contactBad-half.json",
+            "player:axis": "heuristic"
+          },
+          "rows": "artifacts/ai-surrogacy/rows/contactBad-half__attack-eastern.jsonl",
+          "saveSha256": "2b058264f64c75a92157211e421f48d632d19d6ea594bbf233e86c92d0b971f7",
+          "seeds": {
+            "allied": 324751337,
+            "axis": 324751338,
+            "deployment": 324751335,
+            "map": 324751333,
+            "oob": 324751334,
+            "rules": 324751336
+          },
+          "source": "artifacts/ai-surrogacy/contactBad-half/attack-eastern",
+          "variant": "contactBad-half",
+          "variantPlayer": "player:allied"
+        },
+        {
+          "acceptedActions": 772,
+          "acceptedActionsSha256": "a343ffdd3c6292b4396aff13533ac7980e7eb7aadfb518b3896989efef75e1a6",
+          "finalStateHash": "sha256:23dfeaa087256a20e03b758786b4dc71708536aeacf069011e1baf8d6b310b8f",
+          "historicalReplayOk": true,
+          "id": "53123a450a66751ab614e2a2e3c7e84d7ea52b9efee60179d6763cfbe271862e",
+          "initialStateHash": "sha256:3a07f7a323cc62fa9e2cba6244d4c422c64c4103c124c6edff63a4ccb67f1ff6",
+          "match": 1600101,
+          "policies": {
+            "player:allied": "heuristic",
+            "player:axis": "heuristic:artifacts/ai-surrogacy/weights/contactBad-half.json"
+          },
+          "rows": "artifacts/ai-surrogacy/rows/contactBad-half__attack-eastern.jsonl",
+          "saveSha256": "b472c936c5040697328f8f052e49b14cb0b6b2134db8d3ac9efc80233d242050",
+          "seeds": {
+            "allied": 324751337,
+            "axis": 324751338,
+            "deployment": 324751335,
+            "map": 324751333,
+            "oob": 324751334,
+            "rules": 324751336
+          },
+          "source": "artifacts/ai-surrogacy/contactBad-half/attack-eastern",
+          "variant": "contactBad-half",
+          "variantPlayer": "player:axis"
+        }
+      ],
+      "pair": 324751333,
+      "variant": "contactBad-half"
+    },
+    {
+      "climate": "EASTERN_EUROPE",
+      "direction": "half",
+      "early": {
+        "M0": 0.0,
+        "M1": 0.0941400771387142,
+        "M2": 0.7348886705858755,
+        "VP": 0.0,
+        "hqsInReach": 0.0,
+        "objectiveReachColumn": -0.5,
+        "objectiveVpAtRisk": 0.5,
+        "outOfTrace": -1.5,
+        "stacksExposedAllocated": -0.5,
+        "steps": 1.0
+      },
+      "family": "contactBad",
+      "finalVp": 2.0,
+      "games": [
+        {
+          "acceptedActions": 842,
+          "acceptedActionsSha256": "a3d3ed6acb52cc547495010d3428e08bd65b8d92f8f4dc7a50ae40ecb1ffc4e3",
+          "finalStateHash": "sha256:c7737f8e8ec3b87c28d97bcf6d899e3c33bbb6294b2d973456814a2103d439c5",
+          "historicalReplayOk": true,
+          "id": "c12c4fa34d5d3c74bec4facfe8f2f5d6b9f1abc7501e92c89b274b875f669690",
+          "initialStateHash": "sha256:37e747d2c1b8ae0a9acb03798a44a7236e80623e84e123e77fb501316b4db67c",
+          "match": 1600102,
+          "policies": {
+            "player:allied": "heuristic:artifacts/ai-surrogacy/weights/contactBad-half.json",
+            "player:axis": "heuristic"
+          },
+          "rows": "artifacts/ai-surrogacy/rows/contactBad-half__attack-eastern.jsonl",
+          "saveSha256": "d532fae7f024e2fec5fe74bb62d30a09d76be273a245fc71a76b96c4dff5a685",
+          "seeds": {
+            "allied": 324751531,
+            "axis": 324751532,
+            "deployment": 324751529,
+            "map": 324751527,
+            "oob": 324751528,
+            "rules": 324751530
+          },
+          "source": "artifacts/ai-surrogacy/contactBad-half/attack-eastern",
+          "variant": "contactBad-half",
+          "variantPlayer": "player:allied"
+        },
+        {
+          "acceptedActions": 746,
+          "acceptedActionsSha256": "340a1f6ee00b8509314bef5883ef5cd02448ab367a9ed470985d0f39d7003e3b",
+          "finalStateHash": "sha256:b33b7c80ec5e5a8c398c99b257ed83aecb2e7cdf9e0f3c8515abfe60f18140bc",
+          "historicalReplayOk": true,
+          "id": "7a6fdff4a3f15f13cfc7f4f0be8237f0952e004328cde75ef9c100a5c67b8463",
+          "initialStateHash": "sha256:37e747d2c1b8ae0a9acb03798a44a7236e80623e84e123e77fb501316b4db67c",
+          "match": 1600103,
+          "policies": {
+            "player:allied": "heuristic",
+            "player:axis": "heuristic:artifacts/ai-surrogacy/weights/contactBad-half.json"
+          },
+          "rows": "artifacts/ai-surrogacy/rows/contactBad-half__attack-eastern.jsonl",
+          "saveSha256": "cd95f5a7f2c01e86c23e894f7d8f10d971ef470f86c88fe6bca8d205fad9fc05",
+          "seeds": {
+            "allied": 324751531,
+            "axis": 324751532,
+            "deployment": 324751529,
+            "map": 324751527,
+            "oob": 324751528,
+            "rules": 324751530
+          },
+          "source": "artifacts/ai-surrogacy/contactBad-half/attack-eastern",
+          "variant": "contactBad-half",
+          "variantPlayer": "player:axis"
+        }
+      ],
+      "pair": 324751527,
+      "variant": "contactBad-half"
+    },
+    {
+      "climate": "EASTERN_EUROPE",
+      "direction": "double",
+      "early": {
+        "M0": 0.0,
+        "M1": -0.9851962989019711,
+        "M2": -1.7937697980228284,
+        "VP": 0.0,
+        "hqsInReach": 1.5,
+        "objectiveReachColumn": -1.0,
+        "objectiveVpAtRisk": -1.0,
+        "outOfTrace": -1.5,
+        "stacksExposedAllocated": 3.5,
+        "steps": -1.5
+      },
+      "family": "contactBad",
+      "finalVp": -4.0,
+      "games": [
+        {
+          "acceptedActions": 880,
+          "acceptedActionsSha256": "70b18f84b8cf6cb3f57ae2e0eeaafaacd92506da2dd215ae694b418ce03bf5b2",
+          "finalStateHash": "sha256:1539c8044598acf86596bb3fbf79314d24aabc01d51c56e275e3a59f95ca2c42",
+          "historicalReplayOk": true,
+          "id": "c23f8d23b2dd5768ed9491d15dc55cf8fd6b89bb7d73523fa7324d67690b50aa",
+          "initialStateHash": "sha256:3a07f7a323cc62fa9e2cba6244d4c422c64c4103c124c6edff63a4ccb67f1ff6",
+          "match": 1600100,
+          "policies": {
+            "player:allied": "heuristic:artifacts/ai-surrogacy/weights/contactBad-double.json",
+            "player:axis": "heuristic"
+          },
+          "rows": "artifacts/ai-surrogacy/rows/contactBad-double__attack-eastern.jsonl",
+          "saveSha256": "934a2f93fad257c36090a80d2c0d9fb9bd2076ac367a0d9901de4d5e45a6ed26",
+          "seeds": {
+            "allied": 324751337,
+            "axis": 324751338,
+            "deployment": 324751335,
+            "map": 324751333,
+            "oob": 324751334,
+            "rules": 324751336
+          },
+          "source": "artifacts/ai-surrogacy/contactBad-double/attack-eastern",
+          "variant": "contactBad-double",
+          "variantPlayer": "player:allied"
+        },
+        {
+          "acceptedActions": 823,
+          "acceptedActionsSha256": "90322e9cc102848c99b1bb7d3487eec6bd332da3e292dd319eb553fe23b19efa",
+          "finalStateHash": "sha256:82bd464d0dfedd446c0785588f3d44c612e6e1fb9d4b13359904e55c8157912f",
+          "historicalReplayOk": true,
+          "id": "56228b42312f49f8a5604b655882910816b8dd2bd2a1893962b609d510666efa",
+          "initialStateHash": "sha256:3a07f7a323cc62fa9e2cba6244d4c422c64c4103c124c6edff63a4ccb67f1ff6",
+          "match": 1600101,
+          "policies": {
+            "player:allied": "heuristic",
+            "player:axis": "heuristic:artifacts/ai-surrogacy/weights/contactBad-double.json"
+          },
+          "rows": "artifacts/ai-surrogacy/rows/contactBad-double__attack-eastern.jsonl",
+          "saveSha256": "24e7530ad310cfc3dc8afd42640af291da61e367ce5c893f7eb81045d2ea34b7",
+          "seeds": {
+            "allied": 324751337,
+            "axis": 324751338,
+            "deployment": 324751335,
+            "map": 324751333,
+            "oob": 324751334,
+            "rules": 324751336
+          },
+          "source": "artifacts/ai-surrogacy/contactBad-double/attack-eastern",
+          "variant": "contactBad-double",
+          "variantPlayer": "player:axis"
+        }
+      ],
+      "pair": 324751333,
+      "variant": "contactBad-double"
+    },
+    {
+      "climate": "EASTERN_EUROPE",
+      "direction": "double",
+      "early": {
+        "M0": 0.0,
+        "M1": 1.4721050911796623,
+        "M2": 0.8728233099227201,
+        "VP": 0.0,
+        "hqsInReach": -0.5,
+        "objectiveReachColumn": -0.5,
+        "objectiveVpAtRisk": 0.0,
+        "outOfTrace": 7.5,
+        "stacksExposedAllocated": -0.5,
+        "steps": -0.5
+      },
+      "family": "contactBad",
+      "finalVp": -4.0,
+      "games": [
+        {
+          "acceptedActions": 842,
+          "acceptedActionsSha256": "b45855376c973c03a14a0b6b74b9dae03d8b0e34c36be3cdf3b755ce0d81bf12",
+          "finalStateHash": "sha256:17ba956bef46b555ce392a52a13ca2805a03cc593af024189f39b6ddb1138f19",
+          "historicalReplayOk": true,
+          "id": "926b5fc785696ea8ea16241be579573ae77197496aa86697b321847511d11262",
+          "initialStateHash": "sha256:37e747d2c1b8ae0a9acb03798a44a7236e80623e84e123e77fb501316b4db67c",
+          "match": 1600102,
+          "policies": {
+            "player:allied": "heuristic:artifacts/ai-surrogacy/weights/contactBad-double.json",
+            "player:axis": "heuristic"
+          },
+          "rows": "artifacts/ai-surrogacy/rows/contactBad-double__attack-eastern.jsonl",
+          "saveSha256": "cdb0bfe0940ce0b7b279dddac36529ee08921672bbd88d164ec2f0430eece829",
+          "seeds": {
+            "allied": 324751531,
+            "axis": 324751532,
+            "deployment": 324751529,
+            "map": 324751527,
+            "oob": 324751528,
+            "rules": 324751530
+          },
+          "source": "artifacts/ai-surrogacy/contactBad-double/attack-eastern",
+          "variant": "contactBad-double",
+          "variantPlayer": "player:allied"
+        },
+        {
+          "acceptedActions": 742,
+          "acceptedActionsSha256": "65ae983fc29850f24e8ab2e34d8ccf030292fc742aced78e927ef808e56453d8",
+          "finalStateHash": "sha256:8a7eb531f52e1340d88a172aebbe851b9fd5dc62f9b1a13e623ee6971b8c7df8",
+          "historicalReplayOk": true,
+          "id": "d7591cdc8bc56834b2c1885c8f593359b1048798689b77ad4d753bb48d38c53f",
+          "initialStateHash": "sha256:37e747d2c1b8ae0a9acb03798a44a7236e80623e84e123e77fb501316b4db67c",
+          "match": 1600103,
+          "policies": {
+            "player:allied": "heuristic",
+            "player:axis": "heuristic:artifacts/ai-surrogacy/weights/contactBad-double.json"
+          },
+          "rows": "artifacts/ai-surrogacy/rows/contactBad-double__attack-eastern.jsonl",
+          "saveSha256": "b997e715d818490c938f6df94df5241db38100a2bf9b56d6e7a7b5ad18be2800",
+          "seeds": {
+            "allied": 324751531,
+            "axis": 324751532,
+            "deployment": 324751529,
+            "map": 324751527,
+            "oob": 324751528,
+            "rules": 324751530
+          },
+          "source": "artifacts/ai-surrogacy/contactBad-double/attack-eastern",
+          "variant": "contactBad-double",
+          "variantPlayer": "player:axis"
+        }
+      ],
+      "pair": 324751527,
+      "variant": "contactBad-double"
+    },
+    {
+      "climate": "EASTERN_EUROPE",
+      "direction": "half",
+      "early": {
+        "M0": 0.0,
+        "M1": 0.0,
+        "M2": 0.0,
+        "VP": 0.0,
+        "hqsInReach": 0.0,
+        "objectiveReachColumn": 0.0,
+        "objectiveVpAtRisk": 0.0,
+        "outOfTrace": 0.0,
+        "stacksExposedAllocated": 0.0,
+        "steps": 0.0
+      },
+      "family": "outOfSupply",
+      "finalVp": -9.0,
+      "games": [
+        {
+          "acceptedActions": 901,
+          "acceptedActionsSha256": "a7676ebb1ee1c9faabff91e6a0654618858049e69d5f9a9e6aa1bab8e06afba6",
+          "finalStateHash": "sha256:ada0d1402f428b75e9316b8d8951aeb0b77612d191869e1aa51abdb925ca9a95",
+          "historicalReplayOk": true,
+          "id": "80a4bf47f65363ae6e32101937b1229ddf193051c178f51d8e72b888905d5b2e",
+          "initialStateHash": "sha256:3a07f7a323cc62fa9e2cba6244d4c422c64c4103c124c6edff63a4ccb67f1ff6",
+          "match": 1600100,
+          "policies": {
+            "player:allied": "heuristic:artifacts/ai-surrogacy/weights/outOfSupply-half.json",
+            "player:axis": "heuristic"
+          },
+          "rows": "artifacts/ai-surrogacy/rows/outOfSupply-half__attack-eastern.jsonl",
+          "saveSha256": "7eda1ab56c6ac72b39c645a5e8a2235c1bf20c68b2aa5906b9cd09e9425bd633",
+          "seeds": {
+            "allied": 324751337,
+            "axis": 324751338,
+            "deployment": 324751335,
+            "map": 324751333,
+            "oob": 324751334,
+            "rules": 324751336
+          },
+          "source": "artifacts/ai-surrogacy/outOfSupply-half/attack-eastern",
+          "variant": "outOfSupply-half",
+          "variantPlayer": "player:allied"
+        },
+        {
+          "acceptedActions": 917,
+          "acceptedActionsSha256": "b1af45c07c3d690729d529f11ba8827c7d26e87d1f1d1aab76e68a6226187d91",
+          "finalStateHash": "sha256:ae8ed23f6ca063dffb957b31a9b58b9dcbad699ea560f47f3a8489e0c6645ddd",
+          "historicalReplayOk": true,
+          "id": "55a917aa205f4ac35ecb248a95ea414eea5bbab3df00f25003db868884dbff32",
+          "initialStateHash": "sha256:3a07f7a323cc62fa9e2cba6244d4c422c64c4103c124c6edff63a4ccb67f1ff6",
+          "match": 1600101,
+          "policies": {
+            "player:allied": "heuristic",
+            "player:axis": "heuristic:artifacts/ai-surrogacy/weights/outOfSupply-half.json"
+          },
+          "rows": "artifacts/ai-surrogacy/rows/outOfSupply-half__attack-eastern.jsonl",
+          "saveSha256": "d28a1a8c775dce2379f77b3b92c169745f8311d3000f62b9a7be8f9065fadd29",
+          "seeds": {
+            "allied": 324751337,
+            "axis": 324751338,
+            "deployment": 324751335,
+            "map": 324751333,
+            "oob": 324751334,
+            "rules": 324751336
+          },
+          "source": "artifacts/ai-surrogacy/outOfSupply-half/attack-eastern",
+          "variant": "outOfSupply-half",
+          "variantPlayer": "player:axis"
+        }
+      ],
+      "pair": 324751333,
+      "variant": "outOfSupply-half"
+    },
+    {
+      "climate": "EASTERN_EUROPE",
+      "direction": "half",
+      "early": {
+        "M0": 0.0,
+        "M1": 0.656797532601314,
+        "M2": 0.7368780767924032,
+        "VP": 0.0,
+        "hqsInReach": 0.0,
+        "objectiveReachColumn": 0.0,
+        "objectiveVpAtRisk": 0.5,
+        "outOfTrace": 1.0,
+        "stacksExposedAllocated": 0.0,
+        "steps": 1.0
+      },
+      "family": "outOfSupply",
+      "finalVp": 0.0,
+      "games": [
+        {
+          "acceptedActions": 818,
+          "acceptedActionsSha256": "df4c7f05686bf762422906fa8e224ee772dc807f9b6ece517f4a803c7987d266",
+          "finalStateHash": "sha256:4eaa2adb448c5cdcf8304694c4ec729eef7ec9c8a3a54d3bf84c7244e0b3a15b",
+          "historicalReplayOk": true,
+          "id": "ae4ea9595c3a791eee7429181a3cf4a1a513a3b7eeec020384df9f39fe958adc",
+          "initialStateHash": "sha256:37e747d2c1b8ae0a9acb03798a44a7236e80623e84e123e77fb501316b4db67c",
+          "match": 1600102,
+          "policies": {
+            "player:allied": "heuristic:artifacts/ai-surrogacy/weights/outOfSupply-half.json",
+            "player:axis": "heuristic"
+          },
+          "rows": "artifacts/ai-surrogacy/rows/outOfSupply-half__attack-eastern.jsonl",
+          "saveSha256": "38fe400e5d88cdaa42353e0f31ad7d9782f018f1ddf6b227b0a9e1d2d6c201d1",
+          "seeds": {
+            "allied": 324751531,
+            "axis": 324751532,
+            "deployment": 324751529,
+            "map": 324751527,
+            "oob": 324751528,
+            "rules": 324751530
+          },
+          "source": "artifacts/ai-surrogacy/outOfSupply-half/attack-eastern",
+          "variant": "outOfSupply-half",
+          "variantPlayer": "player:allied"
+        },
+        {
+          "acceptedActions": 821,
+          "acceptedActionsSha256": "5e66d5bb8b6cb07d61185018bc17f2a2445255420a64abac7edd2225da385366",
+          "finalStateHash": "sha256:81f26e3fa5a4caef320deb0ccb0ebd439b292491f8b4d0dcab8e43d705905041",
+          "historicalReplayOk": true,
+          "id": "c397cfb09802c2085b75a971e0c3d19b9b126da6bb1bdeb86350ac37e1b3379e",
+          "initialStateHash": "sha256:37e747d2c1b8ae0a9acb03798a44a7236e80623e84e123e77fb501316b4db67c",
+          "match": 1600103,
+          "policies": {
+            "player:allied": "heuristic",
+            "player:axis": "heuristic:artifacts/ai-surrogacy/weights/outOfSupply-half.json"
+          },
+          "rows": "artifacts/ai-surrogacy/rows/outOfSupply-half__attack-eastern.jsonl",
+          "saveSha256": "ddac4407fcd8fc2ff599e635ddcd70c70cd54c55bb854f84730ea607ad036adf",
+          "seeds": {
+            "allied": 324751531,
+            "axis": 324751532,
+            "deployment": 324751529,
+            "map": 324751527,
+            "oob": 324751528,
+            "rules": 324751530
+          },
+          "source": "artifacts/ai-surrogacy/outOfSupply-half/attack-eastern",
+          "variant": "outOfSupply-half",
+          "variantPlayer": "player:axis"
+        }
+      ],
+      "pair": 324751527,
+      "variant": "outOfSupply-half"
+    },
+    {
+      "climate": "EASTERN_EUROPE",
+      "direction": "double",
+      "early": {
+        "M0": 0.0,
+        "M1": 0.0,
+        "M2": 0.0,
+        "VP": 0.0,
+        "hqsInReach": 0.0,
+        "objectiveReachColumn": 0.0,
+        "objectiveVpAtRisk": 0.0,
+        "outOfTrace": 0.0,
+        "stacksExposedAllocated": 0.0,
+        "steps": 0.0
+      },
+      "family": "outOfSupply",
+      "finalVp": -2.0,
+      "games": [
+        {
+          "acceptedActions": 958,
+          "acceptedActionsSha256": "0173251e30367291b737e278ec808576a0b0bb8401e4eddc305fec6e9d210a1d",
+          "finalStateHash": "sha256:07a331bfd06cd3e660417430e3604038c2b453d0d2947386bfc250231c338674",
+          "historicalReplayOk": true,
+          "id": "f582eb0471f68b5c4927291328dbaef64711edc66ea451ac91fda6b9780216d5",
+          "initialStateHash": "sha256:3a07f7a323cc62fa9e2cba6244d4c422c64c4103c124c6edff63a4ccb67f1ff6",
+          "match": 1600100,
+          "policies": {
+            "player:allied": "heuristic:artifacts/ai-surrogacy/weights/outOfSupply-double.json",
+            "player:axis": "heuristic"
+          },
+          "rows": "artifacts/ai-surrogacy/rows/outOfSupply-double__attack-eastern.jsonl",
+          "saveSha256": "262653edadbebc99a3a1390db98be1d18fe99addb2a306a2a7998817bcbe7cb3",
+          "seeds": {
+            "allied": 324751337,
+            "axis": 324751338,
+            "deployment": 324751335,
+            "map": 324751333,
+            "oob": 324751334,
+            "rules": 324751336
+          },
+          "source": "artifacts/ai-surrogacy/outOfSupply-double/attack-eastern",
+          "variant": "outOfSupply-double",
+          "variantPlayer": "player:allied"
+        },
+        {
+          "acceptedActions": 917,
+          "acceptedActionsSha256": "b1af45c07c3d690729d529f11ba8827c7d26e87d1f1d1aab76e68a6226187d91",
+          "finalStateHash": "sha256:ae8ed23f6ca063dffb957b31a9b58b9dcbad699ea560f47f3a8489e0c6645ddd",
+          "historicalReplayOk": true,
+          "id": "55a917aa205f4ac35ecb248a95ea414eea5bbab3df00f25003db868884dbff32",
+          "initialStateHash": "sha256:3a07f7a323cc62fa9e2cba6244d4c422c64c4103c124c6edff63a4ccb67f1ff6",
+          "match": 1600101,
+          "policies": {
+            "player:allied": "heuristic",
+            "player:axis": "heuristic:artifacts/ai-surrogacy/weights/outOfSupply-double.json"
+          },
+          "rows": "artifacts/ai-surrogacy/rows/outOfSupply-double__attack-eastern.jsonl",
+          "saveSha256": "d28a1a8c775dce2379f77b3b92c169745f8311d3000f62b9a7be8f9065fadd29",
+          "seeds": {
+            "allied": 324751337,
+            "axis": 324751338,
+            "deployment": 324751335,
+            "map": 324751333,
+            "oob": 324751334,
+            "rules": 324751336
+          },
+          "source": "artifacts/ai-surrogacy/outOfSupply-double/attack-eastern",
+          "variant": "outOfSupply-double",
+          "variantPlayer": "player:axis"
+        }
+      ],
+      "pair": 324751333,
+      "variant": "outOfSupply-double"
+    },
+    {
+      "climate": "EASTERN_EUROPE",
+      "direction": "double",
+      "early": {
+        "M0": 0.0,
+        "M1": 0.0,
+        "M2": 0.0,
+        "VP": 0.0,
+        "hqsInReach": 0.0,
+        "objectiveReachColumn": 0.0,
+        "objectiveVpAtRisk": 0.0,
+        "outOfTrace": 0.0,
+        "stacksExposedAllocated": 0.0,
+        "steps": 0.0
+      },
+      "family": "outOfSupply",
+      "finalVp": 0.0,
+      "games": [
+        {
+          "acceptedActions": 818,
+          "acceptedActionsSha256": "df4c7f05686bf762422906fa8e224ee772dc807f9b6ece517f4a803c7987d266",
+          "finalStateHash": "sha256:4eaa2adb448c5cdcf8304694c4ec729eef7ec9c8a3a54d3bf84c7244e0b3a15b",
+          "historicalReplayOk": true,
+          "id": "ae4ea9595c3a791eee7429181a3cf4a1a513a3b7eeec020384df9f39fe958adc",
+          "initialStateHash": "sha256:37e747d2c1b8ae0a9acb03798a44a7236e80623e84e123e77fb501316b4db67c",
+          "match": 1600102,
+          "policies": {
+            "player:allied": "heuristic:artifacts/ai-surrogacy/weights/outOfSupply-double.json",
+            "player:axis": "heuristic"
+          },
+          "rows": "artifacts/ai-surrogacy/rows/outOfSupply-double__attack-eastern.jsonl",
+          "saveSha256": "38fe400e5d88cdaa42353e0f31ad7d9782f018f1ddf6b227b0a9e1d2d6c201d1",
+          "seeds": {
+            "allied": 324751531,
+            "axis": 324751532,
+            "deployment": 324751529,
+            "map": 324751527,
+            "oob": 324751528,
+            "rules": 324751530
+          },
+          "source": "artifacts/ai-surrogacy/outOfSupply-double/attack-eastern",
+          "variant": "outOfSupply-double",
+          "variantPlayer": "player:allied"
+        },
+        {
+          "acceptedActions": 818,
+          "acceptedActionsSha256": "df4c7f05686bf762422906fa8e224ee772dc807f9b6ece517f4a803c7987d266",
+          "finalStateHash": "sha256:4eaa2adb448c5cdcf8304694c4ec729eef7ec9c8a3a54d3bf84c7244e0b3a15b",
+          "historicalReplayOk": true,
+          "id": "ae4ea9595c3a791eee7429181a3cf4a1a513a3b7eeec020384df9f39fe958adc",
+          "initialStateHash": "sha256:37e747d2c1b8ae0a9acb03798a44a7236e80623e84e123e77fb501316b4db67c",
+          "match": 1600103,
+          "policies": {
+            "player:allied": "heuristic",
+            "player:axis": "heuristic:artifacts/ai-surrogacy/weights/outOfSupply-double.json"
+          },
+          "rows": "artifacts/ai-surrogacy/rows/outOfSupply-double__attack-eastern.jsonl",
+          "saveSha256": "78f13f739b0a2b05c33425dd7de6fdb8ca403c57ebed225719e3c0639ac66f01",
+          "seeds": {
+            "allied": 324751531,
+            "axis": 324751532,
+            "deployment": 324751529,
+            "map": 324751527,
+            "oob": 324751528,
+            "rules": 324751530
+          },
+          "source": "artifacts/ai-surrogacy/outOfSupply-double/attack-eastern",
+          "variant": "outOfSupply-double",
+          "variantPlayer": "player:axis"
+        }
+      ],
+      "pair": 324751527,
+      "variant": "outOfSupply-double"
+    },
+    {
+      "climate": "EASTERN_EUROPE",
+      "direction": "half",
+      "early": {
+        "M0": 0.0,
+        "M1": -0.44093025739317704,
+        "M2": -0.3347715856608371,
+        "VP": 0.0,
+        "hqsInReach": 1.0,
+        "objectiveReachColumn": -1.5,
+        "objectiveVpAtRisk": 1.0,
+        "outOfTrace": -1.0,
+        "stacksExposedAllocated": 1.0,
+        "steps": -0.5
+      },
+      "family": "progressObjective",
+      "finalVp": -2.0,
+      "games": [
+        {
+          "acceptedActions": 905,
+          "acceptedActionsSha256": "65bca3e93bb24815c15c4246dde06c7f66a1e179653189710862bea0600a994d",
+          "finalStateHash": "sha256:63d767a775fd1acea452662b58ae64ce7f0de3481bc9b8dd27c8105d92887c48",
+          "historicalReplayOk": true,
+          "id": "391ba2f5bf175cf7b2aa0df96c05b0f9b545e736574ce64c3f8cb785e6ccb44a",
+          "initialStateHash": "sha256:3a07f7a323cc62fa9e2cba6244d4c422c64c4103c124c6edff63a4ccb67f1ff6",
+          "match": 1600100,
+          "policies": {
+            "player:allied": "heuristic:artifacts/ai-surrogacy/weights/progressObjective-half.json",
+            "player:axis": "heuristic"
+          },
+          "rows": "artifacts/ai-surrogacy/rows/progressObjective-half__attack-eastern.jsonl",
+          "saveSha256": "3afa9e4b755b90a4d3beffccbdccd88c245737732ec88446d554b84168108582",
+          "seeds": {
+            "allied": 324751337,
+            "axis": 324751338,
+            "deployment": 324751335,
+            "map": 324751333,
+            "oob": 324751334,
+            "rules": 324751336
+          },
+          "source": "artifacts/ai-surrogacy/progressObjective-half/attack-eastern",
+          "variant": "progressObjective-half",
+          "variantPlayer": "player:allied"
+        },
+        {
+          "acceptedActions": 909,
+          "acceptedActionsSha256": "2b78ed1ccd44fdaab4ec816237f449c516dff449dc9267d820cc139137a73776",
+          "finalStateHash": "sha256:4f7e56a44bf67e0f6f0b954734b20fe1205403b61c051193fcb45181f5a7013d",
+          "historicalReplayOk": true,
+          "id": "bc55402b93e6dbcdc8d8a3fdf320c88598dfd214971132af0b2ec2f125ccc7d6",
+          "initialStateHash": "sha256:3a07f7a323cc62fa9e2cba6244d4c422c64c4103c124c6edff63a4ccb67f1ff6",
+          "match": 1600101,
+          "policies": {
+            "player:allied": "heuristic",
+            "player:axis": "heuristic:artifacts/ai-surrogacy/weights/progressObjective-half.json"
+          },
+          "rows": "artifacts/ai-surrogacy/rows/progressObjective-half__attack-eastern.jsonl",
+          "saveSha256": "26c349553aa43d0f872f73a3d98db427fdbc028b4d5682f8979c503345a7c5c1",
+          "seeds": {
+            "allied": 324751337,
+            "axis": 324751338,
+            "deployment": 324751335,
+            "map": 324751333,
+            "oob": 324751334,
+            "rules": 324751336
+          },
+          "source": "artifacts/ai-surrogacy/progressObjective-half/attack-eastern",
+          "variant": "progressObjective-half",
+          "variantPlayer": "player:axis"
+        }
+      ],
+      "pair": 324751333,
+      "variant": "progressObjective-half"
+    },
+    {
+      "climate": "EASTERN_EUROPE",
+      "direction": "half",
+      "early": {
+        "M0": 0.0,
+        "M1": -1.472105091179662,
+        "M2": -0.2063468706528062,
+        "VP": 0.0,
+        "hqsInReach": 0.0,
+        "objectiveReachColumn": 0.5,
+        "objectiveVpAtRisk": 0.0,
+        "outOfTrace": -7.5,
+        "stacksExposedAllocated": -1.0,
+        "steps": 0.5
+      },
+      "family": "progressObjective",
+      "finalVp": 0.0,
+      "games": [
+        {
+          "acceptedActions": 769,
+          "acceptedActionsSha256": "1f188c016e6388c73dd1acfbb31c390c28d7e6a9975272201ee6b4638285b0f8",
+          "finalStateHash": "sha256:0d704b6e247497f43ada527a4586e7deb9b6f52ce8c82c12b55a838c9e16906f",
+          "historicalReplayOk": true,
+          "id": "d22a5cdeb0d2aa437034ee75b1db0e697987b7ee2a48f76cea6337fec8cd5c5e",
+          "initialStateHash": "sha256:37e747d2c1b8ae0a9acb03798a44a7236e80623e84e123e77fb501316b4db67c",
+          "match": 1600102,
+          "policies": {
+            "player:allied": "heuristic:artifacts/ai-surrogacy/weights/progressObjective-half.json",
+            "player:axis": "heuristic"
+          },
+          "rows": "artifacts/ai-surrogacy/rows/progressObjective-half__attack-eastern.jsonl",
+          "saveSha256": "d2161c9d63ca7ea9917ea64e56633117e2749ce2d701e14f24f6d3a8e137b12e",
+          "seeds": {
+            "allied": 324751531,
+            "axis": 324751532,
+            "deployment": 324751529,
+            "map": 324751527,
+            "oob": 324751528,
+            "rules": 324751530
+          },
+          "source": "artifacts/ai-surrogacy/progressObjective-half/attack-eastern",
+          "variant": "progressObjective-half",
+          "variantPlayer": "player:allied"
+        },
+        {
+          "acceptedActions": 643,
+          "acceptedActionsSha256": "2f6d4fd28c0859ad04db43d5f470afbc9ef569351f58eafc5f7416081d81c0b8",
+          "finalStateHash": "sha256:2042b0de996ef5a956bd16c10c31f512ed0c031755e24fb971df711ccdb178b8",
+          "historicalReplayOk": true,
+          "id": "b8315fec0c2236a5ff335767800e1338e942325c5496bf37ad2db72cd194500e",
+          "initialStateHash": "sha256:37e747d2c1b8ae0a9acb03798a44a7236e80623e84e123e77fb501316b4db67c",
+          "match": 1600103,
+          "policies": {
+            "player:allied": "heuristic",
+            "player:axis": "heuristic:artifacts/ai-surrogacy/weights/progressObjective-half.json"
+          },
+          "rows": "artifacts/ai-surrogacy/rows/progressObjective-half__attack-eastern.jsonl",
+          "saveSha256": "9b98cd6b65c16dc4961bb67cb36197b588b4a0837061312d67d956e5a06d4127",
+          "seeds": {
+            "allied": 324751531,
+            "axis": 324751532,
+            "deployment": 324751529,
+            "map": 324751527,
+            "oob": 324751528,
+            "rules": 324751530
+          },
+          "source": "artifacts/ai-surrogacy/progressObjective-half/attack-eastern",
+          "variant": "progressObjective-half",
+          "variantPlayer": "player:axis"
+        }
+      ],
+      "pair": 324751527,
+      "variant": "progressObjective-half"
+    },
+    {
+      "climate": "EASTERN_EUROPE",
+      "direction": "double",
+      "early": {
+        "M0": 0.0,
+        "M1": 1.6419938315032852,
+        "M2": -0.10204514486027683,
+        "VP": 0.0,
+        "hqsInReach": 0.0,
+        "objectiveReachColumn": 0.0,
+        "objectiveVpAtRisk": -1.5,
+        "outOfTrace": 2.5,
+        "stacksExposedAllocated": 1.5,
+        "steps": 2.5
+      },
+      "family": "progressObjective",
+      "finalVp": 9.0,
+      "games": [
+        {
+          "acceptedActions": 947,
+          "acceptedActionsSha256": "a9ffbd1eaa0d0d14f8cae92ad74bb27f5416b5526250aebec104adc151809afb",
+          "finalStateHash": "sha256:78fa45d1926ff34cc882618282b0dfe8df7850713f8b177a264a7274059175b2",
+          "historicalReplayOk": true,
+          "id": "94ff1d12cc0dfe20412406a83ab84b1eaad15888c3d8665fa2a8eae6243829b9",
+          "initialStateHash": "sha256:3a07f7a323cc62fa9e2cba6244d4c422c64c4103c124c6edff63a4ccb67f1ff6",
+          "match": 1600100,
+          "policies": {
+            "player:allied": "heuristic:artifacts/ai-surrogacy/weights/progressObjective-double.json",
+            "player:axis": "heuristic"
+          },
+          "rows": "artifacts/ai-surrogacy/rows/progressObjective-double__attack-eastern.jsonl",
+          "saveSha256": "ecbb3876787bca4b1da3dce127663a528dea93a414ae22838338ad82684f410a",
+          "seeds": {
+            "allied": 324751337,
+            "axis": 324751338,
+            "deployment": 324751335,
+            "map": 324751333,
+            "oob": 324751334,
+            "rules": 324751336
+          },
+          "source": "artifacts/ai-surrogacy/progressObjective-double/attack-eastern",
+          "variant": "progressObjective-double",
+          "variantPlayer": "player:allied"
+        },
+        {
+          "acceptedActions": 877,
+          "acceptedActionsSha256": "acec50e7c0bc903ee8a0f013c3847df0da3ad63fa6154eb17f83683cf8b33942",
+          "finalStateHash": "sha256:942e6d1584313be73486da452b86493b4318a57259d8bce2e98643350e24de67",
+          "historicalReplayOk": true,
+          "id": "cffd5518416291e280ef7c7d5282b69bd1c371990ae7fb5e7978addbb1911f4d",
+          "initialStateHash": "sha256:3a07f7a323cc62fa9e2cba6244d4c422c64c4103c124c6edff63a4ccb67f1ff6",
+          "match": 1600101,
+          "policies": {
+            "player:allied": "heuristic",
+            "player:axis": "heuristic:artifacts/ai-surrogacy/weights/progressObjective-double.json"
+          },
+          "rows": "artifacts/ai-surrogacy/rows/progressObjective-double__attack-eastern.jsonl",
+          "saveSha256": "40184246c8acd0495753762cafba8252be479e234fe764f3d81185646ab23a90",
+          "seeds": {
+            "allied": 324751337,
+            "axis": 324751338,
+            "deployment": 324751335,
+            "map": 324751333,
+            "oob": 324751334,
+            "rules": 324751336
+          },
+          "source": "artifacts/ai-surrogacy/progressObjective-double/attack-eastern",
+          "variant": "progressObjective-double",
+          "variantPlayer": "player:axis"
+        }
+      ],
+      "pair": 324751333,
+      "variant": "progressObjective-double"
+    },
+    {
+      "climate": "EASTERN_EUROPE",
+      "direction": "double",
+      "early": {
+        "M0": 0.0,
+        "M1": 0.9576091779712628,
+        "M2": 1.62956667220807,
+        "VP": 0.0,
+        "hqsInReach": -1.0,
+        "objectiveReachColumn": 3.0,
+        "objectiveVpAtRisk": 0.5,
+        "outOfTrace": -1.5,
+        "stacksExposedAllocated": -1.0,
+        "steps": 3.0
+      },
+      "family": "progressObjective",
+      "finalVp": -2.0,
+      "games": [
+        {
+          "acceptedActions": 818,
+          "acceptedActionsSha256": "a91f95dbf00fcd3a663f4e9aa712084b0b76fc4a5b506cc78237a26b8d42cd0d",
+          "finalStateHash": "sha256:c7b8594d4b4acb30895ac7a13f84e4dfee5e083f41cb479eb578e962e906606e",
+          "historicalReplayOk": true,
+          "id": "8f1b4a84151ad920c07e324520a2502cb10e44a440d54458550a1faf5bffef9b",
+          "initialStateHash": "sha256:37e747d2c1b8ae0a9acb03798a44a7236e80623e84e123e77fb501316b4db67c",
+          "match": 1600102,
+          "policies": {
+            "player:allied": "heuristic:artifacts/ai-surrogacy/weights/progressObjective-double.json",
+            "player:axis": "heuristic"
+          },
+          "rows": "artifacts/ai-surrogacy/rows/progressObjective-double__attack-eastern.jsonl",
+          "saveSha256": "952b837d76b536467bf70dd32a2afe18a1d055c40ef5eaaea6f21fcef4360a76",
+          "seeds": {
+            "allied": 324751531,
+            "axis": 324751532,
+            "deployment": 324751529,
+            "map": 324751527,
+            "oob": 324751528,
+            "rules": 324751530
+          },
+          "source": "artifacts/ai-surrogacy/progressObjective-double/attack-eastern",
+          "variant": "progressObjective-double",
+          "variantPlayer": "player:allied"
+        },
+        {
+          "acceptedActions": 795,
+          "acceptedActionsSha256": "91646b1a02db80e335e23e049ce9c6ce5b84fbbe06f849af8cc9fc93a6d106f7",
+          "finalStateHash": "sha256:37f29660c88cd2ed704536b37f04501197e1c88315d41c23c0a1058acc2ed140",
+          "historicalReplayOk": true,
+          "id": "345654c9c49dfd184932b32ce50fef956c7dea0d5f7fa9d40dd78bca9191c1e4",
+          "initialStateHash": "sha256:37e747d2c1b8ae0a9acb03798a44a7236e80623e84e123e77fb501316b4db67c",
+          "match": 1600103,
+          "policies": {
+            "player:allied": "heuristic",
+            "player:axis": "heuristic:artifacts/ai-surrogacy/weights/progressObjective-double.json"
+          },
+          "rows": "artifacts/ai-surrogacy/rows/progressObjective-double__attack-eastern.jsonl",
+          "saveSha256": "ee870d59abe6dbd5414afaff702ac7f81f54b20d3d72bf819c7065e0925a258d",
+          "seeds": {
+            "allied": 324751531,
+            "axis": 324751532,
+            "deployment": 324751529,
+            "map": 324751527,
+            "oob": 324751528,
+            "rules": 324751530
+          },
+          "source": "artifacts/ai-surrogacy/progressObjective-double/attack-eastern",
+          "variant": "progressObjective-double",
+          "variantPlayer": "player:axis"
+        }
+      ],
+      "pair": 324751527,
+      "variant": "progressObjective-double"
+    },
+    {
+      "climate": "EASTERN_EUROPE",
+      "direction": "half",
+      "early": {
+        "M0": 0.0,
+        "M1": 0.3100073523468512,
+        "M2": -4.185517293189838,
+        "VP": 0.0,
+        "hqsInReach": 0.5,
+        "objectiveReachColumn": -3.5,
+        "objectiveVpAtRisk": -3.5,
+        "outOfTrace": -1.5,
+        "stacksExposedAllocated": -1.0,
+        "steps": 1.5
+      },
+      "family": "hqWithArmy",
+      "finalVp": 0.0,
+      "games": [
+        {
+          "acceptedActions": 917,
+          "acceptedActionsSha256": "b1af45c07c3d690729d529f11ba8827c7d26e87d1f1d1aab76e68a6226187d91",
+          "finalStateHash": "sha256:ae8ed23f6ca063dffb957b31a9b58b9dcbad699ea560f47f3a8489e0c6645ddd",
+          "historicalReplayOk": true,
+          "id": "55a917aa205f4ac35ecb248a95ea414eea5bbab3df00f25003db868884dbff32",
+          "initialStateHash": "sha256:3a07f7a323cc62fa9e2cba6244d4c422c64c4103c124c6edff63a4ccb67f1ff6",
+          "match": 1600100,
+          "policies": {
+            "player:allied": "heuristic:artifacts/ai-surrogacy/weights/hqWithArmy-half.json",
+            "player:axis": "heuristic"
+          },
+          "rows": "artifacts/ai-surrogacy/rows/hqWithArmy-half__attack-eastern.jsonl",
+          "saveSha256": "d8046f3b3d72cc3c18567e1477fa5c34e4f5ba089785184349766138d9775076",
+          "seeds": {
+            "allied": 324751337,
+            "axis": 324751338,
+            "deployment": 324751335,
+            "map": 324751333,
+            "oob": 324751334,
+            "rules": 324751336
+          },
+          "source": "artifacts/ai-surrogacy/hqWithArmy-half/attack-eastern",
+          "variant": "hqWithArmy-half",
+          "variantPlayer": "player:allied"
+        },
+        {
+          "acceptedActions": 803,
+          "acceptedActionsSha256": "20ea599a26380bd4e1e7dcf99cc82c89184db43e9d3f3144273200e6969762b8",
+          "finalStateHash": "sha256:0b114927baf308622d5340a5f327bf7f6d64cc8279f0383d431b9f65c959e2de",
+          "historicalReplayOk": true,
+          "id": "3039afbb1a15bbefb9389129acacb9cbafa13a0f65db1113fd884232607e95a4",
+          "initialStateHash": "sha256:3a07f7a323cc62fa9e2cba6244d4c422c64c4103c124c6edff63a4ccb67f1ff6",
+          "match": 1600101,
+          "policies": {
+            "player:allied": "heuristic",
+            "player:axis": "heuristic:artifacts/ai-surrogacy/weights/hqWithArmy-half.json"
+          },
+          "rows": "artifacts/ai-surrogacy/rows/hqWithArmy-half__attack-eastern.jsonl",
+          "saveSha256": "ec84911da334406d58aabd7d5f6344a3c60c7cbb59e04096bd234b8d8b0d46c5",
+          "seeds": {
+            "allied": 324751337,
+            "axis": 324751338,
+            "deployment": 324751335,
+            "map": 324751333,
+            "oob": 324751334,
+            "rules": 324751336
+          },
+          "source": "artifacts/ai-surrogacy/hqWithArmy-half/attack-eastern",
+          "variant": "hqWithArmy-half",
+          "variantPlayer": "player:axis"
+        }
+      ],
+      "pair": 324751333,
+      "variant": "hqWithArmy-half"
+    },
+    {
+      "climate": "EASTERN_EUROPE",
+      "direction": "half",
+      "early": {
+        "M0": 0.0,
+        "M1": 1.5386580473876685,
+        "M2": 0.5783070503285881,
+        "VP": 0.0,
+        "hqsInReach": 0.0,
+        "objectiveReachColumn": 0.0,
+        "objectiveVpAtRisk": -0.5,
+        "outOfTrace": 3.0,
+        "stacksExposedAllocated": 0.0,
+        "steps": 2.0
+      },
+      "family": "hqWithArmy",
+      "finalVp": -4.0,
+      "games": [
+        {
+          "acceptedActions": 733,
+          "acceptedActionsSha256": "65127d8eca529b3db4d170d67f541a20620a4a2b56b524de5c39bbce6524d3b7",
+          "finalStateHash": "sha256:6331a466f4c2633bd2918e8a279bc8919caf0874eed68c84b6669e1688322288",
+          "historicalReplayOk": true,
+          "id": "183d4b5b5a1fe92bb5e4f11c56e43ff98a3d08d29d4d7d7a1a9b3e45cb92f4a5",
+          "initialStateHash": "sha256:37e747d2c1b8ae0a9acb03798a44a7236e80623e84e123e77fb501316b4db67c",
+          "match": 1600102,
+          "policies": {
+            "player:allied": "heuristic:artifacts/ai-surrogacy/weights/hqWithArmy-half.json",
+            "player:axis": "heuristic"
+          },
+          "rows": "artifacts/ai-surrogacy/rows/hqWithArmy-half__attack-eastern.jsonl",
+          "saveSha256": "dd86d28a126a8625c9b6595d6a7ce7f4150ceeb836f13f33f68ad9201f276aa1",
+          "seeds": {
+            "allied": 324751531,
+            "axis": 324751532,
+            "deployment": 324751529,
+            "map": 324751527,
+            "oob": 324751528,
+            "rules": 324751530
+          },
+          "source": "artifacts/ai-surrogacy/hqWithArmy-half/attack-eastern",
+          "variant": "hqWithArmy-half",
+          "variantPlayer": "player:allied"
+        },
+        {
+          "acceptedActions": 818,
+          "acceptedActionsSha256": "df4c7f05686bf762422906fa8e224ee772dc807f9b6ece517f4a803c7987d266",
+          "finalStateHash": "sha256:4eaa2adb448c5cdcf8304694c4ec729eef7ec9c8a3a54d3bf84c7244e0b3a15b",
+          "historicalReplayOk": true,
+          "id": "ae4ea9595c3a791eee7429181a3cf4a1a513a3b7eeec020384df9f39fe958adc",
+          "initialStateHash": "sha256:37e747d2c1b8ae0a9acb03798a44a7236e80623e84e123e77fb501316b4db67c",
+          "match": 1600103,
+          "policies": {
+            "player:allied": "heuristic",
+            "player:axis": "heuristic:artifacts/ai-surrogacy/weights/hqWithArmy-half.json"
+          },
+          "rows": "artifacts/ai-surrogacy/rows/hqWithArmy-half__attack-eastern.jsonl",
+          "saveSha256": "78f13f739b0a2b05c33425dd7de6fdb8ca403c57ebed225719e3c0639ac66f01",
+          "seeds": {
+            "allied": 324751531,
+            "axis": 324751532,
+            "deployment": 324751529,
+            "map": 324751527,
+            "oob": 324751528,
+            "rules": 324751530
+          },
+          "source": "artifacts/ai-surrogacy/hqWithArmy-half/attack-eastern",
+          "variant": "hqWithArmy-half",
+          "variantPlayer": "player:axis"
+        }
+      ],
+      "pair": 324751527,
+      "variant": "hqWithArmy-half"
+    },
+    {
+      "climate": "EASTERN_EUROPE",
+      "direction": "double",
+      "early": {
+        "M0": 0.0,
+        "M1": 0.0,
+        "M2": 0.0,
+        "VP": 0.0,
+        "hqsInReach": 0.0,
+        "objectiveReachColumn": 0.0,
+        "objectiveVpAtRisk": 0.0,
+        "outOfTrace": 0.0,
+        "stacksExposedAllocated": -0.5,
+        "steps": 0.0
+      },
+      "family": "hqWithArmy",
+      "finalVp": 4.0,
+      "games": [
+        {
+          "acceptedActions": 917,
+          "acceptedActionsSha256": "b1af45c07c3d690729d529f11ba8827c7d26e87d1f1d1aab76e68a6226187d91",
+          "finalStateHash": "sha256:ae8ed23f6ca063dffb957b31a9b58b9dcbad699ea560f47f3a8489e0c6645ddd",
+          "historicalReplayOk": true,
+          "id": "55a917aa205f4ac35ecb248a95ea414eea5bbab3df00f25003db868884dbff32",
+          "initialStateHash": "sha256:3a07f7a323cc62fa9e2cba6244d4c422c64c4103c124c6edff63a4ccb67f1ff6",
+          "match": 1600100,
+          "policies": {
+            "player:allied": "heuristic:artifacts/ai-surrogacy/weights/hqWithArmy-double.json",
+            "player:axis": "heuristic"
+          },
+          "rows": "artifacts/ai-surrogacy/rows/hqWithArmy-double__attack-eastern.jsonl",
+          "saveSha256": "d8046f3b3d72cc3c18567e1477fa5c34e4f5ba089785184349766138d9775076",
+          "seeds": {
+            "allied": 324751337,
+            "axis": 324751338,
+            "deployment": 324751335,
+            "map": 324751333,
+            "oob": 324751334,
+            "rules": 324751336
+          },
+          "source": "artifacts/ai-surrogacy/hqWithArmy-double/attack-eastern",
+          "variant": "hqWithArmy-double",
+          "variantPlayer": "player:allied"
+        },
+        {
+          "acceptedActions": 941,
+          "acceptedActionsSha256": "891bdfdd411b9bfd4513969376efa25aff2203c941ca4bb4e984aa507c589903",
+          "finalStateHash": "sha256:bba574b0a2c825c92bc2e795a4e54cda42c142b683c98d01400dfedca8d5630b",
+          "historicalReplayOk": true,
+          "id": "e290003ac61347481b0d316813866e2dc209b769d0b7bab8f7207f7df5f90253",
+          "initialStateHash": "sha256:3a07f7a323cc62fa9e2cba6244d4c422c64c4103c124c6edff63a4ccb67f1ff6",
+          "match": 1600101,
+          "policies": {
+            "player:allied": "heuristic",
+            "player:axis": "heuristic:artifacts/ai-surrogacy/weights/hqWithArmy-double.json"
+          },
+          "rows": "artifacts/ai-surrogacy/rows/hqWithArmy-double__attack-eastern.jsonl",
+          "saveSha256": "bd7bf9d9e4579d6f032232ad44cb33d3effc677a825abd461c087c00bb91a5a7",
+          "seeds": {
+            "allied": 324751337,
+            "axis": 324751338,
+            "deployment": 324751335,
+            "map": 324751333,
+            "oob": 324751334,
+            "rules": 324751336
+          },
+          "source": "artifacts/ai-surrogacy/hqWithArmy-double/attack-eastern",
+          "variant": "hqWithArmy-double",
+          "variantPlayer": "player:axis"
+        }
+      ],
+      "pair": 324751333,
+      "variant": "hqWithArmy-double"
+    },
+    {
+      "climate": "EASTERN_EUROPE",
+      "direction": "double",
+      "early": {
+        "M0": 0.0,
+        "M1": 1.651189538480188,
+        "M2": 2.5460063499907712,
+        "VP": 0.0,
+        "hqsInReach": -2.0,
+        "objectiveReachColumn": 1.0,
+        "objectiveVpAtRisk": 0.5,
+        "outOfTrace": 3.5,
+        "stacksExposedAllocated": -1.5,
+        "steps": 2.0
+      },
+      "family": "hqWithArmy",
+      "finalVp": 4.0,
+      "games": [
+        {
+          "acceptedActions": 852,
+          "acceptedActionsSha256": "27e1555eb9f9d647a76b2185ade0e69c6658b097ccd30c29e2ce51b16a75799b",
+          "finalStateHash": "sha256:0e6888306fb81b179ce505527607859692e2062ed70b24714a7712e5593aa108",
+          "historicalReplayOk": true,
+          "id": "8647be501a87e952b8cc19692251b5987bbb2abf06c635693fe5d0939442e150",
+          "initialStateHash": "sha256:37e747d2c1b8ae0a9acb03798a44a7236e80623e84e123e77fb501316b4db67c",
+          "match": 1600102,
+          "policies": {
+            "player:allied": "heuristic:artifacts/ai-surrogacy/weights/hqWithArmy-double.json",
+            "player:axis": "heuristic"
+          },
+          "rows": "artifacts/ai-surrogacy/rows/hqWithArmy-double__attack-eastern.jsonl",
+          "saveSha256": "a573971718fdf711325cbe50c5e77a5a85ff8a20813eec622aed6e78ceb11e1e",
+          "seeds": {
+            "allied": 324751531,
+            "axis": 324751532,
+            "deployment": 324751529,
+            "map": 324751527,
+            "oob": 324751528,
+            "rules": 324751530
+          },
+          "source": "artifacts/ai-surrogacy/hqWithArmy-double/attack-eastern",
+          "variant": "hqWithArmy-double",
+          "variantPlayer": "player:allied"
+        },
+        {
+          "acceptedActions": 934,
+          "acceptedActionsSha256": "3393375b7d5eedb08149abf364a146b4d88ae0876f9c93d0b63a59a3e9da0d54",
+          "finalStateHash": "sha256:0e2bcef0feec757893b1e19c03477a53bda2693c03eeaab22f7eb1114944ad42",
+          "historicalReplayOk": true,
+          "id": "825ca8321fad3d8efa4ea7afaaa91d53d2d4ca1d11bc729425e8d50e788d4bb1",
+          "initialStateHash": "sha256:37e747d2c1b8ae0a9acb03798a44a7236e80623e84e123e77fb501316b4db67c",
+          "match": 1600103,
+          "policies": {
+            "player:allied": "heuristic",
+            "player:axis": "heuristic:artifacts/ai-surrogacy/weights/hqWithArmy-double.json"
+          },
+          "rows": "artifacts/ai-surrogacy/rows/hqWithArmy-double__attack-eastern.jsonl",
+          "saveSha256": "e93d08495ff294c0dd56f1b789c9c89dc23e98456c2f0b29dc9c891e6bb352ab",
+          "seeds": {
+            "allied": 324751531,
+            "axis": 324751532,
+            "deployment": 324751529,
+            "map": 324751527,
+            "oob": 324751528,
+            "rules": 324751530
+          },
+          "source": "artifacts/ai-surrogacy/hqWithArmy-double/attack-eastern",
+          "variant": "hqWithArmy-double",
+          "variantPlayer": "player:axis"
+        }
+      ],
+      "pair": 324751527,
+      "variant": "hqWithArmy-double"
+    }
+  ],
+  "games": 80
+}

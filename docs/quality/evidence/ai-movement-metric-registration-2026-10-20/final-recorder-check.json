@@ -1,0 +1,45 @@
+{
+  "gameIndex": 0,
+  "provenance": {
+    "cohortSha256": "04931eda9ff831751cebe45f9b2406f781204392981a2765a9b6e5394231f720",
+    "saveSha256": "748935706b9b4880c6501b15152a5674871dd405939be3456bd70a5122e8682c",
+    "scriptSha256": "66341a37f97e0abc627331c9e509ab795be73383a20cd15ad2bc2c74e7e2da92",
+    "engineTreeSha256": "4a87376b26c41f60086cb3060f606afcc1e9b99bb3ba00339c904837d200bb2a",
+    "weights": [
+      {
+        "file": "artifacts/ai-surrogacy/weights/crowding-half.json",
+        "sha256": "4d8b8d9db93f590b2fd9d423ae507928082d7b30f5b5349ebe694923e8721a41"
+      }
+    ],
+    "node": "v26.9.0",
+    "elapsedMs": 66895.411766,
+    "fullCandidateArchive": false,
+    "witness": {
+      "path": "artifacts/ai-movement-metric-panel/games/game-0.json.witness.json.gz",
+      "sha256": "edf1ba9ad56125d73c47f691c21dcca154f57a64a72cfcdd3099bd162169803e",
+      "reportSha256": "ec6e2cb5812e76b2011d9f39f09679b62267fe295f5357e983aafcc275c08dbb"
+    }
+  },
+  "verification": {
+    "acceptedActionsMatched": 740,
+    "dispatches": 740,
+    "rejected": 0,
+    "initialStateHash": "sha256:f1ee3812f962eb7096439176bc1e77f395b78f63a24bee11d1680474ecdbdad1",
+    "finalStateHash": "sha256:84220ccd13512048df60504d8e7de4f6abca5a099fc4a7320b77c1d4ec7ce83b",
+    "independentReplayEventsAndHashes": true,
+    "historicalTrajectoryMatched": true
+  },
+  "diagnostics": {
+    "earlyGroups": 189,
+    "earlyQueries": 845,
+    "truncatedQueries": 16,
+    "totalVp": 12,
+    "denominator": 36,
+    "earlyReports": 321,
+    "objectiveWindows": 12,
+    "distinctSourceTrajectoryId": "77c31b7903b2a502d315193d435219defdf40b1fc23a62ef90921ce56794ea1d"
+  },
+  "actualOutputSha256": "554bb9190246b2aacb7c53c7cb51ceba985beead62a667a7ad6970969b375b51",
+  "initialProbeEarlierHash": "794c1cacb184211139a5995f9c48585942b8898d73b15e29d2f9fd7abb1ea46a",
+  "initialProbeScope": "Separate initial feasibility run before final support counters; not an independent trajectory"
+}

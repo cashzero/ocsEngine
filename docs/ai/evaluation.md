@@ -45,6 +45,7 @@
 | `scripts/ai-observation-study.mjs` | 對凍結建置及目前觀測開關逐項比對實際 session 的行動、查詢、記憶、亂數、事件與 hash；驗證查詢回傳、快取重用及派送身份對帳，見[觀測契約](vp-metrics.md#決策閘門的觀測契約) |
 | `scripts/ai-movement-gates-study.mjs` | 核對已綁定 hash 的移動觀測，按角色及指派目標彙總實際檢查、組別結局與同時刪除候選／原地分數項的門檻敏感度；見[指標契約](vp-metrics.md#移動候選的描述性指標)，未認定 VP 預測或因果效果 |
 | `scripts/ai-movement-objectives-study.mjs` | 重播已綁定的移動觀測 session，連結候選路徑、接受 request 與同目標控制帳本；區分取得、既有持有及未觀測的保有結果，保留去重窗口數，見[同目標結果契約](vp-metrics.md#移動選項與同目標結果) |
+| `scripts/ai-movement-panel-record.mjs`、`scripts/ai-movement-panel-compare.py` | 從原始快照、策略權重與座位種子重算既有對戰，逐接受行動及 hash 對帳；以固定早期移動條件預測不同種子的策略對戰 VP 差，留出整個權重家族並比較 VP、step／OOS 基準，見[跨策略移動指標比較](vp-metrics.md#跨策略移動指標比較) |
 | `scripts/ai-narrate.mjs` | 一局 trace 的逐步摘要，供人工檢視 |
 | `scripts/ai-train.mjs` | 權重自我對戰（已停用，見「決策」） |
 

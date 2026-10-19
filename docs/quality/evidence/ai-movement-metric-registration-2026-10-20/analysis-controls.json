@@ -1,0 +1,30 @@
+[
+  {
+    "case": "stale-source",
+    "exitCode": 1,
+    "expectedDisagreement": "Analysis source changed",
+    "matched": true,
+    "analysisWritten": false
+  },
+  {
+    "case": "stale-protocol",
+    "exitCode": 1,
+    "expectedDisagreement": "Protocol changed",
+    "matched": true,
+    "analysisWritten": false
+  },
+  {
+    "case": "mixed-recorder",
+    "exitCode": 1,
+    "expectedDisagreement": "Mixed recorder source hashes",
+    "matched": true,
+    "analysisWritten": false
+  },
+  {
+    "case": "post-cutoff",
+    "exitCode": 1,
+    "expectedDisagreement": "Post-cutoff group",
+    "matched": true,
+    "analysisWritten": false
+  }
+]

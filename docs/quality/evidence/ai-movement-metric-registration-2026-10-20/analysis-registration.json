@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "status": "FROZEN_BEFORE_NEW_PREDICTION_SCORES",
+  "frozenAtUtc": "2026-10-19T16:05:58.770742+00:00",
+  "cohortSha256": "04931eda9ff831751cebe45f9b2406f781204392981a2765a9b6e5394231f720",
+  "protocol": "artifacts/ai-movement-metric-panel/protocol.md",
+  "protocolSha256": "1fd69d65b46b09f9006c4fd5fba28ce4a70a7b87a8d85e3134711f131f447503",
+  "recorderSha256": "66341a37f97e0abc627331c9e509ab795be73383a20cd15ad2bc2c74e7e2da92",
+  "engineTreeSha256": "4a87376b26c41f60086cb3060f606afcc1e9b99bb3ba00339c904837d200bb2a",
+  "games": 80,
+  "uniqueHistoricalTrajectories": 65,
+  "workers": 4,
+  "initialIdentityProbe": {
+    "acceptedActions": 740,
+    "elapsedMs": 55479.213254,
+    "scope": "one prior execution; after it only support counters and start-time script binding changed, no feature formula changed"
+  },
+  "protocolReviewSha256": "b63972633f41421cbc539ac2125f4cd1a380bd8d2d6112c4128c0f9bd6190949",
+  "analysisSha256": "a4a9550cfec96f1c8df431ef4cb59eb15780b53f5c2fee5559e3aaa2446f6a0d",
+  "analysisFrozenAtUtc": "2026-10-19T16:09:13.816409+00:00",
+  "models": "zero,trainMean,identityM0/M1/M2,vpFit,12diagnosticAlone,12vpPlusDiagnostic",
+  "fit": "sumSquaredResiduals + standardizedExtraCoefficientSquared; intercept/VP unpenalized; training-populationSD; constantcenteredVPslope0",
+  "scoreTarget": "held-variant final oriented matchup effect mean on two other map seeds",
+  "dependentPredictions": 40,
+  "previousAnalysisSha256": "23fc5cc1d4e9f7923cbabcc450919b0561362c58feae597dbd5658c7466e8460",
+  "preScoreAmendment": "Add raw-player, oriented-game and pair nonzero support counts plus path/approach window support; no fit, prediction or ranking change",
+  "amendedAtUtc": "2026-10-19T16:11:12.063080+00:00"
+}

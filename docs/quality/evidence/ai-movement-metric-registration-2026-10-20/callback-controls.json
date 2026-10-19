@@ -1,0 +1,11 @@
+{
+  "recorderSha256": "66341a37f97e0abc627331c9e509ab795be73383a20cd15ad2bc2c74e7e2da92",
+  "scope": "Synthetic invocation of frozen callback and arithmetic helpers, not a heuristic-produced or legal-action trajectory",
+  "postCutoffIgnored": true,
+  "cachedPreControlUsed": true,
+  "initiallyOwnedExcluded": true,
+  "untestedImprovingPathPreventsExhaustion": true,
+  "bothSideTermDeletion": true,
+  "commonPenalty": true,
+  "strictBoundary": true
+}
