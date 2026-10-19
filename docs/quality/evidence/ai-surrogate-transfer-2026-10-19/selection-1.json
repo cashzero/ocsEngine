@@ -1,0 +1,2882 @@
+[
+  {
+    "gainOverAllPolicyMean": -1.28125,
+    "method": "zero",
+    "observedVp": -1.25,
+    "positivePredictionCount": 0,
+    "positivePredictionObservedMean": null,
+    "predictedVp": 0.0,
+    "selectedVariant": "assaultRatio-double",
+    "split": 0
+  },
+  {
+    "gainOverAllPolicyMean": -1.28125,
+    "method": "trainMean",
+    "observedVp": -1.25,
+    "positivePredictionCount": 24,
+    "positivePredictionObservedMean": 0.03125,
+    "predictedVp": 0.6136363636363636,
+    "selectedVariant": "defenderLoss-double",
+    "split": 0
+  },
+  {
+    "gainOverAllPolicyMean": 2.46875,
+    "method": "developmentFinal",
+    "observedVp": 2.5,
+    "positivePredictionCount": 12,
+    "positivePredictionObservedMean": 0.2916666666666667,
+    "predictedVp": 5.5,
+    "selectedVariant": "progressObjective-double",
+    "split": 0
+  },
+  {
+    "gainOverAllPolicyMean": -1.28125,
+    "method": "identity:M0",
+    "observedVp": -1.25,
+    "positivePredictionCount": 4,
+    "positivePredictionObservedMean": -0.0625,
+    "predictedVp": 0.8944973409267907,
+    "selectedVariant": "assaultRatio-double",
+    "split": 0
+  },
+  {
+    "gainOverAllPolicyMean": 1.46875,
+    "method": "identity:M1",
+    "observedVp": 1.5,
+    "positivePredictionCount": 15,
+    "positivePredictionObservedMean": -0.25,
+    "predictedVp": 2.3309763385237594,
+    "selectedVariant": "crowding-double",
+    "split": 0
+  },
+  {
+    "gainOverAllPolicyMean": 1.46875,
+    "method": "identity:M2",
+    "observedVp": 1.5,
+    "positivePredictionCount": 13,
+    "positivePredictionObservedMean": -0.3269230769230769,
+    "predictedVp": 2.677001633467012,
+    "selectedVariant": "crowding-double",
+    "split": 0
+  },
+  {
+    "gainOverAllPolicyMean": -1.28125,
+    "method": "identity:VP",
+    "observedVp": -1.25,
+    "positivePredictionCount": 4,
+    "positivePredictionObservedMean": -0.0625,
+    "predictedVp": 1.5,
+    "selectedVariant": "assaultRatio-double",
+    "split": 0
+  },
+  {
+    "gainOverAllPolicyMean": -1.28125,
+    "method": "mapped:M0",
+    "observedVp": -1.25,
+    "positivePredictionCount": 19,
+    "positivePredictionObservedMean": -0.17105263157894737,
+    "predictedVp": 3.325,
+    "selectedVariant": "assaultRatio-double",
+    "split": 0
+  },
+  {
+    "gainOverAllPolicyMean": 1.46875,
+    "method": "mapped:M1",
+    "observedVp": 1.5,
+    "positivePredictionCount": 13,
+    "positivePredictionObservedMean": -0.23076923076923078,
+    "predictedVp": 3.385168191874929,
+    "selectedVariant": "crowding-double",
+    "split": 0
+  },
+  {
+    "gainOverAllPolicyMean": 1.46875,
+    "method": "mapped:M2",
+    "observedVp": 1.5,
+    "positivePredictionCount": 16,
+    "positivePredictionObservedMean": -0.203125,
+    "predictedVp": 3.8485776880798777,
+    "selectedVariant": "crowding-double",
+    "split": 0
+  },
+  {
+    "gainOverAllPolicyMean": -1.28125,
+    "method": "mapped:steps",
+    "observedVp": -1.25,
+    "positivePredictionCount": 14,
+    "positivePredictionObservedMean": -0.30357142857142855,
+    "predictedVp": 3.5155213895898125,
+    "selectedVariant": "assaultRatio-double",
+    "split": 0
+  },
+  {
+    "gainOverAllPolicyMean": 1.46875,
+    "method": "mapped:outOfTrace",
+    "observedVp": 1.5,
+    "positivePredictionCount": 15,
+    "positivePredictionObservedMean": -0.26666666666666666,
+    "predictedVp": 1.7889316967070763,
+    "selectedVariant": "crowding-double",
+    "split": 0
+  },
+  {
+    "gainOverAllPolicyMean": 1.71875,
+    "method": "mapped:objectiveReachColumn",
+    "observedVp": 1.75,
+    "positivePredictionCount": 19,
+    "positivePredictionObservedMean": -0.11842105263157894,
+    "predictedVp": 1.056208915365653,
+    "selectedVariant": "hqWithArmy-half",
+    "split": 0
+  },
+  {
+    "gainOverAllPolicyMean": -4.53125,
+    "method": "mapped:objectiveVpAtRisk",
+    "observedVp": -4.5,
+    "positivePredictionCount": 19,
+    "positivePredictionObservedMean": -0.14473684210526316,
+    "predictedVp": 1.6811254396248536,
+    "selectedVariant": "garrisonThreatened-half",
+    "split": 0
+  },
+  {
+    "gainOverAllPolicyMean": -0.53125,
+    "method": "mapped:stacksExposedAllocated",
+    "observedVp": -0.5,
+    "positivePredictionCount": 19,
+    "positivePredictionObservedMean": -0.14473684210526316,
+    "predictedVp": 1.8317862352473149,
+    "selectedVariant": "crowding-half",
+    "split": 0
+  },
+  {
+    "gainOverAllPolicyMean": 1.46875,
+    "method": "mapped:hqsInReach",
+    "observedVp": 1.5,
+    "positivePredictionCount": 15,
+    "positivePredictionObservedMean": 0.06666666666666667,
+    "predictedVp": 2.3990963855421685,
+    "selectedVariant": "crowding-double",
+    "split": 0
+  },
+  {
+    "gainOverAllPolicyMean": 3.2291666666666665,
+    "method": "zero",
+    "observedVp": 3.25,
+    "positivePredictionCount": 0,
+    "positivePredictionObservedMean": null,
+    "predictedVp": 0.0,
+    "selectedVariant": "assaultRatio-double",
+    "split": 1
+  },
+  {
+    "gainOverAllPolicyMean": 3.2291666666666665,
+    "method": "trainMean",
+    "observedVp": 3.25,
+    "positivePredictionCount": 24,
+    "positivePredictionObservedMean": 0.020833333333333332,
+    "predictedVp": 0.5340909090909091,
+    "selectedVariant": "assaultRatio-double",
+    "split": 1
+  },
+  {
+    "gainOverAllPolicyMean": 3.2291666666666665,
+    "method": "developmentFinal",
+    "observedVp": 3.25,
+    "positivePredictionCount": 13,
+    "positivePredictionObservedMean": 0.1346153846153846,
+    "predictedVp": 4.75,
+    "selectedVariant": "progressObjective-double",
+    "split": 1
+  },
+  {
+    "gainOverAllPolicyMean": 1.4791666666666667,
+    "method": "identity:M0",
+    "observedVp": 1.5,
+    "positivePredictionCount": 2,
+    "positivePredictionObservedMean": 0.5,
+    "predictedVp": 1.3417460113901858,
+    "selectedVariant": "hqWithArmy-double",
+    "split": 1
+  },
+  {
+    "gainOverAllPolicyMean": 1.4791666666666667,
+    "method": "identity:M1",
+    "observedVp": 1.5,
+    "positivePredictionCount": 14,
+    "positivePredictionObservedMean": 0.5535714285714286,
+    "predictedVp": 1.9607019149189426,
+    "selectedVariant": "hqWithArmy-double",
+    "split": 1
+  },
+  {
+    "gainOverAllPolicyMean": 1.4791666666666667,
+    "method": "identity:M2",
+    "observedVp": 1.5,
+    "positivePredictionCount": 13,
+    "positivePredictionObservedMean": 0.28846153846153844,
+    "predictedVp": 1.605716652912176,
+    "selectedVariant": "hqWithArmy-double",
+    "split": 1
+  },
+  {
+    "gainOverAllPolicyMean": 1.4791666666666667,
+    "method": "identity:VP",
+    "observedVp": 1.5,
+    "positivePredictionCount": 2,
+    "positivePredictionObservedMean": 0.5,
+    "predictedVp": 2.25,
+    "selectedVariant": "hqWithArmy-double",
+    "split": 1
+  },
+  {
+    "gainOverAllPolicyMean": 3.2291666666666665,
+    "method": "mapped:M0",
+    "observedVp": 3.25,
+    "positivePredictionCount": 23,
+    "positivePredictionObservedMean": 0.021739130434782608,
+    "predictedVp": 0.5425844346549192,
+    "selectedVariant": "assaultRatio-double",
+    "split": 1
+  },
+  {
+    "gainOverAllPolicyMean": 1.4791666666666667,
+    "method": "mapped:M1",
+    "observedVp": 1.5,
+    "positivePredictionCount": 22,
+    "positivePredictionObservedMean": 0.09090909090909091,
+    "predictedVp": 1.0676401359536123,
+    "selectedVariant": "assaultRatio-half",
+    "split": 1
+  },
+  {
+    "gainOverAllPolicyMean": 1.4791666666666667,
+    "method": "mapped:M2",
+    "observedVp": 1.5,
+    "positivePredictionCount": 20,
+    "positivePredictionObservedMean": 0.05,
+    "predictedVp": 1.3485592575862446,
+    "selectedVariant": "assaultRatio-half",
+    "split": 1
+  },
+  {
+    "gainOverAllPolicyMean": 1.4791666666666667,
+    "method": "mapped:steps",
+    "observedVp": 1.5,
+    "positivePredictionCount": 21,
+    "positivePredictionObservedMean": -0.023809523809523808,
+    "predictedVp": 1.0115384615384615,
+    "selectedVariant": "assaultRatio-half",
+    "split": 1
+  },
+  {
+    "gainOverAllPolicyMean": 4.479166666666667,
+    "method": "mapped:outOfTrace",
+    "observedVp": 4.5,
+    "positivePredictionCount": 19,
+    "positivePredictionObservedMean": 0.039473684210526314,
+    "predictedVp": 2.054926696215479,
+    "selectedVariant": "crowding-double",
+    "split": 1
+  },
+  {
+    "gainOverAllPolicyMean": -0.5208333333333334,
+    "method": "mapped:objectiveReachColumn",
+    "observedVp": -0.5,
+    "positivePredictionCount": 22,
+    "positivePredictionObservedMean": -0.09090909090909091,
+    "predictedVp": 0.9987997740751198,
+    "selectedVariant": "combatSupply-double",
+    "split": 1
+  },
+  {
+    "gainOverAllPolicyMean": 1.4791666666666667,
+    "method": "mapped:objectiveVpAtRisk",
+    "observedVp": 1.5,
+    "positivePredictionCount": 21,
+    "positivePredictionObservedMean": -0.13095238095238096,
+    "predictedVp": 0.9585623282538096,
+    "selectedVariant": "assaultRatio-half",
+    "split": 1
+  },
+  {
+    "gainOverAllPolicyMean": 0.9791666666666666,
+    "method": "mapped:stacksExposedAllocated",
+    "observedVp": 1.0,
+    "positivePredictionCount": 18,
+    "positivePredictionObservedMean": -0.3333333333333333,
+    "predictedVp": 2.6500623743849197,
+    "selectedVariant": "hqWithArmy-half",
+    "split": 1
+  },
+  {
+    "gainOverAllPolicyMean": -5.270833333333333,
+    "method": "mapped:hqsInReach",
+    "observedVp": -5.25,
+    "positivePredictionCount": 20,
+    "positivePredictionObservedMean": 0.1,
+    "predictedVp": 1.2730331262939958,
+    "selectedVariant": "garrisonThreatened-half",
+    "split": 1
+  },
+  {
+    "gainOverAllPolicyMean": 2.0208333333333335,
+    "method": "zero",
+    "observedVp": 2.25,
+    "positivePredictionCount": 0,
+    "positivePredictionObservedMean": null,
+    "predictedVp": 0.0,
+    "selectedVariant": "assaultRatio-double",
+    "split": 2
+  },
+  {
+    "gainOverAllPolicyMean": 0.5208333333333334,
+    "method": "trainMean",
+    "observedVp": 0.75,
+    "positivePredictionCount": 20,
+    "positivePredictionObservedMean": -0.0875,
+    "predictedVp": 0.3068181818181818,
+    "selectedVariant": "garrisonThreatened-double",
+    "split": 2
+  },
+  {
+    "gainOverAllPolicyMean": 3.7708333333333335,
+    "method": "developmentFinal",
+    "observedVp": 4.0,
+    "positivePredictionCount": 12,
+    "positivePredictionObservedMean": 0.375,
+    "predictedVp": 4.0,
+    "selectedVariant": "progressObjective-double",
+    "split": 2
+  },
+  {
+    "gainOverAllPolicyMean": 2.0208333333333335,
+    "method": "identity:M0",
+    "observedVp": 2.25,
+    "positivePredictionCount": 0,
+    "positivePredictionObservedMean": null,
+    "predictedVp": 0.0,
+    "selectedVariant": "assaultRatio-double",
+    "split": 2
+  },
+  {
+    "gainOverAllPolicyMean": -1.2291666666666667,
+    "method": "identity:M1",
+    "observedVp": -1.0,
+    "positivePredictionCount": 14,
+    "positivePredictionObservedMean": 0.3392857142857143,
+    "predictedVp": 2.2253416276639166,
+    "selectedVariant": "crowding-half",
+    "split": 2
+  },
+  {
+    "gainOverAllPolicyMean": -1.2291666666666667,
+    "method": "identity:M2",
+    "observedVp": -1.0,
+    "positivePredictionCount": 12,
+    "positivePredictionObservedMean": 0.22916666666666666,
+    "predictedVp": 2.866969767004719,
+    "selectedVariant": "crowding-half",
+    "split": 2
+  },
+  {
+    "gainOverAllPolicyMean": 2.0208333333333335,
+    "method": "identity:VP",
+    "observedVp": 2.25,
+    "positivePredictionCount": 0,
+    "positivePredictionObservedMean": null,
+    "predictedVp": 0.0,
+    "selectedVariant": "assaultRatio-double",
+    "split": 2
+  },
+  {
+    "gainOverAllPolicyMean": -0.9791666666666666,
+    "method": "mapped:M0",
+    "observedVp": -0.75,
+    "positivePredictionCount": 17,
+    "positivePredictionObservedMean": -0.29411764705882354,
+    "predictedVp": 0.4583333333333333,
+    "selectedVariant": "contactBad-double",
+    "split": 2
+  },
+  {
+    "gainOverAllPolicyMean": -1.2291666666666667,
+    "method": "mapped:M1",
+    "observedVp": -1.0,
+    "positivePredictionCount": 15,
+    "positivePredictionObservedMean": 0.45,
+    "predictedVp": 2.1223380438099806,
+    "selectedVariant": "crowding-half",
+    "split": 2
+  },
+  {
+    "gainOverAllPolicyMean": -1.2291666666666667,
+    "method": "mapped:M2",
+    "observedVp": -1.0,
+    "positivePredictionCount": 16,
+    "positivePredictionObservedMean": 0.21875,
+    "predictedVp": 4.9769700996621635,
+    "selectedVariant": "crowding-half",
+    "split": 2
+  },
+  {
+    "gainOverAllPolicyMean": 0.5208333333333334,
+    "method": "mapped:steps",
+    "observedVp": 0.75,
+    "positivePredictionCount": 18,
+    "positivePredictionObservedMean": 0.041666666666666664,
+    "predictedVp": 1.9743607804465735,
+    "selectedVariant": "assaultRatio-half",
+    "split": 2
+  },
+  {
+    "gainOverAllPolicyMean": 3.2708333333333335,
+    "method": "mapped:outOfTrace",
+    "observedVp": 3.5,
+    "positivePredictionCount": 13,
+    "positivePredictionObservedMean": 0.5576923076923077,
+    "predictedVp": 4.959703392282028,
+    "selectedVariant": "crowding-double",
+    "split": 2
+  },
+  {
+    "gainOverAllPolicyMean": 1.0208333333333333,
+    "method": "mapped:objectiveReachColumn",
+    "observedVp": 1.25,
+    "positivePredictionCount": 12,
+    "positivePredictionObservedMean": 0.020833333333333332,
+    "predictedVp": 2.5147870662460567,
+    "selectedVariant": "contactBad-half",
+    "split": 2
+  },
+  {
+    "gainOverAllPolicyMean": -3.4791666666666665,
+    "method": "mapped:objectiveVpAtRisk",
+    "observedVp": -3.25,
+    "positivePredictionCount": 12,
+    "positivePredictionObservedMean": 0.125,
+    "predictedVp": 2.2283025123406763,
+    "selectedVariant": "garrisonThreatened-half",
+    "split": 2
+  },
+  {
+    "gainOverAllPolicyMean": 0.5208333333333334,
+    "method": "mapped:stacksExposedAllocated",
+    "observedVp": 0.75,
+    "positivePredictionCount": 15,
+    "positivePredictionObservedMean": 0.5,
+    "predictedVp": 3.0879776328052184,
+    "selectedVariant": "assaultRatio-half",
+    "split": 2
+  },
+  {
+    "gainOverAllPolicyMean": -0.47916666666666663,
+    "method": "mapped:hqsInReach",
+    "observedVp": -0.25,
+    "positivePredictionCount": 17,
+    "positivePredictionObservedMean": 0.19117647058823528,
+    "predictedVp": 2.5236220472440944,
+    "selectedVariant": "hqWithArmy-double",
+    "split": 2
+  },
+  {
+    "gainOverAllPolicyMean": -0.5520833333333334,
+    "method": "zero",
+    "observedVp": -0.5,
+    "positivePredictionCount": 0,
+    "positivePredictionObservedMean": null,
+    "predictedVp": 0.0,
+    "selectedVariant": "assaultRatio-double",
+    "split": 3
+  },
+  {
+    "gainOverAllPolicyMean": -2.0520833333333335,
+    "method": "trainMean",
+    "observedVp": -2.0,
+    "positivePredictionCount": 24,
+    "positivePredictionObservedMean": 0.052083333333333336,
+    "predictedVp": 0.5568181818181818,
+    "selectedVariant": "defenderLoss-double",
+    "split": 3
+  },
+  {
+    "gainOverAllPolicyMean": 3.9479166666666665,
+    "method": "developmentFinal",
+    "observedVp": 4.0,
+    "positivePredictionCount": 13,
+    "positivePredictionObservedMean": 0.5576923076923077,
+    "predictedVp": 4.0,
+    "selectedVariant": "progressObjective-double",
+    "split": 3
+  },
+  {
+    "gainOverAllPolicyMean": 1.9479166666666667,
+    "method": "identity:M0",
+    "observedVp": 2.0,
+    "positivePredictionCount": 6,
+    "positivePredictionObservedMean": 0.9166666666666666,
+    "predictedVp": 1.3417460113901858,
+    "selectedVariant": "hqWithArmy-double",
+    "split": 3
+  },
+  {
+    "gainOverAllPolicyMean": 1.9479166666666667,
+    "method": "identity:M1",
+    "observedVp": 2.0,
+    "positivePredictionCount": 15,
+    "positivePredictionObservedMean": 0.16666666666666666,
+    "predictedVp": 2.518761516893091,
+    "selectedVariant": "hqWithArmy-double",
+    "split": 3
+  },
+  {
+    "gainOverAllPolicyMean": 1.9479166666666667,
+    "method": "identity:M2",
+    "observedVp": 2.0,
+    "positivePredictionCount": 13,
+    "positivePredictionObservedMean": 0.40384615384615385,
+    "predictedVp": 1.7159958727806746,
+    "selectedVariant": "hqWithArmy-double",
+    "split": 3
+  },
+  {
+    "gainOverAllPolicyMean": 1.9479166666666667,
+    "method": "identity:VP",
+    "observedVp": 2.0,
+    "positivePredictionCount": 6,
+    "positivePredictionObservedMean": 0.9166666666666666,
+    "predictedVp": 2.25,
+    "selectedVariant": "hqWithArmy-double",
+    "split": 3
+  },
+  {
+    "gainOverAllPolicyMean": 1.9479166666666667,
+    "method": "mapped:M0",
+    "observedVp": 2.0,
+    "positivePredictionCount": 21,
+    "positivePredictionObservedMean": 0.011904761904761904,
+    "predictedVp": 1.7646227982718508,
+    "selectedVariant": "hqWithArmy-double",
+    "split": 3
+  },
+  {
+    "gainOverAllPolicyMean": 1.9479166666666667,
+    "method": "mapped:M1",
+    "observedVp": 2.0,
+    "positivePredictionCount": 19,
+    "positivePredictionObservedMean": -0.10526315789473684,
+    "predictedVp": 3.5989471499298924,
+    "selectedVariant": "hqWithArmy-double",
+    "split": 3
+  },
+  {
+    "gainOverAllPolicyMean": 0.4479166666666667,
+    "method": "mapped:M2",
+    "observedVp": 0.5,
+    "positivePredictionCount": 20,
+    "positivePredictionObservedMean": 0.2125,
+    "predictedVp": 1.6647269902013373,
+    "selectedVariant": "holdRatio-double",
+    "split": 3
+  },
+  {
+    "gainOverAllPolicyMean": 1.9479166666666667,
+    "method": "mapped:steps",
+    "observedVp": 2.0,
+    "positivePredictionCount": 18,
+    "positivePredictionObservedMean": 0.18055555555555555,
+    "predictedVp": 3.3550798347820727,
+    "selectedVariant": "hqWithArmy-double",
+    "split": 3
+  },
+  {
+    "gainOverAllPolicyMean": -1.3020833333333333,
+    "method": "mapped:outOfTrace",
+    "observedVp": -1.25,
+    "positivePredictionCount": 17,
+    "positivePredictionObservedMean": -0.25,
+    "predictedVp": 1.4234348040423956,
+    "selectedVariant": "combatSupply-half",
+    "split": 3
+  },
+  {
+    "gainOverAllPolicyMean": 1.9479166666666667,
+    "method": "mapped:objectiveReachColumn",
+    "observedVp": 2.0,
+    "positivePredictionCount": 18,
+    "positivePredictionObservedMean": -0.1527777777777778,
+    "predictedVp": 0.9866471362459133,
+    "selectedVariant": "hqWithArmy-double",
+    "split": 3
+  },
+  {
+    "gainOverAllPolicyMean": 1.9479166666666667,
+    "method": "mapped:objectiveVpAtRisk",
+    "observedVp": 2.0,
+    "positivePredictionCount": 22,
+    "positivePredictionObservedMean": 0.0,
+    "predictedVp": 1.911714285714286,
+    "selectedVariant": "hqWithArmy-double",
+    "split": 3
+  },
+  {
+    "gainOverAllPolicyMean": 0.19791666666666666,
+    "method": "mapped:stacksExposedAllocated",
+    "observedVp": 0.25,
+    "positivePredictionCount": 22,
+    "positivePredictionObservedMean": -0.056818181818181816,
+    "predictedVp": 0.9095413913719395,
+    "selectedVariant": "contactBad-double",
+    "split": 3
+  },
+  {
+    "gainOverAllPolicyMean": -0.5520833333333334,
+    "method": "mapped:hqsInReach",
+    "observedVp": -0.5,
+    "positivePredictionCount": 13,
+    "positivePredictionObservedMean": 0.038461538461538464,
+    "predictedVp": 3.1341463414634148,
+    "selectedVariant": "assaultRatio-double",
+    "split": 3
+  },
+  {
+    "gainOverAllPolicyMean": -1.7604166666666667,
+    "method": "zero",
+    "observedVp": -1.5,
+    "positivePredictionCount": 0,
+    "positivePredictionObservedMean": null,
+    "predictedVp": 0.0,
+    "selectedVariant": "assaultRatio-double",
+    "split": 4
+  },
+  {
+    "gainOverAllPolicyMean": -1.7604166666666667,
+    "method": "trainMean",
+    "observedVp": -1.5,
+    "positivePredictionCount": 18,
+    "positivePredictionObservedMean": 0.19444444444444445,
+    "predictedVp": 0.3522727272727273,
+    "selectedVariant": "defenderLoss-double",
+    "split": 4
+  },
+  {
+    "gainOverAllPolicyMean": 0.4895833333333333,
+    "method": "developmentFinal",
+    "observedVp": 0.75,
+    "positivePredictionCount": 11,
+    "positivePredictionObservedMean": 0.2727272727272727,
+    "predictedVp": 4.5,
+    "selectedVariant": "crowding-double",
+    "split": 4
+  },
+  {
+    "gainOverAllPolicyMean": -1.7604166666666667,
+    "method": "identity:M0",
+    "observedVp": -1.5,
+    "positivePredictionCount": 4,
+    "positivePredictionObservedMean": 0.4375,
+    "predictedVp": 0.8944973409267907,
+    "selectedVariant": "assaultRatio-double",
+    "split": 4
+  },
+  {
+    "gainOverAllPolicyMean": 0.4895833333333333,
+    "method": "identity:M1",
+    "observedVp": 0.75,
+    "positivePredictionCount": 13,
+    "positivePredictionObservedMean": 0.1346153846153846,
+    "predictedVp": 2.384397405483372,
+    "selectedVariant": "crowding-double",
+    "split": 4
+  },
+  {
+    "gainOverAllPolicyMean": 0.4895833333333333,
+    "method": "identity:M2",
+    "observedVp": 0.75,
+    "positivePredictionCount": 11,
+    "positivePredictionObservedMean": 0.13636363636363635,
+    "predictedVp": 2.1535736878108467,
+    "selectedVariant": "crowding-double",
+    "split": 4
+  },
+  {
+    "gainOverAllPolicyMean": -1.7604166666666667,
+    "method": "identity:VP",
+    "observedVp": -1.5,
+    "positivePredictionCount": 4,
+    "positivePredictionObservedMean": 0.4375,
+    "predictedVp": 1.5,
+    "selectedVariant": "assaultRatio-double",
+    "split": 4
+  },
+  {
+    "gainOverAllPolicyMean": -1.7604166666666667,
+    "method": "mapped:M0",
+    "observedVp": -1.5,
+    "positivePredictionCount": 16,
+    "positivePredictionObservedMean": 0.078125,
+    "predictedVp": 2.715476190476191,
+    "selectedVariant": "assaultRatio-double",
+    "split": 4
+  },
+  {
+    "gainOverAllPolicyMean": 0.4895833333333333,
+    "method": "mapped:M1",
+    "observedVp": 0.75,
+    "positivePredictionCount": 13,
+    "positivePredictionObservedMean": 0.1346153846153846,
+    "predictedVp": 4.279492221783809,
+    "selectedVariant": "crowding-double",
+    "split": 4
+  },
+  {
+    "gainOverAllPolicyMean": 0.4895833333333333,
+    "method": "mapped:M2",
+    "observedVp": 0.75,
+    "positivePredictionCount": 12,
+    "positivePredictionObservedMean": 0.0625,
+    "predictedVp": 4.0586819098185885,
+    "selectedVariant": "crowding-double",
+    "split": 4
+  },
+  {
+    "gainOverAllPolicyMean": -1.7604166666666667,
+    "method": "mapped:steps",
+    "observedVp": -1.5,
+    "positivePredictionCount": 13,
+    "positivePredictionObservedMean": 0.09615384615384616,
+    "predictedVp": 2.264060727213788,
+    "selectedVariant": "assaultRatio-double",
+    "split": 4
+  },
+  {
+    "gainOverAllPolicyMean": 0.4895833333333333,
+    "method": "mapped:outOfTrace",
+    "observedVp": 0.75,
+    "positivePredictionCount": 9,
+    "positivePredictionObservedMean": -0.19444444444444445,
+    "predictedVp": 4.9279563210227275,
+    "selectedVariant": "crowding-double",
+    "split": 4
+  },
+  {
+    "gainOverAllPolicyMean": 0.7395833333333333,
+    "method": "mapped:objectiveReachColumn",
+    "observedVp": 1.0,
+    "positivePredictionCount": 15,
+    "positivePredictionObservedMean": -0.05,
+    "predictedVp": 0.8035976366989048,
+    "selectedVariant": "hqWithArmy-half",
+    "split": 4
+  },
+  {
+    "gainOverAllPolicyMean": -2.0104166666666665,
+    "method": "mapped:objectiveVpAtRisk",
+    "observedVp": -1.75,
+    "positivePredictionCount": 15,
+    "positivePredictionObservedMean": 0.03333333333333333,
+    "predictedVp": 0.7759090909090909,
+    "selectedVariant": "garrisonThreatened-half",
+    "split": 4
+  },
+  {
+    "gainOverAllPolicyMean": 0.4895833333333333,
+    "method": "mapped:stacksExposedAllocated",
+    "observedVp": 0.75,
+    "positivePredictionCount": 17,
+    "positivePredictionObservedMean": -0.07352941176470588,
+    "predictedVp": 0.8497357992073977,
+    "selectedVariant": "attackThreshold-double",
+    "split": 4
+  },
+  {
+    "gainOverAllPolicyMean": 0.4895833333333333,
+    "method": "mapped:hqsInReach",
+    "observedVp": 0.75,
+    "positivePredictionCount": 7,
+    "positivePredictionObservedMean": 0.25,
+    "predictedVp": 3.2857142857142856,
+    "selectedVariant": "crowding-double",
+    "split": 4
+  },
+  {
+    "gainOverAllPolicyMean": 2.75,
+    "method": "zero",
+    "observedVp": 3.0,
+    "positivePredictionCount": 0,
+    "positivePredictionObservedMean": null,
+    "predictedVp": 0.0,
+    "selectedVariant": "assaultRatio-double",
+    "split": 5
+  },
+  {
+    "gainOverAllPolicyMean": 0.5,
+    "method": "trainMean",
+    "observedVp": 0.75,
+    "positivePredictionCount": 20,
+    "positivePredictionObservedMean": 0.0625,
+    "predictedVp": 0.2727272727272727,
+    "selectedVariant": "contactBad-double",
+    "split": 5
+  },
+  {
+    "gainOverAllPolicyMean": 5.25,
+    "method": "developmentFinal",
+    "observedVp": 5.5,
+    "positivePredictionCount": 12,
+    "positivePredictionObservedMean": 0.4166666666666667,
+    "predictedVp": 2.5,
+    "selectedVariant": "progressObjective-double",
+    "split": 5
+  },
+  {
+    "gainOverAllPolicyMean": 0.75,
+    "method": "identity:M0",
+    "observedVp": 1.0,
+    "positivePredictionCount": 2,
+    "positivePredictionObservedMean": 0.625,
+    "predictedVp": 1.3417460113901858,
+    "selectedVariant": "hqWithArmy-double",
+    "split": 5
+  },
+  {
+    "gainOverAllPolicyMean": 0.0,
+    "method": "identity:M1",
+    "observedVp": 0.25,
+    "positivePredictionCount": 14,
+    "positivePredictionObservedMean": 0.625,
+    "predictedVp": 2.2525431995529392,
+    "selectedVariant": "crowding-half",
+    "split": 5
+  },
+  {
+    "gainOverAllPolicyMean": 0.0,
+    "method": "identity:M2",
+    "observedVp": 0.25,
+    "positivePredictionCount": 13,
+    "positivePredictionObservedMean": 0.4807692307692308,
+    "predictedVp": 2.5860230030198412,
+    "selectedVariant": "crowding-half",
+    "split": 5
+  },
+  {
+    "gainOverAllPolicyMean": 0.75,
+    "method": "identity:VP",
+    "observedVp": 1.0,
+    "positivePredictionCount": 2,
+    "positivePredictionObservedMean": 0.625,
+    "predictedVp": 2.25,
+    "selectedVariant": "hqWithArmy-double",
+    "split": 5
+  },
+  {
+    "gainOverAllPolicyMean": 0.75,
+    "method": "mapped:M0",
+    "observedVp": 1.0,
+    "positivePredictionCount": 18,
+    "positivePredictionObservedMean": 0.2222222222222222,
+    "predictedVp": 1.3489154824233358,
+    "selectedVariant": "hqWithArmy-double",
+    "split": 5
+  },
+  {
+    "gainOverAllPolicyMean": 0.0,
+    "method": "mapped:M1",
+    "observedVp": 0.25,
+    "positivePredictionCount": 15,
+    "positivePredictionObservedMean": 0.5333333333333333,
+    "predictedVp": 1.928527006268654,
+    "selectedVariant": "crowding-half",
+    "split": 5
+  },
+  {
+    "gainOverAllPolicyMean": 0.0,
+    "method": "mapped:M2",
+    "observedVp": 0.25,
+    "positivePredictionCount": 16,
+    "positivePredictionObservedMean": 0.34375,
+    "predictedVp": 2.0493580349053184,
+    "selectedVariant": "crowding-half",
+    "split": 5
+  },
+  {
+    "gainOverAllPolicyMean": 0.5,
+    "method": "mapped:steps",
+    "observedVp": 0.75,
+    "positivePredictionCount": 18,
+    "positivePredictionObservedMean": 0.3333333333333333,
+    "predictedVp": 1.265216543113539,
+    "selectedVariant": "assaultRatio-half",
+    "split": 5
+  },
+  {
+    "gainOverAllPolicyMean": 3.5,
+    "method": "mapped:outOfTrace",
+    "observedVp": 3.75,
+    "positivePredictionCount": 13,
+    "positivePredictionObservedMean": -0.4230769230769231,
+    "predictedVp": 2.6579404485573304,
+    "selectedVariant": "crowding-double",
+    "split": 5
+  },
+  {
+    "gainOverAllPolicyMean": -2.75,
+    "method": "mapped:objectiveReachColumn",
+    "observedVp": -2.5,
+    "positivePredictionCount": 19,
+    "positivePredictionObservedMean": 0.06578947368421052,
+    "predictedVp": 0.4842582833050731,
+    "selectedVariant": "garrisonThreatened-half",
+    "split": 5
+  },
+  {
+    "gainOverAllPolicyMean": 2.0,
+    "method": "mapped:objectiveVpAtRisk",
+    "observedVp": 2.25,
+    "positivePredictionCount": 18,
+    "positivePredictionObservedMean": -0.16666666666666666,
+    "predictedVp": 0.5093059806435603,
+    "selectedVariant": "contactBad-half",
+    "split": 5
+  },
+  {
+    "gainOverAllPolicyMean": 0.0,
+    "method": "mapped:stacksExposedAllocated",
+    "observedVp": 0.25,
+    "positivePredictionCount": 17,
+    "positivePredictionObservedMean": 0.029411764705882353,
+    "predictedVp": 0.8060371201305323,
+    "selectedVariant": "hqWithArmy-half",
+    "split": 5
+  },
+  {
+    "gainOverAllPolicyMean": 2.75,
+    "method": "mapped:hqsInReach",
+    "observedVp": 3.0,
+    "positivePredictionCount": 16,
+    "positivePredictionObservedMean": 0.46875,
+    "predictedVp": 1.226617132867133,
+    "selectedVariant": "assaultRatio-double",
+    "split": 5
+  },
+  {
+    "gainOverAllPolicyMean": -1.7291666666666667,
+    "method": "zero",
+    "observedVp": -1.75,
+    "positivePredictionCount": 0,
+    "positivePredictionObservedMean": null,
+    "predictedVp": 0.0,
+    "selectedVariant": "assaultRatio-double",
+    "split": 6
+  },
+  {
+    "gainOverAllPolicyMean": -1.2291666666666667,
+    "method": "trainMean",
+    "observedVp": -1.25,
+    "positivePredictionCount": 24,
+    "positivePredictionObservedMean": -0.020833333333333332,
+    "predictedVp": 0.625,
+    "selectedVariant": "defenderLoss-double",
+    "split": 6
+  },
+  {
+    "gainOverAllPolicyMean": 2.0208333333333335,
+    "method": "developmentFinal",
+    "observedVp": 2.0,
+    "positivePredictionCount": 12,
+    "positivePredictionObservedMean": 0.3958333333333333,
+    "predictedVp": 6.0,
+    "selectedVariant": "progressObjective-double",
+    "split": 6
+  },
+  {
+    "gainOverAllPolicyMean": -1.7291666666666667,
+    "method": "identity:M0",
+    "observedVp": -1.75,
+    "positivePredictionCount": 5,
+    "positivePredictionObservedMean": 0.15,
+    "predictedVp": 1.341746011390186,
+    "selectedVariant": "assaultRatio-double",
+    "split": 6
+  },
+  {
+    "gainOverAllPolicyMean": 1.5208333333333333,
+    "method": "identity:M1",
+    "observedVp": 1.5,
+    "positivePredictionCount": 15,
+    "positivePredictionObservedMean": 0.23333333333333334,
+    "predictedVp": 2.1972087548907866,
+    "selectedVariant": "crowding-double",
+    "split": 6
+  },
+  {
+    "gainOverAllPolicyMean": 1.5208333333333333,
+    "method": "identity:M2",
+    "observedVp": 1.5,
+    "positivePredictionCount": 13,
+    "positivePredictionObservedMean": -0.34615384615384615,
+    "predictedVp": 2.5660756675092644,
+    "selectedVariant": "crowding-double",
+    "split": 6
+  },
+  {
+    "gainOverAllPolicyMean": -1.7291666666666667,
+    "method": "identity:VP",
+    "observedVp": -1.75,
+    "positivePredictionCount": 5,
+    "positivePredictionObservedMean": 0.15,
+    "predictedVp": 2.25,
+    "selectedVariant": "assaultRatio-double",
+    "split": 6
+  },
+  {
+    "gainOverAllPolicyMean": -1.7291666666666667,
+    "method": "mapped:M0",
+    "observedVp": -1.75,
+    "positivePredictionCount": 19,
+    "positivePredictionObservedMean": -0.19736842105263158,
+    "predictedVp": 4.7146739130434785,
+    "selectedVariant": "assaultRatio-double",
+    "split": 6
+  },
+  {
+    "gainOverAllPolicyMean": 1.5208333333333333,
+    "method": "mapped:M1",
+    "observedVp": 1.5,
+    "positivePredictionCount": 11,
+    "positivePredictionObservedMean": 0.25,
+    "predictedVp": 3.8524855994264042,
+    "selectedVariant": "crowding-double",
+    "split": 6
+  },
+  {
+    "gainOverAllPolicyMean": 1.5208333333333333,
+    "method": "mapped:M2",
+    "observedVp": 1.5,
+    "positivePredictionCount": 13,
+    "positivePredictionObservedMean": -0.21153846153846154,
+    "predictedVp": 4.467425907114912,
+    "selectedVariant": "crowding-double",
+    "split": 6
+  },
+  {
+    "gainOverAllPolicyMean": 1.7708333333333333,
+    "method": "mapped:steps",
+    "observedVp": 1.75,
+    "positivePredictionCount": 18,
+    "positivePredictionObservedMean": -0.25,
+    "predictedVp": 3.5203858161315877,
+    "selectedVariant": "holdRatio-half",
+    "split": 6
+  },
+  {
+    "gainOverAllPolicyMean": 1.5208333333333333,
+    "method": "mapped:outOfTrace",
+    "observedVp": 1.5,
+    "positivePredictionCount": 11,
+    "positivePredictionObservedMean": 0.5681818181818182,
+    "predictedVp": 5.571228161846558,
+    "selectedVariant": "crowding-double",
+    "split": 6
+  },
+  {
+    "gainOverAllPolicyMean": 0.020833333333333332,
+    "method": "mapped:objectiveReachColumn",
+    "observedVp": 0.0,
+    "positivePredictionCount": 19,
+    "positivePredictionObservedMean": -0.25,
+    "predictedVp": 1.892438820330475,
+    "selectedVariant": "assaultRatio-half",
+    "split": 6
+  },
+  {
+    "gainOverAllPolicyMean": -4.479166666666667,
+    "method": "mapped:objectiveVpAtRisk",
+    "observedVp": -4.5,
+    "positivePredictionCount": 20,
+    "positivePredictionObservedMean": -0.2375,
+    "predictedVp": 1.0495248538011697,
+    "selectedVariant": "garrisonThreatened-half",
+    "split": 6
+  },
+  {
+    "gainOverAllPolicyMean": 0.5208333333333334,
+    "method": "mapped:stacksExposedAllocated",
+    "observedVp": 0.5,
+    "positivePredictionCount": 21,
+    "positivePredictionObservedMean": -0.19047619047619047,
+    "predictedVp": 0.9920518464172169,
+    "selectedVariant": "crowding-half",
+    "split": 6
+  },
+  {
+    "gainOverAllPolicyMean": 1.5208333333333333,
+    "method": "mapped:hqsInReach",
+    "observedVp": 1.5,
+    "positivePredictionCount": 18,
+    "positivePredictionObservedMean": 0.09722222222222222,
+    "predictedVp": 2.690225035161744,
+    "selectedVariant": "crowding-double",
+    "split": 6
+  },
+  {
+    "gainOverAllPolicyMean": 2.78125,
+    "method": "zero",
+    "observedVp": 2.75,
+    "positivePredictionCount": 0,
+    "positivePredictionObservedMean": null,
+    "predictedVp": 0.0,
+    "selectedVariant": "assaultRatio-double",
+    "split": 7
+  },
+  {
+    "gainOverAllPolicyMean": 2.78125,
+    "method": "trainMean",
+    "observedVp": 2.75,
+    "positivePredictionCount": 24,
+    "positivePredictionObservedMean": -0.03125,
+    "predictedVp": 0.6022727272727273,
+    "selectedVariant": "assaultRatio-double",
+    "split": 7
+  },
+  {
+    "gainOverAllPolicyMean": 2.78125,
+    "method": "developmentFinal",
+    "observedVp": 2.75,
+    "positivePredictionCount": 12,
+    "positivePredictionObservedMean": 0.20833333333333334,
+    "predictedVp": 5.25,
+    "selectedVariant": "progressObjective-double",
+    "split": 7
+  },
+  {
+    "gainOverAllPolicyMean": 2.53125,
+    "method": "identity:M0",
+    "observedVp": 2.5,
+    "positivePredictionCount": 4,
+    "positivePredictionObservedMean": 2.125,
+    "predictedVp": 1.3417460113901858,
+    "selectedVariant": "hqWithArmy-double",
+    "split": 7
+  },
+  {
+    "gainOverAllPolicyMean": 0.53125,
+    "method": "identity:M1",
+    "observedVp": 0.5,
+    "positivePredictionCount": 14,
+    "positivePredictionObservedMean": 0.6785714285714286,
+    "predictedVp": 2.477220632696293,
+    "selectedVariant": "crowding-half",
+    "split": 7
+  },
+  {
+    "gainOverAllPolicyMean": 0.53125,
+    "method": "identity:M2",
+    "observedVp": 0.5,
+    "positivePredictionCount": 13,
+    "positivePredictionObservedMean": 0.6923076923076923,
+    "predictedVp": 2.6460368419738454,
+    "selectedVariant": "crowding-half",
+    "split": 7
+  },
+  {
+    "gainOverAllPolicyMean": 2.53125,
+    "method": "identity:VP",
+    "observedVp": 2.5,
+    "positivePredictionCount": 4,
+    "positivePredictionObservedMean": 2.125,
+    "predictedVp": 2.25,
+    "selectedVariant": "hqWithArmy-double",
+    "split": 7
+  },
+  {
+    "gainOverAllPolicyMean": 2.53125,
+    "method": "mapped:M0",
+    "observedVp": 2.5,
+    "positivePredictionCount": 23,
+    "positivePredictionObservedMean": 0.010869565217391304,
+    "predictedVp": 0.8819875776397519,
+    "selectedVariant": "hqWithArmy-double",
+    "split": 7
+  },
+  {
+    "gainOverAllPolicyMean": 0.53125,
+    "method": "mapped:M1",
+    "observedVp": 0.5,
+    "positivePredictionCount": 20,
+    "positivePredictionObservedMean": 0.35,
+    "predictedVp": 1.8390047677451504,
+    "selectedVariant": "crowding-half",
+    "split": 7
+  },
+  {
+    "gainOverAllPolicyMean": 0.53125,
+    "method": "mapped:M2",
+    "observedVp": 0.5,
+    "positivePredictionCount": 21,
+    "positivePredictionObservedMean": 0.10714285714285714,
+    "predictedVp": 1.4279356664792398,
+    "selectedVariant": "crowding-half",
+    "split": 7
+  },
+  {
+    "gainOverAllPolicyMean": 2.28125,
+    "method": "mapped:steps",
+    "observedVp": 2.25,
+    "positivePredictionCount": 23,
+    "positivePredictionObservedMean": 0.010869565217391304,
+    "predictedVp": 1.230529386575313,
+    "selectedVariant": "assaultRatio-half",
+    "split": 7
+  },
+  {
+    "gainOverAllPolicyMean": 4.53125,
+    "method": "mapped:outOfTrace",
+    "observedVp": 4.5,
+    "positivePredictionCount": 20,
+    "positivePredictionObservedMean": 0.0625,
+    "predictedVp": 3.0151122625215887,
+    "selectedVariant": "crowding-double",
+    "split": 7
+  },
+  {
+    "gainOverAllPolicyMean": -0.46875,
+    "method": "mapped:objectiveReachColumn",
+    "observedVp": -0.5,
+    "positivePredictionCount": 21,
+    "positivePredictionObservedMean": -0.2857142857142857,
+    "predictedVp": 1.162106896065435,
+    "selectedVariant": "combatSupply-double",
+    "split": 7
+  },
+  {
+    "gainOverAllPolicyMean": 2.28125,
+    "method": "mapped:objectiveVpAtRisk",
+    "observedVp": 2.25,
+    "positivePredictionCount": 21,
+    "positivePredictionObservedMean": -0.2261904761904762,
+    "predictedVp": 0.771505376344086,
+    "selectedVariant": "assaultRatio-half",
+    "split": 7
+  },
+  {
+    "gainOverAllPolicyMean": 0.03125,
+    "method": "mapped:stacksExposedAllocated",
+    "observedVp": 0.0,
+    "positivePredictionCount": 20,
+    "positivePredictionObservedMean": -0.275,
+    "predictedVp": 2.1807654402102497,
+    "selectedVariant": "hqWithArmy-half",
+    "split": 7
+  },
+  {
+    "gainOverAllPolicyMean": 4.53125,
+    "method": "mapped:hqsInReach",
+    "observedVp": 4.5,
+    "positivePredictionCount": 20,
+    "positivePredictionObservedMean": 0.1625,
+    "predictedVp": 2.0955400981996726,
+    "selectedVariant": "crowding-double",
+    "split": 7
+  },
+  {
+    "gainOverAllPolicyMean": 1.5729166666666667,
+    "method": "zero",
+    "observedVp": 1.75,
+    "positivePredictionCount": 0,
+    "positivePredictionObservedMean": null,
+    "predictedVp": 0.0,
+    "selectedVariant": "assaultRatio-double",
+    "split": 8
+  },
+  {
+    "gainOverAllPolicyMean": 1.3229166666666667,
+    "method": "trainMean",
+    "observedVp": 1.5,
+    "positivePredictionCount": 24,
+    "positivePredictionObservedMean": 0.17708333333333334,
+    "predictedVp": 0.3977272727272727,
+    "selectedVariant": "garrisonThreatened-double",
+    "split": 8
+  },
+  {
+    "gainOverAllPolicyMean": 3.3229166666666665,
+    "method": "developmentFinal",
+    "observedVp": 3.5,
+    "positivePredictionCount": 10,
+    "positivePredictionObservedMean": 0.475,
+    "predictedVp": 4.5,
+    "selectedVariant": "progressObjective-double",
+    "split": 8
+  },
+  {
+    "gainOverAllPolicyMean": 1.5729166666666667,
+    "method": "identity:M0",
+    "observedVp": 1.75,
+    "positivePredictionCount": 3,
+    "positivePredictionObservedMean": 1.75,
+    "predictedVp": 0.4472486704633954,
+    "selectedVariant": "assaultRatio-double",
+    "split": 8
+  },
+  {
+    "gainOverAllPolicyMean": -0.17708333333333334,
+    "method": "identity:M1",
+    "observedVp": 0.0,
+    "positivePredictionCount": 14,
+    "positivePredictionObservedMean": 0.5357142857142857,
+    "predictedVp": 3.1062708415661633,
+    "selectedVariant": "crowding-half",
+    "split": 8
+  },
+  {
+    "gainOverAllPolicyMean": -0.17708333333333334,
+    "method": "identity:M2",
+    "observedVp": 0.0,
+    "positivePredictionCount": 12,
+    "positivePredictionObservedMean": 0.7083333333333334,
+    "predictedVp": 3.9539321498825455,
+    "selectedVariant": "crowding-half",
+    "split": 8
+  },
+  {
+    "gainOverAllPolicyMean": 1.5729166666666667,
+    "method": "identity:VP",
+    "observedVp": 1.75,
+    "positivePredictionCount": 3,
+    "positivePredictionObservedMean": 1.75,
+    "predictedVp": 0.75,
+    "selectedVariant": "assaultRatio-double",
+    "split": 8
+  },
+  {
+    "gainOverAllPolicyMean": 1.5729166666666667,
+    "method": "mapped:M0",
+    "observedVp": 1.75,
+    "positivePredictionCount": 20,
+    "positivePredictionObservedMean": 0.0375,
+    "predictedVp": 1.5827067669172932,
+    "selectedVariant": "assaultRatio-double",
+    "split": 8
+  },
+  {
+    "gainOverAllPolicyMean": -0.17708333333333334,
+    "method": "mapped:M1",
+    "observedVp": 0.0,
+    "positivePredictionCount": 17,
+    "positivePredictionObservedMean": 0.4852941176470588,
+    "predictedVp": 2.482257482603274,
+    "selectedVariant": "crowding-half",
+    "split": 8
+  },
+  {
+    "gainOverAllPolicyMean": -0.17708333333333334,
+    "method": "mapped:M2",
+    "observedVp": 0.0,
+    "positivePredictionCount": 16,
+    "positivePredictionObservedMean": 0.546875,
+    "predictedVp": 5.804871791884723,
+    "selectedVariant": "crowding-half",
+    "split": 8
+  },
+  {
+    "gainOverAllPolicyMean": 1.3229166666666667,
+    "method": "mapped:steps",
+    "observedVp": 1.5,
+    "positivePredictionCount": 17,
+    "positivePredictionObservedMean": -0.22058823529411764,
+    "predictedVp": 1.1685121878715814,
+    "selectedVariant": "assaultRatio-half",
+    "split": 8
+  },
+  {
+    "gainOverAllPolicyMean": 3.3229166666666665,
+    "method": "mapped:outOfTrace",
+    "observedVp": 3.5,
+    "positivePredictionCount": 15,
+    "positivePredictionObservedMean": 0.8166666666666667,
+    "predictedVp": 4.230058850423793,
+    "selectedVariant": "crowding-double",
+    "split": 8
+  },
+  {
+    "gainOverAllPolicyMean": -3.4270833333333335,
+    "method": "mapped:objectiveReachColumn",
+    "observedVp": -3.25,
+    "positivePredictionCount": 19,
+    "positivePredictionObservedMean": -0.06578947368421052,
+    "predictedVp": 1.3706565392002794,
+    "selectedVariant": "garrisonThreatened-half",
+    "split": 8
+  },
+  {
+    "gainOverAllPolicyMean": -3.4270833333333335,
+    "method": "mapped:objectiveVpAtRisk",
+    "observedVp": -3.25,
+    "positivePredictionCount": 18,
+    "positivePredictionObservedMean": 0.06944444444444445,
+    "predictedVp": 1.6847240915208614,
+    "selectedVariant": "garrisonThreatened-half",
+    "split": 8
+  },
+  {
+    "gainOverAllPolicyMean": 0.5729166666666666,
+    "method": "mapped:stacksExposedAllocated",
+    "observedVp": 0.75,
+    "positivePredictionCount": 22,
+    "positivePredictionObservedMean": 0.22727272727272727,
+    "predictedVp": 1.4584569732937687,
+    "selectedVariant": "hqWithArmy-half",
+    "split": 8
+  },
+  {
+    "gainOverAllPolicyMean": 3.3229166666666665,
+    "method": "mapped:hqsInReach",
+    "observedVp": 3.5,
+    "positivePredictionCount": 16,
+    "positivePredictionObservedMean": 0.203125,
+    "predictedVp": 1.749718151071026,
+    "selectedVariant": "crowding-double",
+    "split": 8
+  },
+  {
+    "gainOverAllPolicyMean": -1.0,
+    "method": "zero",
+    "observedVp": -1.0,
+    "positivePredictionCount": 0,
+    "positivePredictionObservedMean": null,
+    "predictedVp": 0.0,
+    "selectedVariant": "assaultRatio-double",
+    "split": 9
+  },
+  {
+    "gainOverAllPolicyMean": -2.0,
+    "method": "trainMean",
+    "observedVp": -2.0,
+    "positivePredictionCount": 24,
+    "positivePredictionObservedMean": 0.0,
+    "predictedVp": 0.5681818181818182,
+    "selectedVariant": "defenderLoss-double",
+    "split": 9
+  },
+  {
+    "gainOverAllPolicyMean": 3.5,
+    "method": "developmentFinal",
+    "observedVp": 3.5,
+    "positivePredictionCount": 13,
+    "positivePredictionObservedMean": 0.5192307692307693,
+    "predictedVp": 4.5,
+    "selectedVariant": "progressObjective-double",
+    "split": 9
+  },
+  {
+    "gainOverAllPolicyMean": -1.0,
+    "method": "identity:M0",
+    "observedVp": -1.0,
+    "positivePredictionCount": 6,
+    "positivePredictionObservedMean": 1.3333333333333333,
+    "predictedVp": 1.341746011390186,
+    "selectedVariant": "assaultRatio-double",
+    "split": 9
+  },
+  {
+    "gainOverAllPolicyMean": 3.0,
+    "method": "identity:M1",
+    "observedVp": 3.0,
+    "positivePredictionCount": 13,
+    "positivePredictionObservedMean": 0.5769230769230769,
+    "predictedVp": 2.105964132273044,
+    "selectedVariant": "hqWithArmy-double",
+    "split": 9
+  },
+  {
+    "gainOverAllPolicyMean": -1.0,
+    "method": "identity:M2",
+    "observedVp": -1.0,
+    "positivePredictionCount": 12,
+    "positivePredictionObservedMean": 0.5416666666666666,
+    "predictedVp": 2.1992913094996154,
+    "selectedVariant": "assaultRatio-double",
+    "split": 9
+  },
+  {
+    "gainOverAllPolicyMean": -1.0,
+    "method": "identity:VP",
+    "observedVp": -1.0,
+    "positivePredictionCount": 6,
+    "positivePredictionObservedMean": 1.3333333333333333,
+    "predictedVp": 2.25,
+    "selectedVariant": "assaultRatio-double",
+    "split": 9
+  },
+  {
+    "gainOverAllPolicyMean": 3.0,
+    "method": "mapped:M0",
+    "observedVp": 3.0,
+    "positivePredictionCount": 22,
+    "positivePredictionObservedMean": -0.09090909090909091,
+    "predictedVp": 1.5847058823529414,
+    "selectedVariant": "hqWithArmy-double",
+    "split": 9
+  },
+  {
+    "gainOverAllPolicyMean": 3.0,
+    "method": "mapped:M1",
+    "observedVp": 3.0,
+    "positivePredictionCount": 14,
+    "positivePredictionObservedMean": 0.5357142857142857,
+    "predictedVp": 3.4700567771253326,
+    "selectedVariant": "hqWithArmy-double",
+    "split": 9
+  },
+  {
+    "gainOverAllPolicyMean": -1.0,
+    "method": "mapped:M2",
+    "observedVp": -1.0,
+    "positivePredictionCount": 17,
+    "positivePredictionObservedMean": 0.3235294117647059,
+    "predictedVp": 1.8069166778571315,
+    "selectedVariant": "assaultRatio-double",
+    "split": 9
+  },
+  {
+    "gainOverAllPolicyMean": 3.0,
+    "method": "mapped:steps",
+    "observedVp": 3.0,
+    "positivePredictionCount": 19,
+    "positivePredictionObservedMean": 0.18421052631578946,
+    "predictedVp": 2.6029546146816935,
+    "selectedVariant": "hqWithArmy-double",
+    "split": 9
+  },
+  {
+    "gainOverAllPolicyMean": 1.75,
+    "method": "mapped:outOfTrace",
+    "observedVp": 1.75,
+    "positivePredictionCount": 16,
+    "positivePredictionObservedMean": 0.078125,
+    "predictedVp": 1.8403582367825275,
+    "selectedVariant": "crowding-double",
+    "split": 9
+  },
+  {
+    "gainOverAllPolicyMean": 3.0,
+    "method": "mapped:objectiveReachColumn",
+    "observedVp": 3.0,
+    "positivePredictionCount": 20,
+    "positivePredictionObservedMean": -0.05,
+    "predictedVp": 0.9151860669089089,
+    "selectedVariant": "hqWithArmy-double",
+    "split": 9
+  },
+  {
+    "gainOverAllPolicyMean": 3.0,
+    "method": "mapped:objectiveVpAtRisk",
+    "observedVp": 3.0,
+    "positivePredictionCount": 22,
+    "positivePredictionObservedMean": 0.045454545454545456,
+    "predictedVp": 3.977205685170287,
+    "selectedVariant": "hqWithArmy-double",
+    "split": 9
+  },
+  {
+    "gainOverAllPolicyMean": -1.5,
+    "method": "mapped:stacksExposedAllocated",
+    "observedVp": -1.5,
+    "positivePredictionCount": 21,
+    "positivePredictionObservedMean": 0.07142857142857142,
+    "predictedVp": 1.756308991554893,
+    "selectedVariant": "contactBad-double",
+    "split": 9
+  },
+  {
+    "gainOverAllPolicyMean": 1.75,
+    "method": "mapped:hqsInReach",
+    "observedVp": 1.75,
+    "positivePredictionCount": 16,
+    "positivePredictionObservedMean": -0.140625,
+    "predictedVp": 3.0270886537759942,
+    "selectedVariant": "crowding-double",
+    "split": 9
+  },
+  {
+    "gainOverAllPolicyMean": -2.2083333333333335,
+    "method": "zero",
+    "observedVp": -2.0,
+    "positivePredictionCount": 0,
+    "positivePredictionObservedMean": null,
+    "predictedVp": 0.0,
+    "selectedVariant": "assaultRatio-double",
+    "split": 10
+  },
+  {
+    "gainOverAllPolicyMean": 1.2916666666666667,
+    "method": "trainMean",
+    "observedVp": 1.5,
+    "positivePredictionCount": 18,
+    "positivePredictionObservedMean": 0.041666666666666664,
+    "predictedVp": 0.4318181818181818,
+    "selectedVariant": "garrisonThreatened-double",
+    "split": 10
+  },
+  {
+    "gainOverAllPolicyMean": 0.5416666666666666,
+    "method": "developmentFinal",
+    "observedVp": 0.75,
+    "positivePredictionCount": 11,
+    "positivePredictionObservedMean": 0.4772727272727273,
+    "predictedVp": 4.5,
+    "selectedVariant": "crowding-double",
+    "split": 10
+  },
+  {
+    "gainOverAllPolicyMean": -2.2083333333333335,
+    "method": "identity:M0",
+    "observedVp": -2.0,
+    "positivePredictionCount": 5,
+    "positivePredictionObservedMean": 0.7,
+    "predictedVp": 1.341746011390186,
+    "selectedVariant": "assaultRatio-double",
+    "split": 10
+  },
+  {
+    "gainOverAllPolicyMean": 0.5416666666666666,
+    "method": "identity:M1",
+    "observedVp": 0.75,
+    "positivePredictionCount": 14,
+    "positivePredictionObservedMean": 0.4107142857142857,
+    "predictedVp": 2.2506298218503993,
+    "selectedVariant": "crowding-double",
+    "split": 10
+  },
+  {
+    "gainOverAllPolicyMean": 1.0416666666666667,
+    "method": "identity:M2",
+    "observedVp": 1.25,
+    "positivePredictionCount": 11,
+    "positivePredictionObservedMean": 0.11363636363636363,
+    "predictedVp": 3.1148383876029353,
+    "selectedVariant": "crowding-half",
+    "split": 10
+  },
+  {
+    "gainOverAllPolicyMean": -2.2083333333333335,
+    "method": "identity:VP",
+    "observedVp": -2.0,
+    "positivePredictionCount": 5,
+    "positivePredictionObservedMean": 0.7,
+    "predictedVp": 2.25,
+    "selectedVariant": "assaultRatio-double",
+    "split": 10
+  },
+  {
+    "gainOverAllPolicyMean": -2.2083333333333335,
+    "method": "mapped:M0",
+    "observedVp": -2.0,
+    "positivePredictionCount": 17,
+    "positivePredictionObservedMean": 0.058823529411764705,
+    "predictedVp": 3.416666666666667,
+    "selectedVariant": "assaultRatio-double",
+    "split": 10
+  },
+  {
+    "gainOverAllPolicyMean": 0.5416666666666666,
+    "method": "mapped:M1",
+    "observedVp": 0.75,
+    "positivePredictionCount": 12,
+    "positivePredictionObservedMean": 0.3958333333333333,
+    "predictedVp": 3.4884519241259206,
+    "selectedVariant": "crowding-double",
+    "split": 10
+  },
+  {
+    "gainOverAllPolicyMean": 1.0416666666666667,
+    "method": "mapped:M2",
+    "observedVp": 1.25,
+    "positivePredictionCount": 11,
+    "positivePredictionObservedMean": 0.36363636363636365,
+    "predictedVp": 5.398587137718735,
+    "selectedVariant": "crowding-half",
+    "split": 10
+  },
+  {
+    "gainOverAllPolicyMean": 2.7916666666666665,
+    "method": "mapped:steps",
+    "observedVp": 3.0,
+    "positivePredictionCount": 13,
+    "positivePredictionObservedMean": 0.11538461538461539,
+    "predictedVp": 3.083955938697318,
+    "selectedVariant": "holdRatio-half",
+    "split": 10
+  },
+  {
+    "gainOverAllPolicyMean": 0.5416666666666666,
+    "method": "mapped:outOfTrace",
+    "observedVp": 0.75,
+    "positivePredictionCount": 10,
+    "positivePredictionObservedMean": 0.5,
+    "predictedVp": 6.0904889013767916,
+    "selectedVariant": "crowding-double",
+    "split": 10
+  },
+  {
+    "gainOverAllPolicyMean": -2.2083333333333335,
+    "method": "mapped:objectiveReachColumn",
+    "observedVp": -2.0,
+    "positivePredictionCount": 15,
+    "positivePredictionObservedMean": -0.05,
+    "predictedVp": 1.1565874547239425,
+    "selectedVariant": "assaultRatio-double",
+    "split": 10
+  },
+  {
+    "gainOverAllPolicyMean": -0.20833333333333334,
+    "method": "mapped:objectiveVpAtRisk",
+    "observedVp": 0.0,
+    "positivePredictionCount": 18,
+    "positivePredictionObservedMean": -0.1527777777777778,
+    "predictedVp": 0.8409090909090909,
+    "selectedVariant": "hqWithArmy-half",
+    "split": 10
+  },
+  {
+    "gainOverAllPolicyMean": -1.9583333333333333,
+    "method": "mapped:stacksExposedAllocated",
+    "observedVp": -1.75,
+    "positivePredictionCount": 18,
+    "positivePredictionObservedMean": 0.041666666666666664,
+    "predictedVp": 1.4783350840336136,
+    "selectedVariant": "garrisonThreatened-half",
+    "split": 10
+  },
+  {
+    "gainOverAllPolicyMean": 0.5416666666666666,
+    "method": "mapped:hqsInReach",
+    "observedVp": 0.75,
+    "positivePredictionCount": 14,
+    "positivePredictionObservedMean": 0.23214285714285715,
+    "predictedVp": 2.977515243902439,
+    "selectedVariant": "crowding-double",
+    "split": 10
+  },
+  {
+    "gainOverAllPolicyMean": 2.3020833333333335,
+    "method": "zero",
+    "observedVp": 2.5,
+    "positivePredictionCount": 0,
+    "positivePredictionObservedMean": null,
+    "predictedVp": 0.0,
+    "selectedVariant": "assaultRatio-double",
+    "split": 11
+  },
+  {
+    "gainOverAllPolicyMean": -0.19791666666666666,
+    "method": "trainMean",
+    "observedVp": 0.0,
+    "positivePredictionCount": 22,
+    "positivePredictionObservedMean": 0.22727272727272727,
+    "predictedVp": 0.3409090909090909,
+    "selectedVariant": "garrisonThreatened-double",
+    "split": 11
+  },
+  {
+    "gainOverAllPolicyMean": 4.802083333333333,
+    "method": "developmentFinal",
+    "observedVp": 5.0,
+    "positivePredictionCount": 13,
+    "positivePredictionObservedMean": 0.4423076923076923,
+    "predictedVp": 3.0,
+    "selectedVariant": "progressObjective-double",
+    "split": 11
+  },
+  {
+    "gainOverAllPolicyMean": 1.8020833333333333,
+    "method": "identity:M0",
+    "observedVp": 2.0,
+    "positivePredictionCount": 4,
+    "positivePredictionObservedMean": 2.6875,
+    "predictedVp": 1.3417460113901858,
+    "selectedVariant": "hqWithArmy-double",
+    "split": 11
+  },
+  {
+    "gainOverAllPolicyMean": 1.0520833333333333,
+    "method": "identity:M1",
+    "observedVp": 1.25,
+    "positivePredictionCount": 14,
+    "positivePredictionObservedMean": 0.7857142857142857,
+    "predictedVp": 3.133472413455186,
+    "selectedVariant": "crowding-half",
+    "split": 11
+  },
+  {
+    "gainOverAllPolicyMean": 1.0520833333333333,
+    "method": "identity:M2",
+    "observedVp": 1.25,
+    "positivePredictionCount": 14,
+    "positivePredictionObservedMean": 0.7678571428571429,
+    "predictedVp": 3.6729853858976678,
+    "selectedVariant": "crowding-half",
+    "split": 11
+  },
+  {
+    "gainOverAllPolicyMean": 1.8020833333333333,
+    "method": "identity:VP",
+    "observedVp": 2.0,
+    "positivePredictionCount": 4,
+    "positivePredictionObservedMean": 2.6875,
+    "predictedVp": 2.25,
+    "selectedVariant": "hqWithArmy-double",
+    "split": 11
+  },
+  {
+    "gainOverAllPolicyMean": 1.0520833333333333,
+    "method": "mapped:M0",
+    "observedVp": 1.25,
+    "positivePredictionCount": 18,
+    "positivePredictionObservedMean": 0.08333333333333333,
+    "predictedVp": 0.9114832535885168,
+    "selectedVariant": "crowding-half",
+    "split": 11
+  },
+  {
+    "gainOverAllPolicyMean": 1.0520833333333333,
+    "method": "mapped:M1",
+    "observedVp": 1.25,
+    "positivePredictionCount": 18,
+    "positivePredictionObservedMean": 0.5833333333333334,
+    "predictedVp": 2.450939865366552,
+    "selectedVariant": "crowding-half",
+    "split": 11
+  },
+  {
+    "gainOverAllPolicyMean": 1.0520833333333333,
+    "method": "mapped:M2",
+    "observedVp": 1.25,
+    "positivePredictionCount": 18,
+    "positivePredictionObservedMean": 0.5694444444444444,
+    "predictedVp": 2.5499955200007585,
+    "selectedVariant": "crowding-half",
+    "split": 11
+  },
+  {
+    "gainOverAllPolicyMean": 1.3020833333333333,
+    "method": "mapped:steps",
+    "observedVp": 1.5,
+    "positivePredictionCount": 18,
+    "positivePredictionObservedMean": -0.09722222222222222,
+    "predictedVp": 1.1114928243129163,
+    "selectedVariant": "assaultRatio-half",
+    "split": 11
+  },
+  {
+    "gainOverAllPolicyMean": 3.5520833333333335,
+    "method": "mapped:outOfTrace",
+    "observedVp": 3.75,
+    "positivePredictionCount": 18,
+    "positivePredictionObservedMean": 0.4444444444444444,
+    "predictedVp": 2.0702828738341705,
+    "selectedVariant": "crowding-double",
+    "split": 11
+  },
+  {
+    "gainOverAllPolicyMean": -2.6979166666666665,
+    "method": "mapped:objectiveReachColumn",
+    "observedVp": -2.5,
+    "positivePredictionCount": 19,
+    "positivePredictionObservedMean": -0.06578947368421052,
+    "predictedVp": 0.7673578118637165,
+    "selectedVariant": "garrisonThreatened-half",
+    "split": 11
+  },
+  {
+    "gainOverAllPolicyMean": 2.3020833333333335,
+    "method": "mapped:objectiveVpAtRisk",
+    "observedVp": 2.5,
+    "positivePredictionCount": 20,
+    "positivePredictionObservedMean": 0.1875,
+    "predictedVp": 0.48126129553885655,
+    "selectedVariant": "assaultRatio-double",
+    "split": 11
+  },
+  {
+    "gainOverAllPolicyMean": -0.9479166666666666,
+    "method": "mapped:stacksExposedAllocated",
+    "observedVp": -0.75,
+    "positivePredictionCount": 21,
+    "positivePredictionObservedMean": -0.023809523809523808,
+    "predictedVp": 0.5145007342143905,
+    "selectedVariant": "hqWithArmy-half",
+    "split": 11
+  },
+  {
+    "gainOverAllPolicyMean": 3.5520833333333335,
+    "method": "mapped:hqsInReach",
+    "observedVp": 3.75,
+    "positivePredictionCount": 19,
+    "positivePredictionObservedMean": 0.5526315789473685,
+    "predictedVp": 1.0021329541414858,
+    "selectedVariant": "crowding-double",
+    "split": 11
+  },
+  {
+    "gainOverAllPolicyMean": -0.9895833333333334,
+    "method": "zero",
+    "observedVp": -1.0,
+    "positivePredictionCount": 0,
+    "positivePredictionObservedMean": null,
+    "predictedVp": 0.0,
+    "selectedVariant": "assaultRatio-double",
+    "split": 12
+  },
+  {
+    "gainOverAllPolicyMean": -0.4895833333333333,
+    "method": "trainMean",
+    "observedVp": -0.5,
+    "positivePredictionCount": 22,
+    "positivePredictionObservedMean": 0.011363636363636364,
+    "predictedVp": 0.625,
+    "selectedVariant": "defenderLoss-double",
+    "split": 12
+  },
+  {
+    "gainOverAllPolicyMean": 0.2604166666666667,
+    "method": "developmentFinal",
+    "observedVp": 0.25,
+    "positivePredictionCount": 13,
+    "positivePredictionObservedMean": 0.3076923076923077,
+    "predictedVp": 7.75,
+    "selectedVariant": "progressObjective-double",
+    "split": 12
+  },
+  {
+    "gainOverAllPolicyMean": -0.9895833333333334,
+    "method": "identity:M0",
+    "observedVp": -1.0,
+    "positivePredictionCount": 4,
+    "positivePredictionObservedMean": -0.375,
+    "predictedVp": 0.8944973409267907,
+    "selectedVariant": "assaultRatio-double",
+    "split": 12
+  },
+  {
+    "gainOverAllPolicyMean": 1.0104166666666667,
+    "method": "identity:M1",
+    "observedVp": 1.0,
+    "positivePredictionCount": 12,
+    "positivePredictionObservedMean": -0.20833333333333334,
+    "predictedVp": 2.4836810879529594,
+    "selectedVariant": "crowding-double",
+    "split": 12
+  },
+  {
+    "gainOverAllPolicyMean": 1.0104166666666667,
+    "method": "identity:M2",
+    "observedVp": 1.0,
+    "positivePredictionCount": 8,
+    "positivePredictionObservedMean": -0.34375,
+    "predictedVp": 2.718138153320111,
+    "selectedVariant": "crowding-double",
+    "split": 12
+  },
+  {
+    "gainOverAllPolicyMean": -0.9895833333333334,
+    "method": "identity:VP",
+    "observedVp": -1.0,
+    "positivePredictionCount": 4,
+    "positivePredictionObservedMean": -0.375,
+    "predictedVp": 1.5,
+    "selectedVariant": "assaultRatio-double",
+    "split": 12
+  },
+  {
+    "gainOverAllPolicyMean": -0.9895833333333334,
+    "method": "mapped:M0",
+    "observedVp": -1.0,
+    "positivePredictionCount": 17,
+    "positivePredictionObservedMean": -0.38235294117647056,
+    "predictedVp": 4.456804458894566,
+    "selectedVariant": "assaultRatio-double",
+    "split": 12
+  },
+  {
+    "gainOverAllPolicyMean": 1.0104166666666667,
+    "method": "mapped:M1",
+    "observedVp": 1.0,
+    "positivePredictionCount": 11,
+    "positivePredictionObservedMean": -0.1590909090909091,
+    "predictedVp": 6.98155162182138,
+    "selectedVariant": "crowding-double",
+    "split": 12
+  },
+  {
+    "gainOverAllPolicyMean": 1.0104166666666667,
+    "method": "mapped:M2",
+    "observedVp": 1.0,
+    "positivePredictionCount": 15,
+    "positivePredictionObservedMean": -0.1,
+    "predictedVp": 5.031320195963296,
+    "selectedVariant": "crowding-double",
+    "split": 12
+  },
+  {
+    "gainOverAllPolicyMean": -3.4895833333333335,
+    "method": "mapped:steps",
+    "observedVp": -3.5,
+    "positivePredictionCount": 19,
+    "positivePredictionObservedMean": -0.05263157894736842,
+    "predictedVp": 3.336515689757253,
+    "selectedVariant": "garrisonThreatened-half",
+    "split": 12
+  },
+  {
+    "gainOverAllPolicyMean": 1.0104166666666667,
+    "method": "mapped:outOfTrace",
+    "observedVp": 1.0,
+    "positivePredictionCount": 16,
+    "positivePredictionObservedMean": 0.1875,
+    "predictedVp": 3.899981532097216,
+    "selectedVariant": "crowding-double",
+    "split": 12
+  },
+  {
+    "gainOverAllPolicyMean": 0.010416666666666666,
+    "method": "mapped:objectiveReachColumn",
+    "observedVp": 0.0,
+    "positivePredictionCount": 14,
+    "positivePredictionObservedMean": -0.25,
+    "predictedVp": 3.3382599932818273,
+    "selectedVariant": "assaultRatio-half",
+    "split": 12
+  },
+  {
+    "gainOverAllPolicyMean": -3.4895833333333335,
+    "method": "mapped:objectiveVpAtRisk",
+    "observedVp": -3.5,
+    "positivePredictionCount": 20,
+    "positivePredictionObservedMean": -0.0125,
+    "predictedVp": 1.034530689882215,
+    "selectedVariant": "garrisonThreatened-half",
+    "split": 12
+  },
+  {
+    "gainOverAllPolicyMean": -0.9895833333333334,
+    "method": "mapped:stacksExposedAllocated",
+    "observedVp": -1.0,
+    "positivePredictionCount": 17,
+    "positivePredictionObservedMean": -0.10294117647058823,
+    "predictedVp": 1.0329611501988376,
+    "selectedVariant": "defenderLoss-half",
+    "split": 12
+  },
+  {
+    "gainOverAllPolicyMean": -3.4895833333333335,
+    "method": "mapped:hqsInReach",
+    "observedVp": -3.5,
+    "positivePredictionCount": 20,
+    "positivePredictionObservedMean": 0.0,
+    "predictedVp": 1.3054068522483941,
+    "selectedVariant": "garrisonThreatened-half",
+    "split": 12
+  },
+  {
+    "gainOverAllPolicyMean": 3.5208333333333335,
+    "method": "zero",
+    "observedVp": 3.5,
+    "positivePredictionCount": 0,
+    "positivePredictionObservedMean": null,
+    "predictedVp": 0.0,
+    "selectedVariant": "assaultRatio-double",
+    "split": 13
+  },
+  {
+    "gainOverAllPolicyMean": 3.5208333333333335,
+    "method": "trainMean",
+    "observedVp": 3.5,
+    "positivePredictionCount": 24,
+    "positivePredictionObservedMean": -0.020833333333333332,
+    "predictedVp": 0.625,
+    "selectedVariant": "assaultRatio-double",
+    "split": 13
+  },
+  {
+    "gainOverAllPolicyMean": 1.0208333333333333,
+    "method": "developmentFinal",
+    "observedVp": 1.0,
+    "positivePredictionCount": 13,
+    "positivePredictionObservedMean": 0.40384615384615385,
+    "predictedVp": 7.0,
+    "selectedVariant": "progressObjective-double",
+    "split": 13
+  },
+  {
+    "gainOverAllPolicyMean": 2.0208333333333335,
+    "method": "identity:M0",
+    "observedVp": 2.0,
+    "positivePredictionCount": 3,
+    "positivePredictionObservedMean": 0.8333333333333334,
+    "predictedVp": 1.3417460113901858,
+    "selectedVariant": "hqWithArmy-double",
+    "split": 13
+  },
+  {
+    "gainOverAllPolicyMean": -0.4791666666666667,
+    "method": "identity:M1",
+    "observedVp": -0.5,
+    "positivePredictionCount": 10,
+    "positivePredictionObservedMean": 0.725,
+    "predictedVp": 2.011387730158319,
+    "selectedVariant": "crowding-half",
+    "split": 13
+  },
+  {
+    "gainOverAllPolicyMean": -0.4791666666666667,
+    "method": "identity:M2",
+    "observedVp": -0.5,
+    "positivePredictionCount": 7,
+    "positivePredictionObservedMean": 1.0714285714285714,
+    "predictedVp": 1.7239699515377747,
+    "selectedVariant": "crowding-half",
+    "split": 13
+  },
+  {
+    "gainOverAllPolicyMean": 2.0208333333333335,
+    "method": "identity:VP",
+    "observedVp": 2.0,
+    "positivePredictionCount": 3,
+    "positivePredictionObservedMean": 0.8333333333333334,
+    "predictedVp": 2.25,
+    "selectedVariant": "hqWithArmy-double",
+    "split": 13
+  },
+  {
+    "gainOverAllPolicyMean": 2.0208333333333335,
+    "method": "mapped:M0",
+    "observedVp": 2.0,
+    "positivePredictionCount": 22,
+    "positivePredictionObservedMean": -0.20454545454545456,
+    "predictedVp": 2.4962406015037595,
+    "selectedVariant": "hqWithArmy-double",
+    "split": 13
+  },
+  {
+    "gainOverAllPolicyMean": -0.4791666666666667,
+    "method": "mapped:M1",
+    "observedVp": -0.5,
+    "positivePredictionCount": 16,
+    "positivePredictionObservedMean": 0.328125,
+    "predictedVp": 3.3339853544122047,
+    "selectedVariant": "crowding-half",
+    "split": 13
+  },
+  {
+    "gainOverAllPolicyMean": 2.0208333333333335,
+    "method": "mapped:M2",
+    "observedVp": 2.0,
+    "positivePredictionCount": 20,
+    "positivePredictionObservedMean": 0.1625,
+    "predictedVp": 1.4777147288573214,
+    "selectedVariant": "hqWithArmy-double",
+    "split": 13
+  },
+  {
+    "gainOverAllPolicyMean": 2.0208333333333335,
+    "method": "mapped:steps",
+    "observedVp": 2.0,
+    "positivePredictionCount": 17,
+    "positivePredictionObservedMean": 0.3088235294117647,
+    "predictedVp": 1.6301108139090559,
+    "selectedVariant": "hqWithArmy-double",
+    "split": 13
+  },
+  {
+    "gainOverAllPolicyMean": 4.020833333333333,
+    "method": "mapped:outOfTrace",
+    "observedVp": 4.0,
+    "positivePredictionCount": 18,
+    "positivePredictionObservedMean": 0.2777777777777778,
+    "predictedVp": 2.1449885960466295,
+    "selectedVariant": "crowding-double",
+    "split": 13
+  },
+  {
+    "gainOverAllPolicyMean": 2.0208333333333335,
+    "method": "mapped:objectiveReachColumn",
+    "observedVp": 2.0,
+    "positivePredictionCount": 22,
+    "positivePredictionObservedMean": 0.022727272727272728,
+    "predictedVp": 1.2183623669762085,
+    "selectedVariant": "hqWithArmy-double",
+    "split": 13
+  },
+  {
+    "gainOverAllPolicyMean": 3.5208333333333335,
+    "method": "mapped:objectiveVpAtRisk",
+    "observedVp": 3.5,
+    "positivePredictionCount": 22,
+    "positivePredictionObservedMean": -0.06818181818181818,
+    "predictedVp": 0.6263961605584643,
+    "selectedVariant": "assaultRatio-double",
+    "split": 13
+  },
+  {
+    "gainOverAllPolicyMean": -3.4791666666666665,
+    "method": "mapped:stacksExposedAllocated",
+    "observedVp": -3.5,
+    "positivePredictionCount": 22,
+    "positivePredictionObservedMean": -0.23863636363636365,
+    "predictedVp": 1.1886698642957416,
+    "selectedVariant": "defenderLoss-double",
+    "split": 13
+  },
+  {
+    "gainOverAllPolicyMean": -4.229166666666667,
+    "method": "mapped:hqsInReach",
+    "observedVp": -4.25,
+    "positivePredictionCount": 21,
+    "positivePredictionObservedMean": -0.07142857142857142,
+    "predictedVp": 2.0756372062231048,
+    "selectedVariant": "garrisonThreatened-half",
+    "split": 13
+  },
+  {
+    "gainOverAllPolicyMean": 2.3125,
+    "method": "zero",
+    "observedVp": 2.5,
+    "positivePredictionCount": 0,
+    "positivePredictionObservedMean": null,
+    "predictedVp": 0.0,
+    "selectedVariant": "assaultRatio-double",
+    "split": 14
+  },
+  {
+    "gainOverAllPolicyMean": 0.5625,
+    "method": "trainMean",
+    "observedVp": 0.75,
+    "positivePredictionCount": 20,
+    "positivePredictionObservedMean": 0.0,
+    "predictedVp": 0.3977272727272727,
+    "selectedVariant": "garrisonThreatened-double",
+    "split": 14
+  },
+  {
+    "gainOverAllPolicyMean": 1.5625,
+    "method": "developmentFinal",
+    "observedVp": 1.75,
+    "positivePredictionCount": 11,
+    "positivePredictionObservedMean": 0.7727272727272727,
+    "predictedVp": 6.25,
+    "selectedVariant": "progressObjective-double",
+    "split": 14
+  },
+  {
+    "gainOverAllPolicyMean": 1.5625,
+    "method": "identity:M0",
+    "observedVp": 1.75,
+    "positivePredictionCount": 1,
+    "positivePredictionObservedMean": 1.75,
+    "predictedVp": 0.14908289015446508,
+    "selectedVariant": "progressObjective-double",
+    "split": 14
+  },
+  {
+    "gainOverAllPolicyMean": -1.1875,
+    "method": "identity:M1",
+    "observedVp": -1.0,
+    "positivePredictionCount": 8,
+    "positivePredictionObservedMean": 1.3125,
+    "predictedVp": 2.6404379390281894,
+    "selectedVariant": "crowding-half",
+    "split": 14
+  },
+  {
+    "gainOverAllPolicyMean": -1.1875,
+    "method": "identity:M2",
+    "observedVp": -1.0,
+    "positivePredictionCount": 6,
+    "positivePredictionObservedMean": 1.2083333333333333,
+    "predictedVp": 3.031865259446475,
+    "selectedVariant": "crowding-half",
+    "split": 14
+  },
+  {
+    "gainOverAllPolicyMean": 1.5625,
+    "method": "identity:VP",
+    "observedVp": 1.75,
+    "positivePredictionCount": 1,
+    "positivePredictionObservedMean": 1.75,
+    "predictedVp": 0.25,
+    "selectedVariant": "progressObjective-double",
+    "split": 14
+  },
+  {
+    "gainOverAllPolicyMean": -0.1875,
+    "method": "mapped:M0",
+    "observedVp": 0.0,
+    "positivePredictionCount": 16,
+    "positivePredictionObservedMean": 0.3125,
+    "predictedVp": 0.8197986577181209,
+    "selectedVariant": "outOfSupply-double",
+    "split": 14
+  },
+  {
+    "gainOverAllPolicyMean": -1.1875,
+    "method": "mapped:M1",
+    "observedVp": -1.0,
+    "positivePredictionCount": 11,
+    "positivePredictionObservedMean": 0.8863636363636364,
+    "predictedVp": 5.369980038413681,
+    "selectedVariant": "crowding-half",
+    "split": 14
+  },
+  {
+    "gainOverAllPolicyMean": -1.1875,
+    "method": "mapped:M2",
+    "observedVp": -1.0,
+    "positivePredictionCount": 13,
+    "positivePredictionObservedMean": 0.7692307692307693,
+    "predictedVp": 5.0128588276165456,
+    "selectedVariant": "crowding-half",
+    "split": 14
+  },
+  {
+    "gainOverAllPolicyMean": -2.4375,
+    "method": "mapped:steps",
+    "observedVp": -2.25,
+    "positivePredictionCount": 17,
+    "positivePredictionObservedMean": 0.14705882352941177,
+    "predictedVp": 2.4570486270900447,
+    "selectedVariant": "garrisonThreatened-half",
+    "split": 14
+  },
+  {
+    "gainOverAllPolicyMean": 2.8125,
+    "method": "mapped:outOfTrace",
+    "observedVp": 3.0,
+    "positivePredictionCount": 13,
+    "positivePredictionObservedMean": 0.5961538461538461,
+    "predictedVp": 5.361114434408089,
+    "selectedVariant": "crowding-double",
+    "split": 14
+  },
+  {
+    "gainOverAllPolicyMean": -2.4375,
+    "method": "mapped:objectiveReachColumn",
+    "observedVp": -2.25,
+    "positivePredictionCount": 18,
+    "positivePredictionObservedMean": -0.06944444444444445,
+    "predictedVp": 1.1367263316799654,
+    "selectedVariant": "garrisonThreatened-half",
+    "split": 14
+  },
+  {
+    "gainOverAllPolicyMean": -2.4375,
+    "method": "mapped:objectiveVpAtRisk",
+    "observedVp": -2.25,
+    "positivePredictionCount": 18,
+    "positivePredictionObservedMean": 0.0,
+    "predictedVp": 1.9326923076923075,
+    "selectedVariant": "garrisonThreatened-half",
+    "split": 14
+  },
+  {
+    "gainOverAllPolicyMean": -2.4375,
+    "method": "mapped:stacksExposedAllocated",
+    "observedVp": -2.25,
+    "positivePredictionCount": 19,
+    "positivePredictionObservedMean": 0.013157894736842105,
+    "predictedVp": 0.591171440786661,
+    "selectedVariant": "garrisonThreatened-half",
+    "split": 14
+  },
+  {
+    "gainOverAllPolicyMean": -2.4375,
+    "method": "mapped:hqsInReach",
+    "observedVp": -2.25,
+    "positivePredictionCount": 15,
+    "positivePredictionObservedMean": 0.21666666666666667,
+    "predictedVp": 1.548076923076923,
+    "selectedVariant": "garrisonThreatened-half",
+    "split": 14
+  },
+  {
+    "gainOverAllPolicyMean": -0.2604166666666667,
+    "method": "zero",
+    "observedVp": -0.25,
+    "positivePredictionCount": 0,
+    "positivePredictionObservedMean": null,
+    "predictedVp": 0.0,
+    "selectedVariant": "assaultRatio-double",
+    "split": 15
+  },
+  {
+    "gainOverAllPolicyMean": -1.2604166666666667,
+    "method": "trainMean",
+    "observedVp": -1.25,
+    "positivePredictionCount": 24,
+    "positivePredictionObservedMean": 0.010416666666666666,
+    "predictedVp": 0.5681818181818182,
+    "selectedVariant": "defenderLoss-double",
+    "split": 15
+  },
+  {
+    "gainOverAllPolicyMean": 1.7395833333333333,
+    "method": "developmentFinal",
+    "observedVp": 1.75,
+    "positivePredictionCount": 13,
+    "positivePredictionObservedMean": 0.38461538461538464,
+    "predictedVp": 6.25,
+    "selectedVariant": "progressObjective-double",
+    "split": 15
+  },
+  {
+    "gainOverAllPolicyMean": 2.4895833333333335,
+    "method": "identity:M0",
+    "observedVp": 2.5,
+    "positivePredictionCount": 6,
+    "positivePredictionObservedMean": 0.7916666666666666,
+    "predictedVp": 1.3417460113901858,
+    "selectedVariant": "hqWithArmy-double",
+    "split": 15
+  },
+  {
+    "gainOverAllPolicyMean": 2.4895833333333335,
+    "method": "identity:M1",
+    "observedVp": 2.5,
+    "positivePredictionCount": 12,
+    "positivePredictionObservedMean": 0.20833333333333334,
+    "predictedVp": 2.1668277313077553,
+    "selectedVariant": "hqWithArmy-double",
+    "split": 15
+  },
+  {
+    "gainOverAllPolicyMean": -0.2604166666666667,
+    "method": "identity:M2",
+    "observedVp": -0.25,
+    "positivePredictionCount": 10,
+    "positivePredictionObservedMean": 0.5,
+    "predictedVp": 1.2436657884453766,
+    "selectedVariant": "assaultRatio-double",
+    "split": 15
+  },
+  {
+    "gainOverAllPolicyMean": 2.4895833333333335,
+    "method": "identity:VP",
+    "observedVp": 2.5,
+    "positivePredictionCount": 6,
+    "positivePredictionObservedMean": 0.7916666666666666,
+    "predictedVp": 2.25,
+    "selectedVariant": "hqWithArmy-double",
+    "split": 15
+  },
+  {
+    "gainOverAllPolicyMean": 2.4895833333333335,
+    "method": "mapped:M0",
+    "observedVp": 2.5,
+    "positivePredictionCount": 20,
+    "positivePredictionObservedMean": 0.0875,
+    "predictedVp": 2.699795081967213,
+    "selectedVariant": "hqWithArmy-double",
+    "split": 15
+  },
+  {
+    "gainOverAllPolicyMean": 2.4895833333333335,
+    "method": "mapped:M1",
+    "observedVp": 2.5,
+    "positivePredictionCount": 13,
+    "positivePredictionObservedMean": 0.09615384615384616,
+    "predictedVp": 5.566597272057289,
+    "selectedVariant": "hqWithArmy-double",
+    "split": 15
+  },
+  {
+    "gainOverAllPolicyMean": 2.4895833333333335,
+    "method": "mapped:M2",
+    "observedVp": 2.5,
+    "positivePredictionCount": 18,
+    "positivePredictionObservedMean": 0.2361111111111111,
+    "predictedVp": 1.997830905967467,
+    "selectedVariant": "hqWithArmy-double",
+    "split": 15
+  },
+  {
+    "gainOverAllPolicyMean": 2.4895833333333335,
+    "method": "mapped:steps",
+    "observedVp": 2.5,
+    "positivePredictionCount": 15,
+    "positivePredictionObservedMean": 0.06666666666666667,
+    "predictedVp": 2.6475247056598423,
+    "selectedVariant": "hqWithArmy-double",
+    "split": 15
+  },
+  {
+    "gainOverAllPolicyMean": -0.7604166666666666,
+    "method": "mapped:outOfTrace",
+    "observedVp": -0.75,
+    "positivePredictionCount": 16,
+    "positivePredictionObservedMean": 0.03125,
+    "predictedVp": 2.26099446423948,
+    "selectedVariant": "combatSupply-double",
+    "split": 15
+  },
+  {
+    "gainOverAllPolicyMean": -0.010416666666666666,
+    "method": "mapped:objectiveReachColumn",
+    "observedVp": 0.0,
+    "positivePredictionCount": 15,
+    "positivePredictionObservedMean": -0.03333333333333333,
+    "predictedVp": 2.107384228896645,
+    "selectedVariant": "assaultRatio-half",
+    "split": 15
+  },
+  {
+    "gainOverAllPolicyMean": 2.4895833333333335,
+    "method": "mapped:objectiveVpAtRisk",
+    "observedVp": 2.5,
+    "positivePredictionCount": 18,
+    "positivePredictionObservedMean": 0.08333333333333333,
+    "predictedVp": 3.7507539203860065,
+    "selectedVariant": "hqWithArmy-double",
+    "split": 15
+  },
+  {
+    "gainOverAllPolicyMean": -0.7604166666666666,
+    "method": "mapped:stacksExposedAllocated",
+    "observedVp": -0.75,
+    "positivePredictionCount": 17,
+    "positivePredictionObservedMean": 0.4117647058823529,
+    "predictedVp": 1.8164987823776841,
+    "selectedVariant": "contactBad-double",
+    "split": 15
+  },
+  {
+    "gainOverAllPolicyMean": -2.7604166666666665,
+    "method": "mapped:hqsInReach",
+    "observedVp": -2.75,
+    "positivePredictionCount": 19,
+    "positivePredictionObservedMean": -0.17105263157894737,
+    "predictedVp": 2.2053027875680873,
+    "selectedVariant": "garrisonThreatened-half",
+    "split": 15
+  },
+  {
+    "gainOverAllPolicyMean": -1.46875,
+    "method": "zero",
+    "observedVp": -1.25,
+    "positivePredictionCount": 0,
+    "positivePredictionObservedMean": null,
+    "predictedVp": 0.0,
+    "selectedVariant": "assaultRatio-double",
+    "split": 16
+  },
+  {
+    "gainOverAllPolicyMean": 0.53125,
+    "method": "trainMean",
+    "observedVp": 0.75,
+    "positivePredictionCount": 20,
+    "positivePredictionObservedMean": 0.1125,
+    "predictedVp": 0.4318181818181818,
+    "selectedVariant": "garrisonThreatened-double",
+    "split": 16
+  },
+  {
+    "gainOverAllPolicyMean": 2.28125,
+    "method": "developmentFinal",
+    "observedVp": 2.5,
+    "positivePredictionCount": 12,
+    "positivePredictionObservedMean": 0.22916666666666666,
+    "predictedVp": 5.5,
+    "selectedVariant": "progressObjective-double",
+    "split": 16
+  },
+  {
+    "gainOverAllPolicyMean": -1.46875,
+    "method": "identity:M0",
+    "observedVp": -1.25,
+    "positivePredictionCount": 4,
+    "positivePredictionObservedMean": 0.125,
+    "predictedVp": 0.8944973409267907,
+    "selectedVariant": "assaultRatio-double",
+    "split": 16
+  },
+  {
+    "gainOverAllPolicyMean": 0.03125,
+    "method": "identity:M1",
+    "observedVp": 0.25,
+    "positivePredictionCount": 11,
+    "positivePredictionObservedMean": 0.4772727272727273,
+    "predictedVp": 2.537102154912572,
+    "selectedVariant": "crowding-double",
+    "split": 16
+  },
+  {
+    "gainOverAllPolicyMean": 0.03125,
+    "method": "identity:M2",
+    "observedVp": 0.25,
+    "positivePredictionCount": 8,
+    "positivePredictionObservedMean": 0.4375,
+    "predictedVp": 2.1947102076639458,
+    "selectedVariant": "crowding-double",
+    "split": 16
+  },
+  {
+    "gainOverAllPolicyMean": -1.46875,
+    "method": "identity:VP",
+    "observedVp": -1.25,
+    "positivePredictionCount": 4,
+    "positivePredictionObservedMean": 0.125,
+    "predictedVp": 1.5,
+    "selectedVariant": "assaultRatio-double",
+    "split": 16
+  },
+  {
+    "gainOverAllPolicyMean": -1.46875,
+    "method": "mapped:M0",
+    "observedVp": -1.25,
+    "positivePredictionCount": 16,
+    "positivePredictionObservedMean": -0.109375,
+    "predictedVp": 3.881093814010652,
+    "selectedVariant": "assaultRatio-double",
+    "split": 16
+  },
+  {
+    "gainOverAllPolicyMean": 0.03125,
+    "method": "mapped:M1",
+    "observedVp": 0.25,
+    "positivePredictionCount": 10,
+    "positivePredictionObservedMean": 0.125,
+    "predictedVp": 7.073834351843334,
+    "selectedVariant": "crowding-double",
+    "split": 16
+  },
+  {
+    "gainOverAllPolicyMean": 0.03125,
+    "method": "mapped:M2",
+    "observedVp": 0.25,
+    "positivePredictionCount": 13,
+    "positivePredictionObservedMean": 0.23076923076923078,
+    "predictedVp": 4.8428719322493246,
+    "selectedVariant": "crowding-double",
+    "split": 16
+  },
+  {
+    "gainOverAllPolicyMean": -0.96875,
+    "method": "mapped:steps",
+    "observedVp": -0.75,
+    "positivePredictionCount": 17,
+    "positivePredictionObservedMean": 0.058823529411764705,
+    "predictedVp": 2.4849630238290876,
+    "selectedVariant": "garrisonThreatened-half",
+    "split": 16
+  },
+  {
+    "gainOverAllPolicyMean": 0.03125,
+    "method": "mapped:outOfTrace",
+    "observedVp": 0.25,
+    "positivePredictionCount": 10,
+    "positivePredictionObservedMean": 0.15,
+    "predictedVp": 6.957848353841037,
+    "selectedVariant": "crowding-double",
+    "split": 16
+  },
+  {
+    "gainOverAllPolicyMean": -0.96875,
+    "method": "mapped:objectiveReachColumn",
+    "observedVp": -0.75,
+    "positivePredictionCount": 13,
+    "positivePredictionObservedMean": -0.23076923076923078,
+    "predictedVp": 2.398474778459441,
+    "selectedVariant": "assaultRatio-half",
+    "split": 16
+  },
+  {
+    "gainOverAllPolicyMean": -1.21875,
+    "method": "mapped:objectiveVpAtRisk",
+    "observedVp": -1.0,
+    "positivePredictionCount": 16,
+    "positivePredictionObservedMean": -0.015625,
+    "predictedVp": 1.3635446104158258,
+    "selectedVariant": "hqWithArmy-half",
+    "split": 16
+  },
+  {
+    "gainOverAllPolicyMean": -1.96875,
+    "method": "mapped:stacksExposedAllocated",
+    "observedVp": -1.75,
+    "positivePredictionCount": 12,
+    "positivePredictionObservedMean": 0.14583333333333334,
+    "predictedVp": 0.8586759371221281,
+    "selectedVariant": "contactBad-double",
+    "split": 16
+  },
+  {
+    "gainOverAllPolicyMean": -0.96875,
+    "method": "mapped:hqsInReach",
+    "observedVp": -0.75,
+    "positivePredictionCount": 14,
+    "positivePredictionObservedMean": 0.4642857142857143,
+    "predictedVp": 1.4051925320886813,
+    "selectedVariant": "garrisonThreatened-half",
+    "split": 16
+  },
+  {
+    "gainOverAllPolicyMean": 3.0416666666666665,
+    "method": "zero",
+    "observedVp": 3.25,
+    "positivePredictionCount": 0,
+    "positivePredictionObservedMean": null,
+    "predictedVp": 0.0,
+    "selectedVariant": "assaultRatio-double",
+    "split": 17
+  },
+  {
+    "gainOverAllPolicyMean": -0.9583333333333334,
+    "method": "trainMean",
+    "observedVp": -0.75,
+    "positivePredictionCount": 22,
+    "positivePredictionObservedMean": 0.011363636363636364,
+    "predictedVp": 0.3409090909090909,
+    "selectedVariant": "garrisonThreatened-double",
+    "split": 17
+  },
+  {
+    "gainOverAllPolicyMean": 3.0416666666666665,
+    "method": "developmentFinal",
+    "observedVp": 3.25,
+    "positivePredictionCount": 13,
+    "positivePredictionObservedMean": 0.3269230769230769,
+    "predictedVp": 4.75,
+    "selectedVariant": "progressObjective-double",
+    "split": 17
+  },
+  {
+    "gainOverAllPolicyMean": 1.2916666666666667,
+    "method": "identity:M0",
+    "observedVp": 1.5,
+    "positivePredictionCount": 3,
+    "positivePredictionObservedMean": 1.6666666666666667,
+    "predictedVp": 1.3417460113901858,
+    "selectedVariant": "hqWithArmy-double",
+    "split": 17
+  },
+  {
+    "gainOverAllPolicyMean": 0.04166666666666666,
+    "method": "identity:M1",
+    "observedVp": 0.25,
+    "positivePredictionCount": 10,
+    "positivePredictionObservedMean": 0.875,
+    "predictedVp": 2.667639510917212,
+    "selectedVariant": "crowding-half",
+    "split": 17
+  },
+  {
+    "gainOverAllPolicyMean": 0.04166666666666666,
+    "method": "identity:M2",
+    "observedVp": 0.25,
+    "positivePredictionCount": 9,
+    "positivePredictionObservedMean": 1.1111111111111112,
+    "predictedVp": 2.750918495461597,
+    "selectedVariant": "crowding-half",
+    "split": 17
+  },
+  {
+    "gainOverAllPolicyMean": 1.2916666666666667,
+    "method": "identity:VP",
+    "observedVp": 1.5,
+    "positivePredictionCount": 3,
+    "positivePredictionObservedMean": 1.6666666666666667,
+    "predictedVp": 2.25,
+    "selectedVariant": "hqWithArmy-double",
+    "split": 17
+  },
+  {
+    "gainOverAllPolicyMean": 1.2916666666666667,
+    "method": "mapped:M0",
+    "observedVp": 1.5,
+    "positivePredictionCount": 15,
+    "positivePredictionObservedMean": 0.36666666666666664,
+    "predictedVp": 2.835591133004926,
+    "selectedVariant": "hqWithArmy-double",
+    "split": 17
+  },
+  {
+    "gainOverAllPolicyMean": 0.04166666666666666,
+    "method": "mapped:M1",
+    "observedVp": 0.25,
+    "positivePredictionCount": 14,
+    "positivePredictionObservedMean": 0.8392857142857143,
+    "predictedVp": 4.199393085083729,
+    "selectedVariant": "crowding-half",
+    "split": 17
+  },
+  {
+    "gainOverAllPolicyMean": 0.04166666666666666,
+    "method": "mapped:M2",
+    "observedVp": 0.25,
+    "positivePredictionCount": 14,
+    "positivePredictionObservedMean": 0.6964285714285714,
+    "predictedVp": 2.6583109658214625,
+    "selectedVariant": "crowding-half",
+    "split": 17
+  },
+  {
+    "gainOverAllPolicyMean": 1.2916666666666667,
+    "method": "mapped:steps",
+    "observedVp": 1.5,
+    "positivePredictionCount": 15,
+    "positivePredictionObservedMean": 0.4166666666666667,
+    "predictedVp": 1.1738563721267625,
+    "selectedVariant": "hqWithArmy-double",
+    "split": 17
+  },
+  {
+    "gainOverAllPolicyMean": 0.04166666666666666,
+    "method": "mapped:outOfTrace",
+    "observedVp": 0.25,
+    "positivePredictionCount": 14,
+    "positivePredictionObservedMean": 0.5714285714285714,
+    "predictedVp": 2.9733652671510318,
+    "selectedVariant": "crowding-half",
+    "split": 17
+  },
+  {
+    "gainOverAllPolicyMean": 3.0416666666666665,
+    "method": "mapped:objectiveReachColumn",
+    "observedVp": 3.25,
+    "positivePredictionCount": 18,
+    "positivePredictionObservedMean": 0.19444444444444445,
+    "predictedVp": 0.8428873414573489,
+    "selectedVariant": "assaultRatio-double",
+    "split": 17
+  },
+  {
+    "gainOverAllPolicyMean": 3.0416666666666665,
+    "method": "mapped:objectiveVpAtRisk",
+    "observedVp": 3.25,
+    "positivePredictionCount": 17,
+    "positivePredictionObservedMean": 0.04411764705882353,
+    "predictedVp": 0.6501546391752577,
+    "selectedVariant": "assaultRatio-double",
+    "split": 17
+  },
+  {
+    "gainOverAllPolicyMean": -0.9583333333333334,
+    "method": "mapped:stacksExposedAllocated",
+    "observedVp": -0.75,
+    "positivePredictionCount": 18,
+    "positivePredictionObservedMean": -0.1527777777777778,
+    "predictedVp": 0.6733041834081777,
+    "selectedVariant": "garrisonThreatened-double",
+    "split": 17
+  },
+  {
+    "gainOverAllPolicyMean": -1.7083333333333333,
+    "method": "mapped:hqsInReach",
+    "observedVp": -1.5,
+    "positivePredictionCount": 16,
+    "positivePredictionObservedMean": 0.3125,
+    "predictedVp": 1.6545876472688326,
+    "selectedVariant": "garrisonThreatened-half",
+    "split": 17
+  }
+]

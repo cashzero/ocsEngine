@@ -1,0 +1,1136 @@
+{
+  "artifactRoot": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle",
+  "counts": {
+    "climates": 2,
+    "distinctTrajectoryIdentities": 230,
+    "families": 12,
+    "games": 384,
+    "historicalReplayOk": 384,
+    "newEngineReplays": 0,
+    "pairEffects": 192,
+    "rows": 6144,
+    "savedActionIdentities": 384,
+    "savedEndpointsReconciled": 384,
+    "seedPairs": 8,
+    "variants": 24
+  },
+  "expectedResults": {
+    "file": "/home/cashlin/ocsEngine/docs/quality/evidence/ai-position-surrogacy-2026-10-19/results.json",
+    "sha256": "ec83a8bfe0932ff73d33da46525c1acd66dabc39d0960cd2936239f3467f0764"
+  },
+  "files": [
+    {
+      "group": "attack-temperate",
+      "rows": "artifacts/ai-surrogacy/rows/capture-half__attack-temperate.jsonl",
+      "rowsSha256": "f9b40288333bac942664cce5da965e2b629bd2771f6731458bcaad6d67088f3b",
+      "summary": {
+        "file": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/capture-half/attack-temperate/summary.json",
+        "sha256": "fd402bdfcc3b406204437d447c4d230bad550a9ab7a75940e45fd5cdaa571e52"
+      },
+      "variant": "capture-half"
+    },
+    {
+      "group": "attack-eastern",
+      "rows": "artifacts/ai-surrogacy/rows/capture-half__attack-eastern.jsonl",
+      "rowsSha256": "5bc84cb03612c01c849ff86b3069a4608cdb62a39aa0f26327d3993d6173c182",
+      "summary": {
+        "file": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/capture-half/attack-eastern/summary.json",
+        "sha256": "9e41fe4365ad645933502d0b450c6cdb0ea634bf789ca52e4dc73a9525f61056"
+      },
+      "variant": "capture-half"
+    },
+    {
+      "group": "attack-temperate",
+      "rows": "artifacts/ai-surrogacy/rows/capture-double__attack-temperate.jsonl",
+      "rowsSha256": "32a446abf6c1f05406055a0404c94883de20f2fd3db590d5a3473141e59ca8ea",
+      "summary": {
+        "file": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/capture-double/attack-temperate/summary.json",
+        "sha256": "e38984c0e51c8c465ae97b26329f7557d7532d86f38dd1a1685e4870bad75b8b"
+      },
+      "variant": "capture-double"
+    },
+    {
+      "group": "attack-eastern",
+      "rows": "artifacts/ai-surrogacy/rows/capture-double__attack-eastern.jsonl",
+      "rowsSha256": "127825fe9fb3a0e36b2d5abda4b9cc178741e9382d284f1dedafe14ae8914056",
+      "summary": {
+        "file": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/capture-double/attack-eastern/summary.json",
+        "sha256": "1f395d426c544a9ad896df2d2ac03b59348ce3d687f1f373d747abd8132d13b8"
+      },
+      "variant": "capture-double"
+    },
+    {
+      "group": "attack-temperate",
+      "rows": "artifacts/ai-surrogacy/rows/crowding-half__attack-temperate.jsonl",
+      "rowsSha256": "3cff5c8f9fdcae15a631c575f38804714179ce4aa059eb7da811e1614680e923",
+      "summary": {
+        "file": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/crowding-half/attack-temperate/summary.json",
+        "sha256": "43a1ca730f1c36cb8b6a4840647d44837c079be03e181d5f4300084b29abac4e"
+      },
+      "variant": "crowding-half"
+    },
+    {
+      "group": "attack-eastern",
+      "rows": "artifacts/ai-surrogacy/rows/crowding-half__attack-eastern.jsonl",
+      "rowsSha256": "854d6d68d14e1de2426411faccc0056d4f94d4981938034427a25035ae7a99c7",
+      "summary": {
+        "file": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/crowding-half/attack-eastern/summary.json",
+        "sha256": "ca115c553d4162bf4fd32e129d5d22ce0b579ef9a356621ed2f22dddafc333d3"
+      },
+      "variant": "crowding-half"
+    },
+    {
+      "group": "attack-temperate",
+      "rows": "artifacts/ai-surrogacy/rows/crowding-double__attack-temperate.jsonl",
+      "rowsSha256": "c04a69e8c4d32923c5b171e578c051a183ad88a5fca00ca448c5b0da6c8746d3",
+      "summary": {
+        "file": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/crowding-double/attack-temperate/summary.json",
+        "sha256": "949bd121a94372c16afebbd3036f3ba2dfde9a6d4cb78a74a853d832d94d47b2"
+      },
+      "variant": "crowding-double"
+    },
+    {
+      "group": "attack-eastern",
+      "rows": "artifacts/ai-surrogacy/rows/crowding-double__attack-eastern.jsonl",
+      "rowsSha256": "ad9ab952d4d25b018296677303dcc710e63eacd4e1789378efaec4c704396030",
+      "summary": {
+        "file": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/crowding-double/attack-eastern/summary.json",
+        "sha256": "d5c270ceccd16de0b216379f316d1b6affd739777816614c7ff0e658378b8915"
+      },
+      "variant": "crowding-double"
+    },
+    {
+      "group": "attack-temperate",
+      "rows": "artifacts/ai-surrogacy/rows/contactBad-half__attack-temperate.jsonl",
+      "rowsSha256": "d3d8c3504ed23cdd1397912db55f388bcdfd6793db85b02b212830d9149a12c9",
+      "summary": {
+        "file": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/contactBad-half/attack-temperate/summary.json",
+        "sha256": "ad9be55df0b3bf39d213cb1257d807382eb92b8a4497140bb0088fd3ff11a9dd"
+      },
+      "variant": "contactBad-half"
+    },
+    {
+      "group": "attack-eastern",
+      "rows": "artifacts/ai-surrogacy/rows/contactBad-half__attack-eastern.jsonl",
+      "rowsSha256": "d589901e06a6e9f689c8a87cfea7b4fee54160ac31e560d2d828a312366e1379",
+      "summary": {
+        "file": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/contactBad-half/attack-eastern/summary.json",
+        "sha256": "6d205641d8e474d22a617a33add2642723dc9d493bb75cfbbed5b02e705b9226"
+      },
+      "variant": "contactBad-half"
+    },
+    {
+      "group": "attack-temperate",
+      "rows": "artifacts/ai-surrogacy/rows/contactBad-double__attack-temperate.jsonl",
+      "rowsSha256": "4f9adeeadfd54f091ff3374d95c7b114af9273bfd86a9fc37b3fbd712847d05d",
+      "summary": {
+        "file": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/contactBad-double/attack-temperate/summary.json",
+        "sha256": "c2b472e80f332097648046cf6f2f1d6a5db5127e5fa2c297856024a56a102f9d"
+      },
+      "variant": "contactBad-double"
+    },
+    {
+      "group": "attack-eastern",
+      "rows": "artifacts/ai-surrogacy/rows/contactBad-double__attack-eastern.jsonl",
+      "rowsSha256": "698b6110ff0c1e0d6ae5ca785d873a707eba510096487f89d1e3e2620e226b7a",
+      "summary": {
+        "file": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/contactBad-double/attack-eastern/summary.json",
+        "sha256": "cf8a62f5abf1bdf362fc477ddbb58626dc64ee2efd54898fc69e5c929fdf3aff"
+      },
+      "variant": "contactBad-double"
+    },
+    {
+      "group": "attack-temperate",
+      "rows": "artifacts/ai-surrogacy/rows/outOfSupply-half__attack-temperate.jsonl",
+      "rowsSha256": "15b398d23d890f7fe2a04bef7045cbb5083bf99275998c2f76a3c114229f902f",
+      "summary": {
+        "file": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/outOfSupply-half/attack-temperate/summary.json",
+        "sha256": "d31bcfd62b86880925cae9ca0949401ba9859473aa65ba8a4f963a5cdf44ecdd"
+      },
+      "variant": "outOfSupply-half"
+    },
+    {
+      "group": "attack-eastern",
+      "rows": "artifacts/ai-surrogacy/rows/outOfSupply-half__attack-eastern.jsonl",
+      "rowsSha256": "6913ea1798f9c8a9c05f81b89b6c9d6830fc9b8eaed1cc839e9f463bd934e12d",
+      "summary": {
+        "file": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/outOfSupply-half/attack-eastern/summary.json",
+        "sha256": "22b0f7d2fa9ffedb79e707cf9724048cee6054a1ff8c9942f69694da0a006de4"
+      },
+      "variant": "outOfSupply-half"
+    },
+    {
+      "group": "attack-temperate",
+      "rows": "artifacts/ai-surrogacy/rows/outOfSupply-double__attack-temperate.jsonl",
+      "rowsSha256": "884c879c06baad19846bd94d3f23cb0afbe6e177e3845fe642821f0969d1a922",
+      "summary": {
+        "file": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/outOfSupply-double/attack-temperate/summary.json",
+        "sha256": "28de1caab33fc5039fd2f34430bd5fbb889810f8e3a335a9cd0ed68384586f6c"
+      },
+      "variant": "outOfSupply-double"
+    },
+    {
+      "group": "attack-eastern",
+      "rows": "artifacts/ai-surrogacy/rows/outOfSupply-double__attack-eastern.jsonl",
+      "rowsSha256": "96bb9ca2cfa1c56a65d2bf696c7d99f1f4ede055c4ee4d8a035b4243f065136b",
+      "summary": {
+        "file": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/outOfSupply-double/attack-eastern/summary.json",
+        "sha256": "681e3a27c0554405decff920466d0c4fac8cff4aea4a386487794329fbe7c55e"
+      },
+      "variant": "outOfSupply-double"
+    },
+    {
+      "group": "attack-temperate",
+      "rows": "artifacts/ai-surrogacy/rows/attackThreshold-half__attack-temperate.jsonl",
+      "rowsSha256": "5a5983384e86a7353f7fdbdaf4b41f23dc78ce244f9b096ea05d15c0e75e2e72",
+      "summary": {
+        "file": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/attackThreshold-half/attack-temperate/summary.json",
+        "sha256": "df91b66592234713a4e2fddc8926076f89c1f95e077b82ecbb50af0d99f729f0"
+      },
+      "variant": "attackThreshold-half"
+    },
+    {
+      "group": "attack-eastern",
+      "rows": "artifacts/ai-surrogacy/rows/attackThreshold-half__attack-eastern.jsonl",
+      "rowsSha256": "ce19a23a1c0a0a7b964488156cf2f84b51e336bdc5028040be93f97a3aa7cf11",
+      "summary": {
+        "file": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/attackThreshold-half/attack-eastern/summary.json",
+        "sha256": "d914be28a04cf778ab3bbaa79d555e92b41160e49a444a6e3225e707ac0e662d"
+      },
+      "variant": "attackThreshold-half"
+    },
+    {
+      "group": "attack-temperate",
+      "rows": "artifacts/ai-surrogacy/rows/attackThreshold-double__attack-temperate.jsonl",
+      "rowsSha256": "c27a2ae289b8d814ff82def6c16e95a8cee92802ac89c39fdf39a493b1e7f83e",
+      "summary": {
+        "file": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/attackThreshold-double/attack-temperate/summary.json",
+        "sha256": "757d7368413b83348d8886688dedbfa12c444537d7d9c6d9004347bbc210df24"
+      },
+      "variant": "attackThreshold-double"
+    },
+    {
+      "group": "attack-eastern",
+      "rows": "artifacts/ai-surrogacy/rows/attackThreshold-double__attack-eastern.jsonl",
+      "rowsSha256": "4189a0a8f146a0ede793a3cf41405c4eece35d7a8b799a1d41f83b79e9e5f586",
+      "summary": {
+        "file": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/attackThreshold-double/attack-eastern/summary.json",
+        "sha256": "1f8565c0c52a720f2c7065b78d91767e368dfa8870c27c9f9b1a2ad8fb366bce"
+      },
+      "variant": "attackThreshold-double"
+    },
+    {
+      "group": "attack-temperate",
+      "rows": "artifacts/ai-surrogacy/rows/combatSupply-half__attack-temperate.jsonl",
+      "rowsSha256": "6275dc341dd2daf8150248822f6d58dfd47e4b9a177b89855ba858ca3a3056b4",
+      "summary": {
+        "file": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/combatSupply-half/attack-temperate/summary.json",
+        "sha256": "fd077a3fb3c698e8bb9f77260dd5c7bf6915f8c0c4a34e22249f4920d548ad46"
+      },
+      "variant": "combatSupply-half"
+    },
+    {
+      "group": "attack-eastern",
+      "rows": "artifacts/ai-surrogacy/rows/combatSupply-half__attack-eastern.jsonl",
+      "rowsSha256": "e87fc2306424b09b6347e1989a8898d513bc19954d2340e9fbece8a6e43a47c7",
+      "summary": {
+        "file": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/combatSupply-half/attack-eastern/summary.json",
+        "sha256": "ccbd52c343e3cf1bf78a8c54b31a0b5163c6a232f49c0a8991213b94ad272202"
+      },
+      "variant": "combatSupply-half"
+    },
+    {
+      "group": "attack-temperate",
+      "rows": "artifacts/ai-surrogacy/rows/combatSupply-double__attack-temperate.jsonl",
+      "rowsSha256": "d6dfcfae02db165b7f54b8d819d7eaf2cf127973b5a7a144d56c60bf032de94f",
+      "summary": {
+        "file": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/combatSupply-double/attack-temperate/summary.json",
+        "sha256": "7f850592994ba743725698c293425a445b8eeb8800455254d41b329f3b61821d"
+      },
+      "variant": "combatSupply-double"
+    },
+    {
+      "group": "attack-eastern",
+      "rows": "artifacts/ai-surrogacy/rows/combatSupply-double__attack-eastern.jsonl",
+      "rowsSha256": "5e754e4d5ff89e4e50476a1ad9b5074eb8e484395df1a2add6dd43d8414f8948",
+      "summary": {
+        "file": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/combatSupply-double/attack-eastern/summary.json",
+        "sha256": "477dd5e4a2b1f2e5268cf76399e05862eb9e821c81ea85e67bb055d89b5ef844"
+      },
+      "variant": "combatSupply-double"
+    },
+    {
+      "group": "attack-temperate",
+      "rows": "artifacts/ai-surrogacy/rows/assaultRatio-half__attack-temperate.jsonl",
+      "rowsSha256": "8785ca1b9c94709ba73123d043783a9c255316906f77f84cdc20087886cc8abc",
+      "summary": {
+        "file": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/assaultRatio-half/attack-temperate/summary.json",
+        "sha256": "8f01b80bd81faa944a779a80a98e2665a29ffc0c70e480fb4fb67befdd61478c"
+      },
+      "variant": "assaultRatio-half"
+    },
+    {
+      "group": "attack-eastern",
+      "rows": "artifacts/ai-surrogacy/rows/assaultRatio-half__attack-eastern.jsonl",
+      "rowsSha256": "81c73b3d43bd5e69c5f09c81df24c09f914a6ce6891e7a9182e5813a6df31cbb",
+      "summary": {
+        "file": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/assaultRatio-half/attack-eastern/summary.json",
+        "sha256": "e9eef1fd3e99993ca4621df08aa6ffde4d6aae909124f06d3a9c7aa00a99a8b3"
+      },
+      "variant": "assaultRatio-half"
+    },
+    {
+      "group": "attack-temperate",
+      "rows": "artifacts/ai-surrogacy/rows/assaultRatio-double__attack-temperate.jsonl",
+      "rowsSha256": "f68ad52f7cf16f0c48ac9bc525af35e8ee665affae69ba75c89eddc47fc73906",
+      "summary": {
+        "file": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/assaultRatio-double/attack-temperate/summary.json",
+        "sha256": "cbd77ff03805804f33c8986234242e1f21bdf648469bafa1f540cffe330c4b88"
+      },
+      "variant": "assaultRatio-double"
+    },
+    {
+      "group": "attack-eastern",
+      "rows": "artifacts/ai-surrogacy/rows/assaultRatio-double__attack-eastern.jsonl",
+      "rowsSha256": "76f83f3ea38c36e2fc2f2ab71737bd07e41c3a375523d8955b19c77cefd8076d",
+      "summary": {
+        "file": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/assaultRatio-double/attack-eastern/summary.json",
+        "sha256": "171d317f4b1e264e26ebffa22d986c15baa96949ad5d60d9bf06b5a727cb597a"
+      },
+      "variant": "assaultRatio-double"
+    },
+    {
+      "group": "attack-temperate",
+      "rows": "artifacts/ai-surrogacy/rows/garrisonThreatened-half__attack-temperate.jsonl",
+      "rowsSha256": "56ff51200cf405d6239eb9a3caf27f3bd572b1c1b42dda1e47209131f50812ad",
+      "summary": {
+        "file": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/garrisonThreatened-half/attack-temperate/summary.json",
+        "sha256": "8130d6a0948a30e0b11bc09cc632361151984242a2ee02fdbdc25c871e7935c4"
+      },
+      "variant": "garrisonThreatened-half"
+    },
+    {
+      "group": "attack-eastern",
+      "rows": "artifacts/ai-surrogacy/rows/garrisonThreatened-half__attack-eastern.jsonl",
+      "rowsSha256": "77d640a9a85368da7c9530440a8907461df3789f466f2ec4d91631bfd65a018f",
+      "summary": {
+        "file": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/garrisonThreatened-half/attack-eastern/summary.json",
+        "sha256": "d3d8139414f2c7a90e99a9cc4e522cb870d49d5baccce71bb7d1271ae475b4fc"
+      },
+      "variant": "garrisonThreatened-half"
+    },
+    {
+      "group": "attack-temperate",
+      "rows": "artifacts/ai-surrogacy/rows/garrisonThreatened-double__attack-temperate.jsonl",
+      "rowsSha256": "cd00f63ea194e5778c2027ee374d17ffc6789139694381c156a527c56e115262",
+      "summary": {
+        "file": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/garrisonThreatened-double/attack-temperate/summary.json",
+        "sha256": "cb858c7436974cb88a7d0764c44801b948b6fae2439cdb07b047a6138dc9ff4e"
+      },
+      "variant": "garrisonThreatened-double"
+    },
+    {
+      "group": "attack-eastern",
+      "rows": "artifacts/ai-surrogacy/rows/garrisonThreatened-double__attack-eastern.jsonl",
+      "rowsSha256": "89b70ae95292e5a1009ba382eaafce20d6750387bd05355a658044fa5a6814ea",
+      "summary": {
+        "file": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/garrisonThreatened-double/attack-eastern/summary.json",
+        "sha256": "091ba8e6adb169a3e0f2d47a630c225a10bf4d9a76fc342a90db5d17807be240"
+      },
+      "variant": "garrisonThreatened-double"
+    },
+    {
+      "group": "attack-temperate",
+      "rows": "artifacts/ai-surrogacy/rows/holdRatio-half__attack-temperate.jsonl",
+      "rowsSha256": "a5b497ddfdec8c885720cc9295a661b0476c04f57a861ceb3d87ab9de011926a",
+      "summary": {
+        "file": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/holdRatio-half/attack-temperate/summary.json",
+        "sha256": "ee076489aad2d79ed62ff371ebb08bc17562c767f2a741feead84404b256f7ee"
+      },
+      "variant": "holdRatio-half"
+    },
+    {
+      "group": "attack-eastern",
+      "rows": "artifacts/ai-surrogacy/rows/holdRatio-half__attack-eastern.jsonl",
+      "rowsSha256": "13dbff7edc36b15ab83a18560c2b684da284e1d13dac293dc49d6ca977e44536",
+      "summary": {
+        "file": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/holdRatio-half/attack-eastern/summary.json",
+        "sha256": "fe53e53319ed25b8306ec568e67d9d16f49e0c621d3ec423c420b274bf241a59"
+      },
+      "variant": "holdRatio-half"
+    },
+    {
+      "group": "attack-temperate",
+      "rows": "artifacts/ai-surrogacy/rows/holdRatio-double__attack-temperate.jsonl",
+      "rowsSha256": "2108c88eda47fd97ca0ac624a57b7b1ad49fcd9310773140b94c4560f3905f02",
+      "summary": {
+        "file": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/holdRatio-double/attack-temperate/summary.json",
+        "sha256": "a0e1cd61f3355be7ed629132bd5e8f31d1d7ce92127cc6f57ca715e2589bb5be"
+      },
+      "variant": "holdRatio-double"
+    },
+    {
+      "group": "attack-eastern",
+      "rows": "artifacts/ai-surrogacy/rows/holdRatio-double__attack-eastern.jsonl",
+      "rowsSha256": "4028de13da623d0d0149dadb5c837c88901f842526beedbef0711a39f64cfb76",
+      "summary": {
+        "file": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/holdRatio-double/attack-eastern/summary.json",
+        "sha256": "123b4c12325e02351033316a854a5852759f53f429ccfd1067fb2ba5c3ecf1eb"
+      },
+      "variant": "holdRatio-double"
+    },
+    {
+      "group": "attack-temperate",
+      "rows": "artifacts/ai-surrogacy/rows/progressObjective-half__attack-temperate.jsonl",
+      "rowsSha256": "753eaa0016188fa2c407334772470a05aba89dc8fcd794a6042955e0e0470fa8",
+      "summary": {
+        "file": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/progressObjective-half/attack-temperate/summary.json",
+        "sha256": "d113732a7fe72c2658cb85b6201806b4ace4e23bf4e30e2a5c2cae8dd1c86a71"
+      },
+      "variant": "progressObjective-half"
+    },
+    {
+      "group": "attack-eastern",
+      "rows": "artifacts/ai-surrogacy/rows/progressObjective-half__attack-eastern.jsonl",
+      "rowsSha256": "f91b44f69979defb33ab78e25bf9c4772ef54a2521444b228ea5dff89e97c017",
+      "summary": {
+        "file": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/progressObjective-half/attack-eastern/summary.json",
+        "sha256": "031c5bde93875a376b410bb4f504046e13c567ec05400c403076737845292e4f"
+      },
+      "variant": "progressObjective-half"
+    },
+    {
+      "group": "attack-temperate",
+      "rows": "artifacts/ai-surrogacy/rows/progressObjective-double__attack-temperate.jsonl",
+      "rowsSha256": "734c3b47f49d356e9da02b5c36583cc6ef1a1715cd4984fd82f7aa60129432d2",
+      "summary": {
+        "file": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/progressObjective-double/attack-temperate/summary.json",
+        "sha256": "55823911ba18f78bb428238bac0a048cfd114b24dbbd0fbaf90f5aa39821c875"
+      },
+      "variant": "progressObjective-double"
+    },
+    {
+      "group": "attack-eastern",
+      "rows": "artifacts/ai-surrogacy/rows/progressObjective-double__attack-eastern.jsonl",
+      "rowsSha256": "971d59c153f0c753a7f62d9992359c7c23a45979f7ac1a8753592ec0a5e11f16",
+      "summary": {
+        "file": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/progressObjective-double/attack-eastern/summary.json",
+        "sha256": "aab630c8751476517033b353a8589fdcdd599aaa2e55bfe01815372dbf9d9bf7"
+      },
+      "variant": "progressObjective-double"
+    },
+    {
+      "group": "attack-temperate",
+      "rows": "artifacts/ai-surrogacy/rows/defenderLoss-half__attack-temperate.jsonl",
+      "rowsSha256": "74e04f2083236bcee696b7061e164e92c446bba8b0132b02aaebec442f97f138",
+      "summary": {
+        "file": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/defenderLoss-half/attack-temperate/summary.json",
+        "sha256": "4c19ecbbc075ecad310e04e66b7186bee975b143a72ed57d1bf0304441e646a6"
+      },
+      "variant": "defenderLoss-half"
+    },
+    {
+      "group": "attack-eastern",
+      "rows": "artifacts/ai-surrogacy/rows/defenderLoss-half__attack-eastern.jsonl",
+      "rowsSha256": "fa2d4545a59f6447becece1db7639b31f294e8f0e4223b8694d32d0a4a8ae969",
+      "summary": {
+        "file": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/defenderLoss-half/attack-eastern/summary.json",
+        "sha256": "e2f6f14c34aee029efa7a804cca8d5ba7a46c413e01888f5bc0826db30af8e40"
+      },
+      "variant": "defenderLoss-half"
+    },
+    {
+      "group": "attack-temperate",
+      "rows": "artifacts/ai-surrogacy/rows/defenderLoss-double__attack-temperate.jsonl",
+      "rowsSha256": "28d9ee7c78711cb87cfecc09c78b77d1bcb4dd4c7788ddfa08d83901c5ad9351",
+      "summary": {
+        "file": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/defenderLoss-double/attack-temperate/summary.json",
+        "sha256": "b21c271ebabc7b2d47afa8e3012a66f770ba00abd3420685ec3d5c19a202eba7"
+      },
+      "variant": "defenderLoss-double"
+    },
+    {
+      "group": "attack-eastern",
+      "rows": "artifacts/ai-surrogacy/rows/defenderLoss-double__attack-eastern.jsonl",
+      "rowsSha256": "e3c792ff06b1fc6fcb987f8aeca6b9ac24d5fea6ad2ff69c52ab9514fb758c83",
+      "summary": {
+        "file": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/defenderLoss-double/attack-eastern/summary.json",
+        "sha256": "9db49d87fbf0bdd45561e0c663716549855355b570e8f9e6f384ca82e12a5808"
+      },
+      "variant": "defenderLoss-double"
+    },
+    {
+      "group": "attack-temperate",
+      "rows": "artifacts/ai-surrogacy/rows/hqWithArmy-half__attack-temperate.jsonl",
+      "rowsSha256": "cc72a778e774a1a8de7f9479eda452148f61a92ffb6bd0e80fe3f00f7362ccdb",
+      "summary": {
+        "file": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/hqWithArmy-half/attack-temperate/summary.json",
+        "sha256": "b7a828cefb41a3b4b0c4c49dc3bdae53607f16ce04f4767a57facc4c4d745dbe"
+      },
+      "variant": "hqWithArmy-half"
+    },
+    {
+      "group": "attack-eastern",
+      "rows": "artifacts/ai-surrogacy/rows/hqWithArmy-half__attack-eastern.jsonl",
+      "rowsSha256": "bcf7d97e7d2f0e07d24c477529466103aeafffd3d00aea3c7441e63aaee9e38c",
+      "summary": {
+        "file": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/hqWithArmy-half/attack-eastern/summary.json",
+        "sha256": "5ec5494db7279e78a8fcfbcad1d0788a38d8500a432d726ef926dc98d3e47116"
+      },
+      "variant": "hqWithArmy-half"
+    },
+    {
+      "group": "attack-temperate",
+      "rows": "artifacts/ai-surrogacy/rows/hqWithArmy-double__attack-temperate.jsonl",
+      "rowsSha256": "570b8e71449cb8b1598859f28dd22af89316d9d130b3c7cb0d33d9f41b8799f3",
+      "summary": {
+        "file": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/hqWithArmy-double/attack-temperate/summary.json",
+        "sha256": "146e14cac02b9055affc7bedf2727317d840e91c00bf482302ee7f85b857ee2a"
+      },
+      "variant": "hqWithArmy-double"
+    },
+    {
+      "group": "attack-eastern",
+      "rows": "artifacts/ai-surrogacy/rows/hqWithArmy-double__attack-eastern.jsonl",
+      "rowsSha256": "3fb67765ce84e2936cc19d22482f60603b78a9d1b92061c09cc59be5eeca4b1b",
+      "summary": {
+        "file": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/hqWithArmy-double/attack-eastern/summary.json",
+        "sha256": "1bbfaa65abd35449b51d05c82859dfd59bdf030f3d55fe83788747153b9f64a3"
+      },
+      "variant": "hqWithArmy-double"
+    }
+  ],
+  "fullPrecisionResults": {
+    "file": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/results.json",
+    "sha256": "9b4dad299a2b664e198999cae3e7bda231c818c7d325e33549269fa2cd8f5735"
+  },
+  "identityScope": "Save bytes, canonical accepted actions, saved hash strings, action counts and saved snapshot endpoints reconciled; replay.ok is historical summary evidence. No new engine replay or engine state-hash recomputation was performed.",
+  "manifest": {
+    "file": "/home/cashlin/ocsEngine/docs/quality/evidence/ai-position-surrogacy-2026-10-19/manifest.json",
+    "sha256": "fa9c47bb0e8acfd52c4499a78a849aa907567a2b70cf1d15f11e0f9f116b44a4"
+  },
+  "registration": {
+    "file": "/home/cashlin/ocsEngine/docs/quality/evidence/ai-position-surrogacy-2026-10-19/registration.json",
+    "sha256": "df9ce9f264632da0542fad7210043ede1449bc2c32d2f5ddc257973848609557"
+  },
+  "repositoryRoot": "/home/cashlin/ocsEngine",
+  "seedAxes": [
+    {
+      "climate": "TEMPERATE_INLAND",
+      "initialStateHash": "sha256:f1ee3812f962eb7096439176bc1e77f395b78f63a24bee11d1680474ecdbdad1",
+      "pairIndex": 0,
+      "seeds": {
+        "allied": 324741637,
+        "axis": 324741638,
+        "deployment": 324741635,
+        "map": 324741633,
+        "oob": 324741634,
+        "rules": 324741636
+      }
+    },
+    {
+      "climate": "TEMPERATE_INLAND",
+      "initialStateHash": "sha256:6700ea090ff2462869292621b9b206542ef02341f3e3fe487253fc46379a8a39",
+      "pairIndex": 1,
+      "seeds": {
+        "allied": 324741831,
+        "axis": 324741832,
+        "deployment": 324741829,
+        "map": 324741827,
+        "oob": 324741828,
+        "rules": 324741830
+      }
+    },
+    {
+      "climate": "TEMPERATE_INLAND",
+      "initialStateHash": "sha256:7d352ce10065ed5d06e973b8860dec7d080b02cfd6b434cd35d1e79deb69db93",
+      "pairIndex": 2,
+      "seeds": {
+        "allied": 324742025,
+        "axis": 324742026,
+        "deployment": 324742023,
+        "map": 324742021,
+        "oob": 324742022,
+        "rules": 324742024
+      }
+    },
+    {
+      "climate": "TEMPERATE_INLAND",
+      "initialStateHash": "sha256:abf1f6db26ff52e4af6d5534a6ea8fff15cbf7201e654a501e58dad101735b3c",
+      "pairIndex": 3,
+      "seeds": {
+        "allied": 324742219,
+        "axis": 324742220,
+        "deployment": 324742217,
+        "map": 324742215,
+        "oob": 324742216,
+        "rules": 324742218
+      }
+    },
+    {
+      "climate": "EASTERN_EUROPE",
+      "initialStateHash": "sha256:3a07f7a323cc62fa9e2cba6244d4c422c64c4103c124c6edff63a4ccb67f1ff6",
+      "pairIndex": 0,
+      "seeds": {
+        "allied": 324751337,
+        "axis": 324751338,
+        "deployment": 324751335,
+        "map": 324751333,
+        "oob": 324751334,
+        "rules": 324751336
+      }
+    },
+    {
+      "climate": "EASTERN_EUROPE",
+      "initialStateHash": "sha256:37e747d2c1b8ae0a9acb03798a44a7236e80623e84e123e77fb501316b4db67c",
+      "pairIndex": 1,
+      "seeds": {
+        "allied": 324751531,
+        "axis": 324751532,
+        "deployment": 324751529,
+        "map": 324751527,
+        "oob": 324751528,
+        "rules": 324751530
+      }
+    },
+    {
+      "climate": "EASTERN_EUROPE",
+      "initialStateHash": "sha256:8ced66e95d285a496cb67dd42d27d2b90b7357bd3a2b1c02f6d069c0eb139c35",
+      "pairIndex": 2,
+      "seeds": {
+        "allied": 324751725,
+        "axis": 324751726,
+        "deployment": 324751723,
+        "map": 324751721,
+        "oob": 324751722,
+        "rules": 324751724
+      }
+    },
+    {
+      "climate": "EASTERN_EUROPE",
+      "initialStateHash": "sha256:dd947af568e6dc74f8b7c1e7c7f76d204f55c54fc1053e09d8cdba4a1e16a242",
+      "pairIndex": 3,
+      "seeds": {
+        "allied": 324751919,
+        "axis": 324751920,
+        "deployment": 324751917,
+        "map": 324751915,
+        "oob": 324751916,
+        "rules": 324751918
+      }
+    }
+  ],
+  "sources": [
+    {
+      "file": "scripts/ai-position-final.py",
+      "sha256": "20b8aa054c84ae655d6f938f050808566cba195702676c602e49ed94e2f4777a"
+    },
+    {
+      "file": "scripts/ai-position-metrics.mjs",
+      "sha256": "e69bd80c1523ef63b1b8100f3da492ee38f4c3d31eed3992b3dd182c51489dd8"
+    },
+    {
+      "file": "scripts/ai-position-record.mjs",
+      "sha256": "682f054c23d0efc3d3390b127087bf34ed8c19fa32b3aaacb482dec47ed03c6d"
+    },
+    {
+      "file": "scripts/ai-position-surrogacy.py",
+      "sha256": "1d50ddc92bf855fe64f99add9cb800b970b005b771499c3cebd0458f920fc17d"
+    },
+    {
+      "file": "scripts/ai-position-validate.py",
+      "sha256": "91eb5b1d453a3fe102462a3bc787eff126791eb8fb447373c8592c730f06dbff"
+    },
+    {
+      "file": "scripts/ai-vp-metrics-compare.py",
+      "sha256": "00eeb924694c722d1ce47d92e44a6d1d6bae485b6728f1c9d2f0fcd80ed6a864"
+    }
+  ],
+  "training": {
+    "files": [
+      {
+        "file": "artifacts/ai-positions-p5/ai-assault__defender-1330__noeffort-eastern.jsonl",
+        "kind": "rows",
+        "sha256": "9cca4f0aa15b6bbc323b0c5d66cfd35fa6c5228cffb4fc740a7ef9ac9c394ad2",
+        "summarySha256": "f0f650a0ff645698881d19a5cbaceb2958e3eb692f4c883e59216bed3e5558a8"
+      },
+      {
+        "file": "artifacts/ai-positions-p5/ai-assault__defender-1330__noeffort-temperate.jsonl",
+        "kind": "rows",
+        "sha256": "5a50a96d7efe06cdaf2fc87c8741b5784eaf04ceeef51ec0c15c3cf3bb1576b2",
+        "summarySha256": "9855257bd813df207e69fdf8d49992062aad3b5f6e40a876292141dbbfe43580"
+      },
+      {
+        "file": "artifacts/ai-positions-p5/ai-assault__defender-1330__v83-eastern.jsonl",
+        "kind": "rows",
+        "sha256": "45ccc7d18c59b9aeade7a66416be887ae8f1f59805b3cf2f353e7f13d65f6dec",
+        "summarySha256": "ab105eb53eae6f92620a981fabc11dbc7a536c08e92324908454a0e06f499869"
+      },
+      {
+        "file": "artifacts/ai-positions-p5/ai-assault__defender-1330__v83-temperate.jsonl",
+        "kind": "rows",
+        "sha256": "b4614be7ea203dd3a7dd0d325654b5296810bed29b2ae7733b0459ac03ad99c7",
+        "summarySha256": "0d0b9a1ab78efb89856832603b0ddbec2ad816eafc2d02b378a338e1c2464c76"
+      },
+      {
+        "file": "artifacts/ai-positions-p5/ai-assault__v84-development__attack-eastern.jsonl",
+        "kind": "rows",
+        "sha256": "28bc92160ef2e98723966535bbcb46c0f686538d24c56a2cc395e3f6e164f99f",
+        "summarySha256": "73ec18a88be85c6edca40d29e8445a55300ef4635856dcfa37e74fc1eedd46fe"
+      },
+      {
+        "file": "artifacts/ai-positions-p5/ai-assault__v84-development__attack-temperate.jsonl",
+        "kind": "rows",
+        "sha256": "59260b763218119b01e3afbdccba77a87f15d159cafd0d2205c618c66aeee68a",
+        "summarySha256": "268d7a6b8a364a9addc585a6497eecb0404ea3820ebaefb72204d922759bfca0"
+      },
+      {
+        "file": "artifacts/ai-positions-p5/ai-assault__v84-development__meeting-eastern.jsonl",
+        "kind": "rows",
+        "sha256": "0bf298d5a262b1f1c095b9cc2ea0756f74d80382fa2c9cc55497bdc407424a9b",
+        "summarySha256": "8bcfddbb3fae1b748520a87c2bbf75f99c1e6aa5c454107177acbfab37f1c972"
+      },
+      {
+        "file": "artifacts/ai-positions-p5/ai-assault__v84-development__meeting-temperate.jsonl",
+        "kind": "rows",
+        "sha256": "4c6b2766290761aaa76ca535a172b59d33868451655918b9bb476c3a67059e55",
+        "summarySha256": "51218415b77df1e07d1e30326429100b47f5136097d9f0522dcef84c8105cafa"
+      },
+      {
+        "file": "artifacts/ai-positions-p5/ai-continue__ration-fix-games__attack-eastern.jsonl",
+        "kind": "rows",
+        "sha256": "4c882877755f73a9eb4928b6a25aa1d27aceb57d692dd2e5309633c0c7a66af1",
+        "summarySha256": "0d61b02a4ef9b51c51c7176f499e8d8adbf4c6d92c8cba285c526d4bbb2a9a02"
+      },
+      {
+        "file": "artifacts/ai-positions-p5/ai-continue__ration-fix-games__attack-temperate.jsonl",
+        "kind": "rows",
+        "sha256": "59da2feb1cf2aec567068ee519540027db72e8cde4ac35649c349960f0f5aa19",
+        "summarySha256": "92a30a6a449833aa91debd5b46f56578ec4129528a6a2aadf0b21f9694494c49"
+      },
+      {
+        "file": "artifacts/ai-positions-p5/ai-continue__ration-fix-games__meeting-eastern.jsonl",
+        "kind": "rows",
+        "sha256": "3bedebf6fd96acac05ac6f03f72c13931e6a089349aa03259a2f3eeb58865014",
+        "summarySha256": "f4e8981a68f03750e8d6a3e9441c14422fcd9da30f51ff80c8d038201603340a"
+      },
+      {
+        "file": "artifacts/ai-positions-p5/ai-continue__ration-fix-games__meeting-temperate.jsonl",
+        "kind": "rows",
+        "sha256": "03edb2e2f1471bc232782679fc6a1b7904f99c4b01ac0ce78e808bde0e07f10d",
+        "summarySha256": "765d79b4073d633df0f76d276c1ea7a269c295a4c23394d920dfd7000781a67e"
+      },
+      {
+        "file": "artifacts/ai-positions-p5/ai-promotion__frozen-v81-development__attack-eastern.jsonl",
+        "kind": "rows",
+        "sha256": "7816b28bd9636b24a864e7d8e9f79c0faf7658fc9a88021d44b7fe1294310f78",
+        "summarySha256": "3ed9924ff7ec1b5bc6c62cd6751df068cf11eeb62454977897ed82283cd06bf8"
+      },
+      {
+        "file": "artifacts/ai-positions-p5/ai-promotion__frozen-v81-development__attack-temperate.jsonl",
+        "kind": "rows",
+        "sha256": "128ddd7b0ffd47b569a7c9153224f492d1b343971e66f945d7186ea49e8d3aad",
+        "summarySha256": "4f09c3768054aa37a936414f19170cc63dbc437877224fbbcabe760da8c6bc1a"
+      },
+      {
+        "file": "artifacts/ai-positions-p5/ai-promotion__frozen-v81-development__meeting-eastern.jsonl",
+        "kind": "rows",
+        "sha256": "f4e0144839fd8b5a33a04e678f646835f01c2183ab8500881272a6f46e50ca27",
+        "summarySha256": "597eaa8a3ef71e370370bb52e157f1ce9780b6010194dc2703c35fb0ce39a9b9"
+      },
+      {
+        "file": "artifacts/ai-positions-p5/ai-promotion__frozen-v81-development__meeting-temperate.jsonl",
+        "kind": "rows",
+        "sha256": "8fc2efcc7956a5b8cd3b9d7d07fd52db779269a0965945360744b68afc89cdeb",
+        "summarySha256": "6fc1ebdc83594854eb84d8c508c7f1d9599abad93ac41f1d91c19078c0ade21f"
+      },
+      {
+        "file": "artifacts/ai-positions-p5/ai-promotion__frozen-v82r-independent__attack-eastern.jsonl",
+        "kind": "rows",
+        "sha256": "9cc5214daf77fddcc76273605c5fbf7bd26d615bf0af8c2a86ac65ff71e69f2e",
+        "summarySha256": "0a03ae6a4ed80a58a8b6365a9b4808029f6ac837219ee7212477ff5f35306f3e"
+      },
+      {
+        "file": "artifacts/ai-positions-p5/ai-promotion__frozen-v82r-independent__attack-temperate.jsonl",
+        "kind": "rows",
+        "sha256": "dd20031bfab5dba2475ee31a8156d849096b7f5b46a0c9f4603d5c8eee4cbb9d",
+        "summarySha256": "aa41a9528df2311f78fea938121cca196a7f9b990d50b3e3ff3a813e442aa790"
+      },
+      {
+        "file": "artifacts/ai-positions-p5/ai-promotion__frozen-v82r-independent__meeting-eastern.jsonl",
+        "kind": "rows",
+        "sha256": "cbb23253efb49d7a63afd1122113a7fb272a35c04e2bfd1853d7de10a00411e5",
+        "summarySha256": "c81b6de3d4113365aa5c4b9de6fad9b6fa44b0a1fb719025bf474df2590f1905"
+      },
+      {
+        "file": "artifacts/ai-positions-p5/ai-promotion__frozen-v82r-independent__meeting-temperate.jsonl",
+        "kind": "rows",
+        "sha256": "7c74a9cb0a7fe039ca36c65cc4e2e232a667340c35a4c7dc0b5ce0fd073d438e",
+        "summarySha256": "649cbc9cbd697d19057b44c111d48d792436767a5cee8f9f7b2e87cda7f79344"
+      },
+      {
+        "file": "artifacts/ai-positions-p5/ai-promotion__frozen-v85-development__attack-eastern.jsonl",
+        "kind": "rows",
+        "sha256": "a81ff9812397f88b10eeca9eff066b1dc109300944548b12d6ce842035f52179",
+        "summarySha256": "9d8f11892b64887d6923a8aeef4bc4d93d319af228af6da69e4dceedbd48c1da"
+      },
+      {
+        "file": "artifacts/ai-positions-p5/ai-promotion__frozen-v85-development__attack-temperate.jsonl",
+        "kind": "rows",
+        "sha256": "ad3f0c883d477f495bd356d0ed7f4c958446b53264ee413609c3af12d8f6757f",
+        "summarySha256": "ef7610ed405e8e75479ef347677df2a0ab19083e02f5c028e57edb38f402163c"
+      },
+      {
+        "file": "artifacts/ai-positions-p5/ai-promotion__frozen-v85-development__meeting-eastern.jsonl",
+        "kind": "rows",
+        "sha256": "7613c4252d95a0388b277a274d65bedc87cf3d42e23b6cb18e8fe01613f1beef",
+        "summarySha256": "d39f2c04e9cff1c019bdb1c982b7980fccc9e7251ca35306069b24e23f232bb6"
+      },
+      {
+        "file": "artifacts/ai-positions-p5/ai-promotion__frozen-v85-development__meeting-temperate.jsonl",
+        "kind": "rows",
+        "sha256": "c03bf9e250b01ee042086fd83d6e227eb7b5749afaf9b48f6fe3643c37fbe79b",
+        "summarySha256": "2400c5b5a78a09ac534d3c802ea69f0c3b55c3cf3eaa6bafc413088c11534c43"
+      },
+      {
+        "file": "artifacts/ai-positions-p5/validation/results.json",
+        "kind": "analysis",
+        "sha256": "907937c2fb1f3336e3fc4d5353c634564361d9fa25ad46939c79e4a5ef74842b"
+      }
+    ],
+    "manifest": "/home/cashlin/ocsEngine/docs/quality/evidence/ai-position-metrics-p5-2026-10-19/manifest.json",
+    "manifestSha256": "162b19ab5f5074e9acb5431554da6caf9e9df0f66714874b1952d342c545e9e8",
+    "metricOnlyDistinct": 252,
+    "metricOnlyIdentityCollisions": [
+      [
+        "bdebc704ed6ad291fa94a13485e09ae81a41c5fd2618c349ba4abead7737b4b7",
+        "f9a4b852b43b68333a16a4fee15097de149e4f650b52635cbf7d9038cea79b06",
+        "a3ce9c7b1bce4314a10f6dd6f019a8ff7089c4336f80a04946d10e556474e4de"
+      ],
+      [
+        "7324782053465b080b791e28cf3945c59cfb30ae9775867283be202329def085",
+        "34bc432a8e1d1bb41638c32c992412963b58ed35685e7eb0bfa418ab06803098"
+      ]
+    ]
+  },
+  "trainingGT4AxisAttackSamples": 186,
+  "trainingGames": 255,
+  "trainingMapSeeds": [
+    295641633,
+    295641827,
+    295642021,
+    295642215,
+    295651333,
+    295651527,
+    295651721,
+    295651915,
+    295661033,
+    295661227,
+    295661421,
+    295661615,
+    295670733,
+    295670927,
+    295671121,
+    295671315,
+    298551633,
+    298551827,
+    298552021,
+    298552215,
+    298552409,
+    298552603,
+    298552797,
+    298552991,
+    298553185,
+    298553379,
+    298553573,
+    298553767,
+    298553961,
+    298554155,
+    298554349,
+    298554543,
+    298554737,
+    298554931,
+    298555125,
+    298555319,
+    298561333,
+    298561527,
+    298561721,
+    298561915,
+    298562109,
+    298562303,
+    298562497,
+    298562691,
+    298562885,
+    298563079,
+    298563273,
+    298563467,
+    298563661,
+    298563855,
+    298564049,
+    298564243,
+    298564437,
+    298564631,
+    298564825,
+    298565019,
+    955241633,
+    955241827,
+    955242021,
+    955242215,
+    955242409,
+    955242603,
+    955242797,
+    955242991,
+    955243185,
+    955243379,
+    955251333,
+    955251527,
+    955251721,
+    955251915,
+    955252109,
+    955252303,
+    955252497,
+    955252691,
+    955252885,
+    955253079,
+    955261033,
+    955261227,
+    955261421,
+    955261615,
+    955261809,
+    955262003,
+    955262197,
+    955262391,
+    955262585,
+    955262779,
+    955270733,
+    955270927,
+    955271121,
+    955271315,
+    955271509,
+    955271703,
+    955271897,
+    955272091,
+    955272285,
+    955272479
+  ],
+  "variantAxes": [
+    {
+      "direction": "half",
+      "family": "capture",
+      "variant": "capture-half"
+    },
+    {
+      "direction": "double",
+      "family": "capture",
+      "variant": "capture-double"
+    },
+    {
+      "direction": "half",
+      "family": "crowding",
+      "variant": "crowding-half"
+    },
+    {
+      "direction": "double",
+      "family": "crowding",
+      "variant": "crowding-double"
+    },
+    {
+      "direction": "half",
+      "family": "contactBad",
+      "variant": "contactBad-half"
+    },
+    {
+      "direction": "double",
+      "family": "contactBad",
+      "variant": "contactBad-double"
+    },
+    {
+      "direction": "half",
+      "family": "outOfSupply",
+      "variant": "outOfSupply-half"
+    },
+    {
+      "direction": "double",
+      "family": "outOfSupply",
+      "variant": "outOfSupply-double"
+    },
+    {
+      "direction": "half",
+      "family": "attackThreshold",
+      "variant": "attackThreshold-half"
+    },
+    {
+      "direction": "double",
+      "family": "attackThreshold",
+      "variant": "attackThreshold-double"
+    },
+    {
+      "direction": "half",
+      "family": "combatSupply",
+      "variant": "combatSupply-half"
+    },
+    {
+      "direction": "double",
+      "family": "combatSupply",
+      "variant": "combatSupply-double"
+    },
+    {
+      "direction": "half",
+      "family": "assaultRatio",
+      "variant": "assaultRatio-half"
+    },
+    {
+      "direction": "double",
+      "family": "assaultRatio",
+      "variant": "assaultRatio-double"
+    },
+    {
+      "direction": "half",
+      "family": "garrisonThreatened",
+      "variant": "garrisonThreatened-half"
+    },
+    {
+      "direction": "double",
+      "family": "garrisonThreatened",
+      "variant": "garrisonThreatened-double"
+    },
+    {
+      "direction": "half",
+      "family": "holdRatio",
+      "variant": "holdRatio-half"
+    },
+    {
+      "direction": "double",
+      "family": "holdRatio",
+      "variant": "holdRatio-double"
+    },
+    {
+      "direction": "half",
+      "family": "progressObjective",
+      "variant": "progressObjective-half"
+    },
+    {
+      "direction": "double",
+      "family": "progressObjective",
+      "variant": "progressObjective-double"
+    },
+    {
+      "direction": "half",
+      "family": "defenderLoss",
+      "variant": "defenderLoss-half"
+    },
+    {
+      "direction": "double",
+      "family": "defenderLoss",
+      "variant": "defenderLoss-double"
+    },
+    {
+      "direction": "half",
+      "family": "hqWithArmy",
+      "variant": "hqWithArmy-half"
+    },
+    {
+      "direction": "double",
+      "family": "hqWithArmy",
+      "variant": "hqWithArmy-double"
+    }
+  ],
+  "weights": [
+    {
+      "file": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/weights/capture-half.json",
+      "sha256": "f83d2d3d66afd80b6311ef5dedef11be058897a879c53d96ae26b2c4b5dea351"
+    },
+    {
+      "file": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/weights/capture-double.json",
+      "sha256": "bfadd9fb5faed520783bc9ef1306f41b1396a63d3de7d24df332c0f62ea9af6f"
+    },
+    {
+      "file": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/weights/crowding-half.json",
+      "sha256": "4d8b8d9db93f590b2fd9d423ae507928082d7b30f5b5349ebe694923e8721a41"
+    },
+    {
+      "file": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/weights/crowding-double.json",
+      "sha256": "55ea7133e358fd20dbd2fe0cfc51e9154d96f0b8805ce879c0ccdff62933e20e"
+    },
+    {
+      "file": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/weights/contactBad-half.json",
+      "sha256": "5a1b7dbc5f27c85a9878314e730b0b2c0001ece2b486a71423eb6ef23ea54d19"
+    },
+    {
+      "file": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/weights/contactBad-double.json",
+      "sha256": "aca4e2fe275cf1bf83f44103127a7e818b40bdc368cefe1b4b17b92d52d2ddb7"
+    },
+    {
+      "file": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/weights/outOfSupply-half.json",
+      "sha256": "bccbd49488cf5a07a29d61735e2f32a0d21878085b3161d0a108840008eb6554"
+    },
+    {
+      "file": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/weights/outOfSupply-double.json",
+      "sha256": "05a523b704f3f9cda7c210b3180b93f0754c04c0f74549bfcab33b0a66d9da3e"
+    },
+    {
+      "file": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/weights/attackThreshold-half.json",
+      "sha256": "7764acc4d36f11975345dc00d0cad952b875d1407cd177b01c19525b0e075121"
+    },
+    {
+      "file": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/weights/attackThreshold-double.json",
+      "sha256": "4f258dfcb960da9b51a7b650808a275fd5b038dbb449db1a73500fa4e0943a82"
+    },
+    {
+      "file": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/weights/combatSupply-half.json",
+      "sha256": "e42742d578fe0bf3eed217539e100b53ca4f58b9136f96caa12f4aa544d1d17c"
+    },
+    {
+      "file": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/weights/combatSupply-double.json",
+      "sha256": "ed04cef5c1501423d54343c1a1305a8281bc5336ef21c033558ba21ea9de6fd9"
+    },
+    {
+      "file": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/weights/assaultRatio-half.json",
+      "sha256": "06dd2f791d355cfb5da8cfaa937c48c2aeb7c40207ad5e493f0e1952b53c9f3f"
+    },
+    {
+      "file": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/weights/assaultRatio-double.json",
+      "sha256": "989fa7a54b508c41c25bc2451a00e3e8e5d30dff7cc6b0ca63ec4256dc4e25a4"
+    },
+    {
+      "file": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/weights/garrisonThreatened-half.json",
+      "sha256": "189bde70645e35a32c4c5fd1e0c8370146250a9889ff7c38a2d95cf1603f57ce"
+    },
+    {
+      "file": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/weights/garrisonThreatened-double.json",
+      "sha256": "4b074b9ee3f9b8aae72624a51116d5e436e34f1d267a1df752824ca78176c05b"
+    },
+    {
+      "file": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/weights/holdRatio-half.json",
+      "sha256": "e9ad86bd9dfbe953f60774a17e2b2e4ebf09093400fb16099fc0b71e2d6f6550"
+    },
+    {
+      "file": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/weights/holdRatio-double.json",
+      "sha256": "cbd67b0f25c6c2f0756c8d5e4a4fc6b3216280206e2474ac3be0161275ee4ad4"
+    },
+    {
+      "file": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/weights/progressObjective-half.json",
+      "sha256": "b1006eb3bc94667329374a397cbe797543afb42cd08ad408e0fd1c118962fcce"
+    },
+    {
+      "file": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/weights/progressObjective-double.json",
+      "sha256": "62d953c41592c626673c567db7da9a9d8ca6caef32d12bc905a8eda29309622d"
+    },
+    {
+      "file": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/weights/defenderLoss-half.json",
+      "sha256": "128298aed3687e95a74daecd8d3c67d699136d5872da2f8710c3e634d418a99b"
+    },
+    {
+      "file": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/weights/defenderLoss-double.json",
+      "sha256": "413ea2c1dc81019a8ee111dd4d159d97704f1d1a8145de31bb2056d5ffee9192"
+    },
+    {
+      "file": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/weights/hqWithArmy-half.json",
+      "sha256": "339e396b9550bacb65b4d5039f1351bf4cb6fda1bd1188c288de66d21403daa5"
+    },
+    {
+      "file": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/weights/hqWithArmy-double.json",
+      "sha256": "4cbfa04b77e3fde8e978d781a0d25e2e8ec6e0fc0d808ec2c71d100fb2f4ba92"
+    }
+  ]
+}

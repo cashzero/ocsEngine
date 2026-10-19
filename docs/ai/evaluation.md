@@ -41,6 +41,7 @@
 | `scripts/ai-concentration-study.mjs` | 攻方兵力集中：戰力離敵距離與任務分佈、可攻擊格與宣告攻擊的 Combat Table 欄位、主攻群貼近目標的戰力、砲兵模式與砲擊（需 `--trace`） |
 | `scripts/ai-vp-metrics-extract.mjs`、`scripts/ai-vp-metrics-compare.py`、`scripts/ai-outcome-metrics-observer.mjs`、`scripts/ai-outcome-metrics-compare.py` | 固定回合的目標控制與戰術指標重播（含未控目標最佳有效欄位與 2 格局部兵力比）；`--advanced` 加入補給階段的共同配給條件、耗損前 RE 暴露與損失原因，四結果比較使用各自的早期基準、同角色自戰差分、留出種子與策略變體；manifest、重現方式與限制見 [VP 指標研究](vp-metrics.md) |
 | `scripts/ai-objective-replay.mjs`、`scripts/ai-objective-study.py`、`scripts/ai-objective-replay-verify.mjs` | 先後手決定後擷取同目標條件、控制事件及保有結果；逐行動比對觀測開關的 state／event hash，核對雙方 gross／signed VP；固定機率模型留出整組種子，報告 Brier、log loss、校準及 VP 誤差，見[同目標研究](objective-metrics.md) |
+| `scripts/ai-surrogate-transfer.py`、`scripts/ai-surrogate-transfer-inputs.py` | 核對 P8 來源、交換座位及歷史模型，固定早期代理值預測不同種子的改版 VP 效果；一元校準留出完整權重家族，保留猜零與開發終局基準、36 切分及共同噪音負對照，見[效果轉移驗證](policy-errors.md#改版效果能否轉移到另一批種子) |
 | `scripts/ai-narrate.mjs` | 一局 trace 的逐步摘要，供人工檢視 |
 | `scripts/ai-train.mjs` | 權重自我對戰（已停用，見「決策」） |
 

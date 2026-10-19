@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "status": "FROZEN_BEFORE_NEW_PAIR_TRANSFER_SCORES",
+  "frozenAtUtc": "2026-10-19T04:46:36.057116+00:00",
+  "baseCommit": "13821dc",
+  "turn": 4,
+  "population": "P8existing24single-weightvariants,12families,8sharedseedpairs,384games;no new matches",
+  "primaryContrast": "MSE(identity:M0)-MSE(identity:M2);positive favors M2",
+  "splits": "36oriented4development/4evaluationpairs;2of4pairs perclimate;identical acrossallvariants",
+  "primaryPredictions": "P6historicalGT4M0andM2predictedmargins, variantseat signs averagedwithinpair,then meanoverdevelopmentseeds;no P8calibration",
+  "secondary": "identity:M1,identity:VP;OLSintercept+slope mappings of M0,M1,M2and sixregisteredmetric surrogates;exclude bothdirections ofheldweightfamily,train on22variantmeans fromdevelopmentseeds only",
+  "baselines": [
+    "zero",
+    "trainMean excludingheldfamily",
+    "developmentFinal ownAfinaleffect (requirescompleteddevelopmentgames)"
+  ],
+  "scores": [
+    "MSE",
+    "MAE",
+    "bias",
+    "signed correlation",
+    "MSEskillagainstzero"
+  ],
+  "uncertainty": {
+    "draws": 10000,
+    "seed": 20261019,
+    "unit": "12weightfamilymeanpairederrordifferences",
+    "scope": "conditional fixed-prediction familyresampling;no refit,no map-population or independent864row coverage;explicitly label descriptive"
+  },
+  "syntheticControls": {
+    "replicates": 500,
+    "seed": 20261020,
+    "families": 12,
+    "directions": 2,
+    "pairs": 8,
+    "modes": [
+      "transfer",
+      "sharedNoiseOnly",
+      "negativeTransfer",
+      "familyDirection"
+    ],
+    "checks": "mean directional primary/zero gains with MonteCarlo standarderrors;exactfold leakage, sign androwreorder invariants;sharednoise samepanelr2 is1but disjointprediction cannotbeat zero",
+    "requiredOutputs": "Perreplicate statistics, gainsagainstzero/trainMean, slope signs, deliberatelyleakywithin-family comparator, fullclimate/partition/familysensitivity"
+  },
+  "graft": "Signed covariance decomposition over wholevariantvectors;fold-local excludesheldfamily andevaluationseeds;full8seed moments as appendixcontext only;no correctedslopes,no latentR2,no selection",
+  "identityTolerance": {
+    "abs": 1e-08,
+    "rel": 1e-10,
+    "committedSummary": "Committed P8effects are rounded4decimals;firstreproduce manifest-hashed fullprecisionrawresults at strict tolerance,thencheckroundedcommittedvalues."
+  },
+  "sourceHashes": {
+    "scripts/ai-position-surrogacy.py": "1d50ddc92bf855fe64f99add9cb800b970b005b771499c3cebd0458f920fc17d",
+    "scripts/ai-position-final.py": "20b8aa054c84ae655d6f938f050808566cba195702676c602e49ed94e2f4777a",
+    "scripts/ai-position-validate.py": "91eb5b1d453a3fe102462a3bc787eff126791eb8fb447373c8592c730f06dbff",
+    "scripts/ai-vp-metrics-compare.py": "00eeb924694c722d1ce47d92e44a6d1d6bae485b6728f1c9d2f0fcd80ed6a864",
+    "scripts/ai-position-record.mjs": "682f054c23d0efc3d3390b127087bf34ed8c19fa32b3aaacb482dec47ed03c6d",
+    "scripts/ai-position-metrics.mjs": "e69bd80c1523ef63b1b8100f3da492ee38f4c3d31eed3992b3dd182c51489dd8"
+  },
+  "designHashes": {
+    "design-a/design.md": "f46acca4565b4c33dae4eb5cc9584911ae111ecaafb843ecb6a920d121a2716c",
+    "design-b/design.md": "07bc7d66b72b22f2b17c87da2162bb4de073bf0355fc9797ae835634bbadeedf",
+    "design-judge.md": "2b7e1947a32e6b710aafcdb8180e43b4d0390a3024d73515372e6f6a788a8ac3"
+  },
+  "selectionTieBreak": "lexical variant ID;descriptive only",
+  "reviewAmendment": "Beforeempirical scoring, complete controls retainedbydesignA andjudge;strengthen acceptance, no predictor or primarycontrast change."
+}

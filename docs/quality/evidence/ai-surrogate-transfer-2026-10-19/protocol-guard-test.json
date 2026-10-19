@@ -1,0 +1,9 @@
+{
+  "status": "VERIFIED",
+  "rejected": [
+    "unsupported protocol schema or turn",
+    "unsupported bootstrap configuration",
+    "unsupported control configuration",
+    "unsupported identity tolerance"
+  ]
+}

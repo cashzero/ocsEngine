@@ -1,0 +1,3 @@
+# Accepted design
+
+Use A as the base. Identity P6 M2 versus M0 predictions preserve VP units and avoid a new data-dependent calibration in the primary contrast. Secondary one-slope mappings exclude both members of the held weight family. Graft B's signed cross-seed covariance decomposition and exact off-diagonal algebra check. Fold-local diagnostics exclude evaluation seeds and held family; full-panel moments only contextualize the registered P8 association in an appendix. No corrected-slope estimator, latent R2, new feature selection, or new matches. The cross-judge agrees on A and this restricted graft. All controls and the protocol freeze precede new pair-transfer scores.

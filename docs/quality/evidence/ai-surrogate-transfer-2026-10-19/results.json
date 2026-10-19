@@ -1,0 +1,2673 @@
+{
+  "candidateVersusZero": {
+    "developmentFinal": {
+      "draws": 10000,
+      "estimate": -1.6276041666666667,
+      "families": 12,
+      "familyDifferences": {
+        "assaultRatio": -8.1875,
+        "attackThreshold": -1.859375,
+        "capture": 0.0,
+        "combatSupply": -3.59375,
+        "contactBad": -0.09375,
+        "crowding": -0.59375,
+        "defenderLoss": -3.140625,
+        "garrisonThreatened": 0.734375,
+        "holdRatio": -2.921875,
+        "hqWithArmy": -1.421875,
+        "outOfSupply": -1.53125,
+        "progressObjective": 3.078125
+      },
+      "lower": -3.25,
+      "scope": "descriptive family resampling conditional on fixed predictions and these maps;no refit or map-population coverage",
+      "upper": -0.20572916666666666
+    },
+    "identity:M0": {
+      "draws": 10000,
+      "estimate": 0.07437727869446267,
+      "families": 12,
+      "familyDifferences": {
+        "assaultRatio": -1.1829188265064434,
+        "attackThreshold": -0.01601392104703892,
+        "capture": 0.0,
+        "combatSupply": -0.17489894515877355,
+        "contactBad": -0.5822554528612834,
+        "crowding": -0.33979658275108565,
+        "defenderLoss": 0.08377301960765483,
+        "garrisonThreatened": 1.102136021987689,
+        "holdRatio": -0.7213653023255273,
+        "hqWithArmy": 1.0593936730435909,
+        "outOfSupply": 0.0,
+        "progressObjective": 1.6644736603447696
+      },
+      "lower": -0.35473932840639993,
+      "scope": "descriptive family resampling conditional on fixed predictions and these maps;no refit or map-population coverage",
+      "upper": 0.5367468858444359
+    },
+    "identity:M1": {
+      "draws": 10000,
+      "estimate": 0.30170963270155704,
+      "families": 12,
+      "familyDifferences": {
+        "assaultRatio": -1.7456278710965654,
+        "attackThreshold": -0.1716071095391545,
+        "capture": 0.0,
+        "combatSupply": -0.6005304665249365,
+        "contactBad": -1.1070577406899131,
+        "crowding": 1.3566852381855472,
+        "defenderLoss": 0.5696967744560708,
+        "garrisonThreatened": 1.443145964364266,
+        "holdRatio": -0.29789662833470504,
+        "hqWithArmy": 1.238172391981464,
+        "outOfSupply": -0.12646907623718484,
+        "progressObjective": 3.062004115853796
+      },
+      "lower": -0.3960112929697705,
+      "scope": "descriptive family resampling conditional on fixed predictions and these maps;no refit or map-population coverage",
+      "upper": 1.0338305406147148
+    },
+    "identity:M2": {
+      "draws": 10000,
+      "estimate": 0.17736128523042652,
+      "families": 12,
+      "familyDifferences": {
+        "assaultRatio": -3.19335414458487,
+        "attackThreshold": -0.06983627021197598,
+        "capture": 0.0,
+        "combatSupply": -0.49252557356247073,
+        "contactBad": -0.8023565176857255,
+        "crowding": 1.4119936411019642,
+        "defenderLoss": 0.3109486161573989,
+        "garrisonThreatened": 1.6939278998485185,
+        "holdRatio": -1.9347568069586392,
+        "hqWithArmy": 0.51927561045716,
+        "outOfSupply": -0.1428109405620099,
+        "progressObjective": 4.827829908765768
+      },
+      "lower": -0.8663457659315342,
+      "scope": "descriptive family resampling conditional on fixed predictions and these maps;no refit or map-population coverage",
+      "upper": 1.3033020179237245
+    },
+    "identity:VP": {
+      "draws": 10000,
+      "estimate": -0.04557291666666666,
+      "families": 12,
+      "familyDifferences": {
+        "assaultRatio": -2.40625,
+        "attackThreshold": -0.052083333333333336,
+        "capture": 0.0,
+        "combatSupply": -0.34375,
+        "contactBad": -1.0520833333333333,
+        "crowding": -0.796875,
+        "defenderLoss": -0.1875,
+        "garrisonThreatened": 1.703125,
+        "holdRatio": -1.2916666666666667,
+        "hqWithArmy": 1.265625,
+        "outOfSupply": 0.0,
+        "progressObjective": 2.6145833333333335
+      },
+      "lower": -0.7738715277777778,
+      "scope": "descriptive family resampling conditional on fixed predictions and these maps;no refit or map-population coverage",
+      "upper": 0.7109375
+    },
+    "mapped:M0": {
+      "draws": 10000,
+      "estimate": -0.8354762208151764,
+      "families": 12,
+      "familyDifferences": {
+        "assaultRatio": -5.753951056664142,
+        "attackThreshold": -0.11563069866883982,
+        "capture": -0.08624806349623915,
+        "combatSupply": -0.6397562379515376,
+        "contactBad": -2.045216341901366,
+        "crowding": -0.22426931733592476,
+        "defenderLoss": -2.2031385756129507,
+        "garrisonThreatened": 0.08305007219514651,
+        "holdRatio": -2.00380837059913,
+        "hqWithArmy": 0.8747704061949848,
+        "outOfSupply": -0.3532284881368501,
+        "progressObjective": 2.4417120221947317
+      },
+      "lower": -2.0416948807583326,
+      "scope": "descriptive family resampling conditional on fixed predictions and these maps;no refit or map-population coverage",
+      "upper": 0.16887501295758164
+    },
+    "mapped:M1": {
+      "draws": 10000,
+      "estimate": -0.43710724915466753,
+      "families": 12,
+      "familyDifferences": {
+        "assaultRatio": -3.2578016679176316,
+        "attackThreshold": -1.0500487024991223,
+        "capture": -0.05963179841364742,
+        "combatSupply": -1.0725727746691665,
+        "contactBad": -1.1800530680357681,
+        "crowding": -1.3229661648194346,
+        "defenderLoss": 0.011174559106499345,
+        "garrisonThreatened": 0.7762285443458624,
+        "holdRatio": -1.0144773048916904,
+        "hqWithArmy": 0.3203366284516691,
+        "outOfSupply": 0.020401956164869155,
+        "progressObjective": 2.5841228033215504
+      },
+      "lower": -1.2008861874261383,
+      "scope": "descriptive family resampling conditional on fixed predictions and these maps;no refit or map-population coverage",
+      "upper": 0.3413449158365878
+    },
+    "mapped:M2": {
+      "draws": 10000,
+      "estimate": -0.6209900737770085,
+      "families": 12,
+      "familyDifferences": {
+        "assaultRatio": -4.772469904875698,
+        "attackThreshold": -0.31124564078431427,
+        "capture": -0.05356674464765891,
+        "combatSupply": -0.7910983511680832,
+        "contactBad": -0.46978526250144387,
+        "crowding": -1.308861547543038,
+        "defenderLoss": -0.5073297505854503,
+        "garrisonThreatened": 0.15485662947814044,
+        "holdRatio": -3.4429629201567784,
+        "hqWithArmy": 0.379030568384943,
+        "outOfSupply": -0.20333118599365108,
+        "progressObjective": 3.8748832250689307
+      },
+      "lower": -1.7704880428522045,
+      "scope": "descriptive family resampling conditional on fixed predictions and these maps;no refit or map-population coverage",
+      "upper": 0.5008733207537316
+    },
+    "mapped:hqsInReach": {
+      "draws": 10000,
+      "estimate": -0.19253043045036167,
+      "families": 12,
+      "familyDifferences": {
+        "assaultRatio": -0.8885267223015849,
+        "attackThreshold": -0.0796886522698148,
+        "capture": -0.05266778828501542,
+        "combatSupply": -0.21104362152692738,
+        "contactBad": -0.32220197817022866,
+        "crowding": 1.3216439158256217,
+        "defenderLoss": -0.8761674011652015,
+        "garrisonThreatened": -3.402490631778691,
+        "holdRatio": 0.45985433654692326,
+        "hqWithArmy": -0.15829438850816596,
+        "outOfSupply": -0.1662688267221937,
+        "progressObjective": 2.0654865929509385
+      },
+      "lower": -0.949480831621227,
+      "scope": "descriptive family resampling conditional on fixed predictions and these maps;no refit or map-population coverage",
+      "upper": 0.4709142927433927
+    },
+    "mapped:objectiveReachColumn": {
+      "draws": 10000,
+      "estimate": -0.832657245987713,
+      "families": 12,
+      "familyDifferences": {
+        "assaultRatio": -1.6809503616496455,
+        "attackThreshold": -0.3222842504926834,
+        "capture": -0.08288790285610874,
+        "combatSupply": -0.5643405692221712,
+        "contactBad": -1.8738925613774684,
+        "crowding": -0.21666738578532385,
+        "defenderLoss": -0.9643389434260408,
+        "garrisonThreatened": -1.1597154261499698,
+        "holdRatio": -2.73965675175338,
+        "hqWithArmy": -1.0459613655331879,
+        "outOfSupply": -0.41128007365060487,
+        "progressObjective": 1.0700886400440295
+      },
+      "lower": -1.3879164662969792,
+      "scope": "descriptive family resampling conditional on fixed predictions and these maps;no refit or map-population coverage",
+      "upper": -0.3089140930521744
+    },
+    "mapped:objectiveVpAtRisk": {
+      "draws": 10000,
+      "estimate": -0.512395620495454,
+      "families": 12,
+      "familyDifferences": {
+        "assaultRatio": 0.30843859463284073,
+        "attackThreshold": -0.04092913519683121,
+        "capture": -0.05517243430159821,
+        "combatSupply": -0.16761140102456284,
+        "contactBad": -0.5667606595977134,
+        "crowding": -0.2683667197349776,
+        "defenderLoss": -0.9464839515006579,
+        "garrisonThreatened": -2.161254202048113,
+        "holdRatio": -0.5321958390923557,
+        "hqWithArmy": -1.2345665426095398,
+        "outOfSupply": -0.35175329458758886,
+        "progressObjective": -0.1320918608843498
+      },
+      "lower": -0.9055257748215456,
+      "scope": "descriptive family resampling conditional on fixed predictions and these maps;no refit or map-population coverage",
+      "upper": -0.18695378461588094
+    },
+    "mapped:outOfTrace": {
+      "draws": 10000,
+      "estimate": -0.3510659480677609,
+      "families": 12,
+      "familyDifferences": {
+        "assaultRatio": 0.34790341891455,
+        "attackThreshold": 0.014624879351354703,
+        "capture": -0.036421403400190636,
+        "combatSupply": -1.2799250328226366,
+        "contactBad": -0.5495554019790624,
+        "crowding": -0.5095516534784136,
+        "defenderLoss": -0.4287426159752679,
+        "garrisonThreatened": -0.2862157118285446,
+        "holdRatio": -1.666117167891744,
+        "hqWithArmy": -0.10153036296403231,
+        "outOfSupply": 0.047227774993822774,
+        "progressObjective": 0.2355119002670333
+      },
+      "lower": -0.699446201004287,
+      "scope": "descriptive family resampling conditional on fixed predictions and these maps;no refit or map-population coverage",
+      "upper": -0.04934118715927949
+    },
+    "mapped:stacksExposedAllocated": {
+      "draws": 10000,
+      "estimate": -0.46350085870938584,
+      "families": 12,
+      "familyDifferences": {
+        "assaultRatio": -0.17986145064969533,
+        "attackThreshold": -0.13185168173274842,
+        "capture": -0.07637766669531741,
+        "combatSupply": -0.33200941034429987,
+        "contactBad": -0.16209993406371168,
+        "crowding": -1.4150828039771548,
+        "defenderLoss": -1.2177716042012596,
+        "garrisonThreatened": -1.2957720164194857,
+        "holdRatio": -0.6129572940240701,
+        "hqWithArmy": 0.5886872108890843,
+        "outOfSupply": -0.4177102754515436,
+        "progressObjective": -0.30920337784242746
+      },
+      "lower": -0.7844816492784162,
+      "scope": "descriptive family resampling conditional on fixed predictions and these maps;no refit or map-population coverage",
+      "upper": -0.15960918818498146
+    },
+    "mapped:steps": {
+      "draws": 10000,
+      "estimate": -0.2616299587859097,
+      "families": 12,
+      "familyDifferences": {
+        "assaultRatio": -1.1354554036390196,
+        "attackThreshold": -0.5570752450334493,
+        "capture": -0.03458185288667752,
+        "combatSupply": -0.30903990435175066,
+        "contactBad": -0.507176404367345,
+        "crowding": -0.18840476056995015,
+        "defenderLoss": 0.05907387061401305,
+        "garrisonThreatened": -1.822938533486907,
+        "holdRatio": -0.15305695573034106,
+        "hqWithArmy": 0.7776562830073118,
+        "outOfSupply": -0.34589198079705974,
+        "progressObjective": 1.0773313818102586
+      },
+      "lower": -0.686464192986174,
+      "scope": "descriptive family resampling conditional on fixed predictions and these maps;no refit or map-population coverage",
+      "upper": 0.14395574550306434
+    },
+    "trainMean": {
+      "draws": 10000,
+      "estimate": -0.12518473083103768,
+      "families": 12,
+      "familyDifferences": {
+        "assaultRatio": 0.534392217630854,
+        "attackThreshold": 0.0040891873278236955,
+        "capture": -0.06325327134986226,
+        "combatSupply": -0.11819903581267217,
+        "contactBad": -0.02950671487603311,
+        "crowding": 0.19346160468319556,
+        "defenderLoss": -0.9607438016528926,
+        "garrisonThreatened": -1.128013085399449,
+        "holdRatio": 0.21866391184572992,
+        "hqWithArmy": 0.24539428374655647,
+        "outOfSupply": -0.37474173553719003,
+        "progressObjective": -0.023760330578512463
+      },
+      "lower": -0.40103628615702475,
+      "scope": "descriptive family resampling conditional on fixed predictions and these maps;no refit or map-population coverage",
+      "upper": 0.11670325413223137
+    }
+  },
+  "climateScores": {
+    "EASTERN_EUROPE": {
+      "primaryGain": -0.4916349108234106,
+      "scope": "same climate-balanced prediction scored on this climate evaluation mean",
+      "scores": {
+        "developmentFinal": {
+          "bias": -0.010416666666666666,
+          "count": 864,
+          "mae": 1.8020833333333333,
+          "mse": 5.705729166666667,
+          "mseSkillAgainstZero": -0.5961631860126275,
+          "signedCorrelation": 0.1644323337441148
+        },
+        "identity:M0": {
+          "bias": -0.1917048795768973,
+          "count": 864,
+          "mae": 1.379858048322886,
+          "mse": 3.5683463326087046,
+          "mseSkillAgainstZero": 0.0017642119559913017,
+          "signedCorrelation": 0.10565232292151878
+        },
+        "identity:M1": {
+          "bias": 0.028386782617751693,
+          "count": 864,
+          "mae": 1.4835398876643329,
+          "mse": 3.794406864474843,
+          "mseSkillAgainstZero": -0.06147564542861095,
+          "signedCorrelation": 0.13697316822868605
+        },
+        "identity:M2": {
+          "bias": -0.07003641177800689,
+          "count": 864,
+          "mae": 1.5175452223669614,
+          "mse": 4.059981243432115,
+          "mseSkillAgainstZero": -0.1357694007852832,
+          "signedCorrelation": 0.15740501434872173
+        },
+        "identity:VP": {
+          "bias": -0.1875,
+          "count": 864,
+          "mae": 1.4236111111111112,
+          "mse": 3.734375,
+          "mseSkillAgainstZero": -0.044681884409907724,
+          "signedCorrelation": 0.10565232292151876
+        },
+        "mapped:M0": {
+          "bias": 0.002378249810930528,
+          "count": 864,
+          "mae": 1.5670727956275117,
+          "mse": 4.346035063260875,
+          "mseSkillAgainstZero": -0.21579222750765625,
+          "signedCorrelation": -0.004651486157284166
+        },
+        "mapped:M1": {
+          "bias": 0.022664381616821536,
+          "count": 864,
+          "mae": 1.6273318268032564,
+          "mse": 4.495577406174203,
+          "mseSkillAgainstZero": -0.257626316637368,
+          "signedCorrelation": 0.09369249878078377
+        },
+        "mapped:M2": {
+          "bias": 0.024394025837162308,
+          "count": 864,
+          "mae": 1.6143761072348763,
+          "mse": 4.624327931245417,
+          "mseSkillAgainstZero": -0.2936439477403401,
+          "signedCorrelation": 0.09299132309075894
+        },
+        "mapped:hqsInReach": {
+          "bias": -0.04304499944259755,
+          "count": 864,
+          "mae": 1.4856421417313403,
+          "mse": 3.7200552757689906,
+          "mseSkillAgainstZero": -0.040675978068450025,
+          "signedCorrelation": 0.11317799195536835
+        },
+        "mapped:objectiveReachColumn": {
+          "bias": -0.05456188216326448,
+          "count": 864,
+          "mae": 1.5796141306870666,
+          "mse": 4.322108077459455,
+          "mseSkillAgainstZero": -0.2090987142382934,
+          "signedCorrelation": -0.14232189333511464
+        },
+        "mapped:objectiveVpAtRisk": {
+          "bias": -0.03967422903201779,
+          "count": 864,
+          "mae": 1.4879441517772523,
+          "mse": 4.009053206733068,
+          "mseSkillAgainstZero": -0.1215224123740879,
+          "signedCorrelation": -0.09240747442551359
+        },
+        "mapped:outOfTrace": {
+          "bias": 0.02296537910202741,
+          "count": 864,
+          "mae": 1.5546854578649854,
+          "mse": 4.35481438030848,
+          "mseSkillAgainstZero": -0.21824821906638392,
+          "signedCorrelation": 0.017831631417381585
+        },
+        "mapped:stacksExposedAllocated": {
+          "bias": -0.029434832536374685,
+          "count": 864,
+          "mae": 1.483978671661913,
+          "mse": 3.873339106461657,
+          "mseSkillAgainstZero": -0.0835567388644558,
+          "signedCorrelation": -0.019571709304377946
+        },
+        "mapped:steps": {
+          "bias": 0.010519508921492235,
+          "count": 864,
+          "mae": 1.4997777923141224,
+          "mse": 3.9250275911196875,
+          "mseSkillAgainstZero": -0.09801646065320058,
+          "signedCorrelation": 0.06756340869594796
+        },
+        "trainMean": {
+          "bias": -0.01041666666666667,
+          "count": 864,
+          "mae": 1.4202441077441077,
+          "mse": 3.651068569214876,
+          "mseSkillAgainstZero": -0.021377122810960936,
+          "signedCorrelation": -0.117755100914378
+        },
+        "zero": {
+          "bias": -0.19791666666666666,
+          "count": 864,
+          "mae": 1.3368055555555556,
+          "mse": 3.5746527777777777,
+          "mseSkillAgainstZero": 0.0,
+          "signedCorrelation": null
+        }
+      }
+    },
+    "TEMPERATE_INLAND": {
+      "primaryGain": 0.6976029238953381,
+      "scope": "same climate-balanced prediction scored on this climate evaluation mean",
+      "scores": {
+        "developmentFinal": {
+          "bias": 0.010416666666666666,
+          "count": 864,
+          "mae": 2.285300925925926,
+          "mse": 8.74392361111111,
+          "mseSkillAgainstZero": -0.1475279106858054,
+          "signedCorrelation": 0.21374932581762807
+        },
+        "identity:M0": {
+          "bias": -0.17087154624356396,
+          "count": 864,
+          "mae": 1.9032714828225508,
+          "mse": 7.477343554446815,
+          "mseSkillAgainstZero": 0.01869448909515492,
+          "signedCorrelation": 0.13604253428971158
+        },
+        "identity:M1": {
+          "bias": 0.04922011595108503,
+          "count": 864,
+          "mae": 1.8512180482915483,
+          "mse": 6.796618314566486,
+          "mseSkillAgainstZero": 0.10803095256543727,
+          "signedCorrelation": 0.32441858610622015
+        },
+        "identity:M2": {
+          "bias": -0.049203078444673566,
+          "count": 864,
+          "mae": 1.8430786035636726,
+          "mse": 6.779740630551476,
+          "mseSkillAgainstZero": 0.11024593228579405,
+          "signedCorrelation": 0.332082222247109
+        },
+        "identity:VP": {
+          "bias": -0.16666666666666666,
+          "count": 864,
+          "mae": 1.9010416666666667,
+          "mse": 7.551215277777778,
+          "mseSkillAgainstZero": 0.008999772157666897,
+          "signedCorrelation": 0.1360425342897116
+        },
+        "mapped:M0": {
+          "bias": 0.023211583144263862,
+          "count": 864,
+          "mae": 2.0725769330371753,
+          "mse": 8.519361822813922,
+          "mseSkillAgainstZero": -0.11805705398514887,
+          "signedCorrelation": -0.027571812438746013
+        },
+        "mapped:M1": {
+          "bias": 0.04349771495015487,
+          "count": 864,
+          "mae": 1.9949856502381607,
+          "mse": 7.573081536579577,
+          "mseSkillAgainstZero": 0.006130105930773233,
+          "signedCorrelation": 0.2153013882015613
+        },
+        "mapped:M2": {
+          "bias": 0.04522735917049565,
+          "count": 864,
+          "mae": 2.0201629553401315,
+          "mse": 7.8120966607530455,
+          "mseSkillAgainstZero": -0.025237565867795464,
+          "signedCorrelation": 0.19109031534533977
+        },
+        "mapped:hqsInReach": {
+          "bias": -0.022211666109264217,
+          "count": 864,
+          "mae": 2.020014126223811,
+          "mse": 7.859450029576177,
+          "mseSkillAgainstZero": -0.03145208863884208,
+          "signedCorrelation": 0.054165515642004766
+        },
+        "mapped:objectiveReachColumn": {
+          "bias": -0.03372854882993115,
+          "count": 864,
+          "mae": 2.136311847674297,
+          "mse": 8.537650858960417,
+          "mseSkillAgainstZero": -0.120457255584689,
+          "signedCorrelation": -0.1425579660943615
+        },
+        "mapped:objectiveVpAtRisk": {
+          "bias": -0.018840895698684454,
+          "count": 864,
+          "mae": 2.097751064343175,
+          "mse": 8.210182478702285,
+          "mseSkillAgainstZero": -0.07748122755354658,
+          "signedCorrelation": -0.11376956204661394
+        },
+        "mapped:outOfTrace": {
+          "bias": 0.043798712435360744,
+          "count": 864,
+          "mae": 2.035228925701407,
+          "mse": 7.5417619602714865,
+          "mseSkillAgainstZero": 0.010240398925409844,
+          "signedCorrelation": 0.17983239712651336
+        },
+        "mapped:stacksExposedAllocated": {
+          "bias": -0.00860149920304134,
+          "count": 864,
+          "mae": 2.0759884353909226,
+          "mse": 8.24810705540156,
+          "mseSkillAgainstZero": -0.08245834219897441,
+          "signedCorrelation": -0.12082588766154778
+        },
+        "mapped:steps": {
+          "bias": 0.03135284225482557,
+          "count": 864,
+          "mae": 1.969453004749182,
+          "mse": 7.792676770896576,
+          "mseSkillAgainstZero": -0.022688954211990797,
+          "signedCorrelation": 0.09035389767105866
+        },
+        "trainMean": {
+          "bias": 0.010416666666666663,
+          "count": 864,
+          "mae": 2.026278409090909,
+          "mse": 7.793745336891643,
+          "mseSkillAgainstZero": -0.022829189803961203,
+          "signedCorrelation": -0.16880188139602192
+        },
+        "zero": {
+          "bias": -0.17708333333333334,
+          "count": 864,
+          "mae": 1.9479166666666667,
+          "mse": 7.619791666666667,
+          "mseSkillAgainstZero": 0.0,
+          "signedCorrelation": null
+        }
+      }
+    }
+  },
+  "complementaryPartitions": [
+    {
+      "primaryGain": -0.4838319236493424,
+      "splits": [
+        0,
+        35
+      ]
+    },
+    {
+      "primaryGain": -0.17764169351210748,
+      "splits": [
+        1,
+        34
+      ]
+    },
+    {
+      "primaryGain": -0.42304116099168354,
+      "splits": [
+        2,
+        33
+      ]
+    },
+    {
+      "primaryGain": 0.1662382819625973,
+      "splits": [
+        3,
+        32
+      ]
+    },
+    {
+      "primaryGain": 0.004582934758526077,
+      "splits": [
+        4,
+        31
+      ]
+    },
+    {
+      "primaryGain": -0.33252181206561887,
+      "splits": [
+        5,
+        30
+      ]
+    },
+    {
+      "primaryGain": -0.07918646929544441,
+      "splits": [
+        6,
+        29
+      ]
+    },
+    {
+      "primaryGain": 0.20725984033923997,
+      "splits": [
+        7,
+        28
+      ]
+    },
+    {
+      "primaryGain": 0.07180408100727893,
+      "splits": [
+        8,
+        27
+      ]
+    },
+    {
+      "primaryGain": 0.4998255769763922,
+      "splits": [
+        9,
+        26
+      ]
+    },
+    {
+      "primaryGain": 0.4481139379199359,
+      "splits": [
+        10,
+        25
+      ]
+    },
+    {
+      "primaryGain": 0.09126527059324058,
+      "splits": [
+        11,
+        24
+      ]
+    },
+    {
+      "primaryGain": 0.271621935739905,
+      "splits": [
+        12,
+        23
+      ]
+    },
+    {
+      "primaryGain": 0.17283804318014082,
+      "splits": [
+        13,
+        22
+      ]
+    },
+    {
+      "primaryGain": -0.039089933252525404,
+      "splits": [
+        14,
+        21
+      ]
+    },
+    {
+      "primaryGain": 0.8179739299240935,
+      "splits": [
+        15,
+        20
+      ]
+    },
+    {
+      "primaryGain": 0.6897900737669317,
+      "splits": [
+        16,
+        19
+      ]
+    },
+    {
+      "primaryGain": -0.05228879575421219,
+      "splits": [
+        17,
+        18
+      ]
+    }
+  ],
+  "constantCalibrations": 0,
+  "executionContract": {
+    "calibrationFolds": 432,
+    "methods": [
+      "zero",
+      "trainMean",
+      "developmentFinal",
+      "identity:M0",
+      "identity:M1",
+      "identity:M2",
+      "identity:VP",
+      "mapped:M0",
+      "mapped:M1",
+      "mapped:M2",
+      "mapped:steps",
+      "mapped:outOfTrace",
+      "mapped:objectiveReachColumn",
+      "mapped:objectiveVpAtRisk",
+      "mapped:stacksExposedAllocated",
+      "mapped:hqsInReach"
+    ],
+    "predictionsPerMethod": 864,
+    "protocolIsMethodSelector": false,
+    "selectionTieBreak": "lexical variant ID",
+    "splitCount": 36
+  },
+  "familyScores": {
+    "assaultRatio": {
+      "developmentFinal": {
+        "bias": 0.0,
+        "count": 72,
+        "mae": 2.9583333333333335,
+        "mse": 11.104166666666666,
+        "mseSkillAgainstZero": -2.807142857142857,
+        "signedCorrelation": -1.0
+      },
+      "identity:M0": {
+        "bias": 0.034977947924779075,
+        "count": 72,
+        "mae": 1.777332446975597,
+        "mse": 4.099585493173111,
+        "mseSkillAgainstZero": -0.4055721690879237,
+        "signedCorrelation": -0.7425395688415029
+      },
+      "identity:M1": {
+        "bias": 0.3375017814874429,
+        "count": 72,
+        "mae": 1.7458429404476468,
+        "mse": 4.662294537763232,
+        "mseSkillAgainstZero": -0.5985009843759654,
+        "signedCorrelation": -0.4500659643947878
+      },
+      "identity:M2": {
+        "bias": 0.669575658767969,
+        "count": 72,
+        "mae": 1.964298318334655,
+        "mse": 6.110020811251537,
+        "mseSkillAgainstZero": -1.0948642781433842,
+        "signedCorrelation": -0.6444022547754991
+      },
+      "identity:VP": {
+        "bias": 0.3125,
+        "count": 72,
+        "mae": 1.9791666666666667,
+        "mse": 5.322916666666667,
+        "mseSkillAgainstZero": -0.8250000000000002,
+        "signedCorrelation": -0.7425395688415029
+      },
+      "mapped:M0": {
+        "bias": 0.9421686496834466,
+        "count": 72,
+        "mae": 2.295883944207456,
+        "mse": 8.670617723330809,
+        "mseSkillAgainstZero": -1.972783219427706,
+        "signedCorrelation": -0.6666842072388436
+      },
+      "mapped:M1": {
+        "bias": 0.4754558169386374,
+        "count": 72,
+        "mae": 1.9637639880333113,
+        "mse": 6.174468334584299,
+        "mseSkillAgainstZero": -1.116960571857474,
+        "signedCorrelation": -0.3842513755335068
+      },
+      "mapped:M2": {
+        "bias": 0.9185451810579119,
+        "count": 72,
+        "mae": 2.1193064356502713,
+        "mse": 7.689136571542365,
+        "mseSkillAgainstZero": -1.6362753959573824,
+        "signedCorrelation": -0.6606119539436881
+      },
+      "mapped:hqsInReach": {
+        "bias": -0.33046548577084256,
+        "count": 72,
+        "mae": 1.695927249471977,
+        "mse": 3.805193388968252,
+        "mseSkillAgainstZero": -0.30463773336054367,
+        "signedCorrelation": 0.04982753469447559
+      },
+      "mapped:objectiveReachColumn": {
+        "bias": 0.3587212277877134,
+        "count": 72,
+        "mae": 1.9409311054903284,
+        "mse": 4.597617028316312,
+        "mseSkillAgainstZero": -0.5763258382798784,
+        "signedCorrelation": -0.3564388307312794
+      },
+      "mapped:objectiveVpAtRisk": {
+        "bias": -0.19025694562784648,
+        "count": 72,
+        "mae": 1.4173711728077647,
+        "mse": 2.608228072033826,
+        "mseSkillAgainstZero": 0.10575037530268816,
+        "signedCorrelation": 0.2734681798673255
+      },
+      "mapped:outOfTrace": {
+        "bias": -0.10056666180832896,
+        "count": 72,
+        "mae": 1.4196940776102416,
+        "mse": 2.5687632477521167,
+        "mseSkillAgainstZero": 0.11928117219927425,
+        "signedCorrelation": 0.2806202299317544
+      },
+      "mapped:stacksExposedAllocated": {
+        "bias": -0.055188605851619464,
+        "count": 72,
+        "mae": 1.5079069126507578,
+        "mse": 3.096528117316362,
+        "mseSkillAgainstZero": -0.06166678307989559,
+        "signedCorrelation": 0.08549545442262099
+      },
+      "mapped:steps": {
+        "bias": 0.06826513201152334,
+        "count": 72,
+        "mae": 1.6631583411833413,
+        "mse": 4.052122070305686,
+        "mseSkillAgainstZero": -0.3892989955333783,
+        "signedCorrelation": -0.06353842176394543
+      },
+      "trainMean": {
+        "bias": -0.20454545454545456,
+        "count": 72,
+        "mae": 1.3731060606060606,
+        "mse": 2.3822744490358128,
+        "mseSkillAgainstZero": 0.18322018890200698,
+        "signedCorrelation": 0.6800084303152304
+      },
+      "zero": {
+        "bias": -0.375,
+        "count": 72,
+        "mae": 1.4791666666666667,
+        "mse": 2.9166666666666665,
+        "mseSkillAgainstZero": 0.0,
+        "signedCorrelation": null
+      }
+    },
+    "attackThreshold": {
+      "developmentFinal": {
+        "bias": 0.0,
+        "count": 72,
+        "mae": 1.375,
+        "mse": 2.53125,
+        "mseSkillAgainstZero": -2.7674418604651163,
+        "signedCorrelation": -0.8947368421052633
+      },
+      "identity:M0": {
+        "bias": -0.13704144507723254,
+        "count": 72,
+        "mae": 0.6901758766838294,
+        "mse": 0.6878889210470389,
+        "mseSkillAgainstZero": -0.0238346731862904,
+        "signedCorrelation": 0.07358513094805798
+      },
+      "identity:M1": {
+        "bias": -0.41054764278589007,
+        "count": 72,
+        "mae": 0.7498517187012638,
+        "mse": 0.8434821095391545,
+        "mseSkillAgainstZero": -0.2554152328024626,
+        "signedCorrelation": 0.31154921221843956
+      },
+      "identity:M2": {
+        "bias": -0.2708655024556405,
+        "count": 72,
+        "mae": 0.6992331171015533,
+        "mse": 0.741711270211976,
+        "mseSkillAgainstZero": -0.1039423556643364,
+        "signedCorrelation": 0.20967532499061883
+      },
+      "identity:VP": {
+        "bias": -0.1875,
+        "count": 72,
+        "mae": 0.7013888888888888,
+        "mse": 0.7239583333333334,
+        "mseSkillAgainstZero": -0.07751937984496138,
+        "signedCorrelation": 0.07358513094805799
+      },
+      "mapped:M0": {
+        "bias": 0.013683273535433778,
+        "count": 72,
+        "mae": 0.7727183916931554,
+        "mse": 0.7875056986688398,
+        "mseSkillAgainstZero": -0.17210150499548238,
+        "signedCorrelation": -0.1338816263959948
+      },
+      "mapped:M1": {
+        "bias": -0.656940487851469,
+        "count": 72,
+        "mae": 0.9829505253015243,
+        "mse": 1.7219237024991223,
+        "mseSkillAgainstZero": -1.5628631851149728,
+        "signedCorrelation": -0.10264166508169191
+      },
+      "mapped:M2": {
+        "bias": -0.2153966184585796,
+        "count": 72,
+        "mae": 0.8259007696468241,
+        "mse": 0.9831206407843143,
+        "mseSkillAgainstZero": -0.4632493258185142,
+        "signedCorrelation": -0.18852014074734919
+      },
+      "mapped:hqsInReach": {
+        "bias": -0.19485531164462305,
+        "count": 72,
+        "mae": 0.717984452795415,
+        "mse": 0.7515636522698148,
+        "mseSkillAgainstZero": -0.11860636616902664,
+        "signedCorrelation": 0.1899758097351949
+      },
+      "mapped:objectiveReachColumn": {
+        "bias": 0.11163721153176459,
+        "count": 72,
+        "mae": 0.8237792236951,
+        "mse": 0.9941592504926834,
+        "mseSkillAgainstZero": -0.47967888445422635,
+        "signedCorrelation": -0.21159735777936087
+      },
+      "mapped:objectiveVpAtRisk": {
+        "bias": 0.16484029721969748,
+        "count": 72,
+        "mae": 0.7222611515780134,
+        "mse": 0.7128041351968313,
+        "mseSkillAgainstZero": -0.06091778261853964,
+        "signedCorrelation": 0.09415449656669803
+      },
+      "mapped:outOfTrace": {
+        "bias": -0.15656766570392353,
+        "count": 72,
+        "mae": 0.6461341474227742,
+        "mse": 0.6572501206486453,
+        "mseSkillAgainstZero": 0.02176726229038839,
+        "signedCorrelation": 0.3011665223167664
+      },
+      "mapped:stacksExposedAllocated": {
+        "bias": 0.16371838887589507,
+        "count": 72,
+        "mae": 0.7693663580131161,
+        "mse": 0.8037266817327484,
+        "mseSkillAgainstZero": -0.19624436350920704,
+        "signedCorrelation": 0.06797752433664817
+      },
+      "mapped:steps": {
+        "bias": -0.3992625391752995,
+        "count": 72,
+        "mae": 0.9006964816640876,
+        "mse": 1.2289502450334495,
+        "mseSkillAgainstZero": -0.8291352484218784,
+        "signedCorrelation": -0.14608929765651624
+      },
+      "trainMean": {
+        "bias": 0.13636363636363635,
+        "count": 72,
+        "mae": 0.7089646464646465,
+        "mse": 0.6677858126721763,
+        "mseSkillAgainstZero": 0.006086232301877104,
+        "signedCorrelation": 0.1684884908392158
+      },
+      "zero": {
+        "bias": -0.0625,
+        "count": 72,
+        "mae": 0.6875,
+        "mse": 0.671875,
+        "mseSkillAgainstZero": 0.0,
+        "signedCorrelation": null
+      }
+    },
+    "capture": {
+      "developmentFinal": {
+        "bias": 0.0,
+        "count": 72,
+        "mae": 0.0,
+        "mse": 0.0,
+        "mseSkillAgainstZero": null,
+        "signedCorrelation": null
+      },
+      "identity:M0": {
+        "bias": 0.0,
+        "count": 72,
+        "mae": 0.0,
+        "mse": 0.0,
+        "mseSkillAgainstZero": null,
+        "signedCorrelation": null
+      },
+      "identity:M1": {
+        "bias": 0.0,
+        "count": 72,
+        "mae": 0.0,
+        "mse": 0.0,
+        "mseSkillAgainstZero": null,
+        "signedCorrelation": null
+      },
+      "identity:M2": {
+        "bias": 0.0,
+        "count": 72,
+        "mae": 0.0,
+        "mse": 0.0,
+        "mseSkillAgainstZero": null,
+        "signedCorrelation": null
+      },
+      "identity:VP": {
+        "bias": 0.0,
+        "count": 72,
+        "mae": 0.0,
+        "mse": 0.0,
+        "mseSkillAgainstZero": null,
+        "signedCorrelation": null
+      },
+      "mapped:M0": {
+        "bias": 0.22044342622438431,
+        "count": 72,
+        "mae": 0.24370626688994884,
+        "mse": 0.08624806349623915,
+        "mseSkillAgainstZero": null,
+        "signedCorrelation": null
+      },
+      "mapped:M1": {
+        "bias": -0.1148525378517147,
+        "count": 72,
+        "mae": 0.19634668188486615,
+        "mse": 0.05963179841364742,
+        "mseSkillAgainstZero": null,
+        "signedCorrelation": null
+      },
+      "mapped:M2": {
+        "bias": 0.06991455187301401,
+        "count": 72,
+        "mae": 0.18257282734234137,
+        "mse": 0.05356674464765891,
+        "mseSkillAgainstZero": null,
+        "signedCorrelation": null
+      },
+      "mapped:hqsInReach": {
+        "bias": 0.10081906628735396,
+        "count": 72,
+        "mae": 0.1875093024176539,
+        "mse": 0.05266778828501542,
+        "mseSkillAgainstZero": null,
+        "signedCorrelation": null
+      },
+      "mapped:objectiveReachColumn": {
+        "bias": 0.21821305523197287,
+        "count": 72,
+        "mae": 0.24357839797003505,
+        "mse": 0.08288790285610874,
+        "mseSkillAgainstZero": null,
+        "signedCorrelation": null
+      },
+      "mapped:objectiveVpAtRisk": {
+        "bias": 0.17461560225420103,
+        "count": 72,
+        "mae": 0.19720082641050563,
+        "mse": 0.05517243430159821,
+        "mseSkillAgainstZero": null,
+        "signedCorrelation": null
+      },
+      "mapped:outOfTrace": {
+        "bias": -0.07856965165346759,
+        "count": 72,
+        "mae": 0.14825083526875246,
+        "mse": 0.036421403400190636,
+        "mseSkillAgainstZero": null,
+        "signedCorrelation": null
+      },
+      "mapped:stacksExposedAllocated": {
+        "bias": 0.21376044071364547,
+        "count": 72,
+        "mae": 0.23766363866699397,
+        "mse": 0.07637766669531741,
+        "mseSkillAgainstZero": null,
+        "signedCorrelation": null
+      },
+      "mapped:steps": {
+        "bias": 0.09989228144161044,
+        "count": 72,
+        "mae": 0.15454998001060186,
+        "mse": 0.03458185288667752,
+        "mseSkillAgainstZero": null,
+        "signedCorrelation": null
+      },
+      "trainMean": {
+        "bias": 0.20454545454545453,
+        "count": 72,
+        "mae": 0.2095959595959596,
+        "mse": 0.06325327134986226,
+        "mseSkillAgainstZero": null,
+        "signedCorrelation": null
+      },
+      "zero": {
+        "bias": 0.0,
+        "count": 72,
+        "mae": 0.0,
+        "mse": 0.0,
+        "mseSkillAgainstZero": null,
+        "signedCorrelation": null
+      }
+    },
+    "combatSupply": {
+      "developmentFinal": {
+        "bias": 0.0,
+        "count": 72,
+        "mae": 1.875,
+        "mse": 5.0625,
+        "mseSkillAgainstZero": -2.4468085106382977,
+        "signedCorrelation": -0.8
+      },
+      "identity:M0": {
+        "bias": 0.10091710984553492,
+        "count": 72,
+        "mae": 1.0705276300514883,
+        "mse": 1.6436489451587735,
+        "mseSkillAgainstZero": -0.1190801328740585,
+        "signedCorrelation": -0.5797509043642027
+      },
+      "identity:M1": {
+        "bias": 0.23639975509783284,
+        "count": 72,
+        "mae": 1.2246100746030328,
+        "mse": 2.0692804665249365,
+        "mseSkillAgainstZero": -0.40887180699570136,
+        "signedCorrelation": -0.19074834519916103
+      },
+      "identity:M2": {
+        "bias": 0.0021058887191849154,
+        "count": 72,
+        "mae": 1.1688184320802846,
+        "mse": 1.961275573562471,
+        "mseSkillAgainstZero": -0.33533656072338447,
+        "signedCorrelation": -0.19880619897867322
+      },
+      "identity:VP": {
+        "bias": 0.0,
+        "count": 72,
+        "mae": 1.1041666666666667,
+        "mse": 1.8125,
+        "mseSkillAgainstZero": -0.23404255319148937,
+        "signedCorrelation": -0.5797509043642028
+      },
+      "mapped:M0": {
+        "bias": 0.1529698474734372,
+        "count": 72,
+        "mae": 1.2475647100512763,
+        "mse": 2.1085062379515374,
+        "mseSkillAgainstZero": -0.43557871520104663,
+        "signedCorrelation": -0.5446189015291765
+      },
+      "mapped:M1": {
+        "bias": 0.2152252377256566,
+        "count": 72,
+        "mae": 1.3815623531360242,
+        "mse": 2.5413227746691667,
+        "mseSkillAgainstZero": -0.7302623146683689,
+        "signedCorrelation": -0.20626359760462448
+      },
+      "mapped:M2": {
+        "bias": 0.08149470571045277,
+        "count": 72,
+        "mae": 1.29830860660335,
+        "mse": 2.259848351168083,
+        "mseSkillAgainstZero": -0.5386201539867799,
+        "signedCorrelation": -0.2816331619531739
+      },
+      "mapped:hqsInReach": {
+        "bias": 0.36228565584369776,
+        "count": 72,
+        "mae": 1.1191415108043938,
+        "mse": 1.6797936215269273,
+        "mseSkillAgainstZero": -0.14368927423109956,
+        "signedCorrelation": 0.08957882694353657
+      },
+      "mapped:objectiveReachColumn": {
+        "bias": 0.3599408471639871,
+        "count": 72,
+        "mae": 1.2216981500911195,
+        "mse": 2.0330905692221712,
+        "mseSkillAgainstZero": -0.38423187691722305,
+        "signedCorrelation": -0.2738922360952372
+      },
+      "mapped:objectiveVpAtRisk": {
+        "bias": 0.396587650341936,
+        "count": 72,
+        "mae": 1.1053995152325438,
+        "mse": 1.6363614010245628,
+        "mseSkillAgainstZero": -0.11411840069757462,
+        "signedCorrelation": -0.029768173650703316
+      },
+      "mapped:outOfTrace": {
+        "bias": 0.7958133659318496,
+        "count": 72,
+        "mae": 1.3643699461798202,
+        "mse": 2.7486750328226366,
+        "mseSkillAgainstZero": -0.8714383202196674,
+        "signedCorrelation": -0.042506720872328506
+      },
+      "mapped:stacksExposedAllocated": {
+        "bias": 0.37117312952519943,
+        "count": 72,
+        "mae": 1.15322077945364,
+        "mse": 1.8007594103442999,
+        "mseSkillAgainstZero": -0.2260489602344169,
+        "signedCorrelation": -0.035219733862317824
+      },
+      "mapped:steps": {
+        "bias": 0.08351468275213327,
+        "count": 72,
+        "mae": 1.163346883599145,
+        "mse": 1.7777899043517504,
+        "mseSkillAgainstZero": -0.210410147643745,
+        "signedCorrelation": -0.0697125322053214
+      },
+      "trainMean": {
+        "bias": 0.4772727272727273,
+        "count": 72,
+        "mae": 1.0946969696969697,
+        "mse": 1.586949035812672,
+        "mseSkillAgainstZero": -0.08047593927671293,
+        "signedCorrelation": 0.1923834864782769
+      },
+      "zero": {
+        "bias": 0.25,
+        "count": 72,
+        "mae": 1.0208333333333333,
+        "mse": 1.46875,
+        "mseSkillAgainstZero": 0.0,
+        "signedCorrelation": null
+      }
+    },
+    "contactBad": {
+      "developmentFinal": {
+        "bias": 0.0,
+        "count": 72,
+        "mae": 1.5416666666666667,
+        "mse": 3.6458333333333335,
+        "mseSkillAgainstZero": -0.02639296187683282,
+        "signedCorrelation": 0.4868035190615836
+      },
+      "identity:M0": {
+        "bias": -0.1490828901544651,
+        "count": 72,
+        "mae": 1.8088051123766873,
+        "mse": 4.134338786194617,
+        "mseSkillAgainstZero": -0.1639194236794228,
+        "signedCorrelation": -0.6487543519612495
+      },
+      "identity:M1": {
+        "bias": -0.025669610309352185,
+        "count": 72,
+        "mae": 1.8566038091117771,
+        "mse": 4.659141074023247,
+        "mseSkillAgainstZero": -0.311664349285137,
+        "signedCorrelation": -0.5766693926031815
+      },
+      "identity:M2": {
+        "bias": 0.14395654632881513,
+        "count": 72,
+        "mae": 1.7905042981013122,
+        "mse": 4.354439851019059,
+        "mseSkillAgainstZero": -0.22588335981768215,
+        "signedCorrelation": -0.3468920962235783
+      },
+      "identity:VP": {
+        "bias": -0.25,
+        "count": 72,
+        "mae": 1.9097222222222223,
+        "mse": 4.604166666666667,
+        "mseSkillAgainstZero": -0.29618768328445744,
+        "signedCorrelation": -0.6487543519612495
+      },
+      "mapped:M0": {
+        "bias": -0.22473098289141843,
+        "count": 72,
+        "mae": 2.0688898916235505,
+        "mse": 5.597299675234699,
+        "mseSkillAgainstZero": -0.5757793807112348,
+        "signedCorrelation": -0.4736770903387391
+      },
+      "mapped:M1": {
+        "bias": -0.08817661764336471,
+        "count": 72,
+        "mae": 1.8661714829223384,
+        "mse": 4.732136401369101,
+        "mseSkillAgainstZero": -0.3322143534646149,
+        "signedCorrelation": -0.5356911742289258
+      },
+      "mapped:M2": {
+        "bias": 0.2236431269250717,
+        "count": 72,
+        "mae": 1.7353416285624013,
+        "mse": 4.0218685958347775,
+        "mseSkillAgainstZero": -0.13225626158398418,
+        "signedCorrelation": -0.16521386682011277
+      },
+      "mapped:hqsInReach": {
+        "bias": -0.3387176028706466,
+        "count": 72,
+        "mae": 1.7804902479253149,
+        "mse": 3.874285311503562,
+        "mseSkillAgainstZero": -0.09070788828252763,
+        "signedCorrelation": 0.005939831016543544
+      },
+      "mapped:objectiveReachColumn": {
+        "bias": -0.09039949540852532,
+        "count": 72,
+        "mae": 1.9811162888872833,
+        "mse": 5.425975894710802,
+        "mseSkillAgainstZero": -0.5275474659596391,
+        "signedCorrelation": -0.42577918329600684
+      },
+      "mapped:objectiveVpAtRisk": {
+        "bias": 0.22016056133084402,
+        "count": 72,
+        "mae": 1.7268245434758738,
+        "mse": 4.118843992931047,
+        "mseSkillAgainstZero": -0.1595572531418783,
+        "signedCorrelation": -0.23811705267060987
+      },
+      "mapped:outOfTrace": {
+        "bias": 0.0038650721245277117,
+        "count": 72,
+        "mae": 1.7319126627414159,
+        "mse": 4.101638735312395,
+        "mseSkillAgainstZero": -0.15471354425216988,
+        "signedCorrelation": -0.2592982049887835
+      },
+      "mapped:stacksExposedAllocated": {
+        "bias": 0.2838685099777483,
+        "count": 72,
+        "mae": 1.6576223021392646,
+        "mse": 3.714183267397045,
+        "mseSkillAgainstZero": -0.04563517205312695,
+        "signedCorrelation": 0.09420174240897224
+      },
+      "mapped:steps": {
+        "bias": 0.23251610280431395,
+        "count": 72,
+        "mae": 1.69650833354754,
+        "mse": 4.059259737700678,
+        "mseSkillAgainstZero": -0.1427828000564959,
+        "signedCorrelation": -0.2536905670468933
+      },
+      "trainMean": {
+        "bias": 0.20454545454545456,
+        "count": 72,
+        "mae": 1.6486742424242424,
+        "mse": 3.581590048209366,
+        "mseSkillAgainstZero": -0.008306875742226216,
+        "signedCorrelation": 0.060603942438804174
+      },
+      "zero": {
+        "bias": 0.0,
+        "count": 72,
+        "mae": 1.6597222222222223,
+        "mse": 3.5520833333333335,
+        "mseSkillAgainstZero": 0.0,
+        "signedCorrelation": null
+      }
+    },
+    "crowding": {
+      "developmentFinal": {
+        "bias": 0.0,
+        "count": 72,
+        "mae": 2.138888888888889,
+        "mse": 5.895833333333333,
+        "mseSkillAgainstZero": -0.11198428290766205,
+        "signedCorrelation": -0.31627906976744186
+      },
+      "identity:M0": {
+        "bias": -1.638187832384151,
+        "count": 72,
+        "mae": 1.8084861849742557,
+        "mse": 5.641879916084418,
+        "mseSkillAgainstZero": -0.06408737120649155,
+        "signedCorrelation": -0.4097645381730659
+      },
+      "identity:M1": {
+        "bias": -0.4371835118608201,
+        "count": 72,
+        "mae": 1.6277519025461251,
+        "mse": 3.9453980951477856,
+        "mseSkillAgainstZero": 0.25587776594462197,
+        "signedCorrelation": -0.2599892240519402
+      },
+      "identity:M2": {
+        "bias": -0.05124002027040123,
+        "count": 72,
+        "mae": 1.6020298040552392,
+        "mse": 3.890089692231369,
+        "mseSkillAgainstZero": 0.2663092132530227,
+        "signedCorrelation": -0.29010142577349374
+      },
+      "identity:VP": {
+        "bias": -1.5625,
+        "count": 72,
+        "mae": 1.8125,
+        "mse": 6.098958333333333,
+        "mseSkillAgainstZero": -0.150294695481336,
+        "signedCorrelation": -0.4097645381730659
+      },
+      "mapped:M0": {
+        "bias": -1.4594451537441508,
+        "count": 72,
+        "mae": 1.7426242532128386,
+        "mse": 5.526352650669258,
+        "mseSkillAgainstZero": -0.04229833882956546,
+        "signedCorrelation": -0.3088715763647439
+      },
+      "mapped:M1": {
+        "bias": -0.09786475681145874,
+        "count": 72,
+        "mae": 2.120383680343129,
+        "mse": 6.625049498152768,
+        "mseSkillAgainstZero": -0.2495181764688914,
+        "signedCorrelation": -0.300884943903127
+      },
+      "mapped:M2": {
+        "bias": 0.3139663414377323,
+        "count": 72,
+        "mae": 2.0757151859078355,
+        "mse": 6.610944880876371,
+        "mseSkillAgainstZero": -0.246857973603402,
+        "signedCorrelation": -0.3731475132645898
+      },
+      "mapped:hqsInReach": {
+        "bias": -1.0836718441630022,
+        "count": 72,
+        "mae": 1.634600652944673,
+        "mse": 3.9804394175077116,
+        "mseSkillAgainstZero": 0.24926879355453768,
+        "signedCorrelation": 0.10105731571119538
+      },
+      "mapped:objectiveReachColumn": {
+        "bias": -1.786252932311539,
+        "count": 72,
+        "mae": 1.9209795184415834,
+        "mse": 5.518750719118657,
+        "mseSkillAgainstZero": -0.040864575708037476,
+        "signedCorrelation": 0.053425448831645225
+      },
+      "mapped:objectiveVpAtRisk": {
+        "bias": -1.8526697618837733,
+        "count": 72,
+        "mae": 2.0164073679429837,
+        "mse": 5.570450053068311,
+        "mseSkillAgainstZero": -0.05061533417398412,
+        "signedCorrelation": 0.26477527923154354
+      },
+      "mapped:outOfTrace": {
+        "bias": 0.1737500680855058,
+        "count": 72,
+        "mae": 1.9181532925171167,
+        "mse": 5.811634986811747,
+        "mseSkillAgainstZero": -0.09610404466390521,
+        "signedCorrelation": -0.14634098340472468
+      },
+      "mapped:stacksExposedAllocated": {
+        "bias": -1.874532286288394,
+        "count": 72,
+        "mae": 2.0821005932003382,
+        "mse": 6.717166137310488,
+        "mseSkillAgainstZero": -0.2668918451508977,
+        "signedCorrelation": -0.14428028116125247
+      },
+      "mapped:steps": {
+        "bias": -1.5995670551869088,
+        "count": 72,
+        "mae": 1.8412104583501414,
+        "mse": 5.490488093903283,
+        "mseSkillAgainstZero": -0.03553410022537373,
+        "signedCorrelation": -0.02752165503554981
+      },
+      "trainMean": {
+        "bias": -1.7045454545454546,
+        "count": 72,
+        "mae": 1.8361742424242427,
+        "mse": 5.108621728650138,
+        "mseSkillAgainstZero": 0.03648784685576967,
+        "signedCorrelation": 0.13215201145411432
+      },
+      "zero": {
+        "bias": -1.75,
+        "count": 72,
+        "mae": 1.8611111111111112,
+        "mse": 5.302083333333333,
+        "mseSkillAgainstZero": 0.0,
+        "signedCorrelation": null
+      }
+    },
+    "defenderLoss": {
+      "developmentFinal": {
+        "bias": 0.0,
+        "count": 72,
+        "mae": 2.1805555555555554,
+        "mse": 7.270833333333333,
+        "mseSkillAgainstZero": -0.7604035308953343,
+        "signedCorrelation": -0.9335180055401662
+      },
+      "identity:M0": {
+        "bias": 1.2018342196910696,
+        "count": 72,
+        "mae": 1.652523025042907,
+        "mse": 4.046435313725678,
+        "mseSkillAgainstZero": 0.0202830009642746,
+        "signedCorrelation": -0.42541598782393475
+      },
+      "identity:M1": {
+        "bias": 0.8433947008771848,
+        "count": 72,
+        "mae": 1.4351145096788032,
+        "mse": 3.5605115588772622,
+        "mseSkillAgainstZero": 0.13793414967914952,
+        "signedCorrelation": -0.4502162748743661
+      },
+      "identity:M2": {
+        "bias": 0.6935279334743973,
+        "count": 72,
+        "mae": 1.5059492869662678,
+        "mse": 3.819259717175934,
+        "mseSkillAgainstZero": 0.07528642408855057,
+        "signedCorrelation": -0.7086634507397674
+      },
+      "identity:VP": {
+        "bias": 1.0,
+        "count": 72,
+        "mae": 1.7152777777777777,
+        "mse": 4.317708333333333,
+        "mseSkillAgainstZero": -0.045397225725094525,
+        "signedCorrelation": -0.4254159878239348
+      },
+      "mapped:M0": {
+        "bias": 1.1078929034989946,
+        "count": 72,
+        "mae": 2.067422045469759,
+        "mse": 6.333346908946284,
+        "mseSkillAgainstZero": -0.5334206891774107,
+        "signedCorrelation": -0.43516907749114575
+      },
+      "mapped:M1": {
+        "bias": 0.6454870797229266,
+        "count": 72,
+        "mae": 1.6396762343759532,
+        "mse": 4.119033774226834,
+        "mseSkillAgainstZero": 0.0027055679047262027,
+        "signedCorrelation": -0.5121431940924439
+      },
+      "mapped:M2": {
+        "bias": 0.8105006950524625,
+        "count": 72,
+        "mae": 1.7440678606539595,
+        "mse": 4.637538083918783,
+        "mseSkillAgainstZero": -0.12283393709004597,
+        "signedCorrelation": -0.6874755478308631
+      },
+      "mapped:hqsInReach": {
+        "bias": 1.4888275892165712,
+        "count": 72,
+        "mae": 1.8553518131371933,
+        "mse": 5.006375734498535,
+        "mseSkillAgainstZero": -0.21213636951288617,
+        "signedCorrelation": -0.1006217780153145
+      },
+      "mapped:objectiveReachColumn": {
+        "bias": 1.6357253652461248,
+        "count": 72,
+        "mae": 1.9208959588850416,
+        "mse": 5.094547276759374,
+        "mseSkillAgainstZero": -0.23348433434779303,
+        "signedCorrelation": -0.20848848894323332
+      },
+      "mapped:objectiveVpAtRisk": {
+        "bias": 1.800880056740314,
+        "count": 72,
+        "mae": 1.906909762994494,
+        "mse": 5.0766922848339915,
+        "mseSkillAgainstZero": -0.2291613098210925,
+        "signedCorrelation": 0.1653124886598479
+      },
+      "mapped:outOfTrace": {
+        "bias": 1.4625172843670955,
+        "count": 72,
+        "mae": 1.7207420086281413,
+        "mse": 4.558950949308601,
+        "mseSkillAgainstZero": -0.10380653501544956,
+        "signedCorrelation": -0.04245757069517854
+      },
+      "mapped:stacksExposedAllocated": {
+        "bias": 1.8028288954834377,
+        "count": 72,
+        "mae": 1.9187939034595418,
+        "mse": 5.347979937534593,
+        "mseSkillAgainstZero": -0.2948450794535207,
+        "signedCorrelation": -0.06203539003656166
+      },
+      "mapped:steps": {
+        "bias": 1.2853714820211868,
+        "count": 72,
+        "mae": 1.648900989438377,
+        "mse": 4.0711344627193204,
+        "mseSkillAgainstZero": 0.014302879139836633,
+        "signedCorrelation": -0.22471304106374262
+      },
+      "trainMean": {
+        "bias": 1.8409090909090908,
+        "count": 72,
+        "mae": 1.8993055555555556,
+        "mse": 5.090952134986226,
+        "mseSkillAgainstZero": -0.23261388388065019,
+        "signedCorrelation": 0.43764307401068414
+      },
+      "zero": {
+        "bias": 1.5,
+        "count": 72,
+        "mae": 1.6597222222222223,
+        "mse": 4.130208333333333,
+        "mseSkillAgainstZero": 0.0,
+        "signedCorrelation": null
+      }
+    },
+    "garrisonThreatened": {
+      "developmentFinal": {
+        "bias": 0.0,
+        "count": 72,
+        "mae": 1.9166666666666667,
+        "mse": 5.03125,
+        "mseSkillAgainstZero": 0.12737127371273715,
+        "signedCorrelation": 0.3199577613516367
+      },
+      "identity:M0": {
+        "bias": 1.2138756647683024,
+        "count": 72,
+        "mae": 1.6930423314349692,
+        "mse": 4.663488978012311,
+        "mseSkillAgainstZero": 0.19115638321737694,
+        "signedCorrelation": 0.5471438752965724
+      },
+      "identity:M1": {
+        "bias": 1.1853445271699403,
+        "count": 72,
+        "mae": 1.655271999155219,
+        "mse": 4.322479035635734,
+        "mseSkillAgainstZero": 0.25030173907672904,
+        "signedCorrelation": 0.4635381623307618
+      },
+      "identity:M2": {
+        "bias": 0.662805198887636,
+        "count": 72,
+        "mae": 1.5608991643430132,
+        "mse": 4.071697100151481,
+        "mseSkillAgainstZero": 0.2937977929276564,
+        "signedCorrelation": 0.41093586832657725
+      },
+      "identity:VP": {
+        "bias": 1.0625,
+        "count": 72,
+        "mae": 1.5416666666666667,
+        "mse": 4.0625,
+        "mseSkillAgainstZero": 0.29539295392953935,
+        "signedCorrelation": 0.5471438752965724
+      },
+      "mapped:M0": {
+        "bias": 1.4876067587344313,
+        "count": 72,
+        "mae": 1.8375782078916403,
+        "mse": 5.682574927804854,
+        "mseSkillAgainstZero": 0.014404348565011715,
+        "signedCorrelation": 0.24931169972563227
+      },
+      "mapped:M1": {
+        "bias": 1.2498390794350975,
+        "count": 72,
+        "mae": 1.7966105465375704,
+        "mse": 4.989396455654138,
+        "mseSkillAgainstZero": 0.13463042503559675,
+        "signedCorrelation": 0.29949577204550976
+      },
+      "mapped:M2": {
+        "bias": 1.0205383657830966,
+        "count": 72,
+        "mae": 1.8324549009675255,
+        "mse": 5.61076837052186,
+        "mseSkillAgainstZero": 0.02685860240271265,
+        "signedCorrelation": 0.2579791128409442
+      },
+      "mapped:hqsInReach": {
+        "bias": 2.0535654904641882,
+        "count": 72,
+        "mae": 2.376434895043835,
+        "mse": 9.16811563177869,
+        "mseSkillAgainstZero": -0.5901338765144613,
+        "signedCorrelation": -0.5100723753337069
+      },
+      "mapped:objectiveReachColumn": {
+        "bias": 1.6321286242603426,
+        "count": 72,
+        "mae": 2.0484918785970567,
+        "mse": 6.92534042614997,
+        "mseSkillAgainstZero": -0.20114305494200013,
+        "signedCorrelation": -0.16446531254230767
+      },
+      "mapped:objectiveVpAtRisk": {
+        "bias": 1.8219532866037536,
+        "count": 72,
+        "mae": 2.1868529220335415,
+        "mse": 7.926879202048113,
+        "mseSkillAgainstZero": -0.3748516773199979,
+        "signedCorrelation": -0.353270735514876
+      },
+      "mapped:outOfTrace": {
+        "bias": 1.290863292562407,
+        "count": 72,
+        "mae": 1.9983486943509463,
+        "mse": 6.051840711828544,
+        "mseSkillAgainstZero": -0.04964174947703737,
+        "signedCorrelation": 0.0564229108174062
+      },
+      "mapped:stacksExposedAllocated": {
+        "bias": 1.7532418993886845,
+        "count": 72,
+        "mae": 2.115387126102382,
+        "mse": 7.061397016419486,
+        "mseSkillAgainstZero": -0.2247409459372549,
+        "signedCorrelation": -0.061549162476976095
+      },
+      "mapped:steps": {
+        "bias": 1.9108828917080511,
+        "count": 72,
+        "mae": 2.1979491106677007,
+        "mse": 7.588563533486907,
+        "mseSkillAgainstZero": -0.316173620984179,
+        "signedCorrelation": 0.09376988349854294
+      },
+      "trainMean": {
+        "bias": 1.7727272727272727,
+        "count": 72,
+        "mae": 2.0912247474747474,
+        "mse": 6.893638085399449,
+        "mseSkillAgainstZero": -0.1956445459771401,
+        "signedCorrelation": -0.103699533855973
+      },
+      "zero": {
+        "bias": 1.4375,
+        "count": 72,
+        "mae": 1.9166666666666667,
+        "mse": 5.765625,
+        "mseSkillAgainstZero": 0.0,
+        "signedCorrelation": null
+      }
+    },
+    "holdRatio": {
+      "developmentFinal": {
+        "bias": 0.0,
+        "count": 72,
+        "mae": 1.9027777777777777,
+        "mse": 5.5625,
+        "mseSkillAgainstZero": -1.106508875739645,
+        "signedCorrelation": -0.6952380952380952
+      },
+      "identity:M0": {
+        "bias": -1.1863536126930816,
+        "count": 72,
+        "mae": 1.4308744829579871,
+        "mse": 3.3619903023255273,
+        "mseSkillAgainstZero": -0.2731797594605547,
+        "signedCorrelation": -0.5571757679321331
+      },
+      "identity:M1": {
+        "bias": -0.6344786634960784,
+        "count": 72,
+        "mae": 1.3610577196222962,
+        "mse": 2.938521628334705,
+        "mseSkillAgainstZero": -0.11281292433976997,
+        "signedCorrelation": -0.0824216414182363
+      },
+      "identity:M2": {
+        "bias": -0.9890095375385219,
+        "count": 72,
+        "mae": 1.7470414407821553,
+        "mse": 4.57538180695864,
+        "mseSkillAgainstZero": -0.7326889683156979,
+        "signedCorrelation": -0.42284973566079026
+      },
+      "identity:VP": {
+        "bias": -1.3125,
+        "count": 72,
+        "mae": 1.5486111111111112,
+        "mse": 3.9322916666666665,
+        "mseSkillAgainstZero": -0.4891518737672582,
+        "signedCorrelation": -0.5571757679321332
+      },
+      "mapped:M0": {
+        "bias": -1.3577277707112272,
+        "count": 72,
+        "mae": 1.6423543785292134,
+        "mse": 4.64443337059913,
+        "mseSkillAgainstZero": -0.7588386728896115,
+        "signedCorrelation": -0.7167742085501371
+      },
+      "mapped:M1": {
+        "bias": -0.8315467117631037,
+        "count": 72,
+        "mae": 1.4636338072543653,
+        "mse": 3.65510230489169,
+        "mseSkillAgainstZero": -0.3841807545151963,
+        "signedCorrelation": 0.0018635061527281257
+      },
+      "mapped:M2": {
+        "bias": -1.1871589113970937,
+        "count": 72,
+        "mae": 1.8968190583487923,
+        "mse": 6.083587920156778,
+        "mseSkillAgainstZero": -1.3038439460948745,
+        "signedCorrelation": -0.4663848402169109
+      },
+      "mapped:hqsInReach": {
+        "bias": -0.7434783454754612,
+        "count": 72,
+        "mae": 1.1855796494791313,
+        "mse": 2.1807706634530764,
+        "mseSkillAgainstZero": 0.17414602094084686,
+        "signedCorrelation": 0.20101875268341268
+      },
+      "mapped:objectiveReachColumn": {
+        "bias": -1.6304735359801699,
+        "count": 72,
+        "mae": 1.904543132059537,
+        "mse": 5.38028175175338,
+        "mseSkillAgainstZero": -1.0375031485929957,
+        "signedCorrelation": -0.35958213624355784
+      },
+      "mapped:objectiveVpAtRisk": {
+        "bias": -1.056438328720236,
+        "count": 72,
+        "mae": 1.4233799967287766,
+        "mse": 3.1728208390923553,
+        "mseSkillAgainstZero": -0.20154161953793337,
+        "signedCorrelation": -0.24441870923156722
+      },
+      "mapped:outOfTrace": {
+        "bias": -1.3493557377628327,
+        "count": 72,
+        "mae": 1.6394325280509414,
+        "mse": 4.306742167891744,
+        "mseSkillAgainstZero": -0.6309556138761634,
+        "signedCorrelation": -0.12495957316501743
+      },
+      "mapped:stacksExposedAllocated": {
+        "bias": -1.0956045882940653,
+        "count": 72,
+        "mae": 1.3933748577336469,
+        "mse": 3.2535822940240697,
+        "mseSkillAgainstZero": -0.2321258391570442,
+        "signedCorrelation": -0.19617076036208372
+      },
+      "mapped:steps": {
+        "bias": -0.3112906896738542,
+        "count": 72,
+        "mae": 1.1868211743414088,
+        "mse": 2.793681955730341,
+        "mseSkillAgainstZero": -0.05796239743634213,
+        "signedCorrelation": 0.17432276850416326
+      },
+      "trainMean": {
+        "bias": -0.8863636363636364,
+        "count": 72,
+        "mae": 1.2108585858585859,
+        "mse": 2.42196108815427,
+        "mseSkillAgainstZero": 0.08280763525518764,
+        "signedCorrelation": 0.06431459547065801
+      },
+      "zero": {
+        "bias": -1.0,
+        "count": 72,
+        "mae": 1.2569444444444444,
+        "mse": 2.640625,
+        "mseSkillAgainstZero": 0.0,
+        "signedCorrelation": null
+      }
+    },
+    "hqWithArmy": {
+      "developmentFinal": {
+        "bias": 0.0,
+        "count": 72,
+        "mae": 1.5694444444444444,
+        "mse": 3.65625,
+        "mseSkillAgainstZero": -0.6363636363636365,
+        "signedCorrelation": -0.16129032258064516
+      },
+      "identity:M0": {
+        "bias": -0.47706349715245355,
+        "count": 72,
+        "mae": 0.9101675530244032,
+        "mse": 1.1749813269564091,
+        "mseSkillAgainstZero": 0.47413423129223653,
+        "signedCorrelation": 0.6614769048245084
+      },
+      "identity:M1": {
+        "bias": 0.10626349479451697,
+        "count": 72,
+        "mae": 0.797751192815273,
+        "mse": 0.9962026080185359,
+        "mseSkillAgainstZero": 0.5541470845231727,
+        "signedCorrelation": 0.6123682558451904
+      },
+      "identity:M2": {
+        "bias": -0.9213284278483518,
+        "count": 72,
+        "mae": 1.0704370458261898,
+        "mse": 1.7150993895428401,
+        "mseSkillAgainstZero": 0.23240307041439323,
+        "signedCorrelation": 0.7084567314037806
+      },
+      "identity:VP": {
+        "bias": -0.25,
+        "count": 72,
+        "mae": 0.8055555555555556,
+        "mse": 0.96875,
+        "mseSkillAgainstZero": 0.5664335664335665,
+        "signedCorrelation": 0.6614769048245084
+      },
+      "mapped:M0": {
+        "bias": -0.1645040694213904,
+        "count": 72,
+        "mae": 0.9601849750694059,
+        "mse": 1.3596045938050152,
+        "mseSkillAgainstZero": 0.39150563633901414,
+        "signedCorrelation": 0.5100926140800714
+      },
+      "mapped:M1": {
+        "bias": 0.427108428355921,
+        "count": 72,
+        "mae": 1.1151060270267836,
+        "mse": 1.9140383715483307,
+        "mseSkillAgainstZero": 0.14336744210424357,
+        "signedCorrelation": 0.44502782716135897
+      },
+      "mapped:M2": {
+        "bias": -0.9811450961607194,
+        "count": 72,
+        "mae": 1.1214283876896347,
+        "mse": 1.855344431615057,
+        "mseSkillAgainstZero": 0.16963605857787667,
+        "signedCorrelation": 0.7015085065419094
+      },
+      "mapped:hqsInReach": {
+        "bias": -0.5646960766011601,
+        "count": 72,
+        "mae": 1.254475682103582,
+        "mse": 2.392669388508166,
+        "mseSkillAgainstZero": -0.07084504101064759,
+        "signedCorrelation": -0.10743613869796673
+      },
+      "mapped:objectiveReachColumn": {
+        "bias": -0.5608842034331774,
+        "count": 72,
+        "mae": 1.5071116802806686,
+        "mse": 3.280336365533188,
+        "mseSkillAgainstZero": -0.46812256918967843,
+        "signedCorrelation": -0.1778502928694868
+      },
+      "mapped:objectiveVpAtRisk": {
+        "bias": -0.659170439450437,
+        "count": 72,
+        "mae": 1.5085973848576375,
+        "mse": 3.46894154260954,
+        "mseSkillAgainstZero": -0.5525332778112626,
+        "signedCorrelation": 0.03206641652124819
+      },
+      "mapped:outOfTrace": {
+        "bias": -0.4522132584762742,
+        "count": 72,
+        "mae": 1.2282224588729855,
+        "mse": 2.3359053629640325,
+        "mseSkillAgainstZero": -0.045440162445441024,
+        "signedCorrelation": -0.01694812476620569
+      },
+      "mapped:stacksExposedAllocated": {
+        "bias": -0.5159921699547789,
+        "count": 72,
+        "mae": 1.0507087750836475,
+        "mse": 1.6456877891109156,
+        "mseSkillAgainstZero": 0.26346840207623357,
+        "signedCorrelation": 0.38607523373381253
+      },
+      "mapped:steps": {
+        "bias": -0.0707681210824202,
+        "count": 72,
+        "mae": 0.9979468019930986,
+        "mse": 1.4567187169926883,
+        "mseSkillAgainstZero": 0.34804197281446114,
+        "signedCorrelation": 0.3989548871423485
+      },
+      "trainMean": {
+        "bias": -0.6818181818181819,
+        "count": 72,
+        "mae": 1.180239898989899,
+        "mse": 1.9889807162534434,
+        "mseSkillAgainstZero": 0.10982681230615121,
+        "signedCorrelation": 0.18745433451098262
+      },
+      "zero": {
+        "bias": -0.8125,
+        "count": 72,
+        "mae": 1.2361111111111112,
+        "mse": 2.234375,
+        "mseSkillAgainstZero": 0.0,
+        "signedCorrelation": null
+      }
+    },
+    "outOfSupply": {
+      "developmentFinal": {
+        "bias": 0.0,
+        "count": 72,
+        "mae": 1.4166666666666667,
+        "mse": 2.96875,
+        "mseSkillAgainstZero": -1.0652173913043477,
+        "signedCorrelation": -0.9095477386934673
+      },
+      "identity:M0": {
+        "bias": 0.8125,
+        "count": 72,
+        "mae": 0.9166666666666666,
+        "mse": 1.4375,
+        "mseSkillAgainstZero": 0.0,
+        "signedCorrelation": null
+      },
+      "identity:M1": {
+        "bias": 0.8535498457875821,
+        "count": 72,
+        "mae": 0.9440332305250547,
+        "mse": 1.5639690762371847,
+        "mseSkillAgainstZero": -0.08797848781717188,
+        "signedCorrelation": -0.4229151796861967
+      },
+      "identity:M2": {
+        "bias": 0.8585548797995252,
+        "count": 72,
+        "mae": 0.9473699198663501,
+        "mse": 1.58031094056201,
+        "mseSkillAgainstZero": -0.09934674126052867,
+        "signedCorrelation": -0.42291517968619663
+      },
+      "identity:VP": {
+        "bias": 0.8125,
+        "count": 72,
+        "mae": 0.9166666666666666,
+        "mse": 1.4375,
+        "mseSkillAgainstZero": 0.0,
+        "signedCorrelation": null
+      },
+      "mapped:M0": {
+        "bias": 1.1102861237939197,
+        "count": 72,
+        "mae": 1.1275173448978795,
+        "mse": 1.7907284881368501,
+        "mseSkillAgainstZero": -0.24572416566041744,
+        "signedCorrelation": 0.642913499952734
+      },
+      "mapped:M1": {
+        "bias": 0.8298208343074428,
+        "count": 72,
+        "mae": 0.9270391696356306,
+        "mse": 1.4170980438351308,
+        "mseSkillAgainstZero": 0.01419266515816986,
+        "signedCorrelation": 0.25089888942217325
+      },
+      "mapped:M2": {
+        "bias": 1.0077397522546496,
+        "count": 72,
+        "mae": 1.0325547648358844,
+        "mse": 1.640831185993651,
+        "mseSkillAgainstZero": -0.14144778156080084,
+        "signedCorrelation": 0.4866047459384956
+      },
+      "mapped:hqsInReach": {
+        "bias": 0.9901707586436996,
+        "count": 72,
+        "mae": 1.0447084530746051,
+        "mse": 1.6037688267221937,
+        "mseSkillAgainstZero": -0.11566527076326527,
+        "signedCorrelation": 0.49993437606736446
+      },
+      "mapped:objectiveReachColumn": {
+        "bias": 1.1102056987783697,
+        "count": 72,
+        "mae": 1.1285252819377436,
+        "mse": 1.8487800736506048,
+        "mseSkillAgainstZero": -0.2861078773221599,
+        "signedCorrelation": 0.5346524729362709
+      },
+      "mapped:objectiveVpAtRisk": {
+        "bias": 1.0700457185069654,
+        "count": 72,
+        "mae": 1.102150572544221,
+        "mse": 1.789253294587589,
+        "mseSkillAgainstZero": -0.24469794406093137,
+        "signedCorrelation": 0.49074192716707915
+      },
+      "mapped:outOfTrace": {
+        "bias": 0.8367705651800666,
+        "count": 72,
+        "mae": 0.9210108842221678,
+        "mse": 1.3902722250061772,
+        "mseSkillAgainstZero": 0.03285410434352887,
+        "signedCorrelation": 0.3640102123638498
+      },
+      "mapped:stacksExposedAllocated": {
+        "bias": 1.100891554772676,
+        "count": 72,
+        "mae": 1.131621256553239,
+        "mse": 1.8552102754515434,
+        "mseSkillAgainstZero": -0.2905810611836823,
+        "signedCorrelation": 0.48358308621706114
+      },
+      "mapped:steps": {
+        "bias": 1.031701010772429,
+        "count": 72,
+        "mae": 1.0750305522863557,
+        "mse": 1.78339198079706,
+        "mseSkillAgainstZero": -0.24062050838056348,
+        "signedCorrelation": 0.2901782114353312
+      },
+      "trainMean": {
+        "bias": 1.0909090909090908,
+        "count": 72,
+        "mae": 1.1202651515151514,
+        "mse": 1.8122417355371898,
+        "mseSkillAgainstZero": -0.2606899029823928,
+        "signedCorrelation": 0.5756974634613152
+      },
+      "zero": {
+        "bias": 0.8125,
+        "count": 72,
+        "mae": 0.9166666666666666,
+        "mse": 1.4375,
+        "mseSkillAgainstZero": 0.0,
+        "signedCorrelation": null
+      }
+    },
+    "progressObjective": {
+      "developmentFinal": {
+        "bias": 0.0,
+        "count": 72,
+        "mae": 1.9861111111111112,
+        "mse": 6.729166666666667,
+        "mseSkillAgainstZero": 0.31386086032926175,
+        "signedCorrelation": 0.29088913282107576
+      },
+      "identity:M0": {
+        "bias": -1.9518342196910698,
+        "count": 72,
+        "mae": 2.1939981406745774,
+        "mse": 8.142818006321896,
+        "mseSkillAgainstZero": 0.16971797280201584,
+        "signedCorrelation": 0.4251873022336502
+      },
+      "identity:M1": {
+        "bias": -1.5889332853493388,
+        "count": 72,
+        "mae": 1.9604038599914284,
+        "mse": 6.745287550812871,
+        "mseSkillAgainstZero": 0.31221709519061536,
+        "signedCorrelation": 0.380663873735963
+      },
+      "identity:M2": {
+        "bias": -1.513519559200695,
+        "count": 72,
+        "mae": 1.682926089726526,
+        "mse": 4.979461757900899,
+        "mseSkillAgainstZero": 0.4922694330764882,
+        "signedCorrelation": 0.7297863793625374
+      },
+      "identity:VP": {
+        "bias": -1.75,
+        "count": 72,
+        "mae": 2.0902777777777777,
+        "mse": 7.192708333333333,
+        "mseSkillAgainstZero": 0.2665958576739246,
+        "signedCorrelation": 0.4251873022336502
+      },
+      "mapped:M0": {
+        "bias": -1.675104008444694,
+        "count": 72,
+        "mae": 2.1071248224765053,
+        "mse": 7.365579644471936,
+        "mseSkillAgainstZero": 0.2489690431552779,
+        "signedCorrelation": 0.2091458953125445
+      },
+      "mapped:M1": {
+        "bias": -1.6565827851627128,
+        "count": 72,
+        "mae": 2.0079246011491287,
+        "mse": 7.2231688633451165,
+        "mseSkillAgainstZero": 0.26348995126804964,
+        "signedCorrelation": 0.2410523877252737
+      },
+      "mapped:M2": {
+        "bias": -1.6449137840320511,
+        "count": 72,
+        "mae": 1.7916712229152116,
+        "mse": 5.932408441597736,
+        "mseSkillAgainstZero": 0.3951022725508415,
+        "signedCorrelation": 0.5847216872046256
+      },
+      "mapped:hqsInReach": {
+        "bias": -2.1313238872409457,
+        "count": 72,
+        "mae": 2.1864789874327952,
+        "mse": 7.741805073715728,
+        "mseSkillAgainstZero": 0.21060723624353694,
+        "signedCorrelation": 0.6245902031411577
+      },
+      "mapped:objectiveReachColumn": {
+        "bias": -1.8883044488260365,
+        "count": 72,
+        "mae": 2.3078001657891343,
+        "mse": 8.737203026622637,
+        "mseSkillAgainstZero": 0.1091115341946115,
+        "signedCorrelation": -0.10033280103752491
+      },
+      "mapped:objectiveVpAtRisk": {
+        "bias": -2.2416384456996328,
+        "count": 72,
+        "mae": 2.4469149333782108,
+        "mse": 9.939383527551017,
+        "mseSkillAgainstZero": -0.013468739930852625,
+        "signedCorrelation": 0.04222985879972443
+      },
+      "mapped:outOfTrace": {
+        "bias": -2.0257221236222964,
+        "count": 72,
+        "mae": 2.277394534472287,
+        "mse": 9.571779766399635,
+        "mseSkillAgainstZero": 0.024013959028821086,
+        "signedCorrelation": -0.20905885151548181
+      },
+      "mapped:stacksExposedAllocated": {
+        "bias": -2.3763831587849253,
+        "count": 72,
+        "mae": 2.4784024425959545,
+        "mse": 10.116495044509094,
+        "mseSkillAgainstZero": -0.03152790682195761,
+        "signedCorrelation": 0.2428388071286971
+      },
+      "mapped:steps": {
+        "bias": -2.0800210713348584,
+        "count": 72,
+        "mae": 2.2867116108619654,
+        "mse": 8.729960284856409,
+        "mseSkillAgainstZero": 0.10985003999339849,
+        "signedCorrelation": 0.2737674537265503
+      },
+      "trainMean": {
+        "bias": -2.25,
+        "count": 72,
+        "mae": 2.380050505050505,
+        "mse": 9.83105199724518,
+        "mseSkillAgainstZero": -0.0024227209086959967,
+        "signedCorrelation": -0.02640847637482716
+      },
+      "zero": {
+        "bias": -2.25,
+        "count": 72,
+        "mae": 2.3819444444444446,
+        "mse": 9.807291666666666,
+        "mseSkillAgainstZero": 0.0,
+        "signedCorrelation": null
+      }
+    }
+  },
+  "interpretation": "Historical policy/seed transfer;fixed identity primary. Repeated splits are dependent;no prospective, latent-effect or reward qualification.",
+  "leaveOneFamilyOutPrimary": {
+    "assaultRatio": 0.2951130360463629,
+    "attackThreshold": 0.1172391297815002,
+    "capture": 0.1123461889483241,
+    "combatSupply": 0.14122133698502384,
+    "contactBad": 0.132355376659637,
+    "crowding": -0.04690746776558951,
+    "defenderLoss": 0.09169386198925646,
+    "garrisonThreatened": 0.05854692732461235,
+    "holdRatio": 0.22265450755133426,
+    "hqWithArmy": 0.161447831001636,
+    "outOfSupply": 0.12532900172668865,
+    "progressObjective": -0.17523165181722114
+  },
+  "primaryContrast": {
+    "baseline": "identity:M0",
+    "candidate": "identity:M2",
+    "draws": 10000,
+    "estimate": 0.10298400653596378,
+    "families": 12,
+    "familyDifferences": {
+      "assaultRatio": -2.010435318078427,
+      "attackThreshold": -0.053822349164937076,
+      "capture": 0.0,
+      "combatSupply": -0.31762662840369726,
+      "contactBad": -0.22010106482444197,
+      "crowding": 1.7517902238530498,
+      "defenderLoss": 0.22717559654974406,
+      "garrisonThreatened": 0.5917918778608293,
+      "holdRatio": -1.2133915046331119,
+      "hqWithArmy": -0.5401180625864309,
+      "outOfSupply": -0.1428109405620099,
+      "progressObjective": 3.163356248420998
+    },
+    "lower": -0.575689110628949,
+    "positiveFavorsCandidate": true,
+    "scope": "descriptive family resampling conditional on fixed predictions and these maps;no refit or map-population coverage",
+    "upper": 0.8646097932591478
+  },
+  "samePanelContextMoments": {
+    "M0": {
+      "crossSeed": {
+        "xx": 0.037767598246967744,
+        "xy": 0.11614466404621335,
+        "yy": 0.8688669987922701
+      },
+      "estimatedSameSeedContribution": {
+        "xx": 0.05785931629093032,
+        "xy": 0.08155221202818602,
+        "yy": 1.2737960446859906
+      },
+      "nonpositiveCrossSeedVariance": false,
+      "observed": {
+        "xx": 0.09562691453789807,
+        "xy": 0.19769687607439937,
+        "yy": 2.1426630434782608
+      },
+      "offDiagonalXY": 0.11614466404621335,
+      "scope": "signed finite-panel diagnostic;no latent correlation or corrected prediction slope"
+    },
+    "M1": {
+      "crossSeed": {
+        "xx": 0.18082578109842667,
+        "xy": 0.5024648984827009,
+        "yy": 0.8688669987922701
+      },
+      "estimatedSameSeedContribution": {
+        "xx": 0.2618333970747633,
+        "xy": 0.17560939498499692,
+        "yy": 1.2737960446859906
+      },
+      "nonpositiveCrossSeedVariance": false,
+      "observed": {
+        "xx": 0.44265917817318995,
+        "xy": 0.6780742934676979,
+        "yy": 2.1426630434782608
+      },
+      "offDiagonalXY": 0.5024648984827009,
+      "scope": "signed finite-panel diagnostic;no latent correlation or corrected prediction slope"
+    },
+    "M2": {
+      "crossSeed": {
+        "xx": 0.36481996497064845,
+        "xy": 0.6800467857826649,
+        "yy": 0.8688669987922701
+      },
+      "estimatedSameSeedContribution": {
+        "xx": 0.410799766898379,
+        "xy": 0.246732010454633,
+        "yy": 1.2737960446859906
+      },
+      "nonpositiveCrossSeedVariance": false,
+      "observed": {
+        "xx": 0.7756197318690274,
+        "xy": 0.9267787962372979,
+        "yy": 2.1426630434782608
+      },
+      "offDiagonalXY": 0.6800467857826649,
+      "scope": "signed finite-panel diagnostic;no latent correlation or corrected prediction slope"
+    },
+    "hqsInReach": {
+      "crossSeed": {
+        "xx": 0.04886586654589371,
+        "xy": -0.1518955691425121,
+        "yy": 0.8688669987922701
+      },
+      "estimatedSameSeedContribution": {
+        "xx": 0.03349798082729469,
+        "xy": -0.018790572161835748,
+        "yy": 1.2737960446859906
+      },
+      "nonpositiveCrossSeedVariance": false,
+      "observed": {
+        "xx": 0.0823638473731884,
+        "xy": -0.17068614130434784,
+        "yy": 2.1426630434782608
+      },
+      "offDiagonalXY": -0.15189556914251207,
+      "scope": "signed finite-panel diagnostic;no latent correlation or corrected prediction slope"
+    },
+    "objectiveReachColumn": {
+      "crossSeed": {
+        "xx": 0.06775551026570048,
+        "xy": 0.021309820350241537,
+        "yy": 0.8688669987922701
+      },
+      "estimatedSameSeedContribution": {
+        "xx": 0.3909670327596619,
+        "xy": -0.20184650513285024,
+        "yy": 1.2737960446859906
+      },
+      "nonpositiveCrossSeedVariance": false,
+      "observed": {
+        "xx": 0.45872254302536236,
+        "xy": -0.1805366847826087,
+        "yy": 2.1426630434782608
+      },
+      "offDiagonalXY": 0.02130982035024155,
+      "scope": "signed finite-panel diagnostic;no latent correlation or corrected prediction slope"
+    },
+    "objectiveVpAtRisk": {
+      "crossSeed": {
+        "xx": 0.11948973429951693,
+        "xy": -0.07570954106280194,
+        "yy": 0.8688669987922701
+      },
+      "estimatedSameSeedContribution": {
+        "xx": 0.13424667874396135,
+        "xy": 0.021701388888888895,
+        "yy": 1.2737960446859906
+      },
+      "nonpositiveCrossSeedVariance": false,
+      "observed": {
+        "xx": 0.25373641304347827,
+        "xy": -0.05400815217391304,
+        "yy": 2.1426630434782608
+      },
+      "offDiagonalXY": -0.07570954106280192,
+      "scope": "signed finite-panel diagnostic;no latent correlation or corrected prediction slope"
+    },
+    "outOfTrace": {
+      "crossSeed": {
+        "xx": 0.5048592240338161,
+        "xy": 0.9863234073067634,
+        "yy": 0.8688669987922701
+      },
+      "estimatedSameSeedContribution": {
+        "xx": 2.0851472863828504,
+        "xy": 0.3361969731280193,
+        "yy": 1.2737960446859906
+      },
+      "nonpositiveCrossSeedVariance": false,
+      "observed": {
+        "xx": 2.5900065104166665,
+        "xy": 1.3225203804347827,
+        "yy": 2.1426630434782608
+      },
+      "offDiagonalXY": 0.9863234073067634,
+      "scope": "signed finite-panel diagnostic;no latent correlation or corrected prediction slope"
+    },
+    "stacksExposedAllocated": {
+      "crossSeed": {
+        "xx": -0.05804649758454106,
+        "xy": 0.17127113526570048,
+        "yy": 0.8688669987922701
+      },
+      "estimatedSameSeedContribution": {
+        "xx": 0.21123943236714976,
+        "xy": -0.07989885265700483,
+        "yy": 1.2737960446859906
+      },
+      "nonpositiveCrossSeedVariance": true,
+      "observed": {
+        "xx": 0.1531929347826087,
+        "xy": 0.09137228260869565,
+        "yy": 2.1426630434782608
+      },
+      "offDiagonalXY": 0.17127113526570045,
+      "scope": "signed finite-panel diagnostic;no latent correlation or corrected prediction slope"
+    },
+    "steps": {
+      "crossSeed": {
+        "xx": -0.07611998037439593,
+        "xy": 0.46684405193236717,
+        "yy": 0.8688669987922701
+      },
+      "estimatedSameSeedContribution": {
+        "xx": 0.6548960220410627,
+        "xy": 0.10312877415458936,
+        "yy": 1.2737960446859906
+      },
+      "nonpositiveCrossSeedVariance": true,
+      "observed": {
+        "xx": 0.5787760416666667,
+        "xy": 0.5699728260869565,
+        "yy": 2.1426630434782608
+      },
+      "offDiagonalXY": 0.4668440519323671,
+      "scope": "signed finite-panel diagnostic;no latent correlation or corrected prediction slope"
+    }
+  },
+  "scores": {
+    "developmentFinal": {
+      "bias": 0.0,
+      "count": 864,
+      "mae": 1.7384259259259258,
+      "mse": 4.954861111111111,
+      "mseSkillAgainstZero": -0.4891729715627444,
+      "signedCorrelation": 0.24746209624258406
+    },
+    "identity:M0": {
+      "bias": -0.18128821291023062,
+      "count": 864,
+      "mae": 1.3293832875719473,
+      "mse": 3.2528796657499814,
+      "mseSkillAgainstZero": 0.022353932965306966,
+      "signedCorrelation": 0.15801642244527278
+    },
+    "identity:M1": {
+      "bias": 0.03880344928441836,
+      "count": 864,
+      "mae": 1.27985774643316,
+      "mse": 3.025547311742887,
+      "mseSkillAgainstZero": 0.09067818859175436,
+      "signedCorrelation": 0.3172451253623067
+    },
+    "identity:M2": {
+      "bias": -0.059619745111340224,
+      "count": 864,
+      "mae": 1.3116255764319622,
+      "mse": 3.149895659214018,
+      "mseSkillAgainstZero": 0.05330555715769669,
+      "signedCorrelation": 0.3336495482620889
+    },
+    "identity:VP": {
+      "bias": -0.17708333333333334,
+      "count": 864,
+      "mae": 1.34375,
+      "mse": 3.372829861111111,
+      "mseSkillAgainstZero": -0.013696843203756748,
+      "signedCorrelation": 0.15801642244527284
+    },
+    "mapped:M0": {
+      "bias": 0.012794916477597194,
+      "count": 864,
+      "mae": 1.5094641026677191,
+      "mse": 4.1627331652596204,
+      "mseSkillAgainstZero": -0.25110060171643167,
+      "signedCorrelation": -0.023340449566102973
+    },
+    "mapped:M1": {
+      "bias": 0.0330810482834882,
+      "count": 864,
+      "mae": 1.4550974248000519,
+      "mse": 3.7643641935991123,
+      "mseSkillAgainstZero": -0.1313716543245962,
+      "signedCorrelation": 0.21198626012189084
+    },
+    "mapped:M2": {
+      "bias": 0.03481069250382898,
+      "count": 864,
+      "mae": 1.4713451374270026,
+      "mse": 3.948247018221453,
+      "mseSkillAgainstZero": -0.18663724627996703,
+      "signedCorrelation": 0.19324387369957863
+    },
+    "mapped:hqsInReach": {
+      "bias": -0.03262833277593088,
+      "count": 864,
+      "mae": 1.4198902413858807,
+      "mse": 3.5197873748948063,
+      "mseSkillAgainstZero": -0.057864611499821805,
+      "signedCorrelation": 0.09976151844044197
+    },
+    "mapped:objectiveReachColumn": {
+      "bias": -0.04414521549659781,
+      "count": 864,
+      "mae": 1.5791208985103862,
+      "mse": 4.159914190432158,
+      "mseSkillAgainstZero": -0.2502533648259446,
+      "signedCorrelation": -0.18196284272156676
+    },
+    "mapped:objectiveVpAtRisk": {
+      "bias": -0.02925756236535112,
+      "count": 864,
+      "mae": 1.4800225124987139,
+      "mse": 3.8396525649398985,
+      "mseSkillAgainstZero": -0.15399941424752495,
+      "signedCorrelation": -0.1342457461122066
+    },
+    "mapped:outOfTrace": {
+      "bias": 0.03338204576869407,
+      "count": 864,
+      "mae": 1.4178055058614658,
+      "mse": 3.678322892512205,
+      "mseSkillAgainstZero": -0.10551212423012268,
+      "signedCorrelation": 0.14575358527281745
+    },
+    "mapped:stacksExposedAllocated": {
+      "bias": -0.01901816586970801,
+      "count": 864,
+      "mae": 1.4580140788043767,
+      "mse": 3.7907578031538303,
+      "mseSkillAgainstZero": -0.13930419755627765,
+      "signedCorrelation": -0.10186228553568129
+    },
+    "mapped:steps": {
+      "bias": 0.0209361755881589,
+      "count": 864,
+      "mae": 1.4010692264953135,
+      "mse": 3.588886903230354,
+      "mseSkillAgainstZero": -0.07863232781668872,
+      "signedCorrelation": 0.10359746566391762
+    },
+    "trainMean": {
+      "bias": -1.807003620809174e-18,
+      "count": 864,
+      "mae": 1.3960963804713804,
+      "mse": 3.452441675275482,
+      "mseSkillAgainstZero": -0.03762400467449911,
+      "signedCorrelation": -0.18915573176231598
+    },
+    "zero": {
+      "bias": -0.1875,
+      "count": 864,
+      "mae": 1.3396990740740742,
+      "mse": 3.3272569444444446,
+      "mseSkillAgainstZero": 0.0,
+      "signedCorrelation": null
+    }
+  },
+  "status": "REPORTED_EXPLORATORY"
+}

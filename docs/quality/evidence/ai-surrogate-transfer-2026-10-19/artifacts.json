@@ -1,0 +1,56 @@
+{
+  "baseCommit": "13821dc16bc0c10fd41af1654fc72e50177923a6",
+  "files": {
+    "artifacts/ai-surrogate-transfer-study/design-a/design.md": {
+      "bytes": 10923,
+      "sha256": "f46acca4565b4c33dae4eb5cc9584911ae111ecaafb843ecb6a920d121a2716c"
+    },
+    "artifacts/ai-surrogate-transfer-study/design-b/design.md": {
+      "bytes": 12716,
+      "sha256": "07bc7d66b72b22f2b17c87da2162bb4de073bf0355fc9797ae835634bbadeedf"
+    },
+    "artifacts/ai-surrogate-transfer-study/design-judge.md": {
+      "bytes": 4311,
+      "sha256": "2b7e1947a32e6b710aafcdb8180e43b4d0390a3024d73515372e6f6a788a8ac3"
+    },
+    "artifacts/ai-surrogate-transfer-study/protocol.json": {
+      "bytes": 3589,
+      "sha256": "403881d74579830d79da135a86d1acf0f294dd00795ea592a253caede68975ff"
+    },
+    "artifacts/ai-surrogate-transfer-study/run.stdout.json": {
+      "bytes": 4038,
+      "sha256": "c9cc83a019721065a90113470c16e0072930ee22361e740d1a6277e9714f5149"
+    },
+    "artifacts/ai-surrogate-transfer-study/run/analysis.json": {
+      "bytes": 553625,
+      "sha256": "b14c47c9b70eb5711a890f5c37e4d0d213dbed4f4668a72e4a09f66bab4d664f"
+    },
+    "artifacts/ai-surrogate-transfer-study/run/folds.json": {
+      "bytes": 3501941,
+      "sha256": "e04065784b1e9b78bc5816b0d653db13d1e4a6c14f0553b36edb0adbae139de5"
+    },
+    "artifacts/ai-surrogate-transfer-study/run/panel.json": {
+      "bytes": 558536,
+      "sha256": "7a848393510d83306d2062af1c3a406591064fc3a3084646e0b64bbe51677398"
+    },
+    "artifacts/ai-surrogate-transfer-study/run/predictions.json": {
+      "bytes": 689642,
+      "sha256": "467a536567a492300e9eae0803cdf80097c32b27d1789ca54c1b5e094effba0c"
+    },
+    "artifacts/ai-surrogate-transfer-study/self-test.json": {
+      "bytes": 832304,
+      "sha256": "1df90dc2ccd151c7b3820d920ddf532c57e7deba72a834531a58b7aeddcca183"
+    },
+    "scripts/ai-surrogate-transfer-inputs.py": {
+      "bytes": 22542,
+      "sha256": "c83d81482735707f38ce05b94d240af6ad0e89d526592916eb54cba84e301d4a"
+    },
+    "scripts/ai-surrogate-transfer.py": {
+      "bytes": 25779,
+      "sha256": "b352e3bec5691076d6cd29fded6dad8ab832c1d5f32f47032934b0fc2c00268d"
+    }
+  },
+  "historicalReplayOnly": true,
+  "pythonVersion": "Python 3.14.4",
+  "rawArtifactsIgnored": true
+}

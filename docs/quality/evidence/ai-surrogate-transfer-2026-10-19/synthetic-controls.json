@@ -1,0 +1,142 @@
+{
+  "checks": [
+    "exact VP errors",
+    "complete panel and family exclusion",
+    "36 balanced splits",
+    "shared-noise null versus genuine and negative transfer",
+    "off-diagonal covariance algebra",
+    "fold-local outcome and feature perturbation",
+    "row reorder and sign invariance"
+  ],
+  "simulations": {
+    "familyDirection": {
+      "crossSeedCovariance": {
+        "mean": 0.08100208907378625,
+        "monteCarloSE": 0.12135052033160333
+      },
+      "deliberatelyLeakyGainOverZero": {
+        "mean": 14.525384358174577,
+        "monteCarloSE": 0.13242094563314058
+      },
+      "identityGainOverTrainMean": {
+        "mean": -3.47861724710567,
+        "monteCarloSE": 0.23644218425893268
+      },
+      "identityGainOverZero": {
+        "mean": -3.478735888225245,
+        "monteCarloSE": 0.23644265872936057
+      },
+      "mappedGainOverTrainMean": {
+        "mean": -1.8608532919620306,
+        "monteCarloSE": 0.16085561022264486
+      },
+      "mappedGainOverZero": {
+        "mean": -1.8609719330816055,
+        "monteCarloSE": 0.16085528571221433
+      },
+      "meanMappedSlope": {
+        "mean": 0.028468401001570394,
+        "monteCarloSE": 0.030955164938958665
+      },
+      "replicates": 500,
+      "samePanelSignedCorrelation": {
+        "mean": 0.014431548423596664,
+        "monteCarloSE": 0.015543518259040049
+      }
+    },
+    "negativeTransfer": {
+      "crossSeedCovariance": {
+        "mean": -3.906040989042869,
+        "monteCarloSE": 0.05547758724995506
+      },
+      "identityGainOverTrainMean": {
+        "mean": -9.414781218144231,
+        "monteCarloSE": 0.1336113250490004
+      },
+      "identityGainOverZero": {
+        "mean": -9.965010011380421,
+        "monteCarloSE": 0.13804349753247364
+      },
+      "mappedGainOverTrainMean": {
+        "mean": 8.509048784556562,
+        "monteCarloSE": 0.12438816002589678
+      },
+      "mappedGainOverZero": {
+        "mean": 7.958819991320372,
+        "monteCarloSE": 0.11055536419365977
+      },
+      "meanMappedSlope": {
+        "mean": -1.9968903503601676,
+        "monteCarloSE": 0.0005300143446244933
+      },
+      "replicates": 500,
+      "samePanelSignedCorrelation": {
+        "mean": -0.9995721817015375,
+        "monteCarloSE": 8.897905103575372e-06
+      }
+    },
+    "sharedNoiseOnly": {
+      "crossSeedCovariance": {
+        "mean": -0.003357625876298405,
+        "monteCarloSE": 0.0017860462473977565
+      },
+      "identityGainOverTrainMean": {
+        "mean": -0.24290616982185453,
+        "monteCarloSE": 0.0026993737943004827
+      },
+      "identityGainOverZero": {
+        "mean": -0.25414079876662554,
+        "monteCarloSE": 0.0026233801740476433
+      },
+      "mappedGainOverTrainMean": {
+        "mean": -0.24290616982185453,
+        "monteCarloSE": 0.0026993737943004827
+      },
+      "mappedGainOverZero": {
+        "mean": -0.25414079876662554,
+        "monteCarloSE": 0.0026233801740476433
+      },
+      "meanMappedSlope": {
+        "mean": 1.0,
+        "monteCarloSE": 0.0
+      },
+      "replicates": 500,
+      "samePanelSignedCorrelation": {
+        "mean": 1.0,
+        "monteCarloSE": 0.0
+      }
+    },
+    "transfer": {
+      "crossSeedCovariance": {
+        "mean": 3.840996837282489,
+        "monteCarloSE": 0.056515447624431954
+      },
+      "identityGainOverTrainMean": {
+        "mean": 6.403832030681231,
+        "monteCarloSE": 0.10048504675184143
+      },
+      "identityGainOverZero": {
+        "mean": 5.924209174540158,
+        "monteCarloSE": 0.08537023297116217
+      },
+      "mappedGainOverTrainMean": {
+        "mean": 8.369351024786786,
+        "monteCarloSE": 0.12685846016170063
+      },
+      "mappedGainOverZero": {
+        "mean": 7.889728168645712,
+        "monteCarloSE": 0.11367027967651859
+      },
+      "meanMappedSlope": {
+        "mean": 1.9971908125737232,
+        "monteCarloSE": 0.0005271086906322374
+      },
+      "replicates": 500,
+      "samePanelSignedCorrelation": {
+        "mean": 0.9995614878715132,
+        "monteCarloSE": 9.027123005436308e-06
+      }
+    }
+  },
+  "status": "VERIFIED_CONTROLS"
+}

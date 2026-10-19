@@ -1,0 +1,1929 @@
+{
+  "absTolerance": 1e-08,
+  "checks": [
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.0,
+      "outcome": "dVP",
+      "registeredFullPrecision": 0.0,
+      "reproduced": 0.0,
+      "variant": "capture-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.0,
+      "outcome": "GT4 M0 VP",
+      "registeredFullPrecision": 0.0,
+      "reproduced": 0.0,
+      "variant": "capture-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.0,
+      "outcome": "GT4 M1 + steps, out of trace",
+      "registeredFullPrecision": 0.0,
+      "reproduced": 0.0,
+      "variant": "capture-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.0,
+      "outcome": "GT4 M2 + objective reach and risk",
+      "registeredFullPrecision": 0.0,
+      "reproduced": 0.0,
+      "variant": "capture-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.0,
+      "outcome": "GT4 steps",
+      "registeredFullPrecision": 0.0,
+      "reproduced": 0.0,
+      "variant": "capture-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.0,
+      "outcome": "GT4 outOfTrace",
+      "registeredFullPrecision": 0.0,
+      "reproduced": 0.0,
+      "variant": "capture-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.0,
+      "outcome": "GT4 objectiveReachColumn",
+      "registeredFullPrecision": 0.0,
+      "reproduced": 0.0,
+      "variant": "capture-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.0,
+      "outcome": "GT4 objectiveVpAtRisk",
+      "registeredFullPrecision": 0.0,
+      "reproduced": 0.0,
+      "variant": "capture-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.0,
+      "outcome": "GT4 stacksExposedAllocated",
+      "registeredFullPrecision": 0.0,
+      "reproduced": 0.0,
+      "variant": "capture-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.0,
+      "outcome": "GT4 hqsInReach",
+      "registeredFullPrecision": 0.0,
+      "reproduced": 0.0,
+      "variant": "capture-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.0,
+      "outcome": "dVP",
+      "registeredFullPrecision": 0.0,
+      "reproduced": 0.0,
+      "variant": "capture-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.0,
+      "outcome": "GT4 M0 VP",
+      "registeredFullPrecision": 0.0,
+      "reproduced": 0.0,
+      "variant": "capture-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.0,
+      "outcome": "GT4 M1 + steps, out of trace",
+      "registeredFullPrecision": 0.0,
+      "reproduced": 0.0,
+      "variant": "capture-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.0,
+      "outcome": "GT4 M2 + objective reach and risk",
+      "registeredFullPrecision": 0.0,
+      "reproduced": 0.0,
+      "variant": "capture-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.0,
+      "outcome": "GT4 steps",
+      "registeredFullPrecision": 0.0,
+      "reproduced": 0.0,
+      "variant": "capture-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.0,
+      "outcome": "GT4 outOfTrace",
+      "registeredFullPrecision": 0.0,
+      "reproduced": 0.0,
+      "variant": "capture-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.0,
+      "outcome": "GT4 objectiveReachColumn",
+      "registeredFullPrecision": 0.0,
+      "reproduced": 0.0,
+      "variant": "capture-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.0,
+      "outcome": "GT4 objectiveVpAtRisk",
+      "registeredFullPrecision": 0.0,
+      "reproduced": 0.0,
+      "variant": "capture-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.0,
+      "outcome": "GT4 stacksExposedAllocated",
+      "registeredFullPrecision": 0.0,
+      "reproduced": 0.0,
+      "variant": "capture-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.0,
+      "outcome": "GT4 hqsInReach",
+      "registeredFullPrecision": 0.0,
+      "reproduced": 0.0,
+      "variant": "capture-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.875,
+      "outcome": "dVP",
+      "registeredFullPrecision": 0.875,
+      "reproduced": 0.875,
+      "variant": "crowding-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.4472,
+      "outcome": "GT4 M0 VP",
+      "registeredFullPrecision": 0.44724867046339534,
+      "reproduced": 0.44724867046339534,
+      "variant": "crowding-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 1.1585,
+      "outcome": "GT4 M1 + steps, out of trace",
+      "registeredFullPrecision": 1.1585366755959972,
+      "reproduced": 1.1585366755959972,
+      "variant": "crowding-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 1.8511,
+      "outcome": "GT4 M2 + objective reach and risk",
+      "registeredFullPrecision": 1.8511329390344187,
+      "reproduced": 1.8511329390344187,
+      "variant": "crowding-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.1875,
+      "outcome": "GT4 steps",
+      "registeredFullPrecision": 0.1875,
+      "reproduced": 0.1875,
+      "variant": "crowding-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 3.4375,
+      "outcome": "GT4 outOfTrace",
+      "registeredFullPrecision": 3.4375,
+      "reproduced": 3.4375,
+      "variant": "crowding-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": -0.1875,
+      "outcome": "GT4 objectiveReachColumn",
+      "registeredFullPrecision": -0.1875,
+      "reproduced": -0.1875,
+      "variant": "crowding-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.375,
+      "outcome": "GT4 objectiveVpAtRisk",
+      "registeredFullPrecision": 0.375,
+      "reproduced": 0.375,
+      "variant": "crowding-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": -0.3125,
+      "outcome": "GT4 stacksExposedAllocated",
+      "registeredFullPrecision": -0.3125,
+      "reproduced": -0.3125,
+      "variant": "crowding-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": -0.3125,
+      "outcome": "GT4 hqsInReach",
+      "registeredFullPrecision": -0.3125,
+      "reproduced": -0.3125,
+      "variant": "crowding-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 2.625,
+      "outcome": "dVP",
+      "registeredFullPrecision": 2.625,
+      "reproduced": 2.625,
+      "variant": "crowding-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": -0.2236,
+      "outcome": "GT4 M0 VP",
+      "registeredFullPrecision": -0.22362433523169764,
+      "reproduced": -0.22362433523169764,
+      "variant": "crowding-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 1.4671,
+      "outcome": "GT4 M1 + steps, out of trace",
+      "registeredFullPrecision": 1.4670963006823625,
+      "reproduced": 1.4670963006823625,
+      "variant": "crowding-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 1.5464,
+      "outcome": "GT4 M2 + objective reach and risk",
+      "registeredFullPrecision": 1.546387020424779,
+      "reproduced": 1.546387020424779,
+      "variant": "crowding-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.6875,
+      "outcome": "GT4 steps",
+      "registeredFullPrecision": 0.6875,
+      "reproduced": 0.6875,
+      "variant": "crowding-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 5.875,
+      "outcome": "GT4 outOfTrace",
+      "registeredFullPrecision": 5.875,
+      "reproduced": 5.875,
+      "variant": "crowding-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.3125,
+      "outcome": "GT4 objectiveReachColumn",
+      "registeredFullPrecision": 0.3125,
+      "reproduced": 0.3125,
+      "variant": "crowding-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.5,
+      "outcome": "GT4 objectiveVpAtRisk",
+      "registeredFullPrecision": 0.5,
+      "reproduced": 0.5,
+      "variant": "crowding-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.5625,
+      "outcome": "GT4 stacksExposedAllocated",
+      "registeredFullPrecision": 0.5625,
+      "reproduced": 0.5625,
+      "variant": "crowding-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": -0.8125,
+      "outcome": "GT4 hqsInReach",
+      "registeredFullPrecision": -0.8125,
+      "reproduced": -0.8125,
+      "variant": "crowding-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 1.625,
+      "outcome": "dVP",
+      "registeredFullPrecision": 1.625,
+      "reproduced": 1.625,
+      "variant": "contactBad-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": -0.2982,
+      "outcome": "GT4 M0 VP",
+      "registeredFullPrecision": -0.2981657803089302,
+      "reproduced": -0.2981657803089302,
+      "variant": "contactBad-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": -0.1756,
+      "outcome": "GT4 M1 + steps, out of trace",
+      "registeredFullPrecision": -0.17563822135356355,
+      "reproduced": -0.17563822135356355,
+      "variant": "contactBad-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.0231,
+      "outcome": "GT4 M2 + objective reach and risk",
+      "registeredFullPrecision": 0.023078839016155345,
+      "reproduced": 0.023078839016155345,
+      "variant": "contactBad-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.0625,
+      "outcome": "GT4 steps",
+      "registeredFullPrecision": 0.0625,
+      "reproduced": 0.0625,
+      "variant": "contactBad-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.0,
+      "outcome": "GT4 outOfTrace",
+      "registeredFullPrecision": 0.0,
+      "reproduced": 0.0,
+      "variant": "contactBad-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 1.3125,
+      "outcome": "GT4 objectiveReachColumn",
+      "registeredFullPrecision": 1.3125,
+      "reproduced": 1.3125,
+      "variant": "contactBad-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.5625,
+      "outcome": "GT4 objectiveVpAtRisk",
+      "registeredFullPrecision": 0.5625,
+      "reproduced": 0.5625,
+      "variant": "contactBad-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.25,
+      "outcome": "GT4 stacksExposedAllocated",
+      "registeredFullPrecision": 0.25,
+      "reproduced": 0.25,
+      "variant": "contactBad-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.25,
+      "outcome": "GT4 hqsInReach",
+      "registeredFullPrecision": 0.25,
+      "reproduced": 0.25,
+      "variant": "contactBad-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": -1.625,
+      "outcome": "dVP",
+      "registeredFullPrecision": -1.625,
+      "reproduced": -1.625,
+      "variant": "contactBad-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.0,
+      "outcome": "GT4 M0 VP",
+      "registeredFullPrecision": 0.0,
+      "reproduced": 0.0,
+      "variant": "contactBad-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.1243,
+      "outcome": "GT4 M1 + steps, out of trace",
+      "registeredFullPrecision": 0.12429900073485921,
+      "reproduced": 0.12429900073485921,
+      "variant": "contactBad-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.2648,
+      "outcome": "GT4 M2 + objective reach and risk",
+      "registeredFullPrecision": 0.26483425364147484,
+      "reproduced": 0.26483425364147484,
+      "variant": "contactBad-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.125,
+      "outcome": "GT4 steps",
+      "registeredFullPrecision": 0.125,
+      "reproduced": 0.125,
+      "variant": "contactBad-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.3125,
+      "outcome": "GT4 outOfTrace",
+      "registeredFullPrecision": 0.3125,
+      "reproduced": 0.3125,
+      "variant": "contactBad-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": -0.125,
+      "outcome": "GT4 objectiveReachColumn",
+      "registeredFullPrecision": -0.125,
+      "reproduced": -0.125,
+      "variant": "contactBad-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.0,
+      "outcome": "GT4 objectiveVpAtRisk",
+      "registeredFullPrecision": 0.0,
+      "reproduced": 0.0,
+      "variant": "contactBad-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.5625,
+      "outcome": "GT4 stacksExposedAllocated",
+      "registeredFullPrecision": 0.5625,
+      "reproduced": 0.5625,
+      "variant": "contactBad-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.1875,
+      "outcome": "GT4 hqsInReach",
+      "registeredFullPrecision": 0.1875,
+      "reproduced": 0.1875,
+      "variant": "contactBad-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": -1.0,
+      "outcome": "dVP",
+      "registeredFullPrecision": -1.0,
+      "reproduced": -1.0,
+      "variant": "outOfSupply-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.0,
+      "outcome": "GT4 M0 VP",
+      "registeredFullPrecision": 0.0,
+      "reproduced": 0.0,
+      "variant": "outOfSupply-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.0821,
+      "outcome": "GT4 M1 + steps, out of trace",
+      "registeredFullPrecision": 0.08209969157516425,
+      "reproduced": 0.08209969157516425,
+      "variant": "outOfSupply-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.0921,
+      "outcome": "GT4 M2 + objective reach and risk",
+      "registeredFullPrecision": 0.0921097595990504,
+      "reproduced": 0.0921097595990504,
+      "variant": "outOfSupply-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.125,
+      "outcome": "GT4 steps",
+      "registeredFullPrecision": 0.125,
+      "reproduced": 0.125,
+      "variant": "outOfSupply-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.125,
+      "outcome": "GT4 outOfTrace",
+      "registeredFullPrecision": 0.125,
+      "reproduced": 0.125,
+      "variant": "outOfSupply-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.0,
+      "outcome": "GT4 objectiveReachColumn",
+      "registeredFullPrecision": 0.0,
+      "reproduced": 0.0,
+      "variant": "outOfSupply-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.0625,
+      "outcome": "GT4 objectiveVpAtRisk",
+      "registeredFullPrecision": 0.0625,
+      "reproduced": 0.0625,
+      "variant": "outOfSupply-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.0,
+      "outcome": "GT4 stacksExposedAllocated",
+      "registeredFullPrecision": 0.0,
+      "reproduced": 0.0,
+      "variant": "outOfSupply-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.0,
+      "outcome": "GT4 hqsInReach",
+      "registeredFullPrecision": 0.0,
+      "reproduced": 0.0,
+      "variant": "outOfSupply-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": -0.625,
+      "outcome": "dVP",
+      "registeredFullPrecision": -0.625,
+      "reproduced": -0.625,
+      "variant": "outOfSupply-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.0,
+      "outcome": "GT4 M0 VP",
+      "registeredFullPrecision": 0.0,
+      "reproduced": 0.0,
+      "variant": "outOfSupply-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.0,
+      "outcome": "GT4 M1 + steps, out of trace",
+      "registeredFullPrecision": 0.0,
+      "reproduced": 0.0,
+      "variant": "outOfSupply-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.0,
+      "outcome": "GT4 M2 + objective reach and risk",
+      "registeredFullPrecision": 0.0,
+      "reproduced": 0.0,
+      "variant": "outOfSupply-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.0,
+      "outcome": "GT4 steps",
+      "registeredFullPrecision": 0.0,
+      "reproduced": 0.0,
+      "variant": "outOfSupply-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.0,
+      "outcome": "GT4 outOfTrace",
+      "registeredFullPrecision": 0.0,
+      "reproduced": 0.0,
+      "variant": "outOfSupply-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.0,
+      "outcome": "GT4 objectiveReachColumn",
+      "registeredFullPrecision": 0.0,
+      "reproduced": 0.0,
+      "variant": "outOfSupply-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.0,
+      "outcome": "GT4 objectiveVpAtRisk",
+      "registeredFullPrecision": 0.0,
+      "reproduced": 0.0,
+      "variant": "outOfSupply-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.0,
+      "outcome": "GT4 stacksExposedAllocated",
+      "registeredFullPrecision": 0.0,
+      "reproduced": 0.0,
+      "variant": "outOfSupply-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.0,
+      "outcome": "GT4 hqsInReach",
+      "registeredFullPrecision": 0.0,
+      "reproduced": 0.0,
+      "variant": "outOfSupply-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.25,
+      "outcome": "dVP",
+      "registeredFullPrecision": 0.25,
+      "reproduced": 0.25,
+      "variant": "attackThreshold-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.0,
+      "outcome": "GT4 M0 VP",
+      "registeredFullPrecision": 0.0,
+      "reproduced": 0.0,
+      "variant": "attackThreshold-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.1407,
+      "outcome": "GT4 M1 + steps, out of trace",
+      "registeredFullPrecision": 0.14066436386564993,
+      "reproduced": 0.14066436386564993,
+      "variant": "attackThreshold-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.0712,
+      "outcome": "GT4 M2 + objective reach and risk",
+      "registeredFullPrecision": 0.0711720436247607,
+      "reproduced": 0.0711720436247607,
+      "variant": "attackThreshold-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.0,
+      "outcome": "GT4 steps",
+      "registeredFullPrecision": 0.0,
+      "reproduced": 0.0,
+      "variant": "attackThreshold-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.625,
+      "outcome": "GT4 outOfTrace",
+      "registeredFullPrecision": 0.625,
+      "reproduced": 0.625,
+      "variant": "attackThreshold-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": -0.0625,
+      "outcome": "GT4 objectiveReachColumn",
+      "registeredFullPrecision": -0.0625,
+      "reproduced": -0.0625,
+      "variant": "attackThreshold-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.0,
+      "outcome": "GT4 objectiveVpAtRisk",
+      "registeredFullPrecision": 0.0,
+      "reproduced": 0.0,
+      "variant": "attackThreshold-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": -0.3125,
+      "outcome": "GT4 stacksExposedAllocated",
+      "registeredFullPrecision": -0.3125,
+      "reproduced": -0.3125,
+      "variant": "attackThreshold-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.0,
+      "outcome": "GT4 hqsInReach",
+      "registeredFullPrecision": 0.0,
+      "reproduced": 0.0,
+      "variant": "attackThreshold-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": -0.125,
+      "outcome": "dVP",
+      "registeredFullPrecision": -0.125,
+      "reproduced": -0.125,
+      "variant": "attackThreshold-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": -0.1491,
+      "outcome": "GT4 M0 VP",
+      "registeredFullPrecision": -0.1490828901544651,
+      "reproduced": -0.1490828901544651,
+      "variant": "attackThreshold-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": -0.8368,
+      "outcome": "GT4 M1 + steps, out of trace",
+      "registeredFullPrecision": -0.8367596494374301,
+      "reproduced": -0.8367596494374301,
+      "variant": "attackThreshold-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": -0.4879,
+      "outcome": "GT4 M2 + objective reach and risk",
+      "registeredFullPrecision": -0.48790304853604166,
+      "reproduced": -0.48790304853604166,
+      "variant": "attackThreshold-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": -1.3125,
+      "outcome": "GT4 steps",
+      "registeredFullPrecision": -1.3125,
+      "reproduced": -1.3125,
+      "variant": "attackThreshold-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": -0.75,
+      "outcome": "GT4 outOfTrace",
+      "registeredFullPrecision": -0.75,
+      "reproduced": -0.75,
+      "variant": "attackThreshold-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.625,
+      "outcome": "GT4 objectiveReachColumn",
+      "registeredFullPrecision": 0.625,
+      "reproduced": 0.625,
+      "variant": "attackThreshold-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.1875,
+      "outcome": "GT4 objectiveVpAtRisk",
+      "registeredFullPrecision": 0.1875,
+      "reproduced": 0.1875,
+      "variant": "attackThreshold-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": -0.1875,
+      "outcome": "GT4 stacksExposedAllocated",
+      "registeredFullPrecision": -0.1875,
+      "reproduced": -0.1875,
+      "variant": "attackThreshold-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.25,
+      "outcome": "GT4 hqsInReach",
+      "registeredFullPrecision": 0.25,
+      "reproduced": 0.25,
+      "variant": "attackThreshold-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.125,
+      "outcome": "dVP",
+      "registeredFullPrecision": 0.125,
+      "reproduced": 0.125,
+      "variant": "combatSupply-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": -0.1491,
+      "outcome": "GT4 M0 VP",
+      "registeredFullPrecision": -0.14908289015446508,
+      "reproduced": -0.14908289015446508,
+      "variant": "combatSupply-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.3241,
+      "outcome": "GT4 M1 + steps, out of trace",
+      "registeredFullPrecision": 0.3241306663359981,
+      "reproduced": 0.3241306663359981,
+      "variant": "combatSupply-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.093,
+      "outcome": "GT4 M2 + objective reach and risk",
+      "registeredFullPrecision": 0.09295245012198604,
+      "reproduced": 0.09295245012198604,
+      "variant": "combatSupply-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": -0.1875,
+      "outcome": "GT4 steps",
+      "registeredFullPrecision": -0.1875,
+      "reproduced": -0.1875,
+      "variant": "combatSupply-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 2.25,
+      "outcome": "GT4 outOfTrace",
+      "registeredFullPrecision": 2.25,
+      "reproduced": 2.25,
+      "variant": "combatSupply-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.3125,
+      "outcome": "GT4 objectiveReachColumn",
+      "registeredFullPrecision": 0.3125,
+      "reproduced": 0.3125,
+      "variant": "combatSupply-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.1875,
+      "outcome": "GT4 objectiveVpAtRisk",
+      "registeredFullPrecision": 0.1875,
+      "reproduced": 0.1875,
+      "variant": "combatSupply-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": -0.625,
+      "outcome": "GT4 stacksExposedAllocated",
+      "registeredFullPrecision": -0.625,
+      "reproduced": -0.625,
+      "variant": "combatSupply-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": -0.125,
+      "outcome": "GT4 hqsInReach",
+      "registeredFullPrecision": -0.125,
+      "reproduced": -0.125,
+      "variant": "combatSupply-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": -0.625,
+      "outcome": "dVP",
+      "registeredFullPrecision": -0.625,
+      "reproduced": -0.625,
+      "variant": "combatSupply-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": -0.1491,
+      "outcome": "GT4 M0 VP",
+      "registeredFullPrecision": -0.1490828901544651,
+      "reproduced": -0.1490828901544651,
+      "variant": "combatSupply-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": -0.3513,
+      "outcome": "GT4 M1 + steps, out of trace",
+      "registeredFullPrecision": -0.3513311561403324,
+      "reproduced": -0.3513311561403324,
+      "variant": "combatSupply-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": -0.5887,
+      "outcome": "GT4 M2 + objective reach and risk",
+      "registeredFullPrecision": -0.5887406726836162,
+      "reproduced": -0.5887406726836162,
+      "variant": "combatSupply-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": -0.9375,
+      "outcome": "GT4 steps",
+      "registeredFullPrecision": -0.9375,
+      "reproduced": -0.9375,
+      "variant": "combatSupply-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.6875,
+      "outcome": "GT4 outOfTrace",
+      "registeredFullPrecision": 0.6875,
+      "reproduced": 0.6875,
+      "variant": "combatSupply-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.3125,
+      "outcome": "GT4 objectiveReachColumn",
+      "registeredFullPrecision": 0.3125,
+      "reproduced": 0.3125,
+      "variant": "combatSupply-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": -0.0625,
+      "outcome": "GT4 objectiveVpAtRisk",
+      "registeredFullPrecision": -0.0625,
+      "reproduced": -0.0625,
+      "variant": "combatSupply-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.0,
+      "outcome": "GT4 stacksExposedAllocated",
+      "registeredFullPrecision": 0.0,
+      "reproduced": 0.0,
+      "variant": "combatSupply-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.1875,
+      "outcome": "GT4 hqsInReach",
+      "registeredFullPrecision": 0.1875,
+      "reproduced": 0.1875,
+      "variant": "combatSupply-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.375,
+      "outcome": "dVP",
+      "registeredFullPrecision": 0.375,
+      "reproduced": 0.375,
+      "variant": "assaultRatio-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.1491,
+      "outcome": "GT4 M0 VP",
+      "registeredFullPrecision": 0.14908289015446508,
+      "reproduced": 0.14908289015446508,
+      "variant": "assaultRatio-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.2291,
+      "outcome": "GT4 M1 + steps, out of trace",
+      "registeredFullPrecision": 0.22905820622848805,
+      "reproduced": 0.22905820622848805,
+      "variant": "assaultRatio-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.7623,
+      "outcome": "GT4 M2 + objective reach and risk",
+      "registeredFullPrecision": 0.7623310204949245,
+      "reproduced": 0.7623310204949245,
+      "variant": "assaultRatio-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": -0.0625,
+      "outcome": "GT4 steps",
+      "registeredFullPrecision": -0.0625,
+      "reproduced": -0.0625,
+      "variant": "assaultRatio-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.6875,
+      "outcome": "GT4 outOfTrace",
+      "registeredFullPrecision": 0.6875,
+      "reproduced": 0.6875,
+      "variant": "assaultRatio-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": -1.0,
+      "outcome": "GT4 objectiveReachColumn",
+      "registeredFullPrecision": -1.0,
+      "reproduced": -1.0,
+      "variant": "assaultRatio-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.0625,
+      "outcome": "GT4 objectiveVpAtRisk",
+      "registeredFullPrecision": 0.0625,
+      "reproduced": 0.0625,
+      "variant": "assaultRatio-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": -0.4375,
+      "outcome": "GT4 stacksExposedAllocated",
+      "registeredFullPrecision": -0.4375,
+      "reproduced": -0.4375,
+      "variant": "assaultRatio-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.4375,
+      "outcome": "GT4 hqsInReach",
+      "registeredFullPrecision": 0.4375,
+      "reproduced": 0.4375,
+      "variant": "assaultRatio-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.375,
+      "outcome": "dVP",
+      "registeredFullPrecision": 0.375,
+      "reproduced": 0.375,
+      "variant": "assaultRatio-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.6709,
+      "outcome": "GT4 M0 VP",
+      "registeredFullPrecision": 0.670873005695093,
+      "reproduced": 0.670873005695093,
+      "variant": "assaultRatio-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 1.1959,
+      "outcome": "GT4 M1 + steps, out of trace",
+      "registeredFullPrecision": 1.1959453567463978,
+      "reproduced": 1.1959453567463978,
+      "variant": "assaultRatio-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 1.3268,
+      "outcome": "GT4 M2 + objective reach and risk",
+      "registeredFullPrecision": 1.3268202970410137,
+      "reproduced": 1.3268202970410137,
+      "variant": "assaultRatio-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 1.0625,
+      "outcome": "GT4 steps",
+      "registeredFullPrecision": 1.0625,
+      "reproduced": 1.0625,
+      "variant": "assaultRatio-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 1.25,
+      "outcome": "GT4 outOfTrace",
+      "registeredFullPrecision": 1.25,
+      "reproduced": 1.25,
+      "variant": "assaultRatio-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": -1.0,
+      "outcome": "GT4 objectiveReachColumn",
+      "registeredFullPrecision": -1.0,
+      "reproduced": -1.0,
+      "variant": "assaultRatio-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": -0.25,
+      "outcome": "GT4 objectiveVpAtRisk",
+      "registeredFullPrecision": -0.25,
+      "reproduced": -0.25,
+      "variant": "assaultRatio-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.75,
+      "outcome": "GT4 stacksExposedAllocated",
+      "registeredFullPrecision": 0.75,
+      "reproduced": 0.75,
+      "variant": "assaultRatio-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": -0.25,
+      "outcome": "GT4 hqsInReach",
+      "registeredFullPrecision": -0.25,
+      "reproduced": -0.25,
+      "variant": "assaultRatio-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": -3.0,
+      "outcome": "dVP",
+      "registeredFullPrecision": -3.0,
+      "reproduced": -3.0,
+      "variant": "garrisonThreatened-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": -0.4472,
+      "outcome": "GT4 M0 VP",
+      "registeredFullPrecision": -0.4472486704633953,
+      "reproduced": -0.4472486704633953,
+      "variant": "garrisonThreatened-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": -0.8784,
+      "outcome": "GT4 M1 + steps, out of trace",
+      "registeredFullPrecision": -0.8783574112368101,
+      "reproduced": -0.8783574112368101,
+      "variant": "garrisonThreatened-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": -1.9752,
+      "outcome": "GT4 M2 + objective reach and risk",
+      "registeredFullPrecision": -1.975223202135019,
+      "reproduced": -1.975223202135019,
+      "variant": "garrisonThreatened-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": -0.125,
+      "outcome": "GT4 steps",
+      "registeredFullPrecision": -0.125,
+      "reproduced": -0.125,
+      "variant": "garrisonThreatened-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": -2.3125,
+      "outcome": "GT4 outOfTrace",
+      "registeredFullPrecision": -2.3125,
+      "reproduced": -2.3125,
+      "variant": "garrisonThreatened-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.875,
+      "outcome": "GT4 objectiveReachColumn",
+      "registeredFullPrecision": 0.875,
+      "reproduced": 0.875,
+      "variant": "garrisonThreatened-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.4375,
+      "outcome": "GT4 objectiveVpAtRisk",
+      "registeredFullPrecision": 0.4375,
+      "reproduced": 0.4375,
+      "variant": "garrisonThreatened-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": -0.0625,
+      "outcome": "GT4 stacksExposedAllocated",
+      "registeredFullPrecision": -0.0625,
+      "reproduced": -0.0625,
+      "variant": "garrisonThreatened-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": -0.3125,
+      "outcome": "GT4 hqsInReach",
+      "registeredFullPrecision": -0.3125,
+      "reproduced": -0.3125,
+      "variant": "garrisonThreatened-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.125,
+      "outcome": "dVP",
+      "registeredFullPrecision": 0.125,
+      "reproduced": 0.125,
+      "variant": "garrisonThreatened-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.0,
+      "outcome": "GT4 M0 VP",
+      "registeredFullPrecision": 0.0,
+      "reproduced": 0.0,
+      "variant": "garrisonThreatened-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.374,
+      "outcome": "GT4 M1 + steps, out of trace",
+      "registeredFullPrecision": 0.3740464655766907,
+      "reproduced": 0.3740464655766907,
+      "variant": "garrisonThreatened-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.4258,
+      "outcome": "GT4 M2 + objective reach and risk",
+      "registeredFullPrecision": 0.4258335999102909,
+      "reproduced": 0.4258335999102909,
+      "variant": "garrisonThreatened-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.3125,
+      "outcome": "GT4 steps",
+      "registeredFullPrecision": 0.3125,
+      "reproduced": 0.3125,
+      "variant": "garrisonThreatened-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 1.0625,
+      "outcome": "GT4 outOfTrace",
+      "registeredFullPrecision": 1.0625,
+      "reproduced": 1.0625,
+      "variant": "garrisonThreatened-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.25,
+      "outcome": "GT4 objectiveReachColumn",
+      "registeredFullPrecision": 0.25,
+      "reproduced": 0.25,
+      "variant": "garrisonThreatened-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.3125,
+      "outcome": "GT4 objectiveVpAtRisk",
+      "registeredFullPrecision": 0.3125,
+      "reproduced": 0.3125,
+      "variant": "garrisonThreatened-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": -0.4375,
+      "outcome": "GT4 stacksExposedAllocated",
+      "registeredFullPrecision": -0.4375,
+      "reproduced": -0.4375,
+      "variant": "garrisonThreatened-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": -0.0625,
+      "outcome": "GT4 hqsInReach",
+      "registeredFullPrecision": -0.0625,
+      "reproduced": -0.0625,
+      "variant": "garrisonThreatened-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 1.5,
+      "outcome": "dVP",
+      "registeredFullPrecision": 1.5,
+      "reproduced": 1.5,
+      "variant": "holdRatio-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": -0.2982,
+      "outcome": "GT4 M0 VP",
+      "registeredFullPrecision": -0.29816578030893015,
+      "reproduced": -0.29816578030893015,
+      "variant": "holdRatio-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.703,
+      "outcome": "GT4 M1 + steps, out of trace",
+      "registeredFullPrecision": 0.7030467792376628,
+      "reproduced": 0.7030467792376628,
+      "variant": "holdRatio-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": -0.1289,
+      "outcome": "GT4 M2 + objective reach and risk",
+      "registeredFullPrecision": -0.1288843374190104,
+      "reproduced": -0.1288843374190104,
+      "variant": "holdRatio-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 2.0,
+      "outcome": "GT4 steps",
+      "registeredFullPrecision": 2.0,
+      "reproduced": 2.0,
+      "variant": "holdRatio-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.1875,
+      "outcome": "GT4 outOfTrace",
+      "registeredFullPrecision": 0.1875,
+      "reproduced": 0.1875,
+      "variant": "holdRatio-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 1.125,
+      "outcome": "GT4 objectiveReachColumn",
+      "registeredFullPrecision": 1.125,
+      "reproduced": 1.125,
+      "variant": "holdRatio-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.3125,
+      "outcome": "GT4 objectiveVpAtRisk",
+      "registeredFullPrecision": 0.3125,
+      "reproduced": 0.3125,
+      "variant": "holdRatio-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.0,
+      "outcome": "GT4 stacksExposedAllocated",
+      "registeredFullPrecision": 0.0,
+      "reproduced": 0.0,
+      "variant": "holdRatio-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": -0.4375,
+      "outcome": "GT4 hqsInReach",
+      "registeredFullPrecision": -0.4375,
+      "reproduced": -0.4375,
+      "variant": "holdRatio-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.5,
+      "outcome": "dVP",
+      "registeredFullPrecision": 0.5,
+      "reproduced": 0.5,
+      "variant": "holdRatio-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": -0.0745,
+      "outcome": "GT4 M0 VP",
+      "registeredFullPrecision": -0.07454144507723254,
+      "reproduced": -0.07454144507723254,
+      "variant": "holdRatio-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.028,
+      "outcome": "GT4 M1 + steps, out of trace",
+      "registeredFullPrecision": 0.027995893770180524,
+      "reproduced": 0.027995893770180524,
+      "variant": "holdRatio-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.1509,
+      "outcome": "GT4 M2 + objective reach and risk",
+      "registeredFullPrecision": 0.15086526234196682,
+      "reproduced": 0.15086526234196682,
+      "variant": "holdRatio-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.3125,
+      "outcome": "GT4 steps",
+      "registeredFullPrecision": 0.3125,
+      "reproduced": 0.3125,
+      "variant": "holdRatio-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": -0.25,
+      "outcome": "GT4 outOfTrace",
+      "registeredFullPrecision": -0.25,
+      "reproduced": -0.25,
+      "variant": "holdRatio-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 1.0625,
+      "outcome": "GT4 objectiveReachColumn",
+      "registeredFullPrecision": 1.0625,
+      "reproduced": 1.0625,
+      "variant": "holdRatio-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.5,
+      "outcome": "GT4 objectiveVpAtRisk",
+      "registeredFullPrecision": 0.5,
+      "reproduced": 0.5,
+      "variant": "holdRatio-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": -0.4375,
+      "outcome": "GT4 stacksExposedAllocated",
+      "registeredFullPrecision": -0.4375,
+      "reproduced": -0.4375,
+      "variant": "holdRatio-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.0625,
+      "outcome": "GT4 hqsInReach",
+      "registeredFullPrecision": 0.0625,
+      "reproduced": 0.0625,
+      "variant": "holdRatio-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.5,
+      "outcome": "dVP",
+      "registeredFullPrecision": 0.5,
+      "reproduced": 0.5,
+      "variant": "progressObjective-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.1491,
+      "outcome": "GT4 M0 VP",
+      "registeredFullPrecision": 0.14908289015446508,
+      "reproduced": 0.14908289015446508,
+      "variant": "progressObjective-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.3979,
+      "outcome": "GT4 M1 + steps, out of trace",
+      "registeredFullPrecision": 0.397855442867268,
+      "reproduced": 0.397855442867268,
+      "variant": "progressObjective-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": -0.0107,
+      "outcome": "GT4 M2 + objective reach and risk",
+      "registeredFullPrecision": -0.010708736776702948,
+      "reproduced": -0.010708736776702948,
+      "variant": "progressObjective-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": -0.0625,
+      "outcome": "GT4 steps",
+      "registeredFullPrecision": -0.0625,
+      "reproduced": -0.0625,
+      "variant": "progressObjective-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 1.4375,
+      "outcome": "GT4 outOfTrace",
+      "registeredFullPrecision": 1.4375,
+      "reproduced": 1.4375,
+      "variant": "progressObjective-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": -0.4375,
+      "outcome": "GT4 objectiveReachColumn",
+      "registeredFullPrecision": -0.4375,
+      "reproduced": -0.4375,
+      "variant": "progressObjective-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": -1.0,
+      "outcome": "GT4 objectiveVpAtRisk",
+      "registeredFullPrecision": -1.0,
+      "reproduced": -1.0,
+      "variant": "progressObjective-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.1875,
+      "outcome": "GT4 stacksExposedAllocated",
+      "registeredFullPrecision": 0.1875,
+      "reproduced": 0.1875,
+      "variant": "progressObjective-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.25,
+      "outcome": "GT4 hqsInReach",
+      "registeredFullPrecision": 0.25,
+      "reproduced": 0.25,
+      "variant": "progressObjective-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 4.0,
+      "outcome": "dVP",
+      "registeredFullPrecision": 4.0,
+      "reproduced": 4.0,
+      "variant": "progressObjective-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.4472,
+      "outcome": "GT4 M0 VP",
+      "registeredFullPrecision": 0.44724867046339534,
+      "reproduced": 0.44724867046339534,
+      "variant": "progressObjective-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.9243,
+      "outcome": "GT4 M1 + steps, out of trace",
+      "registeredFullPrecision": 0.9242779864340543,
+      "reproduced": 0.9242779864340543,
+      "variant": "progressObjective-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 1.4837,
+      "outcome": "GT4 M2 + objective reach and risk",
+      "registeredFullPrecision": 1.4836696183753129,
+      "reproduced": 1.4836696183753129,
+      "variant": "progressObjective-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.6875,
+      "outcome": "GT4 steps",
+      "registeredFullPrecision": 0.6875,
+      "reproduced": 0.6875,
+      "variant": "progressObjective-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 1.4375,
+      "outcome": "GT4 outOfTrace",
+      "registeredFullPrecision": 1.4375,
+      "reproduced": 1.4375,
+      "variant": "progressObjective-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": -0.75,
+      "outcome": "GT4 objectiveReachColumn",
+      "registeredFullPrecision": -0.75,
+      "reproduced": -0.75,
+      "variant": "progressObjective-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": -0.25,
+      "outcome": "GT4 objectiveVpAtRisk",
+      "registeredFullPrecision": -0.25,
+      "reproduced": -0.25,
+      "variant": "progressObjective-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.125,
+      "outcome": "GT4 stacksExposedAllocated",
+      "registeredFullPrecision": 0.125,
+      "reproduced": 0.125,
+      "variant": "progressObjective-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": -0.375,
+      "outcome": "GT4 hqsInReach",
+      "registeredFullPrecision": -0.375,
+      "reproduced": -0.375,
+      "variant": "progressObjective-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": -1.25,
+      "outcome": "dVP",
+      "registeredFullPrecision": -1.25,
+      "reproduced": -1.25,
+      "variant": "defenderLoss-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.0,
+      "outcome": "GT4 M0 VP",
+      "registeredFullPrecision": 0.0,
+      "reproduced": 0.0,
+      "variant": "defenderLoss-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": -1.0415,
+      "outcome": "GT4 M1 + steps, out of trace",
+      "registeredFullPrecision": -1.0414620444482312,
+      "reproduced": -1.0414620444482312,
+      "variant": "defenderLoss-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": -0.9581,
+      "outcome": "GT4 M2 + objective reach and risk",
+      "registeredFullPrecision": -0.9580526473730603,
+      "reproduced": -0.9580526473730603,
+      "variant": "defenderLoss-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": -1.5,
+      "outcome": "GT4 steps",
+      "registeredFullPrecision": -1.5,
+      "reproduced": -1.5,
+      "variant": "defenderLoss-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": -1.75,
+      "outcome": "GT4 outOfTrace",
+      "registeredFullPrecision": -1.75,
+      "reproduced": -1.75,
+      "variant": "defenderLoss-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": -0.3125,
+      "outcome": "GT4 objectiveReachColumn",
+      "registeredFullPrecision": -0.3125,
+      "reproduced": -0.3125,
+      "variant": "defenderLoss-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": -0.375,
+      "outcome": "GT4 objectiveVpAtRisk",
+      "registeredFullPrecision": -0.375,
+      "reproduced": -0.375,
+      "variant": "defenderLoss-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.1875,
+      "outcome": "GT4 stacksExposedAllocated",
+      "registeredFullPrecision": 0.1875,
+      "reproduced": 0.1875,
+      "variant": "defenderLoss-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.375,
+      "outcome": "GT4 hqsInReach",
+      "registeredFullPrecision": 0.375,
+      "reproduced": 0.375,
+      "variant": "defenderLoss-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": -1.75,
+      "outcome": "dVP",
+      "registeredFullPrecision": -1.75,
+      "reproduced": -1.75,
+      "variant": "defenderLoss-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": -0.5963,
+      "outcome": "GT4 M0 VP",
+      "registeredFullPrecision": -0.5963315606178604,
+      "reproduced": -0.5963315606178604,
+      "variant": "defenderLoss-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": -0.2717,
+      "outcome": "GT4 M1 + steps, out of trace",
+      "registeredFullPrecision": -0.2717485537973992,
+      "reproduced": -0.2717485537973992,
+      "variant": "defenderLoss-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": -0.6549,
+      "outcome": "GT4 M2 + objective reach and risk",
+      "registeredFullPrecision": -0.654891485678145,
+      "reproduced": -0.654891485678145,
+      "variant": "defenderLoss-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": -0.375,
+      "outcome": "GT4 steps",
+      "registeredFullPrecision": -0.375,
+      "reproduced": -0.375,
+      "variant": "defenderLoss-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 1.3125,
+      "outcome": "GT4 outOfTrace",
+      "registeredFullPrecision": 1.3125,
+      "reproduced": 1.3125,
+      "variant": "defenderLoss-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.875,
+      "outcome": "GT4 objectiveReachColumn",
+      "registeredFullPrecision": 0.875,
+      "reproduced": 0.875,
+      "variant": "defenderLoss-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.1875,
+      "outcome": "GT4 objectiveVpAtRisk",
+      "registeredFullPrecision": 0.1875,
+      "reproduced": 0.1875,
+      "variant": "defenderLoss-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": -0.4375,
+      "outcome": "GT4 stacksExposedAllocated",
+      "registeredFullPrecision": -0.4375,
+      "reproduced": -0.4375,
+      "variant": "defenderLoss-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": -0.125,
+      "outcome": "GT4 hqsInReach",
+      "registeredFullPrecision": -0.125,
+      "reproduced": -0.125,
+      "variant": "defenderLoss-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.0,
+      "outcome": "dVP",
+      "registeredFullPrecision": 0.0,
+      "reproduced": 0.0,
+      "variant": "hqWithArmy-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.0,
+      "outcome": "GT4 M0 VP",
+      "registeredFullPrecision": 0.0,
+      "reproduced": 0.0,
+      "variant": "hqWithArmy-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.631,
+      "outcome": "GT4 M1 + steps, out of trace",
+      "registeredFullPrecision": 0.6309635865724099,
+      "reproduced": 0.6309635865724099,
+      "variant": "hqWithArmy-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": -1.0309,
+      "outcome": "GT4 M2 + objective reach and risk",
+      "registeredFullPrecision": -1.030936215763092,
+      "reproduced": -1.030936215763092,
+      "variant": "hqWithArmy-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.875,
+      "outcome": "GT4 steps",
+      "registeredFullPrecision": 0.875,
+      "reproduced": 0.875,
+      "variant": "hqWithArmy-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 1.125,
+      "outcome": "GT4 outOfTrace",
+      "registeredFullPrecision": 1.125,
+      "reproduced": 1.125,
+      "variant": "hqWithArmy-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": -0.9375,
+      "outcome": "GT4 objectiveReachColumn",
+      "registeredFullPrecision": -0.9375,
+      "reproduced": -0.9375,
+      "variant": "hqWithArmy-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": -1.3125,
+      "outcome": "GT4 objectiveVpAtRisk",
+      "registeredFullPrecision": -1.3125,
+      "reproduced": -1.3125,
+      "variant": "hqWithArmy-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": -0.9375,
+      "outcome": "GT4 stacksExposedAllocated",
+      "registeredFullPrecision": -0.9375,
+      "reproduced": -0.9375,
+      "variant": "hqWithArmy-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.0,
+      "outcome": "GT4 hqsInReach",
+      "registeredFullPrecision": 0.0,
+      "reproduced": 0.0,
+      "variant": "hqWithArmy-half"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 1.625,
+      "outcome": "dVP",
+      "registeredFullPrecision": 1.625,
+      "reproduced": 1.625,
+      "variant": "hqWithArmy-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.6709,
+      "outcome": "GT4 M0 VP",
+      "registeredFullPrecision": 0.6708730056950929,
+      "reproduced": 0.6708730056950929,
+      "variant": "hqWithArmy-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 1.2066,
+      "outcome": "GT4 M1 + steps, out of trace",
+      "registeredFullPrecision": 1.2065634030166241,
+      "reproduced": 1.2065634030166241,
+      "variant": "hqWithArmy-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.8133,
+      "outcome": "GT4 M2 + objective reach and risk",
+      "registeredFullPrecision": 0.8132793600663883,
+      "reproduced": 0.8132793600663883,
+      "variant": "hqWithArmy-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 1.25,
+      "outcome": "GT4 steps",
+      "registeredFullPrecision": 1.25,
+      "reproduced": 1.25,
+      "variant": "hqWithArmy-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.9375,
+      "outcome": "GT4 outOfTrace",
+      "registeredFullPrecision": 0.9375,
+      "reproduced": 0.9375,
+      "variant": "hqWithArmy-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": -0.6875,
+      "outcome": "GT4 objectiveReachColumn",
+      "registeredFullPrecision": -0.6875,
+      "reproduced": -0.6875,
+      "variant": "hqWithArmy-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": -1.1875,
+      "outcome": "GT4 objectiveVpAtRisk",
+      "registeredFullPrecision": -1.1875,
+      "reproduced": -1.1875,
+      "variant": "hqWithArmy-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": 0.0625,
+      "outcome": "GT4 stacksExposedAllocated",
+      "registeredFullPrecision": 0.0625,
+      "reproduced": 0.0625,
+      "variant": "hqWithArmy-double"
+    },
+    {
+      "absoluteError": 0.0,
+      "committedExpected": -0.25,
+      "outcome": "GT4 hqsInReach",
+      "registeredFullPrecision": -0.25,
+      "reproduced": -0.25,
+      "variant": "hqWithArmy-double"
+    }
+  ],
+  "committedFourDecimalValues": 57,
+  "count": 240,
+  "maxAbsoluteError": 0.0,
+  "relTolerance": 1e-10
+}
