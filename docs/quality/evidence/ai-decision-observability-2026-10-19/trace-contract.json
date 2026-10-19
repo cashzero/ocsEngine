@@ -1,0 +1,58 @@
+{
+  "boundary": "Read-only inspection of one existing decision trace and source contract;no new games or replay",
+  "traceFile": ".claude/worktrees/ai-truck-shuttle/artifacts/ai-assault/v84-development/attack-temperate/match-1300200.trace.jsonl",
+  "traceSha256": "99f22309b5aaf099ecff1d403980c470c17c485b5815a3abad02d829c52e3e6b",
+  "rows": 872,
+  "rowsWithBreakdown": 872,
+  "rowsWithCandidateScores": 0,
+  "rowsWithAlternatives": 0,
+  "sample": {
+    "ordinal": 14,
+    "kind": "ACTION",
+    "intent": "combat to 15,15 (assault 13,15)",
+    "score": 31.90865800865801,
+    "breakdown": [
+      {
+        "term": "progress",
+        "value": 36.81818181818182
+      },
+      {
+        "term": "exposure",
+        "value": -4.90952380952381
+      }
+    ],
+    "rejections": []
+  },
+  "sourceBindings": {
+    "scripts/ai-match.mjs": "f12267cf106747487504baff605d8b849d630a5eb59b5728c7c66baca27a65a4",
+    "src/ai/seat-runner.ts": "8641e64f675b1d7e03099d8946bda42d66e9d817c0c47f8588d6e3b9091d05b8",
+    "src/ai/policies/heuristic.ts": "84710117e3106750bec4ae6a0214a33b47442afc5d106226953d9128425ebbdc"
+  },
+  "P8TraceConfigured": false,
+  "P8MetadataFields": [
+    "acceptedAtMs",
+    "durationMs",
+    "requestId",
+    "seatId"
+  ],
+  "interpretation": "intent,score,breakdown describe the initial policy choice;action describes the last attempted dispatch and can be a fallback;rejections are dispatch failures,not a census of policy candidates or gates;no first policy-blocking reason available",
+  "baseCommit": "c996680",
+  "fieldNames": [
+    "action",
+    "attempts",
+    "breakdown",
+    "decideMs",
+    "dispatchMs",
+    "intent",
+    "kind",
+    "ordinal",
+    "policy",
+    "rejections",
+    "revision",
+    "score",
+    "seatId",
+    "status",
+    "stepKey"
+  ],
+  "rowsWithFallback": 0
+}
