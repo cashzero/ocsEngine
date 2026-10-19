@@ -1,0 +1,30 @@
+[
+  {
+    "case": "unbound-bytes",
+    "exitCode": 1,
+    "expectedDisagreement": "Input is not bound",
+    "matched": true,
+    "outputWritten": false
+  },
+  {
+    "case": "pre-state-hash",
+    "exitCode": 1,
+    "expectedDisagreement": "Observation pre-state hash mismatch",
+    "matched": true,
+    "outputWritten": false
+  },
+  {
+    "case": "attempt-request",
+    "exitCode": 1,
+    "expectedDisagreement": "Attempt request identity mismatch",
+    "matched": true,
+    "outputWritten": false
+  },
+  {
+    "case": "turn-owner",
+    "exitCode": 1,
+    "expectedDisagreement": "Replayed events mismatch",
+    "matched": true,
+    "outputWritten": false
+  }
+]

@@ -1,0 +1,231 @@
+{
+  "generated": {
+    "outputSha256": "fb82c723169a247904dcb3ae02ea1c7d51ddc095e20aeb42e27c2206133d5923",
+    "provenance": {
+      "input": "artifacts/ai-movement-observation-study/reproduced/equivalence/enabled.json",
+      "inputSha256": "03d33dd54ec23518831d4c9b2582449a7995e3bf0ce306fb52c3e6a7bb12ed88",
+      "summarySha256": "90ff35728f9b9490b8215719d72e59f1b98b9099a4a12f44dc1126d50ccd0e29",
+      "producerProvenanceSha256": "62e0710fea35c6e79d9c60f17a53aaf1f016dcb2bfe13a7b430f9928bb19c8c6",
+      "engineTreeSha256": "4a87376b26c41f60086cb3060f606afcc1e9b99bb3ba00339c904837d200bb2a",
+      "scriptSha256": "2bca1ad40389c1000381d2ad981d7c487753536dc44027e3970038cd821bb00b",
+      "node": "v26.9.0",
+      "boundaryProofEngineTreeSha256": "4a87376b26c41f60086cb3060f606afcc1e9b99bb3ba00339c904837d200bb2a",
+      "elapsedMs": 3082.0353920000002
+    },
+    "summary": {
+      "groups": 50,
+      "assignedObjectiveGroups": 22,
+      "absentTargetGroups": 13,
+      "nonObjectiveTargetGroups": 15,
+      "objectiveRows": 44,
+      "ownTurnObservedRows": 44,
+      "afterOpponentObservedRows": 37,
+      "uniqueOwnTurnObjectiveWindows": 16,
+      "uniqueAfterOpponentObjectiveWindows": 9,
+      "immediateCaptureRows": 0,
+      "assignedTargetImmediateCaptureRows": 0,
+      "supplyExhaustedGroups": 1,
+      "supplyExhaustedAssignedObjectiveGroups": 0,
+      "endpointStatuses": {
+        "ownTurn": {
+          "OBSERVED": 44
+        },
+        "afterOpponentTurn": {
+          "OBSERVED": 37,
+          "CENSORED": 7
+        }
+      },
+      "accounting": [
+        {
+          "playerId": "player:allied",
+          "startControlledVp": 0,
+          "endControlledVp": 0,
+          "gained": 0,
+          "lost": 0
+        },
+        {
+          "playerId": "player:axis",
+          "startControlledVp": 18,
+          "endControlledVp": 18,
+          "gained": 0,
+          "lost": 0
+        }
+      ],
+      "predictiveQualification": "NOT_TESTED"
+    },
+    "completedTurns": [
+      {
+        "dispatchIndex": 45,
+        "postIndex": 46,
+        "eventIndex": 3,
+        "turn": "1:0",
+        "owner": "player:allied",
+        "from": {
+          "gameTurn": 1,
+          "playerTurnIndex": 0,
+          "phase": "CLEAN_UP",
+          "segment": "NONE",
+          "firstPlayerId": "player:allied",
+          "phasingPlayerId": "player:allied",
+          "actingPlayerId": "player:allied"
+        },
+        "to": {
+          "gameTurn": 1,
+          "playerTurnIndex": 1,
+          "phase": "AIRCRAFT_REFIT",
+          "segment": "NONE",
+          "firstPlayerId": "player:allied",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:axis"
+        },
+        "objectiveControlProven": true
+      },
+      {
+        "dispatchIndex": 60,
+        "postIndex": 61,
+        "eventIndex": 4,
+        "turn": "1:1",
+        "owner": "player:axis",
+        "from": {
+          "gameTurn": 1,
+          "playerTurnIndex": 1,
+          "phase": "CLEAN_UP",
+          "segment": "NONE",
+          "firstPlayerId": "player:allied",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:axis"
+        },
+        "to": {
+          "gameTurn": 1,
+          "playerTurnIndex": 1,
+          "phase": "TURN_END",
+          "segment": "NONE",
+          "firstPlayerId": "player:allied",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:axis"
+        },
+        "objectiveControlProven": true
+      },
+      {
+        "dispatchIndex": 81,
+        "postIndex": 82,
+        "eventIndex": 3,
+        "turn": "2:0",
+        "owner": "player:axis",
+        "from": {
+          "gameTurn": 2,
+          "playerTurnIndex": 0,
+          "phase": "CLEAN_UP",
+          "segment": "NONE",
+          "firstPlayerId": "player:axis",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:axis"
+        },
+        "to": {
+          "gameTurn": 2,
+          "playerTurnIndex": 1,
+          "phase": "AIRCRAFT_REFIT",
+          "segment": "NONE",
+          "firstPlayerId": "player:axis",
+          "phasingPlayerId": "player:allied",
+          "actingPlayerId": "player:allied"
+        },
+        "objectiveControlProven": true
+      },
+      {
+        "dispatchIndex": 128,
+        "postIndex": 129,
+        "eventIndex": 3,
+        "turn": "2:1",
+        "owner": "player:allied",
+        "from": {
+          "gameTurn": 2,
+          "playerTurnIndex": 1,
+          "phase": "CLEAN_UP",
+          "segment": "NONE",
+          "firstPlayerId": "player:axis",
+          "phasingPlayerId": "player:allied",
+          "actingPlayerId": "player:allied"
+        },
+        "to": {
+          "gameTurn": 2,
+          "playerTurnIndex": 1,
+          "phase": "TURN_END",
+          "segment": "NONE",
+          "firstPlayerId": "player:axis",
+          "phasingPlayerId": "player:allied",
+          "actingPlayerId": "player:allied"
+        },
+        "objectiveControlProven": true
+      }
+    ],
+    "objectiveControlChanges": []
+  },
+  "recorded": {
+    "outputSha256": "bc0764fdbe671a193f202d08cf203f025181a769a568b1eb8a104b702101bd76",
+    "provenance": {
+      "input": "artifacts/ai-movement-observation-study/reproduced/equivalence/recorded-enabled.json",
+      "inputSha256": "349287eaeaca5cb9d5a8c6cdd5d457b1eaa58e5cba6ae61d9d51e82d1c0f3c6c",
+      "summarySha256": "90ff35728f9b9490b8215719d72e59f1b98b9099a4a12f44dc1126d50ccd0e29",
+      "producerProvenanceSha256": "62e0710fea35c6e79d9c60f17a53aaf1f016dcb2bfe13a7b430f9928bb19c8c6",
+      "engineTreeSha256": "4a87376b26c41f60086cb3060f606afcc1e9b99bb3ba00339c904837d200bb2a",
+      "scriptSha256": "2bca1ad40389c1000381d2ad981d7c487753536dc44027e3970038cd821bb00b",
+      "node": "v26.9.0",
+      "boundaryProofEngineTreeSha256": "4a87376b26c41f60086cb3060f606afcc1e9b99bb3ba00339c904837d200bb2a",
+      "elapsedMs": 1228.4724959999999
+    },
+    "summary": {
+      "groups": 19,
+      "assignedObjectiveGroups": 7,
+      "absentTargetGroups": 6,
+      "nonObjectiveTargetGroups": 6,
+      "objectiveRows": 29,
+      "ownTurnObservedRows": 0,
+      "afterOpponentObservedRows": 0,
+      "uniqueOwnTurnObjectiveWindows": 0,
+      "uniqueAfterOpponentObjectiveWindows": 0,
+      "immediateCaptureRows": 1,
+      "assignedTargetImmediateCaptureRows": 0,
+      "supplyExhaustedGroups": 0,
+      "supplyExhaustedAssignedObjectiveGroups": 0,
+      "endpointStatuses": {
+        "ownTurn": {
+          "CENSORED": 29
+        },
+        "afterOpponentTurn": {
+          "CENSORED": 29
+        }
+      },
+      "accounting": [
+        {
+          "playerId": "player:allied",
+          "startControlledVp": 6,
+          "endControlledVp": 10,
+          "gained": 4,
+          "lost": 0
+        },
+        {
+          "playerId": "player:axis",
+          "startControlledVp": 6,
+          "endControlledVp": 2,
+          "gained": 0,
+          "lost": 4
+        }
+      ],
+      "predictiveQualification": "NOT_TESTED"
+    },
+    "completedTurns": [],
+    "objectiveControlChanges": [
+      {
+        "dispatchIndex": 1,
+        "requestId": "bot:seat:one:1",
+        "revision": 80,
+        "hexId": "15,4",
+        "points": 4,
+        "from": "player:axis",
+        "to": "player:allied",
+        "actionKind": "MOVE_PIECE"
+      }
+    ]
+  }
+}

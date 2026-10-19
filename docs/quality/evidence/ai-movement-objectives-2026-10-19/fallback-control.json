@@ -1,0 +1,14 @@
+{
+  "scope": "Synthetic observation/attempt identity fixture; not a heuristic-produced game or passivity proof",
+  "dispatches": 3,
+  "acceptedActions": 2,
+  "rejectedStatus": "REJECTED",
+  "rejectedViolation": "STALE_REVISION",
+  "selectedCandidateId": "candidate:control-stale",
+  "acceptedCandidateId": "candidate:30",
+  "acceptedMatchesSelection": false,
+  "captureRequestId": "bot:seat:one:1",
+  "rejectedRequestHasNoControlChange": true,
+  "ownTurnStatus": "CENSORED",
+  "afterOpponentStatus": "CENSORED"
+}

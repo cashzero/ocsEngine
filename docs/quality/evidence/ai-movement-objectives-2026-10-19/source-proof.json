@@ -1,0 +1,17 @@
+{
+  "engineTreeSha256": "4a87376b26c41f60086cb3060f606afcc1e9b99bb3ba00339c904837d200bb2a",
+  "scriptSha256": "2bca1ad40389c1000381d2ad981d7c487753536dc44027e3970038cd821bb00b",
+  "sources": {
+    "src/rules/kernel/reducer.ts": "9319e2a17bb2bb21f778ea000e0f1a0f7f2b1c99a37b1ee6eb1dcd2f3a19893f",
+    "src/rules/lifecycle/lifecycle.ts": "60a3f80e64723b24677a8ce5cadf3d4f680eed91c3f22077d75a3a6ba5cf2361",
+    "src/rules/supply/rail-cap.ts": "54b0e82b98939a9bd8d503583f88b51e716947d6b009180456683397fb731ea3"
+  },
+  "scope": "ADVANCE_SEQUENCE lifecycle leaves configured objective controls unchanged on this exact engine tree; other action kinds/builds receive unavailable internal endpoints",
+  "sourceReferences": [
+    "src/rules/kernel/reducer.ts:73",
+    "src/rules/kernel/reducer.ts:129",
+    "src/rules/lifecycle/lifecycle.ts:180",
+    "src/rules/supply/rail-cap.ts:454"
+  ],
+  "verification": "Enumerated setHexControl writers in src/rules; ordinary lifecycle reaches only applyFrontControl, which skips configured objectives; remaining objective writers belong to explicit relocation/entry/combat/transport actions. Script also asserts endpoint control invariance but does not use net equality as the proof."
+}
