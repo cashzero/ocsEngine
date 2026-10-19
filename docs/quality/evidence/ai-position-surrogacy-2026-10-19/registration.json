@@ -1,0 +1,261 @@
+{
+ "registeredAt": "2026-10-19, before any surrogacy game was played",
+ "question": "Across policy variants of different directions, does a variant's effect on position-based surrogates at Game Turn 4 predict its effect on the final VP margin (trial-level surrogacy)?",
+ "variants": [
+  {
+   "name": "capture-half",
+   "weight": "capture",
+   "default": 40,
+   "value": 20.0,
+   "file": "artifacts/ai-surrogacy/weights/capture-half.json",
+   "sha256": "f83d2d3d66afd80b6311ef5dedef11be058897a879c53d96ae26b2c4b5dea351"
+  },
+  {
+   "name": "capture-double",
+   "weight": "capture",
+   "default": 40,
+   "value": 80,
+   "file": "artifacts/ai-surrogacy/weights/capture-double.json",
+   "sha256": "bfadd9fb5faed520783bc9ef1306f41b1396a63d3de7d24df332c0f62ea9af6f"
+  },
+  {
+   "name": "crowding-half",
+   "weight": "crowding",
+   "default": 3,
+   "value": 1.5,
+   "file": "artifacts/ai-surrogacy/weights/crowding-half.json",
+   "sha256": "4d8b8d9db93f590b2fd9d423ae507928082d7b30f5b5349ebe694923e8721a41"
+  },
+  {
+   "name": "crowding-double",
+   "weight": "crowding",
+   "default": 3,
+   "value": 6,
+   "file": "artifacts/ai-surrogacy/weights/crowding-double.json",
+   "sha256": "55ea7133e358fd20dbd2fe0cfc51e9154d96f0b8805ce879c0ccdff62933e20e"
+  },
+  {
+   "name": "contactBad-half",
+   "weight": "contactBad",
+   "default": 8,
+   "value": 4.0,
+   "file": "artifacts/ai-surrogacy/weights/contactBad-half.json",
+   "sha256": "5a1b7dbc5f27c85a9878314e730b0b2c0001ece2b486a71423eb6ef23ea54d19"
+  },
+  {
+   "name": "contactBad-double",
+   "weight": "contactBad",
+   "default": 8,
+   "value": 16,
+   "file": "artifacts/ai-surrogacy/weights/contactBad-double.json",
+   "sha256": "aca4e2fe275cf1bf83f44103127a7e818b40bdc368cefe1b4b17b92d52d2ddb7"
+  },
+  {
+   "name": "outOfSupply-half",
+   "weight": "outOfSupply",
+   "default": 60,
+   "value": 30.0,
+   "file": "artifacts/ai-surrogacy/weights/outOfSupply-half.json",
+   "sha256": "bccbd49488cf5a07a29d61735e2f32a0d21878085b3161d0a108840008eb6554"
+  },
+  {
+   "name": "outOfSupply-double",
+   "weight": "outOfSupply",
+   "default": 60,
+   "value": 120,
+   "file": "artifacts/ai-surrogacy/weights/outOfSupply-double.json",
+   "sha256": "05a523b704f3f9cda7c210b3180b93f0754c04c0f74549bfcab33b0a66d9da3e"
+  },
+  {
+   "name": "attackThreshold-half",
+   "weight": "attackThreshold",
+   "default": 4,
+   "value": 2.0,
+   "file": "artifacts/ai-surrogacy/weights/attackThreshold-half.json",
+   "sha256": "7764acc4d36f11975345dc00d0cad952b875d1407cd177b01c19525b0e075121"
+  },
+  {
+   "name": "attackThreshold-double",
+   "weight": "attackThreshold",
+   "default": 4,
+   "value": 8,
+   "file": "artifacts/ai-surrogacy/weights/attackThreshold-double.json",
+   "sha256": "4f258dfcb960da9b51a7b650808a275fd5b038dbb449db1a73500fa4e0943a82"
+  },
+  {
+   "name": "combatSupply-half",
+   "weight": "combatSupply",
+   "default": 1.5,
+   "value": 0.75,
+   "file": "artifacts/ai-surrogacy/weights/combatSupply-half.json",
+   "sha256": "e42742d578fe0bf3eed217539e100b53ca4f58b9136f96caa12f4aa544d1d17c"
+  },
+  {
+   "name": "combatSupply-double",
+   "weight": "combatSupply",
+   "default": 1.5,
+   "value": 3.0,
+   "file": "artifacts/ai-surrogacy/weights/combatSupply-double.json",
+   "sha256": "ed04cef5c1501423d54343c1a1305a8281bc5336ef21c033558ba21ea9de6fd9"
+  },
+  {
+   "name": "assaultRatio-half",
+   "weight": "assaultRatio",
+   "default": 2.5,
+   "value": 1.25,
+   "file": "artifacts/ai-surrogacy/weights/assaultRatio-half.json",
+   "sha256": "06dd2f791d355cfb5da8cfaa937c48c2aeb7c40207ad5e493f0e1952b53c9f3f"
+  },
+  {
+   "name": "assaultRatio-double",
+   "weight": "assaultRatio",
+   "default": 2.5,
+   "value": 5.0,
+   "file": "artifacts/ai-surrogacy/weights/assaultRatio-double.json",
+   "sha256": "989fa7a54b508c41c25bc2451a00e3e8e5d30dff7cc6b0ca63ec4256dc4e25a4"
+  },
+  {
+   "name": "garrisonThreatened-half",
+   "weight": "garrisonThreatened",
+   "default": 1.3,
+   "value": 0.65,
+   "file": "artifacts/ai-surrogacy/weights/garrisonThreatened-half.json",
+   "sha256": "189bde70645e35a32c4c5fd1e0c8370146250a9889ff7c38a2d95cf1603f57ce"
+  },
+  {
+   "name": "garrisonThreatened-double",
+   "weight": "garrisonThreatened",
+   "default": 1.3,
+   "value": 2.6,
+   "file": "artifacts/ai-surrogacy/weights/garrisonThreatened-double.json",
+   "sha256": "4b074b9ee3f9b8aae72624a51116d5e436e34f1d267a1df752824ca78176c05b"
+  },
+  {
+   "name": "holdRatio-half",
+   "weight": "holdRatio",
+   "default": 0.5,
+   "value": 0.25,
+   "file": "artifacts/ai-surrogacy/weights/holdRatio-half.json",
+   "sha256": "e9ad86bd9dfbe953f60774a17e2b2e4ebf09093400fb16099fc0b71e2d6f6550"
+  },
+  {
+   "name": "holdRatio-double",
+   "weight": "holdRatio",
+   "default": 0.5,
+   "value": 1.0,
+   "file": "artifacts/ai-surrogacy/weights/holdRatio-double.json",
+   "sha256": "cbd67b0f25c6c2f0756c8d5e4a4fc6b3216280206e2474ac3be0161275ee4ad4"
+  },
+  {
+   "name": "progressObjective-half",
+   "weight": "progressObjective",
+   "default": 15,
+   "value": 7.5,
+   "file": "artifacts/ai-surrogacy/weights/progressObjective-half.json",
+   "sha256": "b1006eb3bc94667329374a397cbe797543afb42cd08ad408e0fd1c118962fcce"
+  },
+  {
+   "name": "progressObjective-double",
+   "weight": "progressObjective",
+   "default": 15,
+   "value": 30,
+   "file": "artifacts/ai-surrogacy/weights/progressObjective-double.json",
+   "sha256": "62d953c41592c626673c567db7da9a9d8ca6caef32d12bc905a8eda29309622d"
+  },
+  {
+   "name": "defenderLoss-half",
+   "weight": "defenderLoss",
+   "default": 10,
+   "value": 5.0,
+   "file": "artifacts/ai-surrogacy/weights/defenderLoss-half.json",
+   "sha256": "128298aed3687e95a74daecd8d3c67d699136d5872da2f8710c3e634d418a99b"
+  },
+  {
+   "name": "defenderLoss-double",
+   "weight": "defenderLoss",
+   "default": 10,
+   "value": 20,
+   "file": "artifacts/ai-surrogacy/weights/defenderLoss-double.json",
+   "sha256": "413ea2c1dc81019a8ee111dd4d159d97704f1d1a8145de31bb2056d5ffee9192"
+  },
+  {
+   "name": "hqWithArmy-half",
+   "weight": "hqWithArmy",
+   "default": 6,
+   "value": 3.0,
+   "file": "artifacts/ai-surrogacy/weights/hqWithArmy-half.json",
+   "sha256": "339e396b9550bacb65b4d5039f1351bf4cb6fda1bd1188c288de66d21403daa5"
+  },
+  {
+   "name": "hqWithArmy-double",
+   "weight": "hqWithArmy",
+   "default": 6,
+   "value": 12,
+   "file": "artifacts/ai-surrogacy/weights/hqWithArmy-double.json",
+   "sha256": "4cbfa04b77e3fde8e978d781a0d25e2e8ec6e0fc0d808ec2c71d100fb2f4ba92"
+  }
+ ],
+ "design": "Each variant changes one standard heuristic@85 weight to half or double. It plays the standard policy in Axis attacks, seat-swapped pairs on the same 8 seeds as every other variant (4 temperate, 4 eastern): 24 variants x 16 games = 384 games. A pair's value is the mean over its two games from the variant's side, so map and side effects cancel; no self-play baseline is needed.",
+ "power": "Per-pair SD of the variant-side margin in existing seat-swapped attack batches: about 1-4 VP eastern, 4-6 temperate, about 4 pooled; the spread of variant means beyond noise in those batches is about 2.6 VP. With 8 pairs a variant effect has SE about 1.4 VP (reliability about 0.67). With 24 variants, a true trial-level R2 of 0.5 gives an attenuated r about 0.58, Fisher interval about [0.18, 0.84]: detectable; a true R2 of 0.25 is borderline.",
+ "groups": [
+  {
+   "name": "attack-temperate",
+   "style": "TEMPERATE_INLAND",
+   "start": 1600000,
+   "matches": 8,
+   "out": "artifacts/ai-surrogacy/{variant}/attack-temperate",
+   "rows": "artifacts/ai-surrogacy/rows/{variant}__attack-temperate.jsonl",
+   "command": "node scripts/ai-match.mjs --matches 8 --start 1600000 --style TEMPERATE_INLAND --engagement AXIS_ATTACKS --turns 8 --size 32x24 --divisions 6 --armored 2 --air NONE --air-transport NONE --swap --axis heuristic --parallel 4 --allied heuristic:artifacts/ai-surrogacy/weights/{variant}.json --out artifacts/ai-surrogacy/{variant}/attack-temperate"
+  },
+  {
+   "name": "attack-eastern",
+   "style": "EASTERN_EUROPE",
+   "start": 1600100,
+   "matches": 8,
+   "out": "artifacts/ai-surrogacy/{variant}/attack-eastern",
+   "rows": "artifacts/ai-surrogacy/rows/{variant}__attack-eastern.jsonl",
+   "command": "node scripts/ai-match.mjs --matches 8 --start 1600100 --style EASTERN_EUROPE --engagement AXIS_ATTACKS --turns 8 --size 32x24 --divisions 6 --armored 2 --air NONE --air-transport NONE --swap --axis heuristic --parallel 4 --allied heuristic:artifacts/ai-surrogacy/weights/{variant}.json --out artifacts/ai-surrogacy/{variant}/attack-eastern"
+  }
+ ],
+ "record": "node scripts/ai-position-record.mjs <out> --out <rows> for every variant and group; every game must replay to its final hash",
+ "training": {
+  "manifest": "docs/quality/evidence/ai-position-metrics-p5-2026-10-19/manifest.json"
+ },
+ "analysis": {
+  "command": "python3 scripts/ai-position-surrogacy.py --registration docs/quality/evidence/ai-position-surrogacy-2026-10-19/registration.json --artifact-root . --out artifacts/ai-surrogacy/results.json",
+  "gameTurns": [
+   3,
+   4,
+   5
+  ],
+  "primaryGameTurn": 4
+ },
+ "questions": [
+  {
+   "id": "Q0",
+   "question": "Variants differ in final VP effect beyond noise",
+   "pass": "permutation p of the one-way F test of pair effects by variant below 0.05"
+  },
+  {
+   "id": "Q1",
+   "question": "The M2 surrogate (objective reach and risk) predicts the variant effect on the final margin",
+   "surrogate": "GT4 M2 + objective reach and risk",
+   "pass": "95% interval of trial-level R2 (variants resampled) with lower bound above 0.05"
+  },
+  {
+   "id": "Q2",
+   "question": "The M2 surrogate beats the Game Turn 4 VP margin as surrogate",
+   "surrogate": "GT4 M2 over M0",
+   "pass": "95% interval of the R2 difference above 0"
+  }
+ ],
+ "secondary": "GT3 and GT5 surrogates, M1, and single metric differences (steps, outOfTrace, objectiveReachColumn, objectiveVpAtRisk, stacksExposedAllocated, hqsInReach) are reported without a pass rule.",
+ "scripts": {
+  "scripts/ai-position-surrogacy.py": "1d50ddc92bf855fe64f99add9cb800b970b005b771499c3cebd0458f920fc17d",
+  "scripts/ai-position-final.py": "20b8aa054c84ae655d6f938f050808566cba195702676c602e49ed94e2f4777a",
+  "scripts/ai-position-validate.py": "91eb5b1d453a3fe102462a3bc787eff126791eb8fb447373c8592c730f06dbff",
+  "scripts/ai-vp-metrics-compare.py": "00eeb924694c722d1ce47d92e44a6d1d6bae485b6728f1c9d2f0fcd80ed6a864",
+  "scripts/ai-position-record.mjs": "682f054c23d0efc3d3390b127087bf34ed8c19fa32b3aaacb482dec47ed03c6d",
+  "scripts/ai-position-metrics.mjs": "e69bd80c1523ef63b1b8100f3da492ee38f4c3d31eed3992b3dd182c51489dd8"
+ }
+}
