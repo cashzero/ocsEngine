@@ -7,7 +7,7 @@ const artifactDirectory = join(process.cwd(), 'tmp', 'ui-flow-gate');
 const cases = [
   {
     id: 'default',
-    style: 'TEMPERATE_INLAND', width: 18, height: 12,
+    style: 'WESTERN_EUROPE', width: 18, height: 12,
     scale: 'COMPACT', formations: 2,
     mapSeed: 0x0c50_0001, oobSeed: 0x0c50_0002,
     deploymentSeed: 0x0c50_0003, rulesSeed: 0x0c50_0004,
@@ -15,7 +15,7 @@ const cases = [
   },
   {
     id: 'large',
-    style: 'TEMPERATE_INLAND', width: 18, height: 12,
+    style: 'WESTERN_EUROPE', width: 18, height: 12,
     scale: 'LARGE', formations: 4,
     mapSeed: 91_001, oobSeed: 91_002,
     deploymentSeed: 91_003, rulesSeed: 91_004,
@@ -23,7 +23,7 @@ const cases = [
   },
   {
     id: 'contact',
-    style: 'TEMPERATE_INLAND', width: 8, height: 8,
+    style: 'WESTERN_EUROPE', width: 8, height: 8,
     scale: 'COMPACT', formations: 1,
     mapSeed: 92_001, oobSeed: 92_002,
     deploymentSeed: 92_003, rulesSeed: 92_004,

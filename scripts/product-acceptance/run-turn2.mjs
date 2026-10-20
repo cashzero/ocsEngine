@@ -22,20 +22,20 @@ const flatness = () => page.evaluate(() => {
 });
 
 try {
-  // MAP-06 first part: the same seeds, Temperate then Eastern Europe, side by side.
+  // MAP-06 first part: the same seeds, Western Europe then Eastern Europe, side by side.
   await openNewGame(h);
-  await configure(h, { ...BASE, style: 'TEMPERATE_INLAND' });
+  await configure(h, { ...BASE, style: 'WESTERN_EUROPE' });
   await generate(h);
-  const temperate = await flatness();
-  await page.locator('.operation-map').screenshot({ path: join(evidenceDir, 'map06-temperate-preview.png') });
+  const western = await flatness();
+  await page.locator('.operation-map').screenshot({ path: join(evidenceDir, 'map06-western-preview.png') });
   await configure(h, { style: 'EASTERN_EUROPE' });
   await generate(h);
   const eastern = await flatness();
   const easternSig = await previewSignature(h);
   await page.locator('.operation-map').screenshot({ path: join(evidenceDir, 'map06-eastern-preview.png') });
-  extra['MAP-06'] = { temperate, eastern };
-  const flatter = eastern.mountain === 0 && eastern.rough + eastern.mountain < temperate.rough + temperate.mountain && eastern.clear > temperate.clear;
-  const sparser = eastern.roads < temperate.roads && eastern.rails < temperate.rails;
+  extra['MAP-06'] = { western, eastern };
+  const flatter = eastern.mountain === 0 && eastern.rough + eastern.mountain < western.rough + western.mountain && eastern.clear > western.clear;
+  const sparser = eastern.roads < western.roads && eastern.rails < western.rails;
   await start(h);
   await h.shot('map06-eastern-started');
   const opening = { ...(await where(h)), arrivalsTab: await has(h, '[data-deck-tab="arrivals"]'), arrivalRows: await page.locator('.arrivals .deck-unit[data-piece]').count() };
@@ -114,7 +114,7 @@ try {
     opening.phase === 'Movement' && !opening.arrivalsTab && opening.arrivalRows === 0 && k1.unit && k1.sp && k1.repl && k2.unit && k2.sp && k2.repl && firstSide !== secondSide);
 
   // MAP-06 second part: the arrival/phase/hand-over run reached Game Turn 2 and beyond on the Eastern map.
-  record(h, 'MAP-06', 'Eastern Europe is offered; its preview is visibly flatter (mostly open, few hills, no mountains) with clearly fewer roads and railways than Temperate on the same seeds; the started map is the preview; arrivals, phase ends and hand-overs reach Game Turn 2', `same seeds, Preview counts Temperate ${JSON.stringify(temperate)} vs Eastern ${JSON.stringify(eastern)}; started map ${mountedTerrain}; Game Turn 1 played through (first hand-over screen: ${turn1.privacy ? `map hidden ${!turn1.privacy.mapVisible}` : 'none seen'}) to ${after1.turn}, ${after1.player}, ${after1.phase}; Game Turn 2 reached ${end.turn}. Visual flatness is judged on map06-*-preview.png`,
+  record(h, 'MAP-06', 'Eastern Europe is offered; its preview is visibly flatter (mostly open, few hills, no mountains) with clearly fewer roads and railways than Western Europe on the same seeds; the started map is the preview; arrivals, phase ends and hand-overs reach Game Turn 2', `same seeds, Preview counts Western Europe ${JSON.stringify(western)} vs Eastern ${JSON.stringify(eastern)}; started map ${mountedTerrain}; Game Turn 1 played through (first hand-over screen: ${turn1.privacy ? `map hidden ${!turn1.privacy.mapVisible}` : 'none seen'}) to ${after1.turn}, ${after1.player}, ${after1.phase}; Game Turn 2 reached ${end.turn}. Visual flatness is judged on map06-*-preview.png`,
     flatter && sparser && /Turn 3/.test(end.turn));
   extra.eastern = { sig: easternSig.metrics };
 } catch (error) {

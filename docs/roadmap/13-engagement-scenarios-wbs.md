@@ -13,7 +13,7 @@
 | S1 | New Game request 加入劇本類型（缺省為遭遇戰） | DONE |
 | S2 | 部署：分界、縱深、攻守目標與駐守、守方戰鬥模式、攻方先手、攻方 1.5 倍兵力、攻方勝利條件 | DONE（SCN-R3 除外） |
 | S3 | `ai-match --engagement` 與攻守分組研究工具 | DONE |
-| S4 | 溫帶地圖電腦互打與平衡 | DONE（之後的鐵路、卡車、hedgehog、架橋改動未重新量測，見 `attack-balance`） |
+| S4 | 西歐地圖電腦互打與平衡 | DONE（之後的鐵路、卡車、hedgehog、架橋改動未重新量測，見 `attack-balance`） |
 | S5 | UI：New Game 劇本選單、預覽與遊戲中顯示攻守與勝利條件 | DONE |
 | S6 | 真實瀏覽器（NG-11） | DONE（NG-11 之後因 VP 配置修改重開，見 `03`） |
 | S7 | 攻方地圖外空軍（規則、生成、UI、電腦、瀏覽器 NG-12） | DONE（NG-12 因 AEP 修改重開，見 `03`） |

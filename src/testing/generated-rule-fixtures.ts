@@ -24,7 +24,7 @@ import {
 /** A generated 8x8 meeting engagement with units in contact within two turns. */
 export const CONTACT_NEW_GAME_REQUEST: NewGameRequest = {
   templateId: 'GROUND_DUEL',
-  map: { width: 8, height: 8, style: 'TEMPERATE_INLAND' },
+  map: { width: 8, height: 8, style: 'WESTERN_EUROPE' },
   oob: { scale: 'COMPACT', divisionsPerSide: 1, armoredDivisionsPerSide: 1 },
   seeds: { map: 92_001, oob: 92_002, deployment: 92_003, rules: 92_004 },
   turnLimit: 2,
@@ -38,7 +38,7 @@ export const CONTACT_NEW_GAME_REQUEST: NewGameRequest = {
  */
 export const RULE_FIXTURE_NEW_GAME_REQUEST: NewGameRequest = {
   templateId: 'GROUND_DUEL',
-  map: { width: 18, height: 12, style: 'TEMPERATE_INLAND' },
+  map: { width: 18, height: 12, style: 'WESTERN_EUROPE' },
   oob: { scale: 'COMPACT', divisionsPerSide: 2, armoredDivisionsPerSide: 1 },
   seeds: { map: 0x0c500001, oob: 0x0c5041b0, deployment: 0x0c500003, rules: 0x0c500004 },
   turnLimit: 2,

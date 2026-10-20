@@ -7,7 +7,7 @@ import { click, gotoHex, has, open, placeArrivals, record, textOf, where } from 
 import { configure, deckText, generate, hoverLine, menuSummary, openNewGame, previewSignature, screenHexes, start, sweepMap } from './lib.mjs';
 
 const evidenceDir = join(process.argv[2] ?? 'artifacts/product-2026-10-04', 'map');
-const NG07 = { style: 'TEMPERATE_INLAND', width: 18, height: 12, scale: 'LARGE', divisions: 4, armored: 2, turnLimit: 3, seeds: { map: 91001, oob: 91002, deployment: 91003, rules: 91004 } };
+const NG07 = { style: 'WESTERN_EUROPE', width: 18, height: 12, scale: 'LARGE', divisions: 4, armored: 2, turnLimit: 3, seeds: { map: 91001, oob: 91002, deployment: 91003, rules: 91004 } };
 const extra = {};
 const h = await open({ evidenceDir });
 const { page } = h;

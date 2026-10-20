@@ -25,7 +25,7 @@ const MAJOR_RIVER = 'edge:major-river';
  * Major Cities are clusters of two or three Hexes and stand roughly a dozen Hexes apart. The
  * eastern theme thins this (settlement density, Major Cities and Minor City share come from the style).
  */
-export const LAND_HEXES_PER_MAJOR_CITY = MAP_STYLE_PROFILES.TEMPERATE_INLAND.landHexesPerMajorCity;
+export const LAND_HEXES_PER_MAJOR_CITY = MAP_STYLE_PROFILES.WESTERN_EUROPE.landHexesPerMajorCity;
 const MAJOR_CITY_SPACING = 9;
 const TOWN_SPACING = 3;
 const VILLAGE_SPACING = 2;

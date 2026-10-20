@@ -14,7 +14,7 @@ import {
 
 const options = {
   width: 18, height: 12, seed: 1943,
-  style: 'TEMPERATE_INLAND' as const,
+  style: 'WESTERN_EUROPE' as const,
 };
 
 describe('M6 deterministic random map pipeline', () => {
@@ -28,7 +28,7 @@ describe('M6 deterministic random map pipeline', () => {
     expect(validateMapDefinition(first.value.mapDefinition)).toEqual([]);
   });
 
-  it.each(['TEMPERATE_INLAND', 'MEDITERRANEAN_COAST', 'EASTERN_EUROPE'] as const)(
+  it.each(['WESTERN_EUROPE', 'EASTERN_EUROPE'] as const)(
     'generates valid %s terrain, rivers, strategic regions, and roads',
     (style) => {
       const generated = generateRandomMap({ ...options, style, seed: style.length * 101 });
@@ -42,8 +42,7 @@ describe('M6 deterministic random map pipeline', () => {
       expect(result.metrics.settlements).toBeGreaterThanOrEqual(4);
       expect(validateGeneratedMap(result.mapDefinition, result.strategicRegions, style).valid).toBe(true);
       expect(result.mapDefinition.hexsides.every(({ hexsideId }) => parseHexsideId(hexsideId).ok)).toBe(true);
-      if (style === 'MEDITERRANEAN_COAST') expect(result.metrics.terrainCounts.WATER).toBeGreaterThan(0);
-      else expect(result.metrics.terrainCounts.WATER).toBe(0);
+      expect(result.metrics.terrainCounts.WATER).toBe(0);
     },
   );
 
@@ -82,8 +81,8 @@ describe('M6 deterministic random map pipeline', () => {
   });
 
   it('builds a BtR-scale road mesh: dense, looped, every place on a road, no unserved district', () => {
-    for (const style of ['TEMPERATE_INLAND', 'MEDITERRANEAN_COAST'] as const) for (const seed of [3, 1943, 31337, 2024]) {
-      const generated = generateRandomMap({ width: 32, height: 24, seed, style });
+    for (const sea of ['NONE', 'WEST'] as const) for (const seed of [3, 1943, 31337, 2024]) {
+      const generated = generateRandomMap({ width: 32, height: 24, seed, style: 'WESTERN_EUROPE', sea });
       expect(generated.ok).toBe(true);
       if (!generated.ok) continue;
       const { metrics, mapDefinition } = generated.value;
@@ -110,8 +109,9 @@ describe('M6 deterministic random map pipeline', () => {
   });
 
   it('lays one railway network, much sparser than the roads, with a multi-track trunk and each rail entry on the rails (12.6a, 13.3)', () => {
-    for (const style of ['TEMPERATE_INLAND', 'MEDITERRANEAN_COAST'] as const) for (const seed of [3, 1943, 31337, 2024]) {
-      const generated = generateRandomMap({ width: 32, height: 24, seed, style });
+    for (const sea of ['NONE', 'WEST'] as const) for (const seed of [3, 1943, 31337, 2024]) {
+      const style = 'WESTERN_EUROPE' as const;
+      const generated = generateRandomMap({ width: 32, height: 24, seed, style, sea });
       expect(generated.ok).toBe(true);
       if (!generated.ok) continue;
       const { metrics, mapDefinition, strategicRegions } = generated.value;
@@ -148,7 +148,7 @@ describe('M6 deterministic random map pipeline', () => {
 
   it('makes Eastern Europe flatter and emptier than BtR: fewer roads, railways and towns on the same seeds (docs/generator/map-styles.md)', () => {
     for (const seed of [3, 1943, 31337, 2024]) {
-      const western = generateRandomMap({ width: 32, height: 24, seed, style: 'TEMPERATE_INLAND' });
+      const western = generateRandomMap({ width: 32, height: 24, seed, style: 'WESTERN_EUROPE' });
       const generated = generateRandomMap({ width: 32, height: 24, seed, style: 'EASTERN_EUROPE' });
       expect(western.ok && generated.ok).toBe(true);
       if (!western.ok || !generated.ok) continue;
@@ -192,7 +192,7 @@ describe('M6 deterministic random map pipeline', () => {
     }
   });
 
-  it.each(['EASTERN_EUROPE', 'TEMPERATE_INLAND'] as const)(
+  it.each(['EASTERN_EUROPE', 'WESTERN_EUROPE'] as const)(
     'runs %s rail lines inland from a few spread entries instead of along the side edges', (style) => {
       const [width, height] = [64, 40];
       const railEntries = railEntryCountFor(style, height);
@@ -228,7 +228,7 @@ describe('M6 deterministic random map pipeline', () => {
   it.each(['NORTH', 'WEST', 'EAST'] as const)(
     'puts a %s sea along that map edge, keeping the entries and the corridor on land',
     (sea) => {
-      for (const style of ['TEMPERATE_INLAND', 'EASTERN_EUROPE'] as const) for (const seed of [3, 1943]) {
+      for (const style of ['WESTERN_EUROPE', 'EASTERN_EUROPE'] as const) for (const seed of [3, 1943]) {
         const generated = generateRandomMap({ width: 32, height: 24, seed, style, sea });
         expect(generated.ok).toBe(true);
         if (!generated.ok) continue;
@@ -250,22 +250,19 @@ describe('M6 deterministic random map pipeline', () => {
     },
   );
 
-  it('keeps each style\'s own sea, and its map IDs, when no sea is named', () => {
-    const coast = generateRandomMap({ ...options, style: 'MEDITERRANEAN_COAST' });
-    const explicit = generateRandomMap({ ...options, style: 'MEDITERRANEAN_COAST', sea: 'WEST' });
-    expect(coast.ok && explicit.ok).toBe(true);
-    if (!coast.ok || !explicit.ok) return;
-    expect(coast.value.options.sea).toBe('WEST');
-    expect(explicit.value).toEqual(coast.value);
-    expect(String(coast.value.mapDefinition.id)).toBe('generated-map:mediterranean_coast:18x12:1943');
-    const inland = generateRandomMap({ ...options, sea: 'NONE' });
-    expect(inland.ok && inland.value.options.sea).toBe('NONE');
-    const dry = generateRandomMap({ ...options, style: 'MEDITERRANEAN_COAST', sea: 'NONE' });
-    expect(dry.ok && dry.value.metrics.terrainCounts.WATER).toBe(0);
+  it('defaults to no sea, and omits the sea suffix when no sea is named', () => {
+    const defaultSea = generateRandomMap(options);
+    const explicit = generateRandomMap({ ...options, sea: 'NONE' });
+    expect(defaultSea.ok && explicit.ok).toBe(true);
+    if (!defaultSea.ok || !explicit.ok) return;
+    expect(defaultSea.value.options.sea).toBe('NONE');
+    expect(explicit.value).toEqual(defaultSea.value);
+    expect(String(defaultSea.value.mapDefinition.id)).toBe('generated-map:western_europe:18x12:1943');
+    expect(defaultSea.value.metrics.terrainCounts.WATER).toBe(0);
   });
 
   it('rejects invalid generation options without partial output', () => {
-    const generated = generateRandomMap({ width: 4, height: 257, seed: -1, style: 'TEMPERATE_INLAND' });
+    const generated = generateRandomMap({ width: 4, height: 257, seed: -1, style: 'WESTERN_EUROPE' });
     expect(generated.ok).toBe(false);
     if (!generated.ok) expect(generated.error.map(({ path }) => path[0])).toEqual(['width', 'height', 'seed']);
     const sea = generateRandomMap({ ...options, sea: 'SOUTH' as never });

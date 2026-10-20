@@ -34,8 +34,8 @@ if '--delivered' in sys.argv:
 if registration:
     assert registration['candidateFreezeSha256'] == hashlib.sha256(candidate_file.read_bytes()).hexdigest()
     assert registration['baselineFreezeSha256'] == hashlib.sha256(baseline_file.read_bytes()).hexdigest()
-groups = [('meeting-temperate', 'MEETING', 'TEMPERATE_INLAND', 1300000), ('meeting-eastern', 'MEETING', 'EASTERN_EUROPE', 1300100),
-          ('attack-temperate', 'AXIS_ATTACKS', 'TEMPERATE_INLAND', 1300200), ('attack-eastern', 'AXIS_ATTACKS', 'EASTERN_EUROPE', 1300300)]
+groups = [('meeting-western', 'MEETING', 'WESTERN_EUROPE', 1300000), ('meeting-eastern', 'MEETING', 'EASTERN_EUROPE', 1300100),
+          ('attack-western', 'AXIS_ATTACKS', 'WESTERN_EUROPE', 1300200), ('attack-eastern', 'AXIS_ATTACKS', 'EASTERN_EUROPE', 1300300)]
 # A registration names the groups it plays; one whose development batch left an engagement unchanged plays only the others.
 if registration:
     groups = [group for group in groups if group[0] in registration['ranges']]

@@ -35,11 +35,11 @@ margins = dict(arg.split('=') for index, arg in enumerate(sys.argv) if index > 0
 margins = {metric: float(value) for metric, value in margins.items()}
 assert primary in {'vp', 'killLoss', 'supply'} and primary not in margins and set(margins) <= {'vp', 'killLoss', 'supply'}
 unchanged = development.get('unchangedEngagements', [])
-names = {'MEETING': ['meeting-temperate', 'meeting-eastern'], 'AXIS_ATTACKS': ['attack-temperate', 'attack-eastern']}
+names = {'MEETING': ['meeting-western', 'meeting-eastern'], 'AXIS_ATTACKS': ['attack-western', 'attack-eastern']}
 played = [name for engagement, group in names.items() if engagement not in unchanged for name in group]
 assert played, 'The candidate changes no engagement'
 per_group = 80 // len(played)
-offsets = {'meeting-temperate': 0, 'meeting-eastern': 100, 'attack-temperate': 200, 'attack-eastern': 300}
+offsets = {'meeting-western': 0, 'meeting-eastern': 100, 'attack-western': 200, 'attack-eastern': 300}
 ranges = {name: [start + offsets[name], start + offsets[name] + per_group - 1] for name in played}
 fresh = {i for first, last in ranges.values() for i in range(first, last + 1)}
 for folder in [root / 'artifacts', root / 'tmp/ai-match']:

@@ -5,7 +5,7 @@ import sys
 directory = Path(sys.argv[1])
 count = 20 if directory.name.endswith('-independent') else 8
 total = 0
-for name in ['meeting-temperate', 'meeting-eastern', 'attack-temperate', 'attack-eastern']:
+for name in ['meeting-western', 'meeting-eastern', 'attack-western', 'attack-eastern']:
     folder = directory / name
     completed = len(list(folder.glob('*.save.json')))
     total += completed

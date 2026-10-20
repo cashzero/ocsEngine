@@ -44,7 +44,8 @@ export interface MapStyleProfile {
   };
 }
 
-const WESTERN: Omit<MapStyleProfile, 'sea'> = {
+const WESTERN: MapStyleProfile = {
+  sea: 'NONE',
   terrain: 'WESTERN',
   riverbankWoods: 0,
   settlementDensity: 0.1,
@@ -82,8 +83,7 @@ const EASTERN: MapStyleProfile = {
 };
 
 export const MAP_STYLE_PROFILES: Readonly<Record<MapGenerationStyle, MapStyleProfile>> = {
-  TEMPERATE_INLAND: { ...WESTERN, sea: 'NONE' },
-  MEDITERRANEAN_COAST: { ...WESTERN, sea: 'WEST' },
+  WESTERN_EUROPE: WESTERN,
   EASTERN_EUROPE: EASTERN,
 };
 

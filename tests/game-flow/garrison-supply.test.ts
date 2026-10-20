@@ -6,8 +6,8 @@ describe('garrison emergency supply allocation', () => {
     let isolatedCount = 0;
     let tracedCount = 0;
     for (const engagement of ['MEETING', 'AXIS_ATTACKS', 'ALLIED_ATTACKS'] as Engagement[]) {
-      for (const style of ['TEMPERATE_INLAND', 'EASTERN_EUROPE', 'MEDITERRANEAN_COAST'] as const) {
-        const prepared = prepareNewGame({ ...DEFAULT_NEW_GAME_REQUEST, engagement, map: { ...DEFAULT_NEW_GAME_REQUEST.map, style, width: 24, height: 16 }, oob: { ...DEFAULT_NEW_GAME_REQUEST.oob, divisionsPerSide: 3, armoredDivisionsPerSide: 1 }, seeds: { map: 14, oob: 8802, deployment: 8803, rules: 8804 } });
+      for (const [style, sea] of [['WESTERN_EUROPE', 'NONE'], ['EASTERN_EUROPE', 'NONE'], ['WESTERN_EUROPE', 'FLANK']] as const) {
+        const prepared = prepareNewGame({ ...DEFAULT_NEW_GAME_REQUEST, engagement, map: { ...DEFAULT_NEW_GAME_REQUEST.map, style, sea, width: 24, height: 16 }, oob: { ...DEFAULT_NEW_GAME_REQUEST.oob, divisionsPerSide: 3, armoredDivisionsPerSide: 1 }, seeds: { map: 14, oob: 8802, deployment: 8803, rules: 8804 } });
         if (!prepared.ok) throw new Error(JSON.stringify(prepared.error));
         const { scenario, configuration, generatedOob, deployment } = prepared.value;
         const created = createInitialGameState(scenario, configuration, 1);

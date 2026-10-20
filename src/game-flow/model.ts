@@ -34,8 +34,8 @@ export const attackerOf = (engagement: Engagement): OobSide | null =>
 export const NEW_GAME_SEAS = ['NONE', 'FLANK'] as const;
 export type NewGameSea = (typeof NEW_GAME_SEAS)[number];
 
-/** The sea a style brings when the request names none: the Mediterranean coast has one along the flank. */
-export const styleSeaOf = (style: MapGenerationStyle): NewGameSea => (style === 'MEDITERRANEAN_COAST' ? 'FLANK' : 'NONE');
+/** The sea a style brings when the request names none. */
+export const styleSeaOf = (_style: MapGenerationStyle): NewGameSea => 'NONE';
 
 /** The request's sea, with the style's own sea standing in when the request names none. */
 export const newGameSeaOf = (request: NewGameRequest): NewGameSea => request.map.sea ?? styleSeaOf(request.map.style);
@@ -70,7 +70,7 @@ export interface NewGameRequest {
     readonly width: number;
     readonly height: number;
     readonly style: MapGenerationStyle;
-    /** Absent means the style's own sea (`styleSeaOf`): along the flank for the Mediterranean coast, none otherwise. */
+    /** Absent means the style's own sea (`styleSeaOf`): none. */
     readonly sea?: NewGameSea;
   };
   readonly oob: {

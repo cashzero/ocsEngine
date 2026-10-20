@@ -7,9 +7,9 @@ they were calibrated against. The pipeline that uses them is in [random-map.md](
 
 ## Current behavior
 
-| Setting | Temperate inland, Mediterranean coast (BtR) | Eastern Europe (Case Blue / GBII) |
+| Setting | Western Europe (`WESTERN_EUROPE`, BtR) | Eastern Europe (`EASTERN_EUROPE`, Case Blue / GBII) |
 |---|---|---|
-| Own sea | none / west | none |
+| Own sea | none | none |
 | Terrain classifier | elevation, roughness, moisture, temperature | flatter: rough only where high and broken, no mountain, woods thicken northward |
 | Riverbank woods (share of open hexes beside a river) | 0 | 0.35 |
 | Settlements per land hex (default) | 0.10 | 0.05 |
@@ -26,7 +26,7 @@ they were calibrated against. The pipeline that uses them is in [random-map.md](
 
 Measured means (30 seeds, `1000 + 37·i`, same seeds for both; 64×48 with 10 seeds):
 
-| Per land hex | Temperate 32×24 | Eastern 32×24 | Temperate 64×48 | Eastern 64×48 |
+| Per land hex | Western 32×24 | Eastern 32×24 | Western 64×48 | Eastern 64×48 |
 |---|---|---|---|---|
 | Clear / Woods / Rough / Mountain / Marsh | 61 / 22 / 17 / 0.6 / 0.3 % | 78 / 16 / 4.4 / 0 / 1.0 % | 61 / 23 / 16 / 0.3 / 0.3 % | 80 / 15 / 4.5 / 0 / 1.0 % |
 | Road hexsides | 0.55 | 0.26 | 0.56 | 0.26 |
@@ -37,7 +37,7 @@ Measured means (30 seeds, `1000 + 37·i`, same seeds for both; 64×48 with 10 se
 
 ## Decisions
 
-- **Western styles follow Beyond the Rhine's density** at its 3.5-mile scale. Hand counts on the BtR VASSAL map
+- **Western Europe follows Beyond the Rhine's density** at its 3.5-mile scale. Hand counts on the BtR VASSAL map
   (`docs/study/07-beyond-the-rhine-vassal-reference.md`; no art copied): Breda–Tilburg–Eindhoven about 0.55 road
   hexsides and 0.12 settlements per land hex with a largest road gap of 2; the Ardennes about 0.35–0.45 road hexsides
   and 0.04 settlements with gaps of 3. Almost every settlement is a 3–5-road junction, and Major Cities are multi-hex
@@ -49,18 +49,18 @@ Measured means (30 seeds, `1000 + 37·i`, same seeds for both; 64×48 with 10 se
   hexsides and 0.04 places per hex, nearly all open ground. Case Blue uses 5-mile hexes; the generator keeps its 3.5-mile
   hex and thins the BtR values toward that picture so a 32×24 map stays playable. Every entry stays on a road and each
   rail entry on a railway.
-- **The western styles were not changed by adding Eastern Europe**: their generated maps are byte-identical to before
-  (30 seeds per style compared by hash).
+- **Western Europe was not changed by adding Eastern Europe**: its generated maps are byte-identical to before
+  (30 seeds compared by hash).
 
 ## Known gaps
 
 From `docs/quality/05-todo-inventory.md`: `case-blue-terrain` (Case Blue terrain and weather still use BtR's rules),
-pending decision 6 (default Eastern maps have about two-thirds of the BtR rail density: 0.66× Temperate on 32×24 versus a
+pending decision 6 (default Eastern maps have about two-thirds of the BtR rail density: 0.66× Western Europe on 32×24 versus a
 target of 0.5×, because the trunk between the primary entries is the floor on small maps), `map-appearance` (Autobahn,
 side-by-side roads).
 
 ## Verification
 
-`tests/generation/random-map.test.ts` (Eastern Europe against Temperate on the same seeds: no mountains, under half the
+`tests/generation/random-map.test.ts` (Eastern Europe against Western Europe on the same seeds: no mountains, under half the
 hills, under 0.7× the settlements, under 0.6× the roads, under 0.85× the rails, larger but bounded road gaps, one road and
 one rail net); browser row MAP-06 with run record `docs/quality/evidence/map-theme-2026-10-04/`.

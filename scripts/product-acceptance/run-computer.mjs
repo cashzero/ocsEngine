@@ -11,7 +11,7 @@ import { DEFAULT_NEW_GAME_REQUEST, createGameplayEngine, createMemoryGameplayPor
 const evidenceDir = process.argv[2] ?? 'artifacts/product-computer';
 const h = await open({ evidenceDir });
 const { page } = h;
-const SMALL = { style: 'TEMPERATE_INLAND', width: 16, height: 12, scale: 'COMPACT', divisions: 2, armored: 1, turnLimit: 6 };
+const SMALL = { style: 'WESTERN_EUROPE', width: 16, height: 12, scale: 'COMPACT', divisions: 2, armored: 1, turnLimit: 6 };
 const extra = {};
 
 /** New Game through the dialog: the settings typed, the seats chosen, previewed, and the previewed package started. */

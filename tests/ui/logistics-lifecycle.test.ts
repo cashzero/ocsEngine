@@ -3,7 +3,7 @@ import { createGameplayEngine, createMemoryGameplayPorts, createNewGameOrchestra
 it('clears transport previews on same-revision load and hides them during a private handoff',async()=>{
   const engine=createGameplayEngine(createMemoryGameplayPorts());
   const created=await createNewGameOrchestrator(engine).create({...DEFAULT_NEW_GAME_REQUEST,
-    map:{width:24,height:18,style:'TEMPERATE_INLAND'},oob:{scale:'STANDARD',divisionsPerSide:3,armoredDivisionsPerSide:1,air:'NONE'},
+    map:{width:24,height:18,style:'WESTERN_EUROPE'},oob:{scale:'STANDARD',divisionsPerSide:3,armoredDivisionsPerSide:1,air:'NONE'},
     seeds:{map:23101,oob:23102,deployment:23103,rules:23104}});
   if(!created.ok)throw Error('Natural package failed');
   const {session,scenario,bindings}=created.value,controller=createUiController({engine,session,scenario,bindings});

@@ -283,9 +283,8 @@ describe('New Game sea', () => {
     expect(String(prepared.value.scenario.id).endsWith(sea === 'NONE' ? '' : `:sea-${sea.toLowerCase()}`)).toBe(true);
   });
 
-  it('keeps the style\'s own sea when the request names none, and rejects an unknown sea', () => {
+  it('defaults to no sea when the request names none, and rejects an unknown sea', () => {
     expect(mapSeaPlacementOf(DEFAULT_NEW_GAME_REQUEST)).toBe('NONE');
-    expect(mapSeaPlacementOf({ ...DEFAULT_NEW_GAME_REQUEST, map: { ...DEFAULT_NEW_GAME_REQUEST.map, style: 'MEDITERRANEAN_COAST' } })).toBe('NORTH');
     expect(validateNewGameRequest({ ...DEFAULT_NEW_GAME_REQUEST, map: { ...DEFAULT_NEW_GAME_REQUEST.map, sea: 'ATTACKER' as never } })
       .map(({ code }) => code)).toEqual(['UNKNOWN_SEA']);
   });

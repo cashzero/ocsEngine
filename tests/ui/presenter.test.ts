@@ -36,7 +36,7 @@ describe('U3-U4 UI map and action presenters', () => {
   });
 
   it('projects generated terrain and infrastructure into an SVG-ready model', () => {
-    const generated = generateRandomMap({ width: 18, height: 12, seed: 1943, style: 'MEDITERRANEAN_COAST' });
+    const generated = generateRandomMap({ width: 18, height: 12, seed: 1943, style: 'WESTERN_EUROPE', sea: 'WEST' });
     expect(generated.ok).toBe(true);
     if (!generated.ok) return;
     const preview = buildGeneratedMapPreview(generated.value);

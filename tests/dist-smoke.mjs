@@ -81,7 +81,7 @@ const gameplaySave = gameplaySession.serializeSave();
 const loadedGameplay = await gameplay.loadSession(gameplaySave);
 assert.equal(loadedGameplay.getMetadata().stateHash, gameplaySession.getMetadata().stateHash);
 assert.equal(layoutHexMap(ruleFixture.scenario).cells.length, 25);
-const generatedMap = generateRandomMap({ width: 18, height: 12, seed: 1943, style: 'TEMPERATE_INLAND' });
+const generatedMap = generateRandomMap({ width: 18, height: 12, seed: 1943, style: 'WESTERN_EUROPE' });
 assert.equal(generatedMap.ok, true);
 assert.equal(generatedMap.value.metrics.connectedRoadComponents, 1);
 const generatedOob = generateRandomOob({ seed: 1944, scale: 'STANDARD', divisionsPerSide: 3, armoredDivisionsPerSide: 1 });

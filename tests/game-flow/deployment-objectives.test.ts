@@ -84,7 +84,7 @@ describe('generated objectives', () => {
   });
 
   it('starts each objective held by the side whose garrison stands on it (13.3h, OOB 0.4.0)', () => {
-    for (const style of ['TEMPERATE_INLAND', 'EASTERN_EUROPE'] as const) {
+    for (const style of ['WESTERN_EUROPE', 'EASTERN_EUROPE'] as const) {
       const { objectives, players, warnings } = objectivesOf({ ...DEFAULT_NEW_GAME_REQUEST, map: { ...DEFAULT_NEW_GAME_REQUEST.map, style } });
       // Every objective has a garrison (user decision 2026-10-07: no objective is taken by simply walking in), and a
       // combat unit in a hex controls it, so none starts neutral even where it lies in the ground between the armies.

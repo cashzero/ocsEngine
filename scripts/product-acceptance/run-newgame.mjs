@@ -7,7 +7,7 @@ import { click, has, open, record, textOf, where } from '../air-acceptance/harne
 import { configure, dialogState, generate, menuSummary, openNewGame, photographBuild, previewSignature, sha, start, startStageWatch, stopStageWatch, sweepMap } from './lib.mjs';
 
 const evidenceDir = join(process.argv[2] ?? 'artifacts/product-2026-10-04', 'newgame');
-const NG07 = { style: 'TEMPERATE_INLAND', width: 18, height: 12, scale: 'LARGE', divisions: 4, armored: 2, turnLimit: 3, seeds: { map: 91001, oob: 91002, deployment: 91003, rules: 91004 } };
+const NG07 = { style: 'WESTERN_EUROPE', width: 18, height: 12, scale: 'LARGE', divisions: 4, armored: 2, turnLimit: 3, seeds: { map: 91001, oob: 91002, deployment: 91003, rules: 91004 } };
 const extra = {};
 
 /** The preview shows divisions per side ("6 per side", or each side's count in an attack); the menu counts them all. */
@@ -145,7 +145,7 @@ try {
   await h.shot('ng06-mounted');
   const ng06 = await continuity(h, 'NG-06', ng06Preview, { seeds: defaultSeeds, turnLimit: 8 });
   record(h, 'NG-06', 'Default 32×24 / COMPACT / 6 per side, 2 armored / 8 turns: preview and mounted size, style, units, formations, objectives, seeds and turn limit agree', `style ${defaultStyle}; preview ${JSON.stringify(ng06Preview.metrics)} (Generate ${ng06Gen.elapsed} ms, Start ${ng06Mount} ms); mounted ${ng06.swept.width}×${ng06.swept.height}, ${ng06.occupied} occupied hexes, terrain mismatches ${ng06.terrainMismatch.length}; menu "${ng06.summary}"; checks ${JSON.stringify(ng06.checks)}; objectives compared on the screenshots`,
-    ng06Preview.metrics.Map === '32×24' && defaultStyle === 'TEMPERATE_INLAND' && Object.values(ng06.checks).every(Boolean) && ng06Gen.elapsed <= 3000 && ng06Mount <= 3000);
+    ng06Preview.metrics.Map === '32×24' && defaultStyle === 'WESTERN_EUROPE' && Object.values(ng06.checks).every(Boolean) && ng06Gen.elapsed <= 3000 && ng06Mount <= 3000);
 
   // NG-10: what the player sees of progress across Preview (NG-02 run) and Start (NG-06 run): the stage strip on the Settings and
   // Preview pages, and the loading page's own step list while the package is built or started. At most one step may be active

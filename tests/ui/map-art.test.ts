@@ -7,7 +7,7 @@ import {
 } from '../../src/ui/map-art.js';
 
 const preview = (() => {
-  const generated = generateRandomMap({ width: 18, height: 12, seed: 1943, style: 'MEDITERRANEAN_COAST' });
+  const generated = generateRandomMap({ width: 18, height: 12, seed: 1943, style: 'WESTERN_EUROPE', sea: 'WEST' });
   if (!generated.ok) throw new Error('map generation failed');
   return buildGeneratedMapPreview(generated.value, 50);
 })();

@@ -1,5 +1,5 @@
 // Map theme acceptance driver: operates the built UI in Chromium from visible controls. New Game -> pick the
-// Temperate inland style -> Generate, then the Eastern Europe style on the same seeds -> Generate (the two previews
+// Western Europe theater -> Generate, then the Eastern Europe theater on the same seeds -> Generate (the two previews
 // are compared on the drawn map) -> Start the Eastern Europe preview -> End phase / place arrivals / hot-seat
 // handoffs through one whole Game Turn.
 // Usage: npm run ui:serve, then node scripts/map-theme-acceptance.mjs <screenshot dir> (OCS_UI_URL overrides the address,
@@ -91,12 +91,12 @@ await page.click('#open-new-game');
 await page.waitForSelector('#new-game-form');
 console.log('style options', JSON.stringify(await page.locator('#new-game-style option').allInnerTexts()));
 
-const western = await generateWith('TEMPERATE_INLAND');
-await page.locator('.operation-map').first().screenshot({ path: `${out}/01-temperate-preview.jpg`, type: 'jpeg', quality: 85 });
+const western = await generateWith('WESTERN_EUROPE');
+await page.locator('.operation-map').first().screenshot({ path: `${out}/01-western-preview.jpg`, type: 'jpeg', quality: 85 });
 const eastern = await generateWith('EASTERN_EUROPE');
 await page.locator('.operation-map').first().screenshot({ path: `${out}/02-eastern-preview.jpg`, type: 'jpeg', quality: 85 });
 await shot('03-eastern-dialog');
-console.log('eastern/temperate roads', (eastern.roads / western.roads).toFixed(2), 'rails', (eastern.rails / western.rails).toFixed(2));
+console.log('eastern/western roads', (eastern.roads / western.roads).toFixed(2), 'rails', (eastern.rails / western.rails).toFixed(2));
 
 await page.click('#start-previewed-game');
 await page.waitForFunction(() => !document.querySelector('.new-game-dialog'), null, { timeout: 60000 });

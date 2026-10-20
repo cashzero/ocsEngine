@@ -1116,7 +1116,7 @@ const newGameDialog = () => {
           <p class="field-help">${seatsHelp(newGameSettings)}</p>
         </fieldset>
         <fieldset><legend>Operational map</legend>
-          ${select('new-game-style', 'Theater', [['TEMPERATE_INLAND', 'Western Europe'], ['EASTERN_EUROPE', 'Eastern Europe']], newGameSettings.map.style)}
+          ${select('new-game-style', 'Theater', [['WESTERN_EUROPE', 'Western Europe'], ['EASTERN_EUROPE', 'Eastern Europe']], newGameSettings.map.style)}
           ${select('new-game-sea', 'Sea', SEA_OPTIONS, newGameSeaOf(newGameSettings))}
           <p class="field-help">${seaHelp(newGameSeaOf(newGameSettings))}</p>
           ${seaSideFields(number, select)}

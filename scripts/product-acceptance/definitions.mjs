@@ -5,7 +5,7 @@ const engine = await import(new URL('../../dist/index.js', import.meta.url));
 
 export const NG07_REQUEST = (() => {
   const base = engine.DEFAULT_NEW_GAME_REQUEST;
-  return { ...base, map: { ...base.map, style: 'TEMPERATE_INLAND', width: 18, height: 12 }, oob: { ...base.oob, scale: 'LARGE', divisionsPerSide: 4, armoredDivisionsPerSide: 2 }, turnLimit: 3, seeds: { map: 91001, oob: 91002, deployment: 91003, rules: 91004 } };
+  return { ...base, map: { ...base.map, style: 'WESTERN_EUROPE', width: 18, height: 12 }, oob: { ...base.oob, scale: 'LARGE', divisionsPerSide: 4, armoredDivisionsPerSide: 2 }, turnLimit: 3, seeds: { map: 91001, oob: 91002, deployment: 91003, rules: 91004 } };
 })();
 
 export const definitionsByName = (request = NG07_REQUEST) => {

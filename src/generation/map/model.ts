@@ -4,11 +4,11 @@ import type { MapDefinition } from '../../domain/map/index.js';
 export const MAP_GENERATOR_VERSION = '0.5.0' as const;
 
 /**
- * Map themes. The two western themes are calibrated on Beyond the Rhine (north-west Europe);
+ * Map themes. WESTERN_EUROPE is calibrated on Beyond the Rhine (north-west Europe);
  * EASTERN_EUROPE on Case Blue / Guderian's Blitzkrieg II (southern and central Russia): flatter,
  * emptier country with far fewer roads, railways and towns (docs/generator/map-styles.md).
  */
-export const MAP_GENERATION_STYLES = ['TEMPERATE_INLAND', 'MEDITERRANEAN_COAST', 'EASTERN_EUROPE'] as const;
+export const MAP_GENERATION_STYLES = ['WESTERN_EUROPE', 'EASTERN_EUROPE'] as const;
 export type MapGenerationStyle = (typeof MAP_GENERATION_STYLES)[number];
 
 /**
@@ -31,7 +31,7 @@ export interface MapGenerationOptions {
   readonly height: number;
   readonly seed: number;
   readonly style: MapGenerationStyle;
-  /** Defaults to the style's own sea: WEST for the Mediterranean coast, NONE otherwise. */
+  /** Defaults to the style's own sea: NONE. */
   readonly sea?: MapSeaPlacement;
   /**
    * Entry edges of sides that reach the map only by sea (no inland entry Hexes): each gets a port within

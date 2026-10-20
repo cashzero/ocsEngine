@@ -125,6 +125,6 @@
 2. 補給變體，以及 B3（付費來源偏好）、B4（定期補給線）：`docs/roadmap/09-supply-logistics-ux-wbs.md`。
 3. 是否把 Breakdowns 提議的驗收列加入 `03`：`docs/rule-engine/breakdowns.md`。
 4. 是否把控制權與 VP 顯示的 CTL-1～5 加入 `03`：`docs/quality/evidence/control-2026-10-05/RUN.md`。
-6. 東歐主題的入口格數，或入口格不在鐵路上時的補給源規則；決定後才能把預設東歐圖的鐵路降到 Temperate 的一半以下。
+6. 東歐主題的入口格數，或入口格不在鐵路上時的補給源規則；決定後才能把預設東歐圖的鐵路降到西歐的一半以下。
 8. 是否要做電腦難度等級（目前只有標準策略，New Game 的電腦座位沒有難度選項）：`docs/roadmap/11-ai-bot-wbs.md` §5。
 7. 援軍的具體預設比例、首批回合、整師取樣與分批排程，待平衡評估後決定；雙方皆可設比例、海運攻方對應的守方預設較高、排程必要時可自動提前至 T2 的行為由使用者確認保留。契約與評估見 `docs/game-flow/reinforcement-balance.md`。

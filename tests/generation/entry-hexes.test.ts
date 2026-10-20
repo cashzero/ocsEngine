@@ -13,10 +13,10 @@ const column = (hexId: HexId) => coordinate(hexId).q + Math.floor(coordinate(hex
 
 describe('reinforcement entry Hexes along each map edge (13.6)', () => {
   it.each([
-    [16, 12, 'TEMPERATE_INLAND'], [32, 24, 'TEMPERATE_INLAND'], [32, 24, 'MEDITERRANEAN_COAST'], [64, 48, 'TEMPERATE_INLAND'],
-  ] as const)('spreads several entries, each a Supply Source, along each side\'s edge on a %ix%i %s map', (width, height, style) => {
+    [16, 12, 'WESTERN_EUROPE', 'NONE'], [32, 24, 'WESTERN_EUROPE', 'NONE'], [32, 24, 'WESTERN_EUROPE', 'WEST'], [64, 48, 'WESTERN_EUROPE', 'NONE'],
+  ] as const)('spreads several entries, each a Supply Source, along each side\'s edge on a %ix%i %s (%s) map', (width, height, style, sea) => {
     for (const seed of [1, 7, 1943, 0x0c500001]) {
-      const generated = generateRandomMap({ width, height, style, seed });
+      const generated = generateRandomMap({ width, height, style, sea, seed });
       expect(generated.ok, `seed ${seed}`).toBe(true);
       if (!generated.ok) return;
       const regions = generated.value.strategicRegions;

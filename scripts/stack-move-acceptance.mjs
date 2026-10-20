@@ -33,7 +33,7 @@ const neighbours = (id) => {
 try {
   // OCS_SEED and OCS_DIVISIONS pick another generated operation; the defaults are the recorded run.
   const seed = Number(process.env.OCS_SEED ?? 93001);
-  await newGame(h, { style: 'TEMPERATE_INLAND', width: 16, height: 12, scale: 'COMPACT', divisions: Number(process.env.OCS_DIVISIONS ?? 2), armored: 1, turnLimit: 3, seeds: { map: seed, oob: seed + 1, deployment: seed + 2, rules: Number(process.env.OCS_RULES_SEED ?? seed + 3) } });
+  await newGame(h, { style: 'WESTERN_EUROPE', width: 16, height: 12, scale: 'COMPACT', divisions: Number(process.env.OCS_DIVISIONS ?? 2), armored: 1, turnLimit: 3, seeds: { map: seed, oob: seed + 1, deployment: seed + 2, rules: Number(process.env.OCS_RULES_SEED ?? seed + 3) } });
   await advanceTo(h, (state) => /Movement/i.test(state.phase) && !state.handoff && !state.complete);
   h.note(`At ${JSON.stringify(await where(h))}`);
   await h.shot('movement-phase');

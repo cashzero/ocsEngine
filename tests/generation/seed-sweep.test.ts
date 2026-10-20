@@ -3,7 +3,7 @@ import { sweepRandomMapSeeds } from '../../src/index.js';
 
 // Slow (1,500 maps); opt in with `npm run test:sweep`.
 describe.skipIf(!process.env.OCS_SWEEP)('M6 map seed sweep', () => {
-  it.each(['TEMPERATE_INLAND', 'MEDITERRANEAN_COAST', 'EASTERN_EUROPE'] as const)(
+  it.each(['WESTERN_EUROPE', 'EASTERN_EUROPE'] as const)(
     'has no invalid maps or exceptions across 500 %s seeds',
     (style) => {
       const report = sweepRandomMapSeeds({ width: 18, height: 12, style }, 500, style.length * 10_000);

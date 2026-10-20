@@ -179,7 +179,7 @@ def load_panel(repository_root: Path, artifact_root: Path, registration_path: Pa
     require(registration['analysis']['primaryGameTurn'] == 4, 'registered primary turn must be GT4')
     groups = {group['name']: group for group in registration['groups']}
     require(len(groups) == len(registration['groups']) == 2 and
-            {group['style'] for group in groups.values()} == {'TEMPERATE_INLAND', 'EASTERN_EUROPE'},
+            {group['style'] for group in groups.values()} in ({'WESTERN_EUROPE', 'EASTERN_EUROPE'}, {'TEMPERATE_INLAND', 'EASTERN_EUROPE'}),
             'expected the two registered climates')
     require(all(group['matches'] == 8 for group in groups.values()), 'expected eight games per variant/climate')
     entries = {(entry['variant'], entry['group']): entry for entry in manifest['files']}

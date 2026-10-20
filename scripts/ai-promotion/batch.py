@@ -19,8 +19,8 @@ quality = json.loads((engine.with_name(engine.name + '-quality') / 'result.json'
 assert set(quality['checks']) == {'typecheck', 'tests', 'smoke'} and all(c['exitCode'] == 0 for c in quality['checks'].values())
 out = engine.with_name(engine.name + '-' + mode)
 out.mkdir(exist_ok=False)
-groups = [('meeting-temperate', 'MEETING', 'TEMPERATE_INLAND', 1300000), ('meeting-eastern', 'MEETING', 'EASTERN_EUROPE', 1300100),
-          ('attack-temperate', 'AXIS_ATTACKS', 'TEMPERATE_INLAND', 1300200), ('attack-eastern', 'AXIS_ATTACKS', 'EASTERN_EUROPE', 1300300)]
+groups = [('meeting-western', 'MEETING', 'WESTERN_EUROPE', 1300000), ('meeting-eastern', 'MEETING', 'EASTERN_EUROPE', 1300100),
+          ('attack-western', 'AXIS_ATTACKS', 'WESTERN_EUROPE', 1300200), ('attack-eastern', 'AXIS_ATTACKS', 'EASTERN_EUROPE', 1300300)]
 registration = json.loads((engine.with_name(engine.name + '-registration.json')).read_text()) if mode == 'independent' else None
 if registration:
     assert registration['candidateFreezeSha256'] == hashlib.sha256(Path(candidate_path).read_bytes()).hexdigest()

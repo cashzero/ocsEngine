@@ -10,7 +10,7 @@ const directory = process.argv[2] ?? 'artifacts/artillery-facility/positions';
 await mkdir(directory, { recursive: true });
 const request = {
   ...DEFAULT_NEW_GAME_REQUEST,
-  map: { width: 18, height: 12, style: 'TEMPERATE_INLAND', sea: 'FLANK' },
+  map: { width: 18, height: 12, style: 'WESTERN_EUROPE', sea: 'FLANK' },
   oob: { scale: 'STANDARD', divisionsPerSide: 3, armoredDivisionsPerSide: 1, air: 'STANDARD' },
   seeds: { map: 5101, oob: 5102, deployment: 5103, rules: 5104 }, turnLimit: 3,
 };

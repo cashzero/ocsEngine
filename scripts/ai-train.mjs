@@ -20,7 +20,7 @@ const parseArgs = (argv) => {
   const options = {
     run: 'main', hours: null, generations: null, evaluate: null, parallel: 4, turns: 8,
     batchPairs: 6, minPairs: 12, maxPairs: 30, significance: 0.05, gatePairs: 10, gateWinRate: 0.9,
-    styles: ['TEMPERATE_INLAND', 'EASTERN_EUROPE'], mutationSize: 0.5, seed: 1,
+    styles: ['WESTERN_EUROPE', 'EASTERN_EUROPE'], mutationSize: 0.5, seed: 1,
   };
   for (let index = 0; index < argv.length; index += 1) {
     const flag = argv[index];

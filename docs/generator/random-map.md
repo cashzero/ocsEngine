@@ -12,7 +12,7 @@ scenario are made later ([docs/game-flow/overview.md](../game-flow/overview.md))
 ### Options and output
 
 - Options: width and height 8–256 (New Game offers 16×12 to 256×256; smaller maps are for rule-test fixtures), a uint32
-  seed, a style (`TEMPERATE_INLAND`, `MEDITERRANEAN_COAST`, `EASTERN_EUROPE`), an optional sea (`NONE`, `NORTH`, `WEST`,
+  seed, a style (`WESTERN_EUROPE`, `EASTERN_EUROPE`), an optional sea (`NONE`, `NORTH`, `WEST`,
   `EAST`), optional landing edges, and an optional settlement density. Invalid options return typed errors and no output.
 - Output: generator version and normalized options, an immutable Foundation `MapDefinition`, neutral first and second
   entry and supply regions, settlement and port hexes, metrics and warnings. `serializeGeneratedMap` emits canonical
@@ -33,7 +33,7 @@ plus marsh at 40% of land.
 ### Sea and ports
 
 - A sea follows a low-frequency shoreline along its edge: one connected body of 6–35% water; a map without a sea may hold
-  at most 2% water. Without a `sea` option a style keeps its own (west for Mediterranean coast, none otherwise); another
+  at most 2% water. Without a `sea` option a map has no sea (`NONE`); another
   sea adds `:sea-<edge>` to the map ID. New Game offers **No sea** or **Along the flank** (the north edge).
 - `landingEdges` gives a side landing by sea (no inland entry) a port within a fifth of the width (at least 3 columns) of
   its edge: the best coastal place there, or a new port town on the shore nearest the edge; otherwise the map fails with

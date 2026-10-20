@@ -123,11 +123,11 @@ formation 共同路線、補給源）重算，數斷補的己方單位。只試�
 | 歷史 M1，VP 加 step 與斷補 | 3.0255 | 1.2799 |
 | 歷史 M2，M1 加目標可達與風險 | 3.1499 | 1.3116 |
 
-事前指定的 M0 減 M2 平方誤差增益為 0.1030 VP²，描述性家族重抽區間 [−0.5757, 0.8646]。36 個切分只有 17 個改善；東歐為 −0.4916，溫帶為 +0.6976。刪除某一權重家族後的固定預測平均增益範圍為 [−0.1752, 0.2951]，方向不穩定。不能由原本 0.517 的同批 R² 認定 M2 已能選出更好的新改版。
+事前指定的 M0 減 M2 平方誤差增益為 0.1030 VP²，描述性家族重抽區間 [−0.5757, 0.8646]。36 個切分只有 17 個改善；東歐為 −0.4916，西歐為 +0.6976。刪除某一權重家族後的固定預測平均增益範圍為 [−0.1752, 0.2951]，方向不穩定。不能由原本 0.517 的同批 R² 認定 M2 已能選出更好的新改版。
 
 M1 點估計最好，但不是事前主要比較。它相對猜零的 MSE 增益 0.3017，描述性區間 [−0.3960, 1.0338]，仍只列候選。用每次切分中預測最高的改版作探索性選擇，M2 在另一批種子的平均效果為 +0.229 VP，全部改版平均 +0.188；M1 為 +0.965。這 36 次選擇互相重疊，不能當作獨立成功案例，也不構成策略升級證據。
 
-本批再校準的 M0、M1、M2 以及六個單項指標，其 MSE 全部高於猜零。加入更多本批擬合沒有補上轉移缺口。所有方法、權重家族、地圖與切分都保留在證據中，沒有只挑 M1 或溫帶的好數字。
+本批再校準的 M0、M1、M2 以及六個單項指標，其 MSE 全部高於猜零。加入更多本批擬合沒有補上轉移缺口。所有方法、權重家族、地圖與切分都保留在證據中，沒有只挑 M1 或西歐的好數字。
 
 共同噪音負對照中，同批早期與終局值完全相同、相關為 1，跨種子卻比猜零多錯 0.2541 VP²。真正的正向、負向訊號與家族方向不同的控制均通過，包含刻意洩漏家族結果的對照。實際 M2 的同批共變異 0.9268 中，分解出的同種子項約 0.2467；其餘有限面板的跨種子共變異仍為正。不能把全部關聯說成假象，也不能把分解後的量直接當成已識別的真實 R²；step 的修正變異甚至為負。方法只報有符號的量，不裁成零或生成潛在 R²。
 
@@ -135,7 +135,7 @@ M1 點估計最好，但不是事前主要比較。它相對猜零的 MSE 增益
 
 負對照：獨立隨機特徵在舊的樣本內方法下也得到區間排除 0 的新增 R²，但樣本外 R² 下降（[對照](../quality/evidence/ai-position-validation-2026-10-18/negative-control.json)），所以只採用樣本外的比較。
 
-`dumpSpInReach` 與補給堆損失的先前描述性結果見 [量測證據](../quality/evidence/ai-position-exposure-2026-10-18/README.md)。[溫帶 16 局的擴充指標探索](../quality/evidence/ai-position-metrics-temperate-2026-10-18/README.md) 則使用 208 個玩家回合，全部屬樣本內比較。按目前 recorder 拆出 attrition 後，`stacksExposedAllocated` 對其餘損失事件的 r 為 0.25，遭遇戰的 `maxSingleStackExpectedLoss` 為 0.37；可支付目標數對當回合丟點的 r 由幾何指標的 0.34 升為 0.44。這些數字是代理量的描述性關係，不證明支付可行、損失分類正確或預測改善。原批 raw 紀錄目前未能取得，不能用另一批存檔宣稱重現原結果。
+`dumpSpInReach` 與補給堆損失的先前描述性結果見 [量測證據](../quality/evidence/ai-position-exposure-2026-10-18/README.md)。[西歐 16 局的擴充指標探索](../quality/evidence/ai-position-metrics-temperate-2026-10-18/README.md) 則使用 208 個玩家回合，全部屬樣本內比較。按目前 recorder 拆出 attrition 後，`stacksExposedAllocated` 對其餘損失事件的 r 為 0.25，遭遇戰的 `maxSingleStackExpectedLoss` 為 0.37；可支付目標數對當回合丟點的 r 由幾何指標的 0.34 升為 0.44。這些數字是代理量的描述性關係，不證明支付可行、損失分類正確或預測改善。原批 raw 紀錄目前未能取得，不能用另一批存檔宣稱重現原結果。
 
 ### 移動決策的實際阻擋
 
@@ -194,4 +194,4 @@ M1 點估計最好，但不是事前主要比較。它相對猜零的 MSE 增益
 - [E2 原因、E3 與 E5 接續測試](../quality/evidence/ai-error-continuations-v85-2026-10-18/README.md)
 - [擴充指標的量測契約與分組比較](../quality/evidence/ai-position-metric-audit-2026-10-19/README.md)
 - [局勢指標的分組樣本外驗證](../quality/evidence/ai-position-validation-2026-10-18/README.md)
-- [局勢指標的記錄](../quality/evidence/ai-position-record-2026-10-18/README.md)、[檢驗](../quality/evidence/ai-position-analysis-2026-10-18/README.md)、[分配後暴露量與補給堆損失](../quality/evidence/ai-position-exposure-2026-10-18/README.md)與[溫帶 16 局擴充指標與損失拆分檢驗](../quality/evidence/ai-position-metrics-temperate-2026-10-18/README.md)
+- [局勢指標的記錄](../quality/evidence/ai-position-record-2026-10-18/README.md)、[檢驗](../quality/evidence/ai-position-analysis-2026-10-18/README.md)、[分配後暴露量與補給堆損失](../quality/evidence/ai-position-exposure-2026-10-18/README.md)與[西歐 16 局擴充指標與損失拆分檢驗](../quality/evidence/ai-position-metrics-temperate-2026-10-18/README.md)

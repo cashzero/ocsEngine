@@ -108,10 +108,10 @@ const roadGaps = (map: MapDefinition, roadEdges: readonly (readonly [HexId, HexI
 };
 
 /**
- * Road-gap limits are the style's (docs/generator/map-styles.md): in the western themes open ground lies within
+ * Road-gap limits are the style's (docs/generator/map-styles.md): in the western theme open ground lies within
  * two Hexes of a road and woods and hills within three; eastern steppe allows four and five.
  */
-export const measureGeneratedMap = (map: MapDefinition, style: MapGenerationStyle = 'TEMPERATE_INLAND'): GeneratedMapMetrics => {
+export const measureGeneratedMap = (map: MapDefinition, style: MapGenerationStyle = 'WESTERN_EUROPE'): GeneratedMapMetrics => {
   const terrainCounts: Record<GeneratedTerrainKind, number> = {
     CLEAR: 0, WOODS: 0, ROUGH: 0, MOUNTAIN: 0, MARSH: 0, WATER: 0,
   };
