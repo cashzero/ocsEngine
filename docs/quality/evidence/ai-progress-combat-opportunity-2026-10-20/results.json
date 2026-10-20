@@ -1,0 +1,4022 @@
+{
+  "scope": "Post-result fifteen-seed local-effect exploration in one fixed relative Combat segment; no cross-family or whole-policy qualification.",
+  "summary": {
+    "pairs": 15,
+    "boundaries": 30,
+    "replayedActions": 147,
+    "observedWitnesses": 10,
+    "armsWithTargetWitness": 10,
+    "truncatedQueries": 0,
+    "nonzeroPairs": {
+      "boundaryVp": 0,
+      "attackAvailableValue": 0,
+      "offeredAttackStrength": 3
+    }
+  },
+  "models": {
+    "priorZero": {
+      "mae": 4.4,
+      "mse": 36.53333333333333,
+      "alias": null
+    },
+    "priorTrainingMean": {
+      "mae": 4.761904761904762,
+      "mse": 41.91836734693877,
+      "alias": null
+    },
+    "priorProgress": {
+      "mae": 4.998910444190817,
+      "mse": 45.574959362729345,
+      "alias": null
+    },
+    "directBoundaryVp": {
+      "mae": 4.4,
+      "mse": 36.53333333333333,
+      "alias": "priorZero"
+    },
+    "fittedBoundaryVp": {
+      "mae": 4.761904761904762,
+      "mse": 41.91836734693877,
+      "alias": "priorTrainingMean"
+    },
+    "fittedAttackAvailableValue": {
+      "mae": 4.761904761904762,
+      "mse": 41.91836734693877,
+      "alias": "priorTrainingMean"
+    },
+    "fittedOfferedAttackStrength": {
+      "mae": 5.339468012777961,
+      "mse": 45.67148814737046,
+      "alias": null
+    }
+  },
+  "aliases": {
+    "directBoundaryVp": "priorZero",
+    "fittedBoundaryVp": "priorTrainingMean",
+    "fittedAttackAvailableValue": "priorTrainingMean"
+  },
+  "features": {
+    "boundaryVp": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "attackAvailableValue": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "offeredAttackStrength": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      1.1428571428571428,
+      0,
+      0,
+      0,
+      0,
+      4.083333333333333,
+      0,
+      0,
+      2.0769230769230766,
+      0
+    ],
+    "priorProgress": [
+      1.5384615384615383,
+      1.5384615384615383,
+      1.333333333333333,
+      1.1428571428571432,
+      0.615384615384615,
+      1.1428571428571441,
+      0.7692307692307692,
+      2,
+      1.12,
+      1.2000000000000002,
+      2.333333333333334,
+      1.0666666666666682,
+      1.5384615384615383,
+      1.3846153846153848,
+      0.8571428571428577
+    ]
+  },
+  "folds": [
+    {
+      "firstMatch": 1800000,
+      "observed": -2,
+      "training": {
+        "fittedBoundaryVp": {
+          "count": 14,
+          "nonzeroFeature": 0,
+          "mean": 0,
+          "scale": 0.0,
+          "coefficient": null,
+          "targetMean": 0,
+          "zeroTrainingScale": true,
+          "alias": "priorTrainingMean"
+        },
+        "fittedAttackAvailableValue": {
+          "count": 14,
+          "nonzeroFeature": 0,
+          "mean": 0,
+          "scale": 0.0,
+          "coefficient": null,
+          "targetMean": 0,
+          "zeroTrainingScale": true,
+          "alias": "priorTrainingMean"
+        },
+        "fittedOfferedAttackStrength": {
+          "count": 14,
+          "nonzeroFeature": 3,
+          "mean": 0.5216509680795395,
+          "scale": 1.1490265063637202,
+          "coefficient": 0.5304697551780121,
+          "targetMean": 0,
+          "zeroTrainingScale": false,
+          "alias": null
+        }
+      },
+      "predictions": {
+        "priorZero": 0,
+        "priorTrainingMean": 0,
+        "priorProgress": -0.02188943568205841,
+        "directBoundaryVp": 0,
+        "fittedBoundaryVp": 0,
+        "fittedAttackAvailableValue": 0,
+        "fittedOfferedAttackStrength": -0.2408300067865724
+      }
+    },
+    {
+      "firstMatch": 1800002,
+      "observed": 8,
+      "training": {
+        "fittedBoundaryVp": {
+          "count": 14,
+          "nonzeroFeature": 0,
+          "mean": 0,
+          "scale": 0.0,
+          "coefficient": null,
+          "targetMean": -0.7142857142857143,
+          "zeroTrainingScale": true,
+          "alias": "priorTrainingMean"
+        },
+        "fittedAttackAvailableValue": {
+          "count": 14,
+          "nonzeroFeature": 0,
+          "mean": 0,
+          "scale": 0.0,
+          "coefficient": null,
+          "targetMean": -0.7142857142857143,
+          "zeroTrainingScale": true,
+          "alias": "priorTrainingMean"
+        },
+        "fittedOfferedAttackStrength": {
+          "count": 14,
+          "nonzeroFeature": 3,
+          "mean": 0.5216509680795395,
+          "scale": 1.1490265063637202,
+          "coefficient": 0.8331323222528068,
+          "targetMean": -0.7142857142857143,
+          "zeroTrainingScale": false,
+          "alias": null
+        }
+      },
+      "predictions": {
+        "priorZero": 0,
+        "priorTrainingMean": -0.7142857142857143,
+        "priorProgress": -0.9462394295726805,
+        "directBoundaryVp": 0,
+        "fittedBoundaryVp": -0.7142857142857143,
+        "fittedAttackAvailableValue": -0.7142857142857143,
+        "fittedOfferedAttackStrength": -1.0925226653347435
+      }
+    },
+    {
+      "firstMatch": 1800004,
+      "observed": -12,
+      "training": {
+        "fittedBoundaryVp": {
+          "count": 14,
+          "nonzeroFeature": 0,
+          "mean": 0,
+          "scale": 0.0,
+          "coefficient": null,
+          "targetMean": 0.7142857142857143,
+          "zeroTrainingScale": true,
+          "alias": "priorTrainingMean"
+        },
+        "fittedAttackAvailableValue": {
+          "count": 14,
+          "nonzeroFeature": 0,
+          "mean": 0,
+          "scale": 0.0,
+          "coefficient": null,
+          "targetMean": 0.7142857142857143,
+          "zeroTrainingScale": true,
+          "alias": "priorTrainingMean"
+        },
+        "fittedOfferedAttackStrength": {
+          "count": 14,
+          "nonzeroFeature": 3,
+          "mean": 0.5216509680795395,
+          "scale": 1.1490265063637202,
+          "coefficient": 0.22780718810321762,
+          "targetMean": 0.7142857142857143,
+          "zeroTrainingScale": false,
+          "alias": null
+        }
+      },
+      "predictions": {
+        "priorZero": 0,
+        "priorTrainingMean": 0.7142857142857143,
+        "priorProgress": 0.71061916077124,
+        "directBoundaryVp": 0,
+        "fittedBoundaryVp": 0.7142857142857143,
+        "fittedAttackAvailableValue": 0.7142857142857143,
+        "fittedOfferedAttackStrength": 0.6108626517615986
+      }
+    },
+    {
+      "firstMatch": 1800006,
+      "observed": 8,
+      "training": {
+        "fittedBoundaryVp": {
+          "count": 14,
+          "nonzeroFeature": 0,
+          "mean": 0,
+          "scale": 0.0,
+          "coefficient": null,
+          "targetMean": -0.7142857142857143,
+          "zeroTrainingScale": true,
+          "alias": "priorTrainingMean"
+        },
+        "fittedAttackAvailableValue": {
+          "count": 14,
+          "nonzeroFeature": 0,
+          "mean": 0,
+          "scale": 0.0,
+          "coefficient": null,
+          "targetMean": -0.7142857142857143,
+          "zeroTrainingScale": true,
+          "alias": "priorTrainingMean"
+        },
+        "fittedOfferedAttackStrength": {
+          "count": 14,
+          "nonzeroFeature": 3,
+          "mean": 0.5216509680795395,
+          "scale": 1.1490265063637202,
+          "coefficient": 0.8331323222528068,
+          "targetMean": -0.7142857142857143,
+          "zeroTrainingScale": false,
+          "alias": null
+        }
+      },
+      "predictions": {
+        "priorZero": 0,
+        "priorTrainingMean": -0.7142857142857143,
+        "priorProgress": -0.754326006128626,
+        "directBoundaryVp": 0,
+        "fittedBoundaryVp": -0.7142857142857143,
+        "fittedAttackAvailableValue": -0.7142857142857143,
+        "fittedOfferedAttackStrength": -1.0925226653347435
+      }
+    },
+    {
+      "firstMatch": 1800008,
+      "observed": -8,
+      "training": {
+        "fittedBoundaryVp": {
+          "count": 14,
+          "nonzeroFeature": 0,
+          "mean": 0,
+          "scale": 0.0,
+          "coefficient": null,
+          "targetMean": 0.42857142857142855,
+          "zeroTrainingScale": true,
+          "alias": "priorTrainingMean"
+        },
+        "fittedAttackAvailableValue": {
+          "count": 14,
+          "nonzeroFeature": 0,
+          "mean": 0,
+          "scale": 0.0,
+          "coefficient": null,
+          "targetMean": 0.42857142857142855,
+          "zeroTrainingScale": true,
+          "alias": "priorTrainingMean"
+        },
+        "fittedOfferedAttackStrength": {
+          "count": 14,
+          "nonzeroFeature": 3,
+          "mean": 0.5216509680795395,
+          "scale": 1.1490265063637202,
+          "coefficient": 0.3488722149331354,
+          "targetMean": 0.42857142857142855,
+          "zeroTrainingScale": false,
+          "alias": null
+        }
+      },
+      "predictions": {
+        "priorZero": 0,
+        "priorTrainingMean": 0.42857142857142855,
+        "priorProgress": 2.3752440688147343,
+        "directBoundaryVp": 0,
+        "fittedBoundaryVp": 0.42857142857142855,
+        "fittedAttackAvailableValue": 0.42857142857142855,
+        "fittedOfferedAttackStrength": 0.2701855883423302
+      }
+    },
+    {
+      "firstMatch": 1800010,
+      "observed": 8,
+      "training": {
+        "fittedBoundaryVp": {
+          "count": 14,
+          "nonzeroFeature": 0,
+          "mean": 0,
+          "scale": 0.0,
+          "coefficient": null,
+          "targetMean": -0.7142857142857143,
+          "zeroTrainingScale": true,
+          "alias": "priorTrainingMean"
+        },
+        "fittedAttackAvailableValue": {
+          "count": 14,
+          "nonzeroFeature": 0,
+          "mean": 0,
+          "scale": 0.0,
+          "coefficient": null,
+          "targetMean": -0.7142857142857143,
+          "zeroTrainingScale": true,
+          "alias": "priorTrainingMean"
+        },
+        "fittedOfferedAttackStrength": {
+          "count": 14,
+          "nonzeroFeature": 2,
+          "mean": 0.44001831501831495,
+          "scale": 1.1425721275402183,
+          "coefficient": 0.25674137874960345,
+          "targetMean": -0.7142857142857143,
+          "zeroTrainingScale": false,
+          "alias": null
+        }
+      },
+      "predictions": {
+        "priorZero": 0,
+        "priorTrainingMean": -0.7142857142857143,
+        "priorProgress": -0.7543260061286253,
+        "directBoundaryVp": 0,
+        "fittedBoundaryVp": -0.7142857142857143,
+        "fittedAttackAvailableValue": -0.7142857142857143,
+        "fittedOfferedAttackStrength": -0.5563544945853247
+      }
+    },
+    {
+      "firstMatch": 1800012,
+      "observed": 0,
+      "training": {
+        "fittedBoundaryVp": {
+          "count": 14,
+          "nonzeroFeature": 0,
+          "mean": 0,
+          "scale": 0.0,
+          "coefficient": null,
+          "targetMean": -0.14285714285714285,
+          "zeroTrainingScale": true,
+          "alias": "priorTrainingMean"
+        },
+        "fittedAttackAvailableValue": {
+          "count": 14,
+          "nonzeroFeature": 0,
+          "mean": 0,
+          "scale": 0.0,
+          "coefficient": null,
+          "targetMean": -0.14285714285714285,
+          "zeroTrainingScale": true,
+          "alias": "priorTrainingMean"
+        },
+        "fittedOfferedAttackStrength": {
+          "count": 14,
+          "nonzeroFeature": 3,
+          "mean": 0.5216509680795395,
+          "scale": 1.1490265063637202,
+          "coefficient": 0.5910022685929711,
+          "targetMean": -0.14285714285714285,
+          "zeroTrainingScale": false,
+          "alias": null
+        }
+      },
+      "predictions": {
+        "priorZero": 0,
+        "priorTrainingMean": -0.14285714285714285,
+        "priorProgress": -0.004664326081895487,
+        "directBoundaryVp": 0,
+        "fittedBoundaryVp": -0.14285714285714285,
+        "fittedAttackAvailableValue": -0.14285714285714285,
+        "fittedOfferedAttackStrength": -0.41116853849620666
+      }
+    },
+    {
+      "firstMatch": 1800014,
+      "observed": 0,
+      "training": {
+        "fittedBoundaryVp": {
+          "count": 14,
+          "nonzeroFeature": 0,
+          "mean": 0,
+          "scale": 0.0,
+          "coefficient": null,
+          "targetMean": -0.14285714285714285,
+          "zeroTrainingScale": true,
+          "alias": "priorTrainingMean"
+        },
+        "fittedAttackAvailableValue": {
+          "count": 14,
+          "nonzeroFeature": 0,
+          "mean": 0,
+          "scale": 0.0,
+          "coefficient": null,
+          "targetMean": -0.14285714285714285,
+          "zeroTrainingScale": true,
+          "alias": "priorTrainingMean"
+        },
+        "fittedOfferedAttackStrength": {
+          "count": 14,
+          "nonzeroFeature": 3,
+          "mean": 0.5216509680795395,
+          "scale": 1.1490265063637202,
+          "coefficient": 0.5910022685929711,
+          "targetMean": -0.14285714285714285,
+          "zeroTrainingScale": false,
+          "alias": null
+        }
+      },
+      "predictions": {
+        "priorZero": 0,
+        "priorTrainingMean": -0.14285714285714285,
+        "priorProgress": -0.39089609550732796,
+        "directBoundaryVp": 0,
+        "fittedBoundaryVp": -0.14285714285714285,
+        "fittedAttackAvailableValue": -0.14285714285714285,
+        "fittedOfferedAttackStrength": -0.41116853849620666
+      }
+    },
+    {
+      "firstMatch": 1800016,
+      "observed": -4,
+      "training": {
+        "fittedBoundaryVp": {
+          "count": 14,
+          "nonzeroFeature": 0,
+          "mean": 0,
+          "scale": 0.0,
+          "coefficient": null,
+          "targetMean": 0.14285714285714285,
+          "zeroTrainingScale": true,
+          "alias": "priorTrainingMean"
+        },
+        "fittedAttackAvailableValue": {
+          "count": 14,
+          "nonzeroFeature": 0,
+          "mean": 0,
+          "scale": 0.0,
+          "coefficient": null,
+          "targetMean": 0.14285714285714285,
+          "zeroTrainingScale": true,
+          "alias": "priorTrainingMean"
+        },
+        "fittedOfferedAttackStrength": {
+          "count": 14,
+          "nonzeroFeature": 3,
+          "mean": 0.5216509680795395,
+          "scale": 1.1490265063637202,
+          "coefficient": 0.4699372417630531,
+          "targetMean": 0.14285714285714285,
+          "zeroTrainingScale": false,
+          "alias": null
+        }
+      },
+      "predictions": {
+        "priorZero": 0,
+        "priorTrainingMean": 0.14285714285714285,
+        "priorProgress": 0.2420790712942949,
+        "directBoundaryVp": 0,
+        "fittedBoundaryVp": 0.14285714285714285,
+        "fittedAttackAvailableValue": 0.14285714285714285,
+        "fittedOfferedAttackStrength": -0.07049147507693818
+      }
+    },
+    {
+      "firstMatch": 1800018,
+      "observed": 0,
+      "training": {
+        "fittedBoundaryVp": {
+          "count": 14,
+          "nonzeroFeature": 0,
+          "mean": 0,
+          "scale": 0.0,
+          "coefficient": null,
+          "targetMean": -0.14285714285714285,
+          "zeroTrainingScale": true,
+          "alias": "priorTrainingMean"
+        },
+        "fittedAttackAvailableValue": {
+          "count": 14,
+          "nonzeroFeature": 0,
+          "mean": 0,
+          "scale": 0.0,
+          "coefficient": null,
+          "targetMean": -0.14285714285714285,
+          "zeroTrainingScale": true,
+          "alias": "priorTrainingMean"
+        },
+        "fittedOfferedAttackStrength": {
+          "count": 14,
+          "nonzeroFeature": 3,
+          "mean": 0.5216509680795395,
+          "scale": 1.1490265063637202,
+          "coefficient": 0.5910022685929711,
+          "targetMean": -0.14285714285714285,
+          "zeroTrainingScale": false,
+          "alias": null
+        }
+      },
+      "predictions": {
+        "priorZero": 0,
+        "priorTrainingMean": -0.14285714285714285,
+        "priorProgress": -0.11624682773663012,
+        "directBoundaryVp": 0,
+        "fittedBoundaryVp": -0.14285714285714285,
+        "fittedAttackAvailableValue": -0.14285714285714285,
+        "fittedOfferedAttackStrength": -0.41116853849620666
+      }
+    },
+    {
+      "firstMatch": 1800020,
+      "observed": 0,
+      "training": {
+        "fittedBoundaryVp": {
+          "count": 14,
+          "nonzeroFeature": 0,
+          "mean": 0,
+          "scale": 0.0,
+          "coefficient": null,
+          "targetMean": -0.14285714285714285,
+          "zeroTrainingScale": true,
+          "alias": "priorTrainingMean"
+        },
+        "fittedAttackAvailableValue": {
+          "count": 14,
+          "nonzeroFeature": 0,
+          "mean": 0,
+          "scale": 0.0,
+          "coefficient": null,
+          "targetMean": -0.14285714285714285,
+          "zeroTrainingScale": true,
+          "alias": "priorTrainingMean"
+        },
+        "fittedOfferedAttackStrength": {
+          "count": 14,
+          "nonzeroFeature": 2,
+          "mean": 0.22998430141287282,
+          "scale": 0.5903529822963106,
+          "coefficient": 1.084416276776259,
+          "targetMean": -0.14285714285714285,
+          "zeroTrainingScale": false,
+          "alias": null
+        }
+      },
+      "predictions": {
+        "priorZero": 0,
+        "priorTrainingMean": -0.14285714285714285,
+        "priorProgress": -0.6718581321214772,
+        "directBoundaryVp": 0,
+        "fittedBoundaryVp": -0.14285714285714285,
+        "fittedAttackAvailableValue": -0.14285714285714285,
+        "fittedOfferedAttackStrength": 6.93533935250204
+      }
+    },
+    {
+      "firstMatch": 1800022,
+      "observed": 0,
+      "training": {
+        "fittedBoundaryVp": {
+          "count": 14,
+          "nonzeroFeature": 0,
+          "mean": 0,
+          "scale": 0.0,
+          "coefficient": null,
+          "targetMean": -0.14285714285714285,
+          "zeroTrainingScale": true,
+          "alias": "priorTrainingMean"
+        },
+        "fittedAttackAvailableValue": {
+          "count": 14,
+          "nonzeroFeature": 0,
+          "mean": 0,
+          "scale": 0.0,
+          "coefficient": null,
+          "targetMean": -0.14285714285714285,
+          "zeroTrainingScale": true,
+          "alias": "priorTrainingMean"
+        },
+        "fittedOfferedAttackStrength": {
+          "count": 14,
+          "nonzeroFeature": 3,
+          "mean": 0.5216509680795395,
+          "scale": 1.1490265063637202,
+          "coefficient": 0.5910022685929711,
+          "targetMean": -0.14285714285714285,
+          "zeroTrainingScale": false,
+          "alias": null
+        }
+      },
+      "predictions": {
+        "priorZero": 0,
+        "priorTrainingMean": -0.14285714285714285,
+        "priorProgress": -0.08315230648954611,
+        "directBoundaryVp": 0,
+        "fittedBoundaryVp": -0.14285714285714285,
+        "fittedAttackAvailableValue": -0.14285714285714285,
+        "fittedOfferedAttackStrength": -0.41116853849620666
+      }
+    },
+    {
+      "firstMatch": 1800024,
+      "observed": -8,
+      "training": {
+        "fittedBoundaryVp": {
+          "count": 14,
+          "nonzeroFeature": 0,
+          "mean": 0,
+          "scale": 0.0,
+          "coefficient": null,
+          "targetMean": 0.42857142857142855,
+          "zeroTrainingScale": true,
+          "alias": "priorTrainingMean"
+        },
+        "fittedAttackAvailableValue": {
+          "count": 14,
+          "nonzeroFeature": 0,
+          "mean": 0,
+          "scale": 0.0,
+          "coefficient": null,
+          "targetMean": 0.42857142857142855,
+          "zeroTrainingScale": true,
+          "alias": "priorTrainingMean"
+        },
+        "fittedOfferedAttackStrength": {
+          "count": 14,
+          "nonzeroFeature": 3,
+          "mean": 0.5216509680795395,
+          "scale": 1.1490265063637202,
+          "coefficient": 0.3488722149331354,
+          "targetMean": 0.42857142857142855,
+          "zeroTrainingScale": false,
+          "alias": null
+        }
+      },
+      "predictions": {
+        "priorZero": 0,
+        "priorTrainingMean": 0.42857142857142855,
+        "priorProgress": 0.5327205606523149,
+        "directBoundaryVp": 0,
+        "fittedBoundaryVp": 0.42857142857142855,
+        "fittedAttackAvailableValue": 0.42857142857142855,
+        "fittedOfferedAttackStrength": 0.2701855883423302
+      }
+    },
+    {
+      "firstMatch": 1800026,
+      "observed": 0,
+      "training": {
+        "fittedBoundaryVp": {
+          "count": 14,
+          "nonzeroFeature": 0,
+          "mean": 0,
+          "scale": 0.0,
+          "coefficient": null,
+          "targetMean": -0.14285714285714285,
+          "zeroTrainingScale": true,
+          "alias": "priorTrainingMean"
+        },
+        "fittedAttackAvailableValue": {
+          "count": 14,
+          "nonzeroFeature": 0,
+          "mean": 0,
+          "scale": 0.0,
+          "coefficient": null,
+          "targetMean": -0.14285714285714285,
+          "zeroTrainingScale": true,
+          "alias": "priorTrainingMean"
+        },
+        "fittedOfferedAttackStrength": {
+          "count": 14,
+          "nonzeroFeature": 2,
+          "mean": 0.37329931972789115,
+          "scale": 1.0700066825746066,
+          "coefficient": 0.6161616211291514,
+          "targetMean": -0.14285714285714285,
+          "zeroTrainingScale": false,
+          "alias": null
+        }
+      },
+      "predictions": {
+        "priorZero": 0,
+        "priorTrainingMean": -0.14285714285714285,
+        "priorProgress": -0.1635660615280154,
+        "directBoundaryVp": 0,
+        "fittedBoundaryVp": -0.14285714285714285,
+        "fittedAttackAvailableValue": -0.14285714285714285,
+        "fittedOfferedAttackStrength": 0.8381718480102389
+      }
+    },
+    {
+      "firstMatch": 1800028,
+      "observed": 8,
+      "training": {
+        "fittedBoundaryVp": {
+          "count": 14,
+          "nonzeroFeature": 0,
+          "mean": 0,
+          "scale": 0.0,
+          "coefficient": null,
+          "targetMean": -0.7142857142857143,
+          "zeroTrainingScale": true,
+          "alias": "priorTrainingMean"
+        },
+        "fittedAttackAvailableValue": {
+          "count": 14,
+          "nonzeroFeature": 0,
+          "mean": 0,
+          "scale": 0.0,
+          "coefficient": null,
+          "targetMean": -0.7142857142857143,
+          "zeroTrainingScale": true,
+          "alias": "priorTrainingMean"
+        },
+        "fittedOfferedAttackStrength": {
+          "count": 14,
+          "nonzeroFeature": 3,
+          "mean": 0.5216509680795395,
+          "scale": 1.1490265063637202,
+          "coefficient": 0.8331323222528068,
+          "targetMean": -0.7142857142857143,
+          "zeroTrainingScale": false,
+          "alias": null
+        }
+      },
+      "predictions": {
+        "priorZero": 0,
+        "priorTrainingMean": -0.7142857142857143,
+        "priorProgress": -1.2596080457169114,
+        "directBoundaryVp": 0,
+        "fittedBoundaryVp": -0.7142857142857143,
+        "fittedAttackAvailableValue": -0.7142857142857143,
+        "fittedOfferedAttackStrength": -1.0925226653347435
+      }
+    }
+  ],
+  "cases": [
+    {
+      "firstMatch": 1800000,
+      "originalTarget": "-2,7",
+      "features": {
+        "boundaryVp": 0,
+        "attackAvailableValue": 0,
+        "offeredAttackStrength": 0
+      },
+      "terminalLocalEffect": -2,
+      "witnessCounts": [
+        0,
+        0
+      ],
+      "arms": [
+        {
+          "sourcePath": "artifacts/ai-progress-objective-30games/matches/match-1800001.save.json",
+          "sourceSha256": "e04812aafaf87a018eba2164b0b69806f7a39076147e2d663c415370a0cddd4c",
+          "armIndex": 0,
+          "resumeAt": 63,
+          "resumeHash": "sha256:03c00b40034e3a23ac3babc8b9a1c4094b58b068043362d3eea0f472ec0adfea",
+          "replayedActions": 4,
+          "at": 66,
+          "internalBoundary": true,
+          "revision": 66,
+          "stateHash": "sha256:b3b6c79467612497ea1cebe2a46627b296fb8feae48dfb9fa5b40ad1e073cc5b",
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "COMBAT",
+            "segment": "COMBAT",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "entryEvent": {
+            "kind": "SEQUENCE_ADVANCED",
+            "sequence": 2,
+            "from": {
+              "gameTurn": 1,
+              "playerTurnIndex": 0,
+              "phase": "COMBAT",
+              "segment": "BARRAGE",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            },
+            "to": {
+              "gameTurn": 1,
+              "playerTurnIndex": 0,
+              "phase": "COMBAT",
+              "segment": "COMBAT",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            }
+          },
+          "eventIndex": 2,
+          "containerPreHash": "sha256:97ff0610e74b0935bed6f379ceaa73cea9e2222b1d8d0a06231c153ed982269b",
+          "containerPostHash": "sha256:d43fb837d750157b4bed95a6e8ac5a26aad754996239a99da61bf9354d8ed408",
+          "containerPostRevision": 67,
+          "action": {
+            "actionId": "candidate:advance:66",
+            "actorId": "player:allied",
+            "expectedRevision": 66,
+            "kind": "ADVANCE_SEQUENCE"
+          },
+          "reconstruction": {
+            "transitions": 3,
+            "allEventsMatch": true,
+            "normalizedFinalStateMatches": true
+          },
+          "query": {
+            "budget": 200,
+            "candidates": 4,
+            "truncated": false,
+            "actionsSha256": "8e5bbdc72309e24d333e27ee805c4007ae0aba86dc3ce4ba66327aef4eb0f870"
+          },
+          "targetHolder": "player:allied",
+          "targetPoints": 4,
+          "pointScale": 1.5384615384615383,
+          "scores": {
+            "player:allied": 13,
+            "player:axis": 0
+          },
+          "axisMargin": -13,
+          "witnesses": [],
+          "attackAvailableValue": 0,
+          "offeredAttackStrength": 0,
+          "bestActionId": null,
+          "supplementaryQueriesPreserveRulesState": true
+        },
+        {
+          "sourcePath": "artifacts/ai-progress-objective-original-continuation/pair-1800000/branch-15.save.json",
+          "sourceSha256": "ce6334a7dafd24b41f5687fab07f847d64a6488eed4f6370b8f6fc12f1fa2ae6",
+          "armIndex": 1,
+          "resumeAt": 63,
+          "resumeHash": "sha256:1725dcb1b3aed869d47988344b71eb78c10b20b7474f8cc69b99207d1e2df163",
+          "replayedActions": 4,
+          "at": 66,
+          "internalBoundary": true,
+          "revision": 66,
+          "stateHash": "sha256:35b50f44e1136b3deb16a6bffbe639604611e317fd57ebc69ee3d57ffe8593a0",
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "COMBAT",
+            "segment": "COMBAT",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "entryEvent": {
+            "kind": "SEQUENCE_ADVANCED",
+            "sequence": 2,
+            "from": {
+              "gameTurn": 1,
+              "playerTurnIndex": 0,
+              "phase": "COMBAT",
+              "segment": "BARRAGE",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            },
+            "to": {
+              "gameTurn": 1,
+              "playerTurnIndex": 0,
+              "phase": "COMBAT",
+              "segment": "COMBAT",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            }
+          },
+          "eventIndex": 2,
+          "containerPreHash": "sha256:3092455baafa610c7173a10f409c4d46d1e9af4738c2aecdca65601a6084ee42",
+          "containerPostHash": "sha256:873f69e0615f8db1293ff5b710c76ae49498658b0e983ae1099a1e2afd028384",
+          "containerPostRevision": 67,
+          "action": {
+            "actionId": "candidate:advance:66",
+            "actorId": "player:allied",
+            "expectedRevision": 66,
+            "kind": "ADVANCE_SEQUENCE"
+          },
+          "reconstruction": {
+            "transitions": 3,
+            "allEventsMatch": true,
+            "normalizedFinalStateMatches": true
+          },
+          "query": {
+            "budget": 200,
+            "candidates": 4,
+            "truncated": false,
+            "actionsSha256": "c6b82255d56d44cd494ef72469c21d179e7fc0ad2d084b1d405350aeef1db5d3"
+          },
+          "targetHolder": "player:allied",
+          "targetPoints": 4,
+          "pointScale": 1.5384615384615383,
+          "scores": {
+            "player:allied": 13,
+            "player:axis": 0
+          },
+          "axisMargin": -13,
+          "witnesses": [],
+          "attackAvailableValue": 0,
+          "offeredAttackStrength": 0,
+          "bestActionId": null,
+          "supplementaryQueriesPreserveRulesState": true
+        }
+      ],
+      "provenance": {
+        "rawPath": "artifacts/ai-progress-combat-opportunity/pair-1800000.raw.json.gz",
+        "rawSha256": "5bcce8a2dbb915b1078eba51c1f0a2127a8ce330f07922662eced2b74d076b5a",
+        "registrationSha256": "b70bedc7e26ad356b144b32d577c11a020760d3c11fcb799eb1550f84795ddbb",
+        "scriptSha256": "10bc1e59d3c1cac0e5c08235bf7bb085e93ca3bccdef19b5b862be0f31198c7d",
+        "engineTreeSha256": "4a87376b26c41f60086cb3060f606afcc1e9b99bb3ba00339c904837d200bb2a"
+      }
+    },
+    {
+      "firstMatch": 1800002,
+      "originalTarget": "5,18",
+      "features": {
+        "boundaryVp": 0,
+        "attackAvailableValue": 0,
+        "offeredAttackStrength": 0
+      },
+      "terminalLocalEffect": 8,
+      "witnessCounts": [
+        0,
+        0
+      ],
+      "arms": [
+        {
+          "sourcePath": "artifacts/ai-progress-objective-30games/matches/match-1800003.save.json",
+          "sourceSha256": "4955c2ee602c967630da6a1dc9ad6c86396dcbc883908b4702e815b45d1103f8",
+          "armIndex": 0,
+          "resumeAt": 68,
+          "resumeHash": "sha256:1d6a101946e5257e3497b51a740cdee4af1cd0c1596e9223217a318eb95f09c7",
+          "replayedActions": 6,
+          "at": 73,
+          "internalBoundary": true,
+          "revision": 73,
+          "stateHash": "sha256:a9e1f11b537e6440cdc58027028b324da3140f00f65ae93c9f294f86666bbc60",
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "COMBAT",
+            "segment": "COMBAT",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "entryEvent": {
+            "kind": "SEQUENCE_ADVANCED",
+            "sequence": 0,
+            "from": {
+              "gameTurn": 1,
+              "playerTurnIndex": 0,
+              "phase": "COMBAT",
+              "segment": "BARRAGE",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            },
+            "to": {
+              "gameTurn": 1,
+              "playerTurnIndex": 0,
+              "phase": "COMBAT",
+              "segment": "COMBAT",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            }
+          },
+          "eventIndex": 0,
+          "containerPreHash": "sha256:4ab3bc9a1858e38ba0b3542e29cd11d4ceb10980de444de092c9df974129416c",
+          "containerPostHash": "sha256:7f4b07064ae55ab500d1f138dbf61aa8f4ec785c8a8298f86ebeb92e691bdb71",
+          "containerPostRevision": 74,
+          "action": {
+            "actionId": "candidate:advance:73",
+            "actorId": "player:axis",
+            "expectedRevision": 73,
+            "kind": "ADVANCE_SEQUENCE"
+          },
+          "reconstruction": {
+            "transitions": 1,
+            "allEventsMatch": true,
+            "normalizedFinalStateMatches": true
+          },
+          "query": {
+            "budget": 200,
+            "candidates": 6,
+            "truncated": false,
+            "actionsSha256": "a504f54e60124154b341566c7d93ff3ccbcebb93db010c885f8963ce44aa0541"
+          },
+          "targetHolder": "player:allied",
+          "targetPoints": 4,
+          "pointScale": 1.5384615384615383,
+          "scores": {
+            "player:allied": 13,
+            "player:axis": 0
+          },
+          "axisMargin": -13,
+          "witnesses": [],
+          "attackAvailableValue": 0,
+          "offeredAttackStrength": 0,
+          "bestActionId": null,
+          "supplementaryQueriesPreserveRulesState": true
+        },
+        {
+          "sourcePath": "artifacts/ai-progress-objective-original-continuation/pair-1800002/branch-15.save.json",
+          "sourceSha256": "02983b8591943b23776686887f8e154a4b90e2afd157469cb80194473261dbbb",
+          "armIndex": 1,
+          "resumeAt": 68,
+          "resumeHash": "sha256:3aed7c6ed5efde7d2022b1a76ea306309b9a5df37f629913c3f9107aaeddc9a1",
+          "replayedActions": 6,
+          "at": 73,
+          "internalBoundary": true,
+          "revision": 73,
+          "stateHash": "sha256:0fd08986377e562c7d4e311c9d336083f7ca4a1b966a3d5aed8d5cfa88f114ec",
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "COMBAT",
+            "segment": "COMBAT",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "entryEvent": {
+            "kind": "SEQUENCE_ADVANCED",
+            "sequence": 0,
+            "from": {
+              "gameTurn": 1,
+              "playerTurnIndex": 0,
+              "phase": "COMBAT",
+              "segment": "BARRAGE",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            },
+            "to": {
+              "gameTurn": 1,
+              "playerTurnIndex": 0,
+              "phase": "COMBAT",
+              "segment": "COMBAT",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            }
+          },
+          "eventIndex": 0,
+          "containerPreHash": "sha256:00688c07ef53a52b8a2304e7cb6fdb721f2e759554049f7475317ace2e514c5e",
+          "containerPostHash": "sha256:a24933e2f03c7286b43eb0dcfcf20479c90f9d294025f72dcd819f3b4b7fc4e6",
+          "containerPostRevision": 74,
+          "action": {
+            "actionId": "candidate:advance:73",
+            "actorId": "player:axis",
+            "expectedRevision": 73,
+            "kind": "ADVANCE_SEQUENCE"
+          },
+          "reconstruction": {
+            "transitions": 1,
+            "allEventsMatch": true,
+            "normalizedFinalStateMatches": true
+          },
+          "query": {
+            "budget": 200,
+            "candidates": 4,
+            "truncated": false,
+            "actionsSha256": "7ba6d7858f26738aa0185033f01f4e8e3d3328b7ce656694d08c42f8420e4b62"
+          },
+          "targetHolder": "player:allied",
+          "targetPoints": 4,
+          "pointScale": 1.5384615384615383,
+          "scores": {
+            "player:allied": 13,
+            "player:axis": 0
+          },
+          "axisMargin": -13,
+          "witnesses": [],
+          "attackAvailableValue": 0,
+          "offeredAttackStrength": 0,
+          "bestActionId": null,
+          "supplementaryQueriesPreserveRulesState": true
+        }
+      ],
+      "provenance": {
+        "rawPath": "artifacts/ai-progress-combat-opportunity/pair-1800002.raw.json.gz",
+        "rawSha256": "ce7e5663dfe34180bc7d18f2bbbea13ab95c60799a9115cd6efd43f1945bde55",
+        "registrationSha256": "b70bedc7e26ad356b144b32d577c11a020760d3c11fcb799eb1550f84795ddbb",
+        "scriptSha256": "10bc1e59d3c1cac0e5c08235bf7bb085e93ca3bccdef19b5b862be0f31198c7d",
+        "engineTreeSha256": "4a87376b26c41f60086cb3060f606afcc1e9b99bb3ba00339c904837d200bb2a"
+      }
+    },
+    {
+      "firstMatch": 1800004,
+      "originalTarget": "11,13",
+      "features": {
+        "boundaryVp": 0,
+        "attackAvailableValue": 0,
+        "offeredAttackStrength": 0
+      },
+      "terminalLocalEffect": -12,
+      "witnessCounts": [
+        0,
+        0
+      ],
+      "arms": [
+        {
+          "sourcePath": "artifacts/ai-progress-objective-30games/matches/match-1800005.save.json",
+          "sourceSha256": "280e1bb45485a16cdbd53d4c73d446bd6d8f28c01807cb74c78a4b5ea610a64b",
+          "armIndex": 0,
+          "resumeAt": 63,
+          "resumeHash": "sha256:00c77c7b949437edcee3cd733e777954131703909ccf2efdd24e6e4524228c04",
+          "replayedActions": 3,
+          "at": 65,
+          "internalBoundary": true,
+          "revision": 65,
+          "stateHash": "sha256:6d9f00ebae150ac88b26261731030f500ef3a4d131a66009c26dc3d96e43f562",
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "COMBAT",
+            "segment": "COMBAT",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "entryEvent": {
+            "kind": "SEQUENCE_ADVANCED",
+            "sequence": 4,
+            "from": {
+              "gameTurn": 1,
+              "playerTurnIndex": 0,
+              "phase": "COMBAT",
+              "segment": "BARRAGE",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            },
+            "to": {
+              "gameTurn": 1,
+              "playerTurnIndex": 0,
+              "phase": "COMBAT",
+              "segment": "COMBAT",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            }
+          },
+          "eventIndex": 4,
+          "containerPreHash": "sha256:d04ed607989906d511c56f3d5075a50c8c6ada1901234c42501d721c65bd80c6",
+          "containerPostHash": "sha256:5942461632de8c269589a491675f4c73830ec46ba481f4e06b60155488650edd",
+          "containerPostRevision": 66,
+          "action": {
+            "actionId": "candidate:advance:65",
+            "actorId": "player:axis",
+            "expectedRevision": 65,
+            "kind": "ADVANCE_SEQUENCE"
+          },
+          "reconstruction": {
+            "transitions": 5,
+            "allEventsMatch": true,
+            "normalizedFinalStateMatches": true
+          },
+          "query": {
+            "budget": 200,
+            "candidates": 2,
+            "truncated": false,
+            "actionsSha256": "5ee43fc46a127e1d3eb7c10aaa000fe91a125eb5afd4f2eb33e470377387fc4d"
+          },
+          "targetHolder": "player:allied",
+          "targetPoints": 2,
+          "pointScale": 0.6666666666666666,
+          "scores": {
+            "player:allied": 15,
+            "player:axis": 0
+          },
+          "axisMargin": -15,
+          "witnesses": [],
+          "attackAvailableValue": 0,
+          "offeredAttackStrength": 0,
+          "bestActionId": null,
+          "supplementaryQueriesPreserveRulesState": true
+        },
+        {
+          "sourcePath": "artifacts/ai-progress-objective-original-continuation/pair-1800004/branch-15.save.json",
+          "sourceSha256": "4f2c8e392b2a7e43bd9636b3ca75daa76cf9c4bf83cbdcd0801689c2593cb592",
+          "armIndex": 1,
+          "resumeAt": 63,
+          "resumeHash": "sha256:c90c01a436fca1c82d1b20ceed70142c69c544df78b9ddf1963bff8e31dce91a",
+          "replayedActions": 3,
+          "at": 65,
+          "internalBoundary": true,
+          "revision": 65,
+          "stateHash": "sha256:295099cf20aa894c91ebf065ea333f0f61537ab55fe358f63e8375b2b837e38f",
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "COMBAT",
+            "segment": "COMBAT",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "entryEvent": {
+            "kind": "SEQUENCE_ADVANCED",
+            "sequence": 4,
+            "from": {
+              "gameTurn": 1,
+              "playerTurnIndex": 0,
+              "phase": "COMBAT",
+              "segment": "BARRAGE",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            },
+            "to": {
+              "gameTurn": 1,
+              "playerTurnIndex": 0,
+              "phase": "COMBAT",
+              "segment": "COMBAT",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            }
+          },
+          "eventIndex": 4,
+          "containerPreHash": "sha256:7046495a6663e6e6d964eb177c7c2788171809d95770a770f2768097a178c731",
+          "containerPostHash": "sha256:377e7f1259effae7e1c539a8ba31580c1f51da536950a634f6e6f907f17a1520",
+          "containerPostRevision": 66,
+          "action": {
+            "actionId": "candidate:advance:65",
+            "actorId": "player:axis",
+            "expectedRevision": 65,
+            "kind": "ADVANCE_SEQUENCE"
+          },
+          "reconstruction": {
+            "transitions": 5,
+            "allEventsMatch": true,
+            "normalizedFinalStateMatches": true
+          },
+          "query": {
+            "budget": 200,
+            "candidates": 2,
+            "truncated": false,
+            "actionsSha256": "55c3336860752288f398fd7133cd6e1aac7f7c10c354790e9f607ed20a7ed677"
+          },
+          "targetHolder": "player:allied",
+          "targetPoints": 2,
+          "pointScale": 0.6666666666666666,
+          "scores": {
+            "player:allied": 15,
+            "player:axis": 0
+          },
+          "axisMargin": -15,
+          "witnesses": [],
+          "attackAvailableValue": 0,
+          "offeredAttackStrength": 0,
+          "bestActionId": null,
+          "supplementaryQueriesPreserveRulesState": true
+        }
+      ],
+      "provenance": {
+        "rawPath": "artifacts/ai-progress-combat-opportunity/pair-1800004.raw.json.gz",
+        "rawSha256": "7ed7a0d6c257c5a735ee55fc346edce1e1a543b3c7b63954441bc8d48e21c446",
+        "registrationSha256": "b70bedc7e26ad356b144b32d577c11a020760d3c11fcb799eb1550f84795ddbb",
+        "scriptSha256": "10bc1e59d3c1cac0e5c08235bf7bb085e93ca3bccdef19b5b862be0f31198c7d",
+        "engineTreeSha256": "4a87376b26c41f60086cb3060f606afcc1e9b99bb3ba00339c904837d200bb2a"
+      }
+    },
+    {
+      "firstMatch": 1800006,
+      "originalTarget": "-2,16",
+      "features": {
+        "boundaryVp": 0,
+        "attackAvailableValue": 0,
+        "offeredAttackStrength": 0
+      },
+      "terminalLocalEffect": 8,
+      "witnessCounts": [
+        0,
+        0
+      ],
+      "arms": [
+        {
+          "sourcePath": "artifacts/ai-progress-objective-30games/matches/match-1800007.save.json",
+          "sourceSha256": "78f0acb920bc47cc108f4e4c06d20967b979224079fb524ac8e7c3a07a4aa325",
+          "armIndex": 0,
+          "resumeAt": 64,
+          "resumeHash": "sha256:40da5efa86ba8f0c3b988cab4d9e31aed16cce817fb72913ce382b475312700a",
+          "replayedActions": 7,
+          "at": 70,
+          "internalBoundary": true,
+          "revision": 70,
+          "stateHash": "sha256:7e7abb0f611028d38ebfb13e0b5fcbdc6ffcefba433ebe39d623d0d931fb3c73",
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "COMBAT",
+            "segment": "COMBAT",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "entryEvent": {
+            "kind": "SEQUENCE_ADVANCED",
+            "sequence": 0,
+            "from": {
+              "gameTurn": 1,
+              "playerTurnIndex": 0,
+              "phase": "COMBAT",
+              "segment": "BARRAGE",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            },
+            "to": {
+              "gameTurn": 1,
+              "playerTurnIndex": 0,
+              "phase": "COMBAT",
+              "segment": "COMBAT",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            }
+          },
+          "eventIndex": 0,
+          "containerPreHash": "sha256:976eaeb225bc5d63089322fe2118ddf56e49979e7acfebc7ac2768dfd59dbfab",
+          "containerPostHash": "sha256:4871d00c90929a29a57427c33af8773e97930780c3fc3da43a494ae7ca8e5d50",
+          "containerPostRevision": 71,
+          "action": {
+            "actionId": "candidate:advance:70",
+            "actorId": "player:axis",
+            "expectedRevision": 70,
+            "kind": "ADVANCE_SEQUENCE"
+          },
+          "reconstruction": {
+            "transitions": 1,
+            "allEventsMatch": true,
+            "normalizedFinalStateMatches": true
+          },
+          "query": {
+            "budget": 200,
+            "candidates": 4,
+            "truncated": false,
+            "actionsSha256": "e6e024ee37a08eed85e40097c409992b83f76c9bdf6349dcc227059f114a2eaf"
+          },
+          "targetHolder": "player:allied",
+          "targetPoints": 4,
+          "pointScale": 1.1428571428571428,
+          "scores": {
+            "player:allied": 21,
+            "player:axis": 0
+          },
+          "axisMargin": -21,
+          "witnesses": [],
+          "attackAvailableValue": 0,
+          "offeredAttackStrength": 0,
+          "bestActionId": null,
+          "supplementaryQueriesPreserveRulesState": true
+        },
+        {
+          "sourcePath": "artifacts/ai-progress-objective-original-continuation/pair-1800006/branch-15.save.json",
+          "sourceSha256": "c6c33e40402e0b430b68e362c8e05e8b047f251687bfffc12e7c471a00b65221",
+          "armIndex": 1,
+          "resumeAt": 64,
+          "resumeHash": "sha256:5f03d157901be4761e5db0378f628609b7520de7cda0ad7f3bf91b560591318c",
+          "replayedActions": 7,
+          "at": 70,
+          "internalBoundary": true,
+          "revision": 70,
+          "stateHash": "sha256:22da05d1504a7639024d252cd0b9c41ee9dbbb900f51ca4cac2c0e49d5d369d3",
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "COMBAT",
+            "segment": "COMBAT",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "entryEvent": {
+            "kind": "SEQUENCE_ADVANCED",
+            "sequence": 0,
+            "from": {
+              "gameTurn": 1,
+              "playerTurnIndex": 0,
+              "phase": "COMBAT",
+              "segment": "BARRAGE",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            },
+            "to": {
+              "gameTurn": 1,
+              "playerTurnIndex": 0,
+              "phase": "COMBAT",
+              "segment": "COMBAT",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            }
+          },
+          "eventIndex": 0,
+          "containerPreHash": "sha256:5340e657a9f2de3bac68fd102dd85db4ff1f97d149eecaad14ed11ae3be06397",
+          "containerPostHash": "sha256:076f54f7f0f8193c9e27d9e3eea8727f20fb66a8d378ef122860f3b433171c1e",
+          "containerPostRevision": 71,
+          "action": {
+            "actionId": "candidate:advance:70",
+            "actorId": "player:axis",
+            "expectedRevision": 70,
+            "kind": "ADVANCE_SEQUENCE"
+          },
+          "reconstruction": {
+            "transitions": 1,
+            "allEventsMatch": true,
+            "normalizedFinalStateMatches": true
+          },
+          "query": {
+            "budget": 200,
+            "candidates": 4,
+            "truncated": false,
+            "actionsSha256": "dc10b149bc9734c4cc72b585ac108a7dce7b6e74af407dd6f493e17aa1490168"
+          },
+          "targetHolder": "player:allied",
+          "targetPoints": 4,
+          "pointScale": 1.1428571428571428,
+          "scores": {
+            "player:allied": 21,
+            "player:axis": 0
+          },
+          "axisMargin": -21,
+          "witnesses": [],
+          "attackAvailableValue": 0,
+          "offeredAttackStrength": 0,
+          "bestActionId": null,
+          "supplementaryQueriesPreserveRulesState": true
+        }
+      ],
+      "provenance": {
+        "rawPath": "artifacts/ai-progress-combat-opportunity/pair-1800006.raw.json.gz",
+        "rawSha256": "c99e2503e577640039a3646d7d9cd263666abe089a925cbc54ae3c18239dbdfc",
+        "registrationSha256": "b70bedc7e26ad356b144b32d577c11a020760d3c11fcb799eb1550f84795ddbb",
+        "scriptSha256": "10bc1e59d3c1cac0e5c08235bf7bb085e93ca3bccdef19b5b862be0f31198c7d",
+        "engineTreeSha256": "4a87376b26c41f60086cb3060f606afcc1e9b99bb3ba00339c904837d200bb2a"
+      }
+    },
+    {
+      "firstMatch": 1800008,
+      "originalTarget": "12,10",
+      "features": {
+        "boundaryVp": 0,
+        "attackAvailableValue": 0,
+        "offeredAttackStrength": 0
+      },
+      "terminalLocalEffect": -8,
+      "witnessCounts": [
+        0,
+        0
+      ],
+      "arms": [
+        {
+          "sourcePath": "artifacts/ai-progress-objective-30games/matches/match-1800009.save.json",
+          "sourceSha256": "5276521eb7308ccdbb76917cbdcd4b51b90779e1d889504d0300d1e608821854",
+          "armIndex": 0,
+          "resumeAt": 64,
+          "resumeHash": "sha256:3e57186d26345ecbce4d2f800166c06fb9d4543a005d3d8ea8e470f81bc68dc4",
+          "replayedActions": 5,
+          "at": 68,
+          "internalBoundary": true,
+          "revision": 68,
+          "stateHash": "sha256:908cfd82a7ac53df02a1389fd1f11fc3d7bee050290e6190802a65c5f77aeae4",
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "COMBAT",
+            "segment": "COMBAT",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "entryEvent": {
+            "kind": "SEQUENCE_ADVANCED",
+            "sequence": 0,
+            "from": {
+              "gameTurn": 1,
+              "playerTurnIndex": 0,
+              "phase": "COMBAT",
+              "segment": "BARRAGE",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            },
+            "to": {
+              "gameTurn": 1,
+              "playerTurnIndex": 0,
+              "phase": "COMBAT",
+              "segment": "COMBAT",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            }
+          },
+          "eventIndex": 0,
+          "containerPreHash": "sha256:6489adaadf3f6c319dd422c420e0a2f65e107803f289e6683f817f870b674b0c",
+          "containerPostHash": "sha256:088bafed8989912e7cc4d826558cd2a75b8808700f371b10f2facee11e442715",
+          "containerPostRevision": 69,
+          "action": {
+            "actionId": "candidate:advance:68",
+            "actorId": "player:axis",
+            "expectedRevision": 68,
+            "kind": "ADVANCE_SEQUENCE"
+          },
+          "reconstruction": {
+            "transitions": 1,
+            "allEventsMatch": true,
+            "normalizedFinalStateMatches": true
+          },
+          "query": {
+            "budget": 200,
+            "candidates": 5,
+            "truncated": false,
+            "actionsSha256": "eb68c1f2f6629ee5ad87f7bd16bf8760f30d4e6360da7ee6a503e9097a422fe7"
+          },
+          "targetHolder": "player:allied",
+          "targetPoints": 2,
+          "pointScale": 0.6153846153846154,
+          "scores": {
+            "player:allied": 13,
+            "player:axis": 0
+          },
+          "axisMargin": -13,
+          "witnesses": [],
+          "attackAvailableValue": 0,
+          "offeredAttackStrength": 0,
+          "bestActionId": null,
+          "supplementaryQueriesPreserveRulesState": true
+        },
+        {
+          "sourcePath": "artifacts/ai-progress-objective-original-continuation/pair-1800008/branch-15.save.json",
+          "sourceSha256": "3b2435dc368b9fd80e91182af82475919e4d9da0055dcb1c555f6749a54beea6",
+          "armIndex": 1,
+          "resumeAt": 64,
+          "resumeHash": "sha256:76090a9e6fa61de533c82ea89abc4ffe402237eaeb06e1d66d9f4e464ab920e6",
+          "replayedActions": 5,
+          "at": 68,
+          "internalBoundary": true,
+          "revision": 68,
+          "stateHash": "sha256:637ad918c4a51c9061336724ffc2d4ecdcce1cf4862c61f24c6f2a55d4ca8960",
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "COMBAT",
+            "segment": "COMBAT",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "entryEvent": {
+            "kind": "SEQUENCE_ADVANCED",
+            "sequence": 0,
+            "from": {
+              "gameTurn": 1,
+              "playerTurnIndex": 0,
+              "phase": "COMBAT",
+              "segment": "BARRAGE",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            },
+            "to": {
+              "gameTurn": 1,
+              "playerTurnIndex": 0,
+              "phase": "COMBAT",
+              "segment": "COMBAT",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            }
+          },
+          "eventIndex": 0,
+          "containerPreHash": "sha256:1faaa6ac5bb52920e0e645ee30ddbe7f5f7e395749d326729b61ff760a8deb9c",
+          "containerPostHash": "sha256:0a4c1ad25cce2aa202bb41289eace1237b3ee025a664981fc8dd4ebc8897017f",
+          "containerPostRevision": 69,
+          "action": {
+            "actionId": "candidate:advance:68",
+            "actorId": "player:axis",
+            "expectedRevision": 68,
+            "kind": "ADVANCE_SEQUENCE"
+          },
+          "reconstruction": {
+            "transitions": 1,
+            "allEventsMatch": true,
+            "normalizedFinalStateMatches": true
+          },
+          "query": {
+            "budget": 200,
+            "candidates": 5,
+            "truncated": false,
+            "actionsSha256": "eb68c1f2f6629ee5ad87f7bd16bf8760f30d4e6360da7ee6a503e9097a422fe7"
+          },
+          "targetHolder": "player:allied",
+          "targetPoints": 2,
+          "pointScale": 0.6153846153846154,
+          "scores": {
+            "player:allied": 13,
+            "player:axis": 0
+          },
+          "axisMargin": -13,
+          "witnesses": [],
+          "attackAvailableValue": 0,
+          "offeredAttackStrength": 0,
+          "bestActionId": null,
+          "supplementaryQueriesPreserveRulesState": true
+        }
+      ],
+      "provenance": {
+        "rawPath": "artifacts/ai-progress-combat-opportunity/pair-1800008.raw.json.gz",
+        "rawSha256": "3fe71cd335f701c75999c6774e15a1804ab0c38dbff244d15c29d157bc420753",
+        "registrationSha256": "b70bedc7e26ad356b144b32d577c11a020760d3c11fcb799eb1550f84795ddbb",
+        "scriptSha256": "10bc1e59d3c1cac0e5c08235bf7bb085e93ca3bccdef19b5b862be0f31198c7d",
+        "engineTreeSha256": "4a87376b26c41f60086cb3060f606afcc1e9b99bb3ba00339c904837d200bb2a"
+      }
+    },
+    {
+      "firstMatch": 1800010,
+      "originalTarget": "19,1",
+      "features": {
+        "boundaryVp": 0,
+        "attackAvailableValue": 0,
+        "offeredAttackStrength": 1.1428571428571428
+      },
+      "terminalLocalEffect": 8,
+      "witnessCounts": [
+        1,
+        1
+      ],
+      "arms": [
+        {
+          "sourcePath": "artifacts/ai-progress-objective-30games/matches/match-1800011.save.json",
+          "sourceSha256": "c3e6d89cea7b84fe6a3f5e6d633908caafd035e1e768887d1cfb315c1b7cf592",
+          "armIndex": 0,
+          "resumeAt": 68,
+          "resumeHash": "sha256:5e005c0d4b4f295d3750233ebdc072a8d04e840e79dfd0544c750cd2195fe81d",
+          "replayedActions": 3,
+          "at": 70,
+          "internalBoundary": true,
+          "revision": 70,
+          "stateHash": "sha256:8ec42367e0a045e656efb0d5309a72a90454c487848cf3df470738bdf3f3645e",
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "COMBAT",
+            "segment": "COMBAT",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "entryEvent": {
+            "kind": "SEQUENCE_ADVANCED",
+            "sequence": 4,
+            "from": {
+              "gameTurn": 1,
+              "playerTurnIndex": 0,
+              "phase": "COMBAT",
+              "segment": "BARRAGE",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            },
+            "to": {
+              "gameTurn": 1,
+              "playerTurnIndex": 0,
+              "phase": "COMBAT",
+              "segment": "COMBAT",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            }
+          },
+          "eventIndex": 4,
+          "containerPreHash": "sha256:7d69337f1ebecfe245edcea4497017b29288ae164569ce1856d222a1ba17f1ec",
+          "containerPostHash": "sha256:de4d61ce17a01d474a4e23e2a48cf4f789791472a51d3ecc49aaa17ae4b8098c",
+          "containerPostRevision": 71,
+          "action": {
+            "actionId": "candidate:advance:70",
+            "actorId": "player:axis",
+            "expectedRevision": 70,
+            "kind": "ADVANCE_SEQUENCE"
+          },
+          "reconstruction": {
+            "transitions": 5,
+            "allEventsMatch": true,
+            "normalizedFinalStateMatches": true
+          },
+          "query": {
+            "budget": 200,
+            "candidates": 3,
+            "truncated": false,
+            "actionsSha256": "667c50bb79d7d93f7fbf201555ee671190da9272a4cac2b670074e93af72fa91"
+          },
+          "targetHolder": "player:allied",
+          "targetPoints": 4,
+          "pointScale": 1.1428571428571428,
+          "scores": {
+            "player:allied": 14,
+            "player:axis": 0
+          },
+          "axisMargin": -14,
+          "witnesses": [
+            {
+              "action": {
+                "actionId": "candidate:combat:REGULAR:19,1:generated-oob:344142604:axis:f3-recon:unit+generated-oob:344142604:axis:independent-anti-tank-6:unit:70",
+                "actorId": "player:axis",
+                "expectedRevision": 70,
+                "kind": "DECLARE_COMBAT",
+                "combatKind": "REGULAR",
+                "attackerIds": [
+                  "generated-oob:344142604:axis:f3-recon:unit",
+                  "generated-oob:344142604:axis:independent-anti-tank-6:unit"
+                ],
+                "defenderIds": [
+                  "generated-oob:344142604:allied:garrison:objective-2"
+                ],
+                "targetHexId": "19,1",
+                "leadAttackerId": "generated-oob:344142604:axis:f3-recon:unit",
+                "attackerSupply": [
+                  {
+                    "pieceId": "generated-oob:344142604:axis:f3-recon:unit",
+                    "method": "DUMPS",
+                    "dumpIds": [
+                      "generated-oob:344142604:axis:independent-supply-1:unit"
+                    ]
+                  },
+                  {
+                    "pieceId": "generated-oob:344142604:axis:independent-anti-tank-6:unit",
+                    "method": "DUMPS",
+                    "dumpIds": [
+                      "generated-oob:344142604:axis:independent-supply-1:unit"
+                    ]
+                  }
+                ]
+              },
+              "attackerStrength": 2,
+              "externalPayments": [
+                {
+                  "resourcePieceId": "generated-oob:344142604:axis:independent-supply-1:unit",
+                  "quantity": 2,
+                  "unitDefinitionId": "quantity:supply-token"
+                }
+              ],
+              "internalIds": [],
+              "odds": "4:1",
+              "line": "EXTREMELY_CLOSE",
+              "defenderCanPay": true
+            }
+          ],
+          "attackAvailableValue": 8,
+          "offeredAttackStrength": 2.2857142857142856,
+          "bestActionId": "candidate:combat:REGULAR:19,1:generated-oob:344142604:axis:f3-recon:unit+generated-oob:344142604:axis:independent-anti-tank-6:unit:70",
+          "supplementaryQueriesPreserveRulesState": true
+        },
+        {
+          "sourcePath": "artifacts/ai-progress-objective-original-continuation/pair-1800010/branch-15.save.json",
+          "sourceSha256": "423cce0b17ca24bf678792d172044c2e9718355f59296401266a73b9e5b20f5e",
+          "armIndex": 1,
+          "resumeAt": 68,
+          "resumeHash": "sha256:e0185b29946d37924bccbcd7247d2eed9a75e51de7394eb30782a7688b8e949e",
+          "replayedActions": 3,
+          "at": 70,
+          "internalBoundary": true,
+          "revision": 70,
+          "stateHash": "sha256:31ac6e28c2cb7a24f7d311fc9f322517ce34a972f745c12805f1b6b9002f194e",
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "COMBAT",
+            "segment": "COMBAT",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "entryEvent": {
+            "kind": "SEQUENCE_ADVANCED",
+            "sequence": 4,
+            "from": {
+              "gameTurn": 1,
+              "playerTurnIndex": 0,
+              "phase": "COMBAT",
+              "segment": "BARRAGE",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            },
+            "to": {
+              "gameTurn": 1,
+              "playerTurnIndex": 0,
+              "phase": "COMBAT",
+              "segment": "COMBAT",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            }
+          },
+          "eventIndex": 4,
+          "containerPreHash": "sha256:3cf1e01c0dd1068452791cbd6c13d6bbfbc939381790fcf2dd2db3ed7268895e",
+          "containerPostHash": "sha256:fdf3b96324adc6813eebac7c8e5f625ec8850f2936907a7428025ec8a8f87097",
+          "containerPostRevision": 71,
+          "action": {
+            "actionId": "candidate:advance:70",
+            "actorId": "player:axis",
+            "expectedRevision": 70,
+            "kind": "ADVANCE_SEQUENCE"
+          },
+          "reconstruction": {
+            "transitions": 5,
+            "allEventsMatch": true,
+            "normalizedFinalStateMatches": true
+          },
+          "query": {
+            "budget": 200,
+            "candidates": 2,
+            "truncated": false,
+            "actionsSha256": "93d8894b62b29574ae8db4eaea40c2c4700e112c13bcb383c66f3929f1768fa6"
+          },
+          "targetHolder": "player:allied",
+          "targetPoints": 4,
+          "pointScale": 1.1428571428571428,
+          "scores": {
+            "player:allied": 14,
+            "player:axis": 0
+          },
+          "axisMargin": -14,
+          "witnesses": [
+            {
+              "action": {
+                "actionId": "candidate:combat:REGULAR:19,1:generated-oob:344142604:axis:independent-anti-tank-6:unit:70",
+                "actorId": "player:axis",
+                "expectedRevision": 70,
+                "kind": "DECLARE_COMBAT",
+                "combatKind": "REGULAR",
+                "attackerIds": [
+                  "generated-oob:344142604:axis:independent-anti-tank-6:unit"
+                ],
+                "defenderIds": [
+                  "generated-oob:344142604:allied:garrison:objective-2"
+                ],
+                "targetHexId": "19,1",
+                "leadAttackerId": "generated-oob:344142604:axis:independent-anti-tank-6:unit",
+                "attackerSupply": [
+                  {
+                    "pieceId": "generated-oob:344142604:axis:independent-anti-tank-6:unit",
+                    "method": "DUMPS",
+                    "dumpIds": [
+                      "generated-oob:344142604:axis:independent-supply-1:unit"
+                    ]
+                  }
+                ]
+              },
+              "attackerStrength": 1,
+              "externalPayments": [
+                {
+                  "resourcePieceId": "generated-oob:344142604:axis:independent-supply-1:unit",
+                  "quantity": 1,
+                  "unitDefinitionId": "quantity:supply-token"
+                }
+              ],
+              "internalIds": [],
+              "odds": "2:1",
+              "line": "EXTREMELY_CLOSE",
+              "defenderCanPay": true
+            }
+          ],
+          "attackAvailableValue": 8,
+          "offeredAttackStrength": 1.1428571428571428,
+          "bestActionId": "candidate:combat:REGULAR:19,1:generated-oob:344142604:axis:independent-anti-tank-6:unit:70",
+          "supplementaryQueriesPreserveRulesState": true
+        }
+      ],
+      "provenance": {
+        "rawPath": "artifacts/ai-progress-combat-opportunity/pair-1800010.raw.json.gz",
+        "rawSha256": "234cf6f0071122a3c0210c76f79e9efe563139ec6895bb7ae3b069d22d23bc12",
+        "registrationSha256": "b70bedc7e26ad356b144b32d577c11a020760d3c11fcb799eb1550f84795ddbb",
+        "scriptSha256": "10bc1e59d3c1cac0e5c08235bf7bb085e93ca3bccdef19b5b862be0f31198c7d",
+        "engineTreeSha256": "4a87376b26c41f60086cb3060f606afcc1e9b99bb3ba00339c904837d200bb2a"
+      }
+    },
+    {
+      "firstMatch": 1800012,
+      "originalTarget": "15,11",
+      "features": {
+        "boundaryVp": 0,
+        "attackAvailableValue": 0,
+        "offeredAttackStrength": 0
+      },
+      "terminalLocalEffect": 0,
+      "witnessCounts": [
+        1,
+        1
+      ],
+      "arms": [
+        {
+          "sourcePath": "artifacts/ai-progress-objective-30games/matches/match-1800013.save.json",
+          "sourceSha256": "ee0affe79acd481987efb59186e68fb7041d45825eabef8d14c5d61527336b3d",
+          "armIndex": 0,
+          "resumeAt": 65,
+          "resumeHash": "sha256:0e32810007572fcf863de0abe6ed7940c91bc9643440ddb0b13ddbb251a91e61",
+          "replayedActions": 4,
+          "at": 68,
+          "internalBoundary": true,
+          "revision": 68,
+          "stateHash": "sha256:c6bd5beb236b2a15612915ec30ec3d5236f7e63563d847eca8cd3581bc3e4998",
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "COMBAT",
+            "segment": "COMBAT",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "entryEvent": {
+            "kind": "SEQUENCE_ADVANCED",
+            "sequence": 2,
+            "from": {
+              "gameTurn": 1,
+              "playerTurnIndex": 0,
+              "phase": "COMBAT",
+              "segment": "BARRAGE",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            },
+            "to": {
+              "gameTurn": 1,
+              "playerTurnIndex": 0,
+              "phase": "COMBAT",
+              "segment": "COMBAT",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            }
+          },
+          "eventIndex": 2,
+          "containerPreHash": "sha256:f71157b428617d86c5b63008664833e85f6ef768106083d1c26670cf7284737b",
+          "containerPostHash": "sha256:cbacbc84d61e0add03272420e8c401c6699619c27c6307c5bc26912dd17e339f",
+          "containerPostRevision": 69,
+          "action": {
+            "actionId": "candidate:advance:68",
+            "actorId": "player:allied",
+            "expectedRevision": 68,
+            "kind": "ADVANCE_SEQUENCE"
+          },
+          "reconstruction": {
+            "transitions": 3,
+            "allEventsMatch": true,
+            "normalizedFinalStateMatches": true
+          },
+          "query": {
+            "budget": 200,
+            "candidates": 7,
+            "truncated": false,
+            "actionsSha256": "afeb8e8ab5b15a686454a5f4b7213c8a35373e746810578aff8cafdfdd7bd459"
+          },
+          "targetHolder": "player:allied",
+          "targetPoints": 2,
+          "pointScale": 0.7692307692307692,
+          "scores": {
+            "player:allied": 13,
+            "player:axis": 0
+          },
+          "axisMargin": -13,
+          "witnesses": [
+            {
+              "action": {
+                "actionId": "candidate:combat:REGULAR:15,11:generated-oob:344142798:axis:f11-combat-1:unit+generated-oob:344142798:axis:independent-anti-tank-6:unit+generated-oob:344142798:axis:independent-tank-3:unit:68",
+                "actorId": "player:axis",
+                "expectedRevision": 68,
+                "kind": "DECLARE_COMBAT",
+                "combatKind": "REGULAR",
+                "attackerIds": [
+                  "generated-oob:344142798:axis:f11-combat-1:unit",
+                  "generated-oob:344142798:axis:independent-anti-tank-6:unit",
+                  "generated-oob:344142798:axis:independent-tank-3:unit"
+                ],
+                "defenderIds": [
+                  "generated-oob:344142798:allied:garrison:objective-3"
+                ],
+                "targetHexId": "15,11",
+                "leadAttackerId": "generated-oob:344142798:axis:independent-anti-tank-6:unit",
+                "attackerSupply": [
+                  {
+                    "pieceId": "generated-oob:344142798:axis:f11-combat-1:unit",
+                    "method": "DUMPS",
+                    "dumpIds": [
+                      "generated-oob:344142798:axis:independent-supply-1:unit"
+                    ]
+                  },
+                  {
+                    "pieceId": "generated-oob:344142798:axis:independent-anti-tank-6:unit",
+                    "method": "DUMPS",
+                    "dumpIds": [
+                      "generated-oob:344142798:axis:independent-supply-1:unit"
+                    ]
+                  },
+                  {
+                    "pieceId": "generated-oob:344142798:axis:independent-tank-3:unit",
+                    "method": "DUMPS",
+                    "dumpIds": [
+                      "generated-oob:344142798:axis:independent-supply-1:unit"
+                    ]
+                  }
+                ]
+              },
+              "attackerStrength": 23.5,
+              "externalPayments": [
+                {
+                  "resourcePieceId": "generated-oob:344142798:axis:independent-supply-1:unit",
+                  "quantity": 6,
+                  "unitDefinitionId": "quantity:supply-token"
+                }
+              ],
+              "internalIds": [],
+              "odds": "24:1",
+              "line": "OPEN",
+              "defenderCanPay": true
+            }
+          ],
+          "attackAvailableValue": 4,
+          "offeredAttackStrength": 18.076923076923077,
+          "bestActionId": "candidate:combat:REGULAR:15,11:generated-oob:344142798:axis:f11-combat-1:unit+generated-oob:344142798:axis:independent-anti-tank-6:unit+generated-oob:344142798:axis:independent-tank-3:unit:68",
+          "supplementaryQueriesPreserveRulesState": true
+        },
+        {
+          "sourcePath": "artifacts/ai-progress-objective-original-continuation/pair-1800012/branch-15.save.json",
+          "sourceSha256": "8e378c1dbfb5f40d6c1c5a7f47341e12949a73d092b50fd9d930d7df101365b1",
+          "armIndex": 1,
+          "resumeAt": 65,
+          "resumeHash": "sha256:65ca94154e4ee39aad2a98d14613be0f9399d05a7745d11807abad5d550c092d",
+          "replayedActions": 4,
+          "at": 68,
+          "internalBoundary": true,
+          "revision": 68,
+          "stateHash": "sha256:c3f0714eed7b07d080aa547d1bdc5e322172621573c53068215a5e20a54715f7",
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "COMBAT",
+            "segment": "COMBAT",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "entryEvent": {
+            "kind": "SEQUENCE_ADVANCED",
+            "sequence": 2,
+            "from": {
+              "gameTurn": 1,
+              "playerTurnIndex": 0,
+              "phase": "COMBAT",
+              "segment": "BARRAGE",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            },
+            "to": {
+              "gameTurn": 1,
+              "playerTurnIndex": 0,
+              "phase": "COMBAT",
+              "segment": "COMBAT",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            }
+          },
+          "eventIndex": 2,
+          "containerPreHash": "sha256:23887895f81f5d77783275c52a173713222d180df827ac3dac3fa51769e847a8",
+          "containerPostHash": "sha256:05664b61966be6fdc427d18634161623a392c48a2ecc6a791db4ca78bbc1e8e4",
+          "containerPostRevision": 69,
+          "action": {
+            "actionId": "candidate:advance:68",
+            "actorId": "player:allied",
+            "expectedRevision": 68,
+            "kind": "ADVANCE_SEQUENCE"
+          },
+          "reconstruction": {
+            "transitions": 3,
+            "allEventsMatch": true,
+            "normalizedFinalStateMatches": true
+          },
+          "query": {
+            "budget": 200,
+            "candidates": 7,
+            "truncated": false,
+            "actionsSha256": "afeb8e8ab5b15a686454a5f4b7213c8a35373e746810578aff8cafdfdd7bd459"
+          },
+          "targetHolder": "player:allied",
+          "targetPoints": 2,
+          "pointScale": 0.7692307692307692,
+          "scores": {
+            "player:allied": 13,
+            "player:axis": 0
+          },
+          "axisMargin": -13,
+          "witnesses": [
+            {
+              "action": {
+                "actionId": "candidate:combat:REGULAR:15,11:generated-oob:344142798:axis:f11-combat-1:unit+generated-oob:344142798:axis:independent-anti-tank-6:unit+generated-oob:344142798:axis:independent-tank-3:unit:68",
+                "actorId": "player:axis",
+                "expectedRevision": 68,
+                "kind": "DECLARE_COMBAT",
+                "combatKind": "REGULAR",
+                "attackerIds": [
+                  "generated-oob:344142798:axis:f11-combat-1:unit",
+                  "generated-oob:344142798:axis:independent-anti-tank-6:unit",
+                  "generated-oob:344142798:axis:independent-tank-3:unit"
+                ],
+                "defenderIds": [
+                  "generated-oob:344142798:allied:garrison:objective-3"
+                ],
+                "targetHexId": "15,11",
+                "leadAttackerId": "generated-oob:344142798:axis:independent-anti-tank-6:unit",
+                "attackerSupply": [
+                  {
+                    "pieceId": "generated-oob:344142798:axis:f11-combat-1:unit",
+                    "method": "DUMPS",
+                    "dumpIds": [
+                      "generated-oob:344142798:axis:independent-supply-1:unit"
+                    ]
+                  },
+                  {
+                    "pieceId": "generated-oob:344142798:axis:independent-anti-tank-6:unit",
+                    "method": "DUMPS",
+                    "dumpIds": [
+                      "generated-oob:344142798:axis:independent-supply-1:unit"
+                    ]
+                  },
+                  {
+                    "pieceId": "generated-oob:344142798:axis:independent-tank-3:unit",
+                    "method": "DUMPS",
+                    "dumpIds": [
+                      "generated-oob:344142798:axis:independent-supply-1:unit"
+                    ]
+                  }
+                ]
+              },
+              "attackerStrength": 23.5,
+              "externalPayments": [
+                {
+                  "resourcePieceId": "generated-oob:344142798:axis:independent-supply-1:unit",
+                  "quantity": 6,
+                  "unitDefinitionId": "quantity:supply-token"
+                }
+              ],
+              "internalIds": [],
+              "odds": "24:1",
+              "line": "OPEN",
+              "defenderCanPay": true
+            }
+          ],
+          "attackAvailableValue": 4,
+          "offeredAttackStrength": 18.076923076923077,
+          "bestActionId": "candidate:combat:REGULAR:15,11:generated-oob:344142798:axis:f11-combat-1:unit+generated-oob:344142798:axis:independent-anti-tank-6:unit+generated-oob:344142798:axis:independent-tank-3:unit:68",
+          "supplementaryQueriesPreserveRulesState": true
+        }
+      ],
+      "provenance": {
+        "rawPath": "artifacts/ai-progress-combat-opportunity/pair-1800012.raw.json.gz",
+        "rawSha256": "27cecf8be2ec85cc7281537eed01ab177074fc550455a3c4040c29cafa923d19",
+        "registrationSha256": "b70bedc7e26ad356b144b32d577c11a020760d3c11fcb799eb1550f84795ddbb",
+        "scriptSha256": "10bc1e59d3c1cac0e5c08235bf7bb085e93ca3bccdef19b5b862be0f31198c7d",
+        "engineTreeSha256": "4a87376b26c41f60086cb3060f606afcc1e9b99bb3ba00339c904837d200bb2a"
+      }
+    },
+    {
+      "firstMatch": 1800014,
+      "originalTarget": "3,14",
+      "features": {
+        "boundaryVp": 0,
+        "attackAvailableValue": 0,
+        "offeredAttackStrength": 0
+      },
+      "terminalLocalEffect": 0,
+      "witnessCounts": [
+        0,
+        0
+      ],
+      "arms": [
+        {
+          "sourcePath": "artifacts/ai-progress-objective-30games/matches/match-1800015.save.json",
+          "sourceSha256": "82215e903f856db42f2e0a29bc15da27e4520c25b97741c85615ca406ebe4071",
+          "armIndex": 0,
+          "resumeAt": 65,
+          "resumeHash": "sha256:e33bd891066e15567afddecfd1299d8f5530a3188747d9af6b66e3d17540a950",
+          "replayedActions": 5,
+          "at": 69,
+          "internalBoundary": true,
+          "revision": 69,
+          "stateHash": "sha256:16e99ef3960c3a6a71d6cb93d383ddf7ca215ab78520da80a837113946264133",
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "COMBAT",
+            "segment": "COMBAT",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "entryEvent": {
+            "kind": "SEQUENCE_ADVANCED",
+            "sequence": 0,
+            "from": {
+              "gameTurn": 1,
+              "playerTurnIndex": 0,
+              "phase": "COMBAT",
+              "segment": "BARRAGE",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            },
+            "to": {
+              "gameTurn": 1,
+              "playerTurnIndex": 0,
+              "phase": "COMBAT",
+              "segment": "COMBAT",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            }
+          },
+          "eventIndex": 0,
+          "containerPreHash": "sha256:a3c55b58d1de3d457c17939353025dd6e0c5498a9b17e98597b8912d20ad419c",
+          "containerPostHash": "sha256:1f11bfc527ce84c057f47ffb85d0bf9ef988627c2a051aeafaa593182785683d",
+          "containerPostRevision": 70,
+          "action": {
+            "actionId": "candidate:advance:69",
+            "actorId": "player:axis",
+            "expectedRevision": 69,
+            "kind": "ADVANCE_SEQUENCE"
+          },
+          "reconstruction": {
+            "transitions": 1,
+            "allEventsMatch": true,
+            "normalizedFinalStateMatches": true
+          },
+          "query": {
+            "budget": 200,
+            "candidates": 5,
+            "truncated": false,
+            "actionsSha256": "a7f71898c26962c769c1aa019d6c6d9d7b24ba38e43e50f6c89c5df50da435de"
+          },
+          "targetHolder": "player:allied",
+          "targetPoints": 2,
+          "pointScale": 0.6666666666666666,
+          "scores": {
+            "player:allied": 12,
+            "player:axis": 0
+          },
+          "axisMargin": -12,
+          "witnesses": [],
+          "attackAvailableValue": 0,
+          "offeredAttackStrength": 0,
+          "bestActionId": null,
+          "supplementaryQueriesPreserveRulesState": true
+        },
+        {
+          "sourcePath": "artifacts/ai-progress-objective-original-continuation/pair-1800014/branch-15.save.json",
+          "sourceSha256": "ba486fcecdb946bca586d3f5fe64e4969280b51e97705271e5ee9346d44b6409",
+          "armIndex": 1,
+          "resumeAt": 65,
+          "resumeHash": "sha256:0b50e2f4286690cd4e30da1984708c5b8f664c65e1e31508043ddfed42c59659",
+          "replayedActions": 5,
+          "at": 69,
+          "internalBoundary": true,
+          "revision": 69,
+          "stateHash": "sha256:8081d3b0670d2d0e6fd79e8b172c4da50bb8bf6adbcb7f2855d6a13f0bc0588d",
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "COMBAT",
+            "segment": "COMBAT",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "entryEvent": {
+            "kind": "SEQUENCE_ADVANCED",
+            "sequence": 0,
+            "from": {
+              "gameTurn": 1,
+              "playerTurnIndex": 0,
+              "phase": "COMBAT",
+              "segment": "BARRAGE",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            },
+            "to": {
+              "gameTurn": 1,
+              "playerTurnIndex": 0,
+              "phase": "COMBAT",
+              "segment": "COMBAT",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            }
+          },
+          "eventIndex": 0,
+          "containerPreHash": "sha256:0fa125b0f87f3b0b72ab82a16480d19d268693d6a7cc7155dd5de1082644cc9f",
+          "containerPostHash": "sha256:64eeb7fec74652bfc66fd9c7645548da7f58f3565c2b5e19563a1f9741f54649",
+          "containerPostRevision": 70,
+          "action": {
+            "actionId": "candidate:advance:69",
+            "actorId": "player:axis",
+            "expectedRevision": 69,
+            "kind": "ADVANCE_SEQUENCE"
+          },
+          "reconstruction": {
+            "transitions": 1,
+            "allEventsMatch": true,
+            "normalizedFinalStateMatches": true
+          },
+          "query": {
+            "budget": 200,
+            "candidates": 5,
+            "truncated": false,
+            "actionsSha256": "1542f2fe20595304ed9291db04fab701a327bc06802d16508267e46f0e5f6c1b"
+          },
+          "targetHolder": "player:allied",
+          "targetPoints": 2,
+          "pointScale": 0.6666666666666666,
+          "scores": {
+            "player:allied": 12,
+            "player:axis": 0
+          },
+          "axisMargin": -12,
+          "witnesses": [],
+          "attackAvailableValue": 0,
+          "offeredAttackStrength": 0,
+          "bestActionId": null,
+          "supplementaryQueriesPreserveRulesState": true
+        }
+      ],
+      "provenance": {
+        "rawPath": "artifacts/ai-progress-combat-opportunity/pair-1800014.raw.json.gz",
+        "rawSha256": "f8e3bffb9bad674a7941c0c1915eae65491cef9aabc49e79ec93b822b72b3e59",
+        "registrationSha256": "b70bedc7e26ad356b144b32d577c11a020760d3c11fcb799eb1550f84795ddbb",
+        "scriptSha256": "10bc1e59d3c1cac0e5c08235bf7bb085e93ca3bccdef19b5b862be0f31198c7d",
+        "engineTreeSha256": "4a87376b26c41f60086cb3060f606afcc1e9b99bb3ba00339c904837d200bb2a"
+      }
+    },
+    {
+      "firstMatch": 1800016,
+      "originalTarget": "10,9",
+      "features": {
+        "boundaryVp": 0,
+        "attackAvailableValue": 0,
+        "offeredAttackStrength": 0
+      },
+      "terminalLocalEffect": -4,
+      "witnessCounts": [
+        0,
+        0
+      ],
+      "arms": [
+        {
+          "sourcePath": "artifacts/ai-progress-objective-30games/matches/match-1800017.save.json",
+          "sourceSha256": "a604ce6ad93f82796e932c24d0fbf5d31282ff26a54b51d7bbe3b987b8691291",
+          "armIndex": 0,
+          "resumeAt": 66,
+          "resumeHash": "sha256:1605a089dd57b3be945b386e422685a6a6b4850ebc76e40d35bf721a0b3f9359",
+          "replayedActions": 4,
+          "at": 69,
+          "internalBoundary": true,
+          "revision": 69,
+          "stateHash": "sha256:0b442f0579a4c856f46e428ac35947f9b696c5ade4ee787053f76a0595617ae0",
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "COMBAT",
+            "segment": "COMBAT",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "entryEvent": {
+            "kind": "SEQUENCE_ADVANCED",
+            "sequence": 2,
+            "from": {
+              "gameTurn": 1,
+              "playerTurnIndex": 0,
+              "phase": "COMBAT",
+              "segment": "BARRAGE",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            },
+            "to": {
+              "gameTurn": 1,
+              "playerTurnIndex": 0,
+              "phase": "COMBAT",
+              "segment": "COMBAT",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            }
+          },
+          "eventIndex": 2,
+          "containerPreHash": "sha256:25680f1c75590153d8a00d7685e4a7fd1999477b9f1693b2696f2177e651f380",
+          "containerPostHash": "sha256:4146334952d4cf19079d092b80520a37e64fb7f832e3e6e2522c3116cc61b4b7",
+          "containerPostRevision": 70,
+          "action": {
+            "actionId": "candidate:advance:69",
+            "actorId": "player:allied",
+            "expectedRevision": 69,
+            "kind": "ADVANCE_SEQUENCE"
+          },
+          "reconstruction": {
+            "transitions": 3,
+            "allEventsMatch": true,
+            "normalizedFinalStateMatches": true
+          },
+          "query": {
+            "budget": 200,
+            "candidates": 7,
+            "truncated": false,
+            "actionsSha256": "8c3fd536a47ce80047b9f7050ccce7c87ac7cae062e61ebec351e5500da5b2da"
+          },
+          "targetHolder": "player:allied",
+          "targetPoints": 4,
+          "pointScale": 1.1199999999999999,
+          "scores": {
+            "player:allied": 25,
+            "player:axis": 0
+          },
+          "axisMargin": -25,
+          "witnesses": [],
+          "attackAvailableValue": 0,
+          "offeredAttackStrength": 0,
+          "bestActionId": null,
+          "supplementaryQueriesPreserveRulesState": true
+        },
+        {
+          "sourcePath": "artifacts/ai-progress-objective-original-continuation/pair-1800016/branch-15.save.json",
+          "sourceSha256": "4e65dfdd71f4dbaab7a7a9db0f7e4b774a7cead389673ef87b827cfdadc7b74b",
+          "armIndex": 1,
+          "resumeAt": 66,
+          "resumeHash": "sha256:1f39e45336bbc074b0e4174e0a580b722fbcf0990ce07f2475c1e62e6a2d20f7",
+          "replayedActions": 4,
+          "at": 69,
+          "internalBoundary": true,
+          "revision": 69,
+          "stateHash": "sha256:ab48f2efd1c3da22de6ba54f8521378976181ff69df0dcce0a06ca93e7a0bb91",
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "COMBAT",
+            "segment": "COMBAT",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "entryEvent": {
+            "kind": "SEQUENCE_ADVANCED",
+            "sequence": 2,
+            "from": {
+              "gameTurn": 1,
+              "playerTurnIndex": 0,
+              "phase": "COMBAT",
+              "segment": "BARRAGE",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            },
+            "to": {
+              "gameTurn": 1,
+              "playerTurnIndex": 0,
+              "phase": "COMBAT",
+              "segment": "COMBAT",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            }
+          },
+          "eventIndex": 2,
+          "containerPreHash": "sha256:5e6044a49b2fc37ffd44c4653798b01c4d248ae8f997e69eba21a1028577ea95",
+          "containerPostHash": "sha256:56448a74a780a7277e45c119474861050e873d2b68faf05f0a9443e47f82db72",
+          "containerPostRevision": 70,
+          "action": {
+            "actionId": "candidate:advance:69",
+            "actorId": "player:allied",
+            "expectedRevision": 69,
+            "kind": "ADVANCE_SEQUENCE"
+          },
+          "reconstruction": {
+            "transitions": 3,
+            "allEventsMatch": true,
+            "normalizedFinalStateMatches": true
+          },
+          "query": {
+            "budget": 200,
+            "candidates": 7,
+            "truncated": false,
+            "actionsSha256": "cd853c9baab043ce5e448b81518ccb692883a817b2dcb624f4c318fd37620057"
+          },
+          "targetHolder": "player:allied",
+          "targetPoints": 4,
+          "pointScale": 1.1199999999999999,
+          "scores": {
+            "player:allied": 25,
+            "player:axis": 0
+          },
+          "axisMargin": -25,
+          "witnesses": [],
+          "attackAvailableValue": 0,
+          "offeredAttackStrength": 0,
+          "bestActionId": null,
+          "supplementaryQueriesPreserveRulesState": true
+        }
+      ],
+      "provenance": {
+        "rawPath": "artifacts/ai-progress-combat-opportunity/pair-1800016.raw.json.gz",
+        "rawSha256": "f310670f68e7e002b3ea69651eb35926b63cd0c472eb2556592e94e859779fc2",
+        "registrationSha256": "b70bedc7e26ad356b144b32d577c11a020760d3c11fcb799eb1550f84795ddbb",
+        "scriptSha256": "10bc1e59d3c1cac0e5c08235bf7bb085e93ca3bccdef19b5b862be0f31198c7d",
+        "engineTreeSha256": "4a87376b26c41f60086cb3060f606afcc1e9b99bb3ba00339c904837d200bb2a"
+      }
+    },
+    {
+      "firstMatch": 1800018,
+      "originalTarget": "4,18",
+      "features": {
+        "boundaryVp": 0,
+        "attackAvailableValue": 0,
+        "offeredAttackStrength": 0
+      },
+      "terminalLocalEffect": 0,
+      "witnessCounts": [
+        0,
+        0
+      ],
+      "arms": [
+        {
+          "sourcePath": "artifacts/ai-progress-objective-30games/matches/match-1800019.save.json",
+          "sourceSha256": "037b2dfa7e9d48f0c55cc78fb0d9497b3eba345d0d0cadf8c02081d3eac4efb6",
+          "armIndex": 0,
+          "resumeAt": 66,
+          "resumeHash": "sha256:dc9e2ce208900dd0a4295f7f03b97808c1ad9590ca3fe0d6108fe010fca1d8f5",
+          "replayedActions": 6,
+          "at": 71,
+          "internalBoundary": true,
+          "revision": 71,
+          "stateHash": "sha256:de68df4a571846bec3b33c88ccef90f5e4bf42acae35d66ee5f8711b6af4cdb8",
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "COMBAT",
+            "segment": "COMBAT",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "entryEvent": {
+            "kind": "SEQUENCE_ADVANCED",
+            "sequence": 0,
+            "from": {
+              "gameTurn": 1,
+              "playerTurnIndex": 0,
+              "phase": "COMBAT",
+              "segment": "BARRAGE",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            },
+            "to": {
+              "gameTurn": 1,
+              "playerTurnIndex": 0,
+              "phase": "COMBAT",
+              "segment": "COMBAT",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            }
+          },
+          "eventIndex": 0,
+          "containerPreHash": "sha256:4c86edecce1cfa0ab1e3622aeb88ef78a3ed67786530d41b313a2e97e937ec94",
+          "containerPostHash": "sha256:55308fb515b7b3a27a7aa871ff478d1ace34e050c0dde73c6781e62ce5c2a83a",
+          "containerPostRevision": 72,
+          "action": {
+            "actionId": "candidate:advance:71",
+            "actorId": "player:axis",
+            "expectedRevision": 71,
+            "kind": "ADVANCE_SEQUENCE"
+          },
+          "reconstruction": {
+            "transitions": 1,
+            "allEventsMatch": true,
+            "normalizedFinalStateMatches": true
+          },
+          "query": {
+            "budget": 200,
+            "candidates": 4,
+            "truncated": false,
+            "actionsSha256": "113856df3e2972f8d627008016352b6f4d6a3065f65ed271a72b6bb37cb6acbf"
+          },
+          "targetHolder": "player:allied",
+          "targetPoints": 4,
+          "pointScale": 1.2,
+          "scores": {
+            "player:allied": 30,
+            "player:axis": 0
+          },
+          "axisMargin": -30,
+          "witnesses": [],
+          "attackAvailableValue": 0,
+          "offeredAttackStrength": 0,
+          "bestActionId": null,
+          "supplementaryQueriesPreserveRulesState": true
+        },
+        {
+          "sourcePath": "artifacts/ai-progress-objective-original-continuation/pair-1800018/branch-15.save.json",
+          "sourceSha256": "15f73f844c56ce160ed00f4d9bb7c855b7d47fa7be5845f53fdf3685173828ef",
+          "armIndex": 1,
+          "resumeAt": 66,
+          "resumeHash": "sha256:955dbb97b0aa848bc875a74b722de6ba7dd9d3da058f6393c7aacbba1f92dd1e",
+          "replayedActions": 6,
+          "at": 71,
+          "internalBoundary": true,
+          "revision": 71,
+          "stateHash": "sha256:97d9ac12433b8f79194ece41be292c90b3d5d65d420b078c5e8ae52b8235ac2d",
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "COMBAT",
+            "segment": "COMBAT",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "entryEvent": {
+            "kind": "SEQUENCE_ADVANCED",
+            "sequence": 0,
+            "from": {
+              "gameTurn": 1,
+              "playerTurnIndex": 0,
+              "phase": "COMBAT",
+              "segment": "BARRAGE",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            },
+            "to": {
+              "gameTurn": 1,
+              "playerTurnIndex": 0,
+              "phase": "COMBAT",
+              "segment": "COMBAT",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            }
+          },
+          "eventIndex": 0,
+          "containerPreHash": "sha256:29c3434e39d0231c722fed74f9f1f24fac582fe75d310db01a558b376e070131",
+          "containerPostHash": "sha256:4678d579d52536439c8e7285388fc033bd2c2ed6cc22056085f9b763cca153b1",
+          "containerPostRevision": 72,
+          "action": {
+            "actionId": "candidate:advance:71",
+            "actorId": "player:axis",
+            "expectedRevision": 71,
+            "kind": "ADVANCE_SEQUENCE"
+          },
+          "reconstruction": {
+            "transitions": 1,
+            "allEventsMatch": true,
+            "normalizedFinalStateMatches": true
+          },
+          "query": {
+            "budget": 200,
+            "candidates": 4,
+            "truncated": false,
+            "actionsSha256": "4d3b01b16b80700b12f400446baa82cb15ba31558a9a2984eea8fc2ed6724826"
+          },
+          "targetHolder": "player:allied",
+          "targetPoints": 4,
+          "pointScale": 1.2,
+          "scores": {
+            "player:allied": 30,
+            "player:axis": 0
+          },
+          "axisMargin": -30,
+          "witnesses": [],
+          "attackAvailableValue": 0,
+          "offeredAttackStrength": 0,
+          "bestActionId": null,
+          "supplementaryQueriesPreserveRulesState": true
+        }
+      ],
+      "provenance": {
+        "rawPath": "artifacts/ai-progress-combat-opportunity/pair-1800018.raw.json.gz",
+        "rawSha256": "31e325b6cd252c9360584ae64028198924c5cfb9b3da008c8c899b3d9d642182",
+        "registrationSha256": "b70bedc7e26ad356b144b32d577c11a020760d3c11fcb799eb1550f84795ddbb",
+        "scriptSha256": "10bc1e59d3c1cac0e5c08235bf7bb085e93ca3bccdef19b5b862be0f31198c7d",
+        "engineTreeSha256": "4a87376b26c41f60086cb3060f606afcc1e9b99bb3ba00339c904837d200bb2a"
+      }
+    },
+    {
+      "firstMatch": 1800020,
+      "originalTarget": "11,17",
+      "features": {
+        "boundaryVp": 0,
+        "attackAvailableValue": 0,
+        "offeredAttackStrength": 4.083333333333333
+      },
+      "terminalLocalEffect": 0,
+      "witnessCounts": [
+        1,
+        1
+      ],
+      "arms": [
+        {
+          "sourcePath": "artifacts/ai-progress-objective-30games/matches/match-1800021.save.json",
+          "sourceSha256": "ff2385f6bb032556993211b7efc8f4c37b6d300a9018ca04c1c2c29ff0dc65f9",
+          "armIndex": 0,
+          "resumeAt": 66,
+          "resumeHash": "sha256:7f2c6f60fdb559b24a44bb842acfd230333ba4ecba34eb01db1d383abbc03bcb",
+          "replayedActions": 4,
+          "at": 69,
+          "internalBoundary": true,
+          "revision": 69,
+          "stateHash": "sha256:b2541707200f4a3ecf2960ac69fb5eeec1d945a858f2b021f04b493dbf30d5d1",
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "COMBAT",
+            "segment": "COMBAT",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "entryEvent": {
+            "kind": "SEQUENCE_ADVANCED",
+            "sequence": 0,
+            "from": {
+              "gameTurn": 1,
+              "playerTurnIndex": 0,
+              "phase": "COMBAT",
+              "segment": "BARRAGE",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            },
+            "to": {
+              "gameTurn": 1,
+              "playerTurnIndex": 0,
+              "phase": "COMBAT",
+              "segment": "COMBAT",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            }
+          },
+          "eventIndex": 0,
+          "containerPreHash": "sha256:4f213c6bada7d770542d9f385264043bd58e79ecefa580571b5e15a44647dc81",
+          "containerPostHash": "sha256:170a2a4a61dce625bc89b6af46d9e8a6f9946130ee5c177e7a7d68e4fa635fb0",
+          "containerPostRevision": 70,
+          "action": {
+            "actionId": "candidate:advance:69",
+            "actorId": "player:axis",
+            "expectedRevision": 69,
+            "kind": "ADVANCE_SEQUENCE"
+          },
+          "reconstruction": {
+            "transitions": 1,
+            "allEventsMatch": true,
+            "normalizedFinalStateMatches": true
+          },
+          "query": {
+            "budget": 200,
+            "candidates": 6,
+            "truncated": false,
+            "actionsSha256": "7eb060d2b3d53efb559ec24523951273468469f5ca943710705dd7a91752a9c2"
+          },
+          "targetHolder": "player:allied",
+          "targetPoints": 4,
+          "pointScale": 1.1666666666666667,
+          "scores": {
+            "player:allied": 24,
+            "player:axis": 0
+          },
+          "axisMargin": -24,
+          "witnesses": [
+            {
+              "action": {
+                "actionId": "candidate:combat:REGULAR:11,17:generated-oob:344143574:axis:f1-recon:unit+generated-oob:344143574:axis:f2-recon:unit+generated-oob:344143574:axis:f4-recon:unit+generated-oob:344143574:axis:independent-tank-1:unit:69",
+                "actorId": "player:axis",
+                "expectedRevision": 69,
+                "kind": "DECLARE_COMBAT",
+                "combatKind": "REGULAR",
+                "attackerIds": [
+                  "generated-oob:344143574:axis:f1-recon:unit",
+                  "generated-oob:344143574:axis:f2-recon:unit",
+                  "generated-oob:344143574:axis:f4-recon:unit",
+                  "generated-oob:344143574:axis:independent-tank-1:unit"
+                ],
+                "defenderIds": [
+                  "generated-oob:344143574:allied:garrison:objective-4",
+                  "generated-oob:344143574:allied:independent-engineer-1:unit",
+                  "generated-oob:344143574:allied:independent-hq-1:unit"
+                ],
+                "targetHexId": "11,17",
+                "leadAttackerId": "generated-oob:344143574:axis:f1-recon:unit",
+                "attackerSupply": [
+                  {
+                    "pieceId": "generated-oob:344143574:axis:f1-recon:unit",
+                    "method": "DUMPS",
+                    "dumpIds": [
+                      "rail-supply:6:17,18:generated-oob:344143574:axis:independent-supply-4:unit"
+                    ]
+                  },
+                  {
+                    "pieceId": "generated-oob:344143574:axis:f2-recon:unit",
+                    "method": "DUMPS",
+                    "dumpIds": [
+                      "rail-supply:6:17,18:generated-oob:344143574:axis:independent-supply-4:unit"
+                    ]
+                  },
+                  {
+                    "pieceId": "generated-oob:344143574:axis:f4-recon:unit",
+                    "method": "DUMPS",
+                    "dumpIds": [
+                      "rail-supply:6:17,18:generated-oob:344143574:axis:independent-supply-4:unit"
+                    ]
+                  },
+                  {
+                    "pieceId": "generated-oob:344143574:axis:independent-tank-1:unit",
+                    "method": "DUMPS",
+                    "dumpIds": [
+                      "rail-supply:6:17,18:generated-oob:344143574:axis:independent-supply-4:unit"
+                    ]
+                  }
+                ]
+              },
+              "attackerStrength": 6,
+              "externalPayments": [
+                {
+                  "resourcePieceId": "rail-supply:6:17,18:generated-oob:344143574:axis:independent-supply-4:unit",
+                  "quantity": 4,
+                  "unitDefinitionId": "quantity:supply-token"
+                }
+              ],
+              "internalIds": [],
+              "odds": "3:1",
+              "line": "VERY_CLOSE",
+              "defenderCanPay": true
+            }
+          ],
+          "attackAvailableValue": 8,
+          "offeredAttackStrength": 7,
+          "bestActionId": "candidate:combat:REGULAR:11,17:generated-oob:344143574:axis:f1-recon:unit+generated-oob:344143574:axis:f2-recon:unit+generated-oob:344143574:axis:f4-recon:unit+generated-oob:344143574:axis:independent-tank-1:unit:69",
+          "supplementaryQueriesPreserveRulesState": true
+        },
+        {
+          "sourcePath": "artifacts/ai-progress-objective-original-continuation/pair-1800020/branch-15.save.json",
+          "sourceSha256": "4678e22ffdcc495e1bcb5d2a2c5ee6183b88062326a17db33485e2aa1f2cd84b",
+          "armIndex": 1,
+          "resumeAt": 66,
+          "resumeHash": "sha256:e456bdc2e62854ecb703147c4d87c90c84e7a7e7191dcbaa3af0d835392c5cf5",
+          "replayedActions": 4,
+          "at": 69,
+          "internalBoundary": true,
+          "revision": 69,
+          "stateHash": "sha256:1eb6137ce34b1b3eb0e97c970ecd41758fbb8eae54b73aecaafee9b7f661d735",
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "COMBAT",
+            "segment": "COMBAT",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "entryEvent": {
+            "kind": "SEQUENCE_ADVANCED",
+            "sequence": 0,
+            "from": {
+              "gameTurn": 1,
+              "playerTurnIndex": 0,
+              "phase": "COMBAT",
+              "segment": "BARRAGE",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            },
+            "to": {
+              "gameTurn": 1,
+              "playerTurnIndex": 0,
+              "phase": "COMBAT",
+              "segment": "COMBAT",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            }
+          },
+          "eventIndex": 0,
+          "containerPreHash": "sha256:42e8d0ea14462546fb63320ce9ca64b3f1847dbbaf6f9a48e8809e2c652b02d8",
+          "containerPostHash": "sha256:3703205f4df15b3813f54c3ae8b9f0586d577f71fd52804276b608b49a7fce3d",
+          "containerPostRevision": 70,
+          "action": {
+            "actionId": "candidate:advance:69",
+            "actorId": "player:axis",
+            "expectedRevision": 69,
+            "kind": "ADVANCE_SEQUENCE"
+          },
+          "reconstruction": {
+            "transitions": 1,
+            "allEventsMatch": true,
+            "normalizedFinalStateMatches": true
+          },
+          "query": {
+            "budget": 200,
+            "candidates": 6,
+            "truncated": false,
+            "actionsSha256": "5d559f9b827bfdaeff9d37fe5c41200da42bfb11300ae8e8b75b1088e9646aae"
+          },
+          "targetHolder": "player:allied",
+          "targetPoints": 4,
+          "pointScale": 1.1666666666666667,
+          "scores": {
+            "player:allied": 24,
+            "player:axis": 0
+          },
+          "axisMargin": -24,
+          "witnesses": [
+            {
+              "action": {
+                "actionId": "candidate:combat:REGULAR:11,17:generated-oob:344143574:axis:f2-recon:unit+generated-oob:344143574:axis:f4-recon:unit:69",
+                "actorId": "player:axis",
+                "expectedRevision": 69,
+                "kind": "DECLARE_COMBAT",
+                "combatKind": "REGULAR",
+                "attackerIds": [
+                  "generated-oob:344143574:axis:f2-recon:unit",
+                  "generated-oob:344143574:axis:f4-recon:unit"
+                ],
+                "defenderIds": [
+                  "generated-oob:344143574:allied:garrison:objective-4",
+                  "generated-oob:344143574:allied:independent-engineer-1:unit",
+                  "generated-oob:344143574:allied:independent-hq-1:unit"
+                ],
+                "targetHexId": "11,17",
+                "leadAttackerId": "generated-oob:344143574:axis:f2-recon:unit",
+                "attackerSupply": [
+                  {
+                    "pieceId": "generated-oob:344143574:axis:f2-recon:unit",
+                    "method": "DUMPS",
+                    "dumpIds": [
+                      "rail-supply:6:17,18:generated-oob:344143574:axis:independent-supply-4:unit"
+                    ]
+                  },
+                  {
+                    "pieceId": "generated-oob:344143574:axis:f4-recon:unit",
+                    "method": "DUMPS",
+                    "dumpIds": [
+                      "rail-supply:6:17,18:generated-oob:344143574:axis:independent-supply-4:unit"
+                    ]
+                  }
+                ]
+              },
+              "attackerStrength": 2.5,
+              "externalPayments": [
+                {
+                  "resourcePieceId": "rail-supply:6:17,18:generated-oob:344143574:axis:independent-supply-4:unit",
+                  "quantity": 2,
+                  "unitDefinitionId": "quantity:supply-token"
+                }
+              ],
+              "internalIds": [],
+              "odds": "1:1",
+              "line": "VERY_CLOSE",
+              "defenderCanPay": true
+            }
+          ],
+          "attackAvailableValue": 8,
+          "offeredAttackStrength": 2.916666666666667,
+          "bestActionId": "candidate:combat:REGULAR:11,17:generated-oob:344143574:axis:f2-recon:unit+generated-oob:344143574:axis:f4-recon:unit:69",
+          "supplementaryQueriesPreserveRulesState": true
+        }
+      ],
+      "provenance": {
+        "rawPath": "artifacts/ai-progress-combat-opportunity/pair-1800020.raw.json.gz",
+        "rawSha256": "fe34f255ada82b5ad13b447d01ce5484f4c23873f1eb7213c4791d7a9f3ca498",
+        "registrationSha256": "b70bedc7e26ad356b144b32d577c11a020760d3c11fcb799eb1550f84795ddbb",
+        "scriptSha256": "10bc1e59d3c1cac0e5c08235bf7bb085e93ca3bccdef19b5b862be0f31198c7d",
+        "engineTreeSha256": "4a87376b26c41f60086cb3060f606afcc1e9b99bb3ba00339c904837d200bb2a"
+      }
+    },
+    {
+      "firstMatch": 1800022,
+      "originalTarget": "13,10",
+      "features": {
+        "boundaryVp": 0,
+        "attackAvailableValue": 0,
+        "offeredAttackStrength": 0
+      },
+      "terminalLocalEffect": 0,
+      "witnessCounts": [
+        0,
+        0
+      ],
+      "arms": [
+        {
+          "sourcePath": "artifacts/ai-progress-objective-30games/matches/match-1800023.save.json",
+          "sourceSha256": "f5e136683d468618aa3c0b8bb8a2f8b78c8616ed61f847779ed5a0b0696feaa9",
+          "armIndex": 0,
+          "resumeAt": 64,
+          "resumeHash": "sha256:2acbbd01d07f32c732b1a46fac24623dd409ca482a17d749455d11bcda448ec1",
+          "replayedActions": 4,
+          "at": 67,
+          "internalBoundary": true,
+          "revision": 67,
+          "stateHash": "sha256:03a2b03ba9649948977c88084ca1ba44bda8330bb881da63a31d9ad5ba2be809",
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "COMBAT",
+            "segment": "COMBAT",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "entryEvent": {
+            "kind": "SEQUENCE_ADVANCED",
+            "sequence": 0,
+            "from": {
+              "gameTurn": 1,
+              "playerTurnIndex": 0,
+              "phase": "COMBAT",
+              "segment": "BARRAGE",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            },
+            "to": {
+              "gameTurn": 1,
+              "playerTurnIndex": 0,
+              "phase": "COMBAT",
+              "segment": "COMBAT",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            }
+          },
+          "eventIndex": 0,
+          "containerPreHash": "sha256:62f676a9b287412424335b5ac39907ad2ff644a0af5fbf22e8990b17341bb6f8",
+          "containerPostHash": "sha256:6d8e3762ee25945c8f7cea417f184230b61e71b5d7587cc153e426e19cef24db",
+          "containerPostRevision": 68,
+          "action": {
+            "actionId": "candidate:advance:67",
+            "actorId": "player:axis",
+            "expectedRevision": 67,
+            "kind": "ADVANCE_SEQUENCE"
+          },
+          "reconstruction": {
+            "transitions": 1,
+            "allEventsMatch": true,
+            "normalizedFinalStateMatches": true
+          },
+          "query": {
+            "budget": 200,
+            "candidates": 1,
+            "truncated": false,
+            "actionsSha256": "6766ef281edbf4b4d0339554685ff662157b6a07225559f28ebf4aa288a7270a"
+          },
+          "targetHolder": "player:allied",
+          "targetPoints": 4,
+          "pointScale": 1.0666666666666667,
+          "scores": {
+            "player:allied": 15,
+            "player:axis": 0
+          },
+          "axisMargin": -15,
+          "witnesses": [],
+          "attackAvailableValue": 0,
+          "offeredAttackStrength": 0,
+          "bestActionId": null,
+          "supplementaryQueriesPreserveRulesState": true
+        },
+        {
+          "sourcePath": "artifacts/ai-progress-objective-original-continuation/pair-1800022/branch-15.save.json",
+          "sourceSha256": "cacf2e54367cbbf49e00d82c8a3bf6a79d9f8b7a8a763ee48392627c7493d577",
+          "armIndex": 1,
+          "resumeAt": 64,
+          "resumeHash": "sha256:280d9e8a8564f0ffeb2566f72004224daabab687da73d561e48d8568bcb77379",
+          "replayedActions": 4,
+          "at": 67,
+          "internalBoundary": true,
+          "revision": 67,
+          "stateHash": "sha256:d084c6fc38c35a9d72f5ecee32fa6d7546635dbc4bd9e406578a0d098aae3de4",
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "COMBAT",
+            "segment": "COMBAT",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "entryEvent": {
+            "kind": "SEQUENCE_ADVANCED",
+            "sequence": 0,
+            "from": {
+              "gameTurn": 1,
+              "playerTurnIndex": 0,
+              "phase": "COMBAT",
+              "segment": "BARRAGE",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            },
+            "to": {
+              "gameTurn": 1,
+              "playerTurnIndex": 0,
+              "phase": "COMBAT",
+              "segment": "COMBAT",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            }
+          },
+          "eventIndex": 0,
+          "containerPreHash": "sha256:d27c8bdf453b9d0f872036fe8440c24784bead3c9cfe42f201287a5fb0f83a55",
+          "containerPostHash": "sha256:6847bb8ae4abd707ce2dfee80c169f17ad5c77d936c4bb0b53fbd317ebcd08ad",
+          "containerPostRevision": 68,
+          "action": {
+            "actionId": "candidate:advance:67",
+            "actorId": "player:axis",
+            "expectedRevision": 67,
+            "kind": "ADVANCE_SEQUENCE"
+          },
+          "reconstruction": {
+            "transitions": 1,
+            "allEventsMatch": true,
+            "normalizedFinalStateMatches": true
+          },
+          "query": {
+            "budget": 200,
+            "candidates": 1,
+            "truncated": false,
+            "actionsSha256": "6766ef281edbf4b4d0339554685ff662157b6a07225559f28ebf4aa288a7270a"
+          },
+          "targetHolder": "player:allied",
+          "targetPoints": 4,
+          "pointScale": 1.0666666666666667,
+          "scores": {
+            "player:allied": 15,
+            "player:axis": 0
+          },
+          "axisMargin": -15,
+          "witnesses": [],
+          "attackAvailableValue": 0,
+          "offeredAttackStrength": 0,
+          "bestActionId": null,
+          "supplementaryQueriesPreserveRulesState": true
+        }
+      ],
+      "provenance": {
+        "rawPath": "artifacts/ai-progress-combat-opportunity/pair-1800022.raw.json.gz",
+        "rawSha256": "8ce3a6f4008435e2b48a41352371b9416d9c19d76feda79c2e28bfa904136841",
+        "registrationSha256": "b70bedc7e26ad356b144b32d577c11a020760d3c11fcb799eb1550f84795ddbb",
+        "scriptSha256": "10bc1e59d3c1cac0e5c08235bf7bb085e93ca3bccdef19b5b862be0f31198c7d",
+        "engineTreeSha256": "4a87376b26c41f60086cb3060f606afcc1e9b99bb3ba00339c904837d200bb2a"
+      }
+    },
+    {
+      "firstMatch": 1800024,
+      "originalTarget": "9,2",
+      "features": {
+        "boundaryVp": 0,
+        "attackAvailableValue": 0,
+        "offeredAttackStrength": 0
+      },
+      "terminalLocalEffect": -8,
+      "witnessCounts": [
+        0,
+        0
+      ],
+      "arms": [
+        {
+          "sourcePath": "artifacts/ai-progress-objective-30games/matches/match-1800025.save.json",
+          "sourceSha256": "94293ac49de52b9828b1691190f7b47b3b91d6d701f027377fd441f19dd914bd",
+          "armIndex": 0,
+          "resumeAt": 67,
+          "resumeHash": "sha256:8a539aaf8fb7bf42cd73373a47a154c6ae2dc40c0714c66470913a083e52138c",
+          "replayedActions": 7,
+          "at": 73,
+          "internalBoundary": true,
+          "revision": 73,
+          "stateHash": "sha256:ecf76d8a0e8ee02d160778f2ed8c4f7ad29532b2531831efac8cab0fd47d79ff",
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "COMBAT",
+            "segment": "COMBAT",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "entryEvent": {
+            "kind": "SEQUENCE_ADVANCED",
+            "sequence": 0,
+            "from": {
+              "gameTurn": 1,
+              "playerTurnIndex": 0,
+              "phase": "COMBAT",
+              "segment": "BARRAGE",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            },
+            "to": {
+              "gameTurn": 1,
+              "playerTurnIndex": 0,
+              "phase": "COMBAT",
+              "segment": "COMBAT",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            }
+          },
+          "eventIndex": 0,
+          "containerPreHash": "sha256:4c38f62727d842e3ec81c4675234c8cc907ecaed7b28f24851bd6ec54cf92882",
+          "containerPostHash": "sha256:78bcdae0e7295453c6f7078b6bb3bcbcd2bc52ffd95d6781baabfb61f9c564d4",
+          "containerPostRevision": 74,
+          "action": {
+            "actionId": "candidate:advance:73",
+            "actorId": "player:axis",
+            "expectedRevision": 73,
+            "kind": "ADVANCE_SEQUENCE"
+          },
+          "reconstruction": {
+            "transitions": 1,
+            "allEventsMatch": true,
+            "normalizedFinalStateMatches": true
+          },
+          "query": {
+            "budget": 200,
+            "candidates": 2,
+            "truncated": false,
+            "actionsSha256": "bafbef1c4c78cefea20174146a9b6e07ae883a73ad71c0e9dbc385ce73eb368f"
+          },
+          "targetHolder": "player:allied",
+          "targetPoints": 4,
+          "pointScale": 1.5384615384615383,
+          "scores": {
+            "player:allied": 13,
+            "player:axis": 0
+          },
+          "axisMargin": -13,
+          "witnesses": [],
+          "attackAvailableValue": 0,
+          "offeredAttackStrength": 0,
+          "bestActionId": null,
+          "supplementaryQueriesPreserveRulesState": true
+        },
+        {
+          "sourcePath": "artifacts/ai-progress-objective-original-continuation/pair-1800024/branch-15.save.json",
+          "sourceSha256": "30359253ff477c9ba767e85d023391b134883b58d91eaf29a6c11e975a7f431b",
+          "armIndex": 1,
+          "resumeAt": 67,
+          "resumeHash": "sha256:d916c10136d6eac53bc302ac609daf40ee1ad2583a51ce2eba0b8858e2ce3921",
+          "replayedActions": 6,
+          "at": 72,
+          "internalBoundary": true,
+          "revision": 72,
+          "stateHash": "sha256:0d9954e111dd9515e3c6a347cdcd19c17dba73d9151f2484a6ad2c2fcfef7958",
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "COMBAT",
+            "segment": "COMBAT",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "entryEvent": {
+            "kind": "SEQUENCE_ADVANCED",
+            "sequence": 0,
+            "from": {
+              "gameTurn": 1,
+              "playerTurnIndex": 0,
+              "phase": "COMBAT",
+              "segment": "BARRAGE",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            },
+            "to": {
+              "gameTurn": 1,
+              "playerTurnIndex": 0,
+              "phase": "COMBAT",
+              "segment": "COMBAT",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            }
+          },
+          "eventIndex": 0,
+          "containerPreHash": "sha256:f7313c325bbb2e7395ac00f099c935cd1b95df3f32f47e385970bf6e3011752c",
+          "containerPostHash": "sha256:84b6d24f616fd0e169b13a85ee59d7e39b3413457a1c3a6cc59c56760ce0891f",
+          "containerPostRevision": 73,
+          "action": {
+            "actionId": "candidate:advance:72",
+            "actorId": "player:axis",
+            "expectedRevision": 72,
+            "kind": "ADVANCE_SEQUENCE"
+          },
+          "reconstruction": {
+            "transitions": 9,
+            "allEventsMatch": true,
+            "normalizedFinalStateMatches": true
+          },
+          "query": {
+            "budget": 200,
+            "candidates": 0,
+            "truncated": false,
+            "actionsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "targetHolder": "player:allied",
+          "targetPoints": 4,
+          "pointScale": 1.5384615384615383,
+          "scores": {
+            "player:allied": 13,
+            "player:axis": 0
+          },
+          "axisMargin": -13,
+          "witnesses": [],
+          "attackAvailableValue": 0,
+          "offeredAttackStrength": 0,
+          "bestActionId": null,
+          "supplementaryQueriesPreserveRulesState": true
+        }
+      ],
+      "provenance": {
+        "rawPath": "artifacts/ai-progress-combat-opportunity/pair-1800024.raw.json.gz",
+        "rawSha256": "d2e119396061943eaf7d1291a6b060b9bfd1b33c64d582e4a8a78e60f0c867a4",
+        "registrationSha256": "b70bedc7e26ad356b144b32d577c11a020760d3c11fcb799eb1550f84795ddbb",
+        "scriptSha256": "10bc1e59d3c1cac0e5c08235bf7bb085e93ca3bccdef19b5b862be0f31198c7d",
+        "engineTreeSha256": "4a87376b26c41f60086cb3060f606afcc1e9b99bb3ba00339c904837d200bb2a"
+      }
+    },
+    {
+      "firstMatch": 1800026,
+      "originalTarget": "10,15",
+      "features": {
+        "boundaryVp": 0,
+        "attackAvailableValue": 0,
+        "offeredAttackStrength": 2.0769230769230766
+      },
+      "terminalLocalEffect": 0,
+      "witnessCounts": [
+        1,
+        1
+      ],
+      "arms": [
+        {
+          "sourcePath": "artifacts/ai-progress-objective-30games/matches/match-1800027.save.json",
+          "sourceSha256": "0316327088a91723e8708bef8e00ee9a4609b16ce388d5ae3ec39ad1792dba7f",
+          "armIndex": 0,
+          "resumeAt": 206,
+          "resumeHash": "sha256:b2bb645834cbe1502901f71e4172ab511c7dc8ac8e6635a0c8f3e6f13405c234",
+          "replayedActions": 5,
+          "at": 210,
+          "internalBoundary": true,
+          "revision": 210,
+          "stateHash": "sha256:d611b39ca81b4d355486d1933b384d500f8710b996e39b7affc3896e1091dff5",
+          "sequence": {
+            "gameTurn": 2,
+            "playerTurnIndex": 0,
+            "phase": "COMBAT",
+            "segment": "COMBAT",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "entryEvent": {
+            "kind": "SEQUENCE_ADVANCED",
+            "sequence": 3,
+            "from": {
+              "gameTurn": 2,
+              "playerTurnIndex": 0,
+              "phase": "COMBAT",
+              "segment": "BARRAGE",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            },
+            "to": {
+              "gameTurn": 2,
+              "playerTurnIndex": 0,
+              "phase": "COMBAT",
+              "segment": "COMBAT",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            }
+          },
+          "eventIndex": 3,
+          "containerPreHash": "sha256:f76629b90d144574f99592f825d30a500ecb63593efb8a8d5aeb443f549a2c9f",
+          "containerPostHash": "sha256:e1dac51aaf152f4fb58ea773396bb6ec18f23756e4ddc5aefe28686ce306f037",
+          "containerPostRevision": 211,
+          "action": {
+            "actionId": "candidate:advance:210",
+            "actorId": "player:axis",
+            "expectedRevision": 210,
+            "kind": "ADVANCE_SEQUENCE"
+          },
+          "reconstruction": {
+            "transitions": 4,
+            "allEventsMatch": true,
+            "normalizedFinalStateMatches": true
+          },
+          "query": {
+            "budget": 200,
+            "candidates": 10,
+            "truncated": false,
+            "actionsSha256": "fcacf8786434b0820b8080b054afbba100abca1f70f214b2cf047a8ac22ecdc3"
+          },
+          "targetHolder": "player:allied",
+          "targetPoints": 6,
+          "pointScale": 1.3846153846153848,
+          "scores": {
+            "player:allied": 13,
+            "player:axis": 0
+          },
+          "axisMargin": -13,
+          "witnesses": [
+            {
+              "action": {
+                "actionId": "candidate:combat:REGULAR:10,15:generated-oob:344144156:axis:f2-recon:unit+generated-oob:344144156:axis:f4-combat-1:unit+generated-oob:344144156:axis:f4-combat-2:unit+generated-oob:344144156:axis:independent-anti-tank-3:unit+generated-oob:344144156:axis:independent-anti-tank-4:unit+generated-oob:344144156:axis:independent-anti-tank-5:unit:210",
+                "actorId": "player:axis",
+                "expectedRevision": 210,
+                "kind": "DECLARE_COMBAT",
+                "combatKind": "REGULAR",
+                "attackerIds": [
+                  "generated-oob:344144156:axis:f2-recon:unit",
+                  "generated-oob:344144156:axis:f4-combat-1:unit",
+                  "generated-oob:344144156:axis:f4-combat-2:unit",
+                  "generated-oob:344144156:axis:independent-anti-tank-3:unit",
+                  "generated-oob:344144156:axis:independent-anti-tank-4:unit",
+                  "generated-oob:344144156:axis:independent-anti-tank-5:unit"
+                ],
+                "defenderIds": [
+                  "generated-oob:344144156:allied:f1-recon:unit",
+                  "generated-oob:344144156:allied:garrison:objective-3",
+                  "generated-oob:344144156:allied:independent-anti_tank-1:unit"
+                ],
+                "targetHexId": "10,15",
+                "leadAttackerId": "generated-oob:344144156:axis:f2-recon:unit",
+                "attackerSupply": [
+                  {
+                    "pieceId": "generated-oob:344144156:axis:f2-recon:unit",
+                    "method": "DUMPS",
+                    "dumpIds": [
+                      "rail-supply:139:14,18:supply-arrival:player:axis:2"
+                    ]
+                  },
+                  {
+                    "pieceId": "generated-oob:344144156:axis:f4-combat-1:unit",
+                    "method": "DUMPS",
+                    "dumpIds": [
+                      "rail-supply:139:14,18:supply-arrival:player:axis:2"
+                    ]
+                  },
+                  {
+                    "pieceId": "generated-oob:344144156:axis:f4-combat-2:unit",
+                    "method": "DUMPS",
+                    "dumpIds": [
+                      "rail-supply:139:14,18:supply-arrival:player:axis:2"
+                    ]
+                  },
+                  {
+                    "pieceId": "generated-oob:344144156:axis:independent-anti-tank-3:unit",
+                    "method": "DUMPS",
+                    "dumpIds": [
+                      "generated-oob:344144156:axis:independent-supply-6:unit"
+                    ]
+                  },
+                  {
+                    "pieceId": "generated-oob:344144156:axis:independent-anti-tank-4:unit",
+                    "method": "DUMPS",
+                    "dumpIds": [
+                      "rail-supply:139:14,18:supply-arrival:player:axis:2"
+                    ]
+                  },
+                  {
+                    "pieceId": "generated-oob:344144156:axis:independent-anti-tank-5:unit",
+                    "method": "DUMPS",
+                    "dumpIds": [
+                      "generated-oob:344144156:axis:independent-supply-6:unit"
+                    ]
+                  }
+                ]
+              },
+              "attackerStrength": 14.5,
+              "externalPayments": [
+                {
+                  "resourcePieceId": "generated-oob:344144156:axis:independent-supply-6:unit",
+                  "quantity": 2,
+                  "unitDefinitionId": "quantity:supply-token"
+                },
+                {
+                  "resourcePieceId": "rail-supply:139:14,18:supply-arrival:player:axis:2",
+                  "quantity": 4,
+                  "unitDefinitionId": "quantity:supply-token"
+                }
+              ],
+              "internalIds": [],
+              "odds": "2:1",
+              "line": "EXTREMELY_CLOSE",
+              "defenderCanPay": true
+            }
+          ],
+          "attackAvailableValue": 12,
+          "offeredAttackStrength": 20.07692307692308,
+          "bestActionId": "candidate:combat:REGULAR:10,15:generated-oob:344144156:axis:f2-recon:unit+generated-oob:344144156:axis:f4-combat-1:unit+generated-oob:344144156:axis:f4-combat-2:unit+generated-oob:344144156:axis:independent-anti-tank-3:unit+generated-oob:344144156:axis:independent-anti-tank-4:unit+generated-oob:344144156:axis:independent-anti-tank-5:unit:210",
+          "supplementaryQueriesPreserveRulesState": true
+        },
+        {
+          "sourcePath": "artifacts/ai-progress-objective-original-continuation/pair-1800026/branch-15.save.json",
+          "sourceSha256": "259841fbccf00a6df8e17f1bb299370d1fb64a7e3855ef6ce218c98dafb131ed",
+          "armIndex": 1,
+          "resumeAt": 206,
+          "resumeHash": "sha256:5537ba1590cae9b8acf0f9ddce6e6695c5eee11cf387992f48797fa2592ebb8f",
+          "replayedActions": 5,
+          "at": 210,
+          "internalBoundary": true,
+          "revision": 210,
+          "stateHash": "sha256:e7233718e51a352e5ccc66aa925384a51cc87ce8749dfc81d8ceff224727a2a9",
+          "sequence": {
+            "gameTurn": 2,
+            "playerTurnIndex": 0,
+            "phase": "COMBAT",
+            "segment": "COMBAT",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "entryEvent": {
+            "kind": "SEQUENCE_ADVANCED",
+            "sequence": 3,
+            "from": {
+              "gameTurn": 2,
+              "playerTurnIndex": 0,
+              "phase": "COMBAT",
+              "segment": "BARRAGE",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            },
+            "to": {
+              "gameTurn": 2,
+              "playerTurnIndex": 0,
+              "phase": "COMBAT",
+              "segment": "COMBAT",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            }
+          },
+          "eventIndex": 3,
+          "containerPreHash": "sha256:98d936ca05045de26dbc9d3bc64b23da0f88a60ed7518b2781860aedd6ced9b1",
+          "containerPostHash": "sha256:3dc635934dc7206c6f3b1b1d4aa818cc30b104e2fdd9de93288b8c82fad42bfd",
+          "containerPostRevision": 211,
+          "action": {
+            "actionId": "candidate:advance:210",
+            "actorId": "player:axis",
+            "expectedRevision": 210,
+            "kind": "ADVANCE_SEQUENCE"
+          },
+          "reconstruction": {
+            "transitions": 4,
+            "allEventsMatch": true,
+            "normalizedFinalStateMatches": true
+          },
+          "query": {
+            "budget": 200,
+            "candidates": 10,
+            "truncated": false,
+            "actionsSha256": "7b2c0d89172040cbf4f84251cb78bfbfef8c58efe6fc43ee40001bf28489d667"
+          },
+          "targetHolder": "player:allied",
+          "targetPoints": 6,
+          "pointScale": 1.3846153846153848,
+          "scores": {
+            "player:allied": 13,
+            "player:axis": 0
+          },
+          "axisMargin": -13,
+          "witnesses": [
+            {
+              "action": {
+                "actionId": "candidate:combat:REGULAR:10,15:generated-oob:344144156:axis:f4-combat-1:unit+generated-oob:344144156:axis:f4-combat-2:unit+generated-oob:344144156:axis:independent-anti-tank-3:unit+generated-oob:344144156:axis:independent-anti-tank-4:unit+generated-oob:344144156:axis:independent-anti-tank-5:unit:210",
+                "actorId": "player:axis",
+                "expectedRevision": 210,
+                "kind": "DECLARE_COMBAT",
+                "combatKind": "REGULAR",
+                "attackerIds": [
+                  "generated-oob:344144156:axis:f4-combat-1:unit",
+                  "generated-oob:344144156:axis:f4-combat-2:unit",
+                  "generated-oob:344144156:axis:independent-anti-tank-3:unit",
+                  "generated-oob:344144156:axis:independent-anti-tank-4:unit",
+                  "generated-oob:344144156:axis:independent-anti-tank-5:unit"
+                ],
+                "defenderIds": [
+                  "generated-oob:344144156:allied:f1-recon:unit",
+                  "generated-oob:344144156:allied:garrison:objective-3",
+                  "generated-oob:344144156:allied:independent-anti_tank-1:unit"
+                ],
+                "targetHexId": "10,15",
+                "leadAttackerId": "generated-oob:344144156:axis:independent-anti-tank-3:unit",
+                "attackerSupply": [
+                  {
+                    "pieceId": "generated-oob:344144156:axis:f4-combat-1:unit",
+                    "method": "DUMPS",
+                    "dumpIds": [
+                      "rail-supply:139:14,18:supply-arrival:player:axis:2"
+                    ]
+                  },
+                  {
+                    "pieceId": "generated-oob:344144156:axis:f4-combat-2:unit",
+                    "method": "DUMPS",
+                    "dumpIds": [
+                      "rail-supply:139:14,18:supply-arrival:player:axis:2"
+                    ]
+                  },
+                  {
+                    "pieceId": "generated-oob:344144156:axis:independent-anti-tank-3:unit",
+                    "method": "DUMPS",
+                    "dumpIds": [
+                      "rail-supply:139:14,18:supply-arrival:player:axis:2"
+                    ]
+                  },
+                  {
+                    "pieceId": "generated-oob:344144156:axis:independent-anti-tank-4:unit",
+                    "method": "DUMPS",
+                    "dumpIds": [
+                      "generated-oob:344144156:axis:independent-supply-6:unit"
+                    ]
+                  },
+                  {
+                    "pieceId": "generated-oob:344144156:axis:independent-anti-tank-5:unit",
+                    "method": "DUMPS",
+                    "dumpIds": [
+                      "rail-supply:139:14,18:supply-arrival:player:axis:2"
+                    ]
+                  }
+                ]
+              },
+              "attackerStrength": 13,
+              "externalPayments": [
+                {
+                  "resourcePieceId": "generated-oob:344144156:axis:independent-supply-6:unit",
+                  "quantity": 1,
+                  "unitDefinitionId": "quantity:supply-token"
+                },
+                {
+                  "resourcePieceId": "rail-supply:139:14,18:supply-arrival:player:axis:2",
+                  "quantity": 4,
+                  "unitDefinitionId": "quantity:supply-token"
+                }
+              ],
+              "internalIds": [],
+              "odds": "2:1",
+              "line": "EXTREMELY_CLOSE",
+              "defenderCanPay": true
+            }
+          ],
+          "attackAvailableValue": 12,
+          "offeredAttackStrength": 18.000000000000004,
+          "bestActionId": "candidate:combat:REGULAR:10,15:generated-oob:344144156:axis:f4-combat-1:unit+generated-oob:344144156:axis:f4-combat-2:unit+generated-oob:344144156:axis:independent-anti-tank-3:unit+generated-oob:344144156:axis:independent-anti-tank-4:unit+generated-oob:344144156:axis:independent-anti-tank-5:unit:210",
+          "supplementaryQueriesPreserveRulesState": true
+        }
+      ],
+      "provenance": {
+        "rawPath": "artifacts/ai-progress-combat-opportunity/pair-1800026.raw.json.gz",
+        "rawSha256": "8911af2a21d6656e332b9c7acb9386dcc10852a1baf35351f238f2c0be7dcd0f",
+        "registrationSha256": "b70bedc7e26ad356b144b32d577c11a020760d3c11fcb799eb1550f84795ddbb",
+        "scriptSha256": "10bc1e59d3c1cac0e5c08235bf7bb085e93ca3bccdef19b5b862be0f31198c7d",
+        "engineTreeSha256": "4a87376b26c41f60086cb3060f606afcc1e9b99bb3ba00339c904837d200bb2a"
+      }
+    },
+    {
+      "firstMatch": 1800028,
+      "originalTarget": "12,15",
+      "features": {
+        "boundaryVp": 0,
+        "attackAvailableValue": 0,
+        "offeredAttackStrength": 0
+      },
+      "terminalLocalEffect": 8,
+      "witnessCounts": [
+        1,
+        1
+      ],
+      "arms": [
+        {
+          "sourcePath": "artifacts/ai-progress-objective-30games/matches/match-1800029.save.json",
+          "sourceSha256": "0fba68defa48adf66842bbf7707dfab600efb6d9df258a5c90ecbb51d639b6e5",
+          "armIndex": 0,
+          "resumeAt": 71,
+          "resumeHash": "sha256:330d3f9d6d7c4b2dd36d22435d851b2753d2870a11b666717cfbe0254d1d951d",
+          "replayedActions": 7,
+          "at": 77,
+          "internalBoundary": true,
+          "revision": 77,
+          "stateHash": "sha256:1003a8ef31a26cac6514b7284fcb07b124f47f00c9b29cebdba310ff8341d7b6",
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "COMBAT",
+            "segment": "COMBAT",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "entryEvent": {
+            "kind": "SEQUENCE_ADVANCED",
+            "sequence": 0,
+            "from": {
+              "gameTurn": 1,
+              "playerTurnIndex": 0,
+              "phase": "COMBAT",
+              "segment": "BARRAGE",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            },
+            "to": {
+              "gameTurn": 1,
+              "playerTurnIndex": 0,
+              "phase": "COMBAT",
+              "segment": "COMBAT",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            }
+          },
+          "eventIndex": 0,
+          "containerPreHash": "sha256:575fcf28e4982d28256aacc0c0cae7b76d2a5c051e933ed9e878bfa11481acd4",
+          "containerPostHash": "sha256:373546acbb545cd02538d4ea808d837577c212b702b1ac344684dbcc049deafe",
+          "containerPostRevision": 78,
+          "action": {
+            "actionId": "candidate:advance:77",
+            "actorId": "player:axis",
+            "expectedRevision": 77,
+            "kind": "ADVANCE_SEQUENCE"
+          },
+          "reconstruction": {
+            "transitions": 1,
+            "allEventsMatch": true,
+            "normalizedFinalStateMatches": true
+          },
+          "query": {
+            "budget": 200,
+            "candidates": 4,
+            "truncated": false,
+            "actionsSha256": "ded4e569bd9f831dcec95d46b8a32f829552643fdcc3a9979960785fff934170"
+          },
+          "targetHolder": "player:allied",
+          "targetPoints": 3,
+          "pointScale": 0.8571428571428571,
+          "scores": {
+            "player:allied": 21,
+            "player:axis": 0
+          },
+          "axisMargin": -21,
+          "witnesses": [
+            {
+              "action": {
+                "actionId": "candidate:combat:REGULAR:12,15:generated-oob:344144350:axis:f2-recon:unit:77",
+                "actorId": "player:axis",
+                "expectedRevision": 77,
+                "kind": "DECLARE_COMBAT",
+                "combatKind": "REGULAR",
+                "attackerIds": [
+                  "generated-oob:344144350:axis:f2-recon:unit"
+                ],
+                "defenderIds": [
+                  "generated-oob:344144350:allied:garrison:objective-1",
+                  "generated-oob:344144350:allied:independent-engineer-1:unit",
+                  "generated-oob:344144350:allied:independent-hq-1:unit"
+                ],
+                "targetHexId": "12,15",
+                "leadAttackerId": "generated-oob:344144350:axis:f2-recon:unit",
+                "attackerSupply": [
+                  {
+                    "pieceId": "generated-oob:344144350:axis:f2-recon:unit",
+                    "method": "DUMPS",
+                    "dumpIds": [
+                      "generated-oob:344144350:axis:independent-supply-6:unit"
+                    ]
+                  }
+                ]
+              },
+              "attackerStrength": 1.5,
+              "externalPayments": [
+                {
+                  "resourcePieceId": "generated-oob:344144350:axis:independent-supply-6:unit",
+                  "quantity": 1,
+                  "unitDefinitionId": "quantity:supply-token"
+                }
+              ],
+              "internalIds": [],
+              "odds": "1:1",
+              "line": "VERY_CLOSE",
+              "defenderCanPay": true
+            }
+          ],
+          "attackAvailableValue": 6,
+          "offeredAttackStrength": 1.2857142857142856,
+          "bestActionId": "candidate:combat:REGULAR:12,15:generated-oob:344144350:axis:f2-recon:unit:77",
+          "supplementaryQueriesPreserveRulesState": true
+        },
+        {
+          "sourcePath": "artifacts/ai-progress-objective-original-continuation/pair-1800028/branch-15.save.json",
+          "sourceSha256": "faf73dc6b5f1febbc1decf369da9e57b189b9eb543436ae7071fc74d787ba5d0",
+          "armIndex": 1,
+          "resumeAt": 71,
+          "resumeHash": "sha256:8d6b2d5cd6a30d58ebc2e4ff644923f1ab2da000e3cce230b9b801a3ac5b2863",
+          "replayedActions": 7,
+          "at": 77,
+          "internalBoundary": true,
+          "revision": 77,
+          "stateHash": "sha256:bec033e48ec77e2176c329c076aaba11adf2809a964d40d6d46e98b2f3d36613",
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "COMBAT",
+            "segment": "COMBAT",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "entryEvent": {
+            "kind": "SEQUENCE_ADVANCED",
+            "sequence": 0,
+            "from": {
+              "gameTurn": 1,
+              "playerTurnIndex": 0,
+              "phase": "COMBAT",
+              "segment": "BARRAGE",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            },
+            "to": {
+              "gameTurn": 1,
+              "playerTurnIndex": 0,
+              "phase": "COMBAT",
+              "segment": "COMBAT",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            }
+          },
+          "eventIndex": 0,
+          "containerPreHash": "sha256:555283d9f8aebb66c2f460cdc8764e480e0e82f9ba1be53564e9eda979efed92",
+          "containerPostHash": "sha256:8b2af50939578849732ab082cb551b87170ffba8b6098ff9ce444aff81cbd77b",
+          "containerPostRevision": 78,
+          "action": {
+            "actionId": "candidate:advance:77",
+            "actorId": "player:axis",
+            "expectedRevision": 77,
+            "kind": "ADVANCE_SEQUENCE"
+          },
+          "reconstruction": {
+            "transitions": 1,
+            "allEventsMatch": true,
+            "normalizedFinalStateMatches": true
+          },
+          "query": {
+            "budget": 200,
+            "candidates": 4,
+            "truncated": false,
+            "actionsSha256": "ded4e569bd9f831dcec95d46b8a32f829552643fdcc3a9979960785fff934170"
+          },
+          "targetHolder": "player:allied",
+          "targetPoints": 3,
+          "pointScale": 0.8571428571428571,
+          "scores": {
+            "player:allied": 21,
+            "player:axis": 0
+          },
+          "axisMargin": -21,
+          "witnesses": [
+            {
+              "action": {
+                "actionId": "candidate:combat:REGULAR:12,15:generated-oob:344144350:axis:f2-recon:unit:77",
+                "actorId": "player:axis",
+                "expectedRevision": 77,
+                "kind": "DECLARE_COMBAT",
+                "combatKind": "REGULAR",
+                "attackerIds": [
+                  "generated-oob:344144350:axis:f2-recon:unit"
+                ],
+                "defenderIds": [
+                  "generated-oob:344144350:allied:garrison:objective-1",
+                  "generated-oob:344144350:allied:independent-engineer-1:unit",
+                  "generated-oob:344144350:allied:independent-hq-1:unit"
+                ],
+                "targetHexId": "12,15",
+                "leadAttackerId": "generated-oob:344144350:axis:f2-recon:unit",
+                "attackerSupply": [
+                  {
+                    "pieceId": "generated-oob:344144350:axis:f2-recon:unit",
+                    "method": "DUMPS",
+                    "dumpIds": [
+                      "generated-oob:344144350:axis:independent-supply-6:unit"
+                    ]
+                  }
+                ]
+              },
+              "attackerStrength": 1.5,
+              "externalPayments": [
+                {
+                  "resourcePieceId": "generated-oob:344144350:axis:independent-supply-6:unit",
+                  "quantity": 1,
+                  "unitDefinitionId": "quantity:supply-token"
+                }
+              ],
+              "internalIds": [],
+              "odds": "1:1",
+              "line": "VERY_CLOSE",
+              "defenderCanPay": true
+            }
+          ],
+          "attackAvailableValue": 6,
+          "offeredAttackStrength": 1.2857142857142856,
+          "bestActionId": "candidate:combat:REGULAR:12,15:generated-oob:344144350:axis:f2-recon:unit:77",
+          "supplementaryQueriesPreserveRulesState": true
+        }
+      ],
+      "provenance": {
+        "rawPath": "artifacts/ai-progress-combat-opportunity/pair-1800028.raw.json.gz",
+        "rawSha256": "48dd0abbb80a8f71563919df9d2c5721858bcac28853798c21d3a5630c1ec822",
+        "registrationSha256": "b70bedc7e26ad356b144b32d577c11a020760d3c11fcb799eb1550f84795ddbb",
+        "scriptSha256": "10bc1e59d3c1cac0e5c08235bf7bb085e93ca3bccdef19b5b862be0f31198c7d",
+        "engineTreeSha256": "4a87376b26c41f60086cb3060f606afcc1e9b99bb3ba00339c904837d200bb2a"
+      }
+    }
+  ],
+  "provenance": {
+    "scorerSha256": "c4c0c0036f4cd9e92a7ad91bd93c14c01a65cd6a3a8710835346b8473e1065c4",
+    "registrationSha256": "b70bedc7e26ad356b144b32d577c11a020760d3c11fcb799eb1550f84795ddbb"
+  }
+}
