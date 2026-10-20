@@ -1,0 +1,401 @@
+{
+  "histories": 60,
+  "replayedActions": 4800,
+  "verified": [
+    {
+      "key": "1800000:original:30",
+      "stateHash": "sha256:b3b6c79467612497ea1cebe2a46627b296fb8feae48dfb9fa5b40ad1e073cc5b",
+      "paymentActions": 6,
+      "witnesses": 0
+    },
+    {
+      "key": "1800000:original:15",
+      "stateHash": "sha256:35b50f44e1136b3deb16a6bffbe639604611e317fd57ebc69ee3d57ffe8593a0",
+      "paymentActions": 6,
+      "witnesses": 0
+    },
+    {
+      "key": "1800000:resample:30",
+      "stateHash": "sha256:4aa7281796fe46c3f0a88d545a060d54b6bc537a282b86cd61e83b44e9333b4a",
+      "paymentActions": 6,
+      "witnesses": 0
+    },
+    {
+      "key": "1800000:resample:15",
+      "stateHash": "sha256:613d9453a6614647ef776f935787c92beee72a9ab588e71c5e700352d068754c",
+      "paymentActions": 6,
+      "witnesses": 0
+    },
+    {
+      "key": "1800002:original:30",
+      "stateHash": "sha256:a9e1f11b537e6440cdc58027028b324da3140f00f65ae93c9f294f86666bbc60",
+      "paymentActions": 7,
+      "witnesses": 0
+    },
+    {
+      "key": "1800002:original:15",
+      "stateHash": "sha256:0fd08986377e562c7d4e311c9d336083f7ca4a1b966a3d5aed8d5cfa88f114ec",
+      "paymentActions": 7,
+      "witnesses": 0
+    },
+    {
+      "key": "1800002:resample:30",
+      "stateHash": "sha256:84d501bc48d484a1f4ca204da63d8948436f4c97c431c304411924a1055a5291",
+      "paymentActions": 7,
+      "witnesses": 0
+    },
+    {
+      "key": "1800002:resample:15",
+      "stateHash": "sha256:248cf8988f4a4f3ecbbd2d67947344351921ad724edec6143efff53b86c6d5c7",
+      "paymentActions": 7,
+      "witnesses": 0
+    },
+    {
+      "key": "1800004:original:30",
+      "stateHash": "sha256:6d9f00ebae150ac88b26261731030f500ef3a4d131a66009c26dc3d96e43f562",
+      "paymentActions": 6,
+      "witnesses": 0
+    },
+    {
+      "key": "1800004:original:15",
+      "stateHash": "sha256:295099cf20aa894c91ebf065ea333f0f61537ab55fe358f63e8375b2b837e38f",
+      "paymentActions": 6,
+      "witnesses": 0
+    },
+    {
+      "key": "1800004:resample:30",
+      "stateHash": "sha256:2120b790f523addfded41e2220ef9a468db5e4c21d8d8847b78ab0dd0a16d63a",
+      "paymentActions": 6,
+      "witnesses": 0
+    },
+    {
+      "key": "1800004:resample:15",
+      "stateHash": "sha256:974c5a22506f0d34eb5a39ebd80eba79e4aaffc49e3838a85f78bae2ba82c825",
+      "paymentActions": 6,
+      "witnesses": 0
+    },
+    {
+      "key": "1800006:original:30",
+      "stateHash": "sha256:7e7abb0f611028d38ebfb13e0b5fcbdc6ffcefba433ebe39d623d0d931fb3c73",
+      "paymentActions": 6,
+      "witnesses": 0
+    },
+    {
+      "key": "1800006:original:15",
+      "stateHash": "sha256:22da05d1504a7639024d252cd0b9c41ee9dbbb900f51ca4cac2c0e49d5d369d3",
+      "paymentActions": 6,
+      "witnesses": 0
+    },
+    {
+      "key": "1800006:resample:30",
+      "stateHash": "sha256:0935aa2c73bbb92271832bdd36a8bc80077464eb7d6d830b42c29110b589c1b8",
+      "paymentActions": 6,
+      "witnesses": 0
+    },
+    {
+      "key": "1800006:resample:15",
+      "stateHash": "sha256:0b58fcf5f48394890db0b31602c142cc2f588338e057b86618cd1b968bea6984",
+      "paymentActions": 6,
+      "witnesses": 0
+    },
+    {
+      "key": "1800008:original:30",
+      "stateHash": "sha256:908cfd82a7ac53df02a1389fd1f11fc3d7bee050290e6190802a65c5f77aeae4",
+      "paymentActions": 6,
+      "witnesses": 0
+    },
+    {
+      "key": "1800008:original:15",
+      "stateHash": "sha256:637ad918c4a51c9061336724ffc2d4ecdcce1cf4862c61f24c6f2a55d4ca8960",
+      "paymentActions": 6,
+      "witnesses": 0
+    },
+    {
+      "key": "1800008:resample:30",
+      "stateHash": "sha256:4cbe5e20a7c0cbd79de77a19f16d1f8fb87d3cd98e7169eac2f26681c3e60098",
+      "paymentActions": 6,
+      "witnesses": 0
+    },
+    {
+      "key": "1800008:resample:15",
+      "stateHash": "sha256:73e62115c8f477d20f205bf32fc2693f94e353d753f468fca83d7061caff63e2",
+      "paymentActions": 6,
+      "witnesses": 0
+    },
+    {
+      "key": "1800010:original:30",
+      "stateHash": "sha256:8ec42367e0a045e656efb0d5309a72a90454c487848cf3df470738bdf3f3645e",
+      "paymentActions": 6,
+      "witnesses": 1
+    },
+    {
+      "key": "1800010:original:15",
+      "stateHash": "sha256:31ac6e28c2cb7a24f7d311fc9f322517ce34a972f745c12805f1b6b9002f194e",
+      "paymentActions": 6,
+      "witnesses": 1
+    },
+    {
+      "key": "1800010:resample:30",
+      "stateHash": "sha256:43a5c8d110322ebd191f1b8160b857fc6d5d0bcaf8fb7449581dfe7b323ee3a8",
+      "paymentActions": 6,
+      "witnesses": 1
+    },
+    {
+      "key": "1800010:resample:15",
+      "stateHash": "sha256:90dbc015ccf048fb191ffa603d599530ee83c2c0e4aeca81dc75aec0bca91c67",
+      "paymentActions": 6,
+      "witnesses": 1
+    },
+    {
+      "key": "1800012:original:30",
+      "stateHash": "sha256:c6bd5beb236b2a15612915ec30ec3d5236f7e63563d847eca8cd3581bc3e4998",
+      "paymentActions": 6,
+      "witnesses": 1
+    },
+    {
+      "key": "1800012:original:15",
+      "stateHash": "sha256:c3f0714eed7b07d080aa547d1bdc5e322172621573c53068215a5e20a54715f7",
+      "paymentActions": 6,
+      "witnesses": 1
+    },
+    {
+      "key": "1800012:resample:30",
+      "stateHash": "sha256:960dddbc2f43154953bfeabe0ca1eed3e5514d0b5183d9ccdf0e098416a2ac16",
+      "paymentActions": 6,
+      "witnesses": 1
+    },
+    {
+      "key": "1800012:resample:15",
+      "stateHash": "sha256:3613b621b62071469ba2ec88b4754caaee99fe9d1c56aa607b62996a59ff140f",
+      "paymentActions": 6,
+      "witnesses": 1
+    },
+    {
+      "key": "1800014:original:30",
+      "stateHash": "sha256:16e99ef3960c3a6a71d6cb93d383ddf7ca215ab78520da80a837113946264133",
+      "paymentActions": 7,
+      "witnesses": 0
+    },
+    {
+      "key": "1800014:original:15",
+      "stateHash": "sha256:8081d3b0670d2d0e6fd79e8b172c4da50bb8bf6adbcb7f2855d6a13f0bc0588d",
+      "paymentActions": 7,
+      "witnesses": 0
+    },
+    {
+      "key": "1800014:resample:30",
+      "stateHash": "sha256:0a812e3c61c934ef411bac0427b5aba125954718c96a787c3b7e56165febc3d9",
+      "paymentActions": 7,
+      "witnesses": 0
+    },
+    {
+      "key": "1800014:resample:15",
+      "stateHash": "sha256:297ab7d2a8b6a8c05ce9d3fb55ff66c30ca75b59bf68941bed519af6b33079df",
+      "paymentActions": 7,
+      "witnesses": 0
+    },
+    {
+      "key": "1800016:original:30",
+      "stateHash": "sha256:0b442f0579a4c856f46e428ac35947f9b696c5ade4ee787053f76a0595617ae0",
+      "paymentActions": 6,
+      "witnesses": 0
+    },
+    {
+      "key": "1800016:original:15",
+      "stateHash": "sha256:ab48f2efd1c3da22de6ba54f8521378976181ff69df0dcce0a06ca93e7a0bb91",
+      "paymentActions": 6,
+      "witnesses": 0
+    },
+    {
+      "key": "1800016:resample:30",
+      "stateHash": "sha256:f5aece3fbaca1aac79f4c24fb78feeb0fcb90ea6286d34733703d647fc74915a",
+      "paymentActions": 6,
+      "witnesses": 0
+    },
+    {
+      "key": "1800016:resample:15",
+      "stateHash": "sha256:189a419c2aab084914c646eab42d3f64a17970ae98ed89d8a6ef8d4e2c118cf1",
+      "paymentActions": 6,
+      "witnesses": 0
+    },
+    {
+      "key": "1800018:original:30",
+      "stateHash": "sha256:de68df4a571846bec3b33c88ccef90f5e4bf42acae35d66ee5f8711b6af4cdb8",
+      "paymentActions": 6,
+      "witnesses": 0
+    },
+    {
+      "key": "1800018:original:15",
+      "stateHash": "sha256:97d9ac12433b8f79194ece41be292c90b3d5d65d420b078c5e8ae52b8235ac2d",
+      "paymentActions": 6,
+      "witnesses": 0
+    },
+    {
+      "key": "1800018:resample:30",
+      "stateHash": "sha256:91cbf1b282d185223b8e204a90d3364def146cc71b7b21940c58df6e4dc1dfc7",
+      "paymentActions": 6,
+      "witnesses": 0
+    },
+    {
+      "key": "1800018:resample:15",
+      "stateHash": "sha256:909d3629aa3c4d7456948bab675be9023c4c9e353e8a69ee0049d2087ed669c2",
+      "paymentActions": 6,
+      "witnesses": 0
+    },
+    {
+      "key": "1800020:original:30",
+      "stateHash": "sha256:b2541707200f4a3ecf2960ac69fb5eeec1d945a858f2b021f04b493dbf30d5d1",
+      "paymentActions": 6,
+      "witnesses": 1
+    },
+    {
+      "key": "1800020:original:15",
+      "stateHash": "sha256:1eb6137ce34b1b3eb0e97c970ecd41758fbb8eae54b73aecaafee9b7f661d735",
+      "paymentActions": 6,
+      "witnesses": 1
+    },
+    {
+      "key": "1800020:resample:30",
+      "stateHash": "sha256:efc998cc388f6b86469e010e5f12d1fe17d41824d283da6ab461b4db4db1026d",
+      "paymentActions": 6,
+      "witnesses": 1
+    },
+    {
+      "key": "1800020:resample:15",
+      "stateHash": "sha256:bccf9d2fbe1ddfd5290f7bb0c747ba71b43be26cd933af59acf5369a4455d14d",
+      "paymentActions": 6,
+      "witnesses": 1
+    },
+    {
+      "key": "1800022:original:30",
+      "stateHash": "sha256:03a2b03ba9649948977c88084ca1ba44bda8330bb881da63a31d9ad5ba2be809",
+      "paymentActions": 6,
+      "witnesses": 0
+    },
+    {
+      "key": "1800022:original:15",
+      "stateHash": "sha256:d084c6fc38c35a9d72f5ecee32fa6d7546635dbc4bd9e406578a0d098aae3de4",
+      "paymentActions": 6,
+      "witnesses": 0
+    },
+    {
+      "key": "1800022:resample:30",
+      "stateHash": "sha256:0330e9c1de26b3177ea30cd8bd015702bfa2b115227ae801d8d9235edcfaba8b",
+      "paymentActions": 6,
+      "witnesses": 0
+    },
+    {
+      "key": "1800022:resample:15",
+      "stateHash": "sha256:eb7a2157212d421a0c5877d5fb6d9e800933298f1d706c24ce406e49a5263d0a",
+      "paymentActions": 6,
+      "witnesses": 0
+    },
+    {
+      "key": "1800024:original:30",
+      "stateHash": "sha256:ecf76d8a0e8ee02d160778f2ed8c4f7ad29532b2531831efac8cab0fd47d79ff",
+      "paymentActions": 6,
+      "witnesses": 0
+    },
+    {
+      "key": "1800024:original:15",
+      "stateHash": "sha256:0d9954e111dd9515e3c6a347cdcd19c17dba73d9151f2484a6ad2c2fcfef7958",
+      "paymentActions": 6,
+      "witnesses": 0
+    },
+    {
+      "key": "1800024:resample:30",
+      "stateHash": "sha256:211b1681754f4002cc2dfede4d6c2251b4f3b889eac79c65b7d428b027a4701d",
+      "paymentActions": 6,
+      "witnesses": 0
+    },
+    {
+      "key": "1800024:resample:15",
+      "stateHash": "sha256:6605ec421b7892f4330ae4a112b4dd59d68ae38f7ccd038dddbbfca9174079c2",
+      "paymentActions": 6,
+      "witnesses": 0
+    },
+    {
+      "key": "1800026:original:30",
+      "stateHash": "sha256:d611b39ca81b4d355486d1933b384d500f8710b996e39b7affc3896e1091dff5",
+      "paymentActions": 9,
+      "witnesses": 1
+    },
+    {
+      "key": "1800026:original:15",
+      "stateHash": "sha256:e7233718e51a352e5ccc66aa925384a51cc87ce8749dfc81d8ceff224727a2a9",
+      "paymentActions": 9,
+      "witnesses": 1
+    },
+    {
+      "key": "1800026:resample:30",
+      "stateHash": "sha256:c80260862db22febff5057c6cf7bb8b9392cabc9fe5157ce04d277cca86a0863",
+      "paymentActions": 9,
+      "witnesses": 1
+    },
+    {
+      "key": "1800026:resample:15",
+      "stateHash": "sha256:268878ce095f786750065a25470d21c4a581d16f04eb8ed6d00efa0afb4955f7",
+      "paymentActions": 9,
+      "witnesses": 1
+    },
+    {
+      "key": "1800028:original:30",
+      "stateHash": "sha256:1003a8ef31a26cac6514b7284fcb07b124f47f00c9b29cebdba310ff8341d7b6",
+      "paymentActions": 8,
+      "witnesses": 1
+    },
+    {
+      "key": "1800028:original:15",
+      "stateHash": "sha256:bec033e48ec77e2176c329c076aaba11adf2809a964d40d6d46e98b2f3d36613",
+      "paymentActions": 8,
+      "witnesses": 1
+    },
+    {
+      "key": "1800028:resample:30",
+      "stateHash": "sha256:9be960485d4d96ae54498ca762da5cfb19616368235e7314b6ae8ceb2e94fea2",
+      "paymentActions": 8,
+      "witnesses": 1
+    },
+    {
+      "key": "1800028:resample:15",
+      "stateHash": "sha256:12242d550475d41aff9e737ad49c3fce606e5e1c06dae2a4962207b4c7619cae",
+      "paymentActions": 8,
+      "witnesses": 1
+    }
+  ],
+  "paymentActions": 388,
+  "paymentTotals": {
+    "PAY_FUEL": 1476,
+    "RECOVER_INTERNALS": 0,
+    "CHECK_SUPPLY": 4
+  },
+  "crossDiceUnchangedStrength": 30,
+  "priorTerminalSaveBindings": 30,
+  "semanticControls": [
+    "doubleChargedSettledPayment",
+    "fabricatedConsistentLedgerStock",
+    "wrongInternalBoundary",
+    "sharedSourceOverspending"
+  ],
+  "reservationControl": {
+    "at": 67,
+    "resourceId": "generated-oob:344141634:axis:independent-supply-2:unit",
+    "physicalConsumptionAtDeclaration": 0,
+    "reservedTokens": 3
+  },
+  "recoveryControl": {
+    "sourcePath": "artifacts/ai-progress-objective-30games/matches/match-1800001.save.json",
+    "at": 553,
+    "actorId": "player:axis",
+    "payments": [
+      {
+        "resourcePieceId": "supply-arrival:player:axis:5#load524",
+        "quantity": 2,
+        "unitDefinitionId": "quantity:supply-token"
+      }
+    ]
+  },
+  "checkerSha256": "4911731d921a521d0b4b89b886751f245568bae8f5fcb533ee5ffc4c9a7077f8",
+  "resultsSha256": "af7f7603bfd22a93a63c7f71077e1dcf03db0db1f46d825c556b1305d2c6f409",
+  "registrationSha256": "3d8d40dededf0fc5dd6d66dae4b1efd8329d36f860b22e94ee69334f1a48e155"
+}

@@ -1,0 +1,3925 @@
+{
+  "rows": [
+    {
+      "firstMatch": 1800000,
+      "dice": "original",
+      "weight": 30,
+      "target": "-2,7",
+      "sourceSave": "artifacts/ai-progress-objective-30games/matches/match-1800001.save.json",
+      "sourceSha256": "e04812aafaf87a018eba2164b0b69806f7a39076147e2d663c415370a0cddd4c",
+      "replayedActions": 67,
+      "boundary": {
+        "at": 66,
+        "sequence": {
+          "gameTurn": 1,
+          "playerTurnIndex": 0,
+          "phase": "COMBAT",
+          "segment": "COMBAT",
+          "firstPlayerId": "player:axis",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:axis"
+        },
+        "stateHash": "sha256:b3b6c79467612497ea1cebe2a46627b296fb8feae48dfb9fa5b40ad1e073cc5b",
+        "rng": {
+          "state": 4147271153,
+          "draws": 4
+        },
+        "internalRevision": 66,
+        "containerPreHash": "sha256:97ff0610e74b0935bed6f379ceaa73cea9e2222b1d8d0a06231c153ed982269b",
+        "containerPostHash": "sha256:d43fb837d750157b4bed95a6e8ac5a26aad754996239a99da61bf9354d8ed408",
+        "eventIndex": 2,
+        "supplyExit": {
+          "at": 65,
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "SUPPLY",
+            "segment": "NONE",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "preLifecycleHash": "sha256:3e79de0cab27aa58134538a2e4bae4f4c7f759396c248ebaaf71266c05bd2ff7",
+          "eventIndex": 1
+        },
+        "query": {
+          "budget": 200,
+          "actionHash": "8e5bbdc72309e24d333e27ee805c4007ae0aba86dc3ce4ba66327aef4eb0f870",
+          "truncated": false,
+          "candidates": 4,
+          "status": "ABSENT_IN_OFFERED_SET"
+        },
+        "bestStrength": 0,
+        "witnessCount": 0,
+        "priorMatch": true
+      },
+      "payments": {
+        "PAY_FUEL": 24,
+        "RECOVER_INTERNALS": 0,
+        "CHECK_SUPPLY": 0
+      },
+      "paymentActions": 6,
+      "preForkPaymentActions": 6,
+      "rawPath": "artifacts/ai-theater-supply-audit/pair-1800000-original-30.raw.json.gz",
+      "rawSha256": "dc5c581404bbecaf61115ee595411c8b8e1c1e257353319f6002d2eb1ef4b5fe",
+      "requeryUnchanged": true,
+      "settledCurrentTurnCosts": true
+    },
+    {
+      "firstMatch": 1800000,
+      "dice": "original",
+      "weight": 15,
+      "target": "-2,7",
+      "sourceSave": "artifacts/ai-progress-objective-original-continuation/pair-1800000/branch-15.save.json",
+      "sourceSha256": "ce6334a7dafd24b41f5687fab07f847d64a6488eed4f6370b8f6fc12f1fa2ae6",
+      "replayedActions": 67,
+      "boundary": {
+        "at": 66,
+        "sequence": {
+          "gameTurn": 1,
+          "playerTurnIndex": 0,
+          "phase": "COMBAT",
+          "segment": "COMBAT",
+          "firstPlayerId": "player:axis",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:axis"
+        },
+        "stateHash": "sha256:35b50f44e1136b3deb16a6bffbe639604611e317fd57ebc69ee3d57ffe8593a0",
+        "rng": {
+          "state": 4147271153,
+          "draws": 4
+        },
+        "internalRevision": 66,
+        "containerPreHash": "sha256:3092455baafa610c7173a10f409c4d46d1e9af4738c2aecdca65601a6084ee42",
+        "containerPostHash": "sha256:873f69e0615f8db1293ff5b710c76ae49498658b0e983ae1099a1e2afd028384",
+        "eventIndex": 2,
+        "supplyExit": {
+          "at": 65,
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "SUPPLY",
+            "segment": "NONE",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "preLifecycleHash": "sha256:b72b94906bfcdc104be5e5df81ce391126b05e7838d1cc9e5d31b56ffd086084",
+          "eventIndex": 1
+        },
+        "query": {
+          "budget": 200,
+          "actionHash": "c6b82255d56d44cd494ef72469c21d179e7fc0ad2d084b1d405350aeef1db5d3",
+          "truncated": false,
+          "candidates": 4,
+          "status": "ABSENT_IN_OFFERED_SET"
+        },
+        "bestStrength": 0,
+        "witnessCount": 0,
+        "priorMatch": true
+      },
+      "payments": {
+        "PAY_FUEL": 24,
+        "RECOVER_INTERNALS": 0,
+        "CHECK_SUPPLY": 0
+      },
+      "paymentActions": 6,
+      "preForkPaymentActions": 6,
+      "rawPath": "artifacts/ai-theater-supply-audit/pair-1800000-original-15.raw.json.gz",
+      "rawSha256": "f0ae32187d462c2a460609d7bed118f33db9309f1dc9a42ae5affc6482f4e498",
+      "requeryUnchanged": true,
+      "settledCurrentTurnCosts": true
+    },
+    {
+      "firstMatch": 1800000,
+      "dice": "resample",
+      "weight": 30,
+      "target": "-2,7",
+      "sourceSave": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800000/branch-30.save.json",
+      "sourceSha256": "1a8274643aac0f674d5ca0e428e711021141f95867385d6cd71ca5f509ec8312",
+      "replayedActions": 67,
+      "boundary": {
+        "at": 66,
+        "sequence": {
+          "gameTurn": 1,
+          "playerTurnIndex": 0,
+          "phase": "COMBAT",
+          "segment": "COMBAT",
+          "firstPlayerId": "player:axis",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:axis"
+        },
+        "stateHash": "sha256:4aa7281796fe46c3f0a88d545a060d54b6bc537a282b86cd61e83b44e9333b4a",
+        "rng": {
+          "state": 1887752311,
+          "draws": 4
+        },
+        "internalRevision": 66,
+        "containerPreHash": "sha256:b4a00b4374c3e785042cf56e457853f54cd3807b400fa516a9fe9a3d2cd42fb8",
+        "containerPostHash": "sha256:83ebd2c04de970b0289e9d0ab6b5b015569928720ebd693ab991ddfe77e98f54",
+        "eventIndex": 2,
+        "supplyExit": {
+          "at": 65,
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "SUPPLY",
+            "segment": "NONE",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "preLifecycleHash": "sha256:89cc716a0b456e96c5d0ba2e17e54b00147db8d3b2ae44c9c4411b946541dfa4",
+          "eventIndex": 1
+        },
+        "query": {
+          "budget": 200,
+          "actionHash": "8e5bbdc72309e24d333e27ee805c4007ae0aba86dc3ce4ba66327aef4eb0f870",
+          "truncated": false,
+          "candidates": 4,
+          "status": "ABSENT_IN_OFFERED_SET"
+        },
+        "bestStrength": 0,
+        "witnessCount": 0,
+        "priorMatch": null
+      },
+      "payments": {
+        "PAY_FUEL": 24,
+        "RECOVER_INTERNALS": 0,
+        "CHECK_SUPPLY": 0
+      },
+      "paymentActions": 6,
+      "preForkPaymentActions": 6,
+      "rawPath": "artifacts/ai-theater-supply-audit/pair-1800000-resample-30.raw.json.gz",
+      "rawSha256": "10872796490bd3a09e4e3cc712fb4ec7ae1381066f60b36eb22d1f757e841c47",
+      "requeryUnchanged": true,
+      "settledCurrentTurnCosts": true
+    },
+    {
+      "firstMatch": 1800000,
+      "dice": "resample",
+      "weight": 15,
+      "target": "-2,7",
+      "sourceSave": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800000/branch-15.save.json",
+      "sourceSha256": "4394900286fbcc3f8778d8a4eeb18f052d1b5f6e5b3e7b8de2cf611321065382",
+      "replayedActions": 67,
+      "boundary": {
+        "at": 66,
+        "sequence": {
+          "gameTurn": 1,
+          "playerTurnIndex": 0,
+          "phase": "COMBAT",
+          "segment": "COMBAT",
+          "firstPlayerId": "player:axis",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:axis"
+        },
+        "stateHash": "sha256:613d9453a6614647ef776f935787c92beee72a9ab588e71c5e700352d068754c",
+        "rng": {
+          "state": 1887752311,
+          "draws": 4
+        },
+        "internalRevision": 66,
+        "containerPreHash": "sha256:9781f617189076114371136faff7426acd0baa8bf1e10e9bab88509c1720551c",
+        "containerPostHash": "sha256:3a3aa8673b3d9084ab0caf1b552e30fa099789e95f19d198b594caa44481edc9",
+        "eventIndex": 2,
+        "supplyExit": {
+          "at": 65,
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "SUPPLY",
+            "segment": "NONE",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "preLifecycleHash": "sha256:ccc4cf5235908300811ecb85cb14759f0ee2883fae448e7387515f2f94b17547",
+          "eventIndex": 1
+        },
+        "query": {
+          "budget": 200,
+          "actionHash": "c6b82255d56d44cd494ef72469c21d179e7fc0ad2d084b1d405350aeef1db5d3",
+          "truncated": false,
+          "candidates": 4,
+          "status": "ABSENT_IN_OFFERED_SET"
+        },
+        "bestStrength": 0,
+        "witnessCount": 0,
+        "priorMatch": null
+      },
+      "payments": {
+        "PAY_FUEL": 24,
+        "RECOVER_INTERNALS": 0,
+        "CHECK_SUPPLY": 0
+      },
+      "paymentActions": 6,
+      "preForkPaymentActions": 6,
+      "rawPath": "artifacts/ai-theater-supply-audit/pair-1800000-resample-15.raw.json.gz",
+      "rawSha256": "56f210d4c78578606351e7d371781f5fd123c4434207f23ba5bc617690ed4898",
+      "requeryUnchanged": true,
+      "settledCurrentTurnCosts": true
+    },
+    {
+      "firstMatch": 1800002,
+      "dice": "original",
+      "weight": 30,
+      "target": "5,18",
+      "sourceSave": "artifacts/ai-progress-objective-30games/matches/match-1800003.save.json",
+      "sourceSha256": "4955c2ee602c967630da6a1dc9ad6c86396dcbc883908b4702e815b45d1103f8",
+      "replayedActions": 74,
+      "boundary": {
+        "at": 73,
+        "sequence": {
+          "gameTurn": 1,
+          "playerTurnIndex": 0,
+          "phase": "COMBAT",
+          "segment": "COMBAT",
+          "firstPlayerId": "player:axis",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:axis"
+        },
+        "stateHash": "sha256:a9e1f11b537e6440cdc58027028b324da3140f00f65ae93c9f294f86666bbc60",
+        "rng": {
+          "state": 1165345497,
+          "draws": 6
+        },
+        "internalRevision": 73,
+        "containerPreHash": "sha256:4ab3bc9a1858e38ba0b3542e29cd11d4ceb10980de444de092c9df974129416c",
+        "containerPostHash": "sha256:7f4b07064ae55ab500d1f138dbf61aa8f4ec785c8a8298f86ebeb92e691bdb71",
+        "eventIndex": 0,
+        "supplyExit": {
+          "at": 70,
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "SUPPLY",
+            "segment": "NONE",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "preLifecycleHash": "sha256:99966dec78ecc957ea48c7d4dc45b1160810181e6ae5463be8417c802f074d28",
+          "eventIndex": 1
+        },
+        "query": {
+          "budget": 200,
+          "actionHash": "a504f54e60124154b341566c7d93ff3ccbcebb93db010c885f8963ce44aa0541",
+          "truncated": false,
+          "candidates": 6,
+          "status": "ABSENT_IN_OFFERED_SET"
+        },
+        "bestStrength": 0,
+        "witnessCount": 0,
+        "priorMatch": true
+      },
+      "payments": {
+        "PAY_FUEL": 28,
+        "RECOVER_INTERNALS": 0,
+        "CHECK_SUPPLY": 0
+      },
+      "paymentActions": 7,
+      "preForkPaymentActions": 4,
+      "rawPath": "artifacts/ai-theater-supply-audit/pair-1800002-original-30.raw.json.gz",
+      "rawSha256": "e1a710ac9ddf13608cab77f593389de10688650a055fce856c1a81a80500fced",
+      "requeryUnchanged": true,
+      "settledCurrentTurnCosts": true
+    },
+    {
+      "firstMatch": 1800002,
+      "dice": "original",
+      "weight": 15,
+      "target": "5,18",
+      "sourceSave": "artifacts/ai-progress-objective-original-continuation/pair-1800002/branch-15.save.json",
+      "sourceSha256": "02983b8591943b23776686887f8e154a4b90e2afd157469cb80194473261dbbb",
+      "replayedActions": 74,
+      "boundary": {
+        "at": 73,
+        "sequence": {
+          "gameTurn": 1,
+          "playerTurnIndex": 0,
+          "phase": "COMBAT",
+          "segment": "COMBAT",
+          "firstPlayerId": "player:axis",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:axis"
+        },
+        "stateHash": "sha256:0fd08986377e562c7d4e311c9d336083f7ca4a1b966a3d5aed8d5cfa88f114ec",
+        "rng": {
+          "state": 1165345497,
+          "draws": 6
+        },
+        "internalRevision": 73,
+        "containerPreHash": "sha256:00688c07ef53a52b8a2304e7cb6fdb721f2e759554049f7475317ace2e514c5e",
+        "containerPostHash": "sha256:a24933e2f03c7286b43eb0dcfcf20479c90f9d294025f72dcd819f3b4b7fc4e6",
+        "eventIndex": 0,
+        "supplyExit": {
+          "at": 70,
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "SUPPLY",
+            "segment": "NONE",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "preLifecycleHash": "sha256:239b7e950e94698f2608963bbd3ad7191d9d2c817f4b1959bb127fbba9f214fd",
+          "eventIndex": 1
+        },
+        "query": {
+          "budget": 200,
+          "actionHash": "7ba6d7858f26738aa0185033f01f4e8e3d3328b7ce656694d08c42f8420e4b62",
+          "truncated": false,
+          "candidates": 4,
+          "status": "ABSENT_IN_OFFERED_SET"
+        },
+        "bestStrength": 0,
+        "witnessCount": 0,
+        "priorMatch": true
+      },
+      "payments": {
+        "PAY_FUEL": 28,
+        "RECOVER_INTERNALS": 0,
+        "CHECK_SUPPLY": 0
+      },
+      "paymentActions": 7,
+      "preForkPaymentActions": 4,
+      "rawPath": "artifacts/ai-theater-supply-audit/pair-1800002-original-15.raw.json.gz",
+      "rawSha256": "07f70e5d1151bf637f30de07224fb66e2fde4b128ea39e1c12a2a597ddcb460b",
+      "requeryUnchanged": true,
+      "settledCurrentTurnCosts": true
+    },
+    {
+      "firstMatch": 1800002,
+      "dice": "resample",
+      "weight": 30,
+      "target": "5,18",
+      "sourceSave": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800002/branch-30.save.json",
+      "sourceSha256": "09dc9b5022f3b6148febbf02aa0a3a38e2d471bf7357869ddbb5c90d257113fb",
+      "replayedActions": 74,
+      "boundary": {
+        "at": 73,
+        "sequence": {
+          "gameTurn": 1,
+          "playerTurnIndex": 0,
+          "phase": "COMBAT",
+          "segment": "COMBAT",
+          "firstPlayerId": "player:axis",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:axis"
+        },
+        "stateHash": "sha256:84d501bc48d484a1f4ca204da63d8948436f4c97c431c304411924a1055a5291",
+        "rng": {
+          "state": 3827427131,
+          "draws": 7
+        },
+        "internalRevision": 73,
+        "containerPreHash": "sha256:a62e3211e3c7f8eea86724d8724c5eb731e2f350ed618f36be6aefcacdea9a7d",
+        "containerPostHash": "sha256:ab7e0caac983c095b5dea98b80a3613f0db0585fa5ec0e3d8735d2473ac1b819",
+        "eventIndex": 0,
+        "supplyExit": {
+          "at": 70,
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "SUPPLY",
+            "segment": "NONE",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "preLifecycleHash": "sha256:c18ae257e3a8de38257026c8874514d81d6cf6305d52ebaa0342494d0cb5e2fc",
+          "eventIndex": 1
+        },
+        "query": {
+          "budget": 200,
+          "actionHash": "ab8644324298b30a4a27940f42b5ee3dcb4970aa89a8973ae88f2aef49cb91de",
+          "truncated": false,
+          "candidates": 5,
+          "status": "ABSENT_IN_OFFERED_SET"
+        },
+        "bestStrength": 0,
+        "witnessCount": 0,
+        "priorMatch": null
+      },
+      "payments": {
+        "PAY_FUEL": 28,
+        "RECOVER_INTERNALS": 0,
+        "CHECK_SUPPLY": 0
+      },
+      "paymentActions": 7,
+      "preForkPaymentActions": 4,
+      "rawPath": "artifacts/ai-theater-supply-audit/pair-1800002-resample-30.raw.json.gz",
+      "rawSha256": "7edfd2868df7e9907423993f81db689ceeb494ff9d397150514ff1938a23f705",
+      "requeryUnchanged": true,
+      "settledCurrentTurnCosts": true
+    },
+    {
+      "firstMatch": 1800002,
+      "dice": "resample",
+      "weight": 15,
+      "target": "5,18",
+      "sourceSave": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800002/branch-15.save.json",
+      "sourceSha256": "1fa0b33b3d68a9268b93766195230c9f9f5ec596df3f7633377a1b717fc1ed29",
+      "replayedActions": 74,
+      "boundary": {
+        "at": 73,
+        "sequence": {
+          "gameTurn": 1,
+          "playerTurnIndex": 0,
+          "phase": "COMBAT",
+          "segment": "COMBAT",
+          "firstPlayerId": "player:axis",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:axis"
+        },
+        "stateHash": "sha256:248cf8988f4a4f3ecbbd2d67947344351921ad724edec6143efff53b86c6d5c7",
+        "rng": {
+          "state": 3827427131,
+          "draws": 7
+        },
+        "internalRevision": 73,
+        "containerPreHash": "sha256:34704321b890e3a2ba2828568b5191d03916059c0822df1494d562c5a6ee1e43",
+        "containerPostHash": "sha256:2132ea3a776043cc3f8c20ffdaf6000d5121e7ed5ee27ea27e03fdd0d578476d",
+        "eventIndex": 0,
+        "supplyExit": {
+          "at": 70,
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "SUPPLY",
+            "segment": "NONE",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "preLifecycleHash": "sha256:4d20b54614618122676cc7569b88eeb9e8a4647fb94a9905be88a1bc0325f6d8",
+          "eventIndex": 1
+        },
+        "query": {
+          "budget": 200,
+          "actionHash": "d06d454aaac3e2172fac118b50cebbdaac3a7235da8f61bdc40b47c3b92a6a58",
+          "truncated": false,
+          "candidates": 3,
+          "status": "ABSENT_IN_OFFERED_SET"
+        },
+        "bestStrength": 0,
+        "witnessCount": 0,
+        "priorMatch": null
+      },
+      "payments": {
+        "PAY_FUEL": 28,
+        "RECOVER_INTERNALS": 0,
+        "CHECK_SUPPLY": 0
+      },
+      "paymentActions": 7,
+      "preForkPaymentActions": 4,
+      "rawPath": "artifacts/ai-theater-supply-audit/pair-1800002-resample-15.raw.json.gz",
+      "rawSha256": "5bef4d8d8a19c9d4570a14f303f871563b93d737177a3462c2d9b80b347c6d9a",
+      "requeryUnchanged": true,
+      "settledCurrentTurnCosts": true
+    },
+    {
+      "firstMatch": 1800004,
+      "dice": "original",
+      "weight": 30,
+      "target": "11,13",
+      "sourceSave": "artifacts/ai-progress-objective-30games/matches/match-1800005.save.json",
+      "sourceSha256": "280e1bb45485a16cdbd53d4c73d446bd6d8f28c01807cb74c78a4b5ea610a64b",
+      "replayedActions": 66,
+      "boundary": {
+        "at": 65,
+        "sequence": {
+          "gameTurn": 1,
+          "playerTurnIndex": 0,
+          "phase": "COMBAT",
+          "segment": "COMBAT",
+          "firstPlayerId": "player:axis",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:axis"
+        },
+        "stateHash": "sha256:6d9f00ebae150ac88b26261731030f500ef3a4d131a66009c26dc3d96e43f562",
+        "rng": {
+          "state": 289220115,
+          "draws": 4
+        },
+        "internalRevision": 65,
+        "containerPreHash": "sha256:d04ed607989906d511c56f3d5075a50c8c6ada1901234c42501d721c65bd80c6",
+        "containerPostHash": "sha256:5942461632de8c269589a491675f4c73830ec46ba481f4e06b60155488650edd",
+        "eventIndex": 4,
+        "supplyExit": {
+          "at": 65,
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "SUPPLY",
+            "segment": "NONE",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "preLifecycleHash": "sha256:1167f9986cff816ee4324cb2c5f33e299c71568d0b8731661e05b29c5c2fb168",
+          "eventIndex": 1
+        },
+        "query": {
+          "budget": 200,
+          "actionHash": "5ee43fc46a127e1d3eb7c10aaa000fe91a125eb5afd4f2eb33e470377387fc4d",
+          "truncated": false,
+          "candidates": 2,
+          "status": "ABSENT_IN_OFFERED_SET"
+        },
+        "bestStrength": 0,
+        "witnessCount": 0,
+        "priorMatch": true
+      },
+      "payments": {
+        "PAY_FUEL": 24,
+        "RECOVER_INTERNALS": 0,
+        "CHECK_SUPPLY": 0
+      },
+      "paymentActions": 6,
+      "preForkPaymentActions": 3,
+      "rawPath": "artifacts/ai-theater-supply-audit/pair-1800004-original-30.raw.json.gz",
+      "rawSha256": "690cf03a74deec25092556171e8a25d0e81a1027c68b663054e2771dc5f3e557",
+      "requeryUnchanged": true,
+      "settledCurrentTurnCosts": true
+    },
+    {
+      "firstMatch": 1800004,
+      "dice": "original",
+      "weight": 15,
+      "target": "11,13",
+      "sourceSave": "artifacts/ai-progress-objective-original-continuation/pair-1800004/branch-15.save.json",
+      "sourceSha256": "4f2c8e392b2a7e43bd9636b3ca75daa76cf9c4bf83cbdcd0801689c2593cb592",
+      "replayedActions": 66,
+      "boundary": {
+        "at": 65,
+        "sequence": {
+          "gameTurn": 1,
+          "playerTurnIndex": 0,
+          "phase": "COMBAT",
+          "segment": "COMBAT",
+          "firstPlayerId": "player:axis",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:axis"
+        },
+        "stateHash": "sha256:295099cf20aa894c91ebf065ea333f0f61537ab55fe358f63e8375b2b837e38f",
+        "rng": {
+          "state": 289220115,
+          "draws": 4
+        },
+        "internalRevision": 65,
+        "containerPreHash": "sha256:7046495a6663e6e6d964eb177c7c2788171809d95770a770f2768097a178c731",
+        "containerPostHash": "sha256:377e7f1259effae7e1c539a8ba31580c1f51da536950a634f6e6f907f17a1520",
+        "eventIndex": 4,
+        "supplyExit": {
+          "at": 65,
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "SUPPLY",
+            "segment": "NONE",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "preLifecycleHash": "sha256:5d738db8ef8b7db96f05cc3d1da49cf106d059af17c7c34713e1a7d488d767ec",
+          "eventIndex": 1
+        },
+        "query": {
+          "budget": 200,
+          "actionHash": "55c3336860752288f398fd7133cd6e1aac7f7c10c354790e9f607ed20a7ed677",
+          "truncated": false,
+          "candidates": 2,
+          "status": "ABSENT_IN_OFFERED_SET"
+        },
+        "bestStrength": 0,
+        "witnessCount": 0,
+        "priorMatch": true
+      },
+      "payments": {
+        "PAY_FUEL": 24,
+        "RECOVER_INTERNALS": 0,
+        "CHECK_SUPPLY": 0
+      },
+      "paymentActions": 6,
+      "preForkPaymentActions": 3,
+      "rawPath": "artifacts/ai-theater-supply-audit/pair-1800004-original-15.raw.json.gz",
+      "rawSha256": "42bd48630c9a32b57ff95bac1d8006188efcdd7e73075d463fe06277e52a6117",
+      "requeryUnchanged": true,
+      "settledCurrentTurnCosts": true
+    },
+    {
+      "firstMatch": 1800004,
+      "dice": "resample",
+      "weight": 30,
+      "target": "11,13",
+      "sourceSave": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800004/branch-30.save.json",
+      "sourceSha256": "a99ad3f18037eae9d22f5793f66d52edf2f7d89a225d3b4867dd2a92c5615302",
+      "replayedActions": 66,
+      "boundary": {
+        "at": 65,
+        "sequence": {
+          "gameTurn": 1,
+          "playerTurnIndex": 0,
+          "phase": "COMBAT",
+          "segment": "COMBAT",
+          "firstPlayerId": "player:axis",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:axis"
+        },
+        "stateHash": "sha256:2120b790f523addfded41e2220ef9a468db5e4c21d8d8847b78ab0dd0a16d63a",
+        "rng": {
+          "state": 254552471,
+          "draws": 4
+        },
+        "internalRevision": 65,
+        "containerPreHash": "sha256:88ea8d19ee9d34de850cce3f15039a8a9ff311915ff00a22c85144fc8b5abbdd",
+        "containerPostHash": "sha256:1c628390818c055f51b5afc39576d9dd0489f7309906a76ef6fd2e7a771052b5",
+        "eventIndex": 4,
+        "supplyExit": {
+          "at": 65,
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "SUPPLY",
+            "segment": "NONE",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "preLifecycleHash": "sha256:dc56c62c6bd456a0d8d24b80eb62e9979a69378f381e9efc7b4f7e8713d225c0",
+          "eventIndex": 1
+        },
+        "query": {
+          "budget": 200,
+          "actionHash": "5ee43fc46a127e1d3eb7c10aaa000fe91a125eb5afd4f2eb33e470377387fc4d",
+          "truncated": false,
+          "candidates": 2,
+          "status": "ABSENT_IN_OFFERED_SET"
+        },
+        "bestStrength": 0,
+        "witnessCount": 0,
+        "priorMatch": null
+      },
+      "payments": {
+        "PAY_FUEL": 24,
+        "RECOVER_INTERNALS": 0,
+        "CHECK_SUPPLY": 0
+      },
+      "paymentActions": 6,
+      "preForkPaymentActions": 3,
+      "rawPath": "artifacts/ai-theater-supply-audit/pair-1800004-resample-30.raw.json.gz",
+      "rawSha256": "1c063b543f509de5f54980b9bd64f3bb1b384fbb433ab72eeb7c25f33f0acdb5",
+      "requeryUnchanged": true,
+      "settledCurrentTurnCosts": true
+    },
+    {
+      "firstMatch": 1800004,
+      "dice": "resample",
+      "weight": 15,
+      "target": "11,13",
+      "sourceSave": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800004/branch-15.save.json",
+      "sourceSha256": "830fed1fa3d0932ae3ee6fa34445406bb2b6a2736eb1f641dda5135b9b3babe3",
+      "replayedActions": 66,
+      "boundary": {
+        "at": 65,
+        "sequence": {
+          "gameTurn": 1,
+          "playerTurnIndex": 0,
+          "phase": "COMBAT",
+          "segment": "COMBAT",
+          "firstPlayerId": "player:axis",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:axis"
+        },
+        "stateHash": "sha256:974c5a22506f0d34eb5a39ebd80eba79e4aaffc49e3838a85f78bae2ba82c825",
+        "rng": {
+          "state": 254552471,
+          "draws": 4
+        },
+        "internalRevision": 65,
+        "containerPreHash": "sha256:b5c5232edc1bc7be3a5a2084013580af8f6fce0ad9d6415a81275ac1543bb787",
+        "containerPostHash": "sha256:92baeacf9f2b3f874487583141eba657c28bcb5c934993579424a70fc1d57336",
+        "eventIndex": 4,
+        "supplyExit": {
+          "at": 65,
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "SUPPLY",
+            "segment": "NONE",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "preLifecycleHash": "sha256:83f5a8bc23496e75762b74617fea0ca2d8ac9342d21ce8269c7736904b31e464",
+          "eventIndex": 1
+        },
+        "query": {
+          "budget": 200,
+          "actionHash": "55c3336860752288f398fd7133cd6e1aac7f7c10c354790e9f607ed20a7ed677",
+          "truncated": false,
+          "candidates": 2,
+          "status": "ABSENT_IN_OFFERED_SET"
+        },
+        "bestStrength": 0,
+        "witnessCount": 0,
+        "priorMatch": null
+      },
+      "payments": {
+        "PAY_FUEL": 24,
+        "RECOVER_INTERNALS": 0,
+        "CHECK_SUPPLY": 0
+      },
+      "paymentActions": 6,
+      "preForkPaymentActions": 3,
+      "rawPath": "artifacts/ai-theater-supply-audit/pair-1800004-resample-15.raw.json.gz",
+      "rawSha256": "f5672166764cd3529f99adb72a60d80b0eb4fe0b4718f95f091ab0673afed8da",
+      "requeryUnchanged": true,
+      "settledCurrentTurnCosts": true
+    },
+    {
+      "firstMatch": 1800006,
+      "dice": "original",
+      "weight": 30,
+      "target": "-2,16",
+      "sourceSave": "artifacts/ai-progress-objective-30games/matches/match-1800007.save.json",
+      "sourceSha256": "78f0acb920bc47cc108f4e4c06d20967b979224079fb524ac8e7c3a07a4aa325",
+      "replayedActions": 71,
+      "boundary": {
+        "at": 70,
+        "sequence": {
+          "gameTurn": 1,
+          "playerTurnIndex": 0,
+          "phase": "COMBAT",
+          "segment": "COMBAT",
+          "firstPlayerId": "player:axis",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:axis"
+        },
+        "stateHash": "sha256:7e7abb0f611028d38ebfb13e0b5fcbdc6ffcefba433ebe39d623d0d931fb3c73",
+        "rng": {
+          "state": 2062172041,
+          "draws": 7
+        },
+        "internalRevision": 70,
+        "containerPreHash": "sha256:976eaeb225bc5d63089322fe2118ddf56e49979e7acfebc7ac2768dfd59dbfab",
+        "containerPostHash": "sha256:4871d00c90929a29a57427c33af8773e97930780c3fc3da43a494ae7ca8e5d50",
+        "eventIndex": 0,
+        "supplyExit": {
+          "at": 66,
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "SUPPLY",
+            "segment": "NONE",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "preLifecycleHash": "sha256:e9ceda55de70b76d8f6d60906f8c258b93e31ad43f80d868d551ef7381d35cf3",
+          "eventIndex": 1
+        },
+        "query": {
+          "budget": 200,
+          "actionHash": "e6e024ee37a08eed85e40097c409992b83f76c9bdf6349dcc227059f114a2eaf",
+          "truncated": false,
+          "candidates": 4,
+          "status": "ABSENT_IN_OFFERED_SET"
+        },
+        "bestStrength": 0,
+        "witnessCount": 0,
+        "priorMatch": true
+      },
+      "payments": {
+        "PAY_FUEL": 24,
+        "RECOVER_INTERNALS": 0,
+        "CHECK_SUPPLY": 0
+      },
+      "paymentActions": 6,
+      "preForkPaymentActions": 3,
+      "rawPath": "artifacts/ai-theater-supply-audit/pair-1800006-original-30.raw.json.gz",
+      "rawSha256": "7f6fceaee482319dc3d2d332a8313df232d3b2a528ce5726f381ad157b8d6157",
+      "requeryUnchanged": true,
+      "settledCurrentTurnCosts": true
+    },
+    {
+      "firstMatch": 1800006,
+      "dice": "original",
+      "weight": 15,
+      "target": "-2,16",
+      "sourceSave": "artifacts/ai-progress-objective-original-continuation/pair-1800006/branch-15.save.json",
+      "sourceSha256": "c6c33e40402e0b430b68e362c8e05e8b047f251687bfffc12e7c471a00b65221",
+      "replayedActions": 71,
+      "boundary": {
+        "at": 70,
+        "sequence": {
+          "gameTurn": 1,
+          "playerTurnIndex": 0,
+          "phase": "COMBAT",
+          "segment": "COMBAT",
+          "firstPlayerId": "player:axis",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:axis"
+        },
+        "stateHash": "sha256:22da05d1504a7639024d252cd0b9c41ee9dbbb900f51ca4cac2c0e49d5d369d3",
+        "rng": {
+          "state": 2062172041,
+          "draws": 7
+        },
+        "internalRevision": 70,
+        "containerPreHash": "sha256:5340e657a9f2de3bac68fd102dd85db4ff1f97d149eecaad14ed11ae3be06397",
+        "containerPostHash": "sha256:076f54f7f0f8193c9e27d9e3eea8727f20fb66a8d378ef122860f3b433171c1e",
+        "eventIndex": 0,
+        "supplyExit": {
+          "at": 66,
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "SUPPLY",
+            "segment": "NONE",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "preLifecycleHash": "sha256:b3885a427e630caccfc97a25ada8251e5784eb009a76334618c423e8e6009062",
+          "eventIndex": 1
+        },
+        "query": {
+          "budget": 200,
+          "actionHash": "dc10b149bc9734c4cc72b585ac108a7dce7b6e74af407dd6f493e17aa1490168",
+          "truncated": false,
+          "candidates": 4,
+          "status": "ABSENT_IN_OFFERED_SET"
+        },
+        "bestStrength": 0,
+        "witnessCount": 0,
+        "priorMatch": true
+      },
+      "payments": {
+        "PAY_FUEL": 24,
+        "RECOVER_INTERNALS": 0,
+        "CHECK_SUPPLY": 0
+      },
+      "paymentActions": 6,
+      "preForkPaymentActions": 3,
+      "rawPath": "artifacts/ai-theater-supply-audit/pair-1800006-original-15.raw.json.gz",
+      "rawSha256": "f6ecac097506845bceacfa708fac301cdfbde82cc5ed9f2b8d7053c226a3a437",
+      "requeryUnchanged": true,
+      "settledCurrentTurnCosts": true
+    },
+    {
+      "firstMatch": 1800006,
+      "dice": "resample",
+      "weight": 30,
+      "target": "-2,16",
+      "sourceSave": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800006/branch-30.save.json",
+      "sourceSha256": "d0024c4e2cb69174152a9099e81f480019a13e6331ec657ecc9bb7c2fd91532c",
+      "replayedActions": 71,
+      "boundary": {
+        "at": 70,
+        "sequence": {
+          "gameTurn": 1,
+          "playerTurnIndex": 0,
+          "phase": "COMBAT",
+          "segment": "COMBAT",
+          "firstPlayerId": "player:axis",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:axis"
+        },
+        "stateHash": "sha256:0935aa2c73bbb92271832bdd36a8bc80077464eb7d6d830b42c29110b589c1b8",
+        "rng": {
+          "state": 1375798887,
+          "draws": 6
+        },
+        "internalRevision": 70,
+        "containerPreHash": "sha256:e7b215b459c81d64edad06cd1649483e7556bc713286f86221f67c8093aff4d1",
+        "containerPostHash": "sha256:79bbc5aa25fcf10f09d820f5f4e9f3ba632de72d4272143c10e13f81f0358395",
+        "eventIndex": 0,
+        "supplyExit": {
+          "at": 66,
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "SUPPLY",
+            "segment": "NONE",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "preLifecycleHash": "sha256:46d7b07a55dccdbeda58cd0f717f688fe7b798f516087c237ca331d3bcff98e7",
+          "eventIndex": 1
+        },
+        "query": {
+          "budget": 200,
+          "actionHash": "e6e024ee37a08eed85e40097c409992b83f76c9bdf6349dcc227059f114a2eaf",
+          "truncated": false,
+          "candidates": 4,
+          "status": "ABSENT_IN_OFFERED_SET"
+        },
+        "bestStrength": 0,
+        "witnessCount": 0,
+        "priorMatch": null
+      },
+      "payments": {
+        "PAY_FUEL": 24,
+        "RECOVER_INTERNALS": 0,
+        "CHECK_SUPPLY": 0
+      },
+      "paymentActions": 6,
+      "preForkPaymentActions": 3,
+      "rawPath": "artifacts/ai-theater-supply-audit/pair-1800006-resample-30.raw.json.gz",
+      "rawSha256": "7673099d5ec3a3b093bbfb275034389cc7aa745ff1eac49a6f99affdaa122a5e",
+      "requeryUnchanged": true,
+      "settledCurrentTurnCosts": true
+    },
+    {
+      "firstMatch": 1800006,
+      "dice": "resample",
+      "weight": 15,
+      "target": "-2,16",
+      "sourceSave": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800006/branch-15.save.json",
+      "sourceSha256": "dbd2e7bae6e2eb41a4b73e491545c642f2c9a81fafef586575db7f1739f10af7",
+      "replayedActions": 71,
+      "boundary": {
+        "at": 70,
+        "sequence": {
+          "gameTurn": 1,
+          "playerTurnIndex": 0,
+          "phase": "COMBAT",
+          "segment": "COMBAT",
+          "firstPlayerId": "player:axis",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:axis"
+        },
+        "stateHash": "sha256:0b58fcf5f48394890db0b31602c142cc2f588338e057b86618cd1b968bea6984",
+        "rng": {
+          "state": 1375798887,
+          "draws": 6
+        },
+        "internalRevision": 70,
+        "containerPreHash": "sha256:4000f2c3a037db5da8d61d949f28d5858dd839aaaa65310260ea58f888c64d3e",
+        "containerPostHash": "sha256:a13d8e0a75f62accfce99cc6cfb2cf367f0a3310bb0dfcb5230fc387be3064e7",
+        "eventIndex": 0,
+        "supplyExit": {
+          "at": 66,
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "SUPPLY",
+            "segment": "NONE",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "preLifecycleHash": "sha256:dd7a578bef48627d5c589552e9799c2c0080e76b7b2127a79037530f20d2c6fc",
+          "eventIndex": 1
+        },
+        "query": {
+          "budget": 200,
+          "actionHash": "dc10b149bc9734c4cc72b585ac108a7dce7b6e74af407dd6f493e17aa1490168",
+          "truncated": false,
+          "candidates": 4,
+          "status": "ABSENT_IN_OFFERED_SET"
+        },
+        "bestStrength": 0,
+        "witnessCount": 0,
+        "priorMatch": null
+      },
+      "payments": {
+        "PAY_FUEL": 24,
+        "RECOVER_INTERNALS": 0,
+        "CHECK_SUPPLY": 0
+      },
+      "paymentActions": 6,
+      "preForkPaymentActions": 3,
+      "rawPath": "artifacts/ai-theater-supply-audit/pair-1800006-resample-15.raw.json.gz",
+      "rawSha256": "6af9168312b59eebcbcc2f527ecee6af603cc52cf8802ed066ab5741e16de8a0",
+      "requeryUnchanged": true,
+      "settledCurrentTurnCosts": true
+    },
+    {
+      "firstMatch": 1800008,
+      "dice": "original",
+      "weight": 30,
+      "target": "12,10",
+      "sourceSave": "artifacts/ai-progress-objective-30games/matches/match-1800009.save.json",
+      "sourceSha256": "5276521eb7308ccdbb76917cbdcd4b51b90779e1d889504d0300d1e608821854",
+      "replayedActions": 69,
+      "boundary": {
+        "at": 68,
+        "sequence": {
+          "gameTurn": 1,
+          "playerTurnIndex": 0,
+          "phase": "COMBAT",
+          "segment": "COMBAT",
+          "firstPlayerId": "player:axis",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:axis"
+        },
+        "stateHash": "sha256:908cfd82a7ac53df02a1389fd1f11fc3d7bee050290e6190802a65c5f77aeae4",
+        "rng": {
+          "state": 1568248195,
+          "draws": 4
+        },
+        "internalRevision": 68,
+        "containerPreHash": "sha256:6489adaadf3f6c319dd422c420e0a2f65e107803f289e6683f817f870b674b0c",
+        "containerPostHash": "sha256:088bafed8989912e7cc4d826558cd2a75b8808700f371b10f2facee11e442715",
+        "eventIndex": 0,
+        "supplyExit": {
+          "at": 66,
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "SUPPLY",
+            "segment": "NONE",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "preLifecycleHash": "sha256:98daa2a4750bda1b097183cc9a9c1aaecaa4510e39d2acb4902d2d2f00cbb28f",
+          "eventIndex": 1
+        },
+        "query": {
+          "budget": 200,
+          "actionHash": "eb68c1f2f6629ee5ad87f7bd16bf8760f30d4e6360da7ee6a503e9097a422fe7",
+          "truncated": false,
+          "candidates": 5,
+          "status": "ABSENT_IN_OFFERED_SET"
+        },
+        "bestStrength": 0,
+        "witnessCount": 0,
+        "priorMatch": true
+      },
+      "payments": {
+        "PAY_FUEL": 24,
+        "RECOVER_INTERNALS": 0,
+        "CHECK_SUPPLY": 0
+      },
+      "paymentActions": 6,
+      "preForkPaymentActions": 3,
+      "rawPath": "artifacts/ai-theater-supply-audit/pair-1800008-original-30.raw.json.gz",
+      "rawSha256": "c93b22375711dd5db30fe6c470fde8c3173959473c22e17f9c0de000227a3785",
+      "requeryUnchanged": true,
+      "settledCurrentTurnCosts": true
+    },
+    {
+      "firstMatch": 1800008,
+      "dice": "original",
+      "weight": 15,
+      "target": "12,10",
+      "sourceSave": "artifacts/ai-progress-objective-original-continuation/pair-1800008/branch-15.save.json",
+      "sourceSha256": "3b2435dc368b9fd80e91182af82475919e4d9da0055dcb1c555f6749a54beea6",
+      "replayedActions": 69,
+      "boundary": {
+        "at": 68,
+        "sequence": {
+          "gameTurn": 1,
+          "playerTurnIndex": 0,
+          "phase": "COMBAT",
+          "segment": "COMBAT",
+          "firstPlayerId": "player:axis",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:axis"
+        },
+        "stateHash": "sha256:637ad918c4a51c9061336724ffc2d4ecdcce1cf4862c61f24c6f2a55d4ca8960",
+        "rng": {
+          "state": 1568248195,
+          "draws": 4
+        },
+        "internalRevision": 68,
+        "containerPreHash": "sha256:1faaa6ac5bb52920e0e645ee30ddbe7f5f7e395749d326729b61ff760a8deb9c",
+        "containerPostHash": "sha256:0a4c1ad25cce2aa202bb41289eace1237b3ee025a664981fc8dd4ebc8897017f",
+        "eventIndex": 0,
+        "supplyExit": {
+          "at": 66,
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "SUPPLY",
+            "segment": "NONE",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "preLifecycleHash": "sha256:b9bd24739f1f436de709522f1f815174d481411acc3d44ca672b523ef821bbb3",
+          "eventIndex": 1
+        },
+        "query": {
+          "budget": 200,
+          "actionHash": "eb68c1f2f6629ee5ad87f7bd16bf8760f30d4e6360da7ee6a503e9097a422fe7",
+          "truncated": false,
+          "candidates": 5,
+          "status": "ABSENT_IN_OFFERED_SET"
+        },
+        "bestStrength": 0,
+        "witnessCount": 0,
+        "priorMatch": true
+      },
+      "payments": {
+        "PAY_FUEL": 24,
+        "RECOVER_INTERNALS": 0,
+        "CHECK_SUPPLY": 0
+      },
+      "paymentActions": 6,
+      "preForkPaymentActions": 3,
+      "rawPath": "artifacts/ai-theater-supply-audit/pair-1800008-original-15.raw.json.gz",
+      "rawSha256": "5a4f9e7c72d46b57ed38131eafc3dc3f21cbdff2cf5f7ee71db6c31b0714d1f1",
+      "requeryUnchanged": true,
+      "settledCurrentTurnCosts": true
+    },
+    {
+      "firstMatch": 1800008,
+      "dice": "resample",
+      "weight": 30,
+      "target": "12,10",
+      "sourceSave": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800008/branch-30.save.json",
+      "sourceSha256": "a0186fe29ff711ad26974d14ab1805f68177aa69c4a58259e481902aad0fa96a",
+      "replayedActions": 69,
+      "boundary": {
+        "at": 68,
+        "sequence": {
+          "gameTurn": 1,
+          "playerTurnIndex": 0,
+          "phase": "COMBAT",
+          "segment": "COMBAT",
+          "firstPlayerId": "player:axis",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:axis"
+        },
+        "stateHash": "sha256:4cbe5e20a7c0cbd79de77a19f16d1f8fb87d3cd98e7169eac2f26681c3e60098",
+        "rng": {
+          "state": 287681493,
+          "draws": 4
+        },
+        "internalRevision": 68,
+        "containerPreHash": "sha256:99ceb6e30aaea5d6455797c271998b97bd78f5d2aec6ec0f7334c8933d60e1ff",
+        "containerPostHash": "sha256:c6bfb44eddc11075da77c4e44941b358d444ead937062ffb9b6a52a5e8d88d22",
+        "eventIndex": 0,
+        "supplyExit": {
+          "at": 66,
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "SUPPLY",
+            "segment": "NONE",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "preLifecycleHash": "sha256:8d7302dc4efab63d45eb4bdcad87fdb9c8ed6271724a7166d3b930c1f7adf5e8",
+          "eventIndex": 1
+        },
+        "query": {
+          "budget": 200,
+          "actionHash": "eb68c1f2f6629ee5ad87f7bd16bf8760f30d4e6360da7ee6a503e9097a422fe7",
+          "truncated": false,
+          "candidates": 5,
+          "status": "ABSENT_IN_OFFERED_SET"
+        },
+        "bestStrength": 0,
+        "witnessCount": 0,
+        "priorMatch": null
+      },
+      "payments": {
+        "PAY_FUEL": 24,
+        "RECOVER_INTERNALS": 0,
+        "CHECK_SUPPLY": 0
+      },
+      "paymentActions": 6,
+      "preForkPaymentActions": 3,
+      "rawPath": "artifacts/ai-theater-supply-audit/pair-1800008-resample-30.raw.json.gz",
+      "rawSha256": "afe8144fc4d85109773668fe9ebd786c66af4ba6cba398404ac2b661ef15e812",
+      "requeryUnchanged": true,
+      "settledCurrentTurnCosts": true
+    },
+    {
+      "firstMatch": 1800008,
+      "dice": "resample",
+      "weight": 15,
+      "target": "12,10",
+      "sourceSave": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800008/branch-15.save.json",
+      "sourceSha256": "4602ccdfdeaeb11446068aab8a07b010bcfb3f8ebfdc8a2d804e6ef99221fd43",
+      "replayedActions": 69,
+      "boundary": {
+        "at": 68,
+        "sequence": {
+          "gameTurn": 1,
+          "playerTurnIndex": 0,
+          "phase": "COMBAT",
+          "segment": "COMBAT",
+          "firstPlayerId": "player:axis",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:axis"
+        },
+        "stateHash": "sha256:73e62115c8f477d20f205bf32fc2693f94e353d753f468fca83d7061caff63e2",
+        "rng": {
+          "state": 287681493,
+          "draws": 4
+        },
+        "internalRevision": 68,
+        "containerPreHash": "sha256:a9222ac6b8b7ea97a7bf0fc878abb289b62b515b412ea31966ea14652acc8b0e",
+        "containerPostHash": "sha256:73399fd6b06e4457c47081a370fc8c6d5f35396dd31b5616dd00c81f95087e9d",
+        "eventIndex": 0,
+        "supplyExit": {
+          "at": 66,
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "SUPPLY",
+            "segment": "NONE",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "preLifecycleHash": "sha256:6e1d5c0627cd41e0e2974bd45692b3624bd8f825cafeb74b8eee08a038eb44b1",
+          "eventIndex": 1
+        },
+        "query": {
+          "budget": 200,
+          "actionHash": "eb68c1f2f6629ee5ad87f7bd16bf8760f30d4e6360da7ee6a503e9097a422fe7",
+          "truncated": false,
+          "candidates": 5,
+          "status": "ABSENT_IN_OFFERED_SET"
+        },
+        "bestStrength": 0,
+        "witnessCount": 0,
+        "priorMatch": null
+      },
+      "payments": {
+        "PAY_FUEL": 24,
+        "RECOVER_INTERNALS": 0,
+        "CHECK_SUPPLY": 0
+      },
+      "paymentActions": 6,
+      "preForkPaymentActions": 3,
+      "rawPath": "artifacts/ai-theater-supply-audit/pair-1800008-resample-15.raw.json.gz",
+      "rawSha256": "c698cf1f3d9d41dd29e84d970a0f6acfb3eb191c2aa7bfe7f0211bb0ad364154",
+      "requeryUnchanged": true,
+      "settledCurrentTurnCosts": true
+    },
+    {
+      "firstMatch": 1800010,
+      "dice": "original",
+      "weight": 30,
+      "target": "19,1",
+      "sourceSave": "artifacts/ai-progress-objective-30games/matches/match-1800011.save.json",
+      "sourceSha256": "c3e6d89cea7b84fe6a3f5e6d633908caafd035e1e768887d1cfb315c1b7cf592",
+      "replayedActions": 71,
+      "boundary": {
+        "at": 70,
+        "sequence": {
+          "gameTurn": 1,
+          "playerTurnIndex": 0,
+          "phase": "COMBAT",
+          "segment": "COMBAT",
+          "firstPlayerId": "player:axis",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:axis"
+        },
+        "stateHash": "sha256:8ec42367e0a045e656efb0d5309a72a90454c487848cf3df470738bdf3f3645e",
+        "rng": {
+          "state": 1918570191,
+          "draws": 4
+        },
+        "internalRevision": 70,
+        "containerPreHash": "sha256:7d69337f1ebecfe245edcea4497017b29288ae164569ce1856d222a1ba17f1ec",
+        "containerPostHash": "sha256:de4d61ce17a01d474a4e23e2a48cf4f789791472a51d3ecc49aaa17ae4b8098c",
+        "eventIndex": 4,
+        "supplyExit": {
+          "at": 70,
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "SUPPLY",
+            "segment": "NONE",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "preLifecycleHash": "sha256:e73e7d7186f27089168ad584d0a03e99666c5db06d8ceda6f2597ca1cab6f63b",
+          "eventIndex": 1
+        },
+        "query": {
+          "budget": 200,
+          "actionHash": "667c50bb79d7d93f7fbf201555ee671190da9272a4cac2b670074e93af72fa91",
+          "truncated": false,
+          "candidates": 3,
+          "status": "PRESENT"
+        },
+        "bestStrength": 2.2857142857142856,
+        "witnessCount": 1,
+        "priorMatch": true
+      },
+      "payments": {
+        "PAY_FUEL": 24,
+        "RECOVER_INTERNALS": 0,
+        "CHECK_SUPPLY": 0
+      },
+      "paymentActions": 6,
+      "preForkPaymentActions": 5,
+      "rawPath": "artifacts/ai-theater-supply-audit/pair-1800010-original-30.raw.json.gz",
+      "rawSha256": "b740139b466ff229176dee804017bae839ef183c51759b8230314bd575af8e4f",
+      "requeryUnchanged": true,
+      "settledCurrentTurnCosts": true
+    },
+    {
+      "firstMatch": 1800010,
+      "dice": "original",
+      "weight": 15,
+      "target": "19,1",
+      "sourceSave": "artifacts/ai-progress-objective-original-continuation/pair-1800010/branch-15.save.json",
+      "sourceSha256": "423cce0b17ca24bf678792d172044c2e9718355f59296401266a73b9e5b20f5e",
+      "replayedActions": 71,
+      "boundary": {
+        "at": 70,
+        "sequence": {
+          "gameTurn": 1,
+          "playerTurnIndex": 0,
+          "phase": "COMBAT",
+          "segment": "COMBAT",
+          "firstPlayerId": "player:axis",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:axis"
+        },
+        "stateHash": "sha256:31ac6e28c2cb7a24f7d311fc9f322517ce34a972f745c12805f1b6b9002f194e",
+        "rng": {
+          "state": 1918570191,
+          "draws": 4
+        },
+        "internalRevision": 70,
+        "containerPreHash": "sha256:3cf1e01c0dd1068452791cbd6c13d6bbfbc939381790fcf2dd2db3ed7268895e",
+        "containerPostHash": "sha256:fdf3b96324adc6813eebac7c8e5f625ec8850f2936907a7428025ec8a8f87097",
+        "eventIndex": 4,
+        "supplyExit": {
+          "at": 70,
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "SUPPLY",
+            "segment": "NONE",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "preLifecycleHash": "sha256:76048820d50e1c3f5bec63b6af2391644c0a7f92db2beb0cbae20ed086c8d495",
+          "eventIndex": 1
+        },
+        "query": {
+          "budget": 200,
+          "actionHash": "93d8894b62b29574ae8db4eaea40c2c4700e112c13bcb383c66f3929f1768fa6",
+          "truncated": false,
+          "candidates": 2,
+          "status": "PRESENT"
+        },
+        "bestStrength": 1.1428571428571428,
+        "witnessCount": 1,
+        "priorMatch": true
+      },
+      "payments": {
+        "PAY_FUEL": 24,
+        "RECOVER_INTERNALS": 0,
+        "CHECK_SUPPLY": 0
+      },
+      "paymentActions": 6,
+      "preForkPaymentActions": 5,
+      "rawPath": "artifacts/ai-theater-supply-audit/pair-1800010-original-15.raw.json.gz",
+      "rawSha256": "a361bc38432d5e372c9b319347125b5c31779caa9cb2244552a4750e9a47ba9c",
+      "requeryUnchanged": true,
+      "settledCurrentTurnCosts": true
+    },
+    {
+      "firstMatch": 1800010,
+      "dice": "resample",
+      "weight": 30,
+      "target": "19,1",
+      "sourceSave": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800010/branch-30.save.json",
+      "sourceSha256": "531d064443267cda901b2f0a35ef21d11b5f9382fd9fa0fca5deb9b48524c56a",
+      "replayedActions": 71,
+      "boundary": {
+        "at": 70,
+        "sequence": {
+          "gameTurn": 1,
+          "playerTurnIndex": 0,
+          "phase": "COMBAT",
+          "segment": "COMBAT",
+          "firstPlayerId": "player:axis",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:axis"
+        },
+        "stateHash": "sha256:43a5c8d110322ebd191f1b8160b857fc6d5d0bcaf8fb7449581dfe7b323ee3a8",
+        "rng": {
+          "state": 2251092291,
+          "draws": 4
+        },
+        "internalRevision": 70,
+        "containerPreHash": "sha256:33f97e27daab54885069a920e8e7e672bf2f132972e555203192884fcf56fcd2",
+        "containerPostHash": "sha256:d89627350714e60697acf982c837f2077ad9ef9d9be194c65b16086dbe00d4ab",
+        "eventIndex": 4,
+        "supplyExit": {
+          "at": 70,
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "SUPPLY",
+            "segment": "NONE",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "preLifecycleHash": "sha256:973e0c5fc26e65b4a178718c6fcf7f09f22839e354bb76ba456363b19a9da689",
+          "eventIndex": 1
+        },
+        "query": {
+          "budget": 200,
+          "actionHash": "667c50bb79d7d93f7fbf201555ee671190da9272a4cac2b670074e93af72fa91",
+          "truncated": false,
+          "candidates": 3,
+          "status": "PRESENT"
+        },
+        "bestStrength": 2.2857142857142856,
+        "witnessCount": 1,
+        "priorMatch": null
+      },
+      "payments": {
+        "PAY_FUEL": 24,
+        "RECOVER_INTERNALS": 0,
+        "CHECK_SUPPLY": 0
+      },
+      "paymentActions": 6,
+      "preForkPaymentActions": 5,
+      "rawPath": "artifacts/ai-theater-supply-audit/pair-1800010-resample-30.raw.json.gz",
+      "rawSha256": "21f69c9a0cacd4aa6919778b95f23c2d15ac942685eece390d15ce9e7609b3dc",
+      "requeryUnchanged": true,
+      "settledCurrentTurnCosts": true
+    },
+    {
+      "firstMatch": 1800010,
+      "dice": "resample",
+      "weight": 15,
+      "target": "19,1",
+      "sourceSave": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800010/branch-15.save.json",
+      "sourceSha256": "3e03a2f5592dadd03b164ea6e7c5752617c64d3f0e6695883e573a8f86cc1226",
+      "replayedActions": 71,
+      "boundary": {
+        "at": 70,
+        "sequence": {
+          "gameTurn": 1,
+          "playerTurnIndex": 0,
+          "phase": "COMBAT",
+          "segment": "COMBAT",
+          "firstPlayerId": "player:axis",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:axis"
+        },
+        "stateHash": "sha256:90dbc015ccf048fb191ffa603d599530ee83c2c0e4aeca81dc75aec0bca91c67",
+        "rng": {
+          "state": 2251092291,
+          "draws": 4
+        },
+        "internalRevision": 70,
+        "containerPreHash": "sha256:b79c8667bc64797153e9f02e5148df3e356c68486ab3daa09f6c183498142a95",
+        "containerPostHash": "sha256:3c5dcffa773fe346b01560e49f87c2c92ceb5952fd0f39749b00c18312e73880",
+        "eventIndex": 4,
+        "supplyExit": {
+          "at": 70,
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "SUPPLY",
+            "segment": "NONE",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "preLifecycleHash": "sha256:7e01204c8bc006584849d0b8eb3f18b4b67ac22c979292305971287734322154",
+          "eventIndex": 1
+        },
+        "query": {
+          "budget": 200,
+          "actionHash": "93d8894b62b29574ae8db4eaea40c2c4700e112c13bcb383c66f3929f1768fa6",
+          "truncated": false,
+          "candidates": 2,
+          "status": "PRESENT"
+        },
+        "bestStrength": 1.1428571428571428,
+        "witnessCount": 1,
+        "priorMatch": null
+      },
+      "payments": {
+        "PAY_FUEL": 24,
+        "RECOVER_INTERNALS": 0,
+        "CHECK_SUPPLY": 0
+      },
+      "paymentActions": 6,
+      "preForkPaymentActions": 5,
+      "rawPath": "artifacts/ai-theater-supply-audit/pair-1800010-resample-15.raw.json.gz",
+      "rawSha256": "09324871bb04f26c5522adfcf8c26343e014b7aba0c458bfd0a4ebda0238bcf9",
+      "requeryUnchanged": true,
+      "settledCurrentTurnCosts": true
+    },
+    {
+      "firstMatch": 1800012,
+      "dice": "original",
+      "weight": 30,
+      "target": "15,11",
+      "sourceSave": "artifacts/ai-progress-objective-30games/matches/match-1800013.save.json",
+      "sourceSha256": "ee0affe79acd481987efb59186e68fb7041d45825eabef8d14c5d61527336b3d",
+      "replayedActions": 69,
+      "boundary": {
+        "at": 68,
+        "sequence": {
+          "gameTurn": 1,
+          "playerTurnIndex": 0,
+          "phase": "COMBAT",
+          "segment": "COMBAT",
+          "firstPlayerId": "player:axis",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:axis"
+        },
+        "stateHash": "sha256:c6bd5beb236b2a15612915ec30ec3d5236f7e63563d847eca8cd3581bc3e4998",
+        "rng": {
+          "state": 209454142,
+          "draws": 4
+        },
+        "internalRevision": 68,
+        "containerPreHash": "sha256:f71157b428617d86c5b63008664833e85f6ef768106083d1c26670cf7284737b",
+        "containerPostHash": "sha256:cbacbc84d61e0add03272420e8c401c6699619c27c6307c5bc26912dd17e339f",
+        "eventIndex": 2,
+        "supplyExit": {
+          "at": 67,
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "SUPPLY",
+            "segment": "NONE",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "preLifecycleHash": "sha256:5d8e5e8e3f695ce1c6934aca9ca1931194e81d8829c4436c8b60372dc1d8c682",
+          "eventIndex": 1
+        },
+        "query": {
+          "budget": 200,
+          "actionHash": "afeb8e8ab5b15a686454a5f4b7213c8a35373e746810578aff8cafdfdd7bd459",
+          "truncated": false,
+          "candidates": 7,
+          "status": "PRESENT"
+        },
+        "bestStrength": 18.076923076923077,
+        "witnessCount": 1,
+        "priorMatch": true
+      },
+      "payments": {
+        "PAY_FUEL": 24,
+        "RECOVER_INTERNALS": 0,
+        "CHECK_SUPPLY": 0
+      },
+      "paymentActions": 6,
+      "preForkPaymentActions": 3,
+      "rawPath": "artifacts/ai-theater-supply-audit/pair-1800012-original-30.raw.json.gz",
+      "rawSha256": "3e594955c958a0e9cca4523d5f99fccc2e268a8a5a7faa79e8d98ba4c81a4034",
+      "requeryUnchanged": true,
+      "settledCurrentTurnCosts": true
+    },
+    {
+      "firstMatch": 1800012,
+      "dice": "original",
+      "weight": 15,
+      "target": "15,11",
+      "sourceSave": "artifacts/ai-progress-objective-original-continuation/pair-1800012/branch-15.save.json",
+      "sourceSha256": "8e378c1dbfb5f40d6c1c5a7f47341e12949a73d092b50fd9d930d7df101365b1",
+      "replayedActions": 69,
+      "boundary": {
+        "at": 68,
+        "sequence": {
+          "gameTurn": 1,
+          "playerTurnIndex": 0,
+          "phase": "COMBAT",
+          "segment": "COMBAT",
+          "firstPlayerId": "player:axis",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:axis"
+        },
+        "stateHash": "sha256:c3f0714eed7b07d080aa547d1bdc5e322172621573c53068215a5e20a54715f7",
+        "rng": {
+          "state": 209454142,
+          "draws": 4
+        },
+        "internalRevision": 68,
+        "containerPreHash": "sha256:23887895f81f5d77783275c52a173713222d180df827ac3dac3fa51769e847a8",
+        "containerPostHash": "sha256:05664b61966be6fdc427d18634161623a392c48a2ecc6a791db4ca78bbc1e8e4",
+        "eventIndex": 2,
+        "supplyExit": {
+          "at": 67,
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "SUPPLY",
+            "segment": "NONE",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "preLifecycleHash": "sha256:5a7c9362ab05fe3fbc80e5f8740327ed86df22138d1e504378cdd68df09389e7",
+          "eventIndex": 1
+        },
+        "query": {
+          "budget": 200,
+          "actionHash": "afeb8e8ab5b15a686454a5f4b7213c8a35373e746810578aff8cafdfdd7bd459",
+          "truncated": false,
+          "candidates": 7,
+          "status": "PRESENT"
+        },
+        "bestStrength": 18.076923076923077,
+        "witnessCount": 1,
+        "priorMatch": true
+      },
+      "payments": {
+        "PAY_FUEL": 24,
+        "RECOVER_INTERNALS": 0,
+        "CHECK_SUPPLY": 0
+      },
+      "paymentActions": 6,
+      "preForkPaymentActions": 3,
+      "rawPath": "artifacts/ai-theater-supply-audit/pair-1800012-original-15.raw.json.gz",
+      "rawSha256": "308a7324f817f7776a3d7bf4a64b30ae077d8dc7d34d950ef1b76d3b9f1203f0",
+      "requeryUnchanged": true,
+      "settledCurrentTurnCosts": true
+    },
+    {
+      "firstMatch": 1800012,
+      "dice": "resample",
+      "weight": 30,
+      "target": "15,11",
+      "sourceSave": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800012/branch-30.save.json",
+      "sourceSha256": "64c57d8e63cd8a773853d3ea33097d099229d742dbe06122a770e1fab776a78b",
+      "replayedActions": 69,
+      "boundary": {
+        "at": 68,
+        "sequence": {
+          "gameTurn": 1,
+          "playerTurnIndex": 0,
+          "phase": "COMBAT",
+          "segment": "COMBAT",
+          "firstPlayerId": "player:axis",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:axis"
+        },
+        "stateHash": "sha256:960dddbc2f43154953bfeabe0ca1eed3e5514d0b5183d9ccdf0e098416a2ac16",
+        "rng": {
+          "state": 168760452,
+          "draws": 4
+        },
+        "internalRevision": 68,
+        "containerPreHash": "sha256:97f28665c2fdb40c103f4501206604b6fbcd3a99d99e8dcc028ab15ae192e6a0",
+        "containerPostHash": "sha256:bfc977fb2feff77e69a9ce32458b6367d653a9da19ae4527fc839f552f400a6d",
+        "eventIndex": 2,
+        "supplyExit": {
+          "at": 67,
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "SUPPLY",
+            "segment": "NONE",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "preLifecycleHash": "sha256:c7b3363f14621ebeb9e6bc0ae8fc0c8f85d87045c318ce251f637e30b1792a32",
+          "eventIndex": 1
+        },
+        "query": {
+          "budget": 200,
+          "actionHash": "afeb8e8ab5b15a686454a5f4b7213c8a35373e746810578aff8cafdfdd7bd459",
+          "truncated": false,
+          "candidates": 7,
+          "status": "PRESENT"
+        },
+        "bestStrength": 18.076923076923077,
+        "witnessCount": 1,
+        "priorMatch": null
+      },
+      "payments": {
+        "PAY_FUEL": 24,
+        "RECOVER_INTERNALS": 0,
+        "CHECK_SUPPLY": 0
+      },
+      "paymentActions": 6,
+      "preForkPaymentActions": 3,
+      "rawPath": "artifacts/ai-theater-supply-audit/pair-1800012-resample-30.raw.json.gz",
+      "rawSha256": "bd7bce2e058fec59a64d1e5faada4d15aa0a76cc9845b51440ffca34fab04599",
+      "requeryUnchanged": true,
+      "settledCurrentTurnCosts": true
+    },
+    {
+      "firstMatch": 1800012,
+      "dice": "resample",
+      "weight": 15,
+      "target": "15,11",
+      "sourceSave": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800012/branch-15.save.json",
+      "sourceSha256": "0c7df937ba462b9b2d61e8f41635d7de752196a6c79722fed572d37df9e32039",
+      "replayedActions": 69,
+      "boundary": {
+        "at": 68,
+        "sequence": {
+          "gameTurn": 1,
+          "playerTurnIndex": 0,
+          "phase": "COMBAT",
+          "segment": "COMBAT",
+          "firstPlayerId": "player:axis",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:axis"
+        },
+        "stateHash": "sha256:3613b621b62071469ba2ec88b4754caaee99fe9d1c56aa607b62996a59ff140f",
+        "rng": {
+          "state": 168760452,
+          "draws": 4
+        },
+        "internalRevision": 68,
+        "containerPreHash": "sha256:0f412094af7b8e6a27f85f1a9ddab8276d2eb690222609b6817233c46735aeda",
+        "containerPostHash": "sha256:52d401577fc633160f2e8b8264187347c6c88790a62f6eae84c62b0a7b0c9fe0",
+        "eventIndex": 2,
+        "supplyExit": {
+          "at": 67,
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "SUPPLY",
+            "segment": "NONE",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "preLifecycleHash": "sha256:030eda2365bdde01690fea96f0e8b72ba5ce7bbfc06490de4a9d03d9f06b555d",
+          "eventIndex": 1
+        },
+        "query": {
+          "budget": 200,
+          "actionHash": "afeb8e8ab5b15a686454a5f4b7213c8a35373e746810578aff8cafdfdd7bd459",
+          "truncated": false,
+          "candidates": 7,
+          "status": "PRESENT"
+        },
+        "bestStrength": 18.076923076923077,
+        "witnessCount": 1,
+        "priorMatch": null
+      },
+      "payments": {
+        "PAY_FUEL": 24,
+        "RECOVER_INTERNALS": 0,
+        "CHECK_SUPPLY": 0
+      },
+      "paymentActions": 6,
+      "preForkPaymentActions": 3,
+      "rawPath": "artifacts/ai-theater-supply-audit/pair-1800012-resample-15.raw.json.gz",
+      "rawSha256": "9f84cd41c06a43ef2add65c251c1e7f287e60fc8dced7e62c57be4935423adcb",
+      "requeryUnchanged": true,
+      "settledCurrentTurnCosts": true
+    },
+    {
+      "firstMatch": 1800014,
+      "dice": "original",
+      "weight": 30,
+      "target": "3,14",
+      "sourceSave": "artifacts/ai-progress-objective-30games/matches/match-1800015.save.json",
+      "sourceSha256": "82215e903f856db42f2e0a29bc15da27e4520c25b97741c85615ca406ebe4071",
+      "replayedActions": 70,
+      "boundary": {
+        "at": 69,
+        "sequence": {
+          "gameTurn": 1,
+          "playerTurnIndex": 0,
+          "phase": "COMBAT",
+          "segment": "COMBAT",
+          "firstPlayerId": "player:axis",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:axis"
+        },
+        "stateHash": "sha256:16e99ef3960c3a6a71d6cb93d383ddf7ca215ab78520da80a837113946264133",
+        "rng": {
+          "state": 570616905,
+          "draws": 4
+        },
+        "internalRevision": 69,
+        "containerPreHash": "sha256:a3c55b58d1de3d457c17939353025dd6e0c5498a9b17e98597b8912d20ad419c",
+        "containerPostHash": "sha256:1f11bfc527ce84c057f47ffb85d0bf9ef988627c2a051aeafaa593182785683d",
+        "eventIndex": 0,
+        "supplyExit": {
+          "at": 67,
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "SUPPLY",
+            "segment": "NONE",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "preLifecycleHash": "sha256:1272df417d505dd7316b98025efa8fa836cbc9a234ddb0a92851ec90caf7f938",
+          "eventIndex": 1
+        },
+        "query": {
+          "budget": 200,
+          "actionHash": "a7f71898c26962c769c1aa019d6c6d9d7b24ba38e43e50f6c89c5df50da435de",
+          "truncated": false,
+          "candidates": 5,
+          "status": "ABSENT_IN_OFFERED_SET"
+        },
+        "bestStrength": 0,
+        "witnessCount": 0,
+        "priorMatch": true
+      },
+      "payments": {
+        "PAY_FUEL": 28,
+        "RECOVER_INTERNALS": 0,
+        "CHECK_SUPPLY": 0
+      },
+      "paymentActions": 7,
+      "preForkPaymentActions": 7,
+      "rawPath": "artifacts/ai-theater-supply-audit/pair-1800014-original-30.raw.json.gz",
+      "rawSha256": "046ed16cd394c318e8fc066bbc0c297d6a8f7ff1f021d5d3eddbd5d8c8de1e98",
+      "requeryUnchanged": true,
+      "settledCurrentTurnCosts": true
+    },
+    {
+      "firstMatch": 1800014,
+      "dice": "original",
+      "weight": 15,
+      "target": "3,14",
+      "sourceSave": "artifacts/ai-progress-objective-original-continuation/pair-1800014/branch-15.save.json",
+      "sourceSha256": "ba486fcecdb946bca586d3f5fe64e4969280b51e97705271e5ee9346d44b6409",
+      "replayedActions": 70,
+      "boundary": {
+        "at": 69,
+        "sequence": {
+          "gameTurn": 1,
+          "playerTurnIndex": 0,
+          "phase": "COMBAT",
+          "segment": "COMBAT",
+          "firstPlayerId": "player:axis",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:axis"
+        },
+        "stateHash": "sha256:8081d3b0670d2d0e6fd79e8b172c4da50bb8bf6adbcb7f2855d6a13f0bc0588d",
+        "rng": {
+          "state": 570616905,
+          "draws": 4
+        },
+        "internalRevision": 69,
+        "containerPreHash": "sha256:0fa125b0f87f3b0b72ab82a16480d19d268693d6a7cc7155dd5de1082644cc9f",
+        "containerPostHash": "sha256:64eeb7fec74652bfc66fd9c7645548da7f58f3565c2b5e19563a1f9741f54649",
+        "eventIndex": 0,
+        "supplyExit": {
+          "at": 67,
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "SUPPLY",
+            "segment": "NONE",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "preLifecycleHash": "sha256:c69d108e4bf300ed0c103f2dbc54149d6adff65d7edfcedb809bad8b4b365db0",
+          "eventIndex": 1
+        },
+        "query": {
+          "budget": 200,
+          "actionHash": "1542f2fe20595304ed9291db04fab701a327bc06802d16508267e46f0e5f6c1b",
+          "truncated": false,
+          "candidates": 5,
+          "status": "ABSENT_IN_OFFERED_SET"
+        },
+        "bestStrength": 0,
+        "witnessCount": 0,
+        "priorMatch": true
+      },
+      "payments": {
+        "PAY_FUEL": 28,
+        "RECOVER_INTERNALS": 0,
+        "CHECK_SUPPLY": 0
+      },
+      "paymentActions": 7,
+      "preForkPaymentActions": 7,
+      "rawPath": "artifacts/ai-theater-supply-audit/pair-1800014-original-15.raw.json.gz",
+      "rawSha256": "860884a3470a1972d0d892378a5eabbd190cf5bef62d31889ebaf33e83c86940",
+      "requeryUnchanged": true,
+      "settledCurrentTurnCosts": true
+    },
+    {
+      "firstMatch": 1800014,
+      "dice": "resample",
+      "weight": 30,
+      "target": "3,14",
+      "sourceSave": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800014/branch-30.save.json",
+      "sourceSha256": "e275eed36a284f4a5c696c533a1857dbc9675548fb829863dc02d23dc889a2d9",
+      "replayedActions": 70,
+      "boundary": {
+        "at": 69,
+        "sequence": {
+          "gameTurn": 1,
+          "playerTurnIndex": 0,
+          "phase": "COMBAT",
+          "segment": "COMBAT",
+          "firstPlayerId": "player:axis",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:axis"
+        },
+        "stateHash": "sha256:0a812e3c61c934ef411bac0427b5aba125954718c96a787c3b7e56165febc3d9",
+        "rng": {
+          "state": 3737996272,
+          "draws": 4
+        },
+        "internalRevision": 69,
+        "containerPreHash": "sha256:01fb5a6eef5caef2f64e70ce4082ff6fc9c7d1d7a75e42417fc4abfd89929432",
+        "containerPostHash": "sha256:ccd3cecafd51cdc0e262682d5d5f02f2ca4000e5b160f0c0f9dc74d0ecb9d36d",
+        "eventIndex": 0,
+        "supplyExit": {
+          "at": 67,
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "SUPPLY",
+            "segment": "NONE",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "preLifecycleHash": "sha256:4c85b1b5fd77d4a7482ae35e6e4ddd242fa6e83aabdfe20e650c385f0d95f016",
+          "eventIndex": 1
+        },
+        "query": {
+          "budget": 200,
+          "actionHash": "a7f71898c26962c769c1aa019d6c6d9d7b24ba38e43e50f6c89c5df50da435de",
+          "truncated": false,
+          "candidates": 5,
+          "status": "ABSENT_IN_OFFERED_SET"
+        },
+        "bestStrength": 0,
+        "witnessCount": 0,
+        "priorMatch": null
+      },
+      "payments": {
+        "PAY_FUEL": 28,
+        "RECOVER_INTERNALS": 0,
+        "CHECK_SUPPLY": 0
+      },
+      "paymentActions": 7,
+      "preForkPaymentActions": 7,
+      "rawPath": "artifacts/ai-theater-supply-audit/pair-1800014-resample-30.raw.json.gz",
+      "rawSha256": "50c36dc9e55a3b8c4f3794804738d4b956b5ea74518c8044b1594bfa93726f11",
+      "requeryUnchanged": true,
+      "settledCurrentTurnCosts": true
+    },
+    {
+      "firstMatch": 1800014,
+      "dice": "resample",
+      "weight": 15,
+      "target": "3,14",
+      "sourceSave": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800014/branch-15.save.json",
+      "sourceSha256": "83f2e372282b12ae9721ea386b6817db458f238280446e12eebb5f4f91212149",
+      "replayedActions": 70,
+      "boundary": {
+        "at": 69,
+        "sequence": {
+          "gameTurn": 1,
+          "playerTurnIndex": 0,
+          "phase": "COMBAT",
+          "segment": "COMBAT",
+          "firstPlayerId": "player:axis",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:axis"
+        },
+        "stateHash": "sha256:297ab7d2a8b6a8c05ce9d3fb55ff66c30ca75b59bf68941bed519af6b33079df",
+        "rng": {
+          "state": 3737996272,
+          "draws": 4
+        },
+        "internalRevision": 69,
+        "containerPreHash": "sha256:1b490ab6c2a5906b0354f3b2432b97bb47f214248f3fec99a0e7b6b205274a63",
+        "containerPostHash": "sha256:a3715aed419146b8e8b49cc7181bc3644e7843f46ebd9b5f0da25df77ab7b964",
+        "eventIndex": 0,
+        "supplyExit": {
+          "at": 67,
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "SUPPLY",
+            "segment": "NONE",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "preLifecycleHash": "sha256:87b822032522e7b1388e4dc745c5130ddd2663316cd620a8dcb4324cf8d8efa9",
+          "eventIndex": 1
+        },
+        "query": {
+          "budget": 200,
+          "actionHash": "1542f2fe20595304ed9291db04fab701a327bc06802d16508267e46f0e5f6c1b",
+          "truncated": false,
+          "candidates": 5,
+          "status": "ABSENT_IN_OFFERED_SET"
+        },
+        "bestStrength": 0,
+        "witnessCount": 0,
+        "priorMatch": null
+      },
+      "payments": {
+        "PAY_FUEL": 28,
+        "RECOVER_INTERNALS": 0,
+        "CHECK_SUPPLY": 0
+      },
+      "paymentActions": 7,
+      "preForkPaymentActions": 7,
+      "rawPath": "artifacts/ai-theater-supply-audit/pair-1800014-resample-15.raw.json.gz",
+      "rawSha256": "0bbe2c4696113374c55eb0511264dcd2cce028dfe388988996cdff1e1c32703e",
+      "requeryUnchanged": true,
+      "settledCurrentTurnCosts": true
+    },
+    {
+      "firstMatch": 1800016,
+      "dice": "original",
+      "weight": 30,
+      "target": "10,9",
+      "sourceSave": "artifacts/ai-progress-objective-30games/matches/match-1800017.save.json",
+      "sourceSha256": "a604ce6ad93f82796e932c24d0fbf5d31282ff26a54b51d7bbe3b987b8691291",
+      "replayedActions": 70,
+      "boundary": {
+        "at": 69,
+        "sequence": {
+          "gameTurn": 1,
+          "playerTurnIndex": 0,
+          "phase": "COMBAT",
+          "segment": "COMBAT",
+          "firstPlayerId": "player:axis",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:axis"
+        },
+        "stateHash": "sha256:0b442f0579a4c856f46e428ac35947f9b696c5ade4ee787053f76a0595617ae0",
+        "rng": {
+          "state": 2959077019,
+          "draws": 4
+        },
+        "internalRevision": 69,
+        "containerPreHash": "sha256:25680f1c75590153d8a00d7685e4a7fd1999477b9f1693b2696f2177e651f380",
+        "containerPostHash": "sha256:4146334952d4cf19079d092b80520a37e64fb7f832e3e6e2522c3116cc61b4b7",
+        "eventIndex": 2,
+        "supplyExit": {
+          "at": 68,
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "SUPPLY",
+            "segment": "NONE",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "preLifecycleHash": "sha256:6cb5099d55a11e30689a13bffdb0ba1342bf426544074904727062ebdffc1813",
+          "eventIndex": 1
+        },
+        "query": {
+          "budget": 200,
+          "actionHash": "8c3fd536a47ce80047b9f7050ccce7c87ac7cae062e61ebec351e5500da5b2da",
+          "truncated": false,
+          "candidates": 7,
+          "status": "ABSENT_IN_OFFERED_SET"
+        },
+        "bestStrength": 0,
+        "witnessCount": 0,
+        "priorMatch": true
+      },
+      "payments": {
+        "PAY_FUEL": 24,
+        "RECOVER_INTERNALS": 0,
+        "CHECK_SUPPLY": 0
+      },
+      "paymentActions": 6,
+      "preForkPaymentActions": 3,
+      "rawPath": "artifacts/ai-theater-supply-audit/pair-1800016-original-30.raw.json.gz",
+      "rawSha256": "de80bc27b955d49f74d9cbfc8b7fecaf8ee137fc74538a3e9dde339cd64adfaa",
+      "requeryUnchanged": true,
+      "settledCurrentTurnCosts": true
+    },
+    {
+      "firstMatch": 1800016,
+      "dice": "original",
+      "weight": 15,
+      "target": "10,9",
+      "sourceSave": "artifacts/ai-progress-objective-original-continuation/pair-1800016/branch-15.save.json",
+      "sourceSha256": "4e65dfdd71f4dbaab7a7a9db0f7e4b774a7cead389673ef87b827cfdadc7b74b",
+      "replayedActions": 70,
+      "boundary": {
+        "at": 69,
+        "sequence": {
+          "gameTurn": 1,
+          "playerTurnIndex": 0,
+          "phase": "COMBAT",
+          "segment": "COMBAT",
+          "firstPlayerId": "player:axis",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:axis"
+        },
+        "stateHash": "sha256:ab48f2efd1c3da22de6ba54f8521378976181ff69df0dcce0a06ca93e7a0bb91",
+        "rng": {
+          "state": 2959077019,
+          "draws": 4
+        },
+        "internalRevision": 69,
+        "containerPreHash": "sha256:5e6044a49b2fc37ffd44c4653798b01c4d248ae8f997e69eba21a1028577ea95",
+        "containerPostHash": "sha256:56448a74a780a7277e45c119474861050e873d2b68faf05f0a9443e47f82db72",
+        "eventIndex": 2,
+        "supplyExit": {
+          "at": 68,
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "SUPPLY",
+            "segment": "NONE",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "preLifecycleHash": "sha256:fba7d28ae50b9666a266c59a4a37ca6afaaae5f75af67bf38c6ee5a4fcea8605",
+          "eventIndex": 1
+        },
+        "query": {
+          "budget": 200,
+          "actionHash": "cd853c9baab043ce5e448b81518ccb692883a817b2dcb624f4c318fd37620057",
+          "truncated": false,
+          "candidates": 7,
+          "status": "ABSENT_IN_OFFERED_SET"
+        },
+        "bestStrength": 0,
+        "witnessCount": 0,
+        "priorMatch": true
+      },
+      "payments": {
+        "PAY_FUEL": 24,
+        "RECOVER_INTERNALS": 0,
+        "CHECK_SUPPLY": 0
+      },
+      "paymentActions": 6,
+      "preForkPaymentActions": 3,
+      "rawPath": "artifacts/ai-theater-supply-audit/pair-1800016-original-15.raw.json.gz",
+      "rawSha256": "6516ad843725fe49deaace71f125fe70a7ca525684c6393c9952696352f42696",
+      "requeryUnchanged": true,
+      "settledCurrentTurnCosts": true
+    },
+    {
+      "firstMatch": 1800016,
+      "dice": "resample",
+      "weight": 30,
+      "target": "10,9",
+      "sourceSave": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800016/branch-30.save.json",
+      "sourceSha256": "d1e6d8c5f7fbb153f7409190832de9f8daa6b7b611853063c9bfd090a895be38",
+      "replayedActions": 70,
+      "boundary": {
+        "at": 69,
+        "sequence": {
+          "gameTurn": 1,
+          "playerTurnIndex": 0,
+          "phase": "COMBAT",
+          "segment": "COMBAT",
+          "firstPlayerId": "player:axis",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:axis"
+        },
+        "stateHash": "sha256:f5aece3fbaca1aac79f4c24fb78feeb0fcb90ea6286d34733703d647fc74915a",
+        "rng": {
+          "state": 712020471,
+          "draws": 4
+        },
+        "internalRevision": 69,
+        "containerPreHash": "sha256:d48946fcfcd1e4d3b205a64140fcb93762e6c43d96a230f0389fc7bfeb6dc28f",
+        "containerPostHash": "sha256:72a36a5c7bacccaaa723566149783c68165a391657ddaf2eb4d70615d1120554",
+        "eventIndex": 2,
+        "supplyExit": {
+          "at": 68,
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "SUPPLY",
+            "segment": "NONE",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "preLifecycleHash": "sha256:056b5987a29e7447150afacc85988a81e6c91e1fdc976435249abc725a42669f",
+          "eventIndex": 1
+        },
+        "query": {
+          "budget": 200,
+          "actionHash": "8c3fd536a47ce80047b9f7050ccce7c87ac7cae062e61ebec351e5500da5b2da",
+          "truncated": false,
+          "candidates": 7,
+          "status": "ABSENT_IN_OFFERED_SET"
+        },
+        "bestStrength": 0,
+        "witnessCount": 0,
+        "priorMatch": null
+      },
+      "payments": {
+        "PAY_FUEL": 24,
+        "RECOVER_INTERNALS": 0,
+        "CHECK_SUPPLY": 0
+      },
+      "paymentActions": 6,
+      "preForkPaymentActions": 3,
+      "rawPath": "artifacts/ai-theater-supply-audit/pair-1800016-resample-30.raw.json.gz",
+      "rawSha256": "3803eaf666630f766226b0b753952ccfb9a03f0b177c896043c8c80ed8073d91",
+      "requeryUnchanged": true,
+      "settledCurrentTurnCosts": true
+    },
+    {
+      "firstMatch": 1800016,
+      "dice": "resample",
+      "weight": 15,
+      "target": "10,9",
+      "sourceSave": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800016/branch-15.save.json",
+      "sourceSha256": "64dec1016921c0c3c447701a2b7a2060b1b0f07e86141b90730149c1c7ffe022",
+      "replayedActions": 70,
+      "boundary": {
+        "at": 69,
+        "sequence": {
+          "gameTurn": 1,
+          "playerTurnIndex": 0,
+          "phase": "COMBAT",
+          "segment": "COMBAT",
+          "firstPlayerId": "player:axis",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:axis"
+        },
+        "stateHash": "sha256:189a419c2aab084914c646eab42d3f64a17970ae98ed89d8a6ef8d4e2c118cf1",
+        "rng": {
+          "state": 712020471,
+          "draws": 4
+        },
+        "internalRevision": 69,
+        "containerPreHash": "sha256:60ccc3ed21d4dbb54d30a3c351969d4fb2115d70a605df9b8475a25f42db3507",
+        "containerPostHash": "sha256:24f404d55abbdddd8eac22e031ebe267b56772a2fbbe4f502ac514a6d0ffe055",
+        "eventIndex": 2,
+        "supplyExit": {
+          "at": 68,
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "SUPPLY",
+            "segment": "NONE",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "preLifecycleHash": "sha256:6321e8b4c8401a8a54539cf26ac37f01e61822e63a7d70d462db4ee1a2df2203",
+          "eventIndex": 1
+        },
+        "query": {
+          "budget": 200,
+          "actionHash": "cd853c9baab043ce5e448b81518ccb692883a817b2dcb624f4c318fd37620057",
+          "truncated": false,
+          "candidates": 7,
+          "status": "ABSENT_IN_OFFERED_SET"
+        },
+        "bestStrength": 0,
+        "witnessCount": 0,
+        "priorMatch": null
+      },
+      "payments": {
+        "PAY_FUEL": 24,
+        "RECOVER_INTERNALS": 0,
+        "CHECK_SUPPLY": 0
+      },
+      "paymentActions": 6,
+      "preForkPaymentActions": 3,
+      "rawPath": "artifacts/ai-theater-supply-audit/pair-1800016-resample-15.raw.json.gz",
+      "rawSha256": "423997eddfb6a84b6d89e7bdb22a65eea4be1e8eca058dc6b649d0a56038e6ae",
+      "requeryUnchanged": true,
+      "settledCurrentTurnCosts": true
+    },
+    {
+      "firstMatch": 1800018,
+      "dice": "original",
+      "weight": 30,
+      "target": "4,18",
+      "sourceSave": "artifacts/ai-progress-objective-30games/matches/match-1800019.save.json",
+      "sourceSha256": "037b2dfa7e9d48f0c55cc78fb0d9497b3eba345d0d0cadf8c02081d3eac4efb6",
+      "replayedActions": 72,
+      "boundary": {
+        "at": 71,
+        "sequence": {
+          "gameTurn": 1,
+          "playerTurnIndex": 0,
+          "phase": "COMBAT",
+          "segment": "COMBAT",
+          "firstPlayerId": "player:axis",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:axis"
+        },
+        "stateHash": "sha256:de68df4a571846bec3b33c88ccef90f5e4bf42acae35d66ee5f8711b6af4cdb8",
+        "rng": {
+          "state": 1462828753,
+          "draws": 6
+        },
+        "internalRevision": 71,
+        "containerPreHash": "sha256:4c86edecce1cfa0ab1e3622aeb88ef78a3ed67786530d41b313a2e97e937ec94",
+        "containerPostHash": "sha256:55308fb515b7b3a27a7aa871ff478d1ace34e050c0dde73c6781e62ce5c2a83a",
+        "eventIndex": 0,
+        "supplyExit": {
+          "at": 68,
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "SUPPLY",
+            "segment": "NONE",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "preLifecycleHash": "sha256:608778df889c6ae96afe02e9b970a1904029396b2c16af7fd98adfe995fbc84b",
+          "eventIndex": 1
+        },
+        "query": {
+          "budget": 200,
+          "actionHash": "113856df3e2972f8d627008016352b6f4d6a3065f65ed271a72b6bb37cb6acbf",
+          "truncated": false,
+          "candidates": 4,
+          "status": "ABSENT_IN_OFFERED_SET"
+        },
+        "bestStrength": 0,
+        "witnessCount": 0,
+        "priorMatch": true
+      },
+      "payments": {
+        "PAY_FUEL": 24,
+        "RECOVER_INTERNALS": 0,
+        "CHECK_SUPPLY": 0
+      },
+      "paymentActions": 6,
+      "preForkPaymentActions": 3,
+      "rawPath": "artifacts/ai-theater-supply-audit/pair-1800018-original-30.raw.json.gz",
+      "rawSha256": "a64ba76334394cceab65668c6e56a2a493ef15d2211415f793b775861e1395b7",
+      "requeryUnchanged": true,
+      "settledCurrentTurnCosts": true
+    },
+    {
+      "firstMatch": 1800018,
+      "dice": "original",
+      "weight": 15,
+      "target": "4,18",
+      "sourceSave": "artifacts/ai-progress-objective-original-continuation/pair-1800018/branch-15.save.json",
+      "sourceSha256": "15f73f844c56ce160ed00f4d9bb7c855b7d47fa7be5845f53fdf3685173828ef",
+      "replayedActions": 72,
+      "boundary": {
+        "at": 71,
+        "sequence": {
+          "gameTurn": 1,
+          "playerTurnIndex": 0,
+          "phase": "COMBAT",
+          "segment": "COMBAT",
+          "firstPlayerId": "player:axis",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:axis"
+        },
+        "stateHash": "sha256:97d9ac12433b8f79194ece41be292c90b3d5d65d420b078c5e8ae52b8235ac2d",
+        "rng": {
+          "state": 1462828753,
+          "draws": 6
+        },
+        "internalRevision": 71,
+        "containerPreHash": "sha256:29c3434e39d0231c722fed74f9f1f24fac582fe75d310db01a558b376e070131",
+        "containerPostHash": "sha256:4678d579d52536439c8e7285388fc033bd2c2ed6cc22056085f9b763cca153b1",
+        "eventIndex": 0,
+        "supplyExit": {
+          "at": 68,
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "SUPPLY",
+            "segment": "NONE",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "preLifecycleHash": "sha256:d7ad79ee846a386d9b5a99225732cd08f0d96b817ef30d7a382218f279d25d6b",
+          "eventIndex": 1
+        },
+        "query": {
+          "budget": 200,
+          "actionHash": "4d3b01b16b80700b12f400446baa82cb15ba31558a9a2984eea8fc2ed6724826",
+          "truncated": false,
+          "candidates": 4,
+          "status": "ABSENT_IN_OFFERED_SET"
+        },
+        "bestStrength": 0,
+        "witnessCount": 0,
+        "priorMatch": true
+      },
+      "payments": {
+        "PAY_FUEL": 24,
+        "RECOVER_INTERNALS": 0,
+        "CHECK_SUPPLY": 0
+      },
+      "paymentActions": 6,
+      "preForkPaymentActions": 3,
+      "rawPath": "artifacts/ai-theater-supply-audit/pair-1800018-original-15.raw.json.gz",
+      "rawSha256": "a1d0c13cd60bcc7b82955d37b96cb59814391e05655889ab873a186c281b760b",
+      "requeryUnchanged": true,
+      "settledCurrentTurnCosts": true
+    },
+    {
+      "firstMatch": 1800018,
+      "dice": "resample",
+      "weight": 30,
+      "target": "4,18",
+      "sourceSave": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800018/branch-30.save.json",
+      "sourceSha256": "5a72bac1d3d802bfcc245b376339a9ef814788d4b2dd9a339c532dbb742235a4",
+      "replayedActions": 72,
+      "boundary": {
+        "at": 71,
+        "sequence": {
+          "gameTurn": 1,
+          "playerTurnIndex": 0,
+          "phase": "COMBAT",
+          "segment": "COMBAT",
+          "firstPlayerId": "player:axis",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:axis"
+        },
+        "stateHash": "sha256:91cbf1b282d185223b8e204a90d3364def146cc71b7b21940c58df6e4dc1dfc7",
+        "rng": {
+          "state": 1677004354,
+          "draws": 8
+        },
+        "internalRevision": 71,
+        "containerPreHash": "sha256:54e7e53f42857b9d32d6048ffaf9b703fb5bec04f44a9e19c4e46a7f641db4de",
+        "containerPostHash": "sha256:84a932299895b80e14f2f307e8eaace8b34e7f4dfb5844b57591b8954119856e",
+        "eventIndex": 0,
+        "supplyExit": {
+          "at": 68,
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "SUPPLY",
+            "segment": "NONE",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "preLifecycleHash": "sha256:f7965877fd5eddcf0f95c8263fa525b74a4d6506e77ae08b52805390503b5404",
+          "eventIndex": 1
+        },
+        "query": {
+          "budget": 200,
+          "actionHash": "0a0b71182a900c4f38f4eff8ca9a477e712cb772b67d04e592cfb7939ae67ec6",
+          "truncated": false,
+          "candidates": 3,
+          "status": "ABSENT_IN_OFFERED_SET"
+        },
+        "bestStrength": 0,
+        "witnessCount": 0,
+        "priorMatch": null
+      },
+      "payments": {
+        "PAY_FUEL": 24,
+        "RECOVER_INTERNALS": 0,
+        "CHECK_SUPPLY": 0
+      },
+      "paymentActions": 6,
+      "preForkPaymentActions": 3,
+      "rawPath": "artifacts/ai-theater-supply-audit/pair-1800018-resample-30.raw.json.gz",
+      "rawSha256": "3b9aff0784b4c34883bb6a92ce91d8dcd578353abb7fc91511ce185243712127",
+      "requeryUnchanged": true,
+      "settledCurrentTurnCosts": true
+    },
+    {
+      "firstMatch": 1800018,
+      "dice": "resample",
+      "weight": 15,
+      "target": "4,18",
+      "sourceSave": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800018/branch-15.save.json",
+      "sourceSha256": "9d5b48e463854dd06255f0541b6bb0435b9e275ea3bc661bce02a306867ad4fe",
+      "replayedActions": 72,
+      "boundary": {
+        "at": 71,
+        "sequence": {
+          "gameTurn": 1,
+          "playerTurnIndex": 0,
+          "phase": "COMBAT",
+          "segment": "COMBAT",
+          "firstPlayerId": "player:axis",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:axis"
+        },
+        "stateHash": "sha256:909d3629aa3c4d7456948bab675be9023c4c9e353e8a69ee0049d2087ed669c2",
+        "rng": {
+          "state": 1677004354,
+          "draws": 8
+        },
+        "internalRevision": 71,
+        "containerPreHash": "sha256:b2fa243a761a871c9aacd45e27aba68a4db3be9a6ca7a383824326c96f2bc361",
+        "containerPostHash": "sha256:eaed05515e12d2c10782b8d4769cb3fb9131257f998f11d469d884664d9f1e8a",
+        "eventIndex": 0,
+        "supplyExit": {
+          "at": 68,
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "SUPPLY",
+            "segment": "NONE",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "preLifecycleHash": "sha256:1cc647e25a71f587e8f70053c640e2f8e88ecfebef4986cf1fabd454827d1e3a",
+          "eventIndex": 1
+        },
+        "query": {
+          "budget": 200,
+          "actionHash": "6c38f355cf113cb127e7dfcb5dda8cad3cd6c57a78b594fea272da905c5711f9",
+          "truncated": false,
+          "candidates": 3,
+          "status": "ABSENT_IN_OFFERED_SET"
+        },
+        "bestStrength": 0,
+        "witnessCount": 0,
+        "priorMatch": null
+      },
+      "payments": {
+        "PAY_FUEL": 24,
+        "RECOVER_INTERNALS": 0,
+        "CHECK_SUPPLY": 0
+      },
+      "paymentActions": 6,
+      "preForkPaymentActions": 3,
+      "rawPath": "artifacts/ai-theater-supply-audit/pair-1800018-resample-15.raw.json.gz",
+      "rawSha256": "d494e9d0967cadf4f2d1a8768ca3ef23be153131f30d3ce037c26c35a7f431b8",
+      "requeryUnchanged": true,
+      "settledCurrentTurnCosts": true
+    },
+    {
+      "firstMatch": 1800020,
+      "dice": "original",
+      "weight": 30,
+      "target": "11,17",
+      "sourceSave": "artifacts/ai-progress-objective-30games/matches/match-1800021.save.json",
+      "sourceSha256": "ff2385f6bb032556993211b7efc8f4c37b6d300a9018ca04c1c2c29ff0dc65f9",
+      "replayedActions": 70,
+      "boundary": {
+        "at": 69,
+        "sequence": {
+          "gameTurn": 1,
+          "playerTurnIndex": 0,
+          "phase": "COMBAT",
+          "segment": "COMBAT",
+          "firstPlayerId": "player:axis",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:axis"
+        },
+        "stateHash": "sha256:b2541707200f4a3ecf2960ac69fb5eeec1d945a858f2b021f04b493dbf30d5d1",
+        "rng": {
+          "state": 3575807023,
+          "draws": 5
+        },
+        "internalRevision": 69,
+        "containerPreHash": "sha256:4f213c6bada7d770542d9f385264043bd58e79ecefa580571b5e15a44647dc81",
+        "containerPostHash": "sha256:170a2a4a61dce625bc89b6af46d9e8a6f9946130ee5c177e7a7d68e4fa635fb0",
+        "eventIndex": 0,
+        "supplyExit": {
+          "at": 68,
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "SUPPLY",
+            "segment": "NONE",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "preLifecycleHash": "sha256:d2045f7dd16093d54a92e3883e74823845b35e312fbb59c021f14749aaa5bbc0",
+          "eventIndex": 1
+        },
+        "query": {
+          "budget": 200,
+          "actionHash": "7eb060d2b3d53efb559ec24523951273468469f5ca943710705dd7a91752a9c2",
+          "truncated": false,
+          "candidates": 6,
+          "status": "PRESENT"
+        },
+        "bestStrength": 7,
+        "witnessCount": 1,
+        "priorMatch": true
+      },
+      "payments": {
+        "PAY_FUEL": 24,
+        "RECOVER_INTERNALS": 0,
+        "CHECK_SUPPLY": 0
+      },
+      "paymentActions": 6,
+      "preForkPaymentActions": 3,
+      "rawPath": "artifacts/ai-theater-supply-audit/pair-1800020-original-30.raw.json.gz",
+      "rawSha256": "42eece439e1ef01d0cb851f8abd13b30ec27274c4a3b66162f66531fc8fbfefc",
+      "requeryUnchanged": true,
+      "settledCurrentTurnCosts": true
+    },
+    {
+      "firstMatch": 1800020,
+      "dice": "original",
+      "weight": 15,
+      "target": "11,17",
+      "sourceSave": "artifacts/ai-progress-objective-original-continuation/pair-1800020/branch-15.save.json",
+      "sourceSha256": "4678e22ffdcc495e1bcb5d2a2c5ee6183b88062326a17db33485e2aa1f2cd84b",
+      "replayedActions": 70,
+      "boundary": {
+        "at": 69,
+        "sequence": {
+          "gameTurn": 1,
+          "playerTurnIndex": 0,
+          "phase": "COMBAT",
+          "segment": "COMBAT",
+          "firstPlayerId": "player:axis",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:axis"
+        },
+        "stateHash": "sha256:1eb6137ce34b1b3eb0e97c970ecd41758fbb8eae54b73aecaafee9b7f661d735",
+        "rng": {
+          "state": 3575807023,
+          "draws": 5
+        },
+        "internalRevision": 69,
+        "containerPreHash": "sha256:42e8d0ea14462546fb63320ce9ca64b3f1847dbbaf6f9a48e8809e2c652b02d8",
+        "containerPostHash": "sha256:3703205f4df15b3813f54c3ae8b9f0586d577f71fd52804276b608b49a7fce3d",
+        "eventIndex": 0,
+        "supplyExit": {
+          "at": 68,
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "SUPPLY",
+            "segment": "NONE",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "preLifecycleHash": "sha256:9c3b987c9e01bde3140353b76ddbe783b32caa57e6afcd7722aff763069d3fbc",
+          "eventIndex": 1
+        },
+        "query": {
+          "budget": 200,
+          "actionHash": "5d559f9b827bfdaeff9d37fe5c41200da42bfb11300ae8e8b75b1088e9646aae",
+          "truncated": false,
+          "candidates": 6,
+          "status": "PRESENT"
+        },
+        "bestStrength": 2.916666666666667,
+        "witnessCount": 1,
+        "priorMatch": true
+      },
+      "payments": {
+        "PAY_FUEL": 24,
+        "RECOVER_INTERNALS": 0,
+        "CHECK_SUPPLY": 0
+      },
+      "paymentActions": 6,
+      "preForkPaymentActions": 3,
+      "rawPath": "artifacts/ai-theater-supply-audit/pair-1800020-original-15.raw.json.gz",
+      "rawSha256": "d4f2aa4d5e1c606150574451505827dd508044489a6136ad512758601a5359c4",
+      "requeryUnchanged": true,
+      "settledCurrentTurnCosts": true
+    },
+    {
+      "firstMatch": 1800020,
+      "dice": "resample",
+      "weight": 30,
+      "target": "11,17",
+      "sourceSave": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800020/branch-30.save.json",
+      "sourceSha256": "08ce4d1f9c5f91d1a7f21740f00c4d152c724161d32f5dc4a08bc31afdd3f7c9",
+      "replayedActions": 70,
+      "boundary": {
+        "at": 69,
+        "sequence": {
+          "gameTurn": 1,
+          "playerTurnIndex": 0,
+          "phase": "COMBAT",
+          "segment": "COMBAT",
+          "firstPlayerId": "player:axis",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:axis"
+        },
+        "stateHash": "sha256:efc998cc388f6b86469e010e5f12d1fe17d41824d283da6ab461b4db4db1026d",
+        "rng": {
+          "state": 4066882066,
+          "draws": 4
+        },
+        "internalRevision": 69,
+        "containerPreHash": "sha256:ec5501a3b00f53df91b3b95b3a0f131eff110dd2f148d62aff2c6014268425b8",
+        "containerPostHash": "sha256:93344db9935c8130c555da63d62a51c18e9f39a42f6d05a67fa18ef3c088bd60",
+        "eventIndex": 0,
+        "supplyExit": {
+          "at": 68,
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "SUPPLY",
+            "segment": "NONE",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "preLifecycleHash": "sha256:7b5ec894af375548cecbb5bcc869adeabec6821621862a6da1464a904d4d1e3b",
+          "eventIndex": 1
+        },
+        "query": {
+          "budget": 200,
+          "actionHash": "7eb060d2b3d53efb559ec24523951273468469f5ca943710705dd7a91752a9c2",
+          "truncated": false,
+          "candidates": 6,
+          "status": "PRESENT"
+        },
+        "bestStrength": 7,
+        "witnessCount": 1,
+        "priorMatch": null
+      },
+      "payments": {
+        "PAY_FUEL": 24,
+        "RECOVER_INTERNALS": 0,
+        "CHECK_SUPPLY": 0
+      },
+      "paymentActions": 6,
+      "preForkPaymentActions": 3,
+      "rawPath": "artifacts/ai-theater-supply-audit/pair-1800020-resample-30.raw.json.gz",
+      "rawSha256": "796ce1054618674c3ec11572d8984926d49060573dce4bcc9945b436a291b245",
+      "requeryUnchanged": true,
+      "settledCurrentTurnCosts": true
+    },
+    {
+      "firstMatch": 1800020,
+      "dice": "resample",
+      "weight": 15,
+      "target": "11,17",
+      "sourceSave": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800020/branch-15.save.json",
+      "sourceSha256": "0a23d51230aa6d171f803e465c72241d6e54c3fcde4108201e76fb2a4b7976e8",
+      "replayedActions": 70,
+      "boundary": {
+        "at": 69,
+        "sequence": {
+          "gameTurn": 1,
+          "playerTurnIndex": 0,
+          "phase": "COMBAT",
+          "segment": "COMBAT",
+          "firstPlayerId": "player:axis",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:axis"
+        },
+        "stateHash": "sha256:bccf9d2fbe1ddfd5290f7bb0c747ba71b43be26cd933af59acf5369a4455d14d",
+        "rng": {
+          "state": 4066882066,
+          "draws": 4
+        },
+        "internalRevision": 69,
+        "containerPreHash": "sha256:b49c487af4676c242b6fd744d69d763746b2f3fa66d7a5f7613c803014b84af3",
+        "containerPostHash": "sha256:f224be9956e5ea7d4591e94a0cf0b25b47365d833c884edfa426eb922bb48167",
+        "eventIndex": 0,
+        "supplyExit": {
+          "at": 68,
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "SUPPLY",
+            "segment": "NONE",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "preLifecycleHash": "sha256:f07e8e813a5ad9e9a0013d8e194e948cb1fdad0f213c00105f6cd73bf405a6ac",
+          "eventIndex": 1
+        },
+        "query": {
+          "budget": 200,
+          "actionHash": "5d559f9b827bfdaeff9d37fe5c41200da42bfb11300ae8e8b75b1088e9646aae",
+          "truncated": false,
+          "candidates": 6,
+          "status": "PRESENT"
+        },
+        "bestStrength": 2.916666666666667,
+        "witnessCount": 1,
+        "priorMatch": null
+      },
+      "payments": {
+        "PAY_FUEL": 24,
+        "RECOVER_INTERNALS": 0,
+        "CHECK_SUPPLY": 0
+      },
+      "paymentActions": 6,
+      "preForkPaymentActions": 3,
+      "rawPath": "artifacts/ai-theater-supply-audit/pair-1800020-resample-15.raw.json.gz",
+      "rawSha256": "82f6e61aacdd80b03d637914193f696038cf38c36c2866c81dae486e0adad224",
+      "requeryUnchanged": true,
+      "settledCurrentTurnCosts": true
+    },
+    {
+      "firstMatch": 1800022,
+      "dice": "original",
+      "weight": 30,
+      "target": "13,10",
+      "sourceSave": "artifacts/ai-progress-objective-30games/matches/match-1800023.save.json",
+      "sourceSha256": "f5e136683d468618aa3c0b8bb8a2f8b78c8616ed61f847779ed5a0b0696feaa9",
+      "replayedActions": 68,
+      "boundary": {
+        "at": 67,
+        "sequence": {
+          "gameTurn": 1,
+          "playerTurnIndex": 0,
+          "phase": "COMBAT",
+          "segment": "COMBAT",
+          "firstPlayerId": "player:axis",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:axis"
+        },
+        "stateHash": "sha256:03a2b03ba9649948977c88084ca1ba44bda8330bb881da63a31d9ad5ba2be809",
+        "rng": {
+          "state": 742807486,
+          "draws": 4
+        },
+        "internalRevision": 67,
+        "containerPreHash": "sha256:62f676a9b287412424335b5ac39907ad2ff644a0af5fbf22e8990b17341bb6f8",
+        "containerPostHash": "sha256:6d8e3762ee25945c8f7cea417f184230b61e71b5d7587cc153e426e19cef24db",
+        "eventIndex": 0,
+        "supplyExit": {
+          "at": 66,
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "SUPPLY",
+            "segment": "NONE",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "preLifecycleHash": "sha256:a1ed1429b16d9e954deb354dc3d22b96067237f710d28920bab38f0470216ffb",
+          "eventIndex": 1
+        },
+        "query": {
+          "budget": 200,
+          "actionHash": "6766ef281edbf4b4d0339554685ff662157b6a07225559f28ebf4aa288a7270a",
+          "truncated": false,
+          "candidates": 1,
+          "status": "ABSENT_IN_OFFERED_SET"
+        },
+        "bestStrength": 0,
+        "witnessCount": 0,
+        "priorMatch": true
+      },
+      "payments": {
+        "PAY_FUEL": 24,
+        "RECOVER_INTERNALS": 0,
+        "CHECK_SUPPLY": 0
+      },
+      "paymentActions": 6,
+      "preForkPaymentActions": 6,
+      "rawPath": "artifacts/ai-theater-supply-audit/pair-1800022-original-30.raw.json.gz",
+      "rawSha256": "50a1bc51fc8edaa551f392d03b8019883baf36d7e9af153afd55b13e0ed15361",
+      "requeryUnchanged": true,
+      "settledCurrentTurnCosts": true
+    },
+    {
+      "firstMatch": 1800022,
+      "dice": "original",
+      "weight": 15,
+      "target": "13,10",
+      "sourceSave": "artifacts/ai-progress-objective-original-continuation/pair-1800022/branch-15.save.json",
+      "sourceSha256": "cacf2e54367cbbf49e00d82c8a3bf6a79d9f8b7a8a763ee48392627c7493d577",
+      "replayedActions": 68,
+      "boundary": {
+        "at": 67,
+        "sequence": {
+          "gameTurn": 1,
+          "playerTurnIndex": 0,
+          "phase": "COMBAT",
+          "segment": "COMBAT",
+          "firstPlayerId": "player:axis",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:axis"
+        },
+        "stateHash": "sha256:d084c6fc38c35a9d72f5ecee32fa6d7546635dbc4bd9e406578a0d098aae3de4",
+        "rng": {
+          "state": 742807486,
+          "draws": 4
+        },
+        "internalRevision": 67,
+        "containerPreHash": "sha256:d27c8bdf453b9d0f872036fe8440c24784bead3c9cfe42f201287a5fb0f83a55",
+        "containerPostHash": "sha256:6847bb8ae4abd707ce2dfee80c169f17ad5c77d936c4bb0b53fbd317ebcd08ad",
+        "eventIndex": 0,
+        "supplyExit": {
+          "at": 66,
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "SUPPLY",
+            "segment": "NONE",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "preLifecycleHash": "sha256:8083c6e9638e8681e5069ed1f719f816eeca505a9aa93339321e254e875de2ef",
+          "eventIndex": 1
+        },
+        "query": {
+          "budget": 200,
+          "actionHash": "6766ef281edbf4b4d0339554685ff662157b6a07225559f28ebf4aa288a7270a",
+          "truncated": false,
+          "candidates": 1,
+          "status": "ABSENT_IN_OFFERED_SET"
+        },
+        "bestStrength": 0,
+        "witnessCount": 0,
+        "priorMatch": true
+      },
+      "payments": {
+        "PAY_FUEL": 24,
+        "RECOVER_INTERNALS": 0,
+        "CHECK_SUPPLY": 0
+      },
+      "paymentActions": 6,
+      "preForkPaymentActions": 6,
+      "rawPath": "artifacts/ai-theater-supply-audit/pair-1800022-original-15.raw.json.gz",
+      "rawSha256": "33002fd9b125d9d2bf4db81f2e0fdba61f9a1ba188499f59fc39f15e694e8aac",
+      "requeryUnchanged": true,
+      "settledCurrentTurnCosts": true
+    },
+    {
+      "firstMatch": 1800022,
+      "dice": "resample",
+      "weight": 30,
+      "target": "13,10",
+      "sourceSave": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800022/branch-30.save.json",
+      "sourceSha256": "36f399a13673e67a4c4643689d7da2da08544bd62b8136a0a1e9ae6dab04a984",
+      "replayedActions": 68,
+      "boundary": {
+        "at": 67,
+        "sequence": {
+          "gameTurn": 1,
+          "playerTurnIndex": 0,
+          "phase": "COMBAT",
+          "segment": "COMBAT",
+          "firstPlayerId": "player:axis",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:axis"
+        },
+        "stateHash": "sha256:0330e9c1de26b3177ea30cd8bd015702bfa2b115227ae801d8d9235edcfaba8b",
+        "rng": {
+          "state": 4278241284,
+          "draws": 4
+        },
+        "internalRevision": 67,
+        "containerPreHash": "sha256:c5397288546245417efe7022865ff3964353284e15d97112d6429fa2275e6602",
+        "containerPostHash": "sha256:e81db858698bb1afbacc0a64e64e31376145f204b07cb55b1f864b09b02021f4",
+        "eventIndex": 0,
+        "supplyExit": {
+          "at": 66,
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "SUPPLY",
+            "segment": "NONE",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "preLifecycleHash": "sha256:ab4bae55f10a8d806ebded37ff03854f3faadb80845d5b9f51f93bf492c11338",
+          "eventIndex": 1
+        },
+        "query": {
+          "budget": 200,
+          "actionHash": "6766ef281edbf4b4d0339554685ff662157b6a07225559f28ebf4aa288a7270a",
+          "truncated": false,
+          "candidates": 1,
+          "status": "ABSENT_IN_OFFERED_SET"
+        },
+        "bestStrength": 0,
+        "witnessCount": 0,
+        "priorMatch": null
+      },
+      "payments": {
+        "PAY_FUEL": 24,
+        "RECOVER_INTERNALS": 0,
+        "CHECK_SUPPLY": 0
+      },
+      "paymentActions": 6,
+      "preForkPaymentActions": 6,
+      "rawPath": "artifacts/ai-theater-supply-audit/pair-1800022-resample-30.raw.json.gz",
+      "rawSha256": "32b35baaa672e1a0096127d37bb2e2362f84d5ff89a277da37a48e0ec8b0018e",
+      "requeryUnchanged": true,
+      "settledCurrentTurnCosts": true
+    },
+    {
+      "firstMatch": 1800022,
+      "dice": "resample",
+      "weight": 15,
+      "target": "13,10",
+      "sourceSave": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800022/branch-15.save.json",
+      "sourceSha256": "b19291d3dc26b08a03d50d323676cfe6d9ce8e5e1ba3beb9c997eff23522db82",
+      "replayedActions": 68,
+      "boundary": {
+        "at": 67,
+        "sequence": {
+          "gameTurn": 1,
+          "playerTurnIndex": 0,
+          "phase": "COMBAT",
+          "segment": "COMBAT",
+          "firstPlayerId": "player:axis",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:axis"
+        },
+        "stateHash": "sha256:eb7a2157212d421a0c5877d5fb6d9e800933298f1d706c24ce406e49a5263d0a",
+        "rng": {
+          "state": 4278241284,
+          "draws": 4
+        },
+        "internalRevision": 67,
+        "containerPreHash": "sha256:d696703ed93c6b7c98c410130ce5342861f6c930879568fc4b86f8f6467787c7",
+        "containerPostHash": "sha256:5925e684dd545ff3affaa8bdd966f3e1c954ae041e7109425446ac771191cfbd",
+        "eventIndex": 0,
+        "supplyExit": {
+          "at": 66,
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "SUPPLY",
+            "segment": "NONE",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "preLifecycleHash": "sha256:c4b65865891a585211ca805d664264b51765747a20ab570b226d4ab0277a7122",
+          "eventIndex": 1
+        },
+        "query": {
+          "budget": 200,
+          "actionHash": "6766ef281edbf4b4d0339554685ff662157b6a07225559f28ebf4aa288a7270a",
+          "truncated": false,
+          "candidates": 1,
+          "status": "ABSENT_IN_OFFERED_SET"
+        },
+        "bestStrength": 0,
+        "witnessCount": 0,
+        "priorMatch": null
+      },
+      "payments": {
+        "PAY_FUEL": 24,
+        "RECOVER_INTERNALS": 0,
+        "CHECK_SUPPLY": 0
+      },
+      "paymentActions": 6,
+      "preForkPaymentActions": 6,
+      "rawPath": "artifacts/ai-theater-supply-audit/pair-1800022-resample-15.raw.json.gz",
+      "rawSha256": "c007a67c1dcc57ba5538f8a8e49b0d47245724704ed68221d9ac4aba35bf71da",
+      "requeryUnchanged": true,
+      "settledCurrentTurnCosts": true
+    },
+    {
+      "firstMatch": 1800024,
+      "dice": "original",
+      "weight": 30,
+      "target": "9,2",
+      "sourceSave": "artifacts/ai-progress-objective-30games/matches/match-1800025.save.json",
+      "sourceSha256": "94293ac49de52b9828b1691190f7b47b3b91d6d701f027377fd441f19dd914bd",
+      "replayedActions": 74,
+      "boundary": {
+        "at": 73,
+        "sequence": {
+          "gameTurn": 1,
+          "playerTurnIndex": 0,
+          "phase": "COMBAT",
+          "segment": "COMBAT",
+          "firstPlayerId": "player:axis",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:axis"
+        },
+        "stateHash": "sha256:ecf76d8a0e8ee02d160778f2ed8c4f7ad29532b2531831efac8cab0fd47d79ff",
+        "rng": {
+          "state": 1447256165,
+          "draws": 7
+        },
+        "internalRevision": 73,
+        "containerPreHash": "sha256:4c38f62727d842e3ec81c4675234c8cc907ecaed7b28f24851bd6ec54cf92882",
+        "containerPostHash": "sha256:78bcdae0e7295453c6f7078b6bb3bcbcd2bc52ffd95d6781baabfb61f9c564d4",
+        "eventIndex": 0,
+        "supplyExit": {
+          "at": 69,
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "SUPPLY",
+            "segment": "NONE",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "preLifecycleHash": "sha256:c6f0278ec0dc929e6904f4279206df6a5e4e7cd9f02209655afbfed6dcd82928",
+          "eventIndex": 1
+        },
+        "query": {
+          "budget": 200,
+          "actionHash": "bafbef1c4c78cefea20174146a9b6e07ae883a73ad71c0e9dbc385ce73eb368f",
+          "truncated": false,
+          "candidates": 2,
+          "status": "ABSENT_IN_OFFERED_SET"
+        },
+        "bestStrength": 0,
+        "witnessCount": 0,
+        "priorMatch": true
+      },
+      "payments": {
+        "PAY_FUEL": 24,
+        "RECOVER_INTERNALS": 0,
+        "CHECK_SUPPLY": 0
+      },
+      "paymentActions": 6,
+      "preForkPaymentActions": 6,
+      "rawPath": "artifacts/ai-theater-supply-audit/pair-1800024-original-30.raw.json.gz",
+      "rawSha256": "c45cad8dd2a978d181bb72f027a10339190c19b4d844d771d0fe0480b49f4588",
+      "requeryUnchanged": true,
+      "settledCurrentTurnCosts": true
+    },
+    {
+      "firstMatch": 1800024,
+      "dice": "original",
+      "weight": 15,
+      "target": "9,2",
+      "sourceSave": "artifacts/ai-progress-objective-original-continuation/pair-1800024/branch-15.save.json",
+      "sourceSha256": "30359253ff477c9ba767e85d023391b134883b58d91eaf29a6c11e975a7f431b",
+      "replayedActions": 73,
+      "boundary": {
+        "at": 72,
+        "sequence": {
+          "gameTurn": 1,
+          "playerTurnIndex": 0,
+          "phase": "COMBAT",
+          "segment": "COMBAT",
+          "firstPlayerId": "player:axis",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:axis"
+        },
+        "stateHash": "sha256:0d9954e111dd9515e3c6a347cdcd19c17dba73d9151f2484a6ad2c2fcfef7958",
+        "rng": {
+          "state": 1447256165,
+          "draws": 7
+        },
+        "internalRevision": 72,
+        "containerPreHash": "sha256:f7313c325bbb2e7395ac00f099c935cd1b95df3f32f47e385970bf6e3011752c",
+        "containerPostHash": "sha256:84b6d24f616fd0e169b13a85ee59d7e39b3413457a1c3a6cc59c56760ce0891f",
+        "eventIndex": 0,
+        "supplyExit": {
+          "at": 69,
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "SUPPLY",
+            "segment": "NONE",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "preLifecycleHash": "sha256:1676c1724797e028d94fc372f5c792293f6ee6a0a271948fcb9510967343bcdb",
+          "eventIndex": 1
+        },
+        "query": {
+          "budget": 200,
+          "actionHash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "truncated": false,
+          "candidates": 0,
+          "status": "ABSENT_IN_OFFERED_SET"
+        },
+        "bestStrength": 0,
+        "witnessCount": 0,
+        "priorMatch": true
+      },
+      "payments": {
+        "PAY_FUEL": 24,
+        "RECOVER_INTERNALS": 0,
+        "CHECK_SUPPLY": 0
+      },
+      "paymentActions": 6,
+      "preForkPaymentActions": 6,
+      "rawPath": "artifacts/ai-theater-supply-audit/pair-1800024-original-15.raw.json.gz",
+      "rawSha256": "9d0b1e8e4b92b36bc7162b9436b808d7b86ba7d19a9cd16ae554b7a345b7f203",
+      "requeryUnchanged": true,
+      "settledCurrentTurnCosts": true
+    },
+    {
+      "firstMatch": 1800024,
+      "dice": "resample",
+      "weight": 30,
+      "target": "9,2",
+      "sourceSave": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800024/branch-30.save.json",
+      "sourceSha256": "3e0af33333976cd708d5d7abf65ff22434c045f3d6dd3b8405684d68884c8e3a",
+      "replayedActions": 74,
+      "boundary": {
+        "at": 73,
+        "sequence": {
+          "gameTurn": 1,
+          "playerTurnIndex": 0,
+          "phase": "COMBAT",
+          "segment": "COMBAT",
+          "firstPlayerId": "player:axis",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:axis"
+        },
+        "stateHash": "sha256:211b1681754f4002cc2dfede4d6c2251b4f3b889eac79c65b7d428b027a4701d",
+        "rng": {
+          "state": 3275703699,
+          "draws": 7
+        },
+        "internalRevision": 73,
+        "containerPreHash": "sha256:f858e4756f202e8996199a723e6180e297509d19e84a1a515c205ee5727da5b3",
+        "containerPostHash": "sha256:42112100ebd846949635b0e1ed14d83cd0f604e43345b51d8a45db430a2dc065",
+        "eventIndex": 0,
+        "supplyExit": {
+          "at": 69,
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "SUPPLY",
+            "segment": "NONE",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "preLifecycleHash": "sha256:7898c3b3f3378dd72116e691a399997fa153447b725af71415068eb880d6f609",
+          "eventIndex": 1
+        },
+        "query": {
+          "budget": 200,
+          "actionHash": "5e49f271ad895fcf8d2df2f13d7e64c0ba33350a8c70f133d7da4cf70be57394",
+          "truncated": false,
+          "candidates": 3,
+          "status": "ABSENT_IN_OFFERED_SET"
+        },
+        "bestStrength": 0,
+        "witnessCount": 0,
+        "priorMatch": null
+      },
+      "payments": {
+        "PAY_FUEL": 24,
+        "RECOVER_INTERNALS": 0,
+        "CHECK_SUPPLY": 0
+      },
+      "paymentActions": 6,
+      "preForkPaymentActions": 6,
+      "rawPath": "artifacts/ai-theater-supply-audit/pair-1800024-resample-30.raw.json.gz",
+      "rawSha256": "d4a7ede812758132f36aea3fbb671c003f9d5fe18eb58ae8ad0ef4c5e0a16583",
+      "requeryUnchanged": true,
+      "settledCurrentTurnCosts": true
+    },
+    {
+      "firstMatch": 1800024,
+      "dice": "resample",
+      "weight": 15,
+      "target": "9,2",
+      "sourceSave": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800024/branch-15.save.json",
+      "sourceSha256": "3062f65a61999af5efc1387cbe9a51e5618f74df1a5e15641c3e3022dd0968cf",
+      "replayedActions": 73,
+      "boundary": {
+        "at": 72,
+        "sequence": {
+          "gameTurn": 1,
+          "playerTurnIndex": 0,
+          "phase": "COMBAT",
+          "segment": "COMBAT",
+          "firstPlayerId": "player:axis",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:axis"
+        },
+        "stateHash": "sha256:6605ec421b7892f4330ae4a112b4dd59d68ae38f7ccd038dddbbfca9174079c2",
+        "rng": {
+          "state": 3275703699,
+          "draws": 7
+        },
+        "internalRevision": 72,
+        "containerPreHash": "sha256:1cad1a746cb9f23746ff0dff48e62e6a89b398a655d450998c7c2ca645dd38de",
+        "containerPostHash": "sha256:c993fa33e7511f447ceded7275ad9e7cf2cc71188cdfa3e6507e15dcdd5a56e0",
+        "eventIndex": 0,
+        "supplyExit": {
+          "at": 69,
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "SUPPLY",
+            "segment": "NONE",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "preLifecycleHash": "sha256:d78eeaac6eb1c45c44bf7fafbddddd2d428c480ebb8341212f6e25f907dd2fe8",
+          "eventIndex": 1
+        },
+        "query": {
+          "budget": 200,
+          "actionHash": "d722e4d13cbb7a97eaebd77f3ad58cee71a9df01d66bb68b3bd8d7db0416671e",
+          "truncated": false,
+          "candidates": 1,
+          "status": "ABSENT_IN_OFFERED_SET"
+        },
+        "bestStrength": 0,
+        "witnessCount": 0,
+        "priorMatch": null
+      },
+      "payments": {
+        "PAY_FUEL": 24,
+        "RECOVER_INTERNALS": 0,
+        "CHECK_SUPPLY": 0
+      },
+      "paymentActions": 6,
+      "preForkPaymentActions": 6,
+      "rawPath": "artifacts/ai-theater-supply-audit/pair-1800024-resample-15.raw.json.gz",
+      "rawSha256": "3b723c00449017bf2391ba095766c3d488eb7de415ec87a95e07947c6ac72055",
+      "requeryUnchanged": true,
+      "settledCurrentTurnCosts": true
+    },
+    {
+      "firstMatch": 1800026,
+      "dice": "original",
+      "weight": 30,
+      "target": "10,15",
+      "sourceSave": "artifacts/ai-progress-objective-30games/matches/match-1800027.save.json",
+      "sourceSha256": "0316327088a91723e8708bef8e00ee9a4609b16ce388d5ae3ec39ad1792dba7f",
+      "replayedActions": 211,
+      "boundary": {
+        "at": 210,
+        "sequence": {
+          "gameTurn": 2,
+          "playerTurnIndex": 0,
+          "phase": "COMBAT",
+          "segment": "COMBAT",
+          "firstPlayerId": "player:axis",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:axis"
+        },
+        "stateHash": "sha256:d611b39ca81b4d355486d1933b384d500f8710b996e39b7affc3896e1091dff5",
+        "rng": {
+          "state": 741278851,
+          "draws": 36
+        },
+        "internalRevision": 210,
+        "containerPreHash": "sha256:f76629b90d144574f99592f825d30a500ecb63593efb8a8d5aeb443f549a2c9f",
+        "containerPostHash": "sha256:e1dac51aaf152f4fb58ea773396bb6ec18f23756e4ddc5aefe28686ce306f037",
+        "eventIndex": 3,
+        "supplyExit": {
+          "at": 210,
+          "sequence": {
+            "gameTurn": 2,
+            "playerTurnIndex": 0,
+            "phase": "SUPPLY",
+            "segment": "NONE",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "preLifecycleHash": "sha256:f76629b90d144574f99592f825d30a500ecb63593efb8a8d5aeb443f549a2c9f",
+          "eventIndex": 0
+        },
+        "query": {
+          "budget": 200,
+          "actionHash": "fcacf8786434b0820b8080b054afbba100abca1f70f214b2cf047a8ac22ecdc3",
+          "truncated": false,
+          "candidates": 10,
+          "status": "PRESENT"
+        },
+        "bestStrength": 20.07692307692308,
+        "witnessCount": 1,
+        "priorMatch": true
+      },
+      "payments": {
+        "PAY_FUEL": 23,
+        "RECOVER_INTERNALS": 0,
+        "CHECK_SUPPLY": 1
+      },
+      "paymentActions": 9,
+      "preForkPaymentActions": 3,
+      "rawPath": "artifacts/ai-theater-supply-audit/pair-1800026-original-30.raw.json.gz",
+      "rawSha256": "b48632a82928ffbcb95b00840bb192d580f30bc3c057747bf24a5fe71de8f8ff",
+      "requeryUnchanged": true,
+      "settledCurrentTurnCosts": true
+    },
+    {
+      "firstMatch": 1800026,
+      "dice": "original",
+      "weight": 15,
+      "target": "10,15",
+      "sourceSave": "artifacts/ai-progress-objective-original-continuation/pair-1800026/branch-15.save.json",
+      "sourceSha256": "259841fbccf00a6df8e17f1bb299370d1fb64a7e3855ef6ce218c98dafb131ed",
+      "replayedActions": 211,
+      "boundary": {
+        "at": 210,
+        "sequence": {
+          "gameTurn": 2,
+          "playerTurnIndex": 0,
+          "phase": "COMBAT",
+          "segment": "COMBAT",
+          "firstPlayerId": "player:axis",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:axis"
+        },
+        "stateHash": "sha256:e7233718e51a352e5ccc66aa925384a51cc87ce8749dfc81d8ceff224727a2a9",
+        "rng": {
+          "state": 741278851,
+          "draws": 36
+        },
+        "internalRevision": 210,
+        "containerPreHash": "sha256:98d936ca05045de26dbc9d3bc64b23da0f88a60ed7518b2781860aedd6ced9b1",
+        "containerPostHash": "sha256:3dc635934dc7206c6f3b1b1d4aa818cc30b104e2fdd9de93288b8c82fad42bfd",
+        "eventIndex": 3,
+        "supplyExit": {
+          "at": 210,
+          "sequence": {
+            "gameTurn": 2,
+            "playerTurnIndex": 0,
+            "phase": "SUPPLY",
+            "segment": "NONE",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "preLifecycleHash": "sha256:98d936ca05045de26dbc9d3bc64b23da0f88a60ed7518b2781860aedd6ced9b1",
+          "eventIndex": 0
+        },
+        "query": {
+          "budget": 200,
+          "actionHash": "7b2c0d89172040cbf4f84251cb78bfbfef8c58efe6fc43ee40001bf28489d667",
+          "truncated": false,
+          "candidates": 10,
+          "status": "PRESENT"
+        },
+        "bestStrength": 18.000000000000004,
+        "witnessCount": 1,
+        "priorMatch": true
+      },
+      "payments": {
+        "PAY_FUEL": 23,
+        "RECOVER_INTERNALS": 0,
+        "CHECK_SUPPLY": 1
+      },
+      "paymentActions": 9,
+      "preForkPaymentActions": 3,
+      "rawPath": "artifacts/ai-theater-supply-audit/pair-1800026-original-15.raw.json.gz",
+      "rawSha256": "740201c6fef3376262b78b50614f8a74fdc065742eb13eea641dc9df99cea893",
+      "requeryUnchanged": true,
+      "settledCurrentTurnCosts": true
+    },
+    {
+      "firstMatch": 1800026,
+      "dice": "resample",
+      "weight": 30,
+      "target": "10,15",
+      "sourceSave": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800026/branch-30.save.json",
+      "sourceSha256": "5ff0f895f63d2f55af77ed50dd0a33f90bed711b65b18f8a3f48c83244eef0a7",
+      "replayedActions": 211,
+      "boundary": {
+        "at": 210,
+        "sequence": {
+          "gameTurn": 2,
+          "playerTurnIndex": 0,
+          "phase": "COMBAT",
+          "segment": "COMBAT",
+          "firstPlayerId": "player:axis",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:axis"
+        },
+        "stateHash": "sha256:c80260862db22febff5057c6cf7bb8b9392cabc9fe5157ce04d277cca86a0863",
+        "rng": {
+          "state": 1872448408,
+          "draws": 36
+        },
+        "internalRevision": 210,
+        "containerPreHash": "sha256:1a6a9f6e750bf207b400ef867917654c1323d984f568afe9fcae30b2049d8735",
+        "containerPostHash": "sha256:70ca15c7ac7f00612e6c235c08dd964b46988226d9da3d6c36ffc899ddb76321",
+        "eventIndex": 3,
+        "supplyExit": {
+          "at": 210,
+          "sequence": {
+            "gameTurn": 2,
+            "playerTurnIndex": 0,
+            "phase": "SUPPLY",
+            "segment": "NONE",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "preLifecycleHash": "sha256:1a6a9f6e750bf207b400ef867917654c1323d984f568afe9fcae30b2049d8735",
+          "eventIndex": 0
+        },
+        "query": {
+          "budget": 200,
+          "actionHash": "fcacf8786434b0820b8080b054afbba100abca1f70f214b2cf047a8ac22ecdc3",
+          "truncated": false,
+          "candidates": 10,
+          "status": "PRESENT"
+        },
+        "bestStrength": 20.07692307692308,
+        "witnessCount": 1,
+        "priorMatch": null
+      },
+      "payments": {
+        "PAY_FUEL": 23,
+        "RECOVER_INTERNALS": 0,
+        "CHECK_SUPPLY": 1
+      },
+      "paymentActions": 9,
+      "preForkPaymentActions": 3,
+      "rawPath": "artifacts/ai-theater-supply-audit/pair-1800026-resample-30.raw.json.gz",
+      "rawSha256": "89ad107277206d33fc6b800003be606ffa1f17330f054297f17c05652c4b2362",
+      "requeryUnchanged": true,
+      "settledCurrentTurnCosts": true
+    },
+    {
+      "firstMatch": 1800026,
+      "dice": "resample",
+      "weight": 15,
+      "target": "10,15",
+      "sourceSave": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800026/branch-15.save.json",
+      "sourceSha256": "3c88e388a6e68535801e92b1ef3a8c2ebaff92e9dc0ce2c644b82d80f32b3c9e",
+      "replayedActions": 211,
+      "boundary": {
+        "at": 210,
+        "sequence": {
+          "gameTurn": 2,
+          "playerTurnIndex": 0,
+          "phase": "COMBAT",
+          "segment": "COMBAT",
+          "firstPlayerId": "player:axis",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:axis"
+        },
+        "stateHash": "sha256:268878ce095f786750065a25470d21c4a581d16f04eb8ed6d00efa0afb4955f7",
+        "rng": {
+          "state": 1872448408,
+          "draws": 36
+        },
+        "internalRevision": 210,
+        "containerPreHash": "sha256:d4f0c3cdb9d128c3123eea35c9c592e187c4e019c515eb28e23b7579cfaf9eef",
+        "containerPostHash": "sha256:2cdc408321ad398ca635771f9a23793de6307871f030d9408de901fec2f45438",
+        "eventIndex": 3,
+        "supplyExit": {
+          "at": 210,
+          "sequence": {
+            "gameTurn": 2,
+            "playerTurnIndex": 0,
+            "phase": "SUPPLY",
+            "segment": "NONE",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "preLifecycleHash": "sha256:d4f0c3cdb9d128c3123eea35c9c592e187c4e019c515eb28e23b7579cfaf9eef",
+          "eventIndex": 0
+        },
+        "query": {
+          "budget": 200,
+          "actionHash": "7b2c0d89172040cbf4f84251cb78bfbfef8c58efe6fc43ee40001bf28489d667",
+          "truncated": false,
+          "candidates": 10,
+          "status": "PRESENT"
+        },
+        "bestStrength": 18.000000000000004,
+        "witnessCount": 1,
+        "priorMatch": null
+      },
+      "payments": {
+        "PAY_FUEL": 23,
+        "RECOVER_INTERNALS": 0,
+        "CHECK_SUPPLY": 1
+      },
+      "paymentActions": 9,
+      "preForkPaymentActions": 3,
+      "rawPath": "artifacts/ai-theater-supply-audit/pair-1800026-resample-15.raw.json.gz",
+      "rawSha256": "3d9ce1acfc45ee8a2e32e91f54b82697d1f83d03d763f370a15cf1546a3b8478",
+      "requeryUnchanged": true,
+      "settledCurrentTurnCosts": true
+    },
+    {
+      "firstMatch": 1800028,
+      "dice": "original",
+      "weight": 30,
+      "target": "12,15",
+      "sourceSave": "artifacts/ai-progress-objective-30games/matches/match-1800029.save.json",
+      "sourceSha256": "0fba68defa48adf66842bbf7707dfab600efb6d9df258a5c90ecbb51d639b6e5",
+      "replayedActions": 78,
+      "boundary": {
+        "at": 77,
+        "sequence": {
+          "gameTurn": 1,
+          "playerTurnIndex": 0,
+          "phase": "COMBAT",
+          "segment": "COMBAT",
+          "firstPlayerId": "player:axis",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:axis"
+        },
+        "stateHash": "sha256:1003a8ef31a26cac6514b7284fcb07b124f47f00c9b29cebdba310ff8341d7b6",
+        "rng": {
+          "state": 1103451801,
+          "draws": 7
+        },
+        "internalRevision": 77,
+        "containerPreHash": "sha256:575fcf28e4982d28256aacc0c0cae7b76d2a5c051e933ed9e878bfa11481acd4",
+        "containerPostHash": "sha256:373546acbb545cd02538d4ea808d837577c212b702b1ac344684dbcc049deafe",
+        "eventIndex": 0,
+        "supplyExit": {
+          "at": 73,
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "SUPPLY",
+            "segment": "NONE",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "preLifecycleHash": "sha256:839d46149a7e492fd9b27e795227e7f1ec680f446fbd947dbb6793f2ce7fe4e9",
+          "eventIndex": 1
+        },
+        "query": {
+          "budget": 200,
+          "actionHash": "ded4e569bd9f831dcec95d46b8a32f829552643fdcc3a9979960785fff934170",
+          "truncated": false,
+          "candidates": 4,
+          "status": "PRESENT"
+        },
+        "bestStrength": 1.2857142857142856,
+        "witnessCount": 1,
+        "priorMatch": true
+      },
+      "payments": {
+        "PAY_FUEL": 26,
+        "RECOVER_INTERNALS": 0,
+        "CHECK_SUPPLY": 0
+      },
+      "paymentActions": 8,
+      "preForkPaymentActions": 3,
+      "rawPath": "artifacts/ai-theater-supply-audit/pair-1800028-original-30.raw.json.gz",
+      "rawSha256": "80d6e9fb6b8699f53aa52ff3e1d70b9955493cb2667550bdb17d248d5d01e977",
+      "requeryUnchanged": true,
+      "settledCurrentTurnCosts": true
+    },
+    {
+      "firstMatch": 1800028,
+      "dice": "original",
+      "weight": 15,
+      "target": "12,15",
+      "sourceSave": "artifacts/ai-progress-objective-original-continuation/pair-1800028/branch-15.save.json",
+      "sourceSha256": "faf73dc6b5f1febbc1decf369da9e57b189b9eb543436ae7071fc74d787ba5d0",
+      "replayedActions": 78,
+      "boundary": {
+        "at": 77,
+        "sequence": {
+          "gameTurn": 1,
+          "playerTurnIndex": 0,
+          "phase": "COMBAT",
+          "segment": "COMBAT",
+          "firstPlayerId": "player:axis",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:axis"
+        },
+        "stateHash": "sha256:bec033e48ec77e2176c329c076aaba11adf2809a964d40d6d46e98b2f3d36613",
+        "rng": {
+          "state": 1103451801,
+          "draws": 7
+        },
+        "internalRevision": 77,
+        "containerPreHash": "sha256:555283d9f8aebb66c2f460cdc8764e480e0e82f9ba1be53564e9eda979efed92",
+        "containerPostHash": "sha256:8b2af50939578849732ab082cb551b87170ffba8b6098ff9ce444aff81cbd77b",
+        "eventIndex": 0,
+        "supplyExit": {
+          "at": 73,
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "SUPPLY",
+            "segment": "NONE",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "preLifecycleHash": "sha256:d40c228846b77c1f94ce0b3121b036dd1d8a5a57e476229adec69491687f8cc3",
+          "eventIndex": 1
+        },
+        "query": {
+          "budget": 200,
+          "actionHash": "ded4e569bd9f831dcec95d46b8a32f829552643fdcc3a9979960785fff934170",
+          "truncated": false,
+          "candidates": 4,
+          "status": "PRESENT"
+        },
+        "bestStrength": 1.2857142857142856,
+        "witnessCount": 1,
+        "priorMatch": true
+      },
+      "payments": {
+        "PAY_FUEL": 26,
+        "RECOVER_INTERNALS": 0,
+        "CHECK_SUPPLY": 0
+      },
+      "paymentActions": 8,
+      "preForkPaymentActions": 3,
+      "rawPath": "artifacts/ai-theater-supply-audit/pair-1800028-original-15.raw.json.gz",
+      "rawSha256": "70836e97161c797655809d63337ce060350f53200bd07b6884625b44aa205df9",
+      "requeryUnchanged": true,
+      "settledCurrentTurnCosts": true
+    },
+    {
+      "firstMatch": 1800028,
+      "dice": "resample",
+      "weight": 30,
+      "target": "12,15",
+      "sourceSave": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800028/branch-30.save.json",
+      "sourceSha256": "2a231828604e2f1a456aa18b9d468bcac3f1ee7d0304578d17eabf029310bd2c",
+      "replayedActions": 79,
+      "boundary": {
+        "at": 78,
+        "sequence": {
+          "gameTurn": 1,
+          "playerTurnIndex": 0,
+          "phase": "COMBAT",
+          "segment": "COMBAT",
+          "firstPlayerId": "player:axis",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:axis"
+        },
+        "stateHash": "sha256:9be960485d4d96ae54498ca762da5cfb19616368235e7314b6ae8ceb2e94fea2",
+        "rng": {
+          "state": 2453411527,
+          "draws": 7
+        },
+        "internalRevision": 78,
+        "containerPreHash": "sha256:f96b9828ace7a565a0806e58ba8e64a73e2d0229ff39ba94607c55ca628ccaab",
+        "containerPostHash": "sha256:78046d9e0127393c1b3b2af25239b31eba9f02ea8c275a288ab7d003500b290f",
+        "eventIndex": 0,
+        "supplyExit": {
+          "at": 74,
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "SUPPLY",
+            "segment": "NONE",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "preLifecycleHash": "sha256:b2bf17c21dff39514fd699ab2f053b28acb35e497cd60d114e75f5546619475f",
+          "eventIndex": 1
+        },
+        "query": {
+          "budget": 200,
+          "actionHash": "73519220d930cbf3161633e7a1b0f462a90a3dde72062448dff9a5cb53b0fc5d",
+          "truncated": false,
+          "candidates": 4,
+          "status": "PRESENT"
+        },
+        "bestStrength": 1.2857142857142856,
+        "witnessCount": 1,
+        "priorMatch": null
+      },
+      "payments": {
+        "PAY_FUEL": 26,
+        "RECOVER_INTERNALS": 0,
+        "CHECK_SUPPLY": 0
+      },
+      "paymentActions": 8,
+      "preForkPaymentActions": 3,
+      "rawPath": "artifacts/ai-theater-supply-audit/pair-1800028-resample-30.raw.json.gz",
+      "rawSha256": "9dc3e4cd217a9be93217215377c059ce3e51e1d1be24e7fcdff67386c5732822",
+      "requeryUnchanged": true,
+      "settledCurrentTurnCosts": true
+    },
+    {
+      "firstMatch": 1800028,
+      "dice": "resample",
+      "weight": 15,
+      "target": "12,15",
+      "sourceSave": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800028/branch-15.save.json",
+      "sourceSha256": "073a56e578fe0cb6f93419da9129eac65d95b053f13a2784940f89edf5bf8561",
+      "replayedActions": 79,
+      "boundary": {
+        "at": 78,
+        "sequence": {
+          "gameTurn": 1,
+          "playerTurnIndex": 0,
+          "phase": "COMBAT",
+          "segment": "COMBAT",
+          "firstPlayerId": "player:axis",
+          "phasingPlayerId": "player:axis",
+          "actingPlayerId": "player:axis"
+        },
+        "stateHash": "sha256:12242d550475d41aff9e737ad49c3fce606e5e1c06dae2a4962207b4c7619cae",
+        "rng": {
+          "state": 2453411527,
+          "draws": 7
+        },
+        "internalRevision": 78,
+        "containerPreHash": "sha256:522c92e757f2fb3ea88aab7938ae6ccf72ac8ebf6ffb5b1d3787261319cbeac5",
+        "containerPostHash": "sha256:daa04ff81140a49569ddad4fb16bb1d915e4c00a0291b74e5b57e00a82ac7eea",
+        "eventIndex": 0,
+        "supplyExit": {
+          "at": 74,
+          "sequence": {
+            "gameTurn": 1,
+            "playerTurnIndex": 0,
+            "phase": "SUPPLY",
+            "segment": "NONE",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "preLifecycleHash": "sha256:768e4f22f341cf93cd67fde7b020119f0212eba372939ced8cd24d0b617b70a7",
+          "eventIndex": 1
+        },
+        "query": {
+          "budget": 200,
+          "actionHash": "73519220d930cbf3161633e7a1b0f462a90a3dde72062448dff9a5cb53b0fc5d",
+          "truncated": false,
+          "candidates": 4,
+          "status": "PRESENT"
+        },
+        "bestStrength": 1.2857142857142856,
+        "witnessCount": 1,
+        "priorMatch": null
+      },
+      "payments": {
+        "PAY_FUEL": 26,
+        "RECOVER_INTERNALS": 0,
+        "CHECK_SUPPLY": 0
+      },
+      "paymentActions": 8,
+      "preForkPaymentActions": 3,
+      "rawPath": "artifacts/ai-theater-supply-audit/pair-1800028-resample-15.raw.json.gz",
+      "rawSha256": "906e518a73b8ba646af1cd8c3e26e9683cbe006ce8f582b6c835788088e3cf39",
+      "requeryUnchanged": true,
+      "settledCurrentTurnCosts": true
+    }
+  ],
+  "summary": {
+    "histories": 60,
+    "boundaries": 60,
+    "replayedActions": 4800,
+    "priorMatches": 30,
+    "targetWitnesses": 20,
+    "paymentTotals": {
+      "PAY_FUEL": 1476,
+      "RECOVER_INTERNALS": 0,
+      "CHECK_SUPPLY": 4
+    },
+    "paymentActions": 388,
+    "preForkPaymentActions": 244,
+    "unknownQueries": 0
+  },
+  "provenance": {
+    "sourceCommit": "1be8d57614822ed7ee6e6d0a3219a320150f99d6",
+    "engineTreeSha256": "4a87376b26c41f60086cb3060f606afcc1e9b99bb3ba00339c904837d200bb2a",
+    "scriptSha256": "2afada74e09717b6ee74338ea4a0324d8b764a400ed2249ac5bac78893ed4a2c",
+    "registrationSha256": "3d8d40dededf0fc5dd6d66dae4b1efd8329d36f860b22e94ee69334f1a48e155"
+  }
+}

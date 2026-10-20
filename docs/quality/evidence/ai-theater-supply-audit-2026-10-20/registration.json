@@ -1,0 +1,854 @@
+{
+  "sourceCommit": "1be8d57614822ed7ee6e6d0a3219a320150f99d6",
+  "createdAt": "2026-10-20T13:23:06.383Z",
+  "engineTreeSha256": "4a87376b26c41f60086cb3060f606afcc1e9b99bb3ba00339c904837d200bb2a",
+  "cases": [
+    {
+      "firstMatch": 1800000,
+      "target": "-2,7",
+      "forkAt": 20,
+      "fork": {
+        "gameTurn": 1,
+        "playerTurnIndex": 0,
+        "phase": "MOVEMENT",
+        "segment": "MOVEMENT",
+        "firstPlayerId": "player:axis",
+        "phasingPlayerId": "player:axis",
+        "actingPlayerId": "player:axis"
+      },
+      "originalForkHash": "sha256:ce1bc53909d1e4fc9917e59d9a6e316dc438a6bd928a8ed51f2aa2ff6cf7ea1e",
+      "originalForkRng": {
+        "state": 344141636,
+        "draws": 0
+      },
+      "futureState": 1217121444,
+      "sourceSave": "artifacts/ai-progress-objective-30games/matches/match-1800001.save.json",
+      "oldPath": "artifacts/ai-progress-combat-opportunity/pair-1800000.json",
+      "histories": [
+        {
+          "dice": "original",
+          "weight": 30,
+          "save": "artifacts/ai-progress-objective-30games/matches/match-1800001.save.json"
+        },
+        {
+          "dice": "original",
+          "weight": 15,
+          "save": "artifacts/ai-progress-objective-original-continuation/pair-1800000/branch-15.save.json"
+        },
+        {
+          "dice": "resample",
+          "weight": 30,
+          "save": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800000/branch-30.save.json"
+        },
+        {
+          "dice": "resample",
+          "weight": 15,
+          "save": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800000/branch-15.save.json"
+        }
+      ]
+    },
+    {
+      "firstMatch": 1800002,
+      "target": "5,18",
+      "forkAt": 11,
+      "fork": {
+        "gameTurn": 1,
+        "playerTurnIndex": 0,
+        "phase": "MOVEMENT",
+        "segment": "MOVEMENT",
+        "firstPlayerId": "player:axis",
+        "phasingPlayerId": "player:axis",
+        "actingPlayerId": "player:axis"
+      },
+      "originalForkHash": "sha256:5a3bca88b3bcd9df06b34b5070ba4cfa4902ed7648200e68c52f948834d3c485",
+      "originalForkRng": {
+        "state": 344141830,
+        "draws": 0
+      },
+      "futureState": 2911246429,
+      "sourceSave": "artifacts/ai-progress-objective-30games/matches/match-1800003.save.json",
+      "oldPath": "artifacts/ai-progress-combat-opportunity/pair-1800002.json",
+      "histories": [
+        {
+          "dice": "original",
+          "weight": 30,
+          "save": "artifacts/ai-progress-objective-30games/matches/match-1800003.save.json"
+        },
+        {
+          "dice": "original",
+          "weight": 15,
+          "save": "artifacts/ai-progress-objective-original-continuation/pair-1800002/branch-15.save.json"
+        },
+        {
+          "dice": "resample",
+          "weight": 30,
+          "save": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800002/branch-30.save.json"
+        },
+        {
+          "dice": "resample",
+          "weight": 15,
+          "save": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800002/branch-15.save.json"
+        }
+      ]
+    },
+    {
+      "firstMatch": 1800004,
+      "target": "11,13",
+      "forkAt": 7,
+      "fork": {
+        "gameTurn": 1,
+        "playerTurnIndex": 0,
+        "phase": "MOVEMENT",
+        "segment": "MOVEMENT",
+        "firstPlayerId": "player:axis",
+        "phasingPlayerId": "player:axis",
+        "actingPlayerId": "player:axis"
+      },
+      "originalForkHash": "sha256:764a72decd6019e84952c7b2fbc138fee0a44813fe2fad97a1c14cb14c91fff0",
+      "originalForkRng": {
+        "state": 344142024,
+        "draws": 0
+      },
+      "futureState": 3183850202,
+      "sourceSave": "artifacts/ai-progress-objective-30games/matches/match-1800005.save.json",
+      "oldPath": "artifacts/ai-progress-combat-opportunity/pair-1800004.json",
+      "histories": [
+        {
+          "dice": "original",
+          "weight": 30,
+          "save": "artifacts/ai-progress-objective-30games/matches/match-1800005.save.json"
+        },
+        {
+          "dice": "original",
+          "weight": 15,
+          "save": "artifacts/ai-progress-objective-original-continuation/pair-1800004/branch-15.save.json"
+        },
+        {
+          "dice": "resample",
+          "weight": 30,
+          "save": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800004/branch-30.save.json"
+        },
+        {
+          "dice": "resample",
+          "weight": 15,
+          "save": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800004/branch-15.save.json"
+        }
+      ]
+    },
+    {
+      "firstMatch": 1800006,
+      "target": "-2,16",
+      "forkAt": 7,
+      "fork": {
+        "gameTurn": 1,
+        "playerTurnIndex": 0,
+        "phase": "MOVEMENT",
+        "segment": "MOVEMENT",
+        "firstPlayerId": "player:axis",
+        "phasingPlayerId": "player:axis",
+        "actingPlayerId": "player:axis"
+      },
+      "originalForkHash": "sha256:e273a86e06b3d9aff7c6561f0f18a314fa855e22273d72c16089877654d6e9d9",
+      "originalForkRng": {
+        "state": 344142218,
+        "draws": 0
+      },
+      "futureState": 4146576893,
+      "sourceSave": "artifacts/ai-progress-objective-30games/matches/match-1800007.save.json",
+      "oldPath": "artifacts/ai-progress-combat-opportunity/pair-1800006.json",
+      "histories": [
+        {
+          "dice": "original",
+          "weight": 30,
+          "save": "artifacts/ai-progress-objective-30games/matches/match-1800007.save.json"
+        },
+        {
+          "dice": "original",
+          "weight": 15,
+          "save": "artifacts/ai-progress-objective-original-continuation/pair-1800006/branch-15.save.json"
+        },
+        {
+          "dice": "resample",
+          "weight": 30,
+          "save": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800006/branch-30.save.json"
+        },
+        {
+          "dice": "resample",
+          "weight": 15,
+          "save": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800006/branch-15.save.json"
+        }
+      ]
+    },
+    {
+      "firstMatch": 1800008,
+      "target": "12,10",
+      "forkAt": 10,
+      "fork": {
+        "gameTurn": 1,
+        "playerTurnIndex": 0,
+        "phase": "MOVEMENT",
+        "segment": "MOVEMENT",
+        "firstPlayerId": "player:axis",
+        "phasingPlayerId": "player:axis",
+        "actingPlayerId": "player:axis"
+      },
+      "originalForkHash": "sha256:43b036cb117688a8dd55d1b98206e302716a7990d7248fcef5508643b754fed7",
+      "originalForkRng": {
+        "state": 344142412,
+        "draws": 0
+      },
+      "futureState": 1720827952,
+      "sourceSave": "artifacts/ai-progress-objective-30games/matches/match-1800009.save.json",
+      "oldPath": "artifacts/ai-progress-combat-opportunity/pair-1800008.json",
+      "histories": [
+        {
+          "dice": "original",
+          "weight": 30,
+          "save": "artifacts/ai-progress-objective-30games/matches/match-1800009.save.json"
+        },
+        {
+          "dice": "original",
+          "weight": 15,
+          "save": "artifacts/ai-progress-objective-original-continuation/pair-1800008/branch-15.save.json"
+        },
+        {
+          "dice": "resample",
+          "weight": 30,
+          "save": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800008/branch-30.save.json"
+        },
+        {
+          "dice": "resample",
+          "weight": 15,
+          "save": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800008/branch-15.save.json"
+        }
+      ]
+    },
+    {
+      "firstMatch": 1800010,
+      "target": "19,1",
+      "forkAt": 19,
+      "fork": {
+        "gameTurn": 1,
+        "playerTurnIndex": 0,
+        "phase": "MOVEMENT",
+        "segment": "MOVEMENT",
+        "firstPlayerId": "player:axis",
+        "phasingPlayerId": "player:axis",
+        "actingPlayerId": "player:axis"
+      },
+      "originalForkHash": "sha256:4a17762963e592bf7c7496c166dfeb156bccf0a3367e54761f8b8891771a909e",
+      "originalForkRng": {
+        "state": 344142606,
+        "draws": 0
+      },
+      "futureState": 2994086707,
+      "sourceSave": "artifacts/ai-progress-objective-30games/matches/match-1800011.save.json",
+      "oldPath": "artifacts/ai-progress-combat-opportunity/pair-1800010.json",
+      "histories": [
+        {
+          "dice": "original",
+          "weight": 30,
+          "save": "artifacts/ai-progress-objective-30games/matches/match-1800011.save.json"
+        },
+        {
+          "dice": "original",
+          "weight": 15,
+          "save": "artifacts/ai-progress-objective-original-continuation/pair-1800010/branch-15.save.json"
+        },
+        {
+          "dice": "resample",
+          "weight": 30,
+          "save": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800010/branch-30.save.json"
+        },
+        {
+          "dice": "resample",
+          "weight": 15,
+          "save": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800010/branch-15.save.json"
+        }
+      ]
+    },
+    {
+      "firstMatch": 1800012,
+      "target": "15,11",
+      "forkAt": 9,
+      "fork": {
+        "gameTurn": 1,
+        "playerTurnIndex": 0,
+        "phase": "MOVEMENT",
+        "segment": "MOVEMENT",
+        "firstPlayerId": "player:axis",
+        "phasingPlayerId": "player:axis",
+        "actingPlayerId": "player:axis"
+      },
+      "originalForkHash": "sha256:b8bae14c958036871b3b7930fa69b777bdcd3850b0df82640db22232fc655a0a",
+      "originalForkRng": {
+        "state": 344142800,
+        "draws": 0
+      },
+      "futureState": 1307829097,
+      "sourceSave": "artifacts/ai-progress-objective-30games/matches/match-1800013.save.json",
+      "oldPath": "artifacts/ai-progress-combat-opportunity/pair-1800012.json",
+      "histories": [
+        {
+          "dice": "original",
+          "weight": 30,
+          "save": "artifacts/ai-progress-objective-30games/matches/match-1800013.save.json"
+        },
+        {
+          "dice": "original",
+          "weight": 15,
+          "save": "artifacts/ai-progress-objective-original-continuation/pair-1800012/branch-15.save.json"
+        },
+        {
+          "dice": "resample",
+          "weight": 30,
+          "save": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800012/branch-30.save.json"
+        },
+        {
+          "dice": "resample",
+          "weight": 15,
+          "save": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800012/branch-15.save.json"
+        }
+      ]
+    },
+    {
+      "firstMatch": 1800014,
+      "target": "3,14",
+      "forkAt": 24,
+      "fork": {
+        "gameTurn": 1,
+        "playerTurnIndex": 0,
+        "phase": "MOVEMENT",
+        "segment": "MOVEMENT",
+        "firstPlayerId": "player:axis",
+        "phasingPlayerId": "player:axis",
+        "actingPlayerId": "player:axis"
+      },
+      "originalForkHash": "sha256:456fbbd5329950fae9d5070be55ee25285794f6ebefbe5c882ea9a2048c1fc8b",
+      "originalForkRng": {
+        "state": 344142994,
+        "draws": 0
+      },
+      "futureState": 971523618,
+      "sourceSave": "artifacts/ai-progress-objective-30games/matches/match-1800015.save.json",
+      "oldPath": "artifacts/ai-progress-combat-opportunity/pair-1800014.json",
+      "histories": [
+        {
+          "dice": "original",
+          "weight": 30,
+          "save": "artifacts/ai-progress-objective-30games/matches/match-1800015.save.json"
+        },
+        {
+          "dice": "original",
+          "weight": 15,
+          "save": "artifacts/ai-progress-objective-original-continuation/pair-1800014/branch-15.save.json"
+        },
+        {
+          "dice": "resample",
+          "weight": 30,
+          "save": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800014/branch-30.save.json"
+        },
+        {
+          "dice": "resample",
+          "weight": 15,
+          "save": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800014/branch-15.save.json"
+        }
+      ]
+    },
+    {
+      "firstMatch": 1800016,
+      "target": "10,9",
+      "forkAt": 13,
+      "fork": {
+        "gameTurn": 1,
+        "playerTurnIndex": 0,
+        "phase": "MOVEMENT",
+        "segment": "MOVEMENT",
+        "firstPlayerId": "player:axis",
+        "phasingPlayerId": "player:axis",
+        "actingPlayerId": "player:axis"
+      },
+      "originalForkHash": "sha256:68a706fecb0646db33b7469888d46582496e9b5a518ff0e4409578dde046049e",
+      "originalForkRng": {
+        "state": 344143188,
+        "draws": 0
+      },
+      "futureState": 2639665108,
+      "sourceSave": "artifacts/ai-progress-objective-30games/matches/match-1800017.save.json",
+      "oldPath": "artifacts/ai-progress-combat-opportunity/pair-1800016.json",
+      "histories": [
+        {
+          "dice": "original",
+          "weight": 30,
+          "save": "artifacts/ai-progress-objective-30games/matches/match-1800017.save.json"
+        },
+        {
+          "dice": "original",
+          "weight": 15,
+          "save": "artifacts/ai-progress-objective-original-continuation/pair-1800016/branch-15.save.json"
+        },
+        {
+          "dice": "resample",
+          "weight": 30,
+          "save": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800016/branch-30.save.json"
+        },
+        {
+          "dice": "resample",
+          "weight": 15,
+          "save": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800016/branch-15.save.json"
+        }
+      ]
+    },
+    {
+      "firstMatch": 1800018,
+      "target": "4,18",
+      "forkAt": 10,
+      "fork": {
+        "gameTurn": 1,
+        "playerTurnIndex": 0,
+        "phase": "MOVEMENT",
+        "segment": "MOVEMENT",
+        "firstPlayerId": "player:axis",
+        "phasingPlayerId": "player:axis",
+        "actingPlayerId": "player:axis"
+      },
+      "originalForkHash": "sha256:2e177df4f55dc115cc802ecbba7bedf8f88e836d39d333330c669eb47792b49a",
+      "originalForkRng": {
+        "state": 344143382,
+        "draws": 0
+      },
+      "futureState": 4120324435,
+      "sourceSave": "artifacts/ai-progress-objective-30games/matches/match-1800019.save.json",
+      "oldPath": "artifacts/ai-progress-combat-opportunity/pair-1800018.json",
+      "histories": [
+        {
+          "dice": "original",
+          "weight": 30,
+          "save": "artifacts/ai-progress-objective-30games/matches/match-1800019.save.json"
+        },
+        {
+          "dice": "original",
+          "weight": 15,
+          "save": "artifacts/ai-progress-objective-original-continuation/pair-1800018/branch-15.save.json"
+        },
+        {
+          "dice": "resample",
+          "weight": 30,
+          "save": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800018/branch-30.save.json"
+        },
+        {
+          "dice": "resample",
+          "weight": 15,
+          "save": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800018/branch-15.save.json"
+        }
+      ]
+    },
+    {
+      "firstMatch": 1800020,
+      "target": "11,17",
+      "forkAt": 10,
+      "fork": {
+        "gameTurn": 1,
+        "playerTurnIndex": 0,
+        "phase": "MOVEMENT",
+        "segment": "MOVEMENT",
+        "firstPlayerId": "player:axis",
+        "phasingPlayerId": "player:axis",
+        "actingPlayerId": "player:axis"
+      },
+      "originalForkHash": "sha256:f962d64b9e79ee18ef5c2819293e067427d401814738ce3d1a9bfa843d091aa2",
+      "originalForkRng": {
+        "state": 344143576,
+        "draws": 0
+      },
+      "futureState": 1978730716,
+      "sourceSave": "artifacts/ai-progress-objective-30games/matches/match-1800021.save.json",
+      "oldPath": "artifacts/ai-progress-combat-opportunity/pair-1800020.json",
+      "histories": [
+        {
+          "dice": "original",
+          "weight": 30,
+          "save": "artifacts/ai-progress-objective-30games/matches/match-1800021.save.json"
+        },
+        {
+          "dice": "original",
+          "weight": 15,
+          "save": "artifacts/ai-progress-objective-original-continuation/pair-1800020/branch-15.save.json"
+        },
+        {
+          "dice": "resample",
+          "weight": 30,
+          "save": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800020/branch-30.save.json"
+        },
+        {
+          "dice": "resample",
+          "weight": 15,
+          "save": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800020/branch-15.save.json"
+        }
+      ]
+    },
+    {
+      "firstMatch": 1800022,
+      "target": "13,10",
+      "forkAt": 31,
+      "fork": {
+        "gameTurn": 1,
+        "playerTurnIndex": 0,
+        "phase": "MOVEMENT",
+        "segment": "MOVEMENT",
+        "firstPlayerId": "player:axis",
+        "phasingPlayerId": "player:axis",
+        "actingPlayerId": "player:axis"
+      },
+      "originalForkHash": "sha256:3a8efe5cbca181f02be1022aa753c5bfcc1d90ddde40a7104d8449fd5c1f895e",
+      "originalForkRng": {
+        "state": 344143770,
+        "draws": 0
+      },
+      "futureState": 3029308146,
+      "sourceSave": "artifacts/ai-progress-objective-30games/matches/match-1800023.save.json",
+      "oldPath": "artifacts/ai-progress-combat-opportunity/pair-1800022.json",
+      "histories": [
+        {
+          "dice": "original",
+          "weight": 30,
+          "save": "artifacts/ai-progress-objective-30games/matches/match-1800023.save.json"
+        },
+        {
+          "dice": "original",
+          "weight": 15,
+          "save": "artifacts/ai-progress-objective-original-continuation/pair-1800022/branch-15.save.json"
+        },
+        {
+          "dice": "resample",
+          "weight": 30,
+          "save": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800022/branch-30.save.json"
+        },
+        {
+          "dice": "resample",
+          "weight": 15,
+          "save": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800022/branch-15.save.json"
+        }
+      ]
+    },
+    {
+      "firstMatch": 1800024,
+      "target": "9,2",
+      "forkAt": 28,
+      "fork": {
+        "gameTurn": 1,
+        "playerTurnIndex": 0,
+        "phase": "MOVEMENT",
+        "segment": "MOVEMENT",
+        "firstPlayerId": "player:axis",
+        "phasingPlayerId": "player:axis",
+        "actingPlayerId": "player:axis"
+      },
+      "originalForkHash": "sha256:d83fb14ba09f8f0773c0a9434577d2e92db455112bfbc89e711cac7f7c1510c7",
+      "originalForkRng": {
+        "state": 344143964,
+        "draws": 0
+      },
+      "futureState": 3573794758,
+      "sourceSave": "artifacts/ai-progress-objective-30games/matches/match-1800025.save.json",
+      "oldPath": "artifacts/ai-progress-combat-opportunity/pair-1800024.json",
+      "histories": [
+        {
+          "dice": "original",
+          "weight": 30,
+          "save": "artifacts/ai-progress-objective-30games/matches/match-1800025.save.json"
+        },
+        {
+          "dice": "original",
+          "weight": 15,
+          "save": "artifacts/ai-progress-objective-original-continuation/pair-1800024/branch-15.save.json"
+        },
+        {
+          "dice": "resample",
+          "weight": 30,
+          "save": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800024/branch-30.save.json"
+        },
+        {
+          "dice": "resample",
+          "weight": 15,
+          "save": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800024/branch-15.save.json"
+        }
+      ]
+    },
+    {
+      "firstMatch": 1800026,
+      "target": "10,15",
+      "forkAt": 152,
+      "fork": {
+        "gameTurn": 2,
+        "playerTurnIndex": 0,
+        "phase": "MOVEMENT",
+        "segment": "MOVEMENT",
+        "firstPlayerId": "player:axis",
+        "phasingPlayerId": "player:axis",
+        "actingPlayerId": "player:axis"
+      },
+      "originalForkHash": "sha256:7856ec73a0c778199352be54b86b16a24d03219e5714e1b12fe7537941a12657",
+      "originalForkRng": {
+        "state": 44836817,
+        "draws": 30
+      },
+      "futureState": 4191642559,
+      "sourceSave": "artifacts/ai-progress-objective-30games/matches/match-1800027.save.json",
+      "oldPath": "artifacts/ai-progress-combat-opportunity/pair-1800026.json",
+      "histories": [
+        {
+          "dice": "original",
+          "weight": 30,
+          "save": "artifacts/ai-progress-objective-30games/matches/match-1800027.save.json"
+        },
+        {
+          "dice": "original",
+          "weight": 15,
+          "save": "artifacts/ai-progress-objective-original-continuation/pair-1800026/branch-15.save.json"
+        },
+        {
+          "dice": "resample",
+          "weight": 30,
+          "save": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800026/branch-30.save.json"
+        },
+        {
+          "dice": "resample",
+          "weight": 15,
+          "save": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800026/branch-15.save.json"
+        }
+      ]
+    },
+    {
+      "firstMatch": 1800028,
+      "target": "12,15",
+      "forkAt": 7,
+      "fork": {
+        "gameTurn": 1,
+        "playerTurnIndex": 0,
+        "phase": "MOVEMENT",
+        "segment": "MOVEMENT",
+        "firstPlayerId": "player:axis",
+        "phasingPlayerId": "player:axis",
+        "actingPlayerId": "player:axis"
+      },
+      "originalForkHash": "sha256:0505c185c866e60735a37ed2db7d2c6af6a740af8cb874a5260c79bf11a0ecaf",
+      "originalForkRng": {
+        "state": 344144352,
+        "draws": 0
+      },
+      "futureState": 660291647,
+      "sourceSave": "artifacts/ai-progress-objective-30games/matches/match-1800029.save.json",
+      "oldPath": "artifacts/ai-progress-combat-opportunity/pair-1800028.json",
+      "histories": [
+        {
+          "dice": "original",
+          "weight": 30,
+          "save": "artifacts/ai-progress-objective-30games/matches/match-1800029.save.json"
+        },
+        {
+          "dice": "original",
+          "weight": 15,
+          "save": "artifacts/ai-progress-objective-original-continuation/pair-1800028/branch-15.save.json"
+        },
+        {
+          "dice": "resample",
+          "weight": 30,
+          "save": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800028/branch-30.save.json"
+        },
+        {
+          "dice": "resample",
+          "weight": 15,
+          "save": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800028/branch-15.save.json"
+        }
+      ]
+    }
+  ],
+  "files": {
+    "artifacts/ai-progress-combat-opportunity/checks.json": "66142366fa1af2f76765a5d497900c0aa44c5b52046f2e0dff395c5dccffe630",
+    "artifacts/ai-progress-combat-opportunity/pair-1800000.json": "8a70b32b67ed4e48821b8c2e9463b611f86255d6166cd978a9670b147acd9121",
+    "artifacts/ai-progress-combat-opportunity/pair-1800000.raw.json.gz": "5bcce8a2dbb915b1078eba51c1f0a2127a8ce330f07922662eced2b74d076b5a",
+    "artifacts/ai-progress-combat-opportunity/pair-1800002.json": "7db144d64faddd16119b1786d8ba2d558e445ffd0c670262f58f983462d9671c",
+    "artifacts/ai-progress-combat-opportunity/pair-1800002.raw.json.gz": "ce7e5663dfe34180bc7d18f2bbbea13ab95c60799a9115cd6efd43f1945bde55",
+    "artifacts/ai-progress-combat-opportunity/pair-1800004.json": "ae20e28bf1a4ec7688e46e4757fe29a708314e0c7bb54d77f57a95b2fdac126a",
+    "artifacts/ai-progress-combat-opportunity/pair-1800004.raw.json.gz": "7ed7a0d6c257c5a735ee55fc346edce1e1a543b3c7b63954441bc8d48e21c446",
+    "artifacts/ai-progress-combat-opportunity/pair-1800006.json": "f06e1f3740f3f93ad185625632ccc4f8aa006e11bccecd5b3792f35d05db39d1",
+    "artifacts/ai-progress-combat-opportunity/pair-1800006.raw.json.gz": "c99e2503e577640039a3646d7d9cd263666abe089a925cbc54ae3c18239dbdfc",
+    "artifacts/ai-progress-combat-opportunity/pair-1800008.json": "ccb555c96c18a7a0f3c5e43e54b767ec0663c1c59b4e6f00e2502ef9bab0e496",
+    "artifacts/ai-progress-combat-opportunity/pair-1800008.raw.json.gz": "3fe71cd335f701c75999c6774e15a1804ab0c38dbff244d15c29d157bc420753",
+    "artifacts/ai-progress-combat-opportunity/pair-1800010.json": "8187a38ef03d1e31f0c4f389fe5a7455fa2945a5ee018afde235d770ba3596df",
+    "artifacts/ai-progress-combat-opportunity/pair-1800010.raw.json.gz": "234cf6f0071122a3c0210c76f79e9efe563139ec6895bb7ae3b069d22d23bc12",
+    "artifacts/ai-progress-combat-opportunity/pair-1800012.json": "2f4ae78ae2df62297907563afd1cfd827f4a31d7818f0a7c4ae7bb9e85648754",
+    "artifacts/ai-progress-combat-opportunity/pair-1800012.raw.json.gz": "27cecf8be2ec85cc7281537eed01ab177074fc550455a3c4040c29cafa923d19",
+    "artifacts/ai-progress-combat-opportunity/pair-1800014.json": "e37a19e6e869d8f1f85eaa0976ca12b9e767192e83e4ff4674a0f87657515130",
+    "artifacts/ai-progress-combat-opportunity/pair-1800014.raw.json.gz": "f8e3bffb9bad674a7941c0c1915eae65491cef9aabc49e79ec93b822b72b3e59",
+    "artifacts/ai-progress-combat-opportunity/pair-1800016.json": "ecabb7acd4a1a9581c1b350d7f8b7df599621d8b620067e03042029be88070ac",
+    "artifacts/ai-progress-combat-opportunity/pair-1800016.raw.json.gz": "f310670f68e7e002b3ea69651eb35926b63cd0c472eb2556592e94e859779fc2",
+    "artifacts/ai-progress-combat-opportunity/pair-1800018.json": "3afb3c1e7c5b268d8baec33fcef769067d315933c736d73889d2b2dd4d0c8fbe",
+    "artifacts/ai-progress-combat-opportunity/pair-1800018.raw.json.gz": "31e325b6cd252c9360584ae64028198924c5cfb9b3da008c8c899b3d9d642182",
+    "artifacts/ai-progress-combat-opportunity/pair-1800020.json": "bbeb3d5023db251e9ea0044200037f66c5a22d72e0081c68709c156e7c701cb6",
+    "artifacts/ai-progress-combat-opportunity/pair-1800020.raw.json.gz": "fe34f255ada82b5ad13b447d01ce5484f4c23873f1eb7213c4791d7a9f3ca498",
+    "artifacts/ai-progress-combat-opportunity/pair-1800022.json": "cd4730b5a8e25c23c2957bb388707a4af4910de055b7eff58c3b91ba2d8566e2",
+    "artifacts/ai-progress-combat-opportunity/pair-1800022.raw.json.gz": "8ce3a6f4008435e2b48a41352371b9416d9c19d76feda79c2e28bfa904136841",
+    "artifacts/ai-progress-combat-opportunity/pair-1800024.json": "8595e6dc05824fd03f176f17c6dc90be9378d68a5e089d23f78fb59a9461e088",
+    "artifacts/ai-progress-combat-opportunity/pair-1800024.raw.json.gz": "d2e119396061943eaf7d1291a6b060b9bfd1b33c64d582e4a8a78e60f0c867a4",
+    "artifacts/ai-progress-combat-opportunity/pair-1800026.json": "d83b3da16effa1175784f20c663ffe6315cc93479278d5a60e1fc75b1dc2096e",
+    "artifacts/ai-progress-combat-opportunity/pair-1800026.raw.json.gz": "8911af2a21d6656e332b9c7acb9386dcc10852a1baf35351f238f2c0be7dcd0f",
+    "artifacts/ai-progress-combat-opportunity/pair-1800028.json": "7f9b01ef0a93f73daf17cacf005626dc500352438707910c05152a8f2d5038dc",
+    "artifacts/ai-progress-combat-opportunity/pair-1800028.raw.json.gz": "48dd0abbb80a8f71563919df9d2c5721858bcac28853798c21d3a5630c1ec822",
+    "artifacts/ai-progress-combat-opportunity/protocol.md": "838f64ce2510a88a8c5bc37eb270a859dc0c593d2730289ca7be70a0a710b42e",
+    "artifacts/ai-progress-combat-opportunity/registration.json": "b70bedc7e26ad356b144b32d577c11a020760d3c11fcb799eb1550f84795ddbb",
+    "artifacts/ai-progress-combat-opportunity/results.json": "a911aa9a30507e8b03e6240f87a5198bfb5b18215fe575dcff1d1aa09f1b8eb9",
+    "artifacts/ai-progress-dice-reproducibility/check.json": "ddd4a6c886ec8b6546fdc7f51f56a3ec8abc84c3ab3aba57a238fd92c793196b",
+    "artifacts/ai-progress-dice-reproducibility/control-registration.json": "b1ad6c6f707600f9dc88d86fc23e46849f0e00cc311a92fb0734e9a5fdb38d9c",
+    "artifacts/ai-progress-dice-reproducibility/control/pair-1800026/branch-15.memory.json": "228aaa004ec53348c50afec7dcb4b0753b282fba28abedf1cb22fe5d5a15071d",
+    "artifacts/ai-progress-dice-reproducibility/control/pair-1800026/branch-15.save.json": "da432f4ddb01950693dd3f77364e714df372c74a1b99ddcbd8311804b7934272",
+    "artifacts/ai-progress-dice-reproducibility/control/pair-1800026/branch-15.trace.jsonl": "6afe137040bea2824783cffc5ee24d10471345949c8c7284ed7755880540e8f6",
+    "artifacts/ai-progress-dice-reproducibility/control/pair-1800026/branch-30.memory.json": "40d5aa0303e04a2ccbfd0613afa2e8ea2916539e2ddcf2ccf2004ca52266760c",
+    "artifacts/ai-progress-dice-reproducibility/control/pair-1800026/branch-30.save.json": "d0e8111967a9ffdc8e74d8bce78820d368c9b6b62171557f27948169f302cb26",
+    "artifacts/ai-progress-dice-reproducibility/control/pair-1800026/branch-30.trace.jsonl": "b917b7f9a22f8e637239b084ace9d9a33bd8716fd1e2cd0f3ac331f87da98f17",
+    "artifacts/ai-progress-dice-reproducibility/control/pair-1800026/result.json": "46d7fd4685ad85a752ec35923a39389c84c32bcd722adc7d3270675f596e8218",
+    "artifacts/ai-progress-dice-reproducibility/protocol.md": "1fadd3c26f72b35f2b124b15224b735713c3ffe1c5dcca5692b066bf7ab55843",
+    "artifacts/ai-progress-dice-reproducibility/registration.json": "a11ca309a4d9846fbe38203872fe4bd95654f5a6f20e8430e80d68e487491231",
+    "artifacts/ai-progress-dice-reproducibility/resample/pair-1800000/branch-15.save.json": "4394900286fbcc3f8778d8a4eeb18f052d1b5f6e5b3e7b8de2cf611321065382",
+    "artifacts/ai-progress-dice-reproducibility/resample/pair-1800000/branch-30.save.json": "1a8274643aac0f674d5ca0e428e711021141f95867385d6cd71ca5f509ec8312",
+    "artifacts/ai-progress-dice-reproducibility/resample/pair-1800002/branch-15.save.json": "1fa0b33b3d68a9268b93766195230c9f9f5ec596df3f7633377a1b717fc1ed29",
+    "artifacts/ai-progress-dice-reproducibility/resample/pair-1800002/branch-30.save.json": "09dc9b5022f3b6148febbf02aa0a3a38e2d471bf7357869ddbb5c90d257113fb",
+    "artifacts/ai-progress-dice-reproducibility/resample/pair-1800004/branch-15.save.json": "830fed1fa3d0932ae3ee6fa34445406bb2b6a2736eb1f641dda5135b9b3babe3",
+    "artifacts/ai-progress-dice-reproducibility/resample/pair-1800004/branch-30.save.json": "a99ad3f18037eae9d22f5793f66d52edf2f7d89a225d3b4867dd2a92c5615302",
+    "artifacts/ai-progress-dice-reproducibility/resample/pair-1800006/branch-15.save.json": "dbd2e7bae6e2eb41a4b73e491545c642f2c9a81fafef586575db7f1739f10af7",
+    "artifacts/ai-progress-dice-reproducibility/resample/pair-1800006/branch-30.save.json": "d0024c4e2cb69174152a9099e81f480019a13e6331ec657ecc9bb7c2fd91532c",
+    "artifacts/ai-progress-dice-reproducibility/resample/pair-1800008/branch-15.save.json": "4602ccdfdeaeb11446068aab8a07b010bcfb3f8ebfdc8a2d804e6ef99221fd43",
+    "artifacts/ai-progress-dice-reproducibility/resample/pair-1800008/branch-30.save.json": "a0186fe29ff711ad26974d14ab1805f68177aa69c4a58259e481902aad0fa96a",
+    "artifacts/ai-progress-dice-reproducibility/resample/pair-1800010/branch-15.save.json": "3e03a2f5592dadd03b164ea6e7c5752617c64d3f0e6695883e573a8f86cc1226",
+    "artifacts/ai-progress-dice-reproducibility/resample/pair-1800010/branch-30.save.json": "531d064443267cda901b2f0a35ef21d11b5f9382fd9fa0fca5deb9b48524c56a",
+    "artifacts/ai-progress-dice-reproducibility/resample/pair-1800012/branch-15.save.json": "0c7df937ba462b9b2d61e8f41635d7de752196a6c79722fed572d37df9e32039",
+    "artifacts/ai-progress-dice-reproducibility/resample/pair-1800012/branch-30.save.json": "64c57d8e63cd8a773853d3ea33097d099229d742dbe06122a770e1fab776a78b",
+    "artifacts/ai-progress-dice-reproducibility/resample/pair-1800014/branch-15.save.json": "83f2e372282b12ae9721ea386b6817db458f238280446e12eebb5f4f91212149",
+    "artifacts/ai-progress-dice-reproducibility/resample/pair-1800014/branch-30.save.json": "e275eed36a284f4a5c696c533a1857dbc9675548fb829863dc02d23dc889a2d9",
+    "artifacts/ai-progress-dice-reproducibility/resample/pair-1800016/branch-15.save.json": "64dec1016921c0c3c447701a2b7a2060b1b0f07e86141b90730149c1c7ffe022",
+    "artifacts/ai-progress-dice-reproducibility/resample/pair-1800016/branch-30.save.json": "d1e6d8c5f7fbb153f7409190832de9f8daa6b7b611853063c9bfd090a895be38",
+    "artifacts/ai-progress-dice-reproducibility/resample/pair-1800018/branch-15.save.json": "9d5b48e463854dd06255f0541b6bb0435b9e275ea3bc661bce02a306867ad4fe",
+    "artifacts/ai-progress-dice-reproducibility/resample/pair-1800018/branch-30.save.json": "5a72bac1d3d802bfcc245b376339a9ef814788d4b2dd9a339c532dbb742235a4",
+    "artifacts/ai-progress-dice-reproducibility/resample/pair-1800020/branch-15.save.json": "0a23d51230aa6d171f803e465c72241d6e54c3fcde4108201e76fb2a4b7976e8",
+    "artifacts/ai-progress-dice-reproducibility/resample/pair-1800020/branch-30.save.json": "08ce4d1f9c5f91d1a7f21740f00c4d152c724161d32f5dc4a08bc31afdd3f7c9",
+    "artifacts/ai-progress-dice-reproducibility/resample/pair-1800022/branch-15.save.json": "b19291d3dc26b08a03d50d323676cfe6d9ce8e5e1ba3beb9c997eff23522db82",
+    "artifacts/ai-progress-dice-reproducibility/resample/pair-1800022/branch-30.save.json": "36f399a13673e67a4c4643689d7da2da08544bd62b8136a0a1e9ae6dab04a984",
+    "artifacts/ai-progress-dice-reproducibility/resample/pair-1800024/branch-15.save.json": "3062f65a61999af5efc1387cbe9a51e5618f74df1a5e15641c3e3022dd0968cf",
+    "artifacts/ai-progress-dice-reproducibility/resample/pair-1800024/branch-30.save.json": "3e0af33333976cd708d5d7abf65ff22434c045f3d6dd3b8405684d68884c8e3a",
+    "artifacts/ai-progress-dice-reproducibility/resample/pair-1800026/branch-15.save.json": "3c88e388a6e68535801e92b1ef3a8c2ebaff92e9dc0ce2c644b82d80f32b3c9e",
+    "artifacts/ai-progress-dice-reproducibility/resample/pair-1800026/branch-30.save.json": "5ff0f895f63d2f55af77ed50dd0a33f90bed711b65b18f8a3f48c83244eef0a7",
+    "artifacts/ai-progress-dice-reproducibility/resample/pair-1800028/branch-15.save.json": "073a56e578fe0cb6f93419da9129eac65d95b053f13a2784940f89edf5bf8561",
+    "artifacts/ai-progress-dice-reproducibility/resample/pair-1800028/branch-30.save.json": "2a231828604e2f1a456aa18b9d468bcac3f1ee7d0304578d17eabf029310bd2c",
+    "artifacts/ai-progress-objective-30games/matches/match-1800001.save.json": "e04812aafaf87a018eba2164b0b69806f7a39076147e2d663c415370a0cddd4c",
+    "artifacts/ai-progress-objective-30games/matches/match-1800001.trace.jsonl": "1bb020feb92975d1858c6e28a468c7831a55b0a2300190ea138c9be5d673f5fb",
+    "artifacts/ai-progress-objective-30games/matches/match-1800003.save.json": "4955c2ee602c967630da6a1dc9ad6c86396dcbc883908b4702e815b45d1103f8",
+    "artifacts/ai-progress-objective-30games/matches/match-1800003.trace.jsonl": "5d84ccc47ffa8074a2dc162877aa32c343898eda3e9a531375b998336383c8d3",
+    "artifacts/ai-progress-objective-30games/matches/match-1800005.save.json": "280e1bb45485a16cdbd53d4c73d446bd6d8f28c01807cb74c78a4b5ea610a64b",
+    "artifacts/ai-progress-objective-30games/matches/match-1800005.trace.jsonl": "20a83260d6719ef9823d748e8493289da2ceef13b8ae497f127ef9803c2f5ce0",
+    "artifacts/ai-progress-objective-30games/matches/match-1800007.save.json": "78f0acb920bc47cc108f4e4c06d20967b979224079fb524ac8e7c3a07a4aa325",
+    "artifacts/ai-progress-objective-30games/matches/match-1800007.trace.jsonl": "4108e53bdb4327925314987002671abaa63455db31b85e57b0c93e69a1dd5e47",
+    "artifacts/ai-progress-objective-30games/matches/match-1800009.save.json": "5276521eb7308ccdbb76917cbdcd4b51b90779e1d889504d0300d1e608821854",
+    "artifacts/ai-progress-objective-30games/matches/match-1800009.trace.jsonl": "7def83f34c5fa83c42dd4d5ea478bb12c31c120179edaed56dfcaf0d292d3019",
+    "artifacts/ai-progress-objective-30games/matches/match-1800011.save.json": "c3e6d89cea7b84fe6a3f5e6d633908caafd035e1e768887d1cfb315c1b7cf592",
+    "artifacts/ai-progress-objective-30games/matches/match-1800011.trace.jsonl": "d9f86f205f6139c39aa1f1e414a468c0b7aa9c7f2a9aeb784e53693590c011dc",
+    "artifacts/ai-progress-objective-30games/matches/match-1800013.save.json": "ee0affe79acd481987efb59186e68fb7041d45825eabef8d14c5d61527336b3d",
+    "artifacts/ai-progress-objective-30games/matches/match-1800013.trace.jsonl": "999341f51ec48dc0d0d20616a2592e59d9aaf379e58c824bc3375588e085f269",
+    "artifacts/ai-progress-objective-30games/matches/match-1800015.save.json": "82215e903f856db42f2e0a29bc15da27e4520c25b97741c85615ca406ebe4071",
+    "artifacts/ai-progress-objective-30games/matches/match-1800015.trace.jsonl": "1a37c5e8ffe63cbe316cf4ecedd048e317dcbc985cabfb4b25c7423db8c81cc2",
+    "artifacts/ai-progress-objective-30games/matches/match-1800017.save.json": "a604ce6ad93f82796e932c24d0fbf5d31282ff26a54b51d7bbe3b987b8691291",
+    "artifacts/ai-progress-objective-30games/matches/match-1800017.trace.jsonl": "3cabdf62f35cd61736778a2c3133c6874279f6ddb259e74a8c9782f1748e868b",
+    "artifacts/ai-progress-objective-30games/matches/match-1800019.save.json": "037b2dfa7e9d48f0c55cc78fb0d9497b3eba345d0d0cadf8c02081d3eac4efb6",
+    "artifacts/ai-progress-objective-30games/matches/match-1800019.trace.jsonl": "afddcde0de8f837f7edffd724233b968c718f4b2440fd68734d2d13a189ee0e8",
+    "artifacts/ai-progress-objective-30games/matches/match-1800021.save.json": "ff2385f6bb032556993211b7efc8f4c37b6d300a9018ca04c1c2c29ff0dc65f9",
+    "artifacts/ai-progress-objective-30games/matches/match-1800021.trace.jsonl": "2387e8c8993d732a13c2c53ffa88a1a71a484a2b7e42df2800460fa72a66dafd",
+    "artifacts/ai-progress-objective-30games/matches/match-1800023.save.json": "f5e136683d468618aa3c0b8bb8a2f8b78c8616ed61f847779ed5a0b0696feaa9",
+    "artifacts/ai-progress-objective-30games/matches/match-1800023.trace.jsonl": "1a43a0e6ba3adaa0a9b0d2a95f92ee109e4050c34c5cf13cd42bc10ac2015f2d",
+    "artifacts/ai-progress-objective-30games/matches/match-1800025.save.json": "94293ac49de52b9828b1691190f7b47b3b91d6d701f027377fd441f19dd914bd",
+    "artifacts/ai-progress-objective-30games/matches/match-1800025.trace.jsonl": "f66e244192bf16e98a420c4e86b1148e3d94abfed3dc4aefb702f4e34e07bff3",
+    "artifacts/ai-progress-objective-30games/matches/match-1800027.save.json": "0316327088a91723e8708bef8e00ee9a4609b16ce388d5ae3ec39ad1792dba7f",
+    "artifacts/ai-progress-objective-30games/matches/match-1800027.trace.jsonl": "2907d49c5f48561a5a2bd67dae08256ac40d302050e6fd0fda6da790c4c5e528",
+    "artifacts/ai-progress-objective-30games/matches/match-1800029.save.json": "0fba68defa48adf66842bbf7707dfab600efb6d9df258a5c90ecbb51d639b6e5",
+    "artifacts/ai-progress-objective-30games/matches/match-1800029.trace.jsonl": "e290e474d11f8948131501355e53a6dd56aa74f4726bd588608bfee1d2534a07",
+    "artifacts/ai-progress-objective-30games/matches/summary.json": "f738aabcf60ca671fd20499d958a3f703b2994f337957914fc9ff908c0ff07a8",
+    "artifacts/ai-progress-objective-30games/weights.json": "ff664c80321570dd41d3c9090fd9071d63c074f505b2b84e5a9110d03e2cd0b1",
+    "artifacts/ai-progress-objective-mechanism/results.json": "86c4c33f777fabd339fe407828e6549cd22c7d068c7ba4b484c3f64d38141c50",
+    "artifacts/ai-progress-objective-original-continuation/pair-1800000/branch-15.memory.json": "6a03f9e20962c4a5fadf22c4623effdd0975b763b6e308694e5e03d6ba0111af",
+    "artifacts/ai-progress-objective-original-continuation/pair-1800000/branch-15.save.json": "ce6334a7dafd24b41f5687fab07f847d64a6488eed4f6370b8f6fc12f1fa2ae6",
+    "artifacts/ai-progress-objective-original-continuation/pair-1800000/branch-15.trace.jsonl": "d2f517efafc87c2bb384bcb4b8956ebdd49b4c7e6f954adbba2530c1dd93da51",
+    "artifacts/ai-progress-objective-original-continuation/pair-1800000/branch-30.memory.json": "43f43b8dd819e1b40bce4577f6fa65704b4f7d31c576106beb554dffe2c0d881",
+    "artifacts/ai-progress-objective-original-continuation/pair-1800002/branch-15.memory.json": "82ba2754cbb28e044f5929f77376bc64fbfb1e65bfa918dc39f82b32587d3367",
+    "artifacts/ai-progress-objective-original-continuation/pair-1800002/branch-15.save.json": "02983b8591943b23776686887f8e154a4b90e2afd157469cb80194473261dbbb",
+    "artifacts/ai-progress-objective-original-continuation/pair-1800002/branch-15.trace.jsonl": "eeed51b1504bc6e28b1d26d3f6139ea1ced195f3dc2224a36425364079748847",
+    "artifacts/ai-progress-objective-original-continuation/pair-1800002/branch-30.memory.json": "47c208f98f5e651628614c0d87bfe8cd81f473cc7559d6101e405ed03abf944c",
+    "artifacts/ai-progress-objective-original-continuation/pair-1800004/branch-15.memory.json": "66e2b4adeb26210f74d5308b2a8947085d57bd0b70c762dc595d5ac33c849070",
+    "artifacts/ai-progress-objective-original-continuation/pair-1800004/branch-15.save.json": "4f2c8e392b2a7e43bd9636b3ca75daa76cf9c4bf83cbdcd0801689c2593cb592",
+    "artifacts/ai-progress-objective-original-continuation/pair-1800004/branch-15.trace.jsonl": "ffa9322ab21d2984c8411a50375a11644265b4150d9f238a0f2acb10ca565861",
+    "artifacts/ai-progress-objective-original-continuation/pair-1800004/branch-30.memory.json": "2ed971b2086a2dbc1dce9baa9cf8065567faba1fd083e4e10c915613f917d459",
+    "artifacts/ai-progress-objective-original-continuation/pair-1800006/branch-15.memory.json": "608577a7cd86a108fb981193327928c6914490be8ac95b41ed09ed29292f7997",
+    "artifacts/ai-progress-objective-original-continuation/pair-1800006/branch-15.save.json": "c6c33e40402e0b430b68e362c8e05e8b047f251687bfffc12e7c471a00b65221",
+    "artifacts/ai-progress-objective-original-continuation/pair-1800006/branch-15.trace.jsonl": "a6518aafb1cac50ebb4fd9dc8acdaf0731706d106760707d4e92367afea99a82",
+    "artifacts/ai-progress-objective-original-continuation/pair-1800006/branch-30.memory.json": "2d05cc87932be51b7393519b336b82af43cc38a972ea78e080c466808a78a898",
+    "artifacts/ai-progress-objective-original-continuation/pair-1800008/branch-15.memory.json": "0a4ca0beb900cae2d930c653cd9af2c47d68e5d46b928607eb11b349d7bb3e1b",
+    "artifacts/ai-progress-objective-original-continuation/pair-1800008/branch-15.save.json": "3b2435dc368b9fd80e91182af82475919e4d9da0055dcb1c555f6749a54beea6",
+    "artifacts/ai-progress-objective-original-continuation/pair-1800008/branch-15.trace.jsonl": "b5887a67e79803c2efd2e7f534c55e7ce3c1f11e41887b80c4858714bdac6ac6",
+    "artifacts/ai-progress-objective-original-continuation/pair-1800008/branch-30.memory.json": "291460a17ef02f3f043cdb19084dfddabdb082e05ddde8da0b267cf9ce75d0bd",
+    "artifacts/ai-progress-objective-original-continuation/pair-1800010/branch-15.memory.json": "ff0526a2e64b5d7aa84b0001d349e701fd2a699d19e2bc42ae424594aa1167bc",
+    "artifacts/ai-progress-objective-original-continuation/pair-1800010/branch-15.save.json": "423cce0b17ca24bf678792d172044c2e9718355f59296401266a73b9e5b20f5e",
+    "artifacts/ai-progress-objective-original-continuation/pair-1800010/branch-15.trace.jsonl": "2bfd4fefd27cba27220a2c78ee2ede0a9a19c9664bb55ae6c88adcba3bef3c55",
+    "artifacts/ai-progress-objective-original-continuation/pair-1800010/branch-30.memory.json": "dd0b8e4e720464becbf45499e239cc10efc2d0016a8f1ad4aebf90a01275c6b6",
+    "artifacts/ai-progress-objective-original-continuation/pair-1800012/branch-15.memory.json": "8c7529dde60914b7a48aade1130346c23cfff22132f2a4b725fc8ae77d1a17c8",
+    "artifacts/ai-progress-objective-original-continuation/pair-1800012/branch-15.save.json": "8e378c1dbfb5f40d6c1c5a7f47341e12949a73d092b50fd9d930d7df101365b1",
+    "artifacts/ai-progress-objective-original-continuation/pair-1800012/branch-15.trace.jsonl": "a06a0f8cb51a841029a24d56f65108bf98c9926f6e5b49a4ad54939fc70afada",
+    "artifacts/ai-progress-objective-original-continuation/pair-1800012/branch-30.memory.json": "0c1b9140c0cf43fea7f35f6c7877fd1155420ffbbf20d007c2743135f3aefb29",
+    "artifacts/ai-progress-objective-original-continuation/pair-1800014/branch-15.memory.json": "676f7749c7321b4ec9dee7e7591a6d9e97d81add084f2b1a61538302f47c7f72",
+    "artifacts/ai-progress-objective-original-continuation/pair-1800014/branch-15.save.json": "ba486fcecdb946bca586d3f5fe64e4969280b51e97705271e5ee9346d44b6409",
+    "artifacts/ai-progress-objective-original-continuation/pair-1800014/branch-15.trace.jsonl": "a5b18e74b3b17a9a45ac52b69debee627aa5f7e440f9d81951e5dbbdf9813f97",
+    "artifacts/ai-progress-objective-original-continuation/pair-1800014/branch-30.memory.json": "57f1f04520cbee11c08c045e83248ebd58fb0d3df2b600d40d43556e5bee3daa",
+    "artifacts/ai-progress-objective-original-continuation/pair-1800016/branch-15.memory.json": "0fa5a885c17bed6408b84d164e86bed8404e76ac7cd11142625f7f55cdcc2e59",
+    "artifacts/ai-progress-objective-original-continuation/pair-1800016/branch-15.save.json": "4e65dfdd71f4dbaab7a7a9db0f7e4b774a7cead389673ef87b827cfdadc7b74b",
+    "artifacts/ai-progress-objective-original-continuation/pair-1800016/branch-15.trace.jsonl": "2f665eac41c0d397123054c4b2824c7f7596eb85a6312551e7b783abc141bda9",
+    "artifacts/ai-progress-objective-original-continuation/pair-1800016/branch-30.memory.json": "3341b0c4cac455aaa114cce0b22e4c860b5e27957f501eabeea9b0868b69622d",
+    "artifacts/ai-progress-objective-original-continuation/pair-1800018/branch-15.memory.json": "0601134a6de348455d4a51d7dba063416b69087d5646a32734588a64592917c8",
+    "artifacts/ai-progress-objective-original-continuation/pair-1800018/branch-15.save.json": "15f73f844c56ce160ed00f4d9bb7c855b7d47fa7be5845f53fdf3685173828ef",
+    "artifacts/ai-progress-objective-original-continuation/pair-1800018/branch-15.trace.jsonl": "a075f6808736fd0e4fa27fc11ac1a496232c565c865c45bac0bfce3d0a674cdc",
+    "artifacts/ai-progress-objective-original-continuation/pair-1800018/branch-30.memory.json": "3d58030624bbb66be66fa1187ff9d299b13c9b3ad4accc5ec27c3d7160d5c740",
+    "artifacts/ai-progress-objective-original-continuation/pair-1800020/branch-15.memory.json": "4396ea117e7d36e8975c05ee776f5b338e058f63e8f337626b8b8b2c73a779ae",
+    "artifacts/ai-progress-objective-original-continuation/pair-1800020/branch-15.save.json": "4678e22ffdcc495e1bcb5d2a2c5ee6183b88062326a17db33485e2aa1f2cd84b",
+    "artifacts/ai-progress-objective-original-continuation/pair-1800020/branch-15.trace.jsonl": "09af8aed60122609906c9006f9d9504fef65ca1693adc392c33511ba734cd171",
+    "artifacts/ai-progress-objective-original-continuation/pair-1800020/branch-30.memory.json": "fdeb4e342e1c5dd084c697fcd466714df0c12309e636e3ea393aa4e62c4e6f84",
+    "artifacts/ai-progress-objective-original-continuation/pair-1800022/branch-15.memory.json": "056c425c77d3a453e1e50590d219c265feb193f7bfea124ad48b0d16633a4f2d",
+    "artifacts/ai-progress-objective-original-continuation/pair-1800022/branch-15.save.json": "cacf2e54367cbbf49e00d82c8a3bf6a79d9f8b7a8a763ee48392627c7493d577",
+    "artifacts/ai-progress-objective-original-continuation/pair-1800022/branch-15.trace.jsonl": "c17779c79df4d52923a2009b443f46bbc5914361df7ad363dd23fa6fad0a2b9c",
+    "artifacts/ai-progress-objective-original-continuation/pair-1800022/branch-30.memory.json": "c2a0ae96206da931c0193e6088fa4cfb47993f3cd04c951bc5c7df3e59b1a64d",
+    "artifacts/ai-progress-objective-original-continuation/pair-1800024/branch-15.memory.json": "30563917c5448db2e256a043b627006ecaff7b878ccce8c8e3a258f517e7423a",
+    "artifacts/ai-progress-objective-original-continuation/pair-1800024/branch-15.save.json": "30359253ff477c9ba767e85d023391b134883b58d91eaf29a6c11e975a7f431b",
+    "artifacts/ai-progress-objective-original-continuation/pair-1800024/branch-15.trace.jsonl": "0f2af2a5e249792bfd446d3a6de3a324ade3175c40c05526217912e236c06981",
+    "artifacts/ai-progress-objective-original-continuation/pair-1800024/branch-30.memory.json": "894588405acd9aa75e2b1a870b45fe42107a8376586985e7ff948c06e06b221e",
+    "artifacts/ai-progress-objective-original-continuation/pair-1800026/branch-15.memory.json": "b0a6e52bfc799ff48611f319a1632d3311238481f53f4969d2d71eb11993fbf4",
+    "artifacts/ai-progress-objective-original-continuation/pair-1800026/branch-15.save.json": "259841fbccf00a6df8e17f1bb299370d1fb64a7e3855ef6ce218c98dafb131ed",
+    "artifacts/ai-progress-objective-original-continuation/pair-1800026/branch-15.trace.jsonl": "7488cce5a5f89ee987e36df7f8531b60dcdaaf701068095e27705b78af2e3c2e",
+    "artifacts/ai-progress-objective-original-continuation/pair-1800026/branch-30.memory.json": "9f9a85c94e4231abdc9f6abdbe90e9a0a336734d2bd04c9711402df2b8a5cbbd",
+    "artifacts/ai-progress-objective-original-continuation/pair-1800028/branch-15.memory.json": "9a95bca41048b2bfc53b3715413c4dabc7b21e69be2a01c1090b855de5cbe2d7",
+    "artifacts/ai-progress-objective-original-continuation/pair-1800028/branch-15.save.json": "faf73dc6b5f1febbc1decf369da9e57b189b9eb543436ae7071fc74d787ba5d0",
+    "artifacts/ai-progress-objective-original-continuation/pair-1800028/branch-15.trace.jsonl": "8f5d046374c6009e92f40998f428ebbf1a67a3bc2fffd827d2b8abd24e6831d3",
+    "artifacts/ai-progress-objective-original-continuation/pair-1800028/branch-30.memory.json": "b013f04e0130ab81924f4bdc8a8a9aaaab42a92a725e6f25cd5228c177a0530d",
+    "artifacts/ai-progress-objective-original-continuation/results.json": "cd1187b6d970b8eccefc644e4256155151bfcabf70ab09d9b460323ef0eda4e6",
+    "artifacts/ai-progress-objective-persistence/boundary-snapshots.jsonl": "c2bac6745599693308aad671580a6f0003ec3ab31dded6085a4f72f1991802f0",
+    "artifacts/ai-progress-objective-persistence/measurements.json": "617f68eff2b528df5379002d70ee426d405b06c7cf45ba91796141bf4aca57a1",
+    "artifacts/ai-theater-supply-audit/design.md": "7abd5ea977b6ef7c3fcadcbb82c0055b6f2450910942304c1f881680a3a3e25f",
+    "artifacts/ai-theater-supply-audit/protocol.md": "7d9d7ab2e5444b1226977bcca6d62da40916ade5c0509644e5f1672550a8df56",
+    "scripts/ai-progress-combat-probe.mjs": "10bc1e59d3c1cac0e5c08235bf7bb085e93ca3bccdef19b5b862be0f31198c7d",
+    "scripts/ai-progress-combat-score.py": "c4c0c0036f4cd9e92a7ad91bd93c14c01a65cd6a3a8710835346b8473e1065c4",
+    "scripts/ai-progress-dice-register.mjs": "22d5eaee478d013cae2d316a3f0f132100e85d61c77b80c3515b1c469c9f03e9",
+    "scripts/ai-progress-dice-run.mjs": "72c793592824229a67417e1f4e900ba88b71ce3900b2ba0c233731d2bb9a0847",
+    "scripts/ai-progress-dice-score.py": "00112780fa112d0cb5b019fa09f027a2e376e2a2dfa72a37e2b1ec32c1399f79",
+    "scripts/ai-theater-supply-audit.mjs": "2afada74e09717b6ee74338ea4a0324d8b764a400ed2249ac5bac78893ed4a2c",
+    "src/rules/combat/combat.ts": "dbb5203e4bf7e78a326d097e2944b80798cbabe00102dfa7ff5f27ef57cbf7ca",
+    "src/rules/engine.ts": "98ad366b0bbe3f97f1e646f633a1b4ff0d6958d5978a3216e44eabe8f88215f0",
+    "src/rules/kernel/reducer.ts": "9319e2a17bb2bb21f778ea000e0f1a0f7f2b1c99a37b1ee6eb1dcd2f3a19893f",
+    "src/rules/lifecycle/lifecycle.ts": "60a3f80e64723b24677a8ce5cadf3d4f680eed91c3f22077d75a3a6ba5cf2361",
+    "src/rules/query/candidates.ts": "41e96b7abf1ca6d86547548b9aa57d48e1fdfb5c1d7ba66c75ce909e3689f4f6",
+    "src/rules/sequence/sequence.ts": "be3dbbd8fab188c64331a655a053f243f60e9e8d46938813a56ff1698fcdf24d"
+  }
+}

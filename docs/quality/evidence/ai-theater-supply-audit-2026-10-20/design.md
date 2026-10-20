@@ -1,0 +1,7 @@
+# Synthesis
+
+Use design A's chronological audit. Both independent designs reject re-reserving settled current-turn costs at Combat entry. The cross-judge scores A11/12 and B11.5/12 and recommends A as the smaller base with B's strongest invariants. The parent agrees on that base, not on treating full-game replay as necessary for this interval.
+
+Graft B's separate physical stock, active reservation and consumption concepts, and its warning about cleared supplyPaid. Explicitly replay from original initial state, collecting the entire same player turn including pre-fork payments. Use exact prior full-game verification input hashes instead of another full-terminal replay. Keep the first Combat entry observation unchanged. Source changes outside the three payment classes remain generic state changes with no invented attribution. Unit-specific coverage is required for actual attack witnesses; a new full all-unit planning taxonomy is outside this audit.
+
+The schema is HistoryKey(pair,dice,weight), PaymentReceipt(action index,rule payments,source before/after), BoundaryWitness(full transition provenance), OfferedAttack(action,shared settlement,unit-specific sources), and explicit missing boundary or truncated-absence status. No new allocator, private engine state, future defense reserve, second ration, strategy change or predictor fit. The rubric is chronological correctness, shared-source legality, reuse of60histories and small independent checkability. Verification remains pending actual script execution.

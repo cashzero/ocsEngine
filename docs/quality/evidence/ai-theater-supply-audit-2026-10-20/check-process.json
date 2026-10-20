@@ -1,0 +1,5 @@
+{
+  "command": "node scripts/ai-theater-supply-check.mjs",
+  "exitCode": 0,
+  "elapsedSeconds": 36.768946137992316
+}
