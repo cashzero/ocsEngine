@@ -1,0 +1,2725 @@
+{
+  "registration": {
+    "sourceCommit": "ed7e706d45c5a2ea7a93dfc805319153ca28636c",
+    "engineTreeSha256": "4a87376b26c41f60086cb3060f606afcc1e9b99bb3ba00339c904837d200bb2a",
+    "firstMatches": [
+      1800000,
+      1800002,
+      1800004,
+      1800006,
+      1800008,
+      1800010,
+      1800012,
+      1800014,
+      1800016,
+      1800018,
+      1800020,
+      1800022,
+      1800024,
+      1800026,
+      1800028
+    ],
+    "scheduledFullContinuations": 16,
+    "scheduledShortPrefixControls": 14,
+    "parallel": 4,
+    "features": [
+      "addedScaledProgress",
+      "otherCostPerScaledProgress",
+      "exposureCostPerScaledProgress"
+    ],
+    "ridgePenalty": 1,
+    "primaryError": "MAE",
+    "secondaryError": "MSE",
+    "files": {
+      "artifacts/ai-progress-objective-original-continuation/run-case.mjs": "ff72510b7adc09392e18ada35f77e9d25f2f40df527f1b1f5596d527630be350",
+      "artifacts/ai-progress-objective-original-continuation/run-suite.py": "3b3f2d88b682cb9033e447e26817532a9cf86f0fe498150af08288542b511aa8",
+      "artifacts/ai-progress-objective-original-continuation/score.py": "363b872d23389a38e8076ad659222400e5f7ddb2677f7e6263b75669ae71b829",
+      "artifacts/ai-progress-objective-original-continuation/protocol.md": "0641884bdf91f1340434d2bb301e8493fcf7757500ddc0cd43136a9c6a7706e9",
+      "artifacts/ai-progress-objective-mechanism/results.json": "86c4c33f777fabd339fe407828e6549cd22c7d068c7ba4b484c3f64d38141c50",
+      "artifacts/ai-progress-objective-30games/weights.json": "ff664c80321570dd41d3c9090fd9071d63c074f505b2b84e5a9110d03e2cd0b1",
+      "artifacts/ai-progress-objective-30games/matches/summary.json": "f738aabcf60ca671fd20499d958a3f703b2994f337957914fc9ff908c0ff07a8",
+      "src/ai/policies/heuristic.ts": "756c7ee53d46ef439edec8fa96d176549f4427c938881a65253d102ff087b349",
+      "src/ai/seat-runner.ts": "57f62ef0c4e5f3241334e362d3204739afc28fe635e15358d97573abcfb3d51c",
+      "src/ai/rng.ts": "da6a50ff1744ec98aeedec300362fbc9604a42dc45ecafc2205455a0ad6a9089",
+      "artifacts/ai-progress-objective-30games/matches/match-1800000.save.json": "18bfe56eb0d5b62b057224b0d6faf17cdd8e0717768fc286e41b0e4e607d79e2",
+      "artifacts/ai-progress-objective-30games/matches/match-1800001.save.json": "e04812aafaf87a018eba2164b0b69806f7a39076147e2d663c415370a0cddd4c",
+      "artifacts/ai-progress-objective-30games/matches/match-1800002.save.json": "32ff0e7e9de391afea67913a43fc88756cfce4e8feae67c9c6f25011e82ecfb5",
+      "artifacts/ai-progress-objective-30games/matches/match-1800003.save.json": "4955c2ee602c967630da6a1dc9ad6c86396dcbc883908b4702e815b45d1103f8",
+      "artifacts/ai-progress-objective-30games/matches/match-1800004.save.json": "c7f397bb8ef075ba9c460a77c8d56346e52af5f7ab290613c7061a53961e7949",
+      "artifacts/ai-progress-objective-30games/matches/match-1800005.save.json": "280e1bb45485a16cdbd53d4c73d446bd6d8f28c01807cb74c78a4b5ea610a64b",
+      "artifacts/ai-progress-objective-30games/matches/match-1800006.save.json": "4d8e3884796cd7a1dabbe7b0e054889539d2d382ac71639f012e858dffb9b148",
+      "artifacts/ai-progress-objective-30games/matches/match-1800007.save.json": "78f0acb920bc47cc108f4e4c06d20967b979224079fb524ac8e7c3a07a4aa325",
+      "artifacts/ai-progress-objective-30games/matches/match-1800008.save.json": "1f7ffc0c2ac8ab8da25e30098200f5c920b4ca2fd1159584051d98ff1ef1bbfc",
+      "artifacts/ai-progress-objective-30games/matches/match-1800009.save.json": "5276521eb7308ccdbb76917cbdcd4b51b90779e1d889504d0300d1e608821854",
+      "artifacts/ai-progress-objective-30games/matches/match-1800010.save.json": "fd230e813beaded8df9cf5cece96cf74bf0c916da59e7faccb76fc5663caf8b0",
+      "artifacts/ai-progress-objective-30games/matches/match-1800011.save.json": "c3e6d89cea7b84fe6a3f5e6d633908caafd035e1e768887d1cfb315c1b7cf592",
+      "artifacts/ai-progress-objective-30games/matches/match-1800012.save.json": "c7a5884240f83b57bb37a24f488a6744f0e01659599b367b7faadf055d99d83e",
+      "artifacts/ai-progress-objective-30games/matches/match-1800013.save.json": "ee0affe79acd481987efb59186e68fb7041d45825eabef8d14c5d61527336b3d",
+      "artifacts/ai-progress-objective-30games/matches/match-1800014.save.json": "85da6baeb9440358e459c16e59e3ed9525e41636c78a11ff56bfb9b9213acdfd",
+      "artifacts/ai-progress-objective-30games/matches/match-1800015.save.json": "82215e903f856db42f2e0a29bc15da27e4520c25b97741c85615ca406ebe4071",
+      "artifacts/ai-progress-objective-30games/matches/match-1800016.save.json": "7d6cf297d4c55263f074a65e0157196881c074964e5b02b103eaa7ea12120f9b",
+      "artifacts/ai-progress-objective-30games/matches/match-1800017.save.json": "a604ce6ad93f82796e932c24d0fbf5d31282ff26a54b51d7bbe3b987b8691291",
+      "artifacts/ai-progress-objective-30games/matches/match-1800018.save.json": "8258dd4b7f34f36711852f57190d82f3ae9d051f784400b74963aecc2516b6aa",
+      "artifacts/ai-progress-objective-30games/matches/match-1800019.save.json": "037b2dfa7e9d48f0c55cc78fb0d9497b3eba345d0d0cadf8c02081d3eac4efb6",
+      "artifacts/ai-progress-objective-30games/matches/match-1800020.save.json": "5432506115132b6e72019528a2401be736b745edb70f76a4d41589e8309dfb62",
+      "artifacts/ai-progress-objective-30games/matches/match-1800021.save.json": "ff2385f6bb032556993211b7efc8f4c37b6d300a9018ca04c1c2c29ff0dc65f9",
+      "artifacts/ai-progress-objective-30games/matches/match-1800022.save.json": "a88d83543610171732a70e5ee9ce6d3e9a437b5654d42d0e655f48a300822e9d",
+      "artifacts/ai-progress-objective-30games/matches/match-1800023.save.json": "f5e136683d468618aa3c0b8bb8a2f8b78c8616ed61f847779ed5a0b0696feaa9",
+      "artifacts/ai-progress-objective-30games/matches/match-1800024.save.json": "cdaaf3f9e566c59511ff01cf4fa80789d1cf34fa67673c00b89a3ad8103b2793",
+      "artifacts/ai-progress-objective-30games/matches/match-1800025.save.json": "94293ac49de52b9828b1691190f7b47b3b91d6d701f027377fd441f19dd914bd",
+      "artifacts/ai-progress-objective-30games/matches/match-1800026.save.json": "77e71c3fef71d2265f06e992d4f7bee42e9b1529ce0d220f240260b57d2c5a21",
+      "artifacts/ai-progress-objective-30games/matches/match-1800027.save.json": "0316327088a91723e8708bef8e00ee9a4609b16ce388d5ae3ec39ad1792dba7f",
+      "artifacts/ai-progress-objective-30games/matches/match-1800028.save.json": "35913da61ba78c49e8cba331427da70bdfd58f88915daa03463647009a43dbde",
+      "artifacts/ai-progress-objective-30games/matches/match-1800029.save.json": "0fba68defa48adf66842bbf7707dfab600efb6d9df258a5c90ecbb51d639b6e5"
+    }
+  },
+  "cases": [
+    {
+      "firstMatch": 1800000,
+      "resultSha256": "c4a476efb41defabb52e68651a00a8e845fde1e121e0f225d39f01054a380718",
+      "result": {
+        "sourceCommit": "ed7e706d45c5a2ea7a93dfc805319153ca28636c",
+        "firstMatch": 1800000,
+        "controlFull": false,
+        "sourceSaveSha256": "e04812aafaf87a018eba2164b0b69806f7a39076147e2d663c415370a0cddd4c",
+        "scriptSha256": "ff72510b7adc09392e18ada35f77e9d25f2f40df527f1b1f5596d527630be350",
+        "protocolSha256": "0641884bdf91f1340434d2bb301e8493fcf7757500ddc0cd43136a9c6a7706e9",
+        "commonPrefixActions": 20,
+        "commonPrefixPolicy": {
+          "axis": 30,
+          "allied": 15
+        },
+        "laterPolicies": {
+          "axis": 30,
+          "allied": 15
+        },
+        "originalRulesRng": true,
+        "preMemoriesEqual": true,
+        "scope": "One-decision15 counterfactual versus the recorded30 factual continuation. Same original prefix, rules RNG and lateraxis30/allied15. Control30 reconstructs the prefix and fork; the pilot also reproduces its full factual history. No predictor qualification.",
+        "branches": [
+          {
+            "forkWeight": 30,
+            "finished": false,
+            "acceptedActions": 21,
+            "rejected": 0,
+            "errors": [],
+            "initialStateHash": "sha256:48fb1e6e5150fb325140e7ec0db4fda82a6406aa7278d47c6dd912fb8c3aec8d",
+            "preStateHash": "sha256:ce1bc53909d1e4fc9917e59d9a6e316dc438a6bd928a8ed51f2aa2ff6cf7ea1e",
+            "preRulesRng": {
+              "state": 344141636,
+              "draws": 0
+            },
+            "forkAction": {
+              "actionId": "candidate:move:generated-oob:344141634:axis:f4-combat-1:unit:18,7:20",
+              "actorId": "player:axis",
+              "expectedRevision": 20,
+              "kind": "MOVE_PIECE",
+              "pieceId": "generated-oob:344141634:axis:f4-combat-1:unit",
+              "path": [
+                "25,5",
+                "24,5",
+                "24,4",
+                "23,4",
+                "22,4",
+                "21,5",
+                "20,5",
+                "19,6",
+                "18,7"
+              ]
+            },
+            "forkIntent": "combat to 18,7 (capture -2,7)",
+            "finalStateHash": "sha256:a2086cf2e3da3bfe9f3255e35efe5bf07485ff72127a5a697078a296aba90bb9",
+            "victory": {
+              "scores": [
+                {
+                  "playerId": "player:allied",
+                  "points": 0
+                },
+                {
+                  "playerId": "player:axis",
+                  "points": 0
+                }
+              ],
+              "winnerId": null,
+              "reason": null
+            },
+            "finalRulesRng": {
+              "state": 344141636,
+              "draws": 0
+            },
+            "postRulesRng": {
+              "state": 344141636,
+              "draws": 0
+            },
+            "postStateHash": "sha256:a2086cf2e3da3bfe9f3255e35efe5bf07485ff72127a5a697078a296aba90bb9",
+            "stepsLost": {
+              "player:axis": 0,
+              "player:allied": 0
+            },
+            "targetFinalHolder": "player:allied",
+            "files": {
+              "save.json": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800000/branch-30.save.json",
+                "sha256": "09afa0e61300ab9c4607c4b5c07ab355f31623a9a922efed8e53f4de5674aef2"
+              },
+              "trace.jsonl": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800000/branch-30.trace.jsonl",
+                "sha256": "75022f1ca4eaf94648a4f2f9e1203911699b2c7f08ff9bc912508e061535d5fa"
+              },
+              "memory.json": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800000/branch-30.memory.json",
+                "sha256": "43f43b8dd819e1b40bce4577f6fa65704b4f7d31c576106beb554dffe2c0d881"
+              }
+            }
+          },
+          {
+            "forkWeight": 15,
+            "finished": true,
+            "acceptedActions": 926,
+            "rejected": 0,
+            "errors": [],
+            "initialStateHash": "sha256:48fb1e6e5150fb325140e7ec0db4fda82a6406aa7278d47c6dd912fb8c3aec8d",
+            "preStateHash": "sha256:ce1bc53909d1e4fc9917e59d9a6e316dc438a6bd928a8ed51f2aa2ff6cf7ea1e",
+            "preRulesRng": {
+              "state": 344141636,
+              "draws": 0
+            },
+            "forkAction": {
+              "actionId": "candidate:move:generated-oob:344141634:axis:f4-combat-1:unit:19,7:20",
+              "actorId": "player:axis",
+              "expectedRevision": 20,
+              "kind": "MOVE_PIECE",
+              "pieceId": "generated-oob:344141634:axis:f4-combat-1:unit",
+              "path": [
+                "25,5",
+                "24,5",
+                "23,6",
+                "22,7",
+                "21,7",
+                "20,7",
+                "19,7"
+              ]
+            },
+            "forkIntent": "combat to 19,7 (capture -2,7)",
+            "finalStateHash": "sha256:86bc83b1a1a39a56e52c00ede185f6ea81f5161cb52a4975ea0a95ddac090d93",
+            "victory": {
+              "scores": [
+                {
+                  "playerId": "player:allied",
+                  "points": 9
+                },
+                {
+                  "playerId": "player:axis",
+                  "points": 4
+                }
+              ],
+              "winnerId": "player:allied",
+              "reason": "TURN_LIMIT"
+            },
+            "finalRulesRng": {
+              "state": 2951609133,
+              "draws": 317
+            },
+            "postRulesRng": {
+              "state": 344141636,
+              "draws": 0
+            },
+            "postStateHash": "sha256:9473033f76000f648c66d5b7dddf12251b72947f95d0e13feaebc4e07016d091",
+            "stepsLost": {
+              "player:axis": 19,
+              "player:allied": 32
+            },
+            "targetFinalHolder": "player:allied",
+            "files": {
+              "save.json": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800000/branch-15.save.json",
+                "sha256": "ce6334a7dafd24b41f5687fab07f847d64a6488eed4f6370b8f6fc12f1fa2ae6"
+              },
+              "trace.jsonl": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800000/branch-15.trace.jsonl",
+                "sha256": "d2f517efafc87c2bb384bcb4b8956ebdd49b4c7e6f954adbba2530c1dd93da51"
+              },
+              "memory.json": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800000/branch-15.memory.json",
+                "sha256": "6a03f9e20962c4a5fadf22c4623effdd0975b763b6e308694e5e03d6ba0111af"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "firstMatch": 1800002,
+      "resultSha256": "7b405e7353892006d80e9f45bb4d453c19f1f3cfc4ca1427271d1c1a2a0c230f",
+      "result": {
+        "sourceCommit": "ed7e706d45c5a2ea7a93dfc805319153ca28636c",
+        "firstMatch": 1800002,
+        "controlFull": false,
+        "sourceSaveSha256": "4955c2ee602c967630da6a1dc9ad6c86396dcbc883908b4702e815b45d1103f8",
+        "scriptSha256": "ff72510b7adc09392e18ada35f77e9d25f2f40df527f1b1f5596d527630be350",
+        "protocolSha256": "0641884bdf91f1340434d2bb301e8493fcf7757500ddc0cd43136a9c6a7706e9",
+        "commonPrefixActions": 11,
+        "commonPrefixPolicy": {
+          "axis": 30,
+          "allied": 15
+        },
+        "laterPolicies": {
+          "axis": 30,
+          "allied": 15
+        },
+        "originalRulesRng": true,
+        "preMemoriesEqual": true,
+        "scope": "One-decision15 counterfactual versus the recorded30 factual continuation. Same original prefix, rules RNG and lateraxis30/allied15. Control30 reconstructs the prefix and fork; the pilot also reproduces its full factual history. No predictor qualification.",
+        "branches": [
+          {
+            "forkWeight": 30,
+            "finished": false,
+            "acceptedActions": 12,
+            "rejected": 0,
+            "errors": [],
+            "initialStateHash": "sha256:ed16ee2bd2744eaa8b6b9c191306fce3531af5f587a1de3edc7760117dcc5561",
+            "preStateHash": "sha256:5a3bca88b3bcd9df06b34b5070ba4cfa4902ed7648200e68c52f948834d3c485",
+            "preRulesRng": {
+              "state": 344141830,
+              "draws": 0
+            },
+            "forkAction": {
+              "actionId": "candidate:move:generated-oob:344141828:axis:f1-recon:unit:12,17:11",
+              "actorId": "player:axis",
+              "expectedRevision": 11,
+              "kind": "MOVE_PIECE",
+              "pieceId": "generated-oob:344141828:axis:f1-recon:unit",
+              "path": [
+                "15,21",
+                "15,20",
+                "15,19",
+                "14,19",
+                "13,19",
+                "12,19",
+                "12,18",
+                "12,17"
+              ]
+            },
+            "forkIntent": "combat to 12,17 (capture 5,18)",
+            "finalStateHash": "sha256:3a054d35adbcfff1d1743b51c8d8e0ca50de1512d8a0ab24a403258df20a6423",
+            "victory": {
+              "scores": [
+                {
+                  "playerId": "player:allied",
+                  "points": 0
+                },
+                {
+                  "playerId": "player:axis",
+                  "points": 0
+                }
+              ],
+              "winnerId": null,
+              "reason": null
+            },
+            "finalRulesRng": {
+              "state": 344141830,
+              "draws": 0
+            },
+            "postRulesRng": {
+              "state": 344141830,
+              "draws": 0
+            },
+            "postStateHash": "sha256:3a054d35adbcfff1d1743b51c8d8e0ca50de1512d8a0ab24a403258df20a6423",
+            "stepsLost": {
+              "player:axis": 0,
+              "player:allied": 0
+            },
+            "targetFinalHolder": "player:allied",
+            "files": {
+              "save.json": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800002/branch-30.save.json",
+                "sha256": "02066b38fd6467753ae994215950691ac9589c02c8d6cabb92174c71c7667485"
+              },
+              "trace.jsonl": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800002/branch-30.trace.jsonl",
+                "sha256": "86ef4b9fe1ceb3df1e98c561a1cc6fe791e615af9259577f288cf09701d69f01"
+              },
+              "memory.json": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800002/branch-30.memory.json",
+                "sha256": "47c208f98f5e651628614c0d87bfe8cd81f473cc7559d6101e405ed03abf944c"
+              }
+            }
+          },
+          {
+            "forkWeight": 15,
+            "finished": true,
+            "acceptedActions": 859,
+            "rejected": 0,
+            "errors": [],
+            "initialStateHash": "sha256:ed16ee2bd2744eaa8b6b9c191306fce3531af5f587a1de3edc7760117dcc5561",
+            "preStateHash": "sha256:5a3bca88b3bcd9df06b34b5070ba4cfa4902ed7648200e68c52f948834d3c485",
+            "preRulesRng": {
+              "state": 344141830,
+              "draws": 0
+            },
+            "forkAction": {
+              "actionId": "candidate:move:generated-oob:344141828:axis:f1-recon:unit:10,21:11",
+              "actorId": "player:axis",
+              "expectedRevision": 11,
+              "kind": "MOVE_PIECE",
+              "pieceId": "generated-oob:344141828:axis:f1-recon:unit",
+              "path": [
+                "15,21",
+                "15,20",
+                "15,19",
+                "14,19",
+                "13,19",
+                "12,19",
+                "11,20",
+                "10,21"
+              ]
+            },
+            "forkIntent": "combat to 10,21 (capture 5,18)",
+            "finalStateHash": "sha256:5337beb9c0cdcbae80c9a01e1185af86849da9ca908450f6147e263a42f1ba45",
+            "victory": {
+              "scores": [
+                {
+                  "playerId": "player:allied",
+                  "points": 10
+                },
+                {
+                  "playerId": "player:axis",
+                  "points": 3
+                }
+              ],
+              "winnerId": "player:allied",
+              "reason": "TURN_LIMIT"
+            },
+            "finalRulesRng": {
+              "state": 141103417,
+              "draws": 187
+            },
+            "postRulesRng": {
+              "state": 344141830,
+              "draws": 0
+            },
+            "postStateHash": "sha256:6dd8b003aa6c1c3f1ee459339fdfd320e65af3f70547cf5dc8993a28853f8848",
+            "stepsLost": {
+              "player:axis": 6,
+              "player:allied": 6
+            },
+            "targetFinalHolder": "player:allied",
+            "files": {
+              "save.json": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800002/branch-15.save.json",
+                "sha256": "02983b8591943b23776686887f8e154a4b90e2afd157469cb80194473261dbbb"
+              },
+              "trace.jsonl": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800002/branch-15.trace.jsonl",
+                "sha256": "eeed51b1504bc6e28b1d26d3f6139ea1ced195f3dc2224a36425364079748847"
+              },
+              "memory.json": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800002/branch-15.memory.json",
+                "sha256": "82ba2754cbb28e044f5929f77376bc64fbfb1e65bfa918dc39f82b32587d3367"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "firstMatch": 1800004,
+      "resultSha256": "24a50da5ec96e580676c47c4b842cc9297a2bba3a4b4bcf161ddeff7769727b6",
+      "result": {
+        "sourceCommit": "ed7e706d45c5a2ea7a93dfc805319153ca28636c",
+        "firstMatch": 1800004,
+        "controlFull": false,
+        "sourceSaveSha256": "280e1bb45485a16cdbd53d4c73d446bd6d8f28c01807cb74c78a4b5ea610a64b",
+        "scriptSha256": "ff72510b7adc09392e18ada35f77e9d25f2f40df527f1b1f5596d527630be350",
+        "protocolSha256": "0641884bdf91f1340434d2bb301e8493fcf7757500ddc0cd43136a9c6a7706e9",
+        "commonPrefixActions": 7,
+        "commonPrefixPolicy": {
+          "axis": 30,
+          "allied": 15
+        },
+        "laterPolicies": {
+          "axis": 30,
+          "allied": 15
+        },
+        "originalRulesRng": true,
+        "preMemoriesEqual": true,
+        "scope": "One-decision15 counterfactual versus the recorded30 factual continuation. Same original prefix, rules RNG and lateraxis30/allied15. Control30 reconstructs the prefix and fork; the pilot also reproduces its full factual history. No predictor qualification.",
+        "branches": [
+          {
+            "forkWeight": 30,
+            "finished": false,
+            "acceptedActions": 8,
+            "rejected": 0,
+            "errors": [],
+            "initialStateHash": "sha256:e8ae56accaeba935d2a3691e404be72793ee5325338edfbd934e1f8a8c277194",
+            "preStateHash": "sha256:764a72decd6019e84952c7b2fbc138fee0a44813fe2fad97a1c14cb14c91fff0",
+            "preRulesRng": {
+              "state": 344142024,
+              "draws": 0
+            },
+            "forkAction": {
+              "actionId": "candidate:move:generated-oob:344142022:axis:f1-combat-1:unit:13,15:7",
+              "actorId": "player:axis",
+              "expectedRevision": 7,
+              "kind": "MOVE_PIECE",
+              "pieceId": "generated-oob:344142022:axis:f1-combat-1:unit",
+              "path": [
+                "13,23",
+                "13,22",
+                "13,21",
+                "13,20",
+                "13,19",
+                "13,18",
+                "13,17",
+                "13,16",
+                "13,15"
+              ]
+            },
+            "forkIntent": "combat to 13,15 (capture 11,13)",
+            "finalStateHash": "sha256:5cefb81e2bc0ee112261ab24e4652e4efcf7cafb0b651f75c8a0338ff527b8ea",
+            "victory": {
+              "scores": [
+                {
+                  "playerId": "player:allied",
+                  "points": 0
+                },
+                {
+                  "playerId": "player:axis",
+                  "points": 0
+                }
+              ],
+              "winnerId": null,
+              "reason": null
+            },
+            "finalRulesRng": {
+              "state": 344142024,
+              "draws": 0
+            },
+            "postRulesRng": {
+              "state": 344142024,
+              "draws": 0
+            },
+            "postStateHash": "sha256:5cefb81e2bc0ee112261ab24e4652e4efcf7cafb0b651f75c8a0338ff527b8ea",
+            "stepsLost": {
+              "player:axis": 0,
+              "player:allied": 0
+            },
+            "targetFinalHolder": "player:allied",
+            "files": {
+              "save.json": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800004/branch-30.save.json",
+                "sha256": "31fc183fa4aa11f3c511470b5a666061c815552203809e88e54d0c2bac9abdf0"
+              },
+              "trace.jsonl": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800004/branch-30.trace.jsonl",
+                "sha256": "3658d8d6edb1d96a58e4930902b522b53adedd5a85e65e7590f4ddbe3113089d"
+              },
+              "memory.json": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800004/branch-30.memory.json",
+                "sha256": "2ed971b2086a2dbc1dce9baa9cf8065567faba1fd083e4e10c915613f917d459"
+              }
+            }
+          },
+          {
+            "forkWeight": 15,
+            "finished": true,
+            "acceptedActions": 926,
+            "rejected": 0,
+            "errors": [],
+            "initialStateHash": "sha256:e8ae56accaeba935d2a3691e404be72793ee5325338edfbd934e1f8a8c277194",
+            "preStateHash": "sha256:764a72decd6019e84952c7b2fbc138fee0a44813fe2fad97a1c14cb14c91fff0",
+            "preRulesRng": {
+              "state": 344142024,
+              "draws": 0
+            },
+            "forkAction": {
+              "actionId": "candidate:move:generated-oob:344142022:axis:f1-combat-1:unit:17,13:7",
+              "actorId": "player:axis",
+              "expectedRevision": 7,
+              "kind": "MOVE_PIECE",
+              "pieceId": "generated-oob:344142022:axis:f1-combat-1:unit",
+              "path": [
+                "13,23",
+                "13,22",
+                "13,21",
+                "13,20",
+                "13,19",
+                "13,18",
+                "13,17",
+                "14,16",
+                "15,15",
+                "16,14",
+                "17,13"
+              ]
+            },
+            "forkIntent": "combat to 17,13 (capture 11,13)",
+            "finalStateHash": "sha256:218b1cc4f9a7f49e6161f8c89f3c6c7167eee52918189e06e3ed55dda70a1449",
+            "victory": {
+              "scores": [
+                {
+                  "playerId": "player:allied",
+                  "points": 4
+                },
+                {
+                  "playerId": "player:axis",
+                  "points": 11
+                }
+              ],
+              "winnerId": "player:axis",
+              "reason": "TURN_LIMIT"
+            },
+            "finalRulesRng": {
+              "state": 897048788,
+              "draws": 256
+            },
+            "postRulesRng": {
+              "state": 344142024,
+              "draws": 0
+            },
+            "postStateHash": "sha256:7d6166ca2b8c74559f3d52158bc01295928ed139a62e942d37d1cd3544ef693c",
+            "stepsLost": {
+              "player:axis": 6,
+              "player:allied": 38
+            },
+            "targetFinalHolder": "player:axis",
+            "files": {
+              "save.json": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800004/branch-15.save.json",
+                "sha256": "4f2c8e392b2a7e43bd9636b3ca75daa76cf9c4bf83cbdcd0801689c2593cb592"
+              },
+              "trace.jsonl": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800004/branch-15.trace.jsonl",
+                "sha256": "ffa9322ab21d2984c8411a50375a11644265b4150d9f238a0f2acb10ca565861"
+              },
+              "memory.json": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800004/branch-15.memory.json",
+                "sha256": "66e2b4adeb26210f74d5308b2a8947085d57bd0b70c762dc595d5ac33c849070"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "firstMatch": 1800006,
+      "resultSha256": "8ce156403dce17bca9ccdea48c99564037a6e14e9c1626c7e4ba1e3c57852f15",
+      "result": {
+        "sourceCommit": "ed7e706d45c5a2ea7a93dfc805319153ca28636c",
+        "firstMatch": 1800006,
+        "controlFull": false,
+        "sourceSaveSha256": "78f0acb920bc47cc108f4e4c06d20967b979224079fb524ac8e7c3a07a4aa325",
+        "scriptSha256": "ff72510b7adc09392e18ada35f77e9d25f2f40df527f1b1f5596d527630be350",
+        "protocolSha256": "0641884bdf91f1340434d2bb301e8493fcf7757500ddc0cd43136a9c6a7706e9",
+        "commonPrefixActions": 7,
+        "commonPrefixPolicy": {
+          "axis": 30,
+          "allied": 15
+        },
+        "laterPolicies": {
+          "axis": 30,
+          "allied": 15
+        },
+        "originalRulesRng": true,
+        "preMemoriesEqual": true,
+        "scope": "One-decision15 counterfactual versus the recorded30 factual continuation. Same original prefix, rules RNG and lateraxis30/allied15. Control30 reconstructs the prefix and fork; the pilot also reproduces its full factual history. No predictor qualification.",
+        "branches": [
+          {
+            "forkWeight": 30,
+            "finished": false,
+            "acceptedActions": 8,
+            "rejected": 0,
+            "errors": [],
+            "initialStateHash": "sha256:e7703e57b9c16eecf9bd52f17bd6b6450376e44b48b27a82e96f0d1785e213e0",
+            "preStateHash": "sha256:e273a86e06b3d9aff7c6561f0f18a314fa855e22273d72c16089877654d6e9d9",
+            "preRulesRng": {
+              "state": 344142218,
+              "draws": 0
+            },
+            "forkAction": {
+              "actionId": "candidate:move:generated-oob:344142216:axis:f1-combat-1:unit:13,16:7",
+              "actorId": "player:axis",
+              "expectedRevision": 7,
+              "kind": "MOVE_PIECE",
+              "pieceId": "generated-oob:344142216:axis:f1-combat-1:unit",
+              "path": [
+                "14,22",
+                "15,21",
+                "15,20",
+                "15,19",
+                "14,19",
+                "14,18",
+                "14,17",
+                "14,16",
+                "13,16"
+              ]
+            },
+            "forkIntent": "combat to 13,16 (capture -2,16)",
+            "finalStateHash": "sha256:0a553fde0774512df2d81bffcc2fbece840e1c59506dcd5111988b7ee9807f98",
+            "victory": {
+              "scores": [
+                {
+                  "playerId": "player:allied",
+                  "points": 0
+                },
+                {
+                  "playerId": "player:axis",
+                  "points": 0
+                }
+              ],
+              "winnerId": null,
+              "reason": null
+            },
+            "finalRulesRng": {
+              "state": 344142218,
+              "draws": 0
+            },
+            "postRulesRng": {
+              "state": 344142218,
+              "draws": 0
+            },
+            "postStateHash": "sha256:0a553fde0774512df2d81bffcc2fbece840e1c59506dcd5111988b7ee9807f98",
+            "stepsLost": {
+              "player:axis": 0,
+              "player:allied": 0
+            },
+            "targetFinalHolder": "player:allied",
+            "files": {
+              "save.json": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800006/branch-30.save.json",
+                "sha256": "86b96033718a3f89812290ac62449464317e7fee941ad90438c1140c251de228"
+              },
+              "trace.jsonl": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800006/branch-30.trace.jsonl",
+                "sha256": "7ba74efd19e787eaddbe4150fdc2e5a7869a2522dc9bb989e5c97971baea4f02"
+              },
+              "memory.json": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800006/branch-30.memory.json",
+                "sha256": "2d05cc87932be51b7393519b336b82af43cc38a972ea78e080c466808a78a898"
+              }
+            }
+          },
+          {
+            "forkWeight": 15,
+            "finished": true,
+            "acceptedActions": 839,
+            "rejected": 0,
+            "errors": [],
+            "initialStateHash": "sha256:e7703e57b9c16eecf9bd52f17bd6b6450376e44b48b27a82e96f0d1785e213e0",
+            "preStateHash": "sha256:e273a86e06b3d9aff7c6561f0f18a314fa855e22273d72c16089877654d6e9d9",
+            "preRulesRng": {
+              "state": 344142218,
+              "draws": 0
+            },
+            "forkAction": {
+              "actionId": "candidate:move:generated-oob:344142216:axis:f1-combat-1:unit:14,16:7",
+              "actorId": "player:axis",
+              "expectedRevision": 7,
+              "kind": "MOVE_PIECE",
+              "pieceId": "generated-oob:344142216:axis:f1-combat-1:unit",
+              "path": [
+                "14,22",
+                "15,21",
+                "15,20",
+                "15,19",
+                "14,19",
+                "14,18",
+                "14,17",
+                "14,16"
+              ]
+            },
+            "forkIntent": "combat to 14,16 (capture -2,16)",
+            "finalStateHash": "sha256:22fab9bfc57e0fd333ee7171f4b95fe1a53c02ee42587c24461d4a8d04340639",
+            "victory": {
+              "scores": [
+                {
+                  "playerId": "player:allied",
+                  "points": 12
+                },
+                {
+                  "playerId": "player:axis",
+                  "points": 9
+                }
+              ],
+              "winnerId": "player:allied",
+              "reason": "TURN_LIMIT"
+            },
+            "finalRulesRng": {
+              "state": 1204968782,
+              "draws": 233
+            },
+            "postRulesRng": {
+              "state": 344142218,
+              "draws": 0
+            },
+            "postStateHash": "sha256:4ca7b3d39758c931eb6f17f092b44fbc07137c7280fa8ff76ecf3c9eb370c3e4",
+            "stepsLost": {
+              "player:axis": 5,
+              "player:allied": 27
+            },
+            "targetFinalHolder": "player:allied",
+            "files": {
+              "save.json": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800006/branch-15.save.json",
+                "sha256": "c6c33e40402e0b430b68e362c8e05e8b047f251687bfffc12e7c471a00b65221"
+              },
+              "trace.jsonl": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800006/branch-15.trace.jsonl",
+                "sha256": "a6518aafb1cac50ebb4fd9dc8acdaf0731706d106760707d4e92367afea99a82"
+              },
+              "memory.json": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800006/branch-15.memory.json",
+                "sha256": "608577a7cd86a108fb981193327928c6914490be8ac95b41ed09ed29292f7997"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "firstMatch": 1800008,
+      "resultSha256": "0e5b656bada8e2ea14dffc7c30d353a022378ad131dbcfe6a3f06ce2f1533dfd",
+      "result": {
+        "sourceCommit": "ed7e706d45c5a2ea7a93dfc805319153ca28636c",
+        "firstMatch": 1800008,
+        "controlFull": false,
+        "sourceSaveSha256": "5276521eb7308ccdbb76917cbdcd4b51b90779e1d889504d0300d1e608821854",
+        "scriptSha256": "ff72510b7adc09392e18ada35f77e9d25f2f40df527f1b1f5596d527630be350",
+        "protocolSha256": "0641884bdf91f1340434d2bb301e8493fcf7757500ddc0cd43136a9c6a7706e9",
+        "commonPrefixActions": 10,
+        "commonPrefixPolicy": {
+          "axis": 30,
+          "allied": 15
+        },
+        "laterPolicies": {
+          "axis": 30,
+          "allied": 15
+        },
+        "originalRulesRng": true,
+        "preMemoriesEqual": true,
+        "scope": "One-decision15 counterfactual versus the recorded30 factual continuation. Same original prefix, rules RNG and lateraxis30/allied15. Control30 reconstructs the prefix and fork; the pilot also reproduces its full factual history. No predictor qualification.",
+        "branches": [
+          {
+            "forkWeight": 30,
+            "finished": false,
+            "acceptedActions": 11,
+            "rejected": 0,
+            "errors": [],
+            "initialStateHash": "sha256:d0b924e850d9567de68d4b3146141bda1df27a48100920b8e010903b521445f9",
+            "preStateHash": "sha256:43b036cb117688a8dd55d1b98206e302716a7990d7248fcef5508643b754fed7",
+            "preRulesRng": {
+              "state": 344142412,
+              "draws": 0
+            },
+            "forkAction": {
+              "actionId": "candidate:move:generated-oob:344142410:axis:f1-combat-1:unit:16,12:10",
+              "actorId": "player:axis",
+              "expectedRevision": 10,
+              "kind": "MOVE_PIECE",
+              "pieceId": "generated-oob:344142410:axis:f1-combat-1:unit",
+              "path": [
+                "14,22",
+                "15,21",
+                "16,20",
+                "16,19",
+                "16,18",
+                "16,17",
+                "16,16",
+                "16,15",
+                "16,14",
+                "15,14",
+                "15,13",
+                "16,12"
+              ]
+            },
+            "forkIntent": "combat to 16,12 (capture 12,10)",
+            "finalStateHash": "sha256:52c037fe42ede669e888db1583dfbf199cbeda1934bd90d7917f2c185035fd0b",
+            "victory": {
+              "scores": [
+                {
+                  "playerId": "player:allied",
+                  "points": 0
+                },
+                {
+                  "playerId": "player:axis",
+                  "points": 0
+                }
+              ],
+              "winnerId": null,
+              "reason": null
+            },
+            "finalRulesRng": {
+              "state": 344142412,
+              "draws": 0
+            },
+            "postRulesRng": {
+              "state": 344142412,
+              "draws": 0
+            },
+            "postStateHash": "sha256:52c037fe42ede669e888db1583dfbf199cbeda1934bd90d7917f2c185035fd0b",
+            "stepsLost": {
+              "player:axis": 0,
+              "player:allied": 0
+            },
+            "targetFinalHolder": "player:allied",
+            "files": {
+              "save.json": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800008/branch-30.save.json",
+                "sha256": "876b54b07f5996fa2f5e4a8e64892c78d1a7f4885f70a4c2ad256bfebd401434"
+              },
+              "trace.jsonl": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800008/branch-30.trace.jsonl",
+                "sha256": "1261af10e5e515d1ebe9de14c10518f2ca49d87971ab78423d59c0684367149d"
+              },
+              "memory.json": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800008/branch-30.memory.json",
+                "sha256": "291460a17ef02f3f043cdb19084dfddabdb082e05ddde8da0b267cf9ce75d0bd"
+              }
+            }
+          },
+          {
+            "forkWeight": 15,
+            "finished": true,
+            "acceptedActions": 894,
+            "rejected": 0,
+            "errors": [],
+            "initialStateHash": "sha256:d0b924e850d9567de68d4b3146141bda1df27a48100920b8e010903b521445f9",
+            "preStateHash": "sha256:43b036cb117688a8dd55d1b98206e302716a7990d7248fcef5508643b754fed7",
+            "preRulesRng": {
+              "state": 344142412,
+              "draws": 0
+            },
+            "forkAction": {
+              "actionId": "candidate:move:generated-oob:344142410:axis:f1-combat-1:unit:18,11:10",
+              "actorId": "player:axis",
+              "expectedRevision": 10,
+              "kind": "MOVE_PIECE",
+              "pieceId": "generated-oob:344142410:axis:f1-combat-1:unit",
+              "path": [
+                "14,22",
+                "15,21",
+                "16,20",
+                "16,19",
+                "16,18",
+                "16,17",
+                "16,16",
+                "16,15",
+                "16,14",
+                "17,13",
+                "17,12",
+                "18,11"
+              ]
+            },
+            "forkIntent": "combat to 18,11 (capture 12,10)",
+            "finalStateHash": "sha256:7ea4d154a105f34e26da16c05d3a91ebca919b12c703fa5ecd6bb3a79206a4c7",
+            "victory": {
+              "scores": [
+                {
+                  "playerId": "player:allied",
+                  "points": 0
+                },
+                {
+                  "playerId": "player:axis",
+                  "points": 13
+                }
+              ],
+              "winnerId": "player:axis",
+              "reason": "TURN_LIMIT"
+            },
+            "finalRulesRng": {
+              "state": 3152836611,
+              "draws": 289
+            },
+            "postRulesRng": {
+              "state": 344142412,
+              "draws": 0
+            },
+            "postStateHash": "sha256:9425446cd16a193efed324d058d790c8ae4a01cc9168cebcc572d4c632ae1909",
+            "stepsLost": {
+              "player:axis": 11,
+              "player:allied": 35
+            },
+            "targetFinalHolder": "player:axis",
+            "files": {
+              "save.json": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800008/branch-15.save.json",
+                "sha256": "3b2435dc368b9fd80e91182af82475919e4d9da0055dcb1c555f6749a54beea6"
+              },
+              "trace.jsonl": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800008/branch-15.trace.jsonl",
+                "sha256": "b5887a67e79803c2efd2e7f534c55e7ce3c1f11e41887b80c4858714bdac6ac6"
+              },
+              "memory.json": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800008/branch-15.memory.json",
+                "sha256": "0a4ca0beb900cae2d930c653cd9af2c47d68e5d46b928607eb11b349d7bb3e1b"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "firstMatch": 1800010,
+      "resultSha256": "596d8c934934d4eab3a219cd472e49f831a0f046355896bc3f28dae0d549b65c",
+      "result": {
+        "sourceCommit": "ed7e706d45c5a2ea7a93dfc805319153ca28636c",
+        "firstMatch": 1800010,
+        "controlFull": false,
+        "sourceSaveSha256": "c3e6d89cea7b84fe6a3f5e6d633908caafd035e1e768887d1cfb315c1b7cf592",
+        "scriptSha256": "ff72510b7adc09392e18ada35f77e9d25f2f40df527f1b1f5596d527630be350",
+        "protocolSha256": "0641884bdf91f1340434d2bb301e8493fcf7757500ddc0cd43136a9c6a7706e9",
+        "commonPrefixActions": 19,
+        "commonPrefixPolicy": {
+          "axis": 30,
+          "allied": 15
+        },
+        "laterPolicies": {
+          "axis": 30,
+          "allied": 15
+        },
+        "originalRulesRng": true,
+        "preMemoriesEqual": true,
+        "scope": "One-decision15 counterfactual versus the recorded30 factual continuation. Same original prefix, rules RNG and lateraxis30/allied15. Control30 reconstructs the prefix and fork; the pilot also reproduces its full factual history. No predictor qualification.",
+        "branches": [
+          {
+            "forkWeight": 30,
+            "finished": false,
+            "acceptedActions": 20,
+            "rejected": 0,
+            "errors": [],
+            "initialStateHash": "sha256:d445b8de6ddbb73643911567b4ee3d66abbe9975db9c80fa8e5ca9f96b442763",
+            "preStateHash": "sha256:4a17762963e592bf7c7496c166dfeb156bccf0a3367e54761f8b8891771a909e",
+            "preRulesRng": {
+              "state": 344142606,
+              "draws": 0
+            },
+            "forkAction": {
+              "actionId": "candidate:move:generated-oob:344142604:axis:f3-recon:unit:20,1:19",
+              "actorId": "player:axis",
+              "expectedRevision": 19,
+              "kind": "MOVE_PIECE",
+              "pieceId": "generated-oob:344142604:axis:f3-recon:unit",
+              "path": [
+                "21,11",
+                "20,11",
+                "19,11",
+                "18,11",
+                "18,10",
+                "18,9",
+                "18,8",
+                "18,7",
+                "19,6",
+                "19,5",
+                "20,4",
+                "21,4",
+                "21,3",
+                "21,2",
+                "21,1",
+                "20,1"
+              ]
+            },
+            "forkIntent": "combat to 20,1 (capture 19,1)",
+            "finalStateHash": "sha256:7f2ac2b9da3061a4517c3df6930f5dceb92a14c0a7dd228c95b1c7c7fd3ee7f1",
+            "victory": {
+              "scores": [
+                {
+                  "playerId": "player:allied",
+                  "points": 0
+                },
+                {
+                  "playerId": "player:axis",
+                  "points": 0
+                }
+              ],
+              "winnerId": null,
+              "reason": null
+            },
+            "finalRulesRng": {
+              "state": 344142606,
+              "draws": 0
+            },
+            "postRulesRng": {
+              "state": 344142606,
+              "draws": 0
+            },
+            "postStateHash": "sha256:7f2ac2b9da3061a4517c3df6930f5dceb92a14c0a7dd228c95b1c7c7fd3ee7f1",
+            "stepsLost": {
+              "player:axis": 0,
+              "player:allied": 0
+            },
+            "targetFinalHolder": "player:allied",
+            "files": {
+              "save.json": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800010/branch-30.save.json",
+                "sha256": "a362068064ab49bd1294b2f2ad71f4b18dec354ca24f9f9012e54134dd7b4be2"
+              },
+              "trace.jsonl": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800010/branch-30.trace.jsonl",
+                "sha256": "f148a82910c1b47585f86f1f5b1a9c77adf9d3e965a60b5e3b0062ab99aa3211"
+              },
+              "memory.json": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800010/branch-30.memory.json",
+                "sha256": "dd0b8e4e720464becbf45499e239cc10efc2d0016a8f1ad4aebf90a01275c6b6"
+              }
+            }
+          },
+          {
+            "forkWeight": 15,
+            "finished": true,
+            "acceptedActions": 947,
+            "rejected": 0,
+            "errors": [],
+            "initialStateHash": "sha256:d445b8de6ddbb73643911567b4ee3d66abbe9975db9c80fa8e5ca9f96b442763",
+            "preStateHash": "sha256:4a17762963e592bf7c7496c166dfeb156bccf0a3367e54761f8b8891771a909e",
+            "preRulesRng": {
+              "state": 344142606,
+              "draws": 0
+            },
+            "forkAction": {
+              "actionId": "candidate:move:generated-oob:344142604:axis:f3-recon:unit:21,0:19",
+              "actorId": "player:axis",
+              "expectedRevision": 19,
+              "kind": "MOVE_PIECE",
+              "pieceId": "generated-oob:344142604:axis:f3-recon:unit",
+              "path": [
+                "21,11",
+                "20,11",
+                "19,11",
+                "18,11",
+                "18,10",
+                "18,9",
+                "18,8",
+                "18,7",
+                "19,6",
+                "19,5",
+                "20,4",
+                "21,4",
+                "21,3",
+                "21,2",
+                "21,1",
+                "21,0"
+              ]
+            },
+            "forkIntent": "combat to 21,0 (capture 19,1)",
+            "finalStateHash": "sha256:aea452924866733b13f33e5dca0073f59da330d321dc90a6c780ece305f31b4c",
+            "victory": {
+              "scores": [
+                {
+                  "playerId": "player:allied",
+                  "points": 4
+                },
+                {
+                  "playerId": "player:axis",
+                  "points": 10
+                }
+              ],
+              "winnerId": "player:axis",
+              "reason": "TURN_LIMIT"
+            },
+            "finalRulesRng": {
+              "state": 468787452,
+              "draws": 285
+            },
+            "postRulesRng": {
+              "state": 344142606,
+              "draws": 0
+            },
+            "postStateHash": "sha256:8715c1a52f1f203e31d6eb4955426a0a6f22bc39051cff9e24e2d8e48136582c",
+            "stepsLost": {
+              "player:axis": 12,
+              "player:allied": 34
+            },
+            "targetFinalHolder": "player:axis",
+            "files": {
+              "save.json": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800010/branch-15.save.json",
+                "sha256": "423cce0b17ca24bf678792d172044c2e9718355f59296401266a73b9e5b20f5e"
+              },
+              "trace.jsonl": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800010/branch-15.trace.jsonl",
+                "sha256": "2bfd4fefd27cba27220a2c78ee2ede0a9a19c9664bb55ae6c88adcba3bef3c55"
+              },
+              "memory.json": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800010/branch-15.memory.json",
+                "sha256": "ff0526a2e64b5d7aa84b0001d349e701fd2a699d19e2bc42ae424594aa1167bc"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "firstMatch": 1800012,
+      "resultSha256": "561287f38ef60cc1128708c6d63507df9a9c5cdce6221c8eedd1fb8bd8d3e3d4",
+      "result": {
+        "sourceCommit": "ed7e706d45c5a2ea7a93dfc805319153ca28636c",
+        "firstMatch": 1800012,
+        "controlFull": true,
+        "sourceSaveSha256": "ee0affe79acd481987efb59186e68fb7041d45825eabef8d14c5d61527336b3d",
+        "scriptSha256": "ff72510b7adc09392e18ada35f77e9d25f2f40df527f1b1f5596d527630be350",
+        "protocolSha256": "0641884bdf91f1340434d2bb301e8493fcf7757500ddc0cd43136a9c6a7706e9",
+        "commonPrefixActions": 9,
+        "commonPrefixPolicy": {
+          "axis": 30,
+          "allied": 15
+        },
+        "laterPolicies": {
+          "axis": 30,
+          "allied": 15
+        },
+        "originalRulesRng": true,
+        "preMemoriesEqual": true,
+        "scope": "One-decision15 counterfactual versus the recorded30 factual continuation. Same original prefix, rules RNG and lateraxis30/allied15. Control30 reconstructs the prefix and fork; the pilot also reproduces its full factual history. No predictor qualification.",
+        "branches": [
+          {
+            "forkWeight": 30,
+            "finished": true,
+            "acceptedActions": 808,
+            "rejected": 0,
+            "errors": [],
+            "initialStateHash": "sha256:2880f55017b5f5941e28d7dcbbd1c2b85c668cf55963e1e5ff1b7afa32cfce33",
+            "preStateHash": "sha256:b8bae14c958036871b3b7930fa69b777bdcd3850b0df82640db22232fc655a0a",
+            "preRulesRng": {
+              "state": 344142800,
+              "draws": 0
+            },
+            "forkAction": {
+              "actionId": "candidate:move:generated-oob:344142798:axis:f1-recon:unit:16,13:9",
+              "actorId": "player:axis",
+              "expectedRevision": 9,
+              "kind": "MOVE_PIECE",
+              "pieceId": "generated-oob:344142798:axis:f1-recon:unit",
+              "path": [
+                "15,20",
+                "15,19",
+                "16,18",
+                "17,17",
+                "17,16",
+                "18,15",
+                "18,14",
+                "18,13",
+                "17,13",
+                "16,13"
+              ]
+            },
+            "forkIntent": "combat to 16,13 (capture 15,11)",
+            "finalStateHash": "sha256:c882f05659c157d2d6713fea6e72e81a985aa3afd7d47dbd4362eb800168f956",
+            "victory": {
+              "scores": [
+                {
+                  "playerId": "player:allied",
+                  "points": 9
+                },
+                {
+                  "playerId": "player:axis",
+                  "points": 4
+                }
+              ],
+              "winnerId": "player:allied",
+              "reason": "TURN_LIMIT"
+            },
+            "finalRulesRng": {
+              "state": 989707041,
+              "draws": 250
+            },
+            "postRulesRng": {
+              "state": 344142800,
+              "draws": 0
+            },
+            "postStateHash": "sha256:f2bbd43eb19e12d75cdeb6d8cfaaa7c88eb3d84250af102e3df360e64cd0ea9e",
+            "stepsLost": {
+              "player:axis": 24,
+              "player:allied": 13
+            },
+            "targetFinalHolder": "player:axis",
+            "files": {
+              "save.json": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800012/branch-30.save.json",
+                "sha256": "e46ab0940daa56f827a2e6d49b3632b42639e05dcef0b85967871ff68225b61c"
+              },
+              "trace.jsonl": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800012/branch-30.trace.jsonl",
+                "sha256": "20b15a205d52018f1be43b0a9bf80a5c56fc7fca2d24cdd406acd6fc394d5683"
+              },
+              "memory.json": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800012/branch-30.memory.json",
+                "sha256": "0c1b9140c0cf43fea7f35f6c7877fd1155420ffbbf20d007c2743135f3aefb29"
+              }
+            }
+          },
+          {
+            "forkWeight": 15,
+            "finished": true,
+            "acceptedActions": 808,
+            "rejected": 0,
+            "errors": [],
+            "initialStateHash": "sha256:2880f55017b5f5941e28d7dcbbd1c2b85c668cf55963e1e5ff1b7afa32cfce33",
+            "preStateHash": "sha256:b8bae14c958036871b3b7930fa69b777bdcd3850b0df82640db22232fc655a0a",
+            "preRulesRng": {
+              "state": 344142800,
+              "draws": 0
+            },
+            "forkAction": {
+              "actionId": "candidate:move:generated-oob:344142798:axis:f1-recon:unit:18,12:9",
+              "actorId": "player:axis",
+              "expectedRevision": 9,
+              "kind": "MOVE_PIECE",
+              "pieceId": "generated-oob:344142798:axis:f1-recon:unit",
+              "path": [
+                "15,20",
+                "15,19",
+                "16,18",
+                "17,17",
+                "17,16",
+                "18,15",
+                "18,14",
+                "18,13",
+                "18,12"
+              ]
+            },
+            "forkIntent": "combat to 18,12 (capture 15,11)",
+            "finalStateHash": "sha256:f5073d4c8c1e7952944a00b88e77c599e7b90da8f5c9fc367a27f90d6e10ff6d",
+            "victory": {
+              "scores": [
+                {
+                  "playerId": "player:allied",
+                  "points": 9
+                },
+                {
+                  "playerId": "player:axis",
+                  "points": 4
+                }
+              ],
+              "winnerId": "player:allied",
+              "reason": "TURN_LIMIT"
+            },
+            "finalRulesRng": {
+              "state": 989707041,
+              "draws": 250
+            },
+            "postRulesRng": {
+              "state": 344142800,
+              "draws": 0
+            },
+            "postStateHash": "sha256:3e92f42a3b1f125698024117d2d263103f4bb3292ccfa97ad465cb8318685d21",
+            "stepsLost": {
+              "player:axis": 24,
+              "player:allied": 13
+            },
+            "targetFinalHolder": "player:axis",
+            "files": {
+              "save.json": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800012/branch-15.save.json",
+                "sha256": "8e378c1dbfb5f40d6c1c5a7f47341e12949a73d092b50fd9d930d7df101365b1"
+              },
+              "trace.jsonl": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800012/branch-15.trace.jsonl",
+                "sha256": "a06a0f8cb51a841029a24d56f65108bf98c9926f6e5b49a4ad54939fc70afada"
+              },
+              "memory.json": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800012/branch-15.memory.json",
+                "sha256": "8c7529dde60914b7a48aade1130346c23cfff22132f2a4b725fc8ae77d1a17c8"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "firstMatch": 1800014,
+      "resultSha256": "eecfc49f221ab09f3f59df65983501fba507dbd22cc96acd42ab3d18ec0d2fff",
+      "result": {
+        "sourceCommit": "ed7e706d45c5a2ea7a93dfc805319153ca28636c",
+        "firstMatch": 1800014,
+        "controlFull": false,
+        "sourceSaveSha256": "82215e903f856db42f2e0a29bc15da27e4520c25b97741c85615ca406ebe4071",
+        "scriptSha256": "ff72510b7adc09392e18ada35f77e9d25f2f40df527f1b1f5596d527630be350",
+        "protocolSha256": "0641884bdf91f1340434d2bb301e8493fcf7757500ddc0cd43136a9c6a7706e9",
+        "commonPrefixActions": 24,
+        "commonPrefixPolicy": {
+          "axis": 30,
+          "allied": 15
+        },
+        "laterPolicies": {
+          "axis": 30,
+          "allied": 15
+        },
+        "originalRulesRng": true,
+        "preMemoriesEqual": true,
+        "scope": "One-decision15 counterfactual versus the recorded30 factual continuation. Same original prefix, rules RNG and lateraxis30/allied15. Control30 reconstructs the prefix and fork; the pilot also reproduces its full factual history. No predictor qualification.",
+        "branches": [
+          {
+            "forkWeight": 30,
+            "finished": false,
+            "acceptedActions": 25,
+            "rejected": 0,
+            "errors": [],
+            "initialStateHash": "sha256:24e8a277e1bc194e06413d550148fdfabce563bba8cb84f69e083f4fea5cb7d6",
+            "preStateHash": "sha256:456fbbd5329950fae9d5070be55ee25285794f6ebefbe5c882ea9a2048c1fc8b",
+            "preRulesRng": {
+              "state": 344142994,
+              "draws": 0
+            },
+            "forkAction": {
+              "actionId": "candidate:move:generated-oob:344142992:axis:f4-recon:unit:14,14:24",
+              "actorId": "player:axis",
+              "expectedRevision": 24,
+              "kind": "MOVE_PIECE",
+              "pieceId": "generated-oob:344142992:axis:f4-recon:unit",
+              "path": [
+                "24,3",
+                "23,4",
+                "22,5",
+                "21,5",
+                "20,6",
+                "19,7",
+                "18,8",
+                "18,9",
+                "17,10",
+                "16,11",
+                "15,12",
+                "15,13",
+                "14,14"
+              ]
+            },
+            "forkIntent": "combat to 14,14 (capture 3,14)",
+            "finalStateHash": "sha256:5d9c7f9a41f3324f78c8c8c765a5727c2bd1dedb8fb563d7adaf05894f39e791",
+            "victory": {
+              "scores": [
+                {
+                  "playerId": "player:allied",
+                  "points": 0
+                },
+                {
+                  "playerId": "player:axis",
+                  "points": 0
+                }
+              ],
+              "winnerId": null,
+              "reason": null
+            },
+            "finalRulesRng": {
+              "state": 344142994,
+              "draws": 0
+            },
+            "postRulesRng": {
+              "state": 344142994,
+              "draws": 0
+            },
+            "postStateHash": "sha256:5d9c7f9a41f3324f78c8c8c765a5727c2bd1dedb8fb563d7adaf05894f39e791",
+            "stepsLost": {
+              "player:axis": 0,
+              "player:allied": 0
+            },
+            "targetFinalHolder": "player:allied",
+            "files": {
+              "save.json": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800014/branch-30.save.json",
+                "sha256": "a0b3c46141872cbdd525c47dc55fd847050b1ba7cc65bb551bb6676eecc9ce21"
+              },
+              "trace.jsonl": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800014/branch-30.trace.jsonl",
+                "sha256": "d69272571abc51aa485cda1c8b247b93fa6b054f9db097e5a647e192ae93c40b"
+              },
+              "memory.json": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800014/branch-30.memory.json",
+                "sha256": "57f1f04520cbee11c08c045e83248ebd58fb0d3df2b600d40d43556e5bee3daa"
+              }
+            }
+          },
+          {
+            "forkWeight": 15,
+            "finished": true,
+            "acceptedActions": 933,
+            "rejected": 0,
+            "errors": [],
+            "initialStateHash": "sha256:24e8a277e1bc194e06413d550148fdfabce563bba8cb84f69e083f4fea5cb7d6",
+            "preStateHash": "sha256:456fbbd5329950fae9d5070be55ee25285794f6ebefbe5c882ea9a2048c1fc8b",
+            "preRulesRng": {
+              "state": 344142994,
+              "draws": 0
+            },
+            "forkAction": {
+              "actionId": "candidate:move:generated-oob:344142992:axis:f4-recon:unit:17,13:24",
+              "actorId": "player:axis",
+              "expectedRevision": 24,
+              "kind": "MOVE_PIECE",
+              "pieceId": "generated-oob:344142992:axis:f4-recon:unit",
+              "path": [
+                "24,3",
+                "23,4",
+                "22,5",
+                "21,5",
+                "20,6",
+                "19,7",
+                "18,8",
+                "18,9",
+                "18,10",
+                "18,11",
+                "18,12",
+                "17,13"
+              ]
+            },
+            "forkIntent": "combat to 17,13 (capture 3,14)",
+            "finalStateHash": "sha256:16eb32a7694d6f12f2ee5dd162caf1aa557bf3f1687278564c633d8fbf447309",
+            "victory": {
+              "scores": [
+                {
+                  "playerId": "player:allied",
+                  "points": 0
+                },
+                {
+                  "playerId": "player:axis",
+                  "points": 12
+                }
+              ],
+              "winnerId": "player:axis",
+              "reason": "TURN_LIMIT"
+            },
+            "finalRulesRng": {
+              "state": 4032227224,
+              "draws": 266
+            },
+            "postRulesRng": {
+              "state": 344142994,
+              "draws": 0
+            },
+            "postStateHash": "sha256:6336fae2cf754dd16c8ff7afa4bea4cd6df0b270cd461a85a88020574e763e9c",
+            "stepsLost": {
+              "player:axis": 7,
+              "player:allied": 27
+            },
+            "targetFinalHolder": "player:axis",
+            "files": {
+              "save.json": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800014/branch-15.save.json",
+                "sha256": "ba486fcecdb946bca586d3f5fe64e4969280b51e97705271e5ee9346d44b6409"
+              },
+              "trace.jsonl": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800014/branch-15.trace.jsonl",
+                "sha256": "a5b18e74b3b17a9a45ac52b69debee627aa5f7e440f9d81951e5dbbdf9813f97"
+              },
+              "memory.json": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800014/branch-15.memory.json",
+                "sha256": "676f7749c7321b4ec9dee7e7591a6d9e97d81add084f2b1a61538302f47c7f72"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "firstMatch": 1800016,
+      "resultSha256": "650f7b33a5fa3ccd774fcd044890a0353b6d971271fad9a7ba9b4a8f3abd8c09",
+      "result": {
+        "sourceCommit": "ed7e706d45c5a2ea7a93dfc805319153ca28636c",
+        "firstMatch": 1800016,
+        "controlFull": false,
+        "sourceSaveSha256": "a604ce6ad93f82796e932c24d0fbf5d31282ff26a54b51d7bbe3b987b8691291",
+        "scriptSha256": "ff72510b7adc09392e18ada35f77e9d25f2f40df527f1b1f5596d527630be350",
+        "protocolSha256": "0641884bdf91f1340434d2bb301e8493fcf7757500ddc0cd43136a9c6a7706e9",
+        "commonPrefixActions": 13,
+        "commonPrefixPolicy": {
+          "axis": 30,
+          "allied": 15
+        },
+        "laterPolicies": {
+          "axis": 30,
+          "allied": 15
+        },
+        "originalRulesRng": true,
+        "preMemoriesEqual": true,
+        "scope": "One-decision15 counterfactual versus the recorded30 factual continuation. Same original prefix, rules RNG and lateraxis30/allied15. Control30 reconstructs the prefix and fork; the pilot also reproduces its full factual history. No predictor qualification.",
+        "branches": [
+          {
+            "forkWeight": 30,
+            "finished": false,
+            "acceptedActions": 14,
+            "rejected": 0,
+            "errors": [],
+            "initialStateHash": "sha256:18c82d6cc6298a85e9d0b1df9272c37703a68be610c884f3b9d9eb5ca4e38431",
+            "preStateHash": "sha256:68a706fecb0646db33b7469888d46582496e9b5a518ff0e4409578dde046049e",
+            "preRulesRng": {
+              "state": 344143188,
+              "draws": 0
+            },
+            "forkAction": {
+              "actionId": "candidate:move:generated-oob:344143186:axis:f11-combat-1:unit:16,10:13",
+              "actorId": "player:axis",
+              "expectedRevision": 13,
+              "kind": "MOVE_PIECE",
+              "pieceId": "generated-oob:344143186:axis:f11-combat-1:unit",
+              "path": [
+                "20,10",
+                "19,11",
+                "18,11",
+                "17,11",
+                "16,11",
+                "16,10"
+              ]
+            },
+            "forkIntent": "combat to 16,10 (assault 10,9)",
+            "finalStateHash": "sha256:f74b0799149298feab46871e9d43cc4d299e658d50df1073d4b12e7cbf1cc242",
+            "victory": {
+              "scores": [
+                {
+                  "playerId": "player:allied",
+                  "points": 0
+                },
+                {
+                  "playerId": "player:axis",
+                  "points": 0
+                }
+              ],
+              "winnerId": null,
+              "reason": null
+            },
+            "finalRulesRng": {
+              "state": 344143188,
+              "draws": 0
+            },
+            "postRulesRng": {
+              "state": 344143188,
+              "draws": 0
+            },
+            "postStateHash": "sha256:f74b0799149298feab46871e9d43cc4d299e658d50df1073d4b12e7cbf1cc242",
+            "stepsLost": {
+              "player:axis": 0,
+              "player:allied": 0
+            },
+            "targetFinalHolder": "player:allied",
+            "files": {
+              "save.json": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800016/branch-30.save.json",
+                "sha256": "0456552a61edcdfe822de949bc3e836a48a35eb74f7c0c9d8c5a164de34e5069"
+              },
+              "trace.jsonl": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800016/branch-30.trace.jsonl",
+                "sha256": "1c9d7ab9dcd62259444892a259909ac527a54e065558e5143247f61a2c57bba5"
+              },
+              "memory.json": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800016/branch-30.memory.json",
+                "sha256": "3341b0c4cac455aaa114cce0b22e4c860b5e27957f501eabeea9b0868b69622d"
+              }
+            }
+          },
+          {
+            "forkWeight": 15,
+            "finished": true,
+            "acceptedActions": 968,
+            "rejected": 0,
+            "errors": [],
+            "initialStateHash": "sha256:18c82d6cc6298a85e9d0b1df9272c37703a68be610c884f3b9d9eb5ca4e38431",
+            "preStateHash": "sha256:68a706fecb0646db33b7469888d46582496e9b5a518ff0e4409578dde046049e",
+            "preRulesRng": {
+              "state": 344143188,
+              "draws": 0
+            },
+            "forkAction": {
+              "actionId": "candidate:move:generated-oob:344143186:axis:f11-combat-1:unit:18,9:13",
+              "actorId": "player:axis",
+              "expectedRevision": 13,
+              "kind": "MOVE_PIECE",
+              "pieceId": "generated-oob:344143186:axis:f11-combat-1:unit",
+              "path": [
+                "20,10",
+                "20,9",
+                "19,9",
+                "18,9"
+              ]
+            },
+            "forkIntent": "combat to 18,9 (assault 10,9)",
+            "finalStateHash": "sha256:8cd66b627b7eedd70d9281157b44f25d5bb3518ce7b33efc71f63427c72061a7",
+            "victory": {
+              "scores": [
+                {
+                  "playerId": "player:allied",
+                  "points": 11
+                },
+                {
+                  "playerId": "player:axis",
+                  "points": 14
+                }
+              ],
+              "winnerId": "player:axis",
+              "reason": "TURN_LIMIT"
+            },
+            "finalRulesRng": {
+              "state": 2954995791,
+              "draws": 267
+            },
+            "postRulesRng": {
+              "state": 344143188,
+              "draws": 0
+            },
+            "postStateHash": "sha256:4c8d543c98c487cdadcde514f2b012705c69a4d0d2f61b73d4d4436a11feb4f1",
+            "stepsLost": {
+              "player:axis": 8,
+              "player:allied": 34
+            },
+            "targetFinalHolder": "player:axis",
+            "files": {
+              "save.json": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800016/branch-15.save.json",
+                "sha256": "4e65dfdd71f4dbaab7a7a9db0f7e4b774a7cead389673ef87b827cfdadc7b74b"
+              },
+              "trace.jsonl": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800016/branch-15.trace.jsonl",
+                "sha256": "2f665eac41c0d397123054c4b2824c7f7596eb85a6312551e7b783abc141bda9"
+              },
+              "memory.json": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800016/branch-15.memory.json",
+                "sha256": "0fa5a885c17bed6408b84d164e86bed8404e76ac7cd11142625f7f55cdcc2e59"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "firstMatch": 1800018,
+      "resultSha256": "cfc543c192b5b5a487aeb67d473c35246eb04cda571e8aa5ea2b8c2bf249b7b4",
+      "result": {
+        "sourceCommit": "ed7e706d45c5a2ea7a93dfc805319153ca28636c",
+        "firstMatch": 1800018,
+        "controlFull": false,
+        "sourceSaveSha256": "037b2dfa7e9d48f0c55cc78fb0d9497b3eba345d0d0cadf8c02081d3eac4efb6",
+        "scriptSha256": "ff72510b7adc09392e18ada35f77e9d25f2f40df527f1b1f5596d527630be350",
+        "protocolSha256": "0641884bdf91f1340434d2bb301e8493fcf7757500ddc0cd43136a9c6a7706e9",
+        "commonPrefixActions": 10,
+        "commonPrefixPolicy": {
+          "axis": 30,
+          "allied": 15
+        },
+        "laterPolicies": {
+          "axis": 30,
+          "allied": 15
+        },
+        "originalRulesRng": true,
+        "preMemoriesEqual": true,
+        "scope": "One-decision15 counterfactual versus the recorded30 factual continuation. Same original prefix, rules RNG and lateraxis30/allied15. Control30 reconstructs the prefix and fork; the pilot also reproduces its full factual history. No predictor qualification.",
+        "branches": [
+          {
+            "forkWeight": 30,
+            "finished": false,
+            "acceptedActions": 11,
+            "rejected": 0,
+            "errors": [],
+            "initialStateHash": "sha256:1d70ffece190037542e3eff4c0186a1b6d8ac75c105e5ccd32246f1118a85cda",
+            "preStateHash": "sha256:2e177df4f55dc115cc802ecbba7bedf8f88e836d39d333330c669eb47792b49a",
+            "preRulesRng": {
+              "state": 344143382,
+              "draws": 0
+            },
+            "forkAction": {
+              "actionId": "candidate:move:generated-oob:344143380:axis:f10-combat-1:unit:12,18:10",
+              "actorId": "player:axis",
+              "expectedRevision": 10,
+              "kind": "MOVE_PIECE",
+              "pieceId": "generated-oob:344143380:axis:f10-combat-1:unit",
+              "path": [
+                "15,19",
+                "15,18",
+                "14,18",
+                "14,17",
+                "13,17",
+                "12,18"
+              ]
+            },
+            "forkIntent": "combat to 12,18 (assault 4,18)",
+            "finalStateHash": "sha256:f46236bf1ca5b6b87f8eb17bbf818a82c6a78183ac26cc96f36b522962e02a9a",
+            "victory": {
+              "scores": [
+                {
+                  "playerId": "player:allied",
+                  "points": 0
+                },
+                {
+                  "playerId": "player:axis",
+                  "points": 0
+                }
+              ],
+              "winnerId": null,
+              "reason": null
+            },
+            "finalRulesRng": {
+              "state": 344143382,
+              "draws": 0
+            },
+            "postRulesRng": {
+              "state": 344143382,
+              "draws": 0
+            },
+            "postStateHash": "sha256:f46236bf1ca5b6b87f8eb17bbf818a82c6a78183ac26cc96f36b522962e02a9a",
+            "stepsLost": {
+              "player:axis": 0,
+              "player:allied": 0
+            },
+            "targetFinalHolder": "player:allied",
+            "files": {
+              "save.json": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800018/branch-30.save.json",
+                "sha256": "c22858edf48720ef115c91d6e64aa5e9194929790ea33c330dd0489dc475d61d"
+              },
+              "trace.jsonl": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800018/branch-30.trace.jsonl",
+                "sha256": "800402480600ab89b5e89778f932efad9620a247b81115654c5098e30f921db3"
+              },
+              "memory.json": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800018/branch-30.memory.json",
+                "sha256": "3d58030624bbb66be66fa1187ff9d299b13c9b3ad4accc5ec27c3d7160d5c740"
+              }
+            }
+          },
+          {
+            "forkWeight": 15,
+            "finished": true,
+            "acceptedActions": 796,
+            "rejected": 0,
+            "errors": [],
+            "initialStateHash": "sha256:1d70ffece190037542e3eff4c0186a1b6d8ac75c105e5ccd32246f1118a85cda",
+            "preStateHash": "sha256:2e177df4f55dc115cc802ecbba7bedf8f88e836d39d333330c669eb47792b49a",
+            "preRulesRng": {
+              "state": 344143382,
+              "draws": 0
+            },
+            "forkAction": {
+              "actionId": "candidate:move:generated-oob:344143380:axis:f10-combat-1:unit:13,18:10",
+              "actorId": "player:axis",
+              "expectedRevision": 10,
+              "kind": "MOVE_PIECE",
+              "pieceId": "generated-oob:344143380:axis:f10-combat-1:unit",
+              "path": [
+                "15,19",
+                "15,18",
+                "14,18",
+                "13,18"
+              ]
+            },
+            "forkIntent": "combat to 13,18 (assault 4,18)",
+            "finalStateHash": "sha256:72417b8e24d4c830b94a6d376899ff01abae2ca438979d9329eb28d2d42ac1f7",
+            "victory": {
+              "scores": [
+                {
+                  "playerId": "player:allied",
+                  "points": 23
+                },
+                {
+                  "playerId": "player:axis",
+                  "points": 7
+                }
+              ],
+              "winnerId": "player:allied",
+              "reason": "TURN_LIMIT"
+            },
+            "finalRulesRng": {
+              "state": 1094500581,
+              "draws": 198
+            },
+            "postRulesRng": {
+              "state": 344143382,
+              "draws": 0
+            },
+            "postStateHash": "sha256:1b890f9fce7e126e322095e69247f4b1132e236871e35287198d3b5d96174395",
+            "stepsLost": {
+              "player:axis": 13,
+              "player:allied": 9
+            },
+            "targetFinalHolder": "player:axis",
+            "files": {
+              "save.json": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800018/branch-15.save.json",
+                "sha256": "15f73f844c56ce160ed00f4d9bb7c855b7d47fa7be5845f53fdf3685173828ef"
+              },
+              "trace.jsonl": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800018/branch-15.trace.jsonl",
+                "sha256": "a075f6808736fd0e4fa27fc11ac1a496232c565c865c45bac0bfce3d0a674cdc"
+              },
+              "memory.json": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800018/branch-15.memory.json",
+                "sha256": "0601134a6de348455d4a51d7dba063416b69087d5646a32734588a64592917c8"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "firstMatch": 1800020,
+      "resultSha256": "503d5742d5ac5a0a2676951e56f29ee43c746e759fe0187347fd62db281b3806",
+      "result": {
+        "sourceCommit": "ed7e706d45c5a2ea7a93dfc805319153ca28636c",
+        "firstMatch": 1800020,
+        "controlFull": false,
+        "sourceSaveSha256": "ff2385f6bb032556993211b7efc8f4c37b6d300a9018ca04c1c2c29ff0dc65f9",
+        "scriptSha256": "ff72510b7adc09392e18ada35f77e9d25f2f40df527f1b1f5596d527630be350",
+        "protocolSha256": "0641884bdf91f1340434d2bb301e8493fcf7757500ddc0cd43136a9c6a7706e9",
+        "commonPrefixActions": 10,
+        "commonPrefixPolicy": {
+          "axis": 30,
+          "allied": 15
+        },
+        "laterPolicies": {
+          "axis": 30,
+          "allied": 15
+        },
+        "originalRulesRng": true,
+        "preMemoriesEqual": true,
+        "scope": "One-decision15 counterfactual versus the recorded30 factual continuation. Same original prefix, rules RNG and lateraxis30/allied15. Control30 reconstructs the prefix and fork; the pilot also reproduces its full factual history. No predictor qualification.",
+        "branches": [
+          {
+            "forkWeight": 30,
+            "finished": false,
+            "acceptedActions": 11,
+            "rejected": 0,
+            "errors": [],
+            "initialStateHash": "sha256:ec2105dbf8059509a18e1bdda35265ee056d10cbf08bedad4c7ea254a0301c94",
+            "preStateHash": "sha256:f962d64b9e79ee18ef5c2819293e067427d401814738ce3d1a9bfa843d091aa2",
+            "preRulesRng": {
+              "state": 344143576,
+              "draws": 0
+            },
+            "forkAction": {
+              "actionId": "candidate:move:generated-oob:344143574:axis:f1-combat-2:unit:11,19:10",
+              "actorId": "player:axis",
+              "expectedRevision": 10,
+              "kind": "MOVE_PIECE",
+              "pieceId": "generated-oob:344143574:axis:f1-combat-2:unit",
+              "path": [
+                "14,21",
+                "13,21",
+                "12,21",
+                "11,21",
+                "11,20",
+                "11,19"
+              ]
+            },
+            "forkIntent": "combat to 11,19 (capture 11,17)",
+            "finalStateHash": "sha256:26908f69799fdf4d62f641b68bbba8bc81b677b8e8d3f2316722ef7a7e628d66",
+            "victory": {
+              "scores": [
+                {
+                  "playerId": "player:allied",
+                  "points": 0
+                },
+                {
+                  "playerId": "player:axis",
+                  "points": 0
+                }
+              ],
+              "winnerId": null,
+              "reason": null
+            },
+            "finalRulesRng": {
+              "state": 344143576,
+              "draws": 0
+            },
+            "postRulesRng": {
+              "state": 344143576,
+              "draws": 0
+            },
+            "postStateHash": "sha256:26908f69799fdf4d62f641b68bbba8bc81b677b8e8d3f2316722ef7a7e628d66",
+            "stepsLost": {
+              "player:axis": 0,
+              "player:allied": 0
+            },
+            "targetFinalHolder": "player:allied",
+            "files": {
+              "save.json": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800020/branch-30.save.json",
+                "sha256": "9e7527c698dc1135073eea51b7b89e5e91ba418e3e34b3f5d802f58e47e6aaeb"
+              },
+              "trace.jsonl": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800020/branch-30.trace.jsonl",
+                "sha256": "b5af6c43e57f7fcaf4cd806cdc08ed3f52cbb7399ab8cab5de9144c41fa728ea"
+              },
+              "memory.json": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800020/branch-30.memory.json",
+                "sha256": "fdeb4e342e1c5dd084c697fcd466714df0c12309e636e3ea393aa4e62c4e6f84"
+              }
+            }
+          },
+          {
+            "forkWeight": 15,
+            "finished": true,
+            "acceptedActions": 955,
+            "rejected": 0,
+            "errors": [],
+            "initialStateHash": "sha256:ec2105dbf8059509a18e1bdda35265ee056d10cbf08bedad4c7ea254a0301c94",
+            "preStateHash": "sha256:f962d64b9e79ee18ef5c2819293e067427d401814738ce3d1a9bfa843d091aa2",
+            "preRulesRng": {
+              "state": 344143576,
+              "draws": 0
+            },
+            "forkAction": {
+              "actionId": "candidate:move:generated-oob:344143574:axis:f1-combat-2:unit:15,17:10",
+              "actorId": "player:axis",
+              "expectedRevision": 10,
+              "kind": "MOVE_PIECE",
+              "pieceId": "generated-oob:344143574:axis:f1-combat-2:unit",
+              "path": [
+                "14,21",
+                "15,20",
+                "16,19",
+                "17,18",
+                "17,17",
+                "16,17",
+                "15,17"
+              ]
+            },
+            "forkIntent": "combat to 15,17 (capture 11,17)",
+            "finalStateHash": "sha256:00d6d6135926af7fe22b7679b15ccee6a7f981cdd6c35a53686f94c98a05951b",
+            "victory": {
+              "scores": [
+                {
+                  "playerId": "player:allied",
+                  "points": 0
+                },
+                {
+                  "playerId": "player:axis",
+                  "points": 24
+                }
+              ],
+              "winnerId": "player:axis",
+              "reason": "TURN_LIMIT"
+            },
+            "finalRulesRng": {
+              "state": 1892500468,
+              "draws": 298
+            },
+            "postRulesRng": {
+              "state": 344143576,
+              "draws": 0
+            },
+            "postStateHash": "sha256:792785d3f11a6e936826de91e3208d767386837aa9dfe57b78b8de7c4cc73b9b",
+            "stepsLost": {
+              "player:axis": 8,
+              "player:allied": 40
+            },
+            "targetFinalHolder": "player:axis",
+            "files": {
+              "save.json": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800020/branch-15.save.json",
+                "sha256": "4678e22ffdcc495e1bcb5d2a2c5ee6183b88062326a17db33485e2aa1f2cd84b"
+              },
+              "trace.jsonl": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800020/branch-15.trace.jsonl",
+                "sha256": "09af8aed60122609906c9006f9d9504fef65ca1693adc392c33511ba734cd171"
+              },
+              "memory.json": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800020/branch-15.memory.json",
+                "sha256": "4396ea117e7d36e8975c05ee776f5b338e058f63e8f337626b8b8b2c73a779ae"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "firstMatch": 1800022,
+      "resultSha256": "fa96b289ac4182c1f845314b5766818494cfde87d43174858be87e6a6d776e27",
+      "result": {
+        "sourceCommit": "ed7e706d45c5a2ea7a93dfc805319153ca28636c",
+        "firstMatch": 1800022,
+        "controlFull": false,
+        "sourceSaveSha256": "f5e136683d468618aa3c0b8bb8a2f8b78c8616ed61f847779ed5a0b0696feaa9",
+        "scriptSha256": "ff72510b7adc09392e18ada35f77e9d25f2f40df527f1b1f5596d527630be350",
+        "protocolSha256": "0641884bdf91f1340434d2bb301e8493fcf7757500ddc0cd43136a9c6a7706e9",
+        "commonPrefixActions": 31,
+        "commonPrefixPolicy": {
+          "axis": 30,
+          "allied": 15
+        },
+        "laterPolicies": {
+          "axis": 30,
+          "allied": 15
+        },
+        "originalRulesRng": true,
+        "preMemoriesEqual": true,
+        "scope": "One-decision15 counterfactual versus the recorded30 factual continuation. Same original prefix, rules RNG and lateraxis30/allied15. Control30 reconstructs the prefix and fork; the pilot also reproduces its full factual history. No predictor qualification.",
+        "branches": [
+          {
+            "forkWeight": 30,
+            "finished": false,
+            "acceptedActions": 32,
+            "rejected": 0,
+            "errors": [],
+            "initialStateHash": "sha256:b54c32a9af45cb910d02f56646b56edd5b2f8a5bc2a14ed0b9156d019d6f695a",
+            "preStateHash": "sha256:3a8efe5cbca181f02be1022aa753c5bfcc1d90ddde40a7104d8449fd5c1f895e",
+            "preRulesRng": {
+              "state": 344143770,
+              "draws": 0
+            },
+            "forkAction": {
+              "actionId": "candidate:move:generated-oob:344143768:axis:independent-anti_tank-1:unit:16,9:31",
+              "actorId": "player:axis",
+              "expectedRevision": 31,
+              "kind": "MOVE_PIECE",
+              "pieceId": "generated-oob:344143768:axis:independent-anti_tank-1:unit",
+              "path": [
+                "17,21",
+                "16,21",
+                "15,21",
+                "14,21",
+                "13,21",
+                "13,20",
+                "13,19",
+                "14,18",
+                "15,17",
+                "16,16",
+                "16,15",
+                "17,14",
+                "17,13",
+                "18,12",
+                "19,11",
+                "20,10",
+                "20,9",
+                "19,9",
+                "18,9",
+                "17,9",
+                "16,9"
+              ]
+            },
+            "forkIntent": "combat to 16,9 (capture 13,10)",
+            "finalStateHash": "sha256:fe43475477d793169fdbb052fccc58a2af083e78e0cd7cc86a59ac0800a4101d",
+            "victory": {
+              "scores": [
+                {
+                  "playerId": "player:allied",
+                  "points": 0
+                },
+                {
+                  "playerId": "player:axis",
+                  "points": 0
+                }
+              ],
+              "winnerId": null,
+              "reason": null
+            },
+            "finalRulesRng": {
+              "state": 344143770,
+              "draws": 0
+            },
+            "postRulesRng": {
+              "state": 344143770,
+              "draws": 0
+            },
+            "postStateHash": "sha256:fe43475477d793169fdbb052fccc58a2af083e78e0cd7cc86a59ac0800a4101d",
+            "stepsLost": {
+              "player:axis": 0,
+              "player:allied": 0
+            },
+            "targetFinalHolder": "player:allied",
+            "files": {
+              "save.json": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800022/branch-30.save.json",
+                "sha256": "54a37e72da55e5a9e93ab1f39aaf9f0a8203d7b7e46fe922b69a6cf3051d0045"
+              },
+              "trace.jsonl": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800022/branch-30.trace.jsonl",
+                "sha256": "ce0e9f9e0f1bdd51c5aaa5469f7c83575489c0e870aa0bf1355545bdf2a5150e"
+              },
+              "memory.json": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800022/branch-30.memory.json",
+                "sha256": "c2a0ae96206da931c0193e6088fa4cfb47993f3cd04c951bc5c7df3e59b1a64d"
+              }
+            }
+          },
+          {
+            "forkWeight": 15,
+            "finished": true,
+            "acceptedActions": 916,
+            "rejected": 0,
+            "errors": [],
+            "initialStateHash": "sha256:b54c32a9af45cb910d02f56646b56edd5b2f8a5bc2a14ed0b9156d019d6f695a",
+            "preStateHash": "sha256:3a8efe5cbca181f02be1022aa753c5bfcc1d90ddde40a7104d8449fd5c1f895e",
+            "preRulesRng": {
+              "state": 344143770,
+              "draws": 0
+            },
+            "forkAction": {
+              "actionId": "candidate:move:generated-oob:344143768:axis:independent-anti_tank-1:unit:17,8:31",
+              "actorId": "player:axis",
+              "expectedRevision": 31,
+              "kind": "MOVE_PIECE",
+              "pieceId": "generated-oob:344143768:axis:independent-anti_tank-1:unit",
+              "path": [
+                "17,21",
+                "16,21",
+                "15,21",
+                "14,21",
+                "13,21",
+                "13,20",
+                "13,19",
+                "14,18",
+                "15,17",
+                "16,16",
+                "16,15",
+                "17,14",
+                "17,13",
+                "18,12",
+                "19,11",
+                "20,10",
+                "20,9",
+                "19,9",
+                "18,9",
+                "17,9",
+                "17,8"
+              ]
+            },
+            "forkIntent": "combat to 17,8 (capture 13,10)",
+            "finalStateHash": "sha256:be356c50c3198f696881ca7bc1c558fe4821752603cb98bf14cc61aaaa6297f9",
+            "victory": {
+              "scores": [
+                {
+                  "playerId": "player:allied",
+                  "points": 8
+                },
+                {
+                  "playerId": "player:axis",
+                  "points": 7
+                }
+              ],
+              "winnerId": "player:allied",
+              "reason": "TURN_LIMIT"
+            },
+            "finalRulesRng": {
+              "state": 1798865344,
+              "draws": 230
+            },
+            "postRulesRng": {
+              "state": 344143770,
+              "draws": 0
+            },
+            "postStateHash": "sha256:05d0daa580b0edce7e5100f5700ceebba9fe55cc98c9c1808770485a92c4ce61",
+            "stepsLost": {
+              "player:axis": 7,
+              "player:allied": 25
+            },
+            "targetFinalHolder": "player:allied",
+            "files": {
+              "save.json": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800022/branch-15.save.json",
+                "sha256": "cacf2e54367cbbf49e00d82c8a3bf6a79d9f8b7a8a763ee48392627c7493d577"
+              },
+              "trace.jsonl": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800022/branch-15.trace.jsonl",
+                "sha256": "c17779c79df4d52923a2009b443f46bbc5914361df7ad363dd23fa6fad0a2b9c"
+              },
+              "memory.json": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800022/branch-15.memory.json",
+                "sha256": "056c425c77d3a453e1e50590d219c265feb193f7bfea124ad48b0d16633a4f2d"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "firstMatch": 1800024,
+      "resultSha256": "cf8e52ab49b4271e11f5704e8ef902769c90c6c137c6d5433ec471af457c5eae",
+      "result": {
+        "sourceCommit": "ed7e706d45c5a2ea7a93dfc805319153ca28636c",
+        "firstMatch": 1800024,
+        "controlFull": false,
+        "sourceSaveSha256": "94293ac49de52b9828b1691190f7b47b3b91d6d701f027377fd441f19dd914bd",
+        "scriptSha256": "ff72510b7adc09392e18ada35f77e9d25f2f40df527f1b1f5596d527630be350",
+        "protocolSha256": "0641884bdf91f1340434d2bb301e8493fcf7757500ddc0cd43136a9c6a7706e9",
+        "commonPrefixActions": 28,
+        "commonPrefixPolicy": {
+          "axis": 30,
+          "allied": 15
+        },
+        "laterPolicies": {
+          "axis": 30,
+          "allied": 15
+        },
+        "originalRulesRng": true,
+        "preMemoriesEqual": true,
+        "scope": "One-decision15 counterfactual versus the recorded30 factual continuation. Same original prefix, rules RNG and lateraxis30/allied15. Control30 reconstructs the prefix and fork; the pilot also reproduces its full factual history. No predictor qualification.",
+        "branches": [
+          {
+            "forkWeight": 30,
+            "finished": false,
+            "acceptedActions": 29,
+            "rejected": 0,
+            "errors": [],
+            "initialStateHash": "sha256:507857cd410c28d377b99c1223e850c965cb8107024b9a1c78fd969b9c181440",
+            "preStateHash": "sha256:d83fb14ba09f8f0773c0a9434577d2e92db455112bfbc89e711cac7f7c1510c7",
+            "preRulesRng": {
+              "state": 344143964,
+              "draws": 0
+            },
+            "forkAction": {
+              "actionId": "candidate:move:generated-oob:344143962:axis:f4-recon:unit:20,2:28",
+              "actorId": "player:axis",
+              "expectedRevision": 28,
+              "kind": "MOVE_PIECE",
+              "pieceId": "generated-oob:344143962:axis:f4-recon:unit",
+              "path": [
+                "23,3",
+                "23,2",
+                "23,1",
+                "22,1",
+                "21,1",
+                "20,2"
+              ]
+            },
+            "forkIntent": "combat to 20,2 (capture 9,2)",
+            "finalStateHash": "sha256:bca142aad1e684f70413123bf87f203d9995ed3854154f43f37fb3adf2bf8ca0",
+            "victory": {
+              "scores": [
+                {
+                  "playerId": "player:allied",
+                  "points": 0
+                },
+                {
+                  "playerId": "player:axis",
+                  "points": 0
+                }
+              ],
+              "winnerId": null,
+              "reason": null
+            },
+            "finalRulesRng": {
+              "state": 344143964,
+              "draws": 0
+            },
+            "postRulesRng": {
+              "state": 344143964,
+              "draws": 0
+            },
+            "postStateHash": "sha256:bca142aad1e684f70413123bf87f203d9995ed3854154f43f37fb3adf2bf8ca0",
+            "stepsLost": {
+              "player:axis": 0,
+              "player:allied": 0
+            },
+            "targetFinalHolder": "player:allied",
+            "files": {
+              "save.json": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800024/branch-30.save.json",
+                "sha256": "08f00f8d78f66c9c3167212dcf54a1d737f9a459e425f419c170ff4617b2f321"
+              },
+              "trace.jsonl": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800024/branch-30.trace.jsonl",
+                "sha256": "ff6a8e245e724c7d6fce9e1cbafdd80309f3adaaa9f6f9064a034bcc5d012652"
+              },
+              "memory.json": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800024/branch-30.memory.json",
+                "sha256": "894588405acd9aa75e2b1a870b45fe42107a8376586985e7ff948c06e06b221e"
+              }
+            }
+          },
+          {
+            "forkWeight": 15,
+            "finished": true,
+            "acceptedActions": 1037,
+            "rejected": 0,
+            "errors": [],
+            "initialStateHash": "sha256:507857cd410c28d377b99c1223e850c965cb8107024b9a1c78fd969b9c181440",
+            "preStateHash": "sha256:d83fb14ba09f8f0773c0a9434577d2e92db455112bfbc89e711cac7f7c1510c7",
+            "preRulesRng": {
+              "state": 344143964,
+              "draws": 0
+            },
+            "forkAction": {
+              "actionId": "candidate:move:generated-oob:344143962:axis:f4-recon:unit:21,2:28",
+              "actorId": "player:axis",
+              "expectedRevision": 28,
+              "kind": "MOVE_PIECE",
+              "pieceId": "generated-oob:344143962:axis:f4-recon:unit",
+              "path": [
+                "23,3",
+                "23,2",
+                "23,1",
+                "22,1",
+                "21,2"
+              ]
+            },
+            "forkIntent": "combat to 21,2 (capture 9,2)",
+            "finalStateHash": "sha256:a09e59948d94d222f134da9569accc0f6414ce2650403eade6180cf6fd8325dc",
+            "victory": {
+              "scores": [
+                {
+                  "playerId": "player:allied",
+                  "points": 2
+                },
+                {
+                  "playerId": "player:axis",
+                  "points": 11
+                }
+              ],
+              "winnerId": "player:axis",
+              "reason": "TURN_LIMIT"
+            },
+            "finalRulesRng": {
+              "state": 1302508239,
+              "draws": 271
+            },
+            "postRulesRng": {
+              "state": 344143964,
+              "draws": 0
+            },
+            "postStateHash": "sha256:424eac7f4cbc077b54bf89ce748176d1daf37f2cb88d6beaddaa6ee32869fa45",
+            "stepsLost": {
+              "player:axis": 10,
+              "player:allied": 25
+            },
+            "targetFinalHolder": "player:axis",
+            "files": {
+              "save.json": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800024/branch-15.save.json",
+                "sha256": "30359253ff477c9ba767e85d023391b134883b58d91eaf29a6c11e975a7f431b"
+              },
+              "trace.jsonl": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800024/branch-15.trace.jsonl",
+                "sha256": "0f2af2a5e249792bfd446d3a6de3a324ade3175c40c05526217912e236c06981"
+              },
+              "memory.json": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800024/branch-15.memory.json",
+                "sha256": "30563917c5448db2e256a043b627006ecaff7b878ccce8c8e3a258f517e7423a"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "firstMatch": 1800026,
+      "resultSha256": "b52bb2eeee1fa78495adca5d23902b83709379f2d79246c1d289ae750d93a08f",
+      "result": {
+        "sourceCommit": "ed7e706d45c5a2ea7a93dfc805319153ca28636c",
+        "firstMatch": 1800026,
+        "controlFull": false,
+        "sourceSaveSha256": "0316327088a91723e8708bef8e00ee9a4609b16ce388d5ae3ec39ad1792dba7f",
+        "scriptSha256": "ff72510b7adc09392e18ada35f77e9d25f2f40df527f1b1f5596d527630be350",
+        "protocolSha256": "0641884bdf91f1340434d2bb301e8493fcf7757500ddc0cd43136a9c6a7706e9",
+        "commonPrefixActions": 152,
+        "commonPrefixPolicy": {
+          "axis": 30,
+          "allied": 15
+        },
+        "laterPolicies": {
+          "axis": 30,
+          "allied": 15
+        },
+        "originalRulesRng": true,
+        "preMemoriesEqual": true,
+        "scope": "One-decision15 counterfactual versus the recorded30 factual continuation. Same original prefix, rules RNG and lateraxis30/allied15. Control30 reconstructs the prefix and fork; the pilot also reproduces its full factual history. No predictor qualification.",
+        "branches": [
+          {
+            "forkWeight": 30,
+            "finished": false,
+            "acceptedActions": 153,
+            "rejected": 0,
+            "errors": [],
+            "initialStateHash": "sha256:332c6cd1ba7cabac61277a25c678a741f138aac78284195d230fe037a0403499",
+            "preStateHash": "sha256:7856ec73a0c778199352be54b86b16a24d03219e5714e1b12fe7537941a12657",
+            "preRulesRng": {
+              "state": 44836817,
+              "draws": 30
+            },
+            "forkAction": {
+              "actionId": "candidate:move:generated-oob:344144156:axis:f2-recon:unit:11,14:152",
+              "actorId": "player:axis",
+              "expectedRevision": 152,
+              "kind": "MOVE_PIECE",
+              "pieceId": "generated-oob:344144156:axis:f2-recon:unit",
+              "path": [
+                "13,15",
+                "12,15",
+                "12,14",
+                "11,14"
+              ]
+            },
+            "forkIntent": "combat to 11,14 (capture 10,15)",
+            "finalStateHash": "sha256:fa1bbc657d1609e2d1ba24822dedfbe905520cc9a328eb58c1d5cdfab802f3b7",
+            "victory": {
+              "scores": [
+                {
+                  "playerId": "player:allied",
+                  "points": 13
+                },
+                {
+                  "playerId": "player:axis",
+                  "points": 0
+                }
+              ],
+              "winnerId": "player:allied",
+              "reason": null
+            },
+            "finalRulesRng": {
+              "state": 1285479354,
+              "draws": 31
+            },
+            "postRulesRng": {
+              "state": 1285479354,
+              "draws": 31
+            },
+            "postStateHash": "sha256:fa1bbc657d1609e2d1ba24822dedfbe905520cc9a328eb58c1d5cdfab802f3b7",
+            "stepsLost": {
+              "player:axis": 5,
+              "player:allied": 0
+            },
+            "targetFinalHolder": "player:allied",
+            "files": {
+              "save.json": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800026/branch-30.save.json",
+                "sha256": "9f71dde58b8a242b4f7a5985c7e567b5686701c5b7c5a2d0fa91b6138c3f705e"
+              },
+              "trace.jsonl": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800026/branch-30.trace.jsonl",
+                "sha256": "87520afd5c508ebe88235493151ce183cdebea46ac77cf176163b18814914ade"
+              },
+              "memory.json": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800026/branch-30.memory.json",
+                "sha256": "9f9a85c94e4231abdc9f6abdbe90e9a0a336734d2bd04c9711402df2b8a5cbbd"
+              }
+            }
+          },
+          {
+            "forkWeight": 15,
+            "finished": true,
+            "acceptedActions": 922,
+            "rejected": 0,
+            "errors": [],
+            "initialStateHash": "sha256:332c6cd1ba7cabac61277a25c678a741f138aac78284195d230fe037a0403499",
+            "preStateHash": "sha256:7856ec73a0c778199352be54b86b16a24d03219e5714e1b12fe7537941a12657",
+            "preRulesRng": {
+              "state": 44836817,
+              "draws": 30
+            },
+            "forkAction": {
+              "actionId": "candidate:move:generated-oob:344144156:axis:f2-recon:unit:12,15:152",
+              "actorId": "player:axis",
+              "expectedRevision": 152,
+              "kind": "MOVE_PIECE",
+              "pieceId": "generated-oob:344144156:axis:f2-recon:unit",
+              "path": [
+                "13,15",
+                "12,15"
+              ]
+            },
+            "forkIntent": "combat to 12,15 (capture 10,15)",
+            "finalStateHash": "sha256:7082187cd37d43734b87bb6798635652d33850d54177bdea60b12601e31f4c91",
+            "victory": {
+              "scores": [
+                {
+                  "playerId": "player:allied",
+                  "points": 0
+                },
+                {
+                  "playerId": "player:axis",
+                  "points": 13
+                }
+              ],
+              "winnerId": "player:axis",
+              "reason": "TURN_LIMIT"
+            },
+            "finalRulesRng": {
+              "state": 501940633,
+              "draws": 276
+            },
+            "postRulesRng": {
+              "state": 1285479354,
+              "draws": 31
+            },
+            "postStateHash": "sha256:61d794a2b9c9768cb05c8a79a4a3ff5f714fa4fea977ddd11c37c612c22cdc52",
+            "stepsLost": {
+              "player:axis": 12,
+              "player:allied": 33
+            },
+            "targetFinalHolder": "player:axis",
+            "files": {
+              "save.json": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800026/branch-15.save.json",
+                "sha256": "259841fbccf00a6df8e17f1bb299370d1fb64a7e3855ef6ce218c98dafb131ed"
+              },
+              "trace.jsonl": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800026/branch-15.trace.jsonl",
+                "sha256": "7488cce5a5f89ee987e36df7f8531b60dcdaaf701068095e27705b78af2e3c2e"
+              },
+              "memory.json": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800026/branch-15.memory.json",
+                "sha256": "b0a6e52bfc799ff48611f319a1632d3311238481f53f4969d2d71eb11993fbf4"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "firstMatch": 1800028,
+      "resultSha256": "f582df45b9a88bb7ce9bd9e29b66406528e2d6af9b9aba0175f8af92e164cd17",
+      "result": {
+        "sourceCommit": "ed7e706d45c5a2ea7a93dfc805319153ca28636c",
+        "firstMatch": 1800028,
+        "controlFull": false,
+        "sourceSaveSha256": "0fba68defa48adf66842bbf7707dfab600efb6d9df258a5c90ecbb51d639b6e5",
+        "scriptSha256": "ff72510b7adc09392e18ada35f77e9d25f2f40df527f1b1f5596d527630be350",
+        "protocolSha256": "0641884bdf91f1340434d2bb301e8493fcf7757500ddc0cd43136a9c6a7706e9",
+        "commonPrefixActions": 7,
+        "commonPrefixPolicy": {
+          "axis": 30,
+          "allied": 15
+        },
+        "laterPolicies": {
+          "axis": 30,
+          "allied": 15
+        },
+        "originalRulesRng": true,
+        "preMemoriesEqual": true,
+        "scope": "One-decision15 counterfactual versus the recorded30 factual continuation. Same original prefix, rules RNG and lateraxis30/allied15. Control30 reconstructs the prefix and fork; the pilot also reproduces its full factual history. No predictor qualification.",
+        "branches": [
+          {
+            "forkWeight": 30,
+            "finished": false,
+            "acceptedActions": 8,
+            "rejected": 0,
+            "errors": [],
+            "initialStateHash": "sha256:245a36caaa07c970c6d99ac516da72e86f9f6332b8a240355b0ff06533b5a1f0",
+            "preStateHash": "sha256:0505c185c866e60735a37ed2db7d2c6af6a740af8cb874a5260c79bf11a0ecaf",
+            "preRulesRng": {
+              "state": 344144352,
+              "draws": 0
+            },
+            "forkAction": {
+              "actionId": "candidate:move:generated-oob:344144350:axis:f1-combat-1:unit:14,15:7",
+              "actorId": "player:axis",
+              "expectedRevision": 7,
+              "kind": "MOVE_PIECE",
+              "pieceId": "generated-oob:344144350:axis:f1-combat-1:unit",
+              "path": [
+                "14,22",
+                "14,21",
+                "14,20",
+                "14,19",
+                "14,18",
+                "14,17",
+                "14,16",
+                "14,15"
+              ]
+            },
+            "forkIntent": "combat to 14,15 (capture 12,15)",
+            "finalStateHash": "sha256:a7f442cd9c118b7136004d2fe7b23d79b70e24eeeecbfee8e5dcb5330f5b9744",
+            "victory": {
+              "scores": [
+                {
+                  "playerId": "player:allied",
+                  "points": 0
+                },
+                {
+                  "playerId": "player:axis",
+                  "points": 0
+                }
+              ],
+              "winnerId": null,
+              "reason": null
+            },
+            "finalRulesRng": {
+              "state": 344144352,
+              "draws": 0
+            },
+            "postRulesRng": {
+              "state": 344144352,
+              "draws": 0
+            },
+            "postStateHash": "sha256:a7f442cd9c118b7136004d2fe7b23d79b70e24eeeecbfee8e5dcb5330f5b9744",
+            "stepsLost": {
+              "player:axis": 0,
+              "player:allied": 0
+            },
+            "targetFinalHolder": "player:allied",
+            "files": {
+              "save.json": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800028/branch-30.save.json",
+                "sha256": "349feebc407914fe78449552c48a740d5cc5944d5ad723dbb4ad65dd9410a206"
+              },
+              "trace.jsonl": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800028/branch-30.trace.jsonl",
+                "sha256": "87251977576f3a35c23f850bf174e8bffc3dad15152e7e1b3ea5168038af83ce"
+              },
+              "memory.json": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800028/branch-30.memory.json",
+                "sha256": "b013f04e0130ab81924f4bdc8a8a9aaaab42a92a725e6f25cd5228c177a0530d"
+              }
+            }
+          },
+          {
+            "forkWeight": 15,
+            "finished": true,
+            "acceptedActions": 961,
+            "rejected": 0,
+            "errors": [],
+            "initialStateHash": "sha256:245a36caaa07c970c6d99ac516da72e86f9f6332b8a240355b0ff06533b5a1f0",
+            "preStateHash": "sha256:0505c185c866e60735a37ed2db7d2c6af6a740af8cb874a5260c79bf11a0ecaf",
+            "preRulesRng": {
+              "state": 344144352,
+              "draws": 0
+            },
+            "forkAction": {
+              "actionId": "candidate:move:generated-oob:344144350:axis:f1-combat-1:unit:15,15:7",
+              "actorId": "player:axis",
+              "expectedRevision": 7,
+              "kind": "MOVE_PIECE",
+              "pieceId": "generated-oob:344144350:axis:f1-combat-1:unit",
+              "path": [
+                "14,22",
+                "14,21",
+                "14,20",
+                "14,19",
+                "14,18",
+                "14,17",
+                "14,16",
+                "15,15"
+              ]
+            },
+            "forkIntent": "combat to 15,15 (capture 12,15)",
+            "finalStateHash": "sha256:3ab6c36a309a1ae3b940cb62847da30fbb734160f8baa2c21a51f70783f00139",
+            "victory": {
+              "scores": [
+                {
+                  "playerId": "player:allied",
+                  "points": 10
+                },
+                {
+                  "playerId": "player:axis",
+                  "points": 11
+                }
+              ],
+              "winnerId": "player:axis",
+              "reason": "TURN_LIMIT"
+            },
+            "finalRulesRng": {
+              "state": 341783210,
+              "draws": 299
+            },
+            "postRulesRng": {
+              "state": 344144352,
+              "draws": 0
+            },
+            "postStateHash": "sha256:ba29f307ccdc1aced425e4a9b90caca6079d3540e39e7303b7ecb9a7425914b9",
+            "stepsLost": {
+              "player:axis": 32,
+              "player:allied": 27
+            },
+            "targetFinalHolder": "player:allied",
+            "files": {
+              "save.json": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800028/branch-15.save.json",
+                "sha256": "faf73dc6b5f1febbc1decf369da9e57b189b9eb543436ae7071fc74d787ba5d0"
+              },
+              "trace.jsonl": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800028/branch-15.trace.jsonl",
+                "sha256": "8f5d046374c6009e92f40998f428ebbf1a67a3bc2fffd827d2b8abd24e6831d3"
+              },
+              "memory.json": {
+                "path": "artifacts/ai-progress-objective-original-continuation/pair-1800028/branch-15.memory.json",
+                "sha256": "9a95bca41048b2bfc53b3715413c4dabc7b21e69be2a01c1090b855de5cbe2d7"
+              }
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

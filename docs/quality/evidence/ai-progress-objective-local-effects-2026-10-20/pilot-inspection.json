@@ -1,0 +1,122 @@
+{
+  "selection": "Post-result descriptive inspection of the preselected pilot, not a fitted prediction feature",
+  "sourceSaveSha256": [
+    "e46ab0940daa56f827a2e6d49b3632b42639e05dcef0b85967871ff68225b61c",
+    "8e378c1dbfb5f40d6c1c5a7f47341e12949a73d092b50fd9d930d7df101365b1"
+  ],
+  "scriptSha256": "a0152a3dfe700238fc5959252e49b987875126b19e543518d352225793d8b777",
+  "acceptedActionsEach": 808,
+  "differentActions": [
+    9,
+    131
+  ],
+  "moves": [
+    {
+      "index": 9,
+      "stepKey": "1:0:MOVEMENT:MOVEMENT",
+      "factual": {
+        "actionId": "candidate:move:generated-oob:344142798:axis:f1-recon:unit:16,13:9",
+        "actorId": "player:axis",
+        "expectedRevision": 9,
+        "kind": "MOVE_PIECE",
+        "pieceId": "generated-oob:344142798:axis:f1-recon:unit",
+        "path": [
+          "15,20",
+          "15,19",
+          "16,18",
+          "17,17",
+          "17,16",
+          "18,15",
+          "18,14",
+          "18,13",
+          "17,13",
+          "16,13"
+        ]
+      },
+      "counterfactual": {
+        "actionId": "candidate:move:generated-oob:344142798:axis:f1-recon:unit:18,12:9",
+        "actorId": "player:axis",
+        "expectedRevision": 9,
+        "kind": "MOVE_PIECE",
+        "pieceId": "generated-oob:344142798:axis:f1-recon:unit",
+        "path": [
+          "15,20",
+          "15,19",
+          "16,18",
+          "17,17",
+          "17,16",
+          "18,15",
+          "18,14",
+          "18,13",
+          "18,12"
+        ]
+      }
+    },
+    {
+      "index": 131,
+      "stepKey": "2:0:MOVEMENT:MOVEMENT",
+      "factual": {
+        "actionId": "candidate:move:generated-oob:344142798:axis:f1-recon:unit:15,5:131",
+        "actorId": "player:axis",
+        "expectedRevision": 131,
+        "kind": "MOVE_PIECE",
+        "pieceId": "generated-oob:344142798:axis:f1-recon:unit",
+        "path": [
+          "16,13",
+          "16,12",
+          "16,11",
+          "16,10",
+          "16,9",
+          "17,8",
+          "18,7",
+          "19,6",
+          "20,5",
+          "19,5",
+          "18,5",
+          "18,4",
+          "17,4",
+          "16,4",
+          "15,5"
+        ]
+      },
+      "counterfactual": {
+        "actionId": "candidate:move:generated-oob:344142798:axis:f1-recon:unit:15,5:131",
+        "actorId": "player:axis",
+        "expectedRevision": 131,
+        "kind": "MOVE_PIECE",
+        "pieceId": "generated-oob:344142798:axis:f1-recon:unit",
+        "path": [
+          "18,12",
+          "19,11",
+          "20,10",
+          "20,9",
+          "20,8",
+          "20,7",
+          "20,6",
+          "20,5",
+          "19,5",
+          "18,5",
+          "18,4",
+          "17,4",
+          "16,4",
+          "15,5"
+        ]
+      }
+    }
+  ],
+  "differingStateKeys": [
+    "mapState"
+  ],
+  "differingMapKeys": [
+    "revision"
+  ],
+  "nonObjectiveControlDifferences": [],
+  "terminalMapRevisions": [
+    1336,
+    1334
+  ],
+  "terminalPieceStateEqual": true,
+  "terminalRulesRngEqual": true,
+  "terminalVictoryEqual": true,
+  "limitation": "Full terminal hashes differ only by map revision. Board and endpoint agreement does not prove identical intermediate states or general strategic irrelevance."
+}

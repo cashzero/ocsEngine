@@ -1,0 +1,29 @@
+{
+  "scope": "Isolated temporary overlays; authoritative inputs and results unchanged",
+  "controls": [
+    {
+      "name": "wrongCaseIdentity",
+      "rejected": true,
+      "assertion": "assert result['firstMatch'] == first",
+      "exitCode": 1
+    },
+    {
+      "name": "unmatchedVictory",
+      "rejected": true,
+      "assertion": "assert current['victory'] == branch['victory']",
+      "exitCode": 1
+    },
+    {
+      "name": "falseMemoryEqualityFlag",
+      "rejected": true,
+      "assertion": "assert result['preMemoriesEqual'] and result['originalRulesRng']",
+      "exitCode": 1
+    },
+    {
+      "name": "unequalMemoryPayload",
+      "rejected": true,
+      "assertion": "assert memories[0] == memories[1]",
+      "exitCode": 1
+    }
+  ]
+}

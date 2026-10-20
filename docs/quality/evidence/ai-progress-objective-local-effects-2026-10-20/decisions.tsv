@@ -1,0 +1,5 @@
+id	hypothesis	choice	evidence	result
+1	First-route value can depend on the common continuation	Restore original lateraxis30/allied15 and compare only one15 call	Prior later15 pilot and recorded odd-match histories	Pilot localmargin effect0underlater30 versus+2underlater15; fork memory captures identical
+2	Progress tradeoff magnitudes may distinguish local VP effects better than a constant binary indicator	Freeze three single-feature ridge comparisons againstzero andtrainmean	All fifteen previously observed shared-state route scores	All3features lose tozeroMAE4.4; bestfeatureMAE4.9673; noadoption
+3	Pilot terminal hash difference might represent different board control	Inspect exact state keys and aligned action differences after outcomes	inspect-pilot.mjs	Board control equal; only mapState.revision1336vs1334 differs; two changed actions9and131
+4	Scorer may accept bad provenance or contradictory payloads	Four isolated temporary-overlay negative controls	check-scorer.py	All four reject at named assertions; authoritative outputs unchanged
