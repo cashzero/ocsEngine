@@ -1,0 +1,694 @@
+{
+  "duplicateTrajectories": [
+    {
+      "trajectoryId": "05e51799df1e6963c2ae6d368993a1962430ed77019e655ef174cb3ac4d8c267",
+      "gameIndices": [
+        17,
+        20,
+        28,
+        32
+      ],
+      "initialStateHash": "sha256:f1ee3812f962eb7096439176bc1e77f395b78f63a24bee11d1680474ecdbdad1",
+      "finalStateHash": "sha256:a6437cccc726e38b20d0897826a07429310287db70236b3a79ee6dbc0c55d5a7",
+      "approachFeatureChanges": [
+        {
+          "player": "player:axis",
+          "feature": "routeRefusals",
+          "values": [
+            {
+              "gameIndex": 17,
+              "value": 2.75
+            },
+            {
+              "gameIndex": 20,
+              "value": 2.1666666666666665
+            },
+            {
+              "gameIndex": 28,
+              "value": 2.1666666666666665
+            },
+            {
+              "gameIndex": 32,
+              "value": 2.1666666666666665
+            }
+          ]
+        },
+        {
+          "player": "player:axis",
+          "feature": "exposureCrossing",
+          "values": [
+            {
+              "gameIndex": 17,
+              "value": 1
+            },
+            {
+              "gameIndex": 20,
+              "value": 0.9166666666666666
+            },
+            {
+              "gameIndex": 28,
+              "value": 0.9166666666666666
+            },
+            {
+              "gameIndex": 32,
+              "value": 0.9166666666666666
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "trajectoryId": "6c39caf048c1b9f9d7c3caadec29e4216e951093a333897df628e9efc14e99a2",
+      "gameIndices": [
+        18,
+        19,
+        22,
+        23,
+        26,
+        30,
+        35
+      ],
+      "initialStateHash": "sha256:6700ea090ff2462869292621b9b206542ef02341f3e3fe487253fc46379a8a39",
+      "finalStateHash": "sha256:97ac2ea30270002de5ce43c4bf1044e8b0add517b3f843f32e20e6678af3f1b6",
+      "approachFeatureChanges": [
+        {
+          "player": "player:axis",
+          "feature": "routeRefusals",
+          "values": [
+            {
+              "gameIndex": 18,
+              "value": 41.833333333333336
+            },
+            {
+              "gameIndex": 19,
+              "value": 56.166666666666664
+            },
+            {
+              "gameIndex": 22,
+              "value": 41.833333333333336
+            },
+            {
+              "gameIndex": 23,
+              "value": 16.166666666666668
+            },
+            {
+              "gameIndex": 26,
+              "value": 41.833333333333336
+            },
+            {
+              "gameIndex": 30,
+              "value": 41.833333333333336
+            },
+            {
+              "gameIndex": 35,
+              "value": 41.833333333333336
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "trajectoryId": "55a917aa205f4ac35ecb248a95ea414eea5bbab3df00f25003db868884dbff32",
+      "gameIndices": [
+        57,
+        61,
+        72,
+        76
+      ],
+      "initialStateHash": "sha256:3a07f7a323cc62fa9e2cba6244d4c422c64c4103c124c6edff63a4ccb67f1ff6",
+      "finalStateHash": "sha256:ae8ed23f6ca063dffb957b31a9b58b9dcbad699ea560f47f3a8489e0c6645ddd",
+      "approachFeatureChanges": [
+        {
+          "player": "player:axis",
+          "feature": "routeRefusals",
+          "values": [
+            {
+              "gameIndex": 57,
+              "value": 12.58974358974359
+            },
+            {
+              "gameIndex": 61,
+              "value": 3.948717948717949
+            },
+            {
+              "gameIndex": 72,
+              "value": 8.025641025641026
+            },
+            {
+              "gameIndex": 76,
+              "value": 8.025641025641026
+            }
+          ]
+        },
+        {
+          "player": "player:axis",
+          "feature": "exhaustedGroups",
+          "values": [
+            {
+              "gameIndex": 57,
+              "value": 0.358974358974359
+            },
+            {
+              "gameIndex": 61,
+              "value": 0.2564102564102564
+            },
+            {
+              "gameIndex": 72,
+              "value": 0.358974358974359
+            },
+            {
+              "gameIndex": 76,
+              "value": 0.358974358974359
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "trajectoryId": "ae4ea9595c3a791eee7429181a3cf4a1a513a3b7eeec020384df9f39fe958adc",
+      "gameIndices": [
+        58,
+        62,
+        63,
+        75
+      ],
+      "initialStateHash": "sha256:37e747d2c1b8ae0a9acb03798a44a7236e80623e84e123e77fb501316b4db67c",
+      "finalStateHash": "sha256:4eaa2adb448c5cdcf8304694c4ec729eef7ec9c8a3a54d3bf84c7244e0b3a15b",
+      "approachFeatureChanges": [
+        {
+          "player": "player:axis",
+          "feature": "routeRefusals",
+          "values": [
+            {
+              "gameIndex": 58,
+              "value": 12.083333333333334
+            },
+            {
+              "gameIndex": 62,
+              "value": 12.083333333333334
+            },
+            {
+              "gameIndex": 63,
+              "value": 6.111111111111111
+            },
+            {
+              "gameIndex": 75,
+              "value": 12.083333333333334
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "worstScoreBlockedPredictions": [
+    {
+      "split": 3,
+      "variant": "progressObjective-double",
+      "family": "progressObjective",
+      "developmentSeeds": [
+        324741827,
+        324751527
+      ],
+      "evaluationSeeds": [
+        324741633,
+        324751333
+      ],
+      "trainVariants": [
+        "contactBad-double",
+        "contactBad-half",
+        "crowding-double",
+        "crowding-half",
+        "hqWithArmy-double",
+        "hqWithArmy-half",
+        "outOfSupply-double",
+        "outOfSupply-half"
+      ],
+      "trainMean": 0.75,
+      "observed": 9.0,
+      "byClimate": {
+        "TEMPERATE_INLAND": 9.0,
+        "EASTERN_EUROPE": 9.0
+      },
+      "predictions": {
+        "zero": 0.0,
+        "trainMean": 0.75,
+        "identity:M0": 0.5963315606178603,
+        "identity:M1": 1.0298558196913157,
+        "identity:M2": 1.3632275363937274,
+        "vpFit": 0.75,
+        "alone:path:routeRefusals": 0.75,
+        "vp+:path:routeRefusals": 0.75,
+        "alone:path:exhaustedGroups": 0.75,
+        "vp+:path:exhaustedGroups": 0.75,
+        "alone:path:scoreBlocked": 0.75,
+        "vp+:path:scoreBlocked": 0.75,
+        "alone:path:crowdingCrossing": 0.75,
+        "vp+:path:crowdingCrossing": 0.75,
+        "alone:path:exposureCrossing": 0.75,
+        "vp+:path:exposureCrossing": 0.75,
+        "alone:path:correctionBudget": 0.75,
+        "vp+:path:correctionBudget": 0.75,
+        "alone:approach:routeRefusals": 0.9267239767461258,
+        "vp+:approach:routeRefusals": 0.9267239767461258,
+        "alone:approach:exhaustedGroups": 0.5229988052568697,
+        "vp+:approach:exhaustedGroups": 0.5229988052568697,
+        "alone:approach:scoreBlocked": 0.5299248523886205,
+        "vp+:approach:scoreBlocked": 0.5299248523886205,
+        "alone:approach:crowdingCrossing": -1.352349110524183,
+        "vp+:approach:crowdingCrossing": -1.352349110524183,
+        "alone:approach:exposureCrossing": -1.5597872340425498,
+        "vp+:approach:exposureCrossing": -1.5597872340425498,
+        "alone:approach:correctionBudget": 1.6087431169151127,
+        "vp+:approach:correctionBudget": 1.6087431169151127
+      }
+    },
+    {
+      "split": 2,
+      "variant": "progressObjective-double",
+      "family": "progressObjective",
+      "developmentSeeds": [
+        324741633,
+        324751527
+      ],
+      "evaluationSeeds": [
+        324741827,
+        324751333
+      ],
+      "trainVariants": [
+        "contactBad-double",
+        "contactBad-half",
+        "crowding-double",
+        "crowding-half",
+        "hqWithArmy-double",
+        "hqWithArmy-half",
+        "outOfSupply-double",
+        "outOfSupply-half"
+      ],
+      "trainMean": 0.4375,
+      "observed": 7.5,
+      "byClimate": {
+        "TEMPERATE_INLAND": 6.0,
+        "EASTERN_EUROPE": 9.0
+      },
+      "predictions": {
+        "zero": 0.0,
+        "trainMean": 0.4375,
+        "identity:M0": 0.0,
+        "identity:M1": 0.553461748485697,
+        "identity:M2": 1.6259750415648553,
+        "vpFit": 0.4375,
+        "alone:path:routeRefusals": 0.4375,
+        "vp+:path:routeRefusals": 0.4375,
+        "alone:path:exhaustedGroups": 0.4375,
+        "vp+:path:exhaustedGroups": 0.4375,
+        "alone:path:scoreBlocked": 0.4375,
+        "vp+:path:scoreBlocked": 0.4375,
+        "alone:path:crowdingCrossing": 0.4375,
+        "vp+:path:crowdingCrossing": 0.4375,
+        "alone:path:exposureCrossing": 0.4375,
+        "vp+:path:exposureCrossing": 0.4375,
+        "alone:path:correctionBudget": 0.4375,
+        "vp+:path:correctionBudget": 0.4375,
+        "alone:approach:routeRefusals": 1.7827695141145556,
+        "vp+:approach:routeRefusals": 1.7827695141145556,
+        "alone:approach:exhaustedGroups": 0.6278347477604903,
+        "vp+:approach:exhaustedGroups": 0.6278347477604903,
+        "alone:approach:scoreBlocked": 0.5834510357815441,
+        "vp+:approach:scoreBlocked": 0.5834510357815441,
+        "alone:approach:crowdingCrossing": -0.479822834645669,
+        "vp+:approach:crowdingCrossing": -0.479822834645669,
+        "alone:approach:exposureCrossing": 5.214610970730678,
+        "vp+:approach:exposureCrossing": 5.214610970730678,
+        "alone:approach:correctionBudget": 0.8515298869375154,
+        "vp+:approach:correctionBudget": 0.8515298869375154
+      }
+    },
+    {
+      "split": 2,
+      "variant": "crowding-half",
+      "family": "crowding",
+      "developmentSeeds": [
+        324741633,
+        324751527
+      ],
+      "evaluationSeeds": [
+        324741827,
+        324751333
+      ],
+      "trainVariants": [
+        "contactBad-double",
+        "contactBad-half",
+        "hqWithArmy-double",
+        "hqWithArmy-half",
+        "outOfSupply-double",
+        "outOfSupply-half",
+        "progressObjective-double",
+        "progressObjective-half"
+      ],
+      "trainMean": 0.6875,
+      "observed": 2.0,
+      "byClimate": {
+        "TEMPERATE_INLAND": 0.0,
+        "EASTERN_EUROPE": 4.0
+      },
+      "predictions": {
+        "zero": 0.0,
+        "trainMean": 0.6875,
+        "identity:M0": 0.0,
+        "identity:M1": 0.16419938315032845,
+        "identity:M2": 0.7034787620090237,
+        "vpFit": 0.6875,
+        "alone:path:routeRefusals": 0.6875,
+        "vp+:path:routeRefusals": 0.6875,
+        "alone:path:exhaustedGroups": 0.6875,
+        "vp+:path:exhaustedGroups": 0.6875,
+        "alone:path:scoreBlocked": 0.6875,
+        "vp+:path:scoreBlocked": 0.6875,
+        "alone:path:crowdingCrossing": 0.6875,
+        "vp+:path:crowdingCrossing": 0.6875,
+        "alone:path:exposureCrossing": 0.6875,
+        "vp+:path:exposureCrossing": 0.6875,
+        "alone:path:correctionBudget": 0.6875,
+        "vp+:path:correctionBudget": 0.6875,
+        "alone:approach:routeRefusals": 2.103682906734202,
+        "vp+:approach:routeRefusals": 2.103682906734202,
+        "alone:approach:exhaustedGroups": 2.12820236039148,
+        "vp+:approach:exhaustedGroups": 2.12820236039148,
+        "alone:approach:scoreBlocked": -3.703256302521009,
+        "vp+:approach:scoreBlocked": -3.703256302521009,
+        "alone:approach:crowdingCrossing": 1.002665808415192,
+        "vp+:approach:crowdingCrossing": 1.002665808415192,
+        "alone:approach:exposureCrossing": 1.6752680784567304,
+        "vp+:approach:exposureCrossing": 1.6752680784567304,
+        "alone:approach:correctionBudget": 1.4216064690574777,
+        "vp+:approach:correctionBudget": 1.4216064690574777
+      }
+    },
+    {
+      "split": 2,
+      "variant": "outOfSupply-half",
+      "family": "outOfSupply",
+      "developmentSeeds": [
+        324741633,
+        324751527
+      ],
+      "evaluationSeeds": [
+        324741827,
+        324751333
+      ],
+      "trainVariants": [
+        "contactBad-double",
+        "contactBad-half",
+        "crowding-double",
+        "crowding-half",
+        "hqWithArmy-double",
+        "hqWithArmy-half",
+        "progressObjective-double",
+        "progressObjective-half"
+      ],
+      "trainMean": 1.0625,
+      "observed": -4.5,
+      "byClimate": {
+        "TEMPERATE_INLAND": 0.0,
+        "EASTERN_EUROPE": -9.0
+      },
+      "predictions": {
+        "zero": 0.0,
+        "trainMean": 1.0625,
+        "identity:M0": 0.0,
+        "identity:M1": 0.328398766300657,
+        "identity:M2": 0.3684390383962016,
+        "vpFit": 1.0625,
+        "alone:path:routeRefusals": 1.0625,
+        "vp+:path:routeRefusals": 1.0625,
+        "alone:path:exhaustedGroups": 1.0625,
+        "vp+:path:exhaustedGroups": 1.0625,
+        "alone:path:scoreBlocked": 1.0625,
+        "vp+:path:scoreBlocked": 1.0625,
+        "alone:path:crowdingCrossing": 1.0625,
+        "vp+:path:crowdingCrossing": 1.0625,
+        "alone:path:exposureCrossing": 1.0625,
+        "vp+:path:exposureCrossing": 1.0625,
+        "alone:path:correctionBudget": 1.0625,
+        "vp+:path:correctionBudget": 1.0625,
+        "alone:approach:routeRefusals": 1.5219880839485602,
+        "vp+:approach:routeRefusals": 1.5219880839485602,
+        "alone:approach:exhaustedGroups": 1.4297566371681416,
+        "vp+:approach:exhaustedGroups": 1.4297566371681416,
+        "alone:approach:scoreBlocked": 0.8587962962962964,
+        "vp+:approach:scoreBlocked": 0.8587962962962964,
+        "alone:approach:crowdingCrossing": 1.0769283574638042,
+        "vp+:approach:crowdingCrossing": 1.0769283574638042,
+        "alone:approach:exposureCrossing": 0.4360216027033551,
+        "vp+:approach:exposureCrossing": 0.4360216027033551,
+        "alone:approach:correctionBudget": 1.0303922007371595,
+        "vp+:approach:correctionBudget": 1.0303922007371595
+      }
+    },
+    {
+      "split": 3,
+      "variant": "outOfSupply-half",
+      "family": "outOfSupply",
+      "developmentSeeds": [
+        324741827,
+        324751527
+      ],
+      "evaluationSeeds": [
+        324741633,
+        324751333
+      ],
+      "trainVariants": [
+        "contactBad-double",
+        "contactBad-half",
+        "crowding-double",
+        "crowding-half",
+        "hqWithArmy-double",
+        "hqWithArmy-half",
+        "progressObjective-double",
+        "progressObjective-half"
+      ],
+      "trainMean": 1.375,
+      "observed": -3.0,
+      "byClimate": {
+        "TEMPERATE_INLAND": 3.0,
+        "EASTERN_EUROPE": -9.0
+      },
+      "predictions": {
+        "zero": 0.0,
+        "trainMean": 1.375,
+        "identity:M0": 0.0,
+        "identity:M1": 0.328398766300657,
+        "identity:M2": 0.3684390383962016,
+        "vpFit": 1.0,
+        "alone:path:routeRefusals": 1.375,
+        "vp+:path:routeRefusals": 1.0,
+        "alone:path:exhaustedGroups": 1.375,
+        "vp+:path:exhaustedGroups": 1.0,
+        "alone:path:scoreBlocked": 1.375,
+        "vp+:path:scoreBlocked": 1.0,
+        "alone:path:crowdingCrossing": 1.375,
+        "vp+:path:crowdingCrossing": 1.0,
+        "alone:path:exposureCrossing": 1.375,
+        "vp+:path:exposureCrossing": 1.0,
+        "alone:path:correctionBudget": 1.375,
+        "vp+:path:correctionBudget": 1.0,
+        "alone:approach:routeRefusals": 1.0654353040038593,
+        "vp+:approach:routeRefusals": 0.8535540328943516,
+        "alone:approach:exhaustedGroups": 1.3045821820313155,
+        "vp+:approach:exhaustedGroups": 1.1518306504283684,
+        "alone:approach:scoreBlocked": 1.2220209339774557,
+        "vp+:approach:scoreBlocked": 0.7327890146594915,
+        "alone:approach:crowdingCrossing": 0.8172427711727581,
+        "vp+:approach:crowdingCrossing": 0.5081749889527176,
+        "alone:approach:exposureCrossing": 1.394366664254878,
+        "vp+:approach:exposureCrossing": 0.705299016989766,
+        "alone:approach:correctionBudget": 1.4190832438358962,
+        "vp+:approach:correctionBudget": 1.0091963516958788
+      }
+    },
+    {
+      "split": 1,
+      "variant": "outOfSupply-double",
+      "family": "outOfSupply",
+      "developmentSeeds": [
+        324741827,
+        324751333
+      ],
+      "evaluationSeeds": [
+        324741633,
+        324751527
+      ],
+      "trainVariants": [
+        "contactBad-double",
+        "contactBad-half",
+        "crowding-double",
+        "crowding-half",
+        "hqWithArmy-double",
+        "hqWithArmy-half",
+        "progressObjective-double",
+        "progressObjective-half"
+      ],
+      "trainMean": 2.6875,
+      "observed": -1.5,
+      "byClimate": {
+        "TEMPERATE_INLAND": -3.0,
+        "EASTERN_EUROPE": 0.0
+      },
+      "predictions": {
+        "zero": 0.0,
+        "trainMean": 2.6875,
+        "identity:M0": 0.0,
+        "identity:M1": 0.0,
+        "identity:M2": 0.0,
+        "vpFit": 2.5217391304347827,
+        "alone:path:routeRefusals": 2.6875,
+        "vp+:path:routeRefusals": 2.5217391304347827,
+        "alone:path:exhaustedGroups": 2.6875,
+        "vp+:path:exhaustedGroups": 2.5217391304347827,
+        "alone:path:scoreBlocked": 2.1398809523809526,
+        "vp+:path:scoreBlocked": 1.9250520471894519,
+        "alone:path:crowdingCrossing": 2.6875,
+        "vp+:path:crowdingCrossing": 2.5217391304347827,
+        "alone:path:exposureCrossing": 2.6875,
+        "vp+:path:exposureCrossing": 2.5217391304347827,
+        "alone:path:correctionBudget": 2.6875,
+        "vp+:path:correctionBudget": 2.5217391304347827,
+        "alone:approach:routeRefusals": 1.998803651909228,
+        "vp+:approach:routeRefusals": 1.4248720608685623,
+        "alone:approach:exhaustedGroups": 2.6711660710025744,
+        "vp+:approach:exhaustedGroups": 2.503493919983886,
+        "alone:approach:scoreBlocked": 2.332582921736337,
+        "vp+:approach:scoreBlocked": 1.814430033023191,
+        "alone:approach:crowdingCrossing": 2.654747561767986,
+        "vp+:approach:crowdingCrossing": 2.498548460623702,
+        "alone:approach:exposureCrossing": 2.626677880318605,
+        "vp+:approach:exposureCrossing": 2.5268743630244437,
+        "alone:approach:correctionBudget": 2.6127521074332525,
+        "vp+:approach:correctionBudget": 2.4407895584988486
+      }
+    },
+    {
+      "split": 3,
+      "variant": "outOfSupply-double",
+      "family": "outOfSupply",
+      "developmentSeeds": [
+        324741827,
+        324751527
+      ],
+      "evaluationSeeds": [
+        324741633,
+        324751333
+      ],
+      "trainVariants": [
+        "contactBad-double",
+        "contactBad-half",
+        "crowding-double",
+        "crowding-half",
+        "hqWithArmy-double",
+        "hqWithArmy-half",
+        "progressObjective-double",
+        "progressObjective-half"
+      ],
+      "trainMean": 1.375,
+      "observed": -2.5,
+      "byClimate": {
+        "TEMPERATE_INLAND": -3.0,
+        "EASTERN_EUROPE": -2.0
+      },
+      "predictions": {
+        "zero": 0.0,
+        "trainMean": 1.375,
+        "identity:M0": 0.0,
+        "identity:M1": 0.0,
+        "identity:M2": 0.0,
+        "vpFit": 1.0,
+        "alone:path:routeRefusals": 1.375,
+        "vp+:path:routeRefusals": 1.0,
+        "alone:path:exhaustedGroups": 1.375,
+        "vp+:path:exhaustedGroups": 1.0,
+        "alone:path:scoreBlocked": 1.375,
+        "vp+:path:scoreBlocked": 1.0,
+        "alone:path:crowdingCrossing": 1.375,
+        "vp+:path:crowdingCrossing": 1.0,
+        "alone:path:exposureCrossing": 1.375,
+        "vp+:path:exposureCrossing": 1.0,
+        "alone:path:correctionBudget": 1.375,
+        "vp+:path:correctionBudget": 1.0,
+        "alone:approach:routeRefusals": 1.7228420427557154,
+        "vp+:approach:routeRefusals": 1.2133852530925788,
+        "alone:approach:exhaustedGroups": 1.3337205894666333,
+        "vp+:approach:exhaustedGroups": 1.0467171232087287,
+        "alone:approach:scoreBlocked": 1.2220209339774557,
+        "vp+:approach:scoreBlocked": 0.7327890146594915,
+        "alone:approach:crowdingCrossing": 0.8172427711727581,
+        "vp+:approach:crowdingCrossing": 0.5081749889527176,
+        "alone:approach:exposureCrossing": 1.3380272773315967,
+        "vp+:approach:exposureCrossing": 0.9491894856878907,
+        "alone:approach:correctionBudget": 1.4190832438358962,
+        "vp+:approach:correctionBudget": 1.0091963516958788
+      }
+    },
+    {
+      "split": 3,
+      "variant": "contactBad-double",
+      "family": "contactBad",
+      "developmentSeeds": [
+        324741827,
+        324751527
+      ],
+      "evaluationSeeds": [
+        324741633,
+        324751333
+      ],
+      "trainVariants": [
+        "crowding-double",
+        "crowding-half",
+        "hqWithArmy-double",
+        "hqWithArmy-half",
+        "outOfSupply-double",
+        "outOfSupply-half",
+        "progressObjective-double",
+        "progressObjective-half"
+      ],
+      "trainMean": 1.375,
+      "observed": -2.0,
+      "byClimate": {
+        "TEMPERATE_INLAND": 0.0,
+        "EASTERN_EUROPE": -4.0
+      },
+      "predictions": {
+        "zero": 0.0,
+        "trainMean": 1.375,
+        "identity:M0": 0.0,
+        "identity:M1": 1.0552556049135853,
+        "identity:M2": 0.7001489401226055,
+        "vpFit": 1.0,
+        "alone:path:routeRefusals": 1.375,
+        "vp+:path:routeRefusals": 1.0,
+        "alone:path:exhaustedGroups": 1.375,
+        "vp+:path:exhaustedGroups": 1.0,
+        "alone:path:scoreBlocked": 1.375,
+        "vp+:path:scoreBlocked": 1.0,
+        "alone:path:crowdingCrossing": 1.375,
+        "vp+:path:crowdingCrossing": 1.0,
+        "alone:path:exposureCrossing": 1.375,
+        "vp+:path:exposureCrossing": 1.0,
+        "alone:path:correctionBudget": 1.375,
+        "vp+:path:correctionBudget": 1.0,
+        "alone:approach:routeRefusals": 1.3358241524591203,
+        "vp+:approach:routeRefusals": 1.0162788969521508,
+        "alone:approach:exhaustedGroups": 1.3879341073429066,
+        "vp+:approach:exhaustedGroups": 0.8569592669162429,
+        "alone:approach:scoreBlocked": 1.2234848484848484,
+        "vp+:approach:scoreBlocked": 0.7231833910034602,
+        "alone:approach:crowdingCrossing": 0.8172427711727581,
+        "vp+:approach:crowdingCrossing": 0.5081749889527176,
+        "alone:approach:exposureCrossing": 1.7907249193864323,
+        "vp+:approach:exposureCrossing": 2.2179463366035703,
+        "alone:approach:correctionBudget": 1.499915817591635,
+        "vp+:approach:correctionBudget": 1.1849173499523122
+      }
+    }
+  ],
+  "sameActionInterpretation": "Different policy evaluations of identical accepted histories can change diagnostics. This is a scoring/search invariance counterexample, not a causal VP intervention."
+}

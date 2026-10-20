@@ -1,0 +1,4122 @@
+[
+  {
+    "split": 0,
+    "variant": "contactBad-double",
+    "family": "contactBad",
+    "developmentSeeds": [
+      324741633,
+      324751333
+    ],
+    "evaluationSeeds": [
+      324741827,
+      324751527
+    ],
+    "trainVariants": [
+      "crowding-double",
+      "crowding-half",
+      "hqWithArmy-double",
+      "hqWithArmy-half",
+      "outOfSupply-double",
+      "outOfSupply-half",
+      "progressObjective-double",
+      "progressObjective-half"
+    ],
+    "observed": -2.0,
+    "byClimate": {
+      "TEMPERATE_INLAND": 0.0,
+      "EASTERN_EUROPE": -4.0
+    },
+    "predictions": {
+      "zero": 0.0,
+      "identity:M2": -0.7877177951112069,
+      "m2ResidualMean": 0.09809876391489647,
+      "alone:approach:scoreBlocked": 0.35060768503750994,
+      "m2Residual:approach:scoreBlocked": 0.19837223139847437,
+      "alone:combat:scoreOrVisitedSupplyBlocked": 1.2328968359724906,
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": 0.017105690108736082
+    },
+    "fits": {
+      "m2ResidualMean": {
+        "coefficients": {
+          "intercept": 0.8858165590261033
+        },
+        "vpMean": 0.0,
+        "featureMean": 0.0,
+        "featureSd": 0.0,
+        "feature": null,
+        "rank": 1,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "alone:approach:scoreBlocked": {
+        "coefficients": {
+          "intercept": 1.4375,
+          "extra": -1.1457189349810109
+        },
+        "vpMean": 0.0,
+        "featureMean": -0.011752136752136752,
+        "featureSd": 0.025902611979558676,
+        "feature": "approach:scoreBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "m2Residual:approach:scoreBlocked": {
+        "coefficients": {
+          "intercept": 0.8858165590261033,
+          "extra": 0.10570063730380014
+        },
+        "vpMean": 0.0,
+        "featureMean": -0.011752136752136752,
+        "featureSd": 0.025902611979558676,
+        "feature": "approach:scoreBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "alone:combat:scoreOrVisitedSupplyBlocked": {
+        "coefficients": {
+          "intercept": 1.4375,
+          "extra": -0.9640840020881131
+        },
+        "vpMean": 0.0,
+        "featureMean": -0.019764957264957264,
+        "featureSd": 0.032722014950748265,
+        "feature": "combat:scoreOrVisitedSupplyBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": {
+        "coefficients": {
+          "intercept": 0.8858165590261033,
+          "extra": -0.3816369463668821
+        },
+        "vpMean": 0.0,
+        "featureMean": -0.019764957264957264,
+        "featureSd": 0.032722014950748265,
+        "feature": "combat:scoreOrVisitedSupplyBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      }
+    }
+  },
+  {
+    "split": 0,
+    "variant": "contactBad-half",
+    "family": "contactBad",
+    "developmentSeeds": [
+      324741633,
+      324751333
+    ],
+    "evaluationSeeds": [
+      324741827,
+      324751527
+    ],
+    "trainVariants": [
+      "crowding-double",
+      "crowding-half",
+      "hqWithArmy-double",
+      "hqWithArmy-half",
+      "outOfSupply-double",
+      "outOfSupply-half",
+      "progressObjective-double",
+      "progressObjective-half"
+    ],
+    "observed": 2.0,
+    "byClimate": {
+      "TEMPERATE_INLAND": 2.0,
+      "EASTERN_EUROPE": 2.0
+    },
+    "predictions": {
+      "zero": 0.0,
+      "identity:M2": 0.1653455169701099,
+      "m2ResidualMean": 1.0511620759962133,
+      "alone:approach:scoreBlocked": 3.2804913166755267,
+      "m2Residual:approach:scoreBlocked": 0.8811331528718855,
+      "alone:combat:scoreOrVisitedSupplyBlocked": 2.8067673284917936,
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": 1.593192646852825
+    },
+    "fits": {
+      "m2ResidualMean": {
+        "coefficients": {
+          "intercept": 0.8858165590261033
+        },
+        "vpMean": 0.0,
+        "featureMean": 0.0,
+        "featureSd": 0.0,
+        "feature": null,
+        "rank": 1,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "alone:approach:scoreBlocked": {
+        "coefficients": {
+          "intercept": 1.4375,
+          "extra": -1.1457189349810109
+        },
+        "vpMean": 0.0,
+        "featureMean": -0.011752136752136752,
+        "featureSd": 0.025902611979558676,
+        "feature": "approach:scoreBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "m2Residual:approach:scoreBlocked": {
+        "coefficients": {
+          "intercept": 0.8858165590261033,
+          "extra": 0.10570063730380014
+        },
+        "vpMean": 0.0,
+        "featureMean": -0.011752136752136752,
+        "featureSd": 0.025902611979558676,
+        "feature": "approach:scoreBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "alone:combat:scoreOrVisitedSupplyBlocked": {
+        "coefficients": {
+          "intercept": 1.4375,
+          "extra": -0.9640840020881131
+        },
+        "vpMean": 0.0,
+        "featureMean": -0.019764957264957264,
+        "featureSd": 0.032722014950748265,
+        "feature": "combat:scoreOrVisitedSupplyBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": {
+        "coefficients": {
+          "intercept": 0.8858165590261033,
+          "extra": -0.3816369463668821
+        },
+        "vpMean": 0.0,
+        "featureMean": -0.019764957264957264,
+        "featureSd": 0.032722014950748265,
+        "feature": "combat:scoreOrVisitedSupplyBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      }
+    }
+  },
+  {
+    "split": 0,
+    "variant": "crowding-double",
+    "family": "crowding",
+    "developmentSeeds": [
+      324741633,
+      324751333
+    ],
+    "evaluationSeeds": [
+      324741827,
+      324751527
+    ],
+    "trainVariants": [
+      "contactBad-double",
+      "contactBad-half",
+      "hqWithArmy-double",
+      "hqWithArmy-half",
+      "outOfSupply-double",
+      "outOfSupply-half",
+      "progressObjective-double",
+      "progressObjective-half"
+    ],
+    "observed": 6.0,
+    "byClimate": {
+      "TEMPERATE_INLAND": 12.0,
+      "EASTERN_EUROPE": 0.0
+    },
+    "predictions": {
+      "zero": 0.0,
+      "identity:M2": 3.674122935048131,
+      "m2ResidualMean": 4.9690718562419836,
+      "alone:approach:scoreBlocked": 8.591370761356366,
+      "m2Residual:approach:scoreBlocked": 11.025463696910197,
+      "alone:combat:scoreOrVisitedSupplyBlocked": 8.002702927478374,
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": 11.232368296226703
+    },
+    "fits": {
+      "m2ResidualMean": {
+        "coefficients": {
+          "intercept": 1.294948921193853
+        },
+        "vpMean": -0.125,
+        "featureMean": 0.0,
+        "featureSd": 0.0,
+        "feature": null,
+        "rank": 1,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "alone:approach:scoreBlocked": {
+        "coefficients": {
+          "intercept": 0.9375,
+          "extra": -2.40154134910907
+        },
+        "vpMean": -0.125,
+        "featureMean": -0.006944444444444444,
+        "featureSd": 0.021119014317062815,
+        "feature": "approach:scoreBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "m2Residual:approach:scoreBlocked": {
+        "coefficients": {
+          "intercept": 1.294948921193853,
+          "extra": -1.900303243321814
+        },
+        "vpMean": -0.125,
+        "featureMean": -0.006944444444444444,
+        "featureSd": 0.021119014317062815,
+        "feature": "approach:scoreBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "alone:combat:scoreOrVisitedSupplyBlocked": {
+        "coefficients": {
+          "intercept": 0.9375,
+          "extra": -2.571392585926033
+        },
+        "vpMean": -0.125,
+        "featureMean": -0.021367521367521368,
+        "featureSd": 0.023913492826495075,
+        "feature": "combat:scoreOrVisitedSupplyBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": {
+        "coefficients": {
+          "intercept": 1.294948921193853,
+          "extra": -2.2795373600092415
+        },
+        "vpMean": -0.125,
+        "featureMean": -0.021367521367521368,
+        "featureSd": 0.023913492826495075,
+        "feature": "combat:scoreOrVisitedSupplyBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      }
+    }
+  },
+  {
+    "split": 0,
+    "variant": "crowding-half",
+    "family": "crowding",
+    "developmentSeeds": [
+      324741633,
+      324751333
+    ],
+    "evaluationSeeds": [
+      324741827,
+      324751527
+    ],
+    "trainVariants": [
+      "contactBad-double",
+      "contactBad-half",
+      "hqWithArmy-double",
+      "hqWithArmy-half",
+      "outOfSupply-double",
+      "outOfSupply-half",
+      "progressObjective-double",
+      "progressObjective-half"
+    ],
+    "observed": 0.0,
+    "byClimate": {
+      "TEMPERATE_INLAND": 0.0,
+      "EASTERN_EUROPE": 0.0
+    },
+    "predictions": {
+      "zero": 0.0,
+      "identity:M2": 2.976563684152769,
+      "m2ResidualMean": 4.271512605346622,
+      "alone:approach:scoreBlocked": 0.6945199758299563,
+      "m2Residual:approach:scoreBlocked": 4.079246197706361,
+      "alone:combat:scoreOrVisitedSupplyBlocked": -3.6003132623641605,
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": 0.24874497316131539
+    },
+    "fits": {
+      "m2ResidualMean": {
+        "coefficients": {
+          "intercept": 1.294948921193853
+        },
+        "vpMean": -0.125,
+        "featureMean": 0.0,
+        "featureSd": 0.0,
+        "feature": null,
+        "rank": 1,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "alone:approach:scoreBlocked": {
+        "coefficients": {
+          "intercept": 0.9375,
+          "extra": -2.40154134910907
+        },
+        "vpMean": -0.125,
+        "featureMean": -0.006944444444444444,
+        "featureSd": 0.021119014317062815,
+        "feature": "approach:scoreBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "m2Residual:approach:scoreBlocked": {
+        "coefficients": {
+          "intercept": 1.294948921193853,
+          "extra": -1.900303243321814
+        },
+        "vpMean": -0.125,
+        "featureMean": -0.006944444444444444,
+        "featureSd": 0.021119014317062815,
+        "feature": "approach:scoreBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "alone:combat:scoreOrVisitedSupplyBlocked": {
+        "coefficients": {
+          "intercept": 0.9375,
+          "extra": -2.571392585926033
+        },
+        "vpMean": -0.125,
+        "featureMean": -0.021367521367521368,
+        "featureSd": 0.023913492826495075,
+        "feature": "combat:scoreOrVisitedSupplyBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": {
+        "coefficients": {
+          "intercept": 1.294948921193853,
+          "extra": -2.2795373600092415
+        },
+        "vpMean": -0.125,
+        "featureMean": -0.021367521367521368,
+        "featureSd": 0.023913492826495075,
+        "feature": "combat:scoreOrVisitedSupplyBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      }
+    }
+  },
+  {
+    "split": 0,
+    "variant": "hqWithArmy-double",
+    "family": "hqWithArmy",
+    "developmentSeeds": [
+      324741633,
+      324751333
+    ],
+    "evaluationSeeds": [
+      324741827,
+      324751527
+    ],
+    "trainVariants": [
+      "contactBad-double",
+      "contactBad-half",
+      "crowding-double",
+      "crowding-half",
+      "outOfSupply-double",
+      "outOfSupply-half",
+      "progressObjective-double",
+      "progressObjective-half"
+    ],
+    "observed": 2.0,
+    "byClimate": {
+      "TEMPERATE_INLAND": 0.0,
+      "EASTERN_EUROPE": 4.0
+    },
+    "predictions": {
+      "zero": 0.0,
+      "identity:M2": -0.06790569741772323,
+      "m2ResidualMean": 0.6049074684192346,
+      "alone:approach:scoreBlocked": 0.5055843408175014,
+      "m2Residual:approach:scoreBlocked": 0.11916278665405555,
+      "alone:combat:scoreOrVisitedSupplyBlocked": 0.3964699479045175,
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": -0.21997151340846688
+    },
+    "fits": {
+      "m2ResidualMean": {
+        "coefficients": {
+          "intercept": 0.6728131658369578
+        },
+        "vpMean": -0.125,
+        "featureMean": 0.0,
+        "featureSd": 0.0,
+        "feature": null,
+        "rank": 1,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "alone:approach:scoreBlocked": {
+        "coefficients": {
+          "intercept": 1.5,
+          "extra": -1.5508619597448887
+        },
+        "vpMean": -0.125,
+        "featureMean": -0.01842948717948718,
+        "featureSd": 0.028742096265629496,
+        "feature": "approach:scoreBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "m2Residual:approach:scoreBlocked": {
+        "coefficients": {
+          "intercept": 0.6728131658369578,
+          "extra": -0.7575533853894696
+        },
+        "vpMean": -0.125,
+        "featureMean": -0.01842948717948718,
+        "featureSd": 0.028742096265629496,
+        "feature": "approach:scoreBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "alone:combat:scoreOrVisitedSupplyBlocked": {
+        "coefficients": {
+          "intercept": 1.5,
+          "extra": -1.3762635346945815
+        },
+        "vpMean": -0.125,
+        "featureMean": -0.028044871794871792,
+        "featureSd": 0.03497606097194626,
+        "feature": "combat:scoreOrVisitedSupplyBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": {
+        "coefficients": {
+          "intercept": 0.6728131658369578,
+          "extra": -1.028744854813644
+        },
+        "vpMean": -0.125,
+        "featureMean": -0.028044871794871792,
+        "featureSd": 0.03497606097194626,
+        "feature": "combat:scoreOrVisitedSupplyBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      }
+    }
+  },
+  {
+    "split": 0,
+    "variant": "hqWithArmy-half",
+    "family": "hqWithArmy",
+    "developmentSeeds": [
+      324741633,
+      324751333
+    ],
+    "evaluationSeeds": [
+      324741827,
+      324751527
+    ],
+    "trainVariants": [
+      "contactBad-double",
+      "contactBad-half",
+      "crowding-double",
+      "crowding-half",
+      "outOfSupply-double",
+      "outOfSupply-half",
+      "progressObjective-double",
+      "progressObjective-half"
+    ],
+    "observed": -2.0,
+    "byClimate": {
+      "TEMPERATE_INLAND": 0.0,
+      "EASTERN_EUROPE": -4.0
+    },
+    "predictions": {
+      "zero": 0.0,
+      "identity:M2": -2.758493726236538,
+      "m2ResidualMean": -2.08568056039958,
+      "alone:approach:scoreBlocked": -0.18618307426597602,
+      "m2Residual:approach:scoreBlocked": -2.9093345860014055,
+      "alone:combat:scoreOrVisitedSupplyBlocked": 0.9009408288624525,
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": -2.5334720076774753
+    },
+    "fits": {
+      "m2ResidualMean": {
+        "coefficients": {
+          "intercept": 0.6728131658369578
+        },
+        "vpMean": -0.125,
+        "featureMean": 0.0,
+        "featureSd": 0.0,
+        "feature": null,
+        "rank": 1,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "alone:approach:scoreBlocked": {
+        "coefficients": {
+          "intercept": 1.5,
+          "extra": -1.5508619597448887
+        },
+        "vpMean": -0.125,
+        "featureMean": -0.01842948717948718,
+        "featureSd": 0.028742096265629496,
+        "feature": "approach:scoreBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "m2Residual:approach:scoreBlocked": {
+        "coefficients": {
+          "intercept": 0.6728131658369578,
+          "extra": -0.7575533853894696
+        },
+        "vpMean": -0.125,
+        "featureMean": -0.01842948717948718,
+        "featureSd": 0.028742096265629496,
+        "feature": "approach:scoreBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "alone:combat:scoreOrVisitedSupplyBlocked": {
+        "coefficients": {
+          "intercept": 1.5,
+          "extra": -1.3762635346945815
+        },
+        "vpMean": -0.125,
+        "featureMean": -0.028044871794871792,
+        "featureSd": 0.03497606097194626,
+        "feature": "combat:scoreOrVisitedSupplyBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": {
+        "coefficients": {
+          "intercept": 0.6728131658369578,
+          "extra": -1.028744854813644
+        },
+        "vpMean": -0.125,
+        "featureMean": -0.028044871794871792,
+        "featureSd": 0.03497606097194626,
+        "feature": "combat:scoreOrVisitedSupplyBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      }
+    }
+  },
+  {
+    "split": 0,
+    "variant": "outOfSupply-double",
+    "family": "outOfSupply",
+    "developmentSeeds": [
+      324741633,
+      324751333
+    ],
+    "evaluationSeeds": [
+      324741827,
+      324751527
+    ],
+    "trainVariants": [
+      "contactBad-double",
+      "contactBad-half",
+      "crowding-double",
+      "crowding-half",
+      "hqWithArmy-double",
+      "hqWithArmy-half",
+      "progressObjective-double",
+      "progressObjective-half"
+    ],
+    "observed": 0.0,
+    "byClimate": {
+      "TEMPERATE_INLAND": 0.0,
+      "EASTERN_EUROPE": 0.0
+    },
+    "predictions": {
+      "zero": 0.0,
+      "identity:M2": 0.0,
+      "m2ResidualMean": 1.9011130937937406,
+      "alone:approach:scoreBlocked": 1.7087282780410744,
+      "m2Residual:approach:scoreBlocked": 1.8532798532320156,
+      "alone:combat:scoreOrVisitedSupplyBlocked": 1.8393329202808757,
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": 1.786633912166553
+    },
+    "fits": {
+      "m2ResidualMean": {
+        "coefficients": {
+          "intercept": 1.9011130937937406
+        },
+        "vpMean": -0.125,
+        "featureMean": 0.0,
+        "featureSd": 0.0,
+        "feature": null,
+        "rank": 1,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "alone:approach:scoreBlocked": {
+        "coefficients": {
+          "intercept": 2.375,
+          "extra": -1.1899471813752796
+        },
+        "vpMean": -0.125,
+        "featureMean": -0.016826923076923076,
+        "featureSd": 0.030052528160331632,
+        "feature": "approach:scoreBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "m2Residual:approach:scoreBlocked": {
+        "coefficients": {
+          "intercept": 1.9011130937937406,
+          "extra": -0.08542915436230872
+        },
+        "vpMean": -0.125,
+        "featureMean": -0.016826923076923076,
+        "featureSd": 0.030052528160331632,
+        "feature": "approach:scoreBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "alone:combat:scoreOrVisitedSupplyBlocked": {
+        "coefficients": {
+          "intercept": 2.375,
+          "extra": -0.6130893094684418
+        },
+        "vpMean": -0.125,
+        "featureMean": -0.029647435897435896,
+        "featureSd": 0.03393250526315651,
+        "feature": "combat:scoreOrVisitedSupplyBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": {
+        "coefficients": {
+          "intercept": 1.9011130937937406,
+          "extra": -0.13102534217545442
+        },
+        "vpMean": -0.125,
+        "featureMean": -0.029647435897435896,
+        "featureSd": 0.03393250526315651,
+        "feature": "combat:scoreOrVisitedSupplyBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      }
+    }
+  },
+  {
+    "split": 0,
+    "variant": "outOfSupply-half",
+    "family": "outOfSupply",
+    "developmentSeeds": [
+      324741633,
+      324751333
+    ],
+    "evaluationSeeds": [
+      324741827,
+      324751527
+    ],
+    "trainVariants": [
+      "contactBad-double",
+      "contactBad-half",
+      "crowding-double",
+      "crowding-half",
+      "hqWithArmy-double",
+      "hqWithArmy-half",
+      "progressObjective-double",
+      "progressObjective-half"
+    ],
+    "observed": 0.0,
+    "byClimate": {
+      "TEMPERATE_INLAND": 0.0,
+      "EASTERN_EUROPE": 0.0
+    },
+    "predictions": {
+      "zero": 0.0,
+      "identity:M2": 0.0,
+      "m2ResidualMean": 1.9011130937937406,
+      "alone:approach:scoreBlocked": 1.7087282780410744,
+      "m2Residual:approach:scoreBlocked": 1.8532798532320156,
+      "alone:combat:scoreOrVisitedSupplyBlocked": 1.8393329202808757,
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": 1.786633912166553
+    },
+    "fits": {
+      "m2ResidualMean": {
+        "coefficients": {
+          "intercept": 1.9011130937937406
+        },
+        "vpMean": -0.125,
+        "featureMean": 0.0,
+        "featureSd": 0.0,
+        "feature": null,
+        "rank": 1,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "alone:approach:scoreBlocked": {
+        "coefficients": {
+          "intercept": 2.375,
+          "extra": -1.1899471813752796
+        },
+        "vpMean": -0.125,
+        "featureMean": -0.016826923076923076,
+        "featureSd": 0.030052528160331632,
+        "feature": "approach:scoreBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "m2Residual:approach:scoreBlocked": {
+        "coefficients": {
+          "intercept": 1.9011130937937406,
+          "extra": -0.08542915436230872
+        },
+        "vpMean": -0.125,
+        "featureMean": -0.016826923076923076,
+        "featureSd": 0.030052528160331632,
+        "feature": "approach:scoreBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "alone:combat:scoreOrVisitedSupplyBlocked": {
+        "coefficients": {
+          "intercept": 2.375,
+          "extra": -0.6130893094684418
+        },
+        "vpMean": -0.125,
+        "featureMean": -0.029647435897435896,
+        "featureSd": 0.03393250526315651,
+        "feature": "combat:scoreOrVisitedSupplyBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": {
+        "coefficients": {
+          "intercept": 1.9011130937937406,
+          "extra": -0.13102534217545442
+        },
+        "vpMean": -0.125,
+        "featureMean": -0.029647435897435896,
+        "featureSd": 0.03393250526315651,
+        "feature": "combat:scoreOrVisitedSupplyBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      }
+    }
+  },
+  {
+    "split": 0,
+    "variant": "progressObjective-double",
+    "family": "progressObjective",
+    "developmentSeeds": [
+      324741633,
+      324751333
+    ],
+    "evaluationSeeds": [
+      324741827,
+      324751527
+    ],
+    "trainVariants": [
+      "contactBad-double",
+      "contactBad-half",
+      "crowding-double",
+      "crowding-half",
+      "hqWithArmy-double",
+      "hqWithArmy-half",
+      "outOfSupply-double",
+      "outOfSupply-half"
+    ],
+    "observed": 2.0,
+    "byClimate": {
+      "TEMPERATE_INLAND": 6.0,
+      "EASTERN_EUROPE": -2.0
+    },
+    "predictions": {
+      "zero": 0.0,
+      "identity:M2": 0.7601691330306819,
+      "m2ResidualMean": 0.8599297683549891,
+      "alone:approach:scoreBlocked": 1.0945057525240665,
+      "m2Residual:approach:scoreBlocked": 0.929347080960499,
+      "alone:combat:scoreOrVisitedSupplyBlocked": 1.0539119586526464,
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": 0.9152894089058572
+    },
+    "fits": {
+      "m2ResidualMean": {
+        "coefficients": {
+          "intercept": 0.09976063532430729
+        },
+        "vpMean": -0.125,
+        "featureMean": 0.0,
+        "featureSd": 0.0,
+        "feature": null,
+        "rank": 1,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "alone:approach:scoreBlocked": {
+        "coefficients": {
+          "intercept": 0.5,
+          "extra": -1.2444479850275925
+        },
+        "vpMean": -0.125,
+        "featureMean": -0.013354700854700854,
+        "featureSd": 0.030191077106683586,
+        "feature": "approach:scoreBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "m2Residual:approach:scoreBlocked": {
+        "coefficients": {
+          "intercept": 0.09976063532430729,
+          "extra": -0.14530765166054488
+        },
+        "vpMean": -0.125,
+        "featureMean": -0.013354700854700854,
+        "featureSd": 0.030191077106683586,
+        "feature": "approach:scoreBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "alone:combat:scoreOrVisitedSupplyBlocked": {
+        "coefficients": {
+          "intercept": 0.5,
+          "extra": -0.5703624922293106
+        },
+        "vpMean": -0.125,
+        "featureMean": -0.019764957264957264,
+        "featureSd": 0.0346533257958535,
+        "feature": "combat:scoreOrVisitedSupplyBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": {
+        "coefficients": {
+          "intercept": 0.09976063532430729,
+          "extra": -0.057003756752816916
+        },
+        "vpMean": -0.125,
+        "featureMean": -0.019764957264957264,
+        "featureSd": 0.0346533257958535,
+        "feature": "combat:scoreOrVisitedSupplyBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      }
+    }
+  },
+  {
+    "split": 0,
+    "variant": "progressObjective-half",
+    "family": "progressObjective",
+    "developmentSeeds": [
+      324741633,
+      324751333
+    ],
+    "evaluationSeeds": [
+      324741827,
+      324751527
+    ],
+    "trainVariants": [
+      "contactBad-double",
+      "contactBad-half",
+      "crowding-double",
+      "crowding-half",
+      "hqWithArmy-double",
+      "hqWithArmy-half",
+      "outOfSupply-double",
+      "outOfSupply-half"
+    ],
+    "observed": 3.0,
+    "byClimate": {
+      "TEMPERATE_INLAND": 6.0,
+      "EASTERN_EUROPE": 0.0
+    },
+    "predictions": {
+      "zero": 0.0,
+      "identity:M2": -0.17098880078614886,
+      "m2ResidualMean": -0.07122816546184157,
+      "alone:approach:scoreBlocked": -0.05046828937413572,
+      "m2Residual:approach:scoreBlocked": -0.13550345491138768,
+      "alone:combat:scoreOrVisitedSupplyBlocked": 0.5967147864314145,
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": -0.0615621964767694
+    },
+    "fits": {
+      "m2ResidualMean": {
+        "coefficients": {
+          "intercept": 0.09976063532430729
+        },
+        "vpMean": -0.125,
+        "featureMean": 0.0,
+        "featureSd": 0.0,
+        "feature": null,
+        "rank": 1,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "alone:approach:scoreBlocked": {
+        "coefficients": {
+          "intercept": 0.5,
+          "extra": -1.2444479850275925
+        },
+        "vpMean": -0.125,
+        "featureMean": -0.013354700854700854,
+        "featureSd": 0.030191077106683586,
+        "feature": "approach:scoreBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "m2Residual:approach:scoreBlocked": {
+        "coefficients": {
+          "intercept": 0.09976063532430729,
+          "extra": -0.14530765166054488
+        },
+        "vpMean": -0.125,
+        "featureMean": -0.013354700854700854,
+        "featureSd": 0.030191077106683586,
+        "feature": "approach:scoreBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "alone:combat:scoreOrVisitedSupplyBlocked": {
+        "coefficients": {
+          "intercept": 0.5,
+          "extra": -0.5703624922293106
+        },
+        "vpMean": -0.125,
+        "featureMean": -0.019764957264957264,
+        "featureSd": 0.0346533257958535,
+        "feature": "combat:scoreOrVisitedSupplyBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": {
+        "coefficients": {
+          "intercept": 0.09976063532430729,
+          "extra": -0.057003756752816916
+        },
+        "vpMean": -0.125,
+        "featureMean": -0.019764957264957264,
+        "featureSd": 0.0346533257958535,
+        "feature": "combat:scoreOrVisitedSupplyBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      }
+    }
+  },
+  {
+    "split": 1,
+    "variant": "contactBad-double",
+    "family": "contactBad",
+    "developmentSeeds": [
+      324741827,
+      324751333
+    ],
+    "evaluationSeeds": [
+      324741633,
+      324751527
+    ],
+    "trainVariants": [
+      "crowding-double",
+      "crowding-half",
+      "hqWithArmy-double",
+      "hqWithArmy-half",
+      "outOfSupply-double",
+      "outOfSupply-half",
+      "progressObjective-double",
+      "progressObjective-half"
+    ],
+    "observed": -2.0,
+    "byClimate": {
+      "TEMPERATE_INLAND": 0.0,
+      "EASTERN_EUROPE": -4.0
+    },
+    "predictions": {
+      "zero": 0.0,
+      "identity:M2": -0.6331476138501687,
+      "m2ResidualMean": 0.7861600719908001,
+      "alone:approach:scoreBlocked": -0.5293882251893498,
+      "m2Residual:approach:scoreBlocked": -0.5268310285716499,
+      "alone:combat:scoreOrVisitedSupplyBlocked": 2.1978310215694887,
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": 1.0758921509684916
+    },
+    "fits": {
+      "m2ResidualMean": {
+        "coefficients": {
+          "intercept": 1.4193076858409688
+        },
+        "vpMean": 0.25,
+        "featureMean": 0.0,
+        "featureSd": 0.0,
+        "feature": null,
+        "rank": 1,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "alone:approach:scoreBlocked": {
+        "coefficients": {
+          "intercept": 1.875,
+          "extra": -1.71131979107561
+        },
+        "vpMean": 0.25,
+        "featureMean": -0.0013354700854700855,
+        "featureSd": 0.010075500060822657,
+        "feature": "approach:scoreBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "m2Residual:approach:scoreBlocked": {
+        "coefficients": {
+          "intercept": 1.4193076858409688,
+          "extra": -0.9345194891402016
+        },
+        "vpMean": 0.25,
+        "featureMean": -0.0013354700854700855,
+        "featureSd": 0.010075500060822657,
+        "feature": "approach:scoreBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "alone:combat:scoreOrVisitedSupplyBlocked": {
+        "coefficients": {
+          "intercept": 1.875,
+          "extra": -1.8097561402589533
+        },
+        "vpMean": 0.25,
+        "featureMean": -0.009348290598290598,
+        "featureSd": 0.019464905994660307,
+        "feature": "combat:scoreOrVisitedSupplyBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": {
+        "coefficients": {
+          "intercept": 1.4193076858409688,
+          "extra": -1.624207012110219
+        },
+        "vpMean": 0.25,
+        "featureMean": -0.009348290598290598,
+        "featureSd": 0.019464905994660307,
+        "feature": "combat:scoreOrVisitedSupplyBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      }
+    }
+  },
+  {
+    "split": 1,
+    "variant": "contactBad-half",
+    "family": "contactBad",
+    "developmentSeeds": [
+      324741827,
+      324751333
+    ],
+    "evaluationSeeds": [
+      324741633,
+      324751527
+    ],
+    "trainVariants": [
+      "crowding-double",
+      "crowding-half",
+      "hqWithArmy-double",
+      "hqWithArmy-half",
+      "outOfSupply-double",
+      "outOfSupply-half",
+      "progressObjective-double",
+      "progressObjective-half"
+    ],
+    "observed": 3.0,
+    "byClimate": {
+      "TEMPERATE_INLAND": 4.0,
+      "EASTERN_EUROPE": 2.0
+    },
+    "predictions": {
+      "zero": 0.0,
+      "identity:M2": -0.3528746722349745,
+      "m2ResidualMean": 1.0664330136059943,
+      "alone:approach:scoreBlocked": 6.003289216834544,
+      "m2Residual:approach:scoreBlocked": 3.3208139598547293,
+      "alone:combat:scoreOrVisitedSupplyBlocked": 4.581813950082637,
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": 3.4957250604189465
+    },
+    "fits": {
+      "m2ResidualMean": {
+        "coefficients": {
+          "intercept": 1.4193076858409688
+        },
+        "vpMean": 0.25,
+        "featureMean": 0.0,
+        "featureSd": 0.0,
+        "feature": null,
+        "rank": 1,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "alone:approach:scoreBlocked": {
+        "coefficients": {
+          "intercept": 1.875,
+          "extra": -1.71131979107561
+        },
+        "vpMean": 0.25,
+        "featureMean": -0.0013354700854700855,
+        "featureSd": 0.010075500060822657,
+        "feature": "approach:scoreBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "m2Residual:approach:scoreBlocked": {
+        "coefficients": {
+          "intercept": 1.4193076858409688,
+          "extra": -0.9345194891402016
+        },
+        "vpMean": 0.25,
+        "featureMean": -0.0013354700854700855,
+        "featureSd": 0.010075500060822657,
+        "feature": "approach:scoreBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "alone:combat:scoreOrVisitedSupplyBlocked": {
+        "coefficients": {
+          "intercept": 1.875,
+          "extra": -1.8097561402589533
+        },
+        "vpMean": 0.25,
+        "featureMean": -0.009348290598290598,
+        "featureSd": 0.019464905994660307,
+        "feature": "combat:scoreOrVisitedSupplyBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": {
+        "coefficients": {
+          "intercept": 1.4193076858409688,
+          "extra": -1.624207012110219
+        },
+        "vpMean": 0.25,
+        "featureMean": -0.009348290598290598,
+        "featureSd": 0.019464905994660307,
+        "feature": "combat:scoreOrVisitedSupplyBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      }
+    }
+  },
+  {
+    "split": 1,
+    "variant": "crowding-double",
+    "family": "crowding",
+    "developmentSeeds": [
+      324741827,
+      324751333
+    ],
+    "evaluationSeeds": [
+      324741633,
+      324751527
+    ],
+    "trainVariants": [
+      "contactBad-double",
+      "contactBad-half",
+      "hqWithArmy-double",
+      "hqWithArmy-half",
+      "outOfSupply-double",
+      "outOfSupply-half",
+      "progressObjective-double",
+      "progressObjective-half"
+    ],
+    "observed": 0.5,
+    "byClimate": {
+      "TEMPERATE_INLAND": 1.0,
+      "EASTERN_EUROPE": 0.0
+    },
+    "predictions": {
+      "zero": 0.0,
+      "identity:M2": 2.472703849855461,
+      "m2ResidualMean": 3.486649322638199,
+      "alone:approach:scoreBlocked": 3.2453703703703702,
+      "m2Residual:approach:scoreBlocked": 5.539259830206309,
+      "alone:combat:scoreOrVisitedSupplyBlocked": 4.2787558685446,
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": 6.862726239995029
+    },
+    "fits": {
+      "m2ResidualMean": {
+        "coefficients": {
+          "intercept": 1.013945472782738
+        },
+        "vpMean": 0.125,
+        "featureMean": 0.0,
+        "featureSd": 0.0,
+        "feature": null,
+        "rank": 1,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "alone:approach:scoreBlocked": {
+        "coefficients": {
+          "intercept": 0.875,
+          "extra": -1.0264004785593346
+        },
+        "vpMean": 0.125,
+        "featureMean": 0.0,
+        "featureSd": 0.011102889792108188,
+        "feature": "approach:scoreBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "m2Residual:approach:scoreBlocked": {
+        "coefficients": {
+          "intercept": 1.013945472782738,
+          "extra": -0.8888064218144271
+        },
+        "vpMean": 0.125,
+        "featureMean": 0.0,
+        "featureSd": 0.011102889792108188,
+        "feature": "approach:scoreBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "alone:combat:scoreOrVisitedSupplyBlocked": {
+        "coefficients": {
+          "intercept": 0.875,
+          "extra": -1.9120371159789857
+        },
+        "vpMean": 0.125,
+        "featureMean": -0.014423076923076924,
+        "featureSd": 0.013503445149321088,
+        "feature": "combat:scoreOrVisitedSupplyBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": {
+        "coefficients": {
+          "intercept": 1.013945472782738,
+          "extra": -1.8964886500941454
+        },
+        "vpMean": 0.125,
+        "featureMean": -0.014423076923076924,
+        "featureSd": 0.013503445149321088,
+        "feature": "combat:scoreOrVisitedSupplyBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      }
+    }
+  },
+  {
+    "split": 1,
+    "variant": "crowding-half",
+    "family": "crowding",
+    "developmentSeeds": [
+      324741827,
+      324751333
+    ],
+    "evaluationSeeds": [
+      324741633,
+      324751527
+    ],
+    "trainVariants": [
+      "contactBad-double",
+      "contactBad-half",
+      "hqWithArmy-double",
+      "hqWithArmy-half",
+      "outOfSupply-double",
+      "outOfSupply-half",
+      "progressObjective-double",
+      "progressObjective-half"
+    ],
+    "observed": 2.5,
+    "byClimate": {
+      "TEMPERATE_INLAND": 5.0,
+      "EASTERN_EUROPE": 0.0
+    },
+    "predictions": {
+      "zero": 0.0,
+      "identity:M2": 1.298376159593549,
+      "m2ResidualMean": 2.312321632376287,
+      "alone:approach:scoreBlocked": 0.6774691358024691,
+      "m2Residual:approach:scoreBlocked": 2.141270756745611,
+      "alone:combat:scoreOrVisitedSupplyBlocked": -5.100482524778299,
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": -3.6145689558723673
+    },
+    "fits": {
+      "m2ResidualMean": {
+        "coefficients": {
+          "intercept": 1.013945472782738
+        },
+        "vpMean": 0.125,
+        "featureMean": 0.0,
+        "featureSd": 0.0,
+        "feature": null,
+        "rank": 1,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "alone:approach:scoreBlocked": {
+        "coefficients": {
+          "intercept": 0.875,
+          "extra": -1.0264004785593346
+        },
+        "vpMean": 0.125,
+        "featureMean": 0.0,
+        "featureSd": 0.011102889792108188,
+        "feature": "approach:scoreBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "m2Residual:approach:scoreBlocked": {
+        "coefficients": {
+          "intercept": 1.013945472782738,
+          "extra": -0.8888064218144271
+        },
+        "vpMean": 0.125,
+        "featureMean": 0.0,
+        "featureSd": 0.011102889792108188,
+        "feature": "approach:scoreBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "alone:combat:scoreOrVisitedSupplyBlocked": {
+        "coefficients": {
+          "intercept": 0.875,
+          "extra": -1.9120371159789857
+        },
+        "vpMean": 0.125,
+        "featureMean": -0.014423076923076924,
+        "featureSd": 0.013503445149321088,
+        "feature": "combat:scoreOrVisitedSupplyBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": {
+        "coefficients": {
+          "intercept": 1.013945472782738,
+          "extra": -1.8964886500941454
+        },
+        "vpMean": 0.125,
+        "featureMean": -0.014423076923076924,
+        "featureSd": 0.013503445149321088,
+        "feature": "combat:scoreOrVisitedSupplyBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      }
+    }
+  },
+  {
+    "split": 1,
+    "variant": "hqWithArmy-double",
+    "family": "hqWithArmy",
+    "developmentSeeds": [
+      324741827,
+      324751333
+    ],
+    "evaluationSeeds": [
+      324741633,
+      324751527
+    ],
+    "trainVariants": [
+      "contactBad-double",
+      "contactBad-half",
+      "crowding-double",
+      "crowding-half",
+      "outOfSupply-double",
+      "outOfSupply-half",
+      "progressObjective-double",
+      "progressObjective-half"
+    ],
+    "observed": 3.0,
+    "byClimate": {
+      "TEMPERATE_INLAND": 2.0,
+      "EASTERN_EUROPE": 4.0
+    },
+    "predictions": {
+      "zero": 0.0,
+      "identity:M2": 0.15265274231927362,
+      "m2ResidualMean": 1.4461646482636186,
+      "alone:approach:scoreBlocked": 1.0944877157555652,
+      "m2Residual:approach:scoreBlocked": 0.9225928438315294,
+      "alone:combat:scoreOrVisitedSupplyBlocked": 0.5328946211601693,
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": 0.2565509013035232
+    },
+    "fits": {
+      "m2ResidualMean": {
+        "coefficients": {
+          "intercept": 1.293511905944345
+        },
+        "vpMean": 0.125,
+        "featureMean": 0.0,
+        "featureSd": 0.0,
+        "feature": null,
+        "rank": 1,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "alone:approach:scoreBlocked": {
+        "coefficients": {
+          "intercept": 1.75,
+          "extra": -1.853667715574975
+        },
+        "vpMean": 0.125,
+        "featureMean": -0.00454059829059829,
+        "featureSd": 0.012839973655685807,
+        "feature": "approach:scoreBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "m2Residual:approach:scoreBlocked": {
+        "coefficients": {
+          "intercept": 1.293511905944345,
+          "extra": -1.4805643982397083
+        },
+        "vpMean": 0.125,
+        "featureMean": -0.00454059829059829,
+        "featureSd": 0.012839973655685807,
+        "feature": "approach:scoreBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "alone:combat:scoreOrVisitedSupplyBlocked": {
+        "coefficients": {
+          "intercept": 1.75,
+          "extra": -1.8254775227566533
+        },
+        "vpMean": 0.125,
+        "featureMean": -0.014155982905982906,
+        "featureSd": 0.0212318744594094,
+        "feature": "combat:scoreOrVisitedSupplyBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": {
+        "coefficients": {
+          "intercept": 1.293511905944345,
+          "extra": -1.784244153047783
+        },
+        "vpMean": 0.125,
+        "featureMean": -0.014155982905982906,
+        "featureSd": 0.0212318744594094,
+        "feature": "combat:scoreOrVisitedSupplyBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      }
+    }
+  },
+  {
+    "split": 1,
+    "variant": "hqWithArmy-half",
+    "family": "hqWithArmy",
+    "developmentSeeds": [
+      324741827,
+      324751333
+    ],
+    "evaluationSeeds": [
+      324741633,
+      324751527
+    ],
+    "trainVariants": [
+      "contactBad-double",
+      "contactBad-half",
+      "crowding-double",
+      "crowding-half",
+      "outOfSupply-double",
+      "outOfSupply-half",
+      "progressObjective-double",
+      "progressObjective-half"
+    ],
+    "observed": -3.5,
+    "byClimate": {
+      "TEMPERATE_INLAND": -3.0,
+      "EASTERN_EUROPE": -4.0
+    },
+    "predictions": {
+      "zero": 0.0,
+      "identity:M2": -1.1450412675774075,
+      "m2ResidualMean": 0.1484706383669374,
+      "alone:approach:scoreBlocked": -0.7563704985816626,
+      "m2Residual:approach:scoreBlocked": -1.8534215550498743,
+      "alone:combat:scoreOrVisitedSupplyBlocked": 1.6351787378452989,
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": 0.03624292638956983
+    },
+    "fits": {
+      "m2ResidualMean": {
+        "coefficients": {
+          "intercept": 1.293511905944345
+        },
+        "vpMean": 0.125,
+        "featureMean": 0.0,
+        "featureSd": 0.0,
+        "feature": null,
+        "rank": 1,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "alone:approach:scoreBlocked": {
+        "coefficients": {
+          "intercept": 1.75,
+          "extra": -1.853667715574975
+        },
+        "vpMean": 0.125,
+        "featureMean": -0.00454059829059829,
+        "featureSd": 0.012839973655685807,
+        "feature": "approach:scoreBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "m2Residual:approach:scoreBlocked": {
+        "coefficients": {
+          "intercept": 1.293511905944345,
+          "extra": -1.4805643982397083
+        },
+        "vpMean": 0.125,
+        "featureMean": -0.00454059829059829,
+        "featureSd": 0.012839973655685807,
+        "feature": "approach:scoreBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "alone:combat:scoreOrVisitedSupplyBlocked": {
+        "coefficients": {
+          "intercept": 1.75,
+          "extra": -1.8254775227566533
+        },
+        "vpMean": 0.125,
+        "featureMean": -0.014155982905982906,
+        "featureSd": 0.0212318744594094,
+        "feature": "combat:scoreOrVisitedSupplyBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": {
+        "coefficients": {
+          "intercept": 1.293511905944345,
+          "extra": -1.784244153047783
+        },
+        "vpMean": 0.125,
+        "featureMean": -0.014155982905982906,
+        "featureSd": 0.0212318744594094,
+        "feature": "combat:scoreOrVisitedSupplyBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      }
+    }
+  },
+  {
+    "split": 1,
+    "variant": "outOfSupply-double",
+    "family": "outOfSupply",
+    "developmentSeeds": [
+      324741827,
+      324751333
+    ],
+    "evaluationSeeds": [
+      324741633,
+      324751527
+    ],
+    "trainVariants": [
+      "contactBad-double",
+      "contactBad-half",
+      "crowding-double",
+      "crowding-half",
+      "hqWithArmy-double",
+      "hqWithArmy-half",
+      "progressObjective-double",
+      "progressObjective-half"
+    ],
+    "observed": -1.5,
+    "byClimate": {
+      "TEMPERATE_INLAND": -3.0,
+      "EASTERN_EUROPE": 0.0
+    },
+    "predictions": {
+      "zero": 0.0,
+      "identity:M2": 0.0,
+      "m2ResidualMean": 2.3550604716016115,
+      "alone:approach:scoreBlocked": 2.332582921736337,
+      "m2Residual:approach:scoreBlocked": 2.110225101382245,
+      "alone:combat:scoreOrVisitedSupplyBlocked": 1.8264965365534027,
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": 1.5064027397186819
+    },
+    "fits": {
+      "m2ResidualMean": {
+        "coefficients": {
+          "intercept": 2.3550604716016115
+        },
+        "vpMean": 0.125,
+        "featureMean": 0.0,
+        "featureSd": 0.0,
+        "feature": null,
+        "rank": 1,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "alone:approach:scoreBlocked": {
+        "coefficients": {
+          "intercept": 2.6875,
+          "extra": -1.697222545078803
+        },
+        "vpMean": 0.125,
+        "featureMean": -0.002938034188034188,
+        "featureSd": 0.014049754625894669,
+        "feature": "approach:scoreBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "m2Residual:approach:scoreBlocked": {
+        "coefficients": {
+          "intercept": 2.3550604716016115,
+          "extra": -1.1708090019278383
+        },
+        "vpMean": 0.125,
+        "featureMean": -0.002938034188034188,
+        "featureSd": 0.014049754625894669,
+        "feature": "approach:scoreBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "alone:combat:scoreOrVisitedSupplyBlocked": {
+        "coefficients": {
+          "intercept": 2.6875,
+          "extra": -1.1242509117345705
+        },
+        "vpMean": 0.125,
+        "featureMean": -0.015758547008547008,
+        "featureSd": 0.020576642945257916,
+        "feature": "combat:scoreOrVisitedSupplyBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": {
+        "coefficients": {
+          "intercept": 2.3550604716016115,
+          "extra": -1.1081305352718285
+        },
+        "vpMean": 0.125,
+        "featureMean": -0.015758547008547008,
+        "featureSd": 0.020576642945257916,
+        "feature": "combat:scoreOrVisitedSupplyBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      }
+    }
+  },
+  {
+    "split": 1,
+    "variant": "outOfSupply-half",
+    "family": "outOfSupply",
+    "developmentSeeds": [
+      324741827,
+      324751333
+    ],
+    "evaluationSeeds": [
+      324741633,
+      324751527
+    ],
+    "trainVariants": [
+      "contactBad-double",
+      "contactBad-half",
+      "crowding-double",
+      "crowding-half",
+      "hqWithArmy-double",
+      "hqWithArmy-half",
+      "progressObjective-double",
+      "progressObjective-half"
+    ],
+    "observed": 1.5,
+    "byClimate": {
+      "TEMPERATE_INLAND": 3.0,
+      "EASTERN_EUROPE": 0.0
+    },
+    "predictions": {
+      "zero": 0.0,
+      "identity:M2": 0.0,
+      "m2ResidualMean": 2.3550604716016115,
+      "alone:approach:scoreBlocked": 2.332582921736337,
+      "m2Residual:approach:scoreBlocked": 2.110225101382245,
+      "alone:combat:scoreOrVisitedSupplyBlocked": 1.8264965365534027,
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": 1.5064027397186819
+    },
+    "fits": {
+      "m2ResidualMean": {
+        "coefficients": {
+          "intercept": 2.3550604716016115
+        },
+        "vpMean": 0.125,
+        "featureMean": 0.0,
+        "featureSd": 0.0,
+        "feature": null,
+        "rank": 1,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "alone:approach:scoreBlocked": {
+        "coefficients": {
+          "intercept": 2.6875,
+          "extra": -1.697222545078803
+        },
+        "vpMean": 0.125,
+        "featureMean": -0.002938034188034188,
+        "featureSd": 0.014049754625894669,
+        "feature": "approach:scoreBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "m2Residual:approach:scoreBlocked": {
+        "coefficients": {
+          "intercept": 2.3550604716016115,
+          "extra": -1.1708090019278383
+        },
+        "vpMean": 0.125,
+        "featureMean": -0.002938034188034188,
+        "featureSd": 0.014049754625894669,
+        "feature": "approach:scoreBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "alone:combat:scoreOrVisitedSupplyBlocked": {
+        "coefficients": {
+          "intercept": 2.6875,
+          "extra": -1.1242509117345705
+        },
+        "vpMean": 0.125,
+        "featureMean": -0.015758547008547008,
+        "featureSd": 0.020576642945257916,
+        "feature": "combat:scoreOrVisitedSupplyBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": {
+        "coefficients": {
+          "intercept": 2.3550604716016115,
+          "extra": -1.1081305352718285
+        },
+        "vpMean": 0.125,
+        "featureMean": -0.015758547008547008,
+        "featureSd": 0.020576642945257916,
+        "feature": "combat:scoreOrVisitedSupplyBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      }
+    }
+  },
+  {
+    "split": 1,
+    "variant": "progressObjective-double",
+    "family": "progressObjective",
+    "developmentSeeds": [
+      324741827,
+      324751333
+    ],
+    "evaluationSeeds": [
+      324741633,
+      324751527
+    ],
+    "trainVariants": [
+      "contactBad-double",
+      "contactBad-half",
+      "crowding-double",
+      "crowding-half",
+      "hqWithArmy-double",
+      "hqWithArmy-half",
+      "outOfSupply-double",
+      "outOfSupply-half"
+    ],
+    "observed": 3.5,
+    "byClimate": {
+      "TEMPERATE_INLAND": 9.0,
+      "EASTERN_EUROPE": -2.0
+    },
+    "predictions": {
+      "zero": 0.0,
+      "identity:M2": 0.4974216278595539,
+      "m2ResidualMean": 1.0858379780963372,
+      "alone:approach:scoreBlocked": 0.3847001365297354,
+      "m2Residual:approach:scoreBlocked": 0.772331704392204,
+      "alone:combat:scoreOrVisitedSupplyBlocked": 1.8584675745050299,
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": 2.106329544127305
+    },
+    "fits": {
+      "m2ResidualMean": {
+        "coefficients": {
+          "intercept": 0.5884163502367833
+        },
+        "vpMean": -0.125,
+        "featureMean": 0.0,
+        "featureSd": 0.0,
+        "feature": null,
+        "rank": 1,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "alone:approach:scoreBlocked": {
+        "coefficients": {
+          "intercept": 0.8125,
+          "extra": -2.045749887876566
+        },
+        "vpMean": -0.125,
+        "featureMean": -0.002938034188034188,
+        "featureSd": 0.014049754625894669,
+        "feature": "approach:scoreBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "m2Residual:approach:scoreBlocked": {
+        "coefficients": {
+          "intercept": 0.5884163502367833,
+          "extra": -1.4991950186150769
+        },
+        "vpMean": -0.125,
+        "featureMean": -0.002938034188034188,
+        "featureSd": 0.014049754625894669,
+        "feature": "approach:scoreBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "alone:combat:scoreOrVisitedSupplyBlocked": {
+        "coefficients": {
+          "intercept": 0.8125,
+          "extra": -1.3156349568156436
+        },
+        "vpMean": -0.125,
+        "featureMean": -0.0093482905982906,
+        "featureSd": 0.020493266031216113,
+        "feature": "combat:scoreOrVisitedSupplyBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": {
+        "coefficients": {
+          "intercept": 0.5884163502367833,
+          "extra": -1.283590820720442
+        },
+        "vpMean": -0.125,
+        "featureMean": -0.0093482905982906,
+        "featureSd": 0.020493266031216113,
+        "feature": "combat:scoreOrVisitedSupplyBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      }
+    }
+  },
+  {
+    "split": 1,
+    "variant": "progressObjective-half",
+    "family": "progressObjective",
+    "developmentSeeds": [
+      324741827,
+      324751333
+    ],
+    "evaluationSeeds": [
+      324741633,
+      324751527
+    ],
+    "trainVariants": [
+      "contactBad-double",
+      "contactBad-half",
+      "crowding-double",
+      "crowding-half",
+      "hqWithArmy-double",
+      "hqWithArmy-half",
+      "outOfSupply-double",
+      "outOfSupply-half"
+    ],
+    "observed": 1.5,
+    "byClimate": {
+      "TEMPERATE_INLAND": 3.0,
+      "EASTERN_EUROPE": 0.0
+    },
+    "predictions": {
+      "zero": 0.0,
+      "identity:M2": 0.36942540122181966,
+      "m2ResidualMean": 0.957841751458603,
+      "alone:approach:scoreBlocked": 0.3847001365297354,
+      "m2Residual:approach:scoreBlocked": 0.6443354777544696,
+      "alone:combat:scoreOrVisitedSupplyBlocked": 1.8584675745050299,
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": 1.978333317489571
+    },
+    "fits": {
+      "m2ResidualMean": {
+        "coefficients": {
+          "intercept": 0.5884163502367833
+        },
+        "vpMean": -0.125,
+        "featureMean": 0.0,
+        "featureSd": 0.0,
+        "feature": null,
+        "rank": 1,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "alone:approach:scoreBlocked": {
+        "coefficients": {
+          "intercept": 0.8125,
+          "extra": -2.045749887876566
+        },
+        "vpMean": -0.125,
+        "featureMean": -0.002938034188034188,
+        "featureSd": 0.014049754625894669,
+        "feature": "approach:scoreBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "m2Residual:approach:scoreBlocked": {
+        "coefficients": {
+          "intercept": 0.5884163502367833,
+          "extra": -1.4991950186150769
+        },
+        "vpMean": -0.125,
+        "featureMean": -0.002938034188034188,
+        "featureSd": 0.014049754625894669,
+        "feature": "approach:scoreBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "alone:combat:scoreOrVisitedSupplyBlocked": {
+        "coefficients": {
+          "intercept": 0.8125,
+          "extra": -1.3156349568156436
+        },
+        "vpMean": -0.125,
+        "featureMean": -0.0093482905982906,
+        "featureSd": 0.020493266031216113,
+        "feature": "combat:scoreOrVisitedSupplyBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": {
+        "coefficients": {
+          "intercept": 0.5884163502367833,
+          "extra": -1.283590820720442
+        },
+        "vpMean": -0.125,
+        "featureMean": -0.0093482905982906,
+        "featureSd": 0.020493266031216113,
+        "feature": "combat:scoreOrVisitedSupplyBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      }
+    }
+  },
+  {
+    "split": 2,
+    "variant": "contactBad-double",
+    "family": "contactBad",
+    "developmentSeeds": [
+      324741633,
+      324751527
+    ],
+    "evaluationSeeds": [
+      324741827,
+      324751333
+    ],
+    "trainVariants": [
+      "crowding-double",
+      "crowding-half",
+      "hqWithArmy-double",
+      "hqWithArmy-half",
+      "outOfSupply-double",
+      "outOfSupply-half",
+      "progressObjective-double",
+      "progressObjective-half"
+    ],
+    "observed": -2.0,
+    "byClimate": {
+      "TEMPERATE_INLAND": 0.0,
+      "EASTERN_EUROPE": -4.0
+    },
+    "predictions": {
+      "zero": 0.0,
+      "identity:M2": 0.5455787588615674,
+      "m2ResidualMean": 0.6954622915032114,
+      "alone:approach:scoreBlocked": 0.9375,
+      "m2Residual:approach:scoreBlocked": 0.6954622915032114,
+      "alone:combat:scoreOrVisitedSupplyBlocked": 0.9375,
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": 0.6954622915032114
+    },
+    "fits": {
+      "m2ResidualMean": {
+        "coefficients": {
+          "intercept": 0.14988353264164406
+        },
+        "vpMean": 0.0,
+        "featureMean": 0.0,
+        "featureSd": 0.0,
+        "feature": null,
+        "rank": 1,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "alone:approach:scoreBlocked": {
+        "coefficients": {
+          "intercept": 0.9375,
+          "extra": -0.3475240234284579
+        },
+        "vpMean": 0.0,
+        "featureMean": -0.006944444444444444,
+        "featureSd": 0.016652192789280276,
+        "feature": "approach:scoreBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "m2Residual:approach:scoreBlocked": {
+        "coefficients": {
+          "intercept": 0.14988353264164406,
+          "extra": 0.3433177864242739
+        },
+        "vpMean": 0.0,
+        "featureMean": -0.006944444444444444,
+        "featureSd": 0.016652192789280276,
+        "feature": "approach:scoreBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "alone:combat:scoreOrVisitedSupplyBlocked": {
+        "coefficients": {
+          "intercept": 0.9375,
+          "extra": -0.3475240234284579
+        },
+        "vpMean": 0.0,
+        "featureMean": -0.006944444444444444,
+        "featureSd": 0.016652192789280276,
+        "feature": "combat:scoreOrVisitedSupplyBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": {
+        "coefficients": {
+          "intercept": 0.14988353264164406,
+          "extra": 0.3433177864242739
+        },
+        "vpMean": 0.0,
+        "featureMean": -0.006944444444444444,
+        "featureSd": 0.016652192789280276,
+        "feature": "combat:scoreOrVisitedSupplyBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      }
+    }
+  },
+  {
+    "split": 2,
+    "variant": "contactBad-half",
+    "family": "contactBad",
+    "developmentSeeds": [
+      324741633,
+      324751527
+    ],
+    "evaluationSeeds": [
+      324741827,
+      324751333
+    ],
+    "trainVariants": [
+      "crowding-double",
+      "crowding-half",
+      "hqWithArmy-double",
+      "hqWithArmy-half",
+      "outOfSupply-double",
+      "outOfSupply-half",
+      "progressObjective-double",
+      "progressObjective-half"
+    ],
+    "observed": 3.0,
+    "byClimate": {
+      "TEMPERATE_INLAND": 2.0,
+      "EASTERN_EUROPE": 4.0
+    },
+    "predictions": {
+      "zero": 0.0,
+      "identity:M2": 1.4011119194325197,
+      "m2ResidualMean": 1.5509954520741638,
+      "alone:approach:scoreBlocked": 1.082427536231884,
+      "m2Residual:approach:scoreBlocked": 1.407822037930905,
+      "alone:combat:scoreOrVisitedSupplyBlocked": 1.5172101449275361,
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": 0.9783017955011284
+    },
+    "fits": {
+      "m2ResidualMean": {
+        "coefficients": {
+          "intercept": 0.14988353264164406
+        },
+        "vpMean": 0.0,
+        "featureMean": 0.0,
+        "featureSd": 0.0,
+        "feature": null,
+        "rank": 1,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "alone:approach:scoreBlocked": {
+        "coefficients": {
+          "intercept": 0.9375,
+          "extra": -0.3475240234284579
+        },
+        "vpMean": 0.0,
+        "featureMean": -0.006944444444444444,
+        "featureSd": 0.016652192789280276,
+        "feature": "approach:scoreBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "m2Residual:approach:scoreBlocked": {
+        "coefficients": {
+          "intercept": 0.14988353264164406,
+          "extra": 0.3433177864242739
+        },
+        "vpMean": 0.0,
+        "featureMean": -0.006944444444444444,
+        "featureSd": 0.016652192789280276,
+        "feature": "approach:scoreBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "alone:combat:scoreOrVisitedSupplyBlocked": {
+        "coefficients": {
+          "intercept": 0.9375,
+          "extra": -0.3475240234284579
+        },
+        "vpMean": 0.0,
+        "featureMean": -0.006944444444444444,
+        "featureSd": 0.016652192789280276,
+        "feature": "combat:scoreOrVisitedSupplyBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": {
+        "coefficients": {
+          "intercept": 0.14988353264164406,
+          "extra": 0.3433177864242739
+        },
+        "vpMean": 0.0,
+        "featureMean": -0.006944444444444444,
+        "featureSd": 0.016652192789280276,
+        "feature": "combat:scoreOrVisitedSupplyBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      }
+    }
+  },
+  {
+    "split": 2,
+    "variant": "crowding-double",
+    "family": "crowding",
+    "developmentSeeds": [
+      324741633,
+      324751527
+    ],
+    "evaluationSeeds": [
+      324741827,
+      324751333
+    ],
+    "trainVariants": [
+      "contactBad-double",
+      "contactBad-half",
+      "hqWithArmy-double",
+      "hqWithArmy-half",
+      "outOfSupply-double",
+      "outOfSupply-half",
+      "progressObjective-double",
+      "progressObjective-half"
+    ],
+    "observed": 7.0,
+    "byClimate": {
+      "TEMPERATE_INLAND": 12.0,
+      "EASTERN_EUROPE": 2.0
+    },
+    "predictions": {
+      "zero": 0.0,
+      "identity:M2": 2.881299417078563,
+      "m2ResidualMean": 2.9859438873193946,
+      "alone:approach:scoreBlocked": 4.812149859943978,
+      "m2Residual:approach:scoreBlocked": 5.485927928472904,
+      "alone:combat:scoreOrVisitedSupplyBlocked": 3.4374999999999996,
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": 4.683614207282851
+    },
+    "fits": {
+      "m2ResidualMean": {
+        "coefficients": {
+          "intercept": 0.10464447024083154
+        },
+        "vpMean": 0.0,
+        "featureMean": 0.0,
+        "featureSd": 0.0,
+        "feature": null,
+        "rank": 1,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "alone:approach:scoreBlocked": {
+        "coefficients": {
+          "intercept": 0.6875,
+          "extra": -1.4514392869613346
+        },
+        "vpMean": 0.0,
+        "featureMean": -0.0078125,
+        "featureSd": 0.009469368155065725,
+        "feature": "approach:scoreBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "m2Residual:approach:scoreBlocked": {
+        "coefficients": {
+          "intercept": 0.10464447024083154,
+          "extra": -0.8797292321331368
+        },
+        "vpMean": 0.0,
+        "featureMean": -0.0078125,
+        "featureSd": 0.009469368155065725,
+        "feature": "approach:scoreBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "alone:combat:scoreOrVisitedSupplyBlocked": {
+        "coefficients": {
+          "intercept": 0.6875,
+          "extra": -1.469936830518334
+        },
+        "vpMean": 0.0,
+        "featureMean": -0.010416666666666666,
+        "featureSd": 0.01299186592629841,
+        "feature": "combat:scoreOrVisitedSupplyBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": {
+        "coefficients": {
+          "intercept": 0.10464447024083154,
+          "extra": -0.9074429561425925
+        },
+        "vpMean": 0.0,
+        "featureMean": -0.010416666666666666,
+        "featureSd": 0.01299186592629841,
+        "feature": "combat:scoreOrVisitedSupplyBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      }
+    }
+  },
+  {
+    "split": 2,
+    "variant": "crowding-half",
+    "family": "crowding",
+    "developmentSeeds": [
+      324741633,
+      324751527
+    ],
+    "evaluationSeeds": [
+      324741827,
+      324751333
+    ],
+    "trainVariants": [
+      "contactBad-double",
+      "contactBad-half",
+      "hqWithArmy-double",
+      "hqWithArmy-half",
+      "outOfSupply-double",
+      "outOfSupply-half",
+      "progressObjective-double",
+      "progressObjective-half"
+    ],
+    "observed": 2.0,
+    "byClimate": {
+      "TEMPERATE_INLAND": 0.0,
+      "EASTERN_EUROPE": 4.0
+    },
+    "predictions": {
+      "zero": 0.0,
+      "identity:M2": 0.7034787620090237,
+      "m2ResidualMean": 0.8081232322498553,
+      "alone:approach:scoreBlocked": -3.703256302521009,
+      "m2Residual:approach:scoreBlocked": -1.8531501018813,
+      "alone:combat:scoreOrVisitedSupplyBlocked": -2.848214285714285,
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": -1.3745957505603028
+    },
+    "fits": {
+      "m2ResidualMean": {
+        "coefficients": {
+          "intercept": 0.10464447024083154
+        },
+        "vpMean": 0.0,
+        "featureMean": 0.0,
+        "featureSd": 0.0,
+        "feature": null,
+        "rank": 1,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "alone:approach:scoreBlocked": {
+        "coefficients": {
+          "intercept": 0.6875,
+          "extra": -1.4514392869613346
+        },
+        "vpMean": 0.0,
+        "featureMean": -0.0078125,
+        "featureSd": 0.009469368155065725,
+        "feature": "approach:scoreBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "m2Residual:approach:scoreBlocked": {
+        "coefficients": {
+          "intercept": 0.10464447024083154,
+          "extra": -0.8797292321331368
+        },
+        "vpMean": 0.0,
+        "featureMean": -0.0078125,
+        "featureSd": 0.009469368155065725,
+        "feature": "approach:scoreBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "alone:combat:scoreOrVisitedSupplyBlocked": {
+        "coefficients": {
+          "intercept": 0.6875,
+          "extra": -1.469936830518334
+        },
+        "vpMean": 0.0,
+        "featureMean": -0.010416666666666666,
+        "featureSd": 0.01299186592629841,
+        "feature": "combat:scoreOrVisitedSupplyBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": {
+        "coefficients": {
+          "intercept": 0.10464447024083154,
+          "extra": -0.9074429561425925
+        },
+        "vpMean": 0.0,
+        "featureMean": -0.010416666666666666,
+        "featureSd": 0.01299186592629841,
+        "feature": "combat:scoreOrVisitedSupplyBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      }
+    }
+  },
+  {
+    "split": 2,
+    "variant": "hqWithArmy-double",
+    "family": "hqWithArmy",
+    "developmentSeeds": [
+      324741633,
+      324751527
+    ],
+    "evaluationSeeds": [
+      324741827,
+      324751333
+    ],
+    "trainVariants": [
+      "contactBad-double",
+      "contactBad-half",
+      "crowding-double",
+      "crowding-half",
+      "outOfSupply-double",
+      "outOfSupply-half",
+      "progressObjective-double",
+      "progressObjective-half"
+    ],
+    "observed": 2.0,
+    "byClimate": {
+      "TEMPERATE_INLAND": 0.0,
+      "EASTERN_EUROPE": 4.0
+    },
+    "predictions": {
+      "zero": 0.0,
+      "identity:M2": 1.2050974775776624,
+      "m2ResidualMean": 1.4027091658200876,
+      "alone:approach:scoreBlocked": 1.1748297740637572,
+      "m2Residual:approach:scoreBlocked": 1.2133340341512913,
+      "alone:combat:scoreOrVisitedSupplyBlocked": 1.1901340996168583,
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": 1.3511962188426285
+    },
+    "fits": {
+      "m2ResidualMean": {
+        "coefficients": {
+          "intercept": 0.19761168824242534
+        },
+        "vpMean": 0.0,
+        "featureMean": 0.0,
+        "featureSd": 0.0,
+        "feature": null,
+        "rank": 1,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "alone:approach:scoreBlocked": {
+        "coefficients": {
+          "intercept": 1.125,
+          "extra": -0.1348770635699218
+        },
+        "vpMean": 0.0,
+        "featureMean": -0.0078125,
+        "featureSd": 0.016447304966576752,
+        "feature": "approach:scoreBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "m2Residual:approach:scoreBlocked": {
+        "coefficients": {
+          "intercept": 0.19761168824242534,
+          "extra": 0.5125923637537082
+        },
+        "vpMean": 0.0,
+        "featureMean": -0.0078125,
+        "featureSd": 0.016447304966576752,
+        "feature": "approach:scoreBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "alone:combat:scoreOrVisitedSupplyBlocked": {
+        "coefficients": {
+          "intercept": 1.125,
+          "extra": -0.35075786100109796
+        },
+        "vpMean": 0.0,
+        "featureMean": -0.010416666666666666,
+        "featureSd": 0.018698488913661472,
+        "feature": "combat:scoreOrVisitedSupplyBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": {
+        "coefficients": {
+          "intercept": 0.19761168824242534,
+          "extra": 0.2774057091747994
+        },
+        "vpMean": 0.0,
+        "featureMean": -0.010416666666666666,
+        "featureSd": 0.018698488913661472,
+        "feature": "combat:scoreOrVisitedSupplyBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      }
+    }
+  },
+  {
+    "split": 2,
+    "variant": "hqWithArmy-half",
+    "family": "hqWithArmy",
+    "developmentSeeds": [
+      324741633,
+      324751527
+    ],
+    "evaluationSeeds": [
+      324741827,
+      324751333
+    ],
+    "trainVariants": [
+      "contactBad-double",
+      "contactBad-half",
+      "crowding-double",
+      "crowding-half",
+      "outOfSupply-double",
+      "outOfSupply-half",
+      "progressObjective-double",
+      "progressObjective-half"
+    ],
+    "observed": 0.0,
+    "byClimate": {
+      "TEMPERATE_INLAND": 0.0,
+      "EASTERN_EUROPE": 0.0
+    },
+    "predictions": {
+      "zero": 0.0,
+      "identity:M2": -0.3765815544773252,
+      "m2ResidualMean": -0.17896986623489988,
+      "alone:approach:scoreBlocked": 1.060933147632312,
+      "m2Residual:approach:scoreBlocked": 0.06451244591069571,
+      "alone:combat:scoreOrVisitedSupplyBlocked": 0.9295977011494253,
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": -0.024431025302522058
+    },
+    "fits": {
+      "m2ResidualMean": {
+        "coefficients": {
+          "intercept": 0.19761168824242534
+        },
+        "vpMean": 0.0,
+        "featureMean": 0.0,
+        "featureSd": 0.0,
+        "feature": null,
+        "rank": 1,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "alone:approach:scoreBlocked": {
+        "coefficients": {
+          "intercept": 1.125,
+          "extra": -0.1348770635699218
+        },
+        "vpMean": 0.0,
+        "featureMean": -0.0078125,
+        "featureSd": 0.016447304966576752,
+        "feature": "approach:scoreBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "m2Residual:approach:scoreBlocked": {
+        "coefficients": {
+          "intercept": 0.19761168824242534,
+          "extra": 0.5125923637537082
+        },
+        "vpMean": 0.0,
+        "featureMean": -0.0078125,
+        "featureSd": 0.016447304966576752,
+        "feature": "approach:scoreBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "alone:combat:scoreOrVisitedSupplyBlocked": {
+        "coefficients": {
+          "intercept": 1.125,
+          "extra": -0.35075786100109796
+        },
+        "vpMean": 0.0,
+        "featureMean": -0.010416666666666666,
+        "featureSd": 0.018698488913661472,
+        "feature": "combat:scoreOrVisitedSupplyBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": {
+        "coefficients": {
+          "intercept": 0.19761168824242534,
+          "extra": 0.2774057091747994
+        },
+        "vpMean": 0.0,
+        "featureMean": -0.010416666666666666,
+        "featureSd": 0.018698488913661472,
+        "feature": "combat:scoreOrVisitedSupplyBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      }
+    }
+  },
+  {
+    "split": 2,
+    "variant": "outOfSupply-double",
+    "family": "outOfSupply",
+    "developmentSeeds": [
+      324741633,
+      324751527
+    ],
+    "evaluationSeeds": [
+      324741827,
+      324751333
+    ],
+    "trainVariants": [
+      "contactBad-double",
+      "contactBad-half",
+      "crowding-double",
+      "crowding-half",
+      "hqWithArmy-double",
+      "hqWithArmy-half",
+      "progressObjective-double",
+      "progressObjective-half"
+    ],
+    "observed": -1.0,
+    "byClimate": {
+      "TEMPERATE_INLAND": 0.0,
+      "EASTERN_EUROPE": -2.0
+    },
+    "predictions": {
+      "zero": 0.0,
+      "identity:M2": 0.0,
+      "m2ResidualMean": 0.07760207765440841,
+      "alone:approach:scoreBlocked": 0.8587962962962964,
+      "m2Residual:approach:scoreBlocked": 0.2562089661628262,
+      "alone:combat:scoreOrVisitedSupplyBlocked": 0.6946321321321322,
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": 0.1293901198877002
+    },
+    "fits": {
+      "m2ResidualMean": {
+        "coefficients": {
+          "intercept": 0.07760207765440841
+        },
+        "vpMean": 0.0,
+        "featureMean": 0.0,
+        "featureSd": 0.0,
+        "feature": null,
+        "rank": 1,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "alone:approach:scoreBlocked": {
+        "coefficients": {
+          "intercept": 1.0625,
+          "extra": -0.34694433324435525
+        },
+        "vpMean": 0.0,
+        "featureMean": -0.00954861111111111,
+        "featureSd": 0.01626301562082916,
+        "feature": "approach:scoreBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "m2Residual:approach:scoreBlocked": {
+        "coefficients": {
+          "intercept": 0.07760207765440841,
+          "extra": 0.3041999076096096
+        },
+        "vpMean": 0.0,
+        "featureMean": -0.00954861111111111,
+        "featureSd": 0.01626301562082916,
+        "feature": "approach:scoreBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "alone:combat:scoreOrVisitedSupplyBlocked": {
+        "coefficients": {
+          "intercept": 1.0625,
+          "extra": -0.5536754975222911
+        },
+        "vpMean": 0.0,
+        "featureMean": -0.012152777777777778,
+        "featureSd": 0.018291065543147116,
+        "feature": "combat:scoreOrVisitedSupplyBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": {
+        "coefficients": {
+          "intercept": 0.07760207765440841,
+          "extra": 0.07794584021543954
+        },
+        "vpMean": 0.0,
+        "featureMean": -0.012152777777777778,
+        "featureSd": 0.018291065543147116,
+        "feature": "combat:scoreOrVisitedSupplyBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      }
+    }
+  },
+  {
+    "split": 2,
+    "variant": "outOfSupply-half",
+    "family": "outOfSupply",
+    "developmentSeeds": [
+      324741633,
+      324751527
+    ],
+    "evaluationSeeds": [
+      324741827,
+      324751333
+    ],
+    "trainVariants": [
+      "contactBad-double",
+      "contactBad-half",
+      "crowding-double",
+      "crowding-half",
+      "hqWithArmy-double",
+      "hqWithArmy-half",
+      "progressObjective-double",
+      "progressObjective-half"
+    ],
+    "observed": -4.5,
+    "byClimate": {
+      "TEMPERATE_INLAND": 0.0,
+      "EASTERN_EUROPE": -9.0
+    },
+    "predictions": {
+      "zero": 0.0,
+      "identity:M2": 0.3684390383962016,
+      "m2ResidualMean": 0.44604111605061003,
+      "alone:approach:scoreBlocked": 0.8587962962962964,
+      "m2Residual:approach:scoreBlocked": 0.6246480045590278,
+      "alone:combat:scoreOrVisitedSupplyBlocked": 0.6946321321321322,
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": 0.49782915828390184
+    },
+    "fits": {
+      "m2ResidualMean": {
+        "coefficients": {
+          "intercept": 0.07760207765440841
+        },
+        "vpMean": 0.0,
+        "featureMean": 0.0,
+        "featureSd": 0.0,
+        "feature": null,
+        "rank": 1,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "alone:approach:scoreBlocked": {
+        "coefficients": {
+          "intercept": 1.0625,
+          "extra": -0.34694433324435525
+        },
+        "vpMean": 0.0,
+        "featureMean": -0.00954861111111111,
+        "featureSd": 0.01626301562082916,
+        "feature": "approach:scoreBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "m2Residual:approach:scoreBlocked": {
+        "coefficients": {
+          "intercept": 0.07760207765440841,
+          "extra": 0.3041999076096096
+        },
+        "vpMean": 0.0,
+        "featureMean": -0.00954861111111111,
+        "featureSd": 0.01626301562082916,
+        "feature": "approach:scoreBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "alone:combat:scoreOrVisitedSupplyBlocked": {
+        "coefficients": {
+          "intercept": 1.0625,
+          "extra": -0.5536754975222911
+        },
+        "vpMean": 0.0,
+        "featureMean": -0.012152777777777778,
+        "featureSd": 0.018291065543147116,
+        "feature": "combat:scoreOrVisitedSupplyBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": {
+        "coefficients": {
+          "intercept": 0.07760207765440841,
+          "extra": 0.07794584021543954
+        },
+        "vpMean": 0.0,
+        "featureMean": -0.012152777777777778,
+        "featureSd": 0.018291065543147116,
+        "feature": "combat:scoreOrVisitedSupplyBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      }
+    }
+  },
+  {
+    "split": 2,
+    "variant": "progressObjective-double",
+    "family": "progressObjective",
+    "developmentSeeds": [
+      324741633,
+      324751527
+    ],
+    "evaluationSeeds": [
+      324741827,
+      324751333
+    ],
+    "trainVariants": [
+      "contactBad-double",
+      "contactBad-half",
+      "crowding-double",
+      "crowding-half",
+      "hqWithArmy-double",
+      "hqWithArmy-half",
+      "outOfSupply-double",
+      "outOfSupply-half"
+    ],
+    "observed": 7.5,
+    "byClimate": {
+      "TEMPERATE_INLAND": 6.0,
+      "EASTERN_EUROPE": 9.0
+    },
+    "predictions": {
+      "zero": 0.0,
+      "identity:M2": 1.6259750415648553,
+      "m2ResidualMean": 1.2224220642050787,
+      "alone:approach:scoreBlocked": 0.5834510357815441,
+      "m2Residual:approach:scoreBlocked": 0.4518617997433656,
+      "alone:combat:scoreOrVisitedSupplyBlocked": 0.8943500539374324,
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": 1.0220315239400424
+    },
+    "fits": {
+      "m2ResidualMean": {
+        "coefficients": {
+          "intercept": -0.4035529773597766
+        },
+        "vpMean": 0.0,
+        "featureMean": 0.0,
+        "featureSd": 0.0,
+        "feature": null,
+        "rank": 1,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "alone:approach:scoreBlocked": {
+        "coefficients": {
+          "intercept": 0.4375,
+          "extra": -0.10027165445515017
+        },
+        "vpMean": 0.0,
+        "featureMean": -0.006076388888888888,
+        "featureSd": 0.01490934378239381,
+        "feature": "approach:scoreBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "m2Residual:approach:scoreBlocked": {
+        "coefficients": {
+          "intercept": -0.4035529773597766,
+          "extra": 0.5293922866749836
+        },
+        "vpMean": 0.0,
+        "featureMean": -0.006076388888888888,
+        "featureSd": 0.01490934378239381,
+        "feature": "approach:scoreBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "alone:combat:scoreOrVisitedSupplyBlocked": {
+        "coefficients": {
+          "intercept": 0.4375,
+          "extra": -0.4215019689925031
+        },
+        "vpMean": 0.0,
+        "featureMean": -0.008680555555555556,
+        "featureSd": 0.01761960341161844,
+        "feature": "combat:scoreOrVisitedSupplyBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": {
+        "coefficients": {
+          "intercept": -0.4035529773597766,
+          "extra": 0.18488562398364547
+        },
+        "vpMean": 0.0,
+        "featureMean": -0.008680555555555556,
+        "featureSd": 0.01761960341161844,
+        "feature": "combat:scoreOrVisitedSupplyBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      }
+    }
+  },
+  {
+    "split": 2,
+    "variant": "progressObjective-half",
+    "family": "progressObjective",
+    "developmentSeeds": [
+      324741633,
+      324751527
+    ],
+    "evaluationSeeds": [
+      324741827,
+      324751333
+    ],
+    "trainVariants": [
+      "contactBad-double",
+      "contactBad-half",
+      "crowding-double",
+      "crowding-half",
+      "hqWithArmy-double",
+      "hqWithArmy-half",
+      "outOfSupply-double",
+      "outOfSupply-half"
+    ],
+    "observed": 2.0,
+    "byClimate": {
+      "TEMPERATE_INLAND": 6.0,
+      "EASTERN_EUROPE": -2.0
+    },
+    "predictions": {
+      "zero": 0.0,
+      "identity:M2": -0.10677644328213343,
+      "m2ResidualMean": -0.51032942064191,
+      "alone:approach:scoreBlocked": 0.39663370998116765,
+      "m2Residual:approach:scoreBlocked": -0.2945725465926304,
+      "alone:combat:scoreOrVisitedSupplyBlocked": 0.22984088457389434,
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": -0.4192428114305299
+    },
+    "fits": {
+      "m2ResidualMean": {
+        "coefficients": {
+          "intercept": -0.4035529773597766
+        },
+        "vpMean": 0.0,
+        "featureMean": 0.0,
+        "featureSd": 0.0,
+        "feature": null,
+        "rank": 1,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "alone:approach:scoreBlocked": {
+        "coefficients": {
+          "intercept": 0.4375,
+          "extra": -0.10027165445515017
+        },
+        "vpMean": 0.0,
+        "featureMean": -0.006076388888888888,
+        "featureSd": 0.01490934378239381,
+        "feature": "approach:scoreBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "m2Residual:approach:scoreBlocked": {
+        "coefficients": {
+          "intercept": -0.4035529773597766,
+          "extra": 0.5293922866749836
+        },
+        "vpMean": 0.0,
+        "featureMean": -0.006076388888888888,
+        "featureSd": 0.01490934378239381,
+        "feature": "approach:scoreBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "alone:combat:scoreOrVisitedSupplyBlocked": {
+        "coefficients": {
+          "intercept": 0.4375,
+          "extra": -0.4215019689925031
+        },
+        "vpMean": 0.0,
+        "featureMean": -0.008680555555555556,
+        "featureSd": 0.01761960341161844,
+        "feature": "combat:scoreOrVisitedSupplyBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": {
+        "coefficients": {
+          "intercept": -0.4035529773597766,
+          "extra": 0.18488562398364547
+        },
+        "vpMean": 0.0,
+        "featureMean": -0.008680555555555556,
+        "featureSd": 0.01761960341161844,
+        "feature": "combat:scoreOrVisitedSupplyBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      }
+    }
+  },
+  {
+    "split": 3,
+    "variant": "contactBad-double",
+    "family": "contactBad",
+    "developmentSeeds": [
+      324741827,
+      324751527
+    ],
+    "evaluationSeeds": [
+      324741633,
+      324751333
+    ],
+    "trainVariants": [
+      "crowding-double",
+      "crowding-half",
+      "hqWithArmy-double",
+      "hqWithArmy-half",
+      "outOfSupply-double",
+      "outOfSupply-half",
+      "progressObjective-double",
+      "progressObjective-half"
+    ],
+    "observed": -2.0,
+    "byClimate": {
+      "TEMPERATE_INLAND": 0.0,
+      "EASTERN_EUROPE": -4.0
+    },
+    "predictions": {
+      "zero": 0.0,
+      "identity:M2": 0.7001489401226055,
+      "m2ResidualMean": 1.3835235995791149,
+      "alone:approach:scoreBlocked": 1.2234848484848484,
+      "m2Residual:approach:scoreBlocked": 0.8588637460498857,
+      "alone:combat:scoreOrVisitedSupplyBlocked": 1.2234848484848484,
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": 0.8588637460498857
+    },
+    "fits": {
+      "m2ResidualMean": {
+        "coefficients": {
+          "intercept": 0.6833746594565093
+        },
+        "vpMean": 0.25,
+        "featureMean": 0.0,
+        "featureSd": 0.0,
+        "feature": null,
+        "rank": 1,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "alone:approach:scoreBlocked": {
+        "coefficients": {
+          "intercept": 1.375,
+          "extra": 0.16750630254320203
+        },
+        "vpMean": 0.25,
+        "featureMean": 0.003472222222222222,
+        "featureSd": 0.011516058299845137,
+        "feature": "approach:scoreBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "m2Residual:approach:scoreBlocked": {
+        "coefficients": {
+          "intercept": 0.6833746594565093,
+          "extra": 0.5800332922397582
+        },
+        "vpMean": 0.25,
+        "featureMean": 0.003472222222222222,
+        "featureSd": 0.011516058299845137,
+        "feature": "approach:scoreBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "alone:combat:scoreOrVisitedSupplyBlocked": {
+        "coefficients": {
+          "intercept": 1.375,
+          "extra": 0.16750630254320203
+        },
+        "vpMean": 0.25,
+        "featureMean": 0.003472222222222222,
+        "featureSd": 0.011516058299845137,
+        "feature": "combat:scoreOrVisitedSupplyBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": {
+        "coefficients": {
+          "intercept": 0.6833746594565093,
+          "extra": 0.5800332922397582
+        },
+        "vpMean": 0.25,
+        "featureMean": 0.003472222222222222,
+        "featureSd": 0.011516058299845137,
+        "feature": "combat:scoreOrVisitedSupplyBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      }
+    }
+  },
+  {
+    "split": 3,
+    "variant": "contactBad-half",
+    "family": "contactBad",
+    "developmentSeeds": [
+      324741827,
+      324751527
+    ],
+    "evaluationSeeds": [
+      324741633,
+      324751333
+    ],
+    "trainVariants": [
+      "crowding-double",
+      "crowding-half",
+      "hqWithArmy-double",
+      "hqWithArmy-half",
+      "outOfSupply-double",
+      "outOfSupply-half",
+      "progressObjective-double",
+      "progressObjective-half"
+    ],
+    "observed": 4.0,
+    "byClimate": {
+      "TEMPERATE_INLAND": 4.0,
+      "EASTERN_EUROPE": 4.0
+    },
+    "predictions": {
+      "zero": 0.0,
+      "identity:M2": 0.8828917302274353,
+      "m2ResidualMean": 1.5662663896839446,
+      "alone:approach:scoreBlocked": 1.5265151515151516,
+      "m2Residual:approach:scoreBlocked": 2.0909262432131737,
+      "alone:combat:scoreOrVisitedSupplyBlocked": 1.2234848484848484,
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": 1.0416065361547155
+    },
+    "fits": {
+      "m2ResidualMean": {
+        "coefficients": {
+          "intercept": 0.6833746594565093
+        },
+        "vpMean": 0.25,
+        "featureMean": 0.0,
+        "featureSd": 0.0,
+        "feature": null,
+        "rank": 1,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "alone:approach:scoreBlocked": {
+        "coefficients": {
+          "intercept": 1.375,
+          "extra": 0.16750630254320203
+        },
+        "vpMean": 0.25,
+        "featureMean": 0.003472222222222222,
+        "featureSd": 0.011516058299845137,
+        "feature": "approach:scoreBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "m2Residual:approach:scoreBlocked": {
+        "coefficients": {
+          "intercept": 0.6833746594565093,
+          "extra": 0.5800332922397582
+        },
+        "vpMean": 0.25,
+        "featureMean": 0.003472222222222222,
+        "featureSd": 0.011516058299845137,
+        "feature": "approach:scoreBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "alone:combat:scoreOrVisitedSupplyBlocked": {
+        "coefficients": {
+          "intercept": 1.375,
+          "extra": 0.16750630254320203
+        },
+        "vpMean": 0.25,
+        "featureMean": 0.003472222222222222,
+        "featureSd": 0.011516058299845137,
+        "feature": "combat:scoreOrVisitedSupplyBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": {
+        "coefficients": {
+          "intercept": 0.6833746594565093,
+          "extra": 0.5800332922397582
+        },
+        "vpMean": 0.25,
+        "featureMean": 0.003472222222222222,
+        "featureSd": 0.011516058299845137,
+        "feature": "combat:scoreOrVisitedSupplyBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      }
+    }
+  },
+  {
+    "split": 3,
+    "variant": "crowding-double",
+    "family": "crowding",
+    "developmentSeeds": [
+      324741827,
+      324751527
+    ],
+    "evaluationSeeds": [
+      324741633,
+      324751333
+    ],
+    "trainVariants": [
+      "contactBad-double",
+      "contactBad-half",
+      "hqWithArmy-double",
+      "hqWithArmy-half",
+      "outOfSupply-double",
+      "outOfSupply-half",
+      "progressObjective-double",
+      "progressObjective-half"
+    ],
+    "observed": 1.5,
+    "byClimate": {
+      "TEMPERATE_INLAND": 1.0,
+      "EASTERN_EUROPE": 2.0
+    },
+    "predictions": {
+      "zero": 0.0,
+      "identity:M2": 1.679880331885893,
+      "m2ResidualMean": 1.5035213537156094,
+      "alone:approach:scoreBlocked": 1.1836854460093895,
+      "m2Residual:approach:scoreBlocked": 2.2717017820618386,
+      "alone:combat:scoreOrVisitedSupplyBlocked": -0.20833333333333326,
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": 1.3529194605479564
+    },
+    "fits": {
+      "m2ResidualMean": {
+        "coefficients": {
+          "intercept": -0.17635897817028373
+        },
+        "vpMean": 0.25,
+        "featureMean": 0.0,
+        "featureSd": 0.0,
+        "feature": null,
+        "rank": 1,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "alone:approach:scoreBlocked": {
+        "coefficients": {
+          "intercept": 0.625,
+          "extra": 0.2769157202452324
+        },
+        "vpMean": 0.25,
+        "featureMean": -0.0008680555555555555,
+        "featureSd": 0.007314366122548922,
+        "feature": "approach:scoreBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "m2Residual:approach:scoreBlocked": {
+        "coefficients": {
+          "intercept": -0.17635897817028373,
+          "extra": 0.3807531377687118
+        },
+        "vpMean": 0.25,
+        "featureMean": -0.0008680555555555555,
+        "featureSd": 0.007314366122548922,
+        "feature": "approach:scoreBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "alone:combat:scoreOrVisitedSupplyBlocked": {
+        "coefficients": {
+          "intercept": 0.625,
+          "extra": -0.23570226039551578
+        },
+        "vpMean": 0.25,
+        "featureMean": -0.003472222222222222,
+        "featureSd": 0.004910463758239913,
+        "feature": "combat:scoreOrVisitedSupplyBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": {
+        "coefficients": {
+          "intercept": -0.17635897817028373,
+          "extra": -0.04259664796735172
+        },
+        "vpMean": 0.25,
+        "featureMean": -0.003472222222222222,
+        "featureSd": 0.004910463758239913,
+        "feature": "combat:scoreOrVisitedSupplyBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      }
+    }
+  },
+  {
+    "split": 3,
+    "variant": "crowding-half",
+    "family": "crowding",
+    "developmentSeeds": [
+      324741827,
+      324751527
+    ],
+    "evaluationSeeds": [
+      324741633,
+      324751333
+    ],
+    "trainVariants": [
+      "contactBad-double",
+      "contactBad-half",
+      "hqWithArmy-double",
+      "hqWithArmy-half",
+      "outOfSupply-double",
+      "outOfSupply-half",
+      "progressObjective-double",
+      "progressObjective-half"
+    ],
+    "observed": 4.5,
+    "byClimate": {
+      "TEMPERATE_INLAND": 5.0,
+      "EASTERN_EUROPE": 4.0
+    },
+    "predictions": {
+      "zero": 0.0,
+      "identity:M2": -0.9747087625501965,
+      "m2ResidualMean": -1.1510677407204801,
+      "alone:approach:scoreBlocked": 1.7095070422535212,
+      "m2Residual:approach:scoreBlocked": 0.3401060319516127,
+      "alone:combat:scoreOrVisitedSupplyBlocked": -0.8749999999999998,
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": -1.4221511484222553
+    },
+    "fits": {
+      "m2ResidualMean": {
+        "coefficients": {
+          "intercept": -0.17635897817028373
+        },
+        "vpMean": 0.25,
+        "featureMean": 0.0,
+        "featureSd": 0.0,
+        "feature": null,
+        "rank": 1,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "alone:approach:scoreBlocked": {
+        "coefficients": {
+          "intercept": 0.625,
+          "extra": 0.2769157202452324
+        },
+        "vpMean": 0.25,
+        "featureMean": -0.0008680555555555555,
+        "featureSd": 0.007314366122548922,
+        "feature": "approach:scoreBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "m2Residual:approach:scoreBlocked": {
+        "coefficients": {
+          "intercept": -0.17635897817028373,
+          "extra": 0.3807531377687118
+        },
+        "vpMean": 0.25,
+        "featureMean": -0.0008680555555555555,
+        "featureSd": 0.007314366122548922,
+        "feature": "approach:scoreBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "alone:combat:scoreOrVisitedSupplyBlocked": {
+        "coefficients": {
+          "intercept": 0.625,
+          "extra": -0.23570226039551578
+        },
+        "vpMean": 0.25,
+        "featureMean": -0.003472222222222222,
+        "featureSd": 0.004910463758239913,
+        "feature": "combat:scoreOrVisitedSupplyBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": {
+        "coefficients": {
+          "intercept": -0.17635897817028373,
+          "extra": -0.04259664796735172
+        },
+        "vpMean": 0.25,
+        "featureMean": -0.003472222222222222,
+        "featureSd": 0.004910463758239913,
+        "feature": "combat:scoreOrVisitedSupplyBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      }
+    }
+  },
+  {
+    "split": 3,
+    "variant": "hqWithArmy-double",
+    "family": "hqWithArmy",
+    "developmentSeeds": [
+      324741827,
+      324751527
+    ],
+    "evaluationSeeds": [
+      324741633,
+      324751333
+    ],
+    "trainVariants": [
+      "contactBad-double",
+      "contactBad-half",
+      "crowding-double",
+      "crowding-half",
+      "outOfSupply-double",
+      "outOfSupply-half",
+      "progressObjective-double",
+      "progressObjective-half"
+    ],
+    "observed": 3.0,
+    "byClimate": {
+      "TEMPERATE_INLAND": 2.0,
+      "EASTERN_EUROPE": 4.0
+    },
+    "predictions": {
+      "zero": 0.0,
+      "identity:M2": 1.4256559173146592,
+      "m2ResidualMean": 2.2439663456644716,
+      "alone:approach:scoreBlocked": 0.24107799852833,
+      "m2Residual:approach:scoreBlocked": 0.6537315379770243,
+      "alone:combat:scoreOrVisitedSupplyBlocked": 0.6527777777777777,
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": 1.0385359741778277
+    },
+    "fits": {
+      "m2ResidualMean": {
+        "coefficients": {
+          "intercept": 0.8183104283498124
+        },
+        "vpMean": 0.25,
+        "featureMean": 0.0,
+        "featureSd": 0.0,
+        "feature": null,
+        "rank": 1,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "alone:approach:scoreBlocked": {
+        "coefficients": {
+          "intercept": 1.375,
+          "extra": 0.6058202970851964
+        },
+        "vpMean": 0.25,
+        "featureMean": 0.006076388888888888,
+        "featureSd": 0.010666845249517802,
+        "feature": "approach:scoreBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "m2Residual:approach:scoreBlocked": {
+        "coefficients": {
+          "intercept": 0.8183104283498124,
+          "extra": 0.849614455295935
+        },
+        "vpMean": 0.25,
+        "featureMean": 0.006076388888888888,
+        "featureSd": 0.010666845249517802,
+        "feature": "approach:scoreBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "alone:combat:scoreOrVisitedSupplyBlocked": {
+        "coefficients": {
+          "intercept": 1.375,
+          "extra": 0.4567734398020992
+        },
+        "vpMean": 0.25,
+        "featureMean": 0.003472222222222222,
+        "featureSd": 0.010980130764473538,
+        "feature": "combat:scoreOrVisitedSupplyBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": {
+        "coefficients": {
+          "intercept": 0.8183104283498124,
+          "extra": 0.7623811069281368
+        },
+        "vpMean": 0.25,
+        "featureMean": 0.003472222222222222,
+        "featureSd": 0.010980130764473538,
+        "feature": "combat:scoreOrVisitedSupplyBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      }
+    }
+  },
+  {
+    "split": 3,
+    "variant": "hqWithArmy-half",
+    "family": "hqWithArmy",
+    "developmentSeeds": [
+      324741827,
+      324751527
+    ],
+    "evaluationSeeds": [
+      324741633,
+      324751333
+    ],
+    "trainVariants": [
+      "contactBad-double",
+      "contactBad-half",
+      "crowding-double",
+      "crowding-half",
+      "outOfSupply-double",
+      "outOfSupply-half",
+      "progressObjective-double",
+      "progressObjective-half"
+    ],
+    "observed": -1.5,
+    "byClimate": {
+      "TEMPERATE_INLAND": -3.0,
+      "EASTERN_EUROPE": 0.0
+    },
+    "predictions": {
+      "zero": 0.0,
+      "identity:M2": 1.2368709041818053,
+      "m2ResidualMean": 2.0551813325316175,
+      "alone:approach:scoreBlocked": 1.0298933038999265,
+      "m2Residual:approach:scoreBlocked": 1.5711968258441338,
+      "alone:combat:scoreOrVisitedSupplyBlocked": 1.2305555555555556,
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": 1.814095258234289
+    },
+    "fits": {
+      "m2ResidualMean": {
+        "coefficients": {
+          "intercept": 0.8183104283498124
+        },
+        "vpMean": 0.25,
+        "featureMean": 0.0,
+        "featureSd": 0.0,
+        "feature": null,
+        "rank": 1,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "alone:approach:scoreBlocked": {
+        "coefficients": {
+          "intercept": 1.375,
+          "extra": 0.6058202970851964
+        },
+        "vpMean": 0.25,
+        "featureMean": 0.006076388888888888,
+        "featureSd": 0.010666845249517802,
+        "feature": "approach:scoreBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "m2Residual:approach:scoreBlocked": {
+        "coefficients": {
+          "intercept": 0.8183104283498124,
+          "extra": 0.849614455295935
+        },
+        "vpMean": 0.25,
+        "featureMean": 0.006076388888888888,
+        "featureSd": 0.010666845249517802,
+        "feature": "approach:scoreBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "alone:combat:scoreOrVisitedSupplyBlocked": {
+        "coefficients": {
+          "intercept": 1.375,
+          "extra": 0.4567734398020992
+        },
+        "vpMean": 0.25,
+        "featureMean": 0.003472222222222222,
+        "featureSd": 0.010980130764473538,
+        "feature": "combat:scoreOrVisitedSupplyBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": {
+        "coefficients": {
+          "intercept": 0.8183104283498124,
+          "extra": 0.7623811069281368
+        },
+        "vpMean": 0.25,
+        "featureMean": 0.003472222222222222,
+        "featureSd": 0.010980130764473538,
+        "feature": "combat:scoreOrVisitedSupplyBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      }
+    }
+  },
+  {
+    "split": 3,
+    "variant": "outOfSupply-double",
+    "family": "outOfSupply",
+    "developmentSeeds": [
+      324741827,
+      324751527
+    ],
+    "evaluationSeeds": [
+      324741633,
+      324751333
+    ],
+    "trainVariants": [
+      "contactBad-double",
+      "contactBad-half",
+      "crowding-double",
+      "crowding-half",
+      "hqWithArmy-double",
+      "hqWithArmy-half",
+      "progressObjective-double",
+      "progressObjective-half"
+    ],
+    "observed": -2.5,
+    "byClimate": {
+      "TEMPERATE_INLAND": -3.0,
+      "EASTERN_EUROPE": -2.0
+    },
+    "predictions": {
+      "zero": 0.0,
+      "identity:M2": 0.0,
+      "m2ResidualMean": 0.5315494554622795,
+      "alone:approach:scoreBlocked": 1.2220209339774557,
+      "m2Residual:approach:scoreBlocked": 0.23810867342439096,
+      "alone:combat:scoreOrVisitedSupplyBlocked": 1.3292483660130718,
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": 0.42775574757135315
+    },
+    "fits": {
+      "m2ResidualMean": {
+        "coefficients": {
+          "intercept": 0.5315494554622795
+        },
+        "vpMean": 0.25,
+        "featureMean": 0.0,
+        "featureSd": 0.0,
+        "feature": null,
+        "rank": 1,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "alone:approach:scoreBlocked": {
+        "coefficients": {
+          "intercept": 1.375,
+          "extra": 0.4401970963427133
+        },
+        "vpMean": 0.25,
+        "featureMean": 0.004340277777777778,
+        "featureSd": 0.012489144591960207,
+        "feature": "approach:scoreBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "m2Residual:approach:scoreBlocked": {
+        "coefficients": {
+          "intercept": 0.5315494554622795,
+          "extra": 0.8443755316337055
+        },
+        "vpMean": 0.25,
+        "featureMean": 0.004340277777777778,
+        "featureSd": 0.012489144591960207,
+        "feature": "approach:scoreBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "alone:combat:scoreOrVisitedSupplyBlocked": {
+        "coefficients": {
+          "intercept": 1.375,
+          "extra": 0.32673201960653564
+        },
+        "vpMean": 0.25,
+        "featureMean": 0.001736111111111111,
+        "featureSd": 0.012398313243998003,
+        "feature": "combat:scoreOrVisitedSupplyBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": {
+        "coefficients": {
+          "intercept": 0.5315494554622795,
+          "extra": 0.7412353362361339
+        },
+        "vpMean": 0.25,
+        "featureMean": 0.001736111111111111,
+        "featureSd": 0.012398313243998003,
+        "feature": "combat:scoreOrVisitedSupplyBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      }
+    }
+  },
+  {
+    "split": 3,
+    "variant": "outOfSupply-half",
+    "family": "outOfSupply",
+    "developmentSeeds": [
+      324741827,
+      324751527
+    ],
+    "evaluationSeeds": [
+      324741633,
+      324751333
+    ],
+    "trainVariants": [
+      "contactBad-double",
+      "contactBad-half",
+      "crowding-double",
+      "crowding-half",
+      "hqWithArmy-double",
+      "hqWithArmy-half",
+      "progressObjective-double",
+      "progressObjective-half"
+    ],
+    "observed": -3.0,
+    "byClimate": {
+      "TEMPERATE_INLAND": 3.0,
+      "EASTERN_EUROPE": -9.0
+    },
+    "predictions": {
+      "zero": 0.0,
+      "identity:M2": 0.3684390383962016,
+      "m2ResidualMean": 0.8999884938584811,
+      "alone:approach:scoreBlocked": 1.2220209339774557,
+      "m2Residual:approach:scoreBlocked": 0.6065477118205926,
+      "alone:combat:scoreOrVisitedSupplyBlocked": 1.3292483660130718,
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": 0.7961947859675548
+    },
+    "fits": {
+      "m2ResidualMean": {
+        "coefficients": {
+          "intercept": 0.5315494554622795
+        },
+        "vpMean": 0.25,
+        "featureMean": 0.0,
+        "featureSd": 0.0,
+        "feature": null,
+        "rank": 1,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "alone:approach:scoreBlocked": {
+        "coefficients": {
+          "intercept": 1.375,
+          "extra": 0.4401970963427133
+        },
+        "vpMean": 0.25,
+        "featureMean": 0.004340277777777778,
+        "featureSd": 0.012489144591960207,
+        "feature": "approach:scoreBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "m2Residual:approach:scoreBlocked": {
+        "coefficients": {
+          "intercept": 0.5315494554622795,
+          "extra": 0.8443755316337055
+        },
+        "vpMean": 0.25,
+        "featureMean": 0.004340277777777778,
+        "featureSd": 0.012489144591960207,
+        "feature": "approach:scoreBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "alone:combat:scoreOrVisitedSupplyBlocked": {
+        "coefficients": {
+          "intercept": 1.375,
+          "extra": 0.32673201960653564
+        },
+        "vpMean": 0.25,
+        "featureMean": 0.001736111111111111,
+        "featureSd": 0.012398313243998003,
+        "feature": "combat:scoreOrVisitedSupplyBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": {
+        "coefficients": {
+          "intercept": 0.5315494554622795,
+          "extra": 0.7412353362361339
+        },
+        "vpMean": 0.25,
+        "featureMean": 0.001736111111111111,
+        "featureSd": 0.012398313243998003,
+        "feature": "combat:scoreOrVisitedSupplyBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      }
+    }
+  },
+  {
+    "split": 3,
+    "variant": "progressObjective-double",
+    "family": "progressObjective",
+    "developmentSeeds": [
+      324741827,
+      324751527
+    ],
+    "evaluationSeeds": [
+      324741633,
+      324751333
+    ],
+    "trainVariants": [
+      "contactBad-double",
+      "contactBad-half",
+      "crowding-double",
+      "crowding-half",
+      "hqWithArmy-double",
+      "hqWithArmy-half",
+      "outOfSupply-double",
+      "outOfSupply-half"
+    ],
+    "observed": 9.0,
+    "byClimate": {
+      "TEMPERATE_INLAND": 9.0,
+      "EASTERN_EUROPE": 9.0
+    },
+    "predictions": {
+      "zero": 0.0,
+      "identity:M2": 1.3632275363937274,
+      "m2ResidualMean": 1.448330273946427,
+      "alone:approach:scoreBlocked": 0.5299248523886205,
+      "m2Residual:approach:scoreBlocked": 1.1069617712526523,
+      "alone:combat:scoreOrVisitedSupplyBlocked": 0.6933551198257081,
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": 1.3367553596431332
+    },
+    "fits": {
+      "m2ResidualMean": {
+        "coefficients": {
+          "intercept": 0.08510273755269955
+        },
+        "vpMean": 0.0,
+        "featureMean": 0.0,
+        "featureSd": 0.0,
+        "feature": null,
+        "rank": 1,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "alone:approach:scoreBlocked": {
+        "coefficients": {
+          "intercept": 0.75,
+          "extra": 0.6332659982474121
+        },
+        "vpMean": 0.0,
+        "featureMean": 0.004340277777777778,
+        "featureSd": 0.012489144591960207,
+        "feature": "approach:scoreBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "m2Residual:approach:scoreBlocked": {
+        "coefficients": {
+          "intercept": 0.08510273755269955,
+          "extra": 0.9822874957709204
+        },
+        "vpMean": 0.0,
+        "featureMean": 0.004340277777777778,
+        "featureSd": 0.012489144591960207,
+        "feature": "approach:scoreBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "alone:combat:scoreOrVisitedSupplyBlocked": {
+        "coefficients": {
+          "intercept": 0.75,
+          "extra": 0.40452535760809166
+        },
+        "vpMean": 0.0,
+        "featureMean": 0.001736111111111111,
+        "featureSd": 0.012398313243998003,
+        "feature": "combat:scoreOrVisitedSupplyBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": {
+        "coefficients": {
+          "intercept": 0.08510273755269955,
+          "extra": 0.7968042649177745
+        },
+        "vpMean": 0.0,
+        "featureMean": 0.001736111111111111,
+        "featureSd": 0.012398313243998003,
+        "feature": "combat:scoreOrVisitedSupplyBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      }
+    }
+  },
+  {
+    "split": 3,
+    "variant": "progressObjective-half",
+    "family": "progressObjective",
+    "developmentSeeds": [
+      324741827,
+      324751527
+    ],
+    "evaluationSeeds": [
+      324741633,
+      324751333
+    ],
+    "trainVariants": [
+      "contactBad-double",
+      "contactBad-half",
+      "crowding-double",
+      "crowding-half",
+      "hqWithArmy-double",
+      "hqWithArmy-half",
+      "outOfSupply-double",
+      "outOfSupply-half"
+    ],
+    "observed": 0.5,
+    "byClimate": {
+      "TEMPERATE_INLAND": 3.0,
+      "EASTERN_EUROPE": -2.0
+    },
+    "predictions": {
+      "zero": 0.0,
+      "identity:M2": 0.4336377587258351,
+      "m2ResidualMean": 0.5187404962785347,
+      "alone:approach:scoreBlocked": 0.5299248523886205,
+      "m2Residual:approach:scoreBlocked": 0.17737199358476002,
+      "alone:combat:scoreOrVisitedSupplyBlocked": 0.6933551198257081,
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": 0.4071655819752409
+    },
+    "fits": {
+      "m2ResidualMean": {
+        "coefficients": {
+          "intercept": 0.08510273755269955
+        },
+        "vpMean": 0.0,
+        "featureMean": 0.0,
+        "featureSd": 0.0,
+        "feature": null,
+        "rank": 1,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "alone:approach:scoreBlocked": {
+        "coefficients": {
+          "intercept": 0.75,
+          "extra": 0.6332659982474121
+        },
+        "vpMean": 0.0,
+        "featureMean": 0.004340277777777778,
+        "featureSd": 0.012489144591960207,
+        "feature": "approach:scoreBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "m2Residual:approach:scoreBlocked": {
+        "coefficients": {
+          "intercept": 0.08510273755269955,
+          "extra": 0.9822874957709204
+        },
+        "vpMean": 0.0,
+        "featureMean": 0.004340277777777778,
+        "featureSd": 0.012489144591960207,
+        "feature": "approach:scoreBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "alone:combat:scoreOrVisitedSupplyBlocked": {
+        "coefficients": {
+          "intercept": 0.75,
+          "extra": 0.40452535760809166
+        },
+        "vpMean": 0.0,
+        "featureMean": 0.001736111111111111,
+        "featureSd": 0.012398313243998003,
+        "feature": "combat:scoreOrVisitedSupplyBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      },
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": {
+        "coefficients": {
+          "intercept": 0.08510273755269955,
+          "extra": 0.7968042649177745
+        },
+        "vpMean": 0.0,
+        "featureMean": 0.001736111111111111,
+        "featureSd": 0.012398313243998003,
+        "feature": "combat:scoreOrVisitedSupplyBlocked",
+        "rank": 2,
+        "trainingRows": 8,
+        "objective": "sumSquaredError+standardizedExtraCoefficientSquared"
+      }
+    }
+  }
+]

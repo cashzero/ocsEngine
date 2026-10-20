@@ -1,0 +1,557 @@
+{
+  "qualification": "DESCRIPTIVE_POST_RESULT_META_ANALYSIS",
+  "registration": {
+    "frozenAtUtc": "2026-10-20T00:54:06.277740+00:00",
+    "status": "FROZEN_BEFORE_STABILITY_CALCULATION",
+    "scriptSha256": "6fc46373547a84119809620c30db2be2cc61b5dbfc9eb915e2ca4c6df614c6c8",
+    "protocolSha256": "8f52ecb62c7ddc978efe66fb29beed73ef0bc3fa3beff4fd458870f5b896e487",
+    "helperSha256": "00eeb924694c722d1ce47d92e44a6d1d6bae485b6728f1c9d2f0fcd80ed6a864",
+    "panelSha256": "5251a245ce062a5a8ac41b34ad5b75306458b0eef2e3a0541ac343aa083c7e44"
+  },
+  "pairRows": 40,
+  "variables": 18,
+  "dependentSplits": 4,
+  "resultsArtifactSha256": "b081667b461c19afb1605ed25681e704e2316736ef33361a4faee67f2f9dbf73",
+  "metrics": {
+    "finalVp": [
+      {
+        "split": 0,
+        "variantSpearman": 0.44877455520405946,
+        "familyContrastSpearman": 0.1,
+        "familyBothNonzero": 4,
+        "familySameNonzeroSign": 2
+      },
+      {
+        "split": 1,
+        "variantSpearman": 0.6172957114310298,
+        "familyContrastSpearman": 0.4,
+        "familyBothNonzero": 5,
+        "familySameNonzeroSign": 3
+      },
+      {
+        "split": 2,
+        "variantSpearman": 0.6172957114310298,
+        "familyContrastSpearman": 0.4,
+        "familyBothNonzero": 5,
+        "familySameNonzeroSign": 3
+      },
+      {
+        "split": 3,
+        "variantSpearman": 0.44877455520405946,
+        "familyContrastSpearman": 0.1,
+        "familyBothNonzero": 4,
+        "familySameNonzeroSign": 2
+      }
+    ],
+    "early:VP": [
+      {
+        "split": 0,
+        "variantSpearman": 0.16666666666666666,
+        "familyContrastSpearman": null,
+        "familyBothNonzero": 0,
+        "familySameNonzeroSign": 0
+      },
+      {
+        "split": 1,
+        "variantSpearman": null,
+        "familyContrastSpearman": null,
+        "familyBothNonzero": 0,
+        "familySameNonzeroSign": 0
+      },
+      {
+        "split": 2,
+        "variantSpearman": null,
+        "familyContrastSpearman": null,
+        "familyBothNonzero": 0,
+        "familySameNonzeroSign": 0
+      },
+      {
+        "split": 3,
+        "variantSpearman": 0.16666666666666666,
+        "familyContrastSpearman": null,
+        "familyBothNonzero": 0,
+        "familySameNonzeroSign": 0
+      }
+    ],
+    "early:M0": [
+      {
+        "split": 0,
+        "variantSpearman": 0.16666666666666666,
+        "familyContrastSpearman": null,
+        "familyBothNonzero": 0,
+        "familySameNonzeroSign": 0
+      },
+      {
+        "split": 1,
+        "variantSpearman": null,
+        "familyContrastSpearman": null,
+        "familyBothNonzero": 0,
+        "familySameNonzeroSign": 0
+      },
+      {
+        "split": 2,
+        "variantSpearman": null,
+        "familyContrastSpearman": null,
+        "familyBothNonzero": 0,
+        "familySameNonzeroSign": 0
+      },
+      {
+        "split": 3,
+        "variantSpearman": 0.16666666666666666,
+        "familyContrastSpearman": null,
+        "familyBothNonzero": 0,
+        "familySameNonzeroSign": 0
+      }
+    ],
+    "early:M1": [
+      {
+        "split": 0,
+        "variantSpearman": -0.024316221747202584,
+        "familyContrastSpearman": 0.1,
+        "familyBothNonzero": 4,
+        "familySameNonzeroSign": 2
+      },
+      {
+        "split": 1,
+        "variantSpearman": 0.2613993837824278,
+        "familyContrastSpearman": 0.7,
+        "familyBothNonzero": 4,
+        "familySameNonzeroSign": 3
+      },
+      {
+        "split": 2,
+        "variantSpearman": 0.2613993837824278,
+        "familyContrastSpearman": 0.7,
+        "familyBothNonzero": 4,
+        "familySameNonzeroSign": 3
+      },
+      {
+        "split": 3,
+        "variantSpearman": -0.024316221747202584,
+        "familyContrastSpearman": 0.1,
+        "familyBothNonzero": 4,
+        "familySameNonzeroSign": 2
+      }
+    ],
+    "early:M2": [
+      {
+        "split": 0,
+        "variantSpearman": 0.060790554368006455,
+        "familyContrastSpearman": 0.5,
+        "familyBothNonzero": 4,
+        "familySameNonzeroSign": 4
+      },
+      {
+        "split": 1,
+        "variantSpearman": 0.5592731001856593,
+        "familyContrastSpearman": 0.7,
+        "familyBothNonzero": 4,
+        "familySameNonzeroSign": 4
+      },
+      {
+        "split": 2,
+        "variantSpearman": 0.5592731001856593,
+        "familyContrastSpearman": 0.7,
+        "familyBothNonzero": 4,
+        "familySameNonzeroSign": 4
+      },
+      {
+        "split": 3,
+        "variantSpearman": 0.060790554368006455,
+        "familyContrastSpearman": 0.5,
+        "familyBothNonzero": 4,
+        "familySameNonzeroSign": 4
+      }
+    ],
+    "path:routeRefusals": [
+      {
+        "split": 0,
+        "variantSpearman": null,
+        "familyContrastSpearman": null,
+        "familyBothNonzero": 0,
+        "familySameNonzeroSign": 0
+      },
+      {
+        "split": 1,
+        "variantSpearman": null,
+        "familyContrastSpearman": null,
+        "familyBothNonzero": 0,
+        "familySameNonzeroSign": 0
+      },
+      {
+        "split": 2,
+        "variantSpearman": null,
+        "familyContrastSpearman": null,
+        "familyBothNonzero": 0,
+        "familySameNonzeroSign": 0
+      },
+      {
+        "split": 3,
+        "variantSpearman": null,
+        "familyContrastSpearman": null,
+        "familyBothNonzero": 0,
+        "familySameNonzeroSign": 0
+      }
+    ],
+    "path:exhaustedGroups": [
+      {
+        "split": 0,
+        "variantSpearman": null,
+        "familyContrastSpearman": null,
+        "familyBothNonzero": 0,
+        "familySameNonzeroSign": 0
+      },
+      {
+        "split": 1,
+        "variantSpearman": null,
+        "familyContrastSpearman": null,
+        "familyBothNonzero": 0,
+        "familySameNonzeroSign": 0
+      },
+      {
+        "split": 2,
+        "variantSpearman": null,
+        "familyContrastSpearman": null,
+        "familyBothNonzero": 0,
+        "familySameNonzeroSign": 0
+      },
+      {
+        "split": 3,
+        "variantSpearman": null,
+        "familyContrastSpearman": null,
+        "familyBothNonzero": 0,
+        "familySameNonzeroSign": 0
+      }
+    ],
+    "path:scoreBlocked": [
+      {
+        "split": 0,
+        "variantSpearman": null,
+        "familyContrastSpearman": null,
+        "familyBothNonzero": 0,
+        "familySameNonzeroSign": 0
+      },
+      {
+        "split": 1,
+        "variantSpearman": null,
+        "familyContrastSpearman": null,
+        "familyBothNonzero": 0,
+        "familySameNonzeroSign": 0
+      },
+      {
+        "split": 2,
+        "variantSpearman": null,
+        "familyContrastSpearman": null,
+        "familyBothNonzero": 0,
+        "familySameNonzeroSign": 0
+      },
+      {
+        "split": 3,
+        "variantSpearman": null,
+        "familyContrastSpearman": null,
+        "familyBothNonzero": 0,
+        "familySameNonzeroSign": 0
+      }
+    ],
+    "path:crowdingCrossing": [
+      {
+        "split": 0,
+        "variantSpearman": null,
+        "familyContrastSpearman": null,
+        "familyBothNonzero": 0,
+        "familySameNonzeroSign": 0
+      },
+      {
+        "split": 1,
+        "variantSpearman": null,
+        "familyContrastSpearman": null,
+        "familyBothNonzero": 0,
+        "familySameNonzeroSign": 0
+      },
+      {
+        "split": 2,
+        "variantSpearman": null,
+        "familyContrastSpearman": null,
+        "familyBothNonzero": 0,
+        "familySameNonzeroSign": 0
+      },
+      {
+        "split": 3,
+        "variantSpearman": null,
+        "familyContrastSpearman": null,
+        "familyBothNonzero": 0,
+        "familySameNonzeroSign": 0
+      }
+    ],
+    "path:exposureCrossing": [
+      {
+        "split": 0,
+        "variantSpearman": null,
+        "familyContrastSpearman": null,
+        "familyBothNonzero": 0,
+        "familySameNonzeroSign": 0
+      },
+      {
+        "split": 1,
+        "variantSpearman": null,
+        "familyContrastSpearman": null,
+        "familyBothNonzero": 0,
+        "familySameNonzeroSign": 0
+      },
+      {
+        "split": 2,
+        "variantSpearman": null,
+        "familyContrastSpearman": null,
+        "familyBothNonzero": 0,
+        "familySameNonzeroSign": 0
+      },
+      {
+        "split": 3,
+        "variantSpearman": null,
+        "familyContrastSpearman": null,
+        "familyBothNonzero": 0,
+        "familySameNonzeroSign": 0
+      }
+    ],
+    "path:correctionBudget": [
+      {
+        "split": 0,
+        "variantSpearman": null,
+        "familyContrastSpearman": null,
+        "familyBothNonzero": 0,
+        "familySameNonzeroSign": 0
+      },
+      {
+        "split": 1,
+        "variantSpearman": null,
+        "familyContrastSpearman": null,
+        "familyBothNonzero": 0,
+        "familySameNonzeroSign": 0
+      },
+      {
+        "split": 2,
+        "variantSpearman": null,
+        "familyContrastSpearman": null,
+        "familyBothNonzero": 0,
+        "familySameNonzeroSign": 0
+      },
+      {
+        "split": 3,
+        "variantSpearman": null,
+        "familyContrastSpearman": null,
+        "familyBothNonzero": 0,
+        "familySameNonzeroSign": 0
+      }
+    ],
+    "approach:routeRefusals": [
+      {
+        "split": 0,
+        "variantSpearman": 0.5272727272727272,
+        "familyContrastSpearman": 0.7,
+        "familyBothNonzero": 5,
+        "familySameNonzeroSign": 3
+      },
+      {
+        "split": 1,
+        "variantSpearman": 0.44242424242424244,
+        "familyContrastSpearman": 0.7,
+        "familyBothNonzero": 5,
+        "familySameNonzeroSign": 4
+      },
+      {
+        "split": 2,
+        "variantSpearman": 0.44242424242424244,
+        "familyContrastSpearman": 0.7,
+        "familyBothNonzero": 5,
+        "familySameNonzeroSign": 4
+      },
+      {
+        "split": 3,
+        "variantSpearman": 0.5272727272727272,
+        "familyContrastSpearman": 0.7,
+        "familyBothNonzero": 5,
+        "familySameNonzeroSign": 3
+      }
+    ],
+    "approach:exhaustedGroups": [
+      {
+        "split": 0,
+        "variantSpearman": 0.5183023183212385,
+        "familyContrastSpearman": 0.7,
+        "familyBothNonzero": 5,
+        "familySameNonzeroSign": 3
+      },
+      {
+        "split": 1,
+        "variantSpearman": 0.5227987675648555,
+        "familyContrastSpearman": 0.5,
+        "familyBothNonzero": 5,
+        "familySameNonzeroSign": 3
+      },
+      {
+        "split": 2,
+        "variantSpearman": 0.5227987675648555,
+        "familyContrastSpearman": 0.5,
+        "familyBothNonzero": 5,
+        "familySameNonzeroSign": 3
+      },
+      {
+        "split": 3,
+        "variantSpearman": 0.5183023183212385,
+        "familyContrastSpearman": 0.7,
+        "familyBothNonzero": 5,
+        "familySameNonzeroSign": 3
+      }
+    ],
+    "approach:scoreBlocked": [
+      {
+        "split": 0,
+        "variantSpearman": -0.6916647107884514,
+        "familyContrastSpearman": -0.31622776601683794,
+        "familyBothNonzero": 3,
+        "familySameNonzeroSign": 2
+      },
+      {
+        "split": 1,
+        "variantSpearman": 0.5795221930259518,
+        "familyContrastSpearman": 0.8207826816681233,
+        "familyBothNonzero": 3,
+        "familySameNonzeroSign": 3
+      },
+      {
+        "split": 2,
+        "variantSpearman": 0.5795221930259518,
+        "familyContrastSpearman": 0.8207826816681233,
+        "familyBothNonzero": 3,
+        "familySameNonzeroSign": 3
+      },
+      {
+        "split": 3,
+        "variantSpearman": -0.6916647107884514,
+        "familyContrastSpearman": -0.31622776601683794,
+        "familyBothNonzero": 3,
+        "familySameNonzeroSign": 2
+      }
+    ],
+    "approach:crowdingCrossing": [
+      {
+        "split": 0,
+        "variantSpearman": 0.6836577239790793,
+        "familyContrastSpearman": 0.9746794344808964,
+        "familyBothNonzero": 3,
+        "familySameNonzeroSign": 3
+      },
+      {
+        "split": 1,
+        "variantSpearman": 0.7951107515856809,
+        "familyContrastSpearman": 1.0,
+        "familyBothNonzero": 4,
+        "familySameNonzeroSign": 4
+      },
+      {
+        "split": 2,
+        "variantSpearman": 0.7951107515856809,
+        "familyContrastSpearman": 1.0,
+        "familyBothNonzero": 4,
+        "familySameNonzeroSign": 4
+      },
+      {
+        "split": 3,
+        "variantSpearman": 0.6836577239790793,
+        "familyContrastSpearman": 0.9746794344808964,
+        "familyBothNonzero": 3,
+        "familySameNonzeroSign": 3
+      }
+    ],
+    "approach:exposureCrossing": [
+      {
+        "split": 0,
+        "variantSpearman": 0.1292362752722138,
+        "familyContrastSpearman": 0.3,
+        "familyBothNonzero": 5,
+        "familySameNonzeroSign": 2
+      },
+      {
+        "split": 1,
+        "variantSpearman": 0.06707441766510146,
+        "familyContrastSpearman": 0.4,
+        "familyBothNonzero": 4,
+        "familySameNonzeroSign": 2
+      },
+      {
+        "split": 2,
+        "variantSpearman": 0.06707441766510146,
+        "familyContrastSpearman": 0.4,
+        "familyBothNonzero": 4,
+        "familySameNonzeroSign": 2
+      },
+      {
+        "split": 3,
+        "variantSpearman": 0.1292362752722138,
+        "familyContrastSpearman": 0.3,
+        "familyBothNonzero": 5,
+        "familySameNonzeroSign": 2
+      }
+    ],
+    "approach:correctionBudget": [
+      {
+        "split": 0,
+        "variantSpearman": 0.09231162519443842,
+        "familyContrastSpearman": -0.5,
+        "familyBothNonzero": 4,
+        "familySameNonzeroSign": 2
+      },
+      {
+        "split": 1,
+        "variantSpearman": -0.524390243902439,
+        "familyContrastSpearman": -0.3,
+        "familyBothNonzero": 4,
+        "familySameNonzeroSign": 1
+      },
+      {
+        "split": 2,
+        "variantSpearman": -0.524390243902439,
+        "familyContrastSpearman": -0.3,
+        "familyBothNonzero": 4,
+        "familySameNonzeroSign": 1
+      },
+      {
+        "split": 3,
+        "variantSpearman": 0.09231162519443842,
+        "familyContrastSpearman": -0.5,
+        "familyBothNonzero": 4,
+        "familySameNonzeroSign": 2
+      }
+    ],
+    "combat:scoreOrVisitedSupplyBlocked": [
+      {
+        "split": 0,
+        "variantSpearman": 0.05599866689881505,
+        "familyContrastSpearman": 0.28867513459481287,
+        "familyBothNonzero": 2,
+        "familySameNonzeroSign": 1
+      },
+      {
+        "split": 1,
+        "variantSpearman": 0.7628832112558976,
+        "familyContrastSpearman": 0.8207826816681233,
+        "familyBothNonzero": 3,
+        "familySameNonzeroSign": 2
+      },
+      {
+        "split": 2,
+        "variantSpearman": 0.7628832112558976,
+        "familyContrastSpearman": 0.8207826816681233,
+        "familyBothNonzero": 3,
+        "familySameNonzeroSign": 2
+      },
+      {
+        "split": 3,
+        "variantSpearman": 0.05599866689881505,
+        "familyContrastSpearman": 0.28867513459481287,
+        "familyBothNonzero": 2,
+        "familySameNonzeroSign": 1
+      }
+    ]
+  }
+}

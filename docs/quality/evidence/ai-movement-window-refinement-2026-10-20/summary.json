@@ -1,0 +1,557 @@
+{
+  "qualification": "POST_RESULT_EXPLORATION_ONLY",
+  "registration": {
+    "frozenAtUtc": "2026-10-19T16:33:45.820414+00:00",
+    "status": "FROZEN_BEFORE_REFINED_FEATURE_ASSOCIATIONS",
+    "originalResultAlreadySeen": true,
+    "scriptSha256": "f87fc6edf4d0851b2f1dcb2bd65fcd505c353af4220e0ad55c94dccb8fe2e83a",
+    "protocolSha256": "204bf3a529b1b52d52efa1b6161fe6954b04594d16d067f2a33f9a090b452e89",
+    "scorerSha256": "a4a9550cfec96f1c8df431ef4cb59eb15780b53f5c2fee5559e3aaa2446f6a0d",
+    "originalAnalysisSha256": "0ad6464c3dd25305854997a06364d2bb2031b401429b72bec6f182063337c877"
+  },
+  "support": {
+    "windows": 984,
+    "scoreBlocked": 29,
+    "visitedSupplyExhausted": 14,
+    "contributes": 43,
+    "unknownImproving": 12,
+    "contributingWindowsWithCorrectionOmissions": 14,
+    "rawPlayerScoreBlockedEqualityChecks": 160,
+    "nonzeroPairValues": 15
+  },
+  "overall": {
+    "alone:approach:scoreBlocked": {
+      "mse": 9.280461494321901,
+      "mae": 2.5272943876953513,
+      "bias": 0.05869063933341482,
+      "predictionRows": 40
+    },
+    "alone:combat:scoreOrVisitedSupplyBlocked": {
+      "mse": 12.040188557077615,
+      "mae": 2.9061124949179726,
+      "bias": -0.08664908450163938,
+      "predictionRows": 40
+    },
+    "identity:M2": {
+      "mse": 7.68606804650379,
+      "mae": 2.2437789612482844,
+      "bias": -0.679643067782598,
+      "predictionRows": 40
+    },
+    "m2Residual:approach:scoreBlocked": {
+      "mse": 9.112518122487568,
+      "mae": 2.4437876799229614,
+      "bias": 0.05107050452802227,
+      "predictionRows": 40
+    },
+    "m2Residual:combat:scoreOrVisitedSupplyBlocked": {
+      "mse": 10.595132370889896,
+      "mae": 2.5834827328980596,
+      "bias": -0.09584257959672317,
+      "predictionRows": 40
+    },
+    "m2ResidualMean": {
+      "mse": 8.624720960567261,
+      "mae": 2.3457424374841014,
+      "bias": -5.0653925498522766e-17,
+      "predictionRows": 40
+    },
+    "zero": {
+      "mse": 10.6625,
+      "mae": 2.6,
+      "bias": -1.225,
+      "predictionRows": 40
+    }
+  },
+  "bySplit": {
+    "0": {
+      "alone:approach:scoreBlocked": {
+        "mse": 3.5850566196211036,
+        "mae": 1.7598641416748098,
+        "bias": 0.6697885024682964,
+        "predictionRows": 10
+      },
+      "alone:combat:scoreOrVisitedSupplyBlocked": {
+        "mse": 5.249948998077878,
+        "mae": 2.1175190330742444,
+        "bias": 0.406875719199128,
+        "predictionRows": 10
+      },
+      "identity:M2": {
+        "mse": 3.5549117963031875,
+        "mae": 1.558659652843305,
+        "bias": -0.7208904750349925,
+        "predictionRows": 10
+      },
+      "m2Residual:approach:scoreBlocked": {
+        "mse": 7.019164842985613,
+        "mae": 2.312483685290542,
+        "bias": 0.6894446812052711,
+        "predictionRows": 10
+      },
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": {
+        "mse": 5.382050716153011,
+        "mae": 1.837801044563389,
+        "bias": 0.3764963122025831,
+        "predictionRows": 10
+      },
+      "m2ResidualMean": {
+        "mse": 4.452523350269652,
+        "mae": 1.7843675113698,
+        "bias": 0.24999999999999986,
+        "predictionRows": 10
+      },
+      "zero": {
+        "mse": 6.5,
+        "mae": 1.9,
+        "bias": -1.1,
+        "predictionRows": 10
+      }
+    },
+    "1": {
+      "alone:approach:scoreBlocked": {
+        "mse": 5.953047543843269,
+        "mae": 2.2586709582289073,
+        "bias": 0.6669423831524081,
+        "predictionRows": 10
+      },
+      "alone:combat:scoreOrVisitedSupplyBlocked": {
+        "mse": 13.862222770377267,
+        "mae": 3.041416055476696,
+        "bias": 0.699591989654076,
+        "predictionRows": 10
+      },
+      "identity:M2": {
+        "mse": 4.6892407187789376,
+        "mae": 2.022951370966866,
+        "bias": -0.5840483772812893,
+        "predictionRows": 10
+      },
+      "m2Residual:approach:scoreBlocked": {
+        "mse": 5.640125185188909,
+        "mae": 1.8719740626480192,
+        "bias": 0.6680802191927818,
+        "predictionRows": 10
+      },
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": {
+        "mse": 11.882024010339197,
+        "mae": 2.721341368514051,
+        "bias": 0.6710036664257433,
+        "predictionRows": 10
+      },
+      "m2ResidualMean": {
+        "mse": 5.789714236731333,
+        "mae": 2.076280195239832,
+        "bias": 0.75,
+        "predictionRows": 10
+      },
+      "zero": {
+        "mse": 5.975,
+        "mae": 2.25,
+        "bias": -0.85,
+        "predictionRows": 10
+      }
+    },
+    "2": {
+      "alone:approach:scoreBlocked": {
+        "mse": 13.400755058763105,
+        "mae": 3.036979012674358,
+        "bias": -0.7937738646293773,
+        "predictionRows": 10
+      },
+      "alone:combat:scoreOrVisitedSupplyBlocked": {
+        "mse": 12.516825023237244,
+        "mae": 2.983554106807225,
+        "bias": -0.8322817137244873,
+        "predictionRows": 10
+      },
+      "identity:M2": {
+        "mse": 9.20991346762606,
+        "mae": 2.4580413177354603,
+        "bias": -0.7752377582839067,
+        "predictionRows": 10
+      },
+      "m2Residual:approach:scoreBlocked": {
+        "mse": 11.034412616951466,
+        "mae": 2.6229608556311224,
+        "bias": -0.7947945140039703,
+        "predictionRows": 10
+      },
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": {
+        "mse": 10.259849313261025,
+        "mae": 2.6105807411401516,
+        "bias": -0.8460444272051891,
+        "predictionRows": 10
+      },
+      "m2ResidualMean": {
+        "mse": 9.862142190323988,
+        "mae": 2.493821097041646,
+        "bias": -0.75,
+        "predictionRows": 10
+      },
+      "zero": {
+        "mse": 15.15,
+        "mae": 3.1,
+        "bias": -1.6,
+        "predictionRows": 10
+      }
+    },
+    "3": {
+      "alone:approach:scoreBlocked": {
+        "mse": 14.182986755060128,
+        "mae": 3.0536634382033294,
+        "bias": -0.30819446365766795,
+        "predictionRows": 10
+      },
+      "alone:combat:scoreOrVisitedSupplyBlocked": {
+        "mse": 16.531757436618072,
+        "mae": 3.4819607843137255,
+        "bias": -0.6207823331352742,
+        "predictionRows": 10
+      },
+      "identity:M2": {
+        "mse": 13.290206203306976,
+        "mae": 2.9354635034475045,
+        "bias": -0.6383956605302034,
+        "predictionRows": 10
+      },
+      "m2Residual:approach:scoreBlocked": {
+        "mse": 12.756369844824285,
+        "mae": 2.967732116122162,
+        "bias": -0.35844836828199356,
+        "predictionRows": 10
+      },
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": {
+        "mse": 14.856605443806354,
+        "mae": 3.1642077773746466,
+        "bias": -0.5848258698100299,
+        "predictionRows": 10
+      },
+      "m2ResidualMean": {
+        "mse": 14.39450406494407,
+        "mae": 3.0285009462851273,
+        "bias": -0.25,
+        "predictionRows": 10
+      },
+      "zero": {
+        "mse": 15.025,
+        "mae": 3.15,
+        "bias": -1.35,
+        "predictionRows": 10
+      }
+    }
+  },
+  "byFamily": {
+    "contactBad": {
+      "alone:approach:scoreBlocked": {
+        "mse": 5.8953039851378035,
+        "mae": 2.3321302692620054,
+        "bias": 1.2343659411987644,
+        "predictionRows": 8
+      },
+      "alone:combat:scoreOrVisitedSupplyBlocked": {
+        "mse": 7.519234886500038,
+        "mae": 2.5299498738986093,
+        "bias": 1.4651236222517054,
+        "predictionRows": 8
+      },
+      "identity:M2": {
+        "mse": 5.49865272571346,
+        "mae": 2.2160484744534634,
+        "bias": -0.259832901947764,
+        "predictionRows": 8
+      },
+      "m2Residual:approach:scoreBlocked": {
+        "mse": 3.7470080074685055,
+        "mae": 1.770849970777336,
+        "bias": 0.6158203292813269,
+        "predictionRows": 8
+      },
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": {
+        "mse": 5.277379730993898,
+        "mae": 2.0662434950675754,
+        "bias": 0.7195187396947426,
+        "predictionRows": 8
+      },
+      "m2ResidualMean": {
+        "mse": 5.442512930814242,
+        "mae": 2.2160484744534634,
+        "bias": 0.5247627072935424,
+        "predictionRows": 8
+      },
+      "zero": {
+        "mse": 6.75,
+        "mae": 2.5,
+        "bias": -0.5,
+        "predictionRows": 8
+      }
+    },
+    "crowding": {
+      "alone:approach:scoreBlocked": {
+        "mse": 7.907120521623424,
+        "mae": 2.356463240758543,
+        "bias": -0.8486479638693698,
+        "predictionRows": 8
+      },
+      "alone:combat:scoreOrVisitedSupplyBlocked": {
+        "mse": 19.628127614298517,
+        "mae": 4.059537775276632,
+        "bias": -2.614173076270888,
+        "predictionRows": 8
+      },
+      "identity:M2": {
+        "mse": 8.531818825127033,
+        "mae": 2.4433224193393817,
+        "bias": -1.1610354528658509,
+        "predictionRows": 8
+      },
+      "m2Residual:approach:scoreBlocked": {
+        "mse": 12.807222828501237,
+        "mae": 3.1001896114494847,
+        "bias": 0.6287282652716917,
+        "predictionRows": 8
+      },
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": {
+        "mse": 19.644854662564597,
+        "mae": 3.7148277120508957,
+        "bias": -0.753867834705134,
+        "predictionRows": 8
+      },
+      "m2ResidualMean": {
+        "mse": 9.71646572958891,
+        "mae": 2.4171613017791738,
+        "bias": -0.6017404813540661,
+        "predictionRows": 8
+      },
+      "zero": {
+        "mse": 14.75,
+        "mae": 3.0,
+        "bias": -3.0,
+        "predictionRows": 8
+      }
+    },
+    "hqWithArmy": {
+      "alone:approach:scoreBlocked": {
+        "mse": 4.062523211723422,
+        "mae": 1.8915366311899309,
+        "bias": 0.14553158848121922,
+        "predictionRows": 8
+      },
+      "alone:combat:scoreOrVisitedSupplyBlocked": {
+        "mse": 7.241107050688527,
+        "mae": 2.3654995471191764,
+        "bias": 0.558568658734007,
+        "predictionRows": 8
+      },
+      "identity:M2": {
+        "mse": 3.6559336334446852,
+        "mae": 1.6889255596905488,
+        "bias": -0.41596815053944913,
+        "predictionRows": 8
+      },
+      "m2Residual:approach:scoreBlocked": {
+        "mse": 3.3689387395925547,
+        "mae": 1.5978501375115575,
+        "bias": -0.4022782083353187,
+        "predictionRows": 8
+      },
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": {
+        "mse": 5.062063077698282,
+        "mae": 1.872741204586043,
+        "bias": -0.1601566584300782,
+        "predictionRows": 8
+      },
+      "m2ResidualMean": {
+        "mse": 3.9098817970898603,
+        "mae": 1.4713193461707028,
+        "bias": 0.32959364655393597,
+        "predictionRows": 8
+      },
+      "zero": {
+        "mse": 5.5625,
+        "mae": 2.125,
+        "bias": -0.375,
+        "predictionRows": 8
+      }
+    },
+    "outOfSupply": {
+      "alone:approach:scoreBlocked": {
+        "mse": 10.634014105767562,
+        "mae": 2.905532107512791,
+        "bias": 2.905532107512791,
+        "predictionRows": 8
+      },
+      "alone:combat:scoreOrVisitedSupplyBlocked": {
+        "mse": 10.149998236752007,
+        "mae": 2.7974274887448707,
+        "bias": 2.7974274887448707,
+        "predictionRows": 8
+      },
+      "identity:M2": {
+        "mse": 5.8497600282464575,
+        "mae": 1.8421097595990503,
+        "bias": 1.4671097595990503,
+        "predictionRows": 8
+      },
+      "m2Residual:approach:scoreBlocked": {
+        "mse": 8.577487003527214,
+        "mae": 2.58156540814942,
+        "bias": 2.58156540814942,
+        "predictionRows": 8
+      },
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": {
+        "mse": 8.082410851176013,
+        "mae": 2.4296553894351227,
+        "bias": 2.4296553894351227,
+        "predictionRows": 8
+      },
+      "m2ResidualMean": {
+        "mse": 9.10572911914491,
+        "mae": 2.6834410342270605,
+        "bias": 2.6834410342270605,
+        "predictionRows": 8
+      },
+      "zero": {
+        "mse": 5.125,
+        "mae": 1.75,
+        "bias": 1.375,
+        "predictionRows": 8
+      }
+    },
+    "progressObjective": {
+      "alone:approach:scoreBlocked": {
+        "mse": 17.903345647357295,
+        "mae": 3.1508096897534856,
+        "bias": -3.1433284766563307,
+        "predictionRows": 8
+      },
+      "alone:combat:scoreOrVisitedSupplyBlocked": {
+        "mse": 15.662474997148987,
+        "mae": 2.7781477895505766,
+        "bias": -2.640192115967892,
+        "predictionRows": 8
+      },
+      "identity:M2": {
+        "mse": 14.894175019987319,
+        "mae": 3.028488593158976,
+        "bias": -3.028488593158976,
+        "predictionRows": 8
+      },
+      "m2Residual:approach:scoreBlocked": {
+        "mse": 17.06193403334833,
+        "mae": 3.1684832717270086,
+        "bias": -3.1684832717270086,
+        "predictionRows": 8
+      },
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": {
+        "mse": 14.908953532016694,
+        "mae": 2.8339458633506616,
+        "bias": -2.7143625339782687,
+        "predictionRows": 8
+      },
+      "m2ResidualMean": {
+        "mse": 14.949015226198384,
+        "mae": 2.9407420307901067,
+        "bias": -2.9360569067204727,
+        "predictionRows": 8
+      },
+      "zero": {
+        "mse": 21.125,
+        "mae": 3.625,
+        "bias": -3.625,
+        "predictionRows": 8
+      }
+    }
+  },
+  "byClimate": {
+    "EASTERN_EUROPE": {
+      "alone:approach:scoreBlocked": {
+        "mse": 18.762382723155632,
+        "mae": 3.4898023242609084,
+        "bias": 1.1836906393334146,
+        "predictionRows": 40
+      },
+      "alone:combat:scoreOrVisitedSupplyBlocked": {
+        "mse": 21.18145880977895,
+        "mae": 3.914934255126122,
+        "bias": 1.0383509154983606,
+        "predictionRows": 40
+      },
+      "identity:M2": {
+        "mse": 13.33365851768231,
+        "mae": 2.8122440578059624,
+        "bias": 0.4453569322174021,
+        "predictionRows": 40
+      },
+      "m2Residual:approach:scoreBlocked": {
+        "mse": 18.60836180844925,
+        "mae": 3.416121570388782,
+        "bias": 1.1760705045280222,
+        "predictionRows": 40
+      },
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": {
+        "mse": 19.92378427837301,
+        "mae": 3.566466929057222,
+        "bias": 1.0291574204032767,
+        "predictionRows": 40
+      },
+      "m2ResidualMean": {
+        "mse": 15.420078617474967,
+        "mae": 3.199313214438626,
+        "bias": 1.125,
+        "predictionRows": 40
+      },
+      "zero": {
+        "mse": 14.7,
+        "mae": 2.8,
+        "bias": -0.1,
+        "predictionRows": 40
+      }
+    },
+    "TEMPERATE_INLAND": {
+      "alone:approach:scoreBlocked": {
+        "mse": 12.323540265488168,
+        "mae": 2.697482957239711,
+        "bias": -1.0663093606665852,
+        "predictionRows": 40
+      },
+      "alone:combat:scoreOrVisitedSupplyBlocked": {
+        "mse": 15.423918304376281,
+        "mae": 3.049929171075262,
+        "bias": -1.2116490845016394,
+        "predictionRows": 40
+      },
+      "identity:M2": {
+        "mse": 14.563477575325274,
+        "mae": 2.8418290917558773,
+        "bias": -1.8046430677825982,
+        "predictionRows": 40
+      },
+      "m2Residual:approach:scoreBlocked": {
+        "mse": 12.141674436525886,
+        "mae": 2.658601548893423,
+        "bias": -1.0739294954719778,
+        "predictionRows": 40
+      },
+      "m2Residual:combat:scoreOrVisitedSupplyBlocked": {
+        "mse": 13.791480463406785,
+        "mae": 2.743237306876516,
+        "bias": -1.2208425795967233,
+        "predictionRows": 40
+      },
+      "m2ResidualMean": {
+        "mse": 14.354363303659554,
+        "mae": 2.8600382750048525,
+        "bias": -1.125,
+        "predictionRows": 40
+      },
+      "zero": {
+        "mse": 19.15,
+        "mae": 2.95,
+        "bias": -2.35,
+        "predictionRows": 40
+      }
+    }
+  },
+  "resultsArtifactSha256": "33e16c547dee9a11cd2d3a718ffdaa362e41e559eeeaa285affcec0df512270d"
+}

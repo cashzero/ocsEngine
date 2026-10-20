@@ -1,0 +1,9 @@
+{
+  "frozenAtUtc": "2026-10-19T16:33:45.820414+00:00",
+  "status": "FROZEN_BEFORE_REFINED_FEATURE_ASSOCIATIONS",
+  "originalResultAlreadySeen": true,
+  "scriptSha256": "f87fc6edf4d0851b2f1dcb2bd65fcd505c353af4220e0ad55c94dccb8fe2e83a",
+  "protocolSha256": "204bf3a529b1b52d52efa1b6161fe6954b04594d16d067f2a33f9a090b452e89",
+  "scorerSha256": "a4a9550cfec96f1c8df431ef4cb59eb15780b53f5c2fee5559e3aaa2446f6a0d",
+  "originalAnalysisSha256": "0ad6464c3dd25305854997a06364d2bb2031b401429b72bec6f182063337c877"
+}

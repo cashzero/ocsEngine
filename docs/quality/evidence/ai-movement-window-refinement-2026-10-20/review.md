@@ -1,0 +1,35 @@
+# Independent empirical review of the window refinement
+
+The pending refinement is suitable for publication as a rejected retrospective candidate. I found no numerical, provenance-binding, or reporting blocker in the reviewed material. It does not qualify a predictor, policy, reward, causal explanation, or product operation. P10 and the broader qualification debt correctly remain open.
+
+I reviewed HEAD `97e6e049f5a53d50b4372a87d51f465448ca4a63`, the refinement protocol, registration, source, full results, frozen scorer, all 80 compact game files, the original cohort and analysis, and the pending topic, TODO and WBS changes. I also checked both pending evidence folders. The existing completed empirical review owns the original historical-save identity and 1,200-prediction verification. I read that review but did not regenerate games or repeat its historical replay. The earlier incomplete refinement reviewer is not counted as evidence for this verdict.
+
+The independent calculation is `artifacts/ai-movement-metric-followup/final-review-scratch/recompute.py`, with output in the adjacent `recompute.json`. It imports neither analysis implementation. It reconstructs COMBAT windows from raw compact groups, computes weighted player and swapped-seat values, independently constructs the four partitions, and solves the two-parameter ridge normal equations with 60-digit Decimal arithmetic. All 200 fitted models and 280 predictions match. The largest prediction difference is 1.7763568394002505e-15. MSE, MAE and bias match overall and in every split, family and climate slice within 1e-10.
+
+All 984 approach windows contain COMBAT observations. The raw rows satisfy improving <= scored, checked <= improving, and checked = preserved + refused. Window points agree within each window. There are 29 score-blocked windows, 14 additional windows with improving occurrences all checked and refused, and 12 windows with unchecked improving occurrences and no preserved witness. The 43 contributing windows include 14 with omitted supply corrections. All 160 raw-player score-blocked measurements equal the original all-role definition. The combined feature is nonzero in 15 of the 40 swapped-seat records. All reconstructed per-window support fields and player values match the result artifact.
+
+The implementation follows the registered model. Each fit uses eight other-family development variant means. Historical M2 is an offset with slope one. Only an unpenalized residual intercept and one standardized ridge coefficient are fitted. The ridge objective uses summed squared errors plus the squared standardized coefficient. Held-family outcomes and evaluation features or outcomes do not enter fitting or prediction. Evaluation outcomes are averaged across the two held seeds before the primary error is calculated. Climate errors reuse the same prediction and change the target.
+
+| Model | MSE, VP margin squared |
+|---|---:|
+| Direct historical M2 | 7.686068 |
+| M2 plus training residual mean | 8.624721 |
+| M2 plus original score-blocked residual model | 9.112518 |
+| Original score-blocked alone | 9.280461 |
+| M2 plus combined-window residual model | 10.595132 |
+| Zero | 10.662500 |
+| Combined-window alone | 12.040189 |
+
+The new offset loses to direct M2 and residual-mean calibration in all four primary split scores. Its aggregate MSE exceeds those baselines by 2.909064 and 1.970411 respectively. This supports rejecting this refinement for prediction improvement. It does not establish that all related mechanisms are uninformative. Temperate MSE for the combined offset is 13.791480 against direct M2's 14.563478, while Eastern Europe reverses to 19.923784 against 13.333659. ContactBad is the one family where it beats both direct M2 and residual-mean calibration. The coefficient also changes sign across splits in four of five families. The retained slices prevent aggregate rejection from becoming an unsupported universal claim.
+
+All four registered source/input hashes match current bytes. All 80 compact input hashes match the hash-bound original analysis. Committed refinement protocol, registration and analysis copies match their runnable artifact bytes. The committed panel, predictions and summary match the full result, including its SHA-256. These checks establish present consistency with the recorded freeze. Hashes alone do not independently establish wall-clock execution chronology. The recorded sequence and explicit post-result qualification are consistent with the inspected artifacts.
+
+The documentation accurately limits the indicator to retained scores and visited checks. Summed observations can revisit the same opportunity, and omitted correction checks can affect retained scores. The 43 windows therefore do not establish exhaustive legal search, physical impossibility, independent trials, or a causal VP loss. The 40 overlapping predictions, five historically selected families and four seeds also do not establish independent validation. The different historical M2 and movement cutoffs remain disclosed. No policy or UI acceptance claim is introduced.
+
+The source comment audit covers the new refinement `analyze.py` and its identical evidence copy. Python tokenization found zero comments. There are zero deletions, restorations, suppression findings, MUST KILL flags, encoding offers or outstanding comment constraints. No application code was changed.
+
+I additionally reviewed the descriptive stability protocol, registration, source and result in `artifacts/ai-movement-metric-stability/`. The independent `final-review-scratch/stability.py` reconstructs every variant mean, family contrast, tie rank, sign count and all 144 correlations across 18 variables and four splits. Every value matches, including null correlations for constant vectors, with zero observed correlation difference. All four stability hashes match. Its source also has zero comment tokens. No pending stability documentation was present when this check ran, so this additional verdict covers the artifact arithmetic and protocol only.
+
+The stability numbers support the stated descriptive conclusions. Original approach score-blocking has variant-rank correlation from -0.691665 to 0.579522. Approach crowding is more stable, from 0.683658 to 0.795111, despite its poor existing VP prediction errors. Final-VP family-contrast rank correlations are 0.1 and 0.4, with same-sign agreement 2 of 4 or 3 of 5 nonzero contrasts. Complementary splits reverse the same halves, so there are only two distinct unordered partitions. These values are not a noise ceiling or a bound on another predictor. They do not rescue the rejected refinement or justify new qualification claims.
+
+Prove It Works shaped this review by requiring raw-window reconstruction and an independent numerical solver. Explain the Number shaped it by retaining climate, family, sign and dependence limits alongside aggregate error. The verdict authorizes reporting the inspected research results only. Qualification and outstanding acceptance work remain open.

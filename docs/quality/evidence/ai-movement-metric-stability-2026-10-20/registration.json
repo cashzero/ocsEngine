@@ -1,0 +1,8 @@
+{
+  "frozenAtUtc": "2026-10-20T00:54:06.277740+00:00",
+  "status": "FROZEN_BEFORE_STABILITY_CALCULATION",
+  "scriptSha256": "6fc46373547a84119809620c30db2be2cc61b5dbfc9eb915e2ca4c6df614c6c8",
+  "protocolSha256": "8f52ecb62c7ddc978efe66fb29beed73ef0bc3fa3beff4fd458870f5b896e487",
+  "helperSha256": "00eeb924694c722d1ce47d92e44a6d1d6bae485b6728f1c9d2f0fcd80ed6a864",
+  "panelSha256": "5251a245ce062a5a8ac41b34ad5b75306458b0eef2e3a0541ac343aa083c7e44"
+}

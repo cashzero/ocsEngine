@@ -1,0 +1,498 @@
+{
+  "provenance": {
+    "registrationSha256": "cb35b9cd97a5804ebf346fccdc46c427c23de81fb30f9aacacd44e901c186cd7",
+    "cohortSha256": "04931eda9ff831751cebe45f9b2406f781204392981a2765a9b6e5394231f720",
+    "analysisSha256": "a4a9550cfec96f1c8df431ef4cb59eb15780b53f5c2fee5559e3aaa2446f6a0d",
+    "recorderSha256": "66341a37f97e0abc627331c9e509ab795be73383a20cd15ad2bc2c74e7e2da92",
+    "engineTreeSha256": "4a87376b26c41f60086cb3060f606afcc1e9b99bb3ba00339c904837d200bb2a",
+    "games": [
+      {
+        "gameIndex": 0,
+        "path": "artifacts/ai-movement-metric-panel/games/game-0.json",
+        "sha256": "554bb9190246b2aacb7c53c7cb51ceba985beead62a667a7ad6970969b375b51",
+        "trajectory": "77c31b7903b2a502d315193d435219defdf40b1fc23a62ef90921ce56794ea1d"
+      },
+      {
+        "gameIndex": 1,
+        "path": "artifacts/ai-movement-metric-panel/games/game-1.json",
+        "sha256": "fbc0385b8df3270833797f9604d5e2016a5c8e3fbc6d143c355b9214270e15f8",
+        "trajectory": "6c793004921681591a445b9c001b8d858bd0c71692a1c76e6240fa41cd117250"
+      },
+      {
+        "gameIndex": 2,
+        "path": "artifacts/ai-movement-metric-panel/games/game-2.json",
+        "sha256": "b5922e7c9005b8d0b74181ae4e803f568853be8b6d8d34e24e137c246a2ce232",
+        "trajectory": "58b5fdf07c808b8d725afad150027e0ef032b6cc46f0a3c6199c9a5811c31e3e"
+      },
+      {
+        "gameIndex": 3,
+        "path": "artifacts/ai-movement-metric-panel/games/game-3.json",
+        "sha256": "b73eb95c4967faab597ce2d07e64de12981e2e266496df28660d7ad5b9ee2068",
+        "trajectory": "29701ece3aa7058c7465c0b1529a6c600ccd5063c879efba77d24f512361ed14"
+      },
+      {
+        "gameIndex": 4,
+        "path": "artifacts/ai-movement-metric-panel/games/game-4.json",
+        "sha256": "ded59e985ba06a5895d82bfcfbd5bc0ea523692698524d85352af3e1bb933b1c",
+        "trajectory": "65c88e9967ef417568e46ca7b4e15e0a85821dd0de193ef20a626202ae978bba"
+      },
+      {
+        "gameIndex": 5,
+        "path": "artifacts/ai-movement-metric-panel/games/game-5.json",
+        "sha256": "6ff08ba04f845e93d2dcf722a0bd96fbf267e39d413f2781c00b5ff278f22844",
+        "trajectory": "9797d6664134a062d822495e4baa63b28feeb997608ea3ba86887b9d45d72fa0"
+      },
+      {
+        "gameIndex": 6,
+        "path": "artifacts/ai-movement-metric-panel/games/game-6.json",
+        "sha256": "019d65d9aa7b0235ca8224383696885ae2c85a1bb747fe1e287f6ce8539630e5",
+        "trajectory": "678b19f94a3fe74aca5e66ba70998f53f27f2ffe017d01995c8c2cbc2d733740"
+      },
+      {
+        "gameIndex": 7,
+        "path": "artifacts/ai-movement-metric-panel/games/game-7.json",
+        "sha256": "9bec608cb5b824bbe3dbfe77d6f4dfeec8592515f540ca6b862b441bb743b862",
+        "trajectory": "fc2c7b98a2596d58480df8a947cdfd7bcb5932f1b9249960cc44edf9b7cee15c"
+      },
+      {
+        "gameIndex": 8,
+        "path": "artifacts/ai-movement-metric-panel/games/game-8.json",
+        "sha256": "892b896b8079921f255f16681e40b691aff0359a6949801be6a8a853c2980ca9",
+        "trajectory": "5a06d302971600d8510fe6750c737be6c3ac6f5ce8e09f1b90dcf9899c0eb08c"
+      },
+      {
+        "gameIndex": 9,
+        "path": "artifacts/ai-movement-metric-panel/games/game-9.json",
+        "sha256": "445f01b36437996cdc69b7e64ff181896514ffc38acd46b35cb14820f808af3c",
+        "trajectory": "2776918254b85db7d1f8382f4288eca18325fc2b175a2314c000671a70685322"
+      },
+      {
+        "gameIndex": 10,
+        "path": "artifacts/ai-movement-metric-panel/games/game-10.json",
+        "sha256": "12636f8c060ce37df1af15515a707554d8101f484a674b4cfd6ef9de1f0933c5",
+        "trajectory": "c6b505d40b07eb204568c5691fb43974dfcb2d5efbad1f972e22214da265f8ef"
+      },
+      {
+        "gameIndex": 11,
+        "path": "artifacts/ai-movement-metric-panel/games/game-11.json",
+        "sha256": "02c6a238294f0cee7032083b5347f7612606d6c9d56b07df3cdafce474df260c",
+        "trajectory": "835cd02bfeb7e4956ee6bee39df4193f38108614fc99bd73406931676c130005"
+      },
+      {
+        "gameIndex": 12,
+        "path": "artifacts/ai-movement-metric-panel/games/game-12.json",
+        "sha256": "f6fd25995ff32de12787182221e91809bc49ed96a7fdd4ee58bece9ae8d2c1f7",
+        "trajectory": "067ecf9d2484db5b73c0174aa2316d82beb910afbb1803789f0b988130dd3aa6"
+      },
+      {
+        "gameIndex": 13,
+        "path": "artifacts/ai-movement-metric-panel/games/game-13.json",
+        "sha256": "c662b80e9a6b65984f8f4d84611faa507fc6fb714d1aec8742ce2f8f320778a8",
+        "trajectory": "70fb2ea51919ef555e3a0b81fc115a99140079d0f483193e14a9dd8bf366d018"
+      },
+      {
+        "gameIndex": 14,
+        "path": "artifacts/ai-movement-metric-panel/games/game-14.json",
+        "sha256": "377811380df8f9b55d7f6c6243cfeb98bb12f2745760d79358cd877ef89d7e78",
+        "trajectory": "62a14b82f351ef02fca9263eb41293338713ac2dd582b548bdf1009f28fce4b1"
+      },
+      {
+        "gameIndex": 15,
+        "path": "artifacts/ai-movement-metric-panel/games/game-15.json",
+        "sha256": "a93c8908ee2193aeaaf34388816310bda0a2e31e03291c51e68a0142df4a5149",
+        "trajectory": "7ca4b2130016cee0e13c4542b9ae14dbd0c2d9ead17ac4f7abda4149d1304057"
+      },
+      {
+        "gameIndex": 16,
+        "path": "artifacts/ai-movement-metric-panel/games/game-16.json",
+        "sha256": "6da9484179f3b82cc3af41fe27bae614c5659b1c08136105278b7a3e2963dc36",
+        "trajectory": "22c9997b79e16bc964633d304f9510f6207fd904f5146f7896cc9cda5931bfed"
+      },
+      {
+        "gameIndex": 17,
+        "path": "artifacts/ai-movement-metric-panel/games/game-17.json",
+        "sha256": "bbf61cd35d0eca86adf2ad3a7f1e34c45dac2823d3df8f872b6e81e78efb264c",
+        "trajectory": "05e51799df1e6963c2ae6d368993a1962430ed77019e655ef174cb3ac4d8c267"
+      },
+      {
+        "gameIndex": 18,
+        "path": "artifacts/ai-movement-metric-panel/games/game-18.json",
+        "sha256": "ef7fca8a665a085e0f896e1125de7f4d0efa09442bb1d51b948b10826d3a29e9",
+        "trajectory": "6c39caf048c1b9f9d7c3caadec29e4216e951093a333897df628e9efc14e99a2"
+      },
+      {
+        "gameIndex": 19,
+        "path": "artifacts/ai-movement-metric-panel/games/game-19.json",
+        "sha256": "5aff685a22233946e294f648f17b27afe7c5c4f5d4454b58e22e8fa0dc4ca044",
+        "trajectory": "6c39caf048c1b9f9d7c3caadec29e4216e951093a333897df628e9efc14e99a2"
+      },
+      {
+        "gameIndex": 20,
+        "path": "artifacts/ai-movement-metric-panel/games/game-20.json",
+        "sha256": "e29ba4793120fd2e3f78877afc7343036f7805f2b9d94ee326260482034ab8fb",
+        "trajectory": "05e51799df1e6963c2ae6d368993a1962430ed77019e655ef174cb3ac4d8c267"
+      },
+      {
+        "gameIndex": 21,
+        "path": "artifacts/ai-movement-metric-panel/games/game-21.json",
+        "sha256": "46649ca2886a3ebefcac642fdd66bcb2ae459f86823d4fd580387abb4f587b64",
+        "trajectory": "942342e00a0661aecb7438a2ffe0f196710d0a738dc62bcd7d11bd2ac58d6c4f"
+      },
+      {
+        "gameIndex": 22,
+        "path": "artifacts/ai-movement-metric-panel/games/game-22.json",
+        "sha256": "8f71b9cf267f45110d790a18bc1a51dae345d49fdbb4dc2c470a1b5fdd066b53",
+        "trajectory": "6c39caf048c1b9f9d7c3caadec29e4216e951093a333897df628e9efc14e99a2"
+      },
+      {
+        "gameIndex": 23,
+        "path": "artifacts/ai-movement-metric-panel/games/game-23.json",
+        "sha256": "225f4ef8fc549e88a617e8699c9844d5309526040e658c0cf11c8cdf755db4d8",
+        "trajectory": "6c39caf048c1b9f9d7c3caadec29e4216e951093a333897df628e9efc14e99a2"
+      },
+      {
+        "gameIndex": 24,
+        "path": "artifacts/ai-movement-metric-panel/games/game-24.json",
+        "sha256": "5974d86854a2fa6f5e7ac6d6d0eb046f5522e6412428dcf0bf6a84f5933e4911",
+        "trajectory": "ff93eb793c0aca84eeef36ecfa875ab2f02daab71a1b1178856c925843472c15"
+      },
+      {
+        "gameIndex": 25,
+        "path": "artifacts/ai-movement-metric-panel/games/game-25.json",
+        "sha256": "2cbc690bbb70ad1fa7688b99b28a659da5c85a1f274d1b550768ca44714d5646",
+        "trajectory": "7a7e2ad885621b0188d5a50ae1f272d0633783f0c4c41b905c8b84f020c74466"
+      },
+      {
+        "gameIndex": 26,
+        "path": "artifacts/ai-movement-metric-panel/games/game-26.json",
+        "sha256": "92a7255b570a2eaf71da92ad611571054904a0b57d3ad1fa71976b956dfdaaf1",
+        "trajectory": "6c39caf048c1b9f9d7c3caadec29e4216e951093a333897df628e9efc14e99a2"
+      },
+      {
+        "gameIndex": 27,
+        "path": "artifacts/ai-movement-metric-panel/games/game-27.json",
+        "sha256": "9f6493f9e0d72dd360de5aae481b41341744ebfd5edbdc4674cfc25f674a331d",
+        "trajectory": "f34d872dbe281fb8cf82bb084563db14a9f36728e4b849a307063ff9f638cf15"
+      },
+      {
+        "gameIndex": 28,
+        "path": "artifacts/ai-movement-metric-panel/games/game-28.json",
+        "sha256": "324bdabf64ab991383064679cbc00e9d2d7fac25f961b8ecceec1e88f52de438",
+        "trajectory": "05e51799df1e6963c2ae6d368993a1962430ed77019e655ef174cb3ac4d8c267"
+      },
+      {
+        "gameIndex": 29,
+        "path": "artifacts/ai-movement-metric-panel/games/game-29.json",
+        "sha256": "960b82498b2f96e4c29b2a8c0a412f245d8bcdae882f2c14000feca3cd2847eb",
+        "trajectory": "66d368e1b9516780a735e320f59e6210d1fe750e3a946ebb0f19291358cd3a28"
+      },
+      {
+        "gameIndex": 30,
+        "path": "artifacts/ai-movement-metric-panel/games/game-30.json",
+        "sha256": "0c5f2246b9ad671b8666a36c0724c060e824821374ca949db42fcd73034ae411",
+        "trajectory": "6c39caf048c1b9f9d7c3caadec29e4216e951093a333897df628e9efc14e99a2"
+      },
+      {
+        "gameIndex": 31,
+        "path": "artifacts/ai-movement-metric-panel/games/game-31.json",
+        "sha256": "7f88840cd50439b62baad7400002361efa7827cbbae859f3dfe6508a5f0a9583",
+        "trajectory": "b807834d795d00d887016be8dc1dc29cdeea594d677f074e5dc87f729eff0db5"
+      },
+      {
+        "gameIndex": 32,
+        "path": "artifacts/ai-movement-metric-panel/games/game-32.json",
+        "sha256": "cb04fddf439fa07ae9998027f363848f6dc29c44eff43b159ce404d0a8008298",
+        "trajectory": "05e51799df1e6963c2ae6d368993a1962430ed77019e655ef174cb3ac4d8c267"
+      },
+      {
+        "gameIndex": 33,
+        "path": "artifacts/ai-movement-metric-panel/games/game-33.json",
+        "sha256": "6f2caf5d2bbc5e77414a1107486e3bcb0cb1dc766f35c144843081a0f20ae9f4",
+        "trajectory": "1270610d760280bcfdd274441ee9c6603644d9b5238753b073b96ba443c0ff72"
+      },
+      {
+        "gameIndex": 34,
+        "path": "artifacts/ai-movement-metric-panel/games/game-34.json",
+        "sha256": "dfb259d82d1ed32e390c70090903e4a733510da47080a0d25535e69cff2fd682",
+        "trajectory": "07e961278557a619ef837294f99e6b080ff87459318ef4085a70ea52db3d1776"
+      },
+      {
+        "gameIndex": 35,
+        "path": "artifacts/ai-movement-metric-panel/games/game-35.json",
+        "sha256": "7e9bc4acb8f93575cd0d54f5e7d929e8d7d978ad59a430cc8585899ae3e5eaa0",
+        "trajectory": "6c39caf048c1b9f9d7c3caadec29e4216e951093a333897df628e9efc14e99a2"
+      },
+      {
+        "gameIndex": 36,
+        "path": "artifacts/ai-movement-metric-panel/games/game-36.json",
+        "sha256": "f32aa689a068774ff79b54ec563c3a167f00bf0684722532a3badb5786cc9bc4",
+        "trajectory": "e5ba159571c54a526f33af5bdd7ec44c636e467fd3229133503ecc3cb9d872c6"
+      },
+      {
+        "gameIndex": 37,
+        "path": "artifacts/ai-movement-metric-panel/games/game-37.json",
+        "sha256": "38f49be71b89142e3d20260532bb657d798bdfab5402f0751ba36fe5412bc2c7",
+        "trajectory": "b4f43f92447f437bd1e4736320fde07f4c754ea2bf7eace3cec5bcb6ace11d4f"
+      },
+      {
+        "gameIndex": 38,
+        "path": "artifacts/ai-movement-metric-panel/games/game-38.json",
+        "sha256": "d8782d70806b4ad73848577e1b2e2b2deab7417b5af683aefd45da791eb7d810",
+        "trajectory": "700d9286c0af794510ceac85e1ab9ea72d94aaaa4fad7f0d089fff3a2e7df157"
+      },
+      {
+        "gameIndex": 39,
+        "path": "artifacts/ai-movement-metric-panel/games/game-39.json",
+        "sha256": "921c00a4bf467cb0f370d8c9814d537e16c5dd00ab80e733b9d09f374281c02a",
+        "trajectory": "59b7344342dcb75386266db913f23a58c0fd667601413f79fe540425c4365c05"
+      },
+      {
+        "gameIndex": 40,
+        "path": "artifacts/ai-movement-metric-panel/games/game-40.json",
+        "sha256": "6f0fa1a012ecc902a9563cec055ed799c44eebb234ed1636bb1adc5e77e1449f",
+        "trajectory": "f69f7c57b6be6617004100f56e307137cb040bfeea418db777756fc1ca01d571"
+      },
+      {
+        "gameIndex": 41,
+        "path": "artifacts/ai-movement-metric-panel/games/game-41.json",
+        "sha256": "c62e5a00054c14cfc3cf099e66edec93cc30e365adb2af06eb6759b163a6690a",
+        "trajectory": "9051ae5bcce02af0f6f932a50cfcfb819e6ab866b5379b0e7d8a7bfbb72d2f19"
+      },
+      {
+        "gameIndex": 42,
+        "path": "artifacts/ai-movement-metric-panel/games/game-42.json",
+        "sha256": "389b5717b9df71a89e03e809c1e503fe829bbf24c2b86f8f3329dac659f8c710",
+        "trajectory": "db5d8b5c4487697f76e05e764e42705464bee4eeba72259b7fa67307f61b0622"
+      },
+      {
+        "gameIndex": 43,
+        "path": "artifacts/ai-movement-metric-panel/games/game-43.json",
+        "sha256": "174492e5c54ae921782ceb74001cc58d60581a61c3b0c11832c5dd65665661c0",
+        "trajectory": "2fd8692b58c46a33071c7aa2682541681b3a25ddfe6a1c60f7104fe87b7cda60"
+      },
+      {
+        "gameIndex": 44,
+        "path": "artifacts/ai-movement-metric-panel/games/game-44.json",
+        "sha256": "75f687aa0c5ca22b7bf3204579318b1457d509de2d3309dc9647cdcd66eab6db",
+        "trajectory": "c85af7746aa44d250308a74969080f5d1f0672d10b13987d0d8d80bf95a4dfbf"
+      },
+      {
+        "gameIndex": 45,
+        "path": "artifacts/ai-movement-metric-panel/games/game-45.json",
+        "sha256": "a109ea14d328b398a891d5c57b850e2fd0ea0782f6b690da09bbd5ad4e9f7f7a",
+        "trajectory": "8801b3b70b6a9fd49cd453ae6b9529155801ccac67ad6a12d8f8502f01bdbaa9"
+      },
+      {
+        "gameIndex": 46,
+        "path": "artifacts/ai-movement-metric-panel/games/game-46.json",
+        "sha256": "1eeb864a1a0686a1a63e31e62368f4f497e70c26369ca3f0beee007ecc6db225",
+        "trajectory": "52b0da933e4de726b147c59b6d57b4a510caab1b087c4a545a48cf81d4c98f57"
+      },
+      {
+        "gameIndex": 47,
+        "path": "artifacts/ai-movement-metric-panel/games/game-47.json",
+        "sha256": "09f1652cec619b5a8e94a6e4b02550987bb07b5c05449b827903c3e3ae5da3ef",
+        "trajectory": "6c77a6603453dd408c142a9dc4185a88bfbcc994f71bb05ad1c76a2cf6a244df"
+      },
+      {
+        "gameIndex": 48,
+        "path": "artifacts/ai-movement-metric-panel/games/game-48.json",
+        "sha256": "13e718c70986214a859f1ea7084ff75a67a4b11f2d1444a314d56751c1c924fe",
+        "trajectory": "b50f0a7b6110723956773bf35d90ed258bec5fa9d77bd7d325eb8dc335ae1e81"
+      },
+      {
+        "gameIndex": 49,
+        "path": "artifacts/ai-movement-metric-panel/games/game-49.json",
+        "sha256": "c4ef5da27bbd661e6c8d8f4ca28d78e9bdf658b5ed3e31d5c306058bfa73b60f",
+        "trajectory": "53123a450a66751ab614e2a2e3c7e84d7ea52b9efee60179d6763cfbe271862e"
+      },
+      {
+        "gameIndex": 50,
+        "path": "artifacts/ai-movement-metric-panel/games/game-50.json",
+        "sha256": "73d5072124ffbf4574bbb84486793ca96dc1f2843fea2345202cdec334d71f8e",
+        "trajectory": "c12c4fa34d5d3c74bec4facfe8f2f5d6b9f1abc7501e92c89b274b875f669690"
+      },
+      {
+        "gameIndex": 51,
+        "path": "artifacts/ai-movement-metric-panel/games/game-51.json",
+        "sha256": "584c24cbad3c1964cf9bf3b7e020a4ad86c4fbc002b599c33c9ebed72d2ff4d6",
+        "trajectory": "7a6fdff4a3f15f13cfc7f4f0be8237f0952e004328cde75ef9c100a5c67b8463"
+      },
+      {
+        "gameIndex": 52,
+        "path": "artifacts/ai-movement-metric-panel/games/game-52.json",
+        "sha256": "9e0044566dabd674f54db6f8f7fee37722bc8092dfbc08a902ab686a3657b6d7",
+        "trajectory": "c23f8d23b2dd5768ed9491d15dc55cf8fd6b89bb7d73523fa7324d67690b50aa"
+      },
+      {
+        "gameIndex": 53,
+        "path": "artifacts/ai-movement-metric-panel/games/game-53.json",
+        "sha256": "9dcf47a82d09029b37d1da4362d3da064878f1d9c3afbd3095378cace92c1c6b",
+        "trajectory": "56228b42312f49f8a5604b655882910816b8dd2bd2a1893962b609d510666efa"
+      },
+      {
+        "gameIndex": 54,
+        "path": "artifacts/ai-movement-metric-panel/games/game-54.json",
+        "sha256": "b91b1cd3090aaa3927b10701aa19764110e194c9c69027fedb3025d6878349a6",
+        "trajectory": "926b5fc785696ea8ea16241be579573ae77197496aa86697b321847511d11262"
+      },
+      {
+        "gameIndex": 55,
+        "path": "artifacts/ai-movement-metric-panel/games/game-55.json",
+        "sha256": "9e96ee43ae8df9b04eaf35dd8d6146232a73ba0d858e8d149082cb9e5c422dbe",
+        "trajectory": "d7591cdc8bc56834b2c1885c8f593359b1048798689b77ad4d753bb48d38c53f"
+      },
+      {
+        "gameIndex": 56,
+        "path": "artifacts/ai-movement-metric-panel/games/game-56.json",
+        "sha256": "86f5b0c334f4b46c931ad303638cb684de10cd6f864c59c1a77cf424fc9c1c22",
+        "trajectory": "80a4bf47f65363ae6e32101937b1229ddf193051c178f51d8e72b888905d5b2e"
+      },
+      {
+        "gameIndex": 57,
+        "path": "artifacts/ai-movement-metric-panel/games/game-57.json",
+        "sha256": "5410454f9af51147b78d10a5010e2c94cb5eedd2d6fccea4e53ae1b2034b193a",
+        "trajectory": "55a917aa205f4ac35ecb248a95ea414eea5bbab3df00f25003db868884dbff32"
+      },
+      {
+        "gameIndex": 58,
+        "path": "artifacts/ai-movement-metric-panel/games/game-58.json",
+        "sha256": "e3bf377d3d60abb5fa4812539e068a5289b396dc884f9425031f0556be4eeb06",
+        "trajectory": "ae4ea9595c3a791eee7429181a3cf4a1a513a3b7eeec020384df9f39fe958adc"
+      },
+      {
+        "gameIndex": 59,
+        "path": "artifacts/ai-movement-metric-panel/games/game-59.json",
+        "sha256": "524b7e820ecf3a3c23568beacfb2e1c0bb637aeb83d8023fa1d312479eda5228",
+        "trajectory": "c397cfb09802c2085b75a971e0c3d19b9b126da6bb1bdeb86350ac37e1b3379e"
+      },
+      {
+        "gameIndex": 60,
+        "path": "artifacts/ai-movement-metric-panel/games/game-60.json",
+        "sha256": "1d7ccf2094d9f58b74d39f0682b893cf324d7dc77b2a0448ee5cd4556a1ca34d",
+        "trajectory": "f582eb0471f68b5c4927291328dbaef64711edc66ea451ac91fda6b9780216d5"
+      },
+      {
+        "gameIndex": 61,
+        "path": "artifacts/ai-movement-metric-panel/games/game-61.json",
+        "sha256": "1348dcf4dcdf49753145ce4b7ab855b5c870e2d1d3d727912c06edea6114381b",
+        "trajectory": "55a917aa205f4ac35ecb248a95ea414eea5bbab3df00f25003db868884dbff32"
+      },
+      {
+        "gameIndex": 62,
+        "path": "artifacts/ai-movement-metric-panel/games/game-62.json",
+        "sha256": "094789e0f6bee8bcee8cde8a839fa8aa91eca6fb44c049c049c1c55cb99d64b6",
+        "trajectory": "ae4ea9595c3a791eee7429181a3cf4a1a513a3b7eeec020384df9f39fe958adc"
+      },
+      {
+        "gameIndex": 63,
+        "path": "artifacts/ai-movement-metric-panel/games/game-63.json",
+        "sha256": "1dbebdf5a24c1ebde4d383949d943a8dde8efd62abd8ac477db006bc9142c854",
+        "trajectory": "ae4ea9595c3a791eee7429181a3cf4a1a513a3b7eeec020384df9f39fe958adc"
+      },
+      {
+        "gameIndex": 64,
+        "path": "artifacts/ai-movement-metric-panel/games/game-64.json",
+        "sha256": "18995eed572c180dc5b869be02450207c1e97b3bbf838d53e9a7138f2c016c2d",
+        "trajectory": "391ba2f5bf175cf7b2aa0df96c05b0f9b545e736574ce64c3f8cb785e6ccb44a"
+      },
+      {
+        "gameIndex": 65,
+        "path": "artifacts/ai-movement-metric-panel/games/game-65.json",
+        "sha256": "354ce6345ee2405a20d2a95439e5c8232f513f97abf1bfa81a0c847b844da8ab",
+        "trajectory": "bc55402b93e6dbcdc8d8a3fdf320c88598dfd214971132af0b2ec2f125ccc7d6"
+      },
+      {
+        "gameIndex": 66,
+        "path": "artifacts/ai-movement-metric-panel/games/game-66.json",
+        "sha256": "a2be9e9b2435bea10408639ce0bd198a37c5fa940ae3ef5e143e543e8691fc23",
+        "trajectory": "d22a5cdeb0d2aa437034ee75b1db0e697987b7ee2a48f76cea6337fec8cd5c5e"
+      },
+      {
+        "gameIndex": 67,
+        "path": "artifacts/ai-movement-metric-panel/games/game-67.json",
+        "sha256": "5270163deeb1909a189983b12ff23f6904e1db982001b899c589a7015c78948b",
+        "trajectory": "b8315fec0c2236a5ff335767800e1338e942325c5496bf37ad2db72cd194500e"
+      },
+      {
+        "gameIndex": 68,
+        "path": "artifacts/ai-movement-metric-panel/games/game-68.json",
+        "sha256": "ccf9e91375441f97e920d7cde3a4632d01b9d3f8214f1493bca6a1dc249a8eef",
+        "trajectory": "94ff1d12cc0dfe20412406a83ab84b1eaad15888c3d8665fa2a8eae6243829b9"
+      },
+      {
+        "gameIndex": 69,
+        "path": "artifacts/ai-movement-metric-panel/games/game-69.json",
+        "sha256": "16a335f3d55d6d0f3562c05a8a8beefa7574925fe5c8421b725f7b66a0d762bc",
+        "trajectory": "cffd5518416291e280ef7c7d5282b69bd1c371990ae7fb5e7978addbb1911f4d"
+      },
+      {
+        "gameIndex": 70,
+        "path": "artifacts/ai-movement-metric-panel/games/game-70.json",
+        "sha256": "070d5cd70cf9fec5c53559a84961b3dd979f032abeec94db62060e10cb7c5d5d",
+        "trajectory": "8f1b4a84151ad920c07e324520a2502cb10e44a440d54458550a1faf5bffef9b"
+      },
+      {
+        "gameIndex": 71,
+        "path": "artifacts/ai-movement-metric-panel/games/game-71.json",
+        "sha256": "e512f5180eff5b97cb59c40387fdf78fd53e49ff74adb6758848478409767dda",
+        "trajectory": "345654c9c49dfd184932b32ce50fef956c7dea0d5f7fa9d40dd78bca9191c1e4"
+      },
+      {
+        "gameIndex": 72,
+        "path": "artifacts/ai-movement-metric-panel/games/game-72.json",
+        "sha256": "863dc95d6244aa38c1a565e273c6d0b604770e233463d2a9ecf672e4220a2bad",
+        "trajectory": "55a917aa205f4ac35ecb248a95ea414eea5bbab3df00f25003db868884dbff32"
+      },
+      {
+        "gameIndex": 73,
+        "path": "artifacts/ai-movement-metric-panel/games/game-73.json",
+        "sha256": "9b80a6a9d2817fb3ae40207ed9b1af1a0995cc1db8891eeda8e80d71d7958082",
+        "trajectory": "3039afbb1a15bbefb9389129acacb9cbafa13a0f65db1113fd884232607e95a4"
+      },
+      {
+        "gameIndex": 74,
+        "path": "artifacts/ai-movement-metric-panel/games/game-74.json",
+        "sha256": "b878970f9eff9e87b925c302c095f38bc82039830cac71a1ae219139b9f6bcc0",
+        "trajectory": "183d4b5b5a1fe92bb5e4f11c56e43ff98a3d08d29d4d7d7a1a9b3e45cb92f4a5"
+      },
+      {
+        "gameIndex": 75,
+        "path": "artifacts/ai-movement-metric-panel/games/game-75.json",
+        "sha256": "2656d4461e187be87fa7d839c9bd7496d59070474601bb370430dd52b4c4dcbd",
+        "trajectory": "ae4ea9595c3a791eee7429181a3cf4a1a513a3b7eeec020384df9f39fe958adc"
+      },
+      {
+        "gameIndex": 76,
+        "path": "artifacts/ai-movement-metric-panel/games/game-76.json",
+        "sha256": "3fdc4d39ef188ee424dd0a7a1eedebca6b2a4f73863a1b279c5461318e781ea6",
+        "trajectory": "55a917aa205f4ac35ecb248a95ea414eea5bbab3df00f25003db868884dbff32"
+      },
+      {
+        "gameIndex": 77,
+        "path": "artifacts/ai-movement-metric-panel/games/game-77.json",
+        "sha256": "e5330fd64288de2b613b1da7f1f0a8bf06f3a6bd9d4d4d2f0705d0ab64571897",
+        "trajectory": "e290003ac61347481b0d316813866e2dc209b769d0b7bab8f7207f7df5f90253"
+      },
+      {
+        "gameIndex": 78,
+        "path": "artifacts/ai-movement-metric-panel/games/game-78.json",
+        "sha256": "4b6da9292f5a6e86ccbae05b0bfc2c08a38067e83633872f91e983725cc6f821",
+        "trajectory": "8647be501a87e952b8cc19692251b5987bbb2abf06c635693fe5d0939442e150"
+      },
+      {
+        "gameIndex": 79,
+        "path": "artifacts/ai-movement-metric-panel/games/game-79.json",
+        "sha256": "dedbbcb9365d1a541eaaa08497c15614940c6643ea7c5e7aff337b9a8af79619",
+        "trajectory": "825ca8321fad3d8efa4ea7afaaa91d53d2d4ca1d11bc729425e8d50e788d4bb1"
+      }
+    ]
+  },
+  "batch": {
+    "elapsedSeconds": 1374.494219303131,
+    "failed": false,
+    "launched": 80,
+    "completed": 80
+  },
+  "command": "python3 scripts/ai-movement-panel-compare.py --cohort artifacts/ai-movement-metric-panel/cohort.json --games artifacts/ai-movement-metric-panel/games --registration artifacts/ai-movement-metric-panel/analysis-registration.json --out artifacts/ai-movement-metric-panel/results"
+}

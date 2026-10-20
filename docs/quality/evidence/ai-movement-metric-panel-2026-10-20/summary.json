@@ -1,0 +1,2393 @@
+{
+  "population": {
+    "savedGames": 80,
+    "distinctTrajectories": 65,
+    "families": 5,
+    "variants": 10,
+    "seedPairs": 4,
+    "predictionRowsDependent": 40
+  },
+  "overall": {
+    "alone:approach:correctionBudget": {
+      "mse": 12.249594170846816,
+      "mae": 2.963801397560629,
+      "bias": -0.1260387219055294,
+      "predictionRows": 40
+    },
+    "alone:approach:crowdingCrossing": {
+      "mse": 14.048832961484425,
+      "mae": 3.117621271353008,
+      "bias": -0.08125797640380968,
+      "predictionRows": 40
+    },
+    "alone:approach:exhaustedGroups": {
+      "mse": 13.018040672244037,
+      "mae": 3.045431541698648,
+      "bias": -0.34849580612571573,
+      "predictionRows": 40
+    },
+    "alone:approach:exposureCrossing": {
+      "mse": 16.040447514623875,
+      "mae": 3.0687546773406416,
+      "bias": -0.5537370855199708,
+      "predictionRows": 40
+    },
+    "alone:approach:routeRefusals": {
+      "mse": 11.156449375682751,
+      "mae": 2.7369224304334256,
+      "bias": -0.03909514759468717,
+      "predictionRows": 40
+    },
+    "alone:approach:scoreBlocked": {
+      "mse": 9.280461494321901,
+      "mae": 2.5272943876953513,
+      "bias": 0.05869063933341482,
+      "predictionRows": 40
+    },
+    "alone:path:correctionBudget": {
+      "mse": 10.925,
+      "mae": 2.696875,
+      "bias": 0.0,
+      "predictionRows": 40
+    },
+    "alone:path:crowdingCrossing": {
+      "mse": 10.925,
+      "mae": 2.696875,
+      "bias": 0.0,
+      "predictionRows": 40
+    },
+    "alone:path:exhaustedGroups": {
+      "mse": 10.925,
+      "mae": 2.696875,
+      "bias": 0.0,
+      "predictionRows": 40
+    },
+    "alone:path:exposureCrossing": {
+      "mse": 10.925,
+      "mae": 2.696875,
+      "bias": 0.0,
+      "predictionRows": 40
+    },
+    "alone:path:routeRefusals": {
+      "mse": 10.925,
+      "mae": 2.696875,
+      "bias": 0.0,
+      "predictionRows": 40
+    },
+    "alone:path:scoreBlocked": {
+      "mse": 10.828931248425295,
+      "mae": 2.7206845238095236,
+      "bias": -0.1337301587301587,
+      "predictionRows": 40
+    },
+    "identity:M0": {
+      "mse": 10.432584208234855,
+      "mae": 2.575,
+      "bias": -1.195183421969107,
+      "predictionRows": 40
+    },
+    "identity:M1": {
+      "mse": 10.156408359268262,
+      "mae": 2.598839215386014,
+      "bias": -0.5675125729584806,
+      "predictionRows": 40
+    },
+    "identity:M2": {
+      "mse": 7.68606804650379,
+      "mae": 2.2437789612482844,
+      "bias": -0.679643067782598,
+      "predictionRows": 40
+    },
+    "trainMean": {
+      "mse": 10.925,
+      "mae": 2.696875,
+      "bias": 0.0,
+      "predictionRows": 40
+    },
+    "vp+:approach:correctionBudget": {
+      "mse": 15.529525373489673,
+      "mae": 3.292214833026823,
+      "bias": -0.7484439881290064,
+      "predictionRows": 40
+    },
+    "vp+:approach:crowdingCrossing": {
+      "mse": 15.264009138557602,
+      "mae": 3.1932224235577507,
+      "bias": -0.5223730934491189,
+      "predictionRows": 40
+    },
+    "vp+:approach:exhaustedGroups": {
+      "mse": 14.92214455311851,
+      "mae": 3.3077657014283104,
+      "bias": -0.8323622499472056,
+      "predictionRows": 40
+    },
+    "vp+:approach:exposureCrossing": {
+      "mse": 16.0493853297828,
+      "mae": 3.016961016719036,
+      "bias": -0.7803883259363309,
+      "predictionRows": 40
+    },
+    "vp+:approach:routeRefusals": {
+      "mse": 12.882440523994427,
+      "mae": 2.9908234605479604,
+      "bias": -0.5242293250987964,
+      "predictionRows": 40
+    },
+    "vp+:approach:scoreBlocked": {
+      "mse": 10.851431296801639,
+      "mae": 2.62143480364188,
+      "bias": -0.04205794745810689,
+      "predictionRows": 40
+    },
+    "vp+:path:correctionBudget": {
+      "mse": 12.52140930297962,
+      "mae": 2.9509381469979297,
+      "bias": -0.4790566770186335,
+      "predictionRows": 40
+    },
+    "vp+:path:crowdingCrossing": {
+      "mse": 12.52140930297962,
+      "mae": 2.9509381469979297,
+      "bias": -0.4790566770186335,
+      "predictionRows": 40
+    },
+    "vp+:path:exhaustedGroups": {
+      "mse": 12.52140930297962,
+      "mae": 2.9509381469979297,
+      "bias": -0.4790566770186335,
+      "predictionRows": 40
+    },
+    "vp+:path:exposureCrossing": {
+      "mse": 12.52140930297962,
+      "mae": 2.9509381469979297,
+      "bias": -0.4790566770186335,
+      "predictionRows": 40
+    },
+    "vp+:path:routeRefusals": {
+      "mse": 12.52140930297962,
+      "mae": 2.9509381469979297,
+      "bias": -0.4790566770186335,
+      "predictionRows": 40
+    },
+    "vp+:path:scoreBlocked": {
+      "mse": 14.029800464811434,
+      "mae": 3.0599017146175207,
+      "bias": -0.7313502464503109,
+      "predictionRows": 40
+    },
+    "vpFit": {
+      "mse": 12.52140930297962,
+      "mae": 2.9509381469979297,
+      "bias": -0.4790566770186335,
+      "predictionRows": 40
+    },
+    "zero": {
+      "mse": 10.6625,
+      "mae": 2.6,
+      "bias": -1.225,
+      "predictionRows": 40
+    }
+  },
+  "rankingsExploratory": [
+    {
+      "feature": "approach:scoreBlocked",
+      "mse": 10.851431296801639,
+      "mseGainVsVpFit": 1.6699780061779812,
+      "mseGainVsZero": -0.18893129680163945,
+      "nonzeroPairValues": 14,
+      "nonzeroGameDifferences": 27,
+      "nonzeroPlayerMeasurements": 27,
+      "pairValueRange": [
+        -0.09722222222222222,
+        0.05555555555555555
+      ]
+    },
+    {
+      "feature": "path:correctionBudget",
+      "mse": 12.52140930297962,
+      "mseGainVsVpFit": 0.0,
+      "mseGainVsZero": -1.8589093029796206,
+      "nonzeroPairValues": 0,
+      "nonzeroGameDifferences": 0,
+      "nonzeroPlayerMeasurements": 0,
+      "pairValueRange": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "feature": "path:crowdingCrossing",
+      "mse": 12.52140930297962,
+      "mseGainVsVpFit": 0.0,
+      "mseGainVsZero": -1.8589093029796206,
+      "nonzeroPairValues": 0,
+      "nonzeroGameDifferences": 0,
+      "nonzeroPlayerMeasurements": 0,
+      "pairValueRange": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "feature": "path:exhaustedGroups",
+      "mse": 12.52140930297962,
+      "mseGainVsVpFit": 0.0,
+      "mseGainVsZero": -1.8589093029796206,
+      "nonzeroPairValues": 0,
+      "nonzeroGameDifferences": 0,
+      "nonzeroPlayerMeasurements": 0,
+      "pairValueRange": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "feature": "path:exposureCrossing",
+      "mse": 12.52140930297962,
+      "mseGainVsVpFit": 0.0,
+      "mseGainVsZero": -1.8589093029796206,
+      "nonzeroPairValues": 0,
+      "nonzeroGameDifferences": 0,
+      "nonzeroPlayerMeasurements": 0,
+      "pairValueRange": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "feature": "path:routeRefusals",
+      "mse": 12.52140930297962,
+      "mseGainVsVpFit": 0.0,
+      "mseGainVsZero": -1.8589093029796206,
+      "nonzeroPairValues": 0,
+      "nonzeroGameDifferences": 0,
+      "nonzeroPlayerMeasurements": 0,
+      "pairValueRange": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "feature": "approach:routeRefusals",
+      "mse": 12.882440523994427,
+      "mseGainVsVpFit": -0.361031221014807,
+      "mseGainVsZero": -2.2199405239944277,
+      "nonzeroPairValues": 35,
+      "nonzeroGameDifferences": 80,
+      "nonzeroPlayerMeasurements": 80,
+      "pairValueRange": [
+        -15.083333333333336,
+        10.805555555555554
+      ]
+    },
+    {
+      "feature": "path:scoreBlocked",
+      "mse": 14.029800464811434,
+      "mseGainVsVpFit": -1.5083911618318133,
+      "mseGainVsZero": -3.367300464811434,
+      "nonzeroPairValues": 1,
+      "nonzeroGameDifferences": 1,
+      "nonzeroPlayerMeasurements": 1,
+      "pairValueRange": [
+        -0.02564102564102564,
+        0.0
+      ]
+    },
+    {
+      "feature": "approach:exhaustedGroups",
+      "mse": 14.92214455311851,
+      "mseGainVsVpFit": -2.40073525013889,
+      "mseGainVsZero": -4.259644553118511,
+      "nonzeroPairValues": 23,
+      "nonzeroGameDifferences": 52,
+      "nonzeroPlayerMeasurements": 52,
+      "pairValueRange": [
+        -0.2222222222222222,
+        0.28205128205128205
+      ]
+    },
+    {
+      "feature": "approach:crowdingCrossing",
+      "mse": 15.264009138557602,
+      "mseGainVsVpFit": -2.742599835577982,
+      "mseGainVsZero": -4.601509138557603,
+      "nonzeroPairValues": 25,
+      "nonzeroGameDifferences": 80,
+      "nonzeroPlayerMeasurements": 84,
+      "pairValueRange": [
+        -0.22222222222222227,
+        0.3055555555555556
+      ]
+    },
+    {
+      "feature": "approach:correctionBudget",
+      "mse": 15.529525373489673,
+      "mseGainVsVpFit": -3.0081160705100523,
+      "mseGainVsZero": -4.867025373489673,
+      "nonzeroPairValues": 30,
+      "nonzeroGameDifferences": 80,
+      "nonzeroPlayerMeasurements": 81,
+      "pairValueRange": [
+        -18.458333333333336,
+        11.222222222222221
+      ]
+    },
+    {
+      "feature": "approach:exposureCrossing",
+      "mse": 16.0493853297828,
+      "mseGainVsVpFit": -3.527976026803181,
+      "mseGainVsZero": -5.386885329782801,
+      "nonzeroPairValues": 23,
+      "nonzeroGameDifferences": 80,
+      "nonzeroPlayerMeasurements": 90,
+      "pairValueRange": [
+        -0.16666666666666669,
+        0.11538461538461536
+      ]
+    }
+  ],
+  "bySplit": {
+    "0": {
+      "alone:approach:correctionBudget": {
+        "mse": 10.134897220722157,
+        "mae": 2.6804695098025,
+        "bias": 0.3854404769704106,
+        "predictionRows": 10
+      },
+      "alone:approach:crowdingCrossing": {
+        "mse": 11.742998750883787,
+        "mae": 3.095497366645505,
+        "bias": -0.0208498525568539,
+        "predictionRows": 10
+      },
+      "alone:approach:exhaustedGroups": {
+        "mse": 8.592988738202141,
+        "mae": 2.474409425439462,
+        "bias": -0.24408484346295234,
+        "predictionRows": 10
+      },
+      "alone:approach:exposureCrossing": {
+        "mse": 14.004893360307772,
+        "mae": 3.2513679055773856,
+        "bias": -0.598773660229684,
+        "predictionRows": 10
+      },
+      "alone:approach:routeRefusals": {
+        "mse": 7.558276796129151,
+        "mae": 2.354962078806497,
+        "bias": 0.1433201653339095,
+        "predictionRows": 10
+      },
+      "alone:approach:scoreBlocked": {
+        "mse": 3.5850566196211036,
+        "mae": 1.7598641416748098,
+        "bias": 0.6697885024682964,
+        "predictionRows": 10
+      },
+      "alone:path:correctionBudget": {
+        "mse": 7.0921875,
+        "mae": 2.275,
+        "bias": 0.25,
+        "predictionRows": 10
+      },
+      "alone:path:crowdingCrossing": {
+        "mse": 7.0921875,
+        "mae": 2.275,
+        "bias": 0.25,
+        "predictionRows": 10
+      },
+      "alone:path:exhaustedGroups": {
+        "mse": 7.0921875,
+        "mae": 2.275,
+        "bias": 0.25,
+        "predictionRows": 10
+      },
+      "alone:path:exposureCrossing": {
+        "mse": 7.0921875,
+        "mae": 2.275,
+        "bias": 0.25,
+        "predictionRows": 10
+      },
+      "alone:path:routeRefusals": {
+        "mse": 7.0921875,
+        "mae": 2.275,
+        "bias": 0.25,
+        "predictionRows": 10
+      },
+      "alone:path:scoreBlocked": {
+        "mse": 7.300473592214663,
+        "mae": 2.3226190476190474,
+        "bias": 0.24523809523809526,
+        "predictionRows": 10
+      },
+      "identity:M0": {
+        "mse": 6.774093757266037,
+        "mae": 1.959633156061786,
+        "bias": -1.159633156061786,
+        "predictionRows": 10
+      },
+      "identity:M1": {
+        "mse": 4.733633565511654,
+        "mae": 1.8674880073092623,
+        "bias": -0.48578423568195117,
+        "predictionRows": 10
+      },
+      "identity:M2": {
+        "mse": 3.5549117963031875,
+        "mae": 1.558659652843305,
+        "bias": -0.7208904750349925,
+        "predictionRows": 10
+      },
+      "trainMean": {
+        "mse": 7.0921875,
+        "mae": 2.275,
+        "bias": 0.25,
+        "predictionRows": 10
+      },
+      "vp+:approach:correctionBudget": {
+        "mse": 12.760357130483106,
+        "mae": 2.7969452977493936,
+        "bias": 0.003494722345276496,
+        "predictionRows": 10
+      },
+      "vp+:approach:crowdingCrossing": {
+        "mse": 13.435778020556961,
+        "mae": 3.200862098500715,
+        "bias": -0.457120431788799,
+        "predictionRows": 10
+      },
+      "vp+:approach:exhaustedGroups": {
+        "mse": 13.56370379356263,
+        "mae": 3.161204938755542,
+        "bias": -1.0904773496990339,
+        "predictionRows": 10
+      },
+      "vp+:approach:exposureCrossing": {
+        "mse": 13.108887099847607,
+        "mae": 2.845717202549131,
+        "bias": -0.9442199326989373,
+        "predictionRows": 10
+      },
+      "vp+:approach:routeRefusals": {
+        "mse": 8.499260226124377,
+        "mae": 2.404963184515011,
+        "bias": -0.13920576806849483,
+        "predictionRows": 10
+      },
+      "vp+:approach:scoreBlocked": {
+        "mse": 10.604191287949252,
+        "mae": 2.4946322465239965,
+        "bias": 1.2590630138543624,
+        "predictionRows": 10
+      },
+      "vp+:path:correctionBudget": {
+        "mse": 7.542873086734694,
+        "mae": 2.3285714285714283,
+        "bias": -0.05535714285714288,
+        "predictionRows": 10
+      },
+      "vp+:path:crowdingCrossing": {
+        "mse": 7.542873086734694,
+        "mae": 2.3285714285714283,
+        "bias": -0.05535714285714288,
+        "predictionRows": 10
+      },
+      "vp+:path:exhaustedGroups": {
+        "mse": 7.542873086734694,
+        "mae": 2.3285714285714283,
+        "bias": -0.05535714285714288,
+        "predictionRows": 10
+      },
+      "vp+:path:exposureCrossing": {
+        "mse": 7.542873086734694,
+        "mae": 2.3285714285714283,
+        "bias": -0.05535714285714288,
+        "predictionRows": 10
+      },
+      "vp+:path:routeRefusals": {
+        "mse": 7.542873086734694,
+        "mae": 2.3285714285714283,
+        "bias": -0.05535714285714288,
+        "predictionRows": 10
+      },
+      "vp+:path:scoreBlocked": {
+        "mse": 7.82953770959959,
+        "mae": 2.391916859122402,
+        "bias": -0.09284018842332926,
+        "predictionRows": 10
+      },
+      "vpFit": {
+        "mse": 7.542873086734694,
+        "mae": 2.3285714285714283,
+        "bias": -0.05535714285714288,
+        "predictionRows": 10
+      },
+      "zero": {
+        "mse": 6.5,
+        "mae": 1.9,
+        "bias": -1.1,
+        "predictionRows": 10
+      }
+    },
+    "1": {
+      "alone:approach:correctionBudget": {
+        "mse": 8.363105455230823,
+        "mae": 2.439900574427619,
+        "bias": 0.5407039612459086,
+        "predictionRows": 10
+      },
+      "alone:approach:crowdingCrossing": {
+        "mse": 8.682931593170917,
+        "mae": 2.50973658042751,
+        "bias": 0.8763286784093977,
+        "predictionRows": 10
+      },
+      "alone:approach:exhaustedGroups": {
+        "mse": 12.12060375873504,
+        "mae": 2.9970923155875666,
+        "bias": 0.2066804248515311,
+        "predictionRows": 10
+      },
+      "alone:approach:exposureCrossing": {
+        "mse": 21.763003171186483,
+        "mae": 3.4080117911202032,
+        "bias": -0.4007849204738238,
+        "predictionRows": 10
+      },
+      "alone:approach:routeRefusals": {
+        "mse": 7.4677955615665,
+        "mae": 2.213914846304266,
+        "bias": 0.7843185759272605,
+        "predictionRows": 10
+      },
+      "alone:approach:scoreBlocked": {
+        "mse": 5.953047543843269,
+        "mae": 2.2586709582289073,
+        "bias": 0.6669423831524081,
+        "predictionRows": 10
+      },
+      "alone:path:correctionBudget": {
+        "mse": 7.4828125,
+        "mae": 2.225,
+        "bias": 0.75,
+        "predictionRows": 10
+      },
+      "alone:path:crowdingCrossing": {
+        "mse": 7.4828125,
+        "mae": 2.225,
+        "bias": 0.75,
+        "predictionRows": 10
+      },
+      "alone:path:exhaustedGroups": {
+        "mse": 7.4828125,
+        "mae": 2.225,
+        "bias": 0.75,
+        "predictionRows": 10
+      },
+      "alone:path:exposureCrossing": {
+        "mse": 7.4828125,
+        "mae": 2.225,
+        "bias": 0.75,
+        "predictionRows": 10
+      },
+      "alone:path:routeRefusals": {
+        "mse": 7.4828125,
+        "mae": 2.225,
+        "bias": 0.75,
+        "predictionRows": 10
+      },
+      "alone:path:scoreBlocked": {
+        "mse": 6.8902514014865215,
+        "mae": 2.272619047619048,
+        "bias": 0.21984126984127,
+        "predictionRows": 10
+      },
+      "identity:M0": {
+        "mse": 5.843150774809535,
+        "mae": 2.190366843938214,
+        "bias": -0.7903668439382139,
+        "predictionRows": 10
+      },
+      "identity:M1": {
+        "mse": 6.299483242161128,
+        "mae": 2.217759946433513,
+        "bias": -0.05288830567952152,
+        "predictionRows": 10
+      },
+      "identity:M2": {
+        "mse": 4.6892407187789376,
+        "mae": 2.022951370966866,
+        "bias": -0.5840483772812893,
+        "predictionRows": 10
+      },
+      "trainMean": {
+        "mse": 7.4828125,
+        "mae": 2.225,
+        "bias": 0.75,
+        "predictionRows": 10
+      },
+      "vp+:approach:correctionBudget": {
+        "mse": 19.133193456697718,
+        "mae": 3.6404131009865814,
+        "bias": -1.2070951688073657,
+        "predictionRows": 10
+      },
+      "vp+:approach:crowdingCrossing": {
+        "mse": 12.166405814078784,
+        "mae": 2.840628372482836,
+        "bias": -0.12462847217503745,
+        "predictionRows": 10
+      },
+      "vp+:approach:exhaustedGroups": {
+        "mse": 15.09986895897805,
+        "mae": 3.367727990010443,
+        "bias": -0.632630706837055,
+        "predictionRows": 10
+      },
+      "vp+:approach:exposureCrossing": {
+        "mse": 22.503261922523922,
+        "mae": 3.564138237662248,
+        "bias": -0.7054746710092291,
+        "predictionRows": 10
+      },
+      "vp+:approach:routeRefusals": {
+        "mse": 13.443995570231914,
+        "mae": 3.1332102252122236,
+        "bias": -0.543240038916673,
+        "predictionRows": 10
+      },
+      "vp+:approach:scoreBlocked": {
+        "mse": 5.0294846436683525,
+        "mae": 1.8201668190775115,
+        "bias": 0.19043428597561027,
+        "predictionRows": 10
+      },
+      "vp+:path:correctionBudget": {
+        "mse": 13.430264125183786,
+        "mae": 3.13768115942029,
+        "bias": -0.5108695652173912,
+        "predictionRows": 10
+      },
+      "vp+:path:crowdingCrossing": {
+        "mse": 13.430264125183786,
+        "mae": 3.13768115942029,
+        "bias": -0.5108695652173912,
+        "predictionRows": 10
+      },
+      "vp+:path:exhaustedGroups": {
+        "mse": 13.430264125183786,
+        "mae": 3.13768115942029,
+        "bias": -0.5108695652173912,
+        "predictionRows": 10
+      },
+      "vp+:path:exposureCrossing": {
+        "mse": 13.430264125183786,
+        "mae": 3.13768115942029,
+        "bias": -0.5108695652173912,
+        "predictionRows": 10
+      },
+      "vp+:path:routeRefusals": {
+        "mse": 13.430264125183786,
+        "mae": 3.13768115942029,
+        "bias": -0.5108695652173912,
+        "predictionRows": 10
+      },
+      "vp+:path:scoreBlocked": {
+        "mse": 19.17716414964614,
+        "mae": 3.5101899993476806,
+        "bias": -1.482560797377914,
+        "predictionRows": 10
+      },
+      "vpFit": {
+        "mse": 13.430264125183786,
+        "mae": 3.13768115942029,
+        "bias": -0.5108695652173912,
+        "predictionRows": 10
+      },
+      "zero": {
+        "mse": 5.975,
+        "mae": 2.25,
+        "bias": -0.85,
+        "predictionRows": 10
+      }
+    },
+    "2": {
+      "alone:approach:correctionBudget": {
+        "mse": 15.767580270196817,
+        "mae": 3.2759229105224428,
+        "bias": -0.9951695727059743,
+        "predictionRows": 10
+      },
+      "alone:approach:crowdingCrossing": {
+        "mse": 16.35323150026916,
+        "mae": 3.223144734379612,
+        "bias": -0.9050453215223964,
+        "predictionRows": 10
+      },
+      "alone:approach:exhaustedGroups": {
+        "mse": 15.119467374052286,
+        "mae": 3.202267862207806,
+        "bias": -0.8365847831216116,
+        "predictionRows": 10
+      },
+      "alone:approach:exposureCrossing": {
+        "mse": 9.108306475212725,
+        "mae": 2.1064749842475807,
+        "bias": -0.6843680236720792,
+        "predictionRows": 10
+      },
+      "alone:approach:routeRefusals": {
+        "mse": 14.806780461736448,
+        "mae": 3.1362256447592594,
+        "bias": -0.8016141933349858,
+        "predictionRows": 10
+      },
+      "alone:approach:scoreBlocked": {
+        "mse": 13.400755058763105,
+        "mae": 3.036979012674358,
+        "bias": -0.7937738646293773,
+        "predictionRows": 10
+      },
+      "alone:path:correctionBudget": {
+        "mse": 14.4,
+        "mae": 3.0875,
+        "bias": -0.75,
+        "predictionRows": 10
+      },
+      "alone:path:crowdingCrossing": {
+        "mse": 14.4,
+        "mae": 3.0875,
+        "bias": -0.75,
+        "predictionRows": 10
+      },
+      "alone:path:exhaustedGroups": {
+        "mse": 14.4,
+        "mae": 3.0875,
+        "bias": -0.75,
+        "predictionRows": 10
+      },
+      "alone:path:exposureCrossing": {
+        "mse": 14.4,
+        "mae": 3.0875,
+        "bias": -0.75,
+        "predictionRows": 10
+      },
+      "alone:path:routeRefusals": {
+        "mse": 14.4,
+        "mae": 3.0875,
+        "bias": -0.75,
+        "predictionRows": 10
+      },
+      "alone:path:scoreBlocked": {
+        "mse": 14.4,
+        "mae": 3.0875,
+        "bias": -0.75,
+        "predictionRows": 10
+      },
+      "identity:M0": {
+        "mse": 15.15,
+        "mae": 3.1,
+        "bias": -1.6,
+        "predictionRows": 10
+      },
+      "identity:M1": {
+        "mse": 12.771216207624265,
+        "mae": 3.0033195115051834,
+        "bias": -1.0821368402374396,
+        "predictionRows": 10
+      },
+      "identity:M2": {
+        "mse": 9.20991346762606,
+        "mae": 2.4580413177354603,
+        "bias": -0.7752377582839067,
+        "predictionRows": 10
+      },
+      "trainMean": {
+        "mse": 14.4,
+        "mae": 3.0875,
+        "bias": -0.75,
+        "predictionRows": 10
+      },
+      "vp+:approach:correctionBudget": {
+        "mse": 15.767580270196817,
+        "mae": 3.2759229105224428,
+        "bias": -0.9951695727059743,
+        "predictionRows": 10
+      },
+      "vp+:approach:crowdingCrossing": {
+        "mse": 16.35323150026916,
+        "mae": 3.223144734379612,
+        "bias": -0.9050453215223964,
+        "predictionRows": 10
+      },
+      "vp+:approach:exhaustedGroups": {
+        "mse": 15.119467374052286,
+        "mae": 3.202267862207806,
+        "bias": -0.8365847831216116,
+        "predictionRows": 10
+      },
+      "vp+:approach:exposureCrossing": {
+        "mse": 9.108306475212725,
+        "mae": 2.1064749842475807,
+        "bias": -0.6843680236720792,
+        "predictionRows": 10
+      },
+      "vp+:approach:routeRefusals": {
+        "mse": 14.806780461736448,
+        "mae": 3.1362256447592594,
+        "bias": -0.8016141933349858,
+        "predictionRows": 10
+      },
+      "vp+:approach:scoreBlocked": {
+        "mse": 13.400755058763105,
+        "mae": 3.036979012674358,
+        "bias": -0.7937738646293773,
+        "predictionRows": 10
+      },
+      "vp+:path:correctionBudget": {
+        "mse": 14.4,
+        "mae": 3.0875,
+        "bias": -0.75,
+        "predictionRows": 10
+      },
+      "vp+:path:crowdingCrossing": {
+        "mse": 14.4,
+        "mae": 3.0875,
+        "bias": -0.75,
+        "predictionRows": 10
+      },
+      "vp+:path:exhaustedGroups": {
+        "mse": 14.4,
+        "mae": 3.0875,
+        "bias": -0.75,
+        "predictionRows": 10
+      },
+      "vp+:path:exposureCrossing": {
+        "mse": 14.4,
+        "mae": 3.0875,
+        "bias": -0.75,
+        "predictionRows": 10
+      },
+      "vp+:path:routeRefusals": {
+        "mse": 14.4,
+        "mae": 3.0875,
+        "bias": -0.75,
+        "predictionRows": 10
+      },
+      "vp+:path:scoreBlocked": {
+        "mse": 14.4,
+        "mae": 3.0875,
+        "bias": -0.75,
+        "predictionRows": 10
+      },
+      "vpFit": {
+        "mse": 14.4,
+        "mae": 3.0875,
+        "bias": -0.75,
+        "predictionRows": 10
+      },
+      "zero": {
+        "mse": 15.15,
+        "mae": 3.1,
+        "bias": -1.6,
+        "predictionRows": 10
+      }
+    },
+    "3": {
+      "alone:approach:correctionBudget": {
+        "mse": 14.732793737237472,
+        "mae": 3.4589125954899536,
+        "bias": -0.4351297531324624,
+        "predictionRows": 10
+      },
+      "alone:approach:crowdingCrossing": {
+        "mse": 19.416170001613832,
+        "mae": 3.6421064039594038,
+        "bias": -0.275465409945386,
+        "predictionRows": 10
+      },
+      "alone:approach:exhaustedGroups": {
+        "mse": 16.239102817986684,
+        "mae": 3.5079565635597567,
+        "bias": -0.5199940227698303,
+        "predictionRows": 10
+      },
+      "alone:approach:exposureCrossing": {
+        "mse": 19.28558705178852,
+        "mae": 3.509164028417396,
+        "bias": -0.5310217377042965,
+        "predictionRows": 10
+      },
+      "alone:approach:routeRefusals": {
+        "mse": 14.792944683298904,
+        "mae": 3.2425871518636797,
+        "bias": -0.28240513830493286,
+        "predictionRows": 10
+      },
+      "alone:approach:scoreBlocked": {
+        "mse": 14.182986755060128,
+        "mae": 3.0536634382033294,
+        "bias": -0.30819446365766795,
+        "predictionRows": 10
+      },
+      "alone:path:correctionBudget": {
+        "mse": 14.725,
+        "mae": 3.2,
+        "bias": -0.25,
+        "predictionRows": 10
+      },
+      "alone:path:crowdingCrossing": {
+        "mse": 14.725,
+        "mae": 3.2,
+        "bias": -0.25,
+        "predictionRows": 10
+      },
+      "alone:path:exhaustedGroups": {
+        "mse": 14.725,
+        "mae": 3.2,
+        "bias": -0.25,
+        "predictionRows": 10
+      },
+      "alone:path:exposureCrossing": {
+        "mse": 14.725,
+        "mae": 3.2,
+        "bias": -0.25,
+        "predictionRows": 10
+      },
+      "alone:path:routeRefusals": {
+        "mse": 14.725,
+        "mae": 3.2,
+        "bias": -0.25,
+        "predictionRows": 10
+      },
+      "alone:path:scoreBlocked": {
+        "mse": 14.725,
+        "mae": 3.2,
+        "bias": -0.25,
+        "predictionRows": 10
+      },
+      "identity:M0": {
+        "mse": 13.963092300863853,
+        "mae": 3.05,
+        "bias": -1.230733687876428,
+        "predictionRows": 10
+      },
+      "identity:M1": {
+        "mse": 16.821300421776,
+        "mae": 3.3067893962960975,
+        "bias": -0.6492409102350101,
+        "predictionRows": 10
+      },
+      "identity:M2": {
+        "mse": 13.290206203306976,
+        "mae": 2.9354635034475045,
+        "bias": -0.6383956605302034,
+        "predictionRows": 10
+      },
+      "trainMean": {
+        "mse": 14.725,
+        "mae": 3.2,
+        "bias": -0.25,
+        "predictionRows": 10
+      },
+      "vp+:approach:correctionBudget": {
+        "mse": 14.456970636581048,
+        "mae": 3.455578022848873,
+        "bias": -0.7950059333479615,
+        "predictionRows": 10
+      },
+      "vp+:approach:crowdingCrossing": {
+        "mse": 19.100621219325504,
+        "mae": 3.508254488867839,
+        "bias": -0.6026981483102422,
+        "predictionRows": 10
+      },
+      "vp+:approach:exhaustedGroups": {
+        "mse": 15.905538085881073,
+        "mae": 3.4998620147394512,
+        "bias": -0.7697561601311221,
+        "predictionRows": 10
+      },
+      "vp+:approach:exposureCrossing": {
+        "mse": 19.477085821546957,
+        "mae": 3.551513642417185,
+        "bias": -0.7874906763650777,
+        "predictionRows": 10
+      },
+      "vp+:approach:routeRefusals": {
+        "mse": 14.779725837884971,
+        "mae": 3.28889478770535,
+        "bias": -0.612857300075032,
+        "predictionRows": 10
+      },
+      "vp+:approach:scoreBlocked": {
+        "mse": 14.371294196825847,
+        "mae": 3.1339611362916537,
+        "bias": -0.8239552250330229,
+        "predictionRows": 10
+      },
+      "vp+:path:correctionBudget": {
+        "mse": 14.7125,
+        "mae": 3.25,
+        "bias": -0.6,
+        "predictionRows": 10
+      },
+      "vp+:path:crowdingCrossing": {
+        "mse": 14.7125,
+        "mae": 3.25,
+        "bias": -0.6,
+        "predictionRows": 10
+      },
+      "vp+:path:exhaustedGroups": {
+        "mse": 14.7125,
+        "mae": 3.25,
+        "bias": -0.6,
+        "predictionRows": 10
+      },
+      "vp+:path:exposureCrossing": {
+        "mse": 14.7125,
+        "mae": 3.25,
+        "bias": -0.6,
+        "predictionRows": 10
+      },
+      "vp+:path:routeRefusals": {
+        "mse": 14.7125,
+        "mae": 3.25,
+        "bias": -0.6,
+        "predictionRows": 10
+      },
+      "vp+:path:scoreBlocked": {
+        "mse": 14.7125,
+        "mae": 3.25,
+        "bias": -0.6,
+        "predictionRows": 10
+      },
+      "vpFit": {
+        "mse": 14.7125,
+        "mae": 3.25,
+        "bias": -0.6,
+        "predictionRows": 10
+      },
+      "zero": {
+        "mse": 15.025,
+        "mae": 3.15,
+        "bias": -1.35,
+        "predictionRows": 10
+      }
+    }
+  },
+  "byFamily": {
+    "contactBad": {
+      "alone:approach:correctionBudget": {
+        "mse": 6.6602808217139815,
+        "mae": 2.4044336725364004,
+        "bias": 0.8430118349623108,
+        "predictionRows": 8
+      },
+      "alone:approach:crowdingCrossing": {
+        "mse": 11.17244063253155,
+        "mae": 3.1472213973741896,
+        "bias": 0.3457601609369129,
+        "predictionRows": 8
+      },
+      "alone:approach:exhaustedGroups": {
+        "mse": 8.69256083524361,
+        "mae": 2.721671701487919,
+        "bias": 0.7126101328915239,
+        "predictionRows": 8
+      },
+      "alone:approach:exposureCrossing": {
+        "mse": 17.148027865694736,
+        "mae": 3.733869995256143,
+        "bias": -0.3128282758165034,
+        "predictionRows": 8
+      },
+      "alone:approach:routeRefusals": {
+        "mse": 7.851149582463674,
+        "mae": 2.503811313223408,
+        "bias": 1.0471716209034163,
+        "predictionRows": 8
+      },
+      "alone:approach:scoreBlocked": {
+        "mse": 5.8953039851378035,
+        "mae": 2.3321302692620054,
+        "bias": 1.2343659411987644,
+        "predictionRows": 8
+      },
+      "alone:path:correctionBudget": {
+        "mse": 7.447265625,
+        "mae": 2.5,
+        "bias": 0.90625,
+        "predictionRows": 8
+      },
+      "alone:path:crowdingCrossing": {
+        "mse": 7.447265625,
+        "mae": 2.5,
+        "bias": 0.90625,
+        "predictionRows": 8
+      },
+      "alone:path:exhaustedGroups": {
+        "mse": 7.447265625,
+        "mae": 2.5,
+        "bias": 0.90625,
+        "predictionRows": 8
+      },
+      "alone:path:exposureCrossing": {
+        "mse": 7.447265625,
+        "mae": 2.5,
+        "bias": 0.90625,
+        "predictionRows": 8
+      },
+      "alone:path:routeRefusals": {
+        "mse": 7.447265625,
+        "mae": 2.5,
+        "bias": 0.90625,
+        "predictionRows": 8
+      },
+      "alone:path:scoreBlocked": {
+        "mse": 7.100039466017889,
+        "mae": 2.5,
+        "bias": 0.7415674603174603,
+        "predictionRows": 8
+      },
+      "identity:M0": {
+        "mse": 7.5843172833195585,
+        "mae": 2.649082890154465,
+        "bias": -0.6490828901544651,
+        "predictionRows": 8
+      },
+      "identity:M1": {
+        "mse": 7.215701458778982,
+        "mae": 2.6199751052523066,
+        "bias": -0.23071273991693825,
+        "predictionRows": 8
+      },
+      "identity:M2": {
+        "mse": 5.49865272571346,
+        "mae": 2.2160484744534634,
+        "bias": -0.259832901947764,
+        "predictionRows": 8
+      },
+      "trainMean": {
+        "mse": 7.447265625,
+        "mae": 2.5,
+        "bias": 0.90625,
+        "predictionRows": 8
+      },
+      "vp+:approach:correctionBudget": {
+        "mse": 12.544342605699223,
+        "mae": 2.931065152769587,
+        "bias": -0.20863774415966135,
+        "predictionRows": 8
+      },
+      "vp+:approach:crowdingCrossing": {
+        "mse": 14.768981265575011,
+        "mae": 3.659795461509278,
+        "bias": -0.4142107025881066,
+        "predictionRows": 8
+      },
+      "vp+:approach:exhaustedGroups": {
+        "mse": 11.049878695893469,
+        "mae": 3.025494503333775,
+        "bias": -0.1138411603011624,
+        "predictionRows": 8
+      },
+      "vp+:approach:exposureCrossing": {
+        "mse": 20.228143848751458,
+        "mae": 4.105295972653503,
+        "bias": -0.8454172726981062,
+        "predictionRows": 8
+      },
+      "vp+:approach:routeRefusals": {
+        "mse": 11.224333159820844,
+        "mae": 3.0080158097378344,
+        "bias": 0.24745413069822275,
+        "predictionRows": 8
+      },
+      "vp+:approach:scoreBlocked": {
+        "mse": 4.784615679368594,
+        "mae": 2.018148026869172,
+        "bias": 0.3695999705145779,
+        "predictionRows": 8
+      },
+      "vp+:path:correctionBudget": {
+        "mse": 10.81618923611111,
+        "mae": 2.9791666666666665,
+        "bias": 0.09374999999999994,
+        "predictionRows": 8
+      },
+      "vp+:path:crowdingCrossing": {
+        "mse": 10.81618923611111,
+        "mae": 2.9791666666666665,
+        "bias": 0.09374999999999994,
+        "predictionRows": 8
+      },
+      "vp+:path:exhaustedGroups": {
+        "mse": 10.81618923611111,
+        "mae": 2.9791666666666665,
+        "bias": 0.09374999999999994,
+        "predictionRows": 8
+      },
+      "vp+:path:exposureCrossing": {
+        "mse": 10.81618923611111,
+        "mae": 2.9791666666666665,
+        "bias": 0.09374999999999994,
+        "predictionRows": 8
+      },
+      "vp+:path:routeRefusals": {
+        "mse": 10.81618923611111,
+        "mae": 2.9791666666666665,
+        "bias": 0.09374999999999994,
+        "predictionRows": 8
+      },
+      "vp+:path:scoreBlocked": {
+        "mse": 13.930930058225417,
+        "mae": 3.1136049723756907,
+        "bias": -0.31154904411119894,
+        "predictionRows": 8
+      },
+      "vpFit": {
+        "mse": 10.81618923611111,
+        "mae": 2.9791666666666665,
+        "bias": 0.09374999999999994,
+        "predictionRows": 8
+      },
+      "zero": {
+        "mse": 6.75,
+        "mae": 2.5,
+        "bias": -0.5,
+        "predictionRows": 8
+      }
+    },
+    "crowding": {
+      "alone:approach:correctionBudget": {
+        "mse": 11.042346900548086,
+        "mae": 2.472908601892937,
+        "bias": -2.158519211433169,
+        "predictionRows": 8
+      },
+      "alone:approach:crowdingCrossing": {
+        "mse": 13.607322988632305,
+        "mae": 2.9481389114140004,
+        "bias": -2.026689317164648,
+        "predictionRows": 8
+      },
+      "alone:approach:exhaustedGroups": {
+        "mse": 11.76611668621642,
+        "mae": 2.589734527478807,
+        "bias": -2.4369419503235417,
+        "predictionRows": 8
+      },
+      "alone:approach:exposureCrossing": {
+        "mse": 10.655354807896737,
+        "mae": 2.594725632160952,
+        "bias": -2.2577898224806288,
+        "predictionRows": 8
+      },
+      "alone:approach:routeRefusals": {
+        "mse": 9.994965020027351,
+        "mae": 2.360420971742826,
+        "bias": -1.9785262061711308,
+        "predictionRows": 8
+      },
+      "alone:approach:scoreBlocked": {
+        "mse": 7.907120521623424,
+        "mae": 2.356463240758543,
+        "bias": -0.8486479638693698,
+        "predictionRows": 8
+      },
+      "alone:path:correctionBudget": {
+        "mse": 10.830078125,
+        "mae": 2.546875,
+        "bias": -2.21875,
+        "predictionRows": 8
+      },
+      "alone:path:crowdingCrossing": {
+        "mse": 10.830078125,
+        "mae": 2.546875,
+        "bias": -2.21875,
+        "predictionRows": 8
+      },
+      "alone:path:exhaustedGroups": {
+        "mse": 10.830078125,
+        "mae": 2.546875,
+        "bias": -2.21875,
+        "predictionRows": 8
+      },
+      "alone:path:exposureCrossing": {
+        "mse": 10.830078125,
+        "mae": 2.546875,
+        "bias": -2.21875,
+        "predictionRows": 8
+      },
+      "alone:path:routeRefusals": {
+        "mse": 10.830078125,
+        "mae": 2.546875,
+        "bias": -2.21875,
+        "predictionRows": 8
+      },
+      "alone:path:scoreBlocked": {
+        "mse": 10.830078125,
+        "mae": 2.546875,
+        "bias": -2.21875,
+        "predictionRows": 8
+      },
+      "identity:M0": {
+        "mse": 14.75,
+        "mae": 3.0,
+        "bias": -3.0,
+        "predictionRows": 8
+      },
+      "identity:M1": {
+        "mse": 14.252085896970984,
+        "mae": 3.2377477608043654,
+        "bias": -1.7478142856745045,
+        "predictionRows": 8
+      },
+      "identity:M2": {
+        "mse": 8.531818825127033,
+        "mae": 2.4433224193393817,
+        "bias": -1.1610354528658509,
+        "predictionRows": 8
+      },
+      "trainMean": {
+        "mse": 10.830078125,
+        "mae": 2.546875,
+        "bias": -2.21875,
+        "predictionRows": 8
+      },
+      "vp+:approach:correctionBudget": {
+        "mse": 15.58127651162381,
+        "mae": 2.824633063597923,
+        "bias": -2.8138514218582116,
+        "predictionRows": 8
+      },
+      "vp+:approach:crowdingCrossing": {
+        "mse": 16.043071509377484,
+        "mae": 3.0309961261916136,
+        "bias": -2.406488543304229,
+        "predictionRows": 8
+      },
+      "vp+:approach:exhaustedGroups": {
+        "mse": 16.8341896629281,
+        "mae": 3.2993168649327878,
+        "bias": -3.2415729486889253,
+        "predictionRows": 8
+      },
+      "vp+:approach:exposureCrossing": {
+        "mse": 12.305439081254338,
+        "mae": 2.680201254498636,
+        "bias": -2.5168110649148687,
+        "predictionRows": 8
+      },
+      "vp+:approach:routeRefusals": {
+        "mse": 12.582119503670011,
+        "mae": 2.615062944314692,
+        "bias": -2.4860352161395594,
+        "predictionRows": 8
+      },
+      "vp+:approach:scoreBlocked": {
+        "mse": 19.003641428741886,
+        "mae": 3.6681782954479516,
+        "bias": -0.0944571951114159,
+        "predictionRows": 8
+      },
+      "vp+:path:correctionBudget": {
+        "mse": 12.260324979324196,
+        "mae": 2.703125,
+        "bias": -2.545516304347826,
+        "predictionRows": 8
+      },
+      "vp+:path:crowdingCrossing": {
+        "mse": 12.260324979324196,
+        "mae": 2.703125,
+        "bias": -2.545516304347826,
+        "predictionRows": 8
+      },
+      "vp+:path:exhaustedGroups": {
+        "mse": 12.260324979324196,
+        "mae": 2.703125,
+        "bias": -2.545516304347826,
+        "predictionRows": 8
+      },
+      "vp+:path:exposureCrossing": {
+        "mse": 12.260324979324196,
+        "mae": 2.703125,
+        "bias": -2.545516304347826,
+        "predictionRows": 8
+      },
+      "vp+:path:routeRefusals": {
+        "mse": 12.260324979324196,
+        "mae": 2.703125,
+        "bias": -2.545516304347826,
+        "predictionRows": 8
+      },
+      "vp+:path:scoreBlocked": {
+        "mse": 12.260324979324196,
+        "mae": 2.703125,
+        "bias": -2.545516304347826,
+        "predictionRows": 8
+      },
+      "vpFit": {
+        "mse": 12.260324979324196,
+        "mae": 2.703125,
+        "bias": -2.545516304347826,
+        "predictionRows": 8
+      },
+      "zero": {
+        "mse": 14.75,
+        "mae": 3.0,
+        "bias": -3.0,
+        "predictionRows": 8
+      }
+    },
+    "hqWithArmy": {
+      "alone:approach:correctionBudget": {
+        "mse": 9.651226889193081,
+        "mae": 2.509693835380544,
+        "bias": 1.1691844257179558,
+        "predictionRows": 8
+      },
+      "alone:approach:crowdingCrossing": {
+        "mse": 6.516360141470195,
+        "mae": 2.09847762738532,
+        "bias": 1.0551723592675517,
+        "predictionRows": 8
+      },
+      "alone:approach:exhaustedGroups": {
+        "mse": 8.661612274785181,
+        "mae": 2.407707474466438,
+        "bias": 0.9353173298355998,
+        "predictionRows": 8
+      },
+      "alone:approach:exposureCrossing": {
+        "mse": 7.323163614747638,
+        "mae": 2.1076832727732486,
+        "bias": 0.9096407715205513,
+        "predictionRows": 8
+      },
+      "alone:approach:routeRefusals": {
+        "mse": 7.098017396233476,
+        "mae": 2.1774689343382105,
+        "bias": 0.9145621416272571,
+        "predictionRows": 8
+      },
+      "alone:approach:scoreBlocked": {
+        "mse": 4.062523211723422,
+        "mae": 1.8915366311899309,
+        "bias": 0.14553158848121922,
+        "predictionRows": 8
+      },
+      "alone:path:correctionBudget": {
+        "mse": 6.8203125,
+        "mae": 2.125,
+        "bias": 1.0625,
+        "predictionRows": 8
+      },
+      "alone:path:crowdingCrossing": {
+        "mse": 6.8203125,
+        "mae": 2.125,
+        "bias": 1.0625,
+        "predictionRows": 8
+      },
+      "alone:path:exhaustedGroups": {
+        "mse": 6.8203125,
+        "mae": 2.125,
+        "bias": 1.0625,
+        "predictionRows": 8
+      },
+      "alone:path:exposureCrossing": {
+        "mse": 6.8203125,
+        "mae": 2.125,
+        "bias": 1.0625,
+        "predictionRows": 8
+      },
+      "alone:path:routeRefusals": {
+        "mse": 6.8203125,
+        "mae": 2.125,
+        "bias": 1.0625,
+        "predictionRows": 8
+      },
+      "alone:path:scoreBlocked": {
+        "mse": 6.264756944444445,
+        "mae": 2.125,
+        "bias": 0.8958333333333335,
+        "predictionRows": 8
+      },
+      "identity:M0": {
+        "mse": 5.5625,
+        "mae": 2.125,
+        "bias": -0.375,
+        "predictionRows": 8
+      },
+      "identity:M1": {
+        "mse": 7.070778174706296,
+        "mae": 2.3127344024350074,
+        "bias": 0.6239898593673253,
+        "predictionRows": 8
+      },
+      "identity:M2": {
+        "mse": 3.6559336334446852,
+        "mae": 1.6889255596905488,
+        "bias": -0.41596815053944913,
+        "predictionRows": 8
+      },
+      "trainMean": {
+        "mse": 6.8203125,
+        "mae": 2.125,
+        "bias": 1.0625,
+        "predictionRows": 8
+      },
+      "vp+:approach:correctionBudget": {
+        "mse": 9.132677951142576,
+        "mae": 2.4386987505770352,
+        "bias": 0.9748273313478999,
+        "predictionRows": 8
+      },
+      "vp+:approach:crowdingCrossing": {
+        "mse": 6.418413334355476,
+        "mae": 2.208716116165228,
+        "bias": 0.7233620574452432,
+        "predictionRows": 8
+      },
+      "vp+:approach:exhaustedGroups": {
+        "mse": 7.364275516211645,
+        "mae": 2.282276210678122,
+        "bias": 0.8021389371304065,
+        "predictionRows": 8
+      },
+      "vp+:approach:exposureCrossing": {
+        "mse": 6.65674430930859,
+        "mae": 2.11122289226915,
+        "bias": 0.3952486121198208,
+        "predictionRows": 8
+      },
+      "vp+:approach:routeRefusals": {
+        "mse": 6.494387450669643,
+        "mae": 2.1322093081902382,
+        "bias": 0.7503202371366836,
+        "predictionRows": 8
+      },
+      "vp+:approach:scoreBlocked": {
+        "mse": 4.226104327909566,
+        "mae": 1.8114184635327895,
+        "bias": -0.42570354312268427,
+        "predictionRows": 8
+      },
+      "vp+:path:correctionBudget": {
+        "mse": 6.306452930297828,
+        "mae": 2.125,
+        "bias": 0.827833850931677,
+        "predictionRows": 8
+      },
+      "vp+:path:crowdingCrossing": {
+        "mse": 6.306452930297828,
+        "mae": 2.125,
+        "bias": 0.827833850931677,
+        "predictionRows": 8
+      },
+      "vp+:path:exhaustedGroups": {
+        "mse": 6.306452930297828,
+        "mae": 2.125,
+        "bias": 0.827833850931677,
+        "predictionRows": 8
+      },
+      "vp+:path:exposureCrossing": {
+        "mse": 6.306452930297828,
+        "mae": 2.125,
+        "bias": 0.827833850931677,
+        "predictionRows": 8
+      },
+      "vp+:path:routeRefusals": {
+        "mse": 6.306452930297828,
+        "mae": 2.125,
+        "bias": 0.827833850931677,
+        "predictionRows": 8
+      },
+      "vp+:path:scoreBlocked": {
+        "mse": 5.7571712649728495,
+        "mae": 2.125,
+        "bias": 0.632879048982856,
+        "predictionRows": 8
+      },
+      "vpFit": {
+        "mse": 6.306452930297828,
+        "mae": 2.125,
+        "bias": 0.827833850931677,
+        "predictionRows": 8
+      },
+      "zero": {
+        "mse": 5.5625,
+        "mae": 2.125,
+        "bias": -0.375,
+        "predictionRows": 8
+      }
+    },
+    "outOfSupply": {
+      "alone:approach:correctionBudget": {
+        "mse": 13.747367266944932,
+        "mae": 3.474050109609259,
+        "bias": 3.474050109609259,
+        "predictionRows": 8
+      },
+      "alone:approach:crowdingCrossing": {
+        "mse": 11.067915016870733,
+        "mae": 3.041283888225878,
+        "bias": 3.041283888225878,
+        "predictionRows": 8
+      },
+      "alone:approach:exhaustedGroups": {
+        "mse": 12.859392787789416,
+        "mae": 3.2772897310139575,
+        "bias": 3.2772897310139575,
+        "predictionRows": 8
+      },
+      "alone:approach:exposureCrossing": {
+        "mse": 10.57038407792169,
+        "mae": 2.899893192844795,
+        "bias": 2.899893192844795,
+        "predictionRows": 8
+      },
+      "alone:approach:routeRefusals": {
+        "mse": 12.436107996030724,
+        "mae": 3.2155780466151747,
+        "bias": 3.2155780466151747,
+        "predictionRows": 8
+      },
+      "alone:approach:scoreBlocked": {
+        "mse": 10.634014105767562,
+        "mae": 2.905532107512791,
+        "bias": 2.905532107512791,
+        "predictionRows": 8
+      },
+      "alone:path:correctionBudget": {
+        "mse": 12.447265625,
+        "mae": 3.25,
+        "bias": 3.25,
+        "predictionRows": 8
+      },
+      "alone:path:crowdingCrossing": {
+        "mse": 12.447265625,
+        "mae": 3.25,
+        "bias": 3.25,
+        "predictionRows": 8
+      },
+      "alone:path:exhaustedGroups": {
+        "mse": 12.447265625,
+        "mae": 3.25,
+        "bias": 3.25,
+        "predictionRows": 8
+      },
+      "alone:path:exposureCrossing": {
+        "mse": 12.447265625,
+        "mae": 3.25,
+        "bias": 3.25,
+        "predictionRows": 8
+      },
+      "alone:path:routeRefusals": {
+        "mse": 12.447265625,
+        "mae": 3.25,
+        "bias": 3.25,
+        "predictionRows": 8
+      },
+      "alone:path:scoreBlocked": {
+        "mse": 11.921405049288234,
+        "mae": 3.140873015873016,
+        "bias": 3.140873015873016,
+        "predictionRows": 8
+      },
+      "identity:M0": {
+        "mse": 5.125,
+        "mae": 1.75,
+        "bias": 1.375,
+        "predictionRows": 8
+      },
+      "identity:M1": {
+        "mse": 5.76770912424068,
+        "mae": 1.8320996915751642,
+        "bias": 1.4570996915751642,
+        "predictionRows": 8
+      },
+      "identity:M2": {
+        "mse": 5.8497600282464575,
+        "mae": 1.8421097595990503,
+        "bias": 1.4671097595990503,
+        "predictionRows": 8
+      },
+      "trainMean": {
+        "mse": 12.447265625,
+        "mae": 3.25,
+        "bias": 3.25,
+        "predictionRows": 8
+      },
+      "vp+:approach:correctionBudget": {
+        "mse": 12.441346658886058,
+        "mae": 3.286059546107255,
+        "bias": 3.286059546107255,
+        "predictionRows": 8
+      },
+      "vp+:approach:crowdingCrossing": {
+        "mse": 9.683096596602194,
+        "mae": 2.7362764582246575,
+        "bias": 2.7362764582246575,
+        "predictionRows": 8
+      },
+      "vp+:approach:exhaustedGroups": {
+        "mse": 12.074778863928065,
+        "mae": 3.161602425160261,
+        "bias": 3.161602425160261,
+        "predictionRows": 8
+      },
+      "vp+:approach:exposureCrossing": {
+        "mse": 8.666235239809826,
+        "mae": 2.4189025582764736,
+        "bias": 2.330627908331869,
+        "predictionRows": 8
+      },
+      "vp+:approach:routeRefusals": {
+        "mse": 11.08051025656618,
+        "mae": 3.032971731653855,
+        "bias": 3.032971731653855,
+        "predictionRows": 8
+      },
+      "vp+:approach:scoreBlocked": {
+        "mse": 9.17463827924363,
+        "mae": 2.6506328511130284,
+        "bias": 2.6506328511130284,
+        "predictionRows": 8
+      },
+      "vp+:path:correctionBudget": {
+        "mse": 11.230915306664963,
+        "mae": 3.0567740683229814,
+        "bias": 3.0567740683229814,
+        "predictionRows": 8
+      },
+      "vp+:path:crowdingCrossing": {
+        "mse": 11.230915306664963,
+        "mae": 3.0567740683229814,
+        "bias": 3.0567740683229814,
+        "predictionRows": 8
+      },
+      "vp+:path:exhaustedGroups": {
+        "mse": 11.230915306664963,
+        "mae": 3.0567740683229814,
+        "bias": 3.0567740683229814,
+        "predictionRows": 8
+      },
+      "vp+:path:exposureCrossing": {
+        "mse": 11.230915306664963,
+        "mae": 3.0567740683229814,
+        "bias": 3.0567740683229814,
+        "predictionRows": 8
+      },
+      "vp+:path:routeRefusals": {
+        "mse": 11.230915306664963,
+        "mae": 3.0567740683229814,
+        "bias": 3.0567740683229814,
+        "predictionRows": 8
+      },
+      "vp+:path:scoreBlocked": {
+        "mse": 10.671641860522255,
+        "mae": 2.931356833968264,
+        "bias": 2.931356833968264,
+        "predictionRows": 8
+      },
+      "vpFit": {
+        "mse": 11.230915306664963,
+        "mae": 3.0567740683229814,
+        "bias": 3.0567740683229814,
+        "predictionRows": 8
+      },
+      "zero": {
+        "mse": 5.125,
+        "mae": 1.75,
+        "bias": 1.375,
+        "predictionRows": 8
+      }
+    },
+    "progressObjective": {
+      "alone:approach:correctionBudget": {
+        "mse": 20.146748975834004,
+        "mae": 3.957920768384004,
+        "bias": -3.957920768384004,
+        "predictionRows": 8
+      },
+      "alone:approach:crowdingCrossing": {
+        "mse": 27.88012602791734,
+        "mae": 4.35298453236565,
+        "bias": -2.8218169732847427,
+        "predictionRows": 8
+      },
+      "alone:approach:exhaustedGroups": {
+        "mse": 23.110520777185567,
+        "mae": 4.230754274046118,
+        "bias": -4.230754274046118,
+        "predictionRows": 8
+      },
+      "alone:approach:exposureCrossing": {
+        "mse": 34.50530720685858,
+        "mae": 4.007601293668069,
+        "bias": -4.007601293668069,
+        "predictionRows": 8
+      },
+      "alone:approach:routeRefusals": {
+        "mse": 18.402006883658526,
+        "mae": 3.4273328862475085,
+        "bias": -3.394261340948153,
+        "predictionRows": 8
+      },
+      "alone:approach:scoreBlocked": {
+        "mse": 17.903345647357295,
+        "mae": 3.1508096897534856,
+        "bias": -3.1433284766563307,
+        "predictionRows": 8
+      },
+      "alone:path:correctionBudget": {
+        "mse": 17.080078125,
+        "mae": 3.0625,
+        "bias": -3.0,
+        "predictionRows": 8
+      },
+      "alone:path:crowdingCrossing": {
+        "mse": 17.080078125,
+        "mae": 3.0625,
+        "bias": -3.0,
+        "predictionRows": 8
+      },
+      "alone:path:exhaustedGroups": {
+        "mse": 17.080078125,
+        "mae": 3.0625,
+        "bias": -3.0,
+        "predictionRows": 8
+      },
+      "alone:path:exposureCrossing": {
+        "mse": 17.080078125,
+        "mae": 3.0625,
+        "bias": -3.0,
+        "predictionRows": 8
+      },
+      "alone:path:routeRefusals": {
+        "mse": 17.080078125,
+        "mae": 3.0625,
+        "bias": -3.0,
+        "predictionRows": 8
+      },
+      "alone:path:scoreBlocked": {
+        "mse": 18.02837665737591,
+        "mae": 3.2906746031746033,
+        "bias": -3.2281746031746033,
+        "predictionRows": 8
+      },
+      "identity:M0": {
+        "mse": 19.141103757854722,
+        "mae": 3.350917109845535,
+        "bias": -3.3268342196910696,
+        "predictionRows": 8
+      },
+      "identity:M1": {
+        "mse": 16.475767141644365,
+        "mae": 2.991639116863227,
+        "bias": -2.9401253901434496,
+        "predictionRows": 8
+      },
+      "identity:M2": {
+        "mse": 14.894175019987319,
+        "mae": 3.028488593158976,
+        "bias": -3.028488593158976,
+        "predictionRows": 8
+      },
+      "trainMean": {
+        "mse": 17.080078125,
+        "mae": 3.0625,
+        "bias": -3.0,
+        "predictionRows": 8
+      },
+      "vp+:approach:correctionBudget": {
+        "mse": 27.947983140096696,
+        "mae": 4.980617652082313,
+        "bias": -4.980617652082313,
+        "predictionRows": 8
+      },
+      "vp+:approach:crowdingCrossing": {
+        "mse": 29.406482986877847,
+        "mae": 4.330327955697976,
+        "bias": -3.2508047370231585,
+        "predictionRows": 8
+      },
+      "vp+:approach:exhaustedGroups": {
+        "mse": 27.28760002663127,
+        "mae": 4.770138503036607,
+        "bias": -4.770138503036607,
+        "predictionRows": 8
+      },
+      "vp+:approach:exposureCrossing": {
+        "mse": 32.3903641697898,
+        "mae": 3.7691824058974177,
+        "bias": -3.265589812520369,
+        "predictionRows": 8
+      },
+      "vp+:approach:routeRefusals": {
+        "mse": 23.030852249245456,
+        "mae": 4.165857508843184,
+        "bias": -4.165857508843184,
+        "predictionRows": 8
+      },
+      "vp+:approach:scoreBlocked": {
+        "mse": 17.068156768744522,
+        "mae": 2.9587963812464593,
+        "bias": -2.7103618206840405,
+        "predictionRows": 8
+      },
+      "vp+:path:correctionBudget": {
+        "mse": 21.9931640625,
+        "mae": 3.890625,
+        "bias": -3.828125,
+        "predictionRows": 8
+      },
+      "vp+:path:crowdingCrossing": {
+        "mse": 21.9931640625,
+        "mae": 3.890625,
+        "bias": -3.828125,
+        "predictionRows": 8
+      },
+      "vp+:path:exhaustedGroups": {
+        "mse": 21.9931640625,
+        "mae": 3.890625,
+        "bias": -3.828125,
+        "predictionRows": 8
+      },
+      "vp+:path:exposureCrossing": {
+        "mse": 21.9931640625,
+        "mae": 3.890625,
+        "bias": -3.828125,
+        "predictionRows": 8
+      },
+      "vp+:path:routeRefusals": {
+        "mse": 21.9931640625,
+        "mae": 3.890625,
+        "bias": -3.828125,
+        "predictionRows": 8
+      },
+      "vp+:path:scoreBlocked": {
+        "mse": 27.528934161012444,
+        "mae": 4.4264217667436485,
+        "bias": -4.3639217667436485,
+        "predictionRows": 8
+      },
+      "vpFit": {
+        "mse": 21.9931640625,
+        "mae": 3.890625,
+        "bias": -3.828125,
+        "predictionRows": 8
+      },
+      "zero": {
+        "mse": 21.125,
+        "mae": 3.625,
+        "bias": -3.625,
+        "predictionRows": 8
+      }
+    }
+  },
+  "byClimate": {
+    "EASTERN_EUROPE": {
+      "alone:approach:correctionBudget": {
+        "mse": 16.708260135228876,
+        "mae": 3.172311774756429,
+        "bias": 0.9989612780944706,
+        "predictionRows": 40
+      },
+      "alone:approach:crowdingCrossing": {
+        "mse": 19.951944235819223,
+        "mae": 3.5560293844890607,
+        "bias": 1.0437420235961903,
+        "predictionRows": 40
+      },
+      "alone:approach:exhaustedGroups": {
+        "mse": 17.059841012144325,
+        "mae": 3.1136857857667493,
+        "bias": 0.7765041938742843,
+        "predictionRows": 40
+      },
+      "alone:approach:exposureCrossing": {
+        "mse": 18.859287145227412,
+        "mae": 3.415932670755894,
+        "bias": 0.5712629144800292,
+        "predictionRows": 40
+      },
+      "alone:approach:routeRefusals": {
+        "mse": 16.330533492339605,
+        "mae": 3.1565682039309255,
+        "bias": 1.0859048524053128,
+        "predictionRows": 40
+      },
+      "alone:approach:scoreBlocked": {
+        "mse": 18.762382723155632,
+        "mae": 3.4898023242609084,
+        "bias": 1.1836906393334146,
+        "predictionRows": 40
+      },
+      "alone:path:correctionBudget": {
+        "mse": 17.0375,
+        "mae": 3.265625,
+        "bias": 1.125,
+        "predictionRows": 40
+      },
+      "alone:path:crowdingCrossing": {
+        "mse": 17.0375,
+        "mae": 3.265625,
+        "bias": 1.125,
+        "predictionRows": 40
+      },
+      "alone:path:exhaustedGroups": {
+        "mse": 17.0375,
+        "mae": 3.265625,
+        "bias": 1.125,
+        "predictionRows": 40
+      },
+      "alone:path:exposureCrossing": {
+        "mse": 17.0375,
+        "mae": 3.265625,
+        "bias": 1.125,
+        "predictionRows": 40
+      },
+      "alone:path:routeRefusals": {
+        "mse": 17.0375,
+        "mae": 3.265625,
+        "bias": 1.125,
+        "predictionRows": 40
+      },
+      "alone:path:scoreBlocked": {
+        "mse": 16.540240772234817,
+        "mae": 3.198164682539683,
+        "bias": 0.9912698412698413,
+        "predictionRows": 40
+      },
+      "identity:M0": {
+        "mse": 14.723525121497445,
+        "mae": 2.859633156061786,
+        "bias": -0.07018342196910697,
+        "predictionRows": 40
+      },
+      "identity:M1": {
+        "mse": 16.017468517819175,
+        "mae": 3.1237549067670556,
+        "bias": 0.5574874270415194,
+        "predictionRows": 40
+      },
+      "identity:M2": {
+        "mse": 13.33365851768231,
+        "mae": 2.8122440578059624,
+        "bias": 0.4453569322174021,
+        "predictionRows": 40
+      },
+      "trainMean": {
+        "mse": 17.0375,
+        "mae": 3.265625,
+        "bias": 1.125,
+        "predictionRows": 40
+      },
+      "vp+:approach:correctionBudget": {
+        "mse": 17.385571974283828,
+        "mae": 3.3003342481396416,
+        "bias": 0.3765560118709937,
+        "predictionRows": 40
+      },
+      "vp+:approach:crowdingCrossing": {
+        "mse": 19.985947404789776,
+        "mae": 3.606261795089936,
+        "bias": 0.6026269065508811,
+        "predictionRows": 40
+      },
+      "vp+:approach:exhaustedGroups": {
+        "mse": 17.43064288963045,
+        "mae": 3.273780865139419,
+        "bias": 0.2926377500527944,
+        "predictionRows": 40
+      },
+      "vp+:approach:exposureCrossing": {
+        "mse": 19.316921208305384,
+        "mae": 3.510581460485118,
+        "bias": 0.3446116740636692,
+        "predictionRows": 40
+      },
+      "vp+:approach:routeRefusals": {
+        "mse": 16.176335757877066,
+        "mae": 3.112568785551807,
+        "bias": 0.6007706749012035,
+        "predictionRows": 40
+      },
+      "vp+:approach:scoreBlocked": {
+        "mse": 22.2363194988201,
+        "mae": 3.6365286500110967,
+        "bias": 1.0829420525418931,
+        "predictionRows": 40
+      },
+      "vp+:path:correctionBudget": {
+        "mse": 16.88259589718252,
+        "mae": 3.2543348861283645,
+        "bias": 0.6459433229813665,
+        "predictionRows": 40
+      },
+      "vp+:path:crowdingCrossing": {
+        "mse": 16.88259589718252,
+        "mae": 3.2543348861283645,
+        "bias": 0.6459433229813665,
+        "predictionRows": 40
+      },
+      "vp+:path:exhaustedGroups": {
+        "mse": 16.88259589718252,
+        "mae": 3.2543348861283645,
+        "bias": 0.6459433229813665,
+        "predictionRows": 40
+      },
+      "vp+:path:exposureCrossing": {
+        "mse": 16.88259589718252,
+        "mae": 3.2543348861283645,
+        "bias": 0.6459433229813665,
+        "predictionRows": 40
+      },
+      "vp+:path:routeRefusals": {
+        "mse": 16.88259589718252,
+        "mae": 3.2543348861283645,
+        "bias": 0.6459433229813665,
+        "predictionRows": 40
+      },
+      "vp+:path:scoreBlocked": {
+        "mse": 17.443152429370205,
+        "mae": 3.3522130034015354,
+        "bias": 0.3936497535496892,
+        "predictionRows": 40
+      },
+      "vpFit": {
+        "mse": 16.88259589718252,
+        "mae": 3.2543348861283645,
+        "bias": 0.6459433229813665,
+        "predictionRows": 40
+      },
+      "zero": {
+        "mse": 14.7,
+        "mae": 2.8,
+        "bias": -0.1,
+        "predictionRows": 40
+      }
+    },
+    "TEMPERATE_INLAND": {
+      "alone:approach:correctionBudget": {
+        "mse": 20.315928206464758,
+        "mae": 3.3818411026589503,
+        "bias": -1.2510387219055294,
+        "predictionRows": 40
+      },
+      "alone:approach:crowdingCrossing": {
+        "mse": 20.67072168714963,
+        "mae": 3.320134997489452,
+        "bias": -1.2062579764038097,
+        "predictionRows": 40
+      },
+      "alone:approach:exhaustedGroups": {
+        "mse": 21.501240332343755,
+        "mae": 3.5046021895431623,
+        "bias": -1.4734958061257157,
+        "predictionRows": 40
+      },
+      "alone:approach:exposureCrossing": {
+        "mse": 25.746607884020342,
+        "mae": 3.582731561966674,
+        "bias": -1.6787370855199708,
+        "predictionRows": 40
+      },
+      "alone:approach:routeRefusals": {
+        "mse": 18.5073652590259,
+        "mae": 3.1503096473406607,
+        "bias": -1.1640951475946872,
+        "predictionRows": 40
+      },
+      "alone:approach:scoreBlocked": {
+        "mse": 12.323540265488168,
+        "mae": 2.697482957239711,
+        "bias": -1.0663093606665852,
+        "predictionRows": 40
+      },
+      "alone:path:correctionBudget": {
+        "mse": 17.3375,
+        "mae": 3.053125,
+        "bias": -1.125,
+        "predictionRows": 40
+      },
+      "alone:path:crowdingCrossing": {
+        "mse": 17.3375,
+        "mae": 3.053125,
+        "bias": -1.125,
+        "predictionRows": 40
+      },
+      "alone:path:exhaustedGroups": {
+        "mse": 17.3375,
+        "mae": 3.053125,
+        "bias": -1.125,
+        "predictionRows": 40
+      },
+      "alone:path:exposureCrossing": {
+        "mse": 17.3375,
+        "mae": 3.053125,
+        "bias": -1.125,
+        "predictionRows": 40
+      },
+      "alone:path:routeRefusals": {
+        "mse": 17.3375,
+        "mae": 3.053125,
+        "bias": -1.125,
+        "predictionRows": 40
+      },
+      "alone:path:scoreBlocked": {
+        "mse": 17.642621724615772,
+        "mae": 3.104315476190476,
+        "bias": -1.2587301587301587,
+        "predictionRows": 40
+      },
+      "identity:M0": {
+        "mse": 18.666643294972268,
+        "mae": 2.920183421969107,
+        "bias": -2.320183421969107,
+        "predictionRows": 40
+      },
+      "identity:M1": {
+        "mse": 16.820348200717348,
+        "mae": 2.986132461081957,
+        "bias": -1.6925125729584807,
+        "predictionRows": 40
+      },
+      "identity:M2": {
+        "mse": 14.563477575325274,
+        "mae": 2.8418290917558773,
+        "bias": -1.8046430677825982,
+        "predictionRows": 40
+      },
+      "trainMean": {
+        "mse": 17.3375,
+        "mae": 3.053125,
+        "bias": -1.125,
+        "predictionRows": 40
+      },
+      "vp+:approach:correctionBudget": {
+        "mse": 26.198478772695523,
+        "mae": 3.7822046939289917,
+        "bias": -1.8734439881290066,
+        "predictionRows": 40
+      },
+      "vp+:approach:crowdingCrossing": {
+        "mse": 23.067070872325427,
+        "mae": 3.4009336862704678,
+        "bias": -1.6473730934491186,
+        "predictionRows": 40
+      },
+      "vp+:approach:exhaustedGroups": {
+        "mse": 24.938646216606568,
+        "mae": 3.7589843547008805,
+        "bias": -1.9573622499472054,
+        "predictionRows": 40
+      },
+      "vp+:approach:exposureCrossing": {
+        "mse": 25.306849451260216,
+        "mae": 3.4175255453848417,
+        "bias": -1.9053883259363307,
+        "predictionRows": 40
+      },
+      "vp+:approach:routeRefusals": {
+        "mse": 22.11354529011179,
+        "mae": 3.4218849668531233,
+        "bias": -1.6492293250987964,
+        "predictionRows": 40
+      },
+      "vp+:approach:scoreBlocked": {
+        "mse": 11.991543094783179,
+        "mae": 2.7221570337345464,
+        "bias": -1.1670579474581069,
+        "predictionRows": 40
+      },
+      "vp+:path:correctionBudget": {
+        "mse": 20.68522270877672,
+        "mae": 3.328597308488613,
+        "bias": -1.6040566770186335,
+        "predictionRows": 40
+      },
+      "vp+:path:crowdingCrossing": {
+        "mse": 20.68522270877672,
+        "mae": 3.328597308488613,
+        "bias": -1.6040566770186335,
+        "predictionRows": 40
+      },
+      "vp+:path:exhaustedGroups": {
+        "mse": 20.68522270877672,
+        "mae": 3.328597308488613,
+        "bias": -1.6040566770186335,
+        "predictionRows": 40
+      },
+      "vp+:path:exposureCrossing": {
+        "mse": 20.68522270877672,
+        "mae": 3.328597308488613,
+        "bias": -1.6040566770186335,
+        "predictionRows": 40
+      },
+      "vp+:path:routeRefusals": {
+        "mse": 20.68522270877672,
+        "mae": 3.328597308488613,
+        "bias": -1.6040566770186335,
+        "predictionRows": 40
+      },
+      "vp+:path:scoreBlocked": {
+        "mse": 23.14144850025266,
+        "mae": 3.472697826281123,
+        "bias": -1.856350246450311,
+        "predictionRows": 40
+      },
+      "vpFit": {
+        "mse": 20.68522270877672,
+        "mae": 3.328597308488613,
+        "bias": -1.6040566770186335,
+        "predictionRows": 40
+      },
+      "zero": {
+        "mse": 19.15,
+        "mae": 2.95,
+        "bias": -2.35,
+        "predictionRows": 40
+      }
+    }
+  },
+  "predictionQualification": "NOT_ESTABLISHED",
+  "acceptedActionsMatched": 68207,
+  "observationSupport": {
+    "earlyReports": 28949,
+    "earlyGroups": 14486,
+    "earlyQueries": 80521,
+    "truncatedQueries": 1345
+  },
+  "windowSupport": {
+    "path": {
+      "windows": 1,
+      "scored": 3,
+      "improving": 0,
+      "routeRefusals": 0,
+      "exhaustedGroups": 0,
+      "crowdingCrossing": 0,
+      "exposureCrossing": 0,
+      "correctionBudget": 0,
+      "scoreBlockedWindows": 1
+    },
+    "approach": {
+      "windows": 984,
+      "scored": 213132,
+      "improving": 165300,
+      "routeRefusals": 10229,
+      "exhaustedGroups": 122,
+      "crowdingCrossing": 629,
+      "exposureCrossing": 894,
+      "correctionBudget": 28345,
+      "scoreBlockedWindows": 29
+    }
+  },
+  "analysisArtifactSha256": "0ad6464c3dd25305854997a06364d2bb2031b401429b72bec6f182063337c877",
+  "sourceCommit": "97e6e04",
+  "scope": "retrospective selected five-family panel; no independent confirmation"
+}
