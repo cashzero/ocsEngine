@@ -1,0 +1,189 @@
+{
+  "frozenAtUtc": "2026-10-20T01:51:22.104671+00:00",
+  "sourceCommit": "9e149737619c05cad75c47da2e025211a9ffd014",
+  "command": [
+    "node",
+    "scripts/ai-match.mjs",
+    "--matches",
+    "30",
+    "--start",
+    "1800000",
+    "--parallel",
+    "4",
+    "--turns",
+    "8",
+    "--size",
+    "32x24",
+    "--style",
+    "TEMPERATE_INLAND",
+    "--engagement",
+    "AXIS_ATTACKS",
+    "--divisions",
+    "6",
+    "--armored",
+    "2",
+    "--air",
+    "NONE",
+    "--air-transport",
+    "NONE",
+    "--allied",
+    "heuristic:artifacts/ai-progress-objective-30games/weights.json",
+    "--axis",
+    "heuristic",
+    "--swap",
+    "--trace",
+    "--out",
+    "artifacts/ai-progress-objective-30games/matches"
+  ],
+  "matchCount": 30,
+  "seedPairs": [
+    {
+      "firstMatch": 1800000,
+      "map": 344141633,
+      "oob": 344141634,
+      "deployment": 344141635,
+      "rules": 344141636,
+      "allied": 344141637,
+      "axis": 344141638
+    },
+    {
+      "firstMatch": 1800002,
+      "map": 344141827,
+      "oob": 344141828,
+      "deployment": 344141829,
+      "rules": 344141830,
+      "allied": 344141831,
+      "axis": 344141832
+    },
+    {
+      "firstMatch": 1800004,
+      "map": 344142021,
+      "oob": 344142022,
+      "deployment": 344142023,
+      "rules": 344142024,
+      "allied": 344142025,
+      "axis": 344142026
+    },
+    {
+      "firstMatch": 1800006,
+      "map": 344142215,
+      "oob": 344142216,
+      "deployment": 344142217,
+      "rules": 344142218,
+      "allied": 344142219,
+      "axis": 344142220
+    },
+    {
+      "firstMatch": 1800008,
+      "map": 344142409,
+      "oob": 344142410,
+      "deployment": 344142411,
+      "rules": 344142412,
+      "allied": 344142413,
+      "axis": 344142414
+    },
+    {
+      "firstMatch": 1800010,
+      "map": 344142603,
+      "oob": 344142604,
+      "deployment": 344142605,
+      "rules": 344142606,
+      "allied": 344142607,
+      "axis": 344142608
+    },
+    {
+      "firstMatch": 1800012,
+      "map": 344142797,
+      "oob": 344142798,
+      "deployment": 344142799,
+      "rules": 344142800,
+      "allied": 344142801,
+      "axis": 344142802
+    },
+    {
+      "firstMatch": 1800014,
+      "map": 344142991,
+      "oob": 344142992,
+      "deployment": 344142993,
+      "rules": 344142994,
+      "allied": 344142995,
+      "axis": 344142996
+    },
+    {
+      "firstMatch": 1800016,
+      "map": 344143185,
+      "oob": 344143186,
+      "deployment": 344143187,
+      "rules": 344143188,
+      "allied": 344143189,
+      "axis": 344143190
+    },
+    {
+      "firstMatch": 1800018,
+      "map": 344143379,
+      "oob": 344143380,
+      "deployment": 344143381,
+      "rules": 344143382,
+      "allied": 344143383,
+      "axis": 344143384
+    },
+    {
+      "firstMatch": 1800020,
+      "map": 344143573,
+      "oob": 344143574,
+      "deployment": 344143575,
+      "rules": 344143576,
+      "allied": 344143577,
+      "axis": 344143578
+    },
+    {
+      "firstMatch": 1800022,
+      "map": 344143767,
+      "oob": 344143768,
+      "deployment": 344143769,
+      "rules": 344143770,
+      "allied": 344143771,
+      "axis": 344143772
+    },
+    {
+      "firstMatch": 1800024,
+      "map": 344143961,
+      "oob": 344143962,
+      "deployment": 344143963,
+      "rules": 344143964,
+      "allied": 344143965,
+      "axis": 344143966
+    },
+    {
+      "firstMatch": 1800026,
+      "map": 344144155,
+      "oob": 344144156,
+      "deployment": 344144157,
+      "rules": 344144158,
+      "allied": 344144159,
+      "axis": 344144160
+    },
+    {
+      "firstMatch": 1800028,
+      "map": 344144349,
+      "oob": 344144350,
+      "deployment": 344144351,
+      "rules": 344144352,
+      "allied": 344144353,
+      "axis": 344144354
+    }
+  ],
+  "summaryFilesCheckedForReuse": 248,
+  "availableSeedReuseHits": [],
+  "engineTreeSha256": "4a87376b26c41f60086cb3060f606afcc1e9b99bb3ba00339c904837d200bb2a",
+  "protocolSha256": "fba57b6f07a5e61a0bbc471c0a7b7bd5965e99efbfcdfd47e2c4c15c4496c938",
+  "weightsSha256": "ff664c80321570dd41d3c9090fd9071d63c074f505b2b84e5a9110d03e2cd0b1",
+  "matchRunnerSha256": "16c7326b6776d1f906ada94563f5425b8a4eefa6b236057fcf02515aed1df698",
+  "heuristicSourceSha256": "756c7ee53d46ef439edec8fa96d176549f4427c938881a65253d102ff087b349",
+  "weightDefaultsSourceSha256": "efdb15bcc69aef62308c5f1f1f0523c7e1bedd092d841110d5d28177cf3b853b",
+  "node": "v26.9.0",
+  "qualification": "EXPLORATORY_30_GAMES_NO_PROMOTION",
+  "analysisSha256": "f3db740bca49bb677bc7eee28ffbd8305a1d2b57f6b94c7b6baf78ae4f034deb",
+  "analysisFrozenAtUtc": "2026-10-20T01:53:01.757084+00:00",
+  "supplyAuditSourceSha256": "53fb4d3997b9d612c31a3e399a57368151abf9f86a951545fafc2e072de1b508"
+}

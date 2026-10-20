@@ -1,0 +1,207 @@
+{
+  "qualification": "EXPLORATORY_30_GAMES_NO_PROMOTION",
+  "primary": {
+    "seedPairs": 15,
+    "games": 30,
+    "meanPairedVpMargin": 1.1333333333333333,
+    "standardErrorAcrossSeeds": 1.1705377952713572,
+    "descriptive95PercentTIntervalDf14": [
+      -1.377220547668303,
+      3.6438872143349696
+    ],
+    "minimumPair": -9.0,
+    "maximumPair": 7.0,
+    "positivePairs": 8,
+    "zeroPairs": 4,
+    "negativePairs": 3
+  },
+  "totals": {
+    "candidateVp": 272,
+    "standardVp": 238,
+    "candidateKill": 609,
+    "candidateLoss": 571,
+    "standardKill": 571,
+    "standardLoss": 609,
+    "candidateOos": 39,
+    "standardOos": 53,
+    "accepted": 25856
+  },
+  "perGameVpSigns": {
+    "positive": 15,
+    "zero": 0,
+    "negative": 15
+  },
+  "byCandidateRole": {
+    "allied": {
+      "games": 15,
+      "meanVpMargin": -1,
+      "vpMarginRange": [
+        -14,
+        24
+      ]
+    },
+    "axis": {
+      "games": 15,
+      "meanVpMargin": 3.2666666666666666,
+      "vpMarginRange": [
+        -16,
+        24
+      ]
+    }
+  },
+  "pairs": [
+    {
+      "firstMatch": 1800000,
+      "mapSeed": 344141633,
+      "defenderVpMargin": 9,
+      "attackerVpMargin": -7,
+      "vpMargin": 1.0,
+      "candidateKill": 18.0,
+      "candidateLoss": 26.0,
+      "killLossMargin": -8.0
+    },
+    {
+      "firstMatch": 1800002,
+      "mapSeed": 344141827,
+      "defenderVpMargin": -1,
+      "attackerVpMargin": 1,
+      "vpMargin": 0.0,
+      "candidateKill": 15.0,
+      "candidateLoss": 15.5,
+      "killLossMargin": -0.5
+    },
+    {
+      "firstMatch": 1800004,
+      "mapSeed": 344142021,
+      "defenderVpMargin": -3,
+      "attackerVpMargin": -5,
+      "vpMargin": -4.0,
+      "candidateKill": 19.0,
+      "candidateLoss": 22.5,
+      "killLossMargin": -3.5
+    },
+    {
+      "firstMatch": 1800006,
+      "mapSeed": 344142215,
+      "defenderVpMargin": 9,
+      "attackerVpMargin": 5,
+      "vpMargin": 7.0,
+      "candidateKill": 28.5,
+      "candidateLoss": 18.5,
+      "killLossMargin": 10.0
+    },
+    {
+      "firstMatch": 1800008,
+      "mapSeed": 344142409,
+      "defenderVpMargin": 1,
+      "attackerVpMargin": 5,
+      "vpMargin": 3.0,
+      "candidateKill": 24.0,
+      "candidateLoss": 20.0,
+      "killLossMargin": 4.0
+    },
+    {
+      "firstMatch": 1800010,
+      "mapSeed": 344142603,
+      "defenderVpMargin": -14,
+      "attackerVpMargin": 14,
+      "vpMargin": 0.0,
+      "candidateKill": 22.5,
+      "candidateLoss": 20.5,
+      "killLossMargin": 2.0
+    },
+    {
+      "firstMatch": 1800012,
+      "mapSeed": 344142797,
+      "defenderVpMargin": -13,
+      "attackerVpMargin": -5,
+      "vpMargin": -9.0,
+      "candidateKill": 9.0,
+      "candidateLoss": 29.0,
+      "killLossMargin": -20.0
+    },
+    {
+      "firstMatch": 1800014,
+      "mapSeed": 344142991,
+      "defenderVpMargin": -4,
+      "attackerVpMargin": 12,
+      "vpMargin": 4.0,
+      "candidateKill": 18.5,
+      "candidateLoss": 13.0,
+      "killLossMargin": 5.5
+    },
+    {
+      "firstMatch": 1800016,
+      "mapSeed": 344143185,
+      "defenderVpMargin": -9,
+      "attackerVpMargin": -1,
+      "vpMargin": -5.0,
+      "candidateKill": 21.0,
+      "candidateLoss": 18.5,
+      "killLossMargin": 2.5
+    },
+    {
+      "firstMatch": 1800018,
+      "mapSeed": 344143379,
+      "defenderVpMargin": 24,
+      "attackerVpMargin": -16,
+      "vpMargin": 4.0,
+      "candidateKill": 8.0,
+      "candidateLoss": 6.5,
+      "killLossMargin": 1.5
+    },
+    {
+      "firstMatch": 1800020,
+      "mapSeed": 344143573,
+      "defenderVpMargin": -10,
+      "attackerVpMargin": 24,
+      "vpMargin": 7.0,
+      "candidateKill": 26.0,
+      "candidateLoss": 24.0,
+      "killLossMargin": 2.0
+    },
+    {
+      "firstMatch": 1800022,
+      "mapSeed": 344143767,
+      "defenderVpMargin": 7,
+      "attackerVpMargin": -1,
+      "vpMargin": 3.0,
+      "candidateKill": 23.5,
+      "candidateLoss": 11.5,
+      "killLossMargin": 12.0
+    },
+    {
+      "firstMatch": 1800024,
+      "mapSeed": 344143961,
+      "defenderVpMargin": -1,
+      "attackerVpMargin": 1,
+      "vpMargin": 0.0,
+      "candidateKill": 18.0,
+      "candidateLoss": 22.5,
+      "killLossMargin": -4.5
+    },
+    {
+      "firstMatch": 1800026,
+      "mapSeed": 344144155,
+      "defenderVpMargin": -13,
+      "attackerVpMargin": 13,
+      "vpMargin": 0.0,
+      "candidateKill": 22.5,
+      "candidateLoss": 21.0,
+      "killLossMargin": 1.5
+    },
+    {
+      "firstMatch": 1800028,
+      "mapSeed": 344144349,
+      "defenderVpMargin": 3,
+      "attackerVpMargin": 9,
+      "vpMargin": 6.0,
+      "candidateKill": 31.0,
+      "candidateLoss": 16.5,
+      "killLossMargin": 14.5
+    }
+  ],
+  "elapsedMs": 582728.689587,
+  "resultsArtifactSha256": "a66b95e1f394ff6d081810f8eacb888528ac2e75e50c7487edb7d1747e9923da",
+  "summarySha256": "f738aabcf60ca671fd20499d958a3f703b2994f337957914fc9ff908c0ff07a8"
+}

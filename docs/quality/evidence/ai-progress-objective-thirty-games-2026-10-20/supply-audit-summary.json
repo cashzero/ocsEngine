@@ -1,0 +1,18 @@
+{
+  "games": 30,
+  "fullActionReplayAndFinalHashes": true,
+  "stepLossCountsMatched": true,
+  "diagnostics": {
+    "previewMismatches": 0,
+    "otherUnitTraceBreaks": 0,
+    "relocationTraceBreaks": 0,
+    "feedBreaks": 0
+  },
+  "supplyRelocationActions": 12064,
+  "rationCommitmentSpendingViolations": 0,
+  "elapsedSeconds": 178.68461811399902,
+  "rationSpendingObservations": 2830,
+  "groupedRationPayments": 243,
+  "retreatChoices": 328,
+  "worseSupplyRiskRetreatChoices": 0
+}
