@@ -37,7 +37,7 @@
 
 ## 局勢指標
 
-VP、Kill、Loss、Supply 反映不出局勢（使用者，2026-10-18），所以先加上量測並記錄資料，有了資料再分析。工作順序見 [局勢指標研究 WBS](../roadmap/18-position-metrics-wbs.md)。
+VP、Kill、Loss、Supply 反映不出局勢（使用者，2026-10-18），所以先加上量測並記錄資料，有了資料再分析。工作順序見 [局勢指標研究 WBS](../roadmap/18-position-metrics-wbs.md)。依戰區分配補給與兵力的待驗證提案見 [戰區補給配置](theater-supply-plan.md)，尚未實作。
 `scripts/ai-position-metrics.mjs` 的 `nextTurnMetrics` 量假設下回合的可達範圍與戰力潛力：把局面投影成該方的 Movement Segment
 （尚未移動、全部已加油），用規則層的移動範圍得到每個戰鬥單位能到的格子（地形、ZOC），忽略對方在中間的行動；一格的攻擊潛力
 是所有能到該格旁的單位一起攻擊、守方挑地形時規則給的欄位，所以是上限（同一個單位會算進多個目標）。
