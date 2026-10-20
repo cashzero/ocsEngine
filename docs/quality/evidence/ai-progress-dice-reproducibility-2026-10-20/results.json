@@ -1,0 +1,556 @@
+{
+  "scope": "Two future-dice realizations in fifteen fixed WESTERN progressObjective physical forks; no refit or population reliability claim.",
+  "summary": {
+    "physicalCases": 15,
+    "newContinuations": 30,
+    "controlContinuations": 2,
+    "signMatrixOldRowsNewColumns": {
+      "-1": {
+        "-1": 1,
+        "0": 2,
+        "1": 2
+      },
+      "0": {
+        "-1": 2,
+        "0": 2,
+        "1": 2
+      },
+      "1": {
+        "-1": 0,
+        "0": 0,
+        "1": 4
+      }
+    },
+    "exactSignAgreement": {
+      "numerator": 7,
+      "denominator": 15
+    },
+    "bothNonzeroDirectionAgreement": {
+      "numerator": 5,
+      "denominator": 7
+    },
+    "exactEffectAgreement": 4,
+    "pearson": 0.013368230414792945,
+    "spearman": 0.11577302581521598,
+    "oldMean": -0.13333333333333333,
+    "newMean": 7.2,
+    "pooledTwoRealizationMean": 3.533333333333333,
+    "meanChange": 7.333333333333333,
+    "meanAbsoluteChange": 9.466666666666667,
+    "medianAbsoluteChange": 6,
+    "absoluteChangeRange": [
+      0,
+      38
+    ],
+    "oldRange": [
+      -12,
+      8
+    ],
+    "newRange": [
+      -10,
+      30
+    ],
+    "continuationActions": 26036,
+    "futureRulesDraws": 7712
+  },
+  "models": {
+    "zero": {
+      "newMae": 10.133333333333333,
+      "newMse": 193.06666666666666,
+      "oldMae": 4.4,
+      "oldMse": 36.53333333333333
+    },
+    "trainingMean": {
+      "newMae": 10.342857142857143,
+      "newMse": 195.32789115646258,
+      "oldMae": 4.761904761904762,
+      "oldMse": 41.91836734693877
+    },
+    "addedScaledProgress": {
+      "newMae": 10.540516881573826,
+      "newMse": 199.732374037826,
+      "oldMae": 4.998910444190817,
+      "oldMse": 45.574959362729345
+    },
+    "otherCostPerScaledProgress": {
+      "newMae": 11.294251866861691,
+      "newMse": 213.42958570421337,
+      "oldMae": 5.072001187595042,
+      "oldMse": 42.067287233062764
+    },
+    "exposureCostPerScaledProgress": {
+      "newMae": 10.540455113377908,
+      "newMse": 198.97560421681678,
+      "oldMae": 4.967255553932465,
+      "oldMse": 45.94796243419193
+    },
+    "fittedOfferedAttackStrength": {
+      "newMae": 9.998505666192289,
+      "newMse": 180.03356800332844,
+      "oldMae": 5.339468012777961,
+      "oldMse": 45.67148814737046
+    },
+    "originalTerminalEffect": {
+      "newMae": 9.466666666666667,
+      "newMse": 229.6,
+      "oldMae": 0,
+      "oldMse": 0
+    }
+  },
+  "rows": [
+    {
+      "firstMatch": 1800000,
+      "mapSeed": 344141633,
+      "oldEffect": -2,
+      "newEffect": 0,
+      "change": 2,
+      "predictions": {
+        "zero": 0,
+        "trainingMean": 0,
+        "addedScaledProgress": -0.02188943568205841,
+        "otherCostPerScaledProgress": -2.5193728732531864,
+        "exposureCostPerScaledProgress": 0.04729205448777628,
+        "fittedOfferedAttackStrength": -0.2408300067865724,
+        "originalTerminalEffect": -2
+      },
+      "resultPath": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800000/result.json",
+      "resultSha256": "6df3792163deb4db94092fd2b238697f85cffb946ca7b5d6b8027dc6063257a6",
+      "margins": [
+        -1,
+        -1
+      ],
+      "futureDraws": [
+        293,
+        299
+      ],
+      "continuationActions": [
+        883,
+        934
+      ]
+    },
+    {
+      "firstMatch": 1800002,
+      "mapSeed": 344141827,
+      "oldEffect": 8,
+      "newEffect": 8,
+      "change": 0,
+      "predictions": {
+        "zero": 0,
+        "trainingMean": -0.7142857142857143,
+        "addedScaledProgress": -0.9462394295726805,
+        "otherCostPerScaledProgress": -4.911847661579109,
+        "exposureCostPerScaledProgress": -3.158587200944873,
+        "fittedOfferedAttackStrength": -1.0925226653347435,
+        "originalTerminalEffect": 8
+      },
+      "resultPath": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800002/result.json",
+      "resultSha256": "b702f727c9cbe7ecfa57ef219bd04b9cbc4d89010acc370b334a9bf1cad9ccb5",
+      "margins": [
+        1,
+        -7
+      ],
+      "futureDraws": [
+        250,
+        170
+      ],
+      "continuationActions": [
+        873,
+        641
+      ]
+    },
+    {
+      "firstMatch": 1800004,
+      "mapSeed": 344142021,
+      "oldEffect": -12,
+      "newEffect": 26,
+      "change": 38,
+      "predictions": {
+        "zero": 0,
+        "trainingMean": 0.7142857142857143,
+        "addedScaledProgress": 0.71061916077124,
+        "otherCostPerScaledProgress": -0.8555891073127676,
+        "exposureCostPerScaledProgress": 0.7870414457704878,
+        "fittedOfferedAttackStrength": 0.6108626517615986,
+        "originalTerminalEffect": -12
+      },
+      "resultPath": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800004/result.json",
+      "resultSha256": "352a0e57f5a42c05f4c5a713f0680b0a94bebb0478322761f246529336dd9244",
+      "margins": [
+        15,
+        -11
+      ],
+      "futureDraws": [
+        260,
+        254
+      ],
+      "continuationActions": [
+        922,
+        938
+      ]
+    },
+    {
+      "firstMatch": 1800006,
+      "mapSeed": 344142215,
+      "oldEffect": 8,
+      "newEffect": 18,
+      "change": 10,
+      "predictions": {
+        "zero": 0,
+        "trainingMean": -0.7142857142857143,
+        "addedScaledProgress": -0.754326006128626,
+        "otherCostPerScaledProgress": 0.6672884534100508,
+        "exposureCostPerScaledProgress": -0.7180330799396158,
+        "fittedOfferedAttackStrength": -1.0925226653347435,
+        "originalTerminalEffect": 8
+      },
+      "resultPath": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800006/result.json",
+      "resultSha256": "dacb0d51446860f42d554c605fcff3902578f15eb56e92a4c3bad3e42d4e493b",
+      "margins": [
+        13,
+        -5
+      ],
+      "futureDraws": [
+        267,
+        244
+      ],
+      "continuationActions": [
+        845,
+        758
+      ]
+    },
+    {
+      "firstMatch": 1800008,
+      "mapSeed": 344142409,
+      "oldEffect": -8,
+      "newEffect": -8,
+      "change": 0,
+      "predictions": {
+        "zero": 0,
+        "trainingMean": 0.42857142857142855,
+        "addedScaledProgress": 2.3752440688147343,
+        "otherCostPerScaledProgress": -1.9728498772724647,
+        "exposureCostPerScaledProgress": 0.9767067374208396,
+        "fittedOfferedAttackStrength": 0.2701855883423302,
+        "originalTerminalEffect": -8
+      },
+      "resultPath": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800008/result.json",
+      "resultSha256": "f67bd024fa52a28b01aff175ca6071dd1371f6a21cce5f9d28ed2a2b0240e75f",
+      "margins": [
+        5,
+        13
+      ],
+      "futureDraws": [
+        261,
+        278
+      ],
+      "continuationActions": [
+        867,
+        952
+      ]
+    },
+    {
+      "firstMatch": 1800010,
+      "mapSeed": 344142603,
+      "oldEffect": 8,
+      "newEffect": 14,
+      "change": 6,
+      "predictions": {
+        "zero": 0,
+        "trainingMean": -0.7142857142857143,
+        "addedScaledProgress": -0.7543260061286253,
+        "otherCostPerScaledProgress": -2.1545236310947624,
+        "exposureCostPerScaledProgress": -0.71316748145712,
+        "fittedOfferedAttackStrength": -0.5563544945853247,
+        "originalTerminalEffect": 8
+      },
+      "resultPath": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800010/result.json",
+      "resultSha256": "b0e06798d36c3c595aa71098d5683e9254a2e8d69fe6a02e7d499451d6874c6e",
+      "margins": [
+        14,
+        0
+      ],
+      "futureDraws": [
+        284,
+        280
+      ],
+      "continuationActions": [
+        933,
+        925
+      ]
+    },
+    {
+      "firstMatch": 1800012,
+      "mapSeed": 344142797,
+      "oldEffect": 0,
+      "newEffect": 6,
+      "change": 6,
+      "predictions": {
+        "zero": 0,
+        "trainingMean": -0.14285714285714285,
+        "addedScaledProgress": -0.004664326081895487,
+        "otherCostPerScaledProgress": -0.17135972350514303,
+        "exposureCostPerScaledProgress": -0.17243012243001263,
+        "fittedOfferedAttackStrength": -0.41116853849620666,
+        "originalTerminalEffect": 0
+      },
+      "resultPath": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800012/result.json",
+      "resultSha256": "f0d1ef7e6e2cad1b1a9d1f15e5d2c6c4e727c2adc567283d6c4e3ce761701c27",
+      "margins": [
+        1,
+        -5
+      ],
+      "futureDraws": [
+        263,
+        218
+      ],
+      "continuationActions": [
+        885,
+        770
+      ]
+    },
+    {
+      "firstMatch": 1800014,
+      "mapSeed": 344142991,
+      "oldEffect": 0,
+      "newEffect": -4,
+      "change": -4,
+      "predictions": {
+        "zero": 0,
+        "trainingMean": -0.14285714285714285,
+        "addedScaledProgress": -0.39089609550732796,
+        "otherCostPerScaledProgress": 2.5626262364497303,
+        "exposureCostPerScaledProgress": -0.16463107473940813,
+        "fittedOfferedAttackStrength": -0.41116853849620666,
+        "originalTerminalEffect": 0
+      },
+      "resultPath": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800014/result.json",
+      "resultSha256": "3c8b063e1d19d95b9dccf2138915c83879ef8324817cf6dba0a4c6f7fcf7e96d",
+      "margins": [
+        0,
+        4
+      ],
+      "futureDraws": [
+        284,
+        243
+      ],
+      "continuationActions": [
+        897,
+        957
+      ]
+    },
+    {
+      "firstMatch": 1800016,
+      "mapSeed": 344143185,
+      "oldEffect": -4,
+      "newEffect": 30,
+      "change": 34,
+      "predictions": {
+        "zero": 0,
+        "trainingMean": 0.14285714285714285,
+        "addedScaledProgress": 0.2420790712942949,
+        "otherCostPerScaledProgress": -2.322108264555113,
+        "exposureCostPerScaledProgress": 0.14118476908943586,
+        "fittedOfferedAttackStrength": -0.07049147507693818,
+        "originalTerminalEffect": -4
+      },
+      "resultPath": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800016/result.json",
+      "resultSha256": "b8afa2c22a34303c92442ff98935b0fbdf5b7c81314dc6c8210c3e8e0c7f6372",
+      "margins": [
+        25,
+        -5
+      ],
+      "futureDraws": [
+        256,
+        275
+      ],
+      "continuationActions": [
+        887,
+        978
+      ]
+    },
+    {
+      "firstMatch": 1800018,
+      "mapSeed": 344143379,
+      "oldEffect": 0,
+      "newEffect": -10,
+      "change": -10,
+      "predictions": {
+        "zero": 0,
+        "trainingMean": -0.14285714285714285,
+        "addedScaledProgress": -0.11624682773663012,
+        "otherCostPerScaledProgress": 1.1605410962049905,
+        "exposureCostPerScaledProgress": -0.10814601455984503,
+        "fittedOfferedAttackStrength": -0.41116853849620666,
+        "originalTerminalEffect": 0
+      },
+      "resultPath": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800018/result.json",
+      "resultSha256": "34def2852f8a495ff66bba136b5e804b38072d560245485d09ff73d41d5b2514",
+      "margins": [
+        -14,
+        -4
+      ],
+      "futureDraws": [
+        246,
+        240
+      ],
+      "continuationActions": [
+        778,
+        802
+      ]
+    },
+    {
+      "firstMatch": 1800020,
+      "mapSeed": 344143573,
+      "oldEffect": 0,
+      "newEffect": 22,
+      "change": 22,
+      "predictions": {
+        "zero": 0,
+        "trainingMean": -0.14285714285714285,
+        "addedScaledProgress": -0.6718581321214772,
+        "otherCostPerScaledProgress": 1.5108172773680133,
+        "exposureCostPerScaledProgress": -0.12402600343670386,
+        "fittedOfferedAttackStrength": 6.93533935250204,
+        "originalTerminalEffect": 0
+      },
+      "resultPath": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800020/result.json",
+      "resultSha256": "1171f8980469b01d444ae40e96fb784f7d0d623205414847d842a4ece06db14f",
+      "margins": [
+        24,
+        2
+      ],
+      "futureDraws": [
+        300,
+        246
+      ],
+      "continuationActions": [
+        853,
+        835
+      ]
+    },
+    {
+      "firstMatch": 1800022,
+      "mapSeed": 344143767,
+      "oldEffect": 0,
+      "newEffect": 0,
+      "change": 0,
+      "predictions": {
+        "zero": 0,
+        "trainingMean": -0.14285714285714285,
+        "addedScaledProgress": -0.08315230648954611,
+        "otherCostPerScaledProgress": 2.5868143101679153,
+        "exposureCostPerScaledProgress": 0.17529704786243866,
+        "fittedOfferedAttackStrength": -0.41116853849620666,
+        "originalTerminalEffect": 0
+      },
+      "resultPath": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800022/result.json",
+      "resultSha256": "c3e6ad1cd34aebdc9a78b52fedd08f06199a38912073029a73364d3f9a62ece9",
+      "margins": [
+        -15,
+        -15
+      ],
+      "futureDraws": [
+        224,
+        224
+      ],
+      "continuationActions": [
+        809,
+        809
+      ]
+    },
+    {
+      "firstMatch": 1800024,
+      "mapSeed": 344143961,
+      "oldEffect": -8,
+      "newEffect": 0,
+      "change": 8,
+      "predictions": {
+        "zero": 0,
+        "trainingMean": 0.42857142857142855,
+        "addedScaledProgress": 0.5327205606523149,
+        "otherCostPerScaledProgress": 0.45697648299188864,
+        "exposureCostPerScaledProgress": 0.4428467261107408,
+        "fittedOfferedAttackStrength": 0.2701855883423302,
+        "originalTerminalEffect": -8
+      },
+      "resultPath": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800024/result.json",
+      "resultSha256": "7448be5f97cb18e8e41bf383a56a0bd74dfdeeca278c3cd940aafaaac2ee2843",
+      "margins": [
+        9,
+        9
+      ],
+      "futureDraws": [
+        274,
+        274
+      ],
+      "continuationActions": [
+        987,
+        986
+      ]
+    },
+    {
+      "firstMatch": 1800026,
+      "mapSeed": 344144155,
+      "oldEffect": 0,
+      "newEffect": 0,
+      "change": 0,
+      "predictions": {
+        "zero": 0,
+        "trainingMean": -0.14285714285714285,
+        "addedScaledProgress": -0.1635660615280154,
+        "otherCostPerScaledProgress": 3.097917313385192,
+        "exposureCostPerScaledProgress": -0.06445571178608125,
+        "fittedOfferedAttackStrength": 0.8381718480102389,
+        "originalTerminalEffect": 0
+      },
+      "resultPath": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800026/result.json",
+      "resultSha256": "94cd813719187da5b751dd58bcca63d874a50722ebab366cda0341c0ec3f5acc",
+      "margins": [
+        5,
+        5
+      ],
+      "futureDraws": [
+        247,
+        243
+      ],
+      "continuationActions": [
+        732,
+        796
+      ]
+    },
+    {
+      "firstMatch": 1800028,
+      "mapSeed": 344144349,
+      "oldEffect": 8,
+      "newEffect": 6,
+      "change": -2,
+      "predictions": {
+        "zero": 0,
+        "trainingMean": -0.7142857142857143,
+        "addedScaledProgress": -1.2596080457169114,
+        "otherCostPerScaledProgress": 1.2349430895239015,
+        "exposureCostPerScaledProgress": -0.7149878389516001,
+        "fittedOfferedAttackStrength": -1.0925226653347435,
+        "originalTerminalEffect": 8
+      },
+      "resultPath": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800028/result.json",
+      "resultSha256": "07621523825c510cf38a696436f30f16dc8f616a6b30b1759edd7f2e3184092e",
+      "margins": [
+        13,
+        7
+      ],
+      "futureDraws": [
+        282,
+        233
+      ],
+      "continuationActions": [
+        937,
+        867
+      ]
+    }
+  ],
+  "provenance": {
+    "scorerSha256": "00112780fa112d0cb5b019fa09f027a2e376e2a2dfa72a37e2b1ec32c1399f79",
+    "registrationSha256": "a11ca309a4d9846fbe38203872fe4bd95654f5a6f20e8430e80d68e487491231"
+  }
+}

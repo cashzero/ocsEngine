@@ -1,0 +1,843 @@
+{
+  "physicalCases": 15,
+  "newContinuations": 30,
+  "controls": 2,
+  "prefixActions": 358,
+  "tailActions": 27556,
+  "negativeControlsRejected": [
+    "nonRngForkMutation",
+    "missingPhaseMemory",
+    "changedPhaseMemory",
+    "wrongTerminalMargin"
+  ],
+  "rows": [
+    {
+      "firstMatch": 1800000,
+      "oldEffect": -2,
+      "newEffect": 0,
+      "path": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800000/result.json",
+      "sha256": "6df3792163deb4db94092fd2b238697f85cffb946ca7b5d6b8027dc6063257a6",
+      "arms": [
+        {
+          "forkWeight": 30,
+          "newForkHash": "sha256:0af3605d64bf757e1d6eec82048c471f27633541ae070db1e38d2eab327b25e5",
+          "finalHash": "sha256:ede256ce238d0a017fe60a370a67f1aae8f05660b6577165ef857446875d82c7",
+          "finalRevision": 903,
+          "finalSequence": {
+            "gameTurn": 8,
+            "playerTurnIndex": 1,
+            "phase": "COMPLETE",
+            "segment": "NONE",
+            "firstPlayerId": "player:allied",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "scores": {
+            "player:allied": 7,
+            "player:axis": 6
+          },
+          "axisMargin": -1,
+          "futureDraws": 293,
+          "continuationActions": 883,
+          "elapsedMs": 88123.594205
+        },
+        {
+          "forkWeight": 15,
+          "newForkHash": "sha256:0af3605d64bf757e1d6eec82048c471f27633541ae070db1e38d2eab327b25e5",
+          "finalHash": "sha256:fba8b3840970a7d99d040e44e3e20942b957281cfcdd34b4b75ae2992be5a189",
+          "finalRevision": 954,
+          "finalSequence": {
+            "gameTurn": 8,
+            "playerTurnIndex": 1,
+            "phase": "COMPLETE",
+            "segment": "NONE",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:allied",
+            "actingPlayerId": "player:allied"
+          },
+          "scores": {
+            "player:allied": 7,
+            "player:axis": 6
+          },
+          "axisMargin": -1,
+          "futureDraws": 299,
+          "continuationActions": 934,
+          "elapsedMs": 83629.47508199999
+        }
+      ]
+    },
+    {
+      "firstMatch": 1800002,
+      "oldEffect": 8,
+      "newEffect": 8,
+      "path": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800002/result.json",
+      "sha256": "b702f727c9cbe7ecfa57ef219bd04b9cbc4d89010acc370b334a9bf1cad9ccb5",
+      "arms": [
+        {
+          "forkWeight": 30,
+          "newForkHash": "sha256:3066f691b5070841e7a1044d1f8b2c9b0c9fa99af8b39ec4d3a843a5240c4e8e",
+          "finalHash": "sha256:2a21a14e390e7c02d859206cb95c873f21d61632896b5b69aa850213a88d5110",
+          "finalRevision": 884,
+          "finalSequence": {
+            "gameTurn": 8,
+            "playerTurnIndex": 1,
+            "phase": "COMPLETE",
+            "segment": "NONE",
+            "firstPlayerId": "player:allied",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "scores": {
+            "player:allied": 6,
+            "player:axis": 7
+          },
+          "axisMargin": 1,
+          "futureDraws": 250,
+          "continuationActions": 873,
+          "elapsedMs": 103446.688104
+        },
+        {
+          "forkWeight": 15,
+          "newForkHash": "sha256:3066f691b5070841e7a1044d1f8b2c9b0c9fa99af8b39ec4d3a843a5240c4e8e",
+          "finalHash": "sha256:ee139e8b814a90d038d148e4f2fc9d663962c51d1136dce01765a8d8d22b687e",
+          "finalRevision": 652,
+          "finalSequence": {
+            "gameTurn": 8,
+            "playerTurnIndex": 1,
+            "phase": "COMPLETE",
+            "segment": "NONE",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:allied",
+            "actingPlayerId": "player:allied"
+          },
+          "scores": {
+            "player:allied": 10,
+            "player:axis": 3
+          },
+          "axisMargin": -7,
+          "futureDraws": 170,
+          "continuationActions": 641,
+          "elapsedMs": 78032.47976999999
+        }
+      ]
+    },
+    {
+      "firstMatch": 1800004,
+      "oldEffect": -12,
+      "newEffect": 26,
+      "path": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800004/result.json",
+      "sha256": "352a0e57f5a42c05f4c5a713f0680b0a94bebb0478322761f246529336dd9244",
+      "arms": [
+        {
+          "forkWeight": 30,
+          "newForkHash": "sha256:1c5bbd36c18df050a36ac6a1aea0ace4aa4f5000efb4142268a700508cc91eaa",
+          "finalHash": "sha256:d4da24e81554fb33f7f8199890ea1010ec5c94350411efb540e1e6db32eb38c1",
+          "finalRevision": 929,
+          "finalSequence": {
+            "gameTurn": 8,
+            "playerTurnIndex": 1,
+            "phase": "COMPLETE",
+            "segment": "NONE",
+            "firstPlayerId": "player:allied",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "scores": {
+            "player:allied": 0,
+            "player:axis": 15
+          },
+          "axisMargin": 15,
+          "futureDraws": 260,
+          "continuationActions": 922,
+          "elapsedMs": 98483.133773
+        },
+        {
+          "forkWeight": 15,
+          "newForkHash": "sha256:1c5bbd36c18df050a36ac6a1aea0ace4aa4f5000efb4142268a700508cc91eaa",
+          "finalHash": "sha256:bb80383e89078cbe97051e195ec257561eebc2ec2b12331fe7f2db3f6cae7492",
+          "finalRevision": 945,
+          "finalSequence": {
+            "gameTurn": 8,
+            "playerTurnIndex": 1,
+            "phase": "COMPLETE",
+            "segment": "NONE",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:allied",
+            "actingPlayerId": "player:allied"
+          },
+          "scores": {
+            "player:allied": 13,
+            "player:axis": 2
+          },
+          "axisMargin": -11,
+          "futureDraws": 254,
+          "continuationActions": 938,
+          "elapsedMs": 101812.161659
+        }
+      ]
+    },
+    {
+      "firstMatch": 1800006,
+      "oldEffect": 8,
+      "newEffect": 18,
+      "path": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800006/result.json",
+      "sha256": "dacb0d51446860f42d554c605fcff3902578f15eb56e92a4c3bad3e42d4e493b",
+      "arms": [
+        {
+          "forkWeight": 30,
+          "newForkHash": "sha256:d505ef9fe648d6a383924e7669091cb8aea5c377a30170aba814ece25650bb89",
+          "finalHash": "sha256:f09c6bd36c5b116be5d393154b1f4220496893558b85e5ea7805b4f429b10f9f",
+          "finalRevision": 852,
+          "finalSequence": {
+            "gameTurn": 8,
+            "playerTurnIndex": 1,
+            "phase": "COMPLETE",
+            "segment": "NONE",
+            "firstPlayerId": "player:allied",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "scores": {
+            "player:allied": 4,
+            "player:axis": 17
+          },
+          "axisMargin": 13,
+          "futureDraws": 267,
+          "continuationActions": 845,
+          "elapsedMs": 86816.98692899999
+        },
+        {
+          "forkWeight": 15,
+          "newForkHash": "sha256:d505ef9fe648d6a383924e7669091cb8aea5c377a30170aba814ece25650bb89",
+          "finalHash": "sha256:28d32d3591094a2d85752aebd6c423ca2a0d6b6c121981b8545232b1bcf12453",
+          "finalRevision": 765,
+          "finalSequence": {
+            "gameTurn": 8,
+            "playerTurnIndex": 1,
+            "phase": "COMPLETE",
+            "segment": "NONE",
+            "firstPlayerId": "player:allied",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "scores": {
+            "player:allied": 13,
+            "player:axis": 8
+          },
+          "axisMargin": -5,
+          "futureDraws": 244,
+          "continuationActions": 758,
+          "elapsedMs": 76800.12288099999
+        }
+      ]
+    },
+    {
+      "firstMatch": 1800008,
+      "oldEffect": -8,
+      "newEffect": -8,
+      "path": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800008/result.json",
+      "sha256": "f67bd024fa52a28b01aff175ca6071dd1371f6a21cce5f9d28ed2a2b0240e75f",
+      "arms": [
+        {
+          "forkWeight": 30,
+          "newForkHash": "sha256:3c50f149dfaa0030fb2f5f3bccfc6a85270e9b029cf30efe231309f5a6997326",
+          "finalHash": "sha256:792c1ebe2c619d1662e7e8a44daae4ed8370f76d4ff73622b45fd2164a876a02",
+          "finalRevision": 877,
+          "finalSequence": {
+            "gameTurn": 8,
+            "playerTurnIndex": 1,
+            "phase": "COMPLETE",
+            "segment": "NONE",
+            "firstPlayerId": "player:allied",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "scores": {
+            "player:allied": 4,
+            "player:axis": 9
+          },
+          "axisMargin": 5,
+          "futureDraws": 261,
+          "continuationActions": 867,
+          "elapsedMs": 139541.23728
+        },
+        {
+          "forkWeight": 15,
+          "newForkHash": "sha256:3c50f149dfaa0030fb2f5f3bccfc6a85270e9b029cf30efe231309f5a6997326",
+          "finalHash": "sha256:88a1ced0378faaec006d1642f42b8f79b771a4eaa9b926af8e58e75f3882dec4",
+          "finalRevision": 962,
+          "finalSequence": {
+            "gameTurn": 8,
+            "playerTurnIndex": 1,
+            "phase": "COMPLETE",
+            "segment": "NONE",
+            "firstPlayerId": "player:allied",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "scores": {
+            "player:allied": 0,
+            "player:axis": 13
+          },
+          "axisMargin": 13,
+          "futureDraws": 278,
+          "continuationActions": 952,
+          "elapsedMs": 102347.47860100001
+        }
+      ]
+    },
+    {
+      "firstMatch": 1800010,
+      "oldEffect": 8,
+      "newEffect": 14,
+      "path": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800010/result.json",
+      "sha256": "b0e06798d36c3c595aa71098d5683e9254a2e8d69fe6a02e7d499451d6874c6e",
+      "arms": [
+        {
+          "forkWeight": 30,
+          "newForkHash": "sha256:9644a15aad225f5bfef5de5e952bbc57f48b6e30009f8cc4930ac65abedd0d1d",
+          "finalHash": "sha256:e21037612302e4c5fcd979ceecb63270b1c088c4afa985311e17578ac13b7eab",
+          "finalRevision": 952,
+          "finalSequence": {
+            "gameTurn": 8,
+            "playerTurnIndex": 1,
+            "phase": "COMPLETE",
+            "segment": "NONE",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:allied",
+            "actingPlayerId": "player:allied"
+          },
+          "scores": {
+            "player:allied": 0,
+            "player:axis": 14
+          },
+          "axisMargin": 14,
+          "futureDraws": 284,
+          "continuationActions": 933,
+          "elapsedMs": 111513.533252
+        },
+        {
+          "forkWeight": 15,
+          "newForkHash": "sha256:9644a15aad225f5bfef5de5e952bbc57f48b6e30009f8cc4930ac65abedd0d1d",
+          "finalHash": "sha256:857238af1c9397fd858a00207b46cc342d829c9eb6482888dab2a2af5e47563e",
+          "finalRevision": 944,
+          "finalSequence": {
+            "gameTurn": 8,
+            "playerTurnIndex": 1,
+            "phase": "COMPLETE",
+            "segment": "NONE",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:allied",
+            "actingPlayerId": "player:allied"
+          },
+          "scores": {
+            "player:allied": 7,
+            "player:axis": 7
+          },
+          "axisMargin": 0,
+          "futureDraws": 280,
+          "continuationActions": 925,
+          "elapsedMs": 95652.71733399999
+        }
+      ]
+    },
+    {
+      "firstMatch": 1800012,
+      "oldEffect": 0,
+      "newEffect": 6,
+      "path": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800012/result.json",
+      "sha256": "f0d1ef7e6e2cad1b1a9d1f15e5d2c6c4e727c2adc567283d6c4e3ce761701c27",
+      "arms": [
+        {
+          "forkWeight": 30,
+          "newForkHash": "sha256:8ed27303f5e10492809fdf510b1e9d9f32b4b99bf18b59dc42d6d49233d04b46",
+          "finalHash": "sha256:491150d625e4ce3bc058359b5986cfcf125e058e53ff2ca1527008dd8f8556c8",
+          "finalRevision": 894,
+          "finalSequence": {
+            "gameTurn": 8,
+            "playerTurnIndex": 1,
+            "phase": "COMPLETE",
+            "segment": "NONE",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:allied",
+            "actingPlayerId": "player:allied"
+          },
+          "scores": {
+            "player:allied": 6,
+            "player:axis": 7
+          },
+          "axisMargin": 1,
+          "futureDraws": 263,
+          "continuationActions": 885,
+          "elapsedMs": 70538.753942
+        },
+        {
+          "forkWeight": 15,
+          "newForkHash": "sha256:8ed27303f5e10492809fdf510b1e9d9f32b4b99bf18b59dc42d6d49233d04b46",
+          "finalHash": "sha256:9e68f71ac2cc04255329e72c91fa846e8a8b8bb28f16d0f5e42713a79b68b43b",
+          "finalRevision": 779,
+          "finalSequence": {
+            "gameTurn": 8,
+            "playerTurnIndex": 1,
+            "phase": "COMPLETE",
+            "segment": "NONE",
+            "firstPlayerId": "player:allied",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "scores": {
+            "player:allied": 9,
+            "player:axis": 4
+          },
+          "axisMargin": -5,
+          "futureDraws": 218,
+          "continuationActions": 770,
+          "elapsedMs": 62504.616481000005
+        }
+      ]
+    },
+    {
+      "firstMatch": 1800014,
+      "oldEffect": 0,
+      "newEffect": -4,
+      "path": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800014/result.json",
+      "sha256": "3c8b063e1d19d95b9dccf2138915c83879ef8324817cf6dba0a4c6f7fcf7e96d",
+      "arms": [
+        {
+          "forkWeight": 30,
+          "newForkHash": "sha256:ee1654be08813c924ae5135f45d64480a4fff9439668cd42289b2e4ddddc8481",
+          "finalHash": "sha256:220304743f0b52c24d16f1b082b4c5398d3908074f61f4229e6d1edeafb71a29",
+          "finalRevision": 921,
+          "finalSequence": {
+            "gameTurn": 8,
+            "playerTurnIndex": 1,
+            "phase": "COMPLETE",
+            "segment": "NONE",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:allied",
+            "actingPlayerId": "player:allied"
+          },
+          "scores": {
+            "player:allied": 6,
+            "player:axis": 6
+          },
+          "axisMargin": 0,
+          "futureDraws": 284,
+          "continuationActions": 897,
+          "elapsedMs": 82209.679944
+        },
+        {
+          "forkWeight": 15,
+          "newForkHash": "sha256:ee1654be08813c924ae5135f45d64480a4fff9439668cd42289b2e4ddddc8481",
+          "finalHash": "sha256:e95d15bc72189dd44d07460b2f332e48a013131f86a432be7d4d40da1bfbfcfc",
+          "finalRevision": 981,
+          "finalSequence": {
+            "gameTurn": 8,
+            "playerTurnIndex": 1,
+            "phase": "COMPLETE",
+            "segment": "NONE",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:allied",
+            "actingPlayerId": "player:allied"
+          },
+          "scores": {
+            "player:allied": 4,
+            "player:axis": 8
+          },
+          "axisMargin": 4,
+          "futureDraws": 243,
+          "continuationActions": 957,
+          "elapsedMs": 87841.623801
+        }
+      ]
+    },
+    {
+      "firstMatch": 1800016,
+      "oldEffect": -4,
+      "newEffect": 30,
+      "path": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800016/result.json",
+      "sha256": "b8afa2c22a34303c92442ff98935b0fbdf5b7c81314dc6c8210c3e8e0c7f6372",
+      "arms": [
+        {
+          "forkWeight": 30,
+          "newForkHash": "sha256:35b2cf4f482eaf418a6b05d978c68390f8e7f536005c8dfe03e41353d42b2db8",
+          "finalHash": "sha256:b2334d6452efa907ace9d89cd97a19ef56a0e432f763cf9aae6c32113944ca46",
+          "finalRevision": 900,
+          "finalSequence": {
+            "gameTurn": 8,
+            "playerTurnIndex": 1,
+            "phase": "COMPLETE",
+            "segment": "NONE",
+            "firstPlayerId": "player:allied",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "scores": {
+            "player:allied": 0,
+            "player:axis": 25
+          },
+          "axisMargin": 25,
+          "futureDraws": 256,
+          "continuationActions": 887,
+          "elapsedMs": 76365.213709
+        },
+        {
+          "forkWeight": 15,
+          "newForkHash": "sha256:35b2cf4f482eaf418a6b05d978c68390f8e7f536005c8dfe03e41353d42b2db8",
+          "finalHash": "sha256:21ff8fbc8507d40b242273af93346f05991e86acb1352da7b0b1f0125a357285",
+          "finalRevision": 991,
+          "finalSequence": {
+            "gameTurn": 8,
+            "playerTurnIndex": 1,
+            "phase": "COMPLETE",
+            "segment": "NONE",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:allied",
+            "actingPlayerId": "player:allied"
+          },
+          "scores": {
+            "player:allied": 15,
+            "player:axis": 10
+          },
+          "axisMargin": -5,
+          "futureDraws": 275,
+          "continuationActions": 978,
+          "elapsedMs": 82185.432382
+        }
+      ]
+    },
+    {
+      "firstMatch": 1800018,
+      "oldEffect": 0,
+      "newEffect": -10,
+      "path": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800018/result.json",
+      "sha256": "34def2852f8a495ff66bba136b5e804b38072d560245485d09ff73d41d5b2514",
+      "arms": [
+        {
+          "forkWeight": 30,
+          "newForkHash": "sha256:1c6cacfaa2de9c7589f8f0e54c73dd58ee0f14506ffce7c9b18465df91bdd532",
+          "finalHash": "sha256:367d427bfcece6ec2902b1a192cde8eece6ef0c89b64027089560bd8670c545e",
+          "finalRevision": 788,
+          "finalSequence": {
+            "gameTurn": 8,
+            "playerTurnIndex": 1,
+            "phase": "COMPLETE",
+            "segment": "NONE",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:allied",
+            "actingPlayerId": "player:allied"
+          },
+          "scores": {
+            "player:allied": 22,
+            "player:axis": 8
+          },
+          "axisMargin": -14,
+          "futureDraws": 246,
+          "continuationActions": 778,
+          "elapsedMs": 71877.106516
+        },
+        {
+          "forkWeight": 15,
+          "newForkHash": "sha256:1c6cacfaa2de9c7589f8f0e54c73dd58ee0f14506ffce7c9b18465df91bdd532",
+          "finalHash": "sha256:bd92171b31da7b659ec90d83209a5a3efe525afee6cd03845d42a0f6fadd2f86",
+          "finalRevision": 812,
+          "finalSequence": {
+            "gameTurn": 8,
+            "playerTurnIndex": 1,
+            "phase": "COMPLETE",
+            "segment": "NONE",
+            "firstPlayerId": "player:allied",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "scores": {
+            "player:allied": 17,
+            "player:axis": 13
+          },
+          "axisMargin": -4,
+          "futureDraws": 240,
+          "continuationActions": 802,
+          "elapsedMs": 80058.76355999999
+        }
+      ]
+    },
+    {
+      "firstMatch": 1800020,
+      "oldEffect": 0,
+      "newEffect": 22,
+      "path": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800020/result.json",
+      "sha256": "1171f8980469b01d444ae40e96fb784f7d0d623205414847d842a4ece06db14f",
+      "arms": [
+        {
+          "forkWeight": 30,
+          "newForkHash": "sha256:6fc02c3413738b1236a8aef2ace4a625351c53cb1a46c887157c85cc1bd0a702",
+          "finalHash": "sha256:0ff34a3a528cf9e506ad4d23b30308ca530c4ffcc4bfc010ba6f6bf9c64ec04f",
+          "finalRevision": 863,
+          "finalSequence": {
+            "gameTurn": 8,
+            "playerTurnIndex": 1,
+            "phase": "COMPLETE",
+            "segment": "NONE",
+            "firstPlayerId": "player:allied",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "scores": {
+            "player:allied": 0,
+            "player:axis": 24
+          },
+          "axisMargin": 24,
+          "futureDraws": 300,
+          "continuationActions": 853,
+          "elapsedMs": 88564.474433
+        },
+        {
+          "forkWeight": 15,
+          "newForkHash": "sha256:6fc02c3413738b1236a8aef2ace4a625351c53cb1a46c887157c85cc1bd0a702",
+          "finalHash": "sha256:6d9aeaa91641a6135de1c1dd27e6f802a9d55afbdc89004c6effbf44bf42892b",
+          "finalRevision": 845,
+          "finalSequence": {
+            "gameTurn": 8,
+            "playerTurnIndex": 1,
+            "phase": "COMPLETE",
+            "segment": "NONE",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:allied",
+            "actingPlayerId": "player:allied"
+          },
+          "scores": {
+            "player:allied": 11,
+            "player:axis": 13
+          },
+          "axisMargin": 2,
+          "futureDraws": 246,
+          "continuationActions": 835,
+          "elapsedMs": 104363.59489899999
+        }
+      ]
+    },
+    {
+      "firstMatch": 1800022,
+      "oldEffect": 0,
+      "newEffect": 0,
+      "path": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800022/result.json",
+      "sha256": "c3e6ad1cd34aebdc9a78b52fedd08f06199a38912073029a73364d3f9a62ece9",
+      "arms": [
+        {
+          "forkWeight": 30,
+          "newForkHash": "sha256:4ec8751d9d9f7d7079b1a90dd0e3d3d639f44d41a343523f1e433f596a1d6d4d",
+          "finalHash": "sha256:845c6e161b9245197d21f609ea9b3a40181c48ccfee32ae8b9153c785663cc67",
+          "finalRevision": 840,
+          "finalSequence": {
+            "gameTurn": 8,
+            "playerTurnIndex": 1,
+            "phase": "COMPLETE",
+            "segment": "NONE",
+            "firstPlayerId": "player:allied",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "scores": {
+            "player:allied": 15,
+            "player:axis": 0
+          },
+          "axisMargin": -15,
+          "futureDraws": 224,
+          "continuationActions": 809,
+          "elapsedMs": 65238.22984199999
+        },
+        {
+          "forkWeight": 15,
+          "newForkHash": "sha256:4ec8751d9d9f7d7079b1a90dd0e3d3d639f44d41a343523f1e433f596a1d6d4d",
+          "finalHash": "sha256:01a90bdab375f6f60e932a99836b9f08bd49ef30156b56ded79f219393af46de",
+          "finalRevision": 840,
+          "finalSequence": {
+            "gameTurn": 8,
+            "playerTurnIndex": 1,
+            "phase": "COMPLETE",
+            "segment": "NONE",
+            "firstPlayerId": "player:allied",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "scores": {
+            "player:allied": 15,
+            "player:axis": 0
+          },
+          "axisMargin": -15,
+          "futureDraws": 224,
+          "continuationActions": 809,
+          "elapsedMs": 63364.82477000001
+        }
+      ]
+    },
+    {
+      "firstMatch": 1800024,
+      "oldEffect": -8,
+      "newEffect": 0,
+      "path": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800024/result.json",
+      "sha256": "7448be5f97cb18e8e41bf383a56a0bd74dfdeeca278c3cd940aafaaac2ee2843",
+      "arms": [
+        {
+          "forkWeight": 30,
+          "newForkHash": "sha256:ac825008dbd83db0cec70886d676a89384c97cd20e58ddd2743c8c8093589f50",
+          "finalHash": "sha256:e2da4f2f49609d3581d0ce2053f272e1f3b051987e4f03a450db59016db3e962",
+          "finalRevision": 1015,
+          "finalSequence": {
+            "gameTurn": 8,
+            "playerTurnIndex": 1,
+            "phase": "COMPLETE",
+            "segment": "NONE",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:allied",
+            "actingPlayerId": "player:allied"
+          },
+          "scores": {
+            "player:allied": 2,
+            "player:axis": 11
+          },
+          "axisMargin": 9,
+          "futureDraws": 274,
+          "continuationActions": 987,
+          "elapsedMs": 76467.672032
+        },
+        {
+          "forkWeight": 15,
+          "newForkHash": "sha256:ac825008dbd83db0cec70886d676a89384c97cd20e58ddd2743c8c8093589f50",
+          "finalHash": "sha256:9c02af5238408dc673acd07365ed8b207fcd988004a6037426a72172f7517d8b",
+          "finalRevision": 1014,
+          "finalSequence": {
+            "gameTurn": 8,
+            "playerTurnIndex": 1,
+            "phase": "COMPLETE",
+            "segment": "NONE",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:allied",
+            "actingPlayerId": "player:allied"
+          },
+          "scores": {
+            "player:allied": 2,
+            "player:axis": 11
+          },
+          "axisMargin": 9,
+          "futureDraws": 274,
+          "continuationActions": 986,
+          "elapsedMs": 67392.838386
+        }
+      ]
+    },
+    {
+      "firstMatch": 1800026,
+      "oldEffect": 0,
+      "newEffect": 0,
+      "path": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800026/result.json",
+      "sha256": "94cd813719187da5b751dd58bcca63d874a50722ebab366cda0341c0ec3f5acc",
+      "arms": [
+        {
+          "forkWeight": 30,
+          "newForkHash": "sha256:2dadfeb7d2d16a80a48e8ced8f791f0384fa18b5ace762ee3127238c54853eda",
+          "finalHash": "sha256:e70cca5d54dd14cd3eb086c5a6d386ab1540dc9c2926adc28c60ab4a027e797e",
+          "finalRevision": 884,
+          "finalSequence": {
+            "gameTurn": 8,
+            "playerTurnIndex": 1,
+            "phase": "COMPLETE",
+            "segment": "NONE",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:allied",
+            "actingPlayerId": "player:allied"
+          },
+          "scores": {
+            "player:allied": 4,
+            "player:axis": 9
+          },
+          "axisMargin": 5,
+          "futureDraws": 247,
+          "continuationActions": 732,
+          "elapsedMs": 69784.41155
+        },
+        {
+          "forkWeight": 15,
+          "newForkHash": "sha256:2dadfeb7d2d16a80a48e8ced8f791f0384fa18b5ace762ee3127238c54853eda",
+          "finalHash": "sha256:cbbe6459994b978fd956b99d05d6d7619b2ad67e879477ad81a4e62b0f84076a",
+          "finalRevision": 948,
+          "finalSequence": {
+            "gameTurn": 8,
+            "playerTurnIndex": 1,
+            "phase": "COMPLETE",
+            "segment": "NONE",
+            "firstPlayerId": "player:allied",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "scores": {
+            "player:allied": 4,
+            "player:axis": 9
+          },
+          "axisMargin": 5,
+          "futureDraws": 243,
+          "continuationActions": 796,
+          "elapsedMs": 85747.248474
+        }
+      ]
+    },
+    {
+      "firstMatch": 1800028,
+      "oldEffect": 8,
+      "newEffect": 6,
+      "path": "artifacts/ai-progress-dice-reproducibility/resample/pair-1800028/result.json",
+      "sha256": "07621523825c510cf38a696436f30f16dc8f616a6b30b1759edd7f2e3184092e",
+      "arms": [
+        {
+          "forkWeight": 30,
+          "newForkHash": "sha256:cfb4dcc1c7abadc800fb4f71f40deba7d4f13a4fba2d61ba7dd2d7df974aff20",
+          "finalHash": "sha256:57c6e7a87ba5699d796e9f608b4e7a3b4ccd219f591478e50d8e645f7dbf0d78",
+          "finalRevision": 944,
+          "finalSequence": {
+            "gameTurn": 8,
+            "playerTurnIndex": 1,
+            "phase": "COMPLETE",
+            "segment": "NONE",
+            "firstPlayerId": "player:axis",
+            "phasingPlayerId": "player:allied",
+            "actingPlayerId": "player:allied"
+          },
+          "scores": {
+            "player:allied": 4,
+            "player:axis": 17
+          },
+          "axisMargin": 13,
+          "futureDraws": 282,
+          "continuationActions": 937,
+          "elapsedMs": 73450.84825899999
+        },
+        {
+          "forkWeight": 15,
+          "newForkHash": "sha256:cfb4dcc1c7abadc800fb4f71f40deba7d4f13a4fba2d61ba7dd2d7df974aff20",
+          "finalHash": "sha256:e5d16b78353479754dc4d9dc8c4d0e76e43f2b99b54daa2f33761f70c90e784c",
+          "finalRevision": 874,
+          "finalSequence": {
+            "gameTurn": 8,
+            "playerTurnIndex": 1,
+            "phase": "COMPLETE",
+            "segment": "NONE",
+            "firstPlayerId": "player:allied",
+            "phasingPlayerId": "player:axis",
+            "actingPlayerId": "player:axis"
+          },
+          "scores": {
+            "player:allied": 7,
+            "player:axis": 14
+          },
+          "axisMargin": 7,
+          "futureDraws": 233,
+          "continuationActions": 867,
+          "elapsedMs": 65213.850886
+        }
+      ]
+    }
+  ],
+  "checkerSha256": "e0359ed5884424cc81b6bb38f739f71b4f340f8b333f66ea01838da2649741c3",
+  "registrationSha256": "a11ca309a4d9846fbe38203872fe4bd95654f5a6f20e8430e80d68e487491231",
+  "resultsSha256": "7c0314048a1cb54b7c847458de7b11d64362620528cb4789f4bff56ab1e75b12"
+}

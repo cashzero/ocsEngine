@@ -1,0 +1,216 @@
+{
+  "firstMatch": 1800026,
+  "mode": "control",
+  "originalEffect": 0,
+  "effect": 0,
+  "branches": [
+    {
+      "forkWeight": 30,
+      "finished": true,
+      "sourceSaveSha256": "0316327088a91723e8708bef8e00ee9a4609b16ce388d5ae3ec39ad1792dba7f",
+      "originalForkHash": "sha256:7856ec73a0c778199352be54b86b16a24d03219e5714e1b12fe7537941a12657",
+      "originalForkRng": {
+        "state": 44836817,
+        "draws": 30
+      },
+      "newForkHash": "sha256:7856ec73a0c778199352be54b86b16a24d03219e5714e1b12fe7537941a12657",
+      "newForkRng": {
+        "state": 44836817,
+        "draws": 30
+      },
+      "preMemorySha256": "8782d9fb4643db129df05da5ec956520c379d34ace56345cb28e11cec4aea675",
+      "expectedPreMemorySha256": "8782d9fb4643db129df05da5ec956520c379d34ace56345cb28e11cec4aea675",
+      "postMemorySha256": "2aea110dd607775304954bf78125393fb6255e458989bd61cd5c5d3bb23e5f03",
+      "forkTrace": {
+        "ordinal": 152,
+        "seatId": "seat:axis",
+        "policy": "future-dice@1",
+        "stepKey": "2:0:MOVEMENT:MOVEMENT",
+        "revision": 152,
+        "kind": "ACTION",
+        "action": {
+          "actionId": "candidate:move:generated-oob:344144156:axis:f2-recon:unit:11,14:152",
+          "actorId": "player:axis",
+          "expectedRevision": 152,
+          "kind": "MOVE_PIECE",
+          "pieceId": "generated-oob:344144156:axis:f2-recon:unit",
+          "path": [
+            "13,15",
+            "12,15",
+            "12,14",
+            "11,14"
+          ]
+        },
+        "intent": "combat to 11,14 (capture 10,15)",
+        "score": 59.59305210918116,
+        "breakdown": [
+          {
+            "term": "progress",
+            "value": 83.0769230769231
+          },
+          {
+            "term": "contact",
+            "value": -8
+          },
+          {
+            "term": "exposure",
+            "value": -15.483870967741936
+          }
+        ],
+        "status": "ACCEPTED",
+        "attempts": 1,
+        "rejections": [],
+        "decideMs": 96.59160100000008,
+        "dispatchMs": 7.876800000000003
+      },
+      "scores": {
+        "player:allied": 0,
+        "player:axis": 13
+      },
+      "axisMargin": 13,
+      "finalHash": "sha256:a2f4ad08931a3b3d80d4e84effd480b4ce055a13488d4c5129d2faa1d8f95384",
+      "finalRulesRng": {
+        "state": 1845672612,
+        "draws": 263
+      },
+      "futureDraws": 233,
+      "prefixStepsLost": {
+        "player:axis": 5,
+        "player:allied": 0
+      },
+      "tailStepsLost": {
+        "player:axis": 4,
+        "player:allied": 33
+      },
+      "totalStepsLost": {
+        "player:axis": 9,
+        "player:allied": 33
+      },
+      "regeneratedPrefixActions": 152,
+      "continuationActions": 750,
+      "acceptedActions": 902,
+      "rejected": 0,
+      "errors": [],
+      "elapsedMs": 66553.013164,
+      "files": {
+        "save.json": {
+          "path": "artifacts/ai-progress-dice-reproducibility/control/pair-1800026/branch-30.save.json",
+          "sha256": "d0e8111967a9ffdc8e74d8bce78820d368c9b6b62171557f27948169f302cb26"
+        },
+        "trace.jsonl": {
+          "path": "artifacts/ai-progress-dice-reproducibility/control/pair-1800026/branch-30.trace.jsonl",
+          "sha256": "b917b7f9a22f8e637239b084ace9d9a33bd8716fd1e2cd0f3ac331f87da98f17"
+        },
+        "memory.json": {
+          "path": "artifacts/ai-progress-dice-reproducibility/control/pair-1800026/branch-30.memory.json",
+          "sha256": "40d5aa0303e04a2ccbfd0613afa2e8ea2916539e2ddcf2ccf2004ca52266760c"
+        }
+      }
+    },
+    {
+      "forkWeight": 15,
+      "finished": true,
+      "sourceSaveSha256": "0316327088a91723e8708bef8e00ee9a4609b16ce388d5ae3ec39ad1792dba7f",
+      "originalForkHash": "sha256:7856ec73a0c778199352be54b86b16a24d03219e5714e1b12fe7537941a12657",
+      "originalForkRng": {
+        "state": 44836817,
+        "draws": 30
+      },
+      "newForkHash": "sha256:7856ec73a0c778199352be54b86b16a24d03219e5714e1b12fe7537941a12657",
+      "newForkRng": {
+        "state": 44836817,
+        "draws": 30
+      },
+      "preMemorySha256": "8782d9fb4643db129df05da5ec956520c379d34ace56345cb28e11cec4aea675",
+      "expectedPreMemorySha256": "8782d9fb4643db129df05da5ec956520c379d34ace56345cb28e11cec4aea675",
+      "postMemorySha256": "a9e3ec6d5f180aea56190ef2771e6d81fd3f5eda2e7273729ce1e948cb99af2b",
+      "forkTrace": {
+        "ordinal": 152,
+        "seatId": "seat:axis",
+        "policy": "future-dice@1",
+        "stepKey": "2:0:MOVEMENT:MOVEMENT",
+        "revision": 152,
+        "kind": "ACTION",
+        "action": {
+          "actionId": "candidate:move:generated-oob:344144156:axis:f2-recon:unit:12,15:152",
+          "actorId": "player:axis",
+          "expectedRevision": 152,
+          "kind": "MOVE_PIECE",
+          "pieceId": "generated-oob:344144156:axis:f2-recon:unit",
+          "path": [
+            "13,15",
+            "12,15"
+          ]
+        },
+        "intent": "combat to 12,15 (capture 10,15)",
+        "score": 18.193961952026473,
+        "breakdown": [
+          {
+            "term": "progress",
+            "value": 20.769230769230774
+          },
+          {
+            "term": "contact",
+            "value": 6
+          },
+          {
+            "term": "exposure",
+            "value": -8.5752688172043
+          }
+        ],
+        "status": "ACCEPTED",
+        "attempts": 1,
+        "rejections": [],
+        "decideMs": 72.30199999999604,
+        "dispatchMs": 6.205399999991641
+      },
+      "scores": {
+        "player:allied": 0,
+        "player:axis": 13
+      },
+      "axisMargin": 13,
+      "finalHash": "sha256:7082187cd37d43734b87bb6798635652d33850d54177bdea60b12601e31f4c91",
+      "finalRulesRng": {
+        "state": 501940633,
+        "draws": 276
+      },
+      "futureDraws": 246,
+      "prefixStepsLost": {
+        "player:axis": 5,
+        "player:allied": 0
+      },
+      "tailStepsLost": {
+        "player:axis": 7,
+        "player:allied": 33
+      },
+      "totalStepsLost": {
+        "player:axis": 12,
+        "player:allied": 33
+      },
+      "regeneratedPrefixActions": 152,
+      "continuationActions": 770,
+      "acceptedActions": 922,
+      "rejected": 0,
+      "errors": [],
+      "elapsedMs": 56979.393966,
+      "files": {
+        "save.json": {
+          "path": "artifacts/ai-progress-dice-reproducibility/control/pair-1800026/branch-15.save.json",
+          "sha256": "da432f4ddb01950693dd3f77364e714df372c74a1b99ddcbd8311804b7934272"
+        },
+        "trace.jsonl": {
+          "path": "artifacts/ai-progress-dice-reproducibility/control/pair-1800026/branch-15.trace.jsonl",
+          "sha256": "6afe137040bea2824783cffc5ee24d10471345949c8c7284ed7755880540e8f6"
+        },
+        "memory.json": {
+          "path": "artifacts/ai-progress-dice-reproducibility/control/pair-1800026/branch-15.memory.json",
+          "sha256": "228aaa004ec53348c50afec7dcb4b0753b282fba28abedf1cb22fe5d5a15071d"
+        }
+      }
+    }
+  ],
+  "sourceCommit": "32bb4998e569d68557bb4d9b8f3fae89503038b3",
+  "scriptSha256": "72c793592824229a67417e1f4e900ba88b71ce3900b2ba0c233731d2bb9a0847",
+  "engineTreeSha256": "4a87376b26c41f60086cb3060f606afcc1e9b99bb3ba00339c904837d200bb2a",
+  "registrationSha256": "b1ad6c6f707600f9dc88d86fc23e46849f0e00cc311a92fb0734e9a5fdb38d9c"
+}
