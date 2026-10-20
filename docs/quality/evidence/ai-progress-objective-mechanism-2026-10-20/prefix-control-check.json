@@ -1,0 +1,96 @@
+{
+  "pairs": 15,
+  "note": "Every assigned target stays allied throughout its common prefix. First suffix axis acquisitions are first full-history acquisitions.",
+  "rows": [
+    {
+      "firstMatch": 1800000,
+      "target": "-2,7",
+      "commonActions": 20,
+      "holderThroughoutPrefix": "player:allied"
+    },
+    {
+      "firstMatch": 1800002,
+      "target": "5,18",
+      "commonActions": 11,
+      "holderThroughoutPrefix": "player:allied"
+    },
+    {
+      "firstMatch": 1800004,
+      "target": "11,13",
+      "commonActions": 7,
+      "holderThroughoutPrefix": "player:allied"
+    },
+    {
+      "firstMatch": 1800006,
+      "target": "-2,16",
+      "commonActions": 7,
+      "holderThroughoutPrefix": "player:allied"
+    },
+    {
+      "firstMatch": 1800008,
+      "target": "12,10",
+      "commonActions": 10,
+      "holderThroughoutPrefix": "player:allied"
+    },
+    {
+      "firstMatch": 1800010,
+      "target": "19,1",
+      "commonActions": 19,
+      "holderThroughoutPrefix": "player:allied"
+    },
+    {
+      "firstMatch": 1800012,
+      "target": "15,11",
+      "commonActions": 9,
+      "holderThroughoutPrefix": "player:allied"
+    },
+    {
+      "firstMatch": 1800014,
+      "target": "3,14",
+      "commonActions": 24,
+      "holderThroughoutPrefix": "player:allied"
+    },
+    {
+      "firstMatch": 1800016,
+      "target": "10,9",
+      "commonActions": 13,
+      "holderThroughoutPrefix": "player:allied"
+    },
+    {
+      "firstMatch": 1800018,
+      "target": "4,18",
+      "commonActions": 10,
+      "holderThroughoutPrefix": "player:allied"
+    },
+    {
+      "firstMatch": 1800020,
+      "target": "11,17",
+      "commonActions": 10,
+      "holderThroughoutPrefix": "player:allied"
+    },
+    {
+      "firstMatch": 1800022,
+      "target": "13,10",
+      "commonActions": 31,
+      "holderThroughoutPrefix": "player:allied"
+    },
+    {
+      "firstMatch": 1800024,
+      "target": "9,2",
+      "commonActions": 28,
+      "holderThroughoutPrefix": "player:allied"
+    },
+    {
+      "firstMatch": 1800026,
+      "target": "10,15",
+      "commonActions": 152,
+      "holderThroughoutPrefix": "player:allied"
+    },
+    {
+      "firstMatch": 1800028,
+      "target": "12,15",
+      "commonActions": 7,
+      "holderThroughoutPrefix": "player:allied"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "sourceCommit": "d12230fb8e60f77a3402873f50fd977883985dad",
+  "engineTreeSha256": "4a87376b26c41f60086cb3060f606afcc1e9b99bb3ba00339c904837d200bb2a",
+  "files": {
+    "protocol.md": "3a2cd60fd236d9adb61bd35f29d6afd3e0fbd76eadbb852acced62dfe4a00316",
+    "branch-protocol.md": "643f81762ac4fd7134b8bb944124594cbeb5866a33c804d87ec6b86e97df8a93",
+    "analyze.mjs": "6f08e2b041b03ad82dbee018c875df9509902b2c4032f2d1f16904cc61b20651",
+    "results.json": "86c4c33f777fabd339fe407828e6549cd22c7d068c7ba4b484c3f64d38141c50",
+    "branch.mjs": "ba4d44657b19bb15e3028a8eb1caa22940783de33d1ea2117bd3299763e59627",
+    "branch-results.json": "861a3f0ad285c3ccd558556b36d2c86ce8fa999ee2646dd8d3b702d6f7cc24df",
+    "audit-branches.mjs": "7f9f16faec73a64e37235dff398d23b1099a50524a97fd8c726ffc8d4596ad20",
+    "branch-audit.json": "ca755593f88456c7050f3aea292ed1737a8f13331b114d82288fbb32a670caf7",
+    "grounding.md": "45622073f35dc9bf571fcda402292ee0e68f82f5b14c0816fd82140abfd03a28",
+    "decisions.tsv": "180c2db69877161ef1471cdc4c99539cab9795dc3cd60ec280225aada1101ed1",
+    "verify-prefixes.mjs": "d26370be81ff85e9a6b8d6ba87ab09eb7cf0f0d7758065bd303a81509f2aa361",
+    "prefix-control-check.json": "c36a390dc9abd010d73f82d536ec99fe79b4e391f758d3cac22219a4bb4e63ef",
+    "review.md": "5f8f431e0612d5d3fb304c08031401167144e850de95c4944ad2cf191d520802",
+    "delivery-review.md": "3fc01d02f3da82fb89b59bda61dc76f4ab3e2e11da275878809528c6268e3d2a"
+  },
+  "rawArtifactRoot": "artifacts/ai-progress-objective-mechanism",
+  "note": "The original thirty games are unchanged. Two separately registered continuation tails were played. Full saves, traces and memory captures stay in ignored artifacts; branch-results binds their hashes."
+}

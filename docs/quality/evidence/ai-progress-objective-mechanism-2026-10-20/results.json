@@ -1,0 +1,3497 @@
+{
+  "source": {
+    "resultsSha256": "a66b95e1f394ff6d081810f8eacb888528ac2e75e50c7487edb7d1747e9923da",
+    "scriptSha256": "6f08e2b041b03ad82dbee018c875df9509902b2c4032f2d1f16904cc61b20651"
+  },
+  "scope": "Post-result descriptive analysis of all15 existing pairs. No new games, full candidate enumeration, isolated-action causality or independent predictor validation.",
+  "summary": {
+    "pairs": 15,
+    "games": 30,
+    "acceptedActions": 25856,
+    "allSameUnitAndTarget": true,
+    "moreProgress": 15,
+    "worseOtherScore": 15,
+    "worseExposure": 14,
+    "targetTerminalChanged": 3,
+    "targetContributionSum": 12,
+    "otherContributionSum": 5,
+    "signs": [
+      {
+        "name": "positive",
+        "pairs": 8,
+        "moreProgress": 8,
+        "worseExposure": 7
+      },
+      {
+        "name": "zero",
+        "pairs": 4,
+        "moreProgress": 4,
+        "worseExposure": 4
+      },
+      {
+        "name": "negative",
+        "pairs": 3,
+        "moreProgress": 3,
+        "worseExposure": 3
+      }
+    ]
+  },
+  "pairs": [
+    {
+      "firstMatch": 1800000,
+      "mapSeed": 344141633,
+      "pairedVpMargin": 1,
+      "commonActions": 20,
+      "preStateHash": "sha256:ce1bc53909d1e4fc9917e59d9a6e316dc438a6bd928a8ed51f2aa2ff6cf7ea1e",
+      "choices": [
+        {
+          "match": 1800000,
+          "weight": 15,
+          "actor": "player:axis",
+          "pieceId": "generated-oob:344141634:axis:f4-combat-1:unit",
+          "purpose": "capture",
+          "target": "-2,7",
+          "targetPoints": 4,
+          "pointScale": 1.5384615384615383,
+          "origin": "25,5",
+          "destination": "19,7",
+          "distanceProgress": 6,
+          "slope": 9.23076923076923,
+          "otherScore": -9,
+          "terms": {
+            "crowding": -9,
+            "progress": 138.46153846153845
+          },
+          "score": 129.46153846153845,
+          "retainedAt15": 129.46153846153845,
+          "retainedAt30": 267.9230769230769
+        },
+        {
+          "match": 1800001,
+          "weight": 30,
+          "actor": "player:axis",
+          "pieceId": "generated-oob:344141634:axis:f4-combat-1:unit",
+          "purpose": "capture",
+          "target": "-2,7",
+          "targetPoints": 4,
+          "pointScale": 1.5384615384615383,
+          "origin": "25,5",
+          "destination": "18,7",
+          "distanceProgress": 7,
+          "slope": 10.769230769230768,
+          "otherScore": -50.38970588235293,
+          "terms": {
+            "progress": 323.07692307692304,
+            "contact": -8,
+            "exposure": -42.38970588235294
+          },
+          "score": 272.6872171945701,
+          "retainedAt15": 111.14875565610859,
+          "retainedAt30": 272.6872171945701
+        }
+      ],
+      "outcomes": [
+        {
+          "match": 1800000,
+          "finalHash": "sha256:c5bfdb478a64f2a9a81960e9a1f760953829c7a463768a6a6083979a89eedc32",
+          "acceptedActions": 902,
+          "initialHolder": "player:allied",
+          "changes": [],
+          "firstAxisAcquisition": null,
+          "finalHolder": "player:allied",
+          "axisMargin": -9,
+          "objectiveContributions": [
+            {
+              "hexId": "-2,7",
+              "points": 4,
+              "owner": "player:allied",
+              "axisContribution": -4
+            },
+            {
+              "hexId": "-4,19",
+              "points": 3,
+              "owner": "player:allied",
+              "axisContribution": -3
+            },
+            {
+              "hexId": "10,6",
+              "points": 2,
+              "owner": "player:allied",
+              "axisContribution": -2
+            },
+            {
+              "hexId": "15,7",
+              "points": 2,
+              "owner": "player:axis",
+              "axisContribution": 2
+            },
+            {
+              "hexId": "17,4",
+              "points": 2,
+              "owner": "player:allied",
+              "axisContribution": -2
+            }
+          ],
+          "movedPieceFinal": {
+            "remainingSteps": 1,
+            "location": {
+              "kind": "ON_MAP",
+              "hexId": "15,7"
+            },
+            "statuses": []
+          }
+        },
+        {
+          "match": 1800001,
+          "finalHash": "sha256:0e51e6b2de99e967ce55d1537fcb613d4050f7c2336a9eb394d95661817ef975",
+          "acceptedActions": 846,
+          "initialHolder": "player:allied",
+          "changes": [],
+          "firstAxisAcquisition": null,
+          "finalHolder": "player:allied",
+          "axisMargin": -7,
+          "objectiveContributions": [
+            {
+              "hexId": "-2,7",
+              "points": 4,
+              "owner": "player:allied",
+              "axisContribution": -4
+            },
+            {
+              "hexId": "-4,19",
+              "points": 3,
+              "owner": "player:axis",
+              "axisContribution": 3
+            },
+            {
+              "hexId": "10,6",
+              "points": 2,
+              "owner": "player:allied",
+              "axisContribution": -2
+            },
+            {
+              "hexId": "15,7",
+              "points": 2,
+              "owner": "player:allied",
+              "axisContribution": -2
+            },
+            {
+              "hexId": "17,4",
+              "points": 2,
+              "owner": "player:allied",
+              "axisContribution": -2
+            }
+          ],
+          "movedPieceFinal": {
+            "remainingSteps": 1,
+            "location": {
+              "kind": "ON_MAP",
+              "hexId": "17,6"
+            },
+            "statuses": []
+          }
+        }
+      ],
+      "difference": {
+        "distanceProgress": 1,
+        "exposureScore": -42.38970588235294,
+        "otherScore": -41.38970588235293,
+        "slope": 1.5384615384615383,
+        "twoRouteSwitchWeight": 26.903308823529404,
+        "targetPairContribution": 0,
+        "otherObjectivesPairContribution": 1
+      },
+      "inputs": [
+        {
+          "match": 1800000,
+          "saveSha256": "18bfe56eb0d5b62b057224b0d6faf17cdd8e0717768fc286e41b0e4e607d79e2",
+          "traceSha256": "f82f1c67188b1a198c5c19d58e2a9156ef34cf66f26901f6ad4dac5496410c93"
+        },
+        {
+          "match": 1800001,
+          "saveSha256": "e04812aafaf87a018eba2164b0b69806f7a39076147e2d663c415370a0cddd4c",
+          "traceSha256": "1bb020feb92975d1858c6e28a468c7831a55b0a2300190ea138c9be5d673f5fb"
+        }
+      ]
+    },
+    {
+      "firstMatch": 1800002,
+      "mapSeed": 344141827,
+      "pairedVpMargin": 0,
+      "commonActions": 11,
+      "preStateHash": "sha256:5a3bca88b3bcd9df06b34b5070ba4cfa4902ed7648200e68c52f948834d3c485",
+      "choices": [
+        {
+          "match": 1800002,
+          "weight": 15,
+          "actor": "player:axis",
+          "pieceId": "generated-oob:344141828:axis:f1-recon:unit",
+          "purpose": "capture",
+          "target": "5,18",
+          "targetPoints": 4,
+          "pointScale": 1.5384615384615383,
+          "origin": "15,21",
+          "destination": "10,21",
+          "distanceProgress": 5,
+          "slope": 7.692307692307692,
+          "otherScore": -19.794117647058826,
+          "terms": {
+            "progress": 115.38461538461537,
+            "exposure": -11.794117647058822,
+            "hq-dependent-supply": -8
+          },
+          "score": 95.59049773755655,
+          "retainedAt15": 95.59049773755655,
+          "retainedAt30": 210.97511312217193
+        },
+        {
+          "match": 1800003,
+          "weight": 30,
+          "actor": "player:axis",
+          "pieceId": "generated-oob:344141828:axis:f1-recon:unit",
+          "purpose": "capture",
+          "target": "5,18",
+          "targetPoints": 4,
+          "pointScale": 1.5384615384615383,
+          "origin": "15,21",
+          "destination": "12,17",
+          "distanceProgress": 6,
+          "slope": 9.23076923076923,
+          "otherScore": -62.30392156862746,
+          "terms": {
+            "progress": 276.9230769230769,
+            "contact": 6,
+            "exposure": -68.30392156862744
+          },
+          "score": 214.61915535444945,
+          "retainedAt15": 76.157616892911,
+          "retainedAt30": 214.61915535444945
+        }
+      ],
+      "outcomes": [
+        {
+          "match": 1800002,
+          "finalHash": "sha256:6e17f1ddde7c90a0de2e3c7e1c8d3083b51dc9221c6769b4b54e7db293793958",
+          "acceptedActions": 736,
+          "initialHolder": "player:allied",
+          "changes": [
+            {
+              "at": 494,
+              "revision": 495,
+              "turn": 5,
+              "sequence": {
+                "gameTurn": 5,
+                "playerTurnIndex": 0,
+                "phase": "EXPLOITATION",
+                "segment": "MOVEMENT",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:axis",
+                "actingPlayerId": "player:axis"
+              },
+              "from": "player:allied",
+              "to": "player:axis",
+              "actionKind": "MOVE_PIECE"
+            }
+          ],
+          "firstAxisAcquisition": {
+            "at": 494,
+            "revision": 495,
+            "turn": 5,
+            "sequence": {
+              "gameTurn": 5,
+              "playerTurnIndex": 0,
+              "phase": "EXPLOITATION",
+              "segment": "MOVEMENT",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            },
+            "from": "player:allied",
+            "to": "player:axis",
+            "actionKind": "MOVE_PIECE"
+          },
+          "finalHolder": "player:axis",
+          "axisMargin": 1,
+          "objectiveContributions": [
+            {
+              "hexId": "1,5",
+              "points": 2,
+              "owner": "player:allied",
+              "axisContribution": -2
+            },
+            {
+              "hexId": "10,15",
+              "points": 2,
+              "owner": "player:allied",
+              "axisContribution": -2
+            },
+            {
+              "hexId": "14,13",
+              "points": 2,
+              "owner": "player:allied",
+              "axisContribution": -2
+            },
+            {
+              "hexId": "14,15",
+              "points": 3,
+              "owner": "player:axis",
+              "axisContribution": 3
+            },
+            {
+              "hexId": "5,18",
+              "points": 4,
+              "owner": "player:axis",
+              "axisContribution": 4
+            }
+          ],
+          "movedPieceFinal": {
+            "remainingSteps": 1,
+            "location": {
+              "kind": "ON_MAP",
+              "hexId": "5,18"
+            },
+            "statuses": []
+          }
+        },
+        {
+          "match": 1800003,
+          "finalHash": "sha256:a7c8a00a35399fcfc22762971e29ecabdfab34f1668ae131b440d7fcc3fe90a5",
+          "acceptedActions": 723,
+          "initialHolder": "player:allied",
+          "changes": [
+            {
+              "at": 646,
+              "revision": 647,
+              "turn": 8,
+              "sequence": {
+                "gameTurn": 8,
+                "playerTurnIndex": 0,
+                "phase": "MOVEMENT",
+                "segment": "MOVEMENT",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:axis",
+                "actingPlayerId": "player:axis"
+              },
+              "from": "player:allied",
+              "to": "player:axis",
+              "actionKind": "RESPOND_DECISION"
+            }
+          ],
+          "firstAxisAcquisition": {
+            "at": 646,
+            "revision": 647,
+            "turn": 8,
+            "sequence": {
+              "gameTurn": 8,
+              "playerTurnIndex": 0,
+              "phase": "MOVEMENT",
+              "segment": "MOVEMENT",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            },
+            "from": "player:allied",
+            "to": "player:axis",
+            "actionKind": "RESPOND_DECISION"
+          },
+          "finalHolder": "player:axis",
+          "axisMargin": 1,
+          "objectiveContributions": [
+            {
+              "hexId": "1,5",
+              "points": 2,
+              "owner": "player:allied",
+              "axisContribution": -2
+            },
+            {
+              "hexId": "10,15",
+              "points": 2,
+              "owner": "player:allied",
+              "axisContribution": -2
+            },
+            {
+              "hexId": "14,13",
+              "points": 2,
+              "owner": "player:allied",
+              "axisContribution": -2
+            },
+            {
+              "hexId": "14,15",
+              "points": 3,
+              "owner": "player:axis",
+              "axisContribution": 3
+            },
+            {
+              "hexId": "5,18",
+              "points": 4,
+              "owner": "player:axis",
+              "axisContribution": 4
+            }
+          ],
+          "movedPieceFinal": {
+            "remainingSteps": 1,
+            "location": {
+              "kind": "ON_MAP",
+              "hexId": "10,16"
+            },
+            "statuses": []
+          }
+        }
+      ],
+      "difference": {
+        "distanceProgress": 1,
+        "exposureScore": -56.50980392156862,
+        "otherScore": -42.50980392156863,
+        "slope": 1.5384615384615383,
+        "twoRouteSwitchWeight": 27.631372549019613,
+        "targetPairContribution": 0,
+        "otherObjectivesPairContribution": 0
+      },
+      "inputs": [
+        {
+          "match": 1800002,
+          "saveSha256": "32ff0e7e9de391afea67913a43fc88756cfce4e8feae67c9c6f25011e82ecfb5",
+          "traceSha256": "83e5a31e59d6f957a83da4df295628263d0cc9c996d7c0fc9e4b9a93bd0cf1ef"
+        },
+        {
+          "match": 1800003,
+          "saveSha256": "4955c2ee602c967630da6a1dc9ad6c86396dcbc883908b4702e815b45d1103f8",
+          "traceSha256": "5d84ccc47ffa8074a2dc162877aa32c343898eda3e9a531375b998336383c8d3"
+        }
+      ]
+    },
+    {
+      "firstMatch": 1800004,
+      "mapSeed": 344142021,
+      "pairedVpMargin": -4,
+      "commonActions": 7,
+      "preStateHash": "sha256:764a72decd6019e84952c7b2fbc138fee0a44813fe2fad97a1c14cb14c91fff0",
+      "choices": [
+        {
+          "match": 1800004,
+          "weight": 15,
+          "actor": "player:axis",
+          "pieceId": "generated-oob:344142022:axis:f1-combat-1:unit",
+          "purpose": "capture",
+          "target": "11,13",
+          "targetPoints": 2,
+          "pointScale": 0.6666666666666666,
+          "origin": "13,23",
+          "destination": "17,13",
+          "distanceProgress": 6,
+          "slope": 4,
+          "otherScore": 0,
+          "terms": {
+            "progress": 60
+          },
+          "score": 60,
+          "retainedAt15": 60,
+          "retainedAt30": 120
+        },
+        {
+          "match": 1800005,
+          "weight": 30,
+          "actor": "player:axis",
+          "pieceId": "generated-oob:344142022:axis:f1-combat-1:unit",
+          "purpose": "capture",
+          "target": "11,13",
+          "targetPoints": 2,
+          "pointScale": 0.6666666666666666,
+          "origin": "13,23",
+          "destination": "13,15",
+          "distanceProgress": 8,
+          "slope": 5.333333333333333,
+          "otherScore": -36.154411764705884,
+          "terms": {
+            "progress": 160,
+            "contact": -8,
+            "exposure": -28.154411764705884
+          },
+          "score": 123.84558823529412,
+          "retainedAt15": 43.845588235294116,
+          "retainedAt30": 123.84558823529412
+        }
+      ],
+      "outcomes": [
+        {
+          "match": 1800004,
+          "finalHash": "sha256:8ba60b01d575dc6574bdfdb57e948fcae584bd8b13ce62617c30b151752991df",
+          "acceptedActions": 812,
+          "initialHolder": "player:allied",
+          "changes": [],
+          "firstAxisAcquisition": null,
+          "finalHolder": "player:allied",
+          "axisMargin": 3,
+          "objectiveContributions": [
+            {
+              "hexId": "11,11",
+              "points": 3,
+              "owner": "player:axis",
+              "axisContribution": 3
+            },
+            {
+              "hexId": "11,13",
+              "points": 2,
+              "owner": "player:allied",
+              "axisContribution": -2
+            },
+            {
+              "hexId": "13,10",
+              "points": 2,
+              "owner": "player:axis",
+              "axisContribution": 2
+            },
+            {
+              "hexId": "2,1",
+              "points": 4,
+              "owner": "player:allied",
+              "axisContribution": -4
+            },
+            {
+              "hexId": "3,12",
+              "points": 4,
+              "owner": "player:axis",
+              "axisContribution": 4
+            }
+          ],
+          "movedPieceFinal": {
+            "remainingSteps": 1,
+            "location": {
+              "kind": "ON_MAP",
+              "hexId": "3,13"
+            },
+            "statuses": []
+          }
+        },
+        {
+          "match": 1800005,
+          "finalHash": "sha256:09d686cf06797bc6362226292580d970b30567ed605c18474c54d4c66aa9d9db",
+          "acceptedActions": 866,
+          "initialHolder": "player:allied",
+          "changes": [],
+          "firstAxisAcquisition": null,
+          "finalHolder": "player:allied",
+          "axisMargin": -5,
+          "objectiveContributions": [
+            {
+              "hexId": "11,11",
+              "points": 3,
+              "owner": "player:axis",
+              "axisContribution": 3
+            },
+            {
+              "hexId": "11,13",
+              "points": 2,
+              "owner": "player:allied",
+              "axisContribution": -2
+            },
+            {
+              "hexId": "13,10",
+              "points": 2,
+              "owner": "player:axis",
+              "axisContribution": 2
+            },
+            {
+              "hexId": "2,1",
+              "points": 4,
+              "owner": "player:allied",
+              "axisContribution": -4
+            },
+            {
+              "hexId": "3,12",
+              "points": 4,
+              "owner": "player:allied",
+              "axisContribution": -4
+            }
+          ],
+          "movedPieceFinal": {
+            "remainingSteps": 1,
+            "location": {
+              "kind": "ELIMINATED"
+            },
+            "statuses": []
+          }
+        }
+      ],
+      "difference": {
+        "distanceProgress": 2,
+        "exposureScore": -28.154411764705884,
+        "otherScore": -36.154411764705884,
+        "slope": 1.333333333333333,
+        "twoRouteSwitchWeight": 27.11580882352942,
+        "targetPairContribution": 0,
+        "otherObjectivesPairContribution": -4
+      },
+      "inputs": [
+        {
+          "match": 1800004,
+          "saveSha256": "c7f397bb8ef075ba9c460a77c8d56346e52af5f7ab290613c7061a53961e7949",
+          "traceSha256": "50d3056ce12d4b6b21c5d04c01f37acccfee61deb013c009a515958258e1585c"
+        },
+        {
+          "match": 1800005,
+          "saveSha256": "280e1bb45485a16cdbd53d4c73d446bd6d8f28c01807cb74c78a4b5ea610a64b",
+          "traceSha256": "20a83260d6719ef9823d748e8493289da2ceef13b8ae497f127ef9803c2f5ce0"
+        }
+      ]
+    },
+    {
+      "firstMatch": 1800006,
+      "mapSeed": 344142215,
+      "pairedVpMargin": 7,
+      "commonActions": 7,
+      "preStateHash": "sha256:e273a86e06b3d9aff7c6561f0f18a314fa855e22273d72c16089877654d6e9d9",
+      "choices": [
+        {
+          "match": 1800006,
+          "weight": 15,
+          "actor": "player:axis",
+          "pieceId": "generated-oob:344142216:axis:f1-combat-1:unit",
+          "purpose": "capture",
+          "target": "-2,16",
+          "targetPoints": 4,
+          "pointScale": 1.1428571428571428,
+          "origin": "14,22",
+          "destination": "14,16",
+          "distanceProgress": 6,
+          "slope": 6.857142857142857,
+          "otherScore": -24.983333333333334,
+          "terms": {
+            "progress": 102.85714285714285,
+            "contact": 6,
+            "exposure": -30.983333333333334
+          },
+          "score": 77.87380952380951,
+          "retainedAt15": 77.87380952380951,
+          "retainedAt30": 180.73095238095237
+        },
+        {
+          "match": 1800007,
+          "weight": 30,
+          "actor": "player:axis",
+          "pieceId": "generated-oob:344142216:axis:f1-combat-1:unit",
+          "purpose": "capture",
+          "target": "-2,16",
+          "targetPoints": 4,
+          "pointScale": 1.1428571428571428,
+          "origin": "14,22",
+          "destination": "13,16",
+          "distanceProgress": 7,
+          "slope": 8,
+          "otherScore": -45.31666666666666,
+          "terms": {
+            "progress": 240,
+            "contact": 6,
+            "exposure": -51.31666666666666
+          },
+          "score": 194.68333333333334,
+          "retainedAt15": 74.68333333333334,
+          "retainedAt30": 194.68333333333334
+        }
+      ],
+      "outcomes": [
+        {
+          "match": 1800006,
+          "finalHash": "sha256:d3993f2d757dc4a8e25f917664fe3a1b1cb26a81e727f2218de3ea8e7ecc09b2",
+          "acceptedActions": 946,
+          "initialHolder": "player:allied",
+          "changes": [],
+          "firstAxisAcquisition": null,
+          "finalHolder": "player:allied",
+          "axisMargin": -9,
+          "objectiveContributions": [
+            {
+              "hexId": "-2,16",
+              "points": 4,
+              "owner": "player:allied",
+              "axisContribution": -4
+            },
+            {
+              "hexId": "-6,18",
+              "points": 4,
+              "owner": "player:allied",
+              "axisContribution": -4
+            },
+            {
+              "hexId": "0,14",
+              "points": 3,
+              "owner": "player:allied",
+              "axisContribution": -3
+            },
+            {
+              "hexId": "12,16",
+              "points": 2,
+              "owner": "player:axis",
+              "axisContribution": 2
+            },
+            {
+              "hexId": "14,15",
+              "points": 4,
+              "owner": "player:axis",
+              "axisContribution": 4
+            },
+            {
+              "hexId": "6,14",
+              "points": 4,
+              "owner": "player:allied",
+              "axisContribution": -4
+            }
+          ],
+          "movedPieceFinal": {
+            "remainingSteps": 1,
+            "location": {
+              "kind": "ON_MAP",
+              "hexId": "6,13"
+            },
+            "statuses": []
+          }
+        },
+        {
+          "match": 1800007,
+          "finalHash": "sha256:dea4d5d08a46961ecf40ed9a9180bc897e0c347d9dc8186691bd4180de6b2a1b",
+          "acceptedActions": 803,
+          "initialHolder": "player:allied",
+          "changes": [
+            {
+              "at": 446,
+              "revision": 447,
+              "turn": 4,
+              "sequence": {
+                "gameTurn": 4,
+                "playerTurnIndex": 0,
+                "phase": "EXPLOITATION",
+                "segment": "MOVEMENT",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:axis",
+                "actingPlayerId": "player:axis"
+              },
+              "from": "player:allied",
+              "to": "player:axis",
+              "actionKind": "MOVE_PIECE"
+            }
+          ],
+          "firstAxisAcquisition": {
+            "at": 446,
+            "revision": 447,
+            "turn": 4,
+            "sequence": {
+              "gameTurn": 4,
+              "playerTurnIndex": 0,
+              "phase": "EXPLOITATION",
+              "segment": "MOVEMENT",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            },
+            "from": "player:allied",
+            "to": "player:axis",
+            "actionKind": "MOVE_PIECE"
+          },
+          "finalHolder": "player:axis",
+          "axisMargin": 5,
+          "objectiveContributions": [
+            {
+              "hexId": "-2,16",
+              "points": 4,
+              "owner": "player:axis",
+              "axisContribution": 4
+            },
+            {
+              "hexId": "-6,18",
+              "points": 4,
+              "owner": "player:allied",
+              "axisContribution": -4
+            },
+            {
+              "hexId": "0,14",
+              "points": 3,
+              "owner": "player:axis",
+              "axisContribution": 3
+            },
+            {
+              "hexId": "12,16",
+              "points": 2,
+              "owner": "player:axis",
+              "axisContribution": 2
+            },
+            {
+              "hexId": "14,15",
+              "points": 4,
+              "owner": "player:axis",
+              "axisContribution": 4
+            },
+            {
+              "hexId": "6,14",
+              "points": 4,
+              "owner": "player:allied",
+              "axisContribution": -4
+            }
+          ],
+          "movedPieceFinal": {
+            "remainingSteps": 1,
+            "location": {
+              "kind": "ON_MAP",
+              "hexId": "12,16"
+            },
+            "statuses": []
+          }
+        }
+      ],
+      "difference": {
+        "distanceProgress": 1,
+        "exposureScore": -20.33333333333333,
+        "otherScore": -20.33333333333333,
+        "slope": 1.1428571428571432,
+        "twoRouteSwitchWeight": 17.791666666666657,
+        "targetPairContribution": 4,
+        "otherObjectivesPairContribution": 3
+      },
+      "inputs": [
+        {
+          "match": 1800006,
+          "saveSha256": "4d8e3884796cd7a1dabbe7b0e054889539d2d382ac71639f012e858dffb9b148",
+          "traceSha256": "a068f1759f51f91e766d4b4ff1c19855a89ef7ee361059ef4460a36153c99f15"
+        },
+        {
+          "match": 1800007,
+          "saveSha256": "78f0acb920bc47cc108f4e4c06d20967b979224079fb524ac8e7c3a07a4aa325",
+          "traceSha256": "4108e53bdb4327925314987002671abaa63455db31b85e57b0c93e69a1dd5e47"
+        }
+      ]
+    },
+    {
+      "firstMatch": 1800008,
+      "mapSeed": 344142409,
+      "pairedVpMargin": 3,
+      "commonActions": 10,
+      "preStateHash": "sha256:43b036cb117688a8dd55d1b98206e302716a7990d7248fcef5508643b754fed7",
+      "choices": [
+        {
+          "match": 1800008,
+          "weight": 15,
+          "actor": "player:axis",
+          "pieceId": "generated-oob:344142410:axis:f1-combat-1:unit",
+          "purpose": "capture",
+          "target": "12,10",
+          "targetPoints": 2,
+          "pointScale": 0.6153846153846154,
+          "origin": "14,22",
+          "destination": "18,11",
+          "distanceProgress": 7,
+          "slope": 4.307692307692308,
+          "otherScore": -3.328125,
+          "terms": {
+            "progress": 64.61538461538461,
+            "exposure": -3.3281250000000018
+          },
+          "score": 61.28725961538461,
+          "retainedAt15": 61.28725961538463,
+          "retainedAt30": 125.90264423076925
+        },
+        {
+          "match": 1800009,
+          "weight": 30,
+          "actor": "player:axis",
+          "pieceId": "generated-oob:344142410:axis:f1-combat-1:unit",
+          "purpose": "capture",
+          "target": "12,10",
+          "targetPoints": 2,
+          "pointScale": 0.6153846153846154,
+          "origin": "14,22",
+          "destination": "16,12",
+          "distanceProgress": 8,
+          "slope": 4.923076923076923,
+          "otherScore": -20.953125,
+          "terms": {
+            "progress": 147.6923076923077,
+            "exposure": -20.953125
+          },
+          "score": 126.73918269230771,
+          "retainedAt15": 52.893028846153854,
+          "retainedAt30": 126.73918269230771
+        }
+      ],
+      "outcomes": [
+        {
+          "match": 1800008,
+          "finalHash": "sha256:c33cc9d56c3ac919d7ba089e84852ff802cd4ee1387db701b49c0cade52c53d1",
+          "acceptedActions": 820,
+          "initialHolder": "player:allied",
+          "changes": [
+            {
+              "at": 678,
+              "revision": 679,
+              "turn": 7,
+              "sequence": {
+                "gameTurn": 7,
+                "playerTurnIndex": 1,
+                "phase": "MOVEMENT",
+                "segment": "MOVEMENT",
+                "firstPlayerId": "player:allied",
+                "phasingPlayerId": "player:axis",
+                "actingPlayerId": "player:axis"
+              },
+              "from": "player:allied",
+              "to": "player:axis",
+              "actionKind": "MOVE_PIECE"
+            }
+          ],
+          "firstAxisAcquisition": {
+            "at": 678,
+            "revision": 679,
+            "turn": 7,
+            "sequence": {
+              "gameTurn": 7,
+              "playerTurnIndex": 1,
+              "phase": "MOVEMENT",
+              "segment": "MOVEMENT",
+              "firstPlayerId": "player:allied",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            },
+            "from": "player:allied",
+            "to": "player:axis",
+            "actionKind": "MOVE_PIECE"
+          },
+          "finalHolder": "player:axis",
+          "axisMargin": -1,
+          "objectiveContributions": [
+            {
+              "hexId": "1,19",
+              "points": 4,
+              "owner": "player:allied",
+              "axisContribution": -4
+            },
+            {
+              "hexId": "10,13",
+              "points": 3,
+              "owner": "player:allied",
+              "axisContribution": -3
+            },
+            {
+              "hexId": "12,10",
+              "points": 2,
+              "owner": "player:axis",
+              "axisContribution": 2
+            },
+            {
+              "hexId": "6,17",
+              "points": 4,
+              "owner": "player:axis",
+              "axisContribution": 4
+            }
+          ],
+          "movedPieceFinal": {
+            "remainingSteps": 1,
+            "location": {
+              "kind": "ELIMINATED"
+            },
+            "statuses": []
+          }
+        },
+        {
+          "match": 1800009,
+          "finalHash": "sha256:394f296de06663e02f41749ed70c0b9fa6f21d8f3f4dafd13b1bf7f4bddc01ed",
+          "acceptedActions": 867,
+          "initialHolder": "player:allied",
+          "changes": [
+            {
+              "at": 469,
+              "revision": 470,
+              "turn": 4,
+              "sequence": {
+                "gameTurn": 4,
+                "playerTurnIndex": 0,
+                "phase": "COMBAT",
+                "segment": "COMBAT",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:axis",
+                "actingPlayerId": "player:axis"
+              },
+              "from": "player:allied",
+              "to": "player:axis",
+              "actionKind": "RESPOND_DECISION"
+            }
+          ],
+          "firstAxisAcquisition": {
+            "at": 469,
+            "revision": 470,
+            "turn": 4,
+            "sequence": {
+              "gameTurn": 4,
+              "playerTurnIndex": 0,
+              "phase": "COMBAT",
+              "segment": "COMBAT",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            },
+            "from": "player:allied",
+            "to": "player:axis",
+            "actionKind": "RESPOND_DECISION"
+          },
+          "finalHolder": "player:axis",
+          "axisMargin": 5,
+          "objectiveContributions": [
+            {
+              "hexId": "1,19",
+              "points": 4,
+              "owner": "player:allied",
+              "axisContribution": -4
+            },
+            {
+              "hexId": "10,13",
+              "points": 3,
+              "owner": "player:axis",
+              "axisContribution": 3
+            },
+            {
+              "hexId": "12,10",
+              "points": 2,
+              "owner": "player:axis",
+              "axisContribution": 2
+            },
+            {
+              "hexId": "6,17",
+              "points": 4,
+              "owner": "player:axis",
+              "axisContribution": 4
+            }
+          ],
+          "movedPieceFinal": {
+            "remainingSteps": 1,
+            "location": {
+              "kind": "ON_MAP",
+              "hexId": "10,13"
+            },
+            "statuses": []
+          }
+        }
+      ],
+      "difference": {
+        "distanceProgress": 1,
+        "exposureScore": -17.625,
+        "otherScore": -17.625,
+        "slope": 0.615384615384615,
+        "twoRouteSwitchWeight": 28.640625000000018,
+        "targetPairContribution": 0,
+        "otherObjectivesPairContribution": 3
+      },
+      "inputs": [
+        {
+          "match": 1800008,
+          "saveSha256": "1f7ffc0c2ac8ab8da25e30098200f5c920b4ca2fd1159584051d98ff1ef1bbfc",
+          "traceSha256": "86940cd2a702a8f3cc9545b4228eab3a44604ac5fba6846ec4d665a454c0a7e8"
+        },
+        {
+          "match": 1800009,
+          "saveSha256": "5276521eb7308ccdbb76917cbdcd4b51b90779e1d889504d0300d1e608821854",
+          "traceSha256": "7def83f34c5fa83c42dd4d5ea478bb12c31c120179edaed56dfcaf0d292d3019"
+        }
+      ]
+    },
+    {
+      "firstMatch": 1800010,
+      "mapSeed": 344142603,
+      "pairedVpMargin": 0,
+      "commonActions": 19,
+      "preStateHash": "sha256:4a17762963e592bf7c7496c166dfeb156bccf0a3367e54761f8b8891771a909e",
+      "choices": [
+        {
+          "match": 1800010,
+          "weight": 15,
+          "actor": "player:axis",
+          "pieceId": "generated-oob:344142604:axis:f3-recon:unit",
+          "purpose": "capture",
+          "target": "19,1",
+          "targetPoints": 4,
+          "pointScale": 1.1428571428571428,
+          "origin": "21,11",
+          "destination": "21,0",
+          "distanceProgress": 10,
+          "slope": 11.428571428571427,
+          "otherScore": -14.5,
+          "terms": {
+            "progress": 171.42857142857142,
+            "exposure": -6.5,
+            "hq-dependent-supply": -8
+          },
+          "score": 156.92857142857142,
+          "retainedAt15": 156.92857142857142,
+          "retainedAt30": 328.35714285714283
+        },
+        {
+          "match": 1800011,
+          "weight": 30,
+          "actor": "player:axis",
+          "pieceId": "generated-oob:344142604:axis:f3-recon:unit",
+          "purpose": "capture",
+          "target": "19,1",
+          "targetPoints": 4,
+          "pointScale": 1.1428571428571428,
+          "origin": "21,11",
+          "destination": "20,1",
+          "distanceProgress": 11,
+          "slope": 12.571428571428571,
+          "otherScore": -42.125,
+          "terms": {
+            "progress": 377.1428571428571,
+            "contact": -8,
+            "exposure": -26.125,
+            "hq-dependent-supply": -8
+          },
+          "score": 335.0178571428571,
+          "retainedAt15": 146.44642857142856,
+          "retainedAt30": 335.0178571428571
+        }
+      ],
+      "outcomes": [
+        {
+          "match": 1800010,
+          "finalHash": "sha256:e6f19d2c2cacb73ba2652ad37221d0d5caa75b19964175d69db9e1690c343953",
+          "acceptedActions": 908,
+          "initialHolder": "player:allied",
+          "changes": [
+            {
+              "at": 74,
+              "revision": 75,
+              "turn": 1,
+              "sequence": {
+                "gameTurn": 1,
+                "playerTurnIndex": 0,
+                "phase": "COMBAT",
+                "segment": "COMBAT",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:axis",
+                "actingPlayerId": "player:axis"
+              },
+              "from": "player:allied",
+              "to": "player:axis",
+              "actionKind": "RESPOND_DECISION"
+            },
+            {
+              "at": 98,
+              "revision": 99,
+              "turn": 1,
+              "sequence": {
+                "gameTurn": 1,
+                "playerTurnIndex": 1,
+                "phase": "MOVEMENT",
+                "segment": "MOVEMENT",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:allied",
+                "actingPlayerId": "player:allied"
+              },
+              "from": "player:axis",
+              "to": "player:allied",
+              "actionKind": "MOVE_PIECE"
+            },
+            {
+              "at": 521,
+              "revision": 522,
+              "turn": 5,
+              "sequence": {
+                "gameTurn": 5,
+                "playerTurnIndex": 0,
+                "phase": "MOVEMENT",
+                "segment": "MOVEMENT",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:axis",
+                "actingPlayerId": "player:axis"
+              },
+              "from": "player:allied",
+              "to": "player:axis",
+              "actionKind": "MOVE_PIECE"
+            }
+          ],
+          "firstAxisAcquisition": {
+            "at": 74,
+            "revision": 75,
+            "turn": 1,
+            "sequence": {
+              "gameTurn": 1,
+              "playerTurnIndex": 0,
+              "phase": "COMBAT",
+              "segment": "COMBAT",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            },
+            "from": "player:allied",
+            "to": "player:axis",
+            "actionKind": "RESPOND_DECISION"
+          },
+          "finalHolder": "player:axis",
+          "axisMargin": 14,
+          "objectiveContributions": [
+            {
+              "hexId": "1,12",
+              "points": 3,
+              "owner": "player:axis",
+              "axisContribution": 3
+            },
+            {
+              "hexId": "19,1",
+              "points": 4,
+              "owner": "player:axis",
+              "axisContribution": 4
+            },
+            {
+              "hexId": "2,13",
+              "points": 3,
+              "owner": "player:axis",
+              "axisContribution": 3
+            },
+            {
+              "hexId": "4,13",
+              "points": 4,
+              "owner": "player:axis",
+              "axisContribution": 4
+            }
+          ],
+          "movedPieceFinal": {
+            "remainingSteps": 1,
+            "location": {
+              "kind": "ON_MAP",
+              "hexId": "19,1"
+            },
+            "statuses": []
+          }
+        },
+        {
+          "match": 1800011,
+          "finalHash": "sha256:1d74a9272041fbf6e099c41991ab60a69ec8b05f7417fb6a871a394547091b44",
+          "acceptedActions": 966,
+          "initialHolder": "player:allied",
+          "changes": [
+            {
+              "at": 74,
+              "revision": 75,
+              "turn": 1,
+              "sequence": {
+                "gameTurn": 1,
+                "playerTurnIndex": 0,
+                "phase": "COMBAT",
+                "segment": "COMBAT",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:axis",
+                "actingPlayerId": "player:axis"
+              },
+              "from": "player:allied",
+              "to": "player:axis",
+              "actionKind": "RESPOND_DECISION"
+            },
+            {
+              "at": 156,
+              "revision": 157,
+              "turn": 2,
+              "sequence": {
+                "gameTurn": 2,
+                "playerTurnIndex": 0,
+                "phase": "COMBAT",
+                "segment": "COMBAT",
+                "firstPlayerId": "player:allied",
+                "phasingPlayerId": "player:allied",
+                "actingPlayerId": "player:allied"
+              },
+              "from": "player:axis",
+              "to": "player:allied",
+              "actionKind": "RESPOND_DECISION"
+            },
+            {
+              "at": 570,
+              "revision": 571,
+              "turn": 5,
+              "sequence": {
+                "gameTurn": 5,
+                "playerTurnIndex": 0,
+                "phase": "COMBAT",
+                "segment": "COMBAT",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:axis",
+                "actingPlayerId": "player:axis"
+              },
+              "from": "player:allied",
+              "to": "player:axis",
+              "actionKind": "RESPOND_DECISION"
+            }
+          ],
+          "firstAxisAcquisition": {
+            "at": 74,
+            "revision": 75,
+            "turn": 1,
+            "sequence": {
+              "gameTurn": 1,
+              "playerTurnIndex": 0,
+              "phase": "COMBAT",
+              "segment": "COMBAT",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            },
+            "from": "player:allied",
+            "to": "player:axis",
+            "actionKind": "RESPOND_DECISION"
+          },
+          "finalHolder": "player:axis",
+          "axisMargin": 14,
+          "objectiveContributions": [
+            {
+              "hexId": "1,12",
+              "points": 3,
+              "owner": "player:axis",
+              "axisContribution": 3
+            },
+            {
+              "hexId": "19,1",
+              "points": 4,
+              "owner": "player:axis",
+              "axisContribution": 4
+            },
+            {
+              "hexId": "2,13",
+              "points": 3,
+              "owner": "player:axis",
+              "axisContribution": 3
+            },
+            {
+              "hexId": "4,13",
+              "points": 4,
+              "owner": "player:axis",
+              "axisContribution": 4
+            }
+          ],
+          "movedPieceFinal": {
+            "remainingSteps": 1,
+            "location": {
+              "kind": "ELIMINATED"
+            },
+            "statuses": []
+          }
+        }
+      ],
+      "difference": {
+        "distanceProgress": 1,
+        "exposureScore": -19.625,
+        "otherScore": -27.625,
+        "slope": 1.1428571428571441,
+        "twoRouteSwitchWeight": 24.17187499999997,
+        "targetPairContribution": 0,
+        "otherObjectivesPairContribution": 0
+      },
+      "inputs": [
+        {
+          "match": 1800010,
+          "saveSha256": "fd230e813beaded8df9cf5cece96cf74bf0c916da59e7faccb76fc5663caf8b0",
+          "traceSha256": "16e3b0fdbf098edf2416a9f34116d80565aa1ccdd9e8bfaaba3535f671f5c553"
+        },
+        {
+          "match": 1800011,
+          "saveSha256": "c3e6d89cea7b84fe6a3f5e6d633908caafd035e1e768887d1cfb315c1b7cf592",
+          "traceSha256": "d9f86f205f6139c39aa1f1e414a468c0b7aa9c7f2a9aeb784e53693590c011dc"
+        }
+      ]
+    },
+    {
+      "firstMatch": 1800012,
+      "mapSeed": 344142797,
+      "pairedVpMargin": -9,
+      "commonActions": 9,
+      "preStateHash": "sha256:b8bae14c958036871b3b7930fa69b777bdcd3850b0df82640db22232fc655a0a",
+      "choices": [
+        {
+          "match": 1800012,
+          "weight": 15,
+          "actor": "player:axis",
+          "pieceId": "generated-oob:344142798:axis:f1-recon:unit",
+          "purpose": "capture",
+          "target": "15,11",
+          "targetPoints": 2,
+          "pointScale": 0.7692307692307692,
+          "origin": "15,20",
+          "destination": "18,12",
+          "distanceProgress": 5,
+          "slope": 3.846153846153846,
+          "otherScore": -0.588235294117645,
+          "terms": {
+            "progress": 57.692307692307686,
+            "exposure": -0.5882352941176467
+          },
+          "score": 57.10407239819004,
+          "retainedAt15": 57.10407239819004,
+          "retainedAt30": 114.79638009049773
+        },
+        {
+          "match": 1800013,
+          "weight": 30,
+          "actor": "player:axis",
+          "pieceId": "generated-oob:344142798:axis:f1-recon:unit",
+          "purpose": "capture",
+          "target": "15,11",
+          "targetPoints": 2,
+          "pointScale": 0.7692307692307692,
+          "origin": "15,20",
+          "destination": "16,13",
+          "distanceProgress": 6,
+          "slope": 4.615384615384615,
+          "otherScore": -17.137254901960787,
+          "terms": {
+            "progress": 138.46153846153845,
+            "exposure": -17.137254901960784
+          },
+          "score": 121.32428355957767,
+          "retainedAt15": 52.09351432880844,
+          "retainedAt30": 121.32428355957767
+        }
+      ],
+      "outcomes": [
+        {
+          "match": 1800012,
+          "finalHash": "sha256:6a67a7a93a9dd5167211216ffc4fb6ae6044e913361ac657563a90acb39e96c7",
+          "acceptedActions": 792,
+          "initialHolder": "player:allied",
+          "changes": [
+            {
+              "at": 76,
+              "revision": 77,
+              "turn": 1,
+              "sequence": {
+                "gameTurn": 1,
+                "playerTurnIndex": 0,
+                "phase": "COMBAT",
+                "segment": "COMBAT",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:axis",
+                "actingPlayerId": "player:axis"
+              },
+              "from": "player:allied",
+              "to": "player:axis",
+              "actionKind": "RESPOND_DECISION"
+            }
+          ],
+          "firstAxisAcquisition": {
+            "at": 76,
+            "revision": 77,
+            "turn": 1,
+            "sequence": {
+              "gameTurn": 1,
+              "playerTurnIndex": 0,
+              "phase": "COMBAT",
+              "segment": "COMBAT",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            },
+            "from": "player:allied",
+            "to": "player:axis",
+            "actionKind": "RESPOND_DECISION"
+          },
+          "finalHolder": "player:axis",
+          "axisMargin": 13,
+          "objectiveContributions": [
+            {
+              "hexId": "13,4",
+              "points": 2,
+              "owner": "player:axis",
+              "axisContribution": 2
+            },
+            {
+              "hexId": "14,6",
+              "points": 4,
+              "owner": "player:axis",
+              "axisContribution": 4
+            },
+            {
+              "hexId": "15,11",
+              "points": 2,
+              "owner": "player:axis",
+              "axisContribution": 2
+            },
+            {
+              "hexId": "15,8",
+              "points": 3,
+              "owner": "player:axis",
+              "axisContribution": 3
+            },
+            {
+              "hexId": "17,7",
+              "points": 2,
+              "owner": "player:axis",
+              "axisContribution": 2
+            }
+          ],
+          "movedPieceFinal": {
+            "remainingSteps": 1,
+            "location": {
+              "kind": "ON_MAP",
+              "hexId": "13,4"
+            },
+            "statuses": []
+          }
+        },
+        {
+          "match": 1800013,
+          "finalHash": "sha256:c882f05659c157d2d6713fea6e72e81a985aa3afd7d47dbd4362eb800168f956",
+          "acceptedActions": 808,
+          "initialHolder": "player:allied",
+          "changes": [
+            {
+              "at": 79,
+              "revision": 80,
+              "turn": 1,
+              "sequence": {
+                "gameTurn": 1,
+                "playerTurnIndex": 0,
+                "phase": "COMBAT",
+                "segment": "COMBAT",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:axis",
+                "actingPlayerId": "player:axis"
+              },
+              "from": "player:allied",
+              "to": "player:axis",
+              "actionKind": "RESPOND_DECISION"
+            }
+          ],
+          "firstAxisAcquisition": {
+            "at": 79,
+            "revision": 80,
+            "turn": 1,
+            "sequence": {
+              "gameTurn": 1,
+              "playerTurnIndex": 0,
+              "phase": "COMBAT",
+              "segment": "COMBAT",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            },
+            "from": "player:allied",
+            "to": "player:axis",
+            "actionKind": "RESPOND_DECISION"
+          },
+          "finalHolder": "player:axis",
+          "axisMargin": -5,
+          "objectiveContributions": [
+            {
+              "hexId": "13,4",
+              "points": 2,
+              "owner": "player:allied",
+              "axisContribution": -2
+            },
+            {
+              "hexId": "14,6",
+              "points": 4,
+              "owner": "player:allied",
+              "axisContribution": -4
+            },
+            {
+              "hexId": "15,11",
+              "points": 2,
+              "owner": "player:axis",
+              "axisContribution": 2
+            },
+            {
+              "hexId": "15,8",
+              "points": 3,
+              "owner": "player:allied",
+              "axisContribution": -3
+            },
+            {
+              "hexId": "17,7",
+              "points": 2,
+              "owner": "player:axis",
+              "axisContribution": 2
+            }
+          ],
+          "movedPieceFinal": {
+            "remainingSteps": 1,
+            "location": {
+              "kind": "ON_MAP",
+              "hexId": "15,5"
+            },
+            "statuses": []
+          }
+        }
+      ],
+      "difference": {
+        "distanceProgress": 1,
+        "exposureScore": -16.549019607843135,
+        "otherScore": -16.549019607843142,
+        "slope": 0.7692307692307692,
+        "twoRouteSwitchWeight": 21.513725490196087,
+        "targetPairContribution": 0,
+        "otherObjectivesPairContribution": -9
+      },
+      "inputs": [
+        {
+          "match": 1800012,
+          "saveSha256": "c7a5884240f83b57bb37a24f488a6744f0e01659599b367b7faadf055d99d83e",
+          "traceSha256": "8db158e7de6b0843fc5c5a406ca34e8f5f3fcb1eb5890635c09abb24f3bb2100"
+        },
+        {
+          "match": 1800013,
+          "saveSha256": "ee0affe79acd481987efb59186e68fb7041d45825eabef8d14c5d61527336b3d",
+          "traceSha256": "999341f51ec48dc0d0d20616a2592e59d9aaf379e58c824bc3375588e085f269"
+        }
+      ]
+    },
+    {
+      "firstMatch": 1800014,
+      "mapSeed": 344142991,
+      "pairedVpMargin": 4,
+      "commonActions": 24,
+      "preStateHash": "sha256:456fbbd5329950fae9d5070be55ee25285794f6ebefbe5c882ea9a2048c1fc8b",
+      "choices": [
+        {
+          "match": 1800014,
+          "weight": 15,
+          "actor": "player:axis",
+          "pieceId": "generated-oob:344142992:axis:f4-recon:unit",
+          "purpose": "capture",
+          "target": "3,14",
+          "targetPoints": 2,
+          "pointScale": 0.6666666666666666,
+          "origin": "24,3",
+          "destination": "17,13",
+          "distanceProgress": 7,
+          "slope": 4.666666666666666,
+          "otherScore": -6,
+          "terms": {
+            "crowding": -6,
+            "progress": 70
+          },
+          "score": 64,
+          "retainedAt15": 63.999999999999986,
+          "retainedAt30": 133.99999999999997
+        },
+        {
+          "match": 1800015,
+          "weight": 30,
+          "actor": "player:axis",
+          "pieceId": "generated-oob:344142992:axis:f4-recon:unit",
+          "purpose": "capture",
+          "target": "3,14",
+          "targetPoints": 2,
+          "pointScale": 0.6666666666666666,
+          "origin": "24,3",
+          "destination": "14,14",
+          "distanceProgress": 10,
+          "slope": 6.666666666666666,
+          "otherScore": -37.9375,
+          "terms": {
+            "crowding": -3,
+            "progress": 200,
+            "contact": 6,
+            "exposure": -40.9375
+          },
+          "score": 162.0625,
+          "retainedAt15": 62.062499999999986,
+          "retainedAt30": 162.06249999999997
+        }
+      ],
+      "outcomes": [
+        {
+          "match": 1800014,
+          "finalHash": "sha256:f9df2bff3ac7dc412189c61de600cadc40631eec0627f3f78feca37471899c96",
+          "acceptedActions": 956,
+          "initialHolder": "player:allied",
+          "changes": [
+            {
+              "at": 502,
+              "revision": 503,
+              "turn": 4,
+              "sequence": {
+                "gameTurn": 4,
+                "playerTurnIndex": 1,
+                "phase": "COMBAT",
+                "segment": "COMBAT",
+                "firstPlayerId": "player:allied",
+                "phasingPlayerId": "player:axis",
+                "actingPlayerId": "player:axis"
+              },
+              "from": "player:allied",
+              "to": "player:axis",
+              "actionKind": "RESPOND_DECISION"
+            }
+          ],
+          "firstAxisAcquisition": {
+            "at": 502,
+            "revision": 503,
+            "turn": 4,
+            "sequence": {
+              "gameTurn": 4,
+              "playerTurnIndex": 1,
+              "phase": "COMBAT",
+              "segment": "COMBAT",
+              "firstPlayerId": "player:allied",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            },
+            "from": "player:allied",
+            "to": "player:axis",
+            "actionKind": "RESPOND_DECISION"
+          },
+          "finalHolder": "player:axis",
+          "axisMargin": 4,
+          "objectiveContributions": [
+            {
+              "hexId": "-2,15",
+              "points": 4,
+              "owner": "player:allied",
+              "axisContribution": -4
+            },
+            {
+              "hexId": "-5,19",
+              "points": 3,
+              "owner": "player:axis",
+              "axisContribution": 3
+            },
+            {
+              "hexId": "3,14",
+              "points": 2,
+              "owner": "player:axis",
+              "axisContribution": 2
+            },
+            {
+              "hexId": "7,11",
+              "points": 3,
+              "owner": "player:axis",
+              "axisContribution": 3
+            }
+          ],
+          "movedPieceFinal": {
+            "remainingSteps": 1,
+            "location": {
+              "kind": "ON_MAP",
+              "hexId": "7,11"
+            },
+            "statuses": []
+          }
+        },
+        {
+          "match": 1800015,
+          "finalHash": "sha256:fbb2e6ba2954a67f892fbf2fb608a6c4846dac06e94417ac34a2c1b5ebc02abb",
+          "acceptedActions": 833,
+          "initialHolder": "player:allied",
+          "changes": [
+            {
+              "at": 381,
+              "revision": 382,
+              "turn": 3,
+              "sequence": {
+                "gameTurn": 3,
+                "playerTurnIndex": 0,
+                "phase": "COMBAT",
+                "segment": "COMBAT",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:axis",
+                "actingPlayerId": "player:axis"
+              },
+              "from": "player:allied",
+              "to": "player:axis",
+              "actionKind": "RESPOND_DECISION"
+            }
+          ],
+          "firstAxisAcquisition": {
+            "at": 381,
+            "revision": 382,
+            "turn": 3,
+            "sequence": {
+              "gameTurn": 3,
+              "playerTurnIndex": 0,
+              "phase": "COMBAT",
+              "segment": "COMBAT",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            },
+            "from": "player:allied",
+            "to": "player:axis",
+            "actionKind": "RESPOND_DECISION"
+          },
+          "finalHolder": "player:axis",
+          "axisMargin": 12,
+          "objectiveContributions": [
+            {
+              "hexId": "-2,15",
+              "points": 4,
+              "owner": "player:axis",
+              "axisContribution": 4
+            },
+            {
+              "hexId": "-5,19",
+              "points": 3,
+              "owner": "player:axis",
+              "axisContribution": 3
+            },
+            {
+              "hexId": "3,14",
+              "points": 2,
+              "owner": "player:axis",
+              "axisContribution": 2
+            },
+            {
+              "hexId": "7,11",
+              "points": 3,
+              "owner": "player:axis",
+              "axisContribution": 3
+            }
+          ],
+          "movedPieceFinal": {
+            "remainingSteps": 1,
+            "location": {
+              "kind": "ELIMINATED"
+            },
+            "statuses": []
+          }
+        }
+      ],
+      "difference": {
+        "distanceProgress": 3,
+        "exposureScore": -40.9375,
+        "otherScore": -31.9375,
+        "slope": 2,
+        "twoRouteSwitchWeight": 15.96875,
+        "targetPairContribution": 0,
+        "otherObjectivesPairContribution": 4
+      },
+      "inputs": [
+        {
+          "match": 1800014,
+          "saveSha256": "85da6baeb9440358e459c16e59e3ed9525e41636c78a11ff56bfb9b9213acdfd",
+          "traceSha256": "39d1769eee1c399f24b2d1c6d1fcaf8ef9aa0df22d428c9768344a8018aef29b"
+        },
+        {
+          "match": 1800015,
+          "saveSha256": "82215e903f856db42f2e0a29bc15da27e4520c25b97741c85615ca406ebe4071",
+          "traceSha256": "1a37c5e8ffe63cbe316cf4ecedd048e317dcbc985cabfb4b25c7423db8c81cc2"
+        }
+      ]
+    },
+    {
+      "firstMatch": 1800016,
+      "mapSeed": 344143185,
+      "pairedVpMargin": -5,
+      "commonActions": 13,
+      "preStateHash": "sha256:68a706fecb0646db33b7469888d46582496e9b5a518ff0e4409578dde046049e",
+      "choices": [
+        {
+          "match": 1800016,
+          "weight": 15,
+          "actor": "player:axis",
+          "pieceId": "generated-oob:344143186:axis:f11-combat-1:unit",
+          "purpose": "assault",
+          "target": "10,9",
+          "targetPoints": 4,
+          "pointScale": 1.1199999999999999,
+          "origin": "20,10",
+          "destination": "18,9",
+          "distanceProgress": 3,
+          "slope": 3.3599999999999994,
+          "otherScore": -9.04054054054054,
+          "terms": {
+            "progress": 50.39999999999999,
+            "exposure": -9.04054054054054
+          },
+          "score": 41.35945945945945,
+          "retainedAt15": 41.35945945945945,
+          "retainedAt30": 91.75945945945944
+        },
+        {
+          "match": 1800017,
+          "weight": 30,
+          "actor": "player:axis",
+          "pieceId": "generated-oob:344143186:axis:f11-combat-1:unit",
+          "purpose": "assault",
+          "target": "10,9",
+          "targetPoints": 4,
+          "pointScale": 1.1199999999999999,
+          "origin": "20,10",
+          "destination": "16,10",
+          "distanceProgress": 4,
+          "slope": 4.4799999999999995,
+          "otherScore": -39.52702702702703,
+          "terms": {
+            "progress": 134.39999999999998,
+            "contact": -8,
+            "exposure": -31.527027027027025
+          },
+          "score": 94.87297297297295,
+          "retainedAt15": 27.672972972972957,
+          "retainedAt30": 94.87297297297295
+        }
+      ],
+      "outcomes": [
+        {
+          "match": 1800016,
+          "finalHash": "sha256:15016a7adc34b77092c4ec8a6fce354fdfa026d8551cd775282c964a536456c3",
+          "acceptedActions": 932,
+          "initialHolder": "player:allied",
+          "changes": [],
+          "firstAxisAcquisition": null,
+          "finalHolder": "player:allied",
+          "axisMargin": 9,
+          "objectiveContributions": [
+            {
+              "hexId": "10,9",
+              "points": 4,
+              "owner": "player:allied",
+              "axisContribution": -4
+            },
+            {
+              "hexId": "11,4",
+              "points": 3,
+              "owner": "player:axis",
+              "axisContribution": 3
+            },
+            {
+              "hexId": "13,7",
+              "points": 4,
+              "owner": "player:axis",
+              "axisContribution": 4
+            },
+            {
+              "hexId": "14,4",
+              "points": 3,
+              "owner": "player:axis",
+              "axisContribution": 3
+            },
+            {
+              "hexId": "2,8",
+              "points": 4,
+              "owner": "player:allied",
+              "axisContribution": -4
+            },
+            {
+              "hexId": "4,5",
+              "points": 4,
+              "owner": "player:axis",
+              "axisContribution": 4
+            },
+            {
+              "hexId": "9,8",
+              "points": 3,
+              "owner": "player:axis",
+              "axisContribution": 3
+            }
+          ],
+          "movedPieceFinal": {
+            "remainingSteps": 4,
+            "location": {
+              "kind": "ON_MAP",
+              "hexId": "15,2"
+            },
+            "statuses": []
+          }
+        },
+        {
+          "match": 1800017,
+          "finalHash": "sha256:6866e5e5fb7ac4c66ff101c4caec87df6dc84c7ab48dd249509e6675cb3f216b",
+          "acceptedActions": 883,
+          "initialHolder": "player:allied",
+          "changes": [
+            {
+              "at": 528,
+              "revision": 529,
+              "turn": 5,
+              "sequence": {
+                "gameTurn": 5,
+                "playerTurnIndex": 0,
+                "phase": "COMBAT",
+                "segment": "COMBAT",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:axis",
+                "actingPlayerId": "player:axis"
+              },
+              "from": "player:allied",
+              "to": "player:axis",
+              "actionKind": "RESPOND_DECISION"
+            }
+          ],
+          "firstAxisAcquisition": {
+            "at": 528,
+            "revision": 529,
+            "turn": 5,
+            "sequence": {
+              "gameTurn": 5,
+              "playerTurnIndex": 0,
+              "phase": "COMBAT",
+              "segment": "COMBAT",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            },
+            "from": "player:allied",
+            "to": "player:axis",
+            "actionKind": "RESPOND_DECISION"
+          },
+          "finalHolder": "player:axis",
+          "axisMargin": -1,
+          "objectiveContributions": [
+            {
+              "hexId": "10,9",
+              "points": 4,
+              "owner": "player:axis",
+              "axisContribution": 4
+            },
+            {
+              "hexId": "11,4",
+              "points": 3,
+              "owner": "player:allied",
+              "axisContribution": -3
+            },
+            {
+              "hexId": "13,7",
+              "points": 4,
+              "owner": "player:axis",
+              "axisContribution": 4
+            },
+            {
+              "hexId": "14,4",
+              "points": 3,
+              "owner": "player:allied",
+              "axisContribution": -3
+            },
+            {
+              "hexId": "2,8",
+              "points": 4,
+              "owner": "player:allied",
+              "axisContribution": -4
+            },
+            {
+              "hexId": "4,5",
+              "points": 4,
+              "owner": "player:axis",
+              "axisContribution": 4
+            },
+            {
+              "hexId": "9,8",
+              "points": 3,
+              "owner": "player:allied",
+              "axisContribution": -3
+            }
+          ],
+          "movedPieceFinal": {
+            "remainingSteps": 4,
+            "location": {
+              "kind": "ON_MAP",
+              "hexId": "7,10"
+            },
+            "statuses": [
+              {
+                "statusDefinitionId": "status:internal-stocks",
+                "value": {
+                  "kind": "TEXT",
+                  "value": "LOW"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "difference": {
+        "distanceProgress": 1,
+        "exposureScore": -22.486486486486484,
+        "otherScore": -30.48648648648649,
+        "slope": 1.12,
+        "twoRouteSwitchWeight": 27.220077220077222,
+        "targetPairContribution": 4,
+        "otherObjectivesPairContribution": -9
+      },
+      "inputs": [
+        {
+          "match": 1800016,
+          "saveSha256": "7d6cf297d4c55263f074a65e0157196881c074964e5b02b103eaa7ea12120f9b",
+          "traceSha256": "bfb731aff9cadac3aa12977eab57d37a335a542b82046addf5675204e9d2aa43"
+        },
+        {
+          "match": 1800017,
+          "saveSha256": "a604ce6ad93f82796e932c24d0fbf5d31282ff26a54b51d7bbe3b987b8691291",
+          "traceSha256": "3cabdf62f35cd61736778a2c3133c6874279f6ddb259e74a8c9782f1748e868b"
+        }
+      ]
+    },
+    {
+      "firstMatch": 1800018,
+      "mapSeed": 344143379,
+      "pairedVpMargin": 4,
+      "commonActions": 10,
+      "preStateHash": "sha256:2e177df4f55dc115cc802ecbba7bedf8f88e836d39d333330c669eb47792b49a",
+      "choices": [
+        {
+          "match": 1800018,
+          "weight": 15,
+          "actor": "player:axis",
+          "pieceId": "generated-oob:344143380:axis:f10-combat-1:unit",
+          "purpose": "assault",
+          "target": "4,18",
+          "targetPoints": 4,
+          "pointScale": 1.2,
+          "origin": "15,19",
+          "destination": "13,18",
+          "distanceProgress": 3,
+          "slope": 3.5999999999999996,
+          "otherScore": -8.333333333333336,
+          "terms": {
+            "progress": 54,
+            "exposure": -8.333333333333336
+          },
+          "score": 45.666666666666664,
+          "retainedAt15": 45.66666666666666,
+          "retainedAt30": 99.66666666666666
+        },
+        {
+          "match": 1800019,
+          "weight": 30,
+          "actor": "player:axis",
+          "pieceId": "generated-oob:344143380:axis:f10-combat-1:unit",
+          "purpose": "assault",
+          "target": "4,18",
+          "targetPoints": 4,
+          "pointScale": 1.2,
+          "origin": "15,19",
+          "destination": "12,18",
+          "distanceProgress": 4,
+          "slope": 4.8,
+          "otherScore": -30.683333333333337,
+          "terms": {
+            "progress": 144,
+            "contact": -8,
+            "exposure": -22.683333333333337
+          },
+          "score": 113.31666666666666,
+          "retainedAt15": 41.31666666666666,
+          "retainedAt30": 113.31666666666666
+        }
+      ],
+      "outcomes": [
+        {
+          "match": 1800018,
+          "finalHash": "sha256:caeb5e0d44d17e001eea9f2abe23ceaa53d45ccb58e4f52660f3dd68014c4c41",
+          "acceptedActions": 733,
+          "initialHolder": "player:allied",
+          "changes": [],
+          "firstAxisAcquisition": null,
+          "finalHolder": "player:allied",
+          "axisMargin": -24,
+          "objectiveContributions": [
+            {
+              "hexId": "-2,13",
+              "points": 3,
+              "owner": "player:allied",
+              "axisContribution": -3
+            },
+            {
+              "hexId": "1,16",
+              "points": 3,
+              "owner": "player:allied",
+              "axisContribution": -3
+            },
+            {
+              "hexId": "12,13",
+              "points": 3,
+              "owner": "player:allied",
+              "axisContribution": -3
+            },
+            {
+              "hexId": "13,11",
+              "points": 3,
+              "owner": "player:allied",
+              "axisContribution": -3
+            },
+            {
+              "hexId": "14,14",
+              "points": 3,
+              "owner": "player:axis",
+              "axisContribution": 3
+            },
+            {
+              "hexId": "15,11",
+              "points": 4,
+              "owner": "player:allied",
+              "axisContribution": -4
+            },
+            {
+              "hexId": "2,21",
+              "points": 4,
+              "owner": "player:allied",
+              "axisContribution": -4
+            },
+            {
+              "hexId": "4,18",
+              "points": 4,
+              "owner": "player:allied",
+              "axisContribution": -4
+            },
+            {
+              "hexId": "7,15",
+              "points": 3,
+              "owner": "player:allied",
+              "axisContribution": -3
+            }
+          ],
+          "movedPieceFinal": {
+            "remainingSteps": 3,
+            "location": {
+              "kind": "ON_MAP",
+              "hexId": "4,19"
+            },
+            "statuses": [
+              {
+                "statusDefinitionId": "status:internal-stocks",
+                "value": {
+                  "kind": "TEXT",
+                  "value": "EXHAUSTED"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "match": 1800019,
+          "finalHash": "sha256:d5a9c06267531bf5dae363504b8bfe49439356e06ca3e3262344017cbe14a7b6",
+          "acceptedActions": 653,
+          "initialHolder": "player:allied",
+          "changes": [
+            {
+              "at": 346,
+              "revision": 347,
+              "turn": 3,
+              "sequence": {
+                "gameTurn": 3,
+                "playerTurnIndex": 1,
+                "phase": "COMBAT",
+                "segment": "COMBAT",
+                "firstPlayerId": "player:allied",
+                "phasingPlayerId": "player:axis",
+                "actingPlayerId": "player:axis"
+              },
+              "from": "player:allied",
+              "to": "player:axis",
+              "actionKind": "RESPOND_DECISION"
+            }
+          ],
+          "firstAxisAcquisition": {
+            "at": 346,
+            "revision": 347,
+            "turn": 3,
+            "sequence": {
+              "gameTurn": 3,
+              "playerTurnIndex": 1,
+              "phase": "COMBAT",
+              "segment": "COMBAT",
+              "firstPlayerId": "player:allied",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            },
+            "from": "player:allied",
+            "to": "player:axis",
+            "actionKind": "RESPOND_DECISION"
+          },
+          "finalHolder": "player:axis",
+          "axisMargin": -16,
+          "objectiveContributions": [
+            {
+              "hexId": "-2,13",
+              "points": 3,
+              "owner": "player:allied",
+              "axisContribution": -3
+            },
+            {
+              "hexId": "1,16",
+              "points": 3,
+              "owner": "player:allied",
+              "axisContribution": -3
+            },
+            {
+              "hexId": "12,13",
+              "points": 3,
+              "owner": "player:allied",
+              "axisContribution": -3
+            },
+            {
+              "hexId": "13,11",
+              "points": 3,
+              "owner": "player:allied",
+              "axisContribution": -3
+            },
+            {
+              "hexId": "14,14",
+              "points": 3,
+              "owner": "player:axis",
+              "axisContribution": 3
+            },
+            {
+              "hexId": "15,11",
+              "points": 4,
+              "owner": "player:allied",
+              "axisContribution": -4
+            },
+            {
+              "hexId": "2,21",
+              "points": 4,
+              "owner": "player:allied",
+              "axisContribution": -4
+            },
+            {
+              "hexId": "4,18",
+              "points": 4,
+              "owner": "player:axis",
+              "axisContribution": 4
+            },
+            {
+              "hexId": "7,15",
+              "points": 3,
+              "owner": "player:allied",
+              "axisContribution": -3
+            }
+          ],
+          "movedPieceFinal": {
+            "remainingSteps": 3,
+            "location": {
+              "kind": "ON_MAP",
+              "hexId": "11,14"
+            },
+            "statuses": []
+          }
+        }
+      ],
+      "difference": {
+        "distanceProgress": 1,
+        "exposureScore": -14.350000000000001,
+        "otherScore": -22.35,
+        "slope": 1.2000000000000002,
+        "twoRouteSwitchWeight": 18.625,
+        "targetPairContribution": 4,
+        "otherObjectivesPairContribution": 0
+      },
+      "inputs": [
+        {
+          "match": 1800018,
+          "saveSha256": "8258dd4b7f34f36711852f57190d82f3ae9d051f784400b74963aecc2516b6aa",
+          "traceSha256": "06729d39eab4849a42473bdc6d60022d1f3ac13e56ba3ab1161c7f276d6e0142"
+        },
+        {
+          "match": 1800019,
+          "saveSha256": "037b2dfa7e9d48f0c55cc78fb0d9497b3eba345d0d0cadf8c02081d3eac4efb6",
+          "traceSha256": "afddcde0de8f837f7edffd724233b968c718f4b2440fd68734d2d13a189ee0e8"
+        }
+      ]
+    },
+    {
+      "firstMatch": 1800020,
+      "mapSeed": 344143573,
+      "pairedVpMargin": 7,
+      "commonActions": 10,
+      "preStateHash": "sha256:f962d64b9e79ee18ef5c2819293e067427d401814738ce3d1a9bfa843d091aa2",
+      "choices": [
+        {
+          "match": 1800020,
+          "weight": 15,
+          "actor": "player:axis",
+          "pieceId": "generated-oob:344143574:axis:f1-combat-2:unit",
+          "purpose": "capture",
+          "target": "11,17",
+          "targetPoints": 4,
+          "pointScale": 1.1666666666666667,
+          "origin": "14,21",
+          "destination": "15,17",
+          "distanceProgress": 3,
+          "slope": 3.5,
+          "otherScore": 0,
+          "terms": {
+            "progress": 52.5
+          },
+          "score": 52.5,
+          "retainedAt15": 52.5,
+          "retainedAt30": 105
+        },
+        {
+          "match": 1800021,
+          "weight": 30,
+          "actor": "player:axis",
+          "pieceId": "generated-oob:344143574:axis:f1-combat-2:unit",
+          "purpose": "capture",
+          "target": "11,17",
+          "targetPoints": 4,
+          "pointScale": 1.1666666666666667,
+          "origin": "14,21",
+          "destination": "11,19",
+          "distanceProgress": 5,
+          "slope": 5.833333333333334,
+          "otherScore": -41.79729729729729,
+          "terms": {
+            "progress": 175,
+            "contact": -8,
+            "exposure": -33.7972972972973
+          },
+          "score": 133.2027027027027,
+          "retainedAt15": 45.70270270270272,
+          "retainedAt30": 133.20270270270274
+        }
+      ],
+      "outcomes": [
+        {
+          "match": 1800020,
+          "finalHash": "sha256:9354df8b9c044634c42953c709ec7e6e47a424c23942eb00b485585c31afbd6d",
+          "acceptedActions": 895,
+          "initialHolder": "player:allied",
+          "changes": [
+            {
+              "at": 635,
+              "revision": 636,
+              "turn": 6,
+              "sequence": {
+                "gameTurn": 6,
+                "playerTurnIndex": 1,
+                "phase": "MOVEMENT",
+                "segment": "MOVEMENT",
+                "firstPlayerId": "player:allied",
+                "phasingPlayerId": "player:axis",
+                "actingPlayerId": "player:axis"
+              },
+              "from": "player:allied",
+              "to": "player:axis",
+              "actionKind": "MOVE_PIECE"
+            }
+          ],
+          "firstAxisAcquisition": {
+            "at": 635,
+            "revision": 636,
+            "turn": 6,
+            "sequence": {
+              "gameTurn": 6,
+              "playerTurnIndex": 1,
+              "phase": "MOVEMENT",
+              "segment": "MOVEMENT",
+              "firstPlayerId": "player:allied",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            },
+            "from": "player:allied",
+            "to": "player:axis",
+            "actionKind": "MOVE_PIECE"
+          },
+          "finalHolder": "player:axis",
+          "axisMargin": 10,
+          "objectiveContributions": [
+            {
+              "hexId": "-4,13",
+              "points": 4,
+              "owner": "player:axis",
+              "axisContribution": 4
+            },
+            {
+              "hexId": "0,14",
+              "points": 3,
+              "owner": "player:allied",
+              "axisContribution": -3
+            },
+            {
+              "hexId": "1,6",
+              "points": 3,
+              "owner": "player:axis",
+              "axisContribution": 3
+            },
+            {
+              "hexId": "11,17",
+              "points": 4,
+              "owner": "player:axis",
+              "axisContribution": 4
+            },
+            {
+              "hexId": "16,11",
+              "points": 3,
+              "owner": "player:axis",
+              "axisContribution": 3
+            },
+            {
+              "hexId": "3,14",
+              "points": 4,
+              "owner": "player:allied",
+              "axisContribution": -4
+            },
+            {
+              "hexId": "4,11",
+              "points": 3,
+              "owner": "player:axis",
+              "axisContribution": 3
+            }
+          ],
+          "movedPieceFinal": {
+            "remainingSteps": 1,
+            "location": {
+              "kind": "ON_MAP",
+              "hexId": "-2,16"
+            },
+            "statuses": []
+          }
+        },
+        {
+          "match": 1800021,
+          "finalHash": "sha256:46002a1db879ff7475c2af44e00211e9c54446bd58d28fafc74e7be0569e1747",
+          "acceptedActions": 913,
+          "initialHolder": "player:allied",
+          "changes": [
+            {
+              "at": 84,
+              "revision": 85,
+              "turn": 1,
+              "sequence": {
+                "gameTurn": 1,
+                "playerTurnIndex": 0,
+                "phase": "COMBAT",
+                "segment": "COMBAT",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:axis",
+                "actingPlayerId": "player:axis"
+              },
+              "from": "player:allied",
+              "to": "player:axis",
+              "actionKind": "RESPOND_DECISION"
+            }
+          ],
+          "firstAxisAcquisition": {
+            "at": 84,
+            "revision": 85,
+            "turn": 1,
+            "sequence": {
+              "gameTurn": 1,
+              "playerTurnIndex": 0,
+              "phase": "COMBAT",
+              "segment": "COMBAT",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            },
+            "from": "player:allied",
+            "to": "player:axis",
+            "actionKind": "RESPOND_DECISION"
+          },
+          "finalHolder": "player:axis",
+          "axisMargin": 24,
+          "objectiveContributions": [
+            {
+              "hexId": "-4,13",
+              "points": 4,
+              "owner": "player:axis",
+              "axisContribution": 4
+            },
+            {
+              "hexId": "0,14",
+              "points": 3,
+              "owner": "player:axis",
+              "axisContribution": 3
+            },
+            {
+              "hexId": "1,6",
+              "points": 3,
+              "owner": "player:axis",
+              "axisContribution": 3
+            },
+            {
+              "hexId": "11,17",
+              "points": 4,
+              "owner": "player:axis",
+              "axisContribution": 4
+            },
+            {
+              "hexId": "16,11",
+              "points": 3,
+              "owner": "player:axis",
+              "axisContribution": 3
+            },
+            {
+              "hexId": "3,14",
+              "points": 4,
+              "owner": "player:axis",
+              "axisContribution": 4
+            },
+            {
+              "hexId": "4,11",
+              "points": 3,
+              "owner": "player:axis",
+              "axisContribution": 3
+            }
+          ],
+          "movedPieceFinal": {
+            "remainingSteps": 1,
+            "location": {
+              "kind": "ELIMINATED"
+            },
+            "statuses": [
+              {
+                "statusDefinitionId": "status:out-of-trace-since",
+                "value": {
+                  "kind": "INTEGER",
+                  "value": 8
+                }
+              },
+              {
+                "statusDefinitionId": "status:out-of-supply",
+                "value": {
+                  "kind": "FLAG",
+                  "value": true
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "difference": {
+        "distanceProgress": 2,
+        "exposureScore": -33.7972972972973,
+        "otherScore": -41.79729729729729,
+        "slope": 2.333333333333334,
+        "twoRouteSwitchWeight": 17.913127413127405,
+        "targetPairContribution": 0,
+        "otherObjectivesPairContribution": 7
+      },
+      "inputs": [
+        {
+          "match": 1800020,
+          "saveSha256": "5432506115132b6e72019528a2401be736b745edb70f76a4d41589e8309dfb62",
+          "traceSha256": "9ea206256df31b92959631612f80cbba7e5de7c8426a4b923d29d236b4ad33d3"
+        },
+        {
+          "match": 1800021,
+          "saveSha256": "ff2385f6bb032556993211b7efc8f4c37b6d300a9018ca04c1c2c29ff0dc65f9",
+          "traceSha256": "2387e8c8993d732a13c2c53ffa88a1a71a484a2b7e42df2800460fa72a66dafd"
+        }
+      ]
+    },
+    {
+      "firstMatch": 1800022,
+      "mapSeed": 344143767,
+      "pairedVpMargin": 3,
+      "commonActions": 31,
+      "preStateHash": "sha256:3a8efe5cbca181f02be1022aa753c5bfcc1d90ddde40a7104d8449fd5c1f895e",
+      "choices": [
+        {
+          "match": 1800022,
+          "weight": 15,
+          "actor": "player:axis",
+          "pieceId": "generated-oob:344143768:axis:independent-anti_tank-1:unit",
+          "purpose": "capture",
+          "target": "13,10",
+          "targetPoints": 4,
+          "pointScale": 1.0666666666666667,
+          "origin": "17,21",
+          "destination": "17,8",
+          "distanceProgress": 11,
+          "slope": 11.733333333333333,
+          "otherScore": -15.010416666666657,
+          "terms": {
+            "progress": 176,
+            "exposure": -15.010416666666664
+          },
+          "score": 160.98958333333334,
+          "retainedAt15": 160.98958333333334,
+          "retainedAt30": 336.98958333333337
+        },
+        {
+          "match": 1800023,
+          "weight": 30,
+          "actor": "player:axis",
+          "pieceId": "generated-oob:344143768:axis:independent-anti_tank-1:unit",
+          "purpose": "capture",
+          "target": "13,10",
+          "targetPoints": 4,
+          "pointScale": 1.0666666666666667,
+          "origin": "17,21",
+          "destination": "16,9",
+          "distanceProgress": 12,
+          "slope": 12.8,
+          "otherScore": -32,
+          "terms": {
+            "crowding": -24,
+            "progress": 384,
+            "contact": -8
+          },
+          "score": 352,
+          "retainedAt15": 160,
+          "retainedAt30": 352
+        }
+      ],
+      "outcomes": [
+        {
+          "match": 1800022,
+          "finalHash": "sha256:c1cc31ede88e708bb649cb8bfd799be2e9f7323fd2ff45ad67b6a33b90fb90e5",
+          "acceptedActions": 943,
+          "initialHolder": "player:allied",
+          "changes": [],
+          "firstAxisAcquisition": null,
+          "finalHolder": "player:allied",
+          "axisMargin": -7,
+          "objectiveContributions": [
+            {
+              "hexId": "11,3",
+              "points": 4,
+              "owner": "player:axis",
+              "axisContribution": 4
+            },
+            {
+              "hexId": "13,10",
+              "points": 4,
+              "owner": "player:allied",
+              "axisContribution": -4
+            },
+            {
+              "hexId": "5,9",
+              "points": 3,
+              "owner": "player:allied",
+              "axisContribution": -3
+            },
+            {
+              "hexId": "7,6",
+              "points": 4,
+              "owner": "player:allied",
+              "axisContribution": -4
+            }
+          ],
+          "movedPieceFinal": {
+            "remainingSteps": 1,
+            "location": {
+              "kind": "ON_MAP",
+              "hexId": "13,11"
+            },
+            "statuses": []
+          }
+        },
+        {
+          "match": 1800023,
+          "finalHash": "sha256:7d053fc2f471796d9b5f8c771a74ee2b13c50b8741728724e240deb4068bb197",
+          "acceptedActions": 916,
+          "initialHolder": "player:allied",
+          "changes": [],
+          "firstAxisAcquisition": null,
+          "finalHolder": "player:allied",
+          "axisMargin": -1,
+          "objectiveContributions": [
+            {
+              "hexId": "11,3",
+              "points": 4,
+              "owner": "player:axis",
+              "axisContribution": 4
+            },
+            {
+              "hexId": "13,10",
+              "points": 4,
+              "owner": "player:allied",
+              "axisContribution": -4
+            },
+            {
+              "hexId": "5,9",
+              "points": 3,
+              "owner": "player:axis",
+              "axisContribution": 3
+            },
+            {
+              "hexId": "7,6",
+              "points": 4,
+              "owner": "player:allied",
+              "axisContribution": -4
+            }
+          ],
+          "movedPieceFinal": {
+            "remainingSteps": 1,
+            "location": {
+              "kind": "ON_MAP",
+              "hexId": "14,9"
+            },
+            "statuses": []
+          }
+        }
+      ],
+      "difference": {
+        "distanceProgress": 1,
+        "exposureScore": 15.010416666666664,
+        "otherScore": -16.989583333333343,
+        "slope": 1.0666666666666682,
+        "twoRouteSwitchWeight": 15.927734374999986,
+        "targetPairContribution": 0,
+        "otherObjectivesPairContribution": 3
+      },
+      "inputs": [
+        {
+          "match": 1800022,
+          "saveSha256": "a88d83543610171732a70e5ee9ce6d3e9a437b5654d42d0e655f48a300822e9d",
+          "traceSha256": "47d54871d8b43c0cfacb9bf0d4d12f17cb24d5c8a3ee7dc7f3d19fa9ccb5762f"
+        },
+        {
+          "match": 1800023,
+          "saveSha256": "f5e136683d468618aa3c0b8bb8a2f8b78c8616ed61f847779ed5a0b0696feaa9",
+          "traceSha256": "1a43a0e6ba3adaa0a9b0d2a95f92ee109e4050c34c5cf13cd42bc10ac2015f2d"
+        }
+      ]
+    },
+    {
+      "firstMatch": 1800024,
+      "mapSeed": 344143961,
+      "pairedVpMargin": 0,
+      "commonActions": 28,
+      "preStateHash": "sha256:d83fb14ba09f8f0773c0a9434577d2e92db455112bfbc89e711cac7f7c1510c7",
+      "choices": [
+        {
+          "match": 1800024,
+          "weight": 15,
+          "actor": "player:axis",
+          "pieceId": "generated-oob:344143962:axis:f4-recon:unit",
+          "purpose": "capture",
+          "target": "9,2",
+          "targetPoints": 4,
+          "pointScale": 1.5384615384615383,
+          "origin": "23,3",
+          "destination": "21,2",
+          "distanceProgress": 3,
+          "slope": 4.615384615384615,
+          "otherScore": -22.92647058823529,
+          "terms": {
+            "progress": 69.23076923076923,
+            "exposure": -22.926470588235293
+          },
+          "score": 46.30429864253394,
+          "retainedAt15": 46.30429864253394,
+          "retainedAt30": 115.53506787330316
+        },
+        {
+          "match": 1800025,
+          "weight": 30,
+          "actor": "player:axis",
+          "pieceId": "generated-oob:344143962:axis:f4-recon:unit",
+          "purpose": "capture",
+          "target": "9,2",
+          "targetPoints": 4,
+          "pointScale": 1.5384615384615383,
+          "origin": "23,3",
+          "destination": "20,2",
+          "distanceProgress": 4,
+          "slope": 6.153846153846153,
+          "otherScore": -55.83088235294119,
+          "terms": {
+            "progress": 184.61538461538458,
+            "contact": -8,
+            "exposure": -47.83088235294118
+          },
+          "score": 128.7845022624434,
+          "retainedAt15": 36.476809954751104,
+          "retainedAt30": 128.7845022624434
+        }
+      ],
+      "outcomes": [
+        {
+          "match": 1800024,
+          "finalHash": "sha256:7869be039871d3c615d4c0cba7248c9c353d09546fb99f10851100fd480c90e2",
+          "acceptedActions": 853,
+          "initialHolder": "player:allied",
+          "changes": [],
+          "firstAxisAcquisition": null,
+          "finalHolder": "player:allied",
+          "axisMargin": 1,
+          "objectiveContributions": [
+            {
+              "hexId": "16,10",
+              "points": 3,
+              "owner": "player:axis",
+              "axisContribution": 3
+            },
+            {
+              "hexId": "5,9",
+              "points": 2,
+              "owner": "player:axis",
+              "axisContribution": 2
+            },
+            {
+              "hexId": "6,21",
+              "points": 2,
+              "owner": "player:axis",
+              "axisContribution": 2
+            },
+            {
+              "hexId": "8,6",
+              "points": 2,
+              "owner": "player:allied",
+              "axisContribution": -2
+            },
+            {
+              "hexId": "9,2",
+              "points": 4,
+              "owner": "player:allied",
+              "axisContribution": -4
+            }
+          ],
+          "movedPieceFinal": {
+            "remainingSteps": 1,
+            "location": {
+              "kind": "ELIMINATED"
+            },
+            "statuses": []
+          }
+        },
+        {
+          "match": 1800025,
+          "finalHash": "sha256:4c4d45e79902b21d1a988186f50a633e141753e35a69881116ad28a4ec46f0ec",
+          "acceptedActions": 927,
+          "initialHolder": "player:allied",
+          "changes": [],
+          "firstAxisAcquisition": null,
+          "finalHolder": "player:allied",
+          "axisMargin": 1,
+          "objectiveContributions": [
+            {
+              "hexId": "16,10",
+              "points": 3,
+              "owner": "player:axis",
+              "axisContribution": 3
+            },
+            {
+              "hexId": "5,9",
+              "points": 2,
+              "owner": "player:allied",
+              "axisContribution": -2
+            },
+            {
+              "hexId": "6,21",
+              "points": 2,
+              "owner": "player:axis",
+              "axisContribution": 2
+            },
+            {
+              "hexId": "8,6",
+              "points": 2,
+              "owner": "player:axis",
+              "axisContribution": 2
+            },
+            {
+              "hexId": "9,2",
+              "points": 4,
+              "owner": "player:allied",
+              "axisContribution": -4
+            }
+          ],
+          "movedPieceFinal": {
+            "remainingSteps": 1,
+            "location": {
+              "kind": "ELIMINATED"
+            },
+            "statuses": []
+          }
+        }
+      ],
+      "difference": {
+        "distanceProgress": 1,
+        "exposureScore": -24.904411764705888,
+        "otherScore": -32.9044117647059,
+        "slope": 1.5384615384615383,
+        "twoRouteSwitchWeight": 21.387867647058837,
+        "targetPairContribution": 0,
+        "otherObjectivesPairContribution": 0
+      },
+      "inputs": [
+        {
+          "match": 1800024,
+          "saveSha256": "cdaaf3f9e566c59511ff01cf4fa80789d1cf34fa67673c00b89a3ad8103b2793",
+          "traceSha256": "47908cb8f16e1a13722a22ea474186f3c929e3eff0fa5f38ea28b32a4482c959"
+        },
+        {
+          "match": 1800025,
+          "saveSha256": "94293ac49de52b9828b1691190f7b47b3b91d6d701f027377fd441f19dd914bd",
+          "traceSha256": "f66e244192bf16e98a420c4e86b1148e3d94abfed3dc4aefb702f4e34e07bff3"
+        }
+      ]
+    },
+    {
+      "firstMatch": 1800026,
+      "mapSeed": 344144155,
+      "pairedVpMargin": 0,
+      "commonActions": 152,
+      "preStateHash": "sha256:7856ec73a0c778199352be54b86b16a24d03219e5714e1b12fe7537941a12657",
+      "choices": [
+        {
+          "match": 1800026,
+          "weight": 15,
+          "actor": "player:axis",
+          "pieceId": "generated-oob:344144156:axis:f2-recon:unit",
+          "purpose": "capture",
+          "target": "10,15",
+          "targetPoints": 6,
+          "pointScale": 1.3846153846153848,
+          "origin": "13,15",
+          "destination": "12,15",
+          "distanceProgress": 1,
+          "slope": 1.3846153846153848,
+          "otherScore": -2.5752688172043,
+          "terms": {
+            "progress": 20.769230769230774,
+            "contact": 6,
+            "exposure": -8.5752688172043
+          },
+          "score": 18.193961952026473,
+          "retainedAt15": 18.193961952026473,
+          "retainedAt30": 38.96319272125724
+        },
+        {
+          "match": 1800027,
+          "weight": 30,
+          "actor": "player:axis",
+          "pieceId": "generated-oob:344144156:axis:f2-recon:unit",
+          "purpose": "capture",
+          "target": "10,15",
+          "targetPoints": 6,
+          "pointScale": 1.3846153846153848,
+          "origin": "13,15",
+          "destination": "11,14",
+          "distanceProgress": 2,
+          "slope": 2.7692307692307696,
+          "otherScore": -23.483870967741936,
+          "terms": {
+            "progress": 83.0769230769231,
+            "contact": -8,
+            "exposure": -15.483870967741936
+          },
+          "score": 59.59305210918116,
+          "retainedAt15": 18.05459057071961,
+          "retainedAt30": 59.59305210918116
+        }
+      ],
+      "outcomes": [
+        {
+          "match": 1800026,
+          "finalHash": "sha256:3ab4cf09da90706077b3434d90fcc1ff349d673a8074a577749403e14fc4ec3d",
+          "acceptedActions": 903,
+          "initialHolder": "player:allied",
+          "changes": [
+            {
+              "at": 438,
+              "revision": 439,
+              "turn": 4,
+              "sequence": {
+                "gameTurn": 4,
+                "playerTurnIndex": 1,
+                "phase": "MOVEMENT",
+                "segment": "MOVEMENT",
+                "firstPlayerId": "player:allied",
+                "phasingPlayerId": "player:axis",
+                "actingPlayerId": "player:axis"
+              },
+              "from": "player:allied",
+              "to": "player:axis",
+              "actionKind": "MOVE_PIECE"
+            }
+          ],
+          "firstAxisAcquisition": {
+            "at": 438,
+            "revision": 439,
+            "turn": 4,
+            "sequence": {
+              "gameTurn": 4,
+              "playerTurnIndex": 1,
+              "phase": "MOVEMENT",
+              "segment": "MOVEMENT",
+              "firstPlayerId": "player:allied",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            },
+            "from": "player:allied",
+            "to": "player:axis",
+            "actionKind": "MOVE_PIECE"
+          },
+          "finalHolder": "player:axis",
+          "axisMargin": 13,
+          "objectiveContributions": [
+            {
+              "hexId": "-1,14",
+              "points": 4,
+              "owner": "player:axis",
+              "axisContribution": 4
+            },
+            {
+              "hexId": "-2,17",
+              "points": 3,
+              "owner": "player:axis",
+              "axisContribution": 3
+            },
+            {
+              "hexId": "10,15",
+              "points": 6,
+              "owner": "player:axis",
+              "axisContribution": 6
+            }
+          ],
+          "movedPieceFinal": {
+            "remainingSteps": 1,
+            "location": {
+              "kind": "ELIMINATED"
+            },
+            "statuses": []
+          }
+        },
+        {
+          "match": 1800027,
+          "finalHash": "sha256:a2f4ad08931a3b3d80d4e84effd480b4ce055a13488d4c5129d2faa1d8f95384",
+          "acceptedActions": 902,
+          "initialHolder": "player:allied",
+          "changes": [
+            {
+              "at": 659,
+              "revision": 660,
+              "turn": 6,
+              "sequence": {
+                "gameTurn": 6,
+                "playerTurnIndex": 0,
+                "phase": "MOVEMENT",
+                "segment": "MOVEMENT",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:axis",
+                "actingPlayerId": "player:axis"
+              },
+              "from": "player:allied",
+              "to": "player:axis",
+              "actionKind": "MOVE_PIECE"
+            }
+          ],
+          "firstAxisAcquisition": {
+            "at": 659,
+            "revision": 660,
+            "turn": 6,
+            "sequence": {
+              "gameTurn": 6,
+              "playerTurnIndex": 0,
+              "phase": "MOVEMENT",
+              "segment": "MOVEMENT",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            },
+            "from": "player:allied",
+            "to": "player:axis",
+            "actionKind": "MOVE_PIECE"
+          },
+          "finalHolder": "player:axis",
+          "axisMargin": 13,
+          "objectiveContributions": [
+            {
+              "hexId": "-1,14",
+              "points": 4,
+              "owner": "player:axis",
+              "axisContribution": 4
+            },
+            {
+              "hexId": "-2,17",
+              "points": 3,
+              "owner": "player:axis",
+              "axisContribution": 3
+            },
+            {
+              "hexId": "10,15",
+              "points": 6,
+              "owner": "player:axis",
+              "axisContribution": 6
+            }
+          ],
+          "movedPieceFinal": {
+            "remainingSteps": 1,
+            "location": {
+              "kind": "ON_MAP",
+              "hexId": "10,15"
+            },
+            "statuses": []
+          }
+        }
+      ],
+      "difference": {
+        "distanceProgress": 1,
+        "exposureScore": -6.908602150537636,
+        "otherScore": -20.908602150537636,
+        "slope": 1.3846153846153848,
+        "twoRouteSwitchWeight": 15.100657108721624,
+        "targetPairContribution": 0,
+        "otherObjectivesPairContribution": 0
+      },
+      "inputs": [
+        {
+          "match": 1800026,
+          "saveSha256": "77e71c3fef71d2265f06e992d4f7bee42e9b1529ce0d220f240260b57d2c5a21",
+          "traceSha256": "9b6d957deab22cd886465d29ae417b3bd80fab14a1b18e8c1b71537c2ad01fe8"
+        },
+        {
+          "match": 1800027,
+          "saveSha256": "0316327088a91723e8708bef8e00ee9a4609b16ce388d5ae3ec39ad1792dba7f",
+          "traceSha256": "2907d49c5f48561a5a2bd67dae08256ac40d302050e6fd0fda6da790c4c5e528"
+        }
+      ]
+    },
+    {
+      "firstMatch": 1800028,
+      "mapSeed": 344144349,
+      "pairedVpMargin": 6,
+      "commonActions": 7,
+      "preStateHash": "sha256:0505c185c866e60735a37ed2db7d2c6af6a740af8cb874a5260c79bf11a0ecaf",
+      "choices": [
+        {
+          "match": 1800028,
+          "weight": 15,
+          "actor": "player:axis",
+          "pieceId": "generated-oob:344144350:axis:f1-combat-1:unit",
+          "purpose": "capture",
+          "target": "12,15",
+          "targetPoints": 3,
+          "pointScale": 0.8571428571428571,
+          "origin": "14,22",
+          "destination": "15,15",
+          "distanceProgress": 6,
+          "slope": 5.142857142857142,
+          "otherScore": -20.13333333333334,
+          "terms": {
+            "progress": 77.14285714285714,
+            "exposure": -20.133333333333336
+          },
+          "score": 57.0095238095238,
+          "retainedAt15": 57.0095238095238,
+          "retainedAt30": 134.15238095238095
+        },
+        {
+          "match": 1800029,
+          "weight": 30,
+          "actor": "player:axis",
+          "pieceId": "generated-oob:344144350:axis:f1-combat-1:unit",
+          "purpose": "capture",
+          "target": "12,15",
+          "targetPoints": 3,
+          "pointScale": 0.8571428571428571,
+          "origin": "14,22",
+          "destination": "14,15",
+          "distanceProgress": 7,
+          "slope": 6,
+          "otherScore": -33.71666666666667,
+          "terms": {
+            "progress": 180,
+            "exposure": -33.71666666666667
+          },
+          "score": 146.28333333333333,
+          "retainedAt15": 56.28333333333333,
+          "retainedAt30": 146.28333333333333
+        }
+      ],
+      "outcomes": [
+        {
+          "match": 1800028,
+          "finalHash": "sha256:e68b8dbd0f33a6476fb494418bbd2764c724f5efad98380cf0d551ed46ff1ffd",
+          "acceptedActions": 913,
+          "initialHolder": "player:allied",
+          "changes": [
+            {
+              "at": 603,
+              "revision": 604,
+              "turn": 5,
+              "sequence": {
+                "gameTurn": 5,
+                "playerTurnIndex": 1,
+                "phase": "COMBAT",
+                "segment": "COMBAT",
+                "firstPlayerId": "player:allied",
+                "phasingPlayerId": "player:axis",
+                "actingPlayerId": "player:axis"
+              },
+              "from": "player:allied",
+              "to": "player:axis",
+              "actionKind": "RESPOND_DECISION"
+            }
+          ],
+          "firstAxisAcquisition": {
+            "at": 603,
+            "revision": 604,
+            "turn": 5,
+            "sequence": {
+              "gameTurn": 5,
+              "playerTurnIndex": 1,
+              "phase": "COMBAT",
+              "segment": "COMBAT",
+              "firstPlayerId": "player:allied",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            },
+            "from": "player:allied",
+            "to": "player:axis",
+            "actionKind": "RESPOND_DECISION"
+          },
+          "finalHolder": "player:axis",
+          "axisMargin": -3,
+          "objectiveContributions": [
+            {
+              "hexId": "12,15",
+              "points": 3,
+              "owner": "player:axis",
+              "axisContribution": 3
+            },
+            {
+              "hexId": "3,12",
+              "points": 3,
+              "owner": "player:allied",
+              "axisContribution": -3
+            },
+            {
+              "hexId": "6,10",
+              "points": 3,
+              "owner": "player:allied",
+              "axisContribution": -3
+            },
+            {
+              "hexId": "6,14",
+              "points": 6,
+              "owner": "player:allied",
+              "axisContribution": -6
+            },
+            {
+              "hexId": "9,11",
+              "points": 4,
+              "owner": "player:axis",
+              "axisContribution": 4
+            },
+            {
+              "hexId": "9,3",
+              "points": 2,
+              "owner": "player:axis",
+              "axisContribution": 2
+            }
+          ],
+          "movedPieceFinal": {
+            "remainingSteps": 1,
+            "location": {
+              "kind": "ON_MAP",
+              "hexId": "9,11"
+            },
+            "statuses": [
+              {
+                "statusDefinitionId": "status:out-of-trace-since",
+                "value": {
+                  "kind": "INTEGER",
+                  "value": 7
+                }
+              },
+              {
+                "statusDefinitionId": "status:out-of-supply",
+                "value": {
+                  "kind": "FLAG",
+                  "value": true
+                }
+              }
+            ]
+          }
+        },
+        {
+          "match": 1800029,
+          "finalHash": "sha256:8510473a8342a86ec6d1f34b87e931ccd0919a35a4ceab8c1acc9f12055218cc",
+          "acceptedActions": 906,
+          "initialHolder": "player:allied",
+          "changes": [
+            {
+              "at": 806,
+              "revision": 807,
+              "turn": 7,
+              "sequence": {
+                "gameTurn": 7,
+                "playerTurnIndex": 1,
+                "phase": "COMBAT",
+                "segment": "COMBAT",
+                "firstPlayerId": "player:allied",
+                "phasingPlayerId": "player:axis",
+                "actingPlayerId": "player:axis"
+              },
+              "from": "player:allied",
+              "to": "player:axis",
+              "actionKind": "RESPOND_DECISION"
+            }
+          ],
+          "firstAxisAcquisition": {
+            "at": 806,
+            "revision": 807,
+            "turn": 7,
+            "sequence": {
+              "gameTurn": 7,
+              "playerTurnIndex": 1,
+              "phase": "COMBAT",
+              "segment": "COMBAT",
+              "firstPlayerId": "player:allied",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            },
+            "from": "player:allied",
+            "to": "player:axis",
+            "actionKind": "RESPOND_DECISION"
+          },
+          "finalHolder": "player:axis",
+          "axisMargin": 9,
+          "objectiveContributions": [
+            {
+              "hexId": "12,15",
+              "points": 3,
+              "owner": "player:axis",
+              "axisContribution": 3
+            },
+            {
+              "hexId": "3,12",
+              "points": 3,
+              "owner": "player:axis",
+              "axisContribution": 3
+            },
+            {
+              "hexId": "6,10",
+              "points": 3,
+              "owner": "player:axis",
+              "axisContribution": 3
+            },
+            {
+              "hexId": "6,14",
+              "points": 6,
+              "owner": "player:allied",
+              "axisContribution": -6
+            },
+            {
+              "hexId": "9,11",
+              "points": 4,
+              "owner": "player:axis",
+              "axisContribution": 4
+            },
+            {
+              "hexId": "9,3",
+              "points": 2,
+              "owner": "player:axis",
+              "axisContribution": 2
+            }
+          ],
+          "movedPieceFinal": {
+            "remainingSteps": 1,
+            "location": {
+              "kind": "ON_MAP",
+              "hexId": "6,10"
+            },
+            "statuses": []
+          }
+        }
+      ],
+      "difference": {
+        "distanceProgress": 1,
+        "exposureScore": -13.583333333333332,
+        "otherScore": -13.583333333333329,
+        "slope": 0.8571428571428577,
+        "twoRouteSwitchWeight": 15.847222222222207,
+        "targetPairContribution": 0,
+        "otherObjectivesPairContribution": 6
+      },
+      "inputs": [
+        {
+          "match": 1800028,
+          "saveSha256": "35913da61ba78c49e8cba331427da70bdfd58f88915daa03463647009a43dbde",
+          "traceSha256": "fafb07af505979675b2c46e726d03aa818cb0be6063e48545bb62452955081e6"
+        },
+        {
+          "match": 1800029,
+          "saveSha256": "0fba68defa48adf66842bbf7707dfab600efb6d9df258a5c90ecbb51d639b6e5",
+          "traceSha256": "e290e474d11f8948131501355e53a6dd56aa74f4726bd588608bfee1d2534a07"
+        }
+      ]
+    }
+  ]
+}

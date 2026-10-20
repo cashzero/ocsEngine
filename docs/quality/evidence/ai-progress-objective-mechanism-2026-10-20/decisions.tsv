@@ -1,0 +1,4 @@
+id	hypothesis	choice	evidence	result
+1	The worst-pair progress/exposure tradeoff may also occur in improving pairs	Inspect all fifteen first divergences without outcome cutoffs	Existing thirty frozen saves and traces	All15 more progress; signs8positive4zero3negative; binary indicator constant
+2	Existing continuation may reset bot memory	Inspect runner and policy before any branch	scripts/ai-continue.mjs	Not used for one-action causality
+3	First worst-pair route may be harmful under a fixed continuation	Two registered original-RNG one-decision interventions then15both	Exact prefix/hash/memory;1610replayedactions	30raises axisVP1 andmargin2 but loses9moresteps; conditional counterexample only

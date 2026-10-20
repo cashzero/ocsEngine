@@ -1,0 +1,149 @@
+{
+  "sourceCommit": "d12230fb8e60f77a3402873f50fd977883985dad",
+  "sourceSaveSha256": "ee0affe79acd481987efb59186e68fb7041d45825eabef8d14c5d61527336b3d",
+  "scriptSha256": "ba4d44657b19bb15e3028a8eb1caa22940783de33d1ea2117bd3299763e59627",
+  "protocolSha256": "643f81762ac4fd7134b8bb944124594cbeb5866a33c804d87ec6b86e97df8a93",
+  "commonPrefixActions": 9,
+  "commonPrefixPolicy": {
+    "axis": 30,
+    "allied": 15
+  },
+  "laterPolicies": {
+    "axis": 15,
+    "allied": 15
+  },
+  "originalRulesRng": true,
+  "preMemoriesEqual": true,
+  "scope": "Two single-decision policy interventions from a post-selected state, one original dice realization and one common later policy. Action-associated memory updates are included. No average causal effect or predictor qualification.",
+  "branches": [
+    {
+      "forkWeight": 15,
+      "acceptedActions": 691,
+      "rejected": 0,
+      "errors": [],
+      "initialStateHash": "sha256:2880f55017b5f5941e28d7dcbbd1c2b85c668cf55963e1e5ff1b7afa32cfce33",
+      "preStateHash": "sha256:b8bae14c958036871b3b7930fa69b777bdcd3850b0df82640db22232fc655a0a",
+      "preRulesRng": {
+        "state": 344142800,
+        "draws": 0
+      },
+      "forkAction": {
+        "actionId": "candidate:move:generated-oob:344142798:axis:f1-recon:unit:18,12:9",
+        "actorId": "player:axis",
+        "expectedRevision": 9,
+        "kind": "MOVE_PIECE",
+        "pieceId": "generated-oob:344142798:axis:f1-recon:unit",
+        "path": [
+          "15,20",
+          "15,19",
+          "16,18",
+          "17,17",
+          "17,16",
+          "18,15",
+          "18,14",
+          "18,13",
+          "18,12"
+        ]
+      },
+      "forkIntent": "combat to 18,12 (capture 15,11)",
+      "finalStateHash": "sha256:523bb114ffbcdba5a50da9a3e9041f8597e0e07cba1caa1d8e687e471a6a3cd7",
+      "victory": {
+        "scores": [
+          {
+            "playerId": "player:allied",
+            "points": 7
+          },
+          {
+            "playerId": "player:axis",
+            "points": 6
+          }
+        ],
+        "winnerId": "player:allied",
+        "reason": "TURN_LIMIT"
+      },
+      "finalRulesRng": {
+        "state": 692647962,
+        "draws": 209
+      },
+      "files": {
+        "save.json": {
+          "path": "artifacts/ai-progress-objective-mechanism/branch-15.save.json",
+          "sha256": "2c74627cb60246bdca11c2c1b6138b739d43ffe7dab6f1efe82a7c802f54c233"
+        },
+        "trace.jsonl": {
+          "path": "artifacts/ai-progress-objective-mechanism/branch-15.trace.jsonl",
+          "sha256": "fa6e3548d4d056fd98900a8b9012872d190d5e9795ba2db58ffb71b4ea6fa303"
+        },
+        "memory.json": {
+          "path": "artifacts/ai-progress-objective-mechanism/branch-15.memory.json",
+          "sha256": "8c7529dde60914b7a48aade1130346c23cfff22132f2a4b725fc8ae77d1a17c8"
+        }
+      }
+    },
+    {
+      "forkWeight": 30,
+      "acceptedActions": 919,
+      "rejected": 0,
+      "errors": [],
+      "initialStateHash": "sha256:2880f55017b5f5941e28d7dcbbd1c2b85c668cf55963e1e5ff1b7afa32cfce33",
+      "preStateHash": "sha256:b8bae14c958036871b3b7930fa69b777bdcd3850b0df82640db22232fc655a0a",
+      "preRulesRng": {
+        "state": 344142800,
+        "draws": 0
+      },
+      "forkAction": {
+        "actionId": "candidate:move:generated-oob:344142798:axis:f1-recon:unit:16,13:9",
+        "actorId": "player:axis",
+        "expectedRevision": 9,
+        "kind": "MOVE_PIECE",
+        "pieceId": "generated-oob:344142798:axis:f1-recon:unit",
+        "path": [
+          "15,20",
+          "15,19",
+          "16,18",
+          "17,17",
+          "17,16",
+          "18,15",
+          "18,14",
+          "18,13",
+          "17,13",
+          "16,13"
+        ]
+      },
+      "forkIntent": "combat to 16,13 (capture 15,11)",
+      "finalStateHash": "sha256:6ae305c7c99db61fb7d9bb49b75a58875cc085159c9580e3619b51ed512e8403",
+      "victory": {
+        "scores": [
+          {
+            "playerId": "player:allied",
+            "points": 6
+          },
+          {
+            "playerId": "player:axis",
+            "points": 7
+          }
+        ],
+        "winnerId": "player:axis",
+        "reason": "TURN_LIMIT"
+      },
+      "finalRulesRng": {
+        "state": 4183332046,
+        "draws": 246
+      },
+      "files": {
+        "save.json": {
+          "path": "artifacts/ai-progress-objective-mechanism/branch-30.save.json",
+          "sha256": "7347e2b53290afa59a058706abe09e35cee7185fd5b62067dedddb448bfd0881"
+        },
+        "trace.jsonl": {
+          "path": "artifacts/ai-progress-objective-mechanism/branch-30.trace.jsonl",
+          "sha256": "ffe4601d9e42d681b8ebcb0ccd1582f8da7dcbbc8fd9bd79d23424b6f43cc0b7"
+        },
+        "memory.json": {
+          "path": "artifacts/ai-progress-objective-mechanism/branch-30.memory.json",
+          "sha256": "0c1b9140c0cf43fea7f35f6c7877fd1155420ffbbf20d007c2743135f3aefb29"
+        }
+      }
+    }
+  ]
+}

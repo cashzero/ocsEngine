@@ -1,0 +1,11 @@
+# progressObjective mechanism delivery review
+
+No correctness or reporting blocker was found in the supplemental prefix check or the assembled evidence bundle. This review supplements `review.md`. It does not rerun games or repeat the complete thirty-history replay.
+
+The added `verify-prefixes.mjs` loads every pair's original first save, checks that its assigned target starts allied, replays every accepted common-prefix action, and asserts that the target remains allied after each action. Earlier reviewed analysis establishes equality of the two initial states and accepted prefixes. Together these checks justify describing the first observed suffix axis acquisition as the first full-history axis acquisition for these fifteen recorded pairs. They do not establish a general property of other cases or a causal VP effect.
+
+An independent check replayed 358 common-prefix actions across all fifteen pairs. It verified the initial state hashes, exact initial snapshots and action-prefix equality between each pair's two saves, first unequal actions, all fifteen resulting pre-state hashes, and allied target ownership at the initial state and after every prefix action. The fifteen generated prefix rows match their recorded target, match ID, prefix length and owner. The first-axis-acquisition fields match the earliest corresponding suffix control change retained in the already reviewed results.
+
+All thirteen manifest-bound files match their recorded SHA-256 values and their artifact originals byte for byte. This includes the supplemental script, its output and the final decision trail. All thirteen local README links resolve. The README preserves the full-history acquisition qualification and distinguishes it from action-order resolution, metric qualification and causal attribution. The three-row decision trail agrees with the earlier reviewed findings and does not add a promotion or completion claim.
+
+No-comments review covered only the newly added `verify-prefixes.mjs` and its identical evidence copy. Comments found 0. Suppressions found 0. Deletions required 0. MUST KILL flags 0. The earlier independent review covers the three primary scripts. No source or document edits were made during this review.

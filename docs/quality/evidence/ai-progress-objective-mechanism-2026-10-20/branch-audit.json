@@ -1,0 +1,74 @@
+{
+  "sourceResultSha256": "861a3f0ad285c3ccd558556b36d2c86ce8fa999ee2646dd8d3b702d6f7cc24df",
+  "scriptSha256": "7f9f16faec73a64e37235dff398d23b1099a50524a97fd8c726ffc8d4596ad20",
+  "preMemoriesEqual": true,
+  "independentlyReplayedActions": 1610,
+  "rows": [
+    {
+      "forkWeight": 15,
+      "acceptedActions": 691,
+      "preRulesRng": {
+        "state": 344142800,
+        "draws": 0
+      },
+      "postRulesRng": {
+        "state": 344142800,
+        "draws": 0
+      },
+      "postStateHash": "sha256:3e92f42a3b1f125698024117d2d263103f4bb3292ccfa97ad465cb8318685d21",
+      "stepsLost": {
+        "player:allied": 14,
+        "player:axis": 4
+      },
+      "victory": {
+        "scores": [
+          {
+            "playerId": "player:allied",
+            "points": 7
+          },
+          {
+            "playerId": "player:axis",
+            "points": 6
+          }
+        ],
+        "winnerId": "player:allied",
+        "reason": "TURN_LIMIT"
+      },
+      "finalStateHash": "sha256:523bb114ffbcdba5a50da9a3e9041f8597e0e07cba1caa1d8e687e471a6a3cd7",
+      "noRejectionOrFallback": true
+    },
+    {
+      "forkWeight": 30,
+      "acceptedActions": 919,
+      "preRulesRng": {
+        "state": 344142800,
+        "draws": 0
+      },
+      "postRulesRng": {
+        "state": 344142800,
+        "draws": 0
+      },
+      "postStateHash": "sha256:f2bbd43eb19e12d75cdeb6d8cfaaa7c88eb3d84250af102e3df360e64cd0ea9e",
+      "stepsLost": {
+        "player:allied": 24,
+        "player:axis": 13
+      },
+      "victory": {
+        "scores": [
+          {
+            "playerId": "player:allied",
+            "points": 6
+          },
+          {
+            "playerId": "player:axis",
+            "points": 7
+          }
+        ],
+        "winnerId": "player:axis",
+        "reason": "TURN_LIMIT"
+      },
+      "finalStateHash": "sha256:6ae305c7c99db61fb7d9bb49b75a58875cc085159c9580e3619b51ed512e8403",
+      "noRejectionOrFallback": true
+    }
+  ]
+}
