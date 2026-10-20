@@ -1,0 +1,230 @@
+{
+  "pairs": [
+    {
+      "mapSeed": 324741633,
+      "half": {
+        "vpMargin": 3,
+        "kill": 5,
+        "loss": 14.5
+      },
+      "double": {
+        "vpMargin": 9,
+        "kill": 23.5,
+        "loss": 18.5
+      },
+      "doubleMinusHalf": {
+        "vpMargin": 6,
+        "kill": 18.5,
+        "loss": 4
+      }
+    },
+    {
+      "mapSeed": 324741827,
+      "half": {
+        "vpMargin": 6,
+        "kill": 25,
+        "loss": 15.5
+      },
+      "double": {
+        "vpMargin": 6,
+        "kill": 26,
+        "loss": 15.5
+      },
+      "doubleMinusHalf": {
+        "vpMargin": 0,
+        "kill": 1,
+        "loss": 0
+      }
+    },
+    {
+      "mapSeed": 324742021,
+      "half": {
+        "vpMargin": 0,
+        "kill": 23,
+        "loss": 18
+      },
+      "double": {
+        "vpMargin": 3,
+        "kill": 21,
+        "loss": 15
+      },
+      "doubleMinusHalf": {
+        "vpMargin": 3,
+        "kill": -2,
+        "loss": -3
+      }
+    },
+    {
+      "mapSeed": 324742215,
+      "half": {
+        "vpMargin": 0,
+        "kill": 14.5,
+        "loss": 16
+      },
+      "double": {
+        "vpMargin": 0,
+        "kill": 11,
+        "loss": 13.5
+      },
+      "doubleMinusHalf": {
+        "vpMargin": 0,
+        "kill": -3.5,
+        "loss": -2.5
+      }
+    }
+  ],
+  "meanPerSeatGame": {
+    "half": {
+      "vpMargin": 2.25,
+      "kill": 16.875,
+      "loss": 16.0
+    },
+    "double": {
+      "vpMargin": 4.5,
+      "kill": 20.375,
+      "loss": 15.625
+    }
+  },
+  "acceptedHistoricalActions": 13903,
+  "identicalRolePairs": 1,
+  "changedRolePairs": 7,
+  "rolePairsWithChangedFinalVp": 2,
+  "firstDivergences": [
+    {
+      "match": 1600000,
+      "mapSeed": 324741633,
+      "variantPlayer": "player:allied",
+      "commonActions": 762,
+      "identicalHistories": false,
+      "sequence": {
+        "gameTurn": 8,
+        "playerTurnIndex": 1,
+        "phase": "MOVEMENT",
+        "segment": "MOVEMENT",
+        "firstPlayerId": "player:axis",
+        "phasingPlayerId": "player:allied",
+        "actingPlayerId": "player:allied"
+      },
+      "revision": 762,
+      "stateHash": "sha256:f1475b0c7afc224f1fe3690b4ed74411735798ec7e6aaef952f22044e46d4f0f"
+    },
+    {
+      "match": 1600001,
+      "mapSeed": 324741633,
+      "variantPlayer": "player:axis",
+      "commonActions": 7,
+      "identicalHistories": false,
+      "sequence": {
+        "gameTurn": 1,
+        "playerTurnIndex": 0,
+        "phase": "MOVEMENT",
+        "segment": "MOVEMENT",
+        "firstPlayerId": "player:axis",
+        "phasingPlayerId": "player:axis",
+        "actingPlayerId": "player:axis"
+      },
+      "revision": 7,
+      "stateHash": "sha256:96ba41441e11c7a88aacb333acbd65cbedee69e9d038e72fc24e2dd833428afc"
+    },
+    {
+      "match": 1600002,
+      "mapSeed": 324741827,
+      "variantPlayer": "player:allied",
+      "commonActions": 922,
+      "identicalHistories": true,
+      "sequence": null,
+      "revision": null,
+      "stateHash": null
+    },
+    {
+      "match": 1600003,
+      "mapSeed": 324741827,
+      "variantPlayer": "player:axis",
+      "commonActions": 20,
+      "identicalHistories": false,
+      "sequence": {
+        "gameTurn": 1,
+        "playerTurnIndex": 0,
+        "phase": "MOVEMENT",
+        "segment": "MOVEMENT",
+        "firstPlayerId": "player:axis",
+        "phasingPlayerId": "player:axis",
+        "actingPlayerId": "player:axis"
+      },
+      "revision": 20,
+      "stateHash": "sha256:2e4c5928c3998b50e9dfb00bd88189f7d7e9e55a5a38cc4638f45659b798f6eb"
+    },
+    {
+      "match": 1600004,
+      "mapSeed": 324742021,
+      "variantPlayer": "player:allied",
+      "commonActions": 94,
+      "identicalHistories": false,
+      "sequence": {
+        "gameTurn": 1,
+        "playerTurnIndex": 1,
+        "phase": "MOVEMENT",
+        "segment": "MOVEMENT",
+        "firstPlayerId": "player:axis",
+        "phasingPlayerId": "player:allied",
+        "actingPlayerId": "player:allied"
+      },
+      "revision": 94,
+      "stateHash": "sha256:0a7231ce5ac1fbd60151a4fb10a929eb1dc808478bc1b453a3c1eda59407a210"
+    },
+    {
+      "match": 1600005,
+      "mapSeed": 324742021,
+      "variantPlayer": "player:axis",
+      "commonActions": 18,
+      "identicalHistories": false,
+      "sequence": {
+        "gameTurn": 1,
+        "playerTurnIndex": 0,
+        "phase": "MOVEMENT",
+        "segment": "MOVEMENT",
+        "firstPlayerId": "player:axis",
+        "phasingPlayerId": "player:axis",
+        "actingPlayerId": "player:axis"
+      },
+      "revision": 18,
+      "stateHash": "sha256:fb57f0ce4df8f47444f4de482cd1f2a6a66d762b12ee02a293cd8da7ad97b14b"
+    },
+    {
+      "match": 1600006,
+      "mapSeed": 324742215,
+      "variantPlayer": "player:allied",
+      "commonActions": 642,
+      "identicalHistories": false,
+      "sequence": {
+        "gameTurn": 6,
+        "playerTurnIndex": 1,
+        "phase": "MOVEMENT",
+        "segment": "MOVEMENT",
+        "firstPlayerId": "player:axis",
+        "phasingPlayerId": "player:allied",
+        "actingPlayerId": "player:allied"
+      },
+      "revision": 642,
+      "stateHash": "sha256:fde8ab4717e04cc3f86f860b85eb4d098da911063845e4540a907bfa0ab05c61"
+    },
+    {
+      "match": 1600007,
+      "mapSeed": 324742215,
+      "variantPlayer": "player:axis",
+      "commonActions": 9,
+      "identicalHistories": false,
+      "sequence": {
+        "gameTurn": 1,
+        "playerTurnIndex": 0,
+        "phase": "MOVEMENT",
+        "segment": "MOVEMENT",
+        "firstPlayerId": "player:axis",
+        "phasingPlayerId": "player:axis",
+        "actingPlayerId": "player:axis"
+      },
+      "revision": 9,
+      "stateHash": "sha256:7024388f8a6d372a87ac110b9687589cf294feea2610741c89ac05e652a55b95"
+    }
+  ]
+}

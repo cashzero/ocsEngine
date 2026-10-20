@@ -1,0 +1,260 @@
+{
+  "preStateHash": "sha256:96ba41441e11c7a88aacb333acbd65cbedee69e9d038e72fc24e2dd833428afc",
+  "pieceId": "generated-oob:324741634:axis:f1-combat-1:unit",
+  "assignedTarget": {
+    "hexId": "-3,11",
+    "purpose": "CAPTURE"
+  },
+  "revision": 7,
+  "stayScore": 0,
+  "records": [
+    {
+      "weight": 7.5,
+      "sourceGameIndex": 25,
+      "sourceReportSha256": "e876ad134c10e7d7ef70378845f6d2c0236ae1f63a707ed6f8a6bdcdc44ead97",
+      "sourceGameRecordSha256": "2cbc690bbb70ad1fa7688b99b28a659da5c85a1f274d1b550768ca44714d5646",
+      "candidates": [
+        {
+          "destination": "17,11",
+          "retainedScore": 43.0625,
+          "terms": [
+            {
+              "term": "progress",
+              "value": 52.5
+            },
+            {
+              "term": "exposure",
+              "value": -9.4375
+            }
+          ],
+          "selected": false,
+          "correction": {
+            "status": "NOT_EVALUATED",
+            "reason": "NOT_ELIGIBLE"
+          },
+          "finalSupply": {
+            "status": "NOT_EVALUATED",
+            "reason": "EARLIER_CANDIDATE_SELECTED"
+          }
+        },
+        {
+          "destination": "16,11",
+          "retainedScore": 24.34375,
+          "terms": [
+            {
+              "term": "progress",
+              "value": 60
+            },
+            {
+              "term": "contact",
+              "value": -8
+            },
+            {
+              "term": "exposure",
+              "value": -27.65625
+            }
+          ],
+          "selected": false,
+          "correction": {
+            "status": "NOT_EVALUATED",
+            "reason": "NOT_ELIGIBLE"
+          },
+          "finalSupply": {
+            "status": "NOT_EVALUATED",
+            "reason": "EARLIER_CANDIDATE_SELECTED"
+          }
+        },
+        {
+          "destination": "17,12",
+          "retainedScore": 45,
+          "terms": [
+            {
+              "term": "progress",
+              "value": 45
+            }
+          ],
+          "selected": true,
+          "correction": {
+            "status": "NOT_EVALUATED",
+            "reason": "NOT_ELIGIBLE"
+          },
+          "finalSupply": {
+            "status": "EVALUATED",
+            "preserved": true
+          }
+        }
+      ]
+    },
+    {
+      "weight": 30,
+      "sourceGameIndex": 29,
+      "sourceReportSha256": "77f04a20d38d635c35d7827338c6f3097a195caa942db6029471746fbf315fe1",
+      "sourceGameRecordSha256": "960b82498b2f96e4c29b2a8c0a412f245d8bcdae882f2c14000feca3cd2847eb",
+      "candidates": [
+        {
+          "destination": "17,11",
+          "retainedScore": 200.5625,
+          "terms": [
+            {
+              "term": "progress",
+              "value": 210
+            },
+            {
+              "term": "exposure",
+              "value": -9.4375
+            }
+          ],
+          "selected": false,
+          "correction": {
+            "status": "NOT_EVALUATED",
+            "reason": "NOT_ELIGIBLE"
+          },
+          "finalSupply": {
+            "status": "NOT_EVALUATED",
+            "reason": "EARLIER_CANDIDATE_SELECTED"
+          }
+        },
+        {
+          "destination": "16,11",
+          "retainedScore": 204.34375,
+          "terms": [
+            {
+              "term": "progress",
+              "value": 240
+            },
+            {
+              "term": "contact",
+              "value": -8
+            },
+            {
+              "term": "exposure",
+              "value": -27.65625
+            }
+          ],
+          "selected": true,
+          "correction": {
+            "status": "NOT_EVALUATED",
+            "reason": "NOT_ELIGIBLE"
+          },
+          "finalSupply": {
+            "status": "EVALUATED",
+            "preserved": true
+          }
+        },
+        {
+          "destination": "17,12",
+          "retainedScore": 180,
+          "terms": [
+            {
+              "term": "progress",
+              "value": 180
+            }
+          ],
+          "selected": false,
+          "correction": {
+            "status": "NOT_EVALUATED",
+            "reason": "NOT_ELIGIBLE"
+          },
+          "finalSupply": {
+            "status": "NOT_EVALUATED",
+            "reason": "EARLIER_CANDIDATE_SELECTED"
+          }
+        }
+      ]
+    },
+    {
+      "weight": 15,
+      "sourceGameIndex": null,
+      "sourceReportSha256": "0e6273f97d839a3154550987c0ad69c267ad11a63a893014d72e619aeeae0a44",
+      "sourceGameRecordSha256": null,
+      "candidates": [
+        {
+          "destination": "17,11",
+          "retainedScore": 95.5625,
+          "terms": [
+            {
+              "term": "progress",
+              "value": 105
+            },
+            {
+              "term": "exposure",
+              "value": -9.4375
+            }
+          ],
+          "selected": true,
+          "correction": {
+            "status": "NOT_EVALUATED",
+            "reason": "NOT_ELIGIBLE"
+          },
+          "finalSupply": {
+            "status": "EVALUATED",
+            "preserved": true
+          }
+        },
+        {
+          "destination": "16,11",
+          "retainedScore": 84.34375,
+          "terms": [
+            {
+              "term": "progress",
+              "value": 120
+            },
+            {
+              "term": "contact",
+              "value": -8
+            },
+            {
+              "term": "exposure",
+              "value": -27.65625
+            }
+          ],
+          "selected": false,
+          "correction": {
+            "status": "NOT_EVALUATED",
+            "reason": "NOT_ELIGIBLE"
+          },
+          "finalSupply": {
+            "status": "NOT_EVALUATED",
+            "reason": "EARLIER_CANDIDATE_SELECTED"
+          }
+        },
+        {
+          "destination": "17,12",
+          "retainedScore": 90,
+          "terms": [
+            {
+              "term": "progress",
+              "value": 90
+            }
+          ],
+          "selected": false,
+          "correction": {
+            "status": "NOT_EVALUATED",
+            "reason": "NOT_ELIGIBLE"
+          },
+          "finalSupply": {
+            "status": "NOT_EVALUATED",
+            "reason": "EARLIER_CANDIDATE_SELECTED"
+          }
+        }
+      ]
+    }
+  ],
+  "rejectedHypothesis": {
+    "statement": "At weight15 the selected route equals the weight7.5 route",
+    "observed": "Actual standard15 selects a third route to17,11 with score95.5625",
+    "evidence": "artifacts/ai-progress-objective/default-initial-hypothesis.stderr.log",
+    "status": "FALSIFIED_BY_ACTUAL_EIGHT_DECISION_PREFIX"
+  },
+  "interpretation": "Observed three-candidate score comparison and actual choices, not a global weight or VP threshold.",
+  "defaultPrefix": {
+    "scope": "eight-decision prefix only, no default terminal outcome",
+    "progressObjective": 15,
+    "sourceSaveSha256": "b9c9025024830f0293d38c5c7eab330cde8c2089d3cc4005b1ddace7fce6a8ad",
+    "preStateHash": "sha256:96ba41441e11c7a88aacb333acbd65cbedee69e9d038e72fc24e2dd833428afc",
+    "revision": 7,
+    "commonPrefixActionsMatched": 7,
+    "scriptSha256": "29fb90f300520d82c4f37765bd36e78af9b3ad736580dabc449e2b5ac8e167d8",
+    "reportSha256": "0e6273f97d839a3154550987c0ad69c267ad11a63a893014d72e619aeeae0a44"
+  }
+}

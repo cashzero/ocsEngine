@@ -1,0 +1,38 @@
+[
+  {
+    "gameIndex": 27,
+    "direction": "half",
+    "source": "artifacts/ai-movement-metric-panel/games/game-27.json",
+    "sha256": "9f6493f9e0d72dd360de5aae481b41341744ebfd5edbdc4674cfc25f674a331d",
+    "revision": 20,
+    "pieceId": "generated-oob:324741828:axis:f2-recon:unit",
+    "role": "COMBAT",
+    "assignedTarget": {
+      "hexId": "16,6",
+      "purpose": "CAPTURE"
+    },
+    "reportOrdinal": 20,
+    "reportSha256": "55a94d35f16ad7e4b82e14f5a2a8f82b6ee5319edaf3cf0c0df86fbab160899d",
+    "stateHash": "sha256:2e4c5928c3998b50e9dfb00bd88189f7d7e9e55a5a38cc4638f45659b798f6eb",
+    "recorderSha256": "66341a37f97e0abc627331c9e509ab795be73383a20cd15ad2bc2c74e7e2da92",
+    "engineTreeSha256": "4a87376b26c41f60086cb3060f606afcc1e9b99bb3ba00339c904837d200bb2a"
+  },
+  {
+    "gameIndex": 31,
+    "direction": "double",
+    "source": "artifacts/ai-movement-metric-panel/games/game-31.json",
+    "sha256": "7f88840cd50439b62baad7400002361efa7827cbbae859f3dfe6508a5f0a9583",
+    "revision": 20,
+    "pieceId": "generated-oob:324741828:axis:f2-recon:unit",
+    "role": "COMBAT",
+    "assignedTarget": {
+      "hexId": "16,6",
+      "purpose": "CAPTURE"
+    },
+    "reportOrdinal": 20,
+    "reportSha256": "8402d407f0d3f8cb387f6d05ab02a5ef0b80974ab2f673011860d7c895930909",
+    "stateHash": "sha256:2e4c5928c3998b50e9dfb00bd88189f7d7e9e55a5a38cc4638f45659b798f6eb",
+    "recorderSha256": "66341a37f97e0abc627331c9e509ab795be73383a20cd15ad2bc2c74e7e2da92",
+    "engineTreeSha256": "4a87376b26c41f60086cb3060f606afcc1e9b99bb3ba00339c904837d200bb2a"
+  }
+]

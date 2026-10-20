@@ -1,0 +1,349 @@
+{
+  "scope": {
+    "map": "TEMPERATE_INLAND",
+    "engagement": "AXIS_ATTACKS",
+    "weight": "progressObjective",
+    "historicalGames": 16,
+    "seedPairs": 4,
+    "newGames": 0,
+    "weights": {
+      "half": 7.5,
+      "default": 15,
+      "double": 30
+    },
+    "defaultSelfplayPresent": false,
+    "qualification": "RETROSPECTIVE_OBSERVATION_ONLY"
+  },
+  "provenance": {
+    "sourceCommit": "12d7887",
+    "scriptSha256": "e99a72b887c269cf8de84107e435e8959619d647bff923d5f5222abc84806761",
+    "panelSha256": "7a848393510d83306d2062af1c3a406591064fc3a3084646e0b64bbe51677398",
+    "engineTreeSha256": "4a87376b26c41f60086cb3060f606afcc1e9b99bb3ba00339c904837d200bb2a",
+    "elapsedMs": 76640.624136,
+    "weights": [
+      {
+        "name": "progressObjective-half",
+        "weight": "progressObjective",
+        "default": 15,
+        "value": 7.5,
+        "file": "artifacts/ai-surrogacy/weights/progressObjective-half.json",
+        "sha256": "b1006eb3bc94667329374a397cbe797543afb42cd08ad408e0fd1c118962fcce"
+      },
+      {
+        "name": "progressObjective-double",
+        "weight": "progressObjective",
+        "default": 15,
+        "value": 30,
+        "file": "artifacts/ai-surrogacy/weights/progressObjective-double.json",
+        "sha256": "62d953c41592c626673c567db7da9a9d8ca6caef32d12bc905a8eda29309622d"
+      }
+    ]
+  },
+  "rawResultsSha256": "a57bbb64777c06a471b5c263ae943996ffd61ded7f7f06209cd19df289aec210",
+  "games": [
+    {
+      "match": 1600000,
+      "direction": "half",
+      "mapSeed": 324741633,
+      "variantPlayer": "player:allied",
+      "source": ".claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/progressObjective-half/attack-temperate/match-1600000.save.json",
+      "sourceSha256": "166577c5b4d6d6bfbbcf25a2cb3c3e3a11afb151b234d33031225ead66f0d81a",
+      "acceptedActionsSha256": "b0f3035e7ff241e35b28120c1a8a17ddb86fe0c3e8e91eb1f9545e060a02fe34",
+      "accepted": 766,
+      "initialStateHash": "sha256:f1ee3812f962eb7096439176bc1e77f395b78f63a24bee11d1680474ecdbdad1",
+      "finalStateHash": "sha256:ececa843083ab953d6a901129b1ea85ae782138dca9c81ae151854ddb8109780",
+      "metrics": {
+        "vpMargin": 6,
+        "vp": 9,
+        "opponentVp": 3,
+        "kill": 2,
+        "loss": 23
+      }
+    },
+    {
+      "match": 1600000,
+      "direction": "double",
+      "mapSeed": 324741633,
+      "variantPlayer": "player:allied",
+      "source": ".claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/progressObjective-double/attack-temperate/match-1600000.save.json",
+      "sourceSha256": "0dae715e573f2574e86d95eef4c31566ced32aa7bd6e8bcd583102c88ec16d97",
+      "acceptedActionsSha256": "65028e5553c4e8324fd720f1f90d30c79b38f52e7d899294a85ec6f4d5c826bb",
+      "accepted": 765,
+      "initialStateHash": "sha256:f1ee3812f962eb7096439176bc1e77f395b78f63a24bee11d1680474ecdbdad1",
+      "finalStateHash": "sha256:a6437cccc726e38b20d0897826a07429310287db70236b3a79ee6dbc0c55d5a7",
+      "metrics": {
+        "vpMargin": 6,
+        "vp": 9,
+        "opponentVp": 3,
+        "kill": 2,
+        "loss": 23
+      }
+    },
+    {
+      "match": 1600001,
+      "direction": "half",
+      "mapSeed": 324741633,
+      "variantPlayer": "player:axis",
+      "source": ".claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/progressObjective-half/attack-temperate/match-1600001.save.json",
+      "sourceSha256": "b9c9025024830f0293d38c5c7eab330cde8c2089d3cc4005b1ddace7fce6a8ad",
+      "acceptedActionsSha256": "5194e80ed6cfe8533b21df1fdacced08c2be3805df53d4a6eb03192e3f14bd6c",
+      "accepted": 837,
+      "initialStateHash": "sha256:f1ee3812f962eb7096439176bc1e77f395b78f63a24bee11d1680474ecdbdad1",
+      "finalStateHash": "sha256:6d6a7109c97a3796f13d56b4eaa2642e7a8ba6c34d5ba6ac017c757bc838c4d5",
+      "metrics": {
+        "vpMargin": 0,
+        "vp": 6,
+        "opponentVp": 6,
+        "kill": 8,
+        "loss": 6
+      }
+    },
+    {
+      "match": 1600001,
+      "direction": "double",
+      "mapSeed": 324741633,
+      "variantPlayer": "player:axis",
+      "source": ".claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/progressObjective-double/attack-temperate/match-1600001.save.json",
+      "sourceSha256": "ecca973711a00b06c9a9f842d7a81481e09e3aa8b6874c5a13ae118a4cc2aebc",
+      "acceptedActionsSha256": "9e3974cc3a596c5b978fb735f08e4863d6a32c5082a78cd023d2b1f72f374cf1",
+      "accepted": 875,
+      "initialStateHash": "sha256:f1ee3812f962eb7096439176bc1e77f395b78f63a24bee11d1680474ecdbdad1",
+      "finalStateHash": "sha256:461050e2240f1b22641fd7535ae7da62e444c10701c4bd905ad26dd2be01f32a",
+      "metrics": {
+        "vpMargin": 12,
+        "vp": 12,
+        "opponentVp": 0,
+        "kill": 45,
+        "loss": 14
+      }
+    },
+    {
+      "match": 1600002,
+      "direction": "half",
+      "mapSeed": 324741827,
+      "variantPlayer": "player:allied",
+      "source": ".claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/progressObjective-half/attack-temperate/match-1600002.save.json",
+      "sourceSha256": "88fa854319185ca25becf591d1487096dcabe2ddcdfa6353a46e9a6098030560",
+      "acceptedActionsSha256": "35c730fe3cab2ead786a23ca894823532dc1dda824571af16b97e7e649dd4106",
+      "accepted": 922,
+      "initialStateHash": "sha256:6700ea090ff2462869292621b9b206542ef02341f3e3fe487253fc46379a8a39",
+      "finalStateHash": "sha256:97ac2ea30270002de5ce43c4bf1044e8b0add517b3f843f32e20e6678af3f1b6",
+      "metrics": {
+        "vpMargin": 12,
+        "vp": 12,
+        "opponentVp": 0,
+        "kill": 17,
+        "loss": 16
+      }
+    },
+    {
+      "match": 1600002,
+      "direction": "double",
+      "mapSeed": 324741827,
+      "variantPlayer": "player:allied",
+      "source": ".claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/progressObjective-double/attack-temperate/match-1600002.save.json",
+      "sourceSha256": "88fa854319185ca25becf591d1487096dcabe2ddcdfa6353a46e9a6098030560",
+      "acceptedActionsSha256": "35c730fe3cab2ead786a23ca894823532dc1dda824571af16b97e7e649dd4106",
+      "accepted": 922,
+      "initialStateHash": "sha256:6700ea090ff2462869292621b9b206542ef02341f3e3fe487253fc46379a8a39",
+      "finalStateHash": "sha256:97ac2ea30270002de5ce43c4bf1044e8b0add517b3f843f32e20e6678af3f1b6",
+      "metrics": {
+        "vpMargin": 12,
+        "vp": 12,
+        "opponentVp": 0,
+        "kill": 17,
+        "loss": 16
+      }
+    },
+    {
+      "match": 1600003,
+      "direction": "half",
+      "mapSeed": 324741827,
+      "variantPlayer": "player:axis",
+      "source": ".claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/progressObjective-half/attack-temperate/match-1600003.save.json",
+      "sourceSha256": "38bb2f7a57fcc4ea2b1b16e3abafd382d40e14a6639a8db1329a83c76333a140",
+      "acceptedActionsSha256": "7201e879829d46c482f652b4e4eefbd0492d2ab48c05e93c2e763bd90b4dc3a5",
+      "accepted": 890,
+      "initialStateHash": "sha256:6700ea090ff2462869292621b9b206542ef02341f3e3fe487253fc46379a8a39",
+      "finalStateHash": "sha256:4b84256925618d53cd5ae0bb892ae0a3407974673b612cf11c2843167e713e35",
+      "metrics": {
+        "vpMargin": 0,
+        "vp": 6,
+        "opponentVp": 6,
+        "kill": 33,
+        "loss": 15
+      }
+    },
+    {
+      "match": 1600003,
+      "direction": "double",
+      "mapSeed": 324741827,
+      "variantPlayer": "player:axis",
+      "source": ".claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/progressObjective-double/attack-temperate/match-1600003.save.json",
+      "sourceSha256": "289df1cf1b5bf2212ae86069ca97902d6a5a637ff086f3f15706eb90f3dcab6d",
+      "acceptedActionsSha256": "028db827574ee75b180f6b0541a1a88f534f42006a8c57ca3375a56337a7316a",
+      "accepted": 955,
+      "initialStateHash": "sha256:6700ea090ff2462869292621b9b206542ef02341f3e3fe487253fc46379a8a39",
+      "finalStateHash": "sha256:055d2774351038dcaff8cf6484392d106f661e90e5f9943a4f10ef9493331701",
+      "metrics": {
+        "vpMargin": 0,
+        "vp": 6,
+        "opponentVp": 6,
+        "kill": 35,
+        "loss": 15
+      }
+    },
+    {
+      "match": 1600004,
+      "direction": "half",
+      "mapSeed": 324742021,
+      "variantPlayer": "player:allied",
+      "source": ".claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/progressObjective-half/attack-temperate/match-1600004.save.json",
+      "sourceSha256": "8b5c6c314accf89b31e8e8cc31952a08f670de9ed0c2c1a4ba771240476c1e53",
+      "acceptedActionsSha256": "f34825a8addaf92f042efd3d9510682cd184ad6f18d1ee25b8ebe4c6a059a144",
+      "accepted": 969,
+      "initialStateHash": "sha256:7d352ce10065ed5d06e973b8860dec7d080b02cfd6b434cd35d1e79deb69db93",
+      "finalStateHash": "sha256:444de3943bf5556e1299ca72891aabb6c1ca754265ef191238631cc21442c11a",
+      "metrics": {
+        "vpMargin": -13,
+        "vp": 0,
+        "opponentVp": 13,
+        "kill": 17,
+        "loss": 23
+      }
+    },
+    {
+      "match": 1600004,
+      "direction": "double",
+      "mapSeed": 324742021,
+      "variantPlayer": "player:allied",
+      "source": ".claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/progressObjective-double/attack-temperate/match-1600004.save.json",
+      "sourceSha256": "884da628b2a985dc754c1c32ecadbfea6d9ed2d886fcd2c9102f87e6426feae6",
+      "acceptedActionsSha256": "9587296d948ae4de33503a505033fb8dc7a301920cd40fe1993bca4bbd7a418f",
+      "accepted": 779,
+      "initialStateHash": "sha256:7d352ce10065ed5d06e973b8860dec7d080b02cfd6b434cd35d1e79deb69db93",
+      "finalStateHash": "sha256:9ed22b3c3e47c30967f767f953524d915b1462e162de6bcd6b727bff87b8a698",
+      "metrics": {
+        "vpMargin": -7,
+        "vp": 3,
+        "opponentVp": 10,
+        "kill": 15,
+        "loss": 22
+      }
+    },
+    {
+      "match": 1600005,
+      "direction": "half",
+      "mapSeed": 324742021,
+      "variantPlayer": "player:axis",
+      "source": ".claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/progressObjective-half/attack-temperate/match-1600005.save.json",
+      "sourceSha256": "61315d8d79570e68270f14d13f1fbc4c37072c1089be532206b12fc5396f1361",
+      "acceptedActionsSha256": "686dcd0cadea5c5e88388067277519d133e6e17d33ead42d0372ae7b20290e62",
+      "accepted": 845,
+      "initialStateHash": "sha256:7d352ce10065ed5d06e973b8860dec7d080b02cfd6b434cd35d1e79deb69db93",
+      "finalStateHash": "sha256:1cb5b9a81a338648dc351fa693a8be7f5f47cf1b5170e9a588f861652fb3b912",
+      "metrics": {
+        "vpMargin": 13,
+        "vp": 13,
+        "opponentVp": 0,
+        "kill": 29,
+        "loss": 13
+      }
+    },
+    {
+      "match": 1600005,
+      "direction": "double",
+      "mapSeed": 324742021,
+      "variantPlayer": "player:axis",
+      "source": ".claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/progressObjective-double/attack-temperate/match-1600005.save.json",
+      "sourceSha256": "97733752e08a9df14bf0abf2d1dcc2efe470ffe3e0a0828f18b84832c5cce815",
+      "acceptedActionsSha256": "766f4b087ff00ec05022d83e8723b47476aacd9574796bb638ee5934fa70a041",
+      "accepted": 898,
+      "initialStateHash": "sha256:7d352ce10065ed5d06e973b8860dec7d080b02cfd6b434cd35d1e79deb69db93",
+      "finalStateHash": "sha256:4abececd125f0e0bb471cda2ca1fef969e37110bdaf5a6068cd2702f5187b2d7",
+      "metrics": {
+        "vpMargin": 13,
+        "vp": 13,
+        "opponentVp": 0,
+        "kill": 27,
+        "loss": 8
+      }
+    },
+    {
+      "match": 1600006,
+      "direction": "half",
+      "mapSeed": 324742215,
+      "variantPlayer": "player:allied",
+      "source": ".claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/progressObjective-half/attack-temperate/match-1600006.save.json",
+      "sourceSha256": "5c9a171e8c5ba65d123537e49ab08198dd3977e6ef200684248e9fec32c1e6e8",
+      "acceptedActionsSha256": "5c409dff949b51437d1b5d5f41995685aa80cff7b943a43911a907b9670ab491",
+      "accepted": 885,
+      "initialStateHash": "sha256:abf1f6db26ff52e4af6d5534a6ea8fff15cbf7201e654a501e58dad101735b3c",
+      "finalStateHash": "sha256:f72a7745699a9aecc7f6ac4410f1fadfdcaacb0bc8a17cf882da8688e54732f5",
+      "metrics": {
+        "vpMargin": 9,
+        "vp": 11,
+        "opponentVp": 2,
+        "kill": 6,
+        "loss": 22
+      }
+    },
+    {
+      "match": 1600006,
+      "direction": "double",
+      "mapSeed": 324742215,
+      "variantPlayer": "player:allied",
+      "source": ".claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/progressObjective-double/attack-temperate/match-1600006.save.json",
+      "sourceSha256": "706011a232f81f100ae90aff5b5cb95f3ccf5c3f868bd2b61affc830c711ce59",
+      "acceptedActionsSha256": "325760f2e9ac424f9835b6082d7a36d67a47c19729f328785b190ba91b9db8f7",
+      "accepted": 874,
+      "initialStateHash": "sha256:abf1f6db26ff52e4af6d5534a6ea8fff15cbf7201e654a501e58dad101735b3c",
+      "finalStateHash": "sha256:a5120225ec9a159e49112f27d1e1041aacebe667b6439af6956e6bc027cca160",
+      "metrics": {
+        "vpMargin": 9,
+        "vp": 11,
+        "opponentVp": 2,
+        "kill": 6,
+        "loss": 17
+      }
+    },
+    {
+      "match": 1600007,
+      "direction": "half",
+      "mapSeed": 324742215,
+      "variantPlayer": "player:axis",
+      "source": ".claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/progressObjective-half/attack-temperate/match-1600007.save.json",
+      "sourceSha256": "b43fd240aaa15bcb95ead1001d81ddd81f6cc51e5fea2fa9b1db2e90414bde01",
+      "acceptedActionsSha256": "b7be475eb34db6917af7578d8bf53fbea9c0730fa3248b1e44fd7b704179af79",
+      "accepted": 862,
+      "initialStateHash": "sha256:abf1f6db26ff52e4af6d5534a6ea8fff15cbf7201e654a501e58dad101735b3c",
+      "finalStateHash": "sha256:f525c56d4e69dc9b6ae9e242e91a4c08ef74c82277a0c44d164d76dd3271cc3d",
+      "metrics": {
+        "vpMargin": -9,
+        "vp": 2,
+        "opponentVp": 11,
+        "kill": 23,
+        "loss": 10
+      }
+    },
+    {
+      "match": 1600007,
+      "direction": "double",
+      "mapSeed": 324742215,
+      "variantPlayer": "player:axis",
+      "source": ".claude/worktrees/ai-truck-shuttle/artifacts/ai-surrogacy/progressObjective-double/attack-temperate/match-1600007.save.json",
+      "sourceSha256": "31c82727e1f3eb4e06c9e9b9747a3cef1eefe05baad521b793b68cacb309dfff",
+      "acceptedActionsSha256": "c7c9b77852a500a3f6fabdaef9296414b2d42f845091c26d42c5589ea6e4f43c",
+      "accepted": 859,
+      "initialStateHash": "sha256:abf1f6db26ff52e4af6d5534a6ea8fff15cbf7201e654a501e58dad101735b3c",
+      "finalStateHash": "sha256:44c5193521fde3d7fbba6d004142c2ce2043f4014db4231d3f8753b609a767d2",
+      "metrics": {
+        "vpMargin": -9,
+        "vp": 2,
+        "opponentVp": 11,
+        "kill": 16,
+        "loss": 10
+      }
+    }
+  ]
+}

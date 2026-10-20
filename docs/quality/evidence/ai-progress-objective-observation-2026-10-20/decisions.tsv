@@ -1,0 +1,6 @@
+decision	reason	evidence
+Observe only progressObjective and western attack	User explicitly narrowed scope before asking to focus this coefficient	Current user instructions and docs/ai/vp-metrics.md scope
+Reuse16historical saves, no new bot games	Four existing paired seeds support behavior inspection; new promotion evidence is not requested yet	artifacts/ai-surrogate-transfer-study/run/panel.json filtered to family and climate
+Verify16historical replays before interpretingVP	All13903acceptedactionslegal andfinalhashmatched; finalVP independentlyrecomputedfromcontrol	artifacts/ai-progress-objective/results.json
+Reject assumeddefault15wouldequalhalfroute	Actualsame-state8decisionprefixselectsthirdroute17,11; two-candidatealgebraisinsufficient	artifacts/ai-progress-objective/default-initial-hypothesis.stderr.log
+Keepzero-effectandlater-capturecounterexamples	SevenrolepairschangeactionsbutonlytwochangeVP;30doesnotalwayscaptureearlier	artifacts/ai-progress-objective/results.json

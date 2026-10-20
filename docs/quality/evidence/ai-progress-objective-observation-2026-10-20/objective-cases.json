@@ -1,0 +1,313 @@
+[
+  {
+    "match": 1600001,
+    "direction": "half",
+    "variantPlayer": "player:axis",
+    "metrics": {
+      "vpMargin": 0,
+      "vp": 6,
+      "opponentVp": 6,
+      "kill": 8,
+      "loss": 6
+    },
+    "GT4control": [
+      {
+        "hexId": "-3,11",
+        "controllerId": "player:allied"
+      },
+      {
+        "hexId": "1,11",
+        "controllerId": "player:allied"
+      },
+      {
+        "hexId": "14,8",
+        "controllerId": "player:allied"
+      },
+      {
+        "hexId": "15,11",
+        "controllerId": "player:allied"
+      }
+    ],
+    "objectiveChanges": [
+      {
+        "actionIndex": 733,
+        "turn": 7,
+        "phase": "COMBAT",
+        "hexId": "1,11",
+        "points": 3,
+        "from": "player:allied",
+        "to": "player:axis"
+      },
+      {
+        "actionIndex": 745,
+        "turn": 7,
+        "phase": "EXPLOITATION",
+        "hexId": "-3,11",
+        "points": 3,
+        "from": "player:allied",
+        "to": "player:axis"
+      }
+    ]
+  },
+  {
+    "match": 1600001,
+    "direction": "double",
+    "variantPlayer": "player:axis",
+    "metrics": {
+      "vpMargin": 12,
+      "vp": 12,
+      "opponentVp": 0,
+      "kill": 45,
+      "loss": 14
+    },
+    "GT4control": [
+      {
+        "hexId": "-3,11",
+        "controllerId": "player:allied"
+      },
+      {
+        "hexId": "1,11",
+        "controllerId": "player:allied"
+      },
+      {
+        "hexId": "14,8",
+        "controllerId": "player:allied"
+      },
+      {
+        "hexId": "15,11",
+        "controllerId": "player:allied"
+      }
+    ],
+    "objectiveChanges": [
+      {
+        "actionIndex": 566,
+        "turn": 5,
+        "phase": "COMBAT",
+        "hexId": "14,8",
+        "points": 2,
+        "from": "player:allied",
+        "to": "player:axis"
+      },
+      {
+        "actionIndex": 690,
+        "turn": 7,
+        "phase": "MOVEMENT",
+        "hexId": "15,11",
+        "points": 4,
+        "from": "player:allied",
+        "to": "player:axis"
+      },
+      {
+        "actionIndex": 860,
+        "turn": 8,
+        "phase": "COMBAT",
+        "hexId": "-3,11",
+        "points": 3,
+        "from": "player:allied",
+        "to": "player:axis"
+      },
+      {
+        "actionIndex": 864,
+        "turn": 8,
+        "phase": "COMBAT",
+        "hexId": "1,11",
+        "points": 3,
+        "from": "player:allied",
+        "to": "player:axis"
+      }
+    ]
+  },
+  {
+    "match": 1600003,
+    "direction": "half",
+    "variantPlayer": "player:axis",
+    "metrics": {
+      "vpMargin": 0,
+      "vp": 6,
+      "opponentVp": 6,
+      "kill": 33,
+      "loss": 15
+    },
+    "GT4control": [
+      {
+        "hexId": "0,13",
+        "controllerId": "player:allied"
+      },
+      {
+        "hexId": "16,6",
+        "controllerId": "player:axis"
+      },
+      {
+        "hexId": "17,2",
+        "controllerId": "player:allied"
+      }
+    ],
+    "objectiveChanges": [
+      {
+        "actionIndex": 265,
+        "turn": 2,
+        "phase": "COMBAT",
+        "hexId": "16,6",
+        "points": 2,
+        "from": "player:allied",
+        "to": "player:axis"
+      },
+      {
+        "actionIndex": 566,
+        "turn": 5,
+        "phase": "MOVEMENT",
+        "hexId": "17,2",
+        "points": 4,
+        "from": "player:allied",
+        "to": "player:axis"
+      }
+    ]
+  },
+  {
+    "match": 1600003,
+    "direction": "double",
+    "variantPlayer": "player:axis",
+    "metrics": {
+      "vpMargin": 0,
+      "vp": 6,
+      "opponentVp": 6,
+      "kill": 35,
+      "loss": 15
+    },
+    "GT4control": [
+      {
+        "hexId": "0,13",
+        "controllerId": "player:allied"
+      },
+      {
+        "hexId": "16,6",
+        "controllerId": "player:axis"
+      },
+      {
+        "hexId": "17,2",
+        "controllerId": "player:allied"
+      }
+    ],
+    "objectiveChanges": [
+      {
+        "actionIndex": 369,
+        "turn": 3,
+        "phase": "COMBAT",
+        "hexId": "16,6",
+        "points": 2,
+        "from": "player:allied",
+        "to": "player:axis"
+      },
+      {
+        "actionIndex": 881,
+        "turn": 8,
+        "phase": "MOVEMENT",
+        "hexId": "17,2",
+        "points": 4,
+        "from": "player:allied",
+        "to": "player:axis"
+      }
+    ]
+  },
+  {
+    "match": 1600004,
+    "direction": "half",
+    "variantPlayer": "player:allied",
+    "metrics": {
+      "vpMargin": -13,
+      "vp": 0,
+      "opponentVp": 13,
+      "kill": 17,
+      "loss": 23
+    },
+    "GT4control": [
+      {
+        "hexId": "3,12",
+        "controllerId": "player:allied"
+      },
+      {
+        "hexId": "13,1",
+        "controllerId": "player:allied"
+      },
+      {
+        "hexId": "15,12",
+        "controllerId": "player:axis"
+      }
+    ],
+    "objectiveChanges": [
+      {
+        "actionIndex": 77,
+        "turn": 1,
+        "phase": "COMBAT",
+        "hexId": "15,12",
+        "points": 4,
+        "from": "player:allied",
+        "to": "player:axis"
+      },
+      {
+        "actionIndex": 735,
+        "turn": 6,
+        "phase": "EXPLOITATION",
+        "hexId": "3,12",
+        "points": 3,
+        "from": "player:allied",
+        "to": "player:axis"
+      },
+      {
+        "actionIndex": 904,
+        "turn": 8,
+        "phase": "MOVEMENT",
+        "hexId": "13,1",
+        "points": 6,
+        "from": "player:allied",
+        "to": "player:axis"
+      }
+    ]
+  },
+  {
+    "match": 1600004,
+    "direction": "double",
+    "variantPlayer": "player:allied",
+    "metrics": {
+      "vpMargin": -7,
+      "vp": 3,
+      "opponentVp": 10,
+      "kill": 15,
+      "loss": 22
+    },
+    "GT4control": [
+      {
+        "hexId": "3,12",
+        "controllerId": "player:allied"
+      },
+      {
+        "hexId": "13,1",
+        "controllerId": "player:allied"
+      },
+      {
+        "hexId": "15,12",
+        "controllerId": "player:axis"
+      }
+    ],
+    "objectiveChanges": [
+      {
+        "actionIndex": 77,
+        "turn": 1,
+        "phase": "COMBAT",
+        "hexId": "15,12",
+        "points": 4,
+        "from": "player:allied",
+        "to": "player:axis"
+      },
+      {
+        "actionIndex": 586,
+        "turn": 6,
+        "phase": "MOVEMENT",
+        "hexId": "13,1",
+        "points": 6,
+        "from": "player:allied",
+        "to": "player:axis"
+      }
+    ]
+  }
+]
