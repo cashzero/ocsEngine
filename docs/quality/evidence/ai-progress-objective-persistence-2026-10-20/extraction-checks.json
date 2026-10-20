@@ -1,0 +1,23 @@
+{
+  "scriptSha256": "02ae961b9f2cab59716e0e5a93bb82e3169b46f10bc2fa515f3f7b13eb766785",
+  "verifiedBoundarySnapshots": 30,
+  "replayedActions": 2282,
+  "controls": [
+    {
+      "kind": "wrongTarget",
+      "rejected": true,
+      "expected": "target identity"
+    },
+    {
+      "kind": "wrongDistance",
+      "rejected": true,
+      "expected": "unit distance"
+    },
+    {
+      "kind": "cachedVictoryAsCurrent",
+      "rejected": true,
+      "expected": "current VP, not cached victory"
+    }
+  ],
+  "snapshotsSha256": "c2bac6745599693308aad671580a6f0003ec3ab31dded6085a4f72f1991802f0"
+}

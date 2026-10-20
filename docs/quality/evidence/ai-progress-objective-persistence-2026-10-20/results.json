@@ -1,0 +1,373 @@
+{
+  "scope": "Post-result local-effect exploration at a fixed movement boundary; features are available after movement, not at the original decision. No independent cross-family validation.",
+  "summary": {
+    "pairs": 15,
+    "histories": 30,
+    "replayedActions": 9878,
+    "availableRetainedProgress": 15,
+    "identicalToFirstProgress": true,
+    "boundaryVpIdenticallyZero": true,
+    "sameNextMoveDestination": 2,
+    "nextMoveCensoredHistories": 6
+  },
+  "aliases": {
+    "standaloneRetainedProgress": "prior.addedScaledProgress",
+    "directBoundaryVp": "prior.zero",
+    "boundaryVpPlusResidualMean": "prior.trainingMean",
+    "boundaryVpPlusResidualProgress": "prior.addedScaledProgress"
+  },
+  "models": {
+    "directBoundaryVp": {
+      "mae": 4.4,
+      "mse": 36.53333333333333,
+      "reusedEquivalentModel": "prior.zero"
+    },
+    "boundaryVpPlusResidualMean": {
+      "mae": 4.761904761904762,
+      "mse": 41.91836734693877,
+      "reusedEquivalentModel": "prior.trainingMean"
+    },
+    "boundaryVpPlusResidualProgress": {
+      "mae": 4.998910444190817,
+      "mse": 45.574959362729345,
+      "reusedEquivalentModel": "prior.addedScaledProgress"
+    },
+    "standaloneRetainedProgress": {
+      "mae": 4.998910444190817,
+      "mse": 45.574959362729345,
+      "reusedEquivalentModel": "prior.addedScaledProgress"
+    }
+  },
+  "priorModels": {
+    "zero": {
+      "mae": 4.4,
+      "mse": 36.53333333333333
+    },
+    "trainingMean": {
+      "mae": 4.761904761904762,
+      "mse": 41.91836734693877
+    },
+    "addedScaledProgress": {
+      "mae": 4.998910444190817,
+      "mse": 45.574959362729345
+    },
+    "otherCostPerScaledProgress": {
+      "mae": 5.072001187595042,
+      "mse": 42.067287233062764
+    },
+    "exposureCostPerScaledProgress": {
+      "mae": 4.967255553932465,
+      "mse": 45.94796243419193
+    }
+  },
+  "predictions": {
+    "directBoundaryVp": [
+      {
+        "firstMatch": 1800000,
+        "observed": -2,
+        "predicted": 0
+      },
+      {
+        "firstMatch": 1800002,
+        "observed": 8,
+        "predicted": 0
+      },
+      {
+        "firstMatch": 1800004,
+        "observed": -12,
+        "predicted": 0
+      },
+      {
+        "firstMatch": 1800006,
+        "observed": 8,
+        "predicted": 0
+      },
+      {
+        "firstMatch": 1800008,
+        "observed": -8,
+        "predicted": 0
+      },
+      {
+        "firstMatch": 1800010,
+        "observed": 8,
+        "predicted": 0
+      },
+      {
+        "firstMatch": 1800012,
+        "observed": 0,
+        "predicted": 0
+      },
+      {
+        "firstMatch": 1800014,
+        "observed": 0,
+        "predicted": 0
+      },
+      {
+        "firstMatch": 1800016,
+        "observed": -4,
+        "predicted": 0
+      },
+      {
+        "firstMatch": 1800018,
+        "observed": 0,
+        "predicted": 0
+      },
+      {
+        "firstMatch": 1800020,
+        "observed": 0,
+        "predicted": 0
+      },
+      {
+        "firstMatch": 1800022,
+        "observed": 0,
+        "predicted": 0
+      },
+      {
+        "firstMatch": 1800024,
+        "observed": -8,
+        "predicted": 0
+      },
+      {
+        "firstMatch": 1800026,
+        "observed": 0,
+        "predicted": 0
+      },
+      {
+        "firstMatch": 1800028,
+        "observed": 8,
+        "predicted": 0
+      }
+    ],
+    "boundaryVpPlusResidualMean": [
+      {
+        "firstMatch": 1800000,
+        "observed": -2,
+        "predicted": 0
+      },
+      {
+        "firstMatch": 1800002,
+        "observed": 8,
+        "predicted": -0.7142857142857143
+      },
+      {
+        "firstMatch": 1800004,
+        "observed": -12,
+        "predicted": 0.7142857142857143
+      },
+      {
+        "firstMatch": 1800006,
+        "observed": 8,
+        "predicted": -0.7142857142857143
+      },
+      {
+        "firstMatch": 1800008,
+        "observed": -8,
+        "predicted": 0.42857142857142855
+      },
+      {
+        "firstMatch": 1800010,
+        "observed": 8,
+        "predicted": -0.7142857142857143
+      },
+      {
+        "firstMatch": 1800012,
+        "observed": 0,
+        "predicted": -0.14285714285714285
+      },
+      {
+        "firstMatch": 1800014,
+        "observed": 0,
+        "predicted": -0.14285714285714285
+      },
+      {
+        "firstMatch": 1800016,
+        "observed": -4,
+        "predicted": 0.14285714285714285
+      },
+      {
+        "firstMatch": 1800018,
+        "observed": 0,
+        "predicted": -0.14285714285714285
+      },
+      {
+        "firstMatch": 1800020,
+        "observed": 0,
+        "predicted": -0.14285714285714285
+      },
+      {
+        "firstMatch": 1800022,
+        "observed": 0,
+        "predicted": -0.14285714285714285
+      },
+      {
+        "firstMatch": 1800024,
+        "observed": -8,
+        "predicted": 0.42857142857142855
+      },
+      {
+        "firstMatch": 1800026,
+        "observed": 0,
+        "predicted": -0.14285714285714285
+      },
+      {
+        "firstMatch": 1800028,
+        "observed": 8,
+        "predicted": -0.7142857142857143
+      }
+    ],
+    "boundaryVpPlusResidualProgress": [
+      {
+        "firstMatch": 1800000,
+        "observed": -2,
+        "predicted": -0.02188943568205841
+      },
+      {
+        "firstMatch": 1800002,
+        "observed": 8,
+        "predicted": -0.9462394295726805
+      },
+      {
+        "firstMatch": 1800004,
+        "observed": -12,
+        "predicted": 0.71061916077124
+      },
+      {
+        "firstMatch": 1800006,
+        "observed": 8,
+        "predicted": -0.754326006128626
+      },
+      {
+        "firstMatch": 1800008,
+        "observed": -8,
+        "predicted": 2.3752440688147343
+      },
+      {
+        "firstMatch": 1800010,
+        "observed": 8,
+        "predicted": -0.7543260061286253
+      },
+      {
+        "firstMatch": 1800012,
+        "observed": 0,
+        "predicted": -0.004664326081895487
+      },
+      {
+        "firstMatch": 1800014,
+        "observed": 0,
+        "predicted": -0.39089609550732796
+      },
+      {
+        "firstMatch": 1800016,
+        "observed": -4,
+        "predicted": 0.2420790712942949
+      },
+      {
+        "firstMatch": 1800018,
+        "observed": 0,
+        "predicted": -0.11624682773663012
+      },
+      {
+        "firstMatch": 1800020,
+        "observed": 0,
+        "predicted": -0.6718581321214772
+      },
+      {
+        "firstMatch": 1800022,
+        "observed": 0,
+        "predicted": -0.08315230648954611
+      },
+      {
+        "firstMatch": 1800024,
+        "observed": -8,
+        "predicted": 0.5327205606523149
+      },
+      {
+        "firstMatch": 1800026,
+        "observed": 0,
+        "predicted": -0.1635660615280154
+      },
+      {
+        "firstMatch": 1800028,
+        "observed": 8,
+        "predicted": -1.2596080457169114
+      }
+    ],
+    "standaloneRetainedProgress": [
+      {
+        "firstMatch": 1800000,
+        "observed": -2,
+        "predicted": -0.02188943568205841
+      },
+      {
+        "firstMatch": 1800002,
+        "observed": 8,
+        "predicted": -0.9462394295726805
+      },
+      {
+        "firstMatch": 1800004,
+        "observed": -12,
+        "predicted": 0.71061916077124
+      },
+      {
+        "firstMatch": 1800006,
+        "observed": 8,
+        "predicted": -0.754326006128626
+      },
+      {
+        "firstMatch": 1800008,
+        "observed": -8,
+        "predicted": 2.3752440688147343
+      },
+      {
+        "firstMatch": 1800010,
+        "observed": 8,
+        "predicted": -0.7543260061286253
+      },
+      {
+        "firstMatch": 1800012,
+        "observed": 0,
+        "predicted": -0.004664326081895487
+      },
+      {
+        "firstMatch": 1800014,
+        "observed": 0,
+        "predicted": -0.39089609550732796
+      },
+      {
+        "firstMatch": 1800016,
+        "observed": -4,
+        "predicted": 0.2420790712942949
+      },
+      {
+        "firstMatch": 1800018,
+        "observed": 0,
+        "predicted": -0.11624682773663012
+      },
+      {
+        "firstMatch": 1800020,
+        "observed": 0,
+        "predicted": -0.6718581321214772
+      },
+      {
+        "firstMatch": 1800022,
+        "observed": 0,
+        "predicted": -0.08315230648954611
+      },
+      {
+        "firstMatch": 1800024,
+        "observed": -8,
+        "predicted": 0.5327205606523149
+      },
+      {
+        "firstMatch": 1800026,
+        "observed": 0,
+        "predicted": -0.1635660615280154
+      },
+      {
+        "firstMatch": 1800028,
+        "observed": 8,
+        "predicted": -1.2596080457169114
+      }
+    ]
+  }
+}
