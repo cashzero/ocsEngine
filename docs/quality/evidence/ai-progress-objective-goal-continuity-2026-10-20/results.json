@@ -1,0 +1,369 @@
+{
+  "scope": "Post-result local-effect forecasts after the intervention player turn; not pre-action or independent cross-family validation.",
+  "summary": {
+    "pairs": 15,
+    "histories": 30,
+    "primaryBoundaries": 30,
+    "replayedActions": 2727,
+    "observedNextGoals": 24,
+    "censoredNextGoals": 6,
+    "changedTarget": 11,
+    "changedWhileOldTargetStillEnemy": 7,
+    "changedAfterOldTargetHeldByAxis": 4,
+    "changedWithOldTargetNeutral": 0,
+    "sameTargetChangedPurpose": 6,
+    "nextHunt": 2,
+    "heldAtHandoff": 6,
+    "nonzeroAllVpEffects": 0,
+    "nonzeroTargetVpEffects": 0,
+    "identicalAllAndTarget": true
+  },
+  "aliases": {
+    "directAllVp": "prior.zero",
+    "fittedAllVp": "prior.trainingMean",
+    "directTargetVp": "prior.zero",
+    "fittedTargetVp": "prior.trainingMean"
+  },
+  "models": {
+    "directAllVp": {
+      "mae": 4.4,
+      "mse": 36.53333333333333,
+      "alias": "prior.zero"
+    },
+    "fittedAllVp": {
+      "mae": 4.761904761904762,
+      "mse": 41.91836734693877,
+      "alias": "prior.trainingMean"
+    },
+    "directTargetVp": {
+      "mae": 4.4,
+      "mse": 36.53333333333333,
+      "alias": "prior.zero"
+    },
+    "fittedTargetVp": {
+      "mae": 4.761904761904762,
+      "mse": 41.91836734693877,
+      "alias": "prior.trainingMean"
+    }
+  },
+  "baselineModels": {
+    "zero": {
+      "mae": 4.4,
+      "mse": 36.53333333333333
+    },
+    "trainingMean": {
+      "mae": 4.761904761904762,
+      "mse": 41.91836734693877
+    }
+  },
+  "predictions": {
+    "directAllVp": [
+      {
+        "firstMatch": 1800000,
+        "observed": -2,
+        "predicted": 0
+      },
+      {
+        "firstMatch": 1800002,
+        "observed": 8,
+        "predicted": 0
+      },
+      {
+        "firstMatch": 1800004,
+        "observed": -12,
+        "predicted": 0
+      },
+      {
+        "firstMatch": 1800006,
+        "observed": 8,
+        "predicted": 0
+      },
+      {
+        "firstMatch": 1800008,
+        "observed": -8,
+        "predicted": 0
+      },
+      {
+        "firstMatch": 1800010,
+        "observed": 8,
+        "predicted": 0
+      },
+      {
+        "firstMatch": 1800012,
+        "observed": 0,
+        "predicted": 0
+      },
+      {
+        "firstMatch": 1800014,
+        "observed": 0,
+        "predicted": 0
+      },
+      {
+        "firstMatch": 1800016,
+        "observed": -4,
+        "predicted": 0
+      },
+      {
+        "firstMatch": 1800018,
+        "observed": 0,
+        "predicted": 0
+      },
+      {
+        "firstMatch": 1800020,
+        "observed": 0,
+        "predicted": 0
+      },
+      {
+        "firstMatch": 1800022,
+        "observed": 0,
+        "predicted": 0
+      },
+      {
+        "firstMatch": 1800024,
+        "observed": -8,
+        "predicted": 0
+      },
+      {
+        "firstMatch": 1800026,
+        "observed": 0,
+        "predicted": 0
+      },
+      {
+        "firstMatch": 1800028,
+        "observed": 8,
+        "predicted": 0
+      }
+    ],
+    "fittedAllVp": [
+      {
+        "firstMatch": 1800000,
+        "observed": -2,
+        "predicted": 0
+      },
+      {
+        "firstMatch": 1800002,
+        "observed": 8,
+        "predicted": -0.7142857142857143
+      },
+      {
+        "firstMatch": 1800004,
+        "observed": -12,
+        "predicted": 0.7142857142857143
+      },
+      {
+        "firstMatch": 1800006,
+        "observed": 8,
+        "predicted": -0.7142857142857143
+      },
+      {
+        "firstMatch": 1800008,
+        "observed": -8,
+        "predicted": 0.42857142857142855
+      },
+      {
+        "firstMatch": 1800010,
+        "observed": 8,
+        "predicted": -0.7142857142857143
+      },
+      {
+        "firstMatch": 1800012,
+        "observed": 0,
+        "predicted": -0.14285714285714285
+      },
+      {
+        "firstMatch": 1800014,
+        "observed": 0,
+        "predicted": -0.14285714285714285
+      },
+      {
+        "firstMatch": 1800016,
+        "observed": -4,
+        "predicted": 0.14285714285714285
+      },
+      {
+        "firstMatch": 1800018,
+        "observed": 0,
+        "predicted": -0.14285714285714285
+      },
+      {
+        "firstMatch": 1800020,
+        "observed": 0,
+        "predicted": -0.14285714285714285
+      },
+      {
+        "firstMatch": 1800022,
+        "observed": 0,
+        "predicted": -0.14285714285714285
+      },
+      {
+        "firstMatch": 1800024,
+        "observed": -8,
+        "predicted": 0.42857142857142855
+      },
+      {
+        "firstMatch": 1800026,
+        "observed": 0,
+        "predicted": -0.14285714285714285
+      },
+      {
+        "firstMatch": 1800028,
+        "observed": 8,
+        "predicted": -0.7142857142857143
+      }
+    ],
+    "directTargetVp": [
+      {
+        "firstMatch": 1800000,
+        "observed": -2,
+        "predicted": 0
+      },
+      {
+        "firstMatch": 1800002,
+        "observed": 8,
+        "predicted": 0
+      },
+      {
+        "firstMatch": 1800004,
+        "observed": -12,
+        "predicted": 0
+      },
+      {
+        "firstMatch": 1800006,
+        "observed": 8,
+        "predicted": 0
+      },
+      {
+        "firstMatch": 1800008,
+        "observed": -8,
+        "predicted": 0
+      },
+      {
+        "firstMatch": 1800010,
+        "observed": 8,
+        "predicted": 0
+      },
+      {
+        "firstMatch": 1800012,
+        "observed": 0,
+        "predicted": 0
+      },
+      {
+        "firstMatch": 1800014,
+        "observed": 0,
+        "predicted": 0
+      },
+      {
+        "firstMatch": 1800016,
+        "observed": -4,
+        "predicted": 0
+      },
+      {
+        "firstMatch": 1800018,
+        "observed": 0,
+        "predicted": 0
+      },
+      {
+        "firstMatch": 1800020,
+        "observed": 0,
+        "predicted": 0
+      },
+      {
+        "firstMatch": 1800022,
+        "observed": 0,
+        "predicted": 0
+      },
+      {
+        "firstMatch": 1800024,
+        "observed": -8,
+        "predicted": 0
+      },
+      {
+        "firstMatch": 1800026,
+        "observed": 0,
+        "predicted": 0
+      },
+      {
+        "firstMatch": 1800028,
+        "observed": 8,
+        "predicted": 0
+      }
+    ],
+    "fittedTargetVp": [
+      {
+        "firstMatch": 1800000,
+        "observed": -2,
+        "predicted": 0
+      },
+      {
+        "firstMatch": 1800002,
+        "observed": 8,
+        "predicted": -0.7142857142857143
+      },
+      {
+        "firstMatch": 1800004,
+        "observed": -12,
+        "predicted": 0.7142857142857143
+      },
+      {
+        "firstMatch": 1800006,
+        "observed": 8,
+        "predicted": -0.7142857142857143
+      },
+      {
+        "firstMatch": 1800008,
+        "observed": -8,
+        "predicted": 0.42857142857142855
+      },
+      {
+        "firstMatch": 1800010,
+        "observed": 8,
+        "predicted": -0.7142857142857143
+      },
+      {
+        "firstMatch": 1800012,
+        "observed": 0,
+        "predicted": -0.14285714285714285
+      },
+      {
+        "firstMatch": 1800014,
+        "observed": 0,
+        "predicted": -0.14285714285714285
+      },
+      {
+        "firstMatch": 1800016,
+        "observed": -4,
+        "predicted": 0.14285714285714285
+      },
+      {
+        "firstMatch": 1800018,
+        "observed": 0,
+        "predicted": -0.14285714285714285
+      },
+      {
+        "firstMatch": 1800020,
+        "observed": 0,
+        "predicted": -0.14285714285714285
+      },
+      {
+        "firstMatch": 1800022,
+        "observed": 0,
+        "predicted": -0.14285714285714285
+      },
+      {
+        "firstMatch": 1800024,
+        "observed": -8,
+        "predicted": 0.42857142857142855
+      },
+      {
+        "firstMatch": 1800026,
+        "observed": 0,
+        "predicted": -0.14285714285714285
+      },
+      {
+        "firstMatch": 1800028,
+        "observed": 8,
+        "predicted": -0.7142857142857143
+      }
+    ]
+  }
+}

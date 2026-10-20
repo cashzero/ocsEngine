@@ -1,0 +1,25 @@
+{
+  "verifiedInternalSnapshots": 30,
+  "controls": [
+    {
+      "kind": "wrongOriginalTarget",
+      "rejected": true,
+      "assertion": "original target identity"
+    },
+    {
+      "kind": "wrongCurrentVP",
+      "rejected": true,
+      "assertion": "current objective VP from raw control"
+    },
+    {
+      "kind": "outerRevisionAsInternal",
+      "rejected": true,
+      "assertion": "internal boundary revision"
+    }
+  ],
+  "scriptSha256": "1e9787ce8e319573401e60e71f708387bcc87361d2a1a97913d14c7f8644042c",
+  "measurementsSha256": "b0b4a513fb5b8254a38866c3e3185767ccce6b2c0e645369dce607127864871d",
+  "snapshotsSha256": "609af716c0eb2eea2dc2fd37cd11b4d703f80c92a36c265437d9abc8a70bd1bf",
+  "mechanismSha256": "86c4c33f777fabd339fe407828e6549cd22c7d068c7ba4b484c3f64d38141c50",
+  "scope": "Raw derived snapshot checks; independent selective legal replay is recorded in final-review.md."
+}

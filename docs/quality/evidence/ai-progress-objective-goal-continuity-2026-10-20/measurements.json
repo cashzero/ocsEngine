@@ -1,0 +1,3833 @@
+{
+  "sourceCommit": "16ff5ec97126f0e1dafa9309ca8c7532a223d73b",
+  "equivalentReachableSourceCommit": "edfc3987ef9a6889e68798bd1726dffb3200b3b3",
+  "analysisCheckoutCommit": "e96b238a07566b966280501d07a8d82c6f5b5b78",
+  "scriptSha256": "34193efdd7d489a8850785a656ea619a8eee35e3d3395239e55495964b8b7430",
+  "summary": {
+    "pairs": 15,
+    "histories": 30,
+    "primaryBoundaries": 30,
+    "replayedActions": 2727,
+    "observedNextGoals": 24,
+    "censoredNextGoals": 6,
+    "changedTarget": 11,
+    "changedWhileOldTargetStillEnemy": 7,
+    "changedAfterOldTargetHeldByAxis": 4,
+    "changedWithOldTargetNeutral": 0,
+    "sameTargetChangedPurpose": 6,
+    "nextHunt": 2,
+    "heldAtHandoff": 6
+  },
+  "rows": [
+    {
+      "firstMatch": 1800000,
+      "mapSeed": 344141633,
+      "originalTarget": "-2,7",
+      "originalPurpose": "capture",
+      "pieceId": "generated-oob:344141634:axis:f4-combat-1:unit",
+      "allVpEffect": 0,
+      "targetVpEffect": 0,
+      "terminalLocalEffect": -2,
+      "arms": [
+        {
+          "path": "artifacts/ai-progress-objective-30games/matches/match-1800001.save.json",
+          "saveSha256": "e04812aafaf87a018eba2164b0b69806f7a39076147e2d663c415370a0cddd4c",
+          "tracePath": "artifacts/ai-progress-objective-30games/matches/match-1800001.trace.jsonl",
+          "traceSha256": "1bb020feb92975d1858c6e28a468c7831a55b0a2300190ea138c9be5d673f5fb",
+          "resumeAt": 63,
+          "resumeHash": "sha256:03c00b40034e3a23ac3babc8b9a1c4094b58b068043362d3eea0f472ec0adfea",
+          "actionsReplayed": 107,
+          "primary": {
+            "at": 73,
+            "revision": 73,
+            "stateHash": "sha256:682c7cee54e4a4b434527345a01d968cf695ec9d567646dad6c67d0b06260cf6",
+            "internalBoundary": true,
+            "eventIndex": 4,
+            "containerPreStateHash": "sha256:b9cc6f93e13026d9b368273ba4d118feb2fb55bad797fd65c094fc2c7c061c24",
+            "containerPostStateHash": "sha256:e3601d713680020a8adc580183cbdfa2f1fbfc67ba7ea03e52f54ec5d1ecb2af",
+            "containerPostRevision": 74,
+            "reconstruction": {
+              "lifecycleTransitions": 8,
+              "allEventsMatch": true,
+              "normalizedFinalStateMatches": true
+            },
+            "sequence": {
+              "gameTurn": 1,
+              "playerTurnIndex": 1,
+              "phase": "AIRCRAFT_REFIT",
+              "segment": "NONE",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:allied",
+              "actingPlayerId": "player:allied"
+            },
+            "departureEvent": {
+              "kind": "SEQUENCE_ADVANCED",
+              "sequence": 4,
+              "from": {
+                "gameTurn": 1,
+                "playerTurnIndex": 0,
+                "phase": "CLEAN_UP",
+                "segment": "NONE",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:axis",
+                "actingPlayerId": "player:axis"
+              },
+              "to": {
+                "gameTurn": 1,
+                "playerTurnIndex": 1,
+                "phase": "AIRCRAFT_REFIT",
+                "segment": "NONE",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:allied",
+                "actingPlayerId": "player:allied"
+              }
+            },
+            "action": {
+              "actionId": "candidate:advance:73",
+              "actorId": "player:axis",
+              "expectedRevision": 73,
+              "kind": "ADVANCE_SEQUENCE"
+            },
+            "scores": {
+              "player:allied": 13,
+              "player:axis": 0
+            },
+            "axisMargin": -13,
+            "targetHolder": "player:allied",
+            "targetPoints": 4,
+            "targetMarginContribution": -4,
+            "firstObservedAxisAcquisition": null,
+            "observedControlChangesThroughHandoff": []
+          },
+          "changes": [],
+          "nextGoal": {
+            "status": "OBSERVED",
+            "at": 169,
+            "sequence": {
+              "gameTurn": 2,
+              "playerTurnIndex": 1,
+              "phase": "MOVEMENT",
+              "segment": "MOVEMENT",
+              "firstPlayerId": "player:allied",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            },
+            "preStateHash": "sha256:4f38117b727d9447f13275b15b41fae138490c2ef3cf4f742e93f9a61c737d92",
+            "action": {
+              "actionId": "candidate:move:generated-oob:344141634:axis:f4-combat-1:unit:16,6:169",
+              "actorId": "player:axis",
+              "expectedRevision": 169,
+              "kind": "MOVE_PIECE",
+              "path": [
+                "18,7",
+                "18,6",
+                "17,6",
+                "16,6"
+              ],
+              "pieceId": "generated-oob:344141634:axis:f4-combat-1:unit"
+            },
+            "intent": "combat to 16,6 (assault 10,6)",
+            "purpose": "assault",
+            "target": "10,6",
+            "sameTargetHex": false,
+            "samePurpose": false,
+            "nextTargetIsObjective": true,
+            "oldTargetHolder": "player:allied",
+            "oldTargetHeldByAxis": false
+          }
+        },
+        {
+          "path": "artifacts/ai-progress-objective-original-continuation/pair-1800000/branch-15.save.json",
+          "saveSha256": "ce6334a7dafd24b41f5687fab07f847d64a6488eed4f6370b8f6fc12f1fa2ae6",
+          "tracePath": "artifacts/ai-progress-objective-original-continuation/pair-1800000/branch-15.trace.jsonl",
+          "traceSha256": "d2f517efafc87c2bb384bcb4b8956ebdd49b4c7e6f954adbba2530c1dd93da51",
+          "resumeAt": 63,
+          "resumeHash": "sha256:1725dcb1b3aed869d47988344b71eb78c10b20b7474f8cc69b99207d1e2df163",
+          "actionsReplayed": 107,
+          "primary": {
+            "at": 73,
+            "revision": 73,
+            "stateHash": "sha256:3c0867f9ba38df9e99558122448df250f04ef5ed50e5dfcbc4fd2091548afbd2",
+            "internalBoundary": true,
+            "eventIndex": 4,
+            "containerPreStateHash": "sha256:1e1aae160a200e9215013049c5eaea38f63cf3d20b138209ceb2dc4d85e15d7b",
+            "containerPostStateHash": "sha256:4a92ca1c2610844fde9266ed1be5ac0c1390a7bbe8fb515f3d01a4c64d207043",
+            "containerPostRevision": 74,
+            "reconstruction": {
+              "lifecycleTransitions": 8,
+              "allEventsMatch": true,
+              "normalizedFinalStateMatches": true
+            },
+            "sequence": {
+              "gameTurn": 1,
+              "playerTurnIndex": 1,
+              "phase": "AIRCRAFT_REFIT",
+              "segment": "NONE",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:allied",
+              "actingPlayerId": "player:allied"
+            },
+            "departureEvent": {
+              "kind": "SEQUENCE_ADVANCED",
+              "sequence": 4,
+              "from": {
+                "gameTurn": 1,
+                "playerTurnIndex": 0,
+                "phase": "CLEAN_UP",
+                "segment": "NONE",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:axis",
+                "actingPlayerId": "player:axis"
+              },
+              "to": {
+                "gameTurn": 1,
+                "playerTurnIndex": 1,
+                "phase": "AIRCRAFT_REFIT",
+                "segment": "NONE",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:allied",
+                "actingPlayerId": "player:allied"
+              }
+            },
+            "action": {
+              "actionId": "candidate:advance:73",
+              "actorId": "player:axis",
+              "expectedRevision": 73,
+              "kind": "ADVANCE_SEQUENCE"
+            },
+            "scores": {
+              "player:allied": 13,
+              "player:axis": 0
+            },
+            "axisMargin": -13,
+            "targetHolder": "player:allied",
+            "targetPoints": 4,
+            "targetMarginContribution": -4,
+            "firstObservedAxisAcquisition": null,
+            "observedControlChangesThroughHandoff": []
+          },
+          "changes": [],
+          "nextGoal": {
+            "status": "OBSERVED",
+            "at": 169,
+            "sequence": {
+              "gameTurn": 2,
+              "playerTurnIndex": 1,
+              "phase": "MOVEMENT",
+              "segment": "MOVEMENT",
+              "firstPlayerId": "player:allied",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            },
+            "preStateHash": "sha256:fb91f16d813b26e434b372eebc875d4f3563963f8e0fe0bf23251a09c56e8839",
+            "action": {
+              "actionId": "candidate:move:generated-oob:344141634:axis:f4-combat-1:unit:16,7:169",
+              "actorId": "player:axis",
+              "expectedRevision": 169,
+              "kind": "MOVE_PIECE",
+              "pieceId": "generated-oob:344141634:axis:f4-combat-1:unit",
+              "path": [
+                "19,7",
+                "18,7",
+                "17,7",
+                "16,7"
+              ]
+            },
+            "intent": "combat to 16,7 (capture -2,7)",
+            "purpose": "capture",
+            "target": "-2,7",
+            "sameTargetHex": true,
+            "samePurpose": true,
+            "nextTargetIsObjective": true,
+            "oldTargetHolder": "player:allied",
+            "oldTargetHeldByAxis": false
+          }
+        }
+      ]
+    },
+    {
+      "firstMatch": 1800002,
+      "mapSeed": 344141827,
+      "originalTarget": "5,18",
+      "originalPurpose": "capture",
+      "pieceId": "generated-oob:344141828:axis:f1-recon:unit",
+      "allVpEffect": 0,
+      "targetVpEffect": 0,
+      "terminalLocalEffect": 8,
+      "arms": [
+        {
+          "path": "artifacts/ai-progress-objective-30games/matches/match-1800003.save.json",
+          "saveSha256": "4955c2ee602c967630da6a1dc9ad6c86396dcbc883908b4702e815b45d1103f8",
+          "tracePath": "artifacts/ai-progress-objective-30games/matches/match-1800003.trace.jsonl",
+          "traceSha256": "5d84ccc47ffa8074a2dc162877aa32c343898eda3e9a531375b998336383c8d3",
+          "resumeAt": 68,
+          "resumeHash": "sha256:1d6a101946e5257e3497b51a740cdee4af1cd0c1596e9223217a318eb95f09c7",
+          "actionsReplayed": 23,
+          "primary": {
+            "at": 90,
+            "revision": 90,
+            "stateHash": "sha256:0b67270456f7b5899474e58b858ca2dfa1b0a39ff20b5c7590bdebca972ea59b",
+            "internalBoundary": true,
+            "eventIndex": 1,
+            "containerPreStateHash": "sha256:d993f8466baa7420177d911992eae49a0ef76d9ede69c5a753d4c1fb33953732",
+            "containerPostStateHash": "sha256:d40333946bb66e781635392735b50aedb692cf50a19538ef41eef87bf34cc562",
+            "containerPostRevision": 91,
+            "reconstruction": {
+              "lifecycleTransitions": 5,
+              "allEventsMatch": true,
+              "normalizedFinalStateMatches": true
+            },
+            "sequence": {
+              "gameTurn": 1,
+              "playerTurnIndex": 1,
+              "phase": "AIRCRAFT_REFIT",
+              "segment": "NONE",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:allied",
+              "actingPlayerId": "player:allied"
+            },
+            "departureEvent": {
+              "kind": "SEQUENCE_ADVANCED",
+              "sequence": 1,
+              "from": {
+                "gameTurn": 1,
+                "playerTurnIndex": 0,
+                "phase": "CLEAN_UP",
+                "segment": "NONE",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:axis",
+                "actingPlayerId": "player:axis"
+              },
+              "to": {
+                "gameTurn": 1,
+                "playerTurnIndex": 1,
+                "phase": "AIRCRAFT_REFIT",
+                "segment": "NONE",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:allied",
+                "actingPlayerId": "player:allied"
+              }
+            },
+            "action": {
+              "actionId": "candidate:advance:90",
+              "actorId": "player:axis",
+              "expectedRevision": 90,
+              "kind": "ADVANCE_SEQUENCE"
+            },
+            "scores": {
+              "player:allied": 10,
+              "player:axis": 3
+            },
+            "axisMargin": -7,
+            "targetHolder": "player:allied",
+            "targetPoints": 4,
+            "targetMarginContribution": -4,
+            "firstObservedAxisAcquisition": null,
+            "observedControlChangesThroughHandoff": []
+          },
+          "changes": [],
+          "nextGoal": {
+            "status": "OBSERVED",
+            "at": 86,
+            "sequence": {
+              "gameTurn": 1,
+              "playerTurnIndex": 0,
+              "phase": "EXPLOITATION",
+              "segment": "MOVEMENT",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            },
+            "preStateHash": "sha256:ad9d06f397c3b7edfcda69d156d8c58d64ee6b69f0f5cbbb0d46b7ed109975fd",
+            "action": {
+              "actionId": "candidate:move:generated-oob:344141828:axis:f1-recon:unit:12,18:86",
+              "actorId": "player:axis",
+              "expectedRevision": 86,
+              "kind": "MOVE_PIECE",
+              "path": [
+                "12,17",
+                "12,18"
+              ],
+              "pieceId": "generated-oob:344141828:axis:f1-recon:unit"
+            },
+            "intent": "combat to 12,18 (assault 5,18)",
+            "purpose": "assault",
+            "target": "5,18",
+            "sameTargetHex": true,
+            "samePurpose": false,
+            "nextTargetIsObjective": true,
+            "oldTargetHolder": "player:allied",
+            "oldTargetHeldByAxis": false
+          }
+        },
+        {
+          "path": "artifacts/ai-progress-objective-original-continuation/pair-1800002/branch-15.save.json",
+          "saveSha256": "02983b8591943b23776686887f8e154a4b90e2afd157469cb80194473261dbbb",
+          "tracePath": "artifacts/ai-progress-objective-original-continuation/pair-1800002/branch-15.trace.jsonl",
+          "traceSha256": "eeed51b1504bc6e28b1d26d3f6139ea1ced195f3dc2224a36425364079748847",
+          "resumeAt": 68,
+          "resumeHash": "sha256:3aed7c6ed5efde7d2022b1a76ea306309b9a5df37f629913c3f9107aaeddc9a1",
+          "actionsReplayed": 60,
+          "primary": {
+            "at": 86,
+            "revision": 86,
+            "stateHash": "sha256:3bf1a10f37cb9ddb14d7b70d6d7b3ba82ae4798d024818320b548414a5b9d32e",
+            "internalBoundary": true,
+            "eventIndex": 1,
+            "containerPreStateHash": "sha256:723df848dc4010a75bab04fc9a2525bb37b9668205066a54bbafa7e940797f22",
+            "containerPostStateHash": "sha256:2f2213415587a43a3e534cbf00adaa42cb6cbd0a1ce1eb14a80be2a8314b0e7b",
+            "containerPostRevision": 87,
+            "reconstruction": {
+              "lifecycleTransitions": 5,
+              "allEventsMatch": true,
+              "normalizedFinalStateMatches": true
+            },
+            "sequence": {
+              "gameTurn": 1,
+              "playerTurnIndex": 1,
+              "phase": "AIRCRAFT_REFIT",
+              "segment": "NONE",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:allied",
+              "actingPlayerId": "player:allied"
+            },
+            "departureEvent": {
+              "kind": "SEQUENCE_ADVANCED",
+              "sequence": 1,
+              "from": {
+                "gameTurn": 1,
+                "playerTurnIndex": 0,
+                "phase": "CLEAN_UP",
+                "segment": "NONE",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:axis",
+                "actingPlayerId": "player:axis"
+              },
+              "to": {
+                "gameTurn": 1,
+                "playerTurnIndex": 1,
+                "phase": "AIRCRAFT_REFIT",
+                "segment": "NONE",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:allied",
+                "actingPlayerId": "player:allied"
+              }
+            },
+            "action": {
+              "actionId": "candidate:advance:86",
+              "actorId": "player:axis",
+              "expectedRevision": 86,
+              "kind": "ADVANCE_SEQUENCE"
+            },
+            "scores": {
+              "player:allied": 10,
+              "player:axis": 3
+            },
+            "axisMargin": -7,
+            "targetHolder": "player:allied",
+            "targetPoints": 4,
+            "targetMarginContribution": -4,
+            "firstObservedAxisAcquisition": null,
+            "observedControlChangesThroughHandoff": []
+          },
+          "changes": [],
+          "nextGoal": {
+            "status": "OBSERVED",
+            "at": 127,
+            "sequence": {
+              "gameTurn": 2,
+              "playerTurnIndex": 0,
+              "phase": "MOVEMENT",
+              "segment": "MOVEMENT",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            },
+            "preStateHash": "sha256:1d950f98d17334beadf1ad5c6a836e4aee9819719f6105cca229f7f7069c2777",
+            "action": {
+              "actionId": "candidate:move:generated-oob:344141828:axis:f1-recon:unit:10,18:127",
+              "actorId": "player:axis",
+              "expectedRevision": 127,
+              "kind": "MOVE_PIECE",
+              "pieceId": "generated-oob:344141828:axis:f1-recon:unit",
+              "path": [
+                "10,21",
+                "10,20",
+                "10,19",
+                "10,18"
+              ]
+            },
+            "intent": "combat to 10,18 (assault 5,18)",
+            "purpose": "assault",
+            "target": "5,18",
+            "sameTargetHex": true,
+            "samePurpose": false,
+            "nextTargetIsObjective": true,
+            "oldTargetHolder": "player:allied",
+            "oldTargetHeldByAxis": false
+          }
+        }
+      ]
+    },
+    {
+      "firstMatch": 1800004,
+      "mapSeed": 344142021,
+      "originalTarget": "11,13",
+      "originalPurpose": "capture",
+      "pieceId": "generated-oob:344142022:axis:f1-combat-1:unit",
+      "allVpEffect": 0,
+      "targetVpEffect": 0,
+      "terminalLocalEffect": -12,
+      "arms": [
+        {
+          "path": "artifacts/ai-progress-objective-30games/matches/match-1800005.save.json",
+          "saveSha256": "280e1bb45485a16cdbd53d4c73d446bd6d8f28c01807cb74c78a4b5ea610a64b",
+          "tracePath": "artifacts/ai-progress-objective-30games/matches/match-1800005.trace.jsonl",
+          "traceSha256": "20a83260d6719ef9823d748e8493289da2ceef13b8ae497f127ef9803c2f5ce0",
+          "resumeAt": 63,
+          "resumeHash": "sha256:00c77c7b949437edcee3cd733e777954131703909ccf2efdd24e6e4524228c04",
+          "actionsReplayed": 53,
+          "primary": {
+            "at": 70,
+            "revision": 70,
+            "stateHash": "sha256:8368ce28995141cc4013e74c52d88e4a4a508cf102645153dfc7068b33ab4f93",
+            "internalBoundary": true,
+            "eventIndex": 4,
+            "containerPreStateHash": "sha256:9d79bc0cece596be013b879db70e94c47d86e798e319173efdd29dbe22007c3f",
+            "containerPostStateHash": "sha256:c9feaf4fee6c4e2e86df8106768afb11e0a0d77640ff28f847cb3dce663facf5",
+            "containerPostRevision": 71,
+            "reconstruction": {
+              "lifecycleTransitions": 8,
+              "allEventsMatch": true,
+              "normalizedFinalStateMatches": true
+            },
+            "sequence": {
+              "gameTurn": 1,
+              "playerTurnIndex": 1,
+              "phase": "AIRCRAFT_REFIT",
+              "segment": "NONE",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:allied",
+              "actingPlayerId": "player:allied"
+            },
+            "departureEvent": {
+              "kind": "SEQUENCE_ADVANCED",
+              "sequence": 4,
+              "from": {
+                "gameTurn": 1,
+                "playerTurnIndex": 0,
+                "phase": "CLEAN_UP",
+                "segment": "NONE",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:axis",
+                "actingPlayerId": "player:axis"
+              },
+              "to": {
+                "gameTurn": 1,
+                "playerTurnIndex": 1,
+                "phase": "AIRCRAFT_REFIT",
+                "segment": "NONE",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:allied",
+                "actingPlayerId": "player:allied"
+              }
+            },
+            "action": {
+              "actionId": "candidate:advance:70",
+              "actorId": "player:axis",
+              "expectedRevision": 70,
+              "kind": "ADVANCE_SEQUENCE"
+            },
+            "scores": {
+              "player:allied": 15,
+              "player:axis": 0
+            },
+            "axisMargin": -15,
+            "targetHolder": "player:allied",
+            "targetPoints": 2,
+            "targetMarginContribution": -2,
+            "firstObservedAxisAcquisition": null,
+            "observedControlChangesThroughHandoff": []
+          },
+          "changes": [],
+          "nextGoal": {
+            "status": "OBSERVED",
+            "at": 115,
+            "sequence": {
+              "gameTurn": 2,
+              "playerTurnIndex": 0,
+              "phase": "MOVEMENT",
+              "segment": "MOVEMENT",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            },
+            "preStateHash": "sha256:d2aeae4fe361969bfe799fdd4eb2d2e1a2252126c7c7a31ac5bb5054f3882b82",
+            "action": {
+              "actionId": "candidate:move:generated-oob:344142022:axis:f1-combat-1:unit:9,17:115",
+              "actorId": "player:axis",
+              "expectedRevision": 115,
+              "kind": "MOVE_PIECE",
+              "path": [
+                "14,15",
+                "13,16",
+                "12,17",
+                "11,17",
+                "10,17",
+                "9,17"
+              ],
+              "pieceId": "generated-oob:344142022:axis:f1-combat-1:unit"
+            },
+            "intent": "combat to 9,17 (hunt 10,16)",
+            "purpose": "hunt",
+            "target": "10,16",
+            "sameTargetHex": false,
+            "samePurpose": false,
+            "nextTargetIsObjective": false,
+            "oldTargetHolder": "player:allied",
+            "oldTargetHeldByAxis": false
+          }
+        },
+        {
+          "path": "artifacts/ai-progress-objective-original-continuation/pair-1800004/branch-15.save.json",
+          "saveSha256": "4f2c8e392b2a7e43bd9636b3ca75daa76cf9c4bf83cbdcd0801689c2593cb592",
+          "tracePath": "artifacts/ai-progress-objective-original-continuation/pair-1800004/branch-15.trace.jsonl",
+          "traceSha256": "ffa9322ab21d2984c8411a50375a11644265b4150d9f238a0f2acb10ca565861",
+          "resumeAt": 63,
+          "resumeHash": "sha256:c90c01a436fca1c82d1b20ceed70142c69c544df78b9ddf1963bff8e31dce91a",
+          "actionsReplayed": 85,
+          "primary": {
+            "at": 66,
+            "revision": 66,
+            "stateHash": "sha256:5d5a52f46d1c96c2aa5bc6401216aa77eaefa7ffc4f6d4c8c20349e3ee129b52",
+            "internalBoundary": true,
+            "eventIndex": 4,
+            "containerPreStateHash": "sha256:377e7f1259effae7e1c539a8ba31580c1f51da536950a634f6e6f907f17a1520",
+            "containerPostStateHash": "sha256:24907a23b0d1198415f42a2dc0412c3ef27e4c3208a713d94920917d00d73f3d",
+            "containerPostRevision": 67,
+            "reconstruction": {
+              "lifecycleTransitions": 8,
+              "allEventsMatch": true,
+              "normalizedFinalStateMatches": true
+            },
+            "sequence": {
+              "gameTurn": 1,
+              "playerTurnIndex": 1,
+              "phase": "AIRCRAFT_REFIT",
+              "segment": "NONE",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:allied",
+              "actingPlayerId": "player:allied"
+            },
+            "departureEvent": {
+              "kind": "SEQUENCE_ADVANCED",
+              "sequence": 4,
+              "from": {
+                "gameTurn": 1,
+                "playerTurnIndex": 0,
+                "phase": "CLEAN_UP",
+                "segment": "NONE",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:axis",
+                "actingPlayerId": "player:axis"
+              },
+              "to": {
+                "gameTurn": 1,
+                "playerTurnIndex": 1,
+                "phase": "AIRCRAFT_REFIT",
+                "segment": "NONE",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:allied",
+                "actingPlayerId": "player:allied"
+              }
+            },
+            "action": {
+              "actionId": "candidate:advance:66",
+              "actorId": "player:axis",
+              "expectedRevision": 66,
+              "kind": "ADVANCE_SEQUENCE"
+            },
+            "scores": {
+              "player:allied": 15,
+              "player:axis": 0
+            },
+            "axisMargin": -15,
+            "targetHolder": "player:allied",
+            "targetPoints": 2,
+            "targetMarginContribution": -2,
+            "firstObservedAxisAcquisition": null,
+            "observedControlChangesThroughHandoff": []
+          },
+          "changes": [],
+          "nextGoal": {
+            "status": "OBSERVED",
+            "at": 147,
+            "sequence": {
+              "gameTurn": 2,
+              "playerTurnIndex": 1,
+              "phase": "MOVEMENT",
+              "segment": "MOVEMENT",
+              "firstPlayerId": "player:allied",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            },
+            "preStateHash": "sha256:32863f1583292d5731cb9960fca8b1a132b00802cc44b36f15a44df8f146f413",
+            "action": {
+              "actionId": "candidate:move:generated-oob:344142022:axis:f1-combat-1:unit:10,15:147",
+              "actorId": "player:axis",
+              "expectedRevision": 147,
+              "kind": "MOVE_PIECE",
+              "pieceId": "generated-oob:344142022:axis:f1-combat-1:unit",
+              "path": [
+                "17,13",
+                "16,13",
+                "16,14",
+                "15,15",
+                "14,16",
+                "13,17",
+                "12,17",
+                "11,17",
+                "10,17",
+                "10,16",
+                "10,15"
+              ]
+            },
+            "intent": "combat to 10,15 (capture 11,13)",
+            "purpose": "capture",
+            "target": "11,13",
+            "sameTargetHex": true,
+            "samePurpose": true,
+            "nextTargetIsObjective": true,
+            "oldTargetHolder": "player:allied",
+            "oldTargetHeldByAxis": false
+          }
+        }
+      ]
+    },
+    {
+      "firstMatch": 1800006,
+      "mapSeed": 344142215,
+      "originalTarget": "-2,16",
+      "originalPurpose": "capture",
+      "pieceId": "generated-oob:344142216:axis:f1-combat-1:unit",
+      "allVpEffect": 0,
+      "targetVpEffect": 0,
+      "terminalLocalEffect": 8,
+      "arms": [
+        {
+          "path": "artifacts/ai-progress-objective-30games/matches/match-1800007.save.json",
+          "saveSha256": "78f0acb920bc47cc108f4e4c06d20967b979224079fb524ac8e7c3a07a4aa325",
+          "tracePath": "artifacts/ai-progress-objective-30games/matches/match-1800007.trace.jsonl",
+          "traceSha256": "4108e53bdb4327925314987002671abaa63455db31b85e57b0c93e69a1dd5e47",
+          "resumeAt": 64,
+          "resumeHash": "sha256:40da5efa86ba8f0c3b988cab4d9e31aed16cce817fb72913ce382b475312700a",
+          "actionsReplayed": 428,
+          "primary": {
+            "at": 81,
+            "revision": 81,
+            "stateHash": "sha256:d4088e6a045f5a6ea9577fe1424a09232cc6e8bb44dc95c42e2334cc346269f3",
+            "internalBoundary": true,
+            "eventIndex": 4,
+            "containerPreStateHash": "sha256:57bf23e8e3f74b055bca2d5f83325fe7f85c3c38ab323095179f9a1759fba4c2",
+            "containerPostStateHash": "sha256:3a650fd9410bb1c373b03f3518cd81838e92f9eb2461159c6802773d9c7ba667",
+            "containerPostRevision": 82,
+            "reconstruction": {
+              "lifecycleTransitions": 8,
+              "allEventsMatch": true,
+              "normalizedFinalStateMatches": true
+            },
+            "sequence": {
+              "gameTurn": 1,
+              "playerTurnIndex": 1,
+              "phase": "AIRCRAFT_REFIT",
+              "segment": "NONE",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:allied",
+              "actingPlayerId": "player:allied"
+            },
+            "departureEvent": {
+              "kind": "SEQUENCE_ADVANCED",
+              "sequence": 4,
+              "from": {
+                "gameTurn": 1,
+                "playerTurnIndex": 0,
+                "phase": "CLEAN_UP",
+                "segment": "NONE",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:axis",
+                "actingPlayerId": "player:axis"
+              },
+              "to": {
+                "gameTurn": 1,
+                "playerTurnIndex": 1,
+                "phase": "AIRCRAFT_REFIT",
+                "segment": "NONE",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:allied",
+                "actingPlayerId": "player:allied"
+              }
+            },
+            "action": {
+              "actionId": "candidate:advance:81",
+              "actorId": "player:axis",
+              "expectedRevision": 81,
+              "kind": "ADVANCE_SEQUENCE"
+            },
+            "scores": {
+              "player:allied": 17,
+              "player:axis": 4
+            },
+            "axisMargin": -13,
+            "targetHolder": "player:allied",
+            "targetPoints": 4,
+            "targetMarginContribution": -4,
+            "firstObservedAxisAcquisition": null,
+            "observedControlChangesThroughHandoff": []
+          },
+          "changes": [
+            {
+              "at": 446,
+              "preSequence": {
+                "gameTurn": 4,
+                "playerTurnIndex": 0,
+                "phase": "EXPLOITATION",
+                "segment": "MOVEMENT",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:axis",
+                "actingPlayerId": "player:axis"
+              },
+              "postSequence": {
+                "gameTurn": 4,
+                "playerTurnIndex": 0,
+                "phase": "EXPLOITATION",
+                "segment": "MOVEMENT",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:axis",
+                "actingPlayerId": "player:axis"
+              },
+              "from": "player:allied",
+              "to": "player:axis",
+              "actionKind": "MOVE_PIECE",
+              "axisAcquiredByObservedUnitMove": false,
+              "triggeringPieceId": "generated-oob:344142216:axis:f3-combat-1:unit"
+            }
+          ],
+          "nextGoal": {
+            "status": "OBSERVED",
+            "at": 491,
+            "sequence": {
+              "gameTurn": 5,
+              "playerTurnIndex": 0,
+              "phase": "MOVEMENT",
+              "segment": "MOVEMENT",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            },
+            "preStateHash": "sha256:2ebc34e5b8bfa8860fb5dedecef987ab41981ac7d3ca4ade3b9b5a562816d79b",
+            "action": {
+              "actionId": "candidate:move:generated-oob:344142216:axis:f1-combat-1:unit:13,15:491",
+              "actorId": "player:axis",
+              "expectedRevision": 491,
+              "kind": "MOVE_PIECE",
+              "path": [
+                "14,15",
+                "13,15"
+              ],
+              "pieceId": "generated-oob:344142216:axis:f1-combat-1:unit"
+            },
+            "intent": "combat to 13,15 (capture 12,16)",
+            "purpose": "capture",
+            "target": "12,16",
+            "sameTargetHex": false,
+            "samePurpose": true,
+            "nextTargetIsObjective": true,
+            "oldTargetHolder": "player:axis",
+            "oldTargetHeldByAxis": true
+          }
+        },
+        {
+          "path": "artifacts/ai-progress-objective-original-continuation/pair-1800006/branch-15.save.json",
+          "saveSha256": "c6c33e40402e0b430b68e362c8e05e8b047f251687bfffc12e7c471a00b65221",
+          "tracePath": "artifacts/ai-progress-objective-original-continuation/pair-1800006/branch-15.trace.jsonl",
+          "traceSha256": "a6518aafb1cac50ebb4fd9dc8acdaf0731706d106760707d4e92367afea99a82",
+          "resumeAt": 64,
+          "resumeHash": "sha256:5f03d157901be4761e5db0378f628609b7520de7cda0ad7f3bf91b560591318c",
+          "actionsReplayed": 17,
+          "primary": {
+            "at": 80,
+            "revision": 80,
+            "stateHash": "sha256:7c0553b48bab0b173a396d8c62c8006914bc0dba643aa829773ab0458bb626be",
+            "internalBoundary": true,
+            "eventIndex": 4,
+            "containerPreStateHash": "sha256:cb8bdeeb1f13344f1c07eb5aaedecbcf34b6093e10f1cea02c47bb9400194105",
+            "containerPostStateHash": "sha256:2d9dc50368ae9d817faa95eb832cd6f87aa1daa70235878b2664855e8073e9b1",
+            "containerPostRevision": 81,
+            "reconstruction": {
+              "lifecycleTransitions": 8,
+              "allEventsMatch": true,
+              "normalizedFinalStateMatches": true
+            },
+            "sequence": {
+              "gameTurn": 1,
+              "playerTurnIndex": 1,
+              "phase": "AIRCRAFT_REFIT",
+              "segment": "NONE",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:allied",
+              "actingPlayerId": "player:allied"
+            },
+            "departureEvent": {
+              "kind": "SEQUENCE_ADVANCED",
+              "sequence": 4,
+              "from": {
+                "gameTurn": 1,
+                "playerTurnIndex": 0,
+                "phase": "CLEAN_UP",
+                "segment": "NONE",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:axis",
+                "actingPlayerId": "player:axis"
+              },
+              "to": {
+                "gameTurn": 1,
+                "playerTurnIndex": 1,
+                "phase": "AIRCRAFT_REFIT",
+                "segment": "NONE",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:allied",
+                "actingPlayerId": "player:allied"
+              }
+            },
+            "action": {
+              "actionId": "candidate:advance:80",
+              "actorId": "player:axis",
+              "expectedRevision": 80,
+              "kind": "ADVANCE_SEQUENCE"
+            },
+            "scores": {
+              "player:allied": 17,
+              "player:axis": 4
+            },
+            "axisMargin": -13,
+            "targetHolder": "player:allied",
+            "targetPoints": 4,
+            "targetMarginContribution": -4,
+            "firstObservedAxisAcquisition": null,
+            "observedControlChangesThroughHandoff": []
+          },
+          "changes": [],
+          "nextGoal": {
+            "status": "CENSORED",
+            "reason": "No subsequent same-unit MOVE_PIECE in source history; no claim about unobserved planning"
+          }
+        }
+      ]
+    },
+    {
+      "firstMatch": 1800008,
+      "mapSeed": 344142409,
+      "originalTarget": "12,10",
+      "originalPurpose": "capture",
+      "pieceId": "generated-oob:344142410:axis:f1-combat-1:unit",
+      "allVpEffect": 0,
+      "targetVpEffect": 0,
+      "terminalLocalEffect": -8,
+      "arms": [
+        {
+          "path": "artifacts/ai-progress-objective-30games/matches/match-1800009.save.json",
+          "saveSha256": "5276521eb7308ccdbb76917cbdcd4b51b90779e1d889504d0300d1e608821854",
+          "tracePath": "artifacts/ai-progress-objective-30games/matches/match-1800009.trace.jsonl",
+          "traceSha256": "7def83f34c5fa83c42dd4d5ea478bb12c31c120179edaed56dfcaf0d292d3019",
+          "resumeAt": 64,
+          "resumeHash": "sha256:3e57186d26345ecbce4d2f800166c06fb9d4543a005d3d8ea8e470f81bc68dc4",
+          "actionsReplayed": 85,
+          "primary": {
+            "at": 82,
+            "revision": 82,
+            "stateHash": "sha256:46b4548df356f7e05ec3ed97fecf931271bbe95c432548b6ba0fba58744bbc1b",
+            "internalBoundary": true,
+            "eventIndex": 1,
+            "containerPreStateHash": "sha256:1a36a051947ecf1b11e4a7ba61904453760a38c7e44605bda03dc80f600d439b",
+            "containerPostStateHash": "sha256:42f4248e2021f43de2166eac088ff32db610386a4f8f607e05739132dd18f0d7",
+            "containerPostRevision": 83,
+            "reconstruction": {
+              "lifecycleTransitions": 4,
+              "allEventsMatch": true,
+              "normalizedFinalStateMatches": true
+            },
+            "sequence": {
+              "gameTurn": 1,
+              "playerTurnIndex": 1,
+              "phase": "AIRCRAFT_REFIT",
+              "segment": "NONE",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:allied",
+              "actingPlayerId": "player:allied"
+            },
+            "departureEvent": {
+              "kind": "SEQUENCE_ADVANCED",
+              "sequence": 1,
+              "from": {
+                "gameTurn": 1,
+                "playerTurnIndex": 0,
+                "phase": "CLEAN_UP",
+                "segment": "NONE",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:axis",
+                "actingPlayerId": "player:axis"
+              },
+              "to": {
+                "gameTurn": 1,
+                "playerTurnIndex": 1,
+                "phase": "AIRCRAFT_REFIT",
+                "segment": "NONE",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:allied",
+                "actingPlayerId": "player:allied"
+              }
+            },
+            "action": {
+              "actionId": "candidate:advance:82",
+              "actorId": "player:axis",
+              "expectedRevision": 82,
+              "kind": "ADVANCE_SEQUENCE"
+            },
+            "scores": {
+              "player:allied": 13,
+              "player:axis": 0
+            },
+            "axisMargin": -13,
+            "targetHolder": "player:allied",
+            "targetPoints": 2,
+            "targetMarginContribution": -2,
+            "firstObservedAxisAcquisition": null,
+            "observedControlChangesThroughHandoff": []
+          },
+          "changes": [],
+          "nextGoal": {
+            "status": "OBSERVED",
+            "at": 148,
+            "sequence": {
+              "gameTurn": 2,
+              "playerTurnIndex": 0,
+              "phase": "MOVEMENT",
+              "segment": "MOVEMENT",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            },
+            "preStateHash": "sha256:30b8dfe7d76cd350446b53431541754e80977e7133bf9e2621cbcfb765c25961",
+            "action": {
+              "actionId": "candidate:move:generated-oob:344142410:axis:f1-combat-1:unit:12,11:148",
+              "actorId": "player:axis",
+              "expectedRevision": 148,
+              "kind": "MOVE_PIECE",
+              "path": [
+                "16,12",
+                "15,13",
+                "14,13",
+                "13,14",
+                "12,14",
+                "12,13",
+                "12,12",
+                "12,11"
+              ],
+              "pieceId": "generated-oob:344142410:axis:f1-combat-1:unit"
+            },
+            "intent": "combat to 12,11 (assault 12,10)",
+            "purpose": "assault",
+            "target": "12,10",
+            "sameTargetHex": true,
+            "samePurpose": false,
+            "nextTargetIsObjective": true,
+            "oldTargetHolder": "player:allied",
+            "oldTargetHeldByAxis": false
+          }
+        },
+        {
+          "path": "artifacts/ai-progress-objective-original-continuation/pair-1800008/branch-15.save.json",
+          "saveSha256": "3b2435dc368b9fd80e91182af82475919e4d9da0055dcb1c555f6749a54beea6",
+          "tracePath": "artifacts/ai-progress-objective-original-continuation/pair-1800008/branch-15.trace.jsonl",
+          "traceSha256": "b5887a67e79803c2efd2e7f534c55e7ce3c1f11e41887b80c4858714bdac6ac6",
+          "resumeAt": 64,
+          "resumeHash": "sha256:76090a9e6fa61de533c82ea89abc4ffe402237eaeb06e1d66d9f4e464ab920e6",
+          "actionsReplayed": 85,
+          "primary": {
+            "at": 82,
+            "revision": 82,
+            "stateHash": "sha256:84c58e9179164813318abe083dae4ab0e9bd48f3a85df91ee03687b78f7a909c",
+            "internalBoundary": true,
+            "eventIndex": 1,
+            "containerPreStateHash": "sha256:47f0ef067fad1d14043d10a0726069d769f1460b3dabb8f8c4547672b0deca5d",
+            "containerPostStateHash": "sha256:5a5cf65da1e7bef5daa3e64e769ba8c0a11d36b533d1c056fc9826f15c602953",
+            "containerPostRevision": 83,
+            "reconstruction": {
+              "lifecycleTransitions": 4,
+              "allEventsMatch": true,
+              "normalizedFinalStateMatches": true
+            },
+            "sequence": {
+              "gameTurn": 1,
+              "playerTurnIndex": 1,
+              "phase": "AIRCRAFT_REFIT",
+              "segment": "NONE",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:allied",
+              "actingPlayerId": "player:allied"
+            },
+            "departureEvent": {
+              "kind": "SEQUENCE_ADVANCED",
+              "sequence": 1,
+              "from": {
+                "gameTurn": 1,
+                "playerTurnIndex": 0,
+                "phase": "CLEAN_UP",
+                "segment": "NONE",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:axis",
+                "actingPlayerId": "player:axis"
+              },
+              "to": {
+                "gameTurn": 1,
+                "playerTurnIndex": 1,
+                "phase": "AIRCRAFT_REFIT",
+                "segment": "NONE",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:allied",
+                "actingPlayerId": "player:allied"
+              }
+            },
+            "action": {
+              "actionId": "candidate:advance:82",
+              "actorId": "player:axis",
+              "expectedRevision": 82,
+              "kind": "ADVANCE_SEQUENCE"
+            },
+            "scores": {
+              "player:allied": 13,
+              "player:axis": 0
+            },
+            "axisMargin": -13,
+            "targetHolder": "player:allied",
+            "targetPoints": 2,
+            "targetMarginContribution": -2,
+            "firstObservedAxisAcquisition": null,
+            "observedControlChangesThroughHandoff": []
+          },
+          "changes": [],
+          "nextGoal": {
+            "status": "OBSERVED",
+            "at": 148,
+            "sequence": {
+              "gameTurn": 2,
+              "playerTurnIndex": 0,
+              "phase": "MOVEMENT",
+              "segment": "MOVEMENT",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            },
+            "preStateHash": "sha256:8550da6f76e72391ec149c50e968a373bd26d0a9193eb19ca1faaf4bf10c0d3c",
+            "action": {
+              "actionId": "candidate:move:generated-oob:344142410:axis:f1-combat-1:unit:11,13:148",
+              "actorId": "player:axis",
+              "expectedRevision": 148,
+              "kind": "MOVE_PIECE",
+              "pieceId": "generated-oob:344142410:axis:f1-combat-1:unit",
+              "path": [
+                "18,11",
+                "17,11",
+                "16,12",
+                "15,13",
+                "14,13",
+                "13,14",
+                "12,14",
+                "11,14",
+                "11,13"
+              ]
+            },
+            "intent": "combat to 11,13 (assault 10,13)",
+            "purpose": "assault",
+            "target": "10,13",
+            "sameTargetHex": false,
+            "samePurpose": false,
+            "nextTargetIsObjective": true,
+            "oldTargetHolder": "player:allied",
+            "oldTargetHeldByAxis": false
+          }
+        }
+      ]
+    },
+    {
+      "firstMatch": 1800010,
+      "mapSeed": 344142603,
+      "originalTarget": "19,1",
+      "originalPurpose": "capture",
+      "pieceId": "generated-oob:344142604:axis:f3-recon:unit",
+      "allVpEffect": 0,
+      "targetVpEffect": 0,
+      "terminalLocalEffect": 8,
+      "arms": [
+        {
+          "path": "artifacts/ai-progress-objective-30games/matches/match-1800011.save.json",
+          "saveSha256": "c3e6d89cea7b84fe6a3f5e6d633908caafd035e1e768887d1cfb315c1b7cf592",
+          "tracePath": "artifacts/ai-progress-objective-30games/matches/match-1800011.trace.jsonl",
+          "traceSha256": "d9f86f205f6139c39aa1f1e414a468c0b7aa9c7f2a9aeb784e53693590c011dc",
+          "resumeAt": 68,
+          "resumeHash": "sha256:5e005c0d4b4f295d3750233ebdc072a8d04e840e79dfd0544c750cd2195fe81d",
+          "actionsReplayed": 11,
+          "primary": {
+            "at": 78,
+            "revision": 78,
+            "stateHash": "sha256:afba884875b5708decc0d1eda0926de447ff035fd41edd269d444c20476e389f",
+            "internalBoundary": true,
+            "eventIndex": 1,
+            "containerPreStateHash": "sha256:65e52285c4b9716ec10823a2720986da9f86db396aaa0fd0e859626a7083fadc",
+            "containerPostStateHash": "sha256:4b07eaa16f70834a5220af9e33d167a858f99cd527af4170a091ff469acd9668",
+            "containerPostRevision": 79,
+            "reconstruction": {
+              "lifecycleTransitions": 5,
+              "allEventsMatch": true,
+              "normalizedFinalStateMatches": true
+            },
+            "sequence": {
+              "gameTurn": 1,
+              "playerTurnIndex": 1,
+              "phase": "AIRCRAFT_REFIT",
+              "segment": "NONE",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:allied",
+              "actingPlayerId": "player:allied"
+            },
+            "departureEvent": {
+              "kind": "SEQUENCE_ADVANCED",
+              "sequence": 1,
+              "from": {
+                "gameTurn": 1,
+                "playerTurnIndex": 0,
+                "phase": "CLEAN_UP",
+                "segment": "NONE",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:axis",
+                "actingPlayerId": "player:axis"
+              },
+              "to": {
+                "gameTurn": 1,
+                "playerTurnIndex": 1,
+                "phase": "AIRCRAFT_REFIT",
+                "segment": "NONE",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:allied",
+                "actingPlayerId": "player:allied"
+              }
+            },
+            "action": {
+              "actionId": "candidate:advance:78",
+              "actorId": "player:axis",
+              "expectedRevision": 78,
+              "kind": "ADVANCE_SEQUENCE"
+            },
+            "scores": {
+              "player:allied": 10,
+              "player:axis": 4
+            },
+            "axisMargin": -6,
+            "targetHolder": "player:axis",
+            "targetPoints": 4,
+            "targetMarginContribution": 4,
+            "firstObservedAxisAcquisition": {
+              "at": 74,
+              "preSequence": {
+                "gameTurn": 1,
+                "playerTurnIndex": 0,
+                "phase": "COMBAT",
+                "segment": "COMBAT",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:axis",
+                "actingPlayerId": "player:axis"
+              },
+              "postSequence": {
+                "gameTurn": 1,
+                "playerTurnIndex": 0,
+                "phase": "COMBAT",
+                "segment": "COMBAT",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:axis",
+                "actingPlayerId": "player:axis"
+              },
+              "from": "player:allied",
+              "to": "player:axis",
+              "actionKind": "RESPOND_DECISION",
+              "axisAcquiredByObservedUnitMove": false,
+              "triggeringPieceId": null
+            },
+            "observedControlChangesThroughHandoff": [
+              {
+                "at": 74,
+                "preSequence": {
+                  "gameTurn": 1,
+                  "playerTurnIndex": 0,
+                  "phase": "COMBAT",
+                  "segment": "COMBAT",
+                  "firstPlayerId": "player:axis",
+                  "phasingPlayerId": "player:axis",
+                  "actingPlayerId": "player:axis"
+                },
+                "postSequence": {
+                  "gameTurn": 1,
+                  "playerTurnIndex": 0,
+                  "phase": "COMBAT",
+                  "segment": "COMBAT",
+                  "firstPlayerId": "player:axis",
+                  "phasingPlayerId": "player:axis",
+                  "actingPlayerId": "player:axis"
+                },
+                "from": "player:allied",
+                "to": "player:axis",
+                "actionKind": "RESPOND_DECISION",
+                "axisAcquiredByObservedUnitMove": false,
+                "triggeringPieceId": null
+              }
+            ]
+          },
+          "changes": [
+            {
+              "at": 74,
+              "preSequence": {
+                "gameTurn": 1,
+                "playerTurnIndex": 0,
+                "phase": "COMBAT",
+                "segment": "COMBAT",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:axis",
+                "actingPlayerId": "player:axis"
+              },
+              "postSequence": {
+                "gameTurn": 1,
+                "playerTurnIndex": 0,
+                "phase": "COMBAT",
+                "segment": "COMBAT",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:axis",
+                "actingPlayerId": "player:axis"
+              },
+              "from": "player:allied",
+              "to": "player:axis",
+              "actionKind": "RESPOND_DECISION",
+              "axisAcquiredByObservedUnitMove": false,
+              "triggeringPieceId": null
+            }
+          ],
+          "nextGoal": {
+            "status": "CENSORED",
+            "reason": "No subsequent same-unit MOVE_PIECE in source history; no claim about unobserved planning"
+          }
+        },
+        {
+          "path": "artifacts/ai-progress-objective-original-continuation/pair-1800010/branch-15.save.json",
+          "saveSha256": "423cce0b17ca24bf678792d172044c2e9718355f59296401266a73b9e5b20f5e",
+          "tracePath": "artifacts/ai-progress-objective-original-continuation/pair-1800010/branch-15.trace.jsonl",
+          "traceSha256": "2bfd4fefd27cba27220a2c78ee2ede0a9a19c9664bb55ae6c88adcba3bef3c55",
+          "resumeAt": 68,
+          "resumeHash": "sha256:e0185b29946d37924bccbcd7247d2eed9a75e51de7394eb30782a7688b8e949e",
+          "actionsReplayed": 112,
+          "primary": {
+            "at": 77,
+            "revision": 77,
+            "stateHash": "sha256:664c19e802e686767a2facbc34a467c39ce063ae5c69a7f5a9270c5dd2c901f4",
+            "internalBoundary": true,
+            "eventIndex": 1,
+            "containerPreStateHash": "sha256:7d3fdb0690638553f36f9ecab35d133796e4d02c1defd9529a327c004d779bb5",
+            "containerPostStateHash": "sha256:aa7d3616c6586a436cc2a15b25f5a3cc6f6c9c7863cfa8b7d8d03d7eff28f2da",
+            "containerPostRevision": 78,
+            "reconstruction": {
+              "lifecycleTransitions": 5,
+              "allEventsMatch": true,
+              "normalizedFinalStateMatches": true
+            },
+            "sequence": {
+              "gameTurn": 1,
+              "playerTurnIndex": 1,
+              "phase": "AIRCRAFT_REFIT",
+              "segment": "NONE",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:allied",
+              "actingPlayerId": "player:allied"
+            },
+            "departureEvent": {
+              "kind": "SEQUENCE_ADVANCED",
+              "sequence": 1,
+              "from": {
+                "gameTurn": 1,
+                "playerTurnIndex": 0,
+                "phase": "CLEAN_UP",
+                "segment": "NONE",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:axis",
+                "actingPlayerId": "player:axis"
+              },
+              "to": {
+                "gameTurn": 1,
+                "playerTurnIndex": 1,
+                "phase": "AIRCRAFT_REFIT",
+                "segment": "NONE",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:allied",
+                "actingPlayerId": "player:allied"
+              }
+            },
+            "action": {
+              "actionId": "candidate:advance:77",
+              "actorId": "player:axis",
+              "expectedRevision": 77,
+              "kind": "ADVANCE_SEQUENCE"
+            },
+            "scores": {
+              "player:allied": 10,
+              "player:axis": 4
+            },
+            "axisMargin": -6,
+            "targetHolder": "player:axis",
+            "targetPoints": 4,
+            "targetMarginContribution": 4,
+            "firstObservedAxisAcquisition": {
+              "at": 74,
+              "preSequence": {
+                "gameTurn": 1,
+                "playerTurnIndex": 0,
+                "phase": "COMBAT",
+                "segment": "COMBAT",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:axis",
+                "actingPlayerId": "player:axis"
+              },
+              "postSequence": {
+                "gameTurn": 1,
+                "playerTurnIndex": 0,
+                "phase": "COMBAT",
+                "segment": "COMBAT",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:axis",
+                "actingPlayerId": "player:axis"
+              },
+              "from": "player:allied",
+              "to": "player:axis",
+              "actionKind": "RESPOND_DECISION",
+              "axisAcquiredByObservedUnitMove": false,
+              "triggeringPieceId": null
+            },
+            "observedControlChangesThroughHandoff": [
+              {
+                "at": 74,
+                "preSequence": {
+                  "gameTurn": 1,
+                  "playerTurnIndex": 0,
+                  "phase": "COMBAT",
+                  "segment": "COMBAT",
+                  "firstPlayerId": "player:axis",
+                  "phasingPlayerId": "player:axis",
+                  "actingPlayerId": "player:axis"
+                },
+                "postSequence": {
+                  "gameTurn": 1,
+                  "playerTurnIndex": 0,
+                  "phase": "COMBAT",
+                  "segment": "COMBAT",
+                  "firstPlayerId": "player:axis",
+                  "phasingPlayerId": "player:axis",
+                  "actingPlayerId": "player:axis"
+                },
+                "from": "player:allied",
+                "to": "player:axis",
+                "actionKind": "RESPOND_DECISION",
+                "axisAcquiredByObservedUnitMove": false,
+                "triggeringPieceId": null
+              }
+            ]
+          },
+          "changes": [
+            {
+              "at": 74,
+              "preSequence": {
+                "gameTurn": 1,
+                "playerTurnIndex": 0,
+                "phase": "COMBAT",
+                "segment": "COMBAT",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:axis",
+                "actingPlayerId": "player:axis"
+              },
+              "postSequence": {
+                "gameTurn": 1,
+                "playerTurnIndex": 0,
+                "phase": "COMBAT",
+                "segment": "COMBAT",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:axis",
+                "actingPlayerId": "player:axis"
+              },
+              "from": "player:allied",
+              "to": "player:axis",
+              "actionKind": "RESPOND_DECISION",
+              "axisAcquiredByObservedUnitMove": false,
+              "triggeringPieceId": null
+            },
+            {
+              "at": 98,
+              "preSequence": {
+                "gameTurn": 1,
+                "playerTurnIndex": 1,
+                "phase": "MOVEMENT",
+                "segment": "MOVEMENT",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:allied",
+                "actingPlayerId": "player:allied"
+              },
+              "postSequence": {
+                "gameTurn": 1,
+                "playerTurnIndex": 1,
+                "phase": "MOVEMENT",
+                "segment": "MOVEMENT",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:allied",
+                "actingPlayerId": "player:allied"
+              },
+              "from": "player:axis",
+              "to": "player:allied",
+              "actionKind": "MOVE_PIECE",
+              "axisAcquiredByObservedUnitMove": false,
+              "triggeringPieceId": "generated-oob:344142604:allied:independent-anti_tank-2:unit"
+            }
+          ],
+          "nextGoal": {
+            "status": "OBSERVED",
+            "at": 179,
+            "sequence": {
+              "gameTurn": 2,
+              "playerTurnIndex": 1,
+              "phase": "MOVEMENT",
+              "segment": "MOVEMENT",
+              "firstPlayerId": "player:allied",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            },
+            "preStateHash": "sha256:90b1ba29ca53d850b4826c7590adaeae30a68f7c8439b5aeb5d9351eeac38edb",
+            "action": {
+              "actionId": "candidate:move:generated-oob:344142604:axis:f3-recon:unit:18,1:179",
+              "actorId": "player:axis",
+              "expectedRevision": 179,
+              "kind": "MOVE_PIECE",
+              "pieceId": "generated-oob:344142604:axis:f3-recon:unit",
+              "path": [
+                "21,0",
+                "20,1",
+                "19,2",
+                "18,2",
+                "18,1"
+              ]
+            },
+            "intent": "combat to 18,1 (capture 19,1)",
+            "purpose": "capture",
+            "target": "19,1",
+            "sameTargetHex": true,
+            "samePurpose": true,
+            "nextTargetIsObjective": true,
+            "oldTargetHolder": "player:allied",
+            "oldTargetHeldByAxis": false
+          }
+        }
+      ]
+    },
+    {
+      "firstMatch": 1800012,
+      "mapSeed": 344142797,
+      "originalTarget": "15,11",
+      "originalPurpose": "capture",
+      "pieceId": "generated-oob:344142798:axis:f1-recon:unit",
+      "allVpEffect": 0,
+      "targetVpEffect": 0,
+      "terminalLocalEffect": 0,
+      "arms": [
+        {
+          "path": "artifacts/ai-progress-objective-30games/matches/match-1800013.save.json",
+          "saveSha256": "ee0affe79acd481987efb59186e68fb7041d45825eabef8d14c5d61527336b3d",
+          "tracePath": "artifacts/ai-progress-objective-30games/matches/match-1800013.trace.jsonl",
+          "traceSha256": "999341f51ec48dc0d0d20616a2592e59d9aaf379e58c824bc3375588e085f269",
+          "resumeAt": 65,
+          "resumeHash": "sha256:0e32810007572fcf863de0abe6ed7940c91bc9643440ddb0b13ddbb251a91e61",
+          "actionsReplayed": 67,
+          "primary": {
+            "at": 88,
+            "revision": 88,
+            "stateHash": "sha256:dfd85e9496399b1382bc6fa0f04e34f44ed19a43418983fec6fc51a46dd5b727",
+            "internalBoundary": true,
+            "eventIndex": 1,
+            "containerPreStateHash": "sha256:4494b6b6b33ee5a9a0884c16e74c9ef246f6f7338bbaf16848fab0d05d4063f5",
+            "containerPostStateHash": "sha256:f6d934e73060e155c51136d74076731a34d765de1057b108e31f3496ded33c2a",
+            "containerPostRevision": 89,
+            "reconstruction": {
+              "lifecycleTransitions": 5,
+              "allEventsMatch": true,
+              "normalizedFinalStateMatches": true
+            },
+            "sequence": {
+              "gameTurn": 1,
+              "playerTurnIndex": 1,
+              "phase": "AIRCRAFT_REFIT",
+              "segment": "NONE",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:allied",
+              "actingPlayerId": "player:allied"
+            },
+            "departureEvent": {
+              "kind": "SEQUENCE_ADVANCED",
+              "sequence": 1,
+              "from": {
+                "gameTurn": 1,
+                "playerTurnIndex": 0,
+                "phase": "CLEAN_UP",
+                "segment": "NONE",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:axis",
+                "actingPlayerId": "player:axis"
+              },
+              "to": {
+                "gameTurn": 1,
+                "playerTurnIndex": 1,
+                "phase": "AIRCRAFT_REFIT",
+                "segment": "NONE",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:allied",
+                "actingPlayerId": "player:allied"
+              }
+            },
+            "action": {
+              "actionId": "candidate:advance:88",
+              "actorId": "player:axis",
+              "expectedRevision": 88,
+              "kind": "ADVANCE_SEQUENCE"
+            },
+            "scores": {
+              "player:allied": 8,
+              "player:axis": 5
+            },
+            "axisMargin": -3,
+            "targetHolder": "player:axis",
+            "targetPoints": 2,
+            "targetMarginContribution": 2,
+            "firstObservedAxisAcquisition": {
+              "at": 79,
+              "preSequence": {
+                "gameTurn": 1,
+                "playerTurnIndex": 0,
+                "phase": "COMBAT",
+                "segment": "COMBAT",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:axis",
+                "actingPlayerId": "player:axis"
+              },
+              "postSequence": {
+                "gameTurn": 1,
+                "playerTurnIndex": 0,
+                "phase": "COMBAT",
+                "segment": "COMBAT",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:axis",
+                "actingPlayerId": "player:axis"
+              },
+              "from": "player:allied",
+              "to": "player:axis",
+              "actionKind": "RESPOND_DECISION",
+              "axisAcquiredByObservedUnitMove": false,
+              "triggeringPieceId": null
+            },
+            "observedControlChangesThroughHandoff": [
+              {
+                "at": 79,
+                "preSequence": {
+                  "gameTurn": 1,
+                  "playerTurnIndex": 0,
+                  "phase": "COMBAT",
+                  "segment": "COMBAT",
+                  "firstPlayerId": "player:axis",
+                  "phasingPlayerId": "player:axis",
+                  "actingPlayerId": "player:axis"
+                },
+                "postSequence": {
+                  "gameTurn": 1,
+                  "playerTurnIndex": 0,
+                  "phase": "COMBAT",
+                  "segment": "COMBAT",
+                  "firstPlayerId": "player:axis",
+                  "phasingPlayerId": "player:axis",
+                  "actingPlayerId": "player:axis"
+                },
+                "from": "player:allied",
+                "to": "player:axis",
+                "actionKind": "RESPOND_DECISION",
+                "axisAcquiredByObservedUnitMove": false,
+                "triggeringPieceId": null
+              }
+            ]
+          },
+          "changes": [
+            {
+              "at": 79,
+              "preSequence": {
+                "gameTurn": 1,
+                "playerTurnIndex": 0,
+                "phase": "COMBAT",
+                "segment": "COMBAT",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:axis",
+                "actingPlayerId": "player:axis"
+              },
+              "postSequence": {
+                "gameTurn": 1,
+                "playerTurnIndex": 0,
+                "phase": "COMBAT",
+                "segment": "COMBAT",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:axis",
+                "actingPlayerId": "player:axis"
+              },
+              "from": "player:allied",
+              "to": "player:axis",
+              "actionKind": "RESPOND_DECISION",
+              "axisAcquiredByObservedUnitMove": false,
+              "triggeringPieceId": null
+            }
+          ],
+          "nextGoal": {
+            "status": "OBSERVED",
+            "at": 131,
+            "sequence": {
+              "gameTurn": 2,
+              "playerTurnIndex": 0,
+              "phase": "MOVEMENT",
+              "segment": "MOVEMENT",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            },
+            "preStateHash": "sha256:686a6d8bf9a6313cf61c1510b4e925ed7557ca5944430599e372c30d7cf72fcc",
+            "action": {
+              "actionId": "candidate:move:generated-oob:344142798:axis:f1-recon:unit:15,5:131",
+              "actorId": "player:axis",
+              "expectedRevision": 131,
+              "kind": "MOVE_PIECE",
+              "path": [
+                "16,13",
+                "16,12",
+                "16,11",
+                "16,10",
+                "16,9",
+                "17,8",
+                "18,7",
+                "19,6",
+                "20,5",
+                "19,5",
+                "18,5",
+                "18,4",
+                "17,4",
+                "16,4",
+                "15,5"
+              ],
+              "pieceId": "generated-oob:344142798:axis:f1-recon:unit"
+            },
+            "intent": "combat to 15,5 (capture 14,6)",
+            "purpose": "capture",
+            "target": "14,6",
+            "sameTargetHex": false,
+            "samePurpose": true,
+            "nextTargetIsObjective": true,
+            "oldTargetHolder": "player:axis",
+            "oldTargetHeldByAxis": true
+          }
+        },
+        {
+          "path": "artifacts/ai-progress-objective-original-continuation/pair-1800012/branch-15.save.json",
+          "saveSha256": "8e378c1dbfb5f40d6c1c5a7f47341e12949a73d092b50fd9d930d7df101365b1",
+          "tracePath": "artifacts/ai-progress-objective-original-continuation/pair-1800012/branch-15.trace.jsonl",
+          "traceSha256": "a06a0f8cb51a841029a24d56f65108bf98c9926f6e5b49a4ad54939fc70afada",
+          "resumeAt": 65,
+          "resumeHash": "sha256:65ca94154e4ee39aad2a98d14613be0f9399d05a7745d11807abad5d550c092d",
+          "actionsReplayed": 67,
+          "primary": {
+            "at": 88,
+            "revision": 88,
+            "stateHash": "sha256:8487f3a118d175b9d411dff5683e25839f9750d565440edb168010e4a9516f6b",
+            "internalBoundary": true,
+            "eventIndex": 1,
+            "containerPreStateHash": "sha256:f09df040436e808395033cbbf38f52221695ac9bf136dc9438f99be262fe5199",
+            "containerPostStateHash": "sha256:e0540f0f1cef930e26ff34b5a541ac48ab127fbf65f4af71360da263ab59f0a2",
+            "containerPostRevision": 89,
+            "reconstruction": {
+              "lifecycleTransitions": 5,
+              "allEventsMatch": true,
+              "normalizedFinalStateMatches": true
+            },
+            "sequence": {
+              "gameTurn": 1,
+              "playerTurnIndex": 1,
+              "phase": "AIRCRAFT_REFIT",
+              "segment": "NONE",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:allied",
+              "actingPlayerId": "player:allied"
+            },
+            "departureEvent": {
+              "kind": "SEQUENCE_ADVANCED",
+              "sequence": 1,
+              "from": {
+                "gameTurn": 1,
+                "playerTurnIndex": 0,
+                "phase": "CLEAN_UP",
+                "segment": "NONE",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:axis",
+                "actingPlayerId": "player:axis"
+              },
+              "to": {
+                "gameTurn": 1,
+                "playerTurnIndex": 1,
+                "phase": "AIRCRAFT_REFIT",
+                "segment": "NONE",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:allied",
+                "actingPlayerId": "player:allied"
+              }
+            },
+            "action": {
+              "actionId": "candidate:advance:88",
+              "actorId": "player:axis",
+              "expectedRevision": 88,
+              "kind": "ADVANCE_SEQUENCE"
+            },
+            "scores": {
+              "player:allied": 8,
+              "player:axis": 5
+            },
+            "axisMargin": -3,
+            "targetHolder": "player:axis",
+            "targetPoints": 2,
+            "targetMarginContribution": 2,
+            "firstObservedAxisAcquisition": {
+              "at": 79,
+              "preSequence": {
+                "gameTurn": 1,
+                "playerTurnIndex": 0,
+                "phase": "COMBAT",
+                "segment": "COMBAT",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:axis",
+                "actingPlayerId": "player:axis"
+              },
+              "postSequence": {
+                "gameTurn": 1,
+                "playerTurnIndex": 0,
+                "phase": "COMBAT",
+                "segment": "COMBAT",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:axis",
+                "actingPlayerId": "player:axis"
+              },
+              "from": "player:allied",
+              "to": "player:axis",
+              "actionKind": "RESPOND_DECISION",
+              "axisAcquiredByObservedUnitMove": false,
+              "triggeringPieceId": null
+            },
+            "observedControlChangesThroughHandoff": [
+              {
+                "at": 79,
+                "preSequence": {
+                  "gameTurn": 1,
+                  "playerTurnIndex": 0,
+                  "phase": "COMBAT",
+                  "segment": "COMBAT",
+                  "firstPlayerId": "player:axis",
+                  "phasingPlayerId": "player:axis",
+                  "actingPlayerId": "player:axis"
+                },
+                "postSequence": {
+                  "gameTurn": 1,
+                  "playerTurnIndex": 0,
+                  "phase": "COMBAT",
+                  "segment": "COMBAT",
+                  "firstPlayerId": "player:axis",
+                  "phasingPlayerId": "player:axis",
+                  "actingPlayerId": "player:axis"
+                },
+                "from": "player:allied",
+                "to": "player:axis",
+                "actionKind": "RESPOND_DECISION",
+                "axisAcquiredByObservedUnitMove": false,
+                "triggeringPieceId": null
+              }
+            ]
+          },
+          "changes": [
+            {
+              "at": 79,
+              "preSequence": {
+                "gameTurn": 1,
+                "playerTurnIndex": 0,
+                "phase": "COMBAT",
+                "segment": "COMBAT",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:axis",
+                "actingPlayerId": "player:axis"
+              },
+              "postSequence": {
+                "gameTurn": 1,
+                "playerTurnIndex": 0,
+                "phase": "COMBAT",
+                "segment": "COMBAT",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:axis",
+                "actingPlayerId": "player:axis"
+              },
+              "from": "player:allied",
+              "to": "player:axis",
+              "actionKind": "RESPOND_DECISION",
+              "axisAcquiredByObservedUnitMove": false,
+              "triggeringPieceId": null
+            }
+          ],
+          "nextGoal": {
+            "status": "OBSERVED",
+            "at": 131,
+            "sequence": {
+              "gameTurn": 2,
+              "playerTurnIndex": 0,
+              "phase": "MOVEMENT",
+              "segment": "MOVEMENT",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            },
+            "preStateHash": "sha256:bdbe3973a770562c9dc269ee262409aecff4579e5362f05a94d3daa0bb5352bc",
+            "action": {
+              "actionId": "candidate:move:generated-oob:344142798:axis:f1-recon:unit:15,5:131",
+              "actorId": "player:axis",
+              "expectedRevision": 131,
+              "kind": "MOVE_PIECE",
+              "pieceId": "generated-oob:344142798:axis:f1-recon:unit",
+              "path": [
+                "18,12",
+                "19,11",
+                "20,10",
+                "20,9",
+                "20,8",
+                "20,7",
+                "20,6",
+                "20,5",
+                "19,5",
+                "18,5",
+                "18,4",
+                "17,4",
+                "16,4",
+                "15,5"
+              ]
+            },
+            "intent": "combat to 15,5 (capture 14,6)",
+            "purpose": "capture",
+            "target": "14,6",
+            "sameTargetHex": false,
+            "samePurpose": true,
+            "nextTargetIsObjective": true,
+            "oldTargetHolder": "player:axis",
+            "oldTargetHeldByAxis": true
+          }
+        }
+      ]
+    },
+    {
+      "firstMatch": 1800014,
+      "mapSeed": 344142991,
+      "originalTarget": "3,14",
+      "originalPurpose": "capture",
+      "pieceId": "generated-oob:344142992:axis:f4-recon:unit",
+      "allVpEffect": 0,
+      "targetVpEffect": 0,
+      "terminalLocalEffect": 0,
+      "arms": [
+        {
+          "path": "artifacts/ai-progress-objective-30games/matches/match-1800015.save.json",
+          "saveSha256": "82215e903f856db42f2e0a29bc15da27e4520c25b97741c85615ca406ebe4071",
+          "tracePath": "artifacts/ai-progress-objective-30games/matches/match-1800015.trace.jsonl",
+          "traceSha256": "1a37c5e8ffe63cbe316cf4ecedd048e317dcbc985cabfb4b25c7423db8c81cc2",
+          "resumeAt": 65,
+          "resumeHash": "sha256:e33bd891066e15567afddecfd1299d8f5530a3188747d9af6b66e3d17540a950",
+          "actionsReplayed": 19,
+          "primary": {
+            "at": 83,
+            "revision": 83,
+            "stateHash": "sha256:2f80078439110b31337ad37967ad269d32a69fee36041b75de8deb888a75675b",
+            "internalBoundary": true,
+            "eventIndex": 3,
+            "containerPreStateHash": "sha256:b259f34d22810588cb900fd5c483acf050031f086bb561f2f1fb314dbb54feee",
+            "containerPostStateHash": "sha256:efac9e9776bd12ea85017b84e0bd8401206be4bad5e8f53a02bdd4747ac6e97d",
+            "containerPostRevision": 84,
+            "reconstruction": {
+              "lifecycleTransitions": 6,
+              "allEventsMatch": true,
+              "normalizedFinalStateMatches": true
+            },
+            "sequence": {
+              "gameTurn": 1,
+              "playerTurnIndex": 1,
+              "phase": "AIRCRAFT_REFIT",
+              "segment": "NONE",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:allied",
+              "actingPlayerId": "player:allied"
+            },
+            "departureEvent": {
+              "kind": "SEQUENCE_ADVANCED",
+              "sequence": 3,
+              "from": {
+                "gameTurn": 1,
+                "playerTurnIndex": 0,
+                "phase": "CLEAN_UP",
+                "segment": "NONE",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:axis",
+                "actingPlayerId": "player:axis"
+              },
+              "to": {
+                "gameTurn": 1,
+                "playerTurnIndex": 1,
+                "phase": "AIRCRAFT_REFIT",
+                "segment": "NONE",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:allied",
+                "actingPlayerId": "player:allied"
+              }
+            },
+            "action": {
+              "actionId": "candidate:advance:83",
+              "actorId": "player:axis",
+              "expectedRevision": 83,
+              "kind": "ADVANCE_SEQUENCE"
+            },
+            "scores": {
+              "player:allied": 12,
+              "player:axis": 0
+            },
+            "axisMargin": -12,
+            "targetHolder": "player:allied",
+            "targetPoints": 2,
+            "targetMarginContribution": -2,
+            "firstObservedAxisAcquisition": null,
+            "observedControlChangesThroughHandoff": []
+          },
+          "changes": [],
+          "nextGoal": {
+            "status": "CENSORED",
+            "reason": "No subsequent same-unit MOVE_PIECE in source history; no claim about unobserved planning"
+          }
+        },
+        {
+          "path": "artifacts/ai-progress-objective-original-continuation/pair-1800014/branch-15.save.json",
+          "saveSha256": "ba486fcecdb946bca586d3f5fe64e4969280b51e97705271e5ee9346d44b6409",
+          "tracePath": "artifacts/ai-progress-objective-original-continuation/pair-1800014/branch-15.trace.jsonl",
+          "traceSha256": "a5b18e74b3b17a9a45ac52b69debee627aa5f7e440f9d81951e5dbbdf9813f97",
+          "resumeAt": 65,
+          "resumeHash": "sha256:0b50e2f4286690cd4e30da1984708c5b8f664c65e1e31508043ddfed42c59659",
+          "actionsReplayed": 133,
+          "primary": {
+            "at": 83,
+            "revision": 83,
+            "stateHash": "sha256:a43927721990f3e6fa132750f75c6df525bd129cdc09ee0b805ed909e028cd37",
+            "internalBoundary": true,
+            "eventIndex": 3,
+            "containerPreStateHash": "sha256:d4cdc8a1da139a8d2492f294fd8c19afda51710d34e2032655a8e255f6a137f6",
+            "containerPostStateHash": "sha256:1c2097491e27ab5b9f523e2830017dae882c7f84185f70cf7f9dc98b046f6368",
+            "containerPostRevision": 84,
+            "reconstruction": {
+              "lifecycleTransitions": 6,
+              "allEventsMatch": true,
+              "normalizedFinalStateMatches": true
+            },
+            "sequence": {
+              "gameTurn": 1,
+              "playerTurnIndex": 1,
+              "phase": "AIRCRAFT_REFIT",
+              "segment": "NONE",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:allied",
+              "actingPlayerId": "player:allied"
+            },
+            "departureEvent": {
+              "kind": "SEQUENCE_ADVANCED",
+              "sequence": 3,
+              "from": {
+                "gameTurn": 1,
+                "playerTurnIndex": 0,
+                "phase": "CLEAN_UP",
+                "segment": "NONE",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:axis",
+                "actingPlayerId": "player:axis"
+              },
+              "to": {
+                "gameTurn": 1,
+                "playerTurnIndex": 1,
+                "phase": "AIRCRAFT_REFIT",
+                "segment": "NONE",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:allied",
+                "actingPlayerId": "player:allied"
+              }
+            },
+            "action": {
+              "actionId": "candidate:advance:83",
+              "actorId": "player:axis",
+              "expectedRevision": 83,
+              "kind": "ADVANCE_SEQUENCE"
+            },
+            "scores": {
+              "player:allied": 12,
+              "player:axis": 0
+            },
+            "axisMargin": -12,
+            "targetHolder": "player:allied",
+            "targetPoints": 2,
+            "targetMarginContribution": -2,
+            "firstObservedAxisAcquisition": null,
+            "observedControlChangesThroughHandoff": []
+          },
+          "changes": [],
+          "nextGoal": {
+            "status": "OBSERVED",
+            "at": 197,
+            "sequence": {
+              "gameTurn": 2,
+              "playerTurnIndex": 1,
+              "phase": "MOVEMENT",
+              "segment": "MOVEMENT",
+              "firstPlayerId": "player:allied",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            },
+            "preStateHash": "sha256:bb848dcd16e0be0b20ba321c7d6e04da63b5fb0f11df2db4f8cc1f6432086516",
+            "action": {
+              "actionId": "candidate:move:generated-oob:344142992:axis:f4-recon:unit:8,11:197",
+              "actorId": "player:axis",
+              "expectedRevision": 197,
+              "kind": "MOVE_PIECE",
+              "pieceId": "generated-oob:344142992:axis:f4-recon:unit",
+              "path": [
+                "17,13",
+                "16,13",
+                "15,13",
+                "14,13",
+                "13,13",
+                "13,12",
+                "13,11",
+                "12,11",
+                "11,11",
+                "10,11",
+                "9,11",
+                "8,11"
+              ]
+            },
+            "intent": "combat to 8,11 (capture 7,11)",
+            "purpose": "capture",
+            "target": "7,11",
+            "sameTargetHex": false,
+            "samePurpose": true,
+            "nextTargetIsObjective": true,
+            "oldTargetHolder": "player:allied",
+            "oldTargetHeldByAxis": false
+          }
+        }
+      ]
+    },
+    {
+      "firstMatch": 1800016,
+      "mapSeed": 344143185,
+      "originalTarget": "10,9",
+      "originalPurpose": "assault",
+      "pieceId": "generated-oob:344143186:axis:f11-combat-1:unit",
+      "allVpEffect": 0,
+      "targetVpEffect": 0,
+      "terminalLocalEffect": -4,
+      "arms": [
+        {
+          "path": "artifacts/ai-progress-objective-30games/matches/match-1800017.save.json",
+          "saveSha256": "a604ce6ad93f82796e932c24d0fbf5d31282ff26a54b51d7bbe3b987b8691291",
+          "tracePath": "artifacts/ai-progress-objective-30games/matches/match-1800017.trace.jsonl",
+          "traceSha256": "3cabdf62f35cd61736778a2c3133c6874279f6ddb259e74a8c9782f1748e868b",
+          "resumeAt": 66,
+          "resumeHash": "sha256:1605a089dd57b3be945b386e422685a6a6b4850ebc76e40d35bf721a0b3f9359",
+          "actionsReplayed": 90,
+          "primary": {
+            "at": 85,
+            "revision": 85,
+            "stateHash": "sha256:346faaef2e1871bfe0c443cebd88297d08319d3be206099cf1d63a149199e1b5",
+            "internalBoundary": true,
+            "eventIndex": 1,
+            "containerPreStateHash": "sha256:4f73f401295c3d92a45dded34689bf18876eef11725884ae74cba5dde1d4acd2",
+            "containerPostStateHash": "sha256:34fc829c6336426e1a9d98f35866bd719c0f053c516d6991e7d94e33c76da1e8",
+            "containerPostRevision": 86,
+            "reconstruction": {
+              "lifecycleTransitions": 4,
+              "allEventsMatch": true,
+              "normalizedFinalStateMatches": true
+            },
+            "sequence": {
+              "gameTurn": 1,
+              "playerTurnIndex": 1,
+              "phase": "AIRCRAFT_REFIT",
+              "segment": "NONE",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:allied",
+              "actingPlayerId": "player:allied"
+            },
+            "departureEvent": {
+              "kind": "SEQUENCE_ADVANCED",
+              "sequence": 1,
+              "from": {
+                "gameTurn": 1,
+                "playerTurnIndex": 0,
+                "phase": "CLEAN_UP",
+                "segment": "NONE",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:axis",
+                "actingPlayerId": "player:axis"
+              },
+              "to": {
+                "gameTurn": 1,
+                "playerTurnIndex": 1,
+                "phase": "AIRCRAFT_REFIT",
+                "segment": "NONE",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:allied",
+                "actingPlayerId": "player:allied"
+              }
+            },
+            "action": {
+              "actionId": "candidate:advance:85",
+              "actorId": "player:axis",
+              "expectedRevision": 85,
+              "kind": "ADVANCE_SEQUENCE"
+            },
+            "scores": {
+              "player:allied": 25,
+              "player:axis": 0
+            },
+            "axisMargin": -25,
+            "targetHolder": "player:allied",
+            "targetPoints": 4,
+            "targetMarginContribution": -4,
+            "firstObservedAxisAcquisition": null,
+            "observedControlChangesThroughHandoff": []
+          },
+          "changes": [],
+          "nextGoal": {
+            "status": "OBSERVED",
+            "at": 155,
+            "sequence": {
+              "gameTurn": 2,
+              "playerTurnIndex": 1,
+              "phase": "MOVEMENT",
+              "segment": "MOVEMENT",
+              "firstPlayerId": "player:allied",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            },
+            "preStateHash": "sha256:6acd347eb1ca2d517235f47226cebe1b7afed32dd3219193e105acf78d75d5d0",
+            "action": {
+              "actionId": "candidate:move:generated-oob:344143186:axis:f11-combat-1:unit:17,5:155",
+              "actorId": "player:axis",
+              "expectedRevision": 155,
+              "kind": "MOVE_PIECE",
+              "path": [
+                "16,10",
+                "17,9",
+                "17,8",
+                "17,7",
+                "17,6",
+                "17,5"
+              ],
+              "pieceId": "generated-oob:344143186:axis:f11-combat-1:unit"
+            },
+            "intent": "combat to 17,5 (assault 14,4)",
+            "purpose": "assault",
+            "target": "14,4",
+            "sameTargetHex": false,
+            "samePurpose": true,
+            "nextTargetIsObjective": true,
+            "oldTargetHolder": "player:allied",
+            "oldTargetHeldByAxis": false
+          }
+        },
+        {
+          "path": "artifacts/ai-progress-objective-original-continuation/pair-1800016/branch-15.save.json",
+          "saveSha256": "4e65dfdd71f4dbaab7a7a9db0f7e4b774a7cead389673ef87b827cfdadc7b74b",
+          "tracePath": "artifacts/ai-progress-objective-original-continuation/pair-1800016/branch-15.trace.jsonl",
+          "traceSha256": "2f665eac41c0d397123054c4b2824c7f7596eb85a6312551e7b783abc141bda9",
+          "resumeAt": 66,
+          "resumeHash": "sha256:1f39e45336bbc074b0e4174e0a580b722fbcf0990ce07f2475c1e62e6a2d20f7",
+          "actionsReplayed": 90,
+          "primary": {
+            "at": 85,
+            "revision": 85,
+            "stateHash": "sha256:3ed6fe67c37e0fbc7f642055f99a1bc4f6ae47ece0fef78ec4102f4b6f0d3273",
+            "internalBoundary": true,
+            "eventIndex": 1,
+            "containerPreStateHash": "sha256:13434770fb81e4e650dbc487e0c5750aad5b6e1b9f2cc0a2644bf9cc2834c60b",
+            "containerPostStateHash": "sha256:b9be8cfb85d62d1d950be1f8c3996de384c7532348c92e14cf5d8fa1e9314e97",
+            "containerPostRevision": 86,
+            "reconstruction": {
+              "lifecycleTransitions": 4,
+              "allEventsMatch": true,
+              "normalizedFinalStateMatches": true
+            },
+            "sequence": {
+              "gameTurn": 1,
+              "playerTurnIndex": 1,
+              "phase": "AIRCRAFT_REFIT",
+              "segment": "NONE",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:allied",
+              "actingPlayerId": "player:allied"
+            },
+            "departureEvent": {
+              "kind": "SEQUENCE_ADVANCED",
+              "sequence": 1,
+              "from": {
+                "gameTurn": 1,
+                "playerTurnIndex": 0,
+                "phase": "CLEAN_UP",
+                "segment": "NONE",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:axis",
+                "actingPlayerId": "player:axis"
+              },
+              "to": {
+                "gameTurn": 1,
+                "playerTurnIndex": 1,
+                "phase": "AIRCRAFT_REFIT",
+                "segment": "NONE",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:allied",
+                "actingPlayerId": "player:allied"
+              }
+            },
+            "action": {
+              "actionId": "candidate:advance:85",
+              "actorId": "player:axis",
+              "expectedRevision": 85,
+              "kind": "ADVANCE_SEQUENCE"
+            },
+            "scores": {
+              "player:allied": 25,
+              "player:axis": 0
+            },
+            "axisMargin": -25,
+            "targetHolder": "player:allied",
+            "targetPoints": 4,
+            "targetMarginContribution": -4,
+            "firstObservedAxisAcquisition": null,
+            "observedControlChangesThroughHandoff": []
+          },
+          "changes": [],
+          "nextGoal": {
+            "status": "OBSERVED",
+            "at": 155,
+            "sequence": {
+              "gameTurn": 2,
+              "playerTurnIndex": 1,
+              "phase": "MOVEMENT",
+              "segment": "MOVEMENT",
+              "firstPlayerId": "player:allied",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            },
+            "preStateHash": "sha256:6ee110ef4e40d0b63a29f3ba88fcf62877a6a9f09d63d1d19e13946c1be5b2e7",
+            "action": {
+              "actionId": "candidate:move:generated-oob:344143186:axis:f11-combat-1:unit:15,9:155",
+              "actorId": "player:axis",
+              "expectedRevision": 155,
+              "kind": "MOVE_PIECE",
+              "pieceId": "generated-oob:344143186:axis:f11-combat-1:unit",
+              "path": [
+                "18,9",
+                "17,9",
+                "16,9",
+                "15,9"
+              ]
+            },
+            "intent": "combat to 15,9 (assault 10,9)",
+            "purpose": "assault",
+            "target": "10,9",
+            "sameTargetHex": true,
+            "samePurpose": true,
+            "nextTargetIsObjective": true,
+            "oldTargetHolder": "player:allied",
+            "oldTargetHeldByAxis": false
+          }
+        }
+      ]
+    },
+    {
+      "firstMatch": 1800018,
+      "mapSeed": 344143379,
+      "originalTarget": "4,18",
+      "originalPurpose": "assault",
+      "pieceId": "generated-oob:344143380:axis:f10-combat-1:unit",
+      "allVpEffect": 0,
+      "targetVpEffect": 0,
+      "terminalLocalEffect": 0,
+      "arms": [
+        {
+          "path": "artifacts/ai-progress-objective-30games/matches/match-1800019.save.json",
+          "saveSha256": "037b2dfa7e9d48f0c55cc78fb0d9497b3eba345d0d0cadf8c02081d3eac4efb6",
+          "tracePath": "artifacts/ai-progress-objective-30games/matches/match-1800019.trace.jsonl",
+          "traceSha256": "afddcde0de8f837f7edffd724233b968c718f4b2440fd68734d2d13a189ee0e8",
+          "resumeAt": 66,
+          "resumeHash": "sha256:dc9e2ce208900dd0a4295f7f03b97808c1ad9590ca3fe0d6108fe010fca1d8f5",
+          "actionsReplayed": 88,
+          "primary": {
+            "at": 93,
+            "revision": 93,
+            "stateHash": "sha256:2410970fcbe765262d6529caaa735a4035b7dcb2907d7e40f96a78255905c647",
+            "internalBoundary": true,
+            "eventIndex": 1,
+            "containerPreStateHash": "sha256:758fd484015a75904a2e657ff9c578ee4276535cc87dd14ac92949680c52b0d7",
+            "containerPostStateHash": "sha256:7effc99c232ca05ff81bac06b99feb7790ff99bbe96f085d3db383c3e1e1ea00",
+            "containerPostRevision": 94,
+            "reconstruction": {
+              "lifecycleTransitions": 5,
+              "allEventsMatch": true,
+              "normalizedFinalStateMatches": true
+            },
+            "sequence": {
+              "gameTurn": 1,
+              "playerTurnIndex": 1,
+              "phase": "AIRCRAFT_REFIT",
+              "segment": "NONE",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:allied",
+              "actingPlayerId": "player:allied"
+            },
+            "departureEvent": {
+              "kind": "SEQUENCE_ADVANCED",
+              "sequence": 1,
+              "from": {
+                "gameTurn": 1,
+                "playerTurnIndex": 0,
+                "phase": "CLEAN_UP",
+                "segment": "NONE",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:axis",
+                "actingPlayerId": "player:axis"
+              },
+              "to": {
+                "gameTurn": 1,
+                "playerTurnIndex": 1,
+                "phase": "AIRCRAFT_REFIT",
+                "segment": "NONE",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:allied",
+                "actingPlayerId": "player:allied"
+              }
+            },
+            "action": {
+              "actionId": "candidate:advance:93",
+              "actorId": "player:axis",
+              "expectedRevision": 93,
+              "kind": "ADVANCE_SEQUENCE"
+            },
+            "scores": {
+              "player:allied": 27,
+              "player:axis": 3
+            },
+            "axisMargin": -24,
+            "targetHolder": "player:allied",
+            "targetPoints": 4,
+            "targetMarginContribution": -4,
+            "firstObservedAxisAcquisition": null,
+            "observedControlChangesThroughHandoff": []
+          },
+          "changes": [],
+          "nextGoal": {
+            "status": "OBSERVED",
+            "at": 153,
+            "sequence": {
+              "gameTurn": 2,
+              "playerTurnIndex": 1,
+              "phase": "MOVEMENT",
+              "segment": "MOVEMENT",
+              "firstPlayerId": "player:allied",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            },
+            "preStateHash": "sha256:e68ace2918703ac11b2560936ef1bce38c8524d301dc2cea83bde325ea4a8794",
+            "action": {
+              "actionId": "candidate:move:generated-oob:344143380:axis:f10-combat-1:unit:9,18:153",
+              "actorId": "player:axis",
+              "expectedRevision": 153,
+              "kind": "MOVE_PIECE",
+              "path": [
+                "12,18",
+                "11,18",
+                "10,18",
+                "9,18"
+              ],
+              "pieceId": "generated-oob:344143380:axis:f10-combat-1:unit"
+            },
+            "intent": "combat to 9,18 (assault 4,18)",
+            "purpose": "assault",
+            "target": "4,18",
+            "sameTargetHex": true,
+            "samePurpose": true,
+            "nextTargetIsObjective": true,
+            "oldTargetHolder": "player:allied",
+            "oldTargetHeldByAxis": false
+          }
+        },
+        {
+          "path": "artifacts/ai-progress-objective-original-continuation/pair-1800018/branch-15.save.json",
+          "saveSha256": "15f73f844c56ce160ed00f4d9bb7c855b7d47fa7be5845f53fdf3685173828ef",
+          "tracePath": "artifacts/ai-progress-objective-original-continuation/pair-1800018/branch-15.trace.jsonl",
+          "traceSha256": "a075f6808736fd0e4fa27fc11ac1a496232c565c865c45bac0bfce3d0a674cdc",
+          "resumeAt": 66,
+          "resumeHash": "sha256:955dbb97b0aa848bc875a74b722de6ba7dd9d3da058f6393c7aacbba1f92dd1e",
+          "actionsReplayed": 88,
+          "primary": {
+            "at": 93,
+            "revision": 93,
+            "stateHash": "sha256:0a41caa04a6ff190a923a369aeee635ab10b07cbc73baa29d23006ca1e223762",
+            "internalBoundary": true,
+            "eventIndex": 1,
+            "containerPreStateHash": "sha256:2950166a5c1e6c526f0a8c48d39b764cceb6afbaca0914fe01349bc771918fd1",
+            "containerPostStateHash": "sha256:f3f03a01668358cbf42da424d2290a8971fb0a09cbe2c8df45895eab4988a14b",
+            "containerPostRevision": 94,
+            "reconstruction": {
+              "lifecycleTransitions": 5,
+              "allEventsMatch": true,
+              "normalizedFinalStateMatches": true
+            },
+            "sequence": {
+              "gameTurn": 1,
+              "playerTurnIndex": 1,
+              "phase": "AIRCRAFT_REFIT",
+              "segment": "NONE",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:allied",
+              "actingPlayerId": "player:allied"
+            },
+            "departureEvent": {
+              "kind": "SEQUENCE_ADVANCED",
+              "sequence": 1,
+              "from": {
+                "gameTurn": 1,
+                "playerTurnIndex": 0,
+                "phase": "CLEAN_UP",
+                "segment": "NONE",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:axis",
+                "actingPlayerId": "player:axis"
+              },
+              "to": {
+                "gameTurn": 1,
+                "playerTurnIndex": 1,
+                "phase": "AIRCRAFT_REFIT",
+                "segment": "NONE",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:allied",
+                "actingPlayerId": "player:allied"
+              }
+            },
+            "action": {
+              "actionId": "candidate:advance:93",
+              "actorId": "player:axis",
+              "expectedRevision": 93,
+              "kind": "ADVANCE_SEQUENCE"
+            },
+            "scores": {
+              "player:allied": 27,
+              "player:axis": 3
+            },
+            "axisMargin": -24,
+            "targetHolder": "player:allied",
+            "targetPoints": 4,
+            "targetMarginContribution": -4,
+            "firstObservedAxisAcquisition": null,
+            "observedControlChangesThroughHandoff": []
+          },
+          "changes": [],
+          "nextGoal": {
+            "status": "OBSERVED",
+            "at": 153,
+            "sequence": {
+              "gameTurn": 2,
+              "playerTurnIndex": 1,
+              "phase": "MOVEMENT",
+              "segment": "MOVEMENT",
+              "firstPlayerId": "player:allied",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            },
+            "preStateHash": "sha256:6233776374b55f21b00dddb907fa791ad8e387b16f91a54e5d511c9b7faa39ac",
+            "action": {
+              "actionId": "candidate:move:generated-oob:344143380:axis:f10-combat-1:unit:9,19:153",
+              "actorId": "player:axis",
+              "expectedRevision": 153,
+              "kind": "MOVE_PIECE",
+              "pieceId": "generated-oob:344143380:axis:f10-combat-1:unit",
+              "path": [
+                "13,18",
+                "13,17",
+                "12,17",
+                "11,17",
+                "10,18",
+                "9,19"
+              ]
+            },
+            "intent": "combat to 9,19 (capture 4,18)",
+            "purpose": "capture",
+            "target": "4,18",
+            "sameTargetHex": true,
+            "samePurpose": false,
+            "nextTargetIsObjective": true,
+            "oldTargetHolder": "player:allied",
+            "oldTargetHeldByAxis": false
+          }
+        }
+      ]
+    },
+    {
+      "firstMatch": 1800020,
+      "mapSeed": 344143573,
+      "originalTarget": "11,17",
+      "originalPurpose": "capture",
+      "pieceId": "generated-oob:344143574:axis:f1-combat-2:unit",
+      "allVpEffect": 0,
+      "targetVpEffect": 0,
+      "terminalLocalEffect": 0,
+      "arms": [
+        {
+          "path": "artifacts/ai-progress-objective-30games/matches/match-1800021.save.json",
+          "saveSha256": "ff2385f6bb032556993211b7efc8f4c37b6d300a9018ca04c1c2c29ff0dc65f9",
+          "tracePath": "artifacts/ai-progress-objective-30games/matches/match-1800021.trace.jsonl",
+          "traceSha256": "2387e8c8993d732a13c2c53ffa88a1a71a484a2b7e42df2800460fa72a66dafd",
+          "resumeAt": 66,
+          "resumeHash": "sha256:7f2c6f60fdb559b24a44bb842acfd230333ba4ecba34eb01db1d383abbc03bcb",
+          "actionsReplayed": 121,
+          "primary": {
+            "at": 93,
+            "revision": 93,
+            "stateHash": "sha256:4a4bdfc761e2ad8bc5bfc657bc16a67def2b6df06792f0dad9b248fe33848483",
+            "internalBoundary": true,
+            "eventIndex": 1,
+            "containerPreStateHash": "sha256:f63f9b3a278ebf967b0c679c542bf43ad3ee1512cdb834d1308707cf85fa8441",
+            "containerPostStateHash": "sha256:b35580be6c914b5a84c710ec1e67baa60d6d91ff0266da1d2756fb4999d9b53f",
+            "containerPostRevision": 94,
+            "reconstruction": {
+              "lifecycleTransitions": 4,
+              "allEventsMatch": true,
+              "normalizedFinalStateMatches": true
+            },
+            "sequence": {
+              "gameTurn": 1,
+              "playerTurnIndex": 1,
+              "phase": "AIRCRAFT_REFIT",
+              "segment": "NONE",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:allied",
+              "actingPlayerId": "player:allied"
+            },
+            "departureEvent": {
+              "kind": "SEQUENCE_ADVANCED",
+              "sequence": 1,
+              "from": {
+                "gameTurn": 1,
+                "playerTurnIndex": 0,
+                "phase": "CLEAN_UP",
+                "segment": "NONE",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:axis",
+                "actingPlayerId": "player:axis"
+              },
+              "to": {
+                "gameTurn": 1,
+                "playerTurnIndex": 1,
+                "phase": "AIRCRAFT_REFIT",
+                "segment": "NONE",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:allied",
+                "actingPlayerId": "player:allied"
+              }
+            },
+            "action": {
+              "actionId": "candidate:advance:93",
+              "actorId": "player:axis",
+              "expectedRevision": 93,
+              "kind": "ADVANCE_SEQUENCE"
+            },
+            "scores": {
+              "player:allied": 17,
+              "player:axis": 7
+            },
+            "axisMargin": -10,
+            "targetHolder": "player:axis",
+            "targetPoints": 4,
+            "targetMarginContribution": 4,
+            "firstObservedAxisAcquisition": {
+              "at": 84,
+              "preSequence": {
+                "gameTurn": 1,
+                "playerTurnIndex": 0,
+                "phase": "COMBAT",
+                "segment": "COMBAT",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:axis",
+                "actingPlayerId": "player:axis"
+              },
+              "postSequence": {
+                "gameTurn": 1,
+                "playerTurnIndex": 0,
+                "phase": "COMBAT",
+                "segment": "COMBAT",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:axis",
+                "actingPlayerId": "player:axis"
+              },
+              "from": "player:allied",
+              "to": "player:axis",
+              "actionKind": "RESPOND_DECISION",
+              "axisAcquiredByObservedUnitMove": false,
+              "triggeringPieceId": null
+            },
+            "observedControlChangesThroughHandoff": [
+              {
+                "at": 84,
+                "preSequence": {
+                  "gameTurn": 1,
+                  "playerTurnIndex": 0,
+                  "phase": "COMBAT",
+                  "segment": "COMBAT",
+                  "firstPlayerId": "player:axis",
+                  "phasingPlayerId": "player:axis",
+                  "actingPlayerId": "player:axis"
+                },
+                "postSequence": {
+                  "gameTurn": 1,
+                  "playerTurnIndex": 0,
+                  "phase": "COMBAT",
+                  "segment": "COMBAT",
+                  "firstPlayerId": "player:axis",
+                  "phasingPlayerId": "player:axis",
+                  "actingPlayerId": "player:axis"
+                },
+                "from": "player:allied",
+                "to": "player:axis",
+                "actionKind": "RESPOND_DECISION",
+                "axisAcquiredByObservedUnitMove": false,
+                "triggeringPieceId": null
+              }
+            ]
+          },
+          "changes": [
+            {
+              "at": 84,
+              "preSequence": {
+                "gameTurn": 1,
+                "playerTurnIndex": 0,
+                "phase": "COMBAT",
+                "segment": "COMBAT",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:axis",
+                "actingPlayerId": "player:axis"
+              },
+              "postSequence": {
+                "gameTurn": 1,
+                "playerTurnIndex": 0,
+                "phase": "COMBAT",
+                "segment": "COMBAT",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:axis",
+                "actingPlayerId": "player:axis"
+              },
+              "from": "player:allied",
+              "to": "player:axis",
+              "actionKind": "RESPOND_DECISION",
+              "axisAcquiredByObservedUnitMove": false,
+              "triggeringPieceId": null
+            }
+          ],
+          "nextGoal": {
+            "status": "OBSERVED",
+            "at": 186,
+            "sequence": {
+              "gameTurn": 2,
+              "playerTurnIndex": 1,
+              "phase": "MOVEMENT",
+              "segment": "MOVEMENT",
+              "firstPlayerId": "player:allied",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            },
+            "preStateHash": "sha256:7a5f256f02cdcf01be782aefe88b60293077c9c4018c35aa5040699e04d09f86",
+            "action": {
+              "actionId": "candidate:move:generated-oob:344143574:axis:f1-combat-2:unit:11,19:186",
+              "actorId": "player:axis",
+              "expectedRevision": 186,
+              "kind": "MOVE_PIECE",
+              "path": [
+                "10,20",
+                "11,19"
+              ],
+              "pieceId": "generated-oob:344143574:axis:f1-combat-2:unit"
+            },
+            "intent": "combat to 11,19 (hunt 10,20)",
+            "purpose": "hunt",
+            "target": "10,20",
+            "sameTargetHex": false,
+            "samePurpose": false,
+            "nextTargetIsObjective": false,
+            "oldTargetHolder": "player:axis",
+            "oldTargetHeldByAxis": true
+          }
+        },
+        {
+          "path": "artifacts/ai-progress-objective-original-continuation/pair-1800020/branch-15.save.json",
+          "saveSha256": "4678e22ffdcc495e1bcb5d2a2c5ee6183b88062326a17db33485e2aa1f2cd84b",
+          "tracePath": "artifacts/ai-progress-objective-original-continuation/pair-1800020/branch-15.trace.jsonl",
+          "traceSha256": "09af8aed60122609906c9006f9d9504fef65ca1693adc392c33511ba734cd171",
+          "resumeAt": 66,
+          "resumeHash": "sha256:e456bdc2e62854ecb703147c4d87c90c84e7a7e7191dcbaa3af0d835392c5cf5",
+          "actionsReplayed": 116,
+          "primary": {
+            "at": 91,
+            "revision": 91,
+            "stateHash": "sha256:ba37aa3c45a0c8b16bd5c8c9198729ef5e25dd92995e93f7f88f0544d143ff08",
+            "internalBoundary": true,
+            "eventIndex": 1,
+            "containerPreStateHash": "sha256:b221da9b7791a9d9924ad73e2194c049d42a725891dddcb95a48aa146060627d",
+            "containerPostStateHash": "sha256:3217de71fcf701445575b6a408e0b1c59fbb935433f53bfcd5891044f89df828",
+            "containerPostRevision": 92,
+            "reconstruction": {
+              "lifecycleTransitions": 4,
+              "allEventsMatch": true,
+              "normalizedFinalStateMatches": true
+            },
+            "sequence": {
+              "gameTurn": 1,
+              "playerTurnIndex": 1,
+              "phase": "AIRCRAFT_REFIT",
+              "segment": "NONE",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:allied",
+              "actingPlayerId": "player:allied"
+            },
+            "departureEvent": {
+              "kind": "SEQUENCE_ADVANCED",
+              "sequence": 1,
+              "from": {
+                "gameTurn": 1,
+                "playerTurnIndex": 0,
+                "phase": "CLEAN_UP",
+                "segment": "NONE",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:axis",
+                "actingPlayerId": "player:axis"
+              },
+              "to": {
+                "gameTurn": 1,
+                "playerTurnIndex": 1,
+                "phase": "AIRCRAFT_REFIT",
+                "segment": "NONE",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:allied",
+                "actingPlayerId": "player:allied"
+              }
+            },
+            "action": {
+              "actionId": "candidate:advance:91",
+              "actorId": "player:axis",
+              "expectedRevision": 91,
+              "kind": "ADVANCE_SEQUENCE"
+            },
+            "scores": {
+              "player:allied": 17,
+              "player:axis": 7
+            },
+            "axisMargin": -10,
+            "targetHolder": "player:axis",
+            "targetPoints": 4,
+            "targetMarginContribution": 4,
+            "firstObservedAxisAcquisition": {
+              "at": 84,
+              "preSequence": {
+                "gameTurn": 1,
+                "playerTurnIndex": 0,
+                "phase": "COMBAT",
+                "segment": "COMBAT",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:axis",
+                "actingPlayerId": "player:axis"
+              },
+              "postSequence": {
+                "gameTurn": 1,
+                "playerTurnIndex": 0,
+                "phase": "COMBAT",
+                "segment": "COMBAT",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:axis",
+                "actingPlayerId": "player:axis"
+              },
+              "from": "player:allied",
+              "to": "player:axis",
+              "actionKind": "RESPOND_DECISION",
+              "axisAcquiredByObservedUnitMove": false,
+              "triggeringPieceId": null
+            },
+            "observedControlChangesThroughHandoff": [
+              {
+                "at": 84,
+                "preSequence": {
+                  "gameTurn": 1,
+                  "playerTurnIndex": 0,
+                  "phase": "COMBAT",
+                  "segment": "COMBAT",
+                  "firstPlayerId": "player:axis",
+                  "phasingPlayerId": "player:axis",
+                  "actingPlayerId": "player:axis"
+                },
+                "postSequence": {
+                  "gameTurn": 1,
+                  "playerTurnIndex": 0,
+                  "phase": "COMBAT",
+                  "segment": "COMBAT",
+                  "firstPlayerId": "player:axis",
+                  "phasingPlayerId": "player:axis",
+                  "actingPlayerId": "player:axis"
+                },
+                "from": "player:allied",
+                "to": "player:axis",
+                "actionKind": "RESPOND_DECISION",
+                "axisAcquiredByObservedUnitMove": false,
+                "triggeringPieceId": null
+              }
+            ]
+          },
+          "changes": [
+            {
+              "at": 84,
+              "preSequence": {
+                "gameTurn": 1,
+                "playerTurnIndex": 0,
+                "phase": "COMBAT",
+                "segment": "COMBAT",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:axis",
+                "actingPlayerId": "player:axis"
+              },
+              "postSequence": {
+                "gameTurn": 1,
+                "playerTurnIndex": 0,
+                "phase": "COMBAT",
+                "segment": "COMBAT",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:axis",
+                "actingPlayerId": "player:axis"
+              },
+              "from": "player:allied",
+              "to": "player:axis",
+              "actionKind": "RESPOND_DECISION",
+              "axisAcquiredByObservedUnitMove": false,
+              "triggeringPieceId": null
+            },
+            {
+              "at": 108,
+              "preSequence": {
+                "gameTurn": 1,
+                "playerTurnIndex": 1,
+                "phase": "MOVEMENT",
+                "segment": "MOVEMENT",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:allied",
+                "actingPlayerId": "player:allied"
+              },
+              "postSequence": {
+                "gameTurn": 1,
+                "playerTurnIndex": 1,
+                "phase": "MOVEMENT",
+                "segment": "MOVEMENT",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:allied",
+                "actingPlayerId": "player:allied"
+              },
+              "from": "player:axis",
+              "to": "player:allied",
+              "actionKind": "MOVE_PIECE",
+              "axisAcquiredByObservedUnitMove": false,
+              "triggeringPieceId": "generated-oob:344143574:allied:f5-combat-1:unit"
+            }
+          ],
+          "nextGoal": {
+            "status": "OBSERVED",
+            "at": 181,
+            "sequence": {
+              "gameTurn": 2,
+              "playerTurnIndex": 1,
+              "phase": "MOVEMENT",
+              "segment": "MOVEMENT",
+              "firstPlayerId": "player:allied",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            },
+            "preStateHash": "sha256:cd60ef4893635e17cf0b92d7febd4d83b1737b30ab2f03a5bf205c4f657c2aab",
+            "action": {
+              "actionId": "candidate:move:generated-oob:344143574:axis:f1-combat-2:unit:12,13:181",
+              "actorId": "player:axis",
+              "expectedRevision": 181,
+              "kind": "MOVE_PIECE",
+              "pieceId": "generated-oob:344143574:axis:f1-combat-2:unit",
+              "path": [
+                "15,17",
+                "14,17",
+                "13,17",
+                "12,17",
+                "12,16",
+                "12,15",
+                "12,14",
+                "12,13"
+              ]
+            },
+            "intent": "combat to 12,13 (capture -4,13)",
+            "purpose": "capture",
+            "target": "-4,13",
+            "sameTargetHex": false,
+            "samePurpose": true,
+            "nextTargetIsObjective": true,
+            "oldTargetHolder": "player:allied",
+            "oldTargetHeldByAxis": false
+          }
+        }
+      ]
+    },
+    {
+      "firstMatch": 1800022,
+      "mapSeed": 344143767,
+      "originalTarget": "13,10",
+      "originalPurpose": "capture",
+      "pieceId": "generated-oob:344143768:axis:independent-anti_tank-1:unit",
+      "allVpEffect": 0,
+      "targetVpEffect": 0,
+      "terminalLocalEffect": 0,
+      "arms": [
+        {
+          "path": "artifacts/ai-progress-objective-30games/matches/match-1800023.save.json",
+          "saveSha256": "f5e136683d468618aa3c0b8bb8a2f8b78c8616ed61f847779ed5a0b0696feaa9",
+          "tracePath": "artifacts/ai-progress-objective-30games/matches/match-1800023.trace.jsonl",
+          "traceSha256": "1a43a0e6ba3adaa0a9b0d2a95f92ee109e4050c34c5cf13cd42bc10ac2015f2d",
+          "resumeAt": 64,
+          "resumeHash": "sha256:2acbbd01d07f32c732b1a46fac24623dd409ca482a17d749455d11bcda448ec1",
+          "actionsReplayed": 80,
+          "primary": {
+            "at": 68,
+            "revision": 68,
+            "stateHash": "sha256:0334d274dbb1c051e3f98737e063eacf136981338dcb9cda2902c728770a3915",
+            "internalBoundary": true,
+            "eventIndex": 4,
+            "containerPreStateHash": "sha256:6d8e3762ee25945c8f7cea417f184230b61e71b5d7587cc153e426e19cef24db",
+            "containerPostStateHash": "sha256:332730e4d75eff34c6d6e5f8742608087b449096a1a8cda90bec42b91a2bc3bd",
+            "containerPostRevision": 69,
+            "reconstruction": {
+              "lifecycleTransitions": 8,
+              "allEventsMatch": true,
+              "normalizedFinalStateMatches": true
+            },
+            "sequence": {
+              "gameTurn": 1,
+              "playerTurnIndex": 1,
+              "phase": "AIRCRAFT_REFIT",
+              "segment": "NONE",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:allied",
+              "actingPlayerId": "player:allied"
+            },
+            "departureEvent": {
+              "kind": "SEQUENCE_ADVANCED",
+              "sequence": 4,
+              "from": {
+                "gameTurn": 1,
+                "playerTurnIndex": 0,
+                "phase": "CLEAN_UP",
+                "segment": "NONE",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:axis",
+                "actingPlayerId": "player:axis"
+              },
+              "to": {
+                "gameTurn": 1,
+                "playerTurnIndex": 1,
+                "phase": "AIRCRAFT_REFIT",
+                "segment": "NONE",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:allied",
+                "actingPlayerId": "player:allied"
+              }
+            },
+            "action": {
+              "actionId": "candidate:advance:68",
+              "actorId": "player:axis",
+              "expectedRevision": 68,
+              "kind": "ADVANCE_SEQUENCE"
+            },
+            "scores": {
+              "player:allied": 15,
+              "player:axis": 0
+            },
+            "axisMargin": -15,
+            "targetHolder": "player:allied",
+            "targetPoints": 4,
+            "targetMarginContribution": -4,
+            "firstObservedAxisAcquisition": null,
+            "observedControlChangesThroughHandoff": []
+          },
+          "changes": [],
+          "nextGoal": {
+            "status": "OBSERVED",
+            "at": 143,
+            "sequence": {
+              "gameTurn": 2,
+              "playerTurnIndex": 0,
+              "phase": "MOVEMENT",
+              "segment": "MOVEMENT",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            },
+            "preStateHash": "sha256:aefa9e6bf55684adeabef266356d555868c4a2f8a33c60090611552a45a1b888",
+            "action": {
+              "actionId": "candidate:move:generated-oob:344143768:axis:independent-anti_tank-1:unit:14,10:143",
+              "actorId": "player:axis",
+              "expectedRevision": 143,
+              "kind": "MOVE_PIECE",
+              "path": [
+                "16,9",
+                "17,9",
+                "16,10",
+                "15,10",
+                "14,10"
+              ],
+              "pieceId": "generated-oob:344143768:axis:independent-anti_tank-1:unit"
+            },
+            "intent": "combat to 14,10 (assault 13,10)",
+            "purpose": "assault",
+            "target": "13,10",
+            "sameTargetHex": true,
+            "samePurpose": false,
+            "nextTargetIsObjective": true,
+            "oldTargetHolder": "player:allied",
+            "oldTargetHeldByAxis": false
+          }
+        },
+        {
+          "path": "artifacts/ai-progress-objective-original-continuation/pair-1800022/branch-15.save.json",
+          "saveSha256": "cacf2e54367cbbf49e00d82c8a3bf6a79d9f8b7a8a763ee48392627c7493d577",
+          "tracePath": "artifacts/ai-progress-objective-original-continuation/pair-1800022/branch-15.trace.jsonl",
+          "traceSha256": "c17779c79df4d52923a2009b443f46bbc5914361df7ad363dd23fa6fad0a2b9c",
+          "resumeAt": 64,
+          "resumeHash": "sha256:280d9e8a8564f0ffeb2566f72004224daabab687da73d561e48d8568bcb77379",
+          "actionsReplayed": 80,
+          "primary": {
+            "at": 68,
+            "revision": 68,
+            "stateHash": "sha256:92f796bc78dc73f5fcbe9386d58a691e2ec59223b4839c416b0a7d7f5bea5bd3",
+            "internalBoundary": true,
+            "eventIndex": 4,
+            "containerPreStateHash": "sha256:6847bb8ae4abd707ce2dfee80c169f17ad5c77d936c4bb0b53fbd317ebcd08ad",
+            "containerPostStateHash": "sha256:a9dbadc273111513f6137a30fe96dca958de2872076ef3eb9763dce7a44e43e4",
+            "containerPostRevision": 69,
+            "reconstruction": {
+              "lifecycleTransitions": 8,
+              "allEventsMatch": true,
+              "normalizedFinalStateMatches": true
+            },
+            "sequence": {
+              "gameTurn": 1,
+              "playerTurnIndex": 1,
+              "phase": "AIRCRAFT_REFIT",
+              "segment": "NONE",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:allied",
+              "actingPlayerId": "player:allied"
+            },
+            "departureEvent": {
+              "kind": "SEQUENCE_ADVANCED",
+              "sequence": 4,
+              "from": {
+                "gameTurn": 1,
+                "playerTurnIndex": 0,
+                "phase": "CLEAN_UP",
+                "segment": "NONE",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:axis",
+                "actingPlayerId": "player:axis"
+              },
+              "to": {
+                "gameTurn": 1,
+                "playerTurnIndex": 1,
+                "phase": "AIRCRAFT_REFIT",
+                "segment": "NONE",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:allied",
+                "actingPlayerId": "player:allied"
+              }
+            },
+            "action": {
+              "actionId": "candidate:advance:68",
+              "actorId": "player:axis",
+              "expectedRevision": 68,
+              "kind": "ADVANCE_SEQUENCE"
+            },
+            "scores": {
+              "player:allied": 15,
+              "player:axis": 0
+            },
+            "axisMargin": -15,
+            "targetHolder": "player:allied",
+            "targetPoints": 4,
+            "targetMarginContribution": -4,
+            "firstObservedAxisAcquisition": null,
+            "observedControlChangesThroughHandoff": []
+          },
+          "changes": [],
+          "nextGoal": {
+            "status": "OBSERVED",
+            "at": 143,
+            "sequence": {
+              "gameTurn": 2,
+              "playerTurnIndex": 0,
+              "phase": "MOVEMENT",
+              "segment": "MOVEMENT",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            },
+            "preStateHash": "sha256:c2a16cdccd5a7ea13f4af181db56a0944b3a725aa2d9b02f826ea14cfdf9f36b",
+            "action": {
+              "actionId": "candidate:move:generated-oob:344143768:axis:independent-anti_tank-1:unit:14,10:143",
+              "actorId": "player:axis",
+              "expectedRevision": 143,
+              "kind": "MOVE_PIECE",
+              "pieceId": "generated-oob:344143768:axis:independent-anti_tank-1:unit",
+              "path": [
+                "17,8",
+                "17,9",
+                "16,10",
+                "15,10",
+                "14,10"
+              ]
+            },
+            "intent": "combat to 14,10 (assault 13,10)",
+            "purpose": "assault",
+            "target": "13,10",
+            "sameTargetHex": true,
+            "samePurpose": false,
+            "nextTargetIsObjective": true,
+            "oldTargetHolder": "player:allied",
+            "oldTargetHeldByAxis": false
+          }
+        }
+      ]
+    },
+    {
+      "firstMatch": 1800024,
+      "mapSeed": 344143961,
+      "originalTarget": "9,2",
+      "originalPurpose": "capture",
+      "pieceId": "generated-oob:344143962:axis:f4-recon:unit",
+      "allVpEffect": 0,
+      "targetVpEffect": 0,
+      "terminalLocalEffect": -8,
+      "arms": [
+        {
+          "path": "artifacts/ai-progress-objective-30games/matches/match-1800025.save.json",
+          "saveSha256": "94293ac49de52b9828b1691190f7b47b3b91d6d701f027377fd441f19dd914bd",
+          "tracePath": "artifacts/ai-progress-objective-30games/matches/match-1800025.trace.jsonl",
+          "traceSha256": "f66e244192bf16e98a420c4e86b1148e3d94abfed3dc4aefb702f4e34e07bff3",
+          "resumeAt": 67,
+          "resumeHash": "sha256:8a539aaf8fb7bf42cd73373a47a154c6ae2dc40c0714c66470913a083e52138c",
+          "actionsReplayed": 8,
+          "primary": {
+            "at": 74,
+            "revision": 74,
+            "stateHash": "sha256:4f32d2e89ee2eaa64904fa7137fee88d5de45946721b9e73147c47ff57f3a300",
+            "internalBoundary": true,
+            "eventIndex": 4,
+            "containerPreStateHash": "sha256:78bcdae0e7295453c6f7078b6bb3bcbcd2bc52ffd95d6781baabfb61f9c564d4",
+            "containerPostStateHash": "sha256:6cabc3f7e7d52e6c4ead2e510451751bf4add416ae5b8388784ce1d377a7b5e5",
+            "containerPostRevision": 75,
+            "reconstruction": {
+              "lifecycleTransitions": 8,
+              "allEventsMatch": true,
+              "normalizedFinalStateMatches": true
+            },
+            "sequence": {
+              "gameTurn": 1,
+              "playerTurnIndex": 1,
+              "phase": "AIRCRAFT_REFIT",
+              "segment": "NONE",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:allied",
+              "actingPlayerId": "player:allied"
+            },
+            "departureEvent": {
+              "kind": "SEQUENCE_ADVANCED",
+              "sequence": 4,
+              "from": {
+                "gameTurn": 1,
+                "playerTurnIndex": 0,
+                "phase": "CLEAN_UP",
+                "segment": "NONE",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:axis",
+                "actingPlayerId": "player:axis"
+              },
+              "to": {
+                "gameTurn": 1,
+                "playerTurnIndex": 1,
+                "phase": "AIRCRAFT_REFIT",
+                "segment": "NONE",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:allied",
+                "actingPlayerId": "player:allied"
+              }
+            },
+            "action": {
+              "actionId": "candidate:advance:74",
+              "actorId": "player:axis",
+              "expectedRevision": 74,
+              "kind": "ADVANCE_SEQUENCE"
+            },
+            "scores": {
+              "player:allied": 13,
+              "player:axis": 0
+            },
+            "axisMargin": -13,
+            "targetHolder": "player:allied",
+            "targetPoints": 4,
+            "targetMarginContribution": -4,
+            "firstObservedAxisAcquisition": null,
+            "observedControlChangesThroughHandoff": []
+          },
+          "changes": [],
+          "nextGoal": {
+            "status": "CENSORED",
+            "reason": "No subsequent same-unit MOVE_PIECE in source history; no claim about unobserved planning"
+          }
+        },
+        {
+          "path": "artifacts/ai-progress-objective-original-continuation/pair-1800024/branch-15.save.json",
+          "saveSha256": "30359253ff477c9ba767e85d023391b134883b58d91eaf29a6c11e975a7f431b",
+          "tracePath": "artifacts/ai-progress-objective-original-continuation/pair-1800024/branch-15.trace.jsonl",
+          "traceSha256": "0f2af2a5e249792bfd446d3a6de3a324ade3175c40c05526217912e236c06981",
+          "resumeAt": 67,
+          "resumeHash": "sha256:d916c10136d6eac53bc302ac609daf40ee1ad2583a51ce2eba0b8858e2ce3921",
+          "actionsReplayed": 6,
+          "primary": {
+            "at": 72,
+            "revision": 72,
+            "stateHash": "sha256:d89fff9937e0b3b5f00f9b1efb11fc821350b423994c3885db60245a1c77ea4d",
+            "internalBoundary": true,
+            "eventIndex": 5,
+            "containerPreStateHash": "sha256:f7313c325bbb2e7395ac00f099c935cd1b95df3f32f47e385970bf6e3011752c",
+            "containerPostStateHash": "sha256:84b6d24f616fd0e169b13a85ee59d7e39b3413457a1c3a6cc59c56760ce0891f",
+            "containerPostRevision": 73,
+            "reconstruction": {
+              "lifecycleTransitions": 9,
+              "allEventsMatch": true,
+              "normalizedFinalStateMatches": true
+            },
+            "sequence": {
+              "gameTurn": 1,
+              "playerTurnIndex": 1,
+              "phase": "AIRCRAFT_REFIT",
+              "segment": "NONE",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:allied",
+              "actingPlayerId": "player:allied"
+            },
+            "departureEvent": {
+              "kind": "SEQUENCE_ADVANCED",
+              "sequence": 5,
+              "from": {
+                "gameTurn": 1,
+                "playerTurnIndex": 0,
+                "phase": "CLEAN_UP",
+                "segment": "NONE",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:axis",
+                "actingPlayerId": "player:axis"
+              },
+              "to": {
+                "gameTurn": 1,
+                "playerTurnIndex": 1,
+                "phase": "AIRCRAFT_REFIT",
+                "segment": "NONE",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:allied",
+                "actingPlayerId": "player:allied"
+              }
+            },
+            "action": {
+              "actionId": "candidate:advance:72",
+              "actorId": "player:axis",
+              "expectedRevision": 72,
+              "kind": "ADVANCE_SEQUENCE"
+            },
+            "scores": {
+              "player:allied": 13,
+              "player:axis": 0
+            },
+            "axisMargin": -13,
+            "targetHolder": "player:allied",
+            "targetPoints": 4,
+            "targetMarginContribution": -4,
+            "firstObservedAxisAcquisition": null,
+            "observedControlChangesThroughHandoff": []
+          },
+          "changes": [],
+          "nextGoal": {
+            "status": "CENSORED",
+            "reason": "No subsequent same-unit MOVE_PIECE in source history; no claim about unobserved planning"
+          }
+        }
+      ]
+    },
+    {
+      "firstMatch": 1800026,
+      "mapSeed": 344144155,
+      "originalTarget": "10,15",
+      "originalPurpose": "capture",
+      "pieceId": "generated-oob:344144156:axis:f2-recon:unit",
+      "allVpEffect": 0,
+      "targetVpEffect": 0,
+      "terminalLocalEffect": 0,
+      "arms": [
+        {
+          "path": "artifacts/ai-progress-objective-30games/matches/match-1800027.save.json",
+          "saveSha256": "0316327088a91723e8708bef8e00ee9a4609b16ce388d5ae3ec39ad1792dba7f",
+          "tracePath": "artifacts/ai-progress-objective-30games/matches/match-1800027.trace.jsonl",
+          "traceSha256": "2907d49c5f48561a5a2bd67dae08256ac40d302050e6fd0fda6da790c4c5e528",
+          "resumeAt": 206,
+          "resumeHash": "sha256:b2bb645834cbe1502901f71e4172ab511c7dc8ac8e6635a0c8f3e6f13405c234",
+          "actionsReplayed": 311,
+          "primary": {
+            "at": 223,
+            "revision": 223,
+            "stateHash": "sha256:f9466c314cce3b9fd1372b0661ec3aedf731e314f73b6cf30a5936315bb95c16",
+            "internalBoundary": true,
+            "eventIndex": 3,
+            "containerPreStateHash": "sha256:14adb903b7a5876fe407b217afbb1c58981643b6ff7d1e40a65be82a752adafc",
+            "containerPostStateHash": "sha256:3893997f3af7e6ec7b767320831f15e6596206ba68ecfb495c42c29d2058af87",
+            "containerPostRevision": 224,
+            "reconstruction": {
+              "lifecycleTransitions": 5,
+              "allEventsMatch": true,
+              "normalizedFinalStateMatches": true
+            },
+            "sequence": {
+              "gameTurn": 2,
+              "playerTurnIndex": 1,
+              "phase": "AIRCRAFT_REFIT",
+              "segment": "NONE",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:allied",
+              "actingPlayerId": "player:allied"
+            },
+            "departureEvent": {
+              "kind": "SEQUENCE_ADVANCED",
+              "sequence": 3,
+              "from": {
+                "gameTurn": 2,
+                "playerTurnIndex": 0,
+                "phase": "CLEAN_UP",
+                "segment": "NONE",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:axis",
+                "actingPlayerId": "player:axis"
+              },
+              "to": {
+                "gameTurn": 2,
+                "playerTurnIndex": 1,
+                "phase": "AIRCRAFT_REFIT",
+                "segment": "NONE",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:allied",
+                "actingPlayerId": "player:allied"
+              }
+            },
+            "action": {
+              "actionId": "candidate:advance:223",
+              "actorId": "player:axis",
+              "expectedRevision": 223,
+              "kind": "ADVANCE_SEQUENCE"
+            },
+            "scores": {
+              "player:allied": 13,
+              "player:axis": 0
+            },
+            "axisMargin": -13,
+            "targetHolder": "player:allied",
+            "targetPoints": 6,
+            "targetMarginContribution": -6,
+            "firstObservedAxisAcquisition": null,
+            "observedControlChangesThroughHandoff": []
+          },
+          "changes": [],
+          "nextGoal": {
+            "status": "OBSERVED",
+            "at": 516,
+            "sequence": {
+              "gameTurn": 5,
+              "playerTurnIndex": 0,
+              "phase": "MOVEMENT",
+              "segment": "MOVEMENT",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            },
+            "preStateHash": "sha256:5bda25f45dc197e931cb32bd808d6dec7d5aa7a15b423a071b321a3b96636baf",
+            "action": {
+              "actionId": "candidate:move:generated-oob:344144156:axis:f2-recon:unit:9,15:516",
+              "actorId": "player:axis",
+              "expectedRevision": 516,
+              "kind": "MOVE_PIECE",
+              "path": [
+                "11,13",
+                "10,14",
+                "9,15"
+              ],
+              "pieceId": "generated-oob:344144156:axis:f2-recon:unit"
+            },
+            "intent": "combat to 9,15 (capture 10,15)",
+            "purpose": "capture",
+            "target": "10,15",
+            "sameTargetHex": true,
+            "samePurpose": true,
+            "nextTargetIsObjective": true,
+            "oldTargetHolder": "player:allied",
+            "oldTargetHeldByAxis": false
+          }
+        },
+        {
+          "path": "artifacts/ai-progress-objective-original-continuation/pair-1800026/branch-15.save.json",
+          "saveSha256": "259841fbccf00a6df8e17f1bb299370d1fb64a7e3855ef6ce218c98dafb131ed",
+          "tracePath": "artifacts/ai-progress-objective-original-continuation/pair-1800026/branch-15.trace.jsonl",
+          "traceSha256": "7488cce5a5f89ee987e36df7f8531b60dcdaaf701068095e27705b78af2e3c2e",
+          "resumeAt": 206,
+          "resumeHash": "sha256:5537ba1590cae9b8acf0f9ddce6e6695c5eee11cf387992f48797fa2592ebb8f",
+          "actionsReplayed": 23,
+          "primary": {
+            "at": 228,
+            "revision": 228,
+            "stateHash": "sha256:d63aac14b59e1ba8627c3909b4aa1c8daa42e101db0fcd296bd463d434385909",
+            "internalBoundary": true,
+            "eventIndex": 3,
+            "containerPreStateHash": "sha256:d13bd4cc978e661ad4a9dc34e415249014bc0c125c28f666cae64978779a5650",
+            "containerPostStateHash": "sha256:9f715450cee403940515a5073d1ffa6cfb3e0dbd8e5784d5e39dec56071cad98",
+            "containerPostRevision": 229,
+            "reconstruction": {
+              "lifecycleTransitions": 5,
+              "allEventsMatch": true,
+              "normalizedFinalStateMatches": true
+            },
+            "sequence": {
+              "gameTurn": 2,
+              "playerTurnIndex": 1,
+              "phase": "AIRCRAFT_REFIT",
+              "segment": "NONE",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:allied",
+              "actingPlayerId": "player:allied"
+            },
+            "departureEvent": {
+              "kind": "SEQUENCE_ADVANCED",
+              "sequence": 3,
+              "from": {
+                "gameTurn": 2,
+                "playerTurnIndex": 0,
+                "phase": "CLEAN_UP",
+                "segment": "NONE",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:axis",
+                "actingPlayerId": "player:axis"
+              },
+              "to": {
+                "gameTurn": 2,
+                "playerTurnIndex": 1,
+                "phase": "AIRCRAFT_REFIT",
+                "segment": "NONE",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:allied",
+                "actingPlayerId": "player:allied"
+              }
+            },
+            "action": {
+              "actionId": "candidate:advance:228",
+              "actorId": "player:axis",
+              "expectedRevision": 228,
+              "kind": "ADVANCE_SEQUENCE"
+            },
+            "scores": {
+              "player:allied": 13,
+              "player:axis": 0
+            },
+            "axisMargin": -13,
+            "targetHolder": "player:allied",
+            "targetPoints": 6,
+            "targetMarginContribution": -6,
+            "firstObservedAxisAcquisition": null,
+            "observedControlChangesThroughHandoff": []
+          },
+          "changes": [],
+          "nextGoal": {
+            "status": "CENSORED",
+            "reason": "No subsequent same-unit MOVE_PIECE in source history; no claim about unobserved planning"
+          }
+        }
+      ]
+    },
+    {
+      "firstMatch": 1800028,
+      "mapSeed": 344144349,
+      "originalTarget": "12,15",
+      "originalPurpose": "capture",
+      "pieceId": "generated-oob:344144350:axis:f1-combat-1:unit",
+      "allVpEffect": 0,
+      "targetVpEffect": 0,
+      "terminalLocalEffect": 8,
+      "arms": [
+        {
+          "path": "artifacts/ai-progress-objective-30games/matches/match-1800029.save.json",
+          "saveSha256": "0fba68defa48adf66842bbf7707dfab600efb6d9df258a5c90ecbb51d639b6e5",
+          "tracePath": "artifacts/ai-progress-objective-30games/matches/match-1800029.trace.jsonl",
+          "traceSha256": "e290e474d11f8948131501355e53a6dd56aa74f4726bd588608bfee1d2534a07",
+          "resumeAt": 71,
+          "resumeHash": "sha256:330d3f9d6d7c4b2dd36d22435d851b2753d2870a11b666717cfbe0254d1d951d",
+          "actionsReplayed": 83,
+          "primary": {
+            "at": 87,
+            "revision": 87,
+            "stateHash": "sha256:a06ab3122c699cdbdffc7bbd3b7ea310c4a30cd997f3e491876977b8bfeacfa8",
+            "internalBoundary": true,
+            "eventIndex": 3,
+            "containerPreStateHash": "sha256:123a43ccfa98b2c8a0877dff36413dcacf65d51ca9cc1f197c20fa01123fd23d",
+            "containerPostStateHash": "sha256:3c414e510e2421c6bcc962efa6a8d5c8b40eae0e0b7aa151fd95df06b09eaa78",
+            "containerPostRevision": 88,
+            "reconstruction": {
+              "lifecycleTransitions": 7,
+              "allEventsMatch": true,
+              "normalizedFinalStateMatches": true
+            },
+            "sequence": {
+              "gameTurn": 1,
+              "playerTurnIndex": 1,
+              "phase": "AIRCRAFT_REFIT",
+              "segment": "NONE",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:allied",
+              "actingPlayerId": "player:allied"
+            },
+            "departureEvent": {
+              "kind": "SEQUENCE_ADVANCED",
+              "sequence": 3,
+              "from": {
+                "gameTurn": 1,
+                "playerTurnIndex": 0,
+                "phase": "CLEAN_UP",
+                "segment": "NONE",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:axis",
+                "actingPlayerId": "player:axis"
+              },
+              "to": {
+                "gameTurn": 1,
+                "playerTurnIndex": 1,
+                "phase": "AIRCRAFT_REFIT",
+                "segment": "NONE",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:allied",
+                "actingPlayerId": "player:allied"
+              }
+            },
+            "action": {
+              "actionId": "candidate:advance:87",
+              "actorId": "player:axis",
+              "expectedRevision": 87,
+              "kind": "ADVANCE_SEQUENCE"
+            },
+            "scores": {
+              "player:allied": 21,
+              "player:axis": 0
+            },
+            "axisMargin": -21,
+            "targetHolder": "player:allied",
+            "targetPoints": 3,
+            "targetMarginContribution": -3,
+            "firstObservedAxisAcquisition": null,
+            "observedControlChangesThroughHandoff": []
+          },
+          "changes": [],
+          "nextGoal": {
+            "status": "OBSERVED",
+            "at": 153,
+            "sequence": {
+              "gameTurn": 2,
+              "playerTurnIndex": 1,
+              "phase": "MOVEMENT",
+              "segment": "MOVEMENT",
+              "firstPlayerId": "player:allied",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            },
+            "preStateHash": "sha256:06f0c341a8a9f5e23f9e47e7b3901a532b1f32faf341ba46d79b122b6b6e9562",
+            "action": {
+              "actionId": "candidate:move:generated-oob:344144350:axis:f1-combat-1:unit:13,12:153",
+              "actorId": "player:axis",
+              "expectedRevision": 153,
+              "kind": "MOVE_PIECE",
+              "path": [
+                "14,15",
+                "15,14",
+                "14,14",
+                "13,14",
+                "13,13",
+                "13,12"
+              ],
+              "pieceId": "generated-oob:344144350:axis:f1-combat-1:unit"
+            },
+            "intent": "combat to 13,12 (assault 6,14)",
+            "purpose": "assault",
+            "target": "6,14",
+            "sameTargetHex": false,
+            "samePurpose": false,
+            "nextTargetIsObjective": true,
+            "oldTargetHolder": "player:allied",
+            "oldTargetHeldByAxis": false
+          }
+        },
+        {
+          "path": "artifacts/ai-progress-objective-original-continuation/pair-1800028/branch-15.save.json",
+          "saveSha256": "faf73dc6b5f1febbc1decf369da9e57b189b9eb543436ae7071fc74d787ba5d0",
+          "tracePath": "artifacts/ai-progress-objective-original-continuation/pair-1800028/branch-15.trace.jsonl",
+          "traceSha256": "8f5d046374c6009e92f40998f428ebbf1a67a3bc2fffd827d2b8abd24e6831d3",
+          "resumeAt": 71,
+          "resumeHash": "sha256:8d6b2d5cd6a30d58ebc2e4ff644923f1ab2da000e3cce230b9b801a3ac5b2863",
+          "actionsReplayed": 84,
+          "primary": {
+            "at": 87,
+            "revision": 87,
+            "stateHash": "sha256:f33fd9f27fcdc1fbceb180cff29ffcdf0d300e8ff5e7964e1fcd8bad0dafd302",
+            "internalBoundary": true,
+            "eventIndex": 3,
+            "containerPreStateHash": "sha256:c702f0dc7dcf127b5ce0567a92637f8dc54e082fb1c0f015341a6edce12eede7",
+            "containerPostStateHash": "sha256:4e459319b38ece31de29116127a687e3b3426c398397dc490f4f4a68d121fabd",
+            "containerPostRevision": 88,
+            "reconstruction": {
+              "lifecycleTransitions": 7,
+              "allEventsMatch": true,
+              "normalizedFinalStateMatches": true
+            },
+            "sequence": {
+              "gameTurn": 1,
+              "playerTurnIndex": 1,
+              "phase": "AIRCRAFT_REFIT",
+              "segment": "NONE",
+              "firstPlayerId": "player:axis",
+              "phasingPlayerId": "player:allied",
+              "actingPlayerId": "player:allied"
+            },
+            "departureEvent": {
+              "kind": "SEQUENCE_ADVANCED",
+              "sequence": 3,
+              "from": {
+                "gameTurn": 1,
+                "playerTurnIndex": 0,
+                "phase": "CLEAN_UP",
+                "segment": "NONE",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:axis",
+                "actingPlayerId": "player:axis"
+              },
+              "to": {
+                "gameTurn": 1,
+                "playerTurnIndex": 1,
+                "phase": "AIRCRAFT_REFIT",
+                "segment": "NONE",
+                "firstPlayerId": "player:axis",
+                "phasingPlayerId": "player:allied",
+                "actingPlayerId": "player:allied"
+              }
+            },
+            "action": {
+              "actionId": "candidate:advance:87",
+              "actorId": "player:axis",
+              "expectedRevision": 87,
+              "kind": "ADVANCE_SEQUENCE"
+            },
+            "scores": {
+              "player:allied": 21,
+              "player:axis": 0
+            },
+            "axisMargin": -21,
+            "targetHolder": "player:allied",
+            "targetPoints": 3,
+            "targetMarginContribution": -3,
+            "firstObservedAxisAcquisition": null,
+            "observedControlChangesThroughHandoff": []
+          },
+          "changes": [],
+          "nextGoal": {
+            "status": "OBSERVED",
+            "at": 154,
+            "sequence": {
+              "gameTurn": 2,
+              "playerTurnIndex": 1,
+              "phase": "MOVEMENT",
+              "segment": "MOVEMENT",
+              "firstPlayerId": "player:allied",
+              "phasingPlayerId": "player:axis",
+              "actingPlayerId": "player:axis"
+            },
+            "preStateHash": "sha256:6e237288023731c0ec89d175d68d1f5964bf0623ff03d2d031b4044c3e571072",
+            "action": {
+              "actionId": "candidate:move:generated-oob:344144350:axis:f1-combat-1:unit:14,14:154",
+              "actorId": "player:axis",
+              "expectedRevision": 154,
+              "kind": "MOVE_PIECE",
+              "pieceId": "generated-oob:344144350:axis:f1-combat-1:unit",
+              "path": [
+                "15,15",
+                "14,15",
+                "15,14",
+                "14,14"
+              ]
+            },
+            "intent": "combat to 14,14 (capture 12,15)",
+            "purpose": "capture",
+            "target": "12,15",
+            "sameTargetHex": true,
+            "samePurpose": true,
+            "nextTargetIsObjective": true,
+            "oldTargetHolder": "player:allied",
+            "oldTargetHeldByAxis": false
+          }
+        }
+      ]
+    }
+  ]
+}
