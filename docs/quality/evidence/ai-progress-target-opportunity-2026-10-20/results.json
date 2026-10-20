@@ -1,0 +1,1879 @@
+{
+  "scope": "Descriptive next-move mechanism observations at heterogeneous times; no predictive fitting or strategic-error attribution.",
+  "summary": {
+    "observed": 24,
+    "censored": 6,
+    "regeneratedAcceptedActions": 4354,
+    "checkedWitnessRoutes": 235,
+    "allObserved": {
+      "histories": 24,
+      "assaultReservations": 11,
+      "greedyAssignments": 13,
+      "directSafeWitness": 3,
+      "adjacentSafeWitness": 14,
+      "stillApproachingOldTarget": 18,
+      "stationaryOldDistance": 3,
+      "retreatingFromOldTarget": 3,
+      "originalTargetStillAssigned": 23,
+      "truncated": 1
+    },
+    "switchedWhileEnemy": {
+      "histories": 7,
+      "assaultReservations": 4,
+      "greedyAssignments": 3,
+      "directSafeWitness": 0,
+      "adjacentSafeWitness": 4,
+      "stillApproachingOldTarget": 4,
+      "stationaryOldDistance": 2,
+      "retreatingFromOldTarget": 1,
+      "originalTargetStillAssigned": 6,
+      "truncated": 0
+    }
+  },
+  "rows": [
+    {
+      "firstMatch": 1800000,
+      "armIndex": 0,
+      "at": 169,
+      "sourcePath": "artifacts/ai-progress-objective-30games/matches/match-1800001.save.json",
+      "originalTarget": "-2,7",
+      "nextTarget": "10,6",
+      "nextPurpose": "assault",
+      "oldTargetHolder": "player:allied",
+      "changedTarget": true,
+      "changedWhileEnemy": true,
+      "planAt": 145,
+      "preStateHash": "sha256:4f38117b727d9447f13275b15b41fae138490c2ef3cf4f742e93f9a61c737d92",
+      "planStateHash": "sha256:2282113ef16f4ca970b984e1aa335d9986bbc0ff6df9871c35326d3c800ecf43",
+      "assignment": "ASSAULT_RESERVATION",
+      "oldPairDecisions": [
+        {
+          "purpose": "CAPTURE",
+          "reason": "UNIT_ALREADY_ASSIGNED",
+          "countBefore": 0,
+          "limit": 3,
+          "score": 3.2941176470588234,
+          "alreadyAssignedTo": {
+            "hexId": "10,6",
+            "purpose": "ASSAULT"
+          }
+        }
+      ],
+      "selectedGreedyAssignment": null,
+      "originalTargetAssignees": [
+        {
+          "pieceId": "generated-oob:344141634:axis:independent-anti_tank-2:unit",
+          "purpose": "CAPTURE"
+        },
+        {
+          "pieceId": "generated-oob:344141634:axis:independent-tank-1:unit",
+          "purpose": "CAPTURE"
+        },
+        {
+          "pieceId": "generated-oob:344141634:axis:independent-anti_tank-1:unit",
+          "purpose": "CAPTURE"
+        }
+      ],
+      "originalVisibleEnemy": {
+        "hasCombatUnit": true,
+        "strength": 1,
+        "hidden": 0
+      },
+      "oldDistanceBefore": 20,
+      "oldDistanceAfter": 18,
+      "oldProgress": 2,
+      "directSafeWitnesses": 0,
+      "adjacentSafeWitnesses": 0,
+      "rangeContainsOriginal": false,
+      "rangeAdjacent": 0,
+      "queryTruncated": false,
+      "candidateCount": 34,
+      "witnessCount": 0,
+      "unsafeWitnessCount": 0,
+      "casePath": "artifacts/ai-progress-target-opportunity/cases/1800000-0.json",
+      "caseSha256": "48755dcf9462d2f36230adc783b960134ad34cf848a22be317ecd87f24180ee0",
+      "rawPath": "artifacts/ai-progress-target-opportunity/cases/1800000-0.json.raw.json.gz",
+      "rawSha256": "071f9b2c25da03307313b46a7c66242b52cd05195fde5fc14acc26f2628003d8"
+    },
+    {
+      "firstMatch": 1800000,
+      "armIndex": 1,
+      "at": 169,
+      "sourcePath": "artifacts/ai-progress-objective-original-continuation/pair-1800000/branch-15.save.json",
+      "originalTarget": "-2,7",
+      "nextTarget": "-2,7",
+      "nextPurpose": "capture",
+      "oldTargetHolder": "player:allied",
+      "changedTarget": false,
+      "changedWhileEnemy": false,
+      "planAt": 146,
+      "preStateHash": "sha256:fb91f16d813b26e434b372eebc875d4f3563963f8e0fe0bf23251a09c56e8839",
+      "planStateHash": "sha256:78d154a04beeeb4d4e446beec42054d617cfbcd4d8d46cf0c844ce17bc2ba582",
+      "assignment": "EXECUTED_GREEDY_ASSIGNMENT",
+      "oldPairDecisions": [
+        {
+          "purpose": "CAPTURE",
+          "reason": "ASSIGNED",
+          "countBefore": 0,
+          "limit": 3,
+          "score": 3.2,
+          "alreadyAssignedTo": null
+        }
+      ],
+      "selectedGreedyAssignment": {
+        "pieceId": "generated-oob:344141634:axis:f4-combat-1:unit",
+        "hexId": "-2,7",
+        "purpose": "CAPTURE",
+        "score": 3.2,
+        "countBefore": 0,
+        "limit": 3
+      },
+      "originalTargetAssignees": [
+        {
+          "pieceId": "generated-oob:344141634:axis:f4-combat-1:unit",
+          "purpose": "CAPTURE"
+        },
+        {
+          "pieceId": "generated-oob:344141634:axis:independent-anti_tank-2:unit",
+          "purpose": "CAPTURE"
+        },
+        {
+          "pieceId": "generated-oob:344141634:axis:independent-tank-1:unit",
+          "purpose": "CAPTURE"
+        }
+      ],
+      "originalVisibleEnemy": {
+        "hasCombatUnit": true,
+        "strength": 1,
+        "hidden": 0
+      },
+      "oldDistanceBefore": 21,
+      "oldDistanceAfter": 18,
+      "oldProgress": 3,
+      "directSafeWitnesses": 0,
+      "adjacentSafeWitnesses": 0,
+      "rangeContainsOriginal": false,
+      "rangeAdjacent": 0,
+      "queryTruncated": false,
+      "candidateCount": 42,
+      "witnessCount": 0,
+      "unsafeWitnessCount": 0,
+      "casePath": "artifacts/ai-progress-target-opportunity/cases/1800000-1.json",
+      "caseSha256": "885a64443599dae4de7b9c073d3b71e479e6fa962c4728f94aadda5f8e07c468",
+      "rawPath": "artifacts/ai-progress-target-opportunity/cases/1800000-1.json.raw.json.gz",
+      "rawSha256": "2b8111e7f7755eebe4903983244f6c9d8ae6342e8035aa4fe230d2fd4c80b0e3"
+    },
+    {
+      "firstMatch": 1800002,
+      "armIndex": 0,
+      "at": 86,
+      "sourcePath": "artifacts/ai-progress-objective-30games/matches/match-1800003.save.json",
+      "originalTarget": "5,18",
+      "nextTarget": "5,18",
+      "nextPurpose": "assault",
+      "oldTargetHolder": "player:allied",
+      "changedTarget": false,
+      "changedWhileEnemy": false,
+      "planAt": 85,
+      "preStateHash": "sha256:ad9d06f397c3b7edfcda69d156d8c58d64ee6b69f0f5cbbb0d46b7ed109975fd",
+      "planStateHash": "sha256:94c75865962a9c387326fa28467bc6861978f679222679cd76e9f29c80d2362c",
+      "assignment": "ASSAULT_RESERVATION",
+      "oldPairDecisions": [
+        {
+          "purpose": "CAPTURE",
+          "reason": "UNIT_ALREADY_ASSIGNED",
+          "countBefore": 3,
+          "limit": 3,
+          "score": 4.266666666666667,
+          "alreadyAssignedTo": {
+            "hexId": "5,18",
+            "purpose": "ASSAULT"
+          }
+        }
+      ],
+      "selectedGreedyAssignment": null,
+      "originalTargetAssignees": [
+        {
+          "pieceId": "generated-oob:344141828:axis:f1-recon:unit",
+          "purpose": "ASSAULT"
+        },
+        {
+          "pieceId": "generated-oob:344141828:axis:f4-recon:unit",
+          "purpose": "CAPTURE"
+        },
+        {
+          "pieceId": "generated-oob:344141828:axis:f4-combat-2:unit",
+          "purpose": "CAPTURE"
+        },
+        {
+          "pieceId": "generated-oob:344141828:axis:independent-anti-tank-7:unit",
+          "purpose": "CAPTURE"
+        }
+      ],
+      "originalVisibleEnemy": {
+        "hasCombatUnit": true,
+        "strength": 1,
+        "hidden": 0
+      },
+      "oldDistanceBefore": 7,
+      "oldDistanceAfter": 7,
+      "oldProgress": 0,
+      "directSafeWitnesses": 0,
+      "adjacentSafeWitnesses": 0,
+      "rangeContainsOriginal": false,
+      "rangeAdjacent": 0,
+      "queryTruncated": false,
+      "candidateCount": 43,
+      "witnessCount": 0,
+      "unsafeWitnessCount": 0,
+      "casePath": "artifacts/ai-progress-target-opportunity/cases/1800002-0.json",
+      "caseSha256": "95f94fad56083b957503b159d723e7db852f3698d359657f835a1b4809b40551",
+      "rawPath": "artifacts/ai-progress-target-opportunity/cases/1800002-0.json.raw.json.gz",
+      "rawSha256": "c25cfa9402d68d24f8faa2c55317505dc8dc7a0b77d1b93909e8399bdadeeddd"
+    },
+    {
+      "firstMatch": 1800002,
+      "armIndex": 1,
+      "at": 127,
+      "sourcePath": "artifacts/ai-progress-objective-original-continuation/pair-1800002/branch-15.save.json",
+      "originalTarget": "5,18",
+      "nextTarget": "5,18",
+      "nextPurpose": "assault",
+      "oldTargetHolder": "player:allied",
+      "changedTarget": false,
+      "changedWhileEnemy": false,
+      "planAt": 118,
+      "preStateHash": "sha256:1d950f98d17334beadf1ad5c6a836e4aee9819719f6105cca229f7f7069c2777",
+      "planStateHash": "sha256:52c735aaafc1e2b8317888e80d5832bd3c12c216bb4cba48413271df4dce4572",
+      "assignment": "ASSAULT_RESERVATION",
+      "oldPairDecisions": [
+        {
+          "purpose": "CAPTURE",
+          "reason": "UNIT_ALREADY_ASSIGNED",
+          "countBefore": 3,
+          "limit": 4,
+          "score": 4,
+          "alreadyAssignedTo": {
+            "hexId": "5,18",
+            "purpose": "ASSAULT"
+          }
+        }
+      ],
+      "selectedGreedyAssignment": null,
+      "originalTargetAssignees": [
+        {
+          "pieceId": "generated-oob:344141828:axis:f10-combat-1:unit",
+          "purpose": "ASSAULT"
+        },
+        {
+          "pieceId": "generated-oob:344141828:axis:independent-anti-tank-5:unit",
+          "purpose": "ASSAULT"
+        },
+        {
+          "pieceId": "generated-oob:344141828:axis:independent-anti-tank-7:unit",
+          "purpose": "ASSAULT"
+        },
+        {
+          "pieceId": "generated-oob:344141828:axis:f1-recon:unit",
+          "purpose": "ASSAULT"
+        },
+        {
+          "pieceId": "generated-oob:344141828:axis:f4-recon:unit",
+          "purpose": "CAPTURE"
+        },
+        {
+          "pieceId": "generated-oob:344141828:axis:f4-combat-2:unit",
+          "purpose": "CAPTURE"
+        },
+        {
+          "pieceId": "generated-oob:344141828:axis:f4-combat-1:unit",
+          "purpose": "CAPTURE"
+        },
+        {
+          "pieceId": "generated-oob:344141828:axis:independent-anti-tank-8:unit",
+          "purpose": "CAPTURE"
+        }
+      ],
+      "originalVisibleEnemy": {
+        "hasCombatUnit": true,
+        "strength": 10.352941176470587,
+        "hidden": 1
+      },
+      "oldDistanceBefore": 8,
+      "oldDistanceAfter": 5,
+      "oldProgress": 3,
+      "directSafeWitnesses": 0,
+      "adjacentSafeWitnesses": 0,
+      "rangeContainsOriginal": false,
+      "rangeAdjacent": 0,
+      "queryTruncated": false,
+      "candidateCount": 146,
+      "witnessCount": 0,
+      "unsafeWitnessCount": 0,
+      "casePath": "artifacts/ai-progress-target-opportunity/cases/1800002-1.json",
+      "caseSha256": "1f98bae647a9459f3e6ebfe4a15fafcbfa8e2bc4859ff1c5106d60856b3acefb",
+      "rawPath": "artifacts/ai-progress-target-opportunity/cases/1800002-1.json.raw.json.gz",
+      "rawSha256": "605d54890bb1d3672ca973c7151223dd82ab4cd4376604706c4788508ff4fd49"
+    },
+    {
+      "firstMatch": 1800004,
+      "armIndex": 0,
+      "at": 115,
+      "sourcePath": "artifacts/ai-progress-objective-30games/matches/match-1800005.save.json",
+      "originalTarget": "11,13",
+      "nextTarget": "10,16",
+      "nextPurpose": "hunt",
+      "oldTargetHolder": "player:allied",
+      "changedTarget": true,
+      "changedWhileEnemy": true,
+      "planAt": 104,
+      "preStateHash": "sha256:d2aeae4fe361969bfe799fdd4eb2d2e1a2252126c7c7a31ac5bb5054f3882b82",
+      "planStateHash": "sha256:2f3aa05c30933bf9356227c7be6e590db3d9a7fb5a90ba76a477abd4dbc3ce35",
+      "assignment": "EXECUTED_GREEDY_ASSIGNMENT",
+      "oldPairDecisions": [
+        {
+          "purpose": "CAPTURE",
+          "reason": "UNIT_ALREADY_ASSIGNED",
+          "countBefore": 0,
+          "limit": 8,
+          "score": 2.333333333333333,
+          "alreadyAssignedTo": {
+            "hexId": "10,16",
+            "purpose": "HUNT"
+          }
+        }
+      ],
+      "selectedGreedyAssignment": {
+        "pieceId": "generated-oob:344142022:axis:f1-combat-1:unit",
+        "hexId": "10,16",
+        "purpose": "HUNT",
+        "score": 2.5454545454545454,
+        "countBefore": 0,
+        "limit": 1
+      },
+      "originalTargetAssignees": [
+        {
+          "pieceId": "generated-oob:344142022:axis:f11-combat-1:unit",
+          "purpose": "CAPTURE"
+        },
+        {
+          "pieceId": "generated-oob:344142022:axis:f7-combat-1:unit",
+          "purpose": "CAPTURE"
+        },
+        {
+          "pieceId": "generated-oob:344142022:axis:independent-anti_tank-2:unit",
+          "purpose": "CAPTURE"
+        }
+      ],
+      "originalVisibleEnemy": {
+        "hasCombatUnit": true,
+        "strength": 34.64705882352941,
+        "hidden": 2
+      },
+      "oldDistanceBefore": 5,
+      "oldDistanceAfter": 4,
+      "oldProgress": 1,
+      "directSafeWitnesses": 0,
+      "adjacentSafeWitnesses": 3,
+      "rangeContainsOriginal": false,
+      "rangeAdjacent": 6,
+      "queryTruncated": false,
+      "candidateCount": 217,
+      "witnessCount": 6,
+      "unsafeWitnessCount": 3,
+      "casePath": "artifacts/ai-progress-target-opportunity/cases/1800004-0.json",
+      "caseSha256": "dd4e979febcf5c93056f1c34ea0067971b6e102b06c622241d16e9c43a6f2cca",
+      "rawPath": "artifacts/ai-progress-target-opportunity/cases/1800004-0.json.raw.json.gz",
+      "rawSha256": "6234b85984dd5c626bc2eb86df9ae554adb43b159abca9fe7e713460cfdface9"
+    },
+    {
+      "firstMatch": 1800004,
+      "armIndex": 1,
+      "at": 147,
+      "sourcePath": "artifacts/ai-progress-objective-original-continuation/pair-1800004/branch-15.save.json",
+      "originalTarget": "11,13",
+      "nextTarget": "11,13",
+      "nextPurpose": "capture",
+      "oldTargetHolder": "player:allied",
+      "changedTarget": false,
+      "changedWhileEnemy": false,
+      "planAt": 136,
+      "preStateHash": "sha256:32863f1583292d5731cb9960fca8b1a132b00802cc44b36f15a44df8f146f413",
+      "planStateHash": "sha256:a92306f8155b427ae4bbb83b299cc8151e1288c7baa4e436ed7699f6c3a3e7b1",
+      "assignment": "EXECUTED_GREEDY_ASSIGNMENT",
+      "oldPairDecisions": [
+        {
+          "purpose": "CAPTURE",
+          "reason": "ASSIGNED",
+          "countBefore": 0,
+          "limit": 7,
+          "score": 2.1538461538461537,
+          "alreadyAssignedTo": null
+        }
+      ],
+      "selectedGreedyAssignment": {
+        "pieceId": "generated-oob:344142022:axis:f1-combat-1:unit",
+        "hexId": "11,13",
+        "purpose": "CAPTURE",
+        "score": 2.1538461538461537,
+        "countBefore": 0,
+        "limit": 7
+      },
+      "originalTargetAssignees": [
+        {
+          "pieceId": "generated-oob:344142022:axis:f1-combat-1:unit",
+          "purpose": "CAPTURE"
+        },
+        {
+          "pieceId": "generated-oob:344142022:axis:f11-combat-1:unit",
+          "purpose": "CAPTURE"
+        },
+        {
+          "pieceId": "generated-oob:344142022:axis:f2-combat-2:unit",
+          "purpose": "CAPTURE"
+        },
+        {
+          "pieceId": "generated-oob:344142022:axis:f7-combat-1:unit",
+          "purpose": "CAPTURE"
+        },
+        {
+          "pieceId": "generated-oob:344142022:axis:independent-anti_tank-2:unit",
+          "purpose": "CAPTURE"
+        }
+      ],
+      "originalVisibleEnemy": {
+        "hasCombatUnit": true,
+        "strength": 29.323529411764707,
+        "hidden": 1
+      },
+      "oldDistanceBefore": 6,
+      "oldDistanceAfter": 2,
+      "oldProgress": 4,
+      "directSafeWitnesses": 0,
+      "adjacentSafeWitnesses": 3,
+      "rangeContainsOriginal": false,
+      "rangeAdjacent": 5,
+      "queryTruncated": false,
+      "candidateCount": 257,
+      "witnessCount": 5,
+      "unsafeWitnessCount": 2,
+      "casePath": "artifacts/ai-progress-target-opportunity/cases/1800004-1.json",
+      "caseSha256": "88d6d900337376ba1f9e7c4d9046d157e8cc413d01cec6790587128b229630cc",
+      "rawPath": "artifacts/ai-progress-target-opportunity/cases/1800004-1.json.raw.json.gz",
+      "rawSha256": "3b99234c9c90b2d2007c216221019ef946aa6f4f688f53b1ef2bb0e10871099d"
+    },
+    {
+      "firstMatch": 1800006,
+      "armIndex": 0,
+      "at": 491,
+      "sourcePath": "artifacts/ai-progress-objective-30games/matches/match-1800007.save.json",
+      "originalTarget": "-2,16",
+      "nextTarget": "12,16",
+      "nextPurpose": "capture",
+      "oldTargetHolder": "player:axis",
+      "changedTarget": true,
+      "changedWhileEnemy": false,
+      "planAt": 485,
+      "preStateHash": "sha256:2ebc34e5b8bfa8860fb5dedecef987ab41981ac7d3ca4ade3b9b5a562816d79b",
+      "planStateHash": "sha256:381df996d3d7e72fcc9c6fd455ffd4021b6f00d0a9db4d23b070bf2b428ce155",
+      "assignment": "EXECUTED_GREEDY_ASSIGNMENT",
+      "oldPairDecisions": [
+        {
+          "purpose": "GARRISON",
+          "reason": "TARGET_SLOT_FULL",
+          "countBefore": 2,
+          "limit": 2,
+          "score": 3.165217391304348,
+          "alreadyAssignedTo": null
+        }
+      ],
+      "selectedGreedyAssignment": {
+        "pieceId": "generated-oob:344142216:axis:f1-combat-1:unit",
+        "hexId": "12,16",
+        "purpose": "CAPTURE",
+        "score": 3.1111111111111116,
+        "countBefore": 0,
+        "limit": 2
+      },
+      "originalTargetAssignees": [
+        {
+          "pieceId": "generated-oob:344142216:axis:f3-combat-1:unit",
+          "purpose": "GARRISON"
+        },
+        {
+          "pieceId": "generated-oob:344142216:axis:independent-anti-tank-7:unit",
+          "purpose": "GARRISON"
+        }
+      ],
+      "originalVisibleEnemy": null,
+      "oldDistanceBefore": 16,
+      "oldDistanceAfter": 15,
+      "oldProgress": 1,
+      "directSafeWitnesses": 0,
+      "adjacentSafeWitnesses": 0,
+      "rangeContainsOriginal": false,
+      "rangeAdjacent": 0,
+      "queryTruncated": false,
+      "candidateCount": 325,
+      "witnessCount": 0,
+      "unsafeWitnessCount": 0,
+      "casePath": "artifacts/ai-progress-target-opportunity/cases/1800006-0.json",
+      "caseSha256": "c07319975bca703450cf8be9dbdc66df7c3a698e8f269232d8046b277ad4a07e",
+      "rawPath": "artifacts/ai-progress-target-opportunity/cases/1800006-0.json.raw.json.gz",
+      "rawSha256": "bdff52de4f97b59276d38addcd8fe028d46c74ebda21ef262664c541a3be1f41"
+    },
+    {
+      "firstMatch": 1800008,
+      "armIndex": 0,
+      "at": 148,
+      "sourcePath": "artifacts/ai-progress-objective-30games/matches/match-1800009.save.json",
+      "originalTarget": "12,10",
+      "nextTarget": "12,10",
+      "nextPurpose": "assault",
+      "oldTargetHolder": "player:allied",
+      "changedTarget": false,
+      "changedWhileEnemy": false,
+      "planAt": 124,
+      "preStateHash": "sha256:30b8dfe7d76cd350446b53431541754e80977e7133bf9e2621cbcfb765c25961",
+      "planStateHash": "sha256:794549069a30e607bc9e41eefc021a9437c761c4eddeca857a47a48c82956aa8",
+      "assignment": "ASSAULT_RESERVATION",
+      "oldPairDecisions": [
+        {
+          "purpose": "CAPTURE",
+          "reason": "UNIT_ALREADY_ASSIGNED",
+          "countBefore": 0,
+          "limit": 5,
+          "score": 2.1538461538461537,
+          "alreadyAssignedTo": {
+            "hexId": "12,10",
+            "purpose": "ASSAULT"
+          }
+        }
+      ],
+      "selectedGreedyAssignment": null,
+      "originalTargetAssignees": [
+        {
+          "pieceId": "generated-oob:344142410:axis:independent-anti-tank-7:unit",
+          "purpose": "ASSAULT"
+        },
+        {
+          "pieceId": "generated-oob:344142410:axis:f7-combat-1:unit",
+          "purpose": "ASSAULT"
+        },
+        {
+          "pieceId": "generated-oob:344142410:axis:independent-anti-tank-3:unit",
+          "purpose": "ASSAULT"
+        },
+        {
+          "pieceId": "generated-oob:344142410:axis:f1-combat-1:unit",
+          "purpose": "ASSAULT"
+        },
+        {
+          "pieceId": "generated-oob:344142410:axis:f2-combat-1:unit",
+          "purpose": "ASSAULT"
+        }
+      ],
+      "originalVisibleEnemy": {
+        "hasCombatUnit": true,
+        "strength": 16.1875,
+        "hidden": 2
+      },
+      "oldDistanceBefore": 6,
+      "oldDistanceAfter": 1,
+      "oldProgress": 5,
+      "directSafeWitnesses": 0,
+      "adjacentSafeWitnesses": 2,
+      "rangeContainsOriginal": false,
+      "rangeAdjacent": 5,
+      "queryTruncated": false,
+      "candidateCount": 307,
+      "witnessCount": 5,
+      "unsafeWitnessCount": 3,
+      "casePath": "artifacts/ai-progress-target-opportunity/cases/1800008-0.json",
+      "caseSha256": "365eaba83842e036b0437635b4b66647f79ecfe766beac88c4063443ef533de3",
+      "rawPath": "artifacts/ai-progress-target-opportunity/cases/1800008-0.json.raw.json.gz",
+      "rawSha256": "ff16bd9ebbaaf017313e5a381b8ad46c143cac79e486ae99c9ca2a48f459ce34"
+    },
+    {
+      "firstMatch": 1800008,
+      "armIndex": 1,
+      "at": 148,
+      "sourcePath": "artifacts/ai-progress-objective-original-continuation/pair-1800008/branch-15.save.json",
+      "originalTarget": "12,10",
+      "nextTarget": "10,13",
+      "nextPurpose": "assault",
+      "oldTargetHolder": "player:allied",
+      "changedTarget": true,
+      "changedWhileEnemy": true,
+      "planAt": 124,
+      "preStateHash": "sha256:8550da6f76e72391ec149c50e968a373bd26d0a9193eb19ca1faaf4bf10c0d3c",
+      "planStateHash": "sha256:7c9516703039c69187fd5770bbea04822d30cc25942ca3c53570e65fa02005e0",
+      "assignment": "ASSAULT_RESERVATION",
+      "oldPairDecisions": [
+        {
+          "purpose": "CAPTURE",
+          "reason": "UNIT_ALREADY_ASSIGNED",
+          "countBefore": 0,
+          "limit": 5,
+          "score": 2,
+          "alreadyAssignedTo": {
+            "hexId": "10,13",
+            "purpose": "ASSAULT"
+          }
+        }
+      ],
+      "selectedGreedyAssignment": null,
+      "originalTargetAssignees": [
+        {
+          "pieceId": "generated-oob:344142410:axis:independent-anti-tank-7:unit",
+          "purpose": "ASSAULT"
+        },
+        {
+          "pieceId": "generated-oob:344142410:axis:f7-combat-1:unit",
+          "purpose": "ASSAULT"
+        },
+        {
+          "pieceId": "generated-oob:344142410:axis:independent-anti-tank-3:unit",
+          "purpose": "ASSAULT"
+        },
+        {
+          "pieceId": "generated-oob:344142410:axis:f2-combat-1:unit",
+          "purpose": "ASSAULT"
+        },
+        {
+          "pieceId": "generated-oob:344142410:axis:independent-anti_tank-2:unit",
+          "purpose": "ASSAULT"
+        }
+      ],
+      "originalVisibleEnemy": {
+        "hasCombatUnit": true,
+        "strength": 16.1875,
+        "hidden": 2
+      },
+      "oldDistanceBefore": 7,
+      "oldDistanceAfter": 3,
+      "oldProgress": 4,
+      "directSafeWitnesses": 0,
+      "adjacentSafeWitnesses": 2,
+      "rangeContainsOriginal": false,
+      "rangeAdjacent": 5,
+      "queryTruncated": false,
+      "candidateCount": 306,
+      "witnessCount": 5,
+      "unsafeWitnessCount": 3,
+      "casePath": "artifacts/ai-progress-target-opportunity/cases/1800008-1.json",
+      "caseSha256": "56e6f7899d08f7479cb6c1a965ee51dcfee9479144075507be606731d9eb92bf",
+      "rawPath": "artifacts/ai-progress-target-opportunity/cases/1800008-1.json.raw.json.gz",
+      "rawSha256": "4ba8f70c9396ed465473145ea2bb5d03f7354018e064fe28b6eb05e68c8c2f71"
+    },
+    {
+      "firstMatch": 1800010,
+      "armIndex": 1,
+      "at": 179,
+      "sourcePath": "artifacts/ai-progress-objective-original-continuation/pair-1800010/branch-15.save.json",
+      "originalTarget": "19,1",
+      "nextTarget": "19,1",
+      "nextPurpose": "capture",
+      "oldTargetHolder": "player:allied",
+      "changedTarget": false,
+      "changedWhileEnemy": false,
+      "planAt": 161,
+      "preStateHash": "sha256:90b1ba29ca53d850b4826c7590adaeae30a68f7c8439b5aeb5d9351eeac38edb",
+      "planStateHash": "sha256:a6357b62e3c14d83cf6ef0e436d5f4e80bf316e29578c2a65d13b4d6e4444651",
+      "assignment": "EXECUTED_GREEDY_ASSIGNMENT",
+      "oldPairDecisions": [
+        {
+          "purpose": "CAPTURE",
+          "reason": "ASSIGNED",
+          "countBefore": 0,
+          "limit": 7,
+          "score": 7.199999999999999,
+          "alreadyAssignedTo": null
+        }
+      ],
+      "selectedGreedyAssignment": {
+        "pieceId": "generated-oob:344142604:axis:f3-recon:unit",
+        "hexId": "19,1",
+        "purpose": "CAPTURE",
+        "score": 7.199999999999999,
+        "countBefore": 0,
+        "limit": 7
+      },
+      "originalTargetAssignees": [
+        {
+          "pieceId": "generated-oob:344142604:axis:f3-recon:unit",
+          "purpose": "CAPTURE"
+        },
+        {
+          "pieceId": "generated-oob:344142604:axis:f4-recon:unit",
+          "purpose": "CAPTURE"
+        },
+        {
+          "pieceId": "generated-oob:344142604:axis:independent-tank-8:unit",
+          "purpose": "CAPTURE"
+        },
+        {
+          "pieceId": "generated-oob:344142604:axis:f4-combat-2:unit",
+          "purpose": "CAPTURE"
+        },
+        {
+          "pieceId": "generated-oob:344142604:axis:independent-anti-tank-7:unit",
+          "purpose": "CAPTURE"
+        },
+        {
+          "pieceId": "generated-oob:344142604:axis:f12-combat-1:unit",
+          "purpose": "CAPTURE"
+        },
+        {
+          "pieceId": "generated-oob:344142604:axis:independent-anti-tank-3:unit",
+          "purpose": "CAPTURE"
+        }
+      ],
+      "originalVisibleEnemy": {
+        "hasCombatUnit": true,
+        "strength": 29.5,
+        "hidden": 2
+      },
+      "oldDistanceBefore": 2,
+      "oldDistanceAfter": 1,
+      "oldProgress": 1,
+      "directSafeWitnesses": 0,
+      "adjacentSafeWitnesses": 4,
+      "rangeContainsOriginal": false,
+      "rangeAdjacent": 6,
+      "queryTruncated": false,
+      "candidateCount": 84,
+      "witnessCount": 6,
+      "unsafeWitnessCount": 2,
+      "casePath": "artifacts/ai-progress-target-opportunity/cases/1800010-1.json",
+      "caseSha256": "9ebd11ca3015adcc0c9133481f6cbbb8531d7e5ba082b92eb698e0ff10c853b1",
+      "rawPath": "artifacts/ai-progress-target-opportunity/cases/1800010-1.json.raw.json.gz",
+      "rawSha256": "a5d5cd9b286240c5d2d28a580c9553b85f45052089509f232955f4b4ec9b3111"
+    },
+    {
+      "firstMatch": 1800012,
+      "armIndex": 0,
+      "at": 131,
+      "sourcePath": "artifacts/ai-progress-objective-30games/matches/match-1800013.save.json",
+      "originalTarget": "15,11",
+      "nextTarget": "14,6",
+      "nextPurpose": "capture",
+      "oldTargetHolder": "player:axis",
+      "changedTarget": true,
+      "changedWhileEnemy": false,
+      "planAt": 121,
+      "preStateHash": "sha256:686a6d8bf9a6313cf61c1510b4e925ed7557ca5944430599e372c30d7cf72fcc",
+      "planStateHash": "sha256:83e816ee4cc479ed466e76432a743af20f5d3d4b7fd7988fd27b062ccbb7b490",
+      "assignment": "EXECUTED_GREEDY_ASSIGNMENT",
+      "oldPairDecisions": [
+        {
+          "purpose": "GARRISON",
+          "reason": "TARGET_SLOT_FULL",
+          "countBefore": 2,
+          "limit": 2,
+          "score": 3.7818181818181817,
+          "alreadyAssignedTo": null
+        }
+      ],
+      "selectedGreedyAssignment": {
+        "pieceId": "generated-oob:344142798:axis:f1-recon:unit",
+        "hexId": "14,6",
+        "purpose": "CAPTURE",
+        "score": 3.764705882352941,
+        "countBefore": 2,
+        "limit": 4
+      },
+      "originalTargetAssignees": [
+        {
+          "pieceId": "generated-oob:344142798:axis:independent-tank-3:unit",
+          "purpose": "GARRISON"
+        },
+        {
+          "pieceId": "generated-oob:344142798:axis:f11-combat-1:unit",
+          "purpose": "GARRISON"
+        }
+      ],
+      "originalVisibleEnemy": null,
+      "oldDistanceBefore": 3,
+      "oldDistanceAfter": 6,
+      "oldProgress": -3,
+      "directSafeWitnesses": 1,
+      "adjacentSafeWitnesses": 6,
+      "rangeContainsOriginal": true,
+      "rangeAdjacent": 6,
+      "queryTruncated": false,
+      "candidateCount": 342,
+      "witnessCount": 102,
+      "unsafeWitnessCount": 89,
+      "casePath": "artifacts/ai-progress-target-opportunity/cases/1800012-0.json",
+      "caseSha256": "1baae0daacc2ab5113b9211c8911ab21b1df4044e40dff599a29c22c6775c187",
+      "rawPath": "artifacts/ai-progress-target-opportunity/cases/1800012-0.json.raw.json.gz",
+      "rawSha256": "24b07457f0c49afffd9316be7a80e5ec684bf11badc876dfa7aeab19f9fe75d9"
+    },
+    {
+      "firstMatch": 1800012,
+      "armIndex": 1,
+      "at": 131,
+      "sourcePath": "artifacts/ai-progress-objective-original-continuation/pair-1800012/branch-15.save.json",
+      "originalTarget": "15,11",
+      "nextTarget": "14,6",
+      "nextPurpose": "capture",
+      "oldTargetHolder": "player:axis",
+      "changedTarget": true,
+      "changedWhileEnemy": false,
+      "planAt": 121,
+      "preStateHash": "sha256:bdbe3973a770562c9dc269ee262409aecff4579e5362f05a94d3daa0bb5352bc",
+      "planStateHash": "sha256:753f5e6390cacef3717c19add4e6c3c62686455c76421a20c1f2f9d8d70cfa6a",
+      "assignment": "EXECUTED_GREEDY_ASSIGNMENT",
+      "oldPairDecisions": [
+        {
+          "purpose": "GARRISON",
+          "reason": "UNIT_ALREADY_ASSIGNED",
+          "countBefore": 2,
+          "limit": 2,
+          "score": 3.466666666666667,
+          "alreadyAssignedTo": {
+            "hexId": "14,6",
+            "purpose": "CAPTURE"
+          }
+        }
+      ],
+      "selectedGreedyAssignment": {
+        "pieceId": "generated-oob:344142798:axis:f1-recon:unit",
+        "hexId": "14,6",
+        "purpose": "CAPTURE",
+        "score": 3.5555555555555554,
+        "countBefore": 2,
+        "limit": 4
+      },
+      "originalTargetAssignees": [
+        {
+          "pieceId": "generated-oob:344142798:axis:independent-tank-3:unit",
+          "purpose": "GARRISON"
+        },
+        {
+          "pieceId": "generated-oob:344142798:axis:f11-combat-1:unit",
+          "purpose": "GARRISON"
+        }
+      ],
+      "originalVisibleEnemy": null,
+      "oldDistanceBefore": 4,
+      "oldDistanceAfter": 6,
+      "oldProgress": -2,
+      "directSafeWitnesses": 1,
+      "adjacentSafeWitnesses": 6,
+      "rangeContainsOriginal": true,
+      "rangeAdjacent": 6,
+      "queryTruncated": false,
+      "candidateCount": 316,
+      "witnessCount": 70,
+      "unsafeWitnessCount": 58,
+      "casePath": "artifacts/ai-progress-target-opportunity/cases/1800012-1.json",
+      "caseSha256": "34759b1649d362deae2e56da3b1e549ab9e2bdc8bc6687253954cef8d5e017f6",
+      "rawPath": "artifacts/ai-progress-target-opportunity/cases/1800012-1.json.raw.json.gz",
+      "rawSha256": "e583722d70ed5327b27c185750a6fbbeac76a432c9cacc2765add0b50a8c284c"
+    },
+    {
+      "firstMatch": 1800014,
+      "armIndex": 1,
+      "at": 197,
+      "sourcePath": "artifacts/ai-progress-objective-original-continuation/pair-1800014/branch-15.save.json",
+      "originalTarget": "3,14",
+      "nextTarget": "7,11",
+      "nextPurpose": "capture",
+      "oldTargetHolder": "player:allied",
+      "changedTarget": true,
+      "changedWhileEnemy": true,
+      "planAt": 155,
+      "preStateHash": "sha256:bb848dcd16e0be0b20ba321c7d6e04da63b5fb0f11df2db4f8cc1f6432086516",
+      "planStateHash": "sha256:45bf5af5f764feeb6287aa94427553b1ba59c543a2a20e286fdf962150ad021f",
+      "assignment": "EXECUTED_GREEDY_ASSIGNMENT",
+      "oldPairDecisions": [
+        {
+          "purpose": "CAPTURE",
+          "reason": "UNIT_ALREADY_ASSIGNED",
+          "countBefore": 0,
+          "limit": 6,
+          "score": 1.4545454545454546,
+          "alreadyAssignedTo": {
+            "hexId": "7,11",
+            "purpose": "CAPTURE"
+          }
+        }
+      ],
+      "selectedGreedyAssignment": {
+        "pieceId": "generated-oob:344142992:axis:f4-recon:unit",
+        "hexId": "7,11",
+        "purpose": "CAPTURE",
+        "score": 2.4,
+        "countBefore": 1,
+        "limit": 4
+      },
+      "originalTargetAssignees": [],
+      "originalVisibleEnemy": {
+        "hasCombatUnit": true,
+        "strength": 19.75,
+        "hidden": 1
+      },
+      "oldDistanceBefore": 14,
+      "oldDistanceAfter": 5,
+      "oldProgress": 9,
+      "directSafeWitnesses": 0,
+      "adjacentSafeWitnesses": 0,
+      "rangeContainsOriginal": false,
+      "rangeAdjacent": 0,
+      "queryTruncated": false,
+      "candidateCount": 289,
+      "witnessCount": 0,
+      "unsafeWitnessCount": 0,
+      "casePath": "artifacts/ai-progress-target-opportunity/cases/1800014-1.json",
+      "caseSha256": "5fab6e21f89558a90d1426af8773c0a013b450a8c1948b02703f8da35d1b5fa0",
+      "rawPath": "artifacts/ai-progress-target-opportunity/cases/1800014-1.json.raw.json.gz",
+      "rawSha256": "61038ecc85cc15f5252a1da25d270d41148e4fc4edddf75e8eb3912656aa7ce2"
+    },
+    {
+      "firstMatch": 1800016,
+      "armIndex": 0,
+      "at": 155,
+      "sourcePath": "artifacts/ai-progress-objective-30games/matches/match-1800017.save.json",
+      "originalTarget": "10,9",
+      "nextTarget": "14,4",
+      "nextPurpose": "assault",
+      "oldTargetHolder": "player:allied",
+      "changedTarget": true,
+      "changedWhileEnemy": true,
+      "planAt": 142,
+      "preStateHash": "sha256:6acd347eb1ca2d517235f47226cebe1b7afed32dd3219193e105acf78d75d5d0",
+      "planStateHash": "sha256:1c7d674c56029c57381791caf1625ea0ac61ba11c907236871659c9fc55389d4",
+      "assignment": "ASSAULT_RESERVATION",
+      "oldPairDecisions": [
+        {
+          "purpose": "CAPTURE",
+          "reason": "UNIT_ALREADY_ASSIGNED",
+          "countBefore": 5,
+          "limit": 5,
+          "score": 2.4,
+          "alreadyAssignedTo": {
+            "hexId": "14,4",
+            "purpose": "ASSAULT"
+          }
+        }
+      ],
+      "selectedGreedyAssignment": null,
+      "originalTargetAssignees": [
+        {
+          "pieceId": "generated-oob:344143186:axis:f1-recon:unit",
+          "purpose": "CAPTURE"
+        },
+        {
+          "pieceId": "generated-oob:344143186:axis:independent-tank-1:unit",
+          "purpose": "CAPTURE"
+        },
+        {
+          "pieceId": "generated-oob:344143186:axis:f1-combat-1:unit",
+          "purpose": "CAPTURE"
+        },
+        {
+          "pieceId": "generated-oob:344143186:axis:independent-anti-tank-5:unit",
+          "purpose": "CAPTURE"
+        },
+        {
+          "pieceId": "generated-oob:344143186:axis:independent-tank-2:unit",
+          "purpose": "CAPTURE"
+        }
+      ],
+      "originalVisibleEnemy": {
+        "hasCombatUnit": true,
+        "strength": 15.945945945945946,
+        "hidden": 2
+      },
+      "oldDistanceBefore": 7,
+      "oldDistanceAfter": 7,
+      "oldProgress": 0,
+      "directSafeWitnesses": 0,
+      "adjacentSafeWitnesses": 0,
+      "rangeContainsOriginal": false,
+      "rangeAdjacent": 0,
+      "queryTruncated": false,
+      "candidateCount": 59,
+      "witnessCount": 0,
+      "unsafeWitnessCount": 0,
+      "casePath": "artifacts/ai-progress-target-opportunity/cases/1800016-0.json",
+      "caseSha256": "7cacf0b568d7d2939055d39c182806fd74c7830f2f5ed70b3aece902307004da",
+      "rawPath": "artifacts/ai-progress-target-opportunity/cases/1800016-0.json.raw.json.gz",
+      "rawSha256": "8cbb93a1afc12e5098f8f6fddc9207b4da1adb520469fc9a6b0f356ea442af88"
+    },
+    {
+      "firstMatch": 1800016,
+      "armIndex": 1,
+      "at": 155,
+      "sourcePath": "artifacts/ai-progress-objective-original-continuation/pair-1800016/branch-15.save.json",
+      "originalTarget": "10,9",
+      "nextTarget": "10,9",
+      "nextPurpose": "assault",
+      "oldTargetHolder": "player:allied",
+      "changedTarget": false,
+      "changedWhileEnemy": false,
+      "planAt": 142,
+      "preStateHash": "sha256:6ee110ef4e40d0b63a29f3ba88fcf62877a6a9f09d63d1d19e13946c1be5b2e7",
+      "planStateHash": "sha256:e61f8d091953324e353ea037a446e60d2017b23b4341e606ecf4139825b7a745",
+      "assignment": "ASSAULT_RESERVATION",
+      "oldPairDecisions": [
+        {
+          "purpose": "CAPTURE",
+          "reason": "UNIT_ALREADY_ASSIGNED",
+          "countBefore": 5,
+          "limit": 5,
+          "score": 2.181818181818182,
+          "alreadyAssignedTo": {
+            "hexId": "10,9",
+            "purpose": "ASSAULT"
+          }
+        }
+      ],
+      "selectedGreedyAssignment": null,
+      "originalTargetAssignees": [
+        {
+          "pieceId": "generated-oob:344143186:axis:f1-recon:unit",
+          "purpose": "ASSAULT"
+        },
+        {
+          "pieceId": "generated-oob:344143186:axis:independent-tank-1:unit",
+          "purpose": "ASSAULT"
+        },
+        {
+          "pieceId": "generated-oob:344143186:axis:f1-combat-1:unit",
+          "purpose": "ASSAULT"
+        },
+        {
+          "pieceId": "generated-oob:344143186:axis:f11-combat-1:unit",
+          "purpose": "ASSAULT"
+        },
+        {
+          "pieceId": "generated-oob:344143186:axis:f3-combat-2:unit",
+          "purpose": "ASSAULT"
+        },
+        {
+          "pieceId": "generated-oob:344143186:axis:independent-tank-7:unit",
+          "purpose": "ASSAULT"
+        },
+        {
+          "pieceId": "generated-oob:344143186:axis:independent-anti-tank-5:unit",
+          "purpose": "CAPTURE"
+        },
+        {
+          "pieceId": "generated-oob:344143186:axis:independent-tank-2:unit",
+          "purpose": "CAPTURE"
+        },
+        {
+          "pieceId": "generated-oob:344143186:axis:independent-anti-tank-6:unit",
+          "purpose": "CAPTURE"
+        },
+        {
+          "pieceId": "generated-oob:344143186:axis:f12-combat-1:unit",
+          "purpose": "CAPTURE"
+        },
+        {
+          "pieceId": "generated-oob:344143186:axis:independent-tank-6:unit",
+          "purpose": "CAPTURE"
+        }
+      ],
+      "originalVisibleEnemy": {
+        "hasCombatUnit": true,
+        "strength": 15.945945945945946,
+        "hidden": 2
+      },
+      "oldDistanceBefore": 8,
+      "oldDistanceAfter": 5,
+      "oldProgress": 3,
+      "directSafeWitnesses": 0,
+      "adjacentSafeWitnesses": 0,
+      "rangeContainsOriginal": false,
+      "rangeAdjacent": 0,
+      "queryTruncated": false,
+      "candidateCount": 39,
+      "witnessCount": 0,
+      "unsafeWitnessCount": 0,
+      "casePath": "artifacts/ai-progress-target-opportunity/cases/1800016-1.json",
+      "caseSha256": "bc9c7ee198ab82a46d1025d9e22074b287cc9d4c19635eddf570208ab994185f",
+      "rawPath": "artifacts/ai-progress-target-opportunity/cases/1800016-1.json.raw.json.gz",
+      "rawSha256": "4635a700c67b6409a41d4cd2615fb38638e923358eee7249fbb7d64e9011c8b0"
+    },
+    {
+      "firstMatch": 1800018,
+      "armIndex": 0,
+      "at": 153,
+      "sourcePath": "artifacts/ai-progress-objective-30games/matches/match-1800019.save.json",
+      "originalTarget": "4,18",
+      "nextTarget": "4,18",
+      "nextPurpose": "assault",
+      "oldTargetHolder": "player:allied",
+      "changedTarget": false,
+      "changedWhileEnemy": false,
+      "planAt": 144,
+      "preStateHash": "sha256:e68ace2918703ac11b2560936ef1bce38c8524d301dc2cea83bde325ea4a8794",
+      "planStateHash": "sha256:23efe7d1c2caed6f14ffcb6f110bffa03c1922d4e56717abeba8a598afc16ce7",
+      "assignment": "ASSAULT_RESERVATION",
+      "oldPairDecisions": [
+        {
+          "purpose": "CAPTURE",
+          "reason": "UNIT_ALREADY_ASSIGNED",
+          "countBefore": 3,
+          "limit": 4,
+          "score": 2.181818181818182,
+          "alreadyAssignedTo": {
+            "hexId": "4,18",
+            "purpose": "ASSAULT"
+          }
+        }
+      ],
+      "selectedGreedyAssignment": null,
+      "originalTargetAssignees": [
+        {
+          "pieceId": "generated-oob:344143380:axis:f10-combat-1:unit",
+          "purpose": "ASSAULT"
+        },
+        {
+          "pieceId": "generated-oob:344143380:axis:f6-combat-1:unit",
+          "purpose": "ASSAULT"
+        },
+        {
+          "pieceId": "generated-oob:344143380:axis:independent-tank-2:unit",
+          "purpose": "CAPTURE"
+        },
+        {
+          "pieceId": "generated-oob:344143380:axis:independent-tank-5:unit",
+          "purpose": "CAPTURE"
+        },
+        {
+          "pieceId": "generated-oob:344143380:axis:independent-tank-9:unit",
+          "purpose": "CAPTURE"
+        },
+        {
+          "pieceId": "generated-oob:344143380:axis:independent-anti_tank-1:unit",
+          "purpose": "CAPTURE"
+        }
+      ],
+      "originalVisibleEnemy": {
+        "hasCombatUnit": true,
+        "strength": 10.8,
+        "hidden": 1
+      },
+      "oldDistanceBefore": 8,
+      "oldDistanceAfter": 5,
+      "oldProgress": 3,
+      "directSafeWitnesses": 0,
+      "adjacentSafeWitnesses": 0,
+      "rangeContainsOriginal": false,
+      "rangeAdjacent": 0,
+      "queryTruncated": false,
+      "candidateCount": 43,
+      "witnessCount": 0,
+      "unsafeWitnessCount": 0,
+      "casePath": "artifacts/ai-progress-target-opportunity/cases/1800018-0.json",
+      "caseSha256": "77c041f3b40a1d0f652991698d7d9e19e87a26893906e36f53bec6c09d2345db",
+      "rawPath": "artifacts/ai-progress-target-opportunity/cases/1800018-0.json.raw.json.gz",
+      "rawSha256": "a848c9a3d4eb173925cc0bf0b0dfa4de763f170210ed5be5fda3423bd0250ad7"
+    },
+    {
+      "firstMatch": 1800018,
+      "armIndex": 1,
+      "at": 153,
+      "sourcePath": "artifacts/ai-progress-objective-original-continuation/pair-1800018/branch-15.save.json",
+      "originalTarget": "4,18",
+      "nextTarget": "4,18",
+      "nextPurpose": "capture",
+      "oldTargetHolder": "player:allied",
+      "changedTarget": false,
+      "changedWhileEnemy": false,
+      "planAt": 144,
+      "preStateHash": "sha256:6233776374b55f21b00dddb907fa791ad8e387b16f91a54e5d511c9b7faa39ac",
+      "planStateHash": "sha256:4dd7a1457915771a7232a0bac2463ba51a7d403e658ce46cfeb983144c3c8b02",
+      "assignment": "EXECUTED_GREEDY_ASSIGNMENT",
+      "oldPairDecisions": [
+        {
+          "purpose": "CAPTURE",
+          "reason": "ASSIGNED",
+          "countBefore": 0,
+          "limit": 4,
+          "score": 2,
+          "alreadyAssignedTo": null
+        }
+      ],
+      "selectedGreedyAssignment": {
+        "pieceId": "generated-oob:344143380:axis:f10-combat-1:unit",
+        "hexId": "4,18",
+        "purpose": "CAPTURE",
+        "score": 2,
+        "countBefore": 0,
+        "limit": 4
+      },
+      "originalTargetAssignees": [
+        {
+          "pieceId": "generated-oob:344143380:axis:f6-combat-1:unit",
+          "purpose": "ASSAULT"
+        },
+        {
+          "pieceId": "generated-oob:344143380:axis:independent-anti-tank-8:unit",
+          "purpose": "ASSAULT"
+        },
+        {
+          "pieceId": "generated-oob:344143380:axis:independent-tank-2:unit",
+          "purpose": "ASSAULT"
+        },
+        {
+          "pieceId": "generated-oob:344143380:axis:independent-tank-5:unit",
+          "purpose": "ASSAULT"
+        },
+        {
+          "pieceId": "generated-oob:344143380:axis:f10-combat-1:unit",
+          "purpose": "CAPTURE"
+        },
+        {
+          "pieceId": "generated-oob:344143380:axis:independent-anti_tank-1:unit",
+          "purpose": "CAPTURE"
+        },
+        {
+          "pieceId": "generated-oob:344143380:axis:f9-combat-1:unit",
+          "purpose": "CAPTURE"
+        }
+      ],
+      "originalVisibleEnemy": {
+        "hasCombatUnit": true,
+        "strength": 10.8,
+        "hidden": 1
+      },
+      "oldDistanceBefore": 9,
+      "oldDistanceAfter": 6,
+      "oldProgress": 3,
+      "directSafeWitnesses": 0,
+      "adjacentSafeWitnesses": 0,
+      "rangeContainsOriginal": false,
+      "rangeAdjacent": 0,
+      "queryTruncated": false,
+      "candidateCount": 58,
+      "witnessCount": 0,
+      "unsafeWitnessCount": 0,
+      "casePath": "artifacts/ai-progress-target-opportunity/cases/1800018-1.json",
+      "caseSha256": "37dcfb2ac65adaec9d99f477fcdaf6da27f337716b91718bcd66fe476357d5fc",
+      "rawPath": "artifacts/ai-progress-target-opportunity/cases/1800018-1.json.raw.json.gz",
+      "rawSha256": "220d673da783cfa770b7bc912b062a6c7eca3d6546c18c929eb1cea7e834d8d2"
+    },
+    {
+      "firstMatch": 1800020,
+      "armIndex": 0,
+      "at": 186,
+      "sourcePath": "artifacts/ai-progress-objective-30games/matches/match-1800021.save.json",
+      "originalTarget": "11,17",
+      "nextTarget": "10,20",
+      "nextPurpose": "hunt",
+      "oldTargetHolder": "player:axis",
+      "changedTarget": true,
+      "changedWhileEnemy": false,
+      "planAt": 174,
+      "preStateHash": "sha256:7a5f256f02cdcf01be782aefe88b60293077c9c4018c35aa5040699e04d09f86",
+      "planStateHash": "sha256:277ee9e1a92baf29cc3e2884278e8c30bc900ddf3a2c2f3d521ea23b5e5f9b4a",
+      "assignment": "EXECUTED_GREEDY_ASSIGNMENT",
+      "oldPairDecisions": [
+        {
+          "purpose": "GARRISON",
+          "reason": "TARGET_SLOT_FULL",
+          "countBefore": 3,
+          "limit": 3,
+          "score": 8.08888888888889,
+          "alreadyAssignedTo": null
+        }
+      ],
+      "selectedGreedyAssignment": {
+        "pieceId": "generated-oob:344143574:axis:f1-combat-2:unit",
+        "hexId": "10,20",
+        "purpose": "HUNT",
+        "score": 3.5,
+        "countBefore": 0,
+        "limit": 1
+      },
+      "originalTargetAssignees": [
+        {
+          "pieceId": "generated-oob:344143574:axis:f4-recon:unit",
+          "purpose": "GARRISON"
+        },
+        {
+          "pieceId": "generated-oob:344143574:axis:independent-tank-1:unit",
+          "purpose": "GARRISON"
+        },
+        {
+          "pieceId": "generated-oob:344143574:axis:f1-recon:unit",
+          "purpose": "GARRISON"
+        }
+      ],
+      "originalVisibleEnemy": null,
+      "oldDistanceBefore": 3,
+      "oldDistanceAfter": 2,
+      "oldProgress": 1,
+      "directSafeWitnesses": 1,
+      "adjacentSafeWitnesses": 6,
+      "rangeContainsOriginal": true,
+      "rangeAdjacent": 6,
+      "queryTruncated": false,
+      "candidateCount": 65,
+      "witnessCount": 14,
+      "unsafeWitnessCount": 0,
+      "casePath": "artifacts/ai-progress-target-opportunity/cases/1800020-0.json",
+      "caseSha256": "9d2a8e060be42ea23256d0df072874b2026bd6f17fbb2bbd143b8016069538c4",
+      "rawPath": "artifacts/ai-progress-target-opportunity/cases/1800020-0.json.raw.json.gz",
+      "rawSha256": "f6a765f8683badac5f9d5587755cd0ae3e8d47ad50d0897d71d93045787e5219"
+    },
+    {
+      "firstMatch": 1800020,
+      "armIndex": 1,
+      "at": 181,
+      "sourcePath": "artifacts/ai-progress-objective-original-continuation/pair-1800020/branch-15.save.json",
+      "originalTarget": "11,17",
+      "nextTarget": "-4,13",
+      "nextPurpose": "capture",
+      "oldTargetHolder": "player:allied",
+      "changedTarget": true,
+      "changedWhileEnemy": true,
+      "planAt": 174,
+      "preStateHash": "sha256:cd60ef4893635e17cf0b92d7febd4d83b1737b30ab2f03a5bf205c4f657c2aab",
+      "planStateHash": "sha256:9b585ddbe877bb8adb0c616c47d38ef61804ce23cbb2faba6572ae8ad17f6501",
+      "assignment": "EXECUTED_GREEDY_ASSIGNMENT",
+      "oldPairDecisions": [
+        {
+          "purpose": "CAPTURE",
+          "reason": "TARGET_SLOT_FULL",
+          "countBefore": 4,
+          "limit": 4,
+          "score": 5.090909090909091,
+          "alreadyAssignedTo": null
+        },
+        {
+          "purpose": "HUNT",
+          "reason": "TARGET_SLOT_FULL",
+          "countBefore": 4,
+          "limit": 4,
+          "score": 1.9090909090909092,
+          "alreadyAssignedTo": null
+        }
+      ],
+      "selectedGreedyAssignment": {
+        "pieceId": "generated-oob:344143574:axis:f1-combat-2:unit",
+        "hexId": "-4,13",
+        "purpose": "CAPTURE",
+        "score": 1.8666666666666667,
+        "countBefore": 1,
+        "limit": 3
+      },
+      "originalTargetAssignees": [
+        {
+          "pieceId": "generated-oob:344143574:axis:f2-recon:unit",
+          "purpose": "ASSAULT"
+        },
+        {
+          "pieceId": "generated-oob:344143574:axis:f1-recon:unit",
+          "purpose": "ASSAULT"
+        },
+        {
+          "pieceId": "generated-oob:344143574:axis:f10-combat-1:unit",
+          "purpose": "ASSAULT"
+        },
+        {
+          "pieceId": "generated-oob:344143574:axis:f4-combat-1:unit",
+          "purpose": "ASSAULT"
+        },
+        {
+          "pieceId": "generated-oob:344143574:axis:f4-combat-2:unit",
+          "purpose": "CAPTURE"
+        },
+        {
+          "pieceId": "generated-oob:344143574:axis:independent-anti-tank-3:unit",
+          "purpose": "CAPTURE"
+        },
+        {
+          "pieceId": "generated-oob:344143574:axis:independent-anti-tank-7:unit",
+          "purpose": "CAPTURE"
+        },
+        {
+          "pieceId": "generated-oob:344143574:axis:f3-recon:unit",
+          "purpose": "CAPTURE"
+        }
+      ],
+      "originalVisibleEnemy": {
+        "hasCombatUnit": true,
+        "strength": 10.108108108108109,
+        "hidden": 1
+      },
+      "oldDistanceBefore": 4,
+      "oldDistanceAfter": 4,
+      "oldProgress": 0,
+      "directSafeWitnesses": 0,
+      "adjacentSafeWitnesses": 4,
+      "rangeContainsOriginal": false,
+      "rangeAdjacent": 5,
+      "queryTruncated": false,
+      "candidateCount": 208,
+      "witnessCount": 5,
+      "unsafeWitnessCount": 1,
+      "casePath": "artifacts/ai-progress-target-opportunity/cases/1800020-1.json",
+      "caseSha256": "6c568f1c68dd206e5fb77f82f3ef73aec3bb772b8818305a8059bb8819d7fee9",
+      "rawPath": "artifacts/ai-progress-target-opportunity/cases/1800020-1.json.raw.json.gz",
+      "rawSha256": "632a5c6b1c3d5d4d8cef0c48d29e6226236cf51129bb0d0b27562c7f4de3321b"
+    },
+    {
+      "firstMatch": 1800022,
+      "armIndex": 0,
+      "at": 143,
+      "sourcePath": "artifacts/ai-progress-objective-30games/matches/match-1800023.save.json",
+      "originalTarget": "13,10",
+      "nextTarget": "13,10",
+      "nextPurpose": "assault",
+      "oldTargetHolder": "player:allied",
+      "changedTarget": false,
+      "changedWhileEnemy": false,
+      "planAt": 111,
+      "preStateHash": "sha256:aefa9e6bf55684adeabef266356d555868c4a2f8a33c60090611552a45a1b888",
+      "planStateHash": "sha256:9543fa21d15c3ee45bd9ad0ef00352b4a9300b0d519e415b1e004d2ae6564960",
+      "assignment": "ASSAULT_RESERVATION",
+      "oldPairDecisions": [
+        {
+          "purpose": "CAPTURE",
+          "reason": "UNIT_ALREADY_ASSIGNED",
+          "countBefore": 0,
+          "limit": 5,
+          "score": 6.588235294117648,
+          "alreadyAssignedTo": {
+            "hexId": "13,10",
+            "purpose": "ASSAULT"
+          }
+        }
+      ],
+      "selectedGreedyAssignment": null,
+      "originalTargetAssignees": [
+        {
+          "pieceId": "generated-oob:344143768:axis:f7-combat-1:unit",
+          "purpose": "ASSAULT"
+        },
+        {
+          "pieceId": "generated-oob:344143768:axis:independent-anti_tank-1:unit",
+          "purpose": "ASSAULT"
+        },
+        {
+          "pieceId": "generated-oob:344143768:axis:independent-anti-tank-7:unit",
+          "purpose": "ASSAULT"
+        },
+        {
+          "pieceId": "generated-oob:344143768:axis:independent-anti-tank-6:unit",
+          "purpose": "ASSAULT"
+        },
+        {
+          "pieceId": "generated-oob:344143768:axis:independent-tank-3:unit",
+          "purpose": "ASSAULT"
+        },
+        {
+          "pieceId": "generated-oob:344143768:axis:independent-tank-7:unit",
+          "purpose": "ASSAULT"
+        },
+        {
+          "pieceId": "generated-oob:344143768:axis:independent-anti-tank-5:unit",
+          "purpose": "CAPTURE"
+        },
+        {
+          "pieceId": "generated-oob:344143768:axis:independent-tank-5:unit",
+          "purpose": "CAPTURE"
+        },
+        {
+          "pieceId": "generated-oob:344143768:axis:f1-recon:unit",
+          "purpose": "CAPTURE"
+        },
+        {
+          "pieceId": "generated-oob:344143768:axis:independent-anti-tank-4:unit",
+          "purpose": "CAPTURE"
+        },
+        {
+          "pieceId": "generated-oob:344143768:axis:independent-tank-2:unit",
+          "purpose": "CAPTURE"
+        }
+      ],
+      "originalVisibleEnemy": {
+        "hasCombatUnit": true,
+        "strength": 16.1875,
+        "hidden": 2
+      },
+      "oldDistanceBefore": 3,
+      "oldDistanceAfter": 1,
+      "oldProgress": 2,
+      "directSafeWitnesses": 0,
+      "adjacentSafeWitnesses": 1,
+      "rangeContainsOriginal": false,
+      "rangeAdjacent": 1,
+      "queryTruncated": false,
+      "candidateCount": 22,
+      "witnessCount": 1,
+      "unsafeWitnessCount": 0,
+      "casePath": "artifacts/ai-progress-target-opportunity/cases/1800022-0.json",
+      "caseSha256": "f5e71eeca3596c128bc9da679004341f13ba3b45ddea8fa90f46f1a0c183b0b5",
+      "rawPath": "artifacts/ai-progress-target-opportunity/cases/1800022-0.json.raw.json.gz",
+      "rawSha256": "83a32b90fd34b9d6b4586cee26eebadd25e9aca8e5638194db0cc90bcc743ee0"
+    },
+    {
+      "firstMatch": 1800022,
+      "armIndex": 1,
+      "at": 143,
+      "sourcePath": "artifacts/ai-progress-objective-original-continuation/pair-1800022/branch-15.save.json",
+      "originalTarget": "13,10",
+      "nextTarget": "13,10",
+      "nextPurpose": "assault",
+      "oldTargetHolder": "player:allied",
+      "changedTarget": false,
+      "changedWhileEnemy": false,
+      "planAt": 111,
+      "preStateHash": "sha256:c2a16cdccd5a7ea13f4af181db56a0944b3a725aa2d9b02f826ea14cfdf9f36b",
+      "planStateHash": "sha256:c4d48bdc72739101ce7ab9b186baf5253ce1d4753901dbf6156e8e76d85ba2a4",
+      "assignment": "ASSAULT_RESERVATION",
+      "oldPairDecisions": [
+        {
+          "purpose": "CAPTURE",
+          "reason": "UNIT_ALREADY_ASSIGNED",
+          "countBefore": 0,
+          "limit": 5,
+          "score": 6.222222222222223,
+          "alreadyAssignedTo": {
+            "hexId": "13,10",
+            "purpose": "ASSAULT"
+          }
+        }
+      ],
+      "selectedGreedyAssignment": null,
+      "originalTargetAssignees": [
+        {
+          "pieceId": "generated-oob:344143768:axis:f7-combat-1:unit",
+          "purpose": "ASSAULT"
+        },
+        {
+          "pieceId": "generated-oob:344143768:axis:independent-anti-tank-7:unit",
+          "purpose": "ASSAULT"
+        },
+        {
+          "pieceId": "generated-oob:344143768:axis:independent-anti_tank-1:unit",
+          "purpose": "ASSAULT"
+        },
+        {
+          "pieceId": "generated-oob:344143768:axis:independent-anti-tank-6:unit",
+          "purpose": "ASSAULT"
+        },
+        {
+          "pieceId": "generated-oob:344143768:axis:independent-tank-3:unit",
+          "purpose": "ASSAULT"
+        },
+        {
+          "pieceId": "generated-oob:344143768:axis:independent-tank-7:unit",
+          "purpose": "ASSAULT"
+        },
+        {
+          "pieceId": "generated-oob:344143768:axis:independent-anti-tank-5:unit",
+          "purpose": "CAPTURE"
+        },
+        {
+          "pieceId": "generated-oob:344143768:axis:independent-tank-5:unit",
+          "purpose": "CAPTURE"
+        },
+        {
+          "pieceId": "generated-oob:344143768:axis:f1-recon:unit",
+          "purpose": "CAPTURE"
+        },
+        {
+          "pieceId": "generated-oob:344143768:axis:independent-anti-tank-4:unit",
+          "purpose": "CAPTURE"
+        },
+        {
+          "pieceId": "generated-oob:344143768:axis:independent-tank-2:unit",
+          "purpose": "CAPTURE"
+        }
+      ],
+      "originalVisibleEnemy": {
+        "hasCombatUnit": true,
+        "strength": 16.1875,
+        "hidden": 2
+      },
+      "oldDistanceBefore": 4,
+      "oldDistanceAfter": 1,
+      "oldProgress": 3,
+      "directSafeWitnesses": 0,
+      "adjacentSafeWitnesses": 1,
+      "rangeContainsOriginal": false,
+      "rangeAdjacent": 1,
+      "queryTruncated": false,
+      "candidateCount": 24,
+      "witnessCount": 1,
+      "unsafeWitnessCount": 0,
+      "casePath": "artifacts/ai-progress-target-opportunity/cases/1800022-1.json",
+      "caseSha256": "7d126a4039a52fa9014093a3e66bcfe1bc6884f9c42e27258597aa1f9d71e06e",
+      "rawPath": "artifacts/ai-progress-target-opportunity/cases/1800022-1.json.raw.json.gz",
+      "rawSha256": "92f16e8804773e054e00239b6313f4c3164218b20ecd1ac1ae86adba51d0dbe9"
+    },
+    {
+      "firstMatch": 1800026,
+      "armIndex": 0,
+      "at": 516,
+      "sourcePath": "artifacts/ai-progress-objective-30games/matches/match-1800027.save.json",
+      "originalTarget": "10,15",
+      "nextTarget": "10,15",
+      "nextPurpose": "capture",
+      "oldTargetHolder": "player:allied",
+      "changedTarget": false,
+      "changedWhileEnemy": false,
+      "planAt": 502,
+      "preStateHash": "sha256:5bda25f45dc197e931cb32bd808d6dec7d5aa7a15b423a071b321a3b96636baf",
+      "planStateHash": "sha256:d33d2b70a42f7635fe7888f5620aeeadd95c6e1d3348df70aef74e88e7e8d6fa",
+      "assignment": "EXECUTED_GREEDY_ASSIGNMENT",
+      "oldPairDecisions": [
+        {
+          "purpose": "CAPTURE",
+          "reason": "ASSIGNED",
+          "countBefore": 0,
+          "limit": 4,
+          "score": 9.6,
+          "alreadyAssignedTo": null
+        },
+        {
+          "purpose": "HUNT",
+          "reason": "UNIT_ALREADY_ASSIGNED",
+          "countBefore": 4,
+          "limit": 4,
+          "score": 2.4,
+          "alreadyAssignedTo": {
+            "hexId": "10,15",
+            "purpose": "CAPTURE"
+          }
+        }
+      ],
+      "selectedGreedyAssignment": {
+        "pieceId": "generated-oob:344144156:axis:f2-recon:unit",
+        "hexId": "10,15",
+        "purpose": "CAPTURE",
+        "score": 9.6,
+        "countBefore": 0,
+        "limit": 4
+      },
+      "originalTargetAssignees": [
+        {
+          "pieceId": "generated-oob:344144156:axis:independent-anti_tank-2:unit",
+          "purpose": "ASSAULT"
+        },
+        {
+          "pieceId": "generated-oob:344144156:axis:f1-combat-2:unit",
+          "purpose": "ASSAULT"
+        },
+        {
+          "pieceId": "generated-oob:344144156:axis:f11-combat-1:unit",
+          "purpose": "ASSAULT"
+        },
+        {
+          "pieceId": "generated-oob:344144156:axis:f2-recon:unit",
+          "purpose": "CAPTURE"
+        },
+        {
+          "pieceId": "generated-oob:344144156:axis:f3-recon:unit",
+          "purpose": "CAPTURE"
+        },
+        {
+          "pieceId": "generated-oob:344144156:axis:f4-recon:unit",
+          "purpose": "CAPTURE"
+        },
+        {
+          "pieceId": "generated-oob:344144156:axis:f3-combat-1:unit",
+          "purpose": "CAPTURE"
+        }
+      ],
+      "originalVisibleEnemy": {
+        "hasCombatUnit": true,
+        "strength": 10.741935483870968,
+        "hidden": 1
+      },
+      "oldDistanceBefore": 2,
+      "oldDistanceAfter": 1,
+      "oldProgress": 1,
+      "directSafeWitnesses": 0,
+      "adjacentSafeWitnesses": 4,
+      "rangeContainsOriginal": false,
+      "rangeAdjacent": 5,
+      "queryTruncated": true,
+      "candidateCount": 400,
+      "witnessCount": 5,
+      "unsafeWitnessCount": 1,
+      "casePath": "artifacts/ai-progress-target-opportunity/cases/1800026-0.json",
+      "caseSha256": "44c5912e4d27eef02c167d466321baa7cd06e282f1a6b97d41b9b3a522bcb28f",
+      "rawPath": "artifacts/ai-progress-target-opportunity/cases/1800026-0.json.raw.json.gz",
+      "rawSha256": "9f146d7b36e8072c46afdeccbe396d3f605f67fff2b173d10e337c6fbb80f23d"
+    },
+    {
+      "firstMatch": 1800028,
+      "armIndex": 0,
+      "at": 153,
+      "sourcePath": "artifacts/ai-progress-objective-30games/matches/match-1800029.save.json",
+      "originalTarget": "12,15",
+      "nextTarget": "6,14",
+      "nextPurpose": "assault",
+      "oldTargetHolder": "player:allied",
+      "changedTarget": true,
+      "changedWhileEnemy": true,
+      "planAt": 146,
+      "preStateHash": "sha256:06f0c341a8a9f5e23f9e47e7b3901a532b1f32faf341ba46d79b122b6b6e9562",
+      "planStateHash": "sha256:c623210e4afd23553e0208259517bde43bcf91b9d27198853453de0fea20c654",
+      "assignment": "ASSAULT_RESERVATION",
+      "oldPairDecisions": [
+        {
+          "purpose": "CAPTURE",
+          "reason": "UNIT_ALREADY_ASSIGNED",
+          "countBefore": 0,
+          "limit": 7,
+          "score": 4.666666666666667,
+          "alreadyAssignedTo": {
+            "hexId": "6,14",
+            "purpose": "ASSAULT"
+          }
+        }
+      ],
+      "selectedGreedyAssignment": null,
+      "originalTargetAssignees": [
+        {
+          "pieceId": "generated-oob:344144350:axis:independent-tank-6:unit",
+          "purpose": "CAPTURE"
+        },
+        {
+          "pieceId": "generated-oob:344144350:axis:f2-combat-2:unit",
+          "purpose": "CAPTURE"
+        },
+        {
+          "pieceId": "generated-oob:344144350:axis:independent-anti-tank-5:unit",
+          "purpose": "CAPTURE"
+        },
+        {
+          "pieceId": "generated-oob:344144350:axis:f6-combat-1:unit",
+          "purpose": "CAPTURE"
+        },
+        {
+          "pieceId": "generated-oob:344144350:axis:independent-tank-1:unit",
+          "purpose": "CAPTURE"
+        },
+        {
+          "pieceId": "generated-oob:344144350:axis:f11-combat-1:unit",
+          "purpose": "CAPTURE"
+        },
+        {
+          "pieceId": "generated-oob:344144350:axis:independent-tank-3:unit",
+          "purpose": "CAPTURE"
+        }
+      ],
+      "originalVisibleEnemy": {
+        "hasCombatUnit": true,
+        "strength": 26.8,
+        "hidden": 4
+      },
+      "oldDistanceBefore": 2,
+      "oldDistanceAfter": 3,
+      "oldProgress": -1,
+      "directSafeWitnesses": 0,
+      "adjacentSafeWitnesses": 3,
+      "rangeContainsOriginal": false,
+      "rangeAdjacent": 5,
+      "queryTruncated": false,
+      "candidateCount": 174,
+      "witnessCount": 5,
+      "unsafeWitnessCount": 2,
+      "casePath": "artifacts/ai-progress-target-opportunity/cases/1800028-0.json",
+      "caseSha256": "74b11d5cca62d119584eec4ec4cff808b13d05b1495b7e74be6ad10f3c05e700",
+      "rawPath": "artifacts/ai-progress-target-opportunity/cases/1800028-0.json.raw.json.gz",
+      "rawSha256": "d73ff7771c388917061224618823b7c11fa2e7ba4e45a6ce933eff9a4e424eb1"
+    },
+    {
+      "firstMatch": 1800028,
+      "armIndex": 1,
+      "at": 154,
+      "sourcePath": "artifacts/ai-progress-objective-original-continuation/pair-1800028/branch-15.save.json",
+      "originalTarget": "12,15",
+      "nextTarget": "12,15",
+      "nextPurpose": "capture",
+      "oldTargetHolder": "player:allied",
+      "changedTarget": false,
+      "changedWhileEnemy": false,
+      "planAt": 146,
+      "preStateHash": "sha256:6e237288023731c0ec89d175d68d1f5964bf0623ff03d2d031b4044c3e571072",
+      "planStateHash": "sha256:7bfb17bb8b5c5208ff59a8f19fe86defb79cd7ff92076cf816693292a18039eb",
+      "assignment": "EXECUTED_GREEDY_ASSIGNMENT",
+      "oldPairDecisions": [
+        {
+          "purpose": "CAPTURE",
+          "reason": "ASSIGNED",
+          "countBefore": 4,
+          "limit": 7,
+          "score": 4.2,
+          "alreadyAssignedTo": null
+        }
+      ],
+      "selectedGreedyAssignment": {
+        "pieceId": "generated-oob:344144350:axis:f1-combat-1:unit",
+        "hexId": "12,15",
+        "purpose": "CAPTURE",
+        "score": 4.2,
+        "countBefore": 4,
+        "limit": 7
+      },
+      "originalTargetAssignees": [
+        {
+          "pieceId": "generated-oob:344144350:axis:f1-recon:unit",
+          "purpose": "CAPTURE"
+        },
+        {
+          "pieceId": "generated-oob:344144350:axis:f2-recon:unit",
+          "purpose": "CAPTURE"
+        },
+        {
+          "pieceId": "generated-oob:344144350:axis:f1-combat-2:unit",
+          "purpose": "CAPTURE"
+        },
+        {
+          "pieceId": "generated-oob:344144350:axis:independent-tank-2:unit",
+          "purpose": "CAPTURE"
+        },
+        {
+          "pieceId": "generated-oob:344144350:axis:f1-combat-1:unit",
+          "purpose": "CAPTURE"
+        },
+        {
+          "pieceId": "generated-oob:344144350:axis:independent-tank-6:unit",
+          "purpose": "CAPTURE"
+        },
+        {
+          "pieceId": "generated-oob:344144350:axis:f2-combat-1:unit",
+          "purpose": "CAPTURE"
+        }
+      ],
+      "originalVisibleEnemy": {
+        "hasCombatUnit": true,
+        "strength": 26.8,
+        "hidden": 4
+      },
+      "oldDistanceBefore": 3,
+      "oldDistanceAfter": 2,
+      "oldProgress": 1,
+      "directSafeWitnesses": 0,
+      "adjacentSafeWitnesses": 3,
+      "rangeContainsOriginal": false,
+      "rangeAdjacent": 5,
+      "queryTruncated": false,
+      "candidateCount": 147,
+      "witnessCount": 5,
+      "unsafeWitnessCount": 2,
+      "casePath": "artifacts/ai-progress-target-opportunity/cases/1800028-1.json",
+      "caseSha256": "6d66b887a2754d9f03313de80c6e04e4d3ae6f6266cc15a37e1581ba985f33ce",
+      "rawPath": "artifacts/ai-progress-target-opportunity/cases/1800028-1.json.raw.json.gz",
+      "rawSha256": "0011f7ef7063ebf518318ff704d510dce71a7d15b6e979900b62a88821846447"
+    }
+  ],
+  "provenance": {
+    "registrationSha256": "d6ac0c7efba9444f51d90245d50e32d5cd6f3e154de2f3b793af3dffef4d4761",
+    "probeSha256": "a76554b3d34fb9ab6d5e032f4f6b0f58b902371c2894f5ef25f547267d1aa0f6",
+    "checkerSha256": "7a8efd9773ce8a2e08eb598453116c7f33f5a9be8181e4c1f354bc018d1e6dfe"
+  }
+}

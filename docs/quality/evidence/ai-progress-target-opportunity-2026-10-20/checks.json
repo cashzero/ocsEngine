@@ -1,0 +1,24 @@
+{
+  "cases": 24,
+  "checkedWitnesses": 235,
+  "controls": [
+    {
+      "kind": "wrongOriginalTarget",
+      "rejected": true,
+      "assertion": "original target identity"
+    },
+    {
+      "kind": "wrongActualAction",
+      "rejected": true,
+      "assertion": "actual historical selected action"
+    },
+    {
+      "kind": "falseSafeWitness",
+      "rejected": true,
+      "assertion": "actual supply-preserved witness"
+    }
+  ],
+  "engineTreeSha256": "4a87376b26c41f60086cb3060f606afcc1e9b99bb3ba00339c904837d200bb2a",
+  "resultsSha256": "ce472bf162e0a6f3373d3b6388b1ff1b4a1830640f661450bdfdb731f2ba10d3",
+  "checkerSha256": "7a8efd9773ce8a2e08eb598453116c7f33f5a9be8181e4c1f354bc018d1e6dfe"
+}
