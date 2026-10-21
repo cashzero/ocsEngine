@@ -180,3 +180,74 @@ export const segmentEntry = (m, before, action, applied, phase, segment, counts)
   if (canonical({ ...rebuilt, revision: applied.state.revision }) !== canonical(applied.state)) throw new Error('lifecycle state differs from the recorded one');
   return measured;
 };
+
+export const ZONE_HEXES = 3;
+
+/**
+ * Each theater's front zone: hexes within ZONE_HEXES of one of its objectives, a hex near several objectives going to
+ * the nearest one (ties to the lower objective id). -> Map(hexId -> theater)
+ */
+export const theaterZones = (m, state, partition) => {
+  const zones = new Map();
+  for (const { id } of state.scenario.mapDefinition.hexes) {
+    let best = null;
+    for (const objective of partition.objectives) {
+      const distance = m.hexDistanceBetween(id, objective.hexId);
+      if (distance <= ZONE_HEXES && (best === null || distance < best.distance)) best = { distance, theater: objective.theater };
+    }
+    if (best) zones.set(String(id), best.theater);
+  }
+  return zones;
+};
+
+const isResource = (state, piece) => state.scenario.pieceCatalog.definitions.find(({ id }) => id === piece.definitionId)?.family === 'RESOURCE';
+
+/** Where each of the player's Tokens are: dumps on the map, and truck cargo at its truck's hex. -> [{ pieceId, hexId, tokens, cargoOf }] */
+export const tokenHolders = (state, playerId) => {
+  const byId = new Map(state.pieceState.pieces.map((piece) => [piece.id, piece]));
+  return state.pieceState.pieces.filter((piece) => piece.ownerId === playerId && isResource(state, piece) && (piece.resourceQuantity ?? 0) > 0).flatMap((piece) => {
+    if (piece.location.kind === 'ON_MAP') return [{ pieceId: piece.id, hexId: String(piece.location.hexId), tokens: piece.resourceQuantity, cargoOf: null }];
+    const truck = piece.location.kind === 'CONTAINER' ? byId.get(piece.location.containerId) : null;
+    return truck?.location.kind === 'ON_MAP' ? [{ pieceId: piece.id, hexId: String(truck.location.hexId), tokens: piece.resourceQuantity, cargoOf: truck.id }] : [];
+  });
+};
+
+/** The player's Tokens in each theater's zone and in total. -> { total, byTheater: { theater: tokens } } */
+export const zoneTokens = (state, playerId, zones) => {
+  const byTheater = {};
+  let total = 0;
+  for (const { hexId, tokens } of tokenHolders(state, playerId)) {
+    total += tokens;
+    const theater = zones.get(hexId);
+    if (theater) byTheater[theater] = (byTheater[theater] ?? 0) + tokens;
+  }
+  return { total, byTheater };
+};
+
+/**
+ * An upper bound, at the player's Movement segment entry, on the Tokens transport can bring into each theater's zone
+ * before Combat: no more than the Tokens outside the zone, and no more than what the Rail Cap left can move (one quarter
+ * per Token, 13.3b, halved on all-multi-track routes, so two Tokens per quarter at most) plus what the trucks whose movement range touches the zone can carry: their cargo plus a full load per
+ * load-and-unload pair their MA pays for (13.2f; unbounded when loading is free).
+ *   -> { [theater]: { outside, rail, trucks, bound } }
+ */
+export const inflowBound = (m, modules, state, playerId, zones) => {
+  const { pieces, transport, railCap } = modules;
+  const holders = tokenHolders(state, playerId);
+  const rail = 2 * railCap.railCapRemainingQuarters(state, playerId);
+  const trucks = state.pieceState.pieces.filter((piece) => piece.ownerId === playerId && piece.location.kind === 'ON_MAP'
+    && pieces.isTransportPoint(state, piece) && !pieces.isExtender(state, piece)).map((truck) => {
+    const loadTicks = transport.loadCostTicks(state, truck);
+    const allowance = pieces.movementAllowanceTicks(state, truck);
+    const trips = loadTicks > 0 ? Math.floor(allowance / (2 * loadTicks)) : Infinity;
+    const reach = new Set([String(truck.location.hexId), ...(m.ruleEngine.queryMovementRange(state, playerId, truck.id).value ?? []).map(({ hexId }) => String(hexId))]);
+    return { reach, carry: transport.loadedTokens(state, truck) + trips * transport.capacityTokens(state, truck) };
+  });
+  const result = {};
+  for (const theater of new Set(zones.values())) {
+    const outside = holders.filter(({ hexId }) => zones.get(hexId) !== theater).reduce((sum, { tokens }) => sum + tokens, 0);
+    const truckCarry = trucks.filter(({ reach }) => [...reach].some((hexId) => zones.get(hexId) === theater)).reduce((sum, { carry }) => sum + carry, 0);
+    result[theater] = { outside, rail, trucks: truckCarry, bound: Math.min(outside, rail + truckCarry) };
+  }
+  return result;
+};

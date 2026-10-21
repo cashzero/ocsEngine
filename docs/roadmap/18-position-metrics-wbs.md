@@ -68,7 +68,7 @@
 - [ ] P11 戰區補給配置（待驗證提案）。使用者確認（2026-10-21）：戰區依鐵路分岔樹劃分、時間窗口先做 1 回合、目標函數為校準後的奪點機率乘 VP。程式只放在 `scripts/`，不改 `src/`。設計與結果見[戰區補給配置](../ai/theater-supply-plan.md)；付款時序稽核已完成。P5、P7 只作回溯開發比較，正式資格需凍結後的新資料。
   - [x] P11.0 地圖普查與戰區劃分。`ai-theater-supply.mjs` 的 `theaters` 與 `ai-theater-survey.mjs`；P7 的 48 局西歐攻擊戰。[紀錄](../quality/evidence/ai-theater-survey-2026-10-21/README.md)
   - [x] P11.1 Combat 階段的可付最佳攻擊。`bestPayableAttack` 以 `validateAction` 共同結算補給作見證；828 次實際攻擊中最佳欄位沒有低於實際欄位，查詢不改變局面。每次進入 Combat 時檢查全部目標，因補給而無法攻擊的是 0 次。[紀錄](../quality/evidence/ai-theater-attack-check-2026-10-21/README.md)
-  - [ ] P11.2 1 回合窗口的運入量。Rail Cap 分配、卡車載量與裝卸移動力、鐵路到達後當階段不能裝載，同時涵蓋燃料與戰鬥補給。先行核對已完成：Combat 階段的戰鬥補給從未阻擋攻擊，Movement 階段無法支付燃料的單位佔能到達目標兵力的攻方 5～9%、守方 14～24%（[紀錄](../quality/evidence/ai-theater-fuel-check-2026-10-21/README.md)）。驗收：歷史中每個戰區每回合實際運到的 SP 不超過估計上限，並報告上限的寬鬆程度。
+  - [x] P11.2 1 回合窗口的運入量。`inflowBound`：區域外存量與「鐵路剩餘 Rail Cap 兩倍加可達卡車載運量」取小者，同時涵蓋燃料與戰鬥補給。先行核對：Combat 階段的戰鬥補給從未阻擋攻擊，Movement 階段無法支付燃料的單位佔能到達目標兵力的攻方 5～9%、守方 14～24%（[紀錄](../quality/evidence/ai-theater-fuel-check-2026-10-21/README.md)）。驗收：1,083 個戰區窗口實際運入都不超過上限，有運入的窗口實際量中位數為上限的 36%（[紀錄](../quality/evidence/ai-theater-inflow-check-2026-10-21/README.md)）。
   - [ ] P11.3 奪點機率模型。只用 P5 擬合「可付最佳欄位與相關條件 → 本回合奪點」並凍結。驗收：留出種子的 Brier 與校準優於只用欄位的模型。
   - [ ] P11.4 配置搜尋。在運量上限內把單位與 HQ 分給目標，保留守住己方 VP 的兵力，最大化 Σ VP × 奪點機率；貪婪加局部交換。驗收：小案例與窮舉最佳解比較，報告近似差距。
   - [ ] P11.5 輸出與記錄。潛力、配置效率、暫未支援進攻的戰力與 SP、缺口目標，以選用旗標加入 `ai-position-record.mjs`。驗收：記錄前後重播 hash 不變。

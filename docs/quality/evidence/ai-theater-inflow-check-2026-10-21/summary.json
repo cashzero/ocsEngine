@@ -1,0 +1,35 @@
+{
+ "games": 48,
+ "finalHashMismatches": 0,
+ "windows": 1083,
+ "entriesUnavailable": 8,
+ "windowsWithoutCombatEntry": 8,
+ "overBound": 0,
+ "withInflow": 420,
+ "boundLimitedBy": {
+  "outside": 1011,
+  "transport": 72
+ },
+ "actualOverBoundQuantiles": {
+  "q10": 0.033,
+  "q50": 0.357,
+  "q90": 0.865,
+  "max": 1
+ },
+ "tokens": {
+  "actual": 8767,
+  "bound": 80428
+ },
+ "axis": {
+  "windows": 568,
+  "withInflow": 202,
+  "actual": 5020,
+  "bound": 58717
+ },
+ "allied": {
+  "windows": 515,
+  "withInflow": 218,
+  "actual": 3747,
+  "bound": 21711
+ }
+}

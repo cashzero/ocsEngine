@@ -35,6 +35,7 @@
 | `scripts/ai-theater-survey.mjs` | 戰區補給配置的地圖普查：重播存檔到 Game Turn 3，記錄鐵路網、補給源與雙方的戰區劃分（`scripts/ai-theater-supply.mjs` 的 `theaters`）；分岔門檻 4、6、8 格的戰區數（[戰區補給配置](theater-supply-plan.md)） |
 | `scripts/ai-theater-attack-check.mjs` | 戰區補給配置的 Combat 階段核對：重播存檔，在每次實際攻擊前與每次進入 Combat 時呼叫 `bestPayableAttack`（`scripts/ai-theater-supply.mjs`），比較可付最佳欄位與實際欄位、統計補給是否阻擋攻擊（[戰區補給配置](theater-supply-plan.md)） |
 | `scripts/ai-theater-fuel-check.mjs` | 戰區補給配置的 Movement 階段燃料核對：重播存檔，在每次進入 Movement 時把需要燃料的單位分成已加油、付得起與無法支付，並以規則移動範圍檢查能否到達未持有目標旁（[戰區補給配置](theater-supply-plan.md)） |
+| `scripts/ai-theater-inflow-check.mjs` | 戰區補給配置的 1 回合運入核對：重播存檔，比較每個戰區從進入 Movement 到進入 Combat 實際運入前線區域的 token 與 `inflowBound` 上限（[戰區補給配置](theater-supply-plan.md)） |
 | `scripts/ai-position-confirm.py` | 依登記檔的門檻判定前瞻確認的每項假設（[局勢指標研究 WBS](../roadmap/18-position-metrics-wbs.md) P7） |
 | `scripts/ai-find-branches.mjs` | 從 trace 找分岔點：某一方在某個 segment 做了要研究的決策（例如攻擊戰守方的主攻任務），輸出該 segment 第一個行動的 index |
 | `scripts/ai-continue.mjs` | 局面接續：從存檔的分岔點重設 Rules RNG，各策略變體在同一組骰子種子下對固定對手接著下，記錄 +h 回合與終局的局面指標與事件 |

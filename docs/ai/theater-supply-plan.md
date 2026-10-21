@@ -1,6 +1,6 @@
 # 戰區補給配置
 
-狀態：**待驗證提案，實作中**。已實作戰區劃分（P11.0）、Combat 階段的可付最佳攻擊（P11.1）與 Movement 階段的燃料核對；運量、配置與輸出尚未實作，也不確定會比現有局勢指標或 heuristic@85 好。已實作既有 Combat 入口的付款時序稽核，見下節；它不是戰區規劃器或新 VP 預測指標。本文件不改變現行策略，也不代表任何指標或策略已取得資格。工作項目見 [局勢指標研究 WBS 的 P11](../roadmap/18-position-metrics-wbs.md)。
+狀態：**待驗證提案，實作中**。已實作戰區劃分（P11.0）、Combat 階段的可付最佳攻擊（P11.1）、Movement 階段的燃料核對與 1 回合運入上限（P11.2）；運量、配置與輸出尚未實作，也不確定會比現有局勢指標或 heuristic@85 好。已實作既有 Combat 入口的付款時序稽核，見下節；它不是戰區規劃器或新 VP 預測指標。本文件不改變現行策略，也不代表任何指標或策略已取得資格。工作項目見 [局勢指標研究 WBS 的 P11](../roadmap/18-position-metrics-wbs.md)。
 
 ## 範圍
 
@@ -43,6 +43,12 @@
 [燃料核對](../quality/evidence/ai-theater-fuel-check-2026-10-21/README.md)在每次進入 Movement 時，把行動方需要燃料的戰鬥單位分成已加油、現在付得起（自己的選項或 HQ 選項涵蓋）與無法支付；再以規則移動範圍（假設已加油）檢查能否到達未持有目標或其相鄰格。無法支付的單位比例逐回合上升：攻方從 Game Turn 2 的 4% 到 12～14%，佔能到達目標的兵力 5～9%；守方從 Game Turn 3 起 22～41%，佔能到達目標的兵力 14～24%。付得起是逐單位判斷，同一補給堆可能付不起兩個單位，所以無法支付的比例是下限。
 
 這些對局的補給限制在於移往目標的燃料，不在目標處的戰鬥補給。窗口運入量（P11.2）因此須同時涵蓋燃料與戰鬥補給的送達。
+
+### 1 回合窗口的運入上限
+
+`inflowBound` 在行動方進入 Movement 時，估計到進入 Combat 前運輸最多能送進各戰區前線區域（離該戰區目標 3 格內，`theaterZones`）的 token：取區域外存量，與「鐵路剩餘 Rail Cap 的兩倍（多軌路線半價）加上移動範圍碰到區域的卡車所能載運量」兩者中較小者。卡車量是現有貨物加上 MA 付得起的每次裝卸各一車。
+
+[運入核對](../quality/evidence/ai-theater-inflow-check-2026-10-21/README.md)以「讓全軍 token 總量不變的動作」淨移入區域的量作為實際運入：1,083 個戰區窗口沒有一個超過上限。第一次執行漏算規則 4.7b 的多軌半價，有 3 個窗口超過，修正後重跑。上限偏鬆：有運入的窗口實際量中位數為上限的 36%，1,011 個窗口由區域外存量決定，運輸能力只在 72 個窗口成為限制。上限是各戰區分開計算，鐵路與卡車共用，不能把兩個戰區的上限相加。
 
 ## 提議的模型
 
@@ -127,6 +133,6 @@
 
 ## 驗證
 
-戰區劃分規則與地圖結構見[地圖普查](../quality/evidence/ai-theater-survey-2026-10-21/README.md)。可付最佳攻擊的核對見[Combat 階段核對](../quality/evidence/ai-theater-attack-check-2026-10-21/README.md)，燃料限制見[燃料核對](../quality/evidence/ai-theater-fuel-check-2026-10-21/README.md)。
+戰區劃分規則與地圖結構見[地圖普查](../quality/evidence/ai-theater-survey-2026-10-21/README.md)。可付最佳攻擊的核對見[Combat 階段核對](../quality/evidence/ai-theater-attack-check-2026-10-21/README.md)，燃料限制見[燃料核對](../quality/evidence/ai-theater-fuel-check-2026-10-21/README.md)，運入上限見[運入核對](../quality/evidence/ai-theater-inflow-check-2026-10-21/README.md)。
 
 付款時序工具、原始輸入與驗證見[稽核證據](../quality/evidence/ai-theater-supply-audit-2026-10-20/README.md)。它只驗證既有截點的實際成本與單次宣告，不是戰區配置或策略改善證據。
