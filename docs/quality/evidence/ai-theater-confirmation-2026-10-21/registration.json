@@ -1,0 +1,32 @@
+{
+ "plan": "P11.7 (docs/roadmap/18-position-metrics-wbs.md)",
+ "authorization": "The user set the goal to complete P11 (2026-10-21), whose P11.7 step is new Western Europe games, at most 80 per batch, after a power analysis.",
+ "registeredBefore": "any confirmation game was played",
+ "games": {
+  "count": 80,
+  "matches": "1900000-1900079 (no save with these match numbers exists in any checkout)",
+  "policy": "heuristic@85 self-play (the standard)",
+  "command": "node scripts/ai-match.mjs --matches 80 --start 1900000 --style WESTERN_EUROPE --engagement AXIS_ATTACKS --turns 8 --size 32x24 --divisions 6 --armored 2 --air NONE --air-transport NONE --allied heuristic --axis heuristic --parallel 12 --out artifacts/ai-theater-confirmation/attack-western"
+ },
+ "recording": "node scripts/ai-position-record.mjs <chunk of 10 games> --theater docs/quality/evidence/ai-theater-capture-model-2026-10-21/model.json --out <rows.jsonl>",
+ "training": "all P11.6 rows: the development and retrospective manifests of docs/quality/evidence/ai-theater-validation-2026-10-21 merged; map seeds must not overlap the new games",
+ "analysis": "python3 scripts/ai-theater-validate.py --development <merged manifest> --retrospective <new-games manifest> --artifact-root . --out artifacts/ai-theater-confirmation/validation.json",
+ "question": {
+  "id": "Q2",
+  "question": "On rows where the attacker moves, the mover theater potential predicts the objective VP the attacker gains in its player turn better than objectiveReachColumn and payableObjectiveVpInReach (single-feature linear fits on the training rows, scored on the new games).",
+  "pass": "both MAE gains have map-seed resampled 95% intervals above 0"
+ },
+ "reportedWithoutPassRule": "Q1 final-margin cells (it failed in P11.6 and is not confirmed here), R2 gains, descriptive realized/potential.",
+ "power": "P11.6 retrospective: MAE gain about 0.22 with a 95% half-width about 0.10 on 48 games (384 attacker rows). With 80 games the half-width is about 0.10*sqrt(48/80)=0.077: power about 99% if the gain is 0.22, about 80% if it is half that.",
+ "scripts": {
+  "scripts/ai-theater-validate.py": "9853c94ec696212c09271103048a5f8a1fd1ada2768c4032985c23f057930173",
+  "scripts/ai-position-final.py": "20b8aa054c84ae655d6f938f050808566cba195702676c602e49ed94e2f4777a",
+  "scripts/ai-position-validate.py": "91eb5b1d453a3fe102462a3bc787eff126791eb8fb447373c8592c730f06dbff",
+  "scripts/ai-position-record.mjs": "651125e76ef8140e119de2b0e3088562fec3dc0fc2fe7b279dda20b34c10b76f",
+  "scripts/ai-theater-allocation.mjs": "242aebb1f1c9316acbfc253b0b539d761ac8379ab153488a7917c63a9b0789b9",
+  "scripts/ai-theater-supply.mjs": "ad54291cf44b9ed185b80e83d51220388627a874b7f8a809fe1a93165229a104",
+  "scripts/ai-match.mjs": "16c7326b6776d1f906ada94563f5425b8a4eefa6b236057fcf02515aed1df698"
+ },
+ "captureModelSha256": "e5943b6d6fb306a20d00dd4118466feb644eedd2d13bb21ff45166da223bbdf3",
+ "engine": "dist built with npm run build from the commit of this registration (no src change since cc0c68f)"
+}
