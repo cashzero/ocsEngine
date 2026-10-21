@@ -1,0 +1,30 @@
+{
+ "plan": "P11.8 observation (docs/roadmap/18-position-metrics-wbs.md)",
+ "purpose": "Whether the theater allocation helps the attacker in Western Europe attack games. Observation, not a promotion gate.",
+ "userRequest": "2026-10-21: complete the implementation and learn whether it helps; promotion is far off; Western Europe only (docs/ai/vp-metrics.md).",
+ "registeredBefore": "any game of this batch",
+ "source": "committed source of this registration; theaterAllocation 0 is the standard heuristic@85",
+ "games": {
+  "count": 80,
+  "pairs": 40,
+  "matches": "2100000-2100079 (no save with these numbers exists in any checkout)",
+  "command": "node scripts/ai-match.mjs --matches 80 --start 2100000 --style WESTERN_EUROPE --engagement AXIS_ATTACKS --turns 8 --size 32x24 --divisions 6 --armored 2 --air NONE --air-transport NONE --allied heuristic:docs/quality/evidence/ai-theater-allocation-games-2026-10-21/theater-weights.json --axis heuristic --swap --parallel 12 --out artifacts/ai-theater-allocation-games/attack-western"
+ },
+ "measures": {
+  "primary": "VP margin, theater-on side minus standard side, averaged over the two seat-swapped games of a pair; mean over 40 pairs with a 95% t interval",
+  "secondary": [
+   "Kill - Loss steps (on side), same pairing",
+   "Supply: units the opponent ends out of supply minus own",
+   "Game Turn 1-3 attacker potential, realized value at Combat entry and objective VP gained, on side versus standard side (ai-position-record.mjs --theater)"
+  ]
+ },
+ "reading": "Helps on VP if the 95% interval of the primary is above 0; hurts if below 0; otherwise not established at this size. No further games are added to this batch.",
+ "power": "Per-pair VP SD about 5.4 from the 12 complete Western pairs observed earlier; 40 pairs give SE about 0.85, power about 0.65 for a true +2 VP a pair and about 0.98 for +3.",
+ "weightsSha256": "04f09223c27164cf2f4563343cd9dfe2a1071ed5b0d4bd982a48ad41d6ce0a35",
+ "scripts": {
+  "scripts/ai-match.mjs": "16c7326b6776d1f906ada94563f5425b8a4eefa6b236057fcf02515aed1df698",
+  "scripts/ai-position-record.mjs": "651125e76ef8140e119de2b0e3088562fec3dc0fc2fe7b279dda20b34c10b76f",
+  "src/ai/policies/theater.ts": "f09fd50ade0a0626b17bb967b705ad37180dee920791fb87bedc65a6e2c31d2d",
+  "src/ai/policies/heuristic.ts": "390c6dcb6d4db53f37257cedc98fb0c2995502ac0427ac24bdf681878c35dceb"
+ }
+}
