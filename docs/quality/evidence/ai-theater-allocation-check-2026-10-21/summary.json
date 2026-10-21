@@ -1,0 +1,33 @@
+{
+ "k": 7,
+ "cases": 576,
+ "withValue": 412,
+ "optimal": 346,
+ "relativeGap": {
+  "mean": 0.029656368680713415,
+  "q90": 0.05083858247030331,
+  "max": 0.47964074189982897
+ },
+ "jointlyUnpayableGroups": 0,
+ "valueShortfall": 5.84189945440594,
+ "optimumTotal": 425.9764537476408,
+ "fullSearchMs": {
+  "median": 51,
+  "q90": 282,
+  "max": 782
+ },
+ "bySide": {
+  "axis": {
+   "cases": 288,
+   "withValue": 273,
+   "optimal": 224
+  },
+  "allied": {
+   "cases": 288,
+   "withValue": 139,
+   "optimal": 122
+  }
+ },
+ "meanUnits": 20.288194444444443,
+ "meanObjectives": 2.357638888888889
+}
