@@ -276,3 +276,38 @@ export const exhaustive = (problem, unitIds) => {
   }
   return result(problem, best.groups);
 };
+
+/**
+ * The theater allocation outputs for one player from this state (docs/ai/theater-supply-plan.md):
+ * - potential: expected VP of the best allocation found this turn (move = true) or with units where they stand (false);
+ * - unusedSteps: steps of allocatable units the allocation does not use; strandedSteps: steps that cannot pay fuel;
+ * - idleTokens: the player's Tokens in dumps that reach none of the allocated attack positions;
+ * - gapObjectives, gapVp: objectives not held whose allocated capture probability is below one half.
+ */
+export const theaterMetrics = (engine, state, playerId, model, { move = true } = {}) => {
+  const { m } = engine;
+  const problem = allocationProblem(engine, state, playerId, model, { move });
+  const best = allocate(problem);
+  const used = new Set(best.assignment.keys());
+  const reached = new Set();
+  for (const objective of best.objectives.filter(({ defended, unitIds }) => defended && unitIds.length > 0)) {
+    const target = problem.objectives.find(({ hexId }) => hexId === objective.hexId);
+    for (const id of objective.unitIds) {
+      const unit = problem.units.find((candidate) => candidate.id === id);
+      const hexId = attackHex(problem, unit, target);
+      const piece = problem.base.pieceState.pieces.find((candidate) => candidate.id === id);
+      for (const dump of m.dumpsReaching(placed(problem.base, [[id, hexId]]), playerId, hexId, { ...piece, location: { ...piece.location, hexId } })) reached.add(dump.pieceId);
+    }
+  }
+  const dumps = problem.base.pieceState.pieces.filter((piece) => piece.ownerId === playerId && piece.location.kind === 'ON_MAP'
+    && problem.base.scenario.pieceCatalog.definitions.find(({ id }) => id === piece.definitionId)?.family === 'RESOURCE' && (piece.resourceQuantity ?? 0) > 0);
+  const gaps = best.objectives.filter(({ probability }) => (probability ?? 0) < 0.5);
+  return {
+    potential: best.value,
+    allocatableSteps: problem.units.reduce((sum, { steps }) => sum + steps, 0),
+    unusedSteps: problem.units.filter(({ id }) => !used.has(id)).reduce((sum, { steps }) => sum + steps, 0),
+    strandedSteps: problem.units.filter(({ fuelStatus }) => fuelStatus === 'STRANDED').reduce((sum, { steps }) => sum + steps, 0),
+    idleTokens: dumps.filter(({ id }) => !reached.has(id)).reduce((sum, { resourceQuantity }) => sum + resourceQuantity, 0),
+    gapObjectives: gaps.length, gapVp: gaps.reduce((sum, { points }) => sum + points, 0),
+  };
+};

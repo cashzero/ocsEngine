@@ -13,18 +13,33 @@
 // action moves the following events on). A step loss is attrition when it follows ATTRITION_ROLLED or answers an
 // ATTRITION_LOSS decision (as in scripts/ai-outcome-metrics-observer.mjs). Games are replayed on this build; a game whose
 // replay does not reach its recorded final state hash is skipped and reported, so rows never mix rule versions silently.
+//
+// With --theater <capture-model.json> (the frozen model of plan P11.3) each row also gets `theater`: both players'
+// theaterMetrics (scripts/ai-theater-allocation.mjs) at the row's state, and `theaterRealized`: what the phasing player
+// realized by this player turn's Combat segment entry, the points of objectives gained since the row plus the potential
+// with units where they stand (null when that entry cannot be rebuilt). Each computation leaves the state unchanged.
 import { appendFileSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadEngine, nextTurnMetrics, positionMetrics } from './ai-position-metrics.mjs';
+import { loadAllocationEngine, theaterMetrics } from './ai-theater-allocation.mjs';
+import { segmentEntry } from './ai-theater-supply.mjs';
 
 const root = resolve(fileURLToPath(new URL('..', import.meta.url)));
 const args = process.argv.slice(2);
 const out = args.includes('--out') ? resolve(args[args.indexOf('--out') + 1]) : null;
 if (!out) throw new Error('--out <file.jsonl>');
-const dirs = args.filter((arg, index) => arg !== '--out' && args[index - 1] !== '--out');
+const theaterModel = args.includes('--theater') ? JSON.parse(readFileSync(resolve(args[args.indexOf('--theater') + 1]), 'utf8')).frozen : null;
+const dirs = args.filter((arg, index) => !['--out', '--theater'].includes(arg) && !['--out', '--theater'].includes(args[index - 1]));
 const engine = await loadEngine(join(root, 'dist'));
 const { m } = engine;
+const allocationEngine = theaterModel ? await loadAllocationEngine(join(root, 'dist')) : null;
+const unchanged = (state, compute) => {
+  const before = m.serializeGameState(state).value;
+  const value = compute();
+  if (m.serializeGameState(state).value !== before) throw new Error('theater metrics changed the state');
+  return value;
+};
 writeFileSync(out, '');
 let games = 0; let rows = 0; const skipped = [];
 
@@ -69,8 +84,21 @@ for (const dir of dirs) {
           metrics: Object.fromEntries(players.map((playerId) => [playerId, { ...position[playerId], ...nextTurn[playerId] }])),
           turn: outcomeOf(key),
         };
+        if (theaterModel) {
+          row.theater = unchanged(state, () => Object.fromEntries(players.map((playerId) => [playerId, theaterMetrics(allocationEngine, state, playerId, theaterModel)])));
+          row.theaterRealized = null;
+          row.heldAtStart = objectives.filter(({ hexId }) => control(state, hexId) === state.sequence.phasingPlayerId).map(({ hexId }) => hexId);
+        }
       }
       const next = m.ruleEngine.applyAction(state, action);
+      if (theaterModel && row && row.theaterRealized === null) {
+        const entry = segmentEntry(m, state, action, next, 'COMBAT', 'COMBAT', { unavailable: 0 });
+        if (entry && keyOf(entry.sequence) === turnKey) {
+          const phasing = entry.sequence.phasingPlayerId;
+          const gained = objectives.filter(({ hexId }) => control(entry, hexId) === phasing && !row.heldAtStart.includes(hexId)).reduce((sum, { points }) => sum + points, 0);
+          row.theaterRealized = gained + unchanged(entry, () => theaterMetrics(allocationEngine, entry, phasing, theaterModel, { move: false }).potential);
+        }
+      }
       const ownerOf = (pieceId) => (state.pieceState.pieces.find(({ id }) => id === pieceId) ?? next.state.pieceState.pieces.find(({ id }) => id === pieceId))?.ownerId;
       let eventTurn = outcomeOf(key);
       let attrition = state.pendingDecision?.kind === 'ATTRITION_LOSS';
@@ -100,7 +128,7 @@ for (const dir of dirs) {
     const hash = (await m.hashGameState(state)).value;
     if (hash !== record.finalStateHash) { skipped.push(file); continue; }
     const finalVp = Object.fromEntries(players.map((playerId) => [playerId, record.sides[sideOf(playerId)].vp]));
-    for (const entry of pending) appendFileSync(out, `${JSON.stringify({ ...entry, finalVp })}\n`);
+    for (const { heldAtStart, ...entry } of pending) appendFileSync(out, `${JSON.stringify({ ...entry, finalVp })}\n`);
     games += 1; rows += pending.length;
   }
 }

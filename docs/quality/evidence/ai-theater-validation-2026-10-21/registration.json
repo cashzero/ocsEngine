@@ -1,0 +1,54 @@
+{
+ "plan": "P11.6 (docs/roadmap/18-position-metrics-wbs.md)",
+ "registeredBefore": "any analysis of the theater rows; recording was running and its rows had not been read",
+ "data": {
+  "development": "P5 Western Europe Axis-attack folders: ai-assault/defender-1330/{noeffort,v83}-temperate, ai-assault/v84-development/attack-temperate, ai-continue/ration-fix-games/attack-temperate, ai-promotion/frozen-{v81-development,v82r-independent,v85-development}/attack-temperate",
+  "retrospective": "P7 Western Europe Axis attacks: ai-position-confirmation/attack-temperate (48 games). Seen in earlier work; retrospective, not prospective.",
+  "recording": "node scripts/ai-position-record.mjs <chunk> --theater docs/quality/evidence/ai-theater-capture-model-2026-10-21/model.json --out <rows.jsonl>, folders split into chunks of 10 games under artifacts/ai-theater-record/chunks",
+  "loading": "ai-position-validate.py load_games: trajectory identity and map seeds; development and retrospective map seeds must not overlap"
+ },
+ "models": {
+  "Q1": {
+   "M2": "ai-position-final.py M2",
+   "M2T": "M2 + each side theater potential",
+   "M2F": "M2 + each side potential and stranded steps"
+  },
+  "Q2": {
+   "potential": "mover theater potential",
+   "objectiveReachColumn": "mover objectiveReachColumn",
+   "payableObjectiveVpInReach": "mover payableObjectiveVpInReach"
+  }
+ },
+ "questions": [
+  {
+   "id": "Q1",
+   "primary": true,
+   "question": "M2T predicts the final Axis minus Allied margin better than M2 at Game Turn 4",
+   "measure": "retrospective MAE gain (fit on development, score on retrospective)",
+   "pass": "map-seed resampled 95% interval lower bound above 0"
+  },
+  {
+   "id": "Q1s",
+   "primary": false,
+   "question": "Game Turns 3 and 5, R2 gains, M2F, development ten-fold",
+   "pass": "reported, no pass rule"
+  },
+  {
+   "id": "Q2",
+   "primary": false,
+   "question": "the mover potential predicts the objective VP the attacker gains in its player turn better than objectiveReachColumn and payableObjectiveVpInReach",
+   "measure": "retrospective MAE or R2 gain",
+   "pass": "on the same measure, both gains have 95% intervals above 0"
+  }
+ ],
+ "stepRule": "P11.6 passes if Q1 or Q2 passes; P11.7 then confirms on new games only the questions that passed. If neither passes, P11.7 still runs Q1 on new games as registered there, and P11.8 does not start.",
+ "scripts": {
+  "scripts/ai-theater-validate.py": "9853c94ec696212c09271103048a5f8a1fd1ada2768c4032985c23f057930173",
+  "scripts/ai-position-final.py": "20b8aa054c84ae655d6f938f050808566cba195702676c602e49ed94e2f4777a",
+  "scripts/ai-position-validate.py": "91eb5b1d453a3fe102462a3bc787eff126791eb8fb447373c8592c730f06dbff",
+  "scripts/ai-position-record.mjs": "ebb76f3383b8a29657498caef6a3ae06634a4974379da15d7935dcb6d148a434",
+  "scripts/ai-theater-allocation.mjs": "242aebb1f1c9316acbfc253b0b539d761ac8379ab153488a7917c63a9b0789b9",
+  "scripts/ai-theater-supply.mjs": "0f88b79d2dc613d252a92afa0a988fa4db3388e797f43efda87f1adfb5b83507"
+ },
+ "command": "python3 scripts/ai-theater-validate.py --development artifacts/ai-theater-record/development-manifest.json --retrospective artifacts/ai-theater-record/retrospective-manifest.json --artifact-root . --out artifacts/ai-theater-record/validation.json"
+}
