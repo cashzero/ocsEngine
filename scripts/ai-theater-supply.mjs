@@ -75,3 +75,79 @@ export const theaters = (m, state, playerId, { splitRailHexes = SPLIT_RAIL_HEXES
     theaters: [...members.values()].map((hexIds) => hexIds.join('+')).sort(byId),
   };
 };
+
+export const CANDIDATE_LIMIT = 10;
+
+/**
+ * The attack on `targetHexId` with the highest odds column that the actor's combat supply can pay now, in a Combat
+ * segment state: the rules accept the declaration (`validateAction`, which settles every attacker's declared supply
+ * together) with the supply choices of `defaultAttackerSupply`. Ties go to fewer Tokens, then fewer attackers.
+ * Candidates are the adjacent own units that the rules accept attacking alone. When all of them together are payable
+ * they reach the best column, and the weakest not needed for it are dropped; otherwise subsets are searched, above
+ * CANDIDATE_LIMIT only among the strongest. Odds assume every defender pays its combat supply. Null when no candidate can attack.
+ * `ineligible` counts adjacent own units the rules reject attacking alone; `reasons` counts why (violation codes, or
+ * NO_SUPPLY_CHOICE when no supply declaration exists). `unboundColumn` is the best column of the candidates with supply and every other check ignored.
+ *   -> { attackerIds, defenderIds, attackerSupply, leadAttackerId, column, unboundColumn, tokens, candidates, ineligible, reasons, validations, dropped }
+ */
+export const bestPayableAttack = (m, state, actorId, targetHexId) => {
+  const target = String(targetHexId);
+  const onMap = state.pieceState.pieces.filter((piece) => piece.location.kind === 'ON_MAP' && m.isOnMapCombatUnit(state, piece));
+  const defenderIds = onMap.filter((piece) => piece.ownerId !== actorId && String(piece.location.hexId) === target).map(({ id }) => id).sort(byId);
+  if (defenderIds.length === 0) return null;
+  const adjacent = new Set(m.adjacentHexIds(target).map(String));
+  const declaration = (attackerIds, attackerSupply) => ({
+    kind: 'DECLARE_COMBAT', actionId: `theater-supply:${target}:${attackerIds.join('+')}`, actorId, expectedRevision: state.revision,
+    combatKind: 'REGULAR', attackerIds, defenderIds, targetHexId: target, leadAttackerId: attackerIds[0], attackerSupply,
+  });
+  let validations = 0;
+  const reasons = {};
+  const legal = (attackerIds, why = null) => {
+    const attackerSupply = m.defaultAttackerSupply(state, actorId, attackerIds);
+    if (!attackerSupply) {
+      if (why) why.NO_SUPPLY_CHOICE = (why.NO_SUPPLY_CHOICE ?? 0) + 1;
+      return null;
+    }
+    validations += 1;
+    const validation = m.ruleEngine.validateAction(state, declaration(attackerIds, attackerSupply));
+    if (!validation.allowed && why) for (const { code } of validation.violations) why[code] = (why[code] ?? 0) + 1;
+    return validation.allowed ? attackerSupply : null;
+  };
+  const column = (attackerIds) => m.calculateCombatOdds(state, attackerIds, defenderIds, target, defenderIds, null, null).columnIndex;
+  const steps = (id) => state.pieceState.pieces.find((piece) => piece.id === id)?.remainingSteps ?? 1;
+  const adjacentIds = onMap.filter((piece) => piece.ownerId === actorId && adjacent.has(String(piece.location.hexId))).map(({ id }) => id).sort(byId);
+  const eligible = adjacentIds.filter((id) => legal([id], reasons) !== null);
+  const ineligible = adjacentIds.length - eligible.length;
+  if (eligible.length === 0) return { attackerIds: [], defenderIds, column: null, unboundColumn: null, tokens: 0, candidates: 0, ineligible, reasons, validations, dropped: 0 };
+  const strength = (id) => m.calculateCombatOdds(state, [id], defenderIds, target, defenderIds, null, null).attackerStrength ?? 0;
+  const fullSupply = legal(eligible);
+  if (fullSupply) {
+    // Adding an attacker never lowers the column, so all of them reach the best one; drop the weakest that are not needed.
+    const best = column(eligible);
+    let chosen = eligible, attackerSupply = fullSupply;
+    for (const id of [...eligible].sort((a, b) => strength(a) - strength(b) || byId(a, b))) {
+      const without = chosen.filter((other) => other !== id);
+      if (without.length === 0 || column(without) < best) continue;
+      const supply = legal(without);
+      if (supply) { chosen = without; attackerSupply = supply; }
+    }
+    return {
+      attackerIds: chosen, defenderIds, attackerSupply, leadAttackerId: chosen[0], column: best, unboundColumn: best,
+      tokens: chosen.reduce((sum, id) => sum + steps(id), 0), candidates: eligible.length, ineligible, reasons, validations, dropped: 0,
+    };
+  }
+  const candidates = eligible.length <= CANDIDATE_LIMIT ? eligible
+    : [...eligible].sort((a, b) => strength(b) - strength(a) || byId(a, b)).slice(0, CANDIDATE_LIMIT).sort(byId);
+  const subsets = [];
+  for (let mask = 1; mask < 1 << candidates.length; mask++) {
+    const attackerIds = candidates.filter((_, index) => mask & (1 << index));
+    subsets.push({ attackerIds, column: column(attackerIds), tokens: attackerIds.reduce((sum, id) => sum + steps(id), 0) });
+  }
+  subsets.sort((a, b) => b.column - a.column || a.tokens - b.tokens || a.attackerIds.length - b.attackerIds.length || byId(a.attackerIds.join(), b.attackerIds.join()));
+  for (const subset of subsets) {
+    const attackerSupply = legal(subset.attackerIds);
+    if (attackerSupply) {
+      return { ...subset, defenderIds, attackerSupply, leadAttackerId: subset.attackerIds[0], unboundColumn: subsets[0].column, candidates: candidates.length, ineligible, reasons, validations, dropped: eligible.length - candidates.length };
+    }
+  }
+  return { attackerIds: [], defenderIds, column: null, unboundColumn: subsets[0].column, tokens: 0, candidates: candidates.length, ineligible, reasons, validations, dropped: eligible.length - candidates.length };
+};
