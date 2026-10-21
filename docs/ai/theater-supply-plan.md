@@ -1,6 +1,6 @@
 # 戰區補給配置
 
-狀態：**待驗證提案，實作中**。已實作戰區劃分（P11.0）、Combat 階段的可付最佳攻擊（P11.1）、Movement 階段的燃料核對、1 回合運入上限（P11.2）、奪點機率模型（P11.3）與配置搜尋（P11.4）；運量、配置與輸出尚未實作，也不確定會比現有局勢指標或 heuristic@85 好。已實作既有 Combat 入口的付款時序稽核，見下節；它不是戰區規劃器或新 VP 預測指標。本文件不改變現行策略，也不代表任何指標或策略已取得資格。工作項目見 [局勢指標研究 WBS 的 P11](../roadmap/18-position-metrics-wbs.md)。
+狀態：**待驗證提案，實作中**。已實作戰區劃分（P11.0）、Combat 階段的可付最佳攻擊（P11.1）、Movement 階段的燃料核對、1 回合運入上限（P11.2）、奪點機率模型（P11.3）、配置搜尋（P11.4）、記錄輸出（P11.5）與回溯預測驗證（P11.6）；運量、配置與輸出尚未實作，也不確定會比現有局勢指標或 heuristic@85 好。已實作既有 Combat 入口的付款時序稽核，見下節；它不是戰區規劃器或新 VP 預測指標。本文件不改變現行策略，也不代表任何指標或策略已取得資格。工作項目見 [局勢指標研究 WBS 的 P11](../roadmap/18-position-metrics-wbs.md)。
 
 ## 範圍
 
@@ -61,6 +61,18 @@
 有守軍的目標，其價值為點數乘以凍結模型的奪點機率：把派去的單位放在各自最強的相鄰格，以規則的戰力計算取得欄位、AR 最高者領隊的 DRM、守方能否付補給、hedgehog 與線型。可走進的空目標以點數計。需要移動且需要燃料的單位必須能一起從補給堆付清燃料（先買涵蓋兩個以上單位的 HQ 或編隊選項，再每單位 1T）。最終配置的每個攻擊組再共同結算戰鬥補給，付不起的組以 0 計。`allocate` 先依邊際期望 VP 貪婪指派，再嘗試兩個單位一起改派、單一改派與撤出，直到無法改善。
 
 [配置核對](../quality/evidence/ai-theater-allocation-check-2026-10-21/README.md)在 P7 的 48 局、576 個玩家回合，取 step 最多的 7 個可用單位為子問題與窮舉比較：412 個有價值的子問題中 84% 達到最佳，期望 VP 合計少 1.4%；最終攻擊組共同付不起戰鬥補給的是 0 個；完整搜尋中位數 51 ms、最慢 0.78 秒。完整問題（約 20 個單位）的差距無法窮舉驗證。配置不考慮堆疊上限與友軍移動造成的 ZOC 變化，只是本回合可取得量的估計，不是合法行動計劃。
+
+### 輸出與記錄
+
+`theaterMetrics` 對一方輸出：潛力（該方下一個 Movement 的配置期望 VP）、可配置 step、未被配置使用的 step、無法支付燃料的 step、取用不到任何已配置攻擊位置的補給堆 token，以及配置後奪點機率低於一半的目標數與 VP。`ai-position-record.mjs --theater <model.json>` 在每一列加入雙方的這些輸出，並加入行動方在本回合進入 Combat 時的已實現量：從該列起已取得的目標點數，加上單位原地不動時的配置期望 VP。不加旗標時輸出不變；每次計算都核對局面未改變（[記錄紀錄](../quality/evidence/ai-theater-record-2026-10-21/README.md)）。
+
+### 預測驗證（回溯）
+
+[回溯比較](../quality/evidence/ai-theater-validation-2026-10-21/README.md)在分析前登記，以 P5 西歐攻擊戰擬合、P7 西歐攻擊戰評分：
+
+- 終局 margin（主要問題）：在 M2 加入雙方潛力，Game Turn 4 的 MAE 增益 +0.02 [−0.13, +0.18]，不通過；Game Turn 3、5 與 P5 內十折也沒有一致增益。潛力沒有提供 M2 以外的終局資訊。
+- 近期奪點：攻方行動時，行動方潛力預測本回合取得的目標 VP，MAE 1.21，`objectiveReachColumn` 1.43、`payableObjectiveVpInReach` 1.44；兩項增益 +0.22 [0.12, 0.32] 與 +0.23 [0.14, 0.32]，通過。
+- 已實現量與實際取得的目標 VP 接近。攻方在 Game Turn 1～3 只實現潛力的 13～50%，Game Turn 4 起為 60～80%；這段落差來自策略或來自潛力的高估（不計堆疊與友軍 ZOC），目前資料無法區分。
 
 ## 提議的模型
 
@@ -145,6 +157,6 @@
 
 ## 驗證
 
-戰區劃分規則與地圖結構見[地圖普查](../quality/evidence/ai-theater-survey-2026-10-21/README.md)。可付最佳攻擊的核對見[Combat 階段核對](../quality/evidence/ai-theater-attack-check-2026-10-21/README.md)，燃料限制見[燃料核對](../quality/evidence/ai-theater-fuel-check-2026-10-21/README.md)，運入上限見[運入核對](../quality/evidence/ai-theater-inflow-check-2026-10-21/README.md)，奪點機率見[模型紀錄](../quality/evidence/ai-theater-capture-model-2026-10-21/README.md)，配置搜尋見[配置核對](../quality/evidence/ai-theater-allocation-check-2026-10-21/README.md)。
+戰區劃分規則與地圖結構見[地圖普查](../quality/evidence/ai-theater-survey-2026-10-21/README.md)。可付最佳攻擊的核對見[Combat 階段核對](../quality/evidence/ai-theater-attack-check-2026-10-21/README.md)，燃料限制見[燃料核對](../quality/evidence/ai-theater-fuel-check-2026-10-21/README.md)，運入上限見[運入核對](../quality/evidence/ai-theater-inflow-check-2026-10-21/README.md)，奪點機率見[模型紀錄](../quality/evidence/ai-theater-capture-model-2026-10-21/README.md)，配置搜尋見[配置核對](../quality/evidence/ai-theater-allocation-check-2026-10-21/README.md)，記錄見[記錄紀錄](../quality/evidence/ai-theater-record-2026-10-21/README.md)，回溯驗證見[回溯比較](../quality/evidence/ai-theater-validation-2026-10-21/README.md)。
 
 付款時序工具、原始輸入與驗證見[稽核證據](../quality/evidence/ai-theater-supply-audit-2026-10-20/README.md)。它只驗證既有截點的實際成本與單次宣告，不是戰區配置或策略改善證據。

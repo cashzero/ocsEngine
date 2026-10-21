@@ -17,7 +17,7 @@
 // With --theater <capture-model.json> (the frozen model of plan P11.3) each row also gets `theater`: both players'
 // theaterMetrics (scripts/ai-theater-allocation.mjs) at the row's state, and `theaterRealized`: what the phasing player
 // realized by this player turn's Combat segment entry, the points of objectives gained since the row plus the potential
-// with units where they stand (null when that entry cannot be rebuilt). Each computation leaves the state unchanged.
+// with units where they stand (null when that entry cannot be rebuilt; the count is printed). Each computation leaves the state unchanged.
 import { appendFileSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -42,6 +42,7 @@ const unchanged = (state, compute) => {
 };
 writeFileSync(out, '');
 let games = 0; let rows = 0; const skipped = [];
+const entryCounts = { unavailable: 0, mismatched: 0 };
 
 for (const dir of dirs) {
   const records = JSON.parse(readFileSync(join(dir, 'summary.json'), 'utf8')).records;
@@ -92,7 +93,7 @@ for (const dir of dirs) {
       }
       const next = m.ruleEngine.applyAction(state, action);
       if (theaterModel && row && row.theaterRealized === null) {
-        const entry = segmentEntry(m, state, action, next, 'COMBAT', 'COMBAT', { unavailable: 0 });
+        const entry = segmentEntry(m, state, action, next, 'COMBAT', 'COMBAT', entryCounts);
         if (entry && keyOf(entry.sequence) === turnKey) {
           const phasing = entry.sequence.phasingPlayerId;
           const gained = objectives.filter(({ hexId }) => control(entry, hexId) === phasing && !row.heldAtStart.includes(hexId)).reduce((sum, { points }) => sum + points, 0);
@@ -133,4 +134,5 @@ for (const dir of dirs) {
   }
 }
 console.log(`${games} games, ${rows} player-turn rows written to ${out}; skipped (replay hash differs): ${skipped.length}`);
+if (theaterModel) console.log(`Combat entries not rebuilt: ${entryCounts.unavailable} unavailable, ${entryCounts.mismatched} mismatched`);
 for (const file of skipped) console.log(`  ${file}`);

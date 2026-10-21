@@ -1,0 +1,103 @@
+{
+ "engine": "dist built from src as of cc0c68f; scripts of c089c6f plus the rebuild-mismatch counter",
+ "files": [
+  {
+   "file": "artifacts/ai-theater-record/rows/p5__ai-assault__defender-1330__noeffort-temperate__0.jsonl",
+   "source": "artifacts/ai-theater-record/chunks/p5__ai-assault__defender-1330__noeffort-temperate__0",
+   "games": 10,
+   "rows": 160,
+   "sha256": "faf6548e64ce971958b2924be991196935f148cfe944e97641bf63773775c545"
+  },
+  {
+   "file": "artifacts/ai-theater-record/rows/p5__ai-assault__defender-1330__noeffort-temperate__1.jsonl",
+   "source": "artifacts/ai-theater-record/chunks/p5__ai-assault__defender-1330__noeffort-temperate__1",
+   "games": 10,
+   "rows": 160,
+   "sha256": "1baf8aa6b9630d93e7cf14cb677c526a6d71d6ca23b072f61405098b578138f9"
+  },
+  {
+   "file": "artifacts/ai-theater-record/rows/p5__ai-assault__defender-1330__noeffort-temperate__2.jsonl",
+   "source": "artifacts/ai-theater-record/chunks/p5__ai-assault__defender-1330__noeffort-temperate__2",
+   "games": 10,
+   "rows": 160,
+   "sha256": "c2d41e1009162ea45c8954157b6c2499159c7f10e689e52e8b5f7b50964bfa32"
+  },
+  {
+   "file": "artifacts/ai-theater-record/rows/p5__ai-assault__defender-1330__noeffort-temperate__3.jsonl",
+   "source": "artifacts/ai-theater-record/chunks/p5__ai-assault__defender-1330__noeffort-temperate__3",
+   "games": 10,
+   "rows": 160,
+   "sha256": "d5c5c904876d83b1906fcd87877774aabec26f23e0073354c9caccfc724e9be6"
+  },
+  {
+   "file": "artifacts/ai-theater-record/rows/p5__ai-assault__defender-1330__v83-temperate__0.jsonl",
+   "source": "artifacts/ai-theater-record/chunks/p5__ai-assault__defender-1330__v83-temperate__0",
+   "games": 10,
+   "rows": 160,
+   "sha256": "b9faf0cfe5685c74f6f9d946af5982d198b850ba92c9fe27dbb3e94bb383ce99"
+  },
+  {
+   "file": "artifacts/ai-theater-record/rows/p5__ai-assault__defender-1330__v83-temperate__1.jsonl",
+   "source": "artifacts/ai-theater-record/chunks/p5__ai-assault__defender-1330__v83-temperate__1",
+   "games": 10,
+   "rows": 160,
+   "sha256": "e2abe36ac305e5d31b51b12a8463890a674af626a300db253de9bbe8a6f1d4b3"
+  },
+  {
+   "file": "artifacts/ai-theater-record/rows/p5__ai-assault__defender-1330__v83-temperate__2.jsonl",
+   "source": "artifacts/ai-theater-record/chunks/p5__ai-assault__defender-1330__v83-temperate__2",
+   "games": 10,
+   "rows": 160,
+   "sha256": "777b432b284f70106f9b355d46c7a1c3232e89c5d89e10ea23bd6bc8840b8aaa"
+  },
+  {
+   "file": "artifacts/ai-theater-record/rows/p5__ai-assault__defender-1330__v83-temperate__3.jsonl",
+   "source": "artifacts/ai-theater-record/chunks/p5__ai-assault__defender-1330__v83-temperate__3",
+   "games": 10,
+   "rows": 160,
+   "sha256": "f3095cc5f2d216dc737c58b8c4657929f510df8903feb4fac15f7de8022c876a"
+  },
+  {
+   "file": "artifacts/ai-theater-record/rows/p5__ai-assault__v84-development__attack-temperate__0.jsonl",
+   "source": "artifacts/ai-theater-record/chunks/p5__ai-assault__v84-development__attack-temperate__0",
+   "games": 8,
+   "rows": 128,
+   "sha256": "718652a660dbd6b47d9966a50d93d334775bc08b857eda60a274d15b7a0e04a4"
+  },
+  {
+   "file": "artifacts/ai-theater-record/rows/p5__ai-continue__ration-fix-games__attack-temperate__0.jsonl",
+   "source": "artifacts/ai-theater-record/chunks/p5__ai-continue__ration-fix-games__attack-temperate__0",
+   "games": 8,
+   "rows": 128,
+   "sha256": "1df3ab1344df02d7e1ab1affce65602d8952ce71b5e02ba5512fe2c619b15ef1"
+  },
+  {
+   "file": "artifacts/ai-theater-record/rows/p5__ai-promotion__frozen-v81-development__attack-temperate__0.jsonl",
+   "source": "artifacts/ai-theater-record/chunks/p5__ai-promotion__frozen-v81-development__attack-temperate__0",
+   "games": 8,
+   "rows": 128,
+   "sha256": "570bbfafd0049d027f2643a2151d8e7773b65d6fcedd023cfa24dd3df85e1f2a"
+  },
+  {
+   "file": "artifacts/ai-theater-record/rows/p5__ai-promotion__frozen-v82r-independent__attack-temperate__0.jsonl",
+   "source": "artifacts/ai-theater-record/chunks/p5__ai-promotion__frozen-v82r-independent__attack-temperate__0",
+   "games": 10,
+   "rows": 160,
+   "sha256": "227a8aa4e60d6ec477a24119f4f2f2dbbc65e6b46d03c8f45e33829b228b267a"
+  },
+  {
+   "file": "artifacts/ai-theater-record/rows/p5__ai-promotion__frozen-v82r-independent__attack-temperate__1.jsonl",
+   "source": "artifacts/ai-theater-record/chunks/p5__ai-promotion__frozen-v82r-independent__attack-temperate__1",
+   "games": 10,
+   "rows": 160,
+   "sha256": "b734a822cfea80b9beda4ba60b3cc1c8b27ac624fdb1ba87f3c9128bab68b9c2"
+  },
+  {
+   "file": "artifacts/ai-theater-record/rows/p5__ai-promotion__frozen-v85-development__attack-temperate__0.jsonl",
+   "source": "artifacts/ai-theater-record/chunks/p5__ai-promotion__frozen-v85-development__attack-temperate__0",
+   "games": 8,
+   "rows": 128,
+   "sha256": "aa663dee86f6255719c840f476764fe1b662bf3f51e328ad4ce2dccbb7d2f538"
+  }
+ ]
+}

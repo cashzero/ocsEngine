@@ -25,7 +25,7 @@ const m = await import(pathToFileURL(resolve(dist, 'index.js')).href);
 const attacks = [];
 const entries = [];
 
-const entryCounts = { unavailable: 0 };
+const entryCounts = { unavailable: 0, mismatched: 0 };
 const combatEntry = (before, action, applied) => segmentEntry(m, before, action, applied, 'COMBAT', 'COMBAT', entryCounts);
 
 const probeEntry = (file, index, state) => {
@@ -88,7 +88,7 @@ const summary = {
   defaultSupplyMissing: attacks.filter(({ defaultSupplyFound }) => !defaultSupplyFound).length,
   withIneligibleNeighbors: attacks.filter(({ ineligible }) => ineligible > 0).length,
   ineligibleReasons: attacks.reduce((total, { reasons }) => { for (const [code, n] of Object.entries(reasons)) total[code] = (total[code] ?? 0) + n; return total; }, {}),
-  entriesUnavailable: entryCounts.unavailable,
+  entriesUnavailable: entryCounts.unavailable, entriesMismatched: entryCounts.mismatched,
   entryObjectives: entries.length,
   entryWithAdjacentUnits: entries.filter(({ adjacent }) => adjacent > 0).length,
   entryPayable: entries.filter(({ column }) => column !== null).length,

@@ -23,7 +23,7 @@ const m = await import(pathToFileURL(resolve(dist, 'index.js')).href);
 const pieces = await import(pathToFileURL(resolve(dist, 'rules/pieces.js')).href);
 
 const entries = [];
-const counts = { unavailable: 0 };
+const counts = { unavailable: 0, mismatched: 0 };
 
 const probe = (file, index, state) => {
   const actorId = state.sequence.phasingPlayerId;
@@ -82,7 +82,7 @@ const sum = (rows, key) => rows.reduce((total, row) => total + row[key], 0);
 const side = (suffix) => entries.filter(({ actorId }) => actorId.endsWith(suffix));
 const summary = {
   games: games.length, finalHashMismatches: games.filter(({ finalHashMatches }) => !finalHashMatches).length,
-  entries: entries.length, entriesUnavailable: counts.unavailable,
+  entries: entries.length, entriesUnavailable: counts.unavailable, entriesMismatched: counts.mismatched,
   ...Object.fromEntries(['axis', 'allied'].map((name) => {
     const rows = side(name);
     return [name, {

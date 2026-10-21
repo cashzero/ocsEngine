@@ -38,6 +38,7 @@
 | `scripts/ai-theater-inflow-check.mjs` | 戰區補給配置的 1 回合運入核對：重播存檔，比較每個戰區從進入 Movement 到進入 Combat 實際運入前線區域的 token 與 `inflowBound` 上限（[戰區補給配置](theater-supply-plan.md)） |
 | `scripts/ai-theater-capture-extract.mjs`、`scripts/ai-theater-capture-model.py` | 戰區補給配置的奪點機率：抽取每個被攻擊目標與回合的最強實際攻擊及回合結束持有者，依地圖種子分組十折比較候選模型並凍結（[戰區補給配置](theater-supply-plan.md)） |
 | `scripts/ai-theater-allocation-check.mjs` | 戰區補給配置的配置搜尋核對：在每個玩家回合的 Movement 開始執行 `allocate`（`scripts/ai-theater-allocation.mjs`），並以最多 K 個單位的子問題與窮舉最佳解比較（[戰區補給配置](theater-supply-plan.md)） |
+| `scripts/ai-theater-validate.py` | 戰區補給配置的預測驗證：讀 `ai-position-record.mjs --theater` 的列，比較潛力對終局 margin（在 M2 之上）與本回合奪點（對可達欄位與可支付風險）的預測增益，地圖種子重抽區間（[戰區補給配置](theater-supply-plan.md)） |
 | `scripts/ai-position-confirm.py` | 依登記檔的門檻判定前瞻確認的每項假設（[局勢指標研究 WBS](../roadmap/18-position-metrics-wbs.md) P7） |
 | `scripts/ai-find-branches.mjs` | 從 trace 找分岔點：某一方在某個 segment 做了要研究的決策（例如攻擊戰守方的主攻任務），輸出該 segment 第一個行動的 index |
 | `scripts/ai-continue.mjs` | 局面接續：從存檔的分岔點重設 Rules RNG，各策略變體在同一組骰子種子下對固定對手接著下，記錄 +h 回合與終局的局面指標與事件 |

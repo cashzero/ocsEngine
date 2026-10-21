@@ -155,7 +155,8 @@ export const bestPayableAttack = (m, state, actorId, targetHexId) => {
 /**
  * The state at the first `phase`/`segment` entry inside a recorded action, or null. When the action stops at the entry
  * the state after it is the entry; an ADVANCE_SEQUENCE that passes through it is rebuilt from its lifecycle transitions,
- * which must regenerate the recorded events and final state. Any other pass-through adds one to `counts.unavailable`.
+ * which must regenerate the recorded events and final state. Any other pass-through adds one to `counts.unavailable`,
+ * and a rebuild that does not regenerate them adds one to `counts.mismatched`; both return null.
  */
 export const segmentEntry = (m, before, action, applied, phase, segment, counts) => {
   const advances = applied.events.filter(({ kind }) => kind === 'SEQUENCE_ADVANCED');
@@ -168,16 +169,17 @@ export const segmentEntry = (m, before, action, applied, phase, segment, counts)
   if (action.kind !== 'ADVANCE_SEQUENCE') { counts.unavailable += 1; return null; }
   let rebuilt = before, measured = null;
   const regenerated = [];
+  const mismatch = () => { counts.mismatched = (counts.mismatched ?? 0) + 1; return null; };
   for (const event of advances) {
-    if (JSON.stringify(m.nextSequence(rebuilt)) !== JSON.stringify(event.to)) throw new Error('lifecycle sequence differs from the recorded one');
+    if (JSON.stringify(m.nextSequence(rebuilt)) !== JSON.stringify(event.to)) return mismatch();
     const lifecycle = m.applySequenceLifecycle(rebuilt, event.to);
     rebuilt = lifecycle.state;
     regenerated.push(...lifecycle.events);
     if (event.sequence === entry.sequence) measured = rebuilt;
   }
   const canonical = (value) => JSON.stringify(value);
-  if (canonical(regenerated.map((event, sequence) => ({ ...event, sequence }))) !== canonical(applied.events)) throw new Error('lifecycle events differ from the recorded ones');
-  if (canonical({ ...rebuilt, revision: applied.state.revision }) !== canonical(applied.state)) throw new Error('lifecycle state differs from the recorded one');
+  if (canonical(regenerated.map((event, sequence) => ({ ...event, sequence }))) !== canonical(applied.events)) return mismatch();
+  if (canonical({ ...rebuilt, revision: applied.state.revision }) !== canonical(applied.state)) return mismatch();
   return measured;
 };
 

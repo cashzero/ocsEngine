@@ -1,0 +1,40 @@
+{
+ "engine": "dist built from src as of cc0c68f; scripts of c089c6f plus the rebuild-mismatch counter",
+ "files": [
+  {
+   "file": "artifacts/ai-theater-record/rows/p7__ai-position-confirmation__attack-temperate__0.jsonl",
+   "source": "artifacts/ai-theater-record/chunks/p7__ai-position-confirmation__attack-temperate__0",
+   "games": 10,
+   "rows": 160,
+   "sha256": "82b5fccd2e9b4bf039abcdbcd31e7ce64897c83da44bf0359e35822192b17c8c"
+  },
+  {
+   "file": "artifacts/ai-theater-record/rows/p7__ai-position-confirmation__attack-temperate__1.jsonl",
+   "source": "artifacts/ai-theater-record/chunks/p7__ai-position-confirmation__attack-temperate__1",
+   "games": 10,
+   "rows": 160,
+   "sha256": "956ce973292d15def07b18cffa9866b9b56651a122ba9233accc2452cad36a54"
+  },
+  {
+   "file": "artifacts/ai-theater-record/rows/p7__ai-position-confirmation__attack-temperate__2.jsonl",
+   "source": "artifacts/ai-theater-record/chunks/p7__ai-position-confirmation__attack-temperate__2",
+   "games": 10,
+   "rows": 160,
+   "sha256": "5be73069e4b87363ab7c6c482de2a9d69cc5f0243c916ab95cfe7c178b8d7c56"
+  },
+  {
+   "file": "artifacts/ai-theater-record/rows/p7__ai-position-confirmation__attack-temperate__3.jsonl",
+   "source": "artifacts/ai-theater-record/chunks/p7__ai-position-confirmation__attack-temperate__3",
+   "games": 10,
+   "rows": 160,
+   "sha256": "0718b201295336df0264ae561a25f5262c820e18db2794621567c9a0c3f1c193"
+  },
+  {
+   "file": "artifacts/ai-theater-record/rows/p7__ai-position-confirmation__attack-temperate__4.jsonl",
+   "source": "artifacts/ai-theater-record/chunks/p7__ai-position-confirmation__attack-temperate__4",
+   "games": 8,
+   "rows": 128,
+   "sha256": "f6c4612b82bdce0e2eb6d5b6c05732c371871724c3de3a160ba704ca379c71d8"
+  }
+ ]
+}

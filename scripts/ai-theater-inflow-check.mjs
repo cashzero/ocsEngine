@@ -24,7 +24,7 @@ const m = await load('index.js');
 const modules = { pieces: await load('rules/pieces.js'), transport: await load('rules/supply/transport.js'), railCap: await load('rules/supply/rail-cap.js') };
 
 const windows = [];
-const counts = { unavailable: 0, withoutCombat: 0 };
+const counts = { unavailable: 0, mismatched: 0, withoutCombat: 0 };
 const games = [];
 for (const dir of dirs) {
   for (const file of readdirSync(dir).filter((name) => name.endsWith('.save.json')).sort()) {
@@ -75,7 +75,7 @@ const ratios = moved.map(({ actual, bound }) => actual / bound).sort((a, b) => a
 const quantile = (q) => ratios.length ? Number(ratios[Math.min(ratios.length - 1, Math.floor(q * ratios.length))].toFixed(3)) : null;
 const summary = {
   games: games.length, finalHashMismatches: games.filter(({ finalHashMatches }) => !finalHashMatches).length,
-  windows: windows.length, entriesUnavailable: counts.unavailable, windowsWithoutCombatEntry: counts.withoutCombat,
+  windows: windows.length, entriesUnavailable: counts.unavailable, entriesMismatched: counts.mismatched, windowsWithoutCombatEntry: counts.withoutCombat,
   overBound: over.length,
   withInflow: moved.length,
   boundLimitedBy: { outside: windows.filter(({ outside, rail, trucks }) => outside <= rail + trucks).length, transport: windows.filter(({ outside, rail, trucks }) => outside > rail + trucks).length },
