@@ -1,0 +1,61 @@
+{
+ "engine": "dist built from 161f884 (src as of cc0c68f)",
+ "files": [
+  {
+   "file": "artifacts/ai-theater-confirmation/rows/confirm__0.jsonl",
+   "source": "artifacts/ai-theater-confirmation/chunks/confirm__0",
+   "games": 10,
+   "rows": 160,
+   "sha256": "77e9a0c8f27a65fbc6a78a3b6c768e00f6bd27c1975b0c30e9aba7298d07340d"
+  },
+  {
+   "file": "artifacts/ai-theater-confirmation/rows/confirm__1.jsonl",
+   "source": "artifacts/ai-theater-confirmation/chunks/confirm__1",
+   "games": 10,
+   "rows": 160,
+   "sha256": "215a2786a7b73b0bb1bec8b244eb076a8471ad722e04f0d8143b6c6f3757443b"
+  },
+  {
+   "file": "artifacts/ai-theater-confirmation/rows/confirm__2.jsonl",
+   "source": "artifacts/ai-theater-confirmation/chunks/confirm__2",
+   "games": 10,
+   "rows": 160,
+   "sha256": "0282332385bca8943348a39206c9b0befaf0ca41540b9356500186a3a48d7f50"
+  },
+  {
+   "file": "artifacts/ai-theater-confirmation/rows/confirm__3.jsonl",
+   "source": "artifacts/ai-theater-confirmation/chunks/confirm__3",
+   "games": 10,
+   "rows": 160,
+   "sha256": "cccd57c659b5e71ae420ca73d5953c6f86813d5c74a2e85b0935e365f36d4b50"
+  },
+  {
+   "file": "artifacts/ai-theater-confirmation/rows/confirm__4.jsonl",
+   "source": "artifacts/ai-theater-confirmation/chunks/confirm__4",
+   "games": 10,
+   "rows": 160,
+   "sha256": "3dff29812759203328d29568943cb492aed622df62cd4bf8950b26ab995f7a92"
+  },
+  {
+   "file": "artifacts/ai-theater-confirmation/rows/confirm__5.jsonl",
+   "source": "artifacts/ai-theater-confirmation/chunks/confirm__5",
+   "games": 10,
+   "rows": 160,
+   "sha256": "e7b684eb10556ea131372346cae77637017da5f608b6c8d2b691bcfa1fc3803c"
+  },
+  {
+   "file": "artifacts/ai-theater-confirmation/rows/confirm__6.jsonl",
+   "source": "artifacts/ai-theater-confirmation/chunks/confirm__6",
+   "games": 10,
+   "rows": 160,
+   "sha256": "e8994050757782295bf0ebd1216996fec2f4f7b1d22258616ebdcd792f0a5c18"
+  },
+  {
+   "file": "artifacts/ai-theater-confirmation/rows/confirm__7.jsonl",
+   "source": "artifacts/ai-theater-confirmation/chunks/confirm__7",
+   "games": 10,
+   "rows": 160,
+   "sha256": "6b2369e9cac0680916c6493af96deedd6d11267fafa39b61e53018b68c2c105e"
+  }
+ ]
+}

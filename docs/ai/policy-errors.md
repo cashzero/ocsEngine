@@ -37,7 +37,7 @@
 
 ## 局勢指標
 
-VP、Kill、Loss、Supply 反映不出局勢（使用者，2026-10-18），所以先加上量測並記錄資料，有了資料再分析。工作順序見 [局勢指標研究 WBS](../roadmap/18-position-metrics-wbs.md)。依戰區分配補給與兵力的待驗證提案見 [戰區補給配置](theater-supply-plan.md)，尚未實作。
+VP、Kill、Loss、Supply 反映不出局勢（使用者，2026-10-18），所以先加上量測並記錄資料，有了資料再分析。工作順序見 [局勢指標研究 WBS](../roadmap/18-position-metrics-wbs.md)。依戰區分配補給與兵力的配置指標（`theater.potential` 等）的定義、驗證與策略上層規劃見 [戰區補給配置](theater-supply-plan.md)。
 `scripts/ai-position-metrics.mjs` 的 `nextTurnMetrics` 量假設下回合的可達範圍與戰力潛力：把局面投影成該方的 Movement Segment
 （尚未移動、全部已加油），用規則層的移動範圍得到每個戰鬥單位能到的格子（地形、ZOC），忽略對方在中間的行動；一格的攻擊潛力
 是所有能到該格旁的單位一起攻擊、守方挑地形時規則給的欄位，所以是上限（同一個單位會算進多個目標）。
@@ -102,6 +102,8 @@ formation 共同路線、補給源）重算，數斷補的己方單位。只試�
 | `outOfTraceUnfed` | O 下一個己方回合的耗損 | 合併角色時勝過 `outOfTrace`，但各角色內都不勝過 `outOfTrace` 的分桶；合併的增益來自各角色斷補程度不同 | 不採用 |
 
 上表是在已看過的資料上的探索結果。[前瞻確認](../quality/evidence/ai-position-confirmation-2026-10-19/README.md)在事先登記後，以既有對局擬合模型，在 160 局新對局（標準策略自戰、全新種子）上判定 27 格假設，20 格通過。確認成立的有：目標 VP 風險（攻方行動、遭遇戰）、攻方行動時付得起的目標風險優於原版、以移動範圍為準的目標欄位及其優於 2 格有效欄位（攻方行動、遭遇戰）、分配後暴露（攻方行動、遭遇戰）、`hqsInReach`（三個角色）、攻方行動時 `rearHexesInReach` 對斷補增加。未確認的有：`supplyCuttable` 對斷補增加、`rearHexesInReach` 對 HQ 損失，以及守方行動時的目標點指標。近期預測不代表推高指標的策略能提高終局 VP。
+
+戰區配置的 `potential`（[戰區補給配置](theater-supply-plan.md#結果)）在 80 局新的西歐攻擊戰中確認：攻方行動時預測本回合取得的目標 VP，勝過 `objectiveReachColumn` 與 `payableObjectiveVpInReach`；終局 margin 在 M2 之上的增益未通過登記的回溯檢驗。
 
 終局預測（[重驗](../quality/evidence/ai-position-metrics-p6-2026-10-19/README.md)，正確對局識別與種子分組）：攻擊戰中，step 差與斷補差在 VP 之外預測終局 VP 差，到 Game Turn 5 的 R² 增益區間都不含 0（Game Turn 3 為 +0.289）；雙方的 `objectiveReachColumn` 與 `objectiveVpAtRisk` 再往上加，Game Turn 3～7 的 MAE 每局少 0.35～0.95 VP，區間都不含 0，R² 增益在 Game Turn 5、6 通過。分配後暴露與 `hqsInReach` 對終局沒有增益。遭遇戰（69 條軌跡）沒有任何增益通過。前瞻確認中，攻擊戰 96 局新對局的目標點類增益在 Game Turn 3～7 都通過（MAE 每局少 0.55～1.34 VP），step 與斷補勝過只看 VP 只在 Game Turn 4、5 通過。遭遇戰沒有登記；新對局的 64 局遭遇戰中，step 與斷補在 Game Turn 3～7、目標點類在 6～7 的 R² 增益區間不含 0，屬未登記的觀察（`bot-position-final-validation`）。
 
