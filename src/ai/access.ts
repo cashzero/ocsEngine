@@ -1,6 +1,6 @@
 import type { PieceId } from '../core/index.js';
 import type { GameSession, SeatId } from '../gameplay/index.js';
-import type { CandidateResult, FeedSource, GameAction, ReachableHex, TraceCoverage } from '../rules/index.js';
+import type { CandidateResult, FeedSource, GameAction, PlannedAttack, ReachableHex, TraceCoverage } from '../rules/index.js';
 import type { BotActionAccess } from './model.js';
 import type { BotQueryObserver } from './observation.js';
 
@@ -15,6 +15,7 @@ export const createBotActionAccess = (session: GameSession, seatId: SeatId, obse
   const coverageCache = new Map<string, TraceCoverage>();
   const feedCache = new Map<string, readonly FeedSource[]>();
   const drawCache = new Map<string, ReadonlySet<string>>();
+  const attackCache = new Map<string, PlannedAttack>();
   return {
     families: () => families ??= session.getActionFamilies(seatId).filter(({ enabled }) => enabled).map(({ kind }) => kind),
     candidates: (kind, pieceId = null, budget = DEFAULT_CANDIDATE_BUDGET) => {
@@ -60,6 +61,15 @@ export const createBotActionAccess = (session: GameSession, seatId: SeatId, obse
         feedCache.set(String(pieceId), feeds);
       }
       return feeds;
+    },
+    attackStrength: (attackerIds, targetHexId) => {
+      const key = `${targetHexId}|${[...attackerIds].sort().join('+')}`;
+      let planned = attackCache.get(key);
+      if (planned === undefined) {
+        planned = session.getAttackStrength(seatId, attackerIds, targetHexId).value ?? { hedgehogLevel: 0, options: [] };
+        attackCache.set(key, planned);
+      }
+      return planned;
     },
   };
 };

@@ -68,6 +68,7 @@ Dispatch 的 request ID 含 runner 的 `nonce`：session 會拒絕已見過的 r
 | `traceCoverage(pieceId?)` | 任何單位或指定單位（含 12.6f、13.1d）的 trace 範圍 |
 | `feedCoverage(pieceId?)` | 每個友方補給堆能餵到的範圍（12.6c） |
 | `drawReach(hexId)` | 放在該格的 SP 能被取用的範圍：5 Truck MP 的補給路徑加相鄰格（12.3a、12.3c），規則層 `queryDrawReach` |
+| `attackStrength(attackerIds, targetHexId)` | 這些己方單位在目標旁以 Combat Mode 進攻時，在守方可選的每種地形下計入的戰力與戰鬥線型，以及目標的 hedgehog 等級（9.4b、16.0d）；只用己方單位與公開地形，規則層 `queryAttackStrength` |
 
 補給預判（移動後的 trace、口糧、戰後前進、撤退、重建）由規則層以 owner-only facts 提供，計算在
 `src/rules/supply/relocation-impact.ts`、`src/rules/supply/ration-budget.ts` 等處，電腦只讀結果。

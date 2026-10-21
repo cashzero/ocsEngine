@@ -7,6 +7,7 @@ import { hexesBetween, knowledgeOf, type BotGameFacts } from '../knowledge.js';
 import type { BotDecision, BotDecisionContext, BotPolicy, BotScoreTerm } from '../model.js';
 import { forecastBarrage, forecastCombat, forecastFacilityBarrage, type PublicFacilityTarget } from '../odds.js';
 import { DEFAULT_HEURISTIC_WEIGHTS, type HeuristicWeights } from './heuristic-weights.js';
+import { allocateTheater } from './theater.js';
 
 /**
  * heuristic@1: reads the position and plays to win on objectives (M9.2).
@@ -67,6 +68,32 @@ const chooseEfforts = (situation: Situation, w: HeuristicWeights, count: number)
   return efforts;
 };
 
+/**
+ * Plan P11.8 candidate (theaterAllocation): this step's allocation (policies/theater.ts) gives the efforts, one per
+ * defended objective in order of expected VP, and the captures of empty objectives; garrisons keep their objectives.
+ * Effort slots it leaves go to the usual multi-turn efforts with the remaining units.
+ */
+const theaterEfforts = (context: BotDecisionContext, situation: Situation, facts: BotGameFacts, w: HeuristicWeights, notes: StepNotes): MainEffort[] => {
+  const garrisons = new Set(heldDefenders(situation, w).map(({ unit }) => unit.piece.id));
+  const knowledge = knowledgeOf(facts);
+  const groups = allocateTheater(situation, context.actions, garrisons, (piece) => knowledge.profile(piece)?.actionRating ?? 0);
+  const at = new Map(situation.own.map((unit) => [unit.piece.id, unit.hexId]));
+  const efforts: MainEffort[] = groups.filter(({ defended }) => defended).slice(0, w.assaultMaxEfforts).map(({ hexId, unitIds }) => ({
+    hexId, defenders: situation.enemy.get(hexId)?.strength ?? 0, unitIds: new Set(unitIds),
+    lead: [...unitIds].map((id) => at.get(id)!).sort((left, right) => hexesBetween(left, hexId) - hexesBetween(right, hexId) || String(left).localeCompare(String(right)))[0]!,
+  }));
+  notes.captures = new Map(groups.filter(({ defended }) => !defended).flatMap(({ hexId, unitIds }) => unitIds.map((id) => [id, hexId] as const)));
+  const used = new Set<PieceId>([...efforts.flatMap(({ unitIds }) => [...unitIds]), ...notes.captures.keys()]);
+  while (efforts.length < w.assaultMaxEfforts) {
+    const next = chooseEffort(situation, w, used, new Set(efforts.map(({ hexId }) => hexId)));
+    if (!next) break;
+    efforts.push(next);
+    for (const unitId of next.unitIds) used.add(unitId);
+  }
+  debug?.(`THEATER ${groups.map(({ hexId, unitIds, probability }) => `${hexId}:${unitIds.length}u p${probability.toFixed(2)}`).join(' ')}`);
+  return efforts;
+};
+
 const chooseEffort = (situation: Situation, w: HeuristicWeights, used: ReadonlySet<PieceId>, taken: ReadonlySet<HexId>): MainEffort | null => {
   const me = situation.playerId;
   const combat = situation.own.filter((unit) => situation.isCombatUnit(unit));
@@ -110,6 +137,8 @@ interface StepNotes {
   effort?: MainEffort | null;
   /** Further efforts beyond the main one (heuristic@11): their units assault, HQs and SP still follow the main one. */
   secondary?: readonly MainEffort[];
+  /** Empty objectives the theater allocation sends units to take this step (theaterAllocation). */
+  captures?: ReadonlyMap<PieceId, HexId>;
   /** Cut-off groups that need a supply run this step, and the trucks already sent to each (heuristic@7). */
   relief?: { readonly hexIds: readonly HexId[]; readonly sent: Map<HexId, PieceId>; readonly delivered: Set<HexId> };
   /** Nothing more is worth sending by rail this step (heuristic@12). */
@@ -943,13 +972,17 @@ const movementStep = (context: BotDecisionContext, situation: Situation, facts: 
   const unitFeeds = (unit: OwnUnit): readonly FeedSource[] => context.actions.feedCoverage(unit.piece.id);
   const sideFeeds = context.actions.feedCoverage();
   if (notes.effort === undefined) {
-    const efforts = chooseEfforts(situation, w, w.assaultMaxEfforts);
+    const efforts = w.theaterAllocation > 0 && situation.attack && !situation.defending
+      ? theaterEfforts(context, situation, facts, w, notes) : chooseEfforts(situation, w, w.assaultMaxEfforts);
     notes.effort = efforts[0] ?? null;
     notes.secondary = efforts.slice(1);
   }
   const effort = notes.effort;
   if (effort) debug?.(`MAIN EFFORT ${effort.hexId} vs ${effort.defenders.toFixed(1)} with ${effort.unitIds.size} unit(s), lead ${effort.lead}`);
-  notes.targets ??= planTargets(situation, coverage, unitCoverage, w, [...(effort ? [effort] : []), ...(notes.secondary ?? [])], fedHexes(sideFeeds));
+  if (!notes.targets) {
+    notes.targets = planTargets(situation, coverage, unitCoverage, w, [...(effort ? [effort] : []), ...(notes.secondary ?? [])], fedHexes(sideFeeds));
+    for (const [unitId, hexId] of notes.captures ?? []) notes.targets.set(unitId, { hexId, purpose: 'CAPTURE' });
+  }
   // heuristic@79: where an HQ can stand and draw SP that Rail Cap brings to a station this step (12.3a, 13.3c).
   notes.railDraw ??= new Set(railStations(situation, coverage).flatMap((station) => [...context.actions.drawReach(station)]));
   // HQs follow the main effort's lead (their own scores keep them in supply and away from the enemy), else the army.

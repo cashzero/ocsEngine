@@ -30,6 +30,7 @@ import type {
   TraceCoverage,
   FeedSource,
   RuleConfiguration,
+  PlannedAttack,
   ReachableHex,
   RuleQueryResult,
   TransportOptions,
@@ -330,6 +331,8 @@ export interface GameSession {
   readonly getFeedCoverage: (seatId: SeatId, pieceId: PieceId | null) => RuleQueryResult<readonly FeedSource[]>;
   /** Hexes within draw range (12.3a) of SP standing in `hexId`, for the seat; empty when not interactive. */
   readonly getDrawReach: (seatId: SeatId, hexId: HexId) => RuleQueryResult<readonly HexId[]>;
+  /** What the seat's units would count attacking `targetHexId` from beside it, under each terrain the defender may choose (own units and public terrain only). */
+  readonly getAttackStrength: (seatId: SeatId, attackerIds: readonly PieceId[], targetHexId: HexId) => RuleQueryResult<PlannedAttack>;
   /** The seat's Supply Sources (12.6a) and why each counts; empty when not interactive. */
   readonly getSupplySources: (seatId: SeatId) => RuleQueryResult<readonly SupplySourceHex[]>;
   /** Control of every rail Hex from the seat's side (13.3h); empty when not interactive. */

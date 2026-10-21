@@ -7,7 +7,7 @@ import type {
   GameSession,
   SeatId,
 } from '../gameplay/index.js';
-import type { ActionFamily, CandidateResult, FeedSource, GameAction, ProjectedPiece, ReachableHex, RuleExplanation, TraceCoverage } from '../rules/index.js';
+import type { ActionFamily, CandidateResult, FeedSource, GameAction, PlannedAttack, ProjectedPiece, ReachableHex, RuleExplanation, TraceCoverage } from '../rules/index.js';
 
 export type BotPolicyId = string;
 
@@ -34,6 +34,8 @@ export interface BotActionAccess {
   readonly feedCoverage: (pieceId?: PieceId | null) => readonly FeedSource[];
   /** Hexes within draw range (12.3a) of SP standing in `hexId`. */
   readonly drawReach: (hexId: HexId) => ReadonlySet<string>;
+  /** What these own units would count attacking `targetHexId` from beside it, per terrain the defender may choose (9.4b). */
+  readonly attackStrength: (attackerIds: readonly PieceId[], targetHexId: HexId) => PlannedAttack;
 }
 
 /** What one seat remembers within the current phase/segment; reset when the step changes. */
