@@ -1,6 +1,6 @@
 # 戰區補給配置
 
-狀態：**指標已前瞻確認（近期奪點）；終局預測未通過；策略上層實作與升級驗證中**。量測工具全部在 `scripts/`，不被 bot 讀取。工作項目見 [局勢指標研究 WBS 的 P11](../roadmap/18-position-metrics-wbs.md)。
+狀態：**指標已前瞻確認（近期奪點）；終局預測未通過；策略上層已實作（權重預設關閉），西歐觀測未確立幫助**。量測工具全部在 `scripts/`，不被 bot 讀取。工作項目見 [局勢指標研究 WBS 的 P11](../roadmap/18-position-metrics-wbs.md)。
 
 ## 範圍
 
@@ -9,7 +9,7 @@
 - 局勢指標（[定義](policy-errors.md#局勢指標)）只看下回合的移動範圍或目標 2 格內，對每個目標取最大欄位；可支付版本把全前線的剩餘 SP 合成一個池（`bot-position-payability`）。
 - heuristic 的目標分配（[目標分配](heuristic-policy.md#目標分配movement-segment-建立存在當步驟的-botphasememory)）是扁平的：守備、主攻（`MainEffort`）與奪點逐單位指派，卡車與鐵路把 SP 送往主攻 lead 或部隊重心，沒有戰區與戰區預算。
 
-用途依序為：（1）局勢指標：局面在補給約束下本回合可取得的期望 VP，以及實際實現了多少；（2）策略上層：只在指標通過驗證後規劃。研究範圍依 [VP 指標研究的範圍](vp-metrics.md)，只限西歐（`WESTERN_EUROPE`）的攻擊戰。
+用途依序為：（1）局勢指標：局面在補給約束下本回合可取得的期望 VP，以及實際實現了多少；（2）策略上層：指標通過驗證後實作並觀測。研究範圍依 [VP 指標研究的範圍](vp-metrics.md)，只限西歐（`WESTERN_EUROPE`）的攻擊戰。
 
 ## 現行行為
 
@@ -57,15 +57,16 @@
 
 兩次都在分析前登記：[回溯比較](../quality/evidence/ai-theater-validation-2026-10-21/README.md)、[前瞻確認](../quality/evidence/ai-theater-confirmation-2026-10-21/README.md)。`theaterRealized` 與實際取得的目標 VP 接近。攻方在 Game Turn 1～3 只實現潛力的 13～50%（前瞻 21～41%），Game Turn 4 起為 60～80%。這段落差來自策略，或來自潛力的高估（配置不計堆疊上限與友軍移動造成的 ZOC），目前資料無法區分。
 
-## 策略上層的規劃
+## 策略上層
 
-目標是 Game Turn 1～3 潛力與實現量的落差。規劃如下，尚未實作：
+目標是 Game Turn 1～3 潛力與實現量的落差。實作在 `src/ai/policies/theater.ts`，由權重 `theaterAllocation` 開關（預設 0，標準 heuristic@85 不變；行為見 [heuristic 策略](heuristic-policy.md#尚未升級的候選)）：
 
-- **介入點。** 在 heuristic 建立該步驟目標分配（`notes.targets`）時，以配置搜尋的結果覆寫被配置單位的目標：有守軍的目標設為 `ASSAULT`，空目標設為 `CAPTURE`；未被配置的單位沿用現行分配。HQ 與卡車跟隨配置組，比照現行跟隨主攻 lead 的方式。
-- **策略可用的資訊。** 配置須在 `src/ai` 中以 bot 的知識與有界查詢重寫（`BotGameFacts`、規則移動範圍與戰鬥預測查詢），不能直接讀完整局面；奪點模型的係數以版本化的固定表放入策略。每個 Movement 的計算時間須量測，離線版本最慢 0.78 秒。
-- **配置與合法行動的差距。** 策略執行時須以實際移動處理堆疊上限與友軍 ZOC 變化，無法到位的單位回到現行分配；這是指標與策略之間已知的落差。
-- **驗證。** 依[標準策略的升級流程](evaluation.md#標準策略的升級流程)：先以已知西歐攻擊戰種子的開發批決定方向，同時檢查 Game Turn 1～3 的實現比例是否提高（機制檢查）；再凍結候選、登記，以全新種子跑 80 場獨立批，主要量測 VP，Kill − Loss 與 Supply 給不劣化幅度。指標只是近期預測，提高潛力不保證提高 VP（[改版效果轉移](policy-errors.md#改版效果能否轉移到另一批種子)），因此升級只看 VP 等三項量測。
-- **待使用者決定。** 是否現在實作：使用者在 2026-10-19 決定以指標導引決策「目前都還不能做」，策略上層正是以本指標決定行動。另外，升級流程的獨立批涵蓋兩種地圖與兩種交戰，與研究只限西歐攻擊戰的範圍不同，須決定獨立批的範圍。
+- 開啟時，攻擊戰的攻方在每個 Movement 步驟做一次配置，以 bot 看得到的資訊估計奪點機率：可達範圍、`attackStrength` 查詢的規則戰力與地形線型（守方取欄位最低者）、估計的敵軍戰力、雙方最高 AR（看不到的守方以 2 計）、hedgehog，守方一律假設付得起補給。凍結模型的係數放在策略中。
+- 有守軍的組依期望 VP 依序成為主攻，領頭格是目標本身（HQ 與卡車跟隨）；空目標的單位目標設為 CAPTURE；奪點機率低於 0.25 的組不用，其單位沿用原本分配；剩下的主攻名額沿用多回合主攻。守點單位不參與。
+
+[觀測](../quality/evidence/ai-theater-allocation-games-2026-10-21/README.md)在 80 局新的西歐攻擊戰（事先登記，開啟對標準，交換座位 40 對）：VP 每對 +1.10 [−0.23, +2.43]，Kill − Loss +0.48 [−1.47, +2.42]，Supply +0.23 [−0.14, +0.59]，是否有幫助未確立。Game Turn 1～3 的實現比例（0.31 對 0.33）與取得的目標 VP 沒有改變，目標中的機制沒有出現；略正的 VP 來自 Game Turn 4～8。這批的檢定力對每對 +2 VP 約 0.65。
+
+使用者決定（2026-10-21）：P11 只做實作與觀測，不走升級流程，研究只限西歐。先前誤走升級流程的開發批與中途停止的獨立批只作觀測，東歐的對局不採用。
 
 ## 決策
 
@@ -82,4 +83,4 @@
 
 ## 驗證
 
-[地圖普查](../quality/evidence/ai-theater-survey-2026-10-21/README.md)、[Combat 階段核對](../quality/evidence/ai-theater-attack-check-2026-10-21/README.md)、[燃料核對](../quality/evidence/ai-theater-fuel-check-2026-10-21/README.md)、[運入核對](../quality/evidence/ai-theater-inflow-check-2026-10-21/README.md)、[奪點機率模型](../quality/evidence/ai-theater-capture-model-2026-10-21/README.md)、[配置核對](../quality/evidence/ai-theater-allocation-check-2026-10-21/README.md)、[記錄紀錄](../quality/evidence/ai-theater-record-2026-10-21/README.md)、[回溯比較](../quality/evidence/ai-theater-validation-2026-10-21/README.md)、[前瞻確認](../quality/evidence/ai-theater-confirmation-2026-10-21/README.md)、[付款時序稽核](../quality/evidence/ai-theater-supply-audit-2026-10-20/README.md)。這些都不改變 `docs/quality/03-product-operation-verification-plan.md` 的任何列。
+[地圖普查](../quality/evidence/ai-theater-survey-2026-10-21/README.md)、[Combat 階段核對](../quality/evidence/ai-theater-attack-check-2026-10-21/README.md)、[燃料核對](../quality/evidence/ai-theater-fuel-check-2026-10-21/README.md)、[運入核對](../quality/evidence/ai-theater-inflow-check-2026-10-21/README.md)、[奪點機率模型](../quality/evidence/ai-theater-capture-model-2026-10-21/README.md)、[配置核對](../quality/evidence/ai-theater-allocation-check-2026-10-21/README.md)、[記錄紀錄](../quality/evidence/ai-theater-record-2026-10-21/README.md)、[回溯比較](../quality/evidence/ai-theater-validation-2026-10-21/README.md)、[前瞻確認](../quality/evidence/ai-theater-confirmation-2026-10-21/README.md)、[策略上層觀測](../quality/evidence/ai-theater-allocation-games-2026-10-21/README.md)、[付款時序稽核](../quality/evidence/ai-theater-supply-audit-2026-10-20/README.md)。這些都不改變 `docs/quality/03-product-operation-verification-plan.md` 的任何列。
