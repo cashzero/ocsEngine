@@ -71,16 +71,19 @@ const chooseEfforts = (situation: Situation, w: HeuristicWeights, count: number)
 /**
  * Plan P11.8 candidate (theaterAllocation): this step's allocation (policies/theater.ts) gives the efforts, one per
  * defended objective in order of expected VP, and the captures of empty objectives; garrisons keep their objectives.
- * Effort slots it leaves go to the usual multi-turn efforts with the remaining units.
+ * A group whose capture probability is below THEATER_MIN_PROBABILITY is dropped: its units keep the usual targets,
+ * which the allocation does not value. Its groups stop beside their objective this step, so the objective is the lead
+ * HQs and trucks follow. Effort slots it leaves go to the usual multi-turn efforts with the remaining units.
  */
+const THEATER_MIN_PROBABILITY = 0.25;
+
 const theaterEfforts = (context: BotDecisionContext, situation: Situation, facts: BotGameFacts, w: HeuristicWeights, notes: StepNotes): MainEffort[] => {
   const garrisons = new Set(heldDefenders(situation, w).map(({ unit }) => unit.piece.id));
   const knowledge = knowledgeOf(facts);
-  const groups = allocateTheater(situation, context.actions, garrisons, (piece) => knowledge.profile(piece)?.actionRating ?? 0);
-  const at = new Map(situation.own.map((unit) => [unit.piece.id, unit.hexId]));
+  const groups = allocateTheater(situation, context.actions, garrisons, (piece) => knowledge.profile(piece)?.actionRating ?? 0)
+    .filter(({ probability }) => probability >= THEATER_MIN_PROBABILITY);
   const efforts: MainEffort[] = groups.filter(({ defended }) => defended).slice(0, w.assaultMaxEfforts).map(({ hexId, unitIds }) => ({
-    hexId, defenders: situation.enemy.get(hexId)?.strength ?? 0, unitIds: new Set(unitIds),
-    lead: [...unitIds].map((id) => at.get(id)!).sort((left, right) => hexesBetween(left, hexId) - hexesBetween(right, hexId) || String(left).localeCompare(String(right)))[0]!,
+    hexId, defenders: situation.enemy.get(hexId)?.strength ?? 0, unitIds: new Set(unitIds), lead: hexId,
   }));
   notes.captures = new Map(groups.filter(({ defended }) => !defended).flatMap(({ hexId, unitIds }) => unitIds.map((id) => [id, hexId] as const)));
   const used = new Set<PieceId>([...efforts.flatMap(({ unitIds }) => [...unitIds]), ...notes.captures.keys()]);
