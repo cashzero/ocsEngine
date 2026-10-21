@@ -69,7 +69,7 @@
   - [x] P11.0 地圖普查與戰區劃分。`ai-theater-supply.mjs` 的 `theaters` 與 `ai-theater-survey.mjs`；P7 的 48 局西歐攻擊戰。[紀錄](../quality/evidence/ai-theater-survey-2026-10-21/README.md)
   - [x] P11.1 Combat 階段的可付最佳攻擊。`bestPayableAttack` 以 `validateAction` 共同結算補給作見證；828 次實際攻擊中最佳欄位沒有低於實際欄位，查詢不改變局面。每次進入 Combat 時檢查全部目標，因補給而無法攻擊的是 0 次。[紀錄](../quality/evidence/ai-theater-attack-check-2026-10-21/README.md)
   - [x] P11.2 1 回合窗口的運入量。`inflowBound`：區域外存量與「鐵路剩餘 Rail Cap 兩倍加可達卡車載運量」取小者，同時涵蓋燃料與戰鬥補給。先行核對：Combat 階段的戰鬥補給從未阻擋攻擊，Movement 階段無法支付燃料的單位佔能到達目標兵力的攻方 5～9%、守方 14～24%（[紀錄](../quality/evidence/ai-theater-fuel-check-2026-10-21/README.md)）。驗收：1,083 個戰區窗口實際運入都不超過上限，有運入的窗口實際量中位數為上限的 36%（[紀錄](../quality/evidence/ai-theater-inflow-check-2026-10-21/README.md)）。
-  - [ ] P11.3 奪點機率模型。只用 P5 擬合「可付最佳欄位與相關條件 → 本回合奪點」並凍結。驗收：留出種子的 Brier 與校準優於只用欄位的模型。
+  - [ ] P11.3 奪點機率模型。只用 P5 西歐攻擊戰：每個被攻擊的目標與玩家回合取最強的實際攻擊，以規則的戰鬥條件（欄位、DRM、守方能否付補給、hedgehog、線型）預測回合結束時是否由攻方持有。候選為常數、欄位分組平滑、只用欄位的 logistic、全部條件的 logistic，凍結地圖種子分組十折 log loss 最低者。驗收：留出種子的 Brier 低於常數基準率，種子重抽區間不含 0；並報告校準與只用欄位模型的比較。P7 只作回溯評分。
   - [ ] P11.4 配置搜尋。在運量上限內把單位與 HQ 分給目標，保留守住己方 VP 的兵力，最大化 Σ VP × 奪點機率；貪婪加局部交換。驗收：小案例與窮舉最佳解比較，報告近似差距。
   - [ ] P11.5 輸出與記錄。潛力、配置效率、暫未支援進攻的戰力與 SP、缺口目標，以選用旗標加入 `ai-position-record.mjs`。驗收：記錄前後重播 hash 不變。
   - [ ] P11.6 登記與回溯比較。計算前登記；主要問題為 Game Turn 3～5 在 M2 之上的終局預測增益，次要問題為本回合奪點勝過 `objectiveReachColumn` 與可支付版。門檻依第 1 節。
