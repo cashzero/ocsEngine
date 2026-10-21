@@ -1,6 +1,6 @@
 # 戰區補給配置
 
-狀態：**待驗證提案，實作中**。已實作戰區劃分（P11.0）、Combat 階段的可付最佳攻擊（P11.1）、Movement 階段的燃料核對與 1 回合運入上限（P11.2）；運量、配置與輸出尚未實作，也不確定會比現有局勢指標或 heuristic@85 好。已實作既有 Combat 入口的付款時序稽核，見下節；它不是戰區規劃器或新 VP 預測指標。本文件不改變現行策略，也不代表任何指標或策略已取得資格。工作項目見 [局勢指標研究 WBS 的 P11](../roadmap/18-position-metrics-wbs.md)。
+狀態：**待驗證提案，實作中**。已實作戰區劃分（P11.0）、Combat 階段的可付最佳攻擊（P11.1）、Movement 階段的燃料核對、1 回合運入上限（P11.2）與奪點機率模型（P11.3）；運量、配置與輸出尚未實作，也不確定會比現有局勢指標或 heuristic@85 好。已實作既有 Combat 入口的付款時序稽核，見下節；它不是戰區規劃器或新 VP 預測指標。本文件不改變現行策略，也不代表任何指標或策略已取得資格。工作項目見 [局勢指標研究 WBS 的 P11](../roadmap/18-position-metrics-wbs.md)。
 
 ## 範圍
 
@@ -49,6 +49,10 @@
 `inflowBound` 在行動方進入 Movement 時，估計到進入 Combat 前運輸最多能送進各戰區前線區域（離該戰區目標 3 格內，`theaterZones`）的 token：取區域外存量，與「鐵路剩餘 Rail Cap 的兩倍（多軌路線半價）加上移動範圍碰到區域的卡車所能載運量」兩者中較小者。卡車量是現有貨物加上 MA 付得起的每次裝卸各一車。
 
 [運入核對](../quality/evidence/ai-theater-inflow-check-2026-10-21/README.md)以「讓全軍 token 總量不變的動作」淨移入區域的量作為實際運入：1,083 個戰區窗口沒有一個超過上限。第一次執行漏算規則 4.7b 的多軌半價，有 3 個窗口超過，修正後重跑。上限偏鬆：有運入的窗口實際量中位數為上限的 36%，1,011 個窗口由區域外存量決定，運輸能力只在 72 個窗口成為限制。上限是各戰區分開計算，鐵路與卡車共用，不能把兩個戰區的上限相加。
+
+### 奪點機率
+
+[奪點機率模型](../quality/evidence/ai-theater-capture-model-2026-10-21/README.md)只用 P5 西歐攻擊戰（99 條軌跡、33 個地圖種子、765 個被攻擊的目標與回合）擬合：以該回合對目標最強的實際攻擊，用規則的戰鬥條件（欄位、DRM、守方能否付補給、hedgehog、線型）預測回合結束時攻方是否持有。地圖種子分組十折中，全部條件的 logistic 的 log loss 最低（0.340，常數 0.655，只用欄位 0.419），Brier 比常數低 0.125 [0.099, 0.149]，比只用欄位低 0.028 [0.014, 0.042]，留出種子的校準良好；P7 西歐回溯評分一致。凍結的模型存於該證據的 `model.json`。未經攻擊而取得的目標（走進空格或 overrun）在回合結束時全部仍由取得方持有（P5 118 例、P7 49 例），所以配置時可走進的空目標視為取得。模型只描述 bot 選擇發動的攻擊。
 
 ## 提議的模型
 
@@ -133,6 +137,6 @@
 
 ## 驗證
 
-戰區劃分規則與地圖結構見[地圖普查](../quality/evidence/ai-theater-survey-2026-10-21/README.md)。可付最佳攻擊的核對見[Combat 階段核對](../quality/evidence/ai-theater-attack-check-2026-10-21/README.md)，燃料限制見[燃料核對](../quality/evidence/ai-theater-fuel-check-2026-10-21/README.md)，運入上限見[運入核對](../quality/evidence/ai-theater-inflow-check-2026-10-21/README.md)。
+戰區劃分規則與地圖結構見[地圖普查](../quality/evidence/ai-theater-survey-2026-10-21/README.md)。可付最佳攻擊的核對見[Combat 階段核對](../quality/evidence/ai-theater-attack-check-2026-10-21/README.md)，燃料限制見[燃料核對](../quality/evidence/ai-theater-fuel-check-2026-10-21/README.md)，運入上限見[運入核對](../quality/evidence/ai-theater-inflow-check-2026-10-21/README.md)，奪點機率見[模型紀錄](../quality/evidence/ai-theater-capture-model-2026-10-21/README.md)。
 
 付款時序工具、原始輸入與驗證見[稽核證據](../quality/evidence/ai-theater-supply-audit-2026-10-20/README.md)。它只驗證既有截點的實際成本與單次宣告，不是戰區配置或策略改善證據。
