@@ -10,10 +10,10 @@
 //
 // Every recorded action is replayed through the rule engine; each game must reach its saved final state hash.
 import assert from 'node:assert/strict';
-import { readFileSync, readdirSync, writeFileSync } from 'node:fs';
-import { join, resolve } from 'node:path';
+import { mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
+import { dirname, join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { bestPayableAttack } from './ai-theater-supply.mjs';
+import { bestPayableAttack, segmentEntry } from './ai-theater-supply.mjs';
 
 const [dist, out, ...dirs] = process.argv.slice(2);
 if (!dist || !out || dirs.length === 0) {
@@ -25,31 +25,8 @@ const m = await import(pathToFileURL(resolve(dist, 'index.js')).href);
 const attacks = [];
 const entries = [];
 
-let unavailableEntries = 0;
-
-/** The state at the Combat segment entry inside `action`; null if there is none or it cannot be rebuilt. */
-const combatEntry = (before, action, applied) => {
-  const advances = applied.events.filter(({ kind }) => kind === 'SEQUENCE_ADVANCED');
-  const entry = advances.find((event) => event.to.phase === 'COMBAT' && event.to.segment === 'COMBAT');
-  if (!entry) return null;
-  if (entry === advances.at(-1)) {
-    assert.deepEqual(applied.state.sequence, entry.to);
-    return applied.state;
-  }
-  if (action.kind !== 'ADVANCE_SEQUENCE') { unavailableEntries += 1; return null; }
-  let rebuilt = before, measured = null;
-  const regenerated = [];
-  for (const event of applied.events.filter(({ kind }) => kind === 'SEQUENCE_ADVANCED')) {
-    assert.deepEqual(m.nextSequence(rebuilt), event.to);
-    const lifecycle = m.applySequenceLifecycle(rebuilt, event.to);
-    rebuilt = lifecycle.state;
-    regenerated.push(...lifecycle.events);
-    if (event.sequence === entry.sequence) measured = rebuilt;
-  }
-  assert.deepEqual(regenerated.map((event, sequence) => ({ ...event, sequence })), applied.events);
-  assert.deepEqual({ ...rebuilt, revision: applied.state.revision }, applied.state);
-  return measured;
-};
+const entryCounts = { unavailable: 0 };
+const combatEntry = (before, action, applied) => segmentEntry(m, before, action, applied, 'COMBAT', 'COMBAT', entryCounts);
 
 const probeEntry = (file, index, state) => {
   const actorId = state.sequence.phasingPlayerId;
@@ -111,7 +88,7 @@ const summary = {
   defaultSupplyMissing: attacks.filter(({ defaultSupplyFound }) => !defaultSupplyFound).length,
   withIneligibleNeighbors: attacks.filter(({ ineligible }) => ineligible > 0).length,
   ineligibleReasons: attacks.reduce((total, { reasons }) => { for (const [code, n] of Object.entries(reasons)) total[code] = (total[code] ?? 0) + n; return total; }, {}),
-  entriesUnavailable: unavailableEntries,
+  entriesUnavailable: entryCounts.unavailable,
   entryObjectives: entries.length,
   entryWithAdjacentUnits: entries.filter(({ adjacent }) => adjacent > 0).length,
   entryPayable: entries.filter(({ column }) => column !== null).length,
@@ -120,5 +97,6 @@ const summary = {
   candidatesDropped: attacks.filter(({ dropped }) => dropped > 0).length,
   msMedian: sorted[Math.floor(sorted.length / 2)] ?? null, msMax: sorted.at(-1) ?? null,
 };
+mkdirSync(dirname(out), { recursive: true });
 writeFileSync(out, `${JSON.stringify({ summary, below, attacks, entries, games }, null, 1)}\n`);
 console.log(JSON.stringify({ ...summary, belowExamples: below.slice(0, 5) }, null, 1));

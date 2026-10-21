@@ -151,3 +151,32 @@ export const bestPayableAttack = (m, state, actorId, targetHexId) => {
   }
   return { attackerIds: [], defenderIds, column: null, unboundColumn: subsets[0].column, tokens: 0, candidates: candidates.length, ineligible, reasons, validations, dropped: eligible.length - candidates.length };
 };
+
+/**
+ * The state at the first `phase`/`segment` entry inside a recorded action, or null. When the action stops at the entry
+ * the state after it is the entry; an ADVANCE_SEQUENCE that passes through it is rebuilt from its lifecycle transitions,
+ * which must regenerate the recorded events and final state. Any other pass-through adds one to `counts.unavailable`.
+ */
+export const segmentEntry = (m, before, action, applied, phase, segment, counts) => {
+  const advances = applied.events.filter(({ kind }) => kind === 'SEQUENCE_ADVANCED');
+  const entry = advances.find((event) => event.to.phase === phase && event.to.segment === segment);
+  if (!entry) return null;
+  if (entry === advances.at(-1)) {
+    if (JSON.stringify(applied.state.sequence) !== JSON.stringify(entry.to)) throw new Error('entry sequence differs from the state after the action');
+    return applied.state;
+  }
+  if (action.kind !== 'ADVANCE_SEQUENCE') { counts.unavailable += 1; return null; }
+  let rebuilt = before, measured = null;
+  const regenerated = [];
+  for (const event of advances) {
+    if (JSON.stringify(m.nextSequence(rebuilt)) !== JSON.stringify(event.to)) throw new Error('lifecycle sequence differs from the recorded one');
+    const lifecycle = m.applySequenceLifecycle(rebuilt, event.to);
+    rebuilt = lifecycle.state;
+    regenerated.push(...lifecycle.events);
+    if (event.sequence === entry.sequence) measured = rebuilt;
+  }
+  const canonical = (value) => JSON.stringify(value);
+  if (canonical(regenerated.map((event, sequence) => ({ ...event, sequence }))) !== canonical(applied.events)) throw new Error('lifecycle events differ from the recorded ones');
+  if (canonical({ ...rebuilt, revision: applied.state.revision }) !== canonical(applied.state)) throw new Error('lifecycle state differs from the recorded one');
+  return measured;
+};

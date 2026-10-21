@@ -6,8 +6,8 @@
 //
 // Every recorded action up to Game Turn 3 is replayed through the rule engine and must be accepted.
 import assert from 'node:assert/strict';
-import { readFileSync, readdirSync, writeFileSync } from 'node:fs';
-import { join, resolve } from 'node:path';
+import { mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
+import { dirname, join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { SPLIT_RAIL_HEXES, theaters } from './ai-theater-supply.mjs';
 
@@ -80,5 +80,6 @@ for (const playerId of Object.keys(games[0]?.initial.players ?? {})) {
       && JSON.stringify(game.gameTurn3.players[playerId].theaters) !== JSON.stringify(game.initial.players[playerId].theaters)).length,
   };
 }
+mkdirSync(dirname(out), { recursive: true });
 writeFileSync(out, `${JSON.stringify({ summary, games }, null, 1)}\n`);
 console.log(JSON.stringify(summary, null, 1));

@@ -1,0 +1,142 @@
+{
+ "games": 48,
+ "finalHashMismatches": 0,
+ "entries": 768,
+ "entriesUnavailable": 0,
+ "axis": {
+  "entries": 384,
+  "motorized": 13928,
+  "fueled": 0,
+  "payable": 12632,
+  "stranded": 1296,
+  "entriesWithStranded": 179,
+  "reachSteps": 13424,
+  "strandedReachSteps": 946,
+  "byGameTurn": {
+   "1": {
+    "motorized": 1789,
+    "stranded": 0,
+    "reachSteps": 993,
+    "strandedReachSteps": 0,
+    "entries": 48
+   },
+   "2": {
+    "motorized": 1766,
+    "stranded": 78,
+    "reachSteps": 1379,
+    "strandedReachSteps": 71,
+    "entries": 48
+   },
+   "3": {
+    "motorized": 1734,
+    "stranded": 127,
+    "reachSteps": 1874,
+    "strandedReachSteps": 101,
+    "entries": 48
+   },
+   "4": {
+    "motorized": 1723,
+    "stranded": 199,
+    "reachSteps": 2064,
+    "strandedReachSteps": 170,
+    "entries": 48
+   },
+   "5": {
+    "motorized": 1730,
+    "stranded": 204,
+    "reachSteps": 1857,
+    "strandedReachSteps": 158,
+    "entries": 48
+   },
+   "6": {
+    "motorized": 1741,
+    "stranded": 240,
+    "reachSteps": 1710,
+    "strandedReachSteps": 162,
+    "entries": 48
+   },
+   "7": {
+    "motorized": 1733,
+    "stranded": 212,
+    "reachSteps": 1795,
+    "strandedReachSteps": 156,
+    "entries": 48
+   },
+   "8": {
+    "motorized": 1712,
+    "stranded": 236,
+    "reachSteps": 1752,
+    "strandedReachSteps": 128,
+    "entries": 48
+   }
+  }
+ },
+ "allied": {
+  "entries": 384,
+  "motorized": 5236,
+  "fueled": 0,
+  "payable": 3862,
+  "stranded": 1374,
+  "entriesWithStranded": 234,
+  "reachSteps": 3564,
+  "strandedReachSteps": 590,
+  "byGameTurn": {
+   "1": {
+    "motorized": 743,
+    "stranded": 21,
+    "reachSteps": 347,
+    "strandedReachSteps": 8,
+    "entries": 48
+   },
+   "2": {
+    "motorized": 789,
+    "stranded": 75,
+    "reachSteps": 373,
+    "strandedReachSteps": 28,
+    "entries": 48
+   },
+   "3": {
+    "motorized": 746,
+    "stranded": 166,
+    "reachSteps": 372,
+    "strandedReachSteps": 52,
+    "entries": 48
+   },
+   "4": {
+    "motorized": 660,
+    "stranded": 217,
+    "reachSteps": 388,
+    "strandedReachSteps": 92,
+    "entries": 48
+   },
+   "5": {
+    "motorized": 624,
+    "stranded": 223,
+    "reachSteps": 487,
+    "strandedReachSteps": 80,
+    "entries": 48
+   },
+   "6": {
+    "motorized": 580,
+    "stranded": 228,
+    "reachSteps": 485,
+    "strandedReachSteps": 105,
+    "entries": 48
+   },
+   "7": {
+    "motorized": 560,
+    "stranded": 228,
+    "reachSteps": 525,
+    "strandedReachSteps": 112,
+    "entries": 48
+   },
+   "8": {
+    "motorized": 534,
+    "stranded": 216,
+    "reachSteps": 587,
+    "strandedReachSteps": 113,
+    "entries": 48
+   }
+  }
+ }
+}
