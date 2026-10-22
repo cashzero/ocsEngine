@@ -1,0 +1,33 @@
+{
+ "plan": "P11.8 observation of the two-step theater allocation (docs/roadmap/18-position-metrics-wbs.md)",
+ "purpose": "Whether the two-step theater allocation helps the attacker in Western Europe attack games, and whether it changes the attacker's plan. Observation, not a promotion gate.",
+ "userRequest": "2026-10-22: acceptance is to observe in Western Europe games whether it helps; the user chose the two-step design (rules query for next-step reach, discount estimated from development data and frozen, fresh plan each step) and approved this batch of 80 new games.",
+ "registeredBefore": "any game of this batch",
+ "source": "committed source of this registration (2fb408e); theaterAllocation 0 is the standard heuristic@85",
+ "games": {
+  "count": 80,
+  "pairs": 40,
+  "matches": "2100100-2100179 (no save with these numbers exists in any checkout)",
+  "command": "node scripts/ai-match.mjs --matches 80 --start 2100100 --style WESTERN_EUROPE --engagement AXIS_ATTACKS --turns 8 --size 32x24 --divisions 6 --armored 2 --air NONE --air-transport NONE --allied heuristic:docs/quality/evidence/ai-theater-two-step-games-2026-10-22/theater-weights.json --axis heuristic --swap --parallel 12 --out artifacts/ai-theater-two-step-games/attack-western"
+ },
+ "measures": {
+  "primary": "VP margin, theater-on side minus standard side, averaged over the two seat-swapped games of a pair; mean over 40 pairs with a 95% t interval",
+  "secondary": [
+   "Kill - Loss steps (on side), same pairing",
+   "Supply: units the opponent ends out of supply minus own",
+   "Game Turn 1-3 attacker potential, realized value at Combat entry and objective VP gained, on side versus standard side (ai-position-record.mjs --theater)",
+   "Plan change (ai-theater-adherence.mjs): share of theater-plan groups from the allocation, next-step groups, turns whose two plans differ, and how the moving policy did on the allocation's objectives"
+  ]
+ },
+ "reading": "Helps on VP if the 95% interval of the primary is above 0; hurts if below 0; otherwise not established at this size. If the plan barely differs from the standard's, the batch does not test theater planning and that is reported. No further games are added to this batch.",
+ "power": "Per-pair VP SD about 4.2 from the 40 pairs of the one-step batch (2100000-2100079); 40 pairs give SE about 0.66, power about 0.86 for a true +2 VP a pair and about 0.39 for +1.1.",
+ "weightsSha256": "194d6f5db3879df6a658bf3d1adc57580ddad8343afcaf3124c1d864d75071fc",
+ "scripts": {
+  "scripts/ai-match.mjs": "16c7326b6776d1f906ada94563f5425b8a4eefa6b236057fcf02515aed1df698",
+  "scripts/ai-position-record.mjs": "651125e76ef8140e119de2b0e3088562fec3dc0fc2fe7b279dda20b34c10b76f",
+  "scripts/ai-theater-adherence.mjs": "f8bef52c2959873e840d47d87ab3a0a99cfd54675b20d47c3645fec52eaa34fd",
+  "src/ai/policies/theater.ts": "5dcb08c621472eefb0b3f4244b598a2acb74d313bbccc939ed239d3ad0fe064a",
+  "src/ai/policies/heuristic.ts": "a378bd2f263d6e04fb589838ac4a3fef4890d0113f726ea23430eb10eee69442",
+  "src/rules/movement/movement.ts": "37125b772f36f3419184f325f6f176248ee005d4e8ea290e98d39f3b4fd81f54"
+ }
+}
