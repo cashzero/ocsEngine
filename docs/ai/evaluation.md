@@ -39,6 +39,8 @@
 | `scripts/ai-theater-capture-extract.mjs`、`scripts/ai-theater-capture-model.py` | 戰區補給配置的奪點機率：抽取每個被攻擊目標與回合的最強實際攻擊及回合結束持有者，依地圖種子分組十折比較候選模型並凍結（[戰區補給配置](theater-supply-plan.md)） |
 | `scripts/ai-theater-allocation-check.mjs` | 戰區補給配置的配置搜尋核對：在每個玩家回合的 Movement 開始執行 `allocate`（`scripts/ai-theater-allocation.mjs`），並以最多 K 個單位的子問題與窮舉最佳解比較（[戰區補給配置](theater-supply-plan.md)） |
 | `scripts/ai-theater-validate.py` | 戰區補給配置的預測驗證：讀 `ai-position-record.mjs --theater` 的列，比較潛力對終局 margin（在 M2 之上）與本回合奪點（對可達欄位與可支付風險）的預測增益，地圖種子重抽區間（[戰區補給配置](theater-supply-plan.md)） |
+| `scripts/ai-paired-measures.mjs` | 交換座位成對的 ai-match：候選策略減對手的 VP、Kill − Loss、Supply，每對平均、95% t 區間與正／零／負對數 |
+| `scripts/ai-theater-realized.mjs` | 讀 `ai-position-record.mjs --theater` 的列：攻方依策略與 Game Turn 1～3／4～8 的潛力、Combat 入口實現量、比例與取得目標 VP，並以交換座位成對比較取得的目標 VP（[戰區補給配置](theater-supply-plan.md#策略上層)） |
 | `scripts/ai-theater-delay.mjs` | 戰區補給配置策略上層的下回合折扣：重播存檔，在攻方每個 Game Turn 的第一個 Movement 決策處記錄有守軍的未持有目標，比較下一回合同一時點的守軍估計戰力，依 Game Turn 報告沒有增加的比例與地圖種子重抽區間（[戰區補給配置](theater-supply-plan.md#策略上層)） |
 | `scripts/ai-theater-adherence.mjs` | 戰區補給配置策略上層的執行核對：重播存檔，在攻方每個 Movement 的第一個決策處讓開啟權重與標準策略各自規劃，比較兩者的目標與單位，並核對進入 Combat 時是否到位、是否攻擊、回合末是否持有（[戰區補給配置](theater-supply-plan.md#策略上層)） |
 | `scripts/ai-position-confirm.py` | 依登記檔的門檻判定前瞻確認的每項假設（[局勢指標研究 WBS](../roadmap/18-position-metrics-wbs.md) P7） |
