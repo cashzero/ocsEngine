@@ -4,7 +4,7 @@ import { gunzipSync } from 'node:zlib';
 import { describe, expect, it } from 'vitest';
 import {
   DEFAULT_HEURISTIC_WEIGHTS, analyze, createBotRng, createHeuristicPolicy, parseGameStateJson, ruleEngine,
-  type BotActionAccess, type BotDecisionContext, type GameState,
+  type BotActionAccess, type BotDecisionContext, type GameState, type HexId, type PieceId,
 } from '../../src/index.js';
 import { hexesBetween } from '../../src/ai/knowledge.js';
 import { allocateTheater, captureProbability } from '../../src/ai/policies/theater.js';
@@ -20,6 +20,7 @@ const access = (state: GameState): BotActionAccess => {
     feedCoverage: (pieceId = null) => ruleEngine.queryFeedCoverage(state, actorId, pieceId).value!,
     drawReach: hexId => new Set((ruleEngine.queryDrawReach(state, actorId, hexId).value ?? []).map(String)),
     attackStrength: (attackerIds, targetHexId) => ruleEngine.queryAttackStrength(state, actorId, attackerIds, targetHexId).value!,
+    projectedReach: (pieceId, fromHexId) => ruleEngine.queryProjectedReach(state, actorId, pieceId, fromHexId).value!,
   };
 };
 
@@ -39,27 +40,35 @@ describe('theater allocation (plan P11.8 candidate)', () => {
     expect(captureProbability({ column: 10, drm: 4, defenderCanPay: false, hedgehogLevel: 0, line: 'EXTREMELY_CLOSE' })).toBeCloseTo(0.9959509635964245, 12);
   });
 
-  it('sends only units that can reach the objective or stop beside it, the same way each time', () => {
+  it('sends units that can be at or beside the objective by the step its group attacks, the same way each time', () => {
     const state = opening();
     const actorId = state.sequence.actingPlayerId;
     const facts = { scenario: state.scenario, turnLimit: 8 };
     const situation = analyze(ruleEngine.projectForViewer(state, actorId), actorId, facts);
-    const groups = allocateTheater(situation, access(state), new Set(), () => 2);
-    expect(groups.length).toBeGreaterThan(0);
+    const reach = (unitId: PieceId, hexId: HexId) => new Set([String(hexId), ...ruleEngine.queryProjectedReach(state, actorId, unitId, hexId).value!.map((entry) => String(entry.hexId))]);
+    const arrives = (hexIds: ReadonlySet<string>, objective: HexId, defended: boolean) => (defended
+      ? [...hexIds].some((hexId) => hexesBetween(hexId, objective) === 1)
+      : hexIds.has(String(objective)));
+    const groups = allocateTheater(situation, access(state), new Set(), () => 2, 0.5);
+    expect(groups.some(({ turn }) => turn === 1)).toBe(true);
+    expect(groups.some(({ turn }) => turn === 2)).toBe(true);
+    // Track and truck units have not paid fuel yet at the first Movement decision; the plan still counts them.
+    expect(groups.some(({ unitIds }) => unitIds.some((unitId) => ruleEngine.queryMovementRange(state, actorId, unitId).reasons.some(({ code }) => code === 'FUEL_REQUIRED')))).toBe(true);
     for (const group of groups) {
       expect(group.probability).toBeGreaterThan(0);
-      expect(group.probability).toBeLessThanOrEqual(1);
+      expect(group.chance).toBeCloseTo(group.probability * (group.turn === 2 ? 0.5 : 1), 12);
       for (const unitId of group.unitIds) {
         const unit = situation.own.find(({ piece }) => piece.id === unitId)!;
-        const reach = new Set([String(unit.hexId), ...ruleEngine.queryMovementRange(state, actorId, unitId).value!.map(({ hexId }) => String(hexId))]);
-        if (group.defended) {
-          expect([...reach].some((hexId) => hexesBetween(hexId, group.hexId) === 1)).toBe(true);
-        } else {
-          expect(reach.has(String(group.hexId))).toBe(true);
-        }
+        const now = reach(unitId, unit.hexId);
+        if (arrives(now, group.hexId, group.defended)) continue;
+        expect(group.turn).toBe(2);
+        const nearest = Math.min(...[...now].map((hexId) => hexesBetween(hexId, group.hexId)));
+        const staging = [...now].filter((hexId) => hexesBetween(hexId, group.hexId) === nearest && hexId !== String(group.hexId));
+        expect(staging.some((hexId) => arrives(reach(unitId, hexId as HexId), group.hexId, group.defended))).toBe(true);
       }
     }
-    expect(allocateTheater(situation, access(state), new Set(), () => 2)).toEqual(groups);
+    expect(allocateTheater(situation, access(state), new Set(), () => 2, 0.5)).toEqual(groups);
+    expect(allocateTheater(situation, access(state), new Set(), () => 2, 0).every(({ turn }) => turn === 1)).toBe(true);
   });
 
   it('steers the attacker only when the weight is on, with a legal first decision', () => {

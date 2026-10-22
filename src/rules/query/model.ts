@@ -291,6 +291,8 @@ export interface RuleEngine {
   /** Least-cost destinations of one own unit with their cost; facts carry `movement.remainingTicks`. */
   /** Reachable Hexes for one unit, or for it and `companionIds` moving together as one stack (6.1f). */
   readonly queryMovementRange: (state: GameState, actorId: PlayerId, pieceId: PieceId, companionIds?: readonly PieceId[]) => RuleQueryResult<readonly import('../movement/movement.js').ReachableHex[]>;
+  /** Where one own unit could end a Movement Segment begun in `fromHexId`, unmoved and fueled, everything else where it stands. */
+  readonly queryProjectedReach: (state: GameState, actorId: PlayerId, pieceId: PieceId, fromHexId: HexId) => RuleQueryResult<readonly import('../movement/movement.js').ReachableHex[]>;
   /** What one own Transport Point can load or unload in its Hex now: Token ranges, MP cost, and the rule behind anything not offered. */
   readonly queryTransportOptions: (state: GameState, actorId: PlayerId, truckId: PieceId) => RuleQueryResult<import('../supply/transport.js').TransportOptions | null>;
   /** Hexes where the actor's trace supply reaches: for the given unit (13.1d and 12.6f apply), or for any unit when null (12.6). */

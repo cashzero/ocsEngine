@@ -55,8 +55,8 @@ const summarize = (files) => {
   console.log(`Turns whose two plans have the same objectives and group sizes: ${sameSizes} of ${rows.length}`);
   // Groups of the theater plan that come from the allocation (the rest are the usual efforts filling the slots), and how
   // the policy that moved did on those objectives and on the other objectives of its own plan.
-  console.log('| Mover | Game Turns | Theater groups | From the allocation | Turns with one | Allocation: defended attacked | Allocation: defended held at end | Allocation: empty held at end | Other own groups: defended held at end |');
-  console.log('|---|---|---:|---:|---:|---:|---:|---:|---:|');
+  console.log('| Mover | Game Turns | Theater groups | From the allocation | Of which next step | Next step: held at end of next turn | Turns with one | Allocation: defended attacked | Allocation: defended held at end | Allocation: empty held at end | Other own groups: defended held at end |');
+  console.log('|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|');
   for (const mover of ['theater', 'standard']) {
     for (const [label, early] of [['1–3', true], ['4–8', false]]) {
       const turns = rows.filter((row) => row.mover === mover && (row.gameTurn <= 3) === early);
@@ -64,7 +64,12 @@ const summarize = (files) => {
       const allocated = groups.filter(({ allocated: a }) => a);
       const other = turns.flatMap((row) => row.plans[mover].filter(({ hexId }) => !row.plans.theater.some((group) => group.hexId === hexId && group.allocated)));
       const share = (list, key) => `${fmt(mean(list.map((group) => (group[key] ? 1 : 0))))} (${list.length})`;
-      console.log(`| ${mover} | ${label} | ${groups.length} | ${allocated.length} | ${turns.filter((row) => row.plans.theater.some(({ allocated: a }) => a)).length} of ${turns.length}`
+      // A next-step group is judged at the end of the attacker's next player turn.
+      const nextHeld = turns.flatMap((row) => row.plans.theater.filter(({ allocatedTurn }) => allocatedTurn === 2).map(({ hexId }) => {
+        const next = rows.find((other) => other.match === row.match && other.gameTurn === row.gameTurn + 1);
+        return next ? (next.held.includes(hexId) ? 1 : 0) : null;
+      }).filter((value) => value !== null));
+      console.log(`| ${mover} | ${label} | ${groups.length} | ${allocated.length} | ${allocated.filter(({ allocatedTurn }) => allocatedTurn === 2).length} | ${fmt(mean(nextHeld))} (${nextHeld.length}) | ${turns.filter((row) => row.plans.theater.some(({ allocated: a }) => a)).length} of ${turns.length}`
         + ` | ${share(allocated.filter(({ defended }) => defended), 'attacked')} | ${share(allocated.filter(({ defended }) => defended), 'heldAtEnd')}`
         + ` | ${share(allocated.filter(({ defended }) => !defended), 'heldAtEnd')} | ${share(other.filter(({ defended }) => defended), 'heldAtEnd')} |`);
     }
@@ -97,6 +102,7 @@ const access = (state) => {
     feedCoverage: (pieceId = null) => m.ruleEngine.queryFeedCoverage(state, actorId, pieceId).value,
     drawReach: (hexId) => new Set((m.ruleEngine.queryDrawReach(state, actorId, hexId).value ?? []).map(String)),
     attackStrength: (attackerIds, targetHexId) => m.ruleEngine.queryAttackStrength(state, actorId, attackerIds, targetHexId).value,
+    projectedReach: (pieceId, fromHexId) => m.ruleEngine.queryProjectedReach(state, actorId, pieceId, fromHexId).value,
   };
 };
 
@@ -120,7 +126,7 @@ const plan = (facts, weightsOf, state, objectives) => {
   const { enemy } = m.analyze(context.view.projection, playerId, facts);
   // The THEATER debug line lists the allocation's groups the policy kept (theaterAllocation on).
   const theaterLine = lines.find((line) => line.includes(' THEATER'));
-  const allocated = new Set(theaterLine ? theaterLine.slice(theaterLine.indexOf(' THEATER') + ' THEATER'.length).trim().split(' ').filter(Boolean).map((entry) => entry.split(':')[0]) : []);
+  const allocated = new Map([...(theaterLine ?? '').matchAll(/ (\d+,\d+):\d+u p[\d.]+(?: t(\d))?/g)].map(([, hexId, turn]) => [hexId, Number(turn ?? 1)]));
   const groups = new Map();
   for (const [unitId, { hexId, purpose }] of targets) {
     const key = String(hexId);
@@ -128,7 +134,7 @@ const plan = (facts, weightsOf, state, objectives) => {
     if (!groups.has(key)) groups.set(key, []);
     groups.get(key).push(unitId);
   }
-  return [...groups].map(([hexId, unitIds]) => ({ hexId, points: objectives.get(hexId), defended: enemy.get(hexId)?.hasCombatUnit ?? false, allocated: allocated.has(hexId), unitIds }));
+  return [...groups].map(([hexId, unitIds]) => ({ hexId, points: objectives.get(hexId), defended: enemy.get(hexId)?.hasCombatUnit ?? false, allocated: allocated.has(hexId), allocatedTurn: allocated.get(hexId) ?? null, unitIds }));
 };
 
 const entryCounts = { unavailable: 0, mismatched: 0 };
@@ -152,7 +158,7 @@ for (const dir of dirs) {
       for (const [planName, groups] of Object.entries(turn.plans)) {
         turn.plans[planName] = groups.map(({ unitIds, ...group }) => ({ ...group, units: unitIds.length, attacked: turn.attacked.has(group.hexId) }));
       }
-      rows.push({ match: record.match, mover, gameTurn: turn.gameTurn, plans: turn.plans, combatEntryRebuilt: turn.combatEntryRebuilt });
+      rows.push({ match: record.match, mover, gameTurn: turn.gameTurn, plans: turn.plans, combatEntryRebuilt: turn.combatEntryRebuilt, held: [...objectives.keys()].filter((hexId) => control(end, hexId) === attackerId) });
       turn = null;
     };
     for (const action of save.acceptedActions) {

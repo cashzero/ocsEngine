@@ -7,7 +7,7 @@ import { hexesBetween, knowledgeOf, type BotGameFacts } from '../knowledge.js';
 import type { BotDecision, BotDecisionContext, BotPolicy, BotScoreTerm } from '../model.js';
 import { forecastBarrage, forecastCombat, forecastFacilityBarrage, type PublicFacilityTarget } from '../odds.js';
 import { DEFAULT_HEURISTIC_WEIGHTS, type HeuristicWeights } from './heuristic-weights.js';
-import { allocateTheater } from './theater.js';
+import { allocateTheater, nextTurnDiscount } from './theater.js';
 
 /**
  * heuristic@1: reads the position and plays to win on objectives (M9.2).
@@ -71,17 +71,19 @@ const chooseEfforts = (situation: Situation, w: HeuristicWeights, count: number)
 /**
  * Plan P11.8 candidate (theaterAllocation): this step's allocation (policies/theater.ts) gives the efforts, one per
  * defended objective in order of expected VP, and the captures of empty objectives; garrisons keep their objectives.
- * A group whose capture probability is below THEATER_MIN_PROBABILITY is dropped: its units keep the usual targets,
- * which the allocation does not value. Its groups stop beside their objective this step, so the objective is the lead
- * HQs and trucks follow. Effort slots it leaves go to the usual multi-turn efforts with the remaining units.
+ * Groups reach their objective this step or the next; a group whose capture probability, discounted for waiting a
+ * step, is below THEATER_MIN_PROBABILITY is dropped: its units keep the usual targets, which the allocation does not
+ * value. The objective is the lead HQs and trucks follow, so supply gathers there before a next-step attack. Effort
+ * slots it leaves go to the usual multi-turn efforts with the remaining units.
  */
 const THEATER_MIN_PROBABILITY = 0.25;
 
 const theaterEfforts = (context: BotDecisionContext, situation: Situation, facts: BotGameFacts, w: HeuristicWeights, notes: StepNotes): MainEffort[] => {
   const garrisons = new Set(heldDefenders(situation, w).map(({ unit }) => unit.piece.id));
   const knowledge = knowledgeOf(facts);
-  const groups = allocateTheater(situation, context.actions, garrisons, (piece) => knowledge.profile(piece)?.actionRating ?? 0)
-    .filter(({ probability }) => probability >= THEATER_MIN_PROBABILITY);
+  const discount = nextTurnDiscount(context.view.projection?.sequence.gameTurn ?? 1, situation.turnsLeft);
+  const groups = allocateTheater(situation, context.actions, garrisons, (piece) => knowledge.profile(piece)?.actionRating ?? 0, discount)
+    .filter(({ chance }) => chance >= THEATER_MIN_PROBABILITY);
   const efforts: MainEffort[] = groups.filter(({ defended }) => defended).slice(0, w.assaultMaxEfforts).map(({ hexId, unitIds }) => ({
     hexId, defenders: situation.enemy.get(hexId)?.strength ?? 0, unitIds: new Set(unitIds), lead: hexId,
   }));
@@ -93,7 +95,7 @@ const theaterEfforts = (context: BotDecisionContext, situation: Situation, facts
     efforts.push(next);
     for (const unitId of next.unitIds) used.add(unitId);
   }
-  debug?.(`THEATER ${groups.map(({ hexId, unitIds, probability }) => `${hexId}:${unitIds.length}u p${probability.toFixed(2)}`).join(' ')}`);
+  debug?.(`THEATER ${groups.map(({ hexId, unitIds, chance, turn }) => `${hexId}:${unitIds.length}u p${chance.toFixed(2)} t${turn}`).join(' ')}`);
   return efforts;
 };
 

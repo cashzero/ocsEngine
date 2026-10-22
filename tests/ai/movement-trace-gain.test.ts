@@ -54,6 +54,7 @@ describe('supply gained by a real VP approach', () => {
           feedCoverage: (id = null) => ruleEngine.queryFeedCoverage(state, owner, id).value!,
           drawReach: hexId => new Set((ruleEngine.queryDrawReach(state, owner, hexId).value ?? []).map(String)),
           attackStrength: (attackerIds, targetHexId) => ruleEngine.queryAttackStrength(state, owner, attackerIds, targetHexId).value!,
+          projectedReach: (pieceId, fromHexId) => ruleEngine.queryProjectedReach(state, owner, pieceId, fromHexId).value!,
         } };
       const chosen = policy.decide(context);
       if (!chosen) throw new Error('Bot stalled');

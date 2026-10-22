@@ -27,6 +27,7 @@ const context = (state: GameState, memory: BotPhaseMemory): BotDecisionContext =
       feedCoverage: (id = null) => ruleEngine.queryFeedCoverage(state, actorId, id).value!,
       drawReach: hexId => new Set((ruleEngine.queryDrawReach(state, actorId, hexId).value ?? []).map(String)),
       attackStrength: (attackerIds, targetHexId) => ruleEngine.queryAttackStrength(state, actorId, attackerIds, targetHexId).value!,
+      projectedReach: (pieceId, fromHexId) => ruleEngine.queryProjectedReach(state, actorId, pieceId, fromHexId).value!,
     } };
 };
 

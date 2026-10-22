@@ -10,7 +10,7 @@ import { BARRAGE_TABLE_COLUMNS, FACILITY_TABLE_COLUMNS, facilityColumnIndex } fr
 import type { GameAction, GameState } from './kernel/model.js';
 import { applyGameAction } from './kernel/reducer.js';
 import { validateGameAction } from './kernel/validate.js';
-import { queryStackMovementPath, queryStackReachableHexes } from './movement/movement.js';
+import { queryProjectedReachableHexes, queryStackMovementPath, queryStackReachableHexes } from './movement/movement.js';
 import { queryDrawReach, queryFeedCoverage, querySupplySources, queryTraceCoverage } from './supply/supply.js';
 import { relocationSupplyFacts } from './supply/relocation-impact.js';
 import { rationBudgetFacts } from './supply/ration-budget.js';
@@ -185,6 +185,7 @@ const engine: RuleEngine = {
   queryMovementRange: (state, actorId, pieceId, companionIds = []) => (kindMayBeLegal(state, actorId, 'MOVE_PIECE')
     ? queryStackReachableHexes(state, actorId, [pieceId, ...companionIds])
     : { allowed: false, value: [], reasons: [{ code: 'MOVEMENT_NOT_ALLOWED', allowed: false, message: 'No movement in this step.', rule: '6.1' }], facts: [], dependencies: [] }),
+  queryProjectedReach: (state, actorId, pieceId, fromHexId) => queryProjectedReachableHexes(state, actorId, pieceId, fromHexId),
   queryTransportOptions,
   queryTraceCoverage,
   queryFeedCoverage,

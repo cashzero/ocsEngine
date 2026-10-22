@@ -64,6 +64,7 @@ Dispatch 的 request ID 含 runner 的 `nonce`：session 會拒絕已見過的 r
 | `families()` | 目前啟用的行動種類 |
 | `candidates(kind, pieceId?, budget = 400)` | 合法候選行動 |
 | `movementRange(pieceId)` | 可達格、路徑與 MP |
+| `projectedReach(pieceId, fromHexId)` | 單位若從該格開始 Movement Segment、未移動且已付燃料（12.5a），能停在哪些格；其他單位維持原位，規則層 `queryProjectedReach` |
 | `explain(action)` | 驗證行動並取得玩家看得到的 facts（勝率、DRM、費用，以及補給預判） |
 | `traceCoverage(pieceId?)` | 任何單位或指定單位（含 12.6f、13.1d）的 trace 範圍 |
 | `feedCoverage(pieceId?)` | 每個友方補給堆能餵到的範圍（12.6c） |

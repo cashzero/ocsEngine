@@ -6,6 +6,7 @@ import type { RuleFact, RuleQueryResult } from '../query/model.js';
 import {
   adjacentHexIds as adjacentOf,
   definitionOf,
+  emptyUsage,
   enemyCombatUnitsAt,
   friendlyCombatUnitsAt,
   hexOf,
@@ -19,6 +20,7 @@ import {
   pieceById,
   piecesAt,
   usageOf,
+  withUsage,
 } from '../pieces.js';
 import type { MovementStepCost } from '../terrain.js';
 import { moverCostModel } from './bridging.js';
@@ -502,4 +504,29 @@ export const queryStackReachableHexes = (
     ],
     dependencies: [{ aggregate: 'GAME', revision: state.revision, key: `reachable:${pieceIds.join('+')}` }],
   };
+};
+
+/**
+ * Where an own unit could end a Movement Segment it began in `fromHexId`, unmoved and fueled (12.5a), in its current
+ * mode, with every other piece where it stands now: the reach a plan can count on for this step before paying fuel, or
+ * for the next step from where it ends this one.
+ */
+export const queryProjectedReachableHexes = (
+  state: GameState,
+  actorId: PlayerId,
+  pieceId: PieceId,
+  fromHexId: HexId,
+): RuleQueryResult<readonly ReachableHex[]> => {
+  const piece = pieceById(state, pieceId);
+  if (piece?.location.kind === 'ON_MAP' && enemyCombatUnitsAt(state, piece.ownerId, fromHexId).length > 0) {
+    return { allowed: false, value: [], reasons: [{ code: 'ENEMY_OCCUPIED_ORIGIN', allowed: false, message: 'Enemy combat units hold the origin Hex.', rule: '6.1' }], facts: [], dependencies: [] };
+  }
+  const projected: GameState = piece?.location.kind === 'ON_MAP' ? {
+    ...state, activeTransaction: null, pendingDecision: null, currentMoverId: null,
+    sequence: { ...state.sequence, phase: 'MOVEMENT', segment: 'MOVEMENT', phasingPlayerId: actorId, actingPlayerId: actorId },
+    pieceState: { ...state.pieceState, pieces: state.pieceState.pieces.map((entry) => (entry.id === pieceId ? { ...entry, location: { kind: 'ON_MAP' as const, hexId: fromHexId } } : entry)) },
+    usage: withUsage(state, { ...emptyUsage(pieceId, fromHexId), fueled: true }),
+    air: { ...state.air, builderIds: state.air.builderIds.filter((id) => id !== pieceId) },
+  } : state;
+  return queryReachableHexes(projected, actorId, pieceId);
 };

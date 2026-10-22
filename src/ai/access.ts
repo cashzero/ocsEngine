@@ -16,6 +16,7 @@ export const createBotActionAccess = (session: GameSession, seatId: SeatId, obse
   const feedCache = new Map<string, readonly FeedSource[]>();
   const drawCache = new Map<string, ReadonlySet<string>>();
   const attackCache = new Map<string, PlannedAttack>();
+  const projectedCache = new Map<string, readonly ReachableHex[]>();
   return {
     families: () => families ??= session.getActionFamilies(seatId).filter(({ enabled }) => enabled).map(({ kind }) => kind),
     candidates: (kind, pieceId = null, budget = DEFAULT_CANDIDATE_BUDGET) => {
@@ -36,6 +37,15 @@ export const createBotActionAccess = (session: GameSession, seatId: SeatId, obse
         rangeCache.set(pieceId, range);
       }
       return range;
+    },
+    projectedReach: (pieceId, fromHexId) => {
+      const key = `${pieceId}|${fromHexId}`;
+      let reach = projectedCache.get(key);
+      if (reach === undefined) {
+        reach = session.getProjectedReach(seatId, pieceId, fromHexId).value ?? [];
+        projectedCache.set(key, reach);
+      }
+      return reach;
     },
     explain: (action) => session.validateDraft(session.createDraft(seatId, action)),
     traceCoverage: (pieceId = null) => {
