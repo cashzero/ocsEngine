@@ -1,6 +1,6 @@
 # 戰區補給配置
 
-狀態：**指標已前瞻確認（近期奪點）；終局預測未通過；策略上層 2 步驟版本改變了攻方的計畫，但西歐觀測未確立幫助，限制在移動執行（權重預設關閉）**。量測工具全部在 `scripts/`，不被 bot 讀取。工作項目見 [局勢指標研究 WBS 的 P11](../roadmap/18-position-metrics-wbs.md)。
+狀態：**指標已前瞻確認（近期奪點）；終局預測未通過；策略上層 2 步驟版本改變了攻方的計畫；本步驟組的移動執行已修正，但西歐觀測未確立幫助，限制移到下一步驟組的兌現（權重預設關閉）**。量測工具全部在 `scripts/`，不被 bot 讀取。工作項目見 [局勢指標研究 WBS 的 P11](../roadmap/18-position-metrics-wbs.md)。
 
 ## 範圍
 
@@ -69,7 +69,9 @@
 
 [執行核對](../quality/evidence/ai-theater-adherence-2026-10-22/README.md)重播同 80 局，在攻方每個 Movement 的第一個決策處讓兩種策略各自規劃，結果開啟權重幾乎不改變計畫：640 個攻方回合中 638 個兩者的目標相同；配置產出的組只佔 6%（2,135 組中 135 組），其餘因奪點機率低於 0.25 被捨去，名額由原本的主攻補上。配置留下的是 1 個 Movement 內就能到位且勝算高的目標，標準策略在這些目標上同樣攻擊並奪下（Game Turn 1～3 有守軍者：攻擊 0.87、回合末持有 0.70；開啟權重時 0.79、0.67）。Game Turn 1～3 的落差在其餘的組：進入 Combat 時成員（含 `planTargets` 給遠處單位的多回合 CAPTURE 目標）在目標旁約 0.1，有守軍的目標回合末只持有 0.03，兩種策略相同。因此上述觀測的未確立只說明這個 1 回合版本幾乎沒有作用，不構成「依戰區規劃是否有幫助」的檢驗。以上觀測與核對都是 1 回合版本。
 
-2 步驟版本的[觀測](../quality/evidence/ai-theater-two-step-games-2026-10-22/README.md)在 80 局新的西歐攻擊戰（事先登記，2100100–2100179，交換座位 40 對）：計畫明顯改變（640 個攻方回合中 420 個與標準不同，Game Turn 1～3 的組約 40% 來自配置，每回合投入單位 23 對 18），但是否有幫助仍未確立：VP 每對 +0.88 [−1.22, +2.97]，Kill − Loss −0.86 [−3.69, +1.96]，Supply +0.29；Game Turn 1～3 攻方每局多取得目標 VP +0.33 [−0.21, +0.86]。限制已從計畫移到執行（[執行診斷](../quality/evidence/ai-theater-execution-2026-10-30/README.md)）：Game Turn 1～3 配置要求本步驟站到有守軍目標旁的單位，進入 Combat 時 49% 到位（各組平均 0.40，標準移動時同樣的組 0.18），全組到位的只有 27%，這些目標回合末持有 0.32 對 0.30。重播配置版擔任攻方的 40 局、讓策略在記錄局面上重做 7,990 個 Movement 決策（全部與記錄相同）後，這些單位的 310 次移動中：45% 停到目標旁；25% 因目標旁的格子在 trace 補給外、又沒有 SP 承諾供食，被友軍補給關卡全部否決；7% 被其他格子勝過，主要也是 out-of-supply 扣分；10% 移動當下走不到（多半先改為 Combat Mode 而 MA 變低）；7% 走得到但不在策略的候選移動中；5% 因堆疊。最大的損失是補給：攻擊位置在 trace 補給外。先前記錄的「31% 到位」把 `planTargets` 給遠處單位的多回合 CAPTURE 目標也算進組內，已以執行診斷更正。這批觀測到的每對 VP 標準差為 6.54，對每對 +2 VP 的檢定力約 0.5。
+2 步驟版本的[觀測](../quality/evidence/ai-theater-two-step-games-2026-10-22/README.md)在 80 局新的西歐攻擊戰（事先登記，2100100–2100179，交換座位 40 對）：計畫明顯改變（640 個攻方回合中 420 個與標準不同，Game Turn 1～3 的組約 40% 來自配置，每回合投入單位 23 對 18），但是否有幫助仍未確立：VP 每對 +0.88 [−1.22, +2.97]，Kill − Loss −0.86 [−3.69, +1.96]，Supply +0.29；Game Turn 1～3 攻方每局多取得目標 VP +0.33 [−0.21, +0.86]。限制已從計畫移到執行（[執行診斷](../quality/evidence/ai-theater-execution-2026-10-30/README.md)）：Game Turn 1～3 配置要求本步驟站到有守軍目標旁的單位，進入 Combat 時 49% 到位（各組平均 0.40，標準移動時同樣的組 0.18），全組到位的只有 27%，這些目標回合末持有 0.32 對 0.30。重播配置版擔任攻方的 40 局、讓策略在記錄局面上重做 7,990 個 Movement 決策（全部與記錄相同）後，這些單位的 310 次移動中：45% 停到目標旁；25% 因目標旁的格子在 trace 補給外、又沒有 SP 承諾供食，被友軍補給關卡全部否決；7% 被其他格子勝過，主要也是 out-of-supply 扣分；10% 移動當下走不到（多半先改為 Combat Mode 而 MA 變低）；7% 走得到但不在策略的候選移動中；5% 因堆疊。最大的損失是補給：攻擊位置在 trace 補給外。先前記錄的「31% 到位」把 `planTargets` 給遠處單位的多回合 CAPTURE 目標也算進組內，已以執行診斷更正。
+
+在那 77 次被否決的移動中，HQ 換位置只能讓 13 次的攻擊位置進入補給（HQ 離敵 3 格以上時 7 次），所以改為讓計畫跟隨補給：本步驟只算 trace 補給到得了的攻擊位置、以移動時的模式算可達範圍、配置組單位取最多 1,500 個候選目的地（見上方現行行為）。[80 局觀測](../quality/evidence/ai-theater-execution-games-2026-10-30/README.md)（2100200–2100279）中，本步驟組的執行修好了：Game Turn 1～3 成員的移動 86% 停到目標旁（原 45%），這些組幾乎都發動攻擊，回合末持有 0.68（原 0.32）。但本步驟組從 99 組減為 31 組，大多改為下一步驟，而下一步驟組在下一回合末只持有 0.14，與標準在同樣目標上的 0.15 相同。結果 VP 每對 −0.57 [−2.29, +1.14]，未確立幫助；Kill − Loss −2.42 [−4.55, −0.30]，變差，來自 Game Turn 4～8 攻方造成的步數損失減少（每對 −4.05 [−6.66, −1.44]），即攻擊等待補給、而下一步驟沒有帶來補給時，攻擊變少。這批觀測到的每對 VP 標準差為 6.54，對每對 +2 VP 的檢定力約 0.5。
 
 使用者決定（2026-10-21）：P11 只做實作與觀測，不走升級流程，研究只限西歐。先前誤走升級流程的開發批與中途停止的獨立批只作觀測，東歐的對局不採用。
 
@@ -83,9 +85,9 @@
 
 ## 已知缺口
 
-- `bot-theater-allocation`：配置不考慮堆疊上限與友軍移動造成的 ZOC，本步驟成員只有 49% 到位，主因是攻擊位置在 trace 補給外而被友軍補給關卡否決；策略上層的下一步驟可達範圍假設其他單位不動、單位付得起燃料，折扣也套用在空目標上；指標只看 1 回合；完整問題（約 20 個單位）的近似差距未驗證；奪點模型只描述 bot 選擇發動的攻擊；守方的戰區劃分對門檻敏感。
+- `bot-theater-allocation`：配置不考慮堆疊上限與友軍移動造成的 ZOC，本步驟組只在 trace 補給內規劃後執行率 86%，但多數組延到下一步驟，下一步驟組的兌現率與標準相同，Game Turn 4～8 攻擊變少；策略上層的下一步驟可達範圍假設其他單位不動、單位付得起燃料，折扣也套用在空目標上；指標只看 1 回合；完整問題（約 20 個單位）的近似差距未驗證；奪點模型只描述 bot 選擇發動的攻擊；守方的戰區劃分對門檻敏感。
 - 既有可支付目標代理的合法見證缺口仍由 `bot-position-payability` 維護。
 
 ## 驗證
 
-[地圖普查](../quality/evidence/ai-theater-survey-2026-10-21/README.md)、[Combat 階段核對](../quality/evidence/ai-theater-attack-check-2026-10-21/README.md)、[燃料核對](../quality/evidence/ai-theater-fuel-check-2026-10-21/README.md)、[運入核對](../quality/evidence/ai-theater-inflow-check-2026-10-21/README.md)、[奪點機率模型](../quality/evidence/ai-theater-capture-model-2026-10-21/README.md)、[配置核對](../quality/evidence/ai-theater-allocation-check-2026-10-21/README.md)、[記錄紀錄](../quality/evidence/ai-theater-record-2026-10-21/README.md)、[回溯比較](../quality/evidence/ai-theater-validation-2026-10-21/README.md)、[前瞻確認](../quality/evidence/ai-theater-confirmation-2026-10-21/README.md)、[策略上層觀測](../quality/evidence/ai-theater-allocation-games-2026-10-21/README.md)、[策略上層執行核對](../quality/evidence/ai-theater-adherence-2026-10-22/README.md)、[下回合折扣](../quality/evidence/ai-theater-delay-2026-10-22/README.md)、[2 步驟觀測](../quality/evidence/ai-theater-two-step-games-2026-10-22/README.md)、[付款時序稽核](../quality/evidence/ai-theater-supply-audit-2026-10-20/README.md)。這些都不改變 `docs/quality/03-product-operation-verification-plan.md` 的任何列。
+[地圖普查](../quality/evidence/ai-theater-survey-2026-10-21/README.md)、[Combat 階段核對](../quality/evidence/ai-theater-attack-check-2026-10-21/README.md)、[燃料核對](../quality/evidence/ai-theater-fuel-check-2026-10-21/README.md)、[運入核對](../quality/evidence/ai-theater-inflow-check-2026-10-21/README.md)、[奪點機率模型](../quality/evidence/ai-theater-capture-model-2026-10-21/README.md)、[配置核對](../quality/evidence/ai-theater-allocation-check-2026-10-21/README.md)、[記錄紀錄](../quality/evidence/ai-theater-record-2026-10-21/README.md)、[回溯比較](../quality/evidence/ai-theater-validation-2026-10-21/README.md)、[前瞻確認](../quality/evidence/ai-theater-confirmation-2026-10-21/README.md)、[策略上層觀測](../quality/evidence/ai-theater-allocation-games-2026-10-21/README.md)、[策略上層執行核對](../quality/evidence/ai-theater-adherence-2026-10-22/README.md)、[下回合折扣](../quality/evidence/ai-theater-delay-2026-10-22/README.md)、[2 步驟觀測](../quality/evidence/ai-theater-two-step-games-2026-10-22/README.md)、[執行診斷](../quality/evidence/ai-theater-execution-2026-10-30/README.md)、[執行修正觀測](../quality/evidence/ai-theater-execution-games-2026-10-30/README.md)、[付款時序稽核](../quality/evidence/ai-theater-supply-audit-2026-10-20/README.md)。這些都不改變 `docs/quality/03-product-operation-verification-plan.md` 的任何列。
