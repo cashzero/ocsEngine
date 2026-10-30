@@ -7,7 +7,7 @@ import { hexesBetween, knowledgeOf, type BotGameFacts } from '../knowledge.js';
 import type { BotDecision, BotDecisionContext, BotPolicy, BotScoreTerm } from '../model.js';
 import { forecastBarrage, forecastCombat, forecastFacilityBarrage, type PublicFacilityTarget } from '../odds.js';
 import { DEFAULT_HEURISTIC_WEIGHTS, type HeuristicWeights } from './heuristic-weights.js';
-import { allocateTheater, nextTurnDiscount } from './theater.js';
+import { allocateTheater, nextTurnDiscount, type HqPlacement, type TruckPlacement } from './theater.js';
 
 /**
  * heuristic@1: reads the position and plays to win on objectives (M9.2).
@@ -73,20 +73,29 @@ const chooseEfforts = (situation: Situation, w: HeuristicWeights, count: number)
  * defended objective in order of expected VP, and the captures of empty objectives; garrisons keep their objectives.
  * Groups reach their objective this step or the next; a group whose capture probability, discounted for waiting a
  * step, is below THEATER_MIN_PROBABILITY is dropped: its units keep the usual targets, which the allocation does not
- * value. The objective is the lead HQs and trucks follow, so supply gathers there before a next-step attack. Effort
- * slots it leaves go to the usual multi-turn efforts with the remaining units.
+ * value. The allocation also places HQs so that trace supply reaches each group's attack positions on its step; those
+ * HQs move to their places (THEATER_HQ_ARRIVE, THEATER_HQ_PULL) instead of following the army, and the trucks feed them
+ * as dry HQs. Effort slots it leaves go to the usual multi-turn efforts with the remaining units.
  */
 const THEATER_MIN_PROBABILITY = 0.25;
 const THEATER_MOVE_BUDGET = 1500;
+/** Score of a placed HQ ending where the allocation sends it this step, and per hex short of it: above the HQ's other terms. */
+const THEATER_HQ_ARRIVE = 150;
+const THEATER_HQ_PULL = 30;
 
 const theaterEfforts = (context: BotDecisionContext, situation: Situation, facts: BotGameFacts, w: HeuristicWeights, notes: StepNotes): MainEffort[] => {
   const garrisons = new Set(heldDefenders(situation, w).map(({ unit }) => unit.piece.id));
   const knowledge = knowledgeOf(facts);
   const discount = nextTurnDiscount(context.view.projection?.sequence.gameTurn ?? 1, situation.turnsLeft);
-  const groups = allocateTheater(situation, context.actions, garrisons, (piece) => knowledge.profile(piece)?.actionRating ?? 0, discount,
-    (unit, hexId, defended) => combatUnitMode(situation, unit, { hexId, purpose: defended ? 'ASSAULT' : 'CAPTURE' }, w))
-    .filter(({ chance }) => chance >= THEATER_MIN_PROBABILITY);
-  notes.theaterUnits = new Set(groups.flatMap(({ unitIds }) => unitIds));
+  const plan = allocateTheater(situation, context.actions, garrisons, (piece) => knowledge.profile(piece)?.actionRating ?? 0, discount,
+    (unit, hexId, defended) => combatUnitMode(situation, unit, { hexId, purpose: defended ? 'ASSAULT' : 'CAPTURE' }, w));
+  const groups = plan.groups.filter(({ chance }) => chance >= THEATER_MIN_PROBABILITY);
+  const hqs = plan.hqs.filter(({ objective }) => groups.some(({ hexId }) => hexId === objective));
+  const trucks = plan.trucks.filter(({ objective }) => groups.some(({ hexId }) => hexId === objective));
+  notes.hqPlan = new Map(hqs.map((placement) => [placement.hqId, placement]));
+  notes.truckPlan = new Map(trucks.map((placement) => [placement.truckId, placement]));
+  notes.theaterObjectives = new Map(groups.flatMap(({ hexId, unitIds }) => unitIds.map((id) => [id, hexId] as const)));
+  notes.theaterUnits = new Set([...groups.flatMap(({ unitIds }) => unitIds), ...notes.hqPlan.keys()]);
   const efforts: MainEffort[] = groups.filter(({ defended }) => defended).slice(0, w.assaultMaxEfforts).map(({ hexId, unitIds }) => ({
     hexId, defenders: situation.enemy.get(hexId)?.strength ?? 0, unitIds: new Set(unitIds), lead: hexId,
   }));
@@ -98,7 +107,9 @@ const theaterEfforts = (context: BotDecisionContext, situation: Situation, facts
     efforts.push(next);
     for (const unitId of next.unitIds) used.add(unitId);
   }
-  debug?.(`THEATER ${groups.map(({ hexId, unitIds, chance, turn }) => `${hexId}:${unitIds.length}u p${chance.toFixed(2)} t${turn}`).join(' ')}`);
+  debug?.(`THEATER ${groups.map(({ hexId, unitIds, chance, turn }) => `${hexId}:${unitIds.length}u p${chance.toFixed(2)} t${turn}`).join(' ')}`
+    + hqs.map(({ hqId, moveTo, hexId, objective, turn }) => ` HQ ${hqId}>${moveTo}>${hexId}@${objective}/t${turn}`).join('')
+    + trucks.map(({ truckId, drop, objective }) => ` TRUCK ${truckId}>${drop}@${objective}`).join(''));
   return efforts;
 };
 
@@ -160,6 +171,12 @@ interface StepNotes {
   theaterUnits?: ReadonlySet<PieceId>;
   /** Empty objectives the theater allocation sends units to take this step (theaterAllocation). */
   captures?: ReadonlyMap<PieceId, HexId>;
+  /** HQs the theater allocation sends to throw supply to its groups' attack positions, by HQ (theaterAllocation). */
+  hqPlan?: ReadonlyMap<PieceId, HqPlacement>;
+  /** Trucks the theater allocation sends to unload SP for its next-step groups, by truck (theaterAllocation). */
+  truckPlan?: ReadonlyMap<PieceId, TruckPlacement>;
+  /** The objective of each unit of a theater group: it may leave trace for its attack position there if it can eat (12.6c). */
+  theaterObjectives?: ReadonlyMap<PieceId, HexId>;
   /** Cut-off groups that need a supply run this step, and the trucks already sent to each (heuristic@7). */
   relief?: { readonly hexIds: readonly HexId[]; readonly sent: Map<HexId, PieceId>; readonly delivered: Set<HexId> };
   /** Nothing more is worth sending by rail this step (heuristic@12). */
@@ -495,7 +512,9 @@ const scoreDestination = (
     // Supply that depends on an HQ's throw is lost when the HQ moves or falls: prefer direct trace.
     else if (!direct.has(destination) && situation.turnsLeft > 1) add('hq-dependent-supply', -w.hqDependentSupply);
   } else if (unit.piece.role === 'HQ') {
-    if (front) add('with-army', -hexesBetween(destination, front) * w.hqWithArmy);
+    const placed = notes.hqPlan?.get(unit.piece.id);
+    if (placed) add('theater-hq', destination === placed.moveTo ? THEATER_HQ_ARRIVE : -hexesBetween(destination, placed.moveTo) * THEATER_HQ_PULL);
+    else if (front) add('with-army', -hexesBetween(destination, front) * w.hqWithArmy);
     if (situation.nearestEnemy(destination).distance <= 2) add('hq-exposed', -w.hqExposed);
     if (coverage && !coverage.has(destination)) add('out-of-supply', -w.hqOutOfSupply);
     // heuristic@79: an HQ exists to throw supply (12.3b). It stays where SP can reach it this turn: a dump already in its draw
@@ -732,8 +751,10 @@ const truckStep = (context: BotDecisionContext, situation: Situation, unit: OwnU
   const unsentRelief = () => relief.hexIds.filter((hexId) => !relief.sent.has(hexId));
   // SP is worth most where units cannot move for want of fuel (heuristic@79), then where the army can draw it (12.3a):
   // with a main effort at its lead units, otherwise the army's centre.
-  const stranded = strandedCenter(context, situation, notes);
-  const center = stranded?.hexId ?? effort?.lead ?? armyCenter(situation);
+  // A truck the theater allocation sends to a next-step group unloads where it was planned (theaterAllocation).
+  const assigned = notes.truckPlan?.get(id);
+  const stranded = assigned ? null : strandedCenter(context, situation, notes);
+  const center = assigned?.drop ?? stranded?.hexId ?? effort?.lead ?? armyCenter(situation);
   const loadTicks = loadTicksOf(unit);
   const drops = stranded?.drops ?? (center === null ? [] : dropHexes(context, situation, center));
   /** SP here can go somewhere nearer the army: otherwise a load would only be unloaded where it was taken. */
@@ -969,6 +990,13 @@ const preservesFriendlySupply = (context: BotDecisionContext, action: GameAction
   return preserved;
 };
 
+/** theaterAllocation: the move may cost the movers their trace (they eat, 12.6c), but no other unit its trace or rations. */
+const preservesOtherSupply = (context: BotDecisionContext, action: GameAction): boolean => {
+  const { explanation } = context.actions.explain(action);
+  const fact = (key: string) => explanation.facts.find((entry) => entry.key === key)?.value;
+  return explanation.allowed && fact('supply.relocationOtherTraceLost') === 0 && fact('supply.relocationFeedLost') === 0;
+};
+
 const keepsFriendlySupply = (explanation: RuleExplanation): boolean => {
   const lost = explanation.facts.find(({ key }) => key === 'supply.relocationTraceLost')?.value;
   const feedLost = explanation.facts.find(({ key }) => key === 'supply.relocationFeedLost')?.value;
@@ -1038,6 +1066,8 @@ const movementStep = (context: BotDecisionContext, situation: Situation, facts: 
       notes.modeSet.add(id);
       const wanted = unit.piece.role === 'COMBAT' ? combatUnitMode(situation, unit, target, w)
         // An HQ with the army stays in Combat Mode to rebuild units (13.5a); one far behind moves up in Move Mode.
+        // A placed HQ moves in Move Mode, as its reach was planned; it throws in either (12.6e).
+        : unit.piece.role === 'HQ' && notes.hqPlan?.has(id) && notes.hqPlan.get(id)!.moveTo !== unit.hexId ? 'MOVE'
         : unit.piece.role === 'HQ' ? (front !== null && (hexesBetween(unit.hexId, front) <= w.hqCombatModeRadius
             // heuristic@79: on a railroad hex an HQ in Combat Mode is a station (13.8c); it stays there while the army is near.
             || (railheadHex(situation, unit.hexId) && hexesBetween(unit.hexId, front) <= w.hqRailheadReach)) ? 'COMBAT' : 'MOVE') : null;
@@ -1129,9 +1159,14 @@ const movementStep = (context: BotDecisionContext, situation: Situation, facts: 
     const improving = scored.filter(candidate => sum(candidate.terms) > stay)
       .sort((left, right) => captureSwing(right.action) - captureSwing(left.action) || sum(right.terms) - sum(left.terms));
     movementObservation?.improving(improving.map(candidate => candidate.action));
+    // A theater group's unit may leave trace for an attack position at its objective where it can eat (12.6c).
+    const objective = notes.theaterObjectives?.get(id);
+    const attackPosition = (action: GameAction) => objective !== undefined && action.kind === 'MOVE_PIECE'
+      && (situation.enemy.get(objective)?.hasCombatUnit ? hexesBetween(destinationOf(action)!, objective) === 1 : destinationOf(action) === objective);
     for (const candidate of improving) {
-      if (!preservesFriendlySupply(context, candidate.action, movementObservation
-        ? (explanation, preserved) => movementObservation.supply(candidate.action, explanation, preserved) : undefined)) continue;
+      const fedThere = attackPosition(candidate.action) && feedSourceFor(notes, feeds, unit, destinationOf(candidate.action)!) !== null;
+      if (!(fedThere ? preservesOtherSupply(context, candidate.action) : preservesFriendlySupply(context, candidate.action, movementObservation
+        ? (explanation, preserved) => movementObservation.supply(candidate.action, explanation, preserved) : undefined))) continue;
       best = candidate;
       break;
     }

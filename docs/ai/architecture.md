@@ -65,6 +65,7 @@ Dispatch 的 request ID 含 runner 的 `nonce`：session 會拒絕已見過的 r
 | `candidates(kind, pieceId?, budget = 400)` | 合法候選行動 |
 | `movementRange(pieceId)` | 可達格、路徑與 MP |
 | `projectedReach(pieceId, fromHexId, mode?)` | 單位若從該格開始 Movement Segment、未移動且已付燃料（12.5a），以目前模式或開始移動時改成的 `mode`（5.4），能停在哪些格；其他單位維持原位，規則層 `queryProjectedReach` |
+| `hqThrow(hqId, fromHexId)` | 己方 HQ 若站在該格（非 Strat Mode），是否有補給源供應（12.3a，依 HQ 機動類型）、投送（12.3b）涵蓋哪些地圖陸地格，以及可供應哪些己方戰鬥單位（13.1d）；其他單位維持原位，規則層 `queryHqThrow` |
 | `explain(action)` | 驗證行動並取得玩家看得到的 facts（勝率、DRM、費用，以及補給預判） |
 | `traceCoverage(pieceId?)` | 任何單位或指定單位（含 12.6f、13.1d）的 trace 範圍 |
 | `feedCoverage(pieceId?)` | 每個友方補給堆能餵到的範圍（12.6c） |

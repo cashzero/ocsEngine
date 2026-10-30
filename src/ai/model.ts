@@ -8,7 +8,7 @@ import type {
   GameSession,
   SeatId,
 } from '../gameplay/index.js';
-import type { ActionFamily, CandidateResult, FeedSource, GameAction, PlannedAttack, ProjectedPiece, ReachableHex, RuleExplanation, TraceCoverage } from '../rules/index.js';
+import type { ActionFamily, CandidateResult, FeedSource, GameAction, HqThrow, PlannedAttack, ProjectedPiece, ReachableHex, RuleExplanation, TraceCoverage } from '../rules/index.js';
 
 export type BotPolicyId = string;
 
@@ -29,6 +29,8 @@ export interface BotActionAccess {
   readonly movementRange: (pieceId: PieceId) => readonly ReachableHex[];
   /** Where an own unit could end a Movement Segment begun in `fromHexId`, unmoved and fueled (12.5a), in its mode or `mode` (5.4), others where they stand. */
   readonly projectedReach: (pieceId: PieceId, fromHexId: HexId, mode?: OcsMode) => readonly ReachableHex[];
+  /** Where an own HQ would throw supply if it stood in `fromHexId` (12.3b), whether it would be fed there, and whom it may supply (13.1d). */
+  readonly hqThrow: (hqId: PieceId, fromHexId: HexId) => HqThrow;
   /** Whether an action built by the policy is legal now, with the facts a player sees (odds, DRM, cost). */
   readonly explain: (action: GameAction) => DraftValidation;
   /** Hexes the seat's trace supply reaches for any unit (12.6), or for one unit with 12.6f and 13.1d applied. */

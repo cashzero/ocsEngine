@@ -297,6 +297,8 @@ export interface RuleEngine {
   readonly queryTransportOptions: (state: GameState, actorId: PlayerId, truckId: PieceId) => RuleQueryResult<import('../supply/transport.js').TransportOptions | null>;
   /** Hexes where the actor's trace supply reaches: for the given unit (13.1d and 12.6f apply), or for any unit when null (12.6). */
   readonly queryTraceCoverage: (state: GameState, actorId: PlayerId, pieceId: PieceId | null) => RuleQueryResult<import('../supply/supply.js').TraceCoverage>;
+  /** Where one own HQ would throw supply if it stood in `fromHexId` (12.3b), whether it would be fed there, and whom it may supply (13.1d). */
+  readonly queryHqThrow: (state: GameState, actorId: PlayerId, hqId: PieceId, fromHexId: HexId) => RuleQueryResult<import('../supply/supply.js').HqThrow>;
   /** Where each of the actor's dumps can feed the given unit (any unit when null) out of trace (12.6c). */
   readonly queryFeedCoverage: (state: GameState, actorId: PlayerId, pieceId: PieceId | null) => RuleQueryResult<readonly import('../supply/supply.js').FeedSource[]>;
   /** Hexes within draw range (12.3a) of SP standing in the given Hex, for the actor. */

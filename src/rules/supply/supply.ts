@@ -627,6 +627,46 @@ export const queryTraceCoverage = (state: GameState, actorId: PlayerId, pieceId:
   };
 };
 
+/** What an HQ would throw from a Hex (12.3b), for planning where to move it. */
+export interface HqThrow {
+  /** The HQ standing there draws from a Supply Source (12.3a with its mobility), so it throws. */
+  readonly fed: boolean;
+  /** Land Hexes of the map in or adjacent to its throw from there, as trace coverage counts them; empty when not fed. */
+  readonly hexIds: readonly HexId[];
+  /** The actor's on-map combat units it may supply (13.1d). */
+  readonly servableIds: readonly PieceId[];
+}
+
+/**
+ * Where an own HQ's throw would reach if it stood in `fromHexId` (not in Strat Mode, 12.6e), everything else where it
+ * stands: fed when a Supply Source reaches that Hex by the HQ's mobility within draw range, as for the HQs now on the map.
+ */
+export const queryHqThrow = (state: GameState, actorId: PlayerId, hqId: PieceId, fromHexId: HexId): RuleQueryResult<HqThrow> => {
+  const hq = pieceById(state, hqId);
+  if (!hq || hq.ownerId !== actorId || !isHq(state, hq) || throwRangeTicks(state, hq) <= 0) {
+    return {
+      allowed: false, value: { fed: false, hexIds: [], servableIds: [] },
+      reasons: [{ code: 'NOT_A_THROWING_HQ', allowed: false, message: 'Choose one of your own HQs with a throw range.', rule: '12.3b' }],
+      facts: [], dependencies: [],
+    };
+  }
+  const mobility = hqMobility(state, hq);
+  const range = state.configuration.supplyDrawRangeTicks;
+  const fed = friendlySourceHexes(state, actorId).some((source) => reaches(supplyPathCosts(state, actorId, source, mobility, range), fromHexId));
+  const thrown = fed ? withAdjacent([supplyPathCosts(state, actorId, fromHexId, mobility, throwRangeTicks(state, hq))]) : new Set<HexId>();
+  const hexIds = state.scenario.mapDefinition.hexes
+    .filter(({ id, terrainDefinitionIds }) => thrown.has(id) && !terrainDefinitionIds.some((terrain) => String(terrain) === 'terrain:water')).map(({ id }) => id);
+  const servableIds = state.pieceState.pieces.filter((piece) => piece.ownerId === actorId && piece.location.kind === 'ON_MAP'
+    && isCombatUnit(state, piece) && piece.id !== hq.id && hqMaySupply(state, hq, piece)).map(({ id }) => id);
+  return {
+    allowed: true,
+    value: { fed, hexIds, servableIds },
+    reasons: [{ code: 'HQ_THROW', allowed: true, message: 'Hexes an HQ would throw to from this Hex.', rule: '12.3b' }],
+    facts: [],
+    dependencies: [{ aggregate: 'PIECE', revision: state.pieceState.revision, key: `supply:hq-throw:${hqId}:${fromHexId}` }],
+  };
+};
+
 /** Where each of the actor's dumps can feed `pieceId` (any unit when null) out of trace (12.6c). */
 export const queryFeedCoverage = (state: GameState, actorId: PlayerId, pieceId: PieceId | null): RuleQueryResult<readonly FeedSource[]> => {
   const piece = pieceId === null ? null : pieceById(state, pieceId);

@@ -1,6 +1,6 @@
 import type { PieceId } from '../core/index.js';
 import type { GameSession, SeatId } from '../gameplay/index.js';
-import type { CandidateResult, FeedSource, GameAction, PlannedAttack, ReachableHex, TraceCoverage } from '../rules/index.js';
+import type { CandidateResult, FeedSource, GameAction, HqThrow, PlannedAttack, ReachableHex, TraceCoverage } from '../rules/index.js';
 import type { BotActionAccess } from './model.js';
 import type { BotQueryObserver } from './observation.js';
 
@@ -17,6 +17,7 @@ export const createBotActionAccess = (session: GameSession, seatId: SeatId, obse
   const drawCache = new Map<string, ReadonlySet<string>>();
   const attackCache = new Map<string, PlannedAttack>();
   const projectedCache = new Map<string, readonly ReachableHex[]>();
+  const throwCache = new Map<string, HqThrow>();
   return {
     families: () => families ??= session.getActionFamilies(seatId).filter(({ enabled }) => enabled).map(({ kind }) => kind),
     candidates: (kind, pieceId = null, budget = DEFAULT_CANDIDATE_BUDGET) => {
@@ -46,6 +47,15 @@ export const createBotActionAccess = (session: GameSession, seatId: SeatId, obse
         projectedCache.set(key, reach);
       }
       return reach;
+    },
+    hqThrow: (hqId, fromHexId) => {
+      const key = `${hqId}|${fromHexId}`;
+      let value = throwCache.get(key);
+      if (value === undefined) {
+        value = session.getHqThrow(seatId, hqId, fromHexId).value ?? { fed: false, hexIds: [], servableIds: [] };
+        throwCache.set(key, value);
+      }
+      return value;
     },
     explain: (action) => session.validateDraft(session.createDraft(seatId, action)),
     traceCoverage: (pieceId = null) => {

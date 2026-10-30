@@ -283,6 +283,18 @@ export class GameplaySession implements GameSession {
     return cloneValue(this.#ports.rules.queryProjectedReach(this.#state, binding.playerId, pieceId, fromHexId, mode));
   };
 
+  getHqThrow = (
+    seatId: SeatId,
+    hqId: Parameters<GameSession['getHqThrow']>[1],
+    fromHexId: Parameters<GameSession['getHqThrow']>[2],
+  ): ReturnType<GameSession['getHqThrow']> => {
+    const binding = this.#binding(seatId);
+    if (this.#lifecycle !== 'ACTIVE' || this.#handoff !== null) {
+      return { allowed: false, value: { fed: false, hexIds: [], servableIds: [] }, reasons: [{ code: 'SESSION_NOT_INTERACTIVE', allowed: false, message: 'Session is not accepting interaction.', rule: 'gameplay' }], facts: [], dependencies: [] };
+    }
+    return cloneValue(this.#ports.rules.queryHqThrow(this.#state, binding.playerId, hqId, fromHexId));
+  };
+
   getTransportOptions = (seatId: SeatId, truckId: Parameters<GameSession['getTransportOptions']>[1]): ReturnType<GameSession['getTransportOptions']> => {
     const binding = this.#binding(seatId);
     if (this.#lifecycle !== 'ACTIVE' || this.#handoff !== null) {

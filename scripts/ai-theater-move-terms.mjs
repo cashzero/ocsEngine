@@ -42,6 +42,7 @@ const access = (state, actorId) => ({
   drawReach: (hexId) => new Set((m.ruleEngine.queryDrawReach(state, actorId, hexId).value ?? []).map(String)),
   attackStrength: (attackerIds, targetHexId) => m.ruleEngine.queryAttackStrength(state, actorId, attackerIds, targetHexId).value,
   projectedReach: (pieceId, fromHexId, mode) => m.ruleEngine.queryProjectedReach(state, actorId, pieceId, fromHexId, mode).value ?? [],
+  hqThrow: (hqId, fromHexId) => m.ruleEngine.queryHqThrow(state, actorId, hqId, fromHexId).value,
 });
 const sameAction = (left, right) => left?.kind === right.kind && left.pieceId === right.pieceId
   && JSON.stringify(left.path ?? null) === JSON.stringify(right.path ?? null)

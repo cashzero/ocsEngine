@@ -29,6 +29,7 @@ import type {
   RuleProjection,
   RuleViolation,
   TraceCoverage,
+  HqThrow,
   FeedSource,
   RuleConfiguration,
   PlannedAttack,
@@ -330,6 +331,8 @@ export interface GameSession {
   readonly getTransportOptions: (seatId: SeatId, truckId: PieceId) => RuleQueryResult<TransportOptions | null>;
   /** Hexes where the seat's trace supply reaches, for one of its units or (null) any unit; empty when not interactive. */
   readonly getTraceCoverage: (seatId: SeatId, pieceId: PieceId | null) => RuleQueryResult<TraceCoverage>;
+  /** Where one of the seat's HQs would throw supply if it stood in `fromHexId` (12.3b); empty when not interactive. */
+  readonly getHqThrow: (seatId: SeatId, hqId: PieceId, fromHexId: HexId) => RuleQueryResult<HqThrow>;
   /** Where each of the seat's dumps can feed one of its units (or, null, any unit) out of trace (12.6c); empty when not interactive. */
   readonly getFeedCoverage: (seatId: SeatId, pieceId: PieceId | null) => RuleQueryResult<readonly FeedSource[]>;
   /** Hexes within draw range (12.3a) of SP standing in `hexId`, for the seat; empty when not interactive. */
