@@ -1,6 +1,6 @@
 # 戰區補給配置
 
-狀態：**進行中：策略上層已分配 HQ 位置與卡車卸貨點，待西歐觀測；指標已前瞻確認（近期奪點）；終局預測未通過；策略上層 2 步驟版本改變了攻方的計畫；本步驟組的移動執行已修正，但西歐觀測未確立幫助；下一步驟組不要求補給、而補給跟不上，組逐回合延後（權重預設關閉）**。量測工具全部在 `scripts/`，不被 bot 讀取。工作項目見 [局勢指標研究 WBS 的 P11](../roadmap/18-position-metrics-wbs.md)。
+狀態：**進行中：策略上層已分配 HQ 位置與卡車卸貨點，計畫在補給到得了的目標上會被執行，但西歐觀測仍未確立幫助；指標已前瞻確認（近期奪點）；終局預測未通過；策略上層 2 步驟版本改變了攻方的計畫；本步驟組的移動執行已修正，但西歐觀測未確立幫助；下一步驟組不要求補給、而補給跟不上，組逐回合延後（權重預設關閉）**。量測工具全部在 `scripts/`，不被 bot 讀取。工作項目見 [局勢指標研究 WBS 的 P11](../roadmap/18-position-metrics-wbs.md)。
 
 ## 範圍
 
@@ -91,6 +91,17 @@
 - 下一回合 HQ 離目標仍有約 13.5 格（原 16.2 格），只有 17% 的成員走得到 trace 內的目標旁。目標仍未拿下時，配置只有 4% 改成本步驟進攻，53% 再延一步驟，43% 放棄；這些目標下一回合被攻擊 16%、持有 13%。
 - 原因在設計：本步驟要求補給，下一步驟不要求。所以補給外的攻擊位置全部成為下一步驟組，價值只打 0.79～0.94 折，佔走主攻名額和單位，再逐回合延後而不攻擊。這與 Game Turn 4～8 攻擊變少一致。
 
+因此配置改為同時分配 HQ 位置與卡車卸貨點（見上方現行行為）。[80 局觀測](../quality/evidence/ai-theater-hq-games-2026-10-30/README.md)（事先登記，2100300–2100379）結果如下：
+
+- **整體**：VP 每對 +1.35 [−0.51, +3.21]，Kill − Loss +0.71 [−1.78, +3.20]，Supply −0.04，是否有幫助仍未確立。上一批的退步已消失：Game Turn 4～8 守方損失步數每對 −0.17 [−1.65, +1.30]，原為 −4.05。
+- **攻方前 3 回合取得的目標 VP**：每對 +1.10 [−0.04, +2.24]，是四次觀測中最大的，但區間仍含 0。
+- **執行（前 3 回合）**：
+  - 被指派的 HQ 移動段結束時 26/28 到位；
+  - 本步驟組 41/44 發動攻擊、34/44 回合末持有；
+  - 下一步驟組在下一回合末持有 0.55（原 0.14，但組已改為只留補給到得了的）；
+  - 配置選出的有守軍目標，配置版移動時被攻擊 0.79、持有 0.59，標準移動時同樣目標 0.59、0.34。
+- **作用範圍小**：前 3 回合每回合只有 0.7 個有守軍的配置組，因為約一半補給外的目標兩步內任何 HQ 或卸貨點都到不了。卡車指派前 3 回合只有 9 次，卸在卸貨點 1 格內的只有 3 次，卡車部分尚未得到評估。
+
 使用者決定（2026-10-21）：P11 只做實作與觀測，不走升級流程，研究只限西歐。先前誤走升級流程的開發批與中途停止的獨立批只作觀測，東歐的對局不採用。
 
 ## 決策
@@ -108,4 +119,4 @@
 
 ## 驗證
 
-[地圖普查](../quality/evidence/ai-theater-survey-2026-10-21/README.md)、[Combat 階段核對](../quality/evidence/ai-theater-attack-check-2026-10-21/README.md)、[燃料核對](../quality/evidence/ai-theater-fuel-check-2026-10-21/README.md)、[運入核對](../quality/evidence/ai-theater-inflow-check-2026-10-21/README.md)、[奪點機率模型](../quality/evidence/ai-theater-capture-model-2026-10-21/README.md)、[配置核對](../quality/evidence/ai-theater-allocation-check-2026-10-21/README.md)、[記錄紀錄](../quality/evidence/ai-theater-record-2026-10-21/README.md)、[回溯比較](../quality/evidence/ai-theater-validation-2026-10-21/README.md)、[前瞻確認](../quality/evidence/ai-theater-confirmation-2026-10-21/README.md)、[策略上層觀測](../quality/evidence/ai-theater-allocation-games-2026-10-21/README.md)、[策略上層執行核對](../quality/evidence/ai-theater-adherence-2026-10-22/README.md)、[下回合折扣](../quality/evidence/ai-theater-delay-2026-10-22/README.md)、[2 步驟觀測](../quality/evidence/ai-theater-two-step-games-2026-10-22/README.md)、[執行診斷](../quality/evidence/ai-theater-execution-2026-10-30/README.md)、[執行修正觀測](../quality/evidence/ai-theater-execution-games-2026-10-30/README.md)、[下一步驟組追蹤](../quality/evidence/ai-theater-next-step-2026-10-30/README.md)、[付款時序稽核](../quality/evidence/ai-theater-supply-audit-2026-10-20/README.md)。這些都不改變 `docs/quality/03-product-operation-verification-plan.md` 的任何列。
+[地圖普查](../quality/evidence/ai-theater-survey-2026-10-21/README.md)、[Combat 階段核對](../quality/evidence/ai-theater-attack-check-2026-10-21/README.md)、[燃料核對](../quality/evidence/ai-theater-fuel-check-2026-10-21/README.md)、[運入核對](../quality/evidence/ai-theater-inflow-check-2026-10-21/README.md)、[奪點機率模型](../quality/evidence/ai-theater-capture-model-2026-10-21/README.md)、[配置核對](../quality/evidence/ai-theater-allocation-check-2026-10-21/README.md)、[記錄紀錄](../quality/evidence/ai-theater-record-2026-10-21/README.md)、[回溯比較](../quality/evidence/ai-theater-validation-2026-10-21/README.md)、[前瞻確認](../quality/evidence/ai-theater-confirmation-2026-10-21/README.md)、[策略上層觀測](../quality/evidence/ai-theater-allocation-games-2026-10-21/README.md)、[策略上層執行核對](../quality/evidence/ai-theater-adherence-2026-10-22/README.md)、[下回合折扣](../quality/evidence/ai-theater-delay-2026-10-22/README.md)、[2 步驟觀測](../quality/evidence/ai-theater-two-step-games-2026-10-22/README.md)、[執行診斷](../quality/evidence/ai-theater-execution-2026-10-30/README.md)、[執行修正觀測](../quality/evidence/ai-theater-execution-games-2026-10-30/README.md)、[下一步驟組追蹤](../quality/evidence/ai-theater-next-step-2026-10-30/README.md)、[HQ 與卡車配置觀測](../quality/evidence/ai-theater-hq-games-2026-10-30/README.md)、[付款時序稽核](../quality/evidence/ai-theater-supply-audit-2026-10-20/README.md)。這些都不改變 `docs/quality/03-product-operation-verification-plan.md` 的任何列。
