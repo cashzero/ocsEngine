@@ -1,6 +1,6 @@
 # 戰區補給配置
 
-狀態：**指標已前瞻確認（近期奪點）；終局預測未通過；策略上層 2 步驟版本改變了攻方的計畫；本步驟組的移動執行已修正，但西歐觀測未確立幫助，限制移到下一步驟組的兌現（權重預設關閉）**。量測工具全部在 `scripts/`，不被 bot 讀取。工作項目見 [局勢指標研究 WBS 的 P11](../roadmap/18-position-metrics-wbs.md)。
+狀態：**指標已前瞻確認（近期奪點）；終局預測未通過；策略上層 2 步驟版本改變了攻方的計畫；本步驟組的移動執行已修正，但西歐觀測未確立幫助；下一步驟組不要求補給、而補給跟不上，組逐回合延後（權重預設關閉）**。量測工具全部在 `scripts/`，不被 bot 讀取。工作項目見 [局勢指標研究 WBS 的 P11](../roadmap/18-position-metrics-wbs.md)。
 
 ## 範圍
 
@@ -61,7 +61,7 @@
 
 目標是 Game Turn 1～3 潛力與實現量的落差。實作在 `src/ai/policies/theater.ts`，由權重 `theaterAllocation` 開關（預設 0，標準 heuristic@85 不變；行為見 [heuristic 策略](heuristic-policy.md#尚未升級的候選)）：
 
-- 開啟時，攻擊戰的攻方在每個 Movement 步驟做一次配置，看本步驟與下一步驟（使用者確認 2026-10-22）。可達範圍用規則查詢 `projectedReach`：單位已付燃料、未移動時從某格出發能停在哪裡，模式取移動步驟對它會選的模式（模式只在開始移動時改變，5.4；接近敵軍或攻擊目標時為 Combat Mode，MA 較低）。本步驟從單位所在格算，而且只算單位目前 trace 補給到得了的格子，因為移動步驟的友軍補給關卡會否決其他格子；走得到但補給不到的目標歸為下一步驟，HQ 跟隨領頭格推進後再攻擊。下一步驟從本步驟可達範圍中最接近目標的格子算。配置組的單位移動時取最多 1,500 個候選目的地（一般單位 400），因為遠距單位的目標旁格子常排在 400 之後。改用這個查詢之前，配置用 `movementRange`，而 Movement 第一個決策時尚未付燃料，GT1 測試局面中 37 個戰鬥單位有 25 個（卡車與履帶單位）因此沒有可達範圍。
+- 開啟時，攻擊戰的攻方在每個 Movement 步驟做一次配置，看本步驟與下一步驟（使用者確認 2026-10-22）。可達範圍用規則查詢 `projectedReach`：單位已付燃料、未移動時從某格出發能停在哪裡，模式取移動步驟對它會選的模式（模式只在開始移動時改變，5.4；接近敵軍或攻擊目標時為 Combat Mode，MA 較低）。本步驟從單位所在格算，而且只算單位目前 trace 補給到得了的格子，因為移動步驟的友軍補給關卡會否決其他格子；走得到但補給不到的目標歸為下一步驟，假設 HQ 跟隨領頭格推進後再攻擊；下一步驟從本步驟可達範圍中最接近目標的格子算，不檢查補給（這個假設不成立，見下方觀測）。配置組的單位移動時取最多 1,500 個候選目的地（一般單位 400），因為遠距單位的目標旁格子常排在 400 之後。改用這個查詢之前，配置用 `movementRange`，而 Movement 第一個決策時尚未付燃料，GT1 測試局面中 37 個戰鬥單位有 25 個（卡車與履帶單位）因此沒有可達範圍。
 - 奪點機率以 bot 看得到的資訊估計：`attackStrength` 查詢的規則戰力與地形線型（守方取欄位最低者）、估計的敵軍戰力、雙方最高 AR（看不到的守方以 2 計）、hedgehog，守方一律假設付得起補給。凍結模型的係數放在策略中。組內有成員下一步驟才能到位時，組的價值再乘以下回合折扣：P5 開發資料中，攻方下一個 Movement 時守軍估計戰力沒有增加的比例，依 Game Turn 凍結（GT1 0.44、GT2 0.79，之後 0.84～0.94；最後一回合為 0）（[折扣估計](../quality/evidence/ai-theater-delay-2026-10-22/README.md)）。
 - 有守軍的組依期望 VP 依序成為主攻，領頭格是目標本身（HQ 與卡車跟隨，下一步驟進攻的組因此先把補給帶到戰區）；空目標的單位目標設為 CAPTURE；乘上折扣後機率低於 0.25 的組不用，其單位沿用原本分配；剩下的主攻名額沿用多回合主攻。守點單位不參與。每個步驟重新配置，上一步驟集結的單位此時成為本步驟到位的組。
 
@@ -72,6 +72,13 @@
 2 步驟版本的[觀測](../quality/evidence/ai-theater-two-step-games-2026-10-22/README.md)在 80 局新的西歐攻擊戰（事先登記，2100100–2100179，交換座位 40 對）：計畫明顯改變（640 個攻方回合中 420 個與標準不同，Game Turn 1～3 的組約 40% 來自配置，每回合投入單位 23 對 18），但是否有幫助仍未確立：VP 每對 +0.88 [−1.22, +2.97]，Kill − Loss −0.86 [−3.69, +1.96]，Supply +0.29；Game Turn 1～3 攻方每局多取得目標 VP +0.33 [−0.21, +0.86]。限制已從計畫移到執行（[執行診斷](../quality/evidence/ai-theater-execution-2026-10-30/README.md)）：Game Turn 1～3 配置要求本步驟站到有守軍目標旁的單位，進入 Combat 時 49% 到位（各組平均 0.40，標準移動時同樣的組 0.18），全組到位的只有 27%，這些目標回合末持有 0.32 對 0.30。重播配置版擔任攻方的 40 局、讓策略在記錄局面上重做 7,990 個 Movement 決策（全部與記錄相同）後，這些單位的 310 次移動中：45% 停到目標旁；25% 因目標旁的格子在 trace 補給外、又沒有 SP 承諾供食，被友軍補給關卡全部否決；7% 被其他格子勝過，主要也是 out-of-supply 扣分；10% 移動當下走不到（多半先改為 Combat Mode 而 MA 變低）；7% 走得到但不在策略的候選移動中；5% 因堆疊。最大的損失是補給：攻擊位置在 trace 補給外。先前記錄的「31% 到位」把 `planTargets` 給遠處單位的多回合 CAPTURE 目標也算進組內，已以執行診斷更正。
 
 在那 77 次被否決的移動中，HQ 換位置只能讓 13 次的攻擊位置進入補給（HQ 離敵 3 格以上時 7 次），所以改為讓計畫跟隨補給：本步驟只算 trace 補給到得了的攻擊位置、以移動時的模式算可達範圍、配置組單位取最多 1,500 個候選目的地（見上方現行行為）。[80 局觀測](../quality/evidence/ai-theater-execution-games-2026-10-30/README.md)（2100200–2100279）中，本步驟組的執行修好了：Game Turn 1～3 成員的移動 86% 停到目標旁（原 45%），這些組幾乎都發動攻擊，回合末持有 0.68（原 0.32）。但本步驟組從 99 組減為 31 組，大多改為下一步驟，而下一步驟組在下一回合末只持有 0.14，與標準在同樣目標上的 0.15 相同。結果 VP 每對 −0.57 [−2.29, +1.14]，未確立幫助；Kill − Loss −2.42 [−4.55, −0.30]，變差，來自 Game Turn 4～8 攻方造成的步數損失減少（每對 −4.05 [−6.66, −1.44]），即攻擊等待補給、而下一步驟沒有帶來補給時，攻擊變少。這批觀測到的每對 VP 標準差為 6.54，對每對 +2 VP 的檢定力約 0.5。
+
+[下一步驟組追蹤](../quality/evidence/ai-theater-next-step-2026-10-30/README.md)（重播同一批）顯示，延後的原因是補給，而補給跟不上：
+
+- Game Turn 1～3 的 248 個下一步驟組中，77% 的成員不計 trace 時走得到目標旁，但只有 8% 在 trace 內。
+- trace 篩選大致不比移動關卡嚴：在計畫時補給不到的成員中，HQ 先移動後關卡也只放行 23%（Game Turn 4～8 為 49%）。
+- 下一回合 HQ 離目標仍有約 13.5 格（原 16.2 格），只有 17% 的成員走得到 trace 內的目標旁。目標仍未拿下時，配置只有 4% 改成本步驟進攻，53% 再延一步驟，43% 放棄；這些目標下一回合被攻擊 16%、持有 13%。
+- 原因在設計：本步驟要求補給，下一步驟不要求。所以補給外的攻擊位置全部成為下一步驟組，價值只打 0.79～0.94 折，佔走主攻名額和單位，再逐回合延後而不攻擊。這與 Game Turn 4～8 攻擊變少一致。
 
 使用者決定（2026-10-21）：P11 只做實作與觀測，不走升級流程，研究只限西歐。先前誤走升級流程的開發批與中途停止的獨立批只作觀測，東歐的對局不採用。
 
@@ -85,9 +92,9 @@
 
 ## 已知缺口
 
-- `bot-theater-allocation`：配置不考慮堆疊上限與友軍移動造成的 ZOC，本步驟組只在 trace 補給內規劃後執行率 86%，但多數組延到下一步驟，下一步驟組的兌現率與標準相同，Game Turn 4～8 攻擊變少；策略上層的下一步驟可達範圍假設其他單位不動、單位付得起燃料，折扣也套用在空目標上；指標只看 1 回合；完整問題（約 20 個單位）的近似差距未驗證；奪點模型只描述 bot 選擇發動的攻擊；守方的戰區劃分對門檻敏感。
+- `bot-theater-allocation`：配置不考慮堆疊上限與友軍移動造成的 ZOC，本步驟組只在 trace 補給內規劃後執行率 86%，但下一步驟的到位不檢查補給，而 HQ 一回合只推進約 3 格，下一步驟組多半再延後或被放棄（Game Turn 1～3 持有 0.13），佔走主攻名額，Game Turn 4～8 攻擊變少；策略上層的下一步驟可達範圍假設其他單位不動、單位付得起燃料，折扣也套用在空目標上；指標只看 1 回合；完整問題（約 20 個單位）的近似差距未驗證；奪點模型只描述 bot 選擇發動的攻擊；守方的戰區劃分對門檻敏感。
 - 既有可支付目標代理的合法見證缺口仍由 `bot-position-payability` 維護。
 
 ## 驗證
 
-[地圖普查](../quality/evidence/ai-theater-survey-2026-10-21/README.md)、[Combat 階段核對](../quality/evidence/ai-theater-attack-check-2026-10-21/README.md)、[燃料核對](../quality/evidence/ai-theater-fuel-check-2026-10-21/README.md)、[運入核對](../quality/evidence/ai-theater-inflow-check-2026-10-21/README.md)、[奪點機率模型](../quality/evidence/ai-theater-capture-model-2026-10-21/README.md)、[配置核對](../quality/evidence/ai-theater-allocation-check-2026-10-21/README.md)、[記錄紀錄](../quality/evidence/ai-theater-record-2026-10-21/README.md)、[回溯比較](../quality/evidence/ai-theater-validation-2026-10-21/README.md)、[前瞻確認](../quality/evidence/ai-theater-confirmation-2026-10-21/README.md)、[策略上層觀測](../quality/evidence/ai-theater-allocation-games-2026-10-21/README.md)、[策略上層執行核對](../quality/evidence/ai-theater-adherence-2026-10-22/README.md)、[下回合折扣](../quality/evidence/ai-theater-delay-2026-10-22/README.md)、[2 步驟觀測](../quality/evidence/ai-theater-two-step-games-2026-10-22/README.md)、[執行診斷](../quality/evidence/ai-theater-execution-2026-10-30/README.md)、[執行修正觀測](../quality/evidence/ai-theater-execution-games-2026-10-30/README.md)、[付款時序稽核](../quality/evidence/ai-theater-supply-audit-2026-10-20/README.md)。這些都不改變 `docs/quality/03-product-operation-verification-plan.md` 的任何列。
+[地圖普查](../quality/evidence/ai-theater-survey-2026-10-21/README.md)、[Combat 階段核對](../quality/evidence/ai-theater-attack-check-2026-10-21/README.md)、[燃料核對](../quality/evidence/ai-theater-fuel-check-2026-10-21/README.md)、[運入核對](../quality/evidence/ai-theater-inflow-check-2026-10-21/README.md)、[奪點機率模型](../quality/evidence/ai-theater-capture-model-2026-10-21/README.md)、[配置核對](../quality/evidence/ai-theater-allocation-check-2026-10-21/README.md)、[記錄紀錄](../quality/evidence/ai-theater-record-2026-10-21/README.md)、[回溯比較](../quality/evidence/ai-theater-validation-2026-10-21/README.md)、[前瞻確認](../quality/evidence/ai-theater-confirmation-2026-10-21/README.md)、[策略上層觀測](../quality/evidence/ai-theater-allocation-games-2026-10-21/README.md)、[策略上層執行核對](../quality/evidence/ai-theater-adherence-2026-10-22/README.md)、[下回合折扣](../quality/evidence/ai-theater-delay-2026-10-22/README.md)、[2 步驟觀測](../quality/evidence/ai-theater-two-step-games-2026-10-22/README.md)、[執行診斷](../quality/evidence/ai-theater-execution-2026-10-30/README.md)、[執行修正觀測](../quality/evidence/ai-theater-execution-games-2026-10-30/README.md)、[下一步驟組追蹤](../quality/evidence/ai-theater-next-step-2026-10-30/README.md)、[付款時序稽核](../quality/evidence/ai-theater-supply-audit-2026-10-20/README.md)。這些都不改變 `docs/quality/03-product-operation-verification-plan.md` 的任何列。
