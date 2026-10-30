@@ -1,0 +1,35 @@
+{
+ "plan": "Theater allocation movement execution (docs/ai/theater-supply-plan.md, after P11)",
+ "purpose": "Whether planning this-step assaults the move step can carry out (trace supply, move mode, move candidates) gets planned units beside their objectives, and whether the two-step allocation then helps the attacker in Western Europe attack games. Observation, not a promotion gate.",
+ "userRequest": "2026-10-30: 改善移動執行; 試著改看看 並且跑80局確認",
+ "registeredBefore": "any game of this batch",
+ "source": "cb238c7; theaterAllocation 0 is the standard heuristic@85",
+ "games": {
+  "count": 80,
+  "pairs": 40,
+  "matches": "2100200-2100279 (no save with these numbers exists in any checkout)",
+  "command": "node scripts/ai-match.mjs --matches 80 --start 2100200 --style WESTERN_EUROPE --engagement AXIS_ATTACKS --turns 8 --size 32x24 --divisions 6 --armored 2 --air NONE --air-transport NONE --allied heuristic:docs/quality/evidence/ai-theater-execution-games-2026-10-30/theater-weights.json --axis heuristic --swap --parallel 12 --out artifacts/ai-theater-execution-games/attack-western"
+ },
+ "measures": {
+  "primary": "VP margin, theater-on side minus standard side, averaged over the two seat-swapped games of a pair; mean over 40 pairs with a 95% t interval (ai-paired-measures.mjs)",
+  "secondary": [
+   "Execution (ai-theater-move-terms.mjs, Game Turns 1-3): share of moves of this-step defended-group members that stop beside the objective, against 0.45 in the two-step batch; and the refused / unreachable / not offered shares",
+   "Members of the policy's own this-step defended groups in place at Combat, attacked and held (ai-theater-adherence.mjs --execution)",
+   "Kill - Loss and Supply, same pairing",
+   "Game Turn 1-3 objective VP gained as attacker, paired (ai-theater-realized.mjs)"
+  ]
+ },
+ "reading": "Execution improves if the beside share is clearly above 0.45. Helps on VP if the 95% interval of the primary is above 0; hurts if below 0; otherwise not established at this size. No further games are added to this batch.",
+ "power": "Per-pair VP SD 6.54 in the two-step batch (2100100-2100179); 40 pairs give SE about 1.03, power about 0.5 for a true +2 VP a pair and about 0.85 for +3.",
+ "weightsSha256": "00783b405c29309edc7bb4878d12aed76db45e0b30dc6571227fa1fb96b18562",
+ "scripts": {
+  "scripts/ai-match.mjs": "16c7326b6776d1f906ada94563f5425b8a4eefa6b236057fcf02515aed1df698",
+  "scripts/ai-paired-measures.mjs": "370fa4365fe699f32af843346593158736f003585874af0402eb1cbbfd806b26",
+  "scripts/ai-theater-move-terms.mjs": "c486d930724119e66fe565ee69f3309df0efb0514fca4b3b7060b0ad9c95f619",
+  "scripts/ai-theater-adherence.mjs": "3c203e55ca3b41cafd05c0309ac145c630aa4fba23f9117f45d08614b18d7f46",
+  "scripts/ai-theater-realized.mjs": "dee726d6609f916345092dfa49e06c34881cb0c292bc75d7da11ba3e9a1e34fa",
+  "src/ai/policies/theater.ts": "90fd6032d164d8bf4cb22a0d95364691d987db6e59de44194d737541fd538941",
+  "src/ai/policies/heuristic.ts": "4f5d1f6e1ad0021485aa89bbef13d9866ba8aca6fe983844b36fc9b737b4ebda",
+  "src/rules/movement/movement.ts": "8e43495215f91f2e95837d4c0ba7c298d9626b97c69cdf3dd1e2112c4edddfd1"
+ }
+}
