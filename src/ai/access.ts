@@ -38,11 +38,11 @@ export const createBotActionAccess = (session: GameSession, seatId: SeatId, obse
       }
       return range;
     },
-    projectedReach: (pieceId, fromHexId) => {
-      const key = `${pieceId}|${fromHexId}`;
+    projectedReach: (pieceId, fromHexId, mode) => {
+      const key = `${pieceId}|${fromHexId}|${mode ?? ''}`;
       let reach = projectedCache.get(key);
       if (reach === undefined) {
-        reach = session.getProjectedReach(seatId, pieceId, fromHexId).value ?? [];
+        reach = session.getProjectedReach(seatId, pieceId, fromHexId, mode).value ?? [];
         projectedCache.set(key, reach);
       }
       return reach;

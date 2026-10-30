@@ -20,6 +20,10 @@ describe('projected reach (6.1, 12.5a)', () => {
     // The same allowance, measured from the other origin.
     const farthest = (hexIds: readonly HexId[], origin: string) => Math.max(...hexIds.map((hexId) => hexDistanceBetween(hexId, origin as HexId)));
     expect(farthest(there, '8,4')).toBe(farthest(here, '4,4'));
+    // Changing to Combat Mode as it begins to move lowers the tank's allowance (5.4).
+    const combat = ruleEngine.queryProjectedReach(state, ALLIED, TANK, '4,4' as HexId, 'COMBAT').value!.map(({ hexId }) => hexId);
+    expect(combat.length).toBeGreaterThan(0);
+    expect(farthest(combat, '4,4')).toBeLessThan(farthest(here, '4,4'));
     expect(JSON.stringify(state)).toBe(before);
   });
 

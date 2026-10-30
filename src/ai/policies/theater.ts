@@ -1,4 +1,5 @@
 import type { HexId, PieceId } from '../../core/index.js';
+import type { OcsMode } from '../../domain/piece/index.js';
 import type { ProjectedPiece } from '../../rules/index.js';
 import { COMBAT_TABLE_COLUMNS, roundOcs, type CombatLine, type OddsColumn } from '../../rules/tables/ocs-4.3.js';
 import type { OwnUnit, Situation } from '../analysis.js';
@@ -71,37 +72,43 @@ export interface TheaterGroup {
 
 /**
  * Units (not `exclude`d, with a combat strength) go to objectives the player does not hold: an empty one they can
- * enter, or a defended one beside which they can stop, this step or the next. Reach assumes fuel paid (12.5a): this
- * step from where the unit stands, the next from the hex of this step's reach nearest the objective. A defended
+ * enter, or a defended one beside which they can stop, this step or the next. Reach assumes fuel paid (12.5a) and the
+ * mode `modeFor` says the unit takes as it begins to move (5.4): this step from where the unit stands, and only into
+ * hexes where its trace supply reaches now, since the move step refuses any other; the next step from the hex of this
+ * step's reach nearest the objective, wherever HQs then bring supply. A defended
  * objective's capture probability comes from the rules' planned strengths under the defender's best terrain, the
  * estimated enemy strength, the best ratings on each side (an unseen defender rating counts 2) and the defender assumed
  * supplied; a group with a member that gets there only next step is worth that times `discount`. Greedy by marginal
  * value, then pairs and single units moved while the total improves.
  */
 export const allocateTheater = (situation: Situation, access: BotActionAccess, exclude: ReadonlySet<PieceId>,
-  rating: (piece: ProjectedPiece) => number, discount: number): readonly TheaterGroup[] => {
+  rating: (piece: ProjectedPiece) => number, discount: number,
+  modeFor: (unit: OwnUnit, objective: HexId, defended: boolean) => OcsMode | null): readonly TheaterGroup[] => {
   const me = situation.playerId;
   const objectives = situation.objectives.filter((objective) => objective.controllerId !== me);
   if (objectives.length === 0) return [];
   const blocked = (hexId: string) => situation.enemy.get(hexId as HexId)?.hasCombatUnit ?? false;
-  const arrives = (reach: ReadonlySet<string>, hexId: HexId) => (blocked(hexId)
-    ? [...reach].some((hex) => hexesBetween(hex, hexId) === 1 && !blocked(hex))
-    : reach.has(String(hexId)));
-  const reachFrom = (unit: OwnUnit, hexId: HexId) => new Set([String(hexId), ...access.projectedReach(unit.piece.id, hexId).map(({ hexId: hex }) => String(hex))]);
+  const arrives = (reach: ReadonlySet<string>, hexId: HexId, supplied: (hex: string) => boolean = () => true) => (blocked(hexId)
+    ? [...reach].some((hex) => hexesBetween(hex, hexId) === 1 && !blocked(hex) && supplied(hex))
+    : reach.has(String(hexId)) && supplied(String(hexId)));
+  const reachFrom = (unit: OwnUnit, hexId: HexId, mode: OcsMode | null) =>
+    new Set([String(hexId), ...access.projectedReach(unit.piece.id, hexId, mode ?? undefined).map(({ hexId: hex }) => String(hex))]);
   const units = situation.own.filter((unit) => situation.isCombatUnit(unit) && !exclude.has(unit.piece.id) && (unit.profile?.strength ?? 0) > 0)
     .sort((left, right) => String(left.piece.id).localeCompare(String(right.piece.id)));
   const byId = new Map(units.map((unit) => [unit.piece.id, unit]));
   // The step on which each unit can be at each objective it can reach within two steps.
   const arrival = new Map(units.map((unit) => {
-    const now = reachFrom(unit, unit.hexId);
-    const stride = Math.max(...[...now].map((hex) => hexesBetween(unit.hexId, hex)));
+    const traced = new Set(access.traceCoverage(unit.piece.id).hexIds.map(String));
     const steps = new Map<HexId, 1 | 2>();
     for (const objective of objectives) {
-      if (arrives(now, objective.hexId)) { steps.set(objective.hexId, 1); continue; }
+      const mode = modeFor(unit, objective.hexId, blocked(objective.hexId));
+      const now = reachFrom(unit, unit.hexId, mode);
+      if (arrives(now, objective.hexId, (hex) => traced.has(hex))) { steps.set(objective.hexId, 1); continue; }
+      const stride = Math.max(...[...now].map((hex) => hexesBetween(unit.hexId, hex)));
       if (discount <= 0 || hexesBetween(unit.hexId, objective.hexId) > 2 * stride + 1) continue;
       const staging = [...now].filter((hex) => hex !== String(objective.hexId) && !blocked(hex))
         .sort((left, right) => hexesBetween(left, objective.hexId) - hexesBetween(right, objective.hexId) || left.localeCompare(right))[0];
-      if (staging !== undefined && arrives(reachFrom(unit, staging as HexId), objective.hexId)) steps.set(objective.hexId, 2);
+      if (staging !== undefined && arrives(reachFrom(unit, staging as HexId, mode), objective.hexId)) steps.set(objective.hexId, 2);
     }
     return [unit.piece.id, steps] as const;
   }));

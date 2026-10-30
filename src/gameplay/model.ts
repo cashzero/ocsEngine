@@ -7,6 +7,7 @@ import type {
   Revision,
   ScenarioId,
 } from '../core/index.js';
+import type { OcsMode } from '../domain/piece/index.js';
 import type { ScenarioDefinition } from '../domain/scenario/index.js';
 import type {
   ActionFamily,
@@ -324,7 +325,7 @@ export interface GameSession {
   /** Where the unit can move; with `companionIds`, where it and they can move together as one stack (6.1f). */
   readonly getMovementRange: (seatId: SeatId, pieceId: PieceId, companionIds?: readonly PieceId[]) => RuleQueryResult<readonly ReachableHex[]>;
   /** Where one of the seat's units could end a Movement Segment begun in `fromHexId`, unmoved and fueled; empty when not interactive. */
-  readonly getProjectedReach: (seatId: SeatId, pieceId: PieceId, fromHexId: HexId) => RuleQueryResult<readonly ReachableHex[]>;
+  readonly getProjectedReach: (seatId: SeatId, pieceId: PieceId, fromHexId: HexId, mode?: OcsMode) => RuleQueryResult<readonly ReachableHex[]>;
   /** What the seat's Transport Point can load or unload where it stands, with Token ranges, MP cost and the rule behind anything not offered. */
   readonly getTransportOptions: (seatId: SeatId, truckId: PieceId) => RuleQueryResult<TransportOptions | null>;
   /** Hexes where the seat's trace supply reaches, for one of its units or (null) any unit; empty when not interactive. */

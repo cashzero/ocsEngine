@@ -77,13 +77,16 @@ const chooseEfforts = (situation: Situation, w: HeuristicWeights, count: number)
  * slots it leaves go to the usual multi-turn efforts with the remaining units.
  */
 const THEATER_MIN_PROBABILITY = 0.25;
+const THEATER_MOVE_BUDGET = 1500;
 
 const theaterEfforts = (context: BotDecisionContext, situation: Situation, facts: BotGameFacts, w: HeuristicWeights, notes: StepNotes): MainEffort[] => {
   const garrisons = new Set(heldDefenders(situation, w).map(({ unit }) => unit.piece.id));
   const knowledge = knowledgeOf(facts);
   const discount = nextTurnDiscount(context.view.projection?.sequence.gameTurn ?? 1, situation.turnsLeft);
-  const groups = allocateTheater(situation, context.actions, garrisons, (piece) => knowledge.profile(piece)?.actionRating ?? 0, discount)
+  const groups = allocateTheater(situation, context.actions, garrisons, (piece) => knowledge.profile(piece)?.actionRating ?? 0, discount,
+    (unit, hexId, defended) => combatUnitMode(situation, unit, { hexId, purpose: defended ? 'ASSAULT' : 'CAPTURE' }, w))
     .filter(({ chance }) => chance >= THEATER_MIN_PROBABILITY);
+  notes.theaterUnits = new Set(groups.flatMap(({ unitIds }) => unitIds));
   const efforts: MainEffort[] = groups.filter(({ defended }) => defended).slice(0, w.assaultMaxEfforts).map(({ hexId, unitIds }) => ({
     hexId, defenders: situation.enemy.get(hexId)?.strength ?? 0, unitIds: new Set(unitIds), lead: hexId,
   }));
@@ -97,6 +100,17 @@ const theaterEfforts = (context: BotDecisionContext, situation: Situation, facts
   }
   debug?.(`THEATER ${groups.map(({ hexId, unitIds, chance, turn }) => `${hexId}:${unitIds.length}u p${chance.toFixed(2)} t${turn}`).join(' ')}`);
   return efforts;
+};
+
+/** The mode a combat unit takes as it begins to move (5.4): Combat near the enemy or its assault, Strat far behind. */
+const combatUnitMode = (situation: Situation, unit: OwnUnit, target: Target | undefined, w: HeuristicWeights): OcsMode | null => {
+  const enemyDistance = situation.nearestEnemy(unit.hexId).distance;
+  const assaultClose = target?.purpose === 'ASSAULT' && hexesBetween(unit.hexId, target.hexId) <= w.combatModeDistance + 1;
+  const blockedCapture = target?.purpose === 'CAPTURE' && situation.enemy.get(target.hexId)?.hasCombatUnit
+    && hexesBetween(unit.hexId, target.hexId) <= w.combatModeDistance;
+  if (enemyDistance <= w.combatModeDistance || assaultClose || blockedCapture) return 'COMBAT';
+  return (unit.profile?.movement ?? 0) > 0 && enemyDistance >= w.stratModeEnemyDistance && target
+    && hexesBetween(unit.hexId, target.hexId) >= w.stratModeTargetDistance ? 'STRAT' : null;
 };
 
 const chooseEffort = (situation: Situation, w: HeuristicWeights, used: ReadonlySet<PieceId>, taken: ReadonlySet<HexId>): MainEffort | null => {
@@ -142,6 +156,8 @@ interface StepNotes {
   effort?: MainEffort | null;
   /** Further efforts beyond the main one (heuristic@11): their units assault, HQs and SP still follow the main one. */
   secondary?: readonly MainEffort[];
+  /** Units of the theater allocation's groups: they get the full list of move candidates (theaterAllocation). */
+  theaterUnits?: ReadonlySet<PieceId>;
   /** Empty objectives the theater allocation sends units to take this step (theaterAllocation). */
   captures?: ReadonlyMap<PieceId, HexId>;
   /** Cut-off groups that need a supply run this step, and the trucks already sent to each (heuristic@7). */
@@ -1020,13 +1036,9 @@ const movementStep = (context: BotDecisionContext, situation: Situation, facts: 
     // Mode first (5.4): Combat Mode near the enemy for strength and ZOC, Strat Mode far behind the lines.
     if (!notes.modeSet.has(id)) {
       notes.modeSet.add(id);
-      const assaultClose = target?.purpose === 'ASSAULT' && hexesBetween(unit.hexId, target.hexId) <= w.combatModeDistance + 1;
-      const blockedCapture = target?.purpose === 'CAPTURE' && situation.enemy.get(target.hexId)?.hasCombatUnit
-        && hexesBetween(unit.hexId, target.hexId) <= w.combatModeDistance;
-      const wanted = unit.piece.role === 'COMBAT' && (enemyDistance <= w.combatModeDistance || assaultClose || blockedCapture) ? 'COMBAT'
-        : unit.piece.role === 'COMBAT' && (unit.profile?.movement ?? 0) > 0 && enemyDistance >= w.stratModeEnemyDistance && target && hexesBetween(unit.hexId, target.hexId) >= w.stratModeTargetDistance ? 'STRAT'
-          // An HQ with the army stays in Combat Mode to rebuild units (13.5a); one far behind moves up in Move Mode.
-          : unit.piece.role === 'HQ' ? (front !== null && (hexesBetween(unit.hexId, front) <= w.hqCombatModeRadius
+      const wanted = unit.piece.role === 'COMBAT' ? combatUnitMode(situation, unit, target, w)
+        // An HQ with the army stays in Combat Mode to rebuild units (13.5a); one far behind moves up in Move Mode.
+        : unit.piece.role === 'HQ' ? (front !== null && (hexesBetween(unit.hexId, front) <= w.hqCombatModeRadius
             // heuristic@79: on a railroad hex an HQ in Combat Mode is a station (13.8c); it stays there while the army is near.
             || (railheadHex(situation, unit.hexId) && hexesBetween(unit.hexId, front) <= w.hqRailheadReach)) ? 'COMBAT' : 'MOVE') : null;
       if (wanted !== null && unit.piece.mode !== wanted) {
@@ -1041,7 +1053,9 @@ const movementStep = (context: BotDecisionContext, situation: Situation, facts: 
       const overrun = bestCombat(context, situation, facts, w, actions.candidates('DECLARE_COMBAT', id, 20), w.attackThreshold * w.overrunThresholdFactor);
       if (overrun) return overrun;
     }
-    let moves = actions.candidates('MOVE_PIECE', id);
+    // A theater group's unit may need a hex far down a long list of destinations (a recon unit reaches 400+).
+    const moveBudget = notes.theaterUnits?.has(id) ? THEATER_MOVE_BUDGET : undefined;
+    let moves = actions.candidates('MOVE_PIECE', id, moveBudget);
     if (moves.length === 0 && !notes.fueled.has(id)) {
       notes.fueled.add(id);
       // Combat units fuel to reach their target; HQs and artillery always fuel to keep up with the front.
@@ -1051,7 +1065,7 @@ const movementStep = (context: BotDecisionContext, situation: Situation, facts: 
       if (fuel && wantsToMove) return decision(fuel, `fuel to move (${fuel.kind === 'PAY_FUEL' ? fuel.method : ''})`, [{ term: 'fuel', value: 1 }]);
     }
     notes.done.add(id);
-    moves = actions.candidates('MOVE_PIECE', id);
+    moves = actions.candidates('MOVE_PIECE', id, moveBudget);
     if (moves.length === 0) {
       if (unit.piece.role === 'COMBAT' && target !== undefined && hexesBetween(unit.hexId, target.hexId) > 0 && needsFuel(facts, unit)
         && actions.candidates('PAY_FUEL', id).length === 0) notes.stranded.set(id, unit.hexId);

@@ -1,6 +1,6 @@
 import { PriorityQueue, stableSort, type HexId, type PieceId, type PlayerId } from '../../core/index.js';
 import { trainbustingTicks } from '../air/aircraft.js';
-import { isGroundUnitDefinition, type PieceState } from '../../domain/piece/index.js';
+import { isGroundUnitDefinition, upsertPieceState, type OcsMode, type PieceState } from '../../domain/piece/index.js';
 import type { GameState, MobilityType, RuleViolation } from '../kernel/model.js';
 import type { RuleFact, RuleQueryResult } from '../query/model.js';
 import {
@@ -25,6 +25,7 @@ import {
 import type { MovementStepCost } from '../terrain.js';
 import { moverCostModel } from './bridging.js';
 import { violation } from '../validation/violation.js';
+import { applyModeChange, validateModeChange } from '../mode/mode.js';
 import { inEnemyZoc } from '../zoc/zoc.js';
 import { portAt } from '../port/state.js';
 import { traceSupplyAvailableAt } from '../supply/supply.js';
@@ -508,14 +509,15 @@ export const queryStackReachableHexes = (
 
 /**
  * Where an own unit could end a Movement Segment it began in `fromHexId`, unmoved and fueled (12.5a), in its current
- * mode, with every other piece where it stands now: the reach a plan can count on for this step before paying fuel, or
- * for the next step from where it ends this one.
+ * mode or in `mode` when it may change to it as it begins to move (5.4), with every other piece where it stands now:
+ * the reach a plan can count on for this step before paying fuel, or for the next step from where it ends this one.
  */
 export const queryProjectedReachableHexes = (
   state: GameState,
   actorId: PlayerId,
   pieceId: PieceId,
   fromHexId: HexId,
+  mode?: OcsMode,
 ): RuleQueryResult<readonly ReachableHex[]> => {
   const piece = pieceById(state, pieceId);
   if (piece?.location.kind === 'ON_MAP' && enemyCombatUnitsAt(state, piece.ownerId, fromHexId).length > 0) {
@@ -528,5 +530,7 @@ export const queryProjectedReachableHexes = (
     usage: withUsage(state, { ...emptyUsage(pieceId, fromHexId), fueled: true }),
     air: { ...state.air, builderIds: state.air.builderIds.filter((id) => id !== pieceId) },
   } : state;
-  return queryReachableHexes(projected, actorId, pieceId);
+  const changed = mode !== undefined && piece && validateModeChange(projected, actorId, pieceId, mode).length === 0
+    ? { ...projected, pieceState: upsertPieceState(projected.pieceState, applyModeChange(pieceById(projected, pieceId)!, mode)) } : projected;
+  return queryReachableHexes(changed, actorId, pieceId);
 };

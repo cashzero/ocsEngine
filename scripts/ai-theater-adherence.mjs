@@ -103,7 +103,7 @@ const access = (state) => {
     feedCoverage: (pieceId = null) => m.ruleEngine.queryFeedCoverage(state, actorId, pieceId).value,
     drawReach: (hexId) => new Set((m.ruleEngine.queryDrawReach(state, actorId, hexId).value ?? []).map(String)),
     attackStrength: (attackerIds, targetHexId) => m.ruleEngine.queryAttackStrength(state, actorId, attackerIds, targetHexId).value,
-    projectedReach: (pieceId, fromHexId) => m.ruleEngine.queryProjectedReach(state, actorId, pieceId, fromHexId).value,
+    projectedReach: (pieceId, fromHexId, mode) => m.ruleEngine.queryProjectedReach(state, actorId, pieceId, fromHexId, mode).value,
   };
 };
 

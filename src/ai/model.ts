@@ -1,4 +1,5 @@
 import type { HexId, PieceId, PlayerId } from '../core/index.js';
+import type { OcsMode } from '../domain/piece/index.js';
 import type {
   DispatchStatus,
   DispatchRequestId,
@@ -26,8 +27,8 @@ export interface BotActionAccess {
   readonly families: () => readonly ActionFamily['kind'][];
   readonly candidates: (kind: GameAction['kind'], pieceId?: PieceId | null, budget?: number) => readonly GameAction[];
   readonly movementRange: (pieceId: PieceId) => readonly ReachableHex[];
-  /** Where an own unit could end a Movement Segment begun in `fromHexId`, unmoved and fueled (12.5a), others where they stand. */
-  readonly projectedReach: (pieceId: PieceId, fromHexId: HexId) => readonly ReachableHex[];
+  /** Where an own unit could end a Movement Segment begun in `fromHexId`, unmoved and fueled (12.5a), in its mode or `mode` (5.4), others where they stand. */
+  readonly projectedReach: (pieceId: PieceId, fromHexId: HexId, mode?: OcsMode) => readonly ReachableHex[];
   /** Whether an action built by the policy is legal now, with the facts a player sees (odds, DRM, cost). */
   readonly explain: (action: GameAction) => DraftValidation;
   /** Hexes the seat's trace supply reaches for any unit (12.6), or for one unit with 12.6f and 13.1d applied. */

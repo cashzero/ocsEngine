@@ -185,7 +185,7 @@ const engine: RuleEngine = {
   queryMovementRange: (state, actorId, pieceId, companionIds = []) => (kindMayBeLegal(state, actorId, 'MOVE_PIECE')
     ? queryStackReachableHexes(state, actorId, [pieceId, ...companionIds])
     : { allowed: false, value: [], reasons: [{ code: 'MOVEMENT_NOT_ALLOWED', allowed: false, message: 'No movement in this step.', rule: '6.1' }], facts: [], dependencies: [] }),
-  queryProjectedReach: (state, actorId, pieceId, fromHexId) => queryProjectedReachableHexes(state, actorId, pieceId, fromHexId),
+  queryProjectedReach: (state, actorId, pieceId, fromHexId, mode) => queryProjectedReachableHexes(state, actorId, pieceId, fromHexId, mode),
   queryTransportOptions,
   queryTraceCoverage,
   queryFeedCoverage,

@@ -21,6 +21,10 @@ const weightsFile = option('--weights');
 if (!out || !weightsFile) throw new Error('--weights <theater-weights.json> --out <file.jsonl>');
 const [shard, shards] = (option('--shard') ?? '0/1').split('/').map(Number);
 const lastTurn = Number(option('--turns') ?? 3);
+// --hq-cover: for a move whose every destination beside the objective the supply gate refused, whether one of the
+// attacker's HQs could have stood this step (from where it began the step, fueled) where the mover's trace reaches
+// the best such destination; and the same keeping the HQ 3+ hexes from enemy units.
+const hqCover = args.includes('--hq-cover');
 const dir = args.find((arg, index) => !arg.startsWith('--') && !['--out', '--weights', '--shard', '--turns'].includes(args[index - 1]));
 const m = await import(pathToFileURL(join(root, 'dist', 'index.js')).href);
 const weights = JSON.parse(readFileSync(resolve(weightsFile), 'utf8'));
@@ -37,7 +41,7 @@ const access = (state, actorId) => ({
   feedCoverage: (pieceId = null) => m.ruleEngine.queryFeedCoverage(state, actorId, pieceId).value ?? [],
   drawReach: (hexId) => new Set((m.ruleEngine.queryDrawReach(state, actorId, hexId).value ?? []).map(String)),
   attackStrength: (attackerIds, targetHexId) => m.ruleEngine.queryAttackStrength(state, actorId, attackerIds, targetHexId).value,
-  projectedReach: (pieceId, fromHexId) => m.ruleEngine.queryProjectedReach(state, actorId, pieceId, fromHexId).value ?? [],
+  projectedReach: (pieceId, fromHexId, mode) => m.ruleEngine.queryProjectedReach(state, actorId, pieceId, fromHexId, mode).value ?? [],
 });
 const sameAction = (left, right) => left?.kind === right.kind && left.pieceId === right.pieceId
   && JSON.stringify(left.path ?? null) === JSON.stringify(right.path ?? null)
@@ -56,13 +60,13 @@ for (const record of records) {
   const facts = { scenario: state.scenario, turnLimit: 8 };
   const policy = m.createHeuristicPolicy(facts, { weights: theaterWeights, debug: (line) => lines.push(line) });
   let lines = [];
-  let memory = null; let diverged = null; let lastRevision = null; let atRevision = 0;
+  let memory = null; let stepStart = null; let diverged = null; let lastRevision = null; let atRevision = 0;
   for (const action of save.acceptedActions) {
     const { sequence } = state;
     const stepKey = `${sequence.gameTurn}:${sequence.playerTurnIndex}:${sequence.phase}:${sequence.segment}`;
     if (sequence.gameTurn <= lastTurn && sequence.phase === 'MOVEMENT' && sequence.segment === 'MOVEMENT' && sequence.phasingPlayerId === attackerId
       && sequence.actingPlayerId === attackerId && !state.pendingDecision && diverged !== stepKey) {
-      if (memory?.stepKey !== stepKey) { memory = { stepKey, actions: 0, notes: new Map() }; lines = []; }
+      if (memory?.stepKey !== stepKey) { memory = { stepKey, actions: 0, notes: new Map() }; lines = []; stepStart = state; }
       const stateHash = String((await m.hashGameState(state)).value);
       atRevision = lastRevision === state.revision ? atRevision + 1 : 0;
       lastRevision = state.revision;
@@ -100,10 +104,33 @@ for (const record of records) {
           const beside = group.scored.filter(({ action: move }) => m.hexDistanceBetween(move.path.at(-1), objective) === 1)
             .sort((left, right) => total(right.terms) - total(left.terms))[0] ?? null;
           const chosen = group.scored.find(({ action: move }) => sameAction(move, action));
+          const refused = beside && group.supply.some(({ move, preserved }) => !preserved && m.hexDistanceBetween(move.path.at(-1), objective) === 1)
+            && !group.supply.some(({ move, preserved }) => preserved && m.hexDistanceBetween(move.path.at(-1), objective) === 1);
+          let cover = null;
+          if (hqCover && refused) {
+            const target = String(beside.action.path.at(-1));
+            const enemy = [...m.analyze(m.ruleEngine.projectForViewer(state, attackerId), attackerId, facts).enemy.values()].filter(({ hasCombatUnit }) => hasCombatUnit).map(({ hexId }) => String(hexId));
+            cover = { any: false, safe: false };
+            for (const hq of stepStart.pieceState.pieces.filter((piece) => piece.ownerId === attackerId && piece.location.kind === 'ON_MAP' && /hq/i.test(String(piece.definitionId)))) {
+              const from = String(hq.location.hexId);
+              const hexes = [from, ...(m.ruleEngine.queryProjectedReach(stepStart, attackerId, hq.id, from).value ?? []).map(({ hexId }) => String(hexId))]
+                .filter((hexId) => m.hexDistanceBetween(hexId, target) <= 10);
+              for (const hexId of hexes) {
+                const safe = enemy.every((enemyHex) => m.hexDistanceBetween(enemyHex, hexId) >= 3);
+                if (cover.safe || (cover.any && !safe)) continue;
+                const trial = { ...state, pieceState: { ...state.pieceState, pieces: state.pieceState.pieces.map((piece) => (piece.id === hq.id ? { ...piece, location: { kind: 'ON_MAP', hexId } } : piece)) } };
+                if ((m.ruleEngine.queryTraceCoverage(trial, attackerId, group.pieceId).value?.hexIds ?? []).map(String).includes(target)) {
+                  cover.any = true;
+                  if (safe) cover.safe = true;
+                }
+              }
+            }
+          }
           appendFileSync(out, `${JSON.stringify({
             match: record.match, gameTurn: sequence.gameTurn, pieceId: group.pieceId, objective,
             mode: state.pieceState.pieces.find(({ id }) => id === group.pieceId)?.mode ?? null,
             startDistance: m.hexDistanceBetween(action.path[0], objective), endDistance: m.hexDistanceBetween(action.path.at(-1), objective),
+            refused, cover,
             rangeBeside: (m.ruleEngine.queryMovementRange(state, attackerId, group.pieceId).value ?? []).some(({ hexId }) => m.hexDistanceBetween(hexId, objective) === 1),
             moves: group.scored.length,
             stay: group.stay.score, chosen: chosen ? { score: total(chosen.terms), terms: chosen.terms } : null,
