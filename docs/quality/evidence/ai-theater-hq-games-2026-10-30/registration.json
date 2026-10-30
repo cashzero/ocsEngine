@@ -1,0 +1,34 @@
+{
+ "plan": "Theater supply allocation with HQ positions and truck drops (docs/ai/theater-supply-plan.md, P11.4 / P11.8 reopened)",
+ "purpose": "Whether allocating HQ positions and truck drops with the units (attack positions must be supplied on the group's step) gets the plan carried out, next-step groups included, and whether it then helps the attacker in Western Europe attack games. Observation, not a promotion gate.",
+ "userRequest": "2026-10-30: 對 但這整個p11不就是補給規劃嗎; do it 不要問我怎麼做 應該你自行判斷並測試",
+ "registeredBefore": "any game of this batch (dev smoke games 2199000-2199007 are not part of it)",
+ "source": "212f0f1; theaterAllocation 0 is the standard heuristic@85",
+ "games": {
+  "count": 80,
+  "pairs": 40,
+  "matches": "2100300-2100379 (no save with these numbers exists in any checkout)",
+  "command": "node scripts/ai-match.mjs --matches 80 --start 2100300 --style WESTERN_EUROPE --engagement AXIS_ATTACKS --turns 8 --size 32x24 --divisions 6 --armored 2 --air NONE --air-transport NONE --allied heuristic:docs/quality/evidence/ai-theater-hq-games-2026-10-30/theater-weights.json --axis heuristic --swap --parallel 12 --out artifacts/ai-theater-hq-games/attack-western"
+ },
+ "measures": {
+  "primary": "VP margin, theater-on side minus standard side, averaged over the two seat-swapped games of a pair; mean over 40 pairs with a 95% t interval (ai-paired-measures.mjs)",
+  "secondary": [
+   "Kill - Loss and Supply, same pairing; Kill - Loss against -2.42 [-4.55, -0.30] of the movement-execution batch",
+   "Plan follow-through (ai-theater-hq-follow.mjs): placed HQs at their hex when Movement ends; placed trucks unloading near their drop; this-step group members beside and attacked; next-step groups attacked and held at the end of the next turn, against 0.14 held in the movement-execution batch",
+   "Regular attacks per attacker player turn, Game Turns 1-3 and 4-8",
+   "Objective VP gained as attacker and defender steps lost, paired (ai-position-record.mjs --theater, ai-theater-realized.mjs)"
+  ]
+ },
+ "reading": "Helps on VP if the 95% interval of the primary is above 0; hurts if below 0; otherwise not established at this size. The supply fix works if next-step groups convert clearly above 0.14 and Kill - Loss no longer falls below 0. No further games are added to this batch.",
+ "power": "Per-pair VP SD 6.54 in the two-step batch; 40 pairs give SE about 1.03, power about 0.5 for a true +2 VP a pair and about 0.85 for +3. In development replays (Game Turns 1-4 of 2100200-2100279) about half the untraced defended objectives are beyond any HQ or drop within two steps, so the allocation acts on a minority of objectives and a VP effect this large is not expected.",
+ "weightsSha256": "aa68946a609eb1bb8f6b39db304c8f9512a563248b5e652af01f52acb1a7eddd",
+ "scripts": {
+  "scripts/ai-match.mjs": "16c7326b6776d1f906ada94563f5425b8a4eefa6b236057fcf02515aed1df698",
+  "scripts/ai-paired-measures.mjs": "370fa4365fe699f32af843346593158736f003585874af0402eb1cbbfd806b26",
+  "scripts/ai-theater-hq-follow.mjs": "965f367411890469286873c96f0f2b5dd1bfdd0176d5f48f6b48a26b25c2bcea",
+  "scripts/ai-theater-realized.mjs": "dee726d6609f916345092dfa49e06c34881cb0c292bc75d7da11ba3e9a1e34fa",
+  "src/ai/policies/theater.ts": "08156b1c23e0e37d477642d7705915b64bc5e92e989c33e7220a1aae3a62bc6a",
+  "src/ai/policies/heuristic.ts": "0a8229efb5a3420d525e8eb329bda6fa20a6725e1b1b2fadab145209467f46a4",
+  "src/rules/supply/supply.ts": "7dfecf5911e045f4cb8dc4896a77cfebcd7af3531e76a77ceb5a807f619e188d"
+ }
+}
