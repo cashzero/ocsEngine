@@ -85,6 +85,7 @@ const out = option('--out');
 const weightsFile = option('--weights');
 if (!out || !weightsFile) throw new Error('--weights <theater-weights.json> --out <file.jsonl>');
 const [shard, shards] = (option('--shard') ?? '0/1').split('/').map(Number);
+const execution = args.includes('--execution');
 const dirs = args.filter((arg, index) => !arg.startsWith('--') && !['--out', '--weights', '--shard'].includes(args[index - 1]));
 const m = await import(pathToFileURL(join(root, 'dist', 'index.js')).href);
 const weights = JSON.parse(readFileSync(resolve(weightsFile), 'utf8'));
@@ -122,7 +123,12 @@ const plan = (facts, weightsOf, state, objectives) => {
     view: { projection: m.ruleEngine.projectForViewer(state, playerId), pendingDecision: null }, actions: access(state),
   };
   policy.decide(context);
-  const targets = context.memory.notes.get('heuristic')?.targets ?? new Map();
+  const notes = context.memory.notes.get('heuristic');
+  const targets = notes?.targets ?? new Map();
+  // The policy's own groups: its efforts (defended objectives) and the allocation's captures of empty ones. Targets
+  // on the same objective also include units planTargets sends there over several steps.
+  const members = new Map([...[notes?.effort, ...(notes?.secondary ?? [])].filter(Boolean).map(({ hexId, unitIds }) => [String(hexId), [...unitIds]])]);
+  for (const [unitId, hexId] of notes?.captures ?? []) members.set(String(hexId), [...(members.get(String(hexId)) ?? []), unitId]);
   const { enemy } = m.analyze(context.view.projection, playerId, facts);
   // The THEATER debug line lists the allocation's groups the policy kept (theaterAllocation on).
   const theaterLine = lines.find((line) => line.includes(' THEATER'));
@@ -134,7 +140,7 @@ const plan = (facts, weightsOf, state, objectives) => {
     if (!groups.has(key)) groups.set(key, []);
     groups.get(key).push(unitId);
   }
-  return [...groups].map(([hexId, unitIds]) => ({ hexId, points: objectives.get(hexId), defended: enemy.get(hexId)?.hasCombatUnit ?? false, allocated: allocated.has(hexId), allocatedTurn: allocated.get(hexId) ?? null, unitIds }));
+  return [...groups].map(([hexId, unitIds]) => ({ hexId, points: objectives.get(hexId), defended: enemy.get(hexId)?.hasCombatUnit ?? false, allocated: allocated.has(hexId), allocatedTurn: allocated.get(hexId) ?? null, unitIds, groupIds: members.get(hexId) ?? [] }));
 };
 
 const entryCounts = { unavailable: 0, mismatched: 0 };
@@ -156,9 +162,13 @@ for (const dir of dirs) {
     const close = (end) => {
       for (const groups of Object.values(turn.plans)) for (const group of groups) group.heldAtEnd = control(end, group.hexId) === attackerId;
       for (const [planName, groups] of Object.entries(turn.plans)) {
-        turn.plans[planName] = groups.map(({ unitIds, ...group }) => ({ ...group, units: unitIds.length, attacked: turn.attacked.has(group.hexId) }));
+        turn.plans[planName] = groups.map(({ unitIds, groupIds, ...group }) => ({ ...group, units: unitIds.length, groupUnits: groupIds.length, attacked: turn.attacked.has(group.hexId) }));
       }
-      rows.push({ match: record.match, mover, gameTurn: turn.gameTurn, plans: turn.plans, combatEntryRebuilt: turn.combatEntryRebuilt, held: [...objectives.keys()].filter((hexId) => control(end, hexId) === attackerId) });
+      rows.push({
+        match: record.match, mover, gameTurn: turn.gameTurn, plans: turn.plans, combatEntryRebuilt: turn.combatEntryRebuilt,
+        held: [...objectives.keys()].filter((hexId) => control(end, hexId) === attackerId),
+        ...(turn.watch ? { execution: [...turn.watch].map(([unitId, entry]) => ({ unitId, ...entry })) } : {}),
+      });
       turn = null;
     };
     for (const action of save.acceptedActions) {
@@ -172,21 +182,56 @@ for (const dir of dirs) {
           plans: { theater: plan(facts, theaterWeights, state, objectives), standard: plan(facts, m.DEFAULT_HEURISTIC_WEIGHTS, state, objectives) },
         };
         if (m.serializeGameState(state).value !== before) throw new Error('planning changed the state');
+        // --execution: each unit the moving theater policy sends beside a defended objective this step, followed
+        // through its Movement segment.
+        if (execution && mover === 'theater') {
+          turn.watch = new Map(turn.plans.theater.filter(({ allocatedTurn, defended }) => allocatedTurn === 1 && defended)
+            .flatMap(({ hexId, groupIds }) => groupIds.map((unitId) => [unitId, { objective: hexId, planMode: state.pieceState.pieces.find(({ id }) => id === unitId)?.mode ?? null, moved: false, couldReach: null, endedBeside: null, unmovedReasons: null, inPlace: null, eliminated: null }])));
+        }
       }
       if (turn && action.kind === 'DECLARE_COMBAT' && action.combatKind === 'REGULAR' && action.actorId === attackerId) turn.attacked.add(String(action.targetHexId));
+      const inMovement = (current) => current.sequence.phase === 'MOVEMENT' && current.sequence.segment === 'MOVEMENT' && keyOf(current.sequence) === turn?.key;
+      if (turn?.watch && inMovement(state) && action.kind === 'MOVE_PIECE') {
+        // Whether, when it began to move, the unit (with the stack it moved in) could stop beside the objective.
+        const range = m.ruleEngine.queryMovementRange(state, attackerId, action.pieceId, action.companionIds ?? []).value ?? [];
+        for (const unitId of [action.pieceId, ...(action.companionIds ?? [])]) {
+          const entry = turn.watch.get(unitId);
+          if (!entry || entry.moved) continue;
+          entry.moved = true;
+          entry.couldReach = range.some(({ hexId }) => m.hexDistanceBetween(hexId, entry.objective) === 1);
+          entry.endedBeside = m.hexDistanceBetween(action.path.at(-1), entry.objective) === 1;
+          entry.moveMode = state.pieceState.pieces.find(({ id }) => id === unitId)?.mode ?? null;
+          entry.stack = 1 + (action.companionIds?.length ?? 0);
+          entry.startDistance = m.hexDistanceBetween(action.path[0], entry.objective);
+          entry.endDistance = m.hexDistanceBetween(action.path.at(-1), entry.objective);
+          entry.nearestReachable = Math.min(...range.map(({ hexId }) => m.hexDistanceBetween(hexId, entry.objective)));
+        }
+      }
       const next = m.ruleEngine.applyAction(state, action);
+      if (turn?.watch && inMovement(state) && !inMovement(next.state)) {
+        for (const [unitId, entry] of turn.watch) {
+          if (!entry.moved) entry.unmovedReasons = m.ruleEngine.queryMovementRange(state, attackerId, unitId).reasons.map(({ code }) => code);
+        }
+      }
       if (turn && turn.combatEntryRebuilt === null) {
         const entry = segmentEntry(m, state, action, next, 'COMBAT', 'COMBAT', entryCounts);
         if (entry && keyOf(entry.sequence) === turn.key) {
           turn.combatEntryRebuilt = true;
+          for (const [unitId, watched] of turn.watch ?? []) {
+            const hexId = hexOf(entry, unitId);
+            watched.eliminated = hexId === null;
+            watched.inPlace = hexId !== null && m.hexDistanceBetween(hexId, watched.objective) === 1;
+          }
           for (const groups of Object.values(turn.plans)) {
             for (const group of groups) {
               group.heldAtCombat = control(entry, group.hexId) === attackerId;
-              group.inPlace = group.unitIds.filter((unitId) => {
+              const placed = (unitId) => {
                 const hexId = hexOf(entry, unitId);
                 if (!hexId) return false;
                 return group.defended ? m.hexDistanceBetween(hexId, group.hexId) === 1 : hexId === group.hexId || group.heldAtCombat;
-              }).length;
+              };
+              group.inPlace = group.unitIds.filter(placed).length;
+              group.groupInPlace = group.groupIds.filter(placed).length;
             }
           }
         }
