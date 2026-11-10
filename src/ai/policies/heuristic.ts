@@ -75,7 +75,7 @@ const chooseEfforts = (situation: Situation, w: HeuristicWeights, count: number)
  * step, is below THEATER_MIN_PROBABILITY is dropped: its units keep the usual targets, which the allocation does not
  * value. The allocation also places HQs so that trace supply reaches each group's attack positions on its step; those
  * HQs move to their places (THEATER_HQ_ARRIVE, THEATER_HQ_PULL) instead of following the army, and the trucks feed them
- * as dry HQs. Effort slots it leaves go to the usual multi-turn efforts with the remaining units.
+ * as dry HQs; placed trucks unload at their drop, where a member of the group stops (the same pull). Effort slots it leaves go to the usual multi-turn efforts with the remaining units.
  */
 const THEATER_MIN_PROBABILITY = 0.25;
 const THEATER_MOVE_BUDGET = 1500;
@@ -87,13 +87,22 @@ const theaterEfforts = (context: BotDecisionContext, situation: Situation, facts
   const garrisons = new Set(heldDefenders(situation, w).map(({ unit }) => unit.piece.id));
   const knowledge = knowledgeOf(facts);
   const discount = nextTurnDiscount(context.view.projection?.sequence.gameTurn ?? 1, situation.turnsLeft);
-  const plan = allocateTheater(situation, context.actions, garrisons, (piece) => knowledge.profile(piece)?.actionRating ?? 0, discount,
-    (unit, hexId, defended) => combatUnitMode(situation, unit, { hexId, purpose: defended ? 'ASSAULT' : 'CAPTURE' }, w));
+  // Trucks kept for this step's relief runs, the nearest one per cut-off group, are not the allocation's to send.
+  notes.relief ??= { hexIds: reliefTargets(context, situation, w), sent: new Map(), delivered: new Set() };
+  const reliefHexes = notes.relief.hexIds;
+  const nearestRelief = (hexId: HexId) => Math.min(...reliefHexes.map((relief) => hexesBetween(hexId, relief)));
+  const reserved = reliefHexes.length === 0 ? [] : situation.own.filter(({ piece }) => piece.role === 'TRUCK')
+    .sort((left, right) => nearestRelief(left.hexId) - nearestRelief(right.hexId) || String(left.piece.id).localeCompare(String(right.piece.id)))
+    .slice(0, reliefHexes.length).map(({ piece }) => piece.id);
+  const plan = allocateTheater(situation, context.actions, new Set([...garrisons, ...reserved]), (piece) => knowledge.profile(piece)?.actionRating ?? 0, discount,
+    (unit, hexId, defended) => combatUnitMode(situation, unit, { hexId, purpose: defended ? 'ASSAULT' : 'CAPTURE' }, w),
+    (truck) => truckCapacityTokens(facts, truck));
   const groups = plan.groups.filter(({ chance }) => chance >= THEATER_MIN_PROBABILITY);
   const hqs = plan.hqs.filter(({ objective }) => groups.some(({ hexId }) => hexId === objective));
   const trucks = plan.trucks.filter(({ objective }) => groups.some(({ hexId }) => hexId === objective));
   notes.hqPlan = new Map(hqs.map((placement) => [placement.hqId, placement]));
   notes.truckPlan = new Map(trucks.map((placement) => [placement.truckId, placement]));
+  notes.stagers = new Map(trucks.map(({ stagerId, drop }) => [stagerId, drop]));
   notes.theaterObjectives = new Map(groups.flatMap(({ hexId, unitIds }) => unitIds.map((id) => [id, hexId] as const)));
   notes.theaterUnits = new Set([...groups.flatMap(({ unitIds }) => unitIds), ...notes.hqPlan.keys()]);
   const efforts: MainEffort[] = groups.filter(({ defended }) => defended).slice(0, w.assaultMaxEfforts).map(({ hexId, unitIds }) => ({
@@ -109,8 +118,14 @@ const theaterEfforts = (context: BotDecisionContext, situation: Situation, facts
   }
   debug?.(`THEATER ${groups.map(({ hexId, unitIds, chance, turn }) => `${hexId}:${unitIds.length}u p${chance.toFixed(2)} t${turn}`).join(' ')}`
     + hqs.map(({ hqId, moveTo, hexId, objective, turn }) => ` HQ ${hqId}>${moveTo}>${hexId}@${objective}/t${turn}`).join('')
-    + trucks.map(({ truckId, drop, objective }) => ` TRUCK ${truckId}>${drop}@${objective}`).join(''));
+    + trucks.map(({ truckId, drop, objective, tokens, stagerId }) => ` TRUCK ${truckId}>${drop}@${objective}#${tokens}T/${stagerId}`).join(''));
   return efforts;
+};
+
+/** What a truck carries when full (13.2a: 4T a Transport Point), from its size on the map or its printed counter. */
+const truckCapacityTokens = (facts: BotGameFacts, truck: OwnUnit): number => {
+  const size = truck.piece.statusValues.find(({ statusDefinitionId }) => statusDefinitionId === 'status:transport-points')?.value;
+  return Number(size ?? knowledgeOf(facts).definition(truck.piece)?.counter?.transportPoints ?? 0) * 4;
 };
 
 /** The mode a combat unit takes as it begins to move (5.4): Combat near the enemy or its assault, Strat far behind. */
@@ -175,6 +190,12 @@ interface StepNotes {
   hqPlan?: ReadonlyMap<PieceId, HqPlacement>;
   /** Trucks the theater allocation sends to unload SP for its next-step groups, by truck (theaterAllocation). */
   truckPlan?: ReadonlyMap<PieceId, TruckPlacement>;
+  /** Tokens railed into each hex this step: they cannot be loaded again this phase (12.2a; theaterAllocation reads it). */
+  railedTo?: Map<HexId, number>;
+  /** Placed trucks that have unloaded this step: they go back to the usual shuttle (theaterAllocation). */
+  truckDelivered?: Set<PieceId>;
+  /** Group members that stop at a planned truck drop this step, so the SP can be unloaded there (13.2f; theaterAllocation). */
+  stagers?: ReadonlyMap<PieceId, HexId>;
   /** The objective of each unit of a theater group: it may leave trace for its attack position there if it can eat (12.6c). */
   theaterObjectives?: ReadonlyMap<PieceId, HexId>;
   /** Cut-off groups that need a supply run this step, and the trucks already sent to each (heuristic@7). */
@@ -434,6 +455,9 @@ const scoreDestination = (
   const support = situation.friendlyAt(destination).filter((other) => other.piece.id !== unit.piece.id)
     .reduce((total, other) => total + (other.profile?.strength ?? 0), 0);
   const adjacentEnemy = situation.nearestEnemy(destination).distance <= 1;
+  // theaterAllocation: a member of a group stops where its truck unloads (13.2f: SP go only where a combat unit is).
+  const stage = notes.stagers?.get(unit.piece.id);
+  if (stage !== undefined) add('theater-stage', destination === stage ? THEATER_HQ_ARRIVE : -hexesBetween(destination, stage) * THEATER_HQ_PULL);
   // Passing through or stopping on an objective takes its control.
   for (const hexId of path.slice(1)) {
     const objective = situation.objectives.find((entry) => entry.hexId === hexId);
@@ -748,11 +772,12 @@ const truckStep = (context: BotDecisionContext, situation: Situation, unit: OwnU
   const id = unit.piece.id;
   const carried = unit.piece.carriedTokens ?? 0;
   const relief = notes.relief ??= { hexIds: reliefTargets(context, situation, w), sent: new Map(), delivered: new Set() };
-  const unsentRelief = () => relief.hexIds.filter((hexId) => !relief.sent.has(hexId));
+  // A truck the theater allocation sends to a next-step group loads and unloads where it was planned, and leaves
+  // relief runs to the trucks kept for them, until it has unloaded (theaterAllocation).
+  const assigned = notes.truckDelivered?.has(id) ? undefined : notes.truckPlan?.get(id);
+  const unsentRelief = () => (assigned ? [] : relief.hexIds.filter((hexId) => !relief.sent.has(hexId)));
   // SP is worth most where units cannot move for want of fuel (heuristic@79), then where the army can draw it (12.3a):
   // with a main effort at its lead units, otherwise the army's centre.
-  // A truck the theater allocation sends to a next-step group unloads where it was planned (theaterAllocation).
-  const assigned = notes.truckPlan?.get(id);
   const stranded = assigned ? null : strandedCenter(context, situation, notes);
   const center = assigned?.drop ?? stranded?.hexId ?? effort?.lead ?? armyCenter(situation);
   const loadTicks = loadTicksOf(unit);
@@ -773,7 +798,42 @@ const truckStep = (context: BotDecisionContext, situation: Situation, unit: OwnU
     return rescue && fullest?.kind === 'LOAD_SUPPLY' ? { ...fullest, tokens: Math.min(fullest.tokens, 2) } : fullest;
   };
 
+  /**
+   * theaterAllocation: where a placed, empty truck loads. The dump, as it stands now (rail may have moved SP since the
+   * plan), that gives the most of the Tokens planned, then the shortest run, among those it can drive to, load at, drive
+   * on from to its drop and unload within its MA (13.2f).
+   */
+  const placedPickup = (drop: HexId, wanted: number): { hexId: HexId; claimed: number } | null => {
+    const ma = (unit.profile?.movement ?? 45) * 4;
+    const from = new Map(actions.movementRange(id).map(({ hexId, costTicks }) => [hexId, costTicks]));
+    from.set(unit.hexId, 0);
+    const objectives = new Set(situation.objectives.map(({ hexId }) => hexId));
+    const stock = new Map<HexId, number>();
+    for (const { piece, hexId } of situation.own) {
+      if (piece.role !== 'DUMP' || String(piece.id).includes('-stock-') || objectives.has(hexId) || notes.claims.unloaded.has(hexId)
+        || situation.nearestEnemy(hexId).distance < PICKUP_SAFE_DISTANCE || hexesBetween(hexId, drop) <= DELIVERED_RADIUS) continue;
+      stock.set(hexId, (stock.get(hexId) ?? 0) + (piece.resourceQuantity ?? 0));
+    }
+    let best: { hexId: HexId; claimed: number; cost: number } | null = null;
+    for (const [hexId, tokens] of stock) {
+      // SP railed in this step cannot be loaded again (12.2a).
+      const claimed = Math.min(tokens - (notes.railedTo?.get(hexId) ?? 0) - (notes.claims.tokens.get(hexId) ?? 0), wanted);
+      const reached = from.get(hexId);
+      if (claimed <= 0 || reached === undefined) continue;
+      const onward = actions.projectedReach(id, hexId).find((entry) => entry.hexId === drop)?.costTicks;
+      if (onward === undefined || reached + loadTicks + onward + loadTicks > ma) continue;
+      const cost = reached + onward;
+      if (best === null || claimed > best.claimed || (claimed === best.claimed && (cost < best.cost || (cost === best.cost && String(hexId) < String(best.hexId))))) best = { hexId, claimed, cost };
+    }
+    if (best) notes.claims.tokens.set(best.hexId, (notes.claims.tokens.get(best.hexId) ?? 0) + best.claimed);
+    return best;
+  };
+
   const plan = (): TruckLeg => {
+    if (assigned && carried === 0) {
+      const pickup = placedPickup(assigned.drop, assigned.tokens);
+      if (pickup) return { kind: 'FETCH', pickup: pickup.hexId, claimed: pickup.claimed };
+    }
     const unsent = unsentRelief();
     if (carried > 0 && unsent.length > 0) {
       const target = [...unsent].sort((left, right) => hexesBetween(unit.hexId, left) - hexesBetween(unit.hexId, right))[0]!;
@@ -812,6 +872,7 @@ const truckStep = (context: BotDecisionContext, situation: Situation, unit: OwnU
     const unload = actions.candidates('UNLOAD_SUPPLY', id)[0];
     if (!unload) return { next: { kind: 'DONE' } };
     notes.claims.unloaded.add(unit.hexId);
+    if (assigned) (notes.truckDelivered ??= new Set()).add(id);
     for (const [strandedId, hexId] of notes.stranded) if (hexesBetween(hexId, unit.hexId) <= STRANDED_DROP_RADIUS) notes.stranded.delete(strandedId);
     const reach = actions.drawReach(unit.hexId);
     for (const hexId of notes.dryHqs?.keys() ?? []) if (reach.has(String(hexId))) notes.dryHqs!.delete(hexId);
@@ -893,6 +954,7 @@ const truckStep = (context: BotDecisionContext, situation: Situation, unit: OwnU
   };
 
   let leg = notes.trucks.get(id) ?? plan();
+  debug?.(`TRUCK ${id} at ${unit.hexId} carried ${carried} leg ${JSON.stringify(leg)}${assigned ? ` placed ${assigned.pickup ?? '-'}>${assigned.drop} drops ${drops.slice(0, 3).join(' ')}` : ''}`);
   // A leg that cannot act hands over to the next one at once (load → deliver, relief → deliver); each hand-over is final.
   for (let handovers = 0; handovers < 3; handovers++) {
     const { next, decision: chosen } = step(leg);
@@ -934,6 +996,8 @@ const railStep = (context: BotDecisionContext, situation: Situation, notes: Step
     // A garrison's own stock (and SP on an objective) stays where it is.
     if (action.supply.some(({ sourcePieceId }) => String(sourcePieceId).includes('-stock-'))
       || (tokens > 0 && situation.objectives.some(({ hexId }) => hexId === action.fromHexId))) continue;
+    // theaterAllocation: SP a placed truck is to load this step stay where the plan counted them.
+    if (tokens > 0 && [...(notes.truckPlan?.values() ?? [])].some(({ pickup }) => pickup === action.fromHexId)) continue;
     // Units ride only when the front is far: a unit near it walks (and keeps its MA for the fight).
     const units = action.unitIds.filter((id) => {
       const unit = situation.own.find(({ piece }) => piece.id === id);
@@ -944,6 +1008,10 @@ const railStep = (context: BotDecisionContext, situation: Situation, notes: Step
     if (value > 0 && (!best || value > best.value)) best = { action, value, gain };
   }
   if (!best) { notes.railDone = true; return null; }
+  if (best.action.kind === 'RAIL_MOVE') {
+    const railed = best.action.supply.reduce((total, { tokens }) => total + tokens, 0);
+    if (railed > 0) (notes.railedTo ??= new Map()).set(best.action.toHexId, (notes.railedTo.get(best.action.toHexId) ?? 0) + railed);
+  }
   return decision(best.action, `rail ${best.gain} hexes toward the front`, [{ term: 'rail', value: best.value }]);
 };
 
@@ -1040,7 +1108,8 @@ const movementStep = (context: BotDecisionContext, situation: Situation, facts: 
   notes.relief ??= { hexIds: reliefTargets(context, situation, w), sent: new Map(), delivered: new Set() };
   // Deliver an urgent ration before field units move away from the route's ZOC-negating
   // hexes. Otherwise a legal rescue available at the start of the phase can disappear.
-  const order = (unit: OwnUnit) => unit.piece.role === 'TRUCK' && notes.relief!.hexIds.length > 0 ? -1
+  // A truck placed by the theater allocation waits for the unit it unloads beside (13.2f), even on a step with relief runs.
+  const order = (unit: OwnUnit) => unit.piece.role === 'TRUCK' && notes.relief!.hexIds.length > 0 && !notes.truckPlan?.has(unit.piece.id) ? -1
     : unit.piece.role === 'HQ' ? 0 : unit.piece.role === 'COMBAT' ? 1 : unit.piece.role === 'ARTILLERY' ? 2 : unit.piece.role === 'TRUCK' ? 3 : 9;
   const units = situation.own.filter((unit) => order(unit) < 9 && !notes.done.has(unit.piece.id))
     .sort((left, right) => order(left) - order(right) || String(left.piece.id).localeCompare(String(right.piece.id)));

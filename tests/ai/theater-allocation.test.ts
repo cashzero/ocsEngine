@@ -25,13 +25,16 @@ const access = (state: GameState): BotActionAccess => {
   };
 };
 
-// Game Turn 1, the Axis Movement segment of a Western Europe Axis-attack game (P7 match 1500003).
-const opening = (): GameState => {
-  const stored = JSON.parse(gunzipSync(readFileSync(join(__dirname, 'fixtures', 'theater-allocation-1500003.state.json.gz'))).toString()) as { snapshot: string };
+const fixture = (name: string): GameState => {
+  const stored = JSON.parse(gunzipSync(readFileSync(join(__dirname, 'fixtures', name))).toString()) as { snapshot: string };
   const parsed = parseGameStateJson(stored.snapshot);
   if (!parsed.ok) throw new Error('Invalid fixture');
   return parsed.value;
 };
+// Game Turn 1, the Axis Movement segment of a Western Europe Axis-attack game (P7 match 1500003).
+const opening = (): GameState => fixture('theater-allocation-1500003.state.json.gz');
+// Game Turn 3, the Axis Movement segment of match 2100322 (HQ and truck allocation batch): a next-step group needs trucks.
+const laterTurn = (): GameState => fixture('theater-trucks-2100322.state.json.gz');
 
 describe('theater allocation (plan P11.8 candidate)', () => {
   it('matches the frozen capture model of plan P11.3', () => {
@@ -42,11 +45,12 @@ describe('theater allocation (plan P11.8 candidate)', () => {
   });
 
   it.each([
-    ['as found', false],
+    ['Game Turn 1', opening, false, false],
     // Without dumps to eat from, the groups beyond trace need an HQ placed for them.
-    ['without the attacker\'s dumps', true],
-  ])('sends units that can be at or beside the objective, supplied, by the step its group attacks, the same way each time (%s)', (_, withoutDumps) => {
-    const found = opening();
+    ['Game Turn 1 without the attacker\'s dumps', opening, true, false],
+    ['Game Turn 3 of 2100322', laterTurn, false, true],
+  ])('sends units that can be at or beside the objective, supplied, by the step its group attacks, the same way each time (%s)', (_, load, withoutDumps, withTrucks) => {
+    const found = load();
     const dumpIds = new Set(ruleEngine.projectForViewer(found, found.sequence.actingPlayerId).stacks.flatMap(({ pieces }) => pieces)
       .filter((piece) => piece.ownerId === found.sequence.actingPlayerId && piece.role === 'DUMP').map(({ id }) => id));
     const state: GameState = withoutDumps ? { ...found, pieceState: { ...found.pieceState, pieces: found.pieceState.pieces.filter(({ id }) => !dumpIds.has(id)) } } : found;
@@ -58,14 +62,18 @@ describe('theater allocation (plan P11.8 candidate)', () => {
     const attackHexes = (hexIds: ReadonlySet<string>, objective: HexId, defended: boolean) => (defended
       ? [...hexIds].filter((hexId) => hexesBetween(hexId, objective) === 1 && !situation.enemy.get(hexId as HexId)?.hasCombatUnit)
       : hexIds.has(String(objective)) ? [String(objective)] : []);
+    const truckTokens = (truck: { piece: { id: PieceId } }) => ruleEngine.queryTransportOptions(state, actorId, truck.piece.id).value?.capacityTokens ?? 0;
     let placements = 0;
+    let trucks = 0;
     for (const mode of [null, 'COMBAT'] as const) {
-      const plan = allocateTheater(situation, access(state), new Set(), () => 2, 0.5, () => mode);
+      const plan = allocateTheater(situation, access(state), new Set(), () => 2, 0.5, () => mode, truckTokens);
       // Game Turn 1: the far objectives are beyond where any HQ is fed within two steps, so only this-step groups remain.
-      expect(plan.groups.some(({ turn }) => turn === 1)).toBe(true);
+      if (!withTrucks) expect(plan.groups.some(({ turn }) => turn === 1)).toBe(true);
       // One group per HQ, each HQ fed where it throws from, 3+ hexes from the enemy unless it stays, reached by its move.
       expect(new Set(plan.hqs.map(({ hqId }) => hqId)).size).toBe(plan.hqs.length);
       placements += plan.hqs.length;
+      trucks += plan.trucks.length;
+      expect(new Set(plan.trucks.map(({ truckId }) => truckId)).size).toBe(plan.trucks.length);
       for (const placement of plan.hqs) {
         const hq = situation.own.find(({ piece }) => piece.id === placement.hqId)!;
         expect(ruleEngine.queryHqThrow(state, actorId, placement.hqId, placement.hexId).value!.fed).toBe(true);
@@ -81,9 +89,33 @@ describe('theater allocation (plan P11.8 candidate)', () => {
         expect(group.chance).toBeCloseTo(group.probability * (group.turn === 2 ? 0.5 : 1), 12);
         const placement = plan.hqs.find(({ objective }) => objective === group.hexId);
         const thrown = placement ? ruleEngine.queryHqThrow(state, actorId, placement.hqId, placement.hexId).value! : null;
-        const truck = plan.trucks.find(({ objective }) => objective === group.hexId);
-        if (truck) expect(group.turn).toBe(2);
-        const drawn = truck ? (ruleEngine.queryDrawReach(state, actorId, truck.drop).value ?? []).map(String) : [];
+        const sent = plan.trucks.filter(({ objective }) => objective === group.hexId);
+        // A group's trucks unload at one drop, where one member stops.
+        expect(new Set(sent.map(({ drop, stagerId }) => `${drop}|${stagerId}`)).size).toBeLessThanOrEqual(1);
+        for (const truck of sent) {
+          expect(group.turn).toBe(2);
+          // A member stops at the drop this step (13.2f), and the truck holds what the members it serves need.
+          const stager = situation.own.find(({ piece }) => piece.id === truck.stagerId)!;
+          expect(group.unitIds).toContain(truck.stagerId);
+          expect(reach(truck.stagerId, stager.hexId, mode ?? undefined).has(String(truck.drop))).toBe(true);
+          expect(traced(truck.stagerId).has(String(truck.drop))).toBe(true);
+          expect(truck.tokens).toBeGreaterThan(0);
+          expect(truck.tokens).toBeLessThanOrEqual(truckTokens({ piece: { id: truck.truckId } }));
+          // 13.2f: the truck drives to its dump, loads, drives on and unloads within its MA; one that carries its load only unloads.
+          const carrier = situation.own.find(({ piece }) => piece.id === truck.truckId)!;
+          const ma = (carrier.profile?.movement ?? 45) * 4;
+          const handling = Math.round((carrier.profile?.movement ?? 45) / 10) * 4;
+          const cost = (from: HexId, to: HexId) => (from === to ? 0 : ruleEngine.queryProjectedReach(state, actorId, truck.truckId, from).value!.find(({ hexId }) => hexId === to)?.costTicks ?? Infinity);
+          if (truck.pickup === null) {
+            expect((carrier.piece.carriedTokens ?? 0)).toBeGreaterThanOrEqual(truck.tokens);
+            expect(cost(carrier.hexId, truck.drop) + handling).toBeLessThanOrEqual(ma);
+          } else {
+            const stock = situation.own.filter(({ piece, hexId }) => piece.role === 'DUMP' && hexId === truck.pickup).reduce((total, { piece }) => total + (piece.resourceQuantity ?? 0), 0);
+            expect(stock).toBeGreaterThanOrEqual(truck.tokens);
+            expect(cost(carrier.hexId, truck.pickup) + handling + cost(truck.pickup, truck.drop) + handling).toBeLessThanOrEqual(ma);
+          }
+        }
+        const drawn = sent[0] ? (ruleEngine.queryDrawReach(state, actorId, sent[0].drop).value ?? []).map(String) : [];
         for (const unitId of group.unitIds) {
           const unit = situation.own.find(({ piece }) => piece.id === unitId)!;
           const now = reach(unitId, unit.hexId, mode ?? undefined);
@@ -102,12 +134,13 @@ describe('theater allocation (plan P11.8 candidate)', () => {
           expect([...positions].some((hexId) => supply.has(hexId))).toBe(true);
         }
       }
-      expect(allocateTheater(situation, access(state), new Set(), () => 2, 0.5, () => mode)).toEqual(plan);
-      expect(allocateTheater(situation, access(state), new Set(), () => 2, 0, () => mode).groups.every(({ turn }) => turn === 1)).toBe(true);
+      expect(allocateTheater(situation, access(state), new Set(), () => 2, 0.5, () => mode, truckTokens)).toEqual(plan);
+      expect(allocateTheater(situation, access(state), new Set(), () => 2, 0, () => mode, truckTokens).groups.every(({ turn }) => turn === 1)).toBe(true);
     }
     if (withoutDumps) expect(placements).toBeGreaterThan(0);
+    if (withTrucks) expect(trucks).toBeGreaterThan(0);
     // Track and truck units have not paid fuel yet at the first Movement decision; the plan still counts them.
-    if (!withoutDumps) expect(allocateTheater(situation, access(state), new Set(), () => 2, 0.5, () => null).groups.some(({ unitIds }) => unitIds.some((unitId) => ruleEngine.queryMovementRange(state, actorId, unitId).reasons.some(({ code }) => code === 'FUEL_REQUIRED')))).toBe(true);
+    if (!withoutDumps && !withTrucks) expect(allocateTheater(situation, access(state), new Set(), () => 2, 0.5, () => null, truckTokens).groups.some(({ unitIds }) => unitIds.some((unitId) => ruleEngine.queryMovementRange(state, actorId, unitId).reasons.some(({ code }) => code === 'FUEL_REQUIRED')))).toBe(true);
   }, 120_000);
 
   it('steers the attacker only when the weight is on, with a legal first decision', () => {

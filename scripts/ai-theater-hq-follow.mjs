@@ -32,7 +32,7 @@ const summarize = (files) => {
     const trucks = list.flatMap(({ trucks: t }) => t ?? []);
     console.log(`\n${label}: ${list.length} turns, regular attacks per turn ${mean(list.map(({ attacks }) => attacks))}, defended allocation groups per turn ${mean(list.map(({ groups: g }) => g.length))}`);
     console.log(`- HQ placements ${hqs.length} (this step ${hqs.filter(({ turn }) => turn === 1).length}): at their hex when Movement ends ${share(hqs, ({ endDistance }) => endDistance === 0)}, mean hexes short ${mean(hqs.map(({ endDistance }) => endDistance ?? 0))}`);
-    console.log(`- Truck placements ${trucks.length}: unloaded this step ${share(trucks, ({ unloadDistance }) => unloadDistance !== null)}, within 1 hex of the drop ${share(trucks, ({ unloadDistance }) => unloadDistance !== null && unloadDistance <= 1)}`);
+    console.log(`- Truck placements ${trucks.length}: stager at the drop when Movement ends ${share(trucks, ({ stagerAtDrop }) => stagerAtDrop)}; unloaded this step ${share(trucks, ({ unloadDistance }) => unloadDistance !== null)}, at the drop ${share(trucks, ({ unloadDistance }) => unloadDistance === 0)}; Tokens planned ${mean(trucks.map(({ tokens }) => tokens ?? 0))}, unloaded ${mean(trucks.map(({ unloaded }) => unloaded ?? 0))}`);
     console.log(`- This-step groups ${first.length}: members beside (mean share) ${mean(first.map(({ members, beside }) => beside / members))}, beside and traced ${mean(first.map(({ members, besideTraced }) => besideTraced / members))}; all beside ${share(first, ({ members, beside }) => beside === members)}; attacked ${share(first, ({ attacked }) => attacked)}; held at end ${share(first, ({ heldAtEnd }) => heldAtEnd)}`);
     const followed = second.filter(({ next }) => next);
     console.log(`- Next-step groups ${second.length}: next turn this step ${share(followed, ({ next }) => next.turn === 1)}, next step again ${share(followed, ({ next }) => next.turn === 2)}, dropped ${share(followed, ({ next }) => next.turn === null)}; attacked next turn ${share(followed, ({ next }) => next.attacked)}; held at end of next turn ${share(followed, ({ next }) => next.heldAtEnd)}`);
@@ -87,7 +87,8 @@ const plan = (facts, state, attackerId) => {
   const turns = new Map([...theaterLine.matchAll(/ (-?\d+,-?\d+):\d+u p[\d.]+ t(\d)/g)].map(([, hexId, turn]) => [hexId, Number(turn)]));
   const hqs = [...theaterLine.matchAll(/ HQ (\S+)>(-?\d+,-?\d+)>(-?\d+,-?\d+)@(-?\d+,-?\d+)\/t(\d)/g)]
     .map(([, hqId, moveTo, hexId, objective, turn]) => ({ hqId, moveTo, hexId, objective, turn: Number(turn) }));
-  const trucks = [...theaterLine.matchAll(/ TRUCK (\S+)>(-?\d+,-?\d+)@(-?\d+,-?\d+)/g)].map(([, truckId, drop, objective]) => ({ truckId, drop, objective }));
+  const trucks = [...theaterLine.matchAll(/ TRUCK (\S+)>(-?\d+,-?\d+)@(-?\d+,-?\d+)(?:#(\d+)T\/(\S+))?/g)]
+    .map(([, truckId, drop, objective, tokens, stagerId]) => ({ truckId, drop, objective, tokens: tokens === undefined ? null : Number(tokens), stagerId: stagerId ?? null }));
   const efforts = [notes?.effort, ...(notes?.secondary ?? [])].filter((effort) => effort && turns.has(String(effort.hexId)));
   return { turns, hqs, trucks, groups: efforts.map(({ hexId, unitIds }) => ({ objective: String(hexId), turn: turns.get(String(hexId)), unitIds: [...unitIds] })) };
 };
@@ -134,18 +135,20 @@ for (const record of records) {
       turn = {
         key: keyOf(sequence), gameTurn: sequence.gameTurn, plan: result, attacked: new Set(),
         hqs: result.hqs.map((placement) => ({ ...placement, endDistance: null })),
-        trucks: result.trucks.map((placement) => ({ ...placement, unloadDistance: null })),
+        trucks: result.trucks.map((placement) => ({ ...placement, unloadDistance: null, unloaded: 0, stagerAtDrop: null })),
         groups: result.groups.filter(({ objective }) => defended(objective)).map((group) => ({ ...group, beside: null, besideTraced: null })),
       };
     }
     if (turn && action.kind === 'UNLOAD_SUPPLY' && inMovement(state)) {
       for (const placement of turn.trucks.filter(({ truckId }) => truckId === String(action.pieceId ?? action.truckId))) {
-        placement.unloadDistance = m.hexDistanceBetween(hexOf(state, placement.truckId), placement.drop);
+        placement.unloadDistance ??= m.hexDistanceBetween(hexOf(state, placement.truckId), placement.drop);
+        placement.unloaded += action.tokens;
       }
     }
     if (turn && action.kind === 'DECLARE_COMBAT' && action.combatKind === 'REGULAR' && action.actorId === attackerId) turn.attacked.add(String(action.targetHexId));
     const next = m.ruleEngine.applyAction(state, action).state;
     if (turn && inMovement(state) && !inMovement(next)) {
+      for (const placement of turn.trucks.filter(({ stagerId }) => stagerId)) placement.stagerAtDrop = hexOf(next, placement.stagerId) === placement.drop;
       for (const placement of turn.hqs) {
         const hexId = hexOf(next, placement.hqId);
         placement.endDistance = hexId === null ? null : m.hexDistanceBetween(hexId, placement.moveTo);

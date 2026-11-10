@@ -1,6 +1,6 @@
 # 戰區補給配置
 
-狀態：**進行中：策略上層已分配 HQ 位置與卡車卸貨點，計畫在補給到得了的目標上會被執行，但西歐觀測仍未確立幫助；指標已前瞻確認（近期奪點）；終局預測未通過；策略上層 2 步驟版本改變了攻方的計畫；本步驟組的移動執行已修正，但西歐觀測未確立幫助；下一步驟組不要求補給、而補給跟不上，組逐回合延後（權重預設關閉）**。量測工具全部在 `scripts/`，不被 bot 讀取。工作項目見 [局勢指標研究 WBS 的 P11](../roadmap/18-position-metrics-wbs.md)。
+狀態：**進行中：策略上層已分配 HQ 位置與卡車卸貨點，計畫在補給到得了的目標上會被執行，但西歐觀測仍未確立幫助；卡車已依運量分配並在推演中照計畫卸貨，尚無對局觀測；指標已前瞻確認（近期奪點）；終局預測未通過；策略上層 2 步驟版本改變了攻方的計畫；本步驟組的移動執行已修正，但西歐觀測未確立幫助；下一步驟組不要求補給、而補給跟不上，組逐回合延後（權重預設關閉）**。量測工具全部在 `scripts/`，不被 bot 讀取。工作項目見 [局勢指標研究 WBS 的 P11](../roadmap/18-position-metrics-wbs.md)。
 
 ## 範圍
 
@@ -64,13 +64,19 @@
 - 開啟時，攻擊戰的攻方在每個 Movement 步驟做一次配置，看本步驟與下一步驟（使用者確認 2026-10-22）。可達範圍用規則查詢 `projectedReach`：單位已付燃料、未移動時從某格出發能停在哪裡，模式取移動步驟對它會選的模式（模式只在開始移動時改變，5.4；接近敵軍或攻擊目標時為 Combat Mode，MA 較低）。本步驟從單位所在格算，下一步驟另加從本步驟可達範圍中最接近目標的格子算。
 - 配置同時分配補給，攻擊位置必須在該組攻擊的那一步有補給，否則該單位不參加該目標。來源有四種，前兩種直接成立，後兩種要分配：
   - 單位目前的 trace；
-  - 現有補給堆可供它吃的 SP（12.6c，1T 供 2 RE）；
+  - 現有補給堆可供它吃並支付戰鬥補給的 SP（12.6c 每 2 RE 1T、至少 1T；12.4 每 step 1T），每個補給堆只算到它的 token 用完為止；
   - 分配給該組的 HQ 的投送（12.3b）。HQ 先於戰鬥單位移動，這一步移到 Move Mode 可達、離敵 3 格以上、仍有補給源供應（新規則查詢 `queryHqThrow`），而且仍涵蓋只靠它投送的單位的格子；下一步驟的組另可從最接近目標的那一格再移一次；
-  - 下一步驟的組另有卡車這一步卸下的 SP。卡車晚於戰鬥單位移動，卸在組員這一步可到、在 trace 內、離敵 3 格以上、離目標 6 格內，且取用範圍（12.3a）涵蓋攻擊位置的格子。
-- 每個 HQ、每輛卡車只服務一組，依組的價值先後分配。沒有空閒的 HQ 或卡車能補給的單位與目標配對會被捨去，然後重新配置，最多 8 輪。
+  - 下一步驟的組另有卡車這一步卸下的 SP。卸貨點在 trace 內、離敵 3 格以上、離目標 6 格內，取用範圍（12.3a）涵蓋攻擊位置。SP 只能卸在有己方戰鬥單位的格子（13.2f），所以該組一名成員（集結者）這一步停在卸貨點，卸貨點必須在它自己的 trace 內。
+- 卡車依運量計算：
+  - 載重是卡車自己的容量（每個 Transport Point 4T），載貨的卡車算它的現有貨物，空車算一個後方補給堆的存量（離敵 5 格以上、不在目標格、不是守備存糧、離卸貨點超過 3 格）；
+  - 整趟行程要在 MA 內：開到補給堆、裝貨、開到卸貨點、卸貨，裝卸各花 MA 的 10%（13.2f）；
+  - 一輛卡車只供應需求（吃加戰鬥補給）放得進載重的成員；一組可以用多輛卡車，卸在同一個卸貨點；
+  - 這一步要跑救援的卡車不列入：每個被切斷的群保留最近的一輛。
+- 每個 HQ、每輛卡車只服務一組，每組最多一個 HQ，依組的價值先後分配。沒有空閒的 HQ 或卡車能補給的單位與目標配對會被捨去，然後重新配置，最多 8 輪。
 - 執行時：
   - 被指派的 HQ 以 Move Mode 走向指定格，加分 150、每差一格扣 30，蓋過跟隨主攻與離開 SP 範圍的評分；
-  - 被指派的卡車把 SP 送往卸貨點附近；
+  - 集結者被拉往卸貨點（與 HQ 相同的加分）；
+  - 被指派的卡車排在戰鬥單位之後移動（即使這一步有救援），不接救援，卸完後回到一般運補。空車在移動當下才選補給堆：從現有存量中選能給最多計畫 token、其次行程最短、而且整趟在 MA 內的一堆；這一步由鐵路運到的 SP 不能再裝（12.2a），不計入。計畫算入的那一格存量，鐵路這一步不運走；
   - 配置組成員移到目標旁的攻擊位置時，只要在那裡有 SP 可吃、且不讓其他單位失去 trace 或口糧，就可以離開 trace。
 - 配置組的單位與被指派的 HQ 移動時取最多 1,500 個候選目的地（一般單位 400），因為遠距單位的目標旁格子常排在 400 之後。改用這個查詢之前，配置用 `movementRange`，而 Movement 第一個決策時尚未付燃料，GT1 測試局面中 37 個戰鬥單位有 25 個（卡車與履帶單位）因此沒有可達範圍。
 - 奪點機率以 bot 看得到的資訊估計：`attackStrength` 查詢的規則戰力與地形線型（守方取欄位最低者）、估計的敵軍戰力、雙方最高 AR（看不到的守方以 2 計）、hedgehog，守方一律假設付得起補給。凍結模型的係數放在策略中。組內有成員下一步驟才能到位時，組的價值再乘以下回合折扣：P5 開發資料中，攻方下一個 Movement 時守軍估計戰力沒有增加的比例，依 Game Turn 凍結（GT1 0.44、GT2 0.79，之後 0.84～0.94；最後一回合為 0）（[折扣估計](../quality/evidence/ai-theater-delay-2026-10-22/README.md)）。
@@ -100,7 +106,13 @@
   - 本步驟組 41/44 發動攻擊、34/44 回合末持有；
   - 下一步驟組在下一回合末持有 0.55（原 0.14，但組已改為只留補給到得了的）；
   - 配置選出的有守軍目標，配置版移動時被攻擊 0.79、持有 0.59，標準移動時同樣目標 0.59、0.34。
-- **作用範圍小**：前 3 回合每回合只有 0.7 個有守軍的配置組，因為約一半補給外的目標兩步內任何 HQ 或卸貨點都到不了。卡車指派前 3 回合只有 9 次，卸在卸貨點 1 格內的只有 3 次，卡車部分尚未得到評估。
+- **作用範圍小**：前 3 回合每回合只有 0.7 個有守軍的配置組，因為約一半補給外的目標兩步內任何 HQ 或卸貨點都到不了。卡車指派前 3 回合只有 9 次，卸在卸貨點 1 格內的只有 3 次。
+
+卡車的執行與運量隨後修正（見上方現行行為），以[移動段推演](../quality/evidence/ai-theater-truck-execution-2026-11-11/README.md)核對：在同一批 80 局的記錄局面上，讓策略經由正式對局的 seat runner 自己走完攻方的 Movement 段，不開新局。
+
+- 修正前的版本（卡車一律算 20T、後方存量算成一個池）：38 次卡車指派中，計畫的 token 數卸到卸貨點的只有 8 次。原因依序是：卡車被救援任務搶走 14 次；一趟只能從一個補給堆裝、裝不到計畫的量 7 次；卡車沒動 4 次；集結者沒到卸貨點 4 次。
+- 修正後：42 次指派中 37 次把計畫的 token 數卸到卸貨點，42 次都有卸貨；集結者 38 次停在卸貨點，其餘 4 次差 1～3 格，卡車改卸在它實際停的格子。
+- 這只核對一個 Movement 段內的執行；卸下的 SP 是否讓下一步驟的攻擊成立、整局是否有幫助，還沒有對局觀測。
 
 使用者決定（2026-10-21）：P11 只做實作與觀測，不走升級流程，研究只限西歐。先前誤走升級流程的開發批與中途停止的獨立批只作觀測，東歐的對局不採用。
 
@@ -114,9 +126,9 @@
 
 ## 已知缺口
 
-- `bot-theater-allocation`：策略上層分配 HQ 位置與卡車卸貨點，但卡車只按「有載貨或後方有存量」計入，不檢查 token 數是否夠全組吃與戰鬥，也不使用 P11.2 的運入上限；每組最多一個 HQ、一輛卡車；補給源（鐵路可下車格、Extender）的前移不在配置內，兩步內任何 HQ 或卸貨點都補給不到的目標一律捨去（執行修正批次的前 4 回合中約一半）；量測腳本的配置搜尋（`ai-theater-allocation.mjs`）仍只分配戰鬥單位。配置不考慮堆疊上限與友軍移動造成的 ZOC，本步驟組只在 trace 補給內規劃後執行率 86%，但下一步驟的到位不檢查補給，而 HQ 一回合只推進約 3 格，下一步驟組多半再延後或被放棄（Game Turn 1～3 持有 0.13），佔走主攻名額，Game Turn 4～8 攻擊變少；策略上層的下一步驟可達範圍假設其他單位不動、單位付得起燃料，折扣也套用在空目標上；指標只看 1 回合；完整問題（約 20 個單位）的近似差距未驗證；奪點模型只描述 bot 選擇發動的攻擊；守方的戰區劃分對門檻敏感。
+- `bot-theater-allocation`：策略上層分配 HQ 位置與卡車卸貨點，卡車依容量、補給堆存量與 MA 計算，但修正後還沒有對局觀測；計畫時的存量在卡車移動前可能被燃料支付用掉；鐵路與海運的運量（Rail Cap、Sea Cap，P11.2 的運入上限）不在配置內；每組最多一個 HQ；集結者的卸貨點可能在 HQ 移動後失去 trace（推演中 42 次有 4 次沒到位）；補給源（鐵路可下車格、Extender）的前移不在配置內，兩步內任何 HQ 或卸貨點都補給不到的目標一律捨去（執行修正批次的前 4 回合中約一半）；量測腳本的配置搜尋（`ai-theater-allocation.mjs`）仍只分配戰鬥單位。配置不考慮堆疊上限與友軍移動造成的 ZOC，本步驟組只在 trace 補給內規劃後執行率 86%，但下一步驟的到位不檢查補給，而 HQ 一回合只推進約 3 格，下一步驟組多半再延後或被放棄（Game Turn 1～3 持有 0.13），佔走主攻名額，Game Turn 4～8 攻擊變少；策略上層的下一步驟可達範圍假設其他單位不動、單位付得起燃料，折扣也套用在空目標上；指標只看 1 回合；完整問題（約 20 個單位）的近似差距未驗證；奪點模型只描述 bot 選擇發動的攻擊；守方的戰區劃分對門檻敏感。
 - 既有可支付目標代理的合法見證缺口仍由 `bot-position-payability` 維護。
 
 ## 驗證
 
-[地圖普查](../quality/evidence/ai-theater-survey-2026-10-21/README.md)、[Combat 階段核對](../quality/evidence/ai-theater-attack-check-2026-10-21/README.md)、[燃料核對](../quality/evidence/ai-theater-fuel-check-2026-10-21/README.md)、[運入核對](../quality/evidence/ai-theater-inflow-check-2026-10-21/README.md)、[奪點機率模型](../quality/evidence/ai-theater-capture-model-2026-10-21/README.md)、[配置核對](../quality/evidence/ai-theater-allocation-check-2026-10-21/README.md)、[記錄紀錄](../quality/evidence/ai-theater-record-2026-10-21/README.md)、[回溯比較](../quality/evidence/ai-theater-validation-2026-10-21/README.md)、[前瞻確認](../quality/evidence/ai-theater-confirmation-2026-10-21/README.md)、[策略上層觀測](../quality/evidence/ai-theater-allocation-games-2026-10-21/README.md)、[策略上層執行核對](../quality/evidence/ai-theater-adherence-2026-10-22/README.md)、[下回合折扣](../quality/evidence/ai-theater-delay-2026-10-22/README.md)、[2 步驟觀測](../quality/evidence/ai-theater-two-step-games-2026-10-22/README.md)、[執行診斷](../quality/evidence/ai-theater-execution-2026-10-30/README.md)、[執行修正觀測](../quality/evidence/ai-theater-execution-games-2026-10-30/README.md)、[下一步驟組追蹤](../quality/evidence/ai-theater-next-step-2026-10-30/README.md)、[HQ 與卡車配置觀測](../quality/evidence/ai-theater-hq-games-2026-10-30/README.md)、[付款時序稽核](../quality/evidence/ai-theater-supply-audit-2026-10-20/README.md)。這些都不改變 `docs/quality/03-product-operation-verification-plan.md` 的任何列。
+[地圖普查](../quality/evidence/ai-theater-survey-2026-10-21/README.md)、[Combat 階段核對](../quality/evidence/ai-theater-attack-check-2026-10-21/README.md)、[燃料核對](../quality/evidence/ai-theater-fuel-check-2026-10-21/README.md)、[運入核對](../quality/evidence/ai-theater-inflow-check-2026-10-21/README.md)、[奪點機率模型](../quality/evidence/ai-theater-capture-model-2026-10-21/README.md)、[配置核對](../quality/evidence/ai-theater-allocation-check-2026-10-21/README.md)、[記錄紀錄](../quality/evidence/ai-theater-record-2026-10-21/README.md)、[回溯比較](../quality/evidence/ai-theater-validation-2026-10-21/README.md)、[前瞻確認](../quality/evidence/ai-theater-confirmation-2026-10-21/README.md)、[策略上層觀測](../quality/evidence/ai-theater-allocation-games-2026-10-21/README.md)、[策略上層執行核對](../quality/evidence/ai-theater-adherence-2026-10-22/README.md)、[下回合折扣](../quality/evidence/ai-theater-delay-2026-10-22/README.md)、[2 步驟觀測](../quality/evidence/ai-theater-two-step-games-2026-10-22/README.md)、[執行診斷](../quality/evidence/ai-theater-execution-2026-10-30/README.md)、[執行修正觀測](../quality/evidence/ai-theater-execution-games-2026-10-30/README.md)、[下一步驟組追蹤](../quality/evidence/ai-theater-next-step-2026-10-30/README.md)、[HQ 與卡車配置觀測](../quality/evidence/ai-theater-hq-games-2026-10-30/README.md)、[卡車執行推演](../quality/evidence/ai-theater-truck-execution-2026-11-11/README.md)、[付款時序稽核](../quality/evidence/ai-theater-supply-audit-2026-10-20/README.md)。這些都不改變 `docs/quality/03-product-operation-verification-plan.md` 的任何列。
