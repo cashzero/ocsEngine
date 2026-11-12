@@ -82,16 +82,19 @@ export interface HqPlacement {
 }
 
 /**
- * A truck sent to unload SP this step where a next-step group's members can eat and draw combat supply at their attack
- * positions next step (12.6c, 12.4). SP are unloaded only with a friendly combat unit (13.2f): `stagerId`, a member of
- * the group, stops at `drop` this step.
+ * A truck sent to unload SP this step where a group's members can eat and draw combat supply at their attack positions
+ * on the group's step (12.6c, 12.4). SP are unloaded only with a friendly combat unit (13.2f): `stagerId` stops at
+ * `drop` this step, a member of a next-step group or a unit no group uses. The drop may lie outside trace.
  */
 export interface TruckPlacement {
   readonly truckId: PieceId;
   readonly objective: HexId;
   readonly drop: HexId;
   readonly stagerId: PieceId;
-  /** Tokens the members it serves need: eating (1T per 2 RE, at least 1T) and combat supply (1T per step). */
+  /**
+   * Tokens the members it serves need: eating (1T per 2 RE, at least 1T) and combat supply (1T per step); on the
+   * group's first truck also what the stager eats at the drop this step when nothing else feeds it there.
+   */
   readonly tokens: number;
   /** The rear dump hex the plan counted an empty truck's load from (the move step picks the dump again when the truck moves); null for a truck that carries its load. */
   readonly pickup: HexId | null;
@@ -109,10 +112,10 @@ const HQ_SAFE_DISTANCE = 3;
 const HQ_OBJECTIVE_RADIUS = 10;
 /** Rounds of allocation, HQ and truck assignment and dropping the unit/objective pairs nothing free can supply. */
 const SUPPLY_ROUNDS = 8;
-/** SP are unloaded in a friendly-held, traced hex at least this far from the enemy (the move step's drop rule) ... */
+/** SP are unloaded in a hex a combat unit stops in, at least this far from the enemy (the move step's drop rule) ... */
 const DROP_SAFE_DISTANCE = 3;
 /** ... and within this many hexes of the objective. */
-const DROP_OBJECTIVE_RADIUS = 6;
+const DROP_OBJECTIVE_RADIUS = 10;
 /** A truck counts for a drop when it carries this many Tokens or rear dumps hold them. */
 const TRUCK_MIN_TOKENS = 2;
 /** Rear dumps trucks load from stand at least this far from the enemy (the move step's pickup rule). */
@@ -143,25 +146,32 @@ interface HqOption {
 
 /**
  * Units (not `exclude`d, with a combat strength) go to objectives the player does not hold: an empty one they can
- * enter, or a defended one beside which they can stop, this step or the next, where trace supply reaches them on that
- * step, since the move step refuses a move out of trace. Reach assumes fuel paid (12.5a) and the mode `modeFor` says
- * the unit takes as it begins to move (5.4): this step from where the unit stands, the next step also from the hex of
- * this step's reach nearest the objective. Supply on a step is the unit's trace now, SP a dump already holds that
- * it can eat there (12.6c), the throw of an HQ placed for that step, or, for a next-step group, SP a truck unloads
- * this step: an HQ moves this step (it moves before the combat units) to a hex 3+ from the enemy where a Supply Source
- * still feeds it and its throw still covers the units only it supplies now, or, for a next-step group, also once more
- * from the hex of that reach nearest the objective; a truck (it moves after the combat units) unloads in a traced hex
- * 3+ from the enemy where a member stops this step inside its own trace, whose draw (12.3a) reaches the attack
- * positions. SP count by Tokens and transport by capacity and MP: each dump feeds only the members whose eating and
- * combat supply it still holds; a truck (not `exclude`d) brings its cargo, or what it can carry (`truckTokens`, 4T a Transport
+ * enter, or a defended one beside which they can stop, this step or the next, where supply reaches them on that step.
+ * Reach is in the mode `modeFor` says the unit takes as it begins to move (5.4): this step from where the unit stands,
+ * the next step also from the hex of this step's reach nearest the objective. A unit that cannot move now and has no
+ * fuel to pay (12.5a) stays where it is this step.
+ *
+ * Supply on a step is one of four:
+ * - the unit's trace now;
+ * - SP a dump already holds that the unit can eat there (12.6c), while the dump's Tokens last;
+ * - the throw of an HQ placed for that step. The HQ moves this step (HQs move first) to a hex 3+ from the enemy where a
+ *   Supply Source still feeds it and its throw still covers the units only it supplies now; for a next-step group it
+ *   may move once more from the hex of that reach nearest the objective;
+ * - SP trucks unload this step at a drop 3+ from the enemy whose draw (12.3a) reaches the attack positions. A combat
+ *   unit must stop there first (13.2f), the stager: a member of a next-step group that still reaches an attack position
+ *   from the drop next step, or a unit no group uses. The drop need not be in trace: there the stager eats this step
+ *   from the first truck's load. The stager moves after the HQs, then the trucks, then the other units.
+ *
+ * SP count by Tokens and transport by capacity and MP: each dump feeds only the members whose eating and combat supply
+ * it still holds; a truck (not `exclude`d) brings its cargo, or what it can carry (`truckTokens`, 4T a Transport
  * Point) from one rear dump it can drive to, load at, drive on from and unload within its MA (13.2f). A group may take
- * several trucks at one drop. Each HQ and
- * each truck serves one group; a unit/objective pair nothing free can supply is dropped and the allocation repeated.
- * A defended objective's capture probability comes from the rules'
- * planned strengths under the defender's best terrain, the estimated enemy strength, the best ratings on each side (an
- * unseen defender rating counts 2) and the defender assumed supplied; a group with a member that gets there only next
- * step is worth that times `discount`. Greedy by marginal value, then pairs and single units moved while the total
- * improves.
+ * several trucks at one drop. Each HQ and each truck serves one group and each stager one drop; a unit/objective pair
+ * nothing free can supply is dropped and the allocation repeated.
+ *
+ * A defended objective's capture probability comes from the rules' planned strengths under the defender's best
+ * terrain, the estimated enemy strength, the best ratings on each side (an unseen defender rating counts 2) and the
+ * defender assumed supplied; a group with a member that gets there only next step is worth that times `discount`.
+ * Greedy by marginal value, then pairs and single units moved while the total improves.
  */
 export const allocateTheater = (situation: Situation, access: BotActionAccess, exclude: ReadonlySet<PieceId>,
   rating: (piece: ProjectedPiece) => number, discount: number,
@@ -184,10 +194,12 @@ export const allocateTheater = (situation: Situation, access: BotActionAccess, e
   const traced = new Map(units.map((unit) => [unit.piece.id, new Set(access.traceCoverage(unit.piece.id).hexIds.map(String))]));
   // Out of trace a unit eats from a dump whose SP reach it (12.6c: 1T per 2 RE, at least 1T) and draws its combat
   // supply there too (12.4: 1T per step).
-  const need = new Map(units.map((unit) => [unit.piece.id,
-    Math.max(1, Math.ceil((unit.profile?.re ?? 1) / 2)) + (unit.piece.remainingSteps ?? unit.profile?.steps ?? 1)]));
+  const eating = (unitId: PieceId) => Math.max(1, Math.ceil((byId.get(unitId)?.profile?.re ?? 1) / 2));
+  const need = new Map(units.map((unit) => [unit.piece.id, eating(unit.piece.id) + (unit.piece.remainingSteps ?? unit.profile?.steps ?? 1)]));
   const feeds = new Map(units.map((unit) => [unit.piece.id, access.feedCoverage(unit.piece.id)
     .map(({ dumpId, tokens, hexIds }) => ({ dumpId, tokens, hexIds: new Set(hexIds.map(String)) }))]));
+  const mobile = new Map(units.map((unit) => [unit.piece.id,
+    access.movementRange(unit.piece.id).length > 0 || access.candidates('PAY_FUEL', unit.piece.id).length > 0]));
   const stagingReach = new Map<HexId, Set<string>>();
   // This step's reach of each unit toward each objective, in the mode it moves in there.
   const nowReach = new Map<string, ReadonlySet<string>>();
@@ -197,7 +209,8 @@ export const allocateTheater = (situation: Situation, access: BotActionAccess, e
     const byObjective = new Map<HexId, { 1: Set<string>; 2: Set<string> }>();
     for (const objective of objectives) {
       const mode = modeFor(unit, objective.hexId, blocked(objective.hexId));
-      const now = reachFrom(unit.piece.id, unit.hexId, mode);
+      // 12.5a: a unit that needs fuel and has no way to pay it stays where it is this step.
+      const now = mobile.get(unit.piece.id) ? reachFrom(unit.piece.id, unit.hexId, mode) : new Set([String(unit.hexId)]);
       nowReach.set(`${unit.piece.id}|${objective.hexId}`, now);
       modeOf.set(`${unit.piece.id}|${objective.hexId}`, mode);
       if (!stagingReach.has(objective.hexId)) stagingReach.set(objective.hexId, new Set());
@@ -205,7 +218,9 @@ export const allocateTheater = (situation: Situation, access: BotActionAccess, e
       const first = attackHexes(now, objective.hexId);
       const second = new Set(first);
       const stride = Math.max(...[...now].map((hex) => hexesBetween(unit.hexId, hex)));
-      if (discount > 0 && hexesBetween(unit.hexId, objective.hexId) <= 2 * stride + 1) {
+      if (discount > 0 && !mobile.get(unit.piece.id)) {
+        for (const hex of attackHexes(reachFrom(unit.piece.id, unit.hexId, mode), objective.hexId)) second.add(hex);
+      } else if (discount > 0 && hexesBetween(unit.hexId, objective.hexId) <= 2 * stride + 1) {
         const staging = [...now].filter((hex) => hex !== String(objective.hexId) && !blocked(hex))
           .sort((left, right) => hexesBetween(left, objective.hexId) - hexesBetween(right, objective.hexId) || left.localeCompare(right))[0];
         if (staging !== undefined) for (const hex of attackHexes(reachFrom(unit.piece.id, staging as HexId, mode), objective.hexId)) second.add(hex);
@@ -269,8 +284,8 @@ export const allocateTheater = (situation: Situation, access: BotActionAccess, e
     }
   }
 
-  // Truck options for next-step groups: SP unloaded this step where a member can stand now, whose draw (12.3a) reaches
-  // attack positions; each truck's best drop per objective.
+  // Truck options: SP unloaded this step where a combat unit can stop now, whose draw (12.3a) reaches attack
+  // positions; each truck's drops per objective, most positions covered first, then a traced drop.
   const sideTraced = new Set(access.traceCoverage().hexIds.map(String));
   // Rear dumps empty trucks load from, by hex, as the move step picks them: away from the enemy, off the objectives,
   // not an isolated garrison's emergency stock.
@@ -299,23 +314,22 @@ export const allocateTheater = (situation: Situation, access: BotActionAccess, e
     return costs;
   };
   const truckOptions = new Map<HexId, TruckOption[]>();
-  if (discount > 0) {
-    for (const objective of objectives) {
-      const targets = new Set([...positions.values()].flatMap((byObjective) => [...(byObjective.get(objective.hexId)?.[2] ?? [])]));
-      if (targets.size === 0) continue;
-      const drops = [...(stagingReach.get(objective.hexId) ?? [])].filter((hexId) => !occupied(hexId) && sideTraced.has(hexId)
-        && hexesBetween(hexId, objective.hexId) <= DROP_OBJECTIVE_RADIUS && situation.nearestEnemy(hexId as HexId).distance >= DROP_SAFE_DISTANCE)
-        .map((hexId) => ({ hexId, covers: access.drawReach(hexId as HexId) }))
-        .map(({ hexId, covers }) => ({ hexId, covers, count: [...targets].filter((hex) => covers.has(hex)).length }))
-        .filter(({ count }) => count > 0)
-        .sort((left, right) => right.count - left.count || hexesBetween(left.hexId, objective.hexId) - hexesBetween(right.hexId, objective.hexId) || left.hexId.localeCompare(right.hexId));
-      const list = trucks.flatMap((truck): TruckOption[] => {
-        const costs = truckCosts(truck, String(truck.hexId));
-        const reached = drops.filter(({ hexId }) => (costs.get(hexId) ?? Infinity) + loadTicks(truck) <= truckMa(truck)).map(({ hexId, covers }) => ({ hexId: hexId as HexId, covers }));
-        return reached.length > 0 ? [{ truck, carried: truck.piece.carriedTokens ?? 0, drops: reached }] : [];
-      });
-      if (list.length > 0) truckOptions.set(objective.hexId, list);
-    }
+  for (const objective of objectives) {
+    const targets = new Set([...positions.values()].flatMap((byObjective) => [...(byObjective.get(objective.hexId)?.[2] ?? [])]));
+    if (targets.size === 0) continue;
+    const drops = [...(stagingReach.get(objective.hexId) ?? [])].filter((hexId) => !occupied(hexId)
+      && hexesBetween(hexId, objective.hexId) <= DROP_OBJECTIVE_RADIUS && situation.nearestEnemy(hexId as HexId).distance >= DROP_SAFE_DISTANCE)
+      .map((hexId) => ({ hexId, covers: access.drawReach(hexId as HexId) }))
+      .map(({ hexId, covers }) => ({ hexId, covers, count: [...targets].filter((hex) => covers.has(hex)).length }))
+      .filter(({ count }) => count > 0)
+      .sort((left, right) => right.count - left.count || Number(sideTraced.has(right.hexId)) - Number(sideTraced.has(left.hexId))
+        || hexesBetween(left.hexId, objective.hexId) - hexesBetween(right.hexId, objective.hexId) || left.hexId.localeCompare(right.hexId));
+    const list = trucks.flatMap((truck): TruckOption[] => {
+      const costs = truckCosts(truck, String(truck.hexId));
+      const reached = drops.filter(({ hexId }) => (costs.get(hexId) ?? Infinity) + loadTicks(truck) <= truckMa(truck)).map(({ hexId, covers }) => ({ hexId: hexId as HexId, covers }));
+      return reached.length > 0 ? [{ truck, carried: truck.piece.carriedTokens ?? 0, drops: reached }] : [];
+    });
+    if (list.length > 0) truckOptions.set(objective.hexId, list);
   }
 
   const denied = new Set<string>();
@@ -334,7 +348,7 @@ export const allocateTheater = (situation: Situation, access: BotActionAccess, e
     if (!hexes || hexes.size === 0) return false;
     if (selfSupplied(unitId, hexes)) return true;
     if (optionsFor(hexId, step).some(({ covers, servable }) => servable.has(unitId) && [...hexes].some((hex) => covers.has(hex)))) return true;
-    return step === 2 && truckOptionsFor(hexId).some(({ drops }) => drops.some(({ covers }) => [...hexes].some((hex) => covers.has(hex))));
+    return truckOptionsFor(hexId).some(({ drops }) => drops.some(({ covers }) => [...hexes].some((hex) => covers.has(hex))));
   };
   const points = new Map(objectives.map(({ hexId, points: vp }) => [hexId, vp]));
   const cache = new Map<string, number>();
@@ -426,11 +440,19 @@ export const allocateTheater = (situation: Situation, access: BotActionAccess, e
     })).sort((left, right) => right.value - left.value || String(left.hexId).localeCompare(String(right.hexId)));
   };
 
-  /** A member that stops at `drop` this step, inside its own trace, and still reaches an attack position from there next step. */
-  const stagerFor = (group: TheaterGroup, drop: HexId): PieceId | undefined => group.unitIds.find((id) => {
-    if (!nowReach.get(`${id}|${group.hexId}`)?.has(String(drop)) || !traced.get(id)!.has(String(drop))) return false;
-    return attackHexes(reachFrom(id, drop, modeOf.get(`${id}|${group.hexId}`) ?? null), group.hexId).size > 0;
-  });
+  /**
+   * The combat unit that stops at `drop` this step so the group's trucks may unload there (13.2f), with the Tokens it
+   * eats there this step (12.6c) when the drop is outside its trace and no dump feeds it. A member of a next-step group
+   * that still reaches an attack position from the drop next step, or a unit no group uses (`idle`); the one that eats
+   * least, a member first.
+   */
+  const stagerFor = (group: TheaterGroup, drop: HexId, idle: ReadonlySet<PieceId>): { id: PieceId; eats: number; member: boolean } | undefined =>
+    [...(group.turn === 2 ? group.unitIds : []), ...idle].flatMap((id) => {
+      const member = group.unitIds.includes(id);
+      if (!nowReach.get(`${id}|${group.hexId}`)?.has(String(drop))) return [];
+      if (member && attackHexes(reachFrom(id, drop, modeOf.get(`${id}|${group.hexId}`) ?? null), group.hexId).size === 0) return [];
+      return [{ id, eats: selfSupplied(id, new Set([String(drop)])) ? 0 : eating(id), member }];
+    }).sort((left, right) => left.eats - right.eats || Number(right.member) - Number(left.member) || String(left.id).localeCompare(String(right.id)))[0];
 
   /**
    * What the truck brings to `drop` this step within its MA (13.2f): its cargo, or what it can carry (`truckTokens`) of
@@ -454,8 +476,9 @@ export const allocateTheater = (situation: Situation, access: BotActionAccess, e
 
   // Groups in order of value take supply: members out of trace eat and draw combat supply from dumps while their
   // Tokens last; then one HQ at most, and trucks, cover the rest. A truck brings what `truckLoad` says and serves only
-  // the members whose needs fit; a group's trucks unload at one drop, where a member of the group stops (13.2f). Members nothing free covers lose that objective, an HQ
-  // or truck already given to a group is not offered to another, and the allocation runs again.
+  // the members whose needs fit; a group's trucks unload at one drop, where its stager stops (13.2f). Members nothing
+  // free covers lose that objective, an HQ or truck already given to a group is not offered to another, and the
+  // allocation runs again.
   for (let round = 0; ; round++) {
     const groups = allocate();
     const used = new Set<PieceId>();
@@ -465,6 +488,8 @@ export const allocateTheater = (situation: Situation, access: BotActionAccess, e
     const dumpLeft = new Map<string, number>();
     for (const list of feeds.values()) for (const { dumpId, tokens } of list) dumpLeft.set(dumpId, tokens);
     const pickupLeft = new Map(pickups);
+    // Units no group uses this round may stand at a drop; each stands at one.
+    const idle = new Set(units.map(({ piece }) => piece.id).filter((id) => !groups.some(({ unitIds }) => unitIds.includes(id))));
     let changed = false;
     for (const group of groups) {
       const step = group.turn;
@@ -489,15 +514,17 @@ export const allocateTheater = (situation: Situation, access: BotActionAccess, e
       // Trucks for the group unload at one drop, where one member stops: the drop whose trucks feed the most members.
       type Run = { option: TruckOption; tokens: number; load: { capacity: number; pickup: HexId | null } };
       let trucksFor: { drop: HexId; stagerId: PieceId; runs: Run[]; served: PieceId[] } | null = null;
-      if (step === 2 && afterHq.length > 0) {
+      // The stager's meal at an untraced drop rides on the first truck.
+      if (afterHq.length > 0) {
         const available = truckOptionsFor(group.hexId).filter(({ truck }) => !used.has(truck.piece.id));
         const tried = new Set<string>();
         for (const drop of available.flatMap(({ drops }) => drops)) {
           if (tried.has(drop.hexId)) continue;
           tried.add(drop.hexId);
-          const stagerId = stagerFor(group, drop.hexId);
+          const stager = stagerFor(group, drop.hexId, idle);
           let remaining = afterHq.filter((id) => [...hexesOf(id)].some((hex) => drop.covers.has(hex)));
-          if (stagerId === undefined || remaining.length <= (trucksFor?.served.length ?? 0)) continue;
+          if (stager === undefined || remaining.length <= (trucksFor?.served.length ?? 0)) continue;
+          let meal = stager.eats;
           const left = new Map(pickupLeft);
           const runs: Run[] = [];
           const served: PieceId[] = [];
@@ -505,19 +532,20 @@ export const allocateTheater = (situation: Situation, access: BotActionAccess, e
             if (remaining.length === 0) break;
             const load = truckLoad(option, drop.hexId, left);
             if (load === null) continue;
-            let tokens = 0;
+            let tokens = meal;
             const mine = remaining.filter((id) => {
               if (tokens + need.get(id)! > load.capacity) return false;
               tokens += need.get(id)!;
               return true;
             });
             if (mine.length === 0) continue;
+            meal = 0;
             if (load.pickup !== null) left.set(String(load.pickup), left.get(String(load.pickup))! - load.capacity);
             runs.push({ option, tokens, load });
             served.push(...mine);
             remaining = remaining.filter((id) => !mine.includes(id));
           }
-          if (served.length > (trucksFor?.served.length ?? 0)) trucksFor = { drop: drop.hexId, stagerId, runs, served };
+          if (served.length > (trucksFor?.served.length ?? 0)) trucksFor = { drop: drop.hexId, stagerId: stager.id, runs, served };
         }
       }
       const unserved = afterHq.filter((id) => !(trucksFor?.served.includes(id) ?? false));
@@ -531,6 +559,7 @@ export const allocateTheater = (situation: Situation, access: BotActionAccess, e
         used.add(hq.option.hqId);
         hqs.push({ hqId: hq.option.hqId, objective: group.hexId, turn: step, hexId: hq.option.hexId, moveTo: hq.option.moveTo });
       }
+      if (trucksFor) idle.delete(trucksFor.stagerId);
       for (const { option, tokens, load } of trucksFor?.runs ?? []) {
         used.add(option.truck.piece.id);
         // The truck takes all it can carry from the dump, not only what the group needs.

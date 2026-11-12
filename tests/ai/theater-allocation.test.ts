@@ -65,6 +65,7 @@ describe('theater allocation (plan P11.8 candidate)', () => {
     const truckTokens = (truck: { piece: { id: PieceId } }) => ruleEngine.queryTransportOptions(state, actorId, truck.piece.id).value?.capacityTokens ?? 0;
     let placements = 0;
     let trucks = 0;
+    let untraced = 0;
     for (const mode of [null, 'COMBAT'] as const) {
       const plan = allocateTheater(situation, access(state), new Set(), () => 2, 0.5, () => mode, truckTokens);
       // Game Turn 1: the far objectives are beyond where any HQ is fed within two steps, so only this-step groups remain.
@@ -90,15 +91,21 @@ describe('theater allocation (plan P11.8 candidate)', () => {
         const placement = plan.hqs.find(({ objective }) => objective === group.hexId);
         const thrown = placement ? ruleEngine.queryHqThrow(state, actorId, placement.hqId, placement.hexId).value! : null;
         const sent = plan.trucks.filter(({ objective }) => objective === group.hexId);
-        // A group's trucks unload at one drop, where one member stops.
+        // A group's trucks unload at one drop, where one combat unit stops.
         expect(new Set(sent.map(({ drop, stagerId }) => `${drop}|${stagerId}`)).size).toBeLessThanOrEqual(1);
         for (const truck of sent) {
-          expect(group.turn).toBe(2);
-          // A member stops at the drop this step (13.2f), and the truck holds what the members it serves need.
+          // A combat unit stops at the drop this step (13.2f): a member of a next-step group, or a unit no group uses.
           const stager = situation.own.find(({ piece }) => piece.id === truck.stagerId)!;
-          expect(group.unitIds).toContain(truck.stagerId);
+          if (group.unitIds.includes(truck.stagerId)) expect(group.turn).toBe(2);
+          else expect(plan.groups.some(({ unitIds }) => unitIds.includes(truck.stagerId))).toBe(false);
           expect(reach(truck.stagerId, stager.hexId, mode ?? undefined).has(String(truck.drop))).toBe(true);
-          expect(traced(truck.stagerId).has(String(truck.drop))).toBe(true);
+          // Outside its trace and any dump's reach there, the stager eats this step from what the group's trucks bring (12.6c).
+          const fedAtDrop = traced(truck.stagerId).has(String(truck.drop))
+            || ruleEngine.queryFeedCoverage(state, actorId, truck.stagerId).value!.some(({ tokens, hexIds }) => tokens > 0 && hexIds.map(String).includes(String(truck.drop)));
+          if (!fedAtDrop) {
+            untraced += 1;
+            expect(sent.reduce((total, { tokens }) => total + tokens, 0)).toBeGreaterThanOrEqual(Math.max(1, Math.ceil((stager.profile?.re ?? 1) / 2)) + 2);
+          }
           expect(truck.tokens).toBeGreaterThan(0);
           expect(truck.tokens).toBeLessThanOrEqual(truckTokens({ piece: { id: truck.truckId } }));
           // 13.2f: the truck drives to its dump, loads, drives on and unloads within its MA; one that carries its load only unloads.
@@ -118,8 +125,12 @@ describe('theater allocation (plan P11.8 candidate)', () => {
         const drawn = sent[0] ? (ruleEngine.queryDrawReach(state, actorId, sent[0].drop).value ?? []).map(String) : [];
         for (const unitId of group.unitIds) {
           const unit = situation.own.find(({ piece }) => piece.id === unitId)!;
-          const now = reach(unitId, unit.hexId, mode ?? undefined);
+          // 12.5a: a unit that cannot move and has no fuel to pay stays where it is this step.
+          const mobile = ruleEngine.queryMovementRange(state, actorId, unitId).value!.length > 0
+            || ruleEngine.getActionCandidates(state, { actorId, kind: 'PAY_FUEL', pieceId: unitId, budget: 400 }).actions.length > 0;
+          const now = mobile ? reach(unitId, unit.hexId, mode ?? undefined) : new Set([String(unit.hexId)]);
           const positions = new Set(attackHexes(now, group.hexId, group.defended));
+          if (!mobile && group.turn === 2) for (const hexId of attackHexes(reach(unitId, unit.hexId, mode ?? undefined), group.hexId, group.defended)) positions.add(hexId);
           if (group.turn === 2) {
             const nearest = Math.min(...[...now].filter((hexId) => hexId !== String(group.hexId)).map((hexId) => hexesBetween(hexId, group.hexId)));
             for (const staging of [...now].filter((hexId) => hexesBetween(hexId, group.hexId) === nearest && hexId !== String(group.hexId))) {

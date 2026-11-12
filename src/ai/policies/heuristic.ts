@@ -104,12 +104,15 @@ const theaterEfforts = (context: BotDecisionContext, situation: Situation, facts
   notes.truckPlan = new Map(trucks.map((placement) => [placement.truckId, placement]));
   notes.stagers = new Map(trucks.map(({ stagerId, drop }) => [stagerId, drop]));
   notes.theaterObjectives = new Map(groups.flatMap(({ hexId, unitIds }) => unitIds.map((id) => [id, hexId] as const)));
-  notes.theaterUnits = new Set([...groups.flatMap(({ unitIds }) => unitIds), ...notes.hqPlan.keys()]);
+  // A stager outside its group (a unit no group uses) heads for the group's objective, so that it moves in the mode its reach was planned in.
+  notes.stagerTargets = new Map(trucks.filter(({ stagerId }) => !notes.theaterObjectives!.has(stagerId))
+    .map(({ stagerId, objective }) => [stagerId, { hexId: objective, purpose: situation.enemy.get(objective)?.hasCombatUnit ? 'ASSAULT' : 'CAPTURE' } as Target]));
+  notes.theaterUnits = new Set([...groups.flatMap(({ unitIds }) => unitIds), ...notes.hqPlan.keys(), ...notes.stagers.keys()]);
   const efforts: MainEffort[] = groups.filter(({ defended }) => defended).slice(0, w.assaultMaxEfforts).map(({ hexId, unitIds }) => ({
     hexId, defenders: situation.enemy.get(hexId)?.strength ?? 0, unitIds: new Set(unitIds), lead: hexId,
   }));
   notes.captures = new Map(groups.filter(({ defended }) => !defended).flatMap(({ hexId, unitIds }) => unitIds.map((id) => [id, hexId] as const)));
-  const used = new Set<PieceId>([...efforts.flatMap(({ unitIds }) => [...unitIds]), ...notes.captures.keys()]);
+  const used = new Set<PieceId>([...efforts.flatMap(({ unitIds }) => [...unitIds]), ...notes.captures.keys(), ...notes.stagers.keys()]);
   while (efforts.length < w.assaultMaxEfforts) {
     const next = chooseEffort(situation, w, used, new Set(efforts.map(({ hexId }) => hexId)));
     if (!next) break;
@@ -196,6 +199,10 @@ interface StepNotes {
   truckDelivered?: Set<PieceId>;
   /** Group members that stop at a planned truck drop this step, so the SP can be unloaded there (13.2f; theaterAllocation). */
   stagers?: ReadonlyMap<PieceId, HexId>;
+  /** theaterAllocation: the target of a stager that belongs to no group. */
+  stagerTargets?: ReadonlyMap<PieceId, Target>;
+  /** theaterAllocation: Tokens last seen in each dump, so SP a placed truck unloads this step count for the units that move after it. */
+  feedSeen?: Map<string, number>;
   /** The objective of each unit of a theater group: it may leave trace for its attack position there if it can eat (12.6c). */
   theaterObjectives?: ReadonlyMap<PieceId, HexId>;
   /** Cut-off groups that need a supply run this step, and the trucks already sent to each (heuristic@7). */
@@ -528,7 +535,8 @@ const scoreDestination = (
     // Beyond trace a unit can still eat from SP close by (12.3a, a dump or a loaded truck), if that SP is not already
     // promised to other units ending out of trace this step: only unfed ground is dangerous.
     if (coverage && !coverage.has(destination)) {
-      const fed = feedSourceFor(notes, feeds, unit, destination) !== null;
+      // At its drop a stager eats what its truck unloads there this step.
+      const fed = destination === stage || feedSourceFor(notes, feeds, unit, destination) !== null;
       // heuristic@11: only the last turn (not the last two) excuses starving: a unit out of supply on turn 7 rolls
       // Attrition on turns 7 and 8 (12.8b).
       add('out-of-supply', situation.turnsLeft <= 0 || fed ? -w.outOfSupplyFed : -w.outOfSupply);
@@ -585,6 +593,12 @@ const feedSourceFor = (notes: StepNotes, feeds: readonly FeedSource[], unit: Own
   const cost = eatingCost(unit);
   for (const { dumpId, tokens, hexIds } of feeds) {
     if (!notes.feedBudget.has(dumpId)) notes.feedBudget.set(dumpId, tokens);
+    else if (notes.truckPlan?.size) {
+      // SP a placed truck added to this dump since it was last seen.
+      const seen = (notes.feedSeen ??= new Map()).get(dumpId);
+      if (seen !== undefined && tokens > seen) notes.feedBudget.set(dumpId, notes.feedBudget.get(dumpId)! + tokens - seen);
+    }
+    if (notes.truckPlan?.size) (notes.feedSeen ??= new Map()).set(dumpId, tokens);
     if (notes.feedBudget.get(dumpId)! >= cost && hexIds.includes(destination)) return dumpId;
   }
   return null;
@@ -781,7 +795,11 @@ const truckStep = (context: BotDecisionContext, situation: Situation, unit: OwnU
   const stranded = assigned ? null : strandedCenter(context, situation, notes);
   const center = assigned?.drop ?? stranded?.hexId ?? effort?.lead ?? armyCenter(situation);
   const loadTicks = loadTicksOf(unit);
-  const drops = stranded?.drops ?? (center === null ? [] : dropHexes(context, situation, center));
+  const usual = stranded?.drops ?? (center === null ? [] : dropHexes(context, situation, center));
+  // A placed truck's drop may lie outside trace: it counts once a combat unit (its stager) or a dump stands there (13.2f).
+  const placedDrop = assigned && !usual.includes(assigned.drop) && situation.nearestEnemy(assigned.drop).distance >= DROP_SAFE_DISTANCE
+    && situation.friendlyAt(assigned.drop).some((other) => situation.isCombatUnit(other) || other.piece.role === 'DUMP') ? [assigned.drop] : [];
+  const drops = [...placedDrop, ...usual];
   /** SP here can go somewhere nearer the army: otherwise a load would only be unloaded where it was taken. */
   const deliverable = (hexId: HexId) => center !== null && drops.some((drop) => hexesBetween(drop, center) < hexesBetween(hexId, center));
   const moves = () => new Map(actions.candidates('MOVE_PIECE', id, TRUCK_MOVE_BUDGET).map((move) => [destinationOf(move)!, move]));
@@ -1099,6 +1117,7 @@ const movementStep = (context: BotDecisionContext, situation: Situation, facts: 
   if (!notes.targets) {
     notes.targets = planTargets(situation, coverage, unitCoverage, w, [...(effort ? [effort] : []), ...(notes.secondary ?? [])], fedHexes(sideFeeds));
     for (const [unitId, hexId] of notes.captures ?? []) notes.targets.set(unitId, { hexId, purpose: 'CAPTURE' });
+    for (const [unitId, target] of notes.stagerTargets ?? []) notes.targets.set(unitId, target);
   }
   // heuristic@79: where an HQ can stand and draw SP that Rail Cap brings to a station this step (12.3a, 13.3c).
   notes.railDraw ??= new Set(railStations(situation, coverage).flatMap((station) => [...context.actions.drawReach(station)]));
@@ -1108,9 +1127,10 @@ const movementStep = (context: BotDecisionContext, situation: Situation, facts: 
   notes.relief ??= { hexIds: reliefTargets(context, situation, w), sent: new Map(), delivered: new Set() };
   // Deliver an urgent ration before field units move away from the route's ZOC-negating
   // hexes. Otherwise a legal rescue available at the start of the phase can disappear.
-  // A truck placed by the theater allocation waits for the unit it unloads beside (13.2f), even on a step with relief runs.
+  // theaterAllocation: a stager moves to its drop right after the HQs, then the trucks placed there unload beside it
+  // (13.2f), before the other combat units move: these see the SP on the map when they leave trace for their attack positions.
   const order = (unit: OwnUnit) => unit.piece.role === 'TRUCK' && notes.relief!.hexIds.length > 0 && !notes.truckPlan?.has(unit.piece.id) ? -1
-    : unit.piece.role === 'HQ' ? 0 : unit.piece.role === 'COMBAT' ? 1 : unit.piece.role === 'ARTILLERY' ? 2 : unit.piece.role === 'TRUCK' ? 3 : 9;
+    : unit.piece.role === 'HQ' ? 0 : notes.stagers?.has(unit.piece.id) ? 0.4 : notes.truckPlan?.has(unit.piece.id) && !notes.truckDelivered?.has(unit.piece.id) ? 0.6 : unit.piece.role === 'COMBAT' ? 1 : unit.piece.role === 'ARTILLERY' ? 2 : unit.piece.role === 'TRUCK' ? 3 : 9;
   const units = situation.own.filter((unit) => order(unit) < 9 && !notes.done.has(unit.piece.id))
     .sort((left, right) => order(left) - order(right) || String(left.piece.id).localeCompare(String(right.piece.id)));
   // heuristic@79: rail and sea wait for the HQs. An HQ in Combat Mode on a railroad hex makes it a station (13.8c), and SP
@@ -1232,12 +1252,23 @@ const movementStep = (context: BotDecisionContext, situation: Situation, facts: 
     const objective = notes.theaterObjectives?.get(id);
     const attackPosition = (action: GameAction) => objective !== undefined && action.kind === 'MOVE_PIECE'
       && (situation.enemy.get(objective)?.hasCombatUnit ? hexesBetween(destinationOf(action)!, objective) === 1 : destinationOf(action) === objective);
+    // A stager may leave trace for its drop: its truck brings what it eats there this step. So may the other members
+    // of a group that trucks supply, to any hex where the SP unloaded for the group feed them (they move after the trucks).
+    const stage = notes.stagers?.get(id);
+    const trucked = objective !== undefined && [...(notes.truckPlan?.values() ?? [])].some((placement) => placement.objective === objective);
     for (const candidate of improving) {
-      const fedThere = attackPosition(candidate.action) && feedSourceFor(notes, feeds, unit, destinationOf(candidate.action)!) !== null;
+      const fedThere = (stage !== undefined && destinationOf(candidate.action) === stage)
+        || ((trucked || attackPosition(candidate.action)) && feedSourceFor(notes, feeds, unit, destinationOf(candidate.action)!) !== null);
       if (!(fedThere ? preservesOtherSupply(context, candidate.action) : preservesFriendlySupply(context, candidate.action, movementObservation
         ? (explanation, preserved) => movementObservation.supply(candidate.action, explanation, preserved) : undefined))) continue;
       best = candidate;
       break;
+    }
+    if (stage !== undefined && debug && (!best || destinationOf(best.action) !== stage)) {
+      const toStage = scored.find((candidate) => destinationOf(candidate.action) === stage);
+      const explained = toStage ? actions.explain(toStage.action).explanation : null;
+      debug(`STAGER ${id} stage ${stage} from ${unit.hexId}: ${toStage ? `score ${sum(toStage.terms).toFixed(1)} stay ${stay.toFixed(1)} allowed ${explained!.allowed} `
+        + JSON.stringify(explained!.facts.filter(({ key }) => key.startsWith('supply.relocation')).map(({ key, value }) => [key.slice(18), value])) : `not among ${moves.length} moves`}`);
     }
     movementObservation?.finish(best?.action ?? null);
     debug?.(`${unit.piece.role} ${id} at ${unit.hexId} mode ${unit.piece.mode} ${reach.has(unit.hexId) ? 'in-trace' : 'OUT-OF-TRACE'} target ${target?.purpose ?? '-'} ${target?.hexId ?? ''} `
