@@ -256,6 +256,7 @@
 - `bot-ration-search`：共同口糧搜尋有節點上限。
 - `GS-AI`：完整對局中仍有可救援的駐軍餓死。
 - `bot-rebuild-plan`：重建準備與補充再分配尚未計畫到達 VP 的時間。
+- `bot-sp-entry-rail`：到達的 SP 放在鐵路格的入場格，不看這一回合鐵路能否從那裡往前送。
 - `bot-trace-gain-scan`：動作後 trace 修正只查前 12 個候選。
 - `bot-advance-first-entry`：有敵方運輸單位的首次前進與成功 Overrun 強制進駐仍有補給預判缺口。
 - `bot-relocation-coverage`：`DISPLACEMENT_HEX`、鐵路、海運與 breakdown 的補給預判未涵蓋。

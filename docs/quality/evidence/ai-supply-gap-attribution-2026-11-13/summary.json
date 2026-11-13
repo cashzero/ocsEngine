@@ -1,0 +1,2704 @@
+{
+  "arms": {
+    "fixed": {
+      "maps": 40,
+      "segments": 320,
+      "measures": {
+        "rear:drop-now": {
+          "perSegment": 0.653125,
+          "minusBaseline": {
+            "mean": 0.3296875,
+            "low": -0.04534817001159985,
+            "high": 0.7047231700115999,
+            "n": 40
+          }
+        },
+        "rear:flag:drop-now": {
+          "perSegment": 0.653125,
+          "minusBaseline": {
+            "mean": 0.3296875,
+            "low": -0.04534817001159985,
+            "high": 0.7047231700115999,
+            "n": 40
+          }
+        },
+        "rear:flag:hq-moved": {
+          "perSegment": 0.11875,
+          "minusBaseline": {
+            "mean": 0.05625,
+            "low": -0.07904745097519247,
+            "high": 0.19154745097519246,
+            "n": 40
+          }
+        },
+        "rear:flag:idle-truck": {
+          "perSegment": 2.5828125,
+          "minusBaseline": {
+            "mean": 1.4984375,
+            "low": 0.3566663486064965,
+            "high": 2.640208651393504,
+            "n": 40
+          }
+        },
+        "rear:flag:loaded-now": {
+          "perSegment": 2.7078125,
+          "minusBaseline": {
+            "mean": -0.0734375,
+            "low": -2.135289035776505,
+            "high": 1.9884140357765052,
+            "n": 40
+          }
+        },
+        "rear:flag:old-drop": {
+          "perSegment": 0.34375,
+          "minusBaseline": {
+            "mean": -0.06875,
+            "low": -0.36869979147158294,
+            "high": 0.23119979147158295,
+            "n": 40
+          }
+        },
+        "rear:flag:rail-could": {
+          "perSegment": 0.4765625,
+          "minusBaseline": {
+            "mean": 0.2765625,
+            "low": -0.32727023605528477,
+            "high": 0.8803952360552847,
+            "n": 40
+          }
+        },
+        "rear:flag:rail-cut": {
+          "perSegment": 2.0046875,
+          "minusBaseline": {
+            "mean": -0.409375,
+            "low": -2.5620134442201286,
+            "high": 1.7432634442201287,
+            "n": 40
+          }
+        },
+        "rear:flag:railed-now": {
+          "perSegment": 2.66875,
+          "minusBaseline": {
+            "mean": 1.2015625,
+            "low": -0.3628386107486137,
+            "high": 2.7659636107486136,
+            "n": 40
+          }
+        },
+        "rear:hq-moved": {
+          "perSegment": 0.0546875,
+          "minusBaseline": {
+            "mean": 0.0546875,
+            "low": -0.011470313938734739,
+            "high": 0.12084531393873474,
+            "n": 40
+          }
+        },
+        "rear:idle-truck": {
+          "perSegment": 0.290625,
+          "minusBaseline": {
+            "mean": 0.1609375,
+            "low": -0.07189494682017061,
+            "high": 0.39376994682017064,
+            "n": 40
+          }
+        },
+        "rear:loaded-now": {
+          "perSegment": 1.08125,
+          "minusBaseline": {
+            "mean": 0.528125,
+            "low": -0.14687972895720003,
+            "high": 1.2031297289572,
+            "n": 40
+          }
+        },
+        "rear:old-drop": {
+          "perSegment": 0.096875,
+          "minusBaseline": {
+            "mean": -0.034375,
+            "low": -0.18279191287735663,
+            "high": 0.11404191287735661,
+            "n": 40
+          }
+        },
+        "rear:other": {
+          "perSegment": 0.578125,
+          "minusBaseline": {
+            "mean": 0.14375,
+            "low": -0.24906862577582833,
+            "high": 0.5365686257758283,
+            "n": 40
+          }
+        },
+        "rear:rail-could": {
+          "perSegment": 0.0859375,
+          "minusBaseline": {
+            "mean": -0.015625,
+            "low": -0.13723754407915267,
+            "high": 0.10598754407915266,
+            "n": 40
+          }
+        },
+        "rear:rail-cut": {
+          "perSegment": 1.1078125,
+          "minusBaseline": {
+            "mean": -0.8015625,
+            "low": -2.6328341937694533,
+            "high": 1.0297091937694534,
+            "n": 40
+          }
+        },
+        "rear:railed-now": {
+          "perSegment": 2.5421875,
+          "minusBaseline": {
+            "mean": 1.19375,
+            "low": -0.3538100883854105,
+            "high": 2.7413100883854105,
+            "n": 40
+          }
+        },
+        "rear:total": {
+          "perSegment": 6.490625,
+          "minusBaseline": {
+            "mean": 1.559375,
+            "low": -0.9755353970463501,
+            "high": 4.09428539704635,
+            "n": 40
+          }
+        },
+        "stranded:drop-now": {
+          "perSegment": 0.159375,
+          "minusBaseline": {
+            "mean": 0.1015625,
+            "low": -0.08480433323340317,
+            "high": 0.2879293332334032,
+            "n": 40
+          }
+        },
+        "stranded:flag:drop-now": {
+          "perSegment": 0.165625,
+          "minusBaseline": {
+            "mean": 0.1078125,
+            "low": -0.08948889259069909,
+            "high": 0.3051138925906991,
+            "n": 40
+          }
+        },
+        "stranded:flag:hq-moved": {
+          "perSegment": 0.125,
+          "minusBaseline": {
+            "mean": 0.03125,
+            "low": -0.12050606031703881,
+            "high": 0.1830060603170388,
+            "n": 40
+          }
+        },
+        "stranded:flag:idle-truck": {
+          "perSegment": 0.9078125,
+          "minusBaseline": {
+            "mean": 0.6671875,
+            "low": -0.07829884971485412,
+            "high": 1.4126738497148543,
+            "n": 40
+          }
+        },
+        "stranded:flag:loaded-now": {
+          "perSegment": 1.028125,
+          "minusBaseline": {
+            "mean": 0.30625,
+            "low": -0.40553179164000563,
+            "high": 1.0180317916400057,
+            "n": 40
+          }
+        },
+        "stranded:flag:old-drop": {
+          "perSegment": 0.0625,
+          "minusBaseline": {
+            "mean": -0.075,
+            "low": -0.20812012600924756,
+            "high": 0.05812012600924758,
+            "n": 40
+          }
+        },
+        "stranded:flag:rail-could": {
+          "perSegment": 0.184375,
+          "minusBaseline": {
+            "mean": 0.184375,
+            "low": -0.13549293946551827,
+            "high": 0.5042429394655183,
+            "n": 40
+          }
+        },
+        "stranded:flag:rail-cut": {
+          "perSegment": 0.8328125,
+          "minusBaseline": {
+            "mean": 0.15,
+            "low": -0.7343371218217921,
+            "high": 1.034337121821792,
+            "n": 40
+          }
+        },
+        "stranded:flag:railed-now": {
+          "perSegment": 0.0859375,
+          "minusBaseline": {
+            "mean": 0.0859375,
+            "low": -0.08765625000000002,
+            "high": 0.25953125,
+            "n": 40
+          }
+        },
+        "stranded:flag:truck": {
+          "perSegment": 0.0859375,
+          "minusBaseline": {
+            "mean": -0.009375,
+            "low": -0.10867637118746923,
+            "high": 0.08992637118746924,
+            "n": 40
+          }
+        },
+        "stranded:hq-moved": {
+          "perSegment": 0.0546875,
+          "minusBaseline": {
+            "mean": 0.0546875,
+            "low": -0.011470313938734739,
+            "high": 0.12084531393873474,
+            "n": 40
+          }
+        },
+        "stranded:idle-truck": {
+          "perSegment": 0.15,
+          "minusBaseline": {
+            "mean": 0.0453125,
+            "low": -0.11679475769006548,
+            "high": 0.2074197576900655,
+            "n": 40
+          }
+        },
+        "stranded:loaded-now": {
+          "perSegment": 0.746875,
+          "minusBaseline": {
+            "mean": 0.5265625,
+            "low": -0.08091413935560499,
+            "high": 1.134039139355605,
+            "n": 40
+          }
+        },
+        "stranded:old-drop": {
+          "perSegment": 0.0453125,
+          "minusBaseline": {
+            "mean": -0.065625,
+            "low": -0.19138442347254708,
+            "high": 0.06013442347254709,
+            "n": 40
+          }
+        },
+        "stranded:other": {
+          "perSegment": 0.3703125,
+          "minusBaseline": {
+            "mean": 0.1640625,
+            "low": -0.15400320334071949,
+            "high": 0.4821282033407195,
+            "n": 40
+          }
+        },
+        "stranded:rail-could": {
+          "perSegment": 0.025,
+          "minusBaseline": {
+            "mean": 0.025,
+            "low": -0.014615459297913157,
+            "high": 0.06461545929791315,
+            "n": 40
+          }
+        },
+        "stranded:rail-cut": {
+          "perSegment": 0.73125,
+          "minusBaseline": {
+            "mean": 0.0484375,
+            "low": -0.8205230260357302,
+            "high": 0.9173980260357303,
+            "n": 40
+          }
+        },
+        "stranded:total": {
+          "perSegment": 2.36875,
+          "minusBaseline": {
+            "mean": 0.890625,
+            "low": -0.020166609353682197,
+            "high": 1.8014166093536823,
+            "n": 40
+          }
+        },
+        "stranded:truck": {
+          "perSegment": 0.0859375,
+          "minusBaseline": {
+            "mean": -0.009375,
+            "low": -0.10867637118746923,
+            "high": 0.08992637118746924,
+            "n": 40
+          }
+        }
+      },
+      "flows": {
+        "emptyAtStart": {
+          "perSegment": 3.40625,
+          "minusBaseline": {
+            "mean": 0.15,
+            "low": -0.16360501042569867,
+            "high": 0.4636050104256987,
+            "n": 40
+          }
+        },
+        "idleEmpty": {
+          "perSegment": 1.04375,
+          "minusBaseline": {
+            "mean": -0.10625,
+            "low": -0.47499998424597967,
+            "high": 0.26249998424597965,
+            "n": 40
+          }
+        },
+        "loadRearTokens": {
+          "perSegment": 3.265625,
+          "minusBaseline": {
+            "mean": 0.028125,
+            "low": -0.5750485216133753,
+            "high": 0.6312985216133752,
+            "n": 40
+          }
+        },
+        "loadTokens": {
+          "perSegment": 4.059375,
+          "minusBaseline": {
+            "mean": -0.0171875,
+            "low": -0.6489388613971904,
+            "high": 0.6145638613971903,
+            "n": 40
+          }
+        },
+        "loadedIdle": {
+          "perSegment": 0.075,
+          "minusBaseline": {
+            "mean": -0.01875,
+            "low": -0.08733620055850361,
+            "high": 0.0498362005585036,
+            "n": 40
+          }
+        },
+        "railForwardTokens": {
+          "perSegment": 9.1421875,
+          "minusBaseline": {
+            "mean": 1.25625,
+            "low": 0.049488014858749985,
+            "high": 2.46301198514125,
+            "n": 40
+          }
+        },
+        "railTokens": {
+          "perSegment": 10.20625,
+          "minusBaseline": {
+            "mean": 0.9921875,
+            "low": 0.011023733284991954,
+            "high": 1.973351266715008,
+            "n": 40
+          }
+        },
+        "trucks": {
+          "perSegment": 4.1125,
+          "minusBaseline": {
+            "mean": 0.01875,
+            "low": -0.19472940868545682,
+            "high": 0.2322294086854568,
+            "n": 40
+          }
+        },
+        "unloadFrontTokens": {
+          "perSegment": 3.3640625,
+          "minusBaseline": {
+            "mean": -0.16875,
+            "low": -0.7585498886519446,
+            "high": 0.42104988865194454,
+            "n": 40
+          }
+        },
+        "unloadTokens": {
+          "perSegment": 3.73125,
+          "minusBaseline": {
+            "mean": -0.0609375,
+            "low": -0.6413124202471476,
+            "high": 0.5194374202471477,
+            "n": 40
+          }
+        }
+      }
+    },
+    "unfixed": {
+      "maps": 40,
+      "segments": 320,
+      "measures": {
+        "rear:drop-now": {
+          "perSegment": 0.65625,
+          "minusBaseline": {
+            "mean": 0.3328125,
+            "low": -0.03669002930888715,
+            "high": 0.7023150293088871,
+            "n": 40
+          }
+        },
+        "rear:flag:drop-now": {
+          "perSegment": 0.65625,
+          "minusBaseline": {
+            "mean": 0.3328125,
+            "low": -0.03669002930888715,
+            "high": 0.7023150293088871,
+            "n": 40
+          }
+        },
+        "rear:flag:hq-moved": {
+          "perSegment": 0.1171875,
+          "minusBaseline": {
+            "mean": 0.0546875,
+            "low": -0.07942574899759419,
+            "high": 0.1888007489975942,
+            "n": 40
+          }
+        },
+        "rear:flag:idle-truck": {
+          "perSegment": 2.365625,
+          "minusBaseline": {
+            "mean": 1.28125,
+            "low": 0.12848452116281783,
+            "high": 2.434015478837182,
+            "n": 40
+          }
+        },
+        "rear:flag:loaded-now": {
+          "perSegment": 4.5390625,
+          "minusBaseline": {
+            "mean": 1.7578125,
+            "low": -0.8756705487633671,
+            "high": 4.391295548763367,
+            "n": 40
+          }
+        },
+        "rear:flag:old-drop": {
+          "perSegment": 0.3015625,
+          "minusBaseline": {
+            "mean": -0.1109375,
+            "low": -0.4084825602439922,
+            "high": 0.18660756024399225,
+            "n": 40
+          }
+        },
+        "rear:flag:rail-could": {
+          "perSegment": 1.8359375,
+          "minusBaseline": {
+            "mean": 1.6359375,
+            "low": 0.2946592199050577,
+            "high": 2.9772157800949426,
+            "n": 40
+          }
+        },
+        "rear:flag:rail-cut": {
+          "perSegment": 2.196875,
+          "minusBaseline": {
+            "mean": -0.2171875,
+            "low": -2.4645638351075765,
+            "high": 2.0301888351075763,
+            "n": 40
+          }
+        },
+        "rear:flag:railed-now": {
+          "perSegment": 2.109375,
+          "minusBaseline": {
+            "mean": 0.6421875,
+            "low": -0.5382624423021077,
+            "high": 1.8226374423021077,
+            "n": 40
+          }
+        },
+        "rear:hq-moved": {
+          "perSegment": 0.028125,
+          "minusBaseline": {
+            "mean": 0.028125,
+            "low": -0.012546717467582066,
+            "high": 0.06879671746758206,
+            "n": 40
+          }
+        },
+        "rear:idle-truck": {
+          "perSegment": 0.2671875,
+          "minusBaseline": {
+            "mean": 0.1375,
+            "low": -0.08997469304862049,
+            "high": 0.3649746930486205,
+            "n": 40
+          }
+        },
+        "rear:loaded-now": {
+          "perSegment": 1.31875,
+          "minusBaseline": {
+            "mean": 0.765625,
+            "low": 0.06609333897840297,
+            "high": 1.465156661021597,
+            "n": 40
+          }
+        },
+        "rear:old-drop": {
+          "perSegment": 0.0875,
+          "minusBaseline": {
+            "mean": -0.04375,
+            "low": -0.19066196479742897,
+            "high": 0.10316196479742899,
+            "n": 40
+          }
+        },
+        "rear:other": {
+          "perSegment": 0.9265625,
+          "minusBaseline": {
+            "mean": 0.4921875,
+            "low": -0.04902849845734214,
+            "high": 1.0334034984573421,
+            "n": 40
+          }
+        },
+        "rear:rail-could": {
+          "perSegment": 1.4484375,
+          "minusBaseline": {
+            "mean": 1.346875,
+            "low": 0.10931329557649616,
+            "high": 2.5844367044235037,
+            "n": 40
+          }
+        },
+        "rear:rail-cut": {
+          "perSegment": 1.59375,
+          "minusBaseline": {
+            "mean": -0.315625,
+            "low": -2.3163320935293243,
+            "high": 1.6850820935293245,
+            "n": 40
+          }
+        },
+        "rear:railed-now": {
+          "perSegment": 1.9828125,
+          "minusBaseline": {
+            "mean": 0.634375,
+            "low": -0.5249973326996061,
+            "high": 1.7937473326996063,
+            "n": 40
+          }
+        },
+        "rear:total": {
+          "perSegment": 8.309375,
+          "minusBaseline": {
+            "mean": 3.378125,
+            "low": 0.3090288072741463,
+            "high": 6.447221192725854,
+            "n": 40
+          }
+        },
+        "stranded:drop-now": {
+          "perSegment": 0.1203125,
+          "minusBaseline": {
+            "mean": 0.0625,
+            "low": -0.1128105303490981,
+            "high": 0.2378105303490981,
+            "n": 40
+          }
+        },
+        "stranded:flag:drop-now": {
+          "perSegment": 0.1265625,
+          "minusBaseline": {
+            "mean": 0.06875,
+            "low": -0.11827970827878162,
+            "high": 0.2557797082787816,
+            "n": 40
+          }
+        },
+        "stranded:flag:hq-moved": {
+          "perSegment": 0.1296875,
+          "minusBaseline": {
+            "mean": 0.0359375,
+            "low": -0.1015390232543862,
+            "high": 0.1734140232543862,
+            "n": 40
+          }
+        },
+        "stranded:flag:idle-truck": {
+          "perSegment": 0.8140625,
+          "minusBaseline": {
+            "mean": 0.5734375,
+            "low": -0.16891051116895184,
+            "high": 1.315785511168952,
+            "n": 40
+          }
+        },
+        "stranded:flag:loaded-now": {
+          "perSegment": 1.8546875,
+          "minusBaseline": {
+            "mean": 1.1328125,
+            "low": -0.003547086729289717,
+            "high": 2.2691720867292897,
+            "n": 40
+          }
+        },
+        "stranded:flag:old-drop": {
+          "perSegment": 0.065625,
+          "minusBaseline": {
+            "mean": -0.071875,
+            "low": -0.20486842352583376,
+            "high": 0.06111842352583377,
+            "n": 40
+          }
+        },
+        "stranded:flag:rail-could": {
+          "perSegment": 0.64375,
+          "minusBaseline": {
+            "mean": 0.64375,
+            "low": -0.08634802039933287,
+            "high": 1.373848020399333,
+            "n": 40
+          }
+        },
+        "stranded:flag:rail-cut": {
+          "perSegment": 1.0859375,
+          "minusBaseline": {
+            "mean": 0.403125,
+            "low": -0.5403009780298793,
+            "high": 1.3465509780298794,
+            "n": 40
+          }
+        },
+        "stranded:flag:railed-now": {
+          "perSegment": 0.0859375,
+          "minusBaseline": {
+            "mean": 0.0859375,
+            "low": -0.08765625000000002,
+            "high": 0.25953125,
+            "n": 40
+          }
+        },
+        "stranded:flag:truck": {
+          "perSegment": 0.075,
+          "minusBaseline": {
+            "mean": -0.0203125,
+            "low": -0.10905525303903482,
+            "high": 0.06843025303903483,
+            "n": 40
+          }
+        },
+        "stranded:hq-moved": {
+          "perSegment": 0.028125,
+          "minusBaseline": {
+            "mean": 0.028125,
+            "low": -0.012546717467582066,
+            "high": 0.06879671746758206,
+            "n": 40
+          }
+        },
+        "stranded:idle-truck": {
+          "perSegment": 0.1171875,
+          "minusBaseline": {
+            "mean": 0.0125,
+            "low": -0.13832407979123154,
+            "high": 0.16332407979123156,
+            "n": 40
+          }
+        },
+        "stranded:loaded-now": {
+          "perSegment": 0.834375,
+          "minusBaseline": {
+            "mean": 0.6140625,
+            "low": -0.0009362645057097163,
+            "high": 1.2290612645057095,
+            "n": 40
+          }
+        },
+        "stranded:old-drop": {
+          "perSegment": 0.046875,
+          "minusBaseline": {
+            "mean": -0.0640625,
+            "low": -0.19019003475366458,
+            "high": 0.062065034753664594,
+            "n": 40
+          }
+        },
+        "stranded:other": {
+          "perSegment": 0.4703125,
+          "minusBaseline": {
+            "mean": 0.2640625,
+            "low": -0.10817021953307054,
+            "high": 0.6362952195330704,
+            "n": 40
+          }
+        },
+        "stranded:rail-could": {
+          "perSegment": 0.484375,
+          "minusBaseline": {
+            "mean": 0.484375,
+            "low": -0.18466677487990624,
+            "high": 1.1534167748799062,
+            "n": 40
+          }
+        },
+        "stranded:rail-cut": {
+          "perSegment": 0.984375,
+          "minusBaseline": {
+            "mean": 0.3015625,
+            "low": -0.6303560910752217,
+            "high": 1.2334810910752216,
+            "n": 40
+          }
+        },
+        "stranded:total": {
+          "perSegment": 3.1609375,
+          "minusBaseline": {
+            "mean": 1.6828125,
+            "low": 0.2740886312178452,
+            "high": 3.0915363687821547,
+            "n": 40
+          }
+        },
+        "stranded:truck": {
+          "perSegment": 0.075,
+          "minusBaseline": {
+            "mean": -0.0203125,
+            "low": -0.10905525303903482,
+            "high": 0.06843025303903483,
+            "n": 40
+          }
+        }
+      },
+      "flows": {
+        "emptyAtStart": {
+          "perSegment": 3.4125,
+          "minusBaseline": {
+            "mean": 0.15625,
+            "low": -0.1356971099085832,
+            "high": 0.4481971099085832,
+            "n": 40
+          }
+        },
+        "idleEmpty": {
+          "perSegment": 0.8875,
+          "minusBaseline": {
+            "mean": -0.2625,
+            "low": -0.6041235252625623,
+            "high": 0.07912352526256228,
+            "n": 40
+          }
+        },
+        "loadRearTokens": {
+          "perSegment": 3.6828125,
+          "minusBaseline": {
+            "mean": 0.4453125,
+            "low": -0.19517976687391037,
+            "high": 1.0858047668739104,
+            "n": 40
+          }
+        },
+        "loadTokens": {
+          "perSegment": 4.3765625,
+          "minusBaseline": {
+            "mean": 0.3,
+            "low": -0.35364569968841225,
+            "high": 0.9536456996884122,
+            "n": 40
+          }
+        },
+        "loadedIdle": {
+          "perSegment": 0.06875,
+          "minusBaseline": {
+            "mean": -0.025,
+            "low": -0.10128762207626663,
+            "high": 0.051287622076266616,
+            "n": 40
+          }
+        },
+        "railForwardTokens": {
+          "perSegment": 8.2046875,
+          "minusBaseline": {
+            "mean": 0.31875,
+            "low": -1.018040946878775,
+            "high": 1.6555409468787752,
+            "n": 40
+          }
+        },
+        "railTokens": {
+          "perSegment": 9.1,
+          "minusBaseline": {
+            "mean": -0.1140625,
+            "low": -1.2499877240170973,
+            "high": 1.0218627240170974,
+            "n": 40
+          }
+        },
+        "trucks": {
+          "perSegment": 4.125,
+          "minusBaseline": {
+            "mean": 0.03125,
+            "low": -0.17506401007494649,
+            "high": 0.23756401007494649,
+            "n": 40
+          }
+        },
+        "unloadFrontTokens": {
+          "perSegment": 3.51875,
+          "minusBaseline": {
+            "mean": -0.0140625,
+            "low": -0.6079415885103059,
+            "high": 0.5798165885103059,
+            "n": 40
+          }
+        },
+        "unloadTokens": {
+          "perSegment": 3.921875,
+          "minusBaseline": {
+            "mean": 0.1296875,
+            "low": -0.4533028723165092,
+            "high": 0.7126778723165093,
+            "n": 40
+          }
+        }
+      }
+    },
+    "standard": {
+      "maps": 40,
+      "segments": 320,
+      "measures": {
+        "rear:drop-now": {
+          "perSegment": 0.3234375
+        },
+        "rear:flag:drop-now": {
+          "perSegment": 0.3234375
+        },
+        "rear:flag:hq-moved": {
+          "perSegment": 0.0625
+        },
+        "rear:flag:idle-truck": {
+          "perSegment": 1.084375
+        },
+        "rear:flag:loaded-now": {
+          "perSegment": 2.78125
+        },
+        "rear:flag:old-drop": {
+          "perSegment": 0.4125
+        },
+        "rear:flag:rail-could": {
+          "perSegment": 0.2
+        },
+        "rear:flag:rail-cut": {
+          "perSegment": 2.4140625
+        },
+        "rear:flag:railed-now": {
+          "perSegment": 1.4671875
+        },
+        "rear:hq-moved": {
+          "perSegment": 0
+        },
+        "rear:idle-truck": {
+          "perSegment": 0.1296875
+        },
+        "rear:loaded-now": {
+          "perSegment": 0.553125
+        },
+        "rear:old-drop": {
+          "perSegment": 0.13125
+        },
+        "rear:other": {
+          "perSegment": 0.434375
+        },
+        "rear:rail-could": {
+          "perSegment": 0.1015625
+        },
+        "rear:rail-cut": {
+          "perSegment": 1.909375
+        },
+        "rear:railed-now": {
+          "perSegment": 1.3484375
+        },
+        "rear:total": {
+          "perSegment": 4.93125
+        },
+        "stranded:drop-now": {
+          "perSegment": 0.0578125
+        },
+        "stranded:flag:drop-now": {
+          "perSegment": 0.0578125
+        },
+        "stranded:flag:hq-moved": {
+          "perSegment": 0.09375
+        },
+        "stranded:flag:idle-truck": {
+          "perSegment": 0.240625
+        },
+        "stranded:flag:loaded-now": {
+          "perSegment": 0.721875
+        },
+        "stranded:flag:old-drop": {
+          "perSegment": 0.1375
+        },
+        "stranded:flag:rail-could": {
+          "perSegment": 0
+        },
+        "stranded:flag:rail-cut": {
+          "perSegment": 0.6828125
+        },
+        "stranded:flag:railed-now": {
+          "perSegment": 0
+        },
+        "stranded:flag:truck": {
+          "perSegment": 0.0953125
+        },
+        "stranded:hq-moved": {
+          "perSegment": 0
+        },
+        "stranded:idle-truck": {
+          "perSegment": 0.1046875
+        },
+        "stranded:loaded-now": {
+          "perSegment": 0.2203125
+        },
+        "stranded:old-drop": {
+          "perSegment": 0.1109375
+        },
+        "stranded:other": {
+          "perSegment": 0.20625
+        },
+        "stranded:rail-could": {
+          "perSegment": 0
+        },
+        "stranded:rail-cut": {
+          "perSegment": 0.6828125
+        },
+        "stranded:total": {
+          "perSegment": 1.478125
+        },
+        "stranded:truck": {
+          "perSegment": 0.0953125
+        }
+      },
+      "flows": {
+        "emptyAtStart": {
+          "perSegment": 3.25625
+        },
+        "idleEmpty": {
+          "perSegment": 1.15
+        },
+        "loadRearTokens": {
+          "perSegment": 3.2375
+        },
+        "loadTokens": {
+          "perSegment": 4.0765625
+        },
+        "loadedIdle": {
+          "perSegment": 0.09375
+        },
+        "railForwardTokens": {
+          "perSegment": 7.8859375
+        },
+        "railTokens": {
+          "perSegment": 9.2140625
+        },
+        "trucks": {
+          "perSegment": 4.09375
+        },
+        "unloadFrontTokens": {
+          "perSegment": 3.5328125
+        },
+        "unloadTokens": {
+          "perSegment": 3.7921875
+        }
+      }
+    }
+  },
+  "baseline": "standard",
+  "examples": {
+    "fixed": {
+      "stranded": {
+        "truck": [
+          {
+            "match": 2100400,
+            "gameTurn": 4,
+            "hexId": "22,10",
+            "sp": 1,
+            "enemyDistance": 5,
+            "flags": [
+              "truck",
+              "hq-moved"
+            ]
+          },
+          {
+            "match": 2100406,
+            "gameTurn": 4,
+            "hexId": "16,22",
+            "sp": 1,
+            "enemyDistance": 11,
+            "flags": [
+              "truck",
+              "idle-truck"
+            ]
+          },
+          {
+            "match": 2100406,
+            "gameTurn": 5,
+            "hexId": "20,18",
+            "sp": 1,
+            "enemyDistance": 11,
+            "flags": [
+              "truck"
+            ]
+          }
+        ],
+        "drop-now": [
+          {
+            "match": 2100432,
+            "gameTurn": 6,
+            "hexId": "10,13",
+            "sp": 12.75,
+            "enemyDistance": 17,
+            "flags": [
+              "drop-now",
+              "railed-now",
+              "rail-cut",
+              "idle-truck"
+            ]
+          },
+          {
+            "match": 2100428,
+            "gameTurn": 6,
+            "hexId": "15,14",
+            "sp": 5.25,
+            "enemyDistance": 5,
+            "flags": [
+              "drop-now"
+            ]
+          },
+          {
+            "match": 2100462,
+            "gameTurn": 6,
+            "hexId": "20,13",
+            "sp": 2.5,
+            "enemyDistance": 10,
+            "flags": [
+              "drop-now",
+              "rail-cut",
+              "idle-truck"
+            ]
+          }
+        ],
+        "rail-cut": [
+          {
+            "match": 2100406,
+            "gameTurn": 3,
+            "hexId": "20,22",
+            "sp": 25.25,
+            "enemyDistance": 15,
+            "flags": [
+              "rail-cut",
+              "rail-could",
+              "idle-truck"
+            ]
+          },
+          {
+            "match": 2100474,
+            "gameTurn": 4,
+            "hexId": "20,22",
+            "sp": 20,
+            "enemyDistance": 8,
+            "flags": [
+              "rail-cut",
+              "loaded-now"
+            ]
+          },
+          {
+            "match": 2100474,
+            "gameTurn": 6,
+            "hexId": "20,22",
+            "sp": 19.5,
+            "enemyDistance": 14,
+            "flags": [
+              "rail-cut"
+            ]
+          }
+        ],
+        "rail-could": [
+          {
+            "match": 2100430,
+            "gameTurn": 3,
+            "hexId": "25,12",
+            "sp": 3,
+            "enemyDistance": 14,
+            "flags": [
+              "rail-could"
+            ]
+          },
+          {
+            "match": 2100428,
+            "gameTurn": 3,
+            "hexId": "25,12",
+            "sp": 1,
+            "enemyDistance": 15,
+            "flags": [
+              "rail-could",
+              "loaded-now"
+            ]
+          }
+        ],
+        "loaded-now": [
+          {
+            "match": 2100406,
+            "gameTurn": 6,
+            "hexId": "20,22",
+            "sp": 24.25,
+            "enemyDistance": 16,
+            "flags": [
+              "loaded-now"
+            ]
+          },
+          {
+            "match": 2100406,
+            "gameTurn": 4,
+            "hexId": "20,22",
+            "sp": 23.25,
+            "enemyDistance": 15,
+            "flags": [
+              "loaded-now",
+              "idle-truck"
+            ]
+          },
+          {
+            "match": 2100406,
+            "gameTurn": 5,
+            "hexId": "20,22",
+            "sp": 22.25,
+            "enemyDistance": 15,
+            "flags": [
+              "loaded-now"
+            ]
+          }
+        ],
+        "old-drop": [
+          {
+            "match": 2100402,
+            "gameTurn": 4,
+            "hexId": "14,16",
+            "sp": 1.5,
+            "enemyDistance": 1,
+            "flags": [
+              "old-drop"
+            ]
+          },
+          {
+            "match": 2100462,
+            "gameTurn": 3,
+            "hexId": "4,12",
+            "sp": 1.25,
+            "enemyDistance": 2,
+            "flags": [
+              "old-drop"
+            ]
+          },
+          {
+            "match": 2100478,
+            "gameTurn": 3,
+            "hexId": "22,1",
+            "sp": 1,
+            "enemyDistance": 2,
+            "flags": [
+              "old-drop",
+              "idle-truck"
+            ]
+          }
+        ],
+        "hq-moved": [
+          {
+            "match": 2100414,
+            "gameTurn": 5,
+            "hexId": "27,7",
+            "sp": 4.25,
+            "enemyDistance": 8,
+            "flags": [
+              "hq-moved"
+            ]
+          },
+          {
+            "match": 2100452,
+            "gameTurn": 4,
+            "hexId": "25,12",
+            "sp": 2.75,
+            "enemyDistance": 15,
+            "flags": [
+              "hq-moved"
+            ]
+          },
+          {
+            "match": 2100478,
+            "gameTurn": 3,
+            "hexId": "30,2",
+            "sp": 1.75,
+            "enemyDistance": 11,
+            "flags": [
+              "hq-moved",
+              "idle-truck"
+            ]
+          }
+        ],
+        "idle-truck": [
+          {
+            "match": 2100426,
+            "gameTurn": 6,
+            "hexId": "20,22",
+            "sp": 3,
+            "enemyDistance": 18,
+            "flags": [
+              "idle-truck"
+            ]
+          },
+          {
+            "match": 2100430,
+            "gameTurn": 4,
+            "hexId": "30,2",
+            "sp": 2.75,
+            "enemyDistance": 16,
+            "flags": [
+              "idle-truck"
+            ]
+          },
+          {
+            "match": 2100430,
+            "gameTurn": 4,
+            "hexId": "27,7",
+            "sp": 2,
+            "enemyDistance": 13,
+            "flags": [
+              "idle-truck"
+            ]
+          }
+        ],
+        "other": [
+          {
+            "match": 2100420,
+            "gameTurn": 3,
+            "hexId": "11,5",
+            "sp": 4.25,
+            "enemyDistance": 1,
+            "flags": []
+          },
+          {
+            "match": 2100400,
+            "gameTurn": 3,
+            "hexId": "14,22",
+            "sp": 3,
+            "enemyDistance": 1,
+            "flags": []
+          },
+          {
+            "match": 2100458,
+            "gameTurn": 5,
+            "hexId": "20,22",
+            "sp": 3,
+            "enemyDistance": 15,
+            "flags": []
+          }
+        ]
+      },
+      "rear": {
+        "drop-now": [
+          {
+            "match": 2100432,
+            "gameTurn": 6,
+            "hexId": "10,13",
+            "sp": 12.75,
+            "enemyDistance": 17,
+            "flags": [
+              "drop-now",
+              "railed-now",
+              "rail-cut",
+              "idle-truck"
+            ]
+          },
+          {
+            "match": 2100460,
+            "gameTurn": 6,
+            "hexId": "21,11",
+            "sp": 7.5,
+            "enemyDistance": 10,
+            "flags": [
+              "drop-now",
+              "railed-now",
+              "idle-truck"
+            ]
+          },
+          {
+            "match": 2100416,
+            "gameTurn": 4,
+            "hexId": "0,20",
+            "sp": 5.75,
+            "enemyDistance": 8,
+            "flags": [
+              "drop-now",
+              "idle-truck"
+            ]
+          }
+        ],
+        "railed-now": [
+          {
+            "match": 2100400,
+            "gameTurn": 6,
+            "hexId": "20,2",
+            "sp": 31,
+            "enemyDistance": 10,
+            "flags": [
+              "railed-now",
+              "rail-cut",
+              "idle-truck"
+            ]
+          },
+          {
+            "match": 2100400,
+            "gameTurn": 5,
+            "hexId": "20,2",
+            "sp": 25.5,
+            "enemyDistance": 9,
+            "flags": [
+              "railed-now",
+              "rail-cut",
+              "loaded-now"
+            ]
+          },
+          {
+            "match": 2100478,
+            "gameTurn": 6,
+            "hexId": "20,12",
+            "sp": 21,
+            "enemyDistance": 6,
+            "flags": [
+              "railed-now",
+              "rail-could",
+              "loaded-now"
+            ]
+          }
+        ],
+        "rail-cut": [
+          {
+            "match": 2100406,
+            "gameTurn": 3,
+            "hexId": "20,22",
+            "sp": 25.25,
+            "enemyDistance": 15,
+            "flags": [
+              "rail-cut",
+              "rail-could",
+              "idle-truck"
+            ]
+          },
+          {
+            "match": 2100474,
+            "gameTurn": 4,
+            "hexId": "20,22",
+            "sp": 20,
+            "enemyDistance": 8,
+            "flags": [
+              "rail-cut",
+              "loaded-now"
+            ]
+          },
+          {
+            "match": 2100474,
+            "gameTurn": 6,
+            "hexId": "20,22",
+            "sp": 19.5,
+            "enemyDistance": 14,
+            "flags": [
+              "rail-cut"
+            ]
+          }
+        ],
+        "rail-could": [
+          {
+            "match": 2100436,
+            "gameTurn": 3,
+            "hexId": "25,12",
+            "sp": 7,
+            "enemyDistance": 10,
+            "flags": [
+              "rail-could",
+              "loaded-now"
+            ]
+          },
+          {
+            "match": 2100430,
+            "gameTurn": 3,
+            "hexId": "25,12",
+            "sp": 3,
+            "enemyDistance": 14,
+            "flags": [
+              "rail-could"
+            ]
+          },
+          {
+            "match": 2100448,
+            "gameTurn": 6,
+            "hexId": "14,13",
+            "sp": 1.5,
+            "enemyDistance": 10,
+            "flags": [
+              "rail-could",
+              "idle-truck"
+            ]
+          }
+        ],
+        "loaded-now": [
+          {
+            "match": 2100406,
+            "gameTurn": 6,
+            "hexId": "20,22",
+            "sp": 24.25,
+            "enemyDistance": 16,
+            "flags": [
+              "loaded-now"
+            ]
+          },
+          {
+            "match": 2100406,
+            "gameTurn": 4,
+            "hexId": "20,22",
+            "sp": 23.25,
+            "enemyDistance": 15,
+            "flags": [
+              "loaded-now",
+              "idle-truck"
+            ]
+          },
+          {
+            "match": 2100406,
+            "gameTurn": 5,
+            "hexId": "20,22",
+            "sp": 22.25,
+            "enemyDistance": 15,
+            "flags": [
+              "loaded-now"
+            ]
+          }
+        ],
+        "old-drop": [
+          {
+            "match": 2100466,
+            "gameTurn": 4,
+            "hexId": "-4,11",
+            "sp": 1.5,
+            "enemyDistance": 10,
+            "flags": [
+              "old-drop"
+            ]
+          },
+          {
+            "match": 2100466,
+            "gameTurn": 5,
+            "hexId": "-4,11",
+            "sp": 1,
+            "enemyDistance": 8,
+            "flags": [
+              "old-drop",
+              "idle-truck"
+            ]
+          },
+          {
+            "match": 2100450,
+            "gameTurn": 5,
+            "hexId": "27,2",
+            "sp": 1,
+            "enemyDistance": 7,
+            "flags": [
+              "old-drop"
+            ]
+          }
+        ],
+        "hq-moved": [
+          {
+            "match": 2100414,
+            "gameTurn": 5,
+            "hexId": "27,7",
+            "sp": 4.25,
+            "enemyDistance": 8,
+            "flags": [
+              "hq-moved"
+            ]
+          },
+          {
+            "match": 2100452,
+            "gameTurn": 4,
+            "hexId": "25,12",
+            "sp": 2.75,
+            "enemyDistance": 15,
+            "flags": [
+              "hq-moved"
+            ]
+          },
+          {
+            "match": 2100478,
+            "gameTurn": 3,
+            "hexId": "30,2",
+            "sp": 1.75,
+            "enemyDistance": 11,
+            "flags": [
+              "hq-moved",
+              "idle-truck"
+            ]
+          }
+        ],
+        "idle-truck": [
+          {
+            "match": 2100426,
+            "gameTurn": 6,
+            "hexId": "20,22",
+            "sp": 3,
+            "enemyDistance": 18,
+            "flags": [
+              "idle-truck"
+            ]
+          },
+          {
+            "match": 2100430,
+            "gameTurn": 4,
+            "hexId": "30,2",
+            "sp": 2.75,
+            "enemyDistance": 16,
+            "flags": [
+              "idle-truck"
+            ]
+          },
+          {
+            "match": 2100430,
+            "gameTurn": 4,
+            "hexId": "27,7",
+            "sp": 2,
+            "enemyDistance": 13,
+            "flags": [
+              "idle-truck"
+            ]
+          }
+        ],
+        "other": [
+          {
+            "match": 2100458,
+            "gameTurn": 5,
+            "hexId": "20,22",
+            "sp": 3,
+            "enemyDistance": 15,
+            "flags": []
+          },
+          {
+            "match": 2100476,
+            "gameTurn": 3,
+            "hexId": "30,2",
+            "sp": 3,
+            "enemyDistance": 15,
+            "flags": []
+          },
+          {
+            "match": 2100476,
+            "gameTurn": 4,
+            "hexId": "30,2",
+            "sp": 3,
+            "enemyDistance": 15,
+            "flags": []
+          }
+        ]
+      }
+    },
+    "unfixed": {
+      "stranded": {
+        "truck": [
+          {
+            "match": 2100410,
+            "gameTurn": 4,
+            "hexId": "19,22",
+            "sp": 1,
+            "enemyDistance": 12,
+            "flags": [
+              "truck",
+              "hq-moved"
+            ]
+          },
+          {
+            "match": 2100410,
+            "gameTurn": 4,
+            "hexId": "20,22",
+            "sp": 1,
+            "enemyDistance": 13,
+            "flags": [
+              "truck",
+              "loaded-now"
+            ]
+          },
+          {
+            "match": 2100428,
+            "gameTurn": 6,
+            "hexId": "25,10",
+            "sp": 1,
+            "enemyDistance": 17,
+            "flags": [
+              "truck",
+              "idle-truck"
+            ]
+          }
+        ],
+        "drop-now": [
+          {
+            "match": 2100432,
+            "gameTurn": 6,
+            "hexId": "10,13",
+            "sp": 12.75,
+            "enemyDistance": 17,
+            "flags": [
+              "drop-now",
+              "railed-now",
+              "rail-cut",
+              "idle-truck"
+            ]
+          },
+          {
+            "match": 2100462,
+            "gameTurn": 6,
+            "hexId": "20,13",
+            "sp": 2.5,
+            "enemyDistance": 10,
+            "flags": [
+              "drop-now",
+              "rail-cut",
+              "idle-truck"
+            ]
+          },
+          {
+            "match": 2100416,
+            "gameTurn": 4,
+            "hexId": "8,23",
+            "sp": 1,
+            "enemyDistance": 6,
+            "flags": [
+              "drop-now"
+            ]
+          }
+        ],
+        "rail-cut": [
+          {
+            "match": 2100406,
+            "gameTurn": 3,
+            "hexId": "20,22",
+            "sp": 25.25,
+            "enemyDistance": 15,
+            "flags": [
+              "rail-cut",
+              "rail-could",
+              "idle-truck"
+            ]
+          },
+          {
+            "match": 2100400,
+            "gameTurn": 3,
+            "hexId": "20,22",
+            "sp": 22.75,
+            "enemyDistance": 7,
+            "flags": [
+              "rail-cut",
+              "loaded-now"
+            ]
+          },
+          {
+            "match": 2100474,
+            "gameTurn": 4,
+            "hexId": "20,22",
+            "sp": 20,
+            "enemyDistance": 8,
+            "flags": [
+              "rail-cut",
+              "loaded-now"
+            ]
+          }
+        ],
+        "rail-could": [
+          {
+            "match": 2100430,
+            "gameTurn": 5,
+            "hexId": "25,12",
+            "sp": 23,
+            "enemyDistance": 15,
+            "flags": [
+              "rail-could",
+              "loaded-now"
+            ]
+          },
+          {
+            "match": 2100430,
+            "gameTurn": 4,
+            "hexId": "25,12",
+            "sp": 17.5,
+            "enemyDistance": 14,
+            "flags": [
+              "rail-could",
+              "loaded-now"
+            ]
+          },
+          {
+            "match": 2100430,
+            "gameTurn": 3,
+            "hexId": "25,12",
+            "sp": 11,
+            "enemyDistance": 14,
+            "flags": [
+              "rail-could",
+              "loaded-now"
+            ]
+          }
+        ],
+        "loaded-now": [
+          {
+            "match": 2100406,
+            "gameTurn": 6,
+            "hexId": "20,22",
+            "sp": 24.25,
+            "enemyDistance": 16,
+            "flags": [
+              "loaded-now"
+            ]
+          },
+          {
+            "match": 2100406,
+            "gameTurn": 4,
+            "hexId": "20,22",
+            "sp": 23.25,
+            "enemyDistance": 15,
+            "flags": [
+              "loaded-now",
+              "idle-truck"
+            ]
+          },
+          {
+            "match": 2100406,
+            "gameTurn": 5,
+            "hexId": "20,22",
+            "sp": 22.25,
+            "enemyDistance": 15,
+            "flags": [
+              "loaded-now"
+            ]
+          }
+        ],
+        "old-drop": [
+          {
+            "match": 2100402,
+            "gameTurn": 4,
+            "hexId": "14,16",
+            "sp": 1.5,
+            "enemyDistance": 1,
+            "flags": [
+              "old-drop"
+            ]
+          },
+          {
+            "match": 2100462,
+            "gameTurn": 3,
+            "hexId": "4,12",
+            "sp": 1.25,
+            "enemyDistance": 2,
+            "flags": [
+              "old-drop"
+            ]
+          },
+          {
+            "match": 2100466,
+            "gameTurn": 6,
+            "hexId": "-4,11",
+            "sp": 1,
+            "enemyDistance": 8,
+            "flags": [
+              "old-drop",
+              "idle-truck"
+            ]
+          }
+        ],
+        "hq-moved": [
+          {
+            "match": 2100452,
+            "gameTurn": 4,
+            "hexId": "25,12",
+            "sp": 2.75,
+            "enemyDistance": 15,
+            "flags": [
+              "hq-moved"
+            ]
+          },
+          {
+            "match": 2100478,
+            "gameTurn": 3,
+            "hexId": "30,2",
+            "sp": 1.75,
+            "enemyDistance": 11,
+            "flags": [
+              "hq-moved",
+              "idle-truck"
+            ]
+          }
+        ],
+        "idle-truck": [
+          {
+            "match": 2100426,
+            "gameTurn": 6,
+            "hexId": "20,22",
+            "sp": 3,
+            "enemyDistance": 18,
+            "flags": [
+              "idle-truck"
+            ]
+          },
+          {
+            "match": 2100426,
+            "gameTurn": 3,
+            "hexId": "29,2",
+            "sp": 2,
+            "enemyDistance": 13,
+            "flags": [
+              "idle-truck"
+            ]
+          },
+          {
+            "match": 2100458,
+            "gameTurn": 3,
+            "hexId": "24,6",
+            "sp": 1.75,
+            "enemyDistance": 10,
+            "flags": [
+              "idle-truck"
+            ]
+          }
+        ],
+        "other": [
+          {
+            "match": 2100420,
+            "gameTurn": 3,
+            "hexId": "11,5",
+            "sp": 4.25,
+            "enemyDistance": 1,
+            "flags": []
+          },
+          {
+            "match": 2100458,
+            "gameTurn": 5,
+            "hexId": "20,22",
+            "sp": 3,
+            "enemyDistance": 15,
+            "flags": []
+          },
+          {
+            "match": 2100476,
+            "gameTurn": 3,
+            "hexId": "30,2",
+            "sp": 3,
+            "enemyDistance": 15,
+            "flags": []
+          }
+        ]
+      },
+      "rear": {
+        "drop-now": [
+          {
+            "match": 2100432,
+            "gameTurn": 6,
+            "hexId": "10,13",
+            "sp": 12.75,
+            "enemyDistance": 17,
+            "flags": [
+              "drop-now",
+              "railed-now",
+              "rail-cut",
+              "idle-truck"
+            ]
+          },
+          {
+            "match": 2100460,
+            "gameTurn": 6,
+            "hexId": "21,11",
+            "sp": 7.5,
+            "enemyDistance": 10,
+            "flags": [
+              "drop-now",
+              "railed-now",
+              "idle-truck"
+            ]
+          },
+          {
+            "match": 2100416,
+            "gameTurn": 4,
+            "hexId": "0,20",
+            "sp": 5.25,
+            "enemyDistance": 8,
+            "flags": [
+              "drop-now"
+            ]
+          }
+        ],
+        "railed-now": [
+          {
+            "match": 2100478,
+            "gameTurn": 6,
+            "hexId": "20,12",
+            "sp": 21,
+            "enemyDistance": 6,
+            "flags": [
+              "railed-now",
+              "rail-could",
+              "loaded-now"
+            ]
+          },
+          {
+            "match": 2100400,
+            "gameTurn": 6,
+            "hexId": "20,2",
+            "sp": 19.25,
+            "enemyDistance": 10,
+            "flags": [
+              "railed-now",
+              "rail-cut",
+              "loaded-now"
+            ]
+          },
+          {
+            "match": 2100444,
+            "gameTurn": 6,
+            "hexId": "18,17",
+            "sp": 16.25,
+            "enemyDistance": 11,
+            "flags": [
+              "railed-now",
+              "loaded-now"
+            ]
+          }
+        ],
+        "rail-cut": [
+          {
+            "match": 2100406,
+            "gameTurn": 3,
+            "hexId": "20,22",
+            "sp": 25.25,
+            "enemyDistance": 15,
+            "flags": [
+              "rail-cut",
+              "rail-could",
+              "idle-truck"
+            ]
+          },
+          {
+            "match": 2100400,
+            "gameTurn": 3,
+            "hexId": "20,22",
+            "sp": 22.75,
+            "enemyDistance": 7,
+            "flags": [
+              "rail-cut",
+              "loaded-now"
+            ]
+          },
+          {
+            "match": 2100474,
+            "gameTurn": 4,
+            "hexId": "20,22",
+            "sp": 20,
+            "enemyDistance": 8,
+            "flags": [
+              "rail-cut",
+              "loaded-now"
+            ]
+          }
+        ],
+        "rail-could": [
+          {
+            "match": 2100414,
+            "gameTurn": 6,
+            "hexId": "25,12",
+            "sp": 33.5,
+            "enemyDistance": 10,
+            "flags": [
+              "rail-could",
+              "loaded-now"
+            ]
+          },
+          {
+            "match": 2100414,
+            "gameTurn": 4,
+            "hexId": "25,12",
+            "sp": 26.5,
+            "enemyDistance": 10,
+            "flags": [
+              "rail-could",
+              "loaded-now"
+            ]
+          },
+          {
+            "match": 2100430,
+            "gameTurn": 5,
+            "hexId": "25,12",
+            "sp": 23,
+            "enemyDistance": 15,
+            "flags": [
+              "rail-could",
+              "loaded-now"
+            ]
+          }
+        ],
+        "loaded-now": [
+          {
+            "match": 2100406,
+            "gameTurn": 6,
+            "hexId": "20,22",
+            "sp": 24.25,
+            "enemyDistance": 16,
+            "flags": [
+              "loaded-now"
+            ]
+          },
+          {
+            "match": 2100406,
+            "gameTurn": 4,
+            "hexId": "20,22",
+            "sp": 23.25,
+            "enemyDistance": 15,
+            "flags": [
+              "loaded-now",
+              "idle-truck"
+            ]
+          },
+          {
+            "match": 2100406,
+            "gameTurn": 5,
+            "hexId": "20,22",
+            "sp": 22.25,
+            "enemyDistance": 15,
+            "flags": [
+              "loaded-now"
+            ]
+          }
+        ],
+        "old-drop": [
+          {
+            "match": 2100466,
+            "gameTurn": 4,
+            "hexId": "-4,11",
+            "sp": 1.5,
+            "enemyDistance": 10,
+            "flags": [
+              "old-drop"
+            ]
+          },
+          {
+            "match": 2100446,
+            "gameTurn": 5,
+            "hexId": "13,4",
+            "sp": 1,
+            "enemyDistance": 6,
+            "flags": [
+              "old-drop",
+              "idle-truck"
+            ]
+          },
+          {
+            "match": 2100446,
+            "gameTurn": 6,
+            "hexId": "19,2",
+            "sp": 1,
+            "enemyDistance": 12,
+            "flags": [
+              "old-drop",
+              "idle-truck"
+            ]
+          }
+        ],
+        "hq-moved": [
+          {
+            "match": 2100452,
+            "gameTurn": 4,
+            "hexId": "25,12",
+            "sp": 2.75,
+            "enemyDistance": 15,
+            "flags": [
+              "hq-moved"
+            ]
+          },
+          {
+            "match": 2100478,
+            "gameTurn": 3,
+            "hexId": "30,2",
+            "sp": 1.75,
+            "enemyDistance": 11,
+            "flags": [
+              "hq-moved",
+              "idle-truck"
+            ]
+          }
+        ],
+        "idle-truck": [
+          {
+            "match": 2100426,
+            "gameTurn": 6,
+            "hexId": "20,22",
+            "sp": 3,
+            "enemyDistance": 18,
+            "flags": [
+              "idle-truck"
+            ]
+          },
+          {
+            "match": 2100446,
+            "gameTurn": 6,
+            "hexId": "15,1",
+            "sp": 2,
+            "enemyDistance": 7,
+            "flags": [
+              "idle-truck"
+            ]
+          },
+          {
+            "match": 2100464,
+            "gameTurn": 3,
+            "hexId": "22,8",
+            "sp": 2,
+            "enemyDistance": 8,
+            "flags": [
+              "idle-truck"
+            ]
+          }
+        ],
+        "other": [
+          {
+            "match": 2100414,
+            "gameTurn": 5,
+            "hexId": "25,12",
+            "sp": 26.25,
+            "enemyDistance": 10,
+            "flags": []
+          },
+          {
+            "match": 2100450,
+            "gameTurn": 5,
+            "hexId": "25,12",
+            "sp": 8,
+            "enemyDistance": 10,
+            "flags": []
+          },
+          {
+            "match": 2100450,
+            "gameTurn": 6,
+            "hexId": "25,12",
+            "sp": 8,
+            "enemyDistance": 10,
+            "flags": []
+          }
+        ]
+      }
+    },
+    "standard": {
+      "stranded": {
+        "truck": [
+          {
+            "match": 2100414,
+            "gameTurn": 6,
+            "hexId": "26,0",
+            "sp": 3,
+            "enemyDistance": 8,
+            "flags": [
+              "truck"
+            ]
+          },
+          {
+            "match": 2100406,
+            "gameTurn": 6,
+            "hexId": "19,22",
+            "sp": 3,
+            "enemyDistance": 16,
+            "flags": [
+              "truck"
+            ]
+          },
+          {
+            "match": 2100412,
+            "gameTurn": 3,
+            "hexId": "16,22",
+            "sp": 2.75,
+            "enemyDistance": 11,
+            "flags": [
+              "truck"
+            ]
+          }
+        ],
+        "drop-now": [
+          {
+            "match": 2100420,
+            "gameTurn": 4,
+            "hexId": "9,20",
+            "sp": 3,
+            "enemyDistance": 4,
+            "flags": [
+              "drop-now",
+              "loaded-now",
+              "hq-moved"
+            ]
+          },
+          {
+            "match": 2100442,
+            "gameTurn": 4,
+            "hexId": "13,23",
+            "sp": 2,
+            "enemyDistance": 8,
+            "flags": [
+              "drop-now",
+              "idle-truck"
+            ]
+          },
+          {
+            "match": 2100414,
+            "gameTurn": 4,
+            "hexId": "25,0",
+            "sp": 1.75,
+            "enemyDistance": 5,
+            "flags": [
+              "drop-now",
+              "idle-truck"
+            ]
+          }
+        ],
+        "rail-cut": [
+          {
+            "match": 2100406,
+            "gameTurn": 5,
+            "hexId": "20,22",
+            "sp": 27.75,
+            "enemyDistance": 17,
+            "flags": [
+              "rail-cut",
+              "loaded-now"
+            ]
+          },
+          {
+            "match": 2100406,
+            "gameTurn": 4,
+            "hexId": "20,22",
+            "sp": 22.75,
+            "enemyDistance": 17,
+            "flags": [
+              "rail-cut",
+              "loaded-now"
+            ]
+          },
+          {
+            "match": 2100406,
+            "gameTurn": 3,
+            "hexId": "20,22",
+            "sp": 17.75,
+            "enemyDistance": 15,
+            "flags": [
+              "rail-cut",
+              "loaded-now"
+            ]
+          }
+        ],
+        "loaded-now": [
+          {
+            "match": 2100406,
+            "gameTurn": 6,
+            "hexId": "20,22",
+            "sp": 23.75,
+            "enemyDistance": 17,
+            "flags": [
+              "loaded-now"
+            ]
+          },
+          {
+            "match": 2100474,
+            "gameTurn": 3,
+            "hexId": "23,11",
+            "sp": 4.25,
+            "enemyDistance": 7,
+            "flags": [
+              "loaded-now",
+              "hq-moved"
+            ]
+          },
+          {
+            "match": 2100420,
+            "gameTurn": 5,
+            "hexId": "9,20",
+            "sp": 2,
+            "enemyDistance": 8,
+            "flags": [
+              "loaded-now",
+              "old-drop",
+              "idle-truck"
+            ]
+          }
+        ],
+        "old-drop": [
+          {
+            "match": 2100416,
+            "gameTurn": 4,
+            "hexId": "17,8",
+            "sp": 3,
+            "enemyDistance": 4,
+            "flags": [
+              "old-drop",
+              "idle-truck"
+            ]
+          },
+          {
+            "match": 2100452,
+            "gameTurn": 3,
+            "hexId": "22,4",
+            "sp": 2.75,
+            "enemyDistance": 4,
+            "flags": [
+              "old-drop",
+              "idle-truck"
+            ]
+          },
+          {
+            "match": 2100452,
+            "gameTurn": 5,
+            "hexId": "22,4",
+            "sp": 2.75,
+            "enemyDistance": 4,
+            "flags": [
+              "old-drop"
+            ]
+          }
+        ],
+        "idle-truck": [
+          {
+            "match": 2100424,
+            "gameTurn": 6,
+            "hexId": "25,12",
+            "sp": 4,
+            "enemyDistance": 12,
+            "flags": [
+              "idle-truck"
+            ]
+          },
+          {
+            "match": 2100402,
+            "gameTurn": 3,
+            "hexId": "18,15",
+            "sp": 3,
+            "enemyDistance": 1,
+            "flags": [
+              "idle-truck"
+            ]
+          },
+          {
+            "match": 2100418,
+            "gameTurn": 6,
+            "hexId": "20,22",
+            "sp": 3,
+            "enemyDistance": 13,
+            "flags": [
+              "idle-truck"
+            ]
+          }
+        ],
+        "other": [
+          {
+            "match": 2100452,
+            "gameTurn": 6,
+            "hexId": "20,22",
+            "sp": 4,
+            "enemyDistance": 12,
+            "flags": []
+          },
+          {
+            "match": 2100458,
+            "gameTurn": 4,
+            "hexId": "30,2",
+            "sp": 2.75,
+            "enemyDistance": 14,
+            "flags": []
+          },
+          {
+            "match": 2100458,
+            "gameTurn": 5,
+            "hexId": "30,2",
+            "sp": 2.75,
+            "enemyDistance": 14,
+            "flags": []
+          }
+        ]
+      },
+      "rear": {
+        "drop-now": [
+          {
+            "match": 2100464,
+            "gameTurn": 5,
+            "hexId": "15,2",
+            "sp": 8.25,
+            "enemyDistance": 6,
+            "flags": [
+              "drop-now",
+              "railed-now",
+              "loaded-now",
+              "idle-truck"
+            ]
+          },
+          {
+            "match": 2100476,
+            "gameTurn": 6,
+            "hexId": "9,19",
+            "sp": 7,
+            "enemyDistance": 6,
+            "flags": [
+              "drop-now",
+              "railed-now",
+              "idle-truck"
+            ]
+          },
+          {
+            "match": 2100442,
+            "gameTurn": 5,
+            "hexId": "15,15",
+            "sp": 4,
+            "enemyDistance": 6,
+            "flags": [
+              "drop-now"
+            ]
+          }
+        ],
+        "railed-now": [
+          {
+            "match": 2100462,
+            "gameTurn": 6,
+            "hexId": "21,18",
+            "sp": 16,
+            "enemyDistance": 14,
+            "flags": [
+              "railed-now",
+              "rail-cut"
+            ]
+          },
+          {
+            "match": 2100444,
+            "gameTurn": 5,
+            "hexId": "21,11",
+            "sp": 13,
+            "enemyDistance": 7,
+            "flags": [
+              "railed-now",
+              "loaded-now",
+              "idle-truck"
+            ]
+          },
+          {
+            "match": 2100412,
+            "gameTurn": 6,
+            "hexId": "19,5",
+            "sp": 12,
+            "enemyDistance": 6,
+            "flags": [
+              "railed-now",
+              "rail-cut",
+              "loaded-now",
+              "idle-truck"
+            ]
+          }
+        ],
+        "rail-cut": [
+          {
+            "match": 2100458,
+            "gameTurn": 6,
+            "hexId": "20,22",
+            "sp": 43.75,
+            "enemyDistance": 7,
+            "flags": [
+              "rail-cut",
+              "loaded-now"
+            ]
+          },
+          {
+            "match": 2100458,
+            "gameTurn": 5,
+            "hexId": "20,22",
+            "sp": 35.25,
+            "enemyDistance": 7,
+            "flags": [
+              "rail-cut",
+              "loaded-now"
+            ]
+          },
+          {
+            "match": 2100406,
+            "gameTurn": 5,
+            "hexId": "20,22",
+            "sp": 27.75,
+            "enemyDistance": 17,
+            "flags": [
+              "rail-cut",
+              "loaded-now"
+            ]
+          }
+        ],
+        "rail-could": [
+          {
+            "match": 2100466,
+            "gameTurn": 4,
+            "hexId": "20,22",
+            "sp": 6,
+            "enemyDistance": 10,
+            "flags": [
+              "rail-could",
+              "loaded-now"
+            ]
+          },
+          {
+            "match": 2100436,
+            "gameTurn": 3,
+            "hexId": "25,12",
+            "sp": 4,
+            "enemyDistance": 10,
+            "flags": [
+              "rail-could",
+              "loaded-now"
+            ]
+          },
+          {
+            "match": 2100422,
+            "gameTurn": 3,
+            "hexId": "25,12",
+            "sp": 3,
+            "enemyDistance": 10,
+            "flags": [
+              "rail-could",
+              "loaded-now"
+            ]
+          }
+        ],
+        "loaded-now": [
+          {
+            "match": 2100406,
+            "gameTurn": 6,
+            "hexId": "20,22",
+            "sp": 23.75,
+            "enemyDistance": 17,
+            "flags": [
+              "loaded-now"
+            ]
+          },
+          {
+            "match": 2100444,
+            "gameTurn": 6,
+            "hexId": "21,11",
+            "sp": 9,
+            "enemyDistance": 7,
+            "flags": [
+              "loaded-now"
+            ]
+          },
+          {
+            "match": 2100466,
+            "gameTurn": 6,
+            "hexId": "18,21",
+            "sp": 6,
+            "enemyDistance": 7,
+            "flags": [
+              "loaded-now"
+            ]
+          }
+        ],
+        "old-drop": [
+          {
+            "match": 2100404,
+            "gameTurn": 3,
+            "hexId": "14,6",
+            "sp": 2.75,
+            "enemyDistance": 6,
+            "flags": [
+              "old-drop"
+            ]
+          },
+          {
+            "match": 2100412,
+            "gameTurn": 5,
+            "hexId": "23,4",
+            "sp": 2.25,
+            "enemyDistance": 9,
+            "flags": [
+              "old-drop"
+            ]
+          },
+          {
+            "match": 2100426,
+            "gameTurn": 3,
+            "hexId": "7,23",
+            "sp": 2,
+            "enemyDistance": 6,
+            "flags": [
+              "old-drop"
+            ]
+          }
+        ],
+        "idle-truck": [
+          {
+            "match": 2100424,
+            "gameTurn": 6,
+            "hexId": "25,12",
+            "sp": 4,
+            "enemyDistance": 12,
+            "flags": [
+              "idle-truck"
+            ]
+          },
+          {
+            "match": 2100418,
+            "gameTurn": 6,
+            "hexId": "20,22",
+            "sp": 3,
+            "enemyDistance": 13,
+            "flags": [
+              "idle-truck"
+            ]
+          },
+          {
+            "match": 2100424,
+            "gameTurn": 6,
+            "hexId": "21,7",
+            "sp": 2.5,
+            "enemyDistance": 6,
+            "flags": [
+              "idle-truck"
+            ]
+          }
+        ],
+        "other": [
+          {
+            "match": 2100466,
+            "gameTurn": 6,
+            "hexId": "20,22",
+            "sp": 7.75,
+            "enemyDistance": 10,
+            "flags": []
+          },
+          {
+            "match": 2100452,
+            "gameTurn": 6,
+            "hexId": "20,22",
+            "sp": 4,
+            "enemyDistance": 12,
+            "flags": []
+          },
+          {
+            "match": 2100400,
+            "gameTurn": 6,
+            "hexId": "20,22",
+            "sp": 3.5,
+            "enemyDistance": 13,
+            "flags": []
+          }
+        ]
+      }
+    }
+  }
+}
