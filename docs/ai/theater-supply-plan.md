@@ -1,6 +1,6 @@
 # 戰區補給配置
 
-狀態：**進行中：策略上層分配 HQ 位置與卡車卸貨點，卸貨點可在 trace 外，卡車也供應本步驟就進攻的組；從相同的記錄局面推演兩個攻方回合，攻方取得的目標點數比標準策略多 1.34 [0.67, 2.01]，四個攻方回合多 2.50 [0.56, 4.44]（開發推演，未事先登記），這個版本還沒有整局的對局觀測；先前四批 80 局觀測都未確立幫助；指標已前瞻確認（近期奪點），終局預測未通過（權重預設關閉）**。量測工具全部在 `scripts/`，不被 bot 讀取。工作項目見 [局勢指標研究 WBS 的 P11](../roadmap/18-position-metrics-wbs.md)。
+狀態：**進行中：策略上層分配 HQ 位置與卡車卸貨點（卸貨點可在 trace 外，卡車也供應本步驟就進攻的組）；事先登記的 80 局西歐觀測中 VP 每對 +2.70 [+1.15, +4.25]，有幫助，攻方前 3 回合多取得目標 VP 3.70 [2.31, 5.09]；鐵路與海運的運量尚未納入配置，量測腳本的配置搜尋仍只分配戰鬥單位（P11.4 未完成）；指標已前瞻確認（近期奪點），終局預測未通過（權重預設關閉，不走升級流程）**。量測工具全部在 `scripts/`，不被 bot 讀取。工作項目見 [局勢指標研究 WBS 的 P11](../roadmap/18-position-metrics-wbs.md)。
 
 ## 範圍
 
@@ -130,7 +130,18 @@
   | 攻方損失步數 | +2.05 [1.05, 3.05] | +0.95 [−0.31, 2.21] | +1.10 [0.14, 2.06] |
 
 - **各組的兌現**（兩回合推演）：本步驟組 114 個，第一回合被攻擊 105 個、結束時持有 88 個；下一步驟組 146 個，結束時持有 53 個（0.36）。前一版的下一步驟組 57 個、持有 29 個（0.51）：組數是 2.5 倍，持有的比例較低。成員常被擋在 trace 邊緣，跟不上集結者（見決策）。
-- 這是開發推演：沒有事先登記，在同一批局面上看了多個版本與多項量測，最多四個攻方回合。被推到 trace 外、靠卸下的 SP 維持的單位之後能否持續補給，以及整局的 VP，要由事先登記的對局觀測回答。
+- 這是開發推演：沒有事先登記，在同一批局面上看了多個版本與多項量測，最多四個攻方回合。
+
+這個版本的[對局觀測](../quality/evidence/ai-theater-untraced-games-2026-11-13/README.md)在 80 局新的西歐攻擊戰（事先登記，使用者同意，2100400–2100479，交換座位 40 對）：
+
+- **整體**：VP 每對 +2.70 [+1.15, +4.25]，區間在 0 之上，依登記的讀法是有幫助；Kill − Loss +1.81 [−1.28, +4.91]，Supply −0.24 [−0.66, +0.18]。先前四個版本是 +1.10、+0.88、−0.57、+1.35，區間都含 0。
+- **攻方取得的目標 VP**（配置版當攻方減標準當攻方，每對）：前 3 回合 +3.70 [2.31, 5.09]（5.63 對 1.93），第 4～8 回合 −0.40 [−2.07, 1.27]，前期多拿的沒有吐回去。終局多佔 0.90 [0.44, 1.36] 個目標。
+- **潛力的實現比例**：前 3 回合 0.47，標準當攻方時 0.22。這一層要處理的就是這段落差。
+- **代價**：攻方前 3 回合每對多損失 0.75 [0.14, 1.36] 步，整局沒有多損失（+0.63 [−1.53, 2.78]）；因 attrition 損失的步數（+0.07 [−1.89, 2.04]）與終局斷補的單位數（0.42 對 0.55）都沒有增加。
+- **執行（前 3 回合）**：卡車指派 80 次，78 次卸了貨，65 次卸在卸貨點；被指派的 HQ 15/17 到位；本步驟組 45 個，40 個發動攻擊、28 個回合末持有。
+- **下一步驟組仍然兌現不佳**：82 個中下一回合只有 16 個轉成本步驟進攻、48 個被放棄，下一回合末持有 41 個（0.50，與前一批的 0.55 相近，但組數加倍）。
+- **範圍**：一批 40 對、一種對手（標準策略當守方不反攻）、只有西歐攻擊戰；這是觀測，不是升級。
+
 
 使用者決定（2026-10-21）：P11 只做實作與觀測，不走升級流程，研究只限西歐。先前誤走升級流程的開發批與中途停止的獨立批只作觀測，東歐的對局不採用。
 
@@ -147,9 +158,9 @@
 
 ## 已知缺口
 
-- `bot-theater-allocation`：策略上層分配 HQ 位置與卡車卸貨點（可在 trace 外，本步驟與下一步驟的組都供應），但這個版本只有最多四個攻方回合的開發推演，沒有事先登記的整局觀測；下一步驟組的成員常被擋在 trace 邊緣、跟不上集結者，下一步驟組兩回合後只持有 0.36；trace 外的單位靠卸下的 SP 維持，配置只算到該組進攻那一步的口糧與戰鬥補給，之後的持續補給由一般運補與救援處理，沒有規劃；集結者沒到卸貨點時（推演中 175 次有 8 次，例如它一走另一個單位就失去 trace）卡車改卸在一般卸貨點；計畫時的存量在卡車移動前可能被別的支付用掉；鐵路與海運的運量（Rail Cap、Sea Cap，P11.2 的運入上限）不在配置內；每組最多一個 HQ；補給源（鐵路可下車格、Extender）的前移不在配置內；配置的期望 VP 仍只有不看補給時的六成（前 3 回合 3.06 對 4.90）；量測腳本的配置搜尋（`ai-theater-allocation.mjs`）仍只分配戰鬥單位。配置不考慮堆疊上限與友軍移動造成的 ZOC；下一步驟的可達範圍假設其他單位不動、下一步付得起燃料，折扣也套用在空目標上；指標只看 1 回合；完整問題（約 20 個單位）的近似差距未驗證；奪點模型只描述 bot 選擇發動的攻擊；守方的戰區劃分對門檻敏感。
+- `bot-theater-allocation`：策略上層分配 HQ 位置與卡車卸貨點（可在 trace 外，本步驟與下一步驟的組都供應），80 局西歐觀測中有幫助，但只有一批、一種不反攻的對手；下一步驟組的成員常被擋在 trace 邊緣、跟不上集結者，對局中 82 個下一步驟組只有 16 個下一回合轉成本步驟進攻；trace 外的單位靠卸下的 SP 維持，配置只算到該組進攻那一步的口糧與戰鬥補給，之後的持續補給由一般運補與救援處理，沒有規劃；集結者沒到卸貨點時（推演中 175 次有 8 次，例如它一走另一個單位就失去 trace）卡車改卸在一般卸貨點；計畫時的存量在卡車移動前可能被別的支付用掉；鐵路與海運的運量（Rail Cap、Sea Cap，P11.2 的運入上限）不在配置內；每組最多一個 HQ；補給源（鐵路可下車格、Extender）的前移不在配置內；配置的期望 VP 仍只有不看補給時的六成（前 3 回合 3.06 對 4.90）；量測腳本的配置搜尋（`ai-theater-allocation.mjs`）仍只分配戰鬥單位。配置不考慮堆疊上限與友軍移動造成的 ZOC；下一步驟的可達範圍假設其他單位不動、下一步付得起燃料，折扣也套用在空目標上；指標只看 1 回合；完整問題（約 20 個單位）的近似差距未驗證；奪點模型只描述 bot 選擇發動的攻擊；守方的戰區劃分對門檻敏感。
 - 既有可支付目標代理的合法見證缺口仍由 `bot-position-payability` 維護。
 
 ## 驗證
 
-[地圖普查](../quality/evidence/ai-theater-survey-2026-10-21/README.md)、[Combat 階段核對](../quality/evidence/ai-theater-attack-check-2026-10-21/README.md)、[燃料核對](../quality/evidence/ai-theater-fuel-check-2026-10-21/README.md)、[運入核對](../quality/evidence/ai-theater-inflow-check-2026-10-21/README.md)、[奪點機率模型](../quality/evidence/ai-theater-capture-model-2026-10-21/README.md)、[配置核對](../quality/evidence/ai-theater-allocation-check-2026-10-21/README.md)、[記錄紀錄](../quality/evidence/ai-theater-record-2026-10-21/README.md)、[回溯比較](../quality/evidence/ai-theater-validation-2026-10-21/README.md)、[前瞻確認](../quality/evidence/ai-theater-confirmation-2026-10-21/README.md)、[策略上層觀測](../quality/evidence/ai-theater-allocation-games-2026-10-21/README.md)、[策略上層執行核對](../quality/evidence/ai-theater-adherence-2026-10-22/README.md)、[下回合折扣](../quality/evidence/ai-theater-delay-2026-10-22/README.md)、[2 步驟觀測](../quality/evidence/ai-theater-two-step-games-2026-10-22/README.md)、[執行診斷](../quality/evidence/ai-theater-execution-2026-10-30/README.md)、[執行修正觀測](../quality/evidence/ai-theater-execution-games-2026-10-30/README.md)、[下一步驟組追蹤](../quality/evidence/ai-theater-next-step-2026-10-30/README.md)、[HQ 與卡車配置觀測](../quality/evidence/ai-theater-hq-games-2026-10-30/README.md)、[卡車執行推演](../quality/evidence/ai-theater-truck-execution-2026-11-11/README.md)、[trace 外卸貨點與記錄局面推演](../quality/evidence/ai-theater-untraced-drops-2026-11-12/README.md)、[付款時序稽核](../quality/evidence/ai-theater-supply-audit-2026-10-20/README.md)。這些都不改變 `docs/quality/03-product-operation-verification-plan.md` 的任何列。
+[地圖普查](../quality/evidence/ai-theater-survey-2026-10-21/README.md)、[Combat 階段核對](../quality/evidence/ai-theater-attack-check-2026-10-21/README.md)、[燃料核對](../quality/evidence/ai-theater-fuel-check-2026-10-21/README.md)、[運入核對](../quality/evidence/ai-theater-inflow-check-2026-10-21/README.md)、[奪點機率模型](../quality/evidence/ai-theater-capture-model-2026-10-21/README.md)、[配置核對](../quality/evidence/ai-theater-allocation-check-2026-10-21/README.md)、[記錄紀錄](../quality/evidence/ai-theater-record-2026-10-21/README.md)、[回溯比較](../quality/evidence/ai-theater-validation-2026-10-21/README.md)、[前瞻確認](../quality/evidence/ai-theater-confirmation-2026-10-21/README.md)、[策略上層觀測](../quality/evidence/ai-theater-allocation-games-2026-10-21/README.md)、[策略上層執行核對](../quality/evidence/ai-theater-adherence-2026-10-22/README.md)、[下回合折扣](../quality/evidence/ai-theater-delay-2026-10-22/README.md)、[2 步驟觀測](../quality/evidence/ai-theater-two-step-games-2026-10-22/README.md)、[執行診斷](../quality/evidence/ai-theater-execution-2026-10-30/README.md)、[執行修正觀測](../quality/evidence/ai-theater-execution-games-2026-10-30/README.md)、[下一步驟組追蹤](../quality/evidence/ai-theater-next-step-2026-10-30/README.md)、[HQ 與卡車配置觀測](../quality/evidence/ai-theater-hq-games-2026-10-30/README.md)、[卡車執行推演](../quality/evidence/ai-theater-truck-execution-2026-11-11/README.md)、[trace 外卸貨點與記錄局面推演](../quality/evidence/ai-theater-untraced-drops-2026-11-12/README.md)、[trace 外卸貨點對局觀測](../quality/evidence/ai-theater-untraced-games-2026-11-13/README.md)、[付款時序稽核](../quality/evidence/ai-theater-supply-audit-2026-10-20/README.md)。這些都不改變 `docs/quality/03-product-operation-verification-plan.md` 的任何列。
