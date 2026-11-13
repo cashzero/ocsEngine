@@ -8,7 +8,7 @@
 
 ## 現行行為
 
-電腦策略先修錯再談強：[錯誤清單](policy-errors.md)列出標準策略看起來不正確的決策，逐項用局面接續測試量修正的影響。目前也優先進行 [VP 改善的預測指標研究](vp-metrics.md)，先實驗哪些指標能預測新種子與新策略變體的 VP 增益，再據此選擇策略改善方向。已有首輪歷史資料探索，尚無前瞻驗證結論；研究不改變下列策略升級條件。
+電腦策略先修錯再談強：[錯誤清單](policy-errors.md)列出標準策略看起來不正確的決策，逐項用局面接續測試量修正的影響。[VP 改善的預測指標研究](vp-metrics.md)沒有找到能可靠預測新種子 VP 增益的指標，已暫停（使用者決定，2026-11-13）；策略改進的順序（補給延續、有條件反攻的守方、兵力集中、獨立批）與各階段的驗收見 [AI 攻防策略改進 WBS](../roadmap/19-ai-strategy-improvement-wbs.md)，不改變下列策略升級條件。
 
 歷史場景的空軍範圍不能只依 CLI 參數認定。[指標研究盤點](../quality/evidence/ai-vp-metrics-inventory-2026-10-18/README.md)的 `v79-baseline-wide`、`v80g-wide`、`v80j-wide`、`v80q-wide` 共 80 份攻擊戰存檔，即使 options 為 `air=NONE`、`airTransport=NONE`，仍有場外飛機與實際 `DECLARE_AIR_MISSION`。這些批次的「無空軍」描述不成立，只能作含場外空軍的歷史探索資料。其他批次的實際組成尚待稽核，不能由參數推定。缺口見 `historical-ai-air-scope`。
 

@@ -48,7 +48,7 @@ src/ai/           bot 驅動、策略、評估
 | M6 | Random Map | **DONE** | [05-random-map-wbs](roadmap/05-random-map-wbs.md) | `docs/generator/` |
 | M7 | OOB Catalog 與 Random OOB | **DONE**；0.4.0 改版 IN PROGRESS | [06-random-oob-wbs](roadmap/06-random-oob-wbs.md)、[12-oob-revision-wbs](roadmap/12-oob-revision-wbs.md) | `docs/oob/`、`docs/generator/` |
 | M8 | Random Scenario 與 Game Flow 整合 | **IN PROGRESS**（M8.10 gate） | [07-game-flow-integration-wbs](roadmap/07-game-flow-integration-wbs.md)、[13-engagement-scenarios-wbs](roadmap/13-engagement-scenarios-wbs.md) | `docs/game-flow/` |
-| M9 | AI Bot | **IN PROGRESS**（headless 與 B7 人機／觀戰已整合；後勤、行為基準與 exit gate 未完成） | [11-ai-bot-wbs](roadmap/11-ai-bot-wbs.md) | `docs/ai/` |
+| M9 | AI Bot | **IN PROGRESS**（headless 與 B7 人機／觀戰已整合；後勤、行為基準與 exit gate 未完成） | [11-ai-bot-wbs](roadmap/11-ai-bot-wbs.md)、[19-ai-strategy-improvement-wbs](roadmap/19-ai-strategy-improvement-wbs.md) | `docs/ai/` |
 | M10 | Paired self-play 與品質 gate | **IN PROGRESS**：升級流程已在使用（`docs/ai/evaluation.md`）；權重自我對戰停用 | 本文件 §4 | `docs/ai/evaluation.md` |
 | M11 | 完整 OCS 擴充 | **IN PROGRESS**，見下表 | 本文件 §4 | 各主題資料夾 |
 

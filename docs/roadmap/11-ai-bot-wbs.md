@@ -12,6 +12,7 @@
 - [AI Bot 架構](../ai/architecture.md)
 - [Heuristic 策略](../ai/heuristic-policy.md)
 - [AI 對戰評估](../ai/evaluation.md)
+- [AI 攻防策略改進 WBS](19-ai-strategy-improvement-wbs.md)（目前的策略改進順序：補給延續、有條件反攻的守方、兵力集中、獨立批與 B5 重測）
 
 ## 0. 依賴與未關閉的 gate
 
@@ -127,7 +128,7 @@ Air 與 CARGO_LOSS 仍用第一個選項（TODO `bot-air`）。已有局部案�
 空軍（`bot-air`）不在 B5 範圍：電腦會派 Air Barrage 與 refit，其他任務與空中待決的缺口見 §3 TODO。
 
 狀態：**IN PROGRESS**。最後一次 B5 量測在 heuristic@5（預設地圖全部 PASS）；東歐風格未達 90%（TODO `bot-eastern-front`）；
-標準策略 heuristic@86 尚未重跑 B5。量測數字與重跑缺口見 [AI 對戰評估](../ai/evaluation.md)。
+標準策略 heuristic@86 尚未重跑 B5；重測排在 [AI 攻防策略改進 WBS](19-ai-strategy-improvement-wbs.md) 的 S4.6。量測數字與重跑缺口見 [AI 對戰評估](../ai/evaluation.md)。
 
 ### B6 Logistics-aware（M9.3，IN PROGRESS）
 
@@ -189,7 +190,7 @@ BOT-09 的數值門檻仍是提案，以 `03` 該列為準。是否加入難度�
 
 ## 7. VP 預測指標研究
 
-依使用者決定，目前先實驗並改進指標，判斷哪些指標最能預測 VP 改善，再繼續策略優化。逐回合的局勢指標另由 [局勢指標研究 WBS](18-position-metrics-wbs.md) 維護。定義、比較方法與研究結論由 [VP 改善的預測指標](../ai/vp-metrics.md) 維護。首輪歷史探索已完成，整體研究仍在進行。
+狀態：**暫停**（使用者決定，2026-11-13）。P8a 的效果轉移檢查沒有找到能可靠預測獨立種子 VP 改善的指標，M2–M6 停在目前的進度；策略改進改依 [AI 攻防策略改進 WBS](19-ai-strategy-improvement-wbs.md) 以推演、局面接續與升級流程進行，恢復條件見該文件第 6 節。逐回合的局勢指標另由 [局勢指標研究 WBS](18-position-metrics-wbs.md) 維護。定義、比較方法與研究結論由 [VP 改善的預測指標](../ai/vp-metrics.md) 維護。
 
 - [x] M1 首輪資料盤點。選定 80 份存檔、標準自戰與三個相關變體，記錄來源、種子、角色、缺失資訊與探索用途。實際空軍範圍及策略變體證據限制見 [盤點](../quality/evidence/ai-vp-metrics-inventory-2026-10-18/README.md) 與 [首輪結果](../quality/evidence/ai-vp-metrics-pilot-2026-10-18/README.md)。
 - [ ] M2 實作目標級紀錄。先串接目標選擇、有效兵力到位與控制流失，保留未選目標、分母、缺值與搜尋截斷。以真實存檔對帳並證明量測不改變行動及終局 hash。
