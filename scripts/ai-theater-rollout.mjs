@@ -2,7 +2,7 @@
 // Does the theater policy carry out its own supply plan in one Movement segment (docs/ai/theater-supply-plan.md)? Build first.
 //
 //   node scripts/ai-theater-rollout.mjs <ai-match dir> --weights <theater-weights.json> --out <file.jsonl> [--shard i/n] [--turns 5 | --starts 1,3]
-//     [--match id] [--trucks-only] [--through n] [--standard] [--dist <dir>]
+//     [--match id] [--trucks-only] [--through n] [--standard] [--dist <dir>] [--save-dir <dir> --policy-label <label>]
 //   node scripts/ai-theater-rollout.mjs --summarize <file.jsonl> [...]
 //   node scripts/ai-theater-rollout.mjs --compare <dir of candidate rows> <dir of baseline rows>
 //
@@ -21,7 +21,9 @@
 // the rollout in which its objective was first attacked and whether the attacker holds it at the end. --standard lets the standard heuristic play the
 // attacker instead, and --dist loads another build, so that --compare can pair two policies from the same recorded
 // states: the mean difference per map (the two seat-swapped games of a map are one cluster) with a 95% t interval.
-import { appendFileSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
+// With --save-dir (one start turn) each rollout's save and a summary.json naming the attacker's policy --policy-label
+// are written there, so that the supply gate scripts (ai-logistics-study.mjs, ai-fuel-study.mjs) can read the rollouts.
+import { appendFileSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
@@ -104,8 +106,12 @@ const lastTurn = Number(option('--turns') ?? 5);
 const starts = option('--starts')?.split(',').map(Number) ?? null;
 const through = Number(option('--through') ?? 0);
 const standard = args.includes('--standard');
+const saveDir = option('--save-dir');
+const policyLabel = option('--policy-label') ?? (standard ? 'heuristic' : 'theater');
+const saved = [];
+if (saveDir) mkdirSync(saveDir, { recursive: true });
 const trucksOnly = args.includes('--trucks-only');
-const dir = args.find((arg, index) => !arg.startsWith('--') && !['--out', '--weights', '--shard', '--turns', '--match', '--starts', '--through', '--dist'].includes(args[index - 1]));
+const dir = args.find((arg, index) => !arg.startsWith('--') && !['--out', '--weights', '--shard', '--turns', '--match', '--starts', '--through', '--dist', '--save-dir', '--policy-label'].includes(args[index - 1]));
 const m = await import(pathToFileURL(join(option('--dist') ? resolve(option('--dist')) : join(root, 'dist'), 'index.js')).href);
 const weights = JSON.parse(readFileSync(resolve(weightsFile), 'utf8'));
 const theaterWeights = m.heuristicWeights(weights.weights ?? weights);
@@ -244,6 +250,11 @@ for (const record of records) {
         }
         const control = new Map(session.getView(attackerSeat).projection.objectives.map(({ hexId, controllerId }) => [String(hexId), controllerId]));
         for (const group of row.groups) { group.attackedIn = attackedIn.get(group.objective) ?? null; group.heldAtEnd = control.get(group.objective) === attackerId; }
+        if (saveDir) {
+          writeFileSync(join(saveDir, `match-${record.match}.save.json`), session.serializeSave());
+          const attackerSide = String(attackerId).endsWith('axis') ? 'axis' : 'allied';
+          saved.push({ match: record.match, sides: { axis: { policy: attackerSide === 'axis' ? policyLabel : 'heuristic' }, allied: { policy: attackerSide === 'allied' ? policyLabel : 'heuristic' } } });
+        }
         row.outcome = { playerTurns: finished, halted, objectivePointsStart, objectivePointsEnd: held(), attackerStepsLost: lost.attacker, defenderStepsLost: lost.defender, attacks };
       }
       appendFileSync(out, `${JSON.stringify(row)}\n`);
@@ -251,4 +262,5 @@ for (const record of records) {
     state = m.ruleEngine.applyAction(state, action).state;
   }
 }
+if (saveDir) writeFileSync(join(saveDir, `summary-${shard}.json`), JSON.stringify({ records: saved }));
 console.log(JSON.stringify(counts));

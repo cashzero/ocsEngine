@@ -999,11 +999,28 @@ const RAIL_SAFE_DISTANCE = 3;
  * station nearest the front that is safe from the enemy, the largest gain toward the front first. Trucks then carry the
  * SP on from that railhead (they cannot load SP detrained this phase, 12.2a, so the haul continues next turn).
  */
-const railStep = (context: BotDecisionContext, situation: Situation, notes: StepNotes, front: HexId | null): BotDecision | null => {
+const railStep = (context: BotDecisionContext, situation: Situation, facts: BotGameFacts, notes: StepNotes, front: HexId | null): BotDecision | null => {
   if (notes.railDone || front === null) return null;
+  // theaterAllocation: a placed, empty truck loads where the plan counted its load; rail leaves that much there (a full
+  // truck's worth each) and may move the rest. Leaving the whole hex instead stranded 50-130T at map-edge entries.
+  const reserved = new Map<string, number>();
+  for (const [truckId, placement] of notes.truckPlan ?? []) {
+    const truck = situation.own.find(({ piece }) => piece.id === truckId);
+    if (placement.pickup === null || notes.truckDelivered?.has(truckId) || !truck || (truck.piece.carriedTokens ?? 0) > 0) continue;
+    reserved.set(String(placement.pickup), (reserved.get(String(placement.pickup)) ?? 0) + truckCapacityTokens(facts, truck));
+  }
+  const loadableAt = (hexId: HexId) => situation.own.filter((unit) => unit.piece.role === 'DUMP' && unit.hexId === hexId && !String(unit.piece.id).includes('-stock-'))
+    .reduce((total, unit) => total + (unit.piece.resourceQuantity ?? 0), 0) - (notes.railedTo?.get(hexId) ?? 0);
   let best: { action: GameAction; value: number; gain: number } | null = null;
-  for (const action of context.actions.candidates('RAIL_MOVE', null, 400)) {
-    if (action.kind !== 'RAIL_MOVE') continue;
+  for (const candidate of context.actions.candidates('RAIL_MOVE', null, 400)) {
+    if (candidate.kind !== 'RAIL_MOVE') continue;
+    let action = candidate;
+    const kept = reserved.get(String(candidate.fromHexId)) ?? 0;
+    if (kept > 0 && candidate.supply.length > 0) {
+      const allowed = Math.min(candidate.supply[0]!.tokens, loadableAt(candidate.fromHexId) - kept);
+      if (allowed <= 0) continue;
+      action = { ...candidate, supply: [{ ...candidate.supply[0]!, tokens: allowed }] };
+    }
     if (situation.nearestEnemy(action.toHexId).distance < RAIL_SAFE_DISTANCE) continue;
     const gain = hexesBetween(action.fromHexId, front) - hexesBetween(action.toHexId, front);
     const tokens = action.supply.reduce((total, { tokens: quantity }) => total + quantity, 0);
@@ -1014,8 +1031,6 @@ const railStep = (context: BotDecisionContext, situation: Situation, notes: Step
     // A garrison's own stock (and SP on an objective) stays where it is.
     if (action.supply.some(({ sourcePieceId }) => String(sourcePieceId).includes('-stock-'))
       || (tokens > 0 && situation.objectives.some(({ hexId }) => hexId === action.fromHexId))) continue;
-    // theaterAllocation: SP a placed truck is to load this step stay where the plan counted them.
-    if (tokens > 0 && [...(notes.truckPlan?.values() ?? [])].some(({ pickup }) => pickup === action.fromHexId)) continue;
     // Units ride only when the front is far: a unit near it walks (and keeps its MA for the fight).
     const units = action.unitIds.filter((id) => {
       const unit = situation.own.find(({ piece }) => piece.id === id);
@@ -1138,7 +1153,7 @@ const movementStep = (context: BotDecisionContext, situation: Situation, facts: 
   if (context.view.projection?.sequence.phase === 'MOVEMENT' && !units.some((unit) => unit.piece.role === 'HQ')) {
     const shipped = seaStep(context, situation, notes, front);
     if (shipped) return shipped;
-    const railed = railStep(context, situation, notes, front);
+    const railed = railStep(context, situation, facts, notes, front);
     if (railed) return railed;
   }
   for (const unit of units) {
