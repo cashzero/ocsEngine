@@ -1,0 +1,36 @@
+{
+ "plan": "Theater supply allocation with drops outside trace and this-step trucks (docs/ai/theater-supply-plan.md, P11.4 / P11.8)",
+ "purpose": "Whether the theater allocation, now that truck drops may lie outside trace, trucks supply this-step groups and stagers and placed trucks move before the other combat units, helps the attacker over whole Western Europe attack games. Observation, not a promotion gate.",
+ "userRequest": "2026-10-30: 對 但這整個p11不就是補給規劃嗎; do it 不要問我怎麼做 應該你自行判斷並測試",
+ "consent": "2026-11-13: 同意 (asked: whether to play this batch of 80 new Western Europe games, 2100400-2100479)",
+ "registeredBefore": "any game of this batch (development smoke games 2199000-2199015 and the rollouts from the saves of 2100300-2100379 are not part of it)",
+ "source": "51301b1; theaterAllocation 0 is the standard heuristic@85",
+ "games": {
+  "count": 80,
+  "pairs": 40,
+  "matches": "2100400-2100479 (no save with these numbers exists in any checkout)",
+  "command": "node scripts/ai-match.mjs --matches 80 --start 2100400 --style WESTERN_EUROPE --engagement AXIS_ATTACKS --turns 8 --size 32x24 --divisions 6 --armored 2 --air NONE --air-transport NONE --allied heuristic:docs/quality/evidence/ai-theater-untraced-games-2026-11-13/theater-weights.json --axis heuristic --swap --parallel 6 --out artifacts/ai-theater-untraced-games/attack-western"
+ },
+ "measures": {
+  "primary": "VP margin, theater-on side minus standard side, averaged over the two seat-swapped games of a pair; mean over 40 pairs with a 95% t interval (ai-paired-measures.mjs)",
+  "secondary": [
+   "Kill - Loss and Supply, same pairing",
+   "Objective VP gained as attacker, defender steps lost and attacker steps lost, theater policy attacking minus the standard attacking, per pair, for Game Turns 1-3 and 4-8 (ai-position-record.mjs --theater, ai-theater-realized.mjs)",
+   "Attacker combat units out of supply at the end of the game, theater policy attacking minus the standard attacking, per pair (summary.json)",
+   "Plan follow-through (ai-theater-hq-follow.mjs): placed HQs at their hex; placed trucks unloading at their drop and stagers there; this-step groups attacked and held; next-step groups attacked and held at the end of the next turn, against 0.55 held in the HQ and truck allocation batch",
+   "Regular attacks per attacker player turn, Game Turns 1-3 and 4-8"
+  ]
+ },
+ "reading": "Helps on VP if the 95% interval of the primary is above 0; hurts if below 0; otherwise not established at this size. The rollouts' gain carries to whole games if objective VP gained as attacker is above 0 in Game Turns 1-3 and not below 0 in Game Turns 4-8; pushing units beyond trace costs too much if attacker steps lost or units out of supply at the end rise while VP does not. No further games are added to this batch.",
+ "power": "Per-pair VP SD was 5.83 in the HQ and truck allocation batch and 6.54 in the two-step batch; 40 pairs give SE 0.92 to 1.03, power about 0.5 for a true +2 VP a pair, about 0.7 for +2.5 and about 0.85 for +3. Development rollouts from recorded states (docs/quality/evidence/ai-theater-untraced-drops-2026-11-12) gave the attacker +2.50 [0.56, 4.44] objective points against the standard over the first four attacker player turns, so an effect of this order is plausible but not assured.",
+ "weightsSha256": "aa68946a609eb1bb8f6b39db304c8f9512a563248b5e652af01f52acb1a7eddd",
+ "scripts": {
+  "scripts/ai-match.mjs": "16c7326b6776d1f906ada94563f5425b8a4eefa6b236057fcf02515aed1df698",
+  "scripts/ai-paired-measures.mjs": "370fa4365fe699f32af843346593158736f003585874af0402eb1cbbfd806b26",
+  "scripts/ai-theater-hq-follow.mjs": "9f8e4ff081b06958a35102798d3f9b2f031ec1d085aeaff6972881c5c4b64002",
+  "scripts/ai-theater-realized.mjs": "dee726d6609f916345092dfa49e06c34881cb0c292bc75d7da11ba3e9a1e34fa",
+  "src/ai/policies/theater.ts": "60b335f6fc99ccc08b922f7600102431ff36900a80673690483e7f5b1b5065f4",
+  "src/ai/policies/heuristic.ts": "0993bc4e9e91a51dac3018684ce71ac73ad23b0ba11fe615266336c92290426a",
+  "src/rules/supply/supply.ts": "7dfecf5911e045f4cb8dc4896a77cfebcd7af3531e76a77ceb5a807f619e188d"
+ }
+}
