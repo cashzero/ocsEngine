@@ -69,13 +69,17 @@ const chooseEfforts = (situation: Situation, w: HeuristicWeights, count: number)
 };
 
 /**
- * Plan P11.8 candidate (theaterAllocation): this step's allocation (policies/theater.ts) gives the efforts, one per
+ * heuristic@86 (theaterAllocation, plan P11.8): the attacker of an attack engagement plans by theater. In 80 registered
+ * Western Europe games against heuristic@85 it gained 2.70 [1.15, 4.25] VP a pair and 3.70 [2.31, 5.09] objective VP as
+ * attacker in Game Turns 1-3 (docs/quality/evidence/ai-theater-untraced-games-2026-11-13). This step's allocation
+ * (policies/theater.ts) gives the efforts, one per
  * defended objective in order of expected VP, and the captures of empty objectives; garrisons keep their objectives.
  * Groups reach their objective this step or the next; a group whose capture probability, discounted for waiting a
  * step, is below THEATER_MIN_PROBABILITY is dropped: its units keep the usual targets, which the allocation does not
  * value. The allocation also places HQs so that trace supply reaches each group's attack positions on its step; those
  * HQs move to their places (THEATER_HQ_ARRIVE, THEATER_HQ_PULL) instead of following the army, and the trucks feed them
- * as dry HQs; placed trucks unload at their drop, where a member of the group stops (the same pull). Effort slots it leaves go to the usual multi-turn efforts with the remaining units.
+ * as dry HQs; placed trucks unload at their drop, where a stager stops (the same pull). Effort slots it leaves go to the usual
+ * multi-turn efforts with the remaining units. With the weight at 0 the attacker plays as heuristic@85.
  */
 const THEATER_MIN_PROBABILITY = 0.25;
 const THEATER_MOVE_BUDGET = 1500;
@@ -1704,7 +1708,7 @@ export const createHeuristicPolicy = (facts: BotGameFacts, options: HeuristicPol
   const choose = decide(facts, options.weights ?? DEFAULT_HEURISTIC_WEIGHTS);
   return {
     id: 'heuristic',
-    version: options.label === undefined ? '85' : `85+${options.label}`,
+    version: options.label === undefined ? '86' : `86+${options.label}`,
     decide: (context) => {
       const sink = options.debug;
       debug = sink ? (line) => sink(`${context.memory.stepKey} ${String(context.playerId).split(':').at(-1)} ${line}`) : null;
