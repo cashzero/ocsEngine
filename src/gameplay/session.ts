@@ -295,6 +295,15 @@ export class GameplaySession implements GameSession {
     return cloneValue(this.#ports.rules.queryHqThrow(this.#state, binding.playerId, hqId, fromHexId));
   };
 
+  getTraceCut = (seatId: SeatId, pieceId: Parameters<GameSession['getTraceCut']>[1], hexId: Parameters<GameSession['getTraceCut']>[2],
+    mode?: Parameters<GameSession['getTraceCut']>[3]): ReturnType<GameSession['getTraceCut']> => {
+    const binding = this.#binding(seatId);
+    if (this.#lifecycle !== 'ACTIVE' || this.#handoff !== null) {
+      return { allowed: false, value: { tracedIds: [], cutIds: [] }, reasons: [{ code: 'SESSION_NOT_INTERACTIVE', allowed: false, message: 'Session is not accepting interaction.', rule: 'gameplay' }], facts: [], dependencies: [] };
+    }
+    return cloneValue(this.#ports.rules.queryTraceCut(this.#state, binding.playerId, pieceId, hexId, mode));
+  };
+
   getRailArrivalReach = (seatId: SeatId, fromHexId: Parameters<GameSession['getRailArrivalReach']>[1]): ReturnType<GameSession['getRailArrivalReach']> => {
     const binding = this.#binding(seatId);
     if (this.#lifecycle !== 'ACTIVE' || this.#handoff !== null) {

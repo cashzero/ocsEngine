@@ -1,6 +1,6 @@
-import { stableSort, stableKey, type PlayerId, type HexId } from '../../core/index.js';
+import { stableSort, stableKey, type PlayerId, type HexId, type PieceId } from '../../core/index.js';
 import { pieceLocationKey, type PieceLocation } from '../../domain/map/index.js';
-import type { PieceState } from '../../domain/piece/index.js';
+import type { OcsMode, PieceState } from '../../domain/piece/index.js';
 import type { GameState, MobilityType } from '../kernel/model.js';
 import { INTERNAL_STOCKS_STATUS, OUT_OF_TRACE_SINCE_STATUS, RETURN_TURN_STATUS, definitionOf, isCombatUnit, usageOf } from '../pieces.js';
 import { rationPlan } from '../supply/ration-budget.js';
@@ -10,7 +10,8 @@ import { pendingAbsorptions } from '../breakdown/breakdown.js';
 import { calculateCombatOdds } from '../combat/strength.js';
 import { previewBarrage } from '../combat/combat.js';
 import { BARRAGE_TABLE_COLUMNS, FACILITY_TABLE_COLUMNS } from '../tables/ocs-4.3.js';
-import type { PieceRole, ProjectedBridge, ProjectedCombat, ProjectedPiece, ProjectedStack, RuleProjection } from './model.js';
+import type { PieceRole, ProjectedBridge, ProjectedCombat, ProjectedPiece, ProjectedStack, RuleProjection, RuleQueryResult } from './model.js';
+import { applyModeChange } from '../mode/mode.js';
 import { AIR_MISSION_LABELS, previewAirBarrage } from '../air/mission.js';
 import { activeAircraftLimit, airBaseLevel, aircraftName, isActiveAircraft, isAirBase,
   offMapAirfields, aircraftAtAirfield, isAircraft, isFighter, patrolZoneHexes, refitBlockedByZoc, refitCapacity } from '../air/aircraft.js';
@@ -143,6 +144,54 @@ const visibleEnemyTop = (state: GameState, enemy: readonly PieceState[]): readon
   const hog = enemy.find((piece) => isHedgehog(state, piece));
   const visible = [top, hog, base, plane].filter((piece): piece is PieceState => piece !== undefined);
   return visible.length > 0 ? visible : enemy.slice(0, 1);
+};
+
+/** The map as `viewerId` sees it (4.9a): its own pieces, and of each enemy stack on the map only what it may see. */
+const viewerPieces = (state: GameState, viewerId: PlayerId): readonly PieceState[] => {
+  const enemyStacks = new Map<string, PieceState[]>();
+  for (const piece of state.pieceState.pieces) {
+    if (piece.ownerId === viewerId || piece.location.kind !== 'ON_MAP') continue;
+    const key = pieceLocationKey(piece.location);
+    enemyStacks.set(key, [...(enemyStacks.get(key) ?? []), piece]);
+  }
+  const seen = new Set([...enemyStacks.values()].flatMap((stack) => visibleEnemyTop(state, stableSort(stack, (left, right) => right.stackOrder - left.stackOrder)))
+    .map(({ id }) => id));
+  return state.pieceState.pieces.filter((piece) => piece.ownerId === viewerId || seen.has(piece.id));
+};
+
+/** Enemy combat units the viewer sees that would lose trace supply (12.6) if one of its units stood in a hex. */
+export interface TraceCut {
+  /** Seen enemy combat units in trace now, as far as the viewer can tell. */
+  readonly tracedIds: readonly PieceId[];
+  /** Of those, the ones out of trace with the unit there. */
+  readonly cutIds: readonly PieceId[];
+}
+
+/**
+ * For planning a move that cuts the enemy's supply, from what the actor may know (4.9a): the enemy's trace is computed
+ * on the map with only the enemy pieces the actor sees (the top combat unit of each stack, and the like), so an enemy HQ
+ * hidden in a stack counts as absent. Own unit `pieceId` is put in `hexId` (in `mode` when given), everything else where
+ * it stands. Rules and phase are not checked: whether the unit can get there is the movement query's.
+ */
+export const queryTraceCut = (state: GameState, actorId: PlayerId, pieceId: PieceId, hexId: HexId, mode?: OcsMode): RuleQueryResult<TraceCut> => {
+  const own = state.pieceState.pieces.find((piece) => piece.id === pieceId);
+  if (!own || own.ownerId !== actorId || own.location.kind !== 'ON_MAP') {
+    return { allowed: false, value: { tracedIds: [], cutIds: [] }, reasons: [{ code: 'TRACE_CUT_UNIT', allowed: false, message: 'Choose one of your own units on the map.', rule: '12.6' }], facts: [], dependencies: [] };
+  }
+  const pieces = viewerPieces(state, actorId);
+  const seen: GameState = { ...state, pieceState: { ...state.pieceState, pieces } };
+  const enemy = pieces.filter((piece) => piece.ownerId !== actorId && piece.location.kind === 'ON_MAP' && isCombatUnit(seen, piece));
+  const traced = enemy.filter((piece) => pieceHasTrace(seen, piece));
+  const moved: GameState = { ...seen, pieceState: { ...seen.pieceState, pieces: pieces.map((piece) => (piece.id === pieceId
+    ? { ...(mode && mode !== piece.mode ? applyModeChange(piece, mode) : piece), location: { kind: 'ON_MAP', hexId } as PieceLocation } : piece)) } };
+  const cut = traced.filter((piece) => !pieceHasTrace(moved, piece));
+  return {
+    allowed: true,
+    value: { tracedIds: traced.map(({ id }) => id), cutIds: cut.map(({ id }) => id) },
+    reasons: [{ code: 'TRACE_CUT', allowed: true, message: `${cut.length} of ${traced.length} seen enemy units would lose trace.`, rule: '12.6' }],
+    facts: [],
+    dependencies: [{ aggregate: 'PIECE', revision: state.pieceState.revision, key: `supply:trace-cut:${pieceId}:${hexId}:${mode ?? ''}` }],
+  };
 };
 
 /** 13.8b: every river hexside of a hex holding one of the viewer's Engineer-Capable units. */

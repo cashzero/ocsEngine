@@ -1,0 +1,22 @@
+{
+  "record": "S2.3 of docs/roadmap/19-ai-strategy-improvement-wbs.md: continuation test of the defender's cutting moves, registered before any continuation is run",
+  "registeredAt": "2026-11-14",
+  "branches": "branches.jsonl: in the recorded attack games of 2100100-2100179, 2100200-2100279, 2100300-2100379 and 2100400-2100479 (2100000-2100079 is kept for S1's check), the first defender Movement Segment of Game Turns 2-7 of each game at whose first decision planCuts (defenderCut 2) plans at least one move; 239 branch points",
+  "variants": {
+    "none": "heuristic (this build's default: heuristic@86, whose defender forms no counterattack)",
+    "cut": "heuristic:cut-weights.json (defenderCut 2)"
+  },
+  "opponent": "heuristic@artifacts/ai-promotion/frozen-v86/dist as the attacker",
+  "dice": 2,
+  "horizons": "T0+1 and the end of the game",
+  "command": "node scripts/ai-continue.mjs --save <save> --at <at> --subject <subject> --variant none=heuristic --variant cut=heuristic:<cut-weights.json> --opponent heuristic@artifacts/ai-promotion/frozen-v86/dist --dice 2 --horizons 1 --out <branch>.jsonl",
+  "measures": "cut - none for the defender, averaged over a branch's dice, mean and SE over branch points (scripts/ai-continue-compare.py)",
+  "pass": [
+    "primary: attacker combat units out of trace at the end of the game, cut - none: mean - 2.1 x SE > 0",
+    "defender Kill - Loss (steps) at the end, cut - none: mean - 2.1 x SE > -1.5",
+    "VP margin (defender - attacker) at the end, cut - none: mean - 2.1 x SE > -1.5",
+    "every continuation finishes the game"
+  ],
+  "powerAnalysis": "E1 (docs/quality/evidence/ai-defender-assault-continuation-2026-10-18) had per-branch SDs of about 6.2 VP and 6.8 Kill - Loss over 3 dice; with about 240 branches and 2 dice the SE is about 0.45, so with no true difference each non-inferiority check passes with probability about 0.9 (VP: P(Z > -1.5/0.45 + 2.1) ~ 0.89). The primary measure's spread is not known beforehand; E1's attacker out-of-trace difference was 1.15 with no counterattack, which this design should detect if it is of that size.",
+  "onFailure": "bot-defender-counterattack stays open, the defender keeps forming no counterattack, the result goes to the user"
+}

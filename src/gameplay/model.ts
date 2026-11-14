@@ -22,6 +22,7 @@ import type {
   RailControlHex,
   RailMoveOptions,
   RailDestination,
+  TraceCut,
   SeaMoveOptions,
   GameAction,
   PendingDecisionKind,
@@ -336,6 +337,8 @@ export interface GameSession {
   readonly getHqThrow: (seatId: SeatId, hqId: PieceId, fromHexId: HexId) => RuleQueryResult<HqThrow>;
   /** Where SP arriving in `fromHexId` this turn could go by rail for the seat (13.6b); empty when not interactive. */
   readonly getRailArrivalReach: (seatId: SeatId, fromHexId: HexId) => RuleQueryResult<readonly RailDestination[]>;
+  /** Seen enemy units that would lose trace if the seat's unit stood in `hexId` (4.9a: as the seat sees the map); empty when not interactive. */
+  readonly getTraceCut: (seatId: SeatId, pieceId: PieceId, hexId: HexId, mode?: OcsMode) => RuleQueryResult<TraceCut>;
   /** Where each of the seat's dumps can feed one of its units (or, null, any unit) out of trace (12.6c); empty when not interactive. */
   readonly getFeedCoverage: (seatId: SeatId, pieceId: PieceId | null) => RuleQueryResult<readonly FeedSource[]>;
   /** Hexes within draw range (12.3a) of SP standing in `hexId`, for the seat; empty when not interactive. */

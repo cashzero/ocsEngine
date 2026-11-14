@@ -315,6 +315,8 @@ export interface RuleEngine {
   /** What a rail move from one Hex could carry, where it could detrain, and the Rail Cap left (13.3). */
   readonly queryRailMoveOptions: (state: GameState, actorId: PlayerId, fromHexId: HexId) => RuleQueryResult<import('../supply/rail-cap.js').RailMoveOptions>;
   /** Where SP arriving in `fromHexId` this turn could go by rail (13.6b, 13.3c, 13.3e), for placing arrivals; phase and Rail Cap are not checked. */
+  /** For planning a cutting move: seen enemy combat units that would lose trace if the actor's unit stood in a hex, on the map as the actor sees it (4.9a). */
+  readonly queryTraceCut: (state: GameState, actorId: PlayerId, pieceId: PieceId, hexId: HexId, mode?: OcsMode) => RuleQueryResult<import('./projection.js').TraceCut>;
   readonly queryRailArrivalReach: (state: GameState, actorId: PlayerId, fromHexId: HexId) => RuleQueryResult<readonly import('../supply/rail-cap.js').RailDestination[]>;
   /** What a shipment from a port (or, null, the reinforcement Box) could carry, which ports could take it, and the Sea Cap left (19.0f). */
   readonly querySeaMoveOptions: (state: GameState, actorId: PlayerId, fromHexId: HexId | null) => RuleQueryResult<import('../supply/sea-cap.js').SeaMoveOptions>;

@@ -22,7 +22,7 @@ import { queryRailControl } from './supply/supply.js';
 import { queryRailArrivalReach, queryRailMoveOptions, quartersText, railCapRemainingQuarters, railMoveQuarters } from './supply/rail-cap.js';
 import { querySeaMoveOptions, seaCapRemainingQuarters, seaMoveQuarters } from './supply/sea-cap.js';
 import { actionFamilies, barrageAvailability, candidateActions, kindMayBeLegal } from './query/candidates.js';
-import { projectRuleState } from './query/projection.js';
+import { projectRuleState, queryTraceCut } from './query/projection.js';
 import type {
   ActionFamily,
   CandidateRequest,
@@ -203,6 +203,7 @@ const engine: RuleEngine = {
   queryFuelCoverage,
   queryRailMoveOptions,
   queryRailArrivalReach,
+  queryTraceCut,
   querySeaMoveOptions,
   queryFuelPreview,
   queryAttackerSupplyOptions: (state, actorId, prior, pieceId) => {

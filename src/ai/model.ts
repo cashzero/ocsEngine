@@ -33,6 +33,8 @@ export interface BotActionAccess {
   readonly hqThrow: (hqId: PieceId, fromHexId: HexId) => HqThrow;
   /** Stations SP arriving in `fromHexId` this turn could reach by rail as the map stands (13.6b, 13.3c, 13.3e). */
   readonly railArrivalReach: (fromHexId: HexId) => readonly HexId[];
+  /** Seen enemy combat units that would lose trace if own unit `pieceId` stood in `hexId` (in `mode`), as the seat sees the map (4.9a). */
+  readonly traceCut: (pieceId: PieceId, hexId: HexId, mode?: OcsMode) => readonly PieceId[];
   /** Whether an action built by the policy is legal now, with the facts a player sees (odds, DRM, cost). */
   readonly explain: (action: GameAction) => DraftValidation;
   /** Hexes the seat's trace supply reaches for any unit (12.6), or for one unit with 12.6f and 13.1d applied. */

@@ -19,6 +19,7 @@ export const createBotActionAccess = (session: GameSession, seatId: SeatId, obse
   const projectedCache = new Map<string, readonly ReachableHex[]>();
   const throwCache = new Map<string, HqThrow>();
   const arrivalCache = new Map<string, readonly HexId[]>();
+  const cutCache = new Map<string, readonly PieceId[]>();
   return {
     families: () => families ??= session.getActionFamilies(seatId).filter(({ enabled }) => enabled).map(({ kind }) => kind),
     candidates: (kind, pieceId = null, budget = DEFAULT_CANDIDATE_BUDGET) => {
@@ -57,6 +58,15 @@ export const createBotActionAccess = (session: GameSession, seatId: SeatId, obse
         throwCache.set(key, value);
       }
       return value;
+    },
+    traceCut: (pieceId, hexId, mode) => {
+      const key = `${pieceId}|${hexId}|${mode ?? ''}`;
+      let cut = cutCache.get(key);
+      if (cut === undefined) {
+        cut = session.getTraceCut(seatId, pieceId, hexId, mode).value?.cutIds ?? [];
+        cutCache.set(key, cut);
+      }
+      return cut;
     },
     railArrivalReach: (fromHexId) => {
       let reach = arrivalCache.get(String(fromHexId));

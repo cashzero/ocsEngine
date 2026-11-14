@@ -87,6 +87,55 @@ const THEATER_MOVE_BUDGET = 1500;
 const THEATER_HQ_ARRIVE = 150;
 const THEATER_HQ_PULL = 30;
 
+/** defenderCut: hexes tried per step (each a rules query), cutting moves made per step, enemy stacks counted around a hex. */
+const CUT_TRIES = 30;
+const CUT_MOVES = 2;
+const CUT_ENEMY_RADIUS = 4;
+
+/**
+ * defenderCut (bot-defender-counterattack): the defender of an attack engagement sends up to CUT_MOVES units no garrison
+ * needs to hexes where their ZOC cuts the trace supply of at least w.defenderCut of the attacker's units, as far as it can
+ * see them (`traceCut`, 4.9a). A hex is tried when the unit reaches it in Combat Mode this step, stays in its own trace
+ * there, holds no enemy, has enemy stacks within CUT_ENEMY_RADIUS, and is no more exposed than the move scoring accepts
+ * (threat at most its and its stack's strength times w.exposureSupport). Hexes near more enemy stacks are tried first,
+ * no two adjacent (one unit's ZOC covers both), at most CUT_TRIES.
+ */
+const planCuts = (context: BotDecisionContext, situation: Situation, w: HeuristicWeights): { unitId: PieceId; hexId: HexId; cut: number }[] => {
+  const garrisons = new Set(heldDefenders(situation, w).map(({ unit }) => unit.piece.id));
+  const stacks = [...situation.enemy.values()].filter((stack) => stack.hasCombatUnit);
+  const movers = situation.own.filter((unit) => situation.isCombatUnit(unit) && unit.piece.role === 'COMBAT' && !garrisons.has(unit.piece.id)
+    && (unit.profile?.strength ?? 0) > 0
+    && (context.actions.movementRange(unit.piece.id).length > 0 || context.actions.candidates('PAY_FUEL', unit.piece.id).length > 0))
+    .sort((left, right) => String(left.piece.id).localeCompare(String(right.piece.id)));
+  const options = new Map<string, { unit: OwnUnit; around: number }>();
+  for (const unit of movers) {
+    const traced = new Set(context.actions.traceCoverage(unit.piece.id).hexIds.map(String));
+    const strength = Math.max(1, unit.profile?.strength ?? 1);
+    for (const { hexId } of context.actions.projectedReach(unit.piece.id, unit.hexId, 'COMBAT')) {
+      const hex = String(hexId);
+      if (options.has(hex) || !traced.has(hex) || situation.enemy.has(hexId)) continue;
+      const around = stacks.filter((stack) => hexesBetween(stack.hexId, hexId) <= CUT_ENEMY_RADIUS).length;
+      if (around === 0) continue;
+      const support = situation.friendlyAt(hexId).reduce((total, other) => total + (other.profile?.strength ?? 0), 0);
+      if (situation.threatAt(hexId) > (strength + support) * w.exposureSupport) continue;
+      options.set(hex, { unit, around });
+    }
+  }
+  const tried: { hexId: string; unit: OwnUnit; cut: number }[] = [];
+  for (const [hexId, { unit }] of [...options].sort((left, right) => right[1].around - left[1].around || left[0].localeCompare(right[0]))) {
+    if (tried.length >= CUT_TRIES) break;
+    if (tried.some((other) => hexesBetween(other.hexId, hexId) <= 1)) continue;
+    tried.push({ hexId, unit, cut: context.actions.traceCut(unit.piece.id, hexId as HexId, 'COMBAT').length });
+  }
+  const plan: { unitId: PieceId; hexId: HexId; cut: number }[] = [];
+  for (const { hexId, unit, cut } of tried.filter(({ cut: count }) => count >= w.defenderCut).sort((left, right) => right.cut - left.cut || left.hexId.localeCompare(right.hexId))) {
+    if (plan.length >= CUT_MOVES) break;
+    if (plan.some((other) => other.unitId === unit.piece.id || hexesBetween(other.hexId, hexId) <= 2)) continue;
+    plan.push({ unitId: unit.piece.id, hexId: hexId as HexId, cut });
+  }
+  return plan;
+};
+
 const theaterEfforts = (context: BotDecisionContext, situation: Situation, facts: BotGameFacts, w: HeuristicWeights, notes: StepNotes): MainEffort[] => {
   const garrisons = new Set(heldDefenders(situation, w).map(({ unit }) => unit.piece.id));
   const knowledge = knowledgeOf(facts);
@@ -211,6 +260,8 @@ interface StepNotes {
   stagerTargets?: ReadonlyMap<PieceId, Target>;
   /** theaterAllocation: Tokens last seen in each dump, so SP a placed truck unloads this step count for the units that move after it. */
   feedSeen?: Map<string, number>;
+  /** defenderCut: the hex each defender unit sent to cut the attacker's supply stops in this step (bot-defender-counterattack). */
+  cutPlan?: ReadonlyMap<PieceId, HexId>;
   /** The objective of each unit of a theater group: it may leave trace for its attack position there if it can eat (12.6c). */
   theaterObjectives?: ReadonlyMap<PieceId, HexId>;
   /** Cut-off groups that need a supply run this step, and the trucks already sent to each (heuristic@7). */
@@ -473,6 +524,8 @@ const scoreDestination = (
   // theaterAllocation: a member of a group stops where its truck unloads (13.2f: SP go only where a combat unit is).
   const stage = notes.stagers?.get(unit.piece.id);
   if (stage !== undefined) add('theater-stage', destination === stage ? THEATER_HQ_ARRIVE : -hexesBetween(destination, stage) * THEATER_HQ_PULL);
+  const cut = notes.cutPlan?.get(unit.piece.id);
+  if (cut !== undefined) add('defender-cut', destination === cut ? THEATER_HQ_ARRIVE : -hexesBetween(destination, cut) * THEATER_HQ_PULL);
   // Passing through or stopping on an objective takes its control.
   for (const hexId of path.slice(1)) {
     const objective = situation.objectives.find((entry) => entry.hexId === hexId);
@@ -1134,6 +1187,12 @@ const movementStep = (context: BotDecisionContext, situation: Situation, facts: 
       ? theaterEfforts(context, situation, facts, w, notes) : chooseEfforts(situation, w, w.assaultMaxEfforts);
     notes.effort = efforts[0] ?? null;
     notes.secondary = efforts.slice(1);
+    if (w.defenderCut > 0 && situation.defending && context.view.projection?.sequence.phase === 'MOVEMENT') {
+      const cuts = planCuts(context, situation, w);
+      notes.cutPlan = new Map(cuts.map(({ unitId, hexId }) => [unitId, hexId]));
+      notes.theaterUnits = new Set([...(notes.theaterUnits ?? []), ...notes.cutPlan.keys()]);
+      if (cuts.length > 0) debug?.(`CUT ${cuts.map(({ unitId, hexId, cut }) => `${unitId}>${hexId}#${cut}`).join(' ')}`);
+    }
   }
   const effort = notes.effort;
   if (effort) debug?.(`MAIN EFFORT ${effort.hexId} vs ${effort.defenders.toFixed(1)} with ${effort.unitIds.size} unit(s), lead ${effort.lead}`);
@@ -1176,7 +1235,9 @@ const movementStep = (context: BotDecisionContext, situation: Situation, facts: 
     // Mode first (5.4): Combat Mode near the enemy for strength and ZOC, Strat Mode far behind the lines.
     if (!notes.modeSet.has(id)) {
       notes.modeSet.add(id);
-      const wanted = unit.piece.role === 'COMBAT' ? combatUnitMode(situation, unit, target, w)
+      // defenderCut: a cutting unit moves in Combat Mode, as its reach was planned, and exerts its ZOC there (4.5).
+      const wanted = unit.piece.role === 'COMBAT' && notes.cutPlan?.has(id) ? 'COMBAT'
+        : unit.piece.role === 'COMBAT' ? combatUnitMode(situation, unit, target, w)
         // An HQ with the army stays in Combat Mode to rebuild units (13.5a); one far behind moves up in Move Mode.
         // A placed HQ moves in Move Mode, as its reach was planned; it throws in either (12.6e).
         : unit.piece.role === 'HQ' && notes.hqPlan?.has(id) && notes.hqPlan.get(id)!.moveTo !== unit.hexId ? 'MOVE'
