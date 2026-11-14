@@ -199,7 +199,7 @@
 
 ### 尚未升級的候選
 
-到達的 SP 只在這一回合鐵路能從入場格往前送時才偏好鐵路入場格（權重 `arrivalRailForward`，預設 0；規則查詢 `queryRailArrivalReach`，13.6b）。修正 `bot-sp-entry-rail`；開發局面推演中讓 heuristic@86 的兩個攻方補給 gate 對 heuristic@85 通過（後方剩餘 4.8 對 4.9、前線取用不到 1.3 對 1.5），目標點數只在 4 張地圖改變、都變好（[紀錄](../quality/evidence/ai-s1-development-2026-11-14/README.md)）。依 [改進 WBS](../roadmap/19-ai-strategy-improvement-wbs.md) 等 S4 的升級流程。
+到達的 SP 只在這一回合鐵路能從入場格往前送時才偏好鐵路入場格（權重 `arrivalRailForward`，預設 0；規則查詢 `queryRailArrivalReach`，13.6b）。修正 `bot-sp-entry-rail`；開發局面推演中讓 heuristic@86 的兩個攻方補給 gate 對 heuristic@85 通過（後方剩餘 4.8 對 4.9、前線取用不到 1.3 對 1.5），目標點數只在 4 張地圖改變、都變好（[紀錄](../quality/evidence/ai-s1-development-2026-11-14/README.md)）。在沒用於開發的檢查局面上兩個 gate 仍未通過，並在一張地圖適得其反（鐵路把 SP 送到前線取用不到的車站，[S1 檢查](../quality/evidence/ai-s1-check-2026-11-14/README.md)）；S1 未完成，未進入升級流程。
 
 最後一位玩家的最後回合，攻擊未持有的 VP 點、且承受全部 option 損失後仍有攻擊者存活時，候選 v77 改選損失以保留前進資格；其餘情況沿用 v75。候選 patch 以只供攻擊方查看的剩餘步數支援這項判斷，前進仍受既有補給限制。v77 以 v75 為基底，不含 v78 的卡車後勤與 v79 的補給鏈，尚未完成獨立 80 場驗收；[量測結果與證據](evaluation.md#候選策略量測)。
 
