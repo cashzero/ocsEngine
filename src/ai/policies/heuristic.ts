@@ -175,10 +175,11 @@ const theaterEfforts = (context: BotDecisionContext, situation: Situation, facts
     efforts.push(next);
     for (const unitId of next.unitIds) used.add(unitId);
   }
-  debug?.(`THEATER ${groups.map(({ hexId, unitIds, chance, turn }) => `${hexId}:${unitIds.length}u p${chance.toFixed(2)} t${turn}`).join(' ')}`
+  debug?.(`THEATER ${groups.map(({ hexId, unitIds, chance, turn, column }) => `${hexId}:${unitIds.length}u p${chance.toFixed(2)} t${turn}${column ? ` c${column.index}${column.line}` : ''}`).join(' ')}`
     + hqs.map(({ hqId, moveTo, hexId, objective, turn }) => ` HQ ${hqId}>${moveTo}>${hexId}@${objective}/t${turn}`).join('')
     + trucks.map(({ truckId, drop, objective, tokens, stagerId }) => ` TRUCK ${truckId}>${drop}@${objective}#${tokens}T/${stagerId}`).join('')
-    + bridges.map(({ hqId, hexId, tokens }) => ` BRIDGE ${hqId}>${hexId}#${tokens}T`).join(''));
+    + bridges.map(({ hqId, hexId, tokens }) => ` BRIDGE ${hqId}>${hexId}#${tokens}T`).join('')
+    + plan.groups.filter((group) => !groups.includes(group)).map(({ hexId, unitIds, chance, turn }) => ` drop=${hexId}/${unitIds.length}u/p${chance.toFixed(2)}/t${turn}`).join(''));
   return efforts;
 };
 
@@ -565,8 +566,13 @@ const scoreDestination = (
   if (unit.piece.role === 'COMBAT') {
     // Strat Mode units defend badly and lose their ZOC: keep them well away from the enemy (5.8).
     if (unit.piece.mode === 'STRAT' && situation.nearestEnemy(destination).distance <= w.stratSafeDistance) add('strat-near-enemy', -w.stratNearEnemy);
+    // approachAttack (error list E6): a unit of no theater group whose target is a defended hex closes in beside it this step
+    // without the crowding and exposure penalties that held such units two or three hexes short.
+    const approaching = w.approachAttack > 0 && target !== undefined && ['ASSAULT', 'HUNT', 'CAPTURE'].includes(target.purpose)
+      && (situation.enemy.get(target.hexId)?.hasCombatUnit ?? false) && hexesBetween(destination, target.hexId) === 1
+      && !(notes.theaterObjectives?.has(unit.piece.id) ?? false);
     // One stack per hex does the job; more units in the same hex only make a better barrage target.
-    if (path.length > 1) add('crowding', -incoming * w.crowding);
+    if (path.length > 1 && !approaching) add('crowding', -incoming * w.crowding);
     // The assault group gathers around the defended objective instead of shying away from it.
     const assaulting = target?.purpose === 'ASSAULT' && hexesBetween(destination, target.hexId) === 1;
     if (assaulting) add('assault-position', w.assaultPosition);
@@ -591,7 +597,7 @@ const scoreDestination = (
       // Close in only where an attack has a chance; otherwise keep a hex away.
       add('contact', (strength + support) >= enemy.strength * w.contactRatio && unit.piece.mode === 'COMBAT' ? w.contactGood : -w.contactBad);
     }
-    add('exposure', -Math.max(0, threat - (strength + support) * w.exposureSupport));
+    if (!approaching) add('exposure', -Math.max(0, threat - (strength + support) * w.exposureSupport));
     // Out of trace supply a unit must eat SP or suffer attrition (12.8): stay inside, except to grab VP at the end.
     // Beyond trace a unit can still eat from SP close by (12.3a, a dump or a loaded truck), if that SP is not already
     // promised to other units ending out of trace this step: only unfed ground is dangerous.

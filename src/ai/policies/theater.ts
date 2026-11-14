@@ -67,6 +67,8 @@ export interface TheaterGroup {
   readonly probability: number;
   /** The probability, times the next-turn discount for a turn 2 group. */
   readonly chance: number;
+  /** Combat Table column the members would attack at (the defender's best terrain line), or null for an empty objective. */
+  readonly column: { readonly line: CombatLine; readonly index: number } | null;
   readonly value: number;
 }
 
@@ -372,6 +374,7 @@ export const allocateTheater = (situation: Situation, access: BotActionAccess, e
   };
   const points = new Map(objectives.map(({ hexId, points: vp }) => [hexId, vp]));
   const cache = new Map<string, number>();
+  const columns = new Map<string, { line: CombatLine; index: number }>();
   const probability = (hexId: HexId, unitIds: readonly PieceId[]): number => {
     if (unitIds.length === 0) return 0;
     const stack = situation.enemy.get(hexId);
@@ -383,6 +386,7 @@ export const allocateTheater = (situation: Situation, access: BotActionAccess, e
     const options = planned.options.length > 0 ? planned.options : [{ line: 'OPEN' as CombatLine, strengths: [] }];
     const chosen = options.map((option) => ({ line: option.line, column: columnIndex(option.strengths.reduce((sum, { strength }) => sum + strength, 0), stack.strength, COMBAT_TABLE_COLUMNS[option.line]) }))
       .reduce((low, next) => (next.column < low.column ? next : low));
+    columns.set(key, { line: chosen.line, index: chosen.column });
     const ownRating = Math.max(...unitIds.map((id) => byId.get(id)?.profile?.actionRating ?? 0));
     const seen = stack.pieces.filter((piece) => piece.role === 'COMBAT').map(rating);
     const value = captureProbability({ column: chosen.column, drm: ownRating - (seen.length > 0 ? Math.max(...seen) : 2), defenderCanPay: true, hedgehogLevel: planned.hedgehogLevel, line: chosen.line });
@@ -457,6 +461,7 @@ export const allocateTheater = (situation: Situation, access: BotActionAccess, e
     return [...groups].filter(([, members]) => members.length > 0).map(([hexId, unitIds]) => ({
       hexId, defended: blocked(hexId), turn: turnOf(hexId, unitIds), unitIds,
       probability: probability(hexId, unitIds), chance: chanceOf(hexId, unitIds), value: valueOf(hexId, unitIds),
+      column: columns.get(`${hexId}|${[...unitIds].sort().join('+')}`) ?? null,
     })).sort((left, right) => right.value - left.value || String(left.hexId).localeCompare(String(right.hexId)));
   };
 

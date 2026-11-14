@@ -1,0 +1,20 @@
+{
+  "record": "S3.2 of docs/roadmap/19-ai-strategy-improvement-wbs.md: is error list E6 (attacking units stopping two or three hexes short of a defended target they could reach) an error under heuristic@86? Registered before any continuation is run",
+  "registeredAt": "2026-11-15",
+  "branches": "branches.jsonl: the attacker's first Movement decision of Game Turn 2 in every recorded game of 2100400-2100479 and 2100100-2100179 (160)",
+  "variants": {
+    "none": "heuristic (this build's default: heuristic@86)",
+    "approach": "heuristic:approach-weights.json (approachAttack 1: a unit of no theater group closes in beside its defended ASSAULT, HUNT or CAPTURE target without the crowding and exposure penalties)"
+  },
+  "opponent": "heuristic@artifacts/ai-promotion/frozen-v86/dist as the defender",
+  "dice": 2,
+  "horizons": "T0+1 and the end of the game",
+  "command": "node scripts/ai-continue.mjs --save <save> --at <at> --subject <subject> --variant none=heuristic --variant approach=heuristic:<approach-weights.json> --opponent heuristic@artifacts/ai-promotion/frozen-v86/dist --dice 2 --horizons 1 --out <branch>.jsonl",
+  "measures": "approach - none for the attacker, dice averaged per branch, mean and SE over branch points (scripts/ai-continue-compare.py): margin.vp and margin.killLoss at the end",
+  "decision": [
+    "E6 is an error, and approachAttack goes on to the S3 check, if VP margin or Kill - Loss has mean - 2.1 x SE > 0 and the other has mean - 2.1 x SE > -1.5",
+    "E6 is not an error if neither improves so; approachAttack is then removed and recorded as tried and not adopted",
+    "every continuation finishes the game"
+  ],
+  "powerAnalysis": "E5's continuations (27 positions x 4 dice) had per-position SDs of about 4 for Kill - Loss and 2.5 for VP; with 160 branches and 2 dice the SE is about 0.4 and 0.25, so a true improvement of 1 step Kill - Loss or 0.6 VP is found with probability about 0.8."
+}
