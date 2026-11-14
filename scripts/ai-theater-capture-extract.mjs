@@ -6,7 +6,8 @@
 //
 //   node scripts/ai-theater-capture-extract.mjs <dist> <out.jsonl> <dir-with-saves-and-summary.json>...
 //
-// Games are identified by initial hash, final hash and accepted actions; a trajectory seen before is skipped. Every
+// Games are identified by initial hash, final hash and accepted actions; a trajectory seen before is skipped. Rollout
+// summaries name no map seed: there the two seat-swapped games of a seed (matches 2k, 2k + 1) form the map group. Every
 // recorded action is replayed through the rule engine; each game must reach its saved final state hash.
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
@@ -40,11 +41,11 @@ for (const dir of dirs) {
     const open = () => ({ key: keyOf(state.sequence), gameTurn: state.sequence.gameTurn, playerTurnIndex: state.sequence.playerTurnIndex, actorId: state.sequence.phasingPlayerId, startHolders: new Map([...objectives.keys()].map((hexId) => [hexId, holder(state, hexId)])), attacks: new Map(), gained: new Set() });
     const close = (end) => {
       for (const [hexId, attack] of turn.attacks) {
-        rows.push({ kind: 'ATTACK', trajectory, game: `${dir}/match-${record.match}`, mapSeed: record.seeds.map, gameTurn: turn.gameTurn, playerTurnIndex: turn.playerTurnIndex, actorId: turn.actorId, hexId, points: objectives.get(hexId), ...attack, captured: holder(end, hexId) === turn.actorId });
+        rows.push({ kind: 'ATTACK', trajectory, game: `${dir}/match-${record.match}`, mapSeed: record.seeds?.map ?? Math.floor(record.match / 2), gameTurn: turn.gameTurn, playerTurnIndex: turn.playerTurnIndex, actorId: turn.actorId, hexId, points: objectives.get(hexId), ...attack, captured: holder(end, hexId) === turn.actorId });
       }
       for (const hexId of turn.gained) {
         if (turn.attacks.has(hexId)) continue;
-        rows.push({ kind: 'GAINED_WITHOUT_ATTACK', trajectory, game: `${dir}/match-${record.match}`, mapSeed: record.seeds.map, gameTurn: turn.gameTurn, playerTurnIndex: turn.playerTurnIndex, actorId: turn.actorId, hexId, points: objectives.get(hexId), captured: holder(end, hexId) === turn.actorId });
+        rows.push({ kind: 'GAINED_WITHOUT_ATTACK', trajectory, game: `${dir}/match-${record.match}`, mapSeed: record.seeds?.map ?? Math.floor(record.match / 2), gameTurn: turn.gameTurn, playerTurnIndex: turn.playerTurnIndex, actorId: turn.actorId, hexId, points: objectives.get(hexId), captured: holder(end, hexId) === turn.actorId });
       }
     };
     for (const [index, action] of save.acceptedActions.entries()) {

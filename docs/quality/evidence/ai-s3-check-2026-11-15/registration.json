@@ -1,0 +1,25 @@
+{
+  "record": "S3.3 check of docs/roadmap/19-ai-strategy-improvement-wbs.md, registered before the check rollouts are run",
+  "registeredAt": "2026-11-15",
+  "candidate": {
+    "label": "S3",
+    "policy": "heuristic@86 with s3-weights.json (approachAttack 1)"
+  },
+  "arms": {
+    "S3": "s3-weights.json",
+    "v86": {
+      "theaterAllocation": 1
+    }
+  },
+  "positions": "the 40 maps of 2100000-2100079, the even-numbered match of each seed, from the attacker's first Movement decision of Game Turn 1 (artifacts/ai-theater-allocation-games/attack-western); read before only by the P11.8 one-turn observation and its plan replay, not by any S1-S3 development",
+  "rollout": "node scripts/ai-theater-rollout.mjs <check dir> --weights <arm> --starts 1 --through 6 --save-dir <arm>/saves; heuristic (heuristic@86) defending",
+  "pass": [
+    "objective points gained over six attacker turns, S3 - v86 per map: lower end of the 95% t interval > -0.75",
+    "Kill - Loss of the attacker over the rollout (defender steps lost minus attacker steps lost), S3 - v86 per map: lower end > -1.5",
+    "strength of own combat units beside defended objectives the attacker does not hold, at the start of its Combat Segments, S3 - v86 per map: mean > 0",
+    "regular attacks at column index 6 or more, per attacker turn, S3 - v86 per map: mean > 0",
+    "every rollout reaches the end of the attacker's sixth player turn"
+  ],
+  "measures": "objective points and steps from ai-theater-rollout.mjs rows; strength and attacks from s3-concentration.mjs (in docs/quality/evidence/ai-s3-e6-approach-2026-11-15)",
+  "onFailure": "approachAttack is not carried to S4; the result goes to the user"
+}
