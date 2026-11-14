@@ -6,7 +6,9 @@
 // Per side role (attacker / defender, or allied / axis in a meeting engagement), averaged over every player turn from Game
 // Turn 3 on: Rail Cap used of what was given; SP loaded per on-map truck point; trucks that did nothing in the Movement
 // Segment although a rear dump (>= 6 hexes from the enemy, not a garrison stock) still held a full load when it ended;
-// rear SP left when it ended; loads or rail moves taken from garrison stocks (should be 0); arriving trucks placed late;
+// rear SP left when it ended that no front unit can draw (the gate's measure: a front unit is a combat unit other than an
+// HQ within 4 hexes of an enemy combat unit, drawing directly or through an HQ throw, 12.3a-b), and all rear SP left
+// (reported); loads or rail moves taken from garrison stocks (should be 0); arriving trucks placed late;
 // SP near the enemy (<= 4 hexes) at its start; and the attacker's result. Writes logistics.json.
 // Each role is split by policy (from summary.json) when the two sides played different policies.
 //
@@ -38,6 +40,7 @@ const FROM_TURN = 3;
 const LOAD_TOKENS = 8;
 const RAIL_GAIN = 3;
 const RAIL_SAFE = 3;
+const FRONT_HEXES = 4;
 
 const sides = {};
 const result = { games: 0, attackerWins: 0, defenderWins: 0, draws: 0 };
@@ -69,18 +72,28 @@ for (const [dir, isBaseline] of [...dirs.map((dir) => [dir, false]), ...baseline
     let turnKey = null;
     let acted = new Set();
     let snapshot = null;
-    /** Rear SP of `playerId` in `current`: Tokens in dumps at least 6 hexes from enemy combat units, and whether one holds a load. */
+    const isHq = (piece) => String(definitions.get(piece.definitionId)?.categoryDefinitionId).endsWith(':hq');
+    /** Dumps of `playerId` some front unit can draw from (as ai-fuel-study.mjs counts them). */
+    const drawnByFront = (current, playerId) => {
+      const enemyAll = current.pieceState.pieces.filter((piece) => piece.ownerId !== playerId && piece.location.kind === 'ON_MAP' && m.isOnMapCombatUnit(current, piece));
+      const front = new Set(current.pieceState.pieces.filter((piece) => piece.ownerId === playerId && piece.location.kind === 'ON_MAP' && m.isOnMapCombatUnit(current, piece) && !isHq(piece)
+        && enemyAll.some((other) => m.hexDistanceBetween(other.location.hexId, piece.location.hexId) <= FRONT_HEXES)).map((piece) => String(piece.location.hexId)));
+      return new Set((m.ruleEngine.queryFeedCoverage(current, playerId, null).value ?? []).filter((feed) => feed.hexIds.some((hexId) => front.has(String(hexId)))).map(({ dumpId }) => dumpId));
+    };
+    /** Rear SP of `playerId` in `current`: Tokens in dumps at least 6 hexes from enemy combat units (those no front unit draws, and all), and whether one holds a load. */
     const rearOf = (current, playerId) => {
       const enemy = current.pieceState.pieces.filter((piece) => piece.ownerId !== playerId && m.isOnMapCombatUnit(current, piece) && !/garrison/u.test(String(piece.definitionId)));
-      let tokens = 0; let load = false; const dumps = [];
+      const drawn = drawnByFront(current, playerId);
+      let tokens = 0; let all = 0; let load = false; const dumps = [];
       for (const piece of current.pieceState.pieces) {
         if (piece.ownerId !== playerId || piece.location.kind !== 'ON_MAP' || !isDump(piece) || !(piece.resourceQuantity > 0) || isGarrisonStock(piece.id)) continue;
         const distance = Math.min(99, ...enemy.map((other) => m.hexDistanceBetween(other.location.hexId, piece.location.hexId)));
         if (distance < 6) continue;
-        tokens += piece.resourceQuantity;
+        all += piece.resourceQuantity;
+        if (!drawn.has(piece.id)) tokens += piece.resourceQuantity;
         if (piece.resourceQuantity >= LOAD_TOKENS) { load = true; dumps.push(`${piece.location.hexId}:${piece.resourceQuantity}T`); }
       }
-      return { tokens, load, dumps };
+      return { tokens, all, load, dumps };
     };
     const closeTurn = (current) => {
       if (!snapshot) return;
@@ -99,6 +112,7 @@ for (const [dir, isBaseline] of [...dirs.map((dir) => [dir, false]), ...baseline
         }
       }
       bump(role(playerId), 'rearLeftSp', rear.tokens / 4);
+      bump(role(playerId), 'rearLeftAllSp', rear.all / 4);
       bump(role(playerId), 'truckTurns', trucks.length);
       snapshot = null;
     };
@@ -185,6 +199,7 @@ const summary = Object.fromEntries(Object.entries(sides).map(([r, s]) => [r, {
   nearSp: (s.nearSp ?? 0) / (s.turns || 1),
   farSp: (s.farSp ?? 0) / (s.turns || 1),
   rearLeftSp: (s.rearLeftSp ?? 0) / (s.turns || 1),
+  rearLeftAllSp: (s.rearLeftAllSp ?? 0) / (s.turns || 1),
 }]));
 mkdirSync(out, { recursive: true });
 writeFileSync(join(out, 'logistics.json'), JSON.stringify({ dirs, result, sides: summary }, null, 2));
@@ -192,7 +207,7 @@ console.log(`${result.games} games; ${Object.entries(result).filter(([key]) => k
 for (const [r, s] of Object.entries(summary)) {
   const pct = (value) => value === null ? '-' : `${Math.round(value * 100)}%`;
   console.log(`${r.padEnd(9)} rail used ${pct(s.railCapUsed)} (of SP railable forward ${pct(s.railUsedOfRailable)} in ${s.railablePhases} phases) · truck SP/point/turn ${s.truckSpPerPointTurn?.toFixed(2) ?? '-'} · idle trucks ${pct(s.idleTruckShare)} (empty ${pct(s.idleEmptyTruckShare)})`
-    + ` · stock loads ${s.stockLoads}, stock rails ${s.stockRails} · trucks arrived ${s.trucksArrived} (late ${s.trucksLate}) · SP near ${s.nearSp.toFixed(1)}, rear at start ${s.farSp.toFixed(1)}, rear left after moving ${s.rearLeftSp.toFixed(1)}`);
+    + ` · stock loads ${s.stockLoads}, stock rails ${s.stockRails} · trucks arrived ${s.trucksArrived} (late ${s.trucksLate}) · SP near ${s.nearSp.toFixed(1)}, rear at start ${s.farSp.toFixed(1)}, rear left after moving ${s.rearLeftAllSp.toFixed(1)}, of which no front unit can draw ${s.rearLeftSp.toFixed(1)}`);
 }
 
 if (gatePolicy !== null) {
@@ -201,7 +216,7 @@ if (gatePolicy !== null) {
   if (!candidate || !baseline) { console.log(`GATE ERROR: need attacker games of ${gatePolicy} and the standard's self-play on the same match indexes (--baseline)`); process.exit(1); }
   const checks = [
     ['Rail Cap >= 70% of SP railable forward', candidate.railUsedOfRailable === null || candidate.railUsedOfRailable >= 0.7, candidate.railUsedOfRailable === null ? 'no railable phase' : candidate.railUsedOfRailable.toFixed(2)],
-    ['rear SP left after moving <= the standard on the same seeds', candidate.rearLeftSp <= baseline.rearLeftSp, `${candidate.rearLeftSp.toFixed(1)} vs ${baseline.rearLeftSp.toFixed(1)}`],
+    ['rear SP left after moving that no front unit can draw <= the standard on the same seeds', candidate.rearLeftSp <= baseline.rearLeftSp, `${candidate.rearLeftSp.toFixed(1)} vs ${baseline.rearLeftSp.toFixed(1)}`],
     ['no garrison stock loaded or railed', candidate.stockLoads === 0 && candidate.stockRails === 0, `${candidate.stockLoads}/${candidate.stockRails}`],
   ];
   for (const [name, pass, value] of checks) console.log(`GATE ${pass ? 'PASS' : 'FAIL'} ${name}: ${value}`);

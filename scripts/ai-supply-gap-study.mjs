@@ -195,7 +195,8 @@ async function record() {
         'hq-moved': false,
         'idle-truck': hexId !== null && idleEmpty.some((id) => segment.reach.get(id)?.has(hexId)),
       };
-      const pile = { id: String(piece.id).split(':').slice(-2).join(':'), hexId, enemyDistance: hexId === null ? null : distanceTo(enemyField, hexId), flags, stranded: 0, rear: 0 };
+      const pile = { id: String(piece.id).split(':').slice(-2).join(':'), hexId, enemyDistance: hexId === null ? null : distanceTo(enemyField, hexId),
+        frontDistance: hexId === null || front.size === 0 ? null : Math.min(...[...front].map((frontHex) => m.hexDistanceBetween(frontHex, hexId))), flags, stranded: 0, rear: 0 };
       piles.set(piece.id, pile);
       return pile;
     };

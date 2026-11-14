@@ -100,11 +100,14 @@ const theaterEfforts = (context: BotDecisionContext, situation: Situation, facts
     .slice(0, reliefHexes.length).map(({ piece }) => piece.id);
   const plan = allocateTheater(situation, context.actions, new Set([...garrisons, ...reserved]), (piece) => knowledge.profile(piece)?.actionRating ?? 0, discount,
     (unit, hexId, defended) => combatUnitMode(situation, unit, { hexId, purpose: defended ? 'ASSAULT' : 'CAPTURE' }, w),
-    (truck) => truckCapacityTokens(facts, truck));
+    (truck) => truckCapacityTokens(facts, truck), w.hqBridge > 0);
   const groups = plan.groups.filter(({ chance }) => chance >= THEATER_MIN_PROBABILITY);
   const hqs = plan.hqs.filter(({ objective }) => groups.some(({ hexId }) => hexId === objective));
   const trucks = plan.trucks.filter(({ objective }) => groups.some(({ hexId }) => hexId === objective));
-  notes.hqPlan = new Map(hqs.map((placement) => [placement.hqId, placement]));
+  // hqBridge: an HQ no group uses goes where it draws SP no front unit can draw and throws it on to the front.
+  const bridges = plan.bridges.filter(({ hqId }) => !hqs.some((placement) => placement.hqId === hqId));
+  notes.hqPlan = new Map([...hqs.map((placement) => [placement.hqId, placement] as const),
+    ...bridges.map(({ hqId, hexId }) => [hqId, { hqId, objective: hexId, turn: 1, hexId, moveTo: hexId } as HqPlacement] as const)]);
   notes.truckPlan = new Map(trucks.map((placement) => [placement.truckId, placement]));
   notes.stagers = new Map(trucks.map(({ stagerId, drop }) => [stagerId, drop]));
   notes.theaterObjectives = new Map(groups.flatMap(({ hexId, unitIds }) => unitIds.map((id) => [id, hexId] as const)));
@@ -125,7 +128,8 @@ const theaterEfforts = (context: BotDecisionContext, situation: Situation, facts
   }
   debug?.(`THEATER ${groups.map(({ hexId, unitIds, chance, turn }) => `${hexId}:${unitIds.length}u p${chance.toFixed(2)} t${turn}`).join(' ')}`
     + hqs.map(({ hqId, moveTo, hexId, objective, turn }) => ` HQ ${hqId}>${moveTo}>${hexId}@${objective}/t${turn}`).join('')
-    + trucks.map(({ truckId, drop, objective, tokens, stagerId }) => ` TRUCK ${truckId}>${drop}@${objective}#${tokens}T/${stagerId}`).join(''));
+    + trucks.map(({ truckId, drop, objective, tokens, stagerId }) => ` TRUCK ${truckId}>${drop}@${objective}#${tokens}T/${stagerId}`).join('')
+    + bridges.map(({ hqId, hexId, tokens }) => ` BRIDGE ${hqId}>${hexId}#${tokens}T`).join(''));
   return efforts;
 };
 
@@ -1599,10 +1603,19 @@ const chooseRebuild = (context: BotDecisionContext, situation: Situation, facts:
     [{ term: 'rebuild-vp', value: best.vp }, { term: 'rebuild-strength', value: best.strength }]) : null;
 };
 
-/** A station that SP arriving in `hexId` could reach by rail this turn, at least RAIL_MIN_GAIN_HEXES nearer the front and safe from the enemy. */
-const railForwardFromArrival = (context: BotDecisionContext, situation: Situation, hexId: HexId, front: HexId | null): boolean =>
-  front !== null && context.actions.railArrivalReach(hexId).some((station) => situation.nearestEnemy(station).distance >= RAIL_SAFE_DISTANCE
-    && hexesBetween(hexId, front) - hexesBetween(station, front) >= RAIL_MIN_GAIN_HEXES);
+/**
+ * A station that SP arriving in `hexId` could reach by rail this turn, at least RAIL_MIN_GAIN_HEXES nearer the front, safe
+ * from the enemy, and within draw range (12.3a) of a combat unit near the enemy or of an HQ that throws it on (12.3b): SP
+ * railed where neither draws it stay out of the army's reach (S1 check, 2100112).
+ */
+const railForwardFromArrival = (context: BotDecisionContext, situation: Situation, hexId: HexId, front: HexId | null): boolean => {
+  if (front === null) return false;
+  const drawers = situation.own.filter((unit) => unit.piece.role === 'HQ'
+    || (situation.isCombatUnit(unit) && situation.nearestEnemy(unit.hexId).distance <= HQ_COVER_FRONT_HEXES)).map(({ hexId: at }) => String(at));
+  return context.actions.railArrivalReach(hexId).some((station) => situation.nearestEnemy(station).distance >= RAIL_SAFE_DISTANCE
+    && hexesBetween(hexId, front) - hexesBetween(station, front) >= RAIL_MIN_GAIN_HEXES
+    && drawers.some((at) => context.actions.drawReach(station).has(at)));
+};
 
 const reinforcementStep = (context: BotDecisionContext, situation: Situation, facts: BotGameFacts, w: HeuristicWeights): BotDecision | null => {
   const rebuild = chooseRebuild(context, situation, facts);
