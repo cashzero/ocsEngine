@@ -19,7 +19,7 @@ import { rebuildFacts } from './replacement/forecast.js';
 import { queryFuelCoverage, queryFuelPreview } from './supply/fuel.js';
 import { queryTransportOptions } from './supply/transport.js';
 import { queryRailControl } from './supply/supply.js';
-import { queryRailMoveOptions, quartersText, railCapRemainingQuarters, railMoveQuarters } from './supply/rail-cap.js';
+import { queryRailArrivalReach, queryRailMoveOptions, quartersText, railCapRemainingQuarters, railMoveQuarters } from './supply/rail-cap.js';
 import { querySeaMoveOptions, seaCapRemainingQuarters, seaMoveQuarters } from './supply/sea-cap.js';
 import { actionFamilies, barrageAvailability, candidateActions, kindMayBeLegal } from './query/candidates.js';
 import { projectRuleState } from './query/projection.js';
@@ -202,6 +202,7 @@ const engine: RuleEngine = {
   queryRailControl,
   queryFuelCoverage,
   queryRailMoveOptions,
+  queryRailArrivalReach,
   querySeaMoveOptions,
   queryFuelPreview,
   queryAttackerSupplyOptions: (state, actorId, prior, pieceId) => {

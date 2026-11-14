@@ -5,7 +5,7 @@
 //   node scripts/ai-theater-hq-follow.mjs --summarize <file.jsonl> [...]
 //
 // Replays the games where the theater policy (heuristic with --weights) attacks. At the attacker's first Movement
-// decision of each player turn it plans the step as the bot does and reads the allocation's defended groups (with
+// decision of each player turn it plans the step as the bot does and reads the allocation's defended groups (with the planned chance and
 // their step) and HQ placements from the THEATER debug line. When the attacker's Movement segment ends it records
 // where each placed HQ stands and, for this-step groups, which members stand beside the objective and inside their
 // trace coverage; over the player turn, regular attacks declared and the objectives held at its end. A next-step group
@@ -85,12 +85,13 @@ const plan = (facts, state, attackerId) => {
   const notes = context.memory.notes.get('heuristic');
   const theaterLine = lines.find((line) => line.includes(' THEATER')) ?? '';
   const turns = new Map([...theaterLine.matchAll(/ (-?\d+,-?\d+):\d+u p[\d.]+ t(\d)/g)].map(([, hexId, turn]) => [hexId, Number(turn)]));
+  const chances = new Map([...theaterLine.matchAll(/ (-?\d+,-?\d+):\d+u p([\d.]+) t\d/g)].map(([, hexId, chance]) => [hexId, Number(chance)]));
   const hqs = [...theaterLine.matchAll(/ HQ (\S+)>(-?\d+,-?\d+)>(-?\d+,-?\d+)@(-?\d+,-?\d+)\/t(\d)/g)]
     .map(([, hqId, moveTo, hexId, objective, turn]) => ({ hqId, moveTo, hexId, objective, turn: Number(turn) }));
   const trucks = [...theaterLine.matchAll(/ TRUCK (\S+)>(-?\d+,-?\d+)@(-?\d+,-?\d+)(?:#(\d+)T\/(\S+))?/g)]
     .map(([, truckId, drop, objective, tokens, stagerId]) => ({ truckId, drop, objective, tokens: tokens === undefined ? null : Number(tokens), stagerId: stagerId ?? null }));
   const efforts = [notes?.effort, ...(notes?.secondary ?? [])].filter((effort) => effort && turns.has(String(effort.hexId)));
-  return { turns, hqs, trucks, groups: efforts.map(({ hexId, unitIds }) => ({ objective: String(hexId), turn: turns.get(String(hexId)), unitIds: [...unitIds] })) };
+  return { turns, hqs, trucks, groups: efforts.map(({ hexId, unitIds }) => ({ objective: String(hexId), turn: turns.get(String(hexId)), chance: chances.get(String(hexId)) ?? null, unitIds: [...unitIds] })) };
 };
 
 const counts = { games: 0, turns: 0, skipped: 0 };

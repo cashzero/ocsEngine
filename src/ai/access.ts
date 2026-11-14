@@ -1,4 +1,4 @@
-import type { PieceId } from '../core/index.js';
+import type { HexId, PieceId } from '../core/index.js';
 import type { GameSession, SeatId } from '../gameplay/index.js';
 import type { CandidateResult, FeedSource, GameAction, HqThrow, PlannedAttack, ReachableHex, TraceCoverage } from '../rules/index.js';
 import type { BotActionAccess } from './model.js';
@@ -18,6 +18,7 @@ export const createBotActionAccess = (session: GameSession, seatId: SeatId, obse
   const attackCache = new Map<string, PlannedAttack>();
   const projectedCache = new Map<string, readonly ReachableHex[]>();
   const throwCache = new Map<string, HqThrow>();
+  const arrivalCache = new Map<string, readonly HexId[]>();
   return {
     families: () => families ??= session.getActionFamilies(seatId).filter(({ enabled }) => enabled).map(({ kind }) => kind),
     candidates: (kind, pieceId = null, budget = DEFAULT_CANDIDATE_BUDGET) => {
@@ -56,6 +57,14 @@ export const createBotActionAccess = (session: GameSession, seatId: SeatId, obse
         throwCache.set(key, value);
       }
       return value;
+    },
+    railArrivalReach: (fromHexId) => {
+      let reach = arrivalCache.get(String(fromHexId));
+      if (reach === undefined) {
+        reach = (session.getRailArrivalReach(seatId, fromHexId).value ?? []).map(({ hexId }) => hexId);
+        arrivalCache.set(String(fromHexId), reach);
+      }
+      return reach;
     },
     explain: (action) => session.validateDraft(session.createDraft(seatId, action)),
     traceCoverage: (pieceId = null) => {

@@ -31,6 +31,8 @@ export interface BotActionAccess {
   readonly projectedReach: (pieceId: PieceId, fromHexId: HexId, mode?: OcsMode) => readonly ReachableHex[];
   /** Where an own HQ would throw supply if it stood in `fromHexId` (12.3b), whether it would be fed there, and whom it may supply (13.1d). */
   readonly hqThrow: (hqId: PieceId, fromHexId: HexId) => HqThrow;
+  /** Stations SP arriving in `fromHexId` this turn could reach by rail as the map stands (13.6b, 13.3c, 13.3e). */
+  readonly railArrivalReach: (fromHexId: HexId) => readonly HexId[];
   /** Whether an action built by the policy is legal now, with the facts a player sees (odds, DRM, cost). */
   readonly explain: (action: GameAction) => DraftValidation;
   /** Hexes the seat's trace supply reaches for any unit (12.6), or for one unit with 12.6f and 13.1d applied. */

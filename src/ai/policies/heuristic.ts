@@ -1599,7 +1599,12 @@ const chooseRebuild = (context: BotDecisionContext, situation: Situation, facts:
     [{ term: 'rebuild-vp', value: best.vp }, { term: 'rebuild-strength', value: best.strength }]) : null;
 };
 
-const reinforcementStep = (context: BotDecisionContext, situation: Situation, facts: BotGameFacts): BotDecision | null => {
+/** A station that SP arriving in `hexId` could reach by rail this turn, at least RAIL_MIN_GAIN_HEXES nearer the front and safe from the enemy. */
+const railForwardFromArrival = (context: BotDecisionContext, situation: Situation, hexId: HexId, front: HexId | null): boolean =>
+  front !== null && context.actions.railArrivalReach(hexId).some((station) => situation.nearestEnemy(station).distance >= RAIL_SAFE_DISTANCE
+    && hexesBetween(hexId, front) - hexesBetween(station, front) >= RAIL_MIN_GAIN_HEXES);
+
+const reinforcementStep = (context: BotDecisionContext, situation: Situation, facts: BotGameFacts, w: HeuristicWeights): BotDecision | null => {
   const rebuild = chooseRebuild(context, situation, facts);
   if (rebuild) return rebuild;
   const placements = context.actions.candidates('PLACE_REINFORCEMENT', null, 400);
@@ -1625,7 +1630,10 @@ const reinforcementStep = (context: BotDecisionContext, situation: Situation, fa
     // heuristic@79: arriving SP on a railroad entry hex can entrain this turn (13.6b) and ride Rail Cap to the station nearest
     // the front; anywhere else trucks must haul it from the map edge. Replays of heuristic@78 attacks left 25 of 32 SP on the
     // map where rail could not take it.
-    const rail = action.kind === 'PLACE_REINFORCEMENT' && roleOf.get(String(action.pieceId)) === 'DUMP' && knowledgeOf(facts).railHexes.has(String(hexId)) ? 1 : 0;
+    let rail = action.kind === 'PLACE_REINFORCEMENT' && roleOf.get(String(action.pieceId)) === 'DUMP' && knowledgeOf(facts).railHexes.has(String(hexId)) ? 1 : 0;
+    // arrivalRailForward (bot-sp-entry-rail): only when rail can carry it forward from there this turn. An entry hex whose
+    // line out is cut by enemy units or ZOC kept up to 20 SP at the map edge, where only trucks reached it.
+    if (rail > 0 && w.arrivalRailForward > 0) rail = railForwardFromArrival(context, situation, hexId, front) ? 1 : 0;
     return { action, traced, rail, score: -distance - situation.threatAt(hexId) };
   }).sort((left, right) => right.traced - left.traced || right.rail - left.rail || right.score - left.score);
   return decision(scored[0]!.action, scored[0]!.traced ? 'place a supplied arrival toward its mission' : scored[0]!.rail ? 'place arriving SP on the railroad' : 'place the arrival nearest its mission',
@@ -1680,7 +1688,7 @@ const decide = (facts: BotGameFacts, w: HeuristicWeights) => (context: BotDecisi
   if (context.view.pendingDecision !== null) return respondToDecision(context, situation, w.holdRatio, w.advanceThreatLimit);
   const { phase, segment } = projection.sequence;
   let chosen: BotDecision | null = null;
-  if (phase === 'REINFORCEMENT') chosen = reinforcementStep(context, situation, facts);
+  if (phase === 'REINFORCEMENT') chosen = reinforcementStep(context, situation, facts, w);
   else if (phase === 'AIRCRAFT_REFIT') chosen = refitStep(context);
   else if (phase === 'SUPPLY') chosen = supplyStep(context, situation);
   else if (segment === 'MOVEMENT' && (phase === 'MOVEMENT' || phase === 'EXPLOITATION')) {

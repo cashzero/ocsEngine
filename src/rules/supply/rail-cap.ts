@@ -398,6 +398,26 @@ export const queryRailMoveOptions = (state: GameState, actorId: PlayerId, fromHe
   };
 };
 
+/**
+ * Where SP arriving in `fromHexId` this turn could go by rail in the player's Movement Phase, as the map stands now, for
+ * choosing where to place an arrival: 13.6b lifts the entraining requirements for this turn's arrivals on a railroad entry
+ * Hex, so only the rail path (13.3e: no enemy combat unit, no enemy ZOC, no station the player does not control) and the
+ * detraining Hex (13.3c) count. Phase and Rail Cap are not checked; empty when the Hex is not on a railroad or the game has
+ * no Rail Cap.
+ */
+export const queryRailArrivalReach = (state: GameState, actorId: PlayerId, fromHexId: HexId): RuleQueryResult<readonly RailDestination[]> => {
+  const destinations = railCapacityPoints(state, actorId) === null || !isRailHex(state, fromHexId) ? [] : stableSort([...railCargoNetwork(state, actorId)], (left, right) => String(left).localeCompare(String(right)))
+    .filter((hexId) => hexId !== fromHexId && isCargoDetrainable(state, actorId, hexId) && !inEnemyZoc(state, actorId, hexId))
+    .flatMap((hexId) => { const route = railRoute(state, actorId, fromHexId, hexId); return route ? [{ hexId, path: route.path, halves: route.halves }] : []; });
+  return {
+    allowed: destinations.length > 0,
+    value: destinations,
+    reasons: [{ code: 'RAIL_ARRIVAL_REACH', allowed: destinations.length > 0, message: `${destinations.length} destination(s) for SP arriving here.`, rule: '13.6b' }],
+    facts: [],
+    dependencies: [{ aggregate: 'PIECE', revision: state.pieceState.revision, key: `rail:arrival:${fromHexId}` }],
+  };
+};
+
 /** Hexes the player can entrain cargo in right now: detrainable Hexes outside enemy ZOC, and this turn's rail arrival Hexes. */
 export const railEntrainHexes = (state: GameState, playerId: PlayerId): readonly HexId[] => {
   if (railCapacityPoints(state, playerId) === null) return [];

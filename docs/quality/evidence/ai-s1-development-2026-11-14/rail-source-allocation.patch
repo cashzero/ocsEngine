@@ -1,0 +1,122 @@
+--- a/src/ai/policies/theater.ts
++++ b/src/ai/policies/theater.ts
+@@ -100,10 +100,14 @@
+   readonly pickup: HexId | null;
+ }
+ 
++export interface RailPlacement { readonly objective: HexId; readonly fromHexId: HexId; readonly toHexId: HexId; readonly tokens: number }
++export interface RailOption { readonly fromHexId: HexId; readonly toHexId: HexId; readonly tokens: number; readonly quartersPerToken: number }
++
+ export interface TheaterPlan {
+   readonly groups: readonly TheaterGroup[];
+   readonly hqs: readonly HqPlacement[];
+   readonly trucks: readonly TruckPlacement[];
++  readonly rails: readonly RailPlacement[];
+ }
+ 
+ /** An HQ is placed this many hexes or more from enemy units (closer, the move step scores it exposed). */
+@@ -176,10 +180,11 @@
+ export const allocateTheater = (situation: Situation, access: BotActionAccess, exclude: ReadonlySet<PieceId>,
+   rating: (piece: ProjectedPiece) => number, discount: number,
+   modeFor: (unit: OwnUnit, objective: HexId, defended: boolean) => OcsMode | null,
+-  truckTokens: (truck: OwnUnit) => number): TheaterPlan => {
++  truckTokens: (truck: OwnUnit) => number,
++  rail: { readonly options: readonly RailOption[]; readonly quarters: number } | null = null): TheaterPlan => {
+   const me = situation.playerId;
+   const objectives = situation.objectives.filter((objective) => objective.controllerId !== me);
+-  if (objectives.length === 0) return { groups: [], hqs: [], trucks: [] };
++  if (objectives.length === 0) return { groups: [], hqs: [], trucks: [], rails: [] };
+   const blocked = (hexId: string) => situation.enemy.get(hexId as HexId)?.hasCombatUnit ?? false;
+   const occupied = (hexId: string) => situation.enemy.has(hexId as HexId);
+   /** Where a unit attacks the objective from: a free hex beside a defended one, or the empty objective itself. */
+@@ -331,6 +336,15 @@
+     });
+     if (list.length > 0) truckOptions.set(objective.hexId, list);
+   }
++  const railOptions = new Map<HexId, { option: RailOption; covers: ReadonlySet<string> }[]>();
++  for (const objective of rail === null ? [] : objectives) {
++    const targets = new Set([...positions.values()].flatMap((byObjective) => [...(byObjective.get(objective.hexId)?.[2] ?? [])]));
++    if (targets.size === 0) continue;
++    const list = rail!.options.map((option) => ({ option, covers: access.drawReach(option.toHexId) }))
++      .map((entry) => ({ ...entry, count: [...targets].filter((hex) => entry.covers.has(hex)).length })).filter(({ count }) => count > 0)
++      .sort((left, right) => right.count - left.count || left.option.quartersPerToken - right.option.quartersPerToken).map(({ option, covers }) => ({ option, covers }));
++    if (list.length > 0) railOptions.set(objective.hexId, list);
++  }
+ 
+   const denied = new Set<string>();
+   const taken = new Set<string>();
+@@ -348,6 +362,7 @@
+     if (!hexes || hexes.size === 0) return false;
+     if (selfSupplied(unitId, hexes)) return true;
+     if (optionsFor(hexId, step).some(({ covers, servable }) => servable.has(unitId) && [...hexes].some((hex) => covers.has(hex)))) return true;
++    if ((railOptions.get(hexId) ?? []).some(({ covers }) => [...hexes].some((hex) => covers.has(hex)))) return true;
+     return truckOptionsFor(hexId).some(({ drops }) => drops.some(({ covers }) => [...hexes].some((hex) => covers.has(hex))));
+   };
+   const points = new Map(objectives.map(({ hexId, points: vp }) => [hexId, vp]));
+@@ -484,6 +499,9 @@
+     const used = new Set<PieceId>();
+     const hqs: HqPlacement[] = [];
+     const sent: TruckPlacement[] = [];
++    const railed: RailPlacement[] = [];
++    let quartersLeft = rail?.quarters ?? 0;
++    const railFrom = new Map<string, number>();
+     const kept: TheaterGroup[] = [];
+     const dumpLeft = new Map<string, number>();
+     for (const list of feeds.values()) for (const { dumpId, tokens } of list) dumpLeft.set(dumpId, tokens);
+@@ -510,7 +528,24 @@
+       const hq = optionsFor(group.hexId, step)
+         .map((option) => ({ option, served: needing.filter((id) => option.servable.has(id) && [...hexesOf(id)].some((hex) => option.covers.has(hex))) }))
+         .sort((left, right) => right.served.length - left.served.length || String(left.option.hqId).localeCompare(String(right.option.hqId)))[0];
+-      const afterHq = needing.filter((id) => !(hq?.served.includes(id) ?? false));
++      let afterHq = needing.filter((id) => !(hq?.served.includes(id) ?? false));
++      let railFor: { option: RailOption; tokens: number; served: PieceId[] } | null = null;
++      if (afterHq.length > 0) {
++        for (const { option, covers } of railOptions.get(group.hexId) ?? []) {
++          const stock = Math.min(option.tokens - (railFrom.get(String(option.fromHexId)) ?? 0), pickupLeft.get(String(option.fromHexId)) ?? option.tokens);
++          const room = Math.min(stock, Math.floor(quartersLeft / option.quartersPerToken));
++          let tokens = 0;
++          const mine = afterHq.filter((id) => {
++            if (![...hexesOf(id)].some((hex) => covers.has(hex)) || tokens + need.get(id)! > room) return false;
++            tokens += need.get(id)!;
++            return true;
++          });
++          if (mine.length > (railFor?.served.length ?? 0)) railFor = { option, tokens, served: mine };
++        }
++        if (railFor) afterHq = afterHq.filter((id) => !railFor!.served.includes(id));
++      }
++      const pickupAfterRail = new Map(pickupLeft);
++      if (railFor && pickupAfterRail.has(String(railFor.option.fromHexId))) pickupAfterRail.set(String(railFor.option.fromHexId), pickupAfterRail.get(String(railFor.option.fromHexId))! - railFor.tokens);
+       // Trucks for the group unload at one drop, where one member stops: the drop whose trucks feed the most members.
+       type Run = { option: TruckOption; tokens: number; load: { capacity: number; pickup: HexId | null } };
+       let trucksFor: { drop: HexId; stagerId: PieceId; runs: Run[]; served: PieceId[] } | null = null;
+@@ -525,7 +560,7 @@
+           let remaining = afterHq.filter((id) => [...hexesOf(id)].some((hex) => drop.covers.has(hex)));
+           if (stager === undefined || remaining.length <= (trucksFor?.served.length ?? 0)) continue;
+           let meal = stager.eats;
+-          const left = new Map(pickupLeft);
++          const left = new Map(pickupAfterRail);
+           const runs: Run[] = [];
+           const served: PieceId[] = [];
+           for (const option of available.filter(({ drops }) => drops.some(({ hexId }) => hexId === drop.hexId))) {
+@@ -559,6 +594,13 @@
+         used.add(hq.option.hqId);
+         hqs.push({ hqId: hq.option.hqId, objective: group.hexId, turn: step, hexId: hq.option.hexId, moveTo: hq.option.moveTo });
+       }
++      if (railFor) {
++        const from = String(railFor.option.fromHexId);
++        railFrom.set(from, (railFrom.get(from) ?? 0) + railFor.tokens);
++        if (pickupLeft.has(from)) pickupLeft.set(from, pickupLeft.get(from)! - railFor.tokens);
++        quartersLeft -= railFor.tokens * railFor.option.quartersPerToken;
++        railed.push({ objective: group.hexId, fromHexId: railFor.option.fromHexId, toHexId: railFor.option.toHexId, tokens: railFor.tokens });
++      }
+       if (trucksFor) idle.delete(trucksFor.stagerId);
+       for (const { option, tokens, load } of trucksFor?.runs ?? []) {
+         used.add(option.truck.piece.id);
+@@ -569,6 +611,6 @@
+       kept.push(group);
+     }
+     // After the last round, groups still short of supply are left out.
+-    if (!changed || round + 1 >= SUPPLY_ROUNDS) return { groups: kept, hqs, trucks: sent };
++    if (!changed || round + 1 >= SUPPLY_ROUNDS) return { groups: kept, hqs, trucks: sent, rails: railed };
+   }
+ };

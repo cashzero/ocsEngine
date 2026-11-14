@@ -314,6 +314,8 @@ export interface RuleEngine {
   readonly queryRailControl: (state: GameState, actorId: PlayerId) => RuleQueryResult<readonly import('../supply/rail.js').RailControlHex[]>;
   /** What a rail move from one Hex could carry, where it could detrain, and the Rail Cap left (13.3). */
   readonly queryRailMoveOptions: (state: GameState, actorId: PlayerId, fromHexId: HexId) => RuleQueryResult<import('../supply/rail-cap.js').RailMoveOptions>;
+  /** Where SP arriving in `fromHexId` this turn could go by rail (13.6b, 13.3c, 13.3e), for placing arrivals; phase and Rail Cap are not checked. */
+  readonly queryRailArrivalReach: (state: GameState, actorId: PlayerId, fromHexId: HexId) => RuleQueryResult<readonly import('../supply/rail-cap.js').RailDestination[]>;
   /** What a shipment from a port (or, null, the reinforcement Box) could carry, which ports could take it, and the Sea Cap left (19.0f). */
   readonly querySeaMoveOptions: (state: GameState, actorId: PlayerId, fromHexId: HexId | null) => RuleQueryResult<import('../supply/sea-cap.js').SeaMoveOptions>;
   /** Each fuel payment open to one own unit with the units it would newly fuel (12.5c). */

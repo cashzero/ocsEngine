@@ -1,0 +1,33 @@
+{
+  "record": "S1 end condition of docs/roadmap/19-ai-strategy-improvement-wbs.md, registered before the check rollouts are run",
+  "registeredAt": "2026-11-14",
+  "candidate": {
+    "label": "S1",
+    "policy": "heuristic@86 with weights s1-weights.json (arrivalRailForward 1)"
+  },
+  "arms": {
+    "S1": "s1-weights.json",
+    "v86": {
+      "theaterAllocation": 1
+    },
+    "v85": {
+      "theaterAllocation": 0
+    }
+  },
+  "positions": "the 40 maps of 2100100-2100179, the even-numbered match of each seed, from the attacker's first Movement decision of Game Turn 1 (artifacts/ai-theater-two-step-games/attack-western); not used to develop S1.1-S1.5",
+  "rollout": "node scripts/ai-theater-rollout.mjs <check dir> --weights <arm> --starts 1 --through 6 --save-dir <arm>/saves; heuristic (heuristic@86) in the other seat",
+  "measures": "attacker Game Turns 3-6: ai-logistics-study.mjs and ai-fuel-study.mjs with --baseline the v85 arm; objective points by ai-theater-rollout.mjs --compare, per map, 95% t interval over the 40 maps",
+  "pass": [
+    "rear SP left after moving, mean per segment: S1 <= v85",
+    "SP no front unit can draw, mean per segment: S1 <= v85",
+    "units unable to fuel, per game: S1 <= v85",
+    "objective points gained over six attacker turns, S1 - v86 per map: lower end of the 95% interval > -0.75",
+    "every rollout reaches the end of the attacker's sixth player turn",
+    "full test suite passes; with default weights the policy plays as frozen heuristic@86 (four standard self-play games reach the same final state hashes with the frozen v86 build)"
+  ],
+  "reported": [
+    "the same measures for v86 against v85",
+    "S1 - v85 objective points"
+  ],
+  "onFailure": "S1 stays open and the result is reported to the user; S4 is not registered"
+}
