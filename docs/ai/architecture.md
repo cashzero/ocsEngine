@@ -66,6 +66,7 @@ Dispatch 的 request ID 含 runner 的 `nonce`：session 會拒絕已見過的 r
 | `movementRange(pieceId)` | 可達格、路徑與 MP |
 | `projectedReach(pieceId, fromHexId, mode?)` | 單位若從該格開始 Movement Segment、未移動且已付燃料（12.5a），以目前模式或開始移動時改成的 `mode`（5.4），能停在哪些格；其他單位維持原位，規則層 `queryProjectedReach` |
 | `hqThrow(hqId, fromHexId)` | 己方 HQ 若站在該格（非 Strat Mode），是否有補給源供應（12.3a，依 HQ 機動類型）、投送（12.3b）涵蓋哪些地圖陸地格，以及可供應哪些己方戰鬥單位（13.1d）；其他單位維持原位，規則層 `queryHqThrow` |
+| `traceCut(pieceId, hexId, mode?)` | 己方單位若站在該格（以 `mode`），哪些看得到的敵方戰鬥單位會失去 trace（12.6）：敵方 trace 在只保留行動者看得到的敵方棋子（4.9a：每個 stack 最上面的戰鬥單位等）的地圖上計算，藏在 stack 裡的 HQ 視為不在；規則層 `queryTraceCut` |
 | `railArrivalReach(fromHexId)` | 這一回合到達該格的 SP 依目前地圖鐵路能送到哪些車站：13.6b 免除到達物的上車條件，只看鐵路路徑（13.3e：不經敵方戰鬥單位、敵方 ZOC 或非己方控制的車站）與下車格（13.3c）；不檢查階段與 Rail Cap，供選擇入場格，規則層 `queryRailArrivalReach` |
 | `explain(action)` | 驗證行動並取得玩家看得到的 facts（勝率、DRM、費用，以及補給預判） |
 | `traceCoverage(pieceId?)` | 任何單位或指定單位（含 12.6f、13.1d）的 trace 範圍 |

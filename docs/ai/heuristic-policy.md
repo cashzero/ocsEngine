@@ -199,6 +199,8 @@
 
 ### 尚未升級的候選
 
+攻擊戰的守方切斷攻方補給（權重 `defenderCut`，預設 0）：每個 Movement 步驟開頭，最多派 2 個不負責守點的單位，以 Combat Mode 移到能切斷至少 `defenderCut` 個攻方單位 trace 的格子；只用守方看得到的敵方棋子估算（規則查詢 `queryTraceCut`，4.9a），格子要仍在自己的 trace 內，暴露程度不超過移動評分接受的範圍。登記的局面接續測試（對凍結 v86，239 個分支）：攻方終局斷補單位 +1.57 ± 0.42、守方 Kill − Loss +3.66 ± 0.77、VP 差 +0.85 ± 0.46（[紀錄](../quality/evidence/ai-s2-defender-cut-2026-11-14/README.md)）。依 [改進 WBS](../roadmap/19-ai-strategy-improvement-wbs.md) 等 S4 的升級流程。
+
 到達的 SP 只在這一回合鐵路能從入場格往前送時才偏好鐵路入場格（權重 `arrivalRailForward`，預設 0；規則查詢 `queryRailArrivalReach`，13.6b）。修正 `bot-sp-entry-rail`；開發局面推演中讓 heuristic@86 的兩個攻方補給 gate 對 heuristic@85 通過（後方剩餘 4.8 對 4.9、前線取用不到 1.3 對 1.5），目標點數只在 4 張地圖改變、都變好（[紀錄](../quality/evidence/ai-s1-development-2026-11-14/README.md)）。在沒用於開發的檢查局面上兩個 gate 仍未通過，並在一張地圖適得其反（鐵路把 SP 送到前線取用不到的車站，[S1 檢查](../quality/evidence/ai-s1-check-2026-11-14/README.md)）；之後加上「目的車站要有前線單位或 HQ 取用得到」的條件。另一個候選是 `hqBridge`：攻擊戰攻方沒被戰區組用到、這一步能移動的 HQ，站到取用得到前線取用不到的 SP、又投送得到前線的格子（[紀錄](../quality/evidence/ai-s1-supply-diagnosis-2026-11-14/README.md)）。兩項合用時 80 張開發地圖的兩個補給 gate 仍高於 heuristic@85（前線取用不到 1.6 對 1.2），S1 未完成，未進入升級流程。
 
 最後一位玩家的最後回合，攻擊未持有的 VP 點、且承受全部 option 損失後仍有攻擊者存活時，候選 v77 改選損失以保留前進資格；其餘情況沿用 v75。候選 patch 以只供攻擊方查看的剩餘步數支援這項判斷，前進仍受既有補給限制。v77 以 v75 為基底，不含 v78 的卡車後勤與 v79 的補給鏈，尚未完成獨立 80 場驗收；[量測結果與證據](evaluation.md#候選策略量測)。

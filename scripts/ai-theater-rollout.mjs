@@ -3,6 +3,7 @@
 //
 //   node scripts/ai-theater-rollout.mjs <ai-match dir> --weights <theater-weights.json> --out <file.jsonl> [--shard i/n] [--turns 5 | --starts 1,3]
 //     [--match id] [--trucks-only] [--through n] [--standard] [--dist <dir>] [--save-dir <dir> --policy-label <label>]
+//     [--defender-weights <weights.json>]
 //   node scripts/ai-theater-rollout.mjs --summarize <file.jsonl> [...]
 //   node scripts/ai-theater-rollout.mjs --compare <dir of candidate rows> <dir of baseline rows>
 //
@@ -23,6 +24,8 @@
 // states: the mean difference per map (the two seat-swapped games of a map are one cluster) with a 95% t interval.
 // With --save-dir (one start turn) each rollout's save and a summary.json naming the attacker's policy --policy-label
 // are written there, so that the supply gate scripts (ai-logistics-study.mjs, ai-fuel-study.mjs) can read the rollouts.
+// --defender-weights plays the other seat with those weights instead of the standard heuristic (its label in summary.json
+// is the file's `label`).
 import { appendFileSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -108,13 +111,17 @@ const through = Number(option('--through') ?? 0);
 const standard = args.includes('--standard');
 const saveDir = option('--save-dir');
 const policyLabel = option('--policy-label') ?? (standard ? 'heuristic' : 'theater');
+const defenderFile = option('--defender-weights');
 const saved = [];
 if (saveDir) mkdirSync(saveDir, { recursive: true });
 const trucksOnly = args.includes('--trucks-only');
-const dir = args.find((arg, index) => !arg.startsWith('--') && !['--out', '--weights', '--shard', '--turns', '--match', '--starts', '--through', '--dist', '--save-dir', '--policy-label'].includes(args[index - 1]));
+const dir = args.find((arg, index) => !arg.startsWith('--') && !['--out', '--weights', '--shard', '--turns', '--match', '--starts', '--through', '--dist', '--save-dir', '--policy-label', '--defender-weights'].includes(args[index - 1]));
 const m = await import(pathToFileURL(join(option('--dist') ? resolve(option('--dist')) : join(root, 'dist'), 'index.js')).href);
 const weights = JSON.parse(readFileSync(resolve(weightsFile), 'utf8'));
 const theaterWeights = m.heuristicWeights(weights.weights ?? weights);
+const defenderSpec = defenderFile ? JSON.parse(readFileSync(resolve(defenderFile), 'utf8')) : null;
+const defenderWeights = defenderSpec ? m.heuristicWeights(defenderSpec.weights ?? defenderSpec) : null;
+const defenderLabel = defenderSpec?.label ?? 'heuristic';
 writeFileSync(out, '');
 
 const stepKeyOf = ({ gameTurn, playerTurnIndex, phase, segment }) => `${gameTurn}:${playerTurnIndex}:${phase}:${segment}`;
@@ -143,7 +150,7 @@ for (const record of records) {
       const seats = save.bindings.map(({ seatId, playerId }) => ({
         seatId, playerId, seed: record.seeds[String(playerId).endsWith('axis') ? 'axis' : 'allied'],
         policy: playerId === attackerId ? m.createHeuristicPolicy(facts, standard ? {} : { weights: theaterWeights, debug: (line) => lines.push(line) })
-          : m.createHeuristicPolicy(facts, {}),
+          : m.createHeuristicPolicy(facts, defenderWeights ? { weights: defenderWeights } : {}),
       }));
       const attackerSeat = seats.find(({ playerId }) => playerId === attackerId).seatId;
       let session;
@@ -253,7 +260,7 @@ for (const record of records) {
         if (saveDir) {
           writeFileSync(join(saveDir, `match-${record.match}.save.json`), session.serializeSave());
           const attackerSide = String(attackerId).endsWith('axis') ? 'axis' : 'allied';
-          saved.push({ match: record.match, sides: { axis: { policy: attackerSide === 'axis' ? policyLabel : 'heuristic' }, allied: { policy: attackerSide === 'allied' ? policyLabel : 'heuristic' } } });
+          saved.push({ match: record.match, sides: { axis: { policy: attackerSide === 'axis' ? policyLabel : defenderLabel }, allied: { policy: attackerSide === 'allied' ? policyLabel : defenderLabel } } });
         }
         row.outcome = { playerTurns: finished, halted, objectivePointsStart, objectivePointsEnd: held(), attackerStepsLost: lost.attacker, defenderStepsLost: lost.defender, attacks };
       }
