@@ -1,0 +1,44 @@
+{
+  "strategyVersion": "87",
+  "baselineVersion": "86",
+  "sourceCommit": "4a109cc0b8cf97dc29f4702c8763c5a89d60a84c",
+  "registeredAtUtc": "2026-11-15T01:26:57.337492+00:00",
+  "candidateFreezeSha256": "5571e4173136651bf60432f863b60a6e074b701199f5a89c7b7c1649713b364e",
+  "baselineFreezeSha256": "c657c580b1074f32f9f1d1cd34bf04d4d66c35f07c56b20906e4d4c6a22f6a07",
+  "ranges": {
+    "meeting-western": [
+      2400000,
+      2400019
+    ],
+    "meeting-eastern": [
+      2400100,
+      2400119
+    ],
+    "attack-western": [
+      2400200,
+      2400219
+    ],
+    "attack-eastern": [
+      2400300,
+      2400319
+    ]
+  },
+  "unchangedEngagements": [],
+  "gate": {
+    "games": 80,
+    "pairs": 40,
+    "turns": 8,
+    "primary": "killLoss",
+    "nonInferiorityMargins": {
+      "vp": 1.5,
+      "supply": 0.5
+    },
+    "primaryPositiveInEachChangedEngagement": true,
+    "primaryPairedMeanMinus2Point1SePositive": true,
+    "otherMeasuresPairedMeanMinus2Point1SeAboveMinusMargin": true,
+    "unchangedEngagement": "both games of every pair end in the same state hash",
+    "allLegalCompleteReplayHashes": true,
+    "zeroGuardedSupplyAdvanceViolations": true,
+    "fullFrozenQuality": true
+  }
+}
