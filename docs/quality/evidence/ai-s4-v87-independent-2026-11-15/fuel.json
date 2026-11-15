@@ -1,0 +1,32 @@
+{
+  "dirs": [
+    "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-promotion/frozen-v87r-independent/attack-western",
+    "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-promotion/frozen-v87r-independent/attack-eastern"
+  ],
+  "sides": {
+    "attacker heuristic@/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-promotion/frozen-v86/dist": {
+      "games": 20,
+      "strandedSpPerSegment": 9.035416666666666,
+      "frontSpPerSegment": 14.995833333333334,
+      "cannotFuelPerGame": 21.7,
+      "cannotFuelShare": 0.2158130283441074,
+      "dryHqShare": 0.20425531914893616
+    },
+    "attacker heuristic": {
+      "games": 20,
+      "strandedSpPerSegment": 3.2083333333333335,
+      "frontSpPerSegment": 14.970833333333333,
+      "cannotFuelPerGame": 9.85,
+      "cannotFuelShare": 0.11067415730337078,
+      "dryHqShare": 0.06976744186046512
+    },
+    "baseline attacker": {
+      "games": 20,
+      "strandedSpPerSegment": 6.4875,
+      "frontSpPerSegment": 14.360416666666667,
+      "cannotFuelPerGame": 11,
+      "cannotFuelShare": 0.11777301927194861,
+      "dryHqShare": 0.046357615894039736
+    }
+  }
+}

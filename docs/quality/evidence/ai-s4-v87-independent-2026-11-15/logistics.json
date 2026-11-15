@@ -1,0 +1,110 @@
+{
+  "dirs": [
+    "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-promotion/frozen-v87r-independent/attack-western",
+    "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-promotion/frozen-v87r-independent/attack-eastern"
+  ],
+  "result": {
+    "games": 40,
+    "attackerWins": 21,
+    "defenderWins": 19,
+    "draws": 0
+  },
+  "sides": {
+    "attacker heuristic@/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-promotion/frozen-v86/dist": {
+      "railCapUsed": 0.6739583333333333,
+      "railablePhases": 94,
+      "railUsedOfRailable": 1,
+      "truckSpPerPointTurn": 0.5648801128349789,
+      "idleTruckShare": 0.03966597077244259,
+      "idleEmptyTruckShare": 0.03966597077244259,
+      "stockLoads": 0,
+      "stockRails": 0,
+      "trucksArrived": 60,
+      "trucksLate": 0,
+      "nearSp": 4.625,
+      "farSp": 18.377083333333335,
+      "rearLeftSp": 8.5875,
+      "rearLeftAllSp": 14.139583333333333
+    },
+    "defender heuristic": {
+      "railCapUsed": 0.6633333333333333,
+      "railablePhases": 93,
+      "railUsedOfRailable": 1,
+      "truckSpPerPointTurn": 0.36473087818696887,
+      "idleTruckShare": 0.172,
+      "idleEmptyTruckShare": 0.164,
+      "stockLoads": 0,
+      "stockRails": 0,
+      "trucksArrived": 20,
+      "trucksLate": 0,
+      "nearSp": 4.85,
+      "farSp": 5.26875,
+      "rearLeftSp": 1.3125,
+      "rearLeftAllSp": 5.066666666666666
+    },
+    "defender heuristic@/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-promotion/frozen-v86/dist": {
+      "railCapUsed": 0.47541666666666665,
+      "railablePhases": 56,
+      "railUsedOfRailable": 1,
+      "truckSpPerPointTurn": 0.2904040404040404,
+      "idleTruckShare": 0.09813084112149532,
+      "idleEmptyTruckShare": 0.09345794392523364,
+      "stockLoads": 0,
+      "stockRails": 0,
+      "trucksArrived": 20,
+      "trucksLate": 0,
+      "nearSp": 6.189583333333333,
+      "farSp": 3.9229166666666666,
+      "rearLeftSp": 1.3770833333333334,
+      "rearLeftAllSp": 5.425
+    },
+    "attacker heuristic": {
+      "railCapUsed": 0.83375,
+      "railablePhases": 117,
+      "railUsedOfRailable": 1,
+      "truckSpPerPointTurn": 0.5971128608923885,
+      "idleTruckShare": 0.052434456928838954,
+      "idleEmptyTruckShare": 0.05056179775280899,
+      "stockLoads": 0,
+      "stockRails": 0,
+      "trucksArrived": 60,
+      "trucksLate": 0,
+      "nearSp": 5.2375,
+      "farSp": 16.389583333333334,
+      "rearLeftSp": 2.8354166666666667,
+      "rearLeftAllSp": 7.079166666666667
+    },
+    "baseline defender": {
+      "railCapUsed": 0.5,
+      "railablePhases": 72,
+      "railUsedOfRailable": 1,
+      "truckSpPerPointTurn": 0.3967889908256881,
+      "idleTruckShare": 0.12295081967213115,
+      "idleEmptyTruckShare": 0.11065573770491803,
+      "stockLoads": 0,
+      "stockRails": 0,
+      "trucksArrived": 20,
+      "trucksLate": 0,
+      "nearSp": 5.6625,
+      "farSp": 3.783333333333333,
+      "rearLeftSp": 2.089583333333333,
+      "rearLeftAllSp": 4.439583333333333
+    },
+    "baseline attacker": {
+      "railCapUsed": 0.7108333333333333,
+      "railablePhases": 96,
+      "railUsedOfRailable": 1,
+      "truckSpPerPointTurn": 0.5867346938775511,
+      "idleTruckShare": 0.01775147928994083,
+      "idleEmptyTruckShare": 0.015779092702169626,
+      "stockLoads": 0,
+      "stockRails": 0,
+      "trucksArrived": 60,
+      "trucksLate": 0,
+      "nearSp": 5.28125,
+      "farSp": 17.879166666666666,
+      "rearLeftSp": 6.283333333333333,
+      "rearLeftAllSp": 10.88125
+    }
+  }
+}

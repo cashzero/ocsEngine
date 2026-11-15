@@ -1,0 +1,10 @@
+{
+  "policy": "heuristic",
+  "checks": [
+    {
+      "name": "SP no front unit can draw <= the standard on the same seeds",
+      "pass": true,
+      "value": "3.2 vs 6.5"
+    }
+  ]
+}

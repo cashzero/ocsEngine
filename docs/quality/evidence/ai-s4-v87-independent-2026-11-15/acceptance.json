@@ -1,0 +1,151 @@
+{
+  "strategyVersion": "87",
+  "baselineVersion": "86",
+  "sourceCommit": "4a109cc0b8cf97dc29f4702c8763c5a89d60a84c",
+  "mode": "independent",
+  "groups": [
+    {
+      "group": "meeting-western",
+      "games": 20,
+      "candidateVP": 334,
+      "baselineVP": 398,
+      "delta": -64,
+      "legalReplayAndSupply": true
+    },
+    {
+      "group": "meeting-eastern",
+      "games": 20,
+      "candidateVP": 162,
+      "baselineVP": 130,
+      "delta": 32,
+      "legalReplayAndSupply": true
+    },
+    {
+      "group": "attack-western",
+      "games": 20,
+      "candidateVP": 186,
+      "baselineVP": 134,
+      "delta": 52,
+      "legalReplayAndSupply": true
+    },
+    {
+      "group": "attack-eastern",
+      "games": 20,
+      "candidateVP": 136,
+      "baselineVP": 98,
+      "delta": 38,
+      "legalReplayAndSupply": true
+    }
+  ],
+  "totals": {
+    "candidateVP": 818,
+    "candidateStepsKilled": 1840,
+    "candidateStepsLost": 1389,
+    "baselineVP": 760,
+    "baselineStepsKilled": 1389,
+    "baselineStepsLost": 1840,
+    "candidateAdvances": 285,
+    "candidateFundedAdvances": 283,
+    "candidateSuccessfulOverruns": 35,
+    "candidateActuallyFundedOverruns": 35
+  },
+  "engagementDeltas": {
+    "MEETING": -32,
+    "AXIS_ATTACKS": 90
+  },
+  "unchangedEngagements": [],
+  "metrics": {
+    "vp": {
+      "pairs": 40,
+      "mean": 0.725,
+      "standardError": 0.8266300912090653,
+      "interval": [
+        -1.010923191539037,
+        2.4609231915390373
+      ],
+      "engagementPairMeans": {
+        "MEETING": -0.8,
+        "AXIS_ATTACKS": 2.25
+      }
+    },
+    "killLoss": {
+      "pairs": 40,
+      "mean": 5.6375,
+      "standardError": 1.4463689615989836,
+      "interval": [
+        2.6001251806421344,
+        8.674874819357866
+      ],
+      "engagementPairMeans": {
+        "MEETING": 4.625,
+        "AXIS_ATTACKS": 6.65
+      }
+    },
+    "supply": {
+      "pairs": 40,
+      "mean": 1.3375,
+      "standardError": 0.48350599259139987,
+      "interval": [
+        0.3221374155580601,
+        2.3528625844419397
+      ],
+      "engagementPairMeans": {
+        "MEETING": 1.575,
+        "AXIS_ATTACKS": 1.1
+      }
+    }
+  },
+  "pairs": 40,
+  "mean": 0.725,
+  "standardError": 0.8266300912090653,
+  "interval": [
+    -1.010923191539037,
+    2.4609231915390373
+  ],
+  "gateChecks": {
+    "primary killLoss": true,
+    "vp not worse than -1.5": true,
+    "supply not worse than -0.5": true
+  },
+  "gate": true,
+  "vpGate": false,
+  "verificationScope": "frozen-and-delivered",
+  "quality": {
+    "typecheck": {
+      "command": [
+        "npm",
+        "run",
+        "typecheck"
+      ],
+      "exitCode": 0,
+      "seconds": 7.382812224008376,
+      "log": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-promotion/frozen-v87r-quality/typecheck.log",
+      "sha256": "d276a607924b69f3bf75479c9ff0bd362e2bc5a9c0047d63a951c8e899b4eb98"
+    },
+    "tests": {
+      "command": [
+        "npx",
+        "vitest",
+        "run",
+        "--maxWorkers=2"
+      ],
+      "exitCode": 0,
+      "seconds": 148.99234226500266,
+      "log": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-promotion/frozen-v87r-quality/tests.log",
+      "sha256": "670eb8418e9bd566670e3c32954a88caeb6a628014f671e3d0c3cd88b1cfdace",
+      "passed": 823,
+      "skipped": 7
+    },
+    "smoke": {
+      "command": [
+        "npm",
+        "run",
+        "smoke"
+      ],
+      "exitCode": 0,
+      "seconds": 1.3259190249955282,
+      "log": "/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-promotion/frozen-v87r-quality/smoke.log",
+      "sha256": "57f4b11f8e16b9086ab757da51a782c8fdee53c661431fe12983397ac1a2493b"
+    }
+  }
+}
