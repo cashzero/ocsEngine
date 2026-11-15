@@ -1,0 +1,9 @@
+{
+ "label": "v87",
+ "weights": {
+  "arrivalRailForward": 1,
+  "hqBridge": 1,
+  "defenderCut": 2,
+  "approachAttack": 1
+ }
+}

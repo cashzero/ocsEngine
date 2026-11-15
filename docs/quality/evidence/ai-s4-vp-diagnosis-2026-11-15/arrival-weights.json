@@ -1,0 +1,6 @@
+{
+ "label": "arrival",
+ "weights": {
+  "arrivalRailForward": 1
+ }
+}

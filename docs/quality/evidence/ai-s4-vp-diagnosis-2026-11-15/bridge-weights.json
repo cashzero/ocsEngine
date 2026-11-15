@@ -1,0 +1,6 @@
+{
+ "label": "bridge",
+ "weights": {
+  "hqBridge": 1
+ }
+}

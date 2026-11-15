@@ -1,0 +1,37 @@
+{
+  "record": "S4.7 of docs/roadmap/19-ai-strategy-improvement-wbs.md: why heuristic@87's VP did not improve. A diagnosis, not a promotion; written before any continuation is run",
+  "registeredAt": "2026-11-15",
+  "known": {
+    "independentBatch": "VP per pair +0.73 [-1.01, +2.46]: meeting -0.80, attack +2.25 (docs/quality/evidence/ai-s4-v87-independent-2026-11-15)",
+    "roleSplit": "scripts/ai-role-margin.mjs on the attack games against heuristic@86's self-play on the same seeds: the candidate attacking changes the attacker VP margin by +0.90 +/- 1.63 a game (n 20), defending by +3.60 +/- 1.03 (n 20)",
+    "activeParts": "meeting engagements: only approachAttack and arrivalRailForward act (theater allocation and hqBridge need the attacker of an attack engagement, defenderCut its defender)"
+  },
+  "branches": {
+    "meeting": "branches-meeting.jsonl (76): the first own Movement Segment of Game Turn 2 of the seat heuristic@87 played, in the 40 independent and 16 development meeting games, and of one seat (allied in even, axis in odd matches) in the 20 heuristic@87 self-play games of artifacts/ai-b5-v87/vs-self",
+    "attacker": "branches-attacker.jsonl (28): the attacker's first Movement Segment of Game Turn 2 in the 20 independent and 8 development attack games heuristic@87 attacked",
+    "defender": "branches-defender.jsonl (28): the defender's first Movement Segment of Game Turn 2 in the 20 independent and 8 development attack games heuristic@87 defended"
+  },
+  "variants": {
+    "v86": "heuristic (this build's default: heuristic@86)",
+    "approach": "heuristic:approach-weights.json (approachAttack 1)",
+    "arrival": "heuristic:arrival-weights.json (arrivalRailForward 1)",
+    "bridge": "heuristic:bridge-weights.json (hqBridge 1), attacker only",
+    "cut": "heuristic:cut-weights.json (defenderCut 2), defender only",
+    "v87": "heuristic:v87-weights.json (all four: heuristic@87's defaults)"
+  },
+  "groups": {
+    "meeting": ["v86", "approach", "arrival", "v87"],
+    "attacker": ["v86", "approach", "arrival", "bridge", "v87"],
+    "defender": ["v86", "cut", "approach", "arrival", "v87"]
+  },
+  "opponent": "heuristic@artifacts/ai-promotion/frozen-v86/dist",
+  "dice": 2,
+  "horizons": "T0+1 and the end of the game",
+  "command": "node scripts/ai-continue.mjs --save <save> --at <at> --subject <side> --variant <name>=<policy> ... --opponent heuristic@artifacts/ai-promotion/frozen-v86/dist --dice 2 --horizons 1 --out <branch>.jsonl",
+  "measures": "each variant - v86 for the subject, dice averaged per branch, mean and SE over branch points (scripts/ai-continue-compare.py --baseline v86): margin.vp at the end (VP is the primary measure); margin.objectives, Kill - Loss and margin.outOfTrace at the end reported",
+  "reading": [
+    "a part lowers VP in a group if its margin.vp difference has mean + 2.1 SE < 0, raises it if mean - 2.1 SE > 0, and is not established otherwise",
+    "every continuation finishes the game"
+  ],
+  "powerAnalysis": "per-position VP SD about 2.5 (E5's continuations). Meeting, 76 branches: SE about 0.29, so a part with the batch's whole meeting effect (-0.8 a game) is found with probability about 0.75. Attacker and defender, 28 branches each: SE about 0.47; the defender's +3.6 is found, an attacker effect of +0.9 only with probability about 0.25."
+}

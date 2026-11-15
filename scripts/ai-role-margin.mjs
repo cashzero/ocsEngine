@@ -15,6 +15,7 @@ import { join } from 'node:path';
 const args = process.argv.slice(2);
 if (args.length === 0 || args.length % 2 !== 0) throw new Error('usage: ai-role-margin.mjs <baseline dir> <candidate dir> [...]');
 const records = (dir) => JSON.parse(readFileSync(join(dir, 'summary.json'), 'utf8')).records;
+const samePolicy = (policy) => policy.replace(/^(heuristic@).*?([^/]+\/dist)\/?$/, '$1$2');
 const attackerMargin = (record, attacker) => record.sides[attacker].vp - record.sides[attacker === 'axis' ? 'allied' : 'axis'].vp;
 const attacking = [];
 const defending = [];
@@ -23,10 +24,12 @@ for (let index = 0; index < args.length; index += 2) {
   for (const record of records(args[index + 1])) {
     const base = baseline.get(record.match);
     if (!base) continue;
-    // AXIS_ATTACKS: the Axis attacks; the opponent policy is the one the baseline played on both sides.
-    const opponent = base.sides.axis.policy;
-    if (record.sides.axis.policy !== opponent) attacking.push(attackerMargin(record, 'axis') - attackerMargin(base, 'axis'));
-    else if (record.sides.allied.policy !== opponent) defending.push(attackerMargin(base, 'axis') - attackerMargin(record, 'axis'));
+    // AXIS_ATTACKS: the Axis attacks; the opponent policy is the one the baseline played on both sides. A frozen build may
+    // be named by a relative or an absolute path (heuristic@../frozen-v86/dist, heuristic@/…/frozen-v86/dist): compare
+    // the build folder only.
+    const opponent = samePolicy(base.sides.axis.policy);
+    if (samePolicy(record.sides.axis.policy) !== opponent) attacking.push(attackerMargin(record, 'axis') - attackerMargin(base, 'axis'));
+    else if (samePolicy(record.sides.allied.policy) !== opponent) defending.push(attackerMargin(base, 'axis') - attackerMargin(record, 'axis'));
   }
 }
 const describe = (values) => {

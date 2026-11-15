@@ -7,6 +7,8 @@
 //   defender-assault   the defender of an attack engagement sends units on assault tasks ("(assault …)"), Movement Segment
 //   attacker-assault   the attacker does
 //   declined-advance   either side declines every advance after a combat ("advance: no supplied advance …"), Combat Segments
+//   first-movement     either side's own Movement Segment of the Movement Phase, whatever it decides (any engagement);
+//                      its answers to pending decisions in the other side's segment do not count
 // --policy keeps games where that seat's policy (summary.json) contains the substring. One JSON line per branch point:
 // the save, the segment, the seat's side and the index of the segment's first action (the --at of ai-continue.mjs).
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
@@ -24,6 +26,7 @@ const KINDS = {
   'defender-assault': { role: 'defender', segment: /MOVEMENT:MOVEMENT$/, intent: /\(assault / },
   'attacker-assault': { role: 'attacker', segment: /MOVEMENT:MOVEMENT$/, intent: /\(assault / },
   'declined-advance': { role: 'any', segment: /COMBAT$/, intent: /^advance: no supplied advance/ },
+  'first-movement': { role: 'any', segment: /MOVEMENT:MOVEMENT$/, intent: /(?:)/, ownActions: true },
 };
 const spec = KINDS[kind];
 if (!spec) throw new Error(`--kind ${Object.keys(KINDS).join('|')}`);
@@ -43,7 +46,7 @@ for (const dir of dirs) {
       if (row.seatId !== `seat:${side}` || !spec.segment.test(String(row.stepKey))) continue;
       if (Number(String(row.stepKey).split(':')[0]) < fromTurn) continue;
       const segment = segments.get(row.stepKey) ?? { at: row.revision, hits: 0 };
-      if (spec.intent.test(row.intent ?? '')) segment.hits += 1;
+      if (spec.intent.test(row.intent ?? '') && !(spec.ownActions && row.kind === 'DECISION')) segment.hits += 1;
       segments.set(row.stepKey, segment);
     }
     let taken = 0;
