@@ -1,0 +1,42 @@
+{
+  "record": "S5.2 of docs/roadmap/19-ai-strategy-improvement-wbs.md: VP check of the attack-only candidate before an independent batch is registered. Written before any continuation is run",
+  "registeredAt": "2026-11-15",
+  "request": "The user (2026-11-15): 「開始執行S5」, on the plan in section 7 of the WBS (S5.0-S5.2 and the S5.4a census use recorded games only; the optional 40 Eastern self-play games were not approved and are not played)",
+  "build": "source commit 467b5bb (S5.1: approachAttack and arrivalRailForward in attack engagements only), dist built from it, Node v26.9.0",
+  "variants": {
+    "v86": "heuristic (this build's default weights: heuristic@86; S5.1 replayed four recorded heuristic@86 self-play games to the same final hashes)",
+    "cand": "heuristic:docs/quality/evidence/ai-s5-vp-check-2026-11-15/cand-weights.json (arrivalRailForward 1, hqBridge 1, defenderCut 2, approachAttack 1)"
+  },
+  "opponent": "heuristic@artifacts/ai-promotion/frozen-v86/dist",
+  "branches": {
+    "rule": "per game, each side's first own Movement Segment of Game Turn 2 (ai-find-branches.mjs --kind first-movement --from-turn 2 --replay; every save replays with this engine to its recorded final state)",
+    "west": "branches-west.jsonl: 458 branches, 229 games on 120 maps: artifacts/ai-theater-allocation-games (2100000-079), ai-theater-execution-games (2100200-279), ai-theater-hq-games (2100300-379), attack-western. 11 pairs of allocation games are identical (same seeds; the theater weights changed nothing there): the second game of each is left out",
+    "east": "branches-east.jsonl: 78 branches run here; branches-east-s47.jsonl: 28 branches S4.7 ran. Together 106 branches, 53 games on 18 maps: frozen-v87r-independent and frozen-v87r-development attack-eastern (28), heuristic@86 self-play on the same seeds (14 distinct of 28), ai-theater-promotion-check(-final) attack-eastern (11 distinct of 16)"
+  },
+  "dice": {"west": 1, "east": 2},
+  "horizons": "T0+1 and the end of the game",
+  "reuse": "The 28 S4.7 branches are not run again: their v86 and v87 rows (artifacts/ai-vp-why/cont/{attacker,defender}) are copied to artifacts/ai-s5/s52/reused with v87 renamed cand. In attack engagements the candidate decides as heuristic@87 (situation.attack is true there; S5.1 found 8 S4.7 attack branches row-identical), and the branch, the dice seeds and the opponent are the same, so a rerun reproduces them. Their result was seen in S4.7 (heuristic@87 - v86: Eastern attacker +0.29 +/- 0.67, Eastern defender +4.14 +/- 1.64), so the estimate without them is reported beside the registered one",
+  "commands": [
+    "node scripts/ai-continue-batch.mjs --branches docs/quality/evidence/ai-s5-vp-check-2026-11-15/branches-east.jsonl --variant v86=heuristic --variant cand=heuristic:docs/quality/evidence/ai-s5-vp-check-2026-11-15/cand-weights.json --opponent heuristic@artifacts/ai-promotion/frozen-v86/dist --dice 2 --horizons 1 --jobs 10 --out-dir artifacts/ai-s5/s52/east",
+    "node scripts/ai-continue-batch.mjs --branches docs/quality/evidence/ai-s5-vp-check-2026-11-15/branches-west.jsonl --variant v86=heuristic --variant cand=heuristic:docs/quality/evidence/ai-s5-vp-check-2026-11-15/cand-weights.json --opponent heuristic@artifacts/ai-promotion/frozen-v86/dist --dice 1 --horizons 1 --jobs 10 --out-dir artifacts/ai-s5/s52/west",
+    "python3 docs/quality/evidence/ai-s5-vp-check-2026-11-15/analysis.py"
+  ],
+  "continuations": "West 458 x 2 variants x 1 dice = 916; East 78 x 2 x 2 = 312; 1,228 in all",
+  "measure": "margin.vp (own VP - enemy VP of the subject) at the end of the game, cand - v86 on the same branch and dice, dice averaged per branch. VP is the primary measure; margin.objectives, Kill - Loss and margin.outOfTrace at the end are reported, not judged",
+  "estimate": "(Western attacker + Western defender + Eastern attacker + Eastern defender) / 4: the VP change of one attack pair of an independent batch with 20 Western and 20 Eastern pairs (a pair's VP = (the candidate's attacker effect + its defender effect) / 2). 'all cells equally' of ai-continue-compare.py --by-style --by-role --cluster-by-map; SE cluster-robust over maps",
+  "expectedPrecision": "from S4.7's variance (single-dice SD 6-7, between branches 2.4-3.2): about 0.48 a Western role, about 1.0 an Eastern role, about 0.39 for the estimate",
+  "reading": [
+    "pass probability at pair SD s in {3.7, 4.5}: P = Phi((estimate - 2.1 s / sqrt(40)) / sqrt(s^2 / 40 + SE^2)), the chance that 40 attack pairs pass mean - 2.1 SE > 0 given the estimate and its uncertainty (sample SD taken as s; 3.7 is the last batch's attack pairs, 4.5 a margin for a larger one)",
+    "both >= 0.8: recommend registering the independent batch (S5.3)",
+    "otherwise: report to the user with the probabilities; the options are to accept the lower probability, to do S5.4 first, or to stop; both below 0.5: recommend not registering",
+    "any style x role cell with mean + 2.1 SE < 0: the candidate is established worse there; fix it before registering",
+    "reported: each cell and style, the number of branches whose end rows differ between cand and v86, the estimate without the 28 reused branches, the other measures",
+    "every continuation finishes the game"
+  ],
+  "limits": [
+    "Branches start at Game Turn 2: the candidate's Game Turn 1 (first moves, first arrivals) is not in the estimate",
+    "Eastern Europe has 18 maps; its half of the estimate is the coarse one",
+    "The Western positions come from October 2026 games of the theater-weight experiments against the heuristic of that time, replayed with this engine to their recorded final states; their Game Turn 1 was not played by heuristic@86",
+    "28 of the 106 Eastern branches have results seen in S4.7"
+  ]
+}
