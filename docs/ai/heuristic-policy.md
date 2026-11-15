@@ -1,8 +1,8 @@
-# Heuristic 策略（標準：heuristic@87）
+# Heuristic 策略（標準：heuristic@86）
 
 ## 範圍
 
-標準電腦策略 `heuristic@87` 如何做決定：各階段做什麼、目標分配與移動評分、補給保護、戰鬥、重建與待決回應，
+標準電腦策略 `heuristic@86` 如何做決定：各階段做什麼、目標分配與移動評分、補給保護、戰鬥、重建與待決回應，
 以及做過哪些嘗試、為什麼不採用。實作：`src/ai/policies/heuristic.ts`、權重 `src/ai/policies/heuristic-weights.ts`、
 待決回應 `src/ai/decisions.ts`。介面與邊界見 [architecture.md](architecture.md)，強度量測見 [evaluation.md](evaluation.md)。
 
@@ -40,11 +40,8 @@
 - **不能移動的單位**（MA 0：駐軍、部分工兵）只佔自己所在格的任務名額，不佔別處的守點或奪點名額（v75）。
 - **主攻**：選有敵軍守備的目標點，12 格內可集結的兵力須達守軍估計的 2.5 倍（v75 前為 8 格）；派最近的單位（最多 6 個）
   組成攻擊群，接近時轉 Combat Mode、在目標旁集結。HQ 與卡車跟隨主攻。**攻擊戰的守方不組主攻**，不反攻攻方持有的
-  目標點（v85；依奪點機率與補給規劃時，有勝算的奪回每局不到 0.1 次，[S2 普查](../quality/evidence/ai-s2-counterattack-census-2026-11-14/README.md)），改以下面的斷補對付攻方。攻擊戰的攻方不用這裡的選法，改用下面的戰區配置。
+  目標點（v85，權宜做法；應只在有優勢時反攻，見 `bot-defender-counterattack`）。攻擊戰的攻方不用這裡的選法，改用下面的戰區配置。
 - **戰區配置（v86）**：攻擊戰的攻方（權重 `theaterAllocation` 預設 1；設為 0 時照 v85 下）在每個 Movement 步驟以戰區配置（`src/ai/policies/theater.ts`）決定主攻與奪點：以本步驟與下一步驟的可達範圍（`projectedReach`，以移動時的模式計算；這一步不能移動又沒有燃料可付的單位留在原地）、`attackStrength` 的規則戰力與地形線型、估計的敵軍戰力、雙方最高 AR（看不到的守方以 2 計）與凍結的奪點機率模型，把非守點單位分給未持有目標，最大化點數乘以奪點機率（下一步驟才能到位的組再乘依 Game Turn 凍結的折扣）；每個組員在攻擊的那一步都要有補給：trace、可吃的現有 SP、配置指派的 HQ 投送，或配置指派的卡車這一步卸下的 SP（卸貨點可在 trace 外）；卡車依容量（每個 Transport Point 4T）、補給堆存量與 MA 計算，一組可用多輛，這一步跑救援的卡車不列入。被指派的 HQ 走向指定格；一個單位（集結者：下一步驟的組的成員，或沒被用到的單位）先停在卸貨點，被指派的卡車接著移動、移動當下選補給堆裝貨、送到卸貨點，然後其他戰鬥單位才移動；鐵路在計畫算入的裝貨格只留下被指派空車要裝的量；組員可離開 trace 到有 SP 可吃的攻擊位置，由卡車供應的組的成員可到卸下的 SP 供得到的任何格子。有守軍的組依期望 VP 依序成為主攻（沒被指派的 HQ 與卡車跟隨第一個主攻的領頭格），空目標的單位目標設為 CAPTURE，剩下的主攻名額沿用多回合的主攻選擇。設計與量測見[戰區補給配置](theater-supply-plan.md#策略上層)。
-- **HQ 接力（v87，權重 `hqBridge` 1）**：攻擊戰的攻方在配置之後，把沒被戰區組用到、這一步能移動（有移動範圍或付得起燃料）的 HQ，移到取用得到前線單位取用不到的 SP（至少 4 Token）、又投送得到前線的格子；已經站著接上這種補給堆的 HQ 不動，移動後要仍投送到它現在投送、沒有直接 trace 的每個單位。接力計畫與戰區組的 HQ 計畫一起執行（`src/ai/policies/theater.ts` 的 `bridgesFor`）。
-- **守方斷補（v87，權重 `defenderCut` 2）**：攻擊戰的守方在每個 Movement 步驟開頭，最多派 2 個不負責守點的單位，以 Combat Mode 移到能切斷至少 `defenderCut` 個攻方單位 trace 的格子（合計最多試 30 格：4 格內有攻方 stack、依附近 stack 數排序、彼此不相鄰；
-選中的兩格相距 3 格以上）。只用守方看得到的敵方棋子估算（規則查詢 `queryTraceCut`：每個敵方 stack 只看得到頂部的戰鬥單位、hedgehog、機場與頂部的飛機，4.9a）；格子要仍在自己的 trace 內，暴露程度不超過移動評分接受的範圍。
 - **清除與追擊**：己方單位 5 格內戰力 ≤ 2 的敵方 stack（多為目標點駐軍，它的 ZOC 切斷 trace）列為清除目標；
   深入己方補給區或貼近己方目標點、HQ、補給堆的敵軍列為追擊目標。
 - **撤回補給**：不在自己 trace 內、附近也沒有 SP 的戰鬥單位，除最後兩回合外撤回補給範圍；守著目標點的唯一單位在
@@ -64,7 +61,6 @@
   未知的燃料與架橋採樂觀估計。
 - **補給**：離開 trace −60；目的地 2 格內有可分配的 SP 時減為 −10；只靠 HQ 投送的格子 −8。
 - **其他**：同格擁擠、砲兵需在 3 格內與戰鬥單位同格（否則 −40）、HQ 與砲兵暴露、卡車與後方單位暴露、Strat Mode 距敵距離。
-- **貼近有守軍的目標**（v87，權重 `approachAttack` 1；[錯誤清單 E6](policy-errors.md)）：不屬於戰區組的戰鬥單位，目標（ASSAULT、HUNT、CAPTURE）格有敵軍時，移到它旁邊不扣擁擠與暴露；contact 照算。
 - HQ 先移動，因為它的投送範圍決定其他單位哪裡有補給。急需的送補先於一般部隊移動。
 - **HQ 的補給鏈**（heuristic@79，OCS 的 rail → HQ → 投送）：
   - 不離開鐵路的取用範圍（使用者決定：HQ 的核心目的就是提供補給）：目的地既沒有補給堆能供應它（自己的投送不算，12.3b），
@@ -101,9 +97,6 @@
   而出發地不在範圍內的 SP 每 SP 加 10 格的價值，即使朝前線不到 3 格也送。
 - **新到的 SP 先放鐵路**（heuristic@79）：增援階段新到的 SP 優先放在有鐵路的入場格，當回合就能上火車（13.6b）；
   其他入場格只能由卡車從地圖邊緣拉。v78 攻方地圖上約 32 SP 中只有約 7 SP 在能上火車的格子。
-  heuristic@87（權重 `arrivalRailForward` 1）：只在這一回合鐵路能從入場格送到一個車站時才算鐵路入場格；車站要離敵 3 格以上、
-  比入場格靠近前線至少 3 格，而且有己方 HQ 或離敵 6 格內的戰鬥單位取用得到（規則查詢 `queryRailArrivalReach`，不看 Phase 與
-  已用的 Rail Cap）。入場格的鐵路出口被敵軍或 ZOC 切斷時，SP 改放其他入場格。
 - **海運**：Box 中等待的先上岸（戰鬥單位先於 SP），再把遠離前線港口的貨物移到較近的港口。
 - **Hedgehog**（heuristic@10）：所有單位移動後，留在敵軍附近的單位築 hedgehog：先已持有的目標點，再其他鄰接敵軍的格；
   補給堆扣掉一級的 8T 後仍須保留儲備，且不破壞口糧承諾。
@@ -193,8 +186,8 @@
   不用格數估計（2 格估計只把無法加油降到每局 16.4，規則的 5 Truck MP 降到 5.9）。v79 未跑獨立批，由使用者決定直接升級。
 
 - 攻擊戰的守方不反攻（v85，使用者決定直接升級，未跑獨立批）：v79 的守方不分有無優勢都反攻，[局面接續測試](../quality/evidence/ai-defender-assault-continuation-2026-10-18/README.md)
-  中拿掉反攻，守方每局少損失 2.5 ± 0.7 step、VP 差 +1.9 ± 0.9；代價是攻方斷補的單位變少；S2 量過有條件反攻，有勝算的奪回每局不到
-  0.1 次，切斷攻方補給則有效，v87 加上守方斷補。v85 同時帶有對港口與機場的砲擊（`7990052`，沒有 VP 對戰量測）。v81–v83 的分角色主攻規劃已刪除
+  中拿掉反攻，守方每局少損失 2.5 ± 0.7 step、VP 差 +1.9 ± 0.9；代價是攻方斷補的單位變少。這是權宜做法，只在有優勢時反攻是
+  `bot-defender-counterattack`。v85 同時帶有對港口與機場的砲擊（`7990052`，沒有 VP 對戰量測）。v81–v83 的分角色主攻規劃已刪除
   （理由見下表；刪除後的 v84 對凍結 v79 的每一對兩局終局 hash 都相同）。[升級證據](../quality/evidence/ai-defender-no-effort-v85-promotion-2026-10-18/README.md)
 - 攻擊戰的攻方以戰區配置規劃（v86，使用者決定例外升級，2026-11-13；只用西歐攻擊戰的事先登記觀測，未跑升級流程的獨立批，
   兩個攻方補給 gate 未通過，理由見 [evaluation.md 決策](evaluation.md#決策)）：
@@ -203,18 +196,16 @@
   （[觀測](../quality/evidence/ai-theater-untraced-games-2026-11-13/README.md)）。遭遇戰與攻擊戰的守方不受影響；東歐攻擊戰只做過
   正確性檢查（[升級紀錄](../quality/evidence/ai-theater-v86-promotion-2026-11-13/README.md)）。前線取用不到的 SP 仍比 v85 多
   （[補給 gate 與鐵路修正](../quality/evidence/ai-theater-supply-gates-2026-11-13/README.md)）。
-- 補給與兵力的四項修正（v87，走完升級流程，[獨立批](../quality/evidence/ai-s4-v87-independent-2026-11-15/README.md)）：
-  鐵路入場格要能往前送（`arrivalRailForward`）、HQ 接力（`hqBridge`）、守方斷補（`defenderCut`）、非組單位貼近有守軍的目標
-  （`approachAttack`），行為見上。對凍結 v86 的獨立 80 局：Kill − Loss 每對 +5.64 [+2.60, +8.67]（遭遇戰 +4.63、攻擊戰 +6.65）、
-  VP +0.73 [−1.01, +2.46]、Supply +1.34 [+0.32, +2.35]；兩個攻方補給 gate 通過（前線取用不到的後方 SP 2.8 對 6.3、前線取用不到的
-  SP 3.2 對 6.5）。個別量測：守方斷補的局面接續測試攻方終局斷補單位 +1.57 ± 0.42、守方 Kill − Loss +3.66 ± 0.77
-  （[紀錄](../quality/evidence/ai-s2-defender-cut-2026-11-14/README.md)）；貼近目標的接續測試 VP 差 +2.00 ± 0.59，但沒用於開發的
-  檢查局面上目標點數 +0.00 [−1.48, +1.48]，未通過自己的檢查，由使用者決定例外帶進候選（[紀錄](../quality/evidence/ai-s3-e6-approach-2026-11-15/README.md)、
-  [檢查](../quality/evidence/ai-s3-check-2026-11-15/README.md)）；入場修正與 HQ 接力在沒用於開發的局面上沒讓兩個 gate 單獨通過
-  （[S1 檢查](../quality/evidence/ai-s1-check-2026-11-14/README.md)、[診斷](../quality/evidence/ai-s1-supply-diagnosis-2026-11-14/README.md)）。
-  獨立批只判定四項合起來的效果。
 
 ### 尚未升級的候選
+
+非組單位貼近有守軍的目標（權重 `approachAttack`，預設 0；錯誤清單 E6）：不屬於戰區組的戰鬥單位，目標（ASSAULT、HUNT、CAPTURE）格有敵軍時，移到它旁邊不扣 crowding 與 exposure。接續測試 VP 差 +2.00 ± 0.59；開發局面目標點數 +1.43，檢查局面 +0.00 [−1.48, +1.48] 未通過不劣化門檻，使用者決定例外帶進候選 heuristic@87（見下）。它沒有交戰類型的條件：遭遇戰的單位與攻擊戰的守方也會套用，S3 只量過攻擊戰的攻方（[紀錄](../quality/evidence/ai-s3-e6-approach-2026-11-15/README.md)、[檢查](../quality/evidence/ai-s3-check-2026-11-15/README.md)）。
+
+攻擊戰的守方切斷攻方補給（權重 `defenderCut`，預設 0）：每個 Movement 步驟開頭，最多派 2 個不負責守點的單位，以 Combat Mode 移到能切斷至少 `defenderCut` 個攻方單位 trace 的格子；只用守方看得到的敵方棋子估算（規則查詢 `queryTraceCut`，4.9a），格子要仍在自己的 trace 內，暴露程度不超過移動評分接受的範圍。登記的局面接續測試（對凍結 v86，239 個分支）：攻方終局斷補單位 +1.57 ± 0.42、守方 Kill − Loss +3.66 ± 0.77、VP 差 +0.85 ± 0.46（[紀錄](../quality/evidence/ai-s2-defender-cut-2026-11-14/README.md)）。併入候選 heuristic@87（見下）。
+
+到達的 SP 只在這一回合鐵路能從入場格往前送時才偏好鐵路入場格（權重 `arrivalRailForward`，預設 0；規則查詢 `queryRailArrivalReach`，13.6b）。修正 `bot-sp-entry-rail`；開發局面推演中讓 heuristic@86 的兩個攻方補給 gate 對 heuristic@85 通過（後方剩餘 4.8 對 4.9、前線取用不到 1.3 對 1.5），目標點數只在 4 張地圖改變、都變好（[紀錄](../quality/evidence/ai-s1-development-2026-11-14/README.md)）。在沒用於開發的檢查局面上兩個 gate 仍未通過，並在一張地圖適得其反（鐵路把 SP 送到前線取用不到的車站，[S1 檢查](../quality/evidence/ai-s1-check-2026-11-14/README.md)）；之後加上「目的車站要有前線單位或 HQ 取用得到」的條件。另一個候選是 `hqBridge`：攻擊戰攻方沒被戰區組用到、這一步能移動的 HQ，站到取用得到前線取用不到的 SP、又投送得到前線的格子（[紀錄](../quality/evidence/ai-s1-supply-diagnosis-2026-11-14/README.md)）。兩項合用時 80 張開發地圖的兩個補給 gate 仍高於 heuristic@85（前線取用不到 1.6 對 1.2），S1 未完成；使用者決定維持例外，兩項帶進候選 heuristic@87（見下）。
+
+四項合成的候選 heuristic@87（`arrivalRailForward` 1、`hqBridge` 1、`defenderCut` 2、`approachAttack` 1）**以 VP 判定未通過升級**（主要量測是 VP，使用者，2026-11-15）：獨立 80 局對凍結 v86，VP 每對 +0.73 [−1.01, +2.46]，遭遇戰 −0.80、攻擊戰 +2.25（西歐遭遇戰 −3.20，10 對）；Kill − Loss +5.64 [+2.60, +8.67]、Supply +1.34 [+0.32, +2.35]；攻方的兩個補給 gate 通過（前線取用不到的後方 SP 2.8 對 6.3、前線取用不到的 SP 3.2 對 6.5）（[獨立批](../quality/evidence/ai-s4-v87-independent-2026-11-15/README.md)）。遭遇戰沒有戰區配置、HQ 接力與守方斷補，候選在那裡的差異只能來自 `approachAttack` 與 `arrivalRailForward`，兩者都沒有交戰類型的條件；哪一項造成遭遇戰的 VP 差尚未量測。
 
 最後一位玩家的最後回合，攻擊未持有的 VP 點、且承受全部 option 損失後仍有攻擊者存活時，候選 v77 改選損失以保留前進資格；其餘情況沿用 v75。候選 patch 以只供攻擊方查看的剩餘步數支援這項判斷，前進仍受既有補給限制。v77 以 v75 為基底，不含 v78 的卡車後勤與 v79 的補給鏈，尚未完成獨立 80 場驗收；[量測結果與證據](evaluation.md#候選策略量測)。
 
@@ -273,12 +264,14 @@
 - `bot-ration-search`：共同口糧搜尋有節點上限。
 - `GS-AI`：完整對局中仍有可救援的駐軍餓死。
 - `bot-rebuild-plan`：重建準備與補充再分配尚未計畫到達 VP 的時間。
-- `bot-sp-entry-rail`：入場修正已在標準策略中（v87），出口被切斷的入場格放置是否降為 0 尚未量測。
+- `bot-sp-entry-rail`：到達的 SP 放在鐵路格的入場格，不看這一回合鐵路能否從那裡往前送。
 - `bot-trace-gain-scan`：動作後 trace 修正只查前 12 個候選。
 - `bot-advance-first-entry`：有敵方運輸單位的首次前進與成功 Overrun 強制進駐仍有補給預判缺口。
 - `bot-relocation-coverage`：`DISPLACEMENT_HEX`、鐵路、海運與 breakdown 的補給預判未涵蓋。
+- `bot-eastern-front`：東歐地圖的長距離推進與守點尚缺現行策略重測。
 - `bot-hq-logistics-plan`：HQ 與卡車缺少協同前推的接力計畫。
 - 沒有 Reserve、Reaction 反擊、Extender、Breakout 規劃；戰鬥預估不含 Surprise。
+- `bot-defender-counterattack`：守方不反攻是權宜做法，應只在有優勢時反攻（見 [TODO 清單](../quality/05-todo-inventory.md)）。
 - `bot-force-concentration`：攻方不集中兵力。主攻群以守軍原始戰力的 2.5 倍組成、不看地形欄位；每個單位只以自己和目的地同格友軍判斷 `exposure`、`contact`，所以停在敵前 2–3 格；戰鬥補給項讓多數攻擊低於門檻（[研究](../quality/evidence/ai-force-concentration-v79-2026-10-16/README.md)）。候選 v81 試過的攻方集中方式都比 v79 差，v81–v83 的分角色規劃已刪除，v84 照 v79 下（[v81 開發量測](../quality/evidence/ai-assault-v81-development-2026-10-17/README.md)、[v82](../quality/evidence/ai-assault-v82-development-2026-10-17/README.md)）。
 
 ## 驗證

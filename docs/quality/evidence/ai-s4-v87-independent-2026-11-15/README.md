@@ -1,15 +1,17 @@
-# S4: heuristic@87 independent batch and promotion
+# S4: heuristic@87 independent batch
 
 Boundary: the promotion process of [AI evaluation](../../../ai/evaluation.md#標準策略的升級流程), from the registered
-independent batch to the promotion. This record changes no row of
+independent batch to its judgment. This record changes no row of
 `docs/quality/03-product-operation-verification-plan.md`. Plan: [S4.4–S4.5 of the AI strategy improvement
 WBS](../../../roadmap/19-ai-strategy-improvement-wbs.md#5-s4-獨立批與基準重測). Candidate, development batch and the supply
 audit decision: [S4 development record](../ai-s4-v87-2026-11-15/README.md). The user (2026-11-15): 「完成S4」.
 
-**Result: every registered condition holds; heuristic@87 is promoted.** It is the first standard since heuristic@75
-promoted through the whole process with no exception to it. Two of its parts reached S4 by the user's exceptions to the
-improvement plan (S1's remaining gap; `approachAttack` after its S3 check failed); the independent batch judges the
-candidate as a whole, not each part.
+**Result: not promoted; heuristic@86 stays the standard.** The conditions as registered (primary Kill − Loss) hold, but
+VP is the primary measure (the user, 2026-11-15: 「vp才是主要index」). At registration the agent chose Kill − Loss itself
+instead of reporting VP's low power to the user, as S4.3 of the plan requires. Judged on VP the batch fails: the meeting
+engagement's mean is −0.80 a pair (it must be positive in each changed engagement) and the lower end is −1.01 (it must be
+above 0). The promotion committed in `1d582c8` was withdrawn. Two parts of the candidate reached S4 by the user's
+exceptions to the improvement plan (S1's remaining gap; `approachAttack` after its S3 check failed).
 
 ## Registration
 
@@ -92,8 +94,12 @@ against 6.3, 6.5 and 12% when it attacks itself.
 ## What this shows
 
 - The candidate gains in both engagements and both maps on Kill − Loss. In VP it gains in three groups and loses in
-  Western Europe meeting games (−3.2 a pair, SD 7.1, 10 pairs; not separable from noise on its own).
-- The attacker's supply gap that heuristic@86 was promoted with is closed on these seeds: both gates pass with about half
+  Western Europe meeting games (−3.2 a pair, SD 7.1, 10 pairs; not separable from noise on its own), enough to make the
+  meeting engagement negative.
+- Meeting engagements have no theater allocation, HQ bridge or defender cut, so the candidate's meeting games differ only
+  through `approachAttack` and `arrivalRailForward`, which have no engagement condition. `approachAttack` was measured
+  only for the attacker of attack engagements (S3). Which of the two moves meeting VP is not measured.
+- The candidate closes, on these seeds, the attacker's supply gap that heuristic@86 was promoted with: both gates pass with about half
   the standard's undrawable SP. The development batch's worse fuel numbers (26% against 19%, 8 games) do not repeat here
   (11% against 12%); dry HQs stay slightly higher (7% against 5%).
 - On the defender's side, `defenderCut` doubles the SP heuristic@86's attacker cannot bring to its front.

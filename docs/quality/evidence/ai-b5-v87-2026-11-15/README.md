@@ -1,4 +1,4 @@
-# B5 heuristic baseline rerun with heuristic@87
+# B5 heuristic baseline rows with candidate heuristic@87
 
 Boundary: headless bot matches (`scripts/ai-match.mjs`) scored by `scripts/ai-acceptance.mjs`, rows B5-1 to B5-6 of the
 [AI bot WBS](../../../roadmap/11-ai-bot-wbs.md). B5-7 (reading three whole traces by
@@ -6,13 +6,14 @@ hand) was not redone. This record changes no row of `docs/quality/03-product-ope
 [S4.6 of the AI strategy improvement WBS](../../../roadmap/19-ai-strategy-improvement-wbs.md#5-s4-獨立批與基準重測). The user
 (2026-11-15): 「完成S4」, which includes S4.6's 80 games.
 
-**Result: every scored row passes on both map styles; Eastern Europe wins 20/20, so `bot-eastern-front`'s acceptance
-(≥ 90% over 20 games, seats exchanged, new seeds) is met.** B5 stays IN PROGRESS only for B5-7.
+**Result: every scored row passes on both map styles; Eastern Europe wins 20/20.** heuristic@87 is not the standard (its
+independent batch fails on VP, the primary measure), so this is not S4.6's rerun with the standard policy and does not
+close `bot-eastern-front`, whose acceptance names the standard policy.
 
 ## Run
 
-Standard heuristic@87, build of `3af6ab2` (policy identical to the promoted `1d582c8`; that commit changed only
-comments). Node v26.9.0. Default New Game: Western Europe meeting engagement, 32×24, 6 divisions a side, 8 Game Turns,
+Candidate heuristic@87, build of `3af6ab2` (policy identical to `1d582c8`, which promoted it; the promotion was withdrawn
+the same day because its independent batch fails on VP). Node v26.9.0. Default New Game: Western Europe meeting engagement, 32×24, 6 divisions a side, 8 Game Turns,
 generator defaults for air. Seeds not used before (no match index 2700000 or above in `docs/`, `scripts/` or
 `artifacts/`).
 
