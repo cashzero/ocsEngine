@@ -45,7 +45,7 @@ describe('HQ bridges (hqBridge)', () => {
   it('sends an HQ no group uses where it draws SP no front unit can draw and throws to the front', () => {
     const state = fixture();
     const me = state.sequence.actingPlayerId;
-    expect(bridgesOf(state, {})).toEqual([]);
+    expect(bridgesOf(state, { hqBridge: 0 })).toEqual([]);
     const bridges = bridgesOf(state, { hqBridge: 1 });
     expect(bridges.length).toBeGreaterThan(0);
     // The front as the policy sees it: own combat units (not HQs) within 4 hexes of an enemy stack it knows of. The plan

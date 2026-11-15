@@ -66,7 +66,7 @@ describe('where arriving SP enters (bot-sp-entry-rail)', () => {
   it('places the SP where rail can carry it forward only when arrivalRailForward is on', () => {
     const { state, recorded } = fixture();
     expect(String(recorded.hexId)).toBe('20,22');
-    expect(String(spEntry(state, {}, String(recorded.pieceId)))).toBe('20,22');
+    expect(String(spEntry(state, { arrivalRailForward: 0 }, String(recorded.pieceId)))).toBe('20,22');
     expect(String(spEntry(state, { arrivalRailForward: 1 }, String(recorded.pieceId)))).toBe('25,12');
   });
 });

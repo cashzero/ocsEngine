@@ -58,7 +58,7 @@ describe('cutting the attacker supply as the defender sees it (defenderCut)', ()
 
   it('plans cutting moves only with the weight, each cutting at least its value', () => {
     const state = fixture();
-    expect(cutsOf(state, {})).toEqual([]);
+    expect(cutsOf(state, { defenderCut: 0 })).toEqual([]);
     const cuts = cutsOf(state, { defenderCut: 2 });
     expect(cuts.length).toBeGreaterThan(0);
     for (const { cut } of cuts) expect(cut).toBeGreaterThanOrEqual(2);
