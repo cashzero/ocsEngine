@@ -49,10 +49,11 @@
 | `scripts/ai-theater-next-step.mjs` | 戰區配置下一步驟組的追蹤：重播配置版擔任攻方的存檔，記錄每個有守軍的下一步驟組成員在計畫時是否走得到目標旁、是否在 trace 內、移動時友軍補給關卡是否放行，以及下一回合配置是否保留目標、HQ 距離、是否攻擊與持有（[戰區補給配置](theater-supply-plan.md#策略上層)） |
 | `scripts/ai-theater-adherence.mjs` | 戰區補給配置策略上層的執行核對：重播存檔，在攻方每個 Movement 的第一個決策處讓開啟權重與標準策略各自規劃，比較兩者的目標與單位，並核對進入 Combat 時是否到位、是否攻擊、回合末是否持有（[戰區補給配置](theater-supply-plan.md#策略上層)）；`--execution` 逐單位追蹤策略自己的本步驟組成員：移動當下能否到目標旁、停在哪裡、未移動的原因、進入 Combat 時是否到位 |
 | `scripts/ai-position-confirm.py` | 依登記檔的門檻判定前瞻確認的每項假設（[局勢指標研究 WBS](../roadmap/18-position-metrics-wbs.md) P7） |
-| `scripts/ai-find-branches.mjs` | 從 trace 找分岔點：某一方在某個 segment 做了要研究的決策（例如攻擊戰守方的主攻任務），輸出該 segment 第一個行動的 index |
+| `scripts/ai-find-branches.mjs` | 從 trace 找分岔點：某一方在某個 segment 做了要研究的決策（例如攻擊戰守方的主攻任務），輸出該 segment 第一個行動的 index；`--replay` 改為重播存檔，給沒有 trace 的對局用（只限不看 intent 的 `first-movement`；與 trace 的結果逐欄相同） |
 | `scripts/ai-continue.mjs` | 局面接續：從存檔的分岔點重設 Rules RNG，各策略變體在同一組骰子種子下對固定對手接著下，記錄 +h 回合與終局的局面指標與事件 |
+| `scripts/ai-continue-batch.mjs` | 平行執行多個 `ai-continue.mjs`（每個分支 × 變體一個檔），可續跑：已完成的檔保留，中斷的重跑，同名變體換了策略、對手、骰子數或時點即報錯；變體可分次加跑；最後列出失敗與沒打完的接續 |
 | `scripts/ai-position-metrics.mjs` | 局面指標（模組）：VP、目標點持有／有人守／受威脅、單位與 step、DG、接敵、離敵距離、斷補、SP（地圖上、前線取用得到、取用不到、扣除口糧與燃料後的剩餘戰鬥 SP）、未控目標最佳有效欄位、2 格局部兵力比、乾 HQ；下一回合局勢（[局勢指標](policy-errors.md#局勢指標)），含近似共同 SP 預算的目標風險與可攻達性（尚非合法支付計劃）、對方一步能切斷補給的單位數、對方每單位只攻擊一格時的暴露量與單格最高期望損失；事件：step 損失（總計、戰鬥、耗損）、補給堆被奪或被毀的 SP、SP 支出、攻擊、砲擊 |
-| `scripts/ai-continue-compare.py` | 比較接續結果：每個指標的成對差（同一分岔點的骰子先平均）、t 值，以及早期差與終局 VP 差的相關 |
+| `scripts/ai-continue-compare.py` | 比較接續結果：每個指標的成對差（同一分岔點的骰子先平均）、t 值，以及早期差與終局 VP 差的相關；`--by-style`、`--by-role` 依地圖風格與角色（攻擊戰攻方、守方、遭遇戰）分格，報各格、各風格與各格等權的平均；`--cluster-by-map` 以地圖為 SE 的單位（cluster-robust）；並列出終局與基準不同的分支數 |
 | `scripts/ai-role-margin.mjs` | 把候選策略在攻擊戰的攻方與守方效果分開：與對手策略自我對戰的同種子基準比較每局攻方 margin |
 | `scripts/ai-concentration-study.mjs` | 攻方兵力集中：戰力離敵距離與任務分佈、可攻擊格與宣告攻擊的 Combat Table 欄位、主攻群貼近目標的戰力、砲兵模式與砲擊（需 `--trace`） |
 | `scripts/ai-vp-metrics-extract.mjs`、`scripts/ai-vp-metrics-compare.py`、`scripts/ai-outcome-metrics-observer.mjs`、`scripts/ai-outcome-metrics-compare.py` | 固定回合的目標控制與戰術指標重播（含未控目標最佳有效欄位與 2 格局部兵力比）；`--advanced` 加入補給階段的共同配給條件、耗損前 RE 暴露與損失原因，四結果比較使用各自的早期基準、同角色自戰差分、留出種子與策略變體；manifest、重現方式與限制見 [VP 指標研究](vp-metrics.md) |

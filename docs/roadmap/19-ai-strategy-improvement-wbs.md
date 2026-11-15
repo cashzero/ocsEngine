@@ -180,9 +180,9 @@
 
 ### 7.2 S5.0 工具（不開新局）
 
-- [ ] `ai-find-branches.mjs --replay`：存檔沒有 trace 時以重播找 `first-movement` 分支點（Game Turn N 起、該方自己的 Movement Segment 第一個動作）。驗收：有 trace 的 20 局兩種方式結果相同；2100400 的 axis 為 152（S3.2 的紀錄）。
-- [ ] `scripts/ai-continue-batch.mjs`：讀分支清單，平行執行 `ai-continue.mjs`，已有輸出的分支略過（可續跑），失敗列出；變體可分次加跑，基準列沿用。驗收：重跑 4 個已有的 S4.7 分支，v86 與 v87 的終局列逐欄相同。
-- [ ] `ai-continue-compare.py --cluster-by-map --by-style`：依地圖分群計算 SE，分列西歐、東歐與兩者各半的合併值。驗收：在 S4.7 的資料上，不分群時重現原報表。
+- [x] `ai-find-branches.mjs --replay`：存檔沒有 trace 時以重播找 `first-movement` 分支點（Game Turn N 起、該方自己的 Movement Segment 第一個動作）。驗收：有 trace 的 20 局兩種方式結果相同；2100400 的 axis 為 152（S3.2 的紀錄）。結果：`ai-b5-v87/vs-self` 20 局 40 個分支點（含動作數）逐欄相同；S3.2 的 160 個分支全部重現，2100400 axis 為 152。
+- [x] `scripts/ai-continue-batch.mjs`：讀分支清單，平行執行 `ai-continue.mjs`，已有輸出的分支略過（可續跑），失敗列出；變體可分次加跑，基準列沿用。驗收：重跑 4 個已有的 S4.7 分支，v86 與 v87 的終局列逐欄相同。結果：攻方西歐、攻方東歐、守方西歐、遭遇戰東歐各 1 個分支，32 列（含 T0+1）逐欄相同；重跑同一命令略過全部 8 個檔，同名變體換策略即報錯。
+- [x] `ai-continue-compare.py --cluster-by-map --by-style`：依地圖分群計算 SE，分列西歐、東歐與兩者各半的合併值。驗收：在 S4.7 的資料上，不分群時重現原報表。結果：三組報表逐位元相同；`--by-style` 重現 S4.8 的遭遇戰 `approachAttack` 西歐 −1.77 ± 0.99、東歐 +1.86 ± 0.92。
 
 ### 7.3 S5.1 候選只改攻擊戰
 
