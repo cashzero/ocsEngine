@@ -9,7 +9,8 @@
 // points; whether an advance after combat was offered and, per attacker that could advance, the rules' supply facts and
 // whether it passes the advance responder's test (src/ai/decisions.ts, ADVANCE_HEX); the responses given; whether the
 // attacker entered the hex later in the same player turn, who controls it when the attacker's next player turn begins
-// (the end of the game if none follows) and at the end. A game identical to an earlier one (same final state, as the
+// (the end of the game if none follows) and at the end; where no advance was offered, why (every attacker eliminated, an
+// attacker retreat, or no survivor able to move: combat.ts, the ADVANCE step). A game identical to an earlier one (same final state, as the
 // seat-exchanged games of a self-play) is counted once. Writes the events and a summary; prints the summary.
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
@@ -59,7 +60,8 @@ for (const dir of dirs) {
         }
       }
       if (action.kind === 'DECLARE_COMBAT' && action.actorId === attackerId && action.combatKind === 'REGULAR' && objectives.has(String(action.targetHexId))) {
-        pending = { hexId: String(action.targetHexId), points: objectives.get(String(action.targetHexId)), turn: key, revision, offered: null, responses: [] };
+        pending = { hexId: String(action.targetHexId), points: objectives.get(String(action.targetHexId)), turn: key, revision, offered: null, responses: [],
+          attackerIds: action.attackerIds.map(String), attackerRetreated: false };
       }
       const decision = state.pendingDecision;
       if (pending && decision?.kind === 'ADVANCE_HEX' && decision.ownerId === attackerId) {
@@ -84,9 +86,11 @@ for (const dir of dirs) {
         if (action.kind === 'RESPOND_DECISION') pending.responses.push(action.choiceId);
       }
       state = m.ruleEngine.applyAction(state, action).state;
+      if (pending && state.activeTransaction?.attackerRetreated === true) pending.attackerRetreated = true;
       if (pending && state.activeTransaction === null && state.pendingDecision === null) {
         if (combatAt(state, pending.hexId, false).length === 0 && controller(state, pending.hexId) !== attackerId) {
-          gameEvents.push({ save: savePath, match: record.match, ...pending, offered: pending.offered ?? [], enteredLater: false });
+          const attackersLeft = pending.attackerIds.filter((id) => state.pieceState.pieces.some((piece) => String(piece.id) === id && piece.location.kind === 'ON_MAP')).length;
+          gameEvents.push({ save: savePath, match: record.match, ...pending, offered: pending.offered ?? [], enteredLater: false, attackersLeft });
         }
         pending = null;
       }
@@ -98,6 +102,8 @@ for (const dir of dirs) {
       const offered = event.offered.length > 0;
       event.class = !offered ? 'no advance offered' : event.offered.some(({ supplied }) => supplied) ? 'supplied advance not taken' : 'no supplied advance';
       event.recoverable = offered && event.class === 'no supplied advance' && !event.atNextTurn;
+      // Why the rules offered no advance (combat.ts ADVANCE step): every attacker gone, an attacker retreat, or no survivor able to move.
+      if (!offered) event.noOffer = event.attackersLeft === 0 ? 'attackers eliminated' : event.attackerRetreated ? 'attackers retreated' : 'no survivor able to move';
       events.push(event);
     }
   }
@@ -128,9 +134,13 @@ const summary = {
     'recoverable VP, not funded only': perGame(({ recoverable, reason }) => recoverable && reason === 'not funded', ({ points }) => points),
   },
   noSuppliedAdvanceBy: Object.fromEntries(Object.entries(failingTests).map(([reason, count]) => [reason, count / games])),
+  noAdvanceOfferedBy: Object.fromEntries(['attackers eliminated', 'attackers retreated', 'no survivor able to move'].map((reason) => [reason, {
+    events: perGame(({ noOffer }) => noOffer === reason), vp: perGame(({ noOffer }) => noOffer === reason, ({ points }) => points),
+    'VP not held at the next player turn': perGame(({ noOffer, atNextTurn }) => noOffer === reason && !atNextTurn, ({ points }) => points) }])),
 };
 mkdirSync(dirname(resolve(out)), { recursive: true });
 writeFileSync(out, JSON.stringify({ summary, events }, null, 1));
 console.log(`${games} games, ${events.length} events`);
 for (const [key, value] of Object.entries(summary.perGame)) console.log(`  ${key}: ${value.toFixed(2)} a game`);
+for (const [key, value] of Object.entries(summary.noAdvanceOfferedBy)) console.log(`  no advance offered, ${key}: ${value.events.toFixed(2)} a game, ${value.vp.toFixed(2)} VP, ${value['VP not held at the next player turn'].toFixed(2)} VP not held at the next player turn`);
 for (const [key, value] of Object.entries(summary.noSuppliedAdvanceBy)) console.log(`  no supplied advance, the furthest option fails at "${key}": ${value.toFixed(2)} a game`);
