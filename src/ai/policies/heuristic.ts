@@ -93,7 +93,7 @@ const CUT_MOVES = 2;
 const CUT_ENEMY_RADIUS = 4;
 
 /**
- * defenderCut (bot-defender-counterattack): the defender of an attack engagement sends up to CUT_MOVES units no garrison
+ * defenderCut (policy-errors E1): the defender of an attack engagement sends up to CUT_MOVES units no garrison
  * needs to hexes where their ZOC cuts the trace supply of at least w.defenderCut of the attacker's units, as far as it can
  * see them (`traceCut`, 4.9a). A hex is tried when the unit reaches it in Combat Mode this step, stays in its own trace
  * there, holds no enemy, has enemy stacks within CUT_ENEMY_RADIUS, and is no more exposed than the move scoring accepts
@@ -261,7 +261,7 @@ interface StepNotes {
   stagerTargets?: ReadonlyMap<PieceId, Target>;
   /** theaterAllocation: Tokens last seen in each dump, so SP a placed truck unloads this step count for the units that move after it. */
   feedSeen?: Map<string, number>;
-  /** defenderCut: the hex each defender unit sent to cut the attacker's supply stops in this step (bot-defender-counterattack). */
+  /** defenderCut: the hex each defender unit sent to cut the attacker's supply stops in this step (policy-errors E1). */
   cutPlan?: ReadonlyMap<PieceId, HexId>;
   /** The objective of each unit of a theater group: it may leave trace for its attack position there if it can eat (12.6c). */
   theaterObjectives?: ReadonlyMap<PieceId, HexId>;

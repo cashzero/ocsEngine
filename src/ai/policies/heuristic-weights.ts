@@ -70,7 +70,7 @@ export interface HeuristicWeights {
   readonly assaultMaxEfforts: number;
   /** Above 0 the attacker of an attack engagement plans this step's efforts and captures by theater allocation (policies/theater.ts). */
   readonly theaterAllocation: number;
-  /** Above 0, the defender of an attack engagement sends units to cut the trace of at least this many attacker units it sees (bot-defender-counterattack). */
+  /** Above 0, the defender of an attack engagement sends units to cut the trace of at least this many attacker units it sees (policy-errors E1). */
   readonly defenderCut: number;
   /** Above 0, a unit of no theater group closes in beside its defended target without crowding and exposure penalties (error list E6). */
   readonly approachAttack: number;
