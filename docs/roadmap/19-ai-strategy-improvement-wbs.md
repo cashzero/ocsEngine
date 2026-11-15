@@ -186,14 +186,16 @@
 
 ### 7.3 S5.1 候選只改攻擊戰
 
-- [ ] `src/ai/policies/heuristic.ts`：`approaching` 與入場的 `railForwardFromArrival` 加上 `situation.attack`（攻擊戰的攻方與守方都生效；遭遇戰不生效）。更新 `heuristic-weights.ts` 的註解與 `docs/ai/heuristic-policy.md`。
-- [ ] 測試：
+- [x] `src/ai/policies/heuristic.ts`：`approaching` 與入場的 `railForwardFromArrival` 加上 `situation.attack`（攻擊戰的攻方與守方都生效；遭遇戰不生效）。更新 `heuristic-weights.ts` 的註解與 `docs/ai/heuristic-policy.md`。
+- [x] 測試：
   - `tests/ai/approach-attack.test.ts`（目前沒有任何測試涵蓋 `approachAttack`）：攻擊戰的存檔局面中，權重 0 時某個非組單位停在目標 2～3 格外、權重 1 時移到目標旁；遭遇戰的存檔局面中，兩種權重下同一個玩家回合的每個決策相同。
   - `tests/ai/sp-entry-rail.test.ts` 加一個遭遇戰局面：權重開啟時入場格的選擇與權重 0 相同。
-- [ ] 驗收（都用既有局面的接續，不開新局）：
+  - 結果：局面取自上一輪獨立批（攻擊戰 2400201 第 111 步，守方單位權重 0 停在目標 15,11 的 2 格外、權重 1 到旁邊；遭遇戰 2400000 第 91 步與 2400002 第 271 步，heuristic@87 在這兩處的決策與 v86 不同）。拿掉 `situation.attack` 時恰好兩個遭遇戰測試失敗。
+- [x] 驗收（都用既有局面的接續，不開新局）：
   - 遭遇戰未改變：S4.7 的 8 個遭遇戰分支（西歐、東歐各 4），候選權重與 v86 的終局列逐欄相同。
   - 攻擊戰不變質：S4.7 的攻方、守方各 4 個分支，候選權重的終局列與當時的 v87 變體逐欄相同（範圍修正只影響遭遇戰）。
   - 預設權重與凍結 v86 的 4 局標準自我對戰終局 hash 相同；typecheck、完整測試、build 通過。
+  - 結果：遭遇戰 8 個分支 32 列，候選與 v86 逐欄相同（heuristic@87 在其中 16 個終局列有 15 列不同）；攻擊戰 8 個分支 32 列與 S4.7 的 v87 逐欄相同；2400200、2400201、2400300、2400301 的終局 hash 與記錄的 v86 自我對戰相同；typecheck、build 通過，完整測試 826 通過、7 略過。
 
 ### 7.4 S5.2 登記前以 VP 驗證（局面接續）
 

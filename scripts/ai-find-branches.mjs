@@ -14,7 +14,8 @@
 // the save, the segment, the seat's side and the index of the segment's first action (the --at of ai-continue.mjs).
 // --replay reads the saves instead of the traces, for games played without traces: each accepted action is the seat's row
 // of the step it was taken in (the step key of the state before it, an answer to a pending decision being a DECISION row).
-// Intents are not in a save, so only kinds that match any intent (first-movement) can be found this way. Build first.
+// Intents are not in a save, so only kinds that match any intent (first-movement) can be found this way. A save this
+// engine does not replay to its recorded final state is an error. Build first.
 import { existsSync, readFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -56,8 +57,12 @@ const replayRows = async (savePath) => {
       seatId: save.acceptedActionMetadata[revision].seatId, stepKey: `${gameTurn}:${playerTurnIndex}:${phase}:${segment}`,
       revision, kind: state.pendingDecision ? 'DECISION' : 'ACTION', intent: '',
     });
-    state = engine.ruleEngine.applyAction(state, action).state;
+    const applied = engine.ruleEngine.applyAction(state, action);
+    if (!applied.ok) throw new Error(`${savePath}: action ${revision} is rejected by this engine`);
+    state = applied.state;
   });
+  // The branch points are only those of the recorded game if this engine replays it to the same end.
+  if ((await engine.hashGameState(state)).value !== save.finalStateHash) throw new Error(`${savePath}: this engine replays it to another final state`);
   return rows;
 };
 const traceRows = (path) => readFileSync(path, 'utf8').split('\n').filter(Boolean).map((line) => JSON.parse(line));

@@ -8,8 +8,10 @@ import { createBotRng, createHeuristicPolicy, heuristicWeights, parseGameStateJs
 // Game Turn 3 of a rollout of 2100474 (the theater attacker with the rail fix), at the Reinforcement Phase before the
 // attacker places its arriving SP. Enemy units and ZOC cut the rail line out of the entry hex 20,22; from 25,12 rail runs
 // on (docs/quality/evidence/ai-supply-gap-attribution-2026-11-13/README.md).
-const fixture = () => {
-  const stored = JSON.parse(gunzipSync(readFileSync(join(__dirname, 'fixtures', 'sp-entry-rail-2100474.state.json.gz'))).toString()) as {
+// sp-entry-meeting-2400002: Game Turn 3 of a meeting engagement of heuristic@87's independent batch, before heuristic@86
+// placed the Axis SP on the railroad entry hex 25,12; heuristic@87 (no engagement condition) placed it at 20,22 (S4.8).
+const fixture = (name = 'sp-entry-rail-2100474') => {
+  const stored = JSON.parse(gunzipSync(readFileSync(join(__dirname, 'fixtures', `${name}.state.json.gz`))).toString()) as {
     snapshot: string; action: Extract<GameAction, { kind: 'PLACE_REINFORCEMENT' }>;
   };
   const parsed = parseGameStateJson(stored.snapshot);
@@ -67,6 +69,14 @@ describe('where arriving SP enters (bot-sp-entry-rail)', () => {
     const { state, recorded } = fixture();
     expect(String(recorded.hexId)).toBe('20,22');
     expect(String(spEntry(state, { arrivalRailForward: 0 }, String(recorded.pieceId)))).toBe('20,22');
+    expect(String(spEntry(state, { arrivalRailForward: 1 }, String(recorded.pieceId)))).toBe('25,12');
+  });
+
+  it('leaves a meeting engagement\'s entry hex as heuristic@86 chooses it', () => {
+    const { state, recorded } = fixture('sp-entry-meeting-2400002');
+    expect(state.configuration.attackVictory).toBeUndefined();
+    expect(String(recorded.hexId)).toBe('25,12');
+    expect(String(spEntry(state, { arrivalRailForward: 0 }, String(recorded.pieceId)))).toBe('25,12');
     expect(String(spEntry(state, { arrivalRailForward: 1 }, String(recorded.pieceId)))).toBe('25,12');
   });
 });

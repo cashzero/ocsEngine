@@ -72,11 +72,11 @@ export interface HeuristicWeights {
   readonly theaterAllocation: number;
   /** Above 0, the defender of an attack engagement sends units to cut the trace of at least this many attacker units it sees (bot-defender-counterattack). */
   readonly defenderCut: number;
-  /** Above 0, a unit of no theater group closes in beside its defended target without crowding and exposure penalties (error list E6). */
+  /** Above 0, in an attack engagement (either side), a unit of no theater group closes in beside its defended target without crowding and exposure penalties (error list E6). */
   readonly approachAttack: number;
   /** Above 0 (with theaterAllocation), HQs no theater group uses go where they carry SP no front unit can draw on to the front (hqBridge). */
   readonly hqBridge: number;
-  /** Above 0, arriving SP prefers a railroad entry hex only when rail can carry it forward from there this turn (bot-sp-entry-rail). */
+  /** Above 0, in an attack engagement (either side), arriving SP prefers a railroad entry hex only when rail can carry it forward from there this turn (bot-sp-entry-rail). */
   readonly arrivalRailForward: number;
   readonly assaultPosition: number;
   /** Multiplies the objective term of a combat against the main effort's target. */

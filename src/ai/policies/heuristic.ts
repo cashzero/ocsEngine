@@ -567,8 +567,9 @@ const scoreDestination = (
     // Strat Mode units defend badly and lose their ZOC: keep them well away from the enemy (5.8).
     if (unit.piece.mode === 'STRAT' && situation.nearestEnemy(destination).distance <= w.stratSafeDistance) add('strat-near-enemy', -w.stratNearEnemy);
     // approachAttack (error list E6): a unit of no theater group whose target is a defended hex closes in beside it this step
-    // without the crowding and exposure penalties that held such units two or three hexes short.
-    const approaching = w.approachAttack > 0 && target !== undefined && ['ASSAULT', 'HUNT', 'CAPTURE'].includes(target.purpose)
+    // without the crowding and exposure penalties that held such units two or three hexes short. Attack engagements only
+    // (either side): in meeting engagements it lowered VP on the Western maps and raised it on the Eastern ones (S4.8).
+    const approaching = w.approachAttack > 0 && situation.attack && target !== undefined && ['ASSAULT', 'HUNT', 'CAPTURE'].includes(target.purpose)
       && (situation.enemy.get(target.hexId)?.hasCombatUnit ?? false) && hexesBetween(destination, target.hexId) === 1
       && !(notes.theaterObjectives?.has(unit.piece.id) ?? false);
     // One stack per hex does the job; more units in the same hex only make a better barrage target.
@@ -1712,8 +1713,9 @@ const reinforcementStep = (context: BotDecisionContext, situation: Situation, fa
     // map where rail could not take it.
     let rail = action.kind === 'PLACE_REINFORCEMENT' && roleOf.get(String(action.pieceId)) === 'DUMP' && knowledgeOf(facts).railHexes.has(String(hexId)) ? 1 : 0;
     // arrivalRailForward (bot-sp-entry-rail): only when rail can carry it forward from there this turn. An entry hex whose
-    // line out is cut by enemy units or ZOC kept up to 20 SP at the map edge, where only trucks reached it.
-    if (rail > 0 && w.arrivalRailForward > 0) rail = railForwardFromArrival(context, situation, hexId, front) ? 1 : 0;
+    // line out is cut by enemy units or ZOC kept up to 20 SP at the map edge, where only trucks reached it. Attack
+    // engagements only (either side), where it was measured; meeting engagements keep heuristic@86's choice.
+    if (rail > 0 && w.arrivalRailForward > 0 && situation.attack) rail = railForwardFromArrival(context, situation, hexId, front) ? 1 : 0;
     return { action, traced, rail, score: -distance - situation.threatAt(hexId) };
   }).sort((left, right) => right.traced - left.traced || right.rail - left.rail || right.score - left.score);
   return decision(scored[0]!.action, scored[0]!.traced ? 'place a supplied arrival toward its mission' : scored[0]!.rail ? 'place arriving SP on the railroad' : 'place the arrival nearest its mission',
