@@ -1,6 +1,6 @@
 # AI 攻防策略改進 WBS
 
-狀態：**IN PROGRESS**。S1 的剩餘差距由使用者維持為例外，S1 的結束條件未勾選；S2 完成；S3 完成（`approachAttack` 的檢查未通過，由使用者例外帶到 S4）；S4.1–S4.5 完成：heuristic@87（v86 加 `arrivalRailForward`、`hqBridge`、`defenderCut`、`approachAttack`）走完升級流程、升級為標準；S4.6（B5 重測）進行中。本文件只維護工作分解；量測結果寫在 `docs/ai/`，證據在 `docs/quality/evidence/`。
+狀態：**IN PROGRESS**。S1 的剩餘差距由使用者維持為例外，S1 的結束條件未勾選；S2 完成；S3 完成（`approachAttack` 的檢查未通過，由使用者例外帶到 S4）；S4 完成：heuristic@87（v86 加 `arrivalRailForward`、`hqBridge`、`defenderCut`、`approachAttack`）走完升級流程、升級為標準，B5-1～B5-6 以它重測全部通過。只剩 S1 的結束條件（例外）未勾選。本文件只維護工作分解；量測結果寫在 `docs/ai/`，證據在 `docs/quality/evidence/`。
 
 需求來源（使用者，2026-11-13）：「盤點目前ai研究情形 制定接下來的改進策略」，對提出的四階段順序、暫停指標研究線與寫入路線圖回答「全部同意 制定細部計畫」。
 
@@ -119,7 +119,7 @@
 - [x] **S4.3 登記獨立批**（[登記](../quality/evidence/ai-s4-v87-2026-11-15/registration.json)、[說明](../quality/evidence/ai-s4-v87-2026-11-15/registration-notes.md)，`07fda54`）。全新種子 80 場／40 對，四組各 20 局（2400000–2400319）。主要量測 Kill − Loss，VP 與 Supply 的不劣化幅度 1.5 與 0.5，依開發批的每對變異算得合計檢定力約 0.87。
 - [x] **S4.4 執行與判定**（[紀錄](../quality/evidence/ai-s4-v87-independent-2026-11-15/README.md)）。登記的條件全部通過：Kill − Loss 每對 +5.64 [+2.60, +8.67]（遭遇戰 +4.63、攻擊戰 +6.65）、VP +0.73 [−1.01, +2.46]、Supply +1.34 [+0.32, +2.35]；80 局合法完成、重播相同、稽核違例 0；兩個攻方補給 gate 對 v86 同種子自我對戰通過（2.8 對 6.3、3.2 對 6.5）。`verify.py --delivered` 確認交付的原始碼與建置等於凍結的候選。揭露：西歐遭遇戰 VP 每對 −3.20（10 對），乾 HQ 7% 對 5%。
 - [x] **S4.5 升級與凍結**。策略版本 87、四項權重預設開啟；新標準凍結為 `artifacts/ai-promotion/frozen-v87-standard`；主題文件與 TODO 已更新（`bot-defender-counterattack` 關閉）。
-- [ ] **S4.6 B5 重測**（須使用者同意）。以當時的標準策略跑 `ai-acceptance.mjs`：對 random-legal 交換座位 40 局、電腦互打 20 局，以及東歐風格 20 局（`bot-eastern-front`，勝率 ≥ 90%）。更新 [AI WBS](11-ai-bot-wbs.md) B5 的狀態與 `evaluation.md` 的基準數字。B2 的 100 局、大地圖與開空軍批次不在本計畫內，維持開放。
+- [x] **S4.6 B5 重測**（[紀錄](../quality/evidence/ai-b5-v87-2026-11-15/README.md)）。heuristic@87、全新種子 2700000–2700219，`ai-acceptance.mjs`：預設地圖對 random-legal 交換座位 40 局 40 勝、電腦互打 20 局全部完成，B5-1～B5-6 全部 PASS；東歐風格 20 局 20 勝（`bot-eastern-front` 關閉）。已更新 [AI WBS](11-ai-bot-wbs.md) B5 的狀態與 `evaluation.md` 的基準數字；B5-7 的人工檢視不在本項，B5 維持 IN PROGRESS。B2 的 100 局、大地圖與開空軍批次不在本計畫內，維持開放。
 
 需要使用者同意的對局（其餘步驟不開新局）：
 

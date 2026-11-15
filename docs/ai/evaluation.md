@@ -291,8 +291,8 @@ SP 每 segment 7.4–9.8 SP（地圖上 SP 的 29–36%）。
 
 已完成驗證的對戰批均合法打完 8 回合，重播 hash 一致，既定一般補給與嚴格前進稽核違例為零。v77 的完整品質檢查為 752 passed／8 skipped，typecheck、build、smoke 通過；該批成對平均 +0.25、區間 [−0.275, 0.775]，尚未登記或執行獨立批；v77 以 v75 為基底，要成為標準須改以 v78 為基底重新驗收。各次 frozen quality 的命令、時間、來源與建置雜湊在個別 evidence 的 JSON 中；觀測 commit 與歷史重寫後相同 tree 的對照見 [來源對照](../quality/evidence/ai-vp-terminal-option-development-2026-10-16/source-equivalence.json)。
 
-對 `random-legal` 的基準（WBS B5）最後量測於 heuristic@5（OOB 0.4.0，對 random-legal 39/40，終局 91% 在補給內）；
-東歐風格最後量測於 heuristic@1，勝率 80%（目標 90%）。
+對 `random-legal` 的基準（WBS B5）以 heuristic@87 量測（[紀錄](../quality/evidence/ai-b5-v87-2026-11-15/README.md)）：預設地圖（西歐遭遇戰）40/40、兩個座位各 20/20，
+攻擊 odds 中位數 13.0:1，終局 100% 在補給內；東歐風格 20/20（目標 90%）；電腦互打 20 局全部完成。B5-7 的人工檢視最後在 heuristic@1。
 
 ## 決策
 
@@ -332,7 +332,7 @@ SP 每 segment 7.4–9.8 SP（地圖上 SP 的 29–36%）。
 ## 已知缺口
 
 - `heuristic@87` 在西歐遭遇戰 VP 每對 −3.20（10 對，SD 7.1，單組無法與雜訊分開）；攻方乾 HQ 7% 對 v86 的 5%。
-- `heuristic@79` 尚未重跑 WBS B5（對 random-legal、東歐風格），也沒有遭遇戰與獨立批的量測；目前數字來自較舊的版本。
+- WBS B5-7（人工檢視 3 局完整 trace）最後在 heuristic@1 做過，現行標準沒有重做。
 - WBS B2 的 100 局、大地圖 20 局、開啟空軍 20 局批次未完成。
 - 升級流程只用兩種地圖與兩種交戰，沒有 `ALLIED_ATTACKS`、海域、空軍或其他尺寸。
 
