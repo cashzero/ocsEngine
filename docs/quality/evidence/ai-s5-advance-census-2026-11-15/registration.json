@@ -1,0 +1,26 @@
+{
+  "record": "S5.4a of docs/roadmap/19-ai-strategy-improvement-wbs.md: why an attacker's attack clears an objective that nobody then enters. An analysis of recorded games, no new game and no continuation; written before the census is run",
+  "registeredAt": "2026-11-15",
+  "request": "The user (2026-11-15): 「開始執行S5」 (section 7.6 of the WBS: S5.4a is analysis only and may run beside S5.2)",
+  "build": "source commit 467b5bb, dist built from it",
+  "data": {
+    "selfplay": "heuristic@86 self-play attack games on the last batch's seeds: artifacts/ai-promotion/frozen-v87r-v86selfplay-independent/attack-{western,eastern} and frozen-v87-v86selfplay-development/attack-{western,eastern}; a game identical to an earlier one (same final state: the seat-exchanged games of a self-play) is counted once, 28 games (14 Western, 14 Eastern)",
+    "theater": "artifacts/ai-theater-untraced-games/attack-western: the 40 games where the theater policy (theaterAllocation 1, heuristic@86's planning) attacked heuristic@85"
+  },
+  "tool": "node scripts/ai-advance-census.mjs <dir> [...] [--policy <substring of the attacker's policy>] --out <file.json>",
+  "event": "a regular attack of the attacker on an objective hex whose resolution (no transaction and no pending decision left) leaves the hex without an enemy combat unit and not controlled by the attacker",
+  "recorded per event": [
+    "the objective's points; Game Turn and player turn",
+    "whether an ADVANCE_HEX decision was offered, and its advance options (one per attacker left), each with: allowed, supply.advanceFunded, supply.advanceFeedLost, supply.advanceTraceLost, supply.advanceMoverHasTrace, and whether the unit is the only garrison of an objective the attacker holds",
+    "supplied: an option that passes the advance responder's test (src/ai/decisions.ts: allowed, funded or the last turn, feed lost 0, trace lost 0 or the mover has no trace and trace lost 1; not an only garrison)",
+    "the response the bot gave",
+    "whether the attacker enters the hex later in the same player turn; who controls it when the attacker's next player turn begins, and at the end of the game"
+  ],
+  "classes": [
+    "no advance offered (no attacker left to advance)",
+    "offered, no supplied option, with the first failing test of each option (not allowed, not funded, feed lost, trace lost, only garrison)",
+    "offered, a supplied option, not taken"
+  ],
+  "stopRule": "Recoverable VP a game = the points of events where an advance was offered, no option was supplied, and the attacker does not control the hex when its next player turn begins (or at the end of the game if none follows), divided by the games. Over the 68 games pooled (each game counts once): below 0.5, S5.4b is not implemented and the conclusion is recorded. Reported per data set as well; the stop rule uses the pooled value only",
+  "alsoReported": "events a game by class, by failing test, entered later in the turn, held at the next player turn and at the end; the same for the not-funded class alone (the case S5.4b's drop-point fix addresses)"
+}
