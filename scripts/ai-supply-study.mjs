@@ -36,6 +36,12 @@ for (const record of summary.records.filter(r => r.stopReason === 'FINISHED' && 
   const hqBreaks = [];
   const otherUnitTraceBreaks = [];
   const relocationTraceBreaks = [];
+  // The moving unit's own trace loss is a break only if it has neither trace nor SP to eat (12.6c) when its Movement
+  // Segment ends: a theater group's member may leave trace for an attack position where it eats, and a stager stops at a
+  // drop its truck unloads at later in the segment (user decision 2026-11-15, docs/ai/evaluation.md).
+  const moverTraceLosses = [];
+  let pendingMovers = [];
+  const segmentKey = (s) => `${s.sequence.gameTurn}:${s.sequence.playerTurnIndex}:${s.sequence.phase}:${s.sequence.segment}`;
   const previewMismatches = [];
   const feedBreaks = [];
   const retreatChoices = [];
@@ -99,7 +105,9 @@ for (const record of summary.records.filter(r => r.stopReason === 'FINISHED' && 
       if (hq) hqActions++;
       const lost = state.pieceState.pieces.filter(p => p.ownerId === action.actorId && p.location.kind === 'ON_MAP'
         && isCombatUnit(state, p) && m.pieceHasTrace(state, p) && !m.pieceHasTrace(next.state, pieceAt(next.state, p.id)));
-      if (lost.length) relocationTraceBreaks.push({ ...context, hq, lostIds: lost.map(p => p.id) });
+      const othersLost = lost.filter(p => p.id !== action.pieceId);
+      if (othersLost.length) relocationTraceBreaks.push({ ...context, hq, lostIds: othersLost.map(p => p.id) });
+      if (lost.some(p => p.id === action.pieceId)) pendingMovers.push({ context, hq, pieceId: action.pieceId, actorId: action.actorId, segment: segmentKey(state) });
       const predicted = relocationFacts.find(f => f.key === 'supply.relocationTraceLostIds')?.value;
       if (predicted !== lost.map(p => p.id).join(',')) previewMismatches.push({ ...context, predicted, actual: lost.map(p => p.id) });
       if (hq && lost.length) hqBreaks.push({ ...context, lostIds: lost.map(p => p.id) });
@@ -116,6 +124,17 @@ for (const record of summary.records.filter(r => r.stopReason === 'FINISHED' && 
     }
     contexts.push(context);
     states.push(next.state);
+    if (pendingMovers.length && pendingMovers.some(({ segment }) => segment !== segmentKey(next.state))) {
+      const ending = pendingMovers.filter(({ segment }) => segment !== segmentKey(next.state));
+      pendingMovers = pendingMovers.filter((pending) => !ending.includes(pending));
+      for (const { context: at, hq, pieceId, actorId } of ending) {
+        const piece = pieceAt(next.state, pieceId);
+        const supplied = piece?.location.kind === 'ON_MAP' && (m.pieceHasTrace(next.state, piece)
+          || (m.ruleEngine.queryFeedCoverage(next.state, actorId, pieceId).value ?? []).some(f => f.tokens > 0 && f.hexIds.map(String).includes(String(piece.location.hexId))));
+        moverTraceLosses.push({ ...at, hq, pieceId, suppliedAtSegmentEnd: supplied });
+        if (!supplied) relocationTraceBreaks.push({ ...at, hq, lostIds: [pieceId], moverUnsuppliedAtSegmentEnd: true });
+      }
+    }
     state = next.state;
   }
   const hash = await m.hashGameState(state);
@@ -179,7 +198,7 @@ for (const record of summary.records.filter(r => r.stopReason === 'FINISHED' && 
   const rationCounts = {};
   for (const r of attributed) counts[r.category] = (counts[r.category] ?? 0) + 1;
   for (const r of attributed) rationCounts[r.rationCategory] = (rationCounts[r.rationCategory] ?? 0) + 1;
-  const result = { match: record.match, winner: record.winner, sides: record.sides, finalStateHash: hash.value, attrition: attributed, counts, rationCounts, hqActions, hqBreaks, relocationActions, otherUnitTraceBreaks, relocationTraceBreaks, previewMismatches, supplyRelocationActions, feedBreaks, retreatChoices, rationSpending, rationPayments };
+  const result = { match: record.match, winner: record.winner, sides: record.sides, finalStateHash: hash.value, attrition: attributed, counts, rationCounts, hqActions, hqBreaks, relocationActions, otherUnitTraceBreaks, relocationTraceBreaks, moverTraceLosses, previewMismatches, supplyRelocationActions, feedBreaks, retreatChoices, rationSpending, rationPayments };
   results.push(result);
   console.log(record.match, JSON.stringify(counts), `${Date.now() - started}ms`);
 }
