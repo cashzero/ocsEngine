@@ -199,7 +199,7 @@
 
 ### 尚未升級的候選
 
-非組單位貼近有守軍的目標（權重 `approachAttack`，預設 0；錯誤清單 E6）：不屬於戰區組的戰鬥單位，目標（ASSAULT、HUNT、CAPTURE）格有敵軍時，移到它旁邊不扣 crowding 與 exposure。接續測試 VP 差 +2.00 ± 0.59；開發局面目標點數 +1.43，檢查局面 +0.00 [−1.48, +1.48] 未通過不劣化門檻，使用者決定例外帶進候選 heuristic@87（見下）。只給攻擊戰的攻方：heuristic@87 沒有交戰條件，在遭遇戰依地圖風格方向相反（見下，S5.1 改為只在攻擊戰）；單獨量時守方 VP 每局 −0.39 ± 0.50（西歐 −1.17 ± 0.70，[S5.2b](../quality/evidence/ai-s5-parts-2026-11-16/README.md)），所以之後再改為只給攻方。S3 只量過攻擊戰的攻方（[紀錄](../quality/evidence/ai-s3-e6-approach-2026-11-15/README.md)、[檢查](../quality/evidence/ai-s3-check-2026-11-15/README.md)）。回歸測試 `tests/ai/approach-attack.test.ts`：攻擊戰的守方與遭遇戰中，兩種權重的決策相同（heuristic@87 在這兩個局面都把單位移到目標旁）。
+非組單位貼近有守軍的目標（權重 `approachAttack`，預設 0；錯誤清單 E6）：不屬於戰區組的戰鬥單位，目標（ASSAULT、HUNT、CAPTURE）格有敵軍時，移到它旁邊不扣 crowding 與 exposure。接續測試 VP 差 +2.00 ± 0.59；開發局面目標點數 +1.43，檢查局面 +0.00 [−1.48, +1.48] 未通過不劣化門檻，使用者決定例外帶進候選 heuristic@87（見下）。只給攻擊戰的攻方：heuristic@87 沒有交戰條件，在遭遇戰依地圖風格方向相反（見下，S5.1 改為只在攻擊戰）；單獨量時守方 VP 每局 −0.39 ± 0.50（西歐 −1.17 ± 0.70，[S5.2b](../quality/evidence/ai-s5-parts-2026-11-16/README.md)），所以之後再改為只給攻方。S3 只量過攻擊戰的攻方（[紀錄](../quality/evidence/ai-s3-e6-approach-2026-11-15/README.md)、[檢查](../quality/evidence/ai-s3-check-2026-11-15/README.md)）。回歸測試 `tests/ai/approach-attack.test.ts`：攻擊戰攻方的非組單位在權重 0 時停在目標 2 格外、權重 1 時移到目標旁；攻擊戰的守方與遭遇戰中，兩種權重的決策相同（heuristic@87 在這兩個局面都把單位移到目標旁）。
 
 攻擊戰的守方切斷攻方補給（權重 `defenderCut`，預設 0）：每個 Movement 步驟開頭，最多派 2 個不負責守點的單位，以 Combat Mode 移到能切斷至少 `defenderCut` 個攻方單位 trace 的格子；只用守方看得到的敵方棋子估算（規則查詢 `queryTraceCut`，4.9a），格子要仍在自己的 trace 內，暴露程度不超過移動評分接受的範圍。登記的局面接續測試（對凍結 v86，239 個分支）：攻方終局斷補單位 +1.57 ± 0.42、守方 Kill − Loss +3.66 ± 0.77、VP 差 +0.85 ± 0.46（[紀錄](../quality/evidence/ai-s2-defender-cut-2026-11-14/README.md)）。併入候選 heuristic@87（見下）。
 

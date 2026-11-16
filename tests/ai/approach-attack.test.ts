@@ -10,6 +10,8 @@ import { createBotRng, createHeuristicPolicy, heuristicWeights, hexDistanceBetwe
 // - approach-attack-2400201: Game Turn 1, the defender's (Allied) Movement Segment of an attack engagement. Its unit
 //   f2-combat-1 heads for the Axis-held objective 15,11 and, at weight 0, walks past it to 13,12, two hexes short; the
 //   weight once moved it beside 15,11, and now acts for the attacker only (S5.2b: -0.39 a game for the defender).
+// - approach-attacker-2400205: Game Turn 1, the attacker's (Axis) Movement Segment. Its tank (no theater group) hunts the
+//   defended 15,10 and stops at 17,10, two hexes short, at weight 0.
 // - approach-meeting-2400000: Game Turn 1, the Axis Exploitation Movement of a meeting engagement. Its recon heads for
 //   15,4 and stops at 13,6, two hexes short; heuristic@87 (no engagement condition) moved it beside 15,4, to 14,5 (S4.8).
 const fixture = (name: string) => {
@@ -59,6 +61,20 @@ const defended = (state: GameState, hexId: string): boolean => {
 };
 
 describe('closing in beside a defended target (approachAttack, error list E6)', () => {
+  it('for the attacker of an attack engagement, moves a unit of no theater group beside its defended target only when on', () => {
+    const { state } = fixture('approach-attacker-2400205');
+    expect(state.sequence.actingPlayerId).toBe(state.configuration.attackVictory?.attackerId);
+    expect(defended(state, '15,10')).toBe(true);
+    const off = decide(state, 0);
+    const on = decide(state, 1);
+    const tank = 'generated-oob:402361422:axis:independent-tank-4:unit';
+    expect(off.action).toMatchObject({ kind: 'MOVE_PIECE', pieceId: tank });
+    expect(off.intent).toContain('(hunt 15,10)');
+    expect(hexDistanceBetween(destination(off) as HexId, '15,10' as HexId)).toBe(2);
+    expect(on.action).toMatchObject({ kind: 'MOVE_PIECE', pieceId: tank });
+    expect(hexDistanceBetween(destination(on) as HexId, '15,10' as HexId)).toBe(1);
+  });
+
   it('for the defender of an attack engagement, leaves the decision as heuristic@86 makes it', () => {
     const { state, recorded } = fixture('approach-attack-2400201');
     expect(state.configuration.attackVictory?.attackerId).toBe('player:axis');
