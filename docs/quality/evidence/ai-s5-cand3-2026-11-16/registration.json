@@ -1,0 +1,17 @@
+{
+  "record": "S5.4 step 3 of the WBS: cand3 = cand2's weights on a build where approachAttack acts for the attacker of an attack engagement only. Written before any continuation is run",
+  "registeredAt": "2026-11-16",
+  "request": "The user (2026-11-16): 「好 3接2」 (3: approachAttack for the attacker only; then 2: S5.3 with a larger independent batch)",
+  "build": "source commit 6b15f8d, dist built from it",
+  "variant": "cand3 = heuristic:docs/quality/evidence/ai-s5-cand3-2026-11-16/cand3-weights.json (the five weights of cand2) on this build",
+  "branches": "the defender branches of S5.2: docs/quality/evidence/ai-s5-parts-2026-11-16/branches-west-defender.jsonl (229, 1 dice), branches-east-defender.jsonl (39, 2 dice) and branches-east-s47-defender.jsonl in this folder (14, 2 dice); 335 continuations",
+  "attacker rows": "The attacker decides as cand2 (the change only adds !situation.defending to approachAttack), so cand2's attacker rows stand for cand3's. Checked first: cand3 on 4 attacker branches (branches-check-attacker.jsonl) must equal cand2's rows column by column, or the attacker branches are run too",
+  "opponent": "heuristic@artifacts/ai-promotion/frozen-v86/dist",
+  "commands": [
+    "node scripts/ai-continue-batch.mjs --branches <defender lists> --variant cand3=heuristic:$F/cand3-weights.json --opponent heuristic@artifacts/ai-promotion/frozen-v86/dist --horizons 1 --jobs 10 --dice 1|2 --out-dir artifacts/ai-s5/s52d/{west,east}",
+    "python3 $F/analysis.py"
+  ],
+  "estimate": "as S5.2: (Western attacker + Western defender + Eastern attacker + Eastern defender) / 4, SE over maps, with cand2's attacker rows relabelled cand3",
+  "decision": "cand3 replaces cand2 for S5.3 when its estimate is above cand2's (+1.24); otherwise cand2 goes to S5.3. Pass probabilities are reported for 40, 80 and 120 attack pairs at pair SD 3.7 and 4.5. The user chose S5.3 with a larger independent batch (80 attack pairs, 160 games) whatever the probability; its registration, margins and seeds are confirmed with the user first",
+  "limits": "approachAttack's defender effect was measured on these branches (S5.2b), so the choice between cand2 and cand3 is made on the same data"
+}
