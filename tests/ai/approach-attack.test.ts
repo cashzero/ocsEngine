@@ -8,7 +8,8 @@ import { createBotRng, createHeuristicPolicy, heuristicWeights, hexDistanceBetwe
 // Positions of heuristic@87's independent batch (docs/quality/evidence/ai-s4-v87-independent-2026-11-15/README.md), each
 // before a move heuristic@86 made in the game (the recorded action):
 // - approach-attack-2400201: Game Turn 1, the defender's (Allied) Movement Segment of an attack engagement. Its unit
-//   f2-combat-1 heads for the Axis-held objective 15,11 and, at weight 0, walks past it to 13,12, two hexes short.
+//   f2-combat-1 heads for the Axis-held objective 15,11 and, at weight 0, walks past it to 13,12, two hexes short; the
+//   weight once moved it beside 15,11, and now acts for the attacker only (S5.2b: -0.39 a game for the defender).
 // - approach-meeting-2400000: Game Turn 1, the Axis Exploitation Movement of a meeting engagement. Its recon heads for
 //   15,4 and stops at 13,6, two hexes short; heuristic@87 (no engagement condition) moved it beside 15,4, to 14,5 (S4.8).
 const fixture = (name: string) => {
@@ -58,17 +59,17 @@ const defended = (state: GameState, hexId: string): boolean => {
 };
 
 describe('closing in beside a defended target (approachAttack, error list E6)', () => {
-  it('in an attack engagement, moves a unit of no theater group beside its defended target only when approachAttack is on', () => {
+  it('for the defender of an attack engagement, leaves the decision as heuristic@86 makes it', () => {
     const { state, recorded } = fixture('approach-attack-2400201');
     expect(state.configuration.attackVictory?.attackerId).toBe('player:axis');
+    expect(state.sequence.actingPlayerId).toBe('player:allied');
     expect(defended(state, '15,11')).toBe(true);
     const off = decide(state, 0);
     const on = decide(state, 1);
     expect(off.action).toMatchObject({ kind: 'MOVE_PIECE', pieceId: recorded.pieceId, path: recorded.path });
     expect(off.intent).toContain('(capture 15,11)');
     expect(hexDistanceBetween(destination(off) as HexId, '15,11' as HexId)).toBe(2);
-    expect(on.action).toMatchObject({ kind: 'MOVE_PIECE', pieceId: recorded.pieceId });
-    expect(hexDistanceBetween(destination(on) as HexId, '15,11' as HexId)).toBe(1);
+    expect(on.action).toEqual(off.action);
   });
 
   it('in a meeting engagement, leaves the decision as heuristic@86 makes it', () => {

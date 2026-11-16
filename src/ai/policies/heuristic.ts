@@ -567,9 +567,10 @@ const scoreDestination = (
     // Strat Mode units defend badly and lose their ZOC: keep them well away from the enemy (5.8).
     if (unit.piece.mode === 'STRAT' && situation.nearestEnemy(destination).distance <= w.stratSafeDistance) add('strat-near-enemy', -w.stratNearEnemy);
     // approachAttack (error list E6): a unit of no theater group whose target is a defended hex closes in beside it this step
-    // without the crowding and exposure penalties that held such units two or three hexes short. Attack engagements only
-    // (either side): in meeting engagements it lowered VP on the Western maps and raised it on the Eastern ones (S4.8).
-    const approaching = w.approachAttack > 0 && situation.attack && target !== undefined && ['ASSAULT', 'HUNT', 'CAPTURE'].includes(target.purpose)
+    // without the crowding and exposure penalties that held such units two or three hexes short. The attacker of an attack
+    // engagement only: in meeting engagements it lowered VP on the Western maps and raised it on the Eastern ones (S4.8),
+    // and for the defender it was -0.39 +/- 0.50 a game (S5.2b; -1.17 on the Western maps).
+    const approaching = w.approachAttack > 0 && situation.attack && !situation.defending && target !== undefined && ['ASSAULT', 'HUNT', 'CAPTURE'].includes(target.purpose)
       && (situation.enemy.get(target.hexId)?.hasCombatUnit ?? false) && hexesBetween(destination, target.hexId) === 1
       && !(notes.theaterObjectives?.has(unit.piece.id) ?? false);
     // One stack per hex does the job; more units in the same hex only make a better barrage target.
