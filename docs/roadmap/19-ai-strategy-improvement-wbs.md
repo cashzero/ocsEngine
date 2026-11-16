@@ -1,6 +1,6 @@
 # AI 攻防策略改進 WBS
 
-狀態：**IN PROGRESS**。S1 的剩餘差距由使用者維持為例外，S1 的結束條件未勾選；S2 完成；S3 完成（`approachAttack` 的檢查未通過，由使用者例外帶到 S4）；S4 未完成：候選 heuristic@87（v86 加 `arrivalRailForward`、`hqBridge`、`defenderCut`、`approachAttack`）的獨立批以 VP 判定未通過，v86 維持標準；S5（第 7 節）執行中：S5.0、S5.1 完成；S5.2 估計每個攻擊戰對 VP +0.75 ± 0.38，獨立批通過機率 0.25／0.18，依登記建議不登記獨立批；S5.4a 停止規則成立。使用者選擇 S5.4d 與 S5.2b／S5.4c：`optionAdvance` 每對 +0.58 ± 0.14；cand2（候選加 `optionAdvance`）每個攻擊戰對 +1.24 ± 0.38，40 對獨立批通過機率 0.50／0.37，待使用者決定（第 6 節最後一列）。本文件只維護工作分解；量測結果寫在 `docs/ai/`，證據在 `docs/quality/evidence/`。
+狀態：**IN PROGRESS**。S1 的剩餘差距由使用者維持為例外，S1 的結束條件未勾選；S2 完成；S3 完成（`approachAttack` 的檢查未通過，由使用者例外帶到 S4）；S4 未完成：候選 heuristic@87（v86 加 `arrivalRailForward`、`hqBridge`、`defenderCut`、`approachAttack`）的獨立批以 VP 判定未通過，v86 維持標準；S5（第 7 節）執行中：S5.0、S5.1 完成；S5.2 估計每個攻擊戰對 VP +0.75 ± 0.38，獨立批通過機率 0.25／0.18，依登記建議不登記獨立批；S5.4a 停止規則成立。使用者選擇 S5.4d 與 S5.2b／S5.4c：`optionAdvance` 每對 +0.58 ± 0.14；cand2 每個攻擊戰對 +1.24 ± 0.38；cand3（`approachAttack` 只給攻方）+1.53 ± 0.32，80 對獨立批通過機率 0.89／0.78。下一步 S5.3（cand3 為 heuristic@88，80 對獨立批，使用者選擇的例外）。本文件只維護工作分解；量測結果寫在 `docs/ai/`，證據在 `docs/quality/evidence/`。
 
 需求來源（使用者，2026-11-13）：「盤點目前ai研究情形 制定接下來的改進策略」，對提出的四階段順序、暫停指標研究線與寫入路線圖回答「全部同意 制定細部計畫」。
 
@@ -224,7 +224,7 @@
 
 ### 7.5 S5.3 升級流程（新對局，須使用者同意）
 
-- [ ] 候選 heuristic@88：`candidate.patch`（四個權重預設開啟、版本 88）；`freeze.py` 凍結為 `artifacts/ai-promotion/frozen-v88`；`quality.py` 通過。
+- [ ] 候選 heuristic@88 = cand3（[紀錄](../quality/evidence/ai-s5-cand3-2026-11-16/README.md)：每個攻擊戰對 +1.53 ± 0.32）：`candidate.patch`（五個權重預設開啟，含 `optionAdvance`；版本 88）；`freeze.py` 凍結為 `artifacts/ai-promotion/frozen-v88`；`quality.py` 通過。
 - [ ] 開發批 32 局（已知種子 1300000 起）對凍結 v86：全部合法、重播相同、補給與前進稽核違例 0；**遭遇戰 8 對每對兩局終局 hash 相同**（否則回到 S5.1）；兩個攻方補給 gate 對 v86 自我對戰（沿用上一輪同種子、同引擎的 16 局；先重跑 2 局核對 hash 相同）。
 - [ ] 登記：`register.py <cand> <v86> 2800000 --primary vp --margin killLoss=1.5 --margin supply=0.5`。遭遇戰未改變，80 局全給攻擊戰：西歐 2800200–2800239、東歐 2800300–2800339（各 20 對，已核對沒用過）。登記說明寫明 S5.2 的估計、實測標準差與通過機率。不劣化幅度由使用者在登記前確認。
 - [ ] 獨立批 80 局，與同種子的 v86 自我對戰 80 局（gate 的對照）；`verify.py`：先 frozen-only，再用暫時的 worktree（候選的來源 commit 加 patch、建置）跑 `--delivered`；兩個攻方補給 gate。
