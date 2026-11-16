@@ -1,0 +1,16 @@
+{
+  "amends": "registration.json of this folder (28833e0)",
+  "amendedAt": "2026-11-16",
+  "request": "The user (2026-11-16): 「也太久」 (too long), after the run had finished the opt and Western defender variants. No result of any part run had been read",
+  "change": [
+    "The attacker's arrival and bridge variants are not run (614 continuations, about 2 hours). The plan's S5.2b ran only approach for the attacker; S4.7 measured the two at -0.11 +/- 0.08 and +0.18 +/- 0.40 for the attacker",
+    "The attacker effect of arrivalRailForward and hqBridge is measured together as cand - approach on the attacker branches (S5.2's cand rows against the new approach rows); arrivalRailForward and hqBridge are kept together when (that effect + the defender effect of arrival) / 2 is above 0, and dropped together otherwise",
+    "approach (both roles), cut and opt are decided as registered"
+  ],
+  "continuations": "parts: Western 229 x 1 (opt, done) + 229 x 3 (defender, done) + 229 x 1 (attacker approach); Eastern 53 x 2 (opt, done) + 39 x 3 x 2 (defender) + 39 x 2 (attacker approach); 1,563 in all, about 1.7 hours left. cand2 unchanged",
+  "commands": [
+    "node scripts/ai-continue-batch.mjs --branches $F/branches-east-defender.jsonl --variant cut=... --variant approach=... --variant arrival=... $O --dice 2 --out-dir artifacts/ai-s5/s52b/east (resumes)",
+    "node scripts/ai-continue-batch.mjs --branches $F/branches-west-attacker.jsonl --variant approach=heuristic:$F/approach-weights.json $O --dice 1 --out-dir artifacts/ai-s5/s52b/west",
+    "node scripts/ai-continue-batch.mjs --branches $F/branches-east-attacker.jsonl --variant approach=heuristic:$F/approach-weights.json $O --dice 2 --out-dir artifacts/ai-s5/s52b/east"
+  ]
+}
