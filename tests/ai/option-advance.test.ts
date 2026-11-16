@@ -40,7 +40,8 @@ const contextOf = (state: GameState): BotDecisionContext => {
 };
 const answer = (state: GameState, optionAdvance: number): string => {
   const policy = createHeuristicPolicy({ scenario: state.scenario, turnLimit: state.configuration.turnLimit },
-    { weights: heuristicWeights({ optionAdvance }) });
+    // heuristic@86's weights apart from optionAdvance, whatever the defaults are.
+    { weights: heuristicWeights({ optionAdvance, approachAttack: 0, arrivalRailForward: 0, hqBridge: 0, defenderCut: 0 }) });
   const chosen = policy.decide(contextOf(state));
   if (!chosen || chosen.action.kind !== 'RESPOND_DECISION') throw new Error('No answer');
   return chosen.action.choiceId;

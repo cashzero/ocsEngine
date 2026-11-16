@@ -44,7 +44,8 @@ const contextOf = (state: GameState): BotDecisionContext => {
 };
 const decide = (state: GameState, approachAttack: number): BotDecision => {
   const policy = createHeuristicPolicy({ scenario: state.scenario, turnLimit: state.configuration.turnLimit },
-    { weights: heuristicWeights({ approachAttack }) });
+    // heuristic@86's weights apart from approachAttack, whatever the defaults are.
+    { weights: heuristicWeights({ approachAttack, arrivalRailForward: 0, hqBridge: 0, defenderCut: 0, optionAdvance: 0 }) });
   const chosen = policy.decide(contextOf(state));
   if (!chosen) throw new Error('No decision');
   return chosen;
