@@ -1,0 +1,47 @@
+{
+  "record": "S5.2b, S5.4c and the optionAdvance test of docs/roadmap/19-ai-strategy-improvement-wbs.md: each weight of the S5 candidate, and optionAdvance, alone against heuristic@86; the weights with a positive VP effect make cand2, which is then estimated as in S5.2. Written before any continuation is run",
+  "registeredAt": "2026-11-16",
+  "request": "The user (2026-11-16), on the S5.2 options: 「2+3」 (2: the attacker's option choice, bot-option-retreat-advance; 3: S5.2b part split and S5.4c, the defender parts)",
+  "build": "source commit 14719f7 (optionAdvance), dist built from it, Node v26.9.0",
+  "baseline": "heuristic@86's rows of S5.2 (artifacts/ai-s5/s52/{west,east,reused}); same branches, dice seeds and opponent, so they are not run again",
+  "branches": "S5.2's (docs/quality/evidence/ai-s5-vp-check-2026-11-15), split by role into branches-{west,east}-{attacker,defender}.jsonl and branches-east-s47-attacker.jsonl (this folder): Western 229 + 229 (1 dice), Eastern 39 + 39 new and 14 + 14 S4.7 branches (2 dice)",
+  "variants": {
+    "approach": "approach-weights.json (approachAttack 1): attacker and defender",
+    "arrival": "arrival-weights.json (arrivalRailForward 1): attacker and defender",
+    "bridge": "bridge-weights.json (hqBridge 1): attacker",
+    "cut": "cut-weights.json (defenderCut 2): defender",
+    "opt": "opt-weights.json (optionAdvance 1): attacker"
+  },
+  "reuse": "For the 28 S4.7 Eastern branches, S4.7's approach, arrival and bridge rows (attacker) and cut, approach and arrival rows (defender) are copied to artifacts/ai-s5/s52b/reused: the same weights, and in attack engagements S4.7's build decides as this one; their results were seen in S4.7. opt is run on them",
+  "opponent": "heuristic@artifacts/ai-promotion/frozen-v86/dist",
+  "commands": [
+    "F=docs/quality/evidence/ai-s5-parts-2026-11-16; O='--opponent heuristic@artifacts/ai-promotion/frozen-v86/dist --horizons 1 --jobs 10'",
+    "node scripts/ai-continue-batch.mjs --branches $F/branches-west-attacker.jsonl --variant opt=heuristic:$F/opt-weights.json $O --dice 1 --out-dir artifacts/ai-s5/s52b/west",
+    "node scripts/ai-continue-batch.mjs --branches $F/branches-east-attacker.jsonl --branches $F/branches-east-s47-attacker.jsonl --variant opt=heuristic:$F/opt-weights.json $O --dice 2 --out-dir artifacts/ai-s5/s52b/east",
+    "node scripts/ai-continue-batch.mjs --branches $F/branches-west-defender.jsonl --variant cut=heuristic:$F/cut-weights.json --variant approach=heuristic:$F/approach-weights.json --variant arrival=heuristic:$F/arrival-weights.json $O --dice 1 --out-dir artifacts/ai-s5/s52b/west",
+    "node scripts/ai-continue-batch.mjs --branches $F/branches-east-defender.jsonl --variant cut=heuristic:$F/cut-weights.json --variant approach=heuristic:$F/approach-weights.json --variant arrival=heuristic:$F/arrival-weights.json $O --dice 2 --out-dir artifacts/ai-s5/s52b/east",
+    "node scripts/ai-continue-batch.mjs --branches $F/branches-west-attacker.jsonl --variant approach=heuristic:$F/approach-weights.json --variant arrival=heuristic:$F/arrival-weights.json --variant bridge=heuristic:$F/bridge-weights.json $O --dice 1 --out-dir artifacts/ai-s5/s52b/west",
+    "node scripts/ai-continue-batch.mjs --branches $F/branches-east-attacker.jsonl --variant approach=heuristic:$F/approach-weights.json --variant arrival=heuristic:$F/arrival-weights.json --variant bridge=heuristic:$F/bridge-weights.json $O --dice 2 --out-dir artifacts/ai-s5/s52b/east",
+    "python3 $F/analysis.py parts",
+    "cand2 on all S5.2 branches: node scripts/ai-continue-batch.mjs --branches <S5.2 branches-west.jsonl> --variant cand2=heuristic:$F/cand2-weights.json $O --dice 1 --out-dir artifacts/ai-s5/s52c/west; the same for branches-east.jsonl and branches-east-s47.jsonl with --dice 2 into artifacts/ai-s5/s52c/east",
+    "python3 $F/analysis.py cand2"
+  ],
+  "continuations": "parts: Western 229 x 4 + 229 x 3 = 1,603; Eastern 39 x 4 x 2 + 39 x 3 x 2 + 14 x 2 = 574; 2,177 in all (about 7 hours). cand2: 458 + 106 x 2 = 670 (about 2.2 hours)",
+  "measure": "margin.vp at the end of the game, variant - v86, dice averaged per branch; SE over maps (ai-continue-compare.py --by-style --by-role --cluster-by-map). Objectives margin and Kill - Loss reported",
+  "estimates": {
+    "role effect": "(Western + Eastern) / 2 of the weight in that role",
+    "pair effect": "(the sum of the role effects where the weight acts) / 2: the weight's contribution to an attack pair of an independent batch; a role where the weight does not act contributes 0"
+  },
+  "selection": "A weight enters cand2 when its pair effect is above 0 (S5.4c of the plan: keep the parts with positive VP). Weights act on both roles where they act; splitting a weight by role is not done here (it needs code). If no weight is kept, S5 stops and the result goes to the user",
+  "expectedPrecision": "a role effect about 0.53 (S5.2's cells: Western about 0.77, Eastern about 0.73); a pair effect about 0.27 for a one-role weight and 0.37 for a two-role one. A weight with no effect is kept with probability 0.5; one at -0.3 a pair with probability 0.13 to 0.21. Whether a weight's effect is established (mean - 2.1 SE > 0) is reported but does not decide",
+  "cand2 reading": [
+    "as S5.2: pass probability at pair SD 3.7 and 4.5 from the estimate (Western attacker + Western defender + Eastern attacker + Eastern defender) / 4 and its SE; both >= 0.8 recommends registering S5.3 (its games need the user's consent); a cell established worse is fixed first; otherwise the probabilities go to the user",
+    "cand2's weights were selected on these same branches, so its estimate is biased upward; the independent batch is the unbiased test. The estimate without the 28 S4.7 branches is reported",
+    "if cand2 has the same weights as S5.2's candidate, S5.2's estimate stands and cand2 is not run"
+  ],
+  "limits": [
+    "Branches start at Game Turn 2",
+    "The selection rule keeps a weight with no effect half the time",
+    "optionAdvance was found in a census of 68 games, 40 of them Western games of 2100400-479, which are not among these branches; 14 of the Eastern games are census games (heuristic@86 self-play)"
+  ]
+}
