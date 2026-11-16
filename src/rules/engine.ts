@@ -1,5 +1,5 @@
 import type { PlayerId } from '../core/index.js';
-import { attackerSupplyOptions, previewBarrage, previewCombat } from './combat/combat.js';
+import { attackerSupplyOptions, optionChoiceFacts, previewBarrage, previewCombat } from './combat/combat.js';
 import { plannedAttack } from './combat/strength.js';
 import { inPatrolZoneOf } from './air/aircraft.js';
 import { AIR_MISSION_LABELS, flakModifiers, missionBarrageStrength, previewAirBarrage } from './air/mission.js';
@@ -174,6 +174,7 @@ const engine: RuleEngine = {
         publicFact('sequence.phase', state.sequence.phase),
         ...actionFacts(state, action),
         ...(validation.allowed ? relocationSupplyFacts(state, action) : []),
+        ...(validation.allowed ? optionChoiceFacts(state, action) : []),
         ...(validation.allowed ? rationBudgetFacts(state, action) : []),
         ...(validation.allowed ? facilityBarrageBudgetFacts(state, action) : []),
         ...(validation.allowed ? rebuildFacts(state, action) : []),

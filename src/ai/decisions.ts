@@ -1,5 +1,6 @@
 import type { HexId, PieceId } from '../core/index.js';
 import type { GameAction } from '../rules/index.js';
+import { parseCombatResult } from '../rules/tables/ocs-4.3.js';
 import type { OwnUnit, Situation } from './analysis.js';
 import type { BotDecision, BotDecisionContext } from './model.js';
 import { hexesBetween } from './knowledge.js';
@@ -50,7 +51,7 @@ const ratio = (label: string): number => {
   return match ? Number(match[1]) / Number(match[2]) : Number.POSITIVE_INFINITY;
 };
 
-export const respondToDecision = (context: BotDecisionContext, situation: Situation, holdRatio = 0.5, advanceThreatLimit = 8): BotDecision | null => {
+export const respondToDecision = (context: BotDecisionContext, situation: Situation, holdRatio = 0.5, advanceThreatLimit = 8, optionAdvance = 0): BotDecision | null => {
   const decision = context.view.pendingDecision!;
   const options = decision.options as readonly Option[];
   const actions = context.actions.candidates('RESPOND_DECISION');
@@ -115,6 +116,22 @@ export const respondToDecision = (context: BotDecisionContext, situation: Situat
         const [, losses = '0', retreat = '0'] = option.id.split(':');
         return { option, losses: Number(losses), retreat: Number(retreat), trapped: /eliminated/u.test(option.label) };
       }).filter(({ trapped }) => !trapped);
+      // optionAdvance (bot-option-retreat-advance): the attacker of an attack engagement, attacking an objective it does
+      // not hold, takes the option as step losses when the result may empty the hex (the defender's losses and option at
+      // least its number of units, each of which has a step) and an attacker keeps a step: a retreating attacker forfeits
+      // the advance (9.11), and the S5.4a census found such cleared objectives walked back into.
+      const result = projection.combat?.result ? parseCombatResult(projection.combat.result) : null;
+      if (optionAdvance > 0 && !defending && situation.attack && !situation.defending && targetHex !== undefined && result !== null
+        && situation.objectives.some(({ hexId, controllerId }) => hexId === targetHex && controllerId !== context.playerId)
+        && result.defender.loss + result.defender.option >= Math.max(1, projection.combat?.defenderCount ?? 1)) {
+        const stay = parsed.find(({ option, retreat }) => {
+          if (retreat !== 0) return false;
+          const action = actions.find((candidate) => candidate.kind === 'RESPOND_DECISION' && candidate.choiceId === option.id);
+          const left = action ? context.actions.explain(action).explanation.facts.find(({ key }) => key === 'combat.optionStepsLeft')?.value : undefined;
+          return typeof left === 'number' && left > 0;
+        });
+        if (stay) return respond(actions, stay.option.id, 'combat-option', `keep the advance onto the objective: ${stay.option.label}`);
+      }
       // heuristic@75: an attacker option retreats every attacker (9.11). Attackers may stand on an objective we hold
       // next to the target; retreating them hands it to the next enemy unit that passes (a recorded final turn lost a
       // 4 VP point this way). The projection does not name the attackers, so any held objective beside the target that

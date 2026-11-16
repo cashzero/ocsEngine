@@ -21,6 +21,7 @@ import type {
   RuleTransaction,
   RuleViolation,
 } from '../kernel/model.js';
+import type { RuleFact } from '../query/model.js';
 import { rollDie, rollTwoDice } from '../kernel/rng.js';
 import { applyCreateBreakdown, mayCreateBreakdown, pieceNameOf } from '../breakdown/breakdown.js';
 import { settleInterrupts, applyInterruptChoice } from '../lifecycle/interrupts.js';
@@ -1300,6 +1301,21 @@ export const previewRetreatChoice = (state: GameState, choiceId: string): { stat
   const after = applyRetreatChoice(state, step, rest, choiceId, [], true);
   const first = after.activeTransaction!.queue[0];
   return { state: after, additionalLosses: first !== rest[0] && first?.kind === 'LOSS' ? first.count : 0 };
+};
+
+/**
+ * Owner-only fact for an answer to an option split (9.11): the steps this side's surviving units in the combat keep after
+ * the answer's step losses. A side knows its own units; above 0, one of them is left to advance (9.14).
+ */
+export const optionChoiceFacts = (state: GameState, action: GameAction): readonly RuleFact[] => {
+  const [step] = state.activeTransaction?.queue ?? [];
+  if (action.kind !== 'RESPOND_DECISION' || state.pendingDecision?.kind !== 'OPTION_SPLIT' || step?.kind !== 'OPTION') return [];
+  const [prefix, lossText, retreatText] = action.choiceId.split(':');
+  if (prefix !== 'option' || retreatText === undefined) return [];
+  const transaction = state.activeTransaction!;
+  const steps = survivors(state, step.side === 'ATTACKER' ? transaction.attackerIds : transaction.defenderIds)
+    .reduce((total, piece) => total + stepsOf(piece), 0);
+  return [{ key: 'combat.optionStepsLeft', value: Math.max(0, steps - Number(lossText)), visibility: 'OWNER_ONLY', ownerId: action.actorId }];
 };
 
 export const resolveDecision = (state: GameState, choiceId: string): Transition => {
