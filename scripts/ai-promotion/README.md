@@ -20,9 +20,9 @@ The policy version comes from the frozen source, independently of folder names.
    a policy for promotion. Rejected policies and failed checks remain recorded.
 4. Once development warrants independent evaluation, build the delivered source
    and run `register.py <candidate freeze.json> <baseline freeze.json> <start> --primary <vp|killLoss|supply>
-   --margin <measure>=<per pair> ...`. It records the primary measure and the non-inferiority margins, gives the
-   80 games to the engagements the development batch changed, checks unused match indices and writes a new,
-   exclusive registration.
+   --margin <measure>=<per pair> ... [--games 80]`. It records the primary measure and the non-inferiority margins, gives
+   the 80 games (or the larger number the user approved as an exception) to the engagements the development batch
+   changed, checks unused match indices and writes a new, exclusive registration.
    Preserve this registration as text evidence before starting any independent game.
 5. Run `batch.py ... independent`, then `verify.py ... independent --delivered`.
    Read its `vpGate`; the verifier records failed VP results without discarding

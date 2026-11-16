@@ -1,10 +1,12 @@
 """Register a fresh fixed 80 only after complete development and frozen quality.
 
     python3 register.py <candidate freeze.json> <baseline freeze.json> <start> [--primary vp|killLoss|supply] [--margin metric=value ...]
+        [--games 80]
 
 The primary measure and the non-inferiority margins of the other measures are registered here, before any independent game
 (docs/ai/evaluation.md). An engagement the development batch left unchanged (both games of every pair in the same final
-state) is not played; its 40 games go to the changed engagement.
+state) is not played; its 40 games go to the changed engagement. --games sets the batch size (80 unless the user has
+approved a larger batch as an exception); each group gets an equal share, at most 100 games.
 """
 from pathlib import Path
 import datetime
@@ -38,7 +40,9 @@ unchanged = development.get('unchangedEngagements', [])
 names = {'MEETING': ['meeting-western', 'meeting-eastern'], 'AXIS_ATTACKS': ['attack-western', 'attack-eastern']}
 played = [name for engagement, group in names.items() if engagement not in unchanged for name in group]
 assert played, 'The candidate changes no engagement'
-per_group = 80 // len(played)
+games = int(sys.argv[sys.argv.index('--games') + 1]) if '--games' in sys.argv else 80
+assert games % (2 * len(played)) == 0 and games // len(played) <= 100, 'games must split into whole pairs, at most 100 a group'
+per_group = games // len(played)
 offsets = {'meeting-western': 0, 'meeting-eastern': 100, 'attack-western': 200, 'attack-eastern': 300}
 ranges = {name: [start + offsets[name], start + offsets[name] + per_group - 1] for name in played}
 fresh = {i for first, last in ranges.values() for i in range(first, last + 1)}
@@ -58,7 +62,7 @@ record = {'strategyVersion': candidate['policyVersion'], 'baselineVersion': base
           'candidateFreezeSha256': hashlib.sha256(candidate_file.read_bytes()).hexdigest(),
           'baselineFreezeSha256': hashlib.sha256(baseline_file.read_bytes()).hexdigest(), 'ranges': ranges,
           'unchangedEngagements': unchanged,
-          'gate': {'games': 80, 'pairs': 40, 'turns': 8, 'primary': primary, 'nonInferiorityMargins': margins,
+          'gate': {'games': games, 'pairs': games // 2, 'turns': 8, 'primary': primary, 'nonInferiorityMargins': margins,
                    'primaryPositiveInEachChangedEngagement': True, 'primaryPairedMeanMinus2Point1SePositive': True,
                    'otherMeasuresPairedMeanMinus2Point1SeAboveMinusMargin': True,
                    'unchangedEngagement': 'both games of every pair end in the same state hash',
