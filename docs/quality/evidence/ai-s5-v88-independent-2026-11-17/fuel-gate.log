@@ -1,0 +1,4 @@
+attacker heuristic@/home/cashlin/ocsEngine/.claude/worktrees/ai-truck-shuttle/artifacts/ai-promotion/frozen-v86/dist 80 games · SP no front unit can draw 5.7 a segment (front units can draw 17.2) · units unable to fuel 13.4 a game (14% of those needing fuel) · dry HQs 9%
+attacker heuristic 80 games · SP no front unit can draw 3.6 a segment (front units can draw 15.4) · units unable to fuel 17.0 a game (20% of those needing fuel) · dry HQs 11%
+baseline attacker 80 games · SP no front unit can draw 4.1 a segment (front units can draw 17.1) · units unable to fuel 14.4 a game (15% of those needing fuel) · dry HQs 11%
+GATE PASS SP no front unit can draw <= the standard on the same seeds: 3.6 vs 4.1
