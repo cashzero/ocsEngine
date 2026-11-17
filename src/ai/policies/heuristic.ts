@@ -149,7 +149,9 @@ const theaterEfforts = (context: BotDecisionContext, situation: Situation, facts
     .slice(0, reliefHexes.length).map(({ piece }) => piece.id);
   const plan = allocateTheater(situation, context.actions, new Set([...garrisons, ...reserved]), (piece) => knowledge.profile(piece)?.actionRating ?? 0, discount,
     (unit, hexId, defended) => combatUnitMode(situation, unit, { hexId, purpose: defended ? 'ASSAULT' : 'CAPTURE' }, w),
-    (truck) => truckCapacityTokens(facts, truck), w.hqBridge > 0);
+    (truck) => truckCapacityTokens(facts, truck), w.hqBridge > 0,
+    // exploitationFixedLogistics: trucks and HQs do not move in the Exploitation Phase (11.0a), so nothing they would bring counts.
+    !(w.exploitationFixedLogistics > 0 && context.view.projection?.sequence.phase !== 'MOVEMENT'));
   const groups = plan.groups.filter(({ chance }) => chance >= THEATER_MIN_PROBABILITY);
   const hqs = plan.hqs.filter(({ objective }) => groups.some(({ hexId }) => hexId === objective));
   const trucks = plan.trucks.filter(({ objective }) => groups.some(({ hexId }) => hexId === objective));

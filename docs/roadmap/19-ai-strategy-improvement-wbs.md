@@ -279,7 +279,8 @@ S5.0、S5.1、S5.2（不含選用的東歐局面）與 S5.4a 只用既有存檔�
 
 來源：S5.3 獨立批的補給稽核（[紀錄](../quality/evidence/ai-s5-v88-independent-2026-11-17/README.md)）。使用者（2026-11-17）：先不把它當成 bug，分析利弊之後再決定（`bot-exploitation-untraced-move`）。只用既有對局與局面接續，不開新局。
 
-- [ ] **S6.1 描述**：在獨立批 160 局（有 trace）中，找出攻方在 Exploitation 往主攻目標移動、段結束時無 trace 且無 SP 可吃的單位，追蹤到下一個己方回合結束：下一次 Supply 時有沒有 trace 或吃到 SP、吃內部補給或耗損的 step、有沒有參與攻擊、目標有沒有拿下與持有。同時統計同樣在 Exploitation 離開 trace 但段結束時有補給的移動，作為對照。
-- [ ] **S6.2 利弊量測**：預設關閉的開關禁止這種移動（Exploitation 的移動段結束時要有 trace 或 SP 可吃），以事先登記的局面接續量「禁止 − 現行」的 VP、Kill − Loss 與耗損（VP 為主要量測；分支點取在這些移動發生的那個 Exploitation 段開頭）。
+- [x] **S6.1 描述**（[紀錄](../quality/evidence/ai-s6-exploitation-moves-2026-11-17/README.md)）：在獨立批 160 局（有 trace）中，找出攻方在 Exploitation 往主攻目標移動、段結束時無 trace 且無 SP 可吃的單位，追蹤到下一個己方回合結束：下一次 Supply 時有沒有 trace 或吃到 SP、吃內部補給或耗損的 step、有沒有參與攻擊、目標有沒有拿下與持有。同時統計同樣在 Exploitation 離開 trace 但段結束時有補給的移動，作為對照。
+  - 結果：段末無補給的 16 次移動之後同回合 0%、下一回合 6% 參與攻擊，目標下一回合結束時 0% 拿下，63% 存活（Movement 的 993 次：33%、25%、45%、87%）。原因：15 次是戰區配置的集結者走到卡車卸貨點，但 Exploitation 卡車不能移動（11.0a）；使用者：「顯然Exploitation的supply計算要不同」。
+- [ ] **S6.2 利弊量測**（權重 `exploitationFixedLogistics`，預設 0；[登記](../quality/evidence/ai-s6-exploitation-moves-2026-11-17/registration.json)）：預設關閉的開關禁止這種移動（Exploitation 的移動段結束時要有 trace 或 SP 可吃），以事先登記的局面接續量「禁止 − 現行」的 VP、Kill − Loss 與耗損（VP 為主要量測；分支點取在這些移動發生的那個 Exploitation 段開頭）。
 - [ ] **S6.3 回報使用者決定**：保留這種移動並修改補給稽核規則，或禁止它（禁止後是新候選，要走升級流程）。
 

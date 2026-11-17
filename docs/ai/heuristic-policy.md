@@ -228,6 +228,8 @@ gate 通過（[獨立批](../quality/evidence/ai-s5-v88-independent-2026-11-17/R
 
 ### 尚未升級的候選
 
+Exploitation 階段的戰區配置不計卡車與 HQ 的移動（權重 `exploitationFixedLogistics`，預設 0；`bot-exploitation-untraced-move`）：戰區配置在 Movement 與 Exploitation 用同一套算法，安排卡車運補、集結者與 HQ 位置；但 Exploitation 只有 Exploit Mode 的單位與釋出的 Reserve 能移動（11.0a），卡車不會來。heuristic@88 的獨立批中，集結者因此 16 次走到沒有 trace 也沒有 SP 可吃的卸貨點（Movement 階段同樣的移動 993 次全部有補給），之後幾乎不參與攻擊、目標下一回合一個也沒拿下（[S6](../quality/evidence/ai-s6-exploitation-moves-2026-11-17/README.md)）。權重開啟時，Movement 以外的階段不安排卡車、集結者與 HQ 移動，各組只靠已在場的 trace、HQ 投送與 SP。回歸測試 `tests/ai/exploitation-logistics.test.ts`。
+
 最後一位玩家的最後回合，攻擊未持有的 VP 點、且承受全部 option 損失後仍有攻擊者存活時，候選 v77 改選損失以保留前進資格；其餘情況沿用 v75。候選 patch 以只供攻擊方查看的剩餘步數支援這項判斷，前進仍受既有補給限制。v77 以 v75 為基底，不含 v78 的卡車後勤與 v79 的補給鏈，尚未完成獨立 80 場驗收；[量測結果與證據](evaluation.md#候選策略量測)。
 
 

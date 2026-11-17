@@ -191,11 +191,15 @@ interface HqOption {
  * Greedy by marginal value, then pairs and single units moved while the total improves.
  *
  * With `bridge`, the HQs no group uses are then sent to bridge SP left behind the front (`bridgesFor`).
+ *
+ * Without `logistics` this step's trucks and HQs stay where they are (the Exploitation Phase: only Exploit Mode units and
+ * released Reserves move, 11.0a): no truck run and so no stager, and an HQ throws from its hex. A group is then supplied
+ * only by the trace, the throws and the SP already in place.
  */
 export const allocateTheater = (situation: Situation, access: BotActionAccess, exclude: ReadonlySet<PieceId>,
   rating: (piece: ProjectedPiece) => number, discount: number,
   modeFor: (unit: OwnUnit, objective: HexId, defended: boolean) => OcsMode | null,
-  truckTokens: (truck: OwnUnit) => number, bridge = false): TheaterPlan => {
+  truckTokens: (truck: OwnUnit) => number, bridge = false, logistics = true): TheaterPlan => {
   const me = situation.playerId;
   const objectives = situation.objectives.filter((objective) => objective.controllerId !== me);
   if (objectives.length === 0) return { groups: [], hqs: [], trucks: [], bridges: [] };
@@ -272,7 +276,7 @@ export const allocateTheater = (situation: Situation, access: BotActionAccess, e
       const covers = new Set(throwFrom(hexId).hexIds.map(String));
       return dependents.every((unit) => covers.has(String(unit.hexId)));
     };
-    const firstStep = [...reachFrom(id, hq.hexId, 'MOVE')].filter(safe).filter((hexId) => throwFrom(hexId).fed && keepsDependents(hexId));
+    const firstStep = (logistics ? [...reachFrom(id, hq.hexId, 'MOVE')] : [String(hq.hexId)]).filter(safe).filter((hexId) => throwFrom(hexId).fed && keepsDependents(hexId));
     firstSteps.set(id, firstStep);
     const servable = new Set(now.servableIds);
     for (const objective of objectives) {
@@ -318,7 +322,7 @@ export const allocateTheater = (situation: Situation, access: BotActionAccess, e
       || situation.nearestEnemy(dump.hexId).distance < PICKUP_SAFE_DISTANCE) continue;
     pickups.set(String(dump.hexId), (pickups.get(String(dump.hexId)) ?? 0) + (dump.piece.resourceQuantity ?? 0));
   }
-  const trucks = situation.own.filter((unit) => unit.piece.role === 'TRUCK' && !exclude.has(unit.piece.id)
+  const trucks = !logistics ? [] : situation.own.filter((unit) => unit.piece.role === 'TRUCK' && !exclude.has(unit.piece.id)
     && ((unit.piece.carriedTokens ?? 0) >= TRUCK_MIN_TOKENS || ((unit.piece.carriedTokens ?? 0) === 0 && [...pickups.values()].some((tokens) => tokens >= TRUCK_MIN_TOKENS))))
     .sort((left, right) => String(left.piece.id).localeCompare(String(right.piece.id)));
   // 13.2f: loading or unloading costs 10% of the printed MA; costs are in quarter MP.
@@ -523,7 +527,7 @@ export const allocateTheater = (situation: Situation, access: BotActionAccess, e
       .map((pile) => ({ ...pile, hexId: String(pile.unit!.hexId), reach: access.drawReach(pile.unit!.hexId) }));
     const left = piles.filter(({ drawn }) => !drawn);
     // 12.5a: an HQ that cannot move now and has no fuel to pay stays where it is.
-    const free = hqUnits.filter((hq) => !used.has(hq.piece.id) && !exclude.has(hq.piece.id) && firstSteps.has(hq.piece.id)
+    const free = hqUnits.filter((hq) => logistics && !used.has(hq.piece.id) && !exclude.has(hq.piece.id) && firstSteps.has(hq.piece.id)
       && (access.movementRange(hq.piece.id).length > 0 || access.candidates('PAY_FUEL', hq.piece.id).length > 0))
       // An HQ that already carries a pile's SP to the front where it stands keeps doing it.
       .filter((hq) => !(throwsToFront(hq.piece.id, String(hq.hexId)) && piles.some((pile) => pile.drawn && pile.reach.has(String(hq.hexId)))));
