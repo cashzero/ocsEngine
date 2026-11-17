@@ -127,9 +127,7 @@ Air 與 CARGO_LOSS 仍用第一個選項（TODO `bot-air`）。已有局部案�
 
 空軍（`bot-air`）不在 B5 範圍：電腦會派 Air Barrage 與 refit，其他任務與空中待決的缺口見 §3 TODO。
 
-狀態：**IN PROGRESS**。最後一次 B5 量測在 heuristic@5（預設地圖全部 PASS）；東歐風格未達 90%（TODO `bot-eastern-front`）；
-標準策略 heuristic@90 尚未重跑 B5，重測排在 [AI 攻防策略改進 WBS](19-ai-strategy-improvement-wbs.md) 的 S4.6（對局須使用者同意）。未升級的候選 heuristic@87
-在全新種子上 B5-1～B5-6 全部 PASS（預設地圖 40/40、東歐風格 20/20，[紀錄](../quality/evidence/ai-b5-v87-2026-11-15/README.md)）。量測數字見 [AI 對戰評估](../ai/evaluation.md)。
+狀態：**IN PROGRESS**。B5-1～B5-6 以標準策略 heuristic@90 在全新種子上全部 PASS（預設地圖對 random-legal 39/40，東歐風格 19/20；[紀錄](../quality/evidence/ai-b5-v90-2026-11-17/README.md)）；B5-7（人工檢視三局完整 trace）最後在 heuristic@1 做過，尚未以現行標準重做。量測數字見 [AI 對戰評估](../ai/evaluation.md)。
 
 ### B6 Logistics-aware（M9.3，IN PROGRESS）
 

@@ -299,7 +299,6 @@ Exploitation 階段的戰區配置不計卡車與 HQ 的移動（權重 `exploit
 - `bot-trace-gain-scan`：動作後 trace 修正只查前 12 個候選。
 - `bot-advance-first-entry`：有敵方運輸單位的首次前進與成功 Overrun 強制進駐仍有補給預判缺口。
 - `bot-relocation-coverage`：`DISPLACEMENT_HEX`、鐵路、海運與 breakdown 的補給預判未涵蓋。
-- `bot-eastern-front`：東歐地圖的長距離推進與守點尚缺現行策略重測。
 - `bot-hq-logistics-plan`：HQ 與卡車缺少協同前推的接力計畫。
 - 沒有 Reserve、Reaction 反擊、Extender、Breakout 規劃；戰鬥預估不含 Surprise。
 - `bot-defender-counterattack`：守方不反攻是權宜做法，應只在有優勢時反攻（見 [TODO 清單](../quality/05-todo-inventory.md)）。

@@ -295,9 +295,9 @@ SP 每 segment 7.4–9.8 SP（地圖上 SP 的 29–36%）。
 
 已完成驗證的對戰批均合法打完 8 回合，重播 hash 一致，既定一般補給與嚴格前進稽核違例為零。v77 的完整品質檢查為 752 passed／8 skipped，typecheck、build、smoke 通過；該批成對平均 +0.25、區間 [−0.275, 0.775]，尚未登記或執行獨立批；v77 以 v75 為基底，要成為標準須改以 v78 為基底重新驗收。各次 frozen quality 的命令、時間、來源與建置雜湊在個別 evidence 的 JSON 中；觀測 commit 與歷史重寫後相同 tree 的對照見 [來源對照](../quality/evidence/ai-vp-terminal-option-development-2026-10-16/source-equivalence.json)。
 
-對 `random-legal` 的基準（WBS B5）在現行標準上沒有量測：最後量測於 heuristic@5（OOB 0.4.0，對 random-legal 39/40，終局 91% 在補給內）；
-東歐風格最後量測於 heuristic@1，勝率 80%（目標 90%）。未升級的候選 heuristic@87 在全新種子上預設地圖 40/40、東歐風格 20/20，
-B5-1～B5-6 全部通過（[紀錄](../quality/evidence/ai-b5-v87-2026-11-15/README.md)）。
+對 `random-legal` 的基準（WBS B5）以標準 heuristic@90 在全新種子上量測，B5-1～B5-6 全部通過（[紀錄](../quality/evidence/ai-b5-v90-2026-11-17/README.md)）：預設地圖對 random-legal 39/40、
+兩個座位 20/20 與 19/20，終局 99% 的戰鬥單位在補給內；東歐風格 19/20（95%，目標 90%）。前一次標準策略的量測是 heuristic@5（預設地圖 39/40）與
+heuristic@1（東歐風格 80%）。
 
 ## 決策
 
@@ -345,7 +345,7 @@ B5-1～B5-6 全部通過（[紀錄](../quality/evidence/ai-b5-v87-2026-11-15/REA
 ## 已知缺口
 
 - `heuristic@86` 未通過兩個攻方補給 gate（例外升級），東歐攻擊戰的效果沒有量測。
-- 標準策略 `heuristic@90` 尚未重跑 WBS B5；B5-1～B5-6 只以未升級的候選 heuristic@87 量過，B5-7 最後在 heuristic@1。
+- WBS B5-7（人工檢視三局完整 trace）最後在 heuristic@1 做過；B5-1～B5-6 已以標準 heuristic@90 重測。
 - WBS B2 的 100 局、大地圖 20 局、開啟空軍 20 局批次未完成。
 - 升級流程只用兩種地圖與兩種交戰，沒有 `ALLIED_ATTACKS`、海域、空軍或其他尺寸。
 
