@@ -1162,11 +1162,16 @@ const preservesFriendlySupply = (context: BotDecisionContext, action: GameAction
   return preserved;
 };
 
-/** theaterAllocation: the move may cost the movers their trace (they eat, 12.6c), but no other unit its trace or rations. */
-const preservesOtherSupply = (context: BotDecisionContext, action: GameAction): boolean => {
+/**
+ * theaterAllocation: the move may cost the movers their trace (they eat, 12.6c), but no other unit its trace or rations.
+ * With `eatsThere` the mover must have trace or SP in reach where it ends, as the rules see it after the move: the hex it
+ * leaves may have kept an enemy ZOC off the draw path (heuristic@90; a stager's SP arrives later, so its drop is exempt).
+ */
+const preservesOtherSupply = (context: BotDecisionContext, action: GameAction, eatsThere: boolean): boolean => {
   const { explanation } = context.actions.explain(action);
   const fact = (key: string) => explanation.facts.find((entry) => entry.key === key)?.value;
-  return explanation.allowed && fact('supply.relocationOtherTraceLost') === 0 && fact('supply.relocationFeedLost') === 0;
+  return explanation.allowed && fact('supply.relocationOtherTraceLost') === 0 && fact('supply.relocationFeedLost') === 0
+    && (!eatsThere || fact('supply.relocationMoverHasTrace') === true || Number(fact('supply.relocationMoverRation') ?? 0) > 0);
 };
 
 const keepsFriendlySupply = (explanation: RuleExplanation): boolean => {
@@ -1351,9 +1356,10 @@ const movementStep = (context: BotDecisionContext, situation: Situation, facts: 
     const stage = notes.stagers?.get(id);
     const trucked = objective !== undefined && [...(notes.truckPlan?.values() ?? [])].some((placement) => placement.objective === objective);
     for (const candidate of improving) {
-      const fedThere = (stage !== undefined && destinationOf(candidate.action) === stage)
+      const atStage = stage !== undefined && destinationOf(candidate.action) === stage;
+      const fedThere = atStage
         || ((trucked || attackPosition(candidate.action)) && feedSourceFor(notes, feeds, unit, destinationOf(candidate.action)!) !== null);
-      if (!(fedThere ? preservesOtherSupply(context, candidate.action) : preservesFriendlySupply(context, candidate.action, movementObservation
+      if (!(fedThere ? preservesOtherSupply(context, candidate.action, !atStage) : preservesFriendlySupply(context, candidate.action, movementObservation
         ? (explanation, preserved) => movementObservation.supply(candidate.action, explanation, preserved) : undefined))) continue;
       best = candidate;
       break;
@@ -1801,7 +1807,7 @@ export const createHeuristicPolicy = (facts: BotGameFacts, options: HeuristicPol
   const choose = decide(facts, options.weights ?? DEFAULT_HEURISTIC_WEIGHTS);
   return {
     id: 'heuristic',
-    version: options.label === undefined ? '89' : `89+${options.label}`,
+    version: options.label === undefined ? '90' : `90+${options.label}`,
     decide: (context) => {
       const sink = options.debug;
       debug = sink ? (line) => sink(`${context.memory.stepKey} ${String(context.playerId).split(':').at(-1)} ${line}`) : null;

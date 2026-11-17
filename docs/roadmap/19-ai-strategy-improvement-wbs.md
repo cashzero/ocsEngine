@@ -1,6 +1,6 @@
 # AI 攻防策略改進 WBS
 
-狀態：**IN PROGRESS**。S1 的剩餘差距由使用者維持為例外，S1 的結束條件未勾選；S2 完成；S3 完成（`approachAttack` 的檢查未通過，由使用者例外帶到 S4）；S4 未完成：候選 heuristic@87（v86 加 `arrivalRailForward`、`hqBridge`、`defenderCut`、`approachAttack`）的獨立批以 VP 判定未通過，v86 維持標準；S5（第 7 節）執行中：S5.0、S5.1 完成；S5.2 估計每個攻擊戰對 VP +0.75 ± 0.38，獨立批通過機率 0.25／0.18，依登記建議不登記獨立批；S5.4a 停止規則成立。使用者選擇 S5.4d 與 S5.2b／S5.4c：`optionAdvance` 每對 +0.58 ± 0.14；cand2 每個攻擊戰對 +1.24 ± 0.38；cand3（`approachAttack` 只給攻方）+1.53 ± 0.32，80 對獨立批通過機率 0.89／0.78。S5.3：heuristic@88 的獨立批 VP 每對 +2.04 [+1.10, +2.98]，量測與 gate 達標，補給稽核有 16 次違例（v86 自己 6 次）；**使用者例外升級 heuristic@88 為標準**（2026-11-17）；S6 查明補給稽核的違例來自 Exploitation 階段的戰區配置，使用者決定直接修正，現行標準是 **heuristic@89**。下一輪是第 9 節（S7–S11，使用者 2026-11-17：「全部做完」）；之後是 `bot-fog-information-value`。本文件只維護工作分解；量測結果寫在 `docs/ai/`，證據在 `docs/quality/evidence/`。
+狀態：**IN PROGRESS**。S1 的剩餘差距由使用者維持為例外，S1 的結束條件未勾選；S2 完成；S3 完成（`approachAttack` 的檢查未通過，由使用者例外帶到 S4）；S4 未完成：候選 heuristic@87（v86 加 `arrivalRailForward`、`hqBridge`、`defenderCut`、`approachAttack`）的獨立批以 VP 判定未通過，v86 維持標準；S5（第 7 節）執行中：S5.0、S5.1 完成；S5.2 估計每個攻擊戰對 VP +0.75 ± 0.38，獨立批通過機率 0.25／0.18，依登記建議不登記獨立批；S5.4a 停止規則成立。使用者選擇 S5.4d 與 S5.2b／S5.4c：`optionAdvance` 每對 +0.58 ± 0.14；cand2 每個攻擊戰對 +1.24 ± 0.38；cand3（`approachAttack` 只給攻方）+1.53 ± 0.32，80 對獨立批通過機率 0.89／0.78。S5.3：heuristic@88 的獨立批 VP 每對 +2.04 [+1.10, +2.98]，量測與 gate 達標，補給稽核有 16 次違例（v86 自己 6 次）；**使用者例外升級 heuristic@88 為標準**（2026-11-17）；S6 查明補給稽核的違例來自 Exploitation 階段的戰區配置，使用者決定直接修正，之後的標準是 heuristic@89，再修正一處後現行標準是 **heuristic@90**。下一輪是第 9 節（S7–S11，使用者 2026-11-17：「全部做完」）；之後是 `bot-fog-information-value`。本文件只維護工作分解；量測結果寫在 `docs/ai/`，證據在 `docs/quality/evidence/`。
 
 需求來源（使用者，2026-11-13）：「盤點目前ai研究情形 制定接下來的改進策略」，對提出的四階段順序、暫停指標研究線與寫入路線圖回答「全部同意 制定細部計畫」。
 
@@ -294,7 +294,7 @@ S5.0、S5.1、S5.2（不含選用的東歐局面）與 S5.4a 只用既有存檔�
 
 ### S7 收尾
 
-- [ ] **S7.1 直接修正 `bot-attack-position-feed-preview`**：戰區組單位離開 trace 走到攻擊位置時，以移動後的狀態確認它吃得到 SP。回歸測試用 2800337；遭遇戰逐局不變；凍結新標準。
+- [x] **S7.1 直接修正 `bot-attack-position-feed-preview`**：戰區組單位離開 trace 走到攻擊位置時，以移動後的狀態確認它吃得到 SP。回歸測試用 2800337；遭遇戰逐局不變；凍結新標準。結果：heuristic@90；10 個移動段重下後段末無補給 0 次；測試 832 通過、7 略過，smoke 通過；遭遇戰 4 局 hash 不變；凍結 `artifacts/ai-promotion/frozen-v90-standard`。
 - [ ] **S7.2 B5 重測**（S4.6）：新標準對 random-legal、互打與東歐風格，80 局（使用者同意）。
 
 ### S8 把戰果轉成目標點

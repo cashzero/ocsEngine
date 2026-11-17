@@ -122,6 +122,8 @@ export const relocationSupplyFacts = (state: GameState, action: GameAction): rea
     fact('supply.relocationOtherTraceLost', others.length),
     fact('supply.relocationOtherTraceLostIds', others.map(piece => piece.id).join(',')),
     fact('supply.relocationMoverHasTrace', pieceHasTrace(after, relocated)),
+    // What the mover can eat where it ends, with the hexes it left behind it (12.6c): its ration cost in trace, else SP in reach.
+    fact('supply.relocationMoverRation', availableRationTokens(after, relocated)),
     // Preserve these facts for the frozen v13 baseline and consumers of the original HQ preview.
     ...(hq ? [fact('supply.hqRelocationTraceLost', lost.length), fact('supply.hqRelocationTraceLostIds', lost.map(piece => piece.id).join(','))] : []),
   ];

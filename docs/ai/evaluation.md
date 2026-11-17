@@ -180,7 +180,7 @@ SP 每 segment 7.4–9.8 SP（地圖上 SP 的 29–36%）。
 
 ### 目前結果
 
-標準策略 `heuristic@89` 是 heuristic@88 加一項直接修正（Exploitation 階段的戰區配置不計卡車與 HQ 的移動，使用者決定不跑升級流程，
+標準策略 `heuristic@90` 是 heuristic@88 加兩項直接修正（v89：Exploitation 階段的戰區配置不計卡車與 HQ 的移動；v90：走到攻擊位置的單位以移動後的狀態確認吃得到 SP；使用者決定不跑升級流程，
 見[決策](#決策)與 [S6](../quality/evidence/ai-s6-exploitation-moves-2026-11-17/README.md)）；它沒有自己的對戰量測。下表是 `heuristic@88`（heuristic@86 加攻擊戰的五項，
 [內容](heuristic-policy.md#heuristic88-採用的五項攻擊戰)），由使用者決定例外升級（2026-11-17）：走完升級流程，量測與兩個補給 gate 達標，補給稽核有違例：
 
@@ -192,7 +192,7 @@ SP 每 segment 7.4–9.8 SP（地圖上 SP 的 29–36%）。
 | 攻方送補 gate（同上） | 前線取用不到的 SP 3.6 對 4.1：通過 |
 | 正確性 | 160 局合法打完、重播相同；沒有補給的前進只在第 8 回合；**補給稽核 16 次違例**（Exploitation 中往主攻目標移動後無 trace 且無 SP 可吃；v86 當攻方 6 次、v88 當攻方 10 次） |
 
-[獨立批](../quality/evidence/ai-s5-v88-independent-2026-11-17/README.md)、[開發批與登記](../quality/evidence/ai-s5-v88-2026-11-16/README.md)。之後的候選以 `artifacts/ai-promotion/frozen-v89-standard` 為對手。
+[獨立批](../quality/evidence/ai-s5-v88-independent-2026-11-17/README.md)、[開發批與登記](../quality/evidence/ai-s5-v88-2026-11-16/README.md)。之後的候選以 `artifacts/ai-promotion/frozen-v90-standard` 為對手。
 
 前一個標準 `heuristic@86`（攻擊戰的攻方以戰區配置規劃，[設計](theater-supply-plan.md#策略上層)）由使用者決定例外升級：沒有跑獨立批，
 兩個補給 gate 未通過（見[決策](#決策)）：
@@ -325,7 +325,8 @@ B5-1～B5-6 全部通過（[紀錄](../quality/evidence/ai-b5-v87-2026-11-15/REA
   - `heuristic@89` 不跑升級流程：它是 heuristic@88 加一項修正（使用者決定，2026-11-17：「這樣明確的bug可以直接修正」）。戰區配置在
     Exploitation 階段安排了不能移動的卡車（11.0a），集結者因此走到沒有補給的卸貨點；這就是 heuristic@88 獨立批補給稽核 16 次違例中的
     15 次。修正後在那 10 個局面重下該移動段，段末無補給由 10 次降為 1 次；整局的對戰量測沒有做（這種移動每局約 0.1 次）。
-    明確的預測錯誤可以這樣直接修正；改變取捨的改動仍走升級流程。
+    明確的預測錯誤可以這樣直接修正；改變取捨的改動仍走升級流程。`heuristic@90` 以同樣的方式修正剩下的那 1 次（移動前的補給查詢沒算進
+    單位離開原格的影響）。
   - `heuristic@88` 的獨立批量測與兩個補給 gate 達標，但補給稽核有 16 次違例，仍升級為標準（使用者決定，2026-11-17：「先升級88 再研究
     Exploitation 的移動 我建議先不把其當成bug 而是分析利弊之後再決定」）。違例是攻方在 Exploitation 中往主攻目標移動、段結束時無 trace
     且無 SP 可吃；v86 自己在同一批種子上也有（當攻方 80 局 6 次，v88 10 次）。分析後查明是預測錯誤，已在 heuristic@89 修正（上一項）。獨立批 160 局也是使用者的例外（每批上限 80 局）。這不改變升級流程。
@@ -344,7 +345,7 @@ B5-1～B5-6 全部通過（[紀錄](../quality/evidence/ai-b5-v87-2026-11-15/REA
 ## 已知缺口
 
 - `heuristic@86` 未通過兩個攻方補給 gate（例外升級），東歐攻擊戰的效果沒有量測。
-- 標準策略 `heuristic@89` 尚未重跑 WBS B5；B5-1～B5-6 只以未升級的候選 heuristic@87 量過，B5-7 最後在 heuristic@1。
+- 標準策略 `heuristic@90` 尚未重跑 WBS B5；B5-1～B5-6 只以未升級的候選 heuristic@87 量過，B5-7 最後在 heuristic@1。
 - WBS B2 的 100 局、大地圖 20 局、開啟空軍 20 局批次未完成。
 - 升級流程只用兩種地圖與兩種交戰，沒有 `ALLIED_ATTACKS`、海域、空軍或其他尺寸。
 

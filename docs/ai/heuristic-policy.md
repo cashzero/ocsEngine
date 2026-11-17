@@ -1,8 +1,8 @@
-# Heuristic 策略（標準：heuristic@89）
+# Heuristic 策略（標準：heuristic@90）
 
 ## 範圍
 
-標準電腦策略 `heuristic@89` 如何做決定：各階段做什麼、目標分配與移動評分、補給保護、戰鬥、重建與待決回應，
+標準電腦策略 `heuristic@90` 如何做決定：各階段做什麼、目標分配與移動評分、補給保護、戰鬥、重建與待決回應，
 以及做過哪些嘗試、為什麼不採用。實作：`src/ai/policies/heuristic.ts`、權重 `src/ai/policies/heuristic-weights.ts`、
 待決回應 `src/ai/decisions.ts`。介面與邊界見 [architecture.md](architecture.md)，強度量測見 [evaluation.md](evaluation.md)。
 
@@ -200,6 +200,10 @@
   貼近目標。量測與例外的內容見下一節。
 - Exploitation 階段的戰區配置不計卡車與 HQ 的移動（v89，使用者決定直接修正，2026-11-17：「這樣明確的bug可以直接修正」，沒有跑升級流程）：
   heuristic@88 在 Exploitation 仍安排卡車運補與集結者，但卡車在那個階段不能移動（11.0a），集結者走到沒有補給的卸貨點。內容見下一節末段。
+- 離開 trace 走到攻擊位置的單位，以移動後的狀態確認吃得到 SP（v90，直接修正）：v89 以前用移動前的補給查詢判斷，單位離開原格後
+  經過原格的補給路徑可能被敵方 ZOC 切斷。規則查詢提供 `supply.relocationMoverRation`（移動後移動者吃得到的口糧）；集結者的卸貨點
+  仍例外（SP 稍後才由卡車送到）。把 heuristic@88 獨立批的 10 個局面重下該移動段，段末無補給由 1 次降為 0；回歸測試在
+  `tests/ai/exploitation-logistics.test.ts`（2800337）。
 
 ### heuristic@88 採用的五項（攻擊戰）
 
@@ -228,7 +232,7 @@ gate 通過（[獨立批](../quality/evidence/ai-s5-v88-independent-2026-11-17/R
 
 前一個候選 heuristic@87（四項，`arrivalRailForward` 1、`hqBridge` 1、`defenderCut` 2、`approachAttack` 1）**以 VP 判定未通過升級**（主要量測是 VP，使用者，2026-11-15）：獨立 80 局對凍結 v86，VP 每對 +0.73 [−1.01, +2.46]，遭遇戰 −0.80、攻擊戰 +2.25（西歐遭遇戰 −3.20，10 對）；Kill − Loss +5.64 [+2.60, +8.67]、Supply +1.34 [+0.32, +2.35]；攻方的兩個補給 gate 通過（前線取用不到的後方 SP 2.8 對 6.3、前線取用不到的 SP 3.2 對 6.5）（[獨立批](../quality/evidence/ai-s4-v87-independent-2026-11-15/README.md)）。遭遇戰沒有戰區配置、HQ 接力與守方斷補，候選在那裡的差異只能來自 `approachAttack` 與 `arrivalRailForward`，heuristic@87 的這兩項沒有交戰類型的條件（S5.1 起只在攻擊戰生效）。[VP 診斷](../quality/evidence/ai-s4-vp-diagnosis-2026-11-15/README.md)：遭遇戰的 −0.80 ± 1.37 與 0 分不開；攻擊戰的增益（+2.25 ± 0.82）來自守方（候選當守方，攻方 VP margin 每局 +3.60 ± 1.03；當攻方 +0.90 ± 1.63）。從 Game Turn 2 起的局面接續中，四項沒有一項單獨確立 VP 的變化（每分支 VP 差的標準差 5.3～6.6）；它們明顯改變殺傷、接觸與 SP，目標點卻幾乎不動：`defenderCut` 的 Kill − Loss +3.07 ± 1.28，VP −0.18 ± 0.58。[複核](../quality/evidence/ai-s4-vp-review-2026-11-15/README.md)（事後分析）：四項中只有兩項量過 VP（攻方的 `approachAttack` +2.00 ± 0.59、`defenderCut` +0.85 ± 0.46），合起來預測每個攻擊戰對 +1.43、遭遇戰 0，即兩種交戰合計每對 +0.71，獨立批量到 +0.73；兩種交戰都被改到時，gate 需要觀察值高於 1.74。`approachAttack` 在遭遇戰依地圖風格方向相反：東歐 +1.86 ± 0.92（攻擊與殺傷增加），西歐 −1.77 ± 0.99（攻擊次數反而減少 0.66），合併的 −0.43 蓋住了這一點；所以「用目標點換殺傷」的說法不成立。`defenderCut` 的 VP 兩次接續合併為 +0.45 ± 0.36。整個候選的 VP 每局估計：當攻方 +1.21 ± 0.83、當守方 +2.47 ± 0.71，每個攻擊戰對 +1.84 ± 0.54。S5.1 起兩項只在攻擊戰生效後，以 564 個 Game Turn 2 分支（西歐 120 張、東歐 18 張地圖）事先登記的接續量候選對 v86（[S5.2](../quality/evidence/ai-s5-vp-check-2026-11-15/README.md)）：每個攻擊戰對 VP +0.75 ± 0.38（西歐攻方 +1.62 ± 0.79、守方 +0.26 ± 0.76；東歐攻方 +0.04 ± 0.71、守方 +1.08 ± 0.76），上一批的守方增益沒有重現；40 個攻擊戰對的獨立批通過機率 0.18～0.25，依登記建議不登記獨立批。Kill − Loss +2.56 ± 0.89、目標點 +0.27 ± 0.16。
 
-Exploitation 階段的戰區配置不計卡車與 HQ 的移動（權重 `exploitationFixedLogistics`，v89 起預設 1；0 是 heuristic@88 的算法，留作比較）：heuristic@89 = heuristic@88 加這項修正，由使用者決定直接修正、不跑升級流程。戰區配置在 Movement 與 Exploitation 用同一套算法，安排卡車運補、集結者與 HQ 位置；但 Exploitation 只有 Exploit Mode 的單位與釋出的 Reserve 能移動（11.0a），卡車不會來。heuristic@88 的獨立批中，集結者因此 16 次走到沒有 trace 也沒有 SP 可吃的卸貨點（Movement 階段同樣的移動 993 次全部有補給），之後幾乎不參與攻擊、目標下一回合一個也沒拿下（[S6](../quality/evidence/ai-s6-exploitation-moves-2026-11-17/README.md)）。權重開啟時，Movement 以外的階段不安排卡車、集結者與 HQ 移動，各組只靠已在場的 trace、HQ 投送與 SP。在發生這種移動的 10 個局面把該 Exploitation 移動段重下一次：heuristic@88 的算法 10 次段末無補給，修正後 1 次（另一個原因，`bot-attack-position-feed-preview`）。回歸測試 `tests/ai/exploitation-logistics.test.ts`。
+Exploitation 階段的戰區配置不計卡車與 HQ 的移動（權重 `exploitationFixedLogistics`，v89 起預設 1；0 是 heuristic@88 的算法，留作比較）：heuristic@89 = heuristic@88 加這項修正，由使用者決定直接修正、不跑升級流程。戰區配置在 Movement 與 Exploitation 用同一套算法，安排卡車運補、集結者與 HQ 位置；但 Exploitation 只有 Exploit Mode 的單位與釋出的 Reserve 能移動（11.0a），卡車不會來。heuristic@88 的獨立批中，集結者因此 16 次走到沒有 trace 也沒有 SP 可吃的卸貨點（Movement 階段同樣的移動 993 次全部有補給），之後幾乎不參與攻擊、目標下一回合一個也沒拿下（[S6](../quality/evidence/ai-s6-exploitation-moves-2026-11-17/README.md)）。權重開啟時，Movement 以外的階段不安排卡車、集結者與 HQ 移動，各組只靠已在場的 trace、HQ 投送與 SP。在發生這種移動的 10 個局面把該 Exploitation 移動段重下一次：heuristic@88 的算法 10 次段末無補給，修正後 1 次（另一個原因，已在 heuristic@90 修正）。回歸測試 `tests/ai/exploitation-logistics.test.ts`。
 
 ### 尚未升級的候選
 
