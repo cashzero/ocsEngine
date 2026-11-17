@@ -1,6 +1,6 @@
 # AI 攻防策略改進 WBS
 
-狀態：**IN PROGRESS**。S1 的剩餘差距由使用者維持為例外，S1 的結束條件未勾選；S2 完成；S3 完成（`approachAttack` 的檢查未通過，由使用者例外帶到 S4）；S4 未完成：候選 heuristic@87（v86 加 `arrivalRailForward`、`hqBridge`、`defenderCut`、`approachAttack`）的獨立批以 VP 判定未通過，v86 維持標準；S5（第 7 節）執行中：S5.0、S5.1 完成；S5.2 估計每個攻擊戰對 VP +0.75 ± 0.38，獨立批通過機率 0.25／0.18，依登記建議不登記獨立批；S5.4a 停止規則成立。使用者選擇 S5.4d 與 S5.2b／S5.4c：`optionAdvance` 每對 +0.58 ± 0.14；cand2 每個攻擊戰對 +1.24 ± 0.38；cand3（`approachAttack` 只給攻方）+1.53 ± 0.32，80 對獨立批通過機率 0.89／0.78。S5.3：heuristic@88 的獨立批 VP 每對 +2.04 [+1.10, +2.98]，量測與 gate 達標，補給稽核有 16 次違例（v86 自己 6 次）；**使用者例外升級 heuristic@88 為標準**（2026-11-17）。待辦：S4.6 的 B5 重測（對局須使用者同意）、第 8 節 S6 的 Exploitation 移動利弊分析。本文件只維護工作分解；量測結果寫在 `docs/ai/`，證據在 `docs/quality/evidence/`。
+狀態：**IN PROGRESS**。S1 的剩餘差距由使用者維持為例外，S1 的結束條件未勾選；S2 完成；S3 完成（`approachAttack` 的檢查未通過，由使用者例外帶到 S4）；S4 未完成：候選 heuristic@87（v86 加 `arrivalRailForward`、`hqBridge`、`defenderCut`、`approachAttack`）的獨立批以 VP 判定未通過，v86 維持標準；S5（第 7 節）執行中：S5.0、S5.1 完成；S5.2 估計每個攻擊戰對 VP +0.75 ± 0.38，獨立批通過機率 0.25／0.18，依登記建議不登記獨立批；S5.4a 停止規則成立。使用者選擇 S5.4d 與 S5.2b／S5.4c：`optionAdvance` 每對 +0.58 ± 0.14；cand2 每個攻擊戰對 +1.24 ± 0.38；cand3（`approachAttack` 只給攻方）+1.53 ± 0.32，80 對獨立批通過機率 0.89／0.78。S5.3：heuristic@88 的獨立批 VP 每對 +2.04 [+1.10, +2.98]，量測與 gate 達標，補給稽核有 16 次違例（v86 自己 6 次）；**使用者例外升級 heuristic@88 為標準**（2026-11-17）；S6 查明補給稽核的違例來自 Exploitation 階段的戰區配置，使用者決定直接修正，現行標準是 **heuristic@89**。待辦：S4.6 的 B5 重測（對局須使用者同意）、`bot-attack-position-feed-preview`、`bot-fog-information-value`。本文件只維護工作分解；量測結果寫在 `docs/ai/`，證據在 `docs/quality/evidence/`。
 
 需求來源（使用者，2026-11-13）：「盤點目前ai研究情形 制定接下來的改進策略」，對提出的四階段順序、暫停指標研究線與寫入路線圖回答「全部同意 制定細部計畫」。
 
@@ -281,6 +281,7 @@ S5.0、S5.1、S5.2（不含選用的東歐局面）與 S5.4a 只用既有存檔�
 
 - [x] **S6.1 描述**（[紀錄](../quality/evidence/ai-s6-exploitation-moves-2026-11-17/README.md)）：在獨立批 160 局（有 trace）中，找出攻方在 Exploitation 往主攻目標移動、段結束時無 trace 且無 SP 可吃的單位，追蹤到下一個己方回合結束：下一次 Supply 時有沒有 trace 或吃到 SP、吃內部補給或耗損的 step、有沒有參與攻擊、目標有沒有拿下與持有。同時統計同樣在 Exploitation 離開 trace 但段結束時有補給的移動，作為對照。
   - 結果：段末無補給的 16 次移動之後同回合 0%、下一回合 6% 參與攻擊，目標下一回合結束時 0% 拿下，63% 存活（Movement 的 993 次：33%、25%、45%、87%）。原因：15 次是戰區配置的集結者走到卡車卸貨點，但 Exploitation 卡車不能移動（11.0a）；使用者：「顯然Exploitation的supply計算要不同」。
-- [ ] **S6.2 利弊量測**（權重 `exploitationFixedLogistics`，預設 0；[登記](../quality/evidence/ai-s6-exploitation-moves-2026-11-17/registration.json)）：預設關閉的開關禁止這種移動（Exploitation 的移動段結束時要有 trace 或 SP 可吃），以事先登記的局面接續量「禁止 − 現行」的 VP、Kill − Loss 與耗損（VP 為主要量測；分支點取在這些移動發生的那個 Exploitation 段開頭）。
-- [ ] **S6.3 回報使用者決定**：保留這種移動並修改補給稽核規則，或禁止它（禁止後是新候選，要走升級流程）。
+- [x] **S6.2 利弊量測**（權重 `exploitationFixedLogistics`，預設 0；[登記](../quality/evidence/ai-s6-exploitation-moves-2026-11-17/registration.json)）：預設關閉的開關禁止這種移動（Exploitation 的移動段結束時要有 trace 或 SP 可吃），以事先登記的局面接續量「禁止 − 現行」的 VP、Kill − Loss 與耗損（VP 為主要量測；分支點取在這些移動發生的那個 Exploitation 段開頭）。
+  - 結果（[紀錄](../quality/evidence/ai-s6-exploitation-moves-2026-11-17/README.md)）：10 個局面 × 8 組骰子，修正 − heuristic@88 的終局 VP +1.85 ± 1.50（未確立），step 差 +2.51 ± 0.76、Kill − Loss +1.90 ± 0.87、下一回合 trace 外且沒東西吃的單位 −0.79 ± 0.32，沒有看到代價。把該移動段重下一次：段末無補給由 10 次降為 1 次（另一個原因，`bot-attack-position-feed-preview`）。
+- [x] **S6.3 使用者決定**（2026-11-17）：「這樣明確的bug可以直接修正」。修正成為預設，標準策略為 heuristic@89，不跑升級流程；遭遇戰 4 局的終局 hash 與 v88 相同；凍結為 `artifacts/ai-promotion/frozen-v89-standard`。
 
