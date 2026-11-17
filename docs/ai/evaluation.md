@@ -180,7 +180,20 @@ SP 每 segment 7.4–9.8 SP（地圖上 SP 的 29–36%）。
 
 ### 目前結果
 
-標準策略 `heuristic@86`（攻擊戰的攻方以戰區配置規劃，[設計](theater-supply-plan.md#策略上層)）由使用者決定例外升級：沒有跑獨立批，
+標準策略 `heuristic@88`（heuristic@86 加攻擊戰的五項，[內容](heuristic-policy.md#heuristic88-採用的五項攻擊戰)）由使用者決定例外升級
+（2026-11-17）：走完升級流程，量測與兩個補給 gate 達標，補給稽核有違例（見[決策](#決策)）：
+
+| 量測 | 結果（相對 v86） |
+|---|---|
+| 獨立 160 局攻擊戰（西歐 2800200–2800279、東歐 2800300–2800379；使用者例外加大） | VP 每對 +2.04 [+1.10, +2.98]（西歐 +2.65、東歐 +1.43）、Kill − Loss +3.09 [+1.27, +4.92]、Supply +0.16 [−0.39, +0.71] |
+| 遭遇戰（開發批 16 局） | 每對兩局終局 hash 相同，未改變 |
+| 攻方運補 gate（對同種子的 v86 自我對戰 160 局） | 鐵路 100%、駐軍存量 0、後方前線取用不到的 SP 3.3 對 3.9：通過 |
+| 攻方送補 gate（同上） | 前線取用不到的 SP 3.6 對 4.1：通過 |
+| 正確性 | 160 局合法打完、重播相同；沒有補給的前進只在第 8 回合；**補給稽核 16 次違例**（Exploitation 中往主攻目標移動後無 trace 且無 SP 可吃；v86 當攻方 6 次、v88 當攻方 10 次） |
+
+[獨立批](../quality/evidence/ai-s5-v88-independent-2026-11-17/README.md)、[開發批與登記](../quality/evidence/ai-s5-v88-2026-11-16/README.md)。之後的候選以 `artifacts/ai-promotion/frozen-v88-standard` 為對手。
+
+前一個標準 `heuristic@86`（攻擊戰的攻方以戰區配置規劃，[設計](theater-supply-plan.md#策略上層)）由使用者決定例外升級：沒有跑獨立批，
 兩個補給 gate 未通過（見[決策](#決策)）：
 
 | 量測 | 結果（相對 v85） |
@@ -192,7 +205,7 @@ SP 每 segment 7.4–9.8 SP（地圖上 SP 的 29–36%）。
 | 開發種子的正確性檢查 | 東歐攻擊戰 8 局合法完成、重播相同；遭遇戰（西歐、東歐各 2 對）每對兩局終局 hash 相同，未改變 |
 
 [觀測](../quality/evidence/ai-theater-untraced-games-2026-11-13/README.md)、[補給 gate 與鐵路修正](../quality/evidence/ai-theater-supply-gates-2026-11-13/README.md)、
-[升級紀錄](../quality/evidence/ai-theater-v86-promotion-2026-11-13/README.md)。之後的候選以 `artifacts/ai-promotion/frozen-v86` 為對手。
+[升級紀錄](../quality/evidence/ai-theater-v86-promotion-2026-11-13/README.md)。
 
 前一個標準 `heuristic@85`（`f660ed1`，攻擊戰的守方不反攻）由使用者決定不跑獨立批、以局面接續測試與開發批證據直接升級（見[決策](#決策)）：
 
@@ -270,7 +283,7 @@ SP 每 segment 7.4–9.8 SP（地圖上 SP 的 29–36%）。
 | v76 全回合支付可存活的攻方 option | v75 | 開發 32 場 | −2 | +2／−4 | [淘汰](../quality/evidence/ai-vp-option-development-2026-10-16/README.md) |
 | v77 限最後一位玩家的最後回合 | v75 | 開發 32 場 | +8 | 0／+8 | [增益集中一對種子](../quality/evidence/ai-vp-terminal-option-development-2026-10-16/README.md)，尚未獨立驗收 |
 | v87 入場修正、HQ 接力、守方斷補、貼近目標 | v86 | 開發 32 場；獨立 80 場 | +58 | −32／+90 | [以 VP 判定未通過](../quality/evidence/ai-s4-v87-independent-2026-11-15/README.md)：VP 每對 +0.73 [−1.01, +2.46]、遭遇戰 −0.80；Kill − Loss +5.64 [+2.60, +8.67]，兩個攻方補給 gate 通過；[開發批](../quality/evidence/ai-s4-v87-2026-11-15/README.md) Kill − Loss +5.03 ± 1.64 |
-| v88 v87 的四項（`approachAttack` 只給攻擊戰攻方、`arrivalRailForward` 只在攻擊戰）加攻方 option 保留前進 | v86 | 開發 32 場；獨立 160 場（使用者例外，全為攻擊戰） | +326 | 未改變／+326 | [量測達標、補給稽核未過，未升級，待使用者決定](../quality/evidence/ai-s5-v88-independent-2026-11-17/README.md)：VP 每對 +2.04 [+1.10, +2.98]（西歐 +2.65、東歐 +1.43）；Kill − Loss +3.09 [+1.27, +4.92]、Supply +0.16 [−0.39, +0.71]；兩個攻方補給 gate 通過；補給稽核 16 次違例（Exploitation 中往主攻目標移動後無 trace 且無 SP 可吃），v86 當攻方 6 次、v88 當攻方 10 次 |
+| v88 v87 的四項（`approachAttack` 只給攻擊戰攻方、`arrivalRailForward` 只在攻擊戰）加攻方 option 保留前進 | v86 | 開發 32 場；獨立 160 場（使用者例外，全為攻擊戰） | +326 | 未改變／+326 | [量測達標、補給稽核有違例，使用者例外升級為標準](../quality/evidence/ai-s5-v88-independent-2026-11-17/README.md)：VP 每對 +2.04 [+1.10, +2.98]（西歐 +2.65、東歐 +1.43）；Kill − Loss +3.09 [+1.27, +4.92]、Supply +0.16 [−0.39, +0.71]；兩個攻方補給 gate 通過；補給稽核 16 次違例（Exploitation 中往主攻目標移動後無 trace 且無 SP 可吃），v86 當攻方 6 次、v88 當攻方 10 次 |
 | v85 攻擊戰守方不反攻 | v79 | 局面接續 49 × 3；開發 32 場 | +78 | 0／+78 | [使用者決定升級為標準](../quality/evidence/ai-defender-no-effort-v85-promotion-2026-10-18/README.md)，未跑獨立批；接續測試守方損失 −2.5 ± 0.7、VP +1.9 ± 0.9；開發批攻擊戰 VP +4.88 ± 1.81 一對 |
 | v84 刪除 v81–v83 的分角色規劃 | v79 | 開發 32 場 | 0 | 0／0 | 遭遇戰與攻擊戰每一對兩局終局 hash 相同（16/16）：照 v79 下，另含對港口與機場的砲擊（`7990052`，這些局沒有改變任何一局） |
 | v83 只改攻擊戰守方 | v79 | 開發 32 場 | +33 | 0／+33 | [開發中](../quality/evidence/ai-assault-v83-development-2026-10-17/README.md)，遭遇戰每對兩局 hash 相同（未改變）、攻方與 v79 逐局相同；攻擊戰成對 +4.13 ± 1.69；同一守方規劃在 v82 獨立批攻擊戰 20 對 +0.35 ± 0.73、[全新開發種子](../quality/evidence/ai-defender-efforts-development-2026-10-18/README.md) 40 對每局 −2.4 ± 1.25；守方不組主攻每局 +1.4 ± 1.2；未登記獨立批 |
@@ -308,6 +321,10 @@ B5-1～B5-6 全部通過（[紀錄](../quality/evidence/ai-b5-v87-2026-11-15/REA
     （守方不分優勢反攻）經局面接續測試確認：拿掉反攻，守方損失 −2.5 ± 0.7 step（t −3.6）、VP +1.9 ± 0.9；全新開發種子 40 對
     Kill − Loss +2.29 ± 0.98。登記的主要量測與不劣化幅度沒有設定；Supply 在每次量測都略差（攻方斷補單位變少）。
     這不改變升級流程：其他候選仍須跑獨立批。
+  - `heuristic@88` 的獨立批量測與兩個補給 gate 達標，但補給稽核有 16 次違例，仍升級為標準（使用者決定，2026-11-17：「先升級88 再研究
+    Exploitation 的移動 我建議先不把其當成bug 而是分析利弊之後再決定」）。違例是攻方在 Exploitation 中往主攻目標移動、段結束時無 trace
+    且無 SP 可吃；v86 自己在同一批種子上也有（當攻方 80 局 6 次，v88 10 次）。這種移動是否算錯誤、稽核規則要不要改，等利弊分析後由
+    使用者決定（`bot-exploitation-untraced-move`）。獨立批 160 局也是使用者的例外（每批上限 80 局）。這不改變升級流程。
   - `heuristic@86` 不跑獨立批、兩個攻方補給 gate 未通過仍升級為標準（使用者決定，2026-11-13：「既然如此 promte此solution」，
     看過 gate 結果與鐵路修正後選擇「例外升級並 push」）。證據只有西歐攻擊戰：事先登記的 80 局 VP 每對 +2.70 [+1.15, +4.25]，
     是攻擊戰攻方的改動，遭遇戰與守方不變。gate 的差距一部分來自鐵路不運計畫裝貨格的錯誤，已修正；修正後加不到油的單位
@@ -323,7 +340,7 @@ B5-1～B5-6 全部通過（[紀錄](../quality/evidence/ai-b5-v87-2026-11-15/REA
 ## 已知缺口
 
 - `heuristic@86` 未通過兩個攻方補給 gate（例外升級），東歐攻擊戰的效果沒有量測。
-- 標準策略 `heuristic@86` 尚未重跑 WBS B5；B5-1～B5-6 只以未升級的候選 heuristic@87 量過，B5-7 最後在 heuristic@1。
+- 標準策略 `heuristic@88` 尚未重跑 WBS B5；B5-1～B5-6 只以未升級的候選 heuristic@87 量過，B5-7 最後在 heuristic@1。
 - WBS B2 的 100 局、大地圖 20 局、開啟空軍 20 局批次未完成。
 - 升級流程只用兩種地圖與兩種交戰，沒有 `ALLIED_ATTACKS`、海域、空軍或其他尺寸。
 

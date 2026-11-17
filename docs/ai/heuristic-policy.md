@@ -1,8 +1,8 @@
-# Heuristic 策略（標準：heuristic@86）
+# Heuristic 策略（標準：heuristic@88）
 
 ## 範圍
 
-標準電腦策略 `heuristic@86` 如何做決定：各階段做什麼、目標分配與移動評分、補給保護、戰鬥、重建與待決回應，
+標準電腦策略 `heuristic@88` 如何做決定：各階段做什麼、目標分配與移動評分、補給保護、戰鬥、重建與待決回應，
 以及做過哪些嘗試、為什麼不採用。實作：`src/ai/policies/heuristic.ts`、權重 `src/ai/policies/heuristic-weights.ts`、
 待決回應 `src/ai/decisions.ts`。介面與邊界見 [architecture.md](architecture.md)，強度量測見 [evaluation.md](evaluation.md)。
 
@@ -160,7 +160,7 @@
 | SUPPLY_SOURCE | 能付全額的最滿補給堆；沒有補給堆時用內部存量 |
 | DEFENDER_LEAD／DEFENDER_TERRAIN | 對攻方 DRM 或勝率最不利的選項（解析 `−`、`-`、`+`） |
 | STEP_LOSS／ATTRITION_LOSS／OVERSTACK_ELIMINATION | 價值最低的單位 |
-| OPTION_SPLIT | 守目標點時少退優先；身為攻擊方而目標旁有己方持有、有戰鬥單位在上的目標點，且敵方之後還有回合時，也少退優先（攻擊方 option 的退卻是全部攻擊者一起退，v75；投影不公開攻擊者是誰，因此只看相鄰持有點）；其他時候少損失優先 |
+| OPTION_SPLIT | 守目標點時少退優先；身為攻擊方而目標旁有己方持有、有戰鬥單位在上的目標點，且敵方之後還有回合時，也少退優先（攻擊方 option 的退卻是全部攻擊者一起退，v75；投影不公開攻擊者是誰，因此只看相鄰持有點）；攻擊戰的攻方攻擊對方持有的目標點、守方的損失加 option 不少於守方單位數、攻擊單位吸收後仍有 step 時，全以 step 損失吸收以保留前進資格（v88，`optionAdvance`）；其他時候少損失優先 |
 | RETREAT_HEX | 見「補給保護」的撤退順序 |
 | DISPLACEMENT_HEX | 敵方威脅最低的格 |
 | ADVANCE_HEX | 見「補給保護」；不讓持有點的唯一守軍前進；非目標點只在威脅 < 8 時前進 |
@@ -196,18 +196,37 @@
   （[觀測](../quality/evidence/ai-theater-untraced-games-2026-11-13/README.md)）。遭遇戰與攻擊戰的守方不受影響；東歐攻擊戰只做過
   正確性檢查（[升級紀錄](../quality/evidence/ai-theater-v86-promotion-2026-11-13/README.md)）。前線取用不到的 SP 仍比 v85 多
   （[補給 gate 與鐵路修正](../quality/evidence/ai-theater-supply-gates-2026-11-13/README.md)）。
+- 攻擊戰的五項（v88，使用者決定例外升級，2026-11-17）：攻方在 option 中保留前進資格、守方斷補、入場修正與 HQ 接力、攻方的非組單位
+  貼近目標。量測與例外的內容見下一節。
+
+### heuristic@88 採用的五項（攻擊戰）
+
+heuristic@88 = heuristic@86 加下列五個權重的預設值（使用者決定例外升級，2026-11-17：「先升級88」）。五項都只在攻擊戰生效，
+遭遇戰與 heuristic@86 逐局相同（開發批 8 對每對兩局終局 hash 相同）。獨立批 160 局（80 個攻擊戰對）對凍結 v86：VP 每對
++2.04 [+1.10, +2.98]（西歐 +2.65、東歐 +1.43），Kill − Loss +3.09 [+1.27, +4.92]，Supply +0.16 [−0.39, +0.71]，兩個攻方補給
+gate 通過（[獨立批](../quality/evidence/ai-s5-v88-independent-2026-11-17/README.md)）。例外在於補給稽核：16 次 Exploitation
+中往主攻目標的移動，段結束時無 trace 且無 SP 可吃（v86 當攻方 6 次、v88 當攻方 10 次）；這種移動是否算錯誤尚未判定
+（`bot-exploitation-untraced-move`）。各項單獨的量測在下面各段。
+
+| 權重（v88 預設） | 作用的角色 | 單獨對 v86 的 VP（每個攻擊戰對，[S5.2b](../quality/evidence/ai-s5-parts-2026-11-16/README.md)） |
+|---|---|---|
+| `optionAdvance` 1 | 攻方 | +0.58 ± 0.14 |
+| `defenderCut` 2 | 守方 | +0.49 ± 0.17 |
+| `arrivalRailForward` 1、`hqBridge` 1 | 兩方、攻方 | +0.29 ± 0.13（合計） |
+| `approachAttack` 1 | 攻方 | 攻方每局 +0.54 ± 0.51 |
+
+
+非組單位貼近有守軍的目標（權重 `approachAttack`，v88 起預設 1；錯誤清單 E6）：不屬於戰區組的戰鬥單位，目標（ASSAULT、HUNT、CAPTURE）格有敵軍時，移到它旁邊不扣 crowding 與 exposure。接續測試 VP 差 +2.00 ± 0.59；開發局面目標點數 +1.43，檢查局面 +0.00 [−1.48, +1.48] 未通過不劣化門檻，使用者決定例外帶進候選 heuristic@87（見下）。只給攻擊戰的攻方：heuristic@87 沒有交戰條件，在遭遇戰依地圖風格方向相反（見下，S5.1 改為只在攻擊戰）；單獨量時守方 VP 每局 −0.39 ± 0.50（西歐 −1.17 ± 0.70，[S5.2b](../quality/evidence/ai-s5-parts-2026-11-16/README.md)），所以之後再改為只給攻方。S3 只量過攻擊戰的攻方（[紀錄](../quality/evidence/ai-s3-e6-approach-2026-11-15/README.md)、[檢查](../quality/evidence/ai-s3-check-2026-11-15/README.md)）。回歸測試 `tests/ai/approach-attack.test.ts`：攻擊戰攻方的非組單位在權重 0 時停在目標 2 格外、權重 1 時移到目標旁；攻擊戰的守方與遭遇戰中，兩種權重的決策相同（heuristic@87 在這兩個局面都把單位移到目標旁）。
+
+攻擊戰的守方切斷攻方補給（權重 `defenderCut`，v88 起預設 2）：每個 Movement 步驟開頭，最多派 2 個不負責守點的單位，以 Combat Mode 移到能切斷至少 `defenderCut` 個攻方單位 trace 的格子；只用守方看得到的敵方棋子估算（規則查詢 `queryTraceCut`，4.9a），格子要仍在自己的 trace 內，暴露程度不超過移動評分接受的範圍。登記的局面接續測試（對凍結 v86，239 個分支）：攻方終局斷補單位 +1.57 ± 0.42、守方 Kill − Loss +3.66 ± 0.77、VP 差 +0.85 ± 0.46（[紀錄](../quality/evidence/ai-s2-defender-cut-2026-11-14/README.md)）。併入候選 heuristic@87（見下）。
+
+到達的 SP 只在這一回合鐵路能從入場格往前送時才偏好鐵路入場格（權重 `arrivalRailForward`，v88 起預設 1；規則查詢 `queryRailArrivalReach`，13.6b）。修正 `bot-sp-entry-rail`；開發局面推演中讓 heuristic@86 的兩個攻方補給 gate 對 heuristic@85 通過（後方剩餘 4.8 對 4.9、前線取用不到 1.3 對 1.5），目標點數只在 4 張地圖改變、都變好（[紀錄](../quality/evidence/ai-s1-development-2026-11-14/README.md)）。在沒用於開發的檢查局面上兩個 gate 仍未通過，並在一張地圖適得其反（鐵路把 SP 送到前線取用不到的車站，[S1 檢查](../quality/evidence/ai-s1-check-2026-11-14/README.md)）；之後加上「目的車站要有前線單位或 HQ 取用得到」的條件；只在攻擊戰生效（兩方都套用，S5.1），遭遇戰沿用 heuristic@86 的入場格（`tests/ai/sp-entry-rail.test.ts` 的遭遇戰局面，heuristic@87 在那裡改放到 20,22）。另一項是 `hqBridge`（v88 起預設 1）：攻擊戰攻方沒被戰區組用到、這一步能移動的 HQ，站到取用得到前線取用不到的 SP、又投送得到前線的格子（[紀錄](../quality/evidence/ai-s1-supply-diagnosis-2026-11-14/README.md)）。兩項合用時 80 張開發地圖的兩個補給 gate 仍高於 heuristic@85（前線取用不到 1.6 對 1.2），S1 未完成；使用者決定維持例外，兩項帶進候選 heuristic@87（見下）。
+
+攻方在 option 中保留前進資格（權重 `optionAdvance`，v88 起預設 1；`bot-option-retreat-advance`）：攻擊戰的攻方攻擊對方持有的目標格，戰鬥結果的 option 在守方的損失加 option 不少於守方單位數（每個單位至少一個 step，結果可能清空目標格）時，改選「全部以 step 損失吸收」而不退後，前提是攻擊單位吸收後還留有 step；退後會失去戰後前進資格（9.11）。規則查詢對攻方的每個 option 答案提供只有自己看得到的事實 `combat.optionStepsLeft`（吸收這個答案的損失後，這次攻擊的單位還剩幾個 step）；守方的 step 數攻方看不到，所以只用單位數。[S5.4a 普查](../quality/evidence/ai-s5-advance-census-2026-11-15/README.md)：v86 攻方打空目標卻沒進駐的事件，三分之二是攻方自己選了退後，到下一個己方回合仍未持有的目標 VP 每局 1.46 ± 0.31（上限）。回歸測試 `tests/ai/option-advance.test.ts`。登記的局面接續（564 個分支，[S5.4d](../quality/evidence/ai-s5-parts-2026-11-16/README.md)）：單獨開啟時攻方 VP 每局 +1.17 ± 0.27（西歐 +1.35、東歐 +0.98），目標點 +0.49、Kill − Loss −1.22。加進只改攻擊戰的候選後（cand2），每個攻擊戰對 VP +1.24 ± 0.38；再讓 `approachAttack` 只給攻方（cand3）為 +1.53 ± 0.32（[紀錄](../quality/evidence/ai-s5-cand3-2026-11-16/README.md)），80 對獨立批通過機率 0.78～0.89；cand3 是 S5.3 的候選 heuristic@88。獨立批的結果與例外升級見本節開頭。
+
+前一個候選 heuristic@87（四項，`arrivalRailForward` 1、`hqBridge` 1、`defenderCut` 2、`approachAttack` 1）**以 VP 判定未通過升級**（主要量測是 VP，使用者，2026-11-15）：獨立 80 局對凍結 v86，VP 每對 +0.73 [−1.01, +2.46]，遭遇戰 −0.80、攻擊戰 +2.25（西歐遭遇戰 −3.20，10 對）；Kill − Loss +5.64 [+2.60, +8.67]、Supply +1.34 [+0.32, +2.35]；攻方的兩個補給 gate 通過（前線取用不到的後方 SP 2.8 對 6.3、前線取用不到的 SP 3.2 對 6.5）（[獨立批](../quality/evidence/ai-s4-v87-independent-2026-11-15/README.md)）。遭遇戰沒有戰區配置、HQ 接力與守方斷補，候選在那裡的差異只能來自 `approachAttack` 與 `arrivalRailForward`，heuristic@87 的這兩項沒有交戰類型的條件（S5.1 起只在攻擊戰生效）。[VP 診斷](../quality/evidence/ai-s4-vp-diagnosis-2026-11-15/README.md)：遭遇戰的 −0.80 ± 1.37 與 0 分不開；攻擊戰的增益（+2.25 ± 0.82）來自守方（候選當守方，攻方 VP margin 每局 +3.60 ± 1.03；當攻方 +0.90 ± 1.63）。從 Game Turn 2 起的局面接續中，四項沒有一項單獨確立 VP 的變化（每分支 VP 差的標準差 5.3～6.6）；它們明顯改變殺傷、接觸與 SP，目標點卻幾乎不動：`defenderCut` 的 Kill − Loss +3.07 ± 1.28，VP −0.18 ± 0.58。[複核](../quality/evidence/ai-s4-vp-review-2026-11-15/README.md)（事後分析）：四項中只有兩項量過 VP（攻方的 `approachAttack` +2.00 ± 0.59、`defenderCut` +0.85 ± 0.46），合起來預測每個攻擊戰對 +1.43、遭遇戰 0，即兩種交戰合計每對 +0.71，獨立批量到 +0.73；兩種交戰都被改到時，gate 需要觀察值高於 1.74。`approachAttack` 在遭遇戰依地圖風格方向相反：東歐 +1.86 ± 0.92（攻擊與殺傷增加），西歐 −1.77 ± 0.99（攻擊次數反而減少 0.66），合併的 −0.43 蓋住了這一點；所以「用目標點換殺傷」的說法不成立。`defenderCut` 的 VP 兩次接續合併為 +0.45 ± 0.36。整個候選的 VP 每局估計：當攻方 +1.21 ± 0.83、當守方 +2.47 ± 0.71，每個攻擊戰對 +1.84 ± 0.54。S5.1 起兩項只在攻擊戰生效後，以 564 個 Game Turn 2 分支（西歐 120 張、東歐 18 張地圖）事先登記的接續量候選對 v86（[S5.2](../quality/evidence/ai-s5-vp-check-2026-11-15/README.md)）：每個攻擊戰對 VP +0.75 ± 0.38（西歐攻方 +1.62 ± 0.79、守方 +0.26 ± 0.76；東歐攻方 +0.04 ± 0.71、守方 +1.08 ± 0.76），上一批的守方增益沒有重現；40 個攻擊戰對的獨立批通過機率 0.18～0.25，依登記建議不登記獨立批。Kill − Loss +2.56 ± 0.89、目標點 +0.27 ± 0.16。
 
 ### 尚未升級的候選
-
-非組單位貼近有守軍的目標（權重 `approachAttack`，預設 0；錯誤清單 E6）：不屬於戰區組的戰鬥單位，目標（ASSAULT、HUNT、CAPTURE）格有敵軍時，移到它旁邊不扣 crowding 與 exposure。接續測試 VP 差 +2.00 ± 0.59；開發局面目標點數 +1.43，檢查局面 +0.00 [−1.48, +1.48] 未通過不劣化門檻，使用者決定例外帶進候選 heuristic@87（見下）。只給攻擊戰的攻方：heuristic@87 沒有交戰條件，在遭遇戰依地圖風格方向相反（見下，S5.1 改為只在攻擊戰）；單獨量時守方 VP 每局 −0.39 ± 0.50（西歐 −1.17 ± 0.70，[S5.2b](../quality/evidence/ai-s5-parts-2026-11-16/README.md)），所以之後再改為只給攻方。S3 只量過攻擊戰的攻方（[紀錄](../quality/evidence/ai-s3-e6-approach-2026-11-15/README.md)、[檢查](../quality/evidence/ai-s3-check-2026-11-15/README.md)）。回歸測試 `tests/ai/approach-attack.test.ts`：攻擊戰攻方的非組單位在權重 0 時停在目標 2 格外、權重 1 時移到目標旁；攻擊戰的守方與遭遇戰中，兩種權重的決策相同（heuristic@87 在這兩個局面都把單位移到目標旁）。
-
-攻擊戰的守方切斷攻方補給（權重 `defenderCut`，預設 0）：每個 Movement 步驟開頭，最多派 2 個不負責守點的單位，以 Combat Mode 移到能切斷至少 `defenderCut` 個攻方單位 trace 的格子；只用守方看得到的敵方棋子估算（規則查詢 `queryTraceCut`，4.9a），格子要仍在自己的 trace 內，暴露程度不超過移動評分接受的範圍。登記的局面接續測試（對凍結 v86，239 個分支）：攻方終局斷補單位 +1.57 ± 0.42、守方 Kill − Loss +3.66 ± 0.77、VP 差 +0.85 ± 0.46（[紀錄](../quality/evidence/ai-s2-defender-cut-2026-11-14/README.md)）。併入候選 heuristic@87（見下）。
-
-到達的 SP 只在這一回合鐵路能從入場格往前送時才偏好鐵路入場格（權重 `arrivalRailForward`，預設 0；規則查詢 `queryRailArrivalReach`，13.6b）。修正 `bot-sp-entry-rail`；開發局面推演中讓 heuristic@86 的兩個攻方補給 gate 對 heuristic@85 通過（後方剩餘 4.8 對 4.9、前線取用不到 1.3 對 1.5），目標點數只在 4 張地圖改變、都變好（[紀錄](../quality/evidence/ai-s1-development-2026-11-14/README.md)）。在沒用於開發的檢查局面上兩個 gate 仍未通過，並在一張地圖適得其反（鐵路把 SP 送到前線取用不到的車站，[S1 檢查](../quality/evidence/ai-s1-check-2026-11-14/README.md)）；之後加上「目的車站要有前線單位或 HQ 取用得到」的條件；只在攻擊戰生效（兩方都套用，S5.1），遭遇戰沿用 heuristic@86 的入場格（`tests/ai/sp-entry-rail.test.ts` 的遭遇戰局面，heuristic@87 在那裡改放到 20,22）。另一個候選是 `hqBridge`：攻擊戰攻方沒被戰區組用到、這一步能移動的 HQ，站到取用得到前線取用不到的 SP、又投送得到前線的格子（[紀錄](../quality/evidence/ai-s1-supply-diagnosis-2026-11-14/README.md)）。兩項合用時 80 張開發地圖的兩個補給 gate 仍高於 heuristic@85（前線取用不到 1.6 對 1.2），S1 未完成；使用者決定維持例外，兩項帶進候選 heuristic@87（見下）。
-
-攻方在 option 中保留前進資格（權重 `optionAdvance`，預設 0；`bot-option-retreat-advance`）：攻擊戰的攻方攻擊對方持有的目標格，戰鬥結果的 option 在守方的損失加 option 不少於守方單位數（每個單位至少一個 step，結果可能清空目標格）時，改選「全部以 step 損失吸收」而不退後，前提是攻擊單位吸收後還留有 step；退後會失去戰後前進資格（9.11）。規則查詢對攻方的每個 option 答案提供只有自己看得到的事實 `combat.optionStepsLeft`（吸收這個答案的損失後，這次攻擊的單位還剩幾個 step）；守方的 step 數攻方看不到，所以只用單位數。[S5.4a 普查](../quality/evidence/ai-s5-advance-census-2026-11-15/README.md)：v86 攻方打空目標卻沒進駐的事件，三分之二是攻方自己選了退後，到下一個己方回合仍未持有的目標 VP 每局 1.46 ± 0.31（上限）。回歸測試 `tests/ai/option-advance.test.ts`。登記的局面接續（564 個分支，[S5.4d](../quality/evidence/ai-s5-parts-2026-11-16/README.md)）：單獨開啟時攻方 VP 每局 +1.17 ± 0.27（西歐 +1.35、東歐 +0.98），目標點 +0.49、Kill − Loss −1.22。加進只改攻擊戰的候選後（cand2），每個攻擊戰對 VP +1.24 ± 0.38；再讓 `approachAttack` 只給攻方（cand3）為 +1.53 ± 0.32（[紀錄](../quality/evidence/ai-s5-cand3-2026-11-16/README.md)），80 對獨立批通過機率 0.78～0.89；cand3 是 S5.3 的候選 heuristic@88。獨立批 160 局（80 個攻擊戰對，[紀錄](../quality/evidence/ai-s5-v88-independent-2026-11-17/README.md)）：VP 每對 +2.04 [+1.10, +2.98]，Kill − Loss、Supply 與兩個攻方補給 gate 都達標；但補給稽核有 16 次違例（v86 當攻方 6 次、v88 當攻方 10 次，見已知缺口 `bot-exploitation-untraced-move`），**尚未升級，待使用者決定**。
-
-四項合成的候選 heuristic@87（`arrivalRailForward` 1、`hqBridge` 1、`defenderCut` 2、`approachAttack` 1）**以 VP 判定未通過升級**（主要量測是 VP，使用者，2026-11-15）：獨立 80 局對凍結 v86，VP 每對 +0.73 [−1.01, +2.46]，遭遇戰 −0.80、攻擊戰 +2.25（西歐遭遇戰 −3.20，10 對）；Kill − Loss +5.64 [+2.60, +8.67]、Supply +1.34 [+0.32, +2.35]；攻方的兩個補給 gate 通過（前線取用不到的後方 SP 2.8 對 6.3、前線取用不到的 SP 3.2 對 6.5）（[獨立批](../quality/evidence/ai-s4-v87-independent-2026-11-15/README.md)）。遭遇戰沒有戰區配置、HQ 接力與守方斷補，候選在那裡的差異只能來自 `approachAttack` 與 `arrivalRailForward`，heuristic@87 的這兩項沒有交戰類型的條件（S5.1 起只在攻擊戰生效）。[VP 診斷](../quality/evidence/ai-s4-vp-diagnosis-2026-11-15/README.md)：遭遇戰的 −0.80 ± 1.37 與 0 分不開；攻擊戰的增益（+2.25 ± 0.82）來自守方（候選當守方，攻方 VP margin 每局 +3.60 ± 1.03；當攻方 +0.90 ± 1.63）。從 Game Turn 2 起的局面接續中，四項沒有一項單獨確立 VP 的變化（每分支 VP 差的標準差 5.3～6.6）；它們明顯改變殺傷、接觸與 SP，目標點卻幾乎不動：`defenderCut` 的 Kill − Loss +3.07 ± 1.28，VP −0.18 ± 0.58。[複核](../quality/evidence/ai-s4-vp-review-2026-11-15/README.md)（事後分析）：四項中只有兩項量過 VP（攻方的 `approachAttack` +2.00 ± 0.59、`defenderCut` +0.85 ± 0.46），合起來預測每個攻擊戰對 +1.43、遭遇戰 0，即兩種交戰合計每對 +0.71，獨立批量到 +0.73；兩種交戰都被改到時，gate 需要觀察值高於 1.74。`approachAttack` 在遭遇戰依地圖風格方向相反：東歐 +1.86 ± 0.92（攻擊與殺傷增加），西歐 −1.77 ± 0.99（攻擊次數反而減少 0.66），合併的 −0.43 蓋住了這一點；所以「用目標點換殺傷」的說法不成立。`defenderCut` 的 VP 兩次接續合併為 +0.45 ± 0.36。整個候選的 VP 每局估計：當攻方 +1.21 ± 0.83、當守方 +2.47 ± 0.71，每個攻擊戰對 +1.84 ± 0.54。S5.1 起兩項只在攻擊戰生效後，以 564 個 Game Turn 2 分支（西歐 120 張、東歐 18 張地圖）事先登記的接續量候選對 v86（[S5.2](../quality/evidence/ai-s5-vp-check-2026-11-15/README.md)）：每個攻擊戰對 VP +0.75 ± 0.38（西歐攻方 +1.62 ± 0.79、守方 +0.26 ± 0.76；東歐攻方 +0.04 ± 0.71、守方 +1.08 ± 0.76），上一批的守方增益沒有重現；40 個攻擊戰對的獨立批通過機率 0.18～0.25，依登記建議不登記獨立批。Kill − Loss +2.56 ± 0.89、目標點 +0.27 ± 0.16。
 
 最後一位玩家的最後回合，攻擊未持有的 VP 點、且承受全部 option 損失後仍有攻擊者存活時，候選 v77 改選損失以保留前進資格；其餘情況沿用 v75。候選 patch 以只供攻擊方查看的剩餘步數支援這項判斷，前進仍受既有補給限制。v77 以 v75 為基底，不含 v78 的卡車後勤與 v79 的補給鏈，尚未完成獨立 80 場驗收；[量測結果與證據](evaluation.md#候選策略量測)。
 

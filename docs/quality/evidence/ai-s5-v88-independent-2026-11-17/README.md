@@ -1,13 +1,13 @@
 # S5.3: heuristic@88, independent batch
 
-Boundary: the promotion process of [AI evaluation](../../../ai/evaluation.md), independent batch. The standard is
-unchanged (heuristic@86). This record changes no row of `docs/quality/03-product-operation-verification-plan.md`. Plan:
+Boundary: the promotion process of [AI evaluation](../../../ai/evaluation.md), independent batch. heuristic@88 became
+the standard by the user's exception after this batch (see Decision). This record changes no row of `docs/quality/03-product-operation-verification-plan.md`. Plan:
 S5.3 (section 7.5) of the [AI strategy improvement WBS](../../../roadmap/19-ai-strategy-improvement-wbs.md).
 Candidate, development batch and registration: [heuristic@88](../ai-s5-v88-2026-11-16/README.md).
 
 ## Result
 
-**Not promoted: the measures pass, a correctness condition does not; the decision is the user's.** `verify.py` stops at
+**The measures pass, a correctness condition does not; the batch does not pass the promotion process.** `verify.py` stops at
 the ordinary supply audit, so no acceptance.json exists. The measures below were computed from the batch's summaries
 with `verify.py`'s definitions.
 
@@ -27,7 +27,7 @@ in the same state. The continuations had predicted +1.53 ± 0.32.
 | **Ordinary supply audit: no trace or ration broken** | **not met: 16 moves** |
 | Attacker supply gate, logistics: rail 100%, rear SP no front unit can draw 3.3 against 3.9, garrison stock 0 | pass |
 | Attacker supply gate, fuel: SP no front unit can draw 3.6 against 4.1 | pass |
-| `verify.py --delivered` | not run (the frozen-only run stops first) |
+| `verify.py --delivered` | not run (the frozen-only run stops first); the delivered sources and build were compared with the freeze by hash instead (Decision) |
 
 ## The supply audit
 
@@ -44,6 +44,14 @@ the unit loses trace, and it has neither trace nor SP to eat when the Movement S
 
 So the standard policy itself does not meet this condition on these seeds. It is recorded as TODO
 `bot-exploitation-untraced-move`.
+
+## Decision
+
+The user (2026-11-17): 「先升級88 再研究Exploitation 的移動 我建議先不把其當成bug 而是分析利弊之後再決定」. heuristic@88 is
+promoted by exception: the supply audit is not met, and the batch of 160 games was itself an exception. The candidate
+patch became the default weights and version 88; the delivered 210 source files and 210 build files have the hashes of
+the frozen candidate (`frozen-v88-freeze.json`). Whether the Exploitation move is a fault, and whether the audit rule
+changes, is decided after an analysis of its costs and gains (S6 of the WBS).
 
 ## Method
 
