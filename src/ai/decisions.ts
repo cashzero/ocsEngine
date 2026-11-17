@@ -51,7 +51,7 @@ const ratio = (label: string): number => {
   return match ? Number(match[1]) / Number(match[2]) : Number.POSITIVE_INFINITY;
 };
 
-export const respondToDecision = (context: BotDecisionContext, situation: Situation, holdRatio = 0.5, advanceThreatLimit = 8, optionAdvance = 0): BotDecision | null => {
+export const respondToDecision = (context: BotDecisionContext, situation: Situation, holdRatio = 0.5, advanceThreatLimit = 8, optionAdvance = 0, advanceUnfunded = 0): BotDecision | null => {
   const decision = context.view.pendingDecision!;
   const options = decision.options as readonly Option[];
   const actions = context.actions.candidates('RESPOND_DECISION');
@@ -212,7 +212,10 @@ export const respondToDecision = (context: BotDecisionContext, situation: Situat
         const explanation = context.actions.explain(action).explanation;
         const value = (key: string) => explanation.facts.find(f => f.key === key)?.value;
         // Regular combat follows this turn's Supply; on the final turn no friendly ration remains.
-        return explanation.allowed && (situation.turnsLeft <= 0 || value('supply.advanceFunded') === true) && value('supply.advanceFeedLost') === 0
+        // advanceUnfunded: the attacker of an attack engagement enters an objective it has just emptied without the next
+        // ration in hand; its Movement Phase comes before its next Supply Phase (S8.1 of the improvement WBS).
+        const unfunded = advanceUnfunded > 0 && objective && situation.attack && !situation.defending;
+        return explanation.allowed && (situation.turnsLeft <= 0 || unfunded || value('supply.advanceFunded') === true) && value('supply.advanceFeedLost') === 0
           && (value('supply.advanceTraceLost') === 0 || value('supply.advanceMoverHasTrace') === false && value('supply.advanceTraceLost') === 1);
       });
       // The first defender of a newly captured VP must survive the opponent's answer.

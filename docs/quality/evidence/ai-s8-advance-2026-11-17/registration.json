@@ -1,0 +1,26 @@
+{
+  "record": "S8.1 of docs/roadmap/19-ai-strategy-improvement-wbs.md: the attacker enters an objective it has emptied although the advance's next ration is not in hand. Continuations of recorded positions, no new game; written before any continuation is run",
+  "registeredAt": "2026-11-17",
+  "request": "The user (2026-11-17), on the plan after heuristic@89: 「全部做完」",
+  "build": "the commit that holds this file (advanceUnfunded, default 0), dist built from it",
+  "branches": "branches.jsonl: the 68 events of heuristic@88's independent batch (160 attack games; census artifacts/ai-next/census.json, scripts/ai-advance-census.mjs) where the attacker's regular attack emptied an objective, an advance was offered and no option was supplied, every option failing on supply.advanceFunded; in all of them the objective lies out of the attacker's trace. The branch is the attacker's ADVANCE_HEX decision itself (after the combat dice). In 64 of them dropping the funded test alone lets an advance through; the other 4 also lose a unit's feed and stay unchanged. 55 of the 68 objectives were the attacker's at the end of the game anyway, 13 at its next player turn",
+  "variants": {
+    "v90": "heuristic (this build's default: heuristic@90)",
+    "unfunded": "heuristic:docs/quality/evidence/ai-s8-advance-2026-11-17/unfunded-weights.json (advanceUnfunded 1)"
+  },
+  "opponent": "heuristic@artifacts/ai-promotion/frozen-v90-standard/dist",
+  "dice": 4,
+  "command": "node scripts/ai-continue-batch.mjs --branches docs/quality/evidence/ai-s8-advance-2026-11-17/branches.jsonl --variant v90=heuristic --variant unfunded=heuristic:docs/quality/evidence/ai-s8-advance-2026-11-17/unfunded-weights.json --opponent heuristic@artifacts/ai-promotion/frozen-v90-standard/dist --dice 4 --horizons 1 --jobs 10 --out-dir artifacts/ai-s8/advance; python3 scripts/ai-continue-compare.py artifacts/ai-s8/advance/*.jsonl --baseline v90 --by-style --cluster-by-map --metrics margin.vp,margin.objectives,margin.killLoss,loss,own.outOfTrace",
+  "continuations": "68 branches x 4 dice x 2 variants = 544, about 1.8 hours",
+  "measure": "margin.vp at the end of the game, unfunded - v90, dice averaged per branch, SE over maps; the two map styles reported and weighted equally. VP is the primary measure; objectives margin, Kill - Loss, the attacker's steps lost and its units out of trace are reported",
+  "reading": [
+    "advanceUnfunded raises VP if mean - 2.1 SE > 0 (all cells equally): it then goes into the next attack-engagement candidate; lowers it if mean + 2.1 SE < 0: it is recorded as tried and not used; otherwise it is not established and is not used",
+    "every continuation finishes the game"
+  ],
+  "powerAnalysis": "A single continuation's VP difference has an SD of 6 to 11 (S5.2); 68 branches x 4 dice give an SE of about 0.6 to 0.8, so an effect of about 1.5 VP an event is established. The event happens 0.43 times a game. Below that the result is reported as not established",
+  "limits": [
+    "The decision is taken with fresh step memory at the branch, for both variants alike",
+    "The promotion process's advance audit counts a candidate's unfunded advance before Game Turn 8 as a violation; if this is adopted that rule is the user's to change",
+    "The positions come from games against heuristic@86 and heuristic@88; the opponent here is heuristic@90"
+  ]
+}

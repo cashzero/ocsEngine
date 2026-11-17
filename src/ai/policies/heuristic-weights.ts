@@ -80,6 +80,8 @@ export interface HeuristicWeights {
   readonly arrivalRailForward: number;
   /** Above 0, the attacker of an attack engagement takes a combat option on an objective it does not hold as step losses, not a retreat, when the result may empty the hex and an attacker keeps a step (bot-option-retreat-advance). */
   readonly optionAdvance: number;
+  /** Above 0, the attacker of an attack engagement advances into an objective it has emptied even when the advance's next ration is not in hand (S8.1). */
+  readonly advanceUnfunded: number;
   /** Above 0 (the default since heuristic@89), outside the Movement Phase the theater allocation plans no truck run, stager or HQ move: they cannot move then (11.0a), so a group is supplied only by what is in place. 0 is heuristic@88's plan, kept for comparisons. */
   readonly exploitationFixedLogistics: number;
   readonly assaultPosition: number;
@@ -160,7 +162,7 @@ export const DEFAULT_HEURISTIC_WEIGHTS: HeuristicWeights = Object.freeze({
   huntValue: 3, huntInfiltrationRadius: 3, huntAnchorRadius: 2, huntStrengthPerUnit: 5,
   clearStrength: 2, clearRadius: 5, clearValue: 4, clearCombat: 8, reliefMinStrength: 6, reliefRadius: 2, holdTruckReach: 10, holdRatio: 0.5, advanceThreatLimit: 8, holdStrengthPerUnit: 5, holdMaxExtra: 2,
   capture: 40, passThroughShare: 0.25, abandonObjective: 30, holdAtEnd: 15, crowding: 3, stratNearEnemy: 60, stratSafeDistance: 3, progressFront: 6, progressTarget: 10, progressObjective: 15,
-  huntAdjacent: 15, assaultRatio: 2.5, assaultReach: 12, assaultMaxUnits: 6, assaultMaxEfforts: 5, theaterAllocation: 1, arrivalRailForward: 1, hqBridge: 1, defenderCut: 2, approachAttack: 1, optionAdvance: 1, exploitationFixedLogistics: 1, assaultPosition: 20, assaultObjective: 2, barrageMainEffort: 5, garrisonStay: 30, contactGood: 6, contactBad: 8, contactRatio: 1.5, exposureSupport: 1.5,
+  huntAdjacent: 15, assaultRatio: 2.5, assaultReach: 12, assaultMaxUnits: 6, assaultMaxEfforts: 5, theaterAllocation: 1, arrivalRailForward: 1, hqBridge: 1, defenderCut: 2, approachAttack: 1, optionAdvance: 1, exploitationFixedLogistics: 1, advanceUnfunded: 0, assaultPosition: 20, assaultObjective: 2, barrageMainEffort: 5, garrisonStay: 30, contactGood: 6, contactBad: 8, contactRatio: 1.5, exposureSupport: 1.5,
   outOfSupply: 60, outOfSupplyFed: 10, fedRadius: 2, hqDependentSupply: 8,
   hqWithArmy: 6, hqExposed: 60, hqOutOfSupply: 60, hqOffRail: 80, hqCover: 1, hqRailheadReach: 6, hqExposure: 2,
   artilleryInRange: 20, artilleryBeyondRange: 4, artilleryWithArmy: 6, artilleryExposed: 60, artilleryEscortDistance: 3, artilleryUnescorted: 40, artilleryExposure: 1.5,
