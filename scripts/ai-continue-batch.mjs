@@ -7,7 +7,7 @@
 // A branch list is JSON lines with save, at and the subject side (`side` from ai-find-branches.mjs, or `subject`). Each
 // branch × variant is one ai-continue.mjs run with all the dice, written to <out-dir>/<branch>.<variant>.jsonl, where
 // <branch> is the match, the side, the action index and a hash of the save's path. A run writes to a temporary file and
-// renames it when it exits cleanly with every row, so an interrupted batch is rerun with the same command: finished files
+// renames it when it exits cleanly with every row (a game that ends before a horizon has no row for it), so an interrupted batch is rerun with the same command: finished files
 // are kept, unfinished ones played again. A finished file made with another policy, opponent, dice or horizons for the same
 // variant name is an error, not reused. Variants can therefore be added in a later run next to the baseline's files;
 // scripts/ai-continue-compare.py reads them together. At the end it lists the runs that failed and the continuations
@@ -49,6 +49,9 @@ if (new Set(branches.map(({ key }) => key)).size !== branches.length) throw new 
 mkdirSync(outDir, { recursive: true });
 
 const rowsPerRun = dice * (horizons.split(',').length + 1);
+// Complete: every dice has its end-of-game row, and the horizon rows except those the game ended before reaching.
+const complete = (rows) => rows.filter(({ horizon }) => horizon === 'end').length === dice
+  && rows.length <= rowsPerRun && rows.length >= dice;
 const readRows = (file) => readFileSync(file, 'utf8').split('\n').filter(Boolean).map((line) => JSON.parse(line));
 const tasks = [];
 let kept = 0;
@@ -60,7 +63,7 @@ for (const branch of branches) {
       const rows = readRows(out);
       const meta = JSON.parse(readFileSync(`${out}.meta.json`, 'utf8'));
       const wanted = { policy: variant.policy, opponent, dice, horizons };
-      if (JSON.stringify(meta) !== JSON.stringify(wanted) || rows.length !== rowsPerRun) {
+      if (JSON.stringify(meta) !== JSON.stringify(wanted) || !complete(rows)) {
         throw new Error(`${out} was made with ${JSON.stringify(meta)} (${rows.length} rows), not ${JSON.stringify(wanted)}`);
       }
       kept += 1;
@@ -92,7 +95,7 @@ const run = ({ branch, variant, out }) => new Promise((done) => {
   child.on('close', (code) => {
     finished += 1;
     const rows = code === 0 && existsSync(temporary) ? readRows(temporary) : [];
-    if (code === 0 && rows.length === rowsPerRun) {
+    if (code === 0 && complete(rows)) {
       renameSync(temporary, out);
       writeMeta(out, { policy: variant.policy, opponent, dice, horizons });
     } else {

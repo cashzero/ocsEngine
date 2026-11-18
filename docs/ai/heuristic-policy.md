@@ -236,6 +236,8 @@ Exploitation 階段的戰區配置不計卡車與 HQ 的移動（權重 `exploit
 
 ### 尚未升級的候選
 
+遭遇戰的 option 保留前進（權重 `meetingOptionAdvance`，預設 0）：`optionAdvance` 的規則用到遭遇戰的兩方。登記的接續（32 個事件 × 8 組骰子，[S8.3](../quality/evidence/ai-s8-meeting-option-2026-11-18/README.md)）：VP 每個事件 +3.12 ± 1.20（確立），目標點 +1.16，以 step 換目標；每方每局約 +1 VP。回歸測試在 `tests/ai/option-advance.test.ts`。
+
 沒有下一份口糧的前進（權重 `advanceUnfunded`，預設 0；[改進 WBS](../roadmap/19-ai-strategy-improvement-wbs.md) S8.1）：攻擊戰的攻方打空對方持有的目標格時，前進不再要求 `supply.advanceFunded`（其他單位的 trace 與口糧仍不能受損）。heuristic@88 獨立批中這種事件每局 0.43 次，目標格都在攻方 trace 之外；下一次 Supply 之前還有一個 Movement 可以把補給送上去。登記的接續（68 個事件 × 4 組骰子，[S8.1](../quality/evidence/ai-s8-advance-2026-11-17/README.md)）：VP 每個事件 +1.06 ± 0.32（確立），目標點 +0.41、Kill − Loss +0.85，沒有看到代價；採用時升級流程的前進稽核要改。回歸測試 `tests/ai/advance-unfunded.test.ts`。
 
 最後一位玩家的最後回合，攻擊未持有的 VP 點、且承受全部 option 損失後仍有攻擊者存活時，候選 v77 改選損失以保留前進資格；其餘情況沿用 v75。候選 patch 以只供攻擊方查看的剩餘步數支援這項判斷，前進仍受既有補給限制。v77 以 v75 為基底，不含 v78 的卡車後勤與 v79 的補給鏈，尚未完成獨立 80 場驗收；[量測結果與證據](evaluation.md#候選策略量測)。
