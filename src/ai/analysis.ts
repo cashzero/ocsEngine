@@ -90,7 +90,8 @@ export const analyze = (projection: RuleProjection, playerId: PlayerId, facts: B
     if (stack.location.kind !== 'ON_MAP') continue;
     const hexId = stack.location.hexId;
     for (const piece of stack.pieces) {
-      if (piece.ownerId === playerId) own.push({ piece, hexId, profile: knowledge.profile(piece) });
+      // An Extender cannot move or carry (12.7): it is a Supply Source, not a unit the policy moves.
+      if (piece.ownerId === playerId) { if (!(piece.role === 'TRUCK' && piece.currentFaceId === 'extender')) own.push({ piece, hexId, profile: knowledge.profile(piece) }); }
       else {
         const entry = enemyPieces.get(hexId) ?? { pieces: [], hidden: 0 };
         entry.pieces.push(piece);

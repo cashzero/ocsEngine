@@ -57,6 +57,7 @@ describe('supply gained by a real VP approach', () => {
           projectedReach: (pieceId, fromHexId, mode) => ruleEngine.queryProjectedReach(state, owner, pieceId, fromHexId, mode).value!,
           hqThrow: (hqId, fromHexId) => ruleEngine.queryHqThrow(state, owner, hqId, fromHexId).value!,
           railArrivalReach: (fromHexId) => (ruleEngine.queryRailArrivalReach(state, owner, fromHexId).value ?? []).map(({ hexId }) => hexId),
+          extenderSite: (hexId) => ruleEngine.queryExtenderSite(state, owner, hexId).value ?? { linked: false, drawHexIds: [] },
           traceCut: (pieceId, hexId, mode) => ruleEngine.queryTraceCut(state, owner, pieceId, hexId, mode).value?.cutIds ?? [],
         } };
       const chosen = policy.decide(context);

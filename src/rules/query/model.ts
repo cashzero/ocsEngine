@@ -318,6 +318,8 @@ export interface RuleEngine {
   /** For planning a cutting move: seen enemy combat units that would lose trace if the actor's unit stood in a hex, on the map as the actor sees it (4.9a). */
   readonly queryTraceCut: (state: GameState, actorId: PlayerId, pieceId: PieceId, hexId: HexId, mode?: OcsMode) => RuleQueryResult<import('./projection.js').TraceCut>;
   readonly queryRailArrivalReach: (state: GameState, actorId: PlayerId, fromHexId: HexId) => RuleQueryResult<readonly import('../supply/rail-cap.js').RailDestination[]>;
+  /** Whether an Extender of the actor's would link in a Hex and where it would draw (12.7a), for planning one; formation costs are not checked. */
+  readonly queryExtenderSite: (state: GameState, actorId: PlayerId, hexId: HexId) => RuleQueryResult<import('../supply/supply.js').ExtenderSite>;
   /** What a shipment from a port (or, null, the reinforcement Box) could carry, which ports could take it, and the Sea Cap left (19.0f). */
   readonly querySeaMoveOptions: (state: GameState, actorId: PlayerId, fromHexId: HexId | null) => RuleQueryResult<import('../supply/sea-cap.js').SeaMoveOptions>;
   /** Each fuel payment open to one own unit with the units it would newly fuel (12.5c). */

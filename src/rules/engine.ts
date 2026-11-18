@@ -11,7 +11,7 @@ import type { GameAction, GameState } from './kernel/model.js';
 import { applyGameAction } from './kernel/reducer.js';
 import { validateGameAction } from './kernel/validate.js';
 import { queryProjectedReachableHexes, queryStackMovementPath, queryStackReachableHexes } from './movement/movement.js';
-import { queryDrawReach, queryFeedCoverage, queryHqThrow, querySupplySources, queryTraceCoverage } from './supply/supply.js';
+import { queryDrawReach, queryExtenderSite, queryFeedCoverage, queryHqThrow, querySupplySources, queryTraceCoverage } from './supply/supply.js';
 import { relocationSupplyFacts } from './supply/relocation-impact.js';
 import { rationBudgetFacts } from './supply/ration-budget.js';
 import { facilityBarrageBudgetFacts } from './supply/facility-barrage-budget.js';
@@ -204,6 +204,7 @@ const engine: RuleEngine = {
   queryFuelCoverage,
   queryRailMoveOptions,
   queryRailArrivalReach,
+  queryExtenderSite,
   queryTraceCut,
   querySeaMoveOptions,
   queryFuelPreview,

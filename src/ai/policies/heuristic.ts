@@ -144,10 +144,12 @@ const theaterEfforts = (context: BotDecisionContext, situation: Situation, facts
   notes.relief ??= { hexIds: reliefTargets(context, situation, w), sent: new Map(), delivered: new Set() };
   const reliefHexes = notes.relief.hexIds;
   const nearestRelief = (hexId: HexId) => Math.min(...reliefHexes.map((relief) => hexesBetween(hexId, relief)));
-  const reserved = reliefHexes.length === 0 ? [] : situation.own.filter(({ piece }) => piece.role === 'TRUCK')
+  // extenderPlan: the trucks gathering for the Extender are not the allocation's either.
+  const forExtender = notes.extender?.truckIds ?? [];
+  const reserved = reliefHexes.length === 0 ? [] : situation.own.filter(({ piece }) => piece.role === 'TRUCK' && !forExtender.includes(piece.id))
     .sort((left, right) => nearestRelief(left.hexId) - nearestRelief(right.hexId) || String(left.piece.id).localeCompare(String(right.piece.id)))
     .slice(0, reliefHexes.length).map(({ piece }) => piece.id);
-  const plan = allocateTheater(situation, context.actions, new Set([...garrisons, ...reserved]), (piece) => knowledge.profile(piece)?.actionRating ?? 0, discount,
+  const plan = allocateTheater(situation, context.actions, new Set([...garrisons, ...reserved, ...forExtender]), (piece) => knowledge.profile(piece)?.actionRating ?? 0, discount,
     (unit, hexId, defended) => combatUnitMode(situation, unit, { hexId, purpose: defended ? 'ASSAULT' : 'CAPTURE' }, w),
     (truck) => truckCapacityTokens(facts, truck), w.hqBridge > 0,
     // exploitationFixedLogistics: trucks and HQs do not move in the Exploitation Phase (11.0a), so nothing they would bring counts.
@@ -284,6 +286,10 @@ interface StepNotes {
   readonly hqCovered: Set<PieceId>;
   /** Nothing more is worth shipping this step (19.0f). */
   seaDone?: boolean;
+  /** extenderPlan: the site and trucks of the side's Extender this step (null: none planned). */
+  extender?: ExtenderPlan | null;
+  /** extenderPlan: the Extender was formed this step; its other trucks go back to hauling. */
+  extenderFormed?: boolean;
 }
 
 /** What a truck is doing this Movement Segment (heuristic@78). Its actions run back to back (6.1g), leg after leg. */
@@ -1058,6 +1064,170 @@ const truckStep = (context: BotDecisionContext, situation: Situation, unit: OwnU
   return null;
 };
 
+// ─── Extender (extenderPlan; bot-extender, S13) ───────────────────────────────────────────────
+
+/** extenderPlan: an Extender stays this far from every seen enemy combat unit, beyond its ZOC (4.5). */
+const EXTENDER_ENEMY_GAP = 3;
+/** extenderPlan: linked hexes tried nearest each objective out of reach, looked for this far out from it. */
+const EXTENDER_SITES_PER_OBJECTIVE = 3;
+const EXTENDER_SCAN_RADIUS = 12;
+/** 12.7, 13.2c: an Extender is one counter of exactly five Transport Points, and no counter is larger. */
+const EXTENDER_POINTS = 5;
+/** extenderPlan: trucks already gathered on a site keep it while it is worth this share of the best site. */
+const EXTENDER_KEEP_SHARE = 0.75;
+
+/** extenderPlan: where the side's one Extender is to stand this step, and the empty trucks that form it there. */
+interface ExtenderPlan {
+  readonly site: HexId;
+  /** Nearest first, together at least five Transport Points. */
+  readonly truckIds: readonly PieceId[];
+  /** Objective VP the site brings within an HQ's throw of its draw. */
+  readonly gain: number;
+}
+
+const transportPoints = (facts: BotGameFacts, truck: OwnUnit): number => truckCapacityTokens(facts, truck) / 4;
+
+/**
+ * extenderPlan (bot-extender): the attacker of an attack engagement plans one Extender (12.7) in its Movement Phase. An
+ * objective it does not hold counts when it lies beyond an HQ's throw from every hex its current Supply Sources reach
+ * directly (12.3a: where an HQ would be fed); a hex where an Extender would link (12.7a) is worth the VP of those it would
+ * bring within an HQ's throw of its own draw. Sites are the linked hexes nearest each such objective, at least
+ * EXTENDER_ENEMY_GAP hexes from the enemy. Null when the weight is off, outside the Movement Phase (13.2d), with fewer
+ * than two Game Turns left, once the side has an Extender, without five empty Transport Points (12.7d: a loaded one cannot
+ * form), or when no site is worth the weight in VP.
+ */
+const planExtender = (context: BotDecisionContext, situation: Situation, facts: BotGameFacts, w: HeuristicWeights): ExtenderPlan | null => {
+  const projection = context.view.projection;
+  if (!(w.extenderPlan > 0) || !situation.attack || situation.defending || projection?.sequence.phase !== 'MOVEMENT'
+    || situation.turnsLeft < 2) return null;
+  // The situation leaves Extenders out (they do not move or carry): look for one in the projection.
+  if (projection.stacks.some(({ pieces }) => pieces.some((piece) => piece.ownerId === situation.playerId && piece.role === 'TRUCK'
+    && piece.currentFaceId === 'extender'))) return null;
+  const empty = situation.own.filter((unit) => unit.piece.role === 'TRUCK' && (unit.piece.carriedTokens ?? 0) === 0);
+  const pointsOf = (units: readonly OwnUnit[]) => units.reduce((total, unit) => total + transportPoints(facts, unit), 0);
+  if (pointsOf(empty) < EXTENDER_POINTS) return null;
+  const reach = 1 + Math.max(3, ...situation.own.filter((unit) => unit.piece.role === 'HQ').map(hqThrowHexes));
+  const near = (hexIds: readonly (HexId | string)[], hexId: HexId) => hexIds.some((other) => hexesBetween(other as HexId, hexId) <= reach);
+  const direct = context.actions.traceCoverage().directHexIds;
+  const open = situation.objectives.filter((objective) => objective.controllerId !== situation.playerId && !near(direct, objective.hexId));
+  if (open.length === 0) return null;
+  const land = facts.scenario.mapDefinition.hexes
+    .filter(({ id, terrainDefinitionIds }) => !terrainDefinitionIds.some((terrain) => String(terrain) === 'terrain:water')
+      && situation.nearestEnemy(id).distance >= EXTENDER_ENEMY_GAP).map(({ id }) => id);
+  const gainOf = new Map<HexId, number>();
+  const tryHex = (hexId: HexId): boolean => {
+    if (gainOf.has(hexId)) return true;
+    const site = context.actions.extenderSite(hexId);
+    if (!site.linked) return false;
+    gainOf.set(hexId, open.filter((objective) => near(site.drawHexIds, objective.hexId)).reduce((total, { points }) => total + points, 0));
+    return true;
+  };
+  for (const objective of open) {
+    let found = 0;
+    const around = land.filter((hexId) => hexesBetween(hexId, objective.hexId) <= EXTENDER_SCAN_RADIUS)
+      .sort((left, right) => hexesBetween(left, objective.hexId) - hexesBetween(right, objective.hexId) || String(left).localeCompare(String(right)));
+    for (const hexId of around) {
+      if (found >= EXTENDER_SITES_PER_OBJECTIVE) break;
+      if (tryHex(hexId)) found += 1;
+    }
+  }
+  // Trucks already gathered with five points on a site that is still worth it form there instead of setting off again.
+  const gathered = [...new Set(empty.map(({ hexId }) => hexId))].filter((hexId) => pointsOf(empty.filter((unit) => unit.hexId === hexId)) >= EXTENDER_POINTS
+    && land.includes(hexId) && tryHex(hexId));
+  const nearestTruck = (hexId: HexId) => Math.min(...empty.map((unit) => hexesBetween(unit.hexId, hexId)));
+  const ranked = [...gainOf].sort(([left, a], [right, b]) => b - a || nearestTruck(left) - nearestTruck(right) || String(left).localeCompare(String(right)));
+  const best = ranked[0];
+  if (!best) return null;
+  const kept = gathered.map((hexId) => [hexId, gainOf.get(hexId)!] as const).sort(([, a], [, b]) => b - a)
+    .find(([, gain]) => gain >= w.extenderPlan && gain >= best[1] * EXTENDER_KEEP_SHARE);
+  const [site, gain] = kept ?? best;
+  if (gain < w.extenderPlan) return null;
+  const truckIds: PieceId[] = [];
+  let points = 0;
+  for (const truck of [...empty].sort((left, right) => hexesBetween(left.hexId, site) - hexesBetween(right.hexId, site) || String(left.piece.id).localeCompare(String(right.piece.id)))) {
+    if (points >= EXTENDER_POINTS) break;
+    truckIds.push(truck.piece.id);
+    points += transportPoints(facts, truck);
+  }
+  return { site, truckIds, gain };
+};
+
+/** Trucks of `units` whose points add up to exactly `target` (13.2c), fewest first; null when none do. */
+const exactPoints = (facts: BotGameFacts, units: readonly OwnUnit[], target: number): OwnUnit[] | null => {
+  const sorted = [...units].sort((left, right) => transportPoints(facts, right) - transportPoints(facts, left) || String(left.piece.id).localeCompare(String(right.piece.id)));
+  const search = (from: number, left: number, chosen: OwnUnit[]): OwnUnit[] | null => {
+    if (left === 0) return chosen;
+    for (let index = from; index < sorted.length; index += 1) {
+      const points = transportPoints(facts, sorted[index]!);
+      if (points > left) continue;
+      const found = search(index + 1, left - points, [...chosen, sorted[index]!]);
+      if (found) return found;
+    }
+    return null;
+  };
+  return search(0, target, []);
+};
+
+/**
+ * extenderPlan: one planned truck's next action. On the site the trucks there form the Extender: a five-point counter
+ * forms (12.7d), else a set of exactly five points combines (13.2c), else the truck that overshoots five splits off the
+ * excess first. Elsewhere the truck drives onto the site, or as far toward it as it safely can. A formation the rules
+ * refuse (12.7d: half the MA is gone after the drive) waits on the site for the next Movement Phase.
+ */
+const extenderStep = (context: BotDecisionContext, situation: Situation, facts: BotGameFacts, unit: OwnUnit, notes: StepNotes, w: HeuristicWeights): BotDecision | null => {
+  const plan = notes.extender!;
+  const { actions } = context;
+  const id = unit.piece.id;
+  const revision = context.view.stateRevision;
+  const envelope = (scope: string) => ({ actionId: `candidate:extender-${scope}:${revision}` as GameAction['actionId'], actorId: situation.playerId, expectedRevision: revision });
+  const legal = (action: GameAction) => actions.explain(action).explanation.allowed;
+  const terms = [{ term: 'extender', value: plan.gain }];
+  if (unit.hexId === plan.site) {
+    const here = situation.own.filter((other) => other.piece.role === 'TRUCK' && other.hexId === plan.site && plan.truckIds.includes(other.piece.id)
+      && (other.piece.carriedTokens ?? 0) === 0);
+    const five = here.find((other) => transportPoints(facts, other) === EXTENDER_POINTS);
+    if (five) {
+      const form = { ...envelope(`form:${five.piece.id}`), kind: 'FORM_EXTENDER', truckId: five.piece.id } as GameAction;
+      if (legal(form)) {
+        notes.extenderFormed = true;
+        return decision(form, `form an Extender at ${plan.site} (${plan.gain} objective VP within an HQ's throw)`, terms);
+      }
+      for (const other of here) notes.done.add(other.piece.id);
+      debug?.(`EXTENDER ${five.piece.id} at ${plan.site} cannot form yet: ${actions.explain(form).explanation.reasons.map(({ code }) => code).join(' ')}`);
+      return null;
+    }
+    const set = exactPoints(facts, here, EXTENDER_POINTS);
+    if (set && set.length > 1) {
+      const combine = { ...envelope(`combine:${set.map(({ piece }) => piece.id).join('+')}`), kind: 'COMBINE_TRANSPORT', truckIds: set.map(({ piece }) => piece.id) } as GameAction;
+      if (legal(combine)) return decision(combine, `combine ${EXTENDER_POINTS} Transport Points at ${plan.site} for an Extender`, terms);
+    }
+    if (!set && here.reduce((total, other) => total + transportPoints(facts, other), 0) >= EXTENDER_POINTS) {
+      // Largest first until five are reached: the last truck taken carries the excess, split off and left out.
+      let points = 0;
+      for (const other of [...here].sort((left, right) => transportPoints(facts, right) - transportPoints(facts, left) || String(left.piece.id).localeCompare(String(right.piece.id)))) {
+        points += transportPoints(facts, other);
+        if (points < EXTENDER_POINTS) continue;
+        const divide = { ...envelope(`divide:${other.piece.id}`), kind: 'DIVIDE_TRANSPORT', truckId: other.piece.id, points: points - EXTENDER_POINTS } as GameAction;
+        if (points > EXTENDER_POINTS && legal(divide)) return decision(divide, `split ${points - EXTENDER_POINTS} Transport Point(s) off to leave ${EXTENDER_POINTS} for an Extender`, terms);
+        break;
+      }
+    }
+    // The other trucks have not arrived: wait here.
+    notes.done.add(id);
+    return null;
+  }
+  const moves = actions.candidates('MOVE_PIECE', id, TRUCK_MOVE_BUDGET);
+  const onto = moves.find((move) => destinationOf(move) === plan.site);
+  if (onto && preservesFriendlySupply(context, onto)) return decision(onto, `truck to the Extender site ${plan.site}`, terms);
+  const toward = moves.map((move) => ({ move, gain: hexesBetween(unit.hexId, plan.site) - hexesBetween(destinationOf(move)!, plan.site) }))
+    .filter(({ move, gain }) => gain > 0 && situation.nearestEnemy(destinationOf(move)!).distance > 2)
+    .sort((left, right) => right.gain - left.gain || situation.threatAt(destinationOf(left.move)!) - situation.threatAt(destinationOf(right.move)!))
+    .find(({ move }) => preservesFriendlySupply(context, move));
+  notes.done.add(id);
+  if (!toward) return null;
+  return decision(toward.move, `truck toward the Extender site ${plan.site}`, [...terms, { term: 'toward-goal', value: toward.gain * w.truckTowardGoal }]);
+};
+
 /** Worth of each Token railed to an HQ, in hexes of progress toward the front. */
 const RAIL_HQ_VALUE = 10;
 /** Rail moves shorter than this many hexes toward the front are not worth the Rail Cap. */
@@ -1197,6 +1367,10 @@ const movementStep = (context: BotDecisionContext, situation: Situation, facts: 
   const unitCoverage = (unit: OwnUnit): ReadonlySet<string> => new Set(context.actions.traceCoverage(unit.piece.id).hexIds);
   const unitFeeds = (unit: OwnUnit): readonly FeedSource[] => context.actions.feedCoverage(unit.piece.id);
   const sideFeeds = context.actions.feedCoverage();
+  if (notes.extender === undefined) {
+    notes.extender = planExtender(context, situation, facts, w);
+    if (notes.extender) debug?.(`EXTENDER ${notes.extender.site} +${notes.extender.gain}VP trucks ${notes.extender.truckIds.join(' ')}`);
+  }
   if (notes.effort === undefined) {
     const efforts = w.theaterAllocation > 0 && situation.attack && !situation.defending
       ? theaterEfforts(context, situation, facts, w, notes) : chooseEfforts(situation, w, w.assaultMaxEfforts);
@@ -1226,7 +1400,9 @@ const movementStep = (context: BotDecisionContext, situation: Situation, facts: 
   // hexes. Otherwise a legal rescue available at the start of the phase can disappear.
   // theaterAllocation: a stager moves to its drop right after the HQs, then the trucks placed there unload beside it
   // (13.2f), before the other combat units move: these see the SP on the map when they leave trace for their attack positions.
-  const order = (unit: OwnUnit) => unit.piece.role === 'TRUCK' && notes.relief!.hexIds.length > 0 && !notes.truckPlan?.has(unit.piece.id) ? -1
+  // extenderPlan: the Extender forms first, so the HQs and units that move after it see its draw as trace (12.7a).
+  const forExtender = (unit: OwnUnit) => unit.piece.role === 'TRUCK' && !notes.extenderFormed && (notes.extender?.truckIds.includes(unit.piece.id) ?? false);
+  const order = (unit: OwnUnit) => forExtender(unit) ? -2 : unit.piece.role === 'TRUCK' && notes.relief!.hexIds.length > 0 && !notes.truckPlan?.has(unit.piece.id) ? -1
     : unit.piece.role === 'HQ' ? 0 : notes.stagers?.has(unit.piece.id) ? 0.4 : notes.truckPlan?.has(unit.piece.id) && !notes.truckDelivered?.has(unit.piece.id) ? 0.6 : unit.piece.role === 'COMBAT' ? 1 : unit.piece.role === 'ARTILLERY' ? 2 : unit.piece.role === 'TRUCK' ? 3 : 9;
   const units = situation.own.filter((unit) => order(unit) < 9 && !notes.done.has(unit.piece.id))
     .sort((left, right) => order(left) - order(right) || String(left.piece.id).localeCompare(String(right.piece.id)));
@@ -1241,7 +1417,7 @@ const movementStep = (context: BotDecisionContext, situation: Situation, facts: 
   for (const unit of units) {
     const id = unit.piece.id;
     if (unit.piece.role === 'TRUCK') {
-      const step = truckStep(context, situation, unit, notes, w, effort);
+      const step = forExtender(unit) ? extenderStep(context, situation, facts, unit, notes, w) : truckStep(context, situation, unit, notes, w, effort);
       if (step) return step;
       continue;
     }

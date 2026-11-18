@@ -8,7 +8,7 @@ import type {
   GameSession,
   SeatId,
 } from '../gameplay/index.js';
-import type { ActionFamily, CandidateResult, FeedSource, GameAction, HqThrow, PlannedAttack, ProjectedPiece, ReachableHex, RuleExplanation, TraceCoverage } from '../rules/index.js';
+import type { ActionFamily, CandidateResult, ExtenderSite, FeedSource, GameAction, HqThrow, PlannedAttack, ProjectedPiece, ReachableHex, RuleExplanation, TraceCoverage } from '../rules/index.js';
 
 export type BotPolicyId = string;
 
@@ -33,6 +33,8 @@ export interface BotActionAccess {
   readonly hqThrow: (hqId: PieceId, fromHexId: HexId) => HqThrow;
   /** Stations SP arriving in `fromHexId` this turn could reach by rail as the map stands (13.6b, 13.3c, 13.3e). */
   readonly railArrivalReach: (fromHexId: HexId) => readonly HexId[];
+  /** Whether an own Extender would link in `hexId` (12.7a) and the hexes that would trace to it directly; formation costs not checked. */
+  readonly extenderSite: (hexId: HexId) => ExtenderSite;
   /** Seen enemy combat units that would lose trace if own unit `pieceId` stood in `hexId` (in `mode`), as the seat sees the map (4.9a). */
   readonly traceCut: (pieceId: PieceId, hexId: HexId, mode?: OcsMode) => readonly PieceId[];
   /** Whether an action built by the policy is legal now, with the facts a player sees (odds, DRM, cost). */

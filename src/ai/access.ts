@@ -1,6 +1,6 @@
 import type { HexId, PieceId } from '../core/index.js';
 import type { GameSession, SeatId } from '../gameplay/index.js';
-import type { CandidateResult, FeedSource, GameAction, HqThrow, PlannedAttack, ReachableHex, TraceCoverage } from '../rules/index.js';
+import type { CandidateResult, ExtenderSite, FeedSource, GameAction, HqThrow, PlannedAttack, ReachableHex, TraceCoverage } from '../rules/index.js';
 import type { BotActionAccess } from './model.js';
 import type { BotQueryObserver } from './observation.js';
 
@@ -20,6 +20,7 @@ export const createBotActionAccess = (session: GameSession, seatId: SeatId, obse
   const throwCache = new Map<string, HqThrow>();
   const arrivalCache = new Map<string, readonly HexId[]>();
   const cutCache = new Map<string, readonly PieceId[]>();
+  const extenderCache = new Map<string, ExtenderSite>();
   return {
     families: () => families ??= session.getActionFamilies(seatId).filter(({ enabled }) => enabled).map(({ kind }) => kind),
     candidates: (kind, pieceId = null, budget = DEFAULT_CANDIDATE_BUDGET) => {
@@ -75,6 +76,14 @@ export const createBotActionAccess = (session: GameSession, seatId: SeatId, obse
         arrivalCache.set(String(fromHexId), reach);
       }
       return reach;
+    },
+    extenderSite: (hexId) => {
+      let site = extenderCache.get(String(hexId));
+      if (site === undefined) {
+        site = session.getExtenderSite(seatId, hexId).value ?? { linked: false, drawHexIds: [] };
+        extenderCache.set(String(hexId), site);
+      }
+      return site;
     },
     explain: (action) => session.validateDraft(session.createDraft(seatId, action)),
     traceCoverage: (pieceId = null) => {

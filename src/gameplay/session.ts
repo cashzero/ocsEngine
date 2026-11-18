@@ -312,6 +312,14 @@ export class GameplaySession implements GameSession {
     return cloneValue(this.#ports.rules.queryRailArrivalReach(this.#state, binding.playerId, fromHexId));
   };
 
+  getExtenderSite = (seatId: SeatId, hexId: Parameters<GameSession['getExtenderSite']>[1]): ReturnType<GameSession['getExtenderSite']> => {
+    const binding = this.#binding(seatId);
+    if (this.#lifecycle !== 'ACTIVE' || this.#handoff !== null) {
+      return { allowed: false, value: { linked: false, drawHexIds: [] }, reasons: [{ code: 'SESSION_NOT_INTERACTIVE', allowed: false, message: 'Session is not accepting interaction.', rule: 'gameplay' }], facts: [], dependencies: [] };
+    }
+    return cloneValue(this.#ports.rules.queryExtenderSite(this.#state, binding.playerId, hexId));
+  };
+
   getTransportOptions = (seatId: SeatId, truckId: Parameters<GameSession['getTransportOptions']>[1]): ReturnType<GameSession['getTransportOptions']> => {
     const binding = this.#binding(seatId);
     if (this.#lifecycle !== 'ACTIVE' || this.#handoff !== null) {

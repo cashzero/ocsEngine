@@ -68,6 +68,7 @@ Dispatch 的 request ID 含 runner 的 `nonce`：session 會拒絕已見過的 r
 | `hqThrow(hqId, fromHexId)` | 己方 HQ 若站在該格（非 Strat Mode），是否有補給源供應（12.3a，依 HQ 機動類型）、投送（12.3b）涵蓋哪些地圖陸地格，以及可供應哪些己方戰鬥單位（13.1d）；其他單位維持原位，規則層 `queryHqThrow` |
 | `traceCut(pieceId, hexId, mode?)` | 己方單位若站在該格（以 `mode`），哪些看得到的敵方戰鬥單位會失去 trace（12.6）：敵方 trace 在只保留行動者看得到的敵方棋子（4.9a：每個 stack 最上面的戰鬥單位等）的地圖上計算，藏在 stack 裡的 HQ 視為不在；規則層 `queryTraceCut` |
 | `railArrivalReach(fromHexId)` | 這一回合到達該格的 SP 依目前地圖鐵路能送到哪些車站：13.6b 免除到達物的上車條件，只看鐵路路徑（13.3e：不經敵方戰鬥單位、敵方 ZOC 或非己方控制的車站）與下車格（13.3c）；不檢查階段與 Rail Cap，供選擇入場格，規則層 `queryRailArrivalReach` |
+| `extenderSite(hexId)` | 己方 Extender 若站在該格，是否能接上目前的補給源（12.7a A：Extender 射程內有補給源，12.7g 相鄰即可；該格不在敵方 ZOC、沒有敵方戰鬥單位），以及它直接補給到的陸地格（12.3a、12.3c）；不計鐵路連接（12.7a B、C），不檢查卡車點數、移動與組成成本，供規劃 Extender，規則層 `queryExtenderSite` |
 | `explain(action)` | 驗證行動並取得玩家看得到的 facts（勝率、DRM、費用，以及補給預判） |
 | `traceCoverage(pieceId?)` | 任何單位或指定單位（含 12.6f、13.1d）的 trace 範圍 |
 | `feedCoverage(pieceId?)` | 每個友方補給堆能餵到的範圍（12.6c） |

@@ -12,6 +12,7 @@ import {
   isCombatUnit,
   isExtender,
   isHq,
+  isTransportPoint,
   isMultiUnitFormation,
   locatedHexOf,
   mobilityOf,
@@ -664,6 +665,49 @@ export const queryHqThrow = (state: GameState, actorId: PlayerId, hqId: PieceId,
     reasons: [{ code: 'HQ_THROW', allowed: true, message: 'Hexes an HQ would throw to from this Hex.', rule: '12.3b' }],
     facts: [],
     dependencies: [{ aggregate: 'PIECE', revision: state.pieceState.revision, key: `supply:hq-throw:${hqId}:${fromHexId}` }],
+  };
+};
+
+/** What an Extender would do standing in a Hex (12.7a), for planning where to form one. */
+export interface ExtenderSite {
+  /**
+   * An Extender of the actor's in this Hex would link to one of its Supply Sources within the Extender's range (12.7a A,
+   * 12.7b, 12.7g), so it would be a Supply Source itself and may be formed there (12.7d). Links through rail lines
+   * (12.7a B, C) are not counted.
+   */
+  readonly linked: boolean;
+  /** Land Hexes in or next to the truck draw from this Hex (12.3a, 12.3c): what would trace to it directly; empty when not linked. */
+  readonly drawHexIds: readonly HexId[];
+}
+
+/**
+ * Where an Extender of the actor's would link and draw if it stood in `hexId`, everything else as it stands: the Supply
+ * Sources it could link to are the actor's current ones. Needs a Transport Point counter of the actor's with an Extender
+ * side; transport points, movement and the 12.7d formation cost are not checked.
+ */
+export const queryExtenderSite = (state: GameState, actorId: PlayerId, hexId: HexId): RuleQueryResult<ExtenderSite> => {
+  const counter = state.pieceState.pieces.find((piece) => piece.ownerId === actorId && isTransportPoint(state, piece)
+    && (definitionOf(state, piece)?.faces.some(({ id }) => id === 'extender') ?? false));
+  const dependencies = [{ aggregate: 'PIECE' as const, revision: state.pieceState.revision, key: `supply:extender-site:${hexId}` }];
+  if (!counter) {
+    return {
+      allowed: false, value: { linked: false, drawHexIds: [] },
+      reasons: [{ code: 'NO_EXTENDER_COUNTER', allowed: false, message: 'None of your Transport Points has an Extender side.', rule: '12.7' }],
+      facts: [], dependencies,
+    };
+  }
+  const probe: PieceState = { ...counter, location: { kind: 'ON_MAP', hexId }, currentFaceId: 'extender' as PieceState['currentFaceId'] };
+  const linked = sourceUsable(state, actorId, hexId) && extenderLinks(state, actorId, probe, new Set(friendlySourceHexes(state, actorId)));
+  const drawn = linked ? withAdjacent([supplyPathCosts(state, actorId, hexId, 'truck', state.configuration.supplyDrawRangeTicks)]) : new Set<HexId>();
+  const drawHexIds = state.scenario.mapDefinition.hexes
+    .filter(({ id, terrainDefinitionIds }) => drawn.has(id) && !terrainDefinitionIds.some((terrain) => String(terrain) === 'terrain:water')).map(({ id }) => id);
+  return {
+    allowed: linked,
+    value: { linked, drawHexIds },
+    reasons: [linked
+      ? { code: 'EXTENDER_SITE', allowed: true, message: 'An Extender here would link to a Supply Source.', rule: '12.7a' }
+      : { code: 'EXTENDER_NOT_CONNECTED', allowed: false, message: 'An Extender here would not link to a Supply Source.', rule: '12.7a' }],
+    facts: [], dependencies,
   };
 };
 

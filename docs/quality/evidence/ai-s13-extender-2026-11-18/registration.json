@@ -1,0 +1,33 @@
+{
+  "record": "S13.4 of docs/roadmap/19-ai-strategy-improvement-wbs.md: the attacker forms one Extender (extenderPlan) to carry its Supply Sources toward objectives out of their reach. Continuations of recorded positions, no new game; written and committed before any continuation is run",
+  "registeredAt": "2026-11-18",
+  "request": "The user (2026-11-18), on the S13.1 result: 「選A 開始執行S13.2」 (A: the Extender plan)",
+  "build": "the commit that holds this file (extenderPlan, default 0; queryExtenderSite), dist built from it",
+  "branches": "branches-eastern.jsonl (34) and branches-western.jsonl (27), from find-branches.mjs over the 80 games heuristic@88 attacked in its independent batch (artifacts/ai-promotion/frozen-v88-independent). The branch of a game is the first of the attacker's Movement segments whose first decision by the candidate serves the Extender plan; it is the segment's first action, so both variants start it with fresh step memory. 24 Eastern and 15 Western branches are in Game Turn 3, the rest in 4 to 6. The 19 games listed in no-trigger.txt (6 Eastern, 13 Western) never trigger along their recorded path and count as no change",
+  "variants": {
+    "v91": "heuristic (this build's default, heuristic@91: two recorded games of heuristic@91's correctness check, 1300200 and 1300201, replay to the same actions and final state)",
+    "extender": "heuristic:docs/quality/evidence/ai-s13-extender-2026-11-18/extender-weights.json (extenderPlan 2: a site must bring at least 2 objective VP within an HQ's throw)"
+  },
+  "opponent": "heuristic@artifacts/ai-promotion/frozen-v91-standard/dist",
+  "dice": { "eastern": 4, "western": 2 },
+  "commands": [
+    "node scripts/ai-continue-batch.mjs --branches docs/quality/evidence/ai-s13-extender-2026-11-18/branches-eastern.jsonl --variant v91=heuristic --variant extender=heuristic:docs/quality/evidence/ai-s13-extender-2026-11-18/extender-weights.json --opponent heuristic@artifacts/ai-promotion/frozen-v91-standard/dist --dice 4 --horizons 1 --jobs 10 --out-dir artifacts/ai-s13/continue",
+    "node scripts/ai-continue-batch.mjs --branches docs/quality/evidence/ai-s13-extender-2026-11-18/branches-western.jsonl --variant v91=heuristic --variant extender=heuristic:docs/quality/evidence/ai-s13-extender-2026-11-18/extender-weights.json --opponent heuristic@artifacts/ai-promotion/frozen-v91-standard/dist --dice 2 --horizons 1 --jobs 10 --out-dir artifacts/ai-s13/continue",
+    "python3 scripts/ai-continue-compare.py artifacts/ai-s13/continue/*.jsonl --baseline v91 --by-style --cluster-by-map --metrics margin.vp,margin.objectives,margin.killLoss,loss,own.outOfTrace --out artifacts/ai-s13/continue-compare.json"
+  ],
+  "continuations": "34 x 4 x 2 + 27 x 2 x 2 = 380, about 70 minutes",
+  "measure": "margin.vp at the end of the game, extender - v91, dice averaged per branch, SE over maps; reported by map style. VP is the primary measure; objectives margin, Kill - Loss, the attacker's steps lost and its units out of trace are reported. The effect per attack game of a style is the branch mean times the share of its 40 games that trigger (34/40 East, 27/40 West), the other games counting as no change",
+  "reading": [
+    "Eastern Europe (the design's target): extenderPlan raises VP if mean - 2.1 SE > 0; lowers it if mean + 2.1 SE < 0; otherwise not established",
+    "Western Europe (harm check, 2 dice): harm is established if mean + 2.1 SE < 0; then a candidate for S13.5 needs a condition that keeps it out of such positions, proposed to the user",
+    "S13.5 is proposed to the user only if the Eastern effect is established and positive; the independent batch's pass probability is estimated as in S5.2 (P = Phi((theta - 2.1 sd / sqrt(n)) / sqrt(sd^2 / n + SE^2)), sd 4.5 an attack pair, theta the per-pair effect: half the per-game effect averaged over the styles the batch plays) for 40 and 80 pairs",
+    "every continuation finishes the game; an action the rules refuse stops the run and is reported"
+  ],
+  "powerAnalysis": "A single continuation's VP difference has an SD of 6 to 11 (S5.2, S8). 34 Eastern branches x 4 dice give an SE of about 0.8 to 1.2 a branch, so an effect of about 2 to 2.5 VP a triggered game is established; the S13.1 bound is 4 to 6 VP brought within reach in such games. Western Europe with 2 dice detects only harm of about 3 VP or more",
+  "limits": [
+    "The positions come from games heuristic@88 played against heuristic@86 up to the branch; the opponent here is heuristic@91",
+    "A game that never triggers along its recorded path might trigger along the candidate's own path; it is counted as no change",
+    "The branch positions were found with the theater allocation off (find-branches.mjs); the plan is made before the allocation and does not depend on it",
+    "extenderPlan's constants (3 hexes from the enemy, 3 sites an objective, 12 hexes out, minimum 2 VP) were set before any measurement and are not tuned on these results"
+  ]
+}
