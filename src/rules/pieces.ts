@@ -10,6 +10,7 @@ import {
   type PlayerId,
 } from '../core/index.js';
 import {
+  TRANSPORT_POINTS_STATUS_ID,
   createPieceDefinitionCatalogIndex,
   isGroundUnitDefinition,
   type PieceDefinition,
@@ -42,7 +43,7 @@ export const PRIOR_MODE_STATUS = statusId('status:mode-before-involuntary');
 /** 12.10: TEXT LOW or EXHAUSTED under a unit whose internal stocks are used. */
 export const INTERNAL_STOCKS_STATUS = statusId('status:internal-stocks');
 /** 13.2c: current size of a Transport Point counter when it differs from the printed size. */
-export const TRANSPORT_POINTS_STATUS = statusId('status:transport-points');
+export const TRANSPORT_POINTS_STATUS = statusId(TRANSPORT_POINTS_STATUS_ID);
 /** 12.8e: Game Turn in which the unit was first found out of trace supply. */
 export const OUT_OF_TRACE_SINCE_STATUS = statusId('status:out-of-trace-since');
 /** 12.8e: Game Turn on which a unit that broke out returns as a reinforcement. */

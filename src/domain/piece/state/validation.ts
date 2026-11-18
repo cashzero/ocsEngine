@@ -29,6 +29,9 @@ import type {
 } from './model.js';
 import { pieceRelationKey } from './relations.js';
 
+/** The status holding a Transport Point counter's current size once it is combined or divided (13.2c; the rules' `TRANSPORT_POINTS_STATUS`). */
+export const TRANSPORT_POINTS_STATUS_ID = 'status:transport-points';
+
 const error = (
   code: string,
   path: readonly (string | number)[],
@@ -410,11 +413,18 @@ const validateCargoConsistency = (
         ['relations'],
         `Container ${group.containerId} has no matching structural capacity declaration.`,
       ));
-    } else if (!Number.isSafeInteger(group.total) || group.total > capacity.value) {
+      continue;
+    }
+    // A Transport Point counter combined or divided in play (13.2c) carries its current size as a status: its capacity
+    // is the printed capacity per printed point times that size, not the printed counter's.
+    const printedPoints = definition?.counter?.transportPoints ?? null;
+    const size = container?.statuses.find(({ statusDefinitionId }) => String(statusDefinitionId) === TRANSPORT_POINTS_STATUS_ID)?.value;
+    const limit = printedPoints && size?.kind === 'INTEGER' ? capacity.value / printedPoints * size.value : capacity.value;
+    if (!Number.isSafeInteger(group.total) || group.total > limit) {
       issues.push(error(
         'CARGO_CAPACITY_EXCEEDED',
         ['relations'],
-        `Container ${group.containerId} load ${group.total} exceeds capacity ${capacity.value}.`,
+        `Container ${group.containerId} load ${group.total} exceeds capacity ${limit}.`,
       ));
     }
   }

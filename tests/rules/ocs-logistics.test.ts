@@ -573,6 +573,37 @@ describe('OCS 4.3 transport, Extenders and dumps (9.14, 12.2, 12.7, 12.11, 13.2)
     expect(dumpsAt(mergeSupplyAt(crowded, '4,5' as HexId, AXIS), '4,5')).toHaveLength(2);
   });
 
+  it('lets a counter combined beyond its printed size carry 4T a Transport Point (13.2a, 13.2c)', () => {
+    const base = atStep(buildGeneratedRuleState({ [U.alTruck]: ['1,5', null], [U.alSup]: ['1,5', null] }), 'MOVEMENT', 'MOVEMENT', ALLIED);
+    // A one-point truck of the same type printed as another counter (generated trucks each have their own definition).
+    const firstDefinition = base.scenario.pieceCatalog.definitions.find(({ id }) => id === piece(base, U.alTruck).definitionId)!;
+    const printed = firstDefinition.counter!.transportPoints!;
+    const small = {
+      ...firstDefinition, id: 'definition:test-one-point-truck' as typeof firstDefinition.id,
+      counter: { ...firstDefinition.counter!, transportPoints: 1 },
+      capabilities: firstDefinition.capabilities.map((capability) => capability.id !== 'TRANSPORT_CAPACITY' ? capability
+        : { ...capability, parameters: capability.parameters.map((parameter) => parameter.key === 'capacity' ? { ...parameter, value: 4 } : parameter) }),
+    } as typeof firstDefinition;
+    const smallPiece = { ...piece(base, U.alTruck), id: 'piece:test-one-point-truck' as PieceId, definitionId: small.id, stackOrder: 9 };
+    const state: GameState = {
+      ...base,
+      scenario: { ...base.scenario, pieceCatalog: { ...base.scenario.pieceCatalog, definitions: [...base.scenario.pieceCatalog.definitions, small] } },
+      pieceState: { ...base.pieceState, pieces: [...base.pieceState.pieces.map((entry) => entry.id === U.alSup ? { ...entry, resourceQuantity: 40 } : entry), smallPiece] },
+    };
+    // Two points split off the printed truck join the one-point counter, which keeps the combined three: it now holds
+    // more than it was printed to (as 3 + 1 + 1 do when the bot forms an Extender).
+    const known = new Set(state.pieceState.pieces.map(({ id }) => id));
+    const divided = ok(applyRuleAction(state, ALLIED, { kind: 'DIVIDE_TRANSPORT', truckId: U.alTruck, points: 2 }));
+    const splitId = divided.pieceState.pieces.find(({ id }) => !known.has(id))!.id;
+    const combined = ok(applyRuleAction(divided, ALLIED, { kind: 'COMBINE_TRANSPORT', truckIds: [smallPiece.id, splitId] }));
+    const size = 3 * 4;
+    expect(printed).toBeGreaterThan(2);
+    const offers = ruleEngine.getActionCandidates(combined, { actorId: ALLIED, kind: 'LOAD_SUPPLY', pieceId: smallPiece.id, budget: 10 }).actions;
+    expect(offers).toEqual([expect.objectContaining({ kind: 'LOAD_SUPPLY', dumpId: U.alSup, tokens: size })]);
+    const loaded = ok(applyRuleAction(combined, ALLIED, offers[0]!));
+    expect(piece(loaded, U.alSup).resourceQuantity).toBe(40 - size);
+  });
+
   it('lets a truck that already moved divide and then combine again at no MP cost (13.2c, 6.1f)', () => {
     const state = atStep(buildGeneratedRuleState({ [U.alTruck]: ['1,5', null] }), 'MOVEMENT', 'MOVEMENT', ALLIED);
     const moved = ok(applyRuleAction(state, ALLIED, { kind: 'MOVE_PIECE', pieceId: U.alTruck, path: path('1,5', '2,5') }));
