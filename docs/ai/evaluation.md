@@ -74,6 +74,7 @@
 - 存檔重播的終局 state hash 相同。
 - 補給稽核（`ai-supply-study.mjs`）：一般移動與切模式不破壞其他單位既有的 trace 或口糧；移動的單位自己失去 trace，只在它到該 Movement Segment 結束時既沒有 trace、也沒有 SP 可吃（12.6c）時才算違例（使用者決定，2026-11-15：戰區配置的組員會離開 trace 到有 SP 可吃的攻擊位置，集結者先停在卡車稍後才卸貨的卸貨點，[紀錄](../quality/evidence/ai-s4-v87-2026-11-15/README.md)）；可選支出不破壞共同口糧承諾、
   戰後前進與 Overrun 的預判與實際 reducer 一致。違例數必須為 0。
+- 前進稽核（`audit-advances.mjs`）：候選在最後一回合以前沒有補給的前進算違例，只有一個例外：攻擊戰的攻方前進進入剛打空、原本不屬於自己的目標格，且移動的單位以外沒有單位失去 trace 或口糧（使用者決定，2026-11-18，heuristic@91 的 `advanceUnfunded`，[紀錄](../quality/evidence/ai-s8-advance-2026-11-17/README.md)）。
 
 ### 標準策略的升級流程
 
@@ -180,7 +181,7 @@ SP 每 segment 7.4–9.8 SP（地圖上 SP 的 29–36%）。
 
 ### 目前結果
 
-標準策略 `heuristic@90` 是 heuristic@88 加兩項直接修正（v89：Exploitation 階段的戰區配置不計卡車與 HQ 的移動；v90：走到攻擊位置的單位以移動後的狀態確認吃得到 SP；使用者決定不跑升級流程，
+標準策略 `heuristic@91` 是 heuristic@88 加兩項直接修正與兩項事件型改動（v89：Exploitation 階段的戰區配置不計卡車與 HQ 的移動；v90：走到攻擊位置的單位以移動後的狀態確認吃得到 SP；v91：`advanceUnfunded` 與 `meetingOptionAdvance`，[S8.1](../quality/evidence/ai-s8-advance-2026-11-17/README.md)、[S8.3](../quality/evidence/ai-s8-meeting-option-2026-11-18/README.md)）；都由使用者決定不跑升級流程，
 見[決策](#決策)與 [S6](../quality/evidence/ai-s6-exploitation-moves-2026-11-17/README.md)）；它沒有自己的對戰量測。下表是 `heuristic@88`（heuristic@86 加攻擊戰的五項，
 [內容](heuristic-policy.md#heuristic88-採用的五項攻擊戰)），由使用者決定例外升級（2026-11-17）：走完升級流程，量測與兩個補給 gate 達標，補給稽核有違例：
 
@@ -192,7 +193,7 @@ SP 每 segment 7.4–9.8 SP（地圖上 SP 的 29–36%）。
 | 攻方送補 gate（同上） | 前線取用不到的 SP 3.6 對 4.1：通過 |
 | 正確性 | 160 局合法打完、重播相同；沒有補給的前進只在第 8 回合；**補給稽核 16 次違例**（Exploitation 中往主攻目標移動後無 trace 且無 SP 可吃；v86 當攻方 6 次、v88 當攻方 10 次） |
 
-[獨立批](../quality/evidence/ai-s5-v88-independent-2026-11-17/README.md)、[開發批與登記](../quality/evidence/ai-s5-v88-2026-11-16/README.md)。之後的候選以 `artifacts/ai-promotion/frozen-v90-standard` 為對手。
+[獨立批](../quality/evidence/ai-s5-v88-independent-2026-11-17/README.md)、[開發批與登記](../quality/evidence/ai-s5-v88-2026-11-16/README.md)。之後的候選以 `artifacts/ai-promotion/frozen-v91-standard` 為對手。
 
 前一個標準 `heuristic@86`（攻擊戰的攻方以戰區配置規劃，[設計](theater-supply-plan.md#策略上層)）由使用者決定例外升級：沒有跑獨立批，
 兩個補給 gate 未通過（見[決策](#決策)）：
@@ -295,7 +296,7 @@ SP 每 segment 7.4–9.8 SP（地圖上 SP 的 29–36%）。
 
 已完成驗證的對戰批均合法打完 8 回合，重播 hash 一致，既定一般補給與嚴格前進稽核違例為零。v77 的完整品質檢查為 752 passed／8 skipped，typecheck、build、smoke 通過；該批成對平均 +0.25、區間 [−0.275, 0.775]，尚未登記或執行獨立批；v77 以 v75 為基底，要成為標準須改以 v78 為基底重新驗收。各次 frozen quality 的命令、時間、來源與建置雜湊在個別 evidence 的 JSON 中；觀測 commit 與歷史重寫後相同 tree 的對照見 [來源對照](../quality/evidence/ai-vp-terminal-option-development-2026-10-16/source-equivalence.json)。
 
-對 `random-legal` 的基準（WBS B5）以標準 heuristic@90 在全新種子上量測，B5-1～B5-6 全部通過（[紀錄](../quality/evidence/ai-b5-v90-2026-11-17/README.md)）：預設地圖對 random-legal 39/40、
+對 `random-legal` 的基準（WBS B5）以 heuristic@90 在全新種子上量測（heuristic@91 改了遭遇戰，尚未重測），B5-1～B5-6 全部通過（[紀錄](../quality/evidence/ai-b5-v90-2026-11-17/README.md)）：預設地圖對 random-legal 39/40、
 兩個座位 20/20 與 19/20，終局 99% 的戰鬥單位在補給內；東歐風格 19/20（95%，目標 90%）。前一次標準策略的量測是 heuristic@5（預設地圖 39/40）與
 heuristic@1（東歐風格 80%）。
 
@@ -325,7 +326,10 @@ heuristic@1（東歐風格 80%）。
   - `heuristic@89` 不跑升級流程：它是 heuristic@88 加一項修正（使用者決定，2026-11-17：「這樣明確的bug可以直接修正」）。戰區配置在
     Exploitation 階段安排了不能移動的卡車（11.0a），集結者因此走到沒有補給的卸貨點；這就是 heuristic@88 獨立批補給稽核 16 次違例中的
     15 次。修正後在那 10 個局面重下該移動段，段末無補給由 10 次降為 1 次；整局的對戰量測沒有做（這種移動每局約 0.1 次）。
-    明確的預測錯誤可以這樣直接修正；改變取捨的改動仍走升級流程。`heuristic@90` 以同樣的方式修正剩下的那 1 次（移動前的補給查詢沒算進
+    明確的預測錯誤可以這樣直接修正；改變取捨的改動仍走升級流程。
+  - `heuristic@91` 不跑升級流程（使用者決定，2026-11-18：「一起採用」）：`advanceUnfunded`（攻擊戰，每個事件 VP +1.06 ± 0.32）與
+    `meetingOptionAdvance`（遭遇戰，每個事件 +3.12 ± 1.20）都在事件局面的登記接續中確立，但每局效果小，獨立批的通過機率只有
+    0.05～0.06 與 0.32（80 對）。`advanceUnfunded` 是取捨（拿補給風險換節奏），前進稽核為它加了窄範圍的例外。整局的對戰量測沒有做。`heuristic@90` 以同樣的方式修正剩下的那 1 次（移動前的補給查詢沒算進
     單位離開原格的影響）。
   - `heuristic@88` 的獨立批量測與兩個補給 gate 達標，但補給稽核有 16 次違例，仍升級為標準（使用者決定，2026-11-17：「先升級88 再研究
     Exploitation 的移動 我建議先不把其當成bug 而是分析利弊之後再決定」）。違例是攻方在 Exploitation 中往主攻目標移動、段結束時無 trace
@@ -345,7 +349,7 @@ heuristic@1（東歐風格 80%）。
 ## 已知缺口
 
 - `heuristic@86` 未通過兩個攻方補給 gate（例外升級），東歐攻擊戰的效果沒有量測。
-- WBS B5-7（人工檢視三局完整 trace）最後在 heuristic@1 做過；B5-1～B5-6 已以標準 heuristic@90 重測。
+- WBS B5-7（人工檢視三局完整 trace）最後在 heuristic@1 做過；B5-1～B5-6 最後以 heuristic@90 重測，現行標準 heuristic@91 改了遭遇戰，尚未重測。
 - WBS B2 的 100 局、大地圖 20 局、開啟空軍 20 局批次未完成。
 - 升級流程只用兩種地圖與兩種交戰，沒有 `ALLIED_ATTACKS`、海域、空軍或其他尺寸。
 

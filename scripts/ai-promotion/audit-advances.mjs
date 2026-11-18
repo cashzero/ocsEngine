@@ -57,8 +57,13 @@ for(const record of summary.records) {
    const feed=own.filter(p=>!m.pieceHasTrace(state,p)&&availableRationTokens(next.state,next.state.pieceState.pieces.find(q=>q.id===p.id))<availableRationTokens(state,p)).length;
    const funded=advanceRationsPreserved(state,next.state,action.actorId,[mover.id]);
    if(lost>value('supply.advanceTraceLost')||feed>value('supply.advanceFeedLost')||value('supply.advanceMoverHasTrace')===true&&!m.pieceHasTrace(next.state,mover)||value('supply.advanceFunded')===true&&!funded){writeFileSync(`${dir}/advance-preview-failure.json`,JSON.stringify({match:record.match,revision:state.revision,state,action,facts:ex.facts,actual:{lost,feed,funded,moverTraced:m.pieceHasTrace(next.state,mover)},after:next.state,events:next.events}));if(process.argv.includes('--record-violations'))previewViolations.push({candidate:candidateRevisions.has(state.revision),reason:'Advance conservative bound violated',revision:state.revision,action,predicted:ex.facts,actual:{lost,feed,funded}});else throw Error('Advance conservative bound violated '+JSON.stringify({match:record.match,revision:state.revision,action,predicted:{trace:value('supply.advanceTraceLost'),feed:value('supply.advanceFeedLost'),funded:value('supply.advanceFunded')},actual:{lost,feed,funded}}));}
-   if(candidateRevisions.has(state.revision)&&state.sequence.gameTurn<8&&!funded)throw Error('Candidate advanced unfunded before final turn');
-   advances.push({turn:state.sequence.gameTurn,phase:state.sequence.phase,revision:state.revision,candidate:candidateRevisions.has(state.revision),traceLost:lost,feedLost:feed,moverTraced:m.pieceHasTrace(next.state,mover),funded,predictedFunded:value('supply.advanceFunded'),action});
+   // User decision 2026-11-18 (heuristic@91, advanceUnfunded): the attacker of an attack engagement may advance unfunded into
+   // an objective it has just emptied, if no other unit loses its trace or feed.
+   const target=String(state.activeTransaction?.targetHexId),moverTracedBefore=m.pieceHasTrace(state,state.pieceState.pieces.find(p=>p.id===mover.id));
+   const unfundedObjectiveAdvance=state.configuration.attackVictory?.attackerId===action.actorId&&state.configuration.objectives.some(o=>String(o.hexId)===target)
+    &&state.mapState.hexControl.find(e=>String(e.hexId)===target)?.controllerId!==action.actorId&&feed===0&&lost-(moverTracedBefore&&!m.pieceHasTrace(next.state,mover)?1:0)===0;
+   if(candidateRevisions.has(state.revision)&&state.sequence.gameTurn<8&&!funded&&!unfundedObjectiveAdvance)throw Error('Candidate advanced unfunded before final turn');
+   advances.push({turn:state.sequence.gameTurn,phase:state.sequence.phase,revision:state.revision,candidate:candidateRevisions.has(state.revision),traceLost:lost,feedLost:feed,moverTraced:m.pieceHasTrace(next.state,mover),funded,predictedFunded:value('supply.advanceFunded'),unfundedObjectiveAdvance,action});
   }
   if(declared&&next.events.some(e=>e.kind==='PIECE_ADVANCED')) {
    const ids=next.events.filter(e=>e.kind==='PIECE_ADVANCED').map(e=>e.pieceId);

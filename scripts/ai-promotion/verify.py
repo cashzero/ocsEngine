@@ -98,8 +98,10 @@ for name, engagement, style, development_start in groups:
             if advance['candidate']:
                 totals['candidateAdvances'] += 1
                 totals['candidateFundedAdvances'] += advance['funded']
+                # User decision 2026-11-18: an unfunded advance before the final turn only into an objective the attacker has just
+                # emptied, with no other unit losing trace or feed (audit-advances.mjs, unfundedObjectiveAdvance).
                 if not advance['funded']:
-                    assert advance['turn'] == 8 and advance['phase'] in ['COMBAT', 'EXPLOITATION']
+                    assert (advance['turn'] == 8 and advance['phase'] in ['COMBAT', 'EXPLOITATION']) or advance.get('unfundedObjectiveAdvance') is True
         for overrun in row['overruns']:
             assert overrun['candidate'] == (overrun['action']['actorId'] == owners[row['match']])
             if overrun['candidate']:
