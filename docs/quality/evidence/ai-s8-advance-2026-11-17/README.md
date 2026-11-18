@@ -56,6 +56,19 @@ python3 scripts/ai-continue-compare.py artifacts/ai-s8/advance/*.jsonl --baselin
 - The branch is the decision itself, with fresh step memory for both variants.
 - Only the attacker of an attack engagement; meeting engagements are S8.3.
 
+## Adoption (heuristic@91)
+
+The user (2026-11-18): 「一起採用」. `advanceUnfunded` and `meetingOptionAdvance` became defaults in heuristic@91
+(`b935435`), frozen as `artifacts/ai-promotion/frozen-v91-standard`, without an independent batch. The advance audit
+(`scripts/ai-promotion/audit-advances.mjs`, `verify.py`) now accepts a candidate's unfunded advance before the final turn
+only into an objective the attacker of an attack engagement has just emptied, with no other unit losing trace or feed
+(`unfundedObjectiveAdvance`).
+
+Check on known development seeds, heuristic@91 against frozen heuristic@90 (8 Western attack games 1300200–1300207, 4
+Western meeting games 1300000–1300003, seats exchanged, traced): all 12 finished and replayed; the ordinary supply audit
+has no violation; the advance audit passes: 46 advances of heuristic@91, 2 unfunded and both under the exemption, no
+preview violation. 834 tests pass (7 skipped), typecheck, build and smoke pass. Raw data: `artifacts/ai-s8/v91-check/`.
+
 ## Raw data
 
 `artifacts/ai-s8/advance/` and `artifacts/ai-s8/advance-compare.{txt,json}` of the `ai-truck-shuttle` worktree; the
