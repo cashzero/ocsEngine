@@ -11,7 +11,9 @@
 // attacker entered the hex later in the same player turn, who controls it when the attacker's next player turn begins
 // (the end of the game if none follows) and at the end; where no advance was offered, why (every attacker eliminated, an
 // attacker retreat, or no survivor able to move: combat.ts, the ADVANCE step). A game identical to an earlier one (same final state, as the
-// seat-exchanged games of a self-play) is counted once. Writes the events and a summary; prints the summary.
+// seat-exchanged games of a self-play) is counted once. In a meeting engagement each side is counted for its own attacks
+// (--policy keeps the sides whose policy contains it), and the rates are per side a game. Writes the events and a summary;
+// prints the summary.
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -34,12 +36,15 @@ for (const dir of dirs) {
     const savePath = join(dir, `match-${record.match}.save.json`);
     if (record.stopReason !== 'FINISHED' || !existsSync(savePath) || seen.has(record.finalStateHash)) continue;
     const save = JSON.parse(readFileSync(savePath, 'utf8'));
-    let state = m.parseGameStateJson(save.initialSnapshot).value;
-    const attackerId = state.configuration.attackVictory?.attackerId;
-    if (attackerId === undefined) continue;
+    const initial = m.parseGameStateJson(save.initialSnapshot).value;
+    // The attacker of an attack engagement; in a meeting engagement each side, for its own attacks.
+    const attackers = initial.configuration.attackVictory ? [initial.configuration.attackVictory.attackerId] : initial.scenario.players.map(({ id }) => id);
+    let counted = false;
+    for (const attackerId of attackers) {
+    let state = initial;
     const attackerSide = String(attackerId).endsWith('axis') ? 'axis' : 'allied';
     if (policyFilter && !record.sides[attackerSide].policy.includes(policyFilter)) continue;
-    seen.add(record.finalStateHash);
+    counted = true;
     games += 1;
     const turnLimit = state.configuration.turnLimit;
     const objectives = new Map(state.configuration.objectives.map(({ hexId, points }) => [String(hexId), points]));
@@ -104,8 +109,10 @@ for (const dir of dirs) {
       event.recoverable = offered && event.class === 'no supplied advance' && !event.atNextTurn;
       // Why the rules offered no advance (combat.ts ADVANCE step): every attacker gone, an attacker retreat, or no survivor able to move.
       if (!offered) event.noOffer = event.attackersLeft === 0 ? 'attackers eliminated' : event.attackerRetreated ? 'attackers retreated' : 'no survivor able to move';
-      events.push(event);
+      events.push({ ...event, side: attackerSide, engagement: initial.configuration.attackVictory ? 'attack' : 'meeting' });
     }
+    }
+    if (counted) seen.add(record.finalStateHash);
   }
 }
 
