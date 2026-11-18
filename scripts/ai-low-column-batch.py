@@ -74,7 +74,7 @@ def score():
             assert (obs[0] is None) == (obs[1] is None)
             if obs[0] is not None:
                 deltas[-1]["nextTargetHeld"] = int(obs[0]["targetHeld"]) - int(obs[1]["targetHeld"])
-        event = {k: st.mean(d[k] for d in deltas if k in d) for k in set.union(*(set(d) for d in deltas))}
+        event = {k: st.mean(d[k] for d in deltas if k in d) for k in sorted(set.union(*(set(d) for d in deltas)))}
         map_effects[row["match"]] += event["vpMargin"]
         events.append(dict(match=row["match"], at=row["at"], **event))
     rng = random.Random(19090)
