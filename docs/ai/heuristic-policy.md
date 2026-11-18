@@ -307,7 +307,8 @@ heuristic@91 = heuristic@90 加下面兩項（使用者決定直接採用，2026
 - `bot-advance-first-entry`：有敵方運輸單位的首次前進與成功 Overrun 強制進駐仍有補給預判缺口。
 - `bot-relocation-coverage`：`DISPLACEMENT_HEX`、鐵路、海運與 breakdown 的補給預判未涵蓋。
 - `bot-hq-logistics-plan`：HQ 與卡車缺少協同前推的接力計畫。
-- 沒有 Reserve、Reaction 反擊、Extender、Breakout 規劃；戰鬥預估不含 Surprise。
+- `bot-extender`：不合併卡車、不組 Extender（12.7），補給源只隨鐵路前移；東歐攻擊戰中這是 trace 跟不上的主因（[S13.1](../quality/evidence/ai-s13-trace-front-2026-11-18/README.md)）。
+- `bot-reserve-reaction`：沒有 Reserve、Reaction 反擊、Breakout 規劃；戰鬥預估不含 Surprise。
 - `bot-defender-counterattack`：守方不反攻是權宜做法，應只在有優勢時反攻（見 [TODO 清單](../quality/05-todo-inventory.md)）。
 - `bot-force-concentration`：攻方不集中兵力。主攻群以守軍原始戰力的 2.5 倍組成、不看地形欄位；每個單位只以自己和目的地同格友軍判斷 `exposure`、`contact`，所以停在敵前 2–3 格；戰鬥補給項讓多數攻擊低於門檻（[研究](../quality/evidence/ai-force-concentration-v79-2026-10-16/README.md)）。候選 v81 試過的攻方集中方式都比 v79 差，v81–v83 的分角色規劃已刪除，v84 照 v79 下（[v81 開發量測](../quality/evidence/ai-assault-v81-development-2026-10-17/README.md)、[v82](../quality/evidence/ai-assault-v82-development-2026-10-17/README.md)）。
 
