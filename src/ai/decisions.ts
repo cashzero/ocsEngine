@@ -51,7 +51,7 @@ const ratio = (label: string): number => {
   return match ? Number(match[1]) / Number(match[2]) : Number.POSITIVE_INFINITY;
 };
 
-export const respondToDecision = (context: BotDecisionContext, situation: Situation, holdRatio = 0.5, advanceThreatLimit = 8, optionAdvance = 0, advanceUnfunded = 0): BotDecision | null => {
+export const respondToDecision = (context: BotDecisionContext, situation: Situation, holdRatio = 0.5, advanceThreatLimit = 8, optionAdvance = 0, advanceUnfunded = 0, meetingOptionAdvance = 0): BotDecision | null => {
   const decision = context.view.pendingDecision!;
   const options = decision.options as readonly Option[];
   const actions = context.actions.candidates('RESPOND_DECISION');
@@ -121,7 +121,9 @@ export const respondToDecision = (context: BotDecisionContext, situation: Situat
       // least its number of units, each of which has a step) and an attacker keeps a step: a retreating attacker forfeits
       // the advance (9.11), and the S5.4a census found such cleared objectives walked back into.
       const result = projection.combat?.result ? parseCombatResult(projection.combat.result) : null;
-      if (optionAdvance > 0 && !defending && situation.attack && !situation.defending && targetHex !== undefined && result !== null
+      // meetingOptionAdvance: the same for either side of a meeting engagement (S8.3 of the improvement WBS).
+      const optionScope = situation.attack ? optionAdvance > 0 && !situation.defending : meetingOptionAdvance > 0;
+      if (optionScope && !defending && targetHex !== undefined && result !== null
         && situation.objectives.some(({ hexId, controllerId }) => hexId === targetHex && controllerId !== context.playerId)
         && result.defender.loss + result.defender.option >= Math.max(1, projection.combat?.defenderCount ?? 1)) {
         const stay = parsed.find(({ option, retreat }) => {
