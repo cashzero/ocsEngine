@@ -1,0 +1,1030 @@
+[
+ {
+  "match": 2800201,
+  "at": 311,
+  "effort": {
+   "hexId": "2,13",
+   "turn": 2,
+   "units": 5
+  },
+  "note": "main effort arrives next step (t2)",
+  "members": [],
+  "fork": null
+ },
+ {
+  "match": 2800203,
+  "at": 288,
+  "effort": {
+   "hexId": "5,8",
+   "turn": 1,
+   "units": 4
+  },
+  "note": null,
+  "members": [
+   {
+    "pieceId": "generated-oob:441161228:axis:f3-combat-2:unit",
+    "origin": "14,5",
+    "chosen": "6,8",
+    "distance": 1,
+    "moved": true,
+    "status": "arrived",
+    "chosenScore": 106.89909909909909,
+    "adjacent": [
+     {
+      "hexId": "6,8",
+      "order": 162,
+      "score": 106.89909909909909,
+      "excluded": null,
+      "trace": false,
+      "ration": 1,
+      "otherLost": 0,
+      "feedLost": 0
+     },
+     {
+      "hexId": "5,9",
+      "order": 216,
+      "score": 54.56351351351351,
+      "excluded": "supply",
+      "trace": false,
+      "ration": 0,
+      "otherLost": 0,
+      "feedLost": 0
+     },
+     {
+      "hexId": "6,7",
+      "order": 218,
+      "score": 56.4036036036036,
+      "excluded": "supply",
+      "trace": false,
+      "ration": 0,
+      "otherLost": 0,
+      "feedLost": 0
+     }
+    ]
+   },
+   {
+    "pieceId": "generated-oob:441161228:axis:f3-recon:unit",
+    "origin": "13,11",
+    "chosen": "6,8",
+    "distance": 1,
+    "moved": true,
+    "status": "arrived",
+    "chosenScore": 133,
+    "adjacent": [
+     {
+      "hexId": "6,8",
+      "order": 298,
+      "score": 133,
+      "excluded": null,
+      "trace": false,
+      "ration": 1,
+      "otherLost": 0,
+      "feedLost": 0
+     }
+    ]
+   },
+   {
+    "pieceId": "generated-oob:441161228:axis:f4-recon:unit",
+    "origin": "13,9",
+    "chosen": "6,8",
+    "distance": 1,
+    "moved": true,
+    "status": "arrived",
+    "chosenScore": 104.8,
+    "adjacent": [
+     {
+      "hexId": "6,8",
+      "order": 238,
+      "score": 104.8,
+      "excluded": null,
+      "trace": false,
+      "ration": 1,
+      "otherLost": 0,
+      "feedLost": 0
+     }
+    ]
+   },
+   {
+    "pieceId": "generated-oob:441161228:axis:independent-anti-tank-4:unit",
+    "origin": "13,5",
+    "chosen": "13,5",
+    "distance": 8,
+    "moved": false,
+    "status": "none",
+    "chosenScore": -31.16666666666667,
+    "adjacent": [
+     {
+      "hexId": "6,8",
+      "order": 142,
+      "score": 91.2,
+      "excluded": "supply",
+      "trace": false,
+      "ration": 0,
+      "otherLost": 0,
+      "feedLost": 3
+     }
+    ]
+   }
+  ],
+  "fork": null
+ },
+ {
+  "match": 2800205,
+  "at": 244,
+  "effort": {
+   "hexId": "0,7",
+   "turn": 2,
+   "units": 6
+  },
+  "note": "main effort arrives next step (t2)",
+  "members": [],
+  "fork": null
+ },
+ {
+  "match": 2800207,
+  "at": 324,
+  "effort": null,
+  "note": "no main effort",
+  "members": [],
+  "fork": null
+ },
+ {
+  "match": 2800209,
+  "at": 280,
+  "effort": {
+   "hexId": "-3,15",
+   "turn": 2,
+   "units": 3
+  },
+  "note": "main effort arrives next step (t2)",
+  "members": [],
+  "fork": null
+ },
+ {
+  "match": 2800211,
+  "at": 292,
+  "effort": {
+   "hexId": "8,7",
+   "turn": 1,
+   "units": 3
+  },
+  "note": null,
+  "members": [
+   {
+    "pieceId": "generated-oob:441162004:axis:f2-recon:unit",
+    "origin": "10,8",
+    "chosen": "8,8",
+    "distance": 1,
+    "moved": true,
+    "status": "arrived",
+    "chosenScore": 36.833333333333336,
+    "adjacent": [
+     {
+      "hexId": "8,8",
+      "order": 6,
+      "score": 36.833333333333336,
+      "excluded": null,
+      "trace": true,
+      "ration": 1,
+      "otherLost": 0,
+      "feedLost": 0
+     },
+     {
+      "hexId": "9,7",
+      "order": 12,
+      "score": 34.01470588235294,
+      "excluded": null,
+      "trace": true,
+      "ration": 1,
+      "otherLost": 0,
+      "feedLost": 0
+     },
+     {
+      "hexId": "7,8",
+      "order": 20,
+      "score": 32.5,
+      "excluded": null,
+      "trace": false,
+      "ration": 1,
+      "otherLost": 0,
+      "feedLost": 0
+     },
+     {
+      "hexId": "9,6",
+      "order": 21,
+      "score": 32.01470588235294,
+      "excluded": null,
+      "trace": false,
+      "ration": 1,
+      "otherLost": 0,
+      "feedLost": 0
+     },
+     {
+      "hexId": "7,7",
+      "order": 28,
+      "score": 32.5,
+      "excluded": null,
+      "trace": false,
+      "ration": 1,
+      "otherLost": 0,
+      "feedLost": 0
+     },
+     {
+      "hexId": "8,6",
+      "order": 29,
+      "score": 34.833333333333336,
+      "excluded": null,
+      "trace": false,
+      "ration": 1,
+      "otherLost": 0,
+      "feedLost": 0
+     }
+    ]
+   },
+   {
+    "pieceId": "generated-oob:441162004:axis:f3-combat-1:unit",
+    "origin": "19,8",
+    "chosen": "8,8",
+    "distance": 1,
+    "moved": true,
+    "status": "arrived",
+    "chosenScore": 146.5,
+    "adjacent": [
+     {
+      "hexId": "8,8",
+      "order": 245,
+      "score": 146.5,
+      "excluded": null,
+      "trace": true,
+      "ration": 1,
+      "otherLost": 0,
+      "feedLost": 0
+     }
+    ]
+   },
+   {
+    "pieceId": "generated-oob:441162004:axis:independent-tank-3:unit",
+    "origin": "11,12",
+    "chosen": "8,8",
+    "distance": 1,
+    "moved": true,
+    "status": "arrived",
+    "chosenScore": 93.49999999999999,
+    "adjacent": [
+     {
+      "hexId": "8,8",
+      "order": 98,
+      "score": 93.49999999999999,
+      "excluded": null,
+      "trace": true,
+      "ration": 1,
+      "otherLost": 0,
+      "feedLost": 0
+     }
+    ]
+   }
+  ],
+  "fork": null
+ },
+ {
+  "match": 2800213,
+  "at": 268,
+  "effort": {
+   "hexId": "12,10",
+   "turn": 2,
+   "units": 7
+  },
+  "note": "main effort arrives next step (t2)",
+  "members": [],
+  "fork": null
+ },
+ {
+  "match": 2800215,
+  "at": 267,
+  "effort": null,
+  "note": "no main effort",
+  "members": [],
+  "fork": null
+ },
+ {
+  "match": 2800217,
+  "at": 312,
+  "effort": {
+   "hexId": "2,16",
+   "turn": null,
+   "units": null
+  },
+  "note": "main effort arrives next step (tnull)",
+  "members": [],
+  "fork": null
+ },
+ {
+  "match": 2800219,
+  "at": 286,
+  "effort": {
+   "hexId": "-5,10",
+   "turn": 2,
+   "units": 3
+  },
+  "note": "main effort arrives next step (t2)",
+  "members": [],
+  "fork": null
+ },
+ {
+  "match": 2800221,
+  "at": 276,
+  "effort": {
+   "hexId": "5,16",
+   "turn": 2,
+   "units": 6
+  },
+  "note": "main effort arrives next step (t2)",
+  "members": [],
+  "fork": null
+ },
+ {
+  "match": 2800223,
+  "at": 314,
+  "effort": {
+   "hexId": "8,14",
+   "turn": 2,
+   "units": 2
+  },
+  "note": "main effort arrives next step (t2)",
+  "members": [],
+  "fork": null
+ },
+ {
+  "match": 2800225,
+  "at": 275,
+  "effort": null,
+  "note": "no main effort",
+  "members": [],
+  "fork": null
+ },
+ {
+  "match": 2800227,
+  "at": 262,
+  "effort": {
+   "hexId": "4,1",
+   "turn": 2,
+   "units": 7
+  },
+  "note": "main effort arrives next step (t2)",
+  "members": [],
+  "fork": null
+ },
+ {
+  "match": 2800229,
+  "at": 299,
+  "effort": {
+   "hexId": "10,4",
+   "turn": 2,
+   "units": 9
+  },
+  "note": "main effort arrives next step (t2)",
+  "members": [],
+  "fork": null
+ },
+ {
+  "match": 2800231,
+  "at": 293,
+  "effort": {
+   "hexId": "10,21",
+   "turn": null,
+   "units": null
+  },
+  "note": "main effort arrives next step (tnull)",
+  "members": [],
+  "fork": null
+ },
+ {
+  "match": 2800233,
+  "at": 308,
+  "effort": {
+   "hexId": "13,4",
+   "turn": 2,
+   "units": 8
+  },
+  "note": "main effort arrives next step (t2)",
+  "members": [],
+  "fork": null
+ },
+ {
+  "match": 2800235,
+  "at": 327,
+  "effort": {
+   "hexId": "4,4",
+   "turn": 2,
+   "units": 1
+  },
+  "note": "main effort arrives next step (t2)",
+  "members": [],
+  "fork": null
+ },
+ {
+  "match": 2800237,
+  "at": 281,
+  "effort": {
+   "hexId": "-5,12",
+   "turn": 2,
+   "units": 4
+  },
+  "note": "main effort arrives next step (t2)",
+  "members": [],
+  "fork": null
+ },
+ {
+  "match": 2800239,
+  "at": 287,
+  "effort": {
+   "hexId": "9,15",
+   "turn": 2,
+   "units": 7
+  },
+  "note": "main effort arrives next step (t2)",
+  "members": [],
+  "fork": null
+ },
+ {
+  "match": 2800241,
+  "at": 228,
+  "effort": {
+   "hexId": "9,1",
+   "turn": 2,
+   "units": 4
+  },
+  "note": "main effort arrives next step (t2)",
+  "members": [],
+  "fork": null
+ },
+ {
+  "match": 2800243,
+  "at": 272,
+  "effort": {
+   "hexId": "3,12",
+   "turn": null,
+   "units": null
+  },
+  "note": "main effort arrives next step (tnull)",
+  "members": [],
+  "fork": null
+ },
+ {
+  "match": 2800245,
+  "at": 268,
+  "effort": {
+   "hexId": "-3,8",
+   "turn": 2,
+   "units": 4
+  },
+  "note": "main effort arrives next step (t2)",
+  "members": [],
+  "fork": null
+ },
+ {
+  "match": 2800247,
+  "at": 265,
+  "effort": {
+   "hexId": "3,3",
+   "turn": 2,
+   "units": 5
+  },
+  "note": "main effort arrives next step (t2)",
+  "members": [],
+  "fork": null
+ },
+ {
+  "match": 2800249,
+  "at": 294,
+  "effort": {
+   "hexId": "-1,7",
+   "turn": null,
+   "units": null
+  },
+  "note": "main effort arrives next step (tnull)",
+  "members": [],
+  "fork": null
+ },
+ {
+  "match": 2800251,
+  "at": 289,
+  "effort": {
+   "hexId": "-6,15",
+   "turn": 2,
+   "units": 5
+  },
+  "note": "main effort arrives next step (t2)",
+  "members": [],
+  "fork": null
+ },
+ {
+  "match": 2800253,
+  "at": 234,
+  "effort": {
+   "hexId": "-3,8",
+   "turn": 2,
+   "units": 2
+  },
+  "note": "main effort arrives next step (t2)",
+  "members": [],
+  "fork": null
+ },
+ {
+  "match": 2800255,
+  "at": 298,
+  "effort": null,
+  "note": "no main effort",
+  "members": [],
+  "fork": null
+ },
+ {
+  "match": 2800257,
+  "at": 281,
+  "effort": {
+   "hexId": "2,10",
+   "turn": 2,
+   "units": 3
+  },
+  "note": "main effort arrives next step (t2)",
+  "members": [],
+  "fork": null
+ },
+ {
+  "match": 2800259,
+  "at": 282,
+  "effort": {
+   "hexId": "8,16",
+   "turn": null,
+   "units": null
+  },
+  "note": "main effort arrives next step (tnull)",
+  "members": [],
+  "fork": null
+ },
+ {
+  "match": 2800261,
+  "at": 302,
+  "effort": {
+   "hexId": "-1,12",
+   "turn": 2,
+   "units": 2
+  },
+  "note": "main effort arrives next step (t2)",
+  "members": [],
+  "fork": null
+ },
+ {
+  "match": 2800263,
+  "at": 274,
+  "effort": {
+   "hexId": "9,6",
+   "turn": 1,
+   "units": 2
+  },
+  "note": null,
+  "members": [
+   {
+    "pieceId": "generated-oob:441167048:axis:f1-recon:unit",
+    "origin": "14,9",
+    "chosen": "8,7",
+    "distance": 1,
+    "moved": true,
+    "status": "arrived",
+    "chosenScore": 95,
+    "adjacent": [
+     {
+      "hexId": "9,7",
+      "order": 142,
+      "score": 92.66666666666667,
+      "excluded": null,
+      "trace": true,
+      "ration": 1,
+      "otherLost": 0,
+      "feedLost": 0
+     },
+     {
+      "hexId": "8,7",
+      "order": 204,
+      "score": 95,
+      "excluded": null,
+      "trace": true,
+      "ration": 1,
+      "otherLost": 0,
+      "feedLost": 0
+     },
+     {
+      "hexId": "10,5",
+      "order": 208,
+      "score": 38.25,
+      "excluded": "supply",
+      "trace": false,
+      "ration": 0,
+      "otherLost": 0,
+      "feedLost": 0
+     }
+    ]
+   },
+   {
+    "pieceId": "generated-oob:441167048:axis:f5-combat-1:unit",
+    "origin": "12,7",
+    "chosen": "9,7",
+    "distance": 1,
+    "moved": true,
+    "status": "arrived",
+    "chosenScore": 50.57142857142857,
+    "adjacent": [
+     {
+      "hexId": "9,7",
+      "order": 56,
+      "score": 50.57142857142857,
+      "excluded": null,
+      "trace": true,
+      "ration": 2,
+      "otherLost": 0,
+      "feedLost": 0
+     }
+    ]
+   }
+  ],
+  "fork": null
+ },
+ {
+  "match": 2800265,
+  "at": 273,
+  "effort": {
+   "hexId": "15,8",
+   "turn": null,
+   "units": null
+  },
+  "note": "main effort arrives next step (tnull)",
+  "members": [],
+  "fork": null
+ },
+ {
+  "match": 2800267,
+  "at": 325,
+  "effort": {
+   "hexId": "6,8",
+   "turn": null,
+   "units": null
+  },
+  "note": "main effort arrives next step (tnull)",
+  "members": [],
+  "fork": null
+ },
+ {
+  "match": 2800269,
+  "at": 320,
+  "effort": {
+   "hexId": "-1,18",
+   "turn": 2,
+   "units": 2
+  },
+  "note": "main effort arrives next step (t2)",
+  "members": [],
+  "fork": null
+ },
+ {
+  "match": 2800271,
+  "at": 304,
+  "effort": {
+   "hexId": "14,9",
+   "turn": 1,
+   "units": 6
+  },
+  "note": null,
+  "members": [
+   {
+    "pieceId": "generated-oob:441167824:axis:f11-combat-1:unit",
+    "origin": "16,5",
+    "chosen": "15,8",
+    "distance": 1,
+    "moved": true,
+    "status": "arrived",
+    "chosenScore": 59.705882352941174,
+    "adjacent": [
+     {
+      "hexId": "15,8",
+      "order": 13,
+      "score": 59.705882352941174,
+      "excluded": null,
+      "trace": true,
+      "ration": 2,
+      "otherLost": 0,
+      "feedLost": 0
+     },
+     {
+      "hexId": "14,8",
+      "order": 21,
+      "score": 59.705882352941174,
+      "excluded": null,
+      "trace": true,
+      "ration": 2,
+      "otherLost": 0,
+      "feedLost": 0
+     },
+     {
+      "hexId": "15,9",
+      "order": 35,
+      "score": 44.705882352941174,
+      "excluded": null,
+      "trace": true,
+      "ration": 2,
+      "otherLost": 0,
+      "feedLost": 0
+     },
+     {
+      "hexId": "13,9",
+      "order": 48,
+      "score": 59.705882352941174,
+      "excluded": null,
+      "trace": true,
+      "ration": 2,
+      "otherLost": 0,
+      "feedLost": 0
+     }
+    ]
+   },
+   {
+    "pieceId": "generated-oob:441167824:axis:f5-combat-1:unit",
+    "origin": "19,6",
+    "chosen": "13,9",
+    "distance": 1,
+    "moved": true,
+    "status": "arrived",
+    "chosenScore": 72.94117647058823,
+    "adjacent": [
+     {
+      "hexId": "15,8",
+      "order": 22,
+      "score": -951.0588235294117,
+      "excluded": "overstack",
+      "trace": true,
+      "ration": 2,
+      "otherLost": 0,
+      "feedLost": 0
+     },
+     {
+      "hexId": "15,9",
+      "order": 37,
+      "score": 69.94117647058823,
+      "excluded": null,
+      "trace": true,
+      "ration": 2,
+      "otherLost": 0,
+      "feedLost": 0
+     },
+     {
+      "hexId": "13,9",
+      "order": 51,
+      "score": 72.94117647058823,
+      "excluded": null,
+      "trace": true,
+      "ration": 2,
+      "otherLost": 0,
+      "feedLost": 0
+     },
+     {
+      "hexId": "14,10",
+      "order": 52,
+      "score": 59.44117647058823,
+      "excluded": null,
+      "trace": true,
+      "ration": 2,
+      "otherLost": 0,
+      "feedLost": 0
+     },
+     {
+      "hexId": "14,8",
+      "order": 54,
+      "score": 72.94117647058823,
+      "excluded": null,
+      "trace": true,
+      "ration": 2,
+      "otherLost": 0,
+      "feedLost": 0
+     },
+     {
+      "hexId": "13,10",
+      "order": 71,
+      "score": 71.44117647058823,
+      "excluded": null,
+      "trace": true,
+      "ration": 2,
+      "otherLost": 0,
+      "feedLost": 0
+     }
+    ]
+   },
+   {
+    "pieceId": "generated-oob:441167824:axis:f7-combat-1:unit",
+    "origin": "14,10",
+    "chosen": "14,10",
+    "distance": 1,
+    "moved": false,
+    "status": "arrived",
+    "chosenScore": 20,
+    "adjacent": [
+     {
+      "hexId": "13,10",
+      "order": 2,
+      "score": 18.5,
+      "excluded": null,
+      "trace": true,
+      "ration": 2,
+      "otherLost": 0,
+      "feedLost": 0
+     },
+     {
+      "hexId": "13,9",
+      "order": 4,
+      "score": -1004,
+      "excluded": "overstack",
+      "trace": true,
+      "ration": 2,
+      "otherLost": 0,
+      "feedLost": 0
+     },
+     {
+      "hexId": "15,8",
+      "order": 7,
+      "score": -1004,
+      "excluded": "overstack",
+      "trace": true,
+      "ration": 2,
+      "otherLost": 0,
+      "feedLost": 0
+     },
+     {
+      "hexId": "15,9",
+      "order": 8,
+      "score": 17,
+      "excluded": null,
+      "trace": true,
+      "ration": 2,
+      "otherLost": 0,
+      "feedLost": 0
+     },
+     {
+      "hexId": "14,8",
+      "order": 12,
+      "score": 20,
+      "excluded": null,
+      "trace": true,
+      "ration": 2,
+      "otherLost": 0,
+      "feedLost": 0
+     }
+    ]
+   },
+   {
+    "pieceId": "generated-oob:441167824:axis:f8-combat-1:unit",
+    "origin": "14,6",
+    "chosen": "14,8",
+    "distance": 1,
+    "moved": true,
+    "status": "arrived",
+    "chosenScore": 46.470588235294116,
+    "adjacent": [
+     {
+      "hexId": "14,8",
+      "order": 21,
+      "score": 46.470588235294116,
+      "excluded": null,
+      "trace": true,
+      "ration": 2,
+      "otherLost": 0,
+      "feedLost": 0
+     },
+     {
+      "hexId": "13,9",
+      "order": 29,
+      "score": -977.5294117647059,
+      "excluded": "overstack",
+      "trace": true,
+      "ration": 2,
+      "otherLost": 0,
+      "feedLost": 0
+     },
+     {
+      "hexId": "15,8",
+      "order": 31,
+      "score": -977.5294117647059,
+      "excluded": "overstack",
+      "trace": true,
+      "ration": 2,
+      "otherLost": 0,
+      "feedLost": 0
+     }
+    ]
+   },
+   {
+    "pieceId": "generated-oob:441167824:axis:independent-tank-3:unit",
+    "origin": "14,10",
+    "chosen": "14,10",
+    "distance": 1,
+    "moved": false,
+    "status": "arrived",
+    "chosenScore": 20,
+    "adjacent": [
+     {
+      "hexId": "13,10",
+      "order": 2,
+      "score": 20,
+      "excluded": null,
+      "trace": true,
+      "ration": 1,
+      "otherLost": 0,
+      "feedLost": 0
+     },
+     {
+      "hexId": "13,9",
+      "order": 4,
+      "score": -4,
+      "excluded": null,
+      "trace": true,
+      "ration": 1,
+      "otherLost": 0,
+      "feedLost": 0
+     },
+     {
+      "hexId": "15,8",
+      "order": 7,
+      "score": -4,
+      "excluded": null,
+      "trace": true,
+      "ration": 1,
+      "otherLost": 0,
+      "feedLost": 0
+     },
+     {
+      "hexId": "15,9",
+      "order": 8,
+      "score": 18.5,
+      "excluded": null,
+      "trace": true,
+      "ration": 1,
+      "otherLost": 0,
+      "feedLost": 0
+     },
+     {
+      "hexId": "14,8",
+      "order": 12,
+      "score": -4,
+      "excluded": null,
+      "trace": true,
+      "ration": 1,
+      "otherLost": 0,
+      "feedLost": 0
+     }
+    ]
+   }
+  ],
+  "fork": null
+ },
+ {
+  "match": 2800273,
+  "at": 312,
+  "effort": {
+   "hexId": "1,17",
+   "turn": null,
+   "units": null
+  },
+  "note": "main effort arrives next step (tnull)",
+  "members": [],
+  "fork": null
+ },
+ {
+  "match": 2800275,
+  "at": 277,
+  "effort": {
+   "hexId": "7,8",
+   "turn": 2,
+   "units": 2
+  },
+  "note": "main effort arrives next step (t2)",
+  "members": [],
+  "fork": null
+ },
+ {
+  "match": 2800277,
+  "at": 318,
+  "effort": null,
+  "note": "no main effort",
+  "members": [],
+  "fork": null
+ },
+ {
+  "match": 2800279,
+  "at": 299,
+  "effort": {
+   "hexId": "3,6",
+   "turn": null,
+   "units": null
+  },
+  "note": "main effort arrives next step (tnull)",
+  "members": [],
+  "fork": null
+ }
+]

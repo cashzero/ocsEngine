@@ -53,6 +53,7 @@
 | `scripts/ai-continue.mjs` | 局面接續：從存檔的分岔點重設 Rules RNG，各策略變體在同一組骰子種子下對固定對手接著下，記錄 +h 回合與終局的局面指標與事件 |
 | `scripts/ai-continue-batch.mjs` | 平行執行多個 `ai-continue.mjs`（每個分支 × 變體一個檔），可續跑：已完成的檔保留，中斷的重跑，同名變體換了策略、對手、骰子數或時點即報錯；變體可分次加跑；最後列出失敗與沒打完的接續 |
 | `scripts/ai-position-metrics.mjs` | 局面指標（模組）：VP、目標點持有／有人守／受威脅、單位與 step、DG、接敵、離敵距離、斷補、SP（地圖上、前線取用得到、取用不到、扣除口糧與燃料後的剩餘戰鬥 SP）、未控目標最佳有效欄位、2 格局部兵力比、乾 HQ；下一回合局勢（[局勢指標](policy-errors.md#局勢指標)），含近似共同 SP 預算的目標風險與可攻達性（尚非合法支付計劃）、對方一步能切斷補給的單位數、對方每單位只攻擊一格時的暴露量與單格最高期望損失；事件：step 損失（總計、戰鬥、耗損）、補給堆被奪或被毀的 SP、SP 支出、攻擊、砲擊 |
+| `scripts/ai-arrival-fork-census.mjs` | 重播攻擊戰到指定 Game Turn 的攻方移動段起點，以凍結建置重下該段並開被動移動觀測：戰區計畫第一主攻（本步驟組）的每個成員選了哪個終點、離目標多遠、各候選的策略評分，以及目標旁每個終點被排除的原因（堆疊、移動後的補給）；成員停在 1 格外而旁邊有可用終點時記為分岔（[S12](../quality/evidence/ai-s12-arrival-2026-11-19/README.md)） |
 | `scripts/ai-trace-front-study.mjs` | 重播攻擊戰：攻方每個 Movement Phase 結束時，未持有目標離 trace、離 HQ 現在的投送、離現有補給源允許的最佳 HQ 擺放（全圖與當段可達）、離補給源與鐵路多遠，鐵路路徑上不能通行的格子；`--extender` 加上整個攻方一個 Extender 的上限（[S13.1](../quality/evidence/ai-s13-trace-front-2026-11-18/README.md)） |
 | `scripts/ai-continue-compare.py` | 比較接續結果：每個指標的成對差（同一分岔點的骰子先平均）、t 值，以及早期差與終局 VP 差的相關；`--by-style`、`--by-role` 依地圖風格與角色（攻擊戰攻方、守方、遭遇戰）分格，報各格、各風格與各格等權的平均；`--cluster-by-map` 以地圖為 SE 的單位（cluster-robust）；並列出終局與基準不同的分支數 |
 | `scripts/ai-role-margin.mjs` | 把候選策略在攻擊戰的攻方與守方效果分開：與對手策略自我對戰的同種子基準比較每局攻方 margin |
