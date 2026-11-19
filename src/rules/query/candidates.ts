@@ -43,6 +43,7 @@ import {
 } from '../supply/supply.js';
 import { definitionOf, locatedHexOf, pieceById, piecesAt, reTicksOf, usageOf } from '../pieces.js';
 import type { ActionFamily, BarrageAvailability, BarrageBlocker, CandidateRequest } from './model.js';
+import { artillerySupplyGroups, groundBarrageGroups } from './barrage-groups.js';
 
 const actionId = (value: string): RuleActionId => {
   const parsed = parseRuleActionId(value);
@@ -69,16 +70,31 @@ const leadOf = (state: GameState, attackers: readonly PieceState[]): PieceId =>
   stableSort(attackers, (left, right) => combatActionRating(state, right) - combatActionRating(state, left)
     || String(left.id).localeCompare(String(right.id)))[0]!.id;
 
-/** Largest legal attack on each target Hex, falling back to single attackers. */
+/** Legal combat attacks on each target Hex: full group plus cost-, garrison-, and Exploitation-preserving subsets. */
 export const combatCandidatesFor = (
   state: GameState,
   actorId: PlayerId,
   combatKind: 'REGULAR' | 'OVERRUN',
   pieceId: PieceId | null,
+  combatSubsets = false,
 ): readonly GameAction[] => {
   const actions: GameAction[] = [];
   const friendly = friendlyOnMap(state, actorId).filter((piece) => isAttackCapable(state, piece));
   const targets = [...new Set(friendly.flatMap((piece) => enemyHexesAdjacentTo(state, actorId, hexOf(piece)!)))].sort();
+  const heldObjectives = combatKind === 'REGULAR'
+    ? new Set(state.configuration.objectives
+      .filter((objective) => state.mapState.hexControl.some((control) => control.hexId === objective.hexId && control.controllerId === actorId))
+      .map(({ hexId }) => hexId))
+    : null;
+  const strengthOf = (piece: PieceState): number => Number(stepOf(state, piece)?.combatStrength ?? 0);
+  const efficiencyRank = (left: PieceState, right: PieceState): number => {
+    const leftEff = strengthOf(left) / Math.max(1, left.remainingSteps ?? 1);
+    const rightEff = strengthOf(right) / Math.max(1, right.remainingSteps ?? 1);
+    return rightEff - leftEff
+      || combatActionRating(state, right) - combatActionRating(state, left)
+      || strengthOf(right) - strengthOf(left)
+      || String(left.id).localeCompare(String(right.id));
+  };
   for (const target of targets) {
     const defenderIds = enemyCombatUnitsAt(state, actorId, target).map(({ id }) => id).sort();
     const adjacent = friendly.filter((piece) => adjacentHexIds(target).includes(hexOf(piece)!));
@@ -109,12 +125,51 @@ export const combatCandidatesFor = (
       actions.push(...stacks.flatMap((stack) => candidate(stack) ?? []), ...singles.filter(({ piece }) => wanted([piece])).map(({ action }) => action));
       continue;
     }
-    for (const group of [adjacent, ...adjacent.map((piece) => [piece])]) {
-      if (!wanted(group)) continue;
-      const action = candidate(group);
-      if (action) {
-        actions.push(action);
-        if (group === adjacent) break;
+    const seen = new Set<string>();
+    let added = 0;
+    const addGroup = (group: readonly PieceState[]): boolean => {
+      if (group.length === 0 || !wanted(group)) return false;
+      const ordered = byId(group);
+      const key = ordered.map(({ id }) => String(id)).join('+');
+      if (seen.has(key)) return false;
+      seen.add(key);
+      const action = candidate(ordered);
+      if (!action) return false;
+      actions.push(action);
+      added += 1;
+      return true;
+    };
+    addGroup(adjacent);
+    if (!combatSubsets) {
+      if (added === 0) for (const piece of adjacent) addGroup([piece]);
+    } else if (adjacent.length > 1) {
+      // Drop units that individually cannot pay supply so one unsupplied unit never collapses a combined attack.
+      const payable = adjacent.filter((piece) => defaultAttackerSupply(state, actorId, [piece.id]) !== null);
+      if (payable.length > 0 && payable.length < adjacent.length) addGroup(payable);
+      const pool = payable.length > 0 ? payable : adjacent;
+      const freePool = pool.filter((piece) => !heldObjectives!.has(hexOf(piece)!));
+      if (freePool.length > 0 && freePool.length < pool.length) addGroup(freePool);
+      const bases = freePool.length > 0 && freePool.length < pool.length ? [pool, freePool] : [pool];
+      for (const basePool of bases) {
+        // Efficiency prefixes trim SP overkill on high-odds attacks while keeping top combat strength per Token.
+        const ranked = [...basePool].sort(efficiencyRank);
+        for (const size of [1, 2, 3, 4]) {
+          if (size < ranked.length) addGroup(ranked.slice(0, size));
+        }
+        // Best 1-hex and 2-hex groups preserve e# Exploitation (9.10 Note 4: >=3 attacking hexes negate e#).
+        const byHex = new Map<HexId, PieceState[]>();
+        for (const piece of basePool) {
+          const hex = hexOf(piece)!;
+          byHex.set(hex, [...(byHex.get(hex) ?? []), piece]);
+        }
+        const hexGroups = [...byHex.values()].sort((left, right) =>
+          right.reduce((sum, piece) => sum + strengthOf(piece), 0) - left.reduce((sum, piece) => sum + strengthOf(piece), 0)
+          || String(hexOf(left[0]!)!).localeCompare(String(hexOf(right[0]!)!)));
+        if (hexGroups.length >= 2) addGroup(hexGroups[0]!);
+        if (hexGroups.length >= 3) addGroup([...hexGroups[0]!, ...hexGroups[1]!]);
+      }
+      if (added === 0 || adjacent.length === 2) {
+        for (const piece of adjacent) addGroup([piece]);
       }
     }
   }
@@ -123,9 +178,11 @@ export const combatCandidatesFor = (
 
 const scanBarrages = (
   state: GameState, actorId: PlayerId, pieceId: PieceId | null, blockers?: Set<BarrageBlocker>,
+  groundBarrageGroupsByCost = false,
 ): readonly GameAction[] => {
   const actions: GameAction[] = [];
   const artillery = friendlyOnMap(state, actorId).filter((piece) => isArtillery(state, piece));
+  const supplyGroups = groundBarrageGroupsByCost && pieceId === null ? artillerySupplyGroups(state, actorId, artillery) : null;
   if (artillery.length === 0) blockers?.add('NO_ARTILLERY');
   let hasTargets = false;
   const targetHexes = [...new Set([
@@ -141,8 +198,10 @@ const scanBarrages = (
     hasTargets = true;
     const inRange = artillery.filter((piece) => hexDistanceBetween(hexOf(piece)!, targetHexId) <= (stepOf(state, piece)?.range ?? 0));
     if (inRange.length === 0 && !blockers) continue;
-    const groups = inRange.length > 0 ? [inRange, ...inRange.map((piece) => [piece])] : artillery.map((piece) => [piece]);
+    const defaultGroups = inRange.length > 0 ? [inRange, ...inRange.map((piece) => [piece])] : artillery.map((piece) => [piece]);
     for (const target of targets) {
+      const groups = target === 'COMBAT_UNITS' && supplyGroups !== null
+        ? groundBarrageGroups(state, actorId, targetHexId, inRange, supplyGroups) : defaultGroups;
       const targetPieceIds = target === 'COMBAT_UNITS' ? enemyCombatUnitsAt(state, actorId, targetHexId).map(({ id }) => id).sort() : [];
       for (const group of groups) {
         if (pieceId !== null && !group.some(({ id }) => id === pieceId)) continue;
@@ -258,7 +317,7 @@ export const candidateActions = (
     case 'DECLARE_COMBAT': {
       if (state.activeTransaction !== null || state.pendingDecision !== null) break;
       const kind = state.sequence.segment === 'COMBAT' ? 'REGULAR' as const : 'OVERRUN' as const;
-      for (const action of combatCandidatesFor(state, request.actorId, kind, request.pieceId)) {
+      for (const action of combatCandidatesFor(state, request.actorId, kind, request.pieceId, request.combatSubsets)) {
         actions.push(action);
         if (legalLimit !== null && actions.length >= legalLimit) return actions;
       }
@@ -266,7 +325,7 @@ export const candidateActions = (
     }
     case 'DECLARE_BARRAGE':
       if (state.activeTransaction !== null || state.pendingDecision !== null || state.sequence.segment !== 'BARRAGE') break;
-      for (const action of barrageCandidatesFor(state, request.actorId, request.pieceId)) {
+      for (const action of scanBarrages(state, request.actorId, request.pieceId, undefined, request.groundBarrageGroupsByCost)) {
         actions.push(action);
         if (legalLimit !== null && actions.length >= legalLimit) return actions;
       }

@@ -203,7 +203,7 @@ export const respondToDecision = (context: BotDecisionContext, situation: Situat
           const { explanation } = context.actions.explain(action);
           const value = (key: string) => explanation.facts.find(f => f.key === key)?.value;
           if (explanation.allowed && value('supply.advanceTraceLost') === 0 && value('supply.advanceFeedLost') === 0
-            && value('supply.advanceMoverHasTrace') === true) {
+            && (situation.turnsLeft <= 0 || value('supply.advanceMoverHasTrace') === true || value('supply.advanceFunded') === true)) {
             return respond(actions, candidate.option.id, 'reinforce-vp', 'keep the captured objective supplied and strong enough to hold', heldPoint.points);
           }
         }

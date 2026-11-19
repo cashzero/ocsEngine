@@ -23,15 +23,16 @@ export const createBotActionAccess = (session: GameSession, seatId: SeatId, obse
   const extenderCache = new Map<string, ExtenderSite>();
   return {
     families: () => families ??= session.getActionFamilies(seatId).filter(({ enabled }) => enabled).map(({ kind }) => kind),
-    candidates: (kind, pieceId = null, budget = DEFAULT_CANDIDATE_BUDGET) => {
-      const key = `${kind}|${pieceId ?? ''}|${budget}`;
+    candidates: (kind, pieceId = null, budget = DEFAULT_CANDIDATE_BUDGET, options) => {
+      const key = `${kind}|${pieceId ?? ''}|${budget}|${options?.groundBarrageGroupsByCost ?? false}|${options?.combatSubsets ?? false}`;
+      const request = { kind, pieceId, budget, ...options };
       let result = candidateCache.get(key);
       const cacheHit = result !== undefined;
       if (result === undefined) {
-        result = session.getActionCandidates(seatId, { kind, pieceId, budget });
+        result = session.getActionCandidates(seatId, request);
         candidateCache.set(key, result);
       }
-      observeQuery?.({ kind, pieceId, budget }, result, cacheHit);
+      observeQuery?.(request, result, cacheHit);
       return result.actions;
     },
     movementRange: (pieceId) => {
@@ -85,7 +86,7 @@ export const createBotActionAccess = (session: GameSession, seatId: SeatId, obse
       }
       return site;
     },
-    explain: (action) => session.validateDraft(session.createDraft(seatId, action)),
+    explain: (action, previewBarrageFollowUp) => session.validateDraft(session.createDraft(seatId, action), previewBarrageFollowUp),
     traceCoverage: (pieceId = null) => {
       let coverage = coverageCache.get(String(pieceId));
       if (coverage === undefined) {

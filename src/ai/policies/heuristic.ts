@@ -1,6 +1,6 @@
 import type { HexId, PieceId } from '../../core/index.js';
 import type { OcsMode } from '../../domain/piece/index.js';
-import type { FeedSource, GameAction, RuleExplanation } from '../../rules/index.js';
+import type { FeedSource, GameAction, RuleExplanation, RuleFact } from '../../rules/index.js';
 import { analyze, type ObjectiveView, type OwnUnit, type Situation } from '../analysis.js';
 import { respondToDecision } from '../decisions.js';
 import { hexesBetween, knowledgeOf, type BotGameFacts } from '../knowledge.js';
@@ -113,7 +113,9 @@ const planCuts = (context: BotDecisionContext, situation: Situation, w: Heuristi
     const strength = Math.max(1, unit.profile?.strength ?? 1);
     for (const { hexId } of context.actions.projectedReach(unit.piece.id, unit.hexId, 'COMBAT')) {
       const hex = String(hexId);
-      if (options.has(hex) || !traced.has(hex) || situation.enemy.has(hexId)) continue;
+      if (!traced.has(hex) || situation.enemy.has(hexId)) continue;
+      const existing = options.get(hex);
+      if (existing && (existing.unit.profile?.strength ?? 0) >= strength) continue;
       const around = stacks.filter((stack) => hexesBetween(stack.hexId, hexId) <= CUT_ENEMY_RADIUS).length;
       if (around === 0) continue;
       const support = situation.friendlyAt(hexId).reduce((total, other) => total + (other.profile?.strength ?? 0), 0);
@@ -153,14 +155,18 @@ const theaterEfforts = (context: BotDecisionContext, situation: Situation, facts
     (unit, hexId, defended) => combatUnitMode(situation, unit, { hexId, purpose: defended ? 'ASSAULT' : 'CAPTURE' }, w),
     (truck) => truckCapacityTokens(facts, truck), w.hqBridge > 0,
     // exploitationFixedLogistics: trucks and HQs do not move in the Exploitation Phase (11.0a), so nothing they would bring counts.
-    !(w.exploitationFixedLogistics > 0 && context.view.projection?.sequence.phase !== 'MOVEMENT'));
+    !(w.exploitationFixedLogistics > 0 && context.view.projection?.sequence.phase !== 'MOVEMENT'),
+    w.hqAdvanceTrace, THEATER_MIN_PROBABILITY);
   const groups = plan.groups.filter(({ chance }) => chance >= THEATER_MIN_PROBABILITY);
   const hqs = plan.hqs.filter(({ objective }) => groups.some(({ hexId }) => hexId === objective));
   const trucks = plan.trucks.filter(({ objective }) => groups.some(({ hexId }) => hexId === objective));
   // hqBridge: an HQ no group uses goes where it draws SP no front unit can draw and throws it on to the front.
   const bridges = plan.bridges.filter(({ hqId }) => !hqs.some((placement) => placement.hqId === hqId));
+  // hqAdvanceTrace: an HQ no group or bridge uses moves where its throw brings uncovered open objectives into trace.
+  const traceAdvances = plan.traceAdvances.filter(({ hqId }) => !hqs.some((placement) => placement.hqId === hqId) && !bridges.some((b) => b.hqId === hqId));
   notes.hqPlan = new Map([...hqs.map((placement) => [placement.hqId, placement] as const),
-    ...bridges.map(({ hqId, hexId }) => [hqId, { hqId, objective: hexId, turn: 1, hexId, moveTo: hexId } as HqPlacement] as const)]);
+    ...bridges.map(({ hqId, hexId }) => [hqId, { hqId, objective: hexId, turn: 1, hexId, moveTo: hexId } as HqPlacement] as const),
+    ...traceAdvances.map(({ hqId, hexId }) => [hqId, { hqId, objective: hexId, turn: 1, hexId, moveTo: hexId } as HqPlacement] as const)]);
   notes.truckPlan = new Map(trucks.map((placement) => [placement.truckId, placement]));
   notes.stagers = new Map(trucks.map(({ stagerId, drop }) => [stagerId, drop]));
   notes.theaterObjectives = new Map(groups.flatMap(({ hexId, unitIds }) => unitIds.map((id) => [id, hexId] as const)));
@@ -183,6 +189,7 @@ const theaterEfforts = (context: BotDecisionContext, situation: Situation, facts
     + hqs.map(({ hqId, moveTo, hexId, objective, turn }) => ` HQ ${hqId}>${moveTo}>${hexId}@${objective}/t${turn}`).join('')
     + trucks.map(({ truckId, drop, objective, tokens, stagerId }) => ` TRUCK ${truckId}>${drop}@${objective}#${tokens}T/${stagerId}`).join('')
     + bridges.map(({ hqId, hexId, tokens }) => ` BRIDGE ${hqId}>${hexId}#${tokens}T`).join('')
+    + traceAdvances.map(({ hqId, hexId, vp }) => ` ADVTRACE ${hqId}>${hexId}#${vp}VP`).join('')
     + plan.groups.filter((group) => !groups.includes(group)).map(({ hexId, unitIds, chance, turn }) => ` drop=${hexId}/${unitIds.length}u/p${chance.toFixed(2)}/t${turn}`).join(''));
   return efforts;
 };
@@ -191,6 +198,65 @@ const theaterEfforts = (context: BotDecisionContext, situation: Situation, facts
 const truckCapacityTokens = (facts: BotGameFacts, truck: OwnUnit): number => {
   const size = truck.piece.statusValues.find(({ statusDefinitionId }) => statusDefinitionId === 'status:transport-points')?.value;
   return Number(size ?? knowledgeOf(facts).definition(truck.piece)?.counter?.transportPoints ?? 0) * 4;
+};
+
+/** Enemy combat hexes with at least one adjacent friendly combat unit (targets about to be attacked). */
+const engagedEnemyHexes = (situation: Situation): readonly HexId[] => {
+  const combat = situation.own.filter((unit) => situation.isCombatUnit(unit));
+  return [...situation.enemy.values()]
+    .filter((stack) => stack.hasCombatUnit && combat.some((unit) => hexesBetween(unit.hexId, stack.hexId) === 1))
+    .map(({ hexId }) => hexId);
+};
+
+/** 12.5a: whether `unit` needs fuel on its printed `faceId` (`combat` / `move`). */
+const needsFuelOnFace = (facts: BotGameFacts, unit: OwnUnit, faceId: string): boolean => {
+  const definition = knowledgeOf(facts).definition(unit.piece);
+  const face = definition?.faces.find(({ id }) => id === faceId) ?? definition?.faces[0];
+  return ['mobility:truck', 'mobility:tracked'].includes(String(face?.mobilityClassDefinitionId));
+};
+
+/**
+ * OCS 5.4 / 10.1: Artillery has ~2x barrage strength on its Combat side (e.g. 25 vs 13 / 17 vs 9) but lower MA (3-5 vs 14).
+ * Zero-regret mode selection: compare the best destination reachable in COMBAT mode vs MOVE mode using `scoreDestination`.
+ * Switch to COMBAT mode ONLY when COMBAT mode achieves essentially the same tactical position as MOVE mode (within 2 pts,
+ * so guns NEVER lag behind an advance or abandon the main front for a side skirmish) AND that position is a safe, escorted,
+ * supplied firing hex in range of the enemy. Otherwise use MOVE mode (14 MP).
+ */
+const artilleryUnitMode = (
+  context: BotDecisionContext, situation: Situation, facts: BotGameFacts, unit: OwnUnit,
+  front: HexId | null, effort: MainEffort | null, engaged: readonly HexId[],
+  reach: ReadonlySet<string>, direct: ReadonlySet<string>, feeds: readonly FeedSource[],
+  notes: StepNotes, w: HeuristicWeights, opponentTurnRemains: boolean,
+): OcsMode => {
+  const range = Math.max(1, unit.profile?.range ?? 1);
+  const safeFiringHex = (hexId: HexId): boolean => {
+    const dist = situation.nearestEnemy(hexId).distance;
+    if (dist < 2 || dist > range) return false;
+    const escorted = situation.friendlyAt(hexId).some((other) => other.piece.id !== unit.piece.id && situation.isCombatUnit(other));
+    if (!escorted && dist <= w.artilleryEscortDistance) return false;
+    return reach.has(hexId) || feedSourceFor(notes, feeds, unit, hexId) !== null;
+  };
+  const hasFuelOption = context.actions.movementRange(unit.piece.id).length > 0
+    || context.actions.candidates('PAY_FUEL', unit.piece.id).length > 0;
+  const canMoveCombat = !needsFuelOnFace(facts, unit, 'combat') || hasFuelOption;
+  const canMoveMove = !needsFuelOnFace(facts, unit, 'move') || hasFuelOption;
+  const scoreHex = (hexId: HexId): number => sum(scoreDestination(
+    situation, unit, undefined, hexId === unit.hexId ? [unit.hexId] : [unit.hexId, hexId],
+    notes, reach, direct, front, w, feeds, opponentTurnRemains, effort, engaged,
+  ));
+  const bestOf = (hexes: readonly HexId[]): { hexId: HexId; score: number } => {
+    let best = { hexId: unit.hexId, score: scoreHex(unit.hexId) };
+    for (const hexId of hexes) {
+      if (hexId === unit.hexId) continue;
+      const score = scoreHex(hexId);
+      if (score > best.score) best = { hexId, score };
+    }
+    return best;
+  };
+  const combatBest = bestOf(canMoveCombat ? context.actions.projectedReach(unit.piece.id, unit.hexId, 'COMBAT').map(({ hexId }) => hexId) : []);
+  if (!safeFiringHex(combatBest.hexId)) return 'MOVE';
+  const moveBest = bestOf(canMoveMove ? context.actions.projectedReach(unit.piece.id, unit.hexId, 'MOVE').map(({ hexId }) => hexId) : []);
+  return combatBest.score >= moveBest.score - 2 ? 'COMBAT' : 'MOVE';
 };
 
 /** The mode a combat unit takes as it begins to move (5.4): Combat near the enemy or its assault, Strat far behind. */
@@ -240,7 +306,6 @@ interface StepNotes {
   readonly trucks: Map<PieceId, TruckLeg>;
   /** Tokens of each rear dump promised to a truck heading for it, and hexes where SP were unloaded this step (12.2a: not loadable again). */
   readonly claims: { readonly tokens: Map<HexId, number>; readonly unloaded: Set<HexId> };
-  readonly incomingRe: Map<HexId, number>;
   /** Tokens still unpromised in each friendly dump or truck cargo, by its id: units ending out of trace eat from them (12.6c). */
   feedBudget: Map<string, number> | null;
   targets: Map<PieceId, Target> | null;
@@ -305,7 +370,7 @@ type TruckLeg =
 const notesOf = (context: BotDecisionContext): StepNotes => {
   let notes = context.memory.notes.get('heuristic') as StepNotes | undefined;
   if (!notes) {
-    notes = { done: new Set(), modeSet: new Set(), fueled: new Set(), trucks: new Map(), claims: { tokens: new Map(), unloaded: new Set() }, incomingRe: new Map(), feedBudget: null, targets: null, stranded: new Map(), hqCovered: new Set() };
+    notes = { done: new Set(), modeSet: new Set(), fueled: new Set(), trucks: new Map(), claims: { tokens: new Map(), unloaded: new Set() }, feedBudget: null, targets: null, stranded: new Map(), hqCovered: new Set() };
     context.memory.notes.set('heuristic', notes);
   }
   return notes;
@@ -321,11 +386,11 @@ const advance = (context: BotDecisionContext, why: string): BotDecision | null =
   return end ? decision(end, `end step: ${why}`) : null;
 };
 
-const reOf = (unit: OwnUnit): number => unit.profile?.re ?? 1;
+const reOf = (unit: OwnUnit): number => unit.profile?.re ?? 0;
 
 // ─── Operational plan: where each unit goes this step ──────────────────────────────────────────
 
-const planTargets = (situation: Situation, coverage: ReadonlySet<string>, unitCoverage: (unit: OwnUnit) => ReadonlySet<string>, w: HeuristicWeights, efforts: readonly MainEffort[], fedAt: ReadonlySet<string>): Map<PieceId, Target> => {
+const planTargets = (situation: Situation, coverage: ReadonlySet<string>, unitCoverage: (unit: OwnUnit) => ReadonlySet<string>, w: HeuristicWeights, efforts: readonly MainEffort[], fedAt: ReadonlySet<string>, protectedIds?: ReadonlySet<PieceId>): Map<PieceId, Target> => {
   const me = situation.playerId;
   const targets = new Map<PieceId, Target>();
   for (const { unit, hexId } of heldDefenders(situation, w)) targets.set(unit.piece.id, { hexId, purpose: 'GARRISON' });
@@ -388,6 +453,8 @@ const planTargets = (situation: Situation, coverage: ReadonlySet<string>, unitCo
       // The only unit on an objective we hold waits for a supply run rather than leave the objective empty (heuristic@8).
       if (holdsAlone(situation, unit) && situation.own.some(({ piece, hexId }) => piece.role === 'TRUCK' && (piece.carriedTokens ?? 0) > 0
         && hexesBetween(hexId, unit.hexId) <= w.holdTruckReach)) continue;
+      // Units allocated by theaterAllocation (with HQ or truck supply) and stagers keep their theater target.
+      if (protectedIds?.has(unit.piece.id)) continue;
       // The assault group stays forward while an HQ is close enough to throw supply to it (12.3b).
       if (efforts.some(({ unitIds }) => unitIds.has(unit.piece.id)) && situation.own.some(({ piece, hexId }) => piece.role === 'HQ' && hexesBetween(hexId, unit.hexId) <= 3)) continue;
       let back: HexId | null = null;
@@ -520,6 +587,8 @@ const scoreDestination = (
   w: HeuristicWeights,
   feeds: readonly FeedSource[],
   opponentTurnRemains: boolean,
+  effort: MainEffort | null = null,
+  engaged: readonly HexId[] = [],
 ): BotScoreTerm[] => {
   const me = situation.playerId;
   const destination = path.at(-1)!;
@@ -542,7 +611,7 @@ const scoreDestination = (
     // A capture only lasts if someone stays: passing through leaves it empty for the enemy to take back. Staying
     // out of supply is no better (attrition every turn, 12.8b) until the last turns, when only the final owner counts.
     const supplied = coverage === null || coverage.has(hexId) || situation.turnsLeft <= 2;
-    const kept = (hexId === destination && supplied) || (notes.incomingRe.get(hexId) ?? 0) > 0
+    const kept = (hexId === destination && supplied)
       || situation.friendlyAt(hexId).some((other) => other.piece.id !== unit.piece.id && situation.isCombatUnit(other));
     add('capture', contestedVp(objective) * w.capture * (kept || !opponentTurnRemains ? 1 : w.passThroughShare));
   }
@@ -569,8 +638,10 @@ const scoreDestination = (
     && situation.friendlyAt(destination).every((other) => other.piece.id === unit.piece.id || !situation.isCombatUnit(other))) {
     add('hold-at-end', contestedVp(endObjective) * w.holdAtEnd);
   }
-  const incoming = (notes.incomingRe.get(destination) ?? 0) + situation.friendlyAt(destination).reduce((total, other) => total + reOf(other), 0);
-  if (incoming + reOf(unit) > STACKING_LIMIT_RE && path.length > 1) add('overstack', -1000);
+  const presentRe = situation.friendlyAt(destination)
+    .filter((other) => other.piece.id !== unit.piece.id)
+    .reduce((total, other) => total + reOf(other), 0);
+  if (presentRe + reOf(unit) > STACKING_LIMIT_RE && path.length > 1) add('overstack', -1000);
   if (unit.piece.role === 'COMBAT') {
     // Strat Mode units defend badly and lose their ZOC: keep them well away from the enemy (5.8).
     if (unit.piece.mode === 'STRAT' && situation.nearestEnemy(destination).distance <= w.stratSafeDistance) add('strat-near-enemy', -w.stratNearEnemy);
@@ -582,7 +653,7 @@ const scoreDestination = (
       && (situation.enemy.get(target.hexId)?.hasCombatUnit ?? false) && hexesBetween(destination, target.hexId) === 1
       && !(notes.theaterObjectives?.has(unit.piece.id) ?? false);
     // One stack per hex does the job; more units in the same hex only make a better barrage target.
-    if (path.length > 1 && !approaching) add('crowding', -incoming * w.crowding);
+    if (path.length > 1 && !approaching) add('crowding', -presentRe * w.crowding);
     // The assault group gathers around the defended objective instead of shying away from it.
     const assaulting = target?.purpose === 'ASSAULT' && hexesBetween(destination, target.hexId) === 1;
     if (assaulting) add('assault-position', w.assaultPosition);
@@ -645,6 +716,10 @@ const scoreDestination = (
     // Artillery defends poorly: near the enemy it stands with combat units, never alone in front of them.
     const escorted = situation.friendlyAt(destination).some((other) => other.piece.id !== unit.piece.id && situation.isCombatUnit(other));
     if (!escorted && distance <= w.artilleryEscortDistance) add('artillery-unescorted', -w.artilleryUnescorted);
+    if (escorted && distance >= 2 && distance <= range) {
+      if (effort !== null && hexesBetween(destination, effort.hexId) <= range) add('support-effort', 4);
+      else if (engaged.some((hexId) => hexesBetween(destination, hexId) <= range)) add('support-attack', 2);
+    }
     add('exposure', -threat * w.artilleryExposure);
     // heuristic@11: artillery is a combat unit for Attrition too (12.8); replays showed it the most starved role.
     if (coverage && !coverage.has(destination)) add('out-of-supply', feedSourceFor(notes, feeds, unit, destination) !== null ? -w.outOfSupplyFed : -w.outOfSupply);
@@ -749,8 +824,9 @@ const DELIVERED_RADIUS = 3;
  * arrive; replays of heuristic@11 with Rail Cap showed every empty truck heading for the fullest dump at the map edge.
  * Emergency garrison stocks (1T at isolated objectives) are left alone, and so are SP unloaded this step (12.2a).
  */
-const pickupFor = (situation: Situation, notes: StepNotes, truck: OwnUnit, front: HexId | null, reliefRun: boolean, deliverable: (hexId: HexId) => boolean): TruckLeg => {
+const pickupFor = (situation: Situation, notes: StepNotes, truck: OwnUnit, front: HexId | null, reliefRun: boolean, deliverable: (hexId: HexId) => boolean, capacityTokens = TRUCK_LOAD_TOKENS): TruckLeg => {
   const { claims } = notes;
+  const capacity = Math.max(4, capacityTokens);
   const objectives = new Set(situation.objectives.map(({ hexId }) => hexId));
   const left = (hexId: HexId, tokens: number): number => tokens - (claims.tokens.get(hexId) ?? 0);
   const dumps = situation.own.filter(({ piece, hexId }) => piece.role === 'DUMP' && (piece.resourceQuantity ?? 0) > 0
@@ -767,11 +843,11 @@ const pickupFor = (situation: Situation, notes: StepNotes, truck: OwnUnit, front
     // Hexes to drive empty plus hexes to drive loaded; a fuller load is worth a little more road.
     cost: hexesBetween(truck.hexId, dump.hexId) + (front === null ? 0 : hexesBetween(dump.hexId, front)),
   })).filter(({ tokens }) => tokens > 0);
-  const worthwhile = scored.filter(({ tokens }) => tokens >= (reliefRun ? 1 : PICKUP_MIN_TOKENS));
+  const worthwhile = scored.filter(({ tokens }) => tokens >= (reliefRun ? 1 : Math.min(PICKUP_MIN_TOKENS, capacity)));
   const best = (worthwhile.length > 0 ? worthwhile : scored)
-    .sort((a, b) => a.cost - Math.min(a.tokens, TRUCK_LOAD_TOKENS) / 4 - (b.cost - Math.min(b.tokens, TRUCK_LOAD_TOKENS) / 4) || String(a.hexId).localeCompare(String(b.hexId)))[0];
+    .sort((a, b) => a.cost - Math.min(a.tokens, capacity) / 4 - (b.cost - Math.min(b.tokens, capacity) / 4) || String(a.hexId).localeCompare(String(b.hexId)))[0];
   if (!best) { debug?.(`PICKUP none for ${truck.piece.id}: dumps ${JSON.stringify(situation.own.filter(({ piece }) => piece.role === 'DUMP').map(({ piece, hexId }) => [hexId, piece.resourceQuantity, String(piece.id).slice(0, 30), situation.nearestEnemy(hexId).distance]))} front ${front}`); return { kind: 'DONE' }; }
-  const claimed = Math.min(best.tokens, TRUCK_LOAD_TOKENS - (truck.piece.carriedTokens ?? 0));
+  const claimed = Math.min(best.tokens, Math.max(0, capacity - (truck.piece.carriedTokens ?? 0)));
   claims.tokens.set(best.hexId, (claims.tokens.get(best.hexId) ?? 0) + claimed);
   return { kind: 'FETCH', pickup: best.hexId, claimed };
 };
@@ -858,7 +934,7 @@ const strandedCenter = (context: BotDecisionContext, situation: Situation, notes
 /** 13.2f: loading or unloading costs 10% of the printed MA, rounded normally (45 MA pays 5 MP). */
 const loadTicksOf = (truck: OwnUnit): number => Math.round((truck.profile?.movement ?? 45) / 10) * 4;
 
-const truckStep = (context: BotDecisionContext, situation: Situation, unit: OwnUnit, notes: StepNotes, w: HeuristicWeights, effort: MainEffort | null): BotDecision | null => {
+const truckStep = (context: BotDecisionContext, situation: Situation, facts: BotGameFacts, unit: OwnUnit, notes: StepNotes, w: HeuristicWeights, effort: MainEffort | null): BotDecision | null => {
   const { actions } = context;
   const id = unit.piece.id;
   const carried = unit.piece.carriedTokens ?? 0;
@@ -937,7 +1013,7 @@ const truckStep = (context: BotDecisionContext, situation: Situation, unit: OwnU
     }
     if (loadHere(unsent.length > 0)) return { kind: 'FETCH', pickup: unit.hexId, claimed: 0 };
     if (carried > 0) return { kind: 'DELIVER', drop: null };
-    return pickupFor(situation, notes, unit, unsent[0] ?? center, unsent.length > 0, deliverable);
+    return pickupFor(situation, notes, unit, unsent[0] ?? center, unsent.length > 0, deliverable, truckCapacityTokens(facts, unit));
   };
 
   /** The legal move that best closes on `goal` while staying out of enemy reach, if any gets nearer. */
@@ -1253,7 +1329,7 @@ const railStep = (context: BotDecisionContext, situation: Situation, facts: BotG
   const loadableAt = (hexId: HexId) => situation.own.filter((unit) => unit.piece.role === 'DUMP' && unit.hexId === hexId && !String(unit.piece.id).includes('-stock-'))
     .reduce((total, unit) => total + (unit.piece.resourceQuantity ?? 0), 0) - (notes.railedTo?.get(hexId) ?? 0);
   let best: { action: GameAction; value: number; gain: number } | null = null;
-  for (const candidate of context.actions.candidates('RAIL_MOVE', null, 400)) {
+  for (const candidate of context.actions.candidates('RAIL_MOVE', null, 1000)) {
     if (candidate.kind !== 'RAIL_MOVE') continue;
     let action = candidate;
     const kept = reserved.get(String(candidate.fromHexId)) ?? 0;
@@ -1386,7 +1462,8 @@ const movementStep = (context: BotDecisionContext, situation: Situation, facts: 
   const effort = notes.effort;
   if (effort) debug?.(`MAIN EFFORT ${effort.hexId} vs ${effort.defenders.toFixed(1)} with ${effort.unitIds.size} unit(s), lead ${effort.lead}`);
   if (!notes.targets) {
-    notes.targets = planTargets(situation, coverage, unitCoverage, w, [...(effort ? [effort] : []), ...(notes.secondary ?? [])], fedHexes(sideFeeds));
+    const theaterProtected = new Set<PieceId>([...(notes.theaterObjectives?.keys() ?? []), ...(notes.stagers?.keys() ?? [])]);
+    notes.targets = planTargets(situation, coverage, unitCoverage, w, [...(effort ? [effort] : []), ...(notes.secondary ?? [])], fedHexes(sideFeeds), theaterProtected);
     for (const [unitId, hexId] of notes.captures ?? []) notes.targets.set(unitId, { hexId, purpose: 'CAPTURE' });
     for (const [unitId, target] of notes.stagerTargets ?? []) notes.targets.set(unitId, target);
   }
@@ -1414,21 +1491,26 @@ const movementStep = (context: BotDecisionContext, situation: Situation, facts: 
     const railed = railStep(context, situation, facts, notes, front);
     if (railed) return railed;
   }
+  let engagedCache: readonly HexId[] | null = null;
+  const engaged = () => engagedCache ??= engagedEnemyHexes(situation);
   for (const unit of units) {
     const id = unit.piece.id;
     if (unit.piece.role === 'TRUCK') {
-      const step = forExtender(unit) ? extenderStep(context, situation, facts, unit, notes, w) : truckStep(context, situation, unit, notes, w, effort);
+      const step = forExtender(unit) ? extenderStep(context, situation, facts, unit, notes, w) : truckStep(context, situation, facts, unit, notes, w, effort);
       if (step) return step;
       continue;
     }
     const target = notes.targets.get(id);
     const enemyDistance = situation.nearestEnemy(unit.hexId).distance;
+    const artilleryRange = Math.max(1, unit.profile?.range ?? 1);
+    const artilleryEngaged = unit.piece.role === 'ARTILLERY' ? engaged() : [];
     // Mode first (5.4): Combat Mode near the enemy for strength and ZOC, Strat Mode far behind the lines.
     if (!notes.modeSet.has(id)) {
       notes.modeSet.add(id);
       // defenderCut: a cutting unit moves in Combat Mode, as its reach was planned, and exerts its ZOC there (4.5).
       const wanted = unit.piece.role === 'COMBAT' && notes.cutPlan?.has(id) ? 'COMBAT'
         : unit.piece.role === 'COMBAT' ? combatUnitMode(situation, unit, target, w)
+        : unit.piece.role === 'ARTILLERY' ? artilleryUnitMode(context, situation, facts, unit, front, effort, artilleryEngaged, unitCoverage(unit), direct, unitFeeds(unit), notes, w, situation.turnsLeft > 0 || context.view.projection!.sequence.playerTurnIndex === 0)
         // An HQ with the army stays in Combat Mode to rebuild units (13.5a); one far behind moves up in Move Mode.
         // A placed HQ moves in Move Mode, as its reach was planned; it throws in either (12.6e).
         : unit.piece.role === 'HQ' && notes.hqPlan?.has(id) && notes.hqPlan.get(id)!.moveTo !== unit.hexId ? 'MOVE'
@@ -1447,13 +1529,22 @@ const movementStep = (context: BotDecisionContext, situation: Situation, facts: 
       const overrun = bestCombat(context, situation, facts, w, actions.candidates('DECLARE_COMBAT', id, 20), w.attackThreshold * w.overrunThresholdFactor);
       if (overrun) return overrun;
     }
-    // A theater group's unit may need a hex far down a long list of destinations (a recon unit reaches 400+).
-    const moveBudget = notes.theaterUnits?.has(id) ? THEATER_MOVE_BUDGET : undefined;
+    // Fast mobile units (recon, mechanized, HQs, Strat mode) can reach 400+ hexes; do not truncate their destinations.
+    const moveBudget = THEATER_MOVE_BUDGET;
     let moves = actions.candidates('MOVE_PIECE', id, moveBudget);
     if (moves.length === 0 && !notes.fueled.has(id)) {
       notes.fueled.add(id);
-      // Combat units fuel to reach their target; HQs and artillery always fuel to keep up with the front.
-      const wantsToMove = unit.piece.role !== 'COMBAT' || (target !== undefined && hexesBetween(unit.hexId, target.hexId) > 0);
+      // Artillery already deployed in Combat Mode on a safe, escorted, supplied firing hex covering the effort/engaged target
+      // does not need to burn fuel just to stand still.
+      const artilleryDeployedInPlace = unit.piece.role === 'ARTILLERY' && unit.piece.mode === 'COMBAT'
+        && enemyDistance >= 2 && enemyDistance <= artilleryRange
+        && (enemyDistance > w.artilleryEscortDistance || situation.friendlyAt(unit.hexId).some((other) => other.piece.id !== id && situation.isCombatUnit(other)))
+        && unitCoverage(unit).has(unit.hexId)
+        && ((effort !== null && hexesBetween(unit.hexId, effort.hexId) <= artilleryRange)
+          || (effort === null && artilleryEngaged.some((hexId) => hexesBetween(unit.hexId, hexId) <= artilleryRange)));
+      // Combat units fuel to reach their target; HQs and moving artillery fuel to keep up with the front.
+      const wantsToMove = unit.piece.role === 'COMBAT' ? (target !== undefined && hexesBetween(unit.hexId, target.hexId) > 0)
+        : !artilleryDeployedInPlace;
       const fuel = wantsToMove ? [...actions.candidates('PAY_FUEL', id)].sort((left, right) => fuelRank(left) - fuelRank(right))
         .find(action => preservesRations(context, action)) : undefined;
       if (fuel && wantsToMove) return decision(fuel, `fuel to move (${fuel.kind === 'PAY_FUEL' ? fuel.method : ''})`, [{ term: 'fuel', value: 1 }]);
@@ -1475,13 +1566,13 @@ const movementStep = (context: BotDecisionContext, situation: Situation, facts: 
     // An HQ's own throw does not feed itself (12.3b): it needs a dump that reaches it directly.
     const feeds = unit.piece.role === 'COMBAT' || unit.piece.role === 'ARTILLERY' ? unitFeeds(unit) : unit.piece.role === 'HQ' ? context.actions.feedCoverage(id) : sideFeeds;
     const opponentTurnRemains = situation.turnsLeft > 0 || context.view.projection!.sequence.playerTurnIndex === 0;
-    const stayTerms = scoreDestination(situation, unit, target, [unit.hexId], notes, reach, direct, front, w, feeds, opponentTurnRemains);
+    const stayTerms = scoreDestination(situation, unit, target, [unit.hexId], notes, reach, direct, front, w, feeds, opponentTurnRemains, effort, artilleryEngaged);
     const stay = sum(stayTerms);
     let best: { action: GameAction; terms: BotScoreTerm[] } | null = null;
     const scored: { action: GameAction; terms: BotScoreTerm[] }[] = [];
     for (const move of moves) {
       if (move.kind !== 'MOVE_PIECE') continue;
-      const terms = scoreDestination(situation, unit, target, move.path, notes, reach, direct, front, w, feeds, opponentTurnRemains);
+      const terms = scoreDestination(situation, unit, target, move.path, notes, reach, direct, front, w, feeds, opponentTurnRemains, effort, artilleryEngaged);
       scored.push({ action: move, terms });
     }
     const movementObservation = context.observation?.movement({ pieceId: id, role: unit.piece.role, assignedTarget: target ?? null,
@@ -1552,7 +1643,6 @@ const movementStep = (context: BotDecisionContext, situation: Situation, facts: 
     if (best && sum(best.terms) > stay) {
       const destination = destinationOf(best.action)!;
       if (unit.piece.role === 'HQ') markCovered(situation, notes, unit, destination);
-      notes.incomingRe.set(destination, (notes.incomingRe.get(destination) ?? 0) + reOf(unit));
       // A unit ending out of trace counts on eating: promise it the SP it will need.
       if ((unit.piece.role === 'COMBAT' || unit.piece.role === 'ARTILLERY') && !reach.has(destination) && !actuallyTraced.has(best.action)) {
         const source = feedSourceFor(notes, feeds, unit, destination);
@@ -1627,22 +1717,28 @@ const fuelRank = (action: GameAction): number => action.kind !== 'PAY_FUEL' ? 9 
 // ─── Combat and barrage ────────────────────────────────────────────────────────────────────────
 
 /** The declared combat with the best expected value on the printed table, if any clears the threshold. */
-const bestCombat = (context: BotDecisionContext, situation: Situation, facts: BotGameFacts, w: HeuristicWeights, candidates: readonly GameAction[], threshold: number, effort: MainEffort | null = null): BotDecision | null => {
+const bestCombat = (context: BotDecisionContext, situation: Situation, facts: BotGameFacts, w: HeuristicWeights,
+  candidates: readonly GameAction[], threshold: number, effort: MainEffort | null = null,
+  previewFacts?: ReadonlyMap<GameAction, readonly RuleFact[]>): BotDecision | null => {
   let best: { action: GameAction; terms: BotScoreTerm[]; odds: string } | null = null;
   for (const action of candidates) {
     if (action.kind !== 'DECLARE_COMBAT') continue;
-    const explained = context.actions.explain(action);
-    if (!explained.explanation.allowed) continue;
+    const explained = previewFacts === undefined ? context.actions.explain(action).explanation : null;
+    const combatFacts = explained?.allowed ? explained.facts : previewFacts?.get(action);
+    if (!combatFacts) continue;
     const noRationRemains = situation.turnsLeft <= 0 && context.view.projection?.sequence.phase === 'EXPLOITATION';
-    if (action.combatKind === 'OVERRUN' && ((!noRationRemains && explained.explanation.facts.find(f => f.key === 'supply.overrunAdvanceFunded')?.value !== true)
-      || explained.explanation.facts.find(f => f.key === 'supply.overrunOtherTraceLost')?.value !== 0)) continue;
-    const forecast = forecastCombat(explained.explanation.facts);
+    if (action.combatKind === 'OVERRUN' && ((!noRationRemains && combatFacts.find(f => f.key === 'supply.overrunAdvanceFunded')?.value !== true)
+      || combatFacts.find(f => f.key === 'supply.overrunOtherTraceLost')?.value !== 0)) continue;
+    const forecast = forecastCombat(combatFacts, action.combatKind);
     if (!forecast) continue;
     const objective = situation.objectives.find(({ hexId }) => hexId === action.targetHexId);
-    // Below 1:1 the attacker loses more than it gains; only a last-turn grab for an objective justifies it.
+    // Below 1:1 (or below column 3 on Close/Very Close/Extremely Close lines) the attacker loses more than it gains;
+    // only a last-turn grab for an objective justifies it.
     const [oddsFor = 0, oddsAgainst = 1] = forecast.odds.split(':').map(Number);
     const lastGrab = situation.turnsLeft <= 0 && objective !== undefined && objective.controllerId !== situation.playerId;
-    if (oddsFor / Math.max(1e-9, oddsAgainst) < w.minimumOdds && !lastGrab) continue;
+    const belowMinimum = oddsFor / Math.max(1e-9, oddsAgainst) < w.minimumOdds
+      || (w.minimumOdds >= 1 && forecast.columnIndex < 3);
+    if (belowMinimum && !lastGrab) continue;
     const enemy = situation.enemy.get(action.targetHexId);
     // Steps the defender can lose before the hex empties: printed steps of the visible counters, two per hidden one.
     const defenderSteps = Math.max(1, (enemy?.pieces ?? []).filter(({ role }) => role !== 'DUMP' && role !== 'TRUCK' && role !== 'HEDGEHOG')
@@ -1681,8 +1777,10 @@ const bestCombat = (context: BotDecisionContext, situation: Situation, facts: Bo
     }
     if (!best || sum(terms) > sum(best.terms)) best = { action, terms, odds: forecast.odds };
   }
-  if (best) debug?.(`combat best ${best.odds} on ${best.action.kind === 'DECLARE_COMBAT' ? best.action.targetHexId : ''} score ${sum(best.terms).toFixed(1)} ${JSON.stringify(best.terms)} of ${candidates.length}`);
-  else debug?.(`combat: none of ${candidates.length} candidates could be forecast`);
+  if (!previewFacts) {
+    if (best) debug?.(`combat best ${best.odds} on ${best.action.kind === 'DECLARE_COMBAT' ? best.action.targetHexId : ''} score ${sum(best.terms).toFixed(1)} ${JSON.stringify(best.terms)} of ${candidates.length}`);
+    else debug?.(`combat: none of ${candidates.length} candidates could be forecast`);
+  }
   if (!best || sum(best.terms) < threshold) return null;
   const kind = best.action.kind === 'DECLARE_COMBAT' ? best.action.combatKind.toLowerCase() : 'combat';
   return decision(best.action, `${kind} at ${best.odds} on ${best.action.kind === 'DECLARE_COMBAT' ? best.action.targetHexId : ''}`, best.terms, candidates);
@@ -1709,12 +1807,57 @@ const projectionEnemyTurnRemains = (context: BotDecisionContext): boolean => {
   return sequence.phase !== 'REACTION' && sequence.playerTurnIndex === 0;
 };
 
+/** Selective ground barrage supply cost per Token (2.5/T = 10/SP ≈ 1 combat step). */
+const SELECTIVE_BARRAGE_TOKEN_COST = 2.5;
+
+/**
+ * Expected follow-up combat score gain if `target` becomes DG after paying for this barrage.
+ * Returns 0 unless the target is hard before DG (low hit chance, heavy attacker losses, or no viable attack)
+ * AND DG enables a meaningfully better legal attack that clears `w.attackThreshold`.
+ */
+const barrageCombatGain = (
+  context: BotDecisionContext, situation: Situation, facts: BotGameFacts, w: HeuristicWeights, effort: MainEffort | null,
+  target: HexId, preview: RuleExplanation['barrageFollowUp'],
+  beforeChoice: BotDecision | null, beforeForecast: ReturnType<typeof forecastCombat>,
+): number => {
+  const targetAfter = preview?.after.filter(({ action }) => action.targetHexId === target) ?? [];
+  if (targetAfter.length === 0) return 0;
+  const after = new Map(targetAfter.map((entry) => [entry.action, entry.facts]));
+  const afterChoice = bestCombat(context, situation, facts, w, [...after.keys()], w.attackThreshold, effort, after);
+  if (afterChoice?.action.kind !== 'DECLARE_COMBAT' || afterChoice.action.targetHexId !== target) return 0;
+  const withDg = forecastCombat(after.get(afterChoice.action) ?? [], afterChoice.action.combatKind);
+  if (!withDg) return 0;
+  if (beforeChoice?.action.kind === 'DECLARE_COMBAT') {
+    if (!beforeForecast) return 0;
+    const meaningful = withDg.defenderHit - beforeForecast.defenderHit >= 0.15
+      || beforeForecast.attackerLosses - withDg.attackerLosses >= 0.45;
+    if (!meaningful) return 0;
+    return Math.max(0, afterChoice.score - beforeChoice.score);
+  }
+  const targetBefore = preview!.before.filter(({ action }) => action.targetHexId === target);
+  const bestPrior = targetBefore
+    .map(({ action, facts: combatFacts }) => forecastCombat(combatFacts, action.combatKind))
+    .filter((entry): entry is NonNullable<typeof entry> => entry !== null)
+    .sort((left, right) => right.defenderHit - left.defenderHit || left.attackerLosses - right.attackerLosses)[0];
+  if (!bestPrior) return 0;
+  const meaningful = withDg.defenderHit - bestPrior.defenderHit >= 0.15
+    || bestPrior.attackerLosses - withDg.attackerLosses >= 0.45;
+  if (!meaningful) return 0;
+  return Math.max(0, afterChoice.score - w.attackThreshold);
+};
+
 const bestBarrage = (context: BotDecisionContext, situation: Situation, facts: BotGameFacts, w: HeuristicWeights, effort: MainEffort | null = null): BotDecision | null => {
-  const candidates = context.actions.candidates('DECLARE_BARRAGE', null, 60);
+  const selective = w.barrageGroupsByCost > 0;
+  const candidates = selective
+    ? context.actions.candidates('DECLARE_BARRAGE', null, undefined, { groundBarrageGroupsByCost: true })
+    : context.actions.candidates('DECLARE_BARRAGE', null, 60);
   let best: { action: Extract<GameAction, { readonly kind: 'DECLARE_BARRAGE' }>; terms: BotScoreTerm[] } | null = null;
   for (const action of candidates) {
     if (action.kind !== 'DECLARE_BARRAGE') continue;
-    const { explanation } = context.actions.explain(action);
+    const defenders = situation.enemy.get(action.targetHexId)?.pieces.filter(({ role }) => ['COMBAT', 'ARTILLERY', 'HQ'].includes(role)) ?? [];
+    const alreadyDg = selective && defenders.length > 0 && defenders.every(({ mode }) => mode === 'DG');
+    const ground = (action.target ?? 'COMBAT_UNITS') === 'COMBAT_UNITS';
+    const { explanation } = context.actions.explain(action, selective && ground && !alreadyDg ? 'BEFORE_PAYMENT' : undefined);
     if (!explanation.allowed) continue;
     if ((action.target ?? 'COMBAT_UNITS') !== 'COMBAT_UNITS') {
       if (!explanation.facts.some(({ key, value }) => key === 'supply.rationCommitmentsPreserved' && value === true)) continue;
@@ -1738,6 +1881,29 @@ const bestBarrage = (context: BotDecisionContext, situation: Situation, facts: B
     }
     const forecast = forecastBarrage(explanation.facts);
     if (!forecast) continue;
+    if (selective) {
+      const priorAttacks = explanation.barrageFollowUp?.before.filter((entry) => entry.action.targetHexId === action.targetHexId) ?? [];
+      let combatGain = 0;
+      if (!alreadyDg && priorAttacks.length > 0) {
+        const beforeMap = new Map(priorAttacks.map((entry) => [entry.action, entry.facts]));
+        const beforeChoice = bestCombat(context, situation, facts, w, [...beforeMap.keys()], w.attackThreshold, effort, beforeMap);
+        const beforeForecast = beforeChoice?.action.kind === 'DECLARE_COMBAT'
+          ? forecastCombat(beforeMap.get(beforeChoice.action) ?? [], beforeChoice.action.combatKind) : null;
+        const hardBefore = beforeChoice === null
+          || (beforeForecast !== null && (beforeForecast.defenderHit <= 0.75 || beforeForecast.attackerLosses >= 0.5));
+        if (hardBefore) {
+          combatGain = barrageCombatGain(context, situation, facts, w, effort, action.targetHexId,
+            context.actions.explain(action, 'AFTER_PAYMENT_AND_DG').explanation.barrageFollowUp, beforeChoice, beforeForecast);
+        }
+      }
+      const terms: BotScoreTerm[] = [
+        { term: 'disrupt', value: combatGain > 0 ? forecast.disrupt * combatGain : 0 },
+        { term: 'steps', value: forecast.expectedSteps * w.barrageSteps },
+        { term: 'supply', value: -forecast.supplyTokens * SELECTIVE_BARRAGE_TOKEN_COST },
+      ];
+      if (!best || sum(terms) > sum(best.terms)) best = { action, terms };
+      continue;
+    }
     // Worth most against hexes our units are about to attack or that threaten an objective.
     const adjacentOwn = situation.own.some((unit) => situation.isCombatUnit(unit) && hexesBetween(unit.hexId, action.targetHexId) <= 1);
     const nearObjective = situation.objectives.some(({ hexId }) => hexesBetween(hexId, action.targetHexId) <= 1);
@@ -1753,7 +1919,7 @@ const bestBarrage = (context: BotDecisionContext, situation: Situation, facts: B
   if (!best || sum(best.terms) < w.barrageThreshold) return null;
   const target = best.action.target ?? 'COMBAT_UNITS';
   const subject = target === 'COMBAT_UNITS' ? best.action.targetHexId : `${target} at ${best.action.targetHexId}`;
-  const alternatives = target === 'COMBAT_UNITS'
+  const alternatives = target === 'COMBAT_UNITS' && !selective
     ? candidates.filter(action => action.kind === 'DECLARE_BARRAGE' && (action.target ?? 'COMBAT_UNITS') === 'COMBAT_UNITS') : [];
   return decision(best.action, `barrage ${subject}`, best.terms, alternatives);
 };
@@ -1769,6 +1935,8 @@ const bestAirBarrage = (context: BotDecisionContext, situation: Situation, w: He
   let best: { action: GameAction; terms: BotScoreTerm[] } | null = null;
   for (const action of missions) {
     if (action.kind !== 'DECLARE_AIR_MISSION') continue;
+    const defenders = situation.enemy.get(action.targetHexId)?.pieces.filter(({ role }) => ['COMBAT', 'ARTILLERY', 'HQ'].includes(role)) ?? [];
+    if (defenders.length > 0 && defenders.every(({ mode }) => mode === 'DG')) continue;
     const adjacentOwn = situation.own.some((unit) => situation.isCombatUnit(unit) && hexesBetween(unit.hexId, action.targetHexId) <= 1);
     const isEffort = effort?.hexId === action.targetHexId;
     if (!adjacentOwn && !isEffort) continue;
@@ -1948,6 +2116,29 @@ const refitStep = (context: BotDecisionContext): BotDecision | null => {
   return refit ? decision(refit, 'refit aircraft', [{ term: 'refit', value: 1 }]) : null;
 };
 
+/** Main effort for Barrage and Combat segments: align with theaterAllocation's engaged objectives when active. */
+const segmentMainEffort = (situation: Situation, w: HeuristicWeights): MainEffort | null => {
+  if (w.theaterAllocation > 0 && situation.attack && !situation.defending) {
+    const combat = situation.own.filter((unit) => situation.isCombatUnit(unit));
+    let best: { hexId: HexId; defenders: number; unitIds: Set<PieceId>; vp: number; strength: number } | null = null;
+    for (const objective of situation.objectives) {
+      if (objective.controllerId === situation.playerId) continue;
+      const enemy = situation.enemy.get(objective.hexId);
+      if (!enemy?.hasCombatUnit || enemy.strength <= 0) continue;
+      const adjacent = combat.filter((unit) => hexesBetween(unit.hexId, objective.hexId) === 1);
+      if (adjacent.length === 0) continue;
+      const vp = contestedVp(objective);
+      const strength = adjacent.reduce((total, unit) => total + (unit.profile?.strength ?? 0), 0);
+      if (!best || vp > best.vp || (vp === best.vp && strength > best.strength)
+        || (vp === best.vp && strength === best.strength && String(objective.hexId).localeCompare(String(best.hexId)) < 0)) {
+        best = { hexId: objective.hexId, defenders: enemy.strength, unitIds: new Set(adjacent.map(({ piece }) => piece.id)), vp, strength };
+      }
+    }
+    if (best) return { hexId: best.hexId, defenders: best.defenders, unitIds: best.unitIds, lead: best.hexId };
+  }
+  return chooseMainEffort(situation, w);
+};
+
 const decide = (facts: BotGameFacts, w: HeuristicWeights) => (context: BotDecisionContext): BotDecision | null => {
   const projection = context.view.projection;
   if (!projection) return null;
@@ -1962,11 +2153,11 @@ const decide = (facts: BotGameFacts, w: HeuristicWeights) => (context: BotDecisi
     chosen = movementStep(context, situation, facts, w) ?? (phase === 'MOVEMENT' ? hedgehogStep(context, situation, w) : null);
   }
   else if (segment === 'BARRAGE') {
-    const effort = chooseMainEffort(situation, w);
+    const effort = segmentMainEffort(situation, w);
     // Aircraft first: they take the main effort's hex (one barrage per hex, 10.0e) and the guns the next one.
-    chosen = (phase === 'MOVEMENT' ? bestAirBarrage(context, situation, w, effort) : null) ?? bestBarrage(context, situation, facts, w, effort);
+    chosen = bestAirBarrage(context, situation, w, effort) ?? bestBarrage(context, situation, facts, w, effort);
   }
-  else if (segment === 'COMBAT') chosen = bestCombat(context, situation, facts, w, context.actions.candidates('DECLARE_COMBAT', null, 200), w.attackThreshold, chooseMainEffort(situation, w));
+  else if (segment === 'COMBAT') chosen = bestCombat(context, situation, facts, w, context.actions.candidates('DECLARE_COMBAT', null, 200, { combatSubsets: true }), w.attackThreshold, segmentMainEffort(situation, w));
   return chosen ?? advance(context, `nothing worth doing in ${phase.toLowerCase()} ${segment.toLowerCase()}`);
 };
 
@@ -1983,7 +2174,7 @@ export const createHeuristicPolicy = (facts: BotGameFacts, options: HeuristicPol
   const choose = decide(facts, options.weights ?? DEFAULT_HEURISTIC_WEIGHTS);
   return {
     id: 'heuristic',
-    version: options.label === undefined ? '91' : `91+${options.label}`,
+    version: options.label === undefined ? '92' : `92+${options.label}`,
     decide: (context) => {
       const sink = options.debug;
       debug = sink ? (line) => sink(`${context.memory.stepKey} ${String(context.playerId).split(':').at(-1)} ${line}`) : null;

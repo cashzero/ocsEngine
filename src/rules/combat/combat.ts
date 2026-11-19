@@ -1448,6 +1448,27 @@ const barragePayable = (state: GameState, firers: readonly PieceState[], tokens:
   return [...byKey.values()].some((total) => total >= tokens);
 };
 
+/** Individual eligibility shared by the validator and the bot's artillery grouping query. */
+export const barrageFirerViolations = (
+  state: GameState, actorId: PlayerId, targetHexId: HexId, piece: PieceState, index = 0,
+): readonly RuleViolation[] => {
+  const issues: RuleViolation[] = [];
+  const path = ['firerIds', index];
+  const hexId = hexOf(piece);
+  if (piece.ownerId !== actorId) issues.push(violation('NOT_PIECE_OWNER', path, 'Firers must be friendly.', '10.0'));
+  if (!isArtillery(state, piece)) issues.push(violation('FIRER_NOT_ARTILLERY', path, 'Only artillery barrages among ground units.', '10.1'));
+  if (piece.mode === 'RESERVE' || piece.mode === 'STRAT') issues.push(violation('ARTILLERY_MODE_CANNOT_BARRAGE', path, 'Artillery in Reserve or Strat Mode cannot barrage.', '13.4a'));
+  const usage = usageOf(state, piece);
+  if (usage.barraged) issues.push(violation('ARTILLERY_ALREADY_BARRAGED', path, 'A unit barrages only once per phase.', '10.0e'));
+  if (state.sequence.phase === 'REACTION' && !usage.reserveReleased) issues.push(violation('REACTION_REQUIRES_RELEASED_RESERVE', path, 'Only released artillery barrages in the Reaction Phase.', '7.0a'));
+  if (state.sequence.phase === 'EXPLOITATION' && !(usage.reserveReleased || piece.mode === 'EXPLOITATION')) issues.push(violation('EXPLOITATION_REQUIRES_EXPLOIT_OR_RESERVE', path, 'Only Exploit Mode units and released Reserves barrage in the Exploitation Phase.', '11.0a'));
+  const range = stepOf(state, piece)?.range ?? 0;
+  if (!hexId || hexDistanceBetween(hexId, targetHexId) > range || hexDistanceBetween(hexId, targetHexId) < 1) {
+    issues.push(violation('BARRAGE_OUT_OF_RANGE', path, 'Target is outside the firer\'s range.', '10.1a'));
+  }
+  return issues;
+};
+
 export const validateBarrageDeclaration = (state: GameState, action: BarrageDeclaration): readonly RuleViolation[] => {
   const issues: RuleViolation[] = [];
   const { phase, segment } = state.sequence;
@@ -1472,21 +1493,8 @@ export const validateBarrageDeclaration = (state: GameState, action: BarrageDecl
     issues.push(violation('WHOLE_HEX_IS_TARGET', ['targetPieceIds'], target === 'COMBAT_UNITS' ? 'A barrage attacks every combat unit in the Hex.' : 'Facility barrages do not target ground units.', '10.0a'));
   }
   if (state.ledger.barragedHexIds.includes(action.targetHexId)) issues.push(violation('HEX_ALREADY_BARRAGED', ['targetHexId'], 'Only one barrage per Hex per phase.', '10.0e'));
-  for (const [index, candidate] of firers.entries()) {
-    const piece = candidate!;
-    const path = ['firerIds', index];
-    const hexId = hexOf(piece);
-    if (piece.ownerId !== action.actorId) issues.push(violation('NOT_PIECE_OWNER', path, 'Firers must be friendly.', '10.0'));
-    if (!isArtillery(state, piece)) issues.push(violation('FIRER_NOT_ARTILLERY', path, 'Only artillery barrages among ground units.', '10.1'));
-    if (piece.mode === 'RESERVE' || piece.mode === 'STRAT') issues.push(violation('ARTILLERY_MODE_CANNOT_BARRAGE', path, 'Artillery in Reserve or Strat Mode cannot barrage.', '13.4a'));
-    const usage = usageOf(state, piece);
-    if (usage.barraged) issues.push(violation('ARTILLERY_ALREADY_BARRAGED', path, 'A unit barrages only once per phase.', '10.0e'));
-    if (phase === 'REACTION' && !usage.reserveReleased) issues.push(violation('REACTION_REQUIRES_RELEASED_RESERVE', path, 'Only released artillery barrages in the Reaction Phase.', '7.0a'));
-    if (phase === 'EXPLOITATION' && !(usage.reserveReleased || piece.mode === 'EXPLOITATION')) issues.push(violation('EXPLOITATION_REQUIRES_EXPLOIT_OR_RESERVE', path, 'Only Exploit Mode units and released Reserves barrage in the Exploitation Phase.', '11.0a'));
-    const range = stepOf(state, piece)?.range ?? 0;
-    if (!hexId || hexDistanceBetween(hexId, action.targetHexId) > range || hexDistanceBetween(hexId, action.targetHexId) < 1) {
-      issues.push(violation('BARRAGE_OUT_OF_RANGE', path, 'Target is outside the firer\'s range.', '10.1a'));
-    }
+  for (const [index, piece] of firers.entries()) {
+    issues.push(...barrageFirerViolations(state, action.actorId, action.targetHexId, piece!, index));
   }
   if (issues.length === 0) {
     const preview = previewBarrage(state, action.actorId, action.firerIds, action.targetHexId, action.target);

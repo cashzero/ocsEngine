@@ -1,8 +1,8 @@
-# Heuristic 策略（標準：heuristic@91）
+# Heuristic 策略（標準：heuristic@92）
 
 ## 範圍
 
-標準電腦策略 `heuristic@91` 如何做決定：各階段做什麼、目標分配與移動評分、補給保護、戰鬥、重建與待決回應，
+標準電腦策略 `heuristic@92` 如何做決定：各階段做什麼、目標分配與移動評分、補給保護、戰鬥、重建與待決回應，
 以及做過哪些嘗試、為什麼不採用。實作：`src/ai/policies/heuristic.ts`、權重 `src/ai/policies/heuristic-weights.ts`、
 待決回應 `src/ai/decisions.ts`。介面與邊界見 [architecture.md](architecture.md)，強度量測見 [evaluation.md](evaluation.md)。
 
@@ -18,7 +18,7 @@
 | Reinforcement | 先決定重建（見「重建與增援」），再放置增援 |
 | Aircraft Refit | 選第一個合法 refit |
 | Movement／Exploitation 的 Movement segment | 移動步驟（模式、燃料、HQ、卡車、鐵路、海運、一般移動）；Movement Phase 另可築 hedgehog |
-| Barrage segment | Movement Phase 先派空中砲擊，再用砲兵；目標偏向主攻目標 |
+| Barrage segment | Movement Phase 可派空中砲擊；地面砲兵在 Reaction、Combat、Exploitation Phase 的合法候選中選擇，對戰鬥單位的砲擊偏向主攻目標 |
 | Combat segment | 從合法候選選期望值最高的攻擊（主攻目標加權） |
 | Supply | 依價值排序餵養；用規則提供的共同口糧分組一次支付多個單位 |
 | 任何時候有屬於自己的待決 | 由 `respondToDecision` 回答 |
@@ -31,7 +31,7 @@
 
 - **分差價值**：取得中立目標點只讓己方 +VP；取得敵方持有的點同時讓己方 +VP、敵方 −VP，因此價值加倍。保護已持有的點同理。
   Trace 中把它標為 score-margin gain，不是實際取得的 VP。
-- **敵方戰力估計**：看得到的單位用印刷戰力。疊在頂部之下看不到的 counter，每個以對方公開戰鬥序列的平均值計
+- **敵方戰力估計**：看得到的單位用印刷戰力，並依公開狀態套用規則折損：DG（×0.5）、Strat Mode（×0.5）與斷補 `status:out-of-supply`（×0.5）；不可移動單位（MA 0）的威脅半徑限 1 格，DG 單位的威脅半徑減半（v92）。疊在頂部之下看不到的 counter，每個以對方公開戰鬥序列的平均值計
   （地面單位的全戰力總和 ÷ 全部 counter 數，飛機與設施除外）；頂部不是戰鬥單位的 stack 底下沒有戰鬥單位（投影一定把戰鬥
   單位放在頂部），隱藏 counter 不加戰力（v75）。
 - **先留守軍**：已持有的點先保留至少一個現有守軍；對手仍有後續回合時，繼續保留直到戰力達估計威脅的 0.5 倍或無人可留，再分配剩下的部隊。空點或受威脅的點補防權重較高。
@@ -41,7 +41,7 @@
 - **主攻**：選有敵軍守備的目標點，12 格內可集結的兵力須達守軍估計的 2.5 倍（v75 前為 8 格）；派最近的單位（最多 6 個）
   組成攻擊群，接近時轉 Combat Mode、在目標旁集結。HQ 與卡車跟隨主攻。**攻擊戰的守方不組主攻**，不反攻攻方持有的
   目標點（v85，權宜做法；應只在有優勢時反攻，見 `bot-defender-counterattack`）。攻擊戰的攻方不用這裡的選法，改用下面的戰區配置。
-- **戰區配置（v86）**：攻擊戰的攻方（權重 `theaterAllocation` 預設 1；設為 0 時照 v85 下）在每個 Movement 步驟以戰區配置（`src/ai/policies/theater.ts`）決定主攻與奪點：以本步驟與下一步驟的可達範圍（`projectedReach`，以移動時的模式計算；這一步不能移動又沒有燃料可付的單位留在原地）、`attackStrength` 的規則戰力與地形線型、估計的敵軍戰力、雙方最高 AR（看不到的守方以 2 計）與凍結的奪點機率模型，把非守點單位分給未持有目標，最大化點數乘以奪點機率（下一步驟才能到位的組再乘依 Game Turn 凍結的折扣）；每個組員在攻擊的那一步都要有補給：trace、可吃的現有 SP、配置指派的 HQ 投送，或配置指派的卡車這一步卸下的 SP（卸貨點可在 trace 外）；卡車依容量（每個 Transport Point 4T）、補給堆存量與 MA 計算，一組可用多輛，這一步跑救援的卡車不列入。被指派的 HQ 走向指定格；一個單位（集結者：下一步驟的組的成員，或沒被用到的單位）先停在卸貨點，被指派的卡車接著移動、移動當下選補給堆裝貨、送到卸貨點，然後其他戰鬥單位才移動；鐵路在計畫算入的裝貨格只留下被指派空車要裝的量；組員可離開 trace 到有 SP 可吃的攻擊位置，由卡車供應的組的成員可到卸下的 SP 供得到的任何格子。有守軍的組依期望 VP 依序成為主攻（沒被指派的 HQ 與卡車跟隨第一個主攻的領頭格），空目標的單位目標設為 CAPTURE，剩下的主攻名額沿用多回合的主攻選擇。設計與量測見[戰區補給配置](theater-supply-plan.md#策略上層)。
+- **戰區配置（v86；v92 修正順序與保護）**：攻擊戰的攻方（權重 `theaterAllocation` 預設 1；設為 0 時照 v85 下）在每個 Movement 步驟以戰區配置（`src/ai/policies/theater.ts`）決定主攻與奪點：以本步驟與下一步驟的可達範圍（`projectedReach`，以移動時的模式計算；這一步不能移動又沒有燃料可付的單位留在原地）、`attackStrength` 的規則戰力與地形線型、估計的敵軍戰力、雙方最高 AR（看不到的守方以 2 計）與凍結的奪點機率模型，把非守點單位分給未持有目標，最大化點數乘以奪點機率（下一步驟才能到位的組再乘依 Game Turn 凍結的折扣）；乘上折扣後低於門檻（0.25）的組在分配 HQ、卡車與集結者前即濾除（v92）；每個留下組員在攻擊的那一步都要有補給：trace、可吃的現有 SP、配置指派的 HQ 投送，或配置指派的卡車這一步卸下的 SP（卸貨點可在 trace 外）；卡車依容量（每個 Transport Point 4T）、補給堆存量與 MA 計算，一組可用多輛，這一步跑救援的卡車不列入。被指派的 HQ 走向指定格；一個單位（集結者：下一步驟的組的成員，或沒被用到的單位）先停在卸貨點，被指派的卡車接著移動、移動當下選補給堆裝貨、送到卸貨點，然後其他戰鬥單位才移動；鐵路在計畫算入的裝貨格只留下被指派空車要裝的量；組員可離開 trace 到有 SP 可吃的攻擊位置，由卡車供應的組的成員可到卸下的 SP 供得到的任何格子。戰區組目標與集結者不受 `RESUPPLY` 覆寫，且 `BARRAGE` 與 `COMBAT` 段的主攻目標與戰區配置一致（v92）。有守軍的組依期望 VP 依序成為主攻（沒被指派的 HQ 與卡車跟隨第一個主攻的領頭格），空目標的單位目標設為 CAPTURE，剩下的主攻名額沿用多回合的主攻選擇。設計與量測見[戰區補給配置](theater-supply-plan.md#策略上層)。
 - **清除與追擊**：己方單位 5 格內戰力 ≤ 2 的敵方 stack（多為目標點駐軍，它的 ZOC 切斷 trace）列為清除目標；
   深入己方補給區或貼近己方目標點、HQ、補給堆的敵軍列為追擊目標。
 - **撤回補給**：不在自己 trace 內、附近也沒有 SP 的戰鬥單位，除最後兩回合外撤回補給範圍；守著目標點的唯一單位在
@@ -77,7 +77,7 @@
 - **卡車**（heuristic@78）：每輛卡車在 Movement Segment 內循環「取貨 → 送達 → 回程」，動作連續執行（6.1g），
   直到 MP 用完。
   - 取貨：前往離敵 5 格以上、不在目標點、不是駐軍存量、本步驟沒有卸下或運到 SP（12.2a）的後方補給堆，
-    依空車里程加載貨里程、扣掉載量估價；其他卡車已預約的 Token 不算。到達後從格內每個可裝的堆裝滿；
+    依空車里程加載貨里程、扣掉依該車實際容量（每個 Transport Point 4T，v92）計算的載量估價；其他卡車已預約的 Token 不算。到達後從格內每個可裝的堆裝滿；
     部分載貨的卡車停在後方堆時先補滿。當步驟到不了取貨點（或到了沒有裝貨的 5 MP）的卡車放棄預約，留給到得了的卡車。
   - 只在有比所在格更靠近部隊中心的卸貨點時才裝貨：沒有可送的地方時，裝了也只能在原地卸下。
   - 送達：卸貨點要有己方戰鬥單位或補給堆（13.2f）、離敵 3 格以上、在己方 trace 範圍內（卡車不跑到補給線外被切斷）。
@@ -100,7 +100,7 @@
 - **海運**：Box 中等待的先上岸（戰鬥單位先於 SP），再把遠離前線港口的貨物移到較近的港口。
 - **Hedgehog**（heuristic@10）：所有單位移動後，留在敵軍附近的單位築 hedgehog：先已持有的目標點，再其他鄰接敵軍的格；
   補給堆扣掉一級的 8T 後仍須保留儲備，且不破壞口糧承諾。
-- **空軍**：只派 Air Barrage 打己方單位相鄰或主攻目標的戰鬥單位，並在 Refit Phase refit；其他任務與空中待決見「已知缺口」。
+- **空軍**：在所有合法的空中砲擊階段派 Air Barrage 打己方單位相鄰或主攻目標且尚未 DG 的戰鬥單位（v92），並在 Refit Phase refit；其他任務與空中待決見「已知缺口」。
 - **設施砲擊**：砲兵把港口、機場與戰鬥單位的收益放在一起比較。設施使用獨立的 Facility Table 預測，規則見
   [artillery.md](../rule-engine/artillery.md)。
 
@@ -114,7 +114,7 @@
 | 一般移動、切模式 | 不讓任何目前有 trace 的己方單位失去 trace，也不減少任何既有 SP 消費者的口糧（含卡車載運的影響）；沒有安全選項就留在原地 |
 | 可選補給支出（燃料、hedgehog） | 支出後共同口糧計畫仍能履行既有承諾；強制的內部存量恢復先扣，且沒有 trace 的單位靠強制恢復達到的內部存量等級不能因支出而下降（`supply.recoveryLoweredUnits`）：否則它既不能恢復也不在口糧計畫中，Supply 時受 attrition（12.10e、12.6c；[錯誤清單 E2](policy-errors.md)） |
 | 設施砲擊 | 第一位玩家回合的 Reaction 中，非主動方尚有同回合的 Supply，宣告與每次實際付款都保留共同口糧承諾；改選安全的合法補給來源，沒有安全路徑就不射擊。Combat、Exploitation 與第二位玩家回合的 Reaction 不重複預留已結束的當回合 Supply |
-| 一般戰後前進 | 第一個進入敵方格的單位也檢查共同口糧與 trace（v91：攻擊戰的攻方前進進入剛打空的對方目標格時不要求下一份口糧，其他單位的 trace 與口糧仍不能受損）；奪點時選有補給的最強單位；補強已奪下且受威脅的點時只用不造成任何 trace／口糧損失、自己仍有 trace 的單位 |
+| 一般戰後前進 | 第一個進入敵方格的單位也檢查共同口糧與 trace（v91：攻擊戰的攻方前進進入剛打空的對方目標格時不要求下一份口糧，其他單位的 trace 與口糧仍不能受損）；奪點時選有補給的最強單位；補強已奪下且受威脅的點時只用不造成任何 trace／口糧損失，且自己仍有 trace、有共同口糧或在最後一回合的單位（v92） |
 | Overrun | 以清空目標且進攻者存活為條件預判，計入宣告成本與內部存量消耗；不預支隨機俘獲的 SP |
 | 最後一次補給階段之後 | 不為不存在的下一頓預留口糧，其他 trace 保護照常 |
 | 撤退 | 依序比較：必受損失、無口糧單位數、trace 中斷數，再比敵方威脅 |
@@ -125,14 +125,12 @@
 
 ### 戰鬥與砲擊
 
-- 以公開 Combat Table 計算 2d6 的結果分布（不含 Surprise），攻擊門檻權重 4；Overrun 門檻是一般攻擊的兩倍。
-  除最後一回合搶目標點外不打 1:1 以下。
+- 以公開 Combat Table 計算 2d6 的結果分布，並以解析方式納入 OCS 9.8 Surprise（Regular 10+／5−、Overrun 9+／6−、Hedgehog −1 Surprise DRM 與 1d6 欄位偏移分布，v92）；攻擊門檻權重 4，Overrun 門檻是一般攻擊的兩倍。除最後一回合搶目標點外不打 1:1 以下或 Close／Very Close／Extremely Close 第 3 欄以下（v92）。
+- **攻擊子集合（`combatSubsets`，v92）**：`DECLARE_COMBAT` 候選除全相鄰單位外，另提供僅可付費單位、排除孤立守點單位、依效率排序之前綴（1–4 個）與保留 Exploitation 資格之 1–2 格群組；僅由新策略透過 `CandidateRequest.combatSubsets` 啟用，不影響凍結基準對手。
 - **從持有點出擊的風險**（v75）：攻擊者站在己方持有的目標點上、且留下的戰力低於該點威脅 × holdRatio，而敵方之後還有
   回合時，扣分「攻擊者損失或 option 的期望值（上限 1）× 該點分差 VP × 25 × 0.25 × 出擊戰力占比」。
-- 砲兵對戰鬥單位的評分包含 DG、步損、補給成本、目標點與主攻目標，己方單位相鄰時提高 DG 收益。
-  空中砲擊只打主攻目標或己方單位相鄰的敵軍；每格每階段仍只能受一次砲擊（10.0e）。
-
-- 模式只為戰鬥單位與 HQ 改變：砲兵維持部署時的模式（多為 Move Mode），以 Move 面約一半的砲擊戰力射擊；砲擊分數為 DG 機率 × 10（目標旁沒有己方單位時 × 4）＋ 預期損失步數 × 10 − Token × 1.2，門檻 2。
+- **地面砲擊（`barrageGroupsByCost: 1`，v92 預設）**：對戰鬥單位按每個可支付的砲擊表價位，提供結果欄位最高的合法砲組（同價同欄優先較少砲兵）。目標可見地面戰鬥單位均已 DG 時不再重複計入 DG 收益。改以期望值 `barrageCombatGain` 評估跟攻增益：`P(DG) × combatGain + E[steps] × 10 − costT × 2.5`（門檻 2）；僅在 DG 前目標偏硬（原無可行攻擊、命中率 ≤ 75% 或攻方期望硬損 ≥ 0.5 step）且 DG 後跟攻命中率提升 ≥ 0.15 或攻方期望硬損降低 ≥ 0.45 step 時給與 `combatGain`。空中砲擊只打主攻目標或己方單位相鄰且未 DG 的敵軍；每格每階段仍只能受一次砲擊（10.0e）。
+- **砲兵 Combat／Move 模式控制（v92）**：採用零後悔 `artilleryUnitMode` 比較 `projectedReach(..., 'COMBAT')` 與 `projectedReach(..., 'MOVE')` 的最佳目的地評分：僅當 Combat 面最佳格不輸 Move 面超過 2 分且落在安全護衛射界內時轉／維持 `COMBAT`（取得約 2 倍砲擊戰力，且已在目標射界內原地展開時略過不必要的燃料支出），否則轉／維持 `MOVE`（保留 14 MP 機動跟上戰線）。護衛射界格另計 `support-effort (+4)`／`support-attack (+2)`。
 
 設施砲擊逐一計算 Facility Table 的六個等機率結果，再扣除實際供補成本。港口收益包括四次損壞上限與取整後的
 容量減少，乘上剩餘敵方海運回合；只有情境宣告為 Supply Source 的港口，跨過 4T 門檻才另計斷補收益。
@@ -206,6 +204,7 @@
   `tests/ai/exploitation-logistics.test.ts`（2800337）。
 - 兩項事件型改動（v91，使用者決定直接採用，2026-11-18）：攻擊戰攻方沒有下一份口糧也進駐剛打空的目標格（`advanceUnfunded`），
   遭遇戰兩方在 option 中保留前進資格（`meetingOptionAdvance`）。內容見下一節末段。
+- 結構性缺陷修正、期望值地面砲擊與零後悔砲兵模式控制（v92，使用者決定直接升級，2026-11-19：「Promote arty-v3」）：修復 10 項 AI／查詢缺陷（OCS 9.8 Surprise、敵方 DG／Strat／OOS 折損與不可動單位威脅半徑、攻擊子集合 `combatSubsets`、戰區配置 `minProbability` 先濾除後分配後勤、解除 `incomingRe` 重複計算與 `reOf` 預設、`RESUPPLY` 不覆寫戰區目標／集結者、`BARRAGE`/`COMBAT` 主攻對齊、`pickupFor` 實際卡車容量、`planCuts` 留強與 `railStep`/`moveBudget` 預算、全合法階段空中砲擊、`columnIndex < 3` 防呆與 `ADVANCE_HEX` `reinforce-vp` 條件），預設開啟 `barrageGroupsByCost: 1` 搭配 `barrageCombatGain` 期望值評分，並加入零後悔 `artilleryUnitMode`。40 局配對對戰凍結 `heuristic@91`：VP 每對 +1.45 ± 0.99（攻擊戰 +2.40 ± 1.10、遭遇戰 +0.50 ± 1.66，四格全正）、Kill − Loss +4.55 ± 2.02（t = 2.25，K/D 1.23 對 0.81）、Supply +0.03 ± 0.28（[證據](../quality/evidence/ai-v92-bugfix-artillery-2026-11-19/README.md)）。
 
 ### heuristic@88 採用的五項（攻擊戰）
 
@@ -283,13 +282,15 @@ heuristic@91 = heuristic@90 加下面兩項（使用者決定直接採用，2026
 | 遭遇戰雙方也用守方的主攻規劃、配砲與 SP 計價（候選 v82） | [獨立 80 場](../quality/evidence/ai-assault-v82-independent-2026-10-17/README.md)遭遇戰 −34（西歐 −50、東歐 +16）；開發種子 −1.38、重複使用的寬種子 +5.10 一對 | 寬種子的增益沒有重現；遭遇戰改回 v79（v83） |
 | HQ 與卡車跟著兵力最多的主攻（候選 v81） | 卸貨點每局 8.4 格（v79 5.4），相鄰回合的卸貨點相距 6 格以上 32/66 次（v79 13/38）；鐵路送到車站的 SP 沒人運（[證據](../quality/evidence/ai-assault-v82-development-2026-10-17/README.md)） | 兵力最多的主攻每回合換人，後勤跟著換地方；改回跟第一個選出的主攻 |
 | 攻擊戰攻方也配砲、主攻成員不扣 `crowding`、SP 依存量打折（候選 v81） | 開發種子攻方對 v79 自我對戰 −7.0 ± 3.4，只去掉排序 −4.5、再去掉計價 −2.0 | 攻方完全照 v79 下（v82） |
-| 砲兵在射程 + 1 格內轉 Combat Mode（候選 v80） | 開發 32 場 VP 差 −0.06；砲兵多在 Combat Mode，但砲擊由每階段 0.5 次降為 0.3 次（[證據](../quality/evidence/ai-artillery-mode-v80-development-2026-10-16/README.md)） | Barrage Table 依戰力欄位收 SP，同樣的砲在 Combat 面成本較高，被砲擊分數的補給項擋下；Combat 面移動力低，跟不上推進。限制砲擊的是 SP 計價與 2 格射程，不是模式 |
+| 砲兵在射程 + 1 格內無條件轉 Combat Mode（候選 v80） | 開發 32 場 VP 差 −0.06；砲兵多在 Combat Mode，但砲擊由每階段 0.5 次降為 0.3 次（[證據](../quality/evidence/ai-artillery-mode-v80-development-2026-10-16/README.md)） | Barrage Table 依戰力欄位收 SP，舊版無條件展開讓 Combat 面被補給項擋下且跟不上戰線；`heuristic@92` 改由零後悔 `artilleryUnitMode` 搭配 `barrageGroupsByCost` + `barrageCombatGain` 解決 |
 | 攻方主攻依目標地形換算欄位：固定 Open 3:1、戰鬥段會出手的欄位、或清空目標格機率 ≥ 50%（v81 開發） | 對 v79 自我對戰基準，攻方的 margin 每局 −4.6 至 −11.0（[證據](../quality/evidence/ai-assault-v81-development-2026-10-17/README.md)） | 以戰鬥段會出手的欄位計時，目標點 VP 項讓 1:1–2:1 也成立：攻擊有守軍的目標點多一倍、欄位 4.6 對 6.9，空目標點少拿三分之二；更嚴格的欄位則湊不到主攻而變被動 |
 | 主攻群在目標 2 格外集結，到得了的單位夠了才一起上（v81 開發） | 守方攻擊集結中的單位每局 3.6 次（v79 1.4）、攻擊主攻單位 2.8 次（0.8） | 集結的部隊數回合貼著敵線，被逐一擊破 |
 | 主攻成員以整群戰力判斷 `exposure`、`contact`（v81 開發） | 同上 | 守方一次打一個 stack，不是整群；改回以 stack 判斷 |
 | 攻擊戰攻方不再派零散奪點單位去有守軍的目標點（v81 開發） | 攻方 margin 未改善，空目標點更少 | 單位被綁在主攻裡 |
 | 戰鬥段所有主攻目標的 VP 都加倍（v81 開發） | 攻方攻擊目標點每局 6.0 次（只加倍主攻目標時 5.6） | 低賠率攻擊目標點變多 |
 | 攻方組一個 Extender 前推補給源（`extenderPlan`，S13） | 登記的接續未確立、估計偏負：終局 VP 東歐 −0.74 ± 0.50、西歐 −1.41 ± 1.23 | 攻方只有 6～7 點卡車，組 Extender 用掉 5 點；trace 前推了，但 SP 到不了前線，攻擊與目標點變少。使用者 2026-11-19 決定關閉這條線；行為見下方，權重保留、預設 0 |
+| 攻方閒置 HQ 改往覆蓋未持有目標的格子前推（`hqAdvanceTrace`，S15） | 登記的接續未確立：合併終局 VP +0.17 ± 0.48（東歐 +0.94 ± 0.81、西歐 −0.60 ± 0.52）；西歐 Kill − Loss −2.43 ± 0.76、損失 +1.37 ± 0.43 | 把原本以 `with-army`＋`cover` 支援交戰主力的 HQ 抽往未持有目標，在西歐反而增加前線損失；東歐偏正但未確立。權重保留、預設 0（[紀錄](../quality/evidence/ai-s15-hq-placement-2026-11-19/README.md)） |
+| 修復 bug 後重測 v81–v82 三項策略（`combatSupplyPrice`、`terrainEffort`、`assaultStacking`） | 72 局配對消融（各 24 局／12 對，同種子對照 `heuristic@92` 基線 VP +1.92、K/D 1.36）：三項全負——`combatSupplyPrice` −0.25 ± 0.18（K/D 1.17）、`terrainEffort` −0.67 ± 1.32（K/D 1.18）、`assaultStacking` −0.83 ± 1.13（K/D 1.23） | 即使修復底層缺陷後，放寬戰鬥補給定價、按地形加碼主攻與解除主攻擁擠懲罰仍誘發低效攻堅或過度堆疊；全部移除，不納入標準策略（[紀錄](../quality/evidence/ai-v92-bugfix-artillery-2026-11-19/README.md)） |
 
 **Extender 計畫（試過但不採用）**（權重 `extenderPlan`，保留、預設 0；`bot-extender`，[改進 WBS](../roadmap/19-ai-strategy-improvement-wbs.md) S13）：攻擊戰的攻方在 Movement Phase 規劃全場唯一的一個 Extender（12.7）。
 - **何時規劃**：有攻方未持有的目標，從現有補給源直接取得補給的每一格（HQ 站在那裡才有補給）都在 HQ 投送範圍外，而且攻方有至少 5 點空卡車（載貨的不能組，12.7d）時。剩不到兩個 Game Turn、或已有 Extender 時不規劃。
@@ -317,14 +318,14 @@ heuristic@91 = heuristic@90 加下面兩項（使用者決定直接採用，2026
 - `bot-relocation-coverage`：`DISPLACEMENT_HEX`、鐵路、海運與 breakdown 的補給預判未涵蓋。
 - `bot-hq-logistics-plan`：HQ 與卡車缺少協同前推的接力計畫。
 - `bot-extender`：不合併卡車、不組 Extender（12.7），補給源只隨鐵路前移；東歐攻擊戰中這是 trace 跟不上的主因（[S13.1](../quality/evidence/ai-s13-trace-front-2026-11-18/README.md)）。
-- `bot-reserve-reaction`：沒有 Reserve、Reaction 反擊、Breakout 規劃；戰鬥預估不含 Surprise。
+- `bot-reserve-reaction`：沒有 Reserve、Reaction 反擊、Breakout 規劃（戰鬥預估已於 `heuristic@92` 納入 OCS 9.8 Surprise）。
 - `bot-defender-counterattack`：守方不反攻是權宜做法，應只在有優勢時反攻（見 [TODO 清單](../quality/05-todo-inventory.md)）。
 - `bot-force-concentration`：攻方不集中兵力。主攻群以守軍原始戰力的 2.5 倍組成、不看地形欄位；每個單位只以自己和目的地同格友軍判斷 `exposure`、`contact`，所以停在敵前 2–3 格；戰鬥補給項讓多數攻擊低於門檻（[研究](../quality/evidence/ai-force-concentration-v79-2026-10-16/README.md)）。候選 v81 試過的攻方集中方式都比 v79 差，v81–v83 的分角色規劃已刪除，v84 照 v79 下（[v81 開發量測](../quality/evidence/ai-assault-v81-development-2026-10-17/README.md)、[v82](../quality/evidence/ai-assault-v82-development-2026-10-17/README.md)）。
 
 ## 驗證
 
-- 補給與 VP 行為回歸：`tests/ai/` 的 `hidden-strength`、`combat-advance-supply`、`vp-advance`、`vp-capture`、`vp-threat`、`hq-supply`、
-  `movement-trace-gain`、`ration-allocation`、`rebuild-strategy`、`reinforcement-supply`、`garrison-supply`，
+- 補給、戰鬥與 VP 行為回歸：`tests/ai/` 的 `hidden-strength`、`combat-advance-supply`、`vp-advance`、`vp-capture`、`vp-threat`、`hq-supply`、
+  `movement-trace-gain`、`ration-allocation`、`rebuild-strategy`、`reinforcement-supply`、`garrison-supply`、`barrage-groups`、`bugfixes-audit`，
   多數以真實對局存檔接續到 Supply 或終局。
 - 強度與正確性的對戰證據見 [evaluation.md](evaluation.md)。
 - 設施預測、公開資訊、共同口糧與真實 Session 的付款／存讀檔／重播行為見 `tests/ai/facility-barrage.test.ts`。

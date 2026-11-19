@@ -183,7 +183,17 @@ SP 每 segment 7.4–9.8 SP（地圖上 SP 的 29–36%）。
 
 ### 目前結果
 
-標準策略 `heuristic@91` 是 heuristic@88 加兩項直接修正與兩項事件型改動（v89：Exploitation 階段的戰區配置不計卡車與 HQ 的移動；v90：走到攻擊位置的單位以移動後的狀態確認吃得到 SP；v91：`advanceUnfunded` 與 `meetingOptionAdvance`，[S8.1](../quality/evidence/ai-s8-advance-2026-11-17/README.md)、[S8.3](../quality/evidence/ai-s8-meeting-option-2026-11-18/README.md)）；都由使用者決定不跑升級流程，
+標準策略 `heuristic@92` 是 `heuristic@91` 加上 10 項 AI／查詢結構性缺陷修正、預設開啟期望值地面砲擊（`barrageGroupsByCost: 1`＋`barrageCombatGain`）與零後悔砲兵 Combat／Move 模式控制（`artilleryUnitMode`），[內容](heuristic-policy.md#戰鬥與砲擊)；由使用者決定以 40 局配對對戰證據直接升級（2026-11-19，未另跑 80 局獨立批，見[決策](#決策)）：
+
+| 量測 | 結果（相對凍結 `heuristic@91`） |
+|---|---|
+| 40 局配對對戰（20 對；西歐／東歐 × 攻擊戰／遭遇戰各 5 對，種子 `9100000–9100309`） | VP 每對 +1.45 ± 0.99（[−0.64, +3.54]；攻擊戰 +2.40 ± 1.10 [+0.10, +4.70]，西歐 +1.80、東歐 +3.00；遭遇戰 +0.50 ± 1.66，西歐 +0.60、東歐 +0.40）、Kill − Loss +4.55 ± 2.02 [+0.30, +8.80]（K/D 1.23 對 0.81）、Supply +0.03 ± 0.28 |
+| 72 局 v81–v82 消融（同種子子集，各 24 局） | `combatSupplyPrice`（−0.25 ± 0.18）、`terrainEffort`（−0.67 ± 1.32）、`assaultStacking`（−0.83 ± 1.13）皆不如 `heuristic@92` 基線，全數移除 |
+| 正確性與稽核 | 40 局全數合法打完、重播 hash 一致；補給稽核 0 違例（`previewMismatches`/`otherUnitTraceBreaks`/`relocationTraceBreaks`/`feedBreaks`/`rationUnpreserved` 皆為 0）；前進稽核 0 違例（195 次前進中 190 次有共同口糧、4 次為攻擊戰攻方 v91 例外、1 次為第 8 回合終局；26/26 次 Overrun 有共同口糧）；`npm run check`（typecheck、845 tests、build、smoke）全數通過 |
+
+[升級證據](../quality/evidence/ai-v92-bugfix-artillery-2026-11-19/README.md)。之後的候選以 `artifacts/ai-promotion/frozen-v92-standard` 為對手。
+
+前一個標準 `heuristic@91` 是 heuristic@88 加兩項直接修正與兩項事件型改動（v89：Exploitation 階段的戰區配置不計卡車與 HQ 的移動；v90：走到攻擊位置的單位以移動後的狀態確認吃得到 SP；v91：`advanceUnfunded` 與 `meetingOptionAdvance`，[S8.1](../quality/evidence/ai-s8-advance-2026-11-17/README.md)、[S8.3](../quality/evidence/ai-s8-meeting-option-2026-11-18/README.md)）；都由使用者決定不跑升級流程，
 見[決策](#決策)與 [S6](../quality/evidence/ai-s6-exploitation-moves-2026-11-17/README.md)）；它沒有自己的對戰量測。下表是 `heuristic@88`（heuristic@86 加攻擊戰的五項，
 [內容](heuristic-policy.md#heuristic88-採用的五項攻擊戰)），由使用者決定例外升級（2026-11-17）：走完升級流程，量測與兩個補給 gate 達標，補給稽核有違例：
 
@@ -195,7 +205,7 @@ SP 每 segment 7.4–9.8 SP（地圖上 SP 的 29–36%）。
 | 攻方送補 gate（同上） | 前線取用不到的 SP 3.6 對 4.1：通過 |
 | 正確性 | 160 局合法打完、重播相同；沒有補給的前進只在第 8 回合；**補給稽核 16 次違例**（Exploitation 中往主攻目標移動後無 trace 且無 SP 可吃；v86 當攻方 6 次、v88 當攻方 10 次） |
 
-[獨立批](../quality/evidence/ai-s5-v88-independent-2026-11-17/README.md)、[開發批與登記](../quality/evidence/ai-s5-v88-2026-11-16/README.md)。之後的候選以 `artifacts/ai-promotion/frozen-v91-standard` 為對手。
+[獨立批](../quality/evidence/ai-s5-v88-independent-2026-11-17/README.md)、[開發批與登記](../quality/evidence/ai-s5-v88-2026-11-16/README.md)。v92 的對戰以 `artifacts/ai-promotion/frozen-v91-standard` 為對手。
 
 前一個標準 `heuristic@86`（攻擊戰的攻方以戰區配置規劃，[設計](theater-supply-plan.md#策略上層)）由使用者決定例外升級：沒有跑獨立批，
 兩個補給 gate 未通過（見[決策](#決策)）：
@@ -305,7 +315,8 @@ heuristic@1（東歐風格 80%）。
 ## 決策
 
 - 以 VP 為第一判準（使用者決定），勝率與 Kill／Loss 不能抵銷 VP 或正確性的問題。
-- 驗收條件在實作與開跑前登記，失敗的批次完整保留，不事後新增或放寬門檻；例外只由使用者決定並寫明原因。目前有十二次：
+- 驗收條件在實作與開跑前登記，失敗的批次完整保留，不事後新增或放寬門檻；例外只由使用者決定並寫明原因。目前有十三次：
+  - `heuristic@92` 不另跑 80 局獨立批，以 40 局配對對戰與 72 局消融證據直接升級為標準（使用者決定，2026-11-19：「Promote arty-v3」）。內容包含 10 項結構性缺陷修正、期望值地面砲擊（`barrageGroupsByCost: 1`＋`barrageCombatGain`）與零後悔砲兵 Combat／Move 模式控制（`artilleryUnitMode`）：對凍結 `heuristic@91` 四格 VP 全正（總 VP +1.45 ± 0.99、攻擊戰 +2.40 ± 1.10 [+0.10, +4.70]、遭遇戰 +0.50 ± 1.66），Kill − Loss +4.55 ± 2.02 [+0.30, +8.80]（K/D 1.23 對 0.81），Supply +0.03 ± 0.28，40 局補給與前進稽核皆 0 違例（[證據](../quality/evidence/ai-v92-bugfix-artillery-2026-11-19/README.md)）。這不改變升級流程：後續候選仍須跑獨立批。
   - 攻方運補 gate 刪除卡車載量一項（理由見[攻方運補 gate](#攻方運補-gate)）。
   - 攻方運補 gate 的後方存量改為只計前線取用不到的 SP（使用者決定，2026-11-14，理由見[攻方運補 gate](#攻方運補-gate)）。
   - `heuristic@87` 的候選帶有兩項沒通過自己檢查的改動（使用者決定）：S1 的入場修正與 HQ 接力在沒用於開發的局面上沒讓
@@ -351,7 +362,7 @@ heuristic@1（東歐風格 80%）。
 ## 已知缺口
 
 - `heuristic@86` 未通過兩個攻方補給 gate（例外升級），東歐攻擊戰的效果沒有量測。
-- WBS B5-7（人工檢視三局完整 trace）最後在 heuristic@1 做過；B5-1～B5-6 最後以 heuristic@90 重測，現行標準 heuristic@91 改了遭遇戰，尚未重測。
+- WBS B5-7（人工檢視三局完整 trace）最後在 heuristic@1 做過；B5-1～B5-6 最後以 heuristic@90 重測，現行標準 heuristic@92 尚未重測。
 - WBS B2 的 100 局、大地圖 20 局、開啟空軍 20 局批次未完成。
 - 升級流程只用兩種地圖與兩種交戰，沒有 `ALLIED_ATTACKS`、海域、空軍或其他尺寸。
 

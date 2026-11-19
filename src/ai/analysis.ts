@@ -104,6 +104,13 @@ export const analyze = (projection: RuleProjection, playerId: PlayerId, facts: B
       enemyPieces.set(hexId, entry);
     }
   }
+  const enemyEffectiveStrength = (piece: ProjectedPiece, base: number): number => {
+    let factor = 1;
+    // 5.10b DG, 5.8b Strat Mode, 12.8c Out of Supply each halve combat strength.
+    if (piece.mode === 'DG' || piece.mode === 'STRAT') factor *= 0.5;
+    if (piece.statuses.includes('status:out-of-supply')) factor *= 0.5;
+    return base * factor;
+  };
   const hiddenStrength = hiddenCounterStrength(facts, playerId);
   const enemy = new Map<HexId, EnemyStack>();
   for (const [hexId, { pieces, hidden }] of enemyPieces) {
@@ -112,7 +119,8 @@ export const analyze = (projection: RuleProjection, playerId: PlayerId, facts: B
     // A stack shows a ground unit on top whenever it holds one (a combat unit with a ZOC first): without a visible
     // combat unit, the counters beneath are rear-area pieces and add no strength.
     const shown = pieces.some(piece => piece.role === 'COMBAT');
-    const strength = combatPieces.reduce((total, piece) => total + (knowledge.profile(piece)?.strength ?? 0), 0) + (shown ? hidden * hiddenStrength : 0);
+    const strength = combatPieces.reduce((total, piece) => total + enemyEffectiveStrength(piece, knowledge.profile(piece)?.strength ?? 0), 0)
+      + (shown ? hidden * hiddenStrength : 0);
     enemy.set(hexId, { hexId, pieces, hidden, hasCombatUnit: combatPieces.length > 0 || (shown && hidden > 0), strength });
   }
   const byHex = new Map<HexId, OwnUnit[]>();
@@ -161,14 +169,23 @@ export const analyze = (projection: RuleProjection, playerId: PlayerId, facts: B
           for (const piece of stack.pieces) {
             if (!['COMBAT', 'ARTILLERY', 'HQ'].includes(piece.role)) continue;
             const profile = knowledge.profile(piece);
-            const strength = profile?.strength ?? 0;
+            const strength = enemyEffectiveStrength(piece, profile?.strength ?? 0);
             visibleStrength += strength;
+            const movement = profile?.movement ?? 0;
+            // Immobile units (MA 0 garrisons) only threaten adjacent hexes; DG halves MA (5.10b).
+            if (movement <= 0) {
+              if (distance <= 1) threat += strength;
+              continue;
+            }
+            const effectiveMove = piece.mode === 'DG' ? movement * 0.5 : movement;
             // A road costs as little as 0.5 MP per hex. Add one hex for an adjacent attack;
             // a fixed four-hex radius missed real road advances against distant VP garrisons.
             if (heldObjectives.has(hexId) && distance > THREAT_RADIUS && projection.objectiveRaidThreats) {
-              threat += (projection.objectiveRaidThreats.find(r => r.pieceId === piece.id && r.hexId === hexId)?.strength ?? 0) / Math.max(1, distance);
+              const raid = projection.objectiveRaidThreats.find(r => r.pieceId === piece.id && r.hexId === hexId)?.strength ?? 0;
+              threat += enemyEffectiveStrength(piece, raid) / Math.max(1, distance);
             } else {
-              const reach = heldObjectives.has(hexId) ? Math.max(THREAT_RADIUS, Math.ceil(2 * (profile?.movement ?? 0)) + 1) : THREAT_RADIUS;
+              const baseRadius = piece.mode === 'DG' ? Math.max(2, Math.ceil(THREAT_RADIUS / 2)) : THREAT_RADIUS;
+              const reach = heldObjectives.has(hexId) ? Math.max(baseRadius, Math.ceil(2 * effectiveMove) + 1) : baseRadius;
               if (distance <= reach) threat += strength / Math.max(1, distance);
             }
           }

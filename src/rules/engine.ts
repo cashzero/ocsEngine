@@ -1,5 +1,5 @@
 import type { PlayerId } from '../core/index.js';
-import { attackerSupplyOptions, optionChoiceFacts, previewBarrage, previewCombat } from './combat/combat.js';
+import { attackerSupplyOptions, findBarragePaymentPlan, optionChoiceFacts, previewBarrage, previewCombat, setModeForHex } from './combat/combat.js';
 import { plannedAttack } from './combat/strength.js';
 import { inPatrolZoneOf } from './air/aircraft.js';
 import { AIR_MISSION_LABELS, flakModifiers, missionBarrageStrength, previewAirBarrage } from './air/mission.js';
@@ -11,7 +11,7 @@ import type { GameAction, GameState } from './kernel/model.js';
 import { applyGameAction } from './kernel/reducer.js';
 import { validateGameAction } from './kernel/validate.js';
 import { queryProjectedReachableHexes, queryStackMovementPath, queryStackReachableHexes } from './movement/movement.js';
-import { queryDrawReach, queryExtenderSite, queryFeedCoverage, queryHqThrow, querySupplySources, queryTraceCoverage } from './supply/supply.js';
+import { queryDrawReach, queryExtenderSite, queryFeedCoverage, queryHqThrow, querySupplySources, queryTraceCoverage, spendReservations } from './supply/supply.js';
 import { relocationSupplyFacts } from './supply/relocation-impact.js';
 import { rationBudgetFacts } from './supply/ration-budget.js';
 import { facilityBarrageBudgetFacts } from './supply/facility-barrage-budget.js';
@@ -21,10 +21,11 @@ import { queryTransportOptions } from './supply/transport.js';
 import { queryRailControl } from './supply/supply.js';
 import { queryRailArrivalReach, queryRailMoveOptions, quartersText, railCapRemainingQuarters, railMoveQuarters } from './supply/rail-cap.js';
 import { querySeaMoveOptions, seaCapRemainingQuarters, seaMoveQuarters } from './supply/sea-cap.js';
-import { actionFamilies, barrageAvailability, candidateActions, kindMayBeLegal } from './query/candidates.js';
+import { actionFamilies, barrageAvailability, candidateActions, combatCandidatesFor, kindMayBeLegal } from './query/candidates.js';
 import { projectRuleState, queryTraceCut } from './query/projection.js';
 import type {
   ActionFamily,
+  BarrageFollowUpStage,
   CandidateRequest,
   CandidateResult,
   RuleEngine,
@@ -143,6 +144,37 @@ const actionFacts = (state: GameState, action: GameAction): readonly RuleFact[] 
   return [];
 };
 
+const beforeBarrageCache = new WeakMap<GameState, NonNullable<RuleExplanation['barrageFollowUp']>['before']>();
+
+const barrageFollowUp = (
+  state: GameState, action: Extract<GameAction, { kind: 'DECLARE_BARRAGE' }>, stage: BarrageFollowUpStage,
+): RuleExplanation['barrageFollowUp'] => {
+  if (!['COMBAT', 'EXPLOITATION'].includes(state.sequence.phase) || (action.target ?? 'COMBAT_UNITS') !== 'COMBAT_UNITS') return undefined;
+  const combatState: GameState = { ...state, sequence: { ...state.sequence, segment: 'COMBAT' } };
+  const attackOptions = (position: GameState) => combatCandidatesFor(position, action.actorId, 'REGULAR', null, true)
+    .slice(0, 200).flatMap((attack) => attack.kind === 'DECLARE_COMBAT' ? [{
+      action: { ...attack, defenderIds: [] },
+      facts: actionFacts(position, attack).filter(({ key }) => key !== 'combat.defenderCanPay'),
+    }] : []);
+  let before = beforeBarrageCache.get(state);
+  if (!before) {
+    before = attackOptions(combatState);
+    beforeBarrageCache.set(state, before);
+  }
+  if (stage === 'BEFORE_PAYMENT' || !before.some(({ action: attack }) => attack.targetHexId === action.targetHexId)) return { before, after: [] };
+  const price = previewBarrage(state, action.actorId, action.firerIds, action.targetHexId).supplyTokens;
+  let paid: GameState | null = null;
+  findBarragePaymentPlan(state, action, (payments) => {
+    if (payments.reduce((total, entry) => total + entry.quantity, 0) === price) {
+      // Same ordering as the bot's live payment decisions. A preview spends no real supply and rolls no dice.
+      paid = { ...combatState, pieceState: spendReservations(combatState, payments) };
+    }
+    return true;
+  });
+  const after = paid === null ? [] : attackOptions(setModeForHex(paid, action.targetHexId, opponentOf(state, action.actorId), []));
+  return { before, after };
+};
+
 const engine: RuleEngine = {
   getBarrageAvailability: barrageAvailability,
   getActionFamilies: (state: GameState, actorId: PlayerId): readonly ActionFamily[] => actionFamilies(state, actorId),
@@ -161,8 +193,10 @@ const engine: RuleEngine = {
   },
   validateAction: validateGameAction,
   applyAction: applyGameAction,
-  explain: (state: GameState, action: GameAction): RuleExplanation => {
+  explain: (state: GameState, action: GameAction, previewBarrageFollowUp): RuleExplanation => {
     const validation = validateGameAction(state, action);
+    const followUp = previewBarrageFollowUp && validation.allowed && action.kind === 'DECLARE_BARRAGE'
+      ? barrageFollowUp(state, action, previewBarrageFollowUp) : undefined;
     return {
       allowed: validation.allowed,
       actionKind: action.kind,
@@ -180,6 +214,7 @@ const engine: RuleEngine = {
         ...(validation.allowed ? rebuildFacts(state, action) : []),
       ],
       citations: [...new Set(validation.violations.map(({ rule }) => rule))],
+      ...(followUp ? { barrageFollowUp: followUp } : {}),
     };
   },
   projectForViewer: projectRuleState,

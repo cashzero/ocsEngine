@@ -424,12 +424,12 @@ export class GameplaySession implements GameSession {
     stateRevision: this.#state.revision, seatId: this.#binding(seatId).seatId, action: cloneAction(action),
   });
 
-  validateDraft = (draft: ActionDraft): DraftValidation => {
+  validateDraft: GameSession['validateDraft'] = (draft, previewBarrageFollowUp) => {
     const binding = this.#binding(draft.seatId);
     const current = draft.stateRevision === this.#state.revision
       && draft.action.expectedRevision === this.#state.revision
       && draft.action.actorId === binding.playerId;
-    return { current, explanation: this.#ports.rules.explain(this.#state, draft.action) };
+    return { current, explanation: this.#ports.rules.explain(this.#state, draft.action, current ? previewBarrageFollowUp : undefined) };
   };
 
   getPendingDecision = (seatId: SeatId): PendingDecisionDescriptor | null => {

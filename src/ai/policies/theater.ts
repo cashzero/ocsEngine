@@ -113,15 +113,29 @@ export interface HqBridge {
   readonly tokens: number;
 }
 
+/**
+ * An HQ no group or bridge uses, sent to a safe, fed hex (keeping its current trace dependents) whose throw brings
+ * uncovered open objectives with nearby combat units into trace (12.3b, bot-hq-logistics-plan, S15).
+ */
+export interface HqTraceAdvance {
+  readonly hqId: PieceId;
+  readonly hexId: HexId;
+  /** Total VP of newly trace-covered open objectives within 1 hex of its throw from `hexId`. */
+  readonly vp: number;
+}
+
 export interface TheaterPlan {
   readonly groups: readonly TheaterGroup[];
   readonly hqs: readonly HqPlacement[];
   readonly trucks: readonly TruckPlacement[];
   readonly bridges: readonly HqBridge[];
+  readonly traceAdvances: readonly HqTraceAdvance[];
 }
 
 /** A bridge is worth an HQ's move when it brings this many Tokens (1 SP) or more within the front's reach. */
 const BRIDGE_MIN_TOKENS = 4;
+/** Open objectives need a friendly non-HQ combat unit within this many hexes for an idle HQ to advance trace to them. */
+const TRACE_ADVANCE_TROOP_RADIUS = 6;
 
 /** An HQ is placed this many hexes or more from enemy units (closer, the move step scores it exposed). */
 const HQ_SAFE_DISTANCE = 3;
@@ -199,10 +213,10 @@ interface HqOption {
 export const allocateTheater = (situation: Situation, access: BotActionAccess, exclude: ReadonlySet<PieceId>,
   rating: (piece: ProjectedPiece) => number, discount: number,
   modeFor: (unit: OwnUnit, objective: HexId, defended: boolean) => OcsMode | null,
-  truckTokens: (truck: OwnUnit) => number, bridge = false, logistics = true): TheaterPlan => {
+  truckTokens: (truck: OwnUnit) => number, bridge = false, logistics = true, advanceTraceMinVp = 0, minProbability = 0): TheaterPlan => {
   const me = situation.playerId;
   const objectives = situation.objectives.filter((objective) => objective.controllerId !== me);
-  if (objectives.length === 0) return { groups: [], hqs: [], trucks: [], bridges: [] };
+  if (objectives.length === 0) return { groups: [], hqs: [], trucks: [], bridges: [], traceAdvances: [] };
   const blocked = (hexId: string) => situation.enemy.get(hexId as HexId)?.hasCombatUnit ?? false;
   const occupied = (hexId: string) => situation.enemy.has(hexId as HexId);
   /** Where a unit attacks the objective from: a free hex beside a defended one, or the empty objective itself. */
@@ -260,6 +274,7 @@ export const allocateTheater = (situation: Situation, access: BotActionAccess, e
   const options = new Map<string, HqOption[]>();
   /** Where each HQ may stand this step: 3+ from the enemy, fed, still throwing to the units only it supplies now. */
   const firstSteps = new Map<PieceId, readonly string[]>();
+  const hqFedById = new Map<PieceId, ReadonlySet<string>>();
   for (const hq of hqUnits) {
     const id = hq.piece.id;
     const now = currentThrow.get(id)!;
@@ -270,6 +285,7 @@ export const allocateTheater = (situation: Situation, access: BotActionAccess, e
       && now.servableIds.includes(unit.piece.id)
       && !hqUnits.some((other) => other.piece.id !== id && currentThrow.get(other.piece.id)!.hexIds.map(String).includes(String(unit.hexId))));
     const hqFed = new Set(access.feedCoverage(id).filter(({ tokens }) => tokens > 0).flatMap(({ hexIds }) => hexIds.map(String)));
+    hqFedById.set(id, hqFed);
     const safe = (hexId: string) => hexId === String(hq.hexId) || (!occupied(hexId) && situation.nearestEnemy(hexId as HexId).distance >= HQ_SAFE_DISTANCE);
     const throwFrom = (hexId: string) => access.hqThrow(id, hexId as HexId);
     const keepsDependents = (hexId: string) => {
@@ -514,6 +530,14 @@ export const allocateTheater = (situation: Situation, access: BotActionAccess, e
    * front; each pile is bridged once, and an HQ that bridges a pile where it stands stays. The HQ must be able to move
    * now (or pay fuel, 12.5a), and its throw from the bridge must still cover every unit it covers now without direct trace.
    */
+  // Other HQs may move first this step, so a bridge or trace advance keeps every unit the HQ's throw covers now that has no direct trace.
+  const keepsThrow = (hq: OwnUnit, hexId: string) => {
+    const now = currentThrow.get(hq.piece.id)!;
+    const covered = new Set(now.hexIds.map(String));
+    const from = new Set(access.hqThrow(hq.piece.id, hexId as HexId).hexIds.map(String));
+    return situation.own.every((unit) => unit.piece.id === hq.piece.id || !situation.isCombatUnit(unit) || !now.servableIds.includes(unit.piece.id)
+      || !covered.has(String(unit.hexId)) || sideDirect.has(String(unit.hexId)) || from.has(String(unit.hexId)));
+  };
   const bridgesFor = (groups: readonly TheaterGroup[], used: ReadonlySet<PieceId>): HqBridge[] => {
     if (!bridge) return [];
     const front = new Set([
@@ -531,14 +555,6 @@ export const allocateTheater = (situation: Situation, access: BotActionAccess, e
       && (access.movementRange(hq.piece.id).length > 0 || access.candidates('PAY_FUEL', hq.piece.id).length > 0))
       // An HQ that already carries a pile's SP to the front where it stands keeps doing it.
       .filter((hq) => !(throwsToFront(hq.piece.id, String(hq.hexId)) && piles.some((pile) => pile.drawn && pile.reach.has(String(hq.hexId)))));
-    // Other HQs may move first this step, so a bridge keeps every unit the HQ's throw covers now that has no direct trace.
-    const keepsThrow = (hq: OwnUnit, hexId: string) => {
-      const now = currentThrow.get(hq.piece.id)!;
-      const covered = new Set(now.hexIds.map(String));
-      const from = new Set(access.hqThrow(hq.piece.id, hexId as HexId).hexIds.map(String));
-      return situation.own.every((unit) => unit.piece.id === hq.piece.id || !situation.isCombatUnit(unit) || !now.servableIds.includes(unit.piece.id)
-        || !covered.has(String(unit.hexId)) || sideDirect.has(String(unit.hexId)) || from.has(String(unit.hexId)));
-    };
     const bridges: HqBridge[] = [];
     for (;;) {
       let best: { hq: OwnUnit; hexId: string; tokens: number } | null = null;
@@ -557,8 +573,68 @@ export const allocateTheater = (situation: Situation, access: BotActionAccess, e
     }
   };
 
+  /**
+   * With `advanceTraceMinVp > 0`, HQs no group or bridge uses advance to a safe, fed hex (keeping current trace
+   * dependents) whose throw covers uncovered open objectives with nearby friendly combat units (S15).
+   */
+  const traceAdvancesFor = (keptGroups: readonly TheaterGroup[], hqs: readonly HqPlacement[], bridges: readonly HqBridge[]): HqTraceAdvance[] => {
+    if (advanceTraceMinVp <= 0 || !logistics) return [];
+    const activeGroups = keptGroups.filter(({ chance }) => chance >= minProbability);
+    const activeHqs = hqs.filter(({ objective }) => activeGroups.some(({ hexId }) => hexId === objective));
+    const activeUsed = new Set(activeHqs.map(({ hqId }) => hqId));
+    const bridgedIds = new Set(bridges.filter(({ hqId }) => !activeUsed.has(hqId)).map(({ hqId }) => hqId));
+    const free = hqUnits.filter((hq) => !activeUsed.has(hq.piece.id) && !bridgedIds.has(hq.piece.id) && !exclude.has(hq.piece.id)
+      && firstSteps.has(hq.piece.id)
+      && (access.movementRange(hq.piece.id).length > 0 || access.candidates('PAY_FUEL', hq.piece.id).length > 0));
+    if (free.length === 0) return [];
+    const freeIds = new Set(free.map(({ piece }) => piece.id));
+    const covered = new Set<string>(sideDirect);
+    for (const p of activeHqs) for (const h of access.hqThrow(p.hqId, p.moveTo).hexIds) covered.add(String(h));
+    for (const b of bridges) if (bridgedIds.has(b.hqId)) for (const h of access.hqThrow(b.hqId, b.hexId).hexIds) covered.add(String(h));
+    for (const hq of hqUnits) {
+      if (activeUsed.has(hq.piece.id) || bridgedIds.has(hq.piece.id) || freeIds.has(hq.piece.id)) continue;
+      const now = currentThrow.get(hq.piece.id);
+      if (now?.fed) for (const h of now.hexIds) covered.add(String(h));
+    }
+    const ownCombat = situation.own.filter((unit) => situation.isCombatUnit(unit) && unit.piece.role !== 'HQ');
+    let remaining = objectives.filter((obj) => ![...covered].some((h) => hexesBetween(h, obj.hexId) <= 1)
+      && ownCombat.some((u) => hexesBetween(u.hexId, obj.hexId) <= TRACE_ADVANCE_TROOP_RADIUS));
+    const advances: HqTraceAdvance[] = [];
+    const chosenHqs = new Set<PieceId>();
+    for (;;) {
+      if (remaining.length === 0) return advances;
+      let best: { hq: OwnUnit; hexId: string; vp: number; hasDump: boolean; dist: number; reached: readonly typeof remaining[number][] } | null = null;
+      for (const hq of free) {
+        if (chosenHqs.has(hq.piece.id)) continue;
+        const hqFed = hqFedById.get(hq.piece.id);
+        for (const hexId of firstSteps.get(hq.piece.id)!) {
+          if (!remaining.some((obj) => hexesBetween(hexId, obj.hexId) <= HQ_OBJECTIVE_RADIUS)) continue;
+          const thrown = access.hqThrow(hq.piece.id, hexId as HexId);
+          if (!thrown.fed) continue;
+          const reached = remaining.filter((obj) => thrown.hexIds.some((h) => hexesBetween(h, obj.hexId) <= 1));
+          const vp = reached.reduce((total, obj) => total + obj.points, 0);
+          if (vp < advanceTraceMinVp) continue;
+          const hasDump = hqFed?.has(hexId) ?? false;
+          const dist = hexesBetween(hexId, hq.hexId);
+          if (best !== null && (vp < best.vp
+            || (vp === best.vp && Number(hasDump) < Number(best.hasDump))
+            || (vp === best.vp && hasDump === best.hasDump && dist > best.dist)
+            || (vp === best.vp && hasDump === best.hasDump && dist === best.dist && hexId.localeCompare(best.hexId) >= 0))) continue;
+          if (!keepsThrow(hq, hexId)) continue;
+          best = { hq, hexId, vp, hasDump, dist, reached };
+        }
+      }
+      if (!best) return advances;
+      advances.push({ hqId: best.hq.piece.id, hexId: best.hexId as HexId, vp: best.vp });
+      chosenHqs.add(best.hq.piece.id);
+      const reachedHexes = new Set(best.reached.map((obj) => String(obj.hexId)));
+      remaining = remaining.filter((obj) => !reachedHexes.has(String(obj.hexId)));
+    }
+  };
+
   for (let round = 0; ; round++) {
     const groups = allocate();
+    const activeGroups = minProbability > 0 ? groups.filter(({ chance }) => chance >= minProbability) : groups;
     const used = new Set<PieceId>();
     const hqs: HqPlacement[] = [];
     const sent: TruckPlacement[] = [];
@@ -566,10 +642,10 @@ export const allocateTheater = (situation: Situation, access: BotActionAccess, e
     const dumpLeft = new Map<string, number>();
     for (const list of feeds.values()) for (const { dumpId, tokens } of list) dumpLeft.set(dumpId, tokens);
     const pickupLeft = new Map(pickups);
-    // Units no group uses this round may stand at a drop; each stands at one.
-    const idle = new Set(units.map(({ piece }) => piece.id).filter((id) => !groups.some(({ unitIds }) => unitIds.includes(id))));
+    // Units no active group uses this round may stand at a drop; each stands at one.
+    const idle = new Set(units.map(({ piece }) => piece.id).filter((id) => !activeGroups.some(({ unitIds }) => unitIds.includes(id))));
     let changed = false;
-    for (const group of groups) {
+    for (const group of activeGroups) {
       const step = group.turn;
       const hexesOf = (id: PieceId) => positions.get(id)!.get(group.hexId)![step];
       const drawn = new Map<string, number>();
@@ -647,6 +723,9 @@ export const allocateTheater = (situation: Situation, access: BotActionAccess, e
       kept.push(group);
     }
     // After the last round, groups still short of supply are left out.
-    if (!changed || round + 1 >= SUPPLY_ROUNDS) return { groups: kept, hqs, trucks: sent, bridges: bridgesFor(kept, used) };
+    if (!changed || round + 1 >= SUPPLY_ROUNDS) {
+      const bridges = bridgesFor(kept, used);
+      return { groups: kept, hqs, trucks: sent, bridges, traceAdvances: traceAdvancesFor(kept, hqs, bridges) };
+    }
   }
 };

@@ -37,8 +37,18 @@ export interface RuleExplanation {
   readonly reasons: readonly RuleReason[];
   readonly facts: readonly RuleFact[];
   readonly citations: readonly string[];
+  readonly barrageFollowUp?: {
+    readonly before: readonly CombatPreviewCandidate[];
+    readonly after: readonly CombatPreviewCandidate[];
+  };
 }
 
+export type BarrageFollowUpStage = 'BEFORE_PAYMENT' | 'AFTER_PAYMENT_AND_DG';
+
+interface CombatPreviewCandidate {
+  readonly action: Extract<GameAction, { readonly kind: 'DECLARE_COMBAT' }>;
+  readonly facts: readonly RuleFact[];
+}
 /**
  * What a counter is used for, so the UI never has to guess it from field combinations. A supply counter is a
  * `DUMP` on the map and `CARGO` while a Transport Point carries it; a truck is an `EXTENDER` on its other face.
@@ -262,6 +272,10 @@ export interface CandidateRequest {
   readonly kind: GameAction['kind'];
   readonly pieceId: PieceId | null;
   readonly budget: number;
+  /** For an unfiltered ground barrage query, offer the best legal result column at each supply price. */
+  readonly groundBarrageGroupsByCost?: boolean;
+  /** For regular combat queries, also offer cost-, garrison-, and Exploitation-preserving attacker subsets. */
+  readonly combatSubsets?: boolean;
 }
 
 export interface CandidateResult {
@@ -286,7 +300,7 @@ export interface RuleEngine {
   readonly getActionCandidates: (state: GameState, request: CandidateRequest) => CandidateResult;
   readonly validateAction: (state: GameState, action: GameAction) => { readonly allowed: boolean; readonly violations: readonly RuleViolation[] };
   readonly applyAction: (state: GameState, action: GameAction) => import('../kernel/model.js').TransitionResult;
-  readonly explain: (state: GameState, action: GameAction) => RuleExplanation;
+  readonly explain: (state: GameState, action: GameAction, previewBarrageFollowUp?: BarrageFollowUpStage) => RuleExplanation;
   readonly projectForViewer: (state: GameState, viewerId: PlayerId) => RuleProjection;
   /** Least-cost destinations of one own unit with their cost; facts carry `movement.remainingTicks`. */
   /** Reachable Hexes for one unit, or for it and `companionIds` moving together as one stack (6.1f). */

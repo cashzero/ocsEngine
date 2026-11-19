@@ -12,6 +12,7 @@ import type { ScenarioDefinition } from '../domain/scenario/index.js';
 import type {
   ActionFamily,
   BarrageAvailability,
+  BarrageFollowUpStage,
   CandidateRequest,
   CandidateResult,
   FuelCoverage,
@@ -363,7 +364,7 @@ export interface GameSession {
   /** Combat supply sources one of the seat's units may declare after the attackers already declared (9.5, 12.10a). */
   readonly getAttackerSupplyOptions: (seatId: SeatId, prior: readonly AttackerSupplyChoice[], pieceId: PieceId) => RuleQueryResult<AttackerSupplyOptions | null>;
   readonly createDraft: (seatId: SeatId, action: GameAction) => ActionDraft;
-  readonly validateDraft: (draft: ActionDraft) => DraftValidation;
+  readonly validateDraft: (draft: ActionDraft, previewBarrageFollowUp?: BarrageFollowUpStage) => DraftValidation;
   readonly getPendingDecision: (seatId: SeatId) => PendingDecisionDescriptor | null;
   readonly respondToPendingDecision: (requestId: DispatchRequestId, seatId: SeatId, choiceId: string) => Promise<DispatchResult>;
   readonly dispatch: (request: DispatchRequest) => Promise<DispatchResult>;

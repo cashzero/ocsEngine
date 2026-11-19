@@ -1,0 +1,30 @@
+{
+  "record": "S15.3 of docs/roadmap/19-ai-strategy-improvement-wbs.md: unused attacker HQs advance to safe, fed hexes whose throw brings uncovered open objectives with nearby combat units into trace (hqAdvanceTrace). Continuations of recorded positions, no new game; written before any continuation is run",
+  "registeredAt": "2026-11-19",
+  "request": "The user (2026-11-19): 「推進A」 (Route A: HQ throw placement and advance, bot-hq-logistics-plan)",
+  "build": "hqAdvanceTrace (default 0) in src/ai/policies/theater.ts, heuristic.ts, heuristic-weights.ts; dist built from it",
+  "branches": "branches-western.jsonl (28) and branches-eastern.jsonl (32), from find-branches.mjs over the 80 games heuristic@88 attacked in its independent batch (artifacts/ai-promotion/frozen-v88-independent). The branch of a game is the first of the attacker's Movement segments where hqAdvanceTrace=1 adds a new HQ placement to notes.hqPlan relative to hqAdvanceTrace=0; it is the segment's first action, so both variants start with fresh step memory. The 20 games listed in no-trigger-western.txt (12) and no-trigger-eastern.txt (8) never trigger along their recorded path and count as no change",
+  "variants": {
+    "v91": "heuristic (this build's default, hqAdvanceTrace 0)",
+    "hqAdvance": "heuristic:docs/quality/evidence/ai-s15-hq-placement-2026-11-19/hq-advance-weights.json (hqAdvanceTrace 1: at least 1 newly trace-covered open objective VP)"
+  },
+  "opponent": "heuristic@artifacts/ai-promotion/frozen-v91-standard/dist",
+  "dice": { "western": 3, "eastern": 3 },
+  "commands": [
+    "node scripts/ai-continue-batch.mjs --branches docs/quality/evidence/ai-s15-hq-placement-2026-11-19/branches-western.jsonl --variant v91=heuristic --variant hqAdvance=heuristic:docs/quality/evidence/ai-s15-hq-placement-2026-11-19/hq-advance-weights.json --opponent heuristic@artifacts/ai-promotion/frozen-v91-standard/dist --dice 3 --horizons 1 --jobs 10 --out-dir artifacts/ai-s15/continue",
+    "node scripts/ai-continue-batch.mjs --branches docs/quality/evidence/ai-s15-hq-placement-2026-11-19/branches-eastern.jsonl --variant v91=heuristic --variant hqAdvance=heuristic:docs/quality/evidence/ai-s15-hq-placement-2026-11-19/hq-advance-weights.json --opponent heuristic@artifacts/ai-promotion/frozen-v91-standard/dist --dice 3 --horizons 1 --jobs 10 --out-dir artifacts/ai-s15/continue",
+    "python3 scripts/ai-continue-compare.py artifacts/ai-s15/continue/*.jsonl --baseline v91 --by-style --cluster-by-map --metrics margin.vp,margin.objectives,margin.killLoss,loss,own.outOfTrace --out artifacts/ai-s15/continue-compare.json"
+  ],
+  "continuations": "28 x 3 x 2 + 32 x 3 x 2 = 360",
+  "measure": "margin.vp at the end of the game, hqAdvance - v91, dice averaged per branch, SE clustered by map; reported by map style and combined (50/50 West/East). VP is the primary measure; objectives margin, Kill - Loss, attacker steps lost and units out of trace are reported. The per-game effect of a style is the branch mean times its trigger share (28/40 West, 32/40 East), non-triggering games counting as 0",
+  "reading": [
+    "Per-style and combined: hqAdvanceTrace raises VP if mean - 2.1 SE > 0; lowers it if mean + 2.1 SE < 0; otherwise not established",
+    "S15.4 proposes an independent batch (with B5 rerun and attack-position-feed audit) only if the combined effect is established and positive, and neither style shows established harm (mean + 2.1 SE < 0)",
+    "Every continuation finishes the game; any rule rejection stops the run and is reported"
+  ],
+  "limits": [
+    "Positions come from games heuristic@88 played against heuristic@86 up to the branch; the opponent here is frozen heuristic@91",
+    "A game that does not trigger along its recorded path might trigger along the candidate's own path; it is counted as no change",
+    "hqAdvanceTrace constants (HQ_SAFE_DISTANCE 3, TRACE_ADVANCE_TROOP_RADIUS 6, min VP 1) were fixed before any continuation and are not tuned on these results"
+  ]
+}

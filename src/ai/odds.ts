@@ -8,6 +8,7 @@ import {
   PORT_DAMAGE_CAPACITY_PERCENT,
   PORT_MAXIMUM_HITS,
   PORT_SOURCE_MINIMUM_TOKENS,
+  SURPRISE_THRESHOLDS,
   parseFacilityResult,
   combatTableRowIndex,
   parseBarrageResult,
@@ -23,7 +24,7 @@ const TWO_DICE: readonly { readonly total: number; readonly p: number }[] = Arra
 const fact = (facts: readonly RuleFact[], key: string): string | number | boolean | undefined =>
   facts.find((entry) => entry.key === key)?.value;
 
-/** Expected outcome of a declared combat, read from the printed Combat Table (9.9); surprise (9.8) is not modelled. */
+/** Expected outcome of a declared combat, read from the printed Combat Table (9.9) with Surprise shifts (9.8). */
 export interface CombatForecast {
   readonly odds: string;
   readonly columnIndex: number;
@@ -40,12 +41,15 @@ export interface CombatForecast {
   readonly attackerHurt: number;
 }
 
-export const forecastCombat = (facts: readonly RuleFact[]): CombatForecast | null => {
+export const forecastCombat = (facts: readonly RuleFact[], combatKind: 'REGULAR' | 'OVERRUN' = 'REGULAR'): CombatForecast | null => {
   const line = fact(facts, 'combat.line') as CombatLine | undefined;
   const column = String(fact(facts, 'combat.column') ?? '');
   const odds = String(fact(facts, 'combat.odds') ?? column);
-  // 16.0d: the defender's hedgehog subtracts its Level from the combat roll.
-  const drm = Number(fact(facts, 'combat.drm') ?? 0) - Number(fact(facts, 'combat.hedgehogLevel') ?? 0);
+  const arDrm = Number(fact(facts, 'combat.drm') ?? 0);
+  const hedgehogLevel = Number(fact(facts, 'combat.hedgehogLevel') ?? 0);
+  // 16.0d: the defender's hedgehog subtracts its Level from the combat roll, and 1 from the Surprise roll.
+  const drm = arDrm - hedgehogLevel;
+  const surpriseDrm = arDrm + (hedgehogLevel > 0 ? -1 : 0);
   if (!line || !COMBAT_TABLE_COLUMNS[line]) return null;
   const columns = COMBAT_TABLE_COLUMNS[line];
   let columnIndex = columns.findIndex(({ attacker, defender }) => `${attacker}:${defender}` === column);
@@ -54,17 +58,36 @@ export const forecastCombat = (facts: readonly RuleFact[]): CombatForecast | nul
     const [attacker, defender] = column.split(':').map(Number);
     columnIndex = (attacker ?? 0) >= (defender ?? 1) ? columns.length - 1 : 0;
   }
+  // 9.8 Surprise: 2d6 + AR DRM (-1 vs hedgehog); on Surprise one die shifts the column left or right.
+  const threshold = SURPRISE_THRESHOLDS[combatKind];
+  let pAttackerSurprise = 0;
+  let pDefenderSurprise = 0;
+  for (const { total, p } of TWO_DICE) {
+    if (total + surpriseDrm >= threshold.attacker) pAttackerSurprise += p;
+    else if (total + surpriseDrm <= threshold.defender) pDefenderSurprise += p;
+  }
+  const columnWeights = new Array<number>(columns.length).fill(0);
+  columnWeights[columnIndex] = 1 - pAttackerSurprise - pDefenderSurprise;
+  for (let die = 1; die <= 6; die += 1) {
+    columnWeights[Math.min(columns.length - 1, columnIndex + die)]! += pAttackerSurprise / 6;
+    columnWeights[Math.max(0, columnIndex - die)]! += pDefenderSurprise / 6;
+  }
   let attackerLosses = 0; let attackerOptions = 0; let defenderLosses = 0; let defenderOptions = 0;
   let defenderHit = 0; let defenderDisorganized = 0; let attackerHurt = 0;
-  for (const { total, p } of TWO_DICE) {
-    const result = parseCombatResult(COMBAT_TABLE_ROWS[combatTableRowIndex(total + drm)]![columnIndex]!);
-    attackerLosses += p * result.attacker.loss;
-    attackerOptions += p * result.attacker.option;
-    defenderLosses += p * result.defender.loss;
-    defenderOptions += p * result.defender.option;
-    if (result.defender.loss + result.defender.option > 0) defenderHit += p;
-    if (result.defenderDisorganized) defenderDisorganized += p;
-    if (result.attacker.loss > 0) attackerHurt += p;
+  for (let col = 0; col < columns.length; col += 1) {
+    const colWeight = columnWeights[col]!;
+    if (colWeight <= 0) continue;
+    for (const { total, p } of TWO_DICE) {
+      const weight = colWeight * p;
+      const result = parseCombatResult(COMBAT_TABLE_ROWS[combatTableRowIndex(total + drm)]![col]!);
+      attackerLosses += weight * result.attacker.loss;
+      attackerOptions += weight * result.attacker.option;
+      defenderLosses += weight * result.defender.loss;
+      defenderOptions += weight * result.defender.option;
+      if (result.defender.loss + result.defender.option > 0) defenderHit += weight;
+      if (result.defenderDisorganized) defenderDisorganized += weight;
+      if (result.attacker.loss > 0) attackerHurt += weight;
+    }
   }
   return {
     odds, columnIndex, drm, supplyTokens: Number(fact(facts, 'combat.attackerSupplyTokens') ?? 0),

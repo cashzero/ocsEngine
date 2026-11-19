@@ -42,9 +42,9 @@ const context = (state: GameState): BotDecisionContext => {
     view: { projection: ruleEngine.projectForViewer(state, actorId), pendingDecision: state.pendingDecision } as BotDecisionContext['view'],
     actions: {
       families: () => ruleEngine.getActionFamilies(state, actorId).filter(f => f.enabled).map(f => f.kind),
-      candidates: (kind, pieceId = null, budget = 400) => ruleEngine.getActionCandidates(state, { actorId, kind, pieceId, budget }).actions,
+      candidates: (kind, pieceId = null, budget = 400, options) => ruleEngine.getActionCandidates(state, { actorId, kind, pieceId, budget, ...options }).actions,
       movementRange: pieceId => ruleEngine.queryMovementRange(state, actorId, pieceId).value!,
-      explain: action => ({ current: true, explanation: ruleEngine.explain(state, action) }),
+      explain: (action, previewBarrageFollowUp) => ({ current: true, explanation: ruleEngine.explain(state, action, previewBarrageFollowUp) }),
       traceCoverage: (pieceId = null) => ruleEngine.queryTraceCoverage(state, actorId, pieceId).value!,
       feedCoverage: (pieceId = null) => ruleEngine.queryFeedCoverage(state, actorId, pieceId).value!,
       drawReach: hexId => new Set((ruleEngine.queryDrawReach(state, actorId, hexId).value ?? []).map(String)),
@@ -104,7 +104,13 @@ describe('the heuristic selects useful public facility targets', () => {
     expect(choose(fixture({ strength: 21, base: true })).action).toMatchObject({ kind: 'DECLARE_BARRAGE', target: 'AIR_BASE' });
   });
   it('prefers a strong ground barrage when the expected combat effect exceeds facility damage', () => {
-    const chosen = choose(changePiece(fixture({ strength: 81, ground: true, spotter: true, base: true, plane: true }), U.base, base => withAirBaseLevel(base, 1)));
+    const base = changePiece(fixture({ strength: 81, ground: true, spotter: true, base: true, plane: true }), U.base, piece => withAirBaseLevel(piece, 1));
+    const state: GameState = {
+      ...base,
+      configuration: { ...base.configuration, objectives: [{ hexId: TARGET, points: 4 }] },
+      mapState: { ...base.mapState, hexControl: [...base.mapState.hexControl.filter(({ hexId }) => hexId !== TARGET), { hexId: TARGET, controllerId: AXIS }] },
+    };
+    const chosen = choose(state);
     expect(chosen.action).toMatchObject({ kind: 'DECLARE_BARRAGE', target: 'COMBAT_UNITS' });
     expect(chosen.breakdown.some(({ term }) => term === 'steps')).toBe(true);
   });

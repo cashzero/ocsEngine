@@ -8,7 +8,7 @@ import type {
   GameSession,
   SeatId,
 } from '../gameplay/index.js';
-import type { ActionFamily, CandidateResult, ExtenderSite, FeedSource, GameAction, HqThrow, PlannedAttack, ProjectedPiece, ReachableHex, RuleExplanation, TraceCoverage } from '../rules/index.js';
+import type { ActionFamily, BarrageFollowUpStage, CandidateRequest, CandidateResult, ExtenderSite, FeedSource, GameAction, HqThrow, PlannedAttack, ProjectedPiece, ReachableHex, RuleExplanation, TraceCoverage } from '../rules/index.js';
 
 export type BotPolicyId = string;
 
@@ -25,7 +25,10 @@ export interface BotRng {
 export interface BotActionAccess {
   /** Action kinds the Rule Engine currently enables for the seat. */
   readonly families: () => readonly ActionFamily['kind'][];
-  readonly candidates: (kind: GameAction['kind'], pieceId?: PieceId | null, budget?: number) => readonly GameAction[];
+  readonly candidates: (
+    kind: GameAction['kind'], pieceId?: PieceId | null, budget?: number,
+    options?: Pick<CandidateRequest, 'groundBarrageGroupsByCost' | 'combatSubsets'>,
+  ) => readonly GameAction[];
   readonly movementRange: (pieceId: PieceId) => readonly ReachableHex[];
   /** Where an own unit could end a Movement Segment begun in `fromHexId`, unmoved and fueled (12.5a), in its mode or `mode` (5.4), others where they stand. */
   readonly projectedReach: (pieceId: PieceId, fromHexId: HexId, mode?: OcsMode) => readonly ReachableHex[];
@@ -38,7 +41,7 @@ export interface BotActionAccess {
   /** Seen enemy combat units that would lose trace if own unit `pieceId` stood in `hexId` (in `mode`), as the seat sees the map (4.9a). */
   readonly traceCut: (pieceId: PieceId, hexId: HexId, mode?: OcsMode) => readonly PieceId[];
   /** Whether an action built by the policy is legal now, with the facts a player sees (odds, DRM, cost). */
-  readonly explain: (action: GameAction) => DraftValidation;
+  readonly explain: (action: GameAction, previewBarrageFollowUp?: BarrageFollowUpStage) => DraftValidation;
   /** Hexes the seat's trace supply reaches for any unit (12.6), or for one unit with 12.6f and 13.1d applied. */
   readonly traceCoverage: (pieceId?: PieceId | null) => TraceCoverage;
   /** Where each friendly dump can feed a unit out of trace (12.6c): for one unit (13.1d applies) or any unit. */
