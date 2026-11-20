@@ -236,10 +236,11 @@ export interface DumpAccess {
   readonly route: SupplyRoute;
 }
 
-const reservedFrom = (state: GameState, pieceId: PieceId): number => state.activeTransaction === null ? 0
-  : [...state.activeTransaction.attackerPayments, ...state.activeTransaction.defenderPayments]
-    .filter(({ resourcePieceId }) => resourcePieceId === pieceId)
-    .reduce((total, { quantity }) => total + quantity, 0);
+const reservedFrom = (state: GameState, pieceId: PieceId): number =>
+  state.activeTransaction === null || state.activeTransaction.step === 'RESOLVING' ? 0
+    : [...state.activeTransaction.attackerPayments, ...state.activeTransaction.defenderPayments]
+      .filter(({ resourcePieceId }) => resourcePieceId === pieceId)
+      .reduce((total, { quantity }) => total + quantity, 0);
 
 /** Tokens in a dump not already reserved by the combat being paid for. */
 export const availableTokens = (state: GameState, dump: PieceState): number =>

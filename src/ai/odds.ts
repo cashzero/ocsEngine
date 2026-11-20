@@ -108,13 +108,17 @@ export const forecastBarrage = (facts: readonly RuleFact[]): BarrageForecast | n
   if (facts.some(({ key, value }) => key === 'barrage.target' && value !== 'COMBAT_UNITS')) return null;
   const finalColumn = fact(facts, 'barrage.finalColumn');
   if (typeof finalColumn !== 'number') return null;
+  const spotter = fact(facts, 'barrage.spotter');
+  const shifts = String(fact(facts, 'barrage.shifts') ?? '');
+  const dugL3Plus = /\bHedgehog L([3-9])\b/u.test(shifts);
+  // 10.0c: [1/2] is 1/2 (0.5 expected steps) with a correct spotter against < Level 3 hedgehog, else DG only (0 steps).
+  const bracketedHalfSteps = spotter === true ? (dugL3Plus ? 0 : 0.5) : spotter === false ? 0 : 0.25;
   let disrupt = 0; let expectedSteps = 0;
   for (const { total, p } of TWO_DICE) {
     const row = BARRAGE_TABLE_ROWS[total]!;
     const result = parseBarrageResult(row[Math.max(0, Math.min(row.length - 1, finalColumn))]!);
     if (result.kind !== 'NONE') disrupt += p;
-    // A half result costs a step on a 4-6 (10.0a); bracketed only when the hex holds several units.
-    expectedSteps += p * (result.kind === 'STEPS' ? result.steps : result.kind === 'HALF' ? 0.5 : result.kind === 'BRACKETED_HALF' ? 0.25 : 0);
+    expectedSteps += p * (result.kind === 'STEPS' ? result.steps : result.kind === 'HALF' ? 0.5 : result.kind === 'BRACKETED_HALF' ? bracketedHalfSteps : 0);
   }
   return { finalColumn, supplyTokens: Number(fact(facts, 'barrage.supplyTokens') ?? 0), disrupt, expectedSteps };
 };

@@ -183,7 +183,18 @@ SP 每 segment 7.4–9.8 SP（地圖上 SP 的 29–36%）。
 
 ### 目前結果
 
-標準策略 `heuristic@92` 是 `heuristic@91` 加上 10 項 AI／查詢結構性缺陷修正、預設開啟期望值地面砲擊（`barrageGroupsByCost: 1`＋`barrageCombatGain`）與零後悔砲兵 Combat／Move 模式控制（`artilleryUnitMode`），[內容](heuristic-policy.md#戰鬥與砲擊)；由使用者決定以 40 局配對對戰證據直接升級（2026-11-19，未另跑 80 局獨立批，見[決策](#決策)）：
+標準策略 `heuristic@93` 是 `heuristic@92` 加上 7 項 Tier 1 高頻缺陷修正與 5 項 BARRAGE／戰鬥候選效能與正確性修正，[內容](heuristic-policy.md#戰鬥與砲擊)；由使用者決定直接升級（2026-11-20，未另跑 80 局獨立批，見[決策](#決策)）：
+
+| 量測 | 結果（相對凍結 `heuristic@92`） |
+|---|---|
+| 40 局配對對戰（20 對；西歐／東歐 × 攻擊戰／遭遇戰各 5 對，種子 `9200000–9200309`，Tier 1 修正版） | VP 每對 +1.10 ± 0.90（[−0.78, +2.98]；攻擊戰 +1.30 ± 1.22，西歐 +2.00、東歐 +0.60；遭遇戰 +0.90 ± 1.38，西歐 −0.20、東歐 +2.00）、Kill − Loss +1.93 ± 1.72（K/D 1.09）、Supply +0.28 ± 0.35 |
+| Tier 1 同批 40 局缺陷歸零對照 | 戰鬥模式 HQ 空燒燃料 102 → 0（總未移動 HQ 燃料 498T → 123T）、`OPTION_SPLIT` 最後一步自殺 33 → 0、`DEFENDER_TERRAIN` 選錯欄位 19（22 欄）→ 0、卡車白跑 12.2a 鐵路格 51 → 0、終局卡 `STRAT`（≤ 5 格）23 → 3 |
+| 最慢 4 個 `COMBAT:BARRAGE` 局面延遲重播 | 11,329 → 179 ms（63.4×）、8,260 → 42 ms（195.4×）、6,861 → 115 ms（59.7×）、6,654 → 160 ms（41.6×） |
+| 正確性與稽核 | 40 局全數合法打完、重播 hash 一致；候選補給稽核 0 違例；前進稽核 0 違例（222 次前進中 216 次有共同口糧、2 次 v91 例外、4 次第 8 回合終局；14/14 次 Overrun 有共同口糧）；`npm run check`（typecheck、851 tests、build、smoke）全數通過 |
+
+[升級證據](../quality/evidence/ai-v93-tier1-barrage-2026-11-20/README.md)。之後的候選以 `artifacts/ai-promotion/frozen-v93-standard` 為對手。
+
+前一個標準 `heuristic@92` 是 `heuristic@91` 加上 10 項 AI／查詢結構性缺陷修正、預設開啟期望值地面砲擊（`barrageGroupsByCost: 1`＋`barrageCombatGain`）與零後悔砲兵 Combat／Move 模式控制（`artilleryUnitMode`），[內容](heuristic-policy.md#戰鬥與砲擊)；由使用者決定以 40 局配對對戰證據直接升級（2026-11-19，未另跑 80 局獨立批，見[決策](#決策)）：
 
 | 量測 | 結果（相對凍結 `heuristic@91`） |
 |---|---|
@@ -191,7 +202,7 @@ SP 每 segment 7.4–9.8 SP（地圖上 SP 的 29–36%）。
 | 72 局 v81–v82 消融（同種子子集，各 24 局） | `combatSupplyPrice`（−0.25 ± 0.18）、`terrainEffort`（−0.67 ± 1.32）、`assaultStacking`（−0.83 ± 1.13）皆不如 `heuristic@92` 基線，全數移除 |
 | 正確性與稽核 | 40 局全數合法打完、重播 hash 一致；補給稽核 0 違例（`previewMismatches`/`otherUnitTraceBreaks`/`relocationTraceBreaks`/`feedBreaks`/`rationUnpreserved` 皆為 0）；前進稽核 0 違例（195 次前進中 190 次有共同口糧、4 次為攻擊戰攻方 v91 例外、1 次為第 8 回合終局；26/26 次 Overrun 有共同口糧）；`npm run check`（typecheck、845 tests、build、smoke）全數通過 |
 
-[升級證據](../quality/evidence/ai-v92-bugfix-artillery-2026-11-19/README.md)。之後的候選以 `artifacts/ai-promotion/frozen-v92-standard` 為對手。
+[升級證據](../quality/evidence/ai-v92-bugfix-artillery-2026-11-19/README.md)。v93 的對戰以 `artifacts/ai-promotion/frozen-v92-standard` 為對手。
 
 前一個標準 `heuristic@91` 是 heuristic@88 加兩項直接修正與兩項事件型改動（v89：Exploitation 階段的戰區配置不計卡車與 HQ 的移動；v90：走到攻擊位置的單位以移動後的狀態確認吃得到 SP；v91：`advanceUnfunded` 與 `meetingOptionAdvance`，[S8.1](../quality/evidence/ai-s8-advance-2026-11-17/README.md)、[S8.3](../quality/evidence/ai-s8-meeting-option-2026-11-18/README.md)）；都由使用者決定不跑升級流程，
 見[決策](#決策)與 [S6](../quality/evidence/ai-s6-exploitation-moves-2026-11-17/README.md)）；它沒有自己的對戰量測。下表是 `heuristic@88`（heuristic@86 加攻擊戰的五項，
@@ -315,7 +326,8 @@ heuristic@1（東歐風格 80%）。
 ## 決策
 
 - 以 VP 為第一判準（使用者決定），勝率與 Kill／Loss 不能抵銷 VP 或正確性的問題。
-- 驗收條件在實作與開跑前登記，失敗的批次完整保留，不事後新增或放寬門檻；例外只由使用者決定並寫明原因。目前有十三次：
+- 驗收條件在實作與開跑前登記，失敗的批次完整保留，不事後新增或放寬門檻；例外只由使用者決定並寫明原因。目前有十四次：
+  - `heuristic@93` 不另跑 80 局獨立批，以 40 局配對對戰、缺陷歸零統計與 BARRAGE 延遲基準直接升級為標準（使用者決定，2026-11-20：「先promote目前的fix」）。內容包含 7 項 Tier 1 高頻缺陷修正（戰鬥模式 `MA=0` HQ 不再付燃料、`DEFENDER_TERRAIN` 改比 Combat Table 欄位、`STRAT` 接近敵軍主動切回 `MOVE`、`OPTION_SPLIT` 守點前確認存活步數、`pickupFor`/`seaStep` 落實 12.2a、孤立駐軍專用救援卡車、`RESOLVING` 期間停止重複扣除戰鬥補給）及 5 項 BARRAGE／戰鬥候選修正（消除 `reserveInto` cache 失效、單目標 `barrageFollowUp` 將最慢決策由 11.3 秒降至 42–179 ms、過濾無資格鄰接單位、10.0c `[1/2]` 與離圖機場預覽）。40 局對凍結 `heuristic@92`：VP +1.10 ± 0.90（攻擊戰 +1.30、遭遇戰 +0.90）、Kill − Loss +1.93 ± 1.72、Supply +0.28 ± 0.35，候選補給與前進稽核皆 0 違例（[證據](../quality/evidence/ai-v93-tier1-barrage-2026-11-20/README.md)）。這不改變升級流程：後續候選仍須跑獨立批。
   - `heuristic@92` 不另跑 80 局獨立批，以 40 局配對對戰與 72 局消融證據直接升級為標準（使用者決定，2026-11-19：「Promote arty-v3」）。內容包含 10 項結構性缺陷修正、期望值地面砲擊（`barrageGroupsByCost: 1`＋`barrageCombatGain`）與零後悔砲兵 Combat／Move 模式控制（`artilleryUnitMode`）：對凍結 `heuristic@91` 四格 VP 全正（總 VP +1.45 ± 0.99、攻擊戰 +2.40 ± 1.10 [+0.10, +4.70]、遭遇戰 +0.50 ± 1.66），Kill − Loss +4.55 ± 2.02 [+0.30, +8.80]（K/D 1.23 對 0.81），Supply +0.03 ± 0.28，40 局補給與前進稽核皆 0 違例（[證據](../quality/evidence/ai-v92-bugfix-artillery-2026-11-19/README.md)）。這不改變升級流程：後續候選仍須跑獨立批。
   - 攻方運補 gate 刪除卡車載量一項（理由見[攻方運補 gate](#攻方運補-gate)）。
   - 攻方運補 gate 的後方存量改為只計前線取用不到的 SP（使用者決定，2026-11-14，理由見[攻方運補 gate](#攻方運補-gate)）。
@@ -362,7 +374,7 @@ heuristic@1（東歐風格 80%）。
 ## 已知缺口
 
 - `heuristic@86` 未通過兩個攻方補給 gate（例外升級），東歐攻擊戰的效果沒有量測。
-- WBS B5-7（人工檢視三局完整 trace）最後在 heuristic@1 做過；B5-1～B5-6 最後以 heuristic@90 重測，現行標準 heuristic@92 尚未重測。
+- WBS B5-7（人工檢視三局完整 trace）最後在 heuristic@1 做過；B5-1～B5-6 最後以 heuristic@90 重測，現行標準 heuristic@93 尚未重測。
 - WBS B2 的 100 局、大地圖 20 局、開啟空軍 20 局批次未完成。
 - 升級流程只用兩種地圖與兩種交戰，沒有 `ALLIED_ATTACKS`、海域、空軍或其他尺寸。
 

@@ -1,6 +1,6 @@
 import type { HexId, PieceId } from '../core/index.js';
 import type { GameAction } from '../rules/index.js';
-import { parseCombatResult } from '../rules/tables/ocs-4.3.js';
+import { COMBAT_TABLE_COLUMNS, parseCombatResult, type CombatLine } from '../rules/tables/ocs-4.3.js';
 import type { OwnUnit, Situation } from './analysis.js';
 import type { BotDecision, BotDecisionContext } from './model.js';
 import { hexesBetween } from './knowledge.js';
@@ -46,9 +46,35 @@ const safestHex = (options: readonly Option[], situation: Situation): Option | u
   return scored.sort((left, right) => left.score - right.score || left.option.id.localeCompare(right.option.id))[0]?.option;
 };
 
+const TERRAIN_LINES: Readonly<Record<string, CombatLine>> = {
+  open: 'OPEN',
+  close: 'CLOSE',
+  'very close': 'VERY_CLOSE',
+  'extremely close': 'EXTREMELY_CLOSE',
+};
+
 const ratio = (label: string): number => {
   const match = /(\d+(?:\.\d+)?):(\d+(?:\.\d+)?)\s*$/u.exec(label);
   return match ? Number(match[1]) / Number(match[2]) : Number.POSITIVE_INFINITY;
+};
+
+/** 9.7a Combat Table column index for a DEFENDER_TERRAIN option label (lower favors the defender). */
+const terrainColumn = (label: string): number => {
+  const lineMatch = /:\s*(open|close|very close|extremely close)\s+line\b/iu.exec(label);
+  const oddsMatch = /(\d+(?:\.\d+)?):(\d+(?:\.\d+)?)\s*$/u.exec(label);
+  if (!lineMatch || !oddsMatch) return Number.POSITIVE_INFINITY;
+  const line = TERRAIN_LINES[lineMatch[1]!.toLowerCase()]!;
+  const attacker = Number(oddsMatch[1]);
+  const defender = Number(oddsMatch[2]);
+  const columns = COMBAT_TABLE_COLUMNS[line];
+  if (defender === 0) return columns.length;
+  const value = attacker / defender;
+  let index = 0;
+  for (let position = 0; position < columns.length; position += 1) {
+    const column = columns[position]!;
+    if (column.attacker / column.defender <= value + 1e-9) index = position;
+  }
+  return index;
 };
 
 export const respondToDecision = (context: BotDecisionContext, situation: Situation, holdRatio = 0.5, advanceThreatLimit = 8, optionAdvance = 0, advanceUnfunded = 0, meetingOptionAdvance = 0): BotDecision | null => {
@@ -101,7 +127,10 @@ export const respondToDecision = (context: BotDecisionContext, situation: Situat
       return respond(actions, best.id, 'defender-lead', `lead with the unit giving the attacker the lowest DRM (${best.label})`);
     }
     case 'DEFENDER_TERRAIN': {
-      const best = [...options].sort((left, right) => ratio(left.label) - ratio(right.label) || left.id.localeCompare(right.id))[0]!;
+      const best = [...options].sort((left, right) =>
+        terrainColumn(left.label) - terrainColumn(right.label)
+        || ratio(left.label) - ratio(right.label)
+        || left.id.localeCompare(right.id))[0]!;
       return respond(actions, best.id, 'defender-terrain', `terrain giving the lowest odds (${best.label})`);
     }
     case 'STEP_LOSS':
@@ -123,15 +152,15 @@ export const respondToDecision = (context: BotDecisionContext, situation: Situat
       const result = projection.combat?.result ? parseCombatResult(projection.combat.result) : null;
       // meetingOptionAdvance: the same for either side of a meeting engagement (S8.3 of the improvement WBS).
       const optionScope = situation.attack ? optionAdvance > 0 && !situation.defending : meetingOptionAdvance > 0;
+      const stepsLeftOf = (option: Option): number | undefined => {
+        const action = actions.find((candidate) => candidate.kind === 'RESPOND_DECISION' && candidate.choiceId === option.id);
+        const left = action ? context.actions.explain(action).explanation.facts.find(({ key }) => key === 'combat.optionStepsLeft')?.value : undefined;
+        return typeof left === 'number' ? left : undefined;
+      };
       if (optionScope && !defending && targetHex !== undefined && result !== null
         && situation.objectives.some(({ hexId, controllerId }) => hexId === targetHex && controllerId !== context.playerId)
         && result.defender.loss + result.defender.option >= Math.max(1, projection.combat?.defenderCount ?? 1)) {
-        const stay = parsed.find(({ option, retreat }) => {
-          if (retreat !== 0) return false;
-          const action = actions.find((candidate) => candidate.kind === 'RESPOND_DECISION' && candidate.choiceId === option.id);
-          const left = action ? context.actions.explain(action).explanation.facts.find(({ key }) => key === 'combat.optionStepsLeft')?.value : undefined;
-          return typeof left === 'number' && left > 0;
-        });
+        const stay = parsed.find(({ option, retreat }) => retreat === 0 && (stepsLeftOf(option) ?? 0) > 0);
         if (stay) return respond(actions, stay.option.id, 'combat-option', `keep the advance onto the objective: ${stay.option.label}`);
       }
       // heuristic@75: an attacker option retreats every attacker (9.11). Attackers may stand on an objective we hold
@@ -143,12 +172,14 @@ export const respondToDecision = (context: BotDecisionContext, situation: Situat
           && situation.friendlyAt(hexId).some((unit) => situation.isCombatUnit(unit)));
       const holdObjective = holdsBeside || (defending && targetHex !== undefined
         && situation.objectives.some(({ hexId }) => hexId === targetHex));
-      // Hold an objective with steps; elsewhere keep steps and give ground.
-      const ordered = [...parsed].sort((left, right) => holdObjective
+      // Hold an objective with steps only when a step actually survives to remain in the hex; losing the last step
+      // vacates the objective anyway, so prefer retreating to keep the unit alive.
+      const canHold = holdObjective && parsed.some(({ option, retreat }) => retreat === 0 && (stepsLeftOf(option) ?? 1) > 0);
+      const ordered = [...parsed].sort((left, right) => canHold
         ? left.retreat - right.retreat || left.losses - right.losses
         : left.losses - right.losses || left.retreat - right.retreat);
       const choice = ordered[0]?.option ?? options[0]!;
-      return respond(actions, choice.id, 'combat-option', holdObjective ? `hold the objective: ${choice.label}` : `keep steps: ${choice.label}`);
+      return respond(actions, choice.id, 'combat-option', canHold ? `hold the objective: ${choice.label}` : `keep steps: ${choice.label}`);
     }
     case 'RETREAT_HEX': {
       const hexOptions = options.filter(({ id }) => id.startsWith('hex:') || id.startsWith('with:'));

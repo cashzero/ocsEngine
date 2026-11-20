@@ -1,8 +1,8 @@
-# Heuristic 策略（標準：heuristic@92）
+# Heuristic 策略（標準：heuristic@93）
 
 ## 範圍
 
-標準電腦策略 `heuristic@92` 如何做決定：各階段做什麼、目標分配與移動評分、補給保護、戰鬥、重建與待決回應，
+標準電腦策略 `heuristic@93` 如何做決定：各階段做什麼、目標分配與移動評分、補給保護、戰鬥、重建與待決回應，
 以及做過哪些嘗試、為什麼不採用。實作：`src/ai/policies/heuristic.ts`、權重 `src/ai/policies/heuristic-weights.ts`、
 待決回應 `src/ai/decisions.ts`。介面與邊界見 [architecture.md](architecture.md)，強度量測見 [evaluation.md](evaluation.md)。
 
@@ -76,8 +76,8 @@
 
 - **卡車**（heuristic@78）：每輛卡車在 Movement Segment 內循環「取貨 → 送達 → 回程」，動作連續執行（6.1g），
   直到 MP 用完。
-  - 取貨：前往離敵 5 格以上、不在目標點、不是駐軍存量、本步驟沒有卸下或運到 SP（12.2a）的後方補給堆，
-    依空車里程加載貨里程、扣掉依該車實際容量（每個 Transport Point 4T，v92）計算的載量估價；其他卡車已預約的 Token 不算。到達後從格內每個可裝的堆裝滿；
+  - 取貨：前往離敵 5 格以上、不在目標點、不是駐軍存量、本步驟沒有卸下或由鐵路／海運新運達 SP（12.2a，`notes.railedTo`，v93）的後方補給堆，
+    依空車里程加載貨里程、扣掉依該車實際容量（每個 Transport Point 4T，v92）計算的載量估價；其他卡車已預約的 Token 不算（無法裝貨時即釋放預約，v93）。到達後從格內每個可裝的堆裝滿；
     部分載貨的卡車停在後方堆時先補滿。當步驟到不了取貨點（或到了沒有裝貨的 5 MP）的卡車放棄預約，留給到得了的卡車。
   - 只在有比所在格更靠近部隊中心的卸貨點時才裝貨：沒有可送的地方時，裝了也只能在原地卸下。
   - 送達：卸貨點要有己方戰鬥單位或補給堆（13.2f）、離敵 3 格以上、在己方 trace 範圍內（卡車不跑到補給線外被切斷）。
@@ -85,7 +85,7 @@
     （主攻的 lead，否則部隊重心）的點。最佳點到不了時，若到得了的點比所在格靠近中心至少 4 格就先卸在那裡（接力）；
     否則載貨朝最佳點前進並結束。
   - 回程：卸貨後用剩下的 MP 前往下一個取貨點，到得了就再裝一車，下一回合從補給堆出發。
-  - 被切斷的單位群（戰力 ≥ 6）仍優先由一輛載貨卡車送補（heuristic@7）；有未指派的救援目標時，空車只裝 2T 送去。
+  - 被切斷的單位群（戰力 ≥ 6）仍優先由每個目標指派最多 1 輛專用救援卡車（已載貨優先，其次最近）在 `order = -1` 送補（v93 修正：不把其餘非戰區卡車一併提前、不於 HQ 移動與鐵路前快取 `dryHqs`）；專用救援空車只裝 2T 送去並優先停在可卸貨格（13.2f），其餘卡車留在 `order = 3` 滿載運補。
   - **補缺口**（heuristic@79）：卡車最後移動。想移動、需要燃料（12.5a）卻沒有任何合法加油方式的戰鬥單位記為「受困」；
     沒有補給堆供應的 HQ 記為「乾 HQ」，價值是它能投送到的前線戰力。送貨中心改為受困戰力加乾 HQ 價值最大、3 格內有安全卸貨點的
     位置，卸在那裡後附近的受困單位與取用範圍內的乾 HQ 視為已補；都沒有時才送往主攻 lead 或部隊重心。
@@ -126,10 +126,11 @@
 ### 戰鬥與砲擊
 
 - 以公開 Combat Table 計算 2d6 的結果分布，並以解析方式納入 OCS 9.8 Surprise（Regular 10+／5−、Overrun 9+／6−、Hedgehog −1 Surprise DRM 與 1d6 欄位偏移分布，v92）；攻擊門檻權重 4，Overrun 門檻是一般攻擊的兩倍。除最後一回合搶目標點外不打 1:1 以下或 Close／Very Close／Extremely Close 第 3 欄以下（v92）。
-- **攻擊子集合（`combatSubsets`，v92）**：`DECLARE_COMBAT` 候選除全相鄰單位外，另提供僅可付費單位、排除孤立守點單位、依效率排序之前綴（1–4 個）與保留 Exploitation 資格之 1–2 格群組；僅由新策略透過 `CandidateRequest.combatSubsets` 啟用，不影響凍結基準對手。
+- **攻擊子集合（`combatSubsets`，v92；v93 修正資格與相鄰）**：`DECLARE_COMBAT` 候選預先濾除已攻擊、Exploitation 階段非 Exploit／未釋出預備隊與無法跨河邊／禁入地形的相鄰單位，除全相鄰單位外另提供僅可付費單位、排除孤立守點單位、依效率排序之前綴（1–4 個）與相鄰 1–2 格（9.13bC）保留 Exploitation 資格之群組；僅由新策略透過 `CandidateRequest.combatSubsets` 啟用，不影響凍結基準對手。
 - **從持有點出擊的風險**（v75）：攻擊者站在己方持有的目標點上、且留下的戰力低於該點威脅 × holdRatio，而敵方之後還有
   回合時，扣分「攻擊者損失或 option 的期望值（上限 1）× 該點分差 VP × 25 × 0.25 × 出擊戰力占比」。
-- **地面砲擊（`barrageGroupsByCost: 1`，v92 預設）**：對戰鬥單位按每個可支付的砲擊表價位，提供結果欄位最高的合法砲組（同價同欄優先較少砲兵）。目標可見地面戰鬥單位均已 DG 時不再重複計入 DG 收益。改以期望值 `barrageCombatGain` 評估跟攻增益：`P(DG) × combatGain + E[steps] × 10 − costT × 2.5`（門檻 2）；僅在 DG 前目標偏硬（原無可行攻擊、命中率 ≤ 75% 或攻方期望硬損 ≥ 0.5 step）且 DG 後跟攻命中率提升 ≥ 0.15 或攻方期望硬損降低 ≥ 0.45 step 時給與 `combatGain`。空中砲擊只打主攻目標或己方單位相鄰且未 DG 的敵軍；每格每階段仍只能受一次砲擊（10.0e）。
+- **地面砲擊（`barrageGroupsByCost: 1`，v92 預設；v93 修正效能與 `[1/2]`）**：對戰鬥單位按每個可支付的砲擊表價位，提供結果欄位最高的合法砲組（同價同欄優先較少砲兵；設施砲擊在價位分組查詢時亦保留單砲子集）。目標可見地面戰鬥單位均已 DG 時不再重複計入 DG 收益。`forecastBarrage` 依 OCS 10.0c 區分 `[1/2]`（有正確觀測且非 L3+ 壕溝計 `0.5` 步，否則 `0` 步，v93）。改以期望值 `barrageCombatGain` 評估跟攻增益：`P(DG) × combatGain + E[steps] × 10 − costT × 2.5`（門檻 2）；`barrageFollowUp` 僅掃描該目標格並於 `(actorId, targetHexId)` 快取，消除 200 候選截斷與重複全圖計算（v93）。空中砲擊只打主攻目標或己方單位相鄰且未 DG 的敵軍；每格每階段仍只能受一次砲擊（10.0e）。
+- **模式與燃料保護（v93）**：戰鬥單位於接近敵軍（≤ `stratSafeDistance + 2`）或接近目標（< `stratModeTargetDistance`）時主動由 `STRAT` 切回 `MOVE`，避免在距敵 4 格永久死鎖；單位（含戰鬥模式 `MA = 0` HQ）僅在目前面 `movement > 0` 時支付移動燃料。
 - **砲兵 Combat／Move 模式控制（v92）**：採用零後悔 `artilleryUnitMode` 比較 `projectedReach(..., 'COMBAT')` 與 `projectedReach(..., 'MOVE')` 的最佳目的地評分：僅當 Combat 面最佳格不輸 Move 面超過 2 分且落在安全護衛射界內時轉／維持 `COMBAT`（取得約 2 倍砲擊戰力，且已在目標射界內原地展開時略過不必要的燃料支出），否則轉／維持 `MOVE`（保留 14 MP 機動跟上戰線）。護衛射界格另計 `support-effort (+4)`／`support-attack (+2)`。
 
 設施砲擊逐一計算 Facility Table 的六個等機率結果，再扣除實際供補成本。港口收益包括四次損壞上限與取整後的
@@ -156,9 +157,9 @@
 |---|---|
 | FIRST_PLAYER | 最後一回合、或 VP 落後時（遭遇戰任何回合；攻擊戰只在倒數第二回合）選後手；其他選先手 |
 | SUPPLY_SOURCE | 能付全額的最滿補給堆；沒有補給堆時用內部存量 |
-| DEFENDER_LEAD／DEFENDER_TERRAIN | 對攻方 DRM 或勝率最不利的選項（解析 `−`、`-`、`+`） |
+| DEFENDER_LEAD／DEFENDER_TERRAIN | `DEFENDER_LEAD` 選對攻方 DRM 最低者（解析 `−`、`-`、`+`）；`DEFENDER_TERRAIN` 依 OCS 9.7a Combat Table 欄位索引選最低欄位（同欄再比原始賠率，v93） |
 | STEP_LOSS／ATTRITION_LOSS／OVERSTACK_ELIMINATION | 價值最低的單位 |
-| OPTION_SPLIT | 守目標點時少退優先；身為攻擊方而目標旁有己方持有、有戰鬥單位在上的目標點，且敵方之後還有回合時，也少退優先（攻擊方 option 的退卻是全部攻擊者一起退，v75；投影不公開攻擊者是誰，因此只看相鄰持有點）；攻擊戰的攻方攻擊對方持有的目標點、守方的損失加 option 不少於守方單位數、攻擊單位吸收後仍有 step 時，全以 step 損失吸收以保留前進資格（v88，`optionAdvance`）；其他時候少損失優先 |
+| OPTION_SPLIT | 守目標點時僅在 `retreat === 0` 且吸收損失後仍有 step 存活（`combat.optionStepsLeft > 0`，v93）時少退優先，否則退卻保步；身為攻擊方而目標旁有己方持有、有戰鬥單位在上的目標點，且敵方之後還有回合時同理；攻擊戰的攻方（v88）與遭遇戰兩方（v91）攻擊對方持有的目標點、守方的損失加 option 不少於守方單位數、攻擊單位吸收後仍有 step 時，全以 step 損失吸收以保留前進資格；其他時候少損失優先 |
 | RETREAT_HEX | 見「補給保護」的撤退順序 |
 | DISPLACEMENT_HEX | 敵方威脅最低的格 |
 | ADVANCE_HEX | 見「補給保護」；不讓持有點的唯一守軍前進；非目標點只在威脅 < 8 時前進 |
@@ -205,6 +206,7 @@
 - 兩項事件型改動（v91，使用者決定直接採用，2026-11-18）：攻擊戰攻方沒有下一份口糧也進駐剛打空的目標格（`advanceUnfunded`），
   遭遇戰兩方在 option 中保留前進資格（`meetingOptionAdvance`）。內容見下一節末段。
 - 結構性缺陷修正、期望值地面砲擊與零後悔砲兵模式控制（v92，使用者決定直接升級，2026-11-19：「Promote arty-v3」）：修復 10 項 AI／查詢缺陷（OCS 9.8 Surprise、敵方 DG／Strat／OOS 折損與不可動單位威脅半徑、攻擊子集合 `combatSubsets`、戰區配置 `minProbability` 先濾除後分配後勤、解除 `incomingRe` 重複計算與 `reOf` 預設、`RESUPPLY` 不覆寫戰區目標／集結者、`BARRAGE`/`COMBAT` 主攻對齊、`pickupFor` 實際卡車容量、`planCuts` 留強與 `railStep`/`moveBudget` 預算、全合法階段空中砲擊、`columnIndex < 3` 防呆與 `ADVANCE_HEX` `reinforce-vp` 條件），預設開啟 `barrageGroupsByCost: 1` 搭配 `barrageCombatGain` 期望值評分，並加入零後悔 `artilleryUnitMode`。40 局配對對戰凍結 `heuristic@91`：VP 每對 +1.45 ± 0.99（攻擊戰 +2.40 ± 1.10、遭遇戰 +0.50 ± 1.66，四格全正）、Kill − Loss +4.55 ± 2.02（t = 2.25，K/D 1.23 對 0.81）、Supply +0.03 ± 0.28（[證據](../quality/evidence/ai-v92-bugfix-artillery-2026-11-19/README.md)）。
+- Tier 1 缺陷修正與 BARRAGE 效能／正確性修正（v93，使用者決定直接升級，2026-11-20：「先promote目前的fix」）：修正 7 項 Tier 1 高頻缺陷（戰鬥模式 `MA = 0` HQ 不再付燃料、`DEFENDER_TERRAIN` 改比 Combat Table 欄位索引、`STRAT` 接近敵軍／目標主動切回 `MOVE`、`OPTION_SPLIT` 守點前確認 `optionStepsLeft > 0`、`pickupFor`/`seaStep` 落實 12.2a 與釋放失敗預約、孤立駐軍改為專用救援卡車避免綁架全隊卡車與提前快取 `dryHqs`、規則層 `RESOLVING` 期間 `availableTokens` 停止重複扣除戰鬥補給）以及 5 項 BARRAGE 與戰鬥候選修正（移除 `combat.ts` `reserveInto` 造成之 `traceScopeCache` 失效與 $O(N^2)$ 重算、`barrageFollowUp` 改為單目標掃描消除 200 候選截斷並將最慢決策由 11.3 秒降至 42–179 ms、`combatCandidatesFor` 濾除無資格鄰接單位與檢查 2 格相鄰、`forecastBarrage` 依 10.0c 計算 `[1/2]`、`DECLARE_AIR_MISSION` 預覽改用 `airLaunchHex`）。40 局配對對戰凍結 `heuristic@92`：VP 每對 +1.10 ± 0.90（攻擊戰 +1.30、遭遇戰 +0.90）、Kill − Loss +1.93 ± 1.72、Supply +0.28 ± 0.35（[證據](../quality/evidence/ai-v93-tier1-barrage-2026-11-20/README.md)）。
 
 ### heuristic@88 採用的五項（攻擊戰）
 

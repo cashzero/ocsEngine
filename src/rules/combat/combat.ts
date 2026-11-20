@@ -134,7 +134,7 @@ const renumber = (events: readonly RuleEvent[]): RuleEvent[] => events.map((even
 // ─── Declaration ───────────────────────────────────────────────────────────────────────────────
 
 /** Can `piece` enter `targetHexId` from its Hex under the movement rules (9.1f, 8.1b/c)? */
-const canEnterForCombat = (state: GameState, piece: PieceState, targetHexId: HexId, overrun: boolean): RuleViolation | null => {
+export const canEnterForCombat = (state: GameState, piece: PieceState, targetHexId: HexId, overrun: boolean): RuleViolation | null => {
   const origin = hexOf(piece);
   const mobility = mobilityOf(state, piece);
   if (!origin || !mobility) return violation('ATTACKER_CANNOT_MOVE', ['attackerIds'], 'Attackers must be able to move.', '9.1f');
@@ -153,13 +153,17 @@ const canEnterForCombat = (state: GameState, piece: PieceState, targetHexId: Hex
 
 const attackerNeed = (piece: PieceState): number => stepsOf(piece) * COMBAT_SUPPLY.attackerTokensPerStep;
 
-const reserveInto = (state: GameState, reservations: readonly ResourceReservation[]): GameState => ({
-  ...state,
-  pieceState: reservations.reduce((pieceState, reservation) => {
-    const dump = pieceState.pieces.find(({ id }) => id === reservation.resourcePieceId)!;
-    return upsertPieceState(pieceState, { ...dump, resourceQuantity: (dump.resourceQuantity ?? 0) - reservation.quantity });
-  }, state.pieceState),
-});
+const applyReserved = (dumps: readonly DumpAccess[], reserved: ReadonlyMap<PieceId, number>): readonly DumpAccess[] =>
+  reserved.size === 0 ? dumps : dumps.flatMap((dump) => {
+    const left = dump.availableQuantity - (reserved.get(dump.pieceId) ?? 0);
+    return left > 0 ? [{ ...dump, availableQuantity: left }] : [];
+  });
+
+const addReserved = (reserved: Map<PieceId, number>, payments: readonly ResourceReservation[]): void => {
+  for (const payment of payments) {
+    reserved.set(payment.resourcePieceId, (reserved.get(payment.resourcePieceId) ?? 0) + payment.quantity);
+  }
+};
 
 const mergePayments = (payments: readonly ResourceReservation[]): readonly ResourceReservation[] => {
   const merged = new Map<string, ResourceReservation>();
@@ -179,17 +183,18 @@ export interface DeclaredAttackerSupply {
 
 const tokensIn = (dumps: readonly DumpAccess[]): number => dumps.reduce((total, dump) => total + dump.availableQuantity, 0);
 
-/** Pay one attacker's declared choice from `state`, whose dumps already carry the attackers declared before it. */
+/** Pay one attacker's declared choice from `state`, minus tokens already reserved by earlier attackers. */
 const settleAttackerChoice = (
   state: GameState,
   actorId: PlayerId,
   choice: AttackerSupplyChoice,
   index: number,
+  reserved: ReadonlyMap<PieceId, number>,
 ): { readonly payments: readonly ResourceReservation[]; readonly internal: boolean; readonly violation: RuleViolation | null } => {
   const path = ['attackerSupply', index];
   const piece = pieceById(state, choice.pieceId)!;
   const need = attackerNeed(piece);
-  const dumps = dumpsReachingAll(state, actorId, [piece]);
+  const dumps = applyReserved(dumpsReachingAll(state, actorId, [piece]), reserved);
   if (choice.method === 'INTERNAL') {
     if (internalStocksOf(piece) === 'EXHAUSTED') {
       return { payments: [], internal: false, violation: violation('INTERNAL_STOCKS_EXHAUSTED', path, `${unitName(state, piece)} has Exhausted internal stocks; it attacks only with SP from a dump.`, '12.10c') };
@@ -229,16 +234,16 @@ export const settleDeclaredAttackerSupply = (
   if (ids.length !== attackerIds.length || new Set(ids).size !== ids.length || attackerIds.some((id) => !ids.includes(String(id)))) {
     return { payments: [], internalIds: [], violations: [violation('ATTACKER_SUPPLY_MISMATCH', ['attackerSupply'], 'Declare one combat supply source for each attacking unit.', '9.5')] };
   }
-  let working = state;
+  const reserved = new Map<PieceId, number>();
   const payments: ResourceReservation[] = [];
   const internalIds: PieceId[] = [];
   const violations: RuleViolation[] = [];
   for (const [index, choice] of choices.entries()) {
-    const settled = settleAttackerChoice(working, actorId, choice, index);
+    const settled = settleAttackerChoice(state, actorId, choice, index, reserved);
     if (settled.violation) { violations.push(settled.violation); continue; }
     if (settled.internal) internalIds.push(choice.pieceId);
     payments.push(...settled.payments);
-    working = reserveInto(working, settled.payments);
+    addReserved(reserved, settled.payments);
   }
   return { payments: mergePayments(payments), internalIds, violations };
 };
@@ -268,22 +273,17 @@ export interface AttackerSupplyOptions {
  * The sources one attacker may declare after `prior` (12.10a): each hex of dumps in reach that covers it alone, the
  * dumps in reach together when only together they do, and its internal stocks only when they do not.
  */
-export const attackerSupplyOptions = (
+const attackerSupplyOptionsWithReserved = (
   state: GameState,
   actorId: PlayerId,
-  prior: readonly AttackerSupplyChoice[],
+  reserved: ReadonlyMap<PieceId, number>,
   pieceId: PieceId,
+  hasPrior: boolean,
 ): AttackerSupplyOptions | null => {
   const piece = pieceById(state, pieceId);
   if (!piece || piece.ownerId !== actorId || hexOf(piece) === null) return null;
-  let working = state;
-  for (const [index, choice] of prior.entries()) {
-    if (choice.pieceId === pieceId || !pieceById(state, choice.pieceId)) continue;
-    const settled = settleAttackerChoice(working, actorId, choice, index);
-    if (!settled.violation) working = reserveInto(working, settled.payments);
-  }
   const need = attackerNeed(piece);
-  const dumps = dumpsReachingAll(working, actorId, [piece]);
+  const dumps = applyReserved(dumpsReachingAll(state, actorId, [piece]), reserved);
   const reachable = tokensIn(dumps);
   // Dumps in one hex are one source to the player (as on the map): draw from the largest first.
   const byHex = new Map<HexId, DumpAccess[]>();
@@ -308,8 +308,25 @@ export const attackerSupplyOptions = (
     });
   }
   const reason = options.length > 0 ? null
-    : `Needs ${need}T but ${reachable > 0 ? `only ${reachable}T is` : 'no SP is'} in reach${prior.length > 0 ? ' after the units above' : ''}, and its internal stocks are Exhausted (12.10c).`;
+    : `Needs ${need}T but ${reachable > 0 ? `only ${reachable}T is` : 'no SP is'} in reach${hasPrior ? ' after the units above' : ''}, and its internal stocks are Exhausted (12.10c).`;
   return { pieceId, need, reachable, options, reason };
+};
+
+export const attackerSupplyOptions = (
+  state: GameState,
+  actorId: PlayerId,
+  prior: readonly AttackerSupplyChoice[],
+  pieceId: PieceId,
+): AttackerSupplyOptions | null => {
+  const piece = pieceById(state, pieceId);
+  if (!piece || piece.ownerId !== actorId || hexOf(piece) === null) return null;
+  const reserved = new Map<PieceId, number>();
+  for (const [index, choice] of prior.entries()) {
+    if (choice.pieceId === pieceId || !pieceById(state, choice.pieceId)) continue;
+    const settled = settleAttackerChoice(state, actorId, choice, index, reserved);
+    if (!settled.violation) addReserved(reserved, settled.payments);
+  }
+  return attackerSupplyOptionsWithReserved(state, actorId, reserved, pieceId, prior.length > 0);
 };
 
 /**
@@ -322,9 +339,14 @@ export const defaultAttackerSupply = (state: GameState, actorId: PlayerId, attac
   const ordered = stableSort(attackers, (left, right) =>
     Number(internalStocksOf(right) === 'EXHAUSTED') - Number(internalStocksOf(left) === 'EXHAUSTED'));
   const choices: AttackerSupplyChoice[] = [];
-  for (const piece of ordered) {
-    const option = attackerSupplyOptions(state, actorId, choices, piece.id)?.options[0];
+  const reserved = new Map<PieceId, number>();
+  for (let index = 0; index < ordered.length; index += 1) {
+    const piece = ordered[index]!;
+    const option = attackerSupplyOptionsWithReserved(state, actorId, reserved, piece.id, index > 0)?.options[0];
     if (!option) return null;
+    const settled = settleAttackerChoice(state, actorId, option.choice, index, reserved);
+    if (settled.violation) return null;
+    addReserved(reserved, settled.payments);
     choices.push(option.choice);
   }
   return choices;

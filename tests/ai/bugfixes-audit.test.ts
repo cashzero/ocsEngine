@@ -2,11 +2,12 @@ import { readFileSync } from 'node:fs';
 import { gunzipSync } from 'node:zlib';
 import { describe, expect, it } from 'vitest';
 import {
-  createBotActionAccess, createBotRng, createGameplayFixture, createHeuristicPolicy, forecastCombat,
-  hashGameState, heuristicWeights, parseGameStateJson, ruleEngine, serializeGameState,
-  type GameState, type HexId, type RuleFact,
+  analyze, createBotActionAccess, createBotRng, createGameplayFixture, createHeuristicPolicy, forecastBarrage, forecastCombat,
+  hashGameState, heuristicWeights, parseGameStateJson, respondToDecision, ruleEngine, serializeGameState,
+  type BotDecisionContext, type GameAction, type GameState, type HexId, type RuleFact,
 } from '../../src/index.js';
-import { hexOf, isArtillery, isCombatUnit } from '../../src/rules/pieces.js';
+import { hexOf, isArtillery, isCombatUnit, isHq, usageOf, withUsage } from '../../src/rules/pieces.js';
+import { availableTokens } from '../../src/rules/supply/supply.js';
 
 const factList = (entries: Record<string, string | number>): RuleFact[] =>
   Object.entries(entries).map(([key, value]) => ({ key, value, visibility: 'PUBLIC', ownerId: null }));
@@ -182,4 +183,227 @@ describe('artillery Combat/Move mode control', () => {
     const redeployDecision = await decideForGun(rearState);
     expect(redeployDecision.action).toMatchObject({ kind: 'CHANGE_MODE', pieceId: gun.id, mode: 'MOVE' });
   }, 60_000);
+});
+
+describe('Tier 1 bugfix regressions', () => {
+  it('DEFENDER_TERRAIN ranks by Combat Table column index rather than raw odds ratio', () => {
+    const state = loadBarrageFixture();
+    const actor = state.sequence.actingPlayerId;
+    const projection = ruleEngine.projectForViewer(state, actor);
+    const facts = { scenario: state.scenario, turnLimit: state.configuration.turnLimit };
+    const situation = analyze(projection, actor, facts);
+    const makeCtx = (options: { id: string; label: string; hexId: null }[]): BotDecisionContext => ({
+      seatId: 'seat:test' as BotDecisionContext['seatId'],
+      playerId: actor,
+      rng: createBotRng(7, 'terrain', 0),
+      memory: { stepKey: 'combat', actions: 0, notes: new Map() },
+      view: {
+        projection,
+        pendingDecision: { id: 'dec:terrain', kind: 'DEFENDER_TERRAIN', ownerId: actor, prompt: 'Terrain', options },
+      } as unknown as BotDecisionContext['view'],
+      actions: {
+        families: () => ['RESPOND_DECISION'],
+        candidates: () => options.map((o) => ({
+          actionId: `cand:${o.id}`, actorId: actor, expectedRevision: state.revision,
+          kind: 'RESPOND_DECISION', decisionId: 'dec:terrain', choiceId: o.id,
+        })) as unknown as readonly GameAction[],
+        explain: () => ({ current: true, explanation: { actionKind: 'RESPOND_DECISION', allowed: true, reasons: [], facts: [] } }),
+      } as unknown as BotDecisionContext['actions'],
+    });
+    // Armor in City (EXTREMELY_CLOSE 6:1 = col 4) beats Clear (OPEN 2:1 = col 5) despite higher raw ratio.
+    const armorPick = respondToDecision(makeCtx([
+      { id: 'terrain:terrain:clear', label: 'clear: open line, 20 vs 10, 2:1', hexId: null },
+      { id: 'terrain:settlement:city', label: 'city: extremely close line, 20 vs 3.3, 6:1', hexId: null },
+    ]), situation)!;
+    expect(armorPick.action).toMatchObject({ choiceId: 'terrain:settlement:city' });
+
+    // Infantry in Woods (CLOSE 2:1 = col 4) beats Clear (OPEN 2:1 = col 5) despite clear sorting alphabetically first.
+    const woodsPick = respondToDecision(makeCtx([
+      { id: 'terrain:terrain:clear', label: 'clear: open line, 10 vs 5, 2:1', hexId: null },
+      { id: 'terrain:terrain:woods', label: 'woods: close line, 10 vs 5, 2:1', hexId: null },
+    ]), situation)!;
+    expect(woodsPick.action).toMatchObject({ choiceId: 'terrain:terrain:woods' });
+  });
+
+  it('OPTION_SPLIT retreats instead of suiciding the last step on a held objective', () => {
+    const state = loadBarrageFixture();
+    const actor = state.sequence.actingPlayerId;
+    const objHex = state.configuration.objectives[0]!.hexId;
+    const baseProjection = ruleEngine.projectForViewer(state, actor);
+    const projection = {
+      ...baseProjection,
+      combat: {
+        transactionId: 'tx:opt', kind: 'REGULAR' as const, step: 'RESOLVING' as const,
+        attackerOwnerId: state.scenario.players.find((p) => p.id !== actor)!.id,
+        defenderOwnerId: actor, targetHexId: objHex, defenderCount: 1, result: 'Ao1/Do1',
+      },
+    } as unknown as typeof baseProjection;
+    const facts = { scenario: state.scenario, turnLimit: state.configuration.turnLimit };
+    const situation = analyze(projection, actor, facts);
+    const options = [
+      { id: 'option:1:0', label: 'Lose 1 step', hexId: null },
+      { id: 'option:0:1', label: 'Retreat 1 hex', hexId: null },
+    ];
+    const makeCtx = (stepsLeftOnLoss: number): BotDecisionContext => ({
+      seatId: 'seat:test' as BotDecisionContext['seatId'],
+      playerId: actor,
+      rng: createBotRng(7, 'opt', 0),
+      memory: { stepKey: 'combat', actions: 0, notes: new Map() },
+      view: {
+        projection,
+        pendingDecision: { id: 'dec:opt', kind: 'OPTION_SPLIT', ownerId: actor, prompt: 'Option', options },
+      } as unknown as BotDecisionContext['view'],
+      actions: {
+        families: () => ['RESPOND_DECISION'],
+        candidates: () => options.map((o) => ({
+          actionId: `cand:${o.id}`, actorId: actor, expectedRevision: state.revision,
+          kind: 'RESPOND_DECISION', decisionId: 'dec:opt', choiceId: o.id,
+        })) as unknown as readonly GameAction[],
+        explain: (action: GameAction) => ({
+          current: true,
+          explanation: {
+            actionKind: 'RESPOND_DECISION', allowed: true, reasons: [],
+            facts: [{
+              key: 'combat.optionStepsLeft',
+              value: action.kind === 'RESPOND_DECISION' && action.choiceId === 'option:1:0' ? stepsLeftOnLoss : stepsLeftOnLoss + 1,
+              visibility: 'OWNER_ONLY', ownerId: actor,
+            }],
+          },
+        }),
+      } as unknown as BotDecisionContext['actions'],
+    });
+    // 1-step defender (0 steps left on loss) retreats to survive instead of dying on the objective.
+    expect(respondToDecision(makeCtx(0), situation)!.action).toMatchObject({ choiceId: 'option:0:1' });
+    // 2-step defender (1 step left on loss) takes the step loss to hold the objective.
+    expect(respondToDecision(makeCtx(1), situation)!.action).toMatchObject({ choiceId: 'option:1:0' });
+  });
+
+  it('availableTokens does not double-subtract combat payments once activeTransaction enters RESOLVING', () => {
+    const state = loadBarrageFixture();
+    const dump = state.pieceState.pieces.find((p) => (p.resourceQuantity ?? 0) >= 4)!;
+    const paid = { ...dump, resourceQuantity: 2 };
+    const txBase = {
+      id: 'tx:test' as never,
+      kind: 'REGULAR' as const,
+      ownerId: state.sequence.actingPlayerId,
+      defenderOwnerId: state.scenario.players.find((p) => p.id !== state.sequence.actingPlayerId)!.id,
+      targetHexId: '12,12' as HexId,
+      attackerIds: [],
+      defenderIds: [],
+      leadAttackerId: null,
+      leadDefenderId: null,
+      defenderTerrainId: null,
+      attackerSupplied: true,
+      defenderSupplied: true,
+      attackerPayments: [{ resourcePieceId: dump.id, quantity: 2, sourceHexId: hexOf(dump)! }],
+      defenderPayments: [],
+      attackerInternalIds: [],
+      defenderInternalIds: [],
+      payment: null,
+      surpriseRoll: null,
+      shiftDie: null,
+      roll: null,
+      result: null,
+      queue: [],
+      advancedIds: [],
+      retreatedIds: [],
+      exploitingIds: [],
+    };
+    const duringSetup: GameState = { ...state, activeTransaction: { ...txBase, step: 'DEFENDER_SUPPLY' } as unknown as GameState['activeTransaction'] };
+    const duringResolving: GameState = { ...state, activeTransaction: { ...txBase, step: 'RESOLVING' } as unknown as GameState['activeTransaction'] };
+    expect(availableTokens(duringSetup, paid)).toBe(0);
+    expect(availableTokens(duringResolving, paid)).toBe(2);
+  });
+
+  it('Combat-Mode HQ (MA 0) does not pay fuel when staying in Combat Mode', async () => {
+    const base = loadBarrageFixture();
+    const actor = base.sequence.actingPlayerId;
+    const hq = base.pieceState.pieces.find((p) => p.ownerId === actor && isHq(base, p) && hexOf(p) !== null)!;
+    const dump = base.pieceState.pieces.find((p) => p.ownerId === actor && p.location.kind === 'ON_MAP' && (p.resourceQuantity ?? 0) >= 4)!;
+    const hqHex = hexOf(hq)!;
+    const state: GameState = {
+      ...base,
+      sequence: { ...base.sequence, phase: 'MOVEMENT', segment: 'MOVEMENT' },
+      usage: [],
+      fuel: { formations: [], hqIds: [] },
+      pieceState: {
+        ...base.pieceState,
+        pieces: base.pieceState.pieces.map((p) =>
+          p.id === hq.id ? { ...p, mode: 'COMBAT', currentFaceId: 'combat' as typeof p.currentFaceId }
+            : p.id === dump.id ? { ...p, location: { kind: 'ON_MAP', hexId: hqHex }, stackOrder: 99, resourceQuantity: 8 }
+              : p),
+      },
+    };
+    const fixture = await createGameplayFixture({ scenario: state.scenario, configuration: state.configuration });
+    const snapshot = serializeGameState(state);
+    const hash = await hashGameState(state);
+    if (!snapshot.ok) throw new Error(`Failed to serialize HQ fuel fixture: ${JSON.stringify(snapshot.error.slice(0, 3))}`);
+    if (!hash.ok) throw new Error(`Failed to hash HQ fuel fixture: ${JSON.stringify(hash.error.slice(0, 3))}`);
+    const initial = {
+      ...fixture.session.save(),
+      initialSnapshot: snapshot.value,
+      currentSnapshot: snapshot.value,
+      initialStateHash: hash.value,
+      finalStateHash: hash.value,
+    };
+    const session = await fixture.engine.loadSession(JSON.stringify(initial));
+    session.start();
+    const seat = initial.bindings.find(({ playerId }) => playerId === actor)!;
+    const done = new Set(state.pieceState.pieces.filter((p) => p.ownerId === actor && p.id !== hq.id).map((p) => p.id));
+    const notes = new Map<string, unknown>([['heuristic', {
+      done, modeSet: new Set([hq.id, ...done]), fueled: new Set(done), trucks: new Map(),
+      claims: { tokens: new Map(), unloaded: new Set() }, feedBudget: null, targets: null,
+      stranded: new Map(), hqCovered: new Set(), railDone: true, seaDone: true,
+    }]]);
+    const decision = createHeuristicPolicy({ scenario: state.scenario, turnLimit: state.configuration.turnLimit }).decide({
+      seatId: seat.seatId,
+      playerId: seat.playerId,
+      view: session.getView(seat.seatId),
+      actions: createBotActionAccess(session, seat.seatId),
+      memory: { stepKey: 'move', actions: 0, notes },
+      rng: createBotRng(7, hash.value, 0),
+    })!;
+    expect(decision.action.kind).not.toBe('PAY_FUEL');
+  }, 60_000);
+
+  it('forecastBarrage models [1/2] per OCS 10.0c (spotted vs unspotted / Level 3+ hedgehog)', () => {
+    const col = 8; // 41-68 column has [1/2] results
+    const spotted = forecastBarrage([
+      ...factList({ 'barrage.finalColumn': col, 'barrage.supplyTokens': 6, 'barrage.shifts': 'Hedgehog L2' }),
+      { key: 'barrage.spotter', value: true, visibility: 'PUBLIC', ownerId: null },
+    ])!;
+    const unspotted = forecastBarrage([
+      ...factList({ 'barrage.finalColumn': col, 'barrage.supplyTokens': 6, 'barrage.shifts': 'No spotter' }),
+      { key: 'barrage.spotter', value: false, visibility: 'PUBLIC', ownerId: null },
+    ])!;
+    const dugL3 = forecastBarrage([
+      ...factList({ 'barrage.finalColumn': col, 'barrage.supplyTokens': 6, 'barrage.shifts': 'Hedgehog L3' }),
+      { key: 'barrage.spotter', value: true, visibility: 'PUBLIC', ownerId: null },
+    ])!;
+    expect(spotted.expectedSteps).toBeGreaterThan(unspotted.expectedSteps);
+    expect(dugL3.expectedSteps).toBeCloseTo(unspotted.expectedSteps, 6);
+  });
+
+  it('combatCandidatesFor excludes already-attacked units so legal combined attacks remain available', () => {
+    const base = loadBarrageFixture();
+    const combatState: GameState = { ...base, sequence: { ...base.sequence, segment: 'COMBAT' } };
+    const actor = combatState.sequence.actingPlayerId;
+    const before = ruleEngine.getActionCandidates(combatState, {
+      actorId: actor, kind: 'DECLARE_COMBAT', pieceId: null, budget: 200, combatSubsets: true,
+    }).actions.filter((a) => a.kind === 'DECLARE_COMBAT' && a.targetHexId === '12,12');
+    const full = before[0]!;
+    expect(full.kind).toBe('DECLARE_COMBAT');
+    if (full.kind !== 'DECLARE_COMBAT' || full.attackerIds.length < 3) return;
+    const spentPiece = combatState.pieceState.pieces.find((p) => p.id === full.attackerIds[0])!;
+    const withSpent: GameState = {
+      ...combatState,
+      usage: withUsage(combatState, { ...usageOf(combatState, spentPiece), attacked: true }),
+    };
+    const after = ruleEngine.getActionCandidates(withSpent, {
+      actorId: actor, kind: 'DECLARE_COMBAT', pieceId: null, budget: 200, combatSubsets: true,
+    }).actions.filter((a) => a.kind === 'DECLARE_COMBAT' && a.targetHexId === '12,12');
+    // The remaining eligible attackers must still form a combined multi-unit attack (not collapse to singletons).
+    expect(after.some((a) => a.kind === 'DECLARE_COMBAT' && a.attackerIds.length === full.attackerIds.length - 1
+      && !a.attackerIds.includes(spentPiece.id))).toBe(true);
+  });
 });

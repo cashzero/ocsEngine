@@ -1,11 +1,10 @@
 import type { PlayerId } from '../core/index.js';
 import { attackerSupplyOptions, findBarragePaymentPlan, optionChoiceFacts, previewBarrage, previewCombat, setModeForHex } from './combat/combat.js';
 import { plannedAttack } from './combat/strength.js';
-import { inPatrolZoneOf } from './air/aircraft.js';
+import { airLaunchHex, friendlyAirBaseAt, inPatrolZoneOf } from './air/aircraft.js';
 import { AIR_MISSION_LABELS, flakModifiers, missionBarrageStrength, previewAirBarrage } from './air/mission.js';
 import { cargoCapacity, cargoWeight, countedUnloadTokens, dropMethod, halfTokenText, landingFailureMaximum, unloadLimitTokens, unloadedAt } from './air/transport.js';
-import { friendlyAirBaseAt } from './air/aircraft.js';
-import { hexOf, opponentOf, pieceById } from './pieces.js';
+import { opponentOf, pieceById } from './pieces.js';
 import { BARRAGE_TABLE_COLUMNS, FACILITY_TABLE_COLUMNS, facilityColumnIndex } from './tables/ocs-4.3.js';
 import type { GameAction, GameState } from './kernel/model.js';
 import { applyGameAction } from './kernel/reducer.js';
@@ -106,7 +105,11 @@ const actionFacts = (state: GameState, action: GameAction): readonly RuleFact[] 
       publicFact('air.strength', strength),
     ];
     if (action.target === 'COMBAT_UNITS') {
-      const aircraft = action.aircraftIds.flatMap((id) => { const piece = pieceById(state, id); return piece && hexOf(piece) ? [{ pieceId: id, baseHexId: hexOf(piece)! }] : []; });
+      const aircraft = action.aircraftIds.flatMap((id) => {
+        const piece = pieceById(state, id);
+        const launch = piece ? airLaunchHex(state, piece, action.targetHexId) : null;
+        return launch ? [{ pieceId: id, baseHexId: launch }] : [];
+      });
       const preview = previewAirBarrage(state, action.actorId, aircraft, action.targetHexId);
       facts.push(
         publicFact('air.initialColumn', BARRAGE_TABLE_COLUMNS[preview.initialColumn]!.label),
@@ -144,24 +147,30 @@ const actionFacts = (state: GameState, action: GameAction): readonly RuleFact[] 
   return [];
 };
 
-const beforeBarrageCache = new WeakMap<GameState, NonNullable<RuleExplanation['barrageFollowUp']>['before']>();
+const beforeBarrageCache = new WeakMap<GameState, Map<string, NonNullable<RuleExplanation['barrageFollowUp']>['before']>>();
 
 const barrageFollowUp = (
   state: GameState, action: Extract<GameAction, { kind: 'DECLARE_BARRAGE' }>, stage: BarrageFollowUpStage,
 ): RuleExplanation['barrageFollowUp'] => {
   if (!['COMBAT', 'EXPLOITATION'].includes(state.sequence.phase) || (action.target ?? 'COMBAT_UNITS') !== 'COMBAT_UNITS') return undefined;
   const combatState: GameState = { ...state, sequence: { ...state.sequence, segment: 'COMBAT' } };
-  const attackOptions = (position: GameState) => combatCandidatesFor(position, action.actorId, 'REGULAR', null, true)
-    .slice(0, 200).flatMap((attack) => attack.kind === 'DECLARE_COMBAT' ? [{
+  const attackOptions = (position: GameState) => combatCandidatesFor(position, action.actorId, 'REGULAR', null, true, action.targetHexId)
+    .flatMap((attack) => attack.kind === 'DECLARE_COMBAT' ? [{
       action: { ...attack, defenderIds: [] },
       facts: actionFacts(position, attack).filter(({ key }) => key !== 'combat.defenderCanPay'),
     }] : []);
-  let before = beforeBarrageCache.get(state);
+  let byTarget = beforeBarrageCache.get(state);
+  if (!byTarget) {
+    byTarget = new Map();
+    beforeBarrageCache.set(state, byTarget);
+  }
+  const cacheKey = `${action.actorId}:${action.targetHexId}`;
+  let before = byTarget.get(cacheKey);
   if (!before) {
     before = attackOptions(combatState);
-    beforeBarrageCache.set(state, before);
+    byTarget.set(cacheKey, before);
   }
-  if (stage === 'BEFORE_PAYMENT' || !before.some(({ action: attack }) => attack.targetHexId === action.targetHexId)) return { before, after: [] };
+  if (stage === 'BEFORE_PAYMENT' || before.length === 0) return { before, after: [] };
   const price = previewBarrage(state, action.actorId, action.firerIds, action.targetHexId).supplyTokens;
   let paid: GameState | null = null;
   findBarragePaymentPlan(state, action, (payments) => {

@@ -24,7 +24,7 @@ import {
   movingPieceIds,
   stepOf,
 } from '../pieces.js';
-import { defaultAttackerSupply } from '../combat/combat.js';
+import { barrageFirerViolations, canEnterForCombat, defaultAttackerSupply } from '../combat/combat.js';
 import { combatActionRating } from '../combat/strength.js';
 import { combineCandidates, refitCandidates } from '../air/base.js';
 import { constructionHexes, constructionOptions, isEngineerCapable, largestFirstPayments } from '../air/construction.js';
@@ -77,10 +77,20 @@ export const combatCandidatesFor = (
   combatKind: 'REGULAR' | 'OVERRUN',
   pieceId: PieceId | null,
   combatSubsets = false,
+  targetHexId: HexId | null = null,
 ): readonly GameAction[] => {
   const actions: GameAction[] = [];
-  const friendly = friendlyOnMap(state, actorId).filter((piece) => isAttackCapable(state, piece));
-  const targets = [...new Set(friendly.flatMap((piece) => enemyHexesAdjacentTo(state, actorId, hexOf(piece)!)))].sort();
+  const inExploitation = state.sequence.phase === 'EXPLOITATION';
+  const friendly = friendlyOnMap(state, actorId).filter((piece) => {
+    if (!isAttackCapable(state, piece)) return false;
+    const usage = usageOf(state, piece);
+    if (combatKind === 'REGULAR' && usage.attacked) return false;
+    if (inExploitation && piece.mode !== 'EXPLOITATION' && !usage.reserveReleased) return false;
+    return true;
+  });
+  const targets = targetHexId !== null
+    ? (enemyCombatUnitsAt(state, actorId, targetHexId).length > 0 ? [targetHexId] : [])
+    : [...new Set(friendly.flatMap((piece) => enemyHexesAdjacentTo(state, actorId, hexOf(piece)!)))].sort();
   const heldObjectives = combatKind === 'REGULAR'
     ? new Set(state.configuration.objectives
       .filter((objective) => state.mapState.hexControl.some((control) => control.hexId === objective.hexId && control.controllerId === actorId))
@@ -97,7 +107,9 @@ export const combatCandidatesFor = (
   };
   for (const target of targets) {
     const defenderIds = enemyCombatUnitsAt(state, actorId, target).map(({ id }) => id).sort();
-    const adjacent = friendly.filter((piece) => adjacentHexIds(target).includes(hexOf(piece)!));
+    const adjacent = friendly.filter((piece) =>
+      adjacentHexIds(target).includes(hexOf(piece)!)
+      && canEnterForCombat(state, piece, target, combatKind === 'OVERRUN') === null);
     const candidate = (group: readonly PieceState[]): GameAction | null => {
       // 9.5: the supply each attacker declares, Exhausted units first; a group some unit cannot supply is no candidate.
       const attackerSupply = defaultAttackerSupply(state, actorId, group.map(({ id }) => id));
@@ -166,7 +178,12 @@ export const combatCandidatesFor = (
           right.reduce((sum, piece) => sum + strengthOf(piece), 0) - left.reduce((sum, piece) => sum + strengthOf(piece), 0)
           || String(hexOf(left[0]!)!).localeCompare(String(hexOf(right[0]!)!)));
         if (hexGroups.length >= 2) addGroup(hexGroups[0]!);
-        if (hexGroups.length >= 3) addGroup([...hexGroups[0]!, ...hexGroups[1]!]);
+        if (hexGroups.length >= 3) {
+          const anchorHex = hexOf(hexGroups[0]![0]!)!;
+          // 9.13bC: Exploitation requires attacking from 1 hex or 2 adjacent hexes.
+          const partner = hexGroups.slice(1).find((group) => hexDistanceBetween(anchorHex, hexOf(group[0]!)!) === 1);
+          if (partner) addGroup([...hexGroups[0]!, ...partner]);
+        }
       }
       if (added === 0 || adjacent.length === 2) {
         for (const piece of adjacent) addGroup([piece]);
@@ -196,9 +213,12 @@ const scanBarrages = (
     if (enemyPortTarget(state, actorId, targetHexId)) targets.push('PORT');
     if (targets.length === 0) continue;
     hasTargets = true;
-    const inRange = artillery.filter((piece) => hexDistanceBetween(hexOf(piece)!, targetHexId) <= (stepOf(state, piece)?.range ?? 0));
+    const inRange = artillery.filter((piece) =>
+      hexDistanceBetween(hexOf(piece)!, targetHexId) <= (stepOf(state, piece)?.range ?? 0)
+      && (blockers !== undefined || barrageFirerViolations(state, actorId, targetHexId, piece).length === 0));
     if (inRange.length === 0 && !blockers) continue;
-    const defaultGroups = inRange.length > 0 ? [inRange, ...inRange.map((piece) => [piece])] : artillery.map((piece) => [piece]);
+    const defaultGroups = inRange.length > 1 ? [inRange, ...inRange.map((piece) => [piece])]
+      : inRange.length === 1 ? [inRange] : artillery.map((piece) => [piece]);
     for (const target of targets) {
       const groups = target === 'COMBAT_UNITS' && supplyGroups !== null
         ? groundBarrageGroups(state, actorId, targetHexId, inRange, supplyGroups) : defaultGroups;
@@ -210,7 +230,7 @@ const scanBarrages = (
           kind: 'DECLARE_BARRAGE', target, firerIds: group.map(({ id }) => id), targetPieceIds, targetHexId,
         };
         const validation = validateGameAction(state, action);
-        if (validation.allowed) { actions.push(action); if (group === inRange) break; }
+        if (validation.allowed) { actions.push(action); if (group === inRange && (!groundBarrageGroupsByCost || target === 'COMBAT_UNITS')) break; }
         else if (blockers) for (const { code } of validation.violations) {
           const blocker = barrageBlocker(code);
           if (blocker) blockers.add(blocker);
