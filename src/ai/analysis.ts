@@ -91,7 +91,7 @@ export const analyze = (projection: RuleProjection, playerId: PlayerId, facts: B
     const hexId = stack.location.hexId;
     for (const piece of stack.pieces) {
       // An Extender cannot move or carry (12.7): it is a Supply Source, not a unit the policy moves.
-      if (piece.ownerId === playerId) { if (!(piece.role === 'TRUCK' && piece.currentFaceId === 'extender')) own.push({ piece, hexId, profile: knowledge.profile(piece) }); }
+      if (piece.ownerId === playerId) { if (piece.role !== 'EXTENDER' && !(piece.role === 'TRUCK' && piece.currentFaceId === 'extender')) own.push({ piece, hexId, profile: knowledge.profile(piece) }); }
       else {
         const entry = enemyPieces.get(hexId) ?? { pieces: [], hidden: 0 };
         entry.pieces.push(piece);
@@ -106,7 +106,8 @@ export const analyze = (projection: RuleProjection, playerId: PlayerId, facts: B
   }
   const enemyEffectiveStrength = (piece: ProjectedPiece, base: number): number => {
     let factor = 1;
-    // 5.10b DG, 5.8b Strat Mode, 12.8c Out of Supply each halve combat strength.
+    // 5.10b DG and 12.8c Out of Supply halve combat strength; 5.8b Strat Mode defends at 0 right now but flips to Combat
+    // Mode on the enemy's next turn, so keep 0.5x strategic strength (0 blinds threatAt and marks divisions as weak HUNT targets).
     if (piece.mode === 'DG' || piece.mode === 'STRAT') factor *= 0.5;
     if (piece.statuses.includes('status:out-of-supply')) factor *= 0.5;
     return base * factor;
@@ -171,6 +172,8 @@ export const analyze = (projection: RuleProjection, playerId: PlayerId, facts: B
             const profile = knowledge.profile(piece);
             const strength = enemyEffectiveStrength(piece, profile?.strength ?? 0);
             visibleStrength += strength;
+            // HQs and Artillery defend their own hex (13.1c/13.4b) but never initiate ground assaults.
+            if (piece.role !== 'COMBAT') continue;
             const movement = profile?.movement ?? 0;
             // Immobile units (MA 0 garrisons) only threaten adjacent hexes; DG halves MA (5.10b).
             if (movement <= 0) {

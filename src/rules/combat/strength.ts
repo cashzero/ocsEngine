@@ -291,7 +291,7 @@ export const plannedAttack = (state: GameState, actorId: PlayerId, attackerIds: 
       strengths: attackers.map((piece) => ({
         pieceId: piece.id,
         strength: combatSideStrength(state, piece) * antiTankAdjusted(state, piece, multiplierFor(terrain.multipliers, combatClass(state, piece)), defenderAntiTank)
-          * stepLossFactor(state, piece, true),
+          * stepLossFactor(state, piece, true) * (piece.mode === 'DG' ? 0.5 : 1) * supplyFactor(piece, true),
       })),
     })),
   };

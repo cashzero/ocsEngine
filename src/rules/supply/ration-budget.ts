@@ -123,7 +123,16 @@ export const advanceRationsPreserved = (before: GameState, after: GameState, act
     // consumers the feeding priority admits merely when the transaction resolves.
     activeTransaction: null, pendingDecision: null,
   };
-  const original = nextSupply(before), future = afterRequiredRecovery(nextSupply(after), actorId);
+  const original = nextSupply(before);
+  const beforeRecovery = requiredRecoveryOutcome(original, actorId);
+  const afterRecovery = requiredRecoveryOutcome(nextSupply(after), actorId);
+  const lowered = [...beforeRecovery.levels].some(([id, level]) => {
+    const piece = pieceById(original, id);
+    if (!piece || pieceHasTrace(original, piece)) return false;
+    return STOCKS_RANK[afterRecovery.levels.get(id) ?? internalStocksOf(piece)] < STOCKS_RANK[level];
+  });
+  if (lowered) return false;
+  const future = afterRecovery.state;
   const wanted = new Set([...rationPlan(original, actorId).demands.map(d => d.id), ...advancingIds]);
   const { demands, sources } = problem(future, actorId);
   const requested = demands.filter(d => wanted.has(d.id));
@@ -141,9 +150,11 @@ export const rationBudgetFacts = (state: GameState, action: GameAction): readonl
     const plan = rationPlan(state, action.actorId);
     return [fact('supply.rationGroups', JSON.stringify(plan.groups)), fact('supply.rationSearchExhausted', plan.exhausted)];
   }
-  // Exploitation is after this turn's Supply. Future-turn reservations need a logistics plan;
-  // do not charge a second ration for a Supply phase that has already happened.
-  if (state.sequence.phase !== 'MOVEMENT' || state.sequence.phasingPlayerId !== action.actorId) {
+  // Exploitation is after this turn's Supply; Reaction on playerTurnIndex 0 for the non-phasing player still precedes their Supply.
+  // Future-turn reservations need a logistics plan; do not charge a second ration for a Supply phase that has already happened.
+  const beforeOwnSupply = (state.sequence.phase === 'MOVEMENT' && state.sequence.phasingPlayerId === action.actorId)
+    || (state.sequence.phase === 'REACTION' && state.sequence.playerTurnIndex === 0 && state.sequence.phasingPlayerId !== action.actorId);
+  if (!beforeOwnSupply) {
     return [fact('supply.rationCommitmentsPreserved', true), fact('supply.rationBudgetApplicable', false)];
   }
   const plan = rationPlan(state, action.actorId);

@@ -523,11 +523,13 @@ export const queryProjectedReachableHexes = (
   if (piece?.location.kind === 'ON_MAP' && enemyCombatUnitsAt(state, piece.ownerId, fromHexId).length > 0) {
     return { allowed: false, value: [], reasons: [{ code: 'ENEMY_OCCUPIED_ORIGIN', allowed: false, message: 'Enemy combat units hold the origin Hex.', rule: '6.1' }], facts: [], dependencies: [] };
   }
+  const existingUsage = piece ? usageOf(state, piece) : null;
+  const ownBridgeHexId = piece && fromHexId === hexOf(piece) ? existingUsage?.ownBridgeHexId : undefined;
   const projected: GameState = piece?.location.kind === 'ON_MAP' ? {
     ...state, activeTransaction: null, pendingDecision: null, currentMoverId: null,
     sequence: { ...state.sequence, phase: 'MOVEMENT', segment: 'MOVEMENT', phasingPlayerId: actorId, actingPlayerId: actorId },
     pieceState: { ...state.pieceState, pieces: state.pieceState.pieces.map((entry) => (entry.id === pieceId ? { ...entry, location: { kind: 'ON_MAP' as const, hexId: fromHexId } } : entry)) },
-    usage: withUsage(state, { ...emptyUsage(pieceId, fromHexId), fueled: true }),
+    usage: withUsage(state, { ...emptyUsage(pieceId, fromHexId), fueled: true, ...(ownBridgeHexId !== undefined ? { ownBridgeHexId } : {}) }),
     air: { ...state.air, builderIds: state.air.builderIds.filter((id) => id !== pieceId) },
   } : state;
   const changed = mode !== undefined && piece && validateModeChange(projected, actorId, pieceId, mode).length === 0

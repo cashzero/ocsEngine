@@ -105,6 +105,7 @@ const planCuts = (context: BotDecisionContext, situation: Situation, w: Heuristi
   const stacks = [...situation.enemy.values()].filter((stack) => stack.hasCombatUnit);
   const movers = situation.own.filter((unit) => situation.isCombatUnit(unit) && unit.piece.role === 'COMBAT' && !garrisons.has(unit.piece.id)
     && (unit.profile?.strength ?? 0) > 0
+    && unit.piece.mode !== 'DG' && !unit.piece.statuses.includes('status:out-of-supply')
     && (context.actions.movementRange(unit.piece.id).length > 0 || context.actions.candidates('PAY_FUEL', unit.piece.id).length > 0))
     .sort((left, right) => String(left.piece.id).localeCompare(String(right.piece.id)));
   const options = new Map<string, { unit: OwnUnit; around: number }>();
@@ -236,10 +237,17 @@ const artilleryUnitMode = (
     if (!escorted && dist <= w.artilleryEscortDistance) return false;
     return reach.has(hexId) || feedSourceFor(notes, feeds, unit, hexId) !== null;
   };
-  const hasFuelOption = context.actions.movementRange(unit.piece.id).length > 0
-    || context.actions.candidates('PAY_FUEL', unit.piece.id).length > 0;
+  const currentFace = unit.piece.currentFaceId === 'combat' ? 'combat' : 'move';
+  const currentNeedsFuel = needsFuelOnFace(facts, unit, currentFace);
+  // On a motorized face, check actual movementRange or PAY_FUEL; on a free-moving Leg face, check whether a dump reaches
+  // this hex so flipping to a motorized Move face will actually be able to pay fuel instead of stranding at 0 MP.
+  const hasFuelOption = (currentNeedsFuel && context.actions.movementRange(unit.piece.id).length > 0)
+    || context.actions.candidates('PAY_FUEL', unit.piece.id).length > 0
+    || (!currentNeedsFuel && feeds.some(({ tokens, hexIds }) => tokens > 0 && hexIds.includes(unit.hexId)));
   const canMoveCombat = !needsFuelOnFace(facts, unit, 'combat') || hasFuelOption;
   const canMoveMove = !needsFuelOnFace(facts, unit, 'move') || hasFuelOption;
+  // Never flip an unfueled towed gun off its free-moving Leg Combat face onto its immobile Truck Move face.
+  if (!canMoveMove && canMoveCombat) return 'COMBAT';
   const scoreHex = (hexId: HexId): number => sum(scoreDestination(
     situation, unit, undefined, hexId === unit.hexId ? [unit.hexId] : [unit.hexId, hexId],
     notes, reach, direct, front, w, feeds, opponentTurnRemains, effort, engaged,
@@ -350,6 +358,8 @@ interface StepNotes {
   readonly stranded: Map<PieceId, HexId>;
   /** heuristic@79: hexes within draw range (12.3a) of a station SP can be railed to this step. */
   railDraw?: ReadonlySet<string>;
+  /** Direct dump draw hexes (12.3a): where an HQ can draw SP itself to throw on (12.3b prohibits HQ daisy-chaining). */
+  directDumpHexes?: ReadonlySet<string>;
   /** heuristic@79: HQs no dump reaches when the trucks move, by hex, with the front strength each would throw to. */
   dryHqs?: Map<HexId, number>;
   /** heuristic@79: units an HQ that has already moved this step will throw to (12.3b); the next HQ covers others. */
@@ -646,7 +656,7 @@ const scoreDestination = (
   const presentRe = situation.friendlyAt(destination)
     .filter((other) => other.piece.id !== unit.piece.id)
     .reduce((total, other) => total + reOf(other), 0);
-  if (presentRe + reOf(unit) > STACKING_LIMIT_RE && path.length > 1) add('overstack', -1000);
+  if (presentRe + reOf(unit) > STACKING_LIMIT_RE) add('overstack', -1000);
   if (unit.piece.role === 'COMBAT') {
     // Strat Mode units defend badly and lose their ZOC: keep them well away from the enemy (5.8).
     if (unit.piece.mode === 'STRAT' && situation.nearestEnemy(destination).distance <= w.stratSafeDistance) add('strat-near-enemy', -w.stratNearEnemy);
@@ -702,9 +712,10 @@ const scoreDestination = (
     else if (front) add('with-army', -hexesBetween(destination, front) * w.hqWithArmy);
     if (situation.nearestEnemy(destination).distance <= 2) add('hq-exposed', -w.hqExposed);
     if (coverage && !coverage.has(destination)) add('out-of-supply', -w.hqOutOfSupply);
-    // heuristic@79: an HQ exists to throw supply (12.3b). It stays where SP can reach it this turn: a dump already in its draw
-    // range, or a station within draw range that Rail Cap fills after the HQs move (13.3c); beyond that it throws nothing.
-    const supplied = feeds.some(({ tokens, hexIds }) => tokens > 0 && hexIds.includes(destination))
+    // heuristic@79: an HQ exists to throw supply (12.3b). It stays where SP can reach it directly this turn (12.3a/12.3b:
+    // HQs cannot daisy-chain off another HQ's throw), or a station within draw range that Rail Cap fills after the HQs move (13.3c).
+    const supplied = (notes.directDumpHexes?.has(String(destination))
+        ?? feeds.some(({ tokens, hexIds }) => tokens > 0 && hexIds.includes(destination)))
       || (notes.railDraw?.has(String(destination)) ?? false);
     if (!supplied) add('off-rail-draw', -w.hqOffRail);
     // heuristic@79: each HQ throws to a part of the front the HQs before it do not reach, instead of all following one point;
@@ -747,15 +758,17 @@ const eatingCost = (unit: OwnUnit): number => Math.max(1, Math.ceil((unit.profil
  */
 const feedSourceFor = (notes: StepNotes, feeds: readonly FeedSource[], unit: OwnUnit, destination: HexId): string | null => {
   notes.feedBudget ??= new Map();
+  notes.feedSeen ??= new Map();
   const cost = eatingCost(unit);
   for (const { dumpId, tokens, hexIds } of feeds) {
     if (!notes.feedBudget.has(dumpId)) notes.feedBudget.set(dumpId, tokens);
-    else if (notes.truckPlan?.size) {
-      // SP a placed truck added to this dump since it was last seen.
-      const seen = (notes.feedSeen ??= new Map()).get(dumpId);
+    else {
+      const seen = notes.feedSeen.get(dumpId);
+      // SP a placed truck added to this dump since it was last seen; clamp down if mid-phase fuel/rail/load spent SP.
       if (seen !== undefined && tokens > seen) notes.feedBudget.set(dumpId, notes.feedBudget.get(dumpId)! + tokens - seen);
+      else if (tokens < notes.feedBudget.get(dumpId)!) notes.feedBudget.set(dumpId, tokens);
     }
-    if (notes.truckPlan?.size) (notes.feedSeen ??= new Map()).set(dumpId, tokens);
+    notes.feedSeen.set(dumpId, tokens);
     if (notes.feedBudget.get(dumpId)! >= cost && hexIds.includes(destination)) return dumpId;
   }
   return null;
@@ -945,9 +958,13 @@ const needsFuel = (facts: BotGameFacts, unit: OwnUnit): boolean => {
 const strandedCenter = (context: BotDecisionContext, situation: Situation, notes: StepNotes): { hexId: HexId; drops: HexId[] } | null => {
   const stranded = (hexId: HexId) => situation.own.filter((unit) => notes.stranded.has(unit.piece.id) && hexesBetween(unit.hexId, hexId) <= STRANDED_DROP_RADIUS)
     .reduce((total, unit) => total + Math.max(1, unit.profile?.strength ?? 0), 0);
-  // A dry HQ (no dump reaches it, 12.3b) is worth the front strength it would throw to once a load arrives beside it.
+  // A dry HQ (no dump or loaded truck reaches it directly, 12.3a/12.3b) is worth the front strength it would throw to once a load arrives beside it.
+  const directDumpReach = notes.directDumpHexes ?? new Set(situation.own
+    .filter((unit) => (unit.piece.role === 'DUMP' && (unit.piece.resourceQuantity ?? 0) > 0)
+      || (unit.piece.role === 'TRUCK' && (unit.piece.carriedTokens ?? 0) > 0))
+    .flatMap((dump) => [...context.actions.drawReach(dump.hexId)]));
   notes.dryHqs ??= new Map(situation.own.filter((unit) => unit.piece.role === 'HQ'
-    && !context.actions.feedCoverage(unit.piece.id).some(({ tokens, hexIds }) => tokens > 0 && hexIds.includes(unit.hexId)))
+    && !directDumpReach.has(String(unit.hexId)))
     .map((hq) => [hq.hexId, frontUnitsInThrow(situation, { ...notes, hqCovered: new Set() }, hq, hq.hexId)
       .reduce((total, unit) => total + Math.max(1, unit.profile?.strength ?? 0), 0)]));
   const worth = (hexId: HexId) => stranded(hexId) + (notes.dryHqs!.get(hexId) ?? 0);
@@ -1018,16 +1035,22 @@ const truckStep = (context: BotDecisionContext, situation: Situation, facts: Bot
         || situation.nearestEnemy(hexId).distance < PICKUP_SAFE_DISTANCE || hexesBetween(hexId, drop) <= DELIVERED_RADIUS) continue;
       stock.set(hexId, (stock.get(hexId) ?? 0) + (piece.resourceQuantity ?? 0));
     }
-    let best: { hexId: HexId; claimed: number; cost: number } | null = null;
+    const capacity = truckCapacityTokens(facts, unit);
+    let best: { hexId: HexId; claimed: number; satisfies: number; cost: number } | null = null;
     for (const [hexId, tokens] of stock) {
-      // SP railed in this step cannot be loaded again (12.2a).
-      const claimed = Math.min(tokens - (notes.railedTo?.get(hexId) ?? 0) - (notes.claims.tokens.get(hexId) ?? 0), wanted);
+      // SP railed in this step cannot be loaded again (12.2a); claim the full load that loadHere(false) will actually take.
+      const available = tokens - (notes.railedTo?.get(hexId) ?? 0) - (notes.claims.tokens.get(hexId) ?? 0);
+      const claimed = Math.min(available, capacity);
+      const satisfies = Math.min(claimed, wanted);
       const reached = from.get(hexId);
-      if (claimed <= 0 || reached === undefined) continue;
+      if (satisfies <= 0 || reached === undefined) continue;
       const onward = actions.projectedReach(id, hexId).find((entry) => entry.hexId === drop)?.costTicks;
       if (onward === undefined || reached + loadTicks + onward + loadTicks > ma) continue;
       const cost = reached + onward;
-      if (best === null || claimed > best.claimed || (claimed === best.claimed && (cost < best.cost || (cost === best.cost && String(hexId) < String(best.hexId))))) best = { hexId, claimed, cost };
+      if (best === null || satisfies > best.satisfies
+        || (satisfies === best.satisfies && (claimed > best.claimed || (claimed === best.claimed && (cost < best.cost || (cost === best.cost && String(hexId) < String(best.hexId))))))) {
+        best = { hexId, claimed, satisfies, cost };
+      }
     }
     if (best) notes.claims.tokens.set(best.hexId, (notes.claims.tokens.get(best.hexId) ?? 0) + best.claimed);
     return best;
@@ -1228,8 +1251,8 @@ const planExtender = (context: BotDecisionContext, situation: Situation, facts: 
   if (!(w.extenderPlan > 0) || !situation.attack || situation.defending || projection?.sequence.phase !== 'MOVEMENT'
     || situation.turnsLeft < 2) return null;
   // The situation leaves Extenders out (they do not move or carry): look for one in the projection.
-  if (projection.stacks.some(({ pieces }) => pieces.some((piece) => piece.ownerId === situation.playerId && piece.role === 'TRUCK'
-    && piece.currentFaceId === 'extender'))) return null;
+  if (projection.stacks.some(({ pieces }) => pieces.some((piece) => piece.ownerId === situation.playerId
+    && (piece.role === 'EXTENDER' || (piece.role === 'TRUCK' && piece.currentFaceId === 'extender'))))) return null;
   const empty = situation.own.filter((unit) => unit.piece.role === 'TRUCK' && (unit.piece.carriedTokens ?? 0) === 0);
   const pointsOf = (units: readonly OwnUnit[]) => units.reduce((total, unit) => total + transportPoints(facts, unit), 0);
   if (pointsOf(empty) < EXTENDER_POINTS) return null;
@@ -1425,12 +1448,29 @@ const SEA_SAFE_DISTANCE = 3;
  * the front that is safe from the enemy; then cargo in a port far behind the front moves by sea to a port nearer it, as rail
  * does. Sea Cap and port capacity decide how much lands each turn.
  */
-const seaStep = (context: BotDecisionContext, situation: Situation, notes: StepNotes, front: HexId | null): BotDecision | null => {
+const seaStep = (context: BotDecisionContext, situation: Situation, facts: BotGameFacts, notes: StepNotes, front: HexId | null): BotDecision | null => {
   if (notes.seaDone || front === null) return null;
   const roleOf = new Map((context.view.projection?.stacks ?? []).flatMap(({ pieces }) => pieces).map((piece) => [String(piece.id), piece.role]));
+  const reserved = new Map<string, number>();
+  for (const [truckId, placement] of notes.truckPlan ?? []) {
+    const truck = situation.own.find(({ piece }) => piece.id === truckId);
+    if (placement.pickup === null || notes.truckDelivered?.has(truckId) || !truck || (truck.piece.carriedTokens ?? 0) > 0) continue;
+    reserved.set(String(placement.pickup), (reserved.get(String(placement.pickup)) ?? 0) + truckCapacityTokens(facts, truck));
+  }
+  const loadableAt = (hexId: HexId) => situation.own.filter((unit) => unit.piece.role === 'DUMP' && unit.hexId === hexId && !String(unit.piece.id).includes('-stock-'))
+    .reduce((total, unit) => total + (unit.piece.resourceQuantity ?? 0), 0) - (notes.railedTo?.get(hexId) ?? 0);
   let best: { action: GameAction; value: number; why: string } | null = null;
-  for (const action of context.actions.candidates('SEA_MOVE', null, 400)) {
-    if (action.kind !== 'SEA_MOVE') continue;
+  for (const candidate of context.actions.candidates('SEA_MOVE', null, 400)) {
+    if (candidate.kind !== 'SEA_MOVE') continue;
+    let action = candidate;
+    if (action.fromHexId !== null) {
+      const kept = reserved.get(String(action.fromHexId)) ?? 0;
+      if (kept > 0 && action.supply.length > 0) {
+        const allowed = Math.min(action.supply[0]!.tokens, loadableAt(action.fromHexId) - kept);
+        if (allowed <= 0) continue;
+        action = { ...action, supply: [{ ...action.supply[0]!, tokens: allowed }] };
+      }
+    }
     const tokens = action.supply.reduce((total, { tokens: quantity }) => total + quantity, 0);
     const safe = situation.nearestEnemy(action.toHexId).distance >= SEA_SAFE_DISTANCE;
     const closeness = 40 - hexesBetween(action.toHexId, front);
@@ -1441,8 +1481,15 @@ const seaStep = (context: BotDecisionContext, situation: Situation, notes: StepN
       value = 1000 + (combat ? 400 : tokens > 0 ? 200 + tokens : 100) + closeness + (safe ? 50 : 0);
     } else {
       const gain = hexesBetween(action.fromHexId, front) - hexesBetween(action.toHexId, front);
-      if (gain < RAIL_MIN_GAIN_HEXES || !safe || action.supply.some(({ sourcePieceId }) => String(sourcePieceId).includes('-stock-'))) continue;
-      value = gain * (tokens + action.unitIds.length * 8);
+      if (gain < RAIL_MIN_GAIN_HEXES || !safe || action.supply.some(({ sourcePieceId }) => String(sourcePieceId).includes('-stock-'))
+        || (tokens > 0 && situation.objectives.some(({ hexId }) => hexId === action.fromHexId))) continue;
+      // Only ship rear COMBAT units far from the front, matching railStep (never ship HQs/trucks/front-line units away).
+      const units = action.unitIds.filter((id) => {
+        const unit = situation.own.find(({ piece }) => piece.id === id);
+        return unit !== undefined && unit.piece.role === 'COMBAT' && hexesBetween(unit.hexId, front) >= 10;
+      }).length;
+      if (action.unitIds.length > 0 && units === 0) continue;
+      value = gain * (tokens + units * 8);
     }
     if (!best || value > best.value) best = { action, value, why: action.fromHexId === null ? `land ${tokens > 0 ? `${tokens}T` : 'a unit'} from the reinforcement Box at ${action.toHexId}` : `ship toward the front to ${action.toHexId}` };
   }
@@ -1468,11 +1515,11 @@ const preservesFriendlySupply = (context: BotDecisionContext, action: GameAction
  * With `eatsThere` the mover must have trace or SP in reach where it ends, as the rules see it after the move: the hex it
  * leaves may have kept an enemy ZOC off the draw path (heuristic@90; a stager's SP arrives later, so its drop is exempt).
  */
-const preservesOtherSupply = (context: BotDecisionContext, action: GameAction, eatsThere: boolean): boolean => {
+const preservesOtherSupply = (context: BotDecisionContext, action: GameAction, eatsThere: boolean, requiredRation = 1): boolean => {
   const { explanation } = context.actions.explain(action);
   const fact = (key: string) => explanation.facts.find((entry) => entry.key === key)?.value;
   return explanation.allowed && fact('supply.relocationOtherTraceLost') === 0 && fact('supply.relocationFeedLost') === 0
-    && (!eatsThere || fact('supply.relocationMoverHasTrace') === true || Number(fact('supply.relocationMoverRation') ?? 0) > 0);
+    && (!eatsThere || fact('supply.relocationMoverHasTrace') === true || Number(fact('supply.relocationMoverRation') ?? 0) >= requiredRation);
 };
 
 const keepsFriendlySupply = (explanation: RuleExplanation): boolean => {
@@ -1495,9 +1542,17 @@ const movementStep = (context: BotDecisionContext, situation: Situation, facts: 
   const traced = context.actions.traceCoverage();
   const coverage = new Set(traced.hexIds);
   const direct = new Set(traced.directHexIds);
-  const unitCoverage = (unit: OwnUnit): ReadonlySet<string> => new Set(context.actions.traceCoverage(unit.piece.id).hexIds);
+  // For HQs, use directHexIds (12.3b: an HQ throws only from a direct source draw, never daisy-chained off another HQ).
+  const unitCoverage = (unit: OwnUnit): ReadonlySet<string> => {
+    const cov = context.actions.traceCoverage(unit.piece.id);
+    return new Set(unit.piece.role === 'HQ' ? cov.directHexIds : cov.hexIds);
+  };
   const unitFeeds = (unit: OwnUnit): readonly FeedSource[] => context.actions.feedCoverage(unit.piece.id);
   const sideFeeds = context.actions.feedCoverage();
+  notes.directDumpHexes = new Set(situation.own
+    .filter((unit) => (unit.piece.role === 'DUMP' && (unit.piece.resourceQuantity ?? 0) > 0)
+      || (unit.piece.role === 'TRUCK' && (unit.piece.carriedTokens ?? 0) > 0))
+    .flatMap((dump) => [...context.actions.drawReach(dump.hexId)]));
   if (notes.extender === undefined) {
     notes.extender = planExtender(context, situation, facts, w);
     if (notes.extender) debug?.(`EXTENDER ${notes.extender.site} +${notes.extender.gain}VP trucks ${notes.extender.truckIds.join(' ')}`);
@@ -1523,7 +1578,11 @@ const movementStep = (context: BotDecisionContext, situation: Situation, facts: 
     for (const [unitId, target] of notes.stagerTargets ?? []) notes.targets.set(unitId, target);
   }
   // heuristic@79: where an HQ can stand and draw SP that Rail Cap brings to a station this step (12.3a, 13.3c).
-  notes.railDraw ??= new Set(railStations(situation, coverage).flatMap((station) => [...context.actions.drawReach(station)]));
+  const hasRailCap = context.view.projection?.sequence.phase === 'MOVEMENT'
+    && (context.view.projection?.railCap?.[0]?.remainingQuarters ?? 0) > 0;
+  notes.railDraw ??= hasRailCap
+    ? new Set(railStations(situation, coverage).flatMap((station) => [...context.actions.drawReach(station)]))
+    : new Set();
   // HQs follow the main effort's lead (their own scores keep them in supply and away from the enemy), else the army.
   const front = effort?.lead ?? armyCenter(situation);
   // HQs move first: their throw range decides where the rest is in trace supply (12.3b).
@@ -1546,7 +1605,7 @@ const movementStep = (context: BotDecisionContext, situation: Situation, facts: 
   // heuristic@79: rail and sea wait for the HQs. An HQ in Combat Mode on a railroad hex makes it a station (13.8c), and SP
   // railed to it or beside it is what the HQ throws to the units as fuel and trace (12.3b, 12.5c), before they move.
   if (context.view.projection?.sequence.phase === 'MOVEMENT' && !units.some((unit) => unit.piece.role === 'HQ')) {
-    const shipped = seaStep(context, situation, notes, front);
+    const shipped = seaStep(context, situation, facts, notes, front);
     if (shipped) return shipped;
     const railed = railStep(context, situation, facts, notes, front);
     if (railed) return railed;
@@ -1577,7 +1636,8 @@ const movementStep = (context: BotDecisionContext, situation: Situation, facts: 
         : unit.piece.role === 'HQ' ? (front !== null && (hexesBetween(unit.hexId, front) <= w.hqCombatModeRadius
             // heuristic@79: on a railroad hex an HQ in Combat Mode is a station (13.8c); it stays there while the army is near.
             || (railheadHex(situation, unit.hexId) && hexesBetween(unit.hexId, front) <= w.hqRailheadReach)) ? 'COMBAT' : 'MOVE') : null;
-      if (wanted !== null && unit.piece.mode !== wanted) {
+      if (wanted !== null && unit.piece.mode !== wanted
+        && !(unit.piece.mode === 'DG' && unit.piece.currentFaceId === wanted.toLowerCase())) {
         const change = actions.candidates('CHANGE_MODE', id).find((action) => action.kind === 'CHANGE_MODE' && action.mode === wanted);
         if (change && preservesFriendlySupply(context, change)) {
           return decision(change, `${wanted} mode (${enemyDistance} hexes from the enemy)`, [{ term: 'mode', value: 1 }]);
@@ -1687,7 +1747,7 @@ const movementStep = (context: BotDecisionContext, situation: Situation, facts: 
       const atStage = stage !== undefined && destinationOf(candidate.action) === stage;
       const fedThere = atStage
         || ((trucked || attackPosition(candidate.action)) && feedSourceFor(notes, feeds, unit, destinationOf(candidate.action)!) !== null);
-      if (!(fedThere ? preservesOtherSupply(context, candidate.action, !atStage) : preservesFriendlySupply(context, candidate.action, movementObservation
+      if (!(fedThere ? preservesOtherSupply(context, candidate.action, !atStage, eatingCost(unit)) : preservesFriendlySupply(context, candidate.action, movementObservation
         ? (explanation, preserved) => movementObservation.supply(candidate.action, explanation, preserved) : undefined))) continue;
       best = candidate;
       break;
@@ -1802,7 +1862,7 @@ const bestCombat = (context: BotDecisionContext, situation: Situation, facts: Bo
     if (belowMinimum && !lastGrab) continue;
     const enemy = situation.enemy.get(action.targetHexId);
     // Steps the defender can lose before the hex empties: printed steps of the visible counters, two per hidden one.
-    const defenderSteps = Math.max(1, (enemy?.pieces ?? []).filter(({ role }) => role !== 'DUMP' && role !== 'TRUCK' && role !== 'HEDGEHOG')
+    const defenderSteps = Math.max(1, (enemy?.pieces ?? []).filter(({ role }) => role === 'COMBAT' || role === 'ARTILLERY' || role === 'HQ')
       .reduce((total, piece) => total + (knowledgeOf(facts).profile(piece)?.steps ?? 1), 0) + (enemy?.hidden ?? 0) * 2);
     const vacate = Math.min(1, (forecast.defenderLosses + forecast.defenderOptions * w.vacateOptionShare) / defenderSteps);
     const terms: BotScoreTerm[] = [
@@ -2062,11 +2122,18 @@ const chooseRebuild = (context: BotDecisionContext, situation: Situation, facts:
         const mode = u.eliminated ? (u.modes.includes('COMBAT') ? 'COMBAT' : u.modes[0]!) : null;
         const face = definition?.faces.find(f => f.id === (mode?.toLowerCase() ?? piece.currentFaceId)) ?? definition?.faces[0];
         const before = (u.eliminated ? 0 : piece.remainingSteps ?? 0) + allocated;
-        const oldStrength = before === 0 ? 0 : face?.steps.find(s => s.remainingSteps === before)?.combatStrength ?? 0;
-        const newStrength = face?.steps.find(s => s.remainingSteps === before + 1)?.combatStrength ?? oldStrength;
-        return [{ u, mode, gain: newStrength - oldStrength, vp: piece.role === 'COMBAT' ? defenceVp : 0,
+        const maxSteps = Math.max(1, ...(face?.steps.map(s => s.remainingSteps) ?? [1]));
+        const effectiveAt = (steps: number): number => {
+          if (steps <= 0) return 0;
+          const printed = face?.steps.find(s => s.remainingSteps === steps)?.combatStrength ?? face?.steps[0]?.combatStrength ?? 0;
+          if (printed <= 0 || maxSteps <= 1 || steps >= maxSteps) return printed;
+          const defenseFactor = (maxSteps - steps) * 2 >= maxSteps ? 0.5 : 1;
+          return printed * ((0.5 + defenseFactor) / 2) * (0.5 + 0.5 * (steps / maxSteps));
+        };
+        const formId = definition?.ownership.formationDefinitionId ?? null;
+        return [{ u, mode, gain: effectiveAt(before + 1) - effectiveAt(before), vp: piece.role === 'COMBAT' ? defenceVp : 0,
           hq: Number(piece.role === 'HQ' && !situation.own.some(other => other.piece.role === 'HQ'
-            && knowledgeOf(facts).definition(other.piece)?.ownership.formationDefinitionId === definition?.ownership.formationDefinitionId)), mobile: Number(!u.fixed) }];
+            && (knowledgeOf(facts).definition(other.piece)?.ownership.formationDefinitionId ?? null) === formId)), mobile: Number(!u.fixed) }];
       }).sort((a, b) => b.vp - a.vp || b.hq - a.hq || b.mobile - a.mobile || b.gain - a.gain || a.u.pieceId.localeCompare(b.u.pieceId));
       const next = choices[0];
       if (!next) break;
@@ -2113,28 +2180,46 @@ const railForwardFromArrival = (context: BotDecisionContext, situation: Situatio
 };
 
 const reinforcementStep = (context: BotDecisionContext, situation: Situation, facts: BotGameFacts, w: HeuristicWeights): BotDecision | null => {
-  const rebuild = chooseRebuild(context, situation, facts);
-  if (rebuild) return rebuild;
   const placements = context.actions.candidates('PLACE_REINFORCEMENT', null, 400);
-  if (placements.length === 0) return null;
+  const projection = context.view.projection!;
+  const roleOf = new Map(projection.stacks.flatMap(({ pieces }) => pieces).map((piece) => [String(piece.id), piece.role]));
+  // Place arriving Repls (PAX/EQ) before rebuilding when an on-map rebuild site lacks the partner resource (e.g. PAX on map, EQ arriving),
+  // so co-arriving PAX+EQ can combine for an HQ or armored unit instead of burning PAX first.
+  const replPlacements = placements.filter((action) => action.kind === 'PLACE_REINFORCEMENT' && roleOf.get(String(action.pieceId)) === 'REPLACEMENT');
+  const needsPartnerRepl = replPlacements.length > 0 && context.actions.candidates('REBUILD_UNITS', null, 40).some((candidate) => {
+    if (candidate.kind !== 'REBUILD_UNITS') return false;
+    const encoded = context.actions.explain(candidate).explanation.facts.find(f => f.key === 'replacement.rebuildOptions')?.value;
+    if (typeof encoded !== 'string') return false;
+    const opt = JSON.parse(encoded) as RebuildOptions;
+    return (opt.pax > 0 && opt.eq === 0) || (opt.eq > 0 && opt.pax === 0);
+  });
+  if (!needsPartnerRepl) {
+    const rebuild = chooseRebuild(context, situation, facts);
+    if (rebuild) return rebuild;
+  }
+  const activePlacements = needsPartnerRepl ? replPlacements : placements;
+  if (activePlacements.length === 0) return null;
   const goals = situation.objectives.filter(({ controllerId }) => controllerId !== situation.playerId).map(({ hexId }) => hexId);
   const front = frontHex(situation);
   const aim = goals.length > 0 ? goals : front ? [front] : [];
-  const projection = context.view.projection!;
-  const roleOf = new Map(projection.stacks.flatMap(({ pieces }) => pieces).map((piece) => [String(piece.id), piece.role]));
-  const hqs = situation.own.filter(({ piece }) => piece.role === 'HQ').map(({ hexId }) => hexId);
+  // 13.5a: only Combat-Mode HQs can rebuild units; prefer them over Move-Mode HQs when placing Repls.
+  const combatHqs = situation.own.filter(({ piece }) => piece.role === 'HQ' && piece.mode === 'COMBAT').map(({ hexId }) => hexId);
+  const hqs = combatHqs.length > 0 ? combatHqs : situation.own.filter(({ piece }) => piece.role === 'HQ').map(({ hexId }) => hexId);
   const traces = new Map<PieceId, ReadonlySet<string>>();
-  const scored = placements.map((action) => {
+  const scored = activePlacements.map((action) => {
     const hexId = action.kind === 'PLACE_REINFORCEMENT' ? action.hexId : ('' as HexId);
+    const isRepl = action.kind === 'PLACE_REINFORCEMENT' && roleOf.get(String(action.pieceId)) === 'REPLACEMENT';
     // Repls rebuild only near an HQ (13.5a); everything else arrives as close to the objectives as it may.
-    const goalsFor = action.kind === 'PLACE_REINFORCEMENT' && roleOf.get(String(action.pieceId)) === 'REPLACEMENT' && hqs.length > 0 ? hqs : aim;
+    const goalsFor = isRepl && hqs.length > 0 ? hqs : aim;
     const distance = goalsFor.length > 0 ? Math.min(...goalsFor.map((goal) => hexesBetween(hexId, goal))) : 0;
     let traced = 0;
     if (action.kind === 'PLACE_REINFORCEMENT' && ['COMBAT', 'HQ', 'ARTILLERY', 'REPLACEMENT'].includes(roleOf.get(String(action.pieceId)) ?? '')
-      && (roleOf.get(String(action.pieceId)) !== 'REPLACEMENT' || distance <= 2)) {
+      && (!isRepl || distance <= 2)) {
       if (!traces.has(action.pieceId)) traces.set(action.pieceId, new Set(context.actions.traceCoverage(action.pieceId).hexIds));
       traced = Number(traces.get(action.pieceId)!.has(hexId));
     }
+    // 13.5a: Repls cannot be used in enemy ZOC; penalize enemy-adjacent hexes so Repls land where they can rebuild.
+    const zocPenalty = isRepl && situation.nearestEnemy(hexId).distance <= 1 ? 20 : 0;
     // heuristic@79: arriving SP on a railroad entry hex can entrain this turn (13.6b) and ride Rail Cap to the station nearest
     // the front; anywhere else trucks must haul it from the map edge. Replays of heuristic@78 attacks left 25 of 32 SP on the
     // map where rail could not take it.
@@ -2143,7 +2228,7 @@ const reinforcementStep = (context: BotDecisionContext, situation: Situation, fa
     // line out is cut by enemy units or ZOC kept up to 20 SP at the map edge, where only trucks reached it. Attack
     // engagements only (either side), where it was measured; meeting engagements keep heuristic@86's choice.
     if (rail > 0 && w.arrivalRailForward > 0 && situation.attack) rail = railForwardFromArrival(context, situation, hexId, front) ? 1 : 0;
-    return { action, traced, rail, score: -distance - situation.threatAt(hexId) };
+    return { action, traced, rail, score: -distance - situation.threatAt(hexId) - zocPenalty };
   }).sort((left, right) => right.traced - left.traced || right.rail - left.rail || right.score - left.score);
   return decision(scored[0]!.action, scored[0]!.traced ? 'place a supplied arrival toward its mission' : scored[0]!.rail ? 'place arriving SP on the railroad' : 'place the arrival nearest its mission',
     [{ term: 'placement-trace', value: scored[0]!.traced }, { term: 'placement-rail', value: scored[0]!.rail }, { term: 'placement', value: scored[0]!.score }]);
@@ -2248,7 +2333,7 @@ export const createHeuristicPolicy = (facts: BotGameFacts, options: HeuristicPol
   const choose = decide(facts, options.weights ?? DEFAULT_HEURISTIC_WEIGHTS);
   return {
     id: 'heuristic',
-    version: options.label === undefined ? '93' : `93+${options.label}`,
+    version: options.label === undefined ? '94' : `94+${options.label}`,
     decide: (context) => {
       const sink = options.debug;
       debug = sink ? (line) => sink(`${context.memory.stepKey} ${String(context.playerId).split(':').at(-1)} ${line}`) : null;

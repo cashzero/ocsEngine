@@ -20,20 +20,27 @@ const respond = (actions: readonly GameAction[], choiceId: string, responder: st
   } : null;
 };
 
-/** Value of keeping a unit: strength per step, with HQs and artillery worth more than their printed strength. */
+/** Value of keeping a unit for a single step loss: strength per step, with HQs and artillery protected. */
 const unitValue = (unit: OwnUnit | undefined): number => {
   if (!unit) return 1;
   const base = Math.max(1, unit.profile?.strength ?? 1) / Math.max(1, unit.profile?.steps ?? 1);
   return unit.piece.role === 'HQ' ? base + 20 : unit.piece.role === 'ARTILLERY' ? base + 8 : base;
 };
 
+/** Value of keeping a whole unit against total elimination (OVERSTACK_ELIMINATION, 4.8a): total strength × steps. */
+const wholeUnitValue = (unit: OwnUnit | undefined): number => {
+  if (!unit) return 1;
+  const base = Math.max(1, unit.profile?.strength ?? 1) * Math.max(1, unit.profile?.steps ?? 1);
+  return unit.piece.role === 'HQ' ? base + 100 : unit.piece.role === 'ARTILLERY' ? base + 40 : base;
+};
+
 const pieceIdOf = (optionId: string): PieceId => optionId.slice(optionId.indexOf(':') + 1) as PieceId;
 
 /** The cheapest unit to lose a step or to eliminate. */
-const cheapest = (options: readonly Option[], situation: Situation): Option | undefined => {
+const cheapest = (options: readonly Option[], situation: Situation, scorer: (unit: OwnUnit | undefined) => number = unitValue): Option | undefined => {
   const byId = new Map(situation.own.map((unit) => [String(unit.piece.id), unit]));
   return [...options].sort((left, right) =>
-    unitValue(byId.get(String(pieceIdOf(left.id)))) - unitValue(byId.get(String(pieceIdOf(right.id)))) || left.id.localeCompare(right.id))[0];
+    scorer(byId.get(String(pieceIdOf(left.id)))) - scorer(byId.get(String(pieceIdOf(right.id)))) || left.id.localeCompare(right.id))[0];
 };
 
 /** The safest hex: least enemy threat, then nearest friendly units. */
@@ -134,10 +141,13 @@ export const respondToDecision = (context: BotDecisionContext, situation: Situat
       return respond(actions, best.id, 'defender-terrain', `terrain giving the lowest odds (${best.label})`);
     }
     case 'STEP_LOSS':
-    case 'ATTRITION_LOSS':
-    case 'OVERSTACK_ELIMINATION': {
-      const choice = cheapest(options, situation) ?? options[0]!;
+    case 'ATTRITION_LOSS': {
+      const choice = cheapest(options, situation, unitValue) ?? options[0]!;
       return respond(actions, choice.id, 'cheapest-loss', `lose the least valuable unit (${choice.label})`);
+    }
+    case 'OVERSTACK_ELIMINATION': {
+      const choice = cheapest(options, situation, wholeUnitValue) ?? options[0]!;
+      return respond(actions, choice.id, 'cheapest-loss', `eliminate the least valuable whole unit (${choice.label})`);
     }
     case 'OPTION_SPLIT': {
       if (has('option:ignore')) return respond(actions, 'option:ignore', 'combat-option', 'the option may be ignored');
@@ -216,9 +226,11 @@ export const respondToDecision = (context: BotDecisionContext, situation: Situat
       const holdsObjective = (unit: OwnUnit | undefined) => unit !== undefined
         && situation.objectives.some(({ hexId, controllerId }) => hexId === unit.hexId && controllerId === context.playerId)
         && situation.friendlyAt(unit.hexId).filter((other) => situation.isCombatUnit(other)).length <= 1;
+      const presentRe = targetHex === undefined ? 0
+        : situation.friendlyAt(targetHex).reduce((total, u) => total + (u.profile?.re ?? 0), 0);
       const advancers = options.filter(({ id }) => id.startsWith('advance:') && id !== 'advance:done' && id !== 'advance:all')
         .map((option) => ({ option, unit: byId.get(option.id.slice('advance:'.length)) }))
-        .filter(({ unit }) => unit === undefined || unit.hexId !== targetHex);
+        .filter(({ unit }) => unit === undefined || (unit.hexId !== targetHex && presentRe + (unit.profile?.re ?? 0) <= 10 + 1e-9));
       const free = advancers.filter(({ unit }) => !holdsObjective(unit));
       const heldPoint = targetHex === undefined ? undefined : situation.objectives.find(o => o.hexId === targetHex && o.controllerId === context.playerId);
       const heldStrength = targetHex === undefined ? 0 : situation.friendlyAt(targetHex).filter(u => situation.isCombatUnit(u))

@@ -1,9 +1,21 @@
 import type { GameAction, GameState } from '../kernel/model.js';
+import type { PieceState } from '../../domain/piece/index.js';
 import type { RuleFact } from '../query/model.js';
-import { definitionOf, hexOf, pieceById, stepOf } from '../pieces.js';
+import { definitionOf, hexOf, pieceById, printedSteps, stepOf } from '../pieces.js';
 import { rationPlan } from '../supply/ration-budget.js';
 import { pieceHasTrace } from '../supply/supply.js';
 import { applyRebuildUnits, unitRebuildOptions } from './replacement.js';
+
+/** OCS 9.11d effective combat strength accounting for missing-step halving and step completeness. */
+const effectiveRebuildStrength = (state: GameState, piece: PieceState): number => {
+  if (piece.location.kind === 'ELIMINATED') return 0;
+  const printed = stepOf(state, piece)?.combatStrength ?? 0;
+  const maxSteps = Math.max(1, printedSteps(state, piece));
+  const steps = Math.max(0, piece.remainingSteps ?? maxSteps);
+  if (printed <= 0 || maxSteps <= 1 || steps >= maxSteps) return printed;
+  const defenseFactor = (maxSteps - steps) * 2 >= maxSteps ? 0.5 : 1;
+  return printed * ((0.5 + defenseFactor) / 2) * (0.5 + 0.5 * (steps / maxSteps));
+};
 
 /** Own legal replacement options and deterministic supply after rebuilding. No dice or phase advance. */
 export const rebuildFacts = (state: GameState, action: GameAction): readonly RuleFact[] => {
@@ -26,8 +38,8 @@ export const rebuildFacts = (state: GameState, action: GameAction): readonly Rul
   const unsupported = action.units.filter(u => fixed(u.pieceId) && !pieceHasTrace(after, pieceById(after, u.pieceId)!) && !funded.has(u.pieceId));
   const addedStrength = action.units.reduce((sum, u) => {
     const before = pieceById(state, u.pieceId)!;
-    const previous = before.location.kind === 'ELIMINATED' ? 0 : stepOf(state, before)?.combatStrength ?? 0;
-    return sum + (stepOf(after, pieceById(after, u.pieceId)!)?.combatStrength ?? 0) - previous;
+    const rebuilt = pieceById(after, u.pieceId)!;
+    return sum + effectiveRebuildStrength(after, rebuilt) - effectiveRebuildStrength(state, before);
   }, 0);
   const fact = (key: string, value: string | number): RuleFact => ({ key, value, visibility: 'OWNER_ONLY', ownerId: action.actorId });
   return [fact('replacement.rebuildOptions', JSON.stringify(choices)),

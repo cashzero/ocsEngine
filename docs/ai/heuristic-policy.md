@@ -1,8 +1,8 @@
-# Heuristic 策略（標準：heuristic@93）
+# Heuristic 策略（標準：heuristic@94）
 
 ## 範圍
 
-標準電腦策略 `heuristic@93` 如何做決定：各階段做什麼、目標分配與移動評分、補給保護、戰鬥、重建與待決回應，
+標準電腦策略 `heuristic@94` 如何做決定：各階段做什麼、目標分配與移動評分、補給保護、戰鬥、重建與待決回應，
 以及做過哪些嘗試、為什麼不採用。實作：`src/ai/policies/heuristic.ts`、權重 `src/ai/policies/heuristic-weights.ts`、
 待決回應 `src/ai/decisions.ts`。介面與邊界見 [architecture.md](architecture.md)，強度量測見 [evaluation.md](evaluation.md)。
 

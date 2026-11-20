@@ -246,21 +246,25 @@ export const allocateTheater = (situation: Situation, access: BotActionAccess, e
     const byObjective = new Map<HexId, { 1: Set<string>; 2: Set<string> }>();
     for (const objective of objectives) {
       const mode = modeFor(unit, objective.hexId, blocked(objective.hexId));
+      // Step 2 approaches the objective directly: never stay in STRAT mode (5.8a blocks entering enemy ZOC).
+      const nextMode: OcsMode | null = mode === 'STRAT' ? (blocked(objective.hexId) ? 'COMBAT' : 'MOVE') : mode;
       // 12.5a: a unit that needs fuel and has no way to pay it stays where it is this step.
       const now = mobile.get(unit.piece.id) ? reachFrom(unit.piece.id, unit.hexId, mode) : new Set([String(unit.hexId)]);
       nowReach.set(`${unit.piece.id}|${objective.hexId}`, now);
-      modeOf.set(`${unit.piece.id}|${objective.hexId}`, mode);
+      modeOf.set(`${unit.piece.id}|${objective.hexId}`, nextMode);
       if (!stagingReach.has(objective.hexId)) stagingReach.set(objective.hexId, new Set());
       for (const hex of now) stagingReach.get(objective.hexId)!.add(hex);
       const first = attackHexes(now, objective.hexId);
       const second = new Set(first);
       const stride = Math.max(...[...now].map((hex) => hexesBetween(unit.hexId, hex)));
       if (discount > 0 && !mobile.get(unit.piece.id)) {
-        for (const hex of attackHexes(reachFrom(unit.piece.id, unit.hexId, mode), objective.hexId)) second.add(hex);
+        for (const hex of attackHexes(reachFrom(unit.piece.id, unit.hexId, nextMode), objective.hexId)) second.add(hex);
       } else if (discount > 0 && hexesBetween(unit.hexId, objective.hexId) <= 2 * stride + 1) {
-        const staging = [...now].filter((hex) => hex !== String(objective.hexId) && !blocked(hex))
+        // A STRAT-mode unit will not stop within stratSafeDistance (5) of an enemy stack (heuristic.ts:strat-near-enemy).
+        const staging = [...now].filter((hex) => hex !== String(objective.hexId) && !blocked(hex)
+          && (mode !== 'STRAT' || situation.nearestEnemy(hex as HexId).distance > 5))
           .sort((left, right) => hexesBetween(left, objective.hexId) - hexesBetween(right, objective.hexId) || left.localeCompare(right))[0];
-        if (staging !== undefined) for (const hex of attackHexes(reachFrom(unit.piece.id, staging as HexId, mode), objective.hexId)) second.add(hex);
+        if (staging !== undefined) for (const hex of attackHexes(reachFrom(unit.piece.id, staging as HexId, nextMode), objective.hexId)) second.add(hex);
       }
       if (second.size > 0) byObjective.set(objective.hexId, { 1: first, 2: second });
     }
@@ -269,6 +273,14 @@ export const allocateTheater = (situation: Situation, access: BotActionAccess, e
 
   // HQ options: per objective and step, each HQ's best position (most attack hexes covered, then SP already in reach).
   const sideDirect = new Set(access.traceCoverage().directHexIds.map(String));
+  // Direct dump draw hexes (12.3a): where an HQ can draw SP itself (dumps or loaded trucks) to throw on (12.3b prohibits daisy-chaining HQs).
+  const directDumpHexes = new Set<string>();
+  for (const dump of situation.own) {
+    const hasSp = (dump.piece.role === 'DUMP' && (dump.piece.resourceQuantity ?? 0) > 0)
+      || (dump.piece.role === 'TRUCK' && (dump.piece.carriedTokens ?? 0) > 0);
+    if (!hasSp) continue;
+    for (const hexId of access.drawReach(dump.hexId)) directDumpHexes.add(hexId);
+  }
   const hqUnits = situation.own.filter((unit) => unit.piece.role === 'HQ').sort((left, right) => String(left.piece.id).localeCompare(String(right.piece.id)));
   const currentThrow = new Map(hqUnits.map((hq) => [hq.piece.id, access.hqThrow(hq.piece.id, hq.hexId)]));
   const options = new Map<string, HqOption[]>();
@@ -281,11 +293,10 @@ export const allocateTheater = (situation: Situation, access: BotActionAccess, e
     if (!now.fed && now.hexIds.length === 0 && now.servableIds.length === 0) continue;
     // Units only this HQ's throw supplies now must keep it where it goes this step (the move step refuses otherwise).
     const nowCovers = new Set(now.hexIds.map(String));
-    const dependents = situation.own.filter((unit) => unit.piece.id !== id && nowCovers.has(String(unit.hexId)) && !sideDirect.has(String(unit.hexId))
-      && now.servableIds.includes(unit.piece.id)
+    const dependents = situation.own.filter((unit) => unit.piece.id !== id && situation.isCombatUnit(unit)
+      && nowCovers.has(String(unit.hexId)) && !sideDirect.has(String(unit.hexId)) && now.servableIds.includes(unit.piece.id)
       && !hqUnits.some((other) => other.piece.id !== id && currentThrow.get(other.piece.id)!.hexIds.map(String).includes(String(unit.hexId))));
-    const hqFed = new Set(access.feedCoverage(id).filter(({ tokens }) => tokens > 0).flatMap(({ hexIds }) => hexIds.map(String)));
-    hqFedById.set(id, hqFed);
+    hqFedById.set(id, directDumpHexes);
     const safe = (hexId: string) => hexId === String(hq.hexId) || (!occupied(hexId) && situation.nearestEnemy(hexId as HexId).distance >= HQ_SAFE_DISTANCE);
     const throwFrom = (hexId: string) => access.hqThrow(id, hexId as HexId);
     const keepsDependents = (hexId: string) => {
@@ -306,7 +317,7 @@ export const allocateTheater = (situation: Situation, access: BotActionAccess, e
           if (!reached.fed) continue;
           const count = reached.hexIds.filter((hexId) => targets.has(String(hexId))).length;
           if (count === 0) continue;
-          const fedHere = hqFed.has(candidate.hexId);
+          const fedHere = directDumpHexes.has(candidate.hexId);
           if (chosen === null || count > chosen.count || (count === chosen.count && fedHere && !chosen.fed)
             || (count === chosen.count && fedHere === chosen.fed && hexesBetween(candidate.moveTo, hq.hexId) < hexesBetween(chosen.moveTo, hq.hexId))) {
             chosen = { ...candidate, count, fed: fedHere };
@@ -333,10 +344,15 @@ export const allocateTheater = (situation: Situation, access: BotActionAccess, e
   // not an isolated garrison's emergency stock.
   const objectiveHexes = new Set(situation.objectives.map(({ hexId }) => String(hexId)));
   const pickups = new Map<string, number>();
+  const pickupDumpHex = new Map<string, string>();
+  const pickupDumpsAt = new Map<string, string[]>();
   for (const dump of situation.own) {
     if (dump.piece.role !== 'DUMP' || String(dump.piece.id).includes('-stock-') || objectiveHexes.has(String(dump.hexId))
       || situation.nearestEnemy(dump.hexId).distance < PICKUP_SAFE_DISTANCE) continue;
-    pickups.set(String(dump.hexId), (pickups.get(String(dump.hexId)) ?? 0) + (dump.piece.resourceQuantity ?? 0));
+    const hexKey = String(dump.hexId);
+    pickups.set(hexKey, (pickups.get(hexKey) ?? 0) + (dump.piece.resourceQuantity ?? 0));
+    pickupDumpHex.set(String(dump.piece.id), hexKey);
+    pickupDumpsAt.set(hexKey, [...(pickupDumpsAt.get(hexKey) ?? []), String(dump.piece.id)]);
   }
   const trucks = !logistics ? [] : situation.own.filter((unit) => unit.piece.role === 'TRUCK' && !exclude.has(unit.piece.id)
     && ((unit.piece.carriedTokens ?? 0) >= TRUCK_MIN_TOKENS || ((unit.piece.carriedTokens ?? 0) === 0 && [...pickups.values()].some((tokens) => tokens >= TRUCK_MIN_TOKENS))))
@@ -657,7 +673,13 @@ export const allocateTheater = (situation: Situation, access: BotActionAccess, e
         drawn.set(source.dumpId, (drawn.get(source.dumpId) ?? 0) + need.get(id)!);
         return false;
       });
-      const draw = () => { for (const [dumpId, tokens] of drawn) dumpLeft.set(dumpId, dumpLeft.get(dumpId)! - tokens); };
+      const draw = () => {
+        for (const [dumpId, tokens] of drawn) {
+          dumpLeft.set(dumpId, Math.max(0, (dumpLeft.get(dumpId) ?? 0) - tokens));
+          const hexKey = pickupDumpHex.get(dumpId);
+          if (hexKey !== undefined) pickupLeft.set(hexKey, Math.max(0, (pickupLeft.get(hexKey) ?? 0) - tokens));
+        }
+      };
       if (needing.length === 0) { draw(); kept.push(group); continue; }
       for (const option of optionsFor(group.hexId, step).filter(({ hqId }) => used.has(hqId))) taken.add(`${option.hqId}|${group.hexId}|${step}`);
       for (const option of truckOptionsFor(group.hexId).filter(({ truck }) => used.has(truck.piece.id))) taken.add(`${option.truck.piece.id}|${group.hexId}`);
@@ -716,8 +738,19 @@ export const allocateTheater = (situation: Situation, access: BotActionAccess, e
       if (trucksFor) idle.delete(trucksFor.stagerId);
       for (const { option, tokens, load } of trucksFor?.runs ?? []) {
         used.add(option.truck.piece.id);
-        // The truck takes all it can carry from the dump, not only what the group needs.
-        if (load.pickup !== null) pickupLeft.set(String(load.pickup), pickupLeft.get(String(load.pickup))! - load.capacity);
+        // The truck takes all it can carry from the dump, not only what the group needs; keep dumpLeft and pickupLeft coupled.
+        if (load.pickup !== null) {
+          const hexKey = String(load.pickup);
+          pickupLeft.set(hexKey, Math.max(0, (pickupLeft.get(hexKey) ?? 0) - load.capacity));
+          let take = load.capacity;
+          for (const dumpId of pickupDumpsAt.get(hexKey) ?? []) {
+            if (take <= 0) break;
+            const avail = dumpLeft.get(dumpId) ?? 0;
+            const spent = Math.min(avail, take);
+            dumpLeft.set(dumpId, avail - spent);
+            take -= spent;
+          }
+        }
         sent.push({ truckId: option.truck.piece.id, objective: group.hexId, drop: trucksFor!.drop, stagerId: trucksFor!.stagerId, tokens, pickup: load.pickup });
       }
       kept.push(group);

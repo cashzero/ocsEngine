@@ -8,7 +8,7 @@ import { arrivingReinforcements, reinforcementHexes } from '../lifecycle/lifecyc
 import { breakoutCandidates } from '../lifecycle/supply-phase.js';
 import { breakdownProfile } from '../breakdown/breakdown.js';
 import { fuelOptions } from '../supply/fuel.js';
-import { capacityTokens, cargoOf, loadedTokens } from '../supply/transport.js';
+import { MAXIMUM_TRANSPORT_POINTS, capacityTokens, cargoOf, extenderCollapseHexes, loadedTokens } from '../supply/transport.js';
 import { queryReachableHexes } from '../movement/movement.js';
 import { queryRailMoveOptions, railCapRemainingQuarters, railEntrainHexes, railMoveQuarters } from '../supply/rail-cap.js';
 import { arrivesBySea, querySeaMoveOptions, seaCapRemainingQuarters } from '../supply/sea-cap.js';
@@ -21,8 +21,11 @@ import {
   hexOf,
   isArtillery,
   isAttackCapable,
+  isExtender,
+  isTransportPoint,
   movingPieceIds,
   stepOf,
+  transportPointsOf,
 } from '../pieces.js';
 import { barrageFirerViolations, canEnterForCombat, defaultAttackerSupply } from '../combat/combat.js';
 import { combatActionRating } from '../combat/strength.js';
@@ -307,7 +310,8 @@ export const candidateActions = (
           for (const destination of adjacentHexIds(origin)) {
             if (add({ ...base(state, request.actorId, `move:${piece.id}:${destination}`), kind: 'MOVE_PIECE', pieceId: piece.id, path: [origin, destination] })) return actions;
           }
-          continue;
+          // STRAT-mode units (5.8) may have all adjacent hexes out of trace while a 2+ hex move reaches trace.
+          if (piece.mode !== 'STRAT') continue;
         }
         for (const candidate of queryReachableHexes(state, request.actorId, piece.id).value ?? []) {
           actions.push({ ...base(state, request.actorId, `move:${piece.id}:${candidate.hexId}`), kind: 'MOVE_PIECE', pieceId: piece.id, path: candidate.path });
@@ -439,12 +443,48 @@ export const candidateActions = (
       }
       break;
     case 'COMBINE_TRANSPORT': {
-      // Group among every friendly piece: a selected truck needs its partners, which `owned` has already filtered out.
-      const byHex = new Map<string, PieceState[]>();
-      for (const truck of friendlyOnMap(state, request.actorId)) byHex.set(`${hexOf(truck)}|${truck.definitionId}`, [...(byHex.get(`${hexOf(truck)}|${truck.definitionId}`) ?? []), truck]);
-      for (const group of byHex.values()) {
-        if (request.pieceId !== null && !group.some(({ id }) => id === request.pieceId)) continue;
-        if (group.length > 1 && add({ ...base(state, request.actorId, `combine:${group.map(({ id }) => id).join('+')}`), kind: 'COMBINE_TRANSPORT', truckIds: group.map(({ id }) => id) })) return actions;
+      // Group among every eligible friendly transport of the same type (symbol + nationality, 13.2c) in the same hex.
+      const byHexAndType = new Map<string, PieceState[]>();
+      for (const truck of friendlyOnMap(state, request.actorId)) {
+        if (!isTransportPoint(state, truck) || isExtender(state, truck)) continue;
+        if (usageOf(state, truck).moved && state.currentMoverId !== truck.id) continue;
+        const counter = definitionOf(state, truck)?.counter;
+        const key = `${hexOf(truck)}|${counter?.symbol}:${counter?.nationality}`;
+        byHexAndType.set(key, [...(byHexAndType.get(key) ?? []), truck]);
+      }
+      for (const group of byHexAndType.values()) {
+        if (group.length < 2 || (request.pieceId !== null && !group.some(({ id }) => id === request.pieceId))) continue;
+        const total = group.reduce((sum, piece) => sum + transportPointsOf(state, piece), 0);
+        const combos: PieceState[][] = [];
+        if (total <= MAXIMUM_TRANSPORT_POINTS) {
+          combos.push(group);
+        } else {
+          const seen = new Set<string>();
+          const record = (subset: PieceState[]) => {
+            if (subset.length < 2) return;
+            if (request.pieceId !== null && !subset.some(({ id }) => id === request.pieceId)) return;
+            const key = subset.map(({ id }) => id).sort().join('+');
+            if (seen.has(key)) return;
+            seen.add(key);
+            combos.push(subset);
+          };
+          for (let i = 0; i < group.length; i += 1) {
+            const first = group[i]!;
+            const firstPts = transportPointsOf(state, first);
+            const packed = [first];
+            let sum = firstPts;
+            for (let j = i + 1; j < group.length; j += 1) {
+              const next = group[j]!;
+              const nextPts = transportPointsOf(state, next);
+              if (firstPts + nextPts <= MAXIMUM_TRANSPORT_POINTS) record([first, next]);
+              if (sum + nextPts <= MAXIMUM_TRANSPORT_POINTS) { packed.push(next); sum += nextPts; }
+            }
+            record(packed);
+          }
+        }
+        for (const subset of combos) {
+          if (add({ ...base(state, request.actorId, `combine:${subset.map(({ id }) => id).join('+')}`), kind: 'COMBINE_TRANSPORT', truckIds: subset.map(({ id }) => id) })) return actions;
+        }
       }
       break;
     }
@@ -464,6 +504,11 @@ export const candidateActions = (
       }
       break;
     case 'COLLAPSE_EXTENDER':
+      for (const extender of owned.filter((piece) => isExtender(state, piece))) {
+        for (const hexId of extenderCollapseHexes(state, extender, hexOf(extender)!)) {
+          if (add({ ...base(state, request.actorId, `collapse:${extender.id}:${hexId}`), kind: 'COLLAPSE_EXTENDER', extenderId: extender.id, hexId })) return actions;
+        }
+      }
       break;
     case 'REFIT_AIRCRAFT':
       for (const candidate of refitCandidates(state, request.actorId)) {
@@ -478,7 +523,7 @@ export const candidateActions = (
       for (const mission of AIR_MISSION_KINDS.filter((kind) => missionSegment(kind) === state.sequence.segment)) {
         if (mission === 'AIR_TRANSPORT' || mission === 'AIR_DROP') {
           // The load is part of the order, so these missions are built from the cargo that is at each base.
-          for (const body of transportCandidates(state, request.actorId, mission, 40)) {
+          for (const body of transportCandidates(state, request.actorId, mission, 40, request.pieceId)) {
             if (request.pieceId !== null && !body.aircraftIds.includes(request.pieceId)) continue;
             if (add({ ...base(state, request.actorId, `air:${mission}:${body.targetHexId}:${body.aircraftIds.join('+')}`), ...body })) return actions;
           }
@@ -500,8 +545,9 @@ export const candidateActions = (
     }
     case 'REDUCE_AIR_BASE':
       for (const airBase of friendlyAirBases(state, request.actorId).filter((piece) => !isAirStrip(state, piece) && airBaseLevel(state, piece) > 1)) {
-        const units = owned.filter((piece) => hexOf(piece) === hexOf(airBase) && piece.mode === 'COMBAT' && !usageOf(state, piece).moved);
+        const units = friendlyOnMap(state, request.actorId).filter((piece) => hexOf(piece) === hexOf(airBase) && piece.mode === 'COMBAT' && !usageOf(state, piece).moved);
         if (units.length === 0) continue;
+        if (request.pieceId !== null && airBase.id !== request.pieceId && !units.some(({ id }) => id === request.pieceId)) continue;
         if (add({ ...base(state, request.actorId, `reduce:${airBase.id}`), kind: 'REDUCE_AIR_BASE', baseId: airBase.id, pieceIds: units.map(({ id }) => id) })) return actions;
       }
       // 15.4, 13.8d: an Engineer-Capable unit within its 2-hex radius can also do the work.
@@ -518,9 +564,10 @@ export const candidateActions = (
       }
       break;
     case 'UPDATE_AIR_DROP_PLAN':
-      for (const plan of state.air.dropPlans.filter((entry) => entry.ownerId === request.actorId && entry.turn <= state.sequence.gameTurn + 1)) {
+      for (const plan of state.air.dropPlans.filter((entry) => entry.ownerId === request.actorId)) {
         if (request.pieceId !== null && !plan.unitIds.includes(request.pieceId)) continue;
         if (add({ ...base(state, request.actorId, `delay-drop:${plan.id}`), kind: 'UPDATE_AIR_DROP_PLAN', planId: plan.id, unitIds: [...plan.unitIds], change: 'DELAY' })) return actions;
+        if (add({ ...base(state, request.actorId, `cancel-drop:${plan.id}`), kind: 'UPDATE_AIR_DROP_PLAN', planId: plan.id, unitIds: [...plan.unitIds], change: 'CANCEL' })) return actions;
       }
       break;
     case 'REBUILD_AIRCRAFT':

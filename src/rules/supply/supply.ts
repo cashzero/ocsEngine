@@ -584,10 +584,13 @@ const feedCoverage = (state: GameState, playerId: PlayerId, consumer: PieceState
   const dumps = state.pieceState.pieces.filter((piece) => isFriendlyDump(state, playerId, piece) && availableTokens(state, piece) > 0);
   if (dumps.length === 0) return [];
   const hqs = throwingHqs(state, playerId).filter((hq) => hq.id !== consumer?.id && hqMaySupply(state, hq, consumer));
+  const selfHqMobility = consumer !== null && isHq(state, consumer) ? hqMobility(state, consumer) : null;
   return dumps.map((dump) => {
     const origin = locatedHexOf(state, dump)!;
     const draw = supplyPathCosts(state, playerId, origin, 'truck', state.configuration.supplyDrawRangeTicks);
-    const maps = [draw, ...hqs.filter((hq) => reaches(supplyPathCosts(state, playerId, origin, hqMobility(state, hq), state.configuration.supplyDrawRangeTicks), hexOf(hq)!))
+    const selfDraw = selfHqMobility !== null && selfHqMobility !== 'truck'
+      ? [supplyPathCosts(state, playerId, origin, selfHqMobility, state.configuration.supplyDrawRangeTicks)] : [];
+    const maps = [draw, ...selfDraw, ...hqs.filter((hq) => reaches(supplyPathCosts(state, playerId, origin, hqMobility(state, hq), state.configuration.supplyDrawRangeTicks), hexOf(hq)!))
       .map((hq) => supplyPathCosts(state, playerId, hexOf(hq)!, hqMobility(state, hq), throwRangeTicks(state, hq)))];
     const hexIds = state.scenario.mapDefinition.hexes.map(({ id }) => id).filter((hexId) => maps.some((map) => reaches(map, hexId)));
     return { dumpId: dump.id, tokens: availableTokens(state, dump), hexIds };
@@ -652,9 +655,14 @@ export const queryHqThrow = (state: GameState, actorId: PlayerId, hqId: PieceId,
       facts: [], dependencies: [],
     };
   }
+  const dependencies = [{ aggregate: 'PIECE' as const, revision: state.pieceState.revision, key: `supply:hq-throw:${hqId}:${fromHexId}` }];
+  const targetHex = state.scenario.mapDefinition.hexes.find(({ id }) => id === fromHexId);
+  const onLand = targetHex !== undefined && !targetHex.terrainDefinitionIds.some((terrain) => String(terrain) === 'terrain:water');
+  const relocated = fromHexId !== hexOf(hq);
+  const canThrow = onLand && (relocated || hq.mode !== 'STRAT');
   const mobility = hqMobility(state, hq);
   const range = state.configuration.supplyDrawRangeTicks;
-  const fed = friendlySourceHexes(state, actorId).some((source) => reaches(supplyPathCosts(state, actorId, source, mobility, range), fromHexId));
+  const fed = canThrow && friendlySourceHexes(state, actorId).some((source) => reaches(supplyPathCosts(state, actorId, source, mobility, range), fromHexId));
   const thrown = fed ? withAdjacent([supplyPathCosts(state, actorId, fromHexId, mobility, throwRangeTicks(state, hq))]) : new Set<HexId>();
   const hexIds = state.scenario.mapDefinition.hexes
     .filter(({ id, terrainDefinitionIds }) => thrown.has(id) && !terrainDefinitionIds.some((terrain) => String(terrain) === 'terrain:water')).map(({ id }) => id);
@@ -665,7 +673,7 @@ export const queryHqThrow = (state: GameState, actorId: PlayerId, hqId: PieceId,
     value: { fed, hexIds, servableIds },
     reasons: [{ code: 'HQ_THROW', allowed: true, message: 'Hexes an HQ would throw to from this Hex.', rule: '12.3b' }],
     facts: [],
-    dependencies: [{ aggregate: 'PIECE', revision: state.pieceState.revision, key: `supply:hq-throw:${hqId}:${fromHexId}` }],
+    dependencies,
   };
 };
 
@@ -697,8 +705,10 @@ export const queryExtenderSite = (state: GameState, actorId: PlayerId, hexId: He
       facts: [], dependencies,
     };
   }
+  const targetHex = state.scenario.mapDefinition.hexes.find(({ id }) => id === hexId);
+  const onLand = targetHex !== undefined && !targetHex.terrainDefinitionIds.some((terrain) => String(terrain) === 'terrain:water');
   const probe: PieceState = { ...counter, location: { kind: 'ON_MAP', hexId }, currentFaceId: 'extender' as PieceState['currentFaceId'] };
-  const linked = sourceUsable(state, actorId, hexId) && extenderLinks(state, actorId, probe, new Set(friendlySourceHexes(state, actorId)));
+  const linked = onLand && sourceUsable(state, actorId, hexId) && extenderLinks(state, actorId, probe, new Set(friendlySourceHexes(state, actorId)));
   const drawn = linked ? withAdjacent([supplyPathCosts(state, actorId, hexId, 'truck', state.configuration.supplyDrawRangeTicks)]) : new Set<HexId>();
   const drawHexIds = state.scenario.mapDefinition.hexes
     .filter(({ id, terrainDefinitionIds }) => drawn.has(id) && !terrainDefinitionIds.some((terrain) => String(terrain) === 'terrain:water')).map(({ id }) => id);
@@ -866,7 +876,8 @@ export const spendReservations = (state: GameState, reservations: readonly Resou
 /** Combat units of `playerId` that fail trace supply and have not been fed this phase. */
 export const unitsNeedingSupply = (state: GameState, playerId: PlayerId): readonly PieceState[] =>
   state.pieceState.pieces.filter((piece) => piece.ownerId === playerId && piece.location.kind === 'ON_MAP'
-    && isCombatUnit(state, piece) && !usageOf(state, piece).supplyPaid && !pieceHasTrace(state, piece));
+    && isCombatUnit(state, piece) && !usageOf(state, piece).supplyPaid
+    && !state.air.droppedIds.includes(piece.id) && !pieceHasTrace(state, piece));
 
 /** 12.10e: 2T per level for a unit, or per RE of a multi-step unit. */
 export const recoveryTokensPerLevel = (state: GameState, piece: PieceState): number =>

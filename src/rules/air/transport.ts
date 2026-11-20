@@ -550,17 +550,27 @@ const defaultRoutes = (state: GameState, planes: readonly PieceState[], target: 
 };
 
 /** One sensible Air Transport or Air Drop for each friendly base, destination and kind of cargo, for the rule engine's candidate list. */
-export const transportCandidates = (state: GameState, playerId: PlayerId, mission: 'AIR_TRANSPORT' | 'AIR_DROP', limit: number): readonly Omit<Declaration, 'actionId' | 'actorId' | 'expectedRevision'>[] => {
+export const transportCandidates = (
+  state: GameState,
+  playerId: PlayerId,
+  mission: 'AIR_TRANSPORT' | 'AIR_DROP',
+  limit: number,
+  pieceId: PieceId | null = null,
+): readonly Omit<Declaration, 'actionId' | 'actorId' | 'expectedRevision'>[] => {
   const results: Omit<Declaration, 'actionId' | 'actorId' | 'expectedRevision'>[] = [];
   const transports = readyTransports(state, playerId);
-  const bases = [...new Set(transports.map((piece) => hexOf(piece)!))];
+  const bases = [...new Set(transports.filter((piece) => pieceId === null || piece.id === pieceId).map((piece) => hexOf(piece)!))];
   for (const baseHexId of bases) {
-    const planes = transports.filter((piece) => hexOf(piece) === baseHexId).slice(0, 4);
+    const atBase = transports.filter((piece) => hexOf(piece) === baseHexId);
+    const ordered = pieceId === null ? atBase : [...atBase.filter((piece) => piece.id === pieceId), ...atBase.filter((piece) => piece.id !== pieceId)];
     const dumps = baseDumps(state, playerId, baseHexId);
     const targets = mission === 'AIR_TRANSPORT'
       ? friendlyAirBases(state, playerId).map((base) => hexOf(base)!).filter((hexId) => hexId !== baseHexId)
       : dropTargets(state, playerId);
     for (const targetHexId of targets) {
+      // Only include planes that can actually route to `targetHexId`, so a short-range plane never blocks longer-range ones.
+      const planes = ordered.filter((plane) => defaultRoutes(state, [plane], targetHexId, mission) !== null).slice(0, 4);
+      if (planes.length === 0 || (pieceId !== null && !planes.some((plane) => plane.id === pieceId))) continue;
       const routes = defaultRoutes(state, planes, targetHexId, mission);
       if (!routes) continue;
       const stub: AirCargoDeclaration = { baseHexId, unitIds: [], supply: [], routes };
