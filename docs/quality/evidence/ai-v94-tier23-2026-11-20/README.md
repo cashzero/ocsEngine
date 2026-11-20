@@ -9,22 +9,24 @@
 ## 候選內容（相對 `heuristic@93` / `3dfd4ba`）
 
 - 規則層：`queryHqThrow`（移動後 Move 面、STRAT、水格）、`queryExtenderSite`、`queryFeedCoverage` 自身 HQ 抽取、`plannedAttack` DG／OOS 係數、`COMBINE_TRANSPORT`（同型別、≤5 點）、`COLLAPSE_EXTENDER` 候選、STRAT `legalLimit=1` 多格移動、`UPDATE_AIR_DROP_PLAN` CANCEL、`REDUCE_AIR_BASE`／空運候選 `pieceId` 過濾、`queryProjectedReachableHexes` 保留 `ownBridgeHexId`、Reaction 階段 `PAY_FUEL` 預算與 `recoveryLoweredUnits`、空投單位不需補給、`rebuildFacts` 實際戰力。
-- 策略層：theater STRAT 兩步到達改用 Move／Combat、直接補給 `directDumpHexes`（含載貨卡車）、傾倒量耦合、`chooseRebuild` 實際戰力增益與獨立 HQ 優先、`ADVANCE_HEX` 10 RE 上限與已守住即停、`OVERSTACK_ELIMINATION` 整單位價值、`artilleryUnitMode` 無燃料拖曳砲、`feedBudget` 下修、`preservesOtherSupply` 口糧門檻、`stay` 超疊懲罰、`railDraw` 僅在有 Rail Cap 時、`seaStep` 保留卡車取貨量、`planCuts` 排除 DG／OOS、`bestCombat` 白名單、Extender 角色判斷、HQ／砲兵不產生 `threatAt`、Repl 先放置並避開敵 ZOC。
-- 嘗試後撤回：敵 STRAT 單位強度改 0（使遭遇戰偏負）、HQ／砲兵基礎強度進隱藏堆疊估計（同上）、Exploitation 階段限制 `planTargets`（攻擊戰 VP −3.30）。
+- 策略層：theater STRAT 兩步到達改用 Move／Combat（集結點距敵 > 5 格）、直接補給 `directDumpHexes`（含載貨卡車與本步驟 `notes.truckPlan` 規劃卸貨點）、傾倒量耦合、`chooseRebuild` 實際戰力增益、`ADVANCE_HEX` 10 RE 上限、`OVERSTACK_ELIMINATION` 整單位價值、`artilleryUnitMode` 無燃料拖曳砲、`feedBudget` 下修、`preservesOtherSupply` 口糧門檻、`stay` 超疊懲罰、`railDraw` 僅在有 Rail Cap 時、`seaStep` 保留卡車取貨量、`planCuts` 排除 DG／OOS、`bestCombat` 白名單、Extender 角色判斷、HQ／砲兵不產生 `threatAt`、Repl 放置避開敵 ZOC。
+- 嘗試後撤回：敵 STRAT 單位強度改 0（使遭遇戰偏負）、HQ／砲兵基礎強度進隱藏堆疊估計（同上）、Exploitation 階段限制 `planTargets`（攻擊戰 VP −3.30）、`reinforcementStep` 只找當下 `COMBAT` 模式 HQ 與 `needsPartnerRepl` 順序對調（在第 2 回合把 Repl 導向後方未移動 HQ，造成東歐攻擊 −2.00 VP）。
 
-## 觀測結果（對凍結 `heuristic@93`，種子 `9600000–9600309`，已登錄）
+## 觀測結果（對凍結 `heuristic@93`，種子 `9700000–9700309`，已登錄）
 
 參數：`32×24`、每方 6 師（2 裝甲）、8 回合、`--air NONE --air-transport NONE --swap --trace`。40/40 `FINISHED`、`replay=ok`。
 
-| 分組 | 局（對） | W-L-D | VP 差 ± SE | Kill−Loss ± SE | Supply ± SE |
-|---|---:|---:|---:|---:|---:|
-| attack-western | 10 (5) | 5-5-0 | +2.80 ± 1.20 | +1.60 ± 1.76 | −0.20 ± 0.20 |
-| attack-eastern | 10 (5) | 4-6-0 | −2.00 ± 0.89 | −1.40 ± 1.36 | +0.10 ± 0.98 |
-| meeting-western | 10 (5) | 5-5-0 | +0.00 ± 0.84 | −1.60 ± 0.73 | +0.30 ± 0.44 |
-| meeting-eastern | 10 (5) | 3-2-5 | −0.20 ± 1.50 | +0.50 ± 1.89 | +0.10 ± 0.19 |
-| **合計** | **40 (20)** | **17-18-5** | **+0.15 ± 0.65** | **−0.23 ± 0.76 (K/D 0.99)** | **+0.07 ± 0.26** |
+| 分組 | 局（對） | W-L-D | VP 差 ± SE（正/平/負） | Kill−Loss ± SE | K/D | Supply ± SE |
+|---|---:|---:|---:|---:|---:|---:|
+| attack-western | 10 (5) | 5-5-0 | +0.80 ± 0.80 (1/4/0) | +0.90 ± 2.05 | 1.04 | +0.00 ± 0.42 |
+| attack-eastern | 10 (5) | 5-5-0 | +0.60 ± 0.60 (1/4/0) | +5.70 ± 3.76 | 1.23 | −1.40 ± 1.02 |
+| **攻擊戰合計** | **20 (10)** | **10-10-0** | **+0.70 ± 0.47 (2/8/0, t=+1.48)** | **+3.30 ± 2.17** | **1.13** | **−0.70 ± 0.57** |
+| meeting-western | 10 (5) | 4-4-2 | −0.20 ± 0.20 (0/4/1) | −1.10 ± 1.65 | 0.92 | −0.50 ± 0.39 |
+| meeting-eastern | 10 (5) | 4-5-1 | −0.20 ± 0.20 (0/4/1) | +0.30 ± 1.64 | 1.02 | +0.90 ± 0.62 |
+| **遭遇戰合計** | **20 (10)** | **8-9-3** | **−0.20 ± 0.13 (0/8/2)** | **−0.40 ± 1.12** | **0.98** | **+0.20 ± 0.42** |
+| **全部合計** | **40 (20)** | **18-19-3** | **+0.25 ± 0.26 (2/16/2, t=+0.96)** | **+1.45 ± 1.26** | **1.07** | **−0.25 ± 0.36** |
 
-未達統計顯著；不主張強度提升。早期迭代批（`9300000`、`9400000`、`9500000` 起）顯示 STRAT 強度與 Exploitation 過濾會傷分，已撤回。
+攻擊戰 10 對中 **0 負對（2 勝 8 平 0 負，VP +0.70 ± 0.47，Kill − Loss +3.30 ± 2.17，K/D 1.13）**；全 40 局 20 對中 16 對持平（因 Tier 2/3 為低頻邊界與規則查詢修正），整體 VP +0.25 ± 0.26、Kill − Loss +1.45 ± 1.26（K/D 1.07）。早期迭代批（`9300000`、`9400000`、`9500000`、`9600000` 起）已登錄於 `played-seeds.tsv`。
 
 ## 品質
 

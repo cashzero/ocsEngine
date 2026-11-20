@@ -1549,10 +1549,6 @@ const movementStep = (context: BotDecisionContext, situation: Situation, facts: 
   };
   const unitFeeds = (unit: OwnUnit): readonly FeedSource[] => context.actions.feedCoverage(unit.piece.id);
   const sideFeeds = context.actions.feedCoverage();
-  notes.directDumpHexes = new Set(situation.own
-    .filter((unit) => (unit.piece.role === 'DUMP' && (unit.piece.resourceQuantity ?? 0) > 0)
-      || (unit.piece.role === 'TRUCK' && (unit.piece.carriedTokens ?? 0) > 0))
-    .flatMap((dump) => [...context.actions.drawReach(dump.hexId)]));
   if (notes.extender === undefined) {
     notes.extender = planExtender(context, situation, facts, w);
     if (notes.extender) debug?.(`EXTENDER ${notes.extender.site} +${notes.extender.gain}VP trucks ${notes.extender.truckIds.join(' ')}`);
@@ -1569,6 +1565,13 @@ const movementStep = (context: BotDecisionContext, situation: Situation, facts: 
       if (cuts.length > 0) debug?.(`CUT ${cuts.map(({ unitId, hexId, cut }) => `${unitId}>${hexId}#${cut}`).join(' ')}`);
     }
   }
+  notes.directDumpHexes = new Set([
+    ...situation.own
+      .filter((unit) => (unit.piece.role === 'DUMP' && (unit.piece.resourceQuantity ?? 0) > 0)
+        || (unit.piece.role === 'TRUCK' && (unit.piece.carriedTokens ?? 0) > 0))
+      .flatMap((dump) => [...context.actions.drawReach(dump.hexId)]),
+    ...[...(notes.truckPlan?.values() ?? [])].flatMap(({ drop }) => [...context.actions.drawReach(drop)]),
+  ]);
   const effort = notes.effort;
   if (effort) debug?.(`MAIN EFFORT ${effort.hexId} vs ${effort.defenders.toFixed(1)} with ${effort.unitIds.size} unit(s), lead ${effort.lead}`);
   if (!notes.targets) {
@@ -2180,33 +2183,18 @@ const railForwardFromArrival = (context: BotDecisionContext, situation: Situatio
 };
 
 const reinforcementStep = (context: BotDecisionContext, situation: Situation, facts: BotGameFacts, w: HeuristicWeights): BotDecision | null => {
+  const rebuild = chooseRebuild(context, situation, facts);
+  if (rebuild) return rebuild;
   const placements = context.actions.candidates('PLACE_REINFORCEMENT', null, 400);
-  const projection = context.view.projection!;
-  const roleOf = new Map(projection.stacks.flatMap(({ pieces }) => pieces).map((piece) => [String(piece.id), piece.role]));
-  // Place arriving Repls (PAX/EQ) before rebuilding when an on-map rebuild site lacks the partner resource (e.g. PAX on map, EQ arriving),
-  // so co-arriving PAX+EQ can combine for an HQ or armored unit instead of burning PAX first.
-  const replPlacements = placements.filter((action) => action.kind === 'PLACE_REINFORCEMENT' && roleOf.get(String(action.pieceId)) === 'REPLACEMENT');
-  const needsPartnerRepl = replPlacements.length > 0 && context.actions.candidates('REBUILD_UNITS', null, 40).some((candidate) => {
-    if (candidate.kind !== 'REBUILD_UNITS') return false;
-    const encoded = context.actions.explain(candidate).explanation.facts.find(f => f.key === 'replacement.rebuildOptions')?.value;
-    if (typeof encoded !== 'string') return false;
-    const opt = JSON.parse(encoded) as RebuildOptions;
-    return (opt.pax > 0 && opt.eq === 0) || (opt.eq > 0 && opt.pax === 0);
-  });
-  if (!needsPartnerRepl) {
-    const rebuild = chooseRebuild(context, situation, facts);
-    if (rebuild) return rebuild;
-  }
-  const activePlacements = needsPartnerRepl ? replPlacements : placements;
-  if (activePlacements.length === 0) return null;
+  if (placements.length === 0) return null;
   const goals = situation.objectives.filter(({ controllerId }) => controllerId !== situation.playerId).map(({ hexId }) => hexId);
   const front = frontHex(situation);
   const aim = goals.length > 0 ? goals : front ? [front] : [];
-  // 13.5a: only Combat-Mode HQs can rebuild units; prefer them over Move-Mode HQs when placing Repls.
-  const combatHqs = situation.own.filter(({ piece }) => piece.role === 'HQ' && piece.mode === 'COMBAT').map(({ hexId }) => hexId);
-  const hqs = combatHqs.length > 0 ? combatHqs : situation.own.filter(({ piece }) => piece.role === 'HQ').map(({ hexId }) => hexId);
+  const projection = context.view.projection!;
+  const roleOf = new Map(projection.stacks.flatMap(({ pieces }) => pieces).map((piece) => [String(piece.id), piece.role]));
+  const hqs = situation.own.filter(({ piece }) => piece.role === 'HQ').map(({ hexId }) => hexId);
   const traces = new Map<PieceId, ReadonlySet<string>>();
-  const scored = activePlacements.map((action) => {
+  const scored = placements.map((action) => {
     const hexId = action.kind === 'PLACE_REINFORCEMENT' ? action.hexId : ('' as HexId);
     const isRepl = action.kind === 'PLACE_REINFORCEMENT' && roleOf.get(String(action.pieceId)) === 'REPLACEMENT';
     // Repls rebuild only near an HQ (13.5a); everything else arrives as close to the objectives as it may.

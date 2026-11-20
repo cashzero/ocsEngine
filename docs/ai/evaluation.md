@@ -183,7 +183,7 @@ SP 每 segment 7.4–9.8 SP（地圖上 SP 的 29–36%）。
 
 ### 目前結果
 
-標準策略 `heuristic@94` 是 `heuristic@93` 加上 Tier 2／Tier 3 修正（HQ 12.3b 直接補給、theater 配置的 STRAT 兩步到達與傾倒量耦合、`chooseRebuild` 實際戰力增益、`ADVANCE_HEX` 10 RE 堆疊上限、`OVERSTACK_ELIMINATION` 整單位價值、`queryHqThrow`／`plannedAttack`／`COMBINE_TRANSPORT`／`COLLAPSE_EXTENDER` 等規則查詢修正），[內容](heuristic-policy.md)；由使用者決定升級（2026-11-20：「完成剩餘工作」）。對凍結 `heuristic@93` 的 40 局配對結果為中性（VP +0.15 ± 0.65，Kill − Loss −0.23 ± 0.76，Supply +0.07 ± 0.26，[證據](../quality/evidence/ai-v94-tier23-2026-11-20/README.md)），不主張強度提升。前一版 `heuristic@93` 的內容與結果：標準策略 `heuristic@93` 是 `heuristic@92` 加上 7 項 Tier 1 高頻缺陷修正與 5 項 BARRAGE／戰鬥候選效能與正確性修正，[內容](heuristic-policy.md#戰鬥與砲擊)；由使用者決定直接升級（2026-11-20，未另跑 80 局獨立批，見[決策](#決策)）：
+標準策略 `heuristic@94` 是 `heuristic@93` 加上 Tier 2／Tier 3 修正（HQ 12.3b 直接補給、theater 配置的 STRAT 兩步到達與傾倒量耦合、`chooseRebuild` 實際戰力增益、`ADVANCE_HEX` 10 RE 堆疊上限、`OVERSTACK_ELIMINATION` 整單位價值、`queryHqThrow`／`plannedAttack`／`COMBINE_TRANSPORT`／`COLLAPSE_EXTENDER` 等規則查詢修正），[內容](heuristic-policy.md)；由使用者決定升級（2026-11-20：「完成剩餘工作」）。對凍結 `heuristic@93` 的 40 局配對結果為小幅正向／中性（VP +0.25 ± 0.26、攻擊戰 +0.70 ± 0.47［2 勝 8 平 0 負］，Kill − Loss +1.45 ± 1.26［K/D 1.07，攻擊戰 +3.30 ± 2.17］，Supply −0.25 ± 0.36，[證據](../quality/evidence/ai-v94-tier23-2026-11-20/README.md)），不主張強度提升。前一版 `heuristic@93` 的內容與結果：標準策略 `heuristic@93` 是 `heuristic@92` 加上 7 項 Tier 1 高頻缺陷修正與 5 項 BARRAGE／戰鬥候選效能與正確性修正，[內容](heuristic-policy.md#戰鬥與砲擊)；由使用者決定直接升級（2026-11-20，未另跑 80 局獨立批，見[決策](#決策)）：
 
 | 量測 | 結果（相對凍結 `heuristic@92`） |
 |---|---|
